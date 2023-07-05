@@ -1,0 +1,5 @@
+
+class DynamicVal:
+    vals = []
+
+    
