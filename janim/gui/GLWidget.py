@@ -39,7 +39,9 @@ class GLWidget(QOpenGLWidget):
         self.shader = QOpenGLShaderProgram()
         self.shader.addShaderFromSourceFile(QOpenGLShader.ShaderTypeBit.Vertex, 'shaders/tex.vert')
         self.shader.addShaderFromSourceFile(QOpenGLShader.ShaderTypeBit.Fragment, 'shaders/tex.frag')
-        self.shader.link()
+        if not self.shader.link():
+            print('Failed to link GLWidget.shader')
+            exit(1)
         self.shader.bind()
         
         vertices = np.array([
@@ -131,7 +133,7 @@ class GLWidget(QOpenGLWidget):
         start = time.perf_counter()
         super().paintEvent(e)
         elapsed = time.perf_counter() - start
-        plan = 1 / self.frameRate
+        plan = 1 / self.frame_rate
         if elapsed < plan:
             self.timer.start((plan - elapsed) * 1000)
         else:

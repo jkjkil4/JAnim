@@ -1,5 +1,8 @@
+from typing import Union, Iterable
 import ctypes
 import numpy as np
+
+JAnimColor = Union[str, np.ndarray, Iterable]
 
 FLOAT_SIZE = ctypes.sizeof(ctypes.c_float)
 UINT_SIZE = ctypes.sizeof(ctypes.c_uint)

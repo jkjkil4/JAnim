@@ -3,6 +3,8 @@ from typing import List, Iterable
 import itertools as it
 import numpy as np
 
+from janim.utils.functions import safe_call
+
 class Item:
     def __init__(self, comment='') -> None:
         # conf
@@ -11,9 +13,6 @@ class Item:
         # relation
         self._parent: Item = None
         self._items: List[Item] = []
-
-        # data
-        self._points = np.zeros((0, 3), dtype=np.float32)   # _points 在所有操作中都会保持 dtype=np.float32，以便传入 shader
 
     #region 基本结构（array-like 操作、物件包含关系）
 
@@ -67,66 +66,6 @@ class Item:
 
     #endregion
 
-    #region 点坐标数据
-
-    def set_points(self, *points: np.ndarray | Iterable):
-        '''
-        设置点坐标数据，每个坐标点都有三个分量
-        
-        使用形如 `set_points([1.5, 3, 2], [2, 1.5, 0])` 的形式
-        '''
-        if isinstance(points, np.ndarray):
-            points = points.copy()
-        else:
-            points = np.array(points)
-        assert(points.ndim == 2)
-        assert(points.shape[1] == 3)
-        
-        self._points = points.astype(np.float32)
-        return self
-    
-    def get_points(self) -> np.ndarray:
-        return self._points
-
-    def append_points(self, *points: np.ndarray | Iterable):
-        '''
-        追加点坐标数据，每个坐标点都有三个分量
-
-        使用形如 `append_points([1.5, 3, 2], [2, 1.5, 0])` 的形式
-        '''
-        if not isinstance(points, np.ndarray):
-            points = np.array(points)
-        assert(points.ndim == 2)
-        assert(points.shape[1] == 3)
-
-        self._points = np.append(self._points, points.astype(np.float32), axis=0)
-        return self
-
-    def match_points(self, item: Item):
-        '''
-        将另一个物件的点坐标数据设置到该物件上
-        '''
-        self.set_points(item.get_points())
-        return self
-
-    def clear_points(self):
-        self._points = np.zeros((0, 3), dtype=np.float32)
-        return self
-
-    def reverse_points(self):
-        for item in self._items:
-            item.reverse_points()
-        self._points = self._points[::-1]
-    
-    def apply_points_function(self):
-        # TODO
-        pass
-
-    def points_count(self) -> int:
-        return len(self._points)
-
-    #endregion
-
     #region 辅助功能
 
     def get_comment(self) -> str:
@@ -149,6 +88,66 @@ class Item:
 
     #endregion
 
+class PointsItem(Item):
+    def __init__(self) -> None:
+        self._points = np.zeros((0, 3), dtype=np.float32)   # _points 在所有操作中都会保持 dtype=np.float32，以便传入 shader
+
+    def set_points(self, points: Iterable):
+        '''
+        设置点坐标数据，每个坐标点都有三个分量
+        
+        使用形如 `set_points([[1.5, 3, 2], [2, 1.5, 0]])` 的形式
+        '''
+        if isinstance(points, np.ndarray):
+            points = points.copy()
+        else:
+            points = np.array(points)
+        assert(points.ndim == 2)
+        assert(points.shape[1] == 3)
+        
+        self._points = points.astype(np.float32)
+        return self
+    
+    def get_points(self) -> np.ndarray:
+        return self._points
+
+    def append_points(self, points: Iterable):
+        '''
+        追加点坐标数据，每个坐标点都有三个分量
+
+        使用形如 `append_points([[1.5, 3, 2], [2, 1.5, 0]])` 的形式
+        '''
+        if not isinstance(points, np.ndarray):
+            points = np.array(points)
+        assert(points.ndim == 2)
+        assert(points.shape[1] == 3)
+
+        self._points = np.append(self._points, points.astype(np.float32), axis=0)
+        return self
+
+    def match_points(self, item: PointsItem):
+        '''
+        将另一个物件的点坐标数据设置到该物件上
+        '''
+        self.set_points(item.get_points())
+        return self
+
+    def clear_points(self):
+        self._points = np.zeros((0, 3), dtype=np.float32)
+        return self
+
+    def reverse_points(self, recurse=True):
+        if recurse:
+            for item in self._items:
+                safe_call(item, 'reverse_points')
+        self._points = self._points[::-1]
+    
+    def apply_points_function(self):
+        # TODO
+        pass
+
+    def points_count(self) -> int:
+        return len(self._points)
 
 class Group(Item):
     def __init__(self, *items: Item) -> None:
