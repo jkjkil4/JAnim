@@ -15,7 +15,7 @@ from janim.scene import Scene
 import time
 
 class GLWidget(QOpenGLWidget):
-    frame_rate = 30
+    frame_rate = DEFAULT_FRAME_RATE
 
     def __init__(self, parent: Optional[QWidget]=None) -> None:
         super().__init__(parent)
