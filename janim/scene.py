@@ -2,7 +2,7 @@ from __future__ import annotations
 from typing import List
 import itertools as it
 
-from janim.items.item import Item
+from janim.items.item import Item, MethodGroup
 
 class Scene:
     def __init__(self) -> None:
@@ -13,7 +13,6 @@ class Scene:
 
     def __getitem__(self, value):
         if isinstance(value, slice):
-            from items.group import MethodGroup
             return MethodGroup(*self.items[value])
         return self.items[value]
 
@@ -27,17 +26,17 @@ class Scene:
         for item in items:
             if item in self:
                 continue
-            if item.parent:
-                item.parent.remove(item)
+            if item._parent:
+                item._parent.remove(item)
             self.items.append(item)
-            item.parent = self
+            item._parent = self
         return self
 
     def remove(self, *items: Item) -> Scene:
         for item in items:
             if item not in self:
                 continue
-            item.parent = None
+            item._parent = None
             self.items.remove(item)
         return self
     
