@@ -2,6 +2,7 @@ from __future__ import annotations
 from typing import Iterable, Callable, Optional
 import itertools as it
 import numpy as np
+import sys
 from functools import wraps
 
 from janim.constants import *
@@ -9,6 +10,7 @@ from janim.utils.functions import safe_call
 from janim.utils.math_functions import rotation_matrix
 from janim.utils.color import hex_to_rgb
 from janim.utils.iterables import resize_with_interpolation
+from janim.utils.bezier import interpolate, integer_interpolate
 
 from janim.shaders.render import RenderData, Renderer
 
@@ -157,6 +159,35 @@ class Item:
     
     def has_points(self) -> bool:
         return self.points_count() > 0
+    
+    def get_start(self) -> np.ndarray:
+        self.throw_error_if_no_points()
+        return self.get_points()[0].copy()
+
+    def get_end(self) -> np.ndarray:
+        self.throw_error_if_no_points()
+        return self.get_points()[-1].copy()
+
+    def get_start_and_end(self) -> tuple(np.ndarray, np.ndarray):
+        self.throw_error_if_no_points()
+        points = self.get_points()
+        return (points[0].copy(), points[-1].copy())
+
+    def point_from_proportion(self, alpha: float) -> np.ndarray:
+        points = self.get_points()
+        i, subalpha = integer_interpolate(0, len(points) - 1, alpha)
+        return interpolate(points[i], points[i + 1], subalpha)
+
+    def pfp(self, alpha):
+        """Abbreviation for point_from_proportion"""
+        return self.point_from_proportion(alpha)
+    
+    def throw_error_if_no_points(self):
+        if not self.has_points():
+            message = "Cannot call Item.{} " +\
+                      "for a Item with no points"
+            caller_name = sys._getframe(1).f_code.co_name
+            raise Exception(message.format(caller_name))
 
     #endregion
 
@@ -235,7 +266,7 @@ class Item:
         ])
         if len(all_points) == 0:
             return np.zeros((3, 3))
-
+        
         mins = all_points.min(0)
         maxs = all_points.max(0)
         mids = (mins + maxs) / 2
@@ -248,6 +279,52 @@ class Item:
             bb[indices[i]][i]
             for i in range(3)
         ])
+    
+    def get_top(self) -> np.ndarray:
+        return self.get_bbox_point(UP)
+
+    def get_bottom(self) -> np.ndarray:
+        return self.get_bbox_point(DOWN)
+
+    def get_right(self) -> np.ndarray:
+        return self.get_bbox_point(RIGHT)
+
+    def get_left(self) -> np.ndarray:
+        return self.get_bbox_point(LEFT)
+
+    def get_zenith(self) -> np.ndarray:
+        return self.get_bbox_point(OUT)
+
+    def get_nadir(self) -> np.ndarray:
+        return self.get_bbox_point(IN)
+
+    def length_over_dim(self, dim: int) -> float:
+        bb = self.get_bbox()
+        return abs((bb[2] - bb[0])[dim])
+    
+    def get_width(self) -> float:
+        return self.length_over_dim(0)
+
+    def get_height(self) -> float:
+        return self.length_over_dim(1)
+
+    def get_depth(self) -> float:
+        return self.length_over_dim(2)
+    
+    def get_coord(self, dim: int, direction: np.ndarray = ORIGIN) -> float:
+        """
+        Meant to generalize get_x, get_y, get_z
+        """
+        return self.get_bbox_point(direction)[dim]
+
+    def get_x(self, direction=ORIGIN) -> float:
+        return self.get_coord(0, direction)
+
+    def get_y(self, direction=ORIGIN) -> float:
+        return self.get_coord(1, direction)
+
+    def get_z(self, direction=ORIGIN) -> float:
+        return self.get_coord(2, direction)
 
     #endregion
 
@@ -287,13 +364,6 @@ class Item:
         )
         return self
     
-    def shift(self, vector: np.ndarray):
-        self.apply_points_function(
-            lambda points: points + vector,
-            about_edge=None
-        )
-        return self
-    
     def scale(
         self,
         scale_factor: float | Iterable,
@@ -318,6 +388,65 @@ class Item:
             points[:, dim] *= factor
             return points
         self.apply_points_function(func, **kwargs)
+        return self
+
+    #endregion
+
+    #region 位移
+
+    def shift(self, vector: np.ndarray):
+        self.apply_points_function(
+            lambda points: points + vector,
+            about_edge=None
+        )
+        return self
+    
+    def move_to(
+        self,
+        target: Item | np.ndarray,
+        aligned_edge: np.ndarray = ORIGIN,
+        coor_mask: Iterable = (1, 1, 1)
+    ):
+        if isinstance(target, Item):
+            target = target.get_bbox_point(aligned_edge)
+        point_to_align = self.get_bbox_point(aligned_edge)
+        self.shift((target - point_to_align) * coor_mask)
+        return self
+
+    def to_center(self):
+        self.shift(-self.get_center())
+        return self
+
+    def to_border(
+        self,
+        direction: np.ndarray,
+        buff: float = DEF_ITEM_TO_EDGE_BUFF
+    ):
+        """
+        Direction just needs to be a vector pointing towards side or
+        corner in the 2d plane.
+        """
+        target_point = np.sign(direction) * (FRAME_X_RADIUS, FRAME_Y_RADIUS, 0)
+        point_to_align = self.get_bbox_point(direction)
+        shift_val = target_point - point_to_align - buff * np.array(direction)
+        shift_val = shift_val * abs(np.sign(direction))
+        self.shift(shift_val)
+        return self
+    
+    def next_to(
+        self,
+        target: Item | np.ndarray,
+        direction: np.ndarray = RIGHT,
+        buff: float = DEF_ITEM_TO_ITEM_BUFF,
+        aligned_edge: np.ndarray = ORIGIN,
+        coor_mask: Iterable = (1, 1, 1)
+        # TODO: subitem_to_align
+    ):
+        if isinstance(target, Item):
+            target = target.get_bbox_point(aligned_edge + direction)
+        
+        point_to_align = self.get_bbox_point(aligned_edge - direction)
+        self.shift((target - point_to_align + buff * direction) * coor_mask)
         return self
 
     #endregion

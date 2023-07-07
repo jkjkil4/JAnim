@@ -40,6 +40,7 @@ class GLWidget(QOpenGLWidget):
         d = DotCloud([LEFT * 6 + RIGHT * 0.5 * i for i in range(25)])\
             .set_color([RED, GREEN, BLUE]).set_opacity([1, 0, 1])
         self.scene.add(d)
+        self.scene.add(DotCloud([LEFT, RIGHT, UP, DOWN]).next_to(d, DOWN, aligned_edge=RIGHT))
 
     def initializeGL(self) -> None:
         glClearColor(0.2, 0.3, 0.3, 1.0)
