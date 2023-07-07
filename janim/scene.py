@@ -56,6 +56,8 @@ class Scene:
     
     #endregion
 
+    #region 渲染
+
     def render(self) -> None:
         camera_scale_factor = self.camera.get_vertical_dist() / self.camera.frame_shape[1]
 
@@ -67,6 +69,8 @@ class Scene:
 
         for item in self:
             item.render(data)
+    
+    #endregion
 
 class Camera(Item):
     frame_shape = (FRAME_WIDTH, FRAME_HEIGHT)
@@ -76,19 +80,29 @@ class Camera(Item):
     def __init__(self) -> None:
         super().__init__()
 
+        self.reset()
+    
+    def reset(self):
         self.fov = 45
         self.set_points([ORIGIN, LEFT_SIDE, RIGHT_SIDE, BOTTOM, TOP])
+        return self
+
+    def get_horizontal_vect(self) -> np.ndarray:
+        return self.points[2] - self.points[1]
 
     def get_horizontal_dist(self) -> float:
-        return get_norm(self.points[2] - self.points[1])
+        return get_norm(self.get_horizontal_vect())
+    
+    def get_vertical_vect(self) -> np.ndarray:
+        return self.points[4] - self.points[3]
     
     def get_vertical_dist(self) -> float:
-        return get_norm(self.points[4] - self.points[3])
+        return get_norm(self.get_vertical_vect())
 
     def compute_view_matrix(self) -> QMatrix4x4:
         center = self.points[0]
-        hor = self.points[2] - self.points[1]
-        ver = self.points[4] - self.points[3]
+        hor = self.get_horizontal_vect()
+        ver = self.get_vertical_vect()
         normal = get_unit_normal(hor, ver)
         distance = get_norm(ver) / 2 / np.tan(np.deg2rad(self.fov / 2))
 

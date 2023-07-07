@@ -2,14 +2,12 @@ from __future__ import annotations
 from typing import Iterable
 
 import numpy as np
-from functools import wraps
 
 from janim.items.item import Item
 from janim.utils.iterables import resize_with_interpolation
-from janim.shaders.render import RenderData
 from janim.shaders.render import DotCloudRenderer
 
-from constants import Iterable
+from janim.constants import *
 
 class DotCloud(Item):
     radius = 0.05

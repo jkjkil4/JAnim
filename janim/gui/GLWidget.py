@@ -3,7 +3,7 @@ import numpy as np
 
 from PySide6.QtCore import Qt
 from PySide6.QtCore import QTimer
-from PySide6.QtGui import QImage, QMatrix4x4, QPaintEvent, QKeyEvent
+from PySide6.QtGui import QPaintEvent, QKeyEvent, QMouseEvent, QWheelEvent
 from PySide6.QtWidgets import QWidget
 from PySide6.QtOpenGLWidgets import QOpenGLWidget
 from PySide6.QtOpenGL import *
@@ -12,13 +12,17 @@ from OpenGL.GL import *
 from janim.constants import *
 from janim.scene import Scene
 from janim.items.dot_cloud import DotCloud
+from janim.utils.math_functions import normalize, get_unit_normal
 
 import time
 
 class GLWidget(QOpenGLWidget):
     frame_rate = DEFAULT_FRAME_RATE
+    pan_sensitivity = 0.3
+    move_sensitivity = 0.02
+    wheel_step = 0.5
 
-    def __init__(self, parent: Optional[QWidget]=None) -> None:
+    def __init__(self, parent: Optional[QWidget] = None) -> None:
         super().__init__(parent)
 
         # 基本属性
@@ -39,12 +43,14 @@ class GLWidget(QOpenGLWidget):
         self.scene = Scene()
         d1 = DotCloud([LEFT * 6 + RIGHT * 0.5 * i for i in range(25)])\
             .set_color([RED, GREEN, BLUE])\
-            .set_radius(0.05)
+            .set_radius([0.1, 0.05, 0.1, 0.05])
         d2 = DotCloud([LEFT, RIGHT, UP, DOWN])\
-            .move_to(d1, RIGHT)\
+            .next_to(d1, DOWN, aligned_edge=RIGHT)\
             .set_radius(0.1)
         self.scene.add(d1, d2)
         self.i = 0
+
+    #region OpenGL
 
     def initializeGL(self) -> None:
         glClearColor(0.2, 0.3, 0.3, 1.0)
@@ -72,9 +78,6 @@ class GLWidget(QOpenGLWidget):
         # glUniform1i(self.shader.uniformLocation('texture2'), 1)
 
     def paintGL(self) -> None:
-        if self.scene is None:
-            return
-        
         self.scene.render()
 
         # glActiveTexture(GL_TEXTURE0)
@@ -87,8 +90,7 @@ class GLWidget(QOpenGLWidget):
     def resizeGL(self, w: int, h: int) -> None:
         super().resizeGL(w, h)
         glViewport(0, 0, w, h)
-        if self.scene:
-            self.scene.camera.window_shape = (w, h)
+        self.scene.camera.window_shape = (w, h)
 
     def paintEvent(self, e: QPaintEvent) -> None:
         '''
@@ -108,17 +110,56 @@ class GLWidget(QOpenGLWidget):
             self.timer.start((plan - elapsed) * 1000)
         else:
             self.update()
+
+    #endregion
+
+    #region 用户操作
+
+    def mousePressEvent(self, event: QMouseEvent) -> None:
+        super().mousePressEvent(event)
+
+        if event.button() == Qt.MouseButton.MiddleButton:
+            self.mbutton_pos = event.position()
+        elif event.button() == Qt.MouseButton.RightButton:
+            self.rbutton_pos = event.position()
+
+    def mouseMoveEvent(self, event: QMouseEvent) -> None:
+        super().mouseMoveEvent(event)
+
+        if event.buttons() & Qt.MouseButton.MiddleButton:
+            pos = event.position()
+            d_pos = pos - self.mbutton_pos
+            x, y = d_pos.toTuple()
+
+            camera = self.scene.camera
+            camera.shift(
+                - normalize(camera.get_horizontal_vect()) * x * self.move_sensitivity
+                + normalize(camera.get_vertical_vect()) * y * self.move_sensitivity
+            )
+
+            self.mbutton_pos = pos
+
+        if event.buttons() & Qt.MouseButton.RightButton:
+            pos = event.position()
+            d_pos = pos - self.rbutton_pos
+            x, y = d_pos.toTuple()
+
+            camera = self.scene.camera
+            camera.rotate(-self.pan_sensitivity * x * DEGREES, OUT)
+            camera.rotate(-self.pan_sensitivity * y * DEGREES, camera.get_horizontal_vect())
+            
+            self.rbutton_pos = pos
+
+    def wheelEvent(self, event: QWheelEvent) -> None:
+        super().wheelEvent(event)
+        delta = event.angleDelta().y()
+        
+        self.scene.camera.scale(0.98 if delta > 0 else 1 / 0.98)
     
-    # 仅测试
     def keyPressEvent(self, event: QKeyEvent) -> None:
         super().keyPressEvent(event)
-        if event.key() == Qt.Key.Key_Return:
-            self.scene.camera.rotate(2 * DEGREES, UP)
-            self.scene[-1].rotate(2 * DEGREES, RIGHT)
-            self.scene[-1].set_color([
-                np.sin(8 * self.i * DEGREES) / 2 + 0.5, 
-                np.cos(4 * self.i * DEGREES) / 2 + 0.5, 
-                1.0
-            ])
-            self.scene[-1].set_x(np.cos(4 * self.i * DEGREES) * 5)
-            self.i += 1
+        
+        if event.key() == Qt.Key.Key_R:
+            self.scene.camera.reset()
+    
+    #endregion

@@ -3,7 +3,6 @@ from typing import Iterable, Callable, Optional
 import itertools as it
 import numpy as np
 import sys
-from functools import wraps
 
 from janim.constants import *
 from janim.utils.functions import safe_call
