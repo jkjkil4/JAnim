@@ -14,7 +14,7 @@ def main():
     fmt = QSurfaceFormat()
     fmt.setVersion(3, 3)
     fmt.setSamples(4)
-    QSurfaceFormat.setDefaultFormat(fmt)    
+    QSurfaceFormat.setDefaultFormat(fmt)
 
     w = GLWidget()
     w.show()

@@ -2,17 +2,10 @@ from typing import Union, Iterable
 import ctypes
 import numpy as np
 
-JAnimColor = Union[str, np.ndarray, Iterable]
+JAnimColor = Union[str, Iterable]
 
 FLOAT_SIZE = ctypes.sizeof(ctypes.c_float)
 UINT_SIZE = ctypes.sizeof(ctypes.c_uint)
-
-IDEN_MAT = (
-    1, 0, 0, 0,
-    0, 1, 0, 0,
-    0, 0, 1, 0,
-    0, 0, 0, 1
-)
 
 ASPECT_RATIO = 16.0 / 9.0
 FRAME_HEIGHT = 8.0

@@ -11,6 +11,7 @@ from OpenGL.GL import *
 
 from janim.constants import *
 from janim.scene import Scene
+from janim.items.dot_cloud import DotCloud
 
 import time
 
@@ -22,6 +23,7 @@ class GLWidget(QOpenGLWidget):
 
         # 基本属性
         # self.frameRate = 30
+        self.setMinimumSize(100, 100)
 
         # 定时器，用于定时调用绘制，详见 `paintEvent`
         self.timer = QTimer(self)
@@ -32,93 +34,100 @@ class GLWidget(QOpenGLWidget):
         # 场景
         self.scene: Scene = None
 
+        # 仅测试
+        self.scene = Scene()
+        self.scene.add(DotCloud(np.array([ORIGIN, LEFT, RIGHT, UP, DOWN, LEFT_SIDE, RIGHT_SIDE, TOP, BOTTOM])))
+
     def initializeGL(self) -> None:
-        glClearColor(0, 0, 0, 1)    # 将背景色设置为黑色
+        glClearColor(0.2, 0.3, 0.3, 1.0)
+        # glClearColor(0, 0, 0, 1)    # 将背景色设置为黑色
         glEnable(GL_MULTISAMPLE)    # 抗锯齿
 
-        self.shader = QOpenGLShaderProgram()
-        self.shader.addShaderFromSourceFile(QOpenGLShader.ShaderTypeBit.Vertex, 'shaders/tex.vert')
-        self.shader.addShaderFromSourceFile(QOpenGLShader.ShaderTypeBit.Fragment, 'shaders/tex.frag')
-        if not self.shader.link():
-            print('Failed to link GLWidget.shader')
-            exit(1)
-        self.shader.bind()
+        # self.shader = QOpenGLShaderProgram()
+        # self.shader.addShaderFromSourceFile(QOpenGLShader.ShaderTypeBit.Vertex, 'shaders/tex.vert')
+        # self.shader.addShaderFromSourceFile(QOpenGLShader.ShaderTypeBit.Fragment, 'shaders/tex.frag')
+        # if not self.shader.link():
+        #     print('Failed to link GLWidget.shader')
+        #     exit(1)
+        # self.shader.bind()
         
-        vertices = np.array([
-            # positions       # texture coords
-            0.5,  0.5, 0.0,   1.0, 1.0, # top right
-            0.5, -0.5, 0.0,   1.0, 0.0, # bottom right
-           -0.5, -0.5, 0.0,   0.0, 0.0, # bottom left
-           -0.5,  0.5, 0.0,   0.0, 1.0  # top left 
-        ]).astype(np.float32)
+        # vertices = np.array([
+        #     # positions       # texture coords
+        #     0.5,  0.5, 0.0,   1.0, 1.0, # top right
+        #     0.5, -0.5, 0.0,   1.0, 0.0, # bottom right
+        #    -0.5, -0.5, 0.0,   0.0, 0.0, # bottom left
+        #    -0.5,  0.5, 0.0,   0.0, 1.0  # top left 
+        # ]).astype(np.float32)
 
-        self.indices = np.array([
-            0, 1, 3,
-            1, 2, 3
-        ]).astype(np.uint)
+        # self.indices = np.array([
+        #     0, 1, 3,
+        #     1, 2, 3
+        # ]).astype(np.uint)
 
-        self.vao = glGenVertexArrays(1)
-        self.vbo = glGenBuffers(1)
+        # self.vao = glGenVertexArrays(1)
+        # self.vbo = glGenBuffers(1)
 
-        glBindVertexArray(self.vao)
+        # glBindVertexArray(self.vao)
 
-        glBindBuffer(GL_ARRAY_BUFFER, self.vbo)
-        glBufferData(GL_ARRAY_BUFFER, len(vertices) * FLOAT_SIZE, vertices, GL_STATIC_DRAW)
+        # glBindBuffer(GL_ARRAY_BUFFER, self.vbo)
+        # glBufferData(GL_ARRAY_BUFFER, len(vertices) * FLOAT_SIZE, vertices, GL_STATIC_DRAW)
 
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * FLOAT_SIZE, ctypes.c_void_p(0))
-        glEnableVertexAttribArray(0)
-        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * FLOAT_SIZE, ctypes.c_void_p(3 * FLOAT_SIZE))
-        glEnableVertexAttribArray(1)
+        # glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * FLOAT_SIZE, ctypes.c_void_p(0))
+        # glEnableVertexAttribArray(0)
+        # glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * FLOAT_SIZE, ctypes.c_void_p(3 * FLOAT_SIZE))
+        # glEnableVertexAttribArray(1)
 
-        glBindVertexArray(0)
+        # glBindVertexArray(0)
 
-        self.tex1 = QOpenGLTexture(QOpenGLTexture.Target.Target2D)
-        self.tex1.create()
-        self.tex1.setData(QImage('assets/container.jpg').mirrored(False, True))
-        self.tex1.setMinMagFilters(QOpenGLTexture.Filter.Linear, QOpenGLTexture.Filter.Linear)
-        self.tex1.setWrapMode(QOpenGLTexture.WrapMode.ClampToEdge)
+        # self.tex1 = QOpenGLTexture(QOpenGLTexture.Target.Target2D)
+        # self.tex1.create()
+        # self.tex1.setData(QImage('assets/container.jpg').mirrored(False, True))
+        # self.tex1.setMinMagFilters(QOpenGLTexture.Filter.Linear, QOpenGLTexture.Filter.Linear)
+        # self.tex1.setWrapMode(QOpenGLTexture.WrapMode.ClampToEdge)
 
-        self.tex2 = QOpenGLTexture(QOpenGLTexture.Target.Target2D)
-        self.tex2.create()
-        self.tex2.setData(QImage('assets/awesomeface.png').mirrored(False, True))
-        self.tex2.setMinMagFilters(QOpenGLTexture.Filter.Linear, QOpenGLTexture.Filter.Linear)
-        self.tex2.setWrapMode(QOpenGLTexture.WrapMode.ClampToEdge)
+        # self.tex2 = QOpenGLTexture(QOpenGLTexture.Target.Target2D)
+        # self.tex2.create()
+        # self.tex2.setData(QImage('assets/awesomeface.png').mirrored(False, True))
+        # self.tex2.setMinMagFilters(QOpenGLTexture.Filter.Linear, QOpenGLTexture.Filter.Linear)
+        # self.tex2.setWrapMode(QOpenGLTexture.WrapMode.ClampToEdge)
         
-        glUniform1i(self.shader.uniformLocation('texture1'), 0)
-        glUniform1i(self.shader.uniformLocation('texture2'), 1)
+        # glUniform1i(self.shader.uniformLocation('texture1'), 0)
+        # glUniform1i(self.shader.uniformLocation('texture2'), 1)
 
     def paintGL(self) -> None:
-        # if self.scene is None:
-            # return
+        if self.scene is None:
+            return
         
-        # self.scene.render()
+        self.scene.render()
 
-        glActiveTexture(GL_TEXTURE0)
-        self.tex1.bind()
-        glActiveTexture(GL_TEXTURE1)
-        self.tex2.bind()
+        # glActiveTexture(GL_TEXTURE0)
+        # self.tex1.bind()
+        # glActiveTexture(GL_TEXTURE1)
+        # self.tex2.bind()
 
-        self.shader.bind()
+        # self.shader.bind()
 
-        model = QMatrix4x4(IDEN_MAT)
-        model.rotate(60 * (time.time() % 6), 1, 0, 0)
-        self.shader.setUniformValue(self.shader.uniformLocation('model'), model)
+        # model = QMatrix4x4(IDEN_MAT)
+        # model.rotate(60 * (time.time() % 6), 1, 0, 0)
+        # self.shader.setUniformValue(self.shader.uniformLocation('model'), model)
 
-        view = QMatrix4x4(IDEN_MAT)
-        view.translate(0, 0, -3)
-        self.shader.setUniformValue(self.shader.uniformLocation('view'), view)
+        # view = QMatrix4x4(IDEN_MAT)
+        # view.translate(0, 0, -3)
+        # self.shader.setUniformValue(self.shader.uniformLocation('view'), view)
 
-        projection = QMatrix4x4(IDEN_MAT)
-        projection.perspective(45, self.width() / self.height(), 0.1, 100)
-        self.shader.setUniformValue(self.shader.uniformLocation('projection'), projection)
+        # projection = QMatrix4x4(IDEN_MAT)
+        # projection.perspective(45, self.width() / self.height(), 0.1, 100)
+        # self.shader.setUniformValue(self.shader.uniformLocation('projection'), projection)
 
-        glBindVertexArray(self.vao)
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, self.indices)
-        glBindVertexArray(0)
+        # glBindVertexArray(self.vao)
+        # glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, self.indices)
+        # glBindVertexArray(0)
 
     def resizeGL(self, w: int, h: int) -> None:
         super().resizeGL(w, h)
         glViewport(0, 0, w, h)
+        if self.scene:
+            self.scene.camera.window_shape = (w, h)
 
     def paintEvent(self, e: QPaintEvent) -> None:
         '''
