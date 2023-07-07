@@ -38,6 +38,12 @@ class Item:
 
     def points_count_changed(self) -> None:
         self.needs_new_rgbas = True
+    
+    def points_changed(self) -> None:
+        self.renderer.needs_update = True
+    
+    def rgbas_changed(self) -> None:
+        self.renderer.needs_update = True
 
     #region 基本结构（array-like 操作、物件包含关系）
 
@@ -110,6 +116,7 @@ class Item:
         else:
             self.points = points.astype(np.float32)
             self.points_count_changed()
+        self.points_changed()
         return self
     
     def get_points(self) -> np.ndarray:
@@ -128,6 +135,7 @@ class Item:
 
         self.points = np.append(self.points, points.astype(np.float32), axis=0)
         self.points_count_changed()
+        self.points_changed()
         return self
 
     def match_points(self, item: Item):
@@ -135,19 +143,20 @@ class Item:
         将另一个物件的点坐标数据设置到该物件上
         '''
         self.set_points(item.get_points())
-        self.points_count_changed()
         return self
 
     def clear_points(self):
         self.points = np.zeros((0, 3), dtype=np.float32)
         self.points_count_changed()
+        self.points_changed()
         return self
 
     def reverse_points(self, recurse=True):
         if recurse:
             for item in self.items:
                 safe_call(item, 'reverse_points')
-        self.points = self.points[::-1]
+        self.set_points(self.points[::-1])
+        return self
     
     def points_count(self) -> int:
         return len(self.points)
@@ -194,6 +203,7 @@ class Item:
             self.rgbas[:] = rgbas
         else:
             self.rgbas = rgbas.astype(np.float32)
+        self.rgbas_changed()
         return self
     
     def set_color(
@@ -240,6 +250,7 @@ class Item:
             opacity = [opacity]
         opacity = resize_with_interpolation(np.array(opacity), len(self.rgbas))
         self.rgbas[:, 3] = opacity
+        self.rgbas_changed()
         return self
 
     #endregion
@@ -443,13 +454,29 @@ class Item:
         point_to_align = self.get_bbox_point(aligned_edge - direction)
         self.shift((target - point_to_align + buff * direction) * coor_mask)
         return self
+    
+    def set_coord(self, value: float, dim: int, direction: np.ndarray = ORIGIN):
+        curr = self.get_coord(dim, direction)
+        shift_vect = np.zeros(3)
+        shift_vect[dim] = value - curr
+        self.shift(shift_vect)
+        return self
+
+    def set_x(self, x: float, direction: np.ndarray = ORIGIN):
+        return self.set_coord(x, 0, direction)
+
+    def set_y(self, y: float, direction: np.ndarray = ORIGIN):
+        return self.set_coord(y, 1, direction)
+
+    def set_z(self, z: float, direction: np.ndarray = ORIGIN):
+        return self.set_coord(z, 2, direction)
 
     #endregion
 
     #region 渲染
 
     def create_renderer(self) -> Renderer:
-        return None
+        return Renderer()
 
     def render(self, data: RenderData) -> None:
         if not self.renderer:

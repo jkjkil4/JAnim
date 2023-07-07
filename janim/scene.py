@@ -5,7 +5,10 @@ from PySide6.QtGui import QMatrix4x4, QVector3D
 
 from janim.constants import *
 from janim.items.item import Item, MethodGroup
-from janim.utils.math_functions import get_unit_normal, get_norm, get_proportional_scale_size
+from janim.utils.math_functions import (
+    get_unit_normal, get_norm, 
+    get_proportional_scale_size
+)
 from janim.shaders.render import RenderData
 
 class Scene:

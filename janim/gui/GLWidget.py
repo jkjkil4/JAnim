@@ -39,16 +39,18 @@ class GLWidget(QOpenGLWidget):
         self.scene = Scene()
         d1 = DotCloud([LEFT * 6 + RIGHT * 0.5 * i for i in range(25)])\
             .set_color([RED, GREEN, BLUE])\
-            .set_radius([0.1, 0.05, 0.1, 0.05])
+            .set_radius(0.05)
         d2 = DotCloud([LEFT, RIGHT, UP, DOWN])\
-            .next_to(d1, DOWN, aligned_edge=RIGHT)\
+            .move_to(d1, RIGHT)\
             .set_radius(0.1)
         self.scene.add(d1, d2)
+        self.i = 0
 
     def initializeGL(self) -> None:
         glClearColor(0.2, 0.3, 0.3, 1.0)
         # glClearColor(0, 0, 0, 1)    # 将背景色设置为黑色
         glEnable(GL_MULTISAMPLE)    # 抗锯齿
+        glEnable(GL_DEPTH_TEST)
 
         # 颜色混合
         glEnable(GL_BLEND)
@@ -112,3 +114,11 @@ class GLWidget(QOpenGLWidget):
         super().keyPressEvent(event)
         if event.key() == Qt.Key.Key_Return:
             self.scene.camera.rotate(2 * DEGREES, UP)
+            self.scene[-1].rotate(2 * DEGREES, RIGHT)
+            self.scene[-1].set_color([
+                np.sin(8 * self.i * DEGREES) / 2 + 0.5, 
+                np.cos(4 * self.i * DEGREES) / 2 + 0.5, 
+                1.0
+            ])
+            self.scene[-1].set_x(np.cos(4 * self.i * DEGREES) * 5)
+            self.i += 1
