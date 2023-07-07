@@ -4,20 +4,28 @@ layout (triangle_strip, max_vertices = 4) out;
 
 in vec4 v_pos[1];
 in vec4 v_color[1];
+in float v_radius[1];
 
-out vec4 pos;
+out vec2 center;
 out vec4 color;
+out float radius;
+out vec2 point;
 
 uniform mat4 wnd_mul_proj_matrix;
+uniform float anti_alias_width;
 
-void main() {
-    pos = v_pos[0];
+void main()
+{
+    center = v_pos[0].xy;
     color = v_color[0];
+    radius = v_radius[0];
+    float rpa = radius + anti_alias_width;
     for (int i = 0; i < 4; i++) {
-        int x_index = 2 * (i % 2) - 1;
-        int y_index = 2 * (i / 2) - 1;
-        gl_Position = v_pos[0] + vec4(0.1 * x_index, 0.1 * y_index, 0.0, 0.0);
-        gl_Position = wnd_mul_proj_matrix * gl_Position;
+        int xx = 2 * (i % 2) - 1;
+        int yy = 2 * (i / 2) - 1;
+        vec4 corner = v_pos[0] + vec4(rpa * xx, rpa * yy, 0.0, 0.0);
+        gl_Position = wnd_mul_proj_matrix * corner;
+        point = corner.xy;
         EmitVertex();
     }
     EndPrimitive();

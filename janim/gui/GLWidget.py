@@ -3,7 +3,7 @@ import numpy as np
 
 from PySide6.QtCore import Qt
 from PySide6.QtCore import QTimer
-from PySide6.QtGui import QImage, QMatrix4x4, QPaintEvent
+from PySide6.QtGui import QImage, QMatrix4x4, QPaintEvent, QKeyEvent
 from PySide6.QtWidgets import QWidget
 from PySide6.QtOpenGLWidgets import QOpenGLWidget
 from PySide6.QtOpenGL import *
@@ -37,10 +37,13 @@ class GLWidget(QOpenGLWidget):
         # 仅测试
         self.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
         self.scene = Scene()
-        d = DotCloud([LEFT * 6 + RIGHT * 0.5 * i for i in range(25)])\
-            .set_color([RED, GREEN, BLUE]).set_opacity([1, 0, 1])
-        self.scene.add(d)
-        self.scene.add(DotCloud([LEFT, RIGHT, UP, DOWN]).next_to(d, DOWN, aligned_edge=RIGHT))
+        d1 = DotCloud([LEFT * 6 + RIGHT * 0.5 * i for i in range(25)])\
+            .set_color([RED, GREEN, BLUE])\
+            .set_radii([0.1, 0.05, 0.1, 0.05])
+        d2 = DotCloud([LEFT, RIGHT, UP, DOWN])\
+            .next_to(d1, DOWN, aligned_edge=RIGHT)\
+            .set_radius(0.1)
+        self.scene.add(d1, d2)
 
     def initializeGL(self) -> None:
         glClearColor(0.2, 0.3, 0.3, 1.0)
@@ -103,3 +106,9 @@ class GLWidget(QOpenGLWidget):
             self.timer.start((plan - elapsed) * 1000)
         else:
             self.update()
+    
+    # 仅测试
+    def keyPressEvent(self, event: QKeyEvent) -> None:
+        super().keyPressEvent(event)
+        if event.key() == Qt.Key.Key_Return:
+            self.scene.camera.rotate(2 * DEGREES, UP)

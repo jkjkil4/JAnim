@@ -36,13 +36,8 @@ class Item:
         # 渲染
         self.renderer = self.create_renderer()
 
-    def affects_rgbas(func):
-        @wraps(func)
-        def wrapper(self, *args, **kwargs):
-            self.needs_new_rgbas = True
-            func(self, *args, **kwargs)
-            return self
-        return wrapper
+    def points_count_changed(self) -> None:
+        self.needs_new_rgbas = True
 
     #region 基本结构（array-like 操作、物件包含关系）
 
@@ -99,7 +94,6 @@ class Item:
 
     #region 点坐标数据
 
-    @affects_rgbas
     def set_points(self, points: Iterable):
         '''
         设置点坐标数据，每个坐标点都有三个分量
@@ -115,12 +109,12 @@ class Item:
             self.points[:] = points
         else:
             self.points = points.astype(np.float32)
+            self.points_count_changed()
         return self
     
     def get_points(self) -> np.ndarray:
         return self.points
 
-    @affects_rgbas
     def append_points(self, points: Iterable):
         '''
         追加点坐标数据，每个坐标点都有三个分量
@@ -133,19 +127,20 @@ class Item:
         assert(points.shape[1] == 3)
 
         self.points = np.append(self.points, points.astype(np.float32), axis=0)
+        self.points_count_changed()
         return self
 
-    @affects_rgbas
     def match_points(self, item: Item):
         '''
         将另一个物件的点坐标数据设置到该物件上
         '''
         self.set_points(item.get_points())
+        self.points_count_changed()
         return self
 
-    @affects_rgbas
     def clear_points(self):
         self.points = np.zeros((0, 3), dtype=np.float32)
+        self.points_count_changed()
         return self
 
     def reverse_points(self, recurse=True):
@@ -194,10 +189,11 @@ class Item:
     #region 颜色数据
 
     def set_rgbas(self, rgbas: Iterable[Iterable[float, float, float, float]]):
+        rgbas = resize_with_interpolation(np.array(rgbas), self.points_count())
         if len(rgbas) == len(self.rgbas):
             self.rgbas[:] = rgbas
         else:
-            self.rgbas = np.array(rgbas).astype(np.float32)
+            self.rgbas = rgbas.astype(np.float32)
         return self
     
     def set_color(
@@ -232,9 +228,8 @@ class Item:
 
     def get_rgbas(self) -> np.ndarray:
         if self.needs_new_rgbas:
-            cnt = self.points_count()
-            if cnt:
-                self.set_rgbas(resize_with_interpolation(self.rgbas, cnt))
+            if self.has_points():
+                self.set_rgbas(self.rgbas)
             else:
                 self.rgbas = np.array([1, 1, 1, 1], dtype=np.float32).reshape((1, 4))
             self.needs_new_rgbas = False
