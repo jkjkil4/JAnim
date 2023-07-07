@@ -4,8 +4,6 @@ import itertools as it
 import numpy as np
 from functools import wraps
 
-from PySide6.QtGui import QMatrix4x4, QVector3D
-
 from janim.constants import *
 from janim.utils.functions import safe_call
 from janim.utils.math_functions import rotation_matrix
@@ -210,6 +208,13 @@ class Item:
                 self.rgbas = np.array([1, 1, 1, 1], dtype=np.float32).reshape((1, 4))
             self.needs_new_rgbas = False
         return self.rgbas
+
+    def set_opacity(self, opacity: float | Iterable[float]):
+        if not isinstance(opacity, Iterable):
+            opacity = [opacity]
+        opacity = resize_with_interpolation(np.array(opacity), len(self.rgbas))
+        self.rgbas[:, 3] = opacity
+        return self
 
     #endregion
 

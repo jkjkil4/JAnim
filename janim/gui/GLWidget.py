@@ -38,13 +38,17 @@ class GLWidget(QOpenGLWidget):
         self.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
         self.scene = Scene()
         d = DotCloud([LEFT * 6 + RIGHT * 0.5 * i for i in range(25)])\
-            .set_color([RED, GREEN, BLUE], [1, 0])
+            .set_color([RED, GREEN, BLUE]).set_opacity([1, 0, 1])
         self.scene.add(d)
 
     def initializeGL(self) -> None:
         glClearColor(0.2, 0.3, 0.3, 1.0)
         # glClearColor(0, 0, 0, 1)    # 将背景色设置为黑色
         glEnable(GL_MULTISAMPLE)    # 抗锯齿
+
+        # 颜色混合
+        glEnable(GL_BLEND)
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
 
         # self.tex1 = QOpenGLTexture(QOpenGLTexture.Target.Target2D)
         # self.tex1.create()
