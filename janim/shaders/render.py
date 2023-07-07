@@ -12,16 +12,16 @@ class RenderData:
 class Renderer:
     def __init__(self) -> None:
         self.initialized = False
-        self.need_update = True
+        self.needs_update = True
 
     def prepare(self, item) -> None:
         if not self.initialized:
-            self.initialized = True
             self.init()
+            self.initialized = True
         
-        if self.need_update:
-            self.need_update = False
+        if self.needs_update:
             self.update(item)
+            self.needs_update = False
 
     def init(self) -> None:
         pass

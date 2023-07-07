@@ -33,17 +33,17 @@ class Scene:
         for item in items:
             if item in self:
                 continue
-            if item._parent:
-                item._parent.remove(item)
+            if item.parent:
+                item.parent.remove(item)
             self._items.append(item)
-            item._parent = self
+            item.parent = self
         return self
 
     def remove(self, *items: Item) -> Scene:
         for item in items:
             if item not in self:
                 continue
-            item._parent = None
+            item.parent = None
             self._items.remove(item)
         return self
     
@@ -73,9 +73,9 @@ class Camera(Item):
         self.set_points([ORIGIN, LEFT_SIDE, RIGHT_SIDE, BOTTOM, TOP])
 
     def compute_view_matrix(self) -> QMatrix4x4:
-        center = self._points[0]
-        hor = self._points[2] - self._points[1]
-        ver = self._points[4] - self._points[3]
+        center = self.points[0]
+        hor = self.points[2] - self.points[1]
+        ver = self.points[4] - self.points[3]
         normal = get_unit_normal(hor, ver)
         distance = self.frame_shape[1] / 2 / np.tan(np.deg2rad(self.fov / 2))
 

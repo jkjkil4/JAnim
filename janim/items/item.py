@@ -2,6 +2,7 @@ from __future__ import annotations
 from typing import List, Iterable, Callable
 import itertools as it
 import numpy as np
+from functools import wraps
 
 from janim.utils.functions import safe_call
 from janim.constants import *
@@ -11,49 +12,54 @@ class Item:
     comment = ''
 
     def __init__(self) -> None:
-        # relation
-        self._parent: Item = None
-        self._items: List[Item] = []
+        # 基本结构
+        self.parent: Item = None
+        self.items: List[Item] = []
 
-        # data
-        self._points = np.zeros((0, 3), dtype=np.float32)   # _points 在所有操作中都会保持 dtype=np.float32，以便传入 shader
+        # 点坐标数据
+        self.points = np.zeros((0, 3), dtype=np.float32)   # _points 在所有操作中都会保持 dtype=np.float32，以便传入 shader
 
+        # 边界箱
+        self.needs_new_bbox = True
+        self.bbox = np.zeros((3, 3))
+
+        # 渲染
         self.renderer = self.create_renderer()
 
     #region 基本结构（array-like 操作、物件包含关系）
 
     def __getitem__(self, value):
         if isinstance(value, slice):
-            return MethodGroup(*self._items[value])
-        return self._items[value]
+            return MethodGroup(*self.items[value])
+        return self.items[value]
 
     def __iter__(self):
-        return iter(self._items)
+        return iter(self.items)
 
     def __len__(self):
-        return len(self._items)
+        return len(self.items)
 
     def add(self, *items: Item):
         for item in items:                  # 遍历要追加的每个物件
             if item in self:                    # 如果已经是子物件，则跳过
                 continue
-            if item._parent:                    # 将当前物件已有的父物件解除
-                item._parent.remove(item)
-            self._items.append(item)            # 设置当前物件的父物件
-            item._parent = self
+            if item.parent:                    # 将当前物件已有的父物件解除
+                item.parent.remove(item)
+            self.items.append(item)            # 设置当前物件的父物件
+            item.parent = self
         return self
 
     def remove(self, *items: Item):
         for item in items:          # 遍历要移除的每个物件
             if item not in self:        # 如果不是子物件，则跳过
                 continue
-            item._parent = None         # 将当前物件移出
-            self._items.remove(item)
+            item.parent = None         # 将当前物件移出
+            self.items.remove(item)
         return self
     
     def family(self) -> List[Item]:
         # TODO: optimize
-        return list(it.chain(*(item.family() for item in self._items)))
+        return list(it.chain(*(item.family() for item in self.items)))
     
     #endregion
 
@@ -85,11 +91,11 @@ class Item:
         assert(points.ndim == 2)
         assert(points.shape[1] == 3)
         
-        self._points = points.astype(np.float32)
+        self.points = points.astype(np.float32)
         return self
     
     def get_points(self) -> np.ndarray:
-        return self._points
+        return self.points
 
     def append_points(self, points: Iterable):
         '''
@@ -102,7 +108,7 @@ class Item:
         assert(points.ndim == 2)
         assert(points.shape[1] == 3)
 
-        self._points = np.append(self._points, points.astype(np.float32), axis=0)
+        self.points = np.append(self.points, points.astype(np.float32), axis=0)
         return self
 
     def match_points(self, item: Item):
@@ -113,26 +119,65 @@ class Item:
         return self
 
     def clear_points(self):
-        self._points = np.zeros((0, 3), dtype=np.float32)
+        self.points = np.zeros((0, 3), dtype=np.float32)
         return self
 
     def reverse_points(self, recurse=True):
         if recurse:
-            for item in self._items:
+            for item in self.items:
                 safe_call(item, 'reverse_points')
-        self._points = self._points[::-1]
+        self.points = self.points[::-1]
     
+    def points_count(self) -> int:
+        return len(self.points)
+    
+    def has_points(self) -> bool:
+        return self.points_count() > 0
+
+    #endregion
+
+    #region 边界箱 bounding_box
+    
+    def get_bbox(self) -> np.ndarray:
+        # TODO: optimize
+        return self.compute_bbox()
+        
+    def compute_bbox(self) -> np.ndarray:
+        all_points = np.vstack([
+            self.get_points(),
+            *(
+                item.get_bbox()
+                for item in self.family()
+                if item.has_points()
+            )
+        ])
+        if len(all_points) == 0:
+            return np.zeros((3, 3))
+
+        mins = all_points.min(0)
+        maxs = all_points.max(0)
+        mids = (mins + maxs) / 2
+        return np.array([mins, mids, maxs])
+
+    def get_bbox_point(self, direction: np.ndarray) -> np.ndarray:
+        bb = self.get_bbox()
+        indices = (np.sign(direction) + 1).astype(int)
+        return np.array([
+            bb[indices[i]][i]
+            for i in range(3)
+        ])
+
+    #endregion
+
+    #region 变换
+
     def apply_points_function(
         self,
         func: Callable[[np.ndarray], np.ndarray],
         about_point: np.ndarray = None,
         about_edge: np.ndarray = ORIGIN
     ):
-        # TODO
         pass
-
-    def points_count(self) -> int:
-        return len(self._points)
 
     #endregion
 
@@ -166,7 +211,7 @@ class Item:
 
         for i, item in enumerate(self):
             comment = item.get_comment()
-            if item is not self._items[-1]:
+            if item is not self.items[-1]:
                 print(f'{sub_prefix}├──\033[34m[{i}]\033[0m {item} \033[30m({comment})\033[0m')
                 item.print_family(False, sub_prefix + '│   ')
             else:
