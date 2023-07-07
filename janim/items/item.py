@@ -6,9 +6,12 @@ from functools import wraps
 
 from PySide6.QtGui import QMatrix4x4, QVector3D
 
+from janim.constants import *
 from janim.utils.functions import safe_call
 from janim.utils.math_functions import rotation_matrix
-from janim.constants import *
+from janim.utils.color import hex_to_rgb
+from janim.utils.iterables import resize_with_interpolation
+
 from janim.shaders.render import RenderData, Renderer
 
 class Item:
@@ -20,7 +23,11 @@ class Item:
         self.items: list[Item] = []
 
         # 点坐标数据
-        self.points = np.zeros((0, 3), dtype=np.float32)   # _points 在所有操作中都会保持 dtype=np.float32，以便传入 shader
+        self.points = np.zeros((0, 3), dtype=np.float32)    # points 在所有操作中都会保持 dtype=np.float32，以便传入 shader
+
+        # 颜色数据
+        self.rgbas = np.array([1, 1, 1, 1], dtype=np.float32).reshape((1, 4))   # rgbas 在所有操作中都会保持 dtype=np.float32，以便传入 shader
+        self.needs_new_rgbas = True
 
         # 边界箱
         # self.needs_new_bbox = True
@@ -28,6 +35,14 @@ class Item:
 
         # 渲染
         self.renderer = self.create_renderer()
+
+    def affects_rgbas(func):
+        @wraps(func)
+        def wrapper(self, *args, **kwargs):
+            self.needs_new_rgbas = True
+            func(self, *args, **kwargs)
+            return self
+        return wrapper
 
     #region 基本结构（array-like 操作、物件包含关系）
 
@@ -84,6 +99,7 @@ class Item:
 
     #region 点坐标数据
 
+    @affects_rgbas
     def set_points(self, points: Iterable):
         '''
         设置点坐标数据，每个坐标点都有三个分量
@@ -104,6 +120,7 @@ class Item:
     def get_points(self) -> np.ndarray:
         return self.points
 
+    @affects_rgbas
     def append_points(self, points: Iterable):
         '''
         追加点坐标数据，每个坐标点都有三个分量
@@ -118,6 +135,7 @@ class Item:
         self.points = np.append(self.points, points.astype(np.float32), axis=0)
         return self
 
+    @affects_rgbas
     def match_points(self, item: Item):
         '''
         将另一个物件的点坐标数据设置到该物件上
@@ -125,6 +143,7 @@ class Item:
         self.set_points(item.get_points())
         return self
 
+    @affects_rgbas
     def clear_points(self):
         self.points = np.zeros((0, 3), dtype=np.float32)
         return self
@@ -140,6 +159,57 @@ class Item:
     
     def has_points(self) -> bool:
         return self.points_count() > 0
+
+    #endregion
+
+    #region 颜色数据
+
+    def set_rgbas(self, rgbas: Iterable[Iterable[float, float, float, float]]):
+        if len(rgbas) == len(self.rgbas):
+            self.rgbas[:] = rgbas
+        else:
+            self.rgbas = np.array(rgbas).astype(np.float32)
+        return self
+    
+    def set_color(
+        self, 
+        color: JAnimColor | Iterable[JAnimColor], 
+        opacity: float | Iterable[float] = 1
+    ):
+        if isinstance(color, str):
+            color = [hex_to_rgb(color)]
+        elif isinstance(color, Iterable) and not any(isinstance(v, Iterable) for v in color):
+            color = [color]
+        else:
+            color = [
+                hex_to_rgb(c) 
+                if isinstance(c, str) else c 
+                for c in color
+            ]
+        color = resize_with_interpolation(np.array(color), self.points_count())
+        
+        if not isinstance(opacity, Iterable):
+            opacity = [opacity]
+        opacity = resize_with_interpolation(np.array(opacity), self.points_count())
+
+        self.set_rgbas(
+            np.hstack((
+                color, 
+                opacity.reshape((len(opacity), 1))
+            ))
+        )
+
+        return self
+
+    def get_rgbas(self) -> np.ndarray:
+        if self.needs_new_rgbas:
+            cnt = self.points_count()
+            if cnt:
+                self.set_rgbas(resize_with_interpolation(self.rgbas, cnt))
+            else:
+                self.rgbas = np.array([1, 1, 1, 1], dtype=np.float32).reshape((1, 4))
+            self.needs_new_rgbas = False
+        return self.rgbas
 
     #endregion
 
@@ -322,3 +392,4 @@ class MethodGroup:
 
     def __len__(self):
         return len(self.items)
+

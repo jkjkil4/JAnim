@@ -29,7 +29,7 @@ class GLWidget(QOpenGLWidget):
         self.timer = QTimer(self)
         self.timer.setTimerType(Qt.TimerType.PreciseTimer)  # 使定时更准确
         self.timer.setSingleShot(True)                      # 由于每次触发时间不确定，因此是单次触发，每次触发后另行控制
-        self.timer.timeout.connect(self.update)             # 达到定时后调用 `update``
+        self.timer.timeout.connect(self.update)             # 达到定时后调用 `update`
 
         # 场景
         self.scene: Scene = None
@@ -37,15 +37,9 @@ class GLWidget(QOpenGLWidget):
         # 仅测试
         self.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
         self.scene = Scene()
-        self.scene.add(
-            DotCloud([
-                ORIGIN, RIGHT * 2, 
-                LEFT, RIGHT, UP, DOWN, 
-                LEFT_SIDE, RIGHT_SIDE, TOP, BOTTOM,
-                LEFT_SIDE + TOP, LEFT_SIDE + BOTTOM,
-                RIGHT_SIDE + TOP, RIGHT_SIDE + BOTTOM
-            ])
-        )
+        d = DotCloud([LEFT * 6 + RIGHT * 0.5 * i for i in range(25)])\
+            .set_color([RED, GREEN, BLUE], [1, 0])
+        self.scene.add(d)
 
     def initializeGL(self) -> None:
         glClearColor(0.2, 0.3, 0.3, 1.0)
