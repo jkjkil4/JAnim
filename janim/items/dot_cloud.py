@@ -30,26 +30,24 @@ class DotCloud(Item):
     def create_renderer(self) -> DotCloudRenderer:
         return DotCloudRenderer()
     
-    def set_radii(self, radii: Iterable):
-        radii = resize_with_interpolation(np.array(radii), self.points_count())
-        if len(radii) == len(self.radii):
-            self.radii[:] = radii
+    def set_radius(self, radius: float | Iterable[float]):
+        if not isinstance(radius, Iterable):
+            radius = [radius]
+        radius = resize_with_interpolation(np.array(radius), self.points_count())
+        if len(radius) == len(self.radii):
+            self.radii[:] = radius
         else:
-            self.radii = radii.astype(np.float32)
+            self.radii = radius.astype(np.float32)
         return self
     
     def get_radii(self) -> np.ndarray:
         if self.needs_new_radii:
             if self.has_points():
-                self.set_radii(self.radii)
+                self.set_radius(self.radii)
             else:
                 self.radii = np.array([self.radius], dtype=np.float32)
             self.needs_new_radii = False
         return self.radii
-
-    def set_radius(self, radius: float):
-        self.radii[:] = radius
-        return self
     
     def get_radius(self) -> float:
         return self.get_radii().max()

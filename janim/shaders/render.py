@@ -10,27 +10,46 @@ from OpenGL.GL import *
 from janim.constants import *
 
 class ShaderProgram(QOpenGLShaderProgram):
-    keys = (
+    '''
+    简单封装
+
+    给定文件位置自动遍历后缀并读取着色器代码，
+    例如传入 `shaders/dotcloud` 后，会自动读取 
+
+    - `shaders/dotcloud.vert`
+    - `shaders/dotcloud.geom`
+    - `shaders/dotcloud.frag`
+
+    的代码，若没有则缺省，但要能创建可用的着色器。
+
+    使用 `ShaderProgram.get(filename)` 获取着色器对象可以便于复用
+    '''
+
+    keys = (    # 便于遍历后缀读取着色器代码
         ('.vert', QOpenGLShader.ShaderTypeBit.Vertex),
         ('.geom', QOpenGLShader.ShaderTypeBit.Geometry),
         ('.frag', QOpenGLShader.ShaderTypeBit.Fragment)
     )
 
-    filename_to_code_map: dict[str, ShaderProgram] = {}
+    # 存储可复用的着色器对象
+    filename_to_shader_map: dict[str, ShaderProgram] = {}
 
     @staticmethod
     def get(filename: str) -> ShaderProgram:
-        if filename in ShaderProgram.filename_to_code_map:
-            return ShaderProgram.filename_to_code_map[filename]
+        '''
+        若 `filename` 对应着色器先前已创建过，则复用先前的对象，否则另外创建新的对象并记录
+        '''
+        if filename in ShaderProgram.filename_to_shader_map:
+            return ShaderProgram.filename_to_shader_map[filename]
         
         shader = ShaderProgram(filename)
-        ShaderProgram.filename_to_code_map[filename] = shader
+        ShaderProgram.filename_to_shader_map[filename] = shader
         return shader
     
     def __init__(self, path_name: str, parent: Optional[QObject] = None) -> None:
         super().__init__(parent)
         
-        for suffix, shader_type in self.keys:
+        for suffix, shader_type in self.keys:   # 遍历后缀读取着色器代码
             file_path = path_name + suffix
             if os.path.exists(file_path):
                 self.addShaderFromSourceFile(shader_type, file_path)
@@ -39,7 +58,16 @@ class ShaderProgram(QOpenGLShaderProgram):
             print(f'Failed to link shader "{path_name}"')
             exit(1)
 
+    def setMat4(self, name: str, mat: QMatrix4x4) -> None:
+        self.setUniformValue(self.uniformLocation(name), mat)
+
+    def setFloat(self, name: str, val: float) -> None:
+        self.setUniformValue1f(self.uniformLocation(name), val)
+
 class RenderData:
+    '''
+    便于传递基本渲染数据信息
+    '''
     def __init__(
         self,
         camera_matrix: QMatrix4x4, 
@@ -51,6 +79,20 @@ class RenderData:
         self.anti_alias_width = anti_alias_width
 
 class Renderer:
+    '''
+    渲染器的基类
+
+    渲染分为 `init`、`update`、`pre_render` 和 `render`
+
+    `init`: 初始化渲染器对象时被调用
+
+    `update`: 需要更新缓存对象数据时被调用，用于向GL传递物件数据的变化
+
+    `pre_render`: 在渲染子物件前被调用，可以编写一些与子物件呈现效果有关的渲染代码
+
+    `render`: 在子物件渲染后被调用，也是渲染当前对象的主要代码位置
+    '''
+
     def __init__(self) -> None:
         self.initialized = False
         self.needs_update = True
@@ -75,14 +117,6 @@ class Renderer:
     
     def render(self, item, data: RenderData) -> None:
         pass
-
-    @staticmethod
-    def setMat4(shader: ShaderProgram, name: str, mat: QMatrix4x4) -> None:
-        shader.setUniformValue(shader.uniformLocation(name), mat)
-
-    @staticmethod
-    def setFloat(shader: ShaderProgram, name: str, val: float) -> None:
-        shader.setUniformValue1f(shader.uniformLocation(name), val)
 
 
 class DotCloudRenderer(Renderer):
@@ -126,9 +160,9 @@ class DotCloudRenderer(Renderer):
     def render(self, item, data: RenderData) -> None:
         self.shader.bind()
 
-        self.setMat4(self.shader, 'view_matrix', data.view_matrix)
-        self.setMat4(self.shader, 'wnd_mul_proj_matrix', data.wnd_mul_proj_matrix)
-        self.setFloat(self.shader, 'anti_alias_width', data.anti_alias_width)
+        self.shader.setMat4('view_matrix', data.view_matrix)
+        self.shader.setMat4('wnd_mul_proj_matrix', data.wnd_mul_proj_matrix)
+        self.shader.setFloat('anti_alias_width', data.anti_alias_width)
 
         glBindVertexArray(self.vao)
         glDrawArrays(GL_POINTS, 0, len(item.points))

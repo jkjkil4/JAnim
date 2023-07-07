@@ -39,7 +39,7 @@ class GLWidget(QOpenGLWidget):
         self.scene = Scene()
         d1 = DotCloud([LEFT * 6 + RIGHT * 0.5 * i for i in range(25)])\
             .set_color([RED, GREEN, BLUE])\
-            .set_radii([0.1, 0.05, 0.1, 0.05])
+            .set_radius([0.1, 0.05, 0.1, 0.05])
         d2 = DotCloud([LEFT, RIGHT, UP, DOWN])\
             .next_to(d1, DOWN, aligned_edge=RIGHT)\
             .set_radius(0.1)
