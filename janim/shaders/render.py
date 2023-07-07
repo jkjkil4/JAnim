@@ -57,7 +57,7 @@ class DotCloudRenderer(Renderer):
         glBindVertexArray(self.vao)
 
         glBindBuffer(GL_ARRAY_BUFFER, self.vbo)
-        glBufferData(GL_ARRAY_BUFFER, item._points.size * FLOAT_SIZE, item._points, GL_STATIC_DRAW)
+        glBufferData(GL_ARRAY_BUFFER, item.points.size * FLOAT_SIZE, item.points, GL_STATIC_DRAW)
         glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * FLOAT_SIZE, ctypes.c_void_p(0))
         glEnableVertexAttribArray(0)
         glBindBuffer(GL_ARRAY_BUFFER, 0)
@@ -71,6 +71,6 @@ class DotCloudRenderer(Renderer):
         self.setMat4(self.shader, 'wnd_mul_proj_matrix', data.wnd_mul_proj_matrix)
 
         glBindVertexArray(self.vao)
-        glDrawArrays(GL_POINTS, 0, len(item._points))
+        glDrawArrays(GL_POINTS, 0, len(item.points))
         glBindVertexArray(0)
 

@@ -14,20 +14,20 @@ class Scene:
         self.camera = Camera()
 
         # relation
-        self._items: List[Item] = []
+        self.items: List[Item] = []
 
     #region 基本结构
 
-    def __getitem__(self, value):
+    def __getitem__(self, value) -> Item | MethodGroup:
         if isinstance(value, slice):
-            return MethodGroup(*self._items[value])
-        return self._items[value]
+            return MethodGroup(*self.items[value])
+        return self.items[value]
 
     def __iter__(self):
-        return iter(self._items)
+        return iter(self.items)
 
     def __len__(self):
-        return len(self._items)
+        return len(self.items)
 
     def add(self, *items: Item) -> Scene:
         for item in items:
@@ -35,7 +35,7 @@ class Scene:
                 continue
             if item.parent:
                 item.parent.remove(item)
-            self._items.append(item)
+            self.items.append(item)
             item.parent = self
         return self
 
@@ -44,11 +44,11 @@ class Scene:
             if item not in self:
                 continue
             item.parent = None
-            self._items.remove(item)
+            self.items.remove(item)
         return self
     
     def get_family(self) -> List[Item]:
-        return list(it.chain(*(item.get_family() for item in self._items)))
+        return list(it.chain(*(item.get_family() for item in self.items)))
     
     #endregion
 

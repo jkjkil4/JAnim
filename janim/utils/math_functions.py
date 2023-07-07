@@ -2,8 +2,11 @@ from __future__ import annotations
 from typing import Iterable, Optional
 
 import numpy as np
+from scipy.spatial.transform import Rotation
 
 from janim.constants import *
+
+#region vector
 
 def cross(v1: np.ndarray, v2: np.ndarray) -> list[np.ndarray]:
     return [
@@ -41,6 +44,18 @@ def get_unit_normal(
             return DOWN
         return new_cp / new_cp_norm
     return cp / cp_norm
+
+#endregion
+
+#region matrix
+
+def rotation_matrix(angle: float, axis: np.ndarray) -> np.ndarray:
+    """
+    Rotation in R^3 about a specified axis of rotation.
+    """
+    return Rotation.from_rotvec(angle * normalize(axis)).as_matrix()
+
+#endregion
 
 def get_proportional_scale_size(src_width, src_height, tg_width, tg_height):
     factor1 = tg_width / src_width

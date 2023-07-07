@@ -35,8 +35,17 @@ class GLWidget(QOpenGLWidget):
         self.scene: Scene = None
 
         # 仅测试
+        self.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
         self.scene = Scene()
-        self.scene.add(DotCloud(np.array([ORIGIN, LEFT, RIGHT, UP, DOWN, LEFT_SIDE, RIGHT_SIDE, TOP, BOTTOM])))
+        self.scene.add(
+            DotCloud([
+                ORIGIN, RIGHT * 2, 
+                LEFT, RIGHT, UP, DOWN, 
+                LEFT_SIDE, RIGHT_SIDE, TOP, BOTTOM,
+                LEFT_SIDE + TOP, LEFT_SIDE + BOTTOM,
+                RIGHT_SIDE + TOP, RIGHT_SIDE + BOTTOM
+            ])
+        )
 
     def initializeGL(self) -> None:
         glClearColor(0.2, 0.3, 0.3, 1.0)
@@ -95,4 +104,3 @@ class GLWidget(QOpenGLWidget):
             self.timer.start((plan - elapsed) * 1000)
         else:
             self.update()
-

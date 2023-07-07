@@ -1,10 +1,13 @@
 from __future__ import annotations
-from typing import List, Iterable, Callable
+from typing import Iterable, Callable, Optional
 import itertools as it
 import numpy as np
 from functools import wraps
 
+from PySide6.QtGui import QMatrix4x4, QVector3D
+
 from janim.utils.functions import safe_call
+from janim.utils.math_functions import rotation_matrix
 from janim.constants import *
 from janim.shaders.render import RenderData, Renderer
 
@@ -14,14 +17,14 @@ class Item:
     def __init__(self) -> None:
         # 基本结构
         self.parent: Item = None
-        self.items: List[Item] = []
+        self.items: list[Item] = []
 
         # 点坐标数据
         self.points = np.zeros((0, 3), dtype=np.float32)   # _points 在所有操作中都会保持 dtype=np.float32，以便传入 shader
 
         # 边界箱
-        self.needs_new_bbox = True
-        self.bbox = np.zeros((3, 3))
+        # self.needs_new_bbox = True
+        # self.bbox = np.zeros((3, 3))
 
         # 渲染
         self.renderer = self.create_renderer()
@@ -57,9 +60,10 @@ class Item:
             self.items.remove(item)
         return self
     
-    def family(self) -> List[Item]:
+    def get_family(self) -> list[Item]:
         # TODO: optimize
-        return list(it.chain(*(item.family() for item in self.items)))
+        sub_families = (item.get_family() for item in self.items)
+        return [self, *it.chain(*sub_families)]
     
     #endregion
 
@@ -91,7 +95,10 @@ class Item:
         assert(points.ndim == 2)
         assert(points.shape[1] == 3)
         
-        self.points = points.astype(np.float32)
+        if len(points) == len(self.points):
+            self.points[:] = points
+        else:
+            self.points = points.astype(np.float32)
         return self
     
     def get_points(self) -> np.ndarray:
@@ -147,7 +154,7 @@ class Item:
             self.get_points(),
             *(
                 item.get_bbox()
-                for item in self.family()
+                for item in self.get_family()[1:]
                 if item.has_points()
             )
         ])
@@ -177,7 +184,66 @@ class Item:
         about_point: np.ndarray = None,
         about_edge: np.ndarray = ORIGIN
     ):
-        pass
+        if about_point is None and about_edge is not None:
+            about_point = self.get_bbox_point(about_edge)
+        
+        for item in self.get_family():
+            if not item.has_points():
+                continue
+            if about_point is None:
+                item.set_points(func(item.get_points()))
+            else:
+                item.set_points(func(item.get_points() - about_point) + about_point)
+        
+        return self
+
+    def rotate(
+        self,
+        angle: float,
+        axis: np.ndarray = OUT,
+        about_point: Optional[np.ndarray] = None,
+        **kwargs
+    ):
+        rot_matrix_T = rotation_matrix(angle, axis).T
+        self.apply_points_function(
+            lambda points: np.dot(points, rot_matrix_T),
+            about_point,
+            **kwargs
+        )
+        return self
+    
+    def shift(self, vector: np.ndarray):
+        self.apply_points_function(
+            lambda points: points + vector,
+            about_edge=None
+        )
+        return self
+    
+    def scale(
+        self,
+        scale_factor: float | Iterable,
+        min_scale_factor: float = 1e-8,
+        about_point: Optional[np.ndarray] = None,
+        about_edge: np.ndarray = ORIGIN
+    ):
+        if isinstance(scale_factor, Iterable):
+            scale_factor = np.array(scale_factor).clip(min=min_scale_factor)
+        else:
+            scale_factor = max(scale_factor, min_scale_factor)
+        
+        self.apply_points_function(
+            lambda points: scale_factor * points,
+            about_point=about_point,
+            about_edge=about_edge
+        )
+        return self
+    
+    def stretch(self, factor: float, dim: int, **kwargs):
+        def func(points):
+            points[:, dim] *= factor
+            return points
+        self.apply_points_function(func, **kwargs)
+        return self
 
     #endregion
 
