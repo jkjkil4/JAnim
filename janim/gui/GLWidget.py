@@ -53,10 +53,8 @@ class GLWidget(QOpenGLWidget):
     #region OpenGL
 
     def initializeGL(self) -> None:
-        glClearColor(0.2, 0.3, 0.3, 1.0)
-        # glClearColor(0, 0, 0, 1)    # 将背景色设置为黑色
+        glClearColor(0, 0, 0, 1)    # 将背景色设置为黑色
         glEnable(GL_MULTISAMPLE)    # 抗锯齿
-        glEnable(GL_DEPTH_TEST)
 
         # 颜色混合
         glEnable(GL_BLEND)
@@ -90,7 +88,7 @@ class GLWidget(QOpenGLWidget):
     def resizeGL(self, w: int, h: int) -> None:
         super().resizeGL(w, h)
         glViewport(0, 0, w, h)
-        self.scene.camera.window_shape = (w, h)
+        self.scene.camera.wnd_shape = (w, h)
 
     def paintEvent(self, e: QPaintEvent) -> None:
         '''

@@ -12,7 +12,7 @@ from janim.utils.math_functions import (
 from janim.shaders.render import RenderData
 
 class Scene:
-    anti_alias_width = 0.015
+    anti_alias_width = 0.01
 
     def __init__(self) -> None:
         self.camera = Camera()
@@ -62,9 +62,10 @@ class Scene:
         camera_scale_factor = self.camera.get_vertical_dist() / self.camera.frame_shape[1]
 
         data = RenderData(
+            self.anti_alias_width,
+            self.camera.wnd_shape,
             self.camera.compute_view_matrix(),
-            self.camera.compute_wnd_mul_proj_matrix(),
-            self.anti_alias_width * camera_scale_factor
+            self.camera.compute_wnd_mul_proj_matrix()
         )
 
         for item in self:
@@ -74,7 +75,7 @@ class Scene:
 
 class Camera(Item):
     frame_shape = (FRAME_WIDTH, FRAME_HEIGHT)
-    window_shape = (1920, 1080)
+    wnd_shape = (1920, 1080)
     center_point = ORIGIN
 
     def __init__(self) -> None:
@@ -119,7 +120,7 @@ class Camera(Item):
 
         window = QMatrix4x4()
         window.setToIdentity()
-        res_width, res_height = get_proportional_scale_size(*self.frame_shape, *self.window_shape)
-        window.scale(res_width / self.window_shape[0], res_height / self.window_shape[1])
+        res_width, res_height = get_proportional_scale_size(*self.frame_shape, *self.wnd_shape)
+        window.scale(res_width / self.wnd_shape[0], res_height / self.wnd_shape[1])
 
         return window * projection

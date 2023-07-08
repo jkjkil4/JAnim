@@ -11,14 +11,15 @@ out vec4 color;
 out float radius;
 out vec2 point;
 
-uniform mat4 wnd_mul_proj_matrix;
 uniform float anti_alias_width;
+uniform mat4 wnd_mul_proj_matrix;
 
 void main()
 {
     center = v_pos[0].xy;
     color = v_color[0];
     radius = v_radius[0];
+
     float rpa = radius + anti_alias_width;
     for (int i = 0; i < 4; i++) {
         int xx = 2 * (i % 2) - 1;

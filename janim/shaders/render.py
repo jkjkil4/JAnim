@@ -3,7 +3,7 @@ from typing import Optional
 import os
 
 from PySide6.QtCore import QObject
-from PySide6.QtGui import QMatrix4x4
+from PySide6.QtGui import QMatrix4x4, QVector2D
 from PySide6.QtOpenGL import *
 from OpenGL.GL import *
 
@@ -63,6 +63,9 @@ class ShaderProgram(QOpenGLShaderProgram):
 
     def setFloat(self, name: str, val: float) -> None:
         self.setUniformValue1f(self.uniformLocation(name), val)
+    
+    def setVec2(self, name: str, val1: float, val2: float) -> None:
+        self.setUniformValue(self.uniformLocation(name), QVector2D(val1, val2))
 
 class RenderData:
     '''
@@ -70,13 +73,15 @@ class RenderData:
     '''
     def __init__(
         self,
+        anti_alias_width: float,
+        wnd_shape: tuple[float, float],
         camera_matrix: QMatrix4x4, 
-        wnd_mul_proj_matrix: QMatrix4x4,
-        anti_alias_width: float
+        wnd_mul_proj_matrix: QMatrix4x4
     ) -> None:
+        self.anti_alias_width = anti_alias_width
+        self.wnd_shape = wnd_shape
         self.view_matrix = camera_matrix
         self.wnd_mul_proj_matrix = wnd_mul_proj_matrix
-        self.anti_alias_width = anti_alias_width
 
 class Renderer:
     '''
