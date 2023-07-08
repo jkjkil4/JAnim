@@ -28,6 +28,7 @@ class Item:
 
         # 点坐标数据
         self.points = np.zeros((0, 3), dtype=np.float32)    # points 在所有操作中都会保持 dtype=np.float32，以便传入 shader
+        self.needs_new_bbox = True
 
         # 颜色数据
         self.rgbas = np.array([1, 1, 1, 1], dtype=np.float32).reshape((1, 4))   # rgbas 在所有操作中都会保持 dtype=np.float32，以便传入 shader
@@ -52,6 +53,7 @@ class Item:
         self.needs_new_rgbas = True
     
     def points_changed(self) -> None:
+        self.needs_new_bbox = True
         self.renderer.needs_update = True
     
     def rgbas_changed(self) -> None:
@@ -143,7 +145,7 @@ class Item:
 
     def arrange_in_grid(self):
         # TODO: arrange_in_grid
-        pass
+        raise NotImplementedError('Item.arrange_in_gird is not implemented')
 
     #endregion
 
@@ -305,8 +307,9 @@ class Item:
     #region 边界箱 bounding_box
     
     def get_bbox(self) -> np.ndarray:
-        # TODO: optimize
-        return self.compute_bbox()
+        if self.needs_new_bbox:
+            self.bbox = self.compute_bbox()
+        return self.bbox
         
     def compute_bbox(self) -> np.ndarray:
         all_points = np.vstack([
