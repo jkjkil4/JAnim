@@ -24,6 +24,7 @@ class Item:
         # 基本结构
         self.parent: Item = None
         self.items: list[Item] = []
+        self.needs_new_family = True
 
         # 点坐标数据
         self.points = np.zeros((0, 3), dtype=np.float32)    # points 在所有操作中都会保持 dtype=np.float32，以便传入 shader
@@ -44,6 +45,9 @@ class Item:
 
     #region 响应
 
+    def items_changed(self) -> None:
+        self.needs_new_family = True
+
     def points_count_changed(self) -> None:
         self.needs_new_rgbas = True
     
@@ -55,7 +59,38 @@ class Item:
     
     #endregion
 
-    #region 基本结构（array-like 操作、物件包含关系）
+    #region 物件包含关系
+
+    def add(self, *items: Item):
+        for item in items:                  # 遍历要追加的每个物件
+            if item in self:                    # 如果已经是子物件，则跳过
+                continue
+            if item.parent:                    # 将当前物件已有的父物件解除
+                item.parent.remove(item)
+            self.items.append(item)            # 设置当前物件的父物件
+            item.parent = self
+        self.items_changed()
+        return self
+
+    def remove(self, *items: Item):
+        for item in items:          # 遍历要移除的每个物件
+            if item not in self:        # 如果不是子物件，则跳过
+                continue
+            self.needs_new_family = True
+            item.parent = None         # 将当前物件移出
+            self.items.remove(item)
+        self.items_changed()
+        return self
+    
+    def get_family(self) -> list[Item]:
+        if self.needs_new_family:
+            sub_families = (item.get_family() for item in self.items)
+            self.family = [self, *it.chain(*sub_families)]
+        return self.family
+    
+    #endregion
+
+    #region 基本操作
 
     def __getitem__(self, value):
         if isinstance(value, slice):
@@ -67,33 +102,6 @@ class Item:
 
     def __len__(self):
         return len(self.items)
-
-    def add(self, *items: Item):
-        for item in items:                  # 遍历要追加的每个物件
-            if item in self:                    # 如果已经是子物件，则跳过
-                continue
-            if item.parent:                    # 将当前物件已有的父物件解除
-                item.parent.remove(item)
-            self.items.append(item)            # 设置当前物件的父物件
-            item.parent = self
-        return self
-
-    def remove(self, *items: Item):
-        for item in items:          # 遍历要移除的每个物件
-            if item not in self:        # 如果不是子物件，则跳过
-                continue
-            item.parent = None         # 将当前物件移出
-            self.items.remove(item)
-        return self
-    
-    def get_family(self) -> list[Item]:
-        # TODO: optimize
-        sub_families = (item.get_family() for item in self.items)
-        return [self, *it.chain(*sub_families)]
-    
-    #endregion
-
-    #region 基本操作
 
     def __str__(self) -> str:
         return self.__class__.__name__
@@ -539,7 +547,7 @@ class Item:
     def get_comment(self) -> str:
         return self.comment
     
-    def print_family(self, include_self=True, sub_prefix=''):
+    def print_family_structure(self, include_self=True, sub_prefix=''):
         if include_self:
             print(self)
 
@@ -547,10 +555,10 @@ class Item:
             comment = item.get_comment()
             if item is not self.items[-1]:
                 print(f'{sub_prefix}├──\033[34m[{i}]\033[0m {item} \033[30m({comment})\033[0m')
-                item.print_family(False, sub_prefix + '│   ')
+                item.print_family_structure(False, sub_prefix + '│   ')
             else:
                 print(f'{sub_prefix}└──\033[34m[{i}]\033[0m {item} \033[30m({comment})\033[0m')
-                item.print_family(False, sub_prefix + '    ')
+                item.print_family_structure(False, sub_prefix + '    ')
         
         return self
 
@@ -590,4 +598,3 @@ class MethodGroup:
 
     def __len__(self):
         return len(self.items)
-
