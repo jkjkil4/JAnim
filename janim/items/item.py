@@ -3,18 +3,22 @@ from typing import Iterable, Callable, Optional
 import itertools as it
 import numpy as np
 import sys
+import copy
 
 from janim.constants import *
 from janim.utils.functions import safe_call
 from janim.utils.math_functions import rotation_matrix
 from janim.utils.color import hex_to_rgb
-from janim.utils.iterables import resize_with_interpolation
+from janim.utils.iterables import resize_array
 from janim.utils.bezier import interpolate, integer_interpolate
+from janim.constants import *
 
 from janim.shaders.render import RenderData, Renderer
 
 class Item:
     comment = ''
+
+    color = WHITE
 
     def __init__(self) -> None:
         # 基本结构
@@ -35,6 +39,11 @@ class Item:
         # 渲染
         self.renderer = self.create_renderer()
 
+        # 默认值
+        self.set_color(self.color)
+
+    #region 响应
+
     def points_count_changed(self) -> None:
         self.needs_new_rgbas = True
     
@@ -43,6 +52,8 @@ class Item:
     
     def rgbas_changed(self) -> None:
         self.renderer.needs_update = True
+    
+    #endregion
 
     #region 基本结构（array-like 操作、物件包含关系）
 
@@ -88,12 +99,26 @@ class Item:
         return self.__class__.__name__
 
     def __mul__(self, times: int) -> Group:
-        # TODO
+        # TODO: mul
         pass
 
     def copy(self):
-        # TODO
-        pass
+        copy_item = copy.copy(self)
+
+        # relation
+        copy_item.parent = None
+        copy_item.items = []
+        copy_item.add(*[m.copy() for m in self])
+
+        # data
+        copy_item.points = self.points.copy()
+        copy_item.rgbas = self.rgbas.copy()
+
+        # render
+        copy_item.renderer = copy_item.create_renderer()
+
+        return copy_item
+        
 
     #endregion
 
@@ -154,7 +179,8 @@ class Item:
         if recurse:
             for item in self.items:
                 safe_call(item, 'reverse_points')
-        self.set_points(self.points[::-1])
+        self.set_points(self.get_points()[::-1])
+        self.set_rgbas(self.get_rgbas()[::-1])
         return self
     
     def points_count(self) -> int:
@@ -197,7 +223,7 @@ class Item:
     #region 颜色数据
 
     def set_rgbas(self, rgbas: Iterable[Iterable[float, float, float, float]]):
-        rgbas = resize_with_interpolation(np.array(rgbas), self.points_count())
+        rgbas = resize_array(np.array(rgbas), max(1, self.points_count()))
         if len(rgbas) == len(self.rgbas):
             self.rgbas[:] = rgbas
         else:
@@ -220,11 +246,11 @@ class Item:
                 if isinstance(c, str) else c 
                 for c in color
             ]
-        color = resize_with_interpolation(np.array(color), self.points_count())
+        color = resize_array(np.array(color), max(1, self.points_count()))
         
         if not isinstance(opacity, Iterable):
             opacity = [opacity]
-        opacity = resize_with_interpolation(np.array(opacity), self.points_count())
+        opacity = resize_array(np.array(opacity), max(1, self.points_count()))
 
         self.set_rgbas(
             np.hstack((
@@ -237,17 +263,14 @@ class Item:
 
     def get_rgbas(self) -> np.ndarray:
         if self.needs_new_rgbas:
-            if self.has_points():
-                self.set_rgbas(self.rgbas)
-            else:
-                self.rgbas = np.array([1, 1, 1, 1], dtype=np.float32).reshape((1, 4))
+            self.set_rgbas(self.rgbas)
             self.needs_new_rgbas = False
         return self.rgbas
 
     def set_opacity(self, opacity: float | Iterable[float]):
         if not isinstance(opacity, Iterable):
             opacity = [opacity]
-        opacity = resize_with_interpolation(np.array(opacity), len(self.rgbas))
+        opacity = resize_array(np.array(opacity), len(self.rgbas))
         self.rgbas[:, 3] = opacity
         self.rgbas_changed()
         return self

@@ -12,12 +12,12 @@ from OpenGL.GL import *
 from janim.constants import *
 from janim.scene import Scene
 from janim.items.dot_cloud import DotCloud
-from janim.utils.math_functions import normalize, get_unit_normal
+from janim.utils.math_functions import normalize
 
 import time
 
 class GLWidget(QOpenGLWidget):
-    frame_rate = DEFAULT_FRAME_RATE
+    frame_rate = 60
     pan_sensitivity = 0.3
     move_sensitivity = 0.02
     wheel_step = 0.5
@@ -43,12 +43,14 @@ class GLWidget(QOpenGLWidget):
         self.scene = Scene()
         d1 = DotCloud([LEFT * 6 + RIGHT * 0.5 * i for i in range(25)])\
             .set_color([RED, GREEN, BLUE])\
-            .set_radius([0.1, 0.05, 0.1, 0.05])
-        d2 = DotCloud([LEFT, RIGHT, UP, DOWN])\
-            .next_to(d1, DOWN, aligned_edge=RIGHT)\
             .set_radius(0.1)
-        self.scene.add(d1, d2)
-        self.i = 0
+        d2 = DotCloud([LEFT, RIGHT, UP, DOWN])\
+            .set_radius(0.1)\
+            .next_to(d1, DOWN, aligned_edge=RIGHT)
+        d3 = d1.copy().reverse_points()
+        d3.rotate(PI / 2, about_point=d3.get_end())
+        d3.next_to(d2, aligned_edge=UP)
+        self.scene.add(d1, d2, d3)
 
     #region OpenGL
 

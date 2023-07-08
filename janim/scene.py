@@ -12,7 +12,7 @@ from janim.utils.math_functions import (
 from janim.shaders.render import RenderData
 
 class Scene:
-    anti_alias_width = 0.01
+    anti_alias_width = 0.015
 
     def __init__(self) -> None:
         self.camera = Camera()
