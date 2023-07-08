@@ -1,7 +1,11 @@
 from __future__ import annotations
 import itertools as it
 
-from PySide6.QtGui import QMatrix4x4, QVector3D
+from PySide6.QtWidgets import QApplication
+from PySide6.QtGui import (
+    QMatrix4x4, QVector3D,
+    QSurfaceFormat
+)
 
 from janim.constants import *
 from janim.items.item import Item, MethodGroup
@@ -56,11 +60,41 @@ class Scene:
     
     #endregion
 
+    #region 执行
+
+    def run(self) -> None:
+        app = QApplication()
+
+        fmt = QSurfaceFormat()
+        fmt.setVersion(3, 3)
+        fmt.setSamples(4)
+        QSurfaceFormat.setDefaultFormat(fmt)
+
+        from janim.gui.GLWidget import GLWidget
+        window = GLWidget(self)
+        window.show()
+
+        self.construct()
+
+        app.exec()
+
+    def construct(self) -> None:
+        # TODO: construct
+        pass
+
+    def play(self) -> None:
+        # TODO: play
+        pass
+
+    def wait(self) -> None:
+        # TODO: wait
+        pass
+
+    #endregion
+
     #region 渲染
 
     def render(self) -> None:
-        camera_scale_factor = self.camera.get_vertical_dist() / self.camera.frame_shape[1]
-
         data = RenderData(
             self.anti_alias_width,
             self.camera.wnd_shape,

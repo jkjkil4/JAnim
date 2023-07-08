@@ -19,6 +19,7 @@ class Item:
     comment = ''
 
     color = WHITE
+    opacity = 1
 
     def __init__(self) -> None:
         # 基本结构
@@ -42,7 +43,7 @@ class Item:
         self.renderer = self.create_renderer()
 
         # 默认值
-        self.set_color(self.color)
+        self.set_color(self.color, self.opacity)
 
     #region 响应
 
@@ -548,11 +549,11 @@ class Item:
     #region 辅助功能
 
     def get_comment(self) -> str:
-        return self.comment
+        return self.comment or f'points: {self.points_count()}'
     
     def print_family_structure(self, include_self=True, sub_prefix=''):
         if include_self:
-            print(self)
+            print(f'{self} \033[30m({self.get_comment()})\033[0m')
 
         for i, item in enumerate(self):
             comment = item.get_comment()
@@ -601,3 +602,4 @@ class MethodGroup:
 
     def __len__(self):
         return len(self.items)
+

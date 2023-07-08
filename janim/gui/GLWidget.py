@@ -3,7 +3,7 @@ import numpy as np
 
 from PySide6.QtCore import Qt
 from PySide6.QtCore import QTimer
-from PySide6.QtGui import QPaintEvent, QKeyEvent, QMouseEvent, QWheelEvent
+from PySide6.QtGui import QMouseEvent, QWheelEvent
 from PySide6.QtWidgets import QWidget
 from PySide6.QtOpenGLWidgets import QOpenGLWidget
 from PySide6.QtOpenGL import *
@@ -14,7 +14,6 @@ from janim.scene import Scene
 from janim.items.dot_cloud import DotCloud
 from janim.utils.math_functions import normalize
 
-import time
 
 class GLWidget(QOpenGLWidget):
     frame_rate = 60
@@ -22,29 +21,25 @@ class GLWidget(QOpenGLWidget):
     move_sensitivity = 0.02
     wheel_step = 0.5
 
-    def __init__(self, parent: Optional[QWidget] = None) -> None:
+    def __init__(
+        self, 
+        scene: Scene, 
+        parent: Optional[QWidget] = None
+    ) -> None:
         super().__init__(parent)
+        self.scene = scene
 
         # 基本属性
-        # self.frameRate = 30
         self.setMinimumSize(100, 100)
 
-        # 定时器，用于定时调用绘制，详见 `paintEvent`
+        # 定时器，用于定时调用绘制
         self.timer = QTimer(self)
         self.timer.setTimerType(Qt.TimerType.PreciseTimer)  # 使定时更准确
-        self.timer.setSingleShot(True)                      # 由于每次触发时间不确定，因此是单次触发，每次触发后另行控制
         self.timer.timeout.connect(self.update)             # 达到定时后调用 `update`
+        self.timer.start(1000 / self.frame_rate)
 
-        # 场景
-        self.scene: Scene = None
-
-        # 仅测试
-        self.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
-        self.scene = Scene()
-        d1 = DotCloud([LEFT * 6 + RIGHT * 0.5 * i for i in range(25)])\
-            .set_color([RED, GREEN, BLUE])\
-            .set_radius(0.1)
-        self.scene.add((d1 * 4).arrange(DOWN))
+        # TODO: 删除
+        self.setWindowTitle('JAnim')
 
     #region OpenGL
 
@@ -85,25 +80,6 @@ class GLWidget(QOpenGLWidget):
         super().resizeGL(w, h)
         glViewport(0, 0, w, h)
         self.scene.camera.wnd_shape = (w, h)
-
-    def paintEvent(self, e: QPaintEvent) -> None:
-        '''
-        重载 `paintEvent`，用于计算 `paintGL` 用时，
-        并将计划用时（默认 1 / 30 s）减去 `paintGL` 用时后，作为定时器的触发时间，
-        这样就可以做到每次间隔计划用时调用绘制
-
-        如果 `paintGL` 用时超过计划用时，则立即调用下一次 update
-        
-        注：这里的 update 不会对物件数据造成变动，仅用于定时更新画面
-        '''
-        start = time.perf_counter()
-        super().paintEvent(e)
-        elapsed = time.perf_counter() - start
-        plan = 1 / self.frame_rate
-        if elapsed < plan:
-            self.timer.start((plan - elapsed) * 1000)
-        else:
-            self.update()
 
     #endregion
 
@@ -149,11 +125,5 @@ class GLWidget(QOpenGLWidget):
         delta = event.angleDelta().y()
         
         self.scene.camera.scale(0.98 if delta > 0 else 1 / 0.98)
-    
-    def keyPressEvent(self, event: QKeyEvent) -> None:
-        super().keyPressEvent(event)
-        
-        if event.key() == Qt.Key.Key_R:
-            self.scene.camera.reset()
     
     #endregion
