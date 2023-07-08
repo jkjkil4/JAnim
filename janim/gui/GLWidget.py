@@ -44,13 +44,7 @@ class GLWidget(QOpenGLWidget):
         d1 = DotCloud([LEFT * 6 + RIGHT * 0.5 * i for i in range(25)])\
             .set_color([RED, GREEN, BLUE])\
             .set_radius(0.1)
-        d2 = DotCloud([LEFT, RIGHT, UP, DOWN])\
-            .set_radius(0.1)\
-            .next_to(d1, DOWN, aligned_edge=RIGHT)
-        d3 = d1.copy().reverse_points()
-        d3.rotate(PI / 2, about_point=d3.get_end())
-        d3.next_to(d2, aligned_edge=UP)
-        self.scene.add(d1, d2, d3)
+        self.scene.add((d1 * 4).arrange(DOWN))
 
     #region OpenGL
 

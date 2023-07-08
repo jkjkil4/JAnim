@@ -99,8 +99,10 @@ class Item:
         return self.__class__.__name__
 
     def __mul__(self, times: int) -> Group:
-        # TODO: mul
-        pass
+        assert(isinstance(times, int))
+        return Group(
+            *(self.copy() for _ in range(times))
+        )
 
     def copy(self):
         copy_item = copy.copy(self)
@@ -118,7 +120,22 @@ class Item:
         copy_item.renderer = copy_item.create_renderer()
 
         return copy_item
-        
+    
+    def arrange(
+        self,
+        direction: np.ndarray = RIGHT,
+        center: bool = True,
+        **kwargs
+    ):
+        for m1, m2 in zip(self, self[1:]):
+            m2.next_to(m1, direction, **kwargs)
+        if center:
+            self.to_center()
+        return self
+
+    def arrange_in_grid(self):
+        # TODO: arrange_in_grid
+        pass
 
     #endregion
 
@@ -325,6 +342,9 @@ class Item:
 
     def get_nadir(self) -> np.ndarray:
         return self.get_bbox_point(IN)
+    
+    def get_center(self) -> np.ndarray:
+        return self.get_bbox()[1]
 
     def length_over_dim(self, dim: int) -> float:
         bb = self.get_bbox()
