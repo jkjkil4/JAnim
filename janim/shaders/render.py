@@ -182,7 +182,9 @@ class VItemRenderer(Renderer):
         self.shader_stroke = ShaderProgram.get('shaders/vitem_stroke')
 
         self.vao_stroke = glGenVertexArrays(1)
-        self.vbo_stroke_points, self.vbo_stroke_rgbas = glGenBuffers(2)
+        self.vbo_stroke_points = glGenBuffers(1)
+        self.vbo_stroke_rgbas = glGenBuffers(1)
+        self.vbo_stroke_width = glGenBuffers(1)
 
     def update(self, item) -> None:
         self.shader_stroke.bind()
@@ -192,6 +194,8 @@ class VItemRenderer(Renderer):
         points_data_size = points.size * FLOAT_SIZE
         rgbas = item.get_rgbas()
         rgbas_data_size = rgbas.size * FLOAT_SIZE
+        stroke = item.get_stroke_width()
+        stroke_data_size = stroke.size * FLOAT_SIZE
 
         glBindBuffer(GL_ARRAY_BUFFER, self.vbo_stroke_points)
         glBufferData(GL_ARRAY_BUFFER, points_data_size, points, GL_STATIC_DRAW)
@@ -210,6 +214,11 @@ class VItemRenderer(Renderer):
         glEnableVertexAttribArray(4)
         glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, 12 * FLOAT_SIZE, ctypes.c_void_p(8 * FLOAT_SIZE))
         glEnableVertexAttribArray(5)
+
+        glBindBuffer(GL_ARRAY_BUFFER, self.vbo_stroke_width)
+        glBufferData(GL_ARRAY_BUFFER, stroke_data_size, stroke, GL_STATIC_DRAW)
+        glVertexAttribPointer(6, 2, GL_FLOAT, GL_FALSE, 2 * FLOAT_SIZE, ctypes.c_void_p(0))
+        glEnableVertexAttribArray(6)
 
         glBindBuffer(GL_ARRAY_BUFFER, 0)
 

@@ -5,9 +5,11 @@ layout (location = 2) in vec3 aPos2;
 layout (location = 3) in vec4 aColor0;
 layout (location = 4) in vec4 aColor1;
 layout (location = 5) in vec4 aColor2;
+layout (location = 6) in vec2 aStrokeWidth;
 
 out vec4 v_pos[3];
 out vec4 v_color[3];
+out vec2 v_stroke_width;
 
 uniform mat4 view_matrix;
 
@@ -19,4 +21,5 @@ void main()
     v_color[0] = aColor0;
     v_color[1] = aColor1;
     v_color[2] = aColor2;
+    v_stroke_width = aStrokeWidth;
 }

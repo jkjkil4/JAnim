@@ -23,9 +23,6 @@ class Item:
         color: JAnimColor = WHITE,
         opacity: float = 1.0
     ) -> None:
-        self.color = color
-        self.opacity = opacity
-
         # 基本结构
         self.parent: Item = None
         self.items: list[Item] = []
@@ -47,7 +44,7 @@ class Item:
         self.renderer = self.create_renderer()
 
         # 默认值
-        self.set_color(self.color, self.opacity)
+        self.set_color(color, opacity)
 
     #region 响应
 

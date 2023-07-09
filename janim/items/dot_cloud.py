@@ -13,7 +13,7 @@ class DotCloud(Item):
     def __init__(
         self, 
         points: Iterable,
-        color: JAnimColor = GREY_C
+        color: JAnimColor = GREY_C,
         radius: float = 0.05,
         **kwargs
     ):
