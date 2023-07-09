@@ -10,8 +10,11 @@ class Test(Scene):
         ])
         m.set_color([RED, GREEN, BLUE])
 
-        d = DotCloud([LEFT, RIGHT, UP, DOWN]).set_radius(0.1)
+        d = DotCloud([RIGHT * i for i in range(12)])\
+            .set_color([RED, GREEN, BLUE, YELLOW]).set_radius(0.15)
+        d.to_center()
 
-        self.add(m, (d * 6).arrange(buff=LARGE_BUFF))
+        self.add(m)
+        self.add((d * 7).arrange(buff=LARGE_BUFF))
 
 Test().run()

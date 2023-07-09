@@ -13,8 +13,8 @@ void main()
     vec2 diff = point - center;
     float dist = length(diff);
     float signed_dist = dist - radius;
-    if (signed_dist > 0.5 * anti_alias_width) 
+    if (signed_dist > 0) 
         discard;
     FragColor = color;
-    FragColor.a *= smoothstep(0.5, -0.5, signed_dist / anti_alias_width);
+    FragColor.a *= smoothstep(0.0, -1.0, signed_dist / anti_alias_width);
 }

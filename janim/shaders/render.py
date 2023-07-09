@@ -78,12 +78,14 @@ class RenderData:
         anti_alias_width: float,
         wnd_shape: tuple[float, float],
         camera_matrix: QMatrix4x4, 
-        wnd_mul_proj_matrix: QMatrix4x4
+        proj_matrix: QMatrix4x4,
+        wnd_matrix: QMatrix4x4,
     ) -> None:
         self.anti_alias_width = anti_alias_width
         self.wnd_shape = wnd_shape
         self.view_matrix = camera_matrix
-        self.wnd_mul_proj_matrix = wnd_mul_proj_matrix
+        self.proj_matrix = proj_matrix
+        self.wnd_matrix = wnd_matrix
 
 class Renderer:
     '''
@@ -166,9 +168,10 @@ class DotCloudRenderer(Renderer):
     def render(self, item, data: RenderData) -> None:
         self.shader.bind()
 
-        self.shader.setMat4('view_matrix', data.view_matrix)
-        self.shader.setMat4('wnd_mul_proj_matrix', data.wnd_mul_proj_matrix)
         self.shader.setFloat('anti_alias_width', data.anti_alias_width)
+        self.shader.setMat4('view_matrix', data.view_matrix)
+        self.shader.setMat4('proj_matrix', data.proj_matrix)
+        self.shader.setMat4('wnd_matrix', data.wnd_matrix)
 
         glBindVertexArray(self.vao)
         glDrawArrays(GL_POINTS, 0, item.points_count())
@@ -215,9 +218,10 @@ class VItemRenderer(Renderer):
     def render(self, item, data: RenderData) -> None:
         self.shader_stroke.bind()
 
-        self.shader_stroke.setMat4('view_matrix', data.view_matrix)
-        self.shader_stroke.setMat4('wnd_mul_proj_matrix', data.wnd_mul_proj_matrix)
         self.shader_stroke.setFloat('anti_alias_width', data.anti_alias_width)
+        self.shader_stroke.setMat4('view_matrix', data.view_matrix)
+        self.shader_stroke.setMat4('proj_matrix', data.proj_matrix)
+        self.shader_stroke.setMat4('wnd_matrix', data.wnd_matrix)
 
         glBindVertexArray(self.vao_stroke)
         glDrawArrays(GL_POINTS, 0, item.points_count() // 3)

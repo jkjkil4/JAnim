@@ -16,7 +16,7 @@ from janim.utils.math_functions import (
 from janim.shaders.render import RenderData
 
 class Scene:
-    anti_alias_width = 0.015
+    anti_alias_width = 0.02
 
     def __init__(self) -> None:
         self.camera = Camera()
@@ -95,13 +95,12 @@ class Scene:
     #region 渲染
 
     def render(self) -> None:
-        camera_scale_factor = self.camera.get_vertical_dist() / self.camera.frame_shape[1]
-        
         data = RenderData(
-            self.anti_alias_width * camera_scale_factor,
+            self.anti_alias_width,
             self.camera.wnd_shape,
             self.camera.compute_view_matrix(),
-            self.camera.compute_wnd_mul_proj_matrix()
+            self.camera.compute_proj_matrix(),
+            self.camera.compute_wnd_matrix(),
         )
 
         for item in self:
@@ -149,14 +148,18 @@ class Camera(Item):
 
         return view
 
-    def compute_wnd_mul_proj_matrix(self) -> QMatrix4x4:
+    def compute_proj_matrix(self) -> QMatrix4x4:
         projection = QMatrix4x4()
         projection.setToIdentity()
         projection.perspective(self.fov, self.frame_shape[0] / self.frame_shape[1], 0.1, 100)
+        projection.scale(FRAME_X_RADIUS, FRAME_Y_RADIUS)
 
+        return projection
+    
+    def compute_wnd_matrix(self) -> QMatrix4x4:
         window = QMatrix4x4()
         window.setToIdentity()
         res_width, res_height = get_proportional_scale_size(*self.frame_shape, *self.wnd_shape)
-        window.scale(res_width / self.wnd_shape[0], res_height / self.wnd_shape[1])
+        window.scale(res_width / self.wnd_shape[0] / FRAME_X_RADIUS, res_height / self.wnd_shape[1] / FRAME_Y_RADIUS)
 
-        return window * projection
+        return window
