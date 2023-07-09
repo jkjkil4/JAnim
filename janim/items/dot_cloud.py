@@ -10,12 +10,15 @@ from janim.shaders.render import DotCloudRenderer
 from janim.constants import *
 
 class DotCloud(Item):
-    color = GREY_C
-
-    radius = 0.05
-
-    def __init__(self, points: Iterable):
-        super().__init__()
+    def __init__(
+        self, 
+        points: Iterable,
+        color: JAnimColor = GREY_C
+        radius: float = 0.05,
+        **kwargs
+    ):
+        super().__init__(color=GREY_C, **kwargs)
+        self.radius = radius
 
         # 半径数据
         self.radii = np.array([self.radius], dtype=np.float32)  # radii 在所有操作中都会保持 dtype=np.float32，以便传入 shader

@@ -18,10 +18,14 @@ from janim.shaders.render import RenderData, Renderer
 class Item:
     comment = ''
 
-    color = WHITE
-    opacity = 1
+    def __init__(
+        self,
+        color: JAnimColor = WHITE,
+        opacity: float = 1.0
+    ) -> None:
+        self.color = color
+        self.opacity = opacity
 
-    def __init__(self) -> None:
         # 基本结构
         self.parent: Item = None
         self.items: list[Item] = []
