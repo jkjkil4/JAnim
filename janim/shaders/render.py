@@ -199,26 +199,18 @@ class VItemRenderer(Renderer):
 
         glBindBuffer(GL_ARRAY_BUFFER, self.vbo_stroke_points)
         glBufferData(GL_ARRAY_BUFFER, points_data_size, points, GL_STATIC_DRAW)
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 9 * FLOAT_SIZE, ctypes.c_void_p(0))
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * FLOAT_SIZE, ctypes.c_void_p(0))
         glEnableVertexAttribArray(0)
-        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 9 * FLOAT_SIZE, ctypes.c_void_p(3 * FLOAT_SIZE))
-        glEnableVertexAttribArray(1)
-        glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 9 * FLOAT_SIZE, ctypes.c_void_p(6 * FLOAT_SIZE))
-        glEnableVertexAttribArray(2)
 
         glBindBuffer(GL_ARRAY_BUFFER, self.vbo_stroke_rgbas)
         glBufferData(GL_ARRAY_BUFFER, rgbas_data_size, rgbas, GL_STATIC_DRAW)
-        glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, 12 * FLOAT_SIZE, ctypes.c_void_p(0))
-        glEnableVertexAttribArray(3)
-        glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, 12 * FLOAT_SIZE, ctypes.c_void_p(4 * FLOAT_SIZE))
-        glEnableVertexAttribArray(4)
-        glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, 12 * FLOAT_SIZE, ctypes.c_void_p(8 * FLOAT_SIZE))
-        glEnableVertexAttribArray(5)
+        glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 4 * FLOAT_SIZE, ctypes.c_void_p(0))
+        glEnableVertexAttribArray(1)
 
         glBindBuffer(GL_ARRAY_BUFFER, self.vbo_stroke_width)
         glBufferData(GL_ARRAY_BUFFER, stroke_data_size, stroke, GL_STATIC_DRAW)
-        glVertexAttribPointer(6, 2, GL_FLOAT, GL_FALSE, 2 * FLOAT_SIZE, ctypes.c_void_p(0))
-        glEnableVertexAttribArray(6)
+        glVertexAttribPointer(2, 1, GL_FLOAT, GL_FALSE, FLOAT_SIZE, ctypes.c_void_p(0))
+        glEnableVertexAttribArray(2)
 
         glBindBuffer(GL_ARRAY_BUFFER, 0)
 
@@ -233,5 +225,5 @@ class VItemRenderer(Renderer):
         self.shader_stroke.setMat4('wnd_matrix', data.wnd_matrix)
 
         glBindVertexArray(self.vao_stroke)
-        glDrawArrays(GL_POINTS, 0, item.points_count() // 3)
+        glDrawArrays(GL_TRIANGLES, 0, item.points_count())
         glBindVertexArray(0)

@@ -20,8 +20,8 @@ class VItemTest(Scene):
             DOWN * 3, DOWN + LEFT * 2, LEFT + UP * 2
         ]).set_color([
             RED, GREEN, BLUE
-        ])
-        print(m1.get_stroke_width())
+        ]).set_stroke_width(0.2)\
+            .rotate(30 * DEGREES, UP)
 
         m2 = VItem()
         m2.set_points([
@@ -29,7 +29,7 @@ class VItemTest(Scene):
         ]).set_color([
             RED, GREEN, BLUE
         ]).set_stroke_width([
-            0.1, 0.2
+            0.2, 0.4
         ])
 
         self.add(Group(m1, m2).arrange(buff=LARGE_BUFF))
