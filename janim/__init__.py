@@ -4,8 +4,11 @@
 
 __version__ = '0.1'
 
+
+from janim.items.dot_cloud import *
+from janim.items.item import *
+from janim.items.vitem import *
+
 from janim.constants import *
 
-from janim.scene import Scene
-from janim.items.item import Item
-from janim.items.dot_cloud import DotCloud
+from janim.scene import *

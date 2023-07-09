@@ -1,5 +1,6 @@
 from typing import Optional
 import numpy as np
+import traceback
 
 from PySide6.QtCore import Qt
 from PySide6.QtCore import QTimer
@@ -46,7 +47,7 @@ class GLWidget(QOpenGLWidget):
     def initializeGL(self) -> None:
         glClearColor(0, 0, 0, 1)    # 将背景色设置为黑色
         glEnable(GL_MULTISAMPLE)    # 抗锯齿
-
+        
         # 颜色混合
         glEnable(GL_BLEND)
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
@@ -67,7 +68,11 @@ class GLWidget(QOpenGLWidget):
         # glUniform1i(self.shader.uniformLocation('texture2'), 1)
 
     def paintGL(self) -> None:
-        self.scene.render()
+        try:
+            self.scene.render()
+        except:
+            traceback.print_exc()
+            exit(1)
 
         # glActiveTexture(GL_TEXTURE0)
         # self.tex1.bind()

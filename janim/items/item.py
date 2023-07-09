@@ -212,7 +212,7 @@ class Item:
         return self
     
     def points_count(self) -> int:
-        return len(self.points)
+        return len(self.get_points())
     
     def has_points(self) -> bool:
         return self.points_count() > 0

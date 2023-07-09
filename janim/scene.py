@@ -95,8 +95,10 @@ class Scene:
     #region 渲染
 
     def render(self) -> None:
+        camera_scale_factor = self.camera.get_vertical_dist() / self.camera.frame_shape[1]
+        
         data = RenderData(
-            self.anti_alias_width,
+            self.anti_alias_width * camera_scale_factor,
             self.camera.wnd_shape,
             self.camera.compute_view_matrix(),
             self.camera.compute_wnd_mul_proj_matrix()

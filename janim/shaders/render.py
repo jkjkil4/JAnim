@@ -52,7 +52,9 @@ class ShaderProgram(QOpenGLShaderProgram):
         for suffix, shader_type in self.keys:   # 遍历后缀读取着色器代码
             file_path = path_name + suffix
             if os.path.exists(file_path):
-                self.addShaderFromSourceFile(shader_type, file_path)
+                if not self.addShaderFromSourceFile(shader_type, file_path):
+                    print(f'Failed to compile "{file_path}"')
+                    exit(1)
         
         if not self.link():
             print(f'Failed to link shader "{path_name}"')
@@ -127,7 +129,6 @@ class Renderer:
 class DotCloudRenderer(Renderer):
     def init(self) -> None:
         self.shader = ShaderProgram.get('shaders/dotcloud')
-        self.shader.bind()
 
         self.vao = glGenVertexArrays(1)
         self.vbo_points, self.vbo_rgbas, self.vbo_radii = glGenBuffers(3)
@@ -170,6 +171,54 @@ class DotCloudRenderer(Renderer):
         self.shader.setFloat('anti_alias_width', data.anti_alias_width)
 
         glBindVertexArray(self.vao)
-        glDrawArrays(GL_POINTS, 0, len(item.points))
+        glDrawArrays(GL_POINTS, 0, item.points_count())
         glBindVertexArray(0)
 
+class VItemRenderer(Renderer):
+    def init(self) -> None:
+        self.shader_stroke = ShaderProgram.get('shaders/vitem_stroke')
+
+        self.vao_stroke = glGenVertexArrays(1)
+        self.vbo_stroke_points, self.vbo_stroke_rgbas = glGenBuffers(2)
+
+    def update(self, item) -> None:
+        self.shader_stroke.bind()
+        glBindVertexArray(self.vao_stroke)
+
+        points = item.get_points()
+        points_data_size = points.size * FLOAT_SIZE
+        rgbas = item.get_rgbas()
+        rgbas_data_size = rgbas.size * FLOAT_SIZE
+
+        glBindBuffer(GL_ARRAY_BUFFER, self.vbo_stroke_points)
+        glBufferData(GL_ARRAY_BUFFER, points_data_size, points, GL_STATIC_DRAW)
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 9 * FLOAT_SIZE, ctypes.c_void_p(0))
+        glEnableVertexAttribArray(0)
+        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 9 * FLOAT_SIZE, ctypes.c_void_p(3 * FLOAT_SIZE))
+        glEnableVertexAttribArray(1)
+        glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 9 * FLOAT_SIZE, ctypes.c_void_p(6 * FLOAT_SIZE))
+        glEnableVertexAttribArray(2)
+
+        glBindBuffer(GL_ARRAY_BUFFER, self.vbo_stroke_rgbas)
+        glBufferData(GL_ARRAY_BUFFER, rgbas_data_size, rgbas, GL_STATIC_DRAW)
+        glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, 12 * FLOAT_SIZE, ctypes.c_void_p(0))
+        glEnableVertexAttribArray(3)
+        glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, 12 * FLOAT_SIZE, ctypes.c_void_p(4 * FLOAT_SIZE))
+        glEnableVertexAttribArray(4)
+        glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, 12 * FLOAT_SIZE, ctypes.c_void_p(8 * FLOAT_SIZE))
+        glEnableVertexAttribArray(5)
+
+        glBindBuffer(GL_ARRAY_BUFFER, 0)
+
+        glBindVertexArray(0)
+
+    def render(self, item, data: RenderData) -> None:
+        self.shader_stroke.bind()
+
+        self.shader_stroke.setMat4('view_matrix', data.view_matrix)
+        self.shader_stroke.setMat4('wnd_mul_proj_matrix', data.wnd_mul_proj_matrix)
+        self.shader_stroke.setFloat('anti_alias_width', data.anti_alias_width)
+
+        glBindVertexArray(self.vao_stroke)
+        glDrawArrays(GL_POINTS, 0, item.points_count() // 3)
+        glBindVertexArray(0)
