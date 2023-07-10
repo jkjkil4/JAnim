@@ -110,8 +110,10 @@ class GLWidget(QOpenGLWidget):
 
             camera = self.scene.camera
             camera.shift(
-                - normalize(camera.get_horizontal_vect()) * x * self.move_sensitivity
-                + normalize(camera.get_vertical_vect()) * y * self.move_sensitivity
+                self.move_sensitivity * camera.get_vertical_dist() / FRAME_HEIGHT * (
+                    - normalize(camera.get_horizontal_vect()) * x
+                    + normalize(camera.get_vertical_vect()) * y
+                )
             )
 
             self.mbutton_pos = pos
