@@ -1,6 +1,12 @@
 from typing import Union, Iterable
 import ctypes
 import numpy as np
+from enum import Enum
+
+class JointType(Enum):
+    Auto = 0
+    Bevel = 1
+    Round = 2
 
 JAnimColor = Union[str, Iterable]
 

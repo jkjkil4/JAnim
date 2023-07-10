@@ -14,12 +14,13 @@ class VItem(Item):
     def __init__(
         self,
         stroke_width: Optional[float | Iterable[float]] = 0.1,
-        joint_type: str = 'auto',
+        joint_type: JointType = JointType.Auto,
         fill_color: Optional[JAnimColor | Iterable[float]] = None,
         fill_opacity = 0.0,
         **kwargs
     ) -> None:
         super().__init__(**kwargs)
+        self.joint_type = joint_type
         # self.fill_color = fill_color # TODO: 实现 fill_color 和 fill_opacity
         # self.fill_opacity = fill_opacity
 
@@ -47,6 +48,9 @@ class VItem(Item):
     
     def get_anchors(self):
         return self.get_points()[::3]
+
+    def get_handles(self):
+        return self.get_points()[1::3]
     
     def set_stroke_width(self, stroke_width: float | Iterable[float]):
         if not isinstance(stroke_width, Iterable):

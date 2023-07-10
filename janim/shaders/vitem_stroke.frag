@@ -62,8 +62,7 @@ void main() {
     // sdf for the region around the curve we wish to color.
     float signed_dist = dist_to_curve() - 0.5 * uv_stroke_width;
 
-    FragColor.a *= max(0.2, smoothstep(0.0, -1.0, signed_dist / uv_anti_alias_width));
-    // FragColor.a *= smoothstep(0.0, -1.0, signed_dist / uv_anti_alias_width);
+    FragColor.a *= smoothstep(0.0, -1.0, signed_dist / uv_anti_alias_width);
     if (FragColor.a == 0.0)
         discard;
 }

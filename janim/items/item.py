@@ -263,7 +263,8 @@ class Item:
     def set_color(
         self, 
         color: JAnimColor | Iterable[JAnimColor], 
-        opacity: float | Iterable[float] = 1
+        opacity: float | Iterable[float] = 1,
+        recurse: bool = True
     ):
         if isinstance(color, str):
             color = [hex_to_rgb(color)]
@@ -275,12 +276,16 @@ class Item:
                 if isinstance(c, str) else c 
                 for c in color
             ]
-        color = resize_array(np.array(color), max(1, self.points_count()))
         
         if not isinstance(opacity, Iterable):
             opacity = [opacity]
-        opacity = resize_array(np.array(opacity), max(1, self.points_count()))
 
+        if recurse:
+            for item in self:
+                item.set_color(color, opacity)
+
+        color = resize_array(np.array(color), max(1, self.points_count()))
+        opacity = resize_array(np.array(opacity), max(1, self.points_count()))
         self.set_rgbas(
             np.hstack((
                 color, 

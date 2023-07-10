@@ -5,6 +5,8 @@ layout (triangle_strip, max_vertices = 6) out;
 in vec3 verts[3];
 in vec4 v_color[3];
 in float v_stroke_width[3];
+in float v_handle_prev[3];
+in float v_handle_next[3];
 
 out vec2 uv_coords;
 out vec4 color;
@@ -26,7 +28,26 @@ float sqr(float v)
     return v * v;
 }
 
+void create_joint(
+    vec3 unit_normal, float buff,
+    vec3 p0, vec3 p1, vec3 p2,
+    vec3 static_c0, out vec3 changing_c0,
+    vec3 static_c1, out vec3 changing_c1
+) {
+    vec3 v01 = normalize(p1 - p0);
+    vec3 v12 = normalize(p2 - p1);
+    vec3 joint_normal = cross(-v01, v12);
 
+    float orientation = sign(dot(unit_normal, joint_normal));
+
+    float cos_angle = dot(v01, v12);
+    float sin_angle = length(joint_normal);
+
+    vec3 shift = orientation * buff * sin_angle / (1 + cos_angle) * v12;
+
+    changing_c0 = static_c0 - shift;
+    changing_c1 = static_c1 + shift;
+}
 
 vec2 xs_on_clean_parabola(vec3 b0, vec3 b1, vec3 b2)
 {
@@ -109,7 +130,7 @@ mat4 get_xyz_to_uv(
     vec3 b0, vec3 b1, vec3 b2,
     float threshold,
     out bool exceeds_threshold
-){
+) {
     /*
     Populates the matrix `result` with an affine transformation which maps a set of
     quadratic bezier controls points into a new coordinate system such that the bezier
@@ -142,6 +163,10 @@ void main()
     if (v_stroke_width[0] == 0.0 && v_stroke_width[1] == 0.0 && v_stroke_width[2] == 0.0)
         return;
 
+    vec3 handle_prev = vec3(v_handle_prev[0], v_handle_prev[1], v_handle_prev[2]);
+    vec3 handle_next = vec3(v_handle_next[0], v_handle_next[1], v_handle_next[2]);
+
+    // basic
     vec3 v10 = verts[0] - verts[1];
     vec3 v12 = verts[2]- verts[1];
     float unsigned_det = length(cross(normalize(v10), normalize(v12)));
@@ -159,6 +184,14 @@ void main()
     vec3 p1 = verts[1];
     vec3 p2 = verts[2];
 
+    // corners
+    /*
+        2--------4
+        |        |
+        |        5
+        |     3
+        0---1
+    */
     vec3 corners[6];
     corners[0] = p0 + p0_perp;
     corners[1] = p0 - p0_perp;
@@ -170,6 +203,22 @@ void main()
     if (!bool(is_linear))
         corners[3] = (corners[1] + corners[5]) / 2.0;
 
+    // joints
+    // TODO: 为不在同一平面的曲线创建连接处
+    create_joint(
+        unit_normal, v_stroke_width[0] / 2.0,
+        handle_prev, p0, p1,
+        corners[0], corners[0],
+        corners[1], corners[1]
+    );
+    create_joint(
+        -unit_normal, v_stroke_width[2] / 2.0,
+        handle_next, p2, p1,
+        corners[4], corners[4],
+        corners[5], corners[5]
+    );
+
+    // xyz_to_uv
     bool too_steep;
     mat4 xyz_to_uv;
     float uv_scale_factor;
@@ -199,19 +248,19 @@ void main()
         gl_Position = wnd_matrix * proj_corner;
 
         float stroke_width = v_stroke_width[i / 2];
-        float scale_aaw = anti_alias_width / proj_scale_factor;
+        float scaled_aaw = anti_alias_width / proj_scale_factor;
 
         if (bool(is_linear)) {
             float sgn = vec2(-1, 1)[i % 2];
             uv_coords = vec2(0, sgn * (0.5 * stroke_width));
             color = v_color[i / 2];
             uv_stroke_width = stroke_width;
-            uv_anti_alias_width = scale_aaw;
+            uv_anti_alias_width = scaled_aaw;
         } else {
             uv_coords = (xyz_to_uv * v4_corner).xy;
             color = v_color[i / 2];
             uv_stroke_width = stroke_width * uv_scale_factor;
-            uv_anti_alias_width = scale_aaw * uv_scale_factor;
+            uv_anti_alias_width = scaled_aaw * uv_scale_factor;
         }
         EmitVertex();
     }

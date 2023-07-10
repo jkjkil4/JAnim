@@ -8,6 +8,7 @@ from PySide6.QtOpenGL import *
 from OpenGL.GL import *
 
 from janim.constants import *
+from janim.utils.bezier import interpolate
 
 class ShaderProgram(QOpenGLShaderProgram):
     '''
@@ -188,17 +189,30 @@ class VItemRenderer(Renderer):
         self.vbo_stroke_points = glGenBuffers(1)
         self.vbo_stroke_rgbas = glGenBuffers(1)
         self.vbo_stroke_width = glGenBuffers(1)
+        self.vbo_stroke_handles = glGenBuffers(1)
 
     def update(self, item) -> None:
+        if item.points_count() < 3:
+            return
+        
         self.shader_stroke.bind()
         glBindVertexArray(self.vao_stroke)
 
         points = item.get_points()
         points_data_size = points.size * FLOAT_SIZE
+
         rgbas = item.get_rgbas()
         rgbas_data_size = rgbas.size * FLOAT_SIZE
+
         stroke = item.get_stroke_width()
         stroke_data_size = stroke.size * FLOAT_SIZE
+
+        handles = np.vstack([
+            interpolate(points[1], points[0], 2),
+            item.get_handles(),
+            interpolate(points[-2], points[-1], 2)
+        ], dtype=np.float32)
+        handles_data_size = handles.size * FLOAT_SIZE
 
         glBindBuffer(GL_ARRAY_BUFFER, self.vbo_stroke_points)
         glBufferData(GL_ARRAY_BUFFER, points_data_size, points, GL_STATIC_DRAW)
@@ -215,11 +229,21 @@ class VItemRenderer(Renderer):
         glVertexAttribPointer(2, 1, GL_FLOAT, GL_FALSE, FLOAT_SIZE, ctypes.c_void_p(0))
         glEnableVertexAttribArray(2)
 
+        glBindBuffer(GL_ARRAY_BUFFER, self.vbo_stroke_handles)
+        glBufferData(GL_ARRAY_BUFFER, handles_data_size, handles, GL_STATIC_DRAW)
+        glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE, FLOAT_SIZE, ctypes.c_void_p(0))
+        glEnableVertexAttribArray(3)
+        glVertexAttribPointer(4, 1, GL_FLOAT, GL_FALSE, FLOAT_SIZE, ctypes.c_void_p(6 * FLOAT_SIZE))
+        glEnableVertexAttribArray(4)
+
         glBindBuffer(GL_ARRAY_BUFFER, 0)
 
         glBindVertexArray(0)
 
     def render(self, item, data: RenderData) -> None:
+        if item.points_count() < 3:
+            return
+
         self.shader_stroke.bind()
 
         self.shader_stroke.setFloat('anti_alias_width', data.anti_alias_width)
