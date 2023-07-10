@@ -21,7 +21,15 @@ uniform mat4 wnd_matrix;
 
 uniform vec3 vitem_unit_normal;
 
-const float tolerance_det = 0.01;
+uniform int joint_type;
+
+const int AUTO_JOINT = 0;
+const int BEVEL_JOINT = 1;
+const int SHARP_JOINT = 2;
+
+const float linear_tolerance_det = 0.01;
+
+const float sharp_tolerance_dot = 0.866;
 
 float sqr(float v)
 {
@@ -170,7 +178,7 @@ void main()
     vec3 v10 = verts[0] - verts[1];
     vec3 v12 = verts[2]- verts[1];
     float unsigned_det = length(cross(normalize(v10), normalize(v12)));
-    is_linear = float(unsigned_det < tolerance_det && dot(v10, v12) < 0.0);
+    is_linear = float(unsigned_det < linear_tolerance_det && dot(v10, v12) < 0.0);
 
     vec3 unit_normal = 
         bool(is_linear)
@@ -205,18 +213,33 @@ void main()
 
     // joints
     // TODO: 为不在同一平面的曲线创建连接处
-    create_joint(
-        unit_normal, v_stroke_width[0] / 2.0,
-        handle_prev, p0, p1,
-        corners[0], corners[0],
-        corners[1], corners[1]
-    );
-    create_joint(
-        -unit_normal, v_stroke_width[2] / 2.0,
-        handle_next, p2, p1,
-        corners[4], corners[4],
-        corners[5], corners[5]
-    );
+    // TODO: 将 SHARP_JOINT 完善为 ROUND_JOINT
+    if (
+        joint_type == BEVEL_JOINT || (
+            joint_type == AUTO_JOINT &&
+            dot(normalize(v10), normalize(p0 - handle_prev)) < sharp_tolerance_dot
+        )
+    ) {
+        create_joint(
+            unit_normal, v_stroke_width[0] / 2.0,
+            handle_prev, p0, p1,
+            corners[0], corners[0],
+            corners[1], corners[1]
+        );
+    }
+    if (
+        joint_type == BEVEL_JOINT || (
+            joint_type == AUTO_JOINT &&
+            dot(normalize(v12), normalize(p2 - handle_next)) < sharp_tolerance_dot
+        )
+    ) {
+        create_joint(
+            -unit_normal, v_stroke_width[2] / 2.0,
+            handle_next, p2, p1,
+            corners[4], corners[4],
+            corners[5], corners[5]
+        );
+    }
 
     // xyz_to_uv
     bool too_steep;

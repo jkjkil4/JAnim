@@ -13,14 +13,26 @@ class DotCloudTest(Scene):
 
 class VItemTest(Scene):
     def construct(self) -> None:
-        m1 = VItem()
-        m1.set_points([
-            UP, RIGHT, DOWN,
-            DOWN, DOWN * 2, DOWN * 3,
-            DOWN * 3, DOWN + LEFT * 2, LEFT + UP * 2
-        ]).set_color([
-            RED, GREEN, BLUE
-        ]).set_stroke_width(0.2)
+        # m1 = VItem()
+        # m1.set_points([
+        #     UP, RIGHT, DOWN,
+        #     DOWN, DOWN * 2, DOWN * 3,
+        #     DOWN * 3, DOWN + LEFT * 2, LEFT + UP * 2
+        # ]).set_color([
+        #     RED, GREEN, BLUE
+        # ]).set_stroke_width(0.2)
+
+        m1 = Group()
+        for i in range(-65, -30, 5):
+            vect = RIGHT * np.cos(i * DEGREES) + UP * np.sin(i * DEGREES)
+
+            item = VItem()
+            item.set_points([
+                DOWN * 2, DOWN * 1, ORIGIN,
+                ORIGIN, vect, vect * 2
+            ]).set_stroke_width(0.2)
+
+            m1.add(item)
 
         # m2 = VItem()
         # m2.set_points([
@@ -31,7 +43,7 @@ class VItemTest(Scene):
         #     0.2, 0.4
         # ])
 
-        self.add(m1)
+        self.add(m1.arrange())
         # self.add(Group(m1, m2).arrange(buff=LARGE_BUFF))
 
 VItemTest().run()

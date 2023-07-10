@@ -67,6 +67,9 @@ class ShaderProgram(QOpenGLShaderProgram):
     def setFloat(self, name: str, val: float) -> None:
         self.setUniformValue1f(self.uniformLocation(name), val)
     
+    def setInt(self, name: str, val: int) -> None:
+        self.setUniformValue1i(self.uniformLocation(name), val)
+    
     def setVec2(self, name: str, val1: float, val2: float) -> None:
         self.setUniformValue(self.uniformLocation(name), QVector2D(val1, val2))
 
@@ -251,6 +254,7 @@ class VItemRenderer(Renderer):
         self.shader_stroke.setMat4('proj_matrix', data.proj_matrix)
         self.shader_stroke.setMat4('wnd_matrix', data.wnd_matrix)
         self.shader_stroke.setVec3('vitem_unit_normal', *item.get_unit_normal())
+        self.shader_stroke.setInt('joint_type', item.joint_type.value)
 
         glBindVertexArray(self.vao_stroke)
         glDrawArrays(GL_TRIANGLES, 0, item.points_count())

@@ -6,7 +6,7 @@ from enum import Enum
 class JointType(Enum):
     Auto = 0
     Bevel = 1
-    Round = 2
+    Sharp = 2
 
 JAnimColor = Union[str, Iterable]
 

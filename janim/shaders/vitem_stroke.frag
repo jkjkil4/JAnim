@@ -8,7 +8,6 @@ in float is_linear;
 
 out vec4 FragColor;
 
-
 const float QUICK_DIST_WIDTH = 0.2;
 
 float dist_to_curve()
