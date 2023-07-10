@@ -28,17 +28,6 @@ float sqr(float v)
 
 
 
-// vec2 find_intersection(vec2 p0, vec2 v0, vec2 p1, vec2 v1)
-// {
-//     // Find the intersection of a line passing through
-//     // p0 in the direction v0 and one passing through p1 in
-//     // the direction p1.
-//     // That is, find a solutoin to p0 + v0 * t = p1 + v1 * s
-//     float det = -v0.x * v1.y + v1.x * v0.y;
-//     float t = cross2d(p0 - p1, v1) / det;
-//     return p0 + v0 * t;
-// }
-
 vec2 xs_on_clean_parabola(vec3 b0, vec3 b1, vec3 b2)
 {
     /*

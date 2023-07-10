@@ -34,4 +34,4 @@ class VItemTest(Scene):
         self.add(m1)
         # self.add(Group(m1, m2).arrange(buff=LARGE_BUFF))
 
-VItemTest().run()
+DotCloudTest().run()

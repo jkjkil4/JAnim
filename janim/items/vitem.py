@@ -45,9 +45,6 @@ class VItem(Item):
     def create_renderer(self) -> VItemRenderer:
         return VItemRenderer()
     
-    def get_anchors(self):
-        return self.get_points()[::2]
-    
     def set_stroke_width(self, stroke_width: float | Iterable[float]):
         if not isinstance(stroke_width, Iterable):
             stroke_width = [stroke_width]
