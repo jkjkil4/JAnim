@@ -48,7 +48,7 @@ class GLWidget(QOpenGLWidget):
         glClearColor(0.2, 0.3, 0.3, 1.0)
         # glClearColor(0, 0, 0, 1)    # 将背景色设置为黑色
         # glEnable(GL_MULTISAMPLE)    # 抗锯齿
-        glEnable(GL_DEPTH_TEST)
+        # glEnable(GL_DEPTH_TEST)
         
         # 颜色混合
         glEnable(GL_BLEND)

@@ -20,18 +20,18 @@ class VItemTest(Scene):
             DOWN * 3, DOWN + LEFT * 2, LEFT + UP * 2
         ]).set_color([
             RED, GREEN, BLUE
-        ]).set_stroke_width(0.2)\
-            .rotate(30 * DEGREES, UP)
+        ]).set_stroke_width(0.2)
 
-        m2 = VItem()
-        m2.set_points([
-            UP, RIGHT, DOWN
-        ]).set_color([
-            RED, GREEN, BLUE
-        ]).set_stroke_width([
-            0.2, 0.4
-        ])
+        # m2 = VItem()
+        # m2.set_points([
+        #     UP, RIGHT, DOWN
+        # ]).set_color([
+        #     RED, GREEN, BLUE
+        # ]).set_stroke_width([
+        #     0.2, 0.4
+        # ])
 
-        self.add(Group(m1, m2).arrange(buff=LARGE_BUFF))
+        self.add(m1)
+        # self.add(Group(m1, m2).arrange(buff=LARGE_BUFF))
 
 VItemTest().run()

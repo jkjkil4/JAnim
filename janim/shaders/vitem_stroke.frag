@@ -1,6 +1,5 @@
 #version 330 core
 
-in vec2 pos[3];
 in vec2 uv_coords;
 in vec4 color;
 in float uv_stroke_width;
@@ -10,7 +9,7 @@ in float is_linear;
 out vec4 FragColor;
 
 
-// const float QUICK_DIST_WIDTH = 0.2;
+const float QUICK_DIST_WIDTH = 0.2;
 
 float dist_to_curve()
 {
@@ -26,9 +25,9 @@ float dist_to_curve()
     // the distance to the curve.
     // Evaluate F(x, y) = y - x^2
     // divide by its gradient's magnitude
-    // float Fxy = y0 - x0 * x0;
-    // float approx_dist = abs(Fxy) * inversesqrt(1.0 + 4 * x0 * x0);
-    // if(approx_dist < QUICK_DIST_WIDTH) return approx_dist;
+    float Fxy = y0 - x0 * x0;
+    float approx_dist = abs(Fxy) * inversesqrt(1.0 + 4 * x0 * x0);
+    if(approx_dist < QUICK_DIST_WIDTH) return approx_dist;
 
     // Otherwise, solve for the minimal distance.
     // The distance squared between (x0, y0) and a point (x, x^2) looks like
@@ -64,6 +63,9 @@ void main() {
     float signed_dist = dist_to_curve() - 0.5 * uv_stroke_width;
 
     FragColor.a *= max(0.2, smoothstep(0.0, -1.0, signed_dist / uv_anti_alias_width));
+    // FragColor.a *= smoothstep(0.0, -1.0, signed_dist / uv_anti_alias_width);
+    if (FragColor.a == 0.0)
+        discard;
 }
 
 

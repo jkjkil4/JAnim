@@ -2,11 +2,10 @@
 layout (triangles) in;
 layout (triangle_strip, max_vertices = 6) out;
 
-in vec4 verts[3];
+in vec3 verts[3];
 in vec4 v_color[3];
 in float v_stroke_width[3];
 
-out vec2 pos[3];
 out vec2 uv_coords;
 out vec4 color;
 out float uv_stroke_width;
@@ -14,33 +13,34 @@ out float uv_anti_alias_width;
 out float is_linear;
 
 uniform float anti_alias_width;
+uniform mat4 view_matrix;
 uniform mat4 proj_matrix;
 uniform mat4 wnd_matrix;
 
+uniform vec3 vitem_unit_normal;
+
 const float tolerance_det = 0.01;
 
-float cross2d(vec2 v, vec2 w)
+float sqr(float v)
 {
-    return v.x * w.y - w.x * v.y;
+    return v * v;
 }
 
-vec4 normalize_w(vec4 vect) 
-{
-    return vect / vect.w;
-}
 
-vec2 find_intersection(vec2 p0, vec2 v0, vec2 p1, vec2 v1)
-{
-    // Find the intersection of a line passing through
-    // p0 in the direction v0 and one passing through p1 in
-    // the direction p1.
-    // That is, find a solutoin to p0 + v0 * t = p1 + v1 * s
-    float det = -v0.x * v1.y + v1.x * v0.y;
-    float t = cross2d(p0 - p1, v1) / det;
-    return p0 + v0 * t;
-}
 
-vec2 xs_on_clean_parabola(vec3 b0, vec3 b1, vec3 b2){
+// vec2 find_intersection(vec2 p0, vec2 v0, vec2 p1, vec2 v1)
+// {
+//     // Find the intersection of a line passing through
+//     // p0 in the direction v0 and one passing through p1 in
+//     // the direction p1.
+//     // That is, find a solutoin to p0 + v0 * t = p1 + v1 * s
+//     float det = -v0.x * v1.y + v1.x * v0.y;
+//     float t = cross2d(p0 - p1, v1) / det;
+//     return p0 + v0 * t;
+// }
+
+vec2 xs_on_clean_parabola(vec3 b0, vec3 b1, vec3 b2)
+{
     /*
     Given three control points for a quadratic bezier,
     this returns the two values (x0, x2) such that the
@@ -59,7 +59,8 @@ vec2 xs_on_clean_parabola(vec3 b0, vec3 b1, vec3 b2){
 }
 
 
-mat4 map_triangles(vec3 src0, vec3 src1, vec3 src2, vec3 dst0, vec3 dst1, vec3 dst2){
+mat4 map_triangles(vec3 src0, vec3 src1, vec3 src2, vec3 dst0, vec3 dst1, vec3 dst2)
+{
     /*
     Return an affine transform which maps the triangle (src0, src1, src2)
     onto the triangle (dst0, dst1, dst2)
@@ -80,7 +81,8 @@ mat4 map_triangles(vec3 src0, vec3 src1, vec3 src2, vec3 dst0, vec3 dst1, vec3 d
 }
 
 
-mat4 rotation(vec3 axis, float cos_angle){
+mat4 rotation(vec3 axis, float cos_angle)
+{
     float c = cos_angle;
     float s = sqrt(1 - c * c);  // Sine of the angle
     float oc = 1.0 - c;
@@ -97,7 +99,8 @@ mat4 rotation(vec3 axis, float cos_angle){
 }
 
 
-mat4 map_onto_x_axis(vec3 src0, vec3 src1){
+mat4 map_onto_x_axis(vec3 src0, vec3 src1)
+{
     mat4 shift = mat4(1.0);
     shift[3].xyz = -src0;
 
@@ -149,92 +152,77 @@ void main()
 {
     if (v_stroke_width[0] == 0.0 && v_stroke_width[1] == 0.0 && v_stroke_width[2] == 0.0)
         return;
-    
-    vec4 proj_pos[3];
-    for (int i = 0; i < 3; i++) {
-        proj_pos[i] = normalize_w(verts[i]);
-        pos[i] = proj_pos[i].xy;
-    }
 
-    vec2 v10 = proj_pos[0].xy - proj_pos[1].xy;
-    vec2 v12 = proj_pos[2].xy - proj_pos[1].xy;
-    vec4 v10_perp = vec4(v_stroke_width[0] * 0.5 * normalize(vec2(-v10.y, v10.x)), 0.0, 0.0);
-    vec4 v12_perp = vec4(v_stroke_width[2] * 0.5 * normalize(vec2(-v12.y, v12.x)), 0.0, 0.0);
+    vec3 v10 = verts[0] - verts[1];
+    vec3 v12 = verts[2]- verts[1];
+    float unsigned_det = length(cross(normalize(v10), normalize(v12)));
+    is_linear = float(unsigned_det < tolerance_det && dot(v10, v12) < 0.0);
 
-    vec4 vert[6];
-    float det = cross2d(normalize(v10), normalize(v12));
-    is_linear = float(abs(det) < tolerance_det && dot(v10, v12) < 0.0);
-    if (bool(is_linear)) {
-        /*
-            0---2---4
-            |       |
-            1---3---5
-        */
-        vert[0] = proj_pos[0] - v10_perp;
-        vert[1] = proj_pos[0] + v10_perp;
-        vert[4] = proj_pos[2] + v12_perp;
-        vert[5] = proj_pos[2] - v12_perp;
+    vec3 unit_normal = 
+        bool(is_linear)
+        ? vitem_unit_normal
+        : normalize(cross(v10, v12));
+    vec3 p0_perp = vec3(0.5 * v_stroke_width[0] * normalize(cross(v10, unit_normal)));
+    vec3 p2_perp = vec3(0.5 * v_stroke_width[2] * normalize(cross(unit_normal, v12)));
+    vec3 p1_perp = (p0_perp + p2_perp) / 2.0;
 
-        vert[2] = (vert[0] + vert[4]) / 2.0;
-        vert[3] = (vert[1] + vert[5]) / 2.0;
-    } else {
-        if (det > 0.0) {  // right-turn
-            /*
-                2--------4
-                |        |
-                |        5
-                |     3
-                0---1
-            */
-            vert[0] = proj_pos[0] - v10_perp;
-            vert[1] = proj_pos[0] + v10_perp;
-            vert[4] = proj_pos[2] + v12_perp;
-            vert[5] = proj_pos[2] - v12_perp;
+    vec3 p0 = verts[0];
+    vec3 p1 = verts[1];
+    vec3 p2 = verts[2];
 
-            vert[2] = vec4(find_intersection(vert[0].xy, v10, vert[4].xy, v12), proj_pos[1].z, 1.0);
-            vert[3] = (vert[1] + vert[5]) / 2;
-        } else {        // left-turn
-            /*
-                4--------2
-                |        |
-                5        |
-                   3     |
-                     1---0
-            */
-            vert[0] = proj_pos[0] + v10_perp;
-            vert[1] = proj_pos[0] - v10_perp;
-            vert[4] = proj_pos[2] - v12_perp;
-            vert[5] = proj_pos[2] + v12_perp;
+    vec3 corners[6];
+    corners[0] = p0 + p0_perp;
+    corners[1] = p0 - p0_perp;
+    corners[2] = p1 + p1_perp;
+    corners[3] = p1 - p1_perp;
+    corners[4] = p2 + p2_perp;
+    corners[5] = p2 - p2_perp;
 
-            vert[2] = vec4(find_intersection(vert[0].xy, v10, vert[4].xy, v12), proj_pos[1].z, 1.0);
-            vert[3] = (vert[1] + vert[5]) / 2.0;
-        }
-    }
+    if (!bool(is_linear))
+        corners[3] = (corners[1] + corners[5]) / 2.0;
 
     bool too_steep;
     mat4 xyz_to_uv;
     float uv_scale_factor;
     if (!bool(is_linear)) {
-        xyz_to_uv = get_xyz_to_uv(proj_pos[0].xyz, proj_pos[1].xyz, proj_pos[2].xyz, 2.0, too_steep);
+        xyz_to_uv = get_xyz_to_uv(p0, p1, p2, 2.0, too_steep);
+
+        // uv_scale_factor = length(xyz_to_uv[0].xyz);
+
+        // 这是如何起作用的？
+        float f1 = length(xyz_to_uv[0].xyz);
+        float f2 = length(xyz_to_uv[1].xyz);
+        float f3 = length(xyz_to_uv[2].xyz);
+        uv_scale_factor = min(f1, min(f2, f3));
+
         is_linear = float(too_steep);
-        uv_scale_factor = length(xyz_to_uv[0].xyz);
     }
 
     for (int i = 0; i < 6; i++) {
-        gl_Position = wnd_matrix * proj_matrix * vert[i];
+        vec4 v4_corner = vec4(corners[i], 1.0);
+        vec4 view_corner = view_matrix * v4_corner;
+        vec4 proj_corner = proj_matrix * view_corner;
+
+        // 有无更好的方法计算 view_corner 到 proj_corner 的缩放系数？
+        vec4 proj_corner_test = proj_matrix * (view_corner + vec4(1.0, 0.0, 0.0, 0.0));
+        float proj_scale_factor = proj_corner_test.x / proj_corner_test.w - proj_corner.x / proj_corner.w;
+
+        gl_Position = wnd_matrix * proj_corner;
+
         float stroke_width = v_stroke_width[i / 2];
+        float scale_aaw = anti_alias_width / proj_scale_factor;
 
         if (bool(is_linear)) {
             float sgn = vec2(-1, 1)[i % 2];
             uv_coords = vec2(0, sgn * (0.5 * stroke_width));
             color = v_color[i / 2];
             uv_stroke_width = stroke_width;
-            uv_anti_alias_width = anti_alias_width;
+            uv_anti_alias_width = scale_aaw;
         } else {
-            uv_coords = (xyz_to_uv * vert[i]).xy;
+            uv_coords = (xyz_to_uv * v4_corner).xy;
             color = v_color[i / 2];
             uv_stroke_width = stroke_width * uv_scale_factor;
-            uv_anti_alias_width = anti_alias_width * uv_scale_factor;
+            uv_anti_alias_width = scale_aaw * uv_scale_factor;
         }
         EmitVertex();
     }

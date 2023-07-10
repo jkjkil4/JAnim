@@ -3,7 +3,7 @@ from typing import Optional
 import os
 
 from PySide6.QtCore import QObject
-from PySide6.QtGui import QMatrix4x4, QVector2D
+from PySide6.QtGui import QMatrix4x4, QVector2D, QVector3D
 from PySide6.QtOpenGL import *
 from OpenGL.GL import *
 
@@ -68,6 +68,9 @@ class ShaderProgram(QOpenGLShaderProgram):
     
     def setVec2(self, name: str, val1: float, val2: float) -> None:
         self.setUniformValue(self.uniformLocation(name), QVector2D(val1, val2))
+
+    def setVec3(self, name: str, val1: float, val2: float, val3: float) -> None:
+        self.setUniformValue(self.uniformLocation(name), QVector3D(val1, val2, val3))
 
 class RenderData:
     '''
@@ -223,6 +226,7 @@ class VItemRenderer(Renderer):
         self.shader_stroke.setMat4('view_matrix', data.view_matrix)
         self.shader_stroke.setMat4('proj_matrix', data.proj_matrix)
         self.shader_stroke.setMat4('wnd_matrix', data.wnd_matrix)
+        self.shader_stroke.setVec3('vitem_unit_normal', *item.get_unit_normal())
 
         glBindVertexArray(self.vao_stroke)
         glDrawArrays(GL_TRIANGLES, 0, item.points_count())
