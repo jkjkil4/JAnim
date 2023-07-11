@@ -96,7 +96,7 @@ class Item:
 
     #region 基本操作
 
-    def __getitem__(self, value):
+    def __getitem__(self, value) -> Item | MethodGroup:
         if isinstance(value, slice):
             return MethodGroup(*self.items[value])
         return self.items[value]

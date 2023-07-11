@@ -192,7 +192,7 @@ class VItemRenderer(Renderer):
         self.vbo_stroke_points = glGenBuffers(1)
         self.vbo_stroke_rgbas = glGenBuffers(1)
         self.vbo_stroke_width = glGenBuffers(1)
-        self.vbo_stroke_handles = glGenBuffers(1)
+        self.vbo_joint_info = glGenBuffers(1)
 
     def update(self, item) -> None:
         if item.points_count() < 3:
@@ -210,12 +210,8 @@ class VItemRenderer(Renderer):
         stroke = item.get_stroke_width()
         stroke_data_size = stroke.size * FLOAT_SIZE
 
-        handles = np.vstack([
-            interpolate(points[1], points[0], 2),
-            item.get_handles(),
-            interpolate(points[-2], points[-1], 2)
-        ], dtype=np.float32)
-        handles_data_size = handles.size * FLOAT_SIZE
+        joint_info = item.get_joint_info()
+        joint_info_data_size = joint_info.size * FLOAT_SIZE
 
         glBindBuffer(GL_ARRAY_BUFFER, self.vbo_stroke_points)
         glBufferData(GL_ARRAY_BUFFER, points_data_size, points, GL_STATIC_DRAW)
@@ -232,12 +228,10 @@ class VItemRenderer(Renderer):
         glVertexAttribPointer(2, 1, GL_FLOAT, GL_FALSE, FLOAT_SIZE, ctypes.c_void_p(0))
         glEnableVertexAttribArray(2)
 
-        glBindBuffer(GL_ARRAY_BUFFER, self.vbo_stroke_handles)
-        glBufferData(GL_ARRAY_BUFFER, handles_data_size, handles, GL_STATIC_DRAW)
-        glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE, FLOAT_SIZE, ctypes.c_void_p(0))
+        glBindBuffer(GL_ARRAY_BUFFER, self.vbo_joint_info)
+        glBufferData(GL_ARRAY_BUFFER, joint_info_data_size, joint_info, GL_STATIC_DRAW)
+        glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 3 * FLOAT_SIZE, ctypes.c_void_p(0))
         glEnableVertexAttribArray(3)
-        glVertexAttribPointer(4, 1, GL_FLOAT, GL_FALSE, FLOAT_SIZE, ctypes.c_void_p(6 * FLOAT_SIZE))
-        glEnableVertexAttribArray(4)
 
         glBindBuffer(GL_ARRAY_BUFFER, 0)
 

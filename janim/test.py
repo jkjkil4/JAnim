@@ -20,10 +20,14 @@ class VItemTest(Scene):
             item = VItem()
             item.set_points([
                 DOWN * 2, DOWN * 1, ORIGIN,
-                ORIGIN, vect, vect * 2
+                ORIGIN, vect, vect * 2,
+                RIGHT * 2, RIGHT * 3 + UP, UP * 2,
+                UP * 2, UP * 3, UP * 2 + RIGHT * 2
             ]).set_stroke_width(0.2)
 
             m1.add(item)
+            
+        m1[-1].scale(2, about_edge=LEFT)
 
         self.add(m1.arrange())
 

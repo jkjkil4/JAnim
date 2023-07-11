@@ -5,8 +5,7 @@ layout (triangle_strip, max_vertices = 6) out;
 in vec3 verts[3];
 in vec4 v_color[3];
 in float v_stroke_width[3];
-in float v_handle_prev[3];
-in float v_handle_next[3];
+in vec3 v_joint_info[3];
 
 out vec2 uv_coords;
 out vec4 color;
@@ -181,8 +180,10 @@ void main()
     if (v_stroke_width[0] == 0.0 && v_stroke_width[1] == 0.0 && v_stroke_width[2] == 0.0)
         return;
 
-    vec3 handle_prev = vec3(v_handle_prev[0], v_handle_prev[1], v_handle_prev[2]);
-    vec3 handle_next = vec3(v_handle_next[0], v_handle_next[1], v_handle_next[2]);
+    vec3 handle_prev = v_joint_info[0];
+    vec3 handle_next = v_joint_info[2];
+    bool has_prev = bool(v_joint_info[1][0]);
+    bool has_next = bool(v_joint_info[1][1]);
 
     // basic
     vec3 v10 = verts[0] - verts[1];
@@ -224,18 +225,20 @@ void main()
     // joints
     // TODO: 为不在同一平面的曲线创建连接处
     // TODO: 将 SHARP_JOINT 完善为 ROUND_JOINT
-    create_joint(
-        unit_normal, v_stroke_width[0] / 2.0,
-        handle_prev, p0, p1,
-        corners[0], corners[0],
-        corners[1], corners[1]
-    );
-    create_joint(
-        -unit_normal, v_stroke_width[2] / 2.0,
-        handle_next, p2, p1,
-        corners[4], corners[4],
-        corners[5], corners[5]
-    );
+    if (has_prev)
+        create_joint(
+            unit_normal, v_stroke_width[0] / 2.0,
+            handle_prev, p0, p1,
+            corners[0], corners[0],
+            corners[1], corners[1]
+        );
+    if (has_next)
+        create_joint(
+            -unit_normal, v_stroke_width[2] / 2.0,
+            handle_next, p2, p1,
+            corners[4], corners[4],
+            corners[5], corners[5]
+        );
 
     // xyz_to_uv
     bool too_steep;
