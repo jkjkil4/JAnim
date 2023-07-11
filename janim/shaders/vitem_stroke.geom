@@ -44,6 +44,16 @@ void create_joint(
 ) {
     vec3 v01 = normalize(p1 - p0);
     vec3 v12 = normalize(p2 - p1);
+    if (
+        joint_type == SHARP_JOINT || (
+            joint_type == AUTO_JOINT && 
+            dot(normalize(v01), normalize(-v12)) > sharp_tolerance_dot
+    )) {
+        changing_c0 = static_c0;
+        changing_c1 = static_c1;
+        return;
+    }
+
     vec3 joint_normal = cross(-v01, v12);
 
     float orientation = sign(dot(unit_normal, joint_normal));
@@ -214,32 +224,18 @@ void main()
     // joints
     // TODO: 为不在同一平面的曲线创建连接处
     // TODO: 将 SHARP_JOINT 完善为 ROUND_JOINT
-    if (
-        joint_type == BEVEL_JOINT || (
-            joint_type == AUTO_JOINT &&
-            dot(normalize(v10), normalize(p0 - handle_prev)) < sharp_tolerance_dot
-        )
-    ) {
-        create_joint(
-            unit_normal, v_stroke_width[0] / 2.0,
-            handle_prev, p0, p1,
-            corners[0], corners[0],
-            corners[1], corners[1]
-        );
-    }
-    if (
-        joint_type == BEVEL_JOINT || (
-            joint_type == AUTO_JOINT &&
-            dot(normalize(v12), normalize(p2 - handle_next)) < sharp_tolerance_dot
-        )
-    ) {
-        create_joint(
-            -unit_normal, v_stroke_width[2] / 2.0,
-            handle_next, p2, p1,
-            corners[4], corners[4],
-            corners[5], corners[5]
-        );
-    }
+    create_joint(
+        unit_normal, v_stroke_width[0] / 2.0,
+        handle_prev, p0, p1,
+        corners[0], corners[0],
+        corners[1], corners[1]
+    );
+    create_joint(
+        -unit_normal, v_stroke_width[2] / 2.0,
+        handle_next, p2, p1,
+        corners[4], corners[4],
+        corners[5], corners[5]
+    );
 
     // xyz_to_uv
     bool too_steep;
