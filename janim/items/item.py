@@ -7,11 +7,10 @@ import copy
 
 from janim.constants import *
 from janim.utils.functions import safe_call
-from utils.space_ops import rotation_matrix
+from janim.utils.space_ops import rotation_matrix, get_norm, angle_of_vector
 from janim.utils.color import hex_to_rgb
 from janim.utils.iterables import resize_array
 from janim.utils.bezier import interpolate, integer_interpolate
-from janim.constants import *
 
 from janim.shaders.render import RenderData, Renderer
 
@@ -454,6 +453,75 @@ class Item:
             points[:, dim] *= factor
             return points
         self.apply_points_function(func, **kwargs)
+        return self
+    
+    def rescale_to_fit(self, length: float, dim: int, stretch: bool = False, **kwargs):
+        old_length = self.length_over_dim(dim)
+        if old_length == 0:
+            return self
+        if stretch:
+            self.stretch(length / old_length, dim, **kwargs)
+        else:
+            self.scale(length / old_length, **kwargs)
+        return self
+    
+    def set_width(self, width: float, stretch: bool = False, **kwargs):
+        return self.rescale_to_fit(width, 0, stretch=stretch, **kwargs)
+
+    def set_height(self, height: float, stretch: bool = False, **kwargs):
+        return self.rescale_to_fit(height, 1, stretch=stretch, **kwargs)
+
+    def set_depth(self, depth: float, stretch: bool = False, **kwargs):
+        return self.rescale_to_fit(depth, 2, stretch=stretch, **kwargs)
+    
+    def set_size(
+        self,
+        width: Optional[float] = None,
+        height: Optional[float] = None,
+        depth: Optional[float] = None,
+        **kwargs
+    ):
+        if width:
+            self.set_width(width, True, **kwargs)
+        if height:
+            self.set_height(height, True, **kwargs)
+        if depth:
+            self.set_depth(depth, True, **kwargs)
+    
+    def replace(self, item: Item, dim_to_match: int = 0, stretch: bool = False):
+        if not item.points_count() and not item.items:
+            self.scale(0)
+            return self
+        if stretch:
+            for i in range(3):
+                self.rescale_to_fit(item.length_over_dim(i), i, stretch=True)
+        else:
+            self.rescale_to_fit(
+                item.length_over_dim(dim_to_match),
+                dim_to_match,
+                stretch=False
+            )
+        self.shift(item.get_center() - self.get_center())
+        return self
+    
+    def put_start_and_end_on(self, start: np.ndarray, end: np.ndarray):
+        curr_start, curr_end = self.get_start_and_end()
+        curr_vect = curr_end - curr_start
+        if np.all(curr_vect == 0):
+            raise Exception("Cannot position endpoints of closed loop")
+        target_vect = end - start
+        self.scale(
+            get_norm(target_vect) / get_norm(curr_vect),
+            about_point=curr_start,
+        )
+        self.rotate(
+            angle_of_vector(target_vect) - angle_of_vector(curr_vect),
+        )
+        self.rotate(
+            np.arctan2(curr_vect[2], get_norm(curr_vect[:2])) - np.arctan2(target_vect[2], get_norm(target_vect[:2])),
+            axis=np.array([-target_vect[1], target_vect[0], 0]),
+        )
+        self.shift(start - self.get_start())
         return self
 
     #endregion

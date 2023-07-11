@@ -8,7 +8,7 @@ __version__ = '0.1'
 from janim.items.dot_cloud import *
 from janim.items.item import *
 from janim.items.vitem import *
-from janim.items.geometry import *
+from janim.items.geometry.arc import *
 
 from janim.constants import *
 

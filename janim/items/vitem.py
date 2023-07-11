@@ -14,7 +14,7 @@ class VItem(Item):
 
     def __init__(
         self,
-        stroke_width: Optional[float | Iterable[float]] = 0.1,
+        stroke_width: Optional[float | Iterable[float]] = 0.05,
         joint_type: JointType = JointType.Auto,
         fill_color: Optional[JAnimColor | Iterable[float]] = None,
         fill_opacity = 0.0,

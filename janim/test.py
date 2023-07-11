@@ -14,16 +14,31 @@ class DotCloudTest(Scene):
 class VItemTest(Scene):
     def construct(self) -> None:
         m1 = VItem()
-        m1.set_points_as_corners([ORIGIN, DOWN])
-        m1.add_points_as_corners([DR, RIGHT])
+        m1.set_points_as_corners([ORIGIN, DOWN, DR, RIGHT]).close_path()
 
         self.add(m1)
+        # print(m1.get_points(), *m1.get_subpaths(), sep='\n')
 
 class GeometryTest(Scene):
     def construct(self) -> None:
-        arc1 = Arc(20 * DEGREES, 160 * DEGREES)
-        arc2 = Arc(40 * DEGREES, 230 * DEGREES)
+        group = Group(
+            Group(
+                Arc(20 * DEGREES, 160 * DEGREES),
+                Arc(40 * DEGREES, 230 * DEGREES)
+            ).arrange(),
+            Group(
+                Circle(),
+                Circle(radius=1.5),
+                Ellipse()
+            ).arrange(),
+            Group(
+                AnnularSector(),
+                AnnularSector(0.5, 1.5, 60 * DEGREES, 60 * DEGREES),
+                Sector(),
+                Annulus()
+            ).arrange()
+        ).arrange(DOWN)
 
-        self.add(Group(arc1, arc2).arrange())
+        self.add(group)
 
 GeometryTest().run()
