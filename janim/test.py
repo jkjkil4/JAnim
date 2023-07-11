@@ -19,4 +19,11 @@ class VItemTest(Scene):
 
         self.add(m1)
 
-VItemTest().run()
+class GeometryTest(Scene):
+    def construct(self) -> None:
+        arc1 = Arc(20 * DEGREES, 160 * DEGREES)
+        arc2 = Arc(40 * DEGREES, 230 * DEGREES)
+
+        self.add(Group(arc1, arc2).arrange())
+
+GeometryTest().run()
