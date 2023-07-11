@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Iterable, Optional
+from typing import Iterable, Optional, Sequence
 import numpy as np
 
 from janim.constants import *
@@ -101,6 +101,39 @@ class VItem(Item):
             for a in np.linspace(0, 1, 3)
         ])
         return self
+    
+    def get_subpaths_from_points(
+        self,
+        points: Sequence[np.ndarray]
+    ) -> list[Sequence[np.ndarray]]:
+        nppc = 3
+        diffs = points[nppc - 1:-1:nppc] - points[nppc::nppc]
+        splits = (diffs * diffs).sum(1) > self.tolerance_for_point_equality
+        split_indices = np.arange(nppc, len(points), nppc, dtype=int)[splits]
+
+        # split_indices = filter(
+        #     lambda n: not self.consider_points_equals(points[n - 1], points[n]),
+        #     range(nppc, len(points), nppc)
+        # )
+        split_indices = [0, *split_indices, len(points)]
+        return [
+            points[i1:i2]
+            for i1, i2 in zip(split_indices, split_indices[1:])
+            if (i2 - i1) >= nppc
+        ]
+
+    def get_subpaths(self) -> list[Sequence[np.ndarray]]:
+        return self.get_subpaths_from_points(self.get_points())
+    
+    def close_path(self):
+        if not self.is_closed():
+            self.add_line_to(self.get_subpaths()[-1][0])
+        return self
+
+    def is_closed(self) -> bool:
+        return self.consider_points_equals(
+            self.get_points()[0], self.get_points()[-1]
+        )
 
     def get_area_vector(self) -> np.ndarray:
         # Returns a vector whose length is the area bound by
@@ -144,33 +177,42 @@ class VItem(Item):
         self.unit_normal = normal
         return normal
     
-    def consider_points_equal(self, p0: np.ndarray, p1: np.ndarray) -> bool:
+    def consider_points_equals(self, p0: np.ndarray, p1: np.ndarray) -> bool:
         return get_norm(p1 - p0) < self.tolerance_for_point_equality
     
     def get_joint_info(self) -> np.ndarray:
         if self.points_count() < 3:
             return np.zeros((0, 3), np.float32)
         
-        points = self.get_points()
-        cnt = len(points)
-        handles = self.get_handles()
-
         ''' 对于第n段曲线：
         joint_info[0] = 前一个控制点
         joint_info[1] = [是否与前一个曲线转接, 是否与后一个曲线转接, 0.0]
         joint_info[2] = 后一个控制点
         '''
         joint_info = np.zeros(self.points.shape, np.float32)
-        joint_info[3::3] = handles[:-1]     # 设置前一个控制点
-        joint_info[2:-1:3] = handles[1:]    # 设置后一个控制点
-        joint_info[1::3] = [
-            [
-                False if idx == 0 else self.consider_points_equal(points[idx - 1], points[idx]),
-                False if idx == cnt - 3 else self.consider_points_equal(points[idx + 2], points[idx + 3]),
-                0
+
+        offset = 0
+        for subpath in self.get_subpaths():
+            end = offset + len(subpath)
+            handles = subpath[1::3]
+            
+            joint_info[offset:end:3] = np.roll(handles, 1, axis=0)
+            joint_info[offset + 1:end:3] = [
+                [
+                    self.consider_points_equals(p_prev, p0),
+                    self.consider_points_equals(p_next, p2),
+                    0
+                ]
+                for p_prev, p0, p2, p_next in zip(
+                    np.roll(subpath[2::3], 1, axis=0),
+                    subpath[::3],
+                    subpath[2::3],
+                    np.roll(subpath[::3], -1, axis=0)
+                )
             ]
-            for idx in range(0, cnt, 3)
-        ]
+            joint_info[offset + 2:end:3] = np.roll(handles, -1, axis=0)
+
+            offset = end
         
         return joint_info
     
