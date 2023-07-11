@@ -13,22 +13,10 @@ class DotCloudTest(Scene):
 
 class VItemTest(Scene):
     def construct(self) -> None:
-        m1 = Group()
-        for i in range(-65, -30, 5):
-            vect = RIGHT * np.cos(i * DEGREES) + UP * np.sin(i * DEGREES)
+        m1 = VItem()
+        m1.set_points_as_corners([ORIGIN, DOWN])
+        m1.add_points_as_corners([DR, RIGHT])
 
-            item = VItem()
-            item.set_points([
-                DOWN * 2, DOWN * 1, ORIGIN,
-                ORIGIN, vect, vect * 2,
-                RIGHT * 2, RIGHT * 3 + UP, UP * 2,
-                UP * 2, UP * 3, UP * 2 + RIGHT * 2
-            ]).set_stroke_width(0.2)
-
-            m1.add(item)
-            
-        m1[-1].scale(2, about_edge=LEFT)
-
-        self.add(m1.arrange())
+        self.add(m1)
 
 VItemTest().run()

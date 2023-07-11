@@ -9,7 +9,7 @@ from PySide6.QtGui import (
 
 from janim.constants import *
 from janim.items.item import Item, MethodGroup
-from janim.utils.math_functions import (
+from utils.space_ops import (
     get_unit_normal, get_norm, 
     get_proportional_scale_size
 )

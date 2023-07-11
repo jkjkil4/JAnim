@@ -7,7 +7,7 @@ import copy
 
 from janim.constants import *
 from janim.utils.functions import safe_call
-from janim.utils.math_functions import rotation_matrix
+from utils.space_ops import rotation_matrix
 from janim.utils.color import hex_to_rgb
 from janim.utils.iterables import resize_array
 from janim.utils.bezier import interpolate, integer_interpolate

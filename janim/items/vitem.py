@@ -6,7 +6,8 @@ from janim.constants import *
 from janim.items.item import Item
 from janim.utils.iterables import resize_with_interpolation, resize_array
 from janim.shaders.render import VItemRenderer
-from janim.utils.math_functions import get_norm, get_unit_normal
+from utils.space_ops import get_norm, get_unit_normal
+from utils.bezier import interpolate
 
 class VItem(Item):
     tolerance_for_point_equality = 1e-8
@@ -52,6 +53,20 @@ class VItem(Item):
         super().set_points(resize_array(np.array(points), len(points) // 3 * 3))
         return self
     
+    def set_anchors_and_handles(
+        self,
+        anchors1: np.ndarray,
+        handles: np.ndarray,
+        anchors2: np.ndarray
+    ):
+        assert(len(anchors1) == len(handles) == len(anchors2))
+        new_points = np.zeros((3 * len(anchors1), 3))
+        arrays = [anchors1, handles, anchors2]
+        for index, array in enumerate(arrays):
+            new_points[index::3] = array
+        self.set_points(new_points)
+        return self
+    
     def get_start_points(self):
         return self.get_points()[::3]
 
@@ -60,6 +75,32 @@ class VItem(Item):
     
     def get_end_points(self):
         return self.get_points()[2::3]
+    
+    def has_new_path_started(self) -> bool:
+        return self.points_count() % 3 == 1
+    
+    def add_line_to(self, point: np.ndarray):
+        end = self.get_points()[-1]
+        alphas = np.linspace(0, 1, 3)
+        points = [
+            interpolate(end, point, a)
+            for a in alphas
+        ]
+        self.append_points(points)
+        return self
+    
+    def add_points_as_corners(self, points: Iterable[np.ndarray]):
+        for point in points:
+            self.add_line_to(point)
+        return points
+
+    def set_points_as_corners(self, points: Iterable[np.ndarray]):
+        points = np.array(points)
+        self.set_anchors_and_handles(*[
+            interpolate(points[:-1], points[1:], a)
+            for a in np.linspace(0, 1, 3)
+        ])
+        return self
 
     def get_area_vector(self) -> np.ndarray:
         # Returns a vector whose length is the area bound by

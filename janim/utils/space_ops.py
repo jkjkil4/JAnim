@@ -15,6 +15,18 @@ def cross(v1: np.ndarray, v2: np.ndarray) -> list[np.ndarray]:
         v1[0] * v2[1] - v1[1] * v2[0]
     ]
 
+def cross2d(a: np.ndarray, b: np.ndarray) -> np.ndarray:
+    if len(a.shape) == 2:
+        return a[:, 0] * b[:, 1] - a[:, 1] * b[:, 0]
+    else:
+        return a[0] * b[1] - b[0] * a[1]
+    
+def angle_of_vector(vector: np.ndarray) -> float:
+    """
+    Returns polar coordinate theta when vector is project on xy plane
+    """
+    return np.arctan2(vector[1], vector[0])
+
 def get_norm(vect: Iterable) -> float:
     return np.sqrt(sum(x**2 for x in vect))
 
@@ -44,6 +56,46 @@ def get_unit_normal(
             return DOWN
         return new_cp / new_cp_norm
     return cp / cp_norm
+
+def rotate_vector(
+    vector: np.ndarray,
+    angle: float,
+    axis: np.ndarray = OUT
+) -> np.ndarray:
+    rot = Rotation.from_rotvec(angle * normalize(axis))
+    return np.dot(vector, rot.as_matrix().T)
+
+def find_intersection(
+    p0: np.ndarray,
+    v0: np.ndarray,
+    p1: np.ndarray,
+    v1: np.ndarray,
+    threshold: float = 1e-5,
+) -> np.ndarray:
+    """
+    Return the intersection of a line passing through p0 in direction v0
+    with one passing through p1 in direction v1.  (Or array of intersections
+    from arrays of such points/directions).
+
+    For 3d values, it returns the point on the ray p0 + v0 * t closest to the
+    ray p1 + v1 * t
+    """
+    d = len(p0.shape)
+    if d == 1:
+        is_3d = any(arr[2] for arr in (p0, v0, p1, v1))
+    else:
+        is_3d = any(z for arr in (p0, v0, p1, v1) for z in arr.T[2])
+    if not is_3d:
+        numer = np.array(cross2d(v1, p1 - p0))
+        denom = np.array(cross2d(v1, v0))
+    else:
+        cp1 = cross(v1, p1 - p0)
+        cp2 = cross(v1, v0)
+        numer = np.array((cp1 * cp1).sum(d - 1))
+        denom = np.array((cp1 * cp2).sum(d - 1))
+    denom[abs(denom) < threshold] = np.inf
+    ratio = numer / denom
+    return p0 + (ratio * v0.T).T
 
 #endregion
 

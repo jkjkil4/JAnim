@@ -13,7 +13,7 @@ from OpenGL.GL import *
 from janim.constants import *
 from janim.scene import Scene
 from janim.items.dot_cloud import DotCloud
-from janim.utils.math_functions import normalize
+from utils.space_ops import normalize
 
 
 class GLWidget(QOpenGLWidget):
