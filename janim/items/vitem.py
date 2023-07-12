@@ -6,8 +6,9 @@ from janim.constants import *
 from janim.items.item import Item
 from janim.utils.iterables import resize_with_interpolation, resize_array
 from janim.shaders.render import VItemRenderer
-from utils.space_ops import get_norm, get_unit_normal
-from utils.bezier import interpolate
+from janim.utils.space_ops import get_norm, get_unit_normal
+from janim.utils.bezier import interpolate
+from janim.utils.functions import safe_call
 
 class VItem(Item):
     tolerance_for_point_equality = 1e-8
@@ -16,33 +17,44 @@ class VItem(Item):
         self,
         stroke_width: Optional[float | Iterable[float]] = 0.05,
         joint_type: JointType = JointType.Auto,
-        fill_color: Optional[JAnimColor | Iterable[float]] = None,
+        fill_color: Optional[JAnimColor | Iterable[float]] = WHITE,
         fill_opacity = 0.0,
         **kwargs
     ) -> None:
         super().__init__(**kwargs)
         self.joint_type = joint_type
-        # self.fill_color = fill_color # TODO: 实现 fill_color 和 fill_opacity
-        # self.fill_opacity = fill_opacity
+
+        # 法向量
+        self.unit_normal = OUT
+        self.needs_new_unit_normal = True
 
         # 轮廓线粗细
         self.stroke_width = np.array([0.1], dtype=np.float32)   # stroke_width 在所有操作中都会保持 dtype=np.float32，以便传入 shader
         self.needs_new_stroke_width = True
 
-        # 法向量
-        self.unit_normal = OUT
-        self.needs_new_unit_normal = True
+        # 填充色数据
+        self.fill_rgbas = np.array([1, 1, 1, 1], dtype=np.float32).reshape((1, 4))  # fill_rgbas 在所有操作中都会保持 dtype=np.float32，以便传入 shader
+        self.needs_new_fill_rgbas = True
 
         # TODO: triangulation
         # TODO: 精细化边界框
         
         # 默认值
         self.set_stroke_width(stroke_width)
+        self.set_fill_color(fill_color, fill_opacity)
+
+    #region 响应
 
     def points_changed(self) -> None:
         super().points_changed()
-        self.needs_new_stroke_width = True
         self.needs_new_unit_normal = True
+        self.needs_new_stroke_width = True
+        self.needs_new_fill_rgbas = True
+    
+    def fill_rgbas_changed(self) -> None:
+        self.renderer.needs_update = True
+
+    #endregion
     
     def create_renderer(self) -> VItemRenderer:
         return VItemRenderer()
@@ -217,21 +229,6 @@ class VItem(Item):
         return joint_info
     
     #endregion
-    
-    #region 变换
-
-    def scale(
-        self, 
-        scale_factor: float | Iterable, 
-        scale_stroke_width: bool = True, 
-        **kwargs
-    ):
-        if scale_stroke_width and not isinstance(scale_factor, Iterable):
-            self.set_stroke_width(self.get_stroke_width() * scale_factor)
-        super().scale(scale_factor, **kwargs)
-        return self
-
-    #endregion
 
     #region 轮廓线数据
 
@@ -253,4 +250,66 @@ class VItem(Item):
     
     #endregion
 
+    #region 填充色数据
+
+    def set_fill_rgbas(self, rgbas: Iterable[Iterable[float, float, float, float]]):
+        rgbas = resize_array(np.array(rgbas), max(1, self.points_count()))
+        if len(rgbas) == len(self.fill_rgbas):
+            self.fill_rgbas[:] = rgbas
+        else:
+            self.fill_rgbas = rgbas.astype(np.float32)
+        self.fill_rgbas_changed()
+        return self
+    
+    def set_fill_color(
+        self, 
+        color: JAnimColor | Iterable[JAnimColor], 
+        opacity: float | Iterable[float] = 1,
+        recurse: bool = True,
+    ):
+        color, opacity = self.format_color(color), self.format_opacity(opacity)
+
+        if recurse:
+            for item in self:
+                safe_call(item, 'set_fill_color', None, color, opacity)
+
+        color = resize_array(np.array(color), max(1, self.points_count()))
+        opacity = resize_array(np.array(opacity), max(1, self.points_count()))
+        self.set_fill_rgbas(
+            np.hstack((
+                color, 
+                opacity.reshape((len(opacity), 1))
+            ))
+        )
+
+        return self
+    
+    def set_fill_opacity(self, opacity: float | Iterable[float]):
+        opacity = resize_array(np.array(self.format_opacity(opacity)), len(self.fill_rgbas))
+        self.fill_rgbas[:, 3] = opacity
+        self.fill_rgbas_changed()
+        return self
+
+    def get_fill_rgbas(self) -> np.ndarray:
+        if self.needs_new_fill_rgbas:
+            self.set_fill_rgbas(self.fill_rgbas)
+            self.needs_new_fill_rgbas = False
+        return self.fill_rgbas
+
+    #endregion
+
+    #region 变换
+
+    def scale(
+        self, 
+        scale_factor: float | Iterable, 
+        scale_stroke_width: bool = True, 
+        **kwargs
+    ):
+        if scale_stroke_width and not isinstance(scale_factor, Iterable):
+            self.set_stroke_width(self.get_stroke_width() * scale_factor)
+        super().scale(scale_factor, **kwargs)
+        return self
+
+    #endregion
 

@@ -138,8 +138,8 @@ class Ellipse(Circle):
 class AnnularSector(VItem):
     def __init__(
         self,
-        inner_radius: float = 1,
-        outer_radius: float = 2,
+        inner_radius: float = 0.5,
+        outer_radius: float = 1,
         angle: float = TAU / 4,
         start_angle: float = 0,
         arc_center: np.ndarray = ORIGIN,
@@ -193,8 +193,8 @@ class Sector(Arc):
 class Annulus(VItem):
     def __init__(
         self,
-        outer_radius: float = 2,
-        inner_radius: float = 1,
+        outer_radius: float = 1,
+        inner_radius: float = 0.5,
         arc_center: np.ndarray = ORIGIN,
         n_components: int = 8,
         # TODO: fill_opacity: float = 1.0,

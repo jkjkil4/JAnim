@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Iterable, Callable, Optional
+from typing import Iterable, Callable, Optional, Tuple
 import itertools as it
 import numpy as np
 import sys
@@ -250,6 +250,27 @@ class Item:
 
     #region 颜色数据
 
+    @staticmethod
+    def format_color(color: JAnimColor | Iterable[JAnimColor]) -> Iterable:
+        if isinstance(color, str):
+            color = [hex_to_rgb(color)]
+        elif isinstance(color, Iterable) and not any(isinstance(v, Iterable) for v in color):
+            color = [color]
+        else:
+            color = [
+                hex_to_rgb(c) 
+                if isinstance(c, str) else c 
+                for c in color
+            ]
+
+        return color
+    
+    @staticmethod
+    def format_opacity(opacity: float | Iterable[float]) -> Iterable:
+        if not isinstance(opacity, Iterable):
+            opacity = [opacity]
+        return opacity
+
     def set_rgbas(self, rgbas: Iterable[Iterable[float, float, float, float]]):
         rgbas = resize_array(np.array(rgbas), max(1, self.points_count()))
         if len(rgbas) == len(self.rgbas):
@@ -263,21 +284,9 @@ class Item:
         self, 
         color: JAnimColor | Iterable[JAnimColor], 
         opacity: float | Iterable[float] = 1,
-        recurse: bool = True
+        recurse: bool = True,
     ):
-        if isinstance(color, str):
-            color = [hex_to_rgb(color)]
-        elif isinstance(color, Iterable) and not any(isinstance(v, Iterable) for v in color):
-            color = [color]
-        else:
-            color = [
-                hex_to_rgb(c) 
-                if isinstance(c, str) else c 
-                for c in color
-            ]
-        
-        if not isinstance(opacity, Iterable):
-            opacity = [opacity]
+        color, opacity = self.format_color(color), self.format_opacity(opacity)
 
         if recurse:
             for item in self:
@@ -293,20 +302,18 @@ class Item:
         )
 
         return self
+    
+    def set_opacity(self, opacity: float | Iterable[float]):
+        opacity = resize_array(np.array(self.format_opacity(opacity)), len(self.rgbas))
+        self.rgbas[:, 3] = opacity
+        self.rgbas_changed()
+        return self
 
     def get_rgbas(self) -> np.ndarray:
         if self.needs_new_rgbas:
             self.set_rgbas(self.rgbas)
             self.needs_new_rgbas = False
         return self.rgbas
-
-    def set_opacity(self, opacity: float | Iterable[float]):
-        if not isinstance(opacity, Iterable):
-            opacity = [opacity]
-        opacity = resize_array(np.array(opacity), len(self.rgbas))
-        self.rgbas[:, 3] = opacity
-        self.rgbas_changed()
-        return self
 
     #endregion
 
