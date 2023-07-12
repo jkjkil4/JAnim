@@ -36,8 +36,8 @@ class Item:
         self.needs_new_rgbas = True
 
         # 边界箱
-        # self.needs_new_bbox = True
-        # self.bbox = np.zeros((3, 3))
+        self.bbox = np.zeros((3, 3))
+        self.needs_new_bbox = True
 
         # 渲染
         self.renderer = self.create_renderer()

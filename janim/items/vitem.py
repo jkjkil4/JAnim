@@ -41,7 +41,7 @@ class VItem(Item):
         
         # 默认值
         self.set_stroke_width(stroke_width)
-        self.set_fill_color(fill_color, fill_opacity)
+        self.set_fill(fill_color, fill_opacity)
 
     #region 响应
 
@@ -261,7 +261,7 @@ class VItem(Item):
         self.fill_rgbas_changed()
         return self
     
-    def set_fill_color(
+    def set_fill(
         self, 
         color: JAnimColor | Iterable[JAnimColor], 
         opacity: float | Iterable[float] = 1,
