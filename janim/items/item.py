@@ -91,6 +91,9 @@ class Item:
             self.family = [self, *it.chain(*sub_families)]
         return self.family
     
+    def family_members_with_points(self) -> list[Item]:
+        return [m for m in self.get_family() if m.has_points()]
+
     #endregion
 
     #region 基本操作

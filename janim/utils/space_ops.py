@@ -1,10 +1,20 @@
 from __future__ import annotations
-from typing import Iterable, Optional
+from typing import Iterable, Optional, Sequence
 
 import numpy as np
 from scipy.spatial.transform import Rotation
 
 from janim.constants import *
+
+def center_of_mass(points: Iterable[Iterable]) -> np.ndarray:
+    points = [np.array(point).astype("float") for point in points]
+    return sum(points) / len(points)
+
+def midpoint(
+    point1: Sequence[float],
+    point2: Sequence[float]
+) -> np.ndarray:
+    return center_of_mass([point1, point2])
 
 #region vector
 

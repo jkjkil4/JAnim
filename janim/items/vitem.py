@@ -5,10 +5,16 @@ import numpy as np
 from janim.constants import *
 from janim.items.item import Item
 from janim.utils.iterables import resize_with_interpolation, resize_array
-from janim.shaders.render import VItemRenderer
 from janim.utils.space_ops import get_norm, get_unit_normal
-from janim.utils.bezier import interpolate
+from janim.utils.bezier import (
+    interpolate, 
+    get_smooth_quadratic_bezier_handle_points,
+    get_smooth_cubic_bezier_handle_points,
+    get_quadratic_approximation_of_cubic
+)
 from janim.utils.functions import safe_call
+
+from janim.shaders.render import VItemRenderer
 
 class VItem(Item):
     tolerance_for_point_equality = 1e-8
@@ -309,6 +315,51 @@ class VItem(Item):
         if scale_stroke_width and not isinstance(scale_factor, Iterable):
             self.set_stroke_width(self.get_stroke_width() * scale_factor)
         super().scale(scale_factor, **kwargs)
+        return self
+    
+    def change_anchor_mode(self, mode: str):
+        assert(mode in ("jagged", "approx_smooth", "true_smooth"))
+        nppc = 3
+        for subitem in self.family_members_with_points():
+            if isinstance(subitem, VItem):
+                subpaths = subitem.get_subpaths()
+                subitem.clear_points()
+                for subpath in subpaths:
+                    anchors = np.vstack([subpath[::nppc], subpath[-1:]])
+                    new_subpath = np.array(subpath)
+                    if mode == "approx_smooth":
+                        new_subpath[1::nppc] = get_smooth_quadratic_bezier_handle_points(anchors)
+                    elif mode == "true_smooth":
+                        h1, h2 = get_smooth_cubic_bezier_handle_points(anchors)
+                        new_subpath = get_quadratic_approximation_of_cubic(anchors[:-1], h1, h2, anchors[1:])
+                    elif mode == "jagged":
+                        new_subpath[1::nppc] = 0.5 * (anchors[:-1] + anchors[1:])
+                    subitem.append_points(new_subpath)
+        return self
+
+    def make_smooth(self):
+        """
+        This will double the number of points in the mobject,
+        so should not be called repeatedly.  It also means
+        transforming between states before and after calling
+        this might have strange artifacts
+        """
+        self.change_anchor_mode("true_smooth")
+        return self
+
+    def make_approximately_smooth(self):
+        """
+        Unlike make_smooth, this will not change the number of
+        points, but it also does not result in a perfectly smooth
+        curve.  It's most useful when the points have been
+        sampled at a not-too-low rate from a continuous function,
+        as in the case of ParametricCurve
+        """
+        self.change_anchor_mode("approx_smooth")
+        return self
+
+    def make_jagged(self):
+        self.change_anchor_mode("jagged")
         return self
 
     #endregion
