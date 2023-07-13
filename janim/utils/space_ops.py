@@ -123,9 +123,14 @@ def rotation_about_z(angle: float) -> list[list[float]]:
 def rotation_between_vectors(v1, v2) -> np.ndarray:
     if np.all(np.isclose(v1, v2)):
         return np.identity(3)
+    crs = np.cross(v1, v2)
     return rotation_matrix(
         angle=angle_between_vectors(v1, v2),
-        axis=np.cross(v1, v2)
+        axis=(
+            (RIGHT if v1[0] == 0 and v1[1] == 0 else [-v1[1], v1[0], 0])
+            if np.all(crs == 0)
+            else crs
+        )
     )
 
 

@@ -26,6 +26,7 @@ class VItem(Item):
     def __init__(
         self,
         stroke_width: Optional[float | Iterable[float]] = 0.05,
+        stroke_behind_fill: bool = False,
         joint_type: JointType = JointType.Auto,
         fill_color: Optional[JAnimColor | Iterable[float]] = WHITE,
         fill_opacity = 0.0,
@@ -38,8 +39,9 @@ class VItem(Item):
         self.unit_normal = OUT
         self.needs_new_unit_normal = True
 
-        # 轮廓线粗细
+        # 轮廓线数据
         self.stroke_width = np.array([0.1], dtype=np.float32)   # stroke_width 在所有操作中都会保持 dtype=np.float32，以便传入 shader
+        self.stroke_behind_fill = stroke_behind_fill
         self.needs_new_stroke_width = True
 
         # 填充色数据
@@ -262,6 +264,10 @@ class VItem(Item):
             self.needs_new_stroke_width = False
         return self.stroke_width
     
+    def set_stroke_behind_fill(self, flag: bool = True):
+        self.stroke_behind_fill = flag
+        return self
+    
     #endregion
 
     #region 填充色数据
@@ -321,15 +327,10 @@ class VItem(Item):
         if normal_vector is None:
             normal_vector = self.get_unit_normal()
 
-        if not self.needs_new_triangulation:
-            return self.triangulation
-
         points = self.get_points()
 
         if len(points) <= 1:
-            self.triangulation = np.zeros(0, dtype='i4')
-            self.needs_new_triangulation = False
-            return self.triangulation
+            return np.zeros(0, dtype='uint')
 
         if not np.isclose(normal_vector, OUT).all():
             # Rotate points such that unit normal vector is OUT
@@ -368,7 +369,6 @@ class VItem(Item):
         ]
 
         tri_indices = np.hstack([indices, inner_tri_indices])
-        self.needs_new_triangulation = False
         return tri_indices.astype('uint')
     
     def get_triangulation(self) -> np.ndarray:
