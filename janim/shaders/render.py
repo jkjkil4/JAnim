@@ -272,7 +272,7 @@ class VItemRenderer(Renderer):
         self.update_stroke(item)
         self.update_fill(item)
 
-    def render_stroke(self, item, data: RenderData) -> None:
+    def render_stroke(self, item, data: RenderData, z_offset: float) -> None:
         self.shader_stroke.bind()
         self.shader_stroke.setFloat('anti_alias_width', data.anti_alias_width)
         self.shader_stroke.setMat4('view_matrix', data.view_matrix)
@@ -280,6 +280,7 @@ class VItemRenderer(Renderer):
         self.shader_stroke.setMat4('wnd_matrix', data.wnd_matrix)
         self.shader_stroke.setVec3('vitem_unit_normal', *item.get_unit_normal())
         self.shader_stroke.setInt('joint_type', item.joint_type.value)
+        self.shader_stroke.setFloat('z_offset', z_offset)
 
         glBindVertexArray(self.vao_stroke)
         glDrawArrays(GL_TRIANGLES, 0, item.points_count())
@@ -304,8 +305,8 @@ class VItemRenderer(Renderer):
             return
 
         if item.stroke_behind_fill:
-            self.render_stroke(item, data)
+            self.render_stroke(item, data, -1e-4)
             self.render_fill(item, data)
         else:
             self.render_fill(item, data)
-            self.render_stroke(item, data)
+            self.render_stroke(item, data, 1e-4)

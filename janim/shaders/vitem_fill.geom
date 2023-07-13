@@ -132,6 +132,9 @@ mat4 get_xyz_to_uv(
 
 void main()
 {
+    if (v_color[0][3] == 0.0 && v_color[1][3] == 0.0 && v_color[2][3] == 0.0)
+        return;
+
     is_corner = float(v_idx[0] + 1 == v_idx[1] && v_idx[0] + 2 == v_idx[2]);
     mat4 matrix = wnd_matrix * proj_matrix * view_matrix;
     if (bool(is_corner)) {
@@ -152,9 +155,13 @@ void main()
 
         for (int i = 0; i < 3; i++) {
             vec4 v4_vert = vec4(verts[i], 1.0);
+
             gl_Position = matrix * v4_vert;
+            gl_Position.z *= 0.1;
+
             uv_coords = (xyz_to_uv * v4_vert).xy;
             color = v_color[i];
+
             EmitVertex();
         }
         EndPrimitive();
@@ -162,7 +169,10 @@ void main()
     } else {
         for (int i = 0; i < 3; i++) {
             gl_Position = matrix * vec4(verts[i], 1.0);
+            gl_Position.z *= 0.1;
+
             color = v_color[i];
+
             EmitVertex();
         }
         EndPrimitive();

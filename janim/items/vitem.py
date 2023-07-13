@@ -246,11 +246,48 @@ class VItem(Item):
     
     #endregion
 
+    #region 颜色数据
+
+    def set_color(
+        self,
+        color: Optional[JAnimColor | Iterable[JAnimColor]] = None,
+        opacity: Optional[float | Iterable[float]] = None,
+        recurse: bool = True,
+    ):
+        self.set_stroke(color, opacity, recurse=recurse)
+        self.set_fill(color, opacity, recurse=recurse)
+        return self
+
     #region 轮廓线数据
 
-    def set_stroke_width(self, stroke_width: float | Iterable[float]):
+    def set_stroke(
+        self, 
+        color: Optional[JAnimColor | Iterable[JAnimColor]] = None, 
+        opacity: Optional[float | Iterable[float]] = None,
+        width: Optional[float | Iterable[float]] = None,
+        background: Optional[bool] = None,
+        recurse: bool = True,
+    ):
+        if color is not None or opacity is not None:
+            self.set_points_color(color, opacity, recurse)
+        if width is not None:
+            self.set_stroke_width(width, recurse)
+        if background is not None:
+            self.set_stroke_behind_fill(background)
+        return self
+
+    def set_stroke_width(
+        self, 
+        stroke_width: float | Iterable[float], 
+        recurse: bool = True
+    ):
         if not isinstance(stroke_width, Iterable):
             stroke_width = [stroke_width]
+
+        if recurse:
+            for item in self.get_family()[1:]:
+                safe_call(item, 'set_stroke_width', None, stroke_width, False)
+
         stroke_width = resize_with_interpolation(np.array(stroke_width), max(1, self.points_count()))
         if len(stroke_width) == len(self.stroke_width):
             self.stroke_width[:] = stroke_width
@@ -283,15 +320,20 @@ class VItem(Item):
     
     def set_fill(
         self, 
-        color: JAnimColor | Iterable[JAnimColor], 
-        opacity: float | Iterable[float] = 1,
+        color: Optional[JAnimColor | Iterable[JAnimColor]] = None, 
+        opacity: Optional[float | Iterable[float]] = None,
         recurse: bool = True,
     ):
         color, opacity = self.format_color(color), self.format_opacity(opacity)
 
         if recurse:
-            for item in self:
-                safe_call(item, 'set_fill_color', None, color, opacity)
+            for item in self.get_family()[1:]:
+                safe_call(item, 'set_fill_color', None, color, opacity, False)
+        
+        if color is None:
+            color = self.get_fill_rgbas()[:, :3]
+        if opacity is None:
+            opacity = self.get_fill_rgbas()[:, 3]
 
         color = resize_array(np.array(color), max(1, self.points_count()))
         opacity = resize_array(np.array(opacity), max(1, self.points_count()))
@@ -303,18 +345,14 @@ class VItem(Item):
         )
 
         return self
-    
-    def set_fill_opacity(self, opacity: float | Iterable[float]):
-        opacity = resize_array(np.array(self.format_opacity(opacity)), len(self.fill_rgbas))
-        self.fill_rgbas[:, 3] = opacity
-        self.fill_rgbas_changed()
-        return self
 
     def get_fill_rgbas(self) -> np.ndarray:
         if self.needs_new_fill_rgbas:
             self.set_fill_rgbas(self.fill_rgbas)
             self.needs_new_fill_rgbas = False
         return self.fill_rgbas
+
+    #endregion
 
     #endregion
 

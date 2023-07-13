@@ -43,7 +43,7 @@ class Item:
         self.renderer = self.create_renderer()
 
         # 默认值
-        self.set_color(color, opacity)
+        self.set_points_color(color, opacity)
 
     #region 响应
 
@@ -254,7 +254,9 @@ class Item:
     #region 颜色数据
 
     @staticmethod
-    def format_color(color: JAnimColor | Iterable[JAnimColor]) -> Iterable:
+    def format_color(color: JAnimColor | Iterable[JAnimColor] | None) -> Iterable | None:
+        if color is None:
+            return None
         if isinstance(color, str):
             color = [hex_to_rgb(color)]
         elif isinstance(color, Iterable) and not any(isinstance(v, Iterable) for v in color):
@@ -269,7 +271,9 @@ class Item:
         return color
     
     @staticmethod
-    def format_opacity(opacity: float | Iterable[float]) -> Iterable:
+    def format_opacity(opacity: float | Iterable[float] | None) -> Iterable | None:
+        if opacity is None:
+            return None
         if not isinstance(opacity, Iterable):
             opacity = [opacity]
         return opacity
@@ -283,17 +287,22 @@ class Item:
         self.rgbas_changed()
         return self
     
-    def set_color(
+    def set_points_color(
         self, 
-        color: JAnimColor | Iterable[JAnimColor], 
-        opacity: float | Iterable[float] = 1,
+        color: Optional[JAnimColor | Iterable[JAnimColor]] = None, 
+        opacity: Optional[float | Iterable[float]] = None,
         recurse: bool = True,
     ):
         color, opacity = self.format_color(color), self.format_opacity(opacity)
 
         if recurse:
             for item in self:
-                item.set_color(color, opacity)
+                item.set_points_color(color, opacity)
+
+        if color is None:
+            color = self.get_rgbas()[:, :3]
+        if opacity is None:
+            opacity = self.get_rgbas()[:, 3]
 
         color = resize_array(np.array(color), max(1, self.points_count()))
         opacity = resize_array(np.array(opacity), max(1, self.points_count()))
@@ -304,12 +313,6 @@ class Item:
             ))
         )
 
-        return self
-    
-    def set_opacity(self, opacity: float | Iterable[float]):
-        opacity = resize_array(np.array(self.format_opacity(opacity)), len(self.rgbas))
-        self.rgbas[:, 3] = opacity
-        self.rgbas_changed()
         return self
 
     def get_rgbas(self) -> np.ndarray:

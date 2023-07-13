@@ -97,7 +97,7 @@ class ArcBetweenPoints(Arc):
 
 class Circle(Arc):
     def __init__(self, **kwargs):
-        Arc.__init__(self, 0, TAU, **kwargs)
+        super().__init__(0, TAU, **kwargs)
 
     def surround(
         self,
@@ -197,11 +197,10 @@ class Annulus(VItem):
         inner_radius: float = 0.5,
         arc_center: np.ndarray = ORIGIN,
         n_components: int = 8,
-        # TODO: fill_opacity: float = 1.0,
-        # TODO: stroke_width: float = 0,
+        fill_opacity: float = 0.5,
         **kwargs
     ):
-        super().__init__(**kwargs)
+        super().__init__(fill_opacity=fill_opacity, **kwargs)
 
         unit = Arc.create_quadratic_bezier_points(
             TAU, 0,

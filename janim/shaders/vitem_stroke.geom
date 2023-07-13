@@ -19,8 +19,9 @@ uniform mat4 proj_matrix;
 uniform mat4 wnd_matrix;
 
 uniform vec3 vitem_unit_normal;
-
 uniform int joint_type;
+
+uniform float z_offset; // 用于保证 stroke 和 fill 的前后遮挡关系
 
 const int AUTO_JOINT = 0;
 const int BEVEL_JOINT = 1;
@@ -268,6 +269,8 @@ void main()
         float proj_scale_factor = proj_corner_test.x / proj_corner_test.w - proj_corner.x / proj_corner.w;
 
         gl_Position = wnd_matrix * proj_corner;
+        // Flip and scale to prevent premature clipping
+        gl_Position.z = gl_Position.z * 0.1 + z_offset;
 
         float stroke_width = v_stroke_width[i / 2];
         float scaled_aaw = anti_alias_width / proj_scale_factor;
