@@ -9,10 +9,9 @@ from PySide6.QtGui import (
 
 from janim.constants import *
 from janim.items.item import Item, MethodGroup
-from janim.utils.space_ops import (
-    get_unit_normal, get_norm, 
-    get_proportional_scale_size
-)
+from janim.utils.space_ops import get_unit_normal, get_norm
+from janim.utils.functions import get_proportional_scale_size
+
 from janim.shaders.render import RenderData
 
 class Scene:

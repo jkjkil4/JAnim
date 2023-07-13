@@ -187,22 +187,22 @@ class DotCloudRenderer(Renderer):
 class VItemRenderer(Renderer):
     def init(self) -> None:
         self.shader_stroke = ShaderProgram.get('shaders/vitem_stroke')
+        self.shader_fill = ShaderProgram.get('shaders/vitem_fill')
 
-        self.vao_stroke = glGenVertexArrays(1)
-        self.vbo_stroke_points = glGenBuffers(1)
-        self.vbo_stroke_rgbas = glGenBuffers(1)
-        self.vbo_stroke_width = glGenBuffers(1)
-        self.vbo_joint_info = glGenBuffers(1)
-
-    def update(self, item) -> None:
-        if item.points_count() < 3:
-            return
+        self.vao_stroke,    \
+        self.vao_fill = glGenVertexArrays(2)
         
+        self.vbo_points = glGenBuffers(1)
+
+        self.vbo_stroke_rgbas,  \
+        self.vbo_stroke_width,  \
+        self.vbo_joint_info = glGenBuffers(3)
+        
+        self.vbo_fill_rgbas = glGenBuffers(1)
+
+    def update_stroke(self, item) -> None:        
         self.shader_stroke.bind()
         glBindVertexArray(self.vao_stroke)
-
-        points = item.get_points()
-        points_data_size = points.size * FLOAT_SIZE
 
         rgbas = item.get_rgbas()
         rgbas_data_size = rgbas.size * FLOAT_SIZE
@@ -213,8 +213,8 @@ class VItemRenderer(Renderer):
         joint_info = item.get_joint_info()
         joint_info_data_size = joint_info.size * FLOAT_SIZE
 
-        glBindBuffer(GL_ARRAY_BUFFER, self.vbo_stroke_points)
-        glBufferData(GL_ARRAY_BUFFER, points_data_size, points, GL_STATIC_DRAW)
+        glBindBuffer(GL_ARRAY_BUFFER, self.vbo_points)
+        # glBufferData(GL_ARRAY_BUFFER, points_data_size, points, GL_STATIC_DRAW)
         glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * FLOAT_SIZE, ctypes.c_void_p(0))
         glEnableVertexAttribArray(0)
 
@@ -237,12 +237,46 @@ class VItemRenderer(Renderer):
 
         glBindVertexArray(0)
 
+    def update_fill(self, item) -> None:
+        self.shader_fill.bind()
+        glBindVertexArray(self.vao_fill)
+
+        rgbas = item.get_fill_rgbas()
+        rgbas_data_size = rgbas.size * FLOAT_SIZE
+
+        glBindBuffer(GL_ARRAY_BUFFER, self.vbo_points)
+        # glBufferData(GL_ARRAY_BUFFER, points_data_size, points, GL_STATIC_DRAW)
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * FLOAT_SIZE, ctypes.c_void_p(0))
+        glEnableVertexAttribArray(0)
+
+        glBindBuffer(GL_ARRAY_BUFFER, self.vbo_fill_rgbas)
+        glBufferData(GL_ARRAY_BUFFER, rgbas_data_size, rgbas, GL_STATIC_DRAW)
+        glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 4 * FLOAT_SIZE, ctypes.c_void_p(0))
+        glEnableVertexAttribArray(1)
+
+        glBindBuffer(GL_ARRAY_BUFFER, 0)
+
+        glBindVertexArray(0)
+
+    def update(self, item) -> None:
+        if item.points_count() < 3:
+            return
+        
+        points = item.get_points()
+        points_data_size = points.size * FLOAT_SIZE
+
+        glBindBuffer(GL_ARRAY_BUFFER, self.vbo_points)
+        glBufferData(GL_ARRAY_BUFFER, points_data_size, points, GL_STATIC_DRAW)
+        glBindBuffer(GL_ARRAY_BUFFER, 0)
+
+        self.update_stroke(item)
+        self.update_fill(item)
+
     def render(self, item, data: RenderData) -> None:
         if item.points_count() < 3:
             return
 
         self.shader_stroke.bind()
-
         self.shader_stroke.setFloat('anti_alias_width', data.anti_alias_width)
         self.shader_stroke.setMat4('view_matrix', data.view_matrix)
         self.shader_stroke.setMat4('proj_matrix', data.proj_matrix)
@@ -252,4 +286,16 @@ class VItemRenderer(Renderer):
 
         glBindVertexArray(self.vao_stroke)
         glDrawArrays(GL_TRIANGLES, 0, item.points_count())
+
+        triangulation = item.get_triangulation()
+
+        self.shader_fill.bind()
+        self.shader_fill.setFloat('anti_alias_width', data.anti_alias_width)
+        self.shader_fill.setMat4('view_matrix', data.view_matrix)
+        self.shader_fill.setMat4('proj_matrix', data.proj_matrix)
+        self.shader_fill.setMat4('wnd_matrix', data.wnd_matrix)
+
+        glBindVertexArray(self.vao_fill)
+        glDrawElements(GL_TRIANGLES, len(triangulation), GL_UNSIGNED_INT, triangulation)
+
         glBindVertexArray(0)

@@ -9,6 +9,6 @@ out int v_idx;
 void main()
 {
     verts = point;
-    color = color;
-    idx = gl_VertexID;
+    v_color = color;
+    v_idx = gl_VertexID;
 }

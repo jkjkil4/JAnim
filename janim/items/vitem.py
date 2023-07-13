@@ -5,7 +5,11 @@ import numpy as np
 from janim.constants import *
 from janim.items.item import Item
 from janim.utils.iterables import resize_with_interpolation, resize_array
-from janim.utils.space_ops import get_norm, get_unit_normal
+from janim.utils.space_ops import (
+    get_norm, get_unit_normal,
+    z_to_vector, cross2d,
+    earclip_triangulation
+)
 from janim.utils.bezier import (
     interpolate, 
     get_smooth_quadratic_bezier_handle_points,
@@ -42,7 +46,10 @@ class VItem(Item):
         self.fill_rgbas = np.array([1, 1, 1, 1], dtype=np.float32).reshape((1, 4))  # fill_rgbas 在所有操作中都会保持 dtype=np.float32，以便传入 shader
         self.needs_new_fill_rgbas = True
 
-        # TODO: triangulation
+        # triangulation
+        self.needs_new_triangulation = True
+
+        
         # TODO: 精细化边界框
         
         # 默认值
@@ -56,6 +63,7 @@ class VItem(Item):
         self.needs_new_unit_normal = True
         self.needs_new_stroke_width = True
         self.needs_new_fill_rgbas = True
+        self.needs_new_triangulation = True
     
     def fill_rgbas_changed(self) -> None:
         self.renderer.needs_update = True
@@ -301,6 +309,73 @@ class VItem(Item):
             self.set_fill_rgbas(self.fill_rgbas)
             self.needs_new_fill_rgbas = False
         return self.fill_rgbas
+
+    #endregion
+
+    #region 三角剖分
+
+    def compute_triangulation(self, normal_vector: np.ndarray | None = None) -> np.ndarray:
+        # Figure out how to triangulate the interior to know
+        # how to send the points as to the vertex shader.
+        # First triangles come directly from the points
+        if normal_vector is None:
+            normal_vector = self.get_unit_normal()
+
+        if not self.needs_new_triangulation:
+            return self.triangulation
+
+        points = self.get_points()
+
+        if len(points) <= 1:
+            self.triangulation = np.zeros(0, dtype='i4')
+            self.needs_new_triangulation = False
+            return self.triangulation
+
+        if not np.isclose(normal_vector, OUT).all():
+            # Rotate points such that unit normal vector is OUT
+            points = np.dot(points, z_to_vector(normal_vector))
+        indices = np.arange(len(points), dtype=int)
+
+        b0s = points[0::3]
+        b1s = points[1::3]
+        b2s = points[2::3]
+        v01s = b1s - b0s
+        v12s = b2s - b1s
+
+        crosses = cross2d(v01s, v12s)
+        convexities = np.sign(crosses)
+
+        atol = self.tolerance_for_point_equality
+        end_of_loop = np.zeros(len(b0s), dtype=bool)
+        end_of_loop[:-1] = (np.abs(b2s[:-1] - b0s[1:]) > atol).any(1)
+        end_of_loop[-1] = True
+
+        concave_parts = convexities < 0
+
+        # These are the vertices to which we'll apply a polygon triangulation
+        inner_vert_indices = np.hstack([
+            indices[0::3],
+            indices[1::3][concave_parts],
+            indices[2::3][end_of_loop],
+        ])
+        inner_vert_indices.sort()
+        rings = np.arange(1, len(inner_vert_indices) + 1)[inner_vert_indices % 3 == 2]
+
+        # Triangulate
+        inner_verts = points[inner_vert_indices]
+        inner_tri_indices = inner_vert_indices[
+            earclip_triangulation(inner_verts, rings)
+        ]
+
+        tri_indices = np.hstack([indices, inner_tri_indices])
+        self.needs_new_triangulation = False
+        return tri_indices.astype('uint')
+    
+    def get_triangulation(self) -> np.ndarray:
+        if self.needs_new_triangulation:
+            self.triangulation = self.compute_triangulation()
+            self.needs_new_triangulation = False
+        return self.triangulation
 
     #endregion
 
