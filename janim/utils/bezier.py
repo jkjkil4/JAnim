@@ -81,7 +81,7 @@ def partial_quadratic_bezier_points(
 
 
 def interpolate(start: T, end: T, alpha: np.ndarray | float) -> T:
-    # TODO: try-except
+    # TODO: [L] try-except
     return (1 - alpha) * start + alpha * end
 
 
@@ -347,7 +347,7 @@ def get_quadratic_approximation_of_cubic(
 def get_smooth_quadratic_bezier_path_through(
     points: list[np.ndarray]
 ) -> np.ndarray:
-    # TODO
+    # ?TODO
     h0, h1 = get_smooth_cubic_bezier_handle_points(points)
     a0 = points[:-1]
     a1 = points[1:]

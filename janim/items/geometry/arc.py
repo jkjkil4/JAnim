@@ -97,7 +97,7 @@ class Circle(Arc):
         buff: float = MED_SMALL_BUFF
     ):
         # Ignores dim_to_match and stretch; result will always be a circle
-        # TODO: Perhaps create an ellipse class to handle singele-dimension stretching
+        # TODO: [L] Perhaps create an ellipse class to handle singele-dimension stretching
 
         self.replace(item, dim_to_match, stretch)
         self.stretch((self.get_width() + 2 * buff) / self.get_width(), 0)

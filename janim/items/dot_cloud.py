@@ -17,7 +17,7 @@ class DotCloud(Item):
         radius: float = 0.05,
         **kwargs
     ):
-        super().__init__(color=GREY_C, **kwargs)
+        super().__init__(color=color, **kwargs)
         self.radius = radius
 
         # 半径数据

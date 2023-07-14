@@ -51,8 +51,7 @@ class VItem(Item):
         # triangulation
         self.needs_new_triangulation = True
 
-        
-        # TODO: 精细化边界框
+        # TODO: [P] 精细化边界框
         
         # 默认值
         self.set_stroke_width(stroke_width)

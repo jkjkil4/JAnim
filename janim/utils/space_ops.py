@@ -363,7 +363,7 @@ def norm_squared(v: Sequence[float]) -> float:
     return v[0] * v[0] + v[1] * v[1] + v[2] * v[2]
 
 
-# TODO, fails for polygons drawn over themselves
+# TODO: [L] fails for polygons drawn over themselves
 def earclip_triangulation(verts: np.ndarray, ring_ends: list[int]) -> list:
     """
     Returns a list of indices giving a triangulation

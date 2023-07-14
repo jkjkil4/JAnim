@@ -36,10 +36,14 @@ class GLWidget(QOpenGLWidget):
         # 定时器，用于定时调用绘制
         self.timer = QTimer(self)
         self.timer.setTimerType(Qt.TimerType.PreciseTimer)  # 使定时更准确
-        self.timer.timeout.connect(self.update)             # 达到定时后调用 `update`
+        self.timer.timeout.connect(self.onTimerTimeout)
         self.timer.start(1000 / self.frame_rate)
 
         self.setWindowTitle('JAnim Graphics')
+
+    def onTimerTimeout(self) -> None:
+        self.setUpdatesEnabled(True)
+        self.update()
 
     #region OpenGL
 
@@ -69,6 +73,7 @@ class GLWidget(QOpenGLWidget):
         # glUniform1i(self.shader.uniformLocation('texture2'), 1)
 
     def paintGL(self) -> None:
+        self.setUpdatesEnabled(False)
         try:
             self.scene.render()
         except:

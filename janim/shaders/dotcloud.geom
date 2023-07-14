@@ -36,6 +36,7 @@ void main()
     for (int i = 0; i < 4; i++) {
         point = corners[i].xy;
         gl_Position = wnd_matrix * corners[i];
+        gl_Position.z *= 0.1;
         EmitVertex();
     }
     EndPrimitive();

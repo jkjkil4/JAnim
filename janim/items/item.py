@@ -27,7 +27,9 @@ class Item:
         self.items: list[Item] = []
         self.needs_new_family = True
 
-        # TODO: 添加注释
+        # helper_items 仅被 apply_points_function 所影响（也与 rotate、
+        # shift 等变换有关）不参与其它物件有关的操作
+        # 比如可以向 helper_items 添加一个 Point，以跟踪变换前后的相对位置
         self.helper_items: list[Item] = []
 
         # 点坐标数据
@@ -166,10 +168,73 @@ class Item:
         if center:
             self.to_center()
         return self
+    
+    @staticmethod
+    def format_rows_cols(
+        items_count: int, 
+        n_rows: Optional[int],
+        n_cols: Optional[int],
+    ):
+        if n_rows is None and n_cols is None:
+            n_rows = int(np.sqrt(items_count))
+        if n_rows is None:
+            n_rows = items_count // n_cols
+        if n_cols is None:
+            n_cols = items_count // n_rows
+        return n_rows, n_cols
+    
+    @staticmethod
+    def format_buff(
+        buff: Optional[float] = None,
+        h_buff: Optional[float] = None,
+        v_buff: Optional[float] = None,
+        by_center_point: bool = False,
+    ):
+        default_buff = DEF_ITEM_TO_EDGE_BUFF if by_center_point else DEF_ITEM_TO_ITEM_BUFF
+        if buff is not None:
+            h_buff = buff
+            v_buff = buff
+        else:
+            if h_buff is None:
+                h_buff = default_buff
+            if v_buff is None:
+                v_buff = default_buff
+        
+        return h_buff, v_buff
+        
+    # TODO: arrange_by_array
+    
+    def arrange_in_grid(
+        self,
+        n_rows: Optional[int] = None,
+        n_cols: Optional[int] = None,
 
-    def arrange_in_grid(self):
-        # TODO: arrange_in_grid
-        raise NotImplementedError('Item.arrange_in_gird is not implemented')
+        buff: Optional[float] = None,
+        h_buff: Optional[float] = None,
+        v_buff: Optional[float] = None,
+
+        aligned_edge: np.ndarray = ORIGIN,
+        by_center_point: bool = False,
+        fill_rows_first: bool = True
+    ):
+        n_rows, n_cols = self.format_rows_cols(len(self.items), n_rows, n_cols)
+        h_buff, v_buff = self.format_buff(buff, h_buff, v_buff, by_center_point)
+        
+        x_unit = h_buff
+        y_unit = v_buff
+        if not by_center_point:
+            x_unit += max([item.get_width() for item in self.items])
+            y_unit += max([item.get_height() for item in self.items])
+
+        for index, item in enumerate(self.items):
+            if fill_rows_first:
+                x, y = index % n_cols, index // n_cols
+            else:
+                x, y = index // n_rows, index % n_rows
+            item.move_to(ORIGIN, aligned_edge)
+            item.shift(x * x_unit * RIGHT + y * y_unit * DOWN)
+        self.to_center()
+        return self
 
     #endregion
 
@@ -610,7 +675,6 @@ class Item:
         buff: float = DEF_ITEM_TO_ITEM_BUFF,
         aligned_edge: np.ndarray = ORIGIN,
         coor_mask: Iterable = (1, 1, 1)
-        # TODO: subitem_to_align
     ):
         if isinstance(target, Item):
             target = target.get_bbox_point(aligned_edge + direction)
