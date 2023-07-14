@@ -1,6 +1,6 @@
 
 from janim.constants import *
-from janim.items.item import Item
+from janim.items.item import Item, Point
 from janim.items.vitem import VItem
 from janim.utils.space_ops import (
     rotate_vector, angle_of_vector,
@@ -28,6 +28,9 @@ class Arc(VItem):
         )
         self.shift(arc_center)
 
+        self.center_point = Point(arc_center)
+        self.add(self.center_point, is_helper=True)
+
     @staticmethod
     def create_quadratic_bezier_points(
         angle: float,
@@ -51,21 +54,8 @@ class Arc(VItem):
         points[2::3] = samples[2::2]
         return points
 
-    # TODO: optimize
     def get_arc_center(self) -> np.ndarray:
-        """
-        Looks at the normals to the first two
-        anchors, and finds their intersection points
-        """
-        # First two anchors and handles
-        a1, h, a2 = self.get_points()[:3]
-        # Tangent vectors
-        t1 = h - a1
-        t2 = h - a2
-        # Normals
-        n1 = rotate_vector(t1, TAU / 4)
-        n2 = rotate_vector(t2, TAU / 4)
-        return find_intersection(a1, n1, a2, n2)
+        return self.center_point.get_pos()
 
     def get_start_angle(self) -> float:
         angle = angle_of_vector(self.get_start() - self.get_arc_center())
@@ -140,8 +130,8 @@ class AnnularSector(VItem):
         self,
         inner_radius: float = 0.5,
         outer_radius: float = 1,
-        angle: float = TAU / 4,
         start_angle: float = 0,
+        angle: float = TAU / 4,
         arc_center: np.ndarray = ORIGIN,
         n_components: int = 8,
         **kwargs
@@ -164,21 +154,11 @@ class AnnularSector(VItem):
         self.append_points(inner_arc)
         self.add_line_to(outer_arc[0])
 
-    # TODO: optimize
+        self.center_point = Point(arc_center)
+        self.add(self.center_point, is_helper=True)
+
     def get_arc_center(self) -> np.ndarray:
-        """
-        Looks at the normals to the first two
-        anchors, and finds their intersection points
-        """
-        # First two anchors and handles
-        a1, h, a2 = self.get_points()[:3]
-        # Tangent vectors
-        t1 = h - a1
-        t2 = h - a2
-        # Normals
-        n1 = rotate_vector(t1, TAU / 4)
-        n2 = rotate_vector(t2, TAU / 4)
-        return find_intersection(a1, n1, a2, n2)
+        return self.center_point.get_pos()
 
     def move_arc_center_to(self, point: np.ndarray):
         self.shift(point - self.get_arc_center())

@@ -39,8 +39,7 @@ class GLWidget(QOpenGLWidget):
         self.timer.timeout.connect(self.update)             # 达到定时后调用 `update`
         self.timer.start(1000 / self.frame_rate)
 
-        # TODO: 删除
-        self.setWindowTitle('JAnim')
+        self.setWindowTitle('JAnim Graphics')
 
     #region OpenGL
 

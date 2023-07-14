@@ -8,6 +8,11 @@ class JointType(Enum):
     Bevel = 1
     Sharp = 2
 
+class AnchorMode(Enum):
+    Jagged = 0
+    ApproxSmooth = 1
+    TrueSmooth = 2
+
 JAnimColor = Union[str, Iterable]
 
 FLOAT_SIZE = ctypes.sizeof(ctypes.c_float)

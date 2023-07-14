@@ -27,6 +27,9 @@ class Item:
         self.items: list[Item] = []
         self.needs_new_family = True
 
+        # TODO: 添加注释
+        self.helper_items: list[Item] = []
+
         # 点坐标数据
         self.points = np.zeros((0, 3), dtype=np.float32)    # points 在所有操作中都会保持 dtype=np.float32，以便传入 shader
         self.needs_new_bbox = True
@@ -64,24 +67,27 @@ class Item:
 
     #region 物件包含关系
 
-    def add(self, *items: Item):
+    def add(self, *items: Item, is_helper: bool = False):
+        target = self.helper_items if is_helper else self.items
+
         for item in items:                  # 遍历要追加的每个物件
             if item in self:                    # 如果已经是子物件，则跳过
                 continue
-            if item.parent:                    # 将当前物件已有的父物件解除
+            if item.parent:                     # 将当前物件已有的父物件解除
                 item.parent.remove(item)
-            self.items.append(item)            # 设置当前物件的父物件
+            target.append(item)                 # 设置当前物件的父物件
             item.parent = self
         self.items_changed()
         return self
 
-    def remove(self, *items: Item):
+    def remove(self, *items: Item, is_helper: bool = False):
+        target = self.helper_items if is_helper else self.items
+
         for item in items:          # 遍历要移除的每个物件
             if item not in self:        # 如果不是子物件，则跳过
                 continue
-            self.needs_new_family = True
-            item.parent = None         # 将当前物件移出
-            self.items.remove(item)
+            item.parent = None          # 将当前物件移出
+            target.remove(item)
         self.items_changed()
         return self
     
@@ -93,6 +99,20 @@ class Item:
     
     def family_members_with_points(self) -> list[Item]:
         return [m for m in self.get_family() if m.has_points()]
+    
+    def add_helper_items(self, *items: Item):
+        for item in items:
+            if item in self:
+                continue
+            self.helper_items.append(item)
+        return self
+    
+    def remove_helper_items(self, *items: Item):
+        for item in items:
+            if item not in self:
+                continue
+            self.helper_items.remove(item)
+        return self
 
     #endregion
 
@@ -425,6 +445,9 @@ class Item:
             else:
                 item.set_points(func(item.get_points() - about_point) + about_point)
         
+        for item in self.helper_items:
+            item.apply_points_function(func, about_point)
+
         return self
 
     def rotate(
@@ -654,6 +677,15 @@ class Item:
         return self
 
     #endregion  
+
+
+class Point(Item):
+    def __init__(self, pos: Iterable | np.ndarray, **kwargs) -> None:
+        super().__init__(**kwargs)
+        self.set_points([pos])
+    
+    def get_pos(self) -> np.ndarray:
+        return self.get_center()
 
 
 class Group(Item):

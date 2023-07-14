@@ -273,7 +273,7 @@ void main()
         gl_Position.z = gl_Position.z * 0.1 + z_offset;
 
         float stroke_width = v_stroke_width[i / 2];
-        float scaled_aaw = anti_alias_width / proj_scale_factor;
+        float scaled_aaw = min(stroke_width * 0.8, anti_alias_width / proj_scale_factor);
 
         if (bool(is_linear)) {
             float sgn = vec2(-1, 1)[i % 2];

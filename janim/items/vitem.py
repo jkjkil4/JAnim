@@ -430,8 +430,8 @@ class VItem(Item):
         super().scale(scale_factor, **kwargs)
         return self
     
-    def change_anchor_mode(self, mode: str):
-        assert(mode in ("jagged", "approx_smooth", "true_smooth"))
+    def change_anchor_mode(self, mode: AnchorMode):
+        assert(isinstance(mode, AnchorMode))
         nppc = 3
         for subitem in self.family_members_with_points():
             if isinstance(subitem, VItem):
@@ -440,12 +440,12 @@ class VItem(Item):
                 for subpath in subpaths:
                     anchors = np.vstack([subpath[::nppc], subpath[-1:]])
                     new_subpath = np.array(subpath)
-                    if mode == "approx_smooth":
+                    if mode == AnchorMode.ApproxSmooth:
                         new_subpath[1::nppc] = get_smooth_quadratic_bezier_handle_points(anchors)
-                    elif mode == "true_smooth":
+                    elif mode == AnchorMode.TrueSmooth:
                         h1, h2 = get_smooth_cubic_bezier_handle_points(anchors)
                         new_subpath = get_quadratic_approximation_of_cubic(anchors[:-1], h1, h2, anchors[1:])
-                    elif mode == "jagged":
+                    elif mode == AnchorMode.Jagged:
                         new_subpath[1::nppc] = 0.5 * (anchors[:-1] + anchors[1:])
                     subitem.append_points(new_subpath)
         return self
@@ -457,7 +457,7 @@ class VItem(Item):
         transforming between states before and after calling
         this might have strange artifacts
         """
-        self.change_anchor_mode("true_smooth")
+        self.change_anchor_mode(AnchorMode.TrueSmooth)
         return self
 
     def make_approximately_smooth(self):
@@ -468,11 +468,11 @@ class VItem(Item):
         sampled at a not-too-low rate from a continuous function,
         as in the case of ParametricCurve
         """
-        self.change_anchor_mode("approx_smooth")
+        self.change_anchor_mode(AnchorMode.ApproxSmooth)
         return self
 
     def make_jagged(self):
-        self.change_anchor_mode("jagged")
+        self.change_anchor_mode(AnchorMode.Jagged)
         return self
 
     #endregion
