@@ -7,7 +7,7 @@ class DotCloudTest(Scene):
             for i in range(4)
             for j in range(4)
             for k in range(4)
-        ]).set_radius(0.2).set_color([GREEN_A, BLUE_B, YELLOW_B]).to_center()
+        ]).set_radius(0.2).set_points_color([GREEN_A, BLUE_B, YELLOW_B]).to_center()
         
         self.add(dots)
 
@@ -17,7 +17,7 @@ class VItemTest(Scene):
         m1.set_points_as_corners([
             ORIGIN, RIGHT, RIGHT + UR * 3, RIGHT + UP * 3, RIGHT + UP * 2, RIGHT * 0.5 + UR, LEFT + UP * 2,
             LEFT, DOWN, DOWN * 2, DR, DOWN * 0.4
-        ]).set_fill(BLUE, 0.5).set_color(BLUE)
+        ]).set_fill(BLUE, 0.5).set_points_color(BLUE)
         m1.close_path().make_approximately_smooth()
 
         m2 = VItem()
@@ -32,24 +32,6 @@ class VItemTest(Scene):
 
 class GeometryTest(Scene):
     def construct(self) -> None:
-        group = Group(
-            Group(
-                Arc(20 * DEGREES, 160 * DEGREES),
-                Arc(40 * DEGREES, 230 * DEGREES)
-            ).arrange(),
-            Group(
-                Circle(),
-                Circle(radius=1.5),
-                Ellipse()
-            ).arrange(),
-            Group(
-                AnnularSector(),
-                AnnularSector(0.5, 1.5, 60 * DEGREES, 60 * DEGREES),
-                Sector(),
-                Annulus()
-            ).arrange()
-        ).arrange(DOWN)
+        self.add(RoundedRectangle())
 
-        self.add(group)
-
-VItemTest().run()
+GeometryTest().run()

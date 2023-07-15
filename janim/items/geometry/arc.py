@@ -3,9 +3,8 @@ from janim.constants import *
 from janim.items.item import Item, Point
 from janim.items.vitem import VItem
 from janim.utils.space_ops import (
-    rotate_vector, angle_of_vector,
-    angle_between_vectors,
-    find_intersection, get_norm
+    angle_of_vector, get_norm,
+    angle_between_vectors
 )
 
 DEFAULT_DOT_RADIUS = 0.08

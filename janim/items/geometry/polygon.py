@@ -1,4 +1,5 @@
 from __future__ import annotations
+from typing import Optional
 
 from janim.constants import *
 from janim.items.vitem import VItem
@@ -7,7 +8,8 @@ from janim.items.geometry.line import Line
 from janim.utils.iterables import adjacent_n_tuples
 from janim.utils.space_ops import (
     normalize, angle_between_vectors,
-    adjacent_pairs
+    adjacent_pairs, rotate_vector,
+    compass_directions
 )
 
 
@@ -65,3 +67,44 @@ class Polygon(VItem):
             )
             self.append_points(line.get_points())
         return self
+
+class RegularPolygon(Polygon):
+    def __init__(
+        self,
+        n: int = 6,
+        start_angle: Optional[float] = None,
+        **kwargs
+    ):
+        if start_angle is None:
+            start_angle = (n % 2) * PI / 2
+        start_vect = rotate_vector(RIGHT, start_angle)
+        vertices = compass_directions(n, start_vect)
+        super().__init__(*vertices, **kwargs)
+
+class Triangle(RegularPolygon):
+    def __init__(self, **kwargs):
+        super().__init__(n=3, **kwargs)
+
+class Rectangle(Polygon):
+    def __init__(
+        self,
+        width: float = 4.0,
+        height: float = 2.0,
+        **kwargs
+    ):
+        Polygon.__init__(self, UR, UL, DL, DR, **kwargs)
+        self.set_size(width, height)
+
+class Square(Rectangle):
+    def __init__(self, side_length: float = 2.0, **kwargs):
+        self.side_length = side_length
+        super().__init__(side_length, side_length, **kwargs)
+
+class RoundedRectangle(Rectangle):
+    def __init__(
+        self, 
+        corner_radius: float = 0.5,
+        **kwargs
+    ):
+        Rectangle.__init__(self, **kwargs)
+        self.round_corners(corner_radius)
