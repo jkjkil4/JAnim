@@ -31,6 +31,7 @@ class Item:
         # shift 等变换有关）不参与其它物件有关的操作
         # 比如可以向 helper_items 添加一个 Point，以跟踪变换前后的相对位置
         self.helper_items: list[Item] = []
+        self.needs_new_family_with_helpers = True
 
         # 点坐标数据
         self.points = np.zeros((0, 3), dtype=np.float32)    # points 在所有操作中都会保持 dtype=np.float32，以便传入 shader
@@ -54,6 +55,10 @@ class Item:
 
     def items_changed(self) -> None:
         self.needs_new_family = True
+        self.needs_new_family_with_helpers = True
+    
+    def helper_items_changed(self) -> None:
+        self.needs_new_family_with_helpers = True
 
     def points_count_changed(self) -> None:
         self.needs_new_rgbas = True
@@ -79,7 +84,11 @@ class Item:
                 item.parent.remove(item)
             target.append(item)                 # 设置当前物件的父物件
             item.parent = self
-        self.items_changed()
+
+        if is_helper:
+            self.helper_items_changed()
+        else:
+            self.items_changed()
         return self
 
     def remove(self, *items: Item, is_helper: bool = False):
@@ -90,7 +99,11 @@ class Item:
                 continue
             item.parent = None          # 将当前物件移出
             target.remove(item)
-        self.items_changed()
+
+        if is_helper:
+            self.helper_items_changed()
+        else:
+            self.items_changed()
         return self
     
     def get_family(self) -> list[Item]:
@@ -115,6 +128,15 @@ class Item:
                 continue
             self.helper_items.remove(item)
         return self
+    
+    def get_family_with_helpers(self) -> list[Item]:
+        if self.needs_new_family_with_helpers:
+            sub_families = (
+                item.get_family_with_helpers() 
+                for item in it.chain(self.items, self.helper_items)
+            )
+            self.family_with_helpers = [self, *it.chain(*sub_families)]
+        return self.family_with_helpers
 
     #endregion
 
@@ -511,16 +533,13 @@ class Item:
         if about_point is None and about_edge is not None:
             about_point = self.get_bbox_point(about_edge)
         
-        for item in self.get_family():
+        for item in self.get_family_with_helpers():
             if not item.has_points():
                 continue
             if about_point is None:
                 item.set_points(func(item.get_points()))
             else:
                 item.set_points(func(item.get_points() - about_point) + about_point)
-        
-        for item in self.helper_items:
-            item.apply_points_function(func, about_point)
 
         return self
 

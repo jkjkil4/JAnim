@@ -14,7 +14,8 @@ from janim.utils.bezier import (
     interpolate, 
     get_smooth_quadratic_bezier_handle_points,
     get_smooth_cubic_bezier_handle_points,
-    get_quadratic_approximation_of_cubic
+    get_quadratic_approximation_of_cubic,
+    partial_quadratic_bezier_points
 )
 from janim.utils.functions import safe_call
 
@@ -81,6 +82,9 @@ class VItem(Item):
     def set_points(self, points: Iterable):
         super().set_points(resize_array(np.array(points), len(points) // 3 * 3))
         return self
+    
+    def curves_count(self) -> int:
+        return self.points_count() // 3
     
     def set_anchors_and_handles(
         self,
@@ -474,6 +478,64 @@ class VItem(Item):
 
     def make_jagged(self):
         self.change_anchor_mode(AnchorMode.Jagged)
+        return self
+    
+    # Information about the curve
+    @staticmethod
+    def get_bezier_tuples_from_points(points: Sequence[np.ndarray]):
+        nppc = 3
+        remainder = len(points) % nppc
+        points = points[:len(points) - remainder]
+        return (
+            points[i:i + nppc]
+            for i in range(0, len(points), nppc)
+        )
+
+    def get_bezier_tuples(self):
+        return self.get_bezier_tuples_from_points(self.get_points())
+
+    @staticmethod
+    def insert_n_curves_to_point_list(n: int, points: np.ndarray):
+        nppc = 3
+        if len(points) == 1:
+            return np.repeat(points, nppc * n, 0)
+
+        bezier_groups = list(VItem.get_bezier_tuples_from_points(points))
+        norms = np.array([
+            get_norm(bg[nppc - 1] - bg[0])
+            for bg in bezier_groups
+        ])
+        total_norm = sum(norms)
+        # Calculate insertions per curve (ipc)
+        if total_norm < 1e-6:
+            ipc = [n] + [0] * (len(bezier_groups) - 1)
+        else:
+            ipc = np.round(n * norms / sum(norms)).astype(int)
+
+        diff = n - sum(ipc)
+        for x in range(diff):
+            ipc[np.argmin(ipc)] += 1
+        for x in range(-diff):
+            ipc[np.argmax(ipc)] -= 1
+
+        new_points = []
+        for group, n_inserts in zip(bezier_groups, ipc):
+            # What was once a single quadratic curve defined
+            # by "group" will now be broken into n_inserts + 1
+            # smaller quadratic curves
+            alphas = np.linspace(0, 1, n_inserts + 2)
+            for a1, a2 in zip(alphas, alphas[1:]):
+                new_points += partial_quadratic_bezier_points(group, a1, a2)
+        return np.vstack(new_points)
+
+    def insert_n_curves(self, n: int, recurse: bool = True):
+        for item in (self.get_family() if recurse else [self]):
+            if item.curves_count() > 0:
+                new_points = item.insert_n_curves_to_point_list(n, item.get_points())
+                # TODO: [L] this should happen in insert_n_curves_to_point_list
+                if item.has_new_path_started():
+                    new_points = np.vstack([new_points, item.get_points()[-1]])
+                item.set_points(new_points)
         return self
 
     #endregion

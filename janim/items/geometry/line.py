@@ -142,3 +142,10 @@ class Line(VItem):
     def set_length(self, length: float, **kwargs):
         self.scale(length / self.get_length(), False, **kwargs)
         return self
+
+# TODO: DashedLine
+# TODO: TangentLine
+# TODO: Elbow
+
+# TODO: [L] CubicBezier
+

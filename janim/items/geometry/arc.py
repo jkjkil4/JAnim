@@ -4,6 +4,7 @@ from janim.items.item import Item, Point
 from janim.items.vitem import VItem
 from janim.utils.space_ops import (
     rotate_vector, angle_of_vector,
+    angle_between_vectors,
     find_intersection, get_norm
 )
 
@@ -59,6 +60,15 @@ class Arc(VItem):
 
     def get_arc_center(self) -> np.ndarray:
         return self.center_point.get_pos()
+    
+    def get_arc_length(self) -> float:
+        center = self.get_arc_center()
+        p0 = self.get_start()
+        p1 = self.pfp(0.5)
+        vc0 = p0 - center
+        vc1 = p1 - center
+
+        return 2 * get_norm(vc0) * angle_between_vectors(vc0, vc1)
 
     def get_start_angle(self) -> float:
         angle = angle_of_vector(self.get_start() - self.get_arc_center())
@@ -84,9 +94,6 @@ class ArcBetweenPoints(Arc):
         if angle == 0:
             self.set_points_as_corners([LEFT, RIGHT])
         self.put_start_and_end_on(start, end)
-
-# TODO: CurvedArrow
-# TODO: CurvedDoubleArrow
 
 class Circle(Arc):
     def __init__(self, **kwargs):
