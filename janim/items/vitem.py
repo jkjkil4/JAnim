@@ -20,12 +20,14 @@ from janim.utils.functions import safe_call
 
 from janim.shaders.render import VItemRenderer
 
+DEFAULT_STROKE_WIDTH = 0.05
+
 class VItem(Item):
     tolerance_for_point_equality = 1e-8
 
     def __init__(
         self,
-        stroke_width: Optional[float | Iterable[float]] = 0.05,
+        stroke_width: Optional[float | Iterable[float]] = DEFAULT_STROKE_WIDTH,
         stroke_behind_fill: bool = False,
         joint_type: JointType = JointType.Auto,
         fill_color: Optional[JAnimColor | Iterable[float]] = WHITE,

@@ -7,6 +7,9 @@ from janim.utils.space_ops import (
     find_intersection, get_norm
 )
 
+DEFAULT_DOT_RADIUS = 0.08
+DEFAULT_SMALL_DOT_RADIUS = 0.04
+
 class Arc(VItem):
     def __init__(
         self,
@@ -112,8 +115,28 @@ class Circle(Arc):
     def get_radius(self) -> float:
         return get_norm(self.get_start() - self.get_center())
     
-# TODO: Dot
-# TODO: SmallDot
+
+class Dot(Circle):
+    def __init__(
+        self,
+        point: np.ndarray = ORIGIN,
+        radius: float = DEFAULT_DOT_RADIUS,
+        stroke_width: float = 0,
+        fill_opacity: float = 1.0,
+        **kwargs
+    ):
+        super().__init__(
+            arc_center=point,
+            radius=radius,
+            stroke_width=stroke_width,
+            fill_opacity=fill_opacity,
+            **kwargs
+        )
+
+class SmallDot(Dot):
+    def __init__(self, radius: float = DEFAULT_SMALL_DOT_RADIUS, **kwargs):
+        super().__init__(radius=radius, **kwargs)
+
 
 class Ellipse(Circle):
     def __init__(
