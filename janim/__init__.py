@@ -9,6 +9,7 @@ from janim.items.dot_cloud import *
 from janim.items.item import *
 from janim.items.vitem import *
 from janim.items.geometry.arc import *
+from janim.items.geometry.line import *
 
 from janim.constants import *
 

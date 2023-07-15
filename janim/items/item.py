@@ -440,6 +440,15 @@ class Item:
             for i in range(3)
         ])
     
+    def get_continuous_bbox_point(self, direction: np.ndarray) -> np.ndarray:
+        dl, center, ur = self.get_bbox()
+        corner_vect = (ur - center)
+        return center + direction / np.max(np.abs(np.true_divide(
+            direction, corner_vect,
+            out=np.zeros(len(direction)),
+            where=((corner_vect) != 0)
+        )))
+    
     def get_top(self) -> np.ndarray:
         return self.get_bbox_point(UP)
 
