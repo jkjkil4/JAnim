@@ -12,8 +12,7 @@ from OpenGL.GL import *
 
 from janim.constants import *
 from janim.scene import Scene
-from janim.items.dot_cloud import DotCloud
-from utils.space_ops import normalize
+from janim.utils.space_ops import normalize
 
 
 class GLWidget(QOpenGLWidget):
@@ -57,21 +56,6 @@ class GLWidget(QOpenGLWidget):
         glEnable(GL_BLEND)
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
 
-        # self.tex1 = QOpenGLTexture(QOpenGLTexture.Target.Target2D)
-        # self.tex1.create()
-        # self.tex1.setData(QImage('assets/container.jpg').mirrored(False, True))
-        # self.tex1.setMinMagFilters(QOpenGLTexture.Filter.Linear, QOpenGLTexture.Filter.Linear)
-        # self.tex1.setWrapMode(QOpenGLTexture.WrapMode.ClampToEdge)
-
-        # self.tex2 = QOpenGLTexture(QOpenGLTexture.Target.Target2D)
-        # self.tex2.create()
-        # self.tex2.setData(QImage('assets/awesomeface.png').mirrored(False, True))
-        # self.tex2.setMinMagFilters(QOpenGLTexture.Filter.Linear, QOpenGLTexture.Filter.Linear)
-        # self.tex2.setWrapMode(QOpenGLTexture.WrapMode.ClampToEdge)
-        
-        # glUniform1i(self.shader.uniformLocation('texture1'), 0)
-        # glUniform1i(self.shader.uniformLocation('texture2'), 1)
-
     def paintGL(self) -> None:
         self.setUpdatesEnabled(False)
         try:
@@ -79,13 +63,6 @@ class GLWidget(QOpenGLWidget):
         except:
             traceback.print_exc()
             exit(1)
-
-        # glActiveTexture(GL_TEXTURE0)
-        # self.tex1.bind()
-        # glActiveTexture(GL_TEXTURE1)
-        # self.tex2.bind()
-
-        # self.shader.bind()
 
     def resizeGL(self, w: int, h: int) -> None:
         super().resizeGL(w, h)

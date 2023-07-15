@@ -8,7 +8,6 @@ from PySide6.QtOpenGL import *
 from OpenGL.GL import *
 
 from janim.constants import *
-from janim.utils.bezier import interpolate
 
 class ShaderProgram(QOpenGLShaderProgram):
     '''
@@ -310,3 +309,75 @@ class VItemRenderer(Renderer):
         else:
             self.render_fill(item, data)
             self.render_stroke(item, data, 1e-4)
+
+class ImgItemRenderer(Renderer):
+    tex_coord = np.array([
+        [1.0, 0.0], # 右上
+        [1.0, 1.0], # 右下
+        [0.0, 1.0], # 左下
+        [0.0, 0.0]  # 左上
+    ], dtype=np.float32)
+
+    idx = np.array([
+        0, 1, 3,
+        1, 2, 3
+    ], dtype='uint')
+
+    def init(self) -> None:
+        self.shader = ShaderProgram.get('shaders/image')
+        self.shader.bind()
+
+        self.vao = glGenVertexArrays(1)
+
+        self.vbo_points,    \
+        self.vbo_rgbas,     \
+        self.vbo_texcoords = glGenBuffers(3)
+
+        glBindVertexArray(self.vao)
+
+        glBindBuffer(GL_ARRAY_BUFFER, self.vbo_texcoords)
+        glBufferData(GL_ARRAY_BUFFER, self.tex_coord.size * FLOAT_SIZE, self.tex_coord, GL_STATIC_DRAW)
+        glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 2 * FLOAT_SIZE, ctypes.c_void_p(0))
+        glEnableVertexAttribArray(2)
+        glBindBuffer(GL_ARRAY_BUFFER, 0)
+
+        glBindVertexArray(0)
+
+    def update(self, item) -> None:
+        self.shader.bind()
+
+        points = item.get_points()
+        points_data_size = points.size * FLOAT_SIZE
+        rgbas = item.get_rgbas()
+        rgbas_data_size = rgbas.size * FLOAT_SIZE
+
+        glBindVertexArray(self.vao)
+
+        glBindBuffer(GL_ARRAY_BUFFER, self.vbo_points)
+        glBufferData(GL_ARRAY_BUFFER, points_data_size, points, GL_STATIC_DRAW)
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * FLOAT_SIZE, ctypes.c_void_p(0))
+        glEnableVertexAttribArray(0)
+
+        glBindBuffer(GL_ARRAY_BUFFER, self.vbo_rgbas)
+        glBufferData(GL_ARRAY_BUFFER, rgbas_data_size, rgbas, GL_STATIC_DRAW)
+        glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 4 * FLOAT_SIZE, ctypes.c_void_p(0))
+        glEnableVertexAttribArray(1)
+
+        glBindBuffer(GL_ARRAY_BUFFER, 0)
+
+        glBindVertexArray(0)
+
+    def render(self, item, data: RenderData) -> None:
+        glActiveTexture(GL_TEXTURE0)
+        item.texture.bind()
+
+        self.shader.bind()
+
+        self.shader.setMat4('view_matrix', data.view_matrix)
+        self.shader.setMat4('proj_matrix', data.proj_matrix)
+        self.shader.setMat4('wnd_matrix', data.wnd_matrix)
+
+        glBindVertexArray(self.vao)
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, self.idx)
+        glBindVertexArray(0)
+

@@ -64,10 +64,10 @@ class Scene:
     def run(self) -> None:
         app = QApplication()
 
-        # fmt = QSurfaceFormat()
-        # fmt.setVersion(3, 3)
-        # fmt.setSamples(4)
-        # QSurfaceFormat.setDefaultFormat(fmt)
+        fmt = QSurfaceFormat()
+        fmt.setVersion(3, 3)
+        fmt.setSamples(4)
+        QSurfaceFormat.setDefaultFormat(fmt)
 
         from janim.gui.GLWidget import GLWidget
         window = GLWidget(self)
