@@ -1,9 +1,14 @@
 from typing import Optional
 
+from PySide6.QtGui import QCloseEvent
 from PySide6.QtWidgets import QWidget, QMainWindow
 
-class MainWindow(QMainWindow):
-    def __init__(self, parent: Optional[QWidget] = None) -> None:
-        super().__init__(parent)
+from janim.gui.GLWidget import GLWidget
+from janim.gl.texture import Texture
+
+class MainWindow(GLWidget):
+    def closeEvent(self, event: QCloseEvent) -> None:
+        Texture.release_all()
+        super().closeEvent(event)
 
     

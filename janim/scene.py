@@ -1,5 +1,6 @@
 from __future__ import annotations
 import itertools as it
+import traceback
 
 from PySide6.QtWidgets import QApplication
 from PySide6.QtGui import (
@@ -48,11 +49,19 @@ class Scene:
 
     def remove(self, *items: Item) -> Scene:
         for item in items:
-            if item not in self:
+            if item in self:
+                item.parent = None
+                self.items.remove(item)
                 continue
-            item.parent = None
-            self.items.remove(item)
+            if item.parent:
+                item.parent.remove(item)
         return self
+    
+    def mark_needs_new_family(self) -> None:
+        pass
+
+    def mark_needs_new_family_with_helpers(self) -> None:
+        pass
     
     def get_family(self) -> list[Item]:
         return list(it.chain(*(item.get_family() for item in self.items)))
@@ -69,11 +78,14 @@ class Scene:
         fmt.setSamples(4)
         QSurfaceFormat.setDefaultFormat(fmt)
 
-        from janim.gui.GLWidget import GLWidget
-        window = GLWidget(self)
+        from janim.gui.MainWindow import MainWindow
+        window = MainWindow(self)
         window.show()
 
-        self.construct()
+        try:
+            self.construct()
+        except:
+            traceback.print_exc()
 
         app.exec()
 

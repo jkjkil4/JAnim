@@ -54,11 +54,11 @@ class Item:
     #region 响应
 
     def items_changed(self) -> None:
-        self.needs_new_family = True
-        self.needs_new_family_with_helpers = True
+        self.mark_needs_new_family()
+        self.mark_needs_new_family_with_helpers()
     
     def helper_items_changed(self) -> None:
-        self.needs_new_family_with_helpers = True
+        self.mark_needs_new_family_with_helpers()
 
     def points_count_changed(self) -> None:
         self.needs_new_rgbas = True
@@ -105,6 +105,16 @@ class Item:
         else:
             self.items_changed()
         return self
+    
+    def mark_needs_new_family(self) -> None:
+        self.needs_new_family = True
+        if self.parent:
+            self.parent.mark_needs_new_family()
+
+    def mark_needs_new_family_with_helpers(self) -> None:
+        self.needs_new_family_with_helpers = True
+        if self.parent:
+            self.parent.mark_needs_new_family_with_helpers()
     
     def get_family(self) -> list[Item]:
         if self.needs_new_family:

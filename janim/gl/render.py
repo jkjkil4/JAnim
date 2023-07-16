@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Optional
+from typing import Optional, Callable, Iterable
 import os
 
 from PySide6.QtCore import QObject
@@ -112,6 +112,9 @@ class Renderer:
         self.initialized = False
         self.needs_update = True
 
+        self.vertex_arrays_to_delete = []
+        self.buffers_to_delete = []
+
     def prepare(self, item) -> None:
         if not self.initialized:
             self.init()
@@ -133,13 +136,38 @@ class Renderer:
     def render(self, item, data: RenderData) -> None:
         pass
 
+    def genVertexArrays(self, n: int):
+        arrays = glGenVertexArrays(n)
+        if isinstance(arrays, Iterable):
+            self.vertex_arrays_to_delete.extend(arrays)
+        else:
+            self.vertex_arrays_to_delete.append(arrays)
+        return arrays
+    
+    def genBuffers(self, n: int):
+        buffers = glGenBuffers(n)
+        if isinstance(buffers, Iterable):
+            self.buffers_to_delete.extend(buffers)
+        else:
+            self.buffers_to_delete.append(buffers)
+        return buffers
+
+    def __del__(self) -> None:
+        try:
+            if len(self.vertex_arrays_to_delete) > 0:
+                glDeleteVertexArrays(len(self.vertex_arrays_to_delete), self.vertex_arrays_to_delete)
+            if len(self.buffers_to_delete) > 0:
+                glDeleteBuffers(len(self.buffers_to_delete), self.buffers_to_delete)
+        except:
+            pass
+
 
 class DotCloudRenderer(Renderer):
     def init(self) -> None:
         self.shader = ShaderProgram.get('shaders/dotcloud')
 
-        self.vao = glGenVertexArrays(1)
-        self.vbo_points, self.vbo_rgbas, self.vbo_radii = glGenBuffers(3)
+        self.vao = self.genVertexArrays(1)
+        self.vbo_points, self.vbo_rgbas, self.vbo_radii = self.genBuffers(3)
     
     def update(self, item) -> None:
         self.shader.bind()
@@ -189,15 +217,15 @@ class VItemRenderer(Renderer):
         self.shader_fill = ShaderProgram.get('shaders/vitem_fill')
 
         self.vao_stroke,    \
-        self.vao_fill = glGenVertexArrays(2)
+        self.vao_fill = self.genVertexArrays(2)
         
-        self.vbo_points = glGenBuffers(1)
+        self.vbo_points = self.genBuffers(1)
 
         self.vbo_stroke_rgbas,  \
         self.vbo_stroke_width,  \
-        self.vbo_joint_info = glGenBuffers(3)
+        self.vbo_joint_info = self.genBuffers(3)
         
-        self.vbo_fill_rgbas = glGenBuffers(1)
+        self.vbo_fill_rgbas = self.genBuffers(1)
 
     def update_stroke(self, item) -> None:        
         self.shader_stroke.bind()
@@ -327,11 +355,11 @@ class ImgItemRenderer(Renderer):
         self.shader = ShaderProgram.get('shaders/image')
         self.shader.bind()
 
-        self.vao = glGenVertexArrays(1)
+        self.vao = self.genVertexArrays(1)
 
         self.vbo_points,    \
         self.vbo_rgbas,     \
-        self.vbo_texcoords = glGenBuffers(3)
+        self.vbo_texcoords = self.genBuffers(3)
 
         glBindVertexArray(self.vao)
 

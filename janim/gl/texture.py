@@ -10,10 +10,8 @@ class Texture(QOpenGLTexture):
     使用 `Texture.get(filename)` 获取着色器对象可以便于复用
     '''
 
-    # TODO: 解决提示信息: `QOpenGLTexturePrivate::destroy() called without a current context. Texture has not been destroyed`
-
     # 存储可复用的纹理对象
-    filename_to_texture_map = {}
+    filename_to_texture_map: dict[str, Texture] = {}
 
     @staticmethod
     def get(filename: str) -> Texture:
@@ -27,6 +25,11 @@ class Texture(QOpenGLTexture):
         texture = Texture(filename)
         Texture.filename_to_texture_map[filename] = texture
         return texture
+    
+    def release_all() -> None:
+        for texture in Texture.filename_to_texture_map.values():
+            texture.destroy()
+        Texture.filename_to_texture_map.clear()
     
     def __init__(self, filename: str) -> None:
         super().__init__(QOpenGLTexture.Target.Target2D)

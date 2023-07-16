@@ -2,8 +2,7 @@ from typing import Optional
 import numpy as np
 import traceback
 
-from PySide6.QtCore import Qt
-from PySide6.QtCore import QTimer
+from PySide6.QtCore import Qt, QTimer, QEvent
 from PySide6.QtGui import QMouseEvent, QWheelEvent
 from PySide6.QtWidgets import QWidget
 from PySide6.QtOpenGLWidgets import QOpenGLWidget
@@ -41,7 +40,7 @@ class GLWidget(QOpenGLWidget):
         self.setWindowTitle('JAnim Graphics')
 
     def onTimerTimeout(self) -> None:
-        self.setUpdatesEnabled(True)
+        # self.setUpdatesEnabled(True)
         self.update()
 
     #region OpenGL
@@ -57,7 +56,7 @@ class GLWidget(QOpenGLWidget):
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
 
     def paintGL(self) -> None:
-        self.setUpdatesEnabled(False)
+        # self.setUpdatesEnabled(False)
         try:
             self.scene.render()
         except:
@@ -71,7 +70,7 @@ class GLWidget(QOpenGLWidget):
 
     #endregion
 
-    #region 用户操作
+    #region Events
 
     def mousePressEvent(self, event: QMouseEvent) -> None:
         super().mousePressEvent(event)
