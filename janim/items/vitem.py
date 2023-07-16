@@ -19,7 +19,7 @@ from janim.utils.bezier import (
 )
 from janim.utils.functions import safe_call
 
-from janim.shaders.render import VItemRenderer
+from janim.gl.render import VItemRenderer
 
 DEFAULT_STROKE_WIDTH = 0.05
 

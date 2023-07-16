@@ -12,7 +12,7 @@ from janim.utils.color import hex_to_rgb
 from janim.utils.iterables import resize_array
 from janim.utils.bezier import interpolate, integer_interpolate
 
-from janim.shaders.render import RenderData, Renderer
+from janim.gl.render import RenderData, Renderer
 
 class Item:
     comment = ''

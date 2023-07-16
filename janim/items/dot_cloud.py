@@ -5,7 +5,7 @@ import numpy as np
 
 from janim.items.item import Item
 from janim.utils.iterables import resize_array
-from janim.shaders.render import DotCloudRenderer
+from janim.gl.render import DotCloudRenderer
 
 from janim.constants import *
 

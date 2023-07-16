@@ -4,8 +4,8 @@ from janim.constants import *
 from janim.items.item import Item
 from janim.utils.space_ops import get_norm
 
-from janim.shaders.texture import Texture
-from janim.shaders.render import ImgItemRenderer
+from janim.gl.texture import Texture
+from janim.gl.render import ImgItemRenderer
 
 class ImgItem(Item):
     def __init__(
