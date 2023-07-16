@@ -26,6 +26,13 @@ class DotCloud(Item):
 
         self.set_points(points)
 
+    def copy(self):
+        copy_item = super().copy()
+        
+        copy_item.radii = self.radii.copy()
+
+        return copy_item
+
     def points_count_changed(self) -> None:
         super().points_count_changed()
         self.needs_new_radii = True

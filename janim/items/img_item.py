@@ -1,3 +1,4 @@
+from __future__ import annotations
 
 from janim.constants import *
 from janim.items.item import Item
@@ -36,3 +37,7 @@ class ImgItem(Item):
         return get_norm(self.get_vertical_vect())
     
     # TODO: point_to_rgba
+
+    def set_opacity(self, opacity: float | Iterable[float]):
+        self.set_points_color(opacity=opacity)
+        return self

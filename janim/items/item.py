@@ -169,6 +169,8 @@ class Item:
         copy_item.parent = None
         copy_item.items = []
         copy_item.add(*[m.copy() for m in self])
+        copy_item.helper_items = []
+        copy_item.add(*[m.copy() for m in self.helper_items], is_helper=True)
 
         # data
         copy_item.points = self.points.copy()

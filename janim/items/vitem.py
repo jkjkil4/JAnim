@@ -73,6 +73,14 @@ class VItem(Item):
         self.renderer.needs_update = True
 
     #endregion
+
+    def copy(self):
+        copy_item = super().copy()
+
+        copy_item.stroke_width = self.stroke_width.copy()
+        copy_item.fill_rgbas = self.fill_rgbas.copy()
+
+        return copy_item
     
     def create_renderer(self) -> VItemRenderer:
         return VItemRenderer()
