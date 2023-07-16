@@ -12,6 +12,7 @@ from OpenGL.GL import *
 from janim.constants import *
 from janim.scene import Scene
 from janim.utils.space_ops import normalize
+from janim.utils.color import hex_to_rgb
 
 
 class GLWidget(QOpenGLWidget):
@@ -40,23 +41,18 @@ class GLWidget(QOpenGLWidget):
         self.setWindowTitle('JAnim Graphics')
 
     def onTimerTimeout(self) -> None:
-        # self.setUpdatesEnabled(True)
         self.update()
 
     #region OpenGL
 
     def initializeGL(self) -> None:
-        glClearColor(0.2, 0.3, 0.3, 1.0)
-        # glClearColor(0, 0, 0, 1)    # 将背景色设置为黑色
-        # glEnable(GL_MULTISAMPLE)    # 抗锯齿
-        # glEnable(GL_DEPTH_TEST)
+        glClearColor(*hex_to_rgb(self.scene.background_color), 1.0)
         
         # 颜色混合
         glEnable(GL_BLEND)
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
 
     def paintGL(self) -> None:
-        # self.setUpdatesEnabled(False)
         try:
             self.scene.render()
         except:

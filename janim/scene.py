@@ -18,7 +18,12 @@ from janim.gl.render import RenderData
 class Scene:
     anti_alias_width = 0.015
 
-    def __init__(self) -> None:
+    def __init__(
+        self,
+        background_color: JAnimColor = BLACK
+    ) -> None:
+        self.background_color = background_color
+
         self.camera = Camera()
 
         # relation
@@ -71,7 +76,9 @@ class Scene:
     #region 执行
 
     def run(self) -> None:
-        app = QApplication()
+        app = QApplication.instance()
+        if not app:
+            app = QApplication()
 
         fmt = QSurfaceFormat()
         fmt.setVersion(3, 3)
@@ -88,6 +95,7 @@ class Scene:
             traceback.print_exc()
 
         app.exec()
+        
 
     def construct(self) -> None:
         # TODO: construct

@@ -10,6 +10,7 @@ from janim.utils.simple_functions import choose
 from janim.utils.space_ops import find_intersection
 from janim.utils.space_ops import cross2d
 from janim.utils.space_ops import midpoint
+from janim.logger import log
 
 CLOSED_THRESHOLD = 0.001
 T = TypeVar("T")
@@ -81,8 +82,14 @@ def partial_quadratic_bezier_points(
 
 
 def interpolate(start: T, end: T, alpha: np.ndarray | float) -> T:
-    # TODO: [L] try-except
-    return (1 - alpha) * start + alpha * end
+    try:
+        return (1 - alpha) * start + alpha * end
+    except TypeError:
+        log.debug(f"`start` parameter with type `{type(start)}` and dtype `{start.dtype}`")
+        log.debug(f"`end` parameter with type `{type(end)}` and dtype `{end.dtype}`")
+        log.debug(f"`alpha` parameter with value `{alpha}`")
+        import sys
+        sys.exit(2)
 
 
 def outer_interpolate(

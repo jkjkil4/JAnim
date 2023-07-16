@@ -1,14 +1,24 @@
 from janim import __version__
 
-from janim.scene import Scene
-
-from janim.constants import *
-from janim.items.dot_cloud import DotCloud
+import janim.config as jconfig
+import janim.extract_scene
 
 def main():
     print(f"JAnim \033[32mv{__version__}\033[0m")
 
-    # TODO: custom_config
+    args = jconfig.parse_cli()
+    if args.version:
+        return
+    
+    if args.config:
+        jconfig.init_customization()
+        return
+    
+    config = jconfig.get_configuration(args)
+    scenes = janim.extract_scene.main(args, config)
+    
+    for scene in scenes:
+        scene.run()
 
 if __name__ == '__main__':
     main()
