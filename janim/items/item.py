@@ -11,8 +11,6 @@ from janim.utils.color import hex_to_rgb
 from janim.utils.iterables import resize_array
 from janim.utils.bezier import interpolate, integer_interpolate
 
-from janim.gl.render import RenderData, Renderer
-
 class Item:
     comment = ''
 
@@ -223,7 +221,7 @@ class Item:
         v_buff: Optional[float] = None,
         by_center_point: bool = False,
     ):
-        default_buff = DEF_ITEM_TO_EDGE_BUFF if by_center_point else DEF_ITEM_TO_ITEM_BUFF
+        default_buff = DEFAULT_ITEM_TO_EDGE_BUFF if by_center_point else DEFAULT_ITEM_TO_ITEM_BUFF
         if buff is not None:
             h_buff = buff
             v_buff = buff
@@ -703,7 +701,7 @@ class Item:
     def to_border(
         self,
         direction: np.ndarray,
-        buff: float = DEF_ITEM_TO_EDGE_BUFF
+        buff: float = DEFAULT_ITEM_TO_EDGE_BUFF
     ):
         """
         Direction just needs to be a vector pointing towards side or
@@ -720,7 +718,7 @@ class Item:
         self,
         target: Item | np.ndarray,
         direction: np.ndarray = RIGHT,
-        buff: float = DEF_ITEM_TO_ITEM_BUFF,
+        buff: float = DEFAULT_ITEM_TO_ITEM_BUFF,
         aligned_edge: np.ndarray = ORIGIN,
         coor_mask: Iterable = (1, 1, 1)
     ):
@@ -751,10 +749,11 @@ class Item:
 
     #region 渲染
 
-    def create_renderer(self) -> Renderer:
+    def create_renderer(self):
+        from janim.gl.render import Renderer
         return Renderer()
 
-    def render(self, data: RenderData) -> None:
+    def render(self, data) -> None:
         if not self.renderer:
             return
         

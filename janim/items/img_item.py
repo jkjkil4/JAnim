@@ -5,7 +5,6 @@ from janim.items.item import Item
 from janim.utils.space_ops import get_norm
 
 from janim.gl.texture import Texture
-from janim.gl.render import ImgItemRenderer
 
 class ImgItem(Item):
     def __init__(
@@ -21,7 +20,8 @@ class ImgItem(Item):
 
         self.set_size(height * self.texture.img.width() / self.texture.img.height(), height)
     
-    def create_renderer(self) -> ImgItemRenderer:
+    def create_renderer(self):
+        from janim.gl.render import ImgItemRenderer
         return ImgItemRenderer()
     
     def get_horizontal_vect(self) -> np.ndarray:

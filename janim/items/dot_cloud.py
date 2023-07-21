@@ -5,8 +5,6 @@ import numpy as np
 
 from janim.items.item import Item
 from janim.utils.iterables import resize_array
-from janim.gl.render import DotCloudRenderer
-
 from janim.constants import *
 
 class DotCloud(Item):
@@ -37,7 +35,8 @@ class DotCloud(Item):
         super().points_count_changed()
         self.needs_new_radii = True
     
-    def create_renderer(self) -> DotCloudRenderer:
+    def create_renderer(self):
+        from janim.gl.render import DotCloudRenderer
         return DotCloudRenderer()
     
     def set_radius(self, radius: float | Iterable[float]):

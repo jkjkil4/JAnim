@@ -20,8 +20,6 @@ from janim.utils.bezier import (
 )
 from janim.utils.functions import safe_call_same
 
-from janim.gl.render import VItemRenderer
-
 DEFAULT_STROKE_WIDTH = 0.05
 
 class VItem(Item):
@@ -83,7 +81,8 @@ class VItem(Item):
 
         return copy_item
     
-    def create_renderer(self) -> VItemRenderer:
+    def create_renderer(self):
+        from janim.gl.render import VItemRenderer
         return VItemRenderer()
     
     #region 点坐标数据
@@ -202,8 +201,9 @@ class VItem(Item):
         if not self.has_points():
             return np.zeros(3)
 
-        p0 = self.get_start_points()
-        p1 = np.vstack([p0[1:], p0[0]])
+        points = self.get_points()
+        p0 = points[0::3]
+        p1 = points[2::3]
 
         # Each term goes through all edges [(x0, y0, z0), (x1, y1, z1)]
         sums = p0 + p1
@@ -612,4 +612,9 @@ class VItem(Item):
         return self
 
     #endregion
+
+class VGroup(VItem):
+    def __init__(self, *items: VItem) -> None:
+        super().__init__()
+        self.add(*items)
 

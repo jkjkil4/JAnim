@@ -8,6 +8,9 @@ from PySide6.QtOpenGL import *
 from OpenGL.GL import *
 
 from janim.constants import *
+from janim.items.dot_cloud import DotCloud
+from janim.items.vitem import VItem
+from janim.items.img_item import ImgItem
 
 class ShaderProgram(QOpenGLShaderProgram):
     '''
@@ -169,7 +172,7 @@ class DotCloudRenderer(Renderer):
         self.vao = self.genVertexArrays(1)
         self.vbo_points, self.vbo_rgbas, self.vbo_radii = self.genBuffers(3)
     
-    def update(self, item) -> None:
+    def update(self, item: DotCloud) -> None:
         self.shader.bind()
         glBindVertexArray(self.vao)
 
@@ -199,7 +202,7 @@ class DotCloudRenderer(Renderer):
 
         glBindVertexArray(0)
     
-    def render(self, item, data: RenderData) -> None:
+    def render(self, item: DotCloud, data: RenderData) -> None:
         self.shader.bind()
 
         self.shader.setFloat('anti_alias_width', data.anti_alias_width)
@@ -227,7 +230,7 @@ class VItemRenderer(Renderer):
         
         self.vbo_fill_rgbas = self.genBuffers(1)
 
-    def update_stroke(self, item) -> None:        
+    def update_stroke(self, item: VItem) -> None:        
         self.shader_stroke.bind()
         glBindVertexArray(self.vao_stroke)
 
@@ -264,7 +267,7 @@ class VItemRenderer(Renderer):
 
         glBindVertexArray(0)
 
-    def update_fill(self, item) -> None:
+    def update_fill(self, item: VItem) -> None:
         self.shader_fill.bind()
         glBindVertexArray(self.vao_fill)
 
@@ -285,7 +288,7 @@ class VItemRenderer(Renderer):
 
         glBindVertexArray(0)
 
-    def update(self, item) -> None:
+    def update(self, item: VItem) -> None:
         if item.points_count() < 3:
             return
         
@@ -299,7 +302,7 @@ class VItemRenderer(Renderer):
         self.update_stroke(item)
         self.update_fill(item)
 
-    def render_stroke(self, item, data: RenderData, z_offset: float) -> None:
+    def render_stroke(self, item: VItem, data: RenderData, z_offset: float) -> None:
         self.shader_stroke.bind()
         self.shader_stroke.setFloat('anti_alias_width', data.anti_alias_width)
         self.shader_stroke.setMat4('view_matrix', data.view_matrix)
@@ -313,7 +316,7 @@ class VItemRenderer(Renderer):
         glDrawArrays(GL_TRIANGLES, 0, item.points_count())
         glBindVertexArray(0)
 
-    def render_fill(self, item, data: RenderData) -> None:
+    def render_fill(self, item: VItem, data: RenderData) -> None:
         triangulation = item.get_triangulation()
 
         self.shader_fill.bind()
@@ -327,7 +330,7 @@ class VItemRenderer(Renderer):
         glDrawElements(GL_TRIANGLES, len(triangulation), GL_UNSIGNED_INT, triangulation)
         glBindVertexArray(0)
 
-    def render(self, item, data: RenderData) -> None:
+    def render(self, item: VItem, data: RenderData) -> None:
         if item.points_count() < 3:
             return
 
@@ -371,7 +374,7 @@ class ImgItemRenderer(Renderer):
 
         glBindVertexArray(0)
 
-    def update(self, item) -> None:
+    def update(self, item: ImgItem) -> None:
         self.shader.bind()
 
         points = item.get_points()
@@ -395,7 +398,7 @@ class ImgItemRenderer(Renderer):
 
         glBindVertexArray(0)
 
-    def render(self, item, data: RenderData) -> None:
+    def render(self, item: ImgItem, data: RenderData) -> None:
         glActiveTexture(GL_TEXTURE0)
         item.texture.bind()
 
