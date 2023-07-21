@@ -242,7 +242,7 @@ void main()
         );
 
     // xyz_to_uv
-    bool too_steep;
+    bool too_steep = false;
     mat4 xyz_to_uv;
     float uv_scale_factor;
     if (!bool(is_linear)) {
@@ -276,8 +276,12 @@ void main()
         float scaled_aaw = anti_alias_width / proj_scale_factor;
 
         if (bool(is_linear)) {
-            float sgn = vec2(-1, 1)[i % 2];
-            uv_coords = vec2(0, sgn * (0.5 * stroke_width));
+            if (too_steep) {
+                uv_coords = (xyz_to_uv * v4_corner).xy;
+            } else {
+                float sgn = vec2(-1, 1)[i % 2];
+                uv_coords = vec2(0, sgn * (0.5 * stroke_width));
+            }
             color = v_color[i / 2];
             uv_stroke_width = stroke_width;
             uv_anti_alias_width = scaled_aaw;

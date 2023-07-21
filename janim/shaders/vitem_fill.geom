@@ -10,6 +10,9 @@ out vec2 uv_coords;
 out vec4 color;
 out float is_corner;
 out float is_convex;
+out float uv_anti_alias_width;
+
+uniform float anti_alias_width;
 
 uniform mat4 view_matrix;
 uniform mat4 proj_matrix;
@@ -136,7 +139,6 @@ void main()
         return;
 
     is_corner = float(v_idx[0] + 1 == v_idx[1] && v_idx[0] + 2 == v_idx[2]);
-    mat4 matrix = wnd_matrix * proj_matrix * view_matrix;
     if (bool(is_corner)) {
         vec3 v10 = verts[0] - verts[1];
         vec3 v12 = verts[2]- verts[1];
@@ -148,25 +150,43 @@ void main()
 
         bool too_steep;
         mat4 xyz_to_uv = get_xyz_to_uv(verts[0], verts[1], verts[2], 2.0, too_steep);
-        if (too_steep)
-            return;
 
         is_convex = float(dot(curve_normal, vitem_unit_normal) > 0);
 
         for (int i = 0; i < 3; i++) {
             vec4 v4_vert = vec4(verts[i], 1.0);
+            vec4 view_vert = view_matrix * v4_vert;
+            vec4 proj_vert = proj_matrix * view_vert;
 
-            gl_Position = matrix * v4_vert;
+            gl_Position = wnd_matrix * proj_vert;
             gl_Position.z *= 0.1;
 
             uv_coords = (xyz_to_uv * v4_vert).xy;
             color = v_color[i];
+
+            // 有无更好的方法计算 view_vert 到 proj_vert 的缩放系数？
+            vec4 proj_vert_test = proj_matrix * (view_vert + vec4(1.0, 0.0, 0.0, 0.0));
+            float proj_scale_factor = proj_vert_test.x / proj_vert_test.w - proj_vert.x / proj_vert.w;
+
+            float scaled_aaw = anti_alias_width / proj_scale_factor;
+
+            if (too_steep) {
+                uv_anti_alias_width = scaled_aaw;
+            } else {
+                float f1 = length(xyz_to_uv[0].xyz);
+                float f2 = length(xyz_to_uv[1].xyz);
+                float f3 = length(xyz_to_uv[2].xyz);
+                float uv_scale_factor = f1 + f2 + f3 - min(f1, min(f2, f3)) - max(f1, max(f2, f3));
+
+                uv_anti_alias_width = scaled_aaw * uv_scale_factor;
+            }
 
             EmitVertex();
         }
         EndPrimitive();
 
     } else {
+        mat4 matrix = wnd_matrix * proj_matrix * view_matrix;
         for (int i = 0; i < 3; i++) {
             gl_Position = matrix * vec4(verts[i], 1.0);
             gl_Position.z *= 0.1;

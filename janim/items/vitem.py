@@ -141,10 +141,14 @@ class VItem(Item):
         return self
     
     def add_conic_to(self, handle: np.ndarray, point: np.ndarray):
+        end = self.get_points()[-1]
+        if self.consider_points_equals(end, handle):
+            handle = (end + point) / 2
+        
         if self.has_new_path_started():
             self.append_points([handle, point])
         else:
-            self.append_points([self.get_points()[-1], handle, point])
+            self.append_points([end, handle, point])
         return self
     
     def add_points_as_corners(self, points: Iterable[np.ndarray]):
