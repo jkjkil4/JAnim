@@ -8,7 +8,8 @@ from janim.utils.iterables import resize_with_interpolation, resize_array
 from janim.utils.space_ops import (
     get_norm, get_unit_normal,
     z_to_vector, cross2d,
-    earclip_triangulation
+    earclip_triangulation,
+    angle_between_vectors
 )
 from janim.utils.bezier import (
     interpolate, 
@@ -17,7 +18,7 @@ from janim.utils.bezier import (
     get_quadratic_approximation_of_cubic,
     partial_quadratic_bezier_points
 )
-from janim.utils.functions import safe_call
+from janim.utils.functions import safe_call_same
 
 from janim.gl.render import VItemRenderer
 
@@ -87,9 +88,9 @@ class VItem(Item):
     
     #region 点坐标数据
     
-    def set_points(self, points: Iterable):
-        super().set_points(resize_array(np.array(points), len(points) // 3 * 3))
-        return self
+    # def set_points(self, points: Iterable):
+    #     super().set_points(resize_array(np.array(points), len(points) // 3 * 3))
+    #     return self
     
     def curves_count(self) -> int:
         return self.points_count() // 3
@@ -120,6 +121,13 @@ class VItem(Item):
     def has_new_path_started(self) -> bool:
         return self.points_count() % 3 == 1
     
+    def move_to(self, point: np.ndarray):
+        if self.has_new_path_started():
+            self.points[-1] = point
+            self.points_changed()
+        else:
+            self.append_points([point])
+    
     def add_line_to(self, point: np.ndarray):
         end = self.get_points()[-1]
         alphas = np.linspace(0, 1, 3)
@@ -127,7 +135,17 @@ class VItem(Item):
             interpolate(end, point, a)
             for a in alphas
         ]
-        self.append_points(points)
+        if self.has_new_path_started():
+            self.append_points(points[1:])
+        else:
+            self.append_points(points)
+        return self
+    
+    def add_conic_to(self, handle: np.ndarray, point: np.ndarray):
+        if self.has_new_path_started():
+            self.append_points([handle, point])
+        else:
+            self.append_points([self.get_points()[-1], handle, point])
         return self
     
     def add_points_as_corners(self, points: Iterable[np.ndarray]):
@@ -299,7 +317,11 @@ class VItem(Item):
 
         if recurse:
             for item in self.get_family()[1:]:
-                safe_call(item, 'set_stroke_width', None, stroke_width, False)
+                safe_call_same(
+                    item, None, 
+                    stroke_width=stroke_width, 
+                    recurse=False
+                )
 
         stroke_width = resize_with_interpolation(np.array(stroke_width), max(1, self.points_count()))
         if len(stroke_width) == len(self.stroke_width):
@@ -341,7 +363,12 @@ class VItem(Item):
 
         if recurse:
             for item in self.get_family()[1:]:
-                safe_call(item, 'set_fill_color', None, color, opacity, False)
+                safe_call_same(
+                    item, None, 
+                    color=color, 
+                    opacity=opacity, 
+                    recurse=False
+                )
         
         if color is None:
             color = self.get_fill_rgbas()[:, :3]
@@ -537,13 +564,51 @@ class VItem(Item):
         return np.vstack(new_points)
 
     def insert_n_curves(self, n: int, recurse: bool = True):
-        for item in (self.get_family() if recurse else [self]):
-            if item.curves_count() > 0:
-                new_points = item.insert_n_curves_to_point_list(n, item.get_points())
-                # TODO: [L] this should happen in insert_n_curves_to_point_list
-                if item.has_new_path_started():
-                    new_points = np.vstack([new_points, item.get_points()[-1]])
-                item.set_points(new_points)
+        if self.curves_count() > 0:
+            new_points = self.insert_n_curves_to_point_list(n, self.get_points())
+            # TODO: [L] this should happen in insert_n_curves_to_point_list
+            if self.has_new_path_started():
+                new_points = np.vstack([new_points, self.get_points()[-1]])
+            self.set_points(new_points)
+
+        if recurse:
+            for item in self.get_family()[1:]:
+                safe_call_same(
+                    item, None, 
+                    n=n, 
+                    recurse=False
+                )
+        
+        return self
+    
+    def subdivide_sharp_curves(
+        self,
+        angle_threshold: float = 30 * DEGREES,
+        recurse: bool = True
+    ):
+        if self.curves_count() > 0:
+            new_points = []
+            for tup in self.get_bezier_tuples():
+                angle = angle_between_vectors(tup[1] - tup[0], tup[2] - tup[1])
+                if angle > angle_threshold:
+                    n = int(np.ceil(angle / angle_threshold))
+                    alphas = np.linspace(0, 1, n + 1)
+                    new_points.extend([
+                        partial_quadratic_bezier_points(tup, a1, a2)
+                        for a1, a2 in zip(alphas, alphas[1:])
+                    ])
+                else:
+                    new_points.append(tup)
+            self.set_points(np.vstack(new_points))
+
+        if recurse:
+            for item in self.get_family()[1:]:
+                safe_call_same(
+                    item, None, 
+                    angle_threshold=angle_threshold, 
+                    recurse=False
+                )
+
         return self
 
     #endregion

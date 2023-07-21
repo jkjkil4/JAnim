@@ -1,3 +1,4 @@
+import inspect
 
 def safe_call(obj, method_name: str, default_ret=None, *args, **kwargs):
     if hasattr(obj, method_name):
@@ -5,6 +6,9 @@ def safe_call(obj, method_name: str, default_ret=None, *args, **kwargs):
         if callable(method):
             return method(*args, **kwargs)
     return default_ret
+
+def safe_call_same(obj, default_ret=None, *args, **kwargs):
+    safe_call(obj, inspect.currentframe().f_back.f_code.co_name, default_ret, *args, **kwargs)
 
 def get_proportional_scale_size(src_width, src_height, tg_width, tg_height):
     factor1 = tg_width / src_width

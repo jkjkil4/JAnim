@@ -26,11 +26,11 @@ def parse_cli() -> argparse.Namespace:
             action="store_true",
             help="Write all the scenes from a file",
         )
-        parser.add_argument(
-            "--config",
-            action="store_true",
-            help="Guide for automatic configuration",
-        )
+        # parser.add_argument(
+        #     "--config",
+        #     action="store_true",
+        #     help="Guide for automatic configuration",
+        # )
         parser.add_argument(
             "-c", "--color",
             help="Background color",
@@ -66,14 +66,14 @@ def get_configuration(args: argparse.Namespace):
     custom_config_exists = os.path.exists(custom_config_file)
 
     if not default_config_exists:
-        log.error(f'Cannot find "{default_config_file}", please check the integrity of JAnim')
+        log.error(f'Cannot find `{default_config_file}`, please check the integrity of JAnim')
         sys.exit(2)
     
     if not custom_config_exists:
-        log.info(f"Using the default configuration file, which you can modify in `{default_config_file}`")
+        log.info(f'Using the default configuration file, which you can modify in `{default_config_file}`')
         log.info(
-            "If you want to create a local configuration file, you can create a file named"
-            " `custom_config.yml`, or run `janim --config`"
+            'If you want to create a local configuration file, you can create a file named'
+            ' `custom_config.yml`, or run `janim --config`'
         )
     
     # 读取默认配置
@@ -84,12 +84,13 @@ def get_configuration(args: argparse.Namespace):
     if custom_config_exists:
         with open(custom_config_file, 'r') as file:
             custom_config = yaml.safe_load(file)
-            # 将 custom_config 的内容合并至 config 中
-            # 以达到 自定义配置 覆盖 默认配置 的目的
-            config = merge_dicts_recursively(
-                config,
-                custom_config
-            )
+            if custom_config:
+                # 将 custom_config 的内容合并至 config 中
+                # 以达到 自定义配置 覆盖 默认配置 的目的
+                config = merge_dicts_recursively(
+                    config,
+                    custom_config
+                )
 
     return config
 

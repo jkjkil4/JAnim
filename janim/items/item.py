@@ -6,7 +6,6 @@ import sys
 import copy
 
 from janim.constants import *
-from janim.utils.functions import safe_call
 from janim.utils.space_ops import rotation_matrix, get_norm, angle_of_vector
 from janim.utils.color import hex_to_rgb
 from janim.utils.iterables import resize_array
@@ -295,6 +294,15 @@ class Item:
     
     def get_points(self) -> np.ndarray:
         return self.points
+    
+    def get_all_points(self) -> np.ndarray:
+        return np.vstack([
+            self.get_points(),
+            *(
+                item.get_all_points()
+                for item in self
+            )
+        ])
 
     def append_points(self, points: Iterable):
         '''
@@ -328,7 +336,7 @@ class Item:
     def reverse_points(self, recurse=True):
         if recurse:
             for item in self.items:
-                safe_call(item, 'reverse_points')
+                item.reverse_points()
         self.set_points(self.get_points()[::-1])
         self.set_rgbas(self.get_rgbas()[::-1])
         return self

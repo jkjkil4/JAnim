@@ -10,9 +10,9 @@ def main():
     if args.version:
         return
     
-    if args.config:
-        jconfig.init_customization()
-        return
+    # if args.config:
+    #     jconfig.init_customization()
+    #     return
     
     config = jconfig.get_configuration(args)
     scenes = janim.extract_scene.main(args, config)
