@@ -35,18 +35,18 @@ class ShaderProgram(QOpenGLShaderProgram):
     )
 
     # 存储可复用的着色器对象
-    filename_to_shader_map: dict[str, ShaderProgram] = {}
+    filepath_to_shader_map: dict[str, ShaderProgram] = {}
 
     @staticmethod
-    def get(filename: str) -> ShaderProgram:
+    def get(filepath: str) -> ShaderProgram:
         '''
         若 `filename` 对应着色器先前已创建过，则复用先前的对象，否则另外创建新的对象并记录
         '''
-        if filename in ShaderProgram.filename_to_shader_map:
-            return ShaderProgram.filename_to_shader_map[filename]
+        if filepath in ShaderProgram.filepath_to_shader_map:
+            return ShaderProgram.filepath_to_shader_map[filepath]
         
-        shader = ShaderProgram(filename)
-        ShaderProgram.filename_to_shader_map[filename] = shader
+        shader = ShaderProgram(filepath)
+        ShaderProgram.filepath_to_shader_map[filepath] = shader
         return shader
     
     def __init__(self, path_name: str, parent: Optional[QObject] = None) -> None:

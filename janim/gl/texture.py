@@ -11,25 +11,25 @@ class Texture(QOpenGLTexture):
     '''
 
     # 存储可复用的纹理对象
-    filename_to_texture_map: dict[str, Texture] = {}
+    filepath_to_texture_map: dict[str, Texture] = {}
 
     @staticmethod
-    def get(filename: str) -> Texture:
+    def get(filepath: str) -> Texture:
         '''
         若 `filename` 对应纹理先前已创建过，则复用先前的对象，否则另外创建新的对象
         '''
 
-        if filename in Texture.filename_to_texture_map:
-            return Texture.filename_to_texture_map[filename]
+        if filepath in Texture.filepath_to_texture_map:
+            return Texture.filepath_to_texture_map[filepath]
         
-        texture = Texture(filename)
-        Texture.filename_to_texture_map[filename] = texture
+        texture = Texture(filepath)
+        Texture.filepath_to_texture_map[filepath] = texture
         return texture
     
     def release_all() -> None:
-        for texture in Texture.filename_to_texture_map.values():
+        for texture in Texture.filepath_to_texture_map.values():
             texture.destroy()
-        Texture.filename_to_texture_map.clear()
+        Texture.filepath_to_texture_map.clear()
     
     def __init__(self, filename: str) -> None:
         super().__init__(QOpenGLTexture.Target.Target2D)
