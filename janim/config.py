@@ -7,7 +7,13 @@ import yaml
 from janim.logger import log
 from janim.utils.dict_ops import merge_dicts_recursively
 
+JANIM_ARGS = None
+
 def parse_cli() -> argparse.Namespace:
+    global JANIM_ARGS
+    if JANIM_ARGS is not None:
+        return JANIM_ARGS
+    
     try:
         parser = argparse.ArgumentParser()
         module_location = parser.add_mutually_exclusive_group()
@@ -44,7 +50,9 @@ def parse_cli() -> argparse.Namespace:
             action="store_true",
             help="Display the version of janim"
         )
-        return parser.parse_args()
+
+        JANIM_ARGS = parser.parse_args()
+        return JANIM_ARGS
     except argparse.ArgumentError as err:
         log.error(str(err))
         sys.exit(2)
@@ -56,7 +64,15 @@ def get_janim_dir() -> str:
     return os.path.abspath(os.path.join(janim_dir, '..'))
 
 
-def get_configuration(args: argparse.Namespace):
+JANIM_CONFIGURATION = None
+
+def get_configuration():
+    global JANIM_CONFIGURATION
+    if JANIM_CONFIGURATION is not None:
+        return JANIM_CONFIGURATION
+    
+    args = JANIM_ARGS
+    
     # 默认配置路径 与 自定义配置路径
     default_config_file = os.path.join(get_janim_dir(), 'janim', 'default_config.yml')
     custom_config_file = args.config_file or 'custom_config.yml'
@@ -92,6 +108,7 @@ def get_configuration(args: argparse.Namespace):
                     custom_config
                 )
 
+    JANIM_CONFIGURATION = config
     return config
 
 def init_customization() -> None:

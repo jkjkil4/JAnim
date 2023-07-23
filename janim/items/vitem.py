@@ -120,7 +120,7 @@ class VItem(Item):
     def has_new_path_started(self) -> bool:
         return self.points_count() % 3 == 1
     
-    def move_to(self, point: np.ndarray):
+    def path_move_to(self, point: np.ndarray):
         if self.has_new_path_started():
             self.points[-1] = point
             self.points_changed()
@@ -618,7 +618,7 @@ class VItem(Item):
     #endregion
 
 class VGroup(VItem):
-    def __init__(self, *items: VItem) -> None:
-        super().__init__()
+    def __init__(self, *items: VItem, **kwargs) -> None:
+        super().__init__(**kwargs)
         self.add(*items)
 

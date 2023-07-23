@@ -14,7 +14,7 @@ def main():
     #     jconfig.init_customization()
     #     return
     
-    config = jconfig.get_configuration(args)
+    config = jconfig.get_configuration()
     scenes = janim.extract_scene.main(args, config)
     
     for scene in scenes:

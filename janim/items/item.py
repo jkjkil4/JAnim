@@ -17,7 +17,7 @@ class Item:
     def __init__(
         self,
         color: JAnimColor = WHITE,
-        opacity: float = 1.0
+        opacity: float = 1.0,
     ) -> None:
         # 基本结构
         self.parent: Item = None
@@ -800,8 +800,8 @@ class Point(Item):
 
 
 class Group(Item):
-    def __init__(self, *items: Item) -> None:
-        super().__init__()
+    def __init__(self, *items: Item, **kwargs) -> None:
+        super().__init__(**kwargs)
         self.add(*items)
 
 

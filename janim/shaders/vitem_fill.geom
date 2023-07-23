@@ -138,7 +138,7 @@ void main()
     if (v_color[0][3] == 0.0 && v_color[1][3] == 0.0 && v_color[2][3] == 0.0)
         return;
 
-    is_corner = float(v_idx[0] + 1 == v_idx[1] && v_idx[0] + 2 == v_idx[2]);
+    is_corner = float(v_idx[0] % 3 == 0 &&  v_idx[0] + 1 == v_idx[1] && v_idx[0] + 2 == v_idx[2]);
     if (bool(is_corner)) {
         vec3 v10 = verts[0] - verts[1];
         vec3 v12 = verts[2]- verts[1];

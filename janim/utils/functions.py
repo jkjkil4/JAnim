@@ -15,3 +15,6 @@ def get_proportional_scale_size(src_width, src_height, tg_width, tg_height):
     factor2 = tg_height / src_height
     factor = min(factor1, factor2)
     return src_width * factor, src_height * factor
+
+def decode_utf8(utf8: str) -> str:
+    return bytes(utf8, encoding='utf-8').decode('utf-8')
