@@ -12,17 +12,17 @@ from janim.constants import *
 from janim.items.item import Item, MethodGroup
 from janim.utils.space_ops import get_unit_normal, get_norm
 from janim.utils.functions import get_proportional_scale_size
+from janim.config import get_configuration
 
 from janim.gl.render import RenderData
 
 class Scene:
     anti_alias_width = 0.015
+    background_color = None
 
-    def __init__(
-        self,
-        background_color: JAnimColor = BLACK
-    ) -> None:
-        self.background_color = background_color
+    def __init__(self) -> None:
+        if self.background_color is None:
+            self.background_color = get_configuration()['style']['background_color']
 
         self.camera = Camera()
 

@@ -61,16 +61,16 @@ def prompt_user_for_choice(scene_classes):
         sys.exit(1)
 
 
-def get_scenes_to_render(scene_classes, scene_config, args, config):
+def get_scenes_to_render(scene_classes, args, config):
     if args.write_all:
-        return [sc(**scene_config) for sc in scene_classes]
+        return [sc() for sc in scene_classes]
 
     result = []
     for scene_name in args.scene_names:
         found = False
         for scene_class in scene_classes:
             if scene_class.__name__ == scene_name:
-                scene = scene_class(**scene_config)
+                scene = scene_class()
                 result.append(scene)
                 found = True
                 break
@@ -82,7 +82,7 @@ def get_scenes_to_render(scene_classes, scene_config, args, config):
         result = [scene_classes[0]]
     else:
         result = prompt_user_for_choice(scene_classes)
-    return [scene_class(**scene_config) for scene_class in result]
+    return [scene_class() for scene_class in result]
 
 
 def get_scene_classes_from_module(module):
@@ -100,14 +100,11 @@ def get_scene_classes_from_module(module):
 
 def main(args: argparse.Namespace, config: dict):
     module = get_module(args.file)
-    scene_config = {
-        'background_color': args.color or config['style']['background_color']
-    }
     
     if module is None:
         # If no module was passed in, just play the blank scene
-        return [BlankScene(**scene_config)]
+        return [BlankScene()]
 
     all_scene_classes = get_scene_classes_from_module(module)
-    scenes = get_scenes_to_render(all_scene_classes, scene_config, args, config)
+    scenes = get_scenes_to_render(all_scene_classes, args, config)
     return scenes
