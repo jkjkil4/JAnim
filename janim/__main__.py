@@ -1,7 +1,7 @@
 from janim import __version__
 
 import janim.config as jconfig
-import janim.extract_scene
+import janim.scene.extract_scene as extract_scene
 
 def main():
     print(f"JAnim \033[32mv{__version__}\033[0m")
@@ -15,7 +15,7 @@ def main():
     #     return
     
     config = jconfig.get_configuration()
-    scenes = janim.extract_scene.main(args, config)
+    scenes = extract_scene.main(args, config)
     
     for scene in scenes:
         scene.run()

@@ -16,4 +16,4 @@ from janim.items.text.text import *
 
 from janim.constants import *
 
-from janim.scene import *
+from janim.scene.scene import *

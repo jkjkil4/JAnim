@@ -3,7 +3,7 @@ import sys, os
 import argparse
 import importlib.util
 
-from janim.scene import Scene
+from janim.scene.scene import Scene
 from janim.logger import log
 
 

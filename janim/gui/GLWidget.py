@@ -10,7 +10,7 @@ from PySide6.QtOpenGL import *
 from OpenGL.GL import *
 
 from janim.constants import *
-from janim.scene import Scene
+from janim.scene.scene import Scene
 from janim.utils.space_ops import normalize
 from janim.utils.color import hex_to_rgb
 

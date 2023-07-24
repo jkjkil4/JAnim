@@ -29,6 +29,8 @@ class Scene:
         # relation
         self.items: list[Item] = []
 
+        # self.loop_helper = LoopHelper(frame_rate=get_configuration()['frame_rate'])
+
     #region 基本结构
 
     def __getitem__(self, value) -> Item | MethodGroup:
@@ -98,7 +100,6 @@ class Scene:
         
 
     def construct(self) -> None:
-        # TODO: construct
         pass
 
     def play(self) -> None:
@@ -106,7 +107,7 @@ class Scene:
         pass
 
     def wait(self) -> None:
-        # TODO: wait
+        
         pass
 
     #endregion
