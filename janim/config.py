@@ -71,6 +71,8 @@ def get_configuration():
     if JANIM_CONFIGURATION is not None:
         return JANIM_CONFIGURATION
     
+    if JANIM_ARGS is None:
+        parse_cli()
     args = JANIM_ARGS
     
     # 默认配置路径 与 自定义配置路径

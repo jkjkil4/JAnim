@@ -19,7 +19,6 @@ class GLWidget(QOpenGLWidget):
     frame_rate = 60
     pan_sensitivity = 0.3
     move_sensitivity = 0.02
-    wheel_step = 0.5
 
     def __init__(
         self, 
@@ -109,6 +108,6 @@ class GLWidget(QOpenGLWidget):
         super().wheelEvent(event)
         delta = event.angleDelta().y()
         
-        self.scene.camera.scale(0.98 if delta > 0 else 1 / 0.98)
+        self.scene.camera.scale(0.96 if delta > 0 else 1 / 0.96)
     
     #endregion
