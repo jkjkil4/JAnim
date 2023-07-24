@@ -7,7 +7,7 @@ from janim.constants import *
 from janim.config import get_configuration
 from janim.items.item import Item
 from janim.items.vitem import VItem, VGroup
-from janim.utils.font import get_fontpath_by_name, get_font_face
+from janim.utils.font import Font, get_fontpath_by_name
 from janim.utils.functions import decode_utf8
 from janim.utils.space_ops import normalize, get_norm
 
@@ -15,44 +15,24 @@ DEFAULT_FONT_SIZE = 24
 ORIG_FONT_SIZE = 48
 
 class TextChar(VItem):
-    def __init__(self, char: str, fonts: list[FT.Face], font_size: float, **kwargs) -> None:
+    def __init__(self, char: str, fonts: list[Font], font_size: float, **kwargs) -> None:
         super().__init__(**kwargs)
         self.char = char
 
         unicode = decode_utf8(char)
 
         # 确定使用的字体
-        face_render = fonts[0]
-        for face in fonts:
-            idx = face.get_char_index(unicode)
+        font_render = fonts[0]
+        for font in fonts:
+            idx = font.face.get_char_index(unicode)
             if idx != 0:
-                face_render = face
+                font_render = font
                 break
         
-        # 读取字符
-        face_render.load_char(char, FT.FT_LOAD_DEFAULT | FT.FT_LOAD_NO_BITMAP)
-        glyph: FT.Glyph = face.glyph
-        outline: FT.Outline = glyph.outline
+        outline, advance = font_render.get_glyph_data(unicode)
+        self.set_points(outline)
 
-        def f(p) -> np.ndarray:
-            return np.array([p.x, p.y, 0])
-        
-        def move_to(v_point, _):
-            self.path_move_to(f(v_point))
-
-        def line_to(v_point, _):
-            self.add_line_to(f(v_point))   
-
-        def conic_to(v_handle, v_point, _):
-            self.add_conic_to(f(v_handle), f(v_point))   
-
-        def cubic_to(v_handle1, v_handle2, v_end, _):
-            raise NotImplementedError('Cubic curve is not supported')
-        
-        # 解析轮廓
-        outline.decompose(outline, move_to, line_to, conic_to, cubic_to)
-        self.subdivide_sharp_curves()
-
+        # 缩放
         font_scale_factor = font_size / ORIG_FONT_SIZE
         frame_scale_factor = PIXEL_TO_FRAME_RATIO / 32
         scale_factor = font_scale_factor * frame_scale_factor
@@ -62,7 +42,7 @@ class TextChar(VItem):
         self.mark = Item()
         self.mark.set_points([
             ORIGIN, RIGHT * font_scale_factor, UP * font_scale_factor,
-            [glyph.advance.x * scale_factor, glyph.advance.y * scale_factor, 0]
+            [advance[0] * scale_factor, advance[1] * scale_factor, 0]
         ])
         self.add(self.mark, is_helper=True)
     
@@ -84,7 +64,7 @@ class TextChar(VItem):
 class TextLine(VGroup):
     CharClass = TextChar
 
-    def __init__(self, text: str, fonts: list[FT.Face],font_size: float, **kwargs) -> None:
+    def __init__(self, text: str, fonts: list[Font],font_size: float, **kwargs) -> None:
         self.text = text
 
         super().__init__(
@@ -149,14 +129,14 @@ class Text(VGroup):
         if isinstance(font, str):
             font = [font]
         font.append(get_configuration()['style']['font'])
-        font = [
-            get_font_face(get_fontpath_by_name(name)) 
+        fonts = [
+            Font.get(get_fontpath_by_name(name)) 
             for name in font
         ]
 
         super().__init__(
             *[
-                self.LineClass(line_text, fonts=font, font_size=font_size) 
+                self.LineClass(line_text, fonts=fonts, font_size=font_size) 
                 for line_text in text.split('\n')
             ],
             fill_opacity=fill_opacity,

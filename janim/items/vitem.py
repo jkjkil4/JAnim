@@ -585,25 +585,32 @@ class VItem(Item):
         
         return self
     
+    @staticmethod
+    def subdivide_sharp_curves_from_points(
+        points: np.ndarray,
+        angle_threshold: float = 30 * DEGREES
+    ) -> np.ndarray:
+        new_points = []
+        for tup in VItem.get_bezier_tuples_from_points(points):
+            angle = angle_between_vectors(tup[1] - tup[0], tup[2] - tup[1])
+            if angle > angle_threshold:
+                n = int(np.ceil(angle / angle_threshold))
+                alphas = np.linspace(0, 1, n + 1)
+                new_points.extend([
+                    partial_quadratic_bezier_points(tup, a1, a2)
+                    for a1, a2 in zip(alphas, alphas[1:])
+                ])
+            else:
+                new_points.append(tup)
+        return np.vstack(new_points)
+
     def subdivide_sharp_curves(
         self,
         angle_threshold: float = 30 * DEGREES,
         recurse: bool = True
     ):
         if self.curves_count() > 0:
-            new_points = []
-            for tup in self.get_bezier_tuples():
-                angle = angle_between_vectors(tup[1] - tup[0], tup[2] - tup[1])
-                if angle > angle_threshold:
-                    n = int(np.ceil(angle / angle_threshold))
-                    alphas = np.linspace(0, 1, n + 1)
-                    new_points.extend([
-                        partial_quadratic_bezier_points(tup, a1, a2)
-                        for a1, a2 in zip(alphas, alphas[1:])
-                    ])
-                else:
-                    new_points.append(tup)
-            self.set_points(np.vstack(new_points))
+            self.set_points(VItem.subdivide_sharp_curves_from_points(self.get_points(), angle_threshold))
 
         if recurse:
             for item in self.get_family()[1:]:

@@ -289,10 +289,11 @@ class VItemRenderer(Renderer):
         glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 4 * FLOAT_SIZE, ctypes.c_void_p(0))
         glEnableVertexAttribArray(1)
 
+        glBindBuffer(GL_ARRAY_BUFFER, 0)
+
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, self.ebo_fill_triangulation)
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, triangulation_data_size, triangulation, GL_STATIC_DRAW)
-
-        glBindBuffer(GL_ARRAY_BUFFER, 0)
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0)
 
         glBindVertexArray(0)
 
@@ -335,7 +336,9 @@ class VItemRenderer(Renderer):
         self.shader_fill.setVec3('vitem_unit_normal', *item.get_unit_normal())
 
         glBindVertexArray(self.vao_fill)
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, self.ebo_fill_triangulation)
         glDrawElements(GL_TRIANGLES, len(triangulation), GL_UNSIGNED_INT, None)
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0)
         glBindVertexArray(0)
 
     def render(self, item: VItem, data: RenderData) -> None:

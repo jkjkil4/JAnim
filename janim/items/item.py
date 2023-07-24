@@ -279,6 +279,9 @@ class Item:
         '''
         if not isinstance(points, np.ndarray):
             points = np.array(points)
+        if len(points) == 0:
+            self.clear_points()
+            return self
         assert(points.ndim == 2)
         assert(points.shape[1] == 3)
         
