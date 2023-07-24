@@ -1,7 +1,6 @@
 from __future__ import annotations
 from typing import Tuple
 
-import matplotlib.font_manager
 from fontTools.ttLib import TTFont, TTCollection
 import freetype as FT
 from functools import lru_cache
@@ -24,8 +23,9 @@ def get_fontpath_by_name(font_name: str) -> str:
     global fontpaths
 
     if fontpaths is None:
-        fontpaths = matplotlib.font_manager.findSystemFonts()
-
+        from janim.utils.font_manager import findSystemFonts
+        fontpaths = findSystemFonts()
+    
     for filepath in fontpaths:
         fonts = TTCollection(filepath).fonts    \
             if filepath[-3:].endswith('ttc')    \
@@ -79,8 +79,14 @@ class Font:
 
         def conic_to(v_handle, v_point, _):
             nonlocal end_point
+            handle = f(v_handle)
             point = f(v_point)
-            points.extend([end_point, f(v_handle), point])
+
+            if np.all(end_point == handle):
+                line_to(v_point, _)
+                return
+            
+            points.extend([end_point, handle, point])
             end_point = point
 
         def cubic_to(v_handle1, v_handle2, v_point, _):

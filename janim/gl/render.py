@@ -49,6 +49,10 @@ class ShaderProgram(QOpenGLShaderProgram):
         ShaderProgram.filepath_to_shader_map[filepath] = shader
         return shader
     
+    @staticmethod
+    def release_all() -> None:
+        ShaderProgram.filepath_to_shader_map.clear()
+    
     def __init__(self, path_name: str, parent: Optional[QObject] = None) -> None:
         super().__init__(parent)
         
