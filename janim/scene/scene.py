@@ -9,6 +9,7 @@ from PySide6.QtGui import (
 )
 
 from janim.constants import *
+from janim.scene.loop_helper import LoopHelper
 from janim.items.item import Item, MethodGroup
 from janim.utils.space_ops import get_unit_normal, get_norm
 from janim.utils.functions import get_proportional_scale_size
@@ -28,8 +29,6 @@ class Scene:
 
         # relation
         self.items: list[Item] = []
-
-        # self.loop_helper = LoopHelper(frame_rate=get_configuration()['frame_rate'])
 
     #region 基本结构
 
@@ -91,6 +90,8 @@ class Scene:
         window = MainWindow(self)
         window.show()
 
+        self.loop_helper = LoopHelper(get_configuration()['frame_rate'])
+
         try:
             self.construct()
         except:
@@ -106,8 +107,18 @@ class Scene:
         # TODO: play
         pass
 
-    def wait(self) -> None:
-        
+    def wait(self, duration: float = DEFAULT_WAIT_TIME) -> None:
+        def fn_progress(dt: float) -> None:
+            self.update_frame(dt)
+            self.emit_frame()
+        self.loop_helper.exec(fn_progress, duration)
+    
+    def update_frame(self, dt: float) -> None:
+        # TODO: update_frame
+        pass
+
+    def emit_frame(self) -> None:
+        # TODO: emit_frame
         pass
 
     #endregion
@@ -125,7 +136,7 @@ class Scene:
 
         for item in self:
             item.render(data)
-    
+
     #endregion
 
 class Camera(Item):
