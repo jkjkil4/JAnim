@@ -22,7 +22,9 @@ class DotCloud(Item):
         self.radii = np.array([self.radius], dtype=np.float32)  # radii 在所有操作中都会保持 dtype=np.float32，以便传入 shader
         self.needs_new_radii = True
 
-        self.data_to_align.update(('radii', ))
+        self.npdata_to_interpolate.update((
+            ('radii', 'get_radii', 'set_radius'),
+        ))
 
         self.set_points(points)
 

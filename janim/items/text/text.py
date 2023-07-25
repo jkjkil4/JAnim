@@ -14,7 +14,7 @@ from janim.utils.space_ops import normalize, get_norm
 DEFAULT_FONT_SIZE = 24
 ORIG_FONT_SIZE = 48
 
-class TextChar(VItem):
+class _TextChar(VItem):
     def __init__(self, char: str, fonts: list[Font], font_size: float, **kwargs) -> None:
         super().__init__(**kwargs)
         self.char = char
@@ -61,8 +61,8 @@ class TextChar(VItem):
     def get_advance_length(self) -> float:
         return get_norm(self.get_mark_advance() - self.get_mark_orig())
 
-class TextLine(VGroup):
-    CharClass = TextChar
+class _TextLine(VGroup):
+    CharClass = _TextChar
 
     def __init__(self, text: str, fonts: list[Font],font_size: float, **kwargs) -> None:
         self.text = text
@@ -96,7 +96,7 @@ class TextLine(VGroup):
             return
         
         pos: np.ndarray = None
-        def update(char: TextChar) -> None:
+        def update(char: _TextChar) -> None:
             nonlocal pos
             orig = char.get_mark_orig()
             advance = char.get_mark_advance()
@@ -111,7 +111,7 @@ class TextLine(VGroup):
 
 
 class Text(VGroup):
-    LineClass = TextLine
+    LineClass = _TextLine
 
     def __init__(
         self, 
@@ -155,7 +155,7 @@ class Text(VGroup):
         
         pos: np.ndarray = None
         vert: np.ndarray = None
-        def update(line: TextLine) -> None:
+        def update(line: _TextLine) -> None:
             nonlocal pos, vert
             pos = line.get_mark_orig()
             vert = pos - line.get_mark_up()
@@ -175,7 +175,7 @@ class Text(VGroup):
         base_buff: float = 0.85,
         center: bool = True
     ):
-        new_lines: tuple[TextLine, list[TextChar], bool] = []
+        new_lines: tuple[_TextLine, list[_TextChar], bool] = []
 
         # 遍历每行
         for line in self:
@@ -188,7 +188,7 @@ class Text(VGroup):
             # new_line 记录当前新行所包含的字符
             # eol (end of line) 记录当前新行是否是原来行的结尾
             left: np.ndarray = None
-            new_line: list[TextChar] = []
+            new_line: list[_TextChar] = []
             eol = False
 
             # 用于将 new_line 添加到 new_lines 中，并重置状态
@@ -226,7 +226,7 @@ class Text(VGroup):
         new_lines_items = []
         for orig_line, new_line, eol in new_lines:
             # 生成空 TextLine 物件，并复制原来行的位置标记
-            line = TextLine('', [], DEFAULT_FONT_SIZE)
+            line = _TextLine('', [], DEFAULT_FONT_SIZE)
             line.mark.set_points(orig_line.mark.get_points())
 
             # 如果该行为空，则直接添加

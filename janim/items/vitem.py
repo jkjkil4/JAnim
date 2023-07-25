@@ -55,7 +55,10 @@ class VItem(Item):
 
         # TODO: [P] 精细化边界框
 
-        self.data_to_align.update(('stroke_width', 'fill_rgbas'))
+        self.npdata_to_interpolate.update((
+            ('stroke_width', 'get_stroke_width', 'set_stroke_width'), 
+            ('fill_rgbas', 'get_fill_rgbas', 'set_fill_rgbas')
+        ))
         
         # 默认值
         self.set_stroke_width(stroke_width)
@@ -628,6 +631,53 @@ class VItem(Item):
                     recurse=False
                 )
 
+        return self
+
+    #endregion
+
+    #region Alignment
+
+    def align_points(self, vitem: VItem):
+        if self.points_count() == vitem.points_count():
+            return
+
+        for item in self, vitem:
+            # If there are no points, add one to
+            # where the "center" is
+            if not item.has_points():
+                item.path_move_to(item.get_center())
+            # If there's only one point, turn it into
+            # a null curve
+            if item.has_new_path_started():
+                item.add_line_to(item.get_points()[0])
+
+        # Figure out what the subpaths are, and align
+        subpaths1 = self.get_subpaths()
+        subpaths2 = vitem.get_subpaths()
+        n_subpaths = max(len(subpaths1), len(subpaths2))
+        # Start building new ones
+        new_subpaths1 = []
+        new_subpaths2 = []
+
+        nppc = 3
+
+        def get_nth_subpath(path_list, n):
+            if n >= len(path_list):
+                # Create a null path at the very end
+                return [path_list[-1][-1]] * nppc
+            return path_list[n]
+
+        for n in range(n_subpaths):
+            sp1 = get_nth_subpath(subpaths1, n)
+            sp2 = get_nth_subpath(subpaths2, n)
+            diff1 = max(0, (len(sp2) - len(sp1)) // nppc)
+            diff2 = max(0, (len(sp1) - len(sp2)) // nppc)
+            sp1 = self.insert_n_curves_to_point_list(diff1, sp1)
+            sp2 = self.insert_n_curves_to_point_list(diff2, sp2)
+            new_subpaths1.append(sp1)
+            new_subpaths2.append(sp2)
+        self.set_points(np.vstack(new_subpaths1))
+        vitem.set_points(np.vstack(new_subpaths2))
         return self
 
     #endregion

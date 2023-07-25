@@ -42,8 +42,13 @@ class Item:
         self.bbox = np.zeros((3, 3))
         self.needs_new_bbox = True
 
+        # 动画
+        self.npdata_to_interpolate: set[tuple[str, str, str]] = set((
+            ('points', 'get_points', 'set_points'), 
+            ('rgbas', 'get_rgbas', 'set_rgbas')
+        ))
+
         # 渲染
-        self.data_to_align = set(('points', 'rgbas'))
         self.renderer = self.create_renderer()
 
         # 默认值
@@ -348,6 +353,14 @@ class Item:
         self.set_rgbas(self.get_rgbas()[::-1])
         return self
     
+    def resize_points(
+        self,
+        new_length: int,
+        resize_func: Callable[[np.ndarray, int], np.ndarray] = resize_array
+    ):
+        self.set_points(resize_func(self.get_points(), new_length))
+        return self
+    
     def points_count(self) -> int:
         return len(self.get_points())
     
@@ -457,66 +470,6 @@ class Item:
             self.set_rgbas(self.rgbas)
             self.needs_new_rgbas = False
         return self.rgbas
-
-    #endregion
-
-    #region Alignment
-
-    def align_for_transform(self, item: Item):
-        self.align_family(item)
-        self.align_data(item)
-        return self
-    
-    def align_family(self, item: Item):
-        n1 = len(self)
-        n2 = len(item)
-        if n1 != n2:
-            self.add_n_more_subitems(max(0, n2 - n1))
-            item.add_n_more_subitems(max(0, n1 - n2))
-        # Recurse
-        for item1, item2 in zip(self, item):
-            item1.align_family(item2)
-        return self
-    
-    def align_data(self, item: Item) -> None:
-        for item1, item2 in zip(self.get_family(), item.get_family()):
-            for key in item1.data_to_align & item2.data_to_align:
-                arr1 = getattr(item1, key)
-                arr2 = getattr(item2, key)
-                if len(arr2) > len(arr1):
-                    setattr(item1, key, resize_preserving_order(arr1, len(arr2)))
-                elif len(arr1) > len(arr2):
-                    setattr(item2, key, resize_preserving_order(arr2, len(arr1)))
-
-    def add_n_more_subitems(self, n: int):
-        if n == 0:
-            return self
-
-        curr = len(self)
-        if curr == 0:
-            # If empty, simply add n point mobjects
-            null_item = self.copy()
-            null_item.set_points([self.get_center()])
-            self.set_subitems([
-                null_item.copy()
-                for _ in range(n)
-            ])
-            return self
-
-        target = curr + n
-        repeat_indices = (np.arange(target) * curr) // target
-        split_factors = [
-            (repeat_indices == i).sum()
-            for i in range(curr)
-        ]
-        new_subitems = []
-        for subitem, sf in zip(self.items, split_factors):
-            new_subitems.append(subitem)
-            for _ in range(1, sf):
-                new_subitem = subitem.copy()
-                new_subitems.append(new_subitem)
-        self.set_subitems(new_subitems)
-        return self
 
     #endregion
 
@@ -632,6 +585,44 @@ class Item:
                 item.set_points(func(item.get_points() - about_point) + about_point)
 
         return self
+    
+    def apply_function(
+        self, 
+        function: Callable[[np.ndarray], np.ndarray],
+        about_point: np.ndarray = ORIGIN,
+        **kwargs
+    ):
+        # Default to applying matrix about the origin, not mobjects center
+        self.apply_points_function(
+            lambda points: np.array([function(p) for p in points]),
+            about_point=about_point,
+            **kwargs
+        )
+        return self
+
+    def apply_matrix(self, matrix: Iterable, **kwargs):
+        # Default to applying matrix about the origin, not mobjects center
+        if ("about_point" not in kwargs) and ("about_edge" not in kwargs):
+            kwargs["about_point"] = ORIGIN
+        full_matrix = np.identity(3)
+        matrix = np.array(matrix)
+        full_matrix[:matrix.shape[0], :matrix.shape[1]] = matrix
+        self.apply_points_function(
+            lambda points: np.dot(points, full_matrix.T),
+            **kwargs
+        )
+        return self
+    
+    def apply_complex_function(self, function: Callable[[complex], complex], **kwargs):
+        def R3_func(point):
+            x, y, z = point
+            xy_complex = function(complex(x, y))
+            return [
+                xy_complex.real,
+                xy_complex.imag,
+                z
+            ]
+        return self.apply_function(R3_func, **kwargs)
 
     def rotate(
         self,
@@ -816,6 +807,95 @@ class Item:
 
     def set_z(self, z: float, direction: np.ndarray = ORIGIN):
         return self.set_coord(z, 2, direction)
+
+    #endregion
+
+    #region Alignment
+
+    def align_for_transform(self, item: Item):
+        self.align_family(item)
+        self.align_data(item)
+        return self
+    
+    def align_family(self, item: Item):
+        n1 = len(self)
+        n2 = len(item)
+        if n1 != n2:
+            self.add_n_more_subitems(max(0, n2 - n1))
+            item.add_n_more_subitems(max(0, n1 - n2))
+        # Recurse
+        for item1, item2 in zip(self, item):
+            item1.align_family(item2)
+        return self
+    
+    def align_data(self, item: Item) -> None:
+        for item1, item2 in zip(self.get_family(), item.get_family()):
+            item1.align_points(item2)
+            for key, getter, setter in item1.npdata_to_interpolate & item2.npdata_to_interpolate:
+                if key == 'points':
+                    continue
+                getter1, setter1 = getattr(item1, getter), getattr(item1, setter)
+                getter2, setter2 = getattr(item2, getter), getattr(item2, setter)
+                arr1 = getter1()
+                arr2 = getter2()
+                if len(arr2) > len(arr1):
+                    setter1(resize_preserving_order(arr1, len(arr2)))
+                elif len(arr1) > len(arr2):
+                    setter2(resize_preserving_order(arr2, len(arr1)))
+    
+    def align_points(self, item: Item):
+        max_len = max(self.points_count(), item.points_count())
+        for mob in (self, item):
+            mob.resize_points(max_len, resize_func=resize_preserving_order)
+        return self
+
+    def add_n_more_subitems(self, n: int):
+        if n == 0:
+            return self
+
+        curr = len(self)
+        if curr == 0:
+            # If empty, simply add n point mobjects
+            null_item = self.copy()
+            null_item.set_points([self.get_center()])
+            self.set_subitems([
+                null_item.copy()
+                for _ in range(n)
+            ])
+            return self
+
+        target = curr + n
+        repeat_indices = (np.arange(target) * curr) // target
+        split_factors = [
+            (repeat_indices == i).sum()
+            for i in range(curr)
+        ]
+        new_subitems = []
+        for subitem, sf in zip(self.items, split_factors):
+            new_subitems.append(subitem)
+            for _ in range(1, sf):
+                new_subitem = subitem.copy()
+                new_subitems.append(new_subitem)
+        self.set_subitems(new_subitems)
+        return self
+
+    #endregion
+
+    #region Animation
+
+    def interpolate(
+        self,
+        item1: Item,
+        item2: Item,
+        alpha: float,
+        path_func: Callable[[np.ndarray, np.ndarray, float], np.ndarray]
+    ):
+        for key, getter, setter in item1.npdata_to_interpolate & item2.npdata_to_interpolate:
+            setter = getattr(self, setter)
+            getter1 = getattr(item1, getter)
+            getter2 = getattr(item2, getter)
+            func = path_func if key == 'points' else interpolate
+            setter(func(getter1(), getter2(), alpha))
 
     #endregion
 

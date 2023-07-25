@@ -23,7 +23,7 @@ class Animation:
 
         self.state = Animation._State.BeforeExec
 
-    def get_run_ratio(self, elapsed: float) -> float:
+    def get_alpha(self, elapsed: float) -> float:
         return (elapsed - self.begin_time) / self.run_time
 
     def update(self, elapsed, dt) -> None:
@@ -40,12 +40,12 @@ class Animation:
 
         # 常规处理
         if self.state == self._State.OnExec:
-            self.interpolate(self.rate_func(self.get_run_ratio(elapsed)))
+            self.interpolate(self.rate_func(self.get_alpha(elapsed)))
         
     def begin(self) -> None:
         pass
 
-    def interpolate(self, t) -> None:
+    def interpolate(self, alpha) -> None:
         pass
 
     def finish(self) -> None:

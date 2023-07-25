@@ -19,7 +19,7 @@ class _AbstractAnimationGroup(Animation):
         super().update(elapsed, dt)
 
         local_elapsed = elapsed - self.begin_time
-        adjusted_elapsed = outside_linear_rate_func(self.rate_func)(local_elapsed / self.run_time)
+        adjusted_elapsed = self.run_time * outside_linear_rate_func(self.rate_func)(local_elapsed / self.run_time)
 
         for anim in self.anims:
             anim.update(adjusted_elapsed, dt)
@@ -36,6 +36,12 @@ class AnimationGroup(_AbstractAnimationGroup):
         run_time: float = None, 
         **kwargs
     ) -> None:
+        maxt = max([anim.begin_time + anim.run_time for anim in anims])
         if run_time is None:
-            run_time = max([anim.begin_time + anim.run_time for anim in anims])
+            run_time = maxt
+        else:
+            factor = run_time / maxt
+            for anim in anims:
+                anim.begin_time *= factor
+                anim.run_time *= factor
         super().__init__(*anims, run_time=run_time, **kwargs)

@@ -2,6 +2,7 @@ from __future__ import annotations
 import itertools as it
 import traceback
 
+from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QApplication
 from PySide6.QtGui import (
     QMatrix4x4, QVector3D,
@@ -14,6 +15,7 @@ from janim.items.item import Item, MethodGroup
 from janim.utils.space_ops import get_unit_normal, get_norm
 from janim.utils.functions import get_proportional_scale_size
 from janim.config import get_configuration
+from janim.animation.animation import Animation
 from janim.animation.composition import AnimationGroup
 
 from janim.gl.render import RenderData
@@ -104,13 +106,15 @@ class Scene:
     def construct(self) -> None:
         pass
 
-    def play(self, *anims, **kwargs) -> None:
+    def play(self, *anims: Animation, **kwargs) -> None:
         anim = AnimationGroup(*anims, **kwargs)
         elapsed = 0
         def fn_progress(dt: float) -> None:
             nonlocal elapsed
             elapsed += dt
             anim.update(elapsed, dt)
+            self.update_frame(dt)
+            self.emit_frame()
         self.loop_helper.exec(fn_progress, anim.begin_time + anim.run_time)
         anim.finish_all()
 
