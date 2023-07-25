@@ -10,7 +10,7 @@ from PySide6.QtOpenGL import *
 from OpenGL.GL import *
 
 from janim.constants import *
-from janim.scene.scene import Scene
+from janim.scene.scene import Scene, EndSceneEarlyException
 from janim.utils.space_ops import normalize
 from janim.utils.color import hex_to_rgb
 
@@ -52,6 +52,12 @@ class GLWidget(QOpenGLWidget):
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
 
     def paintGL(self) -> None:
+        try:
+            if self.scene.check_skipping():
+                return
+        except EndSceneEarlyException:
+            pass
+
         try:
             self.scene.render()
         except:

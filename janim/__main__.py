@@ -6,7 +6,7 @@ import janim.scene.extract_scene as extract_scene
 def main():
     print(f"JAnim \033[32mv{__version__}\033[0m")
 
-    args = jconfig.parse_cli()
+    args = jconfig.get_cli()
     if args.version:
         return
     

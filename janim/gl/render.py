@@ -4,7 +4,7 @@ import os
 
 from PySide6.QtCore import QObject
 from PySide6.QtGui import QMatrix4x4, QVector2D, QVector3D
-from PySide6.QtOpenGL import *
+from PySide6.QtOpenGL import QOpenGLShaderProgram, QOpenGLShader
 from OpenGL.GL import *
 
 from janim.constants import *

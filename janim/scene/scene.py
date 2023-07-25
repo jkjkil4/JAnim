@@ -16,7 +16,7 @@ from janim.scene.loop_helper import LoopHelper
 from janim.items.item import Item, MethodGroup
 from janim.utils.space_ops import get_unit_normal, get_norm
 from janim.utils.functions import get_proportional_scale_size
-from janim.config import get_configuration
+from janim.config import get_cli, get_configuration
 from janim.animation.animation import Animation
 from janim.animation.composition import AnimationGroup
 
@@ -29,6 +29,20 @@ class Scene:
     def __init__(self) -> None:
         if self.background_color is None:
             self.background_color = get_configuration()['style']['background_color']
+
+        stln = get_cli().start_at_line_number
+        if stln is None:
+            self.start_at_line_number = None
+            self.end_at_line_number = None
+        else:
+            if ',' in stln:
+                start, end = stln.split(',')
+                self.start_at_line_number = int(start)
+                self.end_at_line_number = int(end)
+            else:
+                self.start_at_line_number = int(stln)
+                self.end_at_line_number = None
+        
 
         self.camera = Camera()
 
@@ -99,6 +113,8 @@ class Scene:
 
         try:
             self.construct()
+        except EndSceneEarlyException:
+            pass
         except:
             traceback.print_exc()
 
@@ -108,7 +124,29 @@ class Scene:
     def construct(self) -> None:
         pass
 
+    def check_skipping(self) -> None:
+        if self.start_at_line_number is None and self.end_at_line_number is None:
+            return False
+
+        # 得到位于 construct 下的执行行数
+        frame = inspect.currentframe()
+        while True:
+            frame = frame.f_back
+            if frame is None:
+                return False
+            if frame.f_code.co_name == 'construct':
+                break
+        lineno = frame.f_lineno
+
+        if self.end_at_line_number is not None and lineno > self.end_at_line_number:
+            raise EndSceneEarlyException()
+        
+        if self.start_at_line_number is not None:
+            return lineno < self.start_at_line_number
+        return False
+
     def play(self, *anims: Animation, **kwargs) -> None:
+        skipping = self.check_skipping()
         anim = AnimationGroup(*anims, **kwargs)
         elapsed = 0
         def fn_progress(dt: float) -> None:
@@ -116,25 +154,30 @@ class Scene:
             elapsed += dt
             anim.update(elapsed, dt)
             self.update_frame(dt)
-            self.emit_frame()
+            if not skipping:
+                self.emit_frame()
 
         f_back = inspect.currentframe().f_back
         self.loop_helper.exec(
             fn_progress, 
             anim.begin_time + anim.run_time,
+            delay=not skipping,
             desc=f'Scene.play() at {f_back.f_code.co_filename}:{f_back.f_lineno}'
         )
         anim.finish_all()
 
     def wait(self, duration: float = DEFAULT_WAIT_TIME) -> None:
+        skipping = self.check_skipping()
         def fn_progress(dt: float) -> None:
             self.update_frame(dt)
-            self.emit_frame()
+            if not skipping:
+                self.emit_frame()
 
         f_back = inspect.currentframe().f_back
         self.loop_helper.exec(
             fn_progress, 
             duration,
+            delay=not skipping,
             desc=f'Scene.wait() at {f_back.f_code.co_filename}:{f_back.f_lineno}'
         )
     
@@ -219,3 +262,7 @@ class Camera(Item):
         window.scale(res_width / self.wnd_shape[0] / FRAME_X_RADIUS, res_height / self.wnd_shape[1] / FRAME_Y_RADIUS)
 
         return window
+
+
+class EndSceneEarlyException(Exception):
+    pass

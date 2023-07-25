@@ -9,7 +9,7 @@ from janim.utils.dict_ops import merge_dicts_recursively
 
 JANIM_ARGS = None
 
-def parse_cli() -> argparse.Namespace:
+def get_cli() -> argparse.Namespace:
     global JANIM_ARGS
     if JANIM_ARGS is not None:
         return JANIM_ARGS
@@ -37,6 +37,13 @@ def parse_cli() -> argparse.Namespace:
         #     action="store_true",
         #     help="Guide for automatic configuration",
         # )
+        parser.add_argument(
+            "-n", "--start_at_line_number",
+            help="Start rendering not from the first animation, but "
+                 "from another, specified by its line.  If you pass "
+                 "in two comma separated values, e.g. \"6,9\", it will end "
+                 "the rendering at the second value",
+        )
         parser.add_argument(
             "-c", "--color",
             help="Background color",
@@ -72,7 +79,7 @@ def get_configuration():
         return JANIM_CONFIGURATION
     
     if JANIM_ARGS is None:
-        parse_cli()
+        get_cli()
     args = JANIM_ARGS
     
     # 默认配置路径 与 自定义配置路径
