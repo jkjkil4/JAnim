@@ -8,7 +8,7 @@ import copy
 from janim.constants import *
 from janim.utils.space_ops import rotation_matrix, get_norm, angle_of_vector
 from janim.utils.color import hex_to_rgb
-from janim.utils.iterables import resize_array
+from janim.utils.iterables import resize_array, resize_preserving_order
 from janim.utils.bezier import interpolate, integer_interpolate
 
 class Item:
@@ -43,6 +43,7 @@ class Item:
         self.needs_new_bbox = True
 
         # 渲染
+        self.data_to_align = set(('points', 'rgbas'))
         self.renderer = self.create_renderer()
 
         # 默认值
@@ -101,6 +102,11 @@ class Item:
             self.helper_items_changed()
         else:
             self.items_changed()
+        return self
+    
+    def set_subitems(self, subitem_list: list[Item]):
+        self.remove(*self.items)
+        self.add(*subitem_list)
         return self
     
     def mark_needs_new_family(self) -> None:
@@ -407,11 +413,14 @@ class Item:
         return opacity
 
     def set_rgbas(self, rgbas: Iterable[Iterable[float, float, float, float]]):
-        rgbas = resize_array(np.array(rgbas), max(1, self.points_count()))
+        rgbas = resize_array(
+            np.array(rgbas, dtype=np.float32), 
+            max(1, self.points_count())
+        )
         if len(rgbas) == len(self.rgbas):
             self.rgbas[:] = rgbas
         else:
-            self.rgbas = rgbas.astype(np.float32)
+            self.rgbas = rgbas
         self.rgbas_changed()
         return self
     
@@ -448,6 +457,66 @@ class Item:
             self.set_rgbas(self.rgbas)
             self.needs_new_rgbas = False
         return self.rgbas
+
+    #endregion
+
+    #region Alignment
+
+    def align_for_transform(self, item: Item):
+        self.align_family(item)
+        self.align_data(item)
+        return self
+    
+    def align_family(self, item: Item):
+        n1 = len(self)
+        n2 = len(item)
+        if n1 != n2:
+            self.add_n_more_subitems(max(0, n2 - n1))
+            item.add_n_more_subitems(max(0, n1 - n2))
+        # Recurse
+        for item1, item2 in zip(self, item):
+            item1.align_family(item2)
+        return self
+    
+    def align_data(self, item: Item) -> None:
+        for item1, item2 in zip(self.get_family(), item.get_family()):
+            for key in item1.data_to_align & item2.data_to_align:
+                arr1 = getattr(item1, key)
+                arr2 = getattr(item2, key)
+                if len(arr2) > len(arr1):
+                    setattr(item1, key, resize_preserving_order(arr1, len(arr2)))
+                elif len(arr1) > len(arr2):
+                    setattr(item2, key, resize_preserving_order(arr2, len(arr1)))
+
+    def add_n_more_subitems(self, n: int):
+        if n == 0:
+            return self
+
+        curr = len(self)
+        if curr == 0:
+            # If empty, simply add n point mobjects
+            null_item = self.copy()
+            null_item.set_points([self.get_center()])
+            self.set_subitems([
+                null_item.copy()
+                for _ in range(n)
+            ])
+            return self
+
+        target = curr + n
+        repeat_indices = (np.arange(target) * curr) // target
+        split_factors = [
+            (repeat_indices == i).sum()
+            for i in range(curr)
+        ]
+        new_subitems = []
+        for subitem, sf in zip(self.items, split_factors):
+            new_subitems.append(subitem)
+            for _ in range(1, sf):
+                new_subitem = subitem.copy()
+                new_subitems.append(new_subitem)
+        self.set_subitems(new_subitems)
+        return self
 
     #endregion
 

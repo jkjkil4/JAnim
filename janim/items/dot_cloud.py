@@ -22,6 +22,8 @@ class DotCloud(Item):
         self.radii = np.array([self.radius], dtype=np.float32)  # radii 在所有操作中都会保持 dtype=np.float32，以便传入 shader
         self.needs_new_radii = True
 
+        self.data_to_align.update(('radii', ))
+
         self.set_points(points)
 
     def copy(self):
@@ -42,11 +44,14 @@ class DotCloud(Item):
     def set_radius(self, radius: float | Iterable[float]):
         if not isinstance(radius, Iterable):
             radius = [radius]
-        radius = resize_array(np.array(radius), max(1, self.points_count()))
+        radius = resize_array(
+            np.array(radius, dtype=np.float32), 
+            max(1, self.points_count())
+        )
         if len(radius) == len(self.radii):
             self.radii[:] = radius
         else:
-            self.radii = radius.astype(np.float32)
+            self.radii = radius
         return self
     
     def get_radii(self) -> np.ndarray:

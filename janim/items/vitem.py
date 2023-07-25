@@ -54,6 +54,8 @@ class VItem(Item):
         self.needs_new_triangulation = True
 
         # TODO: [P] 精细化边界框
+
+        self.data_to_align.update(('stroke_width', 'fill_rgbas'))
         
         # 默认值
         self.set_stroke_width(stroke_width)
@@ -327,11 +329,14 @@ class VItem(Item):
                     recurse=False
                 )
 
-        stroke_width = resize_with_interpolation(np.array(stroke_width), max(1, self.points_count()))
+        stroke_width = resize_with_interpolation(
+            np.array(stroke_width, dtype=np.float32), 
+            max(1, self.points_count())
+        )
         if len(stroke_width) == len(self.stroke_width):
             self.stroke_width[:] = stroke_width
         else:
-            self.stroke_width = stroke_width.astype(np.float32)
+            self.stroke_width = stroke_width
         return self
     
     def get_stroke_width(self) -> np.ndarray:
@@ -349,11 +354,14 @@ class VItem(Item):
     #region 填充色数据
 
     def set_fill_rgbas(self, rgbas: Iterable[Iterable[float, float, float, float]]):
-        rgbas = resize_array(np.array(rgbas), max(1, self.points_count()))
+        rgbas = resize_array(
+            np.array(rgbas, dtype=np.float32), 
+            max(1, self.points_count())
+        )
         if len(rgbas) == len(self.fill_rgbas):
             self.fill_rgbas[:] = rgbas
         else:
-            self.fill_rgbas = rgbas.astype(np.float32)
+            self.fill_rgbas = rgbas
         self.fill_rgbas_changed()
         return self
     
