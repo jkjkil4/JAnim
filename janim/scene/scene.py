@@ -1,6 +1,8 @@
 from __future__ import annotations
+
 import itertools as it
 import traceback
+import inspect
 
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QApplication
@@ -115,14 +117,26 @@ class Scene:
             anim.update(elapsed, dt)
             self.update_frame(dt)
             self.emit_frame()
-        self.loop_helper.exec(fn_progress, anim.begin_time + anim.run_time)
+
+        f_back = inspect.currentframe().f_back
+        self.loop_helper.exec(
+            fn_progress, 
+            anim.begin_time + anim.run_time,
+            desc=f'Scene.play() at {f_back.f_code.co_filename}:{f_back.f_lineno}'
+        )
         anim.finish_all()
 
     def wait(self, duration: float = DEFAULT_WAIT_TIME) -> None:
         def fn_progress(dt: float) -> None:
             self.update_frame(dt)
             self.emit_frame()
-        self.loop_helper.exec(fn_progress, duration)
+
+        f_back = inspect.currentframe().f_back
+        self.loop_helper.exec(
+            fn_progress, 
+            duration,
+            desc=f'Scene.wait() at {f_back.f_code.co_filename}:{f_back.f_lineno}'
+        )
     
     def update_frame(self, dt: float) -> None:
         # TODO: update_frame

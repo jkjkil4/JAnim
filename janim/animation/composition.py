@@ -7,7 +7,7 @@ from janim.utils.functions import safe_call_same
 
 class _AbstractAnimationGroup(Animation):
     def __init__(
-        self, 
+        self,
         *anims: Animation, 
         rate_func: Callable[[float], float] = linear, 
         **kwargs
