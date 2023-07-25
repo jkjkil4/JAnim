@@ -74,7 +74,7 @@ class _TextLine(VGroup):
             ],
             **kwargs
         )
-        self.arrange_for_line()
+        self.arrange_in_line()
 
         # 标记位置
         self.mark = Item()
@@ -91,7 +91,7 @@ class _TextLine(VGroup):
     def get_mark_up(self) -> np.ndarray:
         return self.mark.get_points()[2]
     
-    def arrange_for_line(self, buff: float = 0) -> None:
+    def arrange_in_line(self, buff: float = 0) -> None:
         if len(self.items) == 0:
             return
         
@@ -146,10 +146,10 @@ class Text(VGroup):
         self.set_fill(fill_color, fill_opacity)
         self.set_stroke_width(stroke_width)
 
-        self.arrange_for_lines()
+        self.arrange_in_lines()
         self.to_center()
         
-    def arrange_for_lines(self, buff: float = 0, base_buff: float = 0.85) -> None:
+    def arrange_in_lines(self, buff: float = 0, base_buff: float = 0.85) -> None:
         if len(self.items) == 0:
             return
         
@@ -244,13 +244,13 @@ class Text(VGroup):
                 total_advance_length = sum([char.get_advance_length() for char in line])
                 total_space_length = break_length - total_advance_length
                 space_length = total_space_length / (len(line) - 1)
-                line.arrange_for_line(space_length)
+                line.arrange_in_line(space_length)
 
             new_lines_items.append(line)
 
         self.remove(*self.items)
         self.add(*new_lines_items)
-        self.arrange_for_lines(buff, base_buff)
+        self.arrange_in_lines(buff, base_buff)
         if center:
             self.to_center()
         return self

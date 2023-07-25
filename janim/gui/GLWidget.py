@@ -2,8 +2,8 @@ from typing import Optional
 import numpy as np
 import traceback
 
-from PySide6.QtCore import Qt, QTimer, QEvent
-from PySide6.QtGui import QMouseEvent, QWheelEvent
+from PySide6.QtCore import Qt, QTimer
+from PySide6.QtGui import QMouseEvent, QKeyEvent, QWheelEvent
 from PySide6.QtWidgets import QWidget
 from PySide6.QtOpenGLWidgets import QOpenGLWidget
 from PySide6.QtOpenGL import *
@@ -109,6 +109,12 @@ class GLWidget(QOpenGLWidget):
             camera.rotate(-self.pan_sensitivity * y * DEGREES, camera.get_horizontal_vect())
             
             self.rbutton_pos = pos
+
+    def keyReleaseEvent(self, event: QKeyEvent) -> None:
+        super().keyReleaseEvent(event)
+
+        if event.key() == Qt.Key.Key_R:
+            self.scene.camera.reset()
 
     def wheelEvent(self, event: QWheelEvent) -> None:
         super().wheelEvent(event)
