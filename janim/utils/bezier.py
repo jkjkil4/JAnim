@@ -82,14 +82,7 @@ def partial_quadratic_bezier_points(
 
 
 def interpolate(start: T, end: T, alpha: np.ndarray | float) -> T:
-    try:
-        return (1 - alpha) * start + alpha * end
-    except TypeError:
-        log.debug(f"`start` parameter with type `{type(start)}` and dtype `{start.dtype}`")
-        log.debug(f"`end` parameter with type `{type(end)}` and dtype `{end.dtype}`")
-        log.debug(f"`alpha` parameter with value `{alpha}`")
-        import sys
-        sys.exit(2)
+    return (1 - alpha) * start + alpha * end
 
 
 def outer_interpolate(

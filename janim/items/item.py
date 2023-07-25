@@ -470,6 +470,13 @@ class Item:
             self.set_rgbas(self.rgbas)
             self.needs_new_rgbas = False
         return self.rgbas
+    
+    def set_opacity(self, opacity: float):
+        self.set_points_color(opacity=opacity)
+        return self
+    
+    def is_transparent(self) -> bool:
+        return np.any(self.get_rgbas()[:, 3] < 1)
 
     #endregion
 
@@ -872,9 +879,12 @@ class Item:
         ]
         new_subitems = []
         for subitem, sf in zip(self.items, split_factors):
+            transparent = subitem.is_transparent()
             new_subitems.append(subitem)
             for _ in range(1, sf):
                 new_subitem = subitem.copy()
+                if transparent:
+                    new_subitem.set_opacity(0)
                 new_subitems.append(new_subitem)
         self.set_subitems(new_subitems)
         return self

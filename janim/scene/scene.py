@@ -106,8 +106,8 @@ class Scene:
         QSurfaceFormat.setDefaultFormat(fmt)
 
         from janim.gui.MainWindow import MainWindow
-        window = MainWindow(self)
-        window.show()
+        self.window = MainWindow(self)
+        self.window.show()
 
         self.loop_helper = LoopHelper(get_configuration()['frame_rate'])
 
@@ -118,7 +118,8 @@ class Scene:
         except:
             traceback.print_exc()
 
-        app.exec()
+        if not self.window or not self.window.is_closed:
+            app.exec()
         
 
     def construct(self) -> None:
@@ -158,12 +159,14 @@ class Scene:
                 self.emit_frame()
 
         f_back = inspect.currentframe().f_back
-        self.loop_helper.exec(
+        succ = self.loop_helper.exec(
             fn_progress, 
             anim.begin_time + anim.run_time,
             delay=not skipping,
             desc=f'Scene.play() at {f_back.f_code.co_filename}:{f_back.f_lineno}'
         )
+        if not succ or (self.window and self.window.is_closed):
+            raise EndSceneEarlyException()
         anim.finish_all()
 
     def wait(self, duration: float = DEFAULT_WAIT_TIME) -> None:
@@ -174,12 +177,14 @@ class Scene:
                 self.emit_frame()
 
         f_back = inspect.currentframe().f_back
-        self.loop_helper.exec(
+        succ = self.loop_helper.exec(
             fn_progress, 
             duration,
             delay=not skipping,
             desc=f'Scene.wait() at {f_back.f_code.co_filename}:{f_back.f_lineno}'
         )
+        if not succ or (self.window and self.window.is_closed):
+            raise EndSceneEarlyException()
     
     def update_frame(self, dt: float) -> None:
         # TODO: update_frame

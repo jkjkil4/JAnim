@@ -26,26 +26,29 @@ class LoopHelper(QObject):
         duration: float,
         delay: bool = True, 
         desc: str = ''
-    ) -> None:
+    ) -> bool:
         dt_ms = 1000 / self.frame_rate
         dt = dt_ms / 1000
-        times = np.ceil(duration * self.frame_rate)
 
-        progress = iter(ProgressDisplay(
+        progress = ProgressDisplay(
             np.arange(0, duration, dt),
             leave=False,
             desc=desc
-        ))
+        )
+        progress_iter = iter(progress)
+        succ = True
         
         def slot() -> None:
+            nonlocal succ
             try:
                 fn_progress(dt)
             except:
                 traceback.print_exc()
-                exit(1)
+                succ = False
+                self.event_loop.quit()
             
             try:
-                next(progress)
+                next(progress_iter)
             except StopIteration:
                 self.event_loop.quit()
 
@@ -54,5 +57,9 @@ class LoopHelper(QObject):
 
         self.event_loop.exec()
 
+        progress.close()
+
         self.timer.disconnect(connection)
         self.timer.stop()
+
+        return succ

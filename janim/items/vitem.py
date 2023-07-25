@@ -352,6 +352,13 @@ class VItem(Item):
         self.stroke_behind_fill = flag
         return self
     
+    def set_opacity(self, opacity: float):
+        super().set_opacity(opacity)
+        self.set_fill(opacity=opacity)
+    
+    def is_transparent(self) -> bool:
+        return super().is_transparent() or np.any(self.get_fill_rgbas()[:, 3] < 1)
+    
     #endregion
 
     #region 填充色数据

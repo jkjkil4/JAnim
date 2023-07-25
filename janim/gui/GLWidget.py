@@ -1,5 +1,5 @@
 from typing import Optional
-import numpy as np
+import sys
 import traceback
 
 from PySide6.QtCore import Qt, QTimer
@@ -33,7 +33,6 @@ class GLWidget(QOpenGLWidget):
 
         # 定时器，用于定时调用绘制
         self.timer = QTimer(self)
-        self.timer.setTimerType(Qt.TimerType.PreciseTimer)  # 使定时更准确
         self.timer.timeout.connect(self.onTimerTimeout)
         self.timer.start(1000 / self.frame_rate)
 
@@ -62,7 +61,7 @@ class GLWidget(QOpenGLWidget):
             self.scene.render()
         except:
             traceback.print_exc()
-            exit(1)
+            sys.exit(1)
 
     def resizeGL(self, w: int, h: int) -> None:
         super().resizeGL(w, h)
@@ -121,5 +120,5 @@ class GLWidget(QOpenGLWidget):
         delta = event.angleDelta().y()
         
         self.scene.camera.scale(0.96 if delta > 0 else 1 / 0.96)
-    
+
     #endregion

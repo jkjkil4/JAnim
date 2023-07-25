@@ -1,6 +1,7 @@
 from __future__ import annotations
 from typing import Optional, Callable, Iterable
 import os
+import sys
 
 from PySide6.QtCore import QObject
 from PySide6.QtGui import QMatrix4x4, QVector2D, QVector3D
@@ -61,11 +62,11 @@ class ShaderProgram(QOpenGLShaderProgram):
             if os.path.exists(file_path):
                 if not self.addShaderFromSourceFile(shader_type, file_path):
                     print(f'Failed to compile "{file_path}"')
-                    exit(1)
+                    sys.exit(1)
         
         if not self.link():
             print(f'Failed to link shader "{path_name}"')
-            exit(1)
+            sys.exit(1)
 
     def setMat4(self, name: str, mat: QMatrix4x4) -> None:
         self.setUniformValue(self.uniformLocation(name), mat)
