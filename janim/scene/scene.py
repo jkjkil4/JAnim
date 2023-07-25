@@ -14,6 +14,7 @@ from janim.items.item import Item, MethodGroup
 from janim.utils.space_ops import get_unit_normal, get_norm
 from janim.utils.functions import get_proportional_scale_size
 from janim.config import get_configuration
+from janim.animation.composition import AnimationGroup
 
 from janim.gl.render import RenderData
 
@@ -103,9 +104,15 @@ class Scene:
     def construct(self) -> None:
         pass
 
-    def play(self) -> None:
-        # TODO: play
-        pass
+    def play(self, *anims, **kwargs) -> None:
+        anim = AnimationGroup(*anims, **kwargs)
+        elapsed = 0
+        def fn_progress(dt: float) -> None:
+            nonlocal elapsed
+            elapsed += dt
+            anim.update(elapsed, dt)
+        self.loop_helper.exec(fn_progress, anim.begin_time + anim.run_time)
+        anim.finish_all()
 
     def wait(self, duration: float = DEFAULT_WAIT_TIME) -> None:
         def fn_progress(dt: float) -> None:
