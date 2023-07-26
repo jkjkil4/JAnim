@@ -50,13 +50,16 @@ class VItem(Item):
         self.fill_rgbas = np.array([1, 1, 1, 1], dtype=np.float32).reshape((1, 4))  # fill_rgbas 在所有操作中都会保持 dtype=np.float32，以便传入 shader
         self.needs_new_fill_rgbas = True
 
+        self.fill_rgbas_visible = True
+        self.needs_new_fill_rgbas_visible = True
+
         # triangulation
         self.needs_new_triangulation = True
 
         # TODO: [P] 精细化边界框
 
-        self.npdata_to_interpolate.update((
-            ('stroke_width', 'get_stroke_width', 'set_stroke_width'), 
+        self.npdata_to_copy_and_interpolate.update((
+            ('stroke_width', 'get_stroke_width', 'set_self_stroke_width'), 
             ('fill_rgbas', 'get_fill_rgbas', 'set_fill_rgbas')
         ))
         
@@ -77,15 +80,7 @@ class VItem(Item):
         self.renderer.needs_update = True
 
     #endregion
-
-    def copy(self):
-        copy_item = super().copy()
-
-        copy_item.stroke_width = self.stroke_width.copy()
-        copy_item.fill_rgbas = self.fill_rgbas.copy()
-
-        return copy_item
-    
+  
     def create_renderer(self):
         from janim.gl.render import VItemRenderer
         return VItemRenderer()
@@ -265,19 +260,20 @@ class VItem(Item):
             handles = subpath[1::3]
             
             joint_info[offset:end:3] = np.roll(handles, 1, axis=0)
-            joint_info[offset + 1:end:3] = [
-                [
-                    self.consider_points_equals(p_prev, p0),
-                    self.consider_points_equals(p_next, p2),
-                    0
-                ]
-                for p_prev, p0, p2, p_next in zip(
+            joint_info[offset + 1:end:3, 0] = np.all(
+                np.isclose(
                     np.roll(subpath[2::3], 1, axis=0),
-                    subpath[::3],
+                    subpath[::3]
+                ), 
+                axis=1
+            )
+            joint_info[offset + 1:end:3, 1] = np.all(
+                np.isclose(
                     subpath[2::3],
                     np.roll(subpath[::3], -1, axis=0)
-                )
-            ]
+                ),
+                axis=1
+            )
             joint_info[offset + 2:end:3] = np.roll(handles, -1, axis=0)
 
             offset = end
@@ -297,6 +293,11 @@ class VItem(Item):
         self.set_stroke(color, opacity, recurse=recurse)
         self.set_fill(color, opacity, recurse=recurse)
         return self
+    
+    def is_transparent(self) -> bool:
+        data = self.get_fill_rgbas()[:, 3]
+        return super().is_transparent() \
+            or np.any((0 < data) & (data < 1))
 
     #region 轮廓线数据
 
@@ -341,6 +342,10 @@ class VItem(Item):
         else:
             self.stroke_width = stroke_width
         return self
+
+    def set_self_stroke_width(self, stroke_width):
+        '''为了传递给 `npdata_to_copy_and_interpolate` 使用'''
+        return self.set_stroke_width(stroke_width, recurse=False)
     
     def get_stroke_width(self) -> np.ndarray:
         if self.needs_new_stroke_width:
@@ -356,9 +361,10 @@ class VItem(Item):
         super().set_opacity(opacity)
         self.set_fill(opacity=opacity)
     
-    def is_transparent(self) -> bool:
-        return super().is_transparent() or np.any(self.get_fill_rgbas()[:, 3] < 1)
-    
+    def compute_rgbas_visible(self) -> bool:
+        return super().compute_rgbas_visible() \
+            and np.any(self.get_stroke_width() > 0)
+
     #endregion
 
     #region 填充色数据
@@ -413,6 +419,15 @@ class VItem(Item):
             self.set_fill_rgbas(self.fill_rgbas)
             self.needs_new_fill_rgbas = False
         return self.fill_rgbas
+    
+    def get_fill_rgbas_visible(self) -> bool:
+        if self.needs_new_fill_rgbas_visible:
+            self.fill_rgbas_visible = self.compute_fill_rgbas_visible()
+            self.needs_new_fill_rgbas_visible = False
+        return self.fill_rgbas_visible
+
+    def compute_fill_rgbas_visible(self) -> bool:
+        return np.any(self.get_fill_rgbas()[:, 3] > 0)
 
     #endregion
 

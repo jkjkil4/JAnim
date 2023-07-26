@@ -178,8 +178,8 @@ mat4 get_xyz_to_uv(
 
 void main()
 {
-    if (v_stroke_width[0] == 0.0 && v_stroke_width[1] == 0.0 && v_stroke_width[2] == 0.0)
-        return;
+    // if (v_stroke_width[0] == 0.0 && v_stroke_width[1] == 0.0 && v_stroke_width[2] == 0.0)
+    //     return;
 
     vec3 handle_prev = v_joint_info[0];
     vec3 handle_next = v_joint_info[2];

@@ -22,18 +22,11 @@ class DotCloud(Item):
         self.radii = np.array([self.radius], dtype=np.float32)  # radii 在所有操作中都会保持 dtype=np.float32，以便传入 shader
         self.needs_new_radii = True
 
-        self.npdata_to_interpolate.update((
+        self.npdata_to_copy_and_interpolate.update((
             ('radii', 'get_radii', 'set_radius'),
         ))
 
         self.set_points(points)
-
-    def copy(self):
-        copy_item = super().copy()
-        
-        copy_item.radii = self.radii.copy()
-
-        return copy_item
 
     def points_count_changed(self) -> None:
         super().points_count_changed()
@@ -87,10 +80,3 @@ class DotCloud(Item):
         super().reverse_points(recurse)
         self.set_radius(self.get_radii()[::-1])
         return self
-
-    def copy(self):
-        copy_item = super().copy()
-        copy_item.radii = self.radii.copy()
-
-        return copy_item
-        

@@ -38,18 +38,19 @@ class Item:
         self.rgbas = np.array([1, 1, 1, 1], dtype=np.float32).reshape((1, 4))   # rgbas 在所有操作中都会保持 dtype=np.float32，以便传入 shader
         self.needs_new_rgbas = True
 
+        self.rgbas_visible = True
+        self.needs_new_rgbas_visible = True
+
         # 边界箱
         self.bbox = np.zeros((3, 3))
         self.needs_new_bbox = True
 
-        # 动画
-        self.npdata_to_interpolate: set[tuple[str, str, str]] = set((
+        # 其它
+        self.renderer = self.create_renderer()
+        self.npdata_to_copy_and_interpolate: set[tuple[str, str, str]] = set((
             ('points', 'get_points', 'set_points'), 
             ('rgbas', 'get_rgbas', 'set_rgbas')
         ))
-
-        # 其它
-        self.renderer = self.create_renderer()
         self.targets = {}
 
         # 默认值
@@ -72,6 +73,7 @@ class Item:
         self.renderer.needs_update = True
     
     def rgbas_changed(self) -> None:
+        self.needs_new_rgbas_visible = True
         self.renderer.needs_update = True
     
     #endregion
@@ -192,8 +194,8 @@ class Item:
         copy_item.add(*[m.copy() for m in self.helper_items], is_helper=True)
 
         # data
-        copy_item.points = self.points.copy()
-        copy_item.rgbas = self.rgbas.copy()
+        for key, getter, setter in self.npdata_to_copy_and_interpolate:
+            setattr(copy_item, key, getattr(self, key).copy())
 
         # render
         copy_item.renderer = copy_item.create_renderer()
@@ -482,7 +484,17 @@ class Item:
         return self
     
     def is_transparent(self) -> bool:
-        return np.any(self.get_rgbas()[:, 3] < 1)
+        data = self.get_rgbas()[:, 3]
+        return np.any((0 < data) & (data < 1))
+
+    def get_rgbas_visible(self) -> bool:
+        if self.needs_new_rgbas_visible:
+            self.rgbas_visible = self.compute_rgbas_visible()
+            self.needs_new_rgbas_visible = False
+        return self.rgbas_visible
+    
+    def compute_rgbas_visible(self) -> bool:
+        return np.any(self.get_rgbas()[:, 3] > 0)
 
     #endregion
 
@@ -844,7 +856,7 @@ class Item:
     def align_data(self, item: Item) -> None:
         for item1, item2 in zip(self.get_family(), item.get_family()):
             item1.align_points(item2)
-            for key, getter, setter in item1.npdata_to_interpolate & item2.npdata_to_interpolate:
+            for key, getter, setter in item1.npdata_to_copy_and_interpolate & item2.npdata_to_copy_and_interpolate:
                 if key == 'points':
                     continue
                 getter1, setter1 = getattr(item1, getter), getattr(item1, setter)
@@ -906,12 +918,12 @@ class Item:
         alpha: float,
         path_func: Callable[[np.ndarray, np.ndarray, float], np.ndarray]
     ):
-        for key, getter, setter in item1.npdata_to_interpolate & item2.npdata_to_interpolate:
-            setter = getattr(self, setter)
+        for key, getter, setter in item1.npdata_to_copy_and_interpolate & item2.npdata_to_copy_and_interpolate:
+            setter_self = getattr(self, setter)
             getter1 = getattr(item1, getter)
             getter2 = getattr(item2, getter)
             func = path_func if key == 'points' else interpolate
-            setter(func(getter1(), getter2(), alpha))
+            setter_self(func(getter1(), getter2(), alpha))
 
     #endregion
 

@@ -142,7 +142,7 @@ def angle_of_vector(vector: Sequence[float]) -> float:
     """
     Returns polar coordinate theta when vector is project on xy plane
     """
-    return np.angle(complex(*vector[:2]))
+    return math.atan2(vector[1], vector[0])
 
 
 def angle_between_vectors(v1: np.ndarray, v2: np.ndarray) -> float:

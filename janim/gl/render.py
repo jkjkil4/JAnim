@@ -237,7 +237,10 @@ class VItemRenderer(Renderer):
 
         self.ebo_fill_triangulation = self.genBuffers(1)
 
-    def update_stroke(self, item: VItem) -> None:        
+    def update_stroke(self, item: VItem) -> None:
+        if not item.get_rgbas_visible():
+            return
+             
         self.shader_stroke.bind()
         glBindVertexArray(self.vao_stroke)
 
@@ -275,6 +278,9 @@ class VItemRenderer(Renderer):
         glBindVertexArray(0)
 
     def update_fill(self, item: VItem) -> None:
+        if not item.get_fill_rgbas_visible():
+            return
+        
         self.shader_fill.bind()
         glBindVertexArray(self.vao_fill)
 
@@ -317,6 +323,9 @@ class VItemRenderer(Renderer):
         self.update_fill(item)
 
     def render_stroke(self, item: VItem, data: RenderData, z_offset: float) -> None:
+        if not item.get_rgbas_visible():
+            return
+        
         self.shader_stroke.bind()
         self.shader_stroke.setFloat('anti_alias_width', data.anti_alias_width)
         self.shader_stroke.setMat4('view_matrix', data.view_matrix)
@@ -331,6 +340,9 @@ class VItemRenderer(Renderer):
         glBindVertexArray(0)
 
     def render_fill(self, item: VItem, data: RenderData) -> None:
+        if not item.get_fill_rgbas_visible():
+            return
+        
         triangulation = item.get_triangulation()
 
         self.shader_fill.bind()
