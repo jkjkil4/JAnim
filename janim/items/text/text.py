@@ -111,6 +111,17 @@ class _TextLine(VGroup):
 
 
 class Text(VGroup):
+    '''
+    文字物件
+
+    - 文字的子物件 `text[i]` 是文字的每一行
+    - 每行的子物件 `line[i]` 是文字的每个字符
+
+    例如 `text[1][0]` 是第二行的首个字符
+
+    可以调用 `word_wrap()` 进行自动换行（拆行） 
+    '''
+
     LineClass = _TextLine
 
     def __init__(
@@ -150,6 +161,10 @@ class Text(VGroup):
         self.to_center()
         
     def arrange_in_lines(self, buff: float = 0, base_buff: float = 0.85) -> None:
+        '''
+        - `buff`: 每行之间的额外间距
+        - `base_buff`: 每行之间的基本间距，默认值 `0.85` 用于将两行上下排列，如果是 `0` 则会让两行完全重合，大部分时候不需要传入该值
+        '''
         if len(self.items) == 0:
             return
         
@@ -175,6 +190,12 @@ class Text(VGroup):
         base_buff: float = 0.85,
         center: bool = True
     ):
+        '''
+        - `break_length`: 自动换行的宽度，若某一行的宽度超过该值，则会将超出部分向下换行
+        - `stretch`: 拆行后，是否进行左右对齐，以填补两侧边界可能出现的不规则空隙
+        - `buff`, `base_buff`: 参照 `arrange_in_lines()`
+        - `center`: 是否在完成后将物体移动至原点
+        '''
         new_lines: tuple[_TextLine, list[_TextChar], bool] = []
 
         # 遍历每行

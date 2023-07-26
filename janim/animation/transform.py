@@ -7,13 +7,20 @@ from janim.items.item import Item
 from janim.utils.paths import straight_path, path_along_arc
 
 class Transform(Animation):
+    '''
+    创建从 `item` 至 `target_item` 的插值动画
+
+    - 改变的是 `item` 的数据，以呈现插值效果
+    - `path_arc` 和 `path_arc_axis` 可以指定插值的圆弧路径的角度，若不传入则是直线
+    - 也可以直接传入 `path_func` 来指定路径方法
+    '''
     def __init__(
         self,
         item: Item,
         target_item: Item,
         path_arc: float = 0,
         path_arc_axis: np.ndarray = OUT,
-        path_func: Optional[Callable] = None,
+        path_func: Optional[Callable[[np.ndarray, np.ndarray, float], np.ndarray]] = None,
         **kwargs
     ) -> None:
         super().__init__(**kwargs)

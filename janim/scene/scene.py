@@ -27,27 +27,25 @@ class Scene:
     background_color = None
 
     def __init__(self) -> None:
+        # 获得有关属性
         if self.background_color is None:
             self.background_color = get_configuration()['style']['background_color']
-
-        stln = get_cli().start_at_line_number
-        if stln is None:
-            self.start_at_line_number = None
-            self.end_at_line_number = None
-        else:
-            if ',' in stln:
-                start, end = stln.split(',')
-                self.start_at_line_number = int(start)
-                self.end_at_line_number = int(end)
-            else:
-                self.start_at_line_number = int(stln)
-                self.end_at_line_number = None
+            
+        self.start_at_line_number, self.end_at_line_number = self.get_start_and_end_line_number()
         
-
         self.camera = Camera()
 
         # relation
         self.items: list[Item] = []
+    
+    def get_start_and_end_line_number(self) -> tuple[int | None, int | None]:
+        stln = get_cli().start_at_line_number
+        if stln is None:
+            return None, None
+        if ',' in stln:
+            start, end = stln.split(',')
+            return int(start), int(end)
+        return int(stln), None
 
     #region 基本结构
 
