@@ -52,4 +52,13 @@ class Transform(Animation):
 
     def finish(self) -> None:
         self.interpolate(1)
+
+class MoveToTarget(Transform):
+    def __init__(self, item: Item, target_key='', **kwargs):
+        if target_key not in item.targets:
+            raise ValueError(
+                'MoveToTarget called on item '
+                'without generate its target before'
+            )
+        super().__init__(item, item.targets[target_key], **kwargs)
         

@@ -48,8 +48,9 @@ class Item:
             ('rgbas', 'get_rgbas', 'set_rgbas')
         ))
 
-        # 渲染
+        # 其它
         self.renderer = self.create_renderer()
+        self.targets = {}
 
         # 默认值
         self.set_points_color(color, opacity)
@@ -198,6 +199,11 @@ class Item:
         copy_item.renderer = copy_item.create_renderer()
 
         return copy_item
+
+    def generate_target(self, key: str = ''):
+        target = self.copy()
+        self.targets[key] = target
+        return target
     
     def arrange(
         self,
