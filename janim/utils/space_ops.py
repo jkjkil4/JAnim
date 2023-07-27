@@ -324,7 +324,7 @@ def get_winding_number(points: Iterable[float]) -> float:
 ##
 
 def cross2d(a: np.ndarray, b: np.ndarray) -> np.ndarray:
-    if len(a.shape) == 2:
+    if a.ndim == 2:
         return a[:, 0] * b[:, 1] - a[:, 1] * b[:, 0]
     else:
         return a[0] * b[1] - b[0] * a[1]
@@ -374,7 +374,6 @@ def earclip_triangulation(verts: np.ndarray, ring_ends: list[int]) -> list:
     - ring_ends is a list of indices indicating where
     the ends of new paths are
     """
-
     rings = [
         list(range(e0, e1))
         for e0, e1 in zip([0, *ring_ends], ring_ends)
@@ -385,9 +384,7 @@ def earclip_triangulation(verts: np.ndarray, ring_ends: list[int]) -> list:
 
     def ring_area(ring_id):
         ring = rings[ring_id]
-        s = 0
-        for i, j in zip(ring[1:], ring):
-            s += cross2d(verts[i], verts[j])
+        s = np.sum(cross2d(verts[ring[1:]], verts[ring[:-1]]))
         return abs(s) / 2
 
     # Points at the same position may cause problems
