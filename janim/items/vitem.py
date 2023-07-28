@@ -1,5 +1,6 @@
 from __future__ import annotations
 from typing import Iterable, Optional, Sequence
+from janim.typing import Self
 import numpy as np
 
 from janim.constants import *
@@ -86,6 +87,12 @@ class VItem(Item):
         from janim.gl.render import VItemRenderer
         return VItemRenderer()
     
+    def __mul__(self, times: int) -> VGroup:
+        assert(isinstance(times, int))
+        return VGroup(
+            *(self.copy() for _ in range(times))
+        )
+    
     #region 点坐标数据
     
     # def set_points(self, points: Iterable):
@@ -100,7 +107,7 @@ class VItem(Item):
         anchors1: np.ndarray,
         handles: np.ndarray,
         anchors2: np.ndarray
-    ):
+    ) -> Self:
         assert(len(anchors1) == len(handles) == len(anchors2))
         new_points = np.zeros((3 * len(anchors1), 3))
         arrays = [anchors1, handles, anchors2]
@@ -109,26 +116,28 @@ class VItem(Item):
         self.set_points(new_points)
         return self
     
-    def get_start_points(self):
+    def get_start_points(self) -> np.ndarray:
         return self.get_points()[::3]
 
-    def get_handles(self):
+    def get_handles(self) -> np.ndarray:
         return self.get_points()[1::3]
     
-    def get_end_points(self):
+    def get_end_points(self) -> np.ndarray:
         return self.get_points()[2::3]
     
     def has_new_path_started(self) -> bool:
         return self.points_count() % 3 == 1
     
-    def path_move_to(self, point: np.ndarray):
+    def path_move_to(self, point: np.ndarray) -> Self:
         if self.has_new_path_started():
             self.points[-1] = point
             self.points_changed()
         else:
             self.append_points([point])
+        
+        return self
     
-    def add_line_to(self, point: np.ndarray):
+    def add_line_to(self, point: np.ndarray) -> Self:
         end = self.get_points()[-1]
         alphas = np.linspace(0, 1, 3)
         points = [
@@ -139,9 +148,10 @@ class VItem(Item):
             self.append_points(points[1:])
         else:
             self.append_points(points)
+        
         return self
     
-    def add_conic_to(self, handle: np.ndarray, point: np.ndarray):
+    def add_conic_to(self, handle: np.ndarray, point: np.ndarray) -> Self:
         end = self.get_points()[-1]
         if self.consider_points_equals(end, handle):
             handle = (end + point) / 2
@@ -150,14 +160,15 @@ class VItem(Item):
             self.append_points([handle, point])
         else:
             self.append_points([end, handle, point])
+
         return self
     
-    def add_points_as_corners(self, points: Iterable[np.ndarray]):
+    def add_points_as_corners(self, points: Iterable[np.ndarray]) -> Self:
         for point in points:
             self.add_line_to(point)
-        return points
+        return self
 
-    def set_points_as_corners(self, points: Iterable[np.ndarray]):
+    def set_points_as_corners(self, points: Iterable[np.ndarray]) -> Self:
         points = np.array(points)
         self.set_anchors_and_handles(*[
             interpolate(points[:-1], points[1:], a)
@@ -188,7 +199,7 @@ class VItem(Item):
     def get_subpaths(self) -> list[Sequence[np.ndarray]]:
         return self.get_subpaths_from_points(self.get_points())
     
-    def close_path(self):
+    def close_path(self) -> Self:
         if not self.is_closed():
             self.add_line_to(self.get_subpaths()[-1][0])
         return self
@@ -290,7 +301,7 @@ class VItem(Item):
         color: Optional[JAnimColor | Iterable[JAnimColor]] = None,
         opacity: Optional[float | Iterable[float]] = None,
         recurse: bool = True,
-    ):
+    ) -> Self:
         self.set_stroke(color, opacity, recurse=recurse)
         self.set_fill(color, opacity, recurse=recurse)
         return self
@@ -309,7 +320,7 @@ class VItem(Item):
         width: Optional[float | Iterable[float]] = None,
         background: Optional[bool] = None,
         recurse: bool = True,
-    ):
+    ) -> Self:
         if color is not None or opacity is not None:
             self.set_points_color(color, opacity, recurse)
         if width is not None:
@@ -322,7 +333,7 @@ class VItem(Item):
         self, 
         stroke_width: float | Iterable[float], 
         recurse: bool = True
-    ):
+    ) -> Self:
         if not isinstance(stroke_width, Iterable):
             stroke_width = [stroke_width]
 
@@ -344,7 +355,7 @@ class VItem(Item):
             self.stroke_width = stroke_width
         return self
 
-    def set_self_stroke_width(self, stroke_width):
+    def set_self_stroke_width(self, stroke_width) -> Self:
         '''为了传递给 `npdata_to_copy_and_interpolate` 使用'''
         return self.set_stroke_width(stroke_width, recurse=False)
     
@@ -354,13 +365,14 @@ class VItem(Item):
             self.needs_new_stroke_width = False
         return self.stroke_width
     
-    def set_stroke_behind_fill(self, flag: bool = True):
+    def set_stroke_behind_fill(self, flag: bool = True) -> Self:
         self.stroke_behind_fill = flag
         return self
     
-    def set_opacity(self, opacity: float):
+    def set_opacity(self, opacity: float) -> Self:
         super().set_opacity(opacity)
         self.set_fill(opacity=opacity)
+        return self
     
     def compute_rgbas_visible(self) -> bool:
         return super().compute_rgbas_visible() \
@@ -370,7 +382,7 @@ class VItem(Item):
 
     #region 填充色数据
 
-    def set_fill_rgbas(self, rgbas: Iterable[Iterable[float, float, float, float]]):
+    def set_fill_rgbas(self, rgbas: Iterable[Iterable[float, float, float, float]]) -> Self:
         rgbas = resize_array(
             np.array(rgbas, dtype=np.float32), 
             max(1, self.points_count())
@@ -387,7 +399,7 @@ class VItem(Item):
         color: Optional[JAnimColor | Iterable[JAnimColor]] = None, 
         opacity: Optional[float | Iterable[float]] = None,
         recurse: bool = True,
-    ):
+    ) -> Self:
         color, opacity = self.format_color(color), self.format_opacity(opacity)
 
         if recurse:
@@ -502,13 +514,13 @@ class VItem(Item):
         scale_factor: float | Iterable, 
         scale_stroke_width: bool = True, 
         **kwargs
-    ):
+    ) -> Self:
         if scale_stroke_width and not isinstance(scale_factor, Iterable):
             self.set_stroke_width(self.get_stroke_width() * scale_factor)
         super().scale(scale_factor, **kwargs)
         return self
     
-    def change_anchor_mode(self, mode: AnchorMode):
+    def change_anchor_mode(self, mode: AnchorMode) -> Self:
         assert(isinstance(mode, AnchorMode))
         nppc = 3
         for subitem in self.family_members_with_points():
@@ -528,7 +540,7 @@ class VItem(Item):
                     subitem.append_points(new_subpath)
         return self
 
-    def make_smooth(self):
+    def make_smooth(self) -> Self:
         """
         This will double the number of points in the mobject,
         so should not be called repeatedly.  It also means
@@ -538,7 +550,7 @@ class VItem(Item):
         self.change_anchor_mode(AnchorMode.TrueSmooth)
         return self
 
-    def make_approximately_smooth(self):
+    def make_approximately_smooth(self) -> Self:
         """
         Unlike make_smooth, this will not change the number of
         points, but it also does not result in a perfectly smooth
@@ -549,7 +561,7 @@ class VItem(Item):
         self.change_anchor_mode(AnchorMode.ApproxSmooth)
         return self
 
-    def make_jagged(self):
+    def make_jagged(self) -> Self:
         self.change_anchor_mode(AnchorMode.Jagged)
         return self
     
@@ -601,7 +613,7 @@ class VItem(Item):
                 new_points += partial_quadratic_bezier_points(group, a1, a2)
         return np.vstack(new_points)
 
-    def insert_n_curves(self, n: int, recurse: bool = True):
+    def insert_n_curves(self, n: int, recurse: bool = True) -> Self:
         if self.curves_count() > 0:
             new_points = self.insert_n_curves_to_point_list(n, self.get_points())
             # TODO: [L] this should happen in insert_n_curves_to_point_list
@@ -642,7 +654,7 @@ class VItem(Item):
         self,
         angle_threshold: float = 30 * DEGREES,
         recurse: bool = True
-    ):
+    ) -> Self:
         if self.curves_count() > 0:
             self.set_points(VItem.subdivide_sharp_curves_from_points(self.get_points(), angle_threshold))
 
@@ -660,7 +672,7 @@ class VItem(Item):
 
     #region Alignment
 
-    def align_points(self, vitem: VItem):
+    def align_points(self, vitem: VItem) -> Self:
         if self.points_count() == vitem.points_count():
             return
 

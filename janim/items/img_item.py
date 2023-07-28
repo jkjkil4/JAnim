@@ -1,4 +1,5 @@
 from __future__ import annotations
+from janim.typing import Self
 
 from janim.constants import *
 from janim.items.item import Item
@@ -38,6 +39,6 @@ class ImgItem(Item):
     
     # TODO: point_to_rgba
 
-    def set_opacity(self, opacity: float | Iterable[float]):
+    def set_opacity(self, opacity: float | Iterable[float]) -> Self:
         self.set_points_color(opacity=opacity)
         return self

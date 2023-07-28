@@ -1,3 +1,4 @@
+from janim.typing import Self
 
 from janim.constants import *
 from janim.items.item import Item, Point
@@ -19,7 +20,7 @@ class Arc(VItem):
         n_components: int = 8,
         arc_center: np.ndarray = ORIGIN,
         **kwargs
-    ):
+    ) -> None:
         super().__init__(**kwargs)
 
         self.set_points(
@@ -77,7 +78,7 @@ class Arc(VItem):
         angle = angle_of_vector(self.get_end() - self.get_arc_center())
         return angle % TAU
 
-    def move_arc_center_to(self, point: np.ndarray):
+    def move_arc_center_to(self, point: np.ndarray) -> Self:
         self.shift(point - self.get_arc_center())
         return self
 
@@ -88,14 +89,14 @@ class ArcBetweenPoints(Arc):
         end: np.ndarray,
         angle: float = TAU / 4,
         **kwargs
-    ):
+    ) -> None:
         super().__init__(angle=angle, **kwargs)
         if angle == 0:
             self.set_points_as_corners([LEFT, RIGHT])
         self.put_start_and_end_on(start, end)
 
 class Circle(Arc):
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs) -> None:
         super().__init__(0, TAU, **kwargs)
 
     def surround(
@@ -104,13 +105,13 @@ class Circle(Arc):
         dim_to_match: int = 0,
         stretch: bool = False,
         buff: float = MED_SMALL_BUFF
-    ):
+    ) -> Self:
         # Ignores dim_to_match and stretch; result will always be a circle
         # TODO: [L] Perhaps create an ellipse class to handle singele-dimension stretching
-
         self.replace(item, dim_to_match, stretch)
         self.stretch((self.get_width() + 2 * buff) / self.get_width(), 0)
         self.stretch((self.get_height() + 2 * buff) / self.get_height(), 1)
+        return self
 
     def point_at_angle(self, angle: float) -> np.ndarray:
         start_angle = self.get_start_angle()
@@ -130,7 +131,7 @@ class Dot(Circle):
         stroke_width: float = 0,
         fill_opacity: float = 1.0,
         **kwargs
-    ):
+    ) -> None:
         super().__init__(
             arc_center=point,
             radius=radius,
@@ -140,7 +141,7 @@ class Dot(Circle):
         )
 
 class SmallDot(Dot):
-    def __init__(self, radius: float = DEFAULT_SMALL_DOT_RADIUS, **kwargs):
+    def __init__(self, radius: float = DEFAULT_SMALL_DOT_RADIUS, **kwargs) -> None:
         super().__init__(radius=radius, **kwargs)
 
 
@@ -150,7 +151,7 @@ class Ellipse(Circle):
         width: float = 2,
         height: float = 1,
         **kwargs
-    ):
+    ) -> None:
         super().__init__(**kwargs)
         self.set_size(width, height)
 
@@ -164,7 +165,7 @@ class AnnularSector(VItem):
         arc_center: np.ndarray = ORIGIN,
         n_components: int = 8,
         **kwargs
-    ):
+    ) -> None:
         super().__init__(**kwargs)
 
         unit = Arc.create_quadratic_bezier_points(
@@ -189,12 +190,12 @@ class AnnularSector(VItem):
     def get_arc_center(self) -> np.ndarray:
         return self.center_point.get_pos()
 
-    def move_arc_center_to(self, point: np.ndarray):
+    def move_arc_center_to(self, point: np.ndarray) -> Self:
         self.shift(point - self.get_arc_center())
         return self
 
 class Sector(Arc):
-    def __init__(self, arc_center: np.ndarray = ORIGIN, **kwargs):
+    def __init__(self, arc_center: np.ndarray = ORIGIN, **kwargs) -> None:
         super().__init__(arc_center=arc_center, **kwargs)
 
         self.add_points_as_corners([arc_center, self.get_points()[0]])
@@ -208,7 +209,7 @@ class Annulus(VItem):
         n_components: int = 8,
         fill_opacity: float = 0.5,
         **kwargs
-    ):
+    ) -> None:
         super().__init__(fill_opacity=fill_opacity, **kwargs)
 
         unit = Arc.create_quadratic_bezier_points(

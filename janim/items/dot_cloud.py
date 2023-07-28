@@ -1,5 +1,6 @@
 from __future__ import annotations
 from typing import Iterable
+from janim.typing import Self
 
 import numpy as np
 
@@ -36,7 +37,7 @@ class DotCloud(Item):
         from janim.gl.render import DotCloudRenderer
         return DotCloudRenderer()
     
-    def set_radius(self, radius: float | Iterable[float]):
+    def set_radius(self, radius: float | Iterable[float]) -> Self:
         if not isinstance(radius, Iterable):
             radius = [radius]
         radius = resize_array(
@@ -70,13 +71,13 @@ class DotCloud(Item):
         scale_factor: float | Iterable,
         scale_radii: bool = True,
         **kwargs
-    ):
+    ) -> Self:
         super().scale(scale_factor, **kwargs)
         if scale_radii:
             self.set_radius(scale_factor * self.get_radii())
         return self
     
-    def reverse_points(self, recurse=True):
+    def reverse_points(self, recurse=True) -> Self:
         super().reverse_points(recurse)
         self.set_radius(self.get_radii()[::-1])
         return self

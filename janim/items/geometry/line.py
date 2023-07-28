@@ -1,5 +1,6 @@
 from __future__ import annotations
 from typing import Iterable, Optional
+from janim.typing import Self
 
 from janim.constants import *
 from janim.items.item import Item
@@ -33,7 +34,7 @@ class Line(VItem):
         end: np.ndarray,
         buff: float = 0,
         path_arc: float = 0
-    ):
+    ) -> Self:
         vect = end - start
         dist = get_norm(vect)
         if np.isclose(dist, 0):
@@ -62,11 +63,12 @@ class Line(VItem):
             self.set_points_as_corners([start, end])
         return self
 
-    def set_path_arc(self, new_value: float) -> None:
+    def set_path_arc(self, new_value: float) -> Self:
         self.path_arc = new_value
         self.set_points_by_ends(self.start, self.end, self.buff, self.path_arc)
+        return self
 
-    def set_start_and_end_attrs(self, start: np.ndarray, end: np.ndarray):
+    def set_start_and_end_attrs(self, start: np.ndarray, end: np.ndarray) -> None:
         # If either start or end are Mobjects, this
         # gives their centers
         rough_start = self.pointify(start)
@@ -99,7 +101,7 @@ class Line(VItem):
             result[:len(point)] = point
             return result
 
-    def put_start_and_end_on(self, start: np.ndarray, end: np.ndarray):
+    def put_start_and_end_on(self, start: np.ndarray, end: np.ndarray) -> Self:
         curr_start, curr_end = self.get_start_and_end()
         if np.isclose(curr_start, curr_end).all():
             # Handle null lines more gracefully
@@ -127,7 +129,7 @@ class Line(VItem):
     def get_slope(self) -> float:
         return np.tan(self.get_angle())
 
-    def set_angle(self, angle: float, about_point: np.ndarray | None = None):
+    def set_angle(self, angle: float, about_point: np.ndarray | None = None) -> Self:
         if about_point is None:
             about_point = self.get_start()
         self.rotate(
@@ -139,7 +141,7 @@ class Line(VItem):
     def get_length(self) -> float:
         return get_norm(self.get_vector())
 
-    def set_length(self, length: float, **kwargs):
+    def set_length(self, length: float, **kwargs) -> Self:
         self.scale(length / self.get_length(), False, **kwargs)
         return self
 

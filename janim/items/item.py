@@ -81,7 +81,7 @@ class Item:
 
     #region 物件包含关系
 
-    def add(self, *items: Item, is_helper: bool = False):
+    def add(self, *items: Item, is_helper: bool = False) -> Self:
         target = self.helper_items if is_helper else self.items
 
         for item in items:                  # 遍历要追加的每个物件
@@ -98,7 +98,7 @@ class Item:
             self.items_changed()
         return self
 
-    def remove(self, *items: Item, is_helper: bool = False):
+    def remove(self, *items: Item, is_helper: bool = False) -> Self:
         target = self.helper_items if is_helper else self.items
 
         for item in items:          # 遍历要移除的每个物件
@@ -113,7 +113,7 @@ class Item:
             self.items_changed()
         return self
     
-    def set_subitems(self, subitem_list: list[Item]):
+    def set_subitems(self, subitem_list: list[Item]) -> Self:
         self.remove(*self.items)
         self.add(*subitem_list)
         return self
@@ -170,7 +170,7 @@ class Item:
             *(self.copy() for _ in range(times))
         )
 
-    def copy(self):
+    def copy(self) -> Self:
         copy_item = copy.copy(self)
 
         # relation
@@ -189,7 +189,7 @@ class Item:
 
         return copy_item
 
-    def generate_target(self, key: str = ''):
+    def generate_target(self, key: str = '') -> Self:
         target = self.copy()
         self.targets[key] = target
         return target
@@ -199,7 +199,7 @@ class Item:
         direction: np.ndarray = RIGHT,
         center: bool = True,
         **kwargs
-    ):
+    ) -> Self:
         for m1, m2 in zip(self, self[1:]):
             m2.next_to(m1, direction, **kwargs)
         if center:
@@ -211,7 +211,7 @@ class Item:
         items_count: int, 
         n_rows: Optional[int],
         n_cols: Optional[int],
-    ):
+    ) -> tuple[int, int]:
         if n_rows is None and n_cols is None:
             n_rows = int(np.sqrt(items_count))
         if n_rows is None:
@@ -226,7 +226,7 @@ class Item:
         h_buff: Optional[float] = None,
         v_buff: Optional[float] = None,
         by_center_point: bool = False,
-    ):
+    ) -> tuple[float, float]:
         default_buff = DEFAULT_ITEM_TO_EDGE_BUFF if by_center_point else DEFAULT_ITEM_TO_ITEM_BUFF
         if buff is not None:
             h_buff = buff
@@ -253,7 +253,7 @@ class Item:
         aligned_edge: np.ndarray = ORIGIN,
         by_center_point: bool = False,
         fill_rows_first: bool = True
-    ):
+    ) -> Self:
         n_rows, n_cols = self.format_rows_cols(len(self.items), n_rows, n_cols)
         h_buff, v_buff = self.format_buff(buff, h_buff, v_buff, by_center_point)
         
@@ -277,7 +277,7 @@ class Item:
 
     #region 点坐标数据
 
-    def set_points(self, points: Iterable):
+    def set_points(self, points: Iterable) -> Self:
         '''
         设置点坐标数据，每个坐标点都有三个分量
         
@@ -311,7 +311,7 @@ class Item:
             )
         ])
 
-    def append_points(self, points: Iterable):
+    def append_points(self, points: Iterable) -> Self:
         '''
         追加点坐标数据，每个坐标点都有三个分量
 
@@ -327,20 +327,20 @@ class Item:
         self.points_changed()
         return self
 
-    def match_points(self, item: Item):
+    def match_points(self, item: Item) -> Self:
         '''
         将另一个物件的点坐标数据设置到该物件上
         '''
         self.set_points(item.get_points())
         return self
 
-    def clear_points(self):
+    def clear_points(self) -> Self:
         self.points = np.zeros((0, 3), dtype=np.float32)
         self.points_count_changed()
         self.points_changed()
         return self
 
-    def reverse_points(self, recurse=True):
+    def reverse_points(self, recurse=True) -> Self:
         if recurse:
             for item in self.items:
                 item.reverse_points()
@@ -352,7 +352,7 @@ class Item:
         self,
         new_length: int,
         resize_func: Callable[[np.ndarray, int], np.ndarray] = resize_array
-    ):
+    ) -> Self:
         self.set_points(resize_func(self.get_points(), new_length))
         return self
     
@@ -380,11 +380,11 @@ class Item:
         i, subalpha = integer_interpolate(0, len(points) - 1, alpha)
         return interpolate(points[i], points[i + 1], subalpha)
 
-    def pfp(self, alpha):
+    def pfp(self, alpha) -> np.ndarray:
         """Abbreviation for point_from_proportion"""
         return self.point_from_proportion(alpha)
     
-    def throw_error_if_no_points(self):
+    def throw_error_if_no_points(self) -> None:
         if not self.has_points():
             message = "Cannot call Item.{} " +\
                       "for a Item with no points"
@@ -420,7 +420,7 @@ class Item:
             opacity = [opacity]
         return opacity
 
-    def set_rgbas(self, rgbas: Iterable[Iterable[float, float, float, float]]):
+    def set_rgbas(self, rgbas: Iterable[Iterable[float, float, float, float]]) -> Self:
         rgbas = resize_array(
             np.array(rgbas, dtype=np.float32), 
             max(1, self.points_count())
@@ -437,7 +437,7 @@ class Item:
         color: Optional[JAnimColor | Iterable[JAnimColor]] = None, 
         opacity: Optional[float | Iterable[float]] = None,
         recurse: bool = True,
-    ):
+    ) -> Self:
         color, opacity = self.format_color(color), self.format_opacity(opacity)
 
         if recurse:
@@ -466,7 +466,7 @@ class Item:
             self.needs_new_rgbas = False
         return self.rgbas
     
-    def set_opacity(self, opacity: float):
+    def set_opacity(self, opacity: float) -> Self:
         self.set_points_color(opacity=opacity)
         return self
     
@@ -584,7 +584,7 @@ class Item:
         func: Callable[[np.ndarray], np.ndarray],
         about_point: np.ndarray = None,
         about_edge: np.ndarray = ORIGIN
-    ):
+    ) -> Self:
         if about_point is None and about_edge is not None:
             about_point = self.get_bbox_point(about_edge)
         
@@ -603,7 +603,7 @@ class Item:
         function: Callable[[np.ndarray], np.ndarray],
         about_point: np.ndarray = ORIGIN,
         **kwargs
-    ):
+    ) -> Self:
         # Default to applying matrix about the origin, not mobjects center
         self.apply_points_function(
             lambda points: np.array([function(p) for p in points]),
@@ -612,7 +612,7 @@ class Item:
         )
         return self
 
-    def apply_matrix(self, matrix: Iterable, **kwargs):
+    def apply_matrix(self, matrix: Iterable, **kwargs) -> Self:
         # Default to applying matrix about the origin, not mobjects center
         if ("about_point" not in kwargs) and ("about_edge" not in kwargs):
             kwargs["about_point"] = ORIGIN
@@ -625,7 +625,7 @@ class Item:
         )
         return self
     
-    def apply_complex_function(self, function: Callable[[complex], complex], **kwargs):
+    def apply_complex_function(self, function: Callable[[complex], complex], **kwargs) -> Self:
         def R3_func(point):
             x, y, z = point
             xy_complex = function(complex(x, y))
@@ -642,7 +642,7 @@ class Item:
         axis: np.ndarray = OUT,
         about_point: Optional[np.ndarray] = None,
         **kwargs
-    ):
+    ) -> Self:
         rot_matrix_T = rotation_matrix(angle, axis).T
         self.apply_points_function(
             lambda points: np.dot(points, rot_matrix_T),
@@ -657,7 +657,7 @@ class Item:
         min_scale_factor: float = 1e-8,
         about_point: Optional[np.ndarray] = None,
         about_edge: np.ndarray = ORIGIN
-    ):
+    ) -> Self:
         if isinstance(scale_factor, Iterable):
             scale_factor = np.array(scale_factor).clip(min=min_scale_factor)
         else:
@@ -670,14 +670,14 @@ class Item:
         )
         return self
     
-    def stretch(self, factor: float, dim: int, **kwargs):
+    def stretch(self, factor: float, dim: int, **kwargs) -> Self:
         def func(points):
             points[:, dim] *= factor
             return points
         self.apply_points_function(func, **kwargs)
         return self
     
-    def rescale_to_fit(self, length: float, dim: int, stretch: bool = False, **kwargs):
+    def rescale_to_fit(self, length: float, dim: int, stretch: bool = False, **kwargs) -> Self:
         old_length = self.length_over_dim(dim)
         if old_length == 0:
             return self
@@ -687,13 +687,13 @@ class Item:
             self.scale(length / old_length, **kwargs)
         return self
     
-    def set_width(self, width: float, stretch: bool = False, **kwargs):
+    def set_width(self, width: float, stretch: bool = False, **kwargs) -> Self:
         return self.rescale_to_fit(width, 0, stretch=stretch, **kwargs)
 
-    def set_height(self, height: float, stretch: bool = False, **kwargs):
+    def set_height(self, height: float, stretch: bool = False, **kwargs) -> Self:
         return self.rescale_to_fit(height, 1, stretch=stretch, **kwargs)
 
-    def set_depth(self, depth: float, stretch: bool = False, **kwargs):
+    def set_depth(self, depth: float, stretch: bool = False, **kwargs) -> Self:
         return self.rescale_to_fit(depth, 2, stretch=stretch, **kwargs)
     
     def set_size(
@@ -702,15 +702,16 @@ class Item:
         height: Optional[float] = None,
         depth: Optional[float] = None,
         **kwargs
-    ):
+    ) -> Self:
         if width:
             self.set_width(width, True, **kwargs)
         if height:
             self.set_height(height, True, **kwargs)
         if depth:
             self.set_depth(depth, True, **kwargs)
+        return self
     
-    def replace(self, item: Item, dim_to_match: int = 0, stretch: bool = False):
+    def replace(self, item: Item, dim_to_match: int = 0, stretch: bool = False) -> Self:
         if not item.points_count() and not item.items:
             self.scale(0)
             return self
@@ -726,7 +727,7 @@ class Item:
         self.shift(item.get_center() - self.get_center())
         return self
     
-    def put_start_and_end_on(self, start: np.ndarray, end: np.ndarray):
+    def put_start_and_end_on(self, start: np.ndarray, end: np.ndarray) -> Self:
         curr_start, curr_end = self.get_start_and_end()
         curr_vect = curr_end - curr_start
         if np.all(curr_vect == 0):
@@ -750,7 +751,7 @@ class Item:
 
     #region 位移
 
-    def shift(self, vector: np.ndarray):
+    def shift(self, vector: np.ndarray) -> Self:
         self.apply_points_function(
             lambda points: points + vector,
             about_edge=None
@@ -762,14 +763,14 @@ class Item:
         target: Item | np.ndarray,
         aligned_edge: np.ndarray = ORIGIN,
         coor_mask: Iterable = (1, 1, 1)
-    ):
+    ) -> Self:
         if isinstance(target, Item):
             target = target.get_bbox_point(aligned_edge)
         point_to_align = self.get_bbox_point(aligned_edge)
         self.shift((target - point_to_align) * coor_mask)
         return self
 
-    def to_center(self):
+    def to_center(self) -> Self:
         self.shift(-self.get_center())
         return self
 
@@ -777,7 +778,7 @@ class Item:
         self,
         direction: np.ndarray,
         buff: float = DEFAULT_ITEM_TO_EDGE_BUFF
-    ):
+    ) -> Self:
         """
         Direction just needs to be a vector pointing towards side or
         corner in the 2d plane.
@@ -796,7 +797,7 @@ class Item:
         buff: float = DEFAULT_ITEM_TO_ITEM_BUFF,
         aligned_edge: np.ndarray = ORIGIN,
         coor_mask: Iterable = (1, 1, 1)
-    ):
+    ) -> Self:
         if isinstance(target, Item):
             target = target.get_bbox_point(aligned_edge + direction)
         
@@ -804,20 +805,20 @@ class Item:
         self.shift((target - point_to_align + buff * direction) * coor_mask)
         return self
     
-    def set_coord(self, value: float, dim: int, direction: np.ndarray = ORIGIN):
+    def set_coord(self, value: float, dim: int, direction: np.ndarray = ORIGIN) -> Self:
         curr = self.get_coord(dim, direction)
         shift_vect = np.zeros(3)
         shift_vect[dim] = value - curr
         self.shift(shift_vect)
         return self
 
-    def set_x(self, x: float, direction: np.ndarray = ORIGIN):
+    def set_x(self, x: float, direction: np.ndarray = ORIGIN) -> Self:
         return self.set_coord(x, 0, direction)
 
-    def set_y(self, y: float, direction: np.ndarray = ORIGIN):
+    def set_y(self, y: float, direction: np.ndarray = ORIGIN) -> Self:
         return self.set_coord(y, 1, direction)
 
-    def set_z(self, z: float, direction: np.ndarray = ORIGIN):
+    def set_z(self, z: float, direction: np.ndarray = ORIGIN) -> Self:
         return self.set_coord(z, 2, direction)
 
     #endregion
@@ -909,13 +910,15 @@ class Item:
         item2: Item,
         alpha: float,
         path_func: Callable[[np.ndarray, np.ndarray, float], np.ndarray]
-    ):
+    ) -> Self:
         for key, getter, setter in item1.npdata_to_copy_and_interpolate & item2.npdata_to_copy_and_interpolate:
             setter_self = getattr(self, setter)
             getter1 = getattr(item1, getter)
             getter2 = getattr(item2, getter)
             func = path_func if key == 'points' else interpolate
             setter_self(func(getter1(), getter2(), alpha))
+        
+        return self
 
     #endregion
 
@@ -944,7 +947,7 @@ class Item:
     def get_comment(self) -> str:
         return self.comment or f'points: {self.points_count()}'
     
-    def print_family_structure(self, include_self=True, sub_prefix=''):
+    def print_family_structure(self, include_self=True, sub_prefix='') -> Self:
         if include_self:
             print(f'{self} \033[30m({self.get_comment()})\033[0m')
 

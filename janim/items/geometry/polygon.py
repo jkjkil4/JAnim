@@ -1,5 +1,6 @@
 from __future__ import annotations
 from typing import Optional
+from janim.typing import Self
 
 from janim.constants import *
 from janim.items.vitem import VItem
@@ -19,7 +20,7 @@ class Polygon(VItem):
         *verts: np.ndarray, 
         close_path: bool = True, 
         **kwargs
-    ):
+    ) -> None:
         self.vertices = verts
         super().__init__(**kwargs)
         self.set_points_as_corners(
@@ -31,7 +32,7 @@ class Polygon(VItem):
     def get_vertices(self) -> list[np.ndarray]:
         return self.get_start_points()
 
-    def round_corners(self, radius: float = 0.5):
+    def round_corners(self, radius: float = 0.5) -> Self:
         vertices = self.get_vertices()
         arcs = []
         for v1, v2, v3 in adjacent_n_tuples(vertices, 3):
@@ -74,7 +75,7 @@ class RegularPolygon(Polygon):
         n: int = 6,
         start_angle: Optional[float] = None,
         **kwargs
-    ):
+    ) -> None:
         if start_angle is None:
             start_angle = (n % 2) * PI / 2
         start_vect = rotate_vector(RIGHT, start_angle)
@@ -91,12 +92,12 @@ class Rectangle(Polygon):
         width: float = 4.0,
         height: float = 2.0,
         **kwargs
-    ):
+    ) -> None:
         Polygon.__init__(self, UR, UL, DL, DR, **kwargs)
         self.set_size(width, height)
 
 class Square(Rectangle):
-    def __init__(self, side_length: float = 2.0, **kwargs):
+    def __init__(self, side_length: float = 2.0, **kwargs) -> None:
         self.side_length = side_length
         super().__init__(side_length, side_length, **kwargs)
 
@@ -105,6 +106,6 @@ class RoundedRectangle(Rectangle):
         self, 
         corner_radius: float = 0.5,
         **kwargs
-    ):
+    ) -> None:
         Rectangle.__init__(self, **kwargs)
         self.round_corners(corner_radius)

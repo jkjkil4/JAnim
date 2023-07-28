@@ -1,7 +1,6 @@
 from __future__ import annotations
 from typing import Iterable
-
-import freetype as FT
+from janim.typing import Self
 
 from janim.constants import *
 from janim.config import get_configuration
@@ -91,7 +90,7 @@ class _TextLine(VGroup):
     def get_mark_up(self) -> np.ndarray:
         return self.mark.get_points()[2]
     
-    def arrange_in_line(self, buff: float = 0) -> None:
+    def arrange_in_line(self, buff: float = 0) -> Self:
         if len(self.items) == 0:
             return
         
@@ -160,7 +159,7 @@ class Text(VGroup):
         self.arrange_in_lines()
         self.to_center()
         
-    def arrange_in_lines(self, buff: float = 0, base_buff: float = 0.85) -> None:
+    def arrange_in_lines(self, buff: float = 0, base_buff: float = 0.85) -> Self:
         '''
         - `buff`: 每行之间的额外间距
         - `base_buff`: 每行之间的基本间距，默认值 `0.85` 用于将两行上下排列，如果是 `0` 则会让两行完全重合，大部分时候不需要传入该值
@@ -189,7 +188,7 @@ class Text(VGroup):
         buff: float = 0,
         base_buff: float = 0.85,
         center: bool = True
-    ):
+    ) -> Self:
         '''
         - `break_length`: 自动换行的宽度，若某一行的宽度超过该值，则会将超出部分向下换行
         - `stretch`: 拆行后，是否进行左右对齐，以填补两侧边界可能出现的不规则空隙
