@@ -68,7 +68,7 @@ def get_cli() -> argparse.Namespace:
 def get_janim_dir() -> str:
     janim_module = importlib.import_module('janim')
     janim_dir = os.path.dirname(inspect.getabsfile(janim_module))
-    return os.path.abspath(os.path.join(janim_dir, '..'))
+    return os.path.abspath(janim_dir)
 
 
 JANIM_CONFIGURATION = None
@@ -83,7 +83,7 @@ def get_configuration():
     args = JANIM_ARGS
     
     # 默认配置路径 与 自定义配置路径
-    default_config_file = os.path.join(get_janim_dir(), 'janim', 'default_config.yml')
+    default_config_file = os.path.join(get_janim_dir(), 'default_config.yml')
     custom_config_file = args.config_file or 'custom_config.yml'
 
     # 对配置路径进行提示

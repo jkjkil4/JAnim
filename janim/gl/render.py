@@ -12,6 +12,7 @@ from janim.constants import *
 from janim.items.dot_cloud import DotCloud
 from janim.items.vitem import VItem
 from janim.items.img_item import ImgItem
+from janim.config import get_janim_dir
 
 class ShaderProgram(QOpenGLShaderProgram):
     '''
@@ -46,7 +47,7 @@ class ShaderProgram(QOpenGLShaderProgram):
         if filepath in ShaderProgram.filepath_to_shader_map:
             return ShaderProgram.filepath_to_shader_map[filepath]
         
-        shader = ShaderProgram(filepath)
+        shader = ShaderProgram(os.path.join(get_janim_dir(), filepath))
         ShaderProgram.filepath_to_shader_map[filepath] = shader
         return shader
     

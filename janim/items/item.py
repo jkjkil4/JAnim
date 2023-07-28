@@ -1,5 +1,6 @@
 from __future__ import annotations
 from typing import Iterable, Callable, Optional, Tuple
+from janim.typing import Self
 import itertools as it
 import numpy as np
 import sys
@@ -135,20 +136,6 @@ class Item:
     
     def family_members_with_points(self) -> list[Item]:
         return [m for m in self.get_family() if m.has_points()]
-    
-    def add_helper_items(self, *items: Item):
-        for item in items:
-            if item in self:
-                continue
-            self.helper_items.append(item)
-        return self
-    
-    def remove_helper_items(self, *items: Item):
-        for item in items:
-            if item not in self:
-                continue
-            self.helper_items.remove(item)
-        return self
     
     def get_family_with_helpers(self) -> list[Item]:
         if self.needs_new_family_with_helpers:
@@ -910,6 +897,11 @@ class Item:
     #endregion
 
     #region Animation
+
+    def anim(self, call_immediately=False, **kwargs) -> Self:
+        '''实际上返回的是 `MethodAnimation`，但假装返回了 `self`，以做到代码提示'''
+        from janim.animation.transform import MethodAnimation
+        return MethodAnimation(self, call_immediately=call_immediately, **kwargs)
 
     def interpolate(
         self,

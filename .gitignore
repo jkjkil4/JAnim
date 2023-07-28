@@ -1,5 +1,4 @@
 __pycache__
-/*.py
 tempCodeRunnerFile.py
 janim/test
-janim/custom_config.yml
+/custom_config.yml

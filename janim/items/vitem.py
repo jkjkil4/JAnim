@@ -77,6 +77,7 @@ class VItem(Item):
         self.needs_new_triangulation = True
     
     def fill_rgbas_changed(self) -> None:
+        self.needs_new_fill_rgbas_visible = True
         self.renderer.needs_update = True
 
     #endregion

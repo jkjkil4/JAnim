@@ -1,4 +1,4 @@
-
+from __future__ import annotations
 from typing import Callable, Optional
 
 from janim.constants import *
@@ -17,7 +17,7 @@ class Transform(Animation):
     def __init__(
         self,
         item: Item,
-        target_item: Item,
+        target_item: Item | None,
         path_arc: float = 0,
         path_arc_axis: np.ndarray = OUT,
         path_func: Optional[Callable[[np.ndarray, np.ndarray, float], np.ndarray]] = None,
@@ -54,11 +54,42 @@ class Transform(Animation):
         self.interpolate(1)
 
 class MoveToTarget(Transform):
-    def __init__(self, item: Item, target_key='', **kwargs):
+    def __init__(self, item: Item, target_key='', **kwargs) -> None:
         if target_key not in item.targets:
             raise ValueError(
                 'MoveToTarget called on item '
                 'without generate its target before'
             )
         super().__init__(item, item.targets[target_key], **kwargs)
+
+class MethodAnimation(Transform):
+    def __init__(
+        self,
+        item: Item,
+        call_immediately: bool = False,
+        **kwargs
+    ) -> None:
+        target_item = item.copy() if self.call_immediately else None
+        super().__init__(item, target_item, **kwargs)
+        self.call_immediately = call_immediately
+        if not call_immediately:
+            self.methods_to_call = []
+
+    def begin(self) -> None:
+        if not self.call_immediately:
+            self.target_item = self.item.copy()
+            for method_name, method_args, method_kwargs in self.methods_to_call:
+                method = getattr(self.target_item, method_name)
+                method(*method_args, **method_kwargs)
+        super().begin()
+    
+    def __getattr__(self, method_name: str) -> Callable:
+        def update_target(*method_args, **method_kwargs):
+            if self.call_immediately:
+                method = getattr(self.target_item, method_name)
+                method(*method_args, **method_kwargs)
+            else:
+                self.methods_to_call.append((method_name, method_args, method_kwargs))
+            return self
         
+        return update_target

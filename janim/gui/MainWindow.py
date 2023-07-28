@@ -7,7 +7,7 @@ from janim.gui.GLWidget import GLWidget
 from janim.gl.texture import Texture
 from janim.gl.render import ShaderProgram
 
-from scene.scene import Scene
+from janim.scene.scene import Scene
 
 class MainWindow(GLWidget):
     def __init__(self, scene: Scene, parent: Optional[QWidget] = None) -> None:
