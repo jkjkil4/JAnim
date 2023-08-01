@@ -1,5 +1,5 @@
 directories:
-  output: ""
+  output: "videos"
 frame_rate: 60
 style:
   background_color: "#222222"
