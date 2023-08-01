@@ -33,6 +33,16 @@ def get_cli() -> argparse.Namespace:
             help="Render the scene as a movie file",
         )
         parser.add_argument(
+            "-i", "--gif",
+            action="store_true",
+            help="Save the video as gif",
+        )
+        parser.add_argument(
+            "-t", "--transparent",
+            action="store_true",
+            help="Render to a movie file with an alpha channel",
+        )
+        parser.add_argument(
             "-o", "--open",
             action="store_true",
             help="Automatically open the saved file once its done",
@@ -53,6 +63,10 @@ def get_cli() -> argparse.Namespace:
                  "from another, specified by its line.  If you pass "
                  "in two comma separated values, e.g. \"6,9\", it will end "
                  "the rendering at the second value",
+        )
+        parser.add_argument(
+            "--frame_rate",
+            help="Frame rate, as an integer",
         )
         parser.add_argument(
             "-c", "--color",

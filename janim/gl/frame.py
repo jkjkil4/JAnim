@@ -26,18 +26,22 @@ class Frame:
         self.context.create()
         self.context.makeCurrent(self.surface)
 
+        cli = get_cli()
+        self.color_space = GL_RGBA if cli.transparent else GL_RGB
+        self.ffmpeg_color_space = 'rgba' if cli.transparent else 'rgb24'
+
         self.fbo = QOpenGLFramebufferObject(
             *self.scene.camera.wnd_shape,
             QOpenGLFramebufferObject.Attachment.Depth,
-            internalFormat=GL_RGB
+            internalFormat=self.color_space
         )
 
         output_path = guarantee_existence(os.path.join(get_configuration()['directories']['output'], 'videos'))
-        output_filepath = os.path.join(output_path, f'{self.scene.__class__.__name__}.mp4')
-        self.open_movie_pipe(output_filepath)
+        output_filepath_wo_ext = os.path.join(output_path, f'{self.scene.__class__.__name__}')
+        self.open_movie_pipe(output_filepath_wo_ext)
 
         glViewport(0, 0, *self.scene.camera.wnd_shape)
-        glClearColor(*hex_to_rgb(self.scene.background_color), 1.0)
+        glClearColor(*hex_to_rgb(self.scene.background_color), 0.0 if cli.transparent else 1.0)
 
         # 颜色混合
         glEnable(GL_BLEND)
@@ -59,7 +63,7 @@ class Frame:
             traceback.print_exc()
             sys.exit(1)
 
-        raw_bytes = glReadPixels(0, 0, *self.scene.camera.wnd_shape, GL_RGB, GL_UNSIGNED_BYTE)
+        raw_bytes = glReadPixels(0, 0, *self.scene.camera.wnd_shape, self.color_space, GL_UNSIGNED_BYTE)
         self.writing_process.stdin.write(raw_bytes)
         
         self.fbo.release()
@@ -68,12 +72,7 @@ class Frame:
         self.close_movie_pipe()
     
     def open_movie_pipe(self, file_path: str):  # TODO: optimize
-        stem, ext = os.path.splitext(file_path)
-        self.temp_file_path = stem + "_temp" + ext
-        self.final_file_path = file_path
-
-        # TODO: frame_rate
-        fps = 60
+        cli = get_cli()
         width, height = self.scene.camera.wnd_shape
 
         command = [
@@ -81,27 +80,33 @@ class Frame:
             '-y',  # overwrite output file if it exists
             '-f', 'rawvideo',
             '-s', f'{width}x{height}',  # size of one frame
-            '-pix_fmt', 'rgb24',
-            '-r', str(fps),  # frames per second
+            '-pix_fmt', self.ffmpeg_color_space,
+            '-r', str(self.scene.frame_rate),  # frames per second
             '-i', '-',  # The input comes from a pipe
             '-vf', 'vflip',
             '-an',  # Tells FFMPEG not to expect any audio
             '-loglevel', 'error',
         ]
-        # TODO: movie_file_extension
-        # if self.movie_file_extension == ".mov":
-        #     # This is if the background of the exported
-        #     # video should be transparent.
-        #     command += [
-        #         '-vcodec', 'qtrle',
-        #     ]
-        # elif self.movie_file_extension == ".gif":
-        #     command += []
-        # else:
-        command += [
-            '-vcodec', 'libx264',
-            '-pix_fmt', 'yuv420p',
-        ]
+
+        if cli.transparent:
+            # This is if the background of the exported
+            # video should be transparent.
+            command += [
+                '-vcodec', 'qtrle',
+            ]
+            ext = '.mov'
+        elif cli.gif:
+            command += []
+            ext = '.gif'
+        else:
+            command += [
+                '-vcodec', 'libx264',
+                '-pix_fmt', 'yuv420p',
+            ]
+            ext = '.mp4'
+
+        self.temp_file_path = file_path + "_temp" + ext
+        self.final_file_path = file_path + ext
 
         command += [self.temp_file_path]
         self.writing_process = sp.Popen(command, stdin=sp.PIPE)

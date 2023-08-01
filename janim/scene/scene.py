@@ -27,13 +27,19 @@ class Scene:
     background_color = None
 
     def __init__(self) -> None:
-        # 获得有关属性
-        if self.background_color is None:
-            self.background_color = get_configuration()['style']['background_color']
-            
         cli = get_cli()
-        self.write_to_file = cli.write_file or cli.open
+        conf = get_configuration()
+
+        if self.background_color is None:
+            self.background_color = conf['style']['background_color']
+            
+        self.write_to_file = cli.write_file or cli.transparent or cli.gif or cli.open
         self.start_at_line_number, self.end_at_line_number = self.get_start_and_end_line_number()
+        
+        if cli.frame_rate:
+            self.frame_rate = int(cli.frame_rate)
+        else:
+            self.frame_rate = conf['frame_rate']
         
         self.camera = Camera()
 
@@ -113,10 +119,11 @@ class Scene:
             self.scene_writer = MainWindow(self)
             self.scene_writer.show()
 
-        self.loop_helper = LoopHelper(get_configuration()['frame_rate'])
+        self.loop_helper = LoopHelper(self.frame_rate)
 
         try:
             self.construct()
+            self.scene_writer.finish()
         except EndSceneEarlyException:
             pass
         except:
@@ -124,8 +131,6 @@ class Scene:
 
         if not self.write_to_file and not self.scene_writer.is_closed:
             app.exec()
-        
-        self.scene_writer.finish()
         
 
     def construct(self) -> None:
