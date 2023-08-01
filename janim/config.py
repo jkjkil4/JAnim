@@ -28,6 +28,16 @@ def get_cli() -> argparse.Namespace:
             help='Name of the Scene class you want to see'
         )
         parser.add_argument(
+            "-w", "--write_file",
+            action="store_true",
+            help="Render the scene as a movie file",
+        )
+        parser.add_argument(
+            "-o", "--open",
+            action="store_true",
+            help="Automatically open the saved file once its done",
+        )
+        parser.add_argument(
             "-a", "--write_all",
             action="store_true",
             help="Write all the scenes from a file",

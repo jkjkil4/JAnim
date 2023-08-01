@@ -3,8 +3,8 @@ from __future__ import annotations
 import itertools as it
 import traceback
 import inspect
+import os
 
-from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QApplication
 from PySide6.QtGui import (
     QMatrix4x4, QVector3D,
@@ -31,6 +31,8 @@ class Scene:
         if self.background_color is None:
             self.background_color = get_configuration()['style']['background_color']
             
+        cli = get_cli()
+        self.write_to_file = cli.write_file or cli.open
         self.start_at_line_number, self.end_at_line_number = self.get_start_and_end_line_number()
         
         self.camera = Camera()
@@ -97,15 +99,19 @@ class Scene:
         app = QApplication.instance()
         if not app:
             app = QApplication()
-
+        
         fmt = QSurfaceFormat()
         fmt.setVersion(3, 3)
         fmt.setSamples(4)
         QSurfaceFormat.setDefaultFormat(fmt)
 
-        from janim.gui.MainWindow import MainWindow
-        self.window = MainWindow(self)
-        self.window.show()
+        if self.write_to_file:
+            from janim.gl.frame import Frame
+            self.scene_writer = Frame(self)
+        else:
+            from janim.gui.MainWindow import MainWindow
+            self.scene_writer = MainWindow(self)
+            self.scene_writer.show()
 
         self.loop_helper = LoopHelper(get_configuration()['frame_rate'])
 
@@ -116,14 +122,16 @@ class Scene:
         except:
             traceback.print_exc()
 
-        if not self.window or not self.window.is_closed:
+        if not self.write_to_file and not self.scene_writer.is_closed:
             app.exec()
+        
+        self.scene_writer.finish()
         
 
     def construct(self) -> None:
         pass
 
-    def check_skipping(self) -> None:
+    def check_skipping(self) -> bool:
         if self.start_at_line_number is None and self.end_at_line_number is None:
             return False
 
@@ -153,17 +161,16 @@ class Scene:
             elapsed += dt
             anim.update(elapsed, dt)
             self.update_frame(dt)
-            if not skipping:
-                self.emit_frame()
+            self.scene_writer.emit_frame()
 
         f_back = inspect.currentframe().f_back
         succ = self.loop_helper.exec(
             fn_progress, 
             anim.begin_time + anim.run_time,
-            delay=not skipping,
-            desc=f'Scene.play() at {f_back.f_code.co_filename}:{f_back.f_lineno}'
+            delay=not self.write_to_file and not skipping,
+            desc=f'Scene.play() at {os.path.basename(f_back.f_code.co_filename)}:{f_back.f_lineno}'
         )
-        if not succ or (self.window and self.window.is_closed):
+        if not succ or (not self.write_to_file and self.scene_writer.is_closed):
             raise EndSceneEarlyException()
         anim.finish_all()
 
@@ -171,26 +178,21 @@ class Scene:
         skipping = self.check_skipping()
         def fn_progress(dt: float) -> None:
             self.update_frame(dt)
-            if not skipping:
-                self.emit_frame()
+            self.scene_writer.emit_frame()
 
         f_back = inspect.currentframe().f_back
         succ = self.loop_helper.exec(
             fn_progress, 
             duration,
-            delay=not skipping,
-            desc=f'Scene.wait() at {f_back.f_code.co_filename}:{f_back.f_lineno}'
+            delay=not self.write_to_file and not skipping,
+            desc=f'Scene.wait() at {os.path.basename(f_back.f_code.co_filename)}:{f_back.f_lineno}'
         )
-        if not succ or (self.window and self.window.is_closed):
+        if not succ or (not self.write_to_file and self.scene_writer.is_closed):
             raise EndSceneEarlyException()
     
     def update_frame(self, dt: float) -> None:
-        # TODO: update_frame
-        pass
-
-    def emit_frame(self) -> None:
-        # TODO: emit_frame
-        pass
+        for item in self.items:
+            item.update(dt)
 
     #endregion
 

@@ -194,6 +194,17 @@ class Item:
         self.targets[key] = target
         return target
     
+    def update(self, dt: float, recurse: bool = True) -> Self:
+        # TODO: updater
+        # for updater in self.time_based_updaters:
+        #     updater(self, dt)
+        # for updater in self.non_time_updaters:
+        #     updater(self)
+        if recurse:
+            for item in self.items:
+                item.update(dt, recurse)
+        return self
+    
     def arrange(
         self,
         direction: np.ndarray = RIGHT,

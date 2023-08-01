@@ -21,4 +21,7 @@ class MainWindow(GLWidget):
         ShaderProgram.release_all()
         super().closeEvent(event)
 
+    def emit_frame(self) -> None:
+        pass
+
     

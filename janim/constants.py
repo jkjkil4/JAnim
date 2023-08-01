@@ -13,6 +13,8 @@ class AnchorMode(Enum):
     ApproxSmooth = 1
     TrueSmooth = 2
 
+FFMPEG_BIN = 'ffmpeg'
+
 JAnimColor = Union[str, Iterable]
 
 FLOAT_SIZE = ctypes.sizeof(ctypes.c_float)

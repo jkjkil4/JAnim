@@ -40,6 +40,9 @@ class GLWidget(QOpenGLWidget):
 
     def onTimerTimeout(self) -> None:
         self.update()
+    
+    def finish(self) -> None:
+        pass
 
     #region OpenGL
 
