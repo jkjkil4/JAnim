@@ -25,8 +25,8 @@ class Item:
         self.items: list[Item] = []
         self.needs_new_family = True
 
-        # helper_items 仅被 apply_points_function 所影响（也与 rotate、
-        # shift 等变换有关）不参与其它物件有关的操作
+        # helper_items 仅被 apply_points_function 所影响
+        # （也与 rotate、shift 等变换有关），不参与其它物件有关的操作
         # 比如可以向 helper_items 添加一个 Point，以跟踪变换前后的相对位置
         self.helper_items: list[Item] = []
         self.needs_new_family_with_helpers = True
@@ -193,6 +193,13 @@ class Item:
         target = self.copy()
         self.targets[key] = target
         return target
+    
+    def become(self, item: Item) -> Self:
+        self.align_family(item)
+        for item1, item2 in zip(self.get_family(), item.get_family()):
+            for key, getter, setter in item1.npdata_to_copy_and_interpolate & item2.npdata_to_copy_and_interpolate:
+                getattr(item1, setter)(getattr(item2, getter)())
+        return self
     
     def update(self, dt: float, recurse: bool = True) -> Self:
         # TODO: updater
