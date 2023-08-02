@@ -71,7 +71,7 @@ class Frame:
     def finish(self) -> None:
         self.close_movie_pipe()
     
-    def open_movie_pipe(self, file_path: str):  # TODO: optimize
+    def open_movie_pipe(self, file_path: str):
         cli = get_cli()
         width, height = self.scene.camera.wnd_shape
 
@@ -92,7 +92,7 @@ class Frame:
             # This is if the background of the exported
             # video should be transparent.
             command += [
-                '-vcodec', 'qtrle',
+                '-vcodec', cli.vcodec or 'qtrle',
             ]
             ext = '.mov'
         elif cli.gif:
@@ -100,7 +100,7 @@ class Frame:
             ext = '.gif'
         else:
             command += [
-                '-vcodec', 'libx264',
+                '-vcodec', cli.vcodec or 'libx264',
                 '-pix_fmt', 'yuv420p',
             ]
             ext = '.mp4'

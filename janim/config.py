@@ -60,6 +60,10 @@ def get_cli() -> argparse.Namespace:
                  "the rendering at the second value",
         )
         parser.add_argument(
+            "--vcodec",
+            help="video codec, set 'h264_nvenc'(not unique) to use hardware acceleration"
+        )
+        parser.add_argument(
             "--frame_rate",
             help="Frame rate, as an integer",
         )
