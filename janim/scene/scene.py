@@ -13,7 +13,7 @@ from PySide6.QtGui import (
 
 from janim.constants import *
 from janim.scene.loop_helper import LoopHelper
-from janim.items.item import Item, MethodGroup
+from janim.items.item import Item, NonParentGroup
 from janim.utils.space_ops import get_unit_normal, get_norm
 from janim.utils.functions import get_proportional_scale_size
 from janim.config import get_cli, get_configuration
@@ -57,9 +57,9 @@ class Scene:
 
     #region 基本结构
 
-    def __getitem__(self, value) -> Item | MethodGroup:
+    def __getitem__(self, value) -> Item | NonParentGroup:
         if isinstance(value, slice):
-            return MethodGroup(*self.items[value])
+            return NonParentGroup(*self.items[value])
         return self.items[value]
 
     def __iter__(self):

@@ -52,11 +52,6 @@ def get_cli() -> argparse.Namespace:
             action="store_true",
             help="Write all the scenes from a file",
         )
-        # parser.add_argument(
-        #     "--config",
-        #     action="store_true",
-        #     help="Guide for automatic configuration",
-        # )
         parser.add_argument(
             "-n", "--start_at_line_number",
             help="Start rendering not from the first animation, but "
@@ -144,5 +139,3 @@ def get_configuration():
     JANIM_CONFIGURATION = config
     return config
 
-def init_customization() -> None:
-    pass # TODO: init_customization

@@ -4,7 +4,7 @@ from janim.typing import Self
 import numpy as np
 
 from janim.constants import *
-from janim.items.item import Item
+from janim.items.item import Item, NonParentGroup
 from janim.utils.iterables import resize_with_interpolation, resize_array
 from janim.utils.space_ops import (
     get_norm, get_unit_normal,
@@ -20,6 +20,7 @@ from janim.utils.bezier import (
     partial_quadratic_bezier_points
 )
 from janim.utils.functions import safe_call_same
+from janim.logger import log
 
 DEFAULT_STROKE_WIDTH = 0.05
 
@@ -719,6 +720,16 @@ class VItem(Item):
 
 class VGroup(VItem):
     def __init__(self, *items: VItem, **kwargs) -> None:
+        if not all(isinstance(item, VItem) for item in items):
+            log.warning('All subitems of VGroup must be VItem')
         super().__init__(**kwargs)
         self.add(*items)
+    
+    def __getitem__(self, value) -> VItem | NonParentVGroup:
+        if isinstance(value, slice):
+            return NonParentVGroup(*self.items[value])
+        return self.items[value]
+
+class NonParentVGroup(NonParentGroup, VGroup):
+    pass
 

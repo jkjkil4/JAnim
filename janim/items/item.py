@@ -150,9 +150,9 @@ class Item:
 
     #region 基本操作
 
-    def __getitem__(self, value) -> Item | MethodGroup:
+    def __getitem__(self, value) -> Item | NonParentGroup:
         if isinstance(value, slice):
-            return MethodGroup(*self.items[value])
+            return NonParentGroup(*self.items[value])
         return self.items[value]
 
     def __iter__(self):
@@ -249,8 +249,6 @@ class Item:
                 v_buff = default_buff
         
         return h_buff, v_buff
-        
-    # TODO: arrange_by_array
     
     def arrange_in_grid(
         self,
@@ -268,8 +266,7 @@ class Item:
         n_rows, n_cols = self.format_rows_cols(len(self.items), n_rows, n_cols)
         h_buff, v_buff = self.format_buff(buff, h_buff, v_buff, by_center_point)
         
-        x_unit = h_buff
-        y_unit = v_buff
+        x_unit, y_unit = h_buff, v_buff
         if not by_center_point:
             x_unit += max([item.get_width() for item in self.items])
             y_unit += max([item.get_height() for item in self.items])
@@ -283,6 +280,35 @@ class Item:
             item.shift(x * x_unit * RIGHT + y * y_unit * DOWN)
         self.to_center()
         return self
+    
+    @staticmethod
+    def arrange_by_array(
+        items_array: Iterable[Iterable[Item]],
+
+        buff: Optional[float] = None,
+        h_buff: Optional[float] = None,
+        v_buff: Optional[float] = None,
+
+        aligned_edge: np.ndarray = ORIGIN,
+        by_center_point: bool = False
+    ) -> None:
+        h_buff, v_buff = Item.format_buff(buff, h_buff, v_buff, by_center_point)
+
+        x_unit, y_unit = h_buff, v_buff
+        flatten = NonParentGroup(*[item for item in list(it.chain(*items_array)) if item is not None])
+        if not by_center_point:
+            x_unit += max([item.get_width() for item in flatten])
+            y_unit += max([item.get_height() for item in flatten])
+        
+        for row, line in enumerate(items_array):
+            for col, item in enumerate(line):
+                if item is None:
+                    continue
+                item.move_to(ORIGIN, aligned_edge)
+                item.shift(col * x_unit * RIGHT + row * y_unit * DOWN)
+        
+        flatten.to_center()
+        
 
     #endregion
 
@@ -911,7 +937,25 @@ class Item:
     #region Animation
 
     def anim(self, call_immediately=False, **kwargs) -> Self:
-        '''实际上返回的是 `MethodAnimation`，但假装返回了 `self`，以做到代码提示'''
+        '''
+        通过链式调用创建动画
+        - 在默认情况下，变换将基于物体在该动画开始时的状态
+        - 若传入 `call_immediately=True`，则变换将基于物体一开始的状态
+
+        ```python
+        # 例如下面代码，对于第二个动画，它会基于物体在 1s 时的状态，也就是第一个动画完成后的状态，进行变换
+        # 如果这里传入 `call_immediately=True`，那么就会重新从物体一开始的白色空心六边形状态进行变换
+        poly = RegularPolygon()
+        self.add(poly)
+        self.play(
+            poly.anim()                             .scale(2).rotate(30 * DEGREES),
+            poly.anim(begin_time=1)                 .scale(0.8).set_color(BLUE).set_fill(opacity=0.5),
+            poly.anim(begin_time=2.2, run_time=0.5) .scale(1 / 0.8).set_color(RED)
+        )
+        ```
+        '''
+
+        # 实际上返回的是 `MethodAnimation`，但假装返回了 `self`，以做到代码提示
         from janim.animation.transform import MethodAnimation
         return MethodAnimation(self, call_immediately=call_immediately, **kwargs)
 
@@ -990,32 +1034,50 @@ class Group(Item):
         super().__init__(**kwargs)
         self.add(*items)
 
+class NonParentGroup(Group):
+    '''
+    除了子物件不会将自己标记为 `parent` 外，其余功能与 `Group` 相同
+    '''
 
-class MethodGroup:
-    def __init__(self, *items: Item | MethodGroup) -> None:
-        self.items = items
+    def add(self, *items: Item, is_helper: bool = False) -> Self:
+        target = self.helper_items if is_helper else self.items
+
+        for item in items:                  # 遍历要追加的每个物件
+            if item in self:                    # 如果已经是子物件，则跳过
+                continue
+            target.append(item)                 # 仅将当前物件添加到列表中，而不设定 `parent`
+
+        if is_helper:
+            self.helper_items_changed()
+        else:
+            self.items_changed()
+        return self
     
-    def __getattr__(self, method_name: str):
-        def wrap(*method_args, **method_kwargs) -> MethodGroup:
-            for item in self.items:
-                if isinstance(item, MethodGroup):
-                    method = getattr(item, method_name)
-                    method(*method_args, **method_kwargs)
-                elif hasattr(item, method_name):
-                    method = getattr(item, method_name)
-                    if callable(method):
-                        method(*method_args, **method_kwargs)
-            return self
-        return wrap
+    def remove(self, *items: Item, is_helper: bool = False) -> Self:
+        target = self.helper_items if is_helper else self.items
 
-    def __getitem__(self, value):
-        if isinstance(value, slice):
-            return MethodGroup(*self.items[value])
-        return self.items[value]
+        for item in items:          # 遍历要移除的每个物件
+            if item not in self:        # 如果不是子物件，则跳过
+                continue
+            target.remove(item)
 
-    def __iter__(self):
-        return iter(self.items)
-
-    def __len__(self):
-        return len(self.items)
-
+        if is_helper:
+            self.helper_items_changed()
+        else:
+            self.items_changed()
+        return self
+    
+    def get_family(self) -> list[Item]:
+        # 由于子物件没有设定自己为 `parent`，因此原先的 `needs_new_family` 无法正确响应
+        # 因此需每次重新计算，`get_family_with_helpers` 同理
+        sub_families = (item.get_family() for item in self.items)
+        self.family = [self, *it.chain(*sub_families)]
+        return self.family
+    
+    def get_family_with_helpers(self) -> list[Item]:
+        sub_families = (
+            item.get_family_with_helpers() 
+            for item in it.chain(self.items, self.helper_items)
+        )
+        self.family_with_helpers = [self, *it.chain(*sub_families)]
+        return self.family_with_helpers
