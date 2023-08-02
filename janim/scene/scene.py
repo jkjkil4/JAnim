@@ -1,4 +1,5 @@
 from __future__ import annotations
+from janim.typing import Self
 
 import itertools as it
 import traceback
@@ -68,7 +69,7 @@ class Scene:
     def __len__(self):
         return len(self.items)
 
-    def add(self, *items: Item) -> Scene:
+    def add(self, *items: Item) -> Self:
         for item in items:
             if item in self:
                 continue
@@ -78,7 +79,7 @@ class Scene:
             item.parent = self
         return self
 
-    def remove(self, *items: Item) -> Scene:
+    def remove(self, *items: Item) -> Self:
         for item in items:
             if item in self:
                 item.parent = None
@@ -86,6 +87,10 @@ class Scene:
                 continue
             if item.parent:
                 item.parent.remove(item)
+        return self
+    
+    def clear(self) -> Self:
+        self.remove(*self.items)
         return self
     
     def mark_needs_new_family(self) -> None:

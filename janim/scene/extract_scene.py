@@ -8,9 +8,7 @@ from janim.logger import log
 
 
 class BlankScene(Scene):
-    def construct(self):
-        # TODO: self.embed()
-        pass
+    pass
 
 
 def is_child_scene(obj, module):
