@@ -58,8 +58,6 @@ class VItem(Item):
         # triangulation
         self.needs_new_triangulation = True
 
-        # TODO: [P] 精细化边界框
-
         self.npdata_to_copy_and_interpolate.update((
             ('stroke_width', 'get_stroke_width', 'set_self_stroke_width'), 
             ('fill_rgbas', 'get_fill_rgbas', 'set_fill_rgbas')

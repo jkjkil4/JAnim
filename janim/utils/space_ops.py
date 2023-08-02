@@ -27,6 +27,8 @@ def cross(v1: np.ndarray, v2: np.ndarray) -> list[np.ndarray]:
 def get_norm(vect: Iterable) -> float:
     return sum((x**2 for x in vect))**0.5
 
+def det(a: Iterable, b: Iterable) -> float:
+    return a[0] * b[1] - a[1] * b[0]
 
 def normalize(vect: np.ndarray, fall_back: np.ndarray | None = None) -> np.ndarray:
     norm = get_norm(vect)
@@ -245,9 +247,6 @@ def line_intersection(
     """
     x_diff = (line1[0][0] - line1[1][0], line2[0][0] - line2[1][0])
     y_diff = (line1[0][1] - line1[1][1], line2[0][1] - line2[1][1])
-
-    def det(a, b):
-        return a[0] * b[1] - a[1] * b[0]
 
     div = det(x_diff, y_diff)
     if div == 0:

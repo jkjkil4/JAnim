@@ -11,5 +11,5 @@ void main()
 {
 	FragColor = texture(image, v_tex_coords);
 	FragColor.rgb *= v_color.rgb;
-	FragColor.a = v_color.a;
+	FragColor.a *= v_color.a;
 }

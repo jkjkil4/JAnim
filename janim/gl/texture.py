@@ -14,16 +14,16 @@ class Texture(QOpenGLTexture):
     filepath_to_texture_map: dict[str, Texture] = {}
 
     @staticmethod
-    def get(filepath: str) -> Texture:
+    def get(filepath: str, minMagFilter: QOpenGLTexture.Filter) -> Texture:
         '''
         若 `filename` 对应纹理先前已创建过，则复用先前的对象，否则另外创建新的对象
         '''
-
-        if filepath in Texture.filepath_to_texture_map:
-            return Texture.filepath_to_texture_map[filepath]
+        key = (filepath, minMagFilter)
+        if key in Texture.filepath_to_texture_map:
+            return Texture.filepath_to_texture_map[key]
         
-        texture = Texture(filepath)
-        Texture.filepath_to_texture_map[filepath] = texture
+        texture = Texture(filepath, minMagFilter)
+        Texture.filepath_to_texture_map[key] = texture
         return texture
     
     def release_all() -> None:
@@ -31,7 +31,7 @@ class Texture(QOpenGLTexture):
             texture.destroy()
         Texture.filepath_to_texture_map.clear()
     
-    def __init__(self, filename: str) -> None:
+    def __init__(self, filename: str, minMagFilter: QOpenGLTexture.Filter) -> None:
         super().__init__(QOpenGLTexture.Target.Target2D)
 
         self.img = QImage(filename)
@@ -40,5 +40,5 @@ class Texture(QOpenGLTexture):
 
         self.create()
         self.setData(self.img)
-        self.setMinMagFilters(QOpenGLTexture.Filter.Linear, QOpenGLTexture.Filter.Linear)
+        self.setMinMagFilters(QOpenGLTexture.Filter.Linear, minMagFilter)
         self.setWrapMode(QOpenGLTexture.WrapMode.ClampToEdge)
