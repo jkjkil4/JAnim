@@ -56,7 +56,7 @@ class Transform(Animation):
 class MoveToTarget(Transform):
     def __init__(self, item: Item, target_key='', **kwargs) -> None:
         if target_key not in item.targets:
-            raise ValueError(
+            raise Exception(
                 'MoveToTarget called on item '
                 'without generate its target before'
             )

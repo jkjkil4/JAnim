@@ -46,6 +46,7 @@ class Scene:
 
         # relation
         self.items: list[Item] = []
+        self.saved_state: dict[str, list[Item]] = {}
     
     def get_start_and_end_line_number(self) -> tuple[int | None, int | None]:
         stln = get_cli().start_at_line_number
@@ -102,6 +103,20 @@ class Scene:
     def get_family(self) -> list[Item]:
         return list(it.chain(*(item.get_family() for item in self.items)))
     
+    #endregion
+    
+    #region 基本操作
+
+    def save_state(self, key: str = '') -> Self:
+        self.saved_state[key] = [item.copy() for item in self.items]
+        return self
+
+    def restore(self, key: str = '') -> Self:
+        if key not in self.saved_state:
+            raise Exception("Trying to restore scene without having saved")
+        self.items = self.saved_state[key][:]
+        return self
+
     #endregion
 
     #region 执行

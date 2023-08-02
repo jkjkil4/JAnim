@@ -194,6 +194,17 @@ class Item:
         self.targets[key] = target
         return target
     
+    def save_state(self, key: str = '') -> Self:
+        self.generate_target('saved_state_' + key)
+        return self
+    
+    def restore(self, key: str = '') -> Self:
+        key = 'saved_state_' + key
+        if key not in self.targets:
+            raise Exception('Trying to restore without having saved')
+        self.become(self.targets[key])
+        return self
+    
     def become(self, item: Item) -> Self:
         self.align_family(item)
         for item1, item2 in zip(self.get_family(), item.get_family()):
