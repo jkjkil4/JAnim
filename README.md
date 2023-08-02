@@ -1,6 +1,7 @@
 # JAnim
 
 #### 介绍
+
 - 大量借(chāo)鉴(xí) [manim](https://github.com/3b1b/manim) 的产物
 - 进行了大量的魔改
 - 功能不完善，千万不要用！

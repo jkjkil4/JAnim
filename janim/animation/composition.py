@@ -4,41 +4,7 @@ from typing import Callable, Optional
 from janim.animation.animation import Animation
 from janim.utils.rate_functions import linear, outside_linear_rate_func
 
-class _AbstractAnimationGroup(Animation):
-    '''
-    动画集合的基类，
-    用于包含其他 `Animation` 对象
-    '''
-    def __init__(
-        self,
-        *anims: Animation, 
-        rate_func: Callable[[float], float] = linear, 
-        **kwargs
-    ) -> None:
-        super().__init__(rate_func=rate_func, **kwargs)
-        self.anims = anims
-
-    def update(self, elapsed, dt) -> None:
-        super().update(elapsed, dt)
-
-        # 计算出相对于当前动画集合的持续时间，也就是要扣去 `begin_time`
-        local_elapsed = elapsed - self.begin_time
-        # 对持续时间应用 `rate_func`，做到整体插值的目的
-        adjusted_elapsed = self.run_time * outside_linear_rate_func(self.rate_func)(local_elapsed / self.run_time)
-
-        for anim in self.anims:
-            anim.update(adjusted_elapsed, dt)
-    
-    def finish_all(self) -> None:
-        '''
-        传递 `finish_all`，
-        保证所有子动画都进入 `AfterExec` 状态
-        '''
-        for anim in self.anims:
-            anim.finish_all()
-        super().finish_all()
-
-class AnimationGroup(_AbstractAnimationGroup):
+class AnimationGroup(Animation):
     '''
     动画集合（并列执行）
 
@@ -68,20 +34,38 @@ class AnimationGroup(_AbstractAnimationGroup):
     ```
     '''
     def __init__(
-        self, 
+        self,
         *anims: Animation, 
-        run_time: Optional[float] = None, 
+        run_time: Optional[float] = None,
+        rate_func: Callable[[float], float] = linear, 
         **kwargs
     ) -> None:
-        maxt = max([anim.begin_time + anim.run_time for anim in anims])
+        self.anims = anims
+        self.maxt = max([anim.begin_time + anim.run_time for anim in anims])
         if run_time is None:
-            run_time = maxt
-        else:
-            factor = run_time / maxt
-            for anim in anims:
-                anim.begin_time *= factor
-                anim.run_time *= factor
-        super().__init__(*anims, run_time=run_time, **kwargs)
+            run_time = self.maxt
+
+        super().__init__(run_time=run_time, rate_func=rate_func, **kwargs)
+
+    def update(self, elapsed, dt) -> None:
+        super().update(elapsed, dt)
+
+        # 计算出相对于当前动画集合的持续时间，也就是要扣去 `begin_time`
+        local_elapsed = elapsed - self.begin_time
+        # 对持续时间应用 `rate_func`，做到整体插值的目的
+        adjusted_elapsed = self.maxt * outside_linear_rate_func(self.rate_func)(local_elapsed / self.run_time)
+
+        for anim in self.anims:
+            anim.update(adjusted_elapsed, dt)
+    
+    def finish_all(self) -> None:
+        '''
+        传递 `finish_all`，
+        保证所有子动画都进入 `AfterExec` 状态
+        '''
+        for anim in self.anims:
+            anim.finish_all()
+        super().finish_all()
 
 class Succession(AnimationGroup):
     '''
