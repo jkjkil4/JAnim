@@ -83,5 +83,39 @@ class AnimationGroup(_AbstractAnimationGroup):
                 anim.run_time *= factor
         super().__init__(*anims, run_time=run_time, **kwargs)
 
+class Succession(AnimationGroup):
+    '''
+    动画集合（顺序执行）
 
-# TODO: Succession
+    - 会将传入的动画依次执行，不并行
+    - 可以传入 `buff` 指定前后动画中间的空白时间
+    - 其余与 `AnimationGroup` 相同
+
+    时间示例：
+    ```python
+    Succession(
+        Anim1(run_time=3),
+        Anim2(run_time=4)
+    ) # Anim1 在 0~3s 执行，Anim2 在 3~7s 执行
+
+    Succession(
+        Anim1(run_time=2),
+        Anim2(begin_time=1, run_time=2),
+        Anim3(begin_time=0.5, run_time=2)
+    ) # Anim1 在 0~2s 执行，Anim2 在 3~5s 执行，Anim3 在 5.5~7.5s 执行
+
+    Succession(
+        Anim1(run_time=2),
+        Anim2(run_time=2),
+        Anim3(run_time=2),
+        buff=0.5
+    ) # Anim1 在 0~2s 执行，Anim2 在 2.5~4.5s 执行，Anim3 在 5~7s 执行
+    ```
+    '''
+    def __init__(self, *anims: Animation, buff: float = 0, **kwargs) -> None:
+        end_time = 0
+        for anim in anims:
+            anim.begin_time += end_time
+            end_time = anim.begin_time + anim.run_time + buff
+        super().__init__(*anims, **kwargs)
+

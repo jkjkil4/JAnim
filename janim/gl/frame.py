@@ -37,7 +37,7 @@ class Frame:
         )
 
         output_path = guarantee_existence(get_configuration()['directories']['output'])
-        output_filepath_wo_ext = os.path.join(output_path, f'{self.scene.__class__.__name__}')
+        output_filepath_wo_ext = os.path.join(output_path, self.scene.__class__.__name__)
         self.open_movie_pipe(output_filepath_wo_ext)
 
         glViewport(0, 0, *self.scene.camera.wnd_shape)
@@ -96,6 +96,8 @@ class Frame:
             ]
             ext = '.mov'
         elif cli.gif:
+            if cli.vcodec:
+                command += ['-vcodec', cli.vcodec]
             command += []
             ext = '.gif'
         else:
