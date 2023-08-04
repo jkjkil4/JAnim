@@ -1054,6 +1054,8 @@ class Point(Item):
 
 class Group(Item):
     def __init__(self, *items: Item, **kwargs) -> None:
+        if not all(isinstance(item, Item) for item in items):
+            raise Exception('All subitems of Group must be Item')
         super().__init__(**kwargs)
         self.add(*items)
 

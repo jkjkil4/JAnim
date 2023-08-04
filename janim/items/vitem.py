@@ -828,7 +828,7 @@ class VItem(Item):
 class VGroup(VItem):
     def __init__(self, *items: VItem, **kwargs) -> None:
         if not all(isinstance(item, VItem) for item in items):
-            log.warning('All subitems of VGroup must be VItem')
+            raise Exception('All subitems of VGroup must be VItem')
         super().__init__(**kwargs)
         self.add(*items)
     
