@@ -1,7 +1,8 @@
 from __future__ import annotations
-from typing import Iterable, Optional, Sequence
+from typing import Iterable, Optional, Sequence, Callable
 from janim.typing import Self
 import numpy as np
+import math
 
 from janim.constants import *
 from janim.items.item import Item, NonParentGroup
@@ -13,12 +14,14 @@ from janim.utils.space_ops import (
     angle_between_vectors
 )
 from janim.utils.bezier import (
-    interpolate, 
+    bezier, interpolate, 
+    integer_interpolate, inverse_interpolate,
     get_smooth_quadratic_bezier_handle_points,
     get_smooth_cubic_bezier_handle_points,
     get_quadratic_approximation_of_cubic,
     partial_quadratic_bezier_points
 )
+from janim.utils.simple_functions import clip
 from janim.utils.functions import safe_call_same
 from janim.logger import log
 
@@ -44,7 +47,7 @@ class VItem(Item):
         self.needs_new_unit_normal = True
 
         # 轮廓线数据
-        self.stroke_width = np.array([0.1], dtype=np.float32)   # stroke_width 在所有操作中都会保持 dtype=np.float32，以便传入 shader
+        self.stroke_width = np.array([DEFAULT_STROKE_WIDTH], dtype=np.float32)   # stroke_width 在所有操作中都会保持 dtype=np.float32，以便传入 shader
         self.stroke_behind_fill = stroke_behind_fill
         self.needs_new_stroke_width = True
 
@@ -94,13 +97,18 @@ class VItem(Item):
     
     #region 点坐标数据
     
-    # def set_points(self, points: Iterable):
-    #     super().set_points(resize_array(np.array(points), len(points) // 3 * 3))
-    #     return self
+    #region 简单判断
     
     def curves_count(self) -> int:
         return self.points_count() // 3
     
+    def consider_points_equals(self, p0: np.ndarray, p1: np.ndarray) -> bool:
+        return get_norm(p1 - p0) < self.tolerance_for_point_equality
+    
+    #endregion
+    
+    #region ::3 操作
+
     def set_anchors_and_handles(
         self,
         anchors1: np.ndarray,
@@ -124,6 +132,10 @@ class VItem(Item):
     def get_end_points(self) -> np.ndarray:
         return self.get_points()[2::3]
     
+    #endregion
+        
+    #region 链式创建路径操作
+
     def has_new_path_started(self) -> bool:
         return self.points_count() % 3 == 1
     
@@ -162,6 +174,10 @@ class VItem(Item):
 
         return self
     
+    #endregion
+    
+    #region _as_corners 操作
+
     def add_points_as_corners(self, points: Iterable[np.ndarray]) -> Self:
         for point in points:
             self.add_line_to(point)
@@ -175,6 +191,10 @@ class VItem(Item):
         ])
         return self
     
+    #endregion
+    
+    #region subpaths
+
     def get_subpaths_from_points(
         self,
         points: Sequence[np.ndarray]
@@ -207,6 +227,51 @@ class VItem(Item):
         return self.consider_points_equals(
             self.get_points()[0], self.get_points()[-1]
         )
+    
+    #endregion
+    
+    #region pfp
+
+    def get_nth_curve_points(self, n: int) -> np.ndarray:
+        assert(n < self.curves_count())
+        nppc = 3
+        return self.get_points()[nppc * n:nppc * (n + 1)]
+
+    def get_nth_curve_function(self, n: int) -> Callable[[float], np.ndarray]:
+        return bezier(self.get_nth_curve_points(n))
+
+    def quick_point_from_proportion(self, alpha: float) -> np.ndarray:
+        # Assumes all curves have the same length, so is inaccurate
+        num_curves = self.curves_count()
+        n, residue = integer_interpolate(0, num_curves, alpha)
+        curve_func = self.get_nth_curve_function(n)
+        return curve_func(residue)
+
+    def point_from_proportion(self, alpha: float) -> np.ndarray:
+        if alpha <= 0:
+            return self.get_start()
+        elif alpha >= 1:
+            return self.get_end()
+
+        partials = [0]
+        for tup in self.get_bezier_tuples():
+            # Approximate length with straight line from start to end
+            arclen = get_norm(tup[0] - tup[-1])
+            partials.append(partials[-1] + arclen)
+        full = partials[-1]
+        if full == 0:
+            return self.get_start()
+        # First index where the partial lenth is more alpha times the full length
+        i = next(
+            (i for i, x in enumerate(partials) if x >= full * alpha),
+            len(partials)  # Default
+        )
+        residue = inverse_interpolate(partials[i - 1] / full, partials[i] / full, alpha)
+        return self.get_nth_curve_function(i - 1)(residue)
+
+    #endregion
+
+    #region 计算法向量
 
     def get_area_vector(self) -> np.ndarray:
         # Returns a vector whose length is the area bound by
@@ -251,8 +316,7 @@ class VItem(Item):
         self.unit_normal = normal
         return normal
     
-    def consider_points_equals(self, p0: np.ndarray, p1: np.ndarray) -> bool:
-        return get_norm(p1 - p0) < self.tolerance_for_point_equality
+    #endregion
     
     def get_joint_info(self) -> np.ndarray:
         if self.points_count() < 3:
@@ -355,12 +419,11 @@ class VItem(Item):
         return self
 
     def set_self_stroke_width(self, stroke_width) -> Self:
-        '''为了传递给 `npdata_to_copy_and_interpolate` 使用'''
         return self.set_stroke_width(stroke_width, recurse=False)
     
     def get_stroke_width(self) -> np.ndarray:
         if self.needs_new_stroke_width:
-            self.set_stroke_width(self.stroke_width)
+            self.set_self_stroke_width(self.stroke_width)
             self.needs_new_stroke_width = False
         return self.stroke_width
     
@@ -382,10 +445,11 @@ class VItem(Item):
     #region 填充色数据
 
     def set_fill_rgbas(self, rgbas: Iterable[Iterable[float, float, float, float]]) -> Self:
-        rgbas = resize_array(
-            np.array(rgbas, dtype=np.float32), 
-            max(1, self.points_count())
-        )
+        rgbas = np.array(rgbas, dtype=np.float32)
+        assert(rgbas.ndim == 2)
+        assert(rgbas.shape[1] == 4)
+
+        rgbas = resize_array(rgbas, max(1, self.points_count()))
         if len(rgbas) == len(self.fill_rgbas):
             self.fill_rgbas[:] = rgbas
         else:
@@ -715,6 +779,51 @@ class VItem(Item):
         return self
 
     #endregion
+
+    def add_tip(
+        self, 
+        alpha: float = 1.0, 
+        reverse: bool = False, 
+        colorize: bool = True,
+        angle: Optional[float] = None,
+        fill_color: JAnimColor = None,
+        color: JAnimColor = None,
+        d_alpha: float = 1e-6,
+        **tip_kwargs
+    ):
+        '''
+        在 `alpha` 处创建一个箭头
+
+        - 默认情况下，箭头与路径方向同向；若传入 `reverse=True` 则反向
+        - 若传入 `colorize=True`（默认），则会使箭头的颜色与路径的颜色相同
+        - 其余参数请参考 `ArrowTip`
+        '''
+        if alpha >= 1.0:
+            pos = self.get_points()[-1]
+            angle_vert = self.get_points()[-1] - self.get_points()[-2]
+        elif alpha <= 0.0:
+            pos = self.get_points()[0]
+            angle_vert = self.get_points()[1] - self.get_points()[0]
+        else:
+            pos = self.pfp(alpha)
+            angle_vert = self.pfp(clip(alpha + d_alpha, 0, 1)) - self.pfp(clip(alpha - d_alpha, 0, 1))
+
+        if angle is None:
+            angle = math.atan2(angle_vert[1], angle_vert[0])
+        if reverse:
+            angle += PI
+
+        if colorize:
+            if fill_color is None:
+                fill_color = self.get_rgbas()[0][:3]
+            if color is None:
+                color = self.get_rgbas()[0][:3]
+
+        from janim.items.geometry.arrow import ArrowTip
+        tip = ArrowTip(angle=angle, fill_color=fill_color, color=color, **tip_kwargs).move_anchor_to(pos)
+        self.add(tip)
+
+        return tip
 
 class VGroup(VItem):
     def __init__(self, *items: VItem, **kwargs) -> None:

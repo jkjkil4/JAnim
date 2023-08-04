@@ -476,10 +476,11 @@ class Item:
         return opacity
 
     def set_rgbas(self, rgbas: Iterable[Iterable[float, float, float, float]]) -> Self:
-        rgbas = resize_array(
-            np.array(rgbas, dtype=np.float32), 
-            max(1, self.points_count())
-        )
+        rgbas = np.array(rgbas, dtype=np.float32)
+        assert(rgbas.ndim == 2)
+        assert(rgbas.shape[1] == 4)
+        
+        rgbas = resize_array(rgbas, max(1, self.points_count()))
         if len(rgbas) == len(self.rgbas):
             self.rgbas[:] = rgbas
         else:
