@@ -347,7 +347,7 @@ class VItemRenderer(Renderer):
         triangulation = item.get_triangulation()
 
         self.shader_fill.bind()
-        self.shader_fill.setFloat('anti_alias_width', data.anti_alias_width)
+        # self.shader_fill.setFloat('anti_alias_width', data.anti_alias_width)
         self.shader_fill.setMat4('view_matrix', data.view_matrix)
         self.shader_fill.setMat4('proj_matrix', data.proj_matrix)
         self.shader_fill.setMat4('wnd_matrix', data.wnd_matrix)

@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Iterable
+from typing import Iterable, Optional
 from janim.typing import Self
 
 from janim.constants import *
@@ -130,10 +130,12 @@ class Text(VGroup):
         font_size: float = DEFAULT_FONT_SIZE,
         fill_color: JAnimColor = WHITE,
         fill_opacity: float = 1.0,
-        stroke_width: float = 0,
+        stroke_width: Optional[float] = None,
         **kwargs
     ) -> None:
         self.text = text
+        if stroke_width is None:
+            stroke_width = font_size / ORIG_FONT_SIZE * 0.0075
 
         # 获取字体
         if isinstance(font, str):

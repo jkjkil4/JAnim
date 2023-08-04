@@ -4,7 +4,6 @@ in vec2 uv_coords;
 in vec4 color;
 in float is_corner;
 in float is_convex;
-in float uv_anti_alias_width;
 
 out vec4 FragColor;
 
@@ -56,11 +55,7 @@ void main ()
 
     if (bool(is_corner)) {
         float signed_dist = signed_dist_to_curve();
-        if (bool(is_convex))
-            signed_dist *= -1;
-        
-        FragColor.a *= smoothstep(0.5, -0.5, signed_dist / uv_anti_alias_width);
-        if (FragColor.a == 0.0)
+        if (bool(is_convex) ? signed_dist < 0 : signed_dist > 0)
             discard;
     }
 }

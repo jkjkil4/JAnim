@@ -13,6 +13,7 @@ uniform mat4 wnd_matrix;
 void main()
 {
 	gl_Position = wnd_matrix * proj_matrix * view_matrix * vec4(pos, 1.0);
+	gl_Position.z *= 0.1;
 	v_color = color;
 	v_tex_coords = tex_coords;
 }

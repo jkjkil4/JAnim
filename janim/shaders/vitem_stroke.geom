@@ -176,6 +176,13 @@ mat4 get_xyz_to_uv(
     return map_triangles(b0, b1, b2, dst0, dst1, dst2);
 }
 
+float get_proj_scale_factor_at(vec3 pos) {
+    vec4 view_pos = view_matrix * vec4(pos, 1.0);
+    vec4 proj_pos = proj_matrix * view_pos;
+    vec4 proj_pos_test = proj_matrix * (view_pos + vec4(1.0, 0.0, 0.0, 0.0));
+    return proj_pos_test.x / proj_pos_test.w - proj_pos.x / proj_pos.w;
+}
+
 void main()
 {
     // if (v_stroke_width[0] == 0.0 && v_stroke_width[1] == 0.0 && v_stroke_width[2] == 0.0)
@@ -203,6 +210,11 @@ void main()
     vec3 p0 = verts[0];
     vec3 p1 = verts[1];
     vec3 p2 = verts[2];
+
+    float scaled_aaw[3];
+    scaled_aaw[0] = anti_alias_width / get_proj_scale_factor_at(p0);
+    scaled_aaw[1] = anti_alias_width / get_proj_scale_factor_at(p1);
+    scaled_aaw[2] = anti_alias_width / get_proj_scale_factor_at(p2);
 
     // corners
     /*
@@ -259,21 +271,16 @@ void main()
         is_linear = float(too_steep);
     }
 
+    mat4 matrix = wnd_matrix * proj_matrix * view_matrix;
+
     for (int i = 0; i < 6; i++) {
         vec4 v4_corner = vec4(corners[i], 1.0);
-        vec4 view_corner = view_matrix * v4_corner;
-        vec4 proj_corner = proj_matrix * view_corner;
 
-        // 有无更好的方法计算 view_corner 到 proj_corner 的缩放系数？
-        vec4 proj_corner_test = proj_matrix * (view_corner + vec4(1.0, 0.0, 0.0, 0.0));
-        float proj_scale_factor = proj_corner_test.x / proj_corner_test.w - proj_corner.x / proj_corner.w;
-
-        gl_Position = wnd_matrix * proj_corner;
+        gl_Position = matrix * v4_corner;
         // Flip and scale to prevent premature clipping
         gl_Position.z = gl_Position.z * 0.1 + z_offset;
 
         float stroke_width = v_stroke_width[i / 2];
-        float scaled_aaw = anti_alias_width / proj_scale_factor;
 
         if (bool(is_linear)) {
             if (too_steep) {
@@ -284,12 +291,12 @@ void main()
             }
             color = v_color[i / 2];
             uv_stroke_width = stroke_width;
-            uv_anti_alias_width = scaled_aaw;
+            uv_anti_alias_width = scaled_aaw[i / 2];
         } else {
             uv_coords = (xyz_to_uv * v4_corner).xy;
             color = v_color[i / 2];
             uv_stroke_width = stroke_width * uv_scale_factor;
-            uv_anti_alias_width = scaled_aaw * uv_scale_factor;
+            uv_anti_alias_width = scaled_aaw[i / 2] * uv_scale_factor;
         }
         EmitVertex();
     }
