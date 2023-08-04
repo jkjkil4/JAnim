@@ -128,8 +128,8 @@ class Text(VGroup):
         text: str, 
         font: str | Iterable[str] = [],
         font_size: float = DEFAULT_FONT_SIZE,
-        fill_color: JAnimColor = WHITE,
-        fill_opacity: float = 1.0,
+        base_color: JAnimColor = WHITE,
+        base_opacity: float = 1.0,
         stroke_width: Optional[float] = None,
         **kwargs
     ) -> None:
@@ -151,11 +151,9 @@ class Text(VGroup):
                 self.LineClass(line_text, fonts=fonts, font_size=font_size) 
                 for line_text in text.split('\n')
             ],
-            fill_opacity=fill_opacity,
-            stroke_width=stroke_width,
             **kwargs
         )
-        self.set_fill(fill_color, fill_opacity)
+        self.set_color(base_color, base_opacity)
         self.set_stroke_width(stroke_width)
 
         self.arrange_in_lines()
