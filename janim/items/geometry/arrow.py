@@ -78,10 +78,12 @@ class Arrow(Line):
         super().__init__(start, end, buff=buff, **kwargs)
         self.max_length_to_tip_length_ratio = max_length_to_tip_length_ratio
         
+        self.init_tips(tip_kwargs)
+        self.place_tip()
+
+    def init_tips(self, tip_kwargs: dict) -> None:
         self.tip = self.add_tip(**tip_kwargs)
         self.tip_orig_body_length = self.tip.get_body_length()
-        
-        self.place_tip()
 
     def copy(self) -> Self:
         copy_item = super().copy()
@@ -98,27 +100,50 @@ class Arrow(Line):
             arc_len *= self.path_arc / (2 * math.sin(self.path_arc / 2))
         return arc_len
     
-    def place_tip(self) -> Self:
-        direction = self.tip.get_direction()
-        target_direction = self.get_direction()
+    def _place_tip(
+        self, 
+        tip: ArrowTip, 
+        target: np.ndarray, 
+        beside_target: np.ndarray,
+    ) -> None:
+        direction = tip.get_direction()
+        target_direction = normalize(target - beside_target)
+        
         max_length = self.get_arc_length() * self.max_length_to_tip_length_ratio
         length = min(self.tip_orig_body_length, max_length)
-        scale_factor = length / self.tip.get_body_length()
+        scale_factor = length / tip.get_body_length()
 
-        self.tip.scale(scale_factor)
+        tip.scale(scale_factor)
         if not np.isclose(direction, target_direction).all():
-            self.tip.apply_matrix(rotation_between_vectors(direction, target_direction),)
-        self.tip.move_anchor_to(self.points[-1])
-        
+            tip.apply_matrix(rotation_between_vectors(direction, target_direction))
+        tip.move_anchor_to(target)
+
+    def place_tip(self) -> Self:
+        self._place_tip(self.tip, self.points[-1], self.points[-2])        
         return self
 
+class Vector(Arrow):
+    def __init__(self, direction: np.ndarray = RIGHT, buff=0, **kwargs):
+        if len(direction) == 2:
+            direction = np.hstack([direction, 0])
+        super().__init__(ORIGIN, direction, buff=buff, **kwargs)
 
+class DoubleArrow(Arrow):
+    def __init__(self, *args, tip_kwargs: dict = {}, **kwargs) -> None:
+        super().__init__(*args, tip_kwargs=tip_kwargs, **kwargs)
+    
+    def init_tips(self, tip_kwargs: dict) -> None:
+        super().init_tips(tip_kwargs)
+        self.start_tip = self.add_tip(0, True, **tip_kwargs)
+    
+    def copy(self) -> Self:
+        copy_item = super().copy()
+        copy_item.start_tip = copy_item[1]
+        return copy_item
 
-# TODO: Arrow
+    def place_tip(self) -> Self:
+        super().place_tip()
+        self._place_tip(self.start_tip, self.points[0], self.points[1])
+        return self
+
 # TODO: FillArrow
-# TODO: Vector
-# TODO: DoubleArrow
-
-# TODO: CurvedArrow
-# TODO: CurvedDoubleArrow
-
