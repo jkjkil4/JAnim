@@ -1,16 +1,21 @@
 from __future__ import annotations
-from typing import Iterable, Callable, Optional, Tuple
+from typing import Iterable, Callable, Optional
 from janim.typing import Self
 import itertools as it
 import numpy as np
 import sys
 import copy
+import inspect
 
 from janim.constants import *
 from janim.utils.space_ops import rotation_matrix, get_norm, angle_of_vector
 from janim.utils.color import hex_to_rgb
 from janim.utils.iterables import resize_array, resize_preserving_order
 from janim.utils.bezier import interpolate, integer_interpolate
+
+TimeBasedUpdaterFn = Callable[["Item", float], None]
+NonTimeUpdaterFn = Callable[["Item"], None]
+UpdaterFn = Union[TimeBasedUpdaterFn, NonTimeUpdaterFn]
 
 class Item:
     comment = ''
@@ -52,7 +57,8 @@ class Item:
             ('points', 'get_points', 'set_points'), 
             ('rgbas', 'get_rgbas', 'set_rgbas')
         ))
-        self.targets = {}
+        self.targets: dict[str, Item] = {}  # see `.generate_target`
+        self.updaters: list[Updater] = []   # see `.add_updaters`
 
         # 默认值
         self.set_points_color(color, opacity)
@@ -210,17 +216,6 @@ class Item:
         for item1, item2 in zip(self.get_family(), item.get_family()):
             for key, getter, setter in item1.npdata_to_copy_and_interpolate & item2.npdata_to_copy_and_interpolate:
                 getattr(item1, setter)(getattr(item2, getter)())
-        return self
-    
-    def update(self, dt: float, recurse: bool = True) -> Self:
-        # TODO: updater
-        # for updater in self.time_based_updaters:
-        #     updater(self, dt)
-        # for updater in self.non_time_updaters:
-        #     updater(self)
-        if recurse:
-            for item in self.items:
-                item.update(dt, recurse)
         return self
     
     def arrange(
@@ -633,6 +628,34 @@ class Item:
 
     #endregion
 
+    #region updater
+
+    def update(self, dt: float, recurse: bool = True) -> Self:
+        for updater in self.updaters:
+            updater.do(dt)
+        
+        if recurse:
+            for item in self.items:
+                item.update(dt, recurse)
+        return self
+
+    def add_updater(self, fn: UpdaterFn) -> Updater:
+        for updater in self.updaters:
+            if fn is updater.fn:
+                return updater
+        updater = Updater(self, fn)
+        self.updaters.append(updater)
+        return updater
+    
+    def remove_updater(self, updater_or_fn: Updater | UpdaterFn) -> Self:
+        for updater in self.updaters:
+            if updater is updater_or_fn or updater.fn is updater_or_fn:
+                self.updaters.remove(updater)
+                break
+        return self
+
+    #endregion
+
     #region 变换
 
     def apply_points_function(
@@ -1040,7 +1063,36 @@ class Item:
         
         return self
 
-    #endregion  
+    #endregion
+
+class Updater:
+    def __init__(self, item: Item, fn: UpdaterFn) -> None:
+        self.item = item
+        self.fn = fn
+        self.is_time_based = self.get_is_time_based(fn)
+        self.suspended = False
+    
+    @staticmethod
+    def get_is_time_based(fn: UpdaterFn) -> bool:
+        return len(inspect.signature(fn).parameters) == 2
+    
+    def suspend(self) -> Self:
+        self.suspended = True
+        return self
+    
+    def resume(self) -> Self:
+        self.suspended = False
+    
+    def do(self, dt) -> Self:
+        if not self.suspended:
+            if self.is_time_based:
+                self.fn(self.item, dt)
+            else:
+                self.fn(self.item)
+        return self
+    
+    def remove(self) -> None:
+        self.item.remove_updater(self)
 
 
 class Point(Item):

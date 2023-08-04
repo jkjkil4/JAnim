@@ -14,7 +14,7 @@ from PySide6.QtGui import (
 
 from janim.constants import *
 from janim.scene.loop_helper import LoopHelper
-from janim.items.item import Item, NonParentGroup
+from janim.items.item import Item, UpdaterFn, Updater, NonParentGroup
 from janim.utils.space_ops import get_unit_normal, get_norm
 from janim.utils.functions import get_proportional_scale_size
 from janim.config import get_cli, get_configuration
@@ -43,6 +43,8 @@ class Scene:
             self.frame_rate = conf['frame_rate']
         
         self.camera = Camera()
+
+        self.updaters: list[Updater] = []
 
         # relation
         self.items: list[Item] = []
@@ -224,8 +226,25 @@ class Scene:
             raise EndSceneEarlyException()
     
     def update_frame(self, dt: float) -> None:
+        for updater in self.updaters:
+            updater.do(dt)
         for item in self.items:
             item.update(dt)
+
+    def add_updater(self, fn: UpdaterFn) -> Updater:
+        for updater in self.updaters:
+            if fn is updater.fn:
+                return updater
+        updater = Updater(self, fn)
+        self.updaters.append(updater)
+        return updater
+    
+    def remove_updater(self, updater_or_fn: Updater | UpdaterFn) -> Self:
+        for updater in self.updaters:
+            if updater is updater_or_fn or updater.fn is updater_or_fn:
+                self.updaters.remove(updater)
+                break
+        return self
 
     #endregion
 
