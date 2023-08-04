@@ -45,10 +45,23 @@ class Transform(Animation):
         self.target_copy = self.target_item.copy()
         self.item.align_for_transform(self.target_copy)
         self.item_copy = self.item.copy()
+        self.items_npdata_to_copy_and_interpolate = [
+            [
+                (key, getter, setter)
+                for key, getter, setter in item1.npdata_to_copy_and_interpolate & item2.npdata_to_copy_and_interpolate
+                if not np.all(getattr(item1, key) == getattr(item2, key))
+            ]
+            for item1, item2 in zip(self.item_copy.get_family(), self.target_copy.get_family())
+        ]
     
     def interpolate(self, alpha) -> None:
-        for item, item1, item2 in zip(self.item.get_family(), self.item_copy.get_family(), self.target_copy.get_family()):
-            item.interpolate(item1, item2, alpha, self.path_func)
+        for item, item1, item2, npdata_to_copy_and_interpolate in zip(
+            self.item.get_family(), 
+            self.item_copy.get_family(), 
+            self.target_copy.get_family(),
+            self.items_npdata_to_copy_and_interpolate
+        ):
+            item.interpolate(item1, item2, alpha, self.path_func, npdata_to_copy_and_interpolate)
 
     def finish(self) -> None:
         self.interpolate(1)

@@ -982,9 +982,13 @@ class Item:
         item1: Item,
         item2: Item,
         alpha: float,
-        path_func: Callable[[np.ndarray, np.ndarray, float], np.ndarray]
+        path_func: Callable[[np.ndarray, np.ndarray, float], np.ndarray],
+        npdata_to_copy_and_interpolate: Optional[list[tuple[str, str, str]]] = None
     ) -> Self:
-        for key, getter, setter in item1.npdata_to_copy_and_interpolate & item2.npdata_to_copy_and_interpolate:
+        if npdata_to_copy_and_interpolate is None:
+            npdata_to_copy_and_interpolate = item1.npdata_to_copy_and_interpolate & item2.npdata_to_copy_and_interpolate
+
+        for key, getter, setter in npdata_to_copy_and_interpolate:
             setter_self = getattr(self, setter)
             getter1 = getattr(item1, getter)
             getter2 = getattr(item2, getter)
