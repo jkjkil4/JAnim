@@ -25,7 +25,7 @@ from janim.utils.simple_functions import clip
 from janim.utils.functions import safe_call_same
 from janim.logger import log
 
-DEFAULT_STROKE_WIDTH = 0.05
+DEFAULT_STROKE_WIDTH = 0.04
 
 class VItem(Item):
     tolerance_for_point_equality = 1e-8
@@ -575,7 +575,7 @@ class VItem(Item):
     def scale(
         self, 
         scale_factor: float | Iterable, 
-        scale_stroke_width: bool = True, 
+        scale_stroke_width: bool = False, 
         **kwargs
     ) -> Self:
         if scale_stroke_width and not isinstance(scale_factor, Iterable):

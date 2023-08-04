@@ -10,6 +10,7 @@ from janim.utils.space_ops import (
     get_norm, normalize,
     rotate_vector, angle_of_vector
 )
+from janim.utils.simple_functions import clip
 
 class Line(VItem):
     def __init__(
@@ -146,8 +147,32 @@ class Line(VItem):
         return self
 
 # TODO: DashedLine
-# TODO: TangentLine
-# TODO: Elbow
+
+class TangentLine(Line):
+    def __init__(
+        self,
+        vitem: VItem,
+        alpha: float,
+        length: float = 1,
+        d_alpha: float = 1e-6,
+        **kwargs
+    ) -> None:
+        a1 = clip(alpha - d_alpha, 0, 1)
+        a2 = clip(alpha + d_alpha, 0, 1)
+        super().__init__(vitem.pfp(a1), vitem.pfp(a2), **kwargs)
+        self.scale(length / self.get_length())
+
+class Elbow(VItem):
+    def __init__(
+        self,
+        width: float = 0.2,
+        angle: float = 0,
+        **kwargs
+    ) -> None:
+        super().__init__(**kwargs)
+        self.set_points_as_corners([UP, UP + RIGHT, RIGHT])
+        self.set_width(width, about_point=ORIGIN)
+        self.rotate(angle, about_point=ORIGIN)
 
 # TODO: [L] CubicBezier
 
