@@ -1,4 +1,5 @@
 from typing import Callable
+from abc import abstractmethod, ABCMeta
 
 from enum import Enum
 
@@ -26,13 +27,17 @@ class Animation:
         self,
         begin_time: float = 0.0,
         run_time: float = DEFAULT_RUN_TIME,
-        rate_func: Callable[[float], float] = smooth
+        rate_func: Callable[[float], float] = smooth,
     ) -> None:
         self.begin_time = begin_time
         self.run_time = run_time
         self.rate_func = rate_func
 
         self.state = Animation._State.BeforeExec
+    
+    def set_scene_instance(self, scene) -> None:
+        from janim.scene.scene import Scene
+        self.scene: Scene = scene
 
     def get_alpha(self, elapsed: float) -> float:
         '''
@@ -96,7 +101,7 @@ class Animation:
             self.state = self._State.AfterExec
 
 
-class ItemAnimation(Animation):
+class ItemAnimation(Animation, metaclass=ABCMeta):
     def __init__(
         self,
         item_for_anim: Item,
@@ -122,15 +127,20 @@ class ItemAnimation(Animation):
         lower = index * lag_ratio
         return clip((value - lower), 0, 1)
 
+    @abstractmethod
     def create_interpolate_datas(self) -> tuple:
         '''由子类实现'''
-        raise NotImplementedError()
+        pass
     
     def is_null_item(self, item: Item, interpolate_data: tuple) -> bool:
         '''由子类实现'''
         return False
     
     def begin(self) -> None:
+        toplevel_item = self.item_for_anim.get_toplevel_item()
+        if toplevel_item is not self.scene:
+            self.scene.add(toplevel_item)
+
         self.families = list(zip(
             self.item_for_anim.get_family(),
             zip(*self.create_interpolate_datas())

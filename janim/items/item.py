@@ -174,6 +174,12 @@ class Item:
             self.family_with_helpers = [self, *it.chain(*sub_families)]
         return self.family_with_helpers
 
+    def get_toplevel_item(self) -> Item:
+        item = self
+        while isinstance(item, Item) and item.parent is not None:
+            item = item.parent
+        return item
+
     #endregion
 
     #region 基本操作

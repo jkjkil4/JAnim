@@ -47,6 +47,11 @@ class AnimationGroup(Animation):
 
         super().__init__(run_time=run_time, rate_func=rate_func, **kwargs)
 
+    def set_scene_instance(self, scene) -> None:
+        super().set_scene_instance(scene)
+        for anim in self.anims:
+            anim.set_scene_instance(scene)
+
     def update(self, elapsed, dt) -> None:
         super().update(elapsed, dt)
 

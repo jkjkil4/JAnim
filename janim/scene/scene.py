@@ -210,6 +210,7 @@ class Scene:
     def play(self, *anims: Animation, **kwargs) -> None:
         skipping = self.check_skipping()
         anim = AnimationGroup(*anims, **kwargs)
+        anim.set_scene_instance(self)
         elapsed = 0
         def fn_progress(dt: float) -> None:
             nonlocal elapsed
