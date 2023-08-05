@@ -93,7 +93,7 @@ class Item:
         for item in items:                  # 遍历要追加的每个物件
             if item in self:                    # 如果已经是子物件，则跳过
                 continue
-            if item.parent:                     # 将当前物件已有的父物件解除
+            if item.parent is not None:         # 将当前物件已有的父物件解除
                 item.parent.remove(item)
             target.append(item)                 # 设置当前物件的父物件
             item.parent = self
@@ -102,6 +102,20 @@ class Item:
             self.helper_items_changed()
         else:
             self.items_changed()
+        return self
+    
+    def add_to_front(self, item: Item) -> Self:
+        if item.parent is not None:
+            item.parent.remove(item)
+        self.add(item)
+        return self
+    
+    def add_to_back(self, item: Item) -> Self:
+        if item.parent is not None:
+            item.parent.remove(item)
+        self.items.insert(0, item)
+        item.parent = self
+        self.items_changed()
         return self
 
     def remove(self, *items: Item, is_helper: bool = False) -> Self:

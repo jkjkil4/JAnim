@@ -76,10 +76,23 @@ class Scene:
         for item in items:
             if item in self:
                 continue
-            if item.parent:
+            if item.parent is not None:
                 item.parent.remove(item)
             self.items.append(item)
             item.parent = self
+        return self
+    
+    def add_to_front(self, item: Item) -> Self:
+        if item.parent is not None:
+            item.parent.remove(item)
+        self.add(item)
+        return self
+    
+    def add_to_back(self, item: Item) -> Self:
+        if item.parent is not None:
+            item.parent.remove(item)
+        self.items.insert(0, item)
+        item.parent = self
         return self
 
     def remove(self, *items: Item) -> Self:
@@ -88,7 +101,7 @@ class Scene:
                 item.parent = None
                 self.items.remove(item)
                 continue
-            if item.parent:
+            if item.parent is not None:
                 item.parent.remove(item)
         return self
     
