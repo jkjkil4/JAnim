@@ -82,6 +82,9 @@ class VItem(Item):
     def fill_rgbas_changed(self) -> None:
         self.needs_new_fill_rgbas_visible = True
         self.renderer.needs_update = True
+    
+    def stroke_width_changed(self) -> None:
+        self.renderer.needs_update = True
 
     #endregion
   
@@ -416,6 +419,7 @@ class VItem(Item):
             self.stroke_width[:] = stroke_width
         else:
             self.stroke_width = stroke_width
+        self.stroke_width_changed()
         return self
 
     def set_self_stroke_width(self, stroke_width) -> Self:
