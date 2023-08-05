@@ -1,12 +1,12 @@
-from typing import Callable
+from typing import Optional, Callable
 from abc import abstractmethod, ABCMeta
 
 from janim.constants import *
 from janim.items.item import Item
 from janim.items.vitem import VItem
 from janim.animation.animation import ItemAnimation
-from janim.animation.composition import Succession
-from janim.animation.transform import ReplacementTransform
+from janim.utils.rate_functions import double_smooth, linear
+from janim.utils.bezier import integer_interpolate
 
 class ShowPartial(ItemAnimation, metaclass=ABCMeta):
     '''
@@ -45,30 +45,75 @@ class Uncreate(ShowCreation):
     def interpolate(self, alpha) -> None:
         super().interpolate(1 - alpha)
 
-class DrawBorderThenFill(Succession):
+class DrawBorderThenFill(ItemAnimation):
     def __init__(
         self,
         vitem: VItem,
         run_time: float = 2.0,
         stroke_width: float = 0.02,
         stroke_color: JAnimColor = None,
+        rate_func: Callable[[float], float] = double_smooth,
         draw_border_anim_config: dict = {},
         fill_anim_config: dict = {},
         **kwargs
     ) -> None:
+        super().__init__(vitem, run_time=run_time, rate_func=rate_func, **kwargs)
+        self.stroke_width = stroke_width
+        self.stroke_color = stroke_color
+        self.draw_border_anim_config = draw_border_anim_config
+        self.fill_anim_config = fill_anim_config
+    
+    def create_interpolate_datas(self) -> tuple:
+        vitem: VItem = self.item_for_anim
+
+        start = vitem.copy()
+
+        vitem.set_fill(opacity=0).set_stroke_width(self.stroke_width)
         outline = vitem.copy()
-        outline.set_fill(opacity=0)
         for item in outline.get_family():
-            if stroke_color or np.all(vitem.get_stroke_width() == 0.0):
-                item.set_stroke(stroke_color or item.get_fill_rgbas())
-            item.set_stroke_width(stroke_width)
+            item.outline_fully_displayed = False
+            if self.stroke_color or np.all(vitem.get_stroke_width() == 0.0):
+                item.set_stroke(self.stroke_color or item.get_fill_rgbas())
 
-        if 'lag_ratio' not in draw_border_anim_config:
-            draw_border_anim_config['lag_ratio'] = 0.0
-
-        super().__init__(
-            ShowCreation(outline, **draw_border_anim_config),
-            ReplacementTransform(outline, vitem, **fill_anim_config),
-            run_time=run_time,
-            **kwargs
+        items_npdata_to_copy_and_interpolate = [
+            [
+                (key, getter, setter)
+                for key, getter, setter in item1.npdata_to_copy_and_interpolate & item2.npdata_to_copy_and_interpolate
+                if not np.all(getattr(item1, key) == getattr(item2, key))
+            ]
+            for item1, item2 in zip(outline.get_family(), start.get_family())
+        ]
+        
+        return (
+            start.get_family(),
+            outline.get_family(),
+            items_npdata_to_copy_and_interpolate
         )
+    
+    def interpolate_subitem(self, item: VItem, interpolate_data: tuple, alpha: float) -> None:
+        start, outline, npdata_to_copy_and_interpolate = interpolate_data
+        index, subalpha = integer_interpolate(0, 2, alpha)
+        
+        if index == 0:
+            item.pointwise_become_partial(outline, 0, subalpha)
+        else:
+            if not outline.outline_fully_displayed:
+                item.pointwise_become_partial(outline, 0, 1)
+            item.interpolate(outline, start, subalpha, None, npdata_to_copy_and_interpolate)
+
+class Write(DrawBorderThenFill):
+    def __init__(
+        self,
+        vitem: VItem,
+        run_time: Optional[float] = None,
+        lag_ratio: Optional[float] = None,
+        rate_func: Callable[[float], float] = linear,
+        **kwargs
+    ) -> None:
+        length = len(vitem.family_members_with_points())
+        if run_time is None:
+            run_time = 1 if length < 15 else 2
+        if lag_ratio is None:
+            lag_ratio = min(4.0 / (length + 1.0), 0.2)
+        super().__init__(vitem, run_time=run_time, lag_ratio=lag_ratio, rate_func=rate_func, **kwargs)
+
