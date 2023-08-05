@@ -730,6 +730,48 @@ class VItem(Item):
                 )
 
         return self
+    
+    def pointwise_become_partial(self, vitem: VItem, a: float, b: float):
+        assert(isinstance(vitem, VItem))
+        if a <= 0 and b >= 1:
+            self.become(vitem)
+            return self
+        num_curves = vitem.curves_count()
+        nppc = 3
+
+        # Partial curve includes three portions:
+        # - A middle section, which matches the curve exactly
+        # - A start, which is some ending portion of an inner quadratic
+        # - An end, which is the starting portion of a later inner quadratic
+
+        lower_index, lower_residue = integer_interpolate(0, num_curves, a)
+        upper_index, upper_residue = integer_interpolate(0, num_curves, b)
+        i1 = nppc * lower_index
+        i2 = nppc * (lower_index + 1)
+        i3 = nppc * upper_index
+        i4 = nppc * (upper_index + 1)
+
+        vm_points = vitem.get_points()
+        new_points = vm_points.copy()
+        if num_curves == 0:
+            new_points[:] = 0
+            return self
+        if lower_index == upper_index:
+            tup = partial_quadratic_bezier_points(vm_points[i1:i2], lower_residue, upper_residue)
+            new_points[:i1] = tup[0]
+            new_points[i1:i4] = tup
+            new_points[i4:] = tup[2]
+            new_points[nppc:] = new_points[nppc - 1]
+        else:
+            low_tup = partial_quadratic_bezier_points(vm_points[i1:i2], lower_residue, 1)
+            high_tup = partial_quadratic_bezier_points(vm_points[i3:i4], 0, upper_residue)
+            new_points[0:i1] = low_tup[0]
+            new_points[i1:i2] = low_tup
+            # Keep new_points i2:i3 as they are
+            new_points[i3:i4] = high_tup
+            new_points[i4:] = high_tup[2]
+        self.set_points(new_points)
+        return self
 
     #endregion
 

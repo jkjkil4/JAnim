@@ -105,6 +105,13 @@ class Scene:
                 item.parent.remove(item)
         return self
     
+    def replace_subitem(self, item: Item, target: Item) -> Self:
+        if item in self.items:
+            item.parent = None
+            self.items[self.items.index(item)] = target
+            target.parent = self
+        return self
+    
     def clear(self) -> Self:
         self.remove(*self.items)
         return self

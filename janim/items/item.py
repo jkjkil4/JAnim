@@ -133,6 +133,14 @@ class Item:
             self.items_changed()
         return self
     
+    def replace_subitem(self, item: Item, target: Item) -> Self:
+        if item in self.items:
+            item.parent = None
+            self.items[self.items.index(item)] = target
+            target.parent = self
+            self.items_changed()
+        return self
+    
     def set_subitems(self, subitem_list: list[Item]) -> Self:
         self.remove(*self.items)
         self.add(*subitem_list)

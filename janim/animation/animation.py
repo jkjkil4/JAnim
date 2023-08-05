@@ -3,7 +3,9 @@ from typing import Callable
 from enum import Enum
 
 from janim.constants import *
+from janim.items.item import Item
 from janim.utils.rate_functions import smooth
+from janim.utils.simple_functions import clip
 
 class Animation:
     '''
@@ -92,3 +94,69 @@ class Animation:
         if self.state == self._State.OnExec:
             self.finish()
             self.state = self._State.AfterExec
+
+
+class ItemAnimation(Animation):
+    def __init__(
+        self,
+        item_for_anim: Item,
+        lag_ratio: float = 0,
+        skip_null_items: bool = False,
+        **kwargs
+    ) -> None:
+        super().__init__(**kwargs)
+        self.item_for_anim = item_for_anim
+        self.lag_ratio = lag_ratio
+        self.skip_null_items = skip_null_items
+    
+    def get_sub_alpha(
+        self,
+        alpha: float,
+        index: int,
+        num_subitems: int
+    ) -> float:
+        # TODO: [L] make this more understanable
+        lag_ratio = self.lag_ratio
+        full_length = (num_subitems - 1) * lag_ratio + 1
+        value = alpha * full_length
+        lower = index * lag_ratio
+        return clip((value - lower), 0, 1)
+
+    def create_interpolate_datas(self) -> tuple:
+        '''由子类实现'''
+        raise NotImplementedError()
+    
+    def is_null_item(self, item: Item, interpolate_data: tuple) -> bool:
+        '''由子类实现'''
+        return False
+    
+    def begin(self) -> None:
+        self.families = list(zip(
+            self.item_for_anim.get_family(),
+            zip(*self.create_interpolate_datas())
+        ))
+        if self.skip_null_items:
+            self.families = [
+                data
+                for data in self.families
+                if not self.is_null_item(*data)
+            ]
+    
+    def interpolate(self, alpha) -> None:
+        for i, families in enumerate(self.families):
+            sub_alpha = self.get_sub_alpha(alpha, i, len(self.families))
+            self.interpolate_subitem(*families, sub_alpha)
+
+    def finish(self) -> None:
+        self.interpolate(1)
+    
+    def interpolate_subitem(
+        self,
+        item: Item,
+        interpolate_data: tuple,
+        alpha: float
+    ) -> None:
+        '''由子类实现'''
+        pass
+    
+    
