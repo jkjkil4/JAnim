@@ -117,7 +117,6 @@ class Renderer:
 
     `render`: 在子物件渲染后被调用，也是渲染当前对象的主要代码位置
     '''
-
     def __init__(self) -> None:
         self.initialized = False
         self.needs_update = True

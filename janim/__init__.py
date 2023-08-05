@@ -8,6 +8,7 @@ from janim.animation.animation import *
 from janim.animation.composition import *
 from janim.animation.transform import *
 from janim.animation.creation import *
+from janim.animation.fading import *
 
 from janim.items.dot_cloud import *
 from janim.items.item import *

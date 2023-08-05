@@ -28,6 +28,7 @@ class Transform(ItemAnimation):
         super().__init__(target_item if replace else item, **kwargs)
         self.item = item
         self.target_item = target_item
+        self.item_copy = None
         self.target_copy = self.target_item.copy() if call_immediately else None
 
         self.path_func = path_func or self.create_path_func(path_arc, path_arc_axis)
@@ -49,12 +50,13 @@ class Transform(ItemAnimation):
         if self.target_copy is None:
             self.target_copy = self.target_item.copy()
         self.item.align_for_transform(self.target_copy)
-        item_copy = self.item.copy()
+        if self.item_copy is None:
+            self.item_copy = self.item.copy()
 
         return (
-            item_copy.get_family(), 
+            self.item_copy.get_family(), 
             self.target_copy.get_family(),
-            ItemAnimation.compute_npdata_to_copy_and_interpolate(item_copy, self.target_copy)
+            ItemAnimation.compute_npdata_to_copy_and_interpolate(self.item_copy, self.target_copy)
         )
     
     def is_null_item(self, item: Item, interpolate_data: tuple) -> bool:
