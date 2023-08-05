@@ -99,6 +99,7 @@ class DrawBorderThenFill(ItemAnimation):
         else:
             if not outline.outline_fully_displayed:
                 item.pointwise_become_partial(outline, 0, 1)
+                outline.outline_fully_displayed = True
             item.interpolate(outline, start, subalpha, None, npdata_to_copy_and_interpolate)
 
 class Write(DrawBorderThenFill):

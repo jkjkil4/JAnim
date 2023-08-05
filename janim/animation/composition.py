@@ -108,3 +108,30 @@ class Succession(AnimationGroup):
             end_time = anim.begin_time + anim.run_time + buff
         super().__init__(*anims, **kwargs)
 
+class Aligned(AnimationGroup):
+    '''
+    动画集合（并列对齐执行）
+
+    时间示例：
+    ```python
+    Aligned(
+        Anim1(run_time=1),
+        Anim2(run_time=2)
+    ) # Anim1 和 Anim2 都在 0~2s 执行
+
+    Aligned(
+        Anim1(run_time=1),
+        Anim2(run_time=2),
+        run_time=4
+    ) # Anim1 和 Anim2 都在 0~4s 执行
+    ```
+    '''
+    def update(self, elapsed, dt) -> None:
+        local_elapsed = elapsed - self.begin_time
+        local_alpha = outside_linear_rate_func(self.rate_func)(local_elapsed / self.run_time)
+
+        for anim in self.anims:
+            end_time = anim.begin_time + anim.run_time
+            adjusted_elapsed = end_time * local_alpha
+            anim.update(adjusted_elapsed, dt)
+
