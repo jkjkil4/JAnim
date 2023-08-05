@@ -1,5 +1,6 @@
 from __future__ import annotations
 from typing import Optional, Callable, Iterable
+
 import os
 import sys
 
@@ -122,7 +123,6 @@ class Renderer:
         self.needs_update = True
 
         self.vertex_arrays_to_delete = []
-        self.buffers_to_delete = []
 
     def prepare(self, item) -> None:
         if not self.initialized:
@@ -152,23 +152,51 @@ class Renderer:
         else:
             self.vertex_arrays_to_delete.append(arrays)
         return arrays
-    
-    def genBuffers(self, n: int):
-        buffers = glGenBuffers(n)
-        if isinstance(buffers, Iterable):
-            self.buffers_to_delete.extend(buffers)
-        else:
-            self.buffers_to_delete.append(buffers)
-        return buffers
 
     def __del__(self) -> None:
         try:
             if len(self.vertex_arrays_to_delete) > 0:
                 glDeleteVertexArrays(len(self.vertex_arrays_to_delete), self.vertex_arrays_to_delete)
-            if len(self.buffers_to_delete) > 0:
-                glDeleteBuffers(len(self.buffers_to_delete), self.buffers_to_delete)
         except:
             pass
+
+
+class Buffer:
+    def __init__(
+        self, 
+        unit_len: int,
+        buffer_type = GL_ARRAY_BUFFER, 
+        dtype = GL_FLOAT,
+        dsize = FLOAT_SIZE
+    ) -> None:
+        self.buffer = glGenBuffers(1)
+        # self.needs_update = True
+        self.unit_len = unit_len
+        self.buffer_type = buffer_type
+        self.dtype = dtype
+        self.dsize = dsize
+
+    def __del__(self) -> None:
+        try:
+            glDeleteBuffers(1, (self.buffer,))
+        except:
+            pass
+    
+    def pointer(self, index) -> None:
+        glBindBuffer(self.buffer_type, self.buffer)
+        glVertexAttribPointer(index, self.unit_len, self.dtype, GL_FALSE, self.unit_len * self.dsize, ctypes.c_void_p(0))
+        glEnableVertexAttribArray(index)
+        glBindBuffer(self.buffer_type, 0)
+
+    def set_data(self, data: np.ndarray) -> None:   # TODO: set_data_if_needs
+        # if not self.needs_update:
+        #     return
+        data_size = data.size * self.dsize
+        glBindBuffer(self.buffer_type, self.buffer)
+        glBufferData(self.buffer_type, data_size, data, GL_STATIC_DRAW)
+        glBindBuffer(self.buffer_type, 0)
+
+        # self.needs_update = False
 
 
 class DotCloudRenderer(Renderer):
@@ -176,37 +204,23 @@ class DotCloudRenderer(Renderer):
         self.shader = ShaderProgram.get('shaders/dotcloud')
 
         self.vao = self.genVertexArrays(1)
-        self.vbo_points, self.vbo_rgbas, self.vbo_radii = self.genBuffers(3)
-    
-    def update(self, item: DotCloud) -> None:
+        self.vbo_points = Buffer(3)
+        self.vbo_rgbas = Buffer(4)
+        self.vbo_radii = Buffer(1)
+
         self.shader.bind()
         glBindVertexArray(self.vao)
 
-        points = item.get_points()
-        points_data_size = points.size * FLOAT_SIZE
-        rgbas = item.get_rgbas()
-        rgbas_data_size = rgbas.size * FLOAT_SIZE
-        radii = item.get_radii()
-        radii_data_size = radii.size * FLOAT_SIZE
-
-        glBindBuffer(GL_ARRAY_BUFFER, self.vbo_points)
-        glBufferData(GL_ARRAY_BUFFER, points_data_size, points, GL_STATIC_DRAW)
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * FLOAT_SIZE, ctypes.c_void_p(0))
-        glEnableVertexAttribArray(0)
-        
-        glBindBuffer(GL_ARRAY_BUFFER, self.vbo_rgbas)
-        glBufferData(GL_ARRAY_BUFFER, rgbas_data_size, rgbas, GL_STATIC_DRAW)
-        glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 4 * FLOAT_SIZE, ctypes.c_void_p(0))
-        glEnableVertexAttribArray(1)
-
-        glBindBuffer(GL_ARRAY_BUFFER, self.vbo_radii)
-        glBufferData(GL_ARRAY_BUFFER, radii_data_size, radii, GL_STATIC_DRAW)
-        glVertexAttribPointer(2, 1, GL_FLOAT, GL_FALSE, FLOAT_SIZE, ctypes.c_void_p(0))
-        glEnableVertexAttribArray(2)
-
-        glBindBuffer(GL_ARRAY_BUFFER, 0)
+        self.vbo_points.pointer(0)
+        self.vbo_rgbas.pointer(1)
+        self.vbo_radii.pointer(2)
 
         glBindVertexArray(0)
+    
+    def update(self, item: DotCloud) -> None:
+        self.vbo_points.set_data(item.get_points())
+        self.vbo_rgbas.set_data(item.get_rgbas())
+        self.vbo_radii.set_data(item.get_radii())
     
     def render(self, item: DotCloud, data: RenderData) -> None:
         self.shader.bind()
@@ -228,97 +242,50 @@ class VItemRenderer(Renderer):
         self.vao_stroke,    \
         self.vao_fill = self.genVertexArrays(2)
         
-        self.vbo_points = self.genBuffers(1)
+        self.vbo_points = Buffer(3)
 
-        self.vbo_stroke_rgbas,  \
-        self.vbo_stroke_width,  \
-        self.vbo_joint_info = self.genBuffers(3)
+        self.vbo_stroke_rgbas = Buffer(4)
+        self.vbo_stroke_width = Buffer(1)
+        self.vbo_joint_info = Buffer(3)
         
-        self.vbo_fill_rgbas = self.genBuffers(1)
+        self.vbo_fill_rgbas = Buffer(4)
 
-        self.ebo_fill_triangulation = self.genBuffers(1)
+        self.ebo_fill_triangulation = Buffer(None, GL_ELEMENT_ARRAY_BUFFER, None, UINT_SIZE)
 
-    def update_stroke(self, item: VItem) -> None:
-        if not item.get_rgbas_visible():
-            return
-             
         self.shader_stroke.bind()
         glBindVertexArray(self.vao_stroke)
-
-        rgbas = item.get_rgbas()
-        rgbas_data_size = rgbas.size * FLOAT_SIZE
-
-        stroke = item.get_stroke_width()
-        stroke_data_size = stroke.size * FLOAT_SIZE
-
-        joint_info = item.get_joint_info()
-        joint_info_data_size = joint_info.size * FLOAT_SIZE
-
-        glBindBuffer(GL_ARRAY_BUFFER, self.vbo_points)
-        # glBufferData(GL_ARRAY_BUFFER, points_data_size, points, GL_STATIC_DRAW)
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * FLOAT_SIZE, ctypes.c_void_p(0))
-        glEnableVertexAttribArray(0)
-
-        glBindBuffer(GL_ARRAY_BUFFER, self.vbo_stroke_rgbas)
-        glBufferData(GL_ARRAY_BUFFER, rgbas_data_size, rgbas, GL_STATIC_DRAW)
-        glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 4 * FLOAT_SIZE, ctypes.c_void_p(0))
-        glEnableVertexAttribArray(1)
-
-        glBindBuffer(GL_ARRAY_BUFFER, self.vbo_stroke_width)
-        glBufferData(GL_ARRAY_BUFFER, stroke_data_size, stroke, GL_STATIC_DRAW)
-        glVertexAttribPointer(2, 1, GL_FLOAT, GL_FALSE, FLOAT_SIZE, ctypes.c_void_p(0))
-        glEnableVertexAttribArray(2)
-
-        glBindBuffer(GL_ARRAY_BUFFER, self.vbo_joint_info)
-        glBufferData(GL_ARRAY_BUFFER, joint_info_data_size, joint_info, GL_STATIC_DRAW)
-        glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 3 * FLOAT_SIZE, ctypes.c_void_p(0))
-        glEnableVertexAttribArray(3)
-
-        glBindBuffer(GL_ARRAY_BUFFER, 0)
-
-        glBindVertexArray(0)
-
-    def update_fill(self, item: VItem) -> None:
-        if not item.get_fill_rgbas_visible():
-            return
+        
+        self.vbo_points.pointer(0)
+        self.vbo_stroke_rgbas.pointer(1)
+        self.vbo_stroke_width.pointer(2)
+        self.vbo_joint_info.pointer(3)
         
         self.shader_fill.bind()
         glBindVertexArray(self.vao_fill)
 
-        rgbas = item.get_fill_rgbas()
-        rgbas_data_size = rgbas.size * FLOAT_SIZE
-
-        triangulation = item.get_triangulation()
-        triangulation_data_size = triangulation.size * UINT_SIZE
-
-        glBindBuffer(GL_ARRAY_BUFFER, self.vbo_points)
-        # glBufferData(GL_ARRAY_BUFFER, points_data_size, points, GL_STATIC_DRAW)
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * FLOAT_SIZE, ctypes.c_void_p(0))
-        glEnableVertexAttribArray(0)
-
-        glBindBuffer(GL_ARRAY_BUFFER, self.vbo_fill_rgbas)
-        glBufferData(GL_ARRAY_BUFFER, rgbas_data_size, rgbas, GL_STATIC_DRAW)
-        glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 4 * FLOAT_SIZE, ctypes.c_void_p(0))
-        glEnableVertexAttribArray(1)
-
-        glBindBuffer(GL_ARRAY_BUFFER, 0)
-
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, self.ebo_fill_triangulation)
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, triangulation_data_size, triangulation, GL_STATIC_DRAW)
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0)
+        self.vbo_points.pointer(0)
+        self.vbo_fill_rgbas.pointer(1)
 
         glBindVertexArray(0)
+
+    def update_stroke(self, item: VItem) -> None:
+        if not item.get_rgbas_visible():
+            return
+        self.vbo_stroke_rgbas.set_data(item.get_rgbas())
+        self.vbo_stroke_width.set_data(item.get_stroke_width())
+        self.vbo_joint_info.set_data(item.get_joint_info())
+
+    def update_fill(self, item: VItem) -> None:
+        if not item.get_fill_rgbas_visible():
+            return
+        self.vbo_fill_rgbas.set_data(item.get_fill_rgbas())
+        self.ebo_fill_triangulation.set_data(item.get_triangulation())
 
     def update(self, item: VItem) -> None:
         if item.points_count() < 3:
             return
         
-        points = item.get_points()
-        points_data_size = points.size * FLOAT_SIZE
-
-        glBindBuffer(GL_ARRAY_BUFFER, self.vbo_points)
-        glBufferData(GL_ARRAY_BUFFER, points_data_size, points, GL_STATIC_DRAW)
-        glBindBuffer(GL_ARRAY_BUFFER, 0)
+        self.vbo_points.set_data(item.get_points())
 
         self.update_stroke(item)
         self.update_fill(item)
@@ -354,7 +321,7 @@ class VItemRenderer(Renderer):
         self.shader_fill.setVec3('vitem_unit_normal', *item.get_unit_normal())
 
         glBindVertexArray(self.vao_fill)
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, self.ebo_fill_triangulation)
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, self.ebo_fill_triangulation.buffer)
         glDrawElements(GL_TRIANGLES, len(triangulation), GL_UNSIGNED_INT, None)
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0)
         glBindVertexArray(0)
@@ -385,47 +352,26 @@ class ImgItemRenderer(Renderer):
 
     def init(self) -> None:
         self.shader = ShaderProgram.get('shaders/image')
-        self.shader.bind()
 
         self.vao = self.genVertexArrays(1)
 
-        self.vbo_points,    \
-        self.vbo_rgbas,     \
-        self.vbo_texcoords = self.genBuffers(3)
+        self.vbo_points = Buffer(3)
+        self.vbo_rgbas = Buffer(4)
+        self.vbo_texcoords = Buffer(2)
 
+        self.shader.bind()
         glBindVertexArray(self.vao)
 
-        glBindBuffer(GL_ARRAY_BUFFER, self.vbo_texcoords)
-        glBufferData(GL_ARRAY_BUFFER, self.tex_coord.size * FLOAT_SIZE, self.tex_coord, GL_STATIC_DRAW)
-        glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 2 * FLOAT_SIZE, ctypes.c_void_p(0))
-        glEnableVertexAttribArray(2)
-        glBindBuffer(GL_ARRAY_BUFFER, 0)
+        self.vbo_points.pointer(0)
+        self.vbo_rgbas.pointer(1)
+        self.vbo_texcoords.pointer(2)
+        self.vbo_texcoords.set_data(self.tex_coord)
 
         glBindVertexArray(0)
 
     def update(self, item: ImgItem) -> None:
-        self.shader.bind()
-
-        points = item.get_points()
-        points_data_size = points.size * FLOAT_SIZE
-        rgbas = item.get_rgbas()
-        rgbas_data_size = rgbas.size * FLOAT_SIZE
-
-        glBindVertexArray(self.vao)
-
-        glBindBuffer(GL_ARRAY_BUFFER, self.vbo_points)
-        glBufferData(GL_ARRAY_BUFFER, points_data_size, points, GL_STATIC_DRAW)
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * FLOAT_SIZE, ctypes.c_void_p(0))
-        glEnableVertexAttribArray(0)
-
-        glBindBuffer(GL_ARRAY_BUFFER, self.vbo_rgbas)
-        glBufferData(GL_ARRAY_BUFFER, rgbas_data_size, rgbas, GL_STATIC_DRAW)
-        glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 4 * FLOAT_SIZE, ctypes.c_void_p(0))
-        glEnableVertexAttribArray(1)
-
-        glBindBuffer(GL_ARRAY_BUFFER, 0)
-
-        glBindVertexArray(0)
+        self.vbo_points.set_data(item.get_points())
+        self.vbo_rgbas.set_data(item.get_rgbas())
 
     def render(self, item: ImgItem, data: RenderData) -> None:
         glActiveTexture(GL_TEXTURE0)

@@ -74,20 +74,11 @@ class DrawBorderThenFill(ItemAnimation):
             item.outline_fully_displayed = False
             if self.stroke_color or np.all(vitem.get_stroke_width() == 0.0):
                 item.set_stroke(self.stroke_color or item.get_fill_rgbas())
-
-        items_npdata_to_copy_and_interpolate = [
-            [
-                (key, getter, setter)
-                for key, getter, setter in item1.npdata_to_copy_and_interpolate & item2.npdata_to_copy_and_interpolate
-                if not np.all(getattr(item1, key) == getattr(item2, key))
-            ]
-            for item1, item2 in zip(outline.get_family(), start.get_family())
-        ]
         
         return (
             start.get_family(),
             outline.get_family(),
-            items_npdata_to_copy_and_interpolate
+            ItemAnimation.compute_npdata_to_copy_and_interpolate(start, outline)
         )
     
     def interpolate_subitem(self, item: VItem, interpolate_data: tuple, alpha: float) -> None:

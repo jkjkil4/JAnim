@@ -134,7 +134,7 @@ class Item:
         return self
     
     def replace_subitem(self, item: Item, target: Item) -> Self:
-        if item in self.items:
+        if item in self.items and target not in self.items:
             item.parent = None
             self.items[self.items.index(item)] = target
             target.parent = self

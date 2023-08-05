@@ -168,5 +168,16 @@ class ItemAnimation(Animation, metaclass=ABCMeta):
     ) -> None:
         '''由子类实现'''
         pass
+
+    @staticmethod
+    def compute_npdata_to_copy_and_interpolate(item1: Item, item2: Item) -> list[tuple[str, str, str]]:
+        return [
+            [
+                (key, getter, setter)
+                for key, getter, setter in subitem1.npdata_to_copy_and_interpolate & subitem2.npdata_to_copy_and_interpolate
+                if not np.all(getattr(subitem1, key) == getattr(subitem2, key))
+            ]
+            for subitem1, subitem2 in zip(item1.get_family(), item2.get_family())
+        ]
     
     

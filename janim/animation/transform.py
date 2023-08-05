@@ -51,19 +51,10 @@ class Transform(ItemAnimation):
         self.item.align_for_transform(self.target_copy)
         item_copy = self.item.copy()
 
-        items_npdata_to_copy_and_interpolate = [
-            [
-                (key, getter, setter)
-                for key, getter, setter in item1.npdata_to_copy_and_interpolate & item2.npdata_to_copy_and_interpolate
-                if not np.all(getattr(item1, key) == getattr(item2, key))
-            ]
-            for item1, item2 in zip(item_copy.get_family(), self.target_copy.get_family())
-        ]
-
         return (
             item_copy.get_family(), 
             self.target_copy.get_family(),
-            items_npdata_to_copy_and_interpolate
+            ItemAnimation.compute_npdata_to_copy_and_interpolate(item_copy, self.target_copy)
         )
     
     def is_null_item(self, item: Item, interpolate_data: tuple) -> bool:
@@ -71,11 +62,11 @@ class Transform(ItemAnimation):
         return not item1.has_points() and not item2.has_points()
     
     def begin(self) -> None:
-        super().begin()
         if self.replace:
             parent = self.item.parent
             if parent:
                 parent.replace_subitem(self.item, self.target_item)
+        super().begin()
     
     def interpolate_subitem(self, item: Item, interpolate_data: tuple, alpha: float) -> None:
         item1, item2, npdata_to_copy_and_interpolate = interpolate_data

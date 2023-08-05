@@ -87,7 +87,7 @@ class VItem(Item):
         self.renderer.needs_update = True
 
     #endregion
-  
+
     def create_renderer(self):
         from janim.gl.render import VItemRenderer
         return VItemRenderer()
