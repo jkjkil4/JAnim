@@ -199,59 +199,9 @@ void main()
     float unsigned_det = length(cross(normalize(v10), normalize(v12)));
     is_linear = float(unsigned_det < linear_tolerance_det && dot(v10, v12) < 0.0);
 
-    vec3 unit_normal = 
-        bool(is_linear)
-        ? vitem_unit_normal
-        : normalize(cross(v10, v12));
-    vec3 p0_perp = vec3(0.5 * v_stroke_width[0] * normalize(cross(v10, unit_normal)));
-    vec3 p2_perp = vec3(0.5 * v_stroke_width[2] * normalize(cross(unit_normal, v12)));
-    vec3 p1_perp = (p0_perp + p2_perp) / 2.0;
-
     vec3 p0 = verts[0];
     vec3 p1 = verts[1];
     vec3 p2 = verts[2];
-
-    float scaled_aaw[3];
-    scaled_aaw[0] = anti_alias_width / get_proj_scale_factor_at(p0);
-    scaled_aaw[1] = anti_alias_width / get_proj_scale_factor_at(p1);
-    scaled_aaw[2] = anti_alias_width / get_proj_scale_factor_at(p2);
-
-    // corners
-    /*
-        2--------4
-        |        |
-        |        5
-        |     3
-        0---1
-    */
-    vec3 corners[6];
-    corners[0] = p0 + p0_perp;
-    corners[1] = p0 - p0_perp;
-    corners[2] = p1 + p1_perp;
-    corners[3] = p1 - p1_perp;
-    corners[4] = p2 + p2_perp;
-    corners[5] = p2 - p2_perp;
-
-    if (!bool(is_linear))
-        corners[3] = (corners[1] + corners[5]) / 2.0;
-
-    // joints
-    // TODO: 为不在同一平面的曲线创建连接处
-    // TODO: 将 SHARP_JOINT 完善为 ROUND_JOINT
-    if (has_prev)
-        create_joint(
-            unit_normal, v_stroke_width[0] / 2.0,
-            handle_prev, p0, p1,
-            corners[0], corners[0],
-            corners[1], corners[1]
-        );
-    if (has_next)
-        create_joint(
-            -unit_normal, v_stroke_width[2] / 2.0,
-            handle_next, p2, p1,
-            corners[4], corners[4],
-            corners[5], corners[5]
-        );
 
     // xyz_to_uv
     bool too_steep = false;
@@ -271,6 +221,60 @@ void main()
         is_linear = float(too_steep);
     }
 
+    vec3 unit_normal = 
+        bool(is_linear)
+        ? vitem_unit_normal
+        : normalize(cross(v10, v12));
+    vec3 p0_perp = vec3(0.5 * v_stroke_width[0] * normalize(cross(v10, unit_normal)));
+    vec3 p2_perp = vec3(0.5 * v_stroke_width[2] * normalize(cross(unit_normal, v12)));
+    vec3 p1_perp = (p0_perp + p2_perp) / 2.0;
+
+    vec3 p0_perp_n = normalize(p0_perp);
+    vec3 p1_perp_n = normalize(p1_perp);
+    vec3 p2_perp_n = normalize(p2_perp);
+
+    float scaled_aaw[3];
+    scaled_aaw[0] = anti_alias_width / get_proj_scale_factor_at(p0);
+    scaled_aaw[1] = anti_alias_width / get_proj_scale_factor_at(p1);
+    scaled_aaw[2] = anti_alias_width / get_proj_scale_factor_at(p2);
+
+    // corners
+    /*
+        2--------4
+        |        |
+        |        5
+        |     3
+        0---1
+    */
+    vec3 corners[6];
+    corners[0] = p0 + p0_perp + scaled_aaw[0] / 2.0 * p0_perp_n;
+    corners[1] = p0 - p0_perp - scaled_aaw[0] / 2.0 * p0_perp_n;
+    corners[2] = p1 + p1_perp + scaled_aaw[1] / 2.0 * p1_perp_n;
+    corners[3] = p1 - p1_perp - scaled_aaw[1] / 2.0 * p1_perp_n;
+    corners[4] = p2 + p2_perp + scaled_aaw[2] / 2.0 * p2_perp_n;
+    corners[5] = p2 - p2_perp - scaled_aaw[2] / 2.0 * p2_perp_n;
+
+    if (!bool(is_linear))
+        corners[3] = (corners[1] + corners[5]) / 2.0;
+
+    // joints
+    // TODO: 为不在同一平面的曲线创建连接处
+    // TODO: 将 SHARP_JOINT 完善为 ROUND_JOINT
+    if (has_prev)
+        create_joint(
+            unit_normal, (v_stroke_width[0] + scaled_aaw[0]) / 2.0,
+            handle_prev, p0, p1,
+            corners[0], corners[0],
+            corners[1], corners[1]
+        );
+    if (has_next)
+        create_joint(
+            -unit_normal, (v_stroke_width[2] + scaled_aaw[2]) / 2.0,
+            handle_next, p2, p1,
+            corners[4], corners[4],
+            corners[5], corners[5]
+        );
+
     mat4 matrix = wnd_matrix * proj_matrix * view_matrix;
 
     for (int i = 0; i < 6; i++) {
@@ -287,7 +291,7 @@ void main()
                 uv_coords = (xyz_to_uv * v4_corner).xy;
             } else {
                 float sgn = vec2(-1, 1)[i % 2];
-                uv_coords = vec2(0, sgn * (0.5 * stroke_width));
+                uv_coords = vec2(0, 0.5 * (stroke_width + scaled_aaw[i / 2]) * sgn);
             }
             color = v_color[i / 2];
             uv_stroke_width = stroke_width;

@@ -21,6 +21,8 @@ from janim.items.img_item import *
 from janim.items.text.text import *
 from janim.items.value_tracker import *
 
+from janim.utils.rate_functions import *
+
 from janim.constants import *
 
 from janim.scene.scene import *
