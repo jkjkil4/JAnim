@@ -1,5 +1,4 @@
 from __future__ import annotations
-from typing import Tuple
 
 from fontTools.ttLib import TTFont, TTCollection
 import freetype as FT

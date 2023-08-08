@@ -2,26 +2,27 @@
 import math
 
 from PySide6.QtGui import QMatrix4x4
-from PySide6.QtOpenGL import QOpenGLTexture, QOpenGLFramebufferObject
+from PySide6.QtOpenGL import QOpenGLFramebufferObject
 
-from OpenGL.GL import *
+from OpenGL.GL import GL_RGBA, glViewport
 
 from janim.constants import *
 from janim.items.img_item import PixelImgItem
 from janim.items.text.text import DEFAULT_FONT_SIZE, ORIG_FONT_SIZE, _VTextChar, _TextLine, _Text
 from janim.utils.font import Font
-from janim.scene.scene import Scene, Camera
+from janim.scene.scene import Scene
 from janim.utils.space_ops import get_norm
 
 from janim.gl.render import RenderData
 
-PIXELTEXT_FONTSIZE_STEP = 24
+PIXELTEXT_FONTSIZE_STEP = 12
+PIXELTEXT_FONTSIZE_EXT = 18
 
 class _PixelTextChar(PixelImgItem):
     def __init__(self, char: str, fonts: list[Font], font_size: float, stroke_width: float, **kwargs) -> None:
         self.char = char
 
-        sketchy_font_size = math.ceil(font_size / 12) * 12 + 18
+        sketchy_font_size = math.ceil(font_size / PIXELTEXT_FONTSIZE_STEP) * PIXELTEXT_FONTSIZE_STEP + PIXELTEXT_FONTSIZE_EXT
         txt = _VTextChar(char, fonts, sketchy_font_size, stroke_width=stroke_width).set_fill(opacity=1)
 
         width, height = txt.get_width() + 0.1, txt.get_height() + 0.1
