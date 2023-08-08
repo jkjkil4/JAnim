@@ -10,6 +10,7 @@ from PySide6.QtOpenGL import QOpenGLFramebufferObject
 
 from janim.constants import *
 from janim.scene.scene import Scene, EndSceneEarlyException
+from janim.gl.texture import Texture
 from janim.utils.color import hex_to_rgb
 from janim.utils.file_ops import guarantee_existence, open_file
 from janim.config import get_cli, get_configuration
@@ -58,6 +59,7 @@ class Frame:
 
         glClear(GL_COLOR_BUFFER_BIT)
         try:
+            glViewport(0, 0, *self.scene.camera.wnd_shape)
             self.scene.render()
         except:
             traceback.print_exc()
@@ -69,6 +71,7 @@ class Frame:
         self.fbo.release()
         
     def finish(self) -> None:
+        Texture.release_all()
         self.close_movie_pipe()
     
     def open_movie_pipe(self, file_path: str):

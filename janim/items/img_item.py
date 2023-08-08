@@ -3,6 +3,7 @@ from janim.typing import Self
 
 import math
 
+from PySide6.QtGui import QImage
 from PySide6.QtOpenGL import QOpenGLTexture
 
 from janim.constants import *
@@ -17,16 +18,23 @@ class ImgItem(Item):
 
     def __init__(
         self,
-        filepath: str,
-        height: float = 4,
+        filepath_or_img: str | QImage,
+        height: float = None,
         **kwargs
     ):
         super().__init__(**kwargs)
 
-        self.texture = Texture.get(filepath, self.min_mag_filter)
+        self.texture = (
+            Texture(filepath_or_img, self.min_mag_filter)
+            if isinstance(filepath_or_img, QImage) else
+            Texture.get(filepath_or_img, self.min_mag_filter)
+        )
         self.set_points([UR, DR, DL, UL])
 
-        self.set_size(height * self.texture.img.width() / self.texture.img.height(), height)
+        if height is None:
+            self.set_size(self.texture.img.width() * PIXEL_TO_FRAME_RATIO, self.texture.img.height() * PIXEL_TO_FRAME_RATIO)
+        else:
+            self.set_size(height * self.texture.img.width() / self.texture.img.height(), height)
     
     def create_renderer(self):
         from janim.gl.render import ImgItemRenderer
@@ -51,6 +59,8 @@ class ImgItem(Item):
         '''
         通过空间坐标获得对应的像素颜色
         '''
+        assert(isinstance(self.texture, Texture))
+
         hor = self.get_horizontal_vect()
         ver = self.get_vertical_vect()
         vert = point - self.get_orig()

@@ -328,8 +328,8 @@ class Camera(Item):
     def compute_proj_matrix(self) -> QMatrix4x4:
         projection = QMatrix4x4()
         projection.setToIdentity()
-        projection.perspective(self.fov, self.frame_shape[0] / self.frame_shape[1], 0.1, 100)
         projection.scale(FRAME_X_RADIUS, FRAME_Y_RADIUS)
+        projection.perspective(self.fov, self.frame_shape[0] / self.frame_shape[1], 0.1, 100)
 
         return projection
     

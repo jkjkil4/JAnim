@@ -4,7 +4,7 @@ from janim.typing import Self
 
 from janim.constants import *
 from janim.config import get_configuration
-from janim.items.item import Item
+from janim.items.item import Item, Group
 from janim.items.vitem import VItem, VGroup
 from janim.utils.font import Font, get_fontpath_by_name
 from janim.utils.functions import decode_utf8
@@ -13,20 +13,13 @@ from janim.utils.space_ops import normalize, get_norm
 DEFAULT_FONT_SIZE = 24
 ORIG_FONT_SIZE = 48
 
-class _TextChar(VItem):
+class _VTextChar(VItem):
     def __init__(self, char: str, fonts: list[Font], font_size: float, **kwargs) -> None:
         super().__init__(**kwargs)
         self.char = char
 
         unicode = decode_utf8(char)
-
-        # 确定使用的字体
-        font_render = fonts[0]
-        for font in fonts:
-            idx = font.face.get_char_index(unicode)
-            if idx != 0:
-                font_render = font
-                break
+        font_render = self.get_font_for_render(unicode, fonts)
         
         outline, advance = font_render.get_glyph_data(unicode)
         self.set_points(outline)
@@ -45,6 +38,16 @@ class _TextChar(VItem):
         ])
         self.add(self.mark, is_helper=True)
     
+    @staticmethod
+    def get_font_for_render(unicode: str, fonts: list[Font]) -> Font:
+        font_render = fonts[0]
+        for font in fonts:
+            idx = font.face.get_char_index(unicode)
+            if idx != 0:
+                font_render = font
+                break
+        return font_render
+    
     def get_mark_orig(self) -> np.ndarray:
         return self.mark.get_points()[0]
     
@@ -60,15 +63,16 @@ class _TextChar(VItem):
     def get_advance_length(self) -> float:
         return get_norm(self.get_mark_advance() - self.get_mark_orig())
 
-class _TextLine(VGroup):
-    CharClass = _TextChar
 
-    def __init__(self, text: str, fonts: list[Font],font_size: float, **kwargs) -> None:
+class _TextLine(Group):
+    CharClass = _VTextChar
+
+    def __init__(self, text: str, fonts: list[Font], font_size: float, char_kwargs = {}, **kwargs) -> None:
         self.text = text
 
         super().__init__(
             *[
-                self.CharClass(char, fonts=fonts, font_size=font_size)
+                self.CharClass(char, fonts=fonts, font_size=font_size, **char_kwargs)
                 for char in text
             ],
             **kwargs
@@ -95,7 +99,7 @@ class _TextLine(VGroup):
             return
         
         pos: np.ndarray = None
-        def update(char: _TextChar) -> None:
+        def update(char: _VTextChar) -> None:
             nonlocal pos
             orig = char.get_mark_orig()
             advance = char.get_mark_advance()
@@ -107,35 +111,23 @@ class _TextLine(VGroup):
             update(char)
 
         return self
+    
+class _VTextLine(_TextLine, VGroup):
+    pass
 
 
-class Text(VGroup):
-    '''
-    文字物件
-
-    - 文字的子物件 `text[i]` 是文字的每一行
-    - 每行的子物件 `line[i]` 是文字的每个字符
-
-    例如 `text[1][0]` 是第二行的首个字符
-
-    可以调用 `word_wrap()` 进行自动换行（拆行） 
-    '''
-
-    LineClass = _TextLine
+class _Text(Group):
+    LineClass = _VTextLine
 
     def __init__(
         self, 
         text: str, 
         font: str | Iterable[str] = [],
         font_size: float = DEFAULT_FONT_SIZE,
-        base_color: JAnimColor = WHITE,
-        base_opacity: float = 1.0,
-        stroke_width: Optional[float] = None,
+        line_kwargs = {},
         **kwargs
     ) -> None:
         self.text = text
-        if stroke_width is None:
-            stroke_width = font_size / ORIG_FONT_SIZE * 0.0075
 
         # 获取字体
         if isinstance(font, str):
@@ -148,13 +140,11 @@ class Text(VGroup):
 
         super().__init__(
             *[
-                self.LineClass(line_text, fonts=fonts, font_size=font_size) 
+                self.LineClass(line_text, fonts=fonts, font_size=font_size, **line_kwargs) 
                 for line_text in text.split('\n')
             ],
             **kwargs
         )
-        self.set_color(base_color, base_opacity)
-        self.set_stroke_width(stroke_width)
 
         self.arrange_in_lines()
         self.to_center()
@@ -195,7 +185,7 @@ class Text(VGroup):
         - `buff`, `base_buff`: 参照 `arrange_in_lines()`
         - `center`: 是否在完成后将物体移动至原点
         '''
-        new_lines: tuple[_TextLine, list[_TextChar], bool] = []
+        new_lines: tuple[_TextLine, list[_VTextChar], bool] = []
 
         # 遍历每行
         for line in self:
@@ -208,7 +198,7 @@ class Text(VGroup):
             # new_line 记录当前新行所包含的字符
             # eol (end of line) 记录当前新行是否是原来行的结尾
             left: np.ndarray = None
-            new_line: list[_TextChar] = []
+            new_line: list[_VTextChar] = []
             eol = False
 
             # 用于将 new_line 添加到 new_lines 中，并重置状态
@@ -274,5 +264,34 @@ class Text(VGroup):
         if center:
             self.to_center()
         return self
+    
+class Text(_Text, VGroup):
+    '''
+    文字物件
+
+    - 文字的子物件 `text[i]` 是文字的每一行
+    - 每行的子物件 `line[i]` 是文字的每个字符
+
+    例如 `text[1][0]` 是第二行的首个字符
+
+    可以调用 `word_wrap()` 进行自动换行（拆行） 
+    '''
+    def __init__(
+        self, 
+        text: str, 
+        font: str | Iterable[str] = [],
+        font_size: float = DEFAULT_FONT_SIZE,
+        color: JAnimColor = WHITE,
+        opacity: float = 1.0,
+        stroke_width: Optional[float] = None,
+        **kwargs
+    ) -> None:
+        if stroke_width is None:
+            stroke_width = font_size / ORIG_FONT_SIZE * 0.0075
+
+        super().__init__(text, font, font_size, **kwargs)
+
+        self.set_color(color, opacity)
+        self.set_stroke_width(stroke_width)
 
 

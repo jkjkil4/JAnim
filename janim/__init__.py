@@ -19,6 +19,7 @@ from janim.items.geometry.arrow import *
 from janim.items.geometry.polygon import *
 from janim.items.img_item import *
 from janim.items.text.text import *
+from janim.items.text.pixel_text import *
 from janim.items.value_tracker import *
 
 from janim.utils.rate_functions import *

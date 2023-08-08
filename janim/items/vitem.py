@@ -51,6 +51,8 @@ class VItem(Item):
         self.stroke_behind_fill = stroke_behind_fill
         self.needs_new_stroke_width = True
 
+        self.needs_new_joint_info = True
+
         # 填充色数据
         self.fill_rgbas = np.array([1, 1, 1, 1], dtype=np.float32).reshape((1, 4))  # fill_rgbas 在所有操作中都会保持 dtype=np.float32，以便传入 shader
         self.needs_new_fill_rgbas = True
@@ -76,6 +78,7 @@ class VItem(Item):
         super().points_changed()
         self.needs_new_unit_normal = True
         self.needs_new_stroke_width = True
+        self.needs_new_joint_info = True
         self.needs_new_fill_rgbas = True
         self.needs_new_triangulation = True
     
@@ -322,6 +325,9 @@ class VItem(Item):
     #endregion
     
     def get_joint_info(self) -> np.ndarray:
+        if not self.needs_new_joint_info:
+            return self.joint_info
+        
         if self.points_count() < 3:
             return np.zeros((0, 3), np.float32)
         
@@ -356,6 +362,8 @@ class VItem(Item):
 
             offset = end
         
+        self.needs_new_joint_info = False
+        self.joint_info = joint_info
         return joint_info
     
     #endregion
