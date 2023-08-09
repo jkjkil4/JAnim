@@ -80,8 +80,7 @@ class _PixelTextChar(PixelImgItem):
         return get_norm(self.get_mark_advance() - self.get_mark_orig())
     
     def apply_act_list(self, act_list: list[Iterable[str]]) -> None:
-        color = _VTextChar.get_attr_from_act_list(act_list, 'c')
-        if color:
+        def method_color(color) -> None:
             arg_cnt = _VTextChar.check_act_arg_count(color, (1, 3, 4))
             if arg_cnt == 1:
                 _, color_key = color
@@ -94,10 +93,22 @@ class _PixelTextChar(PixelImgItem):
             else:   # == 4
                 self.set_rgbas([[float(val) for val in color[1:]]])
         
-        opacity = _VTextChar.get_attr_from_act_list(act_list, 'opacity')
-        if opacity:
+        def method_opacity(opacity) -> None:
             _VTextChar.check_act_arg_count(opacity, 1)
             self.set_opacity(float(opacity[1]))
+
+        methods = {
+            'c': method_color,
+            'opacity': method_opacity
+        }
+
+        for act in reversed(act_list):
+            method = methods.get(act[0])
+            if method:
+                del methods[act[0]]
+                method(act)
+            if len(methods) == 0:
+                break
 
 class _PixelTextLine(_TextLine):
     CharClass = _PixelTextChar

@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Iterable, Optional
+from typing import Iterable, Optional, Callable
 from janim.typing import Self
 
 import re
@@ -75,17 +75,9 @@ class _VTextChar(VItem):
                 return cnt
         args_cnt = ' or '.join(count)
         raise TypeError(f'{act[0]} takes {args_cnt} arguments but {len(act) - 1} was given')
-    
-    @staticmethod
-    def get_attr_from_act_list(act_list: list[Iterable[str]], key: str) -> Iterable[str] | None:
-        for act in reversed(act_list):
-            if act[0] == key:
-                return act
-        return None
-    
+
     def apply_act_list(self, act_list: list[Iterable[str]]) -> None:
-        color = self.get_attr_from_act_list(act_list, 'c')
-        if color:
+        def method_color(color) -> None:
             arg_cnt = self.check_act_arg_count(color, (1, 3, 4))
             if arg_cnt == 1:
                 _, color_key = color
@@ -98,10 +90,22 @@ class _VTextChar(VItem):
             else:   # == 4
                 self.set_rgbas([[float(val) for val in color[1:]]])
         
-        opacity = self.get_attr_from_act_list(act_list, 'opacity')
-        if opacity:
+        def method_opacity(opacity) -> None:
             self.check_act_arg_count(opacity, 1)
             self.set_opacity(float(opacity[1]))
+
+        methods = {
+            'c': method_color,
+            'opacity': method_opacity
+        }
+
+        for act in reversed(act_list):
+            method = methods.get(act[0])
+            if method:
+                del methods[act[0]]
+                method(act)
+            if len(methods) == 0:
+                break
 
 
 class _TextLine(Group):
@@ -358,7 +362,7 @@ class _Text(Group):
 
                 char.apply_act_list(act_stack)
                 text_at += 1
-                
+
             text_at += 1
     
 class Text(_Text, VGroup):
