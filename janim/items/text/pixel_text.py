@@ -1,5 +1,7 @@
 
 import math
+from typing import Iterable, Optional
+from janim.typing import Self
 
 from PySide6.QtGui import QMatrix4x4
 from PySide6.QtOpenGL import QOpenGLFramebufferObject
@@ -7,6 +9,7 @@ from PySide6.QtOpenGL import QOpenGLFramebufferObject
 from OpenGL.GL import GL_RGBA, glViewport
 
 from janim.constants import *
+from janim.constants import Iterable, JAnimColor
 from janim.items.img_item import PixelImgItem
 from janim.items.text.text import DEFAULT_FONT_SIZE, ORIG_FONT_SIZE, _VTextChar, _TextLine, _Text
 from janim.utils.font import Font
@@ -75,6 +78,26 @@ class _PixelTextChar(PixelImgItem):
     
     def get_advance_length(self) -> float:
         return get_norm(self.get_mark_advance() - self.get_mark_orig())
+    
+    def apply_act_list(self, act_list: list[Iterable[str]]) -> None:
+        color = _VTextChar.get_attr_from_act_list(act_list, 'c')
+        if color:
+            arg_cnt = _VTextChar.check_act_arg_count(color, (1, 3, 4))
+            if arg_cnt == 1:
+                _, color_key = color
+                import janim.constants.colors as colors
+                if not hasattr(colors, color_key):
+                    raise ValueError(f'no built-in color named {color_key}')
+                self.set_points_color(getattr(colors, color_key))
+            elif arg_cnt == 3:
+                self.set_points_color([float(val) for val in color[1:]])
+            else:   # == 4
+                self.set_rgbas([[float(val) for val in color[1:]]])
+        
+        opacity = _VTextChar.get_attr_from_act_list(act_list, 'opacity')
+        if opacity:
+            _VTextChar.check_act_arg_count(opacity, 1)
+            self.set_opacity(float(opacity[1]))
 
 class _PixelTextLine(_TextLine):
     CharClass = _PixelTextChar
@@ -89,9 +112,23 @@ class PixelText(_Text):
         font_size: float = DEFAULT_FONT_SIZE,
         color: JAnimColor = WHITE,
         opacity: float = 1.0,
-        stroke_width: float = None
+        stroke_width: float = None,
+        format: _Text.Format = _Text.Format.PlainText,
+        **kwargs
     ) -> None:
         if stroke_width is None:
             stroke_width = font_size / ORIG_FONT_SIZE * 0.0075
-        super().__init__(text, font, font_size, line_kwargs={ 'char_kwargs': { 'stroke_width': stroke_width } })
+        super().__init__(
+            text, 
+            font, 
+            font_size, 
+            format=format,
+            line_kwargs={ 'char_kwargs': { 'stroke_width': stroke_width } }, 
+            **kwargs
+        )
+
         self.set_points_color(color, opacity)
+
+        if format == _Text.Format.RichText:
+            self.apply_rich_text()
+

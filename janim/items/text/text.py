@@ -2,6 +2,8 @@ from __future__ import annotations
 from typing import Iterable, Optional
 from janim.typing import Self
 
+import re
+
 from janim.constants import *
 from janim.config import get_configuration
 from janim.items.item import Item, Group
@@ -62,6 +64,44 @@ class _VTextChar(VItem):
     
     def get_advance_length(self) -> float:
         return get_norm(self.get_mark_advance() - self.get_mark_orig())
+    
+    @staticmethod
+    def check_act_arg_count(act: Iterable[str], count: int | Iterable[int]) -> int:
+        if isinstance(count, int):
+            count = (count, )
+        
+        for cnt in count:
+            if len(act) == 1 + cnt:
+                return cnt
+        args_cnt = ' or '.join(count)
+        raise TypeError(f'{act[0]} takes {args_cnt} arguments but {len(act) - 1} was given')
+    
+    @staticmethod
+    def get_attr_from_act_list(act_list: list[Iterable[str]], key: str) -> Iterable[str] | None:
+        for act in reversed(act_list):
+            if act[0] == key:
+                return act
+        return None
+    
+    def apply_act_list(self, act_list: list[Iterable[str]]) -> None:
+        color = self.get_attr_from_act_list(act_list, 'c')
+        if color:
+            arg_cnt = self.check_act_arg_count(color, (1, 3, 4))
+            if arg_cnt == 1:
+                _, color_key = color
+                import janim.constants.colors as colors
+                if not hasattr(colors, color_key):
+                    raise ValueError(f'no built-in color named {color_key}')
+                self.set_color(getattr(colors, color_key))
+            elif arg_cnt == 3:
+                self.set_color([float(val) for val in color[1:]])
+            else:   # == 4
+                self.set_rgbas([[float(val) for val in color[1:]]])
+        
+        opacity = self.get_attr_from_act_list(act_list, 'opacity')
+        if opacity:
+            self.check_act_arg_count(opacity, 1)
+            self.set_opacity(float(opacity[1]))
 
 
 class _TextLine(Group):
@@ -119,16 +159,19 @@ class _VTextLine(_TextLine, VGroup):
 class _Text(Group):
     LineClass = _VTextLine
 
+    class Format(Enum):
+        PlainText = 0
+        RichText = 1
+
     def __init__(
         self, 
         text: str, 
         font: str | Iterable[str] = [],
         font_size: float = DEFAULT_FONT_SIZE,
+        format: Format = Format.PlainText,
         line_kwargs = {},
         **kwargs
     ) -> None:
-        self.text = text
-
         # 获取字体
         if isinstance(font, str):
             font = [font]
@@ -138,14 +181,42 @@ class _Text(Group):
             for name in font
         ]
 
+        if not format == _Text.Format.RichText:
+            self.text = text
+        else:
+            # 如果是 RichText，获取属性列表
+            self.text = ''
+            self.act_list: list[tuple[int, list[str, str] | str]] = []
+            idx = 0
+            iter = re.finditer(r'(<+)(/?[^<]*?)>', text, re.RegexFlag.MULTILINE)
+            for match in iter:
+                match: re.Match
+                start, end = match.span()
+                left, mid = match.group(1, 2)
+
+                self.text += text[idx:start]
+                idx = end
+
+                left_cnt = len(left)
+                self.text += '<' * (left_cnt // 2)
+                if left_cnt % 2 == 0:
+                    self.text += mid + '>'
+                else:
+                    self.act_list.append((
+                        len(self.text), 
+                        mid[1:] if mid.startswith('/') else mid.split()
+                    ))
+                    
+            self.text += text[idx:]
+
         super().__init__(
             *[
                 self.LineClass(line_text, fonts=fonts, font_size=font_size, **line_kwargs) 
-                for line_text in text.split('\n')
+                for line_text in self.text.split('\n')
             ],
             **kwargs
         )
-
+                            
         self.arrange_in_lines()
         self.to_center()
         
@@ -236,7 +307,7 @@ class _Text(Group):
         new_lines_items = []
         for orig_line, new_line, eol in new_lines:
             # 生成空 TextLine 物件，并复制原来行的位置标记
-            line = _TextLine('', [], DEFAULT_FONT_SIZE)
+            line = self.LineClass('', [], DEFAULT_FONT_SIZE)
             line.mark.set_points(orig_line.mark.get_points())
 
             # 如果该行为空，则直接添加
@@ -265,6 +336,31 @@ class _Text(Group):
             self.to_center()
         return self
     
+    def apply_rich_text(self) -> None:
+        text_at = 0
+        act_idx = 0
+        act_stack = []
+        for line in self:
+            for char in line:
+                while act_idx < len(self.act_list):
+                    next_act_at, next_act = self.act_list[act_idx]
+                    if text_at < next_act_at:
+                        break
+
+                    if not isinstance(next_act, str):
+                        act_stack.append(next_act)
+                    else:
+                        found = False
+                        while len(act_stack) > 0 and not found:
+                            found = act_stack[-1][0] == next_act
+                            act_stack.pop()
+                    act_idx += 1
+
+                char.apply_act_list(act_stack)
+                text_at += 1
+                
+            text_at += 1
+    
 class Text(_Text, VGroup):
     '''
     文字物件
@@ -284,14 +380,16 @@ class Text(_Text, VGroup):
         color: JAnimColor = WHITE,
         opacity: float = 1.0,
         stroke_width: Optional[float] = None,
+        format: _Text.Format = _Text.Format.PlainText,
         **kwargs
     ) -> None:
         if stroke_width is None:
             stroke_width = font_size / ORIG_FONT_SIZE * 0.0075
 
-        super().__init__(text, font, font_size, **kwargs)
+        super().__init__(text, font, font_size, format=format, **kwargs)
 
         self.set_color(color, opacity)
         self.set_stroke_width(stroke_width)
 
-
+        if format == _Text.Format.RichText:
+            self.apply_rich_text()
