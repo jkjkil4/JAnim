@@ -44,24 +44,14 @@ class VItem(Item):
 
         # 法向量
         self.unit_normal = OUT
-        self.needs_new_unit_normal = True
 
         # 轮廓线数据
         self.stroke_width = np.array([DEFAULT_STROKE_WIDTH], dtype=np.float32)   # stroke_width 在所有操作中都会保持 dtype=np.float32，以便传入 shader
         self.stroke_behind_fill = stroke_behind_fill
-        self.needs_new_stroke_width = True
-
-        self.needs_new_joint_info = True
 
         # 填充色数据
         self.fill_rgbas = np.array([1, 1, 1, 1], dtype=np.float32).reshape((1, 4))  # fill_rgbas 在所有操作中都会保持 dtype=np.float32，以便传入 shader
-        self.needs_new_fill_rgbas = True
-
         self.fill_rgbas_visible = True
-        self.needs_new_fill_rgbas_visible = True
-
-        # triangulation
-        self.needs_new_triangulation = True
 
         self.npdata_to_copy_and_interpolate.update((
             ('stroke_width', 'get_stroke_width', 'set_self_stroke_width'), 
@@ -76,14 +66,14 @@ class VItem(Item):
 
     def points_changed(self) -> None:
         super().points_changed()
-        self.needs_new_unit_normal = True
-        self.needs_new_stroke_width = True
-        self.needs_new_joint_info = True
-        self.needs_new_fill_rgbas = True
-        self.needs_new_triangulation = True
+        self.mark_flag(self.get_unit_normal)
+        self.mark_flag(self.get_stroke_width)
+        self.mark_flag(self.get_joint_info)
+        self.mark_flag(self.get_fill_rgbas)
+        self.mark_flag(self.get_triangulation)
     
     def fill_rgbas_changed(self) -> None:
-        self.needs_new_fill_rgbas_visible = True
+        self.mark_flag(self.get_fill_rgbas_visible)
         self.renderer.needs_update = True
     
     def stroke_width_changed(self) -> None:
@@ -301,10 +291,8 @@ class VItem(Item):
         ])
     
     def get_unit_normal(self) -> np.ndarray:
-        if not self.needs_new_unit_normal:
+        if not self.take_self_flag():
             return self.unit_normal
-        
-        self.needs_new_unit_normal = False
         
         if self.points_count() < 3:
             return OUT
@@ -325,7 +313,7 @@ class VItem(Item):
     #endregion
     
     def get_joint_info(self) -> np.ndarray:
-        if not self.needs_new_joint_info:
+        if not self.take_self_flag():
             return self.joint_info
         
         if self.points_count() < 3:
@@ -362,7 +350,6 @@ class VItem(Item):
 
             offset = end
         
-        self.needs_new_joint_info = False
         self.joint_info = joint_info
         return joint_info
     
@@ -434,9 +421,8 @@ class VItem(Item):
         return self.set_stroke_width(stroke_width, recurse=False)
     
     def get_stroke_width(self) -> np.ndarray:
-        if self.needs_new_stroke_width:
+        if self.take_self_flag():
             self.set_self_stroke_width(self.stroke_width)
-            self.needs_new_stroke_width = False
         return self.stroke_width
     
     def set_stroke_behind_fill(self, flag: bool = True) -> Self:
@@ -503,15 +489,13 @@ class VItem(Item):
         return self
 
     def get_fill_rgbas(self) -> np.ndarray:
-        if self.needs_new_fill_rgbas:
+        if self.take_self_flag():
             self.set_fill_rgbas(self.fill_rgbas)
-            self.needs_new_fill_rgbas = False
         return self.fill_rgbas
     
     def get_fill_rgbas_visible(self) -> bool:
-        if self.needs_new_fill_rgbas_visible:
+        if self.take_self_flag():
             self.fill_rgbas_visible = self.compute_fill_rgbas_visible()
-            self.needs_new_fill_rgbas_visible = False
         return self.fill_rgbas_visible
 
     def compute_fill_rgbas_visible(self) -> bool:
@@ -575,9 +559,8 @@ class VItem(Item):
         return tri_indices.astype('uint')
     
     def get_triangulation(self) -> np.ndarray:
-        if self.needs_new_triangulation:
+        if self.take_self_flag():
             self.triangulation = self.compute_triangulation()
-            self.needs_new_triangulation = False
         return self.triangulation
 
     #endregion

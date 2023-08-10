@@ -21,7 +21,6 @@ class DotCloud(Item):
 
         # 半径数据
         self.radii = np.array([self.radius], dtype=np.float32)  # radii 在所有操作中都会保持 dtype=np.float32，以便传入 shader
-        self.needs_new_radii = True
 
         self.npdata_to_copy_and_interpolate.update((
             ('radii', 'get_radii', 'set_radius'),
@@ -31,7 +30,7 @@ class DotCloud(Item):
 
     def points_count_changed(self) -> None:
         super().points_count_changed()
-        self.needs_new_radii = True
+        self.mark_flag(self.get_radii)
     
     def create_renderer(self):
         from janim.gl.render import DotCloudRenderer
@@ -51,9 +50,8 @@ class DotCloud(Item):
         return self
     
     def get_radii(self) -> np.ndarray:
-        if self.needs_new_radii:
+        if self.take_self_flag():
             self.set_radius(self.radii)
-            self.needs_new_radii = False
         return self.radii
     
     def get_radius(self) -> float:

@@ -32,42 +32,53 @@ class Item:
         from janim.scene.scene import Scene
         self.parent: Item | Scene = None
         self.items: list[Item] = []
-        self.needs_new_family = True
 
         # helper_items 仅被 apply_points_function 所影响
         # （也与 rotate、shift 等变换有关），不参与其它物件有关的操作
         # 比如可以向 helper_items 添加一个 Point，以跟踪变换前后的相对位置
         self.helper_items: list[Item] = []
-        self.needs_new_family_with_helpers = True
 
         # 点坐标数据
         self.points = np.zeros((0, 3), dtype=np.float32)    # points 在所有操作中都会保持 dtype=np.float32，以便传入 shader
-        self.needs_new_bbox = True
+        self.bbox = np.zeros((3, 3))
 
         # 颜色数据
         self.rgbas = np.array([1, 1, 1, 1], dtype=np.float32).reshape((1, 4))   # rgbas 在所有操作中都会保持 dtype=np.float32，以便传入 shader
-        self.needs_new_rgbas = True
-
         self.rgbas_visible = True
-        self.needs_new_rgbas_visible = True
-
-        # 边界箱
-        self.bbox = np.zeros((3, 3))
-        self.needs_new_bbox = True
 
         # 其它
+        self.flags: dict[str, bool] = {}    # see `.set_flag`
+        self.targets: dict[str, Item] = {}  # see `.generate_target`
+        self.updaters: list[Updater] = []   # see `.add_updaters`
         self.renderer = self.create_renderer()
         self.npdata_to_copy_and_interpolate: set[tuple[str, str, str]] = set((
             ('points', 'get_points', 'set_points'), 
             ('rgbas', 'get_rgbas', 'set_rgbas')
         ))
-        self.targets: dict[str, Item] = {}  # see `.generate_target`
-        self.updaters: list[Updater] = []   # see `.add_updaters`
 
         # 默认值
         self.set_points_color(color, opacity)
 
     #region 响应
+
+    @staticmethod
+    def mark_flag(func: Callable, key: str = '') -> None:
+        func.__self__.flags[f'{func.__name__}_{key}'] = True
+
+    @staticmethod
+    def take_flag(func: Callable, key: str = '') -> bool:
+        key = f'{func.__name__}_{key}'
+        flags = func.__self__.flags
+        res = flags.get(key, True)
+        flags[key] = False
+        return res
+    
+    def take_self_flag(self, key: str = '') -> bool:
+        name = inspect.currentframe().f_back.f_code.co_name
+        key = f'{name}_{key}'
+        res = self.flags.get(key, True)
+        self.flags[key] = False
+        return res
 
     def items_changed(self) -> None:
         self.mark_needs_new_family()
@@ -77,14 +88,14 @@ class Item:
         self.mark_needs_new_family_with_helpers()
 
     def points_count_changed(self) -> None:
-        self.needs_new_rgbas = True
+        self.mark_flag(self.get_rgbas)
     
     def points_changed(self) -> None:
         self.mark_needs_new_bbox()
         self.renderer.needs_update = True
     
     def rgbas_changed(self) -> None:
-        self.needs_new_rgbas_visible = True
+        self.mark_flag(self.get_rgbas_visible)
         self.renderer.needs_update = True
     
     #endregion
@@ -151,17 +162,17 @@ class Item:
         return self
     
     def mark_needs_new_family(self) -> None:
-        self.needs_new_family = True
+        self.mark_flag(self.get_family)
         if self.parent is not None and isinstance(self.parent, Item):
             self.parent.mark_needs_new_family()
 
     def mark_needs_new_family_with_helpers(self) -> None:
-        self.needs_new_family_with_helpers = True
+        self.mark_flag(self.get_family_with_helpers)
         if self.parent is not None and isinstance(self.parent, Item):
             self.parent.mark_needs_new_family_with_helpers()
     
     def get_family(self) -> list[Item]:
-        if self.needs_new_family:
+        if self.take_self_flag():
             sub_families = (item.get_family() for item in self.items)
             self.family = [self, *it.chain(*sub_families)]
         return self.family
@@ -170,7 +181,7 @@ class Item:
         return [m for m in self.get_family() if m.has_points()]
     
     def get_family_with_helpers(self) -> list[Item]:
-        if self.needs_new_family_with_helpers:
+        if self.take_self_flag():
             sub_families = (
                 item.get_family_with_helpers() 
                 for item in it.chain(self.items, self.helper_items)
@@ -222,7 +233,8 @@ class Item:
         for key, getter, setter in self.npdata_to_copy_and_interpolate:
             setattr(copy_item, key, getattr(self, key).copy())
 
-        # render
+        # other
+        copy_item.flags = {}
         copy_item.renderer = copy_item.create_renderer()
 
         return copy_item
@@ -488,111 +500,15 @@ class Item:
 
     #endregion
 
-    #region 颜色数据
-
-    @staticmethod
-    def format_color(color: JAnimColor | Iterable[JAnimColor] | None) -> Iterable | None:
-        if color is None:
-            return None
-        if isinstance(color, str):
-            color = [hex_to_rgb(color)]
-        elif isinstance(color, Iterable) and not any(isinstance(v, Iterable) for v in color):
-            color = [color]
-        else:
-            color = [
-                hex_to_rgb(c) 
-                if isinstance(c, str) else c 
-                for c in color
-            ]
-
-        return color
-    
-    @staticmethod
-    def format_opacity(opacity: float | Iterable[float] | None) -> Iterable | None:
-        if opacity is None:
-            return None
-        if not isinstance(opacity, Iterable):
-            opacity = [opacity]
-        return opacity
-
-    def set_rgbas(self, rgbas: Iterable[Iterable[float, float, float, float]]) -> Self:
-        rgbas = np.array(rgbas, dtype=np.float32)
-        assert(rgbas.ndim == 2)
-        assert(rgbas.shape[1] == 4)
-        
-        rgbas = resize_array(rgbas, max(1, self.points_count()))
-        if len(rgbas) == len(self.rgbas):
-            self.rgbas[:] = rgbas
-        else:
-            self.rgbas = rgbas
-        self.rgbas_changed()
-        return self
-    
-    def set_points_color(
-        self, 
-        color: Optional[JAnimColor | Iterable[JAnimColor]] = None, 
-        opacity: Optional[float | Iterable[float]] = None,
-        recurse: bool = True,
-    ) -> Self:
-        color, opacity = self.format_color(color), self.format_opacity(opacity)
-
-        if recurse:
-            for item in self:
-                item.set_points_color(color, opacity)
-
-        if color is None:
-            color = self.get_rgbas()[:, :3]
-        if opacity is None:
-            opacity = self.get_rgbas()[:, 3]
-
-        color = resize_array(np.array(color), max(1, self.points_count()))
-        opacity = resize_array(np.array(opacity), max(1, self.points_count()))
-        self.set_rgbas(
-            np.hstack((
-                color, 
-                opacity.reshape((len(opacity), 1))
-            ))
-        )
-
-        return self
-
-    def get_rgbas(self) -> np.ndarray:
-        if self.needs_new_rgbas:
-            self.set_rgbas(self.rgbas)
-            self.needs_new_rgbas = False
-        return self.rgbas
-    
-    def set_opacity(self, opacity: float, recurse: bool = True) -> Self:
-        self.set_points_color(opacity=opacity)
-        if recurse:
-            for item in self.items:
-                item.set_opacity(opacity)
-        return self
-    
-    def is_transparent(self) -> bool:
-        data = self.get_rgbas()[:, 3]
-        return np.any((0 < data) & (data < 1))
-
-    def get_rgbas_visible(self) -> bool:
-        if self.needs_new_rgbas_visible:
-            self.rgbas_visible = self.compute_rgbas_visible()
-            self.needs_new_rgbas_visible = False
-        return self.rgbas_visible
-    
-    def compute_rgbas_visible(self) -> bool:
-        return np.any(self.get_rgbas()[:, 3] > 0)
-
-    #endregion
-
     #region 边界箱 bounding_box
 
     def mark_needs_new_bbox(self) -> None:
-        self.needs_new_bbox = True
+        self.mark_flag(self.get_bbox)
         if self.parent is not None and isinstance(self.parent, Item):
             self.parent.mark_needs_new_bbox()
     
     def get_bbox(self) -> np.ndarray:
-        if self.needs_new_bbox:
+        if self.take_self_flag():
             self.bbox = self.compute_bbox()
         return self.bbox
         
@@ -678,6 +594,100 @@ class Item:
 
     def get_z(self, direction=ORIGIN) -> float:
         return self.get_coord(2, direction)
+
+    #endregion
+
+    #region 颜色数据
+
+    @staticmethod
+    def format_color(color: JAnimColor | Iterable[JAnimColor] | None) -> Iterable | None:
+        if color is None:
+            return None
+        if isinstance(color, str):
+            color = [hex_to_rgb(color)]
+        elif isinstance(color, Iterable) and not any(isinstance(v, Iterable) for v in color):
+            color = [color]
+        else:
+            color = [
+                hex_to_rgb(c) 
+                if isinstance(c, str) else c 
+                for c in color
+            ]
+
+        return color
+    
+    @staticmethod
+    def format_opacity(opacity: float | Iterable[float] | None) -> Iterable | None:
+        if opacity is None:
+            return None
+        if not isinstance(opacity, Iterable):
+            opacity = [opacity]
+        return opacity
+
+    def set_rgbas(self, rgbas: Iterable[Iterable[float, float, float, float]]) -> Self:
+        rgbas = np.array(rgbas, dtype=np.float32)
+        assert(rgbas.ndim == 2)
+        assert(rgbas.shape[1] == 4)
+        
+        rgbas = resize_array(rgbas, max(1, self.points_count()))
+        if len(rgbas) == len(self.rgbas):
+            self.rgbas[:] = rgbas
+        else:
+            self.rgbas = rgbas
+        self.rgbas_changed()
+        return self
+    
+    def set_points_color(
+        self, 
+        color: Optional[JAnimColor | Iterable[JAnimColor]] = None, 
+        opacity: Optional[float | Iterable[float]] = None,
+        recurse: bool = True,
+    ) -> Self:
+        color, opacity = self.format_color(color), self.format_opacity(opacity)
+
+        if recurse:
+            for item in self:
+                item.set_points_color(color, opacity)
+
+        if color is None:
+            color = self.get_rgbas()[:, :3]
+        if opacity is None:
+            opacity = self.get_rgbas()[:, 3]
+
+        color = resize_array(np.array(color), max(1, self.points_count()))
+        opacity = resize_array(np.array(opacity), max(1, self.points_count()))
+        self.set_rgbas(
+            np.hstack((
+                color, 
+                opacity.reshape((len(opacity), 1))
+            ))
+        )
+
+        return self
+
+    def get_rgbas(self) -> np.ndarray:
+        if self.take_self_flag():
+            self.set_rgbas(self.rgbas)
+        return self.rgbas
+    
+    def set_opacity(self, opacity: float, recurse: bool = True) -> Self:
+        self.set_points_color(opacity=opacity)
+        if recurse:
+            for item in self.items:
+                item.set_opacity(opacity)
+        return self
+    
+    def is_transparent(self) -> bool:
+        data = self.get_rgbas()[:, 3]
+        return np.any((0 < data) & (data < 1))
+
+    def get_rgbas_visible(self) -> bool:
+        if self.take_self_flag():
+            self.rgbas_visible = self.compute_rgbas_visible()
+        return self.rgbas_visible
+    
+    def compute_rgbas_visible(self) -> bool:
+        return np.any(self.get_rgbas()[:, 3] > 0)
 
     #endregion
 
