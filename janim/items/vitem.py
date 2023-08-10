@@ -67,16 +67,24 @@ class VItem(Item):
     def points_changed(self) -> None:
         super().points_changed()
         self.mark_flag(self.get_unit_normal)
-        self.mark_flag(self.get_stroke_width)
         self.mark_flag(self.get_joint_info)
-        self.mark_flag(self.get_fill_rgbas)
         self.mark_flag(self.get_triangulation)
+
+        self.mark_flag(self.get_joint_info, 'render')
+        self.mark_flag(self.get_triangulation, 'render')
+    
+    def points_count_changed(self) -> None:
+        super().points_count_changed()
+        self.mark_flag(self.get_stroke_width)
+        self.mark_flag(self.get_fill_rgbas)
     
     def fill_rgbas_changed(self) -> None:
         self.mark_flag(self.get_fill_rgbas_visible)
+        self.mark_flag(self.get_fill_rgbas, 'render')
         self.renderer.needs_update = True
     
     def stroke_width_changed(self) -> None:
+        self.mark_flag(self.get_stroke_width, 'render')
         self.renderer.needs_update = True
 
     #endregion

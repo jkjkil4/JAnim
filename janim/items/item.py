@@ -92,10 +92,12 @@ class Item:
     
     def points_changed(self) -> None:
         self.mark_needs_new_bbox()
+        self.mark_flag(self.get_points, 'render')
         self.renderer.needs_update = True
     
     def rgbas_changed(self) -> None:
         self.mark_flag(self.get_rgbas_visible)
+        self.mark_flag(self.get_rgbas, 'render')
         self.renderer.needs_update = True
     
     #endregion

@@ -174,11 +174,12 @@ class Scene:
 
         try:
             self.construct()
-            self.scene_writer.finish()
         except EndSceneEarlyException:
             pass
         except:
             traceback.print_exc()
+            
+        self.scene_writer.finish()
 
         if not self.write_to_file and not self.scene_writer.is_closed:
             app.exec()

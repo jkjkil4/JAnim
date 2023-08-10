@@ -31,6 +31,9 @@ class DotCloud(Item):
     def points_count_changed(self) -> None:
         super().points_count_changed()
         self.mark_flag(self.get_radii)
+
+    def radii_changed(self) -> None:
+        self.mark_flag(self.get_radii, 'render')
     
     def create_renderer(self):
         from janim.gl.render import DotCloudRenderer
@@ -47,6 +50,7 @@ class DotCloud(Item):
             self.radii[:] = radius
         else:
             self.radii = radius
+        self.radii_changed()
         return self
     
     def get_radii(self) -> np.ndarray:

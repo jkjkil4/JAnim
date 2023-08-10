@@ -10,6 +10,7 @@ from PySide6.QtOpenGL import QOpenGLShaderProgram, QOpenGLShader
 from OpenGL.GL import *
 
 from janim.constants import *
+from janim.items.item import Item
 from janim.items.dot_cloud import DotCloud
 from janim.items.vitem import VItem
 from janim.items.img_item import ImgItem
@@ -151,6 +152,12 @@ class Renderer:
         else:
             self.vertex_arrays_to_delete.append(arrays)
         return arrays
+    
+    @staticmethod
+    def set_data_if_needs(vbo: Buffer, func: Callable) -> None:
+        data = func()
+        if Item.take_flag(func, 'render'):
+            vbo.set_data(data)
 
     def __del__(self) -> None:
         try:
@@ -169,7 +176,6 @@ class Buffer:
         dsize = FLOAT_SIZE
     ) -> None:
         self.buffer = glGenBuffers(1)
-        # self.needs_update = True
         self.unit_len = unit_len
         self.buffer_type = buffer_type
         self.dtype = dtype
@@ -187,15 +193,11 @@ class Buffer:
         glEnableVertexAttribArray(index)
         glBindBuffer(self.buffer_type, 0)
 
-    def set_data(self, data: np.ndarray) -> None:   # TODO: set_data_if_needs
-        # if not self.needs_update:
-        #     return
+    def set_data(self, data: np.ndarray) -> None:
         data_size = data.size * self.dsize
         glBindBuffer(self.buffer_type, self.buffer)
         glBufferData(self.buffer_type, data_size, data, GL_STATIC_DRAW)
         glBindBuffer(self.buffer_type, 0)
-
-        # self.needs_update = False
 
 
 class DotCloudRenderer(Renderer):
@@ -217,9 +219,9 @@ class DotCloudRenderer(Renderer):
         glBindVertexArray(0)
     
     def update(self, item: DotCloud) -> None:
-        self.vbo_points.set_data(item.get_points())
-        self.vbo_rgbas.set_data(item.get_rgbas())
-        self.vbo_radii.set_data(item.get_radii())
+        self.set_data_if_needs(self.vbo_points, item.get_points)
+        self.set_data_if_needs(self.vbo_rgbas, item.get_rgbas)
+        self.set_data_if_needs(self.vbo_radii, item.get_radii)
     
     def render(self, item: DotCloud, data: RenderData) -> None:
         self.shader.bind()
@@ -270,21 +272,21 @@ class VItemRenderer(Renderer):
     def update_stroke(self, item: VItem) -> None:
         if not item.get_rgbas_visible():
             return
-        self.vbo_stroke_rgbas.set_data(item.get_rgbas())
-        self.vbo_stroke_width.set_data(item.get_stroke_width())
-        self.vbo_joint_info.set_data(item.get_joint_info())
+        self.set_data_if_needs(self.vbo_stroke_rgbas, item.get_rgbas)
+        self.set_data_if_needs(self.vbo_stroke_width, item.get_stroke_width)
+        self.set_data_if_needs(self.vbo_joint_info, item.get_joint_info)
 
     def update_fill(self, item: VItem) -> None:
         if not item.get_fill_rgbas_visible():
             return
-        self.vbo_fill_rgbas.set_data(item.get_fill_rgbas())
-        self.ebo_fill_triangulation.set_data(item.get_triangulation())
+        self.set_data_if_needs(self.vbo_fill_rgbas, item.get_fill_rgbas)
+        self.set_data_if_needs(self.ebo_fill_triangulation, item.get_triangulation)
 
     def update(self, item: VItem) -> None:
         if item.points_count() < 3:
             return
         
-        self.vbo_points.set_data(item.get_points())
+        self.set_data_if_needs(self.vbo_points, item.get_points)
 
         self.update_stroke(item)
         self.update_fill(item)
@@ -369,8 +371,8 @@ class ImgItemRenderer(Renderer):
         glBindVertexArray(0)
 
     def update(self, item: ImgItem) -> None:
-        self.vbo_points.set_data(item.get_points())
-        self.vbo_rgbas.set_data(item.get_rgbas())
+        self.set_data_if_needs(self.vbo_points, item.get_points)
+        self.set_data_if_needs(self.vbo_rgbas, item.get_rgbas)
 
     def render(self, item: ImgItem, data: RenderData) -> None:
         glActiveTexture(GL_TEXTURE0)
