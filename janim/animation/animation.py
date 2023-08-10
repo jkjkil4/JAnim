@@ -5,6 +5,7 @@ from enum import Enum
 
 from janim.constants import *
 from janim.items.item import Item
+from janim.items.vitem import VItem
 from janim.utils.rate_functions import smooth
 from janim.utils.simple_functions import clip
 
@@ -178,6 +179,16 @@ class ItemAnimation(Animation, metaclass=ABCMeta):
                 for key, getter, setter in subitem1.npdata_to_copy_and_interpolate & subitem2.npdata_to_copy_and_interpolate
                 if not np.all(getattr(subitem1, key) == getattr(subitem2, key))
             ]
+            for subitem1, subitem2 in zip(item1.get_family(), item2.get_family())
+        ]
+
+    @staticmethod
+    def compute_triangulation_equals(item1: Item, item2: Item) -> list[bool]:
+        return [
+                isinstance(subitem1, VItem) 
+            and isinstance(subitem2, VItem) 
+            and len(subitem1.get_triangulation()) == len(subitem2.get_triangulation())
+            and np.all(subitem1.get_triangulation() == subitem2.get_triangulation())
             for subitem1, subitem2 in zip(item1.get_family(), item2.get_family())
         ]
     

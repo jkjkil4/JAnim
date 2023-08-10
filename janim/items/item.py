@@ -62,8 +62,12 @@ class Item:
     #region 响应
 
     @staticmethod
-    def mark_flag(func: Callable, key: str = '') -> None:
-        func.__self__.flags[f'{func.__name__}_{key}'] = True
+    def mark_flag(func: Callable, key: str = '', flag: bool = True) -> None:
+        func.__self__.flags[f'{func.__name__}_{key}'] = flag
+    
+    @staticmethod
+    def check_flag(func: Callable, key: str = '') -> bool:
+        return func.__self__.flags.get(key, True)
 
     @staticmethod
     def take_flag(func: Callable, key: str = '') -> bool:
@@ -104,7 +108,7 @@ class Item:
 
     #region 物件包含关系
 
-    def add(self, *items: Item, is_helper: bool = False) -> Self:
+    def add(self, *items: Item, inhert_visible: bool = True, is_helper: bool = False) -> Self:
         target = self.helper_items if is_helper else self.items
 
         for item in items:                  # 遍历要追加的每个物件
@@ -114,6 +118,9 @@ class Item:
                 item.parent.remove(item)
             target.append(item)                 # 设置当前物件的父物件
             item.parent = self
+
+            if inhert_visible and self.visible:
+                item.set_visible(True)
 
         if is_helper:
             self.helper_items_changed()

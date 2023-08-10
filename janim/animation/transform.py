@@ -56,7 +56,8 @@ class Transform(ItemAnimation):
         return (
             self.item_copy.get_family(), 
             self.target_copy.get_family(),
-            ItemAnimation.compute_npdata_to_copy_and_interpolate(self.item_copy, self.target_copy)
+            ItemAnimation.compute_npdata_to_copy_and_interpolate(self.item_copy, self.target_copy),
+            ItemAnimation.compute_triangulation_equals(self.item, self.target_item)
         )
     
     def is_null_item(self, item: Item, interpolate_data: tuple) -> bool:
@@ -71,8 +72,10 @@ class Transform(ItemAnimation):
         super().begin()
     
     def interpolate_subitem(self, item: Item, interpolate_data: tuple, alpha: float) -> None:
-        item1, item2, npdata_to_copy_and_interpolate = interpolate_data
+        item1, item2, npdata_to_copy_and_interpolate, tri_equals = interpolate_data
         item.interpolate(item1, item2, alpha, self.path_func, npdata_to_copy_and_interpolate)
+        if tri_equals:
+            item.mark_flag(item.get_triangulation, flag=False)
 
 class ReplacementTransform(Transform):
     def __init__(
