@@ -1,6 +1,7 @@
 from __future__ import annotations
 from typing import Iterable, Callable, Optional
 from janim.typing import Self
+
 import itertools as it
 import numpy as np
 import sys
@@ -1196,9 +1197,13 @@ class NoRelGroup(Group):
             self.items_changed()
         return self
     
+    # 由于子物件没有设定自己为 `parent`，因此原先的一些调用无法正确响应
+    # 因此需每次重新计算：
+    #   get_family
+    #   get_family_with_helpers
+    #   get_bbox
+    
     def get_family(self) -> list[Item]:
-        # 由于子物件没有设定自己为 `parent`，因此原先的 `needs_new_family` 无法正确响应
-        # 因此需每次重新计算，`get_family_with_helpers` 同理
         sub_families = (item.get_family() for item in self.items)
         self.family = [self, *it.chain(*sub_families)]
         return self.family
@@ -1210,3 +1215,9 @@ class NoRelGroup(Group):
         )
         self.family_with_helpers = [self, *it.chain(*sub_families)]
         return self.family_with_helpers
+    
+    def get_bbox(self) -> np.ndarray:
+        self.bbox = self.compute_bbox()
+        return self.bbox
+    
+
