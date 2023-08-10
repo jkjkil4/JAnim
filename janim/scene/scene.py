@@ -14,7 +14,7 @@ from PySide6.QtGui import (
 
 from janim.constants import *
 from janim.scene.loop_helper import LoopHelper
-from janim.items.item import Item, UpdaterFn, Updater, NonParentGroup
+from janim.items.item import Item, UpdaterFn, Updater, NoRelGroup
 from janim.utils.space_ops import get_unit_normal, get_norm
 from janim.utils.functions import get_proportional_scale_size
 from janim.config import get_cli, get_configuration
@@ -61,9 +61,9 @@ class Scene:
 
     #region 基本结构
 
-    def __getitem__(self, value) -> Item | NonParentGroup:
+    def __getitem__(self, value) -> Item | NoRelGroup:
         if isinstance(value, slice):
-            return NonParentGroup(*self.items[value])
+            return NoRelGroup(*self.items[value])
         return self.items[value]
 
     def __iter__(self):
@@ -72,7 +72,7 @@ class Scene:
     def __len__(self):
         return len(self.items)
 
-    def add(self, *items: Item) -> Self:
+    def add(self, *items: Item, make_visible: bool = True) -> Self:
         for item in items:
             if item in self:
                 continue
@@ -80,6 +80,10 @@ class Scene:
                 item.parent.remove(item)
             self.items.append(item)
             item.parent = self
+
+            if make_visible:
+                item.set_visible(True)
+        
         return self
     
     def add_to_front(self, item: Item) -> Self:
@@ -115,12 +119,6 @@ class Scene:
     def clear(self) -> Self:
         self.remove(*self.items)
         return self
-    
-    def mark_needs_new_family(self) -> None:
-        pass
-
-    def mark_needs_new_family_with_helpers(self) -> None:
-        pass
     
     def get_family(self) -> list[Item]:
         return list(it.chain(*(item.get_family() for item in self.items)))
@@ -167,7 +165,10 @@ class Scene:
         else:
             from janim.gui.MainWindow import MainWindow
             self.scene_writer = MainWindow(self)
-            self.scene_writer.show()
+            if get_cli().full_screen:
+                self.scene_writer.showMaximized()
+            else:
+                self.scene_writer.showNormal()
 
         self.loop_helper = LoopHelper(self.frame_rate)
 

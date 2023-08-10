@@ -25,8 +25,11 @@ class Item:
         color: JAnimColor = WHITE,
         opacity: float = 1.0,
     ) -> None:
+        self.visible = False
+
         # 基本结构
-        self.parent: Item = None
+        from janim.scene.scene import Scene
+        self.parent: Item | Scene = None
         self.items: list[Item] = []
         self.needs_new_family = True
 
@@ -76,7 +79,7 @@ class Item:
         self.needs_new_rgbas = True
     
     def points_changed(self) -> None:
-        self.needs_new_bbox = True
+        self.mark_needs_new_bbox()
         self.renderer.needs_update = True
     
     def rgbas_changed(self) -> None:
@@ -148,12 +151,12 @@ class Item:
     
     def mark_needs_new_family(self) -> None:
         self.needs_new_family = True
-        if self.parent:
+        if self.parent is not None and isinstance(self.parent, Item):
             self.parent.mark_needs_new_family()
 
     def mark_needs_new_family_with_helpers(self) -> None:
         self.needs_new_family_with_helpers = True
-        if self.parent:
+        if self.parent is not None and isinstance(self.parent, Item):
             self.parent.mark_needs_new_family_with_helpers()
     
     def get_family(self) -> list[Item]:
@@ -184,9 +187,9 @@ class Item:
 
     #region 基本操作
 
-    def __getitem__(self, value) -> Item | NonParentGroup:
+    def __getitem__(self, value) -> Item | NoRelGroup:
         if isinstance(value, slice):
-            return NonParentGroup(*self.items[value])
+            return NoRelGroup(*self.items[value])
         return self.items[value]
 
     def __iter__(self):
@@ -222,6 +225,19 @@ class Item:
         copy_item.renderer = copy_item.create_renderer()
 
         return copy_item
+    
+    def set_visible(
+        self, 
+        visible, 
+        recurse_up: bool = False, 
+        recurse_down: bool = True
+    ) -> Self:
+        self.visible = visible
+        if recurse_up and self.parent is not None and isinstance(self.parent, Item):
+            self.parent.set_visible(visible, True, False)
+        if recurse_down:
+            for item in self.items:
+                item.set_visible(visible, False, True)
 
     def generate_target(self, key: str = '') -> Self:
         target = self.copy()
@@ -336,7 +352,7 @@ class Item:
         h_buff, v_buff = Item.format_buff(buff, h_buff, v_buff, by_center_point)
 
         x_unit, y_unit = h_buff, v_buff
-        flatten = NonParentGroup(*[item for item in list(it.chain(*items_array)) if item is not None])
+        flatten = NoRelGroup(*[item for item in list(it.chain(*items_array)) if item is not None])
         if not by_center_point:
             x_unit += max([item.get_width() for item in flatten])
             y_unit += max([item.get_height() for item in flatten])
@@ -545,8 +561,11 @@ class Item:
             self.needs_new_rgbas = False
         return self.rgbas
     
-    def set_opacity(self, opacity: float) -> Self:
+    def set_opacity(self, opacity: float, recurse: bool = True) -> Self:
         self.set_points_color(opacity=opacity)
+        if recurse:
+            for item in self.items:
+                item.set_opacity(opacity)
         return self
     
     def is_transparent(self) -> bool:
@@ -565,6 +584,11 @@ class Item:
     #endregion
 
     #region 边界箱 bounding_box
+
+    def mark_needs_new_bbox(self) -> None:
+        self.needs_new_bbox = True
+        if self.parent is not None and isinstance(self.parent, Item):
+            self.parent.mark_needs_new_bbox()
     
     def get_bbox(self) -> np.ndarray:
         if self.needs_new_bbox:
@@ -1058,7 +1082,7 @@ class Item:
         return Renderer()
 
     def render(self, data) -> None:
-        if not self.renderer:
+        if not self.renderer or not self.visible:
             return
         
         self.renderer.prepare(self)
@@ -1139,7 +1163,7 @@ class Group(Item):
         super().__init__(**kwargs)
         self.add(*items)
 
-class NonParentGroup(Group):
+class NoRelGroup(Group):
     '''
     除了子物件不会将自己标记为 `parent` 外，其余功能与 `Group` 相同
     '''

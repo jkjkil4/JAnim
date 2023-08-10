@@ -5,7 +5,7 @@ import numpy as np
 import math
 
 from janim.constants import *
-from janim.items.item import Item, NonParentGroup
+from janim.items.item import Item, NoRelGroup
 from janim.utils.iterables import resize_with_interpolation, resize_array
 from janim.utils.space_ops import (
     get_norm, get_unit_normal,
@@ -886,11 +886,11 @@ class VGroup(VItem):
         super().__init__(**kwargs)
         self.add(*items)
     
-    def __getitem__(self, value) -> VItem | NonParentVGroup:
+    def __getitem__(self, value) -> VItem | NoRelVGroup:
         if isinstance(value, slice):
-            return NonParentVGroup(*self.items[value])
+            return NoRelVGroup(*self.items[value])
         return self.items[value]
 
-class NonParentVGroup(NonParentGroup, VGroup):
+class NoRelVGroup(NoRelGroup, VGroup):
     pass
 

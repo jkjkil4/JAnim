@@ -12,16 +12,20 @@ from janim.scene.scene import Scene
 class MainWindow(GLWidget):
     def __init__(self, scene: Scene, parent: Optional[QWidget] = None) -> None:
         super().__init__(scene, parent)
+        self.glwidget = self
         self.is_closed = False
 
     def closeEvent(self, event: QCloseEvent) -> None:
         self.is_closed = True
-        self.scene.loop_helper.event_loop.quit()
+        self.glwidget.scene.loop_helper.event_loop.quit()
         Texture.release_all()
         ShaderProgram.release_all()
         super().closeEvent(event)
 
     def emit_frame(self) -> None:
+        pass
+
+    def finish(self) -> None:
         pass
 
     

@@ -72,6 +72,11 @@ def get_cli() -> argparse.Namespace:
             help="Background color",
         )
         parser.add_argument(
+            "-f", "--full_screen",
+            action="store_true",
+            help="Show window in full screen",
+        )
+        parser.add_argument(
             "--config_file",
             help="Path to the custom configuration file",
         )

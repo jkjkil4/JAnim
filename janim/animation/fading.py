@@ -33,3 +33,8 @@ class FadeOut(Fade):
         if self.scale_factor != 1.0:
             self.target_copy.scale(self.scale_factor)
         super().begin()
+    
+    def finish(self) -> None:
+        super().finish()
+        self.item_for_anim.become(self.item_copy)
+        self.item_for_anim.set_visible(False)
