@@ -4,10 +4,11 @@ from PySide6.QtGui import QCloseEvent
 from PySide6.QtWidgets import QWidget, QMainWindow
 
 from janim.gui.GLWidget import GLWidget
+from janim.scene.scene import Scene
+
 from janim.gl.texture import Texture
 from janim.gl.render import ShaderProgram
 
-from janim.scene.scene import Scene
 
 class MainWindow(GLWidget):
     def __init__(self, scene: Scene, parent: Optional[QWidget] = None) -> None:
@@ -27,5 +28,5 @@ class MainWindow(GLWidget):
 
     def finish(self) -> None:
         pass
-
+        
     

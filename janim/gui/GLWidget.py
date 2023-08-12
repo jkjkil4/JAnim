@@ -14,9 +14,12 @@ from janim.scene.scene import Scene, EndSceneEarlyException
 from janim.utils.space_ops import normalize
 from janim.utils.color import hex_to_rgb
 
+from janim.logger import log
+
 
 class GLWidget(QOpenGLWidget):
     frame_rate = 60
+
     pan_sensitivity = 0.3
     move_sensitivity = 0.02
 
@@ -67,6 +70,61 @@ class GLWidget(QOpenGLWidget):
         super().resizeGL(w, h)
         glViewport(0, 0, w, h)
         self.scene.camera.wnd_shape = (w, h)
+
+    #endregion
+
+    #region socket
+
+    def enableSocket(self) -> None:
+        from PySide6.QtNetwork import QUdpSocket
+
+        self.socket = QUdpSocket()
+        self.socket.bind()
+
+        self.stored_states = 0
+
+        log.info(f'调试端口已在 {self.socket.localPort()} 开启')
+
+        self.socket.readyRead.connect(self.onReadyRead)
+
+    def onReadyRead(self) -> None:
+        import json
+
+        while self.socket.hasPendingDatagrams():
+            datagram = self.socket.receiveDatagram()
+            try:
+                tree = json.loads(datagram.data().toStdString())
+                assert('janim' in tree)
+                
+                janim = tree['janim']
+                type = janim['type']
+                if type == 'exec_code':
+                    self.scene.save_state(f'_d_{self.stored_states}')
+                    self.stored_states += 1
+
+                    lines = janim['data'].splitlines()
+                    indent = 0
+                    for line in lines:
+                        line_indent = 0
+                        for char in line:
+                            if char not in '\t ':
+                                break
+                            line_indent += 1
+
+                        indent = line_indent if indent == 0 else min(indent, line_indent)
+
+                    self.scene.execute('\n'.join(line[indent:] for line in lines))
+
+                elif type == 'undo_code':
+                    if self.stored_states > 0:
+                        self.stored_states -= 1
+                        self.scene.restore(f'_d_{self.stored_states}')
+                        log.info(f'已撤销代码')
+                    else:
+                        log.info('已回到初始状态，无法再撤销')
+            except:
+                traceback.print_exc()
+                pass
 
     #endregion
 

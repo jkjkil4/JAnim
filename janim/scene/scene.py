@@ -268,6 +268,18 @@ class Scene:
                 self.updaters.remove(updater)
                 break
         return self
+    
+    def embed(self) -> None:
+        if self.write_to_file:
+            return
+        
+        self.embed_locals = inspect.currentframe().f_back.f_locals        
+        self.scene_writer.enableSocket()
+        raise EndSceneEarlyException()
+    
+    def execute(self, code: str) -> None:
+        print(code)
+        exec(code, self.embed_locals)
 
     #endregion
 
