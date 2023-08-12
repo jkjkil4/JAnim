@@ -130,7 +130,8 @@ class Scene:
     def save_state(self, key: str = '') -> Self:
         self.saved_state[key] = {
             'items': self.items[:],
-            'item_states': [item.copy() for item in self.items]
+            'item_states': [item.copy() for item in self.items],
+            'camera': self.camera.copy()
         }
         return self
 
@@ -138,11 +139,15 @@ class Scene:
         if key not in self.saved_state:
             raise Exception("Trying to restore scene without having saved")
         saved_state = self.saved_state[key]
+
         items = saved_state['items']
         states = saved_state['item_states']
         for item, state in zip(items, states):
             item.become(state)
         self.items = items[:]
+
+        self.camera.become(saved_state['camera'])
+
         return self
 
     #endregion
@@ -269,13 +274,21 @@ class Scene:
                 break
         return self
     
+    def stop_skipping(self) -> Self:
+        self.start_at_line_number = None
+        self.end_at_line_number = None
+        return self
+    
     def embed(self) -> None:
         if self.write_to_file:
             return
         
         self.embed_locals = inspect.currentframe().f_back.f_locals
-        exec('from janim import *', self.embed_locals)       
+        exec('from janim import *', self.embed_locals)   
+
+        self.stop_skipping()
         self.scene_writer.enableSocket()
+
         raise EndSceneEarlyException()
     
     def execute(self, code: str) -> None:

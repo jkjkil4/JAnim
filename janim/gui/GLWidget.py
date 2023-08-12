@@ -19,6 +19,7 @@ from janim.logger import log
 
 class GLWidget(QOpenGLWidget):
     frame_rate = 60
+    delay_ms = 1000 / frame_rate
 
     pan_sensitivity = 0.3
     move_sensitivity = 0.02
@@ -37,7 +38,7 @@ class GLWidget(QOpenGLWidget):
         # 定时器，用于定时调用绘制
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.onTimerTimeout)
-        self.timer.start(1000 / self.frame_rate)
+        self.timer.start(self.delay_ms)
 
         self.setWindowTitle('JAnim Graphics')
 
@@ -78,6 +79,9 @@ class GLWidget(QOpenGLWidget):
     def enableSocket(self) -> None:
         from PySide6.QtNetwork import QUdpSocket
 
+        self.timer.stop()
+        self.update()
+
         self.socket = QUdpSocket()
         self.socket.bind()
 
@@ -114,11 +118,13 @@ class GLWidget(QOpenGLWidget):
                         indent = line_indent if indent == 0 else min(indent, line_indent)
 
                     self.scene.execute('\n'.join(line[indent:] for line in lines))
+                    self.update()
 
                 elif type == 'undo_code':
                     if self.stored_states > 0:
                         self.stored_states -= 1
                         self.scene.restore(f'_d_{self.stored_states}')
+                        self.update()
                         log.info(f'已撤销代码')
                     else:
                         log.info('已回到初始状态，无法再撤销')
