@@ -273,7 +273,8 @@ class Scene:
         if self.write_to_file:
             return
         
-        self.embed_locals = inspect.currentframe().f_back.f_locals        
+        self.embed_locals = inspect.currentframe().f_back.f_locals
+        exec('from janim import *', self.embed_locals)       
         self.scene_writer.enableSocket()
         raise EndSceneEarlyException()
     

@@ -9,7 +9,6 @@ from janim.logger import log
 
 class BlankScene(Scene):
     def construct(self) -> None:
-        exec('from janim import *')
         self.embed()
 
 
