@@ -66,44 +66,82 @@ class _VTextChar(VItem):
         return get_norm(self.get_mark_advance() - self.get_mark_orig())
     
     @staticmethod
-    def check_act_arg_count(act: Iterable[str], count: int | Iterable[int]) -> int:
+    def check_act_arg_count(type: str, act: Iterable[str], count: int | Iterable[int]) -> int:
         if isinstance(count, int):
             count = (count, )
         
         for cnt in count:
-            if len(act) == 1 + cnt:
+            if len(act) == cnt:
                 return cnt
-        args_cnt = ' or '.join(count)
-        raise TypeError(f'{act[0]} takes {args_cnt} arguments but {len(act) - 1} was given')
+        args_cnt = ' or '.join(str(v) for v in count)
+        raise TypeError(f'"{type}" takes {args_cnt} arguments but {len(act) - 1} was given')
+    
+    @staticmethod
+    def get_color_value_by_key(key) -> JAnimColor:
+        import janim.constants.colors as colors
+        if not hasattr(colors, key):
+            raise ValueError(f'No built-in color named {key}')
+        return getattr(colors, key)
 
     def apply_act_list(self, act_list: list[Iterable[str]]) -> None:
-        def method_color(color) -> None:
-            arg_cnt = self.check_act_arg_count(color, (1, 3, 4))
-            if arg_cnt == 1:
-                _, color_key = color
-                import janim.constants.colors as colors
-                if not hasattr(colors, color_key):
-                    raise ValueError(f'no built-in color named {color_key}')
-                self.set_color(getattr(colors, color_key))
-            elif arg_cnt == 3:
-                self.set_color([float(val) for val in color[1:]])
-            else:   # == 4
-                self.set_rgbas([[float(val) for val in color[1:]]])
+        def method_color(type, color) -> None:
+            arg_cnt = self.check_act_arg_count(type, color, (1, 3, 4))
+
+            if arg_cnt == 1:    self.set_color(self.get_color_value_by_key(color[0]))
+            elif arg_cnt == 3:  self.set_color([float(val) for val in color])
+            else:
+                rgbas = [[float(val) for val in color]]
+                self.set_rgbas(rgbas).set_fill_rgbas(rgbas)
         
-        def method_opacity(opacity) -> None:
-            self.check_act_arg_count(opacity, 1)
-            self.set_opacity(float(opacity[1]))
+        def method_stroke_color(type, color) -> None:
+            arg_cnt = self.check_act_arg_count(type, color, (1, 3, 4))
+
+            if arg_cnt == 1:    self.set_stroke(self.get_color_value_by_key(color[0]))
+            elif arg_cnt == 3:  self.set_stroke([float(val) for val in color])
+            else:               self.set_rgbas([[float(val) for val in color]])
+        
+        def method_fill_color(type, color) -> None:
+            arg_cnt = self.check_act_arg_count(type, color, (1, 3, 4))
+
+            if arg_cnt == 1:    self.set_fill(self.get_color_value_by_key(color[0]))
+            elif arg_cnt == 3:  self.set_fill([float(val) for val in color])
+            else:               self.set_fill_rgbas([[float(val) for val in color]])
+        
+        def method_opacity(type, opacity) -> None:
+            self.check_act_arg_count(type, opacity, 1)
+            self.set_opacity(float(opacity[0]))
+
+        def method_stroke(type, stroke) -> None:
+            arg_cnt = self.check_act_arg_count(type, stroke, (1, 2))
+            
+            if arg_cnt == 1:
+                self.set_stroke_width(float(stroke[0]))
+
+            elif arg_cnt == 2:
+                stroke_width, background = stroke
+                self.set_stroke(width=float(stroke_width), background=(background == 'True'))
+
+        def method_distinct_stroke(type, ds) -> None:
+            arg_cnt = self.check_act_arg_count(type, ds, (1, 2))
+            method_stroke_color('', [ds[0]])
+            method_stroke('', ['0.02', 'True'])
+            if arg_cnt == 2:
+                method_fill_color('', [ds[1]])
 
         methods = {
             'c': method_color,
-            'opacity': method_opacity
+            'sc': method_stroke_color,
+            'fc': method_fill_color,
+            'o': method_opacity,
+            's': method_stroke,
+            'ds': method_distinct_stroke,
         }
 
         for act in reversed(act_list):
             method = methods.get(act[0])
             if method:
                 del methods[act[0]]
-                method(act)
+                method(act[0], act[1:])
             if len(methods) == 0:
                 break
 
@@ -173,7 +211,7 @@ class _Text(Group):
         font: str | Iterable[str] = [],
         font_size: float = DEFAULT_FONT_SIZE,
         format: Format = Format.PlainText,
-        line_kwargs = {},
+        line_kwargs: dict = {},
         **kwargs
     ) -> None:
         # 获取字体
@@ -192,7 +230,7 @@ class _Text(Group):
             self.text = ''
             self.act_list: list[tuple[int, list[str, str] | str]] = []
             idx = 0
-            iter = re.finditer(r'(<+)(/?[^<]*?)>', text, re.RegexFlag.MULTILINE)
+            iter = re.finditer(r'(<+)(/?[^<]*?)>', text)
             for match in iter:
                 match: re.Match
                 start, end = match.span()

@@ -40,7 +40,7 @@ class Scene:
         if cli.frame_rate:
             self.frame_rate = int(cli.frame_rate)
         else:
-            self.frame_rate = conf['frame_rate']
+            self.frame_rate = conf['output']['frame_rate']
         
         self.camera = Camera()
 
@@ -144,7 +144,8 @@ class Scene:
         states = saved_state['item_states']
         for item, state in zip(items, states):
             item.become(state)
-        self.items = items[:]
+            item.visible = state.visible
+        self.clear().add(*items, make_visible=False)
 
         self.camera.become(saved_state['camera'])
 
@@ -283,8 +284,10 @@ class Scene:
         if self.write_to_file:
             return
         
-        self.embed_locals = inspect.currentframe().f_back.f_locals
-        exec('from janim import *', self.embed_locals)   
+        f_back = inspect.currentframe().f_back
+        self.embed_globals = f_back.f_globals
+        self.embed_locals = f_back.f_locals
+        exec('from janim import *', self.embed_globals)   
 
         self.stop_skipping()
         self.scene_writer.enableSocket()
@@ -293,7 +296,7 @@ class Scene:
     
     def execute(self, code: str) -> None:
         print(code)
-        exec(code, self.embed_locals)
+        exec(code, self.embed_globals, self.embed_locals)
 
     #endregion
 

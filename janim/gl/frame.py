@@ -76,6 +76,7 @@ class Frame:
     
     def open_movie_pipe(self, file_path: str):
         cli = get_cli()
+        conf = get_configuration()
         width, height = self.scene.camera.wnd_shape
 
         command = [
@@ -91,29 +92,27 @@ class Frame:
             '-loglevel', 'error',
         ]
 
+        vcodec = cli.vcodec
+
         if cli.transparent:
-            # This is if the background of the exported
-            # video should be transparent.
-            command += [
-                '-vcodec', cli.vcodec or 'qtrle',
-            ]
+            vcodec = vcodec or conf['output']['mov_vcodec']
             ext = '.mov'
         elif cli.gif:
-            if cli.vcodec:
-                command += ['-vcodec', cli.vcodec]
-            command += []
             ext = '.gif'
         else:
-            command += [
-                '-vcodec', cli.vcodec or 'libx264',
-                '-pix_fmt', 'yuv420p',
-            ]
+            vcodec = vcodec or conf['output']['mp4_vcodec']
             ext = '.mp4'
+
+        if vcodec:
+            command += ['-vcodec', vcodec]
 
         self.temp_file_path = file_path + "_temp" + ext
         self.final_file_path = file_path + ext
 
         command += [self.temp_file_path]
+
+        log.info(f'导出参数    frame_rate: {self.scene.frame_rate}, vcodec: "{vcodec}"')
+
         self.writing_process = sp.Popen(command, stdin=sp.PIPE)
 
     def close_movie_pipe(self) -> None:

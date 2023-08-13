@@ -1,6 +1,9 @@
 directories:
   output: "videos"
-frame_rate: 60
+output:
+  frame_rate: 60
+  mov_vcodec: "qtrle"
+  mp4_vcodec: "libx264"
 style:
   background_color: "#222222"
   font: "Consolas"

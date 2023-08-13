@@ -371,7 +371,7 @@ class VItem(Item):
         opacity: Optional[float | Iterable[float]] = None,
         recurse: bool = True,
     ) -> Self:
-        self.set_stroke(color, opacity, recurse=recurse)
+        self.set_stroke(color, opacity=opacity, recurse=recurse)
         self.set_fill(color, opacity, recurse=recurse)
         return self
     
@@ -385,8 +385,8 @@ class VItem(Item):
     def set_stroke(
         self, 
         color: Optional[JAnimColor | Iterable[JAnimColor]] = None, 
-        opacity: Optional[float | Iterable[float]] = None,
         width: Optional[float | Iterable[float]] = None,
+        opacity: Optional[float | Iterable[float]] = None,
         background: Optional[bool] = None,
         recurse: bool = True,
     ) -> Self:
@@ -395,7 +395,7 @@ class VItem(Item):
         if width is not None:
             self.set_stroke_width(width, recurse)
         if background is not None:
-            self.set_stroke_behind_fill(background)
+            self.set_stroke_behind_fill(background, recurse)
         return self
 
     def set_stroke_width(
@@ -433,8 +433,17 @@ class VItem(Item):
             self.set_self_stroke_width(self.stroke_width)
         return self.stroke_width
     
-    def set_stroke_behind_fill(self, flag: bool = True) -> Self:
+    def set_stroke_behind_fill(self, flag: bool = True, recurse: bool = True) -> Self:
         self.stroke_behind_fill = flag
+        if recurse:
+            for item in self.get_family()[1:]:
+                safe_call_same(
+                    item, None, 
+                    flag, 
+                    recurse=False
+                )
+
+        self.renderer.needs_update = True
         return self
     
     def set_opacity(self, opacity: float) -> Self:

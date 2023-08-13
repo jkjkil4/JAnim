@@ -24,7 +24,7 @@ class MainWindow(GLWidget):
         super().closeEvent(event)
 
     def emit_frame(self) -> None:
-        if not self.glwidget.timer.isActive():
+        if self.glwidget.isEmbed:
             self.glwidget.update()
 
     def finish(self) -> None:

@@ -32,6 +32,11 @@ class GLWidget(QOpenGLWidget):
         super().__init__(parent)
         self.scene = scene
 
+        # 在 `isEmbed==True` 时，需要 `updateFlag==True`
+        # 才会自动调用 `update()`，并且 `updateFlag` 每次重置
+        self.isEmbed = False
+        self.updateFlag = False
+
         # 基本属性
         self.setMinimumSize(100, 100)
 
@@ -43,7 +48,9 @@ class GLWidget(QOpenGLWidget):
         self.setWindowTitle('JAnim Graphics')
 
     def onTimerTimeout(self) -> None:
-        self.update()
+        if not self.isEmbed or self.updateFlag:
+            self.updateFlag = False
+            self.update()
 
     #region OpenGL
 
@@ -79,17 +86,17 @@ class GLWidget(QOpenGLWidget):
     def enableSocket(self) -> None:
         from PySide6.QtNetwork import QUdpSocket
 
-        self.timer.stop()
-        self.update()
-
         self.socket = QUdpSocket()
         self.socket.bind()
-
         self.stored_states = 0
 
-        log.info(f'调试端口已在 {self.socket.localPort()} 开启')
-
         self.socket.readyRead.connect(self.onReadyRead)
+
+        self.scene.save_state('_d_orig')
+
+        log.info(f'调试端口已在 {self.socket.localPort()} 开启')
+        self.isEmbed = True
+        self.update()
 
     def onReadyRead(self) -> None:
         import json
@@ -118,16 +125,18 @@ class GLWidget(QOpenGLWidget):
                         indent = line_indent if indent == 0 else min(indent, line_indent)
 
                     self.scene.execute('\n'.join(line[indent:] for line in lines))
-                    self.update()
+                    log.info('代码执行完成')
+                    self.updateFlag = True
 
                 elif type == 'undo_code':
                     if self.stored_states > 0:
                         self.stored_states -= 1
                         self.scene.restore(f'_d_{self.stored_states}')
-                        self.update()
                         log.info(f'已撤销代码')
                     else:
-                        log.info('已回到初始状态，无法再撤销')
+                        self.scene.restore(f'_d_orig')
+                        log.info('已回到初始状态')
+                    self.updateFlag = True
             except:
                 traceback.print_exc()
                 pass
@@ -161,6 +170,7 @@ class GLWidget(QOpenGLWidget):
             )
 
             self.mbutton_pos = pos
+            self.updateFlag = True
 
         if event.buttons() & Qt.MouseButton.RightButton:
             pos = event.position()
@@ -172,17 +182,20 @@ class GLWidget(QOpenGLWidget):
             camera.rotate(-self.pan_sensitivity * y * DEGREES, camera.get_horizontal_vect())
             
             self.rbutton_pos = pos
+            self.updateFlag = True
 
     def keyReleaseEvent(self, event: QKeyEvent) -> None:
         super().keyReleaseEvent(event)
 
         if event.key() == Qt.Key.Key_R:
             self.scene.camera.reset()
+            self.updateFlag = True
 
     def wheelEvent(self, event: QWheelEvent) -> None:
         super().wheelEvent(event)
         delta = event.angleDelta().y()
         
         self.scene.camera.scale(0.96 if delta > 0 else 1 / 0.96)
+        self.updateFlag = True
 
     #endregion
