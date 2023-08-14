@@ -1,4 +1,6 @@
 from __future__ import annotations
+
+import numpy as np
 from janim.constants import np
 from janim.typing import Self
 
@@ -71,7 +73,7 @@ class Arrow(Line):
         start: np.ndarray = LEFT,
         end: np.ndarray = RIGHT,
         buff: float = 0.25,
-        max_length_to_tip_length_ratio: float = 0.3,
+        max_length_to_tip_length_ratio: float | None = 0.3,
         tip_kwargs: dict = {},
         **kwargs
     ) -> None:
@@ -84,7 +86,7 @@ class Arrow(Line):
     def init_tips(self, tip_kwargs: dict) -> None:
         self.tip = self.add_tip(**tip_kwargs)
         self.tip_orig_body_length = self.tip.get_body_length()
-
+    
     def copy(self) -> Self:
         copy_item = super().copy()
         copy_item.tip = copy_item.items[0]
@@ -104,13 +106,19 @@ class Arrow(Line):
         self, 
         tip: ArrowTip, 
         target: np.ndarray, 
-        beside_target: np.ndarray,
+        target_direction: np.ndarray
     ) -> None:
         direction = tip.get_direction()
-        target_direction = normalize(target - beside_target)
-        
-        max_length = self.get_arc_length() * self.max_length_to_tip_length_ratio
-        length = min(self.tip_orig_body_length, max_length)
+
+        length = self.tip_orig_body_length
+
+        if self.max_length_to_tip_length_ratio:
+            max_length = self.get_arc_length() * self.max_length_to_tip_length_ratio
+            length = min(length, max_length)
+
+        min_length = self.get_stroke_width()[0] * self.tip.get_body_length() / self.tip.get_back_width()
+        length = max(length, min_length)
+
         scale_factor = length / tip.get_body_length()
 
         tip.scale(scale_factor)
@@ -119,7 +127,7 @@ class Arrow(Line):
         tip.move_anchor_to(target)
 
     def place_tip(self) -> Self:
-        self._place_tip(self.tip, self.points[-1], self.points[-2])        
+        self._place_tip(self.tip, self.points[-1], self.get_end_direction())        
         return self
 
 class Vector(Arrow):
@@ -143,7 +151,7 @@ class DoubleArrow(Arrow):
 
     def place_tip(self) -> Self:
         super().place_tip()
-        self._place_tip(self.start_tip, self.points[0], self.points[1])
+        self._place_tip(self.start_tip, self.points[0], -self.get_start_direction())
         return self
 
 # TODO: FillArrow

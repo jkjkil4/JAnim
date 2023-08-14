@@ -341,18 +341,30 @@ class VItem(Item):
             
             joint_info[offset:end:3] = np.roll(handles, 1, axis=0)
             joint_info[offset + 1:end:3, 0] = np.all(
-                np.isclose(
-                    np.roll(subpath[2::3], 1, axis=0),
-                    subpath[::3]
-                ), 
-                axis=1
+                np.vstack([
+                    np.isclose(
+                        np.roll(subpath[2::3], 1, axis=0),
+                        subpath[::3]
+                    ).all(axis=1),
+                    ~np.isclose(
+                        np.roll(subpath[2::3], 1, axis=0),
+                        np.roll(subpath[1::3], 1, axis=0)
+                    ).all(axis=1)
+                ]),
+                axis=0
             )
             joint_info[offset + 1:end:3, 1] = np.all(
-                np.isclose(
-                    subpath[2::3],
-                    np.roll(subpath[::3], -1, axis=0)
-                ),
-                axis=1
+                np.vstack([
+                    np.isclose(
+                        subpath[2::3],
+                        np.roll(subpath[::3], -1, axis=0)
+                    ).all(axis=1),
+                    ~np.isclose(
+                        np.roll(subpath[::3], -1, axis=0),
+                        np.roll(subpath[1::3], -1, axis=0)
+                    ).all(axis=1)
+                ]),
+                axis=0
             )
             joint_info[offset + 2:end:3] = np.roll(handles, -1, axis=0)
 
@@ -834,6 +846,22 @@ class VItem(Item):
 
     #endregion
 
+    def get_start_direction(self) -> np.ndarray:
+        start = self.points[0]
+        for i in range(1, self.points_count()):
+            pos = self.points[i]
+            if not np.isclose(start, pos).all():
+                return pos - start
+        return RIGHT
+    
+    def get_end_direction(self) -> np.ndarray:
+        end = self.points[-1]
+        for i in range(self.points_count() - 1, -1, -1):
+            pos = self.points[i]
+            if not np.isclose(end, pos).all():
+                return end - pos
+        return RIGHT
+
     def add_tip(
         self, 
         alpha: float = 1.0, 
@@ -854,10 +882,10 @@ class VItem(Item):
         '''
         if alpha >= 1.0:
             pos = self.get_points()[-1]
-            angle_vert = self.get_points()[-1] - self.get_points()[-2]
+            angle_vert = self.get_end_direction()
         elif alpha <= 0.0:
             pos = self.get_points()[0]
-            angle_vert = self.get_points()[1] - self.get_points()[0]
+            angle_vert = self.get_start_direction()
         else:
             pos = self.pfp(alpha)
             angle_vert = self.pfp(clip(alpha + d_alpha, 0, 1)) - self.pfp(clip(alpha - d_alpha, 0, 1))

@@ -266,6 +266,9 @@ class Item:
         self.targets[key] = target
         return target
     
+    def target(self, key: str = '') -> Self:
+        return self.targets[key]
+    
     def save_state(self, key: str = '') -> Self:
         self.generate_target('saved_state_' + key)
         return self

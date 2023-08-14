@@ -63,7 +63,7 @@ def partial_quadratic_bezier_points(
     points: Sequence[np.ndarray],
     a: float,
     b: float
-) -> list[float]:
+) -> list[np.ndarray]:
     if a == 1:
         return 3 * [points[-1]]
 

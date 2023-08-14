@@ -101,6 +101,12 @@ class Animation:
             self.finish()
             self.state = self._State.AfterExec
 
+    def make_visible(self, item: Item) -> None:
+        toplevel_item = item.get_toplevel_item()
+        if toplevel_item is not self.scene:
+            self.scene.add(toplevel_item, make_visible=False)
+        item.set_visible(True, True, True)
+
 
 class ItemAnimation(Animation, metaclass=ABCMeta):
     def __init__(
@@ -138,10 +144,7 @@ class ItemAnimation(Animation, metaclass=ABCMeta):
         return False
     
     def begin(self) -> None:
-        toplevel_item = self.item_for_anim.get_toplevel_item()
-        if toplevel_item is not self.scene:
-            self.scene.add(toplevel_item, make_visible=False)
-        self.item_for_anim.set_visible(True, True, True)
+        self.make_visible(self.item_for_anim)
 
         self.families = list(zip(
             self.item_for_anim.get_family(),

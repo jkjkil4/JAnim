@@ -16,7 +16,7 @@ class DotCloud(Item):
         radius: float = 0.05,
         **kwargs
     ):
-        super().__init__(color=color, **kwargs)
+        super().__init__(**kwargs)
         self.radius = radius
 
         # 半径数据
@@ -27,6 +27,7 @@ class DotCloud(Item):
         ))
 
         self.set_points(points)
+        self.set_points_color(color)
 
     def points_count_changed(self) -> None:
         super().points_count_changed()
