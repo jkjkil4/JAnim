@@ -60,6 +60,17 @@ def get_cli() -> argparse.Namespace:
                  "the rendering at the second value",
         )
         parser.add_argument(
+            "-e", "--embed",
+            type=int,
+            help="Takes a line number as an argument, and resultsin "
+                 "the scene being called as if the line `self.embed()` "
+                 "was inserted into the scene code at that line."
+        )
+        parser.add_argument(
+            "-s", "--skip_animations",
+            action="store_true"
+        )
+        parser.add_argument(
             "--vcodec",
             help="video codec, set 'h264_nvenc'(not unique) to use hardware acceleration"
         )

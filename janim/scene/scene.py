@@ -36,7 +36,15 @@ class Scene:
             
         self.write_to_file = cli.write_file or cli.transparent or cli.gif or cli.open
         self.start_at_line_number, self.end_at_line_number = self.get_start_and_end_line_number()
-        
+        self.embed_at_line_number = cli.embed
+        self.skip_animations = cli.skip_animations
+        self.never_skipping = (
+            self.start_at_line_number is None 
+            and self.end_at_line_number is None
+            and self.embed_at_line_number is None
+            and not self.skip_animations
+        )
+
         if cli.frame_rate:
             self.frame_rate = int(cli.frame_rate)
         else:
@@ -74,15 +82,15 @@ class Scene:
 
     def add(self, *items: Item, make_visible: bool = True) -> Self:
         for item in items:
+            if make_visible:
+                item.set_visible(True)
+            
             if item in self:
                 continue
             if item.parent is not None:
                 item.parent.remove(item)
             self.items.append(item)
             item.parent = self
-
-            if make_visible:
-                item.set_visible(True)
         
         return self
     
@@ -195,7 +203,7 @@ class Scene:
         pass
 
     def check_skipping(self) -> bool:
-        if self.start_at_line_number is None and self.end_at_line_number is None:
+        if self.never_skipping:
             return False
 
         # 得到位于 construct 下的执行行数
@@ -208,11 +216,18 @@ class Scene:
                 break
         lineno = frame.f_lineno
 
+        if self.embed_at_line_number is not None and lineno >= self.embed_at_line_number:
+            self.embed()
+        
+        if self.skip_animations:
+            return True
+
         if self.end_at_line_number is not None and lineno > self.end_at_line_number:
             raise EndSceneEarlyException()
         
         if self.start_at_line_number is not None:
             return lineno < self.start_at_line_number
+        
         return False
 
     def play(self, *anims: Animation, **kwargs) -> None:
@@ -284,10 +299,21 @@ class Scene:
         if self.write_to_file:
             return
         
-        f_back = inspect.currentframe().f_back
-        self.embed_globals = f_back.f_globals
-        self.embed_locals = f_back.f_locals
-        exec('from janim import *', self.embed_globals)   
+        f_current = inspect.currentframe()
+        frame = f_current
+        while True:
+            frame = frame.f_back
+            if frame is None:
+                break
+            if frame.f_code.co_name == 'construct':
+                break
+
+        if frame is None:
+            frame = f_current.f_back
+        
+        self.embed_globals = frame.f_globals
+        self.embed_locals = frame.f_locals
+        exec('from janim import *', self.embed_globals)
 
         self.stop_skipping()
         self.scene_writer.enableSocket()

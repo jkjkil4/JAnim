@@ -48,6 +48,7 @@ class _PixelTextChar(PixelImgItem):
         fbo.bind()
 
         glViewport(0, 0, f_width, f_height)
+        txt.set_visible(True)
         txt.render(RenderData(
             Scene.anti_alias_width, 
             (1920, 1080), 
@@ -57,6 +58,7 @@ class _PixelTextChar(PixelImgItem):
         fbo.release()
 
         super().__init__(fbo.toImage(), **kwargs)
+
         self.shift(txt.get_center())
         
         self.mark = txt.mark
@@ -80,22 +82,16 @@ class _PixelTextChar(PixelImgItem):
         return get_norm(self.get_mark_advance() - self.get_mark_orig())
     
     def apply_act_list(self, act_list: list[Iterable[str]]) -> None:
-        def method_color(color) -> None:
-            arg_cnt = _VTextChar.check_act_arg_count(color, (1, 3, 4))
-            if arg_cnt == 1:
-                _, color_key = color
-                import janim.constants.colors as colors
-                if not hasattr(colors, color_key):
-                    raise ValueError(f'no built-in color named {color_key}')
-                self.set_points_color(getattr(colors, color_key))
-            elif arg_cnt == 3:
-                self.set_points_color([float(val) for val in color[1:]])
-            else:   # == 4
-                self.set_rgbas([[float(val) for val in color[1:]]])
+        def method_color(type, color) -> None:
+            arg_cnt = _VTextChar.check_act_arg_count(type, color, (1, 3, 4))
+
+            if arg_cnt == 1:    self.set_points_color(_VTextChar.get_color_value_by_key(color[0]))
+            elif arg_cnt == 3:  self.set_points_color([float(val) for val in color])
+            else:               self.set_rgbas([[float(val) for val in color]])
         
-        def method_opacity(opacity) -> None:
-            _VTextChar.check_act_arg_count(opacity, 1)
-            self.set_opacity(float(opacity[1]))
+        def method_opacity(type, opacity) -> None:
+            _VTextChar.check_act_arg_count(type, opacity, 1)
+            self.set_opacity(float(opacity[0]))
 
         methods = {
             'c': method_color,
@@ -106,7 +102,7 @@ class _PixelTextChar(PixelImgItem):
             method = methods.get(act[0])
             if method:
                 del methods[act[0]]
-                method(act)
+                method(act[0], act[1:])
             if len(methods) == 0:
                 break
 

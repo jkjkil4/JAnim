@@ -112,15 +112,15 @@ class Item:
         target = self.helper_items if is_helper else self.items
 
         for item in items:                  # 遍历要追加的每个物件
+            if inhert_visible and self.visible:
+                item.set_visible(True)
+            
             if item in self:                    # 如果已经是子物件，则跳过
                 continue
             if item.parent is not None:         # 将当前物件已有的父物件解除
                 item.parent.remove(item)
             target.append(item)                 # 设置当前物件的父物件
             item.parent = self
-
-            if inhert_visible and self.visible:
-                item.set_visible(True)
 
         if is_helper:
             self.helper_items_changed()
