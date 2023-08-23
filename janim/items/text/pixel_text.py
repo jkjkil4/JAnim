@@ -18,8 +18,8 @@ from janim.utils.space_ops import get_norm
 
 from janim.gl.render import RenderData
 
-PIXELTEXT_FONTSIZE_STEP = 12
-PIXELTEXT_FONTSIZE_EXT = 18
+PIXELTEXT_FONTSIZE_STEP = 1
+PIXELTEXT_FONTSIZE_EXT = 12
 
 class _PixelTextChar(PixelImgItem):
     def __init__(self, char: str, fonts: list[Font], font_size: float, stroke_width: float, **kwargs) -> None:
@@ -50,7 +50,7 @@ class _PixelTextChar(PixelImgItem):
         glViewport(0, 0, f_width, f_height)
         txt.set_visible(True)
         txt.render(RenderData(
-            Scene.anti_alias_width, 
+            Scene.anti_alias_width * sketchy_font_size / font_size, 
             (1920, 1080), 
             iden, iden, wnd
         ))

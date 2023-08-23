@@ -173,18 +173,24 @@ class Scene:
         fmt.setSamples(4)
         QSurfaceFormat.setDefaultFormat(fmt)
 
+        self.loop_helper = LoopHelper(self.frame_rate)
+
         if self.write_to_file:
             from janim.gl.frame import Frame
             self.scene_writer = Frame(self)
+            
         else:
             from janim.gui.MainWindow import MainWindow
+
             self.scene_writer = MainWindow(self)
+
             if get_cli().full_screen:
                 self.scene_writer.showMaximized()
             else:
                 self.scene_writer.showNormal()
-
-        self.loop_helper = LoopHelper(self.frame_rate)
+            
+            # 这样可以避免一些意外情况，我也不清楚原理
+            app.processEvents()
 
         try:
             self.construct()
