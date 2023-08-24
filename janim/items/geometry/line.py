@@ -4,13 +4,15 @@ from janim.typing import Self
 
 from janim.constants import *
 from janim.items.item import Item
-from janim.items.vitem import VItem
+from janim.items.vitem import VItem, DashedVItem
 from janim.items.geometry.arc import Arc
 from janim.utils.space_ops import (
     get_norm, normalize,
     rotate_vector, angle_of_vector
 )
-from janim.utils.simple_functions import clip
+from janim.utils.simple_functions import clip, fdiv
+
+DEFAULT_DASH_LENGTH = 0.05
 
 class Line(VItem):
     def __init__(
@@ -146,7 +148,58 @@ class Line(VItem):
         self.scale(length / self.get_length(), False, **kwargs)
         return self
 
-# TODO: DashedLine
+class DashedLine(Line):
+    def __init__(
+        self,
+        *args,
+        dash_length: float = DEFAULT_DASH_LENGTH,
+        dash_spacing: float = None,
+        positive_space_ratio: float = 0.5,
+        **kwargs
+    ) -> None:
+        super().__init__(*args, **kwargs)
+        self.dash_length = dash_length
+        self.dash_spacing = dash_spacing
+
+        num_dashes = self.calculate_num_dashes(positive_space_ratio)
+        dashes = DashedVItem(
+            self,
+            num_dashes=num_dashes,
+            positive_space_ratio=positive_space_ratio
+        )
+        self.clear_points()
+        self.add(*dashes)
+
+    def calculate_num_dashes(self, positive_space_ratio: float) -> int:
+        try:
+            full_length = self.dash_length / positive_space_ratio
+            return int(np.ceil(self.get_length() / full_length))
+        except ZeroDivisionError:
+            return 1
+
+    def calculate_positive_space_ratio(self) -> float:
+        return fdiv(
+            self.dash_length,
+            self.dash_length + self.dash_spacing,
+        )
+
+    def get_start(self) -> np.ndarray:
+        if len(self.items) > 0:
+            return self.items[0].get_start()
+        else:
+            return super().get_start()
+
+    def get_end(self) -> np.ndarray:
+        if len(self.items) > 0:
+            return self.items[-1].get_end()
+        else:
+            return super().get_end()
+
+    def get_first_handle(self) -> np.ndarray:
+        return self.items[0].get_points()[1]
+
+    def get_last_handle(self) -> np.ndarray:
+        return self.items[-1].get_points()[-2]
 
 class TangentLine(Line):
     def __init__(

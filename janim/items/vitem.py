@@ -796,6 +796,11 @@ class VItem(Item):
             new_points[i4:] = high_tup[2]
         self.set_points(new_points)
         return self
+    
+    def get_subcurve(self, a: float, b: float) -> VItem:
+        vitem = self.copy()
+        vitem.pointwise_become_partial(self, a, b)
+        return vitem
 
     #endregion
 
@@ -906,6 +911,37 @@ class VItem(Item):
         self.add(tip)
 
         return tip
+    
+class DashedVItem(VItem):
+    def __init__(
+        self, 
+        vitem: VItem,
+        num_dashes: int = 15,
+        positive_space_ratio: float = 0.5,
+        color: JAnimColor = WHITE, 
+        **kwargs
+    ) -> None:
+        super().__init__(**kwargs)
+        if num_dashes > 0:
+            # End points of the unit interval for division
+            alphas = np.linspace(0, 1, num_dashes + 1)
+
+            # This determines the length of each "dash"
+            full_d_alpha = (1.0 / num_dashes)
+            partial_d_alpha = full_d_alpha * positive_space_ratio
+
+            # Rescale so that the last point of vmobject will
+            # be the end of the last dash
+            alphas /= (1 - full_d_alpha + partial_d_alpha)
+
+            self.add(*[
+                vitem.get_subcurve(alpha, alpha + partial_d_alpha)
+                for alpha in alphas[:-1]
+            ])
+
+        self.set_color(color)
+        self.set_stroke_width(vitem.get_stroke_width()[0])
+
 
 class VGroup(VItem):
     def __init__(self, *items: VItem, **kwargs) -> None:
