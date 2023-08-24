@@ -6,7 +6,7 @@ from janim.typing import Self
 from PySide6.QtGui import QMatrix4x4
 from PySide6.QtOpenGL import QOpenGLFramebufferObject
 
-from OpenGL.GL import GL_RGBA, glViewport
+from OpenGL.GL import glViewport, GL_RGBA
 
 from janim.constants import *
 from janim.constants import Iterable, JAnimColor
@@ -48,16 +48,17 @@ class _PixelTextChar(PixelImgItem):
         fbo.bind()
 
         glViewport(0, 0, f_width, f_height)
+
         txt.set_visible(True)
         txt.render(RenderData(
             Scene.anti_alias_width * sketchy_font_size / font_size, 
-            (1920, 1080), 
+            (f_width, f_height), 
             iden, iden, wnd
         ))
 
-        fbo.release()
-
         super().__init__(fbo.toImage(), **kwargs)
+        
+        fbo.release()
 
         self.shift(txt.get_center())
         

@@ -41,7 +41,6 @@ class Frame:
         output_filepath_wo_ext = os.path.join(output_path, self.scene.__class__.__name__)
         self.open_movie_pipe(output_filepath_wo_ext)
 
-        glViewport(0, 0, *self.scene.camera.wnd_shape)
         glClearColor(*hex_to_rgb(self.scene.background_color), 0.0 if cli.transparent else 1.0)
 
         # 颜色混合
@@ -125,6 +124,4 @@ class Frame:
 
         if get_cli().open:
             open_file(self.final_file_path)
-    
-
-        
+            

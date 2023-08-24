@@ -37,7 +37,7 @@ class LoopHelper(QObject):
         )
         progress_iter = iter(progress)
         succ = True
-        
+
         def slot() -> None:
             nonlocal succ
             try:
