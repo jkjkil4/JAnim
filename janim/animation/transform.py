@@ -13,6 +13,8 @@ class Transform(ItemAnimation):
     - 改变的是 `item` 的数据，以呈现插值效果
     - `path_arc` 和 `path_arc_axis` 可以指定插值的圆弧路径的角度，若不传入则是直线
     - 也可以直接传入 `path_func` 来指定路径方法
+
+    另请参考 `ReplacementTransform`
     '''
     def __init__(
         self,
@@ -78,6 +80,13 @@ class Transform(ItemAnimation):
             item.mark_flag(item.get_triangulation, flag=False)
 
 class ReplacementTransform(Transform):
+    '''
+    与 `Transform` 类似，但是在执行后变为使用目标物件操作
+
+    例如，使用 `ReplacementTransform(a, b)` 后，b物件 替代了 a物件 的操作
+
+    另请参考 `Transform`
+    '''
     def __init__(
         self,
         item: Item,
@@ -88,6 +97,7 @@ class ReplacementTransform(Transform):
         super().__init__(item, target_item, replace=replace, **kwargs)
 
 class MoveToTarget(Transform):
+    '''显示从当前状态变为 物件target 的动画'''
     def __init__(self, item: Item, target_key='', **kwargs) -> None:
         if target_key not in item.targets:
             raise Exception(
@@ -97,6 +107,9 @@ class MoveToTarget(Transform):
         super().__init__(item, item.targets[target_key], **kwargs)
 
 class MethodAnimation(Transform):
+    '''
+    给 `Item.anim` 使用，请参考 `Item.anim` 的注释
+    '''
     def __init__(
         self,
         item: Item,

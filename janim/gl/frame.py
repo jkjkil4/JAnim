@@ -17,9 +17,13 @@ from janim.config import get_cli, get_configuration
 from janim.logger import log
 
 class Frame:
+    '''
+    用于将动画内容输出到文件
+    '''
     def __init__(self, scene: Scene) -> None:
         self.scene = scene
 
+        # 配置离屏渲染
         self.surface = QOffscreenSurface()
         self.surface.create()
 
@@ -64,6 +68,7 @@ class Frame:
             traceback.print_exc()
             sys.exit(1)
 
+        # 获取图像数据并传递给 ffmpeg
         raw_bytes = glReadPixels(0, 0, *self.scene.camera.wnd_shape, self.color_space, GL_UNSIGNED_BYTE)
         self.writing_process.stdin.write(raw_bytes)
         
@@ -74,6 +79,8 @@ class Frame:
         self.close_movie_pipe()
     
     def open_movie_pipe(self, file_path: str):
+        '''打开与 ffmpeg 的数据流'''
+
         cli = get_cli()
         conf = get_configuration()
         width, height = self.scene.camera.wnd_shape
@@ -115,6 +122,8 @@ class Frame:
         self.writing_process = sp.Popen(command, stdin=sp.PIPE)
 
     def close_movie_pipe(self) -> None:
+        '''关闭与 ffmpeg 的数据流，并进行最终处理'''
+        
         self.writing_process.stdin.close()
         self.writing_process.wait()
         self.writing_process.terminate()

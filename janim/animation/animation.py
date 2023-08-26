@@ -102,6 +102,7 @@ class Animation:
             self.state = self._State.AfterExec
 
     def make_visible(self, item: Item) -> None:
+        '''使物体、其子物件及其父物件可见'''
         toplevel_item = item.get_toplevel_item()
         if toplevel_item is not self.scene:
             self.scene.add(toplevel_item, make_visible=False)
@@ -109,6 +110,12 @@ class Animation:
 
 
 class ItemAnimation(Animation, metaclass=ABCMeta):
+    '''
+    物件动画的基类
+
+    - 会对物件的 family 逐一应用插值
+    - 指定 `lag_ratio` 即可起到依次执行的效果
+    '''
     def __init__(
         self,
         item_for_anim: Item,
@@ -127,6 +134,7 @@ class ItemAnimation(Animation, metaclass=ABCMeta):
         index: int,
         num_subitems: int
     ) -> float:
+        '''依据 `lag_ratio` 得到特定子物件的 sub_alpha'''
         # TODO: [L] make this more understanable
         lag_ratio = self.lag_ratio
         full_length = (num_subitems - 1) * lag_ratio + 1
@@ -136,16 +144,34 @@ class ItemAnimation(Animation, metaclass=ABCMeta):
 
     @abstractmethod
     def create_interpolate_datas(self) -> tuple:
-        '''由子类实现'''
+        '''
+        创建用于插值的数据，由子类实现
+
+        例如下面这个返回值，将会使 `interpolate_subitem` 的 
+        `interpolate_data` 参数分别得到 (a, d), (b, e), (c, f)
+        ```python
+        return (
+            (a, b, c),
+            (d, e, f)
+        )
+        ```
+        '''
         pass
     
+    @abstractmethod
     def is_null_item(self, item: Item, interpolate_data: tuple) -> bool:
-        '''由子类实现'''
-        return False
+        '''
+        判断是否为空物件，由子类实现
+
+        如果指定了 `skip_null_items` 且返回值为 `True`，那么这一个子物件会被忽略
+        '''
+        pass
     
     def begin(self) -> None:
+        # 如果物件不在场景中，那么添加到场景
         self.make_visible(self.item_for_anim)
 
+        # 为 `interpolate_subitem`` 准备数据
         self.families = list(zip(
             self.item_for_anim.get_family(),
             zip(*self.create_interpolate_datas())
@@ -158,6 +184,7 @@ class ItemAnimation(Animation, metaclass=ABCMeta):
             ]
     
     def interpolate(self, alpha) -> None:
+        # 遍历所有子物件的数据，调用 `interpolate_subitem`
         for i, families in enumerate(self.families):
             sub_alpha = self.get_sub_alpha(alpha, i, len(self.families))
             self.interpolate_subitem(*families, sub_alpha)
@@ -176,6 +203,10 @@ class ItemAnimation(Animation, metaclass=ABCMeta):
 
     @staticmethod
     def compute_npdata_to_copy_and_interpolate(item1: Item, item2: Item) -> list[tuple[str, str, str]]:
+        '''
+        依据前后数据时候有变动，
+        判断哪些需要进行插值
+        '''
         return [
             [
                 (key, getter, setter)
@@ -187,6 +218,10 @@ class ItemAnimation(Animation, metaclass=ABCMeta):
 
     @staticmethod
     def compute_triangulation_equals(item1: Item, item2: Item) -> list[bool]:
+        '''
+        判断两个 `Item` 的子物件的三角剖分是否相同，
+        如果子物件不是 `VItem`，那么该子物件的结果为 `False`
+        '''
         return [
                 isinstance(subitem1, VItem) 
             and isinstance(subitem2, VItem) 

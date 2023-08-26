@@ -17,6 +17,12 @@ class Fade(Transform):
         super().__init__(item, item, **kwargs)
 
 class FadeIn(Fade):
+    '''
+    淡入
+
+    - 可以使用 `shift` 指定淡入位移
+    - 可以使用 `scale` 指定淡入缩放
+    '''
     def begin(self) -> None:
         self.item_copy = self.item.copy().set_opacity(0)
         if np.any(self.shift_vect != ORIGIN):
@@ -26,6 +32,12 @@ class FadeIn(Fade):
         super().begin()
 
 class FadeOut(Fade):
+    '''
+    淡出
+
+    - 可以使用 `shift` 指定淡出位移
+    - 可以使用 `scale` 指定淡出缩放
+    '''
     def begin(self) -> None:
         self.target_copy = self.target_item.copy().set_opacity(0)
         if np.any(self.shift_vect != ORIGIN):

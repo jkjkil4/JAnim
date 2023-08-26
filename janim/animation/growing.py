@@ -11,6 +11,9 @@ from janim.items.geometry.arrow import Arrow
 
 
 class GrowFromPoint(Transform):
+    '''
+    从指定的位置放大显现
+    '''
     def __init__(self, item: Item, point: np.ndarray, **kwargs):
         self.point = point
         super().__init__(item, item, **kwargs)
@@ -20,17 +23,20 @@ class GrowFromPoint(Transform):
         super().begin()
 
 class GrowFromCenter(GrowFromPoint):
+    '''从物件的中心放大显现'''
     def __init__(self, item: Item, **kwargs):
         point = item.get_center()
         super().__init__(item, point, **kwargs)
 
 class GrowFromEdge(GrowFromPoint):
+    '''从物件的指定边角放大显现'''
     def __init__(self, item: Item, edge: np.ndarray, **kwargs):
         point = item.get_bbox_point(edge)
         super().__init__(item, point, **kwargs)
 
 
 class GrowArrow(Animation):
+    '''显示箭头的显现过程，从开头到结尾画出，并自动调整箭头指针位置'''
     def __init__(self, arrow: Arrow, **kwargs):
         self.arrow = arrow
         super().__init__(**kwargs)
@@ -48,5 +54,6 @@ class GrowArrow(Animation):
 
 
 class SpinInFromNothing(GrowFromCenter):
+    '''从物件的中心旋转半圈放大显现'''
     def __init__(self, item: Item, path_arc=PI, **kwargs):
         super().__init__(item, path_arc=path_arc, **kwargs)

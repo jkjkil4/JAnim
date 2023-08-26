@@ -35,6 +35,9 @@ class ShowPartial(ItemAnimation, metaclass=ABCMeta):
         pass
 
 class ShowCreation(ShowPartial):
+    '''
+    显示物件的创建过程
+    '''
     def __init__(self, item: Item, lag_ratio: float = 1.0, **kwargs) -> None:
         super().__init__(item, lag_ratio=lag_ratio, **kwargs)
 
@@ -42,10 +45,16 @@ class ShowCreation(ShowPartial):
         return (0, alpha)
     
 class Uncreate(ShowCreation):
+    '''
+    显示物件的销毁过程（`ShowCreation` 的倒放）
+    '''
     def interpolate(self, alpha) -> None:
         super().interpolate(1 - alpha)
 
 class DrawBorderThenFill(ItemAnimation):
+    '''
+    画出边缘，然后填充内部
+    '''
     def __init__(
         self,
         vitem: VItem,
@@ -94,6 +103,9 @@ class DrawBorderThenFill(ItemAnimation):
             item.interpolate(outline, start, subalpha, None, npdata_to_copy_and_interpolate)
 
 class Write(DrawBorderThenFill):
+    '''
+    显示书写过程（对每个子物件应用 DrawBorderThenFill）
+    '''
     def __init__(
         self,
         vitem: VItem,
