@@ -200,6 +200,43 @@ class Buffer:
         glBindBuffer(self.buffer_type, 0)
 
 
+class WindowRenderer:
+    def init(self) -> None:
+        self.shader = ShaderProgram.get('shaders/window')
+
+        self.vao = glGenVertexArrays(1)
+        self.vbo = Buffer(2)
+
+        self.shader.bind()
+        glBindVertexArray(self.vao)
+
+        self.vbo.pointer(0)
+        self.vbo.set_data(np.array([
+            -1.0, -1.0,
+             1.0, -1.0,
+            -1.0,  1.0,
+             1.0,  1.0
+        ], dtype=np.float32))
+
+        glBindVertexArray(0)
+
+    def render(self, wnd_shape: tuple[int, int], xy_buff: tuple[float, float]) -> None:
+        self.shader.bind()
+
+        self.shader.setVec2('wnd_shape', *wnd_shape)
+        self.shader.setVec2('xy_buff', *xy_buff)
+        self.shader.setInt('inv_step', 20)
+
+        glBindVertexArray(self.vao)
+        glDrawArrays(GL_TRIANGLE_STRIP, 0, 4)
+        glBindVertexArray(0)
+    
+    def __del__(self) -> None:
+        try:
+            glDeleteVertexArrays(1, (self.vao, ))
+        except:
+            pass
+
 class DotCloudRenderer(Renderer):
     def init(self) -> None:
         self.shader = ShaderProgram.get('shaders/dotcloud')
