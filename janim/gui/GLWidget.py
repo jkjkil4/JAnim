@@ -84,6 +84,10 @@ class GLWidget(QOpenGLWidget):
     #region socket
 
     def enableSocket(self) -> None:
+        '''
+        创建从网络接口接收数据的 UdpSocket，
+        以接收从 vscode 插件 janim-toolbox 发送的指令
+        '''
         from PySide6.QtNetwork import QUdpSocket
 
         self.socket = QUdpSocket()
@@ -101,6 +105,7 @@ class GLWidget(QOpenGLWidget):
     def onReadyRead(self) -> None:
         import json
 
+        # TODO: 添加安全措施，防止远程执行恶意代码
         while self.socket.hasPendingDatagrams():
             datagram = self.socket.receiveDatagram()
             try:
@@ -109,10 +114,13 @@ class GLWidget(QOpenGLWidget):
                 
                 janim = tree['janim']
                 type = janim['type']
+
+                # 执行代码
                 if type == 'exec_code':
                     self.scene.save_state(f'_d_{self.stored_states}')
                     self.stored_states += 1
 
+                    # 计算代码的缩进量
                     lines = janim['data'].splitlines()
                     indent = 0
                     for line in lines:
@@ -124,10 +132,12 @@ class GLWidget(QOpenGLWidget):
 
                         indent = line_indent if indent == 0 else min(indent, line_indent)
 
+                    # 执行删除缩进后的代码
                     self.scene.execute('\n'.join(line[indent:] for line in lines))
                     log.info('代码执行完成')
                     self.updateFlag = True
 
+                # 撤销代码
                 elif type == 'undo_code':
                     if self.stored_states > 0:
                         self.stored_states -= 1

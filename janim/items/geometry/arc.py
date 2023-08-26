@@ -12,6 +12,11 @@ DEFAULT_DOT_RADIUS = 0.08
 DEFAULT_SMALL_DOT_RADIUS = 0.04
 
 class Arc(VItem):
+    '''
+    圆弧
+
+    传入 `start_angle` 指定起始的角度，`angle` 表示圆心角
+    '''
     def __init__(
         self,
         start_angle: float = 0,
@@ -41,6 +46,7 @@ class Arc(VItem):
         start_angle: float = 0,
         n_components: int = 8
     ) -> np.ndarray:
+        '''得到使用二次贝塞尔曲线模拟的圆弧'''
         samples = np.array([
             [np.cos(a), np.sin(a), 0]
             for a in np.linspace(
@@ -59,9 +65,11 @@ class Arc(VItem):
         return points
 
     def get_arc_center(self) -> np.ndarray:
+        '''获取圆弧圆心'''
         return self.center_point.get_pos()
     
     def get_arc_length(self) -> float:
+        '''获取圆弧长度'''
         center = self.get_arc_center()
         p0 = self.get_start()
         p1 = self.pfp(0.5)
@@ -71,18 +79,27 @@ class Arc(VItem):
         return 2 * get_norm(vc0) * angle_between_vectors(vc0, vc1)
 
     def get_start_angle(self) -> float:
+        '''获取起始角度'''
         angle = angle_of_vector(self.get_start() - self.get_arc_center())
         return angle % TAU
 
     def get_stop_angle(self) -> float:
+        '''获取终止角度'''
         angle = angle_of_vector(self.get_end() - self.get_arc_center())
         return angle % TAU
 
     def move_arc_center_to(self, point: np.ndarray) -> Self:
+        '''将圆弧圆心移动到指定的位置'''
         self.shift(point - self.get_arc_center())
         return self
 
 class ArcBetweenPoints(Arc):
+    '''
+    两点之间的圆弧
+
+    - 传入 `start`, `end` 表示起点终点，`angle` 表示圆心角
+    - 其余参数同 `Arc`
+    '''
     def __init__(
         self,
         start: np.ndarray,
@@ -96,6 +113,12 @@ class ArcBetweenPoints(Arc):
         self.put_start_and_end_on(start, end)
 
 class Circle(Arc):
+    '''
+    圆
+
+    - 参数同 `Arc`
+    - 半径传入 `radius` 指定
+    '''
     def __init__(self, **kwargs) -> None:
         super().__init__(0, TAU, **kwargs)
 
@@ -124,6 +147,9 @@ class Circle(Arc):
     
 
 class Dot(Circle):
+    '''
+    点（半径默认为0.08）
+    '''
     def __init__(
         self,
         point: np.ndarray = ORIGIN,
@@ -141,11 +167,17 @@ class Dot(Circle):
         )
 
 class SmallDot(Dot):
+    '''
+    小点（半径默认为0.04）
+    '''
     def __init__(self, radius: float = DEFAULT_SMALL_DOT_RADIUS, **kwargs) -> None:
         super().__init__(radius=radius, **kwargs)
 
 
 class Ellipse(Circle):
+    '''
+    椭圆
+    '''
     def __init__(
         self,
         width: float = 2,
@@ -156,6 +188,15 @@ class Ellipse(Circle):
         self.set_size(width, height)
 
 class AnnularSector(VItem):
+    '''
+    扇环
+
+    - `inner_radius`: 内圆半径
+    - `outer_radius`: 外圆半径
+    - `start_angle`: 起始角度
+    - `angle`: 圆心角
+    - `arc_center`: 圆弧的中心
+    '''
     def __init__(
         self,
         inner_radius: float = 0.5,
@@ -195,12 +236,24 @@ class AnnularSector(VItem):
         return self
 
 class Sector(Arc):
+    '''
+    扇形
+
+    传入参数请参考 `Arc`
+    '''
     def __init__(self, arc_center: np.ndarray = ORIGIN, **kwargs) -> None:
         super().__init__(arc_center=arc_center, **kwargs)
 
         self.add_points_as_corners([arc_center, self.get_points()[0]])
 
 class Annulus(VItem):
+    '''
+    圆环
+
+    - `inner_radius`: 内圆半径
+    - `outer_radius`: 外圆半径
+    - `arc_center`: 圆弧的中心
+    '''
     def __init__(
         self,
         outer_radius: float = 1,
