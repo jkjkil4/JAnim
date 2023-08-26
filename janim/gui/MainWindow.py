@@ -26,7 +26,7 @@ class MainWindow(GLWidget):
         window_monitor = conf['window']['monitor']
 
         if len(window_position) != 2 or window_position[0] not in 'UOD' or window_position[1] not in 'LOR':
-            log.error(f'window.position has wrong argument "{window_position}"')
+            log.error(f'window.position has wrong argument "{window_position}".')
             sys.exit(2)
         
         screens = QApplication.screens()
@@ -34,7 +34,7 @@ class MainWindow(GLWidget):
             screen = screens[window_monitor]
         else:
             screen = screens[0]
-            log.warning(f'window.monitor has invaild value {window_monitor}, please use 0~{len(screens) - 1} instead')
+            log.warning(f'window.monitor has invaild value {window_monitor}, please use 0~{len(screens) - 1} instead.')
         screen_size = screen.availableSize()
         
         if window_position[1] == 'O':
