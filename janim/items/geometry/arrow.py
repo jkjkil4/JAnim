@@ -16,7 +16,29 @@ DEFAULT_ARROWTIP_BODY_LENGTH = 0.2
 DEFAULT_ARROWTIP_BACK_WIDTH = 0.2
 
 class ArrowTip(VItem):
+    '''
+    箭头标志
+
+    - `body_length`: 箭头的宽度
+    - `back_width`: 箭头的长度
+    - `center_anchor`: 原点所处的位置，请参考 `ArrowTip.CenterAnchor`
+    '''
+
     class CenterAnchor(Enum):
+        '''
+        原点所处位置的选项
+        
+        图形示意：
+        ```txt
+          .-----
+          |        -----
+          |               -----
+        [Back]  [Center]  [Front]
+          |               -----
+          |        -----
+          .-----
+        ```
+        '''
         Back = 0
         Center = 1
         Front = 2
@@ -43,6 +65,10 @@ class ArrowTip(VItem):
         self.to_center().rotate_about_anchor(angle)
     
     def get_center_anchor(self) -> np.ndarray:
+        '''
+        根据设定的 `center_anchor`得到原点位置，
+        请参考 `ArrowTip.CenterAnchor`
+        '''
         if self.center_anchor == ArrowTip.CenterAnchor.Back:
             return self.points[4]
         if self.center_anchor == ArrowTip.CenterAnchor.Center:
@@ -51,23 +77,34 @@ class ArrowTip(VItem):
         return self.points[0]
 
     def get_direction(self) -> np.ndarray:
+        '''得到箭头的方向（单位向量）'''
         return normalize(self.points[0] - self.points[4])
     
     def get_body_length(self) -> float:
+        '''得到箭头的长度'''
         return get_norm(self.points[0] - self.points[4])
     
     def get_back_width(self) -> float:
+        '''得到箭头的宽度'''
         return get_norm(self.points[5] - self.points[3])
     
     def rotate_about_anchor(self, angle: float) -> Self:
+        '''相对于原点位置进行旋转'''
         self.rotate(angle, about_point=self.get_center_anchor())
         return self
     
     def move_anchor_to(self, pos: np.ndarray) -> Self:
+        '''将原点移动到指定位置'''
         self.shift(pos - self.get_center_anchor())
         return self
     
 class Arrow(Line):
+    '''
+    带箭头的线段，箭头大小自动
+
+    - `buff`: 箭头首尾的空余量，默认为 0.25
+    - `max_length_to_tip_length_ratio`: 箭头长度和直线长度最大比例
+    '''
     def __init__(
         self,
         start: np.ndarray = LEFT,
@@ -131,12 +168,22 @@ class Arrow(Line):
         return self
 
 class Vector(Arrow):
+    '''
+    起点为 ORIGIN 的箭头，终点为 `direction`
+
+    - `buff` 默认设为了 0
+    '''
     def __init__(self, direction: np.ndarray = RIGHT, buff=0, **kwargs):
         if len(direction) == 2:
             direction = np.hstack([direction, 0])
         super().__init__(ORIGIN, direction, buff=buff, **kwargs)
 
 class DoubleArrow(Arrow):
+    '''
+    双向箭头
+
+    参数请参考 `Arrow`
+    '''
     def __init__(self, *args, tip_kwargs: dict = {}, **kwargs) -> None:
         super().__init__(*args, tip_kwargs=tip_kwargs, **kwargs)
     

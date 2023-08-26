@@ -15,6 +15,14 @@ from janim.utils.simple_functions import clip, fdiv
 DEFAULT_DASH_LENGTH = 0.05
 
 class Line(VItem):
+    '''
+    线段
+
+    传入 `start`, `end` 为线段起点终点
+    
+    - `buff`: 线段两端的空余量，默认为 0
+    - `path_arc`: 表示线段的弯曲角度
+    '''
     def __init__(
         self,
         start: np.ndarray = LEFT,
@@ -105,6 +113,7 @@ class Line(VItem):
             return result
 
     def put_start_and_end_on(self, start: np.ndarray, end: np.ndarray) -> Self:
+        '''将直线的首尾放在 `start`, `end` 上'''
         curr_start, curr_end = self.get_start_and_end()
         if np.isclose(curr_start, curr_end).all():
             # Handle null lines more gracefully
@@ -113,26 +122,29 @@ class Line(VItem):
         return super().put_start_and_end_on(start, end)
 
     def get_vector(self) -> np.ndarray:
+        '''获取直线的方向向量'''
         return self.get_end() - self.get_start()
 
     def get_unit_vector(self) -> np.ndarray:
+        '''获取直线方向上的单位向量'''
         return normalize(self.get_vector())
 
     def get_angle(self) -> float:
+        '''获取直线倾斜角'''
         return angle_of_vector(self.get_vector())
 
     def get_projection(self, point: np.ndarray) -> np.ndarray:
-        """
-        Return projection of a point onto the line
-        """
+        '''返回点在直线上的投影'''
         unit_vect = self.get_unit_vector()
         start = self.get_start()
         return start + np.dot(point - start, unit_vect) * unit_vect
 
     def get_slope(self) -> float:
+        '''获取直线斜率'''
         return np.tan(self.get_angle())
 
     def set_angle(self, angle: float, about_point: np.ndarray | None = None) -> Self:
+        '''设置直线倾斜角为 `angle`'''
         if about_point is None:
             about_point = self.get_start()
         self.rotate(
@@ -145,10 +157,17 @@ class Line(VItem):
         return get_norm(self.get_vector())
 
     def set_length(self, length: float, **kwargs) -> Self:
+        '''缩放到 `length` 长度'''
         self.scale(length / self.get_length(), False, **kwargs)
         return self
 
 class DashedLine(Line):
+    '''
+    虚线
+
+    - 使用了 `DahsedVItem` 进行创建
+    - `dash_length`: 每段虚线的长度，默认为 0.05
+    '''
     def __init__(
         self,
         *args,
@@ -202,6 +221,13 @@ class DashedLine(Line):
         return self.items[-1].get_points()[-2]
 
 class TangentLine(Line):
+    '''
+    切线
+
+    - 传入 `vitem` 表示需要做切线，`alpha` 表示切点在 `vitem` 上的比例
+    - `length`: 切线长度
+    - `d_alpha`: 精细程度，越小越精细（默认 1e-6）
+    '''
     def __init__(
         self,
         vitem: VItem,
@@ -216,6 +242,12 @@ class TangentLine(Line):
         self.scale(length / self.get_length())
 
 class Elbow(VItem):
+    '''
+    折线（一般用作直角符号）
+
+    - width 表示宽度
+    - angle 表示角度
+    '''
     def __init__(
         self,
         width: float = 0.2,

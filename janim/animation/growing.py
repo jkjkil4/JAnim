@@ -36,7 +36,7 @@ class GrowFromEdge(GrowFromPoint):
 
 
 class GrowArrow(Animation):
-    '''显示箭头的显现过程，从开头到结尾画出，并自动调整箭头指针位置'''
+    '''显示箭头的显现过程，从开头到结尾画出，并自动调整箭头标志位置'''
     def __init__(self, arrow: Arrow, **kwargs):
         self.arrow = arrow
         super().__init__(**kwargs)
