@@ -183,6 +183,7 @@ class Scene:
             from janim.gui.MainWindow import MainWindow
 
             self.scene_writer = MainWindow(self)
+            self.scene_writer.moveToPosition()
 
             if get_cli().full_screen:
                 self.scene_writer.showMaximized()

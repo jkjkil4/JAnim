@@ -7,3 +7,6 @@ output:
 style:
   background_color: "#222222"
   font: "Consolas"
+window:
+  position: UR
+  monitor: 0
