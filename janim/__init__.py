@@ -10,6 +10,7 @@ from janim.animation.transform import *
 from janim.animation.creation import *
 from janim.animation.fading import *
 from janim.animation.growing import *
+from janim.animation.indication import *
 
 from janim.items.dot_cloud import *
 from janim.items.item import *
