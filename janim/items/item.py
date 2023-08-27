@@ -890,6 +890,18 @@ class Item:
         self.shift(item.get_center() - self.get_center())
         return self
     
+    def surround(
+        self,
+        item: Item,
+        dim_to_match: int = 0,
+        stretch: bool = False,
+        buff: float = MED_SMALL_BUFF
+    ) -> Self:
+        self.replace(item, dim_to_match, stretch)
+        length = item.length_over_dim(dim_to_match)
+        self.scale((length + buff) / length)
+        return self
+    
     def put_start_and_end_on(self, start: np.ndarray, end: np.ndarray) -> Self:
         curr_start, curr_end = self.get_start_and_end()
         curr_vect = curr_end - curr_start

@@ -785,7 +785,7 @@ class VItem(Item):
             new_points[:i1] = tup[0]
             new_points[i1:i4] = tup
             new_points[i4:] = tup[2]
-            new_points[nppc:] = new_points[nppc - 1]
+            # new_points[nppc:] = new_points[nppc - 1]
         else:
             low_tup = partial_quadratic_bezier_points(vm_points[i1:i2], lower_residue, 1)
             high_tup = partial_quadratic_bezier_points(vm_points[i3:i4], 0, upper_residue)

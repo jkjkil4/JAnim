@@ -6,7 +6,7 @@ from enum import Enum
 from janim.constants import *
 from janim.items.item import Item
 from janim.items.vitem import VItem
-from janim.utils.rate_functions import smooth
+from janim.utils.rate_functions import RateFunc, smooth
 from janim.utils.simple_functions import clip
 
 class Animation:
@@ -28,7 +28,7 @@ class Animation:
         self,
         begin_time: float = 0.0,
         run_time: float = DEFAULT_RUN_TIME,
-        rate_func: Callable[[float], float] = smooth,
+        rate_func: RateFunc = smooth,
     ) -> None:
         self.begin_time = begin_time
         self.run_time = run_time

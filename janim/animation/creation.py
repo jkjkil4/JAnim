@@ -5,7 +5,7 @@ from janim.constants import *
 from janim.items.item import Item
 from janim.items.vitem import VItem
 from janim.animation.animation import ItemAnimation
-from janim.utils.rate_functions import double_smooth, linear
+from janim.utils.rate_functions import RateFunc, double_smooth, linear
 from janim.utils.bezier import integer_interpolate
 
 class ShowPartial(ItemAnimation, metaclass=ABCMeta):
@@ -61,7 +61,7 @@ class DrawBorderThenFill(ItemAnimation):
         run_time: float = 2.0,
         stroke_width: float = 0.02,
         stroke_color: JAnimColor = None,
-        rate_func: Callable[[float], float] = double_smooth,
+        rate_func: RateFunc = double_smooth,
         draw_border_anim_config: dict = {},
         fill_anim_config: dict = {},
         **kwargs
@@ -111,7 +111,7 @@ class Write(DrawBorderThenFill):
         vitem: VItem,
         run_time: Optional[float] = None,
         lag_ratio: Optional[float] = None,
-        rate_func: Callable[[float], float] = linear,
+        rate_func: RateFunc = linear,
         **kwargs
     ) -> None:
         length = len(vitem.family_members_with_points())

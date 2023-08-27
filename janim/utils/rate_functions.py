@@ -4,6 +4,7 @@ import numpy as np
 
 from janim.utils.bezier import bezier
 
+RateFunc = Callable[[float], float]
 
 def linear(t: float) -> float:
     return t
@@ -55,9 +56,9 @@ def running_start(t: float, pull_factor: float = -0.5) -> float:
 
 
 def not_quite_there(
-    func: Callable[[float], float] = smooth,
+    func: RateFunc = smooth,
     proportion: float = 0.7
-) -> Callable[[float], float]:
+) -> RateFunc:
     def result(t):
         return proportion * func(t)
     return result
@@ -68,10 +69,10 @@ def wiggle(t: float, wiggles: float = 2) -> float:
 
 
 def squish_rate_func(
-    func: Callable[[float], float],
+    func: RateFunc,
     a: float = 0.4,
     b: float = 0.6
-) -> Callable[[float], float]:
+) -> RateFunc:
     def result(t):
         if a == b:
             return a
@@ -84,7 +85,7 @@ def squish_rate_func(
 
     return result
 
-def outside_linear_rate_func(func: Callable[[float], float],) -> Callable[[float], float]:
+def outside_linear_rate_func(func: RateFunc) -> RateFunc:
     def result(t):
         if 0 <= t <= 1:
             return func(t)

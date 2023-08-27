@@ -2,7 +2,7 @@
 from typing import Callable, Optional
 
 from janim.animation.animation import Animation
-from janim.utils.rate_functions import linear, outside_linear_rate_func
+from janim.utils.rate_functions import RateFunc, linear, outside_linear_rate_func
 
 class AnimationGroup(Animation):
     '''
@@ -37,7 +37,7 @@ class AnimationGroup(Animation):
         self,
         *anims: Animation, 
         run_time: Optional[float] = None,
-        rate_func: Callable[[float], float] = linear, 
+        rate_func: RateFunc = linear, 
         **kwargs
     ) -> None:
         self.anims = anims
