@@ -676,6 +676,15 @@ class Item:
         )
 
         return self
+    
+    def set_color(
+        self, 
+        color: Optional[JAnimColor | Iterable[JAnimColor]] = None, 
+        opacity: Optional[float | Iterable[float]] = None,
+        recurse: bool = True,
+    ) -> Self:
+        self.set_points_color(color, opacity, recurse)
+        return self
 
     def get_rgbas(self) -> np.ndarray:
         if self.take_self_flag():

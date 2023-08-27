@@ -1,9 +1,11 @@
 from __future__ import annotations
+from typing import Callable
 
 from janim.constants import *
 from janim.items.item import Item
 from janim.items.geometry.arc import Dot
 from janim.animation.transform import Transform
+from janim.utils.rate_functions import there_and_back
 
 class FocusOn(Transform):
     def __init__(
@@ -39,5 +41,22 @@ class FocusOn(Transform):
     def finish(self) -> None:
         super().finish()
         self.scene.remove(self.start_dot)
+
+
+class Indicate(Transform):
+    def __init__(
+        self, 
+        item: Item,
+        scale_factor: float = 1.2,
+        color: JAnimColor = YELLOW,
+        rate_func: Callable[[float], float] = there_and_back,
+        **kwargs
+    ) -> None:
+        target = item.copy()
+        target.scale(scale_factor).set_color(color)
+        super().__init__(item, target, rate_func=rate_func, **kwargs)
+
+    def finish(self) -> None:
+        self.interpolate(0)
 
 
