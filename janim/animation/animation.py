@@ -158,7 +158,6 @@ class ItemAnimation(Animation, metaclass=ABCMeta):
         '''
         pass
     
-    @abstractmethod
     def is_null_item(self, item: Item, interpolate_data: tuple) -> bool:
         '''
         判断是否为空物件，由子类实现

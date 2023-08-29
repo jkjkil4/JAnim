@@ -2,6 +2,7 @@ from typing import Optional
 
 import sys
 
+from PySide6.QtCore import Qt
 from PySide6.QtGui import QCloseEvent
 from PySide6.QtWidgets import QWidget, QMainWindow, QApplication
 
@@ -19,6 +20,8 @@ class MainWindow(GLWidget):
         super().__init__(scene, parent)
         self.glwidget = self
         self.is_closed = False
+
+        self.setWindowFlag(Qt.WindowType.WindowStaysOnTopHint)
 
     def moveToPosition(self) -> None:
         conf = get_configuration()
