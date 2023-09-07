@@ -1,5 +1,6 @@
 directories:
   output: "videos"
+  temporary_storage: ""
 output:
   frame_rate: 60
   mov_vcodec: "qtrle"

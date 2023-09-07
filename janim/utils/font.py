@@ -8,6 +8,7 @@ import numpy as np
 from janim.constants import *
 from janim.utils.space_ops import midpoint
 from janim.items.vitem import VItem
+from janim.utils.bezier import get_quadratic_approximation_of_cubic
 
 
 fontpaths: list[str] = None
@@ -89,7 +90,17 @@ class Font:
             end_point = point
 
         def cubic_to(v_handle1, v_handle2, v_point, _):
-            raise NotImplementedError('Cubic curve is not supported')
+            point = f(v_point)
+            quadratic_approx = get_quadratic_approximation_of_cubic(
+                end_point, f(v_handle1), f(v_handle2), point
+            )
+            if np.isclose(quadratic_approx[0], quadratic_approx[1]).all() or np.isclose(quadratic_approx[1], quadratic_approx[2]).all():
+                quadratic_approx[1] = midpoint(quadratic_approx[0], quadratic_approx[2])
+            if np.isclose(quadratic_approx[3], quadratic_approx[4]).all() or np.isclose(quadratic_approx[4], quadratic_approx[5]).all():
+                quadratic_approx[4] = midpoint(quadratic_approx[3], quadratic_approx[5])
+            
+            points.extend(quadratic_approx)
+            end_point = point
         
         # 解析轮廓
         outline.decompose(outline, move_to, line_to, conic_to, cubic_to)

@@ -14,6 +14,7 @@ from janim.items.geometry.line import Line
 from janim.items.geometry.polygon import Polygon, Polyline, Rectangle, RoundedRectangle
 from janim.items.geometry.arc import Circle
 from janim.utils.iterables import hash_obj
+from janim.utils.directories import get_item_data_dir
 from janim.logger import log
 
 SVG_HASH_TO_MOB_MAP: dict[int, VItem] = {}
@@ -28,7 +29,7 @@ class SVGItem(VItem):
         file_path: str | None = None,
         should_center: bool = True,
         width: Optional[float] = None,
-        height: Optional[float] = None,
+        height: Optional[float] = 2,
         color: Optional[JAnimColor] = None,
         opacity: Optional[float] = None,
         fill_color: Optional[JAnimColor] = None,
@@ -37,7 +38,7 @@ class SVGItem(VItem):
         svg_default: dict = dict(
             color=None,
             opacity=None,
-            fill_color=None,
+            fill_color=WHITE,
             fill_opacity=None,
             stroke_width=None,
             stroke_color=None,
@@ -55,8 +56,7 @@ class SVGItem(VItem):
         self.path_string_config = path_string_config
 
         self.init_svg_item()
-        # self.init_colors()
-        # self.move_into_position()
+        self.move_into_position()
 
         self.set_stroke(color, stroke_width, opacity)
         self.set_fill(fill_color, fill_opacity)
@@ -75,7 +75,8 @@ class SVGItem(VItem):
     def hash_seed(self) -> tuple:
         return (
             self.__class__.__name__,
-            self.file_path
+            self.file_path,
+            self.svg_default
         )
 
     def generate_item(self) -> None:
@@ -159,7 +160,7 @@ class SVGItem(VItem):
             elif isinstance(shape, se.Polyline):
                 item = self.polyline_to_item(shape)
             # elif isinstance(shape, se.Text):
-            #     mob = self.text_to_item(shape)
+            #     item = self.text_to_item(shape)
             elif type(shape) == se.SVGElement:
                 continue
             else:
@@ -189,7 +190,7 @@ class SVGItem(VItem):
         item: VItem,
         shape: se.GraphicObject
     ) -> VItem:
-        item.set_stroke(shape.stroke.hex, shape.stroke_width, shape.stroke.opacity)
+        item.set_stroke(shape.stroke.hex, shape.stroke_width / 100, shape.stroke.opacity)
         item.set_fill(shape.fill.hex, shape.fill.opacity)
         return item
 
@@ -273,3 +274,68 @@ class SVGItem(VItem):
         if self.width is not None:
             self.set_width(self.width)
 
+
+class VItemFromSVGPath(VItem):
+    def __init__(
+        self,
+        path_obj: se.Path,
+        long_lines: bool = False,
+        should_subdivide_sharp_curves: bool = False,
+        should_remove_null_curves: bool = False,
+        **kwargs
+    ) -> None:
+        # Get rid of arcs
+        path_obj.approximate_arcs_with_quads()
+        self.path_obj = path_obj
+        self.long_lines = long_lines
+        self.should_subdivide_sharp_curves = should_subdivide_sharp_curves
+        self.should_remove_null_curves = should_remove_null_curves
+        super().__init__(**kwargs)
+        self.init_points()
+
+    def init_points(self) -> None:
+        # After a given svg_path has been converted into points, the result
+        # will be saved to a file so that future calls for the same path
+        # don't need to retrace the same computation.
+        path_string = self.path_obj.d()
+        hasher = hashlib.sha256(path_string.encode())
+        path_hash = hasher.hexdigest()[:16]
+        points_filepath = os.path.join(get_item_data_dir(), f"{path_hash}_points.npy")
+        tris_filepath = os.path.join(get_item_data_dir(), f"{path_hash}_tris.npy")
+
+        if os.path.exists(points_filepath) and os.path.exists(tris_filepath):
+            self.set_points(np.load(points_filepath))
+            self.triangulation = np.load(tris_filepath)
+            self.needs_new_triangulation = False
+        else:
+            self.handle_commands()
+            if self.should_subdivide_sharp_curves:
+                # For a healthy triangulation later
+                self.subdivide_sharp_curves()
+            if self.should_remove_null_curves:
+                # Get rid of any null curves
+                self.set_points(self.get_points_without_null_curves())
+            # Save to a file for future use
+            np.save(points_filepath, self.get_points())
+            np.save(tris_filepath, self.get_triangulation())
+
+    def handle_commands(self) -> None:
+        segment_class_to_func_map = {
+            se.Move: (self.path_move_to, ("end",)),
+            se.Close: (self.close_path, ()),
+            se.Line: (self.add_line_to, ("end",)),
+            se.QuadraticBezier: (self.add_conic_to, ("control", "end")),
+            se.CubicBezier: (self.add_cubic_to, ("control1", "control2", "end"))
+        }
+        for segment in self.path_obj:
+            segment_class = segment.__class__
+            func, attr_names = segment_class_to_func_map[segment_class]
+            points = [
+                _convert_point_to_3d(*segment.__getattribute__(attr_name))
+                for attr_name in attr_names
+            ]
+            func(*points)
+
+        # Get rid of the side effect of trailing "Z M" commands.
+        if self.has_new_path_started():
+            self.resize_points(self.points_count() - 1)

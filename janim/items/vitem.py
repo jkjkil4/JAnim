@@ -1,8 +1,11 @@
 from __future__ import annotations
 from typing import Iterable, Optional, Sequence, Callable
 from janim.typing import Self
+
 import numpy as np
 import math
+import operator as op
+from functools import reduce
 
 from janim.constants import *
 from janim.items.item import Item, NoRelGroup
@@ -11,7 +14,8 @@ from janim.utils.space_ops import (
     get_norm, get_unit_normal,
     z_to_vector, cross2d,
     earclip_triangulation,
-    angle_between_vectors
+    angle_between_vectors,
+    midpoint
 )
 from janim.utils.bezier import (
     bezier, interpolate, 
@@ -106,9 +110,6 @@ class VItem(Item):
     def curves_count(self) -> int:
         return self.points_count() // 3
     
-    def consider_points_equals(self, p0: np.ndarray, p1: np.ndarray) -> bool:
-        return get_norm(p1 - p0) < self.tolerance_for_point_equality
-    
     #endregion
     
     #region ::3 操作
@@ -135,6 +136,15 @@ class VItem(Item):
     
     def get_end_points(self) -> np.ndarray:
         return self.get_points()[2::3]
+    
+    def get_points_without_null_curves(self, atol: float=1e-9) -> np.ndarray:
+        nppc = 3
+        points = self.get_points()
+        distinct_curves = reduce(op.or_, [
+            (abs(points[i::nppc] - points[0::nppc]) > atol).any(1)
+            for i in range(1, nppc)
+        ])
+        return points[distinct_curves.repeat(nppc)]
     
     #endregion
         
@@ -168,13 +178,35 @@ class VItem(Item):
     
     def add_conic_to(self, handle: np.ndarray, point: np.ndarray) -> Self:
         end = self.get_points()[-1]
-        if self.consider_points_equals(end, handle):
+        if np.isclose(end, handle).all():
             handle = (end + point) / 2
         
         if self.has_new_path_started():
             self.append_points([handle, point])
         else:
             self.append_points([end, handle, point])
+
+        return self
+    
+    def add_cubic_to(
+        self, 
+        handle1: np.ndarray, 
+        handle2: np.ndarray, 
+        anchor: np.ndarray
+    ) -> Self:
+        self.throw_error_if_no_points()
+        quadratic_approx = get_quadratic_approximation_of_cubic(
+            self.points[-1], handle1, handle2, anchor
+        )
+        if np.isclose(quadratic_approx[0], quadratic_approx[1]).all() or np.isclose(quadratic_approx[1], quadratic_approx[2]).all():
+            quadratic_approx[1] = midpoint(quadratic_approx[0], quadratic_approx[2])
+        if np.isclose(quadratic_approx[3], quadratic_approx[4]).all() or np.isclose(quadratic_approx[4], quadratic_approx[5]).all():
+            quadratic_approx[4] = midpoint(quadratic_approx[3], quadratic_approx[5])
+        
+        if self.has_new_path_started():
+            self.append_points(quadratic_approx[1:])
+        else:
+            self.append_points(quadratic_approx)
 
         return self
     
@@ -228,9 +260,9 @@ class VItem(Item):
         return self
 
     def is_closed(self) -> bool:
-        return self.consider_points_equals(
+        return np.isclose(
             self.get_points()[0], self.get_points()[-1]
-        )
+        ).all()
     
     #endregion
     
