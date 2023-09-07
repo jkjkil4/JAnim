@@ -68,6 +68,15 @@ class Polygon(VItem):
             )
             self.append_points(line.get_points())
         return self
+    
+class Polyline(Polygon):
+    def __init__(
+        self, 
+        *verts: np.ndarray, 
+        close_path: bool = False, 
+        **kwargs
+    ) -> None:
+        super().__init__(*verts, close_path=close_path, **kwargs)
 
 class RegularPolygon(Polygon):
     def __init__(

@@ -798,6 +798,10 @@ class Item:
                 z
             ]
         return self.apply_function(R3_func, **kwargs)
+    
+    def flip(self, axis: np.ndarray = UP, **kwargs) -> Self:
+        self.rotate(PI, axis, **kwargs)
+        return self
 
     def rotate(
         self,
