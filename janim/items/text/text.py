@@ -30,7 +30,7 @@ class _VTextChar(VItem):
         font_scale_factor = font_size / ORIG_FONT_SIZE
         frame_scale_factor = PIXEL_TO_FRAME_RATIO / 32
         scale_factor = font_scale_factor * frame_scale_factor
-        self.scale(scale_factor, False, about_point=ORIGIN)
+        self.scale(scale_factor, about_point=ORIGIN)
 
         # 标记位置
         self.mark = Item()
@@ -426,7 +426,7 @@ class Text(_Text, VGroup):
         **kwargs
     ) -> None:
         if stroke_width is None:
-            stroke_width = font_size / ORIG_FONT_SIZE * 0.0075
+            stroke_width = get_stroke_width_by_font_size(font_size)
 
         super().__init__(text, font, font_size, format=format, **kwargs)
 
@@ -435,3 +435,7 @@ class Text(_Text, VGroup):
 
         if format == _Text.Format.RichText:
             self.apply_rich_text()
+
+
+def get_stroke_width_by_font_size(font_size: float) -> float:
+    return font_size / ORIG_FONT_SIZE * 0.0075

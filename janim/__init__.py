@@ -25,6 +25,7 @@ from janim.items.text.text import *
 from janim.items.text.pixel_text import *
 from janim.items.value_tracker import *
 from janim.items.svg_item import *
+from janim.items.text.tex import *
 
 from janim.utils.rate_functions import *
 

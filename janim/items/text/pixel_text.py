@@ -11,7 +11,10 @@ from OpenGL.GL import glViewport, GL_RGBA
 from janim.constants import *
 from janim.constants import Iterable, JAnimColor
 from janim.items.img_item import PixelImgItem
-from janim.items.text.text import DEFAULT_FONT_SIZE, ORIG_FONT_SIZE, _VTextChar, _TextLine, _Text
+from janim.items.text.text import (
+    DEFAULT_FONT_SIZE, get_stroke_width_by_font_size,
+    _VTextChar, _TextLine, _Text
+)
 from janim.utils.font import Font
 from janim.scene.scene import Scene
 from janim.utils.space_ops import get_norm
@@ -125,7 +128,7 @@ class PixelText(_Text):
         **kwargs
     ) -> None:
         if stroke_width is None:
-            stroke_width = font_size / ORIG_FONT_SIZE * 0.0075
+            stroke_width = get_stroke_width_by_font_size(font_size)
         super().__init__(
             text, 
             font, 

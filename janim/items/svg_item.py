@@ -15,6 +15,7 @@ from janim.items.geometry.polygon import Polygon, Polyline, Rectangle, RoundedRe
 from janim.items.geometry.arc import Circle
 from janim.utils.iterables import hash_obj
 from janim.utils.directories import get_item_data_dir
+from janim.utils.dict_ops import merge_dicts_recursively
 from janim.logger import log
 
 SVG_HASH_TO_MOB_MAP: dict[int, VItem] = {}
@@ -35,15 +36,7 @@ class SVGItem(VItem):
         fill_color: Optional[JAnimColor] = None,
         fill_opacity: Optional[float] = None,
         stroke_width: Optional[float] = None,
-        svg_default: dict = dict(
-            color=None,
-            opacity=None,
-            fill_color=WHITE,
-            fill_opacity=None,
-            stroke_width=None,
-            stroke_color=None,
-            stroke_opacity=None,
-        ),
+        svg_default: dict = dict(),
         path_string_config: dict = dict(),
         **kwargs
     ) -> None:
@@ -52,7 +45,18 @@ class SVGItem(VItem):
         self.should_center = should_center
         self.width = width
         self.height = height
-        self.svg_default = svg_default
+        self.svg_default = merge_dicts_recursively(
+            dict(
+                color=None,
+                opacity=None,
+                fill_color=None,
+                fill_opacity=None,
+                stroke_width=None,
+                stroke_color=None,
+                stroke_opacity=None
+            ), 
+            svg_default
+        )
         self.path_string_config = path_string_config
 
         self.init_svg_item()
@@ -142,6 +146,7 @@ class SVGItem(VItem):
 
     def get_items_from(self, svg: se.SVG) -> list[VItem]:
         result = []
+        svg_use_cnt = 0
         for shape in svg.elements():
             if isinstance(shape, se.Group):
                 continue
@@ -161,6 +166,9 @@ class SVGItem(VItem):
                 item = self.polyline_to_item(shape)
             # elif isinstance(shape, se.Text):
             #     item = self.text_to_item(shape)
+            elif isinstance(shape, se.Use):
+                svg_use_cnt += 1
+                continue
             elif type(shape) == se.SVGElement:
                 continue
             else:
@@ -172,6 +180,10 @@ class SVGItem(VItem):
             if isinstance(shape, se.Transformable) and shape.apply:
                 self.handle_transform(item, shape.transform)
             result.append(item)
+        
+
+        if svg_use_cnt != 0:
+            log.warning(f'Unsupported element type: <class \'svgelements.svgelements.Use\'> x {svg_use_cnt}')
         return result
 
     @staticmethod
@@ -217,13 +229,13 @@ class SVGItem(VItem):
     def rect_to_item(self, rect: se.Rect) -> Rectangle:
         if rect.rx == 0 or rect.ry == 0:
             item = Rectangle(
-                width=rect.width,
-                height=rect.height,
+                v1=rect.width,
+                v2=rect.height,
             )
         else:
             item = RoundedRectangle(
-                width=rect.width,
-                height=rect.height * rect.rx / rect.ry,
+                v1=rect.width,
+                v2=rect.height * rect.rx / rect.ry,
                 corner_radius=rect.rx
             )
             item.set_height(rect.height, stretch=True)
