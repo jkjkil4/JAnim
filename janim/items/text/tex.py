@@ -11,7 +11,9 @@ from janim.utils.tex_file_writing import (
 
 SCALE_FACTOR_PER_FONT_POINT = 0.001
 
-class Tex(SVGItem):
+DEFAULT_TEXDOC_FONT_SIZE = 36
+
+class TexDoc(SVGItem):
     def __init__(
         self,
         tex_string: str,
@@ -26,7 +28,7 @@ class Tex(SVGItem):
             'should_subdivide_sharp_curves': True,
             'should_remove_null_curves': True
         },
-        font_size: float = DEFAULT_FONT_SIZE,
+        font_size: float = DEFAULT_TEXDOC_FONT_SIZE,
         **kwargs
     ) -> None:
         assert isinstance(tex_string, str)
@@ -44,9 +46,12 @@ class Tex(SVGItem):
             path_string_config=path_string_config,
             **kwargs
         )
-        
+
         if height is None:
-            self.scale(SCALE_FACTOR_PER_FONT_POINT * self.font_size)
+            self.scale(SCALE_FACTOR_PER_FONT_POINT * self.font_size, about_point=ORIGIN)
+
+    def move_into_position(self) -> None:
+        self.move_anchor_to(ORIGIN)
 
     @property
     def hash_seed(self) -> tuple:

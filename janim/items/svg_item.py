@@ -1,5 +1,6 @@
 from __future__ import annotations
 from typing import Optional
+from janim.typing import Self
 
 import os
 import hashlib
@@ -9,6 +10,7 @@ import svgelements as se
 import numpy as np
 
 from janim.constants import *
+from janim.items.item import Point
 from janim.items.vitem import VItem
 from janim.items.geometry.line import Line
 from janim.items.geometry.polygon import Polygon, Polyline, Rectangle, RoundedRectangle
@@ -60,6 +62,12 @@ class SVGItem(VItem):
         self.path_string_config = path_string_config
 
         self.init_svg_item()
+
+        if self.width is not None:
+            self.set_width(self.width)
+        elif self.height is not None:
+            self.set_height(self.height)
+        
         self.move_into_position()
 
         self.set_stroke(color, stroke_width, opacity)
@@ -92,11 +100,20 @@ class SVGItem(VItem):
         modified_file_path = root + "_" + ext
         new_tree.write(modified_file_path)
 
-        svg = se.SVG.parse(modified_file_path)
+        svg: se.SVG = se.SVG.parse(modified_file_path)
         os.remove(modified_file_path)
 
         items = self.get_items_from(svg)
         self.add(*items)
+
+        svg_root = element_tree.getroot()
+        self.anchor = Point([
+            float(svg_root.get('width').rstrip('pt')) / 2, 
+            float(svg_root.get('height').rstrip('pt')) / 2, 
+            0
+        ])
+        self.add(self.anchor, is_helper=True)
+
         self.flip(RIGHT)  # Flip y
 
     def get_file_path(self) -> str:
@@ -281,10 +298,10 @@ class SVGItem(VItem):
     def move_into_position(self) -> None:
         if self.should_center:
             self.to_center()
-        if self.height is not None:
-            self.set_height(self.height)
-        if self.width is not None:
-            self.set_width(self.width)
+
+    def move_anchor_to(self, point: np.ndarray) -> Self:
+        self.shift(point - self.anchor.get_pos())
+        return self
 
 
 class VItemFromSVGPath(VItem):

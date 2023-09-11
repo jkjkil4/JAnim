@@ -12,7 +12,7 @@ from janim.utils.font import Font, get_fontpath_by_name
 from janim.utils.functions import decode_utf8
 from janim.utils.space_ops import normalize, get_norm
 
-DEFAULT_FONT_SIZE = 24
+DEFAULT_FONT_SIZE = 48
 ORIG_FONT_SIZE = 48
 
 class _VTextChar(VItem):

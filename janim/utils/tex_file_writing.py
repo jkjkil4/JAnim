@@ -71,9 +71,19 @@ def tex_to_dvi(tex_file: str) -> str:
             log_file = tex_file.replace(".tex", ".log")
             log.error("LaTeX Error!  Not a worry, it happens to the best of us.")
             with open(log_file, "r", encoding="utf-8") as file:
+                flag = False
+                err = ''
                 for line in file.readlines():
+                    if flag and line == '\n':
+                        break
                     if line.startswith("!"):
-                        log.debug(f"The error could be: `{line[2:-1]}`")
+                        flag = True
+                    
+                    if flag:
+                        err += line
+                
+                log.debug(f"The error could be: \n{err[:-1]}")
+
             sys.exit(2)
     return result
 
