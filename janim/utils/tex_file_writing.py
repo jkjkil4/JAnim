@@ -53,8 +53,11 @@ def tex_to_svg(tex_file_content: str, svg_file: str):
 
 def tex_to_dvi(tex_file: str) -> str:
     conf = get_configuration()
-    program = conf['tex']['executable']
-    file_type = conf['tex']['intermediate_filetype']
+    tex_default = conf['tex']['default']
+
+    program = conf['tex'][tex_default]['executable']
+    file_type = conf['tex'][tex_default]['intermediate_filetype']
+
     result = tex_file.replace(".tex", "." + file_type)
     if not os.path.exists(result):
         commands = [
@@ -95,7 +98,11 @@ def dvi_to_svg(dvi_file: str, regen_if_exists=False) -> str:
     Returns a list of PIL Image objects for these images sorted as they
     where in the dvi
     """
-    file_type = get_configuration()['tex']['intermediate_filetype']
+    conf = get_configuration()
+    tex_default = conf['tex']['default']
+
+    file_type = conf['tex'][tex_default]['intermediate_filetype']
+
     result = dvi_file.replace("." + file_type, ".svg")
     if not os.path.exists(result):
         commands = [
