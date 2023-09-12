@@ -2,7 +2,7 @@ import os, sys
 import hashlib
 from contextlib import contextmanager
 
-from janim.config import get_configuration
+from janim.config import get_configuration, get_janim_dir
 from janim.utils.directories import get_tex_dir
 from janim.logger import log
 
@@ -25,6 +25,22 @@ def tex_hash(tex_file_content: str):
     # Truncating at 16 bytes for cleanliness
     hasher = hashlib.sha256(tex_file_content.encode())
     return hasher.hexdigest()[:16]
+
+SAVED_TEX_CONF = {}
+
+def get_tex_conf():
+    if not SAVED_TEX_CONF:
+        conf = get_configuration()
+        SAVED_TEX_CONF.update(conf['tex'][conf['tex']['default']])
+        
+        template_filepath = os.path.join(
+            get_janim_dir(), 'tex_templates',
+            SAVED_TEX_CONF['template_file']
+        )
+        with open(template_filepath, 'r', encoding='utf-8') as f:
+            SAVED_TEX_CONF['tex_body'] = f.read()
+        
+    return SAVED_TEX_CONF
 
 
 def tex_to_svg_file(tex_file_content):
@@ -52,11 +68,10 @@ def tex_to_svg(tex_file_content: str, svg_file: str):
     return svg_file
 
 def tex_to_dvi(tex_file: str) -> str:
-    conf = get_configuration()
-    tex_default = conf['tex']['default']
+    conf = get_tex_conf()
 
-    program = conf['tex'][tex_default]['executable']
-    file_type = conf['tex'][tex_default]['intermediate_filetype']
+    program = conf['executable']
+    file_type = conf['intermediate_filetype']
 
     result = tex_file.replace(".tex", "." + file_type)
     if not os.path.exists(result):
@@ -77,7 +92,7 @@ def tex_to_dvi(tex_file: str) -> str:
                 flag = False
                 err = ''
                 for line in file.readlines():
-                    if flag and line == '\n':
+                    if flag and line.isspace():
                         break
                     if line.startswith("!"):
                         flag = True
@@ -98,10 +113,9 @@ def dvi_to_svg(dvi_file: str, regen_if_exists=False) -> str:
     Returns a list of PIL Image objects for these images sorted as they
     where in the dvi
     """
-    conf = get_configuration()
-    tex_default = conf['tex']['default']
+    conf = get_tex_conf()
 
-    file_type = conf['tex'][tex_default]['intermediate_filetype']
+    file_type = conf['intermediate_filetype']
 
     result = dvi_file.replace("." + file_type, ".svg")
     if not os.path.exists(result):

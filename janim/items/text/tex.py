@@ -6,7 +6,8 @@ from janim.items.svg_item import SVGItem
 from janim.items.text.text import DEFAULT_FONT_SIZE, get_stroke_width_by_font_size
 from janim.utils.tex_file_writing import (
     tex_to_svg_file,
-    display_during_execution
+    display_during_execution,
+    get_tex_conf
 )
 
 SCALE_FACTOR_PER_FONT_POINT = 0.001
@@ -59,14 +60,58 @@ class TexDoc(SVGItem):
             self.__class__.__name__,
             self.svg_default,
             self.path_string_config,
-            self.tex_string,
-            # self.alignment,
-            # self.math_mode
+            self.tex_string
         )
     
+    def get_execution_message_body(self) -> str:
+        return self.tex_string
+    
     def get_file_path(self) -> str:
-        with display_during_execution(f'Writing "{self.tex_string}"'):
+        with display_during_execution(f'Writing "{self.get_execution_message_body()}"'):
             file_path = tex_to_svg_file(self.tex_string)
         return file_path
     
+
+class Tex(TexDoc):
+    def __init__(
+        self,
+        tex_string: str,
+        math_mode: bool = True,
+        alignment: str = '\\centering',
+        **kwargs
+    ) -> None:
+        tex_string = tex_string.strip()
+        print(tex_string)
+        self.orig_tex_string = tex_string
+        self.math_mode = math_mode
+        self.alignment = alignment
+
+        if math_mode:
+            tex_string = '\\begin{align*}\n' + tex_string + '\n\\end{align*}'
+        
+        tex_string = alignment + '\n' + tex_string
+
+        conf = get_tex_conf()
+
+        super().__init__(
+            conf['tex_body'].replace(conf['text_to_replace'], tex_string), 
+            **kwargs
+        )
+
+    @property
+    def hash_seed(self) -> tuple:
+        return (
+            self.__class__.__name__,
+            self.svg_default,
+            self.path_string_config,
+            self.orig_tex_string,
+            self.math_mode,
+            self.alignment
+        )
+    
+    def get_execution_message_body(self) -> str:
+        return self.orig_tex_string
+    
+    def move_into_position(self) -> None:
+        return self.to_center()
 
