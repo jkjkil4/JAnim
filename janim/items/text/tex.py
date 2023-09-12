@@ -3,7 +3,7 @@ from typing import Optional
 
 from janim.constants import *
 from janim.items.svg_item import SVGItem
-from janim.items.text.text import DEFAULT_FONT_SIZE, get_stroke_width_by_font_size
+from janim.items.text.text import get_stroke_width_by_font_size
 from janim.utils.tex_file_writing import (
     tex_to_svg_file,
     display_during_execution,
@@ -114,4 +114,13 @@ class Tex(TexDoc):
     
     def move_into_position(self) -> None:
         return self.to_center()
+    
+class TexText(Tex):
+    def __init__(
+        self,
+        tex_string: str,
+        math_mode: bool = False,
+        **kwargs
+    ) -> None:
+        super().__init__(tex_string, math_mode, **kwargs)
 
