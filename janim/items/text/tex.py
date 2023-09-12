@@ -64,10 +64,10 @@ class TexDoc(SVGItem):
         )
     
     def get_execution_message_body(self) -> str:
-        return self.tex_string
+        return 'tex document'
     
     def get_file_path(self) -> str:
-        with display_during_execution(f'Writing "{self.get_execution_message_body()}"'):
+        with display_during_execution(f'Writing {self.get_execution_message_body()}'):
             file_path = tex_to_svg_file(self.tex_string)
         return file_path
     
@@ -110,7 +110,7 @@ class Tex(TexDoc):
         )
     
     def get_execution_message_body(self) -> str:
-        return self.orig_tex_string
+        return f'"{self.orig_tex_string}"'
     
     def move_into_position(self) -> None:
         return self.to_center()
