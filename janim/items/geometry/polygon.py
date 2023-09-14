@@ -124,8 +124,10 @@ class Square(Rectangle):
 class RoundedRectangle(Rectangle):
     def __init__(
         self, 
+        width: float = 4.0,
+        height: float = 2.0,
         corner_radius: float = 0.5,
         **kwargs
     ) -> None:
-        Rectangle.__init__(self, **kwargs)
+        Rectangle.__init__(self, width, height, **kwargs)
         self.round_corners(corner_radius)

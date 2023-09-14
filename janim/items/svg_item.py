@@ -30,7 +30,6 @@ class SVGItem(VItem):
     def __init__(
         self,
         file_path: str | None = None,
-        should_center: bool = True,
         width: Optional[float] = None,
         height: Optional[float] = 2,
         color: Optional[JAnimColor] = None,
@@ -44,7 +43,6 @@ class SVGItem(VItem):
     ) -> None:
         super().__init__(**kwargs)
         self.file_path = file_path
-        self.should_center = should_center
         self.width = width
         self.height = height
         self.svg_default = merge_dicts_recursively(
@@ -63,11 +61,7 @@ class SVGItem(VItem):
 
         self.init_svg_item()
 
-        if self.width is not None:
-            self.set_width(self.width)
-        elif self.height is not None:
-            self.set_height(self.height)
-        
+        self.set_size(self.width, self.height)
         self.move_into_position()
 
         self.set_stroke(color, stroke_width, opacity)
@@ -108,8 +102,8 @@ class SVGItem(VItem):
 
         svg_root = element_tree.getroot()
         self.anchor = Point([
-            float(svg_root.get('width').rstrip('pt')) / 2, 
-            float(svg_root.get('height').rstrip('pt')) / 2, 
+            float(svg_root.get('width').rstrip('pt')) * 2 / 3, 
+            float(svg_root.get('height').rstrip('pt')) * 2 / 3, 
             0
         ])
         self.add(self.anchor, is_helper=True)
@@ -118,7 +112,7 @@ class SVGItem(VItem):
 
     def get_file_path(self) -> str:
         if self.file_path is None:
-            raise Exception("Must specify file for SVGMobject")
+            raise Exception("Must specify file for SVGItem")
         # TODO: get_full_vector_image_path
         return self.file_path
 
@@ -296,8 +290,7 @@ class SVGItem(VItem):
         pass
 
     def move_into_position(self) -> None:
-        if self.should_center:
-            self.to_center()
+        self.to_center()
 
     def move_anchor_to(self, point: np.ndarray) -> Self:
         self.shift(point - self.anchor.get_pos())

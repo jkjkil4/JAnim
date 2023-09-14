@@ -18,6 +18,7 @@ class TexDoc(SVGItem):
     def __init__(
         self,
         tex_string: str,
+        width: Optional[float] = None,
         height: Optional[float] = None,
         fill_opacity: float = 1.0,
         stroke_width: Optional[float] = None,
@@ -40,6 +41,7 @@ class TexDoc(SVGItem):
             stroke_width = get_stroke_width_by_font_size(font_size)
 
         super().__init__(
+            width=width,
             height=height,
             fill_opacity=fill_opacity,
             stroke_width=stroke_width,
@@ -48,7 +50,7 @@ class TexDoc(SVGItem):
             **kwargs
         )
 
-        if height is None:
+        if width is None and height is None:
             self.scale(SCALE_FACTOR_PER_FONT_POINT * self.font_size, about_point=ORIGIN)
 
     def move_into_position(self) -> None:
