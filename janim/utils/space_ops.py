@@ -262,7 +262,7 @@ def find_intersection(
     v0: npt.ArrayLike,
     p1: npt.ArrayLike,
     v1: npt.ArrayLike,
-    threshold: float = 1e-5
+    threshold: float = DEFAULT_EPS
 ) -> np.ndarray:
     """
     Return the intersection of a line passing through p0 in direction v0
@@ -379,7 +379,7 @@ def earclip_triangulation(verts: np.ndarray, ring_ends: list[int]) -> list:
     ]
 
     def is_in(point, ring_id):
-        return abs(abs(get_winding_number([i - point for i in verts[rings[ring_id]]])) - 1) < 1e-5
+        return abs(abs(get_winding_number([i - point for i in verts[rings[ring_id]]])) - 1) < DEFAULT_EPS
 
     def ring_area(ring_id):
         ring = rings[ring_id]
