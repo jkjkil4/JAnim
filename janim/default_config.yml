@@ -6,12 +6,14 @@ tex:
     executable: "latex"
     template_file: "tex_template.tex" 
     intermediate_filetype: "dvi"
+    pkg_to_replace: "[pkg_expression]"
     text_to_replace: "[tex_expression]"
   xelatex:
     # For ctex, use the following configuration
     executable: "xelatex -no-pdf"
     template_file: "ctex_template.tex"
     intermediate_filetype: "xdv"
+    pkg_to_replace: "[pkg_expression]"
     text_to_replace: "[tex_expression]"
   default: "latex"
 output:

@@ -78,13 +78,14 @@ class Tex(TexDoc):
     def __init__(
         self,
         tex_string: str,
+        pkg_string: str = '',
         math_mode: bool = True,
         alignment: str = '\\centering',
         **kwargs
     ) -> None:
         tex_string = tex_string.strip()
-        print(tex_string)
         self.orig_tex_string = tex_string
+        self.pkg_string = pkg_string
         self.math_mode = math_mode
         self.alignment = alignment
 
@@ -96,7 +97,9 @@ class Tex(TexDoc):
         conf = get_tex_conf()
 
         super().__init__(
-            conf['tex_body'].replace(conf['text_to_replace'], tex_string), 
+            conf['tex_body']
+                .replace(conf['text_to_replace'], tex_string)
+                .replace(conf['pkg_to_replace'], pkg_string), 
             **kwargs
         )
 
@@ -121,8 +124,9 @@ class TexText(Tex):
     def __init__(
         self,
         tex_string: str,
+        pkg_string: str = '',
         math_mode: bool = False,
         **kwargs
     ) -> None:
-        super().__init__(tex_string, math_mode, **kwargs)
+        super().__init__(tex_string, pkg_string, math_mode, **kwargs)
 
