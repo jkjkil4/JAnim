@@ -23,6 +23,7 @@ from janim.items.dot_cloud import *
 from janim.items.img_item import *
 from janim.items.item import *
 from janim.items.number_line import *
+from janim.items.numbers import *
 from janim.items.shape_matchers import *
 from janim.items.svg_item import *
 from janim.items.value_tracker import *

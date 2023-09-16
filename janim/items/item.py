@@ -949,6 +949,31 @@ class Item:
         self.shift((target - point_to_align) * coor_mask)
         return self
 
+    def align_to(
+        self,
+        item_or_point: Item | np.ndarray,
+        direction: np.ndarray = ORIGIN
+    ) -> Self:
+        """
+        Examples:
+        mob1.align_to(mob2, UP) moves mob1 vertically so that its
+        top edge lines ups with mob2's top edge.
+
+        mob1.align_to(mob2, alignment_vect = RIGHT) moves mob1
+        horizontally so that it's center is directly above/below
+        the center of mob2
+        """
+        if isinstance(item_or_point, Item):
+            point = item_or_point.get_bbox_point(direction)
+        else:
+            point = item_or_point
+
+        for dim in range(3):
+            if direction[dim] != 0:
+                self.set_coord(point[dim], dim, direction)
+        
+        return self
+
     def to_center(self) -> Self:
         self.shift(-self.get_center())
         return self

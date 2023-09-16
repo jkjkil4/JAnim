@@ -27,6 +27,16 @@ def _convert_point_to_3d(x: float, y: float) -> np.ndarray:
 
 
 class SVGItem(VItem):
+    svg_default_d = dict(
+        color=None,
+        opacity=None,
+        fill_color=None,
+        fill_opacity=None,
+        stroke_width=None,
+        stroke_color=None,
+        stroke_opacity=None
+    )
+    
     def __init__(
         self,
         file_path: str | None = None,
@@ -46,15 +56,7 @@ class SVGItem(VItem):
         self.width = width
         self.height = height
         self.svg_default = merge_dicts_recursively(
-            dict(
-                color=None,
-                opacity=None,
-                fill_color=None,
-                fill_opacity=None,
-                stroke_width=None,
-                stroke_color=None,
-                stroke_opacity=None
-            ), 
+            self.svg_default_d, 
             svg_default
         )
         self.path_string_config = path_string_config

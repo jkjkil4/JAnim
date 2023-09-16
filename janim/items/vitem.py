@@ -9,7 +9,10 @@ from functools import reduce
 
 from janim.constants import *
 from janim.items.item import Item, NoRelGroup
-from janim.utils.iterables import resize_with_interpolation, resize_array
+from janim.utils.iterables import (
+    resize_with_interpolation, resize_array,
+    make_even
+)
 from janim.utils.space_ops import (
     get_norm, get_unit_normal,
     z_to_vector, cross2d,
@@ -418,6 +421,27 @@ class VItem(Item):
         self.set_stroke(color, opacity=opacity, recurse=recurse)
         self.set_fill(color, opacity, recurse=recurse)
         return self
+    
+    def match_style(self, vitem: VItem, recurse: bool = True) -> Self:
+        rgbas = vitem.get_rgbas()[0]
+        self.set_stroke(
+            rgbas[:3],
+            vitem.get_stroke_width()[0],
+            rgbas[3],
+            vitem.stroke_behind_fill
+        )
+        self.set_fill_rgbas([vitem.get_fill_rgbas()[0]])
+
+        if recurse:
+            # Does its best to match up submobject lists, and
+            # match styles accordingly
+            submobs1, submobs2 = self.items, vitem.items
+            if len(submobs1) == 0:
+                return self
+            elif len(submobs2) == 0:
+                submobs2 = [vitem]
+            for sm1, sm2 in zip(*make_even(submobs1, submobs2)):
+                sm1.match_style(sm2)
     
     def is_transparent(self) -> bool:
         data = self.get_fill_rgbas()[:, 3]
