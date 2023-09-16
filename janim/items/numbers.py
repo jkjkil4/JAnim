@@ -166,3 +166,15 @@ class DecimalNumber(VItem):
 
     def increment_value(self, delta_t: float | complex = 1) -> None:
         self.set_value(self.get_value() + delta_t)
+
+class Integer(DecimalNumber):
+    def __init__(
+        self,
+        number: float | complex = 0,
+        num_decimal_places: int = 0,
+        **kwargs
+    ) -> None:
+        super().__init__(number, num_decimal_places=num_decimal_places, **kwargs)
+
+    def get_value(self) -> int:
+        return int(np.round(super().get_value()))
