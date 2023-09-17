@@ -72,7 +72,7 @@ class Polygon(VItem):
 class Polyline(Polygon):
     def __init__(
         self, 
-        *verts: np.ndarray, 
+        *verts: np.ndarray,
         close_path: bool = False, 
         **kwargs
     ) -> None:
@@ -82,6 +82,7 @@ class RegularPolygon(Polygon):
     def __init__(
         self,
         n: int = 6,
+        *,
         start_angle: Optional[float] = None,
         **kwargs
     ) -> None:
@@ -97,11 +98,11 @@ class Triangle(RegularPolygon):
 
 class Rectangle(Polygon):
     @overload
-    def __init__(self, width: float = 4.0, height: float = 2.0, **kwargs) -> None: ...
+    def __init__(self, width: float = 4.0, height: float = 2.0, /, **kwargs) -> None: ...
     @overload
-    def __init__(self, corner1: Iterable, corner2: Iterable, **kwargs) -> None: ...
+    def __init__(self, corner1: Iterable, corner2: Iterable, /, **kwargs) -> None: ...
 
-    def __init__(self, v1, v2, **kwargs) -> None:
+    def __init__(self, v1, v2, /, **kwargs) -> None:
         if isinstance(v1, (int, float)) and isinstance(v2, (int, float)):
             super().__init__(UR, UL, DL, DR, **kwargs)
             self.set_size(v1, v2)
@@ -126,6 +127,7 @@ class RoundedRectangle(Rectangle):
         self, 
         width: float = 4.0,
         height: float = 2.0,
+        *,
         corner_radius: float = 0.5,
         **kwargs
     ) -> None:

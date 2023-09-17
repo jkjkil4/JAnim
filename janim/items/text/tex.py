@@ -18,6 +18,7 @@ class TexDoc(SVGItem):
     def __init__(
         self,
         tex_string: str,
+        *,
         width: Optional[float] = None,
         height: Optional[float] = None,
         fill_opacity: float = 1.0,
@@ -79,6 +80,7 @@ class Tex(TexDoc):
         self,
         tex_string: str,
         pkg_string: str = '',
+        *,
         math_mode: bool = True,
         alignment: str = '\\centering',
         **kwargs
@@ -125,6 +127,7 @@ class TexText(Tex):
         self,
         tex_string: str,
         pkg_string: str = '',
+        *,
         math_mode: bool = False,
         **kwargs
     ) -> None:

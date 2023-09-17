@@ -10,6 +10,7 @@ class SurroundingRectangle(Rectangle):
     def __init__(
         self, 
         item: Item, 
+        *,
         buff: float = SMALL_BUFF,
         color: JAnimColor = YELLOW,
         width: Optional[float] = None, 
@@ -25,7 +26,7 @@ class SurroundingRectangle(Rectangle):
         self.move_to(item)
 
 class Underline(Line):
-    def __init__(self, item: Item, buff: float = SMALL_BUFF, **kwargs):
+    def __init__(self, item: Item, *, buff: float = SMALL_BUFF, **kwargs):
         super().__init__(LEFT, RIGHT, **kwargs)
         self.set_width(item.get_width())
         self.next_to(item, DOWN, buff=buff)

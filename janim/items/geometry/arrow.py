@@ -48,6 +48,7 @@ class ArrowTip(VItem):
         body_length: float = DEFAULT_ARROWTIP_BODY_LENGTH,
         back_width: float = DEFAULT_ARROWTIP_BACK_WIDTH,
         angle: float = 0,
+        *,
         center_anchor: CenterAnchor = CenterAnchor.Back,
         fill_opacity: float = 1.0,
         stroke_width: float = DEFAULT_STROKE_WIDTH / 4,
@@ -109,6 +110,7 @@ class Arrow(Line):
         self,
         start: np.ndarray = LEFT,
         end: np.ndarray = RIGHT,
+        *,
         buff: float = 0.25,
         max_length_to_tip_length_ratio: float | None = 0.3,
         tip_kwargs: dict = {},
@@ -173,7 +175,7 @@ class Vector(Arrow):
 
     - `buff` 默认设为了 0
     '''
-    def __init__(self, direction: np.ndarray = RIGHT, buff=0, **kwargs):
+    def __init__(self, direction: np.ndarray = RIGHT, *, buff: float = 0, **kwargs):
         if len(direction) == 2:
             direction = np.hstack([direction, 0])
         super().__init__(ORIGIN, direction, buff=buff, **kwargs)

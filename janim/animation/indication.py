@@ -19,6 +19,7 @@ class FocusOn(Transform):
     def __init__(
         self, 
         point_or_item: np.ndarray | Item, 
+        *,
         opacity: float = 0.2,
         color: JAnimColor = GREY,
         run_time: float = 2,
@@ -53,6 +54,7 @@ class Indicate(Transform):
     def __init__(
         self, 
         item: Item,
+        *,
         scale_factor: float = 1.2,
         color: JAnimColor = YELLOW,
         rate_func: RateFunc = there_and_back,
@@ -70,6 +72,7 @@ class Flash(AnimationGroup):
     def __init__(
         self,
         point_or_item: np.ndarray | Item,
+        *,
         color: JAnimColor = YELLOW,
         line_length: float = 0.2,
         num_lines: int = 12,
@@ -124,6 +127,7 @@ class CircleIndicate(Transform):
     def __init__(
         self, 
         item: Item,
+        *,
         color: JAnimColor = YELLOW,
         rate_func: RateFunc = there_and_back,
         **kwargs
@@ -145,6 +149,7 @@ class ShowPassingFlash(ShowPartial):
     def __init__(
         self,
         item: Item,
+        *,
         time_width: float = 0.1,
         **kwargs
     ) -> None:
@@ -172,6 +177,7 @@ class ShowCreationThenDestruction(ShowPassingFlash):
     def __init__(
         self,
         item: Item,
+        *,
         time_width: float = 2.0,
         run_time: float = 1,
         **kwargs
@@ -192,6 +198,7 @@ class AnimationOnSurroundingRectangle(AnimationGroup):
     def __init__(
         self, 
         item: Item, 
+        *,
         rect_anim: Animation,
         surrounding_rect_config: dict = {},
         **kwargs

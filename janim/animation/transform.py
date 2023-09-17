@@ -20,6 +20,7 @@ class Transform(ItemAnimation):
         self,
         item: Item,
         target_item: Item | None,
+        *,
         path_arc: float = 0,
         path_arc_axis: np.ndarray = OUT,
         path_func: Optional[Callable[[np.ndarray, np.ndarray, float], np.ndarray]] = None,
@@ -91,6 +92,7 @@ class ReplacementTransform(Transform):
         self,
         item: Item,
         target_item: Item,
+        *,
         replace: bool = True,
         **kwargs
     ) -> None:
@@ -113,6 +115,7 @@ class MethodAnimation(Transform):
     def __init__(
         self,
         item: Item,
+        *,
         call_immediately: bool = False,
         **kwargs
     ) -> None:

@@ -22,6 +22,7 @@ class Arc(VItem):
         start_angle: float = 0,
         angle: float = TAU / 4,
         radius: float = 1.0,
+        *,
         n_components: int = 8,
         arc_center: np.ndarray = ORIGIN,
         **kwargs
@@ -153,6 +154,7 @@ class Dot(Circle):
     def __init__(
         self,
         point: np.ndarray = ORIGIN,
+        *,
         radius: float = DEFAULT_DOT_RADIUS,
         stroke_width: float = 0,
         fill_opacity: float = 1.0,
@@ -170,7 +172,7 @@ class SmallDot(Dot):
     '''
     小点（半径默认为0.04）
     '''
-    def __init__(self, radius: float = DEFAULT_SMALL_DOT_RADIUS, **kwargs) -> None:
+    def __init__(self, *, radius: float = DEFAULT_SMALL_DOT_RADIUS, **kwargs) -> None:
         super().__init__(radius=radius, **kwargs)
 
 
@@ -203,6 +205,7 @@ class AnnularSector(VItem):
         outer_radius: float = 1,
         start_angle: float = 0,
         angle: float = TAU / 4,
+        *,
         arc_center: np.ndarray = ORIGIN,
         n_components: int = 8,
         **kwargs
@@ -241,7 +244,7 @@ class Sector(Arc):
 
     传入参数请参考 `Arc`
     '''
-    def __init__(self, arc_center: np.ndarray = ORIGIN, **kwargs) -> None:
+    def __init__(self, *, arc_center: np.ndarray = ORIGIN, **kwargs) -> None:
         super().__init__(arc_center=arc_center, **kwargs)
 
         self.add_points_as_corners([arc_center, self.get_points()[0]])
@@ -258,6 +261,7 @@ class Annulus(VItem):
         self,
         outer_radius: float = 1,
         inner_radius: float = 0.5,
+        *,
         arc_center: np.ndarray = ORIGIN,
         n_components: int = 8,
         fill_opacity: float = 0.5,

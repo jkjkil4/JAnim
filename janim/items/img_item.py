@@ -19,6 +19,7 @@ class ImgItem(Item):
     def __init__(
         self,
         filepath_or_img: str | QImage,
+        *,
         height: float = None,
         **kwargs
     ):

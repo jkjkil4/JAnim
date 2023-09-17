@@ -172,6 +172,7 @@ class Integer(DecimalNumber):
     def __init__(
         self,
         number: float | complex = 0,
+        *,
         num_decimal_places: int = 0,
         **kwargs
     ) -> None:

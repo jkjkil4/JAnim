@@ -40,6 +40,7 @@ class SVGItem(VItem):
     def __init__(
         self,
         file_path: str | None = None,
+        *,
         width: Optional[float] = None,
         height: Optional[float] = 2,
         color: Optional[JAnimColor] = None,
@@ -303,6 +304,7 @@ class VItemFromSVGPath(VItem):
     def __init__(
         self,
         path_obj: se.Path,
+        *,
         long_lines: bool = False,
         should_subdivide_sharp_curves: bool = False,
         should_remove_null_curves: bool = False,

@@ -120,6 +120,7 @@ class PixelText(_Text):
         self, 
         text: str, 
         font: str | Iterable[str] = [],
+        *,
         font_size: float = DEFAULT_FONT_SIZE,
         color: JAnimColor = WHITE,
         opacity: float = 1.0,

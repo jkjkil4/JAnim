@@ -55,5 +55,5 @@ class GrowArrow(Animation):
 
 class SpinInFromNothing(GrowFromCenter):
     '''从物件的中心旋转半圈放大显现'''
-    def __init__(self, item: Item, path_arc=PI, **kwargs):
+    def __init__(self, item: Item, *, path_arc=PI, **kwargs):
         super().__init__(item, path_arc=path_arc, **kwargs)

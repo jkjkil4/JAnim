@@ -16,6 +16,7 @@ class ValueTracker(Item):
     def __init__(
         self, 
         value: T, 
+        *,
         interpolate_fn: Callable[[T, T, float], T] = interpolate,
         copy_fn: Callable[[T], T] = copy.copy,
         **kwargs

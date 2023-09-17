@@ -27,6 +27,7 @@ class Line(VItem):
         self,
         start: np.ndarray = LEFT,
         end: np.ndarray = RIGHT,
+        *,
         buff: float = 0,
         path_arc: float = 0,
         **kwargs
@@ -233,6 +234,7 @@ class TangentLine(Line):
         vitem: VItem,
         alpha: float,
         length: float = 1,
+        *,
         d_alpha: float = 1e-6,
         **kwargs
     ) -> None:

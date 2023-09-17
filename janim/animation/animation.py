@@ -26,6 +26,7 @@ class Animation:
 
     def __init__(
         self,
+        *,
         begin_time: float = 0.0,
         run_time: float = DEFAULT_RUN_TIME,
         rate_func: RateFunc = smooth,
@@ -119,6 +120,7 @@ class ItemAnimation(Animation, metaclass=ABCMeta):
     def __init__(
         self,
         item_for_anim: Item,
+        *,
         lag_ratio: float = 0,
         skip_null_items: bool = False,
         **kwargs

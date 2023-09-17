@@ -23,6 +23,7 @@ class Item:
 
     def __init__(
         self,
+        *,
         color: JAnimColor = WHITE,
         opacity: float = 1.0,
     ) -> None:

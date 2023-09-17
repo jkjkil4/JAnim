@@ -38,7 +38,7 @@ class ShowCreation(ShowPartial):
     '''
     显示物件的创建过程
     '''
-    def __init__(self, item: Item, lag_ratio: float = 1.0, **kwargs) -> None:
+    def __init__(self, item: Item, *, lag_ratio: float = 1.0, **kwargs) -> None:
         super().__init__(item, lag_ratio=lag_ratio, **kwargs)
 
     def get_bounds(self, alpha: float) -> tuple[float, float]:
@@ -58,6 +58,7 @@ class DrawBorderThenFill(ItemAnimation):
     def __init__(
         self,
         vitem: VItem,
+        *,
         run_time: float = 2.0,
         stroke_width: float = 0.02,
         stroke_color: JAnimColor = None,
@@ -109,6 +110,7 @@ class Write(DrawBorderThenFill):
     def __init__(
         self,
         vitem: VItem,
+        *,
         run_time: Optional[float] = None,
         lag_ratio: Optional[float] = None,
         rate_func: RateFunc = linear,

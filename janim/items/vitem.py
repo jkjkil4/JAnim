@@ -39,6 +39,7 @@ class VItem(Item):
 
     def __init__(
         self,
+        *,
         stroke_width: Optional[float | Iterable[float]] = DEFAULT_STROKE_WIDTH,
         stroke_behind_fill: bool = False,
         joint_type: JointType = JointType.Auto,
@@ -972,6 +973,7 @@ class DashedVItem(VItem):
     def __init__(
         self, 
         vitem: VItem,
+        *,
         num_dashes: int = 15,
         positive_space_ratio: float = 0.5,
         color: JAnimColor = WHITE, 
