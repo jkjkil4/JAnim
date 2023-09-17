@@ -13,6 +13,7 @@ from janim.items.text.text import Text
 
 T = TypeVar('T', bound=VItem)
 
+# TODO: optimize
 class DecimalNumber(VItem):
     def __init__(
         self,
@@ -154,10 +155,10 @@ class DecimalNumber(VItem):
 
     def set_value(self, number: float | complex):
         move_to_point = self.get_bbox_point(self.edge_to_fix)
-        old_submobjects = list(self.items)
+        old_subitems = list(self.items)
         self.set_subitems_from_number(number)
         self.move_to(move_to_point, self.edge_to_fix)
-        for sm1, sm2 in zip(self.items, old_submobjects):
+        for sm1, sm2 in zip(self.items, old_subitems):
             sm1.match_style(sm2)
         return self
 

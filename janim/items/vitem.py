@@ -433,7 +433,7 @@ class VItem(Item):
         self.set_fill_rgbas([vitem.get_fill_rgbas()[0]])
 
         if recurse:
-            # Does its best to match up submobject lists, and
+            # Does its best to match up subitem lists, and
             # match styles accordingly
             submobs1, submobs2 = self.items, vitem.items
             if len(submobs1) == 0:
@@ -685,7 +685,7 @@ class VItem(Item):
 
     def make_smooth(self) -> Self:
         """
-        This will double the number of points in the mobject,
+        This will double the number of points in the item,
         so should not be called repeatedly.  It also means
         transforming between states before and after calling
         this might have strange artifacts
@@ -986,7 +986,7 @@ class DashedVItem(VItem):
             full_d_alpha = (1.0 / num_dashes)
             partial_d_alpha = full_d_alpha * positive_space_ratio
 
-            # Rescale so that the last point of vmobject will
+            # Rescale so that the last point of vitem will
             # be the end of the last dash
             alphas /= (1 - full_d_alpha + partial_d_alpha)
 

@@ -767,7 +767,7 @@ class Item:
         about_point: np.ndarray = ORIGIN,
         **kwargs
     ) -> Self:
-        # Default to applying matrix about the origin, not mobjects center
+        # Default to applying matrix about the origin, not items center
         self.apply_points_function(
             lambda points: np.array([function(p) for p in points]),
             about_point=about_point,
@@ -776,7 +776,7 @@ class Item:
         return self
 
     def apply_matrix(self, matrix: Iterable, **kwargs) -> Self:
-        # Default to applying matrix about the origin, not mobjects center
+        # Default to applying matrix about the origin, not items center
         if ("about_point" not in kwargs) and ("about_edge" not in kwargs):
             kwargs["about_point"] = ORIGIN
         full_matrix = np.identity(3)
@@ -1072,7 +1072,7 @@ class Item:
 
         curr = len(self)
         if curr == 0:
-            # If empty, simply add n point mobjects
+            # If empty, simply add n point items
             null_item = self.copy()
             null_item.set_points([self.get_center()])
             self.set_subitems([

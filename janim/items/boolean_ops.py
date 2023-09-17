@@ -6,10 +6,10 @@ import pathops
 from janim.items.vitem import VItem
 
 
-# Boolean operations between 2D mobjects
+# Boolean operations between 2D items
 # Borrowed from from https://github.com/ManimCommunity/manim/
 
-def _convert_vmobject_to_skia_path(vitem: VItem) -> pathops.Path:
+def _convert_vitem_to_skia_path(vitem: VItem) -> pathops.Path:
     path = pathops.Path()
     subpaths = vitem.get_subpaths_from_points(vitem.get_all_points())
     for subpath in subpaths:
@@ -23,7 +23,7 @@ def _convert_vmobject_to_skia_path(vitem: VItem) -> pathops.Path:
     return path
 
 
-def _convert_skia_path_to_vmobject(
+def _convert_skia_path_to_vitem(
     path: pathops.Path,
     vitem: VItem
 ) -> VItem:
@@ -56,11 +56,11 @@ class Union(VItem):
         super().__init__(**kwargs)
         outpen = pathops.Path()
         paths = [
-            _convert_vmobject_to_skia_path(vitem)
+            _convert_vitem_to_skia_path(vitem)
             for vitem in vitems
         ]
         pathops.union(paths, outpen.getPen())
-        _convert_skia_path_to_vmobject(outpen, self)
+        _convert_skia_path_to_vitem(outpen, self)
 
 
 class Difference(VItem):
@@ -68,11 +68,11 @@ class Difference(VItem):
         super().__init__(**kwargs)
         outpen = pathops.Path()
         pathops.difference(
-            [_convert_vmobject_to_skia_path(subject)],
-            [_convert_vmobject_to_skia_path(clip)],
+            [_convert_vitem_to_skia_path(subject)],
+            [_convert_vitem_to_skia_path(clip)],
             outpen.getPen(),
         )
-        _convert_skia_path_to_vmobject(outpen, self)
+        _convert_skia_path_to_vitem(outpen, self)
 
 
 class Intersection(VItem):
@@ -82,8 +82,8 @@ class Intersection(VItem):
         super().__init__(**kwargs)
         outpen = pathops.Path()
         pathops.intersection(
-            [_convert_vmobject_to_skia_path(vitems[0])],
-            [_convert_vmobject_to_skia_path(vitems[1])],
+            [_convert_vitem_to_skia_path(vitems[0])],
+            [_convert_vitem_to_skia_path(vitems[1])],
             outpen.getPen(),
         )
         new_outpen = outpen
@@ -91,11 +91,11 @@ class Intersection(VItem):
             new_outpen = pathops.Path()
             pathops.intersection(
                 [outpen],
-                [_convert_vmobject_to_skia_path(vitems[_i])],
+                [_convert_vitem_to_skia_path(vitems[_i])],
                 new_outpen.getPen(),
             )
             outpen = new_outpen
-        _convert_skia_path_to_vmobject(outpen, self)
+        _convert_skia_path_to_vitem(outpen, self)
 
 
 class Exclusion(VItem):
@@ -105,8 +105,8 @@ class Exclusion(VItem):
         super().__init__(**kwargs)
         outpen = pathops.Path()
         pathops.xor(
-            [_convert_vmobject_to_skia_path(vitems[0])],
-            [_convert_vmobject_to_skia_path(vitems[1])],
+            [_convert_vitem_to_skia_path(vitems[0])],
+            [_convert_vitem_to_skia_path(vitems[1])],
             outpen.getPen(),
         )
         new_outpen = outpen
@@ -114,8 +114,8 @@ class Exclusion(VItem):
             new_outpen = pathops.Path()
             pathops.xor(
                 [outpen],
-                [_convert_vmobject_to_skia_path(vitems[_i])],
+                [_convert_vitem_to_skia_path(vitems[_i])],
                 new_outpen.getPen(),
             )
             outpen = new_outpen
-        _convert_skia_path_to_vmobject(outpen, self)
+        _convert_skia_path_to_vitem(outpen, self)

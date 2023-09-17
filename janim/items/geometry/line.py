@@ -80,14 +80,14 @@ class Line(VItem):
         return self
 
     def set_start_and_end_attrs(self, start: np.ndarray, end: np.ndarray) -> None:
-        # If either start or end are Mobjects, this
+        # If either start or end are Items, this
         # gives their centers
         rough_start = self.pointify(start)
         rough_end = self.pointify(end)
         vect = normalize(rough_end - rough_start)
         # Now that we know the direction between them,
         # we can find the appropriate boundary point from
-        # start and end, if they're mobjects
+        # start and end, if they're items
         self.start = self.pointify(start, vect)
         self.end = self.pointify(end, -vect)
 

@@ -189,7 +189,7 @@ class SVGItem(VItem):
                 continue
             if not item.has_points():
                 continue
-            self.apply_style_to_mobject(item, shape)
+            self.apply_style_to_item(item, shape)
             if isinstance(shape, se.Transformable) and shape.apply:
                 self.handle_transform(item, shape.transform)
             result.append(item)
@@ -211,7 +211,7 @@ class SVGItem(VItem):
         return item
 
     @staticmethod
-    def apply_style_to_mobject(
+    def apply_style_to_item(
         item: VItem,
         shape: se.GraphicObject
     ) -> VItem:
