@@ -4,7 +4,7 @@ from abc import abstractmethod, ABCMeta
 from enum import Enum
 
 from janim.constants import *
-from janim.items.item import Item
+from janim.items.item import Item, NoRelGroup
 from janim.items.vitem import VItem
 from janim.utils.rate_functions import RateFunc, smooth
 from janim.utils.simple_functions import clip
@@ -104,10 +104,16 @@ class Animation:
 
     def make_visible(self, item: Item) -> None:
         '''使物体、其子物件及其父物件可见'''
-        toplevel_item = item.get_toplevel_item()
-        if toplevel_item is not self.scene:
-            self.scene.add(toplevel_item, make_visible=False)
-        item.set_visible(True, True, True)
+        if isinstance(item, NoRelGroup):
+            items = item.get_items_without_norel_group_recursively()
+        else:
+            items = [item]
+        
+        for item in items:
+            toplevel_item = item.get_toplevel_item()
+            if toplevel_item is not self.scene:
+                self.scene.add(toplevel_item, make_visible=False)
+            item.set_visible(True, True, True)
 
 
 class ItemAnimation(Animation, metaclass=ABCMeta):

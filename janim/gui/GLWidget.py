@@ -17,6 +17,7 @@ from janim.utils.color import hex_to_rgb
 
 from janim.logger import log
 
+# TODO: 修改正在执行动画时的更新逻辑
 
 class GLWidget(QOpenGLWidget):
     frame_rate = 60

@@ -388,7 +388,13 @@ class ImgItemRenderer(Renderer):
         1, 2, 3
     ], dtype='uint')
 
+    ebo_idx = None
+
     def init(self) -> None:
+        if ImgItemRenderer.ebo_idx is None:
+            ImgItemRenderer.ebo_idx = Buffer(None, GL_ELEMENT_ARRAY_BUFFER, None, UINT_SIZE)
+            ImgItemRenderer.ebo_idx.set_data(ImgItemRenderer.idx)
+
         self.shader = ShaderProgram.get('shaders/image')
 
         self.vao = self.genVertexArrays(1)
@@ -422,6 +428,8 @@ class ImgItemRenderer(Renderer):
         self.shader.setMat4('wnd_matrix', data.wnd_matrix)
 
         glBindVertexArray(self.vao)
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, self.idx)
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, self.ebo_idx.buffer)
+        glDrawElements(GL_TRIANGLES, len(ImgItemRenderer.idx), GL_UNSIGNED_INT, None)
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0)
         glBindVertexArray(0)
 

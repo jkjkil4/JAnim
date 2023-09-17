@@ -102,7 +102,7 @@ class Rectangle(Polygon):
     @overload
     def __init__(self, corner1: Iterable, corner2: Iterable, /, **kwargs) -> None: ...
 
-    def __init__(self, v1, v2, /, **kwargs) -> None:
+    def __init__(self, v1 = 4.0, v2 = 2.0, /, **kwargs) -> None:
         if isinstance(v1, (int, float)) and isinstance(v2, (int, float)):
             super().__init__(UR, UL, DL, DR, **kwargs)
             self.set_size(v1, v2)

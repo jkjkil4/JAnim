@@ -1288,6 +1288,16 @@ class NoRelGroup(Group):
         )
         self.family_with_helpers = [self, *it.chain(*sub_families)]
         return self.family_with_helpers
+
+    def get_items_without_norel_group_recursively(self) -> list[Item]:
+        return list(it.chain(*[
+            (
+                item.get_items_without_norel_group()
+                if isinstance(item, NoRelGroup)
+                else [item]
+            )
+            for item in self
+        ]))
     
     def get_bbox(self) -> np.ndarray:
         self.bbox = self.compute_bbox()

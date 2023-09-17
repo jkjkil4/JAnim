@@ -1,7 +1,6 @@
 
 import math
-from typing import Iterable, Optional
-from janim.typing import Self
+from typing import Iterable
 
 from PySide6.QtGui import QMatrix4x4
 from PySide6.QtOpenGL import QOpenGLFramebufferObject
@@ -9,7 +8,6 @@ from PySide6.QtOpenGL import QOpenGLFramebufferObject
 from OpenGL.GL import glViewport, GL_RGBA
 
 from janim.constants import *
-from janim.constants import Iterable, JAnimColor
 from janim.items.img_item import PixelImgItem
 from janim.items.text.text import (
     DEFAULT_FONT_SIZE, get_stroke_width_by_font_size,
@@ -133,7 +131,7 @@ class PixelText(_Text):
         super().__init__(
             text, 
             font, 
-            font_size, 
+            font_size=font_size, 
             format=format,
             line_kwargs={ 'char_kwargs': { 'stroke_width': stroke_width } }, 
             **kwargs

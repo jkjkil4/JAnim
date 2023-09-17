@@ -198,7 +198,6 @@ class AnimationOnSurroundingRectangle(AnimationGroup):
     def __init__(
         self, 
         item: Item, 
-        *,
         rect_anim: Animation,
         surrounding_rect_config: dict = {},
         **kwargs

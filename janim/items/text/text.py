@@ -12,7 +12,7 @@ from janim.utils.font import Font, get_fontpath_by_name
 from janim.utils.functions import decode_utf8
 from janim.utils.space_ops import normalize, get_norm
 
-DEFAULT_FONT_SIZE = 48
+DEFAULT_FONT_SIZE = 24
 ORIG_FONT_SIZE = 48
 
 class _VTextChar(VItem):
@@ -429,7 +429,7 @@ class Text(_Text, VGroup):
         if stroke_width is None:
             stroke_width = get_stroke_width_by_font_size(font_size)
 
-        super().__init__(text, font, font_size, format=format, **kwargs)
+        super().__init__(text, font, font_size=font_size, format=format, **kwargs)
 
         self.set_color(color, opacity)
         self.set_stroke_width(stroke_width)
