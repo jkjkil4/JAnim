@@ -65,8 +65,7 @@ class MainWindow(GLWidget):
         super().closeEvent(event)
 
     def emit_frame(self) -> None:
-        if self.glwidget.isEmbed:
-            self.glwidget.update()
+        self.glwidget.update()
 
     def finish(self) -> None:
         pass

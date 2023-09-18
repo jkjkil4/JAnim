@@ -17,8 +17,6 @@ from janim.utils.color import hex_to_rgb
 
 from janim.logger import log
 
-# TODO: 修改正在执行动画时的更新逻辑
-
 class GLWidget(QOpenGLWidget):
     frame_rate = 60
     delay_ms = 1000 / frame_rate
@@ -34,9 +32,6 @@ class GLWidget(QOpenGLWidget):
         super().__init__(parent)
         self.scene = scene
 
-        # 在 `isEmbed==True` 时，需要 `updateFlag==True`
-        # 才会自动调用 `update()`，并且 `updateFlag` 每次重置
-        self.isEmbed = False
         self.updateFlag = False
 
         # 基本属性
@@ -52,7 +47,7 @@ class GLWidget(QOpenGLWidget):
         self.window_renderer = WindowRenderer()
 
     def onTimerTimeout(self) -> None:
-        if not self.isEmbed or self.updateFlag:
+        if self.updateFlag:
             self.updateFlag = False
             self.update()
 

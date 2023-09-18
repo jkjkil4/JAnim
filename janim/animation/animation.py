@@ -110,9 +110,9 @@ class Animation:
             items = [item]
         
         for item in items:
-            toplevel_item = item.get_toplevel_item()
-            if toplevel_item is not self.scene:
-                self.scene.add(toplevel_item, make_visible=False)
+            toplevel = item.get_toplevel()
+            if toplevel is not self.scene:
+                self.scene.add(toplevel, make_visible=False)
             item.set_visible(True, True, True)
 
 

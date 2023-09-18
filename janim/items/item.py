@@ -48,9 +48,9 @@ class Item:
         self.rgbas_visible = True
 
         # 其它
-        self.flags: dict[str, bool] = {}    # see `.set_flag`
+        self.flags: dict[str, bool] = {}    # see `.mark_flag`
         self.targets: dict[str, Item] = {}  # see `.generate_target`
-        self.updaters: list[Updater] = []   # see `.add_updaters`
+        self.updaters: list[Updater] = []   # see `.add_updater`
         self.renderer = self.create_renderer()
         self.npdata_to_copy_and_interpolate: set[tuple[str, str, str]] = set((
             ('points', 'get_points', 'set_points'), 
@@ -199,7 +199,7 @@ class Item:
             self.family_with_helpers = [self, *it.chain(*sub_families)]
         return self.family_with_helpers
 
-    def get_toplevel_item(self) -> Item:
+    def get_toplevel(self):
         item = self
         while isinstance(item, Item) and item.parent is not None:
             item = item.parent
