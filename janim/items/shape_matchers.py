@@ -2,6 +2,7 @@ from __future__ import annotations
 from typing import Optional
 
 from janim.constants import *
+from janim.utils.margins import Margins, MarginsType
 from janim.items.geometry.line import Line
 from janim.items.geometry.polygon import Rectangle
 from janim.items.item import Item
@@ -11,19 +12,27 @@ class SurroundingRectangle(Rectangle):
         self, 
         item: Item, 
         *,
-        buff: float = SMALL_BUFF,
+        buff: MarginsType = SMALL_BUFF,
         color: JAnimColor = YELLOW,
         width: Optional[float] = None, 
         height: Optional[float] = None, 
         **kwargs
     ):
+        if not isinstance(buff, Margins):
+            buff = Margins(buff)
         if width is None:
-            width = item.get_width() + 2 * buff
+            width = item.get_width() + buff.left + buff.right
         if height is None:
-            height = item.get_height() + 2 * buff
+            height = item.get_height() + buff.top + buff.bottom
 
         super().__init__(width, height, color=color, **kwargs)
-        self.move_to(item)
+        self.move_to(
+            item.get_center() + [
+                (buff.right - buff.left) / 2, 
+                (buff.bottom - buff.top) / 2,
+                0
+            ]
+        )
 
 class Underline(Line):
     def __init__(self, item: Item, *, buff: float = SMALL_BUFF, **kwargs):
