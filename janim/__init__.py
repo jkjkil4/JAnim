@@ -10,6 +10,7 @@ from janim.animation.creation import *
 from janim.animation.fading import *
 from janim.animation.growing import *
 from janim.animation.indication import *
+from janim.animation.movement import *
 from janim.animation.transform import *
 
 from janim.items.geometry.arc import *

@@ -27,7 +27,7 @@ class NumberLine(Line):
         stroke_width: float = 0.02,
         width: float | None = None,
         include_tip: bool = False,                      # 是否显示箭头
-        tip_config: dict = dict(),                      # 箭头属性
+        tip_config: dict = {},                          # 箭头属性
         include_ticks: bool = True,                     # 是否显示刻度
         tick_size: float = 0.1,                         # 刻度大小
         longer_tick_multiple: float = 1.5,              # 长刻度大小倍数
@@ -36,7 +36,7 @@ class NumberLine(Line):
         numbers_to_exclude: Iterable | None = None,  # 需要排除的数字
         line_to_number_direction: np.ndarray = DOWN,    # 详见 get_number_item
         line_to_number_buff: float = MED_SMALL_BUFF,    # 详见 get_number_item
-        decimal_number_config: dict = dict(),           # 数字属性
+        decimal_number_config: dict = {},               # 数字属性
     ) -> None:
         if len(x_range) == 2:
             x_range = [*x_range, 1]

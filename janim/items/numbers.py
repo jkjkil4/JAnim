@@ -27,7 +27,7 @@ class DecimalNumber(VItem):
         unit: str = None,   # Aligned to bottom unless it starts with "^"
         edge_to_fix: np.ndarray = LEFT,
         font_size: float = 48,
-        text_config: dict = dict(), # Do not pass in font_size here
+        text_config: dict = {}, # Do not pass in font_size here
         **kwargs
     ) -> None:
         super().__init__(**kwargs)

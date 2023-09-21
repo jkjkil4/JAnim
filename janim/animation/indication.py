@@ -11,6 +11,7 @@ from janim.animation.animation import Animation, ItemAnimation
 from janim.animation.transform import Transform
 from janim.animation.creation import ShowPartial, ShowCreation
 from janim.animation.fading import FadeOut
+from janim.animation.movement import Homotopy
 from janim.animation.composition import AnimationGroup, Succession
 from janim.utils.rate_functions import RateFunc, there_and_back, wiggle
 from janim.utils.bezier import interpolate
@@ -235,7 +236,26 @@ class ShowCreationThenFadeAround(AnimationOnSurroundingRectangle):
         super().__init__(item, ShowCreationThenFadeOut, **kwargs)
 
 
-# TODO: ApplyWave
+class ApplyWave(Homotopy):
+    def __init__(
+        self,
+        item: Item,
+        direction: np.ndarray = UP,
+        amplitude: float = 0.2,
+        run_time: float = 1,
+        **kwargs
+    ) -> None:
+        left_x = item.get_coord(0, LEFT)
+        right_x = item.get_coord(0, RIGHT)
+        vect = amplitude * direction
+
+        def homotopy(x, y, z, t):
+            alpha = (x - left_x) / (right_x - left_x)
+            power = np.exp(2.0 * (alpha - 0.5))
+            nudge = there_and_back(t**power)
+            return np.array([x, y, z]) + nudge * vect
+        
+        super().__init__(homotopy, item, run_time=run_time, **kwargs)
 
 class WiggleOutThenIn(ItemAnimation):
     def __init__(
@@ -273,9 +293,7 @@ class WiggleOutThenIn(ItemAnimation):
         if self.item_copy is None:
             self.item_copy = self.item_for_anim.copy()
         
-        return (
-            self.item_copy.get_family(),
-        )
+        return (self.item_copy.get_family(), )
     
     def interpolate_subitem(
         self, 

@@ -47,8 +47,8 @@ class SVGItem(VItem):
         fill_color: JAnimColor | None = None,
         fill_opacity: float | None = None,
         stroke_width: float | None = None,
-        svg_default: dict = dict(),
-        path_string_config: dict = dict(),
+        svg_default: dict = {},
+        path_string_config: dict = {},
         **kwargs
     ) -> None:
         super().__init__(**kwargs)
