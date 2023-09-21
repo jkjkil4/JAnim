@@ -312,6 +312,20 @@ class WiggleOutThenIn(ItemAnimation):
             about_point=self.get_rotate_about_point()
         )
 
-# TODO: TurnInsideOut
+class TurnInsideOut(Transform):
+    def __init__(
+        self,
+        item: Item,
+        *,
+        path_arc: float = TAU / 4,
+        **kwargs
+    ) -> None:
+        super().__init__(item, item, path_arc=path_arc, **kwargs)
+
+    def begin(self) -> None:
+        self.target_copy = self.target_item.copy().reverse_points()
+        super().begin()
+
+
 # TODO: FlashyFadeIn
 
