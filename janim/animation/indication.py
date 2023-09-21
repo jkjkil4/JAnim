@@ -326,6 +326,5 @@ class TurnInsideOut(Transform):
         self.target_copy = self.target_item.copy().reverse_points()
         super().begin()
 
-
-# TODO: FlashyFadeIn
+# TODO: [L] FlashyFadeIn
 
