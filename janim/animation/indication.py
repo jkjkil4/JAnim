@@ -7,12 +7,12 @@ from janim.items.vitem import VGroup
 from janim.items.geometry.arc import Dot, Circle
 from janim.items.geometry.line import Line
 from janim.items.shape_matchers import SurroundingRectangle
-from janim.animation.animation import Animation
+from janim.animation.animation import Animation, ItemAnimation
 from janim.animation.transform import Transform
 from janim.animation.creation import ShowPartial, ShowCreation
 from janim.animation.fading import FadeOut
 from janim.animation.composition import AnimationGroup, Succession
-from janim.utils.rate_functions import RateFunc, there_and_back
+from janim.utils.rate_functions import RateFunc, there_and_back, wiggle
 from janim.utils.bezier import interpolate
 
 class FocusOn(Transform):
@@ -236,7 +236,64 @@ class ShowCreationThenFadeAround(AnimationOnSurroundingRectangle):
 
 
 # TODO: ApplyWave
-# TODO: WiggleOutThenIn
+
+class WiggleOutThenIn(ItemAnimation):
+    def __init__(
+        self,
+        item: Item,
+        scale_value: float = 1.1,
+        rotation_angle: float = 0.01 * TAU,
+        *,
+        n_wiggles: int = 6,
+        run_time: float = 2,
+        scale_about_point: np.ndarray | None = None,
+        rotate_about_point: np.ndarray | None = None,
+        **kwargs
+    ) -> None:
+        self.scale_value = scale_value
+        self.rotation_angle = rotation_angle
+        self.n_wiggles = n_wiggles
+        self.scale_about_point = scale_about_point
+        self.rotate_about_point = rotate_about_point
+        super().__init__(item, run_time=run_time, **kwargs)
+
+        self.item_copy = None
+
+    def get_scale_about_point(self) -> np.ndarray:
+        if self.scale_about_point is not None:
+            return self.scale_about_point
+        return self.item_copy.get_center()
+    
+    def get_rotate_about_point(self) -> np.ndarray:
+        if self.rotate_about_point is not None:
+            return self.rotate_about_point
+        return self.item_copy.get_center()
+    
+    def create_interpolate_datas(self) -> tuple:
+        if self.item_copy is None:
+            self.item_copy = self.item_for_anim.copy()
+        
+        return (
+            self.item_copy.get_family(),
+        )
+    
+    def interpolate_subitem(
+        self, 
+        item: Item, 
+        interpolate_data: tuple, 
+        alpha: float
+    ) -> None:
+        starting_item, = interpolate_data
+        item.match_points(starting_item)
+        item.scale(
+            interpolate(1, self.scale_value, there_and_back(alpha)),
+            about_point=self.get_scale_about_point()
+        )
+        item.rotate(
+            wiggle(alpha, self.n_wiggles) * self.rotation_angle,
+            about_point=self.get_rotate_about_point()
+        )
+
 # TODO: TurnInsideOut
 # TODO: FlashyFadeIn
 

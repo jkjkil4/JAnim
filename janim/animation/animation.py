@@ -172,7 +172,7 @@ class ItemAnimation(Animation, metaclass=ABCMeta):
 
         如果指定了 `skip_null_items` 且返回值为 `True`，那么这一个子物件会被忽略
         '''
-        pass
+        return False
     
     def begin(self) -> None:
         # 如果物件不在场景中，那么添加到场景
