@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Callable, Optional, TypeVar
+from typing import Callable, TypeVar
 
 import numpy as np
 from janim.constants import np
@@ -43,7 +43,7 @@ class ValueTracker(Item):
         item2: ValueTracker, 
         alpha: float, 
         path_func: Callable[[np.ndarray, np.ndarray, float], np.ndarray], 
-        npdata_to_copy_and_interpolate: Optional[list[tuple[str, str, str]]] = None
+        npdata_to_copy_and_interpolate: list[tuple[str, str, str]] | None = None
     ) -> Self:
         super().interpolate(item1, item2, alpha, path_func, npdata_to_copy_and_interpolate)
         self.value = self.interpolate_fn(item1.value, item2.value, alpha)

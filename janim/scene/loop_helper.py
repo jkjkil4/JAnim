@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Optional, Callable
+from typing import Callable
 
 import numpy as np
 import traceback
@@ -11,7 +11,7 @@ class LoopHelper(QObject):
     def __init__(
         self, 
         frame_rate: float, 
-        parent: Optional[QObject] = None
+        parent: QObject | None = None
     ) -> None:
         super().__init__(parent)
         self.frame_rate = frame_rate

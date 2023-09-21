@@ -1,5 +1,4 @@
 from __future__ import annotations
-from typing import Optional
 from janim.typing import Self
 
 import os
@@ -41,13 +40,13 @@ class SVGItem(VItem):
         self,
         file_path: str | None = None,
         *,
-        width: Optional[float] = None,
-        height: Optional[float] = 2,
-        color: Optional[JAnimColor] = None,
-        opacity: Optional[float] = None,
-        fill_color: Optional[JAnimColor] = None,
-        fill_opacity: Optional[float] = None,
-        stroke_width: Optional[float] = None,
+        width: float | None = None,
+        height: float | None = 2,
+        color: JAnimColor | None = None,
+        opacity: float | None = None,
+        fill_color: JAnimColor | None = None,
+        fill_opacity: float | None = None,
+        stroke_width: float | None = None,
         svg_default: dict = dict(),
         path_string_config: dict = dict(),
         **kwargs

@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Callable, Optional
+from typing import Callable
 
 from janim.constants import *
 from janim.animation.animation import ItemAnimation
@@ -23,7 +23,7 @@ class Transform(ItemAnimation):
         *,
         path_arc: float = 0,
         path_arc_axis: np.ndarray = OUT,
-        path_func: Optional[Callable[[np.ndarray, np.ndarray, float], np.ndarray]] = None,
+        path_func: Callable[[np.ndarray, np.ndarray, float], np.ndarray] | None = None,
         call_immediately: bool = False,
         replace: bool = False,
         **kwargs

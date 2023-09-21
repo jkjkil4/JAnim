@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Callable, Optional, TypeVar, Type
+from typing import TypeVar, Type
 
 import numpy as np
 from janim.constants import np

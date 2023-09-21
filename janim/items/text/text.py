@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Iterable, Optional, Callable
+from typing import Iterable
 from janim.typing import Self
 
 import re
@@ -422,7 +422,7 @@ class Text(_Text, VGroup):
         font_size: float = DEFAULT_FONT_SIZE,
         color: JAnimColor = WHITE,
         opacity: float = 1.0,
-        stroke_width: Optional[float] = None,
+        stroke_width: float | None = None,
         format: _Text.Format = _Text.Format.PlainText,
         **kwargs
     ) -> None:

@@ -1,4 +1,3 @@
-from typing import Optional, Callable
 from abc import abstractmethod, ABCMeta
 
 from janim.constants import *
@@ -111,8 +110,8 @@ class Write(DrawBorderThenFill):
         self,
         vitem: VItem,
         *,
-        run_time: Optional[float] = None,
-        lag_ratio: Optional[float] = None,
+        run_time: float | None = None,
+        lag_ratio: float | None = None,
         rate_func: RateFunc = linear,
         **kwargs
     ) -> None:

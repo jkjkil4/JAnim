@@ -1,4 +1,3 @@
-from typing import Optional
 import sys
 import traceback
 
@@ -27,7 +26,7 @@ class GLWidget(QOpenGLWidget):
     def __init__(
         self, 
         scene: Scene, 
-        parent: Optional[QWidget] = None
+        parent: QWidget | None = None
     ) -> None:
         super().__init__(parent)
         self.scene = scene

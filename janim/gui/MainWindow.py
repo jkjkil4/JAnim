@@ -1,5 +1,3 @@
-from typing import Optional
-
 import sys
 
 from PySide6.QtCore import Qt
@@ -16,7 +14,7 @@ from janim.config import get_configuration
 from janim.logger import log
 
 class MainWindow(GLWidget):
-    def __init__(self, scene: Scene, parent: Optional[QWidget] = None) -> None:
+    def __init__(self, scene: Scene, parent: QWidget | None = None) -> None:
         super().__init__(scene, parent)
         self.glwidget = self
         self.is_closed = False

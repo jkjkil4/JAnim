@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Optional, overload
+from typing import overload
 from janim.typing import Self
 
 from janim.constants import *
@@ -83,7 +83,7 @@ class RegularPolygon(Polygon):
         self,
         n: int = 6,
         *,
-        start_angle: Optional[float] = None,
+        start_angle: float | None = None,
         **kwargs
     ) -> None:
         if start_angle is None:

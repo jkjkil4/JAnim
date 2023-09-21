@@ -1,5 +1,4 @@
 from __future__ import annotations
-from typing import Optional
 
 from janim.constants import *
 from janim.items.svg_item import SVGItem
@@ -19,10 +18,10 @@ class TexDoc(SVGItem):
         self,
         tex_string: str,
         *,
-        width: Optional[float] = None,
-        height: Optional[float] = None,
+        width: float | None = None,
+        height: float | None = None,
         fill_opacity: float = 1.0,
-        stroke_width: Optional[float] = None,
+        stroke_width: float | None = None,
         svg_default: dict = {
             'color': WHITE,
             'fill_color': WHITE

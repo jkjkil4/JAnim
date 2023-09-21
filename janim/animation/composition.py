@@ -1,6 +1,4 @@
 
-from typing import Callable, Optional
-
 from janim.animation.animation import Animation
 from janim.utils.rate_functions import RateFunc, linear, outside_linear_rate_func
 
@@ -36,7 +34,7 @@ class AnimationGroup(Animation):
     def __init__(
         self,
         *anims: Animation, 
-        run_time: Optional[float] = None,
+        run_time: float | None = None,
         rate_func: RateFunc = linear, 
         **kwargs
     ) -> None:

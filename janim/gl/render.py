@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Optional, Callable, Iterable
+from typing import Callable, Iterable
 
 import os
 import sys
@@ -57,7 +57,7 @@ class ShaderProgram(QOpenGLShaderProgram):
     def release_all() -> None:
         ShaderProgram.filepath_to_shader_map.clear()
     
-    def __init__(self, path_name: str, parent: Optional[QObject] = None) -> None:
+    def __init__(self, path_name: str, parent: QObject | None = None) -> None:
         super().__init__(parent)
         
         for suffix, shader_type in self.keys:   # 遍历后缀读取着色器代码

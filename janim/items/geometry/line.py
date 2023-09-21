@@ -1,5 +1,4 @@
 from __future__ import annotations
-from typing import Iterable, Optional
 from janim.typing import Self
 
 from janim.constants import *

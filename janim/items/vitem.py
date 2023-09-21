@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Iterable, Optional, Sequence, Callable
+from typing import Iterable, Sequence, Callable
 from janim.typing import Self
 
 import numpy as np
@@ -40,10 +40,10 @@ class VItem(Item):
     def __init__(
         self,
         *,
-        stroke_width: Optional[float | Iterable[float]] = DEFAULT_STROKE_WIDTH,
+        stroke_width: float | Iterable[float] | None = DEFAULT_STROKE_WIDTH,
         stroke_behind_fill: bool = False,
         joint_type: JointType = JointType.Auto,
-        fill_color: Optional[JAnimColor | Iterable[float]] = WHITE,
+        fill_color: JAnimColor | Iterable[float] | None = WHITE,
         fill_opacity = 0.0,
         **kwargs
     ) -> None:
@@ -415,8 +415,8 @@ class VItem(Item):
 
     def set_color(
         self,
-        color: Optional[JAnimColor | Iterable[JAnimColor]] = None,
-        opacity: Optional[float | Iterable[float]] = None,
+        color: JAnimColor | Iterable[JAnimColor] | None = None,
+        opacity: float | Iterable[float] | None = None,
         recurse: bool = True,
     ) -> Self:
         self.set_stroke(color, opacity=opacity, recurse=recurse)
@@ -453,10 +453,10 @@ class VItem(Item):
 
     def set_stroke(
         self, 
-        color: Optional[JAnimColor | Iterable[JAnimColor]] = None, 
-        width: Optional[float | Iterable[float]] = None,
-        opacity: Optional[float | Iterable[float]] = None,
-        background: Optional[bool] = None,
+        color: JAnimColor | Iterable[JAnimColor] | None = None, 
+        width: float | Iterable[float] | None = None,
+        opacity: float | Iterable[float] | None = None,
+        background: bool | None = None,
         recurse: bool = True,
     ) -> Self:
         if color is not None or opacity is not None:
@@ -543,8 +543,8 @@ class VItem(Item):
     
     def set_fill(
         self, 
-        color: Optional[JAnimColor | Iterable[JAnimColor]] = None, 
-        opacity: Optional[float | Iterable[float]] = None,
+        color: JAnimColor | Iterable[JAnimColor] | None = None, 
+        opacity: float | Iterable[float] | None = None,
         recurse: bool = True,
     ) -> Self:
         color, opacity = self.format_color(color), self.format_opacity(opacity)
@@ -929,7 +929,7 @@ class VItem(Item):
         alpha: float = 1.0, 
         reverse: bool = False, 
         colorize: bool = True,
-        angle: Optional[float] = None,
+        angle: float | None = None,
         fill_color: JAnimColor = None,
         color: JAnimColor = None,
         d_alpha: float = 1e-6,

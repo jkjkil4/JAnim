@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Iterable, Callable, Optional
+from typing import Iterable, Callable
 from janim.typing import Self
 
 import itertools as it
@@ -303,8 +303,8 @@ class Item:
     @staticmethod
     def format_rows_cols(
         items_count: int, 
-        n_rows: Optional[int],
-        n_cols: Optional[int],
+        n_rows: int | None,
+        n_cols: int | None,
     ) -> tuple[int, int]:
         if n_rows is None and n_cols is None:
             n_rows = int(np.sqrt(items_count))
@@ -316,9 +316,9 @@ class Item:
     
     @staticmethod
     def format_buff(
-        buff: Optional[float] = None,
-        h_buff: Optional[float] = None,
-        v_buff: Optional[float] = None,
+        buff: float | None = None,
+        h_buff: float | None = None,
+        v_buff: float | None = None,
         by_center_point: bool = False,
     ) -> tuple[float, float]:
         default_buff = DEFAULT_ITEM_TO_EDGE_BUFF if by_center_point else DEFAULT_ITEM_TO_ITEM_BUFF
@@ -335,12 +335,12 @@ class Item:
     
     def arrange_in_grid(
         self,
-        n_rows: Optional[int] = None,
-        n_cols: Optional[int] = None,
+        n_rows: int | None = None,
+        n_cols: int | None = None,
 
-        buff: Optional[float] = None,
-        h_buff: Optional[float] = None,
-        v_buff: Optional[float] = None,
+        buff: float | None = None,
+        h_buff: float | None = None,
+        v_buff: float | None = None,
 
         aligned_edge: np.ndarray = ORIGIN,
         by_center_point: bool = False,
@@ -368,9 +368,9 @@ class Item:
     def arrange_by_array(
         items_array: Iterable[Iterable[Item]],
 
-        buff: Optional[float] = None,
-        h_buff: Optional[float] = None,
-        v_buff: Optional[float] = None,
+        buff: float | None = None,
+        h_buff: float | None = None,
+        v_buff: float | None = None,
 
         aligned_edge: np.ndarray = ORIGIN,
         by_center_point: bool = False
@@ -652,8 +652,8 @@ class Item:
     
     def set_points_color(
         self, 
-        color: Optional[JAnimColor | Iterable[JAnimColor]] = None, 
-        opacity: Optional[float | Iterable[float]] = None,
+        color: JAnimColor | Iterable[JAnimColor] | None = None, 
+        opacity: float | Iterable[float] | None = None,
         recurse: bool = True,
     ) -> Self:
         color, opacity = self.format_color(color), self.format_opacity(opacity)
@@ -680,8 +680,8 @@ class Item:
     
     def set_color(
         self, 
-        color: Optional[JAnimColor | Iterable[JAnimColor]] = None, 
-        opacity: Optional[float | Iterable[float]] = None,
+        color: JAnimColor | Iterable[JAnimColor] | None = None, 
+        opacity: float | Iterable[float] | None = None,
         recurse: bool = True,
     ) -> Self:
         self.set_points_color(color, opacity, recurse)
@@ -808,7 +808,7 @@ class Item:
         self,
         angle: float,
         axis: np.ndarray = OUT,
-        about_point: Optional[np.ndarray] = None,
+        about_point: np.ndarray | None = None,
         **kwargs
     ) -> Self:
         rot_matrix_T = rotation_matrix(angle, axis).T
@@ -823,7 +823,7 @@ class Item:
         self,
         scale_factor: float | Iterable,
         min_scale_factor: float = 1e-8,
-        about_point: Optional[np.ndarray] = None,
+        about_point: np.ndarray | None = None,
         about_edge: np.ndarray = ORIGIN
     ) -> Self:
         if isinstance(scale_factor, Iterable):
@@ -866,9 +866,9 @@ class Item:
     
     def set_size(
         self,
-        width: Optional[float] = None,
-        height: Optional[float] = None,
-        depth: Optional[float] = None,
+        width: float | None = None,
+        height: float | None = None,
+        depth: float | None = None,
         **kwargs
     ) -> Self:
         if width:
@@ -1133,7 +1133,7 @@ class Item:
         item2: Item,
         alpha: float,
         path_func: Callable[[np.ndarray, np.ndarray, float], np.ndarray],
-        npdata_to_copy_and_interpolate: Optional[list[tuple[str, str, str]]] = None
+        npdata_to_copy_and_interpolate: list[tuple[str, str, str]] | None = None
     ) -> Self:
         if npdata_to_copy_and_interpolate is None:
             npdata_to_copy_and_interpolate = item1.npdata_to_copy_and_interpolate & item2.npdata_to_copy_and_interpolate

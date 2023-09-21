@@ -1,5 +1,4 @@
 from __future__ import annotations
-from typing import Optional
 from janim.typing import Self
 
 from janim.items.geometry.line import Line
@@ -26,7 +25,7 @@ class NumberLine(Line):
         unit_size: int = 1,
         color: JAnimColor = GREY_B,
         stroke_width: float = 0.02,
-        width: Optional[float] = None,
+        width: float | None = None,
         include_tip: bool = False,                      # 是否显示箭头
         tip_config: dict = dict(),                      # 箭头属性
         include_ticks: bool = True,                     # 是否显示刻度
@@ -34,7 +33,7 @@ class NumberLine(Line):
         longer_tick_multiple: float = 1.5,              # 长刻度大小倍数
         numbers_with_elongated_ticks: Iterable = [],    # 指定哪些数字是长刻度
         include_numbers: bool = False,                  # 是否显示数字
-        numbers_to_exclude: Optional[Iterable] = None,  # 需要排除的数字
+        numbers_to_exclude: Iterable | None = None,  # 需要排除的数字
         line_to_number_direction: np.ndarray = DOWN,    # 详见 get_number_item
         line_to_number_buff: float = MED_SMALL_BUFF,    # 详见 get_number_item
         decimal_number_config: dict = dict(),           # 数字属性
@@ -114,7 +113,7 @@ class NumberLine(Line):
         self.add(ticks)
         self.ticks = ticks
 
-    def get_tick(self, x: float, size: Optional[float] = None) -> Line:
+    def get_tick(self, x: float, size: float | None = None) -> Line:
         if size is None:
             size = self.tick_size
         result = Line(size * DOWN, size * UP)
@@ -150,8 +149,8 @@ class NumberLine(Line):
     def get_number_item(
         self,
         x: float,
-        direction: Optional[np.ndarray] = None,
-        buff: Optional[float] = None,
+        direction: np.ndarray | None = None,
+        buff: float | None = None,
         **number_config 
     ) -> DecimalNumber:
         number_config = merge_dicts_recursively(

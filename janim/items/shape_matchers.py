@@ -1,5 +1,4 @@
 from __future__ import annotations
-from typing import Optional
 
 from janim.constants import *
 from janim.utils.margins import Margins, MarginsType
@@ -14,8 +13,8 @@ class SurroundingRectangle(Rectangle):
         *,
         buff: MarginsType = SMALL_BUFF,
         color: JAnimColor = YELLOW,
-        width: Optional[float] = None, 
-        height: Optional[float] = None, 
+        width: float | None = None, 
+        height: float | None = None, 
         **kwargs
     ):
         if not isinstance(buff, Margins):
