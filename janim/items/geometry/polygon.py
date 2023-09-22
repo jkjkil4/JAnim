@@ -103,20 +103,17 @@ class Rectangle(Polygon):
     def __init__(self, corner1: Iterable, corner2: Iterable, /, **kwargs) -> None: ...
 
     def __init__(self, v1 = 4.0, v2 = 2.0, /, **kwargs) -> None:
-        if isinstance(v1, (int, float)) and isinstance(v2, (int, float)):
-            super().__init__(UR, UL, DL, DR, **kwargs)
-            self.set_size(v1, v2)
-        
-        elif isinstance(v1, Iterable) and isinstance(v2, Iterable):
+        if isinstance(v1, Iterable) and isinstance(v2, Iterable):
             ul = np.array([min(v1, v2) for v1, v2 in zip(v1, v2)])
             dr = np.array([max(v1, v2) for v1, v2 in zip(v1, v2)])
             super().__init__(UR, UL, DL, DR, **kwargs)
             self.set_size(*(dr - ul)[:2])
             self.move_to((dr + ul) / 2)
-        
-        else:
-            raise TypeError('Called with wrong argument types')
 
+        else:
+            super().__init__(UR, UL, DL, DR, **kwargs)
+            self.set_size(v1, v2)
+        
 class Square(Rectangle):
     def __init__(self, side_length: float = 2.0, **kwargs) -> None:
         self.side_length = side_length

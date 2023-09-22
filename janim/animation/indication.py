@@ -7,7 +7,7 @@ from janim.items.vitem import VGroup
 from janim.items.geometry.arc import Dot, Circle
 from janim.items.geometry.line import Line
 from janim.items.shape_matchers import SurroundingRectangle
-from janim.animation.animation import Animation, ItemAnimation
+from janim.animation.animation import Animation, SelfAnimation
 from janim.animation.transform import Transform
 from janim.animation.creation import ShowPartial, ShowCreation
 from janim.animation.fading import FadeOut
@@ -257,7 +257,7 @@ class ApplyWave(Homotopy):
         
         super().__init__(homotopy, item, run_time=run_time, **kwargs)
 
-class WiggleOutThenIn(ItemAnimation):
+class WiggleOutThenIn(SelfAnimation):
     def __init__(
         self,
         item: Item,
@@ -277,8 +277,6 @@ class WiggleOutThenIn(ItemAnimation):
         self.rotate_about_point = rotate_about_point
         super().__init__(item, run_time=run_time, **kwargs)
 
-        self.item_copy = None
-
     def get_scale_about_point(self) -> np.ndarray:
         if self.scale_about_point is not None:
             return self.scale_about_point
@@ -288,12 +286,6 @@ class WiggleOutThenIn(ItemAnimation):
         if self.rotate_about_point is not None:
             return self.rotate_about_point
         return self.item_copy.get_center()
-    
-    def create_interpolate_datas(self) -> tuple:
-        if self.item_copy is None:
-            self.item_copy = self.item_for_anim.copy()
-        
-        return (self.item_copy.get_family(), )
     
     def interpolate_subitem(
         self, 

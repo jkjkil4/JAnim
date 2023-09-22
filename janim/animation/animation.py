@@ -237,4 +237,21 @@ class ItemAnimation(Animation, metaclass=ABCMeta):
             for subitem1, subitem2 in zip(item1.get_family(), item2.get_family())
         ]
     
-    
+class SelfAnimation(ItemAnimation):
+    def __init__(
+        self,
+        item: Item,
+        **kwargs
+    ) -> None:
+        super().__init__(item, **kwargs)
+        self.item_copy = None
+
+    def create_interpolate_datas(self) -> tuple:
+        if self.item_copy is None:
+            self.item_copy = self.item_for_anim.copy()
+
+        return (self.item_copy.get_family(), )
+
+    def is_null_item(self, item: Item, interpolate_data: tuple) -> bool:
+        start_item, = interpolate_data
+        return not start_item.has_points()

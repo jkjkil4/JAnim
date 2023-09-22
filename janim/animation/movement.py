@@ -2,10 +2,10 @@ from __future__ import annotations
 from typing import Callable, Sequence
 
 from janim.constants import *
-from janim.animation.animation import ItemAnimation
+from janim.animation.animation import SelfAnimation
 from janim.items.item import Item
 
-class Homotopy(ItemAnimation):
+class Homotopy(SelfAnimation):
     def __init__(
         self,
         homotopy: Callable[[float, float, float, float], Sequence[float]],
@@ -23,19 +23,11 @@ class Homotopy(ItemAnimation):
         self.apply_function_kwargs = apply_function_kwargs
         super().__init__(item, run_time=run_time, **kwargs)
 
-        self.item_copy = None
-
     def function_at_time_t(
         self,
         t: float
     ) -> Callable[[np.ndarray], Sequence[float]]:
         return lambda p: self.homotopy(*p, t)
-    
-    def create_interpolate_datas(self) -> tuple:
-        if self.item_copy is None:
-            self.item_copy = self.item_for_anim.copy()
-
-        return (self.item_copy.get_family(), )
     
     def interpolate_subitem(
         self, 

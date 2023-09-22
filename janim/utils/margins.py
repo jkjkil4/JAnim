@@ -1,4 +1,4 @@
-
+from typing import Iterable
 
 class Margins:
     '''
@@ -7,7 +7,7 @@ class Margins:
     '''
     def __init__(self, buff: float | tuple[float]) -> None:
         self.buff = buff
-        self.is_float = isinstance(buff, float)
+        self.is_float = not isinstance(buff, Iterable)
     
     @property
     def left(self) -> float:
