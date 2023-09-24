@@ -5,7 +5,7 @@ from typing import Iterable
 from PySide6.QtGui import QMatrix4x4
 from PySide6.QtOpenGL import QOpenGLFramebufferObject
 
-from OpenGL.GL import glViewport, GL_RGBA
+from OpenGL.GL import glViewport, glClear, glClearColor, GL_RGBA, GL_COLOR_BUFFER_BIT
 
 from janim.constants import *
 from janim.items.img_item import PixelImgItem
@@ -49,6 +49,8 @@ class _PixelTextChar(PixelImgItem):
         fbo.bind()
 
         glViewport(0, 0, f_width, f_height)
+        glClearColor(0, 0, 0, 0)
+        glClear(GL_COLOR_BUFFER_BIT)
 
         txt.set_visible(True)
         txt.render(RenderData(
@@ -95,9 +97,17 @@ class _PixelTextChar(PixelImgItem):
             _VTextChar.check_act_arg_count(type, opacity, 1)
             self.set_opacity(float(opacity[0]))
 
+        def method_font_scale(type, fs) -> None:
+            _VTextChar.check_act_arg_count(type, fs, 1)
+            self.scale(float(fs[0]), about_point=ORIGIN)
+
         methods = {
             'c': method_color,
-            'opacity': method_opacity
+            'color': method_color,
+            'o': method_opacity,
+            'opacity': method_opacity,
+            'fs': method_font_scale,
+            'font_scale': method_font_scale,
         }
 
         for act in reversed(act_list):
@@ -141,4 +151,9 @@ class PixelText(_Text):
 
         if format == _Text.Format.RichText:
             self.apply_rich_text()
+
+        for line in self:
+            line.arrange_in_line()
+        self.arrange_in_lines()
+        self.to_center()
 

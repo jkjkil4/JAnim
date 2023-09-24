@@ -74,7 +74,7 @@ class _VTextChar(VItem):
             if len(act) == cnt:
                 return cnt
         args_cnt = ' or '.join(str(v) for v in count)
-        raise TypeError(f'"{type}" takes {args_cnt} arguments but {len(act) - 1} was given')
+        raise TypeError(f'"{type}" takes {args_cnt} arguments but {len(act)} was given')
     
     @staticmethod
     def get_color_value_by_key(key) -> JAnimColor:
@@ -128,13 +128,26 @@ class _VTextChar(VItem):
             if arg_cnt == 2:
                 method_fill_color('', [ds[1]])
 
+        def method_font_scale(type, fs) -> None:
+            self.check_act_arg_count(type, fs, 1)
+            self.scale(float(fs[0]), about_point=ORIGIN)
+
+
         methods = {
             'c': method_color,
+            'color': method_color,
             'sc': method_stroke_color,
+            'stroke_color': method_stroke_color,
             'fc': method_fill_color,
+            'fill_color': method_fill_color,
             'o': method_opacity,
+            'opacity': method_opacity,
             's': method_stroke,
+            'stroke': method_stroke,
             'ds': method_distinct_stroke,
+            'distinct_stroke': method_distinct_stroke,
+            'fs': method_font_scale,
+            'font_scale': method_font_scale,
         }
 
         for act in reversed(act_list):
@@ -159,7 +172,6 @@ class _TextLine(Group):
             ],
             **kwargs
         )
-        self.arrange_in_line()
 
         # 标记位置
         self.mark = Item()
@@ -258,9 +270,6 @@ class _Text(Group):
             ],
             **kwargs
         )
-                            
-        self.arrange_in_lines()
-        self.to_center()
         
     def arrange_in_lines(self, buff: float = 0, base_buff: float = 0.85) -> Self:
         '''
@@ -269,18 +278,15 @@ class _Text(Group):
         '''
         if len(self.items) == 0:
             return
-        
-        pos: np.ndarray = None
-        vert: np.ndarray = None
-        def update(line: _TextLine) -> None:
-            nonlocal pos, vert
-            pos = line.get_mark_orig()
-            vert = pos - line.get_mark_up()
-
-        update(self[0])
+    
+        pos = self[0].get_mark_orig()
         for line in self[1:]:
-            line.shift((pos + base_buff * vert + buff * normalize(vert)) - line.get_mark_orig())
-            update(line)
+            vert = line.get_mark_orig() - line.get_mark_up()
+            line.shift(
+                (pos + base_buff * vert + buff * normalize(vert)) 
+                - line.get_mark_orig()
+            )
+            pos = line.get_mark_orig()
         
         return self
     
@@ -436,6 +442,11 @@ class Text(_Text, VGroup):
 
         if format == _Text.Format.RichText:
             self.apply_rich_text()
+
+        for line in self:
+            line.arrange_in_line()
+        self.arrange_in_lines()
+        self.to_center()
 
 
 def get_stroke_width_by_font_size(font_size: float) -> float:

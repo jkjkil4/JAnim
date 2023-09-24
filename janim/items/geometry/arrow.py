@@ -116,6 +116,9 @@ class Arrow(Line):
         tip_kwargs: dict = {},
         **kwargs
     ) -> None:
+        if 'center_anchor' not in tip_kwargs:
+            tip_kwargs['center_anchor'] = ArrowTip.CenterAnchor.Front
+
         super().__init__(start, end, buff=buff, **kwargs)
         self.max_length_to_tip_length_ratio = max_length_to_tip_length_ratio
         

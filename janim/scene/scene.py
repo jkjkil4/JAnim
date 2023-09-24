@@ -80,7 +80,7 @@ class Scene:
     def __len__(self):
         return len(self.items)
 
-    def add(self, *items: Item, make_visible: bool = True) -> Self:
+    def add(self, *items: Item, make_visible: bool = True, op = list.append) -> Self:
         for item in items:
             if make_visible:
                 item.set_visible(True)
@@ -89,22 +89,21 @@ class Scene:
                 continue
             if item.parent is not None:
                 item.parent.remove(item)
-            self.items.append(item)
+            op(self.items, item)
             item.parent = self
         
         return self
     
-    def add_to_front(self, item: Item) -> Self:
-        if item.parent is not None:
-            item.parent.remove(item)
-        self.add(item)
+    def add_to_front(self, *items: Item, make_visible: bool = True) -> Self:
+        self.add(*items, make_visible=make_visible)
         return self
     
-    def add_to_back(self, item: Item) -> Self:
-        if item.parent is not None:
-            item.parent.remove(item)
-        self.items.insert(0, item)
-        item.parent = self
+    def add_to_back(self, *items: Item, make_visible: bool = True) -> Self:
+        self.add(
+            *reversed(items),
+            make_visible=make_visible,
+            op=lambda items, item: items.insert(0, item)
+        )
         return self
 
     def remove(self, *items: Item) -> Self:
@@ -254,7 +253,7 @@ class Scene:
             fn_progress, 
             anim.begin_time + anim.run_time,
             delay=not self.write_to_file and not skipping,
-            desc=f'Scene.play() at {os.path.basename(f_back.f_code.co_filename)}:{f_back.f_lineno}'
+            desc=f'play() at {os.path.basename(f_back.f_code.co_filename)}:{f_back.f_lineno}'
         )
         if not succ or (not self.write_to_file and self.scene_writer.is_closed):
             raise EndSceneEarlyException()
@@ -271,7 +270,7 @@ class Scene:
             fn_progress, 
             duration,
             delay=not self.write_to_file and not skipping,
-            desc=f'Scene.wait() at {os.path.basename(f_back.f_code.co_filename)}:{f_back.f_lineno}'
+            desc=f'wait() at {os.path.basename(f_back.f_code.co_filename)}:{f_back.f_lineno}'
         )
         if not succ or (not self.write_to_file and self.scene_writer.is_closed):
             raise EndSceneEarlyException()
@@ -319,7 +318,8 @@ class Scene:
             frame = f_current.f_back
         
         self.embed_globals = frame.f_globals
-        self.embed_locals = frame.f_locals
+        self.embed_globals.update(frame.f_locals)
+        # self.embed_locals = frame.f_locals
         exec('from janim import *', self.embed_globals)
 
         self.stop_skipping()
@@ -329,7 +329,8 @@ class Scene:
     
     def execute(self, code: str) -> None:
         print(code)
-        exec(code, self.embed_globals, self.embed_locals)
+        # exec(code, self.embed_globals, self.embed_locals)
+        exec(code, self.embed_globals)
 
     #endregion
 

@@ -45,8 +45,6 @@ class Frame:
         output_filepath_wo_ext = os.path.join(output_path, self.scene.__class__.__name__)
         self.open_movie_pipe(output_filepath_wo_ext)
 
-        glClearColor(*hex_to_rgb(self.scene.background_color), 0.0 if cli.transparent else 1.0)
-
         # 颜色混合
         glEnable(GL_BLEND)
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
@@ -60,6 +58,7 @@ class Frame:
         
         self.fbo.bind()
 
+        glClearColor(*hex_to_rgb(self.scene.background_color), 0.0 if get_cli().transparent else 1.0)
         glClear(GL_COLOR_BUFFER_BIT)
         try:
             glViewport(0, 0, *self.scene.camera.wnd_shape)
