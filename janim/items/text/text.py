@@ -3,11 +3,12 @@ from typing import Iterable
 from janim.typing import Self
 
 import re
+import itertools as it
 
 from janim.constants import *
 from janim.config import get_configuration
 from janim.items.item import Item, Group
-from janim.items.vitem import VItem, VGroup
+from janim.items.vitem import VItem, VGroup, NoRelVGroup
 from janim.utils.font import Font, get_fontpath_by_name
 from janim.utils.functions import decode_utf8
 from janim.utils.space_ops import normalize, get_norm
@@ -212,6 +213,7 @@ class _VTextLine(_TextLine, VGroup):
 
 class _Text(Group):
     LineClass = _VTextLine
+    SelectClass = NoRelVGroup
 
     class Format(Enum):
         PlainText = 0
@@ -270,6 +272,32 @@ class _Text(Group):
             ],
             **kwargs
         )
+
+    def idx_to_row_col(self, idx: int) -> tuple[int, int]:
+        for i, line in enumerate(self):
+            if idx < len(line):
+                return i, idx
+            idx -= len(line)
+        return len(self) - 1, idx
+
+    def select_parts(self, pattern):
+        total_text: str = ''.join([line.text for line in self])
+        parts = []
+        for mch in re.finditer(pattern, total_text):
+            l_row, l_col = self.idx_to_row_col(mch.start())
+            r_row, r_col = self.idx_to_row_col(mch.end())
+            if l_row == r_row:
+                parts.append(self[l_row][l_col:r_col])
+            else:
+                parts.append(
+                    self.SelectClass(*it.chain(
+                        self[l_row][l_col:],
+                        *self[l_row + 1 : r_row],
+                        self[r_row][:r_col]
+                    ))
+                )
+        return self.SelectClass(*parts)
+
         
     def arrange_in_lines(self, buff: float = 0, base_buff: float = 0.85) -> Self:
         '''

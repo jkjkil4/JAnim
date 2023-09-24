@@ -9,6 +9,7 @@ from OpenGL.GL import glViewport, glClear, glClearColor, GL_RGBA, GL_COLOR_BUFFE
 
 from janim.constants import *
 from janim.items.img_item import PixelImgItem
+from janim.items.item import NoRelGroup
 from janim.items.text.text import (
     DEFAULT_FONT_SIZE, get_stroke_width_by_font_size,
     _VTextChar, _TextLine, _Text
@@ -123,6 +124,7 @@ class _PixelTextLine(_TextLine):
 
 class PixelText(_Text):
     LineClass = _PixelTextLine
+    SelectClass = NoRelGroup
 
     def __init__(
         self, 
