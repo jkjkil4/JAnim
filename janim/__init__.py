@@ -21,6 +21,7 @@ from janim.items.geometry.polygon import *
 from janim.items.text.pixel_text import *
 from janim.items.text.tex import *
 from janim.items.text.text import *
+from janim.items.coordinate_systems import *
 from janim.items.dot_cloud import *
 from janim.items.img_item import *
 from janim.items.item import *

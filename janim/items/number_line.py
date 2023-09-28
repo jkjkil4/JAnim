@@ -4,8 +4,9 @@ from janim.typing import Self
 from janim.items.geometry.line import Line
 from janim.items.vitem import VGroup
 from janim.items.numbers import DecimalNumber
-from janim.utils.bezier import outer_interpolate
+from janim.utils.bezier import outer_interpolate, interpolate
 from janim.utils.dict_ops import merge_dicts_recursively
+from janim.utils.simple_functions import fdiv
 from janim.constants import *
 
 class NumberLine(Line):
@@ -33,7 +34,7 @@ class NumberLine(Line):
         longer_tick_multiple: float = 1.5,              # 长刻度大小倍数
         numbers_with_elongated_ticks: Iterable = [],    # 指定哪些数字是长刻度
         include_numbers: bool = False,                  # 是否显示数字
-        numbers_to_exclude: Iterable | None = None,  # 需要排除的数字
+        numbers_to_exclude: Iterable | None = None,     # 需要排除的数字
         line_to_number_direction: np.ndarray = DOWN,    # 详见 get_number_item
         line_to_number_buff: float = MED_SMALL_BUFF,    # 详见 get_number_item
         decimal_number_config: dict = {},               # 数字属性
@@ -103,9 +104,18 @@ class NumberLine(Line):
         r = np.arange(x_min, x_max, self.x_step)
         return r
     
-    def add_ticks(self):
+    def add_ticks(
+        self,
+        excluding: Iterable[float] | None = None,
+    ) -> None:
+        if excluding is None:
+            excluding = self.numbers_to_exclude
+
         ticks = VGroup()
         for x in self.get_tick_range():
+            if excluding is not None and np.isclose(excluding, x).any():
+                continue
+            
             size = self.tick_size
             if np.isclose(self.numbers_with_elongated_ticks, x).any():
                 size *= self.longer_tick_multiple
@@ -139,7 +149,7 @@ class NumberLine(Line):
         
         numbers = VGroup()
         for x in x_values:
-            if excluding is not None and x in excluding:
+            if excluding is not None and np.isclose(excluding, x).any():
                 continue
             numbers.add(self.get_number_item(x, **kwargs))
         self.add(numbers)
@@ -170,6 +180,29 @@ class NumberLine(Line):
         if x < 0 and direction[0] == 0:
             num_item.shift(num_item[0].get_width() * LEFT / 2)
         return num_item
+    
+    def number_to_point(self, number: float | np.ndarray) -> np.ndarray:
+        alpha = (number - self.x_min) / (self.x_max - self.x_min)
+        return outer_interpolate(self.get_start(), self.get_end(), alpha)
+    
+    def point_to_number(self, point: np.ndarray) -> float:
+        points = self.get_points()
+        start = points[0]
+        end = points[-1]
+        vect = end - start
+        proportion = fdiv(
+            np.dot(point - start, vect),
+            np.dot(end - start, vect),
+        )
+        return interpolate(self.x_min, self.x_max, proportion)
+
+    def n2p(self, number: float) -> np.ndarray:
+        """Abbreviation for number_to_point"""
+        return self.number_to_point(number)
+
+    def p2n(self, point: np.ndarray) -> float:
+        """Abbreviation for point_to_number"""
+        return self.point_to_number(point)
 
 class UnitInterval(NumberLine):
     def __init__(
