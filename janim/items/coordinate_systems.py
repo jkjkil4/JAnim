@@ -426,7 +426,7 @@ class Axes(VGroup, CoordinateSystem):
             labels = axis.add_numbers(values, **kwargs)
             self.coordinate_labels.add(labels)
         return self.coordinate_labels
-    
+
 # TODO: ThreeDAxes
 # TODO: NumberPlane
 # TODO: ComplexPlane
