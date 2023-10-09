@@ -6,6 +6,7 @@ from janim.constants import *
 from janim.items.vitem import VItem
 
 DEFAULT_T_RANGE = [0, 1, 0.1]
+DEFAULT_X_RANGE = [-8, 8, 0.25]
 
 class ParametricCurve(VItem):
     def __init__(
@@ -53,12 +54,36 @@ class ParametricCurve(VItem):
     def get_t_func(self):
         return self.t_func
 
-    def get_function(self): # TODO: 解耦合
+    def get_function(self):
         if hasattr(self, "underlying_function"):
             return self.underlying_function
         if hasattr(self, "function"):
             return self.function
 
-    def get_x_range(self):  # TODO: 解耦合
+    def get_x_range(self):
         if hasattr(self, "x_range"):
             return self.x_range
+        
+class FunctionGraph(ParametricCurve):
+    def __init__(
+        self,
+        function: Callable[[float], float],
+        x_range: Sequence[float] = DEFAULT_X_RANGE,
+        *,
+        color: JAnimColor = YELLOW,
+        **kwargs
+    ) -> None:
+        self.function = function
+
+        self.x_range = DEFAULT_X_RANGE
+        self.x_range[:len(x_range)] = x_range
+
+        super().__init__(
+            lambda t: [t, function(t), 0], 
+            self.x_range, 
+            color=color, 
+            **kwargs
+        )
+
+# TODO: ImplicitFunction
+
