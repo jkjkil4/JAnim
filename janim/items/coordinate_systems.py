@@ -2,19 +2,25 @@ from __future__ import annotations
 from abc import ABCMeta, abstractmethod
 
 from janim.typing import RangeSpecifier
-from typing import TypeVar, Type, Sequence
+from typing import TypeVar, Type, Sequence, Callable
 T = TypeVar('T', bound='Item')
 
 from janim.items.item import Item
-from janim.items.vitem import VGroup
+from janim.items.vitem import VGroup, NoRelVGroup
 from janim.items.text.tex import Tex
-from janim.items.geometry.line import DashedLine
+from janim.items.geometry.line import Line, DashedLine
+from janim.items.geometry.polygon import Rectangle
 from janim.items.number_line import NumberLine
+from janim.items.functions import ParametricCurve
 from janim.utils.dict_ops import merge_dicts_recursively
+from janim.utils.simple_functions import binary_search
+from janim.utils.space_ops import rotate_vector, angle_of_vector, get_norm
 from janim.constants import *
 
 DEFAULT_X_RANGE = (-8.0, 8.0, 1.0)
 DEFAULT_Y_RANGE = (-4.0, 4.0, 1.0)
+
+EPSILON = 1e-8
 
 class CoordinateSystem(metaclass=ABCMeta):
     def __init__(
@@ -139,193 +145,191 @@ class CoordinateSystem(metaclass=ABCMeta):
     def get_h_line(self, point: np.ndarray, **kwargs):
         return self.get_line_from_axis_to_point(1, point, **kwargs)
     
-    # TODO: get_graph 以及相关的方法
-
     # Useful for graphing
-    # def get_graph(
-    #     self,
-    #     function: Callable[[float], float],
-    #     x_range: Sequence[float] | None = None,
-    #     **kwargs
-    # ) -> ParametricCurve:
-    #     t_range = np.array(self.x_range, dtype=float)
-    #     if x_range is not None:
-    #         t_range[:len(x_range)] = x_range
-    #     # For axes, the third coordinate of x_range indicates
-    #     # tick frequency.  But for functions, it indicates a
-    #     # sample frequency
-    #     if x_range is None or len(x_range) < 3:
-    #         t_range[2] /= self.num_sampled_graph_points_per_tick
+    def get_graph(
+        self,
+        function: Callable[[float], float],
+        x_range: Sequence[float] | None = None,
+        **kwargs
+    ) -> ParametricCurve:
+        t_range = np.array(self.x_range, dtype=float)
+        if x_range is not None:
+            t_range[:len(x_range)] = x_range
+        # For axes, the third coordinate of x_range indicates
+        # tick frequency.  But for functions, it indicates a
+        # sample frequency
+        if x_range is None or len(x_range) < 3:
+            t_range[2] /= self.num_sampled_graph_points_per_tick
 
-    #     graph = ParametricCurve(
-    #         lambda t: self.c2p(t, function(t)),
-    #         t_range=t_range,
-    #         **kwargs
-    #     )
-    #     graph.underlying_function = function
-    #     graph.x_range = x_range
-    #     return graph
+        graph = ParametricCurve(
+            lambda t: self.c2p(t, function(t)),
+            t_range=t_range,
+            **kwargs
+        )
+        graph.underlying_function = function
+        graph.x_range = x_range
+        return graph
 
-    # def get_parametric_curve(
-    #     self,
-    #     function: Callable[[float], np.ndarray],
-    #     **kwargs
-    # ) -> ParametricCurve:
-    #     dim = self.dimension
-    #     graph = ParametricCurve(
-    #         lambda t: self.coords_to_point(*function(t)[:dim]),
-    #         **kwargs
-    #     )
-    #     graph.underlying_function = function
-    #     return graph
+    def get_parametric_curve(
+        self,
+        function: Callable[[float], np.ndarray],
+        **kwargs
+    ) -> ParametricCurve:
+        dim = self.dimension
+        graph = ParametricCurve(
+            lambda t: self.coords_to_point(*function(t)[:dim]),
+            **kwargs
+        )
+        graph.underlying_function = function
+        return graph
 
-    # def input_to_graph_point(
-    #     self,
-    #     x: float,
-    #     graph: ParametricCurve
-    # ) -> np.ndarray | None:
-    #     if hasattr(graph, "underlying_function"):
-    #         return self.coords_to_point(x, graph.underlying_function(x))
-    #     else:
-    #         alpha = binary_search(
-    #             function=lambda a: self.point_to_coords(
-    #                 graph.quick_point_from_proportion(a)
-    #             )[0],
-    #             target=x,
-    #             lower_bound=self.x_range[0],
-    #             upper_bound=self.x_range[1],
-    #         )
-    #         if alpha is not None:
-    #             return graph.quick_point_from_proportion(alpha)
-    #         else:
-    #             return None
+    # TODO: 使横坐标不水平时仍能得到正确结果
+    def input_to_graph_point(
+        self,
+        x: float,
+        graph: ParametricCurve
+    ) -> np.ndarray | None:
+        if hasattr(graph, "underlying_function"):
+            return self.coords_to_point(x, graph.underlying_function(x))
+        else:
+            alpha = binary_search(
+                function=lambda a: self.point_to_coords(
+                    graph.quick_point_from_proportion(a)
+                )[0],
+                target=x,
+                lower_bound=self.x_range[0],
+                upper_bound=self.x_range[1],
+            )
+            if alpha is not None:
+                return graph.quick_point_from_proportion(alpha)
+            else:
+                return None
 
-    # def i2gp(self, x: float, graph: ParametricCurve) -> np.ndarray | None:
-    #     """
-    #     Alias for input_to_graph_point
-    #     """
-    #     return self.input_to_graph_point(x, graph)
+    def i2gp(self, x: float, graph: ParametricCurve) -> np.ndarray | None:
+        """
+        Alias for input_to_graph_point
+        """
+        return self.input_to_graph_point(x, graph)
 
-    # def get_graph_label(
-    #     self,
-    #     graph: ParametricCurve,
-    #     label: str | Mobject = "f(x)",
-    #     x: float | None = None,
-    #     direction: np.ndarray = RIGHT,
-    #     buff: float = MED_SMALL_BUFF,
-    #     color: ManimColor | None = None
-    # ) -> Tex | Mobject:
-    #     if isinstance(label, str):
-    #         label = Tex(label)
-    #     if color is None:
-    #         label.match_color(graph)
-    #     if x is None:
-    #         # Searching from the right, find a point
-    #         # whose y value is in bounds
-    #         max_y = FRAME_Y_RADIUS - label.get_height()
-    #         max_x = FRAME_X_RADIUS - label.get_width()
-    #         for x0 in np.arange(*self.x_range)[::-1]:
-    #             pt = self.i2gp(x0, graph)
-    #             if abs(pt[0]) < max_x and abs(pt[1]) < max_y:
-    #                 x = x0
-    #                 break
-    #         if x is None:
-    #             x = self.x_range[1]
+    def get_graph_label(
+        self,
+        graph: ParametricCurve,
+        label: str | Item = "f(x)",
+        x: float | None = None,
+        # direction: np.ndarray = RIGHT,
+        buff: float = MED_SMALL_BUFF,
+        color: JAnimColor | None = None
+    ) -> Tex | Item:
+        if isinstance(label, str):
+            label = Tex(label)
+        if color is None:
+            label.set_color(graph.get_rgbas()[0][:3])
+        if x is None:
+            # Searching from the right, find a point
+            # whose y value is in bounds
+            max_y = FRAME_Y_RADIUS - label.get_height()
+            max_x = FRAME_X_RADIUS - label.get_width()
+            for x0 in np.arange(*self.x_range)[::-1]:
+                pt = self.i2gp(x0, graph)
+                if abs(pt[0]) < max_x and abs(pt[1]) < max_y:
+                    x = x0
+                    break
+            if x is None:
+                x = self.x_range[1]
 
-    #     point = self.input_to_graph_point(x, graph)
-    #     angle = self.angle_of_tangent(x, graph)
-    #     normal = rotate_vector(RIGHT, angle + 90 * DEGREES)
-    #     if normal[1] < 0:
-    #         normal *= -1
-    #     label.next_to(point, normal, buff=buff)
-    #     label.shift_onto_screen()
-    #     return label
+        point = self.input_to_graph_point(x, graph)
+        angle = self.angle_of_tangent(x, graph)
+        normal = rotate_vector(RIGHT, angle + 90 * DEGREES)
+        if normal[1] < 0:
+            normal *= -1
+        label.next_to(point, normal, buff=buff)
+        label.shift_onto_screen()
+        return label
 
-    # def get_v_line_to_graph(self, x: float, graph: ParametricCurve, **kwargs):
-    #     return self.get_v_line(self.i2gp(x, graph), **kwargs)
+    def get_v_line_to_graph(self, x: float, graph: ParametricCurve, **kwargs):
+        return self.get_v_line(self.i2gp(x, graph), **kwargs)
 
-    # def get_h_line_to_graph(self, x: float, graph: ParametricCurve, **kwargs):
-    #     return self.get_h_line(self.i2gp(x, graph), **kwargs)
+    def get_h_line_to_graph(self, x: float, graph: ParametricCurve, **kwargs):
+        return self.get_h_line(self.i2gp(x, graph), **kwargs)
 
-    # # For calculus
-    # def angle_of_tangent(
-    #     self,
-    #     x: float,
-    #     graph: ParametricCurve,
-    #     dx: float = EPSILON
-    # ) -> float:
-    #     p0 = self.input_to_graph_point(x, graph)
-    #     p1 = self.input_to_graph_point(x + dx, graph)
-    #     return angle_of_vector(p1 - p0)
+    # For calculus
+    def angle_of_tangent(
+        self,
+        x: float,
+        graph: ParametricCurve,
+        dx: float = EPSILON
+    ) -> float:
+        p0 = self.input_to_graph_point(x, graph)
+        p1 = self.input_to_graph_point(x + dx, graph)
+        return angle_of_vector(p1 - p0)
 
-    # def slope_of_tangent(
-    #     self,
-    #     x: float,
-    #     graph: ParametricCurve,
-    #     **kwargs
-    # ) -> float:
-    #     return np.tan(self.angle_of_tangent(x, graph, **kwargs))
+    def slope_of_tangent(
+        self,
+        x: float,
+        graph: ParametricCurve,
+        **kwargs
+    ) -> float:
+        return np.tan(self.angle_of_tangent(x, graph, **kwargs))
 
-    # def get_tangent_line(
-    #     self,
-    #     x: float,
-    #     graph: ParametricCurve,
-    #     length: float = 5,
-    #     line_func: Type[T] = Line
-    # ) -> T:
-    #     line = line_func(LEFT, RIGHT)
-    #     line.set_width(length)
-    #     line.rotate(self.angle_of_tangent(x, graph))
-    #     line.move_to(self.input_to_graph_point(x, graph))
-    #     return line
+    def get_tangent_line(
+        self,
+        x: float,
+        graph: ParametricCurve,
+        length: float = 5,
+        line_func: Type[T] = Line
+    ) -> T:
+        line = line_func(LEFT, RIGHT)
+        line.set_width(length)
+        line.rotate(self.angle_of_tangent(x, graph))
+        line.move_to(self.input_to_graph_point(x, graph))
+        return line
 
-    # def get_riemann_rectangles(
-    #     self,
-    #     graph: ParametricCurve,
-    #     x_range: Sequence[float] = None,
-    #     dx: float | None = None,
-    #     input_sample_type: str = "left",
-    #     stroke_width: float = 1,
-    #     stroke_color: ManimColor = BLACK,
-    #     fill_opacity: float = 1,
-    #     colors: Iterable[ManimColor] = (BLUE, GREEN),
-    #     stroke_background: bool = True,
-    #     show_signed_area: bool = True
-    # ) -> VGroup:
-    #     if x_range is None:
-    #         x_range = self.x_range[:2]
-    #     if dx is None:
-    #         dx = self.x_range[2]
-    #     if len(x_range) < 3:
-    #         x_range = [*x_range, dx]
+    def get_riemann_rectangles(
+        self,
+        graph: ParametricCurve,
+        x_range: Sequence[float] = None,
+        dx: float | None = None,
+        input_sample_type: InputSampleType = InputSampleType.Left,
+        stroke_width: float = 0.005,
+        stroke_color: JAnimColor = BLACK,
+        fill_opacity: float = 1,
+        colors: Iterable[JAnimColor] = (BLUE, GREEN),
+        stroke_background: bool = True,
+        # show_signed_area: bool = True
+    ) -> VGroup:
+        if x_range is None:
+            x_range = self.x_range[:2]
+        if dx is None:
+            dx = self.x_range[2]
+        if len(x_range) < 3:
+            x_range = [*x_range, dx]
 
-    #     rects = []
-    #     xs = np.arange(*x_range)
-    #     for x0, x1 in zip(xs, xs[1:]):
-    #         if input_sample_type == "left":
-    #             sample = x0
-    #         elif input_sample_type == "right":
-    #             sample = x1
-    #         elif input_sample_type == "center":
-    #             sample = 0.5 * x0 + 0.5 * x1
-    #         else:
-    #             raise Exception("Invalid input sample type")
-    #         height = get_norm(
-    #             self.i2gp(sample, graph) - self.c2p(sample, 0)
-    #         )
-    #         rect = Rectangle(width=self.x_axis.n2p(x1)[0] - self.x_axis.n2p(x0)[0], 
-    #                          height=height)
-    #         rect.move_to(self.c2p(x0, 0), DL)
-    #         rects.append(rect)
-    #     result = VGroup(*rects)
-    #     result.set_submobject_colors_by_gradient(*colors)
-    #     result.set_style(
-    #         stroke_width=stroke_width,
-    #         stroke_color=stroke_color,
-    #         fill_opacity=fill_opacity,
-    #         stroke_background=stroke_background
-    #     )
-    #     return result
+        rects = []
+        xs = np.arange(*x_range)
+        for x0, x1 in zip(xs, xs[1:]):
+            if input_sample_type == InputSampleType.Left:
+                sample = x0
+            elif input_sample_type == InputSampleType.Right:
+                sample = x1
+            elif input_sample_type == InputSampleType.Center:
+                sample = 0.5 * x0 + 0.5 * x1
+            else:
+                raise Exception("Invalid input sample type")
+            
+            height_vect = self.i2gp(sample, graph) - self.c2p(sample, 0)
+            width_vect = self.x_axis.n2p(x1) - self.x_axis.n2p(x0)
+            n2p_x0 = self.x_axis.n2p(x0)
+            rect = Rectangle(
+                n2p_x0,
+                n2p_x0 + width_vect + height_vect
+            )
+            rects.append(rect)
+
+        result = VGroup(*rects)
+        result.set_subitem_colors_by_gradient(*colors)
+        result.set_stroke(stroke_color, stroke_width, background=stroke_background)
+        result.set_fill(opacity=fill_opacity)
+        return result
 
     def get_area_under_graph(self, graph, x_range, fill_color=BLUE, fill_opacity=1):
         # TODO: get_area_under_graph
@@ -381,7 +385,7 @@ class Axes(VGroup, CoordinateSystem):
         # Add as a separate group in case various other
         # mobjects are added to self, as for example in
         # NumberPlane below
-        self.axes = VGroup(self.x_axis, self.y_axis)
+        self.axes = NoRelVGroup(self.x_axis, self.y_axis)
         self.add(*self.axes)
         self.to_center()
 

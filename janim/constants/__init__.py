@@ -1,6 +1,7 @@
 from typing import Union, Iterable
 import ctypes
 import numpy as np
+import colour
 from enum import Enum
 
 from janim.constants.colors import *
@@ -15,9 +16,14 @@ class AnchorMode(Enum):
     ApproxSmooth = 1
     TrueSmooth = 2
 
+class InputSampleType(Enum):
+    Left = 0
+    Right = 1
+    Center = 2
+
 FFMPEG_BIN = 'ffmpeg'
 
-JAnimColor = Union[str, Iterable]
+JAnimColor = Union[str, colour.Color, Iterable]
 
 FLOAT_SIZE = ctypes.sizeof(ctypes.c_float)
 UINT_SIZE = ctypes.sizeof(ctypes.c_uint)

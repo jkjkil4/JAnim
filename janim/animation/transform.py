@@ -60,11 +60,11 @@ class Transform(ItemAnimation):
             self.item_copy.get_family(), 
             self.target_copy.get_family(),
             ItemAnimation.compute_npdata_to_copy_and_interpolate(self.item_copy, self.target_copy),
-            ItemAnimation.compute_triangulation_equals(self.item, self.target_item)
+            ItemAnimation.compute_triangulation_equals(self.item, self.target_copy)
         )
     
     def is_null_item(self, item: Item, interpolate_data: tuple) -> bool:
-        item1, item2, _ = interpolate_data
+        item1, item2, _, _ = interpolate_data
         return not item1.has_points() and not item2.has_points()
     
     def begin(self) -> None:

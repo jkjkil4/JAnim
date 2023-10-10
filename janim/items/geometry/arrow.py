@@ -117,7 +117,7 @@ class Arrow(Line):
         **kwargs
     ) -> None:
         if 'center_anchor' not in tip_kwargs:
-            tip_kwargs['center_anchor'] = ArrowTip.CenterAnchor.Front
+            tip_kwargs['center_anchor'] = ArrowTip.CenterAnchor.Center
 
         super().__init__(start, end, buff=buff, **kwargs)
         self.max_length_to_tip_length_ratio = max_length_to_tip_length_ratio

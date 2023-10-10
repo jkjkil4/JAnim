@@ -178,10 +178,11 @@ class ItemAnimation(Animation, metaclass=ABCMeta):
         # 如果物件不在场景中，那么添加到场景
         self.make_visible(self.item_for_anim)
 
-        # 为 `interpolate_subitem`` 准备数据
+        # 为 `interpolate_subitem` 准备数据
+        datas = self.create_interpolate_datas()
         self.families = list(zip(
             self.item_for_anim.get_family(),
-            zip(*self.create_interpolate_datas())
+            zip(*datas)
         ))
         if self.skip_null_items:
             self.families = [

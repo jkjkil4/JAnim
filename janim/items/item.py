@@ -10,7 +10,7 @@ import inspect
 
 from janim.constants import *
 from janim.utils.space_ops import rotation_matrix, get_norm, angle_of_vector
-from janim.utils.color import hex_to_rgb
+from janim.utils.color import color_to_rgb, hex_to_rgb, color_gradient
 from janim.utils.iterables import resize_array, resize_preserving_order
 from janim.utils.bezier import interpolate, integer_interpolate
 
@@ -68,7 +68,7 @@ class Item:
     
     @staticmethod
     def check_flag(func: Callable, key: str = '') -> bool:
-        return func.__self__.flags.get(key, True)
+        return func.__self__.flags.get(f'{func.__name__}_{key}', True)
 
     @staticmethod
     def take_flag(func: Callable, key: str = '') -> bool:
@@ -618,6 +618,8 @@ class Item:
             return None
         if isinstance(color, str):
             color = [hex_to_rgb(color)]
+        elif isinstance(color, colour.Color):
+            color = [color_to_rgb(color)]
         elif isinstance(color, Iterable) and not any(isinstance(v, Iterable) for v in color):
             color = [color]
         else:
@@ -697,6 +699,19 @@ class Item:
         if recurse:
             for item in self.items:
                 item.set_opacity(opacity)
+        return self
+    
+    def set_subitem_colors_by_gradient(self, *colors: JAnimColor) -> Self:
+        if len(colors) == 0:
+            raise Exception("Need at least one color")
+        elif len(colors) == 1:
+            return self.set_color(*colors)
+
+        # items = self.family_members_with_points()
+        new_colors = color_gradient(colors, len(self.items))
+
+        for mob, color in zip(self.items, new_colors):
+            mob.set_color(color)
         return self
     
     def is_transparent(self) -> bool:
@@ -1008,6 +1023,17 @@ class Item:
         
         point_to_align = self.get_bbox_point(aligned_edge - direction)
         self.shift((target - point_to_align + buff * direction) * coor_mask)
+        return self
+    
+    def shift_onto_screen(self, **kwargs):
+        space_lengths = [FRAME_X_RADIUS, FRAME_Y_RADIUS]
+        for vect in UP, DOWN, LEFT, RIGHT:
+            dim = np.argmax(np.abs(vect))
+            buff = kwargs.get("buff", DEFAULT_ITEM_TO_EDGE_BUFF)
+            max_val = space_lengths[dim] - buff
+            edge_center = self.get_bbox_point(vect)
+            if np.dot(edge_center, vect) > max_val:
+                self.to_border(vect, **kwargs)
         return self
     
     def set_coord(self, value: float, dim: int, direction: np.ndarray = ORIGIN) -> Self:

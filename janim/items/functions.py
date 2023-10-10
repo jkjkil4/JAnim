@@ -1,6 +1,6 @@
 from __future__ import annotations
 from typing import Callable, Sequence
-from janim.typing import Self
+from janim.typing import Self, RangeSpecifier
 
 from janim.constants import *
 from janim.items.vitem import VItem
@@ -12,7 +12,7 @@ class ParametricCurve(VItem):
     def __init__(
         self,
         t_func: Callable[[float], np.ndarray],
-        t_range: Sequence[float] = DEFAULT_T_RANGE,
+        t_range: RangeSpecifier = DEFAULT_T_RANGE,
         *,
         epsilon: float = 1e-8,
         discontinuities: Iterable[float] = [],
@@ -68,7 +68,7 @@ class FunctionGraph(ParametricCurve):
     def __init__(
         self,
         function: Callable[[float], float],
-        x_range: Sequence[float] = DEFAULT_X_RANGE,
+        x_range: RangeSpecifier = DEFAULT_X_RANGE,
         *,
         color: JAnimColor = YELLOW,
         **kwargs
