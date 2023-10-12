@@ -6,6 +6,15 @@ from janim.animation.animation import SelfAnimation
 from janim.items.item import Item
 
 class Homotopy(SelfAnimation):
+    '''
+    homotopy 是一个从 (x, y, z, t) 到 (x’, y’, z’) 的函数。
+    t 的取值范围是 [0, 1]， 让 mobject 根据 homotopy 计算的每个点坐标进行变换。
+    
+    例子中 t = 0 时 mob 是边长为 0 的正方形， t = 1 时是边长为 2 的正方形。
+    
+    与 Transform 类似，区别在于 Transform 锚点运动轨迹是直线，
+    Homotopy 锚点运动轨迹是根据传入的 homotopy 计算的。
+    '''
     def __init__(
         self,
         homotopy: Callable[[float, float, float, float], Sequence[float]],

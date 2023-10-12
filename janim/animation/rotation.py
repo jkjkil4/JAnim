@@ -5,6 +5,11 @@ from janim.items.item import Item
 from janim.utils.rate_functions import RateFunc, linear, smooth
 
 class Rotating(Animation):
+    '''
+    相比 anim().rotate(...)，该动画可以展现完整旋转过程
+
+    以匀速进行旋转，若需要平滑速度，可以使用 `Rotate`
+    '''
     def __init__(
         self,
         item: Item,
@@ -44,6 +49,11 @@ class Rotating(Animation):
         )
 
 class Rotate(Rotating):
+    '''
+    相比 anim().rotate(...)，该动画可以展现完整旋转过程
+
+    以平滑速度进行旋转，若需要匀速，可以使用 `Rotating`
+    '''
     def __init__(
         self,
         item: Item,
