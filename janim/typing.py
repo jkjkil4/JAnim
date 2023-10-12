@@ -3,6 +3,9 @@ try:
 except ImportError:
     from typing_extensions import Self
 
-from typing import Tuple
+import colour
 
+from typing import Tuple, Union, Iterable
+
+JAnimColor = Union[str, colour.Color, Iterable]
 RangeSpecifier = Tuple[float, float, float] | Tuple[float, float]

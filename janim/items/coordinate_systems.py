@@ -1,8 +1,8 @@
 from __future__ import annotations
 from abc import ABCMeta, abstractmethod
 
-from janim.typing import RangeSpecifier
-from typing import TypeVar, Type, Sequence, Callable
+from janim.typing import RangeSpecifier, JAnimColor
+from typing import TypeVar, Type, Sequence, Callable, Iterable
 T = TypeVar('T', bound='Item')
 
 from janim.items.item import Item

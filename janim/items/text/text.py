@@ -1,6 +1,6 @@
 from __future__ import annotations
 from typing import Iterable
-from janim.typing import Self
+from janim.typing import Self, JAnimColor
 
 import re
 import itertools as it

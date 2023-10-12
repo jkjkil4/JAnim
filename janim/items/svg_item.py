@@ -1,5 +1,5 @@
 from __future__ import annotations
-from janim.typing import Self
+from janim.typing import Self, JAnimColor
 
 import os
 import hashlib

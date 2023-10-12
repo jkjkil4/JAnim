@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import overload
+from typing import Iterable, overload
 from janim.typing import Self
 
 from janim.constants import *

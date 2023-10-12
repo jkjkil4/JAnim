@@ -1,4 +1,5 @@
 from __future__ import annotations
+from janim.typing import JAnimColor
 
 from janim.constants import *
 from janim.utils.margins import Margins, MarginsType

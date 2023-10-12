@@ -1,3 +1,4 @@
+from janim.typing import JAnimColor
 from abc import abstractmethod, ABCMeta
 
 from janim.constants import *

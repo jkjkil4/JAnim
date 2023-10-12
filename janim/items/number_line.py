@@ -1,5 +1,6 @@
 from __future__ import annotations
-from janim.typing import Self
+from typing import Iterable
+from janim.typing import Self, JAnimColor
 
 from janim.items.geometry.line import Line
 from janim.items.vitem import VGroup

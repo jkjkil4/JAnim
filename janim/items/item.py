@@ -1,12 +1,13 @@
 from __future__ import annotations
-from typing import Iterable, Callable
-from janim.typing import Self
+from typing import Iterable, Callable, Union
+from janim.typing import Self, JAnimColor
 
 import itertools as it
 import numpy as np
 import sys
 import copy
 import inspect
+import colour
 
 from janim.constants import *
 from janim.utils.space_ops import rotation_matrix, get_norm, angle_of_vector

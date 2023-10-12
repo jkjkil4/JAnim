@@ -1,6 +1,7 @@
 
 import math
 from typing import Iterable
+from janim.typing import JAnimColor
 
 from PySide6.QtGui import QMatrix4x4
 from PySide6.QtOpenGL import QOpenGLFramebufferObject

@@ -1,6 +1,6 @@
 from __future__ import annotations
-from typing import Callable, Sequence
-from janim.typing import Self, RangeSpecifier
+from typing import Callable, Iterable
+from janim.typing import Self, RangeSpecifier, JAnimColor
 
 from janim.constants import *
 from janim.items.vitem import VItem

@@ -1,5 +1,6 @@
 from __future__ import annotations
 from typing import Callable
+from janim.typing import JAnimColor
 
 from janim.constants import *
 from janim.items.item import Item, Point
