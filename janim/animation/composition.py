@@ -46,6 +46,12 @@ class AnimationGroup(Animation):
         super().__init__(run_time=run_time, rate_func=rate_func, **kwargs)
 
     def set_scene_instance(self, scene) -> None:
+        '''
+        设置 scene 实例
+
+        - 会递归传递给所有的子动画
+        - 因为 ItemAnimation.make_visible() 以及其它操作可能会用到 scene 实例，因此进行设置
+        '''
         super().set_scene_instance(scene)
         for anim in self.anims:
             anim.set_scene_instance(scene)

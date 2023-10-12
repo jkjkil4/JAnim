@@ -38,6 +38,11 @@ class Animation:
         self.state = Animation._State.BeforeExec
     
     def set_scene_instance(self, scene) -> None:
+        '''
+        设置 scene 实例
+
+        请参考 `AnimationGroup.set_scene_instance`
+        '''
         from janim.scene.scene import Scene
         self.scene: Scene = scene
 

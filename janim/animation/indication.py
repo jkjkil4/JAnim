@@ -18,6 +18,7 @@ from janim.utils.rate_functions import RateFunc, there_and_back, wiggle
 from janim.utils.bezier import interpolate
 
 class FocusOn(Transform):
+    '''展现一个逐渐聚焦到指定物件的圆形缩小动画'''
     def __init__(
         self, 
         point_or_item: np.ndarray | Item, 
@@ -53,6 +54,7 @@ class FocusOn(Transform):
 
 
 class Indicate(Transform):
+    '''展现指定物件以放大为黄色后回到原状的动画'''
     def __init__(
         self, 
         item: Item,
@@ -71,6 +73,7 @@ class Indicate(Transform):
 
 
 class Flash(AnimationGroup):
+    '''展现以放射状线条进行强调的动画'''
     def __init__(
         self,
         point_or_item: np.ndarray | Item,
@@ -126,6 +129,7 @@ class Flash(AnimationGroup):
 
 
 class CircleIndicate(Transform):
+    '''展现以圆圈在指定物件周围淡入淡出进行强调的动画'''
     def __init__(
         self, 
         item: Item,
@@ -176,6 +180,7 @@ class ShowPassingFlash(ShowPartial):
 
 
 class ShowCreationThenDestruction(ShowPassingFlash):
+    '''展现创建动画后展现销毁动画'''
     def __init__(
         self,
         item: Item,
@@ -188,6 +193,7 @@ class ShowCreationThenDestruction(ShowPassingFlash):
 
 
 class ShowCreationThenFadeOut(Succession):
+    '''展现创建动画后展现淡出动画'''
     def __init__(self, item: Item, **kwargs):
         super().__init__(
             ShowCreation(item),
@@ -197,6 +203,7 @@ class ShowCreationThenFadeOut(Succession):
     
 
 class AnimationOnSurroundingRectangle(AnimationGroup):
+    '''`Show...Around` 的基类'''
     def __init__(
         self, 
         item: Item, 
@@ -223,21 +230,30 @@ class AnimationOnSurroundingRectangle(AnimationGroup):
 
 
 class ShowPassingFlashAround(AnimationOnSurroundingRectangle):
+    '''不完整线条在指定物件周围环绕一圈的动画'''
     def __init__(self, item: Item, **kwargs) -> None:
         super().__init__(item, ShowPassingFlash, **kwargs)
 
 
 class ShowCreationThenDestructionAround(AnimationOnSurroundingRectangle):
+    '''在指定物件周围先创建出完整线条再销毁线条的动画'''
     def __init__(self, item: Item, **kwargs) -> None:
         super().__init__(item, ShowCreationThenDestruction, **kwargs)
 
 
 class ShowCreationThenFadeAround(AnimationOnSurroundingRectangle):
+    '''在指定物件周围先创建出完整线条再淡出线条的动画'''
     def __init__(self, item: Item, **kwargs) -> None:
         super().__init__(item, ShowCreationThenFadeOut, **kwargs)
 
 
 class ApplyWave(Homotopy):
+    '''
+    展现波浪式晃动的动画效果
+    
+    - `direction`: 震荡方向，默认 `UP`，即向上波动后回到原位
+    - `amplitude`: 震荡幅度
+    '''
     def __init__(
         self,
         item: Item,
@@ -259,6 +275,7 @@ class ApplyWave(Homotopy):
         super().__init__(homotopy, item, run_time=run_time, **kwargs)
 
 class WiggleOutThenIn(SelfAnimation):
+    '''展现放大的同时晃动数次的动画后回到原状'''
     def __init__(
         self,
         item: Item,
@@ -306,6 +323,7 @@ class WiggleOutThenIn(SelfAnimation):
         )
 
 class TurnInsideOut(Transform):
+    '''展现应用了 `reverse_points()` 的过渡效果'''
     def __init__(
         self,
         item: Item,
