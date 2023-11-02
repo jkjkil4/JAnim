@@ -1,10 +1,11 @@
 import sys
 
-from PySide6.QtCore import Qt
-from PySide6.QtGui import QCloseEvent
-from PySide6.QtWidgets import QWidget, QMainWindow, QApplication
+from PySide6.QtCore import Qt, QMargins
+from PySide6.QtGui import QCloseEvent, QShortcut, QKeySequence
+from PySide6.QtWidgets import QWidget, QMainWindow, QApplication, QStackedLayout
 
 from janim.gui.GLWidget import GLWidget
+from janim.gui.Overlay import Overlay
 from janim.scene.scene import Scene
 
 from janim.gl.texture import Texture
@@ -13,13 +14,37 @@ from janim.gl.render import ShaderProgram
 from janim.config import get_configuration
 from janim.logger import log
 
-class MainWindow(GLWidget):
+class MainWindow(QWidget):
     def __init__(self, scene: Scene, parent: QWidget | None = None) -> None:
-        super().__init__(scene, parent)
-        self.glwidget = self
+        super().__init__(parent)
+        self.glwidget = GLWidget(scene, self)
+        self.overlay = Overlay(self)
         self.is_closed = False
 
+        self.stkLayout = QStackedLayout()
+        self.stkLayout.setContentsMargins(QMargins())
+        self.stkLayout.setSpacing(0)
+        self.stkLayout.setStackingMode(QStackedLayout.StackingMode.StackAll)
+        self.stkLayout.addWidget(self.glwidget)
+        self.stkLayout.addWidget(self.overlay)
+        self.setLayout(self.stkLayout)
+
         self.setWindowFlag(Qt.WindowType.WindowStaysOnTopHint)
+
+        self.shortcutOpenToolkit = QShortcut(QKeySequence("Ctrl+T"), self)
+        self.shortcutOpenToolkit.activated.connect(self.onOpenToolkit)
+        self.toolkitInst = None
+    
+    def onOpenToolkit(self) -> None:
+        if self.toolkitInst is None:
+            from janim.gui.ToolkitWidget import ToolkitWidget
+            self.toolkitInst = ToolkitWidget(self.overlay, self)
+
+            self.toolkitInst.setWindowFlag(Qt.WindowType.Window)
+            self.toolkitInst.show()
+        else:
+            self.toolkitInst.show()
+            self.toolkitInst.raise_()
 
     def moveToPosition(self) -> None:
         conf = get_configuration()

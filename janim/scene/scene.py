@@ -323,7 +323,7 @@ class Scene:
         exec('from janim import *', self.embed_globals)
 
         self.stop_skipping()
-        self.scene_writer.enableSocket()
+        self.scene_writer.glwidget.enableSocket()
 
         raise EndSceneEarlyException()
     
