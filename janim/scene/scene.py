@@ -201,7 +201,7 @@ class Scene:
             
         self.scene_writer.finish()
 
-        if not self.write_to_file and not self.scene_writer.is_closed:
+        if not self.write_to_file and not self.scene_writer.isClosed:
             app.exec()
         
 
@@ -255,7 +255,7 @@ class Scene:
             delay=not self.write_to_file and not skipping,
             desc=f'play() at {os.path.basename(f_back.f_code.co_filename)}:{f_back.f_lineno}'
         )
-        if not succ or (not self.write_to_file and self.scene_writer.is_closed):
+        if not succ or (not self.write_to_file and self.scene_writer.isClosed):
             raise EndSceneEarlyException()
         anim.finish_all()
 
@@ -272,7 +272,7 @@ class Scene:
             delay=not self.write_to_file and not skipping,
             desc=f'wait() at {os.path.basename(f_back.f_code.co_filename)}:{f_back.f_lineno}'
         )
-        if not succ or (not self.write_to_file and self.scene_writer.is_closed):
+        if not succ or (not self.write_to_file and self.scene_writer.isClosed):
             raise EndSceneEarlyException()
     
     def update_frame(self, dt: float) -> None:
@@ -302,7 +302,7 @@ class Scene:
         return self
     
     def embed(self) -> None:
-        if self.write_to_file:
+        if self.write_to_file or self.scene_writer.isEmbed:
             return
         
         f_current = inspect.currentframe()
@@ -323,7 +323,7 @@ class Scene:
         exec('from janim import *', self.embed_globals)
 
         self.stop_skipping()
-        self.scene_writer.glwidget.enableSocket()
+        self.scene_writer.enableSocket()
 
         raise EndSceneEarlyException()
     
@@ -389,12 +389,15 @@ class Camera(Item):
         view.lookAt(QVector3D(*(center + normal * distance)), QVector3D(*center), QVector3D(*(ver)))
 
         return view
+    
+    def apply_perspective_to_matrix(self, mat: QMatrix4x4) -> None:
+        mat.perspective(self.fov, self.frame_shape[0] / self.frame_shape[1], 0.1, 100)
 
     def compute_proj_matrix(self) -> QMatrix4x4:
         projection = QMatrix4x4()
         projection.setToIdentity()
         projection.scale(FRAME_X_RADIUS, FRAME_Y_RADIUS)
-        projection.perspective(self.fov, self.frame_shape[0] / self.frame_shape[1], 0.1, 100)
+        self.apply_perspective_to_matrix(projection)
 
         return projection
     

@@ -43,8 +43,18 @@ class Overlay(QWidget):
     def _placeWidget(self, widget: QWidget, data: OverlayWidgetData) -> None:
         coords, align = data
 
-        x = (coords[0] + 1) / 2 * self.width()
-        y = (coords[1] + 1) / 2 * self.height()
+        wnd_shape = self.glwidget.scene.camera.wnd_shape
+        camera_shape = (1920, 1080)
+        min_f = min(wnd_shape[0] / camera_shape[0], wnd_shape[1] / camera_shape[1])
+
+        area_width = camera_shape[0] * min_f
+        area_height = camera_shape[1] * min_f
+
+        x_buff = (wnd_shape[0] - area_width) / 2
+        y_buff = (wnd_shape[1] - area_height) / 2
+
+        x = x_buff + (coords[0] + 1) / 2 * area_width
+        y = y_buff + (-coords[1] + 1) / 2 * area_height
         
         if align & Qt.AlignmentFlag.AlignHCenter:
             x -= widget.width() / 2
@@ -56,7 +66,7 @@ class Overlay(QWidget):
         elif align & Qt.AlignmentFlag.AlignBottom:
             y -= widget.height()
         
-        widget.move(x, self.height() - y)
+        widget.move(x, y)
 
     def resizeEvent(self, event: QResizeEvent) -> None:
         super().resizeEvent(event)
