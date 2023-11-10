@@ -31,24 +31,6 @@ class MainWindow(QWidget):
 
         self.setWindowFlag(Qt.WindowType.WindowStaysOnTopHint)
 
-        self.shortcutOpenToolkit = QShortcut(QKeySequence("Ctrl+T"), self)
-        self.shortcutOpenToolkit.activated.connect(self.onOpenToolkit)
-        self.toolkitInst = None
-    
-    def onOpenToolkit(self) -> None:
-        if self.toolkitInst is None:
-            if hasattr(self.glwidget.scene, 'embed_globals'):
-                from janim.gui.ToolkitWidget import ToolkitWidget
-                self.toolkitInst = ToolkitWidget(self, self)
-
-                self.toolkitInst.setWindowFlag(Qt.WindowType.Window)
-                self.toolkitInst.show()
-            else:
-                log.info('Toolkit can only be used at embed state')
-        else:
-            self.toolkitInst.show()
-            self.toolkitInst.raise_()
-
     def moveToPosition(self) -> None:
         conf = get_configuration()
         window_position = conf['window']['position']
