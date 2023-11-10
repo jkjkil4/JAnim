@@ -18,6 +18,8 @@ class Overlay(QWidget):
 
         self.datas: dict[QWidget, OverlayWidgetData] = {}
 
+        self.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents)
+
     def addWidget(
         self, 
         widget: QWidget, 
@@ -54,7 +56,7 @@ class Overlay(QWidget):
         elif align & Qt.AlignmentFlag.AlignBottom:
             y -= widget.height()
         
-        widget.move(x, y)
+        widget.move(x, self.height() - y)
 
     def resizeEvent(self, event: QResizeEvent) -> None:
         super().resizeEvent(event)

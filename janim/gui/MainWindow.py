@@ -37,11 +37,14 @@ class MainWindow(QWidget):
     
     def onOpenToolkit(self) -> None:
         if self.toolkitInst is None:
-            from janim.gui.ToolkitWidget import ToolkitWidget
-            self.toolkitInst = ToolkitWidget(self.overlay, self)
+            if hasattr(self.glwidget.scene, 'embed_globals'):
+                from janim.gui.ToolkitWidget import ToolkitWidget
+                self.toolkitInst = ToolkitWidget(self, self)
 
-            self.toolkitInst.setWindowFlag(Qt.WindowType.Window)
-            self.toolkitInst.show()
+                self.toolkitInst.setWindowFlag(Qt.WindowType.Window)
+                self.toolkitInst.show()
+            else:
+                log.info('Toolkit can only be used at embed state')
         else:
             self.toolkitInst.show()
             self.toolkitInst.raise_()
