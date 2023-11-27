@@ -207,7 +207,12 @@ class MainWindow(QWidget):
                             wnd_pos: QVector4D = matrix.map(QVector4D(*subitem.get_center(), 1))
 
                             label = QLabel(str(i))
-                            label.setStyleSheet('color: white; background: rgba(0,0,0,80); padding: 2px;')
+                            label.setStyleSheet(
+                                'color: white;'
+                                'background: rgba(0,0,0,180);'
+                                'padding: 2px;'
+                                'font: bold 10px;'
+                            )
                             self.displayingCIV.append(label)
                             self.overlay.addWidget(
                                 label, 
