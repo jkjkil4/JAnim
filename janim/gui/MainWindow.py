@@ -145,20 +145,8 @@ class MainWindow(QWidget):
                     self.glwidget.scene.save_state(f'_d_{self.stored_states}')
                     self.stored_states += 1
 
-                    # 计算代码的缩进量
-                    lines = janim['data'].splitlines()
-                    indent = 0
-                    for line in lines:
-                        line_indent = 0
-                        for char in line:
-                            if char not in '\t ':
-                                break
-                            line_indent += 1
-
-                        indent = line_indent if indent == 0 else min(indent, line_indent)
-
                     # 执行删除缩进后的代码
-                    self.glwidget.scene.execute('\n'.join(line[indent:] for line in lines))
+                    self.glwidget.scene.execute(self.getCodeWithoutIndent(janim['data']))
                     log.info('代码执行完成')
                     self.glwidget.updateFlag = True
 
@@ -171,6 +159,12 @@ class MainWindow(QWidget):
                     else:
                         self.glwidget.scene.restore(f'_d_orig')
                         log.info('已回到初始状态')
+                    self.glwidget.updateFlag = True
+
+                # 只执行代码而不进行额外的任何操作
+                elif cmdtype == 'raw_exec_code':
+                    self.glwidget.scene.execute(self.getCodeWithoutIndent(janim['data']))
+                    log.info('代码执行完成（不可撤销）')
                     self.glwidget.updateFlag = True
 
                 # 查看子物件序号
@@ -221,6 +215,22 @@ class MainWindow(QWidget):
                             )
             except:
                 traceback.print_exc()
+    
+    @staticmethod
+    def getCodeWithoutIndent(code: str) -> str:
+        lines = code.splitlines()
+        indent = -1
+        for line in lines:
+            line_indent = 0
+            for char in line:
+                if char not in '\t ':
+                    break
+                line_indent += 1
+
+            if line_indent != len(line):
+                indent = line_indent if indent == -1 else min(indent, line_indent)
+
+        return '\n'.join(line[indent:] for line in lines)
 
     #endregion
 
