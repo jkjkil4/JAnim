@@ -10,7 +10,7 @@ import numpy as np
 
 from janim.constants import *
 from janim.items.item import Point
-from janim.items.vitem import VItem
+from janim.items.vitem import VItem, VGroup
 from janim.items.geometry.line import Line
 from janim.items.geometry.polygon import Polygon, Polyline, Rectangle, RoundedRectangle
 from janim.items.geometry.arc import Circle
@@ -25,7 +25,7 @@ def _convert_point_to_3d(x: float, y: float) -> np.ndarray:
     return np.array([x, y, 0.0])
 
 
-class SVGItem(VItem):
+class SVGItem(VGroup):
     svg_default_d = dict(
         color=None,
         opacity=None,
@@ -241,10 +241,7 @@ class SVGItem(VItem):
 
     def rect_to_item(self, rect: se.Rect) -> Rectangle:
         if rect.rx == 0 or rect.ry == 0:
-            item = Rectangle(
-                v1=rect.width,
-                v2=rect.height,
-            )
+            item = Rectangle(rect.width, rect.height)
         else:
             item = RoundedRectangle(
                 v1=rect.width,

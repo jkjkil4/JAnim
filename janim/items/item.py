@@ -1319,7 +1319,7 @@ class NoRelGroup(Group):
     def get_items_without_norel_group_recursively(self) -> list[Item]:
         return list(it.chain(*[
             (
-                item.get_items_without_norel_group()
+                item.get_items_without_norel_group_recursively()
                 if isinstance(item, NoRelGroup)
                 else [item]
             )
