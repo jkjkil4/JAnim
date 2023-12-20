@@ -1,6 +1,8 @@
+from janim.typing import Self
+
 import unittest
 
-from janim.items.item import Item
+from janim.items.item import Item, Group
 
 class ItemTest(unittest.TestCase):
     def test_simple_relation(self) -> None:
@@ -18,21 +20,6 @@ class ItemTest(unittest.TestCase):
         m1.add(m2, m3)
         m2.add(m4)
         self.assertEqual(m1.get_family(), [m1, m2, m4, m3])
-    
-    def test_fast_relation(self) -> None:
-        with (root := Item()):
-            with (m1 := Item()):
-                m2 = Item()
-                m3 = Item()
-            with (m4 := Item()):
-                with (m5 := Item()):
-                    m6 = Item()
-            m7 = Item()
-        
-        self.assertEqual(root.subitems, [m1, m4, m7])
-        self.assertEqual(m1.subitems, [m2, m3])
-        self.assertEqual(m4.subitems, [m5])
-        self.assertEqual(root.get_family(), [root, m1, m2, m3, m4, m5, m6, m7])
     
     def test_refresh_required(self) -> None:
         class MyItem(Item):
@@ -69,6 +56,32 @@ class ItemTest(unittest.TestCase):
         for i in range(10):
             item.get_data()
         self.assertEqual(item.cnt, 2)
+
+    def test_group_method(self) -> None:
+        class ItemA(Item):
+            def __init__(self):
+                super().__init__()
+                self.val = 0
+
+            def set_value(self, val):
+                self.val = val
+        
+        class ItemB(Item): ...
+
+        root = Group(
+            g1 := Group(
+                m1 := ItemA(),
+                m2 := ItemB()
+            ),
+            m3 := ItemA()
+        )
+        
+        root.set_value(10)
+
+        self.assertEqual(root.get_family(), [root, g1, m1, m2, m3])
+        self.assertEqual(m1.val, 10)
+        self.assertEqual(m3.val, 10)
+        
 
 if __name__ == '__main__':
     unittest.main()
