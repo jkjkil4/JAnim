@@ -1,9 +1,31 @@
 from __future__ import annotations
 from typing import Callable, Any, TypeVar
-from janim.typing import Self
+from janim.typing import Self, VectArray
 
 from functools import wraps
 import itertools as it
+import copy
+import numpy as np
+import inspect
+
+from janim.utils.unique_nparray import UniqueNparray
+
+from janim.logger import log
+
+'''
+继承 Item 及有关类的注意事项：
+    - 完成对 copy 的继承，使得子类的数据能被正常复制
+        - 代码结构：
+
+        def copy(self) -> Self:
+            copy_item = super().copy()
+
+            # ===========
+            # 有关数据复制
+            # ===========
+
+            return copy_item
+'''
 
 class Item:
     def __init__(self, *args, **kwargs):
@@ -113,33 +135,168 @@ class Item:
         self.mark_refresh_required(Item.get_family, recurse_up=True)
         return self
     
+    def __getitem__(self, value) -> Self:   # 假装返回 Self，用于类型提示
+        if isinstance(value, slice):
+            return GroupClass(*self.subitems[value])
+        return self.subitems[value]
+    
+    def __iter__(self):
+        return iter(self.subitems)
+    
+    def __len__(self):
+        return len(self.subitems)
+    
     #endregion
 
-class Points:
+    #region 快速操作
+
+    @property
+    def for_all(self) -> Self:  # 假装返回 Self，方便代码补全
+        return BatchOp(*self.get_family())
+
+    @property
+    def for_all_p(self) -> Self:
+        return BatchOp(*self.get_family(), paired=True)
+    
+    @property
+    def for_all_except_self(self) -> Self:
+        return BatchOp(*self.get_family()[1:])
+    
+    @property
+    def for_all_except_self_p(self) -> Self:
+        return BatchOp(*self.get_family()[1:], paired=True)
+    
+    @property
+    def for_sub(self) -> Self:
+        return BatchOp(*self.subitems)
+    
+    @property
+    def for_sub_p(self) -> Self:
+        return BatchOp(*self.subitems, paired=True)
+
+    #endregion
+
+    #region 数据复制
+
+    def copy(self) -> Self:
+        copy_item = copy.copy(self)
+        
+        # relation
+        copy_item.parents = []
+        copy_item.subitems = []
+        copy_item.add(*[m.copy() for m in self])
+        
+        # TODO: copy: markers
+
+        # other
+        self.refresh_required.clear()       # 清空，使得所有操作都要重新计算数据
+        self.refresh_stored_data.clear()    # 既然 refresh_required 清空了，那么这个就顺便也清空吧，反正也要重新计算的
+
+        return copy_item
+
+    def __mul__(self, times: int) -> Self:  # 假装返回 Self，方便代码补全
+        return GroupClass(
+            *(self.copy() for _ in range(times))
+        )
+
+    #endregion
+
+class Points(Item):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
+        self.points = UniqueNparray()
 
-class _GroupClass(Item):
+    def copy(self) -> Self:
+        copy_item = super().copy()
+
+        copy_item.points = UniqueNparray()
+        copy_item.points.data = self.points.data
+
+    #region points
+
+    def points_changed(self) -> None:
+        self.mark_refresh_required(self.get_bbox, recurse_up=True)
+
+    def points_count_changed(self) -> None:
+        pass
+
+    def get_points(self) -> VectArray:
+        return self.points
+
+    def set_points(self, points: VectArray) -> Self:
+        '''
+        设置点坐标数据，每个坐标点都有三个分量
+        
+        使用形如 `set_points([[1.5, 3, 2], [2, 1.5, 0]])` 的形式
+        '''
+        if not isinstance(points, np.ndarray):
+            points = np.array(points)
+        if len(points) == 0:
+            self.clear_points()
+            return self
+    
+        assert(points.ndim == 2)
+        assert(points.shape[1] == 3)
+
+        if len(points) == len(self.points.data):
+            self.points = points[:]
+        else:
+            self.points = points.astype(np.float32)
+            self.points_count_changed()
+        
+        self.points_changed()
+
+        return self
+    
+    def clear_points(self) -> Self:
+        self.set_points(np.zeros((0, 3)))
+        return self
+
+    #endregion
+
+class GroupClass(Item):
     def __init__(self, *items: T, **kwargs):
         super().__init__(**kwargs)
         self.add(*items)
 
-    def __getattr__(self, method_name: str) -> Callable:
-        '''使得属性的设定可以向子物件传递'''
-        def func(*args, **kwargs):
-            for item in self.subitems:
-                if isinstance(item, _GroupClass) or hasattr(item, method_name):
-                    getattr(item, method_name)(*args, **kwargs)
-        
-        return func
-
 T = TypeVar('T', bound=Item)
 
-
 # 该方法用于方便类型检查以及补全提示
-# 在执行时和直接调用 _GroupClass 没有区别
+# 在执行时和直接调用 GroupClass 没有区别
 def Group(*items: T) -> Item | T:
     '''将 `items` 打包为一个 `Group`，方便属性的设定'''
-    return _GroupClass(*items)
+    return GroupClass(*items)
+
+class BatchOp:
+    def __init__(self, *items: Item, paired: bool = False):
+        self.items = items
+        self.paired = paired
+    
+    def __getattr__(self, method_name: str):
+        def func(*args, **kwargs):
+            ret_list = []
+            found = False
+            for item in self.items:
+                if not hasattr(item, method_name):
+                    continue
+                attr = getattr(item, method_name)
+
+                if not callable(attr):
+                    continue
+                found = True
+                
+                ret = attr(*args, **kwargs)
+                if ret is not None and ret is not item:
+                    ret_list.append((item, ret) if self.paired else ret)
+
+            if not found:
+                frame = inspect.currentframe().f_back
+                log.warning(f'[{frame.f_code.co_filename}:{frame.f_lineno}] 没有物件拥有 `{method_name}` 方法，调用没有产生效果')
+
+            return ret_list or self
+    
+        return func
+                    
+
 

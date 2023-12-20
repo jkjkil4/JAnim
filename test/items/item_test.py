@@ -4,6 +4,18 @@ import unittest
 
 from janim.items.item import Item, Group
 
+class ItemSetVal(Item):
+    def __init__(self):
+        super().__init__()
+        self.val = 0
+
+    def set_value(self, val) -> Self:
+        self.val = val
+        return self
+    
+    def get_value(self):
+        return self.val
+
 class ItemTest(unittest.TestCase):
     def test_simple_relation(self) -> None:
         m1, m2 = Item(), Item()
@@ -57,31 +69,49 @@ class ItemTest(unittest.TestCase):
             item.get_data()
         self.assertEqual(item.cnt, 2)
 
-    def test_group_method(self) -> None:
-        class ItemA(Item):
-            def __init__(self):
-                super().__init__()
-                self.val = 0
-
-            def set_value(self, val):
-                self.val = val
-        
-        class ItemB(Item): ...
+    def test_group_method(self) -> None:        
+        class ItemA(Item): ...
 
         root = Group(
             g1 := Group(
-                m1 := ItemA(),
-                m2 := ItemB()
+                m1 := ItemSetVal(),
+                m2 := ItemA()
             ),
-            m3 := ItemA()
+            m3 := ItemSetVal(),
+            m4 := ItemSetVal()
         )
         
-        root.set_value(10)
+        root.for_all.set_value(10)
+        m4.set_value(20)
 
-        self.assertEqual(root.get_family(), [root, g1, m1, m2, m3])
-        self.assertEqual(m1.val, 10)
-        self.assertEqual(m3.val, 10)
+        self.assertEqual(root.for_all.get_value(), [10, 10, 20])
+
+        self.assertEqual(root.get_family(), [root, g1, m1, m2, m3, m4])
+        self.assertEqual(m1.get_value(), 10)
+        self.assertEqual(m3.get_value(), 10)
+
+    def test_group_method_advanced(self) -> None:
+        class ItemA(Item): ...
+
+        root = ItemSetVal().add(
+            g1 := Group(
+                m1 := ItemSetVal(),
+                m2 := ItemA()
+            ),
+            m3 := ItemSetVal(),
+            m4 := ItemSetVal()
+        )
+
+        root.set_value(0)
+        root.for_all_except_self.set_value(10)
+        root.for_sub.set_value(20)
         
+        self.assertEqual(m1.get_value(), 10)
+        self.assertEqual(root.for_all.get_value(), [0, 10, 20, 20])
+        self.assertEqual(root.for_all_except_self.get_value(), [10, 20, 20])
+        self.assertEqual(root.for_sub.get_value(), [20, 20])
+        self.assertEqual(root.for_sub_p.get_value(), [(m3, 20), (m4, 20)])
+        self.assertEqual(g1.for_all.get_value(), [10])
 
 if __name__ == '__main__':
     unittest.main()
