@@ -37,7 +37,8 @@ class ItemTest(unittest.TestCase):
         class MyItem(Item):
             def __init__(self) -> None:
                 super().__init__()
-                self.cnt = 0    # 用于记录 get_data 真正被调用的次数
+                self.cnt = 0    # 用于记录 `get_data` 真正被调用的次数
+                                # Used to record the actual number of calls to `get_data`
                 self.data = 0
 
             @Item.register_refresh_required
@@ -47,24 +48,32 @@ class ItemTest(unittest.TestCase):
         
         item = MyItem()
         
-        # 一开始没调用 get_data，因此显然调用次数为 0
+        # 一开始没调用 `get_data`，因此显然调用次数为 0
+        # Initially, `get_data` has not been called, so the call count is obviously 0
         self.assertEqual(item.cnt, 0)
 
-        # 在这十次中，只有第一次是有真正执行 get_data 的，因此执行后调用次数为 1
+        # 在这十次中，只有第一次是有真正执行 `get_data` 的，因此执行后调用次数为 1
+        # In these ten calls, only the first one actually executes `get_data`, so the call count becomes 1
         for i in range(10):
             item.get_data()
         self.assertEqual(item.cnt, 1)
 
-        # 这里设置了 data 为 10，但是由于没有 mark_refresh_required，因此 get_data 的数据并没有被更新，所以应当为 0
+        # 这里设置了 `data` 为 10，但是由于没有 `mark_refresh_required`，
+        # 因此 `get_data` 的数据并没有被更新，所以应当为 0
+        #
+        # Here, `data` is set to 10, but without `mark_refresh_required`,
+        # data of `get_data` is not updated, so it should be 0
         item.data = 10
         self.assertEqual(item.get_data(), 0)
 
-        # 这里标记 mark_refresh_required，所以 get_data 可以得到更新，并且调用次数变为 2
+        # 这里标记 `mark_refresh_required`，所以 `get_data` 可以得到更新，并且调用次数变为 2
+        # Mark `mark_refresh_required` here, so `get_data` can be updated, and the call count becomes 2
         item.mark_refresh_required(MyItem.get_data)
         self.assertEqual(item.get_data(), 10)
         self.assertEqual(item.cnt, 2)
 
-        # 之后这十次调用都没有真正调用 get_data，所以最终调用次数仍然为 2
+        # 之后这十次调用都没有真正调用 `get_data`，所以最终调用次数仍然为 2
+        # In the next ten calls, `get_data` is not actually called, so the final call count remains 2
         for i in range(10):
             item.get_data()
         self.assertEqual(item.cnt, 2)

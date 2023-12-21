@@ -5,7 +5,5 @@ except ImportError:
 
 from typing import Iterable
 
-import numpy as np
-
 Vect = Iterable[float]
 VectArray = Iterable[Vect]
