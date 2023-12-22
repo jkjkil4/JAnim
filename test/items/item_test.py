@@ -5,11 +5,11 @@ import unittest, unittest.mock
 
 import numpy as np
 
-from janim.items.item import Item, Points, Group
+from janim.items.item import ItemBase, Item, Group
 from janim.constants import *
 
 
-class ItemSetVal(Item):
+class ItemSetVal(ItemBase):
     def __init__(self):
         super().__init__()
         self.val = 0
@@ -21,9 +21,9 @@ class ItemSetVal(Item):
     def get_value(self):
         return self.val
 
-class ItemTest(unittest.TestCase):
+class ItemBaseTest(unittest.TestCase):
     def test_simple_relation(self) -> None:
-        m1, m2 = Item(), Item()
+        m1, m2 = ItemBase(), ItemBase()
         m1.add(m2)
         self.assertIn(m1, m2.parents)
         self.assertIn(m2, m1.subitems)
@@ -33,20 +33,20 @@ class ItemTest(unittest.TestCase):
         self.assertNotIn(m2, m1.subitems)
     
     def test_get_family(self) -> None:
-        m1, m2, m3, m4 = (Item() for _ in range(4))
+        m1, m2, m3, m4 = (ItemBase() for _ in range(4))
         m1.add(m2, m3)
         m2.add(m4)
         self.assertEqual(m1.get_family(), [m1, m2, m4, m3])
     
     def test_refresh_required(self) -> None:
-        class MyItem(Item):
+        class MyItem(ItemBase):
             def __init__(self) -> None:
                 super().__init__()
                 self.cnt = 0    # 用于记录 `get_data` 真正被调用的次数
                                 # Used to record the actual number of calls to `get_data`
                 self.data = 0
 
-            @Item.register_refresh_required
+            @ItemBase.register_refresh_required
             def get_data(self) -> None:
                 self.cnt += 1
                 return self.data
@@ -84,7 +84,7 @@ class ItemTest(unittest.TestCase):
         self.assertEqual(item.cnt, 2)
 
     def test_group_method(self) -> None:        
-        class ItemA(Item): ...
+        class ItemA(ItemBase): ...
 
         root = Group(
             g1 := Group(
@@ -105,7 +105,7 @@ class ItemTest(unittest.TestCase):
         self.assertEqual(m3.get_value(), 10)
 
     def test_group_method_advanced(self) -> None:
-        class ItemA(Item): ...
+        class ItemA(ItemBase): ...
 
         root = ItemSetVal().add(
             g1 := Group(
@@ -124,11 +124,11 @@ class ItemTest(unittest.TestCase):
         self.assertEqual(root.for_all.get_value(), [0, 10, 20, 20])
         self.assertEqual(root.for_all_except_self.get_value(), [10, 20, 20])
         self.assertEqual(root.for_sub.get_value(), [20, 20])
-        self.assertEqual(root.for_sub_p.get_value(), [(m3, 20), (m4, 20)])
+        self.assertEqual(root.for_sub_p(paired=True).get_value(), [(m3, 20), (m4, 20)])
         self.assertEqual(g1.for_all.get_value(), [10])
 
     def test_signal(self) -> None:       
-        class User(Item):
+        class User(ItemBase):
             def __init__(self, name: str):
                 super().__init__()
 
@@ -138,7 +138,7 @@ class ItemTest(unittest.TestCase):
                 # for testing
                 self.notifier_counter = 0
 
-            @Item.Signal
+            @ItemBase.Signal
             def set_msg(self, msg: str) -> None:
                 self.msg = msg
                 User.set_msg.emit(self)
@@ -148,7 +148,7 @@ class ItemTest(unittest.TestCase):
                 self.notifier_counter += 1
 
             @set_msg.refresh()
-            @Item.register_refresh_required
+            @ItemBase.register_refresh_required
             def get_text(self) -> str:
                 return f'[{self.name}] {self.msg}'
      
@@ -163,8 +163,8 @@ class ItemTest(unittest.TestCase):
     def test_signal_with_inherit(self) -> None:
         called_list = []
 
-        class A(Item):
-            @Item.Signal
+        class A(ItemBase):
+            @ItemBase.Signal
             def test(self) -> None:
                 called_list.append(self.test)
                 A.test.emit(self)
@@ -216,86 +216,73 @@ class ItemTest(unittest.TestCase):
         )
 
 
-class PointsTest(unittest.TestCase):
+class ItemTest(unittest.TestCase):
     def test_points(self) -> None:
-        p = Points()
+        p = Item()
 
         p.set_points([[1, 2, 3], [1.3, 1, 3]])
-        self.assertTrue(
-            np.all(
-                np.equal(
-                    p.get_points(), 
-                    np.array([[1, 2, 3], [1.3, 1, 3]])
-                )
-            )
+        self.assertEqual(
+            p.get_points().tolist(),
+            [[1, 2, 3], [1.3, 1, 3]]
         )
 
         p.append_points([[6, 3, 1]])
-        self.assertTrue(
-            np.all(
-                np.equal(
-                    p.get_points(), 
-                    np.array([[1, 2, 3], [1.3, 1, 3], [6, 3, 1]])
-                )
-            )
+        self.assertEqual(
+            p.get_points().tolist(), 
+            [[1, 2, 3], [1.3, 1, 3], [6, 3, 1]]
         )
 
         p.reverse_points()
-        self.assertTrue(
-            np.all(
-                np.equal(
-                    p.get_points(), 
-                    np.array([[6, 3, 1], [1.3, 1, 3], [1, 2, 3]])
-                )
-            )
+        self.assertEqual(
+            p.get_points().tolist(), 
+            [[6, 3, 1], [1.3, 1, 3], [1, 2, 3]]
         )
 
         self.assertEqual(p.points_count(), 3)
         self.assertTrue(p.has_points())
-        self.assertTrue(
-            np.all(
-                np.equal(
-                    p.get_start(), 
-                    np.array([6, 3, 1])
-                )
-            )
+        self.assertEqual(
+            p.get_start().tolist(), 
+            [6, 3, 1]
         )
-        self.assertTrue(
-            np.all(
-                np.equal(
-                    p.get_end(), 
-                    np.array([1, 2, 3])
-                )
-            )
+        self.assertEqual(
+            p.get_end().tolist(), 
+            [1, 2, 3]
         )
 
         p.clear_points()
-        self.assertTrue(
-            np.all(
-                np.equal(
-                    p.get_points(), 
-                    np.array([]).reshape((0, 3))
-                )
-            )
+        self.assertEqual(
+            p.get_points().tolist(), 
+            []
         )
 
     def test_get_all_points(self) -> None:
-        root = Points(points=[UP, RIGHT]).add(
+        root = Item(points=[UP, RIGHT]).add(
             Group(
-                Points(points=[DOWN, UL]),
-                Item(),
-                Points(points=[RIGHT, DR, DL])
+                Item(points=[DOWN, UL]),
+                ItemBase(),
+                Item(points=[RIGHT, DR, DL])
             )
         )
         self.assertTrue(
-            np.all(
-                np.equal(
-                    root.get_all_points(), 
-                    np.array([UP, RIGHT, DOWN, UL, RIGHT, DR, DL])
-                )
-            )
+            root.get_all_points().tolist(), 
+            np.array([UP, RIGHT, DOWN, UL, RIGHT, DR, DL]).tolist()
         )
+    
+    def test_bounding_box(self) -> None:
+        p = Item(points=[UL, RIGHT, UR + UP])
+        bbox = p.get_bbox()
+        self.assertEqual(bbox[[0, 2]].tolist(), np.array([LEFT, UR + UP]).tolist())
+        self.assertEqual(p.get_border(UP).tolist(), (UP * 2).tolist())
+    
+    def test_bounding_box_with_rel(self) -> None:
+        g = Group(Item(points=[UL, RIGHT, UR + UP]))
 
+        bbox = g.get_bbox()
+        self.assertEqual(bbox[[0, 2]].tolist(), np.array([LEFT, UR + UP]).tolist())
+
+        g.add(Item(points=[DOWN]))
+        bbox = g.get_bbox()
+        self.assertEqual(bbox[[0, 2]].tolist(), np.array([DL, UR + UP]).tolist())
 
 if __name__ == '__main__':
     unittest.main()

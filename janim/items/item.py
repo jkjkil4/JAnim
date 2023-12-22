@@ -8,13 +8,15 @@ import copy
 import numpy as np
 import inspect
 import sys
+import enum
 
 from janim.utils.unique_nparray import UniqueNparray
+from janim.constants import UP, DOWN, LEFT, RIGHT, OUT, IN, ORIGIN
 
 from janim.logger import log
 
 '''
-继承 Item 及有关类的注意事项：
+继承 ItemBase 及有关类的注意事项：
     - 完成对 copy 的继承，使得子类的数据能被正常复制
         - 代码结构：
 
@@ -28,7 +30,7 @@ from janim.logger import log
             return copy_item
 
 
-Inheriting from Item and related classes:
+Inheriting from ItemBase and related classes:
     - Ensure inheritance from copy for proper data copying.
         - Code structure:
 
@@ -42,13 +44,13 @@ Inheriting from Item and related classes:
             return copy_item
 '''
 
-class Item:
+class ItemBase:
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.parents: list[Item] = []
-        self.subitems: list[Item] = []
-        self.markers: list[Points] = []  # TODO: Item.markers
+        self.parents: list[ItemBase] = []
+        self.subitems: list[ItemBase] = []
+        self.markers: list[Item] = []  # TODO: Item.markers
 
         self.refresh_required: dict[str, bool] = {}
         self.refresh_stored_data: dict[str, Any] = {}
@@ -85,13 +87,13 @@ class Item:
 
         #### 例 | Example:
         ```python
-        class User(Item):
+        class User(ItemBase):
             def __init__(self, name: str):
                 super().__init__()
                 self.name = name
                 self.msg = ''
             
-            @Item.Signal
+            @ItemBase.Signal
             def set_msg(self, msg: str) -> None:
                 self.msg = msg
                 User.set_msg.emit(self)
@@ -101,7 +103,7 @@ class Item:
                 print("User's message changed")
 
             @set_msg.refresh()
-            @Item.register_refresh_required
+            @ItemBase.register_refresh_required
             def get_test(self) -> str:
                 return f'[{self.name}] {self.msg}'
             
@@ -111,7 +113,7 @@ class Item:
         ```
         还可以参考 | See also：
         - `janim.items.item.Item.get_points`
-        - `test.items.item_test.ItemTest.test_signal_with_inherit`
+        - `test.items.item_test.ItemBaseTest.test_signal_with_inherit`
         '''
         def __init__(self, func: Callable):
             self.func = func
@@ -153,7 +155,7 @@ class Item:
                 self.slots[key][full_qualname] = ([], [])
         
         def slot(self, *, key: str = ''):
-            def decorator(func: Callable) -> Callable:
+            def decorator(func):
                 full_qualname = self.get_cls_full_qualname_from_fback()
                 self.ensure_slots_list_available(key, full_qualname)
                 self.slots[key][full_qualname][0].append(func)
@@ -163,7 +165,7 @@ class Item:
             return decorator
         
         def refresh(self, *, recurse_down: bool = False, recurse_up: bool = False, key: str = ''):
-            def decorator(func: Callable) -> Callable:
+            def decorator(func):
                 full_qualname = self.get_cls_full_qualname_from_fback()
                 self.ensure_slots_list_available(key, full_qualname)
                 self.slots[key][full_qualname][1].append((func, recurse_down, recurse_up))
@@ -172,7 +174,7 @@ class Item:
 
             return decorator
         
-        def emit(self, item: Item, *args, key: str = '', **kwargs):
+        def emit(self, item: ItemBase, *args, key: str = '', **kwargs):
             try:
                 all_slots = self.slots[key]
             except KeyError:
@@ -280,16 +282,11 @@ class Item:
     It is not directly related to the rendering order.
     '''
 
-    @register_refresh_required
-    def get_family(self) -> list[Item]:
-        '''
-        获取该物件的所有子物件，即包括自己和子物件的子物件
-        
-        Get all subitems of this item, including itself and the subitems of its subitems.
-        '''
-        return [self, *it.chain(*[item.get_family() for item in self.subitems])]
+    @Signal
+    def subitems_changed(self) -> None:
+        ItemBase.subitems_changed.emit(self)
 
-    def add(self, *items: Item) -> Self:
+    def add(self, *items: ItemBase) -> Self:
         '''
         向该物件添加子物件
         
@@ -304,10 +301,10 @@ class Item:
             if self not in item.parents:
                 item.parents.append(self)
             
-        self.mark_refresh_required(Item.get_family, recurse_up=True)
+        self.subitems_changed()
         return self
     
-    def remove(self, *items: Item) -> Self:
+    def remove(self, *items: ItemBase) -> Self:
         '''
         从该物件移除子物件
         
@@ -323,8 +320,19 @@ class Item:
                 item.parents.remove(self)
             except ValueError: ...
         
-        self.mark_refresh_required(Item.get_family, recurse_up=True)
+        self.subitems_changed()
         return self
+    
+    @subitems_changed.refresh(recurse_up=True)
+    @register_refresh_required
+    def get_family(self) -> list[ItemBase]:
+        '''
+        获取该物件的所有子物件，即包括自己和子物件的子物件
+        
+        Get all subitems of this item, including itself and the subitems of its subitems.
+        '''
+        return [self, *it.chain(*[item.get_family() for item in self.subitems])]
+
     
     def __getitem__(self, value) -> Self:   # 假装返回 Self，用于类型提示
         if isinstance(value, slice):
@@ -350,14 +358,13 @@ class Item:
         '''
         return BatchOp(*self.get_family())
 
-    @property
-    def for_all_p(self) -> Self:
+    def for_all_p(self, **kwargs) -> Self:
         '''
-        同 `for_all`，但是调用的返回值以 `(item, retval)` 为单位
+        同 `for_all`，但是可以传入额外参数
         
-        Same as `for_all`, but the returned values are paired with `(item, retval)`.
+        Same as for_all, but can accept additional parameters.
         '''
-        return BatchOp(*self.get_family(), paired=True)
+        return BatchOp(*self.get_family(), **kwargs)
     
     @property
     def for_all_except_self(self) -> Self:
@@ -368,14 +375,13 @@ class Item:
         '''
         return BatchOp(*self.get_family()[1:])
     
-    @property
-    def for_all_except_self_p(self) -> Self:
+    def for_all_except_self_p(self, **kwargs) -> Self:
         '''
-        同 `for_all_except_self`，但是调用的返回值以 `(item, retval)` 为单位
+        同 `for_all_except_self`，但是可以传入额外参数
         
-        Same as `for_all_except_self`, but the returned values are paired with `(item, retval)`.
+        Same as `for_all_except_self`, but can accept additional parameters.
         '''
-        return BatchOp(*self.get_family()[1:], paired=True)
+        return BatchOp(*self.get_family()[1:], **kwargs)
     
     @property
     def for_sub(self) -> Self:
@@ -386,14 +392,13 @@ class Item:
         '''
         return BatchOp(*self.subitems)
     
-    @property
-    def for_sub_p(self) -> Self:
+    def for_sub_p(self, **kwargs) -> Self:
         '''
-        同 `for_sub`，但是调用的返回值以 `(item, retval)` 为单位
+        同 `for_sub`，但是可以传入额外参数
         
-        Same as `for_sub`, but the returned values are paired with `(item, retval)`.
+        Same as `for_sub`, , but can accept additional parameters.
         '''
-        return BatchOp(*self.subitems, paired=True)
+        return BatchOp(*self.subitems, **kwargs)
 
     #endregion
 
@@ -429,7 +434,7 @@ class Item:
 
     #endregion
 
-class Points(Item):
+class Item(ItemBase):
     def __init__(
         self, 
         *args, 
@@ -438,7 +443,8 @@ class Points(Item):
     ):
         super().__init__(*args, **kwargs)
 
-        self.points = UniqueNparray(points)
+        self.points = UniqueNparray()
+        self.set_points(points)
 
     def copy(self) -> Self:
         copy_item = super().copy()
@@ -448,13 +454,13 @@ class Points(Item):
 
     #region points
         
-    def get_points(self) -> VectArray:
+    def get_points(self) -> np.ndarray:
         return self.points.data
     
-    def get_all_points(self) -> VectArray:
+    def get_all_points(self) -> np.ndarray:
         return np.vstack(self.for_all.get_points())
 
-    @Item.Signal
+    @ItemBase.Signal
     def set_points(self, points: VectArray) -> Self:
         '''
         设置点坐标数据，每个坐标点都有三个分量
@@ -467,6 +473,8 @@ class Points(Item):
         '''
         if not isinstance(points, np.ndarray):
             points = np.array(points)
+        if points.size == 0:
+            points = np.zeros((0, 3))
     
         assert(points.ndim == 2)
         assert(points.shape[1] == 3)
@@ -476,8 +484,8 @@ class Points(Item):
         self.points.data = points
 
         if cnt_changed:
-            Points.set_points.emit(self, key='count')
-        Points.set_points.emit(self)
+            Item.set_points.emit(self, key='count')
+        Item.set_points.emit(self)
 
         return self
     
@@ -501,11 +509,11 @@ class Points(Item):
         ]))
         return self
     
-    @Item.Signal
+    @ItemBase.Signal
     def reverse_points(self) -> Self:
         '''使点倒序 | reverse the order of points'''
         self.set_points(self.get_points()[::-1])
-        Points.reverse_points.emit(self)
+        Item.reverse_points.emit(self)
         return self
     
     # TODO: resize_points
@@ -516,11 +524,11 @@ class Points(Item):
     def has_points(self) -> bool:
         return self.points_count() > 0
     
-    def get_start(self) -> Vect:
+    def get_start(self) -> np.ndarray:
         self.throw_error_if_no_points()
         return self.get_points()[0].copy()
 
-    def get_end(self) -> Vect:
+    def get_end(self) -> np.ndarray:
         self.throw_error_if_no_points()
         return self.get_points()[-1].copy()
     
@@ -532,6 +540,92 @@ class Points(Item):
             caller_name = sys._getframe(1).f_code.co_name
             raise Exception(message.format(caller_name))
 
+    #endregion
+    
+    #region 边界箱 | bounding_box
+    
+    @set_points.refresh(recurse_up=True)
+    @ItemBase.subitems_changed.refresh(recurse_up=True)
+    @ItemBase.register_refresh_required
+    def get_bbox(self) -> np.ndarray:
+        all_points = np.vstack([
+            self.get_points(),
+            *self.for_all_except_self.get_bbox()
+        ])
+        if len(all_points) == 0:
+            return np.zeros((3, 3))
+        
+        mins = all_points.min(0)
+        maxs = all_points.max(0)
+        mids = (mins + maxs) / 2
+        return np.array([mins, mids, maxs])
+    
+    def get_border(self, direction: Vect) -> np.ndarray:
+        bb = self.get_bbox()
+        indices = (np.sign(direction) + 1).astype(int)
+        return np.array([
+            bb[indices[i]][i]
+            for i in range(3)
+        ])
+
+    def get_continuous_bbox_point(self, direction: np.ndarray) -> np.ndarray:
+        dl, center, ur = self.get_bbox()
+        corner_vect = (ur - center)
+        return center + direction / np.max(np.abs(np.true_divide(
+            direction, corner_vect,
+            out=np.zeros(len(direction)),
+            where=((corner_vect) != 0)
+        )))
+    
+    def get_top(self) -> np.ndarray:
+        return self.get_border(UP)
+
+    def get_bottom(self) -> np.ndarray:
+        return self.get_border(DOWN)
+
+    def get_right(self) -> np.ndarray:
+        return self.get_border(RIGHT)
+
+    def get_left(self) -> np.ndarray:
+        return self.get_border(LEFT)
+
+    def get_zenith(self) -> np.ndarray:
+        return self.get_border(OUT)
+
+    def get_nadir(self) -> np.ndarray:
+        return self.get_border(IN)
+    
+    def get_center(self) -> np.ndarray:
+        return self.get_bbox()[1]
+
+    def length_over_dim(self, dim: int) -> float:
+        bb = self.get_bbox()
+        return abs((bb[2] - bb[0])[dim])
+    
+    def get_width(self) -> float:
+        return self.length_over_dim(0)
+
+    def get_height(self) -> float:
+        return self.length_over_dim(1)
+
+    def get_depth(self) -> float:
+        return self.length_over_dim(2)
+    
+    def get_coord(self, dim: int, direction: np.ndarray = ORIGIN) -> float:
+        """
+        Meant to generalize get_x, get_y, get_z
+        """
+        return self.get_border(direction)[dim]
+
+    def get_x(self, direction=ORIGIN) -> float:
+        return self.get_coord(0, direction)
+
+    def get_y(self, direction=ORIGIN) -> float:
+        return self.get_coord(1, direction)
+
+    def get_z(self, direction=ORIGIN) -> float:
+        return self.get_coord(2, direction)
+    
     #endregion
 
 class GroupClass(Item):
@@ -578,9 +672,23 @@ class BatchOp:
     and items has a return values, it will return `[val1, val2, ...]`,
     otherwise, it will return `[(item1, val1), (item2, val2), ...]`.
     '''
-    def __init__(self, *items: Item, paired: bool = False):
+
+    class NFRB(enum.Enum):   # abbr: NotFoundBehaviour
+        Auto = 0    # become `EmptyList` if `method_name.startswith('get')` is True
+        EmptyList = 1
+        Self = 2
+
+    def __init__(
+        self, 
+        *items: Item, 
+        paired: bool = False,
+        warning: bool = True,
+        nfrb: NFRB = NFRB.Auto
+    ):
         self.items = items
         self.paired = paired
+        self.warning = warning
+        self.nfrb = nfrb
     
     def __getattr__(self, method_name: str):
         def func(*args, **kwargs):
@@ -605,10 +713,17 @@ class BatchOp:
             # 如果没有任何物件调用了方法，那么进行警告
             # If no item called the method, issue a warning
             if not found:
-                frame = inspect.currentframe().f_back
-                # TODO: i18n
-                log.warning(f'[{frame.f_code.co_filename}:{frame.f_lineno}] 没有物件拥有 `{method_name}` 方法，调用没有产生效果')
+                nfrb = self.nfrb
+                if self.nfrb == BatchOp.NFRB.Auto and method_name.startswith('get'):
+                    nfrb = BatchOp.NFRB.EmptyList
+                
+                if self.warning and nfrb != BatchOp.NFRB.EmptyList:
+                    frame = inspect.currentframe().f_back
+                    # TODO: i18n
+                    log.warning(f'[{frame.f_code.co_filename}:{frame.f_lineno}] 没有物件拥有 `{method_name}` 方法，调用没有产生效果')
 
+                return [] if nfrb == BatchOp.NFRB.EmptyList else self
+            
             return ret_list or self
     
         return func
