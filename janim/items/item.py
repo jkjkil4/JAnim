@@ -1,12 +1,13 @@
 from __future__ import annotations
 from typing import Callable, Any, TypeVar
-from janim.typing import Self, VectArray
+from janim.typing import Self, Vect, VectArray
 
 from functools import wraps
 import itertools as it
 import copy
 import numpy as np
 import inspect
+import sys
 
 from janim.utils.unique_nparray import UniqueNparray
 
@@ -172,7 +173,11 @@ class Item:
             return decorator
         
         def emit(self, item: Item, *args, key: str = '', **kwargs):
-            all_slots = self.slots[key]
+            try:
+                all_slots = self.slots[key]
+            except KeyError:
+                return
+            
             for cls in item.__class__.mro():
                 try:
                     slots, refresh_slots = all_slots[self.get_cls_full_qualname(cls)]
@@ -334,7 +339,7 @@ class Item:
     
     #endregion
 
-    #region 快速操作 quick operations
+    #region 快速操作 | quick operations
 
     @property
     def for_all(self) -> Self:  # 假装返回 Self，方便代码补全
@@ -392,7 +397,7 @@ class Item:
 
     #endregion
 
-    #region 数据复制 data copying
+    #region 数据复制 | data copying
 
     def copy(self) -> Self:
         copy_item = copy.copy(self)
@@ -442,19 +447,14 @@ class Points(Item):
         copy_item.points.data = self.points.data
 
     #region points
-
-    def points_changed(self) -> None:
-        self.mark_refresh_required(self.get_bbox, recurse_up=True)
-
-    def points_count_changed(self) -> None:
-        pass
-
+        
     def get_points(self) -> VectArray:
         return self.points.data
     
     def get_all_points(self) -> VectArray:
         return np.vstack(self.for_all.get_points())
 
+    @Item.Signal
     def set_points(self, points: VectArray) -> Self:
         '''
         设置点坐标数据，每个坐标点都有三个分量
@@ -467,9 +467,6 @@ class Points(Item):
         '''
         if not isinstance(points, np.ndarray):
             points = np.array(points)
-        if len(points) == 0:
-            self.clear_points()
-            return self
     
         assert(points.ndim == 2)
         assert(points.shape[1] == 3)
@@ -479,8 +476,8 @@ class Points(Item):
         self.points.data = points
 
         if cnt_changed:
-            self.points_count_changed()
-        self.points_changed()
+            Points.set_points.emit(self, key='count')
+        Points.set_points.emit(self)
 
         return self
     
@@ -504,9 +501,36 @@ class Points(Item):
         ]))
         return self
     
+    @Item.Signal
     def reverse_points(self) -> Self:
-        # self.set_points(self)
-        ...
+        '''使点倒序 | reverse the order of points'''
+        self.set_points(self.get_points()[::-1])
+        Points.reverse_points.emit(self)
+        return self
+    
+    # TODO: resize_points
+
+    def points_count(self) -> int:
+        return len(self.get_points())
+    
+    def has_points(self) -> bool:
+        return self.points_count() > 0
+    
+    def get_start(self) -> Vect:
+        self.throw_error_if_no_points()
+        return self.get_points()[0].copy()
+
+    def get_end(self) -> Vect:
+        self.throw_error_if_no_points()
+        return self.get_points()[-1].copy()
+    
+    def throw_error_if_no_points(self) -> None:
+        if not self.has_points():
+            # TODO: i18n
+            message = "Cannot call Item.{} " +\
+                      "for a Item with no points"
+            caller_name = sys._getframe(1).f_code.co_name
+            raise Exception(message.format(caller_name))
 
     #endregion
 

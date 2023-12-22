@@ -215,22 +215,69 @@ class ItemTest(unittest.TestCase):
             ]
         )
 
-'''
+
 class PointsTest(unittest.TestCase):
     def test_points(self) -> None:
         p = Points()
 
         p.set_points([[1, 2, 3], [1.3, 1, 3]])
-        self.assertEqual(p.get_points(), np.array([[1, 2, 3], [1.3, 1, 3]]))
+        self.assertTrue(
+            np.all(
+                np.equal(
+                    p.get_points(), 
+                    np.array([[1, 2, 3], [1.3, 1, 3]])
+                )
+            )
+        )
 
         p.append_points([[6, 3, 1]])
-        self.assertEqual(p.get_points(), np.array([[1, 2, 3], [1.3, 1, 3], [6, 3, 1]]))
+        self.assertTrue(
+            np.all(
+                np.equal(
+                    p.get_points(), 
+                    np.array([[1, 2, 3], [1.3, 1, 3], [6, 3, 1]])
+                )
+            )
+        )
 
         p.reverse_points()
-        self.assertEqual(p.get_points(), np.array([[6, 3, 1], [1.3, 1, 3], [1, 2, 3]]))
+        self.assertTrue(
+            np.all(
+                np.equal(
+                    p.get_points(), 
+                    np.array([[6, 3, 1], [1.3, 1, 3], [1, 2, 3]])
+                )
+            )
+        )
+
+        self.assertEqual(p.points_count(), 3)
+        self.assertTrue(p.has_points())
+        self.assertTrue(
+            np.all(
+                np.equal(
+                    p.get_start(), 
+                    np.array([6, 3, 1])
+                )
+            )
+        )
+        self.assertTrue(
+            np.all(
+                np.equal(
+                    p.get_end(), 
+                    np.array([1, 2, 3])
+                )
+            )
+        )
 
         p.clear_points()
-        self.assertEqual(p.get_points(), np.array([]))
+        self.assertTrue(
+            np.all(
+                np.equal(
+                    p.get_points(), 
+                    np.array([]).reshape((0, 3))
+                )
+            )
+        )
 
     def test_get_all_points(self) -> None:
         root = Points(points=[UP, RIGHT]).add(
@@ -240,7 +287,15 @@ class PointsTest(unittest.TestCase):
                 Points(points=[RIGHT, DR, DL])
             )
         )
-        self.assertEqual(root.get_all_points(), np.array([UP, RIGHT, DOWN, UL, RIGHT, DR, DL]))
-'''
+        self.assertTrue(
+            np.all(
+                np.equal(
+                    root.get_all_points(), 
+                    np.array([UP, RIGHT, DOWN, UL, RIGHT, DR, DL])
+                )
+            )
+        )
+
+
 if __name__ == '__main__':
     unittest.main()
