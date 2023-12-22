@@ -66,6 +66,22 @@ class Item:
         注意：
         - 被 `func.slot()` 或 `func.refresh()` 修饰的方法需要与 `func` 在同一个类或者其子类中
 
+        ---
+        
+        Generally used to respond to updates in other data after an impact caused by `func`.
+
+        When a method `func` is decorated with this class and used as `Class.func.emit(self)`:
+        - It will invoke all methods decorated with `func.slots()`.
+        - It will call `mark_refresh_required` for all methods decorated with `func.refresh()`.
+        - You can pass a `key` parameter in the above methods to distinguish the calls.
+        - Besides `key`, `func.refresh()` can also take `recurse_down/up` as parameters.
+        - The `emit` method can pass additional arguments to the invoked `slots`.
+
+        Note:
+        - Methods decorated with `func.slot()` or `func.refresh()` need to be in the same class or its subclass.
+
+        ---
+
         #### 例 | Example:
         ```python
         class User(Item):
@@ -92,7 +108,7 @@ class Item:
         user.set_msg('hello')   # Output: User's message changed
         print(user.get_text())  # Output: [jkjkil] hello
         ```
-        还可以参考：
+        还可以参考 | See also：
         - `janim.items.item.Item.get_points`
         - `test.items.item_test.ItemTest.test_signal_with_inherit`
         '''
