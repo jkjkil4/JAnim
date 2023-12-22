@@ -14,8 +14,8 @@ class UniqueNparray:
     There are some exceptional cases, such as operations like `self.data[...] = ...`，
     which should be avoided whenever possible
     '''
-    def __init__(self):
-        self._data = np.array([])
+    def __init__(self, points: np.ndarray | Iterable = np.array([])):
+        self.data = points
 
     @property
     def data(self) -> np.ndarray:

@@ -52,7 +52,124 @@ class Item:
         self.refresh_required: dict[str, bool] = {}
         self.refresh_stored_data: dict[str, Any] = {}
 
-    #region refresh wrapper
+    class Signal:
+        '''
+        一般用于在 `func` 造成影响后，需要对其它数据进行更新时进行响应
+
+        当 `func` 被该类修饰，使用 `Class.func.emit(self)` 后
+        - 会调用所有被 `func.slots()` 修饰的方法
+        - 会为所有被 `func.refresh()` 修饰的方法调用 `mark_refresh_required`
+        - 可以在上述方法中传入 `key` 参数以区分调用
+        - `func.refresh()` 除了 `key` 之外，还可以传入 `recurse_down/up`
+        - `emit` 方法可以传入额外的参数给被调用的 `slots`
+
+        注意：
+        - 被 `func.slot()` 或 `func.refresh()` 修饰的方法需要与 `func` 在同一个类或者其子类中
+
+        #### 例 | Example:
+        ```python
+        class User(Item):
+            def __init__(self, name: str):
+                super().__init__()
+                self.name = name
+                self.msg = ''
+            
+            @Item.Signal
+            def set_msg(self, msg: str) -> None:
+                self.msg = msg
+                User.set_msg.emit(self)
+            
+            @set_msg.slot()
+            def notifier(self) -> None:
+                print("User's message changed")
+
+            @set_msg.refresh()
+            @Item.register_refresh_required
+            def get_test(self) -> str:
+                return f'[{self.name}] {self.msg}'
+            
+        user = User('jkjkil')
+        user.set_msg('hello')   # Output: User's message changed
+        print(user.get_text())  # Output: [jkjkil] hello
+        ```
+        还可以参考：
+        - `janim.items.item.Item.get_points`
+        - `test.items.item_test.ItemTest.test_signal_with_inherit`
+        '''
+        def __init__(self, func: Callable):
+            self.func = func
+
+            Key = FullQualname = str
+            Slots = list[Callable]
+            RefreshSlots = list[Callable, bool, bool]
+
+            self.slots: dict[
+                Key,
+                dict[
+                    FullQualname, 
+                    tuple[
+                        Slots,
+                        RefreshSlots
+                    ]
+                ]
+            ] = {}
+        
+        def __get__(self, instance, owner):
+            return self if instance is None else self.func.__get__(instance, owner)
+        
+        @staticmethod
+        def get_cls_full_qualname_from_fback() -> str:
+            cls_locals = inspect.currentframe().f_back.f_back.f_locals
+            module = cls_locals['__module__']
+            qualname = cls_locals['__qualname__']
+            return f'{module}.{qualname}'
+        
+        @staticmethod
+        def get_cls_full_qualname(cls: type) -> str:
+            return f'{cls.__module__}.{cls.__qualname__}'
+        
+        def ensure_slots_list_available(self, key: str, full_qualname: str) -> None:
+            if key not in self.slots:
+                self.slots[key] = { full_qualname: ([], []) }
+            
+            elif full_qualname not in self.slots[key]:
+                self.slots[key][full_qualname] = ([], [])
+        
+        def slot(self, *, key: str = ''):
+            def decorator(func: Callable) -> Callable:
+                full_qualname = self.get_cls_full_qualname_from_fback()
+                self.ensure_slots_list_available(key, full_qualname)
+                self.slots[key][full_qualname][0].append(func)
+
+                return func
+
+            return decorator
+        
+        def refresh(self, *, recurse_down: bool = False, recurse_up: bool = False, key: str = ''):
+            def decorator(func: Callable) -> Callable:
+                full_qualname = self.get_cls_full_qualname_from_fback()
+                self.ensure_slots_list_available(key, full_qualname)
+                self.slots[key][full_qualname][1].append((func, recurse_down, recurse_up))
+
+                return func
+
+            return decorator
+        
+        def emit(self, item: Item, *args, key: str = '', **kwargs):
+            all_slots = self.slots[key]
+            for cls in item.__class__.mro():
+                try:
+                    slots, refresh_slots = all_slots[self.get_cls_full_qualname(cls)]
+                except KeyError: 
+                    continue
+
+                for func in slots:
+                    func(item, *args, **kwargs)
+                
+                for func, recurse_down, recurse_up in refresh_slots:
+                    item.mark_refresh_required(func, recurse_down=recurse_down, recurse_up=recurse_up)
+
+    #region refreshing
         
     '''
     refresh 相关方法
@@ -292,10 +409,15 @@ class Item:
     #endregion
 
 class Points(Item):
-    def __init__(self, *args, **kwargs):
+    def __init__(
+        self, 
+        *args, 
+        points: VectArray = np.array([]), 
+        **kwargs
+    ):
         super().__init__(*args, **kwargs)
 
-        self.points = UniqueNparray()
+        self.points = UniqueNparray(points)
 
     def copy(self) -> Self:
         copy_item = super().copy()
@@ -313,6 +435,9 @@ class Points(Item):
 
     def get_points(self) -> VectArray:
         return self.points.data
+    
+    def get_all_points(self) -> VectArray:
+        return np.vstack(self.for_all.get_points())
 
     def set_points(self, points: VectArray) -> Self:
         '''
@@ -333,12 +458,12 @@ class Points(Item):
         assert(points.ndim == 2)
         assert(points.shape[1] == 3)
 
-        if len(points) == len(self.points.data):
-            self.points = points[:]
-        else:
-            self.points = points.astype(np.float32)
+        cnt_changed = len(points) != len(self.points.data)
+
+        self.points.data = points
+
+        if cnt_changed:
             self.points_count_changed()
-        
         self.points_changed()
 
         return self
@@ -346,6 +471,26 @@ class Points(Item):
     def clear_points(self) -> Self:
         self.set_points(np.zeros((0, 3)))
         return self
+    
+    def append_points(self, points: VectArray) -> Self:
+        '''
+        追加点坐标数据，每个坐标点都有三个分量
+
+        使用形如 `append_points([[1.5, 3, 2], [2, 1.5, 0]])` 的形式
+
+        Append point coordinate data, with each point having three components.
+
+        Use a format like `append_points([[1.5, 3, 2], [2, 1.5, 0]])`.
+        '''
+        self.set_points(np.vstack([
+            self.get_points(),
+            points
+        ]))
+        return self
+    
+    def reverse_points(self) -> Self:
+        # self.set_points(self)
+        ...
 
     #endregion
 

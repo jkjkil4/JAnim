@@ -1,8 +1,13 @@
+from __future__ import annotations
 from janim.typing import Self
 
-import unittest
+import unittest, unittest.mock
 
-from janim.items.item import Item, Group
+import numpy as np
+
+from janim.items.item import Item, Points, Group
+from janim.constants import *
+
 
 class ItemSetVal(Item):
     def __init__(self):
@@ -122,5 +127,120 @@ class ItemTest(unittest.TestCase):
         self.assertEqual(root.for_sub_p.get_value(), [(m3, 20), (m4, 20)])
         self.assertEqual(g1.for_all.get_value(), [10])
 
+    def test_signal(self) -> None:       
+        class User(Item):
+            def __init__(self, name: str):
+                super().__init__()
+
+                self.name = name
+                self.msg = ''
+
+                # for testing
+                self.notifier_counter = 0
+
+            @Item.Signal
+            def set_msg(self, msg: str) -> None:
+                self.msg = msg
+                User.set_msg.emit(self)
+
+            @set_msg.slot()
+            def notifier(self) -> None:
+                self.notifier_counter += 1
+
+            @set_msg.refresh()
+            @Item.register_refresh_required
+            def get_text(self) -> str:
+                return f'[{self.name}] {self.msg}'
+     
+        user = User('jkjkil')
+
+        self.assertEqual(user.notifier_counter, 0)
+        user.set_msg('hello')
+        self.assertEqual(user.notifier_counter, 1)
+
+        self.assertEqual(user.get_text(), '[jkjkil] hello')
+
+    def test_signal_with_inherit(self) -> None:
+        called_list = []
+
+        class A(Item):
+            @Item.Signal
+            def test(self) -> None:
+                called_list.append(self.test)
+                A.test.emit(self)
+                A.test.emit(self, key='special')
+            
+            @test.slot()
+            def fnA(self) -> None:
+                called_list.append(self.fnA)
+        
+        class B(A):
+            @A.test.slot()
+            def fnB(self) -> None:
+                called_list.append(self.fnB)
+        
+        class C(A):
+            @A.test.slot()
+            def fnC(self) -> None:
+                called_list.append(self.fnC)
+        
+        class D(C, B):  # test mro()
+            @A.test.slot()
+            def fnD1(self) -> None:
+                called_list.append(self.fnD1)
+            
+            @A.test.slot(key='special')
+            def fnD2(self) -> None:
+                called_list.append(self.fnD2)
+        
+        b = B()
+        b.test()
+
+        c = C()
+        c.test()
+
+        d = D()
+        d.test()
+
+        self.assertEqual(
+            called_list,
+            [
+                b.test,
+                b.fnB, b.fnA,
+                c.test,
+                c.fnC, c.fnA,
+                d.test,
+                d.fnD1, d.fnC, d.fnB, d.fnA,
+                d.fnD2
+            ]
+        )
+
+'''
+class PointsTest(unittest.TestCase):
+    def test_points(self) -> None:
+        p = Points()
+
+        p.set_points([[1, 2, 3], [1.3, 1, 3]])
+        self.assertEqual(p.get_points(), np.array([[1, 2, 3], [1.3, 1, 3]]))
+
+        p.append_points([[6, 3, 1]])
+        self.assertEqual(p.get_points(), np.array([[1, 2, 3], [1.3, 1, 3], [6, 3, 1]]))
+
+        p.reverse_points()
+        self.assertEqual(p.get_points(), np.array([[6, 3, 1], [1.3, 1, 3], [1, 2, 3]]))
+
+        p.clear_points()
+        self.assertEqual(p.get_points(), np.array([]))
+
+    def test_get_all_points(self) -> None:
+        root = Points(points=[UP, RIGHT]).add(
+            Group(
+                Points(points=[DOWN, UL]),
+                Item(),
+                Points(points=[RIGHT, DR, DL])
+            )
+        )
+        self.assertEqual(root.get_all_points(), np.array([UP, RIGHT, DOWN, UL, RIGHT, DR, DL]))
+'''
 if __name__ == '__main__':
     unittest.main()
