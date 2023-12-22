@@ -284,5 +284,13 @@ class ItemTest(unittest.TestCase):
         bbox = g.get_bbox()
         self.assertEqual(bbox[[0, 2]].tolist(), np.array([DL, UR + UP]).tolist())
 
+        self.assertEqual(g.get_border(UR).tolist(), (UR + UP).tolist())
+
+    def test_basic_transform(self) -> None:
+        p = Item(points=[LEFT, RIGHT, UP, DOWN])
+        p.apply_points_function(lambda p: p + LEFT)
+
+        self.assertTrue(np.all(p.get_points() == [LEFT * 2, ORIGIN, UL, DL]))
+
 if __name__ == '__main__':
     unittest.main()

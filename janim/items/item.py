@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Callable, Any, TypeVar
+from typing import Callable, Any, TypeVar, Iterable
 from janim.typing import Self, Vect, VectArray
 
 from functools import wraps
@@ -11,7 +11,12 @@ import sys
 import enum
 
 from janim.utils.unique_nparray import UniqueNparray
-from janim.constants import UP, DOWN, LEFT, RIGHT, OUT, IN, ORIGIN
+from janim.utils.space_ops import get_norm, angle_of_vector, rotation_matrix
+from janim.constants import (
+    UP, DOWN, LEFT, RIGHT, OUT, IN, ORIGIN,
+    PI, 
+    MED_SMALL_BUFF, DEFAULT_ITEM_TO_EDGE_BUFF, DEFAULT_ITEM_TO_ITEM_BUFF
+)
 
 from janim.logger import log
 
@@ -50,7 +55,6 @@ class ItemBase:
 
         self.parents: list[ItemBase] = []
         self.subitems: list[ItemBase] = []
-        self.markers: list[Item] = []  # TODO: Item.markers
 
         self.refresh_required: dict[str, bool] = {}
         self.refresh_stored_data: dict[str, Any] = {}
@@ -411,8 +415,6 @@ class ItemBase:
         copy_item.parents = []
         copy_item.subitems = []
         copy_item.add(*[m.copy() for m in self])
-        
-        # TODO: copy: markers
 
         # other
         self.refresh_required.clear()       # 清空，使得所有操作都要重新计算数据
@@ -446,11 +448,15 @@ class Item(ItemBase):
         self.points = UniqueNparray()
         self.set_points(points)
 
+        # TODO: self.markers
+
     def copy(self) -> Self:
         copy_item = super().copy()
 
         copy_item.points = UniqueNparray()
         copy_item.points.data = self.points.data
+
+        # TODO: copy: markers
 
     #region points
         
@@ -544,38 +550,59 @@ class Item(ItemBase):
     
     #region 边界箱 | bounding_box
     
+    @staticmethod
+    def _get_bbox(points: np.ndarray) -> np.ndarray:
+        if len(points) == 0:
+            return np.zeros((3, 3))
+
+        mins = points.min(0)
+        maxs = points.max(0)
+        mids = (mins + maxs) / 2
+        return np.array([mins, mids, maxs])
+    
+    @set_points.refresh()
+    @ItemBase.register_refresh_required
+    def get_self_bbox(self) -> np.ndarray:
+        return self._get_bbox(self.get_points())
+    
     @set_points.refresh(recurse_up=True)
     @ItemBase.subitems_changed.refresh(recurse_up=True)
     @ItemBase.register_refresh_required
     def get_bbox(self) -> np.ndarray:
         all_points = np.vstack([
-            self.get_points(),
+            self.get_self_bbox(),
             *self.for_all_except_self.get_bbox()
         ])
-        if len(all_points) == 0:
-            return np.zeros((3, 3))
-        
-        mins = all_points.min(0)
-        maxs = all_points.max(0)
-        mids = (mins + maxs) / 2
-        return np.array([mins, mids, maxs])
+        return self._get_bbox(all_points)
     
-    def get_border(self, direction: Vect) -> np.ndarray:
-        bb = self.get_bbox()
+    @staticmethod
+    def _get_border(bbox: np.ndarray, direction: Vect) -> np.ndarray:
         indices = (np.sign(direction) + 1).astype(int)
         return np.array([
-            bb[indices[i]][i]
+            bbox[indices[i]][i]
             for i in range(3)
         ])
 
-    def get_continuous_bbox_point(self, direction: np.ndarray) -> np.ndarray:
-        dl, center, ur = self.get_bbox()
+    def get_self_border(self, direction: Vect) -> np.ndarray:
+        return self._get_border(self.get_self_bbox(), direction)
+
+    def get_border(self, direction: Vect) -> np.ndarray:
+        return self._get_border(self.get_bbox(), direction)
+    
+    def _get_continuous_border(bbox: np.ndarray, direction: np.ndarray) -> np.ndarray:
+        dl, center, ur = bbox
         corner_vect = (ur - center)
         return center + direction / np.max(np.abs(np.true_divide(
             direction, corner_vect,
             out=np.zeros(len(direction)),
             where=((corner_vect) != 0)
         )))
+    
+    def get_self_continuous_border(self, direction: np.ndarray) -> np.ndarray:
+        self._get_continuous_border(self.get_self_bbox(), direction)
+
+    def get_continuous_border(self, direction: np.ndarray) -> np.ndarray:
+        self._get_continuous_border(self.get_bbox(), direction)
     
     def get_top(self) -> np.ndarray:
         return self.get_border(UP)
@@ -626,6 +653,314 @@ class Item(ItemBase):
     def get_z(self, direction=ORIGIN) -> float:
         return self.get_coord(2, direction)
     
+    #endregion
+
+    #region 变换 | Transform
+
+    def apply_points_function(
+        self,
+        func: Callable[[np.ndarray], Vect],
+        about_point: Vect | None = None,
+        about_edge: Vect = ORIGIN,
+        for_all: bool = False
+    ) -> Self:
+        if about_point is None:
+            if for_all:
+                about_point = self.get_border(about_edge)
+            else:
+                about_point = self.get_self_border(about_edge)
+        
+        def apply(item: Item):
+            if not item.has_points():
+                return
+            
+            if about_point is None:
+                item.set_points(func(item.get_points()))
+            else:
+                item.set_points(func(item.get_points() - about_point) + about_point)
+        
+        if for_all:
+            for item in self.get_family():
+                apply(item)
+        else:
+            apply(self)
+        
+        return self
+
+    def apply_function(
+        self,
+        function: Callable[[np.ndarray], np.ndarray],
+        about_point: Vect = ORIGIN,
+        **kwargs 
+    ) -> Self:
+        # Default to applying matrix about the origin, not items center
+        self.apply_points_function(
+            lambda points: np.array([function(p) for p in points]),
+            about_point=about_point,
+            **kwargs
+        )
+        return self
+    
+    def apply_matrix(
+        self,
+        matrix: VectArray,
+        about_point: Vect | None = None,
+        about_edge: Vect | None = None,
+        **kwargs
+    ) -> Self:
+        # Default to applying matrix about the origin, not items center
+        if about_point is None and about_edge is None:
+            about_point = ORIGIN
+        full_matrix = np.identity(3)
+        matrix = np.array(matrix)
+        full_matrix[:matrix.shape[0], :matrix.shape[1]] = matrix
+        self.apply_points_function(
+            lambda points: np.dot(points, full_matrix.T),
+            about_point=about_point,
+            about_edge=about_edge,
+            **kwargs
+        )
+        return self
+
+    def apply_complex_function(self, function: Callable[[complex], complex], **kwargs) -> Self:
+        def R3_func(point):
+            x, y, z = point
+            xy_complex = function(complex(x, y))
+            return [
+                xy_complex.real,
+                xy_complex.imag,
+                z
+            ]
+        return self.apply_function(R3_func, **kwargs)
+    
+    def rotate(
+        self,
+        angle: float,
+        axis: Vect = OUT,
+        about_point: Vect | None = None,
+        **kwargs
+    ) -> Self:
+        rot_matrix_T = rotation_matrix(angle, axis).T
+        self.apply_points_function(
+            lambda points: np.dot(points, rot_matrix_T),
+            about_point,
+            **kwargs
+        )
+        return self
+    
+    def flip(self, axis: Vect = UP, **kwargs) -> Self:
+        self.rotate(PI, axis, **kwargs)
+        return self
+    
+    def scale(
+        self,
+        scale_factor: float | Iterable,
+        min_scale_factor: float = 1e-8,
+        about_point: Vect | None = None,
+        about_edge: Vect = ORIGIN
+    ) -> Self:
+        if isinstance(scale_factor, Iterable):
+            scale_factor = np.array(scale_factor).clip(min=min_scale_factor)
+        else:
+            scale_factor = max(scale_factor, min_scale_factor)
+        
+        self.apply_points_function(
+            lambda points: scale_factor * points,
+            about_point=about_point,
+            about_edge=about_edge
+        )
+        return self
+
+    def stretch(self, factor: float, dim: int, **kwargs) -> Self:
+        def func(points):
+            points[:, dim] *= factor
+            return points
+        self.apply_points_function(func, **kwargs)
+        return self
+    
+    def rescale_to_fit(self, length: float, dim: int, stretch: bool = False, **kwargs) -> Self:
+        old_length = self.length_over_dim(dim)
+        if old_length == 0:
+            return self
+        if stretch:
+            self.stretch(length / old_length, dim, **kwargs)
+        else:
+            self.scale(length / old_length, **kwargs)
+        return self
+    
+    def set_width(self, width: float, stretch: bool = False, **kwargs) -> Self:
+        return self.rescale_to_fit(width, 0, stretch=stretch, **kwargs)
+
+    def set_height(self, height: float, stretch: bool = False, **kwargs) -> Self:
+        return self.rescale_to_fit(height, 1, stretch=stretch, **kwargs)
+
+    def set_depth(self, depth: float, stretch: bool = False, **kwargs) -> Self:
+        return self.rescale_to_fit(depth, 2, stretch=stretch, **kwargs)
+    
+    def set_size(
+        self,
+        width: float | None = None,
+        height: float | None = None,
+        depth: float | None = None,
+        **kwargs
+    ) -> Self:
+        if width:
+            self.set_width(width, True, **kwargs)
+        if height:
+            self.set_height(height, True, **kwargs)
+        if depth:
+            self.set_depth(depth, True, **kwargs)
+        return self
+    
+    def replace(self, item: Item, dim_to_match: int = 0, stretch: bool = False) -> Self:
+        if not item.points_count() and not item.subitems:
+            self.scale(0)
+            return self
+        if stretch:
+            for i in range(3):
+                self.rescale_to_fit(item.length_over_dim(i), i, stretch=True)
+        else:
+            self.rescale_to_fit(
+                item.length_over_dim(dim_to_match),
+                dim_to_match,
+                stretch=False
+            )
+        self.shift(item.get_center() - self.get_center())
+        return self
+    
+    def surround(
+        self,
+        item: Item,
+        dim_to_match: int = 0,
+        stretch: bool = False,
+        buff: float = MED_SMALL_BUFF
+    ) -> Self:
+        self.replace(item, dim_to_match, stretch)
+        length = item.length_over_dim(dim_to_match)
+        self.scale((length + buff) / length)
+        return self
+    
+    def put_start_and_end_on(self, start: Vect, end: Vect) -> Self:
+        curr_start, curr_end = self.get_start(), self.get_end()
+        curr_vect = curr_end - curr_start
+        if np.all(curr_vect == 0):
+            raise Exception("Cannot position endpoints of closed loop")
+        target_vect = end - start
+        self.scale(
+            get_norm(target_vect) / get_norm(curr_vect),
+            about_point=curr_start,
+        )
+        self.rotate(
+            angle_of_vector(target_vect) - angle_of_vector(curr_vect),
+        )
+        self.rotate(
+            np.arctan2(curr_vect[2], get_norm(curr_vect[:2])) - np.arctan2(target_vect[2], get_norm(target_vect[:2])),
+            axis=np.array([-target_vect[1], target_vect[0], 0]),
+        )
+        self.shift(start - self.get_start())
+        return self
+
+    #endregion
+
+    #region 位移 | movement
+
+    def shift(self, vector: Vect) -> Self:
+        self.apply_points_function(
+            lambda points: points + vector,
+            about_edge=None
+        )
+        return self
+    
+    def move_to(
+        self,
+        target: Item | Vect,
+        aligned_edge: Vect = ORIGIN,
+        coor_mask: Iterable = (1, 1, 1)
+    ) -> Self:
+        if isinstance(target, Item):
+            target = target.get_border(aligned_edge)
+        point_to_align = self.get_border(aligned_edge)
+        self.shift((target - point_to_align) * coor_mask)
+        return self
+    
+    def align_to(
+        self,
+        item_or_point: Item | Vect,
+        direction: Vect = ORIGIN
+    ) -> Self:
+        """
+        Examples:
+        mob1.align_to(mob2, UP) moves mob1 vertically so that its
+        top edge lines ups with mob2's top edge.
+
+        mob1.align_to(mob2, alignment_vect = RIGHT) moves mob1
+        horizontally so that it's center is directly above/below
+        the center of mob2
+        """
+        if isinstance(item_or_point, Item):
+            point = item_or_point.get_border(direction)
+        else:
+            point = item_or_point
+
+        for dim in range(3):
+            if direction[dim] != 0:
+                self.set_coord(point[dim], dim, direction)
+        
+        return self
+    
+    def to_center(self) -> Self:
+        self.shift(-self.get_center())
+        return self
+    
+    # TODO: def to_border(
+    #     self,
+    #     direction: Vect,
+    #     buff: float = DEFAULT_ITEM_TO_EDGE_BUFF
+    # ) -> Self:
+    #     """
+    #     Direction just needs to be a vector pointing towards side or
+    #     corner in the 2d plane.
+    #     """
+    #     target_point = np.sign(direction) * (FRAME_X_RADIUS, FRAME_Y_RADIUS, 0)
+    #     point_to_align = self.get_border(direction)
+    #     shift_val = target_point - point_to_align - buff * np.array(direction)
+    #     shift_val = shift_val * abs(np.sign(direction))
+    #     self.shift(shift_val)
+    #     return self
+    
+    def next_to(
+        self,
+        target: Item | Vect,
+        direction: Vect = RIGHT,
+        buff: float = DEFAULT_ITEM_TO_ITEM_BUFF,
+        aligned_edge: Vect = ORIGIN,
+        coor_mask: Iterable = (1, 1, 1)
+    ) -> Self:
+        if isinstance(target, Item):
+            target = target.get_border(aligned_edge + direction)
+        
+        point_to_align = self.get_border(aligned_edge - direction)
+        self.shift((target - point_to_align + buff * direction) * coor_mask)
+        return self
+    
+    # TODO: shift_onto_screen
+
+    def set_coord(self, value: float, dim: int, direction: Vect = ORIGIN) -> Self:
+        curr = self.get_coord(dim, direction)
+        shift_vect = np.zeros(3)
+        shift_vect[dim] = value - curr
+        self.shift(shift_vect)
+        return self
+    
+    def set_x(self, x: float, direction: Vect = ORIGIN) -> Self:
+        return self.set_coord(x, 0, direction)
+
+    def set_y(self, y: float, direction: Vect = ORIGIN) -> Self:
+        return self.set_coord(y, 1, direction)
+
+    def set_z(self, z: float, direction: Vect = ORIGIN) -> Self:
+        return self.set_coord(z, 2, direction)
+
     #endregion
 
 class GroupClass(Item):
