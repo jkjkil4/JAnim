@@ -14,42 +14,40 @@ from janim.utils.unique_nparray import UniqueNparray
 from janim.utils.space_ops import get_norm, angle_of_vector, rotation_matrix
 from janim.constants import (
     UP, DOWN, LEFT, RIGHT, OUT, IN, ORIGIN,
-    PI, 
+    PI,
     MED_SMALL_BUFF, DEFAULT_ITEM_TO_EDGE_BUFF, DEFAULT_ITEM_TO_ITEM_BUFF
 )
 
 from janim.logger import log
 
-'''
-继承 ItemBase 及有关类的注意事项：
-    - 完成对 copy 的继承，使得子类的数据能被正常复制
-        - 代码结构：
-
-        def copy(self) -> Self:
-            copy_item = super().copy()
-
-            # ===========
-            # 有关数据复制
-            # ===========
-
-            return copy_item
-
-
-Inheriting from ItemBase and related classes:
-    - Ensure inheritance from copy for proper data copying.
-        - Code structure:
-
-        def copy(self) -> Self:
-            copy_item = super().copy()
-
-            # ===========
-            # Data copying
-            # ===========
-
-            return copy_item
-'''
 
 class ItemBase:
+    '''
+    物件的基类，定义了物件结构关系，以及一些有用的封装
+
+    The base class for items, defining the structural
+    relationships of items and providing some useful encapsulation.
+
+    ---
+
+    继承 ItemBase 及有关类时，应完成对 copy 的继承，使得子类的数据能被正常复制
+
+    When inheriting from ItemBase or related classes,
+    you should implement inheritance for copy to ensure
+    that the data of the subclass can be copied correctly.
+
+    ```python
+    def copy(self) -> Self:
+        copy_item = super().copy()
+
+        # ===========
+        # 有关数据复制
+        # Data copying
+        # ===========
+
+        return copy_item
+    ```
+    '''
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -74,7 +72,7 @@ class ItemBase:
         - 被 `func.slot()` 或 `func.refresh()` 修饰的方法需要与 `func` 在同一个类或者其子类中
 
         ---
-        
+
         Generally used to respond to updates in other data after an impact caused by `func`.
 
         When a method `func` is decorated with this class and used as `Class.func.emit(self)`:
@@ -96,12 +94,12 @@ class ItemBase:
                 super().__init__()
                 self.name = name
                 self.msg = ''
-            
+
             @ItemBase.Signal
             def set_msg(self, msg: str) -> None:
                 self.msg = msg
                 User.set_msg.emit(self)
-            
+
             @set_msg.slot()
             def notifier(self) -> None:
                 print("User's message changed")
@@ -110,7 +108,7 @@ class ItemBase:
             @ItemBase.register_refresh_required
             def get_test(self) -> str:
                 return f'[{self.name}] {self.msg}'
-            
+
         user = User('jkjkil')
         user.set_msg('hello')   # Output: User's message changed
         print(user.get_text())  # Output: [jkjkil] hello
@@ -129,35 +127,35 @@ class ItemBase:
             self.slots: dict[
                 Key,
                 dict[
-                    FullQualname, 
+                    FullQualname,
                     tuple[
                         Slots,
                         RefreshSlots
                     ]
                 ]
             ] = {}
-        
+
         def __get__(self, instance, owner):
             return self if instance is None else self.func.__get__(instance, owner)
-        
+
         @staticmethod
         def get_cls_full_qualname_from_fback() -> str:
             cls_locals = inspect.currentframe().f_back.f_back.f_locals
             module = cls_locals['__module__']
             qualname = cls_locals['__qualname__']
             return f'{module}.{qualname}'
-        
+
         @staticmethod
         def get_cls_full_qualname(cls: type) -> str:
             return f'{cls.__module__}.{cls.__qualname__}'
-        
+
         def ensure_slots_list_available(self, key: str, full_qualname: str) -> None:
             if key not in self.slots:
-                self.slots[key] = { full_qualname: ([], []) }
-            
+                self.slots[key] = {full_qualname: ([], [])}
+
             elif full_qualname not in self.slots[key]:
                 self.slots[key][full_qualname] = ([], [])
-        
+
         def slot(self, *, key: str = ''):
             def decorator(func):
                 full_qualname = self.get_cls_full_qualname_from_fback()
@@ -167,7 +165,7 @@ class ItemBase:
                 return func
 
             return decorator
-        
+
         def refresh(self, *, recurse_down: bool = False, recurse_up: bool = False, key: str = ''):
             def decorator(func):
                 full_qualname = self.get_cls_full_qualname_from_fback()
@@ -177,62 +175,56 @@ class ItemBase:
                 return func
 
             return decorator
-        
+
         def emit(self, item: ItemBase, *args, key: str = '', **kwargs):
             try:
                 all_slots = self.slots[key]
             except KeyError:
                 return
-            
+
             for cls in item.__class__.mro():
                 try:
                     slots, refresh_slots = all_slots[self.get_cls_full_qualname(cls)]
-                except KeyError: 
+                except KeyError:
                     continue
 
                 for func in slots:
                     func(item, *args, **kwargs)
-                
+
                 for func, recurse_down, recurse_up in refresh_slots:
                     item.mark_refresh_required(func, recurse_down=recurse_down, recurse_up=recurse_up)
 
-    #region refreshing
-        
-    '''
-    refresh 相关方法
-    用于在需要时才进行值的重新计算，提升性能
-    
-    当一个方法 self.func 被 `register_refresh_required` 修饰后
-    会记忆 self.func 被调用后的返回值，并在之后的调用中直接返回该值，而不对 self.func 进行真正的调用
-    需要 `mark_refresh_required(self.func)` 才会对 self.func 重新调用以更新返回值
-
-    例如，`get_family` 方法不会每次都进行计算
-    只有在 `add` 或 `remove` 执行后，才会将 `get_family` 标记为需要更新
-    使得在下次调用 `get_family` 才重新计算结果并返回
-
-    可参考 `test.items.item_test.ItemTest.test_refresh_required`
-
-
-    Methods related to refreshing
-    Used to recalculate values only when necessary for performance improvement
-
-    When a method self.func is decorated with `register_refresh_required`,
-    it memorizes the return value of self.func and directly returns that value in subsequent calls,
-    without actually calling self.func. 
-    `mark_refresh_required(self.func)` is needed to trigger a reevaluation of self.func and update the return value.
-
-    For example, the `get_family` method does not recalculate every time.
-    It is only marked for update after `add` or `remove` is executed,
-    making it recalculated and returning the result the next time `get_family` is called.
-
-    See `test.items.item_test.ItemTest.test_refresh_required` for an example.
-    '''
+    # region refreshing
 
     def register_refresh_required(func: Callable) -> Callable:
         '''
-        修饰器，标记方法在需要更新时才重新进行计算
+        refresh 相关方法
+        用于在需要时才进行值的重新计算，提升性能
 
-        Decorator, marks a method to recalculate only when necessary.
+        当一个方法 self.func 被 `register_refresh_required` 修饰后
+        会记忆 self.func 被调用后的返回值，并在之后的调用中直接返回该值，而不对 self.func 进行真正的调用
+        需要 `mark_refresh_required(self.func)` 才会对 self.func 重新调用以更新返回值
+
+        例如，`get_family` 方法不会每次都进行计算
+        只有在 `add` 或 `remove` 执行后，才会将 `get_family` 标记为需要更新
+        使得在下次调用 `get_family` 才重新计算结果并返回
+
+        可参考 `test.items.item_test.ItemTest.test_refresh_required`
+
+
+        Methods related to refreshing
+        Used to recalculate values only when necessary for performance improvement
+
+        When a method self.func is decorated with `register_refresh_required`,
+        it memorizes the return value of self.func and directly returns that value in subsequent calls,
+        without actually calling self.func.
+        `mark_refresh_required(self.func)` is needed to trigger a reevaluation of self.func and update the return value.
+
+        For example, the `get_family` method does not recalculate every time.
+        It is only marked for update after `add` or `remove` is executed,
+        making it recalculated and returning the result the next time `get_family` is called.
+
+        See `test.items.item_test.ItemTest.test_refresh_required` for an example.
         '''
         name = func.__name__
 
@@ -248,9 +240,9 @@ class ItemBase:
                 self.refresh_required[name] = False
                 return ret
             return self.refresh_stored_data[name]
-        
+
         return wrapper
-    
+
     def mark_refresh_required(self, func: Callable, *, recurse_down: bool = False, recurse_up: bool = False) -> Self:
         '''
         标记指定的 `func` 需要进行更新
@@ -258,7 +250,7 @@ class ItemBase:
         `recurse_down`: 是否递归调用子物件的该方法
         `recurse_up`: 是否递归调用父物件的该方法
 
-        
+
         Marks the specified `func` for an update.
 
         `recurse_down`: Whether to recursively call the method on subitems.
@@ -272,10 +264,10 @@ class ItemBase:
             for item in self.parents:
                 item.mark_refresh_required(func, recurse_up=True)
 
-    #endregion
-                
-    #region relation
-                
+    # endregion
+
+    # region relation
+
     '''
     两个物件之间可以建立 parent-subitem 双向关系
     主要用于 mark_refresh_required 以及一些属性的传递
@@ -293,7 +285,7 @@ class ItemBase:
     def add(self, *items: ItemBase) -> Self:
         '''
         向该物件添加子物件
-        
+
         Add subitems to this item.
         '''
         for item in items:
@@ -304,14 +296,14 @@ class ItemBase:
                 self.subitems.append(item)
             if self not in item.parents:
                 item.parents.append(self)
-            
+
         self.subitems_changed()
         return self
-    
+
     def remove(self, *items: ItemBase) -> Self:
         '''
         从该物件移除子物件
-        
+
         Remove subitems from this item.
         '''
         for item in items:
@@ -323,41 +315,40 @@ class ItemBase:
             try:
                 item.parents.remove(self)
             except ValueError: ...
-        
+
         self.subitems_changed()
         return self
-    
+
     @subitems_changed.refresh(recurse_up=True)
     @register_refresh_required
     def get_family(self) -> list[ItemBase]:
         '''
         获取该物件的所有子物件，即包括自己和子物件的子物件
-        
+
         Get all subitems of this item, including itself and the subitems of its subitems.
         '''
         return [self, *it.chain(*[item.get_family() for item in self.subitems])]
 
-    
     def __getitem__(self, value) -> Self:   # 假装返回 Self，用于类型提示
         if isinstance(value, slice):
             return GroupClass(*self.subitems[value])
         return self.subitems[value]
-    
+
     def __iter__(self):
         return iter(self.subitems)
-    
+
     def __len__(self):
         return len(self.subitems)
-    
-    #endregion
 
-    #region 快速操作 | quick operations
+    # endregion
+
+    # region 快速操作 | quick operations
 
     @property
     def for_all(self) -> Self:  # 假装返回 Self，方便代码补全
         '''
         对自己 `get_family()` 的所有子物件进行操作
-        
+
         Operates on all items obtained from `get_family()`.
         '''
         return BatchOp(*self.get_family())
@@ -365,62 +356,64 @@ class ItemBase:
     def for_all_p(self, **kwargs) -> Self:
         '''
         同 `for_all`，但是可以传入额外参数
-        
+
         Same as for_all, but can accept additional parameters.
         '''
         return BatchOp(*self.get_family(), **kwargs)
-    
+
     @property
     def for_all_except_self(self) -> Self:
         '''
         对不包括自己的 `get_family()` 的所有子物件进行操作
-        
+
         Operatres on all items obtained from `get_family()`, excluding the item itself.
         '''
         return BatchOp(*self.get_family()[1:])
-    
+
     def for_all_except_self_p(self, **kwargs) -> Self:
         '''
         同 `for_all_except_self`，但是可以传入额外参数
-        
+
         Same as `for_all_except_self`, but can accept additional parameters.
         '''
         return BatchOp(*self.get_family()[1:], **kwargs)
-    
+
     @property
     def for_sub(self) -> Self:
         '''
         对 `subitems` 中的物件进行操作
-        
+
         Operates on subitems.
         '''
         return BatchOp(*self.subitems)
-    
+
     def for_sub_p(self, **kwargs) -> Self:
         '''
         同 `for_sub`，但是可以传入额外参数
-        
+
         Same as `for_sub`, , but can accept additional parameters.
         '''
         return BatchOp(*self.subitems, **kwargs)
 
-    #endregion
+    # endregion
 
-    #region 数据复制 | data copying
+    # region 数据复制 | data copying
 
     def copy(self) -> Self:
         copy_item = copy.copy(self)
-        
+
         # relation
         copy_item.parents = []
         copy_item.subitems = []
         copy_item.add(*[m.copy() for m in self])
 
-        # other
-        self.refresh_required.clear()       # 清空，使得所有操作都要重新计算数据
-                                            # Clear, so that all opeartions require recalculating data.
-        self.refresh_stored_data.clear()    # 既然 refresh_required 清空了，那么这个就顺便也清空吧，反正也要重新计算的
-                                            # Since refresh_required is cleared, clear this too, as it needs to be recalculated.
+        # 清空，使得所有操作都要重新计算数据
+        # Clear, so that all opeartions require recalculating data.
+        self.refresh_required.clear()
+
+        # 既然 refresh_required 清空了，那么这个就顺便也清空吧，反正也要重新计算的
+        # Since refresh_required is cleared, clear this too, as it needs to be recalculated.
+        self.refresh_stored_data.clear()
 
         return copy_item
 
@@ -434,13 +427,14 @@ class ItemBase:
             *(self.copy() for _ in range(times))
         )
 
-    #endregion
+    # endregion
+
 
 class Item(ItemBase):
     def __init__(
-        self, 
-        *args, 
-        points: VectArray = np.array([]), 
+        self,
+        *args,
+        points: VectArray = np.array([]),
         **kwargs
     ):
         super().__init__(*args, **kwargs)
@@ -458,11 +452,11 @@ class Item(ItemBase):
 
         # TODO: copy: markers
 
-    #region points
-        
+    # region points
+
     def get_points(self) -> np.ndarray:
         return self.points.data
-    
+
     def get_all_points(self) -> np.ndarray:
         return np.vstack(self.for_all.get_points())
 
@@ -470,20 +464,20 @@ class Item(ItemBase):
     def set_points(self, points: VectArray) -> Self:
         '''
         设置点坐标数据，每个坐标点都有三个分量
-        
+
         使用形如 `set_points([[1.5, 3, 2], [2, 1.5, 0]])` 的形式
 
         Set point coordinate data, with each point having three components.
-        
+
         Use a format like `set_points([[1.5, 3, 2], [2, 1.5, 0]])`.
         '''
         if not isinstance(points, np.ndarray):
             points = np.array(points)
         if points.size == 0:
             points = np.zeros((0, 3))
-    
-        assert(points.ndim == 2)
-        assert(points.shape[1] == 3)
+
+        assert points.ndim == 2
+        assert points.shape[1] == 3
 
         cnt_changed = len(points) != len(self.points.data)
 
@@ -494,11 +488,11 @@ class Item(ItemBase):
         Item.set_points.emit(self)
 
         return self
-    
+
     def clear_points(self) -> Self:
         self.set_points(np.zeros((0, 3)))
         return self
-    
+
     def append_points(self, points: VectArray) -> Self:
         '''
         追加点坐标数据，每个坐标点都有三个分量
@@ -514,30 +508,40 @@ class Item(ItemBase):
             points
         ]))
         return self
-    
+
     @ItemBase.Signal
     def reverse_points(self) -> Self:
         '''使点倒序 | reverse the order of points'''
         self.set_points(self.get_points()[::-1])
         Item.reverse_points.emit(self)
         return self
-    
+
     # TODO: resize_points
 
     def points_count(self) -> int:
         return len(self.get_points())
-    
+
     def has_points(self) -> bool:
         return self.points_count() > 0
-    
+
     def get_start(self) -> np.ndarray:
+        '''
+        得到 `points` 的第一个点
+
+        Obtains the first point of `points`.
+        '''
         self.throw_error_if_no_points()
         return self.get_points()[0].copy()
 
     def get_end(self) -> np.ndarray:
+        '''
+        得到 `points` 的最后一个点
+
+        Obtains the last point of `points`.
+        '''
         self.throw_error_if_no_points()
         return self.get_points()[-1].copy()
-    
+
     def throw_error_if_no_points(self) -> None:
         if not self.has_points():
             # TODO: i18n
@@ -546,10 +550,10 @@ class Item(ItemBase):
             caller_name = sys._getframe(1).f_code.co_name
             raise Exception(message.format(caller_name))
 
-    #endregion
-    
-    #region 边界箱 | bounding_box
-    
+    # endregion
+
+    # region 边界箱 | bounding_box
+
     @staticmethod
     def _get_bbox(points: np.ndarray) -> np.ndarray:
         if len(points) == 0:
@@ -559,22 +563,34 @@ class Item(ItemBase):
         maxs = points.max(0)
         mids = (mins + maxs) / 2
         return np.array([mins, mids, maxs])
-    
+
     @set_points.refresh()
     @ItemBase.register_refresh_required
     def get_self_bbox(self) -> np.ndarray:
+        '''
+        同 `get_bbox`，但仅对自己的 `points` 获取包围框，不考虑子物件的
+
+        Similar to `get_bbox`, but obtains the bounding box only for
+        its own `points` without considering child items.
+        '''
         return self._get_bbox(self.get_points())
-    
+
     @set_points.refresh(recurse_up=True)
     @ItemBase.subitems_changed.refresh(recurse_up=True)
     @ItemBase.register_refresh_required
     def get_bbox(self) -> np.ndarray:
+        '''
+        获取物件（包括子物件）的矩形包围框；包含三个元素，分别为左下，中心，右上
+
+        Obtains the rectangular bounding box of the item (including child items);
+        includes three elements representing the bottom-left, center, and top-right.
+        '''
         all_points = np.vstack([
             self.get_self_bbox(),
             *self.for_all_except_self.get_bbox()
         ])
         return self._get_bbox(all_points)
-    
+
     @staticmethod
     def _get_border(bbox: np.ndarray, direction: Vect) -> np.ndarray:
         indices = (np.sign(direction) + 1).astype(int)
@@ -584,11 +600,31 @@ class Item(ItemBase):
         ])
 
     def get_self_border(self, direction: Vect) -> np.ndarray:
+        '''
+        同 `get_border`，但基于不考虑子物件的边界框
+
+        Similar to `get_border` but based on the boundary box without considering child items.
+        '''
         return self._get_border(self.get_self_bbox(), direction)
 
     def get_border(self, direction: Vect) -> np.ndarray:
+        '''
+        获取物件边界框边上的坐标
+
+        例如：
+        - 传入 UR，则返回边界框右上角的坐标
+        - 传入 RIGHT，则返回边界框右侧中心的坐标
+
+        ---
+
+        Obtains the coordinates on the borders of the item's bounding box.
+
+        Examples:
+        - If UR is passed, it returns the coordinates of the upper-right corner of the bounding box.
+        - If RIGHT is passed, it returns the coordinates of the center on the right side of the bounding box.
+        '''
         return self._get_border(self.get_bbox(), direction)
-    
+
     def _get_continuous_border(bbox: np.ndarray, direction: np.ndarray) -> np.ndarray:
         dl, center, ur = bbox
         corner_vect = (ur - center)
@@ -597,13 +633,15 @@ class Item(ItemBase):
             out=np.zeros(len(direction)),
             where=((corner_vect) != 0)
         )))
-    
+
     def get_self_continuous_border(self, direction: np.ndarray) -> np.ndarray:
+        # TODO: 给 get_self_continuous_border 添加注释
         self._get_continuous_border(self.get_self_bbox(), direction)
 
     def get_continuous_border(self, direction: np.ndarray) -> np.ndarray:
+        # TODO: 给 get_continuous_border 添加注释
         self._get_continuous_border(self.get_bbox(), direction)
-    
+
     def get_top(self) -> np.ndarray:
         return self.get_border(UP)
 
@@ -621,14 +659,14 @@ class Item(ItemBase):
 
     def get_nadir(self) -> np.ndarray:
         return self.get_border(IN)
-    
+
     def get_center(self) -> np.ndarray:
         return self.get_bbox()[1]
 
     def length_over_dim(self, dim: int) -> float:
         bb = self.get_bbox()
         return abs((bb[2] - bb[0])[dim])
-    
+
     def get_width(self) -> float:
         return self.length_over_dim(0)
 
@@ -637,11 +675,8 @@ class Item(ItemBase):
 
     def get_depth(self) -> float:
         return self.length_over_dim(2)
-    
+
     def get_coord(self, dim: int, direction: np.ndarray = ORIGIN) -> float:
-        """
-        Meant to generalize get_x, get_y, get_z
-        """
         return self.get_border(direction)[dim]
 
     def get_x(self, direction=ORIGIN) -> float:
@@ -652,10 +687,10 @@ class Item(ItemBase):
 
     def get_z(self, direction=ORIGIN) -> float:
         return self.get_coord(2, direction)
-    
-    #endregion
 
-    #region 变换 | Transform
+    # endregion
+
+    # region 变换 | Transform
 
     def apply_points_function(
         self,
@@ -664,43 +699,63 @@ class Item(ItemBase):
         about_edge: Vect = ORIGIN,
         for_all: bool = False
     ) -> Self:
-        if about_point is None:
+        '''
+        视 `about_point` 为原点，若其为 `None`，则将物件在 `about_edge` 方向上的边界作为 `about_point`
+
+        注意：
+
+        如果有传入 `about_point`，则以下二者调用后的效果没有区别：
+        - `.for_all.apply_points_function(...)`
+        - `.apply_points_function(..., for_all=True)`
+
+        如果没有传入 `about_point`，而是以 `about_edge` 确定变换原点：
+        - 那么 `.for_all.apply_points_function(...)` 会以每个子物件的边界框分别确定 `about_point` 进行变换
+        - 而 `.apply_points_function(..., for_all=True)` 会以全体的边界框确定共同的 `about_point` 进行变换
+
+        ---
+        '''
+        if about_point is None and about_edge is not None:
             if for_all:
                 about_point = self.get_border(about_edge)
             else:
                 about_point = self.get_self_border(about_edge)
-        
+
         def apply(item: Item):
             if not item.has_points():
                 return
-            
+
             if about_point is None:
                 item.set_points(func(item.get_points()))
             else:
                 item.set_points(func(item.get_points() - about_point) + about_point)
-        
+
         if for_all:
             for item in self.get_family():
                 apply(item)
         else:
             apply(self)
-        
+
         return self
 
     def apply_function(
         self,
         function: Callable[[np.ndarray], np.ndarray],
         about_point: Vect = ORIGIN,
-        **kwargs 
+        **kwargs
     ) -> Self:
-        # Default to applying matrix about the origin, not items center
+        '''
+        以每个点为单位进行变换；以默认的原点作用变换，而不是物件的中心
+
+        Apply a transformation to each point individually.
+        Default to applying the transformation about the origin, not items center.
+        '''
         self.apply_points_function(
             lambda points: np.array([function(p) for p in points]),
             about_point=about_point,
             **kwargs
         )
         return self
-    
+
     def apply_matrix(
         self,
         matrix: VectArray,
@@ -708,7 +763,12 @@ class Item(ItemBase):
         about_edge: Vect | None = None,
         **kwargs
     ) -> Self:
-        # Default to applying matrix about the origin, not items center
+        '''
+        将矩阵变换作用于 `points`；以默认的原点作用变换，而不是物件的中心
+
+        Apply a matrix transformation to the `points`.
+        Default to applying the transformation about the origin, not items center.
+        '''
         if about_point is None and about_edge is None:
             about_point = ORIGIN
         full_matrix = np.identity(3)
@@ -723,6 +783,11 @@ class Item(ItemBase):
         return self
 
     def apply_complex_function(self, function: Callable[[complex], complex], **kwargs) -> Self:
+        '''
+        将复变函数作用于 `points`
+
+        Apply a complex-valued function to the `points`.
+        '''  # TODO: 明确是作用于原点还是物件中心
         def R3_func(point):
             x, y, z = point
             xy_complex = function(complex(x, y))
@@ -732,7 +797,7 @@ class Item(ItemBase):
                 z
             ]
         return self.apply_function(R3_func, **kwargs)
-    
+
     def rotate(
         self,
         angle: float,
@@ -740,6 +805,12 @@ class Item(ItemBase):
         about_point: Vect | None = None,
         **kwargs
     ) -> Self:
+        '''
+        以 `axis` 为方向，`angle` 为角度旋转，可传入 about_point 指定相对于以哪个点为中心
+
+        Rotate the item by an `angle` around the specified `axis`,
+        with an optional `about_point` about which the rotation should be performed.
+        '''
         rot_matrix_T = rotation_matrix(angle, axis).T
         self.apply_points_function(
             lambda points: np.dot(points, rot_matrix_T),
@@ -747,11 +818,16 @@ class Item(ItemBase):
             **kwargs
         )
         return self
-    
+
     def flip(self, axis: Vect = UP, **kwargs) -> Self:
+        '''
+        绕 axis 轴翻转
+
+        Flip the item around the specified axis.
+        '''
         self.rotate(PI, axis, **kwargs)
         return self
-    
+
     def scale(
         self,
         scale_factor: float | Iterable,
@@ -759,11 +835,27 @@ class Item(ItemBase):
         about_point: Vect | None = None,
         about_edge: Vect = ORIGIN
     ) -> Self:
+        '''
+        将物件缩放指定倍数
+
+        如果传入的倍数是可遍历的对象，那么则将其中的各个元素作为坐标各分量缩放的倍数，
+        例如传入 `scale_factor` 为 `(2, 0.5, 1)` 则是在 `x` 方向上缩放为两倍，在 `y` 方向上压缩为原来的一半，在 `z` 方向上保持不变
+
+        ---
+
+        Scale the item by a specified factor.
+
+        If the scale factor provided is an iterable object, each element
+        will be used as the scaling factor for the corresponding coordinate component.
+
+        For example, if `scale_factor` is `(2, 0.5, 1)`, the item will be scaled by a factor of 2 along the `x` axis,
+        compressed by half along the `y` axis, and remain unchanged along the `z` axis.
+        '''
         if isinstance(scale_factor, Iterable):
             scale_factor = np.array(scale_factor).clip(min=min_scale_factor)
         else:
             scale_factor = max(scale_factor, min_scale_factor)
-        
+
         self.apply_points_function(
             lambda points: scale_factor * points,
             about_point=about_point,
@@ -772,12 +864,17 @@ class Item(ItemBase):
         return self
 
     def stretch(self, factor: float, dim: int, **kwargs) -> Self:
+        '''
+        在指定的 `dim` 方向上使物件伸缩
+
+        Stretch the object along the specified `dim` direction.
+        '''
         def func(points):
             points[:, dim] *= factor
             return points
         self.apply_points_function(func, **kwargs)
         return self
-    
+
     def rescale_to_fit(self, length: float, dim: int, stretch: bool = False, **kwargs) -> Self:
         old_length = self.length_over_dim(dim)
         if old_length == 0:
@@ -787,16 +884,31 @@ class Item(ItemBase):
         else:
             self.scale(length / old_length, **kwargs)
         return self
-    
+
     def set_width(self, width: float, stretch: bool = False, **kwargs) -> Self:
+        '''
+        如果 `stretch` 为 `False`（默认），则表示等比缩放
+
+        If `stretch` is `False` (default), it indicates proportional scaling.
+        '''
         return self.rescale_to_fit(width, 0, stretch=stretch, **kwargs)
 
     def set_height(self, height: float, stretch: bool = False, **kwargs) -> Self:
+        '''
+        如果 `stretch` 为 `False`（默认），则表示等比缩放
+
+        If `stretch` is `False` (default), it indicates proportional scaling.
+        '''
         return self.rescale_to_fit(height, 1, stretch=stretch, **kwargs)
 
     def set_depth(self, depth: float, stretch: bool = False, **kwargs) -> Self:
+        '''
+        如果 `stretch` 为 `False`（默认），则表示等比缩放
+
+        If `stretch` is `False` (default), it indicates proportional scaling.
+        '''
         return self.rescale_to_fit(depth, 2, stretch=stretch, **kwargs)
-    
+
     def set_size(
         self,
         width: float | None = None,
@@ -811,23 +923,31 @@ class Item(ItemBase):
         if depth:
             self.set_depth(depth, True, **kwargs)
         return self
-    
+
     def replace(self, item: Item, dim_to_match: int = 0, stretch: bool = False) -> Self:
+        '''
+        放到和 item 的位置，并且大小相同
+
+        Position the object at the same location and with the same size as the specified item.
+        '''
         if not item.points_count() and not item.subitems:
             self.scale(0)
             return self
         if stretch:
+            # If stretch is True, rescale each dimension to match the corresponding dimension of the item.
             for i in range(3):
                 self.rescale_to_fit(item.length_over_dim(i), i, stretch=True)
         else:
+            # If stretch is False, rescale only the dimension specified by dim_to_match to match the item.
             self.rescale_to_fit(
                 item.length_over_dim(dim_to_match),
                 dim_to_match,
                 stretch=False
             )
+        # Shift the object to the center of the specified item.
         self.shift(item.get_center() - self.get_center())
         return self
-    
+
     def surround(
         self,
         item: Item,
@@ -835,12 +955,22 @@ class Item(ItemBase):
         stretch: bool = False,
         buff: float = MED_SMALL_BUFF
     ) -> Self:
+        '''
+        与 `replace` 类似，但是会向外留出 `buff` 间距
+
+        Similar to `replace` but leaves a buffer space of `buff` around the item.
+        '''
         self.replace(item, dim_to_match, stretch)
         length = item.length_over_dim(dim_to_match)
         self.scale((length + buff) / length)
         return self
-    
+
     def put_start_and_end_on(self, start: Vect, end: Vect) -> Self:
+        '''
+        通过旋转和缩放，使得物件的起点和终点被置于 `start` 和 `end`
+
+        Rotate and scale this item such that its start and end points are positioned at `start` and `end`.
+        '''
         curr_start, curr_end = self.get_start(), self.get_end()
         curr_vect = curr_end - curr_start
         if np.all(curr_vect == 0):
@@ -860,29 +990,39 @@ class Item(ItemBase):
         self.shift(start - self.get_start())
         return self
 
-    #endregion
+    # endregion
 
-    #region 位移 | movement
+    # region 位移 | movement
 
     def shift(self, vector: Vect) -> Self:
+        '''
+        相对移动 `vector` 向量
+
+        Shift the object by the specified `vector`.
+        '''
         self.apply_points_function(
             lambda points: points + vector,
             about_edge=None
         )
         return self
-    
+
     def move_to(
         self,
         target: Item | Vect,
         aligned_edge: Vect = ORIGIN,
         coor_mask: Iterable = (1, 1, 1)
     ) -> Self:
+        '''
+        移动到 `target` 的位置
+
+        Move this item to the position of `target`.
+        '''
         if isinstance(target, Item):
             target = target.get_border(aligned_edge)
         point_to_align = self.get_border(aligned_edge)
         self.shift((target - point_to_align) * coor_mask)
         return self
-    
+
     def align_to(
         self,
         item_or_point: Item | Vect,
@@ -890,13 +1030,13 @@ class Item(ItemBase):
     ) -> Self:
         """
         Examples:
-        mob1.align_to(mob2, UP) moves mob1 vertically so that its
-        top edge lines ups with mob2's top edge.
+        item1.align_to(item2, UP) moves item1 vertically so that its
+        top edge lines ups with item2's top edge.
 
-        mob1.align_to(mob2, alignment_vect = RIGHT) moves mob1
+        item1.align_to(item2, direction = RIGHT) moves item1
         horizontally so that it's center is directly above/below
-        the center of mob2
-        """
+        the center of item2
+        """  # TODO: 完善 align_to 注释
         if isinstance(item_or_point, Item):
             point = item_or_point.get_border(direction)
         else:
@@ -905,13 +1045,18 @@ class Item(ItemBase):
         for dim in range(3):
             if direction[dim] != 0:
                 self.set_coord(point[dim], dim, direction)
-        
+
         return self
-    
+
     def to_center(self) -> Self:
+        '''
+        移动到原点 `(0, 0, 0)`
+
+        Move this item to the origin `(0, 0, 0)`.
+        '''
         self.shift(-self.get_center())
         return self
-    
+
     # TODO: def to_border(
     #     self,
     #     direction: Vect,
@@ -927,7 +1072,7 @@ class Item(ItemBase):
     #     shift_val = shift_val * abs(np.sign(direction))
     #     self.shift(shift_val)
     #     return self
-    
+
     def next_to(
         self,
         target: Item | Vect,
@@ -936,13 +1081,18 @@ class Item(ItemBase):
         aligned_edge: Vect = ORIGIN,
         coor_mask: Iterable = (1, 1, 1)
     ) -> Self:
+        '''
+        将该物件放到 `target` 旁边
+
+        Position this item next to `target`.
+        '''
         if isinstance(target, Item):
             target = target.get_border(aligned_edge + direction)
-        
+
         point_to_align = self.get_border(aligned_edge - direction)
         self.shift((target - point_to_align + buff * direction) * coor_mask)
         return self
-    
+
     # TODO: shift_onto_screen
 
     def set_coord(self, value: float, dim: int, direction: Vect = ORIGIN) -> Self:
@@ -951,7 +1101,7 @@ class Item(ItemBase):
         shift_vect[dim] = value - curr
         self.shift(shift_vect)
         return self
-    
+
     def set_x(self, x: float, direction: Vect = ORIGIN) -> Self:
         return self.set_coord(x, 0, direction)
 
@@ -961,24 +1111,28 @@ class Item(ItemBase):
     def set_z(self, z: float, direction: Vect = ORIGIN) -> Self:
         return self.set_coord(z, 2, direction)
 
-    #endregion
+    # endregion
+
 
 class GroupClass(Item):
     def __init__(self, *items: Item, **kwargs):
         super().__init__(**kwargs)
         self.add(*items)
 
+
 T = TypeVar('T', bound=Item)
+
 
 # 该方法用于方便类型检查以及补全提示
 # 在执行时和直接调用 GroupClass 没有区别
 def Group(*items: T) -> Item | T:
     '''
     将 `items` 打包为一个 `Group`，方便属性的设定
-    
+
     Pack `items` into a `Group` for convenient property setting.
     '''
     return GroupClass(*items)
+
 
 class BatchOp:
     '''
@@ -1014,8 +1168,8 @@ class BatchOp:
         Self = 2
 
     def __init__(
-        self, 
-        *items: Item, 
+        self,
+        *items: Item,
         paired: bool = False,
         warning: bool = True,
         nfrb: NFRB = NFRB.Auto
@@ -1024,7 +1178,7 @@ class BatchOp:
         self.paired = paired
         self.warning = warning
         self.nfrb = nfrb
-    
+
     def __getattr__(self, method_name: str):
         def func(*args, **kwargs):
             ret_list = []
@@ -1040,7 +1194,7 @@ class BatchOp:
                 if not callable(attr):
                     continue
                 found = True
-                
+
                 ret = attr(*args, **kwargs)
                 if ret is not None and ret is not item:
                     ret_list.append((item, ret) if self.paired else ret)
@@ -1051,17 +1205,14 @@ class BatchOp:
                 nfrb = self.nfrb
                 if self.nfrb == BatchOp.NFRB.Auto and method_name.startswith('get'):
                     nfrb = BatchOp.NFRB.EmptyList
-                
+
                 if self.warning and nfrb != BatchOp.NFRB.EmptyList:
                     frame = inspect.currentframe().f_back
                     # TODO: i18n
                     log.warning(f'[{frame.f_code.co_filename}:{frame.f_lineno}] 没有物件拥有 `{method_name}` 方法，调用没有产生效果')
 
                 return [] if nfrb == BatchOp.NFRB.EmptyList else self
-            
+
             return ret_list or self
-    
+
         return func
-                    
-
-

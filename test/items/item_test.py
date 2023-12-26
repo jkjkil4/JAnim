@@ -291,6 +291,8 @@ class ItemTest(unittest.TestCase):
         p.apply_points_function(lambda p: p + LEFT)
 
         self.assertTrue(np.all(p.get_points() == [LEFT * 2, ORIGIN, UL, DL]))
+    
+    # TODO: test .apply_points_function(..., for_all=True) and .for_all.apply_points_function(...)
 
 if __name__ == '__main__':
     unittest.main()

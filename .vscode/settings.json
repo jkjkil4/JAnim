@@ -1,3 +1,8 @@
 {
-    "todo-tree.tree.scanMode": "workspace only"
+    "todo-tree.tree.scanMode": "workspace only",
+    "flake8.args": [
+        "--max-line-length=120",
+        "--ignore=E701",
+        "--exclude=test/*,refactor_deprecated/*"
+    ]
 }
