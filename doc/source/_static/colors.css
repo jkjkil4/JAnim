@@ -1,0 +1,21 @@
+.colors {
+    float: left;
+    padding: 10px;
+    border: 10px;
+    margin: 0;
+    width: 80px;
+    height: 80px;
+    text-align: center;
+}
+p.color-text {
+    font-size: inherit;
+    font-family: var(--font-stack--monospace);
+    margin-top: 25px;
+    color: WHITE;
+}
+p.color-text-small {
+    font-size: small;
+    font-family: var(--font-stack--monospace);
+    margin-top: 28px;
+    color: WHITE;
+}
