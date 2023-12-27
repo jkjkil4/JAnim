@@ -17,7 +17,7 @@ class ItemSetVal(ItemBase):
     def set_value(self, val) -> Self:
         self.val = val
         return self
-    
+
     def get_value(self):
         return self.val
 
@@ -31,13 +31,13 @@ class ItemBaseTest(unittest.TestCase):
         m1.remove(m2)
         self.assertNotIn(m1, m2.parents)
         self.assertNotIn(m2, m1.subitems)
-    
+
     def test_get_family(self) -> None:
         m1, m2, m3, m4 = (ItemBase() for _ in range(4))
         m1.add(m2, m3)
         m2.add(m4)
         self.assertEqual(m1.get_family(), [m1, m2, m4, m3])
-    
+
     def test_refresh_required(self) -> None:
         class MyItem(ItemBase):
             def __init__(self) -> None:
@@ -50,9 +50,9 @@ class ItemBaseTest(unittest.TestCase):
             def get_data(self) -> None:
                 self.cnt += 1
                 return self.data
-        
+
         item = MyItem()
-        
+
         # 一开始没调用 `get_data`，因此显然调用次数为 0
         # Initially, `get_data` has not been called, so the call count is obviously 0
         self.assertEqual(item.cnt, 0)
@@ -83,7 +83,7 @@ class ItemBaseTest(unittest.TestCase):
             item.get_data()
         self.assertEqual(item.cnt, 2)
 
-    def test_group_method(self) -> None:        
+    def test_group_method(self) -> None:
         class ItemA(ItemBase): ...
 
         root = Group(
@@ -94,7 +94,7 @@ class ItemBaseTest(unittest.TestCase):
             m3 := ItemSetVal(),
             m4 := ItemSetVal()
         )
-        
+
         root.for_all.set_value(10)
         m4.set_value(20)
 
@@ -119,7 +119,7 @@ class ItemBaseTest(unittest.TestCase):
         root.set_value(0)
         root.for_all_except_self.set_value(10)
         root.for_sub.set_value(20)
-        
+
         self.assertEqual(m1.get_value(), 10)
         self.assertEqual(root.for_all.get_value(), [0, 10, 20, 20])
         self.assertEqual(root.for_all_except_self.get_value(), [10, 20, 20])
@@ -127,7 +127,7 @@ class ItemBaseTest(unittest.TestCase):
         self.assertEqual(root.for_sub_p(paired=True).get_value(), [(m3, 20), (m4, 20)])
         self.assertEqual(g1.for_all.get_value(), [10])
 
-    def test_signal(self) -> None:       
+    def test_signal(self) -> None:
         class User(ItemBase):
             def __init__(self, name: str):
                 super().__init__()
@@ -138,7 +138,7 @@ class ItemBaseTest(unittest.TestCase):
                 # for testing
                 self.notifier_counter = 0
 
-            @ItemBase.Signal
+            @ItemBase.SelfSignal
             def set_msg(self, msg: str) -> None:
                 self.msg = msg
                 User.set_msg.emit(self)
@@ -151,7 +151,7 @@ class ItemBaseTest(unittest.TestCase):
             @ItemBase.register_refresh_required
             def get_text(self) -> str:
                 return f'[{self.name}] {self.msg}'
-     
+
         user = User('jkjkil')
 
         self.assertEqual(user.notifier_counter, 0)
@@ -164,35 +164,35 @@ class ItemBaseTest(unittest.TestCase):
         called_list = []
 
         class A(ItemBase):
-            @ItemBase.Signal
+            @ItemBase.SelfSignal
             def test(self) -> None:
                 called_list.append(self.test)
                 A.test.emit(self)
                 A.test.emit(self, key='special')
-            
+
             @test.slot()
             def fnA(self) -> None:
                 called_list.append(self.fnA)
-        
+
         class B(A):
             @A.test.slot()
             def fnB(self) -> None:
                 called_list.append(self.fnB)
-        
+
         class C(A):
             @A.test.slot()
             def fnC(self) -> None:
                 called_list.append(self.fnC)
-        
+
         class D(C, B):  # test mro()
             @A.test.slot()
             def fnD1(self) -> None:
                 called_list.append(self.fnD1)
-            
+
             @A.test.slot(key='special')
             def fnD2(self) -> None:
                 called_list.append(self.fnD2)
-        
+
         b = B()
         b.test()
 
@@ -228,30 +228,30 @@ class ItemTest(unittest.TestCase):
 
         p.append_points([[6, 3, 1]])
         self.assertEqual(
-            p.get_points().tolist(), 
+            p.get_points().tolist(),
             [[1, 2, 3], [1.3, 1, 3], [6, 3, 1]]
         )
 
         p.reverse_points()
         self.assertEqual(
-            p.get_points().tolist(), 
+            p.get_points().tolist(),
             [[6, 3, 1], [1.3, 1, 3], [1, 2, 3]]
         )
 
         self.assertEqual(p.points_count(), 3)
         self.assertTrue(p.has_points())
         self.assertEqual(
-            p.get_start().tolist(), 
+            p.get_start().tolist(),
             [6, 3, 1]
         )
         self.assertEqual(
-            p.get_end().tolist(), 
+            p.get_end().tolist(),
             [1, 2, 3]
         )
 
         p.clear_points()
         self.assertEqual(
-            p.get_points().tolist(), 
+            p.get_points().tolist(),
             []
         )
 
@@ -264,16 +264,16 @@ class ItemTest(unittest.TestCase):
             )
         )
         self.assertTrue(
-            root.get_all_points().tolist(), 
+            root.get_all_points().tolist(),
             np.array([UP, RIGHT, DOWN, UL, RIGHT, DR, DL]).tolist()
         )
-    
+
     def test_bounding_box(self) -> None:
         p = Item(points=[UL, RIGHT, UR + UP])
         bbox = p.get_bbox()
         self.assertEqual(bbox[[0, 2]].tolist(), np.array([LEFT, UR + UP]).tolist())
         self.assertEqual(p.get_border(UP).tolist(), (UP * 2).tolist())
-    
+
     def test_bounding_box_with_rel(self) -> None:
         g = Group(Item(points=[UL, RIGHT, UR + UP]))
 
@@ -291,7 +291,7 @@ class ItemTest(unittest.TestCase):
         p.apply_points_function(lambda p: p + LEFT)
 
         self.assertTrue(np.all(p.get_points() == [LEFT * 2, ORIGIN, UL, DL]))
-    
+
     # TODO: test .apply_points_function(..., for_all=True) and .for_all.apply_points_function(...)
 
 if __name__ == '__main__':

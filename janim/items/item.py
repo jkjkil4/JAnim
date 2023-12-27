@@ -53,7 +53,7 @@ class ItemBase:
         self.refresh_required: dict[str, bool] = {}
         self.refresh_stored_data: dict[str, Any] = {}
 
-    class Signal:
+    class SelfSignal:
         '''
         一般用于在 ``func`` 造成影响后，需要对其它数据进行更新时进行响应
 
@@ -95,7 +95,7 @@ class ItemBase:
                     self.name = name
                     self.msg = ''
 
-                @ItemBase.Signal
+                @ItemBase.SelfSignal
                 def set_msg(self, msg: str) -> None:
                     self.msg = msg
                     User.set_msg.emit(self)
@@ -160,9 +160,9 @@ class ItemBase:
 
         def slot(self, *, key: str = ''):
             '''
-            被该修饰器所修饰的方法会在 ``Signal`` 触发时被调用
+            被该修饰器所修饰的方法会在 ``SelfSignal`` 触发时被调用
 
-            A method decorated with this decorator will be called when a ``Signal`` is triggered.
+            A method decorated with this decorator will be called when a ``SelfSignal`` is triggered.
             '''
             def decorator(func):
                 full_qualname = self.get_cls_full_qualname_from_fback()
@@ -175,9 +175,9 @@ class ItemBase:
 
         def refresh(self, *, recurse_down: bool = False, recurse_up: bool = False, key: str = ''):
             '''
-            被该修饰器所修饰的方法会在 ``Signal`` 触发时，标记 ``refresh_required``
+            被该修饰器所修饰的方法会在 ``SelfSignal`` 触发时，标记 ``refresh_required``
 
-            A method decorated with this decorator will mark ``refresh_required`` when a ``Signal`` is triggered.
+            A method decorated with this decorator will mark ``refresh_required`` when a ``SelfSignal`` is triggered.
             '''
             def decorator(func):
                 full_qualname = self.get_cls_full_qualname_from_fback()
@@ -189,7 +189,7 @@ class ItemBase:
             return decorator
 
         def emit(self, item: ItemBase, *args, key: str = '', **kwargs):
-            '''触发 ``Signal`` | Trigger ``Signal``'''
+            '''触发 ``SelfSignal`` | Trigger ``SelfSignal``'''
             try:
                 all_slots = self.slots[key]
             except KeyError:
@@ -294,7 +294,7 @@ class ItemBase:
     It is not directly related to the rendering order.
     '''
 
-    @Signal
+    @SelfSignal
     def subitems_changed(self) -> None:
         ItemBase.subitems_changed.emit(self)
 
@@ -487,7 +487,7 @@ class Item(ItemBase):
         '''
         return np.vstack(self.for_all.get_points())
 
-    @ItemBase.Signal
+    @ItemBase.SelfSignal
     def set_points(self, points: VectArray) -> Self:
         '''
         设置点坐标数据，每个坐标点都有三个分量
@@ -536,7 +536,7 @@ class Item(ItemBase):
         ]))
         return self
 
-    @ItemBase.Signal
+    @ItemBase.SelfSignal
     def reverse_points(self) -> Self:
         '''使点倒序 | reverse the order of points'''
         self.set_points(self.get_points()[::-1])
