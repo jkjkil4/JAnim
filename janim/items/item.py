@@ -820,7 +820,7 @@ class Item(ItemBase):
         func: Callable[[np.ndarray], Vect],
         about_point: Vect | None = None,
         about_edge: Vect = ORIGIN,
-        for_all: bool = False
+        self_only: bool = False
     ) -> Self:
         '''
         视 ``about_point`` 为原点，若其为 ``None``，则将物件在 ``about_edge`` 方向上的边界作为 ``about_point``
@@ -829,8 +829,8 @@ class Item(ItemBase):
 
         如果有传入 ``about_point``，则以下二者调用后的效果没有区别：
 
-        - ``.for_all.apply_points_function(...)``
-        - ``.apply_points_function(..., for_all=True)``
+        - ``.apply_points_function(...)``
+        - ``.for_all.apply_points_function(..., )``
 
         如果没有传入 ``about_point``，而是以 ``about_edge`` 确定变换原点：
 
@@ -859,10 +859,10 @@ class Item(ItemBase):
         of all items to determine a common ``about_point`` for the transformation.
         '''
         if about_point is None and about_edge is not None:
-            if for_all:
-                about_point = self.box.get(about_edge)
-            else:
+            if self_only:
                 about_point = self.self_box.get(about_edge)
+            else:
+                about_point = self.box.get(about_edge)
 
         def apply(item: Item):
             if not item.has_points():
@@ -873,11 +873,11 @@ class Item(ItemBase):
             else:
                 item.set_points(func(item.get_points() - about_point) + about_point)
 
-        if for_all:
+        if self_only:
+            apply(self)
+        else:
             for item in self.get_family():
                 apply(item)
-        else:
-            apply(self)
 
         return self
 
