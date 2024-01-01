@@ -127,7 +127,7 @@ class ItemBaseTest(unittest.TestCase):
         self.assertEqual(root.for_sub_p(paired=True).get_value(), [(m3, 20), (m4, 20)])
         self.assertEqual(g1.for_all.get_value(), [10])
 
-    def test_signal(self) -> None:
+    def test_self_signal(self) -> None:
         class User(ItemBase):
             def __init__(self, name: str):
                 super().__init__()
@@ -160,7 +160,7 @@ class ItemBaseTest(unittest.TestCase):
 
         self.assertEqual(user.get_text(), '[jkjkil] hello')
 
-    def test_signal_with_inherit(self) -> None:
+    def test_self_signal_with_inherit(self) -> None:
         called_list = []
 
         class A(ItemBase):
@@ -214,6 +214,38 @@ class ItemBaseTest(unittest.TestCase):
                 d.fnD2
             ]
         )
+
+    def test_signal(self) -> None:
+        called_list = []
+
+        class A:
+            @ItemBase.Signal
+            def fnEmitter1(self):
+                self.fnEmitter1.emit()
+
+            def fnEmitter2(self):
+                A.fnEmitter1.emit(self)
+
+            def fnA(self):
+                called_list.append(self.fnA)
+
+        class B:
+            def fnB(self):
+                called_list.append(self.fnB)
+
+        def fn():
+            called_list.append(fn)
+
+        a = A()
+        b = B()
+        a.fnEmitter1.connect(a.fnA)
+        a.fnEmitter1.connect(b.fnB)
+        a.fnEmitter1.connect(fn)
+
+        a.fnEmitter1()
+        a.fnEmitter2()
+
+        self.assertEqual(called_list, [a.fnA, b.fnB, fn] * 2)
 
 
 class ItemTest(unittest.TestCase):
@@ -270,21 +302,21 @@ class ItemTest(unittest.TestCase):
 
     def test_bounding_box(self) -> None:
         p = Item(points=[UL, RIGHT, UR + UP])
-        bbox = p.get_bbox()
-        self.assertEqual(bbox[[0, 2]].tolist(), np.array([LEFT, UR + UP]).tolist())
-        self.assertEqual(p.get_border(UP).tolist(), (UP * 2).tolist())
+        box = p.box.data
+        self.assertEqual(box[[0, 2]].tolist(), np.array([LEFT, UR + UP]).tolist())
+        self.assertEqual(p.box.get(UP).tolist(), (UP * 2).tolist())
 
     def test_bounding_box_with_rel(self) -> None:
         g = Group(Item(points=[UL, RIGHT, UR + UP]))
 
-        bbox = g.get_bbox()
-        self.assertEqual(bbox[[0, 2]].tolist(), np.array([LEFT, UR + UP]).tolist())
+        box = g.box.data
+        self.assertEqual(box[[0, 2]].tolist(), np.array([LEFT, UR + UP]).tolist())
 
         g.add(Item(points=[DOWN]))
-        bbox = g.get_bbox()
-        self.assertEqual(bbox[[0, 2]].tolist(), np.array([DL, UR + UP]).tolist())
+        box = g.box.data
+        self.assertEqual(box[[0, 2]].tolist(), np.array([DL, UR + UP]).tolist())
 
-        self.assertEqual(g.get_border(UR).tolist(), (UR + UP).tolist())
+        self.assertEqual(g.box.get(UR).tolist(), (UR + UP).tolist())
 
     def test_basic_transform(self) -> None:
         p = Item(points=[LEFT, RIGHT, UP, DOWN])

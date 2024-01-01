@@ -6,7 +6,7 @@ import inspect
 import itertools as it
 import sys
 from functools import wraps, update_wrapper
-from typing import Any, Callable, Iterable, TypeVar
+from typing import Any, Callable, Iterable, TypeVar, Generator, Type
 
 import numpy as np
 
@@ -17,6 +17,9 @@ from janim.logger import log
 from janim.typing import Self, Vect, VectArray
 from janim.utils.space_ops import angle_of_vector, get_norm, rotation_matrix
 from janim.utils.unique_nparray import UniqueNparray
+
+
+ItemBaseT = TypeVar('ItemBaseT', bound='ItemBase')
 
 
 class ItemBase:
@@ -207,6 +210,55 @@ class ItemBase:
                 for func, recurse_down, recurse_up in refresh_slots:
                     item.mark_refresh_required(func, recurse_down=recurse_down, recurse_up=recurse_up)
 
+    class Signal:
+        class __BindSignal:
+            def __init__(self, signal: ItemBase.Signal, instance, owner):
+                self.signal = signal
+                self.instance = instance
+                self.owner = owner
+
+            def __call__(self, *args, **kwargs):
+                return self.signal.func(self.instance, *args, **kwargs)
+
+            def connect(self, slot: Callable, *, key: str = '') -> None:
+                self.signal.connect(self.instance, slot, key=key)
+
+            def emit(self, *args, key: str = '', **kwargs) -> None:
+                self.signal.emit(self.instance, *args, key=key, **kwargs)
+
+        def __init__(self, func: Callable):
+            self.func = func
+            update_wrapper(self, func)
+
+            self.slots: dict[int, dict[str, list[Callable]]] = {}
+
+        def __call__(self, *args, **kwargs):
+            return self.func(*args, **kwargs)
+
+        def __get__(self, instance, owner):
+            return self if instance is None else ItemBase.Signal.__BindSignal(self, instance, owner)
+
+        def ensure_slots_list_available(self, signal_obj_id: int, key: str) -> None:
+            if signal_obj_id not in self.slots:
+                self.slots[signal_obj_id] = {key: []}
+
+            elif key not in self.slots[signal_obj_id]:
+                self.slots[signal_obj_id][key] = []
+
+        def connect(self, signal_obj, slot: Callable, *, key: str = '') -> None:
+            signal_obj_id = id(signal_obj)
+            self.ensure_slots_list_available(signal_obj_id, key)
+            self.slots[signal_obj_id][key].append(slot)
+
+        def emit(self, signal_obj, *args, key: str = '', **kwargs) -> None:
+            try:
+                slots = self.slots[id(signal_obj)][key]
+            except KeyError:
+                return
+
+            for slot in slots:
+                slot(*args, **kwargs)
+
     # region refreshing
 
     def register_refresh_required(func: Callable) -> Callable:
@@ -244,7 +296,7 @@ class ItemBase:
         name = func.__name__
 
         @wraps(func)
-        def wrapper(self, *args, **kwargs):
+        def wrapper(self: ItemBase, *args, **kwargs):
             try:
                 is_required = self.refresh_required[name]
             except KeyError:
@@ -344,6 +396,14 @@ class ItemBase:
         Get all subitems of this item, including itself and the subitems of its subitems.
         '''
         return [self, *it.chain(*[item.get_family() for item in self.subitems])]
+
+    def walk_nearest_subitems(self, base_cls: Type[ItemBaseT]) -> Generator[ItemBaseT, None, None]:
+        for subitem in self.subitems:
+            if isinstance(subitem, base_cls):
+                yield subitem
+            else:
+                for item in subitem.walk_nearest_subitems(base_cls):
+                    yield item
 
     def __getitem__(self, value) -> Self:   # 假装返回 Self，用于类型提示
         if isinstance(value, slice):
@@ -453,6 +513,20 @@ class ItemBase:
 
 
 class Item(ItemBase):
+    '''
+    物件
+
+    - 定义了 点坐标序列、边界框
+    - 实现了 坐标变换、位移 等操作
+
+    =====
+
+    Item
+
+    - Defines point coordinates sequence and bounding box.
+    - Implements coordinate transformations, shifts, and other operations.
+    '''
+
     def __init__(
         self,
         *args,
@@ -577,141 +651,146 @@ class Item(ItemBase):
 
     # region 边界箱 | bounding_box
 
-    @staticmethod
-    def _get_bbox(points: np.ndarray) -> np.ndarray:
-        if len(points) == 0:
-            return np.zeros((3, 3))
+    class BoundingBox:
+        '''
+        边界框，``self.data`` 包含三个元素，分别为左下，中心，右上
 
-        mins = points.min(0)
-        maxs = points.max(0)
-        mids = (mins + maxs) / 2
-        return np.array([mins, mids, maxs])
+        Bounding box, ``self.data`` includes three elements representing the bottom-left, center, and top-right.
+        '''
+        def __init__(self, points: VectArray):
+            self.data = self.compute(points)
 
+        @staticmethod
+        def compute(points: VectArray) -> np.ndarray:
+            points = np.array(points)
+
+            if len(points) == 0:
+                return np.zeros((3, 3))
+
+            mins = points.min(0)
+            maxs = points.max(0)
+            mids = (mins + maxs) / 2
+
+            return np.array([mins, mids, maxs])
+
+        def get(self, direction: Vect) -> np.ndarray:
+            '''
+            获取边界框边上的坐标
+
+            例如：
+
+            - 传入 UR，则返回边界框右上角的坐标
+            - 传入 RIGHT，则返回边界框右侧中心的坐标
+
+            =====
+
+            Obtains the coordinates on the borders of the bounding box.
+
+            Examples:
+
+            - If UR is passed, it returns the coordinates of the upper-right corner of the bounding box.
+            - If RIGHT is passed, it returns the coordinates of the center on the right side of the bounding box.
+            '''
+            indices = (np.sign(direction) + 1).astype(int)
+            return np.array([
+                self.data[indices[i]][i]
+                for i in range(3)
+            ])
+
+        def get_continuous(self, direction: Vect) -> np.ndarray:
+            # TODO: 完善 `get_continuous` 注释
+            dl, center, ur = self.data
+            corner_vect = (ur - center)
+            return center + direction / np.max(np.abs(np.true_divide(
+                direction, corner_vect,
+                out=np.zeros(len(direction)),
+                where=((corner_vect) != 0)
+            )))
+
+        @property
+        def top(self) -> np.ndarray:
+            return self.get(UP)
+
+        @property
+        def bottom(self) -> np.ndarray:
+            return self.get(DOWN)
+
+        @property
+        def right(self) -> np.ndarray:
+            return self.get(RIGHT)
+
+        @property
+        def left(self) -> np.ndarray:
+            return self.get(LEFT)
+
+        @property
+        def zenith(self) -> np.ndarray:
+            return self.get(OUT)
+
+        @property
+        def nadir(self) -> np.ndarray:
+            return self.get(IN)
+
+        @property
+        def center(self) -> np.ndarray:
+            return self.data[1]
+
+        def length_over_dim(self, dim: int) -> float:
+            return abs((self.data[2] - self.data[0])[dim])
+
+        @property
+        def width(self) -> float:
+            return self.length_over_dim(0)
+
+        @property
+        def height(self) -> float:
+            return self.length_over_dim(1)
+
+        @property
+        def depth(self) -> float:
+            return self.length_over_dim(2)
+
+        def coord(self, dim: int, direction=ORIGIN) -> float:
+            return self.get(direction)[dim]
+
+        @property
+        def x(self, direction=ORIGIN) -> float:
+            return self.coord(0, direction)
+
+        @property
+        def y(self, direction=ORIGIN) -> float:
+            return self.coord(1, direction)
+
+        @property
+        def z(self, direction=ORIGIN) -> float:
+            return self.coord(2, direction)
+
+    @property
     @set_points.refresh()
     @ItemBase.register_refresh_required
-    def get_self_bbox(self) -> np.ndarray:
+    def self_box(self) -> BoundingBox:
         '''
-        同 ``get_bbox``，但仅对自己的 ``points`` 获取包围框，不考虑子物件的
+        同 ``box``，但仅表示自己 ``points`` 的包围框，不考虑子物件的
 
-        Similar to ``get_bbox``, but obtains the bounding box only for
-        its own ``points`` without considering child items.
+        Same as ``box``, but only represents the bounding box of its own ``points``, excluding sub-items.
         '''
-        return self._get_bbox(self.get_points())
+        return Item.BoundingBox(self.get_points())
 
+    @property
     @set_points.refresh(recurse_up=True)
     @ItemBase.subitems_changed.refresh(recurse_up=True)
     @ItemBase.register_refresh_required
-    def get_bbox(self) -> np.ndarray:
+    def box(self) -> BoundingBox:
         '''
-        获取物件（包括子物件）的矩形包围框；包含三个元素，分别为左下，中心，右上
+        表示物件（包括子物件）的矩形包围框
 
-        Obtains the rectangular bounding box of the item (including child items);
-        includes three elements representing the bottom-left, center, and top-right.
+        Rectangular bounding box of the item (including child items).
         '''
         all_points = np.vstack([
-            self.get_self_bbox(),
-            *self.for_all_except_self.get_bbox()
+            self.self_box.data,
+            *[item.box.data for item in self.walk_nearest_subitems(Item)]
         ])
-        return self._get_bbox(all_points)
-
-    @staticmethod
-    def _get_border(bbox: np.ndarray, direction: Vect) -> np.ndarray:
-        indices = (np.sign(direction) + 1).astype(int)
-        return np.array([
-            bbox[indices[i]][i]
-            for i in range(3)
-        ])
-
-    def get_self_border(self, direction: Vect) -> np.ndarray:
-        '''
-        同 ``get_border``，但基于不考虑子物件的边界框
-
-        Similar to ``get_border`` but based on the boundary box without considering child items.
-        '''
-        return self._get_border(self.get_self_bbox(), direction)
-
-    def get_border(self, direction: Vect) -> np.ndarray:
-        '''
-        获取物件边界框边上的坐标
-
-        例如：
-
-        - 传入 UR，则返回边界框右上角的坐标
-        - 传入 RIGHT，则返回边界框右侧中心的坐标
-
-        =====
-
-        Obtains the coordinates on the borders of the item's bounding box.
-
-        Examples:
-
-        - If UR is passed, it returns the coordinates of the upper-right corner of the bounding box.
-        - If RIGHT is passed, it returns the coordinates of the center on the right side of the bounding box.
-        '''
-        return self._get_border(self.get_bbox(), direction)
-
-    def _get_continuous_border(bbox: np.ndarray, direction: np.ndarray) -> np.ndarray:
-        dl, center, ur = bbox
-        corner_vect = (ur - center)
-        return center + direction / np.max(np.abs(np.true_divide(
-            direction, corner_vect,
-            out=np.zeros(len(direction)),
-            where=((corner_vect) != 0)
-        )))
-
-    def get_self_continuous_border(self, direction: np.ndarray) -> np.ndarray:
-        # TODO: 给 get_self_continuous_border 添加注释
-        self._get_continuous_border(self.get_self_bbox(), direction)
-
-    def get_continuous_border(self, direction: np.ndarray) -> np.ndarray:
-        # TODO: 给 get_continuous_border 添加注释
-        self._get_continuous_border(self.get_bbox(), direction)
-
-    def get_top(self) -> np.ndarray:
-        return self.get_border(UP)
-
-    def get_bottom(self) -> np.ndarray:
-        return self.get_border(DOWN)
-
-    def get_right(self) -> np.ndarray:
-        return self.get_border(RIGHT)
-
-    def get_left(self) -> np.ndarray:
-        return self.get_border(LEFT)
-
-    def get_zenith(self) -> np.ndarray:
-        return self.get_border(OUT)
-
-    def get_nadir(self) -> np.ndarray:
-        return self.get_border(IN)
-
-    def get_center(self) -> np.ndarray:
-        return self.get_bbox()[1]
-
-    def length_over_dim(self, dim: int) -> float:
-        bb = self.get_bbox()
-        return abs((bb[2] - bb[0])[dim])
-
-    def get_width(self) -> float:
-        return self.length_over_dim(0)
-
-    def get_height(self) -> float:
-        return self.length_over_dim(1)
-
-    def get_depth(self) -> float:
-        return self.length_over_dim(2)
-
-    def get_coord(self, dim: int, direction: np.ndarray = ORIGIN) -> float:
-        return self.get_border(direction)[dim]
-
-    def get_x(self, direction=ORIGIN) -> float:
-        return self.get_coord(0, direction)
-
-    def get_y(self, direction=ORIGIN) -> float:
-        return self.get_coord(1, direction)
-
-    def get_z(self, direction=ORIGIN) -> float:
-        return self.get_coord(2, direction)
+        return Item.BoundingBox(all_points)
 
     # endregion
 
@@ -762,9 +841,9 @@ class Item(ItemBase):
         '''
         if about_point is None and about_edge is not None:
             if for_all:
-                about_point = self.get_border(about_edge)
+                about_point = self.box.get(about_edge)
             else:
-                about_point = self.get_self_border(about_edge)
+                about_point = self.self_box.get(about_edge)
 
         def apply(item: Item):
             if not item.has_points():
@@ -922,7 +1001,7 @@ class Item(ItemBase):
         return self
 
     def rescale_to_fit(self, length: float, dim: int, stretch: bool = False, **kwargs) -> Self:
-        old_length = self.length_over_dim(dim)
+        old_length = self.box.length_over_dim(dim)
         if old_length == 0:
             return self
         if stretch:
@@ -982,16 +1061,16 @@ class Item(ItemBase):
         if stretch:
             # If stretch is True, rescale each dimension to match the corresponding dimension of the item.
             for i in range(3):
-                self.rescale_to_fit(item.length_over_dim(i), i, stretch=True)
+                self.rescale_to_fit(item.box.length_over_dim(i), i, stretch=True)
         else:
             # If stretch is False, rescale only the dimension specified by dim_to_match to match the item.
             self.rescale_to_fit(
-                item.length_over_dim(dim_to_match),
+                item.box.length_over_dim(dim_to_match),
                 dim_to_match,
                 stretch=False
             )
         # Shift the object to the center of the specified item.
-        self.shift(item.get_center() - self.get_center())
+        self.shift(item.box.center - self.box.center)
         return self
 
     def surround(
@@ -1007,7 +1086,7 @@ class Item(ItemBase):
         Similar to ``replace`` but leaves a buffer space of ``buff`` around the item.
         '''
         self.replace(item, dim_to_match, stretch)
-        length = item.length_over_dim(dim_to_match)
+        length = item.box.length_over_dim(dim_to_match)
         self.scale((length + buff) / length)
         return self
 
@@ -1064,8 +1143,8 @@ class Item(ItemBase):
         Move this item to the position of ``target``.
         '''
         if isinstance(target, Item):
-            target = target.get_border(aligned_edge)
-        point_to_align = self.get_border(aligned_edge)
+            target = target.box.get(aligned_edge)
+        point_to_align = self.box.get(aligned_edge)
         self.shift((target - point_to_align) * coor_mask)
         return self
 
@@ -1084,7 +1163,7 @@ class Item(ItemBase):
         the center of item2
         """  # TODO: 完善 align_to 注释
         if isinstance(item_or_point, Item):
-            point = item_or_point.get_border(direction)
+            point = item_or_point.box.get(direction)
         else:
             point = item_or_point
 
@@ -1100,7 +1179,7 @@ class Item(ItemBase):
 
         Move this item to the origin ``(0, 0, 0)``.
         '''
-        self.shift(-self.get_center())
+        self.shift(-self.box.center)
         return self
 
     # TODO: def to_border(
@@ -1113,7 +1192,7 @@ class Item(ItemBase):
     #     corner in the 2d plane.
     #     """
     #     target_point = np.sign(direction) * (FRAME_X_RADIUS, FRAME_Y_RADIUS, 0)
-    #     point_to_align = self.get_border(direction)
+    #     point_to_align = self.box.get(direction)
     #     shift_val = target_point - point_to_align - buff * np.array(direction)
     #     shift_val = shift_val * abs(np.sign(direction))
     #     self.shift(shift_val)
@@ -1133,16 +1212,16 @@ class Item(ItemBase):
         Position this item next to ``target``.
         '''
         if isinstance(target, Item):
-            target = target.get_border(aligned_edge + direction)
+            target = target.box.get(aligned_edge + direction)
 
-        point_to_align = self.get_border(aligned_edge - direction)
+        point_to_align = self.box.get(aligned_edge - direction)
         self.shift((target - point_to_align + buff * direction) * coor_mask)
         return self
 
     # TODO: shift_onto_screen
 
     def set_coord(self, value: float, dim: int, direction: Vect = ORIGIN) -> Self:
-        curr = self.get_coord(dim, direction)
+        curr = self.box.coord(dim, direction)
         shift_vect = np.zeros(3)
         shift_vect[dim] = value - curr
         self.shift(shift_vect)
@@ -1166,12 +1245,12 @@ class GroupClass(Item):
         self.add(*items)
 
 
-T = TypeVar('T', bound=Item)
+ItemT = TypeVar('ItemT', bound=Item)
 
 
 # 该方法用于方便类型检查以及补全提示
 # 在执行时和直接调用 GroupClass 没有区别
-def Group(*items: T) -> Item | T:
+def Group(*items: ItemT) -> Item | ItemT:
     '''
     将 ``items`` 打包为一个 ``Group``，方便属性的设定
 
@@ -1210,7 +1289,7 @@ class BatchOp:
 
     class NFRB(enum.Enum):
         '''
-        abbr of ``NotFoundBehaviour``
+        abbr of ``NotFoundReturnBehaviour``
 
         ``BatchOp.NFRB.Auto`` 会在 ``method_name.startswith('get')`` 为 True 时自动成为 ``EmptyList``
 
@@ -1242,7 +1321,13 @@ class BatchOp:
             for item in self.items:
                 if not hasattr(item, method_name):
                     continue
-                attr = getattr(item, method_name)
+
+                if isinstance(getattr(item.__class__, method_name), property):
+                    # 如果是 `property`，用 lambda 封装成 `Callable`
+                    # If the attribute is a property, create a lambda function to wrap it.
+                    attr = lambda: getattr(item, method_name)
+                else:
+                    attr = getattr(item, method_name)
 
                 if not callable(attr):
                     continue
