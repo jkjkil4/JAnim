@@ -211,6 +211,25 @@ class ItemBase:
                     item.mark_refresh_required(func, recurse_down=recurse_down, recurse_up=recurse_up)
 
     class Signal:
+        '''
+        用于触发信号后让其它方法能被一同调用
+
+        当 ``func`` 被该类修饰，使用 ``self.func.emit()`` 后：
+
+        - 会调用所有通过 ``func.connect(...)`` 绑定的方法
+        - 可以在 ``emit`` 或 ``connect`` 方法中传入 ``key`` 参数以区分调用
+        - ``emit`` 方法可以传入额外的参数给被调用的 ``slots``
+
+        ===
+
+        Used to trigger a signal and allow other methods to be called together.
+
+        When ``func`` is decorated with this class, after using ``self.func.emit()``:
+
+        - It will call all methods bound through ``func.connect(...)``.
+        - You can pass a ``key`` parameter in the ``emit`` or ``connect`` methods to differentiate the calls.
+        - The ``emit`` method can pass additional parameters to the called ``slots``.
+        '''  # TODO: Example for Signal
         class __BindSignal:
             def __init__(self, signal: ItemBase.Signal, instance, owner):
                 self.signal = signal
