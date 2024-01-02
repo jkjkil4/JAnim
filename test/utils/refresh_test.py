@@ -3,7 +3,7 @@ import unittest
 import janim.utils.refresh as refresh
 
 
-class MyItem(metaclass=refresh.RefreshMeta):
+class MyItem(refresh.Refreshable):
     def __init__(self) -> None:
         super().__init__()
 
@@ -14,15 +14,15 @@ class MyItem(metaclass=refresh.RefreshMeta):
         self.data = 0
 
     @refresh.register
-    @property
     def get_data(self) -> None:
         self.cnt += 1
         return self.data
 
 
 class SubItem(MyItem):
+    @property
     @refresh.register
-    def get_empty_list(self) -> None:
+    def empty_list(self) -> None:
         return []
 
 
@@ -50,7 +50,7 @@ class RefreshTest(unittest.TestCase):
 
         # 这里标记需要更新，所以 `get_data` 可以得到更新，并且调用次数变为 2
         # Marking for an update, so `get_data` gets updated, and the call count becomes 2
-        item.get_data.mark()
+        item.mark_refresh(item.get_data)
         self.assertEqual(item.cnt, 1)
         self.assertEqual(item.get_data(), 10)
         self.assertEqual(item.cnt, 2)
@@ -70,15 +70,15 @@ class RefreshTest(unittest.TestCase):
         s.get_data()
         self.assertEqual(s.cnt, 1)
 
-        lst_id = id(s.get_empty_list())
-        self.assertEqual(lst_id, id(s.get_empty_list()))
+        lst_id = s.empty_list
+        self.assertIs(lst_id, s.empty_list)
 
-        s.get_empty_list.mark()
-        self.assertNotEqual(lst_id, id(s.get_empty_list()))
+        s.mark_refresh('empty_list')
+        self.assertIsNot(lst_id, s.empty_list)
 
-        lst_id = id(s.get_empty_list())
-        refresh.reset(s)
-        self.assertNotEqual(lst_id, id(s.get_empty_list()))
+        lst_id = s.empty_list
+        s.reset_refresh()
+        self.assertIsNot(lst_id, s.empty_list)
 
 
 if __name__ == '__main__':
