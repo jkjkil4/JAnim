@@ -44,23 +44,30 @@ class Signal:
     '''
     一般用于在 ``func`` 造成影响后，需要对其它数据进行更新时进行响应
 
-    - 当 ``func`` 被该类修饰，使用 ``Class.func.emit(self)`` 后，
-        - ``self_`` 型（修饰）：
-            - 会以自身调用所有被 ``func.self_slot()`` 修饰的方法
-            - 会将所有被 ``func.self_refresh()`` 修饰的方法标记需要重新计算
-            - ``func.self_refresh_of_relation()`` 与 ``func.self_refresh()`` 相比，还可以传入 ``recurse_up/down``
+    =====
 
-        - 普通型（绑定）：
-            - 会调用所有通过 ``func.connect(...)`` 记录的方法
-            - 会将所有被 ``func.connect_refresh(...)`` 记录的方法标记需要重新计算
+    当 ``func`` 被该类修饰，使用 ``Class.func.emit(self)`` 后，
 
-    - 提醒：
-        - 可以在上述方法中传入 ``key`` 参数以区分调用
-        - ``emit`` 方法可以传入额外的参数给被调用的 ``slots``
+    对于 ``self_`` 型（修饰）：
 
-    - 注意：
-        - 以 ``self_`` 开头的修饰器所修饰的方法需要与 ``func`` 在同一个类或者其子类中
-        - ``Signal`` 的绑定与触发相关的调用需要从类名 ``Cls.func.xxx`` 访问，因为 ``obj.func.xxx`` 得到的是原方法
+    - 会以自身调用所有被 ``func.self_slot()`` 修饰的方法
+    - 会将所有被 ``func.self_refresh()`` 修饰的方法标记需要重新计算
+    - ``func.self_refresh_of_relation()`` 与 ``func.self_refresh()`` 相比，还可以传入 ``recurse_up/down``
+
+    对于 普通型（绑定）：
+
+    - 会调用所有通过 ``func.connect(...)`` 记录的方法
+    - 会将所有被 ``func.connect_refresh(...)`` 记录的方法标记需要重新计算
+
+    提醒：
+
+    - 可以在上述方法中传入 ``key`` 参数以区分调用
+    - ``emit`` 方法可以传入额外的参数给被调用的 ``slots``
+
+    注意：
+
+    - 以 ``self_`` 开头的修饰器所修饰的方法需要与 ``func`` 在同一个类或者其子类中
+    - ``Signal`` 的绑定与触发相关的调用需要从类名 ``Cls.func.xxx`` 访问，因为 ``obj.func.xxx`` 得到的是原方法
 
     =====
 
@@ -83,14 +90,37 @@ class Signal:
             def notifier(self) -> None:
                 print("User's message changed")
 
-            @set_msg.self_refresh_of_relation()
+            @set_msg.self_refresh()
             @refresh.register
-            def get_test(self) -> str:
+            def get_text(self) -> str:
                 return f'[{self.name}] {self.msg}'
 
         user = User('jkjkil')
         user.set_msg('hello')   # Output: User's message changed
         print(user.get_text())  # Output: [jkjkil] hello
+
+
+    .. code-block:: python
+
+        class A:
+            @Signal
+            def fn_A(self) -> None:
+                print('fn_A()')
+                A.fn_A.emit(self)
+
+        class B:
+            def fn_B(self) -> None:
+                print('fn_B()')
+
+        a, b = A(), B()
+        A.fn_A.connect(a, b.fn_B)
+
+        a.fn_A()
+        \'\'\'
+        Output:
+        fn_A()
+        fn_B()
+        \'\'\'
     '''
     def __init__(self, func: Callable):
         self.func = func
@@ -102,14 +132,14 @@ class Signal:
         return self if instance is None else self.func.__get__(instance, owner)
 
     @staticmethod
-    def get_cls_full_qualname_from_fback() -> str:
+    def _get_cls_full_qualname_from_fback() -> str:
         cls_locals = inspect.currentframe().f_back.f_back.f_locals
         module = cls_locals['__module__']
         qualname = cls_locals['__qualname__']
         return f'{module}.{qualname}'
 
     @staticmethod
-    def get_cls_full_qualname(cls: type) -> str:
+    def _get_cls_full_qualname(cls: type) -> str:
         return f'{cls.__module__}.{cls.__qualname__}'
 
     def self_slot(self, *, key: str = ''):
@@ -117,7 +147,7 @@ class Signal:
         被修饰的方法会在 ``Signal`` 触发时被调用
         '''
         def decorator(func):
-            full_qualname = self.get_cls_full_qualname_from_fback()
+            full_qualname = self._get_cls_full_qualname_from_fback()
 
             all_slots = self.slots.setdefault(key, _AllSlots())
             self_slots = all_slots.self_slots_dict.setdefault(full_qualname, _SelfSlots())
@@ -132,7 +162,7 @@ class Signal:
         被修饰的方法会在 ``Signal`` 触发时，标记需要重新计算
         '''
         def decorator(func):
-            full_qualname = self.get_cls_full_qualname_from_fback()
+            full_qualname = self._get_cls_full_qualname_from_fback()
 
             all_slots = self.slots.setdefault(key, _AllSlots())
             self_slots = all_slots.self_slots_dict.setdefault(full_qualname, _SelfSlots())
@@ -147,7 +177,7 @@ class Signal:
         被修饰的方法会在 ``Signal`` 触发时，标记需要重新计算
         '''
         def decorator(func):
-            full_qualname = self.get_cls_full_qualname_from_fback()
+            full_qualname = self._get_cls_full_qualname_from_fback()
             slot = _SelfSlotOfRel(func, recurse_up, recurse_down)
 
             all_slots = self.slots.setdefault(key, _AllSlots())
@@ -187,7 +217,7 @@ class Signal:
 
         for cls in sender.__class__.mro():
             try:
-                slots = all_slots.self_slots_dict[self.get_cls_full_qualname(cls)]
+                slots = all_slots.self_slots_dict[self._get_cls_full_qualname(cls)]
             except KeyError:
                 continue
 

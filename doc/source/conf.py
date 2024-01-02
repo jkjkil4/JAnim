@@ -66,7 +66,7 @@ def generate_autodoc(local_path: str, module_path: str) -> bool:
                 generated_dirs.append(filename)
 
         elif os.path.isfile(sub_path):
-            if filename.endswith('.py'):
+            if filename.endswith('.py') and not filename.startswith('__'):
                 name = filename[:-3]
                 module_name = f'{module_path}.{name}'
                 rst_file_path = os.path.join(rst_path, f'{name}.rst')

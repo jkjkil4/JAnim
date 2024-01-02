@@ -5,3 +5,4 @@ items
    :maxdepth: 1
 
    item
+   relation
