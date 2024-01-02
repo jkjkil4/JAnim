@@ -289,7 +289,7 @@ class ItemBase:
         会记忆 self.func 被调用后的返回值，并在之后的调用中直接返回该值，而不对 self.func 进行真正的调用
         需要 ``mark_refresh_required(self.func)`` 才会对 self.func 重新调用以更新返回值
 
-        例如，``get_family`` 方法不会每次都进行计算
+        例如，``Item`` 的 ``get_family`` 方法不会每次都进行计算
         只有在 ``add`` 或 ``remove`` 执行后，才会将 ``get_family`` 标记为需要更新
         使得在下次调用 ``get_family`` 才重新计算结果并返回
 
@@ -416,12 +416,22 @@ class ItemBase:
         '''
         return [self, *it.chain(*[item.get_family() for item in self.subitems])]
 
-    def walk_nearest_subitems(self, base_cls: Type[ItemBaseT]) -> Generator[ItemBaseT, None, None]:
+    def walk_subitems(
+        self,
+        base_cls: Type[ItemBaseT] | None = None,
+        *,
+        nearest: bool = False
+    ) -> Generator[ItemBaseT, None, None]:
+
+        if base_cls is None:
+            base_cls = ItemBase
+
         for subitem in self.subitems:
             if isinstance(subitem, base_cls):
                 yield subitem
-            else:
-                for item in subitem.walk_nearest_subitems(base_cls):
+
+            if not (nearest and isinstance(subitem, base_cls)):
+                for item in subitem.walk_subitems(base_cls, nearest):
                     yield item
 
     def __getitem__(self, value) -> Self:   # 假装返回 Self，用于类型提示
@@ -807,7 +817,7 @@ class Item(ItemBase):
         '''
         all_points = np.vstack([
             self.self_box.data,
-            *[item.box.data for item in self.walk_nearest_subitems(Item)]
+            *[item.box.data for item in self.walk_subitems(Item, nearest=True)]
         ])
         return Item.BoundingBox(all_points)
 
