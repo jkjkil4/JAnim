@@ -34,7 +34,9 @@ def register(func: Callable[P, R]) -> Callable[P, R]:
     It will only be marked as needing an update after the execution of ``add`` or ``remove``,
     making it recalculated and returning the result the next time ``get_family`` is called.
 
-    See ``test.utils.refresh_test.RefreshTest``.
+    另见 | See also:
+
+    - ``test.utils.refresh_test.RefreshTest``.
     '''
     name = func.__name__
 

@@ -44,11 +44,11 @@ class Relation(Generic[GRelT], refresh.Refreshable):
         '''
         向该物件添加子物件
 
-        Add subitems to this item.
+        Add objects to this item.
         '''
         for obj in objs:
-            # 理论上这里判断 item not in self.subitems 就够了
-            # 但是防止有被私自修改 self.parents 以及 self.subitems 的可能
+            # 理论上这里判断 item not in self.children 就够了
+            # 但是防止有被私自修改 self.parents 以及 self.children 的可能
             # 所以这里都判断了
             if obj not in self.children:
                 self.children.append(obj)
@@ -63,10 +63,10 @@ class Relation(Generic[GRelT], refresh.Refreshable):
         '''
         从该物件移除子物件
 
-        Remove subitems from this item.
+        Remove objects from this item.
         '''
         for obj in objs:
-            # 理论上这里判断 item in self.subitems 就够了
+            # 理论上这里判断 item in self.children 就够了
             # 原因同 add
             try:
                 self.children.remove(obj)
