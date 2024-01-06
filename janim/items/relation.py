@@ -98,9 +98,9 @@ class Relation(Generic[GRelT], refresh.Refreshable):
                 self.children.append(obj)
             if self not in obj.parents:
                 obj.parents.append(self)
+            obj.parents_changed()
 
         self.children_changed()
-        obj.parents_changed()
         return self
 
     def remove(self, *objs: RelT) -> Self:
@@ -118,9 +118,9 @@ class Relation(Generic[GRelT], refresh.Refreshable):
             try:
                 obj.parents.remove(self)
             except ValueError: ...
+            obj.parents_changed()
 
         self.children_changed()
-        obj.parents_changed()
         return self
 
     def _family(self, *, up: bool) -> list[GRelT]:  # use DFS
@@ -136,7 +136,7 @@ class Relation(Generic[GRelT], refresh.Refreshable):
 
         return res
 
-    @parents_changed.self_refresh_of_relation(recurse_down=True)
+    @parents_changed.self_refresh_with_recurse(recurse_down=True)
     @refresh.register
     def ancestors(self) -> list[GRelT]:
         '''
@@ -146,7 +146,7 @@ class Relation(Generic[GRelT], refresh.Refreshable):
         '''
         return self._family(up=True)
 
-    @children_changed.self_refresh_of_relation(recurse_up=True)
+    @children_changed.self_refresh_with_recurse(recurse_up=True)
     @refresh.register
     def descendants(self) -> list[GRelT]:
         '''

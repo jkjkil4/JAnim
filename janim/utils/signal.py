@@ -17,7 +17,7 @@ class _SelfSlots:
     def __init__(self):
         self.self_normal_slots: list[Callable] = []
         self.self_refresh_slots: list[Callable] = []
-        self.self_refresh_slots_of_relation: list[_SelfSlotOfRel] = []
+        self.self_refresh_slots_with_recurse: list[_SelfSlotWithRecurse] = []
 
 
 class _Slots:
@@ -32,7 +32,7 @@ class _AllSlots:
         self.slots_dict: dict[int, _Slots] = {}
 
 
-class _SelfSlotOfRel:
+class _SelfSlotWithRecurse:
     def __init__(self, func: Callable, recurse_up: bool, recurse_down: bool):
         self.func = func
         self.recurse_up = recurse_up
@@ -59,7 +59,7 @@ class Signal(Generic[T, P, R]):
 
     - 会以自身调用所有被 ``func.self_slot()`` 修饰的方法
     - 会将所有被 ``func.self_refresh()`` 修饰的方法标记需要重新计算
-    - ``func.self_refresh_of_relation()`` 与 ``func.self_refresh()`` 相比，还可以传入 ``recurse_up/down``
+    - ``func.self_refresh_with_recurse()`` 与 ``func.self_refresh()`` 相比，还可以传入 ``recurse_up/down``
 
     对于 普通型（绑定）：
 
@@ -84,7 +84,7 @@ class Signal(Generic[T, P, R]):
 
     - It will call all methods decorated with ``func.self_slot()``
     - It will mark all methods decorated with ``func.self_refresh()`` as needing to be recalculated
-    - Compared to ``func.self_refresh()``, ``func.self_refresh_of_relation()``
+    - Compared to ``func.self_refresh()``, ``func.self_refresh_with_recurse()``
       can also take ``recurse_up/down`` as arguments
 
     For the normal type (connecting):
@@ -219,7 +219,7 @@ class Signal(Generic[T, P, R]):
 
         return decorator
 
-    def self_refresh_of_relation(self, *, recurse_up: bool = False, recurse_down: bool = False, key: str = ''):
+    def self_refresh_with_recurse(self, *, recurse_up: bool = False, recurse_down: bool = False, key: str = ''):
         '''
         被修饰的方法会在 ``Signal`` 触发时，标记需要重新计算
 
@@ -227,11 +227,11 @@ class Signal(Generic[T, P, R]):
         '''
         def decorator(func):
             full_qualname = self._get_cls_full_qualname_from_fback()
-            slot = _SelfSlotOfRel(func, recurse_up, recurse_down)
+            slot = _SelfSlotWithRecurse(func, recurse_up, recurse_down)
 
             all_slots = self.slots.setdefault(key, _AllSlots())
             self_slots = all_slots.self_slots_dict.setdefault(full_qualname, _SelfSlots())
-            self_slots.self_refresh_slots_of_relation.append(slot)
+            self_slots.self_refresh_slots_with_recurse.append(slot)
 
             return func
 
@@ -277,14 +277,18 @@ class Signal(Generic[T, P, R]):
                 continue
 
             # pre-check
-            if slots.self_refresh_slots_of_relation:
+            if slots.self_refresh_slots_with_recurse:
                 from janim.items.relation import Relation
+                from janim.components.component import Component
 
-                if not isinstance(sender, Relation):
+                if not isinstance(sender, Relation) and not isinstance(sender, Component):
                     # TODO: i18n
-                    # f'self_refresh_of_relation() cannot be used in class {sender.__class__},
+                    # f'self_refresh_with_recurse() cannot be used in class {sender.__class__},
                     # it can only be used in Relation and its subclasses'
-                    raise TypeError(f'self_refresh_of_relation() 无法在类 {sender.__class__} 中使用， 只能在 Relation 及其子类中使用')
+                    raise TypeError(
+                        f'self_refresh_with_recurse() 无法在类 {sender.__class__} 中使用，'
+                        '只能在 Relation 和 Component 及子类中使用'
+                    )
 
             # self_normal_slots
             for func in slots.self_normal_slots:
@@ -294,8 +298,8 @@ class Signal(Generic[T, P, R]):
             for func in slots.self_refresh_slots:
                 sender.mark_refresh(func)
 
-            # self_refresh_slots_of_relation
-            for slot in slots.self_refresh_slots_of_relation:
+            # self_refresh_slots_with_recurse
+            for slot in slots.self_refresh_slots_with_recurse:
                 sender.mark_refresh(slot.func, recurse_up=slot.recurse_up, recurse_down=slot.recurse_down)
 
         try:

@@ -20,6 +20,7 @@ class RelationTest(unittest.TestCase):
             m9 := Relation()
         )
 
+        self.assertEqual(m6.ancestors(), [m5, m3, root])
         self.assertEqual(m5.descendants(), [m6, m7])
         self.assertEqual(m3.descendants(), [m4, m5, m6, m7, m8])
         self.assertEqual(root.descendants(), [m1, m2, m3, m4, m5, m6, m7, m8, m9])

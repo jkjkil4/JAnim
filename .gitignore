@@ -4,3 +4,4 @@ __pycache__
 /test_some_code
 /doc/build
 /janim/items/__item_deprecated.py
+/test/items/__item_test_deprecated.py

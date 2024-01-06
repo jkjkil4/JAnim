@@ -1,9 +1,6 @@
 from functools import wraps
 from typing import Any, TypeVar, Self, Callable, ParamSpec
 
-CLS_FUNC_LIST_NAME = '__cls_refresh_func_list'
-OBJ_DATA_NAME = '__refresh_data'
-
 P = ParamSpec('P')
 R = TypeVar('R')
 
