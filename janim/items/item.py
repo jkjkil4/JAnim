@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import functools
 from typing import Callable, Self
 
 from janim.items.relation import Relation
@@ -14,52 +15,87 @@ class Item[
             self.item = item
 
         def __getattr__(self, method_name: str):
-            matched: tuple[Component, Callable] = None
+            matched: Callable = None
 
             # 从自身的组件中寻找能调用的方法
             for cmpt in self.item.components:
-                if cmpt.can_get and hasattr(cmpt, method_name):
-                    attr = getattr(cmpt, method_name)
-                    if callable(attr):
-                        matched = (cmpt, attr)
-                        break
+                if not cmpt.can_get or not hasattr(cmpt, method_name):
+                    continue
+
+                attr = getattr(cmpt, method_name)
+                if not callable(attr):
+                    continue
+
+                matched = attr
+                break
 
             if matched is None:
                 # 从后代物件的组件中寻找能调用的方法
                 for descendant in self.item.descendants():
                     for cmpt in descendant.components:
-                        if cmpt.can_get and hasattr(cmpt, method_name):
-                            attr: Callable = getattr(cmpt, method_name)
-                            if callable(attr) and attr.__dict__.get(FUNC_FOR_MANY_KEY, False):
-                                matched = (cmpt, attr)
-                                break
+                        if not cmpt.can_get and hasattr(cmpt, method_name):
+                            continue
+
+                        attr: Callable = getattr(cmpt, method_name)
+                        if not callable(attr) or not attr.__dict__.get(FUNC_FOR_MANY_KEY, False):
+                            continue
+
+                        matched = attr
+                        break
+
+                    if matched is not None:
+                        break
 
             if matched is None:
                 raise KeyError(f'没找到可调用的方法 `{method_name}`')
 
-            def wrapper(*args, **kwargs):
-                cmpt, attr = matched
-
-                if not attr.__dict__.get(FUNC_FOR_MANY_KEY, False):
-                    return attr(*args, **kwargs)
-
-                return attr(
-                    *(
-                        item.components[cmpt.bind_idx]
-                        for item in self.item.walk_descendants(cmpt.bind.cls)
-                    ),
-                    **kwargs
-                )
-
-            return wrapper
+            if matched.__dict__.get(FUNC_FOR_MANY_KEY, False):
+                return functools.partial(matched, _as=self.item)
+            return matched
 
     class _Apply:
         def __init__(self, item: Item):
             self.item = item
 
         def __getattr__(self, method_name: str):
-            # TODO: ...
-            pass
+            type CmptId = tuple[type, int]
+            matched: dict[CmptId, Callable] = {}
+
+            items = [self.item, *self.item.descendants()]
+
+            # 寻找可调用的方法
+            for item in items:
+                for cmpt in item.components:
+                    if not cmpt.can_apply:
+                        continue
+
+                    cmpt_id: CmptId = (cmpt.bind.cls, cmpt.bind_idx)
+                    if cmpt_id in matched:
+                        continue
+                    if not hasattr(cmpt, method_name):
+                        continue
+
+                    attr = getattr(cmpt, method_name)
+                    if not callable(attr):
+                        continue
+                    if item is not self.item and FUNC_FOR_MANY_KEY not in attr.__dict__:
+                        continue
+
+                    matched[cmpt_id] = attr
+
+            if not matched:
+                raise KeyError(f'没找到可调用的方法 `{method_name}`')
+
+            def wrapper(*args, **kwargs):
+                for method in matched.values():
+                    if method.__dict__.get(FUNC_FOR_MANY_KEY, False):
+                        method(*args, _as=self.item, **kwargs)
+                    else:
+                        method(*args, **kwargs)
+
+                return self
+
+            return wrapper
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -103,4 +139,3 @@ class Group[GT, AT](Item[GT, AT]):
     def __init__(self, *objs: Item[GT, AT], **kwargs):
         super().__init__(**kwargs)
         self.add(*objs)
-

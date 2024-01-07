@@ -2,7 +2,7 @@ import unittest
 
 import janim.utils.refresh as refresh
 from janim.utils.signal import Signal
-from janim.items.item import Item
+from janim.items.item import Item, Group
 from janim.components.component import Component
 from janim.components.points import Cmpt_Points
 
@@ -62,24 +62,51 @@ class ItemTest(unittest.TestCase):
             ]
         )
 
-    def test_component(self) -> None:
-        class MyItem(
-            Item[
-                Cmpt_Points,
-                Cmpt_Points
-            ]
-        ):
+    def test_component_apply(self) -> None:
+        called_list = []
+
+        class MyCmpt(Component):
+            @Component.for_many
+            def inc_value(self, *, _as: Item = None):
+                if _as is None:
+                    _as = self.bind.item
+
+                called_list.append((self, _as))
+
+        class MyItem[GT, AT](Item[MyCmpt | GT, MyCmpt | AT]):
             def __init__(self, *args, **kwargs):
                 super().__init__(*args, **kwargs)
 
                 with Component.Binder():
-                    self.points1 = Cmpt_Points(apply=True)
-                    self.points2 = Cmpt_Points(apply=True, get=True)
+                    self.c1 = MyCmpt(apply=True, get=True)
+                    self.c2 = MyCmpt(apply=True)
 
-                print(self.points2)
-                print(self.get.all_points())
+        g = Group(
+            m1 := MyItem().add(
+                m2 := MyItem()
+            )
+        )
 
-        MyItem()
+        m1.c1.inc_value()
+        m2.c1.inc_value()
+
+        m2.apply.inc_value()
+
+        g.apply.inc_value()
+
+        self.assertEqual(
+            called_list,
+            [
+                (m1.c1, m1),
+                (m2.c1, m2),
+
+                (m2.c1, m2),
+                (m2.c2, m2),
+
+                (m1.c1, g),
+                (m1.c2, g)
+            ]
+        )
 
 
 if __name__ == '__main__':

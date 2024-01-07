@@ -11,6 +11,11 @@ FUNC_FOR_MANY_KEY = '__for_many'
 
 
 class Component(refresh.Refreshable):
+    def for_many[**P, R](func: Callable[P, R]) -> Callable[P, R]:
+        # TODO: for_many 的注释
+        func.__dict__[FUNC_FOR_MANY_KEY] = True
+        return func
+
     class Binder:
         '''
         将组件与 :class:`janim.items.item.Item` 绑定
@@ -63,7 +68,6 @@ class Component(refresh.Refreshable):
             用于得知是物件中创建的第几个组件
             '''
             idx = len(self.item.components)
-            print(self.item, component, idx)
             self.item.components.append(component)
             return idx
 
@@ -93,9 +97,3 @@ class Component(refresh.Refreshable):
                 recurse_up=recurse_up,
                 recurse_down=recurse_down
             )
-
-
-def for_many[**P, R](func: Callable[P, R]) -> Callable[P, R]:
-    # TODO: for_many 的注释
-    func.__dict__[FUNC_FOR_MANY_KEY] = True
-    return func

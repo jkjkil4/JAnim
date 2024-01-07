@@ -153,6 +153,18 @@ class Relation[GRelT: 'Relation'](refresh.Refreshable):
         '''
         return self._family(up=False)
 
+    def ancestor_types(self) -> set[type]:
+        '''
+        返回祖先对象包括的类型
+        '''
+        return set(type(obj) for obj in self.ancestors())
+
+    def descendant_types(self) -> set[type]:
+        '''
+        返回后代对象包括的类型
+        '''
+        return set(type(obj) for obj in self.descendants())
+
     @staticmethod
     def _walk_lst[RelT](base_cls: Type[RelT] | None, lst: list[GRelT]) -> Generator[RelT, None, None]:
         if base_cls is None:

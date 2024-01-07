@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import numpy as np
 
-from janim.components.component import Component, for_many
+from janim.components.component import Component
 from janim.utils.signal import Signal
 from janim.utils.unique_nparray import UniqueNparray
 from janim.typing import Self, VectArray
@@ -18,11 +18,15 @@ class Cmpt_Points(Component):
     def points(self) -> np.ndarray:
         return self._points.data
 
-    @for_many
-    def all_points(*many: Cmpt_Points) -> np.ndarray:
-        print(many)
+    @Component.for_many
+    def all_points(self, *, _as=None) -> np.ndarray:
+        if _as is None:
+            _as = self.bind.item
 
-        # return np.vstack([one.points() for one in many])
+        return np.vstack([
+            item.components[self.bind_idx].points()
+            for item in _as.walk_descendants(self.bind.cls)
+        ])
 
     @Signal
     def set_points(self, points: VectArray) -> Self:
