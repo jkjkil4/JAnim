@@ -3,11 +3,9 @@ try:
 except ImportError:
     from typing_extensions import Self
 
-from typing import Iterable, TypeVar
+from typing import Iterable
 
 import numpy as np
 
 Vect = Iterable[float] | np.ndarray
 VectArray = Iterable[Vect] | np.ndarray
-
-ModifierClsT = TypeVar('ModifierClsT')

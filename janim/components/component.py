@@ -1,14 +1,13 @@
 from __future__ import annotations
 
 import inspect
-from typing import Callable
-
 from contextvars import ContextVar
+from typing import Callable
 
 import janim.utils.refresh as refresh
 from janim.typing import Self
 
-ITEM_COMPONENTS_NAME = '__components'
+FUNC_FOR_MANY_KEY = '__for_many'
 
 
 class Component(refresh.Refreshable):
@@ -25,8 +24,8 @@ class Component(refresh.Refreshable):
                     super().__init__(*args, **kwargs)
 
                     with Component.Binder():
-                        self.points = Points()
-                        self.color = Rgbas()
+                        self.points = Cmpt_Points()
+                        self.color = Cmpt_Rgbas()
 
         这样，``points`` 以及 ``color`` 就与 ``MyItem`` 的对象绑定了
 
@@ -56,19 +55,16 @@ class Component(refresh.Refreshable):
 
             from janim.items.item import Item
             self.cls = cls
-            self.obj: Item = obj
-
-            if not hasattr(self.obj, ITEM_COMPONENTS_NAME):
-                setattr(self.obj, ITEM_COMPONENTS_NAME, [])
+            self.item: Item = obj
 
         def append(self, component: Component) -> int:
             '''
             在 ``Component`` 的 ``__init__`` 中被调用，
             用于得知是物件中创建的第几个组件
             '''
-            components: list = getattr(self.obj, ITEM_COMPONENTS_NAME)
-            idx = len(components)
-            components.append(component)
+            idx = len(self.item.components)
+            print(self.item, component, idx)
+            self.item.components.append(component)
             return idx
 
         def __enter__(self):
@@ -77,8 +73,11 @@ class Component(refresh.Refreshable):
         def __exit__(self, exc_type, exc_value, exc_traceback):
             self.ctx_var.reset(self.token)
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, get=False, apply=False, **kwargs):
         super().__init__(*args, **kwargs)
+
+        self.can_get = get
+        self.can_apply = apply
 
         self.bind = Component.Binder.ctx_var.get(None)
         if self.bind is not None:
@@ -88,9 +87,15 @@ class Component(refresh.Refreshable):
         super().mark_refresh(func)
 
         if self.bind is not None:
-            self.bind.obj.broadcast_refresh_of_component(
+            self.bind.item.broadcast_refresh_of_component(
                 self,
                 func,
                 recurse_up=recurse_up,
                 recurse_down=recurse_down
             )
+
+
+def for_many[**P, R](func: Callable[P, R]) -> Callable[P, R]:
+    # TODO: for_many 的注释
+    func.__dict__[FUNC_FOR_MANY_KEY] = True
+    return func

@@ -37,7 +37,7 @@ class RelationTest(unittest.TestCase):
         self.assertEqual(root.descendants(), [m1, m2, m10, m11, m3, m4, m12, m5, m6, m7, m8, m9])
 
     def test_relation_family(self) -> None:
-        '''
+        r'''
         m0(C1)
         | \____
         |      \

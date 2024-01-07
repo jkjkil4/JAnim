@@ -1,11 +1,8 @@
 from functools import wraps
-from typing import Any, TypeVar, Self, Callable, ParamSpec
-
-P = ParamSpec('P')
-R = TypeVar('R')
+from typing import Any, Self, Callable
 
 
-def register(func: Callable[P, R]) -> Callable[P, R]:
+def register[**P, R](func: Callable[P, R]) -> Callable[P, R]:
     '''
     用于在需要时才进行值的重新计算，提升性能
 

@@ -4,17 +4,18 @@ import janim.utils.refresh as refresh
 from janim.utils.signal import Signal
 from janim.items.item import Item
 from janim.components.component import Component
+from janim.components.points import Cmpt_Points
 
 
 class ItemTest(unittest.TestCase):
     def test_broadcast_refresh(self) -> None:
         called_list = []
 
-        class MyComp(Component):
+        class MyCmpt(Component):
             @Signal
             def points_changed(self):
                 called_list.append(self.points_changed)
-                MyComp.points_changed.emit(self)
+                MyCmpt.points_changed.emit(self)
 
             @points_changed.self_refresh_with_recurse(recurse_up=True)
             @refresh.register
@@ -26,7 +27,7 @@ class ItemTest(unittest.TestCase):
                 super().__init__(*args, **kwargs)
 
                 with Component.Binder():
-                    self.comp = MyComp()
+                    self.cmpt = MyCmpt()
 
         m1 = MyItem().add(
             m2 := MyItem().add(
@@ -38,28 +39,47 @@ class ItemTest(unittest.TestCase):
         m: MyItem
 
         for m in [m1, *m1.descendants()]:
-            m.comp.bbox()
+            m.cmpt.bbox()
 
-        m2.comp.points_changed()
-
-        for m in [m1, *m1.descendants()]:
-            m.comp.bbox()
-
-        m3.comp.points_changed()
+        m2.cmpt.points_changed()
 
         for m in [m1, *m1.descendants()]:
-            m.comp.bbox()
+            m.cmpt.bbox()
+
+        m3.cmpt.points_changed()
+
+        for m in [m1, *m1.descendants()]:
+            m.cmpt.bbox()
 
         self.assertEqual(
             called_list,
             [
-                m1.comp.bbox, m2.comp.bbox, m3.comp.bbox, m4.comp.bbox,
-                m2.comp.points_changed,
-                m1.comp.bbox, m2.comp.bbox,
-                m3.comp.points_changed,
-                m1.comp.bbox, m2.comp.bbox, m3.comp.bbox
+                m1.cmpt.bbox, m2.cmpt.bbox, m3.cmpt.bbox, m4.cmpt.bbox,
+                m2.cmpt.points_changed,
+                m1.cmpt.bbox, m2.cmpt.bbox,
+                m3.cmpt.points_changed,
+                m1.cmpt.bbox, m2.cmpt.bbox, m3.cmpt.bbox
             ]
         )
+
+    def test_component(self) -> None:
+        class MyItem(
+            Item[
+                Cmpt_Points,
+                Cmpt_Points
+            ]
+        ):
+            def __init__(self, *args, **kwargs):
+                super().__init__(*args, **kwargs)
+
+                with Component.Binder():
+                    self.points1 = Cmpt_Points(apply=True)
+                    self.points2 = Cmpt_Points(apply=True, get=True)
+
+                print(self.points2)
+                print(self.get.all_points())
+
+        MyItem()
 
 
 if __name__ == '__main__':
