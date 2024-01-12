@@ -4,7 +4,6 @@ from collections import defaultdict
 from typing import Callable, Concatenate, ParamSpec, TypeVar, Generic, Self
 
 import janim.utils.refresh as refresh
-from janim.typing import SupportsRefreshWithRecurse
 
 type Key = str
 type FullQualname = str
