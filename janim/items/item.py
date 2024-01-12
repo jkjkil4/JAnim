@@ -45,11 +45,8 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         '''
         for cls in reversed(self.__class__.mro()):
             for key, info in cls.__dict__.get(CLS_CMPTINFO_NAME, {}).items():
-                obj = info.cls(
-                    *info.args,
-                    bind_info=Component.BindInfo(cls, self, key),
-                    **info.kwargs
-                )
+                obj: Component = info.cls(*info.args, **info.kwargs)
+                obj.set_bind_info(Component.BindInfo(cls, self, key))
                 self.__dict__[key] = obj
 
     def broadcast_refresh_of_component(

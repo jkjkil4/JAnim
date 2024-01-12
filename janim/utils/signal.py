@@ -1,9 +1,10 @@
 import functools
 import inspect
-from typing import Callable, Concatenate, ParamSpec, TypeVar, Generic
+from collections import defaultdict
+from typing import Callable, Concatenate, ParamSpec, TypeVar, Generic, Self
 
 import janim.utils.refresh as refresh
-from janim.typing import Self
+from janim.typing import SupportsRefreshWithRecurse
 
 type Key = str
 type FullQualname = str
@@ -29,8 +30,8 @@ class _Slots:
 
 class _AllSlots:
     def __init__(self):
-        self.self_slots_dict: dict[FullQualname, _SelfSlots] = {}
-        self.slots_dict: dict[int, _Slots] = {}
+        self.self_slots_dict: defaultdict[FullQualname, _SelfSlots] = defaultdict(_SelfSlots)
+        self.slots_dict: defaultdict[int, _Slots] = defaultdict(_Slots)
 
 
 class _SelfSlotWithRecurse:
@@ -167,7 +168,7 @@ class Signal(Generic[T, P, R]):
         self.func = func
         functools.update_wrapper(self, func)
 
-        self.slots: dict[Key, _AllSlots] = {}
+        self.slots: defaultdict[Key, _AllSlots] = defaultdict(_AllSlots)
 
     def __get__(self, instance, owner) -> Callable[P, R] | Self:
         return self if instance is None else self.func.__get__(instance, owner)
@@ -195,8 +196,8 @@ class Signal(Generic[T, P, R]):
         def decorator(func):
             full_qualname = self._get_cls_full_qualname_from_fback()
 
-            all_slots = self.slots.setdefault(key, _AllSlots())
-            self_slots = all_slots.self_slots_dict.setdefault(full_qualname, _SelfSlots())
+            all_slots = self.slots[key]
+            self_slots = all_slots.self_slots_dict[full_qualname]
             self_slots.self_normal_slots.append(func)
 
             return func
@@ -212,8 +213,8 @@ class Signal(Generic[T, P, R]):
         def decorator(func):
             full_qualname = self._get_cls_full_qualname_from_fback()
 
-            all_slots = self.slots.setdefault(key, _AllSlots())
-            self_slots = all_slots.self_slots_dict.setdefault(full_qualname, _SelfSlots())
+            all_slots = self.slots[key]
+            self_slots = all_slots.self_slots_dict[full_qualname]
             self_slots.self_refresh_slots.append(func)
 
             return func
@@ -230,8 +231,8 @@ class Signal(Generic[T, P, R]):
             full_qualname = self._get_cls_full_qualname_from_fback()
             slot = _SelfSlotWithRecurse(func, recurse_up, recurse_down)
 
-            all_slots = self.slots.setdefault(key, _AllSlots())
-            self_slots = all_slots.self_slots_dict.setdefault(full_qualname, _SelfSlots())
+            all_slots = self.slots[key]
+            self_slots = all_slots.self_slots_dict[full_qualname]
             self_slots.self_refresh_slots_with_recurse.append(slot)
 
             return func
@@ -244,8 +245,8 @@ class Signal(Generic[T, P, R]):
 
         Makes ``func`` called when the ``Signal`` is triggered.
         '''
-        all_slots = self.slots.setdefault(key, _AllSlots())
-        slots = all_slots.slots_dict.setdefault(id(sender), _Slots())
+        all_slots = self.slots[key]
+        slots = all_slots.slots_dict[id(sender)]
         slots.normal_slots.append(func)
 
     def connect_refresh(self, sender: object, obj: object, func: Callable | str, *, key: str = '') -> None:
@@ -256,8 +257,8 @@ class Signal(Generic[T, P, R]):
         '''
         slot = _RefreshSlot(obj, func)
 
-        all_slots = self.slots.setdefault(key, _AllSlots())
-        slots = all_slots.slots_dict.setdefault(id(sender), _Slots())
+        all_slots = self.slots[key]
+        slots = all_slots.slots_dict[id(sender)]
         slots.refresh_slots.append(slot)
 
     def emit(self, sender: object, *args, key: str = '', **kwargs):
@@ -266,23 +267,21 @@ class Signal(Generic[T, P, R]):
 
         Triggers the ``Signal``.
         '''
-        try:
-            all_slots = self.slots[key]
-        except KeyError:
+        if key not in self.slots:
             return
 
+        all_slots = self.slots[key]
+
         for cls in sender.__class__.mro():
-            try:
-                slots = all_slots.self_slots_dict[self._get_cls_full_qualname(cls)]
-            except KeyError:
+            full_qualname = self._get_cls_full_qualname(cls)
+            if full_qualname not in all_slots.self_slots_dict:
                 continue
+
+            slots = all_slots.self_slots_dict[full_qualname]
 
             # pre-check
             if slots.self_refresh_slots_with_recurse:
-                from janim.items.relation import Relation
-                from janim.components.component import Component
-
-                if not isinstance(sender, Relation) and not isinstance(sender, Component):
+                if not isinstance(sender, SupportsRefreshWithRecurse):
                     # TODO: i18n
                     # f'self_refresh_with_recurse() cannot be used in class {sender.__class__},
                     # it can only be used in Relation and its subclasses'
@@ -303,10 +302,10 @@ class Signal(Generic[T, P, R]):
             for slot in slots.self_refresh_slots_with_recurse:
                 sender.mark_refresh(slot.func, recurse_up=slot.recurse_up, recurse_down=slot.recurse_down)
 
-        try:
-            slots = all_slots.slots_dict[id(sender)]
-        except KeyError: ...
-        else:
+        sender_id = id(sender)
+        if sender_id in all_slots.slots_dict:
+            slots = all_slots.slots_dict[sender_id]
+
             # normal_slots
             for func in slots.normal_slots:
                 func(*args, **kwargs)

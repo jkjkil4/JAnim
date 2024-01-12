@@ -1,11 +1,13 @@
 from __future__ import annotations
 
+from typing import Self
+
 import numpy as np
 
 from janim.components.component import Component
 from janim.utils.signal import Signal
 from janim.utils.unique_nparray import UniqueNparray
-from janim.typing import Self, VectArray
+from janim.typing import VectArray
 
 
 class Cmpt_Points(Component):

@@ -1,9 +1,8 @@
 from __future__ import annotations
 
-from typing import Callable, TYPE_CHECKING
+from typing import Callable, Self, TYPE_CHECKING
 
 import janim.utils.refresh as refresh
-from janim.typing import Self
 
 FUNC_AS_ABLE_NAME = '__as_able'
 
@@ -51,16 +50,6 @@ class Component(refresh.Refreshable):
                 obj.cmpt_name
             )
 
-    def __init__(
-        self,
-        *args,
-        bind_info: BindInfo | None = None,
-        **kwargs
-    ):
-        super().__init__(*args, **kwargs)
-
-        self.bind_info = bind_info
-
     def set_bind_info(self, bind_info: BindInfo):
         self.bind_info = bind_info
 
@@ -89,11 +78,8 @@ class CmptInfo[T]:
 
 def CmptGroup[T](*cmpt_info_list: CmptInfo[T]) -> CmptInfo[T]:
     class _CmptGroup(Component):
-        def __init__(self, *, bind_info: Component.BindInfo | None = None):
-            if bind_info is None:
-                raise ValueError('CmptGroup 只能在类定义中使用')
-
-            super().__init__(bind_info=bind_info)
+        def set_bind_info(self, bind_info: Component.BindInfo) -> None:
+            super().set_bind_info(bind_info)
             self._find_objects()
 
         def _find_objects(self) -> None:

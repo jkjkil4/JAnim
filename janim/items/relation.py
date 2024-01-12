@@ -1,9 +1,8 @@
 from __future__ import annotations
 
-from typing import Callable, Generator, Type
+from typing import Callable, Generator, Self
 
 import janim.utils.refresh as refresh
-from janim.typing import Self
 from janim.utils.signal import Signal
 
 
@@ -154,7 +153,7 @@ class Relation[GRelT: 'Relation'](refresh.Refreshable):
         return self._family(up=False)
 
     @staticmethod
-    def _walk_lst[RelT](base_cls: Type[RelT] | None, lst: list[GRelT]) -> Generator[RelT, None, None]:
+    def _walk_lst[RelT](base_cls: type[RelT] | None, lst: list[GRelT]) -> Generator[RelT, None, None]:
         if base_cls is None:
             base_cls = Relation
 
@@ -164,7 +163,7 @@ class Relation[GRelT: 'Relation'](refresh.Refreshable):
 
     def _walk_nearest_family[RelT](
         self: Relation,
-        base_cls: Type[RelT],
+        base_cls: type[RelT],
         fn_family: Callable[[Relation], list[Relation]]
     ) -> Generator[RelT, None, None]:
 
@@ -182,7 +181,7 @@ class Relation[GRelT: 'Relation'](refresh.Refreshable):
                         lst.pop(0)
                 yield obj
 
-    def walk_ancestors[RelT](self, base_cls: Type[RelT] = None) -> Generator[RelT, None, None]:
+    def walk_ancestors[RelT](self, base_cls: type[RelT] = None) -> Generator[RelT, None, None]:
         '''
         遍历祖先节点中以 ``base_cls`` （缺省则遍历全部）为基类的对象
 
@@ -190,7 +189,7 @@ class Relation[GRelT: 'Relation'](refresh.Refreshable):
         '''
         yield from self._walk_lst(base_cls, self.ancestors())
 
-    def walk_descendants[RelT](self, base_cls: Type[RelT] = None) -> Generator[RelT, None, None]:
+    def walk_descendants[RelT](self, base_cls: type[RelT] = None) -> Generator[RelT, None, None]:
         '''
         遍历后代节点中以 ``base_cls`` （缺省则遍历全部）为基类的对象
 
@@ -198,7 +197,7 @@ class Relation[GRelT: 'Relation'](refresh.Refreshable):
         '''
         yield from self._walk_lst(base_cls, self.descendants())
 
-    def walk_self_and_ancestors[RelT](self, base_cls: Type[RelT] = None) -> Generator[RelT, None, None]:
+    def walk_self_and_ancestors[RelT](self, base_cls: type[RelT] = None) -> Generator[RelT, None, None]:
         '''
         遍历自己以及祖先节点中以 ``base_cls`` （缺省则遍历全部）为基类的对象
 
@@ -208,7 +207,7 @@ class Relation[GRelT: 'Relation'](refresh.Refreshable):
             yield self
         yield from self._walk_lst(base_cls, self.ancestors())
 
-    def walk_self_and_descendants[RelT](self, base_cls: Type[RelT] = None) -> Generator[RelT, None, None]:
+    def walk_self_and_descendants[RelT](self, base_cls: type[RelT] = None) -> Generator[RelT, None, None]:
         '''
         遍历自己以及后代节点中以 ``base_cls`` （缺省则遍历全部）为基类的对象
 
@@ -218,7 +217,7 @@ class Relation[GRelT: 'Relation'](refresh.Refreshable):
             yield self
         yield from self._walk_lst(base_cls, self.descendants())
 
-    def walk_nearest_ancestors[RelT](self, base_cls: Type[RelT]) -> Generator[RelT, None, None]:
+    def walk_nearest_ancestors[RelT](self, base_cls: type[RelT]) -> Generator[RelT, None, None]:
         '''
         遍历祖先节点中以 ``base_cls`` 为基类的对象，但是排除已经满足条件的对象的祖先对象
 
@@ -227,7 +226,7 @@ class Relation[GRelT: 'Relation'](refresh.Refreshable):
         '''
         yield from self._walk_nearest_family(base_cls, lambda rel: rel.ancestors())
 
-    def walk_nearest_descendants[RelT](self, base_cls: Type[RelT]) -> Generator[RelT, None, None]:
+    def walk_nearest_descendants[RelT](self, base_cls: type[RelT]) -> Generator[RelT, None, None]:
         '''
         遍历后代节点中以 ``base_cls`` 为基类的对象，但是排除已经满足条件的对象的后代对象
 
