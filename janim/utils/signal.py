@@ -281,7 +281,10 @@ class Signal(Generic[T, P, R]):
 
             # pre-check
             if slots.self_refresh_slots_with_recurse:
-                if not isinstance(sender, SupportsRefreshWithRecurse):
+                from janim.items.relation import Relation
+                from janim.components.component import Component
+
+                if not isinstance(sender, Relation) and not isinstance(sender, Component):
                     # TODO: i18n
                     # f'self_refresh_with_recurse() cannot be used in class {sender.__class__},
                     # it can only be used in Relation and its subclasses'
