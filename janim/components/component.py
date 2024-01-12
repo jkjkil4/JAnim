@@ -34,13 +34,13 @@ class Component(refresh.Refreshable):
 
             item = MyItem()
 
-            item.cmpt1.bind_info 与 BindInfo(MyItem, item, 'cmpt1') 一致
-            item.cmpt2.bind_info 与 BindInfo(MyItem, item, 'cmpt2') 一致
+            # item.cmpt1.bind_info 与 BindInfo(MyItem, item, 'cmpt1') 一致
+            # item.cmpt2.bind_info 与 BindInfo(MyItem, item, 'cmpt2') 一致
 
             item2 = MyItem2()
 
-            item2.cmpt1.bind_info 与 BindInfo(MyItem, item2, 'cmpt1') 一致
-            item2.cmpt3.bind_info 与 BindInfo(MyItem2, item2, 'cmpt3') 一致
+            # item2.cmpt1.bind_info 与 BindInfo(MyItem, item2, 'cmpt1') 一致
+            # item2.cmpt3.bind_info 与 BindInfo(MyItem2, item2, 'cmpt3') 一致
         '''
         def __init__(self, def_cls: type, at_item: Item, key: str):
             self.decl_cls = def_cls
