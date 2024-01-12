@@ -4,7 +4,6 @@ utils
 .. toctree::
    :maxdepth: 1
 
-   bind
    iterables
    refresh
    signal

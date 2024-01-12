@@ -22,11 +22,11 @@ class Cmpt_Points(Component):
 
     @Component.as_able
     def get_all(_) -> np.ndarray:
-        orig_item, as_type, cmpt_name = Component.extract_as(_)
+        info = Component.extract_as(_)
 
         return np.vstack([
-            getattr(item, cmpt_name).get()
-            for item in orig_item.walk_self_and_descendants(as_type)
+            getattr(item, info.cmpt_name).get()
+            for item in info.origin.walk_self_and_descendants(info.as_type)
         ])
 
     @Signal

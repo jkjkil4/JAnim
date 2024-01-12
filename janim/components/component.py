@@ -17,6 +17,12 @@ class Component(refresh.Refreshable):
             self.at_item = at_item
             self.key = key
 
+    class AsInfo:
+        def __init__(self, origin: Item, as_type: type, cmpt_name: str):
+            self.origin = origin
+            self.as_type = as_type
+            self.cmpt_name = cmpt_name
+
     def as_able[**P, R](func: Callable[P, R]) -> Callable[P, R]:
         # TODO: for_many 的注释
         func.__dict__[FUNC_AS_ABLE_NAME] = True
@@ -27,9 +33,9 @@ class Component(refresh.Refreshable):
         return func.__dict__.get(FUNC_AS_ABLE_NAME, False)
 
     @staticmethod
-    def extract_as(obj: Component | Item._As._TakedCmpt) -> tuple[Item, type, str]:
+    def extract_as(obj: Component | Item._As._TakedCmpt) -> AsInfo:
         if isinstance(obj, Component):
-            return (
+            return Component.AsInfo(
                 obj.bind_info.at_item,
                 obj.bind_info.decl_cls,
                 obj.bind_info.key
@@ -44,7 +50,7 @@ class Component(refresh.Refreshable):
 
             assert as_type is not None
 
-            return (
+            return Component.AsInfo(
                 obj.item_as.origin,
                 as_type,
                 obj.cmpt_name
