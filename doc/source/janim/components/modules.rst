@@ -5,3 +5,4 @@ components
    :maxdepth: 1
 
    component
+   points

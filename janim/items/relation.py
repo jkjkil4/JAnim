@@ -153,18 +153,6 @@ class Relation[GRelT: 'Relation'](refresh.Refreshable):
         '''
         return self._family(up=False)
 
-    def ancestor_types(self) -> set[type]:
-        '''
-        返回祖先对象包括的类型
-        '''
-        return set(type(obj) for obj in self.ancestors())
-
-    def descendant_types(self) -> set[type]:
-        '''
-        返回后代对象包括的类型
-        '''
-        return set(type(obj) for obj in self.descendants())
-
     @staticmethod
     def _walk_lst[RelT](base_cls: Type[RelT] | None, lst: list[GRelT]) -> Generator[RelT, None, None]:
         if base_cls is None:
@@ -208,6 +196,26 @@ class Relation[GRelT: 'Relation'](refresh.Refreshable):
 
         Traverse descendant nodes with base_cls (default to traverse all) as the base class.
         '''
+        yield from self._walk_lst(base_cls, self.descendants())
+
+    def walk_self_and_ancestors[RelT](self, base_cls: Type[RelT] = None) -> Generator[RelT, None, None]:
+        '''
+        遍历自己以及祖先节点中以 ``base_cls`` （缺省则遍历全部）为基类的对象
+
+        Traverse ancestor nodes with base_cls (default to traverse all) as the base class.
+        '''
+        if isinstance(self, base_cls):
+            yield self
+        yield from self._walk_lst(base_cls, self.ancestors())
+
+    def walk_self_and_descendants[RelT](self, base_cls: Type[RelT] = None) -> Generator[RelT, None, None]:
+        '''
+        遍历自己以及后代节点中以 ``base_cls`` （缺省则遍历全部）为基类的对象
+
+        Traverse descendant nodes with base_cls (default to traverse all) as the base class.
+        '''
+        if isinstance(self, base_cls):
+            yield self
         yield from self._walk_lst(base_cls, self.descendants())
 
     def walk_nearest_ancestors[RelT](self, base_cls: Type[RelT]) -> Generator[RelT, None, None]:

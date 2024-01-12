@@ -2,9 +2,9 @@ import unittest
 
 import janim.utils.refresh as refresh
 from janim.utils.signal import Signal
-from janim.items.item import Item, Group
-from janim.components.component import Component
-from janim.components.points import Cmpt_Points
+from janim.items.item import Item, Group, Points
+from janim.components.component import Component, CmptInfo
+from janim.constants.coord import *
 
 
 class ItemTest(unittest.TestCase):
@@ -23,11 +23,7 @@ class ItemTest(unittest.TestCase):
                 called_list.append(self.bbox)
 
         class MyItem(Item):
-            def __init__(self, *args, **kwargs):
-                super().__init__(*args, **kwargs)
-
-                with Component.Binder():
-                    self.cmpt = MyCmpt()
+            cmpt = CmptInfo(MyCmpt)
 
         m1 = MyItem().add(
             m2 := MyItem().add(
@@ -62,51 +58,33 @@ class ItemTest(unittest.TestCase):
             ]
         )
 
-    def test_component_apply(self) -> None:
-        called_list = []
 
-        class MyCmpt(Component):
-            @Component.for_many
-            def inc_value(self, *, _as: Item = None):
-                if _as is None:
-                    _as = self.bind.item
+class PointsTest(unittest.TestCase):
+    def assertNparrayEqual(self, d1, d2) -> None:
+        self.assertEqual(np.array(d1).tolist(), np.array(d2).tolist())
 
-                called_list.append((self, _as))
-
-        class MyItem[GT, AT](Item[MyCmpt | GT, MyCmpt | AT]):
-            def __init__(self, *args, **kwargs):
-                super().__init__(*args, **kwargs)
-
-                with Component.Binder():
-                    self.c1 = MyCmpt(apply=True, get=True)
-                    self.c2 = MyCmpt(apply=True)
+    def test_get_all(self) -> None:
+        class MyPoints(Points): ...
 
         g = Group(
-            m1 := MyItem().add(
-                m2 := MyItem()
-            )
+            p1 := MyPoints(UP, RIGHT).add(
+                p2 := Points(UL),
+                p3 := Points(DR)
+            ),
+            p4 := Points(ORIGIN)
         )
 
-        m1.c1.inc_value()
-        m2.c1.inc_value()
+        self.assertNparrayEqual(p1.data.get(), [UP, RIGHT])
+        self.assertNparrayEqual(p1.data.get_all(), [UP, RIGHT, UL, DR])
+        self.assertNparrayEqual(p2.data.get(), [UL])
+        self.assertNparrayEqual(p2.data.get_all(), [UL])
 
-        m2.apply.inc_value()
+        # g.data.get_all()    # Error
+        # g.astype(Points).name_that_not_exists   # Error
+        # self.assertNparrayEqual(g.astype(Points).data.get())  # Error
 
-        g.apply.inc_value()
-
-        self.assertEqual(
-            called_list,
-            [
-                (m1.c1, m1),
-                (m2.c1, m2),
-
-                (m2.c1, m2),
-                (m2.c2, m2),
-
-                (m1.c1, g),
-                (m1.c2, g)
-            ]
-        )
+        self.assertNparrayEqual(g.astype(Points).data.get_all(), [UP, RIGHT, UL, DR, ORIGIN])
+        self.assertNparrayEqual(g.astype(MyPoints).data.get_all(), [UP, RIGHT, UL, DR, ORIGIN])
 
 
 if __name__ == '__main__':

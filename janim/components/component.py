@@ -1,99 +1,140 @@
 from __future__ import annotations
 
-import inspect
-from contextvars import ContextVar
-from typing import Callable
+from typing import Callable, TYPE_CHECKING
 
 import janim.utils.refresh as refresh
 from janim.typing import Self
 
-FUNC_FOR_MANY_KEY = '__for_many'
+FUNC_AS_ABLE_NAME = '__as_able'
+
+if TYPE_CHECKING:
+    from janim.items.item import Item
 
 
 class Component(refresh.Refreshable):
-    def for_many[**P, R](func: Callable[P, R]) -> Callable[P, R]:
+    class BindInfo:
+        def __init__(self, def_cls: type, at_item: Item, key: str):
+            self.decl_cls = def_cls
+            self.at_item = at_item
+            self.key = key
+
+    def as_able[**P, R](func: Callable[P, R]) -> Callable[P, R]:
         # TODO: for_many 的注释
-        func.__dict__[FUNC_FOR_MANY_KEY] = True
+        func.__dict__[FUNC_AS_ABLE_NAME] = True
         return func
 
-    class Binder:
-        '''
-        将组件与 :class:`janim.items.item.Item` 绑定
+    @staticmethod
+    def is_as_able(func: Callable) -> bool:
+        return func.__dict__.get(FUNC_AS_ABLE_NAME, False)
 
-        例 | Example:
+    @staticmethod
+    def extract_as(obj: Component | Item._As._TakedCmpt) -> tuple[Item, type, str]:
+        if isinstance(obj, Component):
+            return (
+                obj.bind_info.at_item,
+                obj.bind_info.decl_cls,
+                obj.bind_info.key
+            )
+        else:
+            from janim.items.item import CLS_CMPTINFO_NAME
 
-        .. code-block:: python
+            as_type = None
+            for sup in obj.item_as.cls.mro():
+                if obj.cmpt_name in sup.__dict__.get(CLS_CMPTINFO_NAME, {}):
+                    as_type = sup
 
-            class MyItem(Item):
-                def __init__(self, *args, **kwargs):
-                    super().__init__(*args, **kwargs)
+            assert as_type is not None
 
-                    with Component.Binder():
-                        self.points = Cmpt_Points()
-                        self.color = Cmpt_Rgbas()
+            return (
+                obj.item_as.origin,
+                as_type,
+                obj.cmpt_name
+            )
 
-        这样，``points`` 以及 ``color`` 就与 ``MyItem`` 的对象绑定了
-
-        并且会得知是 ``MyItem`` 中创建的第几个组件，
-        比如这里 points 是第 0 个，color 是第 1 个；
-        这个序号，在 Item.broadcast_refresh_of_component 中使用到
-        '''
-
-        ctx_var: ContextVar[Component.Binder] = ContextVar('Component.Binder.ctx_var')
-
-        def __init__(self, cls: type = None, obj: object = None):
-            if (cls is None) != (obj is None):
-                # TODO: i18n
-                raise KeyError('`cls` 与 `obj` 必须同时被设置或缺省')
-
-            if cls is None:
-                f_back = inspect.currentframe().f_back
-
-                if '__class__' not in f_back.f_locals:
-                    # TODO: i18n
-                    raise KeyError('`cls` 与 `obj` 缺省时必须在对象的方法中调用')
-
-                self_arg_name = inspect.getargs(f_back.f_code).args[0]
-
-                cls = f_back.f_locals['__class__']
-                obj = f_back.f_locals[self_arg_name]
-
-            from janim.items.item import Item
-            self.cls = cls
-            self.item: Item = obj
-
-        def append(self, component: Component) -> int:
-            '''
-            在 ``Component`` 的 ``__init__`` 中被调用，
-            用于得知是物件中创建的第几个组件
-            '''
-            idx = len(self.item.components)
-            self.item.components.append(component)
-            return idx
-
-        def __enter__(self):
-            self.token = self.ctx_var.set(self)
-
-        def __exit__(self, exc_type, exc_value, exc_traceback):
-            self.ctx_var.reset(self.token)
-
-    def __init__(self, *args, get=False, apply=False, **kwargs):
+    def __init__(
+        self,
+        *args,
+        bind_info: BindInfo | None = None,
+        **kwargs
+    ):
         super().__init__(*args, **kwargs)
 
-        self.can_get = get
-        self.can_apply = apply
+        self.bind_info = bind_info
 
-        self.bind = Component.Binder.ctx_var.get(None)
-        if self.bind is not None:
-            self.bind_idx = self.bind.append(self)
+    def set_bind_info(self, bind_info: BindInfo):
+        self.bind_info = bind_info
 
     def mark_refresh(self, func: Callable | str, *, recurse_up=False, recurse_down=False) -> Self:
         super().mark_refresh(func)
 
-        if self.bind is not None:
-            self.bind.item.broadcast_refresh_of_component(
+        if self.bind_info is not None:
+            self.bind_info.at_item.broadcast_refresh_of_component(
                 self,
                 func,
                 recurse_up=recurse_up,
                 recurse_down=recurse_down
             )
+
+
+class CmptInfo[T]:
+    def __init__(self, cls: type[T], *args, **kwargs):
+        self.cls = cls
+        self.args = args
+        self.kwargs = kwargs
+
+    # 方便代码补全，没有实际意义
+    def __get__(self, obj, owner) -> T:
+        return self
+
+
+def CmptGroup[T](*cmpt_info_list: CmptInfo[T]) -> CmptInfo[T]:
+    class _CmptGroup(Component):
+        def __init__(self, *, bind_info: Component.BindInfo | None = None):
+            if bind_info is None:
+                raise ValueError('CmptGroup 只能在类定义中使用')
+
+            super().__init__(bind_info=bind_info)
+            self._find_objects()
+
+        def _find_objects(self) -> None:
+            self.objects: list[Component] = [
+                getattr(
+                    self.bind_info.at_item,
+                    self._find_key(cmpt_info)
+                )
+                for cmpt_info in cmpt_info_list
+            ]
+
+        def _find_key(self, cmpt_info: CmptInfo) -> str:
+            from janim.items.item import CLS_CMPTINFO_NAME
+
+            for key, val in self.bind_info.decl_cls.__dict__.get(CLS_CMPTINFO_NAME, {}).items():
+                if val is cmpt_info:
+                    return key
+
+            raise ValueError('CmptGroup 必须要与传入的内容在同一个类的定义中')
+
+        def __getattr__(self, name: str):
+            methods = []
+
+            for obj in self.objects:
+                if not hasattr(obj, name):
+                    continue
+
+                attr = getattr(obj, name)
+                if not callable(attr):
+                    continue
+
+                methods.append(attr)
+
+            def wrapper(*args, **kwargs):
+                ret = [
+                    method(*args, **kwargs)
+                    for method in methods
+                ]
+
+                return self if ret == self.objects else ret
+
+            return wrapper
+
+    return CmptInfo(_CmptGroup)

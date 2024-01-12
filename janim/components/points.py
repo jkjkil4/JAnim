@@ -13,23 +13,22 @@ class Cmpt_Points(Component):
         super().__init__(*args, **kwargs)
 
         self._points = UniqueNparray()
-        self.set_points([])
+        self.set([])
 
-    def points(self) -> np.ndarray:
+    def get(self) -> np.ndarray:
         return self._points.data
 
-    @Component.for_many
-    def all_points(self, *, _as=None) -> np.ndarray:
-        if _as is None:
-            _as = self.bind.item
+    @Component.as_able
+    def get_all(_) -> np.ndarray:
+        orig_item, as_type, cmpt_name = Component.extract_as(_)
 
         return np.vstack([
-            item.components[self.bind_idx].points()
-            for item in _as.walk_descendants(self.bind.cls)
+            getattr(item, cmpt_name).get()
+            for item in orig_item.walk_self_and_descendants(as_type)
         ])
 
     @Signal
-    def set_points(self, points: VectArray) -> Self:
+    def set(self, points: VectArray) -> Self:
         '''
         设置点坐标数据，每个坐标点都有三个分量
 
@@ -52,7 +51,7 @@ class Cmpt_Points(Component):
         self._points.data = points
 
         if cnt_changed:
-            Cmpt_Points.set_points.emit(self, key='count')
-        Cmpt_Points.set_points.emit(self)
+            Cmpt_Points.set.emit(self, key='count')
+        Cmpt_Points.set.emit(self)
 
         return self

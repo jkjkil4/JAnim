@@ -1,8 +1,13 @@
 from functools import wraps
-from typing import Any, Self, Callable
+from typing import Any, Self, Callable, ParamSpec, TypeVar
+from collections import defaultdict
+
+# 使 sphinx 可用
+P = ParamSpec('P')
+R = TypeVar('R')
 
 
-def register[**P, R](func: Callable[P, R]) -> Callable[P, R]:
+def register(func: Callable[P, R]) -> Callable[P, R]:
     '''
     用于在需要时才进行值的重新计算，提升性能
 
@@ -36,7 +41,7 @@ def register[**P, R](func: Callable[P, R]) -> Callable[P, R]:
 
     @wraps(func)
     def wrapper(self: Refreshable, *args, **kwargs):
-        data: RefreshData = self.refresh_data.setdefault(name, RefreshData())
+        data = self.refresh_data[name]
 
         if data.is_required:
             data.stored = func(self, *args, **kwargs)
@@ -51,7 +56,7 @@ class Refreshable:
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.refresh_data: dict[str, RefreshData] = {}
+        self.refresh_data: defaultdict[str, RefreshData] = defaultdict(RefreshData)
 
     def mark_refresh(self, func: Callable | str) -> Self:
         '''

@@ -1,12 +1,17 @@
 import functools
 import inspect
-from typing import Callable, Concatenate
+from typing import Callable, Concatenate, ParamSpec, TypeVar, Generic
 
 import janim.utils.refresh as refresh
 from janim.typing import Self
 
 type Key = str
 type FullQualname = str
+
+# 使 sphinx 可用
+P = ParamSpec('P')
+T = TypeVar('T')
+R = TypeVar('R')
 
 
 class _SelfSlots:
@@ -41,7 +46,7 @@ class _RefreshSlot:
         self.func = func
 
 
-class Signal[T, **P, R]:
+class Signal(Generic[T, P, R]):
     '''
     一般用于在 ``func`` 造成影响后，需要对其它数据进行更新时进行作用
 
