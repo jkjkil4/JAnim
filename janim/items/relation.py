@@ -201,7 +201,7 @@ class Relation[GRelT: 'Relation'](refresh.Refreshable):
         '''
         遍历自己以及祖先节点中以 ``base_cls`` （缺省则遍历全部）为基类的对象
 
-        Traverse ancestor nodes with base_cls (default to traverse all) as the base class.
+        Traverse self and ancestor nodes with base_cls (default to traverse all) as the base class.
         '''
         if isinstance(self, base_cls):
             yield self
@@ -211,7 +211,7 @@ class Relation[GRelT: 'Relation'](refresh.Refreshable):
         '''
         遍历自己以及后代节点中以 ``base_cls`` （缺省则遍历全部）为基类的对象
 
-        Traverse descendant nodes with base_cls (default to traverse all) as the base class.
+        Traverse self and descendant nodes with base_cls (default to traverse all) as the base class.
         '''
         if isinstance(self, base_cls):
             yield self
