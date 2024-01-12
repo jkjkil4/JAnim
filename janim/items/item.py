@@ -5,8 +5,6 @@ from typing import Callable, Self
 
 from janim.items.relation import Relation
 from janim.components.component import Component, CmptInfo
-from janim.components.points import Cmpt_Points
-from janim.typing import Vect
 
 CLS_CMPTINFO_NAME = '__cls_cmptinfo'
 OBJ_COMPONENTS_NAME = '__obj_components'
