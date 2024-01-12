@@ -58,10 +58,9 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         recurse_down=False
     ) -> Self:
         '''
-        为 :meth:`janim.components.component.Component.mark_refresh()`
+        为 :meth:`~.Component.mark_refresh()`
         进行 ``recurse_up/down`` 的处理
         '''
-
         def mark(item: Item):
             item_component: Component = getattr(item, cmpt.bind_info.key)
             item_component.mark_refresh(func)
@@ -75,9 +74,27 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
                 mark(item)
 
     def astype[T](self, cls: type[T]) -> T:
+        '''
+        使得可以调用当前物件中没有的组件方法（前提是有被 ``@as_able`` 修饰）
+
+        例 | Example:
+
+        .. code-block:: python
+
+            group = Group(
+                Points(UP, RIGHT)
+                Points(LEFT)
+            )
+
+        在这个例子中，``group`` 并不能 ``group.points.get_all()`` 来获取子物件中的所有点，
+        但是可以使用 ``group.astype(Points).points.get_all()`` 来做到
+        '''
         return self._As(self, cls)
 
     class _As:
+        '''
+        astype(...) 得到的伪造物件对象，接上 ``.cmpt_name`` 得到伪造组件 ``_TakedCmpt`` 的对象
+        '''
         def __init__(self, origin: Item, cls: type):
             assert issubclass(cls, Item)
 
@@ -97,6 +114,9 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
             return self._TakedCmpt(self, name, attr)
 
         class _TakedCmpt:
+            '''
+            astype(...).cmpt_name 得到的伪造组件对象
+            '''
             def __init__(self, item_as: Item._As, cmpt_name: str, cmpt_info: CmptInfo):
                 self.item_as = item_as
                 self.cmpt_name = cmpt_name
@@ -116,15 +136,9 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
 
 
 class Group(Item):
+    '''
+    将物件组成一组
+    '''
     def __init__(self, *objs, **kwargs):
         super().__init__(**kwargs)
         self.add(*objs)
-
-
-class Points(Item):
-    data = CmptInfo(Cmpt_Points)
-
-    def __init__(self, *points: Vect, **kwargs):
-        super().__init__(**kwargs)
-
-        self.data.set(points)

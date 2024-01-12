@@ -18,10 +18,16 @@ class Cmpt_Points(Component):
         self.set([])
 
     def get(self) -> np.ndarray:
+        '''
+        得到点坐标数据
+        '''
         return self._points.data
 
     @Component.as_able
     def get_all(_) -> np.ndarray:
+        '''
+        得到自己以及后代物件的所有点坐标数据
+        '''
         info = Component.extract_as(_)
 
         return np.vstack([

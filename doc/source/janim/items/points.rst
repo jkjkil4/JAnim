@@ -1,7 +1,7 @@
-item
-====
+points
+======
 
-.. automodule:: janim.items.item
+.. automodule:: janim.items.points
    :members:
    :undoc-members:
    :show-inheritance:

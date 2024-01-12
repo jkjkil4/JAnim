@@ -160,8 +160,8 @@ class Signal(Generic[T, P, R]):
 
     另见 | See also:
 
-    - :meth:`janim.items.relation.Relation.parents_changed()`
-    - :meth:`janim.items.relation.Relation.children_changed()`
+    - :meth:`~.Relation.parents_changed()`
+    - :meth:`~.Relation.children_changed()`
     '''
     def __init__(self, func: Callable[Concatenate[T, P], R]):
         self.func = func
