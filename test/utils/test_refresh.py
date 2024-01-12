@@ -81,5 +81,5 @@ class RefreshTest(unittest.TestCase):
         self.assertIsNot(lst_id, s.empty_list)
 
 
-if __name__ == '__main__':
-    unittest.main()
+# if __name__ == '__main__':
+#     unittest.main()

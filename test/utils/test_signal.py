@@ -153,5 +153,20 @@ class SignalTest(unittest.TestCase):
             ]
         )
 
-if __name__ == '__main__':
-    unittest.main()
+    def test_signal_err(self) -> None:
+        class A(refresh.Refreshable):
+            @Signal
+            def fn(self):
+                A.fn.emit(self)
+
+            @fn.self_refresh_with_recurse()
+            def fn_that_could_not_decorated_with_refresh_with_recurse(self): ...
+
+        a = A()
+
+        with self.assertRaises(TypeError):
+            a.fn()
+
+
+# if __name__ == '__main__':
+#     unittest.main()

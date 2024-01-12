@@ -172,7 +172,7 @@ class Signal(Generic[T, P, R]):
     def __get__(self, instance, owner) -> Callable[P, R] | Self:
         return self if instance is None else self.func.__get__(instance, owner)
 
-    def __call__(self, *args, **kwargs):
+    def __call__(self, *args, **kwargs):    # pragma: no cover
         return self.func(*args, **kwargs)
 
     @staticmethod

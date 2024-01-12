@@ -1,7 +1,8 @@
 __pycache__
-.vscode/launch.json
+/.vscode/launch.json
 /refactor_deprecated
 /test_some_code
 /doc/build
 /janim/items/__item_deprecated.py
 /test/items/__item_test_deprecated.py
+/.coverage

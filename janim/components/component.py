@@ -6,7 +6,7 @@ import janim.utils.refresh as refresh
 
 FUNC_AS_ABLE_NAME = '__as_able'
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:   # pragma: no cover
     from janim.items.item import Item
 
 
@@ -227,6 +227,10 @@ def CmptGroup[T](*cmpt_info_list: CmptInfo[T]) -> CmptInfo[T]:
                     continue
 
                 methods.append(attr)
+
+            if not methods:
+                cmpt_str = ', '.join(cmpt.__class__.__name__ for cmpt in self.objects)
+                raise AttributeError(f'({cmpt_str}) 中没有组件有叫作 {name} 的方法')
 
             def wrapper(*args, **kwargs):
                 ret = [

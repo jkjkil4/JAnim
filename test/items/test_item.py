@@ -2,7 +2,8 @@ import unittest
 
 import janim.utils.refresh as refresh
 from janim.utils.signal import Signal
-from janim.items.item import Item, Group, Points
+from janim.items.item import Item, Group
+from janim.items.points import Points
 from janim.components.component import Component, CmptInfo
 from janim.constants.coord import *
 
@@ -87,5 +88,5 @@ class PointsTest(unittest.TestCase):
         self.assertNparrayEqual(g.astype(MyPoints).data.get_all(), [UP, RIGHT, UL, DR, ORIGIN])
 
 
-if __name__ == '__main__':
-    unittest.main()
+# if __name__ == '__main__':
+#     unittest.main()

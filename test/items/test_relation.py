@@ -92,5 +92,5 @@ class RelationTest(unittest.TestCase):
         for root, cls, check in check_nearest_ancestors:
             self.assertEqual(list(m[root].walk_nearest_ancestors(cls)), [m[idx] for idx in check])
 
-if __name__ == '__main__':
-    unittest.main()
+# if __name__ == '__main__':
+#     unittest.main()
