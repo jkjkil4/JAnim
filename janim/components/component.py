@@ -55,7 +55,7 @@ class Component(refresh.Refreshable):
 
         - ``item.astype(cls).points.set(...)``
             - ``origin == item``
-            - ``as_type == cls``
+            - ``decl_type == 在 cls 的 mro 中找到 points 定义处的类``
             - ``cmpt_name == 'points'``
 
         另见 | See also:
@@ -64,9 +64,9 @@ class Component(refresh.Refreshable):
         - :meth:`~.Item.astype`
         - :meth:`~.Component.extract_as`
         '''
-        def __init__(self, origin: Item, as_type: type, cmpt_name: str):
+        def __init__(self, origin: Item, decl_type: type, cmpt_name: str):
             self.origin = origin
-            self.as_type = as_type
+            self.decl_type = decl_type
             self.cmpt_name = cmpt_name
 
     def __init__(self, *args, **kwargs) -> None:
@@ -112,16 +112,16 @@ class Component(refresh.Refreshable):
         else:
             from janim.items.item import CLS_CMPTINFO_NAME
 
-            as_type = None
+            decl_type = None
             for sup in data.item_as.cls.mro():
                 if data.cmpt_name in sup.__dict__.get(CLS_CMPTINFO_NAME, {}):
-                    as_type = sup
+                    decl_type = sup
 
-            assert as_type is not None
+            assert decl_type is not None
 
             return Component.AsInfo(
                 data.item_as.origin,
-                as_type,
+                decl_type,
                 data.cmpt_name
             )
 

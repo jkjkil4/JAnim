@@ -1,7 +1,8 @@
 import functools
 import inspect
 from collections import defaultdict
-from typing import Callable, Concatenate, ParamSpec, TypeVar, Generic, Self, overload
+from typing import (Any, Callable, Concatenate, Generic, ParamSpec, Self,
+                    TypeVar, overload)
 
 import janim.utils.refresh as refresh
 
@@ -12,6 +13,8 @@ type FullQualname = str
 P = ParamSpec('P')
 T = TypeVar('T')
 R = TypeVar('R')
+
+SlotP = ParamSpec('SlotP')
 
 
 class _SelfSlots:
@@ -46,7 +49,7 @@ class _RefreshSlot:
         self.func = func
 
 
-class Signal(Generic[T, P, R]):
+class Signal(Generic[SlotP, T, P, R]):
     '''
     一般用于在 ``func`` 造成影响后，需要对其它数据进行更新时进行作用
 
@@ -244,7 +247,7 @@ class Signal(Generic[T, P, R]):
 
         return decorator
 
-    def connect(self, sender: object, func: Callable, *, key: str = '') -> None:
+    def connect(self, sender: object, func: Callable[SlotP, Any], *, key: str = '') -> None:
         '''
         使 ``func`` 会在 ``Signal`` 触发时被调用
 
@@ -286,8 +289,8 @@ class Signal(Generic[T, P, R]):
 
             # pre-check
             if slots.self_refresh_slots_with_recurse:
-                from janim.items.relation import Relation
                 from janim.components.component import Component
+                from janim.items.relation import Relation
 
                 if not isinstance(sender, Relation) and not isinstance(sender, Component):
                     # TODO: i18n
