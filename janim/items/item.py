@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import functools
-from typing import Callable, Self
+from typing import Callable, Self, overload
 
 from janim.items.relation import Relation
 from janim.components.component import Component, CmptInfo
@@ -71,6 +71,20 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
             for item in self.walk_descendants(cmpt.bind_info.decl_cls):
                 mark(item)
 
+    @overload
+    def __getitem__(self, value: int) -> Item: ...
+
+    @overload
+    def __getitem__(self, value: slice) -> Group: ...
+
+    def __getitem__(self, value):
+        if isinstance(value, slice):
+            return Group(*self.children[value])
+        return self.children[value]
+
+    # Do not define __iter__ and __len__ for Item class.
+    # I think using item.children and item.parents explicitly is better.
+
     def astype[T](self, cls: type[T]) -> T:
         '''
         使得可以调用当前物件中没有的组件方法（前提是有被 ``@as_able`` 修饰）
@@ -87,15 +101,17 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         在这个例子中，``group`` 并不能 ``group.points.get_all()`` 来获取子物件中的所有点，
         但是可以使用 ``group.astype(Points).points.get_all()`` 来做到
         '''
+        if not issubclass(cls, Item):
+            # TODO: i18n
+            raise TypeError(f'{cls.__name__} 不是以 Item 为基类，无法作为 astype 的参数')
+
         return self._As(self, cls)
 
     class _As:
         '''
         astype(...) 得到的伪造物件对象，接上 ``.cmpt_name`` 得到伪造组件 ``_TakedCmpt`` 的对象
         '''
-        def __init__(self, origin: Item, cls: type):
-            assert issubclass(cls, Item)
-
+        def __init__(self, origin: Item, cls: type[Item]):
             self.origin = origin
             self.cls = cls
 
@@ -133,10 +149,19 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
                 return functools.partial(attr, self)
 
 
-class Group(Item):
+class Group[T](Item):
     '''
     将物件组成一组
     '''
-    def __init__(self, *objs, **kwargs):
+    def __init__(self, *objs: T, **kwargs):
         super().__init__(**kwargs)
         self.add(*objs)
+
+    @overload
+    def __getitem__(self, value: int) -> T: ...
+
+    @overload
+    def __getitem__(self, value: slice) -> Group[T]: ...
+
+    def __getitem__(self, value):   # pragma: no cover
+        return super().__getitem__(value)

@@ -119,6 +119,10 @@ class Relation[GRelT: 'Relation'](refresh.Refreshable):
         self.children_changed()
         return self
 
+    def clear(self) -> Self:
+        self.remove(*self.children)
+        return self
+
     def _family(self, *, up: bool) -> list[GRelT]:  # use DFS
         lst = self.parents if up else self.children
         res = []
@@ -203,7 +207,7 @@ class Relation[GRelT: 'Relation'](refresh.Refreshable):
 
         Traverse self and ancestor nodes with base_cls (default to traverse all) as the base class.
         '''
-        if isinstance(self, base_cls):
+        if base_cls is None or isinstance(self, base_cls):
             yield self
         yield from self._walk_lst(base_cls, self.ancestors())
 
@@ -213,7 +217,7 @@ class Relation[GRelT: 'Relation'](refresh.Refreshable):
 
         Traverse self and descendant nodes with base_cls (default to traverse all) as the base class.
         '''
-        if isinstance(self, base_cls):
+        if base_cls is None or isinstance(self, base_cls):
             yield self
         yield from self._walk_lst(base_cls, self.descendants())
 

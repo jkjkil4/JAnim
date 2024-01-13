@@ -20,10 +20,10 @@ class RelationTest(unittest.TestCase):
             m9 := Relation()
         )
 
-        self.assertEqual(m6.ancestors(), [m5, m3, root])
-        self.assertEqual(m5.descendants(), [m6, m7])
-        self.assertEqual(m3.descendants(), [m4, m5, m6, m7, m8])
-        self.assertEqual(root.descendants(), [m1, m2, m3, m4, m5, m6, m7, m8, m9])
+        self.assertListEqual(m6.ancestors(), [m5, m3, root])
+        self.assertListEqual(m5.descendants(), [m6, m7])
+        self.assertListEqual(m3.descendants(), [m4, m5, m6, m7, m8])
+        self.assertListEqual(root.descendants(), [m1, m2, m3, m4, m5, m6, m7, m8, m9])
 
         m2.add(
             m10 := Group(
@@ -34,7 +34,17 @@ class RelationTest(unittest.TestCase):
             m12 := Relation()
         )
 
-        self.assertEqual(root.descendants(), [m1, m2, m10, m11, m3, m4, m12, m5, m6, m7, m8, m9])
+        self.assertListEqual(root.descendants(), [m1, m2, m10, m11, m3, m4, m12, m5, m6, m7, m8, m9])
+
+        m2.clear()
+        m2.remove(m10)  # no effect
+        self.assertListEqual(root.descendants(), [m1, m2, m3, m4, m12, m5, m6, m7, m8, m9])
+
+        m4.clear()
+        self.assertListEqual(root.descendants(), [m1, m2, m3, m4, m5, m6, m7, m8, m9])
+
+        self.assertListEqual(list(root.walk_descendants()), [m1, m2, m3, m4, m5, m6, m7, m8, m9])
+        self.assertListEqual(list(m5.walk_self_and_ancestors()), [m5, m3, root])
 
     def test_relation_family(self) -> None:
         r'''
@@ -83,14 +93,21 @@ class RelationTest(unittest.TestCase):
             (8, C2, [3, 7])
         ]
 
+        check_nearest_descendants: list[tuple[int, type, list[int]]] = [
+            (0, C2, [3, 4])
+        ]
+
         for root, check in check_ancestors:
-            self.assertEqual(m[root].ancestors(), [m[idx] for idx in check])
+            self.assertListEqual(m[root].ancestors(), [m[idx] for idx in check])
 
         for root, check in check_descendants:
-            self.assertEqual(m[root].descendants(), [m[idx] for idx in check])
+            self.assertListEqual(m[root].descendants(), [m[idx] for idx in check])
 
         for root, cls, check in check_nearest_ancestors:
-            self.assertEqual(list(m[root].walk_nearest_ancestors(cls)), [m[idx] for idx in check])
+            self.assertListEqual(list(m[root].walk_nearest_ancestors(cls)), [m[idx] for idx in check])
+
+        for root, cls, check in check_nearest_descendants:
+            self.assertListEqual(list(m[root].walk_nearest_descendants(cls)), [m[idx] for idx in check])
 
 # if __name__ == '__main__':
 #     unittest.main()

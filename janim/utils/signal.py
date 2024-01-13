@@ -1,7 +1,7 @@
 import functools
 import inspect
 from collections import defaultdict
-from typing import Callable, Concatenate, ParamSpec, TypeVar, Generic, Self
+from typing import Callable, Concatenate, ParamSpec, TypeVar, Generic, Self, overload
 
 import janim.utils.refresh as refresh
 
@@ -169,7 +169,13 @@ class Signal(Generic[T, P, R]):
 
         self.slots: defaultdict[Key, _AllSlots] = defaultdict(_AllSlots)
 
-    def __get__(self, instance, owner) -> Callable[P, R] | Self:
+    @overload
+    def __get__(self, instance: None, owner) -> Self: ...
+
+    @overload
+    def __get__(self, instnace: object, owner) -> Callable[P, R]: ...
+
+    def __get__(self, instance, owner):
         return self if instance is None else self.func.__get__(instance, owner)
 
     def __call__(self, *args, **kwargs):    # pragma: no cover

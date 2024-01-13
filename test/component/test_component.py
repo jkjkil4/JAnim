@@ -1,7 +1,7 @@
 import unittest
 
 from janim.components.component import Component, CmptInfo, CmptGroup
-from janim.items.item import Item
+from janim.items.item import Item, Group
 
 
 class ComponentTest(unittest.TestCase):
@@ -18,6 +18,7 @@ class ComponentTest(unittest.TestCase):
             cmpt1 = CmptInfo(MyCmpt)
             cmpt2 = CmptInfo(MyCmpt)
             cmpt = CmptGroup(cmpt1, cmpt2)
+            b = 1
 
         item = MyItem()
         item.cmpt1.fn()
@@ -30,6 +31,23 @@ class ComponentTest(unittest.TestCase):
 
         with self.assertRaises(AttributeError):
             item.cmpt.a
+
+        group = Group(item)
+
+        with self.assertRaises(TypeError):
+            group.astype(int)
+
+        with self.assertRaises(AttributeError):
+            group.astype(MyItem).b
+
+        with self.assertRaises(AttributeError):
+            group.astype(MyItem).cmpt_that_not_exists
+
+        with self.assertRaises(AttributeError):
+            group.astype(MyItem).cmpt1.fn
+
+        with self.assertRaises(AttributeError):
+            group.astype(MyItem).cmpt1.fn_that_not_exists
 
     def test_component_group_err(self) -> None:
         class MyCmpt(Component): ...
