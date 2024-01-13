@@ -12,6 +12,10 @@ class ComponentTest(unittest.TestCase):
             def fn(self):
                 called_list.append(self.fn)
 
+            @property
+            def property_without_as_able(self):
+                pass
+
             a = 1
 
         class MyItem(Item):
@@ -48,6 +52,12 @@ class ComponentTest(unittest.TestCase):
 
         with self.assertRaises(AttributeError):
             group.astype(MyItem).cmpt1.fn_that_not_exists
+
+        with self.assertRaises(AttributeError):
+            group.astype(MyItem).cmpt1.a
+
+        with self.assertRaises(AttributeError):
+            group.astype(MyItem).cmpt1.property_without_as_able
 
     def test_component_group_err(self) -> None:
         class MyCmpt(Component): ...

@@ -36,15 +36,18 @@ class RelationTest(unittest.TestCase):
 
         self.assertListEqual(root.descendants(), [m1, m2, m10, m11, m3, m4, m12, m5, m6, m7, m8, m9])
 
-        m2.clear()
+        m2.clear_children()
         m2.remove(m10)  # no effect
         self.assertListEqual(root.descendants(), [m1, m2, m3, m4, m12, m5, m6, m7, m8, m9])
 
-        m4.clear()
+        m4.clear_children()
         self.assertListEqual(root.descendants(), [m1, m2, m3, m4, m5, m6, m7, m8, m9])
 
         self.assertListEqual(list(root.walk_descendants()), [m1, m2, m3, m4, m5, m6, m7, m8, m9])
         self.assertListEqual(list(m5.walk_self_and_ancestors()), [m5, m3, root])
+
+        m3.clear_parents()
+        self.assertListEqual(root.descendants(), [m1, m2, m9])
 
     def test_relation_family(self) -> None:
         r'''

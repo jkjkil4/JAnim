@@ -44,7 +44,7 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         for cls in reversed(self.__class__.mro()):
             for key, info in cls.__dict__.get(CLS_CMPTINFO_NAME, {}).items():
                 obj: Component = info.cls(*info.args, **info.kwargs)
-                obj.set_bind_info(Component.BindInfo(cls, self, key))
+                obj.init_bind(Component.BindInfo(cls, self, key))
                 self.__dict__[key] = obj
 
     def broadcast_refresh_of_component(
@@ -98,7 +98,7 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
                 Points(LEFT)
             )
 
-        在这个例子中，``group`` 并不能 ``group.points.get_all()`` 来获取子物件中的所有点，
+        在这个例子中，并不能 ``group.points.get_all()`` 来获取子物件中的所有点，
         但是可以使用 ``group.astype(Points).points.get_all()`` 来做到
         '''
         if not issubclass(cls, Item):
@@ -139,14 +139,26 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
             def __getattr__(self, name: str):
                 try:
                     attr = getattr(self.cmpt_info.cls, name)
-                    if not callable(attr) or not Component.is_as_able(attr):
+                    if isinstance(attr, property):
+                        if not Component.is_as_able(attr.fget):
+                            raise AttributeError()
+
+                    elif callable(attr):
+                        if not Component.is_as_able(attr):
+                            raise AttributeError()
+
+                    else:  # not isinstance(attr, (Callable, property))
                         raise AttributeError()
 
                 except AttributeError:
                     # TODO: i18n
                     raise AttributeError(f"{self.cmpt_info.cls.__name__} 没有叫作 '{name}' 的 as_able 方法")
 
-                return functools.partial(attr, self)
+                return (
+                    attr.fget(self)
+                    if isinstance(attr, property)
+                    else functools.partial(attr, self)
+                )
 
 
 class Group[T](Item):

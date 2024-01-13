@@ -10,9 +10,9 @@ class Points(Item):
 
     纯数据物件，不参与渲染
     '''
-    data = CmptInfo(Cmpt_Points)
+    points = CmptInfo(Cmpt_Points)
 
     def __init__(self, *points: Vect, **kwargs):
         super().__init__(**kwargs)
 
-        self.data.set(points)
+        self.points.set(points)

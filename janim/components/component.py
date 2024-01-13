@@ -69,6 +69,11 @@ class Component(refresh.Refreshable):
             self.as_type = as_type
             self.cmpt_name = cmpt_name
 
+    def __init__(self, *args, **kwargs) -> None:
+        super().__init__(*args, **kwargs)
+
+        self.bind_info: Component.BindInfo | None = None
+
     def as_able[**P, R](func: Callable[P, R]) -> Callable[P, R]:
         '''
         标注该方法是可以在 :meth:`~.Item.astype` 产生的对象中使用的，否则不行
@@ -84,7 +89,7 @@ class Component(refresh.Refreshable):
         return func.__dict__.get(FUNC_AS_ABLE_NAME, False)
 
     @staticmethod
-    def extract_as(obj: Component | Item._As._TakedCmpt) -> AsInfo:
+    def extract_as(data: Component | Item._As._TakedCmpt) -> AsInfo:
         '''
         在被 :meth:`~.Component.as_able` 修饰的方法中调用，以获得有关信息（:class:`~.AsInfo`）
 
@@ -93,44 +98,44 @@ class Component(refresh.Refreshable):
         .. code-block:: python
 
             @as_able
-            def fn_test(_):
-                info = Component.extract_as(_)
+            def fn_test(as_data):
+                info = Component.extract_as(as_data)
 
                 ...
         '''
-        if isinstance(obj, Component):
+        if isinstance(data, Component):
             return Component.AsInfo(
-                obj.bind_info.at_item,
-                obj.bind_info.decl_cls,
-                obj.bind_info.key
+                data.bind_info.at_item,
+                data.bind_info.decl_cls,
+                data.bind_info.key
             )
         else:
             from janim.items.item import CLS_CMPTINFO_NAME
 
             as_type = None
-            for sup in obj.item_as.cls.mro():
-                if obj.cmpt_name in sup.__dict__.get(CLS_CMPTINFO_NAME, {}):
+            for sup in data.item_as.cls.mro():
+                if data.cmpt_name in sup.__dict__.get(CLS_CMPTINFO_NAME, {}):
                     as_type = sup
 
             assert as_type is not None
 
             return Component.AsInfo(
-                obj.item_as.origin,
+                data.item_as.origin,
                 as_type,
-                obj.cmpt_name
+                data.cmpt_name
             )
 
-    def set_bind_info(self, bind_info: BindInfo):
+    def init_bind(self, bind_info: BindInfo):
         '''
         用于 ``Item._init_components``
+
+        子类可以继承该函数，进行与所在物件相关的处理
         '''
         self.bind_info = bind_info
 
     def mark_refresh(self, func: Callable | str, *, recurse_up=False, recurse_down=False) -> Self:
         '''
-        详见 | See:
-
-        - :meth:`~.Item.broadcast_refresh_of_component`
+        详见 | See: :meth:`~.Item.broadcast_refresh_of_component`
         '''
         super().mark_refresh(func)
 
@@ -193,8 +198,8 @@ def CmptGroup[T](*cmpt_info_list: CmptInfo[T]) -> CmptInfo[T]:
         item.color.set(...)     # stroke 和 fill 的都被调用了 | the methods of stroke and fill are both called
     '''
     class _CmptGroup(Component):
-        def set_bind_info(self, bind_info: Component.BindInfo) -> None:
-            super().set_bind_info(bind_info)
+        def init_bind(self, bind_info: Component.BindInfo) -> None:
+            super().init_bind(bind_info)
             self._find_objects()
 
         def _find_objects(self) -> None:

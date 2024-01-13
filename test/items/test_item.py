@@ -98,13 +98,13 @@ class PointsTest(unittest.TestCase):
             p4 := Points(ORIGIN)
         )
 
-        self.assertNparrayEqual(p1.data.get(), [UP, RIGHT])
-        self.assertNparrayEqual(p1.data.get_all(), [UP, RIGHT, UL, DR])
-        self.assertNparrayEqual(p2.data.get(), [UL])
-        self.assertNparrayEqual(p2.data.get_all(), [UL])
+        self.assertNparrayEqual(p1.points.get(), [UP, RIGHT])
+        self.assertNparrayEqual(p1.points.get_all(), [UP, RIGHT, UL, DR])
+        self.assertNparrayEqual(p2.points.get(), [UL])
+        self.assertNparrayEqual(p2.points.get_all(), [UL])
 
-        self.assertNparrayEqual(g.astype(Points).data.get_all(), [UP, RIGHT, UL, DR, ORIGIN])
-        self.assertNparrayEqual(g.astype(MyPoints).data.get_all(), [UP, RIGHT, UL, DR, ORIGIN])
+        self.assertNparrayEqual(g.astype(Points).points.get_all(), [UP, RIGHT, UL, DR, ORIGIN])
+        self.assertNparrayEqual(g.astype(MyPoints).points.get_all(), [UP, RIGHT, UL, DR, ORIGIN])
 
 
 # if __name__ == '__main__':

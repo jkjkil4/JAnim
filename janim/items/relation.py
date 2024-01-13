@@ -119,7 +119,12 @@ class Relation[GRelT: 'Relation'](refresh.Refreshable):
         self.children_changed()
         return self
 
-    def clear(self) -> Self:
+    def clear_parents(self) -> Self:
+        for parent in self.parents:
+            parent.remove(self)
+        return self
+
+    def clear_children(self) -> Self:
         self.remove(*self.children)
         return self
 
