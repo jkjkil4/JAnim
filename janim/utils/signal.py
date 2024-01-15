@@ -14,8 +14,6 @@ P = ParamSpec('P')
 T = TypeVar('T')
 R = TypeVar('R')
 
-SlotP = ParamSpec('SlotP')
-
 
 class _SelfSlots:
     def __init__(self):
@@ -49,7 +47,7 @@ class _RefreshSlot:
         self.func = func
 
 
-class Signal(Generic[SlotP, T, P, R]):
+class Signal(Generic[T, P, R]):
     '''
     一般用于在 ``func`` 造成影响后，需要对其它数据进行更新时进行作用
 
@@ -247,7 +245,7 @@ class Signal(Generic[SlotP, T, P, R]):
 
         return decorator
 
-    def connect(self, sender: object, func: Callable[SlotP, Any], *, key: str = '') -> None:
+    def connect(self, sender: object, func: Callable, *, key: str = '') -> None:
         '''
         使 ``func`` 会在 ``Signal`` 触发时被调用
 

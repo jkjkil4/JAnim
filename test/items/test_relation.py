@@ -44,7 +44,6 @@ class RelationTest(unittest.TestCase):
         self.assertListEqual(root.descendants(), [m1, m2, m3, m4, m5, m6, m7, m8, m9])
 
         self.assertListEqual(list(root.walk_descendants()), [m1, m2, m3, m4, m5, m6, m7, m8, m9])
-        self.assertListEqual(list(m5.walk_self_and_ancestors()), [m5, m3, root])
 
         m3.clear_parents()
         self.assertListEqual(root.descendants(), [m1, m2, m9])

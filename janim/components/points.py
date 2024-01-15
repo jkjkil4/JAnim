@@ -42,17 +42,20 @@ class Cmpt_Points(Component):
         '''
         return self._points.data
 
-    @Component.as_able
-    def get_all(as_data) -> np.ndarray:
+    def get_all(self) -> np.ndarray:
         '''
         得到自己以及后代物件的所有点坐标数据
         '''
-        info = Component.extract_as(as_data)
+        point_datas = [self.get()]
 
-        return np.vstack([
-            getattr(item, info.cmpt_name).get()
-            for item in info.origin.walk_self_and_descendants(info.decl_type)
-        ])
+        for item in self.bind.at_item.walk_descendants(self.bind.decl_cls):
+            cmpt = getattr(item, self.bind.key)
+            if not isinstance(cmpt, Cmpt_Points):
+                continue
+
+            point_datas.append(cmpt.get())
+
+        return np.vstack(point_datas)
 
     @Signal
     def set(self, points: VectArray) -> Self:
@@ -88,7 +91,7 @@ class Cmpt_Points(Component):
         self.set(np.zeros((0, 3)))
         return self
 
-    def append(self, points: VectArray) -> Self:
+    def extend(self, points: VectArray) -> Self:
         '''
         追加点坐标数据，每个坐标点都有三个分量
 
@@ -158,25 +161,28 @@ class Cmpt_Points(Component):
 
     # region 边界框 | Bounding box
 
+    @property
     @set.self_refresh_with_recurse(recurse_up=True)
     @refresh.register
-    def _box(self) -> BoundingBox:
-        return self.BoundingBox(self.get_all())
-
-    @property
-    @Component.as_able
-    def box(as_data) -> BoundingBox:
+    def box(self) -> BoundingBox:
         '''
         表示物件（包括后代物件）的矩形包围框
 
         Rectangular bounding box of the item (including descendant-items).
         '''
-        if isinstance(as_data, Cmpt_Points):
-            return as_data._box()
+        box_datas = []
 
-        return Cmpt_Points.BoundingBox(
-            Cmpt_Points.get_all(as_data)
-        )
+        if self.has():
+            box_datas.append(self.self_box.data)
+
+        for item in self.bind.at_item.walk_descendants(self.bind.decl_cls):
+            cmpt = getattr(item, self.bind.key)
+            if not isinstance(cmpt, Cmpt_Points) or not cmpt.has():
+                continue
+
+            box_datas.append(cmpt.self_box.data)
+
+        return self.BoundingBox(np.vstack(box_datas) if box_datas else [])
 
     @property
     @set.self_refresh()
@@ -328,14 +334,13 @@ class Cmpt_Points(Component):
 
     # region 变换 | Transform
 
-    @Signal[[PointsFn]]
-    @Component.as_able
+    @Signal
     def apply_points_fn(
-        as_data,
+        self,
         func: PointsFn,
         *,
         about_point: Vect | None = None,
-        about_edge: Vect = ORIGIN,
+        about_edge: Vect | None = ORIGIN,
         self_only: bool = False
     ) -> Self:
         '''
@@ -343,59 +348,61 @@ class Cmpt_Points(Component):
 
         视 ``about_point`` 为原点，若其为 ``None``，则将物件在 ``about_edge`` 方向上的边界作为 ``about_point``
         '''
-        Cmpt_Points._raise_error_if_astype_and_self_only(as_data, self_only)
-
-        info = Component.extract_as(as_data)
-
-        if about_point is None:
+        if about_point is None and about_edge is not None:
             if self_only:
-                # 前面的检查保证了 self_only==True 时，as_data 为 self 对象
-                about_point = as_data.self_box.get(about_edge)
+                about_point = self.self_box.get(about_edge)
             else:
-                about_point = Cmpt_Points.box.fget(as_data).get(about_edge)
+                about_point = self.box.get(about_edge)
 
         def apply(cmpt: Cmpt_Points):
             if not cmpt.has():
                 return
 
-            cmpt.set(func(cmpt.get() - about_point) + about_point)
+            if about_point is None:
+                cmpt.set(func(cmpt.get()))
+            else:
+                cmpt.set(func(cmpt.get() - about_point) + about_point)
+
             Cmpt_Points.apply_points_fn.emit(cmpt, func)
 
-        if isinstance(as_data, Cmpt_Points):
-            apply(as_data)
+        apply(self)
 
         if not self_only:
-            for item in info.origin.walk_descendants(info.decl_type):
-                cmpt = getattr(item, info.cmpt_name)
+            for item in self.bind.at_item.walk_descendants(self.bind.decl_cls):
+                cmpt = getattr(item, self.bind.key)
+                if not isinstance(cmpt, Cmpt_Points):
+                    continue
+
                 apply(cmpt)
 
-        return as_data
+        return self
 
-    @Component.as_able
     def apply_point_fn(
-        as_data,
+        self,
         func: PointFn,
+        *,
         about_point: Vect | None = ORIGIN,
-        **kwargs
+        about_edge: Vect | None = ORIGIN,
+        self_only: bool = False
     ) -> Self:
         '''
         对每个点依次传入 ``func`` 进行变换；以默认的原点作用变换，而不是物件的中心
         '''
-        Cmpt_Points.apply_points_fn(
-            as_data,
+        self.apply_points_fn(
             lambda points: np.array([func(p) for p in points]),
             about_point=about_point,
-            **kwargs
+            about_edge=about_edge,
+            self_only=self_only
         )
-        return as_data
+        return self
 
-    @Component.as_able
     def apply_matrix(
-        as_data,
+        self,
         matrix: VectArray,
+        *,
         about_point: Vect | None = None,
         about_edge: Vect | None = None,
-        **kwargs
+        self_only: bool = False
     ) -> Self:
         '''
         将矩阵变换作用于 ``points``；以默认的原点作用变换，而不是物件的中心
@@ -414,18 +421,23 @@ class Cmpt_Points(Component):
         full_matrix = np.identity(3)
         full_matrix[:matrix.shape[0], :matrix.shape[1]] = matrix
 
-        Cmpt_Points.apply_points_fn(
-            as_data,
+        self.apply_points_fn(
             lambda points: np.dot(points, full_matrix.T),
             about_point=about_point,
             about_edge=about_edge,
-            **kwargs
+            self_only=self_only
         )
 
-        return as_data
+        return self
 
-    @Component.as_able
-    def apply_complex_fn(as_data, func: ComplexFn, **kwargs) -> Self:
+    def apply_complex_fn(
+        self,
+        func: ComplexFn,
+        *,
+        about_point: Vect | None = ORIGIN,
+        about_edge: Vect | None = ORIGIN,
+        self_only: bool = False
+    ) -> Self:
         '''
         将复变函数作用于 ``points``；以默认的原点作用变换，而不是物件的中心
 
@@ -440,17 +452,22 @@ class Cmpt_Points(Component):
                 xy_complex.imag,
                 z
             ]
-        Cmpt_Points.apply_point_fn(as_data, R3_func, **kwargs)
-        return as_data
+        self.apply_point_fn(
+            R3_func,
+            about_point=about_point,
+            about_edge=about_edge,
+            self_only=self_only
+        )
+        return self
 
-    @Component.as_able
     def rotate(
-        as_data,
+        self,
         angle: float,
         *,
         axis: Vect = OUT,
         about_point: Vect | None = None,
-        **kwargs
+        about_edge: Vect | None = ORIGIN,
+        self_only: bool = False
     ) -> Self:
         '''
         以 ``axis`` 为方向，``angle`` 为角度旋转，可传入 ``about_point`` 指定相对于以哪个点为中心
@@ -459,31 +476,44 @@ class Cmpt_Points(Component):
         with an optional ``about_point`` about which the rotation should be performed.
         '''
         rot_matrix_T = rotation_matrix(angle, axis).T
-        Cmpt_Points.apply_points_fn(
-            as_data,
+        self.apply_points_fn(
             lambda points: np.dot(points, rot_matrix_T),
             about_point=about_point,
-            **kwargs
+            about_edge=about_edge,
+            self_only=self_only
         )
-        return as_data
+        return self
 
-    @Component.as_able
-    def flip(as_data, axis: Vect = UP, **kwargs) -> Self:
+    def flip(
+        self,
+        *,
+        axis: Vect = UP,
+        about_point: Vect | None = None,
+        about_edge: Vect | None = ORIGIN,
+        self_only: bool = False
+    ) -> Self:
         '''
         绕 axis 轴翻转
 
         Flip the item around the specified axis.
         '''
-        Cmpt_Points.rotate(as_data, PI, axis, **kwargs)
-        return as_data
+        self.rotate(
+            PI,
+            axis=axis,
+            about_point=about_point,
+            about_edge=about_edge,
+            self_only=self_only
+        )
+        return self
 
-    @Component.as_able
     def scale(
-        as_data,
+        self,
         scale_factor: float | Iterable,
         *,
         min_scale_factor: float = 1e-8,
-        **kwargs
+        about_point: Vect | None = None,
+        about_edge: Vect | None = ORIGIN,
+        self_only: bool = False
     ) -> Self:
         '''
         将物件缩放指定倍数
@@ -506,15 +536,23 @@ class Cmpt_Points(Component):
         else:
             scale_factor = max(scale_factor, min_scale_factor)
 
-        Cmpt_Points.apply_points_fn(
-            as_data,
+        self.apply_points_fn(
             lambda points: scale_factor * points,
-            **kwargs
+            about_point=about_point,
+            about_edge=about_edge,
+            self_only=self_only
         )
-        return as_data
+        return self
 
-    @Component.as_able
-    def stretch(as_data, factor: float, *, dim: int, **kwargs) -> Self:
+    def stretch(
+        self,
+        factor: float,
+        *,
+        dim: int,
+        about_point: Vect | None = None,
+        about_edge: Vect | None = ORIGIN,
+        self_only: bool = False
+    ) -> Self:
         '''
         在指定的 ``dim`` 方向上使物件伸缩
 
@@ -523,179 +561,159 @@ class Cmpt_Points(Component):
         def func(points):
             points[:, dim] *= factor
             return points
-        Cmpt_Points.apply_points_fn(as_data, func, **kwargs)
-        return as_data
+        self.apply_points_fn(
+            self,
+            func,
+            about_point=about_point,
+            about_edge=about_edge,
+            self_only=self_only
+        )
+        return self
 
-    @Component.as_able
     def rescale_to_fit(
-        as_data,
+        self,
         length: float,
-        dim: int,
         *,
+        dim: int,
         stretch: bool = False,
-        self_only: bool = False,
-        **kwargs
+        about_point: Vect | None = None,
+        about_edge: Vect | None = ORIGIN,
+        self_only: bool = False
     ) -> Self:
-        Cmpt_Points._raise_error_if_astype_and_self_only(as_data, self_only)
-
         if self_only:
-            # 前面的检查保证了 self_only==True 时，as_data 为 self 对象
-            old_length = as_data.self_box.length_over_dim(dim)
+            old_length = self.self_box.length_over_dim(dim)
         else:
-            old_length = Cmpt_Points.box.fget(as_data).length_over_dim(dim)
+            old_length = self.box.length_over_dim(dim)
 
         if old_length == 0:
-            return as_data
+            return self
 
         if stretch:
-            Cmpt_Points.stretch(
-                as_data,
+            self.stretch(
                 length / old_length,
-                dim,
+                dim=dim,
+                about_point=about_point,
+                about_edge=about_edge,
                 self_only=self_only,
-                **kwargs
             )
         else:
-            Cmpt_Points.scale(
-                as_data,
+            self.scale(
                 length / old_length,
-                self_only=self_only,
-                **kwargs
+                about_point=about_point,
+                about_edge=about_edge,
+                self_only=self_only
             )
 
-        return as_data
+        return self
 
-    @Component.as_able
-    def set_width(as_data, width: float, *, stretch: bool = False, **kwargs) -> Self:
+    def set_width(self, width: float, *, stretch: bool = False, **kwargs) -> Self:
         '''
         如果 ``stretch`` 为 ``False``（默认），则表示等比缩放
 
         If ``stretch`` is ``False`` (default), it indicates proportional scaling.
         '''
-        return Cmpt_Points.rescale_to_fit(as_data, width, 0, stretch=stretch, **kwargs)
+        return self.rescale_to_fit(width, dim=0, stretch=stretch, **kwargs)
 
-    @Component.as_able
-    def set_height(as_data, height: float, *, stretch: bool = False, **kwargs) -> Self:
+    def set_height(self, height: float, *, stretch: bool = False, **kwargs) -> Self:
         '''
         如果 ``stretch`` 为 ``False``（默认），则表示等比缩放
 
         If ``stretch`` is ``False`` (default), it indicates proportional scaling.
         '''
-        return Cmpt_Points.rescale_to_fit(as_data, height, 1, stretch=stretch, **kwargs)
+        return self.rescale_to_fit(height, dim=1, stretch=stretch, **kwargs)
 
-    @Component.as_able
-    def set_depth(as_data, depth: float, *, stretch: bool = False, **kwargs) -> Self:
+    def set_depth(self, depth: float, *, stretch: bool = False, **kwargs) -> Self:
         '''
         如果 ``stretch`` 为 ``False``（默认），则表示等比缩放
 
         If ``stretch`` is ``False`` (default), it indicates proportional scaling.
         '''
-        return Cmpt_Points.rescale_to_fit(as_data, depth, 2, stretch=stretch, **kwargs)
+        return self.rescale_to_fit(depth, dim=2, stretch=stretch, **kwargs)
 
-    @Component.as_able
     def set_size(
-        as_data,
+        self,
         width: float | None = None,
         height: float | None = None,
         depth: float | None = None,
         **kwargs
     ) -> Self:
         if width:
-            Cmpt_Points.set_width(as_data, width, True, **kwargs)
+            self.set_width(width, stretch=True, **kwargs)
         if height:
-            Cmpt_Points.set_height(as_data, height, True, **kwargs)
+            self.set_height(height, stretch=True, **kwargs)
         if depth:
-            Cmpt_Points.set_depth(as_data, depth, True, **kwargs)
-        return as_data
+            self.set_depth(depth, stretch=True, **kwargs)
+        return self
 
-    @Component.as_able
     def replace(
-        as_data,
+        self,
         item: Item,
         dim_to_match: int = 0,
         *,
         stretch: bool = False,
         self_only: bool = False,
-        item_root_only: bool = False,
-        **kwargs
+        item_root_only: bool = False
     ) -> Self:
         '''
         放到 item 的位置，并且在 ``dim_to_match`` 维度上长度相同
         '''
-        info = Component.extract_as(as_data)
-
-        # 得到 item 的边界框
-        if item_root_only:
-            if not isinstance(item, info.decl_type):
-                # TODO: i18n
-                raise ValueError(f'传入了 item_root_only==True，但 {item.__class__.__name__} 不是支持的类型')
-
-            item_box: Cmpt_Points.BoundingBox = getattr(item, info.cmpt_name).self_box
-
-        else:
-            cmpt = getattr(item.astype(info.decl_type), info.cmpt_name)
-            all_points = cmpt.get_all()
-            if len(all_points) == 0:
-                return
-            item_box = Cmpt_Points.BoundingBox(all_points)
+        cmpt = self.get_same_cmpt(item)
+        item_box = cmpt.self_box if item_root_only else cmpt.box
 
         if stretch:
             # If stretch is True, rescale each dimension to match the corresponding dimension of the item.
             for i in range(3):
-                Cmpt_Points.rescale_to_fit(
-                    as_data,
+                self.rescale_to_fit(
                     item_box.length_over_dim(i),
-                    i,
+                    dim=i,
                     stretch=True,
                     self_only=self_only
                 )
         else:
             # If stretch is False, rescale only the dimension specified by dim_to_match to match the item.
-            Cmpt_Points.rescale_to_fit(
-                as_data,
+            self.rescale_to_fit(
                 item_box.length_over_dim(dim_to_match),
-                dim_to_match,
+                dim=dim_to_match,
                 stretch=False,
-                self_only=self_only,
-                **kwargs
+                self_only=self_only
             )
 
         # Shift the object to the center of the specified item.
-        Cmpt_Points.move_to(as_data, item_box.center(), self_only=self_only)
+        self.move_to(item_box.center(), self_only=self_only)
 
-        return as_data
+        return self
 
-    @Component.as_able
     def surround(
-        as_data,
+        self,
         item: Item,
         dim_to_match: int = 0,
         *,
         stretch: bool = False,
         buff: float = MED_SMALL_BUFF,
         self_only: bool = False,
-        **kwargs
+        item_root_only: bool = False
     ) -> Self:
         '''
         与 ``replace`` 类似，但是会向外留出 ``buff`` 间距
 
         Similar to ``replace`` but leaves a buffer space of ``buff`` around the item.
         '''
-        Cmpt_Points.replace(
-            as_data,
+        self.replace(
             item,
             dim_to_match,
             stretch=stretch,
             self_only=self_only,
-            **kwargs
+            item_root_only=item_root_only
         )
 
-        box: Cmpt_Points.BoundingBox = Cmpt_Points.box.fget(as_data)
-        length = box.length_over_dim(dim_to_match)
+        if self_only:
+            length = self.self_box.length_over_dim(dim_to_match)
+        else:
+            length = self.box.length_over_dim(dim_to_match)
 
-        Cmpt_Points.scale(as_data, (length + buff) / length, self_only=self_only)
+        self.scale((length + buff) / length, self_only=self_only)
 
-        return as_data
+        return self
 
     def put_start_and_end_on(self, start: Vect, end: Vect) -> Self:
         '''
@@ -706,7 +724,7 @@ class Cmpt_Points(Component):
         curr_start, curr_end = self.get_start(), self.get_end()
         curr_vect = curr_end - curr_start
         if np.all(curr_vect == 0):
-            raise Exception("Cannot position endpoints of closed loop")
+            raise ValueError("Cannot position endpoints of closed loop")
         target_vect = end - start
         self.scale(
             get_norm(target_vect) / get_norm(curr_vect),
@@ -722,38 +740,31 @@ class Cmpt_Points(Component):
         self.shift(start - self.get_start())
         return self
 
-    @staticmethod
-    def _raise_error_if_astype_and_self_only(as_data, self_only: bool) -> None:
-        if not isinstance(as_data, Cmpt_Points) and self_only:
-            name = inspect.currentframe().f_back.f_code.co_name
-            # TODO: i18n
-            raise ValueError(f'使用 astype 时，对 {name} 的调用不能传入 self_only=True')
-
     # endregion
 
     # region 位移 | movement
 
-    @Component.as_able
-    def shift(as_data, vector: Vect, **kwargs) -> Self:
+    def shift(self, vector: Vect, *, self_only=False) -> Self:
         '''
         相对移动 ``vector`` 向量
 
         Shift the object by the specified ``vector``.
         '''
-        Cmpt_Points.apply_points_fn(
-            as_data,
+        self.apply_points_fn(
             lambda points: points + vector,
             about_edge=None,
-            **kwargs
+            self_only=self_only
         )
-        return as_data
+        return self
 
-    @Component.as_able
     def move_to(
         self,
         target: Item | Vect,
+        *,
         aligned_edge: Vect = ORIGIN,
-        coor_mask: Iterable = (1, 1, 1)
+        coor_mask: Iterable = (1, 1, 1),
+        self_only: bool = False,
+        item_root_only: bool = False
     ) -> Self:
         '''
         移动到 ``target`` 的位置
@@ -761,43 +772,47 @@ class Cmpt_Points(Component):
         Move this item to the position of ``target``.
         '''
         if isinstance(target, Item):
-            target = target.box.get(aligned_edge)
+            cmpt = self.get_same_cmpt(target)
+            box = cmpt.self_box if item_root_only else cmpt.box
+            target = box.get(aligned_edge)
+
         point_to_align = self.box.get(aligned_edge)
-        self.shift((target - point_to_align) * coor_mask)
-        return self
-
-    def align_to(
-        self,
-        item_or_point: Item | Vect,
-        direction: Vect = ORIGIN
-    ) -> Self:
-        """
-        Examples:
-        item1.align_to(item2, UP) moves item1 vertically so that its
-        top edge lines ups with item2's top edge.
-
-        item1.align_to(item2, direction = RIGHT) moves item1
-        horizontally so that it's center is directly above/below
-        the center of item2
-        """  # TODO: 完善 align_to 注释
-        if isinstance(item_or_point, Item):
-            point = item_or_point.box.get(direction)
-        else:
-            point = item_or_point
-
-        for dim in range(3):
-            if direction[dim] != 0:
-                self.set_coord(point[dim], dim, direction)
+        self.shift((target - point_to_align) * coor_mask, self_only=self_only)
 
         return self
 
-    def to_center(self) -> Self:
+    # TODO: def align_to(
+    #     self,
+    #     item_or_point: Item | Vect,
+    #     direction: Vect = ORIGIN
+    # ) -> Self:
+    #     """
+    #     Examples:
+    #     item1.align_to(item2, UP) moves item1 vertically so that its
+    #     top edge lines ups with item2's top edge.
+
+    #     item1.align_to(item2, direction = RIGHT) moves item1
+    #     horizontally so that it's center is directly above/below
+    #     the center of item2
+    #     """  # TODO: 完善 align_to 注释
+    #     if isinstance(item_or_point, Item):
+    #         point = item_or_point.box.get(direction)
+    #     else:
+    #         point = item_or_point
+
+    #     for dim in range(3):
+    #         if direction[dim] != 0:
+    #             self.set_coord(point[dim], dim, direction)
+
+    #     return self
+
+    def to_center(self, self_only=False) -> Self:
         '''
         移动到原点 ``(0, 0, 0)``
 
         Move this item to the origin ``(0, 0, 0)``.
         '''
-        self.shift(-self.box.center)
+        self.shift(-self.box.center, self_only=self_only)
         return self
 
     # TODO: def to_border(
@@ -820,9 +835,12 @@ class Cmpt_Points(Component):
         self,
         target: Item | Vect,
         direction: Vect = RIGHT,
+        *,
         buff: float = DEFAULT_ITEM_TO_ITEM_BUFF,
         aligned_edge: Vect = ORIGIN,
-        coor_mask: Iterable = (1, 1, 1)
+        coor_mask: Iterable = (1, 1, 1),
+        self_only: bool = False,
+        item_root_only: bool = False
     ) -> Self:
         '''
         将该物件放到 ``target`` 旁边
@@ -830,26 +848,31 @@ class Cmpt_Points(Component):
         Position this item next to ``target``.
         '''
         if isinstance(target, Item):
-            target = target.box.get(aligned_edge + direction)
+            cmpt = self.get_same_cmpt(target)
+            box = cmpt.self_box if item_root_only else cmpt.box
+            target = box.get(aligned_edge + direction)
 
         point_to_align = self.box.get(aligned_edge - direction)
-        self.shift((target - point_to_align + buff * direction) * coor_mask)
+        self.shift(
+            (target - point_to_align + buff * direction) * coor_mask,
+            self_only=self_only
+        )
         return self
 
     # TODO: shift_onto_screen
 
-    def set_coord(self, value: float, dim: int, direction: Vect = ORIGIN) -> Self:
+    def set_coord(self, value: float, *, dim: int, direction: Vect = ORIGIN, self_only=False) -> Self:
         curr = self.box.coord(dim, direction)
         shift_vect = np.zeros(3)
         shift_vect[dim] = value - curr
-        self.shift(shift_vect)
+        self.shift(shift_vect, self_only=self_only)
         return self
 
     def set_x(self, x: float, direction: Vect = ORIGIN) -> Self:
-        return self.set_coord(x, 0, direction)
+        return self.set_coord(x, dim=0, direction=direction)
 
     def set_y(self, y: float, direction: Vect = ORIGIN) -> Self:
-        return self.set_coord(y, 1, direction)
+        return self.set_coord(y, dim=1, direction=direction)
 
     def set_z(self, z: float, direction: Vect = ORIGIN) -> Self:
-        return self.set_coord(z, 2, direction)
+        return self.set_coord(z, dim=2, direction=direction)

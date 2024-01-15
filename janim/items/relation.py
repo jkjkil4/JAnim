@@ -206,25 +206,25 @@ class Relation[GRelT: 'Relation'](refresh.Refreshable):
         '''
         yield from self._walk_lst(base_cls, self.descendants())
 
-    def walk_self_and_ancestors[RelT](self, base_cls: type[RelT] = None) -> Generator[RelT, None, None]:
+    def walk_self_and_ancestors(self) -> Generator[GRelT, None, None]:
         '''
-        遍历自己以及祖先节点中以 ``base_cls`` （缺省则遍历全部）为基类的对象
+        遍历自己以及祖先节点
 
-        Traverse self and ancestor nodes with base_cls (default to traverse all) as the base class.
+        Traverse self and ancestor nodes
         '''
-        if base_cls is None or isinstance(self, base_cls):
-            yield self
-        yield from self._walk_lst(base_cls, self.ancestors())
+        yield self
+        for obj in self.ancestors():
+            yield obj
 
-    def walk_self_and_descendants[RelT](self, base_cls: type[RelT] = None) -> Generator[RelT, None, None]:
+    def walk_self_and_descendants(self) -> Generator[GRelT, None, None]:
         '''
-        遍历自己以及后代节点中以 ``base_cls`` （缺省则遍历全部）为基类的对象
+        遍历自己以及后代节点
 
-        Traverse self and descendant nodes with base_cls (default to traverse all) as the base class.
+        Traverse self and descendant nodes
         '''
-        if base_cls is None or isinstance(self, base_cls):
-            yield self
-        yield from self._walk_lst(base_cls, self.descendants())
+        yield self
+        for obj in self.descendants():
+            yield obj
 
     def walk_nearest_ancestors[RelT](self, base_cls: type[RelT]) -> Generator[RelT, None, None]:
         '''

@@ -1,13 +1,12 @@
 from __future__ import annotations
 
-import functools
+from dataclasses import dataclass
 from typing import Callable, Self, overload
 
 from janim.items.relation import Relation
 from janim.components.component import Component, CmptInfo
 
 CLS_CMPTINFO_NAME = '__cls_cmptinfo'
-OBJ_COMPONENTS_NAME = '__obj_components'
 
 
 class _ItemMeta(type):
@@ -33,6 +32,8 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
 
         self._init_components()
 
+        self._astype_mock_cmpt: dict[tuple[type, str], Component] = {}
+
     def _init_components(self) -> None:
         '''
         创建出 CmptInfo 对应的 Component，
@@ -41,11 +42,38 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         因为 CmptInfo 的 __get__ 标注的返回类型是对应的 Component，
         所以以上做法没有影响基于类型标注的代码补全
         '''
+        type CmptKey = str
+
+        @dataclass
+        class CmptInitData:
+            info: CmptInfo[CmptInfo]
+            decl_cls: type[Item]
+
+        components: dict[CmptKey, CmptInitData] = {}
+
         for cls in reversed(self.__class__.mro()):
             for key, info in cls.__dict__.get(CLS_CMPTINFO_NAME, {}).items():
-                obj: Component = info.cls(*info.args, **info.kwargs)
-                obj.init_bind(Component.BindInfo(cls, self, key))
-                self.__dict__[key] = obj
+                info: CmptInfo
+                if key in components:
+                    data = components[key]
+
+                    # TODO: remove
+                    # 好像没有必要检查是否是派生类
+                    # if not issubclass(info.cls, data.info.cls):
+                    #     raise TypeError(
+                    #         f'组件定义错误：{cls.__name__} 的组件 {key}({info.cls.__name__}) '
+                    #         f'与父类的组件冲突 ({info.cls.__name__} 不是以 {data.info.cls.__name__} 为基类)'
+                    #     )
+
+                    data.info = info
+
+                else:
+                    components[key] = CmptInitData(info, cls)
+
+        for key, data in components.items():
+            obj = data.info.create()
+            obj.init_bind(Component.BindInfo(data.decl_cls, self, key))
+            self.__dict__[key] = obj
 
     def broadcast_refresh_of_component(
         self,
@@ -59,17 +87,33 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         为 :meth:`~.Component.mark_refresh()`
         进行 ``recurse_up/down`` 的处理
         '''
-        def mark(item: Item):
-            item_component: Component = getattr(item, cmpt.bind_info.key)
-            item_component.mark_refresh(func)
+        if not recurse_up and not recurse_down:
+            return
+
+        mock_key = (cmpt.bind.decl_cls, cmpt.bind.key)
+
+        def mark(items: Item):
+            for item in items:
+                if isinstance(item, cmpt.bind.decl_cls):
+                    # 一般情况
+                    item_cmpt: Component = getattr(item, cmpt.bind.key)
+                    item_cmpt.mark_refresh(func)
+
+                else:
+                    # astype 情况
+                    mock_cmpt = item._astype_mock_cmpt.get(mock_key, None)
+                    if mock_cmpt is not None:
+                        mock_cmpt.mark_refresh(func)
 
         if recurse_up:
-            for item in self.walk_ancestors(cmpt.bind_info.decl_cls):
-                mark(item)
+            mark(self.ancestors())
 
         if recurse_down:
-            for item in self.walk_descendants(cmpt.bind_info.decl_cls):
-                mark(item)
+            mark(self.descendants())
+
+    def do(self, func: Callable[[Self]]) -> Self:
+        func(self)
+        return self
 
     @overload
     def __getitem__(self, value: int) -> Item: ...
@@ -87,7 +131,7 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
 
     def astype[T](self, cls: type[T]) -> T:
         '''
-        使得可以调用当前物件中没有的组件方法（前提是有被 ``@as_able`` 修饰）
+        使得可以调用当前物件中没有的组件
 
         例 | Example:
 
@@ -108,57 +152,47 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         return self._As(self, cls)
 
     class _As:
-        '''
-        astype(...) 得到的伪造物件对象，接上 ``.cmpt_name`` 得到伪造组件 ``_TakedCmpt`` 的对象
-        '''
         def __init__(self, origin: Item, cls: type[Item]):
             self.origin = origin
             self.cls = cls
 
         def __getattr__(self, name: str):
             try:
-                attr = getattr(self.cls, name)
-                if not isinstance(attr, CmptInfo):
+                cmpt_info = getattr(self.cls, name)
+                if not isinstance(cmpt_info, CmptInfo):
                     raise AttributeError()
 
             except AttributeError:
-                # TODO: i18n
+                # TODO i18n
                 raise AttributeError(f"'{self.cls.__name__}' 没有叫作 '{name}' 的组件")
 
-            return self._TakedCmpt(self, name, attr)
+            # 找到 cmpt_info 是在哪个类中被定义的
+            decl_cls: type[Item] | None = None
+            for sup in self.cls.mro():
+                if name in sup.__dict__.get(CLS_CMPTINFO_NAME, {}):
+                    decl_cls = sup
 
-        class _TakedCmpt:
-            '''
-            astype(...).cmpt_name 得到的伪造组件对象
-            '''
-            def __init__(self, item_as: Item._As, cmpt_name: str, cmpt_info: CmptInfo):
-                self.item_as = item_as
-                self.cmpt_name = cmpt_name
-                self.cmpt_info = cmpt_info
+            assert decl_cls is not None
 
-            def __getattr__(self, name: str):
-                try:
-                    attr = getattr(self.cmpt_info.cls, name)
-                    if isinstance(attr, property):
-                        if not Component.is_as_able(attr.fget):
-                            raise AttributeError()
+            # 如果 self.origin 本身就是 decl_cls 的实例
+            # 那么它自身肯定有名称为 name 的组件，对于这种情况实际上完全没必要 astype
+            # 为了灵活性，这里将这个已有的组件返回
+            if isinstance(self.origin, decl_cls):
+                return getattr(self.origin, name)
 
-                    elif callable(attr):
-                        if not Component.is_as_able(attr):
-                            raise AttributeError()
+            mock_key = (decl_cls, name)
+            cmpt = self.origin._astype_mock_cmpt.get(mock_key, None)
 
-                    else:  # not isinstance(attr, (Callable, property))
-                        raise AttributeError()
+            # 如果 astype 需求的组件已经被创建过，那么直接返回
+            if cmpt is not None:
+                return cmpt
 
-                except AttributeError:
-                    # TODO: i18n
-                    raise AttributeError(f"{self.cmpt_info.cls.__name__} 没有叫作 '{name}' 的 as_able 方法")
+            # astype 需求的组件还没创建，那么创建并记录
+            cmpt = cmpt_info.create()
+            cmpt.init_bind(Component.BindInfo(decl_cls, self.origin, name))
 
-                return (
-                    attr.fget(self)
-                    if isinstance(attr, property)
-                    else functools.partial(attr, self)
-                )
+            self.origin._astype_mock_cmpt[(decl_cls, name)] = cmpt
+            return cmpt
 
 
 class Group[T](Item):

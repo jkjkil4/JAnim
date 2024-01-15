@@ -6,6 +6,7 @@ import numpy as np
 from janim.constants import DL, DOWN, DR, LEFT, ORIGIN, RIGHT, UL, UP, UR, OUT, TAU, DEGREES
 from janim.items.item import Group, Item
 from janim.items.points import Points
+from janim.components.points import Cmpt_Points
 
 
 class PointsTest(unittest.TestCase):
@@ -26,7 +27,7 @@ class PointsTest(unittest.TestCase):
             [[1, 2, 3], [1.3, 1, 3]]
         )
 
-        p.points.append([[6, 3, 1]])
+        p.points.extend([[6, 3, 1]])
         self.assertNparrayEqual(
             p.points.get(),
             [[1, 2, 3], [1.3, 1, 3], [6, 3, 1]]
@@ -208,3 +209,82 @@ class PointsTest(unittest.TestCase):
         test(ORIGIN, 1, 0.2)
         test(RIGHT * UP * 10, 3, 2)
 
+    def test_movement(self) -> None:
+        p1 = Points(UP, DOWN).add(
+            p2 := Points(LEFT, RIGHT),
+            p3 := Points()
+        )
+
+        p1.points.shift(LEFT)
+
+        self.assertNparrayEqual(p1.points.get(), [UL, DL])
+        self.assertNparrayEqual(p2.points.get(), [LEFT * 2, ORIGIN])
+
+        p1.points.shift(RIGHT, self_only=True)
+
+        self.assertNparrayEqual(p1.points.get(), [UP, DOWN])
+        self.assertNparrayEqual(p2.points.get(), [LEFT * 2, ORIGIN])
+
+        p2.points.shift(RIGHT)
+
+        self.assertNparrayEqual(p1.points.get(), [UP, DOWN])
+        self.assertNparrayEqual(p2.points.get(), [LEFT, RIGHT])
+
+        p1.points.set_x(2)
+
+        self.assertNparrayEqual(
+            p1.points.get_all(),
+            [UP + RIGHT * 2, DOWN + RIGHT * 2, RIGHT, RIGHT * 3]
+        )
+
+        p1.points.set_y(-1)
+
+        self.assertNparrayEqual(
+            p1.points.get_all(),
+            [RIGHT * 2, DOWN * 2 + RIGHT * 2, DOWN + RIGHT, DOWN + RIGHT * 3]
+        )
+
+        p1.points.set_z(1)
+
+        self.assertNparrayEqual(
+            p1.points.get_all(),
+            [RIGHT * 2 + OUT, DOWN * 2 + RIGHT * 2 + OUT, DOWN + RIGHT + OUT, DOWN + RIGHT * 3 + OUT]
+        )
+
+        p1.points.to_center()
+
+        self.assertNparrayEqual(
+            p1.points.get_all(),
+            [UP, DOWN, LEFT, RIGHT]
+        )
+
+        pp1 = Points(UP, DOWN)
+        pp1.points.next_to(p1, RIGHT, buff=0.5)
+
+        self.assertNparrayEqual(pp1.points.get(), [UP + RIGHT * 1.5, DOWN + RIGHT * 1.5])
+
+        pp1.points.next_to(p1, DL, buff=0.5)
+        self.assertNparrayEqual(
+            pp1.points.get(),
+            [DL * 1.5, DL * 1.5 + DOWN * 2]
+        )
+
+        pp1.points.move_to(p1)
+        self.assertNparrayEqual(
+            pp1.points.get(),
+            [UP, DOWN]
+        )
+
+        pp2 = Points(UP).do(lambda p: p.points.extend([RIGHT, DOWN]))
+
+        self.assertNparrayEqual(pp2.points.get(), [UP, RIGHT, DOWN])
+
+        pp2.points.put_start_and_end_on(LEFT, RIGHT)
+        self.assertNparrayClose(pp2.points.get(), [LEFT, UP, RIGHT])
+
+        pp2.points.put_start_and_end_on(DOWN * 2, UP * 2)
+        self.assertNparrayClose(pp2.points.get(), [DOWN * 2, LEFT * 2, UP * 2])
+
+        pp2.points.extend([DOWN * 2])
+        with self.assertRaises(ValueError):
+            pp2.points.put_start_and_end_on(LEFT, RIGHT)

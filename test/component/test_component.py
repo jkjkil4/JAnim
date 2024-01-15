@@ -12,10 +12,6 @@ class ComponentTest(unittest.TestCase):
             def fn(self):
                 called_list.append(self.fn)
 
-            @property
-            def property_without_as_able(self):
-                pass
-
             a = 1
 
         class MyItem(Item):
@@ -47,18 +43,6 @@ class ComponentTest(unittest.TestCase):
         with self.assertRaises(AttributeError):
             group.astype(MyItem).cmpt_that_not_exists
 
-        with self.assertRaises(AttributeError):
-            group.astype(MyItem).cmpt1.fn
-
-        with self.assertRaises(AttributeError):
-            group.astype(MyItem).cmpt1.fn_that_not_exists
-
-        with self.assertRaises(AttributeError):
-            group.astype(MyItem).cmpt1.a
-
-        with self.assertRaises(AttributeError):
-            group.astype(MyItem).cmpt1.property_without_as_able
-
     def test_component_group_err(self) -> None:
         class MyCmpt(Component): ...
 
@@ -71,3 +55,63 @@ class ComponentTest(unittest.TestCase):
                 cmpt = CmptGroup(MyItem.cmpt1, cmpt2)
 
             MyItem2()
+
+    def test_get_same_cmpt(self) -> None:
+        class MyCmpt(Component): ...
+
+        class MyItem(Item):
+            cmpt = CmptInfo(MyCmpt)
+
+        item1 = Item()
+        item2 = MyItem()
+        item3 = MyItem()
+
+        self.assertIs(
+            item2.cmpt.get_same_cmpt(item2),
+            item2.cmpt
+        )
+        self.assertIs(
+            item2.cmpt.get_same_cmpt(item3),
+            item3.cmpt
+        )
+        self.assertIs(
+            item2.cmpt.get_same_cmpt(item1),
+            item1._astype_mock_cmpt[(MyItem, 'cmpt')]
+        )
+
+        self.assertIs(
+            item2.astype(MyItem).cmpt,
+            item2.cmpt
+        )
+
+    def test_inherit(self) -> None:
+        class MyCmpt1(Component):
+            def fn1(self): ...
+
+        class MyCmpt2(MyCmpt1):
+            def fn2(self): ...
+
+        class MyCmpt3(Component):
+            def fn3(self): ...
+
+        class MyItem1(Item):
+            cmpt = CmptInfo(MyCmpt1)
+
+        class MyItem2(MyItem1):
+            cmpt = CmptInfo(MyCmpt2)
+
+        class MyItem3(MyItem1):
+            cmpt = CmptInfo(MyCmpt3)
+
+        item1 = MyItem1()
+        item1.cmpt.fn1()
+
+        item2 = MyItem2()
+        item2.cmpt.fn1()
+        item2.cmpt.fn2()
+
+        item3 = MyItem3()
+        item3.cmpt.fn3()
+
+        with self.assertRaises(AttributeError):
+            item3.cmpt.fn1

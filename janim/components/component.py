@@ -4,8 +4,6 @@ from typing import Callable, Self, TYPE_CHECKING
 
 import janim.utils.refresh as refresh
 
-FUNC_AS_ABLE_NAME = '__as_able'
-
 if TYPE_CHECKING:   # pragma: no cover
     from janim.items.item import Item
 
@@ -42,96 +40,23 @@ class Component(refresh.Refreshable):
             # item2.cmpt1.bind_info 与 BindInfo(MyItem, item2, 'cmpt1') 一致
             # item2.cmpt3.bind_info 与 BindInfo(MyItem2, item2, 'cmpt3') 一致
         '''
-        def __init__(self, def_cls: type, at_item: Item, key: str):
-            self.decl_cls = def_cls
+        def __init__(self, decl_cls: type, at_item: Item, key: str):
+            self.decl_cls = decl_cls
             self.at_item = at_item
             self.key = key
-
-    class AsInfo:
-        '''
-        在被 ``@as_able`` 修饰的方法中，调用 :meth:`~.Component.extract_as` 得到的数据
-
-        例 | Example:
-
-        - ``item.astype(cls).points.set(...)``
-            - ``origin == item``
-            - ``decl_type == 在 cls 的 mro 中找到 points 定义处的类``
-            - ``cmpt_name == 'points'``
-
-        另见 | See also:
-
-        - :meth:`~.Component.as_able`
-        - :meth:`~.Item.astype`
-        - :meth:`~.Component.extract_as`
-        '''
-        def __init__(self, origin: Item, decl_type: type, cmpt_name: str):
-            self.origin = origin
-            self.decl_type = decl_type
-            self.cmpt_name = cmpt_name
 
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
 
-        self.bind_info: Component.BindInfo | None = None
+        self.bind: Component.BindInfo | None = None
 
-    def as_able[**P, R](func: Callable[P, R]) -> Callable[P, R]:
-        '''
-        标注该方法是可以在 :meth:`~.Item.astype` 产生的对象中使用的，否则不行
-        '''
-        func.__dict__[FUNC_AS_ABLE_NAME] = True
-        return func
-
-    @staticmethod
-    def is_as_able(func: Callable) -> bool:
-        '''
-        判断传入的方法是否被 :meth:`~.Component.as_able` 修饰
-        '''
-        return func.__dict__.get(FUNC_AS_ABLE_NAME, False)
-
-    @staticmethod
-    def extract_as(data: Component | Item._As._TakedCmpt) -> AsInfo:
-        '''
-        在被 :meth:`~.Component.as_able` 修饰的方法中调用，以获得有关信息（:class:`~.AsInfo`）
-
-        例 | Example:
-
-        .. code-block:: python
-
-            @as_able
-            def fn_test(as_data):
-                info = Component.extract_as(as_data)
-
-                ...
-        '''
-        if isinstance(data, Component):
-            return Component.AsInfo(
-                data.bind_info.at_item,
-                data.bind_info.decl_cls,
-                data.bind_info.key
-            )
-        else:
-            from janim.items.item import CLS_CMPTINFO_NAME
-
-            decl_type = None
-            for sup in data.item_as.cls.mro():
-                if data.cmpt_name in sup.__dict__.get(CLS_CMPTINFO_NAME, {}):
-                    decl_type = sup
-
-            assert decl_type is not None
-
-            return Component.AsInfo(
-                data.item_as.origin,
-                decl_type,
-                data.cmpt_name
-            )
-
-    def init_bind(self, bind_info: BindInfo):
+    def init_bind(self, bind: BindInfo):
         '''
         用于 ``Item._init_components``
 
         子类可以继承该函数，进行与所在物件相关的处理
         '''
-        self.bind_info = bind_info
+        self.bind = bind
 
     def mark_refresh(self, func: Callable | str, *, recurse_up=False, recurse_down=False) -> Self:
         '''
@@ -139,13 +64,19 @@ class Component(refresh.Refreshable):
         '''
         super().mark_refresh(func)
 
-        if self.bind_info is not None:
-            self.bind_info.at_item.broadcast_refresh_of_component(
+        if self.bind is not None:
+            self.bind.at_item.broadcast_refresh_of_component(
                 self,
                 func,
                 recurse_up=recurse_up,
                 recurse_down=recurse_down
             )
+
+    def get_same_cmpt(self, item: Item) -> Self:
+        if isinstance(item, self.bind.decl_cls):
+            return getattr(item, self.bind.key)
+
+        return getattr(item.astype(self.bind.decl_cls), self.bind.key)
 
 
 class CmptInfo[T]:
@@ -174,6 +105,9 @@ class CmptInfo[T]:
         self.cls = cls
         self.args = args
         self.kwargs = kwargs
+
+    def create(self) -> Component:
+        return self.cls(*self.args, **self.kwargs)
 
     # 方便代码补全，没有实际意义
     def __get__(self, obj, owner) -> T:
@@ -205,7 +139,7 @@ def CmptGroup[T](*cmpt_info_list: CmptInfo[T]) -> CmptInfo[T]:
         def _find_objects(self) -> None:
             self.objects: list[Component] = [
                 getattr(
-                    self.bind_info.at_item,
+                    self.bind.at_item,
                     self._find_key(cmpt_info)
                 )
                 for cmpt_info in cmpt_info_list
@@ -214,7 +148,7 @@ def CmptGroup[T](*cmpt_info_list: CmptInfo[T]) -> CmptInfo[T]:
         def _find_key(self, cmpt_info: CmptInfo) -> str:
             from janim.items.item import CLS_CMPTINFO_NAME
 
-            for key, val in self.bind_info.decl_cls.__dict__.get(CLS_CMPTINFO_NAME, {}).items():
+            for key, val in self.bind.decl_cls.__dict__.get(CLS_CMPTINFO_NAME, {}).items():
                 if val is cmpt_info:
                     return key
 
