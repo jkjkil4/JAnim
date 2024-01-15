@@ -79,6 +79,10 @@ class RelationTest(unittest.TestCase):
         m[6].add(m[8])
         m[7].add(m[8])
 
+        self.assertListEqual(list(m[8].walk_ancestors(C2)), [m[3], m[7], m[4]])
+        self.assertListEqual(list(m[2].walk_self_and_ancestors()), [m[2], m[0]])
+        self.assertListEqual(list(m[2].walk_self_and_descendants()), [m[2], m[3], m[6], m[8], m[4], m[7], m[5]])
+
         check_ancestors: list[tuple[int, list[int]]] = [
             (3, [1, 0, 2]),
             (8, [6, 3, 1, 0, 2, 7, 4, 5]),

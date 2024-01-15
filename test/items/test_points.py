@@ -209,6 +209,127 @@ class PointsTest(unittest.TestCase):
         test(ORIGIN, 1, 0.2)
         test(RIGHT * UP * 10, 3, 2)
 
+    def test_transform(self) -> None:
+        p1 = Points(UP, DOWN).add(
+            Points(UP * 2, DOWN * 2)
+        )
+        p2 = Points(LEFT * 0.5, RIGHT * 0.5, UP * 0.5, DOWN * 0.5).add(
+            p3 := Points(LEFT, RIGHT, UP, DOWN)
+        )
+
+        p2.points.surround(p1, 1, buff=0.5)
+
+        self.assertNparrayEqual(
+            p2.points.get_all(),
+            [
+                LEFT * 1.25, RIGHT * 1.25, UP * 1.25, DOWN * 1.25,
+                LEFT * 2.5, RIGHT * 2.5, UP * 2.5, DOWN * 2.5
+            ]
+        )
+
+        p2.points.surround(p1, 1, buff=0.5, stretch=True, self_only=True, item_root_only=True)
+
+        self.assertNparrayClose(
+            p2.points.get_all(),
+            [
+                LEFT * 0.5, RIGHT * 0.5, UP * 1.5, DOWN * 1.5,
+                LEFT * 2.5, RIGHT * 2.5, UP * 2.5, DOWN * 2.5
+            ]
+        )
+
+        p2.points.set_size(2, 2, 2)
+
+        factor = 1 / 2.5
+
+        self.assertNparrayClose(
+            p2.points.get_all(),
+            np.array([
+                LEFT * 0.5, RIGHT * 0.5, UP * 1.5, DOWN * 1.5,
+                LEFT * 2.5, RIGHT * 2.5, UP * 2.5, DOWN * 2.5
+            ]) * factor
+        )
+
+        p2.points.scale((2, 1, 2))
+
+        self.assertNparrayClose(
+            p2.points.get_all(),
+            np.array([
+                LEFT * 0.5, RIGHT * 0.5, UP * 1.5, DOWN * 1.5,
+                LEFT * 2.5, RIGHT * 2.5, UP * 2.5, DOWN * 2.5
+            ]) * factor * (2, 1, 2)
+        )
+
+        p3 = Points(LEFT, RIGHT, UP, DOWN)
+
+        p3.points.flip(axis=UR)
+        self.assertNparrayClose(
+            p3.points.get(),
+            [DOWN, UP, RIGHT, LEFT]
+        )
+
+        p3.points.shift(UL)
+        self.assertNparrayClose(
+            p3.points.get(),
+            [UL + DOWN, UL + UP, UL + RIGHT, UL + LEFT]
+        )
+
+        p3.points.apply_complex_fn(lambda v: complex(v.imag, v.real))
+        self.assertNparrayClose(
+            p3.points.get(),
+            [DR + LEFT, DR + RIGHT, DR + UP, DR + DOWN]
+        )
+
+        p3.points.apply_matrix([
+            [2, 0, 0],
+            [0, 2, 0],
+            [0, 0, 2]
+        ])
+        self.assertNparrayClose(
+            p3.points.get(),
+            np.array([DR + LEFT, DR + RIGHT, DR + UP, DR + DOWN]) * 2
+        )
+
+        p3.points.apply_matrix([
+            [2, 0],
+            [0, 2]
+        ])
+        self.assertNparrayClose(
+            p3.points.get(),
+            np.array([DR + LEFT, DR + RIGHT, DR + UP, DR + DOWN]) * 4
+        )
+
+        with self.assertRaises(ValueError):
+            p3.points.apply_matrix([
+                [1, 1, 1],
+                [1, 1, 1]
+            ])
+
+        with self.assertRaises(ValueError):
+            p3.points.apply_matrix([[1]])
+
+        with self.assertRaises(ValueError):
+            p3.points.apply_matrix([
+                [1, 1, 1, 1],
+                [1, 1, 1, 1],
+                [1, 1, 1, 1],
+                [1, 1, 1, 1]
+            ])
+
+    def test_put_start_and_end_on(self) -> None:
+        p = Points(UP).do(lambda p: p.points.extend([RIGHT, DOWN]))
+
+        self.assertNparrayEqual(p.points.get(), [UP, RIGHT, DOWN])
+
+        p.points.put_start_and_end_on(LEFT, RIGHT)
+        self.assertNparrayClose(p.points.get(), [LEFT, UP, RIGHT])
+
+        p.points.put_start_and_end_on(DOWN * 2, UP * 2)
+        self.assertNparrayClose(p.points.get(), [DOWN * 2, LEFT * 2, UP * 2])
+
+        p.points.extend([DOWN * 2])
+        with self.assertRaises(ValueError):
+            p.points.put_start_and_end_on(LEFT, RIGHT)
+
     def test_movement(self) -> None:
         p1 = Points(UP, DOWN).add(
             p2 := Points(LEFT, RIGHT),
@@ -274,17 +395,3 @@ class PointsTest(unittest.TestCase):
             pp1.points.get(),
             [UP, DOWN]
         )
-
-        pp2 = Points(UP).do(lambda p: p.points.extend([RIGHT, DOWN]))
-
-        self.assertNparrayEqual(pp2.points.get(), [UP, RIGHT, DOWN])
-
-        pp2.points.put_start_and_end_on(LEFT, RIGHT)
-        self.assertNparrayClose(pp2.points.get(), [LEFT, UP, RIGHT])
-
-        pp2.points.put_start_and_end_on(DOWN * 2, UP * 2)
-        self.assertNparrayClose(pp2.points.get(), [DOWN * 2, LEFT * 2, UP * 2])
-
-        pp2.points.extend([DOWN * 2])
-        with self.assertRaises(ValueError):
-            pp2.points.put_start_and_end_on(LEFT, RIGHT)

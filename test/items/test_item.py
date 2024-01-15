@@ -106,6 +106,8 @@ class PointsTest(unittest.TestCase):
         self.assertNparrayEqual(g.astype(Points).points.get_all(), [UP, RIGHT, UL, DR, ORIGIN])
         self.assertNparrayEqual(g.astype(MyPoints).points.get_all(), [UP, RIGHT, UL, DR, ORIGIN])
 
+        p1.points.extend([LEFT])
+        self.assertNparrayEqual(g.astype(Points).points.get_all(), [UP, RIGHT, LEFT, UL, DR, ORIGIN])
 
 # if __name__ == '__main__':
 #     unittest.main()

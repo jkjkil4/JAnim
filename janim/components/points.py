@@ -51,7 +51,7 @@ class Cmpt_Points(Component):
         for item in self.bind.at_item.walk_descendants(self.bind.decl_cls):
             cmpt = getattr(item, self.bind.key)
             if not isinstance(cmpt, Cmpt_Points):
-                continue
+                continue    # pragma: no cover
 
             point_datas.append(cmpt.get())
 
@@ -371,7 +371,7 @@ class Cmpt_Points(Component):
             for item in self.bind.at_item.walk_descendants(self.bind.decl_cls):
                 cmpt = getattr(item, self.bind.key)
                 if not isinstance(cmpt, Cmpt_Points):
-                    continue
+                    continue    # pragma: no cover
 
                 apply(cmpt)
 
@@ -412,7 +412,10 @@ class Cmpt_Points(Component):
         '''
         matrix = np.array(matrix)
         if matrix.shape not in ((2, 2), (3, 3)):
-            raise ValueError(f'只有 2x2 或 3x3 矩阵是有效的，而传入的是 {"x".join(matrix.shape)} 矩阵')
+            raise ValueError(
+                '只有 2x2 或 3x3 矩阵是有效的，'
+                f'而传入的是 {"x".join(str(v) for v in matrix.shape)} 矩阵'
+            )
 
         if about_point is None and about_edge is None:
             about_point = ORIGIN
@@ -549,6 +552,7 @@ class Cmpt_Points(Component):
         factor: float,
         *,
         dim: int,
+        min_scale_factor: float = 1e-8,
         about_point: Vect | None = None,
         about_edge: Vect | None = ORIGIN,
         self_only: bool = False
@@ -558,11 +562,13 @@ class Cmpt_Points(Component):
 
         Stretch the object along the specified ``dim`` direction.
         '''
+        factor = max(factor, min_scale_factor)
+
         def func(points):
             points[:, dim] *= factor
             return points
+
         self.apply_points_fn(
-            self,
             func,
             about_point=about_point,
             about_edge=about_edge,
@@ -576,6 +582,7 @@ class Cmpt_Points(Component):
         *,
         dim: int,
         stretch: bool = False,
+        min_scale_factor: float = 1e-8,
         about_point: Vect | None = None,
         about_edge: Vect | None = ORIGIN,
         self_only: bool = False
@@ -592,6 +599,7 @@ class Cmpt_Points(Component):
             self.stretch(
                 length / old_length,
                 dim=dim,
+                min_scale_factor=min_scale_factor,
                 about_point=about_point,
                 about_edge=about_edge,
                 self_only=self_only,
@@ -599,6 +607,7 @@ class Cmpt_Points(Component):
         else:
             self.scale(
                 length / old_length,
+                min_scale_factor=min_scale_factor,
                 about_point=about_point,
                 about_edge=about_edge,
                 self_only=self_only
@@ -608,7 +617,7 @@ class Cmpt_Points(Component):
 
     def set_width(self, width: float, *, stretch: bool = False, **kwargs) -> Self:
         '''
-        如果 ``stretch`` 为 ``False``（默认），则表示等比缩放
+        如果 ``stretch`` 为 ``False`` （默认），则表示等比缩放
 
         If ``stretch`` is ``False`` (default), it indicates proportional scaling.
         '''
@@ -616,7 +625,7 @@ class Cmpt_Points(Component):
 
     def set_height(self, height: float, *, stretch: bool = False, **kwargs) -> Self:
         '''
-        如果 ``stretch`` 为 ``False``（默认），则表示等比缩放
+        如果 ``stretch`` 为 ``False`` （默认），则表示等比缩放
 
         If ``stretch`` is ``False`` (default), it indicates proportional scaling.
         '''
@@ -624,7 +633,7 @@ class Cmpt_Points(Component):
 
     def set_depth(self, depth: float, *, stretch: bool = False, **kwargs) -> Self:
         '''
-        如果 ``stretch`` 为 ``False``（默认），则表示等比缩放
+        如果 ``stretch`` 为 ``False`` （默认），则表示等比缩放
 
         If ``stretch`` is ``False`` (default), it indicates proportional scaling.
         '''
@@ -679,7 +688,7 @@ class Cmpt_Points(Component):
             )
 
         # Shift the object to the center of the specified item.
-        self.move_to(item_box.center(), self_only=self_only)
+        self.move_to(item_box.center, self_only=self_only)
 
         return self
 
@@ -706,12 +715,17 @@ class Cmpt_Points(Component):
             item_root_only=item_root_only
         )
 
-        if self_only:
-            length = self.self_box.length_over_dim(dim_to_match)
-        else:
-            length = self.box.length_over_dim(dim_to_match)
+        box = self.self_box if self_only else self.box
 
-        self.scale((length + buff) / length, self_only=self_only)
+        if stretch:
+            for i in range(3):
+                length = box.length_over_dim(i)
+                if length == 0:
+                    continue
+                self.stretch((length + buff * 2) / length, dim=i, self_only=self_only)
+        else:
+            length = box.length_over_dim(dim_to_match)
+            self.scale((length + buff * 2) / length, self_only=self_only)
 
         return self
 
