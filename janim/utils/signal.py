@@ -1,7 +1,8 @@
 import functools
 import inspect
 from collections import defaultdict
-from typing import (Any, Callable, Concatenate, Generic, ParamSpec, Self,
+from dataclasses import dataclass
+from typing import (Callable, Concatenate, Generic, ParamSpec, Self,
                     TypeVar, overload)
 
 import janim.utils.refresh as refresh
@@ -34,17 +35,17 @@ class _AllSlots:
         self.slots_dict: defaultdict[int, _Slots] = defaultdict(_Slots)
 
 
+@dataclass
 class _SelfSlotWithRecurse:
-    def __init__(self, func: Callable, recurse_up: bool, recurse_down: bool):
-        self.func = func
-        self.recurse_up = recurse_up
-        self.recurse_down = recurse_down
+    func: Callable
+    recurse_up: bool
+    recurse_down: bool
 
 
+@dataclass
 class _RefreshSlot:
-    def __init__(self, obj: refresh.Refreshable, func: Callable | str):
-        self.obj = obj
-        self.func = func
+    obj: refresh.Refreshable
+    func: Callable | str
 
 
 class Signal(Generic[T, P, R]):

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from dataclasses import dataclass
 from typing import Callable, Self, TYPE_CHECKING
 
 import janim.utils.refresh as refresh
@@ -9,11 +10,13 @@ if TYPE_CHECKING:   # pragma: no cover
 
 
 class Component(refresh.Refreshable):
+    @dataclass
     class BindInfo:
         '''
         对组件定义信息的封装
 
-        - ``decl_cls``: 以 ``xxx = CmptInfo(...)`` 的形式被声明在哪个类中
+        - ``decl_cls``: 以 ``xxx = CmptInfo(...)`` 的形式被声明在哪个类中；
+          如果一个类及其父类都有 ``xxx = CmptInfo(...)`` ，那么 ``decl_cls`` 是父类
         - ``at_item``: 这个组件对象是属于哪个物件对象的
         - ``key``: 这个组件对象的变量名
 
@@ -40,10 +43,9 @@ class Component(refresh.Refreshable):
             # item2.cmpt1.bind_info 与 BindInfo(MyItem, item2, 'cmpt1') 一致
             # item2.cmpt3.bind_info 与 BindInfo(MyItem2, item2, 'cmpt3') 一致
         '''
-        def __init__(self, decl_cls: type, at_item: Item, key: str):
-            self.decl_cls = decl_cls
-            self.at_item = at_item
-            self.key = key
+        decl_cls: type
+        at_item: Item
+        key: str
 
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)

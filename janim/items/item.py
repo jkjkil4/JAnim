@@ -1,10 +1,12 @@
 from __future__ import annotations
 
+import inspect
 from dataclasses import dataclass
 from typing import Callable, Self, overload
 
 from janim.items.relation import Relation
 from janim.components.component import Component, CmptInfo
+from janim.anims.timeline import Timeline
 
 CLS_CMPTINFO_NAME = '__cls_cmptinfo'
 
@@ -129,6 +131,8 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
     # Do not define __iter__ and __len__ for Item class.
     # I think using item.children and item.parents explicitly is better.
 
+    # region astype
+
     def astype[T](self, cls: type[T]) -> T:
         '''
         使得可以调用当前物件中没有的组件
@@ -193,6 +197,20 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
 
             self.origin._astype_mock_cmpt[(decl_cls, name)] = cmpt
             return cmpt
+
+    # endregion
+
+    @staticmethod
+    def _get_timeline_context() -> Timeline:
+        obj = Timeline.ctx_var.get(None)
+        if obj is None:
+            name = inspect.currentframe().f_back.f_code.co_name
+            raise LookupError(f'Item.{name} 无法在 Timeline.build 之外使用')
+        return obj
+
+    def show(self, **kwargs) -> None:
+        timeline = self._get_timeline_context()
+        timeline.show(self, **kwargs)
 
 
 class Group[T](Item):
