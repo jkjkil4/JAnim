@@ -27,12 +27,20 @@ class Cmpt_Points(Component):
         self._points = UniqueNparray()
         self.set([])
 
-    def init_bind(self, bind_info: Component.BindInfo):
-        super().init_bind(bind_info)
+    def init_bind(self, bind: Component.BindInfo):
+        super().init_bind(bind)
 
-        item = bind_info.at_item
+        item = bind.at_item
 
         item.__class__.children_changed.connect_refresh(item, self, Cmpt_Points.box.fget)
+
+    def copy(self) -> Self:
+        cmpt_copy = super().copy()
+        cmpt_copy._points.data = self._points.data
+        return self
+
+    def __eq__(self, other: Cmpt_Points) -> bool:
+        return id(self._points.data) == id(other._points.data)
 
     # region 点数据 | Points
 
@@ -48,12 +56,13 @@ class Cmpt_Points(Component):
         '''
         point_datas = [self.get()]
 
-        for item in self.bind.at_item.walk_descendants(self.bind.decl_cls):
-            cmpt = getattr(item, self.bind.key)
-            if not isinstance(cmpt, Cmpt_Points):
-                continue    # pragma: no cover
+        if self.bind is not None:
+            for item in self.bind.at_item.walk_descendants(self.bind.decl_cls):
+                cmpt = getattr(item, self.bind.key)
+                if not isinstance(cmpt, Cmpt_Points):
+                    continue    # pragma: no cover
 
-            point_datas.append(cmpt.get())
+                point_datas.append(cmpt.get())
 
         return np.vstack(point_datas)
 
@@ -175,12 +184,13 @@ class Cmpt_Points(Component):
         if self.has():
             box_datas.append(self.self_box.data)
 
-        for item in self.bind.at_item.walk_descendants(self.bind.decl_cls):
-            cmpt = getattr(item, self.bind.key)
-            if not isinstance(cmpt, Cmpt_Points) or not cmpt.has():
-                continue
+        if self.bind is not None:
+            for item in self.bind.at_item.walk_descendants(self.bind.decl_cls):
+                cmpt = getattr(item, self.bind.key)
+                if not isinstance(cmpt, Cmpt_Points) or not cmpt.has():
+                    continue
 
-            box_datas.append(cmpt.self_box.data)
+                box_datas.append(cmpt.self_box.data)
 
         return self.BoundingBox(np.vstack(box_datas) if box_datas else [])
 
@@ -367,7 +377,7 @@ class Cmpt_Points(Component):
 
         apply(self)
 
-        if not self_only:
+        if not self_only and self.bind is not None:
             for item in self.bind.at_item.walk_descendants(self.bind.decl_cls):
                 cmpt = getattr(item, self.bind.key)
                 if not isinstance(cmpt, Cmpt_Points):

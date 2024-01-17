@@ -1,7 +1,8 @@
 from __future__ import annotations
 
+import copy
 from dataclasses import dataclass
-from typing import Callable, Self, TYPE_CHECKING
+from typing import Callable, Self, TYPE_CHECKING, overload
 
 import janim.utils.refresh as refresh
 
@@ -9,7 +10,15 @@ if TYPE_CHECKING:   # pragma: no cover
     from janim.items.item import Item
 
 
-class Component(refresh.Refreshable):
+class _CmptMeta(type):
+    def __new__(cls: type, name: str, bases: tuple[type, ...], attrdict: dict):
+        for key in ('copy', '__eq__'):
+            if not callable(attrdict.get(key, None)):
+                raise AttributeError(f'Component 的每一个子类都必须继承并实现 `{key}` 方法，而 {name} 没有')
+        return super().__new__(cls, name, bases, attrdict)
+
+
+class Component(refresh.Refreshable, metaclass=_CmptMeta):
     @dataclass
     class BindInfo:
         '''
@@ -59,6 +68,14 @@ class Component(refresh.Refreshable):
         子类可以继承该函数，进行与所在物件相关的处理
         '''
         self.bind = bind
+
+    def copy(self) -> Self:
+        cmpt_copy = copy.copy(self)
+        cmpt_copy.bind = None
+        cmpt_copy.reset_refresh()
+        return cmpt_copy
+
+    def __eq__(self, other) -> bool: ...
 
     def mark_refresh(self, func: Callable | str, *, recurse_up=False, recurse_down=False) -> Self:
         '''
@@ -112,8 +129,83 @@ class CmptInfo[T]:
         return self.cls(*self.args, **self.kwargs)
 
     # 方便代码补全，没有实际意义
-    def __get__(self, obj, owner) -> T:
+    @overload
+    def __get__(self, obj: None, owner) -> Self: ...
+
+    @overload
+    def __get__(self, obj: object, owner) -> T: ...
+
+    def __get__(self, obj, owner):
         return self
+
+
+class _CmptGroup(Component):
+    def __init__(self, cmpt_info_list: list[CmptInfo], **kwargs):
+        super().__init__(**kwargs)
+        self.cmpt_info_list = cmpt_info_list
+
+    def init_bind(self, bind: Component.BindInfo) -> None:
+        super().init_bind(bind)
+        self._find_objects()
+
+    def copy(self, *, new_cmpts: dict[str, Component]):
+        cmpt_copy = super().copy()
+        for key in cmpt_copy.objects.keys():
+            cmpt_copy.objects[key] = new_cmpts[key]
+
+        return cmpt_copy
+
+    def __eq__(self, other: _CmptGroup) -> bool:
+        for key in self.objects.keys():
+            if self.objects[key] != other.objects[key]:
+                return False
+
+        return True
+
+    def _find_objects(self) -> None:
+        self.objects: dict[str, Component] = {}
+
+        for cmpt_info in self.cmpt_info_list:
+            key = self._find_key(cmpt_info)
+            self.objects[key] = getattr(self.bind.at_item, key)
+
+    def _find_key(self, cmpt_info: CmptInfo) -> str:
+        from janim.items.item import CLS_CMPTINFO_NAME
+
+        for key, val in self.bind.decl_cls.__dict__.get(CLS_CMPTINFO_NAME, {}).items():
+            if val is cmpt_info:
+                return key
+
+        raise ValueError('CmptGroup 必须要与传入的内容在同一个类的定义中')
+
+    def __getattr__(self, name: str):
+        objects = []
+        methods = []
+
+        for obj in self.objects.values():
+            if not hasattr(obj, name):
+                continue
+
+            attr = getattr(obj, name)
+            if not callable(attr):
+                continue
+
+            objects.append(obj)
+            methods.append(attr)
+
+        if not methods:
+            cmpt_str = ', '.join(cmpt.__class__.__name__ for cmpt in self.objects)
+            raise AttributeError(f'({cmpt_str}) 中没有组件有叫作 {name} 的方法')
+
+        def wrapper(*args, **kwargs):
+            ret = [
+                method(*args, **kwargs)
+                for method in methods
+            ]
+
+            return self if ret == objects else ret
+
+        return wrapper
 
 
 def CmptGroup[T](*cmpt_info_list: CmptInfo[T]) -> CmptInfo[T]:
@@ -133,54 +225,4 @@ def CmptGroup[T](*cmpt_info_list: CmptInfo[T]) -> CmptInfo[T]:
         item.stroke.set(...)    # 只有 stroke 的被调用 | Only the method of stroke be called
         item.color.set(...)     # stroke 和 fill 的都被调用了 | the methods of stroke and fill are both called
     '''
-    class _CmptGroup(Component):
-        def init_bind(self, bind_info: Component.BindInfo) -> None:
-            super().init_bind(bind_info)
-            self._find_objects()
-
-        def _find_objects(self) -> None:
-            self.objects: list[Component] = [
-                getattr(
-                    self.bind.at_item,
-                    self._find_key(cmpt_info)
-                )
-                for cmpt_info in cmpt_info_list
-            ]
-
-        def _find_key(self, cmpt_info: CmptInfo) -> str:
-            from janim.items.item import CLS_CMPTINFO_NAME
-
-            for key, val in self.bind.decl_cls.__dict__.get(CLS_CMPTINFO_NAME, {}).items():
-                if val is cmpt_info:
-                    return key
-
-            raise ValueError('CmptGroup 必须要与传入的内容在同一个类的定义中')
-
-        def __getattr__(self, name: str):
-            methods = []
-
-            for obj in self.objects:
-                if not hasattr(obj, name):
-                    continue
-
-                attr = getattr(obj, name)
-                if not callable(attr):
-                    continue
-
-                methods.append(attr)
-
-            if not methods:
-                cmpt_str = ', '.join(cmpt.__class__.__name__ for cmpt in self.objects)
-                raise AttributeError(f'({cmpt_str}) 中没有组件有叫作 {name} 的方法')
-
-            def wrapper(*args, **kwargs):
-                ret = [
-                    method(*args, **kwargs)
-                    for method in methods
-                ]
-
-                return self if ret == self.objects else ret
-
-            return wrapper
-
-    return CmptInfo(_CmptGroup)
+    return CmptInfo(_CmptGroup, cmpt_info_list)

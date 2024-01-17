@@ -26,3 +26,11 @@ class UniqueNparray:
         if not isinstance(data, np.ndarray):
             data = np.array(data)
         self._data = data[:]
+
+    def __eq__(self, other) -> None:
+        if not isinstance(other, UniqueNparray):
+            return False
+        return id(self._data) == id(other._data)
+
+    def __hash__(self) -> int:
+        return id(self._data)

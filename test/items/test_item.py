@@ -28,6 +28,9 @@ class ItemTest(unittest.TestCase):
             def fn_down(self):
                 called_list.append(self.fn_down)
 
+            def copy(): ...
+            def __eq__(self, other): ...
+
         class MyItem(Item):
             cmpt = CmptInfo(MyCmpt)
 

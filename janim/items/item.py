@@ -5,17 +5,18 @@ from dataclasses import dataclass
 from typing import Callable, Self, overload
 
 from janim.items.relation import Relation
-from janim.components.component import Component, CmptInfo
+from janim.components.component import Component, CmptInfo, _CmptGroup
 from janim.anims.timeline import Timeline
 
 CLS_CMPTINFO_NAME = '__cls_cmptinfo'
+OBJ_CMPTS_NAME = '__obj_cmpts'
 
 
 class _ItemMeta(type):
     '''
     作为 metaclass 记录定义在类中的所有 CmptInfo
     '''
-    def __new__(cls, name: str, bases: tuple[type, ...], attrdict: dict):
+    def __new__(cls: type, name: str, bases: tuple[type, ...], attrdict: dict):
         # 记录所有定义在类中的 CmptInfo
         cls_components: dict[str, Component] = {
             key: val
@@ -36,6 +37,10 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
 
         self._astype_mock_cmpt: dict[tuple[type, str], Component] = {}
 
+        timeline = self._get_timeline_context(raise_exc=False)
+        if timeline:
+            timeline.register(self)
+
     def _init_components(self) -> None:
         '''
         创建出 CmptInfo 对应的 Component，
@@ -51,13 +56,13 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
             info: CmptInfo[CmptInfo]
             decl_cls: type[Item]
 
-        components: dict[CmptKey, CmptInitData] = {}
+        datas: dict[CmptKey, CmptInitData] = {}
 
         for cls in reversed(self.__class__.mro()):
             for key, info in cls.__dict__.get(CLS_CMPTINFO_NAME, {}).items():
                 info: CmptInfo
-                if key in components:
-                    data = components[key]
+                if key in datas:
+                    data = datas[key]
 
                     # TODO: remove
                     # 好像没有必要检查是否是派生类
@@ -69,13 +74,16 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
 
                     data.info = info
 
-                else:
-                    components[key] = CmptInitData(info, cls)
+                else:  # key not in datas
+                    datas[key] = CmptInitData(info, cls)
 
-        for key, data in components.items():
+        self.components: dict[str, Component] = {}
+
+        for key, data in datas.items():
             obj = data.info.create()
             obj.init_bind(Component.BindInfo(data.decl_cls, self, key))
-            self.__dict__[key] = obj
+
+            self.__dict__[key] = self.components[key] = obj
 
     def broadcast_refresh_of_component(
         self,
@@ -200,17 +208,58 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
 
     # endregion
 
+    # region data
+
+    @dataclass
+    class StoredData:
+        item: Item
+
+        components: dict[str, Component]
+        parents: list[Item]
+        children: list[Item]
+
+        def is_changed(self) -> bool:
+            for stored_cmpt, item_cmpt in zip(self.components.values(), self.item.components.values()):
+                if stored_cmpt != item_cmpt:
+                    return True
+
+            return self.parents != self.item.parents or self.children != self.item.children
+
+    def store_data(self) -> StoredData:
+        components: dict[str, Component] = {}
+
+        for key, cmpt in self.components.items():
+            if isinstance(cmpt, _CmptGroup):
+                # 因为现在的 Python 版本中，dict 取键值保留原序
+                # 所以 new_cmpts 肯定有 _CmptGroup 所需要的
+                components[key] = cmpt.copy(new_cmpts=components)
+            else:
+                components[key] = cmpt.copy()
+
+        parents = self.parents[:]
+        children = self.children[:]
+
+        return Item.StoredData(self, components, parents, children)
+
+    # endregion
+
+    # region timeline
+
     @staticmethod
-    def _get_timeline_context() -> Timeline:
+    def _get_timeline_context(raise_exc=True) -> Timeline:
         obj = Timeline.ctx_var.get(None)
-        if obj is None:
+        if obj is None and raise_exc:
             name = inspect.currentframe().f_back.f_code.co_name
             raise LookupError(f'Item.{name} 无法在 Timeline.build 之外使用')
         return obj
 
-    def show(self, **kwargs) -> None:
-        timeline = self._get_timeline_context()
-        timeline.show(self, **kwargs)
+    def show(self, self_only=False) -> None:
+        self._get_timeline_context().show(self, self_only=self_only)
+
+    def hide(self, self_only=False) -> None:
+        self._get_timeline_context().hide(self, self_only=self_only)
+
+    # endregion
 
 
 class Group[T](Item):
