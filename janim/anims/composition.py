@@ -40,7 +40,7 @@ class AnimGroup(Animation):
         **kwargs
     ):
         self.anims = anims
-        self.maxt = max(anim.local_range.end for anim in anims)
+        self.maxt = 0 if not anims else max(anim.local_range.end for anim in anims)
         if duration is None:
             duration = self.maxt
 
@@ -56,9 +56,13 @@ class AnimGroup(Animation):
 
         for anim in self.anims:
             anim.set_global_range(
-                anim.local_range.at * factor,
+                self.global_range.at + anim.local_range.at * factor,
                 anim.local_range.duration * factor
             )
+
+    def anim_init(self) -> None:
+        for anim in self.anims:
+            anim.anim_init()
 
     def anim_on_alpha(self, alpha: float) -> None:
         adjusted_local_t = alpha * self.maxt

@@ -3,7 +3,6 @@ from __future__ import annotations
 import unittest
 from typing import Self
 
-from janim.anims.animation import Animation
 from janim.anims.timeline import Timeline
 from janim.components.component import Component, CmptInfo
 from janim.items.item import Item
@@ -55,6 +54,7 @@ class TimelineTest(unittest.TestCase):
 
         tl = MyTimeline()
         tl._build()
+        tl.init_animations()
 
         self.assertEqual(len(tl.item_stored_datas[tl.item1]), 2)
         self.assertEqual(len(tl.item_stored_datas[tl.item2]), 2)

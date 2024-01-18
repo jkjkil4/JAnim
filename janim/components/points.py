@@ -38,8 +38,9 @@ class Cmpt_Points(Component):
 
     def copy(self) -> Self:
         cmpt_copy = super().copy()
+        cmpt_copy._points = UniqueNparray()
         cmpt_copy._points.data = self._points.data
-        return self
+        return cmpt_copy
 
     def __eq__(self, other: Cmpt_Points) -> bool:
         return id(self.get()) == id(other.get())
@@ -49,19 +50,22 @@ class Cmpt_Points(Component):
         len1, len2 = len(cmpt1.get()), len(cmpt2.get())
 
         if len1 == len2:
-            return AlignedData(cmpt1, cmpt1, cmpt1)
+            if cmpt1 == cmpt2:
+                return AlignedData(cmpt1, cmpt1, cmpt1)
+            # cmpt1 != cmpt2
+            return AlignedData(cmpt1, cmpt2, Cmpt_Points())
 
         if len1 > len2:
-            return AlignedData(cmpt1, Cmpt_Points(), cmpt2.copy().resize(len1))
+            return AlignedData(cmpt1, cmpt2.copy().resize(len1), Cmpt_Points())
 
         # len1 < len2
-        return AlignedData(cmpt1.copy().resize(len2), Cmpt_Points(), cmpt2)
+        return AlignedData(cmpt1.copy().resize(len2), cmpt2, Cmpt_Points())
 
-    def interpolate(self, cmpt1: Cmpt_Points, cmpt2: Cmpt_Points) -> None:
+    def interpolate(self, cmpt1: Cmpt_Points, cmpt2: Cmpt_Points, alpha: float) -> None:
         if cmpt1 == cmpt2:
             return
 
-        self._points._data = interpolate(cmpt1.get(), cmpt2.get())
+        self.set(interpolate(cmpt1.get(), cmpt2.get(), alpha))
 
     # region 点数据 | Points
 

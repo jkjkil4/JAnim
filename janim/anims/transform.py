@@ -26,8 +26,10 @@ class Transform(Animation):
                 for child1, child2 in zip(aligned.data1.children, aligned.data2.children):
                     align(child1, child2, True)
 
-        align(self.item_from, self.item_to)
+        align(self.item_from, self.item_to, not self.root_only)
 
     def anim_on_alpha(self, alpha: float) -> None:
         for aligned in self.aligned.values():
             aligned.union.interpolate(aligned.data1, aligned.data2, alpha)
+
+        # TODO: render

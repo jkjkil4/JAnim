@@ -6,9 +6,10 @@ from abc import ABCMeta, abstractmethod
 from contextvars import ContextVar
 from collections import defaultdict
 from dataclasses import dataclass
-from typing import Iterable, TYPE_CHECKING
+from typing import TYPE_CHECKING, Iterable, Callable, Self
 
 from janim.anims.display import Display
+from janim.anims.composition import AnimGroup
 from janim.logger import log
 
 if TYPE_CHECKING:   # pragma: no cover
@@ -43,7 +44,7 @@ class Timeline(metaclass=ABCMeta):
         self.current_time: float = 0
         self.times_of_code: list[Timeline.TimeOfCode] = []
 
-        self.animations: list[Animation] = []
+        self.anims: list[Animation] = []
 
         self.item_stored_datas: defaultdict[Item, list[Timeline.TimedItemData]] = defaultdict(list)
         self.item_display_times: dict[Item, int] = {}
@@ -58,6 +59,13 @@ class Timeline(metaclass=ABCMeta):
             self.build()
         finally:
             self.ctx_var.reset(token)
+
+    def init_animations(self) -> None:
+        token = self.ctx_var.set(self)
+        self.global_anim = AnimGroup(*self.anims)
+        self.ctx_var.reset(token)
+
+        self.global_anim.anim_init()
 
     def register(self, item: Item) -> None:
         self.item_stored_datas[item]
@@ -90,6 +98,13 @@ class Timeline(metaclass=ABCMeta):
 
     def forward_to(self, t: float) -> None:
         self.forward(t - self.current_time)
+
+    def play(self, *anims: Animation, **kwargs) -> None:
+        anim = AnimGroup(*anims, **kwargs)
+        anim.set_global_range(self.current_time + anim.local_range.at)
+        self.anims.append(anim)
+
+        self.forward_to(anim.global_range.end)
 
     def detect_changes_of_all(self) -> None:
         for item, datas in self.item_stored_datas.items():
@@ -161,11 +176,9 @@ class Timeline(metaclass=ABCMeta):
 
     # region debug
 
-    def dbg_time(self, ext_msg: str = '') -> None:  # pragma: no cover
-        if ext_msg:
-            ext_msg = f'[{ext_msg}]  '
-
-        time = round(self.current_time, 2)
+    @staticmethod
+    def fmt_time(t: float) -> str:
+        time = round(t, 2)
 
         minutes = int(time // 60)
         time %= 60
@@ -183,6 +196,52 @@ class Timeline(metaclass=ABCMeta):
         times.append(f'{seconds:>3d}s')
         times.append(f'{ms:>4d}ms' if ms != 0 else ' ' * 5)
 
-        log.debug(f't={"".join(times)}  {ext_msg}at build.{self.get_build_lineno()}')
+        return "".join(times)
+
+    def dbg_time(self, ext_msg: str = '') -> None:  # pragma: no cover
+        if ext_msg:
+            ext_msg = f'[{ext_msg}]  '
+
+        time = self.fmt_time(self.current_time)
+
+        log.debug(f't={time}  {ext_msg}at build.{self.get_build_lineno()}')
+
+    def dbg_item_builder(self, item: Item):     # pragma: no cover
+        return Timeline.DbgItemBuilder(self, item)
+
+    class DbgItemBuilder:
+        def __init__(self, timeline: Timeline, item: Item):
+            self.timeline = timeline
+            self.item = item
+
+            self.cmpt_formatters: dict[type, Callable] = {}
+
+        def cmpt[T](self, cls: type[T], formatter: Callable[[T]]) -> Self:
+            self.cmpt_formatters[cls] = formatter
+            return self
+
+        def show(self) -> None:
+            lines = []
+
+            lines.append('======')
+            lines.append(f'{self.item.__class__.__name__} {id(self.item):X}')
+            lines.append('======')
+            for timed_data in self.timeline.item_stored_datas[self.item]:
+                time = Timeline.fmt_time(timed_data.time)
+                lines.append(f'- Time={time}')
+
+                for key, cmpt in timed_data.data.components.items():
+                    formatter = self.cmpt_formatters.get(cmpt.__class__, None)
+                    if formatter is None:
+                        continue
+
+                    pre = f'  {key}= '
+
+                    ret = str(formatter(cmpt))
+                    ret = ('\n' + ' ' * len(pre)).join(ret.splitlines())
+
+                    lines.append(f'{pre}{ret}')
+
+            log.debug('\n'.join(lines))
 
     # endregion

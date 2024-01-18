@@ -14,8 +14,8 @@ class UniqueNparray:
     There are some exceptional cases, such as operations like ``self.data[...] = ...``，
     which should be avoided whenever possible
     '''
-    def __init__(self, points: np.ndarray | Iterable = np.array([])):
-        self.data = points
+    def __init__(self):
+        self._data = np.array([])
 
     @property
     def data(self) -> np.ndarray:
@@ -26,7 +26,7 @@ class UniqueNparray:
         if not isinstance(data, np.ndarray):
             self._data = np.array(data)
         else:
-            self._data = data[:]
+            self._data = data.copy()
 
     def __eq__(self, other) -> None:
         if not isinstance(other, UniqueNparray):

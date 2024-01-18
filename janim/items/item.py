@@ -282,7 +282,7 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
             for key, cmpt1 in data1.components.items():
                 cmpt2 = data2.components.get(key, None)
 
-                if cmpt2 is None or not isinstance(cmpt1, SupportsInterpolate[Component]):
+                if cmpt2 is None or not isinstance(cmpt1, SupportsInterpolate):
                     aligned.data1.components[key] = cmpt1
                     aligned.data2.components[key] = cmpt1
                     aligned.union.components[key] = cmpt1
@@ -297,6 +297,8 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
             max_len = max(len(data1.children), len(data2.children))
             aligned.data1.children = resize_preserving_order(data1.children, max_len)
             aligned.data2.children = resize_preserving_order(data2.children, max_len)
+
+            return aligned
 
         def interpolate(self, data1: Item.Data, data2: Item.Data, alpha: float) -> None:
             for key, cmpt in self.components.items():
