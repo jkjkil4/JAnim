@@ -1,12 +1,14 @@
 from __future__ import annotations
 
-import inspect
 from dataclasses import dataclass
 from typing import Callable, Self, overload
 
-from janim.items.relation import Relation
-from janim.components.component import Component, CmptInfo, _CmptGroup
 from janim.anims.timeline import Timeline
+from janim.components.component import CmptInfo, Component, _CmptGroup
+from janim.items.relation import Relation
+from janim.typing import SupportsInterpolate
+from janim.utils.data import AlignedData
+from janim.utils.iterables import resize_preserving_order
 
 CLS_CMPTINFO_NAME = '__cls_cmptinfo'
 OBJ_CMPTS_NAME = '__obj_cmpts'
@@ -37,7 +39,7 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
 
         self._astype_mock_cmpt: dict[tuple[type, str], Component] = {}
 
-        timeline = self._get_timeline_context(raise_exc=False)
+        timeline = Timeline.get_context(raise_exc=False)
         if timeline:
             timeline.register(self)
 
@@ -211,8 +213,8 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
     # region data
 
     @dataclass
-    class StoredData:
-        item: Item
+    class Data[T: 'Item']:
+        item: T
 
         components: dict[str, Component]
         parents: list[Item]
@@ -225,39 +227,98 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
 
             return self.parents != self.item.parents or self.children != self.item.children
 
-    def store_data(self) -> StoredData:
-        components: dict[str, Component] = {}
+        @staticmethod
+        def store[U: 'Item'](item: U) -> Item.Data[U]:
+            components: dict[str, Component] = {}
 
-        for key, cmpt in self.components.items():
-            if isinstance(cmpt, _CmptGroup):
-                # 因为现在的 Python 版本中，dict 取键值保留原序
-                # 所以 new_cmpts 肯定有 _CmptGroup 所需要的
-                components[key] = cmpt.copy(new_cmpts=components)
-            else:
-                components[key] = cmpt.copy()
+            for key, cmpt in item.components.items():
+                if isinstance(cmpt, _CmptGroup):
+                    # 因为现在的 Python 版本中，dict 取键值保留原序
+                    # 所以 new_cmpts 肯定有 _CmptGroup 所需要的
+                    components[key] = cmpt.copy(new_cmpts=components)
+                else:
+                    components[key] = cmpt.copy()
 
-        parents = self.parents[:]
-        children = self.children[:]
+            parents = item.parents[:]
+            children = item.children[:]
 
-        return Item.StoredData(self, components, parents, children)
+            return Item.Data(item, components, parents, children)
+
+        @staticmethod
+        def ref[U: 'Item'](item: U) -> Item.Data[U]:
+            return Item.Data(
+                item,
+                item.components,
+                item.parents,
+                item.children
+            )
+
+        class _CmptGetter:
+            def __init__(self, data: Item.Data):
+                self.data = data
+
+            def __getattr__(self, name: str):
+                cmpt = self.data.components.get(name, None)
+                if cmpt is None:
+                    raise AttributeError(f"'{self.data.item.__class__.__name__}' 没有叫作 '{name}' 的组件")
+
+                return cmpt
+
+        @property
+        def cmpt(self) -> T:
+            return Item.Data._CmptGetter(self)
+
+        @staticmethod
+        def align_for_interpolate(
+            data1: Item.Data,
+            data2: Item.Data
+        ) -> AlignedData[Item.Data]:
+            aligned = AlignedData(*[
+                Item.Data(None, {}, [], [])
+                for _ in range(3)
+            ])
+
+            # align components
+            for key, cmpt1 in data1.components.items():
+                cmpt2 = data2.components.get(key, None)
+
+                if cmpt2 is None or not isinstance(cmpt1, SupportsInterpolate[Component]):
+                    aligned.data1.components[key] = cmpt1
+                    aligned.data2.components[key] = cmpt1
+                    aligned.union.components[key] = cmpt1
+                    continue
+
+                cmpt_aligned = cmpt1.align_for_interpolate(cmpt1, cmpt2)
+                aligned.data1.components[key] = cmpt_aligned.data1
+                aligned.data2.components[key] = cmpt_aligned.data2
+                aligned.union.components[key] = cmpt_aligned.union
+
+            # align children
+            max_len = max(len(data1.children), len(data2.children))
+            aligned.data1.children = resize_preserving_order(data1.children, max_len)
+            aligned.data2.children = resize_preserving_order(data2.children, max_len)
+
+        def interpolate(self, data1: Item.Data, data2: Item.Data, alpha: float) -> None:
+            for key, cmpt in self.components.items():
+                cmpt1 = data1.components[key]
+                cmpt2 = data2.components[key]
+
+                assert isinstance(cmpt, SupportsInterpolate)
+
+                cmpt.interpolate(cmpt1, cmpt2, alpha)
+
+    def store_data(self):
+        return Item.Data.store(self)
 
     # endregion
 
     # region timeline
 
-    @staticmethod
-    def _get_timeline_context(raise_exc=True) -> Timeline:
-        obj = Timeline.ctx_var.get(None)
-        if obj is None and raise_exc:
-            name = inspect.currentframe().f_back.f_code.co_name
-            raise LookupError(f'Item.{name} 无法在 Timeline.build 之外使用')
-        return obj
+    def show(self, root_only=False) -> None:
+        Timeline.get_context().show(self, root_only=root_only)
 
-    def show(self, self_only=False) -> None:
-        self._get_timeline_context().show(self, self_only=self_only)
-
-    def hide(self, self_only=False) -> None:
-        self._get_timeline_context().hide(self, self_only=self_only)
+    def hide(self, root_only=False) -> None:
+        Timeline.get_context().hide(self, root_only=root_only)
 
     # endregion
 

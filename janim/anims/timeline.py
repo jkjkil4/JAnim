@@ -8,16 +8,24 @@ from collections import defaultdict
 from dataclasses import dataclass
 from typing import Iterable, TYPE_CHECKING
 
-from janim.anims.animation import Animation
 from janim.anims.display import Display
 from janim.logger import log
 
 if TYPE_CHECKING:   # pragma: no cover
+    from janim.anims.animation import Animation
     from janim.items.item import Item
 
 
 class Timeline(metaclass=ABCMeta):
     ctx_var: ContextVar[Timeline] = ContextVar('Timeline.ctx_var', default=None)
+
+    @staticmethod
+    def get_context(raise_exc=True) -> Timeline:
+        obj = Timeline.ctx_var.get(None)
+        if obj is None and raise_exc:
+            f_back = inspect.currentframe().f_back
+            raise LookupError(f'{f_back.f_code.co_qualname} 无法在 Timeline.build 之外使用')
+        return obj
 
     @dataclass
     class TimeOfCode:
@@ -27,7 +35,7 @@ class Timeline(metaclass=ABCMeta):
     @dataclass
     class TimedItemData:
         time: float
-        data: Item.StoredData
+        data: Item.Data
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -115,27 +123,25 @@ class Timeline(metaclass=ABCMeta):
             else:  # as_time > datas[-1].time
                 datas.append(Timeline.TimedItemData(as_time, item.store_data()))
 
-    def get_stored_data_at_time(self, item: Item, t: float) -> Timeline.TimedItemData:
+    def get_stored_data_at_time(self, item: Item, t: float) -> Item.Data:
+        # TODO: optimize
         datas = self.item_stored_datas[item]
 
         if not datas:
             raise ValueError('Not stored')
 
-        ret = None
-        for data in reversed(datas):
-            if data.time <= t:
-                ret = data
-                break
+        for timed_data in reversed(datas):
+            if timed_data.time <= t:
+                return timed_data.data
 
-        assert ret is not None
-        return ret
+        assert False
 
     def _show(self, item: Item) -> None:
         self.item_display_times.setdefault(item, self.current_time)
 
-    def show(self, root: Item, *, self_only=False) -> None:
+    def show(self, root: Item, *, root_only=False) -> None:
         self._show(root)
-        if not self_only:
+        if not root_only:
             for item in root.descendants():
                 self._show(item)
 
@@ -147,9 +153,9 @@ class Timeline(metaclass=ABCMeta):
         duration = self.current_time - time
         self.animations.append(Display(item, at=time, duration=duration))
 
-    def hide(self, root: Item, *, self_only=False) -> None:
+    def hide(self, root: Item, *, root_only=False) -> None:
         self._hide(root)
-        if not self_only:
+        if not root_only:
             for item in root.descendants():
                 self._hide(item)
 

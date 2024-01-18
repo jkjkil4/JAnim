@@ -11,7 +11,9 @@ from janim.constants import (DEFAULT_ITEM_TO_ITEM_BUFF, DOWN, IN, LEFT,
                              MED_SMALL_BUFF, ORIGIN, OUT, PI, RIGHT, UP)
 from janim.items.item import Item
 from janim.typing import Vect, VectArray
+from janim.utils.data import AlignedData
 from janim.utils.signal import Signal
+from janim.utils.bezier import interpolate
 from janim.utils.space_ops import angle_of_vector, get_norm, rotation_matrix
 from janim.utils.unique_nparray import UniqueNparray
 
@@ -40,7 +42,26 @@ class Cmpt_Points(Component):
         return self
 
     def __eq__(self, other: Cmpt_Points) -> bool:
-        return id(self._points.data) == id(other._points.data)
+        return id(self.get()) == id(other.get())
+
+    @staticmethod
+    def align_for_interpolate(cmpt1: Cmpt_Points, cmpt2: Cmpt_Points):
+        len1, len2 = len(cmpt1.get()), len(cmpt2.get())
+
+        if len1 == len2:
+            return AlignedData(cmpt1, cmpt1, cmpt1)
+
+        if len1 > len2:
+            return AlignedData(cmpt1, Cmpt_Points(), cmpt2.copy().resize(len1))
+
+        # len1 < len2
+        return AlignedData(cmpt1.copy().resize(len2), Cmpt_Points(), cmpt2)
+
+    def interpolate(self, cmpt1: Cmpt_Points, cmpt2: Cmpt_Points) -> None:
+        if cmpt1 == cmpt2:
+            return
+
+        self._points._data = interpolate(cmpt1.get(), cmpt2.get())
 
     # region 点数据 | Points
 
@@ -351,7 +372,7 @@ class Cmpt_Points(Component):
         *,
         about_point: Vect | None = None,
         about_edge: Vect | None = ORIGIN,
-        self_only: bool = False
+        root_only: bool = False
     ) -> Self:
         '''
         将所有点作为单独的一个参数传入 ``func``，并将 ``func`` 返回的结果作为新的点坐标数据
@@ -359,7 +380,7 @@ class Cmpt_Points(Component):
         视 ``about_point`` 为原点，若其为 ``None``，则将物件在 ``about_edge`` 方向上的边界作为 ``about_point``
         '''
         if about_point is None and about_edge is not None:
-            if self_only:
+            if root_only:
                 about_point = self.self_box.get(about_edge)
             else:
                 about_point = self.box.get(about_edge)
@@ -377,7 +398,7 @@ class Cmpt_Points(Component):
 
         apply(self)
 
-        if not self_only and self.bind is not None:
+        if not root_only and self.bind is not None:
             for item in self.bind.at_item.walk_descendants(self.bind.decl_cls):
                 cmpt = getattr(item, self.bind.key)
                 if not isinstance(cmpt, Cmpt_Points):
@@ -393,7 +414,7 @@ class Cmpt_Points(Component):
         *,
         about_point: Vect | None = ORIGIN,
         about_edge: Vect | None = ORIGIN,
-        self_only: bool = False
+        root_only: bool = False
     ) -> Self:
         '''
         对每个点依次传入 ``func`` 进行变换；以默认的原点作用变换，而不是物件的中心
@@ -402,7 +423,7 @@ class Cmpt_Points(Component):
             lambda points: np.array([func(p) for p in points]),
             about_point=about_point,
             about_edge=about_edge,
-            self_only=self_only
+            root_only=root_only
         )
         return self
 
@@ -412,7 +433,7 @@ class Cmpt_Points(Component):
         *,
         about_point: Vect | None = None,
         about_edge: Vect | None = None,
-        self_only: bool = False
+        root_only: bool = False
     ) -> Self:
         '''
         将矩阵变换作用于 ``points``；以默认的原点作用变换，而不是物件的中心
@@ -438,7 +459,7 @@ class Cmpt_Points(Component):
             lambda points: np.dot(points, full_matrix.T),
             about_point=about_point,
             about_edge=about_edge,
-            self_only=self_only
+            root_only=root_only
         )
 
         return self
@@ -449,7 +470,7 @@ class Cmpt_Points(Component):
         *,
         about_point: Vect | None = ORIGIN,
         about_edge: Vect | None = ORIGIN,
-        self_only: bool = False
+        root_only: bool = False
     ) -> Self:
         '''
         将复变函数作用于 ``points``；以默认的原点作用变换，而不是物件的中心
@@ -469,7 +490,7 @@ class Cmpt_Points(Component):
             R3_func,
             about_point=about_point,
             about_edge=about_edge,
-            self_only=self_only
+            root_only=root_only
         )
         return self
 
@@ -480,7 +501,7 @@ class Cmpt_Points(Component):
         axis: Vect = OUT,
         about_point: Vect | None = None,
         about_edge: Vect | None = ORIGIN,
-        self_only: bool = False
+        root_only: bool = False
     ) -> Self:
         '''
         以 ``axis`` 为方向，``angle`` 为角度旋转，可传入 ``about_point`` 指定相对于以哪个点为中心
@@ -493,7 +514,7 @@ class Cmpt_Points(Component):
             lambda points: np.dot(points, rot_matrix_T),
             about_point=about_point,
             about_edge=about_edge,
-            self_only=self_only
+            root_only=root_only
         )
         return self
 
@@ -503,7 +524,7 @@ class Cmpt_Points(Component):
         axis: Vect = UP,
         about_point: Vect | None = None,
         about_edge: Vect | None = ORIGIN,
-        self_only: bool = False
+        root_only: bool = False
     ) -> Self:
         '''
         绕 axis 轴翻转
@@ -515,7 +536,7 @@ class Cmpt_Points(Component):
             axis=axis,
             about_point=about_point,
             about_edge=about_edge,
-            self_only=self_only
+            root_only=root_only
         )
         return self
 
@@ -526,7 +547,7 @@ class Cmpt_Points(Component):
         min_scale_factor: float = 1e-8,
         about_point: Vect | None = None,
         about_edge: Vect | None = ORIGIN,
-        self_only: bool = False
+        root_only: bool = False
     ) -> Self:
         '''
         将物件缩放指定倍数
@@ -553,7 +574,7 @@ class Cmpt_Points(Component):
             lambda points: scale_factor * points,
             about_point=about_point,
             about_edge=about_edge,
-            self_only=self_only
+            root_only=root_only
         )
         return self
 
@@ -565,7 +586,7 @@ class Cmpt_Points(Component):
         min_scale_factor: float = 1e-8,
         about_point: Vect | None = None,
         about_edge: Vect | None = ORIGIN,
-        self_only: bool = False
+        root_only: bool = False
     ) -> Self:
         '''
         在指定的 ``dim`` 方向上使物件伸缩
@@ -582,7 +603,7 @@ class Cmpt_Points(Component):
             func,
             about_point=about_point,
             about_edge=about_edge,
-            self_only=self_only
+            root_only=root_only
         )
         return self
 
@@ -595,9 +616,9 @@ class Cmpt_Points(Component):
         min_scale_factor: float = 1e-8,
         about_point: Vect | None = None,
         about_edge: Vect | None = ORIGIN,
-        self_only: bool = False
+        root_only: bool = False
     ) -> Self:
-        if self_only:
+        if root_only:
             old_length = self.self_box.length_over_dim(dim)
         else:
             old_length = self.box.length_over_dim(dim)
@@ -612,7 +633,7 @@ class Cmpt_Points(Component):
                 min_scale_factor=min_scale_factor,
                 about_point=about_point,
                 about_edge=about_edge,
-                self_only=self_only,
+                root_only=root_only,
             )
         else:
             self.scale(
@@ -620,7 +641,7 @@ class Cmpt_Points(Component):
                 min_scale_factor=min_scale_factor,
                 about_point=about_point,
                 about_edge=about_edge,
-                self_only=self_only
+                root_only=root_only
             )
 
         return self
@@ -670,7 +691,7 @@ class Cmpt_Points(Component):
         dim_to_match: int = 0,
         *,
         stretch: bool = False,
-        self_only: bool = False,
+        root_only: bool = False,
         item_root_only: bool = False
     ) -> Self:
         '''
@@ -686,7 +707,7 @@ class Cmpt_Points(Component):
                     item_box.length_over_dim(i),
                     dim=i,
                     stretch=True,
-                    self_only=self_only
+                    root_only=root_only
                 )
         else:
             # If stretch is False, rescale only the dimension specified by dim_to_match to match the item.
@@ -694,11 +715,11 @@ class Cmpt_Points(Component):
                 item_box.length_over_dim(dim_to_match),
                 dim=dim_to_match,
                 stretch=False,
-                self_only=self_only
+                root_only=root_only
             )
 
         # Shift the object to the center of the specified item.
-        self.move_to(item_box.center, self_only=self_only)
+        self.move_to(item_box.center, root_only=root_only)
 
         return self
 
@@ -709,7 +730,7 @@ class Cmpt_Points(Component):
         *,
         stretch: bool = False,
         buff: float = MED_SMALL_BUFF,
-        self_only: bool = False,
+        root_only: bool = False,
         item_root_only: bool = False
     ) -> Self:
         '''
@@ -721,21 +742,21 @@ class Cmpt_Points(Component):
             item,
             dim_to_match,
             stretch=stretch,
-            self_only=self_only,
+            root_only=root_only,
             item_root_only=item_root_only
         )
 
-        box = self.self_box if self_only else self.box
+        box = self.self_box if root_only else self.box
 
         if stretch:
             for i in range(3):
                 length = box.length_over_dim(i)
                 if length == 0:
                     continue
-                self.stretch((length + buff * 2) / length, dim=i, self_only=self_only)
+                self.stretch((length + buff * 2) / length, dim=i, root_only=root_only)
         else:
             length = box.length_over_dim(dim_to_match)
-            self.scale((length + buff * 2) / length, self_only=self_only)
+            self.scale((length + buff * 2) / length, root_only=root_only)
 
         return self
 
@@ -768,7 +789,7 @@ class Cmpt_Points(Component):
 
     # region 位移 | movement
 
-    def shift(self, vector: Vect, *, self_only=False) -> Self:
+    def shift(self, vector: Vect, *, root_only=False) -> Self:
         '''
         相对移动 ``vector`` 向量
 
@@ -777,7 +798,7 @@ class Cmpt_Points(Component):
         self.apply_points_fn(
             lambda points: points + vector,
             about_edge=None,
-            self_only=self_only
+            root_only=root_only
         )
         return self
 
@@ -787,7 +808,7 @@ class Cmpt_Points(Component):
         *,
         aligned_edge: Vect = ORIGIN,
         coor_mask: Iterable = (1, 1, 1),
-        self_only: bool = False,
+        root_only: bool = False,
         item_root_only: bool = False
     ) -> Self:
         '''
@@ -801,7 +822,7 @@ class Cmpt_Points(Component):
             target = box.get(aligned_edge)
 
         point_to_align = self.box.get(aligned_edge)
-        self.shift((target - point_to_align) * coor_mask, self_only=self_only)
+        self.shift((target - point_to_align) * coor_mask, root_only=root_only)
 
         return self
 
@@ -830,13 +851,13 @@ class Cmpt_Points(Component):
 
     #     return self
 
-    def to_center(self, self_only=False) -> Self:
+    def to_center(self, root_only=False) -> Self:
         '''
         移动到原点 ``(0, 0, 0)``
 
         Move this item to the origin ``(0, 0, 0)``.
         '''
-        self.shift(-self.box.center, self_only=self_only)
+        self.shift(-self.box.center, root_only=root_only)
         return self
 
     # TODO: def to_border(
@@ -863,7 +884,7 @@ class Cmpt_Points(Component):
         buff: float = DEFAULT_ITEM_TO_ITEM_BUFF,
         aligned_edge: Vect = ORIGIN,
         coor_mask: Iterable = (1, 1, 1),
-        self_only: bool = False,
+        root_only: bool = False,
         item_root_only: bool = False
     ) -> Self:
         '''
@@ -879,17 +900,17 @@ class Cmpt_Points(Component):
         point_to_align = self.box.get(aligned_edge - direction)
         self.shift(
             (target - point_to_align + buff * direction) * coor_mask,
-            self_only=self_only
+            root_only=root_only
         )
         return self
 
     # TODO: shift_onto_screen
 
-    def set_coord(self, value: float, *, dim: int, direction: Vect = ORIGIN, self_only=False) -> Self:
+    def set_coord(self, value: float, *, dim: int, direction: Vect = ORIGIN, root_only=False) -> Self:
         curr = self.box.coord(dim, direction)
         shift_vect = np.zeros(3)
         shift_vect[dim] = value - curr
-        self.shift(shift_vect, self_only=self_only)
+        self.shift(shift_vect, root_only=root_only)
         return self
 
     def set_x(self, x: float, direction: Vect = ORIGIN) -> Self:

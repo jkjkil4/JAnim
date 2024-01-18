@@ -70,7 +70,7 @@ class TimelineTest(unittest.TestCase):
 
         for item, t, val in self.check_data_at_time:
             self.assertEqual(
-                tl.get_stored_data_at_time(item, t).data.components['cmpt'].value,
+                tl.get_stored_data_at_time(item, t).components['cmpt'].value,
                 val,
                 msg=f'check_data_at_time {id(item):X} {t} {val}'
             )

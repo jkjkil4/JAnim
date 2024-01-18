@@ -227,7 +227,7 @@ class PointsTest(unittest.TestCase):
             ]
         )
 
-        p2.points.surround(p1, 1, buff=0.5, stretch=True, self_only=True, item_root_only=True)
+        p2.points.surround(p1, 1, buff=0.5, stretch=True, root_only=True, item_root_only=True)
 
         self.assertNparrayClose(
             p2.points.get_all(),
@@ -341,7 +341,7 @@ class PointsTest(unittest.TestCase):
         self.assertNparrayEqual(p1.points.get(), [UL, DL])
         self.assertNparrayEqual(p2.points.get(), [LEFT * 2, ORIGIN])
 
-        p1.points.shift(RIGHT, self_only=True)
+        p1.points.shift(RIGHT, root_only=True)
 
         self.assertNparrayEqual(p1.points.get(), [UP, DOWN])
         self.assertNparrayEqual(p2.points.get(), [LEFT * 2, ORIGIN])

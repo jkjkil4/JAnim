@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Callable, Iterable, Sequence, TypeVar
+from typing import Callable, Iterable, Sequence, TypeVar, overload
 
 import numpy as np
 
@@ -91,13 +91,34 @@ def resize_array(nparray: np.ndarray, length: int) -> np.ndarray:
     return np.resize(nparray, (length, *nparray.shape[1:]))
 
 
-def resize_preserving_order(nparray: np.ndarray, length: int) -> np.ndarray:
-    if len(nparray) == 0:
-        return np.zeros((length, *nparray.shape[1:]), dtype=nparray.dtype)
-    if len(nparray) == length:
-        return nparray
-    indices = np.arange(length) * len(nparray) // length
-    return nparray[indices]
+@overload
+def resize_preserving_order(array: np.ndarray, length: int) -> np.ndarray: ...
+
+
+@overload
+def resize_preserving_order[T](array: list[T], length: int, fall_back: Callable = None.__class__) -> list[T]: ...
+
+
+def resize_preserving_order(
+    array: np.ndarray | list[T],
+    length: int,
+    fall_back: Callable = None.__class__
+):
+    if isinstance(array, np.ndarray):
+        if len(array) == 0:
+            return np.full((length, *array.shape[1:]), fall_back(), dtype=array.dtype)
+        if len(array) == length:
+            return array
+        indices = np.arange(length) * len(array) // length
+        return array[indices]
+
+    else:  # not isinstance(array, np.ndarray)
+        if len(array) == 0:
+            return [fall_back() for _ in range(length)]
+        if len(array) == length:
+            return array
+        indices = np.arange(length) * len(array) // length
+        return [array[idx] for idx in indices]
 
 
 def resize_with_interpolation(nparray: np.ndarray, length: int) -> np.ndarray:

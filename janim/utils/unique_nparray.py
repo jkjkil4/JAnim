@@ -24,8 +24,9 @@ class UniqueNparray:
     @data.setter
     def data(self, data: np.ndarray | Iterable) -> None:
         if not isinstance(data, np.ndarray):
-            data = np.array(data)
-        self._data = data[:]
+            self._data = np.array(data)
+        else:
+            self._data = data[:]
 
     def __eq__(self, other) -> None:
         if not isinstance(other, UniqueNparray):
