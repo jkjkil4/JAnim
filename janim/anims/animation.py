@@ -1,4 +1,3 @@
-from abc import ABCMeta
 from dataclasses import dataclass
 
 from janim.utils.rate_functions import RateFunc, smooth
@@ -14,7 +13,7 @@ class TimeRange:
         return self.at + self.duration
 
 
-class Animation(metaclass=ABCMeta):
+class Animation:
     def __init__(
         self,
         *,
@@ -33,6 +32,8 @@ class Animation(metaclass=ABCMeta):
         if duration is None:
             duration = self.local_range.duration
         self.global_range = TimeRange(at, duration)
+
+        self.anim_init()
 
     def anim_init(self) -> None: ...
 

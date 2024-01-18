@@ -54,7 +54,6 @@ class TimelineTest(unittest.TestCase):
 
         tl = MyTimeline()
         tl._build()
-        tl.init_animations()
 
         self.assertEqual(len(tl.item_stored_datas[tl.item1]), 2)
         self.assertEqual(len(tl.item_stored_datas[tl.item2]), 2)
@@ -70,10 +69,18 @@ class TimelineTest(unittest.TestCase):
 
         for item, t, val in self.check_data_at_time:
             self.assertEqual(
-                tl.get_stored_data_at_time(item, t).components['cmpt'].value,
+                tl.get_stored_data_at_right(item, t).components['cmpt'].value,
                 val,
                 msg=f'check_data_at_time {id(item):X} {t} {val}'
             )
 
         with self.assertRaises(ValueError):
-            tl.get_stored_data_at_time(tl.item3, 1)
+            tl.get_stored_data_at_right(tl.item3, 1)
+
+    def test_fmt_time(self) -> None:
+        self.assertEqual(  '     21s      ', Timeline.fmt_time(21))
+        self.assertEqual(  '     59s      ', Timeline.fmt_time(59))
+        self.assertEqual(  '  1m  0s      ', Timeline.fmt_time(60))
+        self.assertEqual(  ' 31m 31s 237ms', Timeline.fmt_time(31 * 60 + 31.23666))
+        self.assertEqual(  ' 37m  2s 234ms', Timeline.fmt_time(37 * 60 + 2.23444))
+        self.assertEqual('3h 37m  2s 234ms', Timeline.fmt_time(3 * 60 * 60 + 37 * 60 + 2.23444))

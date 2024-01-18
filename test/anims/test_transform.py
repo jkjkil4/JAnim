@@ -2,8 +2,10 @@ import unittest
 import numpy as np
 
 from janim.anims.animation import TimeRange
+from janim.anims.composition import AnimGroup
 from janim.anims.timeline import Timeline
 from janim.anims.transform import Transform
+from janim.anims.display import Display
 from janim.components.points import Cmpt_Points
 from janim.constants import DOWN, LEFT, RIGHT, UP
 from janim.items.points import Points
@@ -30,6 +32,8 @@ class TransformTest(unittest.TestCase):
                 p1 = Points(UP * 2, DOWN * 2)
                 p2 = Points(LEFT, RIGHT)
 
+                self.show(p1)
+
                 self.forward(2)
 
                 p1.points.set([UP, DOWN])
@@ -38,9 +42,10 @@ class TransformTest(unittest.TestCase):
 
                 p2.points.set([LEFT * 2, RIGHT * 2])
 
+                self.forward(1)
+
         tl = MyTimeline()
         tl._build()
-        tl.init_animations()
 
         self.assertEqual(tsf_anim.global_range, TimeRange(2, 1))
 
@@ -62,7 +67,21 @@ class TransformTest(unittest.TestCase):
             [UP * 0.7 + LEFT * 0.3, DOWN * 0.7 + RIGHT * 0.3]
         )
 
+        for anim in tl.anims:
+            if isinstance(anim, AnimGroup):
+                display1, display2 = filter(lambda x: x is not anim, tl.anims)
+                break
 
+        self.assertIsInstance(display1, Display)
+        self.assertIsInstance(display2, Display)
 
+        self.assertEqual(tsf_anim.global_range.at, 2)
+        self.assertEqual(tsf_anim.global_range.end, 3)
+
+        self.assertEqual(display1.global_range.at, 0)
+        self.assertEqual(display1.global_range.end, 2)
+
+        self.assertEqual(display2.global_range.at, 3)
+        self.assertEqual(display2.global_range.end, 4)
 
 

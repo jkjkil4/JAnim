@@ -3,11 +3,13 @@ from __future__ import annotations
 import inspect
 import math
 from abc import ABCMeta, abstractmethod
+from bisect import insort
 from contextvars import ContextVar
 from collections import defaultdict
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Iterable, Callable, Self
 
+from janim.anims.animation import TimeRange
 from janim.anims.display import Display
 from janim.anims.composition import AnimGroup
 from janim.logger import log
@@ -34,6 +36,13 @@ class Timeline(metaclass=ABCMeta):
         line: int
 
     @dataclass
+    class ScheduledTask:
+        at: float
+        func: Callable
+        args: list
+        kwargs: dict
+
+    @dataclass
     class TimedItemData:
         time: float
         data: Item.Data
@@ -44,6 +53,7 @@ class Timeline(metaclass=ABCMeta):
         self.current_time: float = 0
         self.times_of_code: list[Timeline.TimeOfCode] = []
 
+        self.scheduled_tasks: list[Timeline.ScheduledTask] = []
         self.anims: list[Animation] = []
 
         self.item_stored_datas: defaultdict[Item, list[Timeline.TimedItemData]] = defaultdict(list)
@@ -57,15 +67,10 @@ class Timeline(metaclass=ABCMeta):
         try:
             self._build_frame = inspect.currentframe()
             self.build()
+            self.cleanup_display()
+            self.global_anim = AnimGroup(*self.anims)
         finally:
             self.ctx_var.reset(token)
-
-    def init_animations(self) -> None:
-        token = self.ctx_var.set(self)
-        self.global_anim = AnimGroup(*self.anims)
-        self.ctx_var.reset(token)
-
-        self.global_anim.anim_init()
 
     def register(self, item: Item) -> None:
         self.item_stored_datas[item]
@@ -82,12 +87,21 @@ class Timeline(metaclass=ABCMeta):
 
         return None     # pragma: no cover
 
-    def forward(self, dt: float) -> None:
+    def forward(self, dt: float, *, _detect_changes=True) -> None:
         if dt <= 0:
             raise ValueError('dt 必须大于 0')
 
-        self.detect_changes_of_all()
-        self.current_time += dt
+        if _detect_changes:
+            self.detect_changes_of_all()
+
+        to_time = self.current_time + dt
+
+        while self.scheduled_tasks and self.scheduled_tasks[0].at <= to_time:
+            task = self.scheduled_tasks.pop(0)
+            self.current_time = task.at
+            task.func(*task.args, **task.kwargs)
+
+        self.current_time = to_time
 
         self.times_of_code.append(
             Timeline.TimeOfCode(
@@ -96,49 +110,53 @@ class Timeline(metaclass=ABCMeta):
             )
         )
 
-    def forward_to(self, t: float) -> None:
-        self.forward(t - self.current_time)
+    def forward_to(self, t: float, *, _detect_changes=True) -> None:
+        self.forward(t - self.current_time, _detect_changes=_detect_changes)
 
-    def play(self, *anims: Animation, **kwargs) -> None:
+    def prepare(self, *anims: Animation, **kwargs) -> TimeRange:
+        self.detect_changes_of_all()
+
         anim = AnimGroup(*anims, **kwargs)
         anim.set_global_range(self.current_time + anim.local_range.at)
         self.anims.append(anim)
 
-        self.forward_to(anim.global_range.end)
+        return anim.global_range
+
+    def play(self, *anims: Animation, **kwargs) -> None:
+        t_range = self.prepare(*anims, **kwargs)
+        self.forward_to(t_range.end, _detect_changes=False)
+
+    def schedule(self, at: float, func: Callable, *args, **kwargs) -> None:
+        insort(self.scheduled_tasks, Timeline.ScheduledTask(at, func, args, kwargs), key=lambda x: x.at)
 
     def detect_changes_of_all(self) -> None:
         for item, datas in self.item_stored_datas.items():
             self._detect_change(item, datas)
 
-    def detect_changes(self, items: Iterable[Item], *, as_time: float | None = None) -> None:
+    def detect_changes(self, items: Iterable[Item]) -> None:
         for item in items:
-            self._detect_change(item, self.item_stored_datas[item], as_time=as_time)
+            self._detect_change(item, self.item_stored_datas[item])
 
     def _detect_change(
         self,
         item: Item,
         datas: list[Timeline.TimedItemData],
-        *,
-        as_time: float | None = None
     ) -> None:
         if not datas:
             datas.append(Timeline.TimedItemData(0, item.store_data()))
 
         elif datas[-1].data.is_changed():
-            if as_time is None:
-                as_time = self.current_time
-
-            if as_time < datas[-1].time:
+            if self.current_time < datas[-1].time:
                 # TOOD: 明确是什么物件
                 raise RuntimeError('记录物件数据失败，可能是因为物件处于动画中')
 
-            elif as_time == datas[-1].time:
+            elif self.current_time == datas[-1].time:
                 datas[-1].data = item.store_data()
 
             else:  # as_time > datas[-1].time
-                datas.append(Timeline.TimedItemData(as_time, item.store_data()))
+                datas.append(Timeline.TimedItemData(self.current_time, item.store_data()))
 
-    def get_stored_data_at_time(self, item: Item, t: float) -> Item.Data:
+    def _get_stored_data_at_time(self, item: Item, t: float) -> Item.Data:
         # TODO: optimize
         datas = self.item_stored_datas[item]
 
@@ -151,14 +169,21 @@ class Timeline(metaclass=ABCMeta):
 
         assert False
 
+    def get_stored_data_at_right(self, item: Item, t: float) -> Item.Data:
+        return self._get_stored_data_at_time(item, t + 1e-5)
+
+    def get_stored_data_at_left(self, item: Item, t: float) -> Item.Data:
+        return self._get_stored_data_at_time(item, t - 1e-5)
+
     def _show(self, item: Item) -> None:
         self.item_display_times.setdefault(item, self.current_time)
 
-    def show(self, root: Item, *, root_only=False) -> None:
-        self._show(root)
-        if not root_only:
-            for item in root.descendants():
-                self._show(item)
+    def show(self, *roots: Item, root_only=False) -> None:
+        for root in roots:
+            self._show(root)
+            if not root_only:
+                for item in root.descendants():
+                    self._show(item)
 
     def _hide(self, item: Item) -> None:
         time = self.item_display_times.pop(item, None)
@@ -166,19 +191,27 @@ class Timeline(metaclass=ABCMeta):
             return
 
         duration = self.current_time - time
-        self.animations.append(Display(item, at=time, duration=duration))
 
-    def hide(self, root: Item, *, root_only=False) -> None:
-        self._hide(root)
-        if not root_only:
-            for item in root.descendants():
-                self._hide(item)
+        anim = Display(item, duration=duration)
+        anim.set_global_range(time)
+        self.anims.append(anim)
+
+    def hide(self, *roots: Item, root_only=False) -> None:
+        for root in roots:
+            self._hide(root)
+            if not root_only:
+                for item in root.descendants():
+                    self._hide(item)
+
+    def cleanup_display(self) -> None:
+        for item in list(self.item_display_times.keys()):
+            self._hide(item)
 
     # region debug
 
     @staticmethod
     def fmt_time(t: float) -> str:
-        time = round(t, 2)
+        time = round(t, 3)
 
         minutes = int(time // 60)
         time %= 60
@@ -187,14 +220,14 @@ class Timeline(metaclass=ABCMeta):
         minutes %= 60
 
         seconds = math.floor(time)
-        ms = int((time - seconds) * 1e3)
+        ms = round((time - seconds) * 1e3)
 
         times = []
         if hours != 0:
             times.append(f'{hours}h')
         times.append(f'{minutes:>3d}m' if minutes != 0 else ' ' * 4)
         times.append(f'{seconds:>3d}s')
-        times.append(f'{ms:>4d}ms' if ms != 0 else ' ' * 5)
+        times.append(f'{ms:>4d}ms' if ms != 0 else ' ' * 6)
 
         return "".join(times)
 
@@ -207,9 +240,9 @@ class Timeline(metaclass=ABCMeta):
         log.debug(f't={time}  {ext_msg}at build.{self.get_build_lineno()}')
 
     def dbg_item_builder(self, item: Item):     # pragma: no cover
-        return Timeline.DbgItemBuilder(self, item)
+        return Timeline._DbgItemBuilder(self, item)
 
-    class DbgItemBuilder:
+    class _DbgItemBuilder:   # pragma: no cover
         def __init__(self, timeline: Timeline, item: Item):
             self.timeline = timeline
             self.item = item

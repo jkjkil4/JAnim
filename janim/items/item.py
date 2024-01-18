@@ -316,11 +316,11 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
 
     # region timeline
 
-    def show(self, root_only=False) -> None:
-        Timeline.get_context().show(self, root_only=root_only)
+    def show(self, **kwargs) -> None:
+        Timeline.get_context().show(self, **kwargs)
 
-    def hide(self, root_only=False) -> None:
-        Timeline.get_context().hide(self, root_only=root_only)
+    def hide(self, **kwargs) -> None:
+        Timeline.get_context().hide(self, **kwargs)
 
     # endregion
 

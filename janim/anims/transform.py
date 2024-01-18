@@ -4,10 +4,23 @@ from janim.utils.data import AlignedData
 
 
 class Transform(Animation):
-    def __init__(self, item_from, item_to, *, root_only=False, **kwargs):
+    def __init__(
+        self,
+        item_src: Item,
+        item_target: Item,
+        *,
+        hide_src: bool = True,
+        show_target: bool = True,
+        root_only: bool = False,
+        **kwargs
+    ):
         super().__init__(**kwargs)
-        self.item_from = item_from
-        self.item_to = item_to
+        self.item_src = item_src
+        self.item_target = item_target
+
+        self.hide_src = hide_src
+        self.show_target = show_target
+
         self.root_only = root_only
 
     def anim_init(self) -> None:
@@ -18,15 +31,20 @@ class Transform(Animation):
             if tpl in self.aligned:
                 return
 
-            data1 = self.timeline.get_stored_data_at_time(item1, self.global_range.at)
-            data2 = self.timeline.get_stored_data_at_time(item2, self.global_range.end)
+            data1 = self.timeline.get_stored_data_at_right(item1, self.global_range.at)
+            data2 = self.timeline.get_stored_data_at_left(item2, self.global_range.end)
             aligned = self.aligned[tpl] = data1.align_for_interpolate(data1, data2)
 
             if recurse:
                 for child1, child2 in zip(aligned.data1.children, aligned.data2.children):
                     align(child1, child2, True)
 
-        align(self.item_from, self.item_to, not self.root_only)
+        align(self.item_src, self.item_target, not self.root_only)
+
+        if self.hide_src:
+            self.timeline.schedule(self.global_range.at, self.item_src.hide, root_only=self.root_only)
+        if self.show_target:
+            self.timeline.schedule(self.global_range.end, self.item_target.show, root_only=self.root_only)
 
     def anim_on_alpha(self, alpha: float) -> None:
         for aligned in self.aligned.values():

@@ -60,10 +60,6 @@ class AnimGroup(Animation):
                 anim.local_range.duration * factor
             )
 
-    def anim_init(self) -> None:
-        for anim in self.anims:
-            anim.anim_init()
-
     def anim_on_alpha(self, alpha: float) -> None:
         adjusted_local_t = alpha * self.maxt
 
