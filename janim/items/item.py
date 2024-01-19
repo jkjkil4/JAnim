@@ -124,6 +124,9 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
             mark(self.descendants())
 
     def do(self, func: Callable[[Self]]) -> Self:
+        '''
+        使用 ``func`` 对物件进行操作，并返回 ``self`` 以方便链式调用
+        '''
         func(self)
         return self
 
@@ -220,15 +223,13 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         parents: list[Item]
         children: list[Item]
 
-        def is_changed(self) -> bool:
-            for stored_cmpt, item_cmpt in zip(self.components.values(), self.item.components.values()):
-                if stored_cmpt != item_cmpt:
-                    return True
-
-            return self.parents != self.item.parents or self.children != self.item.children
-
         @staticmethod
         def store[U: 'Item'](item: U) -> Item.Data[U]:
+            '''
+            将物件的数据复制，并返回复制后的数据
+
+            注：仅复制自身数据，不复制子物件的数据
+            '''
             components: dict[str, Component] = {}
 
             for key, cmpt in item.components.items():
@@ -246,12 +247,27 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
 
         @staticmethod
         def ref[U: 'Item'](item: U) -> Item.Data[U]:
+            '''
+            返回数据的引用，不进行复制
+            '''
             return Item.Data(
                 item,
                 item.components,
                 item.parents,
                 item.children
             )
+
+        def is_changed(self) -> bool:
+            '''
+            检查该数据与 ``item`` 现在的数据是否产生差异
+
+            注：仅检查自身数据，不检查子物件的数据
+            '''
+            for stored_cmpt, item_cmpt in zip(self.components.values(), self.item.components.values()):
+                if stored_cmpt != item_cmpt:
+                    return True
+
+            return self.parents != self.item.parents or self.children != self.item.children
 
         class _CmptGetter:
             def __init__(self, data: Item.Data):
@@ -266,6 +282,9 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
 
         @property
         def cmpt(self) -> T:
+            '''
+            将 ``.component['key']`` 简化为 ``.cmpt.key`` 且方便代码提示
+            '''
             return Item.Data._CmptGetter(self)
 
         @staticmethod
@@ -310,6 +329,9 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
                 cmpt.interpolate(cmpt1, cmpt2, alpha)
 
     def store_data(self):
+        '''
+        复制物件的数据并返回
+        '''
         return Item.Data.store(self)
 
     # endregion
@@ -317,9 +339,15 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
     # region timeline
 
     def show(self, **kwargs) -> None:
+        '''
+        显示物件
+        '''
         Timeline.get_context().show(self, **kwargs)
 
     def hide(self, **kwargs) -> None:
+        '''
+        隐藏物件
+        '''
         Timeline.get_context().hide(self, **kwargs)
 
     # endregion

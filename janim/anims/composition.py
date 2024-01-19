@@ -12,25 +12,26 @@ class AnimGroup(Animation):
     - 且可以使用 ``at`` 进行总体偏移（如 ``at=1`` 则是总体延后 1s）
 
     时间示例：
-    ```python
-    AnimGroup(
-        Anim1(duration=3),
-        Anim2(duration=4)
-    ) # Anim1 在 0~3s 执行，Anim2 在 0~4s 执行
 
-    AnimGroup(
-        Anim1(duration=3),
-        Anim2(duration=4),
-        duration=6
-    ) # Anim1 在 0~4.5s 执行，Anim2 在 0~6s 执行
+    .. code-block:: python
 
-    AnimGroup(
-        Anim1(duration=3),
-        Anim2(duration=4),
-        at=1,
-        duration=6
-    ) # Anim1 在 1~5.5s 执行，Anim2 在 1~7s 执行
-    ```
+        AnimGroup(
+            Anim1(duration=3),
+            Anim2(duration=4)
+        ) # Anim1 在 0~3s 执行，Anim2 在 0~4s 执行
+
+        AnimGroup(
+            Anim1(duration=3),
+            Anim2(duration=4),
+            duration=6
+        ) # Anim1 在 0~4.5s 执行，Anim2 在 0~6s 执行
+
+        AnimGroup(
+            Anim1(duration=3),
+            Anim2(duration=4),
+            at=1,
+            duration=6
+        ) # Anim1 在 1~5.5s 执行，Anim2 在 1~7s 执行
     '''
     def __init__(
         self,
@@ -47,6 +48,11 @@ class AnimGroup(Animation):
         super().__init__(duration=duration, rate_func=rate_func, **kwargs)
 
     def set_global_range(self, at: float, duration: float | None = None) -> None:
+        '''
+        设置并计算子动画的时间范围
+
+        不需要手动设置，该方法是被 :meth:`~.Timeline.prepare` 调用以计算的
+        '''
         super().set_global_range(at, duration)
 
         if duration is None:
@@ -61,6 +67,10 @@ class AnimGroup(Animation):
             )
 
     def anim_on_alpha(self, alpha: float) -> None:
+        '''
+        在该方法中，:class:`AnimGroup` 通过 ``alpha``
+        换算出子动画的 ``local_t`` 并调用子动画的 :meth:`~.Animation.anim_on` 方法
+        '''
         adjusted_local_t = alpha * self.maxt
 
         for anim in self.anims:
@@ -78,25 +88,26 @@ class Succession(AnimGroup):
     - 其余与 `AnimGroup` 相同
 
     时间示例：
-    ```python
-    Succession(
-        Anim1(duration=3),
-        Anim2(duration=4)
-    ) # Anim1 在 0~3s 执行，Anim2 在 3~7s 执行
 
-    Succession(
-        Anim1(duration=2),
-        Anim2(at=1, duration=2),
-        Anim3(at=0.5, duration=2)
-    ) # Anim1 在 0~2s 执行，Anim2 在 3~5s 执行，Anim3 在 5.5~7.5s 执行
+    .. code-block:: python
 
-    Succession(
-        Anim1(duration=2),
-        Anim2(duration=2),
-        Anim3(duration=2),
-        buff=0.5
-    ) # Anim1 在 0~2s 执行，Anim2 在 2.5~4.5s 执行，Anim3 在 5~7s 执行
-    ```
+        Succession(
+            Anim1(duration=3),
+            Anim2(duration=4)
+        ) # Anim1 在 0~3s 执行，Anim2 在 3~7s 执行
+
+        Succession(
+            Anim1(duration=2),
+            Anim2(at=1, duration=2),
+            Anim3(at=0.5, duration=2)
+        ) # Anim1 在 0~2s 执行，Anim2 在 3~5s 执行，Anim3 在 5.5~7.5s 执行
+
+        Succession(
+            Anim1(duration=2),
+            Anim2(duration=2),
+            Anim3(duration=2),
+            buff=0.5
+        ) # Anim1 在 0~2s 执行，Anim2 在 2.5~4.5s 执行，Anim3 在 5~7s 执行
     '''
     def __init__(self, *anims: Animation, buff: float = 0, **kwargs):
         end_time = 0
@@ -111,18 +122,19 @@ class Aligned(AnimGroup):
     动画集合（并列对齐执行）
 
     时间示例：
-    ```python
-    Aligned(
-        Anim1(duration=1),
-        Anim2(duration=2)
-    ) # Anim1 和 Anim2 都在 0~2s 执行
 
-    Aligned(
-        Anim1(duration=1),
-        Anim2(duration=2),
-        duration=4
-    ) # Anim1 和 Anim2 都在 0~4s 执行
-    ```
+    .. code-block:: python
+
+        Aligned(
+            Anim1(duration=1),
+            Anim2(duration=2)
+        ) # Anim1 和 Anim2 都在 0~2s 执行
+
+        Aligned(
+            Anim1(duration=1),
+            Anim2(duration=2),
+            duration=4
+        ) # Anim1 和 Anim2 都在 0~4s 执行
     '''
     def __init__(*anims: Animation, **kwargs):
         maxt = max(anim.local_range.end for anim in anims)

@@ -7,6 +7,10 @@ if TYPE_CHECKING:   # pragma: no cover
 
 
 class Display(Animation):
-    def __init__(self, item: 'Item', **kwargs):
+    '''
+    在指定的时间区间上显示物件
+    '''
+    def __init__(self, item: 'Item', root_only=False, **kwargs):
         super().__init__(**kwargs)
         self.item = item
+        self.root_only = root_only

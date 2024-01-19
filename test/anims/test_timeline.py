@@ -28,7 +28,7 @@ class TimelineTest(unittest.TestCase):
             cmpt = CmptInfo(MyCmpt)
 
         class MyTimeline(Timeline):
-            def build(self) -> None:
+            def construct(self) -> None:
                 item1 = MyItem()
                 item1.cmpt.value = 114
 
@@ -53,7 +53,7 @@ class TimelineTest(unittest.TestCase):
                 self.item3 = MyItem()
 
         tl = MyTimeline()
-        tl._build()
+        tl.build()
 
         self.assertEqual(len(tl.item_stored_datas[tl.item1]), 2)
         self.assertEqual(len(tl.item_stored_datas[tl.item2]), 2)

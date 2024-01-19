@@ -20,23 +20,41 @@ if TYPE_CHECKING:   # pragma: no cover
 
 
 class Timeline(metaclass=ABCMeta):
+    '''
+    继承该类并实现 :meth:`construct` 方法，以实现动画的构建逻辑
+
+    调用 :meth:`build` 可以得到构建完成的动画对象
+    '''
+
     ctx_var: ContextVar[Timeline] = ContextVar('Timeline.ctx_var', default=None)
 
     @staticmethod
-    def get_context(raise_exc=True) -> Timeline:
+    def get_context(raise_exc=True) -> Timeline | None:
+        '''
+        调用该方法可以得到当前正在构建的 :class:`Timeline` 对象
+
+        - 用于 :class:`~.Animation` 的初始化以及物件的操作
+        - 如果在 :meth:`construct` 方法外调用，且 ``raise_exc=True`` （默认），则抛出 ``LookupError``
+        '''
         obj = Timeline.ctx_var.get(None)
         if obj is None and raise_exc:
             f_back = inspect.currentframe().f_back
-            raise LookupError(f'{f_back.f_code.co_qualname} 无法在 Timeline.build 之外使用')
+            raise LookupError(f'{f_back.f_code.co_qualname} 无法在 Timeline.construct 之外使用')
         return obj
 
     @dataclass
     class TimeOfCode:
+        '''
+        标记 :meth:`~.Timeline.construct` 执行到的代码行数所对应的时间
+        '''
         time: float
         line: int
 
     @dataclass
     class ScheduledTask:
+        '''
+        另见 :meth:`~.Timeline.schedule`
+        '''
         at: float
         func: Callable
         args: list
@@ -44,6 +62,9 @@ class Timeline(metaclass=ABCMeta):
 
     @dataclass
     class TimedItemData:
+        '''
+        表示从 ``time`` 之后，物件的数据
+        '''
         time: float
         data: Item.Data
 
@@ -60,22 +81,37 @@ class Timeline(metaclass=ABCMeta):
         self.item_display_times: dict[Item, int] = {}
 
     @abstractmethod
-    def build(self) -> None: ...
+    def construct(self) -> None:
+        '''
+        继承该方法以实现动画的构建逻辑
+        '''
+        pass
 
-    def _build(self) -> None:
+    def build(self) -> AnimGroup:
+        '''
+        构建动画并返回
+        '''
         token = self.ctx_var.set(self)
         try:
             self._build_frame = inspect.currentframe()
-            self.build()
+            self.construct()
             self.cleanup_display()
             self.global_anim = AnimGroup(*self.anims)
         finally:
             self.ctx_var.reset(token)
 
+        return self.global_anim
+
     def register(self, item: Item) -> None:
+        '''
+        在 :meth:`construct` 中创建的物件会自动调用该方法
+        '''
         self.item_stored_datas[item]
 
-    def get_build_lineno(self) -> int | None:
+    def get_construct_lineno(self) -> int | None:
+        '''
+        得到当前在 :meth:`construct` 中执行到的行数
+        '''
         frame = inspect.currentframe().f_back
         while frame is not None:
             f_back = frame.f_back
@@ -88,6 +124,9 @@ class Timeline(metaclass=ABCMeta):
         return None     # pragma: no cover
 
     def forward(self, dt: float, *, _detect_changes=True) -> None:
+        '''
+        向前推进 ``dt`` 秒
+        '''
         if dt <= 0:
             raise ValueError('dt 必须大于 0')
 
@@ -106,14 +145,20 @@ class Timeline(metaclass=ABCMeta):
         self.times_of_code.append(
             Timeline.TimeOfCode(
                 self.current_time,
-                self.get_build_lineno() or -1
+                self.get_construct_lineno() or -1
             )
         )
 
     def forward_to(self, t: float, *, _detect_changes=True) -> None:
+        '''
+        向前推进到 ``t`` 秒的时候
+        '''
         self.forward(t - self.current_time, _detect_changes=_detect_changes)
 
     def prepare(self, *anims: Animation, **kwargs) -> TimeRange:
+        '''
+        应用动画
+        '''
         self.detect_changes_of_all()
 
         anim = AnimGroup(*anims, **kwargs)
@@ -123,17 +168,32 @@ class Timeline(metaclass=ABCMeta):
         return anim.global_range
 
     def play(self, *anims: Animation, **kwargs) -> None:
+        '''
+        应用动画并推进到动画结束的时候
+        '''
         t_range = self.prepare(*anims, **kwargs)
         self.forward_to(t_range.end, _detect_changes=False)
 
     def schedule(self, at: float, func: Callable, *args, **kwargs) -> None:
+        '''
+        计划执行
+
+        会在进度达到 ``at`` 时，对 ``func`` 进行调用，
+        可传入 ``*args`` 和 ``**kwargs``
+        '''
         insort(self.scheduled_tasks, Timeline.ScheduledTask(at, func, args, kwargs), key=lambda x: x.at)
 
     def detect_changes_of_all(self) -> None:
+        '''
+        检查所有物件是否有产生变化并记录
+        '''
         for item, datas in self.item_stored_datas.items():
             self._detect_change(item, datas)
 
     def detect_changes(self, items: Iterable[Item]) -> None:
+        '''
+        检查指定的列表中的物件是否有产生变化并记录（仅检查自身而不包括子物件的）
+        '''
         for item in items:
             self._detect_change(item, self.item_stored_datas[item])
 
@@ -170,15 +230,24 @@ class Timeline(metaclass=ABCMeta):
         assert False
 
     def get_stored_data_at_right(self, item: Item, t: float) -> Item.Data:
+        '''
+        得到在指定时间之前的瞬间，物件的数据
+        '''
         return self._get_stored_data_at_time(item, t + 1e-5)
 
     def get_stored_data_at_left(self, item: Item, t: float) -> Item.Data:
+        '''
+        得到在指定时间之后的瞬间，物件的数据
+        '''
         return self._get_stored_data_at_time(item, t - 1e-5)
 
     def _show(self, item: Item) -> None:
         self.item_display_times.setdefault(item, self.current_time)
 
     def show(self, *roots: Item, root_only=False) -> None:
+        '''
+        显示物件
+        '''
         for root in roots:
             self._show(root)
             if not root_only:
@@ -192,11 +261,14 @@ class Timeline(metaclass=ABCMeta):
 
         duration = self.current_time - time
 
-        anim = Display(item, duration=duration)
+        anim = Display(item, duration=duration, root_only=True)
         anim.set_global_range(time)
         self.anims.append(anim)
 
     def hide(self, *roots: Item, root_only=False) -> None:
+        '''
+        隐藏物件
+        '''
         for root in roots:
             self._hide(root)
             if not root_only:
@@ -204,6 +276,9 @@ class Timeline(metaclass=ABCMeta):
                     self._hide(item)
 
     def cleanup_display(self) -> None:
+        '''
+        对目前显示中的所有物件调用隐藏，使得正确产生 :class:`~.Display` 对象
+        '''
         for item in list(self.item_display_times.keys()):
             self._hide(item)
 
@@ -237,7 +312,7 @@ class Timeline(metaclass=ABCMeta):
 
         time = self.fmt_time(self.current_time)
 
-        log.debug(f't={time}  {ext_msg}at build.{self.get_build_lineno()}')
+        log.debug(f't={time}  {ext_msg}at build.{self.get_construct_lineno()}')
 
     def dbg_item_builder(self, item: Item):     # pragma: no cover
         return Timeline._DbgItemBuilder(self, item)

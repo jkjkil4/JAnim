@@ -166,9 +166,15 @@ class Cmpt_Points(Component):
         return self
 
     def count(self) -> int:
+        '''
+        点的数量
+        '''
         return len(self.get())
 
     def has(self) -> bool:
+        '''
+        是否有点坐标数据
+        '''
         return self.count() > 0
 
     def get_start(self) -> np.ndarray:

@@ -24,6 +24,9 @@ class Transform(Animation):
         self.root_only = root_only
 
     def anim_init(self) -> None:
+        '''
+        进行物件数据的对齐
+        '''
         self.aligned: dict[tuple[Item, Item], AlignedData[Item.Data]] = {}
 
         def align(item1: Item, item2: Item, recurse: bool) -> None:
@@ -47,6 +50,9 @@ class Transform(Animation):
             self.timeline.schedule(self.global_range.end, self.item_target.show, root_only=self.root_only)
 
     def anim_on_alpha(self, alpha: float) -> None:
+        '''
+        对物件数据进行过渡插值
+        '''
         for aligned in self.aligned.values():
             aligned.union.interpolate(aligned.data1, aligned.data2, alpha)
 

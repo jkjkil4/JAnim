@@ -26,7 +26,7 @@ class TransformTest(unittest.TestCase):
         p2: Points = None
 
         class MyTimeline(Timeline):
-            def build(self) -> None:
+            def construct(self) -> None:
                 nonlocal tsf_anim, p1, p2
 
                 p1 = Points(UP * 2, DOWN * 2)
@@ -45,7 +45,7 @@ class TransformTest(unittest.TestCase):
                 self.forward(1)
 
         tl = MyTimeline()
-        tl._build()
+        tl.build()
 
         self.assertEqual(tsf_anim.global_range, TimeRange(2, 1))
 
