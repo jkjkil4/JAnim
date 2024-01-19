@@ -1,0 +1,77 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2023, jkjkil4
+# This file is distributed under the same license as the JAnim package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2024.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: JAnim\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-01-19 14:16+0800\n"
+"PO-Revision-Date: 2024-01-19 17:53+0800\n"
+"Last-Translator: \n"
+"Language-Team: en <LL@li.org>\n"
+"Language: en\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Generated-By: Babel 2.14.0\n"
+"X-Generator: Poedit 3.4.2\n"
+
+#: ../../source/janim/utils/refresh.rst:2
+msgid "refresh"
+msgstr "refresh"
+
+#: ../../source/rst_utils/tip_of_complex.rst:1
+msgid ""
+"**提示：这部分内容涉及 JAnim 实现原理，可能较为复杂，若没有研究源码的需"
+"求，你应酌情阅读**"
+msgstr ""
+"**Tips: This section covers the implementations of JAnim, which may be "
+"quite complex. If you do not have the need to delve into the source "
+"code, you may choose to read it at your discretion.**"
+
+#: janim.utils.refresh.register:1 of
+msgid "用于在需要时才进行值的重新计算，提升性能"
+msgstr "Used to recalculate values only when needed, improving performance"
+
+#: janim.utils.refresh.register:3 of
+msgid ""
+"当一个方法 self.func 被修饰后，会记忆 self.func 被调用后的返回值， 并在之"
+"后的调用中直接返回该值，而不对 self.func 进行真正的调用； 需要 ``self."
+"mark_refresh_required(self.func)`` 才会对 self.func 重新调用以更新返回值"
+msgstr ""
+"When a method self.func is decorated, it remembers the return value of "
+"self.func when called, and in subsequent calls, it directly returns that "
+"value without actually calling self.func; ``self."
+"mark_refresh_required(self.func)`` is needed to re-call self.func to "
+"update the return value"
+
+#: janim.utils.refresh.register:7 of
+msgid ""
+"例如，``Item`` 的 ``get_family`` 方法不会每次都进行计算 只有在 ``add`` "
+"或 ``remove`` 执行后，才会将 ``get_family`` 标记为需要更新 使得在下次调"
+"用 ``get_family`` 才重新计算结果并返回"
+msgstr ""
+"For example, the ``get_family`` method of ``Item`` will not be "
+"calculated every time. It will only be marked as needing an update after "
+"the execution of ``add`` or ``remove``, making it recalculated and "
+"returning the result the next time ``get_family`` is called"
+
+#: janim.utils.refresh.register:11 of
+msgid "另见："
+msgstr "See also:"
+
+#: janim.utils.refresh.register:13 of
+msgid "``test.utils.test_refresh.RefreshTest``."
+msgstr "``test.utils.test_refresh.RefreshTest``."
+
+#: janim.utils.refresh.RefreshData:1 janim.utils.refresh.Refreshable:1 of
+msgid "基类：:py:class:`object`"
+msgstr "基类：:py:class:`object`"
+
+#: janim.utils.refresh.Refreshable.mark_refresh:1 of
+msgid "标记指定的 ``func`` 需要进行更新"
+msgstr "Marks the specified ``func`` for an update"

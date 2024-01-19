@@ -1,0 +1,51 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2023, jkjkil4
+# This file is distributed under the same license as the JAnim package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2024.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version:  JAnim\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-01-19 17:57+0800\n"
+"PO-Revision-Date: 2024-01-19 17:56+0800\n"
+"Last-Translator: \n"
+"Language: en\n"
+"Language-Team: en <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.14.0\n"
+
+#: ../../source/index.rst:7
+msgid "JAnim 文档"
+msgstr "JAnim Documentation"
+
+#: ../../source/index.rst:9
+msgid "JAnim 是一个用于简易动画效果的库"
+msgstr "JAnim is a library for simple animation effects"
+
+#: ../../source/index.rst:12
+msgid "其它"
+msgstr "Other"
+
+#: ../../source/index.rst:19
+msgid ":ref:`genindex`"
+msgstr ":ref:`genindex`"
+
+#: ../../source/index.rst:20
+msgid ":ref:`modindex`"
+msgstr ":ref:`modindex`"
+
+#: ../../source/index.rst:21
+msgid ":ref:`search`"
+msgstr ":ref:`search`"
+
+#~ msgid "功能实现大量参考 `3b1b/manim <https://github.com/3b1b/manim>`_"
+#~ msgstr ""
+
+#~ msgid "文档参考 `https://docs.manim.org.cn/ <https://docs.manim.org.cn/>`_"
+#~ msgstr ""
+

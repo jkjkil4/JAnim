@@ -25,6 +25,8 @@ templates_path = ['_templates']
 exclude_patterns = []
 
 language = 'zh_CN'
+locale_dirs = ['locales/']
+gettext_compact = False     # optional
 
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output

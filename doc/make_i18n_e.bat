@@ -1,0 +1,1 @@
+sphinx-build -b html -D language=%1 ".\source" ".\build\html_i18n\%1" -E

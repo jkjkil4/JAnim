@@ -1,0 +1,248 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2023, jkjkil4
+# This file is distributed under the same license as the JAnim package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2024.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: JAnim\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-01-19 18:52+0800\n"
+"PO-Revision-Date: 2024-01-19 19:53+0800\n"
+"Last-Translator: \n"
+"Language-Team: en <LL@li.org>\n"
+"Language: en\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Generated-By: Babel 2.14.0\n"
+"X-Generator: Poedit 3.4.2\n"
+
+#: ../../source/janim/components/points.rst:2
+msgid "points"
+msgstr "points"
+
+#: janim.components.points.Cmpt_Points:1 of
+msgid "基类：:py:class:`~janim.components.component.Component`"
+msgstr "基类：:py:class:`~janim.components.component.Component`"
+
+#: janim.components.points.Cmpt_Points.init_bind:1 of
+msgid "用于 ``Item._init_components``"
+msgstr "Used for ``Item._init_components``"
+
+#: janim.components.points.Cmpt_Points.init_bind:3 of
+msgid "子类可以继承该函数，进行与所在物件相关的处理"
+msgstr "Subclasses can inherit this function to perform item-related processing"
+
+#: janim.components.points.Cmpt_Points.get:1 of
+msgid "得到点坐标数据"
+msgstr "Get the points"
+
+#: janim.components.points.Cmpt_Points.get_all:1 of
+msgid "得到自己以及后代物件的所有点坐标数据"
+msgstr "Get all points for self and descendant-items"
+
+#: janim.components.points.Cmpt_Points.set:1 of
+msgid "设置点坐标数据，每个坐标点都有三个分量"
+msgstr "Set point coordinate data, with each point having three components"
+
+#: janim.components.points.Cmpt_Points.set:3 of
+msgid "使用形如 ``.set([[1.5, 3, 2], [2, 1.5, 0]])`` 的形式"
+msgstr "Use a format like ``.set([[1.5, 3, 2], [2, 1.5, 0]])``"
+
+#: janim.components.points.Cmpt_Points.clear:1 of
+msgid "清除点"
+msgstr "Clear points"
+
+#: janim.components.points.Cmpt_Points.extend:1 of
+msgid "追加点坐标数据，每个坐标点都有三个分量"
+msgstr "Append point coordinate data, with each point having three components"
+
+#: janim.components.points.Cmpt_Points.extend:3 of
+msgid "使用形如 ``.append([[1.5, 3, 2], [2, 1.5, 0]])`` 的形式"
+msgstr "Use a format like ``.append([[1.5, 3, 2], [2, 1.5, 0]])``"
+
+#: janim.components.points.Cmpt_Points.reverse:1 of
+msgid "使点倒序"
+msgstr "Reverse the order of points"
+
+#: janim.components.points.Cmpt_Points.count:1 of
+msgid "点的数量"
+msgstr "The count of points"
+
+#: janim.components.points.Cmpt_Points.has:1 of
+msgid "是否有点坐标数据"
+msgstr "Checks if having points"
+
+#: janim.components.points.Cmpt_Points.get_start:1 of
+msgid "得到 ``points`` 的第一个点"
+msgstr "Get the first point"
+
+#: janim.components.points.Cmpt_Points.get_end:1 of
+msgid "得到 ``points`` 的最后一个点"
+msgstr "Get the last point"
+
+#: janim.components.points.Cmpt_Points.box:1 of
+msgid "表示物件（包括后代物件）的矩形包围框"
+msgstr "Rectangular bounding box of the item (including descendant-items)"
+
+#: janim.components.points.Cmpt_Points.self_box:1 of
+msgid "同 ``box``，但仅表示自己 ``points`` 的包围框，不考虑后代物件的"
+msgstr ""
+"Same as ``box``, but only represents the bounding box of its own ``points``, "
+"excluding descendant-items"
+
+#: janim.components.points.Cmpt_Points.BoundingBox:1 of
+msgid "基类：:py:class:`object`"
+msgstr "基类：:py:class:`object`"
+
+#: janim.components.points.Cmpt_Points.BoundingBox:1 of
+msgid "边界框，``self.data`` 包含三个元素，分别为左下，中心，右上"
+msgstr ""
+"Bounding box, ``self.data`` includes three elements representing the bottom-"
+"left, center, and top-right"
+
+#: janim.components.points.Cmpt_Points.BoundingBox.compute:1 of
+msgid "根据传入的 ``points`` 计算得到包围框的 左下、中心、右上 三个点"
+msgstr ""
+"Calculates the left-bottom, center, and right-top points of the bounding box "
+"based on the provided ``points``"
+
+#: janim.components.points.Cmpt_Points.BoundingBox.get:1 of
+msgid "获取边界框边上的坐标"
+msgstr "Get the coordinates on the borders of the bounding box"
+
+#: janim.components.points.Cmpt_Points.BoundingBox.get:3 of
+msgid "例如："
+msgstr "Examples:"
+
+#: janim.components.points.Cmpt_Points.BoundingBox.get:5 of
+msgid "传入 UR，则返回边界框右上角的坐标"
+msgstr ""
+"If UR is passed, it returns the coordinates of the upper-right corner of the "
+"bounding bo"
+
+#: janim.components.points.Cmpt_Points.BoundingBox.get:6 of
+msgid "传入 RIGHT，则返回边界框右侧中心的坐标"
+msgstr ""
+"If RIGHT is passed, it returns the coordinates of the center on the right "
+"side of the bounding box"
+
+#: janim.components.points.Cmpt_Points.BoundingBox.get_continuous:1 of
+msgid "得到从中心发出的方向为 ``direction`` 的射线与边界框的交点"
+msgstr ""
+"Get the intersection point between a ray, emitted from the center in the "
+"direction of ``direction``, and the bounding box"
+
+#: janim.components.points.Cmpt_Points.apply_points_fn:1 of
+msgid ""
+"将所有点作为单独的一个参数传入 ``func``，并将 ``func`` 返回的结果作为新的点坐"
+"标数据"
+msgstr ""
+"Applies the given function ``func`` to all points as a single parameter, and "
+"see the result as new points"
+
+#: janim.components.points.Cmpt_Points.apply_points_fn:3 of
+msgid ""
+"视 ``about_point`` 为原点，若其为 ``None``，则将物件在 ``about_edge`` 方向上的"
+"边界作为 ``about_point``"
+msgstr ""
+"Considers ``about_point`` as the origin. If it's ``None``, then the edge in "
+"the ``about_edge`` direction is considered as ``about_point``"
+
+#: janim.components.points.Cmpt_Points.apply_point_fn:1 of
+msgid ""
+"对每个点依次传入 ``func`` 进行变换；以默认的原点作用变换，而不是物件的中心"
+msgstr ""
+"Applies the given function ``func`` to each point individually for "
+"transformation\n"
+"\n"
+"Default transformation center is the origin, not the center of the object"
+
+#: janim.components.points.Cmpt_Points.apply_matrix:1 of
+msgid "将矩阵变换作用于 ``points``；以默认的原点作用变换，而不是物件的中心"
+msgstr ""
+"Apply a matrix transformation to the ``points``\n"
+"\n"
+"Default to applying the transformation about the origin, not items center"
+
+#: janim.components.points.Cmpt_Points.apply_complex_fn:1 of
+msgid "将复变函数作用于 ``points``；以默认的原点作用变换，而不是物件的中心"
+msgstr ""
+"Apply a complex-valued function to the ``points``\n"
+"\n"
+"Default to applying the transformation about the origin, not items center"
+
+#: janim.components.points.Cmpt_Points.rotate:1 of
+msgid ""
+"以 ``axis`` 为方向，``angle`` 为角度旋转，可传入 ``about_point`` 指定相对于以"
+"哪个点为中心"
+msgstr ""
+"Rotate the item by an ``angle`` around the specified ``axis``, with an "
+"optional ``about_point`` about which the rotation should be performed"
+
+#: janim.components.points.Cmpt_Points.flip:1 of
+msgid "绕 axis 轴翻转"
+msgstr "Flip the item around the specified axis"
+
+#: janim.components.points.Cmpt_Points.scale:1 of
+msgid "将物件缩放指定倍数"
+msgstr "Scale the item by a specified factor"
+
+#: janim.components.points.Cmpt_Points.scale:3 of
+msgid ""
+"如果传入的倍数是可遍历的对象，那么则将其中的各个元素作为坐标各分量缩放的倍"
+"数， 例如传入 ``scale_factor`` 为 ``(2, 0.5, 1)`` 则是在 ``x`` 方向上缩放为两"
+"倍，在 ``y`` 方向上压缩为原来的一半，在 ``z`` 方向上保持不变"
+msgstr ""
+"If the scale factor provided is an iterable object, each element will be used "
+"as the scaling factor for the corresponding coordinate component. For "
+"example, if ``scale_factor`` is ``(2, 0.5, 1)``, the item will be scaled by a "
+"factor of 2 along the ``x`` axis, compressed by half along the ``y`` axis, "
+"and remain unchanged along the ``z`` axis"
+
+#: janim.components.points.Cmpt_Points.stretch:1 of
+msgid "在指定的 ``dim`` 方向上使物件伸缩"
+msgstr "Stretch the object along the specified ``dim`` direction"
+
+#: janim.components.points.Cmpt_Points.set_depth:1
+#: janim.components.points.Cmpt_Points.set_height:1
+#: janim.components.points.Cmpt_Points.set_width:1 of
+msgid "如果 ``stretch`` 为 ``False`` （默认），则表示等比缩放"
+msgstr ""
+"If ``stretch`` is ``False`` (default), it indicates proportional scaling"
+
+#: janim.components.points.Cmpt_Points.replace:1 of
+msgid "放到 item 的位置，并且在 ``dim_to_match`` 维度上长度相同"
+msgstr ""
+"Moves to the position of the specified ``item`` and matches the length in the "
+"``dim_to_match`` dimension"
+
+#: janim.components.points.Cmpt_Points.surround:1 of
+msgid "与 ``replace`` 类似，但是会向外留出 ``buff`` 间距"
+msgstr ""
+"Similar to ``replace`` but leaves a buffer space of ``buff`` around the item"
+
+#: janim.components.points.Cmpt_Points.put_start_and_end_on:1 of
+msgid "通过旋转和缩放，使得物件的起点和终点被置于 ``start`` 和 ``end``"
+msgstr ""
+"Rotate and scale this item such that its start and end points are positioned "
+"at ``start`` and ``end``"
+
+#: janim.components.points.Cmpt_Points.shift:1 of
+msgid "相对移动 ``vector`` 向量"
+msgstr "Shift the object by the specified ``vector``"
+
+#: janim.components.points.Cmpt_Points.move_to:1 of
+msgid "移动到 ``target`` 的位置"
+msgstr "Move this item to the position of ``target``"
+
+#: janim.components.points.Cmpt_Points.to_center:1 of
+msgid "移动到原点 ``(0, 0, 0)``"
+msgstr "Move this item to the origin ``(0, 0, 0)``"
+
+#: janim.components.points.Cmpt_Points.next_to:1 of
+msgid "将该物件放到 ``target`` 旁边"
+msgstr "Position this item next to ``target``"

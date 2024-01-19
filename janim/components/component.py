@@ -29,7 +29,7 @@ class Component(refresh.Refreshable, metaclass=_CmptMeta):
         - ``at_item``: 这个组件对象是属于哪个物件对象的
         - ``key``: 这个组件对象的变量名
 
-        例如 | Example：
+        例：
 
         .. code-block:: python
 
@@ -79,7 +79,7 @@ class Component(refresh.Refreshable, metaclass=_CmptMeta):
 
     def mark_refresh(self, func: Callable | str, *, recurse_up=False, recurse_down=False) -> Self:
         '''
-        详见 | See: :meth:`~.Item.broadcast_refresh_of_component`
+        详见： :meth:`~.Item.broadcast_refresh_of_component`
         '''
         super().mark_refresh(func)
 
@@ -102,7 +102,7 @@ class CmptInfo[T]:
     '''
     在类中定义组件需要使用该类
 
-    例 | Example:
+    例：
 
     .. code-block:: python
 
@@ -212,7 +212,7 @@ def CmptGroup[T](*cmpt_info_list: CmptInfo[T]) -> CmptInfo[T]:
     '''
     用于将多个组件打包，使得可以同时调用
 
-    例 | Example:
+    例：
 
     .. code-block:: python
 

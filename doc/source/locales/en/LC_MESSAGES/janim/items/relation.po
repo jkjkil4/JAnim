@@ -1,0 +1,155 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2023, jkjkil4
+# This file is distributed under the same license as the JAnim package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2024.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: JAnim\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-01-19 19:29+0800\n"
+"PO-Revision-Date: 2024-01-19 19:53+0800\n"
+"Last-Translator: \n"
+"Language-Team: en <LL@li.org>\n"
+"Language: en\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Generated-By: Babel 2.14.0\n"
+"X-Generator: Poedit 3.4.2\n"
+
+#: ../../source/janim/items/relation.rst:2
+msgid "relation"
+msgstr "relation"
+
+#: janim.items.relation.Relation:1 of
+msgid ""
+"基类：:py:class:`~janim.utils.refresh.Refreshable`, :py:class:`~typing."
+"Generic`"
+msgstr ""
+"基类：:py:class:`~janim.utils.refresh.Refreshable`, :py:class:`~typing."
+"Generic`"
+
+#: janim.items.relation.Relation:1 of
+msgid "定义了有向无环图的包含关系以及一些实用操作"
+msgstr ""
+"Defines the containment relationship of a directed acyclic graph and "
+"some practical operations"
+
+#: janim.items.relation.Relation:3 of
+msgid "也就是，对于每个对象："
+msgstr "That is, for each object:"
+
+#: janim.items.relation.Relation:5 of
+msgid "``self.parents`` 存储了与其直接关联的父对象"
+msgstr "``self.parents`` stores the directly associated parent objects"
+
+#: janim.items.relation.Relation:6 of
+msgid "``self.children`` 存储了与其直接关联的子对象"
+msgstr "``self.children`` stores the directly associated child objects"
+
+#: janim.items.relation.Relation:7 of
+msgid "使用 :meth:`add()` 建立对象间的关系"
+msgstr "Use :meth:`add()` to establish relationships between objects"
+
+#: janim.items.relation.Relation:8 of
+msgid "使用 :meth:`remove()` 取消对象间的关系"
+msgstr "Use :meth:`remove()` to cancel relationships between objects"
+
+#: janim.items.relation.Relation:9 of
+msgid ""
+":meth:`ancestors()` 表示与其直接关联的祖先对象（包括父对象，以及父对象的"
+"父对象，......）"
+msgstr ""
+":meth:`ancestors()` represents the ancestor objects directly associated "
+"with it (including parent objects and parent objects' parent "
+"objects, ...)"
+
+#: janim.items.relation.Relation:10 of
+msgid ""
+":meth:`descendants()` 表示与其直接关联的后代对象（包括子对象、以及子对象"
+"的子对象，......）"
+msgstr ""
+":meth:`descendants()` represents the descendant objects directly "
+"associated with it (including child objects, and child objects' child "
+"objects, ...)"
+
+#: janim.items.relation.Relation:14 of
+msgid "对于 :meth:`ancestors()` 以及 :meth:`descendants()`："
+msgstr "For :meth:`ancestors()` and :meth:`descendants()` :"
+
+#: janim.items.relation.Relation:12 of
+msgid "不包含调用者自身并且返回的列表中没有重复元素"
+msgstr ""
+"Does not include the caller itself, and the returned list has no "
+"duplicate elements"
+
+#: janim.items.relation.Relation:13 of
+msgid "物件顺序是 DFS 顺序"
+msgstr "The order of the objects is DFS order"
+
+#: janim.items.relation.Relation.mark_refresh:1 of
+msgid "标记指定的 ``func`` 需要进行更新"
+msgstr "Marks the specified ``func`` for an update"
+
+#: janim.items.relation.Relation.parents_changed:1 of
+msgid "信号，在 ``self.parents`` 改变时触发"
+msgstr "Signal triggered when ``self.parents`` changes"
+
+#: janim.items.relation.Relation.children_changed:1 of
+msgid "信号，在 ``self.children`` 改变时触发"
+msgstr "Signal triggered when ``self.children`` changes"
+
+#: janim.items.relation.Relation.add:1 of
+msgid "向该对象添加子对象"
+msgstr "Add objects to this object"
+
+#: janim.items.relation.Relation.remove:1 of
+msgid "从该对象移除子对象"
+msgstr "Remove objects from this object"
+
+#: janim.items.relation.Relation.ancestors:1 of
+msgid "获得祖先对象列表"
+msgstr "Get a list of ancestor objects"
+
+#: janim.items.relation.Relation.descendants:1 of
+msgid "获得后代对象列表"
+msgstr "Get a list of descendant objects"
+
+#: janim.items.relation.Relation.walk_ancestors:1 of
+msgid "遍历祖先节点中以 ``base_cls`` （缺省则遍历全部）为基类的对象"
+msgstr ""
+"Traverse ancestor nodes with base_cls (default to traverse all) as the "
+"base class"
+
+#: janim.items.relation.Relation.walk_descendants:1 of
+msgid "遍历后代节点中以 ``base_cls`` （缺省则遍历全部）为基类的对象"
+msgstr ""
+"Traverse descendant nodes with base_cls (default to traverse all) as "
+"the base class"
+
+#: janim.items.relation.Relation.walk_self_and_ancestors:1 of
+msgid "遍历自己以及祖先节点"
+msgstr "Traverse self and ancestor nodes"
+
+#: janim.items.relation.Relation.walk_self_and_descendants:1 of
+msgid "遍历自己以及后代节点"
+msgstr "Traverse self and descendant nodes"
+
+#: janim.items.relation.Relation.walk_nearest_ancestors:1 of
+msgid ""
+"遍历祖先节点中以 ``base_cls`` 为基类的对象，但是排除已经满足条件的对象的"
+"祖先对象"
+msgstr ""
+"Traverse ancestor nodes with ``base_cls`` as the base class, but "
+"exclude the ancestors of objects that already meet the conditions"
+
+#: janim.items.relation.Relation.walk_nearest_descendants:1 of
+msgid ""
+"遍历后代节点中以 ``base_cls`` 为基类的对象，但是排除已经满足条件的对象的"
+"后代对象"
+msgstr ""
+"Traverse descendant nodes with ``base_cls`` as the base class, but "
+"exclude the descendants of objects that already meet the conditions"

@@ -1,0 +1,146 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2023, jkjkil4
+# This file is distributed under the same license as the JAnim package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2024.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: JAnim\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-01-19 19:45+0800\n"
+"PO-Revision-Date: 2024-01-19 19:52+0800\n"
+"Last-Translator: \n"
+"Language-Team: en <LL@li.org>\n"
+"Language: en\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Generated-By: Babel 2.14.0\n"
+"X-Generator: Poedit 3.4.2\n"
+
+#: ../../source/janim/anims/timeline.rst:2
+msgid "timeline"
+msgstr "timeline"
+
+#: janim.anims.timeline.Timeline:1 janim.anims.timeline.Timeline.ScheduledTask:1
+#: janim.anims.timeline.Timeline.TimeOfCode:1
+#: janim.anims.timeline.Timeline.TimedItemData:1 of
+msgid "基类：:py:class:`object`"
+msgstr "基类：:py:class:`object`"
+
+#: janim.anims.timeline.Timeline:1 of
+msgid "继承该类并实现 :meth:`construct` 方法，以实现动画的构建逻辑"
+msgstr ""
+"Inherit this class and implement the :meth:`construct` method to implement the "
+"logic of building animations"
+
+#: janim.anims.timeline.Timeline:3 of
+msgid "调用 :meth:`build` 可以得到构建完成的动画对象"
+msgstr "Call :meth:`build` to get the constructed animation object"
+
+#: janim.anims.timeline.Timeline.get_context:1 of
+msgid "调用该方法可以得到当前正在构建的 :class:`Timeline` 对象"
+msgstr ""
+"Call this method to get the current :class:`Timeline` object being constructing"
+
+#: janim.anims.timeline.Timeline.get_context:3 of
+msgid ""
+"如果在 :meth:`construct` 方法外调用，且 ``raise_exc=True`` （默认），则抛出 "
+"``LookupError``"
+msgstr ""
+"If called outside of :meth:`construct` and ``raise_exc=True`` (default), raises "
+"a ``LookupError``"
+
+#: janim.anims.timeline.Timeline.TimeOfCode:1 of
+msgid "标记 :meth:`~.Timeline.construct` 执行到的代码行数所对应的时间"
+msgstr ""
+"Marks the time corresponding to the line number of code execution in :meth:`~."
+"Timeline.construct`"
+
+#: janim.anims.timeline.Timeline.ScheduledTask:1 of
+msgid "另见 :meth:`~.Timeline.schedule`"
+msgstr "See :meth:`~.Timeline.schedule`"
+
+#: janim.anims.timeline.Timeline.TimedItemData:1 of
+msgid "表示从 ``time`` 之后，物件的数据"
+msgstr "Represents the data of an item after ``time``"
+
+#: janim.anims.timeline.Timeline.construct:1 of
+msgid "继承该方法以实现动画的构建逻辑"
+msgstr "Implement this method to build the animation logic"
+
+#: janim.anims.timeline.Timeline.build:1 of
+msgid "构建动画并返回"
+msgstr "Build the animation and return it"
+
+#: janim.anims.timeline.Timeline.register:1 of
+msgid "在 :meth:`construct` 中创建的物件会自动调用该方法"
+msgstr "Automatically called for items created in :meth:`construct`"
+
+#: janim.anims.timeline.Timeline.get_construct_lineno:1 of
+msgid "得到当前在 :meth:`construct` 中执行到的行数"
+msgstr "Get the current line number being executed in :meth:`construct`"
+
+#: janim.anims.timeline.Timeline.forward:1 of
+msgid "向前推进 ``dt`` 秒"
+msgstr "Advance by ``dt`` seconds"
+
+#: janim.anims.timeline.Timeline.forward_to:1 of
+msgid "向前推进到 ``t`` 秒的时候"
+msgstr "Advance to time ``t``"
+
+#: janim.anims.timeline.Timeline.prepare:1 of
+msgid "应用动画"
+msgstr "Apply animations"
+
+#: janim.anims.timeline.Timeline.play:1 of
+msgid "应用动画并推进到动画结束的时候"
+msgstr "Apply animations and advance to the end of the animation"
+
+#: janim.anims.timeline.Timeline.schedule:1 of
+msgid "计划执行"
+msgstr "Schedule execution"
+
+#: janim.anims.timeline.Timeline.schedule:3 of
+msgid ""
+"会在进度达到 ``at`` 时，对 ``func`` 进行调用， 可传入 ``*args`` 和 ``**kwargs``"
+msgstr ""
+"Calls ``func`` when the progress reaches ``at``, can pass ``*args`` and "
+"``**kwargs``"
+
+#: janim.anims.timeline.Timeline.detect_changes_of_all:1 of
+msgid "检查所有物件是否有产生变化并记录"
+msgstr "Check all items if have changed and record the changes"
+
+#: janim.anims.timeline.Timeline.detect_changes:1 of
+msgid "检查指定的列表中的物件是否有产生变化并记录（仅检查自身而不包括子物件的）"
+msgstr ""
+"Check items in the specified list if have changed and record the changes (only "
+"checks itself, without descendants)"
+
+#: janim.anims.timeline.Timeline.get_stored_data_at_right:1 of
+msgid "得到在指定时间之前的瞬间，物件的数据"
+msgstr "Get the data of the item at the instant before the specified time"
+
+#: janim.anims.timeline.Timeline.get_stored_data_at_left:1 of
+msgid "得到在指定时间之后的瞬间，物件的数据"
+msgstr "Get the data of the item at the instant after the specified time"
+
+#: janim.anims.timeline.Timeline.show:1 of
+msgid "显示物件"
+msgstr "Show item"
+
+#: janim.anims.timeline.Timeline.hide:1 of
+msgid "隐藏物件"
+msgstr "Hide item"
+
+#: janim.anims.timeline.Timeline.cleanup_display:1 of
+msgid "对目前显示中的所有物件调用隐藏，使得正确产生 :class:`~.Display` 对象"
+msgstr ""
+"Hide all currently displayed items to correctly generate :class:`~.Display` "
+"objects"
+
+#~ msgid "用于 :class:`~.Animation` 的初始化以及物件的操作"
+#~ msgstr "Used for initialization of :class:`~.Animation` and operations on items"

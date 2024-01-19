@@ -150,7 +150,7 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         '''
         使得可以调用当前物件中没有的组件
 
-        例 | Example:
+        例：
 
         .. code-block:: python
 

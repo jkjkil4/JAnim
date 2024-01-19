@@ -21,24 +21,6 @@ class Relation[GRelT: 'Relation'](refresh.Refreshable):
     - 对于 :meth:`ancestors()` 以及 :meth:`descendants()`：
         - 不包含调用者自身并且返回的列表中没有重复元素
         - 物件顺序是 DFS 顺序
-
-    =====
-
-    Defines the containment relationship of a directed acyclic graph and some practical operations.
-
-    That is, for each object:
-
-    - ``self.parents`` stores the directly associated parent objects.
-    - ``self.children`` stores the directly associated child objects.
-    - Use :meth:`add()` to establish relationships between objects.
-    - Use :meth:`remove()` to cancel relationships between objects.
-    - :meth:`ancestors()` represents the ancestor objects directly associated with it
-      (including parent objects and parent objects' parent objects, ...).
-    - :meth:`descendants()` represents the descendant objects directly associated with it
-      (including child objects, and child objects' child objects, ...).
-    - For :meth:`ancestors()` and :meth:`descendants()`:
-        - Does not include the caller itself, and the returned list has no duplicate elements.
-        - The order of the objects is DFS order.
     '''
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -65,8 +47,6 @@ class Relation[GRelT: 'Relation'](refresh.Refreshable):
     def parents_changed(self) -> None:
         '''
         信号，在 ``self.parents`` 改变时触发
-
-        Signal triggered when ``self.parents`` changes.
         '''
         Relation.parents_changed.emit(self)
 
@@ -74,16 +54,12 @@ class Relation[GRelT: 'Relation'](refresh.Refreshable):
     def children_changed(self) -> None:
         '''
         信号，在 ``self.children`` 改变时触发
-
-        Signal triggered when ``self.children`` changes.
         '''
         Relation.children_changed.emit(self)
 
     def add(self, *objs: GRelT) -> Self:
         '''
         向该对象添加子对象
-
-        Add objects to this object.
         '''
         for obj in objs:
             # 理论上这里判断 item not in self.children 就够了，但是防止
@@ -102,8 +78,6 @@ class Relation[GRelT: 'Relation'](refresh.Refreshable):
     def remove(self, *objs: GRelT) -> Self:
         '''
         从该对象移除子对象
-
-        Remove objects from this object.
         '''
         for obj in objs:
             # 理论上这里判断 `item in self.children` 就够了，原因同 `add`
@@ -146,8 +120,6 @@ class Relation[GRelT: 'Relation'](refresh.Refreshable):
     def ancestors(self) -> list[GRelT]:
         '''
         获得祖先对象列表
-
-        Get a list of ancestor objects.
         '''
         return self._family(up=True)
 
@@ -156,8 +128,6 @@ class Relation[GRelT: 'Relation'](refresh.Refreshable):
     def descendants(self) -> list[GRelT]:
         '''
         获得后代对象列表
-
-        Get a list of descendant objects.
         '''
         return self._family(up=False)
 
@@ -193,24 +163,18 @@ class Relation[GRelT: 'Relation'](refresh.Refreshable):
     def walk_ancestors[RelT](self, base_cls: type[RelT] = None) -> Generator[RelT, None, None]:
         '''
         遍历祖先节点中以 ``base_cls`` （缺省则遍历全部）为基类的对象
-
-        Traverse ancestor nodes with base_cls (default to traverse all) as the base class.
         '''
         yield from self._walk_lst(base_cls, self.ancestors())
 
     def walk_descendants[RelT](self, base_cls: type[RelT] = None) -> Generator[RelT, None, None]:
         '''
         遍历后代节点中以 ``base_cls`` （缺省则遍历全部）为基类的对象
-
-        Traverse descendant nodes with base_cls (default to traverse all) as the base class.
         '''
         yield from self._walk_lst(base_cls, self.descendants())
 
     def walk_self_and_ancestors(self) -> Generator[GRelT, None, None]:
         '''
         遍历自己以及祖先节点
-
-        Traverse self and ancestor nodes
         '''
         yield self
         for obj in self.ancestors():
@@ -219,8 +183,6 @@ class Relation[GRelT: 'Relation'](refresh.Refreshable):
     def walk_self_and_descendants(self) -> Generator[GRelT, None, None]:
         '''
         遍历自己以及后代节点
-
-        Traverse self and descendant nodes
         '''
         yield self
         for obj in self.descendants():
@@ -229,17 +191,11 @@ class Relation[GRelT: 'Relation'](refresh.Refreshable):
     def walk_nearest_ancestors[RelT](self, base_cls: type[RelT]) -> Generator[RelT, None, None]:
         '''
         遍历祖先节点中以 ``base_cls`` 为基类的对象，但是排除已经满足条件的对象的祖先对象
-
-        Traverse ancestor nodes with base_cls as the base class,
-        but exclude the ancestors of objects that already meet the conditions.
         '''
         yield from self._walk_nearest_family(base_cls, lambda rel: rel.ancestors())
 
     def walk_nearest_descendants[RelT](self, base_cls: type[RelT]) -> Generator[RelT, None, None]:
         '''
         遍历后代节点中以 ``base_cls`` 为基类的对象，但是排除已经满足条件的对象的后代对象
-
-        Traverse descendant nodes with base_cls as the base class,
-        but exclude the descendants of objects that already meet the conditions.
         '''
         yield from self._walk_nearest_family(base_cls, lambda rel: rel.descendants())

@@ -1,0 +1,106 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2023, jkjkil4
+# This file is distributed under the same license as the JAnim package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2024.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: JAnim\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-01-19 11:06+0800\n"
+"PO-Revision-Date: 2024-01-19 19:52+0800\n"
+"Last-Translator: \n"
+"Language-Team: en <LL@li.org>\n"
+"Language: en\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Generated-By: Babel 2.14.0\n"
+"X-Generator: Poedit 3.4.2\n"
+
+#: ../../source/janim/anims/composition.rst:2
+msgid "composition"
+msgstr "composition"
+
+#: janim.anims.composition.AnimGroup:1 of
+msgid "基类：:py:class:`~janim.anims.animation.Animation`"
+msgstr "基类：:py:class:`~janim.anims.animation.Animation`"
+
+#: janim.anims.composition.AnimGroup:1 of
+msgid "动画集合（并列执行）"
+msgstr "Collection of animations (executed in parallel)"
+
+#: janim.anims.composition.AnimGroup:3 of
+msgid ""
+"若不传入 ``duration``，则将终止时间（子动画结束时间的最大值）作为该动画集"
+"合的 ``duration``"
+msgstr ""
+"If ``duration`` is not provided, it takes the termination time (the "
+"maximum end time of child animations) as the ``duration`` of this "
+"animation group"
+
+#: janim.anims.composition.AnimGroup:4 of
+msgid ""
+"若传入 ``duration``，则会将子动画的时间进行拉伸，使得终止时间与 "
+"``duration`` 一致"
+msgstr ""
+"If ``duration`` is provided, it stretches the time of child animations to "
+"make the termination time consistent with ``duration``"
+
+#: janim.anims.composition.AnimGroup:5 of
+msgid "且可以使用 ``at`` 进行总体偏移（如 ``at=1`` 则是总体延后 1s）"
+msgstr ""
+"You can also use ``at`` for an overall offset (e.g., if ``at=1``, it "
+"delays the entire animation by 1s)"
+
+#: janim.anims.composition.Aligned:3 janim.anims.composition.AnimGroup:7
+#: janim.anims.composition.Succession:7 of
+msgid "时间示例："
+msgstr "Time Examples:"
+
+#: janim.anims.composition.AnimGroup.set_global_range:1 of
+msgid "设置并计算子动画的时间范围"
+msgstr "Set and calculate the time range of child animations"
+
+#: janim.anims.composition.AnimGroup.set_global_range:3 of
+msgid "不需要手动设置，该方法是被 :meth:`~.Timeline.prepare` 调用以计算的"
+msgstr ""
+"No need to set manually; this method is called by :meth:`~.Timeline."
+"prepare` for calculation"
+
+#: janim.anims.composition.AnimGroup.anim_on_alpha:1 of
+msgid ""
+"在该方法中，:class:`AnimGroup` 通过 ``alpha`` 换算出子动画的 ``local_t`` "
+"并调用子动画的 :meth:`~.Animation.anim_on` 方法"
+msgstr ""
+"In this method, :class:`AnimGroup` converts ``alpha`` to ``local_t`` of "
+"child animations and calls :meth:`~.Animation.anim_on` method of each "
+"child animation."
+
+#: janim.anims.composition.Aligned:1 janim.anims.composition.Succession:1 of
+msgid "基类：:py:class:`~janim.anims.composition.AnimGroup`"
+msgstr "基类：:py:class:`~janim.anims.composition.AnimGroup`"
+
+#: janim.anims.composition.Succession:1 of
+msgid "动画集合（顺序执行）"
+msgstr "Collection of animations (executed sequentially)"
+
+#: janim.anims.composition.Succession:3 of
+msgid "会将传入的动画依次执行，不并行"
+msgstr "Executes the passed animations in sequence, not in parallel"
+
+#: janim.anims.composition.Succession:4 of
+msgid "可以传入 `buff` 指定前后动画中间的空白时间"
+msgstr ""
+"You can pass `buff` to specify the blank time between front and back "
+"animations"
+
+#: janim.anims.composition.Succession:5 of
+msgid "其余与 `AnimGroup` 相同"
+msgstr "The rest is the same as `AnimGroup`"
+
+#: janim.anims.composition.Aligned:1 of
+msgid "动画集合（并列对齐执行）"
+msgstr "Collection of animations (executed in parallel and aligned)"

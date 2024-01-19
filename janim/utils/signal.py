@@ -52,8 +52,6 @@ class Signal(Generic[T, P, R]):
     '''
     一般用于在 ``func`` 造成影响后，需要对其它数据进行更新时进行作用
 
-    Generally used to make updates in other data after an impact caused by ``func``.
-
     =====
 
     当 ``func`` 被该类修饰，使用 ``Class.func.emit(self)`` 后，
@@ -81,34 +79,7 @@ class Signal(Generic[T, P, R]):
 
     =====
 
-    When ``func`` is decorated with this class, after using ``Class.func.emit(self)``,
-
-    For ``self_`` type (decorator):
-
-    - It will call all methods decorated with ``func.self_slot()``
-    - It will mark all methods decorated with ``func.self_refresh()`` as needing to be recalculated
-    - Compared to ``func.self_refresh()``, ``func.self_refresh_with_recurse()``
-      can also take ``recurse_up/down`` as arguments
-
-    For the normal type (connecting):
-
-    - It will call all methods recorded through ``func.connect(...)``.
-    - It will mark all methods recorded through ``func.connect_refresh(...)`` as needing to be recalculated
-
-    Note:
-
-    - ``key`` parameter can be passed to distinguish the call in the above methods.
-    - Extra arguments can be passed to the called ``slots`` in the ``emit`` method.
-
-    Note:
-
-    - Methods decorated with modifiers starting with ``self_`` need to be in the same class or its subclass as ``func``.
-    - Binding and triggering related calls of ``Signal`` need to be accessed from the class name ``Cls.func.xxx``
-      because ``obj.func.xxx`` gets the original method.
-
-    =====
-
-    例 | Example:
+    例:
 
     .. code-block:: python
 
@@ -160,7 +131,7 @@ class Signal(Generic[T, P, R]):
         \'\'\'
 
 
-    另见 | See also:
+    另见:
 
     - :meth:`~.Relation.parents_changed()`
     - :meth:`~.Relation.children_changed()`
@@ -197,8 +168,6 @@ class Signal(Generic[T, P, R]):
     def self_slot(self, *, key: str = ''):
         '''
         被修饰的方法会在 ``Signal`` 触发时被调用
-
-        The decorated method will be called when the ``Signal`` is triggered.
         '''
         def decorator(func):
             full_qualname = self._get_cls_full_qualname_from_fback()
@@ -214,8 +183,6 @@ class Signal(Generic[T, P, R]):
     def self_refresh(self, *, key: str = ''):
         '''
         被修饰的方法会在 ``Signal`` 触发时，标记需要重新计算
-
-        The decorated method will be marked as needing to be recalculated when the ``Signal`` is triggered.
         '''
         def decorator(func):
             full_qualname = self._get_cls_full_qualname_from_fback()
@@ -231,8 +198,6 @@ class Signal(Generic[T, P, R]):
     def self_refresh_with_recurse(self, *, recurse_up: bool = False, recurse_down: bool = False, key: str = ''):
         '''
         被修饰的方法会在 ``Signal`` 触发时，标记需要重新计算
-
-        The decorated method will be marked as needing to be recalculated when the ``Signal`` is triggered.
         '''
         def decorator(func):
             full_qualname = self._get_cls_full_qualname_from_fback()
@@ -249,8 +214,6 @@ class Signal(Generic[T, P, R]):
     def connect(self, sender: object, func: Callable, *, key: str = '') -> None:
         '''
         使 ``func`` 会在 ``Signal`` 触发时被调用
-
-        Makes ``func`` called when the ``Signal`` is triggered.
         '''
         all_slots = self.slots[key]
         slots = all_slots.slots_dict[id(sender)]
@@ -259,8 +222,6 @@ class Signal(Generic[T, P, R]):
     def connect_refresh(self, sender: object, obj: object, func: Callable | str, *, key: str = '') -> None:
         '''
         使 ``func`` 会在 ``Signal`` 触发时被标记为需要重新计算
-
-        Makes ``func`` marked as needing to be recalculated when the ``Signal`` is triggered.
         '''
         slot = _RefreshSlot(obj, func)
 
@@ -271,8 +232,6 @@ class Signal(Generic[T, P, R]):
     def emit(self, sender: object, *args, key: str = '', **kwargs):
         '''
         触发 ``Signal``
-
-        Triggers the ``Signal``.
         '''
         if key not in self.slots:
             return

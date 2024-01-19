@@ -97,10 +97,6 @@ class Cmpt_Points(Component):
         设置点坐标数据，每个坐标点都有三个分量
 
         使用形如 ``.set([[1.5, 3, 2], [2, 1.5, 0]])`` 的形式
-
-        Set point coordinate data, with each point having three components.
-
-        Use a format like ``.set([[1.5, 3, 2], [2, 1.5, 0]])``.
         '''
         if not isinstance(points, np.ndarray):
             points = np.array(points)
@@ -121,7 +117,7 @@ class Cmpt_Points(Component):
         return self
 
     def clear(self) -> Self:
-        '''清除点 | clear points'''
+        '''清除点'''
         self.set(np.zeros((0, 3)))
         return self
 
@@ -130,10 +126,6 @@ class Cmpt_Points(Component):
         追加点坐标数据，每个坐标点都有三个分量
 
         使用形如 ``.append([[1.5, 3, 2], [2, 1.5, 0]])`` 的形式
-
-        Append point coordinate data, with each point having three components.
-
-        Use a format like ``.append([[1.5, 3, 2], [2, 1.5, 0]])``.
         '''
         self.set(np.vstack([
             self.get(),
@@ -143,7 +135,7 @@ class Cmpt_Points(Component):
 
     @Signal
     def reverse(self) -> Self:
-        '''使点倒序 | reverse the order of points'''
+        '''使点倒序'''
         self.set(self.get()[::-1])
         Cmpt_Points.reverse.emit(self)
         return self
@@ -179,14 +171,14 @@ class Cmpt_Points(Component):
 
     def get_start(self) -> np.ndarray:
         '''
-        得到 ``points`` 的第一个点 | Obtains the first point of ``points``.
+        得到 ``points`` 的第一个点
         '''
         self._raise_error_if_no_points()
         return self.get()[0].copy()
 
     def get_end(self) -> np.ndarray:
         '''
-        得到 ``points`` 的最后一个点 | Obtains the last point of ``points``.
+        得到 ``points`` 的最后一个点
         '''
         self._raise_error_if_no_points()
         return self.get()[-1].copy()
@@ -207,8 +199,6 @@ class Cmpt_Points(Component):
     def box(self) -> BoundingBox:
         '''
         表示物件（包括后代物件）的矩形包围框
-
-        Rectangular bounding box of the item (including descendant-items).
         '''
         box_datas = []
 
@@ -231,16 +221,12 @@ class Cmpt_Points(Component):
     def self_box(self) -> BoundingBox:
         '''
         同 ``box``，但仅表示自己 ``points`` 的包围框，不考虑后代物件的
-
-        Same as ``box``, but only represents the bounding box of its own ``points``, excluding descendant-items.
         '''
         return self.BoundingBox(self.get())
 
     class BoundingBox:
         '''
         边界框，``self.data`` 包含三个元素，分别为左下，中心，右上
-
-        Bounding box, ``self.data`` includes three elements representing the bottom-left, center, and top-right.
         '''
         def __init__(self, points: VectArray):
             self.data = self.compute(points)
@@ -269,15 +255,6 @@ class Cmpt_Points(Component):
 
             - 传入 UR，则返回边界框右上角的坐标
             - 传入 RIGHT，则返回边界框右侧中心的坐标
-
-            =====
-
-            Obtains the coordinates on the borders of the bounding box.
-
-            Examples:
-
-            - If UR is passed, it returns the coordinates of the upper-right corner of the bounding box.
-            - If RIGHT is passed, it returns the coordinates of the center on the right side of the bounding box.
             '''
             indices = (np.sign(direction) + 1).astype(int)
             return np.array([
@@ -447,9 +424,6 @@ class Cmpt_Points(Component):
     ) -> Self:
         '''
         将矩阵变换作用于 ``points``；以默认的原点作用变换，而不是物件的中心
-
-        Apply a matrix transformation to the ``points``.
-        Default to applying the transformation about the origin, not items center.
         '''
         matrix = np.array(matrix)
         if matrix.shape not in ((2, 2), (3, 3)):
@@ -484,9 +458,6 @@ class Cmpt_Points(Component):
     ) -> Self:
         '''
         将复变函数作用于 ``points``；以默认的原点作用变换，而不是物件的中心
-
-        Apply a complex-valued function to the ``points``.
-        Default to applying the transformation about the origin, not items center.
         '''
         def R3_func(point):
             x, y, z = point
@@ -515,9 +486,6 @@ class Cmpt_Points(Component):
     ) -> Self:
         '''
         以 ``axis`` 为方向，``angle`` 为角度旋转，可传入 ``about_point`` 指定相对于以哪个点为中心
-
-        Rotate the item by an ``angle`` around the specified ``axis``,
-        with an optional ``about_point`` about which the rotation should be performed.
         '''
         rot_matrix_T = rotation_matrix(angle, axis).T
         self.apply_points_fn(
@@ -538,8 +506,6 @@ class Cmpt_Points(Component):
     ) -> Self:
         '''
         绕 axis 轴翻转
-
-        Flip the item around the specified axis.
         '''
         self.rotate(
             PI,
@@ -564,16 +530,6 @@ class Cmpt_Points(Component):
 
         如果传入的倍数是可遍历的对象，那么则将其中的各个元素作为坐标各分量缩放的倍数，
         例如传入 ``scale_factor`` 为 ``(2, 0.5, 1)`` 则是在 ``x`` 方向上缩放为两倍，在 ``y`` 方向上压缩为原来的一半，在 ``z`` 方向上保持不变
-
-        =====
-
-        Scale the item by a specified factor.
-
-        If the scale factor provided is an iterable object, each element
-        will be used as the scaling factor for the corresponding coordinate component.
-
-        For example, if ``scale_factor`` is ``(2, 0.5, 1)``, the item will be scaled by a factor
-        of 2 along the ``x`` axis, compressed by half along the ``y`` axis, and remain unchanged along the ``z`` axis.
         '''
         if isinstance(scale_factor, Iterable):
             scale_factor = np.array(scale_factor).clip(min=min_scale_factor)
@@ -600,8 +556,6 @@ class Cmpt_Points(Component):
     ) -> Self:
         '''
         在指定的 ``dim`` 方向上使物件伸缩
-
-        Stretch the object along the specified ``dim`` direction.
         '''
         factor = max(factor, min_scale_factor)
 
@@ -659,24 +613,18 @@ class Cmpt_Points(Component):
     def set_width(self, width: float, *, stretch: bool = False, **kwargs) -> Self:
         '''
         如果 ``stretch`` 为 ``False`` （默认），则表示等比缩放
-
-        If ``stretch`` is ``False`` (default), it indicates proportional scaling.
         '''
         return self.rescale_to_fit(width, dim=0, stretch=stretch, **kwargs)
 
     def set_height(self, height: float, *, stretch: bool = False, **kwargs) -> Self:
         '''
         如果 ``stretch`` 为 ``False`` （默认），则表示等比缩放
-
-        If ``stretch`` is ``False`` (default), it indicates proportional scaling.
         '''
         return self.rescale_to_fit(height, dim=1, stretch=stretch, **kwargs)
 
     def set_depth(self, depth: float, *, stretch: bool = False, **kwargs) -> Self:
         '''
         如果 ``stretch`` 为 ``False`` （默认），则表示等比缩放
-
-        If ``stretch`` is ``False`` (default), it indicates proportional scaling.
         '''
         return self.rescale_to_fit(depth, dim=2, stretch=stretch, **kwargs)
 
@@ -745,8 +693,6 @@ class Cmpt_Points(Component):
     ) -> Self:
         '''
         与 ``replace`` 类似，但是会向外留出 ``buff`` 间距
-
-        Similar to ``replace`` but leaves a buffer space of ``buff`` around the item.
         '''
         self.replace(
             item,
@@ -773,8 +719,6 @@ class Cmpt_Points(Component):
     def put_start_and_end_on(self, start: Vect, end: Vect) -> Self:
         '''
         通过旋转和缩放，使得物件的起点和终点被置于 ``start`` 和 ``end``
-
-        Rotate and scale this item such that its start and end points are positioned at ``start`` and ``end``.
         '''
         curr_start, curr_end = self.get_start(), self.get_end()
         curr_vect = curr_end - curr_start
@@ -802,8 +746,6 @@ class Cmpt_Points(Component):
     def shift(self, vector: Vect, *, root_only=False) -> Self:
         '''
         相对移动 ``vector`` 向量
-
-        Shift the object by the specified ``vector``.
         '''
         self.apply_points_fn(
             lambda points: points + vector,
@@ -823,8 +765,6 @@ class Cmpt_Points(Component):
     ) -> Self:
         '''
         移动到 ``target`` 的位置
-
-        Move this item to the position of ``target``.
         '''
         if isinstance(target, Item):
             cmpt = self.get_same_cmpt(target)
@@ -864,8 +804,6 @@ class Cmpt_Points(Component):
     def to_center(self, root_only=False) -> Self:
         '''
         移动到原点 ``(0, 0, 0)``
-
-        Move this item to the origin ``(0, 0, 0)``.
         '''
         self.shift(-self.box.center, root_only=root_only)
         return self
@@ -899,8 +837,6 @@ class Cmpt_Points(Component):
     ) -> Self:
         '''
         将该物件放到 ``target`` 旁边
-
-        Position this item next to ``target``.
         '''
         if isinstance(target, Item):
             cmpt = self.get_same_cmpt(target)

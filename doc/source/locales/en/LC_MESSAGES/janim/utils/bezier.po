@@ -1,0 +1,82 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2023, jkjkil4
+# This file is distributed under the same license as the JAnim package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2024.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: JAnim \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-01-19 11:06+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: en\n"
+"Language-Team: en <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.14.0\n"
+
+#: ../../source/janim/utils/bezier.rst:2
+msgid "bezier"
+msgstr ""
+
+#: ../../source/rst_utils/tip_of_manim.rst:1
+msgid "该部分代码来自 `3b1b/manim <https://github.com/3b1b/manim>`_，有待重构"
+msgstr ""
+
+#: janim.utils.bezier.partial_bezier_points:1 of
+msgid ""
+"Given an list of points which define a bezier curve, and two numbers "
+"0<=a<b<=1, return an list of the same size, which describes the portion "
+"of the original bezier curve on the interval [a, b]."
+msgstr ""
+
+#: janim.utils.bezier.partial_bezier_points:7 of
+msgid "This algorithm is pretty nifty, and pretty dense."
+msgstr ""
+
+#: janim.utils.bezier.integer_interpolate:1 of
+msgid ""
+"alpha is a float between 0 and 1.  This returns an integer between start "
+"and end (inclusive) representing appropriate interpolation between them, "
+"along with a \"residue\" representing a new proportion between the "
+"returned integer and the next one of the list."
+msgstr ""
+
+#: janim.utils.bezier.integer_interpolate:8 of
+msgid "For example, if start=0, end=10, alpha=0.46, This would return (4, 0.6)."
+msgstr ""
+
+#: janim.utils.bezier.get_smooth_quadratic_bezier_handle_points:1 of
+msgid ""
+"Figuring out which bezier curves most smoothly connect a sequence of "
+"points."
+msgstr ""
+
+#: janim.utils.bezier.get_smooth_quadratic_bezier_handle_points:3 of
+msgid ""
+"Given three successive points, P0, P1 and P2, you can compute that by "
+"defining h = (1/4) P0 + P1 - (1/4)P2, the bezier curve defined by (P0, h,"
+" P1) will pass through the point P2."
+msgstr ""
+
+#: janim.utils.bezier.get_smooth_quadratic_bezier_handle_points:7 of
+msgid ""
+"So for a given set of four successive points, P0, P1, P2, P3, if we want "
+"to add a handle point h between P1 and P2 so that the quadratic bezier "
+"(P1, h, P2) is part of a smooth curve passing through all four points, we"
+" calculate one solution for h that would produce a parbola passing "
+"through P3, call it smooth_to_right, and another that would produce a "
+"parabola passing through P0, call it smooth_to_left, and use the midpoint"
+" between the two."
+msgstr ""
+
+#: janim.utils.bezier.diag_to_matrix:1 of
+msgid ""
+"Converts array whose rows represent diagonal entries of a matrix into the"
+" matrix itself. See scipy.linalg.solve_banded"
+msgstr ""
+

@@ -8,9 +8,6 @@ JAnim 文档
 
 JAnim 是一个用于简易动画效果的库
 
-| 功能实现大量参考 `3b1b/manim <https://github.com/3b1b/manim>`_
-| 文档参考 `https://docs.manim.org.cn/ <https://docs.manim.org.cn/>`_
-
 其它
 ==================
 

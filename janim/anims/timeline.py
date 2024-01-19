@@ -33,7 +33,6 @@ class Timeline(metaclass=ABCMeta):
         '''
         调用该方法可以得到当前正在构建的 :class:`Timeline` 对象
 
-        - 用于 :class:`~.Animation` 的初始化以及物件的操作
         - 如果在 :meth:`construct` 方法外调用，且 ``raise_exc=True`` （默认），则抛出 ``LookupError``
         '''
         obj = Timeline.ctx_var.get(None)

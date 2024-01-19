@@ -1,0 +1,165 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2023, jkjkil4
+# This file is distributed under the same license as the JAnim package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2024.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: JAnim\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-01-19 13:58+0800\n"
+"PO-Revision-Date: 2024-01-19 17:54+0800\n"
+"Last-Translator: \n"
+"Language-Team: en <LL@li.org>\n"
+"Language: en\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Generated-By: Babel 2.14.0\n"
+"X-Generator: Poedit 3.4.2\n"
+
+#: ../../source/janim/utils/signal.rst:2
+msgid "signal"
+msgstr "signal"
+
+#: ../../source/rst_utils/tip_of_complex.rst:1
+msgid ""
+"**提示：这部分内容涉及 JAnim 实现原理，可能较为复杂，若没有研究源码的需求，"
+"你应酌情阅读**"
+msgstr ""
+"**Tips: This section covers the implementations of JAnim, which may be "
+"quite complex. If you do not have the need to delve into the source code, "
+"you may choose to read it at your discretion.**"
+
+#: janim.utils.signal.Signal:1 of
+msgid ""
+"基类：:py:class:`~typing.Generic`\\ [:py:obj:`~janim.utils.signal.T`, :py:"
+"obj:`~janim.utils.signal.P`, :py:obj:`~janim.utils.signal.R`]"
+msgstr ""
+"基类：:py:class:`~typing.Generic`\\ [:py:obj:`~janim.utils.signal.T`, :py:"
+"obj:`~janim.utils.signal.P`, :py:obj:`~janim.utils.signal.R`]"
+
+#: janim.utils.signal.Signal:1 of
+msgid "一般用于在 ``func`` 造成影响后，需要对其它数据进行更新时进行作用"
+msgstr ""
+"Generally used to make updates in other data after an impact caused by "
+"``func``"
+
+#: janim.utils.signal.Signal:5 of
+msgid "当 ``func`` 被该类修饰，使用 ``Class.func.emit(self)`` 后，"
+msgstr ""
+"When ``func`` is decorated with this class, after using ``Class.func."
+"emit(self)``,"
+
+#: janim.utils.signal.Signal:7 of
+msgid "对于 ``self_`` 型（修饰）："
+msgstr "For ``self_`` type (decorator):"
+
+#: janim.utils.signal.Signal:9 of
+msgid "会以自身调用所有被 ``func.self_slot()`` 修饰的方法"
+msgstr "It will call all methods decorated with ``func.self_slot()``"
+
+#: janim.utils.signal.Signal:10 of
+msgid "会将所有被 ``func.self_refresh()`` 修饰的方法标记需要重新计算"
+msgstr ""
+"It will mark all methods decorated with ``func.self_refresh()`` as needing "
+"to be recalculated"
+
+#: janim.utils.signal.Signal:11 of
+msgid ""
+"``func.self_refresh_with_recurse()`` 与 ``func.self_refresh()`` 相比，还可以"
+"传入 ``recurse_up/down``"
+msgstr ""
+"Compared to ``func.self_refresh()``, ``func.self_refresh_with_recurse()`` "
+"can also take ``recurse_up/down`` as arguments"
+
+#: janim.utils.signal.Signal:13 of
+msgid "对于 普通型（绑定）："
+msgstr "For the normal type (connecting):"
+
+#: janim.utils.signal.Signal:15 of
+msgid "会调用所有通过 ``func.connect(...)`` 记录的方法"
+msgstr "It will call all methods recorded through ``func.connect(...)``"
+
+#: janim.utils.signal.Signal:16 of
+msgid "会将所有被 ``func.connect_refresh(...)`` 记录的方法标记需要重新计算"
+msgstr ""
+"It will mark all methods recorded through ``func.connect_refresh(...)`` as "
+"needing to be recalculated"
+
+#: janim.utils.signal.Signal:18 of
+msgid "提醒："
+msgstr "Tips:"
+
+#: janim.utils.signal.Signal:20 of
+msgid "可以在上述方法中传入 ``key`` 参数以区分调用"
+msgstr ""
+"``key`` parameter can be passed to distinguish the call in the above methods"
+
+#: janim.utils.signal.Signal:21 of
+msgid "``emit`` 方法可以传入额外的参数给被调用的 ``slots``"
+msgstr ""
+"Extra arguments can be passed to the called ``slots`` in the ``emit`` method"
+
+#: janim.utils.signal.Signal:23 of
+msgid "注意："
+msgstr "Note:"
+
+#: janim.utils.signal.Signal:25 of
+msgid ""
+"以 ``self_`` 开头的修饰器所修饰的方法需要与 ``func`` 在同一个类或者其子类中"
+msgstr ""
+"Methods decorated with modifiers starting with ``self_`` need to be in the "
+"same class or its subclass as ``func``"
+
+#: janim.utils.signal.Signal:26 of
+msgid ""
+"``Signal`` 的绑定与触发相关的调用需要从类名 ``Cls.func.xxx`` 访问，因为 "
+"``obj.func.xxx`` 得到的是原方法"
+msgstr ""
+"Binding and triggering related calls of ``Signal`` need to be accessed from "
+"the class name ``Cls.func.xxx`` because ``obj.func.xxx`` gets the original "
+"method"
+
+#: janim.utils.signal.Signal:30 of
+msgid "例:"
+msgstr "Example:"
+
+#: janim.utils.signal.Signal:82 of
+msgid "另见:"
+msgstr "See also:"
+
+#: janim.utils.signal.Signal:84 of
+msgid ":meth:`~.Relation.parents_changed()`"
+msgstr ":meth:`~.Relation.parents_changed()`"
+
+#: janim.utils.signal.Signal:85 of
+msgid ":meth:`~.Relation.children_changed()`"
+msgstr ":meth:`~.Relation.children_changed()`"
+
+#: janim.utils.signal.Signal.self_slot:1 of
+msgid "被修饰的方法会在 ``Signal`` 触发时被调用"
+msgstr "The decorated method will be called when the ``Signal`` is triggered"
+
+#: janim.utils.signal.Signal.self_refresh:1
+#: janim.utils.signal.Signal.self_refresh_with_recurse:1 of
+msgid "被修饰的方法会在 ``Signal`` 触发时，标记需要重新计算"
+msgstr ""
+"The decorated method will be marked as needing to be recalculated when the "
+"``Signal`` is triggered"
+
+#: janim.utils.signal.Signal.connect:1 of
+msgid "使 ``func`` 会在 ``Signal`` 触发时被调用"
+msgstr "Makes ``func`` called when the ``Signal`` is triggered"
+
+#: janim.utils.signal.Signal.connect_refresh:1 of
+msgid "使 ``func`` 会在 ``Signal`` 触发时被标记为需要重新计算"
+msgstr ""
+"Makes ``func`` marked as needing to be recalculated when the ``Signal`` is "
+"triggered"
+
+#: janim.utils.signal.Signal.emit:1 of
+msgid "触发 ``Signal``"
+msgstr "Triggers the ``Signal``"
