@@ -39,8 +39,3 @@ html_css_files = [
 ]
 
 sys.path.insert(0, os.path.abspath('../..'))
-
-try:
-    import furo
-except ImportError:
-    os.system('pip install furo')
