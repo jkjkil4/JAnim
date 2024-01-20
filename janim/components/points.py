@@ -381,7 +381,7 @@ class Cmpt_Points(Component):
             else:
                 cmpt.set(func(cmpt.get() - about_point) + about_point)
 
-            Cmpt_Points.apply_points_fn.emit(cmpt, func)
+            Cmpt_Points.apply_points_fn.emit(cmpt, func, about_point)
 
         apply(self)
 
