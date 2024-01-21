@@ -131,7 +131,6 @@ class CmptInfo[T]:
     # 方便代码补全，没有实际意义
     @overload
     def __get__(self, obj: None, owner) -> Self: ...
-
     @overload
     def __get__(self, obj: object, owner) -> T: ...
 

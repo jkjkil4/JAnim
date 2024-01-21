@@ -144,7 +144,6 @@ class Signal(Generic[T, P, R]):
 
     @overload
     def __get__(self, instance: None, owner) -> Self: ...
-
     @overload
     def __get__(self, instnace: object, owner) -> Callable[P, R]: ...
 

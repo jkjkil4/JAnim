@@ -8,6 +8,15 @@ if TYPE_CHECKING:
 type Vect = Iterable[float] | np.ndarray
 type VectArray = Iterable[Vect] | np.ndarray
 
+type JAnimColor = str | Iterable[float] | np.ndarray
+type ColorArray = Iterable[JAnimColor] | np.ndarray
+
+type Alpha = float
+type AlphaArray = Iterable[float] | np.ndarray
+
+type Rgba = Iterable[float] | np.ndarray
+type RgbaArray = Iterable[Rgba] | np.ndarray
+
 
 @runtime_checkable
 class SupportsInterpolate[T](Protocol):

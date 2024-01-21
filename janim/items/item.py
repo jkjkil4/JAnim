@@ -7,6 +7,7 @@ from janim.anims.timeline import Timeline
 from janim.components.component import CmptInfo, Component, _CmptGroup
 from janim.items.relation import Relation
 from janim.typing import SupportsInterpolate
+from janim.render.renderer import Renderer
 from janim.utils.data import AlignedData
 from janim.utils.iterables import resize_preserving_order
 
@@ -132,7 +133,6 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
 
     @overload
     def __getitem__(self, value: int) -> Item: ...
-
     @overload
     def __getitem__(self, value: slice) -> Group: ...
 
@@ -334,6 +334,9 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         '''
         return Item.Data.store(self)
 
+    def new_renderer(self) -> Renderer:
+        return Renderer()
+
     # endregion
 
     # region timeline
@@ -363,7 +366,6 @@ class Group[T](Item):
 
     @overload
     def __getitem__(self, value: int) -> T: ...
-
     @overload
     def __getitem__(self, value: slice) -> Group[T]: ...
 

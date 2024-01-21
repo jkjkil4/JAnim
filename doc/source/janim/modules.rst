@@ -9,6 +9,7 @@ janim
    anims/modules.rst
    components/modules.rst
    items/modules.rst
+   render/modules.rst
    utils/modules.rst
    logger
    typing

@@ -14,6 +14,7 @@ from janim.typing import Vect, VectArray
 from janim.utils.data import AlignedData
 from janim.utils.signal import Signal
 from janim.utils.bezier import interpolate
+from janim.utils.iterables import resize_and_repeatedly_extend
 from janim.utils.space_ops import angle_of_vector, get_norm, rotation_matrix
 from janim.utils.unique_nparray import UniqueNparray
 
@@ -27,7 +28,7 @@ class Cmpt_Points(Component):
         super().__init__(*args, **kwargs)
 
         self._points = UniqueNparray()
-        self.set([])
+        self.clear()
 
     def init_bind(self, bind: Component.BindInfo):
         super().init_bind(bind)
@@ -140,21 +141,9 @@ class Cmpt_Points(Component):
         Cmpt_Points.reverse.emit(self)
         return self
 
-    def resize(self, size: int) -> Self:
+    def resize(self, length: int) -> Self:
         # TODO: resize 注释
-        points = self.get()
-        if size < len(points):
-            self.set(points[:size])
-
-        elif size > len(points):
-            if len(points) == 0:
-                self.set(np.zeros((size, 3)))
-            else:
-                self.set(np.vstack([
-                    points,
-                    np.repeat([points[-1]], size - len(points), axis=0)
-                ]))
-
+        self.set(resize_and_repeatedly_extend(self.get(), length))
         return self
 
     def count(self) -> int:

@@ -4,3 +4,4 @@ numpy
 mapbox_earcut
 scipy
 rich
+colour
