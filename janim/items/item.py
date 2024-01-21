@@ -215,21 +215,23 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
 
     # region data
 
-    @dataclass
-    class Data[T: 'Item']:
-        item: T
+    class Data[ItemT: 'Item']:
+        def __init__(
+            self,
+            item: ItemT,
+            components: dict[str, Component],
+            parents: list[Item],
+            children: list[Item]
+        ):
+            self.item = item
+            self.components = components
+            self.parents = parents
+            self.children = children
 
-        components: dict[str, Component]
-        parents: list[Item]
-        children: list[Item]
+            self.renderer = None
 
-        @staticmethod
-        def store[U: 'Item'](item: U) -> Item.Data[U]:
-            '''
-            将物件的数据复制，并返回复制后的数据
-
-            注：仅复制自身数据，不复制子物件的数据
-            '''
+        @classmethod
+        def _store[U: 'Item'](cls, item: U) -> Self[U]:
             components: dict[str, Component] = {}
 
             for key, cmpt in item.components.items():
@@ -243,14 +245,11 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
             parents = item.parents[:]
             children = item.children[:]
 
-            return Item.Data(item, components, parents, children)
+            return cls(item, components, parents, children)
 
-        @staticmethod
-        def ref[U: 'Item'](item: U) -> Item.Data[U]:
-            '''
-            返回数据的引用，不进行复制
-            '''
-            return Item.Data(
+        @classmethod
+        def _ref[U: 'Item'](cls, item: U) -> Self[U]:
+            return cls(
                 item,
                 item.components,
                 item.parents,
@@ -281,19 +280,20 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
                 return cmpt
 
         @property
-        def cmpt(self) -> T:
+        def cmpt(self) -> ItemT:
             '''
             将 ``.component['key']`` 简化为 ``.cmpt.key`` 且方便代码提示
             '''
             return Item.Data._CmptGetter(self)
 
-        @staticmethod
+        @classmethod
         def align_for_interpolate(
+            cls,
             data1: Item.Data,
             data2: Item.Data
-        ) -> AlignedData[Item.Data]:
+        ) -> AlignedData[Self]:
             aligned = AlignedData(*[
-                Item.Data(None, {}, [], [])
+                cls(None, {}, [], [])
                 for _ in range(3)
             ])
 
@@ -328,11 +328,25 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
 
                 cmpt.interpolate(cmpt1, cmpt2, alpha)
 
+        def render(self) -> None:
+            if self.renderer is None:
+                self.renderer = self.item.new_renderer()
+
+            self.renderer.render(self)
+
     def store_data(self):
         '''
-        复制物件的数据并返回
+        将数据复制，返回复制后的数据
+
+        注：仅复制自身数据，不复制子物件的数据
         '''
-        return Item.Data.store(self)
+        return Item.Data._store(self)
+
+    def ref_data(self):
+        '''
+        返回数据的引用，不进行复制
+        '''
+        return Item.Data._ref(self)
 
     def new_renderer(self) -> Renderer:
         return Renderer()

@@ -11,7 +11,8 @@ from janim.utils.unique_nparray import UniqueNparray
 from janim.utils.data import AlignedData
 from janim.utils.bezier import interpolate
 from janim.utils.iterables import resize_with_interpolation
-from janim.typing import ColorArray, AlphaArray, RgbaArray
+from janim.typing import JAnimColor, ColorArray, Alpha, AlphaArray, Rgba, RgbaArray
+from janim.logger import log
 
 
 class Cmpt_Rgbas(Component):
@@ -94,11 +95,15 @@ class Cmpt_Rgbas(Component):
         self._rgbas.data = rgbas
         return self
 
-    def set(self, colors: ColorArray = None, alphas: AlphaArray = None, /) -> Self:
+    def set(
+        self,
+        color: JAnimColor | ColorArray = None,
+        alpha: Alpha | AlphaArray = None
+    ) -> Self:
         '''
-        - ``colors`` 表示传入的 ``RGB`` 颜色数据
+        - ``colors`` 表示传入的 ``RGB`` 颜色数据，可以是单个颜色也可以颜色数组
           （对于单个数据，支持 ``#FF0000`` ``'red'`` ``[1, 0, 0.5]`` 的表示）
-        - ``alphas`` 表示传入的透明度数据
+        - ``alphas`` 表示传入的透明度数据，可以是单个数也可以是一个数组
           （对于单个数据，``1`` 表示不透明，``0`` 表示完全透明）
 
         特殊传参：
@@ -106,37 +111,38 @@ class Cmpt_Rgbas(Component):
         - 当 ``colors`` 为四分量 ``RGBA`` 颜色数据时，
         则同时表示了 ``colors`` 和 ``alphas`` 二者，因此不能再传入 ``alphas`` 参数
         '''
-        if colors is None and alphas is None:
+        if color is None and alpha is None:
             return
 
-        if alphas is None and isinstance(colors, Iterable) and isinstance(colors[0], Iterable) and len(colors[0]) == 4:
-            rgbas = self.format_rgbas(colors)
+        def is_single_color(value: Iterable) -> bool:
+            if isinstance(value, str):
+                return True
+            if isinstance(value[0], str):
+                return False
+            return not isinstance(value[0], Iterable)
+
+        if color is not None and is_single_color(color):
+            color = [color]
+        if alpha is not None and not isinstance(alpha, Iterable):
+            alpha = [alpha]
+
+        if alpha is None and not isinstance(color[0], str) and len(color[0]) == 4:
+            rgbas = self.format_rgbas(color)
         else:
-            if colors is None and alphas is not None:
-                colors = self.get()[:, :3]
-                alphas = self.format_alphas(alphas)
-                length = len(alphas)
-
-            elif colors is not None and alphas is None:
-                colors = self.format_colors(colors)
-                alphas = self.get()[:, 3]
-                length = len(colors)
-
-            else:
-                colors = self.format_colors(colors)
-                alphas = self.format_alphas(alphas)
-                length = max(len(colors), len(alphas))
+            color = self.get()[:, :3] if color is None else self.format_colors(color)
+            alpha = self.get()[:, 3] if alpha is None else self.format_alphas(alpha)
+            length = max(len(color), len(alpha))
 
             rgbas = np.hstack([
-                resize_with_interpolation(colors, length),
-                resize_with_interpolation(alphas, length).T
+                resize_with_interpolation(color.astype(float), length),
+                resize_with_interpolation(alpha.astype(float), length).reshape((length, 1))
             ])
 
         self.set_rgbas(rgbas)
         return self
 
     def clear(self) -> Self:
-        self.set(np.full(4, 1))
+        self.set(np.full((1, 4), 1))
         return self
 
     def reverse(self) -> Self:
@@ -144,7 +150,7 @@ class Cmpt_Rgbas(Component):
         return self
 
     def resize(self, length: int) -> Self:
-        self.set(resize_with_interpolation(self.get(), max(length, 1)))
+        self.set(resize_with_interpolation(self.get(), length))
         return self
 
     def count(self) -> int:
