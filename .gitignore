@@ -6,3 +6,4 @@ __pycache__
 /janim/items/__item_deprecated.py
 /test/items/__item_test_deprecated.py
 /.coverage
+/env

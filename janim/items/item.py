@@ -33,6 +33,8 @@ class _ItemMeta(type):
 
 
 class Item(Relation['Item'], metaclass=_ItemMeta):
+    renderer_cls = Renderer
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -328,11 +330,8 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
 
                 cmpt.interpolate(cmpt1, cmpt2, alpha)
 
-        def render(self) -> None:
-            if self.renderer is None:
-                self.renderer = self.item.new_renderer()
-
-            self.renderer.render(self)
+        def create_renderer(self) -> None:
+            self.renderer = self.item.renderer_cls(self)
 
     def store_data(self):
         '''
@@ -340,16 +339,13 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
 
         注：仅复制自身数据，不复制子物件的数据
         '''
-        return Item.Data._store(self)
+        return self.Data._store(self)
 
     def ref_data(self):
         '''
         返回数据的引用，不进行复制
         '''
-        return Item.Data._ref(self)
-
-    def new_renderer(self) -> Renderer:
-        return Renderer()
+        return self.Data._ref(self)
 
     # endregion
 

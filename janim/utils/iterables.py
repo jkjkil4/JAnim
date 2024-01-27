@@ -10,14 +10,14 @@ S = TypeVar("S")
 type ResizeFunc = Callable[[np.ndarray, int], np.ndarray]
 
 
-def remove_list_redundancies(l: Iterable[T]) -> list[T]:
+def remove_list_redundancies(lst: Iterable[T]) -> list[T]:
     """
     Used instead of list(set(l)) to maintain order
     Keeps the last occurrence of each element
     """
     reversed_result = []
     used = set()
-    for x in reversed(l):
+    for x in reversed(lst):
         if x not in used:
             reversed_result.append(x)
             used.add(x)

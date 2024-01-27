@@ -1,7 +1,3 @@
 furo
 
-numpy
-mapbox_earcut
-scipy
-rich
-colour
+-r ../../janim/requirements.txt
