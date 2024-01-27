@@ -14,3 +14,12 @@ class Display(Animation):
         super().__init__(**kwargs)
         self.item = item
         self.root_only = root_only
+
+    def anim_on(self, local_t: float) -> None:
+        super().anim_on(local_t)
+
+        global_t = self.global_t_ctx.get()
+        self.current_data = self.timeline.get_stored_data_at_right(self.item, global_t)
+
+    def render(self) -> None:
+        self.current_data.render()

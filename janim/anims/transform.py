@@ -6,8 +6,8 @@ from janim.utils.data import AlignedData
 class Transform(Animation):
     def __init__(
         self,
-        item_src: Item,
-        item_target: Item,
+        src_item: Item,
+        target_item: Item,
         *,
         hide_src: bool = True,
         show_target: bool = True,
@@ -15,8 +15,8 @@ class Transform(Animation):
         **kwargs
     ):
         super().__init__(**kwargs)
-        self.item_src = item_src
-        self.item_target = item_target
+        self.src_item = src_item
+        self.target_item = target_item
 
         self.hide_src = hide_src
         self.show_target = show_target
@@ -42,12 +42,12 @@ class Transform(Animation):
                 for child1, child2 in zip(aligned.data1.children, aligned.data2.children):
                     align(child1, child2, True)
 
-        align(self.item_src, self.item_target, not self.root_only)
+        align(self.src_item, self.target_item, not self.root_only)
 
         if self.hide_src:
-            self.timeline.schedule(self.global_range.at, self.item_src.hide, root_only=self.root_only)
+            self.timeline.schedule(self.global_range.at, self.src_item.hide, root_only=self.root_only)
         if self.show_target:
-            self.timeline.schedule(self.global_range.end, self.item_target.show, root_only=self.root_only)
+            self.timeline.schedule(self.global_range.end, self.target_item.show, root_only=self.root_only)
 
     def anim_on_alpha(self, alpha: float) -> None:
         '''
@@ -56,4 +56,6 @@ class Transform(Animation):
         for aligned in self.aligned.values():
             aligned.union.interpolate(aligned.data1, aligned.data2, alpha)
 
-        # TODO: render
+    def render(self) -> None:
+        for aligned in self.aligned.values():
+            aligned.union.render()

@@ -39,3 +39,5 @@ class DotCloud(Points):
 
             for data in (aligned.data1, aligned.data2):
                 data.cmpt.color.resize(data.cmpt.points.count())
+
+            return aligned

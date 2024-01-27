@@ -87,7 +87,7 @@ class Timeline(metaclass=ABCMeta):
         '''
         pass
 
-    def build(self) -> AnimGroup:
+    def build(self) -> TimelineAnim:
         '''
         构建动画并返回
         '''
@@ -96,11 +96,11 @@ class Timeline(metaclass=ABCMeta):
             self._build_frame = inspect.currentframe()
             self.construct()
             self.cleanup_display()
-            self.global_anim = TimelineAnimGroup(self)
+            global_anim = TimelineAnim(self)
         finally:
             self.ctx_var.reset(token)
 
-        return self.global_anim
+        return global_anim
 
     def register(self, item: Item) -> None:
         '''
@@ -162,10 +162,11 @@ class Timeline(metaclass=ABCMeta):
         self.detect_changes_of_all()
 
         anim = AnimGroup(*anims, **kwargs)
-        anim.set_global_range(self.current_time + anim.local_range.at)
+        anim.local_range.at += self.current_time
+        anim.set_global_range(anim.local_range.at, anim.local_range.duration)
         self.anims.append(anim)
 
-        return anim.global_range
+        return anim.local_range
 
     def play(self, *anims: Animation, **kwargs) -> None:
         '''
@@ -262,7 +263,8 @@ class Timeline(metaclass=ABCMeta):
         duration = self.current_time - time
 
         anim = Display(item, duration=duration, root_only=True)
-        anim.set_global_range(time)
+        anim.local_range.at += time
+        anim.set_global_range(anim.local_range.at, anim.local_range.duration)
         self.display_anims.append(anim)
 
     def hide(self, *roots: Item, root_only=False) -> None:
@@ -355,17 +357,21 @@ class Timeline(metaclass=ABCMeta):
     # endregion
 
 
-class TimelineAnimGroup(AnimGroup):
+class TimelineAnim(AnimGroup):
     '''
-    :class:`Timeline` 运行 ``run()`` 后返回的动画组
+    :class:`Timeline` 运行 :meth:`Timeline.run` 后返回的动画组
 
     - ``self.display_anim`` 是由 :meth:`Timeline.construct` 中执行
       :meth:`Timeline.show` 和 :meth:`Timeline.hide` 而产生的
-    - ``self.anim`` 是显式使用了 :meth:`Timeline.prepare` 或 :meth:`Timeline.play` 而产生的
+    - ``self.user_anim`` 是显式使用了 :meth:`Timeline.prepare` 或 :meth:`Timeline.play` 而产生的
     '''
     def __init__(self, timeline: Timeline, **kwargs):
         self.timeline = timeline
 
         self.display_anim = AnimGroup(*timeline.display_anims)
-        self.anim = AnimGroup(*timeline.anims)
-        super().__init__(self.display_anim, self.anim, **kwargs)
+        self.user_anim = AnimGroup(*timeline.anims)
+        super().__init__(self.display_anim, self.user_anim, **kwargs)
+
+        self.display_anim.global_range = self.display_anim.local_range
+        self.user_anim.global_range = self.user_anim.local_range
+        self.global_range = self.local_range

@@ -45,7 +45,7 @@ class TransformTest(unittest.TestCase):
                 self.forward(1)
 
         tl = MyTimeline()
-        tl.build()
+        global_anim = tl.build()
 
         self.assertEqual(tsf_anim.global_range, TimeRange(2, 1))
 
@@ -67,10 +67,7 @@ class TransformTest(unittest.TestCase):
             [UP * 0.7 + LEFT * 0.3, DOWN * 0.7 + RIGHT * 0.3]
         )
 
-        for anim in tl.anims:
-            if isinstance(anim, AnimGroup):
-                display1, display2 = filter(lambda x: x is not anim, tl.anims)
-                break
+        display1, display2 = global_anim.display_anim.anims
 
         self.assertIsInstance(display1, Display)
         self.assertIsInstance(display2, Display)

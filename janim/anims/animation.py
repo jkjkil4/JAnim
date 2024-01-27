@@ -1,3 +1,4 @@
+from contextvars import ContextVar
 from dataclasses import dataclass
 
 from janim.utils.rate_functions import RateFunc, smooth
@@ -55,8 +56,13 @@ class Animation:
         alpha = self.rate_func(local_t / self.local_range.duration)
         self.anim_on_alpha(alpha)
 
+    global_t_ctx: ContextVar[float] = ContextVar('Animation.global_t_ctx')
+
     def anim_on_alpha(self, alpha: float) -> None:
         '''
         动画在 ``alpha`` 处的行为
         '''
+        pass
+
+    def render(self) -> None:
         pass

@@ -295,7 +295,7 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
             data2: Item.Data
         ) -> AlignedData[Self]:
             aligned = AlignedData(*[
-                cls(None, {}, [], [])
+                cls(data1.item, {}, [], [])
                 for _ in range(3)
             ])
 
@@ -331,7 +331,15 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
                 cmpt.interpolate(cmpt1, cmpt2, alpha)
 
         def create_renderer(self) -> None:
-            self.renderer = self.item.renderer_cls(self)
+            self.renderer = self.item.renderer_cls()
+
+        def render(self) -> None:
+            if self.renderer is None:
+                self.create_renderer()
+
+            if not self.renderer.initialized:
+                self.renderer.init()
+            self.renderer.render(self)
 
     def store_data(self):
         '''
