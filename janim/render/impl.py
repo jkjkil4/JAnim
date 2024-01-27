@@ -12,5 +12,3 @@ class DotCloudRenderer(Renderer):
 
     def render(self, data: DotCloud.Data) -> None:
         print('#' * int(abs(data.cmpt.points.get_start()[0]) + 1))
-
-

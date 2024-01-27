@@ -75,6 +75,7 @@ class Timeline(metaclass=ABCMeta):
 
         self.scheduled_tasks: list[Timeline.ScheduledTask] = []
         self.anims: list[Animation] = []
+        self.display_anims: list[Display] = []
 
         self.item_stored_datas: defaultdict[Item, list[Timeline.TimedItemData]] = defaultdict(list)
         self.item_display_times: dict[Item, int] = {}
@@ -95,7 +96,7 @@ class Timeline(metaclass=ABCMeta):
             self._build_frame = inspect.currentframe()
             self.construct()
             self.cleanup_display()
-            self.global_anim = AnimGroup(*self.anims)
+            self.global_anim = TimelineAnimGroup(self)
         finally:
             self.ctx_var.reset(token)
 
@@ -262,7 +263,7 @@ class Timeline(metaclass=ABCMeta):
 
         anim = Display(item, duration=duration, root_only=True)
         anim.set_global_range(time)
-        self.anims.append(anim)
+        self.display_anims.append(anim)
 
     def hide(self, *roots: Item, root_only=False) -> None:
         '''
@@ -352,3 +353,19 @@ class Timeline(metaclass=ABCMeta):
             log.debug('\n'.join(lines))
 
     # endregion
+
+
+class TimelineAnimGroup(AnimGroup):
+    '''
+    :class:`Timeline` 运行 ``run()`` 后返回的动画组
+
+    - ``self.display_anim`` 是由 :meth:`Timeline.construct` 中执行
+      :meth:`Timeline.show` 和 :meth:`Timeline.hide` 而产生的
+    - ``self.anim`` 是显式使用了 :meth:`Timeline.prepare` 或 :meth:`Timeline.play` 而产生的
+    '''
+    def __init__(self, timeline: Timeline, **kwargs):
+        self.timeline = timeline
+
+        self.display_anim = AnimGroup(*timeline.display_anims)
+        self.anim = AnimGroup(*timeline.anims)
+        super().__init__(self.display_anim, self.anim, **kwargs)
