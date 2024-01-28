@@ -79,8 +79,8 @@ class AnimGroup(Animation):
                 anim.anim_on(anim_t)
 
     def render(self) -> None:
+        global_t = self.global_t_ctx.get()
         for anim in self.anims:
-            global_t = self.global_t_ctx.get()
             if anim.global_range.at <= global_t < anim.global_range.end:
                 anim.render()
 

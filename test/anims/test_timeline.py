@@ -53,7 +53,7 @@ class TimelineTest(unittest.TestCase):
                 self.item3 = MyItem()
 
         tl = MyTimeline()
-        tl.build()
+        tl.build(quiet=True)
 
         self.assertEqual(len(tl.item_stored_datas[tl.item1]), 2)
         self.assertEqual(len(tl.item_stored_datas[tl.item2]), 2)

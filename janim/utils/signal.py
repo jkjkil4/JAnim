@@ -231,7 +231,7 @@ class Signal(Generic[T, P, R]):
     def emit(self, sender: object, *args, key: str = '', **kwargs):
         '''
         触发 ``Signal``
-        '''
+        '''  # TODO: optimize
         if key not in self.slots:
             return
 

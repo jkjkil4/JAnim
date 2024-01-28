@@ -88,7 +88,7 @@ class Timeline(metaclass=ABCMeta):
         '''
         pass
 
-    def build(self, quiet=False) -> TimelineAnim:
+    def build(self, *, quiet=False) -> TimelineAnim:
         '''
         构建动画并返回
         '''

@@ -6,8 +6,8 @@ from typing import Callable, Self, overload
 from janim.anims.timeline import Timeline
 from janim.components.component import CmptInfo, Component, _CmptGroup
 from janim.items.relation import Relation
-from janim.typing import SupportsInterpolate
 from janim.render.base import Renderer
+from janim.typing import SupportsInterpolate
 from janim.utils.data import AlignedData
 from janim.utils.iterables import resize_preserving_order
 
@@ -46,6 +46,11 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         if timeline:
             timeline.register(self)
 
+    @dataclass
+    class _CmptInitData:
+        info: CmptInfo[CmptInfo]
+        decl_cls: type[Item]
+
     def _init_components(self) -> None:
         '''
         创建出 CmptInfo 对应的 Component，
@@ -56,12 +61,7 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         '''
         type CmptKey = str
 
-        @dataclass
-        class CmptInitData:
-            info: CmptInfo[CmptInfo]
-            decl_cls: type[Item]
-
-        datas: dict[CmptKey, CmptInitData] = {}
+        datas: dict[CmptKey, Item._CmptInitData] = {}
 
         for cls in reversed(self.__class__.mro()):
             for key, info in cls.__dict__.get(CLS_CMPTINFO_NAME, {}).items():
@@ -80,7 +80,7 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
                     data.info = info
 
                 else:  # key not in datas
-                    datas[key] = CmptInitData(info, cls)
+                    datas[key] = self._CmptInitData(info, cls)
 
         self.components: dict[str, Component] = {}
 
@@ -339,6 +339,7 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
 
             if not self.renderer.initialized:
                 self.renderer.init()
+                self.renderer.initialized = True
             self.renderer.render(self)
 
     def store_data(self):

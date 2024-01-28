@@ -11,8 +11,7 @@ from janim.utils.unique_nparray import UniqueNparray
 from janim.utils.data import AlignedData
 from janim.utils.bezier import interpolate
 from janim.utils.iterables import resize_with_interpolation
-from janim.typing import JAnimColor, ColorArray, Alpha, AlphaArray, Rgba, RgbaArray
-from janim.logger import log
+from janim.typing import JAnimColor, ColorArray, Alpha, AlphaArray, RgbaArray
 
 
 class Cmpt_Rgbas(Component):
@@ -98,13 +97,15 @@ class Cmpt_Rgbas(Component):
     def set(
         self,
         color: JAnimColor | ColorArray = None,
-        alpha: Alpha | AlphaArray = None
+        alpha: Alpha | AlphaArray = None,
+        root_only: bool = False
     ) -> Self:
         '''
         - ``colors`` 表示传入的 ``RGB`` 颜色数据，可以是单个颜色也可以颜色数组
           （对于单个数据，支持 ``#FF0000`` ``'red'`` ``[1, 0, 0.5]`` 的表示）
         - ``alphas`` 表示传入的透明度数据，可以是单个数也可以是一个数组
           （对于单个数据，``1`` 表示不透明，``0`` 表示完全透明）
+        - 默认情况下会将所有子物件也设置成指定的颜色，传入 ``root_only=True`` 可以只设置根物件的
 
         特殊传参：
 
@@ -128,17 +129,39 @@ class Cmpt_Rgbas(Component):
 
         if alpha is None and not isinstance(color[0], str) and len(color[0]) == 4:
             rgbas = self.format_rgbas(color)
+
+            self.set_rgbas(rgbas)
+
+            if not root_only and self.bind is not None:
+                for item in self.bind.at_item.walk_descendants(self.bind.decl_cls):
+                    cmpt = getattr(item, self.bind.key)
+                    if isinstance(cmpt, Cmpt_Rgbas):
+                        cmpt.set_rgbas(rgbas)
         else:
-            color = self.get()[:, :3] if color is None else self.format_colors(color)
-            alpha = self.get()[:, 3] if alpha is None else self.format_alphas(alpha)
-            length = max(len(color), len(alpha))
+            if color is not None:
+                color = self.format_colors(color)
+            if alpha is not None:
+                alpha = self.format_alphas(alpha)
 
-            rgbas = np.hstack([
-                resize_with_interpolation(color.astype(float), length),
-                resize_with_interpolation(alpha.astype(float), length).reshape((length, 1))
-            ])
+            def set_to(cmpt: Cmpt_Rgbas):
+                cmpt_color = cmpt.get()[:, :3] if color is None else color
+                cmpt_alpha = cmpt.get()[:, 3] if alpha is None else alpha
+                length = max(len(cmpt_color), len(cmpt_alpha))
 
-        self.set_rgbas(rgbas)
+                rgbas = np.hstack([
+                    resize_with_interpolation(cmpt_color.astype(float), length),
+                    resize_with_interpolation(cmpt_alpha.astype(float), length).reshape((length, 1))
+                ])
+                cmpt.set_rgbas(rgbas)
+
+            set_to(self)
+
+            if not root_only and self.bind is not None:
+                for item in self.bind.at_item.walk_descendants(self.bind.decl_cls):
+                    cmpt = getattr(item, self.bind.key)
+                    if isinstance(cmpt, Cmpt_Rgbas):
+                        set_to(cmpt)
+
         return self
 
     def clear(self) -> Self:
