@@ -7,7 +7,7 @@ from janim.anims.timeline import Timeline
 from janim.components.component import CmptInfo, Component, _CmptGroup
 from janim.items.relation import Relation
 from janim.typing import SupportsInterpolate
-from janim.render.renderer import Renderer
+from janim.render.base import Renderer
 from janim.utils.data import AlignedData
 from janim.utils.iterables import resize_preserving_order
 

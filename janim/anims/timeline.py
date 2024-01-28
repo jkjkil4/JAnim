@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import inspect
 import math
+import time
 from abc import ABCMeta, abstractmethod
 from bisect import insort
 from contextvars import ContextVar
@@ -87,16 +88,26 @@ class Timeline(metaclass=ABCMeta):
         '''
         pass
 
-    def build(self) -> TimelineAnim:
+    def build(self, quiet=False) -> TimelineAnim:
         '''
         构建动画并返回
         '''
         token = self.ctx_var.set(self)
         try:
             self._build_frame = inspect.currentframe()
+
+            if not quiet:
+                log.info(f'Building "{self.__class__.__name__}"')
+                start_time = time.time()
+
             self.construct()
-            self.cleanup_display()
+            self.cleanup_display(trail=0.1)
             global_anim = TimelineAnim(self)
+
+            if not quiet:
+                elapsed = time.time() - start_time
+                log.info(f'Finished building "{self.__class__.__name__}" at {elapsed:.2f} s')
+
         finally:
             self.ctx_var.reset(token)
 
@@ -255,17 +266,18 @@ class Timeline(metaclass=ABCMeta):
                 for item in root.descendants():
                     self._show(item)
 
-    def _hide(self, item: Item) -> None:
+    def _hide(self, item: Item, *, trail=0) -> Display:
         time = self.item_display_times.pop(item, None)
         if time is None:
             return
 
         duration = self.current_time - time
 
-        anim = Display(item, duration=duration, root_only=True)
+        anim = Display(item, duration=duration + trail, root_only=True)
         anim.local_range.at += time
         anim.set_global_range(anim.local_range.at, anim.local_range.duration)
         self.display_anims.append(anim)
+        return anim
 
     def hide(self, *roots: Item, root_only=False) -> None:
         '''
@@ -277,12 +289,14 @@ class Timeline(metaclass=ABCMeta):
                 for item in root.descendants():
                     self._hide(item)
 
-    def cleanup_display(self) -> None:
+    def cleanup_display(self, trail=0) -> None:
         '''
         对目前显示中的所有物件调用隐藏，使得正确产生 :class:`~.Display` 对象
+
+        ``trail`` 参数在 :meth:`build` 调用的最后使用到，以便使得最后的一帧也能看到物件
         '''
         for item in list(self.item_display_times.keys()):
-            self._hide(item)
+            self._hide(item, trail=trail)
 
     # region debug
 
@@ -371,6 +385,7 @@ class TimelineAnim(AnimGroup):
         self.display_anim = AnimGroup(*timeline.display_anims)
         self.user_anim = AnimGroup(*timeline.anims)
         super().__init__(self.display_anim, self.user_anim, **kwargs)
+        self.maxt = self.local_range.duration = timeline.current_time
 
         self.display_anim.global_range = self.display_anim.local_range
         self.user_anim.global_range = self.user_anim.local_range

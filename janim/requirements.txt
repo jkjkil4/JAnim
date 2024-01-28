@@ -3,3 +3,4 @@ mapbox_earcut
 scipy
 colour
 rich
+qdarkstyle
