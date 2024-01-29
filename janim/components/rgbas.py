@@ -23,8 +23,7 @@ class Cmpt_Rgbas(Component):
 
     def copy(self) -> Self:
         cmpt_copy = super().copy()
-        cmpt_copy._rgbas = UniqueNparray()
-        cmpt_copy._rgbas.data = self._rgbas.data
+        cmpt_copy._rgbas = self._rgbas.copy()
         return cmpt_copy
 
     def __eq__(self, other: Cmpt_Rgbas) -> bool:

@@ -14,8 +14,8 @@ from janim.render.base import Renderer, RenderData
 if TYPE_CHECKING:
     from janim.gui.anim_viewer import AnimViewer
 
-MAX_UPDATE_RATE = 20
-MIN_UPDATE_DURATION = 1000 // MAX_UPDATE_RATE
+MAX_RESIZE_RATE = 20
+MIN_RESIZE_DURATION = 1000 // MAX_RESIZE_RATE
 
 
 class GLWidget(QOpenGLWidget):
@@ -32,24 +32,14 @@ class GLWidget(QOpenGLWidget):
         self.resize_timer.setSingleShot(True)
         self.resize_timer.timeout.connect(self.on_resize_timeout)
 
-        self.update_timer = QTimer(self)
-        self.update_timer.setSingleShot(True)
-        self.update_timer.timeout.connect(self.update)
-
     def set_progress(self, progress: float) -> None:
         self._progress = progress
 
         token = Animation.global_t_ctx.set(progress)
-
-        self.anim.anim_on(self._progress)
-
+        self.anim.anim_on(progress)
         Animation.global_t_ctx.reset(token)
 
-        self.start_update_timer()
-
-    def start_update_timer(self) -> None:
-        if not self.update_timer.isActive():
-            self.update_timer.start()
+        self.update()
 
     def on_resize_timeout(self) -> None:
         QApplication.instance().postEvent(
@@ -79,7 +69,7 @@ class GLWidget(QOpenGLWidget):
     def event(self, e: QEvent) -> bool:
         if e.type() == QEvent.Type.Resize and e.size() != self.target_size:
             self.target_size = e.size()
-            self.resize_timer.start(MIN_UPDATE_DURATION)
+            self.resize_timer.start(MIN_RESIZE_DURATION)
             e.ignore()
             return True
 

@@ -7,3 +7,4 @@ __pycache__
 /test/items/__item_test_deprecated.py
 /.coverage
 /env
+/result.json

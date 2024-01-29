@@ -39,8 +39,7 @@ class Cmpt_Points(Component):
 
     def copy(self) -> Self:
         cmpt_copy = super().copy()
-        cmpt_copy._points = UniqueNparray()
-        cmpt_copy._points.data = self._points.data
+        cmpt_copy._points = self._points.copy()
         return cmpt_copy
 
     def __eq__(self, other: Cmpt_Points) -> bool:

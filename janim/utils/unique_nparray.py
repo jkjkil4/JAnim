@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import Iterable
 
 import numpy as np
@@ -22,6 +24,11 @@ class UniqueNparray:
             self._data = np.array(data)
         else:
             self._data = data.copy()
+
+    def copy(self) -> UniqueNparray:
+        ret = UniqueNparray()
+        ret._data = self._data
+        return ret
 
     def __eq__(self, other) -> None:
         if not isinstance(other, UniqueNparray):
