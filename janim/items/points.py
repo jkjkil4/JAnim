@@ -20,7 +20,8 @@ class Points(Item):
     def __init__(self, *points: Vect, **kwargs):
         super().__init__(**kwargs)
 
-        self.points.set(points)
+        if points:
+            self.points.set(points)
 
 
 class DotCloud(Points):

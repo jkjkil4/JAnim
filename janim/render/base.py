@@ -7,6 +7,7 @@ from dataclasses import dataclass
 
 import moderngl as mgl
 
+from janim.camera.camera_info import CameraInfo
 from janim.utils.file_ops import get_janim_dir, readall
 
 
@@ -24,9 +25,10 @@ class Renderer(metaclass=ABCMeta):
     def render(self, data) -> None: ...
 
 
-@dataclass
+@dataclass(kw_only=True)
 class RenderData:
     ctx: mgl.Context
+    camera_info: CameraInfo
 
 
 shader_keys = (

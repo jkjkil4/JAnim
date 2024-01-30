@@ -5,14 +5,15 @@ import math
 import time
 from abc import ABCMeta, abstractmethod
 from bisect import insort
-from contextvars import ContextVar
 from collections import defaultdict
+from contextvars import ContextVar
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Iterable, Callable, Self
+from typing import TYPE_CHECKING, Callable, Iterable, Self
 
 from janim.anims.animation import TimeRange
-from janim.anims.display import Display
 from janim.anims.composition import AnimGroup
+from janim.anims.display import Display
+from janim.camera.camera import Camera
 from janim.logger import log
 
 if TYPE_CHECKING:   # pragma: no cover
@@ -80,6 +81,9 @@ class Timeline(metaclass=ABCMeta):
 
         self.item_stored_datas: defaultdict[Item, list[Timeline.TimedItemData]] = defaultdict(list)
         self.item_display_times: dict[Item, int] = {}
+
+        self.camera = Camera()
+        self.register(self.camera)
 
     @abstractmethod
     def construct(self) -> None:
@@ -241,15 +245,15 @@ class Timeline(metaclass=ABCMeta):
 
         assert False
 
-    def get_stored_data_at_right(self, item: Item, t: float) -> Item.Data:
+    def get_stored_data_at_right[T](self, item: T, t: float) -> Item.Data[T]:
         '''
-        得到在指定时间之前的瞬间，物件的数据
+        得到在指定时间之后的瞬间，物件的数据
         '''
         return self._get_stored_data_at_time(item, t + 1e-5)
 
-    def get_stored_data_at_left(self, item: Item, t: float) -> Item.Data:
+    def get_stored_data_at_left[T](self, item: T, t: float) -> Item.Data[T]:
         '''
-        得到在指定时间之后的瞬间，物件的数据
+        得到在指定时间之前的瞬间，物件的数据
         '''
         return self._get_stored_data_at_time(item, t - 1e-5)
 

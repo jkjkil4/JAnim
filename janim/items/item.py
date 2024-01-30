@@ -3,7 +3,6 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Callable, Self, overload
 
-from janim.anims.timeline import Timeline
 from janim.components.component import CmptInfo, Component, _CmptGroup
 from janim.items.relation import Relation
 from janim.render.base import Renderer
@@ -42,6 +41,7 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
 
         self._astype_mock_cmpt: dict[tuple[type, str], Component] = {}
 
+        from janim.anims.timeline import Timeline
         timeline = Timeline.get_context(raise_exc=False)
         if timeline:
             timeline.register(self)
@@ -364,12 +364,14 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         '''
         显示物件
         '''
+        from janim.anims.timeline import Timeline
         Timeline.get_context().show(self, **kwargs)
 
     def hide(self, **kwargs) -> None:
         '''
         隐藏物件
         '''
+        from janim.anims.timeline import Timeline
         Timeline.get_context().hide(self, **kwargs)
 
     # endregion
