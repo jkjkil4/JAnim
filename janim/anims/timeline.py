@@ -20,6 +20,9 @@ if TYPE_CHECKING:   # pragma: no cover
     from janim.anims.animation import Animation
     from janim.items.item import Item
 
+GET_DATA_DELTA = 1e-5
+ANIM_END_DELTA = 1e-5 * 2
+
 
 class Timeline(metaclass=ABCMeta):
     '''
@@ -174,11 +177,14 @@ class Timeline(metaclass=ABCMeta):
         '''
         应用动画
         '''
-        self.detect_changes_of_all()
-
         anim = AnimGroup(*anims, **kwargs)
         anim.local_range.at += self.current_time
         anim.set_global_range(anim.local_range.at, anim.local_range.duration)
+
+        anim.anim_pre_init()
+        self.detect_changes_of_all()
+        anim.anim_init()
+
         self.anims.append(anim)
 
         return anim.local_range
@@ -204,33 +210,37 @@ class Timeline(metaclass=ABCMeta):
         检查所有物件是否有产生变化并记录
         '''
         for item, datas in self.item_stored_datas.items():
-            self._detect_change(item, datas)
+            self._detect_change(item, datas, as_time=self.current_time)
 
-    def detect_changes(self, items: Iterable[Item]) -> None:
+    def detect_changes(self, items: Iterable[Item], *, as_time: float | None = None) -> None:
         '''
         检查指定的列表中的物件是否有产生变化并记录（仅检查自身而不包括子物件的）
         '''
+        if as_time is None:
+            as_time = self.current_time
         for item in items:
-            self._detect_change(item, self.item_stored_datas[item])
+            self._detect_change(item, self.item_stored_datas[item], as_time=as_time)
 
     def _detect_change(
         self,
         item: Item,
         datas: list[Timeline.TimedItemData],
+        *,
+        as_time: float
     ) -> None:
         if not datas:
             datas.append(Timeline.TimedItemData(0, item.store_data()))
 
         elif datas[-1].data.is_changed():
-            if self.current_time < datas[-1].time:
+            if as_time < datas[-1].time:
                 # TOOD: 明确是什么物件
                 raise RuntimeError('记录物件数据失败，可能是因为物件处于动画中')
 
-            elif self.current_time == datas[-1].time:
+            elif as_time == datas[-1].time:
                 datas[-1].data = item.store_data()
-
             else:  # as_time > datas[-1].time
-                datas.append(Timeline.TimedItemData(self.current_time, item.store_data()))
+                datas.append(Timeline.TimedItemData(as_time, item.store_data()))
+            print(as_time)
 
     def _get_stored_data_at_time(self, item: Item, t: float) -> Item.Data:
         # TODO: optimize
@@ -249,13 +259,13 @@ class Timeline(metaclass=ABCMeta):
         '''
         得到在指定时间之后的瞬间，物件的数据
         '''
-        return self._get_stored_data_at_time(item, t + 1e-5)
+        return self._get_stored_data_at_time(item, t + GET_DATA_DELTA)
 
     def get_stored_data_at_left[T](self, item: T, t: float) -> Item.Data[T]:
         '''
         得到在指定时间之前的瞬间，物件的数据
         '''
-        return self._get_stored_data_at_time(item, t - 1e-5)
+        return self._get_stored_data_at_time(item, t - GET_DATA_DELTA)
 
     def _show(self, item: Item) -> None:
         self.item_display_times.setdefault(item, self.current_time)

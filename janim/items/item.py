@@ -133,6 +133,11 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         func(self)
         return self
 
+    @property
+    def anim(self):
+        from janim.anims.transform import MethodTransform
+        return MethodTransform(self)
+
     @overload
     def __getitem__(self, value: int) -> Item: ...
     @overload

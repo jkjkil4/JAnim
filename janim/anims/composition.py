@@ -66,6 +66,14 @@ class AnimGroup(Animation):
                 anim.local_range.duration * factor
             )
 
+    def anim_pre_init(self) -> None:
+        for anim in self.anims:
+            anim.anim_pre_init()
+
+    def anim_init(self) -> None:
+        for anim in self.anims:
+            anim.anim_init()
+
     def anim_on_alpha(self, alpha: float) -> None:
         '''
         在该方法中，:class:`AnimGroup` 通过 ``alpha``

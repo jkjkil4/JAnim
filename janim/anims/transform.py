@@ -1,6 +1,12 @@
+import inspect
+from typing import Any, Callable, Self
+
 from janim.anims.animation import Animation
+from janim.anims.timeline import ANIM_END_DELTA
 from janim.items.item import Item
+from janim.logger import log
 from janim.utils.data import AlignedData
+from janim.utils.rate_functions import RateFunc
 
 
 class Transform(Animation):
@@ -59,3 +65,31 @@ class Transform(Animation):
     def render(self) -> None:
         for aligned in self.aligned.values():
             aligned.union.render()
+
+
+class MethodTransform[T: 'Item'](Transform):
+    def __init__(self, item: T, **kwargs):
+        super().__init__(item, item, **kwargs)
+        self.item = item
+        if self.root_only:
+            log.warning('将 root_only=True 传入 .anim 是无效的')
+
+    def __call__(self,
+                 *,
+                 at: float | None = None,
+                 duration: float | None = None,
+                 rate_func: RateFunc | None = None,
+                 hide_src: bool | None = None,
+                 show_target: bool | None = None) -> Self:
+        for key, value in inspect.getargvalues(inspect.currentframe()).locals.items():
+            if value is not None and key != 'self':
+                setattr(self, key, value)
+        return self
+
+    def do(self, func: Callable[[T], Any]) -> Self:
+        func(self.item)
+        return self
+
+    def anim_pre_init(self) -> None:
+        self.timeline.detect_changes(self.item.walk_self_and_descendants(),
+                                     as_time=self.global_range.end - ANIM_END_DELTA)

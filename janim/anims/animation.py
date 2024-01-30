@@ -45,7 +45,7 @@ class Animation:
             duration = self.local_range.duration
         self.global_range = TimeRange(at, duration)
 
-        self.anim_init()
+    def anim_pre_init(self) -> None: ...
 
     def anim_init(self) -> None: ...
 
