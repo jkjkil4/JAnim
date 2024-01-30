@@ -2,9 +2,7 @@ import inspect
 from typing import Any, Callable, Self
 
 from janim.anims.animation import Animation
-from janim.anims.timeline import ANIM_END_DELTA
 from janim.items.item import Item
-from janim.logger import log
 from janim.utils.data import AlignedData
 from janim.utils.rate_functions import RateFunc
 
@@ -40,8 +38,8 @@ class Transform(Animation):
             if tpl in self.aligned:
                 return
 
-            data1 = self.timeline.get_stored_data_at_right(item1, self.global_range.at)
-            data2 = self.timeline.get_stored_data_at_left(item2, self.global_range.end)
+            data1 = self.timeline.get_stored_data_at_right(item1, self.global_range.at, skip_dynamic_data=True)
+            data2 = self.timeline.get_stored_data_at_left(item2, self.global_range.end, skip_dynamic_data=True)
             aligned = self.aligned[tpl] = data1.align_for_interpolate(data1, data2)
 
             if recurse:
@@ -70,9 +68,6 @@ class Transform(Animation):
 class MethodTransform[T: 'Item'](Transform):
     def __init__(self, item: T, **kwargs):
         super().__init__(item, item, **kwargs)
-        self.item = item
-        if self.root_only:
-            log.warning('将 root_only=True 传入 .anim 是无效的')
 
     def __call__(self,
                  *,
@@ -87,9 +82,12 @@ class MethodTransform[T: 'Item'](Transform):
         return self
 
     def do(self, func: Callable[[T], Any]) -> Self:
-        func(self.item)
+        func(self.src_item)
         return self
 
     def anim_pre_init(self) -> None:
-        self.timeline.detect_changes(self.item.walk_self_and_descendants(),
+        from janim.anims.timeline import ANIM_END_DELTA
+
+        self.timeline.register_method_transform(self)
+        self.timeline.detect_changes(self.src_item.walk_self_and_descendants(),
                                      as_time=self.global_range.end - ANIM_END_DELTA)

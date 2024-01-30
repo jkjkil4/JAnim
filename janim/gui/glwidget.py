@@ -54,7 +54,7 @@ class GLWidget(QOpenGLWidget):
             return
 
         timeline = self.anim.timeline
-        camera_data = timeline.get_stored_data_at_right(timeline.camera, self._progress)
+        camera_data = timeline.get_stored_data_at_time(timeline.camera, self._progress)
         camera_info = camera_data.cmpt.points.info
 
         render_token = Renderer.data_ctx.set(RenderData(ctx=self.ctx, camera_info=camera_info))

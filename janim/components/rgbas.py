@@ -29,21 +29,21 @@ class Cmpt_Rgbas(Component):
     def __eq__(self, other: Cmpt_Rgbas) -> bool:
         return id(self.get()) == id(other.get())
 
-    @staticmethod
-    def align_for_interpolate(cmpt1: Cmpt_Rgbas, cmpt2: Cmpt_Rgbas):
+    @classmethod
+    def align_for_interpolate(cls, cmpt1: Cmpt_Rgbas, cmpt2: Cmpt_Rgbas):
         len1, len2 = len(cmpt1.get()), len(cmpt2.get())
 
         if len1 == len2:
             if cmpt1 == cmpt2:
                 return AlignedData(cmpt1, cmpt1, cmpt1)
             # cmpt1 != cmpt2
-            return AlignedData(cmpt1, cmpt2, Cmpt_Rgbas())
+            return AlignedData(cmpt1, cmpt2, cls())
 
         if len1 > len2:
-            return AlignedData(cmpt1, cmpt2.copy().resize(len1), Cmpt_Rgbas())
+            return AlignedData(cmpt1, cmpt2.copy().resize(len1), cls())
 
         # len1 < len2
-        return AlignedData(cmpt1.copy().resize(len2), cmpt2, Cmpt_Rgbas())
+        return AlignedData(cmpt1.copy().resize(len2), cmpt2, cls())
 
     def interpolate(self, cmpt1: Cmpt_Rgbas, cmpt2: Cmpt_Rgbas, alpha: float) -> None:
         if cmpt1 == cmpt2:

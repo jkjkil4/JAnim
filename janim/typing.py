@@ -20,7 +20,7 @@ type RgbaArray = Iterable[Rgba] | np.ndarray
 
 @runtime_checkable
 class SupportsInterpolate[T](Protocol):
-    @staticmethod
-    def align_for_interpolate(obj1: object, obj2: object) -> AlignedData[T]: ...
+    @classmethod
+    def align_for_interpolate(cls, obj1: object, obj2: object) -> AlignedData[T]: ...
 
     def interpolate(self, obj1: object, obj2: object): ...

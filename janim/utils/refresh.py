@@ -55,7 +55,7 @@ class Refreshable:
         return self
 
     def reset_refresh(self) -> Self:
-        self.refresh_data.clear()
+        self.refresh_data = defaultdict(RefreshData)
 
 
 class RefreshData:

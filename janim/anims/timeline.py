@@ -8,12 +8,14 @@ from bisect import insort
 from collections import defaultdict
 from contextvars import ContextVar
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Callable, Iterable, Self
+from typing import TYPE_CHECKING, Callable, Iterable
 
 from janim.anims.animation import TimeRange
 from janim.anims.composition import AnimGroup
 from janim.anims.display import Display
+from janim.anims.transform import MethodTransform
 from janim.camera.camera import Camera
+from janim.items.item import Item
 from janim.logger import log
 
 if TYPE_CHECKING:   # pragma: no cover
@@ -70,7 +72,7 @@ class Timeline(metaclass=ABCMeta):
         表示从 ``time`` 之后，物件的数据
         '''
         time: float
-        data: Item.Data
+        data: Item.Data | MethodTransform
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -125,6 +127,20 @@ class Timeline(metaclass=ABCMeta):
         在 :meth:`construct` 中创建的物件会自动调用该方法
         '''
         self.item_stored_datas[item]
+
+    def register_method_transform(self, anim: MethodTransform) -> None:
+        def add(item: Item):
+            datas = self.item_stored_datas[item]
+            if anim.global_range.at < datas[-1].time:
+                # TOOD: 明确是什么物件
+                raise RuntimeError('记录物件数据失败，可能是因为物件处于动画中')
+
+            datas.append(Timeline.TimedItemData(self.current_time, anim))
+
+        add(anim.src_item)
+        if not anim.root_only:
+            for item in anim.src_item.descendants():
+                add(item)
 
     def get_construct_lineno(self) -> int | None:
         '''
@@ -230,19 +246,29 @@ class Timeline(metaclass=ABCMeta):
     ) -> None:
         if not datas:
             datas.append(Timeline.TimedItemData(0, item.store_data()))
+            return
 
-        elif datas[-1].data.is_changed():
+        static = None
+        for timed_data in reversed(datas):
+            if isinstance(timed_data.data, Item.Data):
+                static = timed_data
+                break
+
+        assert static is not None
+
+        if static.data.is_changed():
             if as_time < datas[-1].time:
                 # TOOD: 明确是什么物件
                 raise RuntimeError('记录物件数据失败，可能是因为物件处于动画中')
 
-            elif as_time == datas[-1].time:
-                datas[-1].data = item.store_data()
-            else:  # as_time > datas[-1].time
-                datas.append(Timeline.TimedItemData(as_time, item.store_data()))
-            print(as_time)
+            datas.append(Timeline.TimedItemData(as_time, item.store_data()))
 
-    def _get_stored_data_at_time(self, item: Item, t: float) -> Item.Data:
+    def get_stored_data_at_time[T](self, item: T, t: float, *, skip_dynamic_data=False) -> Item.Data[T]:
+        '''
+        得到在指定时间物件的数据
+
+        在两份数据的分界处请使用 :meth:`get_stored_data_at_right` 和 :meth:`get_stored_at_left` 来明确
+        '''
         # TODO: optimize
         datas = self.item_stored_datas[item]
 
@@ -251,21 +277,28 @@ class Timeline(metaclass=ABCMeta):
 
         for timed_data in reversed(datas):
             if timed_data.time <= t:
-                return timed_data.data
+                if not isinstance(timed_data.data, MethodTransform):
+                    return timed_data.data
+                else:
+                    if skip_dynamic_data:
+                        continue
+                    anim = timed_data.data
+                    anim.anim_on_alpha((t - anim.global_range.at) / anim.global_range.duration)
+                    return anim.aligned[(item, item)].union
 
         assert False
 
-    def get_stored_data_at_right[T](self, item: T, t: float) -> Item.Data[T]:
+    def get_stored_data_at_right[T](self, item: T, t: float, *, skip_dynamic_data=False) -> Item.Data[T]:
         '''
         得到在指定时间之后的瞬间，物件的数据
         '''
-        return self._get_stored_data_at_time(item, t + GET_DATA_DELTA)
+        return self.get_stored_data_at_time(item, t + GET_DATA_DELTA, skip_dynamic_data=skip_dynamic_data)
 
-    def get_stored_data_at_left[T](self, item: T, t: float) -> Item.Data[T]:
+    def get_stored_data_at_left[T](self, item: T, t: float, *, skip_dynamic_data=False) -> Item.Data[T]:
         '''
         得到在指定时间之前的瞬间，物件的数据
         '''
-        return self._get_stored_data_at_time(item, t - GET_DATA_DELTA)
+        return self.get_stored_data_at_time(item, t - GET_DATA_DELTA, skip_dynamic_data=skip_dynamic_data)
 
     def _show(self, item: Item) -> None:
         self.item_display_times.setdefault(item, self.current_time)
@@ -343,44 +376,6 @@ class Timeline(metaclass=ABCMeta):
         time = self.fmt_time(self.current_time)
 
         log.debug(f't={time}  {ext_msg}at build.{self.get_construct_lineno()}')
-
-    def dbg_item_builder(self, item: Item):     # pragma: no cover
-        return Timeline._DbgItemBuilder(self, item)
-
-    class _DbgItemBuilder:   # pragma: no cover
-        def __init__(self, timeline: Timeline, item: Item):
-            self.timeline = timeline
-            self.item = item
-
-            self.cmpt_formatters: dict[type, Callable] = {}
-
-        def cmpt[T](self, cls: type[T], formatter: Callable[[T]]) -> Self:
-            self.cmpt_formatters[cls] = formatter
-            return self
-
-        def show(self) -> None:
-            lines = []
-
-            lines.append('======')
-            lines.append(f'{self.item.__class__.__name__} {id(self.item):X}')
-            lines.append('======')
-            for timed_data in self.timeline.item_stored_datas[self.item]:
-                time = Timeline.fmt_time(timed_data.time)
-                lines.append(f'- Time={time}')
-
-                for key, cmpt in timed_data.data.components.items():
-                    formatter = self.cmpt_formatters.get(cmpt.__class__, None)
-                    if formatter is None:
-                        continue
-
-                    pre = f'  {key}= '
-
-                    ret = str(formatter(cmpt))
-                    ret = ('\n' + ' ' * len(pre)).join(ret.splitlines())
-
-                    lines.append(f'{pre}{ret}')
-
-            log.debug('\n'.join(lines))
 
     # endregion
 

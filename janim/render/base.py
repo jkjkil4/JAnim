@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import os
-from abc import abstractmethod, ABCMeta
 from contextvars import ContextVar
 from dataclasses import dataclass
 
@@ -11,17 +10,15 @@ from janim.camera.camera_info import CameraInfo
 from janim.utils.file_ops import get_janim_dir, readall
 
 
-class Renderer(metaclass=ABCMeta):
+class Renderer:
     data_ctx: ContextVar[RenderData] = ContextVar('Renderer.data_ctx')
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.initialized = False
 
-    @abstractmethod
     def init(self) -> None: ...
 
-    @abstractmethod
     def render(self, data) -> None: ...
 
 

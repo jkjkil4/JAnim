@@ -40,6 +40,7 @@ class Cmpt_CameraPoints(Cmpt_Points):
 
     @property
     @fov.fset.self_refresh()
+    @Cmpt_Points.set.self_refresh()
     @refresh.register
     def info(self) -> CameraInfo:
         points = self.get()
