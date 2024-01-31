@@ -2,9 +2,8 @@ __pycache__
 /.vscode/launch.json
 /refactor_deprecated
 /test_some_code
+/test/test.py
 /doc/build
-/janim/items/__item_deprecated.py
-/test/items/__item_test_deprecated.py
 /.coverage
 /env
 /result.json
