@@ -46,6 +46,8 @@ class AnimGroup(Animation):
             duration = self.maxt
 
         super().__init__(duration=duration, rate_func=rate_func, **kwargs)
+        for anim in self.anims:
+            anim.parent = self
 
     def set_global_range(self, at: float, duration: float | None = None) -> None:
         '''
@@ -74,15 +76,16 @@ class AnimGroup(Animation):
         for anim in self.anims:
             anim.anim_init()
 
+    def get_anim_t(self, alpha: float, anim: Animation) -> float:
+        return alpha * self.maxt - anim.local_range.at
+
     def anim_on_alpha(self, alpha: float) -> None:
         '''
         在该方法中，:class:`AnimGroup` 通过 ``alpha``
         换算出子动画的 ``local_t`` 并调用子动画的 :meth:`~.Animation.anim_on` 方法
         '''
-        adjusted_local_t = alpha * self.maxt
-
         for anim in self.anims:
-            anim_t = adjusted_local_t - anim.local_range.at
+            anim_t = self.get_anim_t(alpha, anim)
             if 0 <= anim_t < anim.local_range.duration:
                 anim.anim_on(anim_t)
 

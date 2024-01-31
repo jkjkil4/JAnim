@@ -283,7 +283,7 @@ class Timeline(metaclass=ABCMeta):
                     if skip_dynamic_data:
                         continue
                     anim = timed_data.data
-                    anim.anim_on_alpha((t - anim.global_range.at) / anim.global_range.duration)
+                    anim.anim_on_alpha(anim.get_alpha_on_global_t(t))
                     return anim.aligned[(item, item)].union
 
         assert False

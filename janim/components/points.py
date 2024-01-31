@@ -61,7 +61,7 @@ class Cmpt_Points(Component):
         # len1 < len2
         return AlignedData(cmpt1.copy().resize(len2), cmpt2, cls())
 
-    def interpolate(self, cmpt1: Cmpt_Points, cmpt2: Cmpt_Points, alpha: float) -> None:
+    def interpolate(self, cmpt1: Self, cmpt2: Self, alpha: float) -> None:
         if cmpt1 == cmpt2:
             return
 

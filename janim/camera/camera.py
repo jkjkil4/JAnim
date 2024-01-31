@@ -1,13 +1,20 @@
-from typing import Self
+from __future__ import annotations
+
+from typing import Iterable, Self
+
+import numpy as np
+from scipy.spatial.transform import Rotation, Slerp
 
 import janim.utils.refresh as refresh
 from janim.camera.camera_info import CameraInfo
 from janim.components.component import CmptInfo
 from janim.components.points import Cmpt_Points
-from janim.constants import ORIGIN
+from janim.constants import ORIGIN, OUT
 from janim.items.points import Points
+from janim.typing import Vect
+from janim.utils.bezier import interpolate
 from janim.utils.config import Config
-from janim.utils.signal import Signal
+from janim.utils.space_ops import normalize
 
 
 class Cmpt_CameraPoints(Cmpt_Points):
@@ -15,38 +22,81 @@ class Cmpt_CameraPoints(Cmpt_Points):
         super().__init__(*args, **kwargs)
         self.reset()
 
-    def copy(self) -> Self:
-        return super().copy()
-
-    def __eq__(self, other) -> bool:
-        return super().__eq__(other)
-
-    def reset(self):
+    def reset(self) -> Self:
+        self.set([ORIGIN])
+        self.size = [Config.get.frame_width, Config.get.frame_height]
         self.fov = 45
-        self.set([
-            ORIGIN,
-            Config.get.left_side, Config.get.right_side,
-            Config.get.bottom, Config.get.top
-        ])
+        self.orientation = Rotation.identity()
+
         return self
+
+    def copy(self) -> Self:
+        cmpt_copy = super().copy()
+        cmpt_copy._size = self._size.copy()
+        cmpt_copy.orientation = self.orientation.from_quat(self.orientation.as_quat())
+        return cmpt_copy
+
+    def __eq__(self, other: Cmpt_CameraPoints) -> Self:
+        if not super().__eq__(other):
+            return False
+        if np.any(self.size != other.size) or self.fov != other.fov:
+            return False
+        return np.all(self.orientation.as_quat() == other.orientation.as_quat())
+
+    def interpolate(self, cmpt1: Self, cmpt2: Self, alpha: float) -> None:
+        super().interpolate(cmpt1, cmpt2, alpha)
+        self.fov = interpolate(cmpt1.fov, cmpt2.fov, alpha)
+        self.orientation = Slerp([0, 1], Rotation.concatenate([cmpt1.orientation, cmpt2.orientation]))(alpha)
+
+    @property
+    def size(self) -> np.ndarray:
+        return self._size
+
+    @size.setter
+    def size(self, value: Vect) -> None:
+        self._size = np.array(value)
+        self.mark_refresh(Cmpt_CameraPoints.info.fget)
 
     @property
     def fov(self) -> float:
         return self._fov
 
     @fov.setter
-    @Signal
-    def fov(self, val: float):
+    def fov(self, val: float) -> None:
         self._fov = val
-        Cmpt_CameraPoints.fov.fset.emit(self)
+        self.mark_refresh(Cmpt_CameraPoints.info.fget)
+
+    def scale(
+        self,
+        scale_factor: float | Iterable,
+        **kwargs
+    ) -> Self:
+        super().scale(scale_factor, **kwargs)
+        self._size *= scale_factor
+
+    def rotate(
+        self,
+        angle: float,
+        *,
+        axis: Vect = OUT,
+        **kwargs
+    ) -> Self:
+        super().rotate(angle, axis=axis, **kwargs)
+        self.orientation *= Rotation.from_rotvec(angle * normalize(axis))
+        return self
 
     @property
-    @fov.fset.self_refresh()
     @Cmpt_Points.set.self_refresh()
     @refresh.register
     def info(self) -> CameraInfo:
-        points = self.get()
-        return CameraInfo(self.fov, points[0], points[2] - points[1], points[4] - points[3])
+        rot_mat_T = self.orientation.as_matrix().T
+        width, height = self.size
+        return CameraInfo(
+            self.fov,
+            self.self_box.center,
+            np.dot(np.array([width, 0, 0]), rot_mat_T),
+            np.dot(np.array([0, height, 0]), rot_mat_T)
+        )
 
 
 class Camera(Points):

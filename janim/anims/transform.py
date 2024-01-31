@@ -1,10 +1,8 @@
-import inspect
 from typing import Any, Callable, Self
 
 from janim.anims.animation import Animation
 from janim.items.item import Item
 from janim.utils.data import AlignedData
-from janim.utils.rate_functions import RateFunc
 
 
 class Transform(Animation):
@@ -68,20 +66,7 @@ class Transform(Animation):
 class MethodTransform[T: 'Item'](Transform):
     def __init__(self, item: T, **kwargs):
         super().__init__(item, item, **kwargs)
-
-    def __call__(
-        self,
-        *,
-        at: float | None = None,
-        duration: float | None = None,
-        rate_func: RateFunc | None = None,
-        hide_src: bool | None = None,
-        show_target: bool | None = None,
-    ) -> Self:
-        for key, value in inspect.getargvalues(inspect.currentframe()).locals.items():
-            if value is not None and key != 'self':
-                setattr(self, key, value)
-        return self
+        self.current_alpha = None
 
     def do(self, func: Callable[[T], Any]) -> Self:
         func(self.src_item)
@@ -93,3 +78,9 @@ class MethodTransform[T: 'Item'](Transform):
         self.timeline.register_method_transform(self)
         self.timeline.detect_changes(self.src_item.walk_self_and_descendants(),
                                      as_time=self.global_range.end - ANIM_END_DELTA)
+
+    def anim_on_alpha(self, alpha: float) -> None:
+        if alpha == self.current_alpha:
+            return
+        self.current_alpha = alpha
+        super().anim_on_alpha(alpha)

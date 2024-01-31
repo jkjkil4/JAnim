@@ -67,18 +67,7 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
             for key, info in cls.__dict__.get(CLS_CMPTINFO_NAME, {}).items():
                 info: CmptInfo
                 if key in datas:
-                    data = datas[key]
-
-                    # TODO: remove
-                    # 好像没有必要检查是否是派生类
-                    # if not issubclass(info.cls, data.info.cls):
-                    #     raise TypeError(
-                    #         f'组件定义错误：{cls.__name__} 的组件 {key}({info.cls.__name__}) '
-                    #         f'与父类的组件冲突 ({info.cls.__name__} 不是以 {data.info.cls.__name__} 为基类)'
-                    #     )
-
-                    data.info = info
-
+                    datas[key].info = info
                 else:  # key not in datas
                     datas[key] = self._CmptInitData(info, cls)
 
@@ -133,10 +122,9 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         func(self)
         return self
 
-    @property
-    def anim(self):
+    def anim(self, **kwargs):
         from janim.anims.transform import MethodTransform
-        return MethodTransform(self)
+        return MethodTransform(self, **kwargs)
 
     @overload
     def __getitem__(self, value: int) -> Item: ...
