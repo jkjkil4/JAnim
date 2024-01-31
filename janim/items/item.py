@@ -96,7 +96,7 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         func: Callable | str,
         *,
         recurse_up=False,
-        recurse_down=False
+        recurse_down=False,
     ) -> Self:
         '''
         为 :meth:`~.Component.mark_refresh()`
@@ -228,7 +228,7 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
             item: ItemT,
             components: dict[str, Component],
             parents: list[Item],
-            children: list[Item]
+            children: list[Item],
         ):
             self.item = item
             self.components = components
@@ -297,7 +297,7 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         def align_for_interpolate(
             cls,
             data1: Item.Data,
-            data2: Item.Data
+            data2: Item.Data,
         ) -> AlignedData[Self]:
             aligned = AlignedData(*[
                 cls(data1.item, {}, [], [])

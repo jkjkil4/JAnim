@@ -347,7 +347,7 @@ class Cmpt_Points(Component):
         *,
         about_point: Vect | None = None,
         about_edge: Vect | None = ORIGIN,
-        root_only: bool = False
+        root_only: bool = False,
     ) -> Self:
         '''
         将所有点作为单独的一个参数传入 ``func``，并将 ``func`` 返回的结果作为新的点坐标数据
@@ -389,7 +389,7 @@ class Cmpt_Points(Component):
         *,
         about_point: Vect | None = ORIGIN,
         about_edge: Vect | None = ORIGIN,
-        root_only: bool = False
+        root_only: bool = False,
     ) -> Self:
         '''
         对每个点依次传入 ``func`` 进行变换；以默认的原点作用变换，而不是物件的中心
@@ -408,7 +408,7 @@ class Cmpt_Points(Component):
         *,
         about_point: Vect | None = None,
         about_edge: Vect | None = None,
-        root_only: bool = False
+        root_only: bool = False,
     ) -> Self:
         '''
         将矩阵变换作用于 ``points``；以默认的原点作用变换，而不是物件的中心
@@ -442,7 +442,7 @@ class Cmpt_Points(Component):
         *,
         about_point: Vect | None = ORIGIN,
         about_edge: Vect | None = ORIGIN,
-        root_only: bool = False
+        root_only: bool = False,
     ) -> Self:
         '''
         将复变函数作用于 ``points``；以默认的原点作用变换，而不是物件的中心
@@ -470,7 +470,7 @@ class Cmpt_Points(Component):
         axis: Vect = OUT,
         about_point: Vect | None = None,
         about_edge: Vect | None = ORIGIN,
-        root_only: bool = False
+        root_only: bool = False,
     ) -> Self:
         '''
         以 ``axis`` 为方向，``angle`` 为角度旋转，可传入 ``about_point`` 指定相对于以哪个点为中心
@@ -490,7 +490,7 @@ class Cmpt_Points(Component):
         axis: Vect = UP,
         about_point: Vect | None = None,
         about_edge: Vect | None = ORIGIN,
-        root_only: bool = False
+        root_only: bool = False,
     ) -> Self:
         '''
         绕 axis 轴翻转
@@ -511,7 +511,7 @@ class Cmpt_Points(Component):
         min_scale_factor: float = 1e-8,
         about_point: Vect | None = None,
         about_edge: Vect | None = ORIGIN,
-        root_only: bool = False
+        root_only: bool = False,
     ) -> Self:
         '''
         将物件缩放指定倍数
@@ -540,7 +540,7 @@ class Cmpt_Points(Component):
         min_scale_factor: float = 1e-8,
         about_point: Vect | None = None,
         about_edge: Vect | None = ORIGIN,
-        root_only: bool = False
+        root_only: bool = False,
     ) -> Self:
         '''
         在指定的 ``dim`` 方向上使物件伸缩
@@ -568,7 +568,7 @@ class Cmpt_Points(Component):
         min_scale_factor: float = 1e-8,
         about_point: Vect | None = None,
         about_edge: Vect | None = ORIGIN,
-        root_only: bool = False
+        root_only: bool = False,
     ) -> Self:
         if root_only:
             old_length = self.self_box.length_over_dim(dim)
@@ -677,7 +677,7 @@ class Cmpt_Points(Component):
         stretch: bool = False,
         buff: float = MED_SMALL_BUFF,
         root_only: bool = False,
-        item_root_only: bool = False
+        item_root_only: bool = False,
     ) -> Self:
         '''
         与 ``replace`` 类似，但是会向外留出 ``buff`` 间距
@@ -749,7 +749,7 @@ class Cmpt_Points(Component):
         aligned_edge: Vect = ORIGIN,
         coor_mask: Iterable = (1, 1, 1),
         root_only: bool = False,
-        item_root_only: bool = False
+        item_root_only: bool = False,
     ) -> Self:
         '''
         移动到 ``target`` 的位置
@@ -821,7 +821,7 @@ class Cmpt_Points(Component):
         aligned_edge: Vect = ORIGIN,
         coor_mask: Iterable = (1, 1, 1),
         root_only: bool = False,
-        item_root_only: bool = False
+        item_root_only: bool = False,
     ) -> Self:
         '''
         将该物件放到 ``target`` 旁边

@@ -97,7 +97,7 @@ class Cmpt_Rgbas(Component):
         self,
         color: JAnimColor | ColorArray = None,
         alpha: Alpha | AlphaArray = None,
-        root_only: bool = False
+        root_only: bool = False,
     ) -> Self:
         '''
         - ``colors`` 表示传入的 ``RGB`` 颜色数据，可以是单个颜色也可以颜色数组

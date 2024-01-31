@@ -69,13 +69,15 @@ class MethodTransform[T: 'Item'](Transform):
     def __init__(self, item: T, **kwargs):
         super().__init__(item, item, **kwargs)
 
-    def __call__(self,
-                 *,
-                 at: float | None = None,
-                 duration: float | None = None,
-                 rate_func: RateFunc | None = None,
-                 hide_src: bool | None = None,
-                 show_target: bool | None = None) -> Self:
+    def __call__(
+        self,
+        *,
+        at: float | None = None,
+        duration: float | None = None,
+        rate_func: RateFunc | None = None,
+        hide_src: bool | None = None,
+        show_target: bool | None = None,
+    ) -> Self:
         for key, value in inspect.getargvalues(inspect.currentframe()).locals.items():
             if value is not None and key != 'self':
                 setattr(self, key, value)

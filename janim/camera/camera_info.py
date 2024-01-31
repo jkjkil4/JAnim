@@ -6,11 +6,13 @@ from janim.utils.space_ops import get_norm, normalize, get_unit_normal
 
 
 class CameraInfo:
-    def __init__(self,
-                 fov: float,
-                 center: np.ndarray,
-                 horizontal_vect: np.ndarray,
-                 vertical_vect: np.ndarray):
+    def __init__(
+        self,
+        fov: float,
+        center: np.ndarray,
+        horizontal_vect: np.ndarray,
+        vertical_vect: np.ndarray,
+    ):
         self.fov = fov
         self.center = center
         self.horizontal_vect = horizontal_vect

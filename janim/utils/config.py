@@ -19,6 +19,7 @@ class _ConfigMeta(type):
 @dataclass(kw_only=True)
 class Config(metaclass=_ConfigMeta):
     fps: int = None
+    anti_alias_width: float = None
 
     aspect_ratio: float = None
     frame_height: float = None
@@ -33,6 +34,19 @@ class Config(metaclass=_ConfigMeta):
 
     def __exit__(self, exc_type, exc_value, tb) -> None:
         config_ctx_var.reset(self.token)
+
+
+default_config = Config(
+    fps=60,
+    anti_alias_width=0.015,
+
+    aspect_ratio=16.0 / 9.0,
+    frame_height=8.0,
+
+    pixel_height=1080,
+    pixel_width=1920,
+)
+config_ctx_var.set([default_config])
 
 
 class _ConfigGetter:
@@ -75,12 +89,3 @@ class _ConfigGetter:
 
 
 config_getter = _ConfigGetter()
-
-default_config = Config(
-    fps=60,
-    aspect_ratio=16.0 / 9.0,
-    frame_height=8.0,
-    pixel_height=1080,
-    pixel_width=1920
-)
-config_ctx_var.set([default_config])

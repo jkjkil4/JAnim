@@ -242,7 +242,7 @@ class Timeline(metaclass=ABCMeta):
         item: Item,
         datas: list[Timeline.TimedItemData],
         *,
-        as_time: float
+        as_time: float,
     ) -> None:
         if not datas:
             datas.append(Timeline.TimedItemData(0, item.store_data()))

@@ -143,7 +143,7 @@ class Relation[GRelT: 'Relation'](refresh.Refreshable):
     def _walk_nearest_family[RelT](
         self: Relation,
         base_cls: type[RelT],
-        fn_family: Callable[[Relation], list[Relation]]
+        fn_family: Callable[[Relation], list[Relation]],
     ) -> Generator[RelT, None, None]:
 
         lst = fn_family(self)[:]

@@ -23,9 +23,11 @@ class Cmpt_CameraPoints(Cmpt_Points):
 
     def reset(self):
         self.fov = 45
-        self.set([ORIGIN,
-                  Config.get.left_side, Config.get.right_side,
-                  Config.get.bottom, Config.get.top])
+        self.set([
+            ORIGIN,
+            Config.get.left_side, Config.get.right_side,
+            Config.get.bottom, Config.get.top
+        ])
         return self
 
     @property
