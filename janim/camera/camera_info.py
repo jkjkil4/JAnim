@@ -1,25 +1,30 @@
 import math
+from dataclasses import dataclass, field
 
 import numpy as np
 
 from janim.utils.space_ops import get_norm, normalize, get_unit_normal
 
 
+@dataclass
 class CameraInfo:
-    def __init__(
-        self,
-        fov: float,
-        center: np.ndarray,
-        horizontal_vect: np.ndarray,
-        vertical_vect: np.ndarray,
-    ):
-        self.fov = fov
-        self.center = center
-        self.horizontal_vect = horizontal_vect
-        self.vertical_vect = vertical_vect
+    fov: float
+    center: np.ndarray
+    horizontal_vect: np.ndarray
+    vertical_vect: np.ndarray
 
-        self.horizontal_dist = get_norm(horizontal_vect)
-        self.vertical_dist = get_norm(vertical_vect)
+    horizontal_dist: float = field(init=False)
+    vertical_dist: float = field(init=False)
+
+    camera_location: np.ndarray = field(init=False)
+
+    view_matrix: np.ndarray = field(init=False)
+    proj_matrix: np.ndarray = field(init=False)
+    frame_radius: np.ndarray = field(init=False)
+
+    def __post_init__(self):
+        self.horizontal_dist = get_norm(self.horizontal_vect)
+        self.vertical_dist = get_norm(self.vertical_vect)
 
         self.camera_location = self._compute_camera_location()
 

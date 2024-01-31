@@ -12,7 +12,7 @@ config_ctx_var: ContextVar[list[Config]] = ContextVar('config_ctx_var')
 
 class _ConfigMeta(type):
     @property
-    def get(self) -> Config | _ConfigGetter:
+    def get(self) -> Config | ConfigGetter:
         return config_getter
 
 
@@ -70,7 +70,12 @@ default_config = Config(
 config_ctx_var.set([default_config])
 
 
-class _ConfigGetter:
+class ConfigGetter:
+    '''
+    与配置数据相关联的数据的获取
+
+    请仍然使用 ``Config.get.xxx`` 来获取定义在该类中的内容
+    '''
     def __getattr__(self, name: str):
         lst = config_ctx_var.get()
         for config in reversed(lst):
@@ -109,4 +114,4 @@ class _ConfigGetter:
         return UP * Config.get.frame_y_radius
 
 
-config_getter = _ConfigGetter()
+config_getter = ConfigGetter()
