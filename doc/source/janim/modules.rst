@@ -7,7 +7,9 @@ janim
    :maxdepth: 1
 
    anims/modules.rst
+   camera/modules.rst
    components/modules.rst
+   gui/modules.rst
    items/modules.rst
    render/modules.rst
    utils/modules.rst

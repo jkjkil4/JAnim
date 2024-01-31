@@ -9,6 +9,8 @@ from janim.gui.glwidget import GLWidget
 from janim.utils.config import Config
 
 
+# TODO: comment
+
 class AnimViewer(QWidget):
     def __init__(self, anim: TimelineAnim, parent: QWidget | None = None) -> None:
         super().__init__(parent)

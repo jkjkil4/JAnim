@@ -18,6 +18,23 @@ class _ConfigMeta(type):
 
 @dataclass(kw_only=True)
 class Config(metaclass=_ConfigMeta):
+    '''配置
+
+    使用 ``Config.get.xxx`` 得到属性，例如 ``Config.get.fps`` 则得到当前设置的帧率
+
+    使用 ``with Config(key=value):`` 在指定的配置下执行内容，例如：
+
+    .. code-block:: python
+
+        print(Config.get.fps)   # 60
+
+        with Config(fps=120, pixel_width=1280):
+            print(Config.get.fps)           # 120
+            print(Config.get.pixel_width)   # 1280
+            print(Config.get.pixel_height)  # 1080
+
+    其中没有设置的属性则采用默认设置 :py:obj:`~.default_config`
+    '''
     fps: int = None
     anti_alias_width: float = None
 
@@ -46,6 +63,10 @@ default_config = Config(
     pixel_height=1080,
     pixel_width=1920,
 )
+'''
+默认配置
+'''
+
 config_ctx_var.set([default_config])
 
 

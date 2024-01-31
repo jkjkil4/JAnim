@@ -110,7 +110,7 @@ class Cmpt_Rgbas(Component):
         特殊传参：
 
         - 当 ``colors`` 为四分量 ``RGBA`` 颜色数据时，
-        则同时表示了 ``colors`` 和 ``alphas`` 二者，因此不能再传入 ``alphas`` 参数
+          则同时表示了 ``colors`` 和 ``alphas`` 二者，因此不能再传入 ``alphas`` 参数
         '''
         if color is None and alpha is None:
             return

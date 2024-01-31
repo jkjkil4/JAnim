@@ -51,9 +51,9 @@ class Animation:
             duration = self.local_range.duration
         self.global_range = TimeRange(at, duration)
 
-    def anim_pre_init(self) -> None: ...
+    def anim_pre_init(self) -> None: '''在 :meth:`~.Timeline.detect_changes_of_all` 执行之前调用的初始化方法'''
 
-    def anim_init(self) -> None: ...
+    def anim_init(self) -> None: '''在 :meth:`~.Timeline.detect_changes_of_all` 执行之前调用的初始化方法'''
 
     def anim_on(self, local_t: float) -> None:
         '''
@@ -63,6 +63,9 @@ class Animation:
         self.anim_on_alpha(alpha)
 
     def get_alpha_on_global_t(self, global_t: float) -> float:
+        '''
+        传入全局 ``global_t``，得到物件在该时刻应当处于哪个 ``alpha`` 的插值
+        '''
         if self.parent is None:
             return self.rate_func((global_t - self.global_range.at) / self.global_range.duration)
 
@@ -70,6 +73,9 @@ class Animation:
         return self.rate_func(anim_t / self.local_range.duration)
 
     global_t_ctx: ContextVar[float] = ContextVar('Animation.global_t_ctx')
+    '''
+    对该值进行设置，使得进行 :meth:`anim_on` 和 :meth:`render` 时不需要将 ``global_t`` 作为参数传递也能获取到
+    '''
 
     def anim_on_alpha(self, alpha: float) -> None:
         '''
@@ -78,4 +84,7 @@ class Animation:
         pass
 
     def render(self) -> None:
+        '''
+        动画进行渲染
+        '''
         pass

@@ -64,6 +64,21 @@ class Transform(Animation):
 
 
 class MethodTransform[T: 'Item'](Transform):
+    '''
+    对物件进行变换并创建的补间过程
+
+    例如：
+
+    .. code-block:: python
+
+        self.play(
+            item.anim()
+            .do(lambda m: m.points.scale(2))
+            .do(lambda m: m.color.set('green'))
+        )
+
+    该例子会创建将 ``item`` 缩放 2 倍并且设置为绿色的补间动画
+    '''
     def __init__(self, item: T, **kwargs):
         super().__init__(item, item, **kwargs)
         self.current_alpha = None

@@ -1,7 +1,7 @@
-renderer
-========
+camera
+======
 
-.. automodule:: janim.render.renderer
+.. automodule:: janim.camera.camera
    :members:
    :undoc-members:
    :show-inheritance:

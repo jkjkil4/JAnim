@@ -7,7 +7,9 @@ utils
    :maxdepth: 1
 
    bezier
+   config
    data
+   file_ops
    iterables
    rate_functions
    refresh

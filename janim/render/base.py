@@ -39,7 +39,16 @@ program_map: dict[str, mgl.Program] = {}
 
 def get_program(filepath: str) -> mgl.Program:
     '''
-    若 `filepath` 对应着色器程序先前已创建过，则复用先前的对象，否则另外创建新的对象并记录
+    给定文件位置自动遍历后缀并读取着色器代码，
+    例如传入 `shaders/dotcloud` 后，会自动读取以下位置的代码：
+
+    - `shaders/dotcloud.vert`
+    - `shaders/dotcloud.geom`
+    - `shaders/dotcloud.frag`
+
+    若没有则缺省，但要能创建可用的着色器
+
+    注：若 ``filepath`` 对应着色器程序先前已创建过，则会复用先前的对象，否则另外创建新的对象并记录
     '''
     prog = program_map.get(filepath, None)
     if prog is not None:

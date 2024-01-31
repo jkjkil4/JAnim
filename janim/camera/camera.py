@@ -23,6 +23,9 @@ class Cmpt_CameraPoints(Cmpt_Points):
         self.reset()
 
     def reset(self) -> Self:
+        '''
+        将摄像机几何属性设置为初始状态
+        '''
         self.set([ORIGIN])
         self.size = [Config.get.frame_width, Config.get.frame_height]
         self.fov = 45
@@ -71,7 +74,9 @@ class Cmpt_CameraPoints(Cmpt_Points):
         scale_factor: float | Iterable,
         **kwargs
     ) -> Self:
-        super().scale(scale_factor, **kwargs)
+        '''
+        将摄像机缩放指定倍数
+        '''
         self._size *= scale_factor
 
     def rotate(
@@ -81,6 +86,9 @@ class Cmpt_CameraPoints(Cmpt_Points):
         axis: Vect = OUT,
         **kwargs
     ) -> Self:
+        '''
+        将摄像机绕 ``axis`` 轴进行旋转
+        '''
         super().rotate(angle, axis=axis, **kwargs)
         self.orientation *= Rotation.from_rotvec(angle * normalize(axis))
         return self
@@ -89,6 +97,9 @@ class Cmpt_CameraPoints(Cmpt_Points):
     @Cmpt_Points.set.self_refresh()
     @refresh.register
     def info(self) -> CameraInfo:
+        '''
+        摄像机的几何属性
+        '''
         rot_mat_T = self.orientation.as_matrix().T
         width, height = self.size
         return CameraInfo(
