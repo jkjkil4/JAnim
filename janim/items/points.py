@@ -1,9 +1,12 @@
 from __future__ import annotations
 
+from typing import Iterable
+
 from janim.items.item import Item
 from janim.components.component import CmptInfo
 from janim.components.points import Cmpt_Points
 from janim.components.rgbas import Cmpt_Rgbas
+from janim.components.radius import Cmpt_Radius
 from janim.typing import Vect
 from janim.utils.data import AlignedData
 from janim.render.impl import DotCloudRenderer
@@ -26,8 +29,15 @@ class Points(Item):
 
 class DotCloud(Points):
     color = CmptInfo(Cmpt_Rgbas)
+    radius = CmptInfo(Cmpt_Radius)
 
     renderer_cls = DotCloudRenderer
+
+    def __init__(self, *args, radius: float | Iterable[float] | None = None, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        if radius is not None:
+            self.radius.set(radius)
 
     class Data(Item.Data['DotCloud']):
         @classmethod
@@ -39,6 +49,8 @@ class DotCloud(Points):
             aligned = super().align_for_interpolate(data1, data2)
 
             for data in (aligned.data1, aligned.data2):
-                data.cmpt.color.resize(data.cmpt.points.count())
+                points_count = data.cmpt.points.count()
+                data.cmpt.color.resize(points_count)
+                data.cmpt.radius.resize(points_count)
 
             return aligned

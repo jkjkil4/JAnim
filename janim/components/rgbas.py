@@ -97,6 +97,7 @@ class Cmpt_Rgbas(Component):
         self,
         color: JAnimColor | ColorArray = None,
         alpha: Alpha | AlphaArray = None,
+        *,
         root_only: bool = False,
     ) -> Self:
         '''

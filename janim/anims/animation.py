@@ -26,7 +26,7 @@ class Animation:
         *,
         at: float = 0,
         duration: float = 1.0,
-        rate_func: RateFunc = smooth
+        rate_func: RateFunc = smooth,
     ):
         from janim.anims.timeline import Timeline
         self.timeline = Timeline.get_context()

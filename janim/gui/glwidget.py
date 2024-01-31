@@ -10,6 +10,7 @@ from PySide6.QtCore import QEvent, QTimer, QSize
 from janim.anims.animation import Animation
 from janim.anims.timeline import TimelineAnim
 from janim.render.base import Renderer, RenderData, program_map
+from janim.utils.config import Config
 
 
 MAX_RESIZE_RATE = 20
@@ -48,6 +49,7 @@ class GLWidget(QOpenGLWidget):
 
     def initializeGL(self) -> None:
         self.ctx = mgl.create_context()
+        self.ctx.enable(mgl.BLEND)
 
     def paintGL(self) -> None:
         if self._progress is None:
@@ -71,6 +73,8 @@ class GLWidget(QOpenGLWidget):
                 prog['JA_PROJ_MATRIX'] = proj_matrix_f4
             if 'JA_FRAME_RADIUS' in prog._members:
                 prog['JA_FRAME_RADIUS'] = frame_radius_f4
+            if 'JA_ANTI_ALIAS_RADIUS' in prog._members:
+                prog['JA_ANTI_ALIAS_RADIUS'] = Config.get.anti_alias_width / 2
 
         try:
             self.anim.render()
