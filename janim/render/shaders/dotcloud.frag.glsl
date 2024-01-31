@@ -14,8 +14,8 @@ void main()
     vec2 diff = g_point - g_center;
     float dist = length(diff);
     float signed_dist = dist - g_radius;
-    // if (signed_dist > JA_ANTI_ALIAS_RADIUS)
-    //     discard;
+    if (signed_dist > JA_ANTI_ALIAS_RADIUS)
+        discard;
     f_color = g_color;
     f_color.a *= smoothstep(1, -1, signed_dist / JA_ANTI_ALIAS_RADIUS);
 }

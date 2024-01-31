@@ -7,14 +7,16 @@ import numpy as np
 
 import janim.utils.refresh as refresh
 from janim.components.component import Component
-from janim.constants import (DEFAULT_ITEM_TO_ITEM_BUFF, DOWN, IN, LEFT,
+from janim.constants import (DEFAULT_ITEM_TO_EDGE_BUFF,
+                             DEFAULT_ITEM_TO_ITEM_BUFF, DOWN, IN, LEFT,
                              MED_SMALL_BUFF, ORIGIN, OUT, PI, RIGHT, UP)
 from janim.items.item import Item
 from janim.typing import Vect, VectArray
-from janim.utils.data import AlignedData
-from janim.utils.signal import Signal
 from janim.utils.bezier import interpolate
+from janim.utils.config import Config
+from janim.utils.data import AlignedData
 from janim.utils.iterables import resize_and_repeatedly_extend
+from janim.utils.signal import Signal
 from janim.utils.space_ops import angle_of_vector, get_norm, rotation_matrix
 from janim.utils.unique_nparray import UniqueNparray
 
@@ -796,21 +798,20 @@ class Cmpt_Points(Component):
         self.shift(-self.box.center, root_only=root_only)
         return self
 
-    # TODO: def to_border(
-    #     self,
-    #     direction: Vect,
-    #     buff: float = DEFAULT_ITEM_TO_EDGE_BUFF
-    # ) -> Self:
-    #     """
-    #     Direction just needs to be a vector pointing towards side or
-    #     corner in the 2d plane.
-    #     """
-    #     target_point = np.sign(direction) * (FRAME_X_RADIUS, FRAME_Y_RADIUS, 0)
-    #     point_to_align = self.box.get(direction)
-    #     shift_val = target_point - point_to_align - buff * np.array(direction)
-    #     shift_val = shift_val * abs(np.sign(direction))
-    #     self.shift(shift_val)
-    #     return self
+    def to_border(
+        self,
+        direction: Vect,
+        buff: float = DEFAULT_ITEM_TO_EDGE_BUFF
+    ) -> Self:
+        '''
+        移动到视框的边界
+        '''
+        target_point = np.sign(direction) * (Config.get.frame_x_radius, Config.get.frame_y_radius, 0)
+        point_to_align = self.box.get(direction)
+        shift_val = target_point - point_to_align - buff * np.array(direction)
+        shift_val = shift_val * abs(np.sign(direction))
+        self.shift(shift_val)
+        return self
 
     def next_to(
         self,
