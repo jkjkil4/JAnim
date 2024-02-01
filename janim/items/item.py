@@ -6,7 +6,7 @@ from typing import Callable, Self, overload
 from janim.components.component import CmptInfo, Component, _CmptGroup
 from janim.items.relation import Relation
 from janim.render.base import Renderer
-from janim.typing import SupportsInterpolate
+from janim.typing import SupportsInterpolate, SupportsApartAlpha
 from janim.utils.data import AlignedData
 from janim.utils.iterables import resize_preserving_order
 
@@ -322,6 +322,11 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
                 assert isinstance(cmpt, SupportsInterpolate)
 
                 cmpt.interpolate(cmpt1, cmpt2, alpha)
+
+        def apart_alpha(self, n: int) -> None:
+            for cmpt in self.components.values():
+                if isinstance(cmpt, SupportsApartAlpha):
+                    cmpt.apart_alpha(n)
 
         def create_renderer(self) -> None:
             self.renderer = self.item.renderer_cls()

@@ -1,3 +1,4 @@
+from collections import defaultdict
 from typing import Any, Callable, Self
 
 from janim.anims.animation import Animation
@@ -30,6 +31,8 @@ class Transform(Animation):
         进行物件数据的对齐
         '''
         self.aligned: dict[tuple[Item, Item], AlignedData[Item.Data]] = {}
+        begin_times: defaultdict[Item, int] = defaultdict(int)
+        end_times: defaultdict[Item, int] = defaultdict(int)
 
         def align(item1: Item, item2: Item, recurse: bool) -> None:
             tpl = (item1, item2)
@@ -39,12 +42,23 @@ class Transform(Animation):
             data1 = self.timeline.get_stored_data_at_right(item1, self.global_range.at, skip_dynamic_data=True)
             data2 = self.timeline.get_stored_data_at_left(item2, self.global_range.end, skip_dynamic_data=True)
             aligned = self.aligned[tpl] = data1.align_for_interpolate(data1, data2)
+            begin_times[item1] += 1
+            end_times[item2] += 1
 
             if recurse:
                 for child1, child2 in zip(aligned.data1.children, aligned.data2.children):
                     align(child1, child2, True)
 
         align(self.src_item, self.target_item, not self.root_only)
+
+        for (begin, end), aligned in self.aligned.items():
+            times = begin_times.get(begin, 0)
+            if times >= 2:
+                aligned.data1.apart_alpha(times)
+
+            times = end_times.get(end, 0)
+            if times >= 2:
+                aligned.data2.apart_alpha(times)
 
         if self.hide_src:
             self.timeline.schedule(self.global_range.at, self.src_item.hide, root_only=self.root_only)

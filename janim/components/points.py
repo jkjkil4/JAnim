@@ -26,6 +26,8 @@ type ComplexFn = Callable[[complex], complex]
 
 
 class Cmpt_Points(Component):
+    resize_func = resize_and_repeatedly_extend
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -51,17 +53,15 @@ class Cmpt_Points(Component):
     def align_for_interpolate(cls, cmpt1: Cmpt_Points, cmpt2: Cmpt_Points):
         len1, len2 = len(cmpt1.get()), len(cmpt2.get())
 
-        if len1 == len2:
-            if cmpt1 == cmpt2:
-                return AlignedData(cmpt1, cmpt1, cmpt1)
-            # cmpt1 != cmpt2
-            return AlignedData(cmpt1, cmpt2, cls())
+        cmpt1_copy = cmpt1.copy()
+        cmpt2_copy = cmpt2.copy()
 
-        if len1 > len2:
-            return AlignedData(cmpt1, cmpt2.copy().resize(len1), cls())
+        if len1 < len2:
+            cmpt1_copy.resize(len2)
+        elif len1 > len2:
+            cmpt1_copy.resize(len1)
 
-        # len1 < len2
-        return AlignedData(cmpt1.copy().resize(len2), cmpt2, cls())
+        return AlignedData(cmpt1_copy, cmpt2_copy, cls())
 
     def interpolate(self, cmpt1: Self, cmpt2: Self, alpha: float) -> None:
         if cmpt1 == cmpt2:
@@ -144,7 +144,7 @@ class Cmpt_Points(Component):
 
     def resize(self, length: int) -> Self:
         # TODO: resize 注释
-        self.set(resize_and_repeatedly_extend(self.get(), length))
+        self.set(self.resize_func(self.get(), length))
         return self
 
     def count(self) -> int:

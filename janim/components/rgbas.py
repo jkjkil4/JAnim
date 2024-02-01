@@ -33,17 +33,15 @@ class Cmpt_Rgbas(Component):
     def align_for_interpolate(cls, cmpt1: Cmpt_Rgbas, cmpt2: Cmpt_Rgbas):
         len1, len2 = len(cmpt1.get()), len(cmpt2.get())
 
-        if len1 == len2:
-            if cmpt1 == cmpt2:
-                return AlignedData(cmpt1, cmpt1, cmpt1)
-            # cmpt1 != cmpt2
-            return AlignedData(cmpt1, cmpt2, cls())
+        cmpt1_copy = cmpt1.copy()
+        cmpt2_copy = cmpt2.copy()
 
-        if len1 > len2:
-            return AlignedData(cmpt1, cmpt2.copy().resize(len1), cls())
+        if len1 < len2:
+            cmpt1_copy.resize(len2)
+        elif len1 > len2:
+            cmpt1_copy.resize(len1)
 
-        # len1 < len2
-        return AlignedData(cmpt1.copy().resize(len2), cmpt2, cls())
+        return AlignedData(cmpt1_copy, cmpt2_copy, cls())
 
     def interpolate(self, cmpt1: Cmpt_Rgbas, cmpt2: Cmpt_Rgbas, alpha: float) -> None:
         if cmpt1 == cmpt2:
@@ -179,4 +177,43 @@ class Cmpt_Rgbas(Component):
     def count(self) -> int:
         return len(self.get())
 
+    def apart_alpha(self, n: int) -> Self:
+        rgbas = self.get()
+        for i in range(len(rgbas)):
+            rgbas[i, 3] = apart_alpha(rgbas[i, 3], n)
+        self.set_rgbas(rgbas)
+        return self
+
     # endregion
+
+
+def merge_alpha(alpha: float, n: int) -> float:
+    result = alpha
+    for _ in range(n - 1):
+        result = 1 - (1 - result) * (1 - alpha)
+
+    return result
+
+
+def apart_alpha(alpha: float, n: int, *, eps: float = 1e-3) -> float:
+    if alpha >= 1:
+        return 1
+    if alpha <= 0:
+        return 0
+
+    tpl1 = (0, 0)
+    tpl2 = (1, 1)
+
+    # TODO: 有无更好的方式？
+    while tpl2[0] - tpl1[0] > eps:
+        mid_single = (tpl1[0] + tpl2[0]) / 2
+        mid_merged = merge_alpha(mid_single, n)
+        if mid_merged == alpha:
+            return mid_single
+
+        if mid_merged < alpha:
+            tpl1 = (mid_single, mid_merged)
+        else:
+            tpl2 = (mid_single, mid_merged)
+
+    return mid_single

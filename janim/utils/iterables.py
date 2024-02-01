@@ -121,6 +121,24 @@ def resize_preserving_order(
         return [array[idx] for idx in indices]
 
 
+def resize_preserving_order_indice_groups(len1: int, len2: int) -> list[list[int]]:
+    indices = np.arange(len2) * len1 // len2
+    result = []
+    prev = 0
+    current = []
+    for i, indice in enumerate(indices):
+        if prev != indice:
+            prev = indice
+            result.append(current)
+            current = []
+
+        current.append(i)
+
+    result.append(current)
+
+    return result
+
+
 def resize_and_repeatedly_extend(
     array: np.ndarray,
     length: int,

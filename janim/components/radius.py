@@ -32,17 +32,15 @@ class Cmpt_Radius(Component):
     def align_for_interpolate(cls, cmpt1: Cmpt_Radius, cmpt2: Cmpt_Radius):
         len1, len2 = len(cmpt1.get()), len(cmpt2.get())
 
-        if len1 == len2:
-            if cmpt1 == cmpt2:
-                return AlignedData(cmpt1, cmpt1, cmpt1)
-            # cmpt1 != cmpt2
-            return AlignedData(cmpt1, cmpt2, cls())
+        cmpt1_copy = cmpt1.copy()
+        cmpt2_copy = cmpt2.copy()
 
-        if len1 > len2:
-            return AlignedData(cmpt1, cmpt2.copy().resize(len1), cls())
+        if len1 < len2:
+            cmpt1_copy.resize(len2)
+        elif len1 > len2:
+            cmpt1_copy.resize(len1)
 
-        # len1 < len2
-        return AlignedData(cmpt1.copy().resize(len2), cmpt2, cls())
+        return AlignedData(cmpt1_copy, cmpt2_copy, cls())
 
     def interpolate(self, cmpt1: Cmpt_Radius, cmpt2: Cmpt_Radius, alpha: float) -> None:
         if cmpt1 == cmpt2:
