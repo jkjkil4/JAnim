@@ -26,7 +26,7 @@ class AnimViewer(QWidget):
 
         self.play_timer = QTimer(self)
         self.play_timer.setTimerType(Qt.TimerType.PreciseTimer)
-        self.play_timer.timeout.connect(lambda: self.progress_slider.setValue(self.progress_slider.value() + 1))
+        self.play_timer.timeout.connect(self.on_play_timer_timeout)
         self.switch_play_state()
 
     def setup_ui(self) -> None:
@@ -52,6 +52,11 @@ class AnimViewer(QWidget):
         self.setMinimumSize(200, 160)
         self.resize(800, 608)
 
+    def on_play_timer_timeout(self) -> None:
+        self.progress_slider.setValue(self.progress_slider.value() + 1)
+        if self.progress_slider.value() == self.progress_slider.maximum():
+            self.play_timer.stop()
+
     def set_play_state(self, playing: bool) -> None:
         if playing != self.play_timer.isActive():
             self.switch_play_state()
@@ -60,6 +65,8 @@ class AnimViewer(QWidget):
         if self.play_timer.isActive():
             self.play_timer.stop()
         else:
+            if self.progress_slider.value() == self.progress_slider.maximum():
+                self.progress_slider.setValue(0)
             self.play_timer.start(1000 // Config.get.fps)
 
     @classmethod
