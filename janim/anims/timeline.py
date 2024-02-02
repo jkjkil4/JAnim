@@ -81,7 +81,7 @@ class Timeline(metaclass=ABCMeta):
         self.times_of_code: list[Timeline.TimeOfCode] = []
 
         self.scheduled_tasks: list[Timeline.ScheduledTask] = []
-        self.anims: list[Animation] = []
+        self.anims: list[AnimGroup] = []
         self.display_anims: list[Display] = []
 
         self.item_stored_datas: defaultdict[Item, list[Timeline.TimedItemData]] = defaultdict(list)
@@ -135,7 +135,7 @@ class Timeline(metaclass=ABCMeta):
                 # TOOD: 明确是什么物件
                 raise RuntimeError('记录物件数据失败，可能是因为物件处于动画中')
 
-            datas.append(Timeline.TimedItemData(self.current_time, anim))
+            datas.append(Timeline.TimedItemData(anim.global_range.at, anim))
 
         add(anim.src_item)
         if not anim.root_only:

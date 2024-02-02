@@ -123,6 +123,8 @@ class MethodTransform[T: 'Item'](Transform):
         super().__init__(item, item, **kwargs)
         self.current_alpha = None
 
+        self.timeline.detect_changes(item.walk_self_and_descendants())
+
     def do(self, func: Callable[[T], Any]) -> Self:
         func(self.src_item)
         return self
@@ -135,6 +137,12 @@ class MethodTransform[T: 'Item'](Transform):
                                      as_time=self.global_range.end - ANIM_END_DELTA)
 
     def anim_on_alpha(self, alpha: float) -> None:
+        if alpha < 0:
+            import inspect
+            frame = inspect.currentframe()
+            while frame is not None:
+                print(frame.f_code.co_qualname)
+                frame = frame.f_back
         if alpha == self.current_alpha:
             return
         self.current_alpha = alpha

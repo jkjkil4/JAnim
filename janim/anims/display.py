@@ -19,7 +19,7 @@ class Display(Animation):
         super().anim_on(local_t)
 
         global_t = self.global_t_ctx.get()
-        self.current_data = self.timeline.get_stored_data_at_right(self.item, global_t)
+        self.current_data = self.timeline.get_stored_data_at_right(self.item, global_t, skip_dynamic_data=True)
 
     def render(self) -> None:
         self.current_data.render()

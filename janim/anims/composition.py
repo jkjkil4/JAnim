@@ -49,6 +49,22 @@ class AnimGroup(Animation):
         for anim in self.anims:
             anim.parent = self
 
+    def flatten(self, *, sort_by_time=False) -> list[Animation]:
+        if sort_by_time:
+            anims = list(self.anims)
+            anims.sort(key=lambda anim: anim.local_range.at)
+        else:
+            anims = self.anims
+
+        result = [self]
+        for anim in anims:
+            if isinstance(anim, AnimGroup):
+                result.extend(anim.flatten(sort_by_time=sort_by_time))
+            else:
+                result.append(anim)
+
+        return result
+
     def set_global_range(self, at: float, duration: float | None = None) -> None:
         '''
         设置并计算子动画的时间范围
