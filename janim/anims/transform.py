@@ -1,7 +1,7 @@
 from collections import defaultdict
 from typing import Any, Callable, Self
 
-from janim.anims.animation import Animation
+from janim.anims.animation import Animation, RenderCall
 from janim.constants import OUT
 from janim.items.item import Item
 from janim.typing import Vect
@@ -56,7 +56,7 @@ class Transform(Animation):
         '''
         进行物件数据的对齐
         '''
-        self.aligned: dict[tuple[Item, Item], AlignedData[Item.Data]] = {}
+        self.aligned: dict[tuple[Item, Item], AlignedData[Item.Data[Item]]] = {}
         begin_times: defaultdict[Item, int] = defaultdict(int)
         end_times: defaultdict[Item, int] = defaultdict(int)
 
@@ -86,6 +86,14 @@ class Transform(Animation):
             if times >= 2:
                 aligned.data2.apart_alpha(times)
 
+        self.set_render_call_list([
+            RenderCall(
+                aligned.data1.cmpt.depth,
+                aligned.union.render
+            )
+            for aligned in self.aligned.values()
+        ])
+
         if self.hide_src:
             self.timeline.schedule(self.global_range.at, self.src_item.hide, root_only=self.root_only)
         if self.show_target:
@@ -97,10 +105,6 @@ class Transform(Animation):
         '''
         for aligned in self.aligned.values():
             aligned.union.interpolate(aligned.data1, aligned.data2, alpha, path_func=self.path_func)
-
-    def render(self) -> None:
-        for aligned in self.aligned.values():
-            aligned.union.render()
 
 
 class MethodTransform[T: 'Item'](Transform):

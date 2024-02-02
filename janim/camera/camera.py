@@ -15,6 +15,7 @@ from janim.typing import Vect
 from janim.utils.bezier import interpolate
 from janim.utils.config import Config
 from janim.utils.space_ops import normalize
+from janim.utils.paths import PathFunc, straight_path
 
 
 class Cmpt_CameraPoints(Cmpt_Points):
@@ -46,7 +47,14 @@ class Cmpt_CameraPoints(Cmpt_Points):
             return False
         return np.all(self.orientation.as_quat() == other.orientation.as_quat())
 
-    def interpolate(self, cmpt1: Self, cmpt2: Self, alpha: float) -> None:
+    def interpolate(
+        self,
+        cmpt1: Self,
+        cmpt2: Self,
+        alpha: float,
+        *,
+        path_func: PathFunc = straight_path
+    ) -> None:
         super().interpolate(cmpt1, cmpt2, alpha)
         self.fov = interpolate(cmpt1.fov, cmpt2.fov, alpha)
         self.orientation = Slerp([0, 1], Rotation.concatenate([cmpt1.orientation, cmpt2.orientation]))(alpha)

@@ -105,12 +105,6 @@ class AnimGroup(Animation):
             if 0 <= anim_t < anim.local_range.duration:
                 anim.anim_on(anim_t)
 
-    def render(self) -> None:
-        global_t = self.global_t_ctx.get()
-        for anim in self.anims:
-            if anim.global_range.at <= global_t < anim.global_range.end:
-                anim.render()
-
 
 class Succession(AnimGroup):
     '''

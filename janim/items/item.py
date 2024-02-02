@@ -4,6 +4,7 @@ from dataclasses import dataclass
 from typing import Callable, Self, overload
 
 from janim.components.component import CmptInfo, Component, _CmptGroup
+from janim.components.depth import Cmpt_Depth
 from janim.items.relation import Relation
 from janim.render.base import Renderer
 from janim.typing import SupportsApartAlpha, SupportsInterpolate
@@ -35,10 +36,14 @@ class _ItemMeta(type):
 class Item(Relation['Item'], metaclass=_ItemMeta):
     renderer_cls = Renderer
 
-    def __init__(self, *args, **kwargs):
+    depth = CmptInfo(Cmpt_Depth, 0)
+
+    def __init__(self, *args, depth: float | None = None, **kwargs):
         super().__init__(*args, **kwargs)
 
         self._init_components()
+        if depth is not None:
+            self.depth.set(depth)
 
         self._astype_mock_cmpt: dict[tuple[type, str], Component] = {}
 

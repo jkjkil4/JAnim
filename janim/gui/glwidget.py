@@ -1,4 +1,5 @@
 
+import heapq
 import traceback
 
 import moderngl as mgl
@@ -18,6 +19,7 @@ class GLWidget(QOpenGLWidget):
     def __init__(self, anim: TimelineAnim, parent: QWidget | None = None) -> None:
         super().__init__(parent)
         self.anim = anim
+        self.flattened = anim.flatten()
 
         self._progress: float | None = None
 
@@ -60,7 +62,18 @@ class GLWidget(QOpenGLWidget):
                 prog['JA_ANTI_ALIAS_RADIUS'] = Config.get.anti_alias_width / 2
 
         try:
-            self.anim.render()
+            render_calls = heapq.merge(
+                *[
+                    anim.render_call_list
+                    for anim in self.flattened
+                    if anim.global_range.at <= self._progress < anim.global_range.end
+                ],
+                key=lambda x: x.depth,
+                reverse=True
+            )
+            for render_call in render_calls:
+                render_call.func()
+
         except Exception:
             traceback.print_exc()
 

@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING
 
-from janim.anims.animation import Animation
+from janim.anims.animation import Animation, RenderCall
 
 if TYPE_CHECKING:   # pragma: no cover
     from janim.items.item import Item
@@ -21,5 +21,9 @@ class Display(Animation):
         global_t = self.global_t_ctx.get()
         self.current_data = self.timeline.get_stored_data_at_right(self.item, global_t, skip_dynamic_data=True)
 
-    def render(self) -> None:
-        self.current_data.render()
+        self.set_render_call_list([
+            RenderCall(
+                self.current_data.cmpt.depth,
+                self.current_data.render
+            )
+        ])

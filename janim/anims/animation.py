@@ -1,7 +1,10 @@
+from __future__ import annotations
+
 from contextvars import ContextVar
 from dataclasses import dataclass
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Callable
 
+from janim.components.depth import Cmpt_Depth
 from janim.utils.rate_functions import RateFunc, smooth
 
 if TYPE_CHECKING:
@@ -16,6 +19,12 @@ class TimeRange:
     @property
     def end(self) -> float:
         return self.at + self.duration
+
+
+@dataclass
+class RenderCall:
+    depth: Cmpt_Depth
+    func: Callable[[], None]
 
 
 class Animation:
@@ -41,6 +50,8 @@ class Animation:
         self.global_range = None
         self.rate_func = rate_func
 
+        self.render_call_list: list[RenderCall] = []
+
     def set_global_range(self, at: float, duration: float | None = None) -> None:
         '''
         设置在 Timeline 上的时间范围
@@ -50,6 +61,9 @@ class Animation:
         if duration is None:
             duration = self.local_range.duration
         self.global_range = TimeRange(at, duration)
+
+    def set_render_call_list(self, lst: list[RenderCall]) -> None:
+        self.render_call_list = sorted(lst, key=lambda x: x.depth, reverse=True)
 
     def anim_pre_init(self) -> None: '''在 :meth:`~.Timeline.detect_changes_of_all` 执行之前调用的初始化方法'''
 
@@ -80,11 +94,5 @@ class Animation:
     def anim_on_alpha(self, alpha: float) -> None:
         '''
         动画在 ``alpha`` 处的行为
-        '''
-        pass
-
-    def render(self) -> None:
-        '''
-        动画进行渲染
         '''
         pass
