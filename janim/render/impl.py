@@ -1,8 +1,8 @@
 
 from typing import TYPE_CHECKING
 
-import numpy as np
 import moderngl as mgl
+import numpy as np
 
 from janim.render.base import Renderer, get_program
 from janim.utils.iterables import resize_with_interpolation

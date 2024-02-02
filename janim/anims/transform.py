@@ -6,7 +6,7 @@ from janim.constants import OUT
 from janim.items.item import Item
 from janim.typing import Vect
 from janim.utils.data import AlignedData
-from janim.utils.paths import PathFunc, straight_path, path_along_arc
+from janim.utils.paths import PathFunc, path_along_arc, straight_path
 
 
 class Transform(Animation):

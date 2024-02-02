@@ -2,15 +2,16 @@ from __future__ import annotations
 
 from typing import Iterable
 
-from janim.items.item import Item
 from janim.components.component import CmptInfo
 from janim.components.points import Cmpt_Points
-from janim.components.rgbas import Cmpt_Rgbas, apart_alpha
 from janim.components.radius import Cmpt_Radius
-from janim.typing import Vect, JAnimColor, ColorArray
-from janim.utils.data import AlignedData
-from janim.utils.iterables import resize_preserving_order, resize_preserving_order_indice_groups
+from janim.components.rgbas import Cmpt_Rgbas, apart_alpha
+from janim.items.item import Item
 from janim.render.impl import DotCloudRenderer
+from janim.typing import ColorArray, JAnimColor, Vect
+from janim.utils.data import AlignedData
+from janim.utils.iterables import (resize_preserving_order,
+                                   resize_preserving_order_indice_groups)
 
 
 class Points(Item):

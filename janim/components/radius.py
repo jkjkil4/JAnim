@@ -1,14 +1,14 @@
 from __future__ import annotations
 
-from typing import Self, Iterable
+from typing import Iterable, Self
 
 import numpy as np
 
 from janim.components.component import Component
-from janim.utils.data import AlignedData
-from janim.utils.unique_nparray import UniqueNparray
 from janim.utils.bezier import interpolate
+from janim.utils.data import AlignedData
 from janim.utils.iterables import resize_with_interpolation
+from janim.utils.unique_nparray import UniqueNparray
 
 DEFAULT_RADIUS = 0.05
 

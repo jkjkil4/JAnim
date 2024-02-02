@@ -2,16 +2,15 @@
 import traceback
 
 import moderngl as mgl
+from PySide6.QtCore import QEvent, QSize, QTimer
 from PySide6.QtGui import QResizeEvent
-from PySide6.QtWidgets import QApplication, QWidget
 from PySide6.QtOpenGLWidgets import QOpenGLWidget
-from PySide6.QtCore import QEvent, QTimer, QSize
+from PySide6.QtWidgets import QApplication, QWidget
 
 from janim.anims.animation import Animation
 from janim.anims.timeline import TimelineAnim
-from janim.render.base import Renderer, RenderData, program_map
+from janim.render.base import RenderData, Renderer, program_map
 from janim.utils.config import Config
-
 
 MAX_RESIZE_RATE = 20
 MIN_RESIZE_DURATION = 1000 // MAX_RESIZE_RATE
