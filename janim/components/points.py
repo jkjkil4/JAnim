@@ -26,7 +26,7 @@ type ComplexFn = Callable[[complex], complex]
 
 
 class Cmpt_Points(Component):
-    resize_func = resize_and_repeatedly_extend
+    resize_func = staticmethod(resize_and_repeatedly_extend)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -150,7 +150,6 @@ class Cmpt_Points(Component):
         return self
 
     def resize(self, length: int) -> Self:
-        # TODO: resize 注释
         self.set(self.resize_func(self.get(), length))
         return self
 
