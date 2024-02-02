@@ -2,8 +2,11 @@ from collections import defaultdict
 from typing import Any, Callable, Self
 
 from janim.anims.animation import Animation
+from janim.constants import OUT
 from janim.items.item import Item
+from janim.typing import Vect
 from janim.utils.data import AlignedData
+from janim.utils.paths import PathFunc, straight_path, path_along_arc
 
 
 class Transform(Animation):
@@ -12,8 +15,13 @@ class Transform(Animation):
         src_item: Item,
         target_item: Item,
         *,
+        path_arc: float = 0,
+        path_arc_axis: Vect = OUT,
+        path_func: PathFunc = None,
+
         hide_src: bool = True,
         show_target: bool = True,
+
         root_only: bool = False,
         **kwargs
     ):
@@ -21,10 +29,28 @@ class Transform(Animation):
         self.src_item = src_item
         self.target_item = target_item
 
+        self.path_arc = path_arc
+        self.path_arc_axis = path_arc_axis
+        self.path_func = path_func
+
         self.hide_src = hide_src
         self.show_target = show_target
 
         self.root_only = root_only
+
+        self.init_path_func()
+
+    def init_path_func(self) -> None:
+        if self.path_func is not None:
+            return
+
+        if self.path_arc == 0:
+            self.path_func = straight_path
+        else:
+            self.path_func = path_along_arc(
+                self.path_arc,
+                self.path_arc_axis
+            )
 
     def anim_init(self) -> None:
         '''
@@ -70,7 +96,7 @@ class Transform(Animation):
         对物件数据进行过渡插值
         '''
         for aligned in self.aligned.values():
-            aligned.union.interpolate(aligned.data1, aligned.data2, alpha)
+            aligned.union.interpolate(aligned.data1, aligned.data2, alpha, path_func=self.path_func)
 
     def render(self) -> None:
         for aligned in self.aligned.values():

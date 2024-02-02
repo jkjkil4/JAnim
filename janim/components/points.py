@@ -16,6 +16,7 @@ from janim.utils.bezier import interpolate
 from janim.utils.config import Config
 from janim.utils.data import AlignedData
 from janim.utils.iterables import resize_and_repeatedly_extend
+from janim.utils.paths import PathFunc, straight_path
 from janim.utils.signal import Signal
 from janim.utils.space_ops import angle_of_vector, get_norm, rotation_matrix
 from janim.utils.unique_nparray import UniqueNparray
@@ -59,15 +60,22 @@ class Cmpt_Points(Component):
         if len1 < len2:
             cmpt1_copy.resize(len2)
         elif len1 > len2:
-            cmpt1_copy.resize(len1)
+            cmpt2_copy.resize(len1)
 
-        return AlignedData(cmpt1_copy, cmpt2_copy, cls())
+        return AlignedData(cmpt1_copy, cmpt2_copy, cmpt1_copy.copy())
 
-    def interpolate(self, cmpt1: Self, cmpt2: Self, alpha: float) -> None:
+    def interpolate(
+        self,
+        cmpt1: Self,
+        cmpt2: Self,
+        alpha: float,
+        *,
+        path_func: PathFunc = straight_path
+    ) -> None:
         if cmpt1 == cmpt2:
             return
 
-        self.set(interpolate(cmpt1.get(), cmpt2.get(), alpha))
+        self.set(path_func(cmpt1.get(), cmpt2.get(), alpha))
 
     # region 点数据 | Points
 

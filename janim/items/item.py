@@ -6,9 +6,10 @@ from typing import Callable, Self, overload
 from janim.components.component import CmptInfo, Component, _CmptGroup
 from janim.items.relation import Relation
 from janim.render.base import Renderer
-from janim.typing import SupportsInterpolate, SupportsApartAlpha
+from janim.typing import SupportsApartAlpha, SupportsInterpolate
 from janim.utils.data import AlignedData
 from janim.utils.iterables import resize_preserving_order
+from janim.utils.paths import PathFunc, straight_path
 
 CLS_CMPTINFO_NAME = '__cls_cmptinfo'
 OBJ_CMPTS_NAME = '__obj_cmpts'
@@ -314,14 +315,22 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
 
             return aligned
 
-        def interpolate(self, data1: Item.Data, data2: Item.Data, alpha: float) -> None:
+        def interpolate(
+            self,
+            data1: Item.Data,
+            data2: Item.Data,
+            alpha: float,
+            *,
+            path_func: PathFunc = straight_path,
+        ) -> None:
             for key, cmpt in self.components.items():
                 cmpt1 = data1.components[key]
                 cmpt2 = data2.components[key]
 
-                assert isinstance(cmpt, SupportsInterpolate)
+                if not isinstance(cmpt, SupportsInterpolate):
+                    continue
 
-                cmpt.interpolate(cmpt1, cmpt2, alpha)
+                cmpt.interpolate(cmpt1, cmpt2, alpha, path_func=path_func)
 
         def apart_alpha(self, n: int) -> None:
             for cmpt in self.components.values():

@@ -41,9 +41,9 @@ class Cmpt_Rgbas(Component):
         elif len1 > len2:
             cmpt1_copy.resize(len1)
 
-        return AlignedData(cmpt1_copy, cmpt2_copy, cls())
+        return AlignedData(cmpt1_copy, cmpt2_copy, cmpt1_copy.copy())
 
-    def interpolate(self, cmpt1: Cmpt_Rgbas, cmpt2: Cmpt_Rgbas, alpha: float) -> None:
+    def interpolate(self, cmpt1: Cmpt_Rgbas, cmpt2: Cmpt_Rgbas, alpha: float, *, path_func=None) -> None:
         if cmpt1 == cmpt2:
             return
 

@@ -11,6 +11,7 @@ utils
    data
    file_ops
    iterables
+   paths
    rate_functions
    refresh
    signal
