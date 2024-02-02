@@ -1,7 +1,12 @@
-from PySide6.QtCore import Qt, QTimer
-from PySide6.QtWidgets import (QHBoxLayout, QPushButton, QSlider, QVBoxLayout,
-                               QWidget)
+from dataclasses import dataclass
 
+from PySide6.QtCore import Qt, QTimer
+from PySide6.QtGui import QPaintEvent, QPainter, QColor
+from PySide6.QtWidgets import (QHBoxLayout, QPushButton, QSizePolicy, QSlider,
+                               QSplitter, QVBoxLayout, QWidget)
+
+from janim.anims.animation import Animation, TimeRange
+from janim.anims.composition import AnimGroup
 from janim.anims.timeline import TimelineAnim
 from janim.gui.application import Application
 from janim.gui.fixed_ratio_widget import FixedRatioWidget
@@ -37,6 +42,16 @@ class AnimViewer(QWidget):
         self.btn = QPushButton('暂停/继续')
         self.btn.clicked.connect(self.switch_play_state)
 
+        # self.timeline_view = TimelineView(self.anim)
+        # self.timeline_view.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Preferred)
+
+        # self.vsplitter = QSplitter()
+        # self.vsplitter.setOrientation(Qt.Orientation.Vertical)
+        # self.vsplitter.addWidget(self.fixed_ratio_widget)
+        # self.vsplitter.addWidget(self.timeline_view)
+        # self.vsplitter.setSizes([400, 100])
+        # self.vsplitter.setStyleSheet('''QSplitter { background: rgb(25, 35, 45); }''')
+
         self.progress_slider = QSlider()
         self.progress_slider.setOrientation(Qt.Orientation.Horizontal)
 
@@ -47,6 +62,10 @@ class AnimViewer(QWidget):
         vlayout = QVBoxLayout()
         vlayout.addWidget(self.fixed_ratio_widget)
         vlayout.addLayout(bottom_layout)
+
+        # main_layout = QHBoxLayout()
+        # main_layout.addWidget(self.vsplitter)
+        # main_layout.setContentsMargins(0, 0, 0, 0)
 
         self.setLayout(vlayout)
         self.setMinimumSize(200, 160)
@@ -77,3 +96,36 @@ class AnimViewer(QWidget):
         w.show()
 
         app.exec()
+
+
+class TimelineView(QWidget):
+    @dataclass
+    class LabelInfo:
+        anim: Animation
+        row: int
+
+    def __init__(self, anim: TimelineAnim, parent: QWidget | None = None):
+        super().__init__(parent)
+        self.range = TimeRange(0, anim.global_range.duration)
+        self.anim = anim
+
+        self.init_label_info()
+
+    def init_label_info(self) -> None:
+        self.labels_info: list[TimelineView.LabelInfo] = []
+
+        flatten = self.anim.user_anim.flatten(sort_by_time=True)[1:]
+        stack: list[Animation] = []
+        for anim in flatten:
+            while stack and stack[-1].global_range.end <= anim.global_range.at:
+                stack.pop()
+
+            self.labels_info.append(TimelineView.LabelInfo(anim, len(stack)))
+            stack.append(anim)
+
+        for info in self.labels_info:
+            print(info.row, info.anim.__class__.__name__, info.anim.global_range)
+
+    def paintEvent(self, event: QPaintEvent) -> None:
+        # p = QPainter(self)
+        pass
