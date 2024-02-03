@@ -10,6 +10,8 @@ from janim.utils.paths import PathFunc, path_along_arc, straight_path
 
 
 class Transform(Animation):
+    label_color = (192, 156, 57)
+
     def __init__(
         self,
         src_item: Item,
@@ -123,6 +125,8 @@ class MethodTransform[T: 'Item'](Transform):
 
     该例子会创建将 ``item`` 缩放 2 倍并且设置为绿色的补间动画
     '''
+    label_color = (165, 103, 44)
+
     def __init__(self, item: T, **kwargs):
         super().__init__(item, item, **kwargs)
         self.current_alpha = None

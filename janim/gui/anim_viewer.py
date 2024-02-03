@@ -1,9 +1,8 @@
-import itertools as it
 from dataclasses import dataclass
 
-from PySide6.QtCore import QRect, Qt, QTimer, Signal
+from PySide6.QtCore import QRectF, Qt, QTimer, Signal
 from PySide6.QtGui import (QColor, QKeyEvent, QMouseEvent, QPainter,
-                           QPaintEvent, QPen)
+                           QPaintEvent, QPen, QWheelEvent)
 from PySide6.QtWidgets import (QHBoxLayout, QPushButton, QSizePolicy,
                                QSplitter, QWidget)
 
@@ -14,6 +13,8 @@ from janim.gui.fixed_ratio_widget import FixedRatioWidget
 from janim.gui.glwidget import GLWidget
 from janim.utils.config import Config
 from janim.utils.simple_functions import clip
+
+TIMELINE_VIEW_MIN_DURATION = 0.5
 
 # TODO: comment
 
@@ -110,39 +111,95 @@ class TimelineView(QWidget):
         def right(self) -> float:
             return self.left + self.width
 
+    @dataclass
+    class Pressing:
+        w: bool = False
+        a: bool = False
+        s: bool = False
+        d: bool = False
+
     value_changed = Signal(float)
     dragged = Signal()
 
     space_pressed = Signal()
 
-    label_height = 32
+    label_height = 32   # px
+    play_space = 20     # px
 
     def __init__(self, anim: TimelineAnim, parent: QWidget | None = None):
         super().__init__(parent)
         self.range = TimeRange(0, anim.global_range.duration)
+        self.y_offset = 0
         self.anim = anim
         self._progress = 0
         self._maximum = round(anim.global_range.end * Config.get.preview_fps)
 
+        self.is_pressing = TimelineView.Pressing()
+
+        self.key_timer = QTimer(self)
+        self.key_timer.timeout.connect(self.on_key_timer_timeout)
+        self.key_timer.start(1000 // 60)
+
         self.init_label_info()
         self.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
+        self.setMouseTracking(True)
 
     def init_label_info(self) -> None:
         self.labels_info: list[TimelineView.LabelInfo] = []
+        self.max_row = 0
 
-        flatten = self.anim.user_anim.flatten(sort_by_time=True)[1:]
+        flatten = self.anim.user_anim.flatten()[1:]
+
         stack: list[Animation] = []
         for anim in flatten:
             while stack and stack[-1].global_range.end <= anim.global_range.at:
                 stack.pop()
 
             self.labels_info.append(TimelineView.LabelInfo(anim, len(stack)))
+            self.max_row = max(self.max_row, len(stack))
             stack.append(anim)
+
+    def move_range_to(self, at: float) -> None:
+        self.range.at = clip(at, 0, self.anim.global_range.duration - self.range.duration)
+
+    def on_key_timer_timeout(self) -> None:
+        if self.is_pressing.w:
+            cursor_time = self.pixel_to_time(self.mapFromGlobal(self.cursor().pos()).x())
+
+            factor = max(TIMELINE_VIEW_MIN_DURATION / self.range.duration, 0.97)
+            self.range.duration *= factor
+            self.move_range_to(factor * (self.range.at - cursor_time) + cursor_time)
+
+            self.update()
+
+        elif self.is_pressing.s:
+            cursor_time = self.pixel_to_time(self.mapFromGlobal(self.cursor().pos()).x())
+
+            factor = min(self.anim.global_range.duration / self.range.duration, 1 / 0.97)
+            self.range.duration *= factor
+            self.move_range_to(factor * (self.range.at - cursor_time) + cursor_time)
+
+            self.update()
+
+        if self.is_pressing.a or self.is_pressing.d:
+            shift = self.range.duration * 0.05 * (self.is_pressing.d - self.is_pressing.a)
+            self.move_range_to(self.range.at + shift)
+
+            self.update()
 
     def set_progress(self, progress: float) -> None:
         progress = clip(progress, 0, self._maximum)
         if progress != self._progress:
             self._progress = progress
+
+            pixel_at = self.progress_to_pixel(progress)
+            minimum = self.play_space
+            maximum = self.width() - self.play_space
+            if pixel_at < minimum:
+                self.move_range_to(self.pixel_to_time(pixel_at - minimum))
+            if pixel_at > maximum:
+                self.move_range_to(self.pixel_to_time(pixel_at - maximum))
+
             self.value_changed.emit(progress)
             self.update()
 
@@ -186,24 +243,77 @@ class TimelineView(QWidget):
             self.dragged.emit()
 
     def keyPressEvent(self, event: QKeyEvent) -> None:
-        if event.key() == Qt.Key.Key_Space:
+        key = event.key()
+
+        if key == Qt.Key.Key_Space:
             self.space_pressed.emit()
+        elif key == Qt.Key.Key_W:
+            self.is_pressing.w = True
+        elif key == Qt.Key.Key_A:
+            self.is_pressing.a = True
+        elif key == Qt.Key.Key_S:
+            self.is_pressing.s = True
+        elif key == Qt.Key.Key_D:
+            self.is_pressing.d = True
+
+    def keyReleaseEvent(self, event: QKeyEvent) -> None:
+        key = event.key()
+
+        if key == Qt.Key.Key_W:
+            self.is_pressing.w = False
+        elif key == Qt.Key.Key_A:
+            self.is_pressing.a = False
+        elif key == Qt.Key.Key_S:
+            self.is_pressing.s = False
+        elif key == Qt.Key.Key_D:
+            self.is_pressing.d = False
+
+    def wheelEvent(self, event: QWheelEvent) -> None:
+        self.y_offset = clip(self.y_offset - event.angleDelta().y() / 240 * self.label_height,
+                             0,
+                             self.max_row * self.label_height)
+        self.update()
 
     def paintEvent(self, _: QPaintEvent) -> None:
         p = QPainter(self)
 
-        colors = [Qt.GlobalColor.red, Qt.GlobalColor.green, Qt.GlobalColor.blue]
+        for info in self.labels_info:
+            if info.anim.global_range.end <= self.range.at or info.anim.global_range.at >= self.range.end:
+                continue
 
-        p.setPen(Qt.PenStyle.NoPen)
-        for info, color in zip(self.labels_info, it.cycle(colors)):
             range = self.time_range_to_pixel_range(info.anim.global_range)
-            rect = QRect(range.left, info.row * self.label_height, range.width, self.label_height)
-            rect.adjust(2, 2, -2, -2)
+            rect = QRectF(range.left, -self.y_offset + info.row * self.label_height, range.width, self.label_height)
+            if rect.x() < 0:
+                rect.setX(0)
 
-            p.setBrush(QColor(color).lighter())
+            if rect.width() > 5:
+                x_adjust = 2
+            elif rect.width() > 1:
+                x_adjust = (rect.width() - 1) / 2
+            else:
+                x_adjust = 0
+            rect.adjust(x_adjust, 2, -x_adjust, -2)
+
+            p.setPen(Qt.PenStyle.NoPen)
+            p.setBrush(QColor(*info.anim.label_color).lighter())
             p.drawRect(rect)
 
-        pixel_at = clip(self.progress_to_pixel(self._progress), 0, self.width())
+            rect.adjust(1, 1, -1, -1)
+
+            p.setPen(Qt.GlobalColor.black)
+            p.drawText(
+                rect,
+                Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignTop,
+                f'{info.anim.__class__.__name__}'
+            )
+
+        pixel_at = self.progress_to_pixel(self._progress)
 
         p.setPen(QPen(Qt.GlobalColor.white, 2))
         p.drawLine(pixel_at, 0, pixel_at, self.height())
+
+        left = self.range.at / self.anim.global_range.duration * self.width()
+        width = self.range.duration / self.anim.global_range.duration * self.width()
+        p.setPen(Qt.PenStyle.NoPen)
+        p.setBrush(QColor(68, 83, 100))
+        p.drawRoundedRect(left, self.height() - 4, width, 4, 2, 2)

@@ -34,6 +34,8 @@ class Animation:
     - 创建一个从 ``at`` 持续至 ``at + duration`` 的动画
     - 指定 ``rate_func`` 可以设定插值函数，默认为 :meth:`janim.utils.rate_functions.smooth` 即平滑插值
     '''
+    label_color: tuple[float, float, float] = (128, 132, 137)
+
     def __init__(
         self,
         *,

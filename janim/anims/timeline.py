@@ -116,7 +116,7 @@ class Timeline(metaclass=ABCMeta):
 
             if not quiet:
                 elapsed = time.time() - start_time
-                log.info(f'Finished building "{self.__class__.__name__}" at {elapsed:.2f} s')
+                log.info(f'Finished building "{self.__class__.__name__}" in {elapsed:.2f} s')
 
         finally:
             self.ctx_var.reset(token)
