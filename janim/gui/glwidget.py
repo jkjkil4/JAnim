@@ -66,7 +66,7 @@ class GLWidget(QOpenGLWidget):
                 *[
                     anim.render_call_list
                     for anim in self.flattened
-                    if anim.global_range.at <= self._progress < anim.global_range.end
+                    if anim.render_call_list and anim.global_range.at <= self._progress < anim.global_range.end
                 ],
                 key=lambda x: x.depth,
                 reverse=True

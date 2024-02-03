@@ -17,6 +17,7 @@ from janim.anims.transform import MethodTransform
 from janim.camera.camera import Camera
 from janim.items.item import Item
 from janim.logger import log
+from janim.utils.config import Config
 
 if TYPE_CHECKING:   # pragma: no cover
     from janim.anims.animation import Animation
@@ -110,7 +111,7 @@ class Timeline(metaclass=ABCMeta):
                 start_time = time.time()
 
             self.construct()
-            self.cleanup_display(trail=0.1)
+            self.cleanup_display(trail=2 / Config.get.fps)
             global_anim = TimelineAnim(self)
 
             if not quiet:

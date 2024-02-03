@@ -36,6 +36,7 @@ class Config(metaclass=_ConfigMeta):
     其中没有设置的属性则采用默认设置 :py:obj:`~.default_config`
     '''
     fps: int = None
+    preview_fps: int = None
     anti_alias_width: float = None
 
     aspect_ratio: float = None
@@ -55,6 +56,7 @@ class Config(metaclass=_ConfigMeta):
 
 default_config = Config(
     fps=60,
+    preview_fps=60,
     anti_alias_width=0.015,
 
     aspect_ratio=16.0 / 9.0,

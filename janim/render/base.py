@@ -34,7 +34,7 @@ shader_keys = (
     ('fragment_shader', '.frag.glsl')
 )
 
-program_map: dict[str, mgl.Program] = {}
+program_map: dict[tuple[mgl.Context, str], mgl.Program] = {}
 
 
 def get_program(filepath: str) -> mgl.Program:
@@ -50,16 +50,19 @@ def get_program(filepath: str) -> mgl.Program:
 
     注：若 ``filepath`` 对应着色器程序先前已创建过，则会复用先前的对象，否则另外创建新的对象并记录
     '''
-    prog = program_map.get(filepath, None)
+    ctx = Renderer.data_ctx.get().ctx
+    tpl = (ctx, filepath)
+
+    prog = program_map.get(tpl, None)
     if prog is not None:
         return prog
 
     shader_path = os.path.join(get_janim_dir(), filepath)
 
-    prog = Renderer.data_ctx.get().ctx.program(**{
+    prog = ctx.program(**{
         shader_type: readall(shader_path + suffix)
         for shader_type, suffix in shader_keys
         if os.path.exists(shader_path + suffix)
     })
-    program_map[filepath] = prog
+    program_map[tpl] = prog
     return prog

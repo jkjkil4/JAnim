@@ -7,6 +7,7 @@ components
    :maxdepth: 1
 
    component
+   depth
    points
    radius
    rgbas
