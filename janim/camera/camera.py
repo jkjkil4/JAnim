@@ -27,6 +27,8 @@ class Cmpt_CameraPoints(Cmpt_Points):
         '''
         将摄像机几何属性设置为初始状态
         '''
+        self.orig_height = Config.get.frame_height
+
         self.set([ORIGIN])
         self.size = [Config.get.frame_width, Config.get.frame_height]
         self.fov = 45
@@ -56,8 +58,13 @@ class Cmpt_CameraPoints(Cmpt_Points):
         path_func: PathFunc = straight_path
     ) -> None:
         super().interpolate(cmpt1, cmpt2, alpha)
+        self.size = interpolate(cmpt1.size, cmpt2.size, alpha)
         self.fov = interpolate(cmpt1.fov, cmpt2.fov, alpha)
         self.orientation = Slerp([0, 1], Rotation.concatenate([cmpt1.orientation, cmpt2.orientation]))(alpha)
+
+    @property
+    def scaled_factor(self) -> float:
+        return self.size[1] / self.orig_height
 
     @property
     def size(self) -> np.ndarray:
@@ -111,6 +118,7 @@ class Cmpt_CameraPoints(Cmpt_Points):
         rot_mat_T = self.orientation.as_matrix().T
         width, height = self.size
         return CameraInfo(
+            self.scaled_factor,
             self.fov,
             self.self_box.center,
             np.dot(np.array([width, 0, 0]), rot_mat_T),

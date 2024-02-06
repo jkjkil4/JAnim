@@ -111,6 +111,9 @@ class Timeline(metaclass=ABCMeta):
                 start_time = time.time()
 
             self.construct()
+
+            if self.current_time == 0:
+                self.forward(1e-5)  # 使得没有任何前进时，稍微地产生一点时间，避免除零的问题
             self.cleanup_display(trail=2 / Config.get.fps)
             global_anim = TimelineAnim(self)
 

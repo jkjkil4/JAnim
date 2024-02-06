@@ -8,6 +8,8 @@ from janim.utils.space_ops import get_norm, normalize, get_unit_normal
 
 @dataclass
 class CameraInfo:
+    scaled_factor: float
+
     fov: float
     center: np.ndarray
     horizontal_vect: np.ndarray

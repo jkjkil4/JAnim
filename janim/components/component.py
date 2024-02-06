@@ -181,6 +181,9 @@ class _CmptGroup(Component):
         objects = []
         methods = []
 
+        if name == 'objects':
+            raise AttributeError()
+
         for obj in self.objects.values():
             if not hasattr(obj, name):
                 continue

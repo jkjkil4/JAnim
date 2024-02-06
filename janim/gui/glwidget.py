@@ -61,7 +61,7 @@ class GLWidget(QOpenGLWidget):
             if 'JA_FRAME_RADIUS' in prog._members:
                 prog['JA_FRAME_RADIUS'] = frame_radius_f4
             if 'JA_ANTI_ALIAS_RADIUS' in prog._members:
-                prog['JA_ANTI_ALIAS_RADIUS'] = Config.get.anti_alias_width / 2
+                prog['JA_ANTI_ALIAS_RADIUS'] = Config.get.anti_alias_width / 2 * camera_info.scaled_factor
 
         try:
             render_calls = heapq.merge(
