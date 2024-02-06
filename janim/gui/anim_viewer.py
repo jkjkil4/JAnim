@@ -129,7 +129,7 @@ class TimelineView(QWidget):
 
     def __init__(self, anim: TimelineAnim, parent: QWidget | None = None):
         super().__init__(parent)
-        self.range = TimeRange(0, anim.global_range.duration)
+        self.range = TimeRange(0, min(20, anim.global_range.duration))
         self.y_offset = 0
         self.anim = anim
         self._progress = 0

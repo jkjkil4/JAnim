@@ -14,8 +14,9 @@ from janim.items.points import Points
 from janim.typing import Vect
 from janim.utils.bezier import interpolate
 from janim.utils.config import Config
-from janim.utils.space_ops import normalize
 from janim.utils.paths import PathFunc, straight_path
+from janim.utils.simple_functions import clip
+from janim.utils.space_ops import normalize
 
 
 class Cmpt_CameraPoints(Cmpt_Points):
@@ -57,6 +58,10 @@ class Cmpt_CameraPoints(Cmpt_Points):
         *,
         path_func: PathFunc = straight_path
     ) -> None:
+        # 有次出现了 ValueError: Interpolation times must be within the range [0, 1], both inclusive.
+        # 所以这里限制一下 alpha（本来我觉得没必要的，但是为什么会有上面这个报错呢）
+        alpha = clip(alpha, 0, 1)
+
         super().interpolate(cmpt1, cmpt2, alpha)
         self.size = interpolate(cmpt1.size, cmpt2.size, alpha)
         self.fov = interpolate(cmpt1.fov, cmpt2.fov, alpha)

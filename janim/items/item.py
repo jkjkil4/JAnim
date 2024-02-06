@@ -201,8 +201,8 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
             mock_key = (decl_cls, name)
             cmpt = self.origin._astype_mock_cmpt.get(mock_key, None)
 
-            # 如果 astype 需求的组件已经被创建过，那么直接返回
-            if cmpt is not None:
+            # 如果 astype 需求的组件已经被创建过，并且新类型不是旧类型的子类，那么直接返回
+            if cmpt is not None and not issubclass(cmpt_info.cls, cmpt.__class__):
                 return cmpt
 
             # astype 需求的组件还没创建，那么创建并记录

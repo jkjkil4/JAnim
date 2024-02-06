@@ -88,6 +88,8 @@ class VItemRenderer(Renderer):
 
         self.vao = self.ctx.vertex_array(self.prog, self.vbo_coord, 'in_coord')
 
+        self.prev_camera_info = None
+
         self.prev_points = np.array([])
         self.prev_radius = np.array([])
         self.prev_stroke = np.array([])
@@ -95,6 +97,8 @@ class VItemRenderer(Renderer):
 
     def render(self, data: 'VItem.Data[VItem]') -> None:
         render_data = self.data_ctx.get()
+
+        new_camera_info = render_data.camera_info
 
         new_points = data.cmpt.points.get()
         new_radius = data.cmpt.radius.get()
@@ -131,7 +135,7 @@ class VItemRenderer(Renderer):
             self.vbo_fill_color.write(bytes)
             self.prev_fill = new_fill
 
-        if id(new_points) != id(self.prev_points):
+        if id(new_points) != id(self.prev_points) or id(new_camera_info) != id(self.prev_camera_info):
             mapped = np.hstack([
                 new_points,
                 np.full((len(new_points), 1), 1)
@@ -150,6 +154,8 @@ class VItemRenderer(Renderer):
                 self.vbo_mapped_points.orphan(len(bytes))
 
             self.vbo_mapped_points.write(bytes)
+            self.prev_camera_info = new_camera_info
+            self.prev_points = new_points
 
         self.vbo_mapped_points.bind_to_storage_buffer(0)
         self.vbo_radius.bind_to_storage_buffer(1)
