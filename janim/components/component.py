@@ -149,8 +149,10 @@ class _CmptGroup(Component):
 
     def copy(self, *, new_cmpts: dict[str, Component]):
         cmpt_copy = super().copy()
-        for key in cmpt_copy.objects.keys():
-            cmpt_copy.objects[key] = new_cmpts[key]
+        cmpt_copy.objects = {
+            key: new_cmpts[key]
+            for key in cmpt_copy.objects.keys()
+        }
 
         return cmpt_copy
 
