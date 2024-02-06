@@ -27,8 +27,10 @@ class GLWidget(QOpenGLWidget):
         self._progress = progress
 
         token = Animation.global_t_ctx.set(progress)
-        self.anim.anim_on(progress)
-        Animation.global_t_ctx.reset(token)
+        try:
+            self.anim.anim_on(progress)
+        finally:
+            Animation.global_t_ctx.reset(token)
 
         self.update()
 
@@ -77,5 +79,6 @@ class GLWidget(QOpenGLWidget):
         except Exception:
             traceback.print_exc()
 
-        Animation.global_t_ctx.reset(global_t_token)
-        Renderer.data_ctx.reset(render_token)
+        finally:
+            Animation.global_t_ctx.reset(global_t_token)
+            Renderer.data_ctx.reset(render_token)

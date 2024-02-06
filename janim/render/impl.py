@@ -14,7 +14,6 @@ if TYPE_CHECKING:
 class DotCloudRenderer(Renderer):
     def init(self) -> None:
         self.prog = get_program('render/shaders/dotcloud')
-        self.vao = None
 
         self.ctx = self.data_ctx.get().ctx
         self.vbo_points = self.ctx.buffer(reserve=1)
