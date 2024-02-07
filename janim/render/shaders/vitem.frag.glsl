@@ -94,7 +94,9 @@ float distanceBezier(vec2 A, vec2 B, vec2 C, vec2 p)
     return dis;
 }
 
-// #define CONTROL_POINTS
+#define CONTROL_POINTS
+#define FULL_BACKGROUND
+#define LINES
 
 void main()
 {
@@ -106,8 +108,8 @@ void main()
     for (int i = 1; i < points.length(); i++) {
         d = min(d, distance(v_coord, get_point(i)));
     }
-    if (d < 0.04 * 2) {
-        f_color = vec4(1.0 - smoothstep(0.025 * 2, 0.034 * 2, d));
+    if (d < 0.08) {
+        f_color = vec4(1.0 - smoothstep(0.070, 0.072, d));
         return;
     }
 
@@ -143,8 +145,13 @@ void main()
 
     float radius = mix(get_radius(anchor_idx), get_radius(anchor_idx + 1), ratio);
 
+    #ifdef FULL_BACKGROUND
+    if (sgn > 0 && d > radius + JA_ANTI_ALIAS_RADIUS)
+        f_color = vec4(0.8, 0.3, 0.4, 0.2);
+    #else
     if (sgn > 0 && d > radius + JA_ANTI_ALIAS_RADIUS)
         discard;
+    #endif
 
     vec4 fill_color = vec4(0.0);
     if (get_isclosed(idx)) {
@@ -155,5 +162,31 @@ void main()
     vec4 stroke_color = mix(colors[anchor_idx], colors[anchor_idx + 1], ratio);
     stroke_color.a *= smoothstep(1, -1, (d - radius) / JA_ANTI_ALIAS_RADIUS);
 
+    #ifdef FULL_BACKGROUND
+    f_color = max(f_color, blendColor(stroke_color, fill_color));
+    #else
     f_color = blendColor(stroke_color, fill_color);
+    #endif
+
+    #ifdef LINES
+
+    const int num = points.length();
+    d = dot(v_coord - get_point(0), v_coord - get_point(0));
+    for(int i = 1, j = 0; i < num; j = i, i++)
+    {
+        if (get_point(j) == get_point(i)) {
+            i++;
+            continue;
+        }
+        // distance
+        vec2 e = get_point(j) - get_point(i);
+        vec2 w = v_coord - get_point(i);
+        vec2 b = w - e * clamp(dot(w, e) / dot(e, e), 0.0, 1.0);
+        d = min(d, dot(b, b));
+    }
+    float line_ratio = smoothstep(1.15, 0.85, sqrt(d) / 0.02);
+    f_color.g *= line_ratio * 2.0 + 1.0;
+    f_color.a = max(line_ratio, f_color.a);
+
+    #endif
 }

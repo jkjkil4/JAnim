@@ -144,6 +144,7 @@ class VItemRenderer(Renderer):
             mapped = np.dot(mapped, render_data.camera_info.proj_matrix.T)
             mapped /= np.repeat(mapped[:, 3], 4).reshape((len(mapped), 4))
             mapped[:, :2] *= render_data.camera_info.frame_radius
+
             bytes = np.hstack([
                 mapped[:, :2],
                 data.cmpt.points.get_closepath_flags().reshape((len(mapped), 1)),
