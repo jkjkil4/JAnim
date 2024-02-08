@@ -34,7 +34,7 @@ def run(args: Namespace):
 
     auto_play = len(timelines) == 1
 
-    from PySide6.QtCore import QPoint
+    from PySide6.QtCore import QPoint, QTimer
     from janim.gui.anim_viewer import AnimViewer
     from janim.gui.application import Application
 
@@ -59,6 +59,8 @@ def run(args: Namespace):
         if i != 0:
             widget.move(widgets[i - 1].pos() + QPoint(24, 24))
         widget.show()
+
+    QTimer.singleShot(100, widgets[-1].activateWindow)
 
     log.info(f'Finished constructing in {time.time() - t:.2f} s')
 
