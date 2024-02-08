@@ -2,8 +2,8 @@ from bisect import bisect
 from dataclasses import dataclass
 
 from PySide6.QtCore import QRectF, Qt, QTimer, Signal
-from PySide6.QtGui import (QColor, QKeyEvent, QMouseEvent, QPainter,
-                           QPaintEvent, QPen, QWheelEvent)
+from PySide6.QtGui import (QColor, QHideEvent, QKeyEvent, QMouseEvent,
+                           QPainter, QPaintEvent, QPen, QWheelEvent)
 from PySide6.QtWidgets import (QHBoxLayout, QPushButton, QSizePolicy,
                                QSplitter, QWidget)
 
@@ -22,7 +22,7 @@ TIMELINE_VIEW_MIN_DURATION = 0.5
 
 
 class AnimViewer(QWidget):
-    def __init__(self, anim: TimelineAnim, parent: QWidget | None = None) -> None:
+    def __init__(self, anim: TimelineAnim, auto_play=True, parent: QWidget | None = None) -> None:
         super().__init__(parent)
         self.anim = anim
 
@@ -36,7 +36,8 @@ class AnimViewer(QWidget):
         self.play_timer = QTimer(self)
         self.play_timer.setTimerType(Qt.TimerType.PreciseTimer)
         self.play_timer.timeout.connect(self.on_play_timer_timeout)
-        self.switch_play_state()
+        if auto_play:
+            self.switch_play_state()
 
         self.setWindowTitle('JAnim Graphics')
 
@@ -68,6 +69,10 @@ class AnimViewer(QWidget):
         self.setLayout(main_layout)
         self.setMinimumSize(200, 160)
         self.resize(800, 608)
+
+    def hideEvent(self, event: QHideEvent) -> None:
+        super().hideEvent(event)
+        self.play_timer.stop()
 
     def on_play_timer_timeout(self) -> None:
         self.timeline_view.set_progress(self.timeline_view.progress() + 1)

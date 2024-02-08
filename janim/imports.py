@@ -6,7 +6,6 @@ from janim.anims.transform import MethodTransform, Transform
 from janim.camera.camera import Camera
 from janim.camera.camera_info import CameraInfo
 from janim.components.rgbas import apart_alpha, merge_alpha
-from janim.gui.anim_viewer import AnimViewer
 from janim.items.item import Group
 from janim.items.points import DotCloud, Points
 from janim.items.vitem import VItem

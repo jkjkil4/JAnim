@@ -3,6 +3,6 @@
     "flake8.args": [
         "--max-line-length=120",
         "--ignore=E701,E704,E731,F821,F811",
-        "--exclude=test/*,refactor_deprecated/*,__*"
+        "--exclude=test/*,refactor_deprecated/*"
     ]
 }
