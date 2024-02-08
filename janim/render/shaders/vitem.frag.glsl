@@ -193,10 +193,10 @@ void main()
 
     f_color = blend_color(stroke_color, fill_color);
 
-    // #ifndef POLYGON_LINES
-    // if (sgn > 0 && d > radius + JA_ANTI_ALIAS_RADIUS)
-    //     discard;
-    // #endif
+    #if !defined(POLYGON_LINES) && !defined(DF_PLANE)
+    if (f_color.a == 0.0)
+        discard;
+    #endif
 
     #ifdef DF_PLANE
 

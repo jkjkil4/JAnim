@@ -1,3 +1,4 @@
+from bisect import bisect
 from dataclasses import dataclass
 
 from PySide6.QtCore import QRectF, Qt, QTimer, Signal
@@ -149,16 +150,22 @@ class TimelineView(QWidget):
         self.labels_info: list[TimelineView.LabelInfo] = []
         self.max_row = 0
 
-        flatten = self.anim.user_anim.flatten()[1:]
+        self.flatten = self.anim.user_anim.flatten()[1:]
+        self._sorted_anims = None
 
         stack: list[Animation] = []
-        for anim in flatten:
+        for anim in self.flatten:
             while stack and stack[-1].global_range.end <= anim.global_range.at:
                 stack.pop()
 
             self.labels_info.append(TimelineView.LabelInfo(anim, len(stack)))
             self.max_row = max(self.max_row, len(stack))
             stack.append(anim)
+
+    def get_sorted_anims(self) -> list[Animation]:
+        if self._sorted_anims is None:
+            self._sorted_anims = sorted(self.flatten, key=lambda x: x.global_range.at)
+        return self._sorted_anims
 
     def move_range_to(self, at: float) -> None:
         self.range.at = clip(at, 0, self.anim.global_range.duration - self.range.duration)
@@ -248,6 +255,7 @@ class TimelineView(QWidget):
 
         if key == Qt.Key.Key_Space:
             self.space_pressed.emit()
+
         elif key == Qt.Key.Key_W:
             self.is_pressing.w = True
         elif key == Qt.Key.Key_A:
@@ -256,6 +264,29 @@ class TimelineView(QWidget):
             self.is_pressing.s = True
         elif key == Qt.Key.Key_D:
             self.is_pressing.d = True
+
+        elif key == Qt.Key.Key_Z:
+            anims = self.get_sorted_anims()
+            time = self.progress_to_time(self._progress)
+            idx = bisect(anims, time - 1e-5, key=lambda x: x.global_range.at)
+            idx -= 1
+            if idx < 0:
+                self.set_progress(0)
+            else:
+                self.set_progress(self.time_to_progress(anims[idx].global_range.at))
+
+            self.dragged.emit()
+
+        elif key == Qt.Key.Key_C:
+            anims = self.get_sorted_anims()
+            time = self.progress_to_time(self._progress)
+            idx = bisect(anims, time + 1e-5, key=lambda x: x.global_range.at)
+            if idx < len(anims):
+                self.set_progress(self.time_to_progress(anims[idx].global_range.at))
+            else:
+                self.set_progress(self.time_to_progress(self.anim.global_range.end))
+
+            self.dragged.emit()
 
     def keyReleaseEvent(self, event: QKeyEvent) -> None:
         key = event.key()
