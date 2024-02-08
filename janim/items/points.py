@@ -56,7 +56,7 @@ class DotCloud(Points):
         def align_for_interpolate(
             cls,
             data1: DotCloud.Data,
-            data2: DotCloud.Data
+            data2: DotCloud.Data,
         ) -> AlignedData[DotCloud.Data]:
             len1 = len(data1.cmpt.points.get())
             len2 = len(data2.cmpt.points.get())

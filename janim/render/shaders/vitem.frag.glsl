@@ -6,6 +6,8 @@ out vec4 f_color;
 
 uniform float JA_ANTI_ALIAS_RADIUS;
 
+const float INFINITY = uintBitsToFloat(0x7F800000);
+
 layout(std140, binding = 0) buffer MappedPoints
 {
     vec4 points[];  // vec4(x, y, isclosed, 0)
@@ -35,15 +37,18 @@ float get_radius(int idx) {
     return radii[idx / 4][idx % 4];
 }
 
-vec4 blendColor(vec4 fore, vec4 back) {
+vec4 blend_color(vec4 fore, vec4 back) {
     float a = fore.a + back.a * (1 - fore.a);
-    return vec4(
-        (fore.rgb * fore.a + back.rgb * back.a * (1 - fore.a)) / a,
-        a
+    return clamp(
+        vec4(
+            (fore.rgb * fore.a + back.rgb * back.a * (1 - fore.a)) / a,
+            a
+        ),
+        0.0, 1.0
     );
 }
 
-float signBezier(vec2 A, vec2 B, vec2 C, vec2 p)
+float sign_bezier(vec2 A, vec2 B, vec2 C, vec2 p)
 {
     vec2 a = C - A, b = B - A, c = p - A;
     vec2 bary = vec2(
@@ -52,17 +57,17 @@ float signBezier(vec2 A, vec2 B, vec2 C, vec2 p)
     ) / (a.x * b.y - b.x * a.y);
     vec2 d = vec2(bary.y * 0.5, 0.0) + 1.0 - bary.x - bary.y;
 
-    float signBezierInside = d.x > d.y ? sign(d.x * d.x - d.y) : 1.0;
+    float sign_bezierInside = d.x > d.y ? sign(d.x * d.x - d.y) : 1.0;
 
     bvec3 cond = bvec3( p.y >= A.y,
                         p.y <  C.y,
                         a.x * c.y > a.y * c.x );
     float signLineLeft = all(cond) || all(not(cond)) ? -1.0 : 1.0;
 
-    return signBezierInside * signLineLeft;
+    return sign_bezierInside * signLineLeft;
 }
 
-vec3 solveCubic(float a, float b, float c)
+vec3 solve_cubic(float a, float b, float c)
 {
     float p = b - a * a / 3.0, p3 = p * p * p;
     float q = a * (2.0 * a * a - 9.0 * b) / 27.0 + c;
@@ -79,12 +84,12 @@ vec3 solveCubic(float a, float b, float c)
     return vec3(m + m, -n - m, n - m) * sqrt(-p / 3.0) + offset;
 }
 
-float distanceBezier(vec2 A, vec2 B, vec2 C, vec2 p)
+float distance_bezier(vec2 A, vec2 B, vec2 C, vec2 p)
 {
     B = mix(B + vec2(1e-4), B, abs(sign(B * 2.0 - A - C)));
     vec2 a = B - A, b = A - B * 2.0 + C, c = a * 2.0, d = A - p;
     vec3 k = vec3(3. * dot(a, b),2. * dot(a, a) + dot(d, b),dot(d, a)) / dot(b, b);
-    vec3 t = clamp(solveCubic(k.x, k.y, k.z), 0.0, 1.0);
+    vec3 t = clamp(solve_cubic(k.x, k.y, k.z), 0.0, 1.0);
     vec2 pos = A + (c + b * t.x) * t.x;
     float dis = length(pos - p);
     pos = A + (c + b * t.y) * t.y;
@@ -94,9 +99,59 @@ float distanceBezier(vec2 A, vec2 B, vec2 C, vec2 p)
     return dis;
 }
 
-#define CONTROL_POINTS
-#define FULL_BACKGROUND
-#define LINES
+const int lim = (points.length() - 1) / 2 * 2;
+
+void get_subpath_attr(
+    int start_idx,
+    out int end_idx,
+    out float d,
+    out float sgn,
+    out vec4 fill_color,
+    out vec4 stroke_color
+) {
+    end_idx = lim;
+    bool is_closed = get_isclosed(start_idx);
+
+    int idx = 0;
+    sgn = 1.0;
+    d = INFINITY;
+    for (int i = start_idx; i < lim; i += 2) {
+        vec2 A = get_point(i), B = get_point(i + 1), C = get_point(i + 2);
+
+        if (A == B) {
+            end_idx = i;
+            break;
+        }
+
+        float dist = distance_bezier(A, B, C, v_coord);
+        if (dist < d) {
+            d = dist;
+            idx = i;
+        }
+
+        if (is_closed) {
+            sgn *= sign_bezier(A, B, C, v_coord);
+        }
+    }
+    float sgn_d = sgn * d;
+    int anchor_idx = idx / 2;
+
+    vec2 e = get_point(idx + 2) - get_point(idx);
+    vec2 w = v_coord - get_point(idx);
+    float ratio = clamp(dot(w, e) / dot(e, e), 0.0, 1.0);
+
+    float radius = mix(get_radius(anchor_idx), get_radius(anchor_idx + 1), ratio);
+
+    fill_color = is_closed ? mix(fills[anchor_idx], fills[anchor_idx + 1], ratio) : vec4(0.0);
+    fill_color.a *= smoothstep(1, -1, (sgn_d) / JA_ANTI_ALIAS_RADIUS);
+
+    stroke_color = mix(colors[anchor_idx], colors[anchor_idx + 1], ratio);
+    stroke_color.a *= smoothstep(1, -1, (d - radius) / JA_ANTI_ALIAS_RADIUS);
+}
+
+// #define CONTROL_POINTS
+// #define POLYGON_LINES
+// #define DF_PLANE
 
 void main()
 {
@@ -108,67 +163,52 @@ void main()
     for (int i = 1; i < points.length(); i++) {
         d = min(d, distance(v_coord, get_point(i)));
     }
-    if (d < 0.08) {
-        f_color = vec4(1.0 - smoothstep(0.070, 0.072, d));
+    if (d < 0.06) {
+        f_color = vec4(1.0 - smoothstep(0.052, 0.055, d));
         return;
     }
 
     #endif
 
-    // Get the signed distance to bezier curve
-    d = distanceBezier(get_point(0), get_point(1), get_point(2), v_coord);
-    float sgn = (
-        get_isclosed(0)
-        ? signBezier(get_point(0), get_point(1), get_point(2), v_coord)
-        : 1.0
-    );
-    int idx = 0;
-    for (int i = 2; i < points.length() - 2; i += 2) {
-        if (get_point(i) == get_point(i + 1))
-            continue;
-        float dist = distanceBezier(get_point(i), get_point(i + 1), get_point(i + 2), v_coord);
-        if (dist < d) {
-            d = dist;
-            idx = i;
-        }
-        if (get_isclosed(i)) {
-            sgn *= signBezier(get_point(i), get_point(i + 1), get_point(i + 2), v_coord);
-        }
-    }
-    int anchor_idx = idx / 2;
-    float sgn_d = sgn * d;
+    d = INFINITY;
+    float sgn = -1.0;
+    vec4 fill_color = vec4(0.0), stroke_color = vec4(0.0);
 
-    //
-    vec2 e = get_point(idx + 2) - get_point(idx);
-    vec2 w = v_coord - get_point(idx);
-    float ratio = clamp(dot(w, e) / dot(e, e), 0.0, 1.0);
+    int start_idx = 0;
+    float sp_d;
+    float sp_sgn;
+    vec4 sp_fill_color, sp_stroke_color;
 
-    float radius = mix(get_radius(anchor_idx), get_radius(anchor_idx + 1), ratio);
+    while (true) {
+        get_subpath_attr(start_idx, start_idx, sp_d, sp_sgn, sp_fill_color, sp_stroke_color);
+        d = min(d, sp_d);
+        sgn = max(sgn, sp_sgn);
+        fill_color = blend_color(sp_fill_color, fill_color);
+        stroke_color = blend_color(sp_stroke_color, stroke_color);
 
-    #ifdef FULL_BACKGROUND
-    if (sgn > 0 && d > radius + JA_ANTI_ALIAS_RADIUS)
-        f_color = vec4(0.8, 0.3, 0.4, 0.2);
-    #else
-    if (sgn > 0 && d > radius + JA_ANTI_ALIAS_RADIUS)
-        discard;
-    #endif
-
-    vec4 fill_color = vec4(0.0);
-    if (get_isclosed(idx)) {
-        fill_color = mix(fills[anchor_idx], fills[anchor_idx + 1], ratio);
-        fill_color.a *= smoothstep(1, -1, (sgn_d) / JA_ANTI_ALIAS_RADIUS);
+        if (start_idx >= lim)
+            break;
+        start_idx += 2;
     }
 
-    vec4 stroke_color = mix(colors[anchor_idx], colors[anchor_idx + 1], ratio);
-    stroke_color.a *= smoothstep(1, -1, (d - radius) / JA_ANTI_ALIAS_RADIUS);
+    f_color = blend_color(stroke_color, fill_color);
 
-    #ifdef FULL_BACKGROUND
-    f_color = max(f_color, blendColor(stroke_color, fill_color));
-    #else
-    f_color = blendColor(stroke_color, fill_color);
+    // #ifndef POLYGON_LINES
+    // if (sgn > 0 && d > radius + JA_ANTI_ALIAS_RADIUS)
+    //     discard;
+    // #endif
+
+    #ifdef DF_PLANE
+
+    vec4 df_color = vec4(1.0) - vec4(0.1, 0.4, 0.7, 0.0);
+    df_color *= 0.8 + 0.2 * cos(140. * d / 3.0);
+    df_color = mix(df_color, vec4(1.0), 1.0 - smoothstep(0.0, 0.02, abs(d)));
+    df_color.a = 0.5;
+    f_color = blend_color(df_color, f_color);
+
     #endif
 
-    #ifdef LINES
+    #ifdef POLYGON_LINES
 
     const int num = points.length();
     d = dot(v_coord - get_point(0), v_coord - get_point(0));
@@ -185,7 +225,7 @@ void main()
         d = min(d, dot(b, b));
     }
     float line_ratio = smoothstep(1.15, 0.85, sqrt(d) / 0.02);
-    f_color.g *= line_ratio * 2.0 + 1.0;
+    f_color.g = max(line_ratio, f_color.g);
     f_color.a = max(line_ratio, f_color.a);
 
     #endif

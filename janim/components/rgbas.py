@@ -27,7 +27,7 @@ class Cmpt_Rgbas(Component):
         return cmpt_copy
 
     def __eq__(self, other: Cmpt_Rgbas) -> bool:
-        return id(self.get()) == id(other.get())
+        return self._rgbas.is_share(other._rgbas)
 
     @classmethod
     def align_for_interpolate(cls, cmpt1: Cmpt_Rgbas, cmpt2: Cmpt_Rgbas):
@@ -89,6 +89,7 @@ class Cmpt_Rgbas(Component):
     @Signal
     def set_rgbas(self, rgbas: np.ndarray) -> Self:
         self._rgbas.data = rgbas
+        Cmpt_Rgbas.set_rgbas.emit(self)
         return self
 
     def set(
@@ -171,7 +172,7 @@ class Cmpt_Rgbas(Component):
         return self
 
     def resize(self, length: int) -> Self:
-        self.set(resize_with_interpolation(self.get(), length))
+        self.set(resize_with_interpolation(self.get(), max(1, length)))
         return self
 
     def count(self) -> int:

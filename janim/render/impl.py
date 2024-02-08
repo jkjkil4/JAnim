@@ -95,7 +95,9 @@ class VItemRenderer(Renderer):
         self.prev_stroke = np.array([])
         self.prev_fill = np.array([])
 
-    def render(self, data: 'VItem.Data[VItem]') -> None:
+    def render(self, data: 'VItem.Data') -> None:
+        if data.cmpt.points.curves_count() == 0:
+            return
         render_data = self.data_ctx.get()
 
         new_camera_info = render_data.camera_info

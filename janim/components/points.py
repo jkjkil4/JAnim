@@ -47,7 +47,7 @@ class Cmpt_Points(Component):
         return cmpt_copy
 
     def __eq__(self, other: Cmpt_Points) -> bool:
-        return id(self.get()) == id(other.get())
+        return self._points.is_share(other._points)
 
     @classmethod
     def align_for_interpolate(cls, cmpt1: Cmpt_Points, cmpt2: Cmpt_Points):
@@ -115,7 +115,7 @@ class Cmpt_Points(Component):
         assert points.ndim == 2
         assert points.shape[1] == 3
 
-        cnt_changed = len(points) != len(self._points.data)
+        cnt_changed = len(points) != self._points.len()
 
         self._points.data = points
 

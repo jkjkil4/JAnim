@@ -302,13 +302,14 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
             for key, cmpt1 in data1.components.items():
                 cmpt2 = data2.components.get(key, None)
 
-                if cmpt2 is None or not isinstance(cmpt1, SupportsInterpolate):
-                    aligned.data1.components[key] = cmpt1
-                    aligned.data2.components[key] = cmpt1
-                    aligned.union.components[key] = cmpt1
-                    continue
+                if isinstance(cmpt1, _CmptGroup) and isinstance(cmpt2, _CmptGroup):
+                    cmpt_aligned = cmpt1.align(cmpt1, cmpt2, aligned)
 
-                cmpt_aligned = cmpt1.align_for_interpolate(cmpt1, cmpt2)
+                elif cmpt2 is None or not isinstance(cmpt1, SupportsInterpolate):
+                    cmpt_aligned = AlignedData(cmpt1, cmpt1, cmpt1)
+                else:
+                    cmpt_aligned = cmpt1.align_for_interpolate(cmpt1, cmpt2)
+
                 aligned.data1.components[key] = cmpt_aligned.data1
                 aligned.data2.components[key] = cmpt_aligned.data2
                 aligned.union.components[key] = cmpt_aligned.union

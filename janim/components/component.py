@@ -5,6 +5,7 @@ from dataclasses import dataclass
 from typing import Callable, Self, TYPE_CHECKING, overload
 
 import janim.utils.refresh as refresh
+from janim.utils.data import AlignedData
 
 if TYPE_CHECKING:   # pragma: no cover
     from janim.items.item import Item
@@ -163,6 +164,13 @@ class _CmptGroup(Component):
 
         return True
 
+    @classmethod
+    def align(cls, cmpt1: _CmptGroup, cmpt2: _CmptGroup, aligned: AlignedData[Item.Data]):
+        cmpt1_copy = cmpt1.copy(new_cmpts=aligned.data1.components)
+        cmpt2_copy = cmpt2.copy(new_cmpts=aligned.data2.components)
+        cmpt_union = cmpt1.copy(new_cmpts=aligned.union.components)
+        return AlignedData(cmpt1_copy, cmpt2_copy, cmpt_union)
+
     def _find_objects(self) -> None:
         self.objects: dict[str, Component] = {}
 
@@ -207,7 +215,7 @@ class _CmptGroup(Component):
                 for method in methods
             ]
 
-            return self if ret == objects else ret
+            return self if all(a is b for a, b in zip(ret, objects)) else ret
 
         return wrapper
 

@@ -26,7 +26,7 @@ class Cmpt_Radius(Component):
         return cmpt_copy
 
     def __eq__(self, other: Cmpt_Radius) -> bool:
-        return id(self.get()) == id(other.get())
+        return self._radii.is_share(other._radii)
 
     @classmethod
     def align_for_interpolate(cls, cmpt1: Cmpt_Radius, cmpt2: Cmpt_Radius):
@@ -80,7 +80,7 @@ class Cmpt_Radius(Component):
         return self
 
     def resize(self, length: int) -> Self:
-        self.set(resize_with_interpolation(self.get(), length))
+        self.set(resize_with_interpolation(self.get(), max(1, length)))
         return self
 
     def count(self) -> int:

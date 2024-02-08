@@ -14,9 +14,12 @@ class UniqueNparray:
     def __init__(self):
         self._data = np.array([])
 
+    def len(self) -> int:
+        return len(self._data)
+
     @property
     def data(self) -> np.ndarray:
-        return self._data
+        return self._data.copy()
 
     @data.setter
     def data(self, data: np.ndarray | Iterable) -> None:
@@ -30,10 +33,5 @@ class UniqueNparray:
         ret._data = self._data
         return ret
 
-    def __eq__(self, other) -> None:
-        if not isinstance(other, UniqueNparray):
-            return False
+    def is_share(self, other: UniqueNparray) -> bool:
         return id(self._data) == id(other._data)
-
-    def __hash__(self) -> int:
-        return id(self._data)
