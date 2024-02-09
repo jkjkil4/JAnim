@@ -13,6 +13,7 @@ def main() -> None:
 
     sp = parser.add_subparsers()
     run_parser(sp.add_parser('run', help='Run a timeline from specific namespace'))
+    examples_parser(sp.add_parser('examples', help='Show examples of janim'))
 
     args = parser.parse_args()
     if args.func is None:
@@ -40,6 +41,8 @@ def run(args: Namespace):
 
     app = Application()
 
+    log.info('======')
+
     widgets: list[AnimViewer] = []
     for timeline in timelines:
         viewer = AnimViewer(timeline().build(), auto_play)
@@ -47,6 +50,7 @@ def run(args: Namespace):
 
     t = time.time()
 
+    log.info('======')
     log.info('Constructing window')
 
     if sys.platform.startswith('win'):
@@ -63,6 +67,7 @@ def run(args: Namespace):
     QTimer.singleShot(100, widgets[-1].activateWindow)
 
     log.info(f'Finished constructing in {time.time() - t:.2f} s')
+    log.info('======')
 
     app.exec()
 
@@ -81,6 +86,16 @@ def run_parser(parser: ArgumentParser) -> None:
         '-a', '--all',
         action='store_false',
         help='Render all timelines from a file'
+    )
+    parser.set_defaults(func=run)
+
+
+def examples_parser(parser: ArgumentParser) -> None:
+    parser.set_defaults(namespace='janim.examples')
+    parser.add_argument(
+        'timeline_names',
+        nargs='*',
+        help='Name of the example you want to see'
     )
     parser.set_defaults(func=run)
 
