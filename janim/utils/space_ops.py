@@ -1,14 +1,10 @@
 from __future__ import annotations
 
 import math
-import operator as op
-from functools import reduce
 from typing import Callable, Iterable, Sequence
-import platform
 
 import numpy as np
 import numpy.typing as npt
-from mapbox_earcut import triangulate_float32 as earcut
 from scipy.spatial.transform import Rotation
 
 from janim.constants import *
@@ -27,8 +23,10 @@ def cross(v1: np.ndarray, v2: np.ndarray) -> list[np.ndarray]:
 def get_norm(vect: Iterable) -> float:
     return sum((x**2 for x in vect))**0.5
 
+
 def det(a: Iterable, b: Iterable) -> float:
     return a[0] * b[1] - a[1] * b[0]
+
 
 def normalize(vect: np.ndarray, fall_back: np.ndarray | None = None) -> np.ndarray:
     norm = get_norm(vect)
@@ -276,7 +274,7 @@ def find_intersection(
     p1 = np.array(p1, ndmin=2)
     v1 = np.array(v1, ndmin=2)
     m, n = np.shape(p0)
-    assert(n in [2, 3])
+    assert n in [2, 3]
 
     numer = np.cross(v1, p1 - p0)
     denom = np.cross(v1, v0)
@@ -360,77 +358,3 @@ def is_inside_triangle(
 
 def norm_squared(v: Sequence[float]) -> float:
     return v[0] * v[0] + v[1] * v[1] + v[2] * v[2]
-
-
-# TODO: [L] fails for polygons drawn over themselves
-def earclip_triangulation(verts: np.ndarray, ring_ends: list[int]) -> list:
-    """
-    Returns a list of indices giving a triangulation
-    of a polygon, potentially with holes
-
-    - verts is a numpy array of points
-
-    - ring_ends is a list of indices indicating where
-      the ends of new paths are
-    """
-    rings = [
-        list(range(e0, e1))
-        for e0, e1 in zip([0, *ring_ends], ring_ends)
-    ]
-
-    def is_in(point, ring_id):
-        return abs(abs(get_winding_number([i - point for i in verts[rings[ring_id]]])) - 1) < 1e-5
-
-    def ring_area(ring_id):
-        ring = rings[ring_id]
-        s = np.sum(cross2d(verts[ring[1:]], verts[ring[:-1]]))
-        return abs(s) / 2
-
-    # Points at the same position may cause problems
-    for i in rings:
-        verts[i[0]] += (verts[i[1]] - verts[i[0]]) * 1e-6
-        verts[i[-1]] += (verts[i[-2]] - verts[i[-1]]) * 1e-6
-
-    # First, we should know which rings are directly contained in it for each ring
-
-    right = [max(verts[rings[i], 0]) for i in range(len(rings))]
-    left = [min(verts[rings[i], 0]) for i in range(len(rings))]
-    top = [max(verts[rings[i], 1]) for i in range(len(rings))]
-    bottom = [min(verts[rings[i], 1]) for i in range(len(rings))]
-    area = [ring_area(i) for i in range(len(rings))]
-
-    # The larger ring must be outside
-    rings_sorted = list(range(len(rings)))
-    rings_sorted.sort(key=lambda x: area[x], reverse=True)
-
-    def is_in_fast(ring_a, ring_b):
-        # Whether a is in b
-        return reduce(op.and_, (
-            left[ring_b] <= left[ring_a] <= right[ring_a] <= right[ring_b],
-            bottom[ring_b] <= bottom[ring_a] <= top[ring_a] <= top[ring_b],
-            is_in(verts[rings[ring_a][0]], ring_b)
-        ))
-
-    chilren = [[] for i in rings]
-    for idx, i in enumerate(rings_sorted):
-        for j in rings_sorted[:idx][::-1]:
-            if is_in_fast(i, j):
-                chilren[j].append(i)
-                break
-
-    res = []
-
-    # Then, we can use earcut for each part
-    used = [False] * len(rings)
-    for i in rings_sorted:
-        if used[i]:
-            continue
-        v = rings[i]
-        ring_ends = [len(v)]
-        for j in chilren[i]:
-            used[j] = True
-            v += rings[j]
-            ring_ends.append(len(v))
-        res += [v[i] for i in earcut(verts[v, :2], ring_ends)]
-
-    return res
