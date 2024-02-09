@@ -29,7 +29,7 @@ class AnimViewer(QWidget):
         self.setup_ui()
 
         self.timeline_view.dragged.connect(lambda: self.set_play_state(False))
-        self.timeline_view.value_changed.connect(lambda v: self.glw.set_progress(v / Config.get.preview_fps))
+        self.timeline_view.value_changed.connect(lambda v: self.glw.set_time(v / Config.get.preview_fps))
 
         self.timeline_view.value_changed.emit(0)
 

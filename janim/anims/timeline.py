@@ -1,8 +1,10 @@
 from __future__ import annotations
 
+import heapq
 import inspect
 import math
 import time
+import traceback
 from abc import ABCMeta, abstractmethod
 from bisect import insort
 from collections import defaultdict
@@ -10,17 +12,19 @@ from contextvars import ContextVar
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Callable, Iterable
 
-from janim.anims.animation import TimeRange
+import moderngl as mgl
+
+from janim.anims.animation import Animation, TimeRange
 from janim.anims.composition import AnimGroup
 from janim.anims.display import Display
 from janim.anims.transform import MethodTransform
 from janim.camera.camera import Camera
 from janim.items.item import Item
 from janim.logger import log
+from janim.render.base import RenderData, Renderer, program_map
 from janim.utils.config import Config
 
 if TYPE_CHECKING:   # pragma: no cover
-    from janim.anims.animation import Animation
     from janim.items.item import Item
 
 GET_DATA_DELTA = 1e-5
@@ -403,3 +407,54 @@ class TimelineAnim(AnimGroup):
         self.display_anim.global_range = self.display_anim.local_range
         self.user_anim.global_range = self.user_anim.local_range
         self.global_range = self.local_range
+
+        self.flattened = self.flatten()
+        self._time: float | None = None
+
+    def anim_on(self, local_t: float) -> None:
+        self._time = local_t
+        super().anim_on(local_t)
+
+    def render_all(self, ctx: mgl.Context) -> None:
+        if self._time is None:
+            return
+
+        timeline = self.timeline
+        camera_data = timeline.get_stored_data_at_time(timeline.camera, self._time)
+        camera_info = camera_data.cmpt.points.info
+
+        view_matrix_f4 = camera_info.view_matrix.T.astype('f4').flatten()
+        proj_matrix_f4 = camera_info.proj_matrix.T.astype('f4').flatten()
+        frame_radius_f4 = camera_info.frame_radius.astype('f4')
+
+        for prog in program_map[ctx].values():
+            if 'JA_VIEW_MATRIX' in prog._members:
+                prog['JA_VIEW_MATRIX'] = view_matrix_f4
+            if 'JA_PROJ_MATRIX' in prog._members:
+                prog['JA_PROJ_MATRIX'] = proj_matrix_f4
+            if 'JA_FRAME_RADIUS' in prog._members:
+                prog['JA_FRAME_RADIUS'] = frame_radius_f4
+            if 'JA_ANTI_ALIAS_RADIUS' in prog._members:
+                prog['JA_ANTI_ALIAS_RADIUS'] = Config.get.anti_alias_width / 2 * camera_info.scaled_factor
+
+        global_t_token = Animation.global_t_ctx.set(self._time)
+        render_token = Renderer.data_ctx.set(RenderData(ctx=ctx, camera_info=camera_info))
+
+        try:
+            render_calls = heapq.merge(
+                *[
+                    anim.render_call_list
+                    for anim in self.flattened
+                    if anim.render_call_list and anim.global_range.at <= self._time < anim.global_range.end
+                ],
+                key=lambda x: x.depth,
+                reverse=True
+            )
+            for render_call in render_calls:
+                render_call.func()
+
+        except Exception:
+            traceback.print_exc()
+        finally:
+            Renderer.data_ctx.reset(render_token)
+            Animation.global_t_ctx.reset(global_t_token)
