@@ -413,7 +413,11 @@ class TimelineAnim(AnimGroup):
 
     def anim_on(self, local_t: float) -> None:
         self._time = local_t
-        super().anim_on(local_t)
+        token = self.global_t_ctx.set(local_t)
+        try:
+            super().anim_on(local_t)
+        finally:
+            self.global_t_ctx.reset(token)
 
     def render_all(self, ctx: mgl.Context) -> None:
         if self._time is None:

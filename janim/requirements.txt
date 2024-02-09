@@ -7,3 +7,4 @@ glm
 moderngl
 pyside6
 qdarkstyle
+tqdm

@@ -1,10 +1,12 @@
 import importlib
 import time
 import sys
+import os
 from argparse import ArgumentParser, Namespace
 
 from janim.anims.timeline import Timeline
 from janim.logger import log
+from janim.utils.config import Config, default_config
 
 
 def main() -> None:
@@ -12,7 +14,8 @@ def main() -> None:
     parser.set_defaults(func=None)
 
     sp = parser.add_subparsers()
-    run_parser(sp.add_parser('run', help='Run a timeline from specific namespace'))
+    run_parser(sp.add_parser('run', help='Run timeline(s) from specific namespace'))
+    write_parser(sp.add_parser('write', help='Generate video file(s) of timeline(s) from specific namesapce'))
     examples_parser(sp.add_parser('examples', help='Show examples of janim'))
 
     args = parser.parse_args()
@@ -22,12 +25,55 @@ def main() -> None:
         args.func(args)
 
 
-def run(args: Namespace):
-    try:
-        module = importlib.import_module(args.namespace)
-    except ModuleNotFoundError:
-        log.error(f'No module named \'{args.namespace}\'')
+def render_args(parser: ArgumentParser) -> None:
+    parser.add_argument(
+        'namespace',
+        help='Namespace to file holding the python code for the timeline'
+    )
+    parser.add_argument(
+        'timeline_names',
+        nargs='*',
+        help='Name of the Timeline class you want to see'
+    )
+    parser.add_argument(
+        '-a', '--all',
+        action='store_true',
+        help='Render all timelines from a file'
+    )
+    parser.add_argument(
+        '-c', '--config',
+        nargs=2,
+        metavar=('key', 'value'),
+        action='append',
+        help='Modify the config'
+    )
+
+
+def run_parser(parser: ArgumentParser) -> None:
+    render_args(parser)
+    parser.set_defaults(func=run)
+
+
+def write_parser(parser: ArgumentParser) -> None:
+    render_args(parser)
+    parser.set_defaults(func=write)
+
+
+def examples_parser(parser: ArgumentParser) -> None:
+    parser.set_defaults(namespace='janim.examples')
+    parser.add_argument(
+        'timeline_names',
+        nargs='*',
+        help='Name of the example you want to see'
+    )
+    parser.set_defaults(func=run)
+
+
+def run(args: Namespace) -> None:
+    module = get_module(args.namespace)
+    if module is None:
         return
+    modify_default_config(args)
 
     timelines = extract_timelines_from_module(args, module)
     if not timelines:
@@ -48,10 +94,10 @@ def run(args: Namespace):
         viewer = AnimViewer(timeline().build(), auto_play)
         widgets.append(viewer)
 
-    t = time.time()
-
     log.info('======')
     log.info('Constructing window')
+
+    t = time.time()
 
     if sys.platform.startswith('win'):
         import ctypes
@@ -72,44 +118,70 @@ def run(args: Namespace):
     app.exec()
 
 
-def run_parser(parser: ArgumentParser) -> None:
-    parser.add_argument(
-        'namespace',
-        help='Namespace to file holding the python code for the timeline'
-    )
-    parser.add_argument(
-        'timeline_names',
-        nargs='*',
-        help='Name of the Timeline class you want to see'
-    )
-    parser.add_argument(
-        '-a', '--all',
-        action='store_false',
-        help='Render all timelines from a file'
-    )
-    parser.set_defaults(func=run)
+def write(args: Namespace) -> None:
+    module = get_module(args.namespace)
+    if module is None:
+        return
+    modify_default_config(args)
+
+    timelines = extract_timelines_from_module(args, module)
+    if not timelines:
+        return
+
+    from janim.render.file_writer import FileWriter
+
+    log.info('======')
+
+    built = [timeline().build() for timeline in timelines]
+
+    log.info('======')
+
+    output_dir = os.path.normpath(Config.get.output_dir)
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+
+    log.info(f'fps={Config.get.fps}')
+    log.info(f'resolution="{Config.get.pixel_width}x{Config.get.pixel_height}"')
+    log.info(f'{output_dir=}')
+
+    log.info('======')
+
+    for anim in built:
+        name = anim.timeline.__class__.__name__
+        log.info(f'Writing "{name}"')
+        t = time.time()
+        FileWriter(anim).write_all(
+            os.path.join(Config.get.output_dir, name)
+        )
+        log.info(f'Finished writing "{name}" in {time.time() - t:.2f} s')
+
+    log.info('======')
 
 
-def examples_parser(parser: ArgumentParser) -> None:
-    parser.set_defaults(namespace='janim.examples')
-    parser.add_argument(
-        'timeline_names',
-        nargs='*',
-        help='Name of the example you want to see'
-    )
-    parser.set_defaults(func=run)
+def modify_default_config(args: Namespace) -> None:
+    if args.config:
+        for key, value in args.config:
+            setattr(default_config, key, value)
+
+
+def get_module(namespace: str):
+    try:
+        return importlib.import_module(namespace)
+    except ModuleNotFoundError:
+        log.error(f'No module named "{namespace}"')
+        return None
 
 
 def extract_timelines_from_module(args: Namespace, module) -> list[type[Timeline]]:
     timelines = []
     err = False
 
-    if args.timeline_names:
+    if not args.all and args.timeline_names:
         for name in args.timeline_names:
             try:
                 timelines.append(module.__dict__[name])
             except KeyError:
-                log.error(f'No timeline named \'{name}\'')
+                log.error(f'No timeline named "{name}"')
                 err = True
     else:
         import inspect
@@ -121,8 +193,10 @@ def extract_timelines_from_module(args: Namespace, module) -> list[type[Timeline
         ]
         if len(classes) <= 1:
             return classes
-
         classes.sort(key=lambda x: inspect.getsourcelines(x)[1])
+        if args.all:
+            return classes
+
         max_digits = len(str(len(classes)))
 
         name_to_class = {}

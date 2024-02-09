@@ -45,6 +45,8 @@ class Config(metaclass=_ConfigMeta):
     pixel_height: int = None
     pixel_width: int = None
 
+    output_dir: str = None
+
     def __enter__(self) -> Self:
         lst = config_ctx_var.get()
         self.token = config_ctx_var.set([*lst, self])
@@ -64,6 +66,8 @@ default_config = Config(
 
     pixel_height=1080,
     pixel_width=1920,
+
+    output_dir='videos',
 )
 '''
 默认配置
@@ -78,7 +82,7 @@ class ConfigGetter:
 
     请仍然使用 ``Config.get.xxx`` 来获取定义在该类中的内容
     '''
-    def __getattr__(self, name: str):
+    def __getattr__(self, name: str) -> None:
         lst = config_ctx_var.get()
         for config in reversed(lst):
             value = getattr(config, name)
