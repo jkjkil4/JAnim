@@ -1,5 +1,6 @@
 
 import moderngl as mgl
+from PySide6.QtCore import Signal
 from PySide6.QtOpenGLWidgets import QOpenGLWidget
 from PySide6.QtWidgets import QWidget
 
@@ -7,6 +8,8 @@ from janim.anims.timeline import TimelineAnim
 
 
 class GLWidget(QOpenGLWidget):
+    rendered = Signal()
+
     def __init__(self, anim: TimelineAnim, parent: QWidget | None = None) -> None:
         super().__init__(parent)
         self.anim = anim
@@ -21,3 +24,4 @@ class GLWidget(QOpenGLWidget):
 
     def paintGL(self) -> None:
         self.anim.render_all(self.ctx)
+        self.rendered.emit()

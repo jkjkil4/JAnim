@@ -1,18 +1,22 @@
+import os
+import time
 from bisect import bisect
 from dataclasses import dataclass
 
 from PySide6.QtCore import QRectF, Qt, QTimer, Signal
-from PySide6.QtGui import (QColor, QHideEvent, QKeyEvent, QMouseEvent,
+from PySide6.QtGui import (QColor, QHideEvent, QIcon, QKeyEvent, QMouseEvent,
                            QPainter, QPaintEvent, QPen, QWheelEvent)
-from PySide6.QtWidgets import (QHBoxLayout, QPushButton, QSizePolicy,
-                               QSplitter, QWidget)
+from PySide6.QtWidgets import (QFileDialog, QLabel, QMainWindow, QMessageBox,
+                               QPushButton, QSizePolicy, QSplitter, QWidget)
 
 from janim.anims.animation import Animation, TimeRange
 from janim.anims.timeline import TimelineAnim
 from janim.gui.application import Application
 from janim.gui.fixed_ratio_widget import FixedRatioWidget
 from janim.gui.glwidget import GLWidget
+from janim.render.file_writer import FileWriter
 from janim.utils.config import Config
+from janim.utils.file_ops import get_janim_dir
 from janim.utils.simple_functions import clip
 
 TIMELINE_VIEW_MIN_DURATION = 0.5
@@ -21,17 +25,19 @@ TIMELINE_VIEW_MIN_DURATION = 0.5
 # TODO: 鼠标悬停在时间轴的动画上时，显示动画预览
 
 
-class AnimViewer(QWidget):
+class AnimViewer(QMainWindow):
     def __init__(self, anim: TimelineAnim, auto_play=True, parent: QWidget | None = None) -> None:
         super().__init__(parent)
         self.anim = anim
 
         self.setup_ui()
 
+        self.timeline_view.value_changed.connect(self.on_value_changed)
         self.timeline_view.dragged.connect(lambda: self.set_play_state(False))
-        self.timeline_view.value_changed.connect(lambda v: self.glw.set_time(v / Config.get.preview_fps))
-
+        self.timeline_view.space_pressed.connect(lambda: self.switch_play_state())
         self.timeline_view.value_changed.emit(0)
+
+        self.btn_export.clicked.connect(self.on_export_clicked)
 
         self.play_timer = QTimer(self)
         self.play_timer.setTimerType(Qt.TimerType.PreciseTimer)
@@ -39,9 +45,29 @@ class AnimViewer(QWidget):
         if auto_play:
             self.switch_play_state()
 
-        self.setWindowTitle('JAnim Graphics')
+        self.fps_counter = 0
+        self.fps_record_start = time.time()
+
+        self.glw.rendered.connect(self.on_glw_rendered)
 
     def setup_ui(self) -> None:
+        self.setup_status_bar()
+        self.setup_central_widget()
+
+    def setup_status_bar(self) -> None:
+        self.fps_label = QLabel()
+        self.time_label = QLabel()
+        self.btn_export = QPushButton()
+        self.btn_export.setIcon(QIcon(os.path.join(get_janim_dir(), 'gui', 'export.png')))
+        self.btn_export.setFocusPolicy(Qt.FocusPolicy.NoFocus)
+
+        stb = self.statusBar()
+        stb.setContentsMargins(0, 0, 0, 0)
+        stb.addWidget(self.fps_label)
+        stb.addPermanentWidget(self.time_label)
+        stb.addPermanentWidget(self.btn_export)
+
+    def setup_central_widget(self) -> None:
         self.glw = GLWidget(self.anim)
         self.fixed_ratio_widget = FixedRatioWidget(
             self.glw,
@@ -53,7 +79,6 @@ class AnimViewer(QWidget):
 
         self.timeline_view = TimelineView(self.anim)
         self.timeline_view.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Preferred)
-        self.timeline_view.space_pressed.connect(lambda: self.switch_play_state())
 
         self.vsplitter = QSplitter()
         self.vsplitter.setOrientation(Qt.Orientation.Vertical)
@@ -62,22 +87,49 @@ class AnimViewer(QWidget):
         self.vsplitter.setSizes([400, 100])
         self.vsplitter.setStyleSheet('''QSplitter { background: rgb(25, 35, 45); }''')
 
-        main_layout = QHBoxLayout()
-        main_layout.addWidget(self.vsplitter)
-        main_layout.setContentsMargins(0, 0, 0, 0)
-
-        self.setLayout(main_layout)
+        self.setCentralWidget(self.vsplitter)
         self.setMinimumSize(200, 160)
         self.resize(800, 608)
+        self.setWindowTitle('JAnim Graphics')
 
     def hideEvent(self, event: QHideEvent) -> None:
         super().hideEvent(event)
         self.play_timer.stop()
 
+    def on_value_changed(self, value: int) -> None:
+        time = value / Config.get.preview_fps
+        self.glw.set_time(time)
+        self.time_label.setText(f'{time:.1f}/{self.anim.global_range.duration:.1f} s')
+
     def on_play_timer_timeout(self) -> None:
         self.timeline_view.set_progress(self.timeline_view.progress() + 1)
         if self.timeline_view.at_end():
             self.play_timer.stop()
+
+    def on_glw_rendered(self) -> None:
+        cur = time.time()
+        self.fps_counter += 1
+        if cur - self.fps_record_start >= 1:
+            self.fps_label.setText(f'Preview FPS: {self.fps_counter}/{Config.get.preview_fps}')
+            self.fps_counter = 0
+            self.fps_record_start = cur
+
+    def on_export_clicked(self) -> None:
+        self.play_timer.stop()
+
+        file_path = QFileDialog.getSaveFileName(
+            self,
+            '',
+            os.path.join(Config.get.output_dir, f'{self.anim.timeline.__class__.__name__}.mp4'),
+            'MP4 (*.mp4);;MOV (*.mov)'
+        )
+        file_path = file_path[0]
+        if not file_path:
+            return
+
+        QMessageBox.information(self, '提示', '即将进行输出，请留意控制台信息')
+        FileWriter.writes(self.anim.timeline.__class__().build(), file_path)
+        QMessageBox.information(self, '提示', f'已完成输出至 {file_path}')
 
     def set_play_state(self, playing: bool) -> None:
         if playing != self.play_timer.isActive():
@@ -89,6 +141,8 @@ class AnimViewer(QWidget):
         else:
             if self.timeline_view.at_end():
                 self.timeline_view.set_progress(0)
+            self.fps_record_start = time.time()
+            self.fps_counter = 0
             self.play_timer.start(1000 // Config.get.preview_fps)
 
     @classmethod
@@ -352,5 +406,5 @@ class TimelineView(QWidget):
         left = self.range.at / self.anim.global_range.duration * self.width()
         width = self.range.duration / self.anim.global_range.duration * self.width()
         p.setPen(Qt.PenStyle.NoPen)
-        p.setBrush(QColor(68, 83, 100))
+        p.setBrush(QColor(77, 102, 132))
         p.drawRoundedRect(left, self.height() - 4, width, 4, 2, 2)

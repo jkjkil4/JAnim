@@ -58,10 +58,9 @@ class FileWriter:
         log.info(f'Finished writing "{name}" in {time.time() - t:.2f} s')
 
     def open_video_pipe(self, file_path: str) -> None:
-        ext = '.mp4'     # TODO: 其它格式
-
-        self.final_file_path = file_path + ext
-        self.temp_file_path = file_path + '_temp' + ext
+        stem, ext = os.path.splitext(file_path)
+        self.final_file_path = file_path
+        self.temp_file_path = stem + '_temp' + ext
 
         command = [
             Config.get.ffmpeg_bin,
@@ -76,11 +75,17 @@ class FileWriter:
             '-loglevel', 'error',
         ]
 
-        # TODO: 其它格式
-        command += [
-            '-vcodec', 'libx264',
-            '-pix_fmt', 'yuv420p',
-        ]
+        if ext == ".mov":
+            # This is if the background of the exported
+            # video should be transparent.
+            command += [
+                '-vcodec', 'qtrle',
+            ]
+        else:
+            command += [
+                '-vcodec', 'libx264',
+                '-pix_fmt', 'yuv420p',
+            ]
 
         command += [self.temp_file_path]
         self.writing_process = sp.Popen(command, stdin=sp.PIPE)

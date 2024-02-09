@@ -63,6 +63,12 @@ def write_parser(parser: ArgumentParser) -> None:
         action='store_true',
         help='Open the file after writing'
     )
+    parser.add_argument(
+        '--format',
+        choices=['mp4', 'mov'],
+        default='mp4',
+        help='Format of the output file'
+    )
     parser.set_defaults(func=write)
 
 
@@ -152,12 +158,16 @@ def write(args: Namespace) -> None:
     log.info(f'fps={Config.get.fps}')
     log.info(f'resolution="{Config.get.pixel_width}x{Config.get.pixel_height}"')
     log.info(f'output_dir="{output_dir}"')
+    log.info(f'format="{args.format}"')
 
     log.info('======')
 
     for anim in built:
         writer = FileWriter(anim)
-        writer.write_all(os.path.join(Config.get.output_dir, anim.timeline.__class__.__name__))
+        writer.write_all(
+            os.path.join(Config.get.output_dir,
+                         f'{anim.timeline.__class__.__name__}.{args.format}')
+        )
         if args.open and anim is built[-1]:
             open_file(writer.final_file_path)
 

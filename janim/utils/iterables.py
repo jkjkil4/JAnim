@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import types
 from typing import Callable, Iterable, Sequence, TypeVar, overload
 
 import numpy as np
@@ -96,13 +97,13 @@ def resize_array(nparray: np.ndarray, length: int) -> np.ndarray:
 @overload
 def resize_preserving_order(array: np.ndarray, length: int) -> np.ndarray: ...
 @overload
-def resize_preserving_order[T](array: list[T], length: int, fall_back: Callable = None.__class__) -> list[T]: ...
+def resize_preserving_order[T](array: list[T], length: int, fall_back: Callable = types.NoneType) -> list[T]: ...
 
 
 def resize_preserving_order(
     array: np.ndarray | list[T],
     length: int,
-    fall_back: Callable = None.__class__
+    fall_back: Callable = types.NoneType
 ):
     if isinstance(array, np.ndarray):
         if len(array) == 0:
