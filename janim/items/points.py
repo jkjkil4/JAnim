@@ -31,7 +31,7 @@ class Points(Item):
 
 class DotCloud(Points):
     color = CmptInfo(Cmpt_Rgbas)
-    radius = CmptInfo(Cmpt_Radius)
+    radius = CmptInfo(Cmpt_Radius, 0.05)
 
     renderer_cls = DotCloudRenderer
 

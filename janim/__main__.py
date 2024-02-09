@@ -47,7 +47,7 @@ def render_args(parser: ArgumentParser) -> None:
         nargs=2,
         metavar=('key', 'value'),
         action='append',
-        help='Modify the config'
+        help='Override config'
     )
 
 
@@ -73,6 +73,8 @@ def examples_parser(parser: ArgumentParser) -> None:
         nargs='*',
         help='Name of the example you want to see'
     )
+    parser.set_defaults(all=None)
+    parser.set_defaults(config=None)
     parser.set_defaults(func=run)
 
 
@@ -154,18 +156,10 @@ def write(args: Namespace) -> None:
     log.info('======')
 
     for anim in built:
-        name = anim.timeline.__class__.__name__
-        log.info(f'Writing "{name}"')
-        t = time.time()
-
         writer = FileWriter(anim)
-        writer.write_all(
-            os.path.join(Config.get.output_dir, name)
-        )
+        writer.write_all(os.path.join(Config.get.output_dir, anim.timeline.__class__.__name__))
         if args.open and anim is built[-1]:
             open_file(writer.final_file_path)
-
-        log.info(f'Finished writing "{name}" in {time.time() - t:.2f} s')
 
     log.info('======')
 
@@ -173,7 +167,8 @@ def write(args: Namespace) -> None:
 def modify_default_config(args: Namespace) -> None:
     if args.config:
         for key, value in args.config:
-            setattr(default_config, key, value)
+            dtype = type(getattr(default_config, key))
+            setattr(default_config, key, dtype(value))
 
 
 def get_module(namespace: str):

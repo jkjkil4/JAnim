@@ -4,6 +4,7 @@ __pycache__
 /test_some_code
 /test/test.py
 /doc/build
+/videos
 /.coverage
 /env
 /result.json

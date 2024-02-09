@@ -1,14 +1,14 @@
 import os
 import shutil
 import subprocess as sp
+import time
 
 import moderngl as mgl
 from tqdm import tqdm as ProgressDisplay
 
 from janim.anims.timeline import TimelineAnim
+from janim.logger import log
 from janim.utils.config import Config
-
-FFMPEG_BIN = "ffmpeg"
 
 
 class FileWriter:
@@ -31,6 +31,10 @@ class FileWriter:
         )
 
     def write_all(self, file_path: str) -> None:
+        name = self.anim.timeline.__class__.__name__
+        log.info(f'Writing "{name}"')
+        t = time.time()
+
         self.fbo.use()
         fps = Config.get.fps
 
@@ -46,20 +50,21 @@ class FileWriter:
             self.fbo.clear()    # TODO: backgound-color
             self.anim.anim_on(frame / fps)
             self.anim.render_all(self.ctx)
-            bytes = self.fbo.color_attachments[0].read()
+            bytes = self.fbo.read(components=4)
             self.writing_process.stdin.write(bytes)
 
         self.close_video_pipe()
 
-    def open_video_pipe(self, file_path: str) -> None:
-        file_path += '.mp4'     # TODO: 其它格式
+        log.info(f'Finished writing "{name}" in {time.time() - t:.2f} s')
 
-        stem, ext = os.path.splitext(file_path)
-        self.final_file_path = file_path
-        self.temp_file_path = stem + '_temp' + ext
+    def open_video_pipe(self, file_path: str) -> None:
+        ext = '.mp4'     # TODO: 其它格式
+
+        self.final_file_path = file_path + ext
+        self.temp_file_path = file_path + '_temp' + ext
 
         command = [
-            FFMPEG_BIN,
+            Config.get.ffmpeg_bin,
             '-y',  # overwrite output file if it exists
             '-f', 'rawvideo',
             '-s', f'{Config.get.pixel_width}x{Config.get.pixel_height}',  # size of one frame
@@ -85,3 +90,7 @@ class FileWriter:
         self.writing_process.wait()
         self.writing_process.terminate()
         shutil.move(self.temp_file_path, self.final_file_path)
+
+    @staticmethod
+    def writes(anim: TimelineAnim, file_path: str) -> None:
+        FileWriter(anim).write_all(file_path)

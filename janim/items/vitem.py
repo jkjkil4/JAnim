@@ -15,7 +15,7 @@ from janim.utils.data import AlignedData
 
 class VItem(Points):
     points = CmptInfo(Cmpt_VPoints)
-    radius = CmptInfo(Cmpt_Radius)
+    radius = CmptInfo(Cmpt_Radius, 0.02)
 
     stroke = CmptInfo(Cmpt_Rgbas)
     fill = CmptInfo(Cmpt_Rgbas)

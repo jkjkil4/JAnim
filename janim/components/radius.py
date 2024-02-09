@@ -10,12 +10,11 @@ from janim.utils.data import AlignedData
 from janim.utils.iterables import resize_with_interpolation
 from janim.utils.unique_nparray import UniqueNparray
 
-DEFAULT_RADIUS = 0.05
-
 
 class Cmpt_Radius(Component):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, default_radius: float, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.default_radius = default_radius
 
         self._radii = UniqueNparray()
         self.clear()
@@ -73,7 +72,7 @@ class Cmpt_Radius(Component):
         return self
 
     def clear(self) -> Self:
-        self.set(np.full(1, DEFAULT_RADIUS))
+        self.set(np.full(1, self.default_radius))
 
     def reverse(self) -> Self:
         self.set(self.get()[::-1])

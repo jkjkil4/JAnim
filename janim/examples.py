@@ -38,8 +38,7 @@ class SimpleCurveExample(Timeline):
 
         item2 = VItem(LEFT, UP, RIGHT, DOWN, LEFT)
         item2.color.set(BLUE)
-        item2.fill.set(BLUE, 0.1)
-        item2.stroke.set(BLUE, 0.5)
+        item2.fill.set(alpha=0.2)
 
         self.play(
             Transform(item1, item2),

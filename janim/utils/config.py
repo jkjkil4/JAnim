@@ -45,6 +45,7 @@ class Config(metaclass=_ConfigMeta):
     pixel_height: int = None
     pixel_width: int = None
 
+    ffmpeg_bin: str = None
     output_dir: str = None
 
     def __enter__(self) -> Self:
@@ -67,6 +68,7 @@ default_config = Config(
     pixel_height=1080,
     pixel_width=1920,
 
+    ffmpeg_bin='ffmpeg',
     output_dir='videos',
 )
 '''
