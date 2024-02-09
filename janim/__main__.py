@@ -2,6 +2,8 @@ import importlib
 import time
 import sys
 import os
+import platform
+import subprocess as sp
 from argparse import ArgumentParser, Namespace
 
 from janim.anims.timeline import Timeline
@@ -56,6 +58,11 @@ def run_parser(parser: ArgumentParser) -> None:
 
 def write_parser(parser: ArgumentParser) -> None:
     render_args(parser)
+    parser.add_argument(
+        '-o', '--open',
+        action='store_true',
+        help='Open the file after writing'
+    )
     parser.set_defaults(func=write)
 
 
@@ -142,7 +149,7 @@ def write(args: Namespace) -> None:
 
     log.info(f'fps={Config.get.fps}')
     log.info(f'resolution="{Config.get.pixel_width}x{Config.get.pixel_height}"')
-    log.info(f'{output_dir=}')
+    log.info(f'output_dir="{output_dir}"')
 
     log.info('======')
 
@@ -150,9 +157,14 @@ def write(args: Namespace) -> None:
         name = anim.timeline.__class__.__name__
         log.info(f'Writing "{name}"')
         t = time.time()
-        FileWriter(anim).write_all(
+
+        writer = FileWriter(anim)
+        writer.write_all(
             os.path.join(Config.get.output_dir, name)
         )
+        if args.open and anim is built[-1]:
+            open_file(writer.final_file_path)
+
         log.info(f'Finished writing "{name}" in {time.time() - t:.2f} s')
 
     log.info('======')
@@ -228,6 +240,26 @@ def extract_timelines_from_module(args: Namespace, module) -> list[type[Timeline
                     err = True
 
     return [] if err else timelines
+
+
+def open_file(file_path: str) -> None:
+    current_os = platform.system()
+    if current_os == "Windows":
+        os.startfile(file_path)
+    else:
+        commands = []
+        if current_os == "Linux":
+            commands.append("xdg-open")
+        elif current_os.startswith("CYGWIN"):
+            commands.append("cygstart")
+        else:  # Assume macOS
+            commands.append("open")
+
+        commands.append(file_path)
+
+        FNULL = open(os.devnull, 'w')
+        sp.call(commands, stdout=FNULL, stderr=sp.STDOUT)
+        FNULL.close()
 
 
 if __name__ == '__main__':

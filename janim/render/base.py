@@ -4,6 +4,7 @@ import os
 from contextvars import ContextVar
 from collections import defaultdict
 from dataclasses import dataclass
+from typing import Any
 
 import moderngl as mgl
 
@@ -35,7 +36,22 @@ shader_keys = (
     ('fragment_shader', '.frag.glsl')
 )
 
+type UniformPair = tuple[str, Any]
+
+global_uniform_map: dict[mgl.Context, list[UniformPair]] = {}
 program_map: defaultdict[mgl.Context, dict[str, mgl.Program]] = defaultdict(dict)
+
+
+def set_global_uniforms(ctx: mgl.Context, *uniforms: UniformPair) -> None:
+    global_uniform_map[ctx] = uniforms
+    for prog in program_map[ctx].values():
+        apply_global_uniforms(uniforms, prog)
+
+
+def apply_global_uniforms(uniforms: list[UniformPair], prog: mgl.Program) -> None:
+    for key, value in uniforms:
+        if key in prog._members:
+            prog[key] = value
 
 
 def get_program(filepath: str) -> mgl.Program:
@@ -65,5 +81,10 @@ def get_program(filepath: str) -> mgl.Program:
         for shader_type, suffix in shader_keys
         if os.path.exists(shader_path + suffix)
     })
+
+    global_uniforms = global_uniform_map.get(ctx, None)
+    if global_uniforms is not None:
+        apply_global_uniforms(global_uniforms, prog)
+
     ctx_program_map[filepath] = prog
     return prog

@@ -21,7 +21,7 @@ from janim.anims.transform import MethodTransform
 from janim.camera.camera import Camera
 from janim.items.item import Item
 from janim.logger import log
-from janim.render.base import RenderData, Renderer, program_map
+from janim.render.base import RenderData, Renderer, set_global_uniforms
 from janim.utils.config import Config
 
 if TYPE_CHECKING:   # pragma: no cover
@@ -427,19 +427,13 @@ class TimelineAnim(AnimGroup):
         camera_data = timeline.get_stored_data_at_time(timeline.camera, self._time)
         camera_info = camera_data.cmpt.points.info
 
-        view_matrix_f4 = camera_info.view_matrix.T.astype('f4').flatten()
-        proj_matrix_f4 = camera_info.proj_matrix.T.astype('f4').flatten()
-        frame_radius_f4 = camera_info.frame_radius.astype('f4')
-
-        for prog in program_map[ctx].values():
-            if 'JA_VIEW_MATRIX' in prog._members:
-                prog['JA_VIEW_MATRIX'] = view_matrix_f4
-            if 'JA_PROJ_MATRIX' in prog._members:
-                prog['JA_PROJ_MATRIX'] = proj_matrix_f4
-            if 'JA_FRAME_RADIUS' in prog._members:
-                prog['JA_FRAME_RADIUS'] = frame_radius_f4
-            if 'JA_ANTI_ALIAS_RADIUS' in prog._members:
-                prog['JA_ANTI_ALIAS_RADIUS'] = Config.get.anti_alias_width / 2 * camera_info.scaled_factor
+        set_global_uniforms(
+            ctx,
+            ('JA_VIEW_MATRIX', camera_info.view_matrix.T.flatten()),
+            ('JA_PROJ_MATRIX', camera_info.proj_matrix.T.flatten()),
+            ('JA_FRAME_RADIUS', camera_info.frame_radius),
+            ('JA_ANTI_ALIAS_RADIUS', Config.get.anti_alias_width / 2 * camera_info.scaled_factor)
+        )
 
         global_t_token = Animation.global_t_ctx.set(self._time)
         render_token = Renderer.data_ctx.set(RenderData(ctx=ctx, camera_info=camera_info))
