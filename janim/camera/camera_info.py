@@ -56,13 +56,13 @@ class CameraInfo:
 
         return np.dot(rot_matrix, shift_matrix)
 
-    def _compute_proj_matrix(self) -> np.ndarray:
-        # TODO: avoid using QMatrix4x4
+    def _compute_proj_matrix(self, near=0.1, far=100.0) -> np.ndarray:
+        aspect = self.horizontal_dist / self.vertical_dist
 
-        from PySide6.QtGui import QMatrix4x4
-
-        proj = QMatrix4x4()
-        proj.setToIdentity()
-        proj.perspective(self.fov, self.horizontal_dist / self.vertical_dist, 0.1, 100)
-
-        return np.array(proj.data()).reshape((4, 4)).T
+        f = 1.0 / np.tan(np.radians(self.fov) / 2.0)
+        return np.array([
+            [f / aspect, 0, 0, 0],
+            [0, f, 0, 0],
+            [0, 0, (far + near) / (near - far), 2 * far * near / (near - far)],
+            [0, 0, -1, 0]
+        ])
