@@ -8,7 +8,7 @@ from dataclasses import dataclass
 
 from PySide6.QtCore import QByteArray, QRectF, Qt, QTimer, Signal
 from PySide6.QtGui import (QColor, QHideEvent, QIcon, QKeyEvent, QMouseEvent,
-                           QPainter, QPaintEvent, QPen, QWheelEvent)
+                           QPainter, QPaintEvent, QPen, QWheelEvent, QCloseEvent)
 from PySide6.QtWidgets import (QApplication, QFileDialog, QLabel, QMainWindow,
                                QMessageBox, QPushButton, QSizePolicy,
                                QSplitter, QWidget)
@@ -40,6 +40,7 @@ class AnimViewer(QMainWindow):
     ) -> None:
         super().__init__(parent)
         self.anim = anim
+        self.enable_socket = enable_socket
 
         self.setup_ui()
         self.move_to_position()
@@ -157,7 +158,7 @@ class AnimViewer(QMainWindow):
         self.resize(width, height)
 
     def setup_socket(self) -> None:
-        from PySide6.QtNetwork import QUdpSocket
+        from PySide6.QtNetwork import QUdpSocket, QHostAddress
 
         self.shared_socket = QUdpSocket()
         ret = self.shared_socket.bind(40565, QUdpSocket.BindFlag.ShareAddress | QUdpSocket.BindFlag.ReuseAddressHint)
@@ -168,6 +169,8 @@ class AnimViewer(QMainWindow):
         self.socket.bind()
 
         self.socket.readyRead.connect(self.on_ready_read)
+
+        self.close_event_listener: list[tuple[QHostAddress, int]] = []
 
         log.info(f'调试端口已在 {self.socket.localPort()} 开启')
         self.setWindowTitle(f'{self.windowTitle()} [{self.socket.localPort()}]')
@@ -212,9 +215,17 @@ class AnimViewer(QMainWindow):
                 janim = tree['janim']
                 cmdtype = janim['type']
 
+                # 响应 closeEvent
+                if cmdtype == 'listen_close_event':
+                    self.close_event_listener.append((datagram.senderAddress(), datagram.senderPort()))
+
                 # 重新载入
-                if cmdtype == 'reload':
-                    self.on_reload_triggered()
+                elif cmdtype == 'file_saved':
+                    print(janim['file_path'])
+                    print(inspect.getmodule(self.anim.timeline).__file__)
+                    print(os.path.samefile(janim['file_path'], inspect.getmodule(self.anim.timeline).__file__))
+                    if os.path.samefile(janim['file_path'], inspect.getmodule(self.anim.timeline).__file__):
+                        self.on_reload_triggered()
 
             except Exception:
                 traceback.print_exc()
@@ -222,6 +233,22 @@ class AnimViewer(QMainWindow):
     def hideEvent(self, event: QHideEvent) -> None:
         super().hideEvent(event)
         self.play_timer.stop()
+
+    def closeEvent(self, event: QCloseEvent) -> None:
+        super().closeEvent(event)
+        if self.enable_socket:
+            import json
+
+            msg = json.dumps(dict(
+                janim=dict(
+                    type='close_event'
+                )
+            ))
+            for listener in self.close_event_listener:
+                self.socket.writeDatagram(
+                    QByteArray.fromStdString(msg),
+                    *listener
+                )
 
     def on_value_changed(self, value: int) -> None:
         time = value / Config.get.preview_fps
@@ -241,19 +268,26 @@ class AnimViewer(QMainWindow):
 
     def on_reload_triggered(self) -> None:
         module = inspect.getmodule(self.anim.timeline)
-        time = self.anim._time
+        progress = self.timeline_view.progress()
 
         importlib.reload(module)
         timeline_class = getattr(module, self.anim.timeline.__class__.__name__)
 
-        self.anim: TimelineAnim = timeline_class().build()
-        self.anim.anim_on(time)
+        try:
+            self.anim: TimelineAnim = timeline_class().build()
+        except Exception:
+            traceback.print_exc()
+            log.error('重新加载失败')
+            return
+
+        self.anim.anim_on(self.timeline_view.progress_to_time(progress))
 
         self.glw.anim = self.anim
-        self.timeline_view.anim = self.anim
-        self.update()
-        self.glw.update()
-        self.timeline_view.update()
+
+        range = self.timeline_view.range
+        self.timeline_view.set_anim(self.anim)
+        self.timeline_view.set_progress(progress)
+        self.timeline_view.range = range
 
     def on_glw_rendered(self) -> None:
         cur = time.time()
@@ -342,6 +376,17 @@ class TimelineView(QWidget):
 
     def __init__(self, anim: TimelineAnim, parent: QWidget | None = None):
         super().__init__(parent)
+
+        self.set_anim(anim)
+
+        self.key_timer = QTimer(self)
+        self.key_timer.timeout.connect(self.on_key_timer_timeout)
+        self.key_timer.start(1000 // 60)
+
+        self.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
+        self.setMouseTracking(True)
+
+    def set_anim(self, anim: TimelineAnim) -> None:
         self.range = TimeRange(0, min(20, anim.global_range.duration))
         self.y_offset = 0
         self.anim = anim
@@ -350,13 +395,8 @@ class TimelineView(QWidget):
 
         self.is_pressing = TimelineView.Pressing()
 
-        self.key_timer = QTimer(self)
-        self.key_timer.timeout.connect(self.on_key_timer_timeout)
-        self.key_timer.start(1000 // 60)
-
         self.init_label_info()
-        self.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
-        self.setMouseTracking(True)
+        self.update()
 
     def init_label_info(self) -> None:
         self.labels_info: list[TimelineView.LabelInfo] = []
