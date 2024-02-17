@@ -76,7 +76,7 @@ class Component[ItemT](refresh.Refreshable, metaclass=_CmptMeta):
         cmpt_copy.reset_refresh()
         return cmpt_copy
 
-    def become(self) -> Self: ...
+    def become(self, other) -> Self: ...
 
     def __eq__(self, other) -> bool: ...
 
@@ -163,7 +163,7 @@ class _CmptGroup(Component):
 
         return cmpt_copy
 
-    def become(self) -> None: ...
+    def become(self, other) -> None: ...
 
     def __eq__(self, other: _CmptGroup) -> bool:
         for key in self.objects.keys():

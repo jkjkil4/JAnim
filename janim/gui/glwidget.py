@@ -5,6 +5,7 @@ from PySide6.QtOpenGLWidgets import QOpenGLWidget
 from PySide6.QtWidgets import QWidget
 
 from janim.anims.timeline import TimelineAnim
+from janim.utils.config import Config
 
 
 class GLWidget(QOpenGLWidget):
@@ -21,6 +22,8 @@ class GLWidget(QOpenGLWidget):
     def initializeGL(self) -> None:
         self.ctx = mgl.create_context()
         self.ctx.enable(mgl.BLEND)
+
+        self.ctx.clear(*Config.get.background_color.rgb)
 
     def paintGL(self) -> None:
         self.anim.render_all(self.ctx)

@@ -777,30 +777,30 @@ class Cmpt_Points[ItemT](Component[ItemT]):
 
         return self
 
-    # TODO: def align_to(
-    #     self,
-    #     item_or_point: Item | Vect,
-    #     direction: Vect = ORIGIN
-    # ) -> Self:
-    #     """
-    #     Examples:
-    #     item1.align_to(item2, UP) moves item1 vertically so that its
-    #     top edge lines ups with item2's top edge.
+    def align_to(
+        self,
+        item_or_point: Item | Vect,
+        direction: Vect = ORIGIN,
+        root_only: bool = False,
+        item_root_only: bool = False,
+    ) -> Self:
+        '''对齐
 
-    #     item1.align_to(item2, direction = RIGHT) moves item1
-    #     horizontally so that it's center is directly above/below
-    #     the center of item2
-    #     """  # TODO: 完善 align_to 注释
-    #     if isinstance(item_or_point, Item):
-    #         point = item_or_point.box.get(direction)
-    #     else:
-    #         point = item_or_point
+        例如，``item1.align_to(item2, UP)`` 会将 ``item1`` 垂直移动，顶部与 ``item2`` 的上边缘对齐
+        '''
 
-    #     for dim in range(3):
-    #         if direction[dim] != 0:
-    #             self.set_coord(point[dim], dim, direction)
+        if isinstance(item_or_point, Item):
+            cmpt = self.get_same_cmpt(item_or_point)
+            box = cmpt.self_box if item_root_only else cmpt.box
+            point = box.get(direction)
+        else:
+            point = item_or_point
 
-    #     return self
+        for dim in range(3):
+            if direction[dim] != 0:
+                self.set_coord(point[dim], dim=dim, direction=direction, root_only=root_only)
+
+        return self
 
     def to_center(self, root_only=False) -> Self:
         '''

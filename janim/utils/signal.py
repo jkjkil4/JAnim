@@ -231,11 +231,10 @@ class Signal(Generic[T, P, R]):
     def emit(self, sender: object, *args, key: str = '', **kwargs):
         '''
         触发 ``Signal``
-        '''  # TODO: optimize
-        if key not in self.slots:
+        '''
+        all_slots = self.slots.get(key, None)
+        if all_slots is None:
             return
-
-        all_slots = self.slots[key]
 
         for cls in sender.__class__.mro():
             full_qualname = self._get_cls_full_qualname(cls)
@@ -251,8 +250,6 @@ class Signal(Generic[T, P, R]):
 
                 if not isinstance(sender, Relation) and not isinstance(sender, Component):
                     # TODO: i18n
-                    # f'self_refresh_with_recurse() cannot be used in class {sender.__class__},
-                    # it can only be used in Relation and its subclasses'
                     raise TypeError(
                         f'self_refresh_with_recurse() 无法在类 {sender.__class__} 中使用，'
                         '只能在 Relation 和 Component 及子类中使用'

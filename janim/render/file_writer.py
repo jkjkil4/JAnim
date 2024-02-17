@@ -47,8 +47,10 @@ class FileWriter:
             dynamic_ncols=True
         )
 
+        rgb = Config.get.background_color.rgb
+
         for frame in progress_display:
-            self.fbo.clear()    # TODO: backgound-color
+            self.fbo.clear(*rgb)
             self.anim.anim_on(frame / fps)
             self.anim.render_all(self.ctx)
             bytes = self.fbo.read(components=4)

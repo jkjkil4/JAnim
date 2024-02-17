@@ -4,5 +4,13 @@
         "--max-line-length=120",
         "--ignore=E701,E704,E731,F821,F811",
         "--exclude=test/*,refactor_deprecated/*"
-    ]
+    ],
+    "todo-tree.highlights.customHighlight": {
+        "TODO": {
+            "iconColour": "yellow"
+        },
+        "REFACTOR": {
+            "icon": "tools"
+        }
+    }
 }

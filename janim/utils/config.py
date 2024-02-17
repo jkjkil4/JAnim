@@ -4,6 +4,8 @@ from contextvars import ContextVar
 from dataclasses import dataclass
 from typing import Self
 
+from colour import Color
+
 from janim.typing import Vect
 from janim.constants import LEFT, RIGHT, DOWN, UP
 
@@ -44,6 +46,7 @@ class Config(metaclass=_ConfigMeta):
 
     pixel_height: int = None
     pixel_width: int = None
+    background_color: Color = None
 
     ffmpeg_bin: str = None
     output_dir: str = None
@@ -67,6 +70,7 @@ default_config = Config(
 
     pixel_height=1080,
     pixel_width=1920,
+    background_color=Color('#000000'),
 
     ffmpeg_bin='ffmpeg',
     output_dir='videos',

@@ -207,7 +207,7 @@ def apart_alpha(alpha: float, n: int, *, eps: float = 1e-3) -> float:
     tpl1 = (0, 0)
     tpl2 = (1, 1)
 
-    # TODO: 有无更好的方式？
+    # REFACTOR: 有无更好的方式？
     while tpl2[0] - tpl1[0] > eps:
         mid_single = (tpl1[0] + tpl2[0]) / 2
         mid_merged = merge_alpha(mid_single, n)

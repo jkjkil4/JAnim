@@ -283,12 +283,12 @@ class Timeline(metaclass=ABCMeta):
 
         在两份数据的分界处请使用 :meth:`get_stored_data_at_right` 和 :meth:`get_stored_at_left` 来明确
         '''
-        # TODO: optimize
         datas = self.item_stored_datas[item]
 
         if not datas:
             raise ValueError('Not stored')
 
+        # TODO: optimize
         for timed_data in reversed(datas):
             if timed_data.time <= t:
                 if isinstance(timed_data.data, Item.Data):

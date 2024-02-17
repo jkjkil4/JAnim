@@ -182,7 +182,7 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
                     raise AttributeError()
 
             except AttributeError:
-                # TODO i18n
+                # TODO: i18n
                 raise AttributeError(f"'{self.cls.__name__}' 没有叫作 '{name}' 的组件")
 
             # 找到 cmpt_info 是在哪个类中被定义的
@@ -383,6 +383,11 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         返回数据的引用，不进行复制
         '''
         return self.Data._ref(self)
+
+    def copy(self, *args, **kwargs) -> Self:
+        new_item = self.__class__(*args, **kwargs)
+        new_item.become(self)
+        return new_item
 
     def become(self, item_or_data: Self | Data[Self]) -> Self:
         if isinstance(item_or_data, Item):
