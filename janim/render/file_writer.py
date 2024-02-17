@@ -30,10 +30,11 @@ class FileWriter:
             )
         )
 
-    def write_all(self, file_path: str) -> None:
+    def write_all(self, file_path: str, *, quiet=False) -> None:
         name = self.anim.timeline.__class__.__name__
-        log.info(f'Writing "{name}"')
-        t = time.time()
+        if not quiet:
+            log.info(f'Writing "{name}"')
+            t = time.time()
 
         self.fbo.use()
         fps = Config.get.fps
@@ -55,7 +56,8 @@ class FileWriter:
 
         self.close_video_pipe()
 
-        log.info(f'Finished writing "{name}" in {time.time() - t:.2f} s')
+        if not quiet:
+            log.info(f'Finished writing "{name}" in {time.time() - t:.2f} s')
 
     def open_video_pipe(self, file_path: str) -> None:
         stem, ext = os.path.splitext(file_path)
@@ -97,5 +99,5 @@ class FileWriter:
         shutil.move(self.temp_file_path, self.final_file_path)
 
     @staticmethod
-    def writes(anim: TimelineAnim, file_path: str) -> None:
-        FileWriter(anim).write_all(file_path)
+    def writes(anim: TimelineAnim, file_path: str, *, quiet=False) -> None:
+        FileWriter(anim).write_all(file_path, quiet=quiet)

@@ -117,10 +117,14 @@ class AnimViewer(QMainWindow):
     def on_export_clicked(self) -> None:
         self.play_timer.stop()
 
+        output_dir = Config.get.output_dir
+        if not os.path.exists(output_dir):
+            os.makedirs(output_dir)
+
         file_path = QFileDialog.getSaveFileName(
             self,
             '',
-            os.path.join(Config.get.output_dir, f'{self.anim.timeline.__class__.__name__}.mp4'),
+            os.path.join(output_dir, f'{self.anim.timeline.__class__.__name__}.mp4'),
             'MP4 (*.mp4);;MOV (*.mov)'
         )
         file_path = file_path[0]
