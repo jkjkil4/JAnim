@@ -1,11 +1,12 @@
-import os
-import time
 import importlib
 import inspect
+import traceback
+import os
+import time
 from bisect import bisect
 from dataclasses import dataclass
 
-from PySide6.QtCore import QRectF, Qt, QTimer, Signal
+from PySide6.QtCore import QRectF, Qt, QTimer, Signal, QByteArray
 from PySide6.QtGui import (QColor, QHideEvent, QIcon, QKeyEvent, QMouseEvent,
                            QPainter, QPaintEvent, QPen, QWheelEvent)
 from PySide6.QtWidgets import (QFileDialog, QLabel, QMainWindow, QMessageBox,
@@ -16,6 +17,7 @@ from janim.anims.timeline import TimelineAnim
 from janim.gui.application import Application
 from janim.gui.fixed_ratio_widget import FixedRatioWidget
 from janim.gui.glwidget import GLWidget
+from janim.logger import log
 from janim.render.file_writer import FileWriter
 from janim.utils.config import Config
 from janim.utils.file_ops import get_janim_dir
@@ -28,11 +30,19 @@ TIMELINE_VIEW_MIN_DURATION = 0.5
 
 
 class AnimViewer(QMainWindow):
-    def __init__(self, anim: TimelineAnim, auto_play=True, parent: QWidget | None = None) -> None:
+    def __init__(
+        self,
+        anim: TimelineAnim,
+        auto_play: bool = True,
+        enable_socket: bool = False,
+        parent: QWidget | None = None
+    ) -> None:
         super().__init__(parent)
         self.anim = anim
 
         self.setup_ui()
+        if enable_socket:
+            self.setup_socket()
 
         self.timeline_view.value_changed.connect(self.on_value_changed)
         self.timeline_view.dragged.connect(lambda: self.set_play_state(False))
@@ -65,11 +75,12 @@ class AnimViewer(QMainWindow):
         action_stay_on_top.setCheckable(True)
         action_stay_on_top.setShortcut('Ctrl+T')
         action_stay_on_top.toggled.connect(self.on_stay_on_top_toggled)
+        action_stay_on_top.setChecked(True)
 
         menu_functions.addSeparator()
 
         action_reload = menu_functions.addAction('重新载入')
-        action_reload.setShortcut('Ctrl+R')
+        action_reload.setShortcut('Ctrl+L')
         action_reload.triggered.connect(self.on_reload_triggered)
 
     def setup_status_bar(self) -> None:
@@ -110,6 +121,69 @@ class AnimViewer(QMainWindow):
         self.resize(800, 608)
         self.setWindowTitle('JAnim Graphics')
 
+    def setup_socket(self) -> None:
+        from PySide6.QtNetwork import QUdpSocket
+
+        self.shared_socket = QUdpSocket()
+        ret = self.shared_socket.bind(40565, QUdpSocket.BindFlag.ShareAddress | QUdpSocket.BindFlag.ReuseAddressHint)
+        log.debug(f'shared_socket.bind(40565, ShareAddress | ReuseAddressHint) = {ret}')
+        self.shared_socket.readyRead.connect(self.on_shared_ready_read)
+
+        self.socket = QUdpSocket()
+        self.socket.bind()
+
+        self.socket.readyRead.connect(self.on_ready_read)
+
+        log.info(f'调试端口已在 {self.socket.localPort()} 开启')
+        self.setWindowTitle(f'{self.windowTitle()} [{self.socket.localPort()}]')
+
+    def on_shared_ready_read(self) -> None:
+        import json
+
+        while self.shared_socket.hasPendingDatagrams():
+            datagram = self.shared_socket.receiveDatagram()
+            try:
+                tree = json.loads(datagram.data().toStdString())
+                assert 'janim' in tree
+
+                janim = tree['janim']
+                cmdtype = janim['type']
+
+                if cmdtype == 'find':
+                    msg = json.dumps(dict(
+                        janim=dict(
+                            type='find_re',
+                            data=self.socket.localPort()
+                        )
+                    ))
+                    self.socket.writeDatagram(
+                        QByteArray.fromStdString(msg),
+                        datagram.senderAddress(),
+                        datagram.senderPort()
+                    )
+
+            except Exception:
+                traceback.print_exc()
+
+    def on_ready_read(self) -> None:
+        import json
+
+        while self.socket.hasPendingDatagrams():
+            datagram = self.socket.receiveDatagram()
+            try:
+                tree = json.loads(datagram.data().toStdString())
+                assert 'janim' in tree
+
+                janim = tree['janim']
+                cmdtype = janim['type']
+
+                # 重新载入
+                if cmdtype == 'reload':
+                    self.on_reload_triggered()
+
+            except Exception:
+                traceback.print_exc()
+
     def hideEvent(self, event: QHideEvent) -> None:
         super().hideEvent(event)
         self.play_timer.stop()
@@ -125,8 +199,10 @@ class AnimViewer(QMainWindow):
             self.play_timer.stop()
 
     def on_stay_on_top_toggled(self, flag: bool) -> None:
+        visible = self.isVisible()
         self.setWindowFlag(Qt.WindowType.WindowStaysOnTopHint, flag)
-        self.setVisible(True)
+        if visible:
+            self.setVisible(True)
 
     def on_reload_triggered(self) -> None:
         module = inspect.getmodule(self.anim.timeline)

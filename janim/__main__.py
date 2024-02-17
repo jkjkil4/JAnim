@@ -1,6 +1,5 @@
 import importlib
 import time
-import sys
 import os
 import platform
 import subprocess as sp
@@ -53,6 +52,11 @@ def render_args(parser: ArgumentParser) -> None:
 
 def run_parser(parser: ArgumentParser) -> None:
     render_args(parser)
+    parser.add_argument(
+        '-d', '--debug',
+        action='store_true',
+        help='Enable the network socket for debugging'
+    )
     parser.set_defaults(func=run)
 
 
@@ -106,7 +110,7 @@ def run(args: Namespace) -> None:
 
     widgets: list[AnimViewer] = []
     for timeline in timelines:
-        viewer = AnimViewer(timeline().build(), auto_play)
+        viewer = AnimViewer(timeline().build(), auto_play, args.debug)
         widgets.append(viewer)
 
     log.info('======')
@@ -114,18 +118,12 @@ def run(args: Namespace) -> None:
 
     t = time.time()
 
-    if sys.platform.startswith('win'):
-        import ctypes
-
-        desktop = ctypes.windll.user32.GetDesktopWindow()
-        ctypes.windll.user32.SetForegroundWindow(desktop)
-
     for i, widget in enumerate(widgets):
         if i != 0:
             widget.move(widgets[i - 1].pos() + QPoint(24, 24))
         widget.show()
 
-    QTimer.singleShot(100, widgets[-1].activateWindow)
+    QTimer.singleShot(200, widgets[-1].activateWindow)
 
     log.info(f'Finished constructing in {time.time() - t:.2f} s')
     log.info('======')
