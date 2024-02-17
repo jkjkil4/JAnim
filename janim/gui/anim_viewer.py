@@ -1,5 +1,7 @@
 import os
 import time
+import importlib
+import inspect
 from bisect import bisect
 from dataclasses import dataclass
 
@@ -51,8 +53,24 @@ class AnimViewer(QMainWindow):
         self.glw.rendered.connect(self.on_glw_rendered)
 
     def setup_ui(self) -> None:
+        self.setup_menu_bar()
         self.setup_status_bar()
         self.setup_central_widget()
+
+    def setup_menu_bar(self) -> None:
+        menu_bar = self.menuBar()
+        menu_functions = menu_bar.addMenu('功能')
+
+        action_stay_on_top = menu_functions.addAction('窗口置前')
+        action_stay_on_top.setCheckable(True)
+        action_stay_on_top.setShortcut('Ctrl+T')
+        action_stay_on_top.toggled.connect(self.on_stay_on_top_toggled)
+
+        menu_functions.addSeparator()
+
+        action_reload = menu_functions.addAction('重新载入')
+        action_reload.setShortcut('Ctrl+R')
+        action_reload.triggered.connect(self.on_reload_triggered)
 
     def setup_status_bar(self) -> None:
         self.fps_label = QLabel()
@@ -105,6 +123,26 @@ class AnimViewer(QMainWindow):
         self.timeline_view.set_progress(self.timeline_view.progress() + 1)
         if self.timeline_view.at_end():
             self.play_timer.stop()
+
+    def on_stay_on_top_toggled(self, flag: bool) -> None:
+        self.setWindowFlag(Qt.WindowType.WindowStaysOnTopHint, flag)
+        self.setVisible(True)
+
+    def on_reload_triggered(self) -> None:
+        module = inspect.getmodule(self.anim.timeline)
+        time = self.anim._time
+
+        importlib.reload(module)
+        timeline_class = getattr(module, self.anim.timeline.__class__.__name__)
+
+        self.anim: TimelineAnim = timeline_class().build()
+        self.anim.anim_on(time)
+
+        self.glw.anim = self.anim
+        self.timeline_view.anim = self.anim
+        self.update()
+        self.glw.update()
+        self.timeline_view.update()
 
     def on_glw_rendered(self) -> None:
         cur = time.time()

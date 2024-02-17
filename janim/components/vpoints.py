@@ -158,6 +158,8 @@ class Cmpt_VPoints[ItemT](Cmpt_Points[ItemT]):
 
     # endregion
 
+    # TODO: make_smooth
+
     # region unit_normal
 
     @property
