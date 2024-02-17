@@ -1,16 +1,17 @@
 import importlib
 import inspect
-import traceback
 import os
 import time
+import traceback
 from bisect import bisect
 from dataclasses import dataclass
 
-from PySide6.QtCore import QRectF, Qt, QTimer, Signal, QByteArray
+from PySide6.QtCore import QByteArray, QRectF, Qt, QTimer, Signal
 from PySide6.QtGui import (QColor, QHideEvent, QIcon, QKeyEvent, QMouseEvent,
                            QPainter, QPaintEvent, QPen, QWheelEvent)
-from PySide6.QtWidgets import (QFileDialog, QLabel, QMainWindow, QMessageBox,
-                               QPushButton, QSizePolicy, QSplitter, QWidget)
+from PySide6.QtWidgets import (QApplication, QFileDialog, QLabel, QMainWindow,
+                               QMessageBox, QPushButton, QSizePolicy,
+                               QSplitter, QWidget)
 
 from janim.anims.animation import Animation, TimeRange
 from janim.anims.timeline import TimelineAnim
@@ -41,6 +42,7 @@ class AnimViewer(QMainWindow):
         self.anim = anim
 
         self.setup_ui()
+        self.move_to_position()
         if enable_socket:
             self.setup_socket()
 
@@ -120,6 +122,39 @@ class AnimViewer(QMainWindow):
         self.setMinimumSize(200, 160)
         self.resize(800, 608)
         self.setWindowTitle('JAnim Graphics')
+
+    def move_to_position(self) -> None:
+        window_position = Config.get.wnd_pos
+        window_monitor = Config.get.wnd_monitor
+
+        if len(window_position) != 2 or window_position[0] not in 'UOD' or window_position[1] not in 'LOR':
+            log.warning(f'wnd_pos has wrong argument "{window_position}".')
+            window_position = 'UR'
+
+        screens = QApplication.screens()
+        if window_monitor < len(screens):
+            screen = screens[window_monitor]
+        else:
+            screen = screens[0]
+            log.warning(f'wnd_monitor has invaild value {window_monitor}, please use 0~{len(screens) - 1} instead.')
+        screen_size = screen.availableSize()
+
+        if window_position[1] == 'O':
+            width = screen_size.width()
+            x = 0
+        else:
+            width = screen_size.width() / 2
+            x = 0 if window_position[1] == 'L' else width
+
+        if window_position[0] == 'O':
+            height = screen_size.height()
+            y = 0
+        else:
+            height = screen_size.height() / 2
+            y = 0 if window_position[0] == 'U' else height
+
+        self.move(x, y)
+        self.resize(width, height)
 
     def setup_socket(self) -> None:
         from PySide6.QtNetwork import QUdpSocket
@@ -302,7 +337,7 @@ class TimelineView(QWidget):
 
     space_pressed = Signal()
 
-    label_height = 32   # px
+    label_height = 24   # px
     play_space = 20     # px
 
     def __init__(self, anim: TimelineAnim, parent: QWidget | None = None):
