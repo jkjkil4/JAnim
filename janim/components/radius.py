@@ -11,7 +11,7 @@ from janim.utils.iterables import resize_with_interpolation
 from janim.utils.unique_nparray import UniqueNparray
 
 
-class Cmpt_Radius(Component):
+class Cmpt_Radius[ItemT](Component[ItemT]):
     def __init__(self, default_radius: float, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.default_radius = default_radius

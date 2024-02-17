@@ -25,7 +25,7 @@ type PointFn = Callable[[np.ndarray], Vect]
 type ComplexFn = Callable[[complex], complex]
 
 
-class Cmpt_Points(Component):
+class Cmpt_Points[ItemT](Component[ItemT]):
     resize_func = staticmethod(resize_and_repeatedly_extend)
 
     def __init__(self, *args, **kwargs):

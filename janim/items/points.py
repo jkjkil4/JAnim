@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Iterable
+from typing import Iterable, Self
 
 from janim.components.component import CmptInfo
 from janim.components.points import Cmpt_Points
@@ -20,7 +20,7 @@ class Points(Item):
 
     纯数据物件，不参与渲染
     '''
-    points = CmptInfo(Cmpt_Points)
+    points = CmptInfo(Cmpt_Points[Self])
 
     def __init__(self, *points: Vect, **kwargs):
         super().__init__(**kwargs)
@@ -30,8 +30,8 @@ class Points(Item):
 
 
 class DotCloud(Points):
-    color = CmptInfo(Cmpt_Rgbas)
-    radius = CmptInfo(Cmpt_Radius, 0.05)
+    color = CmptInfo(Cmpt_Rgbas[Self])
+    radius = CmptInfo(Cmpt_Radius[Self], 0.05)
 
     renderer_cls = DotCloudRenderer
 

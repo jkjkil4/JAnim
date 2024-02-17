@@ -17,7 +17,7 @@ from janim.utils.space_ops import get_norm, get_unit_normal
 # TODO: 注释：关于子路径结束是如何判定的
 
 
-class Cmpt_VPoints(Cmpt_Points):
+class Cmpt_VPoints[ItemT](Cmpt_Points[ItemT]):
     def copy(self) -> Self:
         return super().copy()
 

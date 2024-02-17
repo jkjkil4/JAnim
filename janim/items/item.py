@@ -36,7 +36,7 @@ class _ItemMeta(type):
 class Item(Relation['Item'], metaclass=_ItemMeta):
     renderer_cls = Renderer
 
-    depth = CmptInfo(Cmpt_Depth, 0)
+    depth = CmptInfo(Cmpt_Depth[Self], 0)
 
     def __init__(self, *args, depth: float | None = None, **kwargs):
         super().__init__(*args, **kwargs)
@@ -128,9 +128,10 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         func(self)
         return self
 
-    def anim(self, **kwargs):
-        from janim.anims.transform import MethodTransform
-        return MethodTransform(self, **kwargs)
+    @property
+    def anim(self) -> Self | Callable[..., Self]:
+        from janim.anims.transform import MethodTransformArgsBuilder
+        return MethodTransformArgsBuilder(self)
 
     @overload
     def __getitem__(self, value: int) -> Item: ...

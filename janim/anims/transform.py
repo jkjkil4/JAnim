@@ -1,13 +1,18 @@
+from __future__ import annotations
+
 from collections import defaultdict
-from typing import Any, Callable, Self
+from typing import TYPE_CHECKING, Any, Callable, Self
 
 from janim.anims.animation import Animation, RenderCall
-from janim.anims.timeline import DynamicData
+from janim.components.component import Component
 from janim.constants import OUT
 from janim.items.item import Item
 from janim.typing import Vect
 from janim.utils.data import AlignedData
 from janim.utils.paths import PathFunc, path_along_arc, straight_path
+
+if TYPE_CHECKING:
+    from janim.anims.timeline import DynamicData
 
 
 class Transform(Animation):
@@ -119,9 +124,7 @@ class MethodTransform[T: 'Item'](Transform):
     .. code-block:: python
 
         self.play(
-            item.anim()
-            .do(lambda m: m.points.scale(2))
-            .do(lambda m: m.color.set('green'))
+            item.anim.points.scale(2)).r.color.set('green'))
         )
 
     该例子会创建将 ``item`` 缩放 2 倍并且设置为绿色的补间动画
@@ -169,3 +172,47 @@ class MethodTransform[T: 'Item'](Transform):
             return
         self.current_alpha = alpha
         super().anim_on_alpha(alpha)
+
+    class _FakeCmpt:
+        def __init__(self, anim: MethodTransform, cmpt: Component) -> None:
+            self.anim = anim
+            self.cmpt = cmpt
+
+        def __getattr__(self, name: str):
+            if name == 'r':
+                return self.anim
+
+            attr = getattr(self.cmpt, name, None)
+            if attr is None or not callable(attr):
+                raise KeyError(f'{self.cmpt.__class__.__name__} 中没有叫作 {name} 的可调用方法')
+
+            def wrapper(*args, **kwargs):
+                attr(*args, **kwargs)
+                return self
+
+            return wrapper
+
+    def __getattr__(self, name: str):
+        cmpt = self.src_item.components.get(name, None)
+        if cmpt is not None:
+            return MethodTransform._FakeCmpt(self, cmpt)
+
+        attr = getattr(self.src_item, name, None)
+        if attr is not None and callable(attr):
+            def wrapper(*args, **kwargs):
+                attr(*args, **kwargs)
+                return self
+            return wrapper
+
+        raise KeyError(f'{self.src_item.__class__.__name__} 没有叫作 {name} 的组件或者可调用的方法')
+
+
+class MethodTransformArgsBuilder:
+    def __init__(self, item: Item):
+        self.item = item
+
+    def __call__(self, **kwargs):
+        return MethodTransform(self.item, **kwargs)
+
+    def __getattr__(self, name):
+        return getattr(MethodTransform(self.item), name)

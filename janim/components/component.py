@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import copy
 from dataclasses import dataclass
-from typing import Callable, Self, TYPE_CHECKING, overload
+from typing import TYPE_CHECKING, Callable, Self, overload
 
 import janim.utils.refresh as refresh
 from janim.utils.data import AlignedData
@@ -19,7 +19,7 @@ class _CmptMeta(type):
         return super().__new__(cls, name, bases, attrdict)
 
 
-class Component(refresh.Refreshable, metaclass=_CmptMeta):
+class Component[ItemT](refresh.Refreshable, metaclass=_CmptMeta):
     @dataclass
     class BindInfo:
         '''
@@ -37,11 +37,11 @@ class Component(refresh.Refreshable, metaclass=_CmptMeta):
             class MyCmpt(Component): ...
 
             class MyItem(Item):
-                cmpt1 = CmptInfo(MyCmpt)
-                cmpt2 = CmptInfo(MyCmpt)
+                cmpt1 = CmptInfo(MyCmpt[Self])
+                cmpt2 = CmptInfo(MyCmpt[Self])
 
             class MyItem2(MyItem):
-                cmpt3 = CmptInfo(MyCmpt)
+                cmpt3 = CmptInfo(MyCmpt[Self])
 
             item = MyItem()
 
@@ -100,6 +100,10 @@ class Component(refresh.Refreshable, metaclass=_CmptMeta):
 
         return getattr(item.astype(self.bind.decl_cls), self.bind.key)
 
+    @property
+    def r(self) -> ItemT:
+        return self.bind.at_item
+
 
 class CmptInfo[T]:
     '''
@@ -114,13 +118,13 @@ class CmptInfo[T]:
             # cmpt1 = MyCmpt()
 
             # Right
-            cmpt1 = CmptInfo(MyCmpt)
+            cmpt1 = CmptInfo(MyCmpt[Self])
 
             # Wrong!
             # cmpt2 = MyCmptWithArgs(1)
 
             # Right
-            cmpt2 = CmptInfo(MyCmptWithArgs, 1)
+            cmpt2 = CmptInfo(MyCmptWithArgs[Self], 1)
     '''
     def __init__(self, cls: type[T], *args, **kwargs):
         self.__doc__ = ""
@@ -233,8 +237,8 @@ def CmptGroup[T](*cmpt_info_list: CmptInfo[T]) -> CmptInfo[T]:
     .. code-block:: python
 
         class MyItem(Item):
-            stroke = CmptInfo(Cmpt_Rgbas)
-            fill = CmptInfo(Cmpt_Rgbas)
+            stroke = CmptInfo(Cmpt_Rgbas[Self])
+            fill = CmptInfo(Cmpt_Rgbas[Self])
             color = CmptGroup(stroke, fill)
 
         item = MyItem()

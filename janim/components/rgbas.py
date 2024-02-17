@@ -13,7 +13,7 @@ from janim.utils.iterables import resize_with_interpolation
 from janim.utils.unique_nparray import UniqueNparray
 
 
-class Cmpt_Rgbas(Component):
+class Cmpt_Rgbas[ItemT](Component[ItemT]):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 

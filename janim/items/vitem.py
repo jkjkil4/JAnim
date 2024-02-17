@@ -14,11 +14,11 @@ from janim.utils.data import AlignedData
 
 
 class VItem(Points):
-    points = CmptInfo(Cmpt_VPoints)
-    radius = CmptInfo(Cmpt_Radius, 0.02)
+    points = CmptInfo(Cmpt_VPoints[Self])
+    radius = CmptInfo(Cmpt_Radius[Self], 0.02)
 
-    stroke = CmptInfo(Cmpt_Rgbas)
-    fill = CmptInfo(Cmpt_Rgbas)
+    stroke = CmptInfo(Cmpt_Rgbas[Self])
+    fill = CmptInfo(Cmpt_Rgbas[Self])
 
     color = CmptGroup(stroke, fill)
 

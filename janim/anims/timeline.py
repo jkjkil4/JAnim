@@ -17,6 +17,7 @@ import moderngl as mgl
 from janim.anims.animation import Animation, TimeRange
 from janim.anims.composition import AnimGroup
 from janim.anims.display import Display
+from janim.anims.transform import MethodTransform
 from janim.camera.camera import Camera
 from janim.items.item import Item
 from janim.logger import log
@@ -143,6 +144,8 @@ class Timeline(metaclass=ABCMeta):
 
     def register_dynamic_data(self, item: Item, data: DynamicData, as_time: float) -> None:
         datas = self.item_stored_datas[item]
+
+        # 在调用该方法前必须执行过 _detect_change，所以这里可以直接写 datas[-1]
         if as_time < datas[-1].time:
             # TOOD: 明确是什么物件
             raise RuntimeError('记录物件数据失败，可能是因为物件处于动画中')
@@ -216,6 +219,10 @@ class Timeline(metaclass=ABCMeta):
         '''
         应用动画并推进到动画结束的时候
         '''
+        anims = [
+            (anim.anim if isinstance(anim, MethodTransform._FakeCmpt) else anim)
+            for anim in anims
+        ]
         t_range = self.prepare(*anims, **kwargs)
         self.forward_to(t_range.end, _detect_changes=False)
 

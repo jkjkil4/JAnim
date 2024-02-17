@@ -6,7 +6,7 @@ from typing import Self
 from janim.components.component import Component
 
 
-class Cmpt_Depth(Component):
+class Cmpt_Depth[ItemT](Component[ItemT]):
     '''深度组件
 
     - 如果某个对象的深度值更小，那么它在 ``>`` 和 ``<`` 的判断中也就更小

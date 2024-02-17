@@ -19,7 +19,7 @@ from janim.utils.simple_functions import clip
 from janim.utils.space_ops import normalize
 
 
-class Cmpt_CameraPoints(Cmpt_Points):
+class Cmpt_CameraPoints[ItemT](Cmpt_Points[ItemT]):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.reset()
@@ -107,6 +107,7 @@ class Cmpt_CameraPoints(Cmpt_Points):
         将摄像机缩放指定倍数
         '''
         self._size *= scale_factor
+        return self
 
     def rotate(
         self,
@@ -141,4 +142,4 @@ class Cmpt_CameraPoints(Cmpt_Points):
 
 
 class Camera(Points):
-    points = CmptInfo(Cmpt_CameraPoints)
+    points = CmptInfo(Cmpt_CameraPoints[Self])
