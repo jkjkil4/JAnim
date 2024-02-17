@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Iterable, Callable, TypeVar, Sequence
+from typing import Iterable, Callable, TypeVar, Sequence, Self
 
 # from scipy import linalg
 import numpy as np
@@ -11,9 +11,46 @@ from janim.utils.space_ops import find_intersection
 from janim.utils.space_ops import cross2d
 from janim.utils.space_ops import midpoint
 from janim.logger import log
+from janim.typing import Vect
 
 CLOSED_THRESHOLD = 0.001
 T = TypeVar("T")
+
+
+class PathBuilder:
+    def __init__(self, start_point: Vect):
+        self.points_list = [[start_point]]
+        self.end_point = start_point
+
+    def get(self) -> np.ndarray:
+        return np.vstack(self.points_list)
+
+    def move_to(self, point: Vect) -> Self:
+        self.points_list.append([self.end_point, point])
+        self.end_point = point
+        return self
+
+    def line_to(self, point: Vect) -> Self:
+        self.points_list.append([
+            (self.end_point + point) / 2,
+            point
+        ])
+        self.end_point = point
+        return self
+
+    def conic_to(self, handle: Vect, point: Vect) -> Self:
+        self.points_list.append([handle, point])
+        self.end_point = point
+        return self
+
+    def cubic_to(
+        self,
+        handle1: Vect,
+        handle2: Vect,
+        anchor: Vect
+    ) -> Self:
+        # TODO: cubic_to
+        raise NotImplementedError()
 
 
 def bezier(

@@ -175,14 +175,14 @@ class Cmpt_Points[ItemT](Component[ItemT]):
         得到 ``points`` 的第一个点
         '''
         self._raise_error_if_no_points()
-        return self.get()[0].copy()
+        return self._points._data[0].copy()
 
     def get_end(self) -> np.ndarray:
         '''
         得到 ``points`` 的最后一个点
         '''
         self._raise_error_if_no_points()
-        return self.get()[-1].copy()
+        return self._points._data[-1].copy()
 
     def _raise_error_if_no_points(self) -> None:
         if not self.has():

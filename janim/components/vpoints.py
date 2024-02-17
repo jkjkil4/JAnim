@@ -9,7 +9,7 @@ from janim.components.points import Cmpt_Points
 from janim.constants import OUT
 from janim.logger import log
 from janim.typing import VectArray
-from janim.utils.bezier import partial_quadratic_bezier_points
+from janim.utils.bezier import PathBuilder, partial_quadratic_bezier_points
 from janim.utils.data import AlignedData
 from janim.utils.space_ops import get_norm, get_unit_normal
 
@@ -134,6 +134,27 @@ class Cmpt_VPoints[ItemT](Cmpt_Points[ItemT]):
 
     def curves_count(self) -> int:
         return max(0, self.count() - 1) // 2
+
+    # endregion
+
+    # region _as_corners 操作
+
+    def add_as_corners(self, points: VectArray) -> Self:
+        if not self.has():
+            self.set(points[0])
+
+        builder = PathBuilder(self.get_end())
+        for point in points:
+            builder.line_to(point)
+        self.extend(builder.get()[1:])
+
+        return self
+
+    def set_as_corners(self, points: VectArray) -> Self:
+        builder = PathBuilder(points[0])
+        for point in points[1:]:
+            builder.line_to(point)
+        self.set(builder.get())
 
     # endregion
 
