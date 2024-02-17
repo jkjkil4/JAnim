@@ -21,6 +21,10 @@ class Cmpt_VPoints(Cmpt_Points):
     def copy(self) -> Self:
         return super().copy()
 
+    def become(self, other: Cmpt_VPoints) -> Self:
+        super().become(other)
+        return self
+
     def __eq__(self, other: Cmpt_VPoints) -> bool:
         return super().__eq__(other)
 

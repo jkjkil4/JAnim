@@ -17,7 +17,6 @@ import moderngl as mgl
 from janim.anims.animation import Animation, TimeRange
 from janim.anims.composition import AnimGroup
 from janim.anims.display import Display
-from janim.anims.transform import MethodTransform
 from janim.camera.camera import Camera
 from janim.items.item import Item
 from janim.logger import log
@@ -29,6 +28,8 @@ if TYPE_CHECKING:   # pragma: no cover
 
 GET_DATA_DELTA = 1e-5
 ANIM_END_DELTA = 1e-5 * 2
+
+type DynamicData = Callable[[float], Item.Data]
 
 
 class Timeline(metaclass=ABCMeta):
@@ -77,7 +78,11 @@ class Timeline(metaclass=ABCMeta):
         表示从 ``time`` 之后，物件的数据
         '''
         time: float
-        data: Item.Data | MethodTransform
+        data: Item.Data | DynamicData
+        '''
+        - 当 ``data`` 的类型为 ``Item.Data`` 时，为静态数据
+        - 否则，对于 ``DynamicData`` ，会在获取时调用以得到对应数据
+        '''
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -136,19 +141,13 @@ class Timeline(metaclass=ABCMeta):
         '''
         self.item_stored_datas[item]
 
-    def register_method_transform(self, anim: MethodTransform) -> None:
-        def add(item: Item):
-            datas = self.item_stored_datas[item]
-            if anim.global_range.at < datas[-1].time:
-                # TOOD: 明确是什么物件
-                raise RuntimeError('记录物件数据失败，可能是因为物件处于动画中')
+    def register_dynamic_data(self, item: Item, data: DynamicData, as_time: float) -> None:
+        datas = self.item_stored_datas[item]
+        if as_time < datas[-1].time:
+            # TOOD: 明确是什么物件
+            raise RuntimeError('记录物件数据失败，可能是因为物件处于动画中')
 
-            datas.append(Timeline.TimedItemData(anim.global_range.at, anim))
-
-        add(anim.src_item)
-        if not anim.root_only:
-            for item in anim.src_item.descendants():
-                add(item)
+        datas.append(Timeline.TimedItemData(as_time, data))
 
     def get_construct_lineno(self) -> int | None:
         '''
@@ -285,14 +284,12 @@ class Timeline(metaclass=ABCMeta):
 
         for timed_data in reversed(datas):
             if timed_data.time <= t:
-                if not isinstance(timed_data.data, MethodTransform):
+                if isinstance(timed_data.data, Item.Data):
                     return timed_data.data
                 else:
                     if skip_dynamic_data:
                         continue
-                    anim = timed_data.data
-                    anim.anim_on_alpha(anim.get_alpha_on_global_t(t))
-                    return anim.aligned[(item, item)].union
+                    return timed_data.data(t)
 
         assert False
 

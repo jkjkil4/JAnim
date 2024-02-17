@@ -43,6 +43,15 @@ class Cmpt_CameraPoints(Cmpt_Points):
         cmpt_copy.orientation = self.orientation.from_quat(self.orientation.as_quat())
         return cmpt_copy
 
+    def become(self, other: Cmpt_CameraPoints) -> Self:
+        self.set(other.get())
+        self.size = other.size
+        self.fov = other.fov
+        # 有无更好的复制方法？
+        self.orientation = Rotation.from_rotvec(other.orientation.as_rotvec())
+
+        return self
+
     def __eq__(self, other: Cmpt_CameraPoints) -> Self:
         if not super().__eq__(other):
             return False
@@ -58,7 +67,7 @@ class Cmpt_CameraPoints(Cmpt_Points):
         *,
         path_func: PathFunc = straight_path
     ) -> None:
-        # 有次出现了 ValueError: Interpolation times must be within the range [0, 1], both inclusive.
+        # 下面对 Slerp 的调用有次出现了 ValueError: Interpolation times must be within the range [0, 1], both inclusive.
         # 所以这里限制一下 alpha（本来我觉得没必要的，但是为什么会有上面这个报错呢）
         alpha = clip(alpha, 0, 1)
 

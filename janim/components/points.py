@@ -46,6 +46,11 @@ class Cmpt_Points(Component):
         cmpt_copy._points = self._points.copy()
         return cmpt_copy
 
+    def become(self, other: Cmpt_Points) -> Self:
+        self._points = other._points.copy()
+        Cmpt_Points.set.emit(self)
+        return self
+
     def __eq__(self, other: Cmpt_Points) -> bool:
         return self._points.is_share(other._points)
 

@@ -44,6 +44,10 @@ class Cmpt_Depth(Component):
         # Component.copy 中的 copy.copy(self) 已将 _value 和 _order 拷贝
         return super().copy()
 
+    def become(self, other: Cmpt_Depth) -> Self:
+        self.set(*other.get_raw())
+        return self
+
     def __eq__(self, other: Cmpt_Depth) -> bool:
         return self._depth == other._depth and self._order == other._order
 
@@ -59,6 +63,9 @@ class Cmpt_Depth(Component):
             self._counter[value] -= 1
         self._order = order
         return self
+
+    def get_raw(self) -> tuple[float, int]:
+        return (self._depth, self._order)
 
     def arrange(self, depth: float | None = None) -> Self:
         if depth is None:

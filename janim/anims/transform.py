@@ -2,6 +2,7 @@ from collections import defaultdict
 from typing import Any, Callable, Self
 
 from janim.anims.animation import Animation, RenderCall
+from janim.anims.timeline import DynamicData
 from janim.constants import OUT
 from janim.items.item import Item
 from janim.typing import Vect
@@ -137,10 +138,29 @@ class MethodTransform[T: 'Item'](Transform):
         func(self.src_item)
         return self
 
+    def wrap_data(self, item: Item) -> DynamicData:
+        def wrapper(global_t: float) -> Item.Data:
+            alpha = self.get_alpha_on_global_t(global_t)
+            aligned = self.aligned[(item, item)]
+
+            union_copy = aligned.union._copy(aligned.union)
+            union_copy.interpolate(aligned.data1, aligned.data2, alpha, path_func=self.path_func)
+
+            return union_copy
+
+        return wrapper
+
     def anim_pre_init(self) -> None:
         from janim.anims.timeline import ANIM_END_DELTA
 
-        self.timeline.register_method_transform(self)
+        self.timeline.register_dynamic_data(self.src_item, self.wrap_data(self.src_item), self.global_range.at)
+        if not self.root_only:
+            for item in self.src_item.descendants():
+                if (item, item) not in self.aligned:
+                    continue
+
+                self.timeline.register_dynamic_data(item, self.wrap_data(item), self.global_range.at)
+
         self.timeline.detect_changes(self.src_item.walk_self_and_descendants(),
                                      as_time=self.global_range.end - ANIM_END_DELTA)
 

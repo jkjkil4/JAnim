@@ -10,7 +10,6 @@ from janim.typing import Alpha, AlphaArray, ColorArray, JAnimColor, RgbaArray
 from janim.utils.bezier import interpolate
 from janim.utils.data import AlignedData
 from janim.utils.iterables import resize_with_interpolation
-from janim.utils.signal import Signal
 from janim.utils.unique_nparray import UniqueNparray
 
 
@@ -25,6 +24,10 @@ class Cmpt_Rgbas(Component):
         cmpt_copy = super().copy()
         cmpt_copy._rgbas = self._rgbas.copy()
         return cmpt_copy
+
+    def become(self, other: Cmpt_Rgbas) -> Self:
+        self.set(other.get())
+        return self
 
     def __eq__(self, other: Cmpt_Rgbas) -> bool:
         return self._rgbas.is_share(other._rgbas)
@@ -86,10 +89,9 @@ class Cmpt_Rgbas(Component):
         assert alphas.ndim == 1
         return alphas
 
-    @Signal
+    # 如果要给这个方法加上 @Signal，记得在 .become 加上对 emit 的调用
     def set_rgbas(self, rgbas: np.ndarray) -> Self:
         self._rgbas.data = rgbas
-        Cmpt_Rgbas.set_rgbas.emit(self)
         return self
 
     def set(

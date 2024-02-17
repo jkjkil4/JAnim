@@ -233,20 +233,7 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
 
         @classmethod
         def _store[U: 'Item'](cls, item: U) -> Self[U]:
-            components: dict[str, Component] = {}
-
-            for key, cmpt in item.components.items():
-                if isinstance(cmpt, _CmptGroup):
-                    # 因为现在的 Python 版本中，dict 取键值保留原序
-                    # 所以 new_cmpts 肯定有 _CmptGroup 所需要的
-                    components[key] = cmpt.copy(new_cmpts=components)
-                else:
-                    components[key] = cmpt.copy()
-
-            parents = item.parents[:]
-            children = item.children[:]
-
-            return cls(item, components, parents, children)
+            return cls._copy(cls._ref(item))
 
         @classmethod
         def _ref[U: 'Item'](cls, item: U) -> Self[U]:
@@ -256,6 +243,33 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
                 item.parents,
                 item.children
             )
+
+        @classmethod
+        def _copy[U: 'Item'](cls, data: Self[U]) -> Self[U]:
+            components: dict[str, Component] = {}
+
+            for key, cmpt in data.components.items():
+                if isinstance(cmpt, _CmptGroup):
+                    # 因为现在的 Python 版本中，dict 取键值保留原序
+                    # 所以 new_cmpts 肯定有 _CmptGroup 所需要的
+                    components[key] = cmpt.copy(new_cmpts=components)
+                else:
+                    components[key] = cmpt.copy()
+
+            parents = data.parents.copy()
+            children = data.children.copy()
+
+            return cls(data.item, components, parents, children)
+
+        def _become(self, data: Item.Data) -> None:
+            for key in self.components.keys() | data.components.keys():
+                self.components[key].become(data.components[key])
+
+            self.parents.clear()
+            self.parents.extend(data.parents)
+
+            self.children.clear()
+            self.children.extend(data.children)
 
         def is_changed(self) -> bool:
             '''
@@ -368,6 +382,15 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         返回数据的引用，不进行复制
         '''
         return self.Data._ref(self)
+
+    def become(self, item_or_data: Self | Data[Self]) -> Self:
+        if isinstance(item_or_data, Item):
+            data = item_or_data.ref_data()
+        else:
+            data = item_or_data
+
+        self.ref_data()._become(data)
+        return self
 
     # endregion
 

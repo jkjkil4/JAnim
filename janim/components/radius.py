@@ -24,6 +24,10 @@ class Cmpt_Radius(Component):
         cmpt_copy._radii = self._radii.copy()
         return cmpt_copy
 
+    def become(self, other: Cmpt_Radius) -> Self:
+        self.set(other.get())
+        return self
+
     def __eq__(self, other: Cmpt_Radius) -> bool:
         return self._radii.is_share(other._radii)
 
