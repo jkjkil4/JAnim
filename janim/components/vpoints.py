@@ -197,7 +197,7 @@ class Cmpt_VPoints(Cmpt_Points):
 
         start_idx = 0
         for end_idx in self.walk_subpath_end_indices():
-            if end_idx == len(points) - 1 or (points[end_idx] == points[start_idx]).all():
+            if (points[end_idx] == points[start_idx]).all():
                 result[start_idx: end_idx + 1] = True
             start_idx = end_idx + 2
 
