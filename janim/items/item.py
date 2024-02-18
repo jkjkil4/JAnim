@@ -146,6 +146,15 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
     # Do not define __iter__ and __len__ for Item class.
     # I think using item.children and item.parents explicitly is better.
 
+    def __mul__(self, other: int) -> Group:
+        assert isinstance(other, int)
+        return self.replicate(other)
+
+    def replicate(self, n: int) -> Group:
+        return Group(
+            *(self.copy() for _ in range(n))
+        )
+
     # region astype
 
     def astype[T](self, cls: type[T]) -> T:

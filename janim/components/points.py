@@ -24,8 +24,6 @@ type PointsFn = Callable[[np.ndarray], VectArray]
 type PointFn = Callable[[np.ndarray], Vect]
 type ComplexFn = Callable[[complex], complex]
 
-# TODO: arrange
-
 
 class Cmpt_Points[ItemT](Component[ItemT]):
     resize_func = staticmethod(resize_and_repeatedly_extend)
@@ -802,6 +800,104 @@ class Cmpt_Points[ItemT](Component[ItemT]):
             if direction[dim] != 0:
                 self.set_coord(point[dim], dim=dim, direction=direction, root_only=root_only)
 
+        return self
+
+    def arrange(
+        self,
+        direction: Vect = RIGHT,
+        center: bool = True,
+        **kwargs
+    ) -> Self:
+        if self.bind is None:
+            return
+
+        items = [
+            item
+            for item in self.bind.at_item.children
+            if isinstance(getattr(item, self.bind.key), Cmpt_Points)
+        ]
+        for m1, m2 in zip(items, items[1:]):
+            cmpt: Cmpt_Points = getattr(m2, self.bind.key)
+            cmpt.next_to(m1, direction, **kwargs)
+
+        if center:
+            self.to_center()
+
+        return self
+
+    @staticmethod
+    def format_rows_cols(
+        items_count: int,
+        n_rows: int | None,
+        n_cols: int | None,
+    ) -> tuple[int, int]:
+        if n_rows is None and n_cols is None:
+            n_rows = int(np.sqrt(items_count))
+        if n_rows is None:
+            n_rows = items_count // n_cols
+        if n_cols is None:
+            n_cols = items_count // n_rows
+        return n_rows, n_cols
+
+    @staticmethod
+    def format_buff(
+        buff: float | None = None,
+        h_buff: float | None = None,
+        v_buff: float | None = None,
+        by_center_point: bool = False,
+    ) -> tuple[float, float]:
+        default_buff = DEFAULT_ITEM_TO_EDGE_BUFF if by_center_point else DEFAULT_ITEM_TO_ITEM_BUFF
+        if buff is not None:
+            h_buff = buff
+            v_buff = buff
+        else:
+            if h_buff is None:
+                h_buff = default_buff
+            if v_buff is None:
+                v_buff = default_buff
+
+        return h_buff, v_buff
+
+    def arrange_in_grid(
+        self,
+        n_rows: int | None = None,
+        n_cols: int | None = None,
+
+        buff: float | None = None,
+        h_buff: float | None = None,
+        v_buff: float | None = None,
+
+        aligned_edge: np.ndarray = ORIGIN,
+        by_center_point: bool = False,
+        fill_rows_first: bool = True
+    ) -> Self:
+        if self.bind is None:
+            return
+
+        items = [
+            item
+            for item in self.bind.at_item.children
+            if isinstance(getattr(item, self.bind.key), Cmpt_Points)
+        ]
+
+        n_rows, n_cols = self.format_rows_cols(len(items), n_rows, n_cols)
+        h_buff, v_buff = self.format_buff(buff, h_buff, v_buff, by_center_point)
+
+        x_unit, y_unit = h_buff, v_buff
+        if not by_center_point:
+            x_unit += max([getattr(item, self.bind.key).box.width for item in items])
+            y_unit += max([getattr(item, self.bind.key).box.height for item in items])
+
+        for index, item in enumerate(items):
+            if fill_rows_first:
+                x, y = index % n_cols, index // n_cols
+            else:
+                x, y = index // n_rows, index % n_rows
+            cmpt: Cmpt_Points = getattr(item, self.bind.key)
+            cmpt.move_to(ORIGIN, aligned_edge=aligned_edge)
+            cmpt.shift(x * x_unit * RIGHT + y * y_unit * DOWN)
+
+        self.to_center()
         return self
 
     def to_center(self, root_only=False) -> Self:

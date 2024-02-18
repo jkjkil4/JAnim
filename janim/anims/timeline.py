@@ -29,6 +29,7 @@ if TYPE_CHECKING:   # pragma: no cover
 
 GET_DATA_DELTA = 1e-5
 ANIM_END_DELTA = 1e-5 * 2
+MIN_DURATION = 1e-5 * 4
 
 type DynamicData = Callable[[float], Item.Data]
 
@@ -123,7 +124,7 @@ class Timeline(metaclass=ABCMeta):
             self.construct()
 
             if self.current_time == 0:
-                self.forward(1e-5)  # 使得没有任何前进时，稍微地产生一点时间，避免除零的问题
+                self.forward(MIN_DURATION)  # 使得没有任何前进时，稍微地产生一点时间，避免除零的问题
             self.cleanup_display(trail=2 / Config.get.fps)
             global_anim = TimelineAnim(self)
 
