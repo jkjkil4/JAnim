@@ -1,20 +1,22 @@
 import importlib
 import inspect
 import os
+import sys
 import time
 import traceback
 from bisect import bisect
 from dataclasses import dataclass
 
 from PySide6.QtCore import QByteArray, QRectF, Qt, QTimer, Signal
-from PySide6.QtGui import (QColor, QHideEvent, QIcon, QKeyEvent, QMouseEvent,
-                           QPainter, QPaintEvent, QPen, QWheelEvent, QCloseEvent)
+from PySide6.QtGui import (QCloseEvent, QColor, QHideEvent, QIcon, QKeyEvent,
+                           QMouseEvent, QPainter, QPaintEvent, QPen,
+                           QWheelEvent)
 from PySide6.QtWidgets import (QApplication, QFileDialog, QLabel, QMainWindow,
                                QMessageBox, QPushButton, QSizePolicy,
                                QSplitter, QWidget)
 
 from janim.anims.animation import Animation, TimeRange
-from janim.anims.timeline import TimelineAnim
+from janim.anims.timeline import Timeline, TimelineAnim
 from janim.gui.application import Application
 from janim.gui.fixed_ratio_widget import FixedRatioWidget
 from janim.gui.glwidget import GLWidget
@@ -35,16 +37,16 @@ class AnimViewer(QMainWindow):
         self,
         anim: TimelineAnim,
         auto_play: bool = True,
-        enable_socket: bool = False,
+        interact: bool = False,
         parent: QWidget | None = None
     ) -> None:
         super().__init__(parent)
         self.anim = anim
-        self.enable_socket = enable_socket
+        self.interact = interact
 
         self.setup_ui()
         self.move_to_position()
-        if enable_socket:
+        if interact:
             self.setup_socket()
 
         self.timeline_view.value_changed.connect(self.on_value_changed)
@@ -65,6 +67,8 @@ class AnimViewer(QMainWindow):
 
         self.glw.rendered.connect(self.on_glw_rendered)
 
+    # region setup_ui
+
     def setup_ui(self) -> None:
         self.setup_menu_bar()
         self.setup_status_bar()
@@ -82,9 +86,9 @@ class AnimViewer(QMainWindow):
 
         menu_functions.addSeparator()
 
-        action_reload = menu_functions.addAction('重新载入')
+        action_reload = menu_functions.addAction('重新构建')
         action_reload.setShortcut('Ctrl+L')
-        action_reload.triggered.connect(self.on_reload_triggered)
+        action_reload.triggered.connect(self.on_rebuild_triggered)
 
     def setup_status_bar(self) -> None:
         self.fps_label = QLabel()
@@ -157,8 +161,12 @@ class AnimViewer(QMainWindow):
         self.move(x, y)
         self.resize(width, height)
 
+    # endregion
+
+    # region socket
+
     def setup_socket(self) -> None:
-        from PySide6.QtNetwork import QUdpSocket, QHostAddress
+        from PySide6.QtNetwork import QHostAddress, QUdpSocket
 
         self.shared_socket = QUdpSocket()
         ret = self.shared_socket.bind(40565, QUdpSocket.BindFlag.ShareAddress | QUdpSocket.BindFlag.ReuseAddressHint)
@@ -172,7 +180,7 @@ class AnimViewer(QMainWindow):
 
         self.close_event_listener: list[tuple[QHostAddress, int]] = []
 
-        log.info(f'调试端口已在 {self.socket.localPort()} 开启')
+        log.info(f'交互端口已在 {self.socket.localPort()} 开启')
         self.setWindowTitle(f'{self.windowTitle()} [{self.socket.localPort()}]')
 
     def on_shared_ready_read(self) -> None:
@@ -219,16 +227,28 @@ class AnimViewer(QMainWindow):
                 if cmdtype == 'listen_close_event':
                     self.close_event_listener.append((datagram.senderAddress(), datagram.senderPort()))
 
-                # 重新载入
+                # 重新构建
                 elif cmdtype == 'file_saved':
-                    print(janim['file_path'])
-                    print(inspect.getmodule(self.anim.timeline).__file__)
-                    print(os.path.samefile(janim['file_path'], inspect.getmodule(self.anim.timeline).__file__))
                     if os.path.samefile(janim['file_path'], inspect.getmodule(self.anim.timeline).__file__):
-                        self.on_reload_triggered()
+                        self.on_rebuild_triggered()
+
+                elif cmdtype == 'reload':
+                    file_path = janim['file_path']
+                    for module in sys.modules.values():
+                        module_file_path = getattr(module, '__file__', None)
+                        if module_file_path is not None and os.path.samefile(module_file_path, file_path):
+                            importlib.reload(module)
+                            log.info(f'已重新加载 {file_path}')
+                            break
+                    else:
+                        log.error(f'{file_path} 之前没被导入过')
 
             except Exception:
                 traceback.print_exc()
+
+    # endregion
+
+    # region events
 
     def hideEvent(self, event: QHideEvent) -> None:
         super().hideEvent(event)
@@ -236,7 +256,7 @@ class AnimViewer(QMainWindow):
 
     def closeEvent(self, event: QCloseEvent) -> None:
         super().closeEvent(event)
-        if self.enable_socket:
+        if self.interact:
             import json
 
             msg = json.dumps(dict(
@@ -249,6 +269,10 @@ class AnimViewer(QMainWindow):
                     QByteArray.fromStdString(msg),
                     *listener
                 )
+
+    # endregion
+
+    # region slots
 
     def on_value_changed(self, value: int) -> None:
         time = value / Config.get.preview_fps
@@ -266,23 +290,24 @@ class AnimViewer(QMainWindow):
         if visible:
             self.setVisible(True)
 
-    def on_reload_triggered(self) -> None:
+    def on_rebuild_triggered(self) -> None:
         module = inspect.getmodule(self.anim.timeline)
         progress = self.timeline_view.progress()
 
         importlib.reload(module)
-        timeline_class = getattr(module, self.anim.timeline.__class__.__name__)
+        timeline_class: type[Timeline] = getattr(module, self.anim.timeline.__class__.__name__)
 
         try:
             self.anim: TimelineAnim = timeline_class().build()
         except Exception:
             traceback.print_exc()
-            log.error('重新加载失败')
+            log.error('重新构建失败')
             return
 
         self.anim.anim_on(self.timeline_view.progress_to_time(progress))
 
         self.glw.anim = self.anim
+        self.glw.update()
 
         range = self.timeline_view.range
         self.timeline_view.set_anim(self.anim)
@@ -318,6 +343,10 @@ class AnimViewer(QMainWindow):
         FileWriter.writes(self.anim.timeline.__class__().build(), file_path)
         QMessageBox.information(self, '提示', f'已完成输出至 {file_path}')
 
+    # endregion
+
+    # region play_state
+
     def set_play_state(self, playing: bool) -> None:
         if playing != self.play_timer.isActive():
             self.switch_play_state()
@@ -331,6 +360,8 @@ class AnimViewer(QMainWindow):
             self.fps_record_start = time.time()
             self.fps_counter = 0
             self.play_timer.start(1000 // Config.get.preview_fps)
+
+    # endregion
 
     @classmethod
     def views(cls, anim: TimelineAnim) -> None:

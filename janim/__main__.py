@@ -53,9 +53,9 @@ def render_args(parser: ArgumentParser) -> None:
 def run_parser(parser: ArgumentParser) -> None:
     render_args(parser)
     parser.add_argument(
-        '-d', '--debug',
+        '-i', '--interact',
         action='store_true',
-        help='Enable the network socket for debugging'
+        help='Enable the network socket for interacting'
     )
     parser.set_defaults(func=run)
 
@@ -110,7 +110,7 @@ def run(args: Namespace) -> None:
 
     widgets: list[AnimViewer] = []
     for timeline in timelines:
-        viewer = AnimViewer(timeline().build(), auto_play, args.debug)
+        viewer = AnimViewer(timeline().build(), auto_play, args.interact)
         widgets.append(viewer)
 
     log.info('======')
