@@ -151,7 +151,7 @@ void get_subpath_attr(
 
 // #define CONTROL_POINTS
 // #define POLYGON_LINES
-// #define DF_PLANE
+// #define SDF_PLANE
 
 void main()
 {
@@ -171,7 +171,7 @@ void main()
     #endif
 
     d = INFINITY;
-    float sgn = -1.0;
+    float sgn = 1.0;
     vec4 fill_color = vec4(0.0), stroke_color = vec4(0.0);
 
     int start_idx = 0;
@@ -182,7 +182,7 @@ void main()
     while (true) {
         get_subpath_attr(start_idx, start_idx, sp_d, sp_sgn, sp_fill_color, sp_stroke_color);
         d = min(d, sp_d);
-        sgn = max(sgn, sp_sgn);
+        sgn *= sp_sgn;
         fill_color = blend_color(sp_fill_color, fill_color);
         stroke_color = blend_color(sp_stroke_color, stroke_color);
 
@@ -193,14 +193,14 @@ void main()
 
     f_color = blend_color(stroke_color, fill_color);
 
-    #if !defined(POLYGON_LINES) && !defined(DF_PLANE)
+    #if !defined(POLYGON_LINES) && !defined(SDF_PLANE)
     if (f_color.a == 0.0)
         discard;
     #endif
 
-    #ifdef DF_PLANE
+    #ifdef SDF_PLANE
 
-    vec4 df_color = vec4(1.0) - vec4(0.1, 0.4, 0.7, 0.0);
+    vec4 df_color = vec4(1.0) - sgn * vec4(0.1, 0.4, 0.7, 0.0);
     df_color *= 0.8 + 0.2 * cos(140. * d / 3.0);
     df_color = mix(df_color, vec4(1.0), 1.0 - smoothstep(0.0, 0.02, abs(d)));
     df_color.a = 0.5;

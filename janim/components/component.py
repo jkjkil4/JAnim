@@ -12,10 +12,18 @@ if TYPE_CHECKING:   # pragma: no cover
 
 
 class _CmptMeta(type):
-    def __new__(cls: type, name: str, bases: tuple[type, ...], attrdict: dict):
-        for key in ('copy', 'become', '__eq__'):
-            if not callable(attrdict.get(key, None)):
-                raise AttributeError(f'Component 的每一个子类都必须继承并实现 `{key}` 方法，而 {name} 没有')
+    def __new__(
+        cls: type,
+        name: str,
+        bases: tuple[type, ...],
+        attrdict: dict,
+        *,
+        impl=False,     # 若 impl=True，则会跳过下面的检查
+    ):
+        if not impl:
+            for key in ('copy', 'become', '__eq__'):
+                if not callable(attrdict.get(key, None)):
+                    raise AttributeError(f'Component 的每一个子类都必须继承并实现 `{key}` 方法，而 {name} 没有')
         return super().__new__(cls, name, bases, attrdict)
 
 

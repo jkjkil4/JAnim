@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Generator, Iterable, Self
+from typing import Callable, Generator, Iterable, Self
 
 import numpy as np
 
@@ -9,7 +9,9 @@ from janim.components.points import Cmpt_Points
 from janim.constants import OUT
 from janim.logger import log
 from janim.typing import VectArray
-from janim.utils.bezier import PathBuilder, partial_quadratic_bezier_points
+from janim.utils.bezier import (PathBuilder, bezier, integer_interpolate,
+                                inverse_interpolate,
+                                partial_quadratic_bezier_points)
 from janim.utils.data import AlignedData
 from janim.utils.space_ops import get_norm, get_unit_normal
 
@@ -30,8 +32,8 @@ class Cmpt_VPoints[ItemT](Cmpt_Points[ItemT]):
 
     def set(self, points: VectArray) -> Self:
         if len(points) != 0 and len(points) % 2 == 0:
-            points = points[:-1]
             log.warning(f'设置的点数量为 {len(points)}，不是奇数，最后一个点被忽略')
+            points = points[:-1]
         super().set(points)
 
     # region align
@@ -132,8 +134,64 @@ class Cmpt_VPoints[ItemT](Cmpt_Points[ItemT]):
         n_curves = max(0, len(points) - 1) // 2
         return (points[2 * i: 2 * i + 3] for i in range(n_curves))
 
+    def get_bezier_tuples(self) -> Iterable[np.ndarray]:
+        return self.get_bezier_tuples_from_points(self.get())
+
     def curves_count(self) -> int:
         return max(0, self.count() - 1) // 2
+
+    def get_nth_curve_points(self, n: int) -> VectArray:
+        if n < 0 or n >= self.curves_count():
+            raise ValueError(f'n 必须是 0~{self.curves_count() - 1} 的值，{n} 无效')
+        return self._points._data[2 * n: 2 * n + 3].copy()
+
+    def get_nth_curve_function(self, n: int) -> Callable[[float], np.ndarray]:
+        return bezier(self.get_nth_curve_points(n))
+
+    def quick_point_from_proportion(self, alpha: float) -> np.ndarray:
+        # Assumes all curves have the same length, so is inaccurate
+        num_curves = self.curves_count()
+        n, residue = integer_interpolate(0, num_curves, alpha)
+        curve_func = self.get_nth_curve_function(n)
+        return curve_func(residue)
+
+    def curve_and_prop_of_partial_point(self, alpha: float) -> tuple[int, float]:
+        '''
+        If you want a point a proportion alpha along the curve, this
+        gives you the index of the appropriate bezier curve, together
+        with the proportion along that curve you'd need to travel
+        '''
+        if alpha == 0:
+            return (0, 0.0)
+        partials: list[float] = [0]
+        for tup in self.get_bezier_tuples():
+            if (tup[0] == tup[1]).all():
+                # Don't consider null curves
+                arclen = 0
+            else:
+                # Approximate length with straight line from start to end
+                arclen = get_norm(tup[2] - tup[0])
+            partials.append(partials[-1] + arclen)
+        full = partials[-1]
+        if full == 0:
+            return len(partials), 1.0
+        # First index where the partial length is more than alpha times the full length
+        index = next(
+            (i for i, x in enumerate(partials) if x >= full * alpha),
+            len(partials) - 1  # Default
+        )
+        residue = float(inverse_interpolate(
+            partials[index - 1] / full, partials[index] / full, alpha
+        ))
+        return index - 1, residue
+
+    def point_from_proportion(self, alpha: float) -> np.ndarray:
+        if alpha <= 0:
+            return self.get_start()
+        elif alpha >= 1:
+            return self.get_end()
+        index, residue = self.curve_and_prop_of_partial_point(alpha)
+        return self.get_nth_curve_function(index)(residue)
 
     # endregion
 
@@ -143,7 +201,7 @@ class Cmpt_VPoints[ItemT](Cmpt_Points[ItemT]):
         if not self.has():
             self.set(points[0])
 
-        builder = PathBuilder(self.get_end())
+        builder = PathBuilder(start_point=self.get_end())
         for point in points:
             builder.line_to(point)
         self.extend(builder.get()[1:])
@@ -151,7 +209,7 @@ class Cmpt_VPoints[ItemT](Cmpt_Points[ItemT]):
         return self
 
     def set_as_corners(self, points: VectArray) -> Self:
-        builder = PathBuilder(points[0])
+        builder = PathBuilder(start_point=points[0])
         for point in points[1:]:
             builder.line_to(point)
         self.set(builder.get())
@@ -224,7 +282,7 @@ class Cmpt_VPoints[ItemT](Cmpt_Points[ItemT]):
 
         start_idx = 0
         for end_idx in self.walk_subpath_end_indices():
-            if (points[end_idx] == points[start_idx]).all():
+            if np.isclose(points[end_idx], points[start_idx]).all():
                 result[start_idx: end_idx + 1] = True
             start_idx = end_idx + 2
 

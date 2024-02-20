@@ -10,20 +10,30 @@ from janim.utils.simple_functions import choose
 from janim.utils.space_ops import find_intersection
 from janim.utils.space_ops import cross2d
 from janim.utils.space_ops import midpoint
-from janim.logger import log
-from janim.typing import Vect
+from janim.typing import Vect, VectArray
 
 CLOSED_THRESHOLD = 0.001
 T = TypeVar("T")
 
 
 class PathBuilder:
-    def __init__(self, start_point: Vect):
-        self.points_list = [[start_point]]
-        self.end_point = start_point
+    def __init__(self, *, start_point: Vect | None = None, points: VectArray | None = None):
+        if (start_point is None) == (points is None):
+            raise ValueError('必须仅设置 start_point 和 points 中的一个')
+        if start_point is not None:
+            self.points_list = [[start_point]]
+            self.end_point = start_point
+        else:
+            self.points_list = [points]
+            self.end_point = points[-1]
 
     def get(self) -> np.ndarray:
         return np.vstack(self.points_list)
+
+    def append(self, points: VectArray) -> Self:
+        self.points_list.append(points)
+        self.end_point = points[-1]
+        return self
 
     def move_to(self, point: Vect) -> Self:
         self.points_list.append([self.end_point, point])
@@ -51,6 +61,10 @@ class PathBuilder:
     ) -> Self:
         # TODO: cubic_to
         raise NotImplementedError()
+
+    def close_path(self) -> Self:
+        self.line_to(self.points_list[0][0])
+        return self
 
 
 def bezier(

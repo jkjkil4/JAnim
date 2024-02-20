@@ -12,6 +12,7 @@ from janim.constants import (DEFAULT_ITEM_TO_EDGE_BUFF,
                              MED_SMALL_BUFF, ORIGIN, OUT, PI, RIGHT, UP)
 from janim.items.item import Item
 from janim.typing import Vect, VectArray
+from janim.utils.bezier import integer_interpolate, interpolate
 from janim.utils.config import Config
 from janim.utils.data import AlignedData
 from janim.utils.iterables import resize_and_repeatedly_extend
@@ -183,6 +184,15 @@ class Cmpt_Points[ItemT](Component[ItemT]):
         '''
         self._raise_error_if_no_points()
         return self._points._data[-1].copy()
+
+    def point_from_proportion(self, alpha: float) -> np.ndarray:
+        points = self._points._data
+        i, subalpha = integer_interpolate(0, len(points) - 1, alpha)
+        return interpolate(points[i], points[i + 1], subalpha)
+
+    def pfp(self, alpha) -> np.ndarray:
+        '''point_from_proportion 的缩写'''
+        return self.point_from_proportion(alpha)
 
     def _raise_error_if_no_points(self) -> None:
         if not self.has():

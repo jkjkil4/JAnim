@@ -6,6 +6,7 @@ from janim.anims.transform import MethodTransform, Transform
 from janim.camera.camera import Camera
 from janim.camera.camera_info import CameraInfo
 from janim.components.rgbas import apart_alpha, merge_alpha
+from janim.items.geometry.arc import *
 from janim.items.geometry.polygon import (Polygon, Polyline, Rectangle,
                                           RegularPolygon, Square, Triangle)
 from janim.items.item import Group

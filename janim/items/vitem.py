@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Self
+from typing import Self, Iterable
 
 import numpy as np
 
@@ -11,6 +11,7 @@ from janim.components.radius import Cmpt_Radius
 from janim.items.points import Points
 from janim.render.impl import VItemRenderer
 from janim.utils.data import AlignedData
+from janim.typing import Vect, JAnimColor, ColorArray, Alpha, AlphaArray
 
 
 class VItem(Points):
@@ -23,6 +24,35 @@ class VItem(Points):
     color = CmptGroup(stroke, fill)
 
     renderer_cls = VItemRenderer
+
+    def __init__(
+        self,
+        *points: Vect,
+        stroke_radius: float | Iterable[float] | None = None,
+        stroke_color: JAnimColor | ColorArray | None = None,
+        stroke_alpha: Alpha | AlphaArray | None = None,
+        fill_color: JAnimColor | ColorArray | None = None,
+        fill_alpha: Alpha | AlphaArray | None = 0,
+        color: JAnimColor | ColorArray | None = None,
+        alpha: Alpha | AlphaArray | None = None,
+        root_only: bool = False,
+        **kwargs
+    ):
+        super().__init__(*points, **kwargs)
+        if stroke_color is None:
+            stroke_color = color
+        if stroke_alpha is None:
+            stroke_alpha = alpha
+
+        if fill_color is None:
+            fill_color = color
+        if fill_alpha is None:
+            fill_alpha = alpha
+
+        if stroke_radius is not None:
+            self.radius.set(stroke_radius, root_only=root_only)
+        self.stroke.set(stroke_color, stroke_alpha, root_only=root_only)
+        self.fill.set(fill_color, fill_alpha, root_only=root_only)
 
     class Data(Points.Data['VItem']):
         @classmethod
