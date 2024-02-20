@@ -1,17 +1,16 @@
 # flake8: noqa
-from janim.anims.composition import Aligned, AnimGroup, Succession
-from janim.anims.display import Display
-from janim.anims.timeline import Timeline
-from janim.anims.transform import MethodTransform, Transform
-from janim.camera.camera import Camera
-from janim.camera.camera_info import CameraInfo
+from janim.anims.composition import *
+from janim.anims.display import *
+from janim.anims.timeline import *
+from janim.anims.transform import *
+from janim.camera.camera import *
+from janim.camera.camera_info import *
 from janim.components.rgbas import apart_alpha, merge_alpha
 from janim.items.geometry.arc import *
-from janim.items.geometry.polygon import (Polygon, Polyline, Rectangle,
-                                          RegularPolygon, Square, Triangle)
-from janim.items.item import Group
-from janim.items.points import DotCloud, Points
-from janim.items.vitem import VItem
+from janim.items.geometry.polygon import *
+from janim.items.item import *
+from janim.items.points import *
+from janim.items.vitem import *
 from janim.utils.bezier import *
 from janim.utils.config import Config
 from janim.utils.file_ops import *
