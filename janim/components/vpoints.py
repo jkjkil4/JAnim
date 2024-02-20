@@ -220,17 +220,12 @@ class Cmpt_VPoints[ItemT](Cmpt_Points[ItemT]):
 
     # region unit_normal
 
-    @property
-    @Cmpt_Points.set.self_refresh()
-    @refresh.register
-    def area_vector(self) -> np.ndarray:
-        '''
-        一个向量，其长度为锚点形成的多边形所围成的面积，根据右手定则指向垂直于该多边形的方向
-        '''
-        if not self.has():
+    @staticmethod
+    def get_area_vector_from_points(points: np.ndarray) -> np.ndarray:
+        if len(points) == 0:
             return np.zeros(3)
 
-        p0 = self.get_anchors()
+        p0 = points[::2]
         p1 = np.roll(p0, -1, axis=0)
 
         # Each term goes through all edges [(x0, y0, z0), (x1, y1, z1)]
@@ -241,6 +236,15 @@ class Cmpt_VPoints[ItemT](Cmpt_Points[ItemT]):
             (sums[:, 2] * diffs[:, 0]).sum(),  # Add up (z0 + z1)*(x1 - x0)
             (sums[:, 0] * diffs[:, 1]).sum(),  # Add up (x0 + x1)*(y1 - y0)
         ])
+
+    @property
+    @Cmpt_Points.set.self_refresh()
+    @refresh.register
+    def area_vector(self) -> np.ndarray:
+        '''
+        一个向量，其长度为锚点形成的多边形所围成的面积，根据右手定则指向垂直于该多边形的方向
+        '''
+        return self.get_area_vector_from_points(self.get())
 
     @property
     @Cmpt_Points.set.self_refresh()

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Callable, Self, overload
+from typing import Any, Callable, Self, overload
 
 from janim.components.component import CmptInfo, Component, _CmptGroup
 from janim.components.depth import Cmpt_Depth
@@ -121,7 +121,7 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         if recurse_down:
             mark(self.descendants())
 
-    def do(self, func: Callable[[Self]]) -> Self:
+    def do(self, func: Callable[[Self], Any]) -> Self:
         '''
         使用 ``func`` 对物件进行操作，并返回 ``self`` 以方便链式调用
         '''
@@ -129,7 +129,7 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         return self
 
     @property
-    def anim(self) -> Self | Callable[..., Self]:
+    def anim(self) -> Self:
         from janim.anims.transform import MethodTransformArgsBuilder
         return MethodTransformArgsBuilder(self)
 

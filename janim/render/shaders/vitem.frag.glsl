@@ -48,6 +48,10 @@ vec4 blend_color(vec4 fore, vec4 back) {
     );
 }
 
+float cross2d(vec2 a, vec2 b) {
+    return a.x * b.y - a.y * b.x;
+}
+
 float sign_bezier(vec2 A, vec2 B, vec2 C, vec2 p)
 {
     vec2 a = C - A, b = B - A, c = p - A;
@@ -104,17 +108,15 @@ const int lim = (points.length() - 1) / 2 * 2;
 void get_subpath_attr(
     int start_idx,
     out int end_idx,
+    out int idx,
     out float d,
-    out float sgn,
-    out vec4 fill_color,
-    out vec4 stroke_color
+    out float sgn
 ) {
     end_idx = lim;
     bool is_closed = get_isclosed(start_idx);
 
-    int idx = 0;
-    sgn = 1.0;
     d = INFINITY;
+    sgn = 1.0;
     for (int i = start_idx; i < lim; i += 2) {
         vec2 A = get_point(i), B = get_point(i + 1), C = get_point(i + 2);
 
@@ -123,30 +125,35 @@ void get_subpath_attr(
             break;
         }
 
-        float dist = distance_bezier(A, B, C, v_coord);
-        if (dist < d) {
-            d = dist;
-            idx = i;
-        }
+        // REFACTOR: 有无更好的方法判断近似直线？
+        if (abs(cross2d(normalize(C - B), normalize(B - A))) < 1e-3) {
+            vec2 e = C - A;
+            vec2 w = v_coord - A;
+            vec2 b = w - e * clamp(dot(w, e) / dot(e, e), 0.0, 1.0);
+            float dist = length(b);
+            if (dist < d) {
+                d = dist;
+                idx = i;
+            }
 
-        if (is_closed) {
-            sgn *= sign_bezier(A, B, C, v_coord);
+            if (is_closed) {
+                bvec3 cond = bvec3( v_coord.y >= A.y,
+                                    v_coord.y  < C.y,
+                                    e.x * w.y > e.y * w.x );
+                if(all(cond) || all(not(cond))) sgn = -sgn;
+            }
+        } else {
+            float dist = distance_bezier(A, B, C, v_coord);
+            if (dist < d) {
+                d = dist;
+                idx = i;
+            }
+
+            if (is_closed) {
+                sgn *= sign_bezier(A, B, C, v_coord);
+            }
         }
     }
-    float sgn_d = sgn * d;
-    int anchor_idx = idx / 2;
-
-    vec2 e = get_point(idx + 2) - get_point(idx);
-    vec2 w = v_coord - get_point(idx);
-    float ratio = clamp(dot(w, e) / dot(e, e), 0.0, 1.0);
-
-    float radius = mix(get_radius(anchor_idx), get_radius(anchor_idx + 1), ratio);
-
-    fill_color = is_closed ? mix(fills[anchor_idx], fills[anchor_idx + 1], ratio) : vec4(0.0);
-    fill_color.a *= smoothstep(1, -1, (sgn_d) / JA_ANTI_ALIAS_RADIUS);
-
-    stroke_color = mix(colors[anchor_idx], colors[anchor_idx + 1], ratio);
-    stroke_color.a *= smoothstep(1, -1, (d - radius) / JA_ANTI_ALIAS_RADIUS);
 }
 
 // #define CONTROL_POINTS
@@ -170,26 +177,37 @@ void main()
 
     #endif
 
+    int idx;
     d = INFINITY;
     float sgn = 1.0;
-    vec4 fill_color = vec4(0.0), stroke_color = vec4(0.0);
 
     int start_idx = 0;
     float sp_d;
     float sp_sgn;
-    vec4 sp_fill_color, sp_stroke_color;
 
     while (true) {
-        get_subpath_attr(start_idx, start_idx, sp_d, sp_sgn, sp_fill_color, sp_stroke_color);
+        get_subpath_attr(start_idx, start_idx, idx, sp_d, sp_sgn);
         d = min(d, sp_d);
         sgn *= sp_sgn;
-        fill_color = blend_color(sp_fill_color, fill_color);
-        stroke_color = blend_color(sp_stroke_color, stroke_color);
 
         if (start_idx >= lim)
             break;
         start_idx += 2;
     }
+    int anchor_idx = idx / 2;
+    float sgn_d = sgn * d;
+
+    vec2 e = get_point(idx + 2) - get_point(idx);
+    vec2 w = v_coord - get_point(idx);
+    float ratio = clamp(dot(w, e) / dot(e, e), 0.0, 1.0);
+
+    float radius = mix(get_radius(anchor_idx), get_radius(anchor_idx + 1), ratio);
+
+    vec4 fill_color = get_isclosed(idx) ? mix(fills[anchor_idx], fills[anchor_idx + 1], ratio) : vec4(0.0);
+    fill_color.a *= smoothstep(1, -1, (sgn_d) / JA_ANTI_ALIAS_RADIUS);
+
+    vec4 stroke_color = mix(colors[anchor_idx], colors[anchor_idx + 1], ratio);
+    stroke_color.a *= smoothstep(1, -1, (d - radius) / JA_ANTI_ALIAS_RADIUS);
 
     f_color = blend_color(stroke_color, fill_color);
 

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from collections import defaultdict
-from typing import TYPE_CHECKING, Any, Callable, Self
+from typing import TYPE_CHECKING, Self
 
 from janim.anims.animation import Animation, RenderCall
 from janim.components.component import Component
@@ -115,7 +115,7 @@ class Transform(Animation):
             aligned.union.interpolate(aligned.data1, aligned.data2, alpha, path_func=self.path_func)
 
 
-class MethodTransform[T: 'Item'](Transform):
+class MethodTransform(Transform):
     '''
     对物件进行变换并创建的补间过程
 
@@ -131,13 +131,13 @@ class MethodTransform[T: 'Item'](Transform):
     '''
     label_color = (165, 103, 44)
 
-    def __init__(self, item: T, **kwargs):
+    def __init__(self, item: Item, **kwargs):
         super().__init__(item, item, **kwargs)
         self.current_alpha = None
 
         self.timeline.detect_changes(item.walk_self_and_descendants())
 
-    def do(self, func: Callable[[T], Any]) -> Self:
+    def do(self, func) -> Self:
         func(self.src_item)
         return self
 

@@ -177,16 +177,14 @@ class Relation[GRelT: 'Relation'](refresh.Refreshable):
         遍历自己以及祖先节点
         '''
         yield self
-        for obj in self.ancestors():
-            yield obj
+        yield from self.ancestors()
 
     def walk_self_and_descendants(self) -> Generator[GRelT, None, None]:
         '''
         遍历自己以及后代节点
         '''
         yield self
-        for obj in self.descendants():
-            yield obj
+        yield from self.descendants()
 
     def walk_nearest_ancestors[RelT](self, base_cls: type[RelT]) -> Generator[RelT, None, None]:
         '''
