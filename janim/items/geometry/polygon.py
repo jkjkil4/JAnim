@@ -10,6 +10,11 @@ from janim.utils.space_ops import compass_directions, rotate_vector
 
 
 class Polygon(VItem):
+    '''
+    多边形
+
+    传入顶点列表 ``verts`` 进行表示
+    '''
     def __init__(
         self,
         *verts: VectArray,
@@ -31,6 +36,10 @@ class Polygon(VItem):
 
 
 class Polyline(Polygon):
+    '''多边形折线
+
+    与 :class:`Polygon` 的区别是，不会自动将最后一个点与第一个点连接
+    '''
     def __init__(
         self,
         *verts: VectArray,
@@ -41,6 +50,10 @@ class Polyline(Polygon):
 
 
 class RegularPolygon(Polygon):
+    '''正多边形
+
+    传入数字 ``n`` 表示边数
+    '''
     def __init__(
         self,
         n: int = 6,
@@ -56,11 +69,19 @@ class RegularPolygon(Polygon):
 
 
 class Triangle(RegularPolygon):
+    '''
+    正三角形
+    '''
     def __init__(self, **kwargs):
         super().__init__(n=3, **kwargs)
 
 
 class Rectangle(Polygon):
+    '''矩形
+
+    - 可以使用 ``Rectangle(4, 2)`` 的传入宽高的方式进行构建
+    - 也可以使用 ``Rectangle(p1, p2)`` 的传入对角顶点的方式进行构建
+    '''
     @overload
     def __init__(self, width: float = 4.0, height: float = 2.0, /, **kwargs) -> None: ...
     @overload
@@ -80,6 +101,10 @@ class Rectangle(Polygon):
 
 
 class Square(Rectangle):
+    '''正方形
+
+    ``side_length`` 表示正方形边长
+    '''
     def __init__(self, side_length: float = 2.0, **kwargs) -> None:
         self.side_length = side_length
         super().__init__(side_length, side_length, **kwargs)

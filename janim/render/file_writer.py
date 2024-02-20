@@ -12,6 +12,18 @@ from janim.utils.config import Config
 
 
 class FileWriter:
+    '''
+    将时间轴动画生成视频输出到文件中
+
+    可以直接调用 ``FileWriter.writes(MyTimeline().build())`` 进行输出
+
+    主要流程在 :meth:`write_all` 中：
+
+    - 首先调用 ffmpeg，这里用它生成视频（先输出到 _temp 文件中）
+    - 然后遍历动画的每一帧，进行渲染，并将像素数据传递给 ffmpeg
+    - 最后结束 ffmpeg 的调用，完成 _temp 文件的输出
+    - 将 _temp 文件改名，删去 "_temp" 后缀，完成视频输出
+    '''
     def __init__(self, anim: TimelineAnim):
         self.anim = anim
         self.ctx = mgl.create_standalone_context()
@@ -31,6 +43,10 @@ class FileWriter:
         )
 
     def write_all(self, file_path: str, *, quiet=False) -> None:
+        '''将时间轴动画输出到文件中
+
+        - 指定 ``quiet=True``，则不会输出前后的提示信息，但仍有进度条
+        '''
         name = self.anim.timeline.__class__.__name__
         if not quiet:
             log.info(f'Writing "{name}"')

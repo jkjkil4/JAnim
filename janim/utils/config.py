@@ -89,6 +89,8 @@ default_config = Config(
 )
 '''
 默认配置
+
+其中 ``preview_fps`` 在接入电源时是 60，未接入时是 30
 '''
 
 config_ctx_var.set([default_config])

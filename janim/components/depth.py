@@ -57,6 +57,9 @@ class Cmpt_Depth[ItemT](Component[ItemT]):
         return self._order < other._order
 
     def set(self, value: float, order: int | None = None) -> Self:
+        '''
+        设置物件的深度
+        '''
         self._depth = value
         if order is None:
             order = self._counter[value]
@@ -65,9 +68,15 @@ class Cmpt_Depth[ItemT](Component[ItemT]):
         return self
 
     def get_raw(self) -> tuple[float, int]:
+        '''
+        返回元组 ``(depth, order)``
+        '''
         return (self._depth, self._order)
 
     def arrange(self, depth: float | None = None) -> Self:
+        '''
+        将子物件排序深度
+        '''
         if depth is None:
             depth = self._depth
 

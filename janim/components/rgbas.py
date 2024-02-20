@@ -14,6 +14,9 @@ from janim.utils.unique_nparray import UniqueNparray
 
 
 class Cmpt_Rgbas[ItemT](Component[ItemT]):
+    '''
+    颜色组件
+    '''
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -59,6 +62,9 @@ class Cmpt_Rgbas[ItemT](Component[ItemT]):
 
     @staticmethod
     def format_rgbas(rgbas: RgbaArray) -> np.ndarray:
+        '''
+        将传入值转换为数值数组
+        '''
         if not isinstance(rgbas, np.ndarray):
             rgbas = np.array(rgbas)
 
@@ -68,6 +74,10 @@ class Cmpt_Rgbas[ItemT](Component[ItemT]):
 
     @staticmethod
     def format_colors(colors: ColorArray) -> np.ndarray:
+        '''
+        将 ``ColorArray`` （每个元素有可能是 字符串、``[r, g, b]`` ）
+        格式化为元素仅有 ``[r, g, b]`` 的数值数组的格式
+        '''
         if not isinstance(colors, np.ndarray):
             colors = np.array([
                 color
@@ -83,14 +93,19 @@ class Cmpt_Rgbas[ItemT](Component[ItemT]):
 
     @staticmethod
     def format_alphas(alphas: AlphaArray) -> np.ndarray:
+        '''
+        将传入值转为数值数组
+        '''
         if not isinstance(alphas, np.ndarray):
             alphas = np.array(alphas)
 
         assert alphas.ndim == 1
         return alphas
 
-    # 如果要给这个方法加上 @Signal，记得在 .become 加上对 emit 的调用
     def set_rgbas(self, rgbas: np.ndarray) -> Self:
+        '''
+        直接设置 rgba 数据
+        '''
         self._rgbas.data = rgbas
         return self
 
@@ -103,7 +118,7 @@ class Cmpt_Rgbas[ItemT](Component[ItemT]):
     ) -> Self:
         '''
         - ``colors`` 表示传入的 ``RGB`` 颜色数据，可以是单个颜色也可以颜色数组
-          （对于单个数据，支持 ``#FF0000`` ``'red'`` ``[1, 0, 0.5]`` 的表示）
+          （对于单个数据，支持 ``'#FF0000'`` ``'red'`` ``[1, 0, 0.5]`` 的表示）
         - ``alphas`` 表示传入的透明度数据，可以是单个数也可以是一个数组
           （对于单个数据，``1`` 表示不透明，``0`` 表示完全透明）
         - 默认情况下会将所有子物件也设置成指定的颜色，传入 ``root_only=True`` 可以只设置根物件的
@@ -166,6 +181,9 @@ class Cmpt_Rgbas[ItemT](Component[ItemT]):
         return self
 
     def clear(self) -> Self:
+        '''
+        将颜色数据重置为默认值
+        '''
         self.set(np.full((1, 4), 1))
         return self
 
@@ -181,6 +199,9 @@ class Cmpt_Rgbas[ItemT](Component[ItemT]):
         return len(self.get())
 
     def apart_alpha(self, n: int) -> Self:
+        '''
+        对每一个颜色数据应用 :func:`~.apart_alpha`
+        '''
         rgbas = self.get()
         for i in range(len(rgbas)):
             rgbas[i, 3] = apart_alpha(rgbas[i, 3], n)
@@ -191,6 +212,9 @@ class Cmpt_Rgbas[ItemT](Component[ItemT]):
 
 
 def merge_alpha(alpha: float, n: int) -> float:
+    '''
+    计算透明度 ``alpha`` 在重叠 ``n`` 次混合后的透明度
+    '''
     result = alpha
     for _ in range(n - 1):
         result = 1 - (1 - result) * (1 - alpha)
@@ -199,6 +223,11 @@ def merge_alpha(alpha: float, n: int) -> float:
 
 
 def apart_alpha(alpha: float, n: int, *, eps: float = 1e-3) -> float:
+    '''
+    将透明度分离为 ``n`` 份，使得这 ``n`` 份混合后仍然表现为原来的透明度
+
+    使得在对齐时产生的重复部分能够更好地渲染
+    '''
     if alpha >= 1:
         return 1
     if alpha <= 0:

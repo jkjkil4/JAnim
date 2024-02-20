@@ -144,6 +144,14 @@ class Timeline(metaclass=ABCMeta):
         self.item_stored_datas[item]
 
     def register_dynamic_data(self, item: Item, data: DynamicData, as_time: float) -> None:
+        '''
+        注册动态数据信息
+
+        表示在调用 :meth:`get_stored_data_at_time` 时，如果其时间在 ``as_time`` 和下一个数据的时间之间，
+        就调用 ``data`` 来产生动态的数据
+
+        例如，在 :class:`~.MethodTransform` 中使用到
+        '''
         datas = self.item_stored_datas[item]
 
         # 在调用该方法前必须执行过 _detect_change，所以这里可以直接写 datas[-1]
@@ -425,6 +433,9 @@ class TimelineAnim(AnimGroup):
             self.global_t_ctx.reset(token)
 
     def render_all(self, ctx: mgl.Context) -> None:
+        '''
+        调用所有的 :class:`RenderCall` 进行渲染
+        '''
         if self._time is None:
             return
 
@@ -444,6 +455,7 @@ class TimelineAnim(AnimGroup):
         render_token = Renderer.data_ctx.set(RenderData(ctx=ctx, camera_info=camera_info))
 
         try:
+            # 使用 heapq 以深度为序调用 RenderCall
             render_calls = heapq.merge(
                 *[
                     anim.render_call_list

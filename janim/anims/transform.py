@@ -49,6 +49,11 @@ class Transform(Animation):
         self.init_path_func()
 
     def init_path_func(self) -> None:
+        '''
+        根据传入对象的 ``path_arc`` ``path_arc_axis`` ``path_func`` ，建立 ``self.path_func``
+
+        不需要手动调用
+        '''
         if self.path_func is not None:
             return
 
@@ -68,6 +73,7 @@ class Transform(Animation):
         begin_times: defaultdict[Item, int] = defaultdict(int)
         end_times: defaultdict[Item, int] = defaultdict(int)
 
+        # 对齐物件
         def align(item1: Item, item2: Item, recurse: bool) -> None:
             tpl = (item1, item2)
             if tpl in self.aligned:
@@ -85,6 +91,9 @@ class Transform(Animation):
 
         align(self.src_item, self.target_item, not self.root_only)
 
+        # 因为对齐后，可能会有多个一样的物件重叠在一起
+        # 所以这里需要拆分这些物件的透明度，使得重叠在一起的相同物件在颜色混合后仍表现为原有的样子
+        # 这样在动画进行时和进行前后之间就不会有突兀的切换
         for (begin, end), aligned in self.aligned.items():
             times = begin_times.get(begin, 0)
             if times >= 2:
@@ -94,6 +103,7 @@ class Transform(Animation):
             if times >= 2:
                 aligned.data2.apart_alpha(times)
 
+        # 设置 RenderCall
         self.set_render_call_list([
             RenderCall(
                 aligned.data1.cmpt.depth,
@@ -102,6 +112,8 @@ class Transform(Animation):
             for aligned in self.aligned.values()
         ])
 
+        # 在动画开始时自动隐藏源对象，在动画结束时自动隐藏目标对象
+        # 可以将 ``hide_src`` 和 ``show_target`` 置为 ``False`` 以禁用
         if self.hide_src:
             self.timeline.schedule(self.global_range.at, self.src_item.hide, root_only=self.root_only)
         if self.show_target:
@@ -119,15 +131,7 @@ class MethodTransform(Transform):
     '''
     对物件进行变换并创建的补间过程
 
-    例如：
-
-    .. code-block:: python
-
-        self.play(
-            item.anim.points.scale(2)).r.color.set('green'))
-        )
-
-    该例子会创建将 ``item`` 缩放 2 倍并且设置为绿色的补间动画
+    具体参考 :meth:`~.Item.anim`
     '''
     label_color = (165, 103, 44)
 
@@ -142,6 +146,9 @@ class MethodTransform(Transform):
         return self
 
     def wrap_data(self, item: Item) -> DynamicData:
+        '''
+        以供传入 :meth:`~.Timeline.register_dynamic_data` 使用
+        '''
         def wrapper(global_t: float) -> Item.Data:
             alpha = self.get_alpha_on_global_t(global_t)
             aligned = self.aligned[(item, item)]
@@ -208,6 +215,9 @@ class MethodTransform(Transform):
 
 
 class MethodTransformArgsBuilder:
+    '''
+    使得 ``.anim`` 和 ``.anim(...)`` 后可以进行同样的操作
+    '''
     def __init__(self, item: Item):
         self.item = item
 

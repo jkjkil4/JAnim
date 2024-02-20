@@ -11,3 +11,4 @@ components
    points
    radius
    rgbas
+   vpoints

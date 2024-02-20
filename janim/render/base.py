@@ -13,6 +13,10 @@ from janim.utils.file_ops import get_janim_dir, readall
 
 
 class Renderer:
+    '''渲染器的基类
+
+    重写 :meth:`init` 和 :meth:`render` 以实现具体功能
+    '''
     data_ctx: ContextVar[RenderData] = ContextVar('Renderer.data_ctx')
 
     def __init__(self, *args, **kwargs):
@@ -26,6 +30,10 @@ class Renderer:
 
 @dataclass(kw_only=True)
 class RenderData:
+    '''在渲染过程中需要配置的属性
+
+    通过 :py:obj:`Renderer.data_ctx` 进行设置和获取
+    '''
     ctx: mgl.Context
     camera_info: CameraInfo
 
@@ -43,12 +51,16 @@ program_map: defaultdict[mgl.Context, dict[str, mgl.Program]] = defaultdict(dict
 
 
 def set_global_uniforms(ctx: mgl.Context, *uniforms: UniformPair) -> None:
+    '''
+    设置在每个着色器中都可以访问到的 ``uniforms`` （需要在着色器中声明后使用）
+    '''
     global_uniform_map[ctx] = uniforms
     for prog in program_map[ctx].values():
         apply_global_uniforms(uniforms, prog)
 
 
 def apply_global_uniforms(uniforms: list[UniformPair], prog: mgl.Program) -> None:
+    '''将 ``uniforms`` 设置到 ``prog`` 中，并且跳过 ``prog`` 中没有的属性'''
     for key, value in uniforms:
         if key in prog._members:
             prog[key] = value
@@ -59,9 +71,9 @@ def get_program(filepath: str) -> mgl.Program:
     给定文件位置自动遍历后缀并读取着色器代码，
     例如传入 `shaders/dotcloud` 后，会自动读取以下位置的代码：
 
-    - `shaders/dotcloud.vert`
-    - `shaders/dotcloud.geom`
-    - `shaders/dotcloud.frag`
+    - shaders/dotcloud.vert
+    - shaders/dotcloud.geom
+    - shaders/dotcloud.frag
 
     若没有则缺省，但要能创建可用的着色器
 

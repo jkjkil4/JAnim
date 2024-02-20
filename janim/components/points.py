@@ -818,6 +818,9 @@ class Cmpt_Points[ItemT](Component[ItemT]):
         center: bool = True,
         **kwargs
     ) -> Self:
+        '''
+        将子物件按照 ``direction`` 方向排列
+        '''
         if self.bind is None:
             return
 
@@ -836,7 +839,7 @@ class Cmpt_Points[ItemT](Component[ItemT]):
         return self
 
     @staticmethod
-    def format_rows_cols(
+    def _format_rows_cols(
         items_count: int,
         n_rows: int | None,
         n_cols: int | None,
@@ -850,7 +853,7 @@ class Cmpt_Points[ItemT](Component[ItemT]):
         return n_rows, n_cols
 
     @staticmethod
-    def format_buff(
+    def _format_buff(
         buff: float | None = None,
         h_buff: float | None = None,
         v_buff: float | None = None,
@@ -881,6 +884,14 @@ class Cmpt_Points[ItemT](Component[ItemT]):
         by_center_point: bool = False,
         fill_rows_first: bool = True
     ) -> Self:
+        '''
+        将子物件按网格方式排列
+
+        - ``n_rows``, ``n_cols``: 行数、列数
+        - ``v_buff``, ``h_buff``: 行距、列距
+        - ``aligned_edge``: 对齐边缘
+        - ``by_center_point``: 默认为 ``False``；若设置为 ``True``，则仅将物件视为中心点，不考虑物件的宽高
+        '''
         if self.bind is None:
             return
 
@@ -890,8 +901,8 @@ class Cmpt_Points[ItemT](Component[ItemT]):
             if isinstance(getattr(item, self.bind.key), Cmpt_Points)
         ]
 
-        n_rows, n_cols = self.format_rows_cols(len(items), n_rows, n_cols)
-        h_buff, v_buff = self.format_buff(buff, h_buff, v_buff, by_center_point)
+        n_rows, n_cols = self._format_rows_cols(len(items), n_rows, n_cols)
+        h_buff, v_buff = self._format_buff(buff, h_buff, v_buff, by_center_point)
 
         x_unit, y_unit = h_buff, v_buff
         if not by_center_point:

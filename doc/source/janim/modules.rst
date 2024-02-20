@@ -13,5 +13,7 @@ janim
    items/modules.rst
    render/modules.rst
    utils/modules.rst
+   examples
+   imports
    logger
    typing

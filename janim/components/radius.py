@@ -12,6 +12,9 @@ from janim.utils.unique_nparray import UniqueNparray
 
 
 class Cmpt_Radius[ItemT](Component[ItemT]):
+    '''
+    半径组件，被用于 :class:`DotCloud` 的点半径，以及 :class:`VItem` 的轮廓线粗细
+    '''
     def __init__(self, default_radius: float, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.default_radius = default_radius
@@ -54,6 +57,9 @@ class Cmpt_Radius[ItemT](Component[ItemT]):
     # region 半径数据 | Radii
 
     def get(self) -> np.ndarray:
+        '''
+        得到半径数据
+        '''
         return self._radii.data
 
     def set(
@@ -62,6 +68,9 @@ class Cmpt_Radius[ItemT](Component[ItemT]):
         *,
         root_only: bool = False,
     ) -> Self:
+        '''
+        设置半径数据
+        '''
         if not isinstance(radius, Iterable):
             radius = [radius]
         radii = np.array(radius)
@@ -76,6 +85,9 @@ class Cmpt_Radius[ItemT](Component[ItemT]):
         return self
 
     def clear(self) -> Self:
+        '''
+        将半径数据重置为默认值
+        '''
         self.set(np.full(1, self.default_radius))
 
     def reverse(self) -> Self:

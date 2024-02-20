@@ -17,14 +17,11 @@ from janim.utils.space_ops import (angle_between_vectors, angle_of_vector,
 DEFAULT_DOT_RADIUS = 0.08
 DEFAULT_SMALL_DOT_RADIUS = 0.04
 
-__all__ = [
-    'Arc', 'ArcBetweenPoints',
-    'Circle', 'Dot', 'SmallDot', 'Ellipse',
-    'AnnularSector', 'Sector', 'Annulus'
-]
-
 
 class ArcCenter(VItem):
+    '''
+    与圆弧有关的类的基类，被 :class:`Arc` 和 :class:`AnnularSector` 所继承
+    '''
     _arc_center = CmptInfo(Cmpt_Points[Self])
 
     def __init__(self, *args, arc_center: Vect = ORIGIN, **kwargs):
@@ -39,6 +36,7 @@ class ArcCenter(VItem):
         )
 
     def get_arc_center(self) -> np.ndarray:
+        '''得到圆弧所对应的圆心'''
         return self._arc_center.get()[0]
 
     def move_arc_center_to(self, point: Vect) -> Self:
@@ -51,7 +49,8 @@ class Arc(ArcCenter):
     '''
     圆弧
 
-    传入 ``start_angle`` 指定起始的角度，``angle`` 表示圆心角
+    - ``start_angle`` 表示起始的角度
+    - ``angle`` 表示圆心角
     '''
     _arc_center = CmptInfo(Cmpt_Points[Self])
 
@@ -115,8 +114,9 @@ class ArcBetweenPoints(Arc):
     '''
     两点之间的圆弧
 
-    - 传入 `start`, `end` 表示起点终点，`angle` 表示圆心角
-    - 其余参数同 `Arc`
+    - 传入 ``start``, ``end`` 表示起点终点
+    - ``angle`` 表示圆心角
+    - 其余参数同 ``Arc``
     '''
     def __init__(
         self,
@@ -132,6 +132,11 @@ class ArcBetweenPoints(Arc):
 
 
 class Cmpt_VPoints_CircleImpl[ItemT](Cmpt_VPoints[ItemT], impl=True):
+    '''
+    在圆中，对 :class:`~.Cmpt_VPoints` 的进一步实现
+
+    对于 :class:`Circle` 对象 ``circle``，使用 ``circle.points.xxx`` 即可调用以下的方法
+    '''
     def surround(
         self,
         item: Item,
@@ -154,12 +159,16 @@ class Cmpt_VPoints_CircleImpl[ItemT](Cmpt_VPoints[ItemT], impl=True):
         return angle % TAU
 
     def point_at_angle(self, angle: float) -> np.ndarray:
+        '''
+        得到在指定角度处的点，例如 ``angle=0`` 得到右侧的点，``angle=PI / 2`` 得到顶部的点
+        '''
         start_angle = self.get_start_angle()
         return self.point_from_proportion(
             (angle - start_angle) / TAU % 1
         )
 
     def get_radius(self) -> float:
+        '''得到半径'''
         return get_norm(self.get_start() - self.box.center)
 
 
@@ -167,8 +176,8 @@ class Circle(VItem):
     '''
     圆
 
-    - 参数同 `Arc`
-    - 半径传入 `radius` 指定
+    - 参数同 ``Arc``
+    - 半径传入 ``radius`` 指定
     '''
     points = CmptInfo(Cmpt_VPoints_CircleImpl[Self])
 
@@ -192,7 +201,7 @@ class Circle(VItem):
 
 class Dot(Circle):
     '''
-    点（半径默认为0.08）
+    点，半径默认为 ``0.08``
     '''
     def __init__(
         self,
@@ -214,7 +223,7 @@ class Dot(Circle):
 
 class SmallDot(Dot):
     '''
-    小点（半径默认为0.04）
+    小点，半径默认为 ``0.04``
     '''
     def __init__(self, *, radius: float = DEFAULT_SMALL_DOT_RADIUS, **kwargs) -> None:
         super().__init__(radius=radius, **kwargs)
@@ -238,11 +247,11 @@ class AnnularSector(ArcCenter):
     '''
     扇环
 
-    - `inner_radius`: 内圆半径
-    - `outer_radius`: 外圆半径
-    - `start_angle`: 起始角度
-    - `angle`: 圆心角
-    - `arc_center`: 圆弧的中心
+    - ``inner_radius``: 内圆半径
+    - ``outer_radius``: 外圆半径
+    - ``start_angle``: 起始角度
+    - ``angle``: 圆心角
+    - ``arc_center``: 圆弧的中心
     '''
     def __init__(
         self,
@@ -279,7 +288,7 @@ class Sector(Arc):
     '''
     扇形
 
-    传入参数请参考 `Arc`
+    传入参数请参考 ``Arc``
     '''
     def __init__(self, *, arc_center: np.ndarray = ORIGIN, **kwargs) -> None:
         super().__init__(arc_center=arc_center, **kwargs)
@@ -291,9 +300,9 @@ class Annulus(VItem):
     '''
     圆环
 
-    - `inner_radius`: 内圆半径
-    - `outer_radius`: 外圆半径
-    - `arc_center`: 圆弧的中心
+    - ``inner_radius``: 内圆半径
+    - ``outer_radius``: 外圆半径
+    - ``arc_center``: 圆弧的中心
     '''
     def __init__(
         self,

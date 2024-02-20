@@ -23,6 +23,22 @@ class TimeRange:
 
 @dataclass
 class RenderCall:
+    '''
+    绘制调用
+
+    - ``depth``: 该绘制的深度
+    - ``func``: 该绘制所调用的函数
+
+    具体机制：
+
+    - 在每个动画对象中，都会使用 :meth:`~.Animation.set_render_call_list` 来设置该动画进行绘制时所执行的函数
+    - 在进行渲染（具体参考 :meth:`~.TimelineAnim.render_all` ）时，会按照深度进行排序，依次对 ``func`` 进行调用，深度越高的越先调用
+
+    例：
+
+    - 在 :class:`~.Display` 中，设置了单个 :class:`RenderCall` ，作用是绘制物件
+    - 在 :class:`~.Transform` 中，对于每个插值物件都设置了 :class:`RenderCall`，绘制所有的插值物件
+    '''
     depth: Cmpt_Depth
     func: Callable[[], None]
 
@@ -56,7 +72,7 @@ class Animation:
 
     def set_global_range(self, at: float, duration: float | None = None) -> None:
         '''
-        设置在 Timeline 上的时间范围
+        设置在 :class:`~.Timeline` 上的时间范围
 
         不需要手动设置，该方法是被 :meth:`~.AnimGroup.set_global_range` 调用以计算的
         '''
@@ -65,6 +81,9 @@ class Animation:
         self.global_range = TimeRange(at, duration)
 
     def set_render_call_list(self, lst: list[RenderCall]) -> None:
+        '''
+        设置绘制调用，具体参考 :class:`RenderCall`
+        '''
         self.render_call_list = sorted(lst, key=lambda x: x.depth, reverse=True)
 
     def anim_pre_init(self) -> None: '''在 :meth:`~.Timeline.detect_changes_of_all` 执行之前调用的初始化方法'''

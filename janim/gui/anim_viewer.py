@@ -33,6 +33,11 @@ TIMELINE_VIEW_MIN_DURATION = 0.5
 
 
 class AnimViewer(QMainWindow):
+    '''
+    用于显示构建完成的时间轴动画
+
+    可以使用 ``AnimViewer.views(MyTimeline().build())`` 进行直接显示
+    '''
     def __init__(
         self,
         anim: TimelineAnim,
@@ -365,6 +370,9 @@ class AnimViewer(QMainWindow):
 
     @classmethod
     def views(cls, anim: TimelineAnim) -> None:
+        '''
+        直接显示一个浏览构建完成的时间轴动画的窗口
+        '''
         app = Application.instance()
         if app is None:
             app = Application()
@@ -376,8 +384,18 @@ class AnimViewer(QMainWindow):
 
 
 class TimelineView(QWidget):
+    '''
+    窗口下方的进度条和动画区段指示器
+
+    - **w** 键放大区段（使视野精确到一小段中）
+    - **s** 键缩小区段（使视野扩展到一大段中）
+    - **a** 和 **d** 左右移动区段
+    '''
     @dataclass
     class LabelInfo:
+        '''
+        动画区段被渲染到第几行的标记
+        '''
         anim: Animation
         row: int
 
@@ -392,6 +410,9 @@ class TimelineView(QWidget):
 
     @dataclass
     class Pressing:
+        '''
+        记录按键状态
+        '''
         w: bool = False
         a: bool = False
         s: bool = False
@@ -430,6 +451,9 @@ class TimelineView(QWidget):
         self.update()
 
     def init_label_info(self) -> None:
+        '''
+        计算各个动画区段应当被渲染到第几行，以叠放式进行显示
+        '''
         self.labels_info: list[TimelineView.LabelInfo] = []
         self.max_row = 0
 
@@ -592,6 +616,7 @@ class TimelineView(QWidget):
     def paintEvent(self, _: QPaintEvent) -> None:
         p = QPainter(self)
 
+        # 绘制动画区段
         for info in self.labels_info:
             if info.anim.global_range.end <= self.range.at or info.anim.global_range.at >= self.range.end:
                 continue
@@ -601,20 +626,22 @@ class TimelineView(QWidget):
             if rect.x() < 0:
                 rect.setX(0)
 
+            # 这里的判断使得区段过窄时也能看得见
             if rect.width() > 5:
                 x_adjust = 2
             elif rect.width() > 1:
                 x_adjust = (rect.width() - 1) / 2
             else:
                 x_adjust = 0
-            rect.adjust(x_adjust, 2, -x_adjust, -2)
 
+            # 绘制背景部分
+            rect.adjust(x_adjust, 2, -x_adjust, -2)
             p.setPen(Qt.PenStyle.NoPen)
             p.setBrush(QColor(*info.anim.label_color).lighter())
             p.drawRect(rect)
 
+            # 绘制动画类名
             rect.adjust(1, 1, -1, -1)
-
             p.setPen(Qt.GlobalColor.black)
             p.drawText(
                 rect,
@@ -622,11 +649,12 @@ class TimelineView(QWidget):
                 f'{info.anim.__class__.__name__}'
             )
 
+        # 绘制当前进度指示
         pixel_at = self.progress_to_pixel(self._progress)
-
         p.setPen(QPen(Qt.GlobalColor.white, 2))
         p.drawLine(pixel_at, 0, pixel_at, self.height())
 
+        # 绘制视野区域指示（底部的长条）
         left = self.range.at / self.anim.global_range.duration * self.width()
         width = self.range.duration / self.anim.global_range.duration * self.width()
         p.setPen(Qt.PenStyle.NoPen)

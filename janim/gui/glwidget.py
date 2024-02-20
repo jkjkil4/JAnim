@@ -9,6 +9,9 @@ from janim.utils.config import Config
 
 
 class GLWidget(QOpenGLWidget):
+    '''
+    窗口中央的渲染界面
+    '''
     rendered = Signal()
 
     def __init__(self, anim: TimelineAnim, parent: QWidget | None = None) -> None:

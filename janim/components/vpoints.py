@@ -15,11 +15,23 @@ from janim.utils.bezier import (PathBuilder, bezier, integer_interpolate,
 from janim.utils.data import AlignedData
 from janim.utils.space_ops import get_norm, get_unit_normal
 
-# TODO: 注释
-# TODO: 注释：关于子路径结束是如何判定的
-
 
 class Cmpt_VPoints[ItemT](Cmpt_Points[ItemT]):
+    '''
+    曲线点坐标数据
+
+    - 每三个点表示一段二阶贝塞尔曲线，并且前后相接的曲线共用公共点。
+
+      例如对于点坐标列表 ``[a, b, c, d, e, f, g]``，则表示这些曲线：``[a, b, c]`` ``[c, d, e]`` ``[e, f, g]``
+
+    - 如果一段曲线的起始点和控制点相同，则视为该段子路径结束的表示。
+
+      例如对于点坐标列表 ``[a, b, c, d, e, e, f, g, h]``，则表示两段子路径：``[a, b, c, d, e]`` 和 ``[f, g, h]``
+
+    - 如果子路径的终止点和起始点相同，则该段子路径被视为闭合路径。
+
+      只有闭合的子路径，才能够进行填充色的渲染
+    '''
     def copy(self) -> Self:
         return super().copy()
 
@@ -124,32 +136,57 @@ class Cmpt_VPoints[ItemT](Cmpt_Points[ItemT]):
     # region anchors and handles
 
     def get_anchors(self) -> np.ndarray:
+        '''
+        得到曲线的锚点
+        '''
         return self.get()[::2]
 
     def get_handles(self) -> np.ndarray:
+        '''
+        得到曲线的控制点
+        '''
         return self.get()[1::2]
 
     @staticmethod
     def get_bezier_tuples_from_points(points: VectArray) -> Iterable[np.ndarray]:
+        '''
+        由 ``points`` 得到由每一组贝塞尔曲线控制点组成的列表
+
+        例如，对于有 7 个点的 ``points``，返回值是 ``(points[[0, 1, 2]], points[[2, 3, 4]], points[[4, 5, 6]])``
+        '''
         n_curves = max(0, len(points) - 1) // 2
         return (points[2 * i: 2 * i + 3] for i in range(n_curves))
 
     def get_bezier_tuples(self) -> Iterable[np.ndarray]:
+        '''
+        得到由每一组贝塞尔曲线控制点组成的列表，具体参考 :meth:`get_bezier_tuples_from_points`
+        '''
         return self.get_bezier_tuples_from_points(self.get())
 
     def curves_count(self) -> int:
+        '''
+        得到曲线数量
+        '''
         return max(0, self.count() - 1) // 2
 
     def get_nth_curve_points(self, n: int) -> VectArray:
+        '''
+        得到第 ``n`` 组的贝塞尔曲线控制点 (从 0 开始计数)
+        '''
         if n < 0 or n >= self.curves_count():
             raise ValueError(f'n 必须是 0~{self.curves_count() - 1} 的值，{n} 无效')
         return self._points._data[2 * n: 2 * n + 3].copy()
 
     def get_nth_curve_function(self, n: int) -> Callable[[float], np.ndarray]:
+        '''
+        返回值是第 ``n`` 组贝塞尔曲线的描点函数，传入 [0, 1] 之间的值，得到对应的在曲线上的点
+        '''
         return bezier(self.get_nth_curve_points(n))
 
     def quick_point_from_proportion(self, alpha: float) -> np.ndarray:
-        # Assumes all curves have the same length, so is inaccurate
+        '''
+        假设所有的曲线都有相同的长度，所以这是不准确的
+        '''
         num_curves = self.curves_count()
         n, residue = integer_interpolate(0, num_curves, alpha)
         curve_func = self.get_nth_curve_function(n)
@@ -160,7 +197,7 @@ class Cmpt_VPoints[ItemT](Cmpt_Points[ItemT]):
         If you want a point a proportion alpha along the curve, this
         gives you the index of the appropriate bezier curve, together
         with the proportion along that curve you'd need to travel
-        '''
+        '''  # TODO: translate
         if alpha == 0:
             return (0, 0.0)
         partials: list[float] = [0]
@@ -198,6 +235,9 @@ class Cmpt_VPoints[ItemT](Cmpt_Points[ItemT]):
     # region _as_corners 操作
 
     def add_as_corners(self, points: VectArray) -> Self:
+        '''
+        以折线的方式将 ``points`` 添加
+        '''
         if not self.has():
             self.set(points[0])
 
@@ -209,6 +249,9 @@ class Cmpt_VPoints[ItemT](Cmpt_Points[ItemT]):
         return self
 
     def set_as_corners(self, points: VectArray) -> Self:
+        '''
+        将点数据设置为由 ``points`` 构成的折线
+        '''
         builder = PathBuilder(start_point=points[0])
         for point in points[1:]:
             builder.line_to(point)
@@ -269,6 +312,9 @@ class Cmpt_VPoints[ItemT](Cmpt_Points[ItemT]):
     # region subpaths
 
     def walk_subpath_end_indices(self) -> Generator[int, None, None]:
+        '''
+        遍历每个子路径结尾的下标
+        '''
         points = self.get()
         a0, h = points[0:-1:2], points[1::2]
         yield from np.where((a0 == h).all(1))[0] * 2
@@ -278,6 +324,11 @@ class Cmpt_VPoints[ItemT](Cmpt_Points[ItemT]):
         return list(self.walk_subpath_end_indices())
 
     def get_closepath_flags(self) -> np.ndarray:
+        '''
+        得到子路径是否闭合的标志，结果长度与点数量相同
+
+        对于闭合路径，结果中对应部分会被设置为 ``True``
+        '''
         result = np.full(self.count(), False)
         if len(result) == 0:
             return result
@@ -294,12 +345,18 @@ class Cmpt_VPoints[ItemT](Cmpt_Points[ItemT]):
 
     @staticmethod
     def get_parts_by_end_indices(array: np.ndarray, end_indices: np.ndarray) -> list[np.ndarray]:
+        '''
+        根据子路径结尾下标的列表，将 ``array`` 分段
+        '''
         if len(array) == 0:
             return []
         start_indices = [0, *(end_indices[:-1] + 2)]
         return [array[i1: i2 + 1] for i1, i2 in zip(start_indices, end_indices)]
 
     def get_subpaths(self) -> list[np.ndarray]:
+        '''
+        得到子路径列表
+        '''
         return self.get_parts_by_end_indices(self.get(), np.array(self.get_subpath_end_indices()))
 
     # endregion

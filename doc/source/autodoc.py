@@ -56,7 +56,7 @@ def generate_autodoc(local_path: str, module_path: str) -> bool:
     if generated_dirs or generated_files:
         with open(os.path.join(rst_path, 'modules.rst'), 'w') as f_modules:
             try:
-                name = module_path[module_path.index('.') + 1:]
+                name = module_path[module_path.rindex('.') + 1:]
             except ValueError:
                 name = module_path
 

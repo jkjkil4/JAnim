@@ -35,6 +35,9 @@ class _ItemMeta(type):
 
 class Item(Relation['Item'], metaclass=_ItemMeta):
     renderer_cls = Renderer
+    '''
+    覆盖该值以在子类中使用特定的渲染器
+    '''
 
     depth = CmptInfo(Cmpt_Depth[Self], 0)
 
@@ -130,8 +133,32 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
 
     @property
     def anim(self) -> Self:
+        '''
+        例如：
+
+        .. code-block:: python
+
+            self.play(
+                item.anim.points.scale(2).r.color.set('green')
+            )
+
+        该例子会创建将 ``item`` 缩放 2 倍并且设置为绿色的补间动画
+
+        并且可以向动画传入参数：
+
+        .. code-block:: python
+
+            self.play(
+                item.anim(duration=2, rate_func=linear)
+                .points.scale(2).r.color.set('green')
+            )
+        '''
         from janim.anims.transform import MethodTransformArgsBuilder
         return MethodTransformArgsBuilder(self)
+
+    # 使得 .anim() 后仍有代码提示
+    def __call__(self, **kwargs) -> Self:
+        pass
 
     @overload
     def __getitem__(self, value: int) -> Item: ...
@@ -151,6 +178,11 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         return self.replicate(other)
 
     def replicate(self, n: int) -> Group:
+        '''
+        复制 n 个自身，并作为一个 :class:`Group` 返回
+
+        可以将 ``item * n`` 作为该方法的简写
+        '''
         return Group(
             *(self.copy() for _ in range(n))
         )
@@ -394,11 +426,17 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         return self.Data._ref(self)
 
     def copy(self, *args, **kwargs) -> Self:
+        '''
+        复制物件
+        '''
         new_item = self.__class__(*args, **kwargs)
         new_item.become(self)
         return new_item
 
     def become(self, item_or_data: Self | Data[Self]) -> Self:
+        '''
+        将该物件的数据设置为与传入的数据相同（以复制的方式，不是引用）
+        '''
         if isinstance(item_or_data, Item):
             data = item_or_data.ref_data()
         else:
