@@ -7,3 +7,4 @@ moderngl
 pyside6
 qdarkstyle
 tqdm
+psutil

@@ -4,6 +4,7 @@ from contextvars import ContextVar
 from dataclasses import dataclass
 from typing import Self
 
+import psutil
 from colour import Color
 
 from janim.typing import Vect
@@ -63,9 +64,14 @@ class Config(metaclass=_ConfigMeta):
         config_ctx_var.reset(self.token)
 
 
+def is_power_plugged() -> bool:
+    battery = psutil.sensors_battery()
+    return battery is None or battery.power_plugged
+
+
 default_config = Config(
     fps=60,
-    preview_fps=60,
+    preview_fps=60 if is_power_plugged() else 30,
     anti_alias_width=0.015,
 
     aspect_ratio=16.0 / 9.0,
