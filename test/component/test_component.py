@@ -8,12 +8,9 @@ class ComponentTest(unittest.TestCase):
     def test_component_group(self) -> None:
         called_list = []
 
-        class MyCmpt(Component):
+        class MyCmpt(Component, impl=True):
             def fn(self):
                 called_list.append(self.fn)
-
-            def copy(): ...
-            def __eq__(self, other): ...
 
             a = 1
 
@@ -47,9 +44,8 @@ class ComponentTest(unittest.TestCase):
             group.astype(MyItem).cmpt_that_not_exists
 
     def test_component_group_err(self) -> None:
-        class MyCmpt(Component):
-            def copy(): ...
-            def __eq__(self, other): ...
+        class MyCmpt(Component, impl=True):
+            pass
 
         class MyItem(Item):
             cmpt1 = CmptInfo(MyCmpt)
@@ -62,9 +58,8 @@ class ComponentTest(unittest.TestCase):
             MyItem2()
 
     def test_get_same_cmpt(self) -> None:
-        class MyCmpt(Component):
-            def copy(): ...
-            def __eq__(self, other): ...
+        class MyCmpt(Component, impl=True):
+            pass
 
         class MyItem(Item):
             cmpt = CmptInfo(MyCmpt)
@@ -92,23 +87,14 @@ class ComponentTest(unittest.TestCase):
         )
 
     def test_inherit(self) -> None:
-        class MyCmpt1(Component):
+        class MyCmpt1(Component, impl=True):
             def fn1(self): ...
 
-            def copy(): ...
-            def __eq__(self, other): ...
-
-        class MyCmpt2(MyCmpt1):
+        class MyCmpt2(MyCmpt1, impl=True):
             def fn2(self): ...
 
-            def copy(): ...
-            def __eq__(self, other): ...
-
-        class MyCmpt3(Component):
+        class MyCmpt3(Component, impl=True):
             def fn3(self): ...
-
-            def copy(): ...
-            def __eq__(self, other): ...
 
         class MyItem1(Item):
             cmpt = CmptInfo(MyCmpt1)

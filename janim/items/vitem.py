@@ -15,6 +15,9 @@ from janim.typing import Vect, JAnimColor, ColorArray, Alpha, AlphaArray
 
 
 class VItem(Points):
+    '''
+    贝塞尔曲线拼接物件，具体说明请参考 :class:`~.Cmpt_VPoints` 的文档
+    '''
     points = CmptInfo(Cmpt_VPoints[Self])
     radius = CmptInfo(Cmpt_Radius[Self], 0.02)
 

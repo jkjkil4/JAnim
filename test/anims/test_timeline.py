@@ -24,6 +24,8 @@ class TimelineTest(unittest.TestCase):
             def __eq__(self, other: MyCmpt) -> bool:
                 return self.value == other.value
 
+            def become(self, other): ...
+
         class MyItem(Item):
             cmpt = CmptInfo(MyCmpt)
 

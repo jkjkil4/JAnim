@@ -12,7 +12,7 @@ class ItemTest(unittest.TestCase):
     def test_broadcast_refresh(self) -> None:
         called_list = []
 
-        class MyCmpt(Component):
+        class MyCmpt(Component, impl=True):
             @Signal
             def points_changed(self):
                 called_list.append(self.points_changed)
@@ -27,9 +27,6 @@ class ItemTest(unittest.TestCase):
             @refresh.register
             def fn_down(self):
                 called_list.append(self.fn_down)
-
-            def copy(): ...
-            def __eq__(self, other): ...
 
         class MyItem(Item):
             cmpt = CmptInfo(MyCmpt)

@@ -136,7 +136,7 @@ class CmptInfo[T]:
     '''
     def __init__(self, cls: type[T], *args, **kwargs):
         self.__doc__ = ""
-        self.cls = cls
+        self.cls = getattr(cls, '__origin__', cls)
         self.args = args
         self.kwargs = kwargs
 
