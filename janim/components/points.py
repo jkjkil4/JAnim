@@ -969,7 +969,16 @@ class Cmpt_Points[ItemT](Component[ItemT]):
         )
         return self
 
-    # TODO: shift_onto_screen
+    def shift_onto_screen(self, **kwargs) -> Self:
+        space_lengths = [Config.get.frame_x_radius, Config.get.frame_y_radius]
+        for vect in UP, DOWN, LEFT, RIGHT:
+            dim = np.argmax(np.abs(vect))
+            buff = kwargs.get("buff", DEFAULT_ITEM_TO_EDGE_BUFF)
+            max_val = space_lengths[dim] - buff
+            edge_center = self.box.get(vect)
+            if np.dot(edge_center, vect) > max_val:
+                self.to_border(vect, **kwargs)
+        return self
 
     def set_coord(self, value: float, *, dim: int, direction: Vect = ORIGIN, root_only=False) -> Self:
         curr = self.box.coord(dim, direction)
