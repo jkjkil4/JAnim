@@ -1,23 +1,27 @@
 from __future__ import annotations
 
-from typing import Iterable, Callable, TypeVar, Sequence, Self
+from typing import Callable, Iterable, Self, Sequence, TypeVar
 
-# from scipy import linalg
 import numpy as np
-import numpy.typing as npt
 
-from janim.utils.simple_functions import choose
-from janim.utils.space_ops import find_intersection
-from janim.utils.space_ops import cross2d
-from janim.utils.space_ops import midpoint
+from janim.constants import DEGREES
 from janim.typing import Vect, VectArray
+from janim.utils.simple_functions import choose
+from janim.utils.space_ops import (angle_between_vectors, cross2d,
+                                   find_intersection, midpoint)
 
 CLOSED_THRESHOLD = 0.001
 T = TypeVar("T")
 
 
 class PathBuilder:
-    def __init__(self, *, start_point: Vect | None = None, points: VectArray | None = None):
+    def __init__(
+        self,
+        *,
+        start_point: Vect | None = None,
+        points: VectArray | None = None,
+        use_simple_quadratic_approx: bool = False,
+    ):
         if (start_point is None) == (points is None):
             raise ValueError('必须仅设置 start_point 和 points 中的一个')
         if start_point is not None:
@@ -26,6 +30,8 @@ class PathBuilder:
         else:
             self.points_list = [points]
             self.end_point = points[-1]
+
+        self.use_simple_quadratic_approx = use_simple_quadratic_approx
 
     def get(self) -> np.ndarray:
         return np.vstack(self.points_list)
@@ -59,8 +65,20 @@ class PathBuilder:
         handle2: Vect,
         anchor: Vect
     ) -> Self:
-        # TODO: cubic_to
-        raise NotImplementedError()
+        last = self.end_point
+        # Note, this assumes all points are on the xy-plane
+        v1 = handle1 - last
+        v2 = anchor - handle2
+        angle = angle_between_vectors(v1, v2)
+        if self.use_simple_quadratic_approx and angle < 45 * DEGREES:
+            quad_approx = [last, find_intersection(last, v1, anchor, -v2), anchor]
+        else:
+            quad_approx = get_quadratic_approximation_of_cubic(
+                last, handle1, handle2, anchor
+            )
+        self.points_list.append(quad_approx[1:])
+        self.end_point = quad_approx[-1]
+        return self
 
     def close_path(self) -> Self:
         self.line_to(self.points_list[0][0])
@@ -237,86 +255,6 @@ def get_smooth_quadratic_bezier_handle_points(
     return handles
 
 
-# def get_smooth_cubic_bezier_handle_points(
-#     points: npt.ArrayLike
-# ) -> tuple[np.ndarray, np.ndarray]:
-#     points = np.array(points)
-#     num_handles = len(points) - 1
-#     dim = points.shape[1]
-#     if num_handles < 1:
-#         return np.zeros((0, dim)), np.zeros((0, dim))
-#     # Must solve 2*num_handles equations to get the handles.
-#     # l and u are the number of lower an upper diagonal rows
-#     # in the matrix to solve.
-#     l, u = 2, 1
-#     # diag is a representation of the matrix in diagonal form
-#     # See https://www.particleincell.com/2012/bezier-splines/
-#     # for how to arrive at these equations
-#     diag = np.zeros((l + u + 1, 2 * num_handles))
-#     diag[0, 1::2] = -1
-#     diag[0, 2::2] = 1
-#     diag[1, 0::2] = 2
-#     diag[1, 1::2] = 1
-#     diag[2, 1:-2:2] = -2
-#     diag[3, 0:-3:2] = 1
-#     # last
-#     diag[2, -2] = -1
-#     diag[1, -1] = 2
-#     # This is the b as in Ax = b, where we are solving for x,
-#     # and A is represented using diag.  However, think of entries
-#     # to x and b as being points in space, not numbers
-#     b = np.zeros((2 * num_handles, dim))
-#     b[1::2] = 2 * points[1:]
-#     b[0] = points[0]
-#     b[-1] = points[-1]
-
-#     def solve_func(b):
-#         return linalg.solve_banded((l, u), diag, b)
-
-#     use_closed_solve_function = is_closed(points)
-#     if use_closed_solve_function:
-#         # Get equations to relate first and last points
-#         matrix = diag_to_matrix((l, u), diag)
-#         # last row handles second derivative
-#         matrix[-1, [0, 1, -2, -1]] = [2, -1, 1, -2]
-#         # first row handles first derivative
-#         matrix[0, :] = np.zeros(matrix.shape[1])
-#         matrix[0, [0, -1]] = [1, 1]
-#         b[0] = 2 * points[0]
-#         b[-1] = np.zeros(dim)
-
-#         def closed_curve_solve_func(b):
-#             return linalg.solve(matrix, b)
-
-#     handle_pairs = np.zeros((2 * num_handles, dim))
-#     for i in range(dim):
-#         if use_closed_solve_function:
-#             handle_pairs[:, i] = closed_curve_solve_func(b[:, i])
-#         else:
-#             handle_pairs[:, i] = solve_func(b[:, i])
-#     return handle_pairs[0::2], handle_pairs[1::2]
-
-
-# def diag_to_matrix(
-#     l_and_u: tuple[int, int],
-#     diag: np.ndarray
-# ) -> np.ndarray:
-#     """
-#     Converts array whose rows represent diagonal
-#     entries of a matrix into the matrix itself.
-#     See scipy.linalg.solve_banded
-#     """
-#     l, u = l_and_u
-#     dim = diag.shape[1]
-#     matrix = np.zeros((dim, dim))
-#     for i in range(l + u + 1):
-#         np.fill_diagonal(
-#             matrix[max(0, i - u):, max(0, u - i):],
-#             diag[i, max(0, u - i):]
-#         )
-#     return matrix
-
-
 def is_closed(points: Sequence[np.ndarray]) -> bool:
     return np.allclose(points[0], points[-1])
 
@@ -324,10 +262,10 @@ def is_closed(points: Sequence[np.ndarray]) -> bool:
 # Given 4 control points for a cubic bezier curve (or arrays of such)
 # return control points for 2 quadratics (or 2n quadratics) approximating them.
 def get_quadratic_approximation_of_cubic(
-    a0: npt.ArrayLike,
-    h0: npt.ArrayLike,
-    h1: npt.ArrayLike,
-    a1: npt.ArrayLike
+    a0: Vect,
+    h0: Vect,
+    h1: Vect,
+    a1: Vect
 ) -> np.ndarray:
     a0 = np.array(a0, ndmin=2)
     h0 = np.array(h0, ndmin=2)
@@ -386,21 +324,10 @@ def get_quadratic_approximation_of_cubic(
     i1 = find_intersection(a1, T1, mid, Tm)
 
     m, n = np.shape(a0)
-    result = np.zeros((6 * m, n))
-    result[0::6] = a0
-    result[1::6] = i0
-    result[2::6] = mid
-    result[3::6] = mid
-    result[4::6] = i1
-    result[5::6] = a1
+    result = np.zeros((5 * m, n))
+    result[0::5] = a0
+    result[1::5] = i0
+    result[2::5] = mid
+    result[3::5] = i1
+    result[4::5] = a1
     return result
-
-
-def get_smooth_quadratic_bezier_path_through(
-    points: list[np.ndarray]
-) -> np.ndarray:
-    # ?TODO
-    h0, h1 = get_smooth_cubic_bezier_handle_points(points)
-    a0 = points[:-1]
-    a1 = points[1:]
-    return get_quadratic_approximation_of_cubic(a0, h0, h1, a1)

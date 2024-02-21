@@ -28,7 +28,6 @@ from janim.utils.simple_functions import clip
 
 TIMELINE_VIEW_MIN_DURATION = 0.5
 
-# TODO: comment
 # TODO: 鼠标悬停在时间轴的动画上时，显示动画预览
 
 

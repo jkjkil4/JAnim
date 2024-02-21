@@ -185,7 +185,9 @@ class Cmpt_VPoints[ItemT](Cmpt_Points[ItemT]):
 
     def quick_point_from_proportion(self, alpha: float) -> np.ndarray:
         '''
-        假设所有的曲线都有相同的长度，所以这是不准确的
+        相比 :meth:`point_from_proportion` 而言，更快
+
+        但是这里假设所有的曲线都有相同的长度，所以是不准确的
         '''
         num_curves = self.curves_count()
         n, residue = integer_interpolate(0, num_curves, alpha)
@@ -194,10 +196,9 @@ class Cmpt_VPoints[ItemT](Cmpt_Points[ItemT]):
 
     def curve_and_prop_of_partial_point(self, alpha: float) -> tuple[int, float]:
         '''
-        If you want a point a proportion alpha along the curve, this
-        gives you the index of the appropriate bezier curve, together
-        with the proportion along that curve you'd need to travel
-        '''  # TODO: translate
+        如果你想要得到沿着整个曲线上所在比例为 alpha 处的点，
+        这个函数会返回这个比例所对应的曲线部分的索引，以及在这个曲线部分上需要行进的比例
+        '''
         if alpha == 0:
             return (0, 0.0)
         partials: list[float] = [0]
