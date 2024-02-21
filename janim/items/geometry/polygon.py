@@ -1,12 +1,16 @@
 
-from typing import Iterable, overload
+from typing import Iterable, Self, overload
 
 import numpy as np
 
 from janim.constants import DL, DR, PI, RIGHT, UL, UR
+from janim.items.geometry.arc import ArcBetweenPoints
 from janim.items.vitem import VItem
 from janim.typing import Vect, VectArray
-from janim.utils.space_ops import compass_directions, rotate_vector
+from janim.utils.bezier import PathBuilder
+from janim.utils.iterables import adjacent_n_tuples
+from janim.utils.space_ops import (angle_between_vectors, compass_directions,
+                                   cross2d, get_norm, normalize, rotate_vector)
 
 
 class Polygon(VItem):
@@ -30,9 +34,44 @@ class Polygon(VItem):
         )
 
     def get_vertices(self) -> list[np.ndarray]:
-        return self.points.get()[::2]
+        return self.points.get()[:-1:2]
 
-    # TODO: round_corners
+    def round_corners(self, radius: float | None = None) -> Self:
+        verts = self.get_vertices()
+        min_edge_length = min(
+            get_norm(v1 - v2)
+            for v1, v2 in zip(verts, verts[1:])
+            if not np.isclose(v1, v2).all()
+        )
+        if radius is None:
+            radius = 0.25 * min_edge_length
+        else:
+            radius = min(radius, 0.5 * min_edge_length)
+        vertices = self.get_vertices()
+        arcs: list[ArcBetweenPoints] = []
+        for v1, v2, v3 in adjacent_n_tuples(vertices, 3):
+            vect1 = normalize(v2 - v1)
+            vect2 = normalize(v3 - v2)
+            angle = angle_between_vectors(vect1, vect2)
+            # Distance between vertex and start of the arc
+            cut_off_length = radius * np.tan(angle / 2)
+            # Negative radius gives concave curves
+            sign = float(np.sign(radius * cross2d(vect1, vect2)))
+            arc = ArcBetweenPoints(
+                v2 - vect1 * cut_off_length,
+                v2 + vect2 * cut_off_length,
+                angle=sign * angle,
+                n_components=2,
+            )
+            arcs.append(arc)
+
+        builder = PathBuilder(start_point=arcs[-1].points.get_end())
+        for arc in arcs:
+            if not np.isclose(builder.end_point, arc.points.get_start(), atol=1e-3).all():
+                builder.line_to(arc.points.get_start())
+            builder.append(arc.points.get()[1:])
+        self.points.set(builder.get())
+        return self
 
 
 class Polyline(Polygon):
@@ -76,11 +115,11 @@ class Triangle(RegularPolygon):
         super().__init__(n=3, **kwargs)
 
 
-class Rectangle(Polygon):
+class Rect(Polygon):
     '''矩形
 
-    - 可以使用 ``Rectangle(4, 2)`` 的传入宽高的方式进行构建
-    - 也可以使用 ``Rectangle(p1, p2)`` 的传入对角顶点的方式进行构建
+    - 可以使用 ``Rect(4, 2)`` 的传入宽高的方式进行构建
+    - 也可以使用 ``Rect(p1, p2)`` 的传入对角顶点的方式进行构建
     '''
     @overload
     def __init__(self, width: float = 4.0, height: float = 2.0, /, **kwargs) -> None: ...
@@ -100,7 +139,7 @@ class Rectangle(Polygon):
             self.points.set_size(v1, v2)
 
 
-class Square(Rectangle):
+class Square(Rect):
     '''正方形
 
     ``side_length`` 表示正方形边长
@@ -110,4 +149,13 @@ class Square(Rectangle):
         super().__init__(side_length, side_length, **kwargs)
 
 
-# TODO: RoundedRectangle
+class RoundedRect(Rect):
+    '''圆角矩形'''
+    @overload
+    def __init__(self, width: float = 4.0, height: float = 2.0, /, corner_radius: float = 0.5, **kwargs) -> None: ...
+    @overload
+    def __init__(self, corner1: Vect, corner2: Vect, /, corner_radius: float = 0.5, **kwargs) -> None: ...
+
+    def __init__(self, v1=4.0, v2=2.0, /, corner_radius: float = 0.5, **kwargs) -> None:
+        super().__init__(v1, v2, **kwargs)
+        self.round_corners(corner_radius)

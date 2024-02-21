@@ -76,6 +76,7 @@ class FileWriter:
 
         if not quiet:
             log.info(f'Finished writing "{name}" in {time.time() - t:.2f} s')
+            log.info(f'File saved to "{file_path}"')
 
     def open_video_pipe(self, file_path: str) -> None:
         stem, ext = os.path.splitext(file_path)
