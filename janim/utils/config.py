@@ -81,7 +81,7 @@ default_config = Config(
     pixel_width=1920,
     background_color=Color('#000000'),
 
-    wnd_pos='UR',
+    wnd_pos='OR',
     wnd_monitor=0,
 
     ffmpeg_bin='ffmpeg',

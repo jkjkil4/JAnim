@@ -6,6 +6,7 @@ from typing import Any, Callable, Self, overload
 from janim.components.component import CmptInfo, Component, _CmptGroup
 from janim.components.depth import Cmpt_Depth
 from janim.items.relation import Relation
+from janim.logger import log
 from janim.render.base import Renderer
 from janim.typing import SupportsApartAlpha, SupportsInterpolate
 from janim.utils.data import AlignedData
@@ -426,10 +427,13 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         '''
         return self.Data._ref(self)
 
-    def copy(self, *args, **kwargs) -> Self:
+    def copy(self, *args, recurse=True, **kwargs) -> Self:
         '''
         复制物件
         '''
+        if self.children:
+            log.warning('在有子物件的情况下使用 copy 时的处理并未完善')
+
         new_item = self.__class__(*args, **kwargs)
         new_item.become(self)
         return new_item
@@ -438,6 +442,9 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         '''
         将该物件的数据设置为与传入的数据相同（以复制的方式，不是引用）
         '''
+        if self.children:
+            log.warning('在有子物件的情况下使用 become 时的处理并未完善')
+
         if isinstance(item_or_data, Item):
             data = item_or_data.ref_data()
         else:

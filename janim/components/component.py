@@ -65,8 +65,8 @@ class Component[ItemT](refresh.Refreshable, metaclass=_CmptMeta):
         at_item: Item
         key: str
 
-    def __init__(self, *args, **kwargs) -> None:
-        super().__init__(*args, **kwargs)
+    def __init__(self) -> None:
+        super().__init__()
 
         self.bind: Component.BindInfo | None = None
 

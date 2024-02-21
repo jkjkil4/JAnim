@@ -6,7 +6,7 @@ import numpy as np
 
 import janim.utils.refresh as refresh
 from janim.components.points import Cmpt_Points
-from janim.constants import OUT
+from janim.constants import OUT, RIGHT
 from janim.items.item import Item
 from janim.logger import log
 from janim.typing import VectArray
@@ -147,6 +147,22 @@ class Cmpt_VPoints[ItemT](Cmpt_Points[ItemT]):
         得到曲线的控制点
         '''
         return self.get()[1::2]
+
+    def get_start_direction(self) -> np.ndarray:
+        points = self._points._data
+        start = points[0]
+        for pos in points[1:]:
+            if not np.isclose(start, pos).all():
+                return pos - start
+        return RIGHT
+
+    def get_end_direction(self) -> np.ndarray:
+        points = self._points._data
+        end = points[-1]
+        for pos in points[-2::-1]:
+            if not np.isclose(end, pos).all():
+                return end - pos
+        return RIGHT
 
     @staticmethod
     def get_bezier_tuples_from_points(points: VectArray) -> Iterable[np.ndarray]:

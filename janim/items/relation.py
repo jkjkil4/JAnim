@@ -22,8 +22,8 @@ class Relation[GRelT: 'Relation'](refresh.Refreshable):
         - 不包含调用者自身并且返回的列表中没有重复元素
         - 物件顺序是 DFS 顺序
     '''
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self):
+        super().__init__()
 
         self.parents: list[GRelT] = []
         self.children: list[GRelT] = []

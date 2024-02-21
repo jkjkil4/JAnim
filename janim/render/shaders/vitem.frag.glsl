@@ -127,6 +127,7 @@ void get_subpath_attr(
 
         vec2 v1 = normalize(B - A);
         vec2 v2 = normalize(C - B);
+        // REFACTOR: 使用更好的判断可近似为直线的方法
         if (abs(cross2d(v1, v2)) < 1e-3 && dot(v1, v2) > 0.0) {
             vec2 e = C - A;
             vec2 w = v_coord - A;

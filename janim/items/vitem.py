@@ -1,17 +1,22 @@
 from __future__ import annotations
 
-from typing import Self, Iterable
+import math
+from typing import Iterable, Self
 
 import numpy as np
 
-from janim.components.component import CmptInfo, CmptGroup
-from janim.components.vpoints import Cmpt_VPoints
-from janim.components.rgbas import Cmpt_Rgbas, apart_alpha
+from janim.components.component import CmptGroup, CmptInfo
 from janim.components.radius import Cmpt_Radius
+from janim.components.rgbas import Cmpt_Rgbas, apart_alpha
+from janim.components.vpoints import Cmpt_VPoints
+from janim.constants import PI
 from janim.items.points import Points
 from janim.render.impl import VItemRenderer
+from janim.typing import Alpha, AlphaArray, ColorArray, JAnimColor, Vect
 from janim.utils.data import AlignedData
-from janim.typing import Vect, JAnimColor, ColorArray, Alpha, AlphaArray
+from janim.utils.simple_functions import clip
+
+DEFAULT_STROKE_WIDTH = 0.02
 
 
 class VItem(Points):
@@ -19,7 +24,7 @@ class VItem(Points):
     贝塞尔曲线拼接物件，具体说明请参考 :class:`~.Cmpt_VPoints` 的文档
     '''
     points = CmptInfo(Cmpt_VPoints[Self])
-    radius = CmptInfo(Cmpt_Radius[Self], 0.02)
+    radius = CmptInfo(Cmpt_Radius[Self], DEFAULT_STROKE_WIDTH)
 
     stroke = CmptInfo(Cmpt_Rgbas[Self])
     fill = CmptInfo(Cmpt_Rgbas[Self])
@@ -56,6 +61,52 @@ class VItem(Points):
             self.radius.set(stroke_radius, root_only=root_only)
         self.stroke.set(stroke_color, stroke_alpha, root_only=root_only)
         self.fill.set(fill_color, fill_alpha, root_only=root_only)
+
+    def add_tip(
+        self,
+        alpha: float = 1.0,
+        reverse: bool = False,
+        colorize: bool = True,
+        angle: float | None = None,
+        fill_color: JAnimColor = None,
+        stroke_color: JAnimColor = None,
+        d_alpha: float = 1e-6,
+        **tip_kwargs
+    ):
+        '''
+        在 ``alpha`` 处创建一个箭头
+
+        - 默认情况下，箭头与路径方向同向；若传入 ``reverse=True`` 则反向
+        - 若传入 ``colorize=True``（默认），则会使箭头的颜色与路径的颜色相同
+        - 其余参数请参考 :class:`~.ArrowTip`
+        '''
+        if alpha >= 1.0:
+            pos = self.points.get_end()
+            angle_vert = self.points.get_end_direction()
+        elif alpha <= 0.0:
+            pos = self.points.get_start()
+            angle_vert = self.points.get_start_direction()
+        else:
+            pos = self.points.pfp(alpha)
+            angle_vert = self.points.pfp(clip(alpha + d_alpha, 0, 1)) - self.points.pfp(clip(alpha - d_alpha, 0, 1))
+
+        if angle is None:
+            angle = math.atan2(angle_vert[1], angle_vert[0])
+        if reverse:
+            angle += PI
+
+        if colorize:
+            if fill_color is None:
+                fill_color = self.fill.get()[0][:3]
+            if stroke_color is None:
+                stroke_color = self.stroke.get()[0][:3]
+
+        from janim.items.geometry.arrow import ArrowTip
+        tip = ArrowTip(angle=angle, fill_color=fill_color, stroke_color=stroke_color, **tip_kwargs)
+        tip.move_anchor_to(pos)
+        self.add(tip)
+
+        return tip
 
     class Data(Points.Data['VItem']):
         @classmethod
