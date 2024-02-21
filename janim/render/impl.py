@@ -32,9 +32,9 @@ class DotCloudRenderer(Renderer):
         self.prev_radius = np.array([])
 
     def render(self, data: 'DotCloud.Data') -> None:
-        new_color = data.cmpt.color.get()
-        new_radius = data.cmpt.radius.get()
-        new_points = data.cmpt.points.get()
+        new_color = data.cmpt.color._rgbas._data
+        new_radius = data.cmpt.radius._radii._data
+        new_points = data.cmpt.points._points._data
 
         if id(new_color) != id(self.prev_color) or len(new_points) != len(self.prev_points):
             color = resize_with_interpolation(new_color, len(new_points))
@@ -102,10 +102,10 @@ class VItemRenderer(Renderer):
 
         new_camera_info = render_data.camera_info
 
-        new_points = data.cmpt.points.get()
-        new_radius = data.cmpt.radius.get()
-        new_stroke = data.cmpt.stroke.get()
-        new_fill = data.cmpt.fill.get()
+        new_points = data.cmpt.points._points._data
+        new_radius = data.cmpt.radius._radii._data
+        new_stroke = data.cmpt.stroke._rgbas._data
+        new_fill = data.cmpt.fill._rgbas._data
 
         if id(new_radius) != id(self.prev_radius) or len(new_points) != len(self.prev_points):
             radius = resize_with_interpolation(new_radius, (len(new_points) + 1) // 2)
