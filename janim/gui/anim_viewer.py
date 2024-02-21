@@ -28,7 +28,7 @@ from janim.utils.simple_functions import clip
 
 TIMELINE_VIEW_MIN_DURATION = 0.5
 
-# TODO: 鼠标悬停在时间轴的动画上时，显示动画预览
+# TODO: 鼠标悬停在时间轴的动画上时，显示动画信息
 
 
 class AnimViewer(QMainWindow):

@@ -67,7 +67,7 @@ class Polygon(VItem):
 
         builder = PathBuilder(start_point=arcs[-1].points.get_end())
         for arc in arcs:
-            if not np.isclose(builder.end_point, arc.points.get_start(), atol=1e-3).all():
+            if not np.isclose(builder.end_point, arc.points.get_start()).all():
                 builder.line_to(arc.points.get_start())
             builder.append(arc.points.get()[1:])
         self.points.set(builder.get())

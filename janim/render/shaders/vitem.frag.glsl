@@ -125,8 +125,9 @@ void get_subpath_attr(
             break;
         }
 
-        // REFACTOR: 有无更好的方法判断近似直线？
-        if (abs(cross2d(normalize(C - B), normalize(B - A))) < 1e-3) {
+        vec2 v1 = normalize(B - A);
+        vec2 v2 = normalize(C - B);
+        if (abs(cross2d(v1, v2)) < 1e-3 && dot(v1, v2) > 0.0) {
             vec2 e = C - A;
             vec2 w = v_coord - A;
             vec2 b = w - e * clamp(dot(w, e) / dot(e, e), 0.0, 1.0);
