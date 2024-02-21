@@ -7,6 +7,7 @@ import numpy as np
 import janim.utils.refresh as refresh
 from janim.components.points import Cmpt_Points
 from janim.constants import OUT
+from janim.items.item import Item
 from janim.logger import log
 from janim.typing import VectArray
 from janim.utils.bezier import (PathBuilder, bezier, integer_interpolate,
@@ -230,6 +231,50 @@ class Cmpt_VPoints[ItemT](Cmpt_Points[ItemT]):
             return self.get_end()
         index, residue = self.curve_and_prop_of_partial_point(alpha)
         return self.get_nth_curve_function(index)(residue)
+
+    def pointwise_become_partial(self, other: Cmpt_VPoints | Item, a: float, b: float) -> Self:
+        if isinstance(other, Item):
+            cmpt = self.get_same_cmpt(other)
+        else:
+            cmpt = other
+
+        points = cmpt.get()
+        if a <= 0 and b >= 1:
+            self.set(points)
+            return self
+        num_curves = cmpt.curves_count()
+
+        # Partial curve includes three portions:
+        # - A start, which is some ending portion of an inner quadratic
+        # - A middle section, which matches the curve exactly
+        # - An end, which is the starting portion of a later inner quadratic
+
+        lower_index, lower_residue = integer_interpolate(0, num_curves, a)
+        upper_index, upper_residue = integer_interpolate(0, num_curves, b)
+        i1 = 2 * lower_index
+        i2 = 2 * lower_index + 3
+        i3 = 2 * upper_index
+        i4 = 2 * upper_index + 3
+
+        new_points = points.copy()
+        if num_curves == 0:
+            new_points[:] = 0
+            return self
+        if lower_index == upper_index:
+            tup = partial_quadratic_bezier_points(points[i1:i2], lower_residue, upper_residue)
+            new_points[:i1] = tup[0]
+            new_points[i1:i4] = tup
+            new_points[i4:] = tup[2]
+        else:
+            low_tup = partial_quadratic_bezier_points(points[i1:i2], lower_residue, 1)
+            high_tup = partial_quadratic_bezier_points(points[i3:i4], 0, upper_residue)
+            new_points[0:i1] = low_tup[0]
+            new_points[i1:i2] = low_tup
+            # Keep new_points i2:i3 as they are
+            new_points[i3:i4] = high_tup
+            new_points[i4:] = high_tup[2]
+        self.set(new_points)
+        return self
 
     # endregion
 

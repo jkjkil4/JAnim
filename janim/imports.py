@@ -7,6 +7,7 @@ from janim.camera.camera import *
 from janim.camera.camera_info import *
 from janim.components.rgbas import apart_alpha, merge_alpha
 from janim.items.geometry.arc import *
+from janim.items.geometry.line import *
 from janim.items.geometry.polygon import *
 from janim.items.item import *
 from janim.items.points import *

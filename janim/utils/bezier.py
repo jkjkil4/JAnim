@@ -4,11 +4,12 @@ from typing import Callable, Iterable, Self, Sequence, TypeVar
 
 import numpy as np
 
-from janim.constants import DEGREES
+from janim.constants import DEGREES, TAU
 from janim.typing import Vect, VectArray
 from janim.utils.simple_functions import choose
 from janim.utils.space_ops import (angle_between_vectors, cross2d,
-                                   find_intersection, midpoint)
+                                   find_intersection, get_norm, midpoint,
+                                   rotation_between_vectors)
 
 CLOSED_THRESHOLD = 0.001
 T = TypeVar("T")
@@ -80,9 +81,43 @@ class PathBuilder:
         self.end_point = quad_approx[-1]
         return self
 
+    def arc_to(self, point: Vect, angle: float, n_components: int | None = None, threshold: float = 1e-3) -> Self:
+        if abs(angle) < threshold:
+            self.line_to(point)
+            return self
+
+        # Assign default value for n_components
+        if n_components is None:
+            n_components = int(np.ceil(8 * abs(angle) / TAU))
+
+        arc_points = quadratic_bezier_points_for_arc(angle, n_components)
+        target_vect = point - self.end_point
+        curr_vect = arc_points[-1] - arc_points[0]
+
+        arc_points = arc_points @ rotation_between_vectors(curr_vect, target_vect).T
+        arc_points *= get_norm(target_vect) / get_norm(curr_vect)
+        arc_points += (self.end_point - arc_points[0])
+        self.append(arc_points[1:])
+        return self
+
     def close_path(self) -> Self:
         self.line_to(self.points_list[0][0])
         return self
+
+
+def quadratic_bezier_points_for_arc(
+    angle: float,
+    start_angle: float = 0,
+    n_components: int = 8
+) -> np.ndarray:
+    '''得到使用二次贝塞尔曲线模拟的圆弧'''
+    n_points = 2 * n_components + 1
+    angles = np.linspace(start_angle, start_angle + angle, n_points)
+    points = np.array([np.cos(angles), np.sin(angles), np.zeros(n_points)]).T
+    # Adjust handles
+    theta = angle / n_components
+    points[1::2] /= np.cos(theta / 2)
+    return points
 
 
 def bezier(

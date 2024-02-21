@@ -185,6 +185,12 @@ class Cmpt_Points[ItemT](Component[ItemT]):
         self._raise_error_if_no_points()
         return self._points._data[-1].copy()
 
+    def get_start_and_end(self) -> tuple[np.ndarray, np.ndarray]:
+        '''
+        得到 ``points`` 的第一个和最后一个点
+        '''
+        return (self.get_start(), self.get_end())
+
     def point_from_proportion(self, alpha: float) -> np.ndarray:
         points = self._points._data
         i, subalpha = integer_interpolate(0, len(points) - 1, alpha)

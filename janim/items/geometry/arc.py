@@ -10,7 +10,7 @@ from janim.constants import LEFT, MED_SMALL_BUFF, ORIGIN, RIGHT, TAU
 from janim.items.item import Item
 from janim.items.vitem import VItem
 from janim.typing import Alpha, AlphaArray, Vect
-from janim.utils.bezier import PathBuilder
+from janim.utils.bezier import PathBuilder, quadratic_bezier_points_for_arc
 from janim.utils.space_ops import (angle_between_vectors, angle_of_vector,
                                    get_norm)
 
@@ -67,27 +67,12 @@ class Arc(ArcCenter):
         super().__init__(arc_center=arc_center, **kwargs)
 
         self.points.set(
-            Arc.create_quadratic_bezier_points(
+            quadratic_bezier_points_for_arc(
                 angle=angle,
                 start_angle=start_angle,
                 n_components=n_components
             ) * radius + arc_center
         )
-
-    @staticmethod
-    def create_quadratic_bezier_points(
-        angle: float,
-        start_angle: float = 0,
-        n_components: int = 8
-    ) -> np.ndarray:
-        '''得到使用二次贝塞尔曲线模拟的圆弧'''
-        n_points = 2 * n_components + 1
-        angles = np.linspace(start_angle, start_angle + angle, n_points)
-        points = np.array([np.cos(angles), np.sin(angles), np.zeros(n_points)]).T
-        # Adjust handles
-        theta = angle / n_components
-        points[1::2] /= np.cos(theta / 2)
-        return points
 
     def get_arc_length(self) -> float:
         '''获取圆弧长度'''
@@ -131,11 +116,9 @@ class ArcBetweenPoints(Arc):
         self.points.put_start_and_end_on(start, end)
 
 
-class Cmpt_VPoints_CircleImpl[ItemT](Cmpt_VPoints[ItemT], impl=True):
+class _Cmpt_VPoints_CircleImpl[ItemT](Cmpt_VPoints[ItemT], impl=True):
     '''
     在圆中，对 :class:`~.Cmpt_VPoints` 的进一步实现
-
-    对于 :class:`Circle` 对象 ``circle``，使用 ``circle.points.xxx`` 即可调用以下的方法
     '''
     def surround(
         self,
@@ -153,24 +136,6 @@ class Cmpt_VPoints_CircleImpl[ItemT](Cmpt_VPoints[ItemT], impl=True):
         self.set_size(self.box.width + 2 * buff, self.box.height + 2 * buff)
         return self
 
-    def get_start_angle(self) -> float:
-        '''获取起始角度'''
-        angle = angle_of_vector(self.get_start() - self.box.center)
-        return angle % TAU
-
-    def point_at_angle(self, angle: float) -> np.ndarray:
-        '''
-        得到在指定角度处的点，例如 ``angle=0`` 得到右侧的点，``angle=PI / 2`` 得到顶部的点
-        '''
-        start_angle = self.get_start_angle()
-        return self.point_from_proportion(
-            (angle - start_angle) / TAU % 1
-        )
-
-    def get_radius(self) -> float:
-        '''得到半径'''
-        return get_norm(self.get_start() - self.box.center)
-
 
 class Circle(VItem):
     '''
@@ -179,7 +144,7 @@ class Circle(VItem):
     - 参数同 ``Arc``
     - 半径传入 ``radius`` 指定
     '''
-    points = CmptInfo(Cmpt_VPoints_CircleImpl[Self])
+    points = CmptInfo(_Cmpt_VPoints_CircleImpl[Self])
 
     def __init__(
         self,
@@ -191,12 +156,30 @@ class Circle(VItem):
         super().__init__(**kwargs)
 
         self.points.set(
-            Arc.create_quadratic_bezier_points(
+            quadratic_bezier_points_for_arc(
                 angle=TAU,
                 start_angle=0,
                 n_components=n_components
             ) * radius
         )
+
+    def get_start_angle(self) -> float:
+        '''获取起始角度'''
+        angle = angle_of_vector(self.points.get_start() - self.points.box.center)
+        return angle % TAU
+
+    def point_at_angle(self, angle: float) -> np.ndarray:
+        '''
+        得到在指定角度处的点，例如 ``angle=0`` 得到右侧的点，``angle=PI / 2`` 得到顶部的点
+        '''
+        start_angle = self.get_start_angle()
+        return self.points.pfp(
+            (angle - start_angle) / TAU % 1
+        )
+
+    def get_radius(self) -> float:
+        '''得到半径'''
+        return get_norm(self.points.get_start() - self.points.box.center)
 
 
 class Dot(Circle):
@@ -266,7 +249,7 @@ class AnnularSector(ArcCenter):
     ) -> None:
         super().__init__(arc_center=arc_center, **kwargs)
 
-        unit = Arc.create_quadratic_bezier_points(
+        unit = quadratic_bezier_points_for_arc(
             angle=angle,
             start_angle=start_angle,
             n_components=n_components
@@ -316,7 +299,7 @@ class Annulus(VItem):
     ) -> None:
         super().__init__(fill_alpha=fill_alpha, **kwargs)
 
-        unit = Arc.create_quadratic_bezier_points(
+        unit = quadratic_bezier_points_for_arc(
             TAU, 0,
             n_components
         )
