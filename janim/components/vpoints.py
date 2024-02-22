@@ -48,6 +48,19 @@ class Cmpt_VPoints[ItemT](Cmpt_Points[ItemT]):
             log.warning(f'设置的点数量为 {len(points)}，不是奇数，最后一个点被忽略')
             points = points[:-1]
         super().set(points)
+        return self
+
+    def reverse(self) -> Self:
+        if self.has():
+            subpaths = self.get_subpaths()[::-1]
+            builder = PathBuilder(points=subpaths[0])
+            for subpath in subpaths[1:]:
+                builder.move_to(subpath[0])
+                builder.append(subpath[1:])
+
+            self.set(builder.get())
+            Cmpt_Points.reverse.emit(self)
+        return self
 
     # region align
 

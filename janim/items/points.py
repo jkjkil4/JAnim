@@ -45,6 +45,8 @@ class DotCloud(Points):
     ):
         super().__init__(*args, **kwargs)
 
+        Cmpt_Points.reverse.connect(self.points, lambda: self.radius.reverse())
+
         self.points.resize_func = resize_preserving_order
 
         self.color.set(color, alpha)

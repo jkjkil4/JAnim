@@ -27,9 +27,11 @@ class PathBuilder:
             raise ValueError('必须仅设置 start_point 和 points 中的一个')
         if start_point is not None:
             self.points_list = [[start_point]]
+            self.start_point = start_point
             self.end_point = start_point
         else:
             self.points_list = [points]
+            self.start_point = points[0]
             self.end_point = points[-1]
 
         self.use_simple_quadratic_approx = use_simple_quadratic_approx
@@ -43,7 +45,9 @@ class PathBuilder:
         return self
 
     def move_to(self, point: Vect) -> Self:
+        print(self.points_list[-1][-1], self.end_point, point)
         self.points_list.append([self.end_point, point])
+        self.start_point = point
         self.end_point = point
         return self
 
@@ -101,7 +105,7 @@ class PathBuilder:
         return self
 
     def close_path(self) -> Self:
-        self.line_to(self.points_list[0][0])
+        self.line_to(self.start_point)
         return self
 
 

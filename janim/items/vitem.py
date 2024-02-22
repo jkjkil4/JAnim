@@ -8,6 +8,7 @@ import numpy as np
 from janim.components.component import CmptGroup, CmptInfo
 from janim.components.radius import Cmpt_Radius
 from janim.components.rgbas import Cmpt_Rgbas, apart_alpha
+from janim.components.points import Cmpt_Points
 from janim.components.vpoints import Cmpt_VPoints
 from janim.constants import PI
 from janim.items.points import Points
@@ -47,6 +48,13 @@ class VItem(Points):
         **kwargs
     ):
         super().__init__(*points, **kwargs)
+
+        def reverse():
+            for cmpt in (self.radius, self.stroke, self.fill):
+                cmpt.reverse()
+
+        Cmpt_Points.reverse.connect(self.points, reverse)
+
         if stroke_color is None:
             stroke_color = color
         if stroke_alpha is None:

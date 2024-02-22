@@ -51,6 +51,7 @@ class AnimViewer(QMainWindow):
 
         self.setup_ui()
         self.move_to_position()
+        self.socket = None
         if interact:
             self.setup_socket()
 

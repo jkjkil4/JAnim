@@ -1,4 +1,5 @@
 # flake8: noqa
+import janim.items.boolean_ops as boolean_ops
 from janim.anims.composition import *
 from janim.anims.display import *
 from janim.anims.timeline import *
