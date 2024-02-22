@@ -427,7 +427,7 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         '''
         return self.Data._ref(self)
 
-    def copy(self, *args, recurse=True, **kwargs) -> Self:
+    def copy(self, *args, **kwargs) -> Self:
         '''
         复制物件
         '''

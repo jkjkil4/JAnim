@@ -1,5 +1,6 @@
 import importlib
 import inspect
+import json
 import os
 import sys
 import time
@@ -114,9 +115,6 @@ class AnimViewer(QMainWindow):
             (Config.get.pixel_width, Config.get.pixel_height)
         )
 
-        self.btn = QPushButton('暂停/继续')
-        self.btn.clicked.connect(self.switch_play_state)
-
         self.timeline_view = TimelineView(self.anim)
         self.timeline_view.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Preferred)
 
@@ -182,14 +180,13 @@ class AnimViewer(QMainWindow):
 
         self.socket.readyRead.connect(self.on_ready_read)
 
-        self.close_event_listener: list[tuple[QHostAddress, int]] = []
+        self.clients: list[tuple[QHostAddress, int]] = []
+        self.lineno = -1
 
         log.info(f'交互端口已在 {self.socket.localPort()} 开启')
         self.setWindowTitle(f'{self.windowTitle()} [{self.socket.localPort()}]')
 
     def on_shared_ready_read(self) -> None:
-        import json
-
         while self.shared_socket.hasPendingDatagrams():
             datagram = self.shared_socket.receiveDatagram()
             try:
@@ -203,7 +200,10 @@ class AnimViewer(QMainWindow):
                     msg = json.dumps(dict(
                         janim=dict(
                             type='find_re',
-                            data=self.socket.localPort()
+                            data=dict(
+                                port=self.socket.localPort(),
+                                file_path=inspect.getfile(self.anim.timeline.__class__)
+                            )
                         )
                     ))
                     self.socket.writeDatagram(
@@ -216,8 +216,6 @@ class AnimViewer(QMainWindow):
                 traceback.print_exc()
 
     def on_ready_read(self) -> None:
-        import json
-
         while self.socket.hasPendingDatagrams():
             datagram = self.socket.receiveDatagram()
             try:
@@ -227,15 +225,16 @@ class AnimViewer(QMainWindow):
                 janim = tree['janim']
                 cmdtype = janim['type']
 
-                # 响应 closeEvent
-                if cmdtype == 'listen_close_event':
-                    self.close_event_listener.append((datagram.senderAddress(), datagram.senderPort()))
+                if cmdtype == 'register_client':
+                    self.clients.append((datagram.senderAddress(), datagram.senderPort()))
+                    self.send_lineno(self.lineno)
 
                 # 重新构建
                 elif cmdtype == 'file_saved':
                     if os.path.samefile(janim['file_path'], inspect.getmodule(self.anim.timeline).__file__):
                         self.on_rebuild_triggered()
 
+                # 重新加载
                 elif cmdtype == 'reload':
                     file_path = janim['file_path']
                     for module in sys.modules.values():
@@ -250,6 +249,19 @@ class AnimViewer(QMainWindow):
             except Exception:
                 traceback.print_exc()
 
+    def send_lineno(self, line: int) -> None:
+        msg = json.dumps(dict(
+            janim=dict(
+                type='lineno',
+                data=line
+            )
+        ))
+        for client in self.clients:
+            self.socket.writeDatagram(
+                QByteArray.fromStdString(msg),
+                *client
+            )
+
     # endregion
 
     # region events
@@ -261,17 +273,15 @@ class AnimViewer(QMainWindow):
     def closeEvent(self, event: QCloseEvent) -> None:
         super().closeEvent(event)
         if self.interact:
-            import json
-
             msg = json.dumps(dict(
                 janim=dict(
                     type='close_event'
                 )
             ))
-            for listener in self.close_event_listener:
+            for client in self.clients:
                 self.socket.writeDatagram(
                     QByteArray.fromStdString(msg),
-                    *listener
+                    *client
                 )
 
     # endregion
@@ -279,7 +289,16 @@ class AnimViewer(QMainWindow):
     # region slots
 
     def on_value_changed(self, value: int) -> None:
-        time = value / Config.get.preview_fps
+        time = self.timeline_view.progress_to_time(value)
+
+        if self.socket is not None:
+            line = self.anim.timeline.get_lineno_at_time(time)
+
+            if line != self.lineno:
+                self.lineno = line
+
+                self.send_lineno(line)
+
         self.glw.set_time(time)
         self.time_label.setText(f'{time:.1f}/{self.anim.global_range.duration:.1f} s')
 
@@ -307,6 +326,21 @@ class AnimViewer(QMainWindow):
             traceback.print_exc()
             log.error('重新构建失败')
             return
+
+        if self.socket is not None:
+            msg = json.dumps(dict(
+                janim=dict(
+                    type='rebuilt'
+                )
+            ))
+            for client in self.clients:
+                self.socket.writeDatagram(
+                    QByteArray.fromStdString(msg),
+                    *client
+                )
+
+            time = self.timeline_view.progress_to_time(self.timeline_view.progress())
+            self.send_lineno(self.anim.timeline.get_lineno_at_time(time))
 
         self.anim.anim_on(self.timeline_view.progress_to_time(progress))
 

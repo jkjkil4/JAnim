@@ -6,7 +6,7 @@ import math
 import time
 import traceback
 from abc import ABCMeta, abstractmethod
-from bisect import insort
+from bisect import bisect, insort
 from collections import defaultdict
 from contextvars import ContextVar
 from dataclasses import dataclass
@@ -23,6 +23,7 @@ from janim.items.item import Item
 from janim.logger import log
 from janim.render.base import RenderData, Renderer, set_global_uniforms
 from janim.utils.config import Config
+from janim.utils.simple_functions import clip
 
 if TYPE_CHECKING:   # pragma: no cover
     from janim.items.item import Item
@@ -285,6 +286,15 @@ class Timeline(metaclass=ABCMeta):
                 raise RuntimeError('记录物件数据失败，可能是因为物件处于动画中')
 
             datas.append(Timeline.TimedItemData(as_time, item.store_data()))
+
+    def get_lineno_at_time(self, time: float):
+        times_of_code = self.times_of_code
+        if not times_of_code:
+            return -1
+
+        idx = bisect(times_of_code, time, key=lambda x: x.time)
+        idx = clip(idx, 0, len(times_of_code) - 1)
+        return times_of_code[idx].line
 
     def get_stored_data_at_time[T](self, item: T, t: float, *, skip_dynamic_data=False) -> Item.Data[T]:
         '''
