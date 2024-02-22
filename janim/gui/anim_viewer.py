@@ -508,31 +508,37 @@ class TimelineView(QWidget):
             self._sorted_anims = sorted(self.flatten, key=lambda x: x.global_range.at)
         return self._sorted_anims
 
-    def move_range_to(self, at: float) -> None:
-        self.range.at = clip(at, 0, self.anim.global_range.duration - self.range.duration)
+    def set_range(self, at: float, duration: float) -> None:
+        duration = min(duration, self.anim.global_range.duration)
+        at = clip(at, 0, self.anim.global_range.duration - duration)
+        self.range = TimeRange(at, duration)
+        self.update()
 
     def on_key_timer_timeout(self) -> None:
         if self.is_pressing.w:
             cursor_time = self.pixel_to_time(self.mapFromGlobal(self.cursor().pos()).x())
 
             factor = max(TIMELINE_VIEW_MIN_DURATION / self.range.duration, 0.97)
-            self.range.duration *= factor
-            self.move_range_to(factor * (self.range.at - cursor_time) + cursor_time)
-
-            self.update()
+            self.set_range(
+                factor * (self.range.at - cursor_time) + cursor_time,
+                self.range.duration * factor
+            )
 
         elif self.is_pressing.s:
             cursor_time = self.pixel_to_time(self.mapFromGlobal(self.cursor().pos()).x())
 
             factor = min(self.anim.global_range.duration / self.range.duration, 1 / 0.97)
-            self.range.duration *= factor
-            self.move_range_to(factor * (self.range.at - cursor_time) + cursor_time)
-
-            self.update()
+            self.set_range(
+                factor * (self.range.at - cursor_time) + cursor_time,
+                self.range.duration * factor
+            )
 
         if self.is_pressing.a or self.is_pressing.d:
             shift = self.range.duration * 0.05 * (self.is_pressing.d - self.is_pressing.a)
-            self.move_range_to(self.range.at + shift)
+            self.set_range(
+                self.range.at + shift,
+                self.range.duration
+            )
 
             self.update()
 
@@ -545,9 +551,15 @@ class TimelineView(QWidget):
             minimum = self.play_space
             maximum = self.width() - self.play_space
             if pixel_at < minimum:
-                self.move_range_to(self.pixel_to_time(pixel_at - minimum))
+                self.set_range(
+                    self.pixel_to_time(pixel_at - minimum),
+                    self.range.duration
+                )
             if pixel_at > maximum:
-                self.move_range_to(self.pixel_to_time(pixel_at - maximum))
+                self.set_range(
+                    self.pixel_to_time(pixel_at - maximum),
+                    self.range.duration
+                )
 
             self.value_changed.emit(progress)
             self.update()
