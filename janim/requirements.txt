@@ -9,3 +9,5 @@ qdarkstyle
 tqdm
 psutil
 skia-pathops
+fontTools
+freetype-py

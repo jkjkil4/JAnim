@@ -34,20 +34,8 @@ class VItem(Points):
 
     renderer_cls = VItemRenderer
 
-    def __init__(
-        self,
-        *points: Vect,
-        stroke_radius: float | Iterable[float] | None = None,
-        stroke_color: JAnimColor | ColorArray | None = None,
-        stroke_alpha: Alpha | AlphaArray | None = None,
-        fill_color: JAnimColor | ColorArray | None = None,
-        fill_alpha: Alpha | AlphaArray | None = 0,
-        color: JAnimColor | ColorArray | None = None,
-        alpha: Alpha | AlphaArray | None = None,
-        root_only: bool = False,
-        **kwargs
-    ):
-        super().__init__(*points, **kwargs)
+    def __init__(self, *points: Vect, fill_alpha=0, **kwargs):
+        super().__init__(*points, fill_alpha=fill_alpha, **kwargs)
 
         def reverse():
             for cmpt in (self.radius, self.stroke, self.fill):
@@ -55,6 +43,17 @@ class VItem(Points):
 
         Cmpt_Points.reverse.connect(self.points, reverse)
 
+    def set_style(
+        self,
+        stroke_radius: float | Iterable[float] | None = None,
+        stroke_color: JAnimColor | ColorArray | None = None,
+        stroke_alpha: Alpha | AlphaArray | None = None,
+        fill_color: JAnimColor | ColorArray | None = None,
+        fill_alpha: Alpha | AlphaArray | None = None,
+        color: JAnimColor | ColorArray | None = None,
+        alpha: Alpha | AlphaArray | None = None,
+        **kwargs
+    ) -> None:
         if stroke_color is None:
             stroke_color = color
         if stroke_alpha is None:
@@ -66,9 +65,11 @@ class VItem(Points):
             fill_alpha = alpha
 
         if stroke_radius is not None:
-            self.radius.set(stroke_radius, root_only=root_only)
-        self.stroke.set(stroke_color, stroke_alpha, root_only=root_only)
-        self.fill.set(fill_color, fill_alpha, root_only=root_only)
+            self.radius.set(stroke_radius)
+        self.stroke.set(stroke_color, stroke_alpha)
+        self.fill.set(fill_color, fill_alpha)
+
+        super().set_style(**kwargs)
 
     def add_tip(
         self,

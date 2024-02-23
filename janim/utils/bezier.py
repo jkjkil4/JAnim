@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from typing import Callable, Iterable, Self, Sequence, TypeVar
+import inspect
+from typing import Callable, Iterable, Self, Sequence, TypeVar, NoReturn
 
 import numpy as np
 
@@ -23,16 +24,20 @@ class PathBuilder:
         points: VectArray | None = None,
         use_simple_quadratic_approx: bool = False,
     ):
-        if (start_point is None) == (points is None):
-            raise ValueError('必须仅设置 start_point 和 points 中的一个')
+        if start_point is not None and points is not None:
+            raise ValueError('不能同时设置 start_point 和 points')
         if start_point is not None:
             self.points_list = [[start_point]]
             self.start_point = start_point
             self.end_point = start_point
-        else:
+        elif points is not None:
             self.points_list = [points]
             self.start_point = points[0]
             self.end_point = points[-1]
+        else:
+            self.points_list = []
+            self.start_point = None
+            self.end_point = None
 
         self.use_simple_quadratic_approx = use_simple_quadratic_approx
 
@@ -41,27 +46,35 @@ class PathBuilder:
 
     def append(self, points: VectArray) -> Self:
         self.points_list.append(points)
+        if self.start_point is None:
+            self.start_point = points[0]
         self.end_point = points[-1]
         return self
 
     def move_to(self, point: Vect) -> Self:
-        print(self.points_list[-1][-1], self.end_point, point)
-        self.points_list.append([self.end_point, point])
+        if self.end_point is None:
+            self.points_list.append([point])
+        else:
+            self.points_list.append([self.end_point, point])
         self.start_point = point
         self.end_point = point
         return self
 
     def line_to(self, point: Vect) -> Self:
-        self.points_list.append([
-            (self.end_point + point) / 2,
-            point
-        ])
-        self.end_point = point
+        self._raise_if_no_points()
+        mid = (self.end_point + point) / 2
+        if not np.isclose(self.end_point, mid).all():
+            self.points_list.append([mid, point])
+            self.end_point = point
         return self
 
     def conic_to(self, handle: Vect, point: Vect) -> Self:
-        self.points_list.append([handle, point])
-        self.end_point = point
+        self._raise_if_no_points()
+        if np.isclose(self.end_point, handle).all():
+            self.line_to(point)
+        else:
+            self.points_list.append([handle, point])
+            self.end_point = point
         return self
 
     def cubic_to(
@@ -70,6 +83,8 @@ class PathBuilder:
         handle2: Vect,
         anchor: Vect
     ) -> Self:
+        self._raise_if_no_points()
+
         last = self.end_point
         # Note, this assumes all points are on the xy-plane
         v1 = handle1 - last
@@ -86,6 +101,8 @@ class PathBuilder:
         return self
 
     def arc_to(self, point: Vect, angle: float, n_components: int | None = None, threshold: float = 1e-3) -> Self:
+        self._raise_if_no_points()
+
         if abs(angle) < threshold:
             self.line_to(point)
             return self
@@ -105,8 +122,15 @@ class PathBuilder:
         return self
 
     def close_path(self) -> Self:
+        self._raise_if_no_points()
         self.line_to(self.start_point)
         return self
+
+    def _raise_if_no_points(self) -> None | NoReturn:
+        if self.end_point is None:
+            name = inspect.currentframe().f_back.f_code.co_name
+            raise ValueError('PathBuilder 必须在构造时传入 start_point 或 points，'
+                             f'或者以 move_to 为首次调用，否则不能调用 {name}')
 
 
 def quadratic_bezier_points_for_arc(

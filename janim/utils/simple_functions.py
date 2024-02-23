@@ -4,6 +4,10 @@ import math
 from functools import lru_cache
 
 
+def decode_utf8(utf8: str) -> str:
+    return bytes(utf8, encoding='utf-8').decode('utf-8')
+
+
 def sigmoid(x):
     return 1.0 / (1 + np.exp(-x))
 

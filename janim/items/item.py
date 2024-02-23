@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import inspect
 from dataclasses import dataclass
 from typing import Any, Callable, Self, overload
 
@@ -15,6 +16,8 @@ from janim.utils.paths import PathFunc, straight_path
 
 CLS_CMPTINFO_NAME = '__cls_cmptinfo'
 OBJ_CMPTS_NAME = '__obj_cmpts'
+
+AVAILABLE_STYLES_NAME = '__available_styles'
 
 
 class _ItemMeta(type):
@@ -42,8 +45,8 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
 
     depth = CmptInfo(Cmpt_Depth[Self], 0)
 
-    def __init__(self, *args, depth: float | None = None, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, *args, depth: float | None = None, children: list[Item] = [], **kwargs):
+        super().__init__(*args)
 
         self._init_components()
         if depth is not None:
@@ -51,10 +54,54 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
 
         self._astype_mock_cmpt: dict[tuple[type, str], Component] = {}
 
+        self.add(*children)
+
+        self.digest_styles(kwargs)
+
         from janim.anims.timeline import Timeline
         timeline = Timeline.get_context(raise_exc=False)
         if timeline:
             timeline.register(self)
+
+    def digest_styles(self, styles: dict[str, Any]):
+        flags = dict.fromkeys(styles.keys(), False)
+        for item in self.walk_self_and_descendants():
+            available_styles = item.get_available_styles()
+            apply_styles = {
+                key: style
+                for key, style in styles.items()
+                if key in available_styles
+            }
+            for key in apply_styles:
+                flags[key] = True
+            item.set_style(**apply_styles)
+        for key, flag in flags.items():
+            if not flag:
+                log.warning(f'传入参数 "{key}" 没有匹配任何的样式设置，且没有被任何地方使用')
+
+    @classmethod
+    def get_available_styles(cls) -> list[str]:
+        available_styles = getattr(cls, AVAILABLE_STYLES_NAME, None)
+        if available_styles is not None:
+            return available_styles
+
+        available_styles: list[str] = []
+        for mcls in cls.mro():
+            func = getattr(mcls, 'set_style', None)
+            if func is None and not callable(func):
+                continue
+
+            sig = inspect.signature(func)
+            available_styles.extend([
+                param.name
+                for param in sig.parameters.values()
+                if param.kind not in (param.POSITIONAL_ONLY, param.VAR_POSITIONAL, param.VAR_KEYWORD)
+            ])
+
+        setattr(cls, AVAILABLE_STYLES_NAME, available_styles)
+        return available_styles
+
+    def set_style(self, **kwargs) -> None: ...
 
     @dataclass
     class _CmptInitData:
@@ -206,16 +253,38 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         在这个例子中，并不能 ``group.points.get_all()`` 来获取子物件中的所有点，
         但是可以使用 ``group.astype(Points).points.get_all()`` 来做到
         '''
-        if not issubclass(cls, Item):
+        if not isinstance(cls, type) or not issubclass(cls, Item):
             # TODO: i18n
             raise TypeError(f'{cls.__name__} 不是以 Item 为基类，无法作为 astype 的参数')
 
         return self._As(self, cls)
 
+    def __call__[T](self, cls: type[T]) -> T:
+        return self.astype(cls)
+
     class _As:
         def __init__(self, origin: Item, cls: type[Item]):
             self.origin = origin
             self.cls = cls
+
+        class _FakeCmpt:
+            def __init__(self, as_inst: Item._As, cmpt: Component):
+                self.as_inst = as_inst
+                self.cmpt = cmpt
+
+            def __getattr__(self, name: str):
+                if name == 'r':
+                    return self.as_inst
+
+                attr = getattr(self.cmpt, name, None)
+                if attr is None or not callable(attr):
+                    raise KeyError(f'{self.cmpt.__class__.__name__} 中没有叫作 {name} 的可调用方法')
+
+                def wrapper(*args, **kwargs):
+                    ret = attr(*args, **kwargs)
+                    return self if ret is self.cmpt else ret
+
+                return wrapper
 
         def __getattr__(self, name: str):
             try:
@@ -253,7 +322,7 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
             cmpt.init_bind(Component.BindInfo(decl_cls, self.origin, name))
 
             self.origin._astype_mock_cmpt[(decl_cls, name)] = cmpt
-            return cmpt
+            return Item._As._FakeCmpt(self, cmpt)
 
     # endregion
 
@@ -479,8 +548,7 @@ class Group[T](Item):
     将物件组成一组
     '''
     def __init__(self, *objs: T, **kwargs):
-        super().__init__(**kwargs)
-        self.add(*objs)
+        super().__init__(children=objs, **kwargs)
 
     @overload
     def __getitem__(self, value: int) -> T: ...

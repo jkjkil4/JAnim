@@ -48,6 +48,7 @@ class Config(metaclass=_ConfigMeta):
     pixel_height: int = None
     pixel_width: int = None
     background_color: Color = None
+    font: str = None
 
     wnd_pos: str = None
     wnd_monitor: int = None
@@ -80,6 +81,7 @@ default_config = Config(
     pixel_height=1080,
     pixel_width=1920,
     background_color=Color('#000000'),
+    font='Consolas',
 
     wnd_pos='OR',
     wnd_monitor=0,
@@ -122,6 +124,10 @@ class ConfigGetter:
     @property
     def frame_y_radius(self) -> float:
         return Config.get.frame_height / 2
+
+    @property
+    def pixel_to_frame_ratio(self) -> float:
+        return Config.get.frame_width / Config.get.pixel_width
 
     @property
     def left_side(self) -> Vect:

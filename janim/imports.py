@@ -13,6 +13,7 @@ from janim.items.geometry.line import *
 from janim.items.geometry.polygon import *
 from janim.items.item import *
 from janim.items.points import *
+from janim.items.text.text import *
 from janim.items.vitem import *
 from janim.utils.bezier import *
 from janim.utils.config import Config

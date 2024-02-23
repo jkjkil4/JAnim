@@ -38,9 +38,7 @@ class DotCloud(Points):
     def __init__(
         self,
         *args,
-        color: JAnimColor | ColorArray | None = None,
-        alpha: float | Iterable[float] | None = None,
-        radius: float | Iterable[float] | None = None,
+
         **kwargs
     ):
         super().__init__(*args, **kwargs)
@@ -49,9 +47,18 @@ class DotCloud(Points):
 
         self.points.resize_func = resize_preserving_order
 
+    def set_style(
+        self,
+        color: JAnimColor | ColorArray | None = None,
+        alpha: float | Iterable[float] | None = None,
+        radius: float | Iterable[float] | None = None,
+        **kwargs
+    ) -> None:
         self.color.set(color, alpha)
         if radius is not None:
             self.radius.set(radius)
+
+        super().set_style(**kwargs)
 
     class Data(Item.Data['DotCloud']):
         @classmethod
