@@ -276,9 +276,13 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
                 if name == 'r':
                     return self.as_inst
 
-                attr = getattr(self.cmpt, name, None)
-                if attr is None or not callable(attr):
+                cls_attr = getattr(self.cmpt.__class__, name, None)
+                if cls_attr is None or not isinstance(cls_attr, (Callable, property)):
                     raise KeyError(f'{self.cmpt.__class__.__name__} 中没有叫作 {name} 的可调用方法')
+
+                attr = getattr(self.cmpt, name)
+                if isinstance(cls_attr, property):
+                    return attr
 
                 def wrapper(*args, **kwargs):
                     ret = attr(*args, **kwargs)

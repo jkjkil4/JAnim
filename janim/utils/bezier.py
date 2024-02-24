@@ -1,11 +1,11 @@
 from __future__ import annotations
 
 import inspect
-from typing import Callable, Iterable, Self, Sequence, TypeVar, NoReturn
+from typing import Callable, Iterable, NoReturn, Self, Sequence, TypeVar
 
 import numpy as np
 
-from janim.constants import DEGREES, TAU
+from janim.constants import DEGREES, NAN_POINT, TAU
 from janim.typing import Vect, VectArray
 from janim.utils.simple_functions import choose
 from janim.utils.space_ops import (angle_between_vectors, cross2d,
@@ -42,6 +42,8 @@ class PathBuilder:
         self.use_simple_quadratic_approx = use_simple_quadratic_approx
 
     def get(self) -> np.ndarray:
+        if not self.points_list:
+            return np.empty((0, 3))
         return np.vstack(self.points_list)
 
     def append(self, points: VectArray) -> Self:
@@ -55,7 +57,7 @@ class PathBuilder:
         if self.end_point is None:
             self.points_list.append([point])
         else:
-            self.points_list.append([self.end_point, point])
+            self.points_list.append([NAN_POINT, point])
         self.start_point = point
         self.end_point = point
         return self
@@ -63,18 +65,14 @@ class PathBuilder:
     def line_to(self, point: Vect) -> Self:
         self._raise_if_no_points()
         mid = (self.end_point + point) / 2
-        if not np.isclose(self.end_point, mid).all():
-            self.points_list.append([mid, point])
-            self.end_point = point
+        self.points_list.append([mid, point])
+        self.end_point = point
         return self
 
     def conic_to(self, handle: Vect, point: Vect) -> Self:
         self._raise_if_no_points()
-        if np.isclose(self.end_point, handle).all():
-            self.line_to(point)
-        else:
-            self.points_list.append([handle, point])
-            self.end_point = point
+        self.points_list.append([handle, point])
+        self.end_point = point
         return self
 
     def cubic_to(

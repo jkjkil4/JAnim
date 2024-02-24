@@ -11,6 +11,8 @@ X_AXIS = np.array((1., 0., 0.))
 Y_AXIS = np.array((0., 1., 0.))
 Z_AXIS = np.array((0., 0., 1.))
 
+NAN_POINT = np.full(3, np.nan)
+
 # Useful abbreviations for diagonals
 UL = UP + LEFT
 UR = UP + RIGHT

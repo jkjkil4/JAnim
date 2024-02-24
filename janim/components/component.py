@@ -106,7 +106,10 @@ class Component[ItemT](refresh.Refreshable, metaclass=_CmptMeta):
         if isinstance(item, self.bind.decl_cls):
             return getattr(item, self.bind.key)
 
-        return getattr(item.astype(self.bind.decl_cls), self.bind.key)
+        from janim.items.item import Item
+
+        cmpt = getattr(item.astype(self.bind.decl_cls), self.bind.key)
+        return cmpt.cmpt if isinstance(cmpt, Item._As._FakeCmpt) else cmpt
 
     @property
     def r(self) -> ItemT:

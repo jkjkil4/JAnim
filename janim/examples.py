@@ -6,7 +6,7 @@ class SimpleCurveExample(Timeline):
     def construct(self) -> None:
         item1 = VItem(
             LEFT * 2, DR, UR * 3 + UP, RIGHT * 4, DR * 2, DOWN * 2, LEFT * 2,
-            LEFT * 2,   # 与上一个点重复，表示开始新路径（以 DL * 3 开始）
+            NAN_POINT,
             DL * 3, DL * 2, DOWN * 3, DL * 4, DL * 3,
         )
         item1.fill.set(alpha=0.5)

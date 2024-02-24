@@ -118,12 +118,12 @@ void get_subpath_attr(
     d = INFINITY;
     sgn = 1.0;
     for (int i = start_idx; i < lim; i += 2) {
-        vec2 A = get_point(i), B = get_point(i + 1), C = get_point(i + 2);
-
-        if (A == B) {
+        vec2 B = get_point(i + 1);
+        if (isnan(B.x)) {
             end_idx = i;
             break;
         }
+        vec2 A = get_point(i), C = get_point(i + 2);
 
         vec2 v1 = normalize(B - A);
         vec2 v2 = normalize(C - B);
@@ -158,7 +158,7 @@ void get_subpath_attr(
     }
 }
 
-// #define CONTROL_POINTS
+#define CONTROL_POINTS
 // #define POLYGON_LINES
 // #define SDF_PLANE
 
@@ -172,8 +172,8 @@ void main()
     for (int i = 1; i < points.length(); i++) {
         d = min(d, distance(v_coord, get_point(i)));
     }
-    if (d < 0.06) {
-        f_color = vec4(1.0 - smoothstep(0.052, 0.055, d));
+    if (d < 0.025) {
+        f_color = vec4(1.0 - smoothstep(0.010, 0.012, d));
         return;
     }
 

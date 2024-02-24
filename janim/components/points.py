@@ -56,7 +56,7 @@ class Cmpt_Points[ItemT](Component[ItemT]):
         return self._points.is_share(other._points)
 
     @classmethod
-    def align_for_interpolate(cls, cmpt1: Cmpt_Points, cmpt2: Cmpt_Points):
+    def align_for_interpolate(cls, cmpt1: Cmpt_Points, cmpt2: Cmpt_Points) -> AlignedData[Self]:
         len1, len2 = len(cmpt1.get()), len(cmpt2.get())
 
         cmpt1_copy = cmpt1.copy()
@@ -258,8 +258,8 @@ class Cmpt_Points[ItemT](Component[ItemT]):
             if len(points) == 0:
                 return np.zeros((3, 3))
 
-            mins = points.min(0)
-            maxs = points.max(0)
+            mins = np.nanmin(points, 0)
+            maxs = np.nanmax(points, 0)
             mids = (mins + maxs) / 2
 
             return np.array([mins, mids, maxs])
@@ -830,14 +830,13 @@ class Cmpt_Points[ItemT](Component[ItemT]):
         if self.bind is None:
             return
 
-        items = [
-            item
+        cmpts = [
+            self.get_same_cmpt(item)
             for item in self.bind.at_item.children
-            if isinstance(getattr(item, self.bind.key), Cmpt_Points)
         ]
-        for m1, m2 in zip(items, items[1:]):
-            cmpt: Cmpt_Points = getattr(m2, self.bind.key)
-            cmpt.next_to(m1, direction, **kwargs)
+
+        for cmpt1, cmpt2 in zip(cmpts, cmpts[1:]):
+            cmpt2.next_to(cmpt1.bind.at_item, direction, **kwargs)
 
         if center:
             self.to_center()
@@ -901,26 +900,24 @@ class Cmpt_Points[ItemT](Component[ItemT]):
         if self.bind is None:
             return
 
-        items = [
-            item
+        cmpts = [
+            self.get_same_cmpt(item)
             for item in self.bind.at_item.children
-            if isinstance(getattr(item, self.bind.key), Cmpt_Points)
         ]
 
-        n_rows, n_cols = self._format_rows_cols(len(items), n_rows, n_cols)
+        n_rows, n_cols = self._format_rows_cols(len(cmpts), n_rows, n_cols)
         h_buff, v_buff = self._format_buff(buff, h_buff, v_buff, by_center_point)
 
         x_unit, y_unit = h_buff, v_buff
         if not by_center_point:
-            x_unit += max([getattr(item, self.bind.key).box.width for item in items])
-            y_unit += max([getattr(item, self.bind.key).box.height for item in items])
+            x_unit += max([cmpt.box.width for cmpt in cmpts])
+            y_unit += max([cmpt.box.height for cmpt in cmpts])
 
-        for index, item in enumerate(items):
+        for index, cmpt in enumerate(cmpts):
             if fill_rows_first:
                 x, y = index % n_cols, index // n_cols
             else:
                 x, y = index // n_rows, index % n_rows
-            cmpt: Cmpt_Points = getattr(item, self.bind.key)
             cmpt.move_to(ORIGIN, aligned_edge=aligned_edge)
             cmpt.shift(x * x_unit * RIGHT + y * y_unit * DOWN)
 

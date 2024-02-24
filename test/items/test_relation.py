@@ -1,23 +1,22 @@
 import unittest
 
-from janim.items.relation import Relation
-from janim.items.item import Group
+from janim.items.item import Item, Group
 
 
 class RelationTest(unittest.TestCase):
     def test_relation(self) -> None:
         root = Group(
-            m1 := Relation(),
-            m2 := Relation(),
+            m1 := Item(),
+            m2 := Item(),
             m3 := Group(
-                m4 := Relation(),
+                m4 := Item(),
                 m5 := Group(
-                    m6 := Relation(),
-                    m7 := Relation()
+                    m6 := Item(),
+                    m7 := Item()
                 ),
-                m8 := Relation()
+                m8 := Item()
             ),
-            m9 := Relation()
+            m9 := Item()
         )
 
         self.assertListEqual(m6.ancestors(), [m5, m3, root])
@@ -27,11 +26,11 @@ class RelationTest(unittest.TestCase):
 
         m2.add(
             m10 := Group(
-                m11 := Relation()
+                m11 := Item()
             )
         )
         m4.add(
-            m12 := Relation()
+            m12 := Item()
         )
 
         self.assertListEqual(root.descendants(), [m1, m2, m10, m11, m3, m4, m12, m5, m6, m7, m8, m9])
@@ -64,11 +63,11 @@ class RelationTest(unittest.TestCase):
         | /
         m8(R)
         '''
-        R = Relation
+        R = Item
         class C1(R): ...
         class C2(R): ...
 
-        m: list[R] = [C1(), C1(), R(), C2(), C2(), C1(), R(), C2(), R()]
+        m: list[Item] = [C1(), C1(), R(), C2(), C2(), C1(), R(), C2(), R()]
 
         m[0].add(m[1], m[2])
         m[1].add(m[3])

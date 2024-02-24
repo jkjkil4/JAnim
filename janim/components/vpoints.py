@@ -6,7 +6,7 @@ import numpy as np
 
 import janim.utils.refresh as refresh
 from janim.components.points import Cmpt_Points
-from janim.constants import OUT, RIGHT
+from janim.constants import NAN_POINT, OUT, RIGHT
 from janim.items.item import Item
 from janim.logger import log
 from janim.typing import VectArray
@@ -25,9 +25,9 @@ class Cmpt_VPoints[ItemT](Cmpt_Points[ItemT]):
 
       例如对于点坐标列表 ``[a, b, c, d, e, f, g]``，则表示这些曲线：``[a, b, c]`` ``[c, d, e]`` ``[e, f, g]``
 
-    - 如果一段曲线的起始点和控制点相同，则视为该段子路径结束的表示。
+    - 将 ``NAN_POINT`` 视为子路径结束的表示。
 
-      例如对于点坐标列表 ``[a, b, c, d, e, e, f, g, h]``，则表示两段子路径：``[a, b, c, d, e]`` 和 ``[f, g, h]``
+      例如对于点坐标列表 ``[a, b, c, d, e, NAN_POINT, f, g, h]``，则表示两段子路径：``[a, b, c, d, e]`` 和 ``[f, g, h]``
 
     - 如果子路径的终止点和起始点相同，则该段子路径被视为闭合路径。
 
@@ -50,22 +50,10 @@ class Cmpt_VPoints[ItemT](Cmpt_Points[ItemT]):
         super().set(points)
         return self
 
-    def reverse(self) -> Self:
-        if self.has():
-            subpaths = self.get_subpaths()[::-1]
-            builder = PathBuilder(points=subpaths[0])
-            for subpath in subpaths[1:]:
-                builder.move_to(subpath[0])
-                builder.append(subpath[1:])
-
-            self.set(builder.get())
-            Cmpt_Points.reverse.emit(self)
-        return self
-
     # region align
 
     @classmethod
-    def align_for_interpolate(cls, cmpt1: Cmpt_VPoints, cmpt2: Cmpt_VPoints):
+    def align_for_interpolate(cls, cmpt1: Cmpt_VPoints, cmpt2: Cmpt_VPoints) -> AlignedData[Self]:
         cmpt1_copy = cmpt1.copy()
         cmpt2_copy = cmpt2.copy()
 
@@ -79,43 +67,109 @@ class Cmpt_VPoints[ItemT](Cmpt_Points[ItemT]):
 
         subpaths1 = cmpt1_copy.get_subpaths()
         subpaths2 = cmpt2_copy.get_subpaths()
-        for subpaths in [subpaths1, subpaths2]:
-            subpaths.sort(
-                key=lambda sp: sum(
-                    get_norm(p2 - p1)
-                    for p1, p2 in zip(sp, sp[1:])
-                ),
-                reverse=True
-            )
-        n_subpaths = max(len(subpaths1), len(subpaths2))
 
-        # 构建新的子路径
-        new_subpaths1 = []
-        new_subpaths2 = []
+        # 如果都只有单个路径，直接对齐就可以了
+        # 否则进行路径之间的配对，以便对齐数据
+        if len(subpaths1) == len(subpaths2) == 1:
+            sp1, sp2 = cls.align_path(subpaths1[0], subpaths2[0])
+            cmpt1_copy.set(sp1)
+            cmpt2_copy.set(sp2)
+        else:
+            # 这里使得 subpaths1 的子路径数量比 subpaths2 多，简化后面的判断
+            reverse = len(subpaths1) < len(subpaths2)
+            if reverse:
+                cmpt1_copy, cmpt2_copy = cmpt2_copy, cmpt1_copy
+                subpaths1, subpaths2 = subpaths2, subpaths1
 
-        def get_nth_subpath(path_list: list[np.ndarray], n: int) -> np.ndarray:
-            if n >= len(path_list):
-                return np.vstack([path_list[0][:-1], path_list[0][::-1]])
-            return path_list[n]
+            # 每个子路径的中心
+            def center(points: np.ndarray) -> np.ndarray:
+                return (np.min(points, axis=0) + np.max(points, axis=0)) * 0.5
 
-        for n in range(n_subpaths):
-            sp1 = get_nth_subpath(subpaths1, n)
-            sp2 = get_nth_subpath(subpaths2, n)
-            diff1 = max(0, (len(sp2) - len(sp1)) // 2)
-            diff2 = max(0, (len(sp1) - len(sp2)) // 2)
-            sp1 = cls.insert_n_curves_to_point_list(diff1, sp1)
-            sp2 = cls.insert_n_curves_to_point_list(diff2, sp2)
-            if n > 0:
-                # Add intermediate anchor to mark path end
-                new_subpaths1.append(new_subpaths1[-1][-1])
-                new_subpaths2.append(new_subpaths2[-1][-1])
-            new_subpaths1.append(sp1)
-            new_subpaths2.append(sp2)
+            subpaths1_center = np.array([center(subpath) for subpath in subpaths1]) - cmpt1_copy.box.center
+            subpaths2_center = np.array([center(subpath) for subpath in subpaths2]) - cmpt2_copy.box.center
 
-        cmpt1_copy.set(np.vstack(new_subpaths1))
-        cmpt2_copy.set(np.vstack(new_subpaths2))
+            # 这两个函数使用曼哈顿距离
+            def nearest_idx(point: np.ndarray) -> int:
+                return abs(subpaths2_center - point).sum(axis=1).argmin()
+
+            def sorted_idx(point: np.ndarray) -> Iterable[int]:
+                return abs(subpaths2_center - point).sum(axis=1).argsort()
+
+            type SubPath1Idx = int
+
+            distributions: list[list[SubPath1Idx]] = [[] for _ in range(len(subpaths2))]
+
+            # 将 subpaths1 按照最近原则分配给 subpaths2
+            for idx1, center1 in enumerate(subpaths1_center):
+                distributions[nearest_idx(center1)].append(idx1)
+
+            # 遍历分配结果，如果发现有 subpaths2 中的子路径没有分配到内容，则从其它子路径那边抢一个来
+            for idx2, distri in enumerate(distributions):
+                # 如果有分配到内容，则跳过
+                if distri:
+                    continue
+
+                # 按距离遍历其它的子路径
+                for other_idx in sorted_idx(subpaths2_center[idx2]):
+                    if other_idx == idx2:
+                        continue
+
+                    # 如果其它子路径有两个以上的分配，则从它这里抢一个
+                    other_distri = distributions[other_idx]
+                    if len(other_distri) >= 2:
+                        distri.append(other_distri.pop(0))
+                        break
+
+                # 一定能抢到，所以执行到这里时 distri 应当不为空
+                assert distri
+
+            # 构建新的子路径
+            new_subpaths1 = []
+            new_subpaths2 = []
+
+            for idx2, distri in enumerate(distributions):
+                sp2_orig = subpaths2[idx2]
+
+                # 得到点的数量最匹配的那一组，这样可以尽可能减少插入点的数量
+                diff = np.array([len(subpaths1[idx1]) for idx1 in distri]) - len(sp2_orig)
+                perfect = distri[abs(diff).argmin()]
+
+                for idx1 in distri:
+                    sp1 = subpaths1[idx1]
+                    if idx1 == perfect:
+                        sp2 = sp2_orig
+                    else:
+                        # 对于额外的路径，先创建回环
+                        sp2 = np.vstack([sp2_orig[:-1], sp2_orig[::-1]])
+
+                    sp1, sp2 = cls.align_path(sp1, sp2)
+                    if new_subpaths1:
+                        # 标记前一个路径结束
+                        new_subpaths1.append(NAN_POINT)
+                        new_subpaths2.append(NAN_POINT)
+                    new_subpaths1.append(sp1)
+                    new_subpaths2.append(sp2)
+
+            cmpt1_copy.set(np.vstack(new_subpaths1))
+            cmpt2_copy.set(np.vstack(new_subpaths2))
+
+            # 换回来
+            if reverse:
+                cmpt1_copy, cmpt2_copy = cmpt2_copy, cmpt1_copy
 
         return AlignedData(cmpt1_copy, cmpt2_copy, cmpt1_copy.copy())
+
+    @staticmethod
+    def align_path(path1: np.ndarray, path2: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
+        diff = abs(len(path1) - len(path2)) // 2
+        if diff == 0:
+            return path1, path2
+
+        return (
+            (Cmpt_VPoints.insert_n_curves_to_point_list(diff, path1), path2)
+            if len(path1) < len(path2)
+            else (path1, Cmpt_VPoints.insert_n_curves_to_point_list(diff, path2))
+        )
 
     @staticmethod
     def insert_n_curves_to_point_list(n: int, points: VectArray) -> np.ndarray:
@@ -124,7 +178,7 @@ class Cmpt_VPoints[ItemT](Cmpt_Points[ItemT]):
 
         bezier_tuples = list(Cmpt_VPoints.get_bezier_tuples_from_points(points))
         norms = [
-            0 if (tup[0] == tup[1]).all() else get_norm(tup[2] - tup[0])
+            0 if np.isnan(tup[1][0]) else get_norm(tup[2] - tup[0])
             for tup in bezier_tuples
         ]
         # Calculate insertions per curve (ipc)
@@ -391,8 +445,8 @@ class Cmpt_VPoints[ItemT](Cmpt_Points[ItemT]):
         遍历每个子路径结尾的下标
         '''
         points = self.get()
-        a0, h = points[0:-1:2], points[1::2]
-        yield from np.where((a0 == h).all(1))[0] * 2
+        handles = points[1::2]
+        yield from np.where(np.isnan(handles[:, 0]))[0] * 2
         yield len(points) - 1
 
     def get_subpath_end_indices(self) -> list[int]:

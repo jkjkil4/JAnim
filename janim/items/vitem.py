@@ -126,7 +126,7 @@ class VItem(Points):
             aligned = super().align_for_interpolate(data1, data2)
 
             for data in (aligned.data1, aligned.data2):
-                count = (data.cmpt.points.count() - 1) // 2
+                count = (data.cmpt.points.count() + 1) // 2
                 data.cmpt.color.resize(count)
                 data.cmpt.radius.resize(count)
 
