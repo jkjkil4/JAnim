@@ -15,8 +15,6 @@ from janim.utils.iterables import resize_preserving_order
 from janim.utils.paths import PathFunc, straight_path
 
 CLS_CMPTINFO_NAME = '__cls_cmptinfo'
-OBJ_CMPTS_NAME = '__obj_cmpts'
-
 AVAILABLE_STYLES_NAME = '__available_styles'
 
 
@@ -52,6 +50,7 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         if depth is not None:
             self.depth.set(depth)
 
+        self._astype: type[Item] | None = None
         self._astype_mock_cmpt: dict[tuple[type, str], Component] = {}
 
         self.add(*children)
@@ -62,46 +61,6 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         timeline = Timeline.get_context(raise_exc=False)
         if timeline:
             timeline.register(self)
-
-    def digest_styles(self, styles: dict[str, Any]):
-        flags = dict.fromkeys(styles.keys(), False)
-        for item in self.walk_self_and_descendants():
-            available_styles = item.get_available_styles()
-            apply_styles = {
-                key: style
-                for key, style in styles.items()
-                if key in available_styles
-            }
-            for key in apply_styles:
-                flags[key] = True
-            item.set_style(**apply_styles)
-        for key, flag in flags.items():
-            if not flag:
-                log.warning(f'传入参数 "{key}" 没有匹配任何的样式设置，且没有被任何地方使用')
-
-    @classmethod
-    def get_available_styles(cls) -> list[str]:
-        available_styles = getattr(cls, AVAILABLE_STYLES_NAME, None)
-        if available_styles is not None:
-            return available_styles
-
-        available_styles: list[str] = []
-        for mcls in cls.mro():
-            func = getattr(mcls, 'set_style', None)
-            if func is None and not callable(func):
-                continue
-
-            sig = inspect.signature(func)
-            available_styles.extend([
-                param.name
-                for param in sig.parameters.values()
-                if param.kind not in (param.POSITIONAL_ONLY, param.VAR_POSITIONAL, param.VAR_KEYWORD)
-            ])
-
-        setattr(cls, AVAILABLE_STYLES_NAME, available_styles)
-        return available_styles
-
-    def set_style(self, **kwargs) -> None: ...
 
     @dataclass
     class _CmptInitData:
@@ -171,6 +130,46 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
 
         if recurse_down:
             mark(self.descendants())
+
+    def digest_styles(self, styles: dict[str, Any]):
+        flags = dict.fromkeys(styles.keys(), False)
+        for item in self.walk_self_and_descendants():
+            available_styles = item.get_available_styles()
+            apply_styles = {
+                key: style
+                for key, style in styles.items()
+                if key in available_styles
+            }
+            for key in apply_styles:
+                flags[key] = True
+            item.set_style(**apply_styles)
+        for key, flag in flags.items():
+            if not flag:
+                log.warning(f'传入参数 "{key}" 没有匹配任何的样式设置，且没有被任何地方使用')
+
+    @classmethod
+    def get_available_styles(cls) -> list[str]:
+        available_styles = getattr(cls, AVAILABLE_STYLES_NAME, None)
+        if available_styles is not None:
+            return available_styles
+
+        available_styles: list[str] = []
+        for mcls in cls.mro():
+            func = getattr(mcls, 'set_style', None)
+            if func is None and not callable(func):
+                continue
+
+            sig = inspect.signature(func)
+            available_styles.extend([
+                param.name
+                for param in sig.parameters.values()
+                if param.kind not in (param.POSITIONAL_ONLY, param.VAR_POSITIONAL, param.VAR_KEYWORD)
+            ])
+
+        setattr(cls, AVAILABLE_STYLES_NAME, available_styles)
+        return available_styles
+
+    def set_style(self, **kwargs) -> None: ...
 
     def do(self, func: Callable[[Self], Any]) -> Self:
         '''
@@ -252,81 +251,58 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
 
         在这个例子中，并不能 ``group.points.get_all()`` 来获取子物件中的所有点，
         但是可以使用 ``group.astype(Points).points.get_all()`` 来做到
+
+        也可以使用简写 ``group(Points).points.get_all()``
         '''
         if not isinstance(cls, type) or not issubclass(cls, Item):
             # TODO: i18n
             raise TypeError(f'{cls.__name__} 不是以 Item 为基类，无法作为 astype 的参数')
 
-        return self._As(self, cls)
+        self._astype = cls
+        return self
 
     def __call__[T](self, cls: type[T]) -> T:
+        '''
+        等效于调用 ``astype``
+        '''
         return self.astype(cls)
 
-    class _As:
-        def __init__(self, origin: Item, cls: type[Item]):
-            self.origin = origin
-            self.cls = cls
+    def __getattr__(self, name: str):
+        try:
+            cmpt_info = getattr(self._astype, name)
+            if not isinstance(cmpt_info, CmptInfo):
+                raise AttributeError()
 
-        class _FakeCmpt:
-            def __init__(self, as_inst: Item._As, cmpt: Component):
-                self.as_inst = as_inst
-                self.cmpt = cmpt
+        except AttributeError:
+            super().__getattr__(name)   # raise error
 
-            def __getattr__(self, name: str):
-                if name == 'r':
-                    return self.as_inst
+        # 找到 cmpt_info 是在哪个类中被定义的
+        decl_cls: type[Item] | None = None
+        for sup in self._astype.mro():
+            if name in sup.__dict__.get(CLS_CMPTINFO_NAME, {}):
+                decl_cls = sup
 
-                cls_attr = getattr(self.cmpt.__class__, name, None)
-                if cls_attr is None or not isinstance(cls_attr, (Callable, property)):
-                    raise KeyError(f'{self.cmpt.__class__.__name__} 中没有叫作 {name} 的可调用方法')
+        assert decl_cls is not None
 
-                attr = getattr(self.cmpt, name)
-                if isinstance(cls_attr, property):
-                    return attr
+        # 如果 self 本身就是 decl_cls 的实例
+        # 那么自身肯定有名称为 name 的组件，对于这种情况实际上完全没必要 astype
+        # 为了灵活性，这里将这个已有的组件返回
+        if isinstance(self, decl_cls):
+            return getattr(self, name)
 
-                def wrapper(*args, **kwargs):
-                    ret = attr(*args, **kwargs)
-                    return self if ret is self.cmpt else ret
+        mock_key = (decl_cls, name)
+        cmpt = self._astype_mock_cmpt.get(mock_key, None)
 
-                return wrapper
+        # 如果 astype 需求的组件已经被创建过，并且新类型不是旧类型的子类，那么直接返回
+        if cmpt is not None and not issubclass(cmpt_info.cls, cmpt.__class__):
+            return cmpt
 
-        def __getattr__(self, name: str):
-            try:
-                cmpt_info = getattr(self.cls, name)
-                if not isinstance(cmpt_info, CmptInfo):
-                    raise AttributeError()
+        # astype 需求的组件还没创建，那么创建并记录
+        cmpt = cmpt_info.create()
+        cmpt.init_bind(Component.BindInfo(decl_cls, self, name))
 
-            except AttributeError:
-                # TODO: i18n
-                raise AttributeError(f"'{self.cls.__name__}' 没有叫作 '{name}' 的组件")
-
-            # 找到 cmpt_info 是在哪个类中被定义的
-            decl_cls: type[Item] | None = None
-            for sup in self.cls.mro():
-                if name in sup.__dict__.get(CLS_CMPTINFO_NAME, {}):
-                    decl_cls = sup
-
-            assert decl_cls is not None
-
-            # 如果 self.origin 本身就是 decl_cls 的实例
-            # 那么它自身肯定有名称为 name 的组件，对于这种情况实际上完全没必要 astype
-            # 为了灵活性，这里将这个已有的组件返回
-            if isinstance(self.origin, decl_cls):
-                return getattr(self.origin, name)
-
-            mock_key = (decl_cls, name)
-            cmpt = self.origin._astype_mock_cmpt.get(mock_key, None)
-
-            # 如果 astype 需求的组件已经被创建过，并且新类型不是旧类型的子类，那么直接返回
-            if cmpt is not None and not issubclass(cmpt_info.cls, cmpt.__class__):
-                return cmpt
-
-            # astype 需求的组件还没创建，那么创建并记录
-            cmpt = cmpt_info.create()
-            cmpt.init_bind(Component.BindInfo(decl_cls, self.origin, name))
-
-            self.origin._astype_mock_cmpt[(decl_cls, name)] = cmpt
-            return Item._As._FakeCmpt(self, cmpt)
+        self._astype_mock_cmpt[(decl_cls, name)] = cmpt
+        return cmpt
 
     # endregion
 

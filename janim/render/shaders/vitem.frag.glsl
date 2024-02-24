@@ -158,7 +158,7 @@ void get_subpath_attr(
     }
 }
 
-#define CONTROL_POINTS
+// #define CONTROL_POINTS
 // #define POLYGON_LINES
 // #define SDF_PLANE
 
