@@ -506,19 +506,21 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
 
     # region timeline
 
-    def show(self, **kwargs) -> None:
+    def show(self, **kwargs) -> Self:
         '''
         显示物件
         '''
         from janim.anims.timeline import Timeline
         Timeline.get_context().show(self, **kwargs)
+        return self
 
-    def hide(self, **kwargs) -> None:
+    def hide(self, **kwargs) -> Self:
         '''
         隐藏物件
         '''
         from janim.anims.timeline import Timeline
         Timeline.get_context().hide(self, **kwargs)
+        return self
 
     # endregion
 

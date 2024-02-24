@@ -390,13 +390,11 @@ class Cmpt_Points[ItemT](Component[ItemT]):
                 about_point = self.box.get(about_edge)
 
         def apply(cmpt: Cmpt_Points):
-            if not cmpt.has():
-                return
-
-            if about_point is None:
-                cmpt.set(func(cmpt.get()))
-            else:
-                cmpt.set(func(cmpt.get() - about_point) + about_point)
+            if cmpt.has():
+                if about_point is None:
+                    cmpt.set(func(cmpt.get()))
+                else:
+                    cmpt.set(func(cmpt.get() - about_point) + about_point)
 
             Cmpt_Points.apply_points_fn.emit(cmpt, func, about_point)
 
