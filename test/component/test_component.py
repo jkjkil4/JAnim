@@ -78,7 +78,7 @@ class ComponentTest(unittest.TestCase):
         )
         self.assertIs(
             item2.cmpt.get_same_cmpt(item1),
-            item1._astype_mock_cmpt[(MyItem, 'cmpt')]
+            item1._astype_mock_cmpt['cmpt']
         )
 
         self.assertIs(

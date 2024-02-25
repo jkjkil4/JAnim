@@ -53,12 +53,12 @@ class DotCloud(Points):
         alpha: float | Iterable[float] | None = None,
         radius: float | Iterable[float] | None = None,
         **kwargs
-    ) -> None:
+    ) -> Self:
         self.color.set(color, alpha)
         if radius is not None:
             self.radius.set(radius)
 
-        super().set_style(**kwargs)
+        return super().set_style(**kwargs)
 
     class Data(Item.Data['DotCloud']):
         @classmethod

@@ -103,9 +103,20 @@ class Component[ItemT](refresh.Refreshable, metaclass=_CmptMeta):
             )
 
     def get_same_cmpt(self, item: Item) -> Self:
-        if isinstance(item, self.bind.decl_cls):
-            return getattr(item, self.bind.key)
-        return getattr(item.astype(self.bind.decl_cls), self.bind.key)
+        return self.get_same_cmpt_if_exists(item) or getattr(item.astype(self.bind.decl_cls), self.bind.key)
+
+    def get_same_cmpt_without_mock(self, item: Item) -> Self | None:
+        cmpt = item.components.get(self.bind.key, None)
+        return cmpt if issubclass(cmpt.__class__, self.__class__) else None
+
+    def get_same_cmpt_if_exists(self, item: Item) -> Self | None:
+        cmpt = item.components.get(self.bind.key, None)
+        if cmpt is not None and issubclass(cmpt.__class__, self.__class__):
+            return cmpt
+        cmpt = item._astype_mock_cmpt.get(self.bind.key, None)
+        if cmpt is not None and issubclass(cmpt.__class__, self.__class__):
+            return cmpt
+        return None
 
     @property
     def r(self) -> ItemT:

@@ -169,7 +169,8 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         setattr(cls, AVAILABLE_STYLES_NAME, available_styles)
         return available_styles
 
-    def set_style(self, **kwargs) -> None: ...
+    def set_style(self, **kwargs) -> Self:
+        return self
 
     def do(self, func: Callable[[Self], Any]) -> Self:
         '''
@@ -290,18 +291,17 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         if isinstance(self, decl_cls):
             return getattr(self, name)
 
-        mock_key = (decl_cls, name)
-        cmpt = self._astype_mock_cmpt.get(mock_key, None)
+        cmpt = self._astype_mock_cmpt.get(name, None)
 
         # 如果 astype 需求的组件已经被创建过，并且新类型不是旧类型的子类，那么直接返回
-        if cmpt is not None and not issubclass(cmpt_info.cls, cmpt.__class__):
+        if cmpt is not None and (not issubclass(cmpt_info.cls, cmpt.__class__) or cmpt_info.cls is cmpt.__class__):
             return cmpt
 
         # astype 需求的组件还没创建，那么创建并记录
         cmpt = cmpt_info.create()
         cmpt.init_bind(Component.BindInfo(decl_cls, self, name))
 
-        self._astype_mock_cmpt[(decl_cls, name)] = cmpt
+        self._astype_mock_cmpt[name] = cmpt
         return cmpt
 
     # endregion
@@ -531,6 +531,8 @@ class Group[T](Item):
     '''
     def __init__(self, *objs: T, **kwargs):
         super().__init__(children=objs, **kwargs)
+
+        self.children: list[T]
 
     @overload
     def __getitem__(self, value: int) -> T: ...

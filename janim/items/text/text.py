@@ -2,8 +2,9 @@ from __future__ import annotations
 
 import itertools as it
 import re
+from collections import defaultdict
 from enum import Enum
-from typing import Iterable, Self
+from typing import Any, Callable, Concatenate, Iterable, Self
 
 import numpy as np
 
@@ -12,6 +13,8 @@ from janim.constants import ORIGIN, RIGHT, UP
 from janim.items.item import Group
 from janim.items.points import Points
 from janim.items.vitem import VItem
+from janim.logger import log
+from janim.typing import JAnimColor
 from janim.utils.config import Config
 from janim.utils.font import Font, get_fontpath_by_name
 from janim.utils.simple_functions import decode_utf8
@@ -19,6 +22,74 @@ from janim.utils.space_ops import get_norm, normalize
 
 DEFAULT_FONT_SIZE = 24
 ORIG_FONT_SIZE = 48
+
+
+def get_color_value_by_key(key) -> JAnimColor:
+    import janim.constants.colors as colors
+    if not hasattr(colors, key):
+        raise ValueError(f'No built-in color named {key}')
+    return getattr(colors, key)
+
+
+type ActConverter = Callable[[str], Any]
+type ActCaller = Callable[Concatenate[TextChar, ...], Any]
+type Act = tuple[Iterable[ActConverter], ActCaller]
+type ActName = str
+
+type ActParams = Iterable[str]
+type ActParamsStack = list[ActParams]
+
+type ActAt = int
+type ActStart = tuple[ActName, ActParams]
+type ActEnd = str
+
+available_act_map: dict[ActName, list[Act]] = defaultdict(list)
+
+
+def register_acts(names: list[ActName], *acts: Act) -> None:
+    for name in names:
+        available_act_map[name].extend(acts)
+
+
+register_acts(
+    ['color', 'c'],
+    ((get_color_value_by_key,),     lambda char, color: char.color.set(color)),
+    ((float, float, float),         lambda char, r, g, b: char.color.set([r, g, b])),
+    ((float, float, float, float),  lambda char, r, g, b, a: char.color.set_rgbas([r, g, b, a]))
+)
+register_acts(
+    ['stroke_color', 'sc'],
+    ((get_color_value_by_key,),     lambda char, color: char.stroke.set(color)),
+    ((float, float, float),         lambda char, r, g, b: char.stroke.set([r, g, b])),
+    ((float, float, float, float),  lambda char, r, g, b, a: char.stroke.set_rgbas([r, g, b, a]))
+)
+register_acts(
+    ['fill_color', 'fc'],
+    ((get_color_value_by_key,),     lambda char, color: char.fill.set(color)),
+    ((float, float, float),         lambda char, r, g, b: char.fill.set([r, g, b])),
+    ((float, float, float, float),  lambda char, r, g, b, a: char.fill.set_rgbas([r, g, b, a]))
+)
+register_acts(
+    ['alpha', 'a'],
+    ((float,), lambda char, a: char.color.set(alpha=a))
+)
+register_acts(
+    ['stroke_alpha', 'sa'],
+    ((float,), lambda char, a: char.stroke.set(alpha=a))
+)
+register_acts(
+    ['fill_alpha', 'fa'],
+    ((float,), lambda char, a: char.fill.set(alpha=a))
+)
+register_acts(
+    ['stroke', 's'],
+    ((float,), lambda char, radius: char.stroke.set(radius))
+)
+# TODO: distinct_stroke
+register_acts(
+    ['font_scale', 'fs'],
+    ((float,), lambda char, factor: char.points.scale(factor, about_point=ORIGIN))
+)
 
 
 class TextChar(VItem):
@@ -72,106 +143,32 @@ class TextChar(VItem):
     def get_advance_length(self) -> float:
         return get_norm(self.get_mark_advance() - self.get_mark_orig())
 
-    # @staticmethod
-    # def check_act_arg_count(type: str, act: Iterable[str], count: int | Iterable[int]) -> int:
-    #     if isinstance(count, int):
-    #         count = (count, )
+    def apply_act_list(self, act_params_map: dict[str, ActParamsStack]) -> None:
+        for name, params_stack in act_params_map.items():
+            params = params_stack[-1]
+            for converters, caller in available_act_map[name]:
+                if len(converters) == len(params):
+                    try:
+                        caller(
+                            self, *[
+                                converter(param)
+                                for converter, param in zip(converters, params)
+                            ]
+                        )
+                    except Exception:
+                        log.error(f'应用 {name} 时，{params} 与 {[cvt.__name__ for cvt in converters]} 不匹配')
+                        raise
 
-    #     for cnt in count:
-    #         if len(act) == cnt:
-    #             return cnt
-    #     args_cnt = ' or '.join(str(v) for v in count)
-    #     raise TypeError(f'"{type}" takes {args_cnt} arguments but {len(act)} was given')
-
-    # @staticmethod
-    # def get_color_value_by_key(key) -> JAnimColor:
-    #     import janim.constants.colors as colors
-    #     if not hasattr(colors, key):
-    #         raise ValueError(f'No built-in color named {key}')
-    #     return getattr(colors, key)
-
-    # def apply_act_list(self, act_list: list[Iterable[str]]) -> None:
-    #     def method_color(type, color) -> None:
-    #         arg_cnt = self.check_act_arg_count(type, color, (1, 3, 4))
-
-    #         if arg_cnt == 1:    self.set_color(self.get_color_value_by_key(color[0]))
-    #         elif arg_cnt == 3:  self.set_color([float(val) for val in color])
-    #         else:
-    #             rgbas = [[float(val) for val in color]]
-    #             self.set_rgbas(rgbas).set_fill_rgbas(rgbas)
-
-    #     def method_stroke_color(type, color) -> None:
-    #         arg_cnt = self.check_act_arg_count(type, color, (1, 3, 4))
-
-    #         if arg_cnt == 1:    self.set_stroke(self.get_color_value_by_key(color[0]))
-    #         elif arg_cnt == 3:  self.set_stroke([float(val) for val in color])
-    #         else:               self.set_rgbas([[float(val) for val in color]])
-
-    #     def method_fill_color(type, color) -> None:
-    #         arg_cnt = self.check_act_arg_count(type, color, (1, 3, 4))
-
-    #         if arg_cnt == 1:    self.set_fill(self.get_color_value_by_key(color[0]))
-    #         elif arg_cnt == 3:  self.set_fill([float(val) for val in color])
-    #         else:               self.set_fill_rgbas([[float(val) for val in color]])
-
-    #     def method_alpha(type, opacity) -> None:
-    #         self.check_act_arg_count(type, opacity, 1)
-    #         self.set_opacity(float(opacity[0]))
-
-    #     def method_stroke(type, stroke) -> None:
-    #         arg_cnt = self.check_act_arg_count(type, stroke, (1, 2))
-
-    #         if arg_cnt == 1:
-    #             self.set_stroke_width(float(stroke[0]))
-
-    #         elif arg_cnt == 2:
-    #             stroke_width, background = stroke
-    #             self.set_stroke(width=float(stroke_width), background=(background == 'True'))
-
-    #     def method_distinct_stroke(type, ds) -> None:
-    #         arg_cnt = self.check_act_arg_count(type, ds, (1, 2))
-    #         method_stroke_color('', [ds[0]])
-    #         method_stroke('', ['0.02', 'True'])
-    #         if arg_cnt == 2:
-    #             method_fill_color('', [ds[1]])
-
-    #     def method_font_scale(type, fs) -> None:
-    #         self.check_act_arg_count(type, fs, 1)
-    #         self.scale(float(fs[0]), about_point=ORIGIN)
-
-    #     methods = {
-    #         'c': method_color,
-    #         'color': method_color,
-
-    #         'sc': method_stroke_color,
-    #         'stroke_color': method_stroke_color,
-
-    #         'fc': method_fill_color,
-    #         'fill_color': method_fill_color,
-
-    #         'a': method_alpha,
-    #         'alpha': method_alpha,
-
-    #         's': method_stroke,
-    #         'stroke': method_stroke,
-
-    #         'ds': method_distinct_stroke,
-    #         'distinct_stroke': method_distinct_stroke,
-
-    #         'fs': method_font_scale,
-    #         'font_scale': method_font_scale,
-    #     }
-
-    #     for act in reversed(act_list):
-    #         method = methods.get(act[0])
-    #         if method:
-    #             del methods[act[0]]
-    #             method(act[0], act[1:])
-    #         if len(methods) == 0:
-    #             break
+                    break
+            else:
+                txt = ','.join([
+                    '[' + ','.join([cvt.__name__ for cvt in act[0]]) + ']'
+                    for act in available_act_map[name]
+                ])
+                log.warning(f'应用 "{name}" 时，{params} 与 {txt} 没有匹配项')
 
 
-class TextLine(Group[TextChar]):
+class TextLine(Group[TextChar], Points):
     def __init__(self, text: str, fonts: list[Font], font_size: float, char_kwargs={}, **kwargs):
         self.text = text
 
@@ -187,20 +184,18 @@ class TextLine(Group[TextChar]):
         self.mark = Points(ORIGIN, RIGHT, UP)
         self.mark.points.scale(font_size / ORIG_FONT_SIZE, about_point=ORIGIN)
         Cmpt_Points.apply_points_fn.connect(
-            self.astype(Points).points,
+            self.points,
             lambda func, about_point: self.mark.points.apply_points_fn(func, about_point=about_point)
         )
 
-        self.arrange_in_line()
-
     def get_mark_orig(self) -> np.ndarray:
-        return self.mark.points._points._data[0]
+        return self.mark.points._points._data[0].copy()
 
     def get_mark_right(self) -> np.ndarray:
-        return self.mark.points._points._data[1]
+        return self.mark.points._points._data[1].copy()
 
     def get_mark_up(self) -> np.ndarray:
-        return self.mark.points._points._data[2]
+        return self.mark.points._points._data[2].copy()
 
     def arrange_in_line(self, buff: float = 0) -> Self:
         if len(self.children) == 0:
@@ -247,12 +242,12 @@ class Text(Group[TextLine]):
             for name in font
         ]
 
-        if not format == Text.Format.RichText:
+        if format is not Text.Format.RichText:
             self.text = text
         else:
             # 如果是 RichText，获取属性列表
             self.text = ''
-            self.act_list: list[tuple[int, list[str, str] | str]] = []
+            self.act_params_list: list[tuple[ActAt, ActStart | ActEnd]] = []
             idx = 0
             iter = re.finditer(r'(<+)(/?[^<]*?)>', text)
             for match in iter:
@@ -268,10 +263,11 @@ class Text(Group[TextLine]):
                 if left_cnt % 2 == 0:
                     self.text += mid + '>'
                 else:
-                    self.act_list.append((
-                        len(self.text),
-                        mid[1:] if mid.startswith('/') else mid.split()
-                    ))
+                    if mid.startswith('/'):
+                        self.act_params_list.append((len(self.text), mid[1:]))
+                    else:
+                        split = mid.split()
+                        self.act_params_list.append((len(self.text), (split[0], split[1:])))
 
             self.text += text[idx:]
 
@@ -285,6 +281,10 @@ class Text(Group[TextLine]):
             **kwargs
         )
 
+        if format is Text.Format.RichText:
+            self.apply_rich_text()
+        for line in self.children:
+            line.arrange_in_line()
         self.arrange_in_lines()
         self.astype(Points).points.to_center()
 
@@ -321,11 +321,11 @@ class Text(Group[TextLine]):
         if len(self.children) == 0:
             return
 
-        pos = self[0].get_mark_orig()
-        for line in self[1:]:
+        pos = self.children[0].get_mark_orig()
+        for line in self.children[1:]:
             vert = line.get_mark_orig() - line.get_mark_up()
             target = pos + base_buff * vert + buff * normalize(vert)
-            line.astype(Points).points.shift(
+            line.points.shift(
                 target - line.get_mark_orig()
             )
             pos = line.get_mark_orig()
@@ -426,71 +426,29 @@ class Text(Group[TextLine]):
     #         self.to_center()
     #     return self
 
-    # def apply_rich_text(self) -> None:
-    #     text_at = 0
-    #     act_idx = 0
-    #     act_stack = []
-    #     for line in self:
-    #         for char in line:
-    #             while act_idx < len(self.act_list):
-    #                 next_act_at, next_act = self.act_list[act_idx]
-    #                 if text_at < next_act_at:
-    #                     break
+    def apply_rich_text(self) -> None:
+        text_at = 0
+        act_idx = 0
+        act_params_map: defaultdict[str, ActParamsStack] = defaultdict(list)
+        for line in self.children:
+            for char in line.children:
+                while act_idx < len(self.act_params_list):
+                    next_act_at, next_act = self.act_params_list[act_idx]
+                    if text_at < next_act_at:
+                        break
 
-    #                 if not isinstance(next_act, str):
-    #                     act_stack.append(next_act)
-    #                 else:
-    #                     found = False
-    #                     while len(act_stack) > 0 and not found:
-    #                         found = act_stack[-1][0] == next_act
-    #                         act_stack.pop()
-    #                 act_idx += 1
+                    if isinstance(next_act, str):   # ActEnd
+                        stack = act_params_map[next_act]
+                        stack.pop()
+                        if not stack:
+                            del act_params_map[next_act]
+                    else:   # ActStart
+                        name, params = next_act
+                        act_params_map[name].append(params)
 
-    #             char.apply_act_list(act_stack)
-    #             text_at += 1
+                    act_idx += 1
 
-    #         text_at += 1
+                char.apply_act_list(act_params_map)
+                text_at += 1
 
-
-# class _Text(_Text, VGroup):
-#     '''
-#     文字物件
-
-#     - 文字的子物件 `text[i]` 是文字的每一行
-#     - 每行的子物件 `line[i]` 是文字的每个字符
-
-#     例如 `text[1][0]` 是第二行的首个字符
-
-#     可以调用 `word_wrap()` 进行自动换行（拆行）
-#     '''
-#     def __init__(
-#         self,
-#         text: str,
-#         font: str | Iterable[str] = [],
-#         *,
-#         font_size: float = DEFAULT_FONT_SIZE,
-#         color: JAnimColor = WHITE,
-#         opacity: float = 1.0,
-#         stroke_width: float | None = None,
-#         format: _Text.Format = _Text.Format.PlainText,
-#         **kwargs
-#     ) -> None:
-#         if stroke_width is None:
-#             stroke_width = get_stroke_width_by_font_size(font_size)
-
-#         super().__init__(text, font, font_size=font_size, format=format, **kwargs)
-
-#         self.set_color(color, opacity)
-#         self.set_stroke_width(stroke_width)
-
-#         if format == _Text.Format.RichText:
-#             self.apply_rich_text()
-
-#         for line in self:
-#             line.arrange_in_line()
-#         self.arrange_in_lines()
-#         self.to_center()
-
-
-# def get_stroke_width_by_font_size(font_size: float) -> float:
-#     return font_size / ORIG_FONT_SIZE * 0.0075
+            text_at += 1

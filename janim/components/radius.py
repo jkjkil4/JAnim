@@ -78,9 +78,10 @@ class Cmpt_Radius[ItemT](Component[ItemT]):
         self._radii.data = radii
         if not root_only and self.bind is not None:
             for item in self.bind.at_item.walk_descendants(self.bind.decl_cls):
-                cmpt = getattr(item, self.bind.key)
-                if isinstance(cmpt, Cmpt_Radius):
-                    cmpt._radii.data = radii
+                cmpt = self.get_same_cmpt_without_mock(item)
+                if cmpt is None:
+                    continue
+                cmpt._radii._data = radii
 
         return self
 

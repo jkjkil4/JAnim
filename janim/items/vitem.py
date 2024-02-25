@@ -53,7 +53,7 @@ class VItem(Points):
         color: JAnimColor | ColorArray | None = None,
         alpha: Alpha | AlphaArray | None = None,
         **kwargs
-    ) -> None:
+    ) -> Self:
         if stroke_color is None:
             stroke_color = color
         if stroke_alpha is None:
@@ -69,7 +69,7 @@ class VItem(Points):
         self.stroke.set(stroke_color, stroke_alpha)
         self.fill.set(fill_color, fill_alpha)
 
-        super().set_style(**kwargs)
+        return super().set_style(**kwargs)
 
     def add_tip(
         self,

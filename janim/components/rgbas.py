@@ -150,9 +150,10 @@ class Cmpt_Rgbas[ItemT](Component[ItemT]):
 
             if not root_only and self.bind is not None:
                 for item in self.bind.at_item.walk_descendants(self.bind.decl_cls):
-                    cmpt = getattr(item, self.bind.key)
-                    if isinstance(cmpt, Cmpt_Rgbas):
-                        cmpt.set_rgbas(rgbas)
+                    cmpt = self.get_same_cmpt_without_mock(item)
+                    if cmpt is None:
+                        continue
+                    cmpt.set_rgbas(rgbas)
         else:
             if color is not None:
                 color = self.format_colors(color)
@@ -174,9 +175,11 @@ class Cmpt_Rgbas[ItemT](Component[ItemT]):
 
             if not root_only and self.bind is not None:
                 for item in self.bind.at_item.walk_descendants(self.bind.decl_cls):
-                    cmpt = getattr(item, self.bind.key)
-                    if isinstance(cmpt, Cmpt_Rgbas):
-                        set_to(cmpt)
+                    cmpt = self.get_same_cmpt_without_mock(item)
+                    if cmpt is None:
+                        continue
+
+                    set_to(cmpt)
 
         return self
 

@@ -98,10 +98,9 @@ class Cmpt_Points[ItemT](Component[ItemT]):
 
         if self.bind is not None:
             for item in self.bind.at_item.walk_descendants(self.bind.decl_cls):
-                cmpt = getattr(item, self.bind.key)
-                if not isinstance(cmpt, Cmpt_Points):
-                    continue    # pragma: no cover
-
+                cmpt = self.get_same_cmpt_without_mock(item)
+                if cmpt is None:
+                    continue
                 point_datas.append(cmpt.get())
 
         return np.vstack(point_datas)
@@ -224,8 +223,8 @@ class Cmpt_Points[ItemT](Component[ItemT]):
 
         if self.bind is not None:
             for item in self.bind.at_item.walk_descendants(self.bind.decl_cls):
-                cmpt = getattr(item, self.bind.key)
-                if not isinstance(cmpt, Cmpt_Points) or not cmpt.has():
+                cmpt = self.get_same_cmpt_without_mock(item)
+                if cmpt is None or not cmpt.has():
                     continue
 
                 box_datas.append(cmpt.self_box.data)
@@ -402,9 +401,9 @@ class Cmpt_Points[ItemT](Component[ItemT]):
 
         if not root_only and self.bind is not None:
             for item in self.bind.at_item.walk_descendants(self.bind.decl_cls):
-                cmpt = getattr(item, self.bind.key)
-                if not isinstance(cmpt, Cmpt_Points):
-                    continue    # pragma: no cover
+                cmpt = self.get_same_cmpt_without_mock(item)
+                if cmpt is None:
+                    continue
 
                 apply(cmpt)
 

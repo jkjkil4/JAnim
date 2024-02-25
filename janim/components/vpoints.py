@@ -81,12 +81,20 @@ class Cmpt_VPoints[ItemT](Cmpt_Points[ItemT]):
                 cmpt1_copy, cmpt2_copy = cmpt2_copy, cmpt1_copy
                 subpaths1, subpaths2 = subpaths2, subpaths1
 
-            # 每个子路径的中心
-            def center(points: np.ndarray) -> np.ndarray:
-                return (np.min(points, axis=0) + np.max(points, axis=0)) * 0.5
+            # 用于计算相对距离的“中心”
+            # 这里的 ``RIGHT * (i * 1e-5)`` 是为了是有重合的点有所差别，比如可以保证图形字符 “O” 配对时的一致性
+            def center(i: int, points: np.ndarray) -> np.ndarray:
+                min = np.min(points, axis=0)
+                max = np.max(points, axis=0)
+                return (min + max) * 0.5 + RIGHT * (i * 1e-5)
 
-            subpaths1_center = np.array([center(subpath) for subpath in subpaths1]) - cmpt1_copy.box.center
-            subpaths2_center = np.array([center(subpath) for subpath in subpaths2]) - cmpt2_copy.box.center
+            # 这里的 ``/ .box.width`` 是为了缩放到一致
+            subpaths1_center = np.array([center(i, subpath) for i, subpath in enumerate(subpaths1)])
+            subpaths1_center -= cmpt1_copy.box.center
+            subpaths1_center /= cmpt1_copy.box.width
+            subpaths2_center = np.array([center(i, subpath) for i, subpath in enumerate(subpaths2)])
+            subpaths2_center -= cmpt2_copy.box.center
+            subpaths2_center /= cmpt2_copy.box.width
 
             # 这两个函数使用曼哈顿距离
             def nearest_idx(point: np.ndarray) -> int:
