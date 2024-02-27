@@ -16,7 +16,7 @@ if TYPE_CHECKING:
 
 
 class Transform(Animation):
-    label_color = (192, 156, 57)
+    label_color = (208, 171, 67)
 
     def __init__(
         self,
@@ -112,7 +112,7 @@ class Transform(Animation):
             for aligned in self.aligned.values()
         ])
 
-        # 在动画开始时自动隐藏源对象，在动画结束时自动隐藏目标对象
+        # 在动画开始时自动隐藏源对象，在动画结束时自动显示目标对象
         # 可以将 ``hide_src`` 和 ``show_target`` 置为 ``False`` 以禁用
         if self.hide_src:
             self.timeline.schedule(self.global_range.at, self.src_item.hide, root_only=self.root_only)
@@ -150,8 +150,8 @@ class MethodTransform(Transform):
         以供传入 :meth:`~.Timeline.register_dynamic_data` 使用
         '''
         def wrapper(global_t: float) -> Item.Data:
-            alpha = self.get_alpha_on_global_t(global_t)
             aligned = self.aligned[(item, item)]
+            alpha = self.get_alpha_on_global_t(global_t)
 
             union_copy = aligned.union._copy(aligned.union)
             union_copy.interpolate(aligned.data1, aligned.data2, alpha, path_func=self.path_func)
