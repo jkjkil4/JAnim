@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import inspect
+import itertools as it
 from dataclasses import dataclass
 from typing import Any, Callable, Self, overload
 
@@ -15,7 +16,8 @@ from janim.utils.iterables import resize_preserving_order
 from janim.utils.paths import PathFunc, straight_path
 
 CLS_CMPTINFO_NAME = '__cls_cmptinfo'
-AVAILABLE_STYLES_NAME = '__available_styles'
+CLS_STYLES_NAME = '__cls_styles'
+ALL_STYLES_NAME = '__all_styles'
 
 
 class _ItemMeta(type):
@@ -29,8 +31,28 @@ class _ItemMeta(type):
             for key, val in attrdict.items()
             if isinstance(val, CmptInfo)
         }
-
         attrdict[CLS_CMPTINFO_NAME] = cls_components
+
+        # 记录 set_style 的参数
+        set_style_func = attrdict.get('set_style', None)
+        if set_style_func is not None and callable(set_style_func):
+            sig = inspect.signature(set_style_func)
+            styles_name: list[str] = [
+                param.name
+                for param in list(sig.parameters.values())[1:]
+                if param.kind not in (param.POSITIONAL_ONLY, param.VAR_POSITIONAL, param.VAR_KEYWORD)
+            ]
+            attrdict[CLS_STYLES_NAME] = styles_name
+
+            all_styles = list(it.chain(
+                styles_name,
+                *[
+                    getattr(base, CLS_STYLES_NAME)
+                    for base in bases
+                    if hasattr(base, CLS_STYLES_NAME)
+                ]
+            ))
+            attrdict[ALL_STYLES_NAME] = all_styles
 
         return super().__new__(cls, name, bases, attrdict)
 
@@ -143,31 +165,16 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
             for key in apply_styles:
                 flags[key] = True
             item.set_style(**apply_styles)
+
         for key, flag in flags.items():
             if not flag:
+                for item in self.walk_self_and_descendants():
+                    print(item, item.get_available_styles())
                 log.warning(f'传入参数 "{key}" 没有匹配任何的样式设置，且没有被任何地方使用')
 
     @classmethod
     def get_available_styles(cls) -> list[str]:
-        available_styles = getattr(cls, AVAILABLE_STYLES_NAME, None)
-        if available_styles is not None:
-            return available_styles
-
-        available_styles: list[str] = []
-        for mcls in cls.mro():
-            func = getattr(mcls, 'set_style', None)
-            if func is None and not callable(func):
-                continue
-
-            sig = inspect.signature(func)
-            available_styles.extend([
-                param.name
-                for param in sig.parameters.values()
-                if param.kind not in (param.POSITIONAL_ONLY, param.VAR_POSITIONAL, param.VAR_KEYWORD)
-            ])
-
-        setattr(cls, AVAILABLE_STYLES_NAME, available_styles)
-        return available_styles
+        return getattr(cls, ALL_STYLES_NAME)
 
     def set_style(self, **kwargs) -> Self:
         return self

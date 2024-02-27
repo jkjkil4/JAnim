@@ -50,7 +50,7 @@ class TimeBasedUpdater[T: Item](Animation):
             return data_copy
         return wrapper
 
-    def anim_pre_init(self) -> None:
+    def anim_init(self) -> None:
         def build_data(data: Item.Data) -> UpdaterData:
             return UpdaterData(data, data._copy(data))
 
@@ -74,7 +74,7 @@ class TimeBasedUpdater[T: Item](Animation):
         self.func(self.item.ref_data(), end_params)
         if not self.root_only:
             for item in self.item.descendants():
-                self.func(item, end_params)
+                self.func(item.ref_data(), end_params)
 
         for updater_data in self.datas.values():
             self.timeline.register_dynamic_data(self.item, self.wrap_data(updater_data), self.global_range.at)
@@ -82,7 +82,6 @@ class TimeBasedUpdater[T: Item](Animation):
         self.timeline.detect_changes([self.item] if self.root_only else self.item.walk_self_and_descendants(),
                                      as_time=self.global_range.end - ANIM_END_DELTA)
 
-    def anim_init(self) -> None:
         self.set_render_call_list([
             RenderCall(
                 updater_data.data.cmpt.depth,

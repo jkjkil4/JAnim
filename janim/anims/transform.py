@@ -166,8 +166,8 @@ class MethodTransform(Transform):
         self.timeline.register_dynamic_data(self.src_item, self.wrap_data(self.src_item), self.global_range.at)
         if not self.root_only:
             for item in self.src_item.descendants():
-                if (item, item) not in self.aligned:
-                    continue
+                # if (item, item) not in self.aligned:
+                #     continue
 
                 self.timeline.register_dynamic_data(item, self.wrap_data(item), self.global_range.at)
 
