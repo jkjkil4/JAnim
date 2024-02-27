@@ -71,10 +71,11 @@ class TimeBasedUpdater[T: Item](Animation):
 
         end_params = UpdaterParams(self.global_range.end, 1)
 
-        self.func(self.item.ref_data(), end_params)
-        if not self.root_only:
-            for item in self.item.descendants():
-                self.func(item.ref_data(), end_params)
+        if self.become_at_end:
+            self.func(self.item.ref_data(), end_params)
+            if not self.root_only:
+                for item in self.item.descendants():
+                    self.func(item.ref_data(), end_params)
 
         for updater_data in self.datas.values():
             self.timeline.register_dynamic_data(self.item, self.wrap_data(updater_data), self.global_range.at)

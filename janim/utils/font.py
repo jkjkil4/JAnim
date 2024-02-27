@@ -76,4 +76,4 @@ class Font:
             wrap_points(builder.cubic_to)
         )
 
-        return builder.get(), (glyph.advance.x, glyph.advance.y)
+        return builder.get()[::-1], (glyph.advance.x, glyph.advance.y)

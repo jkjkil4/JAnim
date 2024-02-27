@@ -239,6 +239,17 @@ class Cmpt_VPoints[ItemT](Cmpt_Points[ItemT]):
                 return end - pos
         return RIGHT
 
+    def close_path(self) -> Self:
+        self._raise_error_if_no_points()
+        indices = self.get_subpath_end_indices()
+        end = self.get_end()
+        if len(indices) == 1:
+            point = self.get_start()
+        else:
+            point = self._points._data[indices[-2] + 2]
+        self.extend([(end + point) * 0.5, point])
+        return self
+
     @staticmethod
     def get_bezier_tuples_from_points(points: VectArray) -> Iterable[np.ndarray]:
         '''
