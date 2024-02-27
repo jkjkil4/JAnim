@@ -205,8 +205,8 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         return MethodTransformArgsBuilder(self)
 
     # 使得 .anim() 后仍有代码提示
-    def __call__(self, **kwargs) -> Self:
-        pass
+    @overload
+    def __call__(self, **kwargs) -> Self: ...
 
     @overload
     def __getitem__(self, value: int) -> Item: ...
@@ -262,6 +262,9 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         self._astype = cls
         return self
 
+    @overload
+    def __call__[T](self, cls: type[T]) -> T: ...
+
     def __call__[T](self, cls: type[T]) -> T:
         '''
         等效于调用 ``astype``
@@ -269,13 +272,9 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         return self.astype(cls)
 
     def __getattr__(self, name: str):
-        try:
-            cmpt_info = getattr(self._astype, name)
-            if not isinstance(cmpt_info, CmptInfo):
-                raise AttributeError()
-
-        except AttributeError:
-            super().__getattr__(name)   # raise error
+        cmpt_info = None if self._astype is None else getattr(self._astype, name, None)
+        if not isinstance(cmpt_info, CmptInfo):
+            super().__getattribute__(name)  # raise error
 
         # 找到 cmpt_info 是在哪个类中被定义的
         decl_cls: type[Item] | None = None

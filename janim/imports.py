@@ -12,6 +12,7 @@ from janim.items.geometry.arc import *
 from janim.items.geometry.arrow import *
 from janim.items.geometry.line import *
 from janim.items.geometry.polygon import *
+from janim.items.image_item import *
 from janim.items.item import *
 from janim.items.points import *
 from janim.items.text.text import *
