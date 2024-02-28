@@ -224,28 +224,28 @@ class AnimViewer(QMainWindow):
                 assert 'janim' in tree
 
                 janim = tree['janim']
-                cmdtype = janim['type']
 
-                if cmdtype == 'register_client':
-                    self.clients.append((datagram.senderAddress(), datagram.senderPort()))
-                    self.send_lineno(self.lineno)
+                match janim['type']:
+                    case 'register_client':
+                        self.clients.append((datagram.senderAddress(), datagram.senderPort()))
+                        self.send_lineno(self.lineno)
 
-                # 重新构建
-                elif cmdtype == 'file_saved':
-                    if os.path.samefile(janim['file_path'], inspect.getmodule(self.anim.timeline).__file__):
-                        self.on_rebuild_triggered()
+                    # 重新构建
+                    case 'file_saved':
+                        if os.path.samefile(janim['file_path'], inspect.getmodule(self.anim.timeline).__file__):
+                            self.on_rebuild_triggered()
 
-                # 重新加载
-                elif cmdtype == 'reload':
-                    file_path = janim['file_path']
-                    for module in sys.modules.values():
-                        module_file_path = getattr(module, '__file__', None)
-                        if module_file_path is not None and os.path.samefile(module_file_path, file_path):
-                            importlib.reload(module)
-                            log.info(f'已重新加载 {file_path}')
-                            break
-                    else:
-                        log.error(f'{file_path} 之前没被导入过')
+                    # 重新加载
+                    case 'reload':
+                        file_path = janim['file_path']
+                        for module in sys.modules.values():
+                            module_file_path = getattr(module, '__file__', None)
+                            if module_file_path is not None and os.path.samefile(module_file_path, file_path):
+                                importlib.reload(module)
+                                log.info(f'已重新加载 {file_path}')
+                                break
+                        else:
+                            log.error(f'{file_path} 之前没被导入过')
 
             except Exception:
                 traceback.print_exc()

@@ -73,7 +73,7 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
             self.depth.set(depth)
 
         self._astype: type[Item] | None = None
-        self._astype_mock_cmpt: dict[tuple[type, str], Component] = {}
+        self._astype_mock_cmpt: dict[str, Component] = {}
 
         self.add(*children)
 
@@ -132,9 +132,7 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         if not recurse_up and not recurse_down:
             return
 
-        mock_key = (cmpt.bind.decl_cls, cmpt.bind.key)
-
-        def mark(items: Item):
+        def mark(items: list[Item]):
             for item in items:
                 if isinstance(item, cmpt.bind.decl_cls):
                     # 一般情况
@@ -143,7 +141,7 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
 
                 else:
                     # astype 情况
-                    mock_cmpt = item._astype_mock_cmpt.get(mock_key, None)
+                    mock_cmpt = item._astype_mock_cmpt.get(cmpt.bind.key, None)
                     if mock_cmpt is not None:
                         mock_cmpt.mark_refresh(func)
 
