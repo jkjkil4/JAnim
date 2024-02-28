@@ -20,6 +20,8 @@ class UpdaterData:
 
 
 class TimeBasedUpdater[T: Item](Animation):
+    label_color = (49, 155, 191)
+
     def __init__(
         self,
         item: T,

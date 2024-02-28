@@ -10,6 +10,8 @@ from janim.items.item import Item
 
 
 class ShowPartial(TimeBasedUpdater):
+    label_color = (54, 164, 186)
+
     def __init__(
         self,
         item: Item,

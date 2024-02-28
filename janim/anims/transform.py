@@ -133,7 +133,7 @@ class MethodTransform(Transform):
 
     具体参考 :meth:`~.Item.anim`
     '''
-    label_color = (165, 103, 44)
+    label_color = (196, 130, 69)
 
     def __init__(self, item: Item, **kwargs):
         super().__init__(item, item, **kwargs)
@@ -200,8 +200,8 @@ class MethodTransform(Transform):
             return wrapper
 
     def __getattr__(self, name: str):
-        cmpt = self.src_item.components.get(name, None)
-        if cmpt is not None:
+        cmpt = getattr(self.src_item, name, None)
+        if isinstance(cmpt, Component):
             return MethodTransform._FakeCmpt(self, cmpt)
 
         attr = getattr(self.src_item, name, None)
