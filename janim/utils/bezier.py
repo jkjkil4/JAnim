@@ -46,7 +46,9 @@ class PathBuilder:
             return np.empty((0, 3))
         return np.vstack(self.points_list)
 
-    def append(self, points: VectArray) -> Self:
+    def append(self, points: VectArray, *, line_to_start_point=False) -> Self:
+        if line_to_start_point:
+            self.points_list.append([(np.array(self.end_point) + np.array(points[0])) * 0.5])
         self.points_list.append(points)
         if self.start_point is None:
             self.start_point = points[0]

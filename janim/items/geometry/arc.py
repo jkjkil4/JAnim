@@ -262,7 +262,7 @@ class AnnularSector(ArcCenter):
         inner_arc = inner_arc[::-1]
 
         builder = PathBuilder(points=outer_arc)
-        builder.line_to(inner_arc[0]).append(inner_arc[1:]).close_path()
+        builder.append(inner_arc, line_to_start_point=True).close_path()
 
         self.points.set(builder.get() + arc_center)
 
