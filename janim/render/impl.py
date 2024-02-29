@@ -177,7 +177,7 @@ class VItemRenderer(Renderer):
 
             bytes = np.hstack([
                 mapped,
-                data.cmpt.points.get_closepath_flags().reshape((len(mapped), 1)),
+                data.cmpt.points.get_closepath_flags()[:, np.newaxis],
                 np.zeros((len(mapped), 1))
             ]).astype('f4').tobytes()
 

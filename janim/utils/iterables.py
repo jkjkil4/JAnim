@@ -166,16 +166,18 @@ def resize_and_repeatedly_extend(
 
 
 def resize_with_interpolation(nparray: np.ndarray, length: int) -> np.ndarray:
+    if not isinstance(nparray, np.ndarray):
+        nparray = np.array(nparray)
     if len(nparray) == length:
         return nparray
     if length == 0:
-        return np.zeros((0, *nparray.shape[1:]), dtype=nparray.dtype)
+        return np.zeros((0, *nparray.shape[1:]))
     cont_indices = np.linspace(0, len(nparray) - 1, length)
-    return np.array([
-        (1 - a) * nparray[lh] + a * nparray[rh]
-        for ci in cont_indices
-        for lh, rh, a in [(int(ci), int(np.ceil(ci)), ci % 1)]
-    ], dtype=nparray.dtype)
+    lh_s = cont_indices.astype(int)
+    rh_s = np.ceil(cont_indices).astype(int)
+    a_s = cont_indices % 1
+    a_s = np.expand_dims(a_s, axis=tuple(range(1, nparray.ndim)))
+    return (1 - a_s) * nparray[lh_s] + a_s * nparray[rh_s]
 
 
 def make_even(
