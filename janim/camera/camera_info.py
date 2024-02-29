@@ -22,6 +22,7 @@ class CameraInfo:
 
     view_matrix: np.ndarray = field(init=False)
     proj_matrix: np.ndarray = field(init=False)
+    proj_view_matrix: np.ndarray = field(init=False)
     frame_radius: np.ndarray = field(init=False)
 
     def __post_init__(self):
@@ -32,6 +33,7 @@ class CameraInfo:
 
         self.view_matrix = self._compute_view_matrix()
         self.proj_matrix = self._compute_proj_matrix()
+        self.proj_view_matrix = np.dot(self.proj_matrix, self.view_matrix)
         self.frame_radius = np.array([self.horizontal_dist, self.vertical_dist]) / 2
 
     @property

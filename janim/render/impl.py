@@ -4,14 +4,15 @@ from typing import TYPE_CHECKING
 import moderngl as mgl
 import numpy as np
 
+from janim.constants import DOWN, IN, LEFT, OUT, RIGHT, UP
 from janim.render.base import Renderer, get_program
 from janim.render.texture import get_texture_from_img
 from janim.utils.iterables import resize_with_interpolation
 
 if TYPE_CHECKING:
+    from janim.items.image_item import ImageItem
     from janim.items.points import DotCloud
     from janim.items.vitem import VItem
-    from janim.items.image_item import ImageItem
 
 
 class DotCloudRenderer(Renderer):
@@ -75,14 +76,7 @@ class VItemRenderer(Renderer):
         self.prog = get_program('render/shaders/vitem')
 
         self.ctx = self.data_ctx.get().ctx
-        self.vbo_coord = self.ctx.buffer(
-            np.array([
-                -1.0, -1.0,
-                -1.0, 1.0,
-                1.0, -1.0,
-                1.0, 1.0,
-            ], dtype='f4').tobytes()
-        )
+        self.vbo_coord = self.ctx.buffer(reserve=4 * 2 * 4)
         self.vbo_mapped_points = self.ctx.buffer(reserve=1)
         self.vbo_radius = self.ctx.buffer(reserve=1)
         self.vbo_stroke_color = self.ctx.buffer(reserve=1)
@@ -108,6 +102,39 @@ class VItemRenderer(Renderer):
         new_radius = data.cmpt.radius._radii._data
         new_stroke = data.cmpt.stroke._rgbas._data
         new_fill = data.cmpt.fill._rgbas._data
+
+        is_camera_changed = id(new_camera_info) != id(self.prev_camera_info)
+
+        if id(new_radius) != id(self.prev_radius) or id(new_points) != id(self.prev_points) or is_camera_changed:
+            box = data.cmpt.points.box
+            clip_box = [
+                box.get(x + y + z)
+                for x in (LEFT, RIGHT)
+                for y in (DOWN, UP)
+                for z in (IN, OUT)
+            ]
+            clip_box = np.hstack([
+                clip_box,
+                np.full((len(clip_box), 1), 1)
+            ])
+            clip_box = np.dot(clip_box, render_data.camera_info.proj_view_matrix.T)
+            clip_box = clip_box[:, :2] / np.repeat(clip_box[:, 3], 2).reshape((len(clip_box), 2))
+            clip_box *= render_data.camera_info.frame_radius
+
+            buff = new_radius.max() + render_data.anti_alias_radius
+            clip_min = np.min(clip_box, axis=0) - buff
+            clip_max = np.max(clip_box, axis=0) + buff
+            clip_box = np.array([
+                clip_min,
+                [clip_min[0], clip_max[1]],
+                [clip_max[0], clip_min[1]],
+                clip_max
+            ]) / render_data.camera_info.frame_radius
+            clip_box = np.clip(clip_box, -1, 1)
+
+            bytes = clip_box.astype('f4').tobytes()
+            assert len(bytes) == self.vbo_coord.size
+            self.vbo_coord.write(bytes)
 
         if id(new_radius) != id(self.prev_radius) or len(new_points) != len(self.prev_points):
             radius = resize_with_interpolation(new_radius, (len(new_points) + 1) // 2)
@@ -139,18 +166,17 @@ class VItemRenderer(Renderer):
             self.vbo_fill_color.write(bytes)
             self.prev_fill = new_fill
 
-        if id(new_points) != id(self.prev_points) or id(new_camera_info) != id(self.prev_camera_info):
+        if id(new_points) != id(self.prev_points) or is_camera_changed:
             mapped = np.hstack([
                 new_points,
                 np.full((len(new_points), 1), 1)
             ])
-            mapped = np.dot(mapped, render_data.camera_info.view_matrix.T)
-            mapped = np.dot(mapped, render_data.camera_info.proj_matrix.T)
-            mapped /= np.repeat(mapped[:, 3], 4).reshape((len(mapped), 4))
-            mapped[:, :2] *= render_data.camera_info.frame_radius
+            mapped = np.dot(mapped, render_data.camera_info.proj_view_matrix.T)
+            mapped = mapped[:, :2] / np.repeat(mapped[:, 3], 2).reshape((len(mapped), 2))
+            mapped *= render_data.camera_info.frame_radius
 
             bytes = np.hstack([
-                mapped[:, :2],
+                mapped,
                 data.cmpt.points.get_closepath_flags().reshape((len(mapped), 1)),
                 np.zeros((len(mapped), 1))
             ]).astype('f4').tobytes()

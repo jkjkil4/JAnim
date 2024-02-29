@@ -174,8 +174,8 @@ void main()
     for (int i = 1; i < points.length(); i++) {
         d = min(d, distance(v_coord, get_point(i)));
     }
-    if (d < 0.025) {
-        f_color = vec4(1.0 - smoothstep(0.010, 0.012, d));
+    if (d < 0.06) {
+        f_color = vec4(1.0 - smoothstep(0.048, 0.052, d));
         return;
     }
 

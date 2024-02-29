@@ -453,17 +453,20 @@ class TimelineAnim(AnimGroup):
         timeline = self.timeline
         camera_data = timeline.get_stored_data_at_time(timeline.camera, self._time)
         camera_info = camera_data.cmpt.points.info
+        anti_alias_radius = Config.get.anti_alias_width / 2 * camera_info.scaled_factor
 
         set_global_uniforms(
             ctx,
             ('JA_VIEW_MATRIX', camera_info.view_matrix.T.flatten()),
             ('JA_PROJ_MATRIX', camera_info.proj_matrix.T.flatten()),
             ('JA_FRAME_RADIUS', camera_info.frame_radius),
-            ('JA_ANTI_ALIAS_RADIUS', Config.get.anti_alias_width / 2 * camera_info.scaled_factor)
+            ('JA_ANTI_ALIAS_RADIUS', anti_alias_radius)
         )
 
         global_t_token = Animation.global_t_ctx.set(self._time)
-        render_token = Renderer.data_ctx.set(RenderData(ctx=ctx, camera_info=camera_info))
+        render_token = Renderer.data_ctx.set(RenderData(ctx=ctx,
+                                                        camera_info=camera_info,
+                                                        anti_alias_radius=anti_alias_radius))
 
         try:
             # 使用 heapq 以深度为序调用 RenderCall

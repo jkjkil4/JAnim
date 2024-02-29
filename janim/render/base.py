@@ -36,6 +36,7 @@ class RenderData:
     '''
     ctx: mgl.Context
     camera_info: CameraInfo
+    anti_alias_radius: float
 
 
 shader_keys = (

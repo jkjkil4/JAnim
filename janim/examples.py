@@ -14,7 +14,7 @@ class SimpleCurveExample(Timeline):
 
         self.forward(0.5)
         self.play(item1.anim.color.set(BLUE))
-        self.play(item1.anim.points.rotate(-90 * DEGREES))
+        self.play(Rotate(item1, -90 * DEGREES))
         self.forward(0.5)
 
         item2 = VItem(LEFT, UP, RIGHT, DOWN, LEFT)
