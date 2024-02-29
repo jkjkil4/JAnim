@@ -124,6 +124,8 @@ void get_subpath_attr(
             break;
         }
         vec2 A = get_point(i), C = get_point(i + 2);
+        if (A == B && B == C)
+            continue;
 
         vec2 v1 = normalize(B - A);
         vec2 v2 = normalize(C - B);

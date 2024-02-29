@@ -12,12 +12,14 @@ from janim.utils.simple_functions import clip
 class UpdaterParams:
     global_t: int
     alpha: int
+    extra_data: tuple | None
 
 
 @dataclass
 class UpdaterData:
     orig_data: Item.Data[Item]
     data: Item.Data[Item]
+    extra_data: tuple | None
 
 
 class TimeBasedUpdater[T: Item](Animation):
@@ -46,6 +48,9 @@ class TimeBasedUpdater[T: Item](Animation):
         self.skip_null_items = skip_null_items
         self.root_only = root_only
 
+    def create_extra_data(self, data: Item.Data) -> tuple | None:
+        return None
+
     def wrap_data(self, updater_data: UpdaterData) -> DynamicData:
         '''
         以供传入 :meth:`~.Timeline.register_dynamic_data` 使用
@@ -53,13 +58,13 @@ class TimeBasedUpdater[T: Item](Animation):
         def wrapper(global_t: float) -> Item.Data:
             alpha = self.get_alpha_on_global_t(global_t)
             data_copy = updater_data.orig_data._copy(updater_data.orig_data)
-            self.func(data_copy, UpdaterParams(global_t, alpha))
+            self.func(data_copy, UpdaterParams(global_t, alpha, updater_data.extra_data))
             return data_copy
         return wrapper
 
     def anim_init(self) -> None:
         def build_data(data: Item.Data) -> UpdaterData:
-            return UpdaterData(data, data._copy(data))
+            return UpdaterData(data, data._copy(data), self.create_extra_data(data))
 
         self.datas: dict[Item, UpdaterData] = {
             item: build_data(
@@ -77,16 +82,9 @@ class TimeBasedUpdater[T: Item](Animation):
             if not self.skip_null_items or not item.is_null()
         }
 
-        end_params = UpdaterParams(self.global_range.end, 1)
-
-        if self.become_at_end:
-            self.func(self.item.ref_data(), end_params)
-            if not self.root_only:
-                for item in self.item.descendants():
-                    self.func(item.ref_data(), end_params)
-
-        for updater_data in self.datas.values():
-            self.timeline.register_dynamic_data(self.item, self.wrap_data(updater_data), self.global_range.at)
+        for item, updater_data in self.datas.items():
+            self.func(item.ref_data(), UpdaterParams(self.global_range.end, 1, updater_data.extra_data))
+            self.timeline.register_dynamic_data(item, self.wrap_data(updater_data), self.global_range.at)
 
         self.timeline.detect_changes([self.item] if self.root_only else self.item.walk_self_and_descendants(),
                                      as_time=self.global_range.end - ANIM_END_DELTA)
@@ -109,10 +107,11 @@ class TimeBasedUpdater[T: Item](Animation):
     def anim_on_alpha(self, alpha: float) -> None:
         global_t = self.global_t_ctx.get()
         for i, updater_data in enumerate(self.datas.values()):
+            sub_alpha = self.get_sub_alpha(alpha, i)
             updater_data.data._become(updater_data.orig_data)
             self.func(
                 updater_data.data,
-                UpdaterParams(global_t, self.get_sub_alpha(alpha, i))
+                UpdaterParams(global_t, sub_alpha, updater_data.extra_data)
             )
 
     def get_sub_alpha(
