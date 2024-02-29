@@ -28,6 +28,9 @@ class Points(Item):
         if points:
             self.points.set(points)
 
+    def is_null(self) -> bool:
+        return not self.points.has()
+
 
 class DotCloud(Points):
     color = CmptInfo(Cmpt_Rgbas[Self])

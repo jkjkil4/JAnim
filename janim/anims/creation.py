@@ -67,3 +67,23 @@ class Create(ShowPartial):
     '''
     def __init__(self, item: Item, auto_close_path: bool = True, **kwargs):
         super().__init__(item, lambda p: (0, p.alpha), auto_close_path=auto_close_path, **kwargs)
+
+
+class Uncreate(ShowPartial):
+    '''
+    显示物件的销毁过程（:class:`ShowCreation` 的倒放）
+    '''
+    def __init__(
+        self,
+        item: Item,
+        show_at_end: bool = False,
+        auto_close_path: bool = True,
+        **kwargs
+    ):
+        super().__init__(
+            item,
+            lambda p: (0, 1.0 - p.alpha),
+            show_at_end=show_at_end,
+            auto_close_path=auto_close_path,
+            **kwargs
+        )

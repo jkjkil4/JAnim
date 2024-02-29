@@ -288,6 +288,9 @@ class Text(Group[TextLine]):
         self.arrange_in_lines()
         self.astype(Points).points.to_center()
 
+    def is_null(self) -> bool:
+        return True
+
     def idx_to_row_col(self, idx: int) -> tuple[int, int]:
         for i, line in enumerate(self):
             if idx < len(line):

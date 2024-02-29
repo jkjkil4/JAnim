@@ -5,6 +5,7 @@ from typing import Any, Callable
 from janim.anims.animation import Animation, RenderCall
 from janim.anims.timeline import ANIM_END_DELTA, DynamicData
 from janim.items.item import Item
+from janim.utils.simple_functions import clip
 
 
 @dataclass
@@ -27,18 +28,22 @@ class TimeBasedUpdater[T: Item](Animation):
         item: T,
         func: Callable[[Item.Data[T], UpdaterParams], Any],
         *,
+        lag_ratio: float = 0,
         hide_at_begin: bool = True,
         show_at_end: bool = True,
         become_at_end: bool = True,
+        skip_null_items: bool = True,
         root_only: bool = True,
         **kwargs
     ):
         super().__init__(**kwargs)
         self.item = item
         self.func = func
+        self.lag_ratio = lag_ratio
         self.hide_at_begin = hide_at_begin
         self.show_at_end = show_at_end
         self.become_at_end = become_at_end
+        self.skip_null_items = skip_null_items
         self.root_only = root_only
 
     def wrap_data(self, updater_data: UpdaterData) -> DynamicData:
@@ -69,6 +74,7 @@ class TimeBasedUpdater[T: Item](Animation):
                 if self.root_only
                 else self.item.walk_self_and_descendants()
             )
+            if not self.skip_null_items or not item.is_null()
         }
 
         end_params = UpdaterParams(self.global_range.end, 1)
@@ -102,7 +108,22 @@ class TimeBasedUpdater[T: Item](Animation):
 
     def anim_on_alpha(self, alpha: float) -> None:
         global_t = self.global_t_ctx.get()
-        params = UpdaterParams(global_t, alpha)
-        for updater_data in self.datas.values():
+        for i, updater_data in enumerate(self.datas.values()):
             updater_data.data._become(updater_data.orig_data)
-            self.func(updater_data.data, params)
+            self.func(
+                updater_data.data,
+                UpdaterParams(global_t, self.get_sub_alpha(alpha, i))
+            )
+
+    def get_sub_alpha(
+        self,
+        alpha: float,
+        index: int
+    ) -> float:
+        '''依据 ``lag_ratio`` 得到特定子物件的 sub_alpha'''
+        # REFACTOR: make this more understanable
+        lag_ratio = self.lag_ratio
+        full_length = (len(self.datas) - 1) * lag_ratio + 1
+        value = alpha * full_length
+        lower = index * lag_ratio
+        return clip((value - lower), 0, 1)

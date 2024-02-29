@@ -184,6 +184,9 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         func(self)
         return self
 
+    def is_null(self) -> bool:
+        return False
+
     @property
     def anim(self) -> Self:
         '''
