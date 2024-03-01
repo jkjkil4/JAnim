@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import os
+import tempfile
 from contextvars import ContextVar
 from dataclasses import dataclass
 from typing import Self
@@ -7,8 +9,8 @@ from typing import Self
 import psutil
 from colour import Color
 
+from janim.constants import DOWN, LEFT, RIGHT, UP
 from janim.typing import Vect
-from janim.constants import LEFT, RIGHT, DOWN, UP
 
 config_ctx_var: ContextVar[list[Config]] = ContextVar('config_ctx_var')
 
@@ -55,6 +57,7 @@ class Config(metaclass=_ConfigMeta):
 
     ffmpeg_bin: str = None
     output_dir: str = None
+    temp_dir: str = None
 
     def __enter__(self) -> Self:
         lst = config_ctx_var.get()
@@ -88,11 +91,15 @@ default_config = Config(
 
     ffmpeg_bin='ffmpeg',
     output_dir='videos',
+    temp_dir=os.path.join(tempfile.gettempdir(), 'janim')
 )
 '''
 默认配置
 
-其中 ``preview_fps`` 在接入电源时是 60，未接入时是 30
+其中：
+
+- ``preview_fps`` 在接入电源时是 60，未接入时是 30
+- ``temp_dir`` 由操作系统决定
 '''
 
 config_ctx_var.set([default_config])

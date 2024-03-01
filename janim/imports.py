@@ -19,6 +19,7 @@ from janim.items.image_item import *
 from janim.items.item import *
 from janim.items.points import *
 from janim.items.svg.svg_item import *
+from janim.items.svg.typst import *
 from janim.items.text.text import *
 from janim.items.vitem import *
 from janim.render.file_writer import FileWriter

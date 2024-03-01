@@ -6,9 +6,9 @@ from typing import Iterable, Self
 import numpy as np
 
 from janim.components.component import CmptGroup, CmptInfo
+from janim.components.points import Cmpt_Points
 from janim.components.radius import Cmpt_Radius
 from janim.components.rgbas import Cmpt_Rgbas, apart_alpha
-from janim.components.points import Cmpt_Points
 from janim.components.vpoints import Cmpt_VPoints
 from janim.constants import PI
 from janim.items.points import Points

@@ -1,9 +1,12 @@
 
+import os
+from typing import Callable
+
 import numpy as np
 import svgelements as se
 
 from janim.constants import ORIGIN, RIGHT
-from janim.items.item import Group
+from janim.items.item import Group, Item
 from janim.items.vitem import VItem
 from janim.logger import log
 from janim.utils.bezier import PathBuilder
@@ -11,6 +14,8 @@ from janim.utils.config import Config
 
 DEFAULT_SVGITEM_SCALE_FACTOR = 4.36
 STROKE_WIDTH_CONVERSION = 0.01
+
+type VItemBuilder = Callable[[], VItem]
 
 
 def _convert_point_to_3d(x: float, y: float) -> np.ndarray:
@@ -29,20 +34,10 @@ class SVGItem(Group[VItem]):
         fill_color=None,
         fill_alpha=0
     )
+    vitem_builders_map: dict[str, list[VItemBuilder]] = {}
 
     def __init__(self, file_path: str, **kwargs):
-        svg: se.SVG = se.SVG.parse(file_path)
-
-        items = []
-        for shape in svg.elements():
-            if isinstance(shape, (se.Group, se.Use)):
-                continue
-            elif isinstance(shape, se.Path):
-                items.append(self.convert_path_to_item(shape))
-            elif type(shape) is se.SVGElement:
-                continue
-            else:
-                log.warning(f'Unsupported element type: {type(shape)}')
+        items = self.get_items_from_file(file_path)
 
         super().__init__(*items, **kwargs)
 
@@ -53,7 +48,33 @@ class SVGItem(Group[VItem]):
         ).flip(RIGHT)
 
     @staticmethod
-    def convert_path_to_item(path: se.Path) -> VItem:
+    def get_items_from_file(file_path: str) -> list[Item]:
+        mtime = os.path.getmtime(file_path)
+        name = os.path.splitext(os.path.basename(file_path))[0]
+        key = f'{name}_{mtime}'
+
+        cached = SVGItem.vitem_builders_map.get(key, None)
+        if cached is not None:
+            return [builder() for builder in cached]
+
+        svg: se.SVG = se.SVG.parse(file_path)
+
+        builders: list[VItemBuilder] = []
+        for shape in svg.elements():
+            if isinstance(shape, (se.Group, se.Use)):
+                continue
+            elif isinstance(shape, se.Path):
+                builders.append(SVGItem.convert_path(shape))
+            elif type(shape) is se.SVGElement:
+                continue
+            else:
+                log.warning(f'Unsupported element type: {type(shape)}')
+
+        SVGItem.vitem_builders_map[key] = builders
+        return [builder() for builder in builders]
+
+    @staticmethod
+    def convert_path(path: se.Path) -> VItemBuilder:
         builder = PathBuilder()
         segment_class_to_func_map = {
             se.Move: (builder.move_to, ('end',)),
@@ -62,6 +83,7 @@ class SVGItem(Group[VItem]):
             se.QuadraticBezier: (builder.conic_to, ('control', 'end')),
             se.CubicBezier: (builder.cubic_to, ('control1', 'control2', 'end'))
         }
+
         for segment in path:
             segment_class = segment.__class__
             func, attr_names = segment_class_to_func_map[segment_class]
@@ -71,13 +93,19 @@ class SVGItem(Group[VItem]):
             ]
             func(*points)
 
-        vitem = VItem(**SVGItem.svg_part_default_kwargs)
-        vitem.set_style(
+        vitem_styles = dict(
             stroke_radius=path.stroke_width * STROKE_WIDTH_CONVERSION / 2,
             stroke_color=path.stroke.hex,
             stroke_alpha=_convert_alpha_to_float(path.stroke.alpha),
             fill_color=path.fill.hex,
             fill_alpha=_convert_alpha_to_float(path.fill.alpha)
         )
-        vitem.points.set(builder.get())
-        return vitem
+        vitem_points = builder.get()
+
+        def vitem_builder() -> VItem:
+            vitem = VItem(**SVGItem.svg_part_default_kwargs)
+            vitem.set_style(**vitem_styles)
+            vitem.points.set(vitem_points)
+            return vitem
+
+        return vitem_builder

@@ -8,3 +8,4 @@ __pycache__
 /.coverage
 /env
 /result.json
+/result2.json
