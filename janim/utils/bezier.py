@@ -84,6 +84,15 @@ class PathBuilder:
         anchor: Vect
     ) -> Self:
         self._raise_if_no_points()
+        if np.isclose(self.end_point, handle1).all():
+            self.conic_to(handle2, anchor)
+            return
+        if np.isclose(handle1, handle2).all():
+            self.conic_to(handle1, anchor)
+            return
+        if np.isclose(handle2, anchor).all():
+            self.conic_to(handle1, handle2)
+            return
 
         last = self.end_point
         # Note, this assumes all points are on the xy-plane

@@ -12,3 +12,4 @@ skia-pathops
 fontTools
 freetype-py
 pillow
+svgelements

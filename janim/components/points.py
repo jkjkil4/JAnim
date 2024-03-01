@@ -512,8 +512,8 @@ class Cmpt_Points[ItemT](Component[ItemT]):
 
     def flip(
         self,
-        *,
         axis: Vect = UP,
+        *,
         about_point: Vect | None = None,
         about_edge: Vect | None = ORIGIN,
         root_only: bool = False,
