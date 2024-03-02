@@ -3,6 +3,7 @@ import janim.items.boolean_ops as boolean_ops
 from janim.anims.composition import *
 from janim.anims.creation import *
 from janim.anims.display import *
+from janim.anims.fading import *
 from janim.anims.rotation import *
 from janim.anims.timeline import *
 from janim.anims.transform import *
