@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Iterable, Self
+from typing import Iterable, Self, overload
 
 from janim.components.component import CmptInfo
 from janim.components.points import Cmpt_Points
@@ -30,6 +30,24 @@ class Points(Item):
 
     def is_null(self) -> bool:
         return not self.points.has()
+
+
+class Group[T](Points):
+    '''
+    将物件组成一组
+    '''
+    def __init__(self, *objs: T, **kwargs):
+        super().__init__(children=objs, **kwargs)
+
+        self.children: list[T]
+
+    @overload
+    def __getitem__(self, value: int) -> T: ...
+    @overload
+    def __getitem__(self, value: slice) -> Group[T]: ...
+
+    def __getitem__(self, value):   # pragma: no cover
+        return super().__getitem__(value)
 
 
 class DotCloud(Points):

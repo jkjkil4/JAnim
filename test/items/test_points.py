@@ -4,8 +4,8 @@ import unittest
 import numpy as np
 
 from janim.constants import DL, DOWN, DR, LEFT, ORIGIN, RIGHT, UL, UP, UR, OUT, TAU, DEGREES
-from janim.items.item import Group, Item
-from janim.items.points import Points
+from janim.items.item import Item
+from janim.items.points import Group, Points
 from janim.components.points import Cmpt_Points
 
 

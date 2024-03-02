@@ -3,7 +3,7 @@ from __future__ import annotations
 import inspect
 import itertools as it
 from dataclasses import dataclass
-from typing import Any, Callable, Self, overload
+from typing import TYPE_CHECKING, Any, Callable, Self, overload
 
 from janim.components.component import CmptInfo, Component, _CmptGroup
 from janim.components.depth import Cmpt_Depth
@@ -14,6 +14,9 @@ from janim.typing import SupportsApartAlpha, SupportsInterpolate
 from janim.utils.data import AlignedData
 from janim.utils.iterables import resize_preserving_order
 from janim.utils.paths import PathFunc, straight_path
+
+if TYPE_CHECKING:
+    from janim.items.points import Group
 
 CLS_CMPTINFO_NAME = '__cls_cmptinfo'
 CLS_STYLES_NAME = '__cls_styles'
@@ -223,6 +226,7 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
 
     def __getitem__(self, value):
         if isinstance(value, slice):
+            from janim.items.points import Group
             return Group(*self.children[value])
         return self.children[value]
 
@@ -239,6 +243,7 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
 
         可以将 ``item * n`` 作为该方法的简写
         '''
+        from janim.items.points import Group
         return Group(
             *(self.copy() for _ in range(n))
         )
@@ -530,21 +535,3 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         return self
 
     # endregion
-
-
-class Group[T](Item):
-    '''
-    将物件组成一组
-    '''
-    def __init__(self, *objs: T, **kwargs):
-        super().__init__(children=objs, **kwargs)
-
-        self.children: list[T]
-
-    @overload
-    def __getitem__(self, value: int) -> T: ...
-    @overload
-    def __getitem__(self, value: slice) -> Group[T]: ...
-
-    def __getitem__(self, value):   # pragma: no cover
-        return super().__getitem__(value)

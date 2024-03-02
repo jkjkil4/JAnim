@@ -6,7 +6,8 @@ import numpy as np
 import svgelements as se
 
 from janim.constants import ORIGIN, RIGHT
-from janim.items.item import Group, Item
+from janim.items.item import Item
+from janim.items.points import Group
 from janim.items.vitem import VItem
 from janim.logger import log
 from janim.utils.bezier import PathBuilder

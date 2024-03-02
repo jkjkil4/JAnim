@@ -10,8 +10,7 @@ import numpy as np
 
 from janim.components.points import Cmpt_Points
 from janim.constants import ORIGIN, RIGHT, UP
-from janim.items.item import Group
-from janim.items.points import Points
+from janim.items.points import Group, Points
 from janim.items.vitem import VItem
 from janim.logger import log
 from janim.typing import JAnimColor
@@ -168,7 +167,7 @@ class TextChar(VItem):
                 log.warning(f'应用 "{name}" 时，{params} 与 {txt} 没有匹配项')
 
 
-class TextLine(Group[TextChar], Points):
+class TextLine(Group[TextChar]):
     def __init__(self, text: str, fonts: list[Font], font_size: float, char_kwargs={}, **kwargs):
         self.text = text
 

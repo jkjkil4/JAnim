@@ -3,8 +3,8 @@ import unittest
 import janim.utils.refresh as refresh
 from janim.components.component import CmptInfo, Component
 from janim.constants.coord import *
-from janim.items.item import Group, Item
-from janim.items.points import Points
+from janim.items.item import Item
+from janim.items.points import Group, Points
 from janim.utils.signal import Signal
 
 
