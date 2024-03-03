@@ -113,12 +113,7 @@ class VItemRenderer(Renderer):
                 for y in (DOWN, UP)
                 for z in (IN, OUT)
             ]
-            clip_box = np.hstack([
-                clip_box,
-                np.full((len(clip_box), 1), 1)
-            ])
-            clip_box = np.dot(clip_box, render_data.camera_info.proj_view_matrix.T)
-            clip_box = clip_box[:, :2] / np.repeat(clip_box[:, 3], 2).reshape((len(clip_box), 2))
+            clip_box = render_data.camera_info.map_points(clip_box)
             clip_box *= render_data.camera_info.frame_radius
 
             buff = new_radius.max() + render_data.anti_alias_radius
@@ -167,12 +162,7 @@ class VItemRenderer(Renderer):
             self.prev_fill = new_fill
 
         if id(new_points) != id(self.prev_points) or is_camera_changed:
-            mapped = np.hstack([
-                new_points,
-                np.full((len(new_points), 1), 1)
-            ])
-            mapped = np.dot(mapped, render_data.camera_info.proj_view_matrix.T)
-            mapped = mapped[:, :2] / np.repeat(mapped[:, 3], 2).reshape((len(mapped), 2))
+            mapped = render_data.camera_info.map_points(new_points)
             mapped *= render_data.camera_info.frame_radius
 
             bytes = np.hstack([

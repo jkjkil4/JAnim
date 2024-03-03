@@ -40,6 +40,14 @@ class CameraInfo:
     def frame_size(self) -> tuple[float, float]:
         return self.horizontal_dist, self.vertical_dist
 
+    def map_points(self, points: np.ndarray) -> np.ndarray:
+        aligned = np.hstack([
+            points,
+            np.full((len(points), 1), 1)
+        ])
+        mapped = np.dot(aligned, self.proj_view_matrix.T)
+        return mapped[:, :2] / mapped[:, 3].reshape((len(mapped), 1))
+
     def _compute_camera_location(self) -> np.ndarray:
         right = self.horizontal_vect
         up = self.vertical_vect
