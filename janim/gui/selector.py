@@ -19,10 +19,10 @@ class Selector(QObject):
     @dataclass
     class SelectedItem:
         item: Item
-        min_glx: int
-        min_gly: int
-        max_glx: int
-        max_gly: int
+        min_glx: float
+        min_gly: float
+        max_glx: float
+        max_gly: float
 
     def __init__(self, parent: 'AnimViewer') -> None:
         super().__init__(parent)
