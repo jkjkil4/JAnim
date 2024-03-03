@@ -1,0 +1,219 @@
+
+from dataclasses import dataclass
+from typing import TYPE_CHECKING
+
+import numpy as np
+from PySide6.QtCore import QEvent, QObject, QPointF, QRectF, Qt
+from PySide6.QtGui import QColor, QMouseEvent, QPainter, QPaintEvent
+
+from janim.anims.display import Display
+from janim.components.points import Cmpt_Points
+from janim.items.item import Item
+from janim.items.points import Points
+
+if TYPE_CHECKING:
+    from janim.gui.anim_viewer import AnimViewer
+
+
+class Selector(QObject):
+    @dataclass
+    class SelectedItem:
+        item: Item
+        min_glx: int
+        min_gly: int
+        max_glx: int
+        max_gly: int
+
+    def __init__(self, parent: 'AnimViewer') -> None:
+        super().__init__(parent)
+        self.viewer = parent
+
+        self.viewer.glw.installEventFilter(self)
+        self.viewer.overlay.installEventFilter(self)
+
+        self.clear()
+
+    def clear(self) -> None:
+        self.current: Selector.SelectedItem | None = None
+        self.children: list[Selector.SelectedItem] = []
+        self.selected_children: list[Selector.SelectedItem] = []
+        self.viewer.overlay.update()
+
+    def glx_to_overlay_x(self, glx: float) -> float:
+        return (glx + 1) / 2 * self.viewer.overlay.width()
+
+    def gly_to_overlay_y(self, gly: float) -> float:
+        return (-gly + 1) / 2 * self.viewer.overlay.height()
+
+    def get_points_box_of_time(self, item: Item, t: float) -> Cmpt_Points.BoundingBox:
+        box_datas = [
+            self.viewer.anim.timeline.get_stored_data_at_right(sub, t).cmpt.points.self_box.data
+            for sub in item.walk_self_and_descendants()
+            if isinstance(sub, Points) and sub.points.has()
+        ]
+        return Cmpt_Points.BoundingBox(np.vstack(box_datas) if box_datas else [])
+
+    def eventFilter(self, watched: QObject, event: QEvent) -> bool:
+        if watched is self.viewer.glw:
+            if event.type() in (QEvent.Type.MouseButtonPress, QEvent.Type.MouseButtonDblClick):
+                self.on_glw_mouse_press(event)
+            if event.type() == QEvent.Type.MouseMove:
+                self.on_glw_mouse_move(event)
+
+        if watched is self.viewer.overlay:
+            if event.type() == QEvent.Type.Paint:
+                self.on_overlay_paint(event)
+
+        return super().eventFilter(watched, event)
+
+    def on_glw_mouse_press(self, event: QMouseEvent) -> None:
+        if event.modifiers() & Qt.KeyboardModifier.ControlModifier:
+            match event.button():
+                case Qt.MouseButton.LeftButton:
+                    self.select_parent_item(event)
+                case Qt.MouseButton.RightButton:
+                    self.deleteLater()
+        else:
+            match event.button():
+                case Qt.MouseButton.LeftButton:
+                    self.select_child_item(event)
+                case Qt.MouseButton.RightButton:
+                    self.remove_child_item(event)
+
+        self.viewer.overlay.update()
+
+    def on_glw_mouse_move(self, event: QMouseEvent) -> None:
+        if not event.modifiers() & Qt.KeyboardModifier.ControlModifier:
+            match event.buttons():
+                case Qt.MouseButton.LeftButton:
+                    self.select_child_item(event)
+                case Qt.MouseButton.RightButton:
+                    self.remove_child_item(event)
+
+            self.viewer.overlay.update()
+
+    def select_parent_item(self, event: QMouseEvent) -> None:
+        self.children.clear()
+        self.selected_children.clear()
+
+        x, y = event.position().toTuple()
+        glx = x / self.viewer.glw.width() * 2 - 1
+        gly = y / self.viewer.glw.height() * -2 + 1
+
+        anim = self.viewer.anim
+        global_t = anim._time
+        camera_info = anim.timeline.get_stored_data_at_right(anim.timeline.camera, global_t).cmpt.points.info
+
+        found: list[Selector.SelectedItem] = []
+
+        for display in anim.display_anim.anims:
+            display: Display
+            if not display.global_range.at <= global_t < display.global_range.end:
+                continue
+
+            box = self.get_points_box_of_time(display.item, global_t)
+
+            mapped = camera_info.map_points(box.get_corners())
+            min_glx, min_gly = mapped.min(axis=0)
+            max_glx, max_gly = mapped.max(axis=0)
+            if not min_glx <= glx <= max_glx or not min_gly <= gly <= max_gly:
+                continue
+
+            found.append(Selector.SelectedItem(display.item, min_glx, min_gly, max_glx, max_gly))
+
+        if not found:
+            self.current = None
+        else:
+            if self.current is None or self.current not in found:
+                self.current = found[0]
+            else:
+                idx = found.index(self.current)
+                self.current = found[(idx + 1) % len(found)]
+
+            for item in self.current.item.children:
+                box = self.get_points_box_of_time(item, global_t)
+                mapped = camera_info.map_points(box.get_corners())
+                self.children.append(Selector.SelectedItem(item, *mapped.min(axis=0), *mapped.max(axis=0)))
+
+    def select_child_item(self, event: QMouseEvent) -> None:
+        x, y = event.position().toTuple()
+        glx = x / self.viewer.glw.width() * 2 - 1
+        gly = y / self.viewer.glw.height() * -2 + 1
+
+        for child in self.children:
+            if child in self.selected_children:
+                continue
+            if not child.min_glx <= glx <= child.max_glx or not child.min_gly <= gly <= child.max_gly:
+                continue
+            self.selected_children.append(child)
+
+    def remove_child_item(self, event: QMouseEvent) -> None:
+        x, y = event.position().toTuple()
+        glx = x / self.viewer.glw.width() * 2 - 1
+        gly = y / self.viewer.glw.height() * -2 + 1
+
+        for child in self.selected_children:
+            if not child.min_glx <= glx <= child.max_glx or not child.min_gly <= gly <= child.max_gly:
+                continue
+            self.selected_children.remove(child)
+
+    def on_overlay_paint(self, event: QPaintEvent) -> None:
+        rect = self.viewer.overlay.rect().adjusted(2, 2, -2, -2)
+
+        p = QPainter(self.viewer.overlay)
+
+        ranges: list[tuple[float, float]] = []
+        if self.selected_children:
+            range_start = None
+            range_end = None
+
+            for i, child in enumerate(self.children):
+                if child in self.selected_children:
+                    if range_start is None:
+                        range_start = i
+                        range_end = i + 1
+                        continue
+
+                    if i == range_end:
+                        range_end += 1
+                    else:
+                        ranges.append((range_start, range_end))
+                        range_start = i
+                        range_end = i + 1
+            ranges.append((range_start, range_end))
+
+        txt_list = [
+            '子物件选择工具（Ctrl+左键: 选择父物件，左键: 选择子物件，右键: 取消选择子物件，Ctrl+右键: 退出）',
+            '选中父物件: ' + ('无' if self.current is None else self.current.item.__class__.__name__),
+            '选中子物件: ' + ', '.join(
+                (
+                    f'[{range[0]}]'
+                    if range[0] + 1 == range[1]
+                    else f'[{range[0]}:{range[1]}]'
+                )
+                for range in ranges
+            )
+        ]
+
+        if self.current is not None:
+            p.setBrush(QColor(195, 131, 19, 32))
+            p.setPen(QColor(195, 131, 19))
+            p.drawRect(
+                QRectF(
+                    QPointF(self.glx_to_overlay_x(self.current.min_glx), self.gly_to_overlay_y(self.current.min_gly)),
+                    QPointF(self.glx_to_overlay_x(self.current.max_glx), self.gly_to_overlay_y(self.current.max_gly))
+                )
+            )
+
+            p.setBrush(QColor(194, 102, 219, 64))
+            p.setPen(QColor(194, 102, 219))
+            for child in self.selected_children:
+                p.drawRect(
+                    QRectF(
+                        QPointF(self.glx_to_overlay_x(child.min_glx), self.gly_to_overlay_y(child.min_gly)),
+                        QPointF(self.glx_to_overlay_x(child.max_glx), self.gly_to_overlay_y(child.max_gly))
+                    )
+                )
+
+        p.setPen(Qt.GlobalColor.white)
+        p.drawText(rect, Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignTop, '\n'.join(txt_list))

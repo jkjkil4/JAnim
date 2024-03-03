@@ -14,13 +14,14 @@ from PySide6.QtGui import (QCloseEvent, QColor, QHideEvent, QIcon, QKeyEvent,
                            QWheelEvent)
 from PySide6.QtWidgets import (QApplication, QFileDialog, QLabel, QMainWindow,
                                QMessageBox, QPushButton, QSizePolicy,
-                               QSplitter, QWidget)
+                               QSplitter, QStackedLayout, QWidget)
 
 from janim.anims.animation import Animation, TimeRange
 from janim.anims.timeline import Timeline, TimelineAnim
 from janim.gui.application import Application
 from janim.gui.fixed_ratio_widget import FixedRatioWidget
 from janim.gui.glwidget import GLWidget
+from janim.gui.selector import Selector
 from janim.logger import log
 from janim.render.file_writer import FileWriter
 from janim.utils.config import Config
@@ -96,6 +97,13 @@ class AnimViewer(QMainWindow):
         action_reload.setShortcut('Ctrl+L')
         action_reload.triggered.connect(self.on_rebuild_triggered)
 
+        menu_functions.addSeparator()
+
+        action_select = menu_functions.addAction('子物件选择')
+        action_select.setShortcut('Ctrl+S')
+        action_select.triggered.connect(self.on_select_triggered)
+        self.selector: Selector | None = None
+
     def setup_status_bar(self) -> None:
         self.fps_label = QLabel()
         self.time_label = QLabel()
@@ -110,9 +118,21 @@ class AnimViewer(QMainWindow):
         stb.addPermanentWidget(self.btn_export)
 
     def setup_central_widget(self) -> None:
-        self.glw = GLWidget(self.anim)
+        self.glw = GLWidget(self.anim, self)
+        self.overlay = QWidget(self)
+        self.overlay.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground)
+        self.overlay.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents)
+
+        self.stkLayout = QStackedLayout()
+        self.stkLayout.setStackingMode(QStackedLayout.StackingMode.StackAll)
+        self.stkLayout.addWidget(self.glw)
+        self.stkLayout.addWidget(self.overlay)
+
+        self.stkWidget = QWidget(self)
+        self.stkWidget.setLayout(self.stkLayout)
+
         self.fixed_ratio_widget = FixedRatioWidget(
-            self.glw,
+            self.stkWidget,
             (Config.get.pixel_width, Config.get.pixel_height)
         )
 
@@ -352,6 +372,16 @@ class AnimViewer(QMainWindow):
         self.timeline_view.set_anim(self.anim)
         self.timeline_view.set_progress(progress)
         self.timeline_view.range = range
+
+    def on_select_triggered(self) -> None:
+        if self.selector is None:
+            self.selector = Selector(self)
+            self.selector.destroyed.connect(self.on_selector_destroyed)
+        else:
+            self.selector.clear()
+
+    def on_selector_destroyed(self) -> None:
+        self.selector = None
 
     def on_glw_rendered(self) -> None:
         cur = time.time()

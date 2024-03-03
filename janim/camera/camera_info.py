@@ -4,6 +4,7 @@ from dataclasses import dataclass, field
 import numpy as np
 
 from janim.utils.space_ops import get_norm, normalize, get_unit_normal
+from janim.typing import VectArray
 
 
 @dataclass
@@ -40,7 +41,7 @@ class CameraInfo:
     def frame_size(self) -> tuple[float, float]:
         return self.horizontal_dist, self.vertical_dist
 
-    def map_points(self, points: np.ndarray) -> np.ndarray:
+    def map_points(self, points: VectArray) -> np.ndarray:
         aligned = np.hstack([
             points,
             np.full((len(points), 1), 1)

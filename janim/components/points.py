@@ -297,6 +297,15 @@ class Cmpt_Points[ItemT](Component[ItemT]):
                 )
             )
 
+        def get_corners(self) -> list[np.ndarray]:
+            '''得到包围框（立方体）的八个顶点'''
+            return [
+                self.get(x + y + z)
+                for x in (LEFT, RIGHT)
+                for y in (DOWN, UP)
+                for z in (IN, OUT)
+            ]
+
         @property
         def top(self) -> np.ndarray:
             return self.get(UP)

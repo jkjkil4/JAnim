@@ -451,7 +451,7 @@ class TimelineAnim(AnimGroup):
             return
 
         timeline = self.timeline
-        camera_data = timeline.get_stored_data_at_time(timeline.camera, self._time)
+        camera_data = timeline.get_stored_data_at_right(timeline.camera, self._time)
         camera_info = camera_data.cmpt.points.info
         anti_alias_radius = Config.get.anti_alias_width / 2 * camera_info.scaled_factor
 

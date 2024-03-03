@@ -4,7 +4,6 @@ from typing import TYPE_CHECKING
 import moderngl as mgl
 import numpy as np
 
-from janim.constants import DOWN, IN, LEFT, OUT, RIGHT, UP
 from janim.render.base import Renderer, get_program
 from janim.render.texture import get_texture_from_img
 from janim.utils.iterables import resize_with_interpolation
@@ -106,14 +105,7 @@ class VItemRenderer(Renderer):
         is_camera_changed = id(new_camera_info) != id(self.prev_camera_info)
 
         if id(new_radius) != id(self.prev_radius) or id(new_points) != id(self.prev_points) or is_camera_changed:
-            box = data.cmpt.points.box
-            clip_box = [
-                box.get(x + y + z)
-                for x in (LEFT, RIGHT)
-                for y in (DOWN, UP)
-                for z in (IN, OUT)
-            ]
-            clip_box = render_data.camera_info.map_points(clip_box)
+            clip_box = render_data.camera_info.map_points(data.cmpt.points.box.get_corners())
             clip_box *= render_data.camera_info.frame_radius
 
             buff = new_radius.max() + render_data.anti_alias_radius
