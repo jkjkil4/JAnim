@@ -8,6 +8,7 @@ components
 
    component
    depth
+   image
    points
    radius
    rgbas

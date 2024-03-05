@@ -29,6 +29,9 @@ def _convert_alpha_to_float(x: int | None) -> float:
 
 
 class SVGItem(Group[VItem]):
+    '''
+    传入 SVG 文件路径，解析为物件
+    '''
     svg_part_default_kwargs = dict(
         stroke_radius=1.0 * STROKE_WIDTH_CONVERSION / 2,
         stroke_color=None,
@@ -50,6 +53,9 @@ class SVGItem(Group[VItem]):
 
     @staticmethod
     def get_items_from_file(file_path: str) -> list[Item]:
+        '''
+        解析文件并得到物件列表
+        '''
         mtime = os.path.getmtime(file_path)
         name = os.path.splitext(os.path.basename(file_path))[0]
         key = f'{name}_{mtime}'

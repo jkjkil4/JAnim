@@ -9,6 +9,9 @@ from janim.constants import ORIGIN
 
 
 class Rotate(TimeBasedUpdater):
+    '''
+    旋转，默认对角度进行平滑插值
+    '''
     label_color = (64, 181, 126)
 
     def __init__(
@@ -35,5 +38,8 @@ class Rotate(TimeBasedUpdater):
 
 
 class Rotating(Rotate):
+    '''
+    旋转，默认对角度进行线性插值
+    '''
     def __init__(self, item: Points, angle: float, rate_func=linear, **kwargs):
         super().__init__(item, angle, rate_func=rate_func, **kwargs)

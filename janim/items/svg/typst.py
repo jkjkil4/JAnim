@@ -11,6 +11,9 @@ TYPST_FILENAME = 'temp.typ'
 
 
 class Typst(SVGItem):
+    '''
+    ``Typst`` 文档
+    '''
     def __init__(self, text: str, **kwargs):
         self.text = text
 
@@ -18,6 +21,9 @@ class Typst(SVGItem):
 
     @staticmethod
     def compile_typst(text: str) -> str:
+        '''
+        编译 ``Typst`` 文档
+        '''
         typst_temp_dir = get_typst_temp_dir()
         hash_hex = hashlib.md5(text.encode()).hexdigest()
 

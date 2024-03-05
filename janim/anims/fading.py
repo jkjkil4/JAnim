@@ -12,6 +12,9 @@ from janim.constants import ORIGIN
 
 
 class Fade(TimeBasedUpdater, metaclass=ABCMeta):
+    '''
+    :class:`FadeIn` 和 :class:`FadeOut` 的基类
+    '''
     def __init__(
         self,
         item: Item,
@@ -49,8 +52,8 @@ class FadeIn(Fade):
     '''
     淡入
 
-    - 可以使用 `shift` 指定淡入位移
-    - 可以使用 `scale` 指定淡入缩放
+    - 可以使用 ``shift`` 指定淡入位移
+    - 可以使用 ``scale`` 指定淡入缩放
     '''
     def updater(self, data: Item.Data[Points], p: UpdaterParams) -> None:
         if not isinstance(data.item, Points):
@@ -76,8 +79,8 @@ class FadeOut(Fade):
     '''
     淡出
 
-    - 可以使用 `shift` 指定淡出位移
-    - 可以使用 `scale` 指定淡出缩放
+    - 可以使用 ``shift`` 指定淡出位移
+    - 可以使用 ``scale`` 指定淡出缩放
     '''
     def __init__(
         self,

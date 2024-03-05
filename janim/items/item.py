@@ -230,8 +230,11 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
             return Group(*self.children[value])
         return self.children[value]
 
-    # Do not define __iter__ and __len__ for Item class.
-    # I think using item.children and item.parents explicitly is better.
+    def __iter__(self) -> Item:
+        return iter(self.children)
+
+    def __len__(self) -> Item:
+        return len(self.children)
 
     def __mul__(self, other: int) -> Group:
         assert isinstance(other, int)

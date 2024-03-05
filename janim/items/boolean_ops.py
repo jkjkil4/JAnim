@@ -56,6 +56,11 @@ def _convert_skia_path_to_vitem(
 
 
 class Union(VItem):
+    '''
+    并集
+
+    传入两个及以上 :class:`~.VItem`，返回他它们区域的并集的外轮廓
+    '''
     def __init__(self, *vitems: VItem, **kwargs):
         if len(vitems) < 2:
             raise ValueError("At least 2 items needed for Union.")
@@ -72,11 +77,16 @@ class Union(VItem):
 
 
 class Difference(VItem):
-    def __init__(self, subject: VItem, clip: VItem, **kwargs):
+    '''
+    差集
+
+    传入 ``subitem`` 和 ``clip``，返回 ``subitem`` 裁去 ``clip`` 区域的轮廓线
+    '''
+    def __init__(self, subitem: VItem, clip: VItem, **kwargs):
         super().__init__(**kwargs)
         outpen = pathops.Path()
         pathops.difference(
-            [_convert_vitem_to_skia_path(subject)],
+            [_convert_vitem_to_skia_path(subitem)],
             [_convert_vitem_to_skia_path(clip)],
             outpen.getPen(),
         )
@@ -84,6 +94,11 @@ class Difference(VItem):
 
 
 class Intersection(VItem):
+    '''
+    交集
+
+    传入两个及以上 :class:`~.VItem`，返回它们区域交集的外轮廓
+    '''
     def __init__(self, *vmobjects: VItem, **kwargs):
         if len(vmobjects) < 2:
             raise ValueError("At least 2 items needed for Intersection.")
@@ -107,6 +122,11 @@ class Intersection(VItem):
 
 
 class Exclusion(VItem):
+    '''
+    补集
+
+    传入两个及以上 :class:`~.VItem`，返回它们的区域经过 XOR 运算后的外轮廓
+    '''
     def __init__(self, *vitems: VItem, **kwargs):
         if len(vitems) < 2:
             raise ValueError("At least 2 items needed for Exclusion.")

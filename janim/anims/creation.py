@@ -14,6 +14,9 @@ from janim.utils.rate_functions import RateFunc, double_smooth, linear
 
 
 class ShowPartial(TimeBasedUpdater):
+    '''
+    显示物件一部分的动画，显示的部分由 ``bound_func`` 决定
+    '''
     label_color = (54, 164, 186)
 
     def __init__(
@@ -94,6 +97,9 @@ class Uncreate(ShowPartial):
 
 
 class DrawBorderThenFill(TimeBasedUpdater):
+    '''
+    画出边缘，然后填充颜色
+    '''
     label_color = (54, 164, 186)
 
     def __init__(

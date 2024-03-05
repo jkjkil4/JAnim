@@ -7,4 +7,6 @@ geometry
    :maxdepth: 1
 
    arc
+   arrow
+   line
    polygon

@@ -10,6 +10,8 @@ utils
    config
    data
    file_ops
+   font
+   font_manager
    iterables
    paths
    rate_functions

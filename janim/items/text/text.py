@@ -9,7 +9,7 @@ from typing import Any, Callable, Concatenate, Iterable, Self
 import numpy as np
 
 from janim.components.points import Cmpt_Points
-from janim.constants import ORIGIN, RIGHT, UP
+from janim.constants import DEFAULT_ITEM_TO_EDGE_BUFF, ORIGIN, RIGHT, UP
 from janim.items.points import Group, Points
 from janim.items.vitem import VItem
 from janim.logger import log
@@ -23,7 +23,10 @@ DEFAULT_FONT_SIZE = 24
 ORIG_FONT_SIZE = 48
 
 
-def get_color_value_by_key(key) -> JAnimColor:
+def get_color_value_by_key(key: str) -> JAnimColor:
+    '''
+    根据 ``key`` 从 ``janim.constants.colors`` 得到颜色
+    '''
     import janim.constants.colors as colors
     if not hasattr(colors, key):
         raise ValueError(f'No built-in color named {key}')
@@ -46,6 +49,9 @@ available_act_map: dict[ActName, list[Act]] = defaultdict(list)
 
 
 def register_acts(names: list[ActName], *acts: Act) -> None:
+    '''
+    用于声明可用的富文本格式
+    '''
     for name in names:
         available_act_map[name].extend(acts)
 
@@ -92,6 +98,9 @@ register_acts(
 
 
 class TextChar(VItem):
+    '''
+    字符物件，作为 :class:`TextLine` 的子物件，在创建 :class:`TextLine` 时产生
+    '''
     def __init__(self, char: str, fonts: list[Font], font_size: float, **kwargs):
         super().__init__(**kwargs)
         self.char = char
@@ -119,6 +128,9 @@ class TextChar(VItem):
 
     @staticmethod
     def get_font_for_render(unicode: str, fonts: list[Font]) -> Font:
+        '''
+        从字体列表中找到支持显示 ``unicode`` 的字体，如果找不到只好选用第一个
+        '''
         font_render = fonts[0]
         for font in fonts:
             idx = font.face.get_char_index(unicode)
@@ -143,6 +155,9 @@ class TextChar(VItem):
         return get_norm(self.get_mark_advance() - self.get_mark_orig())
 
     def apply_act_list(self, act_params_map: dict[str, ActParamsStack]) -> None:
+        '''
+        应用富文本样式，由 :meth:`Text.apply_rich_text` 调用
+        '''
         for name, params_stack in act_params_map.items():
             params = params_stack[-1]
             for converters, caller in available_act_map[name]:
@@ -168,6 +183,9 @@ class TextChar(VItem):
 
 
 class TextLine(Group[TextChar]):
+    '''
+    单行文字物件，作为 :class:`Text` 的子物件，在创建 :class:`Text` 时产生s
+    '''
     def __init__(self, text: str, fonts: list[Font], font_size: float, char_kwargs={}, **kwargs):
         self.text = text
 
@@ -197,6 +215,9 @@ class TextLine(Group[TextChar]):
         return self.mark.points._points._data[2].copy()
 
     def arrange_in_line(self, buff: float = 0) -> Self:
+        '''
+        根据 ``advance`` 的标记信息排列该行
+        '''
         if len(self.children) == 0:
             return
 
@@ -217,6 +238,9 @@ class TextLine(Group[TextChar]):
 
 
 class Text(Group[TextLine]):
+    '''
+    文字物件
+    '''
     class Format(Enum):
         PlainText = 0
         RichText = 1
@@ -291,6 +315,9 @@ class Text(Group[TextLine]):
         return True
 
     def idx_to_row_col(self, idx: int) -> tuple[int, int]:
+        '''
+        由字符索引得到 行数、列数 索引
+        '''
         for i, line in enumerate(self):
             if idx < len(line):
                 return i, idx
@@ -298,6 +325,9 @@ class Text(Group[TextLine]):
         return len(self) - 1, idx
 
     def select_parts(self, pattern):
+        '''
+        根据 ``pattern`` 获得文字中的部分
+        '''
         total_text: str = ''.join([line.text for line in self])
         parts = []
         for mch in re.finditer(pattern, total_text):
@@ -317,8 +347,8 @@ class Text(Group[TextLine]):
 
     def arrange_in_lines(self, buff: float = 0, base_buff: float = 0.85) -> Self:
         '''
-        - `buff`: 每行之间的额外间距
-        - `base_buff`: 每行之间的基本间距，默认值 `0.85` 用于将两行上下排列，如果是 `0` 则会让两行完全重合，大部分时候不需要传入该值
+        - ``buff``: 每行之间的额外间距
+        - ``base_buff``: 每行之间的基本间距，默认值 `0.85` 用于将两行上下排列，如果是 `0` 则会让两行完全重合，大部分时候不需要传入该值
         '''
         if len(self.children) == 0:
             return
@@ -334,101 +364,12 @@ class Text(Group[TextLine]):
 
         return self
 
-    # def word_wrap(
-    #     self,
-    #     break_length: float = FRAME_WIDTH - 2 * DEFAULT_ITEM_TO_EDGE_BUFF,
-    #     stretch: bool = True,
-    #     buff: float = 0,
-    #     base_buff: float = 0.85,
-    #     center: bool = True
-    # ) -> Self:
-    #     '''
-    #     - `break_length`: 自动换行的宽度，若某一行的宽度超过该值，则会将超出部分向下换行
-    #     - `stretch`: 拆行后，是否进行左右对齐，以填补两侧边界可能出现的不规则空隙
-    #     - `buff`, `base_buff`: 参照 `arrange_in_lines()`
-    #     - `center`: 是否在完成后将物体移动至原点
-    #     '''
-    #     new_lines: tuple[_TextLine, list[_VTextChar], bool] = []
-
-    #     # 遍历每行
-    #     for line in self:
-    #         # 如果该行没有字符，则跳过
-    #         if len(line) == 0:
-    #             new_lines.append((line, [], True))
-    #             continue
-
-    #         # left 记录当前新行的最左侧位置
-    #         # new_line 记录当前新行所包含的字符
-    #         # eol (end of line) 记录当前新行是否是原来行的结尾
-    #         left: np.ndarray = None
-    #         new_line: list[_VTextChar] = []
-    #         eol = False
-
-    #         # 用于将 new_line 添加到 new_lines 中，并重置状态
-    #         def emit_line() -> None:
-    #             nonlocal left, new_line
-    #             new_lines.append((line, new_line, eol))
-    #             left = None
-    #             new_line = []
-
-    #         # 遍历每个字符，计算前后距离，进行拆行
-    #         for char in line:
-    #             if left is None:
-    #                 left = char.get_mark_orig()
-    #             if char is line[-1]:
-    #                 eol = True
-
-    #             # 得到当前位置右侧与新行最左侧位置的距离
-    #             length = get_norm(char.get_mark_advance() - left)
-
-    #             # 如果是第一个字符，那么先添加再判断是否拆行，否则先判断再添加
-    #             if len(new_line) == 0:
-    #                 new_line.append(char)
-    #                 if length > break_length:
-    #                     emit_line()
-    #             else:
-    #                 if length > break_length:
-    #                     emit_line()
-    #                 new_line.append(char)
-
-    #         # 保证末尾字符进入 new_lines
-    #         if len(new_line) > 0:
-    #             emit_line()
-
-    #     # 遍历 new_lines，生成新的行物件
-    #     new_lines_items = []
-    #     for orig_line, new_line, eol in new_lines:
-    #         # 生成空 TextLine 物件，并复制原来行的位置标记
-    #         line = self.LineClass('', [], DEFAULT_FONT_SIZE)
-    #         line.mark.set_points(orig_line.mark.get_points())
-
-    #         # 如果该行为空，则直接添加
-    #         if len(new_line) == 0:
-    #             new_lines_items.append(line)
-    #             continue
-
-    #         # 构建数据
-    #         line.text = ''.join(item.char for item in new_line)                 # 将所有字符文字组合为 line.text
-    #         line.add(*new_line)                                                 # 将所有字符添加到 line 中
-    #         line.mark.shift(line[0].get_mark_orig() - line.get_mark_orig())     # 正确放置 line 的标记
-
-    #         # 如果需要左右对齐，且不是原来行的行尾，且新行不止一个字符，则进行对齐
-    #         if stretch and not eol and len(line) > 1:
-    #             total_advance_length = sum([char.get_advance_length() for char in line])
-    #             total_space_length = break_length - total_advance_length
-    #             space_length = total_space_length / (len(line) - 1)
-    #             line.arrange_in_line(space_length)
-
-    #         new_lines_items.append(line)
-
-    #     self.remove(*self.items)
-    #     self.add(*new_lines_items)
-    #     self.arrange_in_lines(buff, base_buff)
-    #     if center:
-    #         self.to_center()
-    #     return self
+    # TODO: word_wrap
 
     def apply_rich_text(self) -> None:
+        '''
+        应用富文本效果
+        '''
         text_at = 0
         act_idx = 0
         act_params_map: defaultdict[str, ActParamsStack] = defaultdict(list)

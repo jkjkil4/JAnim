@@ -16,6 +16,9 @@ if TYPE_CHECKING:
 
 
 class Selector(QObject):
+    '''
+    子物件选择工具
+    '''
     @dataclass
     class SelectedItem:
         item: Item

@@ -23,6 +23,9 @@ class UpdaterData:
 
 
 class TimeBasedUpdater[T: Item](Animation):
+    '''
+    以时间为参数的物件变换动画
+    '''  # TODO: 例子
     label_color = (49, 155, 191)
 
     def __init__(

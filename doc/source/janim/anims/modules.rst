@@ -8,6 +8,10 @@ anims
 
    animation
    composition
+   creation
    display
+   fading
+   rotation
    timeline
    transform
+   updater

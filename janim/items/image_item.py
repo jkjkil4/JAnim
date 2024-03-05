@@ -20,6 +20,11 @@ from janim.utils.space_ops import cross, det, get_norm, z_to_vector
 
 
 class ImageItem(Points):
+    '''
+    图像物件
+
+    会读取给定的文件路径的图像
+    '''
 
     renderer_cls = ImageItemRenderer
 
@@ -53,21 +58,37 @@ class ImageItem(Points):
             )
 
     def get_orig(self) -> np.ndarray:
+        '''图像的左上角'''
         return self.points[0]
 
     def get_horizontal_vect(self) -> np.ndarray:
+        '''
+        从图像的左上角指向右上角的向量
+        '''
         return self.points[2] - self.points[0]
 
     def get_horizontal_dist(self) -> float:
+        '''
+        :meth:`get_horizontal_vect` 的长度
+        '''
         return get_norm(self.get_horizontal_vect())
 
     def get_vertical_vect(self) -> np.ndarray:
+        '''
+        从图像的左上角指向左下角的向量
+        '''
         return self.points[1] - self.points[0]
 
     def get_vertical_dist(self) -> float:
+        '''
+        :meth:`get_vertical_vect` 的长度
+        '''
         return get_norm(self.get_vertical_vect())
 
     def pixel_to_rgba(self, x: int, y: int) -> np.ndarray:
+        '''
+        根据像素坐标得到颜色
+        '''
         img = self.image.get()
         width, height = img.size
         return np.array(
@@ -105,9 +126,9 @@ class ImageItem(Points):
         '''
         通过像素坐标获得对应的空间坐标，可以传入浮点值
 
-        - 例如 `.pixel_to_point(0, 0)` 会返回原点位置（图片的左上角）
-        - 例如 `.pixel_to_point(6, 11)` 会返回 (6, 11) 像素的左上角
-        - 例如 `.pixel_to_point(6.5, 11.5)` 会返回 (6, 11) 像素的中心
+        - 例如 ``.pixel_to_point(0, 0)`` 会返回原点位置（图片的左上角）
+        - 例如 ``.pixel_to_point(6, 11)`` 会返回 ``(6, 11)`` 像素的左上角
+        - 例如 ``.pixel_to_point(6.5, 11.5)`` 会返回 ``(6, 11)`` 像素的中心
         '''
         hor = self.get_horizontal_vect()
         ver = self.get_vertical_vect()
@@ -134,6 +155,11 @@ class ImageItem(Points):
 
 
 class PixelImageItem(ImageItem):
+    '''
+    图像物件
+
+    与 :class:`ImageItem` 基本一致，只是在图像被放大显示时不进行平滑插值处理，使得像素清晰
+    '''
     def __init__(
         self,
         file_path: str,

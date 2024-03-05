@@ -21,7 +21,7 @@ class CenterAnchor(Enum):
 
     图形示意：
 
-    .. code-block:: txt
+    .. code-block:: text
 
         .-----
         |        -----
@@ -70,7 +70,7 @@ class ArrowTip(VItem):
 
     def get_center_anchor(self) -> np.ndarray:
         '''
-        根据设定的 ``center_anchor` `得到原点位置，
+        根据设定的 ``center_anchor`` 得到原点位置，
         请参考 :class:`ArrowTip.CenterAnchor`
         '''
         points = self.points._points._data
@@ -173,9 +173,9 @@ class Arrow(Line):
 
 class Vector(Arrow):
     '''
-    起点为 ORIGIN 的箭头，终点为 `direction`
+    起点为 ORIGIN 的箭头，终点为 ``direction``
 
-    - `buff` 默认设为了 0
+    - ``buff`` 默认设为了 0
     '''
     def __init__(self, direction: np.ndarray = RIGHT, *, buff: float = 0, **kwargs):
         if len(direction) == 2:
@@ -187,7 +187,7 @@ class DoubleArrow(Arrow):
     '''
     双向箭头
 
-    参数请参考 `Arrow`
+    参数请参考 :class:`Arrow`
     '''
     def __init__(self, *args, tip_kwargs: dict = {}, **kwargs) -> None:
         super().__init__(*args, tip_kwargs=tip_kwargs, **kwargs)

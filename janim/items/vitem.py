@@ -86,7 +86,7 @@ class VItem(Points):
         在 ``alpha`` 处创建一个箭头
 
         - 默认情况下，箭头与路径方向同向；若传入 ``reverse=True`` 则反向
-        - 若传入 ``colorize=True``（默认），则会使箭头的颜色与路径的颜色相同
+        - 若传入 ``colorize=True`` （默认），则会使箭头的颜色与路径的颜色相同
         - 其余参数请参考 :class:`~.ArrowTip`
         '''
         if alpha >= 1.0:

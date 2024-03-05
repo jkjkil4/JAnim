@@ -10,3 +10,4 @@ gui
    application
    fixed_ratio_widget
    glwidget
+   selector

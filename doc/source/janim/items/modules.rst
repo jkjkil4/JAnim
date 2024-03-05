@@ -7,6 +7,10 @@ items
    :maxdepth: 1
 
    geometry/modules.rst
+   svg/modules.rst
+   text/modules.rst
+   boolean_ops
+   image_item
    item
    points
    relation
