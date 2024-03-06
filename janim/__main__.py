@@ -101,9 +101,9 @@ def run(args: Namespace) -> None:
 
     auto_play = len(timelines) == 1
 
-    from PySide6.QtCore import QPoint, QTimer
     from janim.gui.anim_viewer import AnimViewer
     from janim.gui.application import Application
+    from PySide6.QtCore import QPoint, QTimer
 
     app = Application()
 
