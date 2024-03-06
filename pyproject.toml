@@ -47,3 +47,6 @@ exclude = ["doc/", "test/"]
 Home = "https://github.com/jkjkil4/JAnim"
 Source = "https://github.com/jkjkil4/JAnim"
 Documentation = "https://janim.rtfd.io"
+
+[project.scripts]
+janim = "janim.__main__:main"

@@ -126,7 +126,7 @@ class Timeline(metaclass=ABCMeta):
 
             if self.current_time == 0:
                 self.forward(DEFAULT_DURATION)  # 使得没有任何前进时，产生一点时间，避免除零以及其它问题
-                log.info(f'{self.__class__.__name__} 构建后没有产生时长，自动产生了 {DEFAULT_DURATION}s 的时长')
+                log.info(f'"{self.__class__.__name__}" 构建后没有产生时长，自动产生了 {DEFAULT_DURATION}s 的时长')
             self.cleanup_display(trail=2 / Config.get.fps)
             global_anim = TimelineAnim(self)
 

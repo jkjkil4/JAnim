@@ -169,8 +169,6 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
 
         for key, flag in flags.items():
             if not flag:
-                for item in self.walk_self_and_descendants():
-                    print(item, item.get_available_styles())
                 log.warning(f'传入参数 "{key}" 没有匹配任何的样式设置，且没有被任何地方使用')
 
     @classmethod
@@ -236,11 +234,11 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
     def __len__(self) -> Item:
         return len(self.children)
 
-    def __mul__(self, other: int) -> Group:
+    def __mul__(self, other: int) -> Group[Self]:
         assert isinstance(other, int)
         return self.replicate(other)
 
-    def replicate(self, n: int) -> Group:
+    def replicate(self, n: int) -> Group[Self]:
         '''
         复制 n 个自身，并作为一个 :class:`Group` 返回
 

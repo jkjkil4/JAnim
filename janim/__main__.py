@@ -83,6 +83,11 @@ def examples_parser(parser: ArgumentParser) -> None:
         nargs='*',
         help='Name of the example you want to see'
     )
+    parser.add_argument(
+        '-i', '--interact',
+        action='store_true',
+        help='Enable the network socket for interacting'
+    )
     parser.set_defaults(all=None)
     parser.set_defaults(config=None)
     parser.set_defaults(func=run)
