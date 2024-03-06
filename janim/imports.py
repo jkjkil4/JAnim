@@ -11,7 +11,6 @@ from janim.anims.updater import *
 from janim.camera.camera import *
 from janim.camera.camera_info import *
 from janim.components.rgbas import apart_alpha, merge_alpha
-from janim.gui.anim_viewer import AnimViewer
 from janim.items.geometry.arc import *
 from janim.items.geometry.arrow import *
 from janim.items.geometry.line import *
@@ -23,7 +22,6 @@ from janim.items.svg.svg_item import *
 from janim.items.svg.typst import *
 from janim.items.text.text import *
 from janim.items.vitem import *
-from janim.render.file_writer import FileWriter
 from janim.utils.bezier import *
 from janim.utils.config import Config
 from janim.utils.file_ops import *

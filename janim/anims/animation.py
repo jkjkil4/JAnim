@@ -88,7 +88,7 @@ class Animation:
 
     def anim_pre_init(self) -> None: '''在 :meth:`~.Timeline.detect_changes_of_all` 执行之前调用的初始化方法'''
 
-    def anim_init(self) -> None: '''在 :meth:`~.Timeline.detect_changes_of_all` 执行之前调用的初始化方法'''
+    def anim_init(self) -> None: '''在 :meth:`~.Timeline.detect_changes_of_all` 执行之后调用的初始化方法'''
 
     def anim_on(self, local_t: float) -> None:
         '''

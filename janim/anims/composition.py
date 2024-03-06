@@ -94,9 +94,11 @@ class AnimGroup(Animation):
         在该方法中，:class:`AnimGroup` 通过 ``alpha``
         换算出子动画的 ``local_t`` 并调用子动画的 :meth:`~.Animation.anim_on` 方法
         '''
+        global_t = self.global_t_ctx.get()
+
         for anim in self.anims:
             anim_t = self.get_anim_t(alpha, anim)
-            if 0 <= anim_t < anim.local_range.duration:
+            if anim.global_range.at <= global_t < anim.global_range.end:
                 anim.anim_on(anim_t)
 
 
