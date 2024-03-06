@@ -40,6 +40,9 @@ doc = [
     "furo",
 ]
 
+[tool.flit.sdist]
+exclude = ["doc/", "test/"]
+
 [project.urls]
 Home = "https://github.com/jkjkil4/JAnim"
 Source = "https://github.com/jkjkil4/JAnim"

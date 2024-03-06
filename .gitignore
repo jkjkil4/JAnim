@@ -1,5 +1,6 @@
 __pycache__
 /.vscode/launch.json
+/dist
 /refactor_deprecated
 /test_some_code
 /test/test.py
