@@ -1,0 +1,46 @@
+[build-system]
+requires = ["flit_core >=3.2,<4"]
+build-backend = "flit_core.buildapi"
+
+[project]
+name = "janim"
+authors = [
+    {name = "jkjkil4"}
+]
+readme = "README.md"
+dynamic = ["version", "description"]
+license = {file = "LICENSE"}
+classifiers = [
+    "Programming Language :: Python"
+]
+requires-python = ">=3.12"
+dependencies = [
+    "numpy",
+    "scipy",
+    "colour",
+    "rich",
+    "glm",
+    "moderngl",
+    "tqdm",
+    "psutil",
+    "skia-pathops",
+    "fontTools",
+    "freetype-py",
+    "pillow",
+    "svgelements",
+]
+
+[project.optional-dependencies]
+gui = [
+    "pyside6",
+    "qdarkstyle",
+]
+doc = [
+    "sphinx",
+    "furo",
+]
+
+[project.urls]
+Home = "https://github.com/jkjkil4/JAnim"
+Source = "https://github.com/jkjkil4/JAnim"
+Documentation = "https://janim.rtfd.io"

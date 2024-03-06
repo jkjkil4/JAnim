@@ -1,3 +1,0 @@
-furo
-
--r ../../../janim/requirements.txt
