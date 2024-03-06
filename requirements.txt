@@ -4,8 +4,6 @@ colour
 rich
 glm
 moderngl
-pyside6
-qdarkstyle
 tqdm
 psutil
 skia-pathops
