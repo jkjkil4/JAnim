@@ -7,6 +7,7 @@ from janim.anims.animation import Animation, RenderCall
 from janim.components.component import Component
 from janim.constants import OUT
 from janim.items.item import Item
+from janim.logger import log
 from janim.typing import Vect
 from janim.utils.data import AlignedData
 from janim.utils.paths import PathFunc, path_along_arc, straight_path
@@ -86,8 +87,14 @@ class Transform(Animation):
             end_times[item2] += 1
 
             if recurse:
-                for child1, child2 in zip(aligned.data1.children, aligned.data2.children):
-                    align(child1, child2, True)
+                if bool(data1.children) != bool(data2.children):
+                    spec1 = f'<"{item1.__class__.__name__}" {id(item1):X}>'
+                    spec2 = f'<"{item2.__class__.__name__}" {id(item2):X}>'
+                    log.warning(f'{spec1} 和 {spec2} 的子物件无法对齐，因为二者的子物件必须同时为空或同时存在，'
+                                f'但是二者的子物件数量分别是 {len(data1.children)} 和 {len(data2.children)}')
+                else:
+                    for child1, child2 in zip(aligned.data1.children, aligned.data2.children):
+                        align(child1, child2, True)
 
         align(self.src_item, self.target_item, not self.root_only)
 
