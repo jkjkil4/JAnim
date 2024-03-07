@@ -3,6 +3,7 @@ import hashlib
 import os
 import subprocess as sp
 
+from janim.constants import ORIGIN, UP
 from janim.items.svg.svg_item import SVGItem
 from janim.utils.file_ops import get_janim_dir, get_typst_temp_dir
 
@@ -10,7 +11,7 @@ TYPST_BIN = 'typst'
 TYPST_FILENAME = 'temp.typ'
 
 
-class Typst(SVGItem):
+class TypstDoc(SVGItem):
     '''
     ``Typst`` 文档
     '''
@@ -18,6 +19,9 @@ class Typst(SVGItem):
         self.text = text
 
         super().__init__(self.compile_typst(text), **kwargs)
+
+    def move_into_position(self) -> None:
+        self.points.scale(0.9, about_point=ORIGIN).to_border(UP)
 
     @staticmethod
     def compile_typst(text: str) -> str:
@@ -49,6 +53,17 @@ class Typst(SVGItem):
         process.terminate()
 
         return svg_file_path
+
+
+class Typst(TypstDoc):
+    '''
+    Typst 公式
+    '''
+    def __init__(self, text: str, **kwargs):
+        super().__init__(f'$ {text} $', **kwargs)
+
+    def move_into_position(self) -> None:
+        self.points.to_center()
 
 
 cached_typst_template: str | None = None

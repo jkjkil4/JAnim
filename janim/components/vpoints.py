@@ -91,10 +91,12 @@ class Cmpt_VPoints[ItemT](Cmpt_Points[ItemT]):
             # 这里的 ``/ .box.width`` 是为了缩放到一致
             subpaths1_center = np.array([center(i, subpath) for i, subpath in enumerate(subpaths1)])
             subpaths1_center -= cmpt1_copy.box.center
-            subpaths1_center /= cmpt1_copy.box.width
+            if cmpt1_copy.box.width != 0:
+                subpaths1_center /= cmpt1_copy.box.width
             subpaths2_center = np.array([center(i, subpath) for i, subpath in enumerate(subpaths2)])
             subpaths2_center -= cmpt2_copy.box.center
-            subpaths2_center /= cmpt2_copy.box.width
+            if cmpt2_copy.box.width != 0:
+                subpaths2_center /= cmpt2_copy.box.width
 
             # 这两个函数使用曼哈顿距离
             def nearest_idx(point: np.ndarray) -> int:

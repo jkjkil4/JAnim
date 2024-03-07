@@ -58,7 +58,6 @@ class ShowPartial(TimeBasedUpdater):
                 begin_indices = begin_indices[where]
 
                 points[end_indices] = points[begin_indices]
-                points[end_indices - 1] = (points[begin_indices] + points[end_indices - 2]) / 2
                 if end_indices[-1] == len(points) - 1:
                     end_indices = end_indices[:-1]
                 points[end_indices + 1] = NAN_POINT

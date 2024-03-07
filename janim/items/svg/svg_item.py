@@ -39,7 +39,7 @@ class SVGItem(Group[VItem]):
         fill_color=None,
         fill_alpha=0
     )
-    vitem_builders_map: dict[str, list[VItemBuilder]] = {}
+    vitem_builders_map: dict[tuple, list[VItemBuilder]] = {}
 
     def __init__(self, file_path: str, **kwargs):
         items = self.get_items_from_file(file_path)
@@ -51,6 +51,11 @@ class SVGItem(Group[VItem]):
             about_point=ORIGIN
         ).flip(RIGHT)
 
+        self.move_into_position()
+
+    def move_into_position(self) -> None:
+        pass
+
     @staticmethod
     def get_items_from_file(file_path: str) -> list[Item]:
         '''
@@ -58,7 +63,7 @@ class SVGItem(Group[VItem]):
         '''
         mtime = os.path.getmtime(file_path)
         name = os.path.splitext(os.path.basename(file_path))[0]
-        key = f'{name}_{mtime}'
+        key = (name, mtime)
 
         cached = SVGItem.vitem_builders_map.get(key, None)
         if cached is not None:
@@ -66,12 +71,14 @@ class SVGItem(Group[VItem]):
 
         svg: se.SVG = se.SVG.parse(file_path)
 
+        offset = np.array([svg.width / -2, svg.height / -2, 0])
+
         builders: list[VItemBuilder] = []
         for shape in svg.elements():
             if isinstance(shape, (se.Group, se.Use)):
                 continue
             elif isinstance(shape, se.Path):
-                builders.append(SVGItem.convert_path(shape))
+                builders.append(SVGItem.convert_path(shape, offset))
             elif type(shape) is se.SVGElement:
                 continue
             else:
@@ -81,7 +88,7 @@ class SVGItem(Group[VItem]):
         return [builder() for builder in builders]
 
     @staticmethod
-    def convert_path(path: se.Path) -> VItemBuilder:
+    def convert_path(path: se.Path, offset: np.ndarray) -> VItemBuilder:
         builder = PathBuilder()
         segment_class_to_func_map = {
             se.Move: (builder.move_to, ('end',)),
@@ -108,6 +115,7 @@ class SVGItem(Group[VItem]):
             fill_alpha=_convert_alpha_to_float(path.fill.alpha)
         )
         vitem_points = builder.get()
+        vitem_points += offset
 
         def vitem_builder() -> VItem:
             vitem = VItem(**SVGItem.svg_part_default_kwargs)

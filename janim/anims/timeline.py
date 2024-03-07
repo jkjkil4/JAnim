@@ -178,7 +178,7 @@ class Timeline(metaclass=ABCMeta):
 
         return None     # pragma: no cover
 
-    def forward(self, dt: float, *, _detect_changes=True) -> None:
+    def forward(self, dt: float = 1, *, _detect_changes=True) -> None:
         '''
         向前推进 ``dt`` 秒
         '''
