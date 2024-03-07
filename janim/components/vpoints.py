@@ -7,6 +7,7 @@ import numpy as np
 import janim.utils.refresh as refresh
 from janim.components.points import Cmpt_Points
 from janim.constants import NAN_POINT, OUT, RIGHT
+from janim.exception import PointError
 from janim.items.item import Item
 from janim.logger import log
 from janim.typing import VectArray
@@ -279,7 +280,7 @@ class Cmpt_VPoints[ItemT](Cmpt_Points[ItemT]):
         得到第 ``n`` 组的贝塞尔曲线控制点 (从 0 开始计数)
         '''
         if n < 0 or n >= self.curves_count():
-            raise ValueError(f'n 必须是 0~{self.curves_count() - 1} 的值，{n} 无效')
+            raise PointError(f'n 必须是 0~{self.curves_count() - 1} 的值，{n} 无效')
         return self._points._data[2 * n: 2 * n + 3].copy()
 
     def get_nth_curve_function(self, n: int) -> Callable[[float], np.ndarray]:

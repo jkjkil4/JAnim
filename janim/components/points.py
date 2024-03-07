@@ -10,6 +10,7 @@ from janim.components.component import Component
 from janim.constants import (DEFAULT_ITEM_TO_EDGE_BUFF,
                              DEFAULT_ITEM_TO_ITEM_BUFF, DOWN, IN, LEFT,
                              MED_SMALL_BUFF, ORIGIN, OUT, PI, RIGHT, UP)
+from janim.exception import InvaildMatrixError, PointError
 from janim.items.item import Item
 from janim.typing import Vect, VectArray
 from janim.utils.bezier import integer_interpolate, interpolate
@@ -203,7 +204,7 @@ class Cmpt_Points[ItemT](Component[ItemT]):
         if not self.has():
             name = inspect.currentframe().f_back.f_code.co_name
             # TODO: i18n
-            raise ValueError(f'Cannot call {name} with no points')
+            raise PointError(f'Cannot call {name} with no points')
 
     # endregion
 
@@ -450,7 +451,7 @@ class Cmpt_Points[ItemT](Component[ItemT]):
         '''
         matrix = np.array(matrix)
         if matrix.shape not in ((2, 2), (3, 3)):
-            raise ValueError(
+            raise InvaildMatrixError(
                 '只有 2x2 或 3x3 矩阵是有效的，'
                 f'而传入的是 {"x".join(str(v) for v in matrix.shape)} 矩阵'
             )
@@ -746,7 +747,7 @@ class Cmpt_Points[ItemT](Component[ItemT]):
         curr_start, curr_end = self.get_start(), self.get_end()
         curr_vect = curr_end - curr_start
         if np.all(curr_vect == 0):
-            raise ValueError("Cannot position endpoints of closed loop")
+            raise PointError("Cannot position endpoints of closed loop")
         target_vect = end - start
         self.scale(
             get_norm(target_vect) / get_norm(curr_vect),

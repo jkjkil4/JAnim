@@ -6,6 +6,7 @@ from typing import Callable, Iterable, NoReturn, Self, Sequence, TypeVar
 import numpy as np
 
 from janim.constants import DEGREES, NAN_POINT, TAU
+from janim.exception import PointError
 from janim.typing import Vect, VectArray
 from janim.utils.simple_functions import choose
 from janim.utils.space_ops import (angle_between_vectors, cross2d,
@@ -25,7 +26,7 @@ class PathBuilder:
         use_simple_quadratic_approx: bool = False,
     ):
         if start_point is not None and points is not None:
-            raise ValueError('不能同时设置 start_point 和 points')
+            raise PointError('不能同时设置 start_point 和 points')
         if start_point is not None:
             self.points_list = [[start_point]]
             self.start_point = start_point
@@ -138,8 +139,8 @@ class PathBuilder:
     def _raise_if_no_points(self) -> None | NoReturn:
         if self.end_point is None:
             name = inspect.currentframe().f_back.f_code.co_name
-            raise ValueError('PathBuilder 必须在构造时传入 start_point 或 points，'
-                             f'或者以 move_to 为首次调用，否则不能调用 {name}')
+            raise PointError('PathBuilder 必须在构造时传入 start_point 或 points，'
+                              f'或者以 move_to 为首次调用，否则不能调用 {name}')
 
 
 def quadratic_bezier_points_for_arc(

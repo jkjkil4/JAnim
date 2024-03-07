@@ -7,6 +7,7 @@ import freetype as FT
 import numpy as np
 from fontTools.ttLib import TTCollection, TTFont
 
+from janim.exception import FontNotFoundError
 from janim.utils.bezier import PathBuilder
 
 fontpaths: list[str] = None
@@ -34,7 +35,7 @@ def get_fontpath_by_name(font_name: str) -> str:
             if font['name'].getDebugName(4) == font_name:
                 return filepath
 
-    raise ValueError(f'No font named "{font_name}"')
+    raise FontNotFoundError(f'No font named "{font_name}"')
 
 
 class Font:

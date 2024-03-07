@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING, Any, Callable, Self, overload
 
 from janim.components.component import CmptInfo, Component, _CmptGroup
 from janim.components.depth import Cmpt_Depth
+from janim.exception import AsTypeError
 from janim.items.relation import Relation
 from janim.logger import log
 from janim.render.base import Renderer
@@ -271,7 +272,7 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         '''
         if not isinstance(cls, type) or not issubclass(cls, Item):
             # TODO: i18n
-            raise TypeError(f'{cls.__name__} 不是以 Item 为基类，无法作为 astype 的参数')
+            raise AsTypeError(f'{cls.__name__} 不是以 Item 为基类，无法作为 astype 的参数')
 
         self._astype = cls
         return self

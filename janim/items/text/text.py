@@ -9,7 +9,8 @@ from typing import Any, Callable, Concatenate, Iterable, Self
 import numpy as np
 
 from janim.components.points import Cmpt_Points
-from janim.constants import DEFAULT_ITEM_TO_EDGE_BUFF, ORIGIN, RIGHT, UP
+from janim.constants import ORIGIN, RIGHT, UP
+from janim.exception import ColorNotFoundError
 from janim.items.points import Group, Points
 from janim.items.vitem import VItem
 from janim.logger import log
@@ -29,7 +30,7 @@ def get_color_value_by_key(key: str) -> JAnimColor:
     '''
     import janim.constants.colors as colors
     if not hasattr(colors, key):
-        raise ValueError(f'No built-in color named {key}')
+        raise ColorNotFoundError(f'No built-in color named {key}')
     return getattr(colors, key)
 
 

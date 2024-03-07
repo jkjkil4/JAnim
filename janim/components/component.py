@@ -5,6 +5,7 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING, Callable, Self, overload
 
 import janim.utils.refresh as refresh
+from janim.exception import CmptGroupLookupError
 from janim.utils.data import AlignedData
 
 if TYPE_CHECKING:   # pragma: no cover
@@ -211,7 +212,7 @@ class _CmptGroup(Component):
             if val is cmpt_info:
                 return key
 
-        raise ValueError('CmptGroup 必须要与传入的内容在同一个类的定义中')
+        raise CmptGroupLookupError('CmptGroup 必须要与传入的内容在同一个类的定义中')
 
     def __getattr__(self, name: str):
         objects = []

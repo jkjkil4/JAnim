@@ -8,6 +8,7 @@ import numpy.typing as npt
 from scipy.spatial.transform import Rotation
 
 from janim.constants import *
+from janim.exception import PointError
 from janim.utils.iterables import adjacent_pairs
 from janim.utils.simple_functions import clip
 
@@ -248,7 +249,7 @@ def line_intersection(
 
     div = det(x_diff, y_diff)
     if div == 0:
-        raise Exception("Lines do not intersect")
+        raise PointError("Lines do not intersect")
     d = (det(*line1), det(*line2))
     x = det(d, x_diff) / div
     y = det(d, y_diff) / div

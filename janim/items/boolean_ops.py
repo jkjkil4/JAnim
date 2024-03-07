@@ -3,6 +3,7 @@ from __future__ import annotations
 import numpy as np
 import pathops
 
+from janim.exception import BooleanOpsError
 from janim.items.vitem import VItem
 from janim.utils.bezier import PathBuilder
 
@@ -49,7 +50,7 @@ def _convert_skia_path_to_vitem(
             elif path_verb == PathVerb.QUAD:
                 builder.conic_to(*points)
             else:
-                raise Exception(f'Unsupported: {path_verb}')
+                raise BooleanOpsError(f'Unsupported: {path_verb}')
 
     vitem.points.set([] if builder is None else builder.get()).reverse()
     return vitem
@@ -63,7 +64,7 @@ class Union(VItem):
     '''
     def __init__(self, *vitems: VItem, **kwargs):
         if len(vitems) < 2:
-            raise ValueError("At least 2 items needed for Union.")
+            raise BooleanOpsError("At least 2 items needed for Union.")
         super().__init__(**kwargs)
         outpen = pathops.Path()
         pathops.union(
@@ -101,7 +102,7 @@ class Intersection(VItem):
     '''
     def __init__(self, *vmobjects: VItem, **kwargs):
         if len(vmobjects) < 2:
-            raise ValueError("At least 2 items needed for Intersection.")
+            raise BooleanOpsError("At least 2 items needed for Intersection.")
         super().__init__(**kwargs)
         outpen = pathops.Path()
         pathops.intersection(
@@ -129,7 +130,7 @@ class Exclusion(VItem):
     '''
     def __init__(self, *vitems: VItem, **kwargs):
         if len(vitems) < 2:
-            raise ValueError("At least 2 items needed for Exclusion.")
+            raise BooleanOpsError("At least 2 items needed for Exclusion.")
         super().__init__(**kwargs)
         outpen = pathops.Path()
         pathops.xor(

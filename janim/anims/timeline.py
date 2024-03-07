@@ -19,6 +19,8 @@ from janim.anims.composition import AnimGroup
 from janim.anims.display import Display
 from janim.anims.transform import MethodTransform
 from janim.camera.camera import Camera
+from janim.exception import (StoreFailedError, StoreNotFoundError,
+                             TimelineLookupError)
 from janim.items.item import Item
 from janim.logger import log
 from janim.render.base import RenderData, Renderer, set_global_uniforms
@@ -54,7 +56,7 @@ class Timeline(metaclass=ABCMeta):
         obj = Timeline.ctx_var.get(None)
         if obj is None and raise_exc:
             f_back = inspect.currentframe().f_back
-            raise LookupError(f'{f_back.f_code.co_qualname} 无法在 Timeline.construct 之外使用')
+            raise TimelineLookupError(f'{f_back.f_code.co_qualname} 无法在 Timeline.construct 之外使用')
         return obj
 
     @dataclass
@@ -159,7 +161,7 @@ class Timeline(metaclass=ABCMeta):
         # 在调用该方法前必须执行过 _detect_change，所以这里可以直接写 datas[-1]
         if as_time < datas[-1].time:
             # TOOD: 明确是什么物件
-            raise RuntimeError('记录物件数据失败，可能是因为物件处于动画中')
+            raise StoreFailedError('记录物件数据失败，可能是因为物件处于动画中')
 
         datas.append(Timeline.TimedItemData(as_time, data))
 
@@ -284,7 +286,7 @@ class Timeline(metaclass=ABCMeta):
         if static.data.is_changed():
             if as_time < datas[-1].time:
                 # TOOD: 明确是什么物件
-                raise RuntimeError('记录物件数据失败，可能是因为物件处于动画中')
+                raise StoreFailedError('记录物件数据失败，可能是因为物件处于动画中')
 
             datas.append(Timeline.TimedItemData(as_time, item.store_data()))
 
@@ -306,7 +308,7 @@ class Timeline(metaclass=ABCMeta):
         datas = self.item_stored_datas[item]
 
         if not datas:
-            raise ValueError('Not stored')
+            raise StoreNotFoundError('Not stored')
 
         # TODO: optimize
         for timed_data in reversed(datas):
