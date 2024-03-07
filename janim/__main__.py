@@ -1,13 +1,14 @@
-import importlib
-import time
+import importlib.machinery
 import os
 import platform
 import subprocess as sp
+import time
 from argparse import ArgumentParser, Namespace
 
 from janim.anims.timeline import Timeline
 from janim.logger import log
 from janim.utils.config import Config, default_config
+from janim.utils.file_ops import get_janim_dir
 
 
 def main() -> None:
@@ -28,8 +29,8 @@ def main() -> None:
 
 def render_args(parser: ArgumentParser) -> None:
     parser.add_argument(
-        'namespace',
-        help='Namespace to file holding the python code for the timeline'
+        'filepath',
+        help='Path to file holding the python code for the timeline'
     )
     parser.add_argument(
         'timeline_names',
@@ -77,7 +78,7 @@ def write_parser(parser: ArgumentParser) -> None:
 
 
 def examples_parser(parser: ArgumentParser) -> None:
-    parser.set_defaults(namespace='janim.examples')
+    parser.set_defaults(filepath=os.path.join(get_janim_dir(), 'examples.py'))
     parser.add_argument(
         'timeline_names',
         nargs='*',
@@ -95,7 +96,7 @@ def examples_parser(parser: ArgumentParser) -> None:
 
 
 def run(args: Namespace) -> None:
-    module = get_module(args.namespace)
+    module = get_module(args.filepath)
     if module is None:
         return
     modify_default_config(args)
@@ -104,11 +105,13 @@ def run(args: Namespace) -> None:
     if not timelines:
         return
 
+    from janim.gui.anim_viewer import AnimViewer
+
     auto_play = len(timelines) == 1
 
-    from janim.gui.anim_viewer import AnimViewer
-    from janim.gui.application import Application
     from PySide6.QtCore import QPoint, QTimer
+
+    from janim.gui.application import Application
 
     app = Application()
 
@@ -138,7 +141,7 @@ def run(args: Namespace) -> None:
 
 
 def write(args: Namespace) -> None:
-    module = get_module(args.namespace)
+    module = get_module(args.filepath)
     if module is None:
         return
     modify_default_config(args)
@@ -185,12 +188,11 @@ def modify_default_config(args: Namespace) -> None:
             setattr(default_config, key, dtype(value))
 
 
-def get_module(namespace: str):
-    try:
-        return importlib.import_module(namespace)
-    except ModuleNotFoundError:
-        log.error(f'No module named "{namespace}"')
-        return None
+def get_module(file_name: str):
+    module_name = file_name.replace(os.sep, ".").replace(".py", "")
+    loader = importlib.machinery.SourceFileLoader(module_name, file_name)
+    module = loader.load_module()
+    return module
 
 
 def extract_timelines_from_module(args: Namespace, module) -> list[type[Timeline]]:

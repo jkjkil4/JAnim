@@ -1,4 +1,4 @@
-import importlib
+import importlib.machinery
 import inspect
 import json
 import os
@@ -347,7 +347,8 @@ class AnimViewer(QMainWindow):
         module = inspect.getmodule(self.anim.timeline)
         progress = self.timeline_view.progress()
 
-        importlib.reload(module)
+        loader = importlib.machinery.SourceFileLoader(module.__name__, module.__file__)
+        module = loader.load_module()
         timeline_class: type[Timeline] = getattr(module, self.anim.timeline.__class__.__name__)
 
         try:
