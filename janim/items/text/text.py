@@ -91,7 +91,6 @@ register_acts(
     ['stroke', 's'],
     ((float,), lambda char, radius: char.stroke.set(radius))
 )
-# TODO: distinct_stroke
 register_acts(
     ['font_scale', 'fs'],
     ((float,), lambda char, factor: char.points.scale(factor, about_point=ORIGIN))

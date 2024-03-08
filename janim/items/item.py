@@ -435,7 +435,6 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
                 aligned.union.components[key] = cmpt_aligned.union
 
             # align children
-            # TODO: 当 data1.children 和 data2.children 中仅有一者为空时报错
             max_len = max(len(data1.children), len(data2.children))
             aligned.data1.children = resize_preserving_order(data1.children, max_len)
             aligned.data2.children = resize_preserving_order(data2.children, max_len)

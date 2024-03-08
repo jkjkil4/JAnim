@@ -423,8 +423,13 @@ class AnimViewer(QMainWindow):
             return
 
         QMessageBox.information(self, '提示', '即将进行输出，请留意控制台信息')
-        FileWriter.writes(self.anim.timeline.__class__().build(), file_path)
-        QMessageBox.information(self, '提示', f'已完成输出至 {file_path}')
+        try:
+            FileWriter.writes(self.anim.timeline.__class__().build(), file_path)
+        except Exception as e:
+            if not isinstance(e, ExitException):
+                traceback.print_exc()
+        else:
+            QMessageBox.information(self, '提示', f'已完成输出至 {file_path}')
 
     # endregion
 
