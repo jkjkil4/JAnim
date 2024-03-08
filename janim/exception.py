@@ -16,6 +16,8 @@ sys.excepthook = custom_excepthook
 
 EXITCODE_PYSIDE6_NOT_FOUND = 1001
 '''``PySide6`` 未安装时的退出码'''
+EXITCODE_MODULE_NOT_FOUND = 1002
+EXITCODE_NOT_FILE = 1003
 
 EXITCODE_TYPST_NOT_FOUND = 1101
 '''``Typst`` 未安装时的退出码'''

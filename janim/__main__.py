@@ -6,6 +6,8 @@ import time
 from argparse import ArgumentParser, Namespace
 
 from janim.anims.timeline import Timeline
+from janim.exception import (EXITCODE_MODULE_NOT_FOUND, EXITCODE_NOT_FILE,
+                             ExitException)
 from janim.logger import log
 from janim.utils.config import Config, default_config
 from janim.utils.file_ops import get_janim_dir
@@ -184,6 +186,14 @@ def modify_default_config(args: Namespace) -> None:
 
 
 def get_module(file_name: str):
+    if not os.path.exists(file_name):
+        log.error(f'"{file_name}" 不存在')
+        raise ExitException(EXITCODE_MODULE_NOT_FOUND)
+
+    if not os.path.isfile(file_name):
+        log.error(f'"{file_name}" 不是文件')
+        raise ExitException(EXITCODE_NOT_FILE)
+
     module_name = file_name.replace(os.sep, ".").replace(".py", "")
     loader = importlib.machinery.SourceFileLoader(module_name, file_name)
     module = loader.load_module()
