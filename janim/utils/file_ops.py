@@ -25,5 +25,5 @@ def readall(filepath: str) -> str:
     '''
     从文件中读取所有字符
     '''
-    with open(filepath, 'rt') as f:
+    with open(filepath, 'rt', encoding='utf-8') as f:
         return f.read()

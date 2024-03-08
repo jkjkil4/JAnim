@@ -2,11 +2,10 @@
 from typing import Iterable, Self
 
 import numpy as np
-
 from janim.components.component import CmptInfo
 from janim.components.points import Cmpt_Points
 from janim.components.vpoints import Cmpt_VPoints
-from janim.constants import LEFT, MED_SMALL_BUFF, ORIGIN, RIGHT, TAU
+from janim.constants import LEFT, MED_SMALL_BUFF, NAN_POINT, ORIGIN, RIGHT, TAU
 from janim.items.item import Item
 from janim.items.vitem import VItem
 from janim.typing import Alpha, AlphaArray, Vect
@@ -310,4 +309,4 @@ class Annulus(VItem):
         )
         outer = outer[::-1]
 
-        self.points.set(np.vstack([outer, outer[-1], inner]))
+        self.points.set(np.vstack([outer, NAN_POINT, inner]))
