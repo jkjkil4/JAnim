@@ -29,6 +29,7 @@ from PySide6.QtWidgets import (QApplication, QFileDialog, QLabel, QMainWindow,
 
 from janim.anims.animation import Animation, TimeRange
 from janim.anims.timeline import Timeline, TimelineAnim
+from janim.exception import ExitException
 from janim.gui.application import Application
 from janim.gui.fixed_ratio_widget import FixedRatioWidget
 from janim.gui.glwidget import GLWidget
@@ -355,8 +356,9 @@ class AnimViewer(QMainWindow):
 
         try:
             self.anim: TimelineAnim = timeline_class().build()
-        except Exception:
-            traceback.print_exc()
+        except Exception as e:
+            if not isinstance(e, ExitException):
+                traceback.print_exc()
             log.error('重新构建失败')
             return
 
