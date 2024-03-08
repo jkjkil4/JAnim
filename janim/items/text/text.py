@@ -9,8 +9,9 @@ from typing import Any, Callable, Concatenate, Iterable, Self
 import numpy as np
 
 from janim.components.points import Cmpt_Points
-from janim.constants import ORIGIN, RIGHT, UP
+from janim.constants import DOWN, LEFT, MED_SMALL_BUFF, ORIGIN, RIGHT, UP
 from janim.exception import ColorNotFoundError
+from janim.items.geometry.line import Line
 from janim.items.points import Group, Points
 from janim.items.vitem import VItem
 from janim.logger import log
@@ -395,3 +396,32 @@ class Text(Group[TextLine]):
                 text_at += 1
 
             text_at += 1
+
+
+class Title(Text):
+    def __init__(
+        self,
+        text: str,
+        font: str | Iterable[str] = [],
+        font_size: float = DEFAULT_FONT_SIZE,
+        include_underline: bool = True,
+        underline_width: float | None = None,
+        underline_buff: float = MED_SMALL_BUFF,
+        match_underline_width_to_text: bool = False,
+        **kwargs
+    ):
+        super().__init__(text, font=font, font_size=font_size, **kwargs)
+        self.points.to_border(UP)
+
+        if underline_width is None and not match_underline_width_to_text:
+            underline_width = Config.get.frame_width - 2
+
+        if include_underline:
+            underline = Line(LEFT, RIGHT)
+            underline.points.next_to(self, DOWN, buff=underline_buff)
+            if match_underline_width_to_text:
+                underline.points.set_width(self.points.box.width)
+            else:
+                underline.points.set_width(underline_width)
+            self.add(underline)
+            self.underline = underline
