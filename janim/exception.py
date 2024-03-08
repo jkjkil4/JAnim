@@ -1,5 +1,41 @@
+import sys
+from dataclasses import dataclass
+
+
+_sys_excepthook = sys.excepthook
+
+
+def custom_excepthook(exc_type, exc_value, exc_traceback):
+    if issubclass(exc_type, ExitException):
+        sys.exit(exc_value.exit_code)
+    _sys_excepthook(exc_type, exc_value, exc_traceback)
+
+
+sys.excepthook = custom_excepthook
+
+
+EXITCODE_PYSIDE6_NOT_FOUND = 1001
+'''``PySide6`` 未安装时的退出码'''
+
+EXITCODE_TYPST_NOT_FOUND = 1101
+'''``Typst`` 未安装时的退出码'''
+EXITCODE_TYPST_COMPILE_ERROR = 1102
+'''``Typst`` 编译失败时的退出码'''
+
+EXITCODE_FFMPEG_NOT_FOUND = 2001
+'''``ffmpeg`` 未安装时的退出码'''
+
 
 class JAnimException(Exception): ...
+
+
+@dataclass
+class ExitException(JAnimException):
+    '''
+    当 :class:`ExitException` 未被捕获时，
+    会直接以 ``exit_code`` 退出，不输出 ``traceback`` 信息
+    '''
+    exit_code: int
 
 
 class TimelineError(JAnimException): ...

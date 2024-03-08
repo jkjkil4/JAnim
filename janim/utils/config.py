@@ -55,6 +55,8 @@ class Config(metaclass=_ConfigMeta):
     wnd_pos: str = None
     wnd_monitor: int = None
 
+    typst_bin: str = None
+
     ffmpeg_bin: str = None
     output_dir: str = None
     temp_dir: str = None
@@ -88,6 +90,8 @@ default_config = Config(
 
     wnd_pos='OR',
     wnd_monitor=0,
+
+    typst_bin='typst',
 
     ffmpeg_bin='ffmpeg',
     output_dir='videos',

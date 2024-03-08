@@ -14,6 +14,7 @@ janim
    render/modules.rst
    utils/modules.rst
    examples
+   exception
    imports
    logger
    typing

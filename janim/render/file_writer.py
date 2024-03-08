@@ -7,6 +7,7 @@ import moderngl as mgl
 from tqdm import tqdm as ProgressDisplay
 
 from janim.anims.timeline import TimelineAnim
+from janim.exception import EXITCODE_FFMPEG_NOT_FOUND, ExitException
 from janim.logger import log
 from janim.utils.config import Config
 
@@ -109,7 +110,11 @@ class FileWriter:
             ]
 
         command += [self.temp_file_path]
-        self.writing_process = sp.Popen(command, stdin=sp.PIPE)
+        try:
+            self.writing_process = sp.Popen(command, stdin=sp.PIPE)
+        except FileNotFoundError:
+            log.error('无法输出视频，需要安装 ffmpeg 并将其添加到环境变量中')
+            raise ExitException(EXITCODE_FFMPEG_NOT_FOUND)
 
     def close_video_pipe(self) -> None:
         self.writing_process.stdin.close()

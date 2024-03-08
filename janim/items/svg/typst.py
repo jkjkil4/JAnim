@@ -4,10 +4,13 @@ import os
 import subprocess as sp
 
 from janim.constants import ORIGIN, UP
+from janim.exception import (EXITCODE_TYPST_COMPILE_ERROR,
+                             EXITCODE_TYPST_NOT_FOUND, ExitException)
 from janim.items.svg.svg_item import SVGItem
+from janim.logger import log
+from janim.utils.config import Config
 from janim.utils.file_ops import get_janim_dir, get_typst_temp_dir
 
-TYPST_BIN = 'typst'
 TYPST_FILENAME = 'temp.typ'
 
 
@@ -41,15 +44,24 @@ class TypstDoc(SVGItem):
             f.write(get_typst_template().replace('[typst_expression]', text))
 
         commands = [
-            TYPST_BIN,
+            Config.get.typst_bin,
             'compile',
             typst_file_path,
             svg_file_path,
             '-f', 'svg'
         ]
 
-        process = sp.Popen(commands)
-        process.wait()
+        try:
+            process = sp.Popen(commands)
+        except FileNotFoundError:
+            log.error('无法编译 typst，需要安装 typst 并将其添加到环境变量中')
+            raise ExitException(EXITCODE_TYPST_NOT_FOUND)
+
+        ret = process.wait()
+        if ret != 0:
+            log.error('typst 编译错误，请检查输出信息')
+            raise ExitException(EXITCODE_TYPST_COMPILE_ERROR)
+
         process.terminate()
 
         return svg_file_path
