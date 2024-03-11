@@ -338,6 +338,9 @@ class Timeline(metaclass=ABCMeta):
         '''
         return self.get_stored_data_at_time(item, t - GET_DATA_DELTA, skip_dynamic_data=skip_dynamic_data)
 
+    def is_displaying(self, item: Item) -> None:
+        return item in self.item_display_times
+
     def _show(self, item: Item) -> None:
         self.item_display_times.setdefault(item, self.current_time)
 
@@ -416,6 +419,18 @@ class Timeline(metaclass=ABCMeta):
         log.debug(f't={time}  {ext_msg}at construct.{self.get_construct_lineno()}')
 
     # endregion
+
+
+class SourceTimeline(Timeline):
+    '''
+    与 :class:`Timeline` 相比，会在背景显示源代码
+    '''
+    def build(self, *, quiet=False) -> TimelineAnim:
+        from janim.items.text.text import SourceDisplayer
+        token = self.ctx_var.set(self)
+        SourceDisplayer(self.__class__).show()
+        self.ctx_var.reset(token)
+        return super().build(quiet=quiet)
 
 
 class TimelineAnim(AnimGroup):

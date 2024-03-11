@@ -70,7 +70,13 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
 
     depth = CmptInfo(Cmpt_Depth[Self], 0)
 
-    def __init__(self, *args, depth: float | None = None, children: list[Item] = [], **kwargs):
+    def __init__(
+        self,
+        *args,
+        depth: float | None = None,
+        children: list[Item] = [],
+        **kwargs
+    ):
         super().__init__(*args)
 
         self._init_components()
@@ -374,7 +380,7 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
 
             return cls(data.item, components, parents, children)
 
-        def _become(self, data: Item.Data) -> None:
+        def _restore(self, data: Item.Data) -> None:
             for key in self.components.keys() | data.components.keys():
                 self.components[key].become(data.components[key])
 
@@ -497,7 +503,7 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         return self.Data._ref(self)
 
     def restore_data(self, data: Data[Self]) -> Self:
-        self.ref_data()._become(data)
+        self.ref_data()._restore(data)
         return self
 
     def copy(self) -> Self:
@@ -554,6 +560,11 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
 
         for key in self.components.keys() | other.components.keys():
             self.components[key].become(other.components[key])
+
+        from janim.anims.timeline import Timeline
+        timeline = Timeline.get_context(raise_exc=False)
+        if timeline is not None and timeline.is_displaying(self):
+            timeline.show(self)
 
         return self
 

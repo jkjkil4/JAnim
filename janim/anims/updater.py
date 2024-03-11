@@ -86,7 +86,8 @@ class TimeBasedUpdater[T: Item](Animation):
         }
 
         for item, updater_data in self.datas.items():
-            self.func(item.ref_data(), UpdaterParams(self.global_range.end, 1, updater_data.extra_data))
+            if self.become_at_end:
+                self.func(item.ref_data(), UpdaterParams(self.global_range.end, 1, updater_data.extra_data))
             self.timeline.register_dynamic_data(item, self.wrap_data(updater_data), self.global_range.at)
 
         self.timeline.detect_changes([self.item] if self.root_only else self.item.walk_self_and_descendants(),
@@ -111,7 +112,7 @@ class TimeBasedUpdater[T: Item](Animation):
         global_t = self.global_t_ctx.get()
         for i, updater_data in enumerate(self.datas.values()):
             sub_alpha = self.get_sub_alpha(alpha, i)
-            updater_data.data._become(updater_data.orig_data)
+            updater_data.data._restore(updater_data.orig_data)
             self.func(
                 updater_data.data,
                 UpdaterParams(global_t, sub_alpha, updater_data.extra_data)
@@ -122,10 +123,61 @@ class TimeBasedUpdater[T: Item](Animation):
         alpha: float,
         index: int
     ) -> float:
-        '''依据 ``lag_ratio`` 得到特定子物件的 sub_alpha'''
+        '''依据 ``lag_ratio`` 得到特定子物件的 ``sub_alpha``'''
         # REFACTOR: make this more understanable
         lag_ratio = self.lag_ratio
         full_length = (len(self.datas) - 1) * lag_ratio + 1
         value = alpha * full_length
         lower = index * lag_ratio
         return clip((value - lower), 0, 1)
+
+
+class ItemUpdater(Animation):
+    # TODO: 注释
+    label_color = TimeBasedUpdater.label_color
+
+    def __init__(
+        self,
+        func: Callable[[UpdaterParams], Item],
+        item: Item = None,
+        *,
+        hide_at_begin: bool = True,
+        show_at_end: bool = True,
+        become_at_end: bool = True,
+        **kwargs
+    ):
+        super().__init__(**kwargs)
+        self.func = func
+        self.item = item
+        self.hide_at_begin = hide_at_begin
+        self.show_at_end = show_at_end
+        self.become_at_end = become_at_end
+
+    def anim_init(self) -> None:
+        if self.item is None:
+            return
+
+        # 在动画开始时自动隐藏，在动画结束时自动显示
+        # 可以将 ``hide_on_begin`` 和 ``show_on_end`` 置为 ``False`` 以禁用
+        if self.hide_at_begin:
+            self.timeline.schedule(self.global_range.at, self.item.hide)
+        if self.show_at_end:
+            self.timeline.schedule(self.global_range.end, self.item.show)
+
+        # 在动画结束后，自动使用动画最后一帧的物件替换原有的
+        if self.become_at_end:
+            self.timeline.schedule(
+                self.global_range.end,
+                lambda: self.item.become(self.func(UpdaterParams(self.global_range.end, 1, None)))
+            )
+
+    def anim_on_alpha(self, alpha: float) -> None:
+        global_t = self.global_t_ctx.get()
+        dynamic = self.func(UpdaterParams(global_t, alpha, None))
+        self.set_render_call_list([
+            RenderCall(
+                sub.depth,
+                sub.ref_data().render
+            )
+            for sub in dynamic.walk_self_and_descendants()
+        ])

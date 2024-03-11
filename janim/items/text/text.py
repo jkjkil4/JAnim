@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import inspect
 import itertools as it
 import re
 from collections import defaultdict
@@ -9,7 +10,8 @@ from typing import Any, Callable, Concatenate, Iterable, Self
 import numpy as np
 
 from janim.components.points import Cmpt_Points
-from janim.constants import DOWN, LEFT, MED_SMALL_BUFF, ORIGIN, RIGHT, UP
+from janim.constants import (DOWN, GREY, LEFT, MED_SMALL_BUFF, ORIGIN, RIGHT,
+                             UL, UP)
 from janim.exception import ColorNotFoundError
 from janim.items.geometry.line import Line
 from janim.items.points import Group, Points
@@ -183,7 +185,7 @@ class TextChar(VItem):
                 log.warning(f'应用 "{name}" 时，{params} 与 {txt} 没有匹配项')
 
 
-class TextLine(Group[TextChar]):
+class TextLine(VItem, Group[TextChar]):
     '''
     单行文字物件，作为 :class:`Text` 的子物件，在创建 :class:`Text` 时产生s
     '''
@@ -238,7 +240,7 @@ class TextLine(Group[TextChar]):
         return self
 
 
-class Text(Group[TextLine]):
+class Text(VItem, Group[TextLine]):
     '''
     文字物件
     '''
@@ -425,3 +427,20 @@ class Title(Text):
                 underline.points.set_width(underline_width)
             self.add(underline)
             self.underline = underline
+
+
+class SourceDisplayer(Text):
+    def __init__(
+        self,
+        obj,
+        font_size=16,
+        color=GREY,
+        **kwargs
+    ):
+        super().__init__(
+            inspect.getsource(obj),
+            font_size=font_size,
+            color=color,
+            **kwargs
+        )
+        self.points.to_border(UL)

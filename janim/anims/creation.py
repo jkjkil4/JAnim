@@ -141,7 +141,7 @@ class DrawBorderThenFill(TimeBasedUpdater):
         index, subalpha = integer_interpolate(0, 2, p.alpha)
 
         if index == 0:
-            data._become(outline)
+            data._restore(outline)
             data.cmpt.points.pointwise_become_partial(data.cmpt.points, 0, subalpha)
         else:
             data.interpolate(outline, data, subalpha)
