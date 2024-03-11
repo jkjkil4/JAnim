@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import copy
 import inspect
 import itertools as it
 from dataclasses import dataclass
@@ -83,10 +84,7 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
 
         self.digest_styles(kwargs)
 
-        from janim.anims.timeline import Timeline
-        timeline = Timeline.get_context(raise_exc=False)
-        if timeline:
-            timeline.register(self)
+        self.register_to_timeline(raise_exc=False)
 
     @dataclass
     class _CmptInitData:
@@ -120,6 +118,12 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
             obj.init_bind(Component.BindInfo(data.decl_cls, self, key))
 
             self.__dict__[key] = self.components[key] = obj
+
+    def register_to_timeline(self, *, raise_exc=True) -> None:
+        from janim.anims.timeline import Timeline
+        timeline = Timeline.get_context(raise_exc=raise_exc)
+        if timeline:
+            timeline.register(self)
 
     def broadcast_refresh_of_component(
         self,
@@ -287,6 +291,9 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         return self.astype(cls)
 
     def __getattr__(self, name: str):
+        if name == '__setstate__':
+            raise AttributeError()
+
         cmpt_info = None if self._astype is None else getattr(self._astype, name, None)
         if not isinstance(cmpt_info, CmptInfo):
             super().__getattribute__(name)  # raise error
@@ -489,30 +496,65 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         '''
         return self.Data._ref(self)
 
-    def copy(self, *args, **kwargs) -> Self:
+    def restore_data(self, data: Data[Self]) -> Self:
+        self.ref_data()._become(data)
+        return self
+
+    def copy(self) -> Self:
         '''
         复制物件
         '''
-        if self.children:
-            log.warning('在有子物件的情况下使用 copy 时的处理并未完善')
+        copy_item = copy.copy(self)
 
-        new_item = self.__class__(*args, **kwargs)
-        new_item.become(self)
-        return new_item
+        copy_item.reset_refresh()
 
-    def become(self, item_or_data: Self | Data[Self]) -> Self:
+        copy_item.parents = []
+        copy_item.parents_changed()
+
+        copy_item.children = []
+        copy_item.add(*[item.copy() for item in self.children])
+
+        new_cmpts = {}
+        for key, cmpt in self.components.items():
+            if isinstance(cmpt, _CmptGroup):
+                # 因为现在的 Python 版本中，dict 取键值保留原序
+                # 所以 new_cmpts 肯定有 _CmptGroup 所需要的
+                cmpt_copy = cmpt.copy(new_cmpts=new_cmpts)
+            else:
+                cmpt_copy = cmpt.copy()
+
+            cmpt_copy.init_bind(Component.BindInfo(cmpt.bind.decl_cls,
+                                                   copy_item,
+                                                   key))
+
+            new_cmpts[key] = cmpt_copy
+            setattr(copy_item, key, cmpt_copy)
+
+        copy_item.components = new_cmpts
+        copy_item._astype_mock_cmpt = {}
+
+        copy_item.register_to_timeline(raise_exc=False)
+        return copy_item
+
+    def become(self, other: Item) -> Self:
         '''
-        将该物件的数据设置为与传入的数据相同（以复制的方式，不是引用）
+        将该物件的数据设置为与传入的物件相同（以复制的方式，不是引用）
         '''
-        if self.children:
-            log.warning('在有子物件的情况下使用 become 时的处理并未完善')
+        # self.parents 不变
 
-        if isinstance(item_or_data, Item):
-            data = item_or_data.ref_data()
-        else:
-            data = item_or_data
+        children = self.children.copy()
+        self.clear_children()
+        for old, new in it.zip_longest(children, other.children):
+            if new is None:
+                break
+            if old is None or type(old) is not type(new):
+                self.add(new.copy())
+            else:
+                self.add(old.become(new))
 
-        self.ref_data()._become(data)
+        for key in self.components.keys() | other.components.keys():
+            self.components[key].become(other.components[key])
+
         return self
 
     # endregion

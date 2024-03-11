@@ -50,7 +50,10 @@ class Selector(QObject):
 
     def get_points_box_of_time(self, item: Item, t: float) -> Cmpt_Points.BoundingBox:
         box_datas = [
-            self.viewer.anim.timeline.get_stored_data_at_right(sub, t).cmpt.points.self_box.data
+            self.viewer.anim.timeline.get_stored_data_at_right(
+                sub, t, skip_dynamic_data=True
+            ).cmpt.points.self_box.data
+
             for sub in item.walk_self_and_descendants()
             if isinstance(sub, Points) and sub.points.has()
         ]
@@ -187,7 +190,11 @@ class Selector(QObject):
 
         txt_list = [
             '子物件选择工具（Ctrl+左键: 选择父物件，左键: 选择子物件，右键: 取消选择子物件，Ctrl+右键: 退出）',
-            '选中父物件: ' + ('无' if self.current is None else self.current.item.__class__.__name__),
+            '选中父物件: ' + (
+                '无'
+                if self.current is None
+                else f'{self.current.item.__class__.__name__} at {id(self.current.item):X}'
+            ),
             '选中子物件: ' + ', '.join(
                 (
                     f'[{range[0]}]'

@@ -139,6 +139,11 @@ class Arrow(Line):
         self.tip = self.add_tip(**tip_kwargs)
         self.tip_orig_body_length = self.tip.body_length
 
+    def copy(self) -> Self:
+        copy_item = super().copy()
+        copy_item.tip = copy_item[0]
+        return copy_item
+
     def get_direction(self) -> np.ndarray:
         return normalize(self.points[-1] - self.points[-2])
 
