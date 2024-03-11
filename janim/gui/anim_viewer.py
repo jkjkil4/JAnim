@@ -235,7 +235,7 @@ class AnimViewer(QMainWindow):
                             type='find_re',
                             data=dict(
                                 port=self.socket.localPort(),
-                                file_path=inspect.getfile(self.anim.timeline.__class__)
+                                file_path=os.path.abspath(inspect.getfile(self.anim.timeline.__class__))
                             )
                         )
                     ))
