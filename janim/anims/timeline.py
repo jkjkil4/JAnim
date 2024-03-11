@@ -19,8 +19,8 @@ from janim.anims.composition import AnimGroup
 from janim.anims.display import Display
 from janim.anims.transform import MethodTransform
 from janim.camera.camera import Camera
-from janim.exception import (StoreFailedError, StoreNotFoundError,
-                             TimelineLookupError)
+from janim.exception import (NotAnimationError, StoreFailedError,
+                             StoreNotFoundError, TimelineLookupError)
 from janim.items.item import Item
 from janim.logger import log
 from janim.render.base import RenderData, Renderer, set_global_uniforms
@@ -216,6 +216,14 @@ class Timeline(metaclass=ABCMeta):
         '''
         应用动画
         '''
+        anims = [
+            (anim.anim if isinstance(anim, MethodTransform._FakeCmpt) else anim)
+            for anim in anims
+        ]
+        for anim in anims:
+            if not isinstance(anim, Animation):
+                raise NotAnimationError('传入了非动画对象，可能是你忘记使用 .anim 了')
+
         anim = AnimGroup(*anims, **kwargs)
         anim.local_range.at += self.current_time
         anim.set_global_range(anim.local_range.at, anim.local_range.duration)
@@ -232,10 +240,6 @@ class Timeline(metaclass=ABCMeta):
         '''
         应用动画并推进到动画结束的时候
         '''
-        anims = [
-            (anim.anim if isinstance(anim, MethodTransform._FakeCmpt) else anim)
-            for anim in anims
-        ]
         t_range = self.prepare(*anims, **kwargs)
         self.forward_to(t_range.end, _detect_changes=False)
 
