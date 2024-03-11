@@ -261,14 +261,14 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         .. code-block:: python
 
             group = Group(
-                Points(UP, RIGHT)
-                Points(LEFT)
+                Rect()
+                Circle()
             )
 
-        在这个例子中，并不能 ``group.points.get_all()`` 来获取子物件中的所有点，
-        但是可以使用 ``group.astype(Points).points.get_all()`` 来做到
+        在这个例子中，并不能 ``group.color.set(BLUE)`` 来设置子物件中的颜色，
+        但是可以使用 ``group.astype(VItem).color.set(BLUE)`` 来做到
 
-        也可以使用简写 ``group(Points).points.get_all()``
+        也可以使用简写 ``group(VItem).color.set(BLUE)``
         '''
         if not isinstance(cls, type) or not issubclass(cls, Item):
             # TODO: i18n
