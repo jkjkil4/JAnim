@@ -5,15 +5,16 @@ from typing import Self
 
 import numpy as np
 
+from janim.anims.timeline import Timeline
 from janim.components.component import CmptInfo
 from janim.components.vpoints import Cmpt_VPoints
 from janim.constants import DEFAULT_ITEM_TO_ITEM_BUFF, DOWN, PI, SMALL_BUFF
 from janim.items.item import Item
 from janim.items.points import Points
 from janim.items.svg.svg_item import SVGItem
-from janim.items.vitem import VItem
-from janim.items.text.text import Text
 from janim.items.svg.typst import Typst
+from janim.items.text.text import Text
+from janim.items.vitem import VItem
 from janim.typing import Vect
 from janim.utils.file_ops import get_janim_dir
 from janim.utils.space_ops import normalize, rotation_about_z
@@ -74,14 +75,14 @@ class Cmpt_VPoints_BraceImpl(Cmpt_VPoints, impl=True):
             shift_distance = cmpt.box.width * 0.5 + buff
             cmpt.shift(self.direction * shift_distance)
 
-    def create_text(self, text: str, buff: float = SMALL_BUFF, **kwargs) -> Text:
+    def create_text(self, text: str, buff: float = SMALL_BUFF, use_next_to: bool = True, **kwargs) -> Text:
         txt = Text(text, **kwargs)
-        self.put_at_tip(txt, buff=buff)
+        self.put_at_tip(txt, use_next_to=use_next_to, buff=buff)
         return txt
 
-    def create_typst(self, typst: str, buff: float = SMALL_BUFF, **kwargs) -> Typst:
+    def create_typst(self, typst: str, buff: float = SMALL_BUFF, use_next_to: bool = True, **kwargs) -> Typst:
         typ = Typst(typst, **kwargs)
-        self.put_at_tip(typ, buff=buff)
+        self.put_at_tip(typ, use_next_to=use_next_to, buff=buff)
         return typ
 
 
@@ -110,7 +111,8 @@ def get_brace_orig_points() -> np.ndarray:
     if brace_orig_points is not None:
         return brace_orig_points
 
-    svg = SVGItem(os.path.join(get_janim_dir(), 'items', 'svg', 'brace.svg'))
+    with Timeline.CtxBlocker():
+        svg = SVGItem(os.path.join(get_janim_dir(), 'items', 'svg', 'brace.svg'))
     points = svg[0].points.get()
     points -= (points.min(axis=0) + points.max(axis=0)) * 0.5
     brace_orig_points = points

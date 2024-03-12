@@ -10,7 +10,7 @@ from bisect import bisect, insort
 from collections import defaultdict
 from contextvars import ContextVar
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Callable, Iterable
+from typing import TYPE_CHECKING, Callable, Iterable, Self
 
 import moderngl as mgl
 
@@ -44,7 +44,7 @@ class Timeline(metaclass=ABCMeta):
     调用 :meth:`build` 可以得到构建完成的动画对象
     '''
 
-    ctx_var: ContextVar[Timeline] = ContextVar('Timeline.ctx_var', default=None)
+    ctx_var: ContextVar[Timeline | None] = ContextVar('Timeline.ctx_var', default=None)
 
     @staticmethod
     def get_context(raise_exc=True) -> Timeline | None:
@@ -58,6 +58,18 @@ class Timeline(metaclass=ABCMeta):
             f_back = inspect.currentframe().f_back
             raise TimelineLookupError(f'{f_back.f_code.co_qualname} 无法在 Timeline.construct 之外使用')
         return obj
+
+    class CtxBlocker:
+        '''
+        使得在 ``with Timeline.CtxBlocker():`` 内，物件不会自动调用 :meth:`register`
+
+        用于临时创建物件时
+        '''
+        def __enter__(self) -> Self:
+            self.token = Timeline.ctx_var.set(None)
+
+        def __exit__(self, exc_type, exc_value, tb):
+            Timeline.ctx_var.reset(self.token)
 
     @dataclass
     class TimeOfCode:
