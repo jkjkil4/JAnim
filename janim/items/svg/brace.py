@@ -22,24 +22,37 @@ from janim.utils.space_ops import normalize, rotation_about_z
 
 class Cmpt_VPoints_BraceImpl(Cmpt_VPoints, impl=True):
     # 复制时，``length`` 随 ``copy.copy(self)`` 而复制，因此不用重写 ``copy`` 方法
-    def match(self, item: Points | None, direction: Vect, buff: float = SMALL_BUFF) -> Self:
-        self.set(get_brace_orig_points())
+    def match(
+        self,
+        item_or_data: Points | Item.Data[Points] | None,
+        direction: Vect | None = None,
+        buff: float = SMALL_BUFF
+    ) -> Self:
+        if direction is None:
+            direction = self.direction if self.has() else DOWN
 
-        if item is None:
-            self.length = self.box.width
-            return
+        self.set(get_brace_orig_points())
 
         angle = math.atan2(direction[1], direction[0]) + PI / 2
         rot = np.array(rotation_about_z(-angle))
-        rot_points = np.dot(item.points.get(), rot.T)   # dot(points, rot.T) == dot(rot, points.T).T
 
-        box = self.BoundingBox(rot_points)
+        if item_or_data is None:
+            self.brace_length = self.box.width
+        else:
+            if isinstance(item_or_data, Points):
+                cmpt = item_or_data.points
+            else:
+                cmpt = item_or_data.cmpt.points
 
-        self.set_width(box.width, stretch=box.width > self.box.width)
-        self.move_to(box.bottom + DOWN * (buff + self.box.height / 2))
+            rot_points = np.dot(cmpt.get(), rot.T)   # dot(points, rot.T) == dot(rot, points.T).T
+
+            box = self.BoundingBox(rot_points)
+            self.brace_length = box.width
+
+            self.set_width(box.width, stretch=box.width > self.box.width)
+            self.move_to(box.bottom + DOWN * (buff + self.box.height / 2))
+
         self.apply_matrix(rot.T)     # rot.T == rot.I
-
-        self.length = box.width
 
         return self
 

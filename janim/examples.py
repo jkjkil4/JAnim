@@ -93,3 +93,40 @@ class TypstExample(Timeline):
         self.hide(doc)
         self.show(typ)
         self.forward()
+
+
+class UpdaterExample(Timeline):
+    def construct(self) -> None:
+        square = Square(fill_color=BLUE_E, fill_alpha=1).show()
+        brace = Brace(square, UP).show()
+
+        def text_updater(p: UpdaterParams):
+            cmpt = self.t2d(brace, p.global_t).cmpt.points
+            return cmpt.create_text(f'Width = {cmpt.brace_length:.2f}')
+
+        self.prepare(
+            DataUpdater(
+                brace,
+                lambda data, p: data.cmpt.points.match(self.t2d(square, p.global_t))
+            ),
+            ItemUpdater(text_updater),
+            duration=10
+        )
+        self.forward()
+        self.play(square.anim.points.scale(2))
+        self.play(square.anim.points.scale(0.5))
+        self.play(square.anim.points.set_width(5, stretch=True))
+
+        w0 = square.points.box.width
+
+        self.play(
+            DataUpdater(
+                square,
+                lambda data, p: data.cmpt.points.set_width(
+                    w0 + 0.5 * w0 * math.sin(p.alpha * p.range.duration)
+                )
+            ),
+            duration=5
+        )
+        self.forward()
+

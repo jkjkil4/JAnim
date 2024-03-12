@@ -1,9 +1,11 @@
 
+import inspect
 from dataclasses import dataclass
 from typing import Any, Callable
 
 from janim.anims.animation import Animation, RenderCall, TimeRange
 from janim.anims.timeline import ANIM_END_DELTA, DynamicData
+from janim.exception import UpdaterError
 from janim.items.item import Item
 from janim.utils.simple_functions import clip
 
@@ -163,6 +165,13 @@ class ItemUpdater(Animation):
         self.show_at_end = show_at_end
         self.become_at_end = become_at_end
 
+    def call(self, p: UpdaterParams) -> Item:
+        ret = self.func(p)
+        if not isinstance(ret, Item):
+            raise UpdaterError(f'传入 ItemUpdater 的函数必须以一个物件作为返回值，而返回的是 {ret}，'
+                               f'函数定义于 {inspect.getfile(self.func)}:{inspect.getsourcelines(self.func)[1]}')
+        return ret
+
     def anim_init(self) -> None:
         if self.item is None:
             return
@@ -178,7 +187,7 @@ class ItemUpdater(Animation):
         if self.become_at_end:
             self.timeline.schedule(
                 self.global_range.end,
-                lambda: self.item.become(self.func(UpdaterParams(self.global_range.end,
+                lambda: self.item.become(self.call(UpdaterParams(self.global_range.end,
                                                                  1,
                                                                  self.global_range,
                                                                  None)))
@@ -186,7 +195,7 @@ class ItemUpdater(Animation):
 
     def anim_on_alpha(self, alpha: float) -> None:
         global_t = self.global_t_ctx.get()
-        dynamic = self.func(UpdaterParams(global_t, alpha, self.global_range, None))
+        dynamic = self.call(UpdaterParams(global_t, alpha, self.global_range, None))
         self.set_render_call_list([
             RenderCall(
                 sub.depth,
