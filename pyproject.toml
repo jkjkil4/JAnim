@@ -19,7 +19,6 @@ dependencies = [
     "scipy",
     "colour",
     "rich",
-    "glm",
     "moderngl",
     "tqdm",
     "psutil",
