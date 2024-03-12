@@ -13,6 +13,7 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING, Callable, Iterable, Self
 
 import moderngl as mgl
+import numpy as np
 
 from janim.anims.animation import Animation, TimeRange
 from janim.anims.composition import AnimGroup
@@ -141,7 +142,7 @@ class Timeline(metaclass=ABCMeta):
             if self.current_time == 0:
                 self.forward(DEFAULT_DURATION)  # 使得没有任何前进时，产生一点时间，避免除零以及其它问题
                 log.info(f'"{self.__class__.__name__}" 构建后没有产生时长，自动产生了 {DEFAULT_DURATION}s 的时长')
-            self.cleanup_display(trail=2 / Config.get.fps)
+            self.cleanup_display()
             global_anim = TimelineAnim(self)
 
             if not quiet:
@@ -374,14 +375,14 @@ class Timeline(metaclass=ABCMeta):
                 for item in root.descendants():
                     self._show(item)
 
-    def _hide(self, item: Item, *, trail=0) -> Display:
+    def _hide(self, item: Item) -> Display:
         time = self.item_display_times.pop(item, None)
         if time is None:
             return
 
         duration = self.current_time - time
 
-        anim = Display(item, duration=duration + trail, root_only=True)
+        anim = Display(item, duration=duration, root_only=True)
         anim.local_range.at += time
         anim.set_global_range(anim.local_range.at, anim.local_range.duration)
         self.display_anims.append(anim)
@@ -397,14 +398,14 @@ class Timeline(metaclass=ABCMeta):
                 for item in root.descendants():
                     self._hide(item)
 
-    def cleanup_display(self, trail=0) -> None:
+    def cleanup_display(self) -> None:
         '''
         对目前显示中的所有物件调用隐藏，使得正确产生 :class:`~.Display` 对象
 
         ``trail`` 参数在 :meth:`build` 调用的最后使用到，以便使得最后的一帧也能看到物件
         '''
         for item in list(self.item_display_times.keys()):
-            self._hide(item, trail=trail)
+            self._hide(item)
 
     # region debug
 
@@ -477,6 +478,10 @@ class TimelineAnim(AnimGroup):
         self._time: float | None = None
 
     def anim_on(self, local_t: float) -> None:
+        # 使最后一帧不空屏
+        if np.isclose(local_t, self.global_range.duration):
+            local_t -= 1 / Config.get.fps
+
         self._time = local_t
         token = self.global_t_ctx.set(local_t)
         try:
