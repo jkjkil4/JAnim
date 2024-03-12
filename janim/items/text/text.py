@@ -433,7 +433,7 @@ class SourceDisplayer(Text):
     def __init__(
         self,
         obj,
-        font_size=16,
+        font_size=12,
         color=GREY,
         **kwargs
     ):

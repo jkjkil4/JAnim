@@ -10,8 +10,9 @@ from janim.utils.simple_functions import clip
 
 @dataclass
 class UpdaterParams:
-    global_t: int
-    alpha: int
+    global_t: float
+    elapsed: float
+    alpha: float
     extra_data: tuple | None
 
 
@@ -61,7 +62,10 @@ class TimeBasedUpdater[T: Item](Animation):
         def wrapper(global_t: float) -> Item.Data:
             alpha = self.get_alpha_on_global_t(global_t)
             data_copy = updater_data.orig_data._copy(updater_data.orig_data)
-            self.func(data_copy, UpdaterParams(global_t, alpha, updater_data.extra_data))
+            self.func(data_copy, UpdaterParams(global_t,
+                                               global_t - self.global_range.at,
+                                               alpha,
+                                               updater_data.extra_data))
             return data_copy
         return wrapper
 
@@ -87,7 +91,10 @@ class TimeBasedUpdater[T: Item](Animation):
 
         for item, updater_data in self.datas.items():
             if self.become_at_end:
-                self.func(item.ref_data(), UpdaterParams(self.global_range.end, 1, updater_data.extra_data))
+                self.func(item.ref_data(), UpdaterParams(self.global_range.end,
+                                                         self.global_range.duration,
+                                                         1,
+                                                         updater_data.extra_data))
             self.timeline.register_dynamic_data(item, self.wrap_data(updater_data), self.global_range.at)
 
         self.timeline.detect_changes([self.item] if self.root_only else self.item.walk_self_and_descendants(),
@@ -115,7 +122,10 @@ class TimeBasedUpdater[T: Item](Animation):
             updater_data.data._restore(updater_data.orig_data)
             self.func(
                 updater_data.data,
-                UpdaterParams(global_t, sub_alpha, updater_data.extra_data)
+                UpdaterParams(global_t,
+                              global_t - self.global_range.at,
+                              sub_alpha,
+                              updater_data.extra_data)
             )
 
     def get_sub_alpha(
@@ -168,12 +178,15 @@ class ItemUpdater(Animation):
         if self.become_at_end:
             self.timeline.schedule(
                 self.global_range.end,
-                lambda: self.item.become(self.func(UpdaterParams(self.global_range.end, 1, None)))
+                lambda: self.item.become(self.func(UpdaterParams(self.global_range.end,
+                                                                 self.global_range.duration,
+                                                                 1,
+                                                                 None)))
             )
 
     def anim_on_alpha(self, alpha: float) -> None:
         global_t = self.global_t_ctx.get()
-        dynamic = self.func(UpdaterParams(global_t, alpha, None))
+        dynamic = self.func(UpdaterParams(global_t, global_t - self.global_range.at, alpha, None))
         self.set_render_call_list([
             RenderCall(
                 sub.depth,

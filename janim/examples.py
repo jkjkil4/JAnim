@@ -79,7 +79,7 @@ The difference between #text(green)[`TypstDoc`] and #text(green)[`Typst`]:
 - #text(green)[`TypstDoc`] automatically align to the top of view,
   so you can see the document from the start.
 - The content of #text(green)[`Typst`] is wrapped by math environment
-  and the item move to the center by default.
+  and move to the center by default.
 '''
 
 

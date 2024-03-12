@@ -71,7 +71,7 @@ class SVGItem(Group[VItem]):
 
         svg: se.SVG = se.SVG.parse(file_path)
 
-        offset = np.array([svg.width / -2, svg.height / -2, 0])
+        offset = np.array([svg.width / -2, svg.height / -2])
 
         builders: list[VItemBuilder] = []
         for shape in svg.elements():
@@ -115,7 +115,7 @@ class SVGItem(Group[VItem]):
             fill_alpha=_convert_alpha_to_float(path.fill.alpha)
         )
         vitem_points = builder.get()
-        vitem_points += offset
+        vitem_points[:, :2] += offset
 
         def vitem_builder() -> VItem:
             vitem = VItem(**SVGItem.svg_part_default_kwargs)
