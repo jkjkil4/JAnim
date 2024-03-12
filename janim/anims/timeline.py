@@ -338,6 +338,14 @@ class Timeline(metaclass=ABCMeta):
         '''
         return self.get_stored_data_at_time(item, t - GET_DATA_DELTA, skip_dynamic_data=skip_dynamic_data)
 
+    def t2d[T](self, item: T, t: float, *, skip_dynamic_data=False) -> Item.Data[T]:
+        '''
+        ``t2d`` 是 "time to data" 的简写
+
+        等效于调用 :meth:`get_stored_data_at_right`
+        '''
+        return self.get_stored_data_at_right(item, t, skip_dynamic_data=skip_dynamic_data)
+
     def is_displaying(self, item: Item) -> None:
         return item in self.item_display_times
 
