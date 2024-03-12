@@ -3,7 +3,7 @@ from typing import Callable
 
 import numpy as np
 
-from janim.anims.updater import TimeBasedUpdater, UpdaterParams
+from janim.anims.updater import DataUpdater, UpdaterParams
 from janim.components.vpoints import Cmpt_VPoints
 from janim.constants import NAN_POINT
 from janim.items.item import Item
@@ -13,7 +13,7 @@ from janim.utils.bezier import integer_interpolate
 from janim.utils.rate_functions import RateFunc, double_smooth, linear
 
 
-class ShowPartial(TimeBasedUpdater):
+class ShowPartial(DataUpdater):
     '''
     显示物件一部分的动画，显示的部分由 ``bound_func`` 决定
     '''
@@ -95,7 +95,7 @@ class Uncreate(ShowPartial):
         )
 
 
-class DrawBorderThenFill(TimeBasedUpdater):
+class DrawBorderThenFill(DataUpdater):
     '''
     画出边缘，然后填充颜色
     '''

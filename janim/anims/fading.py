@@ -6,12 +6,12 @@ import numpy as np
 from janim.items.item import Item
 from janim.items.points import Points
 from janim.components.rgbas import Cmpt_Rgbas
-from janim.anims.updater import TimeBasedUpdater, UpdaterParams
+from janim.anims.updater import DataUpdater, UpdaterParams
 from janim.typing import Vect
 from janim.constants import ORIGIN
 
 
-class Fade(TimeBasedUpdater, metaclass=ABCMeta):
+class Fade(DataUpdater, metaclass=ABCMeta):
     '''
     :class:`FadeIn` 和 :class:`FadeOut` 的基类
     '''

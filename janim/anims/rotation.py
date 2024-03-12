@@ -1,5 +1,5 @@
 
-from janim.anims.updater import TimeBasedUpdater, UpdaterParams
+from janim.anims.updater import DataUpdater, UpdaterParams
 from janim.items.item import Item
 from janim.items.points import Points
 from janim.components.points import Cmpt_Points
@@ -8,7 +8,7 @@ from janim.utils.rate_functions import linear
 from janim.constants import ORIGIN
 
 
-class Rotate(TimeBasedUpdater):
+class Rotate(DataUpdater):
     '''
     旋转，默认对角度进行平滑插值
     '''

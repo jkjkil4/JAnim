@@ -23,7 +23,7 @@ class UpdaterData:
     extra_data: tuple | None
 
 
-class TimeBasedUpdater[T: Item](Animation):
+class DataUpdater[T: Item](Animation):
     '''
     以时间为参数的物件变换动画
     '''  # TODO: 例子
@@ -144,7 +144,7 @@ class TimeBasedUpdater[T: Item](Animation):
 
 class ItemUpdater(Animation):
     # TODO: 注释
-    label_color = TimeBasedUpdater.label_color
+    label_color = DataUpdater.label_color
 
     def __init__(
         self,
