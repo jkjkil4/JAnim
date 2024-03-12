@@ -45,6 +45,8 @@ class Timeline(metaclass=ABCMeta):
     调用 :meth:`build` 可以得到构建完成的动画对象
     '''
 
+    # region context
+
     ctx_var: ContextVar[Timeline | None] = ContextVar('Timeline.ctx_var', default=None)
 
     @staticmethod
@@ -71,6 +73,8 @@ class Timeline(metaclass=ABCMeta):
 
         def __exit__(self, exc_type, exc_value, tb):
             Timeline.ctx_var.reset(self.token)
+
+    # endregion
 
     @dataclass
     class TimeOfCode:
@@ -154,44 +158,16 @@ class Timeline(metaclass=ABCMeta):
 
         return global_anim
 
-    def register(self, item: Item) -> None:
+    def schedule(self, at: float, func: Callable, *args, **kwargs) -> None:
         '''
-        在 :meth:`construct` 中创建的物件会自动调用该方法
+        计划执行
+
+        会在进度达到 ``at`` 时，对 ``func`` 进行调用，
+        可传入 ``*args`` 和 ``**kwargs``
         '''
-        self.item_stored_datas[item]
+        insort(self.scheduled_tasks, Timeline.ScheduledTask(at, func, args, kwargs), key=lambda x: x.at)
 
-    def register_dynamic_data(self, item: Item, data: DynamicData, as_time: float) -> None:
-        '''
-        注册动态数据信息
-
-        表示在调用 :meth:`get_stored_data_at_time` 时，如果其时间在 ``as_time`` 和下一个数据的时间之间，
-        就调用 ``data`` 来产生动态的数据
-
-        例如，在 :class:`~.MethodTransform` 中使用到
-        '''
-        datas = self.item_stored_datas[item]
-
-        # 在调用该方法前必须执行过 _detect_change，所以这里可以直接写 datas[-1]
-        if as_time < datas[-1].time:
-            # TOOD: 明确是什么物件
-            raise StoreFailedError('记录物件数据失败，可能是因为物件处于动画中')
-
-        datas.append(Timeline.TimedItemData(as_time, data))
-
-    def get_construct_lineno(self) -> int | None:
-        '''
-        得到当前在 :meth:`construct` 中执行到的行数
-        '''
-        frame = inspect.currentframe().f_back
-        while frame is not None:
-            f_back = frame.f_back
-
-            if f_back is self._build_frame:
-                return frame.f_lineno
-
-            frame = f_back
-
-        return None     # pragma: no cover
+    # region progress
 
     def forward(self, dt: float = 1, *, _detect_changes=True) -> None:
         '''
@@ -256,14 +232,89 @@ class Timeline(metaclass=ABCMeta):
         t_range = self.prepare(*anims, **kwargs)
         self.forward_to(t_range.end, _detect_changes=False)
 
-    def schedule(self, at: float, func: Callable, *args, **kwargs) -> None:
-        '''
-        计划执行
+    # endregion
 
-        会在进度达到 ``at`` 时，对 ``func`` 进行调用，
-        可传入 ``*args`` 和 ``**kwargs``
+    # region display
+
+    def is_displaying(self, item: Item) -> None:
+        return item in self.item_display_times
+
+    def _show(self, item: Item) -> None:
+        self.item_display_times.setdefault(item, self.current_time)
+
+    def show(self, *roots: Item, root_only=False) -> None:
         '''
-        insort(self.scheduled_tasks, Timeline.ScheduledTask(at, func, args, kwargs), key=lambda x: x.at)
+        显示物件
+        '''
+        for root in roots:
+            self._show(root)
+            if not root_only:
+                for item in root.descendants():
+                    self._show(item)
+
+    def _hide(self, item: Item) -> Display:
+        time = self.item_display_times.pop(item, None)
+        if time is None:
+            return
+
+        duration = self.current_time - time
+
+        anim = Display(item, duration=duration, root_only=True)
+        anim.local_range.at += time
+        anim.set_global_range(anim.local_range.at, anim.local_range.duration)
+        self.display_anims.append(anim)
+        return anim
+
+    def hide(self, *roots: Item, root_only=False) -> None:
+        '''
+        隐藏物件
+        '''
+        for root in roots:
+            self._hide(root)
+            if not root_only:
+                for item in root.descendants():
+                    self._hide(item)
+
+    def cleanup_display(self) -> None:
+        '''
+        对目前显示中的所有物件调用隐藏，使得正确产生 :class:`~.Display` 对象
+        '''
+        for item in list(self.item_display_times.keys()):
+            self._hide(item)
+
+    # endregion
+
+    # region stored_data
+
+    # region register
+
+    def register(self, item: Item) -> None:
+        '''
+        在 :meth:`construct` 中创建的物件会自动调用该方法
+        '''
+        self.item_stored_datas[item]
+
+    def register_dynamic_data(self, item: Item, data: DynamicData, as_time: float) -> None:
+        '''
+        注册动态数据信息
+
+        表示在调用 :meth:`get_stored_data_at_time` 时，如果其时间在 ``as_time`` 和下一个数据的时间之间，
+        就调用 ``data`` 来产生动态的数据
+
+        例如，在 :class:`~.MethodTransform` 中使用到
+        '''
+        datas = self.item_stored_datas[item]
+
+        # 在调用该方法前必须执行过 _detect_change，所以这里可以直接写 datas[-1]
+        if as_time < datas[-1].time:
+            # TOOD: 明确是什么物件
+            raise StoreFailedError('记录物件数据失败，可能是因为物件处于动画中')
+
+        datas.append(Timeline.TimedItemData(as_time, data))
+
+    # endregion
+
+    # region detect_change
 
     def detect_changes_of_all(self) -> None:
         '''
@@ -307,14 +358,9 @@ class Timeline(metaclass=ABCMeta):
 
             datas.append(Timeline.TimedItemData(as_time, item.store_data()))
 
-    def get_lineno_at_time(self, time: float):
-        times_of_code = self.times_of_code
-        if not times_of_code:
-            return -1
+    # endregion
 
-        idx = bisect(times_of_code, time, key=lambda x: x.time)
-        idx = clip(idx, 0, len(times_of_code) - 1)
-        return times_of_code[idx].line
+    # region get_stored_data
 
     def get_stored_data_at_time[T](self, item: T, t: float, *, skip_dynamic_data=False) -> Item.Data[T]:
         '''
@@ -359,53 +405,37 @@ class Timeline(metaclass=ABCMeta):
         '''
         return self.get_stored_data_at_right(item, t, skip_dynamic_data=skip_dynamic_data)
 
-    def is_displaying(self, item: Item) -> None:
-        return item in self.item_display_times
+    # endregion
 
-    def _show(self, item: Item) -> None:
-        self.item_display_times.setdefault(item, self.current_time)
+    # endregion
 
-    def show(self, *roots: Item, root_only=False) -> None:
+    # region lineno
+
+    def get_construct_lineno(self) -> int | None:
         '''
-        显示物件
+        得到当前在 :meth:`construct` 中执行到的行数
         '''
-        for root in roots:
-            self._show(root)
-            if not root_only:
-                for item in root.descendants():
-                    self._show(item)
+        frame = inspect.currentframe().f_back
+        while frame is not None:
+            f_back = frame.f_back
 
-    def _hide(self, item: Item) -> Display:
-        time = self.item_display_times.pop(item, None)
-        if time is None:
-            return
+            if f_back is self._build_frame:
+                return frame.f_lineno
 
-        duration = self.current_time - time
+            frame = f_back
 
-        anim = Display(item, duration=duration, root_only=True)
-        anim.local_range.at += time
-        anim.set_global_range(anim.local_range.at, anim.local_range.duration)
-        self.display_anims.append(anim)
-        return anim
+        return None     # pragma: no cover
 
-    def hide(self, *roots: Item, root_only=False) -> None:
-        '''
-        隐藏物件
-        '''
-        for root in roots:
-            self._hide(root)
-            if not root_only:
-                for item in root.descendants():
-                    self._hide(item)
+    def get_lineno_at_time(self, time: float):
+        times_of_code = self.times_of_code
+        if not times_of_code:
+            return -1
 
-    def cleanup_display(self) -> None:
-        '''
-        对目前显示中的所有物件调用隐藏，使得正确产生 :class:`~.Display` 对象
+        idx = bisect(times_of_code, time, key=lambda x: x.time)
+        idx = clip(idx, 0, len(times_of_code) - 1)
+        return times_of_code[idx].line
 
-        ``trail`` 参数在 :meth:`build` 调用的最后使用到，以便使得最后的一帧也能看到物件
-        '''
-        for item in list(self.item_display_times.keys()):
-            self._hide(item)
+    # endregion
 
     # region debug
 

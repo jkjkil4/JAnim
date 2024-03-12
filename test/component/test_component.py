@@ -1,6 +1,7 @@
 import unittest
 
-from janim.components.component import Component, CmptInfo, CmptGroup
+from janim.components.component import CmptGroup, CmptInfo, Component
+from janim.exception import AsTypeError, CmptGroupLookupError
 from janim.items.item import Item
 from janim.items.points import Group
 
@@ -35,7 +36,7 @@ class ComponentTest(unittest.TestCase):
 
         group = Group(item)
 
-        with self.assertRaises(TypeError):
+        with self.assertRaises(AsTypeError):
             group.astype(int)
 
         with self.assertRaises(AttributeError):
@@ -51,7 +52,7 @@ class ComponentTest(unittest.TestCase):
         class MyItem(Item):
             cmpt1 = CmptInfo(MyCmpt)
 
-        with self.assertRaises(ValueError):
+        with self.assertRaises(CmptGroupLookupError):
             class MyItem2(MyItem):
                 cmpt2 = CmptInfo(MyCmpt)
                 cmpt = CmptGroup(MyItem.cmpt1, cmpt2)

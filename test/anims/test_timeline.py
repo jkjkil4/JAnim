@@ -4,7 +4,8 @@ import unittest
 from typing import Self
 
 from janim.anims.timeline import Timeline
-from janim.components.component import Component, CmptInfo
+from janim.components.component import CmptInfo, Component
+from janim.exception import StoreNotFoundError
 from janim.items.item import Item
 
 
@@ -76,7 +77,7 @@ class TimelineTest(unittest.TestCase):
                 msg=f'check_data_at_time {id(item):X} {t} {val}'
             )
 
-        with self.assertRaises(ValueError):
+        with self.assertRaises(StoreNotFoundError):
             tl.get_stored_data_at_right(tl.item3, 1)
 
     def test_fmt_time(self) -> None:

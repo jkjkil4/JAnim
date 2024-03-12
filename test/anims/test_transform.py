@@ -79,6 +79,6 @@ class TransformTest(unittest.TestCase):
         self.assertEqual(display1.global_range.end, 2)
 
         self.assertEqual(display2.global_range.at, 3)
-        self.assertGreater(display2.global_range.end, 4)
+        self.assertEqual(display2.global_range.end, 4)
 
 

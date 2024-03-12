@@ -3,10 +3,12 @@ import unittest
 
 import numpy as np
 
-from janim.constants import DL, DOWN, DR, LEFT, ORIGIN, RIGHT, UL, UP, UR, OUT, TAU, DEGREES
+from janim.components.points import Cmpt_Points
+from janim.constants import (DEGREES, DL, DOWN, DR, LEFT, ORIGIN, OUT, RIGHT,
+                             TAU, UL, UP, UR)
+from janim.exception import InvaildMatrixError, PointError
 from janim.items.item import Item
 from janim.items.points import Group, Points
-from janim.components.points import Cmpt_Points
 
 
 class PointsTest(unittest.TestCase):
@@ -68,7 +70,7 @@ class PointsTest(unittest.TestCase):
             []
         )
 
-        with self.assertRaises(ValueError):
+        with self.assertRaises(PointError):
             p.points.get_start()
 
         p.points.resize(3)
@@ -298,16 +300,16 @@ class PointsTest(unittest.TestCase):
             np.array([DR + LEFT, DR + RIGHT, DR + UP, DR + DOWN]) * 4
         )
 
-        with self.assertRaises(ValueError):
+        with self.assertRaises(InvaildMatrixError):
             p3.points.apply_matrix([
                 [1, 1, 1],
                 [1, 1, 1]
             ])
 
-        with self.assertRaises(ValueError):
+        with self.assertRaises(InvaildMatrixError):
             p3.points.apply_matrix([[1]])
 
-        with self.assertRaises(ValueError):
+        with self.assertRaises(InvaildMatrixError):
             p3.points.apply_matrix([
                 [1, 1, 1, 1],
                 [1, 1, 1, 1],
@@ -327,7 +329,7 @@ class PointsTest(unittest.TestCase):
         self.assertNparrayClose(p.points.get(), [DOWN * 2, LEFT * 2, UP * 2])
 
         p.points.extend([DOWN * 2])
-        with self.assertRaises(ValueError):
+        with self.assertRaises(PointError):
             p.points.put_start_and_end_on(LEFT, RIGHT)
 
     def test_movement(self) -> None:
