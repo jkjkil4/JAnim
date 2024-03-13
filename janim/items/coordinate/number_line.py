@@ -48,7 +48,7 @@ class NumberLine(Line):
         longer_tick_multiple: float = 1.5,                      # 长刻度大小倍数
         numbers_with_elongated_ticks: Iterable[float] = [],     # 指定哪些数字是长刻度
         include_numbers: bool = False,                          # 是否显示数字
-        numbers_to_exclude: Iterable[float] | None = None,      # 需要排除的数字
+        numbers_to_exclude: Iterable[float] = [],               # 需要排除的数字
         line_to_number_direction: np.ndarray = DOWN,            # 详见 get_number_item
         line_to_number_buff: float = MED_SMALL_BUFF,            # 详见 get_number_item
         decimal_number_config: dict = {},                       # 数字属性
@@ -64,8 +64,12 @@ class NumberLine(Line):
 
         self.tick_size = tick_size
         self.longer_tick_multiple = longer_tick_multiple
-        self.numbers_with_elongated_ticks = numbers_with_elongated_ticks
-        self.numbers_to_exclude = numbers_to_exclude
+
+        self.numbers_with_elongated_ticks = list(numbers_with_elongated_ticks)
+        self.numbers_to_exclude = list(numbers_to_exclude)
+        if include_tip:
+            self.numbers_to_exclude.append(self.x_max)
+
         self.line_to_number_direction = line_to_number_direction
         self.line_to_number_buff = line_to_number_buff
 
@@ -126,7 +130,7 @@ class NumberLine(Line):
 
         ticks = Group()
         for x in self.get_tick_range():
-            if excluding is not None and np.isclose(excluding, x).any():
+            if np.isclose(excluding, x).any():
                 continue
 
             size = self.tick_size
@@ -160,7 +164,7 @@ class NumberLine(Line):
 
         numbers = Group()
         for x in x_values:
-            if excluding is not None and np.isclose(excluding, x).any():
+            if np.isclose(excluding, x).any():
                 continue
             numbers.add(self.get_number_item(x, font_size=font_size, **kwargs))
         self.add(numbers)
