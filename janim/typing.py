@@ -17,6 +17,8 @@ type AlphaArray = Iterable[float] | np.ndarray
 type Rgba = Iterable[float] | np.ndarray
 type RgbaArray = Iterable[Rgba] | np.ndarray
 
+type RangeSpecifier = tuple[float, float] | tuple[float, float, float]
+
 
 @runtime_checkable
 class SupportsInterpolate[T](Protocol):

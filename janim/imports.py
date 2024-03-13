@@ -11,6 +11,7 @@ from janim.anims.updater import *
 from janim.camera.camera import *
 from janim.camera.camera_info import *
 from janim.components.rgbas import apart_alpha, merge_alpha
+from janim.items.coordinate.number_line import *
 from janim.items.geometry.arc import *
 from janim.items.geometry.arrow import *
 from janim.items.geometry.line import *
