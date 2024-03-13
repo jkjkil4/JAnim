@@ -115,7 +115,7 @@ class ArcBetweenPoints(Arc):
         self.points.put_start_and_end_on(start, end)
 
 
-class _Cmpt_VPoints_CircleImpl[ItemT](Cmpt_VPoints[ItemT], impl=True):
+class Cmpt_VPoints_CircleImpl[ItemT](Cmpt_VPoints[ItemT], impl=True):
     '''
     在圆中，对 :class:`~.Cmpt_VPoints` 的进一步实现
     '''
@@ -135,6 +135,25 @@ class _Cmpt_VPoints_CircleImpl[ItemT](Cmpt_VPoints[ItemT], impl=True):
         self.set_size(self.box.width + 2 * buff, self.box.height + 2 * buff)
         return self
 
+    @property
+    def start_angle(self) -> float:
+        '''获取起始角度'''
+        angle = angle_of_vector(self.get_start() - self.box.center)
+        return angle % TAU
+
+    def at_angle(self, angle: float) -> np.ndarray:
+        '''
+        得到在指定角度处的点，例如 ``angle=0`` 得到右侧的点，``angle=PI / 2`` 得到顶部的点
+        '''
+        return self.pfp(
+            (angle - self.start_angle) / TAU % 1
+        )
+
+    @property
+    def radius(self) -> float:
+        '''得到半径'''
+        return get_norm(self.get_start() - self.box.center)
+
 
 class Circle(VItem):
     '''
@@ -143,7 +162,7 @@ class Circle(VItem):
     - 参数同 ``Arc``
     - 半径传入 ``radius`` 指定
     '''
-    points = CmptInfo(_Cmpt_VPoints_CircleImpl[Self])
+    points = CmptInfo(Cmpt_VPoints_CircleImpl[Self])
 
     def __init__(
         self,
@@ -161,24 +180,6 @@ class Circle(VItem):
                 n_components=n_components
             ) * radius
         )
-
-    def get_start_angle(self) -> float:
-        '''获取起始角度'''
-        angle = angle_of_vector(self.points.get_start() - self.points.box.center)
-        return angle % TAU
-
-    def point_at_angle(self, angle: float) -> np.ndarray:
-        '''
-        得到在指定角度处的点，例如 ``angle=0`` 得到右侧的点，``angle=PI / 2`` 得到顶部的点
-        '''
-        start_angle = self.get_start_angle()
-        return self.points.pfp(
-            (angle - start_angle) / TAU % 1
-        )
-
-    def get_radius(self) -> float:
-        '''得到半径'''
-        return get_norm(self.points.get_start() - self.points.box.center)
 
 
 class Dot(Circle):

@@ -8,6 +8,7 @@ import numpy as np
 from janim.components.component import CmptInfo
 from janim.components.vpoints import Cmpt_VPoints
 from janim.constants import LEFT, ORIGIN, RIGHT, UP
+from janim.items.item import Item
 from janim.items.points import Points
 from janim.items.vitem import VItem
 from janim.typing import Vect
@@ -15,120 +16,151 @@ from janim.utils.bezier import PathBuilder
 from janim.utils.simple_functions import clip
 from janim.utils.space_ops import angle_of_vector, get_norm, normalize
 
+type SupportsPointify = Vect | Points | Item.Data[Item]
 
-class _Cmpt_VPoints_LineImpl[ItemT](Cmpt_VPoints[ItemT], impl=True):
+
+class Cmpt_VPoints_LineImpl[ItemT](Cmpt_VPoints[ItemT]):
     '''
     在线段中，对 :class:`~.Cmpt_VPoints` 的进一步实现
     '''
+    def copy(self) -> Self:
+        copy_cmpt = super().copy()
+        copy_cmpt.start = self.start.copy()
+        copy_cmpt.end = self.end.copy()
+        # buff 和 path_arc 已经通过 copy.copy(self) 复制
+        return copy_cmpt
+
+    def become(self, other: Cmpt_VPoints_LineImpl) -> Self:
+        super().become(other)
+        self.start = other.start.copy()
+        self.end = other.end.copy()
+        self.buff = other.buff
+        self.path_arc = other.path_arc
+        return self
+
+    def __eq__(self, other) -> bool:
+        return super().__eq__(other)
+
     def put_start_and_end_on(self, start: Vect, end: Vect) -> Self:
-        at_item: Line = self.bind.at_item
         curr_start, curr_end = self.get_start_and_end()
         if np.isclose(curr_start, curr_end).all():
             # Handle null lines more gracefully
-            at_item.update_points_by_attrs(start, end, buff=0, path_arc=at_item.path_arc)
+            self.update_points_by_attrs(start, end, buff=0, path_arc=self.path_arc)
             return self
         return self.put_start_and_end_on(start, end)
 
-
-class Line(VItem):
-    '''
-    线段
-
-    传入 ``start``, ``end`` 为线段起点终点
-
-    - ``buff``: 线段两端的空余量，默认为 ``0``
-    - ``path_arc``: 表示线段的弯曲角度
-    '''
-    points = CmptInfo(_Cmpt_VPoints_LineImpl[Self])
-
-    def __init__(
+    def update_points_by_attrs(
         self,
-        start: Vect | Points = LEFT,
-        end: Vect | Points = RIGHT,
-        *,
-        buff: float = 0,
-        path_arc: float = 0,
-        **kwargs
-    ) -> None:
-        super().__init__(**kwargs)
-        self.path_arc = path_arc
-        self.buff = buff
-        self.set_start_and_end(start, end)
+        start: np.ndarray | None = None,
+        end: np.ndarray | None = None,
+        buff: float | None = None,
+        path_arc: float | None = None
+    ) -> Self:
+        if start is None:
+            start = self.start
+            assert start is not None
+        else:
+            self.start = start
 
-    def update_points_by_attrs(self) -> Self:
-        builder = PathBuilder(start_point=self.start)
-        builder.arc_to(self.end, self.path_arc)
-        self.points.set(builder.get())
+        if end is None:
+            end = self.end
+            assert end is not None
+        else:
+            self.end = end
+
+        if buff is None:
+            buff = self.buff
+            assert buff is not None
+        else:
+            self.buff = buff
+
+        if path_arc is None:
+            path_arc = self.path_arc
+            assert path_arc is not None
+        else:
+            self.path_arc = path_arc
+
+        builder = PathBuilder(start_point=start)
+        builder.arc_to(end, path_arc)
+        self.set(builder.get())
 
         # Apply buffer
-        if self.buff > 0:
-            length = self.arc_length
-            alpha = min(self.buff / length, 0.5)
-            self.points.pointwise_become_partial(self.points, alpha, 1 - alpha)
+        if buff > 0:
+            alpha = min(buff / self.arc_length, 0.5)
+            self.pointwise_become_partial(self, alpha, 1 - alpha)
         return self
 
-    def set_buff(self, new_value: float) -> Self:
-        self.buff = new_value
-        self.update_points_by_attrs()
+    def set_buff(self, buff: float) -> Self:
+        self.update_points_by_attrs(buff=buff)
         return self
 
-    def set_path_arc(self, new_value: float) -> Self:
-        self.path_arc = new_value
-        self.update_points_by_attrs()
+    def set_path_arc(self, path_arc: float) -> Self:
+        self.update_points_by_attrs(path_arc=path_arc)
         return self
 
-    def set_start_and_end(self, start: Vect | Points, end: Vect | Points):
+    def set_start_and_end(self, start: SupportsPointify, end: SupportsPointify) -> Self:
+        start, end = self.pointify_start_and_end(start, end)
+        self.update_points_by_attrs(start=start, end=end)
+        return self
+
+    @staticmethod
+    def pointify_start_and_end(start: SupportsPointify, end: SupportsPointify) -> tuple[np.ndarray, np.ndarray]:
         # If either start or end are Mobjects, this
         # gives their centers
-        rough_start = self.pointify(start)
-        rough_end = self.pointify(end)
+        rough_start = Cmpt_VPoints_LineImpl.pointify(start)
+        rough_end = Cmpt_VPoints_LineImpl.pointify(end)
         vect = normalize(rough_end - rough_start)
         # Now that we know the direction between them,
         # we can find the appropriate boundary point from
         # start and end, if they're mobjects
-        self.start = self.pointify(start, vect)
-        self.end = self.pointify(end, -vect)
-        self.update_points_by_attrs()
+        return (
+            Cmpt_VPoints_LineImpl.pointify(start, vect),
+            Cmpt_VPoints_LineImpl.pointify(end, -vect)
+        )
 
+    @staticmethod
     def pointify(
-        self,
-        item_or_point: Vect | Points,
+        item_or_data_or_point: Vect | Points | Item.Data[Points],
         direction: Vect | None = None
-    ) -> Vect:
+    ) -> np.ndarray:
         """
         Take an argument passed into Line (or subclass) and turn
         it into a 3d point.
         """
-        if isinstance(item_or_point, Points):
-            item = item_or_point
-            if direction is None:
-                return item.points.box.center
+        if isinstance(item_or_data_or_point, (Points, Item.Data)):
+            if isinstance(item_or_data_or_point, Points):
+                cmpt = item_or_data_or_point.points
             else:
-                return item.points.box.get_continuous(direction)
+                cmpt = item_or_data_or_point.cmpt.points
+
+            if direction is None:
+                return cmpt.box.center
+            else:
+                return cmpt.box.get_continuous(direction)
         else:
-            point = item_or_point
+            point = item_or_data_or_point
             result = np.zeros(3)
             result[:len(point)] = point
             return result
 
     @property
-    def vector(self) -> Vect:
-        return self.points.get_end() - self.points.get_start()
+    def vector(self) -> np.ndarray:
+        return self.get_end() - self.get_start()
 
     @property
-    def unit_vector(self) -> Vect:
+    def unit_vector(self) -> np.ndarray:
         return normalize(self.vector)
 
     @property
     def angle(self) -> float:
         return angle_of_vector(self.vector)
 
-    def get_projection(self, point: Vect) -> Vect:
+    def get_projection(self, point: Vect) -> np.ndarray:
         """
         Return projection of a point onto the line
         """
         unit_vect = self.unit_vector
-        start = self.points.get_start()
+        start = self.get_start()
         return start + np.dot(point - start, unit_vect) * unit_vect
 
     def get_slope(self) -> float:
@@ -136,15 +168,15 @@ class Line(VItem):
 
     def set_angle(self, angle: float, about_point: Vect | None = None) -> Self:
         if about_point is None:
-            about_point = self.points.get_start()
-        self.points.rotate(
+            about_point = self.get_start()
+        self.rotate(
             angle - self.angle,
             about_point=about_point,
         )
         return self
 
     def set_length(self, length: float, **kwargs):
-        self.points.scale(length / self.length, **kwargs)
+        self.scale(length / self.length, **kwargs)
         return self
 
     @property
@@ -157,6 +189,32 @@ class Line(VItem):
         if self.path_arc > 0:
             arc_len *= self.path_arc / (2 * math.sin(self.path_arc / 2))
         return arc_len
+
+
+class Line(VItem):
+    '''
+    线段
+
+    传入 ``start``, ``end`` 为线段起点终点
+
+    - ``buff``: 线段两端的空余量，默认为 ``0``
+    - ``path_arc``: 表示线段的弯曲角度
+    '''
+    points = CmptInfo(Cmpt_VPoints_LineImpl[Self])
+
+    def __init__(
+        self,
+        start: Vect | Points = LEFT,
+        end: Vect | Points = RIGHT,
+        *,
+        buff: float = 0,
+        path_arc: float = 0,
+        **kwargs
+    ) -> None:
+        super().__init__(**kwargs)
+
+        start, end = self.points.pointify_start_and_end(start, end)
+        self.points.update_points_by_attrs(start, end, buff, path_arc)
 
 
 # TODO: DashedLine
@@ -182,7 +240,7 @@ class TangentLine(Line):
         a1 = clip(alpha - d_alpha, 0, 1)
         a2 = clip(alpha + d_alpha, 0, 1)
         super().__init__(vitem.points.pfp(a1), vitem.points.pfp(a2), **kwargs)
-        self.points.scale(length / self.length)
+        self.points.scale(length / self.points.length)
 
 
 class Elbow(VItem):

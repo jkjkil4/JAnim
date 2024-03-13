@@ -91,10 +91,10 @@ class VItem(Points):
         '''
         if alpha >= 1.0:
             pos = self.points.get_end()
-            angle_vert = self.points.get_end_direction()
+            angle_vert = self.points.end_direction
         elif alpha <= 0.0:
             pos = self.points.get_start()
-            angle_vert = self.points.get_start_direction()
+            angle_vert = self.points.start_direction
         else:
             pos = self.points.pfp(alpha)
             angle_vert = self.points.pfp(clip(alpha + d_alpha, 0, 1)) - self.points.pfp(clip(alpha - d_alpha, 0, 1))

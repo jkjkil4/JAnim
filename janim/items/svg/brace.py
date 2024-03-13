@@ -20,7 +20,7 @@ from janim.utils.file_ops import get_janim_dir
 from janim.utils.space_ops import normalize, rotation_about_z
 
 
-class Cmpt_VPoints_BraceImpl(Cmpt_VPoints, impl=True):
+class Cmpt_VPoints_BraceImpl[ItemT](Cmpt_VPoints[ItemT], impl=True):
     # 复制时，``brace_length`` 随 ``copy.copy(self)`` 而复制，因此不用重写 ``copy`` 方法
     def match(
         self,
@@ -100,7 +100,7 @@ class Cmpt_VPoints_BraceImpl(Cmpt_VPoints, impl=True):
 
 
 class Brace(VItem):
-    points = CmptInfo(Cmpt_VPoints_BraceImpl)
+    points = CmptInfo(Cmpt_VPoints_BraceImpl[Self])
 
     def __init__(
         self,

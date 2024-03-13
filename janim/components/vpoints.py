@@ -226,7 +226,8 @@ class Cmpt_VPoints[ItemT](Cmpt_Points[ItemT]):
         '''
         return self.get()[1::2]
 
-    def get_start_direction(self) -> np.ndarray:
+    @property
+    def start_direction(self) -> np.ndarray:
         points = self._points._data
         start = points[0]
         for pos in points[1:]:
@@ -234,7 +235,8 @@ class Cmpt_VPoints[ItemT](Cmpt_Points[ItemT]):
                 return pos - start
         return RIGHT
 
-    def get_end_direction(self) -> np.ndarray:
+    @property
+    def end_direction(self) -> np.ndarray:
         points = self._points._data
         end = points[-1]
         for pos in points[-2::-1]:

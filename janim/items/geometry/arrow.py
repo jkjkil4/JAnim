@@ -144,9 +144,6 @@ class Arrow(Line):
         copy_item.tip = copy_item[0]
         return copy_item
 
-    def get_direction(self) -> np.ndarray:
-        return normalize(self.points[-1] - self.points[-2])
-
     def _place_tip(
         self,
         tip: ArrowTip,
@@ -158,7 +155,7 @@ class Arrow(Line):
         length = self.tip_orig_body_length
 
         if self.max_length_to_tip_length_ratio:
-            max_length = self.arc_length * self.max_length_to_tip_length_ratio
+            max_length = self.points.arc_length * self.max_length_to_tip_length_ratio
             length = min(length, max_length)
 
         min_length = self.radius.get()[0] * 2 * self.tip.body_length / self.tip.back_width
@@ -172,7 +169,7 @@ class Arrow(Line):
         tip.move_anchor_to(target)
 
     def place_tip(self) -> Self:
-        self._place_tip(self.tip, self.points.get_end(), self.points.get_end_direction())
+        self._place_tip(self.tip, self.points.get_end(), self.points.end_direction)
         return self
 
 
@@ -208,7 +205,7 @@ class DoubleArrow(Arrow):
 
     def place_tip(self) -> Self:
         super().place_tip()
-        self._place_tip(self.start_tip, self.points.get_start(), -self.points.get_start_direction())
+        self._place_tip(self.start_tip, self.points.get_start(), -self.points.start_direction)
         return self
 
 
