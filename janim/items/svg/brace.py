@@ -21,7 +21,7 @@ from janim.utils.space_ops import normalize, rotation_about_z
 
 
 class Cmpt_VPoints_BraceImpl(Cmpt_VPoints, impl=True):
-    # 复制时，``length`` 随 ``copy.copy(self)`` 而复制，因此不用重写 ``copy`` 方法
+    # 复制时，``brace_length`` 随 ``copy.copy(self)`` 而复制，因此不用重写 ``copy`` 方法
     def match(
         self,
         item_or_data: Points | Item.Data[Points] | None,
