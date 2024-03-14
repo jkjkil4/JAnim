@@ -6,19 +6,18 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: JAnim\n"
+"Project-Id-Version:  JAnim\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-01-19 19:22+0800\n"
+"POT-Creation-Date: 2024-03-14 14:52+0800\n"
 "PO-Revision-Date: 2024-01-19 19:53+0800\n"
 "Last-Translator: \n"
-"Language-Team: en <LL@li.org>\n"
 "Language: en\n"
+"Language-Team: en <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "Generated-By: Babel 2.14.0\n"
-"X-Generator: Poedit 3.4.2\n"
 
 #: ../../source/janim/items/item.rst:2
 msgid "item"
@@ -28,6 +27,10 @@ msgstr "item"
 msgid "基类：:py:class:`~janim.items.relation.Relation`\\ [:py:class:`Item`]"
 msgstr "基类：:py:class:`~janim.items.relation.Relation`\\ [:py:class:`Item`]"
 
+#: janim.render.base.Renderer:1 of
+msgid "覆盖该值以在子类中使用特定的渲染器"
+msgstr ""
+
 #: janim.items.item.Item.broadcast_refresh_of_component:1 of
 msgid "为 :meth:`~.Component.mark_refresh()` 进行 ``recurse_up/down`` 的处理"
 msgstr "Handles ``recurse_up/down`` for :meth:`~.Component.mark_refresh()`"
@@ -35,8 +38,29 @@ msgstr "Handles ``recurse_up/down`` for :meth:`~.Component.mark_refresh()`"
 #: janim.items.item.Item.do:1 of
 msgid "使用 ``func`` 对物件进行操作，并返回 ``self`` 以方便链式调用"
 msgstr ""
-"Performs an operation on the item using ``func`` and returns ``self`` for "
-"convenient chain calling"
+"Performs an operation on the item using ``func`` and returns ``self`` for"
+" convenient chain calling"
+
+#: janim.items.item.Item.anim:1 of
+#, fuzzy
+msgid "例如："
+msgstr "Examples:"
+
+#: janim.items.item.Item.anim:9 of
+msgid "该例子会创建将 ``item`` 缩放 2 倍并且设置为绿色的补间动画"
+msgstr ""
+
+#: janim.items.item.Item.anim:11 of
+msgid "并且可以向动画传入参数："
+msgstr ""
+
+#: janim.items.item.Item.replicate:1 of
+msgid "复制 n 个自身，并作为一个 :class:`Group` 返回"
+msgstr ""
+
+#: janim.items.item.Item.replicate:3 of
+msgid "可以将 ``item * n`` 作为该方法的简写"
+msgstr ""
 
 #: janim.items.item.Item.astype:1 of
 msgid "使得可以调用当前物件中没有的组件"
@@ -47,29 +71,22 @@ msgid "例："
 msgstr "Examples:"
 
 #: janim.items.item.Item.astype:12 of
+#, fuzzy
 msgid ""
-"在这个例子中，并不能 ``group.points.get_all()`` 来获取子物件中的所有点， 但"
-"是可以使用 ``group.astype(Points).points.get_all()`` 来做到"
+"在这个例子中，并不能 ``group.color.set(BLUE)`` 来设置子物件中的颜色， 但是可以使用 "
+"``group.astype(VItem).color.set(BLUE)`` 来做到"
 msgstr ""
 "In this example, you cannot use ``group.points.get_all()`` to get all "
-"points in the child objects, but you can use ``group.astype(Points).points."
-"get_all()`` to achieve that"
+"points in the child objects, but you can use "
+"``group.astype(Points).points.get_all()`` to achieve that"
+
+#: janim.items.item.Item.astype:15 of
+msgid "也可以使用简写 ``group(VItem).color.set(BLUE)``"
+msgstr ""
 
 #: janim.items.item.Item.Data:1 of
 msgid "基类：:py:class:`~typing.Generic`"
 msgstr "基类：:py:class:`~typing.Generic`"
-
-#: janim.items.item.Item.Data.store:1 of
-msgid "将物件的数据复制，并返回复制后的数据"
-msgstr "Copies the data of the item and returns the copied data"
-
-#: janim.items.item.Item.Data.store:3 of
-msgid "注：仅复制自身数据，不复制子物件的数据"
-msgstr "Note: Only copies its own data, does not copy the data of child items"
-
-#: janim.items.item.Item.Data.ref:1 of
-msgid "返回数据的引用，不进行复制"
-msgstr "Returns a reference to the data, without copying"
 
 #: janim.items.item.Item.Data.is_changed:1 of
 msgid "检查该数据与 ``item`` 现在的数据是否产生差异"
@@ -88,8 +105,25 @@ msgstr ""
 "completion"
 
 #: janim.items.item.Item.store_data:1 of
-msgid "复制物件的数据并返回"
-msgstr "Copies the data of the item and returns it"
+#, fuzzy
+msgid "将数据复制，返回复制后的数据"
+msgstr "Copies the data of the item and returns the copied data"
+
+#: janim.items.item.Item.store_data:3 of
+msgid "注：仅复制自身数据，不复制子物件的数据"
+msgstr "Note: Only copies its own data, does not copy the data of child items"
+
+#: janim.items.item.Item.ref_data:1 of
+msgid "返回数据的引用，不进行复制"
+msgstr "Returns a reference to the data, without copying"
+
+#: janim.items.item.Item.copy:1 of
+msgid "复制物件"
+msgstr ""
+
+#: janim.items.item.Item.become:1 of
+msgid "将该物件的数据设置为与传入的物件相同（以复制的方式，不是引用）"
+msgstr ""
 
 #: janim.items.item.Item.show:1 of
 msgid "显示物件"
@@ -99,10 +133,12 @@ msgstr "Show item"
 msgid "隐藏物件"
 msgstr "Hide item"
 
-#: janim.items.item.Group:1 of
-msgid "基类：:py:class:`~janim.items.item.Item`, :py:class:`~typing.Generic`"
-msgstr "基类：:py:class:`~janim.items.item.Item`, :py:class:`~typing.Generic`"
+#~ msgid "复制物件的数据并返回"
+#~ msgstr "Copies the data of the item and returns it"
 
-#: janim.items.item.Group:1 of
-msgid "将物件组成一组"
-msgstr "Groups items into a collection"
+#~ msgid "基类：:py:class:`~janim.items.item.Item`, :py:class:`~typing.Generic`"
+#~ msgstr "基类：:py:class:`~janim.items.item.Item`, :py:class:`~typing.Generic`"
+
+#~ msgid "将物件组成一组"
+#~ msgstr "Groups items into a collection"
+

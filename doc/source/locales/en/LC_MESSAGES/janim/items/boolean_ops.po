@@ -1,0 +1,62 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2023, jkjkil4
+# This file is distributed under the same license as the JAnim package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2024.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: JAnim \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-03-14 14:52+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: en\n"
+"Language-Team: en <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.14.0\n"
+
+#: ../../source/janim/items/boolean_ops.rst:2
+msgid "boolean_ops"
+msgstr ""
+
+#: janim.items.boolean_ops.Difference:1 janim.items.boolean_ops.Exclusion:1
+#: janim.items.boolean_ops.Intersection:1 janim.items.boolean_ops.Union:1 of
+msgid "基类：:py:class:`~janim.items.vitem.VItem`"
+msgstr ""
+
+#: janim.items.boolean_ops.Union:1 of
+msgid "并集"
+msgstr ""
+
+#: janim.items.boolean_ops.Union:3 of
+msgid "传入两个及以上 :class:`~.VItem`，返回他它们区域的并集的外轮廓"
+msgstr ""
+
+#: janim.items.boolean_ops.Difference:1 of
+msgid "差集"
+msgstr ""
+
+#: janim.items.boolean_ops.Difference:3 of
+msgid "传入 ``subitem`` 和 ``clip``，返回 ``subitem`` 裁去 ``clip`` 区域的轮廓线"
+msgstr ""
+
+#: janim.items.boolean_ops.Intersection:1 of
+msgid "交集"
+msgstr ""
+
+#: janim.items.boolean_ops.Intersection:3 of
+msgid "传入两个及以上 :class:`~.VItem`，返回它们区域交集的外轮廓"
+msgstr ""
+
+#: janim.items.boolean_ops.Exclusion:1 of
+msgid "补集"
+msgstr ""
+
+#: janim.items.boolean_ops.Exclusion:3 of
+msgid "传入两个及以上 :class:`~.VItem`，返回它们的区域经过 XOR 运算后的外轮廓"
+msgstr ""
+

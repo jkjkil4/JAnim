@@ -136,7 +136,7 @@ class Transform(Animation):
 
 class MethodTransform(Transform):
     '''
-    对物件进行变换并创建的补间过程
+    依据物件的变换而创建的补间过程
 
     具体参考 :meth:`~.Item.anim`
     '''

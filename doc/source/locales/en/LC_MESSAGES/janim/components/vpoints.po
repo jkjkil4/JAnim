@@ -1,0 +1,149 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2023, jkjkil4
+# This file is distributed under the same license as the JAnim package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2024.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: JAnim \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-03-14 14:52+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: en\n"
+"Language-Team: en <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.14.0\n"
+
+#: ../../source/janim/components/vpoints.rst:2
+msgid "vpoints"
+msgstr ""
+
+#: janim.components.vpoints.Cmpt_VPoints:1 of
+msgid ""
+"基类：:py:class:`~janim.components.points.Cmpt_Points`, "
+":py:class:`~typing.Generic`"
+msgstr ""
+
+#: janim.components.vpoints.Cmpt_VPoints:1 of
+msgid "曲线点坐标数据"
+msgstr ""
+
+#: janim.components.vpoints.Cmpt_VPoints:3 of
+msgid "每三个点表示一段二阶贝塞尔曲线，并且前后相接的曲线共用公共点。"
+msgstr ""
+
+#: janim.components.vpoints.Cmpt_VPoints:5 of
+msgid ""
+"例如对于点坐标列表 ``[a, b, c, d, e, f, g]``，则表示这些曲线：``[a, b, c]`` ``[c, d, e]`` "
+"``[e, f, g]``"
+msgstr ""
+
+#: janim.components.vpoints.Cmpt_VPoints:7 of
+msgid "将 ``NAN_POINT`` 视为子路径结束的表示。"
+msgstr ""
+
+#: janim.components.vpoints.Cmpt_VPoints:9 of
+msgid ""
+"例如对于点坐标列表 ``[a, b, c, d, e, NAN_POINT, f, g, h]``，则表示两段子路径：``[a, b, c, d,"
+" e]`` 和 ``[f, g, h]``"
+msgstr ""
+
+#: janim.components.vpoints.Cmpt_VPoints:11 of
+msgid "如果子路径的终止点和起始点相同，则该段子路径被视为闭合路径。"
+msgstr ""
+
+#: janim.components.vpoints.Cmpt_VPoints:13 of
+msgid "只有闭合的子路径，才能够进行填充色的渲染"
+msgstr ""
+
+#: janim.components.vpoints.Cmpt_VPoints.set:1 of
+msgid "设置点坐标数据，每个坐标点都有三个分量"
+msgstr ""
+
+#: janim.components.vpoints.Cmpt_VPoints.set:3 of
+msgid "使用形如 ``.set([[1.5, 3, 2], [2, 1.5, 0]])`` 的形式"
+msgstr ""
+
+#: janim.components.vpoints.Cmpt_VPoints.get_anchors:1 of
+msgid "得到曲线的锚点"
+msgstr ""
+
+#: janim.components.vpoints.Cmpt_VPoints.get_handles:1 of
+msgid "得到曲线的控制点"
+msgstr ""
+
+#: janim.components.vpoints.Cmpt_VPoints.get_bezier_tuples_from_points:1 of
+msgid "由 ``points`` 得到由每一组贝塞尔曲线控制点组成的列表"
+msgstr ""
+
+#: janim.components.vpoints.Cmpt_VPoints.get_bezier_tuples_from_points:3 of
+msgid ""
+"例如，对于有 7 个点的 ``points``，返回值是 ``(points[[0, 1, 2]], points[[2, 3, 4]], "
+"points[[4, 5, 6]])``"
+msgstr ""
+
+#: janim.components.vpoints.Cmpt_VPoints.get_bezier_tuples:1 of
+msgid "得到由每一组贝塞尔曲线控制点组成的列表，具体参考 :meth:`get_bezier_tuples_from_points`"
+msgstr ""
+
+#: janim.components.vpoints.Cmpt_VPoints.curves_count:1 of
+msgid "得到曲线数量"
+msgstr ""
+
+#: janim.components.vpoints.Cmpt_VPoints.get_nth_curve_points:1 of
+msgid "得到第 ``n`` 组的贝塞尔曲线控制点 (从 0 开始计数)"
+msgstr ""
+
+#: janim.components.vpoints.Cmpt_VPoints.get_nth_curve_function:1 of
+msgid "返回值是第 ``n`` 组贝塞尔曲线的描点函数，传入 [0, 1] 之间的值，得到对应的在曲线上的点"
+msgstr ""
+
+#: janim.components.vpoints.Cmpt_VPoints.quick_point_from_proportion:1 of
+msgid "相比 :meth:`point_from_proportion` 而言，更快"
+msgstr ""
+
+#: janim.components.vpoints.Cmpt_VPoints.quick_point_from_proportion:3 of
+msgid "但是这里假设所有的曲线都有相同的长度，所以是不准确的"
+msgstr ""
+
+#: janim.components.vpoints.Cmpt_VPoints.curve_and_prop_of_partial_point:1 of
+msgid "如果你想要得到沿着整个曲线上所在比例为 alpha 处的点， 这个函数会返回这个比例所对应的曲线部分的索引，以及在这个曲线部分上需要行进的比例"
+msgstr ""
+
+#: janim.components.vpoints.Cmpt_VPoints.add_as_corners:1 of
+msgid "以折线的方式将 ``points`` 添加"
+msgstr ""
+
+#: janim.components.vpoints.Cmpt_VPoints.set_as_corners:1 of
+msgid "将点数据设置为由 ``points`` 构成的折线"
+msgstr ""
+
+#: janim.components.vpoints.Cmpt_VPoints.area_vector:1 of
+msgid "一个向量，其长度为锚点形成的多边形所围成的面积，根据右手定则指向垂直于该多边形的方向"
+msgstr ""
+
+#: janim.components.vpoints.Cmpt_VPoints.walk_subpath_end_indices:1 of
+msgid "遍历每个子路径结尾的下标"
+msgstr ""
+
+#: janim.components.vpoints.Cmpt_VPoints.get_closepath_flags:1 of
+msgid "得到子路径是否闭合的标志，结果长度与点数量相同"
+msgstr ""
+
+#: janim.components.vpoints.Cmpt_VPoints.get_closepath_flags:3 of
+msgid "对于闭合路径，结果中对应部分会被设置为 ``True``"
+msgstr ""
+
+#: janim.components.vpoints.Cmpt_VPoints.get_parts_by_end_indices:1 of
+msgid "根据子路径结尾下标的列表，将 ``array`` 分段"
+msgstr ""
+
+#: janim.components.vpoints.Cmpt_VPoints.get_subpaths:1 of
+msgid "得到子路径列表"
+msgstr ""
+

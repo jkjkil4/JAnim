@@ -1,0 +1,125 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2023, jkjkil4
+# This file is distributed under the same license as the JAnim package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2024.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: JAnim \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-03-14 14:52+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: en\n"
+"Language-Team: en <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.14.0\n"
+
+#: ../../source/janim/items/text/text.rst:2
+msgid "text"
+msgstr ""
+
+#: janim.items.text.text.get_color_value_by_key:1 of
+msgid "根据 ``key`` 从 ``janim.constants.colors`` 得到颜色"
+msgstr ""
+
+#: janim.items.text.text.register_acts:1 of
+msgid "用于声明可用的富文本格式"
+msgstr ""
+
+#: janim.items.text.text.TextChar:1 of
+msgid "基类：:py:class:`~janim.items.vitem.VItem`"
+msgstr ""
+
+#: janim.items.text.text.TextChar:1 of
+msgid "字符物件，作为 :class:`TextLine` 的子物件，在创建 :class:`TextLine` 时产生"
+msgstr ""
+
+#: janim.items.text.text.TextChar.get_font_for_render:1 of
+msgid "从字体列表中找到支持显示 ``unicode`` 的字体，如果找不到只好选用第一个"
+msgstr ""
+
+#: janim.items.text.text.TextChar.apply_act_list:1 of
+msgid "应用富文本样式，由 :meth:`Text.apply_rich_text` 调用"
+msgstr ""
+
+#: janim.items.text.text.TextLine:1 of
+msgid ""
+"基类：:py:class:`~janim.items.vitem.VItem`, "
+":py:class:`~janim.items.points.Group`\\ "
+"[:py:class:`~janim.items.text.text.TextChar`]"
+msgstr ""
+
+#: janim.items.text.text.TextLine:1 of
+msgid "单行文字物件，作为 :class:`Text` 的子物件，在创建 :class:`Text` 时产生s"
+msgstr ""
+
+#: janim.items.text.text.TextLine.arrange_in_line:1 of
+msgid "根据 ``advance`` 的标记信息排列该行"
+msgstr ""
+
+#: janim.items.text.text.Text:1 of
+msgid ""
+"基类：:py:class:`~janim.items.vitem.VItem`, "
+":py:class:`~janim.items.points.Group`\\ "
+"[:py:class:`~janim.items.text.text.TextLine`]"
+msgstr ""
+
+#: janim.items.text.text.Text:1 of
+msgid "文字物件"
+msgstr ""
+
+#: janim.items.text.text.Text.Format:1 of
+msgid "基类：:py:class:`~enum.Enum`"
+msgstr ""
+
+#: janim.items.text.text.Text.idx_to_row_col:1 of
+msgid "由字符索引得到 行数、列数 索引"
+msgstr ""
+
+#: janim.items.text.text.Text.select_parts:1 of
+msgid "根据 ``pattern`` 获得文字中的部分"
+msgstr ""
+
+#: janim.items.text.text.Text.arrange_in_lines:1 of
+msgid "``buff``: 每行之间的额外间距"
+msgstr ""
+
+#: janim.items.text.text.Text.arrange_in_lines:2 of
+msgid ""
+"``base_buff``: 每行之间的基本间距，默认值 ``0.85`` 用于将两行上下排列，如果是 ``0`` "
+"则会让两行完全重合，大部分时候不需要传入该值"
+msgstr ""
+
+#: janim.items.text.text.Text.apply_rich_text:1 of
+msgid "应用富文本效果"
+msgstr ""
+
+#: janim.items.text.text.SourceDisplayer:1 janim.items.text.text.Title:1 of
+msgid "基类：:py:class:`~janim.items.text.text.Text`"
+msgstr ""
+
+#: janim.items.text.text.Title:1 of
+msgid "标题"
+msgstr ""
+
+#: janim.items.text.text.Title:3 of
+msgid "``include_underline=True`` 会添加下划线（默认添加）"
+msgstr ""
+
+#: janim.items.text.text.Title:4 of
+msgid "``underline_width`` 下划线的长度（默认屏幕宽 - 2 个单位）"
+msgstr ""
+
+#: janim.items.text.text.Title:5 of
+msgid "``match_underline_width_to_text=True`` 时将下划线的长度和文字匹配（默认为 ``False``）"
+msgstr ""
+
+#: janim.items.text.text.SourceDisplayer:1 of
+msgid "显示 ``obj`` 的源代码"
+msgstr ""
+

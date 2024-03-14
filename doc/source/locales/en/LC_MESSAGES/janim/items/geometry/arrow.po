@@ -1,0 +1,123 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2023, jkjkil4
+# This file is distributed under the same license as the JAnim package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2024.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: JAnim \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-03-14 14:52+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: en\n"
+"Language-Team: en <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.14.0\n"
+
+#: ../../source/janim/items/geometry/arrow.rst:2
+msgid "arrow"
+msgstr ""
+
+#: janim.items.geometry.arrow.CenterAnchor:1 of
+msgid "基类：:py:class:`~enum.Enum`"
+msgstr ""
+
+#: janim.items.geometry.arrow.CenterAnchor:1 of
+msgid "箭头原点所处位置的选项"
+msgstr ""
+
+#: janim.items.geometry.arrow.CenterAnchor:3 of
+msgid "图形示意："
+msgstr ""
+
+#: janim.items.geometry.arrow.ArrowTip:1 of
+msgid "基类：:py:class:`~janim.items.vitem.VItem`"
+msgstr ""
+
+#: janim.items.geometry.arrow.ArrowTip:1 of
+msgid "箭头标志"
+msgstr ""
+
+#: janim.items.geometry.arrow.ArrowTip:3 of
+msgid "``body_length``: 箭头的宽度"
+msgstr ""
+
+#: janim.items.geometry.arrow.ArrowTip:4 of
+msgid "``back_width``: 箭头的长度"
+msgstr ""
+
+#: janim.items.geometry.arrow.ArrowTip:5 of
+msgid "``center_anchor``: 原点所处的位置，请参考 :class:`CenterAnchor`"
+msgstr ""
+
+#: janim.items.geometry.arrow.ArrowTip.get_center_anchor:1 of
+msgid "根据设定的 ``center_anchor`` 得到原点位置， 请参考 :class:`ArrowTip.CenterAnchor`"
+msgstr ""
+
+#: janim.items.geometry.arrow.ArrowTip.direction:1 of
+msgid "得到箭头的方向（单位向量）"
+msgstr ""
+
+#: janim.items.geometry.arrow.ArrowTip.body_length:1 of
+msgid "得到箭头的长度"
+msgstr ""
+
+#: janim.items.geometry.arrow.ArrowTip.back_width:1 of
+msgid "得到箭头的宽度"
+msgstr ""
+
+#: janim.items.geometry.arrow.ArrowTip.rotate_about_anchor:1 of
+msgid "相对于原点位置进行旋转"
+msgstr ""
+
+#: janim.items.geometry.arrow.ArrowTip.move_anchor_to:1 of
+msgid "将原点移动到指定位置"
+msgstr ""
+
+#: janim.items.geometry.arrow.Arrow:1 of
+msgid "基类：:py:class:`~janim.items.geometry.line.Line`"
+msgstr ""
+
+#: janim.items.geometry.arrow.Arrow:1 of
+msgid "带箭头的线段，箭头大小自动"
+msgstr ""
+
+#: janim.items.geometry.arrow.Arrow:3 of
+msgid "``buff``: 箭头首尾的空余量，默认为 ``0.25``"
+msgstr ""
+
+#: janim.items.geometry.arrow.Arrow:4 of
+msgid "``max_length_to_tip_length_ratio``: 箭头长度和直线长度最大比例"
+msgstr ""
+
+#: janim.items.geometry.arrow.Arrow.copy:1
+#: janim.items.geometry.arrow.DoubleArrow.copy:1 of
+msgid "复制物件"
+msgstr ""
+
+#: janim.items.geometry.arrow.DoubleArrow:1 janim.items.geometry.arrow.Vector:1
+#: of
+msgid "基类：:py:class:`~janim.items.geometry.arrow.Arrow`"
+msgstr ""
+
+#: janim.items.geometry.arrow.Vector:1 of
+msgid "起点为 ORIGIN 的箭头，终点为 ``direction``"
+msgstr ""
+
+#: janim.items.geometry.arrow.Vector:3 of
+msgid "``buff`` 默认设为了 0"
+msgstr ""
+
+#: janim.items.geometry.arrow.DoubleArrow:1 of
+msgid "双向箭头"
+msgstr ""
+
+#: janim.items.geometry.arrow.DoubleArrow:3 of
+msgid "参数请参考 :class:`Arrow`"
+msgstr ""
+

@@ -1,0 +1,69 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2023, jkjkil4
+# This file is distributed under the same license as the JAnim package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2024.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: JAnim \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-03-14 14:52+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: en\n"
+"Language-Team: en <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.14.0\n"
+
+#: ../../source/janim/render/file_writer.rst:2
+msgid "file_writer"
+msgstr ""
+
+#: ../../source/rst_utils/tip_of_complex.rst:1
+msgid "**提示：这部分内容涉及 JAnim 实现原理，可能较为复杂，若没有研究源码的需求，你应酌情阅读**"
+msgstr ""
+
+#: janim.render.file_writer.FileWriter:1 of
+msgid "基类：:py:class:`object`"
+msgstr ""
+
+#: janim.render.file_writer.FileWriter:1 of
+msgid "将时间轴动画生成视频输出到文件中"
+msgstr ""
+
+#: janim.render.file_writer.FileWriter:3 of
+msgid "可以直接调用 ``FileWriter.writes(MyTimeline().build())`` 进行输出"
+msgstr ""
+
+#: janim.render.file_writer.FileWriter:5 of
+msgid "主要流程在 :meth:`write_all` 中："
+msgstr ""
+
+#: janim.render.file_writer.FileWriter:7 of
+msgid "首先调用 ffmpeg，这里用它生成视频（先输出到 _temp 文件中）"
+msgstr ""
+
+#: janim.render.file_writer.FileWriter:8 of
+msgid "然后遍历动画的每一帧，进行渲染，并将像素数据传递给 ffmpeg"
+msgstr ""
+
+#: janim.render.file_writer.FileWriter:9 of
+msgid "最后结束 ffmpeg 的调用，完成 _temp 文件的输出"
+msgstr ""
+
+#: janim.render.file_writer.FileWriter:10 of
+msgid "将 _temp 文件改名，删去 \"_temp\" 后缀，完成视频输出"
+msgstr ""
+
+#: janim.render.file_writer.FileWriter.write_all:1 of
+msgid "将时间轴动画输出到文件中"
+msgstr ""
+
+#: janim.render.file_writer.FileWriter.write_all:3 of
+msgid "指定 ``quiet=True``，则不会输出前后的提示信息，但仍有进度条"
+msgstr ""
+

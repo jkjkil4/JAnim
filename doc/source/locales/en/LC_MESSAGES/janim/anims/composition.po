@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: JAnim\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-01-19 11:06+0800\n"
-"PO-Revision-Date: 2024-01-19 19:52+0800\n"
+"POT-Creation-Date: 2024-03-14 14:52+0800\n"
+"PO-Revision-Date: 2024-03-14 15:06+0800\n"
 "Last-Translator: \n"
 "Language-Team: en <LL@li.org>\n"
 "Language: en\n"
@@ -69,6 +69,18 @@ msgid "不需要手动设置，该方法是被 :meth:`~.Timeline.prepare` 调用
 msgstr ""
 "No need to set manually; this method is called by :meth:`~.Timeline."
 "prepare` for calculation"
+
+#: janim.anims.composition.AnimGroup.anim_pre_init:1 of
+msgid "在 :meth:`~.Timeline.detect_changes_of_all` 执行之前调用的初始化方法"
+msgstr ""
+"Initialization method called before :meth:`~.Timeline."
+"detect_changes_of_all`."
+
+#: janim.anims.composition.AnimGroup.anim_init:1 of
+msgid "在 :meth:`~.Timeline.detect_changes_of_all` 执行之后调用的初始化方法"
+msgstr ""
+"Initialization method called after :meth:`~.Timeline."
+"detect_changes_of_all`."
 
 #: janim.anims.composition.AnimGroup.anim_on_alpha:1 of
 msgid ""

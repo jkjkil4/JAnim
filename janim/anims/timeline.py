@@ -401,7 +401,7 @@ class Timeline(metaclass=ABCMeta):
         '''
         ``t2d`` 是 "time to data" 的简写
 
-        - 如果 ``t`` 为 ``None``，则自动设为 :class:`~.UpdaterParams.global_t` 即当前动画运行到的时间，
+        - 如果 ``t`` 为 ``None``，则自动设为 :py:obj:`~.UpdaterParams.global_t` 即当前动画运行到的时间，
           用于在 :class:`~.DataUpdater` 和 :class:`~.ItemUpdater` 中简化调用
         - 等效于调用 :meth:`get_stored_data_at_right`
         '''
@@ -494,7 +494,7 @@ class SourceTimeline(Timeline):
 
 class TimelineAnim(AnimGroup):
     '''
-    :class:`Timeline` 运行 :meth:`Timeline.run` 后返回的动画组
+    运行 :meth:`Timeline.run` 后返回的动画组
 
     - ``self.display_anim`` 是由 :meth:`Timeline.construct` 中执行
       :meth:`Timeline.show` 和 :meth:`Timeline.hide` 而产生的

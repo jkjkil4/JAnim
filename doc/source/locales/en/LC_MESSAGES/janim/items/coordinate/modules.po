@@ -6,11 +6,11 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version:  JAnim\n"
+"Project-Id-Version: JAnim \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-03-14 14:52+0800\n"
-"PO-Revision-Date: 2024-01-19 19:54+0800\n"
-"Last-Translator: \n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
 "Language-Team: en <LL@li.org>\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
@@ -19,15 +19,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.14.0\n"
 
-#: ../../source/janim/utils/data.rst:2
-msgid "data"
-msgstr "data"
-
-#: janim.utils.data.AlignedData:1 of
-msgid "基类：:py:class:`~typing.Generic`"
-msgstr "基类：:py:class:`~typing.Generic`"
-
-#: janim.utils.data.AlignedData:1 of
-msgid "数据对齐后的结构，用于 :meth:`~.Item.Data.align_for_interpolate`"
+#: ../../source/janim/items/coordinate/modules.rst:2
+msgid "coordinate"
 msgstr ""
 
