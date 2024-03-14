@@ -397,12 +397,17 @@ class Timeline(metaclass=ABCMeta):
         '''
         return self.get_stored_data_at_time(item, t - GET_DATA_DELTA, skip_dynamic_data=skip_dynamic_data)
 
-    def t2d[T](self, item: T, t: float, *, skip_dynamic_data=False) -> Item.Data[T]:
+    def t2d[T](self, item: T, t: float | None = None, *, skip_dynamic_data=False) -> Item.Data[T]:
         '''
         ``t2d`` 是 "time to data" 的简写
 
-        等效于调用 :meth:`get_stored_data_at_right`
+        - 如果 ``t`` 为 ``None``，则自动设为 :class:`~.UpdaterParams.global_t` 即当前动画运行到的时间，
+          用于在 :class:`~.DataUpdater` 和 :class:`~.ItemUpdater` 中简化调用
+        - 等效于调用 :meth:`get_stored_data_at_right`
         '''
+        if t is None:
+            from janim.anims.updater import updater_params_ctx
+            t = updater_params_ctx.get().global_t
         return self.get_stored_data_at_right(item, t, skip_dynamic_data=skip_dynamic_data)
 
     # endregion

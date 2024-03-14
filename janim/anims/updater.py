@@ -1,7 +1,8 @@
 
 import inspect
+from contextvars import ContextVar
 from dataclasses import dataclass
-from typing import Any, Callable
+from typing import Any, Callable, Self
 
 from janim.anims.animation import Animation, RenderCall, TimeRange
 from janim.anims.timeline import ANIM_END_DELTA, DynamicData
@@ -16,6 +17,16 @@ class UpdaterParams:
     alpha: float
     range: TimeRange
     extra_data: tuple | None
+
+    def __enter__(self) -> Self:
+        self.token = updater_params_ctx.set(self)
+        return self
+
+    def __exit__(self, exc_type, exc_value, tb):
+        updater_params_ctx.reset(self.token)
+
+
+updater_params_ctx: ContextVar[UpdaterParams] = ContextVar('updater_params_ctx')
 
 
 @dataclass
@@ -64,10 +75,13 @@ class DataUpdater[T: Item](Animation):
         def wrapper(global_t: float) -> Item.Data:
             alpha = self.get_alpha_on_global_t(global_t)
             data_copy = updater_data.orig_data._copy(updater_data.orig_data)
-            self.func(data_copy, UpdaterParams(global_t,
-                                               alpha,
-                                               self.global_range,
-                                               updater_data.extra_data))
+
+            with UpdaterParams(global_t,
+                               alpha,
+                               self.global_range,
+                               updater_data.extra_data) as params:
+                self.func(data_copy, params)
+
             return data_copy
         return wrapper
 
@@ -93,10 +107,11 @@ class DataUpdater[T: Item](Animation):
 
         for item, updater_data in self.datas.items():
             if self.become_at_end:
-                self.func(item.ref_data(), UpdaterParams(self.global_range.end,
-                                                         1,
-                                                         self.global_range,
-                                                         updater_data.extra_data))
+                with UpdaterParams(self.global_range.end,
+                                   1,
+                                   self.global_range,
+                                   updater_data.extra_data) as params:
+                    self.func(item.ref_data(), params)
             self.timeline.register_dynamic_data(item, self.wrap_data(updater_data), self.global_range.at)
 
         self.timeline.detect_changes([self.item] if self.root_only else self.item.walk_self_and_descendants(),
@@ -122,13 +137,12 @@ class DataUpdater[T: Item](Animation):
         for i, updater_data in enumerate(self.datas.values()):
             sub_alpha = self.get_sub_alpha(alpha, i)
             updater_data.data._restore(updater_data.orig_data)
-            self.func(
-                updater_data.data,
-                UpdaterParams(global_t,
-                              sub_alpha,
-                              self.global_range,
-                              updater_data.extra_data)
-            )
+
+            with UpdaterParams(global_t,
+                               sub_alpha,
+                               self.global_range,
+                               updater_data.extra_data) as params:
+                self.func(updater_data.data, params)
 
     def get_sub_alpha(
         self,
@@ -185,17 +199,21 @@ class ItemUpdater(Animation):
 
         # 在动画结束后，自动使用动画最后一帧的物件替换原有的
         if self.become_at_end:
-            self.timeline.schedule(
-                self.global_range.end,
-                lambda: self.item.become(self.call(UpdaterParams(self.global_range.end,
-                                                                 1,
-                                                                 self.global_range,
-                                                                 None)))
-            )
+            self.timeline.schedule(self.global_range.end, self.scheduled_become)
+
+    def scheduled_become(self) -> None:
+        with UpdaterParams(self.global_range.end,
+                           1,
+                           self.global_range,
+                           None) as params:
+            self.item.become(self.call(params))
 
     def anim_on_alpha(self, alpha: float) -> None:
         global_t = self.global_t_ctx.get()
-        dynamic = self.call(UpdaterParams(global_t, alpha, self.global_range, None))
+
+        with UpdaterParams(global_t, alpha, self.global_range, None) as params:
+            dynamic = self.call(params)
+
         self.set_render_call_list([
             RenderCall(
                 sub.depth,

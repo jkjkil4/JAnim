@@ -131,13 +131,13 @@ class UpdaterExample(Timeline):
         brace = Brace(square, UP).show()
 
         def text_updater(p: UpdaterParams):
-            cmpt = self.t2d(brace, p.global_t).cmpt.points
+            cmpt = self.t2d(brace).cmpt.points
             return cmpt.create_text(f'Width = {cmpt.brace_length:.2f}')
 
         self.prepare(
             DataUpdater(
                 brace,
-                lambda data, p: data.cmpt.points.match(self.t2d(square, p.global_t))
+                lambda data, p: data.cmpt.points.match(self.t2d(square))
             ),
             ItemUpdater(text_updater),
             duration=10
