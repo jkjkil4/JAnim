@@ -239,10 +239,10 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
             return Group(*self.children[value])
         return self.children[value]
 
-    def __iter__(self) -> Item:
+    def __iter__(self):
         return iter(self.children)
 
-    def __len__(self) -> Item:
+    def __len__(self) -> int:
         return len(self.children)
 
     def __mul__(self, other: int) -> Group[Self]:
@@ -404,12 +404,12 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
 
         class _CmptGetter:
             def __init__(self, data: Item.Data):
-                self.data = data
+                self._data = data
 
             def __getattr__(self, name: str):
-                cmpt = self.data.components.get(name, None)
+                cmpt = self._data.components.get(name, None)
                 if cmpt is None:
-                    raise AttributeError(f"'{self.data.item.__class__.__name__}' 没有叫作 '{name}' 的组件")
+                    raise AttributeError(f"'{self._data.item.__class__.__name__}' 没有叫作 '{name}' 的组件")
 
                 return cmpt
 

@@ -49,6 +49,9 @@ class Group[T](Points):
     def __getitem__(self, value):   # pragma: no cover
         return super().__getitem__(value)
 
+    def __iter__(self):
+        return iter(self.children)
+
 
 class DotCloud(Points):
     color = CmptInfo(Cmpt_Rgbas[Self])

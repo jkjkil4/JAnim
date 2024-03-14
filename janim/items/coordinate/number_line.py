@@ -227,7 +227,7 @@ class UnitInterval(NumberLine):
         x_range: RangeSpecifier = (0, 1, 0.1),
         *,
         unit_size: int = 10,
-        numbers_with_elongated_ticks: Iterable = [0, 1],
+        numbers_with_elongated_ticks: Iterable[float] = [0, 1],
         decimal_number_config: dict = dict(
             num_decimal_places=1
         ),

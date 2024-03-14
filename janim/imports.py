@@ -23,6 +23,7 @@ from janim.items.svg.brace import *
 from janim.items.svg.svg_item import *
 from janim.items.svg.typst import *
 from janim.items.text.text import *
+from janim.items.value_tracker import *
 from janim.items.vitem import *
 from janim.utils.bezier import *
 from janim.utils.config import Config
