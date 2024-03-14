@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: JAnim\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-03-14 14:52+0800\n"
-"PO-Revision-Date: 2024-03-14 15:05+0800\n"
+"PO-Revision-Date: 2024-03-14 16:05+0800\n"
 "Last-Translator: \n"
 "Language-Team: en <LL@li.org>\n"
 "Language: en\n"
@@ -127,7 +127,9 @@ msgstr "Converts ``local_t`` to ``alpha`` and calls :meth:`anim_on_alpha`"
 
 #: janim.anims.animation.Animation.get_alpha_on_global_t:1 of
 msgid "传入全局 ``global_t``，得到物件在该时刻应当处于哪个 ``alpha`` 的插值"
-msgstr "Converts ``local_t`` to ``alpha`` and calls :meth:`anim_on_alpha`."
+msgstr ""
+"Given the global ``global_t``, returns the interpolation value ``alpha`` at "
+"which the object should be at that moment."
 
 #: ../../docstring janim.anims.animation.Animation.global_t_ctx:1 of
 msgid ""

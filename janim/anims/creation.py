@@ -77,7 +77,7 @@ class Create(ShowPartial):
 
 class Uncreate(ShowPartial):
     '''
-    显示物件的销毁过程（:class:`ShowCreation` 的倒放）
+    显示物件的销毁过程（:class:`Create` 的倒放）
     '''
     def __init__(
         self,
