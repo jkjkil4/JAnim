@@ -1,3 +1,7 @@
+'''
+使用 ``from janim.imports import *`` 即可导入 ``janim`` 主要的功能
+'''
+
 # flake8: noqa
 import janim.items.boolean_ops as boolean_ops
 from janim.anims.composition import *
