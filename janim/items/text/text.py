@@ -351,7 +351,7 @@ class Text(VItem, Group[TextLine]):
     def arrange_in_lines(self, buff: float = 0, base_buff: float = 0.85) -> Self:
         '''
         - ``buff``: 每行之间的额外间距
-        - ``base_buff``: 每行之间的基本间距，默认值 `0.85` 用于将两行上下排列，如果是 `0` 则会让两行完全重合，大部分时候不需要传入该值
+        - ``base_buff``: 每行之间的基本间距，默认值 ``0.85`` 用于将两行上下排列，如果是 ``0`` 则会让两行完全重合，大部分时候不需要传入该值
         '''
         if len(self.children) == 0:
             return
@@ -401,6 +401,13 @@ class Text(VItem, Group[TextLine]):
 
 
 class Title(Text):
+    '''
+    标题
+
+    - ``include_underline=True`` 会添加下划线（默认添加）
+    - ``underline_width`` 下划线的长度（默认屏幕宽 - 2 个单位）
+    - ``match_underline_width_to_text=True`` 时将下划线的长度和文字匹配（默认为 ``False``）
+    '''
     def __init__(
         self,
         text: str,
@@ -430,6 +437,9 @@ class Title(Text):
 
 
 class SourceDisplayer(Text):
+    '''
+    显示 ``obj`` 的源代码
+    '''
     def __init__(
         self,
         obj,

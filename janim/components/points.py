@@ -29,6 +29,7 @@ type ComplexFn = Callable[[complex], complex]
 
 class Cmpt_Points[ItemT](Component[ItemT]):
     resize_func = staticmethod(resize_and_repeatedly_extend)
+    ''''''
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

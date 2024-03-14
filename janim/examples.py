@@ -139,7 +139,7 @@ class UpdaterExample(Timeline):
                 brace,
                 lambda data, p: data.cmpt.points.match(self.t2d(square))
             ),
-            ItemUpdater(text_updater),
+            ItemUpdater(None, text_updater),
             duration=10
         )
         self.forward()

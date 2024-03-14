@@ -213,11 +213,11 @@ class NumberLine(Line):
         return interpolate(self.x_min, self.x_max, proportion)
 
     def n2p(self, number: float) -> np.ndarray:
-        """Abbreviation for number_to_point"""
+        '''``number_to_point`` 的缩写'''
         return self.number_to_point(number)
 
     def p2n(self, point: np.ndarray) -> float:
-        """Abbreviation for point_to_number"""
+        '''``point_to_number`` 的缩写'''
         return self.point_to_number(point)
 
 
@@ -233,6 +233,9 @@ class UnitInterval(NumberLine):
         ),
         **kwargs
     ) -> None:
+        '''
+        单位长度数轴（0~1，分10段）
+        '''
         super().__init__(
             x_range,
             unit_size=unit_size,

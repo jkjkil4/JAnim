@@ -432,6 +432,9 @@ class Timeline(metaclass=ABCMeta):
         return None     # pragma: no cover
 
     def get_lineno_at_time(self, time: float):
+        '''
+        根据 ``time`` 得到对应执行到的行数
+        '''
         times_of_code = self.times_of_code
         if not times_of_code:
             return -1

@@ -1,3 +1,4 @@
+from __future__ import annotations
 
 import inspect
 from contextvars import ContextVar
@@ -13,6 +14,9 @@ from janim.utils.simple_functions import clip
 
 @dataclass
 class UpdaterParams:
+    '''
+    ``Updater`` 调用时会传递的参数，用于标注时间信息以及动画进度
+    '''
     global_t: float
     alpha: float
     range: TimeRange
@@ -29,18 +33,40 @@ class UpdaterParams:
 updater_params_ctx: ContextVar[UpdaterParams] = ContextVar('updater_params_ctx')
 
 
-@dataclass
-class UpdaterData:
-    orig_data: Item.Data[Item]
-    data: Item.Data[Item]
-    extra_data: tuple | None
-
-
 class DataUpdater[T: Item](Animation):
     '''
-    以时间为参数的物件变换动画
-    '''  # TODO: 例子
+    以时间为参数对物件的数据进行修改
+
+    例如：
+
+    .. code-block:: python
+
+        class Example(Timeline):
+            def construct(self) -> None:
+                rect = Rect()
+                rect.points.to_border(LEFT)
+
+                self.play(
+                    DataUpdater(
+                        rect,
+                        lambda data, p: data.cmpt.points.rotate(p.alpha * 180 * DEGREES).shift(p.alpha * 6 * RIGHT)
+                    )
+                )
+
+
+    会产生一个“矩形从左侧旋转着移动到右侧”的动画
+
+    注：使用 ``data.cmpt`` 即可访问物件的组件，例如物件的组件方法 ``item.points.xxx`` 对于数据来说则是通过 ``data.cmpt.points.xxx`` 来调用
+
+    另见：:class:`~.UpdaterExample`
+    '''
     label_color = (49, 155, 191)
+
+    @dataclass
+    class DataGroup:
+        orig_data: Item.Data[Item]
+        data: Item.Data[Item]
+        extra_data: tuple | None
 
     def __init__(
         self,
@@ -68,7 +94,7 @@ class DataUpdater[T: Item](Animation):
     def create_extra_data(self, data: Item.Data) -> tuple | None:
         return None
 
-    def wrap_data(self, updater_data: UpdaterData) -> DynamicData:
+    def wrap_data(self, updater_data: DataUpdater.DataGroup) -> DynamicData:
         '''
         以供传入 :meth:`~.Timeline.register_dynamic_data` 使用
         '''
@@ -86,10 +112,10 @@ class DataUpdater[T: Item](Animation):
         return wrapper
 
     def anim_init(self) -> None:
-        def build_data(data: Item.Data) -> UpdaterData:
-            return UpdaterData(data, data._copy(data), self.create_extra_data(data))
+        def build_data(data: Item.Data) -> DataUpdater.DataGroup:
+            return DataUpdater.DataGroup(data, data._copy(data), self.create_extra_data(data))
 
-        self.datas: dict[Item, UpdaterData] = {
+        self.datas: dict[Item, DataUpdater.DataGroup] = {
             item: build_data(
                 self.timeline.get_stored_data_at_right(
                     item,
@@ -159,13 +185,25 @@ class DataUpdater[T: Item](Animation):
 
 
 class ItemUpdater(Animation):
-    # TODO: 注释
+    '''
+    以时间为参数显示物件
+
+    也就是说，在 :class:`ItemUpdater` 执行时，对于每帧，都会执行 ``func``，并显示 ``func`` 返回的物件
+
+    在默认情况下：
+
+    - 传入的 ``item`` 会在动画的末尾被替换为动画最后一帧 ``func`` 所返回的物件，传入 ``become_at_end=False`` 以禁用
+    - 传入的 ``item`` 会在动画开始时隐藏，在动画结束后显示，传入 ``hide_at_begin=False`` 和 ``show_at_end=False`` 以禁用
+    - 若传入 ``item=None``，则以上两点都无效
+
+    另见：:class:`~.UpdaterExample`
+    '''
     label_color = DataUpdater.label_color
 
     def __init__(
         self,
+        item: Item | None,
         func: Callable[[UpdaterParams], Item],
-        item: Item = None,
         *,
         hide_at_begin: bool = True,
         show_at_end: bool = True,

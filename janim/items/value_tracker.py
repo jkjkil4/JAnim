@@ -9,6 +9,23 @@ from janim.utils.bezier import interpolate
 
 
 class ValueTracker[T](Item):
+    '''
+    记录一个数值数据（传入的数据作为初始值），可以进行动画插值
+
+    例如：
+
+    .. code-block:: python
+
+        val = ValueTracker(0.5)
+
+        self.play(
+            val.anim.data.set(3.5),
+            DataUpdater(...)
+        )
+
+    可以使用 :meth:`~.Cmpt_Data.set_func` 自定义插值以及其它的行为
+    '''
+
     data = CmptInfo(Cmpt_Data[Self, T])
 
     def __init__(

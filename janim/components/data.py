@@ -11,6 +11,9 @@ type InterpolateFn[T] = Callable[[T, T, float], T]
 
 
 class Cmpt_Data[ItemT, T](Component[ItemT]):
+    '''
+    详见 :class:`~.ValueTracker`
+    '''
     def __init__(self):
         self.copy_func: CopyFn[T] = None
         self.eq_func: EqFn[T] = None
@@ -46,10 +49,17 @@ class Cmpt_Data[ItemT, T](Component[ItemT]):
         return self
 
     def set(self, value: T) -> Self:
+        '''设置当前数据'''
         self.value = value
         return self
 
+    def increment(self, value: T) -> Self:
+        '''将值增加 ``value``'''
+        self.value += value
+        return self
+
     def get(self) -> T:
+        '''得到当前数据'''
         return self.value
 
     def set_func(
