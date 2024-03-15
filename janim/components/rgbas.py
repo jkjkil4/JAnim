@@ -211,6 +211,24 @@ class Cmpt_Rgbas[ItemT](Component[ItemT]):
         self.set_rgbas(rgbas)
         return self
 
+    def fade(self, factor: float | Iterable[float], *, root_only: bool = False) -> Self:
+        def fade_on(cmpt: Cmpt_Rgbas):
+            rgbas = cmpt.get()
+            rgbas[:, 3] *= 1 - factor
+            cmpt.set_rgbas(rgbas)
+
+        fade_on(self)
+
+        if not root_only and self.bind is not None:
+            for item in self.bind.at_item.walk_descendants(self.bind.decl_cls):
+                cmpt = self.get_same_cmpt_without_mock(item)
+                if cmpt is None:
+                    continue
+
+                fade_on(cmpt)
+
+        return self
+
     # endregion
 
 
