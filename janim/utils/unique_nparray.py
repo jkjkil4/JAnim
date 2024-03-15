@@ -11,8 +11,9 @@ class UniqueNparray:
 
     实际上也有意外情况，例如 ``self.data[...] = ...`` 之类的操作（尽量避免）
     '''
-    def __init__(self):
-        self._data = np.array([])
+    def __init__(self, dtype=np.float64):
+        self._data = np.array([], dtype=dtype)
+        self._dtype = dtype
 
     def len(self) -> int:
         return len(self._data)
@@ -24,9 +25,9 @@ class UniqueNparray:
     @data.setter
     def data(self, data: np.ndarray | Iterable) -> None:
         if not isinstance(data, np.ndarray):
-            self._data = np.array(data)
+            self._data = np.array(data, dtype=self._dtype)
         else:
-            self._data = data.copy()
+            self._data = data.copy().astype(self._dtype)
 
     def copy(self) -> UniqueNparray:
         ret = UniqueNparray()
