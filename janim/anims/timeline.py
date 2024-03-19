@@ -201,12 +201,19 @@ class Timeline(metaclass=ABCMeta):
         '''
         self.forward(t - self.current_time, _detect_changes=_detect_changes)
 
+    @staticmethod
+    def _get_anim_object(anim) -> Animation:
+        attr = getattr(anim, '__anim__', None)
+        if attr is not None and callable(attr):
+            return attr()
+        return anim
+
     def prepare(self, *anims: Animation, **kwargs) -> TimeRange:
         '''
         应用动画
         '''
         anims = [
-            (anim.anim if isinstance(anim, MethodTransform._FakeCmpt) else anim)
+            self._get_anim_object(anim)
             for anim in anims
         ]
         for anim in anims:

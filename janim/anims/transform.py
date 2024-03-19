@@ -206,6 +206,9 @@ class MethodTransform(Transform):
 
             return wrapper
 
+        def __anim__(self) -> Animation:
+            return self.anim
+
     def __getattr__(self, name: str):
         cmpt = getattr(self.src_item, name, None)
         if isinstance(cmpt, Component):
@@ -219,6 +222,9 @@ class MethodTransform(Transform):
             return wrapper
 
         raise KeyError(f'{self.src_item.__class__.__name__} 没有叫作 {name} 的组件或者可调用的方法')
+
+    def __anim__(self) -> Animation:
+        return self
 
 
 class MethodTransformArgsBuilder:

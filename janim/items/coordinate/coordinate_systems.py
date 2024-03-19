@@ -6,6 +6,7 @@ import numpy as np
 
 from janim.constants import DEGREES, LEFT, ORIGIN
 from janim.items.coordinate.functions import ParametricCurve
+from janim.components.points import Cmpt_Points
 from janim.items.coordinate.number_line import NumberLine
 from janim.items.item import _ItemMeta
 from janim.items.points import Group
@@ -119,7 +120,7 @@ class Axes(Group, CoordinateSystem, metaclass=_ItemMeta_ABCMeta):
         self,
         function: Callable[[float], float],
         x_range: Sequence[float] | None = None,
-        # TODO: bind
+        bind: bool = True,
         **kwargs
     ) -> ParametricCurve:
         x_range = x_range or self.x_range
@@ -134,4 +135,11 @@ class Axes(Group, CoordinateSystem, metaclass=_ItemMeta_ABCMeta):
             t_range=tuple(t_range),
             **kwargs
         )
+
+        if bind:
+            Cmpt_Points.apply_points_fn.connect(
+                self.points,
+                lambda func, about_point: graph.points.apply_points_fn(func, about_point=about_point)
+            )
+
         return graph
