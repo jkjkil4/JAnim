@@ -4,6 +4,7 @@ import inspect
 from typing import Callable, Iterable, NoReturn, Self, Sequence, TypeVar
 
 import numpy as np
+from fontTools.cu2qu.cu2qu import curve_to_quadratic
 
 from janim.constants import DEGREES, NAN_POINT, TAU
 from janim.exception import PointError
@@ -11,7 +12,7 @@ from janim.typing import Vect, VectArray
 from janim.utils.simple_functions import choose
 from janim.utils.space_ops import (angle_between_vectors, cross2d,
                                    find_intersection, get_norm, midpoint,
-                                   rotation_between_vectors)
+                                   rotation_between_vectors, cross, z_to_vector)
 
 CLOSED_THRESHOLD = 0.001
 T = TypeVar("T")
@@ -140,7 +141,7 @@ class PathBuilder:
         if self.end_point is None:
             name = inspect.currentframe().f_back.f_code.co_name
             raise PointError('PathBuilder 必须在构造时传入 start_point 或 points，'
-                              f'或者以 move_to 为首次调用，否则不能调用 {name}')
+                             f'或者以 move_to 为首次调用，否则不能调用 {name}')
 
 
 def quadratic_bezier_points_for_arc(
@@ -294,10 +295,10 @@ def match_interpolate(
     )
 
 
-def get_smooth_quadratic_bezier_handle_points(
+def approx_smooth_quadratic_bezier_handles(
     points: Sequence[np.ndarray]
 ) -> np.ndarray | list[np.ndarray]:
-    """
+    '''
     Figuring out which bezier curves most smoothly connect a sequence of points.
 
     Given three successive points, P0, P1 and P2, you can compute that by defining
@@ -310,7 +311,7 @@ def get_smooth_quadratic_bezier_handle_points(
     for h that would produce a parbola passing through P3, call it smooth_to_right, and
     another that would produce a parabola passing through P0, call it smooth_to_left,
     and use the midpoint between the two.
-    """
+    '''
     if len(points) == 2:
         return midpoint(*points)
     smooth_to_right, smooth_to_left = [
@@ -326,6 +327,127 @@ def get_smooth_quadratic_bezier_handle_points(
     handles = 0.5 * np.vstack([smooth_to_right, [last_str]])
     handles += 0.5 * np.vstack([last_stl, smooth_to_left[::-1]])
     return handles
+
+
+def smooth_quadratic_path(anchors: VectArray) -> np.ndarray:
+    '''
+    Returns a path defining a smooth quadratic bezier spline
+    through anchors.
+    '''
+    if len(anchors) < 2:
+        return anchors
+    elif len(anchors) == 2:
+        return np.array([anchors[0], anchors.mean(1), anchors[2]])
+
+    is_flat = (anchors[:, 2] == 0).all()
+    if not is_flat:
+        normal = cross(anchors[2] - anchors[1], anchors[1] - anchors[0])
+        rot = z_to_vector(normal)
+        anchors = np.dot(anchors, rot)
+        shift = anchors[0, 2]
+        anchors[:, 2] -= shift
+    h1s, h2s = get_smooth_cubic_bezier_handle_points(anchors)
+    quads = [anchors[0, :2]]
+    for cub_bs in zip(anchors[:-1], h1s, h2s, anchors[1:]):
+        # Try to use fontTools curve_to_quadratic
+        new_quads = curve_to_quadratic(
+            [b[:2] for b in cub_bs],
+            max_err=0.1 * get_norm(cub_bs[3] - cub_bs[0])
+        )
+        # Otherwise fall back on home baked solution
+        if new_quads is None or len(new_quads) % 2 == 0:
+            new_quads = get_quadratic_approximation_of_cubic(*cub_bs)[:, :2]
+        quads.extend(new_quads[1:])
+    new_path = np.zeros((len(quads), 3))
+    new_path[:, :2] = quads
+    if not is_flat:
+        new_path[:, 2] += shift
+        new_path = np.dot(new_path, rot.T)
+    return new_path
+
+
+def get_smooth_cubic_bezier_handle_points(
+    points: VectArray
+):
+    # TODO: typing
+
+    from scipy import linalg
+
+    points = np.array(points)
+    num_handles = len(points) - 1
+    dim = points.shape[1]
+    if num_handles < 1:
+        return np.zeros((0, dim)), np.zeros((0, dim))
+    # Must solve 2*num_handles equations to get the handles.
+    # l and u are the number of lower an upper diagonal rows
+    # in the matrix to solve.
+    l, u = 2, 1
+    # diag is a representation of the matrix in diagonal form
+    # See https://www.particleincell.com/2012/bezier-splines/
+    # for how to arrive at these equations
+    diag = np.zeros((l + u + 1, 2 * num_handles))
+    diag[0, 1::2] = -1
+    diag[0, 2::2] = 1
+    diag[1, 0::2] = 2
+    diag[1, 1::2] = 1
+    diag[2, 1:-2:2] = -2
+    diag[3, 0:-3:2] = 1
+    # last
+    diag[2, -2] = -1
+    diag[1, -1] = 2
+    # This is the b as in Ax = b, where we are solving for x,
+    # and A is represented using diag.  However, think of entries
+    # to x and b as being points in space, not numbers
+    b = np.zeros((2 * num_handles, dim))
+    b[1::2] = 2 * points[1:]
+    b[0] = points[0]
+    b[-1] = points[-1]
+
+    def solve_func(b):
+        return linalg.solve_banded((l, u), diag, b)
+
+    use_closed_solve_function = is_closed(points)
+    if use_closed_solve_function:
+        # Get equations to relate first and last points
+        matrix = diag_to_matrix((l, u), diag)
+        # last row handles second derivative
+        matrix[-1, [0, 1, -2, -1]] = [2, -1, 1, -2]
+        # first row handles first derivative
+        matrix[0, :] = np.zeros(matrix.shape[1])
+        matrix[0, [0, -1]] = [1, 1]
+        b[0] = 2 * points[0]
+        b[-1] = np.zeros(dim)
+
+        def closed_curve_solve_func(b):
+            return linalg.solve(matrix, b)
+
+    handle_pairs = np.zeros((2 * num_handles, dim))
+    for i in range(dim):
+        if use_closed_solve_function:
+            handle_pairs[:, i] = closed_curve_solve_func(b[:, i])
+        else:
+            handle_pairs[:, i] = solve_func(b[:, i])
+    return handle_pairs[0::2], handle_pairs[1::2]
+
+
+def diag_to_matrix(
+    l_and_u: tuple[int, int],
+    diag: np.ndarray
+) -> np.ndarray:
+    '''
+    Converts array whose rows represent diagonal
+    entries of a matrix into the matrix itself.
+    See scipy.linalg.solve_banded
+    '''
+    l, u = l_and_u
+    dim = diag.shape[1]
+    matrix = np.zeros((dim, dim))
+    for i in range(l + u + 1):
+        np.fill_diagonal(
+            matrix[max(0, i - u):, max(0, u - i):],
+            diag[i, max(0, u - i):]
+        )
+    return matrix
 
 
 def is_closed(points: Sequence[np.ndarray]) -> bool:

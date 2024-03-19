@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from enum import Enum
 from typing import Callable, Generator, Iterable, Self
 
 import numpy as np
@@ -11,9 +12,11 @@ from janim.exception import PointError
 from janim.items.item import Item
 from janim.logger import log
 from janim.typing import VectArray
-from janim.utils.bezier import (PathBuilder, bezier, integer_interpolate,
-                                inverse_interpolate,
-                                partial_quadratic_bezier_points)
+from janim.utils.bezier import (PathBuilder,
+                                approx_smooth_quadratic_bezier_handles, bezier,
+                                integer_interpolate, inverse_interpolate,
+                                partial_quadratic_bezier_points,
+                                smooth_quadratic_path)
 from janim.utils.data import AlignedData
 from janim.utils.space_ops import get_norm, get_unit_normal
 
@@ -412,7 +415,63 @@ class Cmpt_VPoints[ItemT](Cmpt_Points[ItemT]):
 
     # endregion
 
-    # TODO: make_smooth
+    # region anchor mode
+
+    # TODO: is_smooth
+
+    def change_anchor_mode(self, mode: AnchorMode) -> Self:
+        if not self.has():
+            return self
+
+        subpaths = self.get_subpaths()
+        self.clear()
+        for subpath in subpaths:
+            anchors = subpath[::2]
+            match mode:
+                case AnchorMode.Jagged:
+                    subpath[1::2] = 0.5 * (anchors[:-1] + anchors[1:])
+                case AnchorMode.ApproxSmooth:
+                    subpath[1::2] = approx_smooth_quadratic_bezier_handles(anchors)
+                case AnchorMode.TrueSmooth:
+                    subpath = smooth_quadratic_path(anchors)
+            self.add_subpath(subpath)
+        return self
+
+    def make_smooth(self, approx=False, root_only=False) -> Self:
+        '''
+        Edits the path so as to pass smoothly through all
+        the current anchor points.
+
+        If approx is False, this may increase the total
+        number of points.
+        '''
+        mode = AnchorMode.ApproxSmooth if approx else AnchorMode.TrueSmooth
+        if root_only or self.bind is None:
+            self.change_anchor_mode(mode)
+        else:
+            for item in self.bind.at_item.walk_self_and_descendants():
+                cmpt = self.get_same_cmpt_without_mock(item)
+                if cmpt is None:
+                    continue
+                cmpt.change_anchor_mode(mode)
+        return self
+
+    def make_approximately_smooth(self, root_only=False) -> Self:
+        self.make_smooth(approx=True, root_only=root_only)
+        return self
+
+    def make_jagged(self, root_only=False) -> Self:
+        if root_only or self.bind is None:
+            self.change_anchor_mode(AnchorMode.Jagged)
+        else:
+            for item in self.bind.at_item.walk_self_and_descendants():
+                cmpt = self.get_same_cmpt_without_mock(item)
+                if cmpt is None:
+                    continue
+                cmpt.change_anchor_mode(AnchorMode.Jagged)
+        return self
+
+    # endregion
 
     # region unit_normal
 
@@ -512,4 +571,17 @@ class Cmpt_VPoints[ItemT](Cmpt_Points[ItemT]):
         '''
         return self.get_parts_by_end_indices(self.get(), np.array(self.get_subpath_end_indices()))
 
+    def add_subpath(self, points: VectArray) -> Self:
+        if not self.has():
+            self.set(points)
+        else:
+            self.extend([NAN_POINT, *points])
+        return self
+
     # endregion
+
+
+class AnchorMode(Enum):
+    Jagged = 0
+    ApproxSmooth = 1
+    TrueSmooth = 2
