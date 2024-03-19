@@ -9,6 +9,7 @@ from janim.items.points import Group
 from janim.items.text.text import Text
 from janim.typing import JAnimColor, RangeSpecifier
 from janim.utils.bezier import interpolate, outer_interpolate
+from janim.utils.dict_ops import merge_dicts_recursively
 from janim.utils.simple_functions import fdiv
 
 
@@ -59,8 +60,10 @@ class NumberLine(Line):
 
         self.unit_size = unit_size
 
-        self.tip_config = self.tip_config_d.copy()
-        self.tip_config.update(tip_config)
+        self.tip_config = merge_dicts_recursively(
+            self.tip_config_d,
+            tip_config
+        )
 
         self.tick_size = tick_size
         self.longer_tick_multiple = longer_tick_multiple
@@ -73,8 +76,10 @@ class NumberLine(Line):
         self.line_to_number_direction = line_to_number_direction
         self.line_to_number_buff = line_to_number_buff
 
-        self.decimal_number_config = self.decimal_number_config_d.copy()
-        self.decimal_number_config.update(decimal_number_config)
+        self.decimal_number_config = merge_dicts_recursively(
+            self.decimal_number_config_d,
+            decimal_number_config
+        )
 
         super().__init__(
             self.x_min * RIGHT, self.x_max * RIGHT,
@@ -90,7 +95,7 @@ class NumberLine(Line):
         self.points.to_center()
 
         if include_tip:
-            self.add_tip()
+            self.add_tip(**self.tip_config)
         if include_ticks:
             self.add_ticks()
         if include_numbers:
