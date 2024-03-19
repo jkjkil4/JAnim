@@ -1,14 +1,15 @@
 
 from abc import ABCMeta, abstractmethod
-from typing import Iterable
+from typing import Callable, Iterable, Sequence
 
 import numpy as np
 
 from janim.constants import DEGREES, LEFT, ORIGIN
+from janim.items.coordinate.functions import ParametricCurve
 from janim.items.coordinate.number_line import NumberLine
 from janim.items.item import _ItemMeta
 from janim.items.points import Group
-from janim.typing import RangeSpecifier
+from janim.typing import RangeSpecifier, Vect
 from janim.utils.dict_ops import merge_dicts_recursively
 
 DEFAULT_X_RANGE = (-8.0, 8.0, 1.0)
@@ -34,7 +35,7 @@ class CoordinateSystem(metaclass=ABCMeta):
     def get_axes(self) -> list[NumberLine]:
         pass
 
-    def coords_to_point(self, *coords: float | np.ndarray) -> np.ndarray:
+    def coords_to_point(self, *coords: float | Iterable[float]) -> np.ndarray:
         axes = self.get_axes()
         origin = axes[0].number_to_point(0)
         return origin + sum(
@@ -42,8 +43,19 @@ class CoordinateSystem(metaclass=ABCMeta):
             for axis, coord in zip(axes, coords)
         )
 
-    def point_to_coords(self, point: np.ndarray | Iterable[np.ndarray]) -> np.ndarray:
+    def point_to_coords(self, point: Vect | Iterable[Vect]) -> np.ndarray:
         raise NotImplementedError()     # TODO: point_to_coords
+
+    def c2p(self, *coords: float | np.ndarray) -> np.ndarray:
+        ''':meth:`coords_to_point` 的缩写'''
+        return self.coords_to_point(*coords)
+
+    def p2c(self, point: Vect | Iterable[Vect]) -> np.ndarray:
+        ''':meth:`point_to_coords` 的缩写'''
+        return self.point_to_coords(self, point)
+
+    def get_origin(self) -> np.ndarray:
+        return self.c2p(*[0] * len(self.get_axes()))
 
 
 class Axes(Group, CoordinateSystem, metaclass=_ItemMeta_ABCMeta):
@@ -60,6 +72,7 @@ class Axes(Group, CoordinateSystem, metaclass=_ItemMeta_ABCMeta):
         x_range: RangeSpecifier = DEFAULT_X_RANGE,
         y_range: RangeSpecifier = DEFAULT_Y_RANGE,
         *,
+        num_sampled_graph_points_per_tick: int = 5,
         axis_config: dict = {},
         x_axis_config: dict = {},
         y_axis_config: dict = {},
@@ -68,7 +81,11 @@ class Axes(Group, CoordinateSystem, metaclass=_ItemMeta_ABCMeta):
         unit_size: float = 1.0,
         **kwargs
     ):
+        # REFACTOR: 将 num_sampled_graph_points_per_tick 提取到 CoordinateSystem 中？
         CoordinateSystem.__init__(self)
+        self.x_range = x_range
+        self.y_range = y_range
+        self.num_sampled_graph_points_per_tick = num_sampled_graph_points_per_tick
 
         axis_config = dict(**axis_config, unit_size=unit_size)
         self.x_axis = self.create_axis(
@@ -97,3 +114,24 @@ class Axes(Group, CoordinateSystem, metaclass=_ItemMeta_ABCMeta):
 
     def get_axes(self) -> list[NumberLine]:
         return [self.x_axis, self.y_axis]
+
+    def get_graph(
+        self,
+        function: Callable[[float], float],
+        x_range: Sequence[float] | None = None,
+        # TODO: bind
+        **kwargs
+    ) -> ParametricCurve:
+        x_range = x_range or self.x_range
+        t_range = np.ones(3)
+        t_range[:len(x_range)] = x_range
+        # 对于坐标轴，x_range 的第三个元素是刻度步长
+        # 所以对于函数，需要除以 num_sampled_graph_points_per_tick
+        t_range[2] /= self.num_sampled_graph_points_per_tick
+
+        graph = ParametricCurve(
+            lambda t: self.c2p(t, function(t)),
+            t_range=tuple(t_range),
+            **kwargs
+        )
+        return graph
