@@ -213,6 +213,24 @@ class Cmpt_VPoints[ItemT](Cmpt_Points[ItemT]):
 
         return np.vstack(new_points)
 
+    def insert_n_curves(self, n: int, root_only=False) -> Self:
+        def apply(cmpt: Cmpt_VPoints) -> None:
+            if cmpt.curves_count() == 0:
+                return
+            points = cmpt.insert_n_curves_to_point_list(n, cmpt.get())
+            cmpt.set(points)
+
+        if root_only or self.bind is None:
+            apply(self)
+        else:
+            for item in self.bind.at_item.walk_self_and_descendants():
+                cmpt = self.get_same_cmpt_without_mock(item)
+                if not isinstance(cmpt, Cmpt_VPoints):
+                    continue
+                apply(cmpt)
+
+        return self
+
     # endregion
 
     # region anchors and handles
@@ -451,7 +469,7 @@ class Cmpt_VPoints[ItemT](Cmpt_Points[ItemT]):
         else:
             for item in self.bind.at_item.walk_self_and_descendants():
                 cmpt = self.get_same_cmpt_without_mock(item)
-                if cmpt is None:
+                if not isinstance(cmpt, Cmpt_VPoints):
                     continue
                 cmpt.change_anchor_mode(mode)
         return self
@@ -466,7 +484,7 @@ class Cmpt_VPoints[ItemT](Cmpt_Points[ItemT]):
         else:
             for item in self.bind.at_item.walk_self_and_descendants():
                 cmpt = self.get_same_cmpt_without_mock(item)
-                if cmpt is None:
+                if not isinstance(cmpt, Cmpt_VPoints):
                     continue
                 cmpt.change_anchor_mode(AnchorMode.Jagged)
         return self
