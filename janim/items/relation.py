@@ -57,17 +57,22 @@ class Relation[GRelT: 'Relation'](refresh.Refreshable):
         '''
         Relation.children_changed.emit(self)
 
-    def add(self, *objs: GRelT) -> Self:
+    def add(self, *objs: GRelT, insert=False) -> Self:
         '''
         向该对象添加子对象
+
+        如果 ``insert=True`` （默认为 ``False``），那么插入到子物件列表的开头
         '''
-        for obj in objs:
+        for obj in (reversed(objs) if insert else objs):
             # 理论上这里判断 item not in self.children 就够了，但是防止
             # 有被私自修改 self.parents 以及 self.children 的可能，所以这里都判断了
             # Theoretically, checking item not in self.children is enough here, but to prevent
             # possible modifications to self.parents and self.children, both checks are made here.
             if obj not in self.children:
-                self.children.append(obj)
+                if insert:
+                    self.children.insert(0, obj)
+                else:
+                    self.children.append(obj)
             if self not in obj.parents:
                 obj.parents.append(self)
             obj.parents_changed()
