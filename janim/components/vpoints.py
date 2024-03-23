@@ -6,12 +6,12 @@ from typing import Callable, Generator, Iterable, Self
 import numpy as np
 
 import janim.utils.refresh as refresh
-from janim.components.points import Cmpt_Points
-from janim.constants import NAN_POINT, OUT, RIGHT
+from janim.components.points import Cmpt_Points, PointsFn
+from janim.constants import NAN_POINT, ORIGIN, OUT, RIGHT
 from janim.exception import PointError
 from janim.items.item import Item
 from janim.logger import log
-from janim.typing import VectArray
+from janim.typing import Vect, VectArray
 from janim.utils.bezier import (PathBuilder,
                                 approx_smooth_quadratic_bezier_handles, bezier,
                                 integer_interpolate, inverse_interpolate,
@@ -37,6 +37,10 @@ class Cmpt_VPoints[ItemT](Cmpt_Points[ItemT]):
 
       只有闭合的子路径，才能够进行填充色的渲染
     '''
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.make_smooth_after_applying_functions = False
+
     def copy(self) -> Self:
         return super().copy()
 
@@ -52,6 +56,32 @@ class Cmpt_VPoints[ItemT](Cmpt_Points[ItemT]):
             log.warning(f'设置的点数量为 {len(points)}，不是奇数，最后一个点被忽略')
             points = points[:-1]
         super().set(points)
+        return self
+
+    def apply_points_fn(
+        self,
+        func: PointsFn,
+        *,
+        about_point: Vect | None = None,
+        about_edge: Vect | None = ORIGIN,
+        root_only: bool = False,
+    ) -> Self:
+        super().apply_points_fn(
+            func,
+            about_point=about_point,
+            about_edge=about_edge,
+            root_only=root_only
+        )
+        if root_only or self.bind is None:
+            if self.make_smooth_after_applying_functions:
+                self.make_approximately_smooth()
+        else:
+            for item in self.bind.at_item.walk_self_and_descendants():
+                cmpt = self.get_same_cmpt_without_mock(item)
+                if not isinstance(cmpt, Cmpt_VPoints) or not cmpt.make_smooth_after_applying_functions:
+                    continue
+                cmpt.make_approximately_smooth()
+
         return self
 
     # region align
