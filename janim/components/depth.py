@@ -52,8 +52,8 @@ class Cmpt_Depth[ItemT](Component[ItemT]):
         return self._depth == other._depth and self._order == other._order
 
     def __lt__(self, other: Cmpt_Depth) -> bool:
-        if self._depth < other._depth:
-            return True
+        if self._depth != other._depth:
+            return self._depth < other._depth
         return self._order < other._order
 
     def set(self, value: float, order: int | None = None) -> Self:
