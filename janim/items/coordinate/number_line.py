@@ -53,6 +53,7 @@ class NumberLine(Line):
         line_to_number_direction: np.ndarray = DOWN,            # 详见 get_number_item
         line_to_number_buff: float = MED_SMALL_BUFF,            # 详见 get_number_item
         decimal_number_config: dict = {},                       # 数字属性
+        **kwargs
     ) -> None:
         if len(x_range) == 2:
             x_range = [*x_range, 1]
@@ -84,7 +85,8 @@ class NumberLine(Line):
         super().__init__(
             self.x_min * RIGHT, self.x_max * RIGHT,
             color=color,
-            stroke_radius=stroke_radius
+            stroke_radius=stroke_radius,
+            **kwargs
         )
 
         if width:

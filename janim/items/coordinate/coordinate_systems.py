@@ -1,15 +1,20 @@
 
 from abc import ABCMeta, abstractmethod
-from typing import Callable, Iterable, Sequence
+from typing import Callable, Iterable, Self, Sequence
 
 import numpy as np
 
-from janim.constants import DEGREES, LEFT, ORIGIN
-from janim.items.coordinate.functions import ParametricCurve
+from janim.components.component import CmptInfo
 from janim.components.points import Cmpt_Points
+from janim.components.vpoints import Cmpt_VPoints
+from janim.constants import (BLUE_D, DEGREES, DL, LEFT, ORIGIN, SMALL_BUFF,
+                             WHITE)
+from janim.items.coordinate.functions import ParametricCurve
 from janim.items.coordinate.number_line import NumberLine
+from janim.items.geometry.line import Line
 from janim.items.item import _ItemMeta
 from janim.items.points import Group
+from janim.items.vitem import DEFAULT_STROKE_RADIUS
 from janim.typing import RangeSpecifier, Vect
 from janim.utils.dict_ops import merge_dicts_recursively
 
@@ -143,3 +148,115 @@ class Axes(Group, CoordinateSystem, metaclass=_ItemMeta_ABCMeta):
             )
 
         return graph
+
+
+class CmptVPoints_NumberPlaneImpl(Cmpt_VPoints, impl=True):
+    def prepare_for_nonlinear_transform(self, num_inserted_curves: int = 50, *, root_only=False) -> Self:
+        def apply(cmpt: Cmpt_VPoints):
+            if not cmpt.has():
+                return
+            curves_count = cmpt.curves_count()
+            if num_inserted_curves > curves_count:
+                cmpt.insert_n_curves(num_inserted_curves - curves_count)
+            cmpt.make_smooth_after_applying_functions = True
+
+        if root_only or self.bind is None:
+            apply(self)
+        else:
+            for item in self.bind.at_item.walk_self_and_descendants():
+                cmpt = self.get_same_cmpt_without_mock(item)
+                if not isinstance(cmpt, Cmpt_VPoints):
+                    continue
+                apply(cmpt)
+
+        return self
+
+
+class NumberPlane(Axes):
+    points = CmptInfo(CmptVPoints_NumberPlaneImpl)
+
+    axis_config_d: dict = dict(
+        stroke_color=WHITE,
+        stroke_radius=0.01,
+        include_ticks=False,
+        include_tip=False,
+        line_to_number_buff=SMALL_BUFF,
+        line_to_number_direction=DL
+    )
+    y_axis_config_d: dict = dict(
+        line_to_number_direction=DL
+    )
+
+    def __init__(
+        self,
+        x_range: RangeSpecifier = DEFAULT_X_RANGE,
+        y_range: RangeSpecifier = DEFAULT_Y_RANGE,
+        background_line_style: dict = dict(
+            stroke_color=BLUE_D,
+            stroke_radius=0.01,
+        ),
+        # Defaults to a faded version of line_config
+        faded_line_style: dict = dict(),
+        faded_line_ratio: int = 4,
+        **kwargs
+    ):
+        super().__init__(
+            x_range,
+            y_range,
+            **kwargs
+        )
+        self.background_line_style = dict(background_line_style)
+        self.faded_line_style = dict(faded_line_style)
+        self.faded_line_ratio = faded_line_ratio
+        self._init_background_lines()
+
+    def _init_background_lines(self) -> None:
+        if not self.faded_line_style:
+            style = dict(self.background_line_style)
+
+            for key in ('fill_alpha', 'stroke_alpha', 'alpha'):
+                style[key] = 0.5 * style.get(key, 1)
+
+            style['stroke_radius'] = 0.5 * style.get('stroke_radius', DEFAULT_STROKE_RADIUS)
+
+            self.faded_line_style = style
+
+        x_lines1, x_lines2 = self.get_lines_parallel_to_axis(self.x_axis, self.y_axis)
+        y_lines1, y_lines2 = self.get_lines_parallel_to_axis(self.y_axis, self.x_axis)
+        self.background_lines = Group(*x_lines1, *y_lines1)
+        self.faded_lines = Group(*x_lines2, *y_lines2)
+
+        self.background_lines.digest_styles(self.background_line_style)
+        self.faded_lines.digest_styles(self.faded_line_style)
+
+        self.add(
+            self.faded_lines,
+            self.background_lines,
+            insert=True
+        )
+        self.depth.arrange()
+
+    def get_lines_parallel_to_axis(
+        self,
+        axis1: NumberLine,
+        axis2: NumberLine
+    ) -> tuple[Group, Group]:
+        freq = axis2.x_step
+        ratio = self.faded_line_ratio
+        line = Line(axis1.points.get_start(), axis1.points.get_end())
+        dense_freq = (1 + ratio)
+        step = (1 / dense_freq) * freq
+
+        lines1 = Group()
+        lines2 = Group()
+        inputs = np.arange(axis2.x_min, axis2.x_max + step, step)
+        for i, x in enumerate(inputs):
+            if abs(x) < 1e-8:
+                continue
+            new_line = line.copy()
+            new_line.points.shift(axis2.n2p(x) - axis2.n2p(0))
+            if i % (1 + ratio) == 0:
+                lines1.add(new_line)
+            else:
+                lines2.add(new_line)
+        return lines1, lines2

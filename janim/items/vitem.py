@@ -17,7 +17,7 @@ from janim.typing import Alpha, AlphaArray, ColorArray, JAnimColor, Vect
 from janim.utils.data import AlignedData
 from janim.utils.simple_functions import clip
 
-DEFAULT_STROKE_WIDTH = 0.02
+DEFAULT_STROKE_RADIUS = 0.02
 
 
 class VItem(Points):
@@ -25,7 +25,7 @@ class VItem(Points):
     贝塞尔曲线拼接物件，具体说明请参考 :class:`~.Cmpt_VPoints` 的文档
     '''
     points = CmptInfo(Cmpt_VPoints[Self])
-    radius = CmptInfo(Cmpt_Radius[Self], DEFAULT_STROKE_WIDTH)
+    radius = CmptInfo(Cmpt_Radius[Self], DEFAULT_STROKE_RADIUS)
 
     stroke = CmptInfo(Cmpt_Rgbas[Self])
     fill = CmptInfo(Cmpt_Rgbas[Self])

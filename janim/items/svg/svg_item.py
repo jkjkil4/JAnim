@@ -13,8 +13,8 @@ from janim.logger import log
 from janim.utils.bezier import PathBuilder
 from janim.utils.config import Config
 
-# 这里的 4.36 是我手动试出来的
-DEFAULT_SVGITEM_SCALE_FACTOR = 4.36
+# 这里的 3.3136 是我手动试出来的
+DEFAULT_SVGITEM_SCALE_FACTOR = 3.3136
 STROKE_WIDTH_CONVERSION = 0.01
 
 type VItemBuilder = Callable[[], VItem]

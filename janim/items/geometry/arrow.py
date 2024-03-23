@@ -7,7 +7,7 @@ import numpy as np
 
 from janim.constants import DOWN, LEFT, ORIGIN, RIGHT, UP, np
 from janim.items.geometry.line import Line
-from janim.items.vitem import DEFAULT_STROKE_WIDTH, VItem
+from janim.items.vitem import DEFAULT_STROKE_RADIUS, VItem
 from janim.utils.space_ops import (get_norm, midpoint, normalize,
                                    rotation_between_vectors)
 
@@ -53,7 +53,7 @@ class ArrowTip(VItem):
         *,
         center_anchor: CenterAnchor = CenterAnchor.Back,
         fill_alpha: float = 1.0,
-        stroke_radius: float = DEFAULT_STROKE_WIDTH / 4,
+        stroke_radius: float = DEFAULT_STROKE_RADIUS / 4,
         **kwargs
     ) -> None:
         super().__init__(fill_alpha=fill_alpha, stroke_radius=stroke_radius, **kwargs)
