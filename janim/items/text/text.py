@@ -27,10 +27,15 @@ DEFAULT_FONT_SIZE = 24
 ORIG_FONT_SIZE = 48
 
 
-def get_color_value_by_key(key: str) -> JAnimColor:
+def get_color_value(key: str) -> JAnimColor:
     '''
     根据 ``key`` 从 ``janim.constants.colors`` 得到颜色
+
+    如果 ``key`` 以 ``#`` 开头，则直接返回原值
     '''
+    if key.startswith('#'):
+        return key
+
     import janim.constants.colors as colors
     if not hasattr(colors, key):
         raise ColorNotFoundError(f'No built-in color named {key}')
@@ -62,21 +67,21 @@ def register_acts(names: list[ActName], *acts: Act) -> None:
 
 register_acts(
     ['color', 'c'],
-    ((get_color_value_by_key,),     lambda char, color: char.color.set(color)),
+    ((get_color_value,),            lambda char, color: char.color.set(color)),
     ((float, float, float),         lambda char, r, g, b: char.color.set([r, g, b])),
-    ((float, float, float, float),  lambda char, r, g, b, a: char.color.set_rgbas([r, g, b, a]))
+    ((float, float, float, float),  lambda char, r, g, b, a: char.color.set([r, g, b], a))
 )
 register_acts(
     ['stroke_color', 'sc'],
-    ((get_color_value_by_key,),     lambda char, color: char.stroke.set(color)),
+    ((get_color_value,),            lambda char, color: char.stroke.set(color)),
     ((float, float, float),         lambda char, r, g, b: char.stroke.set([r, g, b])),
-    ((float, float, float, float),  lambda char, r, g, b, a: char.stroke.set_rgbas([r, g, b, a]))
+    ((float, float, float, float),  lambda char, r, g, b, a: char.stroke.set([r, g, b], a))
 )
 register_acts(
     ['fill_color', 'fc'],
-    ((get_color_value_by_key,),     lambda char, color: char.fill.set(color)),
+    ((get_color_value,),            lambda char, color: char.fill.set(color)),
     ((float, float, float),         lambda char, r, g, b: char.fill.set([r, g, b])),
-    ((float, float, float, float),  lambda char, r, g, b, a: char.fill.set_rgbas([r, g, b, a]))
+    ((float, float, float, float),  lambda char, r, g, b, a: char.fill.set([r, g, b], a))
 )
 register_acts(
     ['alpha', 'a'],

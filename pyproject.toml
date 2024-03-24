@@ -33,6 +33,7 @@ dependencies = [
 gui = [
     "pyside6",
     "qdarkstyle",
+    "beautifulsoup4",
 ]
 doc = [
     "sphinx",

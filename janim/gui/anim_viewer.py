@@ -33,6 +33,7 @@ from janim.exception import ExitException
 from janim.gui.application import Application
 from janim.gui.fixed_ratio_widget import FixedRatioWidget
 from janim.gui.glwidget import GLWidget
+from janim.gui.richtext_editor import RichTextEditor
 from janim.gui.selector import Selector
 from janim.logger import log
 from janim.render.file_writer import FileWriter
@@ -115,6 +116,11 @@ class AnimViewer(QMainWindow):
         action_select.setShortcut('Ctrl+S')
         action_select.triggered.connect(self.on_select_triggered)
         self.selector: Selector | None = None
+
+        action_richtext_edit = menu_functions.addAction('富文本编辑')
+        action_richtext_edit.setShortcut('Ctrl+R')
+        action_richtext_edit.triggered.connect(self.on_richtext_edit_triggered)
+        self.richtext_editor: RichTextEditor | None = None
 
     def setup_status_bar(self) -> None:
         self.fps_label = QLabel()
@@ -396,6 +402,17 @@ class AnimViewer(QMainWindow):
 
     def on_selector_destroyed(self) -> None:
         self.selector = None
+
+    def on_richtext_edit_triggered(self) -> None:
+        if self.richtext_editor is None:
+            self.richtext_editor = RichTextEditor(self)
+            self.richtext_editor.setWindowFlag(Qt.WindowType.Tool)
+            self.richtext_editor.setAttribute(Qt.WidgetAttribute.WA_DeleteOnClose)
+            self.richtext_editor.destroyed.connect(self.on_richtext_editor_destroyed)
+        self.richtext_editor.show()
+
+    def on_richtext_editor_destroyed(self) -> None:
+        self.richtext_editor = None
 
     def on_glw_rendered(self) -> None:
         cur = time.time()
