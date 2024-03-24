@@ -368,8 +368,7 @@ def smooth_quadratic_path(anchors: VectArray) -> np.ndarray:
 
 def get_smooth_cubic_bezier_handle_points(
     points: VectArray
-):
-    # TODO: typing
+) -> tuple[np.ndarray, np.ndarray]:
 
     from scipy import linalg
 
