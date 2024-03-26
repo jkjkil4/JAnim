@@ -15,7 +15,7 @@
     from janim.imports import *
 
     class HelloJAnimExample(Timeline):
-        def construct(self) -> None:
+        def construct(self):
             # define items
             circle = Circle(color=BLUE)
             square = Square(color=GREEN, fill_alpha=0.5)
@@ -50,7 +50,7 @@
 .. code-desc::
 
     class HelloJAnimExample(Timeline):
-        def construct(self) -> None:
+        def construct(self):
 
     %
 
