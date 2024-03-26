@@ -1,15 +1,75 @@
-dl.py.function {
-    margin-bottom: 32px;
+p {
+    font-size: initial;
 }
-dl.py.class {
-    margin-bottom: 32px;
+
+span.caption-text {
+    font-size: larger;
 }
-dl.py.method {
-    margin-bottom: 32px;
+
+span.pre {
+    font-size: initial;
 }
-section {
-    margin-bottom: 32px;
+
+.highlight-python.notranslate {
+    margin-top: 0em;
 }
-h1, h2, h3, h4{
-    font-weight: normal;
+
+.janim-video {
+    width: 99.9%;
+    padding: 8px 0;
+    outline: 0;
+}
+
+.janim-box {
+    background-color: #333333;
+    margin-bottom: 10px;
+    box-shadow: 2px 2px 4px #ddd;
+    margin-bottom: 20px;
+}
+
+.janim-box .janim-video {
+    padding: 0;
+}
+
+.janim-box img {
+    margin-bottom: 0;
+}
+
+h5.example-header {
+    font-size: 18px;
+    font-weight: bold;
+    padding: 8px 16px;
+    color: white;
+    margin: 0;
+    font-family: inherit;
+    text-transform: none;
+    margin-top: -0.4em;
+    margin-bottom: -0.2em;
+}
+
+.janim-box .highlight {
+    background-color: #fafafa;
+    border: 2px solid #333333;
+    padding: 8px 8px 10px 8px;
+    font-size: large;
+    margin: 0;
+}
+
+.janim-box .highlight pre {
+    background-color: inherit;
+    border-left: none;
+    margin: 0;
+    padding: 0 6px 0 6px;
+}
+
+.janim-content {
+    background-color: var(--color-background-primary);
+    padding: 0px 8px 0px 10px;
+    margin: 0px;
+    border: 2px solid #333333;
+}
+
+.janim-box .highlight-python.notranslate {
+    margin: 0px;
+    margin-bottom: -0.1em;
 }

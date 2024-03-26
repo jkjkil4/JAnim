@@ -102,7 +102,7 @@ class Cmpt_Rgbas[ItemT](Component[ItemT]):
         assert alphas.ndim == 1
         return alphas
 
-    def set_rgbas(self, rgbas: np.ndarray) -> Self:
+    def set_rgbas(self, rgbas: RgbaArray) -> Self:
         '''
         直接设置 rgba 数据
         '''

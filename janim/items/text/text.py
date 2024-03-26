@@ -69,19 +69,19 @@ register_acts(
     ['color', 'c'],
     ((get_color_value,),            lambda char, color: char.color.set(color)),
     ((float, float, float),         lambda char, r, g, b: char.color.set([r, g, b])),
-    ((float, float, float, float),  lambda char, r, g, b, a: char.color.set([r, g, b], a))
+    ((float, float, float, float),  lambda char, r, g, b, a: char.color.set_rgbas([[r, g, b, a]]))
 )
 register_acts(
     ['stroke_color', 'sc'],
     ((get_color_value,),            lambda char, color: char.stroke.set(color)),
     ((float, float, float),         lambda char, r, g, b: char.stroke.set([r, g, b])),
-    ((float, float, float, float),  lambda char, r, g, b, a: char.stroke.set([r, g, b], a))
+    ((float, float, float, float),  lambda char, r, g, b, a: char.stroke.set_rgbas([[r, g, b, a]]))
 )
 register_acts(
     ['fill_color', 'fc'],
     ((get_color_value,),            lambda char, color: char.fill.set(color)),
     ((float, float, float),         lambda char, r, g, b: char.fill.set([r, g, b])),
-    ((float, float, float, float),  lambda char, r, g, b, a: char.fill.set([r, g, b], a))
+    ((float, float, float, float),  lambda char, r, g, b, a: char.fill.set_rgbas([[r, g, b, a]]))
 )
 register_acts(
     ['alpha', 'a'],

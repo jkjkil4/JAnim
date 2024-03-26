@@ -38,6 +38,8 @@ gui = [
 doc = [
     "sphinx",
     "furo",
+    "jinja2",
+    "docutils",
 ]
 
 [tool.flit.sdist]

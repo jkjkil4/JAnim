@@ -198,7 +198,7 @@ class Cmpt_Points[ItemT](Component[ItemT]):
         return interpolate(points[i], points[i + 1], subalpha)
 
     def pfp(self, alpha) -> np.ndarray:
-        '''point_from_proportion 的缩写'''
+        '''``point_from_proportion`` 的缩写'''
         return self.point_from_proportion(alpha)
 
     def _raise_error_if_no_points(self) -> None:

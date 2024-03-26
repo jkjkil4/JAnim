@@ -6,4 +6,6 @@ coordinate
 .. toctree::
    :maxdepth: 1
 
+   coordinate_systems
+   functions
    number_line

@@ -9,6 +9,7 @@ utils
    bezier
    config
    data
+   dict_ops
    file_ops
    font
    font_manager

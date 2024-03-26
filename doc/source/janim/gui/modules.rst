@@ -10,4 +10,5 @@ gui
    application
    fixed_ratio_widget
    glwidget
+   richtext_editor
    selector

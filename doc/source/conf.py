@@ -17,7 +17,11 @@ release = '0.0.1'
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
-extensions = ['sphinx.ext.autodoc']
+extensions = [
+    'sphinx.ext.autodoc',
+    'extensions.janim_example_ext',
+    'extensions.code_desc_ext'
+]
 autodoc_member_order = 'bysource'
 # autodoc_default_flags = ['members', 'show-inheritance']
 
@@ -34,8 +38,10 @@ gettext_compact = False     # optional
 html_theme = 'furo'
 html_static_path = ['_static']
 html_css_files = [
-    'custom.css',
-    'colors.css'
+    'layout.css',
+    'colors.css',
+    'custom.css'
 ]
 
 sys.path.insert(0, os.path.abspath('../..'))
+sys.path.insert(0, os.path.abspath('.'))
