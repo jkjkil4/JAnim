@@ -6,13 +6,15 @@
 import os
 import sys
 
+from janim import __version__
+
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
 project = 'JAnim'
 copyright = '2023, jkjkil4'
 author = 'jkjkil4'
-release = '0.0.1'
+release = __version__
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
