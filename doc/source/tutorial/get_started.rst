@@ -115,10 +115,10 @@
 物件
 ------------
 
+上面的例子中，涉及到两个物件：:class:`~.Circle` 和 :class:`~.Square`，它们本质上都是几何图形物件
+
 组件
 ~~~~~~~~~~~~
-
-上面的例子中，涉及到两个物件：:class:`~.Circle` 和 :class:`~.Square`，它们本质上都是几何图形物件
 
 .. important::
 
@@ -199,13 +199,13 @@
 
 可以将圆设置为红色
 
-这种设置是立刻的过程，但是如果这样写：
+这种设置是立刻的，但是如果这样写：
 
 .. code-block::
 
     circle.anim.color.set(RED)
 
-注意这里先写 ``.anim`` 再跟上对组件的操作
+注意这里的区别是，先写 ``.anim`` 再跟上对组件的操作
 
 这种写法，不再是“设置为红色”，而是会产生一个“从原来的颜色过渡到红色”的动画，可以放在 ``self.play(...)`` 里面显示动画
 
@@ -227,5 +227,75 @@
             self.play(circle.anim.points.scale(2))
             self.forward()
 
+希望你没忘记，执行的命令是：
+
+.. code-block:: sh
+
+    janim run 文件名 动画名
+
+如果上面这段代码也写在了 ``learn.py`` 中，那么就是：
+
+.. code-block:: sh
+
+    janim run learn.py CmptAnimExample
+
+导出视频
+------------
+
+.. warning::
+
+    若要导出视频，请确保安装了 :ref:`FFmpeg <install_dep>` 并正确地将其添加到了环境变量 ``PATH`` 中
+
+上面进行预览是使用：
+
+.. code-block:: sh
+
+    janim run learn.py CmptAnimExample
+
+如果你想要将这个动画导出为视频，将 ``run`` 替换为 ``write`` 即可：
+
+.. code-block:: sh
+
+    janim write learn.py CmptAnimExample
+
+默认情况下，输出的视频会在目录中的 ``videos/`` 文件夹下
+
+如果再传入 ``-o``，会在导出结束后自动打开视频文件：
+
+.. code-block:: sh
+
+    janim write learn.py CmptAnimExample -o
+
 实时预览
 ------------
+
+.. warning::
+
+    这一部分的功能需要使用 :ref:`vscode <install_vscode>` 作为编辑器
+
+如果每次修改动画都需要关掉窗口、修改代码、重新执行，那么未免有点太麻烦了
+
+因此，有这样的功能：
+
+当代码文件被保存后，自动更新预览窗口中的动画
+
+为了使用这个功能，你需要使用 vscode 进行开发，并且安装 vscode 插件 ``janim-toolbox``
+
+运行时，在预览动画的命令中加上 ``-i``，比如：
+
+.. code-block:: sh
+
+    janim run learn.py CmptAnimExample -i
+
+这样，在执行后，输出内容应当多出这样一句：``交互端口已在 xxxxx 开启``
+
+.. tip::
+
+    你可能注意到了，预览窗口默认是在右半边屏幕置顶的
+
+    这里推荐将 vscode 放在左半边屏幕，关闭侧边栏进行书写
+
+首先，在 vscode 中，默认情况下，需要按下 ``Ctrl+J Ctrl+C`` （分别按下，这是组合键），如果成功的话，
+会在 vscode 右下角的状态栏中显示 ``已连接到界面端 xxxxx``
+
+接着，对代码进行更改，保存后，就会立即更新预览的内容
