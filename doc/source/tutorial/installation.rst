@@ -1,18 +1,19 @@
 安装
 ============
 
-~~~
-
 .. important::
 
     JAnim 运行在 Python 3.12 及更高版本
 
     并且需要 OpenGL 4.3 及更高版本
 
+步骤
+~~~~~~~~
+
 安装 Python
 ------------
 
-访问 `Python 官网下载页 <https://www.python.org/downloads/>`_ 下载 3.12 或更高版本
+访问 `Python 官网下载页 <https://www.python.org/downloads/>`_ 安装 3.12 或更高版本
 
 .. _install_dep:
 
