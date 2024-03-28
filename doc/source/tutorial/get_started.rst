@@ -77,7 +77,7 @@
     这两行，我们定义了一个圆和一个方形（默认情况下不填充内部）
 
     | 并且，将圆设置为了蓝色；
-    | 将方形设置为了蓝色，并且设置内部有 50% 透明度的填充
+    | 将方形设置为了绿色，并且设置内部有 50% 透明度的填充
 
 此时，这两个物件还没有显示出来，我们接着看后面的几行
 
@@ -111,3 +111,121 @@
     self.play(Transform(circle, square), duration=2)
 
 那么动画过程就会持续 2s
+
+物件
+------------
+
+组件
+~~~~~~~~~~~~
+
+上面的例子中，涉及到两个物件：:class:`~.Circle` 和 :class:`~.Square`，它们本质上都是几何图形物件
+
+.. important::
+
+    对于物件，有一个重要的概念是“组件”
+
+    | 每种物件都包含若干的组件，例如，几何图形其实是由“轮廓的描点”所表示的，
+    | 因此，对于几何图形物件，这些是它的组件：
+
+    - 轮廓坐标 ``points``
+    - 描边粗细 ``radius``
+    - 描边颜色 ``stroke``
+    - 填充颜色 ``fill``
+
+为了对组件进行操作，你需要 ``物件.组件名.功能()`` ，比如：
+
+.. code-block:: python
+
+    circle.fill.set(RED, 0.5)
+
+这一行会将圆的填充色设置为红色，并且有 50% 的透明度；你可以把这行插入到上面例子的 ``circle = Circle(color=BLUE)`` 的下一行，试试效果
+
+同样的，``circle.stroke.set(...)`` 会设置描边的颜色
+
+.. hint::
+
+    如果你想将描边和填充的颜色同时进行设置，不必写：
+
+    .. code-block::
+
+        circle.stroke.set(RED)
+        circle.fill.set(RED)
+
+    作为一种更简便的写法，你可以将上面的两行写成这样：
+
+    .. code-block::
+
+        circle.color.set(RED)
+
+    这里提供了一个 ``color``，可以同时对描边和填充进行操作
+
+初始化参数
+~~~~~~~~~~~~
+
+还记得前面例子的代码吗？
+
+.. code-block::
+
+    # define items
+    circle = Circle(color=BLUE)
+    square = Square(color=GREEN, fill_alpha=0.5)
+
+这里的代码看起来没有对 ``circle`` 的组件进行操作，那么是如何设置这些物件的颜色的呢？
+
+你应该注意到了传入 :class:`~.Circle` 和 :class:`~.Square` 的参数，``color=XXX`` 以及 ``fill_alpha=XXX``
+
+具体来说，在创建物件时对组件属性进行设置，并不需要一行一行地列出来，可以全部作为参数直接书写，这里列出几何图形物件可用的一些属性：
+
+.. TODO: 链接到颜色表
+
+- ``stroke_radius``: 描边的粗细
+
+- ``color``: 描边和填充的颜色
+- ``stroke_color``: 描边颜色，会覆盖 ``color``
+- ``fill_color``: 填充颜色，会覆盖 ``color``
+
+- ``alpha``: 透明度，``1`` 表示完全不透明，``0`` 表示完全透明，``0~1`` 之间的数则为半透明
+- ``stroke_alpha``: 描边透明度，会覆盖 ``alpha``
+- ``fill_alpha``: 填充透明度，会覆盖 ``alpha``
+
+组件动画
+------------
+
+通过前面的学习，我们知道，通过
+
+.. code-block::
+
+    circle.color.set(RED)
+
+可以将圆设置为红色
+
+这种设置是立刻的过程，但是如果这样写：
+
+.. code-block::
+
+    circle.anim.color.set(RED)
+
+注意这里先写 ``.anim`` 再跟上对组件的操作
+
+这种写法，不再是“设置为红色”，而是会产生一个“从原来的颜色过渡到红色”的动画，可以放在 ``self.play(...)`` 里面显示动画
+
+比如下面这个例子：
+
+.. janim-example:: CmptAnimExample
+    :media: ../_static/videos/CmptAnimExample.mp4
+
+    from janim.imports import *
+
+    class CmptAnimExample(Timeline):
+        def construct(self) -> None:
+            circle = Circle(color=BLUE, fill_alpha=0.5)
+
+            self.show(circle)
+            self.forward()
+            self.play(circle.anim.color.set(GREEN))
+            self.play(circle.anim.fill.set(alpha=0.2))
+            self.play(circle.anim.points.scale(2))
+            self.forward()
+
+实时预览
+------------

@@ -47,11 +47,14 @@ h5.example-header {
     margin-bottom: -0.2em;
 }
 
+.highlight {
+    font-size: large;
+}
+
 .janim-box .highlight {
     background-color: #fafafa;
     border: 2px solid #333333;
     padding: 8px 8px 10px 8px;
-    font-size: large;
     margin: 0;
     overflow: auto;
 }
