@@ -42,6 +42,7 @@ from janim.utils.file_ops import get_janim_dir
 from janim.utils.simple_functions import clip
 
 TIMELINE_VIEW_MIN_DURATION = 0.5
+TIMELINE_VIEW_RANGE_TIP_HEIGHT = 4
 
 # TODO: 鼠标悬停在时间轴的动画上时，显示动画信息
 
@@ -562,7 +563,8 @@ class TimelineView(QWidget):
 
         stack: list[Animation] = []
         for anim in self.flatten:
-            while stack and stack[-1].global_range.end <= anim.global_range.at:
+            # 可能会因为浮点误差导致 <= 中的相等判断错误，所以 +1e-5
+            while stack and stack[-1].global_range.end <= anim.global_range.at + 1e-5:
                 stack.pop()
 
             self.labels_info.append(TimelineView.LabelInfo(anim, len(stack)))
@@ -735,8 +737,21 @@ class TimelineView(QWidget):
 
             range = self.time_range_to_pixel_range(info.anim.global_range)
             rect = QRectF(range.left, -self.y_offset + info.row * self.label_height, range.width, self.label_height)
+
+            # 标记是否应当绘制名称
+            draw_text = True
+
+            # 使得在区段的左侧有一部分在显示区域外时，
+            # 文字仍然对齐到屏幕的左端，而不是跑到屏幕外面去
             if rect.x() < 0:
                 rect.setX(0)
+
+            # 使得过于下面的区段也能看到一条边
+            max_y = self.height() - TIMELINE_VIEW_RANGE_TIP_HEIGHT - 4
+            if rect.y() > max_y:
+                rect.setY(max_y)
+                rect.setBottom(self.height() + 2)
+                draw_text = False
 
             # 这里的判断使得区段过窄时也能看得见
             if rect.width() > 5:
@@ -751,6 +766,9 @@ class TimelineView(QWidget):
             p.setPen(Qt.PenStyle.NoPen)
             p.setBrush(QColor(*info.anim.label_color).lighter())
             p.drawRect(rect)
+
+            if not draw_text:
+                continue
 
             # 绘制动画类名
             rect.adjust(1, 1, -1, -1)
@@ -771,4 +789,15 @@ class TimelineView(QWidget):
         width = self.range.duration / self.anim.global_range.duration * self.width()
         p.setPen(Qt.PenStyle.NoPen)
         p.setBrush(QColor(77, 102, 132))
-        p.drawRoundedRect(left, self.height() - 4, width, 4, 2, 2)
+        p.drawRoundedRect(
+            left,
+            self.height() - TIMELINE_VIEW_RANGE_TIP_HEIGHT,
+            width,
+            TIMELINE_VIEW_RANGE_TIP_HEIGHT,
+            TIMELINE_VIEW_RANGE_TIP_HEIGHT / 2,
+            TIMELINE_VIEW_RANGE_TIP_HEIGHT / 2
+        )
+
+        # TODO: 对连续两次 forward 中间添加标记
+        # 因为连续两次 forward 很可能进行了非动画的更改，
+        # 对此进行标记有利于直观看出这个变化出现的位置
