@@ -10,7 +10,7 @@ from bisect import bisect, insort
 from collections import defaultdict
 from contextvars import ContextVar
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Callable, Iterable, Self
+from typing import Callable, Iterable, Self
 
 import moderngl as mgl
 import numpy as np
@@ -18,18 +18,16 @@ import numpy as np
 from janim.anims.animation import Animation, TimeRange
 from janim.anims.composition import AnimGroup
 from janim.anims.display import Display
-from janim.anims.transform import MethodTransform
 from janim.camera.camera import Camera
 from janim.exception import (NotAnimationError, StoreFailedError,
                              StoreNotFoundError, TimelineLookupError)
 from janim.items.item import Item
+from janim.items.audio import Audio
 from janim.logger import log
 from janim.render.base import RenderData, Renderer, set_global_uniforms
 from janim.utils.config import Config
 from janim.utils.simple_functions import clip
-
-if TYPE_CHECKING:   # pragma: no cover
-    from janim.items.item import Item
+from janim.utils.iterables import resize_preserving_order
 
 GET_DATA_DELTA = 1e-5
 ANIM_END_DELTA = 1e-5 * 2
@@ -106,6 +104,15 @@ class Timeline(metaclass=ABCMeta):
         - 否则，对于 ``DynamicData`` ，会在获取时调用以得到对应数据
         '''
 
+    @dataclass
+    class PlayAudioInfo:
+        '''
+        调用 :meth:`~.Timeline.play_audio` 的参数信息
+        '''
+        audio: Audio
+        at: float
+        range: TimeRange
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -115,6 +122,7 @@ class Timeline(metaclass=ABCMeta):
         self.scheduled_tasks: list[Timeline.ScheduledTask] = []
         self.anims: list[AnimGroup] = []
         self.display_anims: list[Display] = []
+        self.audio_infos: list[Timeline.PlayAudioInfo] = []
 
         self.item_stored_datas: defaultdict[Item, list[Timeline.TimedItemData]] = defaultdict(list)
         self.item_display_times: dict[Item, int] = {}
@@ -288,6 +296,67 @@ class Timeline(metaclass=ABCMeta):
         '''
         for item in list(self.item_display_times.keys()):
             self._hide(item)
+
+    # endregion
+
+    # region audio
+
+    def play_audio(
+        self,
+        audio: Audio,
+        *,
+        delay: float = 0,
+        begin: float = 0,
+        end: float = -1,
+    ) -> None:
+        if end == -1:
+            end = audio.wav.duration()
+        self.audio_infos.append(Timeline.PlayAudioInfo(audio,
+                                                       self.current_time + delay,
+                                                       TimeRange(begin, end - begin)))
+
+    def has_audio(self) -> bool:
+        return len(self.audio_infos) != 0
+
+    def get_audio_samples_of_frame(
+        self,
+        fps: float,
+        framerate: int,
+        frame: int
+    ) -> np.ndarray:
+        begin = frame / fps
+        end = (frame + 1) / fps
+
+        output_sample_count = math.floor(end * framerate) - math.floor(begin * framerate)
+        result = np.zeros(output_sample_count, dtype=np.int16)
+
+        for info in self.audio_infos:
+            if end < info.at or begin > info.at + info.range.duration:
+                continue
+
+            wav = info.audio.wav
+
+            frame_begin = int((begin - info.at + info.range.at) * wav._framerate)
+            frame_end = int((end - info.at + info.range.at) * wav._framerate)
+
+            clip_begin = max(0, wav._framerate * info.range.at)
+            clip_end = min(wav.sample_count(), wav._framerate * info.range.end)
+
+            left_blank = max(0, clip_begin - frame_begin)
+            right_blank = max(0, frame_end - clip_end)
+
+            data = wav._data._data[max(clip_begin, frame_begin): min(clip_end, frame_end)]
+
+            if left_blank != 0 or right_blank != 0:
+                data = np.concatenate([
+                    np.zeros(left_blank, dtype=np.int16),
+                    data,
+                    np.zeros(right_blank, dtype=np.int16)
+                ])
+
+            result += resize_preserving_order(data, output_sample_count)
+
+        return result
 
     # endregion
 

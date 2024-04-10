@@ -52,6 +52,8 @@ class Config(metaclass=_ConfigMeta):
     background_color: Color = None
     font: str = None
 
+    audio_framerate: int = None
+
     wnd_pos: str = None
     wnd_monitor: int = None
 
@@ -87,6 +89,8 @@ default_config = Config(
     pixel_width=1920,
     background_color=Color('#000000'),
     font='Consolas',
+
+    audio_framerate=44100,
 
     wnd_pos='OR',
     wnd_monitor=0,

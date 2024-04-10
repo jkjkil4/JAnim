@@ -20,6 +20,7 @@ class UniqueNparray:
 
     @property
     def data(self) -> np.ndarray:
+        # TODO: Optimize by setting WRITEABLE=False
         return self._data.copy()
 
     @data.setter

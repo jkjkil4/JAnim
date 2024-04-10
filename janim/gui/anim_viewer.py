@@ -31,6 +31,7 @@ from janim.anims.animation import Animation, TimeRange
 from janim.anims.timeline import Timeline, TimelineAnim
 from janim.exception import ExitException
 from janim.gui.application import Application
+from janim.gui.audio_player import AudioPlayer
 from janim.gui.fixed_ratio_widget import FixedRatioWidget
 from janim.gui.glwidget import GLWidget
 from janim.gui.richtext_editor import RichTextEditor
@@ -82,6 +83,8 @@ class AnimViewer(QMainWindow):
         self.play_timer.timeout.connect(self.on_play_timer_timeout)
         if auto_play:
             self.switch_play_state()
+
+        self.audio_player = AudioPlayer()
 
         self.fps_counter = 0
         self.fps_record_start = time.time()
@@ -343,6 +346,12 @@ class AnimViewer(QMainWindow):
         self.time_label.setText(f'{time:.1f}/{self.anim.global_range.duration:.1f} s')
 
     def on_play_timer_timeout(self) -> None:
+        if self.anim.timeline.has_audio():
+            samples = self.anim.timeline.get_audio_samples_of_frame(Config.get.preview_fps,
+                                                                    Config.get.audio_framerate,
+                                                                    self.timeline_view.progress())
+            self.audio_player.write(samples.tobytes())
+
         self.timeline_view.set_progress(self.timeline_view.progress() + 1)
         if self.timeline_view.at_end():
             self.play_timer.stop()

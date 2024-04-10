@@ -34,6 +34,7 @@ gui = [
     "pyside6",
     "qdarkstyle",
     "beautifulsoup4",
+    "pyaudio",
 ]
 doc = [
     "sphinx",
