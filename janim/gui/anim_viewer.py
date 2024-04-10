@@ -20,8 +20,8 @@ except ImportError:
 
 
 from PySide6.QtCore import QByteArray, QRectF, Qt, QTimer, Signal
-from PySide6.QtGui import (QCloseEvent, QColor, QHideEvent, QIcon, QKeyEvent,
-                           QMouseEvent, QPainter, QPaintEvent, QPen,
+from PySide6.QtGui import (QBrush, QCloseEvent, QColor, QHideEvent, QIcon,
+                           QKeyEvent, QMouseEvent, QPainter, QPaintEvent, QPen,
                            QWheelEvent)
 from PySide6.QtWidgets import (QApplication, QFileDialog, QLabel, QMainWindow,
                                QMessageBox, QPushButton, QSizePolicy,
@@ -746,6 +746,8 @@ class TimelineView(QWidget):
         orig_font = p.font()
 
         bottom_rect = self.rect()
+
+        # 绘制音频区段
         if self.anim.timeline.has_audio():
             audio_rect = QRectF(0, 0, self.width(), self.audio_height)
 
@@ -757,40 +759,13 @@ class TimelineView(QWidget):
                 if info.range.end <= self.range.at or info.range.at >= self.range.end:
                     continue
 
-                # TODO: 提取重复代码
-                range = self.time_range_to_pixel_range(info.range)
-                rect = QRectF(range.left,
-                              audio_rect.y(),
-                              range.width,
-                              self.audio_height)
-
-                # 使得在区段的左侧有一部分在显示区域外时，
-                # 文字仍然对齐到屏幕的左端，而不是跑到屏幕外面去
-                if rect.x() < 0:
-                    rect.setX(0)
-
-                # 这里的判断使得区段过窄时也能看得见
-                if rect.width() > 5:
-                    x_adjust = 2
-                elif rect.width() > 1:
-                    x_adjust = (rect.width() - 1) / 2
-                else:
-                    x_adjust = 0
-
-                # 绘制背景部分
-                rect.adjust(x_adjust, 2, -x_adjust, -2)
-                p.setPen(QColor(67, 219, 125))
-                p.setBrush(QColor(67, 219, 125, 128))
-                p.drawRect(rect)
-
-                # 绘制文件名
-                rect.adjust(1, 1, -1, -1)
-                p.setPen(Qt.GlobalColor.black)
-                p.drawText(
-                    rect,
-                    Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignTop,
-                    info.audio.filename
-                )
+                self.paint_label(p,
+                                 info.range,
+                                 audio_rect.y(),
+                                 self.audio_height,
+                                 info.audio.filename,
+                                 QColor(152, 255, 191),
+                                 QColor(152, 255, 191, 128))
 
             p.setFont(orig_font)
             bottom_rect.adjust(0, self.audio_height, 0, 0)
@@ -803,52 +778,13 @@ class TimelineView(QWidget):
             if info.anim.global_range.end <= self.range.at or info.anim.global_range.at >= self.range.end:
                 continue
 
-            range = self.time_range_to_pixel_range(info.anim.global_range)
-            rect = QRectF(range.left,
-                          bottom_rect.y() - self.y_offset + info.row * self.label_height,
-                          range.width,
-                          self.label_height)
-
-            # 标记是否应当绘制名称
-            draw_text = True
-
-            # 使得在区段的左侧有一部分在显示区域外时，
-            # 文字仍然对齐到屏幕的左端，而不是跑到屏幕外面去
-            if rect.x() < 0:
-                rect.setX(0)
-
-            # 使得超出底端的区段也能看到一条边
-            max_y = self.height() - self.range_tip_height - 4
-            if rect.y() > max_y:
-                rect.setY(max_y)
-                rect.setBottom(self.height() + 2)
-                draw_text = False
-
-            # 这里的判断使得区段过窄时也能看得见
-            if rect.width() > 5:
-                x_adjust = 2
-            elif rect.width() > 1:
-                x_adjust = (rect.width() - 1) / 2
-            else:
-                x_adjust = 0
-
-            # 绘制背景部分
-            rect.adjust(x_adjust, 2, -x_adjust, -2)
-            p.setPen(Qt.PenStyle.NoPen)
-            p.setBrush(QColor(*info.anim.label_color).lighter())
-            p.drawRect(rect)
-
-            if not draw_text:
-                continue
-
-            # 绘制动画类名
-            rect.adjust(1, 1, -1, -1)
-            p.setPen(Qt.GlobalColor.black)
-            p.drawText(
-                rect,
-                Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignTop,
-                f'{info.anim.__class__.__name__}'
-            )
+            self.paint_label(p,
+                             info.anim.global_range,
+                             bottom_rect.y() - self.y_offset + info.row * self.label_height,
+                             self.label_height,
+                             info.anim.__class__.__name__,
+                             Qt.PenStyle.NoPen,
+                             QColor(*info.anim.label_color).lighter())
 
         p.setClipping(False)
 
@@ -874,3 +810,55 @@ class TimelineView(QWidget):
         # TODO: 对连续两次 forward 中间添加标记
         # 因为连续两次 forward 很可能进行了非动画的更改，
         # 对此进行标记有利于直观看出这个变化出现的位置
+
+    def paint_label(
+        self,
+        p: QPainter,
+        time_range: TimeRange,
+        y: float,
+        height: float,
+        txt: str,
+        stroke: QPen | QColor,
+        fill: QBrush | QColor,
+    ) -> None:
+        range = self.time_range_to_pixel_range(time_range)
+        rect = QRectF(range.left, y, range.width, height)
+
+        # 标记是否应当绘制文字
+        draw_txt = True
+
+        # 使得超出底端的区段也能看到一条边
+        max_y = self.height() - self.range_tip_height - 4
+        if rect.y() > max_y:
+            rect.setY(max_y)
+            rect.setBottom(self.height() + 2)
+            draw_txt = False
+
+        # 这里的判断使得区段过窄时也能看得见
+        if rect.width() > 5:
+            x_adjust = 2
+        elif rect.width() > 1:
+            x_adjust = (rect.width() - 1) / 2
+        else:
+            x_adjust = 0
+
+        # 绘制背景部分
+        rect.adjust(x_adjust, 2, -x_adjust, -2)
+        p.setPen(stroke)
+        p.setBrush(fill)
+        p.drawRect(rect)
+
+        # 使得在区段的左侧有一部分在显示区域外时，
+        # 文字仍然对齐到屏幕的左端，而不是跑到屏幕外面去
+        if rect.x() < 0:
+            rect.setX(0)
+
+        # 绘制文字
+        if draw_txt:
+            rect.adjust(1, 1, -1, -1)
+            p.setPen(Qt.GlobalColor.black)
+            p.drawText(
+                rect,
+                Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignTop,
+                txt
+            )
