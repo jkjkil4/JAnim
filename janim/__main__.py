@@ -147,7 +147,7 @@ def write(args: Namespace) -> None:
     if not timelines:
         return
 
-    from janim.render.file_writer import FileWriter
+    from janim.render.writer import VideoWriter
 
     log.info('======')
 
@@ -167,7 +167,7 @@ def write(args: Namespace) -> None:
     log.info('======')
 
     for anim in built:
-        writer = FileWriter(anim)
+        writer = VideoWriter(anim)
         writer.write_all(
             os.path.join(Config.get.output_dir,
                          f'{anim.timeline.__class__.__name__}.{args.format}')

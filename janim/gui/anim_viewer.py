@@ -37,7 +37,7 @@ from janim.gui.glwidget import GLWidget
 from janim.gui.richtext_editor import RichTextEditor
 from janim.gui.selector import Selector
 from janim.logger import log
-from janim.render.file_writer import FileWriter
+from janim.render.writer import VideoWriter
 from janim.utils.config import Config
 from janim.utils.file_ops import get_janim_dir
 from janim.utils.simple_functions import clip
@@ -451,7 +451,7 @@ class AnimViewer(QMainWindow):
 
         QMessageBox.information(self, '提示', '即将进行输出，请留意控制台信息')
         try:
-            FileWriter.writes(self.anim.timeline.__class__().build(), file_path)
+            VideoWriter.writes(self.anim.timeline.__class__().build(), file_path)
         except Exception as e:
             if not isinstance(e, ExitException):
                 traceback.print_exc()

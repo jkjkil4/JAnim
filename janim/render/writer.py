@@ -12,11 +12,11 @@ from janim.logger import log
 from janim.utils.config import Config
 
 
-class FileWriter:
+class VideoWriter:
     '''
     将时间轴动画生成视频输出到文件中
 
-    可以直接调用 ``FileWriter.writes(MyTimeline().build())`` 进行输出
+    可以直接调用 ``VideoWriter.writes(MyTimeline().build())`` 进行输出
 
     主要流程在 :meth:`write_all` 中：
 
@@ -124,4 +124,4 @@ class FileWriter:
 
     @staticmethod
     def writes(anim: TimelineAnim, file_path: str, *, quiet=False) -> None:
-        FileWriter(anim).write_all(file_path, quiet=quiet)
+        VideoWriter(anim).write_all(file_path, quiet=quiet)
