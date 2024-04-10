@@ -788,7 +788,7 @@ class TimelineView(QWidget):
                 p.drawText(
                     rect,
                     Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignTop,
-                    info.audio.wav.filename
+                    info.audio.filename
                 )
 
             p.setFont(orig_font)
@@ -816,7 +816,7 @@ class TimelineView(QWidget):
             if rect.x() < 0:
                 rect.setX(0)
 
-            # 使得过于下面的区段也能看到一条边
+            # 使得超出底端的区段也能看到一条边
             max_y = self.height() - self.range_tip_height - 4
             if rect.y() > max_y:
                 rect.setY(max_y)

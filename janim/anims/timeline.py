@@ -310,7 +310,7 @@ class Timeline(metaclass=ABCMeta):
         end: float = -1,
     ) -> None:
         if end == -1:
-            end = audio.wav.duration()
+            end = audio.duration()
         self.audio_infos.append(Timeline.PlayAudioInfo(audio,
                                                        self.current_time + delay,
                                                        TimeRange(begin, end - begin)))
@@ -334,18 +334,18 @@ class Timeline(metaclass=ABCMeta):
             if end < info.at or begin > info.at + info.range.duration:
                 continue
 
-            wav = info.audio.wav
+            audio = info.audio
 
-            frame_begin = int((begin - info.at + info.range.at) * wav.framerate)
-            frame_end = int((end - info.at + info.range.at) * wav.framerate)
+            frame_begin = int((begin - info.at + info.range.at) * audio.framerate)
+            frame_end = int((end - info.at + info.range.at) * audio.framerate)
 
-            clip_begin = max(0, wav.framerate * info.range.at)
-            clip_end = min(wav.sample_count(), wav.framerate * info.range.end)
+            clip_begin = max(0, audio.framerate * info.range.at)
+            clip_end = min(audio.sample_count(), audio.framerate * info.range.end)
 
             left_blank = max(0, clip_begin - frame_begin)
             right_blank = max(0, frame_end - clip_end)
 
-            data = wav._data._data[max(clip_begin, frame_begin): min(clip_end, frame_end)]
+            data = audio._samples._data[max(clip_begin, frame_begin): min(clip_end, frame_end)]
 
             if left_blank != 0 or right_blank != 0:
                 data = np.concatenate([
