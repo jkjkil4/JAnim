@@ -473,6 +473,7 @@ class AnimViewer(QMainWindow):
                 self.timeline_view.set_progress(0)
             self.fps_record_start = time.time()
             self.fps_counter = 0
+            # TODO: 修复不精准的问题
             self.play_timer.start(1000 // Config.get.preview_fps)
 
     # endregion
@@ -753,12 +754,12 @@ class TimelineView(QWidget):
             p.setFont(font)
 
             for info in self.anim.timeline.audio_infos:
-                if info.at + info.range.duration <= self.range.at or info.at >= self.range.end:
+                if info.range.end <= self.range.at or info.range.at >= self.range.end:
                     continue
 
                 # TODO: 提取重复代码
-                range = self.time_range_to_pixel_range(TimeRange(info.at, info.at + info.range.duration))
-                rect = QRectF(audio_rect.x() + range.left,
+                range = self.time_range_to_pixel_range(info.range)
+                rect = QRectF(range.left,
                               audio_rect.y(),
                               range.width,
                               self.audio_height)
@@ -803,7 +804,7 @@ class TimelineView(QWidget):
                 continue
 
             range = self.time_range_to_pixel_range(info.anim.global_range)
-            rect = QRectF(bottom_rect.x() + range.left,
+            rect = QRectF(range.left,
                           bottom_rect.y() - self.y_offset + info.row * self.label_height,
                           range.width,
                           self.label_height)

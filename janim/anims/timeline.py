@@ -110,8 +110,8 @@ class Timeline(metaclass=ABCMeta):
         调用 :meth:`~.Timeline.play_audio` 的参数信息
         '''
         audio: Audio
-        at: float
         range: TimeRange
+        clip_range: TimeRange
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -311,9 +311,10 @@ class Timeline(metaclass=ABCMeta):
     ) -> None:
         if end == -1:
             end = audio.duration()
+        duration = end - begin
         self.audio_infos.append(Timeline.PlayAudioInfo(audio,
-                                                       self.current_time + delay,
-                                                       TimeRange(begin, end - begin)))
+                                                       TimeRange(self.current_time + delay, duration),
+                                                       TimeRange(begin, duration)))
 
     def has_audio(self) -> bool:
         return len(self.audio_infos) != 0
@@ -331,16 +332,16 @@ class Timeline(metaclass=ABCMeta):
         result = np.zeros(output_sample_count, dtype=np.int16)
 
         for info in self.audio_infos:
-            if end < info.at or begin > info.at + info.range.duration:
+            if end < info.range.at or begin > info.range.end:
                 continue
 
             audio = info.audio
 
-            frame_begin = int((begin - info.at + info.range.at) * audio.framerate)
-            frame_end = int((end - info.at + info.range.at) * audio.framerate)
+            frame_begin = int((begin - info.range.at + info.clip_range.at) * audio.framerate)
+            frame_end = int((end - info.range.at + info.clip_range.at) * audio.framerate)
 
-            clip_begin = max(0, audio.framerate * info.range.at)
-            clip_end = min(audio.sample_count(), audio.framerate * info.range.end)
+            clip_begin = max(0, audio.framerate * info.clip_range.at)
+            clip_end = min(audio.sample_count(), audio.framerate * info.clip_range.end)
 
             left_blank = max(0, clip_begin - frame_begin)
             right_blank = max(0, frame_end - clip_end)
