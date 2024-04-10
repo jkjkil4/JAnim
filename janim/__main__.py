@@ -68,13 +68,26 @@ def write_parser(parser: ArgumentParser) -> None:
     parser.add_argument(
         '-o', '--open',
         action='store_true',
-        help='Open the file after writing'
+        help='Open the video after writing'
     )
     parser.add_argument(
         '--format',
         choices=['mp4', 'mov'],
         default='mp4',
-        help='Format of the output file'
+        help='Format of the output video'
+    )
+    parser.add_argument(
+        '--audio_format',
+        default='mp3',
+        help='Format of the output audio'
+    )
+    parser.add_argument(
+        '--video',
+        action='store_true',
+    )
+    parser.add_argument(
+        '--audio',
+        action='store_true'
     )
     parser.set_defaults(func=write)
 
@@ -147,7 +160,7 @@ def write(args: Namespace) -> None:
     if not timelines:
         return
 
-    from janim.render.writer import VideoWriter
+    from janim.render.writer import AudioWriter, VideoWriter
 
     log.info('======')
 
@@ -155,25 +168,41 @@ def write(args: Namespace) -> None:
 
     log.info('======')
 
+    both = not args.video and not args.audio
+
     output_dir = os.path.normpath(Config.get.output_dir)
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
 
-    log.info(f'fps={Config.get.fps}')
-    log.info(f'resolution="{Config.get.pixel_width}x{Config.get.pixel_height}"')
+    if both or args.video:
+        log.info(f'fps={Config.get.fps}')
+        log.info(f'resolution="{Config.get.pixel_width}x{Config.get.pixel_height}"')
+        log.info(f'format="{args.format}"')
+    if both or args.audio:
+        log.info(f'audio_format="{args.audio_format}"')
+        log.info(f'audio_framerate="{Config.get.audio_framerate}"')
     log.info(f'output_dir="{output_dir}"')
-    log.info(f'format="{args.format}"')
 
     log.info('======')
 
     for anim in built:
-        writer = VideoWriter(anim)
-        writer.write_all(
-            os.path.join(Config.get.output_dir,
-                         f'{anim.timeline.__class__.__name__}.{args.format}')
-        )
-        if args.open and anim is built[-1]:
-            open_file(writer.final_file_path)
+        name = anim.timeline.__class__.__name__
+
+        if both or args.video:
+            writer = VideoWriter(anim)
+            writer.write_all(
+                os.path.join(Config.get.output_dir,
+                             f'{name}.{args.format}')
+            )
+            if args.open and anim is built[-1]:
+                open_file(writer.final_file_path)
+
+        if (both or args.audio) and anim.timeline.has_audio():
+            writer = AudioWriter(anim)
+            writer.write_all(
+                os.path.join(Config.get.output_dir,
+                             f'{name}.{args.audio_format}')
+            )
 
     log.info('======')
 

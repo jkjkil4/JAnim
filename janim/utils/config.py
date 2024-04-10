@@ -53,7 +53,6 @@ class Config(metaclass=_ConfigMeta):
     font: str = None
 
     audio_framerate: int = None
-    audio_sampwidth: int = None
 
     wnd_pos: str = None
     wnd_monitor: int = None
