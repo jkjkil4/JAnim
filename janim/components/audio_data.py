@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import subprocess as sp
+import os
 from typing import Iterable, Self
 
 import numpy as np
@@ -17,12 +18,14 @@ from janim.utils.unique_nparray import UniqueNparray
 class Cmpt_AudioWav[T](Component[T]):
     def __init__(self):
         self._data = UniqueNparray(dtype=np.int16)
-        self._framerate = 0
+        self.framerate = 0
+        self.filepath = ''
+        self.filename = ''
 
     def copy(self) -> Self:
         copy_cmpt = super().copy()
         copy_cmpt._data = self._data.copy()
-        # _framerate 已在父类中赋值
+        # _framerate 已在父类中复制
         return copy_cmpt
 
     def become(self, other: Cmpt_AudioWav) -> Self:
@@ -58,9 +61,14 @@ class Cmpt_AudioWav[T](Component[T]):
         ]
 
         try:
+            # TODO: support more sampwidth
+            # TODO: fix ByteOrder
             with sp.Popen(command, stdout=sp.PIPE) as reading_process:
                 self._data.data = np.frombuffer(reading_process.stdout.read(), dtype=np.int16)
-                self._framerate = Config.get.audio_framerate
+                self.framerate = Config.get.audio_framerate
+                self.filepath = filepath
+                self.filename = os.path.basename(filepath)
+
         except FileNotFoundError:
             log.error('无法读取音频，需要安装 ffmpeg 并将其添加到环境变量中')
             raise ExitException(EXITCODE_FFMPEG_NOT_FOUND)
@@ -69,14 +77,14 @@ class Cmpt_AudioWav[T](Component[T]):
         return len(self._data._data)
 
     def duration(self) -> float:
-        return self.sample_count() / self._framerate
+        return self.sample_count() / self.framerate
 
     def clip(self, begin: float = 0, end: float = -1) -> Self:
-        frame_begin = clip(int(begin * self._framerate), 0, self.sample_count())
+        frame_begin = clip(int(begin * self.framerate), 0, self.sample_count())
         if end == -1:
             frame_end = self.sample_count()
         else:
-            frame_end = clip(int(end * self._framerate), 0, self.sample_count())
+            frame_end = clip(int(end * self.framerate), 0, self.sample_count())
         self._data.data = self._data._data[frame_begin:frame_end]
 
         return self
@@ -89,7 +97,7 @@ class Cmpt_AudioWav[T](Component[T]):
         return self
 
     def fade_in(self, duration: float) -> Self:
-        frames = int(self._framerate * duration)
+        frames = int(self.framerate * duration)
         data = self._data.data
         data[:frames] = (data[:frames] * np.linspace(0, 1, frames)).astype(np.int16)
         self._data.data = data
@@ -97,7 +105,7 @@ class Cmpt_AudioWav[T](Component[T]):
         return self
 
     def fade_out(self, duration: float) -> Self:
-        frames = int(self._framerate * duration)
+        frames = int(self.framerate * duration)
         data = self._data.data
         data[-frames:] = (data[-frames:] * np.linspace(1, 0, frames)).astype(np.int16)
         self._data.data = data

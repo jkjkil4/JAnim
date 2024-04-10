@@ -43,7 +43,6 @@ from janim.utils.file_ops import get_janim_dir
 from janim.utils.simple_functions import clip
 
 TIMELINE_VIEW_MIN_DURATION = 0.5
-TIMELINE_VIEW_RANGE_TIP_HEIGHT = 4
 
 # TODO: 鼠标悬停在时间轴的动画上时，显示动画信息
 
@@ -533,8 +532,11 @@ class TimelineView(QWidget):
 
     space_pressed = Signal()
 
-    label_height = 24   # px
-    play_space = 20     # px
+    # px
+    audio_height = 20
+    label_height = 24
+    range_tip_height = 4
+    play_space = 20
 
     def __init__(self, anim: TimelineAnim, parent: QWidget | None = None):
         super().__init__(parent)
@@ -547,6 +549,7 @@ class TimelineView(QWidget):
 
         self.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
         self.setMouseTracking(True)
+        self.setMinimumHeight(self.label_height + self.range_tip_height + 10)
 
     def set_anim(self, anim: TimelineAnim) -> None:
         self.range = TimeRange(0, min(20, anim.global_range.duration))
@@ -739,13 +742,71 @@ class TimelineView(QWidget):
     def paintEvent(self, _: QPaintEvent) -> None:
         p = QPainter(self)
 
+        orig_font = p.font()
+
+        bottom_rect = self.rect()
+        if self.anim.timeline.has_audio():
+            audio_rect = QRectF(0, 0, self.width(), self.audio_height)
+
+            font = p.font()
+            font.setPointSize(8)
+            p.setFont(font)
+
+            for info in self.anim.timeline.audio_infos:
+                if info.at + info.range.duration <= self.range.at or info.at >= self.range.end:
+                    continue
+
+                # TODO: 提取重复代码
+                range = self.time_range_to_pixel_range(TimeRange(info.at, info.at + info.range.duration))
+                rect = QRectF(audio_rect.x() + range.left,
+                              audio_rect.y(),
+                              range.width,
+                              self.audio_height)
+
+                # 使得在区段的左侧有一部分在显示区域外时，
+                # 文字仍然对齐到屏幕的左端，而不是跑到屏幕外面去
+                if rect.x() < 0:
+                    rect.setX(0)
+
+                # 这里的判断使得区段过窄时也能看得见
+                if rect.width() > 5:
+                    x_adjust = 2
+                elif rect.width() > 1:
+                    x_adjust = (rect.width() - 1) / 2
+                else:
+                    x_adjust = 0
+
+                # 绘制背景部分
+                rect.adjust(x_adjust, 2, -x_adjust, -2)
+                p.setPen(QColor(67, 219, 125))
+                p.setBrush(QColor(67, 219, 125, 128))
+                p.drawRect(rect)
+
+                # 绘制文件名
+                rect.adjust(1, 1, -1, -1)
+                p.setPen(Qt.GlobalColor.black)
+                p.drawText(
+                    rect,
+                    Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignTop,
+                    info.audio.wav.filename
+                )
+
+            p.setFont(orig_font)
+            bottom_rect.adjust(0, self.audio_height, 0, 0)
+
+        bottom_rect.adjust(0, 0, 0, -self.range_tip_height)
+        p.setClipRect(bottom_rect)
+
         # 绘制动画区段
         for info in self.labels_info:
             if info.anim.global_range.end <= self.range.at or info.anim.global_range.at >= self.range.end:
                 continue
 
             range = self.time_range_to_pixel_range(info.anim.global_range)
-            rect = QRectF(range.left, -self.y_offset + info.row * self.label_height, range.width, self.label_height)
+            rect = QRectF(bottom_rect.x() + range.left,
+                          bottom_rect.y() - self.y_offset + info.row * self.label_height,
+                          range.width,
+                          self.label_height)
 
             # 标记是否应当绘制名称
             draw_text = True
@@ -756,7 +817,7 @@ class TimelineView(QWidget):
                 rect.setX(0)
 
             # 使得过于下面的区段也能看到一条边
-            max_y = self.height() - TIMELINE_VIEW_RANGE_TIP_HEIGHT - 4
+            max_y = self.height() - self.range_tip_height - 4
             if rect.y() > max_y:
                 rect.setY(max_y)
                 rect.setBottom(self.height() + 2)
@@ -788,6 +849,8 @@ class TimelineView(QWidget):
                 f'{info.anim.__class__.__name__}'
             )
 
+        p.setClipping(False)
+
         # 绘制当前进度指示
         pixel_at = self.progress_to_pixel(self._progress)
         p.setPen(QPen(Qt.GlobalColor.white, 2))
@@ -800,11 +863,11 @@ class TimelineView(QWidget):
         p.setBrush(QColor(77, 102, 132))
         p.drawRoundedRect(
             left,
-            self.height() - TIMELINE_VIEW_RANGE_TIP_HEIGHT,
+            self.height() - self.range_tip_height,
             width,
-            TIMELINE_VIEW_RANGE_TIP_HEIGHT,
-            TIMELINE_VIEW_RANGE_TIP_HEIGHT / 2,
-            TIMELINE_VIEW_RANGE_TIP_HEIGHT / 2
+            self.range_tip_height,
+            self.range_tip_height / 2,
+            self.range_tip_height / 2
         )
 
         # TODO: 对连续两次 forward 中间添加标记
