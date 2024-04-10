@@ -39,7 +39,7 @@ class Cmpt_AudioWav[T](Component[T]):
         end: float = -1
     ) -> Self:
         command = [
-            'ffmpeg',
+            Config.get.ffmpeg_bin,
             '-vn',
             '-i', filepath,
         ]
