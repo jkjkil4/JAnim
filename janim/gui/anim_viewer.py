@@ -702,7 +702,7 @@ class TimelineView(QWidget):
         elif key == Qt.Key.Key_Z:
             anims = self.get_sorted_anims()
             time = self.progress_to_time(self._progress)
-            idx = bisect(anims, time - 1e-5, key=lambda x: x.global_range.at)
+            idx = bisect(anims, time - 1e-2, key=lambda x: x.global_range.at)
             idx -= 1
             if idx < 0:
                 self.set_progress(0)
@@ -714,7 +714,7 @@ class TimelineView(QWidget):
         elif key == Qt.Key.Key_C:
             anims = self.get_sorted_anims()
             time = self.progress_to_time(self._progress)
-            idx = bisect(anims, time + 1e-5, key=lambda x: x.global_range.at)
+            idx = bisect(anims, time + 1e-2, key=lambda x: x.global_range.at)
             if idx < len(anims):
                 self.set_progress(self.time_to_progress(anims[idx].global_range.at))
             else:
@@ -742,10 +742,19 @@ class TimelineView(QWidget):
 
     def paintEvent(self, _: QPaintEvent) -> None:
         p = QPainter(self)
-
         orig_font = p.font()
-
         bottom_rect = self.rect()
+
+        # 绘制每次 forward 或 play 的时刻
+        times_of_code = self.anim.timeline.times_of_code
+        left = bisect(times_of_code, self.range.at - 1e-5, key=lambda x: x.time)
+        right = bisect(times_of_code, self.range.end + 1e-5, key=lambda x: x.time)
+
+        p.setPen(QPen(QColor(74, 48, 80), 2))
+        p.setRenderHint(QPainter.RenderHint.Antialiasing, True)
+        for time_of_code in times_of_code[left:right]:
+            self.paint_line(p, time_of_code.time)
+        p.setRenderHint(QPainter.RenderHint.Antialiasing, False)
 
         # 绘制音频区段
         if self.anim.timeline.has_audio():
@@ -789,9 +798,10 @@ class TimelineView(QWidget):
         p.setClipping(False)
 
         # 绘制当前进度指示
-        pixel_at = self.progress_to_pixel(self._progress)
         p.setPen(QPen(Qt.GlobalColor.white, 2))
-        p.drawLine(pixel_at, 0, pixel_at, self.height())
+        p.setRenderHint(QPainter.RenderHint.Antialiasing, True)
+        self.paint_line(p, self.progress_to_time(self._progress))
+        p.setRenderHint(QPainter.RenderHint.Antialiasing, False)
 
         # 绘制视野区域指示（底部的长条）
         left = self.range.at / self.anim.global_range.duration * self.width()
@@ -806,10 +816,6 @@ class TimelineView(QWidget):
             self.range_tip_height / 2,
             self.range_tip_height / 2
         )
-
-        # TODO: 对连续两次 forward 中间添加标记
-        # 因为连续两次 forward 很可能进行了非动画的更改，
-        # 对此进行标记有利于直观看出这个变化出现的位置
 
     def paint_label(
         self,
@@ -862,3 +868,7 @@ class TimelineView(QWidget):
                 Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignTop,
                 txt
             )
+
+    def paint_line(self, p: QPainter, time: float) -> None:
+        pixel_at = self.time_to_pixel(time)
+        p.drawLine(pixel_at, 0, pixel_at, self.height())

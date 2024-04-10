@@ -17,6 +17,9 @@ from janim.utils.unique_nparray import UniqueNparray
 
 
 class Audio:
+    '''
+    不建议使用该类处理多声道音频，因为该类读取时仅保留单声道
+    '''
     def __init__(self, filepath: str, begin: float = -1, end: float = -1, **kwargs):
         super().__init__(**kwargs)
         self._samples = UniqueNparray(dtype=np.int16)
@@ -67,6 +70,8 @@ class Audio:
         except FileNotFoundError:
             log.error('无法读取音频，需要安装 ffmpeg 并将其添加到环境变量中')
             raise ExitException(EXITCODE_FFMPEG_NOT_FOUND)
+
+        return self
 
     def sample_count(self) -> int:
         return len(self._samples._data)
