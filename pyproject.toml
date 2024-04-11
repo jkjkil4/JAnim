@@ -38,6 +38,7 @@ gui = [
 ]
 doc = [
     "sphinx",
+    "sphinx-copybutton",
     "furo",
     "jinja2",
     "docutils",

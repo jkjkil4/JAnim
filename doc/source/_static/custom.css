@@ -6,9 +6,9 @@ span.caption-text {
     font-size: larger;
 }
 
-span.pre {
+/* .highlight pre {
     font-size: initial;
-}
+} */
 
 .highlight-python.notranslate {
     margin-top: 0em;
