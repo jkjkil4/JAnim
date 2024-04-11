@@ -230,7 +230,7 @@ class Timeline(metaclass=ABCMeta):
 
         anim = AnimGroup(*anims, **kwargs)
         anim.local_range.at += self.current_time
-        anim.set_global_range(anim.local_range.at, anim.local_range.duration)
+        anim.compute_global_range(anim.local_range.at, anim.local_range.duration)
 
         anim.anim_pre_init()
         self.detect_changes_of_all()
@@ -276,7 +276,7 @@ class Timeline(metaclass=ABCMeta):
 
         anim = Display(item, duration=duration, root_only=True)
         anim.local_range.at += time
-        anim.set_global_range(anim.local_range.at, anim.local_range.duration)
+        anim.compute_global_range(anim.local_range.at, anim.local_range.duration)
         self.display_anims.append(anim)
         return anim
 

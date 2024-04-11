@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING, Callable
 from janim.components.depth import Cmpt_Depth
 from janim.utils.rate_functions import RateFunc, smooth
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:   # pragma: no cover
     from janim.anims.composition import AnimGroup
 
 
@@ -48,14 +48,12 @@ class Animation:
 
         self.render_call_list: list[RenderCall] = []
 
-    def set_global_range(self, at: float, duration: float | None = None) -> None:
+    def compute_global_range(self, at: float, duration: float) -> None:
         '''
-        设置在 :class:`~.Timeline` 上的时间范围
+        计算 :class:`~.Timeline` 上的时间范围
 
-        不需要手动设置，该方法是被 :meth:`~.AnimGroup.set_global_range` 调用以计算的
+        该方法是被 :meth:`~.AnimGroup.set_global_range` 调用以计算的
         '''
-        if duration is None:
-            duration = self.local_range.duration
         self.global_range = TimeRange(at, duration)
 
     def set_render_call_list(self, lst: list[RenderCall]) -> None:

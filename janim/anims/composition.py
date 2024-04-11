@@ -59,21 +59,18 @@ class AnimGroup(Animation):
 
         return result
 
-    def set_global_range(self, at: float, duration: float | None = None) -> None:
+    def compute_global_range(self, at: float, duration: float) -> None:
         '''
-        设置并计算子动画的时间范围
+        计算子动画的时间范围
 
-        不需要手动设置，该方法是被 :meth:`~.Timeline.prepare` 调用以计算的
+        该方法是被 :meth:`~.Timeline.prepare` 调用以计算的
         '''
-        super().set_global_range(at, duration)
-
-        if duration is None:
-            duration = self.local_range.duration
+        super().compute_global_range(at, duration)
 
         factor = duration / self.maxt
 
         for anim in self.anims:
-            anim.set_global_range(
+            anim.compute_global_range(
                 self.global_range.at + anim.local_range.at * factor,
                 anim.local_range.duration * factor
             )
@@ -159,11 +156,18 @@ class Aligned(AnimGroup):
             duration=4
         ) # Anim1 和 Anim2 都在 0~4s 执行
     '''
-    def __init__(*anims: Animation, **kwargs):
-        maxt = max(anim.local_range.end for anim in anims)
-        for anim in anims:
-            factor = anim.local_range.end / maxt
-            anim.local_range.at *= factor
-            anim.local_range.duration *= factor
+    def __init__(self, *anims: Animation, duration: float | None = None, **kwargs):
+        if duration is None:
+            duration = max(anim.local_range.end for anim in anims)
 
-        super().__init__(*anims, **kwargs)
+        super().__init__(*anims, duration=duration, **kwargs)
+
+    def compute_global_range(self, at: float, duration: float) -> None:
+        Animation.compute_global_range(self, at, duration)
+
+        for anim in self.anims:
+            factor = duration / anim.local_range.end
+            anim.compute_global_range(
+                self.global_range.at + anim.local_range.at * factor,
+                anim.local_range.duration * factor
+            )
