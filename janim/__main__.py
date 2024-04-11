@@ -8,16 +8,28 @@ def main() -> None:
     parser = ArgumentParser(description='A library for simple animation effects')
     parser.set_defaults(func=None)
 
+    parser.add_argument(
+        '-v', '--version',
+        action='store_true'
+    )
+
     sp = parser.add_subparsers()
     run_parser(sp.add_parser('run', help='Run timeline(s) from specific namespace'))
     write_parser(sp.add_parser('write', help='Generate video file(s) of timeline(s) from specific namesapce'))
     examples_parser(sp.add_parser('examples', help='Show examples of janim'))
 
     args = parser.parse_args()
+
+    if args.version:
+        from janim import __version__
+        print(f'JAnim {__version__}')
+
     if args.func is None:
-        parser.print_help()
-    else:
-        args.func(args)
+        if not args.version:
+            parser.print_help()
+        return
+
+    args.func(args)
 
 
 def render_args(parser: ArgumentParser) -> None:

@@ -171,11 +171,15 @@ def extract_timelines_from_module(args: Namespace, module) -> list[type['Timelin
             print(f"{str(idx).zfill(max_digits)}: {name}")
             name_to_class[name] = timeline_class
 
-        user_input = input(
-            "\nThat module has multiple timelines, "
-            "which ones would you like to render?"
-            "\nTimeline Name or Number: "
-        )
+        try:
+            user_input = input(
+                "\nThat module has multiple timelines, "
+                "which ones would you like to render?"
+                "\nTimeline Name or Number: "
+            )
+        except KeyboardInterrupt:
+            user_input = ''
+
         for split_str in user_input.replace(' ', '').split(','):
             if not split_str:
                 continue
