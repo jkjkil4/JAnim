@@ -1,4 +1,5 @@
 import unittest
+from typing import Self
 
 from janim.components.component import CmptGroup, CmptInfo, Component
 from janim.exception import AsTypeError, CmptGroupLookupError
@@ -7,14 +8,42 @@ from janim.items.points import Group
 
 
 class ComponentTest(unittest.TestCase):
+    def test_component(self) -> None:
+        with self.assertRaises(AttributeError):
+            class MyCmpt(Component):
+                pass
+
+        class MyCmpt1[T](Component[T], impl=True): ...
+        class MyCmpt2[T](Component[T], impl=True): ...
+
+        class MyItem(Item):
+            cmpt1 = CmptInfo(MyCmpt1[Self])
+            cmpt2 = CmptInfo(MyCmpt2[Self])
+
+        item = MyItem()
+
+        self.assertIs(item, item.cmpt1.r)
+        self.assertIs(item.cmpt2, item.cmpt1.r.cmpt2)
+
     def test_component_group(self) -> None:
         called_list = []
 
-        class MyCmpt(Component, impl=True):
+        class MyCmpt(Component):
+            def __init__(self):
+                self.a = 1
+
+            def copy(self) -> Self:
+                return super().copy()
+
+            def become(self, other) -> Self:
+                self.a = other.a
+                return self
+
+            def __eq__(self, other) -> bool:
+                return self.a == other.a
+
             def fn(self):
                 called_list.append(self.fn)
-
-            a = 1
 
         class MyItem(Item):
             cmpt1 = CmptInfo(MyCmpt)
@@ -27,6 +56,14 @@ class ComponentTest(unittest.TestCase):
         item.cmpt.fn()
 
         self.assertListEqual(called_list, [item.cmpt1.fn, item.cmpt1.fn, item.cmpt2.fn])
+
+        item_copy = item.copy()
+        self.assertEqual(item_copy.cmpt1.a, item.cmpt1.a)
+        self.assertEqual(item_copy.cmpt2.a, item.cmpt2.a)
+        self.assertEqual(item_copy.cmpt, item.cmpt)
+        item_copy.cmpt2.a = 11
+        self.assertNotEqual(item_copy.cmpt2.a, item.cmpt2.a)
+        self.assertNotEqual(item_copy.cmpt, item.cmpt)
 
         with self.assertRaises(AttributeError):
             item.cmpt.fn_not_exists

@@ -53,6 +53,8 @@ class AnimViewer(QMainWindow):
 
     可以使用 ``AnimViewer.views(MyTimeline().build())`` 进行直接显示
     '''
+    play_finished = Signal()
+
     def __init__(
         self,
         anim: TimelineAnim,
@@ -101,28 +103,28 @@ class AnimViewer(QMainWindow):
         menu_bar = self.menuBar()
         menu_functions = menu_bar.addMenu('功能')
 
-        action_stay_on_top = menu_functions.addAction('窗口置前')
-        action_stay_on_top.setCheckable(True)
-        action_stay_on_top.setShortcut('Ctrl+T')
-        action_stay_on_top.toggled.connect(self.on_stay_on_top_toggled)
-        action_stay_on_top.setChecked(True)
+        self.action_stay_on_top = menu_functions.addAction('窗口置前')
+        self.action_stay_on_top.setCheckable(True)
+        self.action_stay_on_top.setShortcut('Ctrl+T')
+        self.action_stay_on_top.toggled.connect(self.on_stay_on_top_toggled)
+        self.action_stay_on_top.setChecked(True)
 
         menu_functions.addSeparator()
 
-        action_reload = menu_functions.addAction('重新构建')
-        action_reload.setShortcut('Ctrl+L')
-        action_reload.triggered.connect(self.on_rebuild_triggered)
+        self.action_reload = menu_functions.addAction('重新构建')
+        self.action_reload.setShortcut('Ctrl+L')
+        self.action_reload.triggered.connect(self.on_rebuild_triggered)
 
         menu_functions.addSeparator()
 
-        action_select = menu_functions.addAction('子物件选择')
-        action_select.setShortcut('Ctrl+S')
-        action_select.triggered.connect(self.on_select_triggered)
+        self.action_select = menu_functions.addAction('子物件选择')
+        self.action_select.setShortcut('Ctrl+S')
+        self.action_select.triggered.connect(self.on_select_triggered)
         self.selector: Selector | None = None
 
-        action_richtext_edit = menu_functions.addAction('富文本编辑')
-        action_richtext_edit.setShortcut('Ctrl+R')
-        action_richtext_edit.triggered.connect(self.on_richtext_edit_triggered)
+        self.action_richtext_edit = menu_functions.addAction('富文本编辑')
+        self.action_richtext_edit.setShortcut('Ctrl+R')
+        self.action_richtext_edit.triggered.connect(self.on_richtext_edit_triggered)
         self.richtext_editor: RichTextEditor | None = None
 
     def setup_status_bar(self) -> None:
@@ -353,6 +355,7 @@ class AnimViewer(QMainWindow):
 
         self.timeline_view.set_progress(self.timeline_view.progress() + 1)
         if self.timeline_view.at_end():
+            self.play_finished.emit()
             self.play_timer.stop()
 
     def on_stay_on_top_toggled(self, flag: bool) -> None:

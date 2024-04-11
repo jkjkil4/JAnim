@@ -13,7 +13,7 @@ from janim.utils.data import AlignedData
 from janim.utils.paths import PathFunc, path_along_arc, straight_path
 
 if TYPE_CHECKING:
-    from janim.anims.timeline import DynamicData
+    from janim.anims.timeline import DynamicData    # pragma: no cover
 
 
 class Transform(Animation):

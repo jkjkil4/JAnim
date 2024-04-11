@@ -1,12 +1,16 @@
 from __future__ import annotations
 
+import inspect
 import unittest
 from typing import Self
 
 from janim.anims.timeline import Timeline
 from janim.components.component import CmptInfo, Component
-from janim.exception import StoreNotFoundError
+from janim.constants import LEFT, RIGHT
+from janim.exception import (NotAnimationError, StoreFailedError,
+                             StoreNotFoundError, TimelineLookupError)
 from janim.items.item import Item
+from janim.items.points import Points
 
 
 class TimelineTest(unittest.TestCase):
@@ -87,3 +91,47 @@ class TimelineTest(unittest.TestCase):
         self.assertEqual(  ' 31m 31s 237ms', Timeline.fmt_time(31 * 60 + 31.23666))
         self.assertEqual(  ' 37m  2s 234ms', Timeline.fmt_time(37 * 60 + 2.23444))
         self.assertEqual('3h 37m  2s 234ms', Timeline.fmt_time(3 * 60 * 60 + 37 * 60 + 2.23444))
+
+    def test_blank_timeline(self) -> None:
+        class MyTimeline(Timeline):
+            def construct(self) -> None:
+                pass
+
+        anim = MyTimeline().build(quiet=True)
+
+        self.assertGreater(anim.global_range.duration, 0)
+
+    def test_exceptions(test) -> None:
+        test.assertIs(Timeline.get_context(raise_exc=False), None)
+
+        with test.assertRaises(TimelineLookupError):
+            Timeline.get_context()
+
+        class MyTimeline(Timeline):
+            def construct(self) -> None:
+                p = Points(LEFT, RIGHT)
+
+                test.assertEqual(self.get_lineno_at_time(0), -1)
+
+                with test.assertRaises(NotAnimationError):
+                    self.prepare(p.points.shift(LEFT))
+
+                self.prepare(p.anim.points.shift(LEFT))
+                self.forward(0.5)
+                lineno1 = inspect.currentframe().f_lineno - 1
+
+                self.forward(0.2)
+                lineno2 = inspect.currentframe().f_lineno - 1
+
+                test.assertEqual(self.get_lineno_at_time(0.4), lineno1)
+                test.assertEqual(self.get_lineno_at_time(0.6), lineno2)
+
+                with test.assertRaises(StoreFailedError):
+                    self.play(p.anim.points.shift(RIGHT))
+
+                with test.assertRaises(StoreFailedError):
+                    p.points.shift(RIGHT * 2)
+                    self.forward()
+
+        MyTimeline().build()
+

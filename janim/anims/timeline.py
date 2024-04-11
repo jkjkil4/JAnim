@@ -135,7 +135,7 @@ class Timeline(metaclass=ABCMeta):
         '''
         继承该方法以实现动画的构建逻辑
         '''
-        pass
+        pass    # pragma: no cover
 
     def build(self, *, quiet=False) -> TimelineAnim:
         '''
@@ -145,7 +145,7 @@ class Timeline(metaclass=ABCMeta):
         try:
             self._build_frame = inspect.currentframe()
 
-            if not quiet:
+            if not quiet:   # pragma: no cover
                 log.info(f'Building "{self.__class__.__name__}"')
                 start_time = time.time()
 
@@ -153,11 +153,12 @@ class Timeline(metaclass=ABCMeta):
 
             if self.current_time == 0:
                 self.forward(DEFAULT_DURATION)  # 使得没有任何前进时，产生一点时间，避免除零以及其它问题
-                log.info(f'"{self.__class__.__name__}" 构建后没有产生时长，自动产生了 {DEFAULT_DURATION}s 的时长')
+                if not quiet:   # pragma: no cover
+                    log.info(f'"{self.__class__.__name__}" 构建后没有产生时长，自动产生了 {DEFAULT_DURATION}s 的时长')
             self.cleanup_display()
             global_anim = TimelineAnim(self)
 
-            if not quiet:
+            if not quiet:   # pragma: no cover
                 elapsed = time.time() - start_time
                 log.info(f'Finished building "{self.__class__.__name__}" in {elapsed:.2f} s')
 
@@ -466,7 +467,7 @@ class Timeline(metaclass=ABCMeta):
                         continue
                     return timed_data.data(t)
 
-        assert False
+        assert False    # pragma: no cover
 
     def get_stored_data_at_right[T](self, item: T, t: float, *, skip_dynamic_data=False) -> Item.Data[T]:
         '''
@@ -563,7 +564,7 @@ class Timeline(metaclass=ABCMeta):
     # endregion
 
 
-class SourceTimeline(Timeline):
+class SourceTimeline(Timeline):     # pragma: no cover
     '''
     与 :class:`Timeline` 相比，会在背景显示源代码
     '''

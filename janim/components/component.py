@@ -180,7 +180,8 @@ class _CmptGroup(Component):
 
         return cmpt_copy
 
-    def become(self, other) -> None: ...
+    def become(self, other) -> Self:    # pragma: no cover
+        return self
 
     def __eq__(self, other: _CmptGroup) -> bool:
         for key in self.objects.keys():

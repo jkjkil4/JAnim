@@ -32,12 +32,12 @@ class ShowPartial(DataUpdater):
         def func(data: Item.Data, p: UpdaterParams) -> None:
             cmpt = data.components.get('points', None)
             if cmpt is None or not isinstance(cmpt, Cmpt_VPoints):
-                return
+                return  # pragma: no cover
             if not cmpt.has():
-                return
+                return  # pragma: no cover
 
             if not auto_close_path:
-                cmpt.pointwise_become_partial(cmpt, *bound_func(p))
+                cmpt.pointwise_become_partial(cmpt, *bound_func(p))     # pragma: no cover
             else:
                 end_indices = np.array(cmpt.get_subpath_end_indices())
                 begin_indices = np.array([0, *[indice + 2 for indice in end_indices[:-1]]])
@@ -127,7 +127,7 @@ class DrawBorderThenFill(DataUpdater):
 
     def create_extra_data(self, data: Item.Data[VItem]) -> tuple | None:
         if not isinstance(data.item, VItem):
-            return None
+            return None     # pragma: no cover
         data_copy = data._copy(data)
         data_copy.cmpt.radius.set(self.stroke_radius)
         data_copy.cmpt.stroke.set(self.stroke_color, 1)
@@ -136,7 +136,7 @@ class DrawBorderThenFill(DataUpdater):
 
     def updater(self, data: Item.Data[VItem], p: UpdaterParams) -> None:
         if p.extra_data is None:
-            return
+            return  # pragma: no cover
         outline, = p.extra_data
         index, subalpha = integer_interpolate(0, 2, p.alpha)
 
