@@ -8,6 +8,7 @@ gui
 
    anim_viewer
    application
+   audio_player
    fixed_ratio_widget
    glwidget
    richtext_editor

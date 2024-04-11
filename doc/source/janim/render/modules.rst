@@ -7,6 +7,6 @@ render
    :maxdepth: 1
 
    base
-   file_writer
    impl
    texture
+   writer

@@ -309,6 +309,12 @@ class Timeline(metaclass=ABCMeta):
         begin: float = 0,
         end: float = -1,
     ) -> None:
+        '''
+        在当前位置播放音频
+
+        - 可以指定 ``begin`` 和 ``end`` 表示裁剪区段
+        - 可以指定在当前位置往后 ``delay`` 秒才开始播放
+        '''
         if end == -1:
             end = audio.duration()
         duration = end - begin

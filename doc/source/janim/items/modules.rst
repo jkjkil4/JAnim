@@ -10,6 +10,7 @@ items
    geometry/modules.rst
    svg/modules.rst
    text/modules.rst
+   audio
    boolean_ops
    image_item
    item
