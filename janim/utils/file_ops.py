@@ -1,8 +1,6 @@
 import importlib.util
 import os
 
-from janim.utils.config import Config
-
 
 def guarantee_existence(path: str) -> str:
     if not os.path.exists(path):
@@ -18,6 +16,7 @@ def get_janim_dir() -> str:
 
 
 def get_typst_temp_dir() -> str:
+    from janim.utils.config import Config
     return guarantee_existence(os.path.join(Config.get.temp_dir, 'Typst'))
 
 
