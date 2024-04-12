@@ -1,5 +1,4 @@
 try:
-    # flake8: noqa
     import PySide6
 except ImportError:
     print('使用 GUI 界面时需要安装额外模块，但是未安装')
@@ -26,8 +25,7 @@ from PySide6.QtGui import (QBrush, QCloseEvent, QColor, QHideEvent, QIcon,
                            QWheelEvent)
 from PySide6.QtWidgets import (QApplication, QFileDialog, QLabel, QMainWindow,
                                QMessageBox, QPushButton, QSizePolicy,
-                               QSplitter, QStackedLayout, QToolTip,
-                               QVBoxLayout, QWidget)
+                               QSplitter, QStackedLayout, QVBoxLayout, QWidget)
 
 from janim.anims.animation import Animation, TimeRange
 from janim.anims.timeline import Timeline, TimelineAnim
@@ -553,7 +551,7 @@ class TimelineView(QWidget):
         self.hover_timer.setSingleShot(True)
         self.hover_timer.timeout.connect(self.on_hover_timer_timeout)
 
-        self.anim_tooltip: QWidget | None = None
+        self.tooltip: QWidget | None = None
 
         self.key_timer = QTimer(self)
         self.key_timer.timeout.connect(self.on_key_timer_timeout)
@@ -606,11 +604,6 @@ class TimelineView(QWidget):
         self.range = TimeRange(at, duration)
         self.update()
 
-    def hide_tooltip(self) -> None:
-        QToolTip.hideText()
-        if self.anim_tooltip is not None:
-            self.anim_tooltip = None
-
     def hover_at(self, pos: QPoint) -> None:
         audio_rect = self.audio_rect
         bottom_rect = self.bottom_rect
@@ -638,7 +631,87 @@ class TimelineView(QWidget):
         if info.clip_range != TimeRange(0, info.audio.duration()):
             msg_lst.append(f'Clip: {round(info.clip_range.at, 2)}s ~ {round(info.clip_range.end, 2)}s')
 
-        QToolTip.showText(self.mapToGlobal(pos), '\n'.join(msg_lst))
+        label = QLabel('\n'.join(msg_lst))
+        chart_view = self.create_audio_chart(info, near=round(self.pixel_to_time(pos.x())))
+
+        layout = QVBoxLayout()
+        layout.addWidget(label)
+        layout.addWidget(chart_view)
+
+        self.tooltip = QWidget()
+        self.tooltip.setWindowFlag(Qt.WindowType.ToolTip)
+        self.tooltip.setLayout(layout)
+        self.tooltip.adjustSize()
+
+        self.place_tooltip(self.tooltip, pos)
+        self.tooltip.show()
+
+    def create_audio_chart(self, info: Timeline.PlayAudioInfo, near: float | None = None) -> None:
+        from PySide6.QtCharts import (QChart, QChartView, QLineSeries,
+                                      QValueAxis)
+
+        audio = info.audio
+
+        clip_begin = info.clip_range.at
+        clip_end = info.clip_range.end
+        if near is not None:
+            clip_begin = max(clip_begin, near - info.range.at - 4)
+            clip_end = min(clip_end, near - info.range.at + 4)
+
+        range_begin = clip_begin + info.range.at
+        range_end = clip_end + info.range.at
+
+        begin = int(clip_begin * audio.framerate)
+        end = int(clip_end * audio.framerate)
+
+        left_blank = max(0, -begin)
+        right_blank = max(0, end - audio.sample_count())
+
+        data = audio._samples._data[max(0, begin): min(end, audio.sample_count())]
+
+        if left_blank != 0 or right_blank != 0:
+            data = np.concatenate([
+                np.zeros(left_blank, dtype=np.int16),
+                data,
+                np.zeros(right_blank, dtype=np.int16)
+            ])
+
+        unit = audio.framerate // Config.get.fps
+
+        data = np.max(
+            np.abs(
+                data[:len(data) // unit * unit].reshape(-1, unit)
+            ),
+            axis=1
+        ) / np.iinfo(np.int16).max
+
+        times = np.linspace(range_begin,
+                            range_end,
+                            len(data))
+
+        series = QLineSeries()
+        for t, y in zip(times, data):
+            series.append(t, y)
+
+        x_axis = QValueAxis()
+        x_axis.setRange(range_begin, range_end)
+
+        y_axis = QValueAxis()
+        y_axis.setRange(0, 1)
+
+        chart = QChart()
+        chart.addSeries(series)
+        chart.addAxis(x_axis, Qt.AlignmentFlag.AlignBottom)
+        chart.addAxis(y_axis, Qt.AlignmentFlag.AlignLeft)
+        series.attachAxis(x_axis)
+        series.attachAxis(y_axis)
+        chart.legend().setVisible(False)
+
+        chart_view = QChartView(chart)
+        chart_view.setRenderHint(QPainter.RenderHint.Antialiasing)
+        chart_view.setMinimumSize(250, 200)
+
+        return chart_view
 
     def hover_at_anim(self, pos: QPoint, anim: Animation) -> None:
         parents = [anim]
@@ -648,8 +721,9 @@ class TimelineView(QWidget):
                 break
             parents.append(last.parent)
 
-        label1 = QLabel(f'{anim.__class__.__name__} {round(anim.global_range.at, 2)}s ~ {round(anim.global_range.end, 2)}s')
-        chart_view = self.create_chart_view(anim)
+        label1 = QLabel(f'{anim.__class__.__name__} '
+                        f'{round(anim.global_range.at, 2)}s ~ {round(anim.global_range.end, 2)}s')
+        chart_view = self.create_anim_chart(anim)
         label2 = QLabel(
             '\n↑\n'.join(
                 f'{anim.rate_func.__name__} ({anim.__class__.__name__})'
@@ -658,40 +732,31 @@ class TimelineView(QWidget):
         )
 
         layout = QVBoxLayout()
-        layout.setSizeConstraint(QVBoxLayout.SizeConstraint.SetMaximumSize)
         layout.addWidget(label1)
         layout.addWidget(chart_view)
         layout.addWidget(label2)
 
-        self.anim_tooltip = QWidget()
-        self.anim_tooltip.setWindowFlag(Qt.WindowType.ToolTip)
-        self.anim_tooltip.setLayout(layout)
-        self.anim_tooltip.adjustSize()
+        self.tooltip = QWidget()
+        self.tooltip.setWindowFlag(Qt.WindowType.ToolTip)
+        self.tooltip.setLayout(layout)
+        self.tooltip.adjustSize()
 
-        rect = self.anim_tooltip.screen().availableGeometry()
-        global_pos = self.mapToGlobal(pos)
-        to = QPoint(global_pos)
-        if to.x() + self.anim_tooltip.width() > rect.right():
-            to.setX(global_pos.x() - self.anim_tooltip.width())
-        if to.y() + self.anim_tooltip.height() > rect.bottom():
-            to.setY(global_pos.y() - self.anim_tooltip.height())
+        self.place_tooltip(self.tooltip, pos)
+        self.tooltip.show()
 
-        self.anim_tooltip.move(to)
-        self.anim_tooltip.show()
-
-    def create_chart_view(self, anim: Animation) -> None:
+    def create_anim_chart(self, anim: Animation) -> None:
         from PySide6.QtCharts import QChart, QChartView, QScatterSeries
 
         count = int(anim.global_range.duration * Config.get.fps)
-        x_lst = np.linspace(anim.global_range.at,
+        times = np.linspace(anim.global_range.at,
                             anim.global_range.end,
                             count)
 
         series = QScatterSeries()
         series.setMarkerSize(3)
         series.setPen(Qt.PenStyle.NoPen)
-        for x in x_lst:
-            series.append(x, anim.get_alpha_on_global_t(x))
+        for t in times:
+            series.append(t, anim.get_alpha_on_global_t(t))
 
         chart = QChart()
         chart.addSeries(series)
@@ -703,6 +768,21 @@ class TimelineView(QWidget):
         chart_view.setMinimumSize(250, 200)
 
         return chart_view
+
+    def place_tooltip(self, tooltip: QWidget, pos: QPoint) -> None:
+        rect = tooltip.screen().availableGeometry()
+        global_pos = self.mapToGlobal(pos)
+        to = QPoint(global_pos) + QPoint(2, 2)
+        if to.x() + tooltip.width() > rect.right():
+            to.setX(global_pos.x() - tooltip.width() - 2)
+        if to.y() + tooltip.height() > rect.bottom():
+            to.setY(global_pos.y() - tooltip.height() - 2)
+
+        tooltip.move(to)
+
+    def hide_tooltip(self) -> None:
+        if self.tooltip is not None:
+            self.tooltip = None
 
     def on_hover_timer_timeout(self) -> None:
         pos = self.mapFromGlobal(self.cursor().pos())
