@@ -347,8 +347,8 @@ class Timeline(metaclass=ABCMeta):
             frame_begin = int((begin - info.range.at + info.clip_range.at) * audio.framerate)
             frame_end = int((end - info.range.at + info.clip_range.at) * audio.framerate)
 
-            clip_begin = max(0, audio.framerate * info.clip_range.at)
-            clip_end = min(audio.sample_count(), audio.framerate * info.clip_range.end)
+            clip_begin = max(0, int(audio.framerate * info.clip_range.at))
+            clip_end = min(audio.sample_count(), int(audio.framerate * info.clip_range.end))
 
             left_blank = max(0, clip_begin - frame_begin)
             right_blank = max(0, frame_end - clip_end)
