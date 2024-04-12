@@ -1,13 +1,3 @@
-import importlib.machinery
-import inspect
-import json
-import os
-import sys
-import time
-import traceback
-from bisect import bisect
-from dataclasses import dataclass
-
 try:
     # flake8: noqa
     import PySide6
@@ -18,14 +8,26 @@ except ImportError:
     from janim.exception import EXITCODE_PYSIDE6_NOT_FOUND, ExitException
     raise ExitException(EXITCODE_PYSIDE6_NOT_FOUND)
 
+import importlib.machinery
+import inspect
+import json
+import os
+import sys
+import time
+import traceback
+from bisect import bisect
+from dataclasses import dataclass
 
-from PySide6.QtCore import QByteArray, QRectF, Qt, QTimer, Signal
+import numpy as np
+from PySide6.QtCore import (QByteArray, QPoint, QRect, QRectF, Qt, QTimer,
+                            Signal)
 from PySide6.QtGui import (QBrush, QCloseEvent, QColor, QHideEvent, QIcon,
                            QKeyEvent, QMouseEvent, QPainter, QPaintEvent, QPen,
                            QWheelEvent)
 from PySide6.QtWidgets import (QApplication, QFileDialog, QLabel, QMainWindow,
                                QMessageBox, QPushButton, QSizePolicy,
-                               QSplitter, QStackedLayout, QWidget)
+                               QSplitter, QStackedLayout, QToolTip,
+                               QVBoxLayout, QWidget)
 
 from janim.anims.animation import Animation, TimeRange
 from janim.anims.timeline import Timeline, TimelineAnim
@@ -547,6 +549,12 @@ class TimelineView(QWidget):
 
         self.set_anim(anim)
 
+        self.hover_timer = QTimer(self)
+        self.hover_timer.setSingleShot(True)
+        self.hover_timer.timeout.connect(self.on_hover_timer_timeout)
+
+        self.anim_tooltip: QWidget | None = None
+
         self.key_timer = QTimer(self)
         self.key_timer.timeout.connect(self.on_key_timer_timeout)
         self.key_timer.start(1000 // 60)
@@ -597,6 +605,104 @@ class TimelineView(QWidget):
         at = clip(at, 0, self.anim.global_range.duration - duration)
         self.range = TimeRange(at, duration)
         self.update()
+
+    def hover_at(self, pos: QPoint) -> None:
+        audio_rect = self.audio_rect
+        bottom_rect = self.bottom_rect
+
+        # 因为后出现的音频在绘制时会覆盖前面的音频，所以这里用 reversed，就会得到最上层的
+        for info in reversed(self.anim.timeline.audio_infos):
+            range = self.time_range_to_pixel_range(info.range)
+            if QRectF(range.left, audio_rect.y(), range.width, self.audio_height).contains(pos):
+                self.hover_at_audio(pos, info)
+                return
+
+        for info in self.labels_info:
+            range = self.time_range_to_pixel_range(info.anim.global_range)
+            if QRectF(range.left,
+                      bottom_rect.y() + self.label_y(info.row),
+                      range.width,
+                      self.label_height).contains(pos):
+                self.hover_at_anim(pos, info.anim)
+
+    def hover_at_audio(self, pos: QPoint, info: Timeline.PlayAudioInfo) -> None:
+        msg_lst = [
+            f'{round(info.range.at, 2)}s ~ {round(info.range.end, 2)}s',
+            info.audio.filepath
+        ]
+        if info.clip_range != TimeRange(0, info.audio.duration()):
+            msg_lst.append(f'Clip: {round(info.clip_range.at, 2)}s ~ {round(info.clip_range.end, 2)}s')
+
+        QToolTip.showText(self.mapToGlobal(pos), '\n'.join(msg_lst))
+
+    def hover_at_anim(self, pos: QPoint, anim: Animation) -> None:
+        parents = [anim]
+        while True:
+            last = parents[-1]
+            if last.parent is None or last.parent is self.anim.user_anim:
+                break
+            parents.append(last.parent)
+
+        label1 = QLabel(f'{anim.__class__.__name__} {round(anim.global_range.at, 2)}s ~ {round(anim.global_range.end, 2)}s')
+        chart_view = self.create_chart_view(anim)
+        label2 = QLabel(
+            '\n↑\n'.join(
+                f'{anim.rate_func.__name__} ({anim.__class__.__name__})'
+                for anim in parents
+            )
+        )
+
+        layout = QVBoxLayout()
+        layout.setSizeConstraint(QVBoxLayout.SizeConstraint.SetMaximumSize)
+        layout.addWidget(label1)
+        layout.addWidget(chart_view)
+        layout.addWidget(label2)
+
+        self.anim_tooltip = QWidget()
+        self.anim_tooltip.setWindowFlag(Qt.WindowType.ToolTip)
+        self.anim_tooltip.setLayout(layout)
+        self.anim_tooltip.adjustSize()
+
+        rect = self.anim_tooltip.screen().availableGeometry()
+        global_pos = self.mapToGlobal(pos)
+        to = QPoint(global_pos)
+        if to.x() + self.anim_tooltip.width() > rect.right():
+            to.setX(global_pos.x() - self.anim_tooltip.width())
+        if to.y() + self.anim_tooltip.height() > rect.bottom():
+            to.setY(global_pos.y() - self.anim_tooltip.height())
+
+        self.anim_tooltip.move(to)
+        self.anim_tooltip.show()
+
+    def create_chart_view(self, anim: Animation) -> None:
+        from PySide6.QtCharts import QChart, QChartView, QScatterSeries
+
+        count = int(anim.global_range.duration * Config.get.fps)
+        x_lst = np.linspace(anim.global_range.at,
+                            anim.global_range.end,
+                            count)
+
+        series = QScatterSeries()
+        series.setMarkerSize(3)
+        series.setPen(Qt.PenStyle.NoPen)
+        for x in x_lst:
+            series.append(x, anim.get_alpha_on_global_t(x))
+
+        chart = QChart()
+        chart.addSeries(series)
+        chart.createDefaultAxes()
+        chart.legend().setVisible(False)
+
+        chart_view = QChartView(chart)
+        chart_view.setRenderHint(QPainter.RenderHint.Antialiasing)
+        chart_view.setMinimumSize(250, 200)
+
+        return chart_view
+
+    def on_hover_timer_timeout(self) -> None:
+        pos = self.mapFromGlobal(self.cursor().pos())
+        if self.rect().contains(pos):
+            self.hover_at(pos)
 
     def on_key_timer_timeout(self) -> None:
         if self.is_pressing.w:
@@ -683,6 +789,11 @@ class TimelineView(QWidget):
             self.dragged.emit()
 
     def mouseMoveEvent(self, event: QMouseEvent) -> None:
+        self.hover_timer.start(500)
+        QToolTip.hideText()
+        if self.anim_tooltip is not None:
+            self.anim_tooltip = None
+
         if event.buttons() & Qt.MouseButton.LeftButton:
             self.set_progress(self.pixel_to_progress(event.position().x()))
             self.dragged.emit()
@@ -746,7 +857,6 @@ class TimelineView(QWidget):
     def paintEvent(self, _: QPaintEvent) -> None:
         p = QPainter(self)
         orig_font = p.font()
-        bottom_rect = self.rect()
 
         # 绘制每次 forward 或 play 的时刻
         times_of_code = self.anim.timeline.times_of_code
@@ -761,7 +871,7 @@ class TimelineView(QWidget):
 
         # 绘制音频区段
         if self.anim.timeline.has_audio():
-            audio_rect = QRectF(0, 0, self.width(), self.audio_height)
+            audio_rect = self.audio_rect
 
             font = p.font()
             font.setPointSize(8)
@@ -780,19 +890,18 @@ class TimelineView(QWidget):
                                  QColor(152, 255, 191, 128))
 
             p.setFont(orig_font)
-            bottom_rect.adjust(0, self.audio_height, 0, 0)
-
-        bottom_rect.adjust(0, 0, 0, -self.range_tip_height)
-        p.setClipRect(bottom_rect)
 
         # 绘制动画区段
+        bottom_rect = self.bottom_rect
+        p.setClipRect(bottom_rect)
+
         for info in self.labels_info:
             if info.anim.global_range.end <= self.range.at or info.anim.global_range.at >= self.range.end:
                 continue
 
             self.paint_label(p,
                              info.anim.global_range,
-                             bottom_rect.y() - self.y_offset + info.row * self.label_height,
+                             bottom_rect.y() + self.label_y(info.row),
                              self.label_height,
                              info.anim.__class__.__name__,
                              Qt.PenStyle.NoPen,
@@ -819,6 +928,22 @@ class TimelineView(QWidget):
             self.range_tip_height / 2,
             self.range_tip_height / 2
         )
+
+    @property
+    def audio_rect(self) -> QRect:
+        if not self.anim.timeline.has_audio():
+            return QRect(0, 0, self.width(), 0)
+        return QRect(0, 0, self.width(), self.audio_height)
+
+    @property
+    def bottom_rect(self) -> QRect:
+        return self.rect().adjusted(0,
+                                    self.audio_height if self.anim.timeline.has_audio() else 0,
+                                    0,
+                                    -self.range_tip_height)
+
+    def label_y(self, row: int) -> float:
+        return -self.y_offset + row * self.label_height
 
     def paint_label(
         self,
