@@ -11,5 +11,6 @@ gui
    audio_player
    fixed_ratio_widget
    glwidget
+   precise_timer
    richtext_editor
    selector

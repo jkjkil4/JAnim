@@ -695,6 +695,7 @@ class TimelineView(QWidget):
 
         x_axis = QValueAxis()
         x_axis.setRange(range_begin, range_end)
+        x_axis.setTickCount(max(2, 1 + int(range_end - range_begin)))
 
         y_axis = QValueAxis()
         y_axis.setRange(0, 1)
