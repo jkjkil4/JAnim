@@ -34,6 +34,7 @@ from janim.gui.application import Application
 from janim.gui.audio_player import AudioPlayer
 from janim.gui.fixed_ratio_widget import FixedRatioWidget
 from janim.gui.glwidget import GLWidget
+from janim.gui.precise_timer import PreciseTimer
 from janim.gui.richtext_editor import RichTextEditor
 from janim.gui.selector import Selector
 from janim.logger import log
@@ -43,8 +44,6 @@ from janim.utils.file_ops import get_janim_dir
 from janim.utils.simple_functions import clip
 
 TIMELINE_VIEW_MIN_DURATION = 0.5
-
-# TODO: 鼠标悬停在时间轴的动画上时，显示动画信息
 
 
 class AnimViewer(QMainWindow):
@@ -79,13 +78,15 @@ class AnimViewer(QMainWindow):
 
         self.btn_export.clicked.connect(self.on_export_clicked)
 
-        self.play_timer = QTimer(self)
-        self.play_timer.setTimerType(Qt.TimerType.PreciseTimer)
+        self.play_timer = PreciseTimer(1 / Config.get.preview_fps, self)
         self.play_timer.timeout.connect(self.on_play_timer_timeout)
         if auto_play:
             self.switch_play_state()
 
-        self.audio_player = AudioPlayer()
+        if self.anim.timeline.has_audio():
+            self.audio_player = AudioPlayer()
+        else:
+            self.audio_player = None
 
         self.fps_counter = 0
         self.fps_record_start = time.time()
@@ -476,8 +477,7 @@ class AnimViewer(QMainWindow):
                 self.timeline_view.set_progress(0)
             self.fps_record_start = time.time()
             self.fps_counter = 0
-            # TODO: 修复不精准的问题
-            self.play_timer.start(1000 // Config.get.preview_fps)
+            self.play_timer.start_precise_timer()
 
     # endregion
 

@@ -10,14 +10,11 @@ class AudioPlayer:
     def __init__(self):
         self.framerate = Config.get.audio_framerate
 
-        self.thread: threading.Thread | None = None
-        self.queue: Queue = Queue(maxsize=1)
+        self.queue: Queue = Queue(maxsize=2)
+        self.thread = threading.Thread(target=self._run, daemon=True)
+        self.thread.start()
 
     def write(self, data: bytes):
-        if self.thread is None:
-            self.thread = threading.Thread(target=self._run, daemon=True)
-            self.thread.start()
-
         try:
             self.queue.put(data, block=False)
         except Full:
