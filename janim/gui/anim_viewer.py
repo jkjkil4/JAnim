@@ -606,6 +606,11 @@ class TimelineView(QWidget):
         self.range = TimeRange(at, duration)
         self.update()
 
+    def hide_tooltip(self) -> None:
+        QToolTip.hideText()
+        if self.anim_tooltip is not None:
+            self.anim_tooltip = None
+
     def hover_at(self, pos: QPoint) -> None:
         audio_rect = self.audio_rect
         bottom_rect = self.bottom_rect
@@ -790,13 +795,14 @@ class TimelineView(QWidget):
 
     def mouseMoveEvent(self, event: QMouseEvent) -> None:
         self.hover_timer.start(500)
-        QToolTip.hideText()
-        if self.anim_tooltip is not None:
-            self.anim_tooltip = None
+        self.hide_tooltip()
 
         if event.buttons() & Qt.MouseButton.LeftButton:
             self.set_progress(self.pixel_to_progress(event.position().x()))
             self.dragged.emit()
+
+    def leaveEvent(self, _) -> None:
+        self.hide_tooltip()
 
     def keyPressEvent(self, event: QKeyEvent) -> None:
         key = event.key()
