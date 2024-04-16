@@ -9,7 +9,7 @@ from janim.anims.timeline import Timeline
 from janim.exception import (EXITCODE_MODULE_NOT_FOUND, EXITCODE_NOT_FILE,
                              ExitException)
 from janim.logger import log
-from janim.utils.config import Config, default_config
+from janim.utils.config import default_config
 
 
 def run(args: Namespace) -> None:
@@ -77,28 +77,28 @@ def write(args: Namespace) -> None:
 
     both = not args.video and not args.audio
 
-    output_dir = os.path.normpath(Config.get.output_dir)
-    if not os.path.exists(output_dir):
-        os.makedirs(output_dir)
-
-    if both or args.video:
-        log.info(f'fps={Config.get.fps}')
-        log.info(f'resolution="{Config.get.pixel_width}x{Config.get.pixel_height}"')
-        log.info(f'format="{args.format}"')
-    if both or args.audio:
-        log.info(f'audio_format="{args.audio_format}"')
-        log.info(f'audio_framerate="{Config.get.audio_framerate}"')
-    log.info(f'output_dir="{output_dir}"')
-
     log.info('======')
 
     for anim in built:
         name = anim.timeline.__class__.__name__
 
+        output_dir = os.path.normpath(anim.cfg.output_dir)
+        if not os.path.exists(output_dir):
+            os.makedirs(output_dir)
+
+        if both or args.video:
+            log.info(f'fps={anim.cfg.fps}')
+            log.info(f'resolution="{anim.cfg.pixel_width}x{anim.cfg.pixel_height}"')
+            log.info(f'format="{args.format}"')
+        if both or args.audio:
+            log.info(f'audio_format="{args.audio_format}"')
+            log.info(f'audio_framerate="{anim.cfg.audio_framerate}"')
+        log.info(f'output_dir="{output_dir}"')
+
         if both or args.video:
             writer = VideoWriter(anim)
             writer.write_all(
-                os.path.join(Config.get.output_dir,
+                os.path.join(anim.cfg.output_dir,
                              f'{name}.{args.format}')
             )
             if args.open and anim is built[-1]:
@@ -107,7 +107,7 @@ def write(args: Namespace) -> None:
         if (both or args.audio) and anim.timeline.has_audio():
             writer = AudioWriter(anim)
             writer.write_all(
-                os.path.join(Config.get.output_dir,
+                os.path.join(anim.cfg.output_dir,
                              f'{name}.{args.audio_format}')
             )
 

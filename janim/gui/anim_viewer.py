@@ -39,7 +39,6 @@ from janim.gui.richtext_editor import RichTextEditor
 from janim.gui.selector import Selector
 from janim.logger import log
 from janim.render.writer import VideoWriter
-from janim.utils.config import Config
 from janim.utils.file_ops import get_janim_dir
 from janim.utils.simple_functions import clip
 
@@ -78,13 +77,13 @@ class AnimViewer(QMainWindow):
 
         self.btn_export.clicked.connect(self.on_export_clicked)
 
-        self.play_timer = PreciseTimer(1 / Config.get.preview_fps, self)
+        self.play_timer = PreciseTimer(1 / self.anim.cfg.preview_fps, self)
         self.play_timer.timeout.connect(self.on_play_timer_timeout)
         if auto_play:
             self.switch_play_state()
 
         if self.anim.timeline.has_audio():
-            self.audio_player = AudioPlayer()
+            self.audio_player = AudioPlayer(self.anim.cfg.audio_framerate)
         else:
             self.audio_player = None
 
@@ -157,7 +156,7 @@ class AnimViewer(QMainWindow):
 
         self.fixed_ratio_widget = FixedRatioWidget(
             self.stkWidget,
-            (Config.get.pixel_width, Config.get.pixel_height)
+            (self.anim.cfg.pixel_width, self.anim.cfg.pixel_height)
         )
 
         self.timeline_view = TimelineView(self.anim)
@@ -176,8 +175,8 @@ class AnimViewer(QMainWindow):
         self.setWindowTitle('JAnim Graphics')
 
     def move_to_position(self) -> None:
-        window_position = Config.get.wnd_pos
-        window_monitor = Config.get.wnd_monitor
+        window_position = self.anim.cfg.wnd_pos
+        window_monitor = self.anim.cfg.wnd_monitor
 
         if len(window_position) != 2 or window_position[0] not in 'UOD' or window_position[1] not in 'LOR':
             log.warning(f'wnd_pos has wrong argument "{window_position}".')
@@ -349,8 +348,8 @@ class AnimViewer(QMainWindow):
 
     def on_play_timer_timeout(self) -> None:
         if self.anim.timeline.has_audio():
-            samples = self.anim.timeline.get_audio_samples_of_frame(Config.get.preview_fps,
-                                                                    Config.get.audio_framerate,
+            samples = self.anim.timeline.get_audio_samples_of_frame(self.anim.cfg.preview_fps,
+                                                                    self.anim.cfg.audio_framerate,
                                                                     self.timeline_view.progress())
             self.audio_player.write(samples.tobytes())
 
@@ -431,14 +430,14 @@ class AnimViewer(QMainWindow):
         cur = time.time()
         self.fps_counter += 1
         if cur - self.fps_record_start >= 1:
-            self.fps_label.setText(f'Preview FPS: {self.fps_counter}/{Config.get.preview_fps}')
+            self.fps_label.setText(f'Preview FPS: {self.fps_counter}/{self.anim.cfg.preview_fps}')
             self.fps_counter = 0
             self.fps_record_start = cur
 
     def on_export_clicked(self) -> None:
         self.play_timer.stop()
 
-        output_dir = Config.get.output_dir
+        output_dir = self.anim.cfg.output_dir
         if not os.path.exists(output_dir):
             os.makedirs(output_dir)
 
@@ -566,7 +565,7 @@ class TimelineView(QWidget):
         self.y_offset = 0
         self.anim = anim
         self._progress = 0
-        self._maximum = round(anim.global_range.end * Config.get.preview_fps)
+        self._maximum = round(anim.global_range.end * self.anim.cfg.preview_fps)
 
         self.is_pressing = TimelineView.Pressing()
 
@@ -676,7 +675,7 @@ class TimelineView(QWidget):
                 np.zeros(right_blank, dtype=np.int16)
             ])
 
-        unit = audio.framerate // Config.get.fps
+        unit = audio.framerate // self.anim.cfg.fps
 
         data = np.max(
             np.abs(
@@ -748,7 +747,7 @@ class TimelineView(QWidget):
     def create_anim_chart(self, anim: Animation) -> None:
         from PySide6.QtCharts import QChart, QChartView, QScatterSeries
 
-        count = int(anim.global_range.duration * Config.get.fps)
+        count = int(anim.global_range.duration * self.anim.cfg.fps)
         times = np.linspace(anim.global_range.at,
                             anim.global_range.end,
                             count)
@@ -847,10 +846,10 @@ class TimelineView(QWidget):
         return self._progress == self._maximum
 
     def progress_to_time(self, progress: int) -> float:
-        return progress / Config.get.preview_fps
+        return progress / self.anim.cfg.preview_fps
 
     def time_to_progress(self, time: float) -> int:
-        return round(time * Config.get.preview_fps)
+        return round(time * self.anim.cfg.preview_fps)
 
     def time_to_pixel(self, time: float) -> float:
         return (time - self.range.at) / self.range.duration * self.width()

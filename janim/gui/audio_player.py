@@ -3,12 +3,10 @@ from queue import Queue, Full
 
 import pyaudio
 
-from janim.utils.config import Config
-
 
 class AudioPlayer:
-    def __init__(self):
-        self.framerate = Config.get.audio_framerate
+    def __init__(self, framerate: int):
+        self.framerate = framerate
 
         self.queue: Queue = Queue(maxsize=2)
         self.thread = threading.Thread(target=self._run, daemon=True)

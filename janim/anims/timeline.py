@@ -28,7 +28,7 @@ from janim.items.svg.typst import TypstText
 from janim.items.text.text import Text
 from janim.logger import log
 from janim.render.base import RenderData, Renderer, set_global_uniforms
-from janim.utils.config import Config
+from janim.utils.config import Config, ConfigGetter, config_ctx_var
 from janim.utils.iterables import resize_preserving_order
 from janim.utils.simple_functions import clip
 
@@ -45,6 +45,53 @@ class Timeline(metaclass=ABCMeta):
 
     调用 :meth:`build` 可以得到构建完成的动画对象
     '''
+
+    # region config
+
+    CONFIG: Config | None = None
+    '''
+    在子类中定义该变量可以起到设置配置的作用，例如：
+
+    .. code-block::
+
+        class Example(Timeline):
+            CONFIG = Config(
+                font=['Consolas', 'LXGW WenKai Lite']
+            )
+
+            def construct(self) -> None:
+                ...
+    '''
+
+    class _WithConfig:
+        def __init__(self, cls: type[Timeline]):
+            self.cls = cls
+
+            self.lst: list[Config] = []
+            for sup in self.cls.mro():
+                config: Config | None = getattr(sup, 'CONFIG', None)
+                if config is None or config in self.lst:
+                    continue
+                self.lst.append(config)
+
+            self.lst.reverse()
+
+        def __enter__(self) -> Self:
+            lst = [*config_ctx_var.get(), *self.lst]
+            self.token = config_ctx_var.set(lst)
+            return self
+
+        def __exit__(self, exc_type, exc_value, tb) -> None:
+            config_ctx_var.reset(self.token)
+
+    @classmethod
+    def with_config(cls) -> _WithConfig:
+        '''
+        使用定义在 :class:`Timeline` 子类中的 config
+        '''
+        return cls._WithConfig(cls)
+
+    # endregion
 
     # region context
 
@@ -141,9 +188,6 @@ class Timeline(metaclass=ABCMeta):
         self.item_stored_datas: defaultdict[Item, list[Timeline.TimedItemData]] = defaultdict(list)
         self.item_display_times: dict[Item, int] = {}
 
-        self.camera = Camera()
-        self.register(self.camera)
-
     @abstractmethod
     def construct(self) -> None:
         '''
@@ -155,29 +199,32 @@ class Timeline(metaclass=ABCMeta):
         '''
         构建动画并返回
         '''
-        token = self.ctx_var.set(self)
-        try:
-            self._build_frame = inspect.currentframe()
+        with self.with_config():
+            token = self.ctx_var.set(self)
+            self.config_getter = ConfigGetter(config_ctx_var.get())
+            self.camera = Camera()
+            try:
+                self._build_frame = inspect.currentframe()
 
-            if not quiet:   # pragma: no cover
-                log.info(f'Building "{self.__class__.__name__}"')
-                start_time = time.time()
-
-            self.construct()
-
-            if self.current_time == 0:
-                self.forward(DEFAULT_DURATION)  # 使得没有任何前进时，产生一点时间，避免除零以及其它问题
                 if not quiet:   # pragma: no cover
-                    log.info(f'"{self.__class__.__name__}" 构建后没有产生时长，自动产生了 {DEFAULT_DURATION}s 的时长')
-            self.cleanup_display()
-            global_anim = TimelineAnim(self)
+                    log.info(f'Building "{self.__class__.__name__}"')
+                    start_time = time.time()
 
-            if not quiet:   # pragma: no cover
-                elapsed = time.time() - start_time
-                log.info(f'Finished building "{self.__class__.__name__}" in {elapsed:.2f} s')
+                self.construct()
 
-        finally:
-            self.ctx_var.reset(token)
+                if self.current_time == 0:
+                    self.forward(DEFAULT_DURATION)  # 使得没有任何前进时，产生一点时间，避免除零以及其它问题
+                    if not quiet:   # pragma: no cover
+                        log.info(f'"{self.__class__.__name__}" 构建后没有产生时长，自动产生了 {DEFAULT_DURATION}s 的时长')
+                self.cleanup_display()
+                global_anim = TimelineAnim(self)
+
+                if not quiet:   # pragma: no cover
+                    elapsed = time.time() - start_time
+                    log.info(f'Finished building "{self.__class__.__name__}" in {elapsed:.2f} s')
+
+            finally:
+                self.ctx_var.reset(token)
 
         return global_anim
 
@@ -674,10 +721,14 @@ class TimelineAnim(AnimGroup):
         self.flattened = self.flatten()
         self._time: float | None = None
 
+    @property
+    def cfg(self) -> Config | ConfigGetter:
+        return self.timeline.config_getter
+
     def anim_on(self, local_t: float) -> None:
         # 使最后一帧不空屏
         if np.isclose(local_t, self.global_range.duration):
-            local_t -= 1 / Config.get.fps
+            local_t -= 1 / self.cfg.fps
 
         self._time = local_t
         token = self.global_t_ctx.set(local_t)
@@ -696,7 +747,7 @@ class TimelineAnim(AnimGroup):
         timeline = self.timeline
         camera_data = timeline.get_stored_data_at_right(timeline.camera, self._time)
         camera_info = camera_data.cmpt.points.info
-        anti_alias_radius = Config.get.anti_alias_width / 2 * camera_info.scaled_factor
+        anti_alias_radius = self.cfg.anti_alias_width / 2 * camera_info.scaled_factor
 
         set_global_uniforms(
             ctx,

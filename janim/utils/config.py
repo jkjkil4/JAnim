@@ -119,8 +119,11 @@ class ConfigGetter:
 
     请仍然使用 ``Config.get.xxx`` 来获取定义在该类中的内容
     '''
+    def __init__(self, config_ctx: list[Config] | None = None):
+        self.config_ctx = config_ctx
+
     def __getattr__(self, name: str) -> None:
-        lst = config_ctx_var.get()
+        lst = self.config_ctx or config_ctx_var.get()
         for config in reversed(lst):
             value = getattr(config, name)
             if value is not None:

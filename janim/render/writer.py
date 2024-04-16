@@ -10,7 +10,6 @@ from tqdm import tqdm as ProgressDisplay
 from janim.anims.timeline import TimelineAnim
 from janim.exception import EXITCODE_FFMPEG_NOT_FOUND, ExitException
 from janim.logger import log
-from janim.utils.config import Config
 
 
 class VideoWriter:
@@ -31,7 +30,7 @@ class VideoWriter:
         self.ctx = mgl.create_standalone_context()
         self.ctx.enable(mgl.BLEND)
 
-        pw, ph = Config.get.pixel_width, Config.get.pixel_height
+        pw, ph = anim.cfg.pixel_width, anim.cfg.pixel_height
         self.fbo = self.ctx.framebuffer(
             color_attachments=self.ctx.texture(
                 (pw, ph),
@@ -55,7 +54,7 @@ class VideoWriter:
             t = time.time()
 
         self.fbo.use()
-        fps = Config.get.fps
+        fps = self.anim.cfg.fps
 
         self.open_video_pipe(file_path)
 
@@ -65,7 +64,7 @@ class VideoWriter:
             dynamic_ncols=True
         )
 
-        rgb = Config.get.background_color.rgb
+        rgb = self.anim.cfg.background_color.rgb
 
         for frame in progress_display:
             self.fbo.clear(*rgb)
@@ -86,12 +85,12 @@ class VideoWriter:
         self.temp_file_path = stem + '_temp' + ext
 
         command = [
-            Config.get.ffmpeg_bin,
+            self.anim.cfg.ffmpeg_bin,
             '-y',   # overwrite output file if it exists
             '-f', 'rawvideo',
-            '-s', f'{Config.get.pixel_width}x{Config.get.pixel_height}',  # size of one frame
+            '-s', f'{self.anim.cfg.pixel_width}x{self.anim.cfg.pixel_height}',  # size of one frame
             '-pix_fmt', 'rgba',
-            '-r', str(Config.get.fps),  # frames per second
+            '-r', str(self.anim.cfg.fps),  # frames per second
             '-i', '-',  # The input comes from a pipe
             '-vf', 'vflip',
             '-an',  # Tells FFMPEG not to expect any audio
@@ -138,8 +137,8 @@ class AudioWriter:
             log.info(f'Writing audio of "{name}"')
             t = time.time()
 
-        fps = Config.get.fps
-        framerate = Config.get.audio_framerate
+        fps = self.anim.cfg.fps
+        framerate = self.anim.cfg.audio_framerate
 
         self.open_audio_pipe(file_path)
 
@@ -169,10 +168,10 @@ class AudioWriter:
         self.temp_file_path = stem + '_temp' + ext
 
         command = [
-            Config.get.ffmpeg_bin,
+            self.anim.cfg.ffmpeg_bin,
             '-y',   # overwrite output file if it exists
             '-f', 's16le',
-            '-ar', str(Config.get.audio_framerate),     # framerate & samplerate
+            '-ar', str(self.anim.cfg.audio_framerate),     # framerate & samplerate
             '-ac', '1',
             '-i', '-',
             '-loglevel', 'error',
