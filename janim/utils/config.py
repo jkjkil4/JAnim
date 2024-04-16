@@ -44,8 +44,8 @@ class Config(metaclass=_ConfigMeta):
     preview_fps: int = None
     anti_alias_width: float = None
 
-    aspect_ratio: float = None
     frame_height: float = None
+    frame_width: float = None
 
     pixel_height: int = None
     pixel_width: int = None
@@ -82,8 +82,8 @@ default_config = Config(
     preview_fps=60 if is_power_plugged() else 30,
     anti_alias_width=0.015,
 
-    aspect_ratio=16.0 / 9.0,
     frame_height=8.0,
+    frame_width=16.0 / 9.0 * 8.0,   # aspect_ratio(16/9) * frame_height
 
     pixel_height=1080,
     pixel_width=1920,
@@ -132,8 +132,8 @@ class ConfigGetter:
         return None
 
     @property
-    def frame_width(self) -> float:
-        return Config.get.aspect_ratio * Config.get.frame_height
+    def aspect_ratio(self) -> float:
+        return Config.get.frame_width / Config.get.frame_height
 
     @property
     def frame_x_radius(self) -> float:
