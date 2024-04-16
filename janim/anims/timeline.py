@@ -19,15 +19,18 @@ from janim.anims.animation import Animation, TimeRange
 from janim.anims.composition import AnimGroup
 from janim.anims.display import Display
 from janim.camera.camera import Camera
+from janim.constants import DOWN, UP
 from janim.exception import (NotAnimationError, StoreFailedError,
                              StoreNotFoundError, TimelineLookupError)
-from janim.items.item import Item
 from janim.items.audio import Audio
+from janim.items.item import Item
+from janim.items.svg.typst import TypstText
+from janim.items.text.text import Text
 from janim.logger import log
 from janim.render.base import RenderData, Renderer, set_global_uniforms
 from janim.utils.config import Config
-from janim.utils.simple_functions import clip
 from janim.utils.iterables import resize_preserving_order
+from janim.utils.simple_functions import clip
 
 GET_DATA_DELTA = 1e-5
 ANIM_END_DELTA = 1e-5 * 2
@@ -113,6 +116,16 @@ class Timeline(metaclass=ABCMeta):
         range: TimeRange
         clip_range: TimeRange
 
+    @dataclass
+    class SubtitleInfo:
+        '''
+        调用 :meth:`~.Timeline.subtitle` 的参数信息
+        '''
+        text: str
+        range: TimeRange
+        kwargs: dict
+        subtitle: Text
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -123,6 +136,7 @@ class Timeline(metaclass=ABCMeta):
         self.anims: list[AnimGroup] = []
         self.display_anims: list[Display] = []
         self.audio_infos: list[Timeline.PlayAudioInfo] = []
+        self.subtitle_infos: list[Timeline.SubtitleInfo] = []   # helpful for extracting subtitles
 
         self.item_stored_datas: defaultdict[Item, list[Timeline.TimedItemData]] = defaultdict(list)
         self.item_display_times: dict[Item, int] = {}
@@ -309,19 +323,25 @@ class Timeline(metaclass=ABCMeta):
         delay: float = 0,
         begin: float = 0,
         end: float = -1,
-    ) -> None:
+    ) -> TimeRange:
         '''
         在当前位置播放音频
 
         - 可以指定 ``begin`` 和 ``end`` 表示裁剪区段
         - 可以指定在当前位置往后 ``delay`` 秒才开始播放
+
+        返回值表示播放的时间段
         '''
         if end == -1:
             end = audio.duration()
         duration = end - begin
-        self.audio_infos.append(Timeline.PlayAudioInfo(audio,
-                                                       TimeRange(self.current_time + delay, duration),
-                                                       TimeRange(begin, duration)))
+
+        info = Timeline.PlayAudioInfo(audio,
+                                      TimeRange(self.current_time + delay, duration),
+                                      TimeRange(begin, duration))
+        self.audio_infos.append(info)
+
+        return info.range.copy()
 
     def has_audio(self) -> bool:
         return len(self.audio_infos) != 0
@@ -365,6 +385,61 @@ class Timeline(metaclass=ABCMeta):
             result += resize_preserving_order(data, output_sample_count)
 
         return result
+
+    # endregion
+
+    # region subtitle
+
+    def subtitle(
+        self,
+        text: str | Iterable[str],
+        delay: float = 0,
+        duration: float = 1,
+        scale: float | Iterable[float] = 0.8,
+        use_typst_text: bool | Iterable[bool] = False,
+        **kwargs
+    ) -> TimeRange:
+        '''
+        添加字幕
+
+        - 文字可以传入一个列表，纵向排列显示
+        - 可以指定在当前位置往后 ``delay`` 秒才显示
+        - ``duration`` 表示持续时间
+        - ``scale`` 表示对文字的缩放，默认为 ``0.8``，可以传入列表表示对各个文字的缩放
+        - ``use_typst_text`` 表示是否使用 :class:`TypstText`，可以传入列表表示各个文字是否使用
+
+        返回值表示显示的时间段
+        '''
+        text_lst = [text] if isinstance(text, str) else text
+        scale_lst = [scale] if not isinstance(scale, Iterable) else scale
+        use_typst_lst = [use_typst_text] if not isinstance(use_typst_text, Iterable) else use_typst_text
+
+        range = TimeRange(self.current_time + delay, duration)
+        for text, scale, use_typst_text in zip(reversed(text_lst),
+                                               reversed(resize_preserving_order(scale_lst, len(text_lst))),
+                                               reversed(resize_preserving_order(use_typst_lst, len(text_lst)))):
+            subtitle = (TypstText if use_typst_text else Text)(text, **kwargs)
+            subtitle.points.scale(scale)
+            self.place_subtitle(subtitle, range)
+            self.subtitle_infos.append(Timeline.SubtitleInfo(text,
+                                                             range,
+                                                             kwargs,
+                                                             subtitle))
+            self.schedule(range.at, subtitle.show)
+            self.schedule(range.end, subtitle.hide)
+
+        return range.copy()
+
+    def place_subtitle(self, subtitle: Text, range: TimeRange) -> None:
+        for other in reversed(self.subtitle_infos):
+            # 根据 TimelineView 中排列显示标签的经验
+            # 这里加了一个 np.isclose 的判断
+            # 如果不加可能导致前一个字幕消失但是后一个字幕凭空出现在更上面
+            # （但是我没有测试过是否会出现这个bug，只是根据写 TimelineView 时的经验加了 np.isclose）
+            if other.range.at <= range.at < other.range.end and not np.isclose(range.at, other.range.end):
+                subtitle.points.next_to(other.subtitle, UP)
+                return
+        subtitle.points.to_border(DOWN)
 
     # endregion
 

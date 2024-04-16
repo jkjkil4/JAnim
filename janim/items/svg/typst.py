@@ -71,11 +71,28 @@ class Typst(TypstDoc):
     '''
     Typst 公式
     '''
-    def __init__(self, text: str, **kwargs):
-        super().__init__(f'$ {text} $', **kwargs)
+    def __init__(self, text: str, *, use_math_environment: bool = True, **kwargs):
+        super().__init__(
+            f'$ {text} $' if use_math_environment else text,
+            **kwargs
+        )
 
     def move_into_position(self) -> None:
         self.points.to_center()
+
+
+class TypstText(Typst):
+    '''
+    Typst 文本
+
+    相当于 :class:`Typst` 传入 ``use_math_environment=False``
+    '''
+    def __init__(self, text: str, use_math_environment: bool = False, **kwargs):
+        super().__init__(
+            text,
+            use_math_environment=use_math_environment,
+            **kwargs
+        )
 
 
 cached_typst_template: str | None = None

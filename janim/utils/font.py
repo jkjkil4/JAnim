@@ -18,7 +18,7 @@ def get_fontpath_by_name(font_name: str) -> str:
     '''
     通过字体名得到字体文件路径
 
-    例：通过 `Consolas` 得到 `C:\\Windows\\Fonts\\consola.ttf`
+    例：通过 ``Consolas`` 得到 ``C:\\Windows\\Fonts\\consola.ttf``
     '''
     global fontpaths
 

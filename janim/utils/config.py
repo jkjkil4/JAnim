@@ -4,7 +4,7 @@ import os
 import tempfile
 from contextvars import ContextVar
 from dataclasses import dataclass
-from typing import Self
+from typing import Iterable, Self
 
 import psutil
 from colour import Color
@@ -50,7 +50,7 @@ class Config(metaclass=_ConfigMeta):
     pixel_height: int = None
     pixel_width: int = None
     background_color: Color = None
-    font: str = None
+    font: str | Iterable[str] = None
 
     audio_framerate: int = None
 

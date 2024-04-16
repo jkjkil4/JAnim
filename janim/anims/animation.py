@@ -20,6 +20,9 @@ class TimeRange:
     def end(self) -> float:
         return self.at + self.duration
 
+    def copy(self) -> TimeRange:
+        return TimeRange(self.at, self.duration)
+
 
 class Animation:
     '''

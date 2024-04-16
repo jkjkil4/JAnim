@@ -267,7 +267,13 @@ class Text(VItem, Group[TextLine]):
         # 获取字体
         if isinstance(font, str):
             font = [font]
-        font.append(Config.get.font)
+
+        cfg_font = Config.get.font
+        if isinstance(cfg_font, str):
+            font.append(cfg_font)
+        else:
+            font.extend(cfg_font)
+
         fonts = [
             Font.get(get_fontpath_by_name(name))
             for name in font
