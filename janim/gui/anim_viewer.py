@@ -696,24 +696,29 @@ class TimelineView(QWidget):
         for t, y in zip(times, data):
             series.append(t, y)
 
+        chart = QChart()
+        chart.addSeries(series)
+
         x_axis = QValueAxis()
         x_axis.setRange(range_begin, range_end)
         x_axis.setTickCount(max(2, 1 + int(range_end - range_begin)))
+        chart.addAxis(x_axis, Qt.AlignmentFlag.AlignBottom)
+        series.attachAxis(x_axis)
 
         y_axis = QValueAxis()
         y_axis.setRange(0, 1)
-
-        chart = QChart()
-        chart.addSeries(series)
-        chart.addAxis(x_axis, Qt.AlignmentFlag.AlignBottom)
         chart.addAxis(y_axis, Qt.AlignmentFlag.AlignLeft)
-        series.attachAxis(x_axis)
         series.attachAxis(y_axis)
+
+        x_clip_axis = QValueAxis()
+        x_clip_axis.setRange(clip_begin, clip_end)
+        chart.addAxis(x_clip_axis, Qt.AlignmentFlag.AlignBottom)
+
         chart.legend().setVisible(False)
 
         chart_view = QChartView(chart)
         chart_view.setRenderHint(QPainter.RenderHint.Antialiasing)
-        chart_view.setMinimumSize(250, 200)
+        chart_view.setMinimumSize(350, 200)
 
         return chart_view
 
