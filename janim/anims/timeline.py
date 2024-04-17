@@ -440,8 +440,8 @@ class Timeline(metaclass=ABCMeta):
     def subtitle(
         self,
         text: str | Iterable[str],
-        delay: float = 0,
         duration: float = 1,
+        delay: float = 0,
         scale: float | Iterable[float] = 0.8,
         use_typst_text: bool | Iterable[bool] = False,
         **kwargs
@@ -466,6 +466,7 @@ class Timeline(metaclass=ABCMeta):
                                                reversed(resize_preserving_order(scale_lst, len(text_lst))),
                                                reversed(resize_preserving_order(use_typst_lst, len(text_lst)))):
             subtitle = (TypstText if use_typst_text else Text)(text, **kwargs)
+            subtitle.depth.set(-1e5)
             subtitle.points.scale(scale)
             self.place_subtitle(subtitle, range)
             self.subtitle_infos.append(Timeline.SubtitleInfo(text,

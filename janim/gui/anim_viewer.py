@@ -82,10 +82,8 @@ class AnimViewer(QMainWindow):
         if auto_play:
             self.switch_play_state()
 
-        if self.anim.timeline.has_audio():
-            self.audio_player = AudioPlayer(self.anim.cfg.audio_framerate)
-        else:
-            self.audio_player = None
+        self.audio_player: AudioPlayer | None = None
+        self.setup_audio_player()
 
         self.fps_counter = 0
         self.fps_record_start = time.time()
@@ -208,6 +206,10 @@ class AnimViewer(QMainWindow):
         self.resize(width, height)
 
     # endregion
+
+    def setup_audio_player(self) -> None:
+        if self.anim.timeline.has_audio() and self.audio_player is None:
+            self.audio_player = AudioPlayer(self.anim.cfg.audio_framerate)
 
     # region socket
 
@@ -394,6 +396,8 @@ class AnimViewer(QMainWindow):
 
             time = self.timeline_view.progress_to_time(self.timeline_view.progress())
             self.send_lineno(self.anim.timeline.get_lineno_at_time(time))
+
+        self.setup_audio_player()
 
         self.anim.anim_on(self.timeline_view.progress_to_time(progress))
 
