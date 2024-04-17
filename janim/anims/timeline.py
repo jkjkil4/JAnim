@@ -10,7 +10,7 @@ from bisect import bisect, insort
 from collections import defaultdict
 from contextvars import ContextVar
 from dataclasses import dataclass
-from typing import Callable, Iterable, Self
+from typing import Callable, Iterable, Self, overload
 
 import moderngl as mgl
 import numpy as np
@@ -437,6 +437,20 @@ class Timeline(metaclass=ABCMeta):
 
     # region subtitle
 
+    @overload
+    def subtitle(
+        self,
+        text: str | Iterable[str],
+        duration: float = 1,
+        delay: float = 0,
+        scale: float | Iterable[float] = 0.8,
+        use_typst_text: bool | Iterable[bool] = False,
+        **kwargs
+    ) -> TimeRange: ...
+
+    @overload
+    def subtitle(self, text: str | Iterable[str], range: TimeRange, **kwargs) -> TimeRange: ...
+
     def subtitle(
         self,
         text: str | Iterable[str],
@@ -461,7 +475,11 @@ class Timeline(metaclass=ABCMeta):
         scale_lst = [scale] if not isinstance(scale, Iterable) else scale
         use_typst_lst = [use_typst_text] if not isinstance(use_typst_text, Iterable) else use_typst_text
 
-        range = TimeRange(self.current_time + delay, duration)
+        if isinstance(duration, TimeRange):
+            range = duration
+        else:
+            range = TimeRange(self.current_time + delay, duration)
+
         for text, scale, use_typst_text in zip(reversed(text_lst),
                                                reversed(resize_preserving_order(scale_lst, len(text_lst))),
                                                reversed(resize_preserving_order(use_typst_lst, len(text_lst)))):
