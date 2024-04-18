@@ -7,7 +7,7 @@
 界面元素
 ~~~~~~~~~~~~
 
-.. image:: ../_static/images/use_gui.png
+.. image:: /_static/images/use_gui.png
     :align: center
     :scale: 50%
 
@@ -91,20 +91,63 @@
 
 鼠标悬停在时间轴动画标签上可以显示具体信息，例如时间区段、插值函数散点图等
 
-.. image:: ../_static/images/hover_at_timeline.png
+.. image:: /_static/images/hover_at_timeline.png
     :align: center
     :scale: 50%
+
+重新构建
+~~~~~~~~~~~~
+
+已在 :ref:`实时预览 <realtime_preview>` 中提及
+
+.. _subitem_selector:
 
 子物件选择
 ~~~~~~~~~~~~
 
+对于子物件复杂的物件（比如 :class:`~.Text` 和 :class:`~.Typst`），
+取其切片就会比较麻烦，因此预览界面提供了进行子物件选择的功能
+
+点击窗口左上角“功能”中的“子物件选择”，左上角会多出这样的内容：
+
+.. image:: /_static/images/subitem_selector1.png
+    :align: center
+    :scale: 65%
+
+首先，如果说我们需要取出一行文本 :class:`~.TextLine` 的某一些字符，我们需要首先找到这行文本，
+那么可以使用 ``Ctrl+左键`` 点击进行选中
+
+.. hint::
+
+    为了选中 :class:`~.TextLine`，由于它是 :class:`~.Text` 的子物件，所以点击一下后，首先会选中整段文本，我们再点击一下便可以选中这一行的 :class:`~.TextLine`
+
+.. image:: /_static/images/subitem_selector2.png
+    :align: center
+    :scale: 65%
+
+选中这行文本后，松开按着 ``Ctrl`` 的手，直接用 ``左键`` 点击这行文本中的字符（可以长按扫动），就可以选出它们，左上角会显示对应的下标
+
+.. image:: /_static/images/subitem_selector3.png
+    :align: center
+    :scale: 65%
+
 .. note::
 
-    有待编写
+    这里选中的是 "first" 和 "ne"，对应的切片是 ``[4:9]`` 和 ``[12:14]``
+
+如果选多了，可以 ``右键`` 取消
+
+选择完后，使用 ``Ctrl+右键`` 退出这个功能
 
 富文本编辑
 ~~~~~~~~~~~~
 
-.. note::
+这是针对编辑 :ref:`富文本格式 <rich_text>` 而实现的功能
 
-    有待编写
+在这个编辑器中，富文本标签会被高亮，提高可读性
+
+.. warning::
+
+    实验性功能：粘贴时识别富文本格式
+
+    该选择框启用后，会尝试将粘贴的 html 文本样式转换为 JAnim 富文本样式

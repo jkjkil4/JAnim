@@ -27,7 +27,7 @@ DEFAULT_FONT_SIZE = 24
 ORIG_FONT_SIZE = 48
 
 
-def get_color_value(key: str) -> JAnimColor:
+def _get_color_value(key: str) -> JAnimColor:
     '''
     根据 ``key`` 从 ``janim.constants.colors`` 得到颜色
 
@@ -57,7 +57,7 @@ type ActEnd = str
 available_act_map: dict[ActName, list[Act]] = defaultdict(list)
 
 
-def register_acts(names: list[ActName], *acts: Act) -> None:
+def _register_acts(names: list[ActName], *acts: Act) -> None:
     '''
     用于声明可用的富文本格式
     '''
@@ -65,41 +65,41 @@ def register_acts(names: list[ActName], *acts: Act) -> None:
         available_act_map[name].extend(acts)
 
 
-register_acts(
+_register_acts(
     ['color', 'c'],
-    ((get_color_value,),            lambda char, color: char.color.set(color)),
+    ((_get_color_value,),            lambda char, color: char.color.set(color)),
     ((float, float, float),         lambda char, r, g, b: char.color.set([r, g, b])),
     ((float, float, float, float),  lambda char, r, g, b, a: char.color.set_rgbas([[r, g, b, a]]))
 )
-register_acts(
+_register_acts(
     ['stroke_color', 'sc'],
-    ((get_color_value,),            lambda char, color: char.stroke.set(color)),
+    ((_get_color_value,),            lambda char, color: char.stroke.set(color)),
     ((float, float, float),         lambda char, r, g, b: char.stroke.set([r, g, b])),
     ((float, float, float, float),  lambda char, r, g, b, a: char.stroke.set_rgbas([[r, g, b, a]]))
 )
-register_acts(
+_register_acts(
     ['fill_color', 'fc'],
-    ((get_color_value,),            lambda char, color: char.fill.set(color)),
+    ((_get_color_value,),            lambda char, color: char.fill.set(color)),
     ((float, float, float),         lambda char, r, g, b: char.fill.set([r, g, b])),
     ((float, float, float, float),  lambda char, r, g, b, a: char.fill.set_rgbas([[r, g, b, a]]))
 )
-register_acts(
+_register_acts(
     ['alpha', 'a'],
     ((float,), lambda char, a: char.color.set(alpha=a))
 )
-register_acts(
+_register_acts(
     ['stroke_alpha', 'sa'],
     ((float,), lambda char, a: char.stroke.set(alpha=a))
 )
-register_acts(
+_register_acts(
     ['fill_alpha', 'fa'],
     ((float,), lambda char, a: char.fill.set(alpha=a))
 )
-register_acts(
+_register_acts(
     ['stroke', 's'],
-    ((float,), lambda char, radius: char.stroke.set(radius))
+    ((float,), lambda char, radius: char.radius.set(radius))
 )
-register_acts(
+_register_acts(
     ['font_scale', 'fs'],
     ((float,), lambda char, factor: char.points.scale(factor, about_point=ORIGIN))
 )

@@ -270,6 +270,8 @@
 
     janim write learn.py CmptAnimExample -o
 
+.. _realtime_preview:
+
 实时预览
 ------------
 
