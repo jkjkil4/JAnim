@@ -227,6 +227,10 @@
             self.play(circle.anim.points.scale(2))
             self.forward()
 
+.. note::
+
+    ``self.show(circle)`` 是将圆直接显示出来，没有动画过程
+
 希望你没忘记，执行的命令是：
 
 .. code-block:: sh
@@ -269,17 +273,16 @@
 实时预览
 ------------
 
-.. warning::
-
-    这一部分的功能需要使用 :ref:`vscode <install_vscode>` 作为编辑器
-
 如果每次修改动画都需要关掉窗口、修改代码、重新执行，那么未免有点太麻烦了
 
-因此，有这样的功能：
+因此，你可以在修改并保存代码后，点击窗口左上角“功能”中的“重新构建”（快捷键是 ``Ctrl+L``），
+这样就会更新动画内容，使其和更改后的代码一致
 
-当代码文件被保存后，自动更新预览窗口中的动画
+.. warning::
 
-为了使用这个功能，你需要使用 vscode 进行开发，并且安装 vscode 插件 ``janim-toolbox``
+    以下的功能需要使用 :ref:`vscode <install_vscode>` 作为编辑器
+
+每次修改完都要手动重新构建可能还是有点麻烦了，如果你使用 vscode 开发，可以安装 vscode 插件 ``janim-toolbox``
 
 运行时，在预览动画的命令中加上 ``-i``，比如：
 

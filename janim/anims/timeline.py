@@ -61,6 +61,8 @@ class Timeline(metaclass=ABCMeta):
 
             def construct(self) -> None:
                 ...
+
+    另见：:class:`~.Config`
     '''
 
     class _WithConfig:

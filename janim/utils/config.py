@@ -25,6 +25,9 @@ class _ConfigMeta(type):
 class Config(metaclass=_ConfigMeta):
     '''配置
 
+    基础用法
+    ------------
+
     使用 ``Config.get.xxx`` 得到属性，例如 ``Config.get.fps`` 则得到当前设置的帧率
 
     使用 ``with Config(key=value):`` 在指定的配置下执行内容，例如：
@@ -39,6 +42,41 @@ class Config(metaclass=_ConfigMeta):
             print(Config.get.pixel_height)  # 1080
 
     其中没有设置的属性则采用默认设置 :py:obj:`~.default_config`
+
+    全局配置
+    ------------
+
+    在使用命令行参数时，使用 ``-c 配置名 值`` 可以修改全局配置
+
+    例如 ``janim write your_file.py YourTimeline -c fps 120`` 可以将渲染帧率设置为 120
+
+    可以同时修改多个，例如：
+
+    .. code-block:: sh
+
+        janim write your_file.py YourTimeline -c fps 120 -c output_dir custom_dir
+
+    这个命令会将动画以 120 的帧率输出到 ``custom_dir`` 这个指定的文件夹中
+
+    时间轴配置
+    ------------
+
+    定义类变量 ``CONFIG``，例如：
+
+    .. code-block:: python
+
+        class YourTimeline(Timeline):
+            CONFIG = Config(
+                fps=120,
+                preview_fps=30
+            )
+
+            def construct(self) -> None:
+                ...
+
+    这样则是设定这个时间轴的配置，渲染时帧率 120，预览（显示为窗口）时帧率 30
+
+    另见：:py:obj:`~.Timeline.CONFIG`
     '''
     fps: int = None
     preview_fps: int = None
