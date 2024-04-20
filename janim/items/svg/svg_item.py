@@ -97,17 +97,22 @@ class SVGItem(Group[VItem]):
             se.Close: (builder.close_path, ()),
             se.Line: (builder.line_to, ('end',)),
             se.QuadraticBezier: (builder.conic_to, ('control', 'end')),
-            se.CubicBezier: (builder.cubic_to, ('control1', 'control2', 'end'))
+            se.CubicBezier: (builder.cubic_to, ('control1', 'control2', 'end')),
+            se.Arc: (lambda segment: builder.arc_to(_convert_point_to_3d(*segment.end), segment.sweep), None),
         }
+        # TODO: refactor
 
         for segment in path:
             segment_class = segment.__class__
             func, attr_names = segment_class_to_func_map[segment_class]
-            points = [
-                _convert_point_to_3d(*getattr(segment, attr_name))
-                for attr_name in attr_names
-            ]
-            func(*points)
+            if attr_names is None:
+                func(segment)
+            else:
+                points = [
+                    _convert_point_to_3d(*getattr(segment, attr_name))
+                    for attr_name in attr_names
+                ]
+                func(*points)
 
         vitem_styles = dict(
             stroke_radius=path.stroke_width * STROKE_WIDTH_CONVERSION / 2,
