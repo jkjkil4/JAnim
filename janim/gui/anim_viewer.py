@@ -443,7 +443,9 @@ class AnimViewer(QMainWindow):
     def on_export_clicked(self) -> None:
         self.play_timer.stop()
 
-        output_dir = self.anim.cfg.output_dir
+        relative_path = os.path.dirname(inspect.getfile(self.anim.timeline.__class__))
+
+        output_dir = self.anim.cfg.formated_output_dir(relative_path)
         if not os.path.exists(output_dir):
             os.makedirs(output_dir)
 
@@ -631,7 +633,7 @@ class TimelineView(QWidget):
     def hover_at_audio(self, pos: QPoint, info: Timeline.PlayAudioInfo) -> None:
         msg_lst = [
             f'{round(info.range.at, 2)}s ~ {round(info.range.end, 2)}s',
-            info.audio.filepath
+            info.audio.file_path
         ]
         if info.clip_range != TimeRange(0, info.audio.duration()):
             msg_lst.append(f'Clip: {round(info.clip_range.at, 2)}s ~ {round(info.clip_range.end, 2)}s')

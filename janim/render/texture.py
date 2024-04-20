@@ -2,11 +2,14 @@ import moderngl as mgl
 from PIL import Image
 
 from janim.render.base import Renderer
+from janim.utils.file_ops import find_file
 
 filepath_to_img_map: dict[str, Image.Image] = {}
 
 
 def get_img_from_file(file_path: str) -> Image.Image:
+    file_path = find_file(file_path)
+
     img = filepath_to_img_map.get(file_path, None)
     if img is not None:
         return img

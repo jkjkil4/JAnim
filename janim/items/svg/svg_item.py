@@ -12,6 +12,7 @@ from janim.items.vitem import VItem
 from janim.logger import log
 from janim.utils.bezier import PathBuilder
 from janim.utils.config import Config
+from janim.utils.file_ops import find_file
 
 # 这里的 3.272 是手动试出来的
 DEFAULT_SVGITEM_SCALE_FACTOR = 3.272
@@ -61,6 +62,7 @@ class SVGItem(Group[VItem]):
         '''
         解析文件并得到物件列表
         '''
+        file_path = find_file(file_path)
         mtime = os.path.getmtime(file_path)
         name = os.path.splitext(os.path.basename(file_path))[0]
         key = (name, mtime)

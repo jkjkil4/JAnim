@@ -100,6 +100,7 @@ class Config(metaclass=_ConfigMeta):
     ffmpeg_bin: str = None
     output_dir: str = None
     temp_dir: str = None
+    asset_dir: str | list[str] = None
 
     def __enter__(self) -> Self:
         lst = config_ctx_var.get()
@@ -137,7 +138,8 @@ default_config = Config(
 
     ffmpeg_bin='ffmpeg',
     output_dir='videos',
-    temp_dir=os.path.join(tempfile.gettempdir(), 'janim')
+    temp_dir=os.path.join(tempfile.gettempdir(), 'janim'),
+    asset_dir=''
 )
 '''
 默认配置
@@ -171,35 +173,46 @@ class ConfigGetter:
 
     @property
     def aspect_ratio(self) -> float:
-        return Config.get.frame_width / Config.get.frame_height
+        return self.frame_width / self.frame_height
 
     @property
     def frame_x_radius(self) -> float:
-        return Config.get.frame_width / 2
+        return self.frame_width / 2
 
     @property
     def frame_y_radius(self) -> float:
-        return Config.get.frame_height / 2
+        return self.frame_height / 2
 
     @property
     def pixel_to_frame_ratio(self) -> float:
-        return Config.get.frame_width / Config.get.pixel_width
+        return self.frame_width / self.pixel_width
 
     @property
     def left_side(self) -> Vect:
-        return LEFT * Config.get.frame_x_radius
+        return LEFT * self.frame_x_radius
 
     @property
     def right_side(self) -> Vect:
-        return RIGHT * Config.get.frame_x_radius
+        return RIGHT * self.frame_x_radius
 
     @property
     def bottom(self) -> Vect:
-        return DOWN * Config.get.frame_y_radius
+        return DOWN * self.frame_y_radius
 
     @property
     def top(self) -> Vect:
-        return UP * Config.get.frame_y_radius
+        return UP * self.frame_y_radius
+
+    def formated_output_dir(self, relative_path: str) -> str:
+        '''
+        将 ``:/path/to/file`` 转换为相对于 ``relative_path`` 的路径
+        '''
+        output_dir = self.output_dir
+
+        if output_dir.startswith((':/', ':\\')):
+            return os.path.join(relative_path, output_dir[2:])
+
+        return output_dir
 
 
 config_getter = ConfigGetter()

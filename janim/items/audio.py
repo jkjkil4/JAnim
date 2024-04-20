@@ -11,6 +11,7 @@ import numpy as np
 from janim.exception import EXITCODE_FFMPEG_NOT_FOUND, ExitException
 from janim.logger import log
 from janim.utils.config import Config
+from janim.utils.file_ops import find_file
 from janim.utils.iterables import resize_with_interpolation
 from janim.utils.simple_functions import clip
 from janim.utils.unique_nparray import UniqueNparray
@@ -20,13 +21,16 @@ class Audio:
     '''
     不建议使用该类处理多声道音频，因为该类读取时仅保留单声道
     '''
-    def __init__(self, filepath: str, begin: float = -1, end: float = -1, **kwargs):
+
+    audio_cache_map: dict[tuple, tuple[np.ndarray, int, str, str]] = {}
+
+    def __init__(self, file_path: str, begin: float = -1, end: float = -1, **kwargs):
         super().__init__(**kwargs)
         self._samples = UniqueNparray(dtype=np.int16)
         self.framerate = 0
-        self.filepath = ''
+        self.file_path = ''
         self.filename = ''
-        self.read(filepath, begin, end)
+        self.read(file_path, begin, end)
 
     def copy(self) -> Self:
         copy_audio = copy.copy(self)
@@ -35,7 +39,7 @@ class Audio:
 
     def read(
         self,
-        filepath: str,
+        file_path: str,
         begin: float = -1,
         end: float = -1
     ) -> Self:
@@ -44,10 +48,21 @@ class Audio:
 
         可以指定 ``begin`` 和 ``end`` 来截取音频的一部分
         '''
+        file_path = find_file(file_path)
+
+        mtime = os.path.getmtime(file_path)
+        name = os.path.splitext(os.path.basename(file_path))[0]
+        key = (name, mtime, begin, end)
+
+        cached = self.audio_cache_map.get(key, None)
+        if cached is not None:
+            self._samples.data, self.framerate, self.file_path, self.filename = cached
+            return
+
         command = [
             Config.get.ffmpeg_bin,
             '-vn',
-            '-i', filepath,
+            '-i', file_path,
         ]
         if begin != -1:
             command += ['-ss', str(begin)]  # clip from
@@ -67,14 +82,17 @@ class Audio:
             # TODO: support more sampwidth
             # TODO: fix ByteOrder
             with sp.Popen(command, stdout=sp.PIPE) as reading_process:
-                self._samples.data = np.frombuffer(reading_process.stdout.read(), dtype=np.int16)
-                self.framerate = Config.get.audio_framerate
-                self.filepath = filepath
-                self.filename = os.path.basename(filepath)
+                data = np.frombuffer(reading_process.stdout.read(), dtype=np.int16)
 
         except FileNotFoundError:
             log.error('无法读取音频，需要安装 ffmpeg 并将其添加到环境变量中')
             raise ExitException(EXITCODE_FFMPEG_NOT_FOUND)
+
+        self._samples.data = data
+        self.framerate = Config.get.audio_framerate
+        self.file_path = file_path
+        self.filename = os.path.basename(file_path)
+        self.audio_cache_map[key] = (data, self.framerate, self.file_path, self.filename)
 
         return self
 

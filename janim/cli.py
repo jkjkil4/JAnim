@@ -1,4 +1,5 @@
 import importlib.machinery
+import inspect
 import os
 import platform
 import subprocess as sp
@@ -81,8 +82,9 @@ def write(args: Namespace) -> None:
 
     for anim in built:
         name = anim.timeline.__class__.__name__
+        relative_path = os.path.dirname(inspect.getfile(anim.timeline.__class__))
 
-        output_dir = os.path.normpath(anim.cfg.output_dir)
+        output_dir = os.path.normpath(anim.cfg.formated_output_dir(relative_path))
         if not os.path.exists(output_dir):
             os.makedirs(output_dir)
 
@@ -98,7 +100,7 @@ def write(args: Namespace) -> None:
         if both or args.video:
             writer = VideoWriter(anim)
             writer.write_all(
-                os.path.join(anim.cfg.output_dir,
+                os.path.join(output_dir,
                              f'{name}.{args.format}')
             )
             if args.open and anim is built[-1]:
@@ -107,7 +109,7 @@ def write(args: Namespace) -> None:
         if (both or args.audio) and anim.timeline.has_audio():
             writer = AudioWriter(anim)
             writer.write_all(
-                os.path.join(anim.cfg.output_dir,
+                os.path.join(output_dir,
                              f'{name}.{args.audio_format}')
             )
 
