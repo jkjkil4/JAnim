@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import random
 from typing import Callable, Generator, Self
 
 import janim.utils.refresh as refresh
@@ -95,6 +96,11 @@ class Relation[GRelT: 'Relation'](refresh.Refreshable):
             except ValueError: ...
             obj.parents_changed()
 
+        self.children_changed()
+        return self
+
+    def shuffle(self) -> Self:
+        random.shuffle(self.children)
         self.children_changed()
         return self
 
