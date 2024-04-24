@@ -186,7 +186,13 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
     def get_available_styles(cls) -> list[str]:
         return getattr(cls, ALL_STYLES_NAME)
 
-    def set_style(self, **kwargs) -> Self:
+    def set_style(
+        self,
+        depth: float | None = None,
+        **kwargs
+    ) -> Self:
+        if depth is not None:
+            self.depth.arrange(depth)
         return self
 
     def do(self, func: Callable[[Self], Any]) -> Self:
