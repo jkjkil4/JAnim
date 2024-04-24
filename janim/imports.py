@@ -26,6 +26,7 @@ from janim.items.geometry.polygon import *
 from janim.items.image_item import *
 from janim.items.item import *
 from janim.items.points import *
+from janim.items.shape_matchers import *
 from janim.items.svg.brace import *
 from janim.items.svg.svg_item import *
 from janim.items.svg.typst import *
