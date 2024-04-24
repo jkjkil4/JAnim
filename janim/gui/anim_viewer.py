@@ -371,6 +371,7 @@ class AnimViewer(QMainWindow):
     def on_rebuild_triggered(self) -> None:
         module = inspect.getmodule(self.anim.timeline)
         progress = self.timeline_view.progress()
+        preview_fps = self.anim.cfg.preview_fps
 
         loader = importlib.machinery.SourceFileLoader(module.__name__, module.__file__)
         module = loader.load_module()
@@ -400,6 +401,8 @@ class AnimViewer(QMainWindow):
             self.send_lineno(self.anim.timeline.get_lineno_at_time(time))
 
         self.setup_audio_player()
+        self.play_timer.duration = 1 / self.anim.cfg.preview_fps
+        progress = int(progress * self.anim.cfg.preview_fps / preview_fps)
 
         self.anim.anim_on(self.timeline_view.progress_to_time(progress))
 
@@ -848,7 +851,7 @@ class TimelineView(QWidget):
 
             self.update()
 
-    def set_progress(self, progress: float) -> None:
+    def set_progress(self, progress: int) -> None:
         progress = clip(progress, 0, self._maximum)
         if progress != self._progress:
             self._progress = progress
