@@ -6,6 +6,10 @@ span.caption-text {
     font-size: larger;
 }
 
+.reference.internal.image-reference img {
+    object-fit: scale-down;
+}
+
 /* .highlight pre {
     font-size: initial;
 } */
