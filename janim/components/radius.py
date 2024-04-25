@@ -75,13 +75,8 @@ class Cmpt_Radius[ItemT](Component[ItemT]):
             radius = [radius]
         radii = np.array(radius)
 
-        self._radii.data = radii
-        if not root_only and self.bind is not None:
-            for item in self.bind.at_item.walk_descendants(self.bind.decl_cls):
-                cmpt = self.get_same_cmpt_without_mock(item)
-                if cmpt is None:
-                    continue
-                cmpt._radii._data = radii
+        for cmpt in self.walk_same_cmpt_of_self_and_descendants_without_mock(root_only):
+            cmpt._radii._data = radii
 
         return self
 

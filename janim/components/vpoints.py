@@ -72,15 +72,10 @@ class Cmpt_VPoints[ItemT](Cmpt_Points[ItemT]):
             about_edge=about_edge,
             root_only=root_only
         )
-        if root_only or self.bind is None:
-            if self.make_smooth_after_applying_functions:
-                self.make_approximately_smooth()
-        else:
-            for item in self.bind.at_item.walk_self_and_descendants():
-                cmpt = self.get_same_cmpt_without_mock(item)
-                if not isinstance(cmpt, Cmpt_VPoints) or not cmpt.make_smooth_after_applying_functions:
-                    continue
-                cmpt.make_approximately_smooth()
+        for cmpt in self.walk_same_cmpt_of_self_and_descendants_without_mock(root_only):
+            if not isinstance(cmpt, Cmpt_VPoints) or not cmpt.make_smooth_after_applying_functions:
+                continue
+            cmpt.make_approximately_smooth()
 
         return self
 
@@ -244,20 +239,11 @@ class Cmpt_VPoints[ItemT](Cmpt_Points[ItemT]):
         return np.vstack(new_points)
 
     def insert_n_curves(self, n: int, root_only=False) -> Self:
-        def apply(cmpt: Cmpt_VPoints) -> None:
-            if cmpt.curves_count() == 0:
-                return
+        for cmpt in self.walk_same_cmpt_of_self_and_descendants_without_mock(root_only):
+            if not isinstance(cmpt, Cmpt_VPoints) or cmpt.curves_count() == 0:
+                continue
             points = cmpt.insert_n_curves_to_point_list(n, cmpt.get())
             cmpt.set(points)
-
-        if root_only or self.bind is None:
-            apply(self)
-        else:
-            for item in self.bind.at_item.walk_self_and_descendants():
-                cmpt = self.get_same_cmpt_without_mock(item)
-                if not isinstance(cmpt, Cmpt_VPoints):
-                    continue
-                apply(cmpt)
 
         return self
 
@@ -494,14 +480,11 @@ class Cmpt_VPoints[ItemT](Cmpt_Points[ItemT]):
         number of points.
         '''
         mode = AnchorMode.ApproxSmooth if approx else AnchorMode.TrueSmooth
-        if root_only or self.bind is None:
-            self.change_anchor_mode(mode)
-        else:
-            for item in self.bind.at_item.walk_self_and_descendants():
-                cmpt = self.get_same_cmpt_without_mock(item)
-                if not isinstance(cmpt, Cmpt_VPoints):
-                    continue
-                cmpt.change_anchor_mode(mode)
+        for cmpt in self.walk_same_cmpt_of_self_and_descendants_without_mock(root_only):
+            if not isinstance(cmpt, Cmpt_VPoints):
+                continue
+            cmpt.change_anchor_mode(mode)
+
         return self
 
     def make_approximately_smooth(self, root_only=False) -> Self:
@@ -509,14 +492,11 @@ class Cmpt_VPoints[ItemT](Cmpt_Points[ItemT]):
         return self
 
     def make_jagged(self, root_only=False) -> Self:
-        if root_only or self.bind is None:
-            self.change_anchor_mode(AnchorMode.Jagged)
-        else:
-            for item in self.bind.at_item.walk_self_and_descendants():
-                cmpt = self.get_same_cmpt_without_mock(item)
-                if not isinstance(cmpt, Cmpt_VPoints):
-                    continue
-                cmpt.change_anchor_mode(AnchorMode.Jagged)
+        for cmpt in self.walk_same_cmpt_of_self_and_descendants_without_mock(root_only):
+            if not isinstance(cmpt, Cmpt_VPoints):
+                continue
+            cmpt.change_anchor_mode(AnchorMode.Jagged)
+
         return self
 
     # endregion

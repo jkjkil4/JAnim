@@ -148,19 +148,16 @@ class Cmpt_Rgbas[ItemT](Component[ItemT]):
 
             self.set_rgbas(rgbas)
 
-            if not root_only and self.bind is not None:
-                for item in self.bind.at_item.walk_descendants(self.bind.decl_cls):
-                    cmpt = self.get_same_cmpt_without_mock(item)
-                    if cmpt is None:
-                        continue
-                    cmpt.set_rgbas(rgbas)
+            for cmpt in self.walk_same_cmpt_of_self_and_descendants_without_mock(root_only):
+                cmpt.set_rgbas(rgbas)
+
         else:
             if color is not None:
                 color = self.format_colors(color)
             if alpha is not None:
                 alpha = self.format_alphas(alpha)
 
-            def set_to(cmpt: Cmpt_Rgbas):
+            for cmpt in self.walk_same_cmpt_of_self_and_descendants_without_mock(root_only):
                 cmpt_color = cmpt.get()[:, :3] if color is None else color
                 cmpt_alpha = cmpt.get()[:, 3] if alpha is None else alpha
                 length = max(len(cmpt_color), len(cmpt_alpha))
@@ -170,16 +167,6 @@ class Cmpt_Rgbas[ItemT](Component[ItemT]):
                     resize_with_interpolation(cmpt_alpha.astype(float), length).reshape((length, 1))
                 ])
                 cmpt.set_rgbas(rgbas)
-
-            set_to(self)
-
-            if not root_only and self.bind is not None:
-                for item in self.bind.at_item.walk_descendants(self.bind.decl_cls):
-                    cmpt = self.get_same_cmpt_without_mock(item)
-                    if cmpt is None:
-                        continue
-
-                    set_to(cmpt)
 
         return self
 
@@ -212,20 +199,10 @@ class Cmpt_Rgbas[ItemT](Component[ItemT]):
         return self
 
     def fade(self, factor: float | Iterable[float], *, root_only: bool = False) -> Self:
-        def fade_on(cmpt: Cmpt_Rgbas):
+        for cmpt in self.walk_same_cmpt_of_self_and_descendants_without_mock(root_only):
             rgbas = cmpt.get()
             rgbas[:, 3] *= 1 - factor
             cmpt.set_rgbas(rgbas)
-
-        fade_on(self)
-
-        if not root_only and self.bind is not None:
-            for item in self.bind.at_item.walk_descendants(self.bind.decl_cls):
-                cmpt = self.get_same_cmpt_without_mock(item)
-                if cmpt is None:
-                    continue
-
-                fade_on(cmpt)
 
         return self
 

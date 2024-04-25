@@ -191,13 +191,13 @@ class Dot(Circle):
         point: np.ndarray = ORIGIN,
         radius: float = DEFAULT_DOT_RADIUS,
         *,
-        stroke_radius: float | Iterable[float] | None = 0,
+        stroke_alpha: Alpha | AlphaArray | None = 0,
         fill_alpha: Alpha | AlphaArray | None = 1.0,
         **kwargs
     ) -> None:
         super().__init__(
             radius=radius,
-            stroke_radius=stroke_radius,
+            stroke_alpha=stroke_alpha,
             fill_alpha=fill_alpha,
             **kwargs
         )

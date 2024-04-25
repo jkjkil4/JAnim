@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import copy
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Callable, Self, overload
+from typing import TYPE_CHECKING, Callable, Generator, Self, overload
 
 import janim.utils.refresh as refresh
 from janim.exception import CmptGroupLookupError
@@ -107,7 +107,6 @@ class Component[ItemT](refresh.Refreshable, metaclass=_CmptMeta):
         return self.get_same_cmpt_if_exists(item) or getattr(item.astype(self.bind.decl_cls), self.bind.key)
 
     def get_same_cmpt_without_mock(self, item: Item) -> Self | None:
-        # TODO: refactor
         return item.components.get(self.bind.key, None)
 
     def get_same_cmpt_if_exists(self, item: Item) -> Self | None:
@@ -117,8 +116,24 @@ class Component[ItemT](refresh.Refreshable, metaclass=_CmptMeta):
         cmpt = item._astype_mock_cmpt.get(self.bind.key, None)
         return cmpt
 
+    def walk_same_cmpt_of_self_and_descendants_without_mock(
+        self,
+        root_only: bool = False
+    ) -> Generator[Self, None, None]:
+        yield self
+        if not root_only and self.bind is not None:
+            for item in self.bind.at_item.walk_descendants(self.bind.decl_cls):
+                cmpt = self.get_same_cmpt_without_mock(item)
+                if cmpt is None:
+                    continue
+                yield cmpt
+            return
+
     @property
     def r(self) -> ItemT:
+        '''
+        所位于的物件，便于链式调用同物件下其它的组件
+        '''
         return self.bind.at_item
 
 

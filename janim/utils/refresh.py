@@ -1,6 +1,6 @@
-from functools import wraps
-from typing import Any, Self, Callable, ParamSpec, TypeVar
 from collections import defaultdict
+from functools import wraps
+from typing import Any, Callable, ParamSpec, Self, TypeVar
 
 # 使 sphinx 可用
 P = ParamSpec('P')

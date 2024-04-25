@@ -133,5 +133,5 @@ class TimelineTest(unittest.TestCase):
                     p.points.shift(RIGHT * 2)
                     self.forward()
 
-        MyTimeline().build()
+        MyTimeline().build(quiet=True)
 

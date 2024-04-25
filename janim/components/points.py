@@ -96,15 +96,10 @@ class Cmpt_Points[ItemT](Component[ItemT]):
         '''
         得到自己以及后代物件的所有点坐标数据
         '''
-        point_datas = [self.get()]
-
-        if self.bind is not None:
-            for item in self.bind.at_item.walk_descendants(self.bind.decl_cls):
-                cmpt = self.get_same_cmpt_without_mock(item)
-                if cmpt is None:
-                    continue
-                point_datas.append(cmpt.get())
-
+        point_datas = [
+            cmpt.get()
+            for cmpt in self.walk_same_cmpt_of_self_and_descendants_without_mock()
+        ]
         return np.vstack(point_datas)
 
     @Signal
@@ -218,19 +213,11 @@ class Cmpt_Points[ItemT](Component[ItemT]):
         '''
         表示物件（包括后代物件）的矩形包围框
         '''
-        box_datas = []
-
-        if self.has():
-            box_datas.append(self.self_box.data)
-
-        if self.bind is not None:
-            for item in self.bind.at_item.walk_descendants(self.bind.decl_cls):
-                cmpt = self.get_same_cmpt_without_mock(item)
-                if cmpt is None or not cmpt.has():
-                    continue
-
-                box_datas.append(cmpt.self_box.data)
-
+        box_datas = [
+            cmpt.self_box.data
+            for cmpt in self.walk_same_cmpt_of_self_and_descendants_without_mock()
+            if cmpt.has()
+        ]
         return self.BoundingBox(np.vstack(box_datas) if box_datas else [])
 
     @property
@@ -399,7 +386,7 @@ class Cmpt_Points[ItemT](Component[ItemT]):
             else:
                 about_point = self.box.get(about_edge)
 
-        def apply(cmpt: Cmpt_Points):
+        for cmpt in self.walk_same_cmpt_of_self_and_descendants_without_mock(root_only):
             if cmpt.has():
                 if about_point is None:
                     cmpt.set(func(cmpt.get()))
@@ -407,16 +394,6 @@ class Cmpt_Points[ItemT](Component[ItemT]):
                     cmpt.set(func(cmpt.get() - about_point) + about_point)
 
             Cmpt_Points.apply_points_fn.emit(cmpt, func, about_point)
-
-        apply(self)
-
-        if not root_only and self.bind is not None:
-            for item in self.bind.at_item.walk_descendants(self.bind.decl_cls):
-                cmpt = self.get_same_cmpt_without_mock(item)
-                if cmpt is None:
-                    continue
-
-                apply(cmpt)
 
         return self
 

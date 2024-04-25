@@ -152,22 +152,14 @@ class Axes(Group, CoordinateSystem, metaclass=_ItemMeta_ABCMeta):
 
 class CmptVPoints_NumberPlaneImpl(Cmpt_VPoints, impl=True):
     def prepare_for_nonlinear_transform(self, num_inserted_curves: int = 50, *, root_only=False) -> Self:
-        def apply(cmpt: Cmpt_VPoints):
-            if not cmpt.has():
-                return
+        for cmpt in self.walk_same_cmpt_of_self_and_descendants_without_mock(root_only):
+            if not isinstance(cmpt, Cmpt_VPoints) or not cmpt.has():
+                continue
+
             curves_count = cmpt.curves_count()
             if num_inserted_curves > curves_count:
                 cmpt.insert_n_curves(num_inserted_curves - curves_count)
             cmpt.make_smooth_after_applying_functions = True
-
-        if root_only or self.bind is None:
-            apply(self)
-        else:
-            for item in self.bind.at_item.walk_self_and_descendants():
-                cmpt = self.get_same_cmpt_without_mock(item)
-                if not isinstance(cmpt, Cmpt_VPoints):
-                    continue
-                apply(cmpt)
 
         return self
 
