@@ -125,19 +125,19 @@ class DrawBorderThenFill(DataUpdater):
         self.stroke_radius = stroke_radius
         self.stroke_color = stroke_color
 
-    def create_extra_data(self, data: Item.Data[VItem]) -> tuple | None:
+    def create_extra_data(self, data: Item.Data[VItem]) -> Item.Data[VItem] | None:
         if not isinstance(data.item, VItem):
             return None     # pragma: no cover
         data_copy = data._copy(data)
         data_copy.cmpt.radius.set(self.stroke_radius)
         data_copy.cmpt.stroke.set(self.stroke_color, 1)
         data_copy.cmpt.fill.set(alpha=0)
-        return (data_copy, )
+        return data_copy
 
     def updater(self, data: Item.Data[VItem], p: UpdaterParams) -> None:
         if p.extra_data is None:
             return  # pragma: no cover
-        outline, = p.extra_data
+        outline = p.extra_data
         index, subalpha = integer_interpolate(0, 2, p.alpha)
 
         if index == 0:

@@ -4,6 +4,7 @@
 
 # flake8: noqa
 import janim.items.boolean_ops as boolean_ops
+from janim.anims.indication import *
 from janim.anims.composition import *
 from janim.anims.creation import *
 from janim.anims.display import *

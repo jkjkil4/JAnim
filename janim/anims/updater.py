@@ -67,7 +67,7 @@ class DataUpdater[T: Item](Animation):
     class DataGroup:
         orig_data: Item.Data[Item]
         data: Item.Data[Item]
-        extra_data: tuple | None
+        extra_data: Any | None
 
     def __init__(
         self,
@@ -92,7 +92,7 @@ class DataUpdater[T: Item](Animation):
         self.skip_null_items = skip_null_items
         self.root_only = root_only
 
-    def create_extra_data(self, data: Item.Data) -> tuple | None:
+    def create_extra_data(self, data: Item.Data) -> Any | None:
         return None
 
     def wrap_data(self, updater_data: DataUpdater.DataGroup) -> DynamicData:
