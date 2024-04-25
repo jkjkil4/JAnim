@@ -1,13 +1,15 @@
 from collections import defaultdict
-from functools import wraps
-from typing import Any, Callable, ParamSpec, Self, TypeVar
-
-# 使 sphinx 可用
-P = ParamSpec('P')
-R = TypeVar('R')
+from functools import partial, wraps
+from typing import Any, Callable, Self, overload
 
 
-def register(func: Callable[P, R]) -> Callable[P, R]:
+@overload
+def register[T](func=None, /, *, fallback_check: Callable[[Any], bool]) -> Callable[[T], T]: ...
+@overload
+def register[T](func: T) -> T: ...
+
+
+def register(func=None, /, *, fallback_check=None):
     '''
     用于在需要时才进行值的重新计算，提升性能
 
@@ -19,14 +21,33 @@ def register(func: Callable[P, R]) -> Callable[P, R]:
     只有在 ``add`` 或 ``remove`` 执行后，才会将 ``get_family`` 标记为需要更新
     使得在下次调用 ``get_family`` 才重新计算结果并返回
 
+    如果指定了 ``fallback_check`` 函数，则每次都会调用该函数，
+    如果返回值为 True，则忽略缓存，并且得到的结果不记录到缓存中
+
     另见：
 
     - ``test.utils.test_refresh.RefreshTest``.
     '''
+    if func is None:
+        # Called with @register()
+        return partial(_register, fallback_check=fallback_check)
+
+    # Called with @register
+    return _register(func)
+
+
+def _register[T](
+    func: T,
+    *,
+    fallback_check: Callable[[Any], bool] | None = None
+) -> T:
     name = func.__name__
 
     @wraps(func)
     def wrapper(self: Refreshable, *args, **kwargs):
+        if fallback_check is not None and fallback_check(self):
+            return func(self, *args, **kwargs)
+
         data = self.refresh_data[name]
 
         if data.is_required:

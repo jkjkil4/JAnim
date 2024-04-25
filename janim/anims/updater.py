@@ -17,6 +17,7 @@ class UpdaterParams:
     '''
     ``Updater`` 调用时会传递的参数，用于标注时间信息以及动画进度
     '''
+    updater: DataUpdater | ItemUpdater
     global_t: float
     alpha: float
     range: TimeRange
@@ -102,7 +103,8 @@ class DataUpdater[T: Item](Animation):
             alpha = self.get_alpha_on_global_t(global_t)
             data_copy = updater_data.orig_data._copy(updater_data.orig_data)
 
-            with UpdaterParams(global_t,
+            with UpdaterParams(self,
+                               global_t,
                                alpha,
                                self.global_range,
                                updater_data.extra_data) as params:
@@ -133,7 +135,8 @@ class DataUpdater[T: Item](Animation):
 
         for item, updater_data in self.datas.items():
             if self.become_at_end:
-                with UpdaterParams(self.global_range.end,
+                with UpdaterParams(self,
+                                   self.global_range.end,
                                    1,
                                    self.global_range,
                                    updater_data.extra_data) as params:
@@ -164,7 +167,8 @@ class DataUpdater[T: Item](Animation):
             sub_alpha = self.get_sub_alpha(alpha, i)
             updater_data.data._restore(updater_data.orig_data)
 
-            with UpdaterParams(global_t,
+            with UpdaterParams(self,
+                               global_t,
                                sub_alpha,
                                self.global_range,
                                updater_data.extra_data) as params:
@@ -240,7 +244,8 @@ class ItemUpdater(Animation):
             self.timeline.schedule(self.global_range.end, self.scheduled_become)
 
     def scheduled_become(self) -> None:
-        with UpdaterParams(self.global_range.end,
+        with UpdaterParams(self,
+                           self.global_range.end,
                            1,
                            self.global_range,
                            None) as params:
@@ -249,7 +254,7 @@ class ItemUpdater(Animation):
     def anim_on_alpha(self, alpha: float) -> None:
         global_t = self.global_t_ctx.get()
 
-        with UpdaterParams(global_t, alpha, self.global_range, None) as params:
+        with UpdaterParams(self, global_t, alpha, self.global_range, None) as params:
             dynamic = self.call(params)
 
         self.set_render_call_list([

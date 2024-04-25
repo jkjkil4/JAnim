@@ -162,6 +162,7 @@ class MethodTransform(Transform):
 
             union_copy = aligned.union._copy(aligned.union)
             union_copy.interpolate(aligned.data1, aligned.data2, alpha, path_func=self.path_func)
+            union_copy.children = aligned.data1.children.copy()
 
             return union_copy
 

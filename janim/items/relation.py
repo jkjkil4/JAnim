@@ -118,7 +118,8 @@ class Relation[GRelT: 'Relation'](refresh.Refreshable):
         res = []
 
         for sub_obj in lst:
-            res.append(sub_obj)
+            if sub_obj not in res:
+                res.append(sub_obj)
             res.extend(filter(
                 lambda obj: obj not in res,
                 sub_obj._family(up=up)

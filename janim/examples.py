@@ -159,4 +159,3 @@ class UpdaterExample(Timeline):
             duration=5
         )
         self.forward()
-

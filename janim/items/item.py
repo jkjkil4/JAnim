@@ -384,7 +384,10 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
             parents = data.parents.copy()
             children = data.children.copy()
 
-            return cls(data.item, components, parents, children)
+            copy_data = cls(data.item, components, parents, children)
+            for key, cmpt in components.items():
+                cmpt.set_at_data(copy_data, key)
+            return copy_data
 
         def _restore(self, data: Item.Data) -> None:
             for key in self.components.keys() | data.components.keys():

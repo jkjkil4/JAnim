@@ -29,7 +29,8 @@ class Cmpt_VPoints_BraceImpl[ItemT](Cmpt_VPoints[ItemT], impl=True):
         self,
         item_or_data: Points | Item.Data[Points] | None,
         direction: Vect | None = None,
-        buff: float = SMALL_BUFF
+        buff: float = SMALL_BUFF,
+        root_only: bool = False
     ) -> Self:
         '''
         将花括号进行伸缩，使得与 ``item_or_data`` 在 ``direction`` 方向的宽度匹配
@@ -50,7 +51,10 @@ class Cmpt_VPoints_BraceImpl[ItemT](Cmpt_VPoints[ItemT], impl=True):
             else:
                 cmpt = item_or_data.cmpt.points
 
-            rot_points = np.dot(cmpt.get(), rot.T)   # dot(points, rot.T) == dot(rot, points.T).T
+            rot_points = np.dot(
+                cmpt.get() if root_only else cmpt.get_all(),
+                rot.T
+            )   # dot(points, rot.T) == dot(rot, points.T).T
 
             box = self.BoundingBox(rot_points)
             self.brace_length = box.width

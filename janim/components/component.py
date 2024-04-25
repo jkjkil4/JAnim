@@ -62,16 +62,22 @@ class Component[ItemT](refresh.Refreshable, metaclass=_CmptMeta):
             # item2.cmpt1.bind_info 与 BindInfo(MyItem, item2, 'cmpt1') 一致
             # item2.cmpt3.bind_info 与 BindInfo(MyItem2, item2, 'cmpt3') 一致
         '''
-        decl_cls: type
+        decl_cls: type[Item]
         at_item: Item
+        key: str
+
+    @dataclass
+    class DataInfo:
+        obj: Item.Data[ItemT]
         key: str
 
     def __init__(self) -> None:
         super().__init__()
 
         self.bind: Component.BindInfo | None = None
+        self.at_data: Component.DataInfo | None = None    # TODO: 添加注释说明
 
-    def init_bind(self, bind: BindInfo):
+    def init_bind(self, bind: BindInfo) -> None:
         '''
         用于 ``Item._init_components``
 
@@ -79,9 +85,20 @@ class Component[ItemT](refresh.Refreshable, metaclass=_CmptMeta):
         '''
         self.bind = bind
 
+    def set_at_data(self, obj: Item.Data[ItemT], key: str) -> None:
+        # TODO: 添加注释说明
+        self.at_data = Component.DataInfo(obj, key)
+
+    def bind_invalid(self) -> bool:
+        '''
+        便于使用 ``@refresh.register(fallback_check=Component.bind_invalid)``
+        '''
+        return self.bind is not None
+
     def copy(self) -> Self:
         cmpt_copy = copy.copy(self)
         cmpt_copy.bind = None
+        cmpt_copy.data = None
         cmpt_copy.reset_refresh()
         return cmpt_copy
 
@@ -106,7 +123,7 @@ class Component[ItemT](refresh.Refreshable, metaclass=_CmptMeta):
     def get_same_cmpt(self, item: Item) -> Self:
         return self.get_same_cmpt_if_exists(item) or getattr(item.astype(self.bind.decl_cls), self.bind.key)
 
-    def get_same_cmpt_without_mock(self, item: Item) -> Self | None:
+    def get_same_cmpt_without_mock(self, item: Item | Item.Data) -> Self | None:
         return item.components.get(self.bind.key, None)
 
     def get_same_cmpt_if_exists(self, item: Item) -> Self | None:
@@ -118,7 +135,9 @@ class Component[ItemT](refresh.Refreshable, metaclass=_CmptMeta):
 
     def walk_same_cmpt_of_self_and_descendants_without_mock(
         self,
-        root_only: bool = False
+        root_only: bool = False,
+        *,
+        fallback: bool = False
     ) -> Generator[Self, None, None]:
         yield self
         if not root_only and self.bind is not None:
@@ -128,6 +147,38 @@ class Component[ItemT](refresh.Refreshable, metaclass=_CmptMeta):
                     continue
                 yield cmpt
             return
+
+        # fallback 意为，在 self.bind 无效时，
+        # 对每个后代物件使用 get_stored_data_at_right 获得 updater 所处时间的数据
+        if not fallback or self.at_data is None:
+            return
+
+        from janim.anims.updater import updater_params_ctx
+
+        params = updater_params_ctx.get(None)
+        if params is None:
+            return
+        timeline = params.updater.timeline
+
+        def family(data: Item.Data) -> list[Item.Data]:  # use DFS
+            res = []
+
+            for sub_item in data.children:
+                sub_data = timeline.get_stored_data_at_right(sub_item, params.global_t)
+                if sub_data not in res:
+                    res.append(sub_data)
+                res.extend(filter(
+                    lambda data: data not in res,
+                    family(sub_data)
+                ))
+
+            return res
+
+        for data in family(self.at_data.obj):
+            cmpt = data.components.get(self.at_data.key, None)
+            if cmpt is None:
+                continue
+            yield cmpt
 
     @property
     def r(self) -> ItemT:
