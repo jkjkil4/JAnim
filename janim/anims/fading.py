@@ -62,7 +62,7 @@ class FadeIn(Fade):
         for cmpt in data.components.values():
             if not isinstance(cmpt, Cmpt_Rgbas):
                 continue
-            rgbas = cmpt.get()
+            rgbas = cmpt.get().copy()
             rgbas[:, 3] *= p.alpha
             cmpt.set_rgbas(rgbas)
 

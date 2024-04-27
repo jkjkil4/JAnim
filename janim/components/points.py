@@ -15,12 +15,11 @@ from janim.items.item import Item
 from janim.typing import Vect, VectArray
 from janim.utils.bezier import integer_interpolate, interpolate
 from janim.utils.config import Config
-from janim.utils.data import AlignedData
+from janim.utils.data import AlignedData, Array
 from janim.utils.iterables import resize_and_repeatedly_extend
 from janim.utils.paths import PathFunc, straight_path
 from janim.utils.signal import Signal
 from janim.utils.space_ops import angle_of_vector, get_norm, rotation_matrix
-from janim.utils.unique_nparray import UniqueNparray
 
 type PointsFn = Callable[[np.ndarray], VectArray]
 type PointFn = Callable[[np.ndarray], Vect]
@@ -34,7 +33,7 @@ class Cmpt_Points[ItemT](Component[ItemT]):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self._points = UniqueNparray()
+        self._points = Array()
         self.clear()
 
     def init_bind(self, bind: Component.BindInfo):
@@ -172,14 +171,14 @@ class Cmpt_Points[ItemT](Component[ItemT]):
         得到 ``points`` 的第一个点
         '''
         self._raise_error_if_no_points()
-        return self._points._data[0].copy()
+        return self._points.data[0]
 
     def get_end(self) -> np.ndarray:
         '''
         得到 ``points`` 的最后一个点
         '''
         self._raise_error_if_no_points()
-        return self._points._data[-1].copy()
+        return self._points.data[-1]
 
     def get_start_and_end(self) -> tuple[np.ndarray, np.ndarray]:
         '''
@@ -188,7 +187,7 @@ class Cmpt_Points[ItemT](Component[ItemT]):
         return (self.get_start(), self.get_end())
 
     def point_from_proportion(self, alpha: float) -> np.ndarray:
-        points = self._points._data
+        points = self._points.data
         i, subalpha = integer_interpolate(0, len(points) - 1, alpha)
         return interpolate(points[i], points[i + 1], subalpha)
 

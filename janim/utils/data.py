@@ -1,6 +1,48 @@
+from __future__ import annotations
+
+import numpy as np
+import numpy.typing as npt
+
 from dataclasses import dataclass
 from enum import IntFlag
 from typing import Iterable, overload
+
+
+class Array:
+    '''
+    使得在使用 ``.data = xxx`` 修改（赋值）后必定是不同的 id
+
+    并且通过 ``.data`` 得到的 numpy 数组必定是只读的
+    '''
+    def __init__(self, *, dtype=np.float64):
+        self._data = np.empty(0, dtype=dtype)
+        self._dtype = dtype
+
+    def len(self) -> int:
+        return len(self._data)
+
+    @property
+    def data(self) -> np.ndarray:
+        return self._data
+
+    @data.setter
+    def data(self, data: npt.ArrayLike | Array) -> None:
+        # 如果是设定的是 Array 对象，因为对方的内容肯定是 write=False，所以直接引用其内容
+        if isinstance(data, Array):
+            self._data = data._data
+            return
+        # 否则进行拷贝，这里的 np.array 对于 numpy 数组和其它 ArrayLike 数据
+        # 都会在原数据之外产生拷贝，不会产生共用内存的情况
+        self._data = np.array(data, dtype=self._dtype)
+        self._data.setflags(write=False)
+
+    def copy(self) -> Array:
+        ret = Array()
+        ret.data = self
+        return ret
+
+    def is_share(self, other: Array) -> bool:
+        return self.data is other.data
 
 
 @dataclass

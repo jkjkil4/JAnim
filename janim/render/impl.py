@@ -34,9 +34,9 @@ class DotCloudRenderer(Renderer):
         self.prev_radius = np.array([])
 
     def render(self, data: 'DotCloud.Data') -> None:
-        new_color = data.cmpt.color._rgbas._data
-        new_radius = data.cmpt.radius._radii._data
-        new_points = data.cmpt.points._points._data
+        new_color = data.cmpt.color._rgbas.data
+        new_radius = data.cmpt.radius._radii.data
+        new_points = data.cmpt.points._points.data
 
         if id(new_color) != id(self.prev_color) or len(new_points) != len(self.prev_points):
             color = resize_with_interpolation(new_color, len(new_points))
@@ -97,10 +97,10 @@ class VItemRenderer(Renderer):
 
         new_camera_info = render_data.camera_info
 
-        new_points = data.cmpt.points._points._data
-        new_radius = data.cmpt.radius._radii._data
-        new_stroke = data.cmpt.stroke._rgbas._data
-        new_fill = data.cmpt.fill._rgbas._data
+        new_points = data.cmpt.points._points.data
+        new_radius = data.cmpt.radius._radii.data
+        new_stroke = data.cmpt.stroke._rgbas.data
+        new_fill = data.cmpt.fill._rgbas.data
 
         is_camera_changed = id(new_camera_info) != id(self.prev_camera_info)
 
@@ -204,8 +204,8 @@ class ImageItemRenderer(Renderer):
         self.prev_img = None
 
     def render(self, data: 'ImageItem.Data') -> None:
-        new_color = data.cmpt.color._rgbas._data
-        new_points = data.cmpt.points._points._data
+        new_color = data.cmpt.color._rgbas.data
+        new_points = data.cmpt.points._points.data
 
         if id(new_color) != id(self.prev_color):
             color = resize_with_interpolation(new_color, 4)

@@ -2,11 +2,11 @@ import unittest
 
 import numpy as np
 
-from janim.utils.unique_nparray import UniqueNparray
+from janim.utils.data import Array
 
-class UniqueNparrayTest(unittest.TestCase):
+class TestArray(unittest.TestCase):
     def test(self):
-        arr = UniqueNparray()
+        arr = Array()
 
         arr1 = []
         arr2 = np.array([[1, 2], [5, 1]])

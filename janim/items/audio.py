@@ -11,10 +11,10 @@ import numpy as np
 from janim.exception import EXITCODE_FFMPEG_NOT_FOUND, ExitException
 from janim.logger import log
 from janim.utils.config import Config
+from janim.utils.data import Array
 from janim.utils.file_ops import find_file
 from janim.utils.iterables import resize_with_interpolation
 from janim.utils.simple_functions import clip
-from janim.utils.unique_nparray import UniqueNparray
 
 
 class Audio:
@@ -26,7 +26,7 @@ class Audio:
 
     def __init__(self, file_path: str, begin: float = -1, end: float = -1, **kwargs):
         super().__init__(**kwargs)
-        self._samples = UniqueNparray(dtype=np.int16)
+        self._samples = Array(dtype=np.int16)
         self.framerate = 0
         self.file_path = ''
         self.filename = ''
@@ -100,7 +100,7 @@ class Audio:
         '''
         所有采样点的数量
         '''
-        return len(self._samples._data)
+        return len(self._samples.data)
 
     def duration(self) -> float:
         '''
@@ -121,7 +121,7 @@ class Audio:
             frame_end = self.sample_count()
         else:
             frame_end = clip(int(end * self.framerate), 0, self.sample_count())
-        self._samples.data = self._samples._data[frame_begin:frame_end]
+        self._samples.data = self._samples.data[frame_begin:frame_end]
 
         return self
 

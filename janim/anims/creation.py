@@ -47,7 +47,7 @@ class ShowPartial(DataUpdater):
 
                 cmpt.pointwise_become_partial(cmpt, *bound_func(p))
 
-                points = cmpt.get()
+                points = cmpt.get().copy()
                 cond2 = ~np.isclose(points[begin_indices], points[end_indices]).all(axis=1)
                 where = np.where(cond1 & cond2)[0]
 

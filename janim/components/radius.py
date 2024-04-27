@@ -6,9 +6,8 @@ import numpy as np
 
 from janim.components.component import Component
 from janim.utils.bezier import interpolate
-from janim.utils.data import AlignedData
+from janim.utils.data import AlignedData, Array
 from janim.utils.iterables import resize_with_interpolation
-from janim.utils.unique_nparray import UniqueNparray
 
 
 class Cmpt_Radius[ItemT](Component[ItemT]):
@@ -19,7 +18,7 @@ class Cmpt_Radius[ItemT](Component[ItemT]):
         super().__init__(*args, **kwargs)
         self.default_radius = default_radius
 
-        self._radii = UniqueNparray()
+        self._radii = Array()
         self.clear()
 
     def copy(self) -> Self:
@@ -73,10 +72,11 @@ class Cmpt_Radius[ItemT](Component[ItemT]):
         '''
         if not isinstance(radius, Iterable):
             radius = [radius]
-        radii = np.array(radius)
+        radii = Array()
+        radii.data = radius
 
         for cmpt in self.walk_same_cmpt_of_self_and_descendants_without_mock(root_only):
-            cmpt._radii._data = radii
+            cmpt._radii.data = radii
 
         return self
 

@@ -422,7 +422,7 @@ class Timeline(metaclass=ABCMeta):
             left_blank = max(0, clip_begin - frame_begin)
             right_blank = max(0, frame_end - clip_end)
 
-            data = audio._samples._data[max(clip_begin, frame_begin): min(clip_end, frame_end)]
+            data = audio._samples.data[max(clip_begin, frame_begin): min(clip_end, frame_end)]
 
             if left_blank != 0 or right_blank != 0:
                 data = np.concatenate([

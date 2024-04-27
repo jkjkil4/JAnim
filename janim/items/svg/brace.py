@@ -69,17 +69,17 @@ class Cmpt_VPoints_BraceImpl[ItemT](Cmpt_VPoints[ItemT], impl=True):
     @property
     def tip_point(self) -> np.ndarray:
         '''得到花括号中间凸出处的坐标'''
-        return self._points._data[get_brace_tip_point_index()].copy()
+        return self._points.data[get_brace_tip_point_index()]
 
     @property
     def brace_left(self) -> np.ndarray:
         '''得到括号指向方向左边的尖端处的坐标'''
-        return self._points._data[get_brace_left_index()].copy()
+        return self._points.data[get_brace_left_index()]
 
     @property
     def brace_right(self) -> np.ndarray:
         '''得到括号指向方向右边的尖端处的坐标'''
-        return self._points._data[get_brace_right_index()].copy()
+        return self._points.data[get_brace_right_index()]
 
     @property
     def direction(self) -> np.ndarray:
@@ -161,10 +161,9 @@ def get_brace_orig_points() -> np.ndarray:
     with Timeline.CtxBlocker():
         svg = SVGItem(os.path.join(get_janim_dir(), 'items', 'svg', 'brace.svg'))
     points = svg[0].points.get()
-    points -= (points.min(axis=0) + points.max(axis=0)) * 0.5
-    brace_orig_points = points
+    center = (points.min(axis=0) + points.max(axis=0)) * 0.5
 
-    return brace_orig_points
+    return points - center
 
 
 def get_brace_tip_point_index() -> int:

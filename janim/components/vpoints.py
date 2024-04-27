@@ -265,7 +265,7 @@ class Cmpt_VPoints[ItemT](Cmpt_Points[ItemT]):
 
     @property
     def start_direction(self) -> np.ndarray:
-        points = self._points._data
+        points = self._points.data
         start = points[0]
         for pos in points[1:]:
             if not np.isclose(start, pos).all():
@@ -274,7 +274,7 @@ class Cmpt_VPoints[ItemT](Cmpt_Points[ItemT]):
 
     @property
     def end_direction(self) -> np.ndarray:
-        points = self._points._data
+        points = self._points.data
         end = points[-1]
         for pos in points[-2::-1]:
             if not np.isclose(end, pos).all():
@@ -288,7 +288,7 @@ class Cmpt_VPoints[ItemT](Cmpt_Points[ItemT]):
         if len(indices) == 1:
             point = self.get_start()
         else:
-            point = self._points._data[indices[-2] + 2]
+            point = self._points.data[indices[-2] + 2]
         self.extend([(end + point) * 0.5, point])
         return self
 
@@ -320,7 +320,7 @@ class Cmpt_VPoints[ItemT](Cmpt_Points[ItemT]):
         '''
         if n < 0 or n >= self.curves_count():
             raise PointError(f'n 必须是 0~{self.curves_count() - 1} 的值，{n} 无效')
-        return self._points._data[2 * n: 2 * n + 3].copy()
+        return self._points.data[2 * n: 2 * n + 3]
 
     def get_nth_curve_function(self, n: int) -> Callable[[float], np.ndarray]:
         '''

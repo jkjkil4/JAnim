@@ -8,9 +8,8 @@ from colour import Color
 from janim.components.component import Component
 from janim.typing import Alpha, AlphaArray, ColorArray, JAnimColor, RgbaArray
 from janim.utils.bezier import interpolate
-from janim.utils.data import AlignedData
+from janim.utils.data import AlignedData, Array
 from janim.utils.iterables import resize_with_interpolation
-from janim.utils.unique_nparray import UniqueNparray
 
 
 class Cmpt_Rgbas[ItemT](Component[ItemT]):
@@ -20,7 +19,7 @@ class Cmpt_Rgbas[ItemT](Component[ItemT]):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self._rgbas = UniqueNparray()
+        self._rgbas = Array()
         self.clear()
 
     def copy(self) -> Self:

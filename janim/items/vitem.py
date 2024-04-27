@@ -138,7 +138,7 @@ class VItem(Points):
                 left_end = indices[0] // 2
                 right_start = indices[-1 - diff] // 2 + 1
 
-                rgbas = data.cmpt.stroke.get()
+                rgbas = data.cmpt.stroke.get().copy()
 
                 left = rgbas[:left_end + 1]
                 right = rgbas[right_start:]

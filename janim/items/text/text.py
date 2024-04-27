@@ -148,16 +148,16 @@ class TextChar(VItem):
         return font_render
 
     def get_mark_orig(self) -> np.ndarray:
-        return self.mark.points._points._data[0].copy()
+        return self.mark.points._points.data[0]
 
     def get_mark_right(self) -> np.ndarray:
-        return self.mark.points._points._data[1].copy()
+        return self.mark.points._points.data[1]
 
     def get_mark_up(self) -> np.ndarray:
-        return self.mark.points._points._data[2].copy()
+        return self.mark.points._points.data[2]
 
     def get_mark_advance(self) -> np.ndarray:
-        return self.mark.points._points._data[3].copy()
+        return self.mark.points._points.data[3]
 
     def get_advance_length(self) -> float:
         return get_norm(self.get_mark_advance() - self.get_mark_orig())
@@ -214,13 +214,13 @@ class TextLine(VItem, Group[TextChar]):
         )
 
     def get_mark_orig(self) -> np.ndarray:
-        return self.mark.points._points._data[0].copy()
+        return self.mark.points._points.data[0]
 
     def get_mark_right(self) -> np.ndarray:
-        return self.mark.points._points._data[1].copy()
+        return self.mark.points._points.data[1]
 
     def get_mark_up(self) -> np.ndarray:
-        return self.mark.points._points._data[2].copy()
+        return self.mark.points._points.data[2]
 
     def arrange_in_line(self, buff: float = 0) -> Self:
         '''
