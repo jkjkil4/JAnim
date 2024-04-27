@@ -48,7 +48,7 @@ class Cmpt_Depth[ItemT](Component[ItemT]):
         self.set(*other.get_raw())
         return self
 
-    def __eq__(self, other: Cmpt_Depth) -> bool:
+    def maybe_same(self, other: Cmpt_Depth) -> bool:
         return self._depth == other._depth and self._order == other._order
 
     def __lt__(self, other: Cmpt_Depth) -> bool:

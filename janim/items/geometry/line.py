@@ -38,8 +38,8 @@ class Cmpt_VPoints_LineImpl[ItemT](Cmpt_VPoints[ItemT]):
         self.path_arc = other.path_arc
         return self
 
-    def __eq__(self, other) -> bool:
-        return super().__eq__(other)
+    def maybe_same(self, other) -> bool:
+        return super().maybe_same(other)
 
     def put_start_and_end_on(self, start: Vect, end: Vect) -> Self:
         curr_start, curr_end = self.get_start_and_end()

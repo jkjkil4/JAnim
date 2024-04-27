@@ -39,7 +39,7 @@ class ComponentTest(unittest.TestCase):
                 self.a = other.a
                 return self
 
-            def __eq__(self, other) -> bool:
+            def maybe_same(self, other) -> bool:
                 return self.a == other.a
 
             def fn(self):
@@ -60,10 +60,10 @@ class ComponentTest(unittest.TestCase):
         item_copy = item.copy()
         self.assertEqual(item_copy.cmpt1.a, item.cmpt1.a)
         self.assertEqual(item_copy.cmpt2.a, item.cmpt2.a)
-        self.assertEqual(item_copy.cmpt, item.cmpt)
+        self.assertTrue(item_copy.cmpt.maybe_same(item.cmpt))
         item_copy.cmpt2.a = 11
         self.assertNotEqual(item_copy.cmpt2.a, item.cmpt2.a)
-        self.assertNotEqual(item_copy.cmpt, item.cmpt)
+        self.assertFalse(item_copy.cmpt.maybe_same(item.cmpt))
 
         with self.assertRaises(AttributeError):
             item.cmpt.fn_not_exists

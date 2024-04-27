@@ -19,7 +19,7 @@ from janim.anims.animation import Animation, TimeRange
 from janim.anims.composition import AnimGroup
 from janim.anims.display import Display
 from janim.camera.camera import Camera
-from janim.constants import DOWN, UP
+from janim.constants import DOWN, UP, GET_DATA_DELTA, ANIM_END_DELTA, DEFAULT_DURATION
 from janim.exception import (NotAnimationError, StoreFailedError,
                              StoreNotFoundError, TimelineLookupError)
 from janim.items.audio import Audio
@@ -31,10 +31,6 @@ from janim.render.base import RenderData, Renderer, set_global_uniforms
 from janim.utils.config import Config, ConfigGetter, config_ctx_var
 from janim.utils.iterables import resize_preserving_order
 from janim.utils.simple_functions import clip
-
-GET_DATA_DELTA = 1e-5
-ANIM_END_DELTA = 1e-5 * 2
-DEFAULT_DURATION = 1
 
 type DynamicData = Callable[[float], Item.Data]
 

@@ -5,8 +5,9 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING, Callable, Generator, Self, overload
 
 import janim.utils.refresh as refresh
+from janim.anims.animation import Animation
 from janim.exception import CmptGroupLookupError
-from janim.utils.data import AlignedData
+from janim.utils.data import AlignedData, History
 
 if TYPE_CHECKING:   # pragma: no cover
     from janim.items.item import Item
@@ -22,7 +23,7 @@ class _CmptMeta(type):
         impl=False,     # 若 impl=True，则会跳过下面的检查
     ):
         if not impl:
-            for key in ('copy', 'become', '__eq__'):
+            for key in ('copy', 'become', 'maybe_same'):
                 if not callable(attrdict.get(key, None)):
                     raise AttributeError(f'Component 的每一个子类都必须继承并实现 `{key}` 方法，而 {name} 没有')
         return super().__new__(cls, name, bases, attrdict)
@@ -66,16 +67,10 @@ class Component[ItemT](refresh.Refreshable, metaclass=_CmptMeta):
         at_item: Item
         key: str
 
-    @dataclass
-    class DataInfo:
-        obj: Item.Data[ItemT]
-        key: str
-
     def __init__(self) -> None:
         super().__init__()
-
         self.bind: Component.BindInfo | None = None
-        self.at_data: Component.DataInfo | None = None    # TODO: 添加注释说明
+        self.history: History[Self[ItemT]] = History()
 
     def init_bind(self, bind: BindInfo) -> None:
         '''
@@ -85,26 +80,27 @@ class Component[ItemT](refresh.Refreshable, metaclass=_CmptMeta):
         '''
         self.bind = bind
 
-    def set_at_data(self, obj: Item.Data[ItemT], key: str) -> None:
-        # TODO: 添加注释说明
-        self.at_data = Component.DataInfo(obj, key)
-
     def bind_invalid(self) -> bool:
-        '''
-        便于使用 ``@refresh.register(fallback_check=Component.bind_invalid)``
-        '''
-        return self.bind is not None
+        return self.bind is None
 
     def copy(self) -> Self:
         cmpt_copy = copy.copy(self)
         cmpt_copy.bind = None
-        cmpt_copy.data = None
         cmpt_copy.reset_refresh()
         return cmpt_copy
 
     def become(self, other) -> Self: ...
 
-    def __eq__(self, other) -> bool: ...
+    def maybe_same(self, other) -> bool: ...
+
+    def save(self, t: float) -> None:
+        self.history.record_at_time(t if self.history.has_record() else 0, self.copy())
+
+    def current(self) -> Self:
+        if not self.history.has_record():
+            return self
+        t = Animation.global_t_ctx.get(None)
+        return self if t is None else self.history.get(t)
 
     def mark_refresh(self, func: Callable | str, *, recurse_up=False, recurse_down=False) -> Self:
         '''
@@ -121,23 +117,22 @@ class Component[ItemT](refresh.Refreshable, metaclass=_CmptMeta):
             )
 
     def get_same_cmpt(self, item: Item) -> Self:
-        return self.get_same_cmpt_if_exists(item) or getattr(item.astype(self.bind.decl_cls), self.bind.key)
+        return self.get_same_cmpt_if_exists(item) or getattr(item.astype(self.bind.decl_cls), self.bind.key).current()
 
     def get_same_cmpt_without_mock(self, item: Item | Item.Data) -> Self | None:
-        return item.components.get(self.bind.key, None)
+        cmpt = item.components.get(self.bind.key, None)
+        return None if cmpt is None else cmpt.current()
 
     def get_same_cmpt_if_exists(self, item: Item) -> Self | None:
         cmpt = item.components.get(self.bind.key, None)
-        if cmpt is not None:
-            return cmpt
-        cmpt = item._astype_mock_cmpt.get(self.bind.key, None)
-        return cmpt
+        if cmpt is None:
+            cmpt = item._astype_mock_cmpt.get(self.bind.key, None)
+
+        return None if cmpt is None else cmpt.current()
 
     def walk_same_cmpt_of_self_and_descendants_without_mock(
         self,
-        root_only: bool = False,
-        *,
-        fallback: bool = False
+        root_only: bool = False
     ) -> Generator[Self, None, None]:
         yield self
         if not root_only and self.bind is not None:
@@ -146,39 +141,6 @@ class Component[ItemT](refresh.Refreshable, metaclass=_CmptMeta):
                 if cmpt is None:
                     continue
                 yield cmpt
-            return
-
-        # fallback 意为，在 self.bind 无效时，
-        # 对每个后代物件使用 get_stored_data_at_right 获得 updater 所处时间的数据
-        if not fallback or self.at_data is None:
-            return
-
-        from janim.anims.updater import updater_params_ctx
-
-        params = updater_params_ctx.get(None)
-        if params is None:
-            return
-        timeline = params.updater.timeline
-
-        def family(data: Item.Data) -> list[Item.Data]:  # use DFS
-            res = []
-
-            for sub_item in data.children:
-                sub_data = timeline.get_stored_data_at_right(sub_item, params.global_t)
-                if sub_data not in res:
-                    res.append(sub_data)
-                res.extend(filter(
-                    lambda data: data not in res,
-                    family(sub_data)
-                ))
-
-            return res
-
-        for data in family(self.at_data.obj):
-            cmpt = data.components.get(self.at_data.key, None)
-            if cmpt is None:
-                continue
-            yield cmpt
 
     @property
     def r(self) -> ItemT:
@@ -249,9 +211,9 @@ class _CmptGroup(Component):
     def become(self, other) -> Self:    # pragma: no cover
         return self
 
-    def __eq__(self, other: _CmptGroup) -> bool:
+    def maybe_same(self, other: _CmptGroup) -> bool:
         for key in self.objects.keys():
-            if self.objects[key] != other.objects[key]:
+            if not self.objects[key].maybe_same(other.objects[key]):
                 return False
 
         return True

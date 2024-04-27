@@ -384,10 +384,7 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
             parents = data.parents.copy()
             children = data.children.copy()
 
-            copy_data = cls(data.item, components, parents, children)
-            for key, cmpt in components.items():
-                cmpt.set_at_data(copy_data, key)
-            return copy_data
+            return cls(data.item, components, parents, children)
 
         def _restore(self, data: Item.Data) -> None:
             for key in self.components.keys() | data.components.keys():
@@ -406,7 +403,7 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
             注：仅检查自身数据，不检查子物件的数据
             '''
             for stored_cmpt, item_cmpt in zip(self.components.values(), self.item.components.values()):
-                if stored_cmpt != item_cmpt:
+                if not stored_cmpt.maybe_same(item_cmpt):
                     return True
 
             return self.parents != self.item.parents or self.children != self.item.children

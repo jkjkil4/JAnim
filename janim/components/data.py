@@ -6,7 +6,7 @@ from janim.components.component import Component
 from janim.utils.data import AlignedData
 
 type CopyFn[T] = Callable[[T], T]
-type EqFn[T] = Callable[[T, T], bool]
+type MaybeSameFn[T] = Callable[[T, T], bool]
 type InterpolateFn[T] = Callable[[T, T, float], T]
 
 
@@ -16,7 +16,7 @@ class Cmpt_Data[ItemT, T](Component[ItemT]):
     '''
     def __init__(self):
         self.copy_func: CopyFn[T] = None
-        self.eq_func: EqFn[T] = None
+        self.maybe_same_func: MaybeSameFn[T] = None
         self.interpolate_func: InterpolateFn[T] = None
 
     def copy(self) -> Self:
@@ -31,9 +31,9 @@ class Cmpt_Data[ItemT, T](Component[ItemT]):
         self.set(other.copy_func(other.value))
         return self
 
-    def __eq__(self, other: Cmpt_Data) -> bool:
-        assert self.eq_func is not None
-        return self.eq_func(self.value, other.value)
+    def maybe_same(self, other: Cmpt_Data) -> bool:
+        assert self.maybe_same_func is not None
+        return self.maybe_same_func(self.value, other.value)
 
     @classmethod
     def align_for_interpolate(cls, cmpt1: Cmpt_Data, cmpt2: Cmpt_Data) -> AlignedData[Self]:
@@ -65,13 +65,13 @@ class Cmpt_Data[ItemT, T](Component[ItemT]):
     def set_func(
         self,
         copy_func: CopyFn[T] | None = None,
-        eq_func: EqFn[T] | None = None,
+        maybe_same_func: MaybeSameFn[T] | None = None,
         interpolate_func: InterpolateFn[T] | None = None
     ) -> Self:
         if copy_func is not None:
             self.copy_func = copy_func
-        if eq_func is not None:
-            self.eq_func = eq_func
+        if maybe_same_func is not None:
+            self.maybe_same_func = maybe_same_func
         if interpolate_func is not None:
             self.interpolate_func = interpolate_func
         return self

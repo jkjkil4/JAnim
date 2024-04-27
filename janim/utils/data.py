@@ -7,6 +7,8 @@ from dataclasses import dataclass
 from enum import IntFlag
 from typing import Iterable, overload
 
+from janim.constants import GET_DATA_DELTA
+
 
 class Array:
     '''
@@ -53,6 +55,53 @@ class AlignedData[T]:
     data1: T
     data2: T
     union: T
+
+
+class History[T]:
+    @dataclass
+    class TimedData[DataT]:
+        time: float
+        data: DataT
+
+    def __init__(self):
+        self.lst: list[History.TimedData[T]] = []
+
+    def record_at_time(self, t: float, data: T) -> T:
+        # 这里假定 t 比现有的所有时刻都大
+        self.lst.append(History.TimedData(t, data))
+
+    def has_record(self) -> bool:
+        return bool(self.lst)
+
+    def get_at_time(self, t: float) -> T:
+        '''
+        得到在指定时间的数据
+
+        在两份数据的分界处请使用 :meth:`get_at_right` 和 :meth:`get_at_left` 来明确
+        '''
+        for timed_data in reversed(self.lst):
+            if timed_data.time <= t:
+                return timed_data.data
+
+        assert False    # pragma: no cover
+
+    def get_at_right(self, t: float) -> T:
+        '''
+        得到在指定时间之后的瞬间的数据
+        '''
+        return self.get_at_time(t + GET_DATA_DELTA)
+
+    def get_at_left(self, t: float) -> T:
+        '''
+        得到在指定时间之前的瞬间的数据
+        '''
+        return self.get_at_time(t - GET_DATA_DELTA)
+
+    def get(self, t: float) -> T:
+        '''
+        :meth:`get_at_right` 的简写
+        '''
+        return self.get_at_right(t)
 
 
 class Margins:

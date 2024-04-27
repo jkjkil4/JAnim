@@ -21,7 +21,7 @@ from janim.utils.data import AlignedData
 from janim.utils.space_ops import get_norm, get_unit_normal
 
 
-class Cmpt_VPoints[ItemT](Cmpt_Points[ItemT]):
+class Cmpt_VPoints[ItemT](Cmpt_Points[ItemT], impl=True):
     '''
     曲线点坐标数据
 
@@ -40,16 +40,6 @@ class Cmpt_VPoints[ItemT](Cmpt_Points[ItemT]):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.make_smooth_after_applying_functions = False
-
-    def copy(self) -> Self:
-        return super().copy()
-
-    def become(self, other: Cmpt_VPoints) -> Self:
-        super().become(other)
-        return self
-
-    def __eq__(self, other: Cmpt_VPoints) -> bool:
-        return super().__eq__(other)
 
     def set(self, points: VectArray) -> Self:
         if len(points) != 0 and len(points) % 2 == 0:
@@ -86,7 +76,7 @@ class Cmpt_VPoints[ItemT](Cmpt_Points[ItemT]):
         cmpt1_copy = cmpt1.copy()
         cmpt2_copy = cmpt2.copy()
 
-        if cmpt1_copy == cmpt2_copy:
+        if cmpt1_copy.maybe_same(cmpt2_copy):
             return AlignedData(cmpt1_copy, cmpt2_copy, cmpt1_copy.copy())
 
         if not cmpt1_copy.has():

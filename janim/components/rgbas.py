@@ -31,7 +31,7 @@ class Cmpt_Rgbas[ItemT](Component[ItemT]):
         self.set(other.get())
         return self
 
-    def __eq__(self, other: Cmpt_Rgbas) -> bool:
+    def maybe_same(self, other: Cmpt_Rgbas) -> bool:
         return self._rgbas.is_share(other._rgbas)
 
     @classmethod
@@ -49,7 +49,7 @@ class Cmpt_Rgbas[ItemT](Component[ItemT]):
         return AlignedData(cmpt1_copy, cmpt2_copy, cmpt1_copy.copy())
 
     def interpolate(self, cmpt1: Cmpt_Rgbas, cmpt2: Cmpt_Rgbas, alpha: float, *, path_func=None) -> None:
-        if cmpt1 == cmpt2:
+        if cmpt1.maybe_same(cmpt2):
             return
 
         self.set(interpolate(cmpt1.get(), cmpt2.get(), alpha))

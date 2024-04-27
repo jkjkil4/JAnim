@@ -53,7 +53,7 @@ class Cmpt_Points[ItemT](Component[ItemT]):
         Cmpt_Points.set.emit(self)
         return self
 
-    def __eq__(self, other: Cmpt_Points) -> bool:
+    def maybe_same(self, other: Cmpt_Points) -> bool:
         return self._points.is_share(other._points)
 
     @classmethod
@@ -78,7 +78,7 @@ class Cmpt_Points[ItemT](Component[ItemT]):
         *,
         path_func: PathFunc = straight_path
     ) -> None:
-        if cmpt1 == cmpt2:
+        if cmpt1.maybe_same(cmpt2):
             return
 
         self.set(path_func(cmpt1.get(), cmpt2.get(), alpha))
@@ -97,7 +97,7 @@ class Cmpt_Points[ItemT](Component[ItemT]):
         '''
         point_datas = [
             cmpt.get()
-            for cmpt in self.walk_same_cmpt_of_self_and_descendants_without_mock(fallback=True)
+            for cmpt in self.walk_same_cmpt_of_self_and_descendants_without_mock()
         ]
         return np.vstack(point_datas)
 
@@ -214,7 +214,7 @@ class Cmpt_Points[ItemT](Component[ItemT]):
         '''
         box_datas = [
             cmpt.self_box.data
-            for cmpt in self.walk_same_cmpt_of_self_and_descendants_without_mock(fallback=True)
+            for cmpt in self.walk_same_cmpt_of_self_and_descendants_without_mock()
             if cmpt.has()
         ]
         return self.BoundingBox(np.vstack(box_datas) if box_datas else [])
