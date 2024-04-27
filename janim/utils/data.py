@@ -9,7 +9,7 @@ import numpy as np
 import numpy.typing as npt
 
 from janim.constants import GET_DATA_DELTA
-from janim.exception import RecordFailedError
+from janim.exception import RecordFailedError, RecordNotFoundError
 
 
 class ContextSetter[T]:
@@ -104,6 +104,9 @@ class History[T]:
 
         在两份数据的分界处请使用 :meth:`get_at_right` 和 :meth:`get_at_left` 来明确
         '''
+        if not self.lst:
+            raise RecordNotFoundError
+
         for timed_data in reversed(self.lst):
             if timed_data.time <= t:
                 return timed_data.data

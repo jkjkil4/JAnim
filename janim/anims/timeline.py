@@ -21,7 +21,7 @@ from janim.camera.camera import Camera
 from janim.constants import (ANIM_END_DELTA, DEFAULT_DURATION, DOWN,
                              GET_DATA_DELTA, UP)
 from janim.exception import (NotAnimationError, RecordFailedError,
-                             StoreNotFoundError, TimelineLookupError)
+                             RecordNotFoundError, TimelineLookupError)
 from janim.items.audio import Audio
 from janim.items.item import Item
 from janim.items.svg.typst import TypstText

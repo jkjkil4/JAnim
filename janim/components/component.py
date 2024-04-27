@@ -101,6 +101,7 @@ class Component[ItemT](refresh.Refreshable, metaclass=_CmptMeta):
         cmpt_copy = copy.copy(self)
         cmpt_copy.bind = None
         cmpt_copy.reset_refresh()
+        cmpt_copy.history = History()
         return cmpt_copy
 
     def become(self, other) -> Self: ...
@@ -111,11 +112,13 @@ class Component[ItemT](refresh.Refreshable, metaclass=_CmptMeta):
         if not self.history.has_record() or not self.history.latest().data.maybe_same(self):
             self.history.record_as_time(as_time, self.copy())
 
-    def current(self) -> Self:
+    def current(self, *, as_time: float | None = None, skip_dynamic=False) -> Self:
+        # TODO: impl skip_dynamic
         if not self.history.has_record():
             return self
-        t = Animation.global_t_ctx.get(None)
-        return self if t is None else self.history.get(t)
+        if as_time is None:
+            as_time = Animation.global_t_ctx.get(None)
+        return self if as_time is None else self.history.get(as_time)
 
     def get_same_cmpt(self, item: Item) -> Self:
         return self.get_same_cmpt_if_exists(item) or getattr(item.astype(self.bind.decl_cls), self.bind.key).current()

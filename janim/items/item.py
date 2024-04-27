@@ -6,6 +6,7 @@ import itertools as it
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any, Callable, Self, overload
 
+from janim.anims.animation import Animation
 from janim.components.component import CmptInfo, Component, _CmptGroup
 from janim.components.depth import Cmpt_Depth
 from janim.exception import AsTypeError
@@ -360,6 +361,19 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         for cmpt in self.components.values():
             cmpt.detect_change(as_time)
 
+    def current_parents(self, *, as_time: float | None = None) -> list[Item]:
+        if as_time is None:
+            as_time = Animation.global_t_ctx.get(None)
+        return self.parents if as_time is None else self.parents_history.get(as_time)
+
+    def current_children(self, *, as_time: float | None = None) -> list[Item]:
+        if as_time is None:
+            as_time = Animation.global_t_ctx.get(None)
+        return self.children if as_time is None else self.children_history.get(as_time)
+
+    def current(self, *, as_time: float | None = None, skip_dynamic=True) -> DataItem:
+        return DataItem(self, as_time, skip_dynamic)
+
     def copy(self) -> Self:
         '''
         复制物件
@@ -374,6 +388,9 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         copy_item.children = []
         copy_item.add(*[item.copy() for item in self.children])
 
+        self.parents_history = History()
+        self.children_history = History()
+
         new_cmpts = {}
         for key, cmpt in self.components.items():
             if isinstance(cmpt, _CmptGroup):
@@ -383,9 +400,10 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
             else:
                 cmpt_copy = cmpt.copy()
 
-            cmpt_copy.init_bind(Component.BindInfo(cmpt.bind.decl_cls,
-                                                   copy_item,
-                                                   key))
+            if cmpt.bind is not None:
+                cmpt_copy.init_bind(Component.BindInfo(cmpt.bind.decl_cls,
+                                                       copy_item,
+                                                       key))
 
             new_cmpts[key] = cmpt_copy
             setattr(copy_item, key, cmpt_copy)
@@ -426,12 +444,14 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
     def align_for_interpolate(
         cls,
         item1: Item,
-        item2: Item,
+        item2: Item
     ) -> AlignedData[Self]:
         '''
         进行数据对齐，以便插值
         '''
-        aligned = AlignedData(item1.copy(), item1.copy(), item2.copy())
+        from janim.anims.timeline import Timeline
+        with Timeline.CtxBlocker():
+            aligned = AlignedData(item1.copy(), item1.copy(), item2.copy())
 
         # align components
         for key, cmpt1 in item1.components.items():
@@ -514,3 +534,16 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         return self
 
     # endregion
+
+
+class DataItem(Item):
+    def __init__(self, item: Item, t: float | None = None, skip_dynamic=True):
+        super().__init__()
+
+        for key, cmpt in item.components.items():
+            self.set_component(key, cmpt.current(as_time=t, skip_dynamic=skip_dynamic))
+
+        self.parents = item.current_parents(as_time=t)
+        self.children = item.current_children(as_time=t)
+
+        self.renderer_cls = item.renderer_cls

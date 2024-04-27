@@ -8,7 +8,7 @@ from janim.anims.timeline import Timeline
 from janim.components.component import CmptInfo, Component
 from janim.constants import LEFT, RIGHT
 from janim.exception import (NotAnimationError, RecordFailedError,
-                             StoreNotFoundError, TimelineLookupError)
+                             RecordNotFoundError, TimelineLookupError)
 from janim.items.item import Item
 from janim.items.points import Points
 
@@ -81,7 +81,7 @@ class TimelineTest(unittest.TestCase):
                 msg=f'check_data_at_time {id(item):X} {t} {val}'
             )
 
-        with self.assertRaises(StoreNotFoundError):
+        with self.assertRaises(RecordNotFoundError):
             tl.get_stored_data_at_right(tl.item3, 1)
 
     def test_fmt_time(self) -> None:

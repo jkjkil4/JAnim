@@ -70,7 +70,7 @@ class Transform(Animation):
         '''
         进行物件数据的对齐
         '''
-        self.aligned: dict[tuple[Item, Item], AlignedData[Item.Data[Item]]] = {}
+        self.aligned: dict[tuple[Item, Item], AlignedData[Item]] = {}
         begin_times: defaultdict[Item, int] = defaultdict(int)
         end_times: defaultdict[Item, int] = defaultdict(int)
 
@@ -80,8 +80,8 @@ class Transform(Animation):
             if tpl in self.aligned:
                 return
 
-            data1 = self.timeline.get_stored_data_at_right(item1, self.global_range.at, skip_dynamic_data=True)
-            data2 = self.timeline.get_stored_data_at_left(item2, self.global_range.end, skip_dynamic_data=True)
+            data1 = item1.current(as_time=self.global_range.at, skip_dynamic=True)
+            data2 = item2.current(as_time=self.global_range.end, skip_dynamic=True)
             aligned = self.aligned[tpl] = data1.align_for_interpolate(data1, data2)
             begin_times[item1] += 1
             end_times[item2] += 1
@@ -113,7 +113,7 @@ class Transform(Animation):
         # 设置 RenderCall
         self.set_render_call_list([
             RenderCall(
-                aligned.data1.cmpt.depth,
+                aligned.data1.depth,
                 aligned.union.render
             )
             for aligned in self.aligned.values()
