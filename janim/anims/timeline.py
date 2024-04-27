@@ -7,7 +7,6 @@ import time
 import traceback
 from abc import ABCMeta, abstractmethod
 from bisect import bisect, insort
-from collections import defaultdict
 from contextvars import ContextVar
 from dataclasses import dataclass
 from typing import Callable, Iterable, Self, overload
@@ -19,8 +18,9 @@ from janim.anims.animation import Animation, TimeRange
 from janim.anims.composition import AnimGroup
 from janim.anims.display import Display
 from janim.camera.camera import Camera
-from janim.constants import DOWN, UP, GET_DATA_DELTA, ANIM_END_DELTA, DEFAULT_DURATION
-from janim.exception import (NotAnimationError, StoreFailedError,
+from janim.constants import (ANIM_END_DELTA, DEFAULT_DURATION, DOWN,
+                             GET_DATA_DELTA, UP)
+from janim.exception import (NotAnimationError, RecordFailedError,
                              StoreNotFoundError, TimelineLookupError)
 from janim.items.audio import Audio
 from janim.items.item import Item
@@ -29,6 +29,7 @@ from janim.items.text.text import Text
 from janim.logger import log
 from janim.render.base import RenderData, Renderer, set_global_uniforms
 from janim.utils.config import Config, ConfigGetter, config_ctx_var
+from janim.utils.data import ContextSetter
 from janim.utils.iterables import resize_preserving_order
 from janim.utils.simple_functions import clip
 
@@ -183,7 +184,7 @@ class Timeline(metaclass=ABCMeta):
         self.audio_infos: list[Timeline.PlayAudioInfo] = []
         self.subtitle_infos: list[Timeline.SubtitleInfo] = []   # helpful for extracting subtitles
 
-        self.item_stored_datas: defaultdict[Item, list[Timeline.TimedItemData]] = defaultdict(list)
+        self.items: list[Item] = []
         self.item_display_times: dict[Item, int] = {}
 
     @abstractmethod
@@ -197,32 +198,29 @@ class Timeline(metaclass=ABCMeta):
         '''
         构建动画并返回
         '''
-        with self.with_config():
-            token = self.ctx_var.set(self)
+        with self.with_config(), ContextSetter(self.ctx_var, self):
+
             self.config_getter = ConfigGetter(config_ctx_var.get())
             self.camera = Camera()
-            try:
-                self._build_frame = inspect.currentframe()
 
+            self._build_frame = inspect.currentframe()
+
+            if not quiet:   # pragma: no cover
+                log.info(f'Building "{self.__class__.__name__}"')
+                start_time = time.time()
+
+            self.construct()
+
+            if self.current_time == 0:
+                self.forward(DEFAULT_DURATION)  # 使得没有任何前进时，产生一点时间，避免除零以及其它问题
                 if not quiet:   # pragma: no cover
-                    log.info(f'Building "{self.__class__.__name__}"')
-                    start_time = time.time()
+                    log.info(f'"{self.__class__.__name__}" 构建后没有产生时长，自动产生了 {DEFAULT_DURATION}s 的时长')
+            self.cleanup_display()
+            global_anim = TimelineAnim(self)
 
-                self.construct()
-
-                if self.current_time == 0:
-                    self.forward(DEFAULT_DURATION)  # 使得没有任何前进时，产生一点时间，避免除零以及其它问题
-                    if not quiet:   # pragma: no cover
-                        log.info(f'"{self.__class__.__name__}" 构建后没有产生时长，自动产生了 {DEFAULT_DURATION}s 的时长')
-                self.cleanup_display()
-                global_anim = TimelineAnim(self)
-
-                if not quiet:   # pragma: no cover
-                    elapsed = time.time() - start_time
-                    log.info(f'Finished building "{self.__class__.__name__}" in {elapsed:.2f} s')
-
-            finally:
-                self.ctx_var.reset(token)
+            if not quiet:   # pragma: no cover
+                elapsed = time.time() - start_time
+                log.info(f'Finished building "{self.__class__.__name__}" in {elapsed:.2f} s')
 
         return global_anim
 
@@ -507,15 +505,13 @@ class Timeline(metaclass=ABCMeta):
 
     # endregion
 
-    # region stored_data
-
     # region register
 
     def register(self, item: Item) -> None:
         '''
         在 :meth:`construct` 中创建的物件会自动调用该方法
         '''
-        self.item_stored_datas[item]
+        self.items.append(item)
 
     def register_dynamic_data(self, item: Item, data: DynamicData, as_time: float) -> None:
         '''
@@ -526,12 +522,14 @@ class Timeline(metaclass=ABCMeta):
 
         例如，在 :class:`~.MethodTransform` 中使用到
         '''
-        datas = self.item_stored_datas[item]
+        # TODO: Impl
+        raise NotImplementedError()
+        datas = self.items[item]
 
         # 在调用该方法前必须执行过 _detect_change，所以这里可以直接写 datas[-1]
         if as_time < datas[-1].time:
             # TOOD: 明确是什么物件
-            raise StoreFailedError('记录物件数据失败，可能是因为物件处于动画中')
+            raise RecordFailedError('记录物件数据失败，可能是因为物件处于动画中')
 
         datas.append(Timeline.TimedItemData(as_time, data))
 
@@ -543,8 +541,8 @@ class Timeline(metaclass=ABCMeta):
         '''
         检查所有物件是否有产生变化并记录
         '''
-        for item, datas in self.item_stored_datas.items():
-            self._detect_change(item, datas, as_time=self.current_time)
+        for item in self.items:
+            item.detect_change(self.current_time)
 
     def detect_changes(self, items: Iterable[Item], *, as_time: float | None = None) -> None:
         '''
@@ -553,87 +551,7 @@ class Timeline(metaclass=ABCMeta):
         if as_time is None:
             as_time = self.current_time
         for item in items:
-            self._detect_change(item, self.item_stored_datas[item], as_time=as_time)
-
-    def _detect_change(
-        self,
-        item: Item,
-        datas: list[Timeline.TimedItemData],
-        *,
-        as_time: float,
-    ) -> None:
-        if not datas:
-            datas.append(Timeline.TimedItemData(0, item.store_data()))
-            return
-
-        static = None
-        for timed_data in reversed(datas):
-            if isinstance(timed_data.data, Item.Data):
-                static = timed_data
-                break
-
-        assert static is not None
-
-        if static.data.is_changed():
-            if as_time < datas[-1].time:
-                # TOOD: 明确是什么物件
-                raise StoreFailedError('记录物件数据失败，可能是因为物件处于动画中')
-
-            datas.append(Timeline.TimedItemData(as_time, item.store_data()))
-
-    # endregion
-
-    # region get_stored_data
-
-    def get_stored_data_at_time[T](self, item: T, t: float, *, skip_dynamic_data=False) -> Item.Data[T]:
-        '''
-        得到在指定时间物件的数据
-
-        在两份数据的分界处请使用 :meth:`get_stored_data_at_right` 和 :meth:`get_stored_at_left` 来明确
-        '''
-        datas = self.item_stored_datas[item]
-
-        if not datas:
-            raise StoreNotFoundError('Not stored')
-
-        # TODO: optimize
-        for timed_data in reversed(datas):
-            if timed_data.time <= t:
-                if isinstance(timed_data.data, Item.Data):
-                    return timed_data.data
-                else:
-                    if skip_dynamic_data:
-                        continue
-                    return timed_data.data(t)
-
-        assert False    # pragma: no cover
-
-    def get_stored_data_at_right[T](self, item: T, t: float, *, skip_dynamic_data=False) -> Item.Data[T]:
-        '''
-        得到在指定时间之后的瞬间，物件的数据
-        '''
-        return self.get_stored_data_at_time(item, t + GET_DATA_DELTA, skip_dynamic_data=skip_dynamic_data)
-
-    def get_stored_data_at_left[T](self, item: T, t: float, *, skip_dynamic_data=False) -> Item.Data[T]:
-        '''
-        得到在指定时间之前的瞬间，物件的数据
-        '''
-        return self.get_stored_data_at_time(item, t - GET_DATA_DELTA, skip_dynamic_data=skip_dynamic_data)
-
-    def t2d[T](self, item: T, t: float | None = None, *, skip_dynamic_data=False) -> Item.Data[T]:
-        '''
-        ``t2d`` 是 "time to data" 的简写
-
-        - 如果 ``t`` 为 ``None``，则自动设为 :py:obj:`~.UpdaterParams.global_t` 即当前动画运行到的时间，
-          用于在 :class:`~.DataUpdater` 和 :class:`~.ItemUpdater` 中简化调用
-        - 等效于调用 :meth:`get_stored_data_at_right`
-        '''
-        if t is None:
-            from janim.anims.updater import updater_params_ctx
-            t = updater_params_ctx.get().global_t
-        return self.get_stored_data_at_right(item, t, skip_dynamic_data=skip_dynamic_data)
-
-    # endregion
+            item.detect_change(as_time)
 
     # endregion
 
@@ -709,9 +627,8 @@ class SourceTimeline(Timeline):     # pragma: no cover
     '''
     def build(self, *, quiet=False) -> TimelineAnim:
         from janim.items.text.text import SourceDisplayer
-        token = self.ctx_var.set(self)
-        SourceDisplayer(self.__class__).show()
-        self.ctx_var.reset(token)
+        with ContextSetter(self.ctx_var, self):
+            SourceDisplayer(self.__class__).show()
         return super().build(quiet=quiet)
 
 
@@ -748,11 +665,8 @@ class TimelineAnim(AnimGroup):
             local_t -= 1 / self.cfg.fps
 
         self._time = local_t
-        token = self.global_t_ctx.set(local_t)
-        try:
+        with ContextSetter(self.global_t_ctx, local_t):
             super().anim_on(local_t)
-        finally:
-            self.global_t_ctx.reset(token)
 
     def render_all(self, ctx: mgl.Context) -> None:
         '''
@@ -761,40 +675,35 @@ class TimelineAnim(AnimGroup):
         if self._time is None:
             return
 
-        timeline = self.timeline
-        camera_data = timeline.get_stored_data_at_right(timeline.camera, self._time)
-        camera_info = camera_data.cmpt.points.info
-        anti_alias_radius = self.cfg.anti_alias_width / 2 * camera_info.scaled_factor
-
-        set_global_uniforms(
-            ctx,
-            ('JA_VIEW_MATRIX', camera_info.view_matrix.T.flatten()),
-            ('JA_PROJ_MATRIX', camera_info.proj_matrix.T.flatten()),
-            ('JA_FRAME_RADIUS', camera_info.frame_radius),
-            ('JA_ANTI_ALIAS_RADIUS', anti_alias_radius)
-        )
-
-        global_t_token = Animation.global_t_ctx.set(self._time)
-        render_token = Renderer.data_ctx.set(RenderData(ctx=ctx,
-                                                        camera_info=camera_info,
-                                                        anti_alias_radius=anti_alias_radius))
-
         try:
-            # 使用 heapq 以深度为序调用 RenderCall
-            render_calls = heapq.merge(
-                *[
-                    anim.render_call_list
-                    for anim in self.flattened
-                    if anim.render_call_list and anim.global_range.at <= self._time < anim.global_range.end
-                ],
-                key=lambda x: x.depth,
-                reverse=True
-            )
-            for render_call in render_calls:
-                render_call.func()
+            with ContextSetter(Animation.global_t_ctx, self._time):
+                timeline = self.timeline
+                camera_info = timeline.camera.points.current().info
+                anti_alias_radius = self.cfg.anti_alias_width / 2 * camera_info.scaled_factor
+
+                set_global_uniforms(
+                    ctx,
+                    ('JA_VIEW_MATRIX', camera_info.view_matrix.T.flatten()),
+                    ('JA_PROJ_MATRIX', camera_info.proj_matrix.T.flatten()),
+                    ('JA_FRAME_RADIUS', camera_info.frame_radius),
+                    ('JA_ANTI_ALIAS_RADIUS', anti_alias_radius)
+                )
+
+                with ContextSetter(Renderer.data_ctx, RenderData(ctx=ctx,
+                                                                 camera_info=camera_info,
+                                                                 anti_alias_radius=anti_alias_radius)):
+                    # 使用 heapq 以深度为序调用 RenderCall
+                    render_calls = heapq.merge(
+                        *[
+                            anim.render_call_list
+                            for anim in self.flattened
+                            if anim.render_call_list and anim.global_range.at <= self._time < anim.global_range.end
+                        ],
+                        key=lambda x: x.depth,
+                        reverse=True
+                    )
+                    for render_call in render_calls:
+                        render_call.func()
 
         except Exception:
             traceback.print_exc()
-        finally:
-            Renderer.data_ctx.reset(render_token)
-            Animation.global_t_ctx.reset(global_t_token)

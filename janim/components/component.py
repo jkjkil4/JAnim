@@ -83,25 +83,6 @@ class Component[ItemT](refresh.Refreshable, metaclass=_CmptMeta):
     def bind_invalid(self) -> bool:
         return self.bind is None
 
-    def copy(self) -> Self:
-        cmpt_copy = copy.copy(self)
-        cmpt_copy.bind = None
-        cmpt_copy.reset_refresh()
-        return cmpt_copy
-
-    def become(self, other) -> Self: ...
-
-    def maybe_same(self, other) -> bool: ...
-
-    def save(self, t: float) -> None:
-        self.history.record_at_time(t if self.history.has_record() else 0, self.copy())
-
-    def current(self) -> Self:
-        if not self.history.has_record():
-            return self
-        t = Animation.global_t_ctx.get(None)
-        return self if t is None else self.history.get(t)
-
     def mark_refresh(self, func: Callable | str, *, recurse_up=False, recurse_down=False) -> Self:
         '''
         详见： :meth:`~.Item.broadcast_refresh_of_component`
@@ -115,6 +96,26 @@ class Component[ItemT](refresh.Refreshable, metaclass=_CmptMeta):
                 recurse_up=recurse_up,
                 recurse_down=recurse_down
             )
+
+    def copy(self) -> Self:
+        cmpt_copy = copy.copy(self)
+        cmpt_copy.bind = None
+        cmpt_copy.reset_refresh()
+        return cmpt_copy
+
+    def become(self, other) -> Self: ...
+
+    def maybe_same(self, other) -> bool: ...
+
+    def detect_change(self, as_time: float) -> None:
+        if not self.history.has_record() or not self.history.latest().data.maybe_same(self):
+            self.history.record_as_time(as_time, self.copy())
+
+    def current(self) -> Self:
+        if not self.history.has_record():
+            return self
+        t = Animation.global_t_ctx.get(None)
+        return self if t is None else self.history.get(t)
 
     def get_same_cmpt(self, item: Item) -> Self:
         return self.get_same_cmpt_if_exists(item) or getattr(item.astype(self.bind.decl_cls), self.bind.key).current()
@@ -194,6 +195,7 @@ class _CmptGroup(Component):
     def __init__(self, cmpt_info_list: list[CmptInfo], **kwargs):
         super().__init__(**kwargs)
         self.cmpt_info_list = cmpt_info_list
+        self.history.record_as_time(0, self)
 
     def init_bind(self, bind: Component.BindInfo) -> None:
         super().init_bind(bind)
@@ -212,14 +214,13 @@ class _CmptGroup(Component):
         return self
 
     def maybe_same(self, other: _CmptGroup) -> bool:
-        for key in self.objects.keys():
-            if not self.objects[key].maybe_same(other.objects[key]):
-                return False
-
         return True
 
+    def detect_change(self, as_time: float) -> None:
+        return
+
     @classmethod
-    def align(cls, cmpt1: _CmptGroup, cmpt2: _CmptGroup, aligned: AlignedData[Item.Data]):
+    def align(cls, cmpt1: _CmptGroup, cmpt2: _CmptGroup, aligned: AlignedData[Item]):
         cmpt1_copy = cmpt1.copy(new_cmpts=aligned.data1.components)
         cmpt2_copy = cmpt2.copy(new_cmpts=aligned.data2.components)
         cmpt_union = cmpt1.copy(new_cmpts=aligned.union.components)

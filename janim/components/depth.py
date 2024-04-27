@@ -38,6 +38,7 @@ class Cmpt_Depth[ItemT](Component[ItemT]):
     _counter: defaultdict[float, int] = defaultdict(int)
 
     def __init__(self, value: float, order: int | None = None):
+        super().__init__()
         self.set(value, order=order)
 
     def copy(self) -> Self:

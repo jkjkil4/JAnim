@@ -1,13 +1,27 @@
 from __future__ import annotations
 
+from contextvars import ContextVar
+from dataclasses import dataclass
+from enum import IntFlag
+from typing import Iterable, Self, overload
+
 import numpy as np
 import numpy.typing as npt
 
-from dataclasses import dataclass
-from enum import IntFlag
-from typing import Iterable, overload
-
 from janim.constants import GET_DATA_DELTA
+from janim.exception import RecordFailedError
+
+
+class ContextSetter[T]:
+    def __init__(self, ctx: ContextVar[T], val: T):
+        self.ctx = ctx
+        self.val = val
+
+    def __enter__(self) -> Self:
+        self.token = self.ctx.set(self.val)
+
+    def __exit__(self, exc_type, exc_value, tb) -> None:
+        self.ctx.reset(self.token)
 
 
 class Array:
@@ -66,12 +80,23 @@ class History[T]:
     def __init__(self):
         self.lst: list[History.TimedData[T]] = []
 
-    def record_at_time(self, t: float, data: T) -> T:
-        # 这里假定 t 比现有的所有时刻都大
-        self.lst.append(History.TimedData(t, data))
+    def record_as_time(self, t: float, data: T) -> T:
+        '''
+        标记在 ``t`` 时刻后，数据为 ``data``
+
+        - t 必须比现有的所有时刻都大
+        - 如果此时 没有已存储的记录，则将 t 视为 0
+        '''
+        if self.lst and t < self.lst[-1].time:
+            raise RecordFailedError('记录数据失败，可能是因为物件处于动画中')
+        self.lst.append(History.TimedData(t if self.lst else 0,
+                                          data))
 
     def has_record(self) -> bool:
         return bool(self.lst)
+
+    def latest(self) -> TimedData[T]:
+        return self.lst[-1]
 
     def get_at_time(self, t: float) -> T:
         '''

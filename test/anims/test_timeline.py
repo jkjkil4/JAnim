@@ -7,7 +7,7 @@ from typing import Self
 from janim.anims.timeline import Timeline
 from janim.components.component import CmptInfo, Component
 from janim.constants import LEFT, RIGHT
-from janim.exception import (NotAnimationError, StoreFailedError,
+from janim.exception import (NotAnimationError, RecordFailedError,
                              StoreNotFoundError, TimelineLookupError)
 from janim.items.item import Item
 from janim.items.points import Points
@@ -62,8 +62,8 @@ class TimelineTest(unittest.TestCase):
         tl = MyTimeline()
         tl.build(quiet=True)
 
-        self.assertEqual(len(tl.item_stored_datas[tl.item1]), 2)
-        self.assertEqual(len(tl.item_stored_datas[tl.item2]), 2)
+        self.assertEqual(len(tl.items[tl.item1]), 2)
+        self.assertEqual(len(tl.items[tl.item2]), 2)
 
         self.check_data_at_time: list[tuple[MyItem, float, int]] = [
             (tl.item1, 1, 114),
@@ -126,10 +126,10 @@ class TimelineTest(unittest.TestCase):
                 test.assertEqual(self.get_lineno_at_time(0.4), lineno1)
                 test.assertEqual(self.get_lineno_at_time(0.6), lineno2)
 
-                with test.assertRaises(StoreFailedError):
+                with test.assertRaises(RecordFailedError):
                     self.play(p.anim.points.shift(RIGHT))
 
-                with test.assertRaises(StoreFailedError):
+                with test.assertRaises(RecordFailedError):
                     p.points.shift(RIGHT * 2)
                     self.forward()
 
