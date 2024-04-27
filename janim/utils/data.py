@@ -105,7 +105,7 @@ class History[T]:
         在两份数据的分界处请使用 :meth:`get_at_right` 和 :meth:`get_at_left` 来明确
         '''
         if not self.lst:
-            raise RecordNotFoundError
+            raise RecordNotFoundError()
 
         for timed_data in reversed(self.lst):
             if timed_data.time <= t:

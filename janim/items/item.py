@@ -352,10 +352,10 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
     # region data
 
     def detect_change(self, as_time: float) -> None:
-        if not self.parents_history.has_record() or self.parents_history.latest() != self.parents:
+        if not self.parents_history.has_record() or self.parents_history.latest().data != self.parents:
             self.parents_history.record_as_time(as_time, self.parents.copy())
 
-        if not self.children_history.has_record() or self.children_history.latest() != self.children:
+        if not self.children_history.has_record() or self.children_history.latest().data != self.children:
             self.children_history.record_as_time(as_time, self.children.copy())
 
         for cmpt in self.components.values():

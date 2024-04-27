@@ -10,6 +10,7 @@ from janim.exception import CmptGroupLookupError
 from janim.utils.data import AlignedData, History
 
 if TYPE_CHECKING:   # pragma: no cover
+    from janim.anims.updater import DynamicData
     from janim.items.item import Item
 
 
@@ -70,7 +71,8 @@ class Component[ItemT](refresh.Refreshable, metaclass=_CmptMeta):
     def __init__(self) -> None:
         super().__init__()
         self.bind: Component.BindInfo | None = None
-        self.history: History[Self[ItemT]] = History()
+        self.history: History[Self[ItemT] | DynamicData] = History()
+        self.history_without_dynamic: History[Self[ItemT]] = History()
 
     def init_bind(self, bind: BindInfo) -> None:
         '''
@@ -109,16 +111,29 @@ class Component[ItemT](refresh.Refreshable, metaclass=_CmptMeta):
     def maybe_same(self, other) -> bool: ...
 
     def detect_change(self, as_time: float) -> None:
-        if not self.history.has_record() or not self.history.latest().data.maybe_same(self):
-            self.history.record_as_time(as_time, self.copy())
+        history_wo_dnmc = self.history_without_dynamic
+
+        if not history_wo_dnmc.has_record() or not history_wo_dnmc.latest().data.maybe_same(self):
+            cmpt_copy = self.copy()
+            history_wo_dnmc.record_as_time(as_time, cmpt_copy)
+            self.history.record_as_time(as_time, cmpt_copy)
+
+    def register_dynamic(self, t: float, data: DynamicData) -> None:
+        self.history.record_as_time(t, data)
 
     def current(self, *, as_time: float | None = None, skip_dynamic=False) -> Self:
-        # TODO: impl skip_dynamic
-        if not self.history.has_record():
+        history = self.history_without_dynamic if skip_dynamic else self.history
+
+        if not history.has_record():
             return self
         if as_time is None:
             as_time = Animation.global_t_ctx.get(None)
-        return self if as_time is None else self.history.get(as_time)
+
+        if as_time is None:
+            return self
+
+        data = history.get(as_time)
+        return data if isinstance(data, Component) else data(as_time)
 
     def get_same_cmpt(self, item: Item) -> Self:
         return self.get_same_cmpt_if_exists(item) or getattr(item.astype(self.bind.decl_cls), self.bind.key).current()
@@ -219,7 +234,7 @@ class _CmptGroup(Component):
     def maybe_same(self, other: _CmptGroup) -> bool:
         return True
 
-    def detect_change(self, as_time: float) -> None:
+    def detect_change(self, as_time: float, *, force=False) -> None:
         return
 
     @classmethod

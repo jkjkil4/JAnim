@@ -5,15 +5,15 @@ from typing import TYPE_CHECKING, Self
 
 from janim.anims.animation import Animation, RenderCall
 from janim.components.component import Component
-from janim.constants import OUT
+from janim.constants import ANIM_END_DELTA, OUT
 from janim.items.item import Item
 from janim.logger import log
-from janim.typing import Vect
+from janim.typing import SupportsInterpolate, Vect
 from janim.utils.data import AlignedData
 from janim.utils.paths import PathFunc, path_along_arc, straight_path
 
 if TYPE_CHECKING:
-    from janim.anims.timeline import DynamicData    # pragma: no cover
+    from janim.anims.timeline import DynamicData  # pragma: no cover
 
 
 class Transform(Animation):
@@ -152,34 +152,34 @@ class MethodTransform(Transform):
         func(self.src_item)
         return self
 
-    def wrap_data(self, item: Item) -> DynamicData:
+    def wrap_data(self, item: Item, key: str) -> DynamicData:
         '''
-        以供传入 :meth:`~.Timeline.register_dynamic_data` 使用
+        以供传入 :meth:`~.Component.register_dynamic` 使用
         '''
-        def wrapper(global_t: float) -> Item.Data:
+        def wrapper(global_t: float) -> Component:
             aligned = self.aligned[(item, item)]
             alpha = self.get_alpha_on_global_t(global_t)
 
-            union_copy = aligned.union._copy(aligned.union)
-            union_copy.interpolate(aligned.data1, aligned.data2, alpha, path_func=self.path_func)
-            union_copy.children = aligned.data1.children.copy()
+            cmpt = aligned.union.components[key].copy()
+            assert isinstance(cmpt, SupportsInterpolate)
 
-            return union_copy
+            cmpt.interpolate(aligned.data1.components[key],
+                             aligned.data2.components[key],
+                             alpha,
+                             path_func=self.path_func)
+
+            return cmpt
 
         return wrapper
 
     def anim_pre_init(self) -> None:
-        from janim.anims.timeline import ANIM_END_DELTA
+        for item in self.src_item.walk_self_and_descendants(self.root_only):
+            for key, cmpt in item.components.items():
+                if not isinstance(cmpt, SupportsInterpolate):
+                    continue
+                cmpt.register_dynamic(self.global_range.at, self.wrap_data(item, key))
 
-        self.timeline.register_dynamic_data(self.src_item, self.wrap_data(self.src_item), self.global_range.at)
-        if not self.root_only:
-            for item in self.src_item.descendants():
-                # if (item, item) not in self.aligned:
-                #     continue
-
-                self.timeline.register_dynamic_data(item, self.wrap_data(item), self.global_range.at)
-
-        self.timeline.detect_changes(self.src_item.walk_self_and_descendants(),
+        self.timeline.detect_changes(self.src_item.walk_self_and_descendants(self.root_only),
                                      as_time=self.global_range.end - ANIM_END_DELTA)
 
     def anim_on_alpha(self, alpha: float) -> None:

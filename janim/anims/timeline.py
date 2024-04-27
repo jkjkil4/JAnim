@@ -18,10 +18,9 @@ from janim.anims.animation import Animation, TimeRange
 from janim.anims.composition import AnimGroup
 from janim.anims.display import Display
 from janim.camera.camera import Camera
-from janim.constants import (ANIM_END_DELTA, DEFAULT_DURATION, DOWN,
-                             GET_DATA_DELTA, UP)
-from janim.exception import (NotAnimationError, RecordFailedError,
-                             RecordNotFoundError, TimelineLookupError)
+from janim.components.component import Component
+from janim.constants import DEFAULT_DURATION, DOWN, UP
+from janim.exception import NotAnimationError, TimelineLookupError
 from janim.items.audio import Audio
 from janim.items.item import Item
 from janim.items.svg.typst import TypstText
@@ -33,7 +32,7 @@ from janim.utils.data import ContextSetter
 from janim.utils.iterables import resize_preserving_order
 from janim.utils.simple_functions import clip
 
-type DynamicData = Callable[[float], Item.Data]
+type DynamicData = Callable[[float], Component]
 
 
 class Timeline(metaclass=ABCMeta):
@@ -505,37 +504,13 @@ class Timeline(metaclass=ABCMeta):
 
     # endregion
 
-    # region register
+    # region detect_change
 
     def register(self, item: Item) -> None:
         '''
         在 :meth:`construct` 中创建的物件会自动调用该方法
         '''
         self.items.append(item)
-
-    def register_dynamic_data(self, item: Item, data: DynamicData, as_time: float) -> None:
-        '''
-        注册动态数据信息
-
-        表示在调用 :meth:`get_stored_data_at_time` 时，如果其时间在 ``as_time`` 和下一个数据的时间之间，
-        就调用 ``data`` 来产生动态的数据
-
-        例如，在 :class:`~.MethodTransform` 中使用到
-        '''
-        # TODO: Impl
-        raise NotImplementedError()
-        datas = self.items[item]
-
-        # 在调用该方法前必须执行过 _detect_change，所以这里可以直接写 datas[-1]
-        if as_time < datas[-1].time:
-            # TOOD: 明确是什么物件
-            raise RecordFailedError('记录物件数据失败，可能是因为物件处于动画中')
-
-        datas.append(Timeline.TimedItemData(as_time, data))
-
-    # endregion
-
-    # region detect_change
 
     def detect_changes_of_all(self) -> None:
         '''
