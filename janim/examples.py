@@ -131,7 +131,7 @@ class UpdaterExample(Timeline):
         brace = Brace(square, UP).show()
 
         def text_updater(p: UpdaterParams):
-            cmpt = brace.points.current()
+            cmpt = brace.current().points
             return cmpt.create_text(f'Width = {cmpt.brace_length:.2f}')
 
         self.prepare(

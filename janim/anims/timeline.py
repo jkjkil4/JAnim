@@ -7,6 +7,7 @@ import time
 import traceback
 from abc import ABCMeta, abstractmethod
 from bisect import bisect, insort
+from collections import defaultdict
 from contextvars import ContextVar
 from dataclasses import dataclass
 from typing import Callable, Iterable, Self, overload
@@ -15,20 +16,20 @@ import moderngl as mgl
 import numpy as np
 
 from janim.anims.animation import Animation, TimeRange
+from janim.anims.updater import updater_params_ctx
 from janim.anims.composition import AnimGroup
 from janim.anims.display import Display
 from janim.camera.camera import Camera
-from janim.components.component import Component
 from janim.constants import DEFAULT_DURATION, DOWN, UP
 from janim.exception import NotAnimationError, TimelineLookupError
 from janim.items.audio import Audio
-from janim.items.item import Item
+from janim.items.item import DynamicItem, Item
 from janim.items.svg.typst import TypstText
 from janim.items.text.text import Text
 from janim.logger import log
 from janim.render.base import RenderData, Renderer, set_global_uniforms
 from janim.utils.config import Config, ConfigGetter, config_ctx_var
-from janim.utils.data import ContextSetter
+from janim.utils.data import ContextSetter, History
 from janim.utils.iterables import resize_preserving_order
 from janim.utils.simple_functions import clip
 
@@ -145,6 +146,11 @@ class Timeline(metaclass=ABCMeta):
         kwargs: dict
         subtitle: Text
 
+    class ItemHistory:
+        def __init__(self):
+            self.history: History[Item | DynamicItem] = History()
+            self.history_without_dynamic: History[Item] = History()
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -157,7 +163,7 @@ class Timeline(metaclass=ABCMeta):
         self.audio_infos: list[Timeline.PlayAudioInfo] = []
         self.subtitle_infos: list[Timeline.SubtitleInfo] = []   # helpful for extracting subtitles
 
-        self.items: list[Item] = []
+        self.items_history: defaultdict[Item, Timeline.ItemHistory] = defaultdict(Timeline.ItemHistory)
         self.item_display_times: dict[Item, int] = {}
 
     @abstractmethod
@@ -478,20 +484,20 @@ class Timeline(metaclass=ABCMeta):
 
     # endregion
 
-    # region detect_change
+    # region history
 
     def track(self, item: Item) -> None:
         '''
         使得 ``item`` 在每次 ``forward`` 和 ``play`` 时都会被自动调用 :meth:`~.Item.detect_change`
         '''
-        self.items.append(item)
+        self.items_history[item]
 
     def detect_changes_of_all(self) -> None:
         '''
         检查所有物件是否有产生变化并记录
         '''
-        for item in self.items:
-            item.detect_change(self.current_time)
+        for item, ih in self.items_history.items():
+            self._detect_change(item, ih, as_time=self.current_time)
 
     def detect_changes(self, items: Iterable[Item], *, as_time: float | None = None) -> None:
         '''
@@ -500,7 +506,54 @@ class Timeline(metaclass=ABCMeta):
         if as_time is None:
             as_time = self.current_time
         for item in items:
-            item.detect_change(as_time)
+            self._detect_change(item, self.items_history[item], as_time=as_time)
+
+    @staticmethod
+    def _detect_change(item: Item, ih: ItemHistory, *, as_time: float) -> None:
+        history_wo_dnmc = ih.history_without_dynamic
+        if not history_wo_dnmc.has_record() or not history_wo_dnmc.latest().data.not_changed(item):
+            item_copy = item.copy(root_only=True)
+            ih.history.record_as_time(as_time, item_copy)
+            history_wo_dnmc.record_as_time(as_time, item_copy)
+
+    def register_dynamic(
+        self,
+        item: Item,
+        dynamic: DynamicItem,
+        static: Item | None,
+        begin: float,
+        end: float,
+        static_replaceable: bool
+    ) -> None:
+        ih = self.items_history[item]
+        ih.history.record_as_time(begin, dynamic)
+
+        if static is None:
+            if ih.history_without_dynamic.has_record():
+                static = ih.history_without_dynamic.latest().data
+            else:
+                static = item.copy(root_only=True)
+        ih.history.record_as_time(end, static, replaceable=static_replaceable)
+        ih.history_without_dynamic.record_as_time(end, static, replaceable=static_replaceable)
+
+    def item_current[T](self, item: T, *, as_time: float | None = None, skip_dynamic=False) -> T:
+        ih = self.items_history[item]
+        history = ih.history_without_dynamic if skip_dynamic else ih.history
+        if not history.has_record():
+            return item
+
+        if as_time is None:
+            params = updater_params_ctx.get(None)
+            if params is not None:
+                as_time = params.global_t
+        if as_time is None:
+            as_time = Animation.global_t_ctx.get(None)
+
+        if as_time is None:
+            return item
+
+        item_or_dynamic = history.get(as_time)
+        return item_or_dynamic if isinstance(item_or_dynamic, Item) else item_or_dynamic(as_time)
 
     # endregion
 
@@ -627,7 +680,7 @@ class TimelineAnim(AnimGroup):
         try:
             with ContextSetter(Animation.global_t_ctx, self._time):
                 timeline = self.timeline
-                camera_info = timeline.camera.points.current().info
+                camera_info = timeline.camera.current().points.info
                 anti_alias_radius = self.cfg.anti_alias_width / 2 * camera_info.scaled_factor
 
                 set_global_uniforms(

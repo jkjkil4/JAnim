@@ -191,7 +191,7 @@ class Cmpt_Rgbas[ItemT](Component[ItemT]):
         '''
         对每一个颜色数据应用 :func:`~.apart_alpha`
         '''
-        rgbas = self.get()
+        rgbas = self.get().copy()
         for i in range(len(rgbas)):
             rgbas[i, 3] = apart_alpha(rgbas[i, 3], n)
         self.set_rgbas(rgbas)
@@ -199,7 +199,7 @@ class Cmpt_Rgbas[ItemT](Component[ItemT]):
 
     def fade(self, factor: float | Iterable[float], *, root_only: bool = False) -> Self:
         for cmpt in self.walk_same_cmpt_of_self_and_descendants_without_mock(root_only):
-            rgbas = cmpt.get()
+            rgbas = cmpt.get().copy()
             rgbas[:, 3] *= 1 - factor
             cmpt.set_rgbas(rgbas)
 

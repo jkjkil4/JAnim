@@ -3,14 +3,12 @@ from __future__ import annotations
 import inspect
 from contextvars import ContextVar
 from dataclasses import dataclass
-from functools import lru_cache
 from typing import Any, Callable, Self
 
 from janim.anims.animation import Animation, RenderCall, TimeRange
-from janim.components.component import Component, DynamicCmpt
 from janim.constants import ANIM_END_DELTA
 from janim.exception import UpdaterError
-from janim.items.item import DataItem, Item
+from janim.items.item import Item, DynamicItem
 from janim.utils.simple_functions import clip
 
 
@@ -67,14 +65,14 @@ class DataUpdater[T: Item](Animation):
 
     @dataclass
     class DataGroup:
-        orig_data: DataItem
-        data: DataItem
+        orig_data: Item
+        data: Item
         extra_data: Any | None
 
     def __init__(
         self,
         item: T,
-        func: Callable[[T | DataItem[T], UpdaterParams], Any],
+        func: Callable[[T, UpdaterParams], Any],
         *,
         lag_ratio: float = 0,
         hide_at_begin: bool = True,
@@ -97,17 +95,16 @@ class DataUpdater[T: Item](Animation):
         for subitem in item.walk_self_and_descendants(root_only):
             self.timeline.track(subitem)
 
-    def create_extra_data(self, data: DataItem) -> Any | None:
+    def create_extra_data(self, data: Item) -> Any | None:
         return None
 
-    def wrap_data(self, updater_data: DataUpdater.DataGroup) -> Callable[[float], Item]:
+    def wrap_dynamic(self, updater_data: DataUpdater.DataGroup) -> DynamicItem:
         '''
         以供传入 :meth:`~.Timeline.register_dynamic_data` 使用
         '''
-        @lru_cache(maxsize=1)
         def wrapper(global_t: float) -> Item:
             alpha = self.get_alpha_on_global_t(global_t)
-            data_copy = updater_data.orig_data.copy()
+            data_copy = updater_data.orig_data.copy(root_only=True)
 
             with UpdaterParams(self,
                                global_t,
@@ -120,15 +117,9 @@ class DataUpdater[T: Item](Animation):
 
         return wrapper
 
-    @staticmethod
-    def wrap_cmpt(data_func: Callable[[float], Item], key: str) -> DynamicCmpt:
-        def wrapper(global_t: float) -> Component:
-            return data_func(global_t).components[key]
-        return wrapper
-
     def anim_init(self) -> None:
-        def build_data(data: DataItem) -> DataUpdater.DataGroup:
-            return DataUpdater.DataGroup(data, data.copy(), self.create_extra_data(data))
+        def build_data(data: Item) -> DataUpdater.DataGroup:
+            return DataUpdater.DataGroup(data, data.copy(root_only=True), self.create_extra_data(data))
 
         self.datas: dict[Item, DataUpdater.DataGroup] = {
             item: build_data(
@@ -148,16 +139,16 @@ class DataUpdater[T: Item](Animation):
                                    updater_data.extra_data) as params:
                     self.func(item, params)
 
-            data_func = self.wrap_data(updater_data)
-            for key, cmpt in item.components.items():
-                cmpt.register_dynamic(self.global_range.at, self.wrap_cmpt(data_func, key))
-
-        self.timeline.detect_changes(self.item.walk_self_and_descendants(self.root_only),
-                                     as_time=self.global_range.end - ANIM_END_DELTA)
+            self.timeline.register_dynamic(item,
+                                           self.wrap_dynamic(updater_data),
+                                           item.copy() if self.become_at_end else None,
+                                           self.global_range.at,
+                                           self.global_range.end - ANIM_END_DELTA,
+                                           not self.become_at_end)
 
         self.set_render_call_list([
             RenderCall(
-                updater_data.data.depth.current(),
+                updater_data.data.depth,
                 updater_data.data.render
             )
             for updater_data in self.datas.values()
@@ -268,7 +259,7 @@ class ItemUpdater(Animation):
 
         self.set_render_call_list([
             RenderCall(
-                sub.depth.current(),
+                sub.depth,
                 sub.render
             )
             for sub in dynamic.walk_self_and_descendants()

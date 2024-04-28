@@ -5,11 +5,9 @@ from typing import Self
 
 import numpy as np
 
-from janim.anims.timeline import Timeline
 from janim.components.component import CmptInfo
 from janim.components.vpoints import Cmpt_VPoints
 from janim.constants import DEFAULT_ITEM_TO_ITEM_BUFF, DOWN, PI, SMALL_BUFF
-from janim.items.item import DataItem
 from janim.items.points import Points
 from janim.items.svg.svg_item import SVGItem
 from janim.items.svg.typst import Typst
@@ -27,7 +25,7 @@ class Cmpt_VPoints_BraceImpl[ItemT](Cmpt_VPoints[ItemT], impl=True):
     # 复制时，``brace_length`` 随 ``copy.copy(self)`` 而复制，因此不用重写 ``copy`` 方法
     def match(
         self,
-        item: Points | DataItem[Points] | None,
+        item: Points | None,
         direction: Vect | None = None,
         buff: float = SMALL_BUFF,
         root_only: bool = False
@@ -85,7 +83,7 @@ class Cmpt_VPoints_BraceImpl[ItemT](Cmpt_VPoints[ItemT], impl=True):
 
     def put_at_tip(
         self,
-        item: Points | DataItem[Points],
+        item: Points,
         use_next_to: bool = True,
         buff: float = DEFAULT_ITEM_TO_ITEM_BUFF,
         **kwargs

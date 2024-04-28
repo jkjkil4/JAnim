@@ -4,11 +4,11 @@ from collections import defaultdict
 from typing import Self
 
 from janim.anims.animation import Animation, RenderCall
-from janim.components.component import Component, DynamicCmpt
+from janim.components.component import Component
 from janim.constants import ANIM_END_DELTA, OUT
-from janim.items.item import Item
+from janim.items.item import DynamicItem, Item
 from janim.logger import log
-from janim.typing import SupportsInterpolate, Vect
+from janim.typing import Vect
 from janim.utils.data import AlignedData
 from janim.utils.paths import PathFunc, path_along_arc, straight_path
 
@@ -155,7 +155,7 @@ class MethodTransform(Transform):
         func(self.src_item)
         return self
 
-    def wrap_cmpt(self, item: Item, key: str) -> DynamicCmpt:
+    def wrap_dynamic(self, item: Item) -> DynamicItem:
         '''
         以供传入 :meth:`~.Component.register_dynamic` 使用
         '''
@@ -163,27 +163,25 @@ class MethodTransform(Transform):
             aligned = self.aligned[(item, item)]
             alpha = self.get_alpha_on_global_t(global_t)
 
-            cmpt = aligned.union.components[key].copy()
-            assert isinstance(cmpt, SupportsInterpolate)
+            union_copy = aligned.union.copy(root_only=True)
+            union_copy.interpolate(aligned.data1, aligned.data2, alpha, path_func=self.path_func)
+            union_copy.children = aligned.data1.children.copy()
 
-            cmpt.interpolate(aligned.data1.components[key],
-                             aligned.data2.components[key],
-                             alpha,
-                             path_func=self.path_func)
-
-            return cmpt
+            return union_copy
 
         return wrapper
 
     def anim_pre_init(self) -> None:
         for item in self.src_item.walk_self_and_descendants(self.root_only):
-            for key, cmpt in item.components.items():
-                if not isinstance(cmpt, SupportsInterpolate):
-                    continue
-                cmpt.register_dynamic(self.global_range.at, self.wrap_cmpt(item, key))
-
-        self.timeline.detect_changes(self.src_item.walk_self_and_descendants(self.root_only),
-                                     as_time=self.global_range.end - ANIM_END_DELTA)
+            ih = self.timeline.items_history[item]
+            history_wo_dnmc = ih.history_without_dynamic
+            not_changed = history_wo_dnmc.has_record() and history_wo_dnmc.latest().data.not_changed(item)
+            self.timeline.register_dynamic(item,
+                                           self.wrap_dynamic(item),
+                                           None if not_changed else item.copy(root_only=True),
+                                           self.global_range.at,
+                                           self.global_range.end - ANIM_END_DELTA,
+                                           not_changed)
 
     def anim_on_alpha(self, alpha: float) -> None:
         if alpha == self.current_alpha:

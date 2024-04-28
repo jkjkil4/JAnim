@@ -5,14 +5,11 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING, Callable, Generator, Self, overload
 
 import janim.utils.refresh as refresh
-from janim.anims.animation import Animation
 from janim.exception import CmptGroupLookupError
-from janim.utils.data import AlignedData, History
+from janim.utils.data import AlignedData
 
 if TYPE_CHECKING:   # pragma: no cover
     from janim.items.item import Item
-
-type DynamicCmpt = Callable[[float], Component]
 
 
 class _CmptMeta(type):
@@ -72,8 +69,6 @@ class Component[ItemT](refresh.Refreshable, metaclass=_CmptMeta):
     def __init__(self) -> None:
         super().__init__()
         self.bind: Component.BindInfo | None = None
-        self.history: History[Self[ItemT] | DynamicCmpt] = History()
-        self.history_without_dynamic: History[Self[ItemT]] = History()
 
     def init_bind(self, bind: BindInfo) -> None:
         '''
@@ -104,56 +99,25 @@ class Component[ItemT](refresh.Refreshable, metaclass=_CmptMeta):
         cmpt_copy = copy.copy(self)
         cmpt_copy.bind = None
         cmpt_copy.reset_refresh()
-        cmpt_copy.history = History()
-        cmpt_copy.history_without_dynamic = History()
         return cmpt_copy
 
     def become(self, other) -> Self: ...
 
     def not_changed(self, other) -> bool: ...
 
-    def detect_change(self, as_time: float) -> None:
-        history_wo_dnmc = self.history_without_dynamic
-
-        if not history_wo_dnmc.has_record() or not history_wo_dnmc.latest().data.not_changed(self):
-            cmpt_copy = self.copy()
-            self.history.record_as_time(as_time, cmpt_copy)
-            history_wo_dnmc.record_as_time(as_time, cmpt_copy)
-
-    def register_dynamic(self, t: float, data: DynamicCmpt) -> None:
-        self.history.record_as_time(t, data)
-
-    def current(self, *, as_time: float | None = None, skip_dynamic=False) -> Self:
-        history = self.history_without_dynamic if skip_dynamic else self.history
-
-        if not history.has_record():
-            return self
-        if as_time is None:
-            as_time = Animation.global_t_ctx.get(None)
-        if as_time is None:
-            from janim.anims.updater import updater_params_ctx
-            params = updater_params_ctx.get(None)
-            as_time = params.global_t
-
-        if as_time is None:
-            return self
-
-        data = history.get(as_time)
-        return data if isinstance(data, Component) else data(as_time)
-
     def get_same_cmpt(self, item: Item) -> Self:
-        return self.get_same_cmpt_if_exists(item) or getattr(item.astype(self.bind.decl_cls), self.bind.key).current()
+        # TODO: .current
+        return self.get_same_cmpt_if_exists(item) or getattr(item.astype(self.bind.decl_cls), self.bind.key)
 
-    def get_same_cmpt_without_mock(self, item: Item | Item.Data) -> Self | None:
-        cmpt = item.components.get(self.bind.key, None)
-        return None if cmpt is None else cmpt.current()
+    def get_same_cmpt_without_mock(self, item: Item) -> Self | None:
+        return item.components.get(self.bind.key, None)
 
     def get_same_cmpt_if_exists(self, item: Item) -> Self | None:
         cmpt = item.components.get(self.bind.key, None)
-        if cmpt is None:
-            cmpt = item._astype_mock_cmpt.get(self.bind.key, None)
+        if cmpt is not None:
+            return cmpt
 
-        return None if cmpt is None else cmpt.current()
+        return item._astype_mock_cmpt.get(self.bind.key, None)
 
     def walk_same_cmpt_of_self_and_descendants_without_mock(
         self,
@@ -219,7 +183,6 @@ class _CmptGroup(Component):
     def __init__(self, cmpt_info_list: list[CmptInfo], **kwargs):
         super().__init__(**kwargs)
         self.cmpt_info_list = cmpt_info_list
-        self.history.record_as_time(0, self)
 
     def init_bind(self, bind: Component.BindInfo) -> None:
         super().init_bind(bind)
@@ -238,10 +201,11 @@ class _CmptGroup(Component):
         return self
 
     def not_changed(self, other: _CmptGroup) -> bool:
-        return True
+        for key, obj in self.objects.items():
+            if not obj.not_changed(other.objects[key]):
+                return False
 
-    def detect_change(self, as_time: float, *, force=False) -> None:
-        return
+        return True
 
     @classmethod
     def align(cls, cmpt1: _CmptGroup, cmpt2: _CmptGroup, aligned: AlignedData[Item]):

@@ -50,10 +50,7 @@ class Selector(QObject):
 
     def get_points_box_of_time(self, item: Item, t: float) -> Cmpt_Points.BoundingBox:
         box_datas = [
-            self.viewer.anim.timeline.get_stored_data_at_right(
-                sub, t, skip_dynamic_data=True
-            ).cmpt.points.self_box.data
-
+            sub.current(as_time=t, skip_dynamic=True).points.self_box.data
             for sub in item.walk_self_and_descendants()
             if isinstance(sub, Points) and sub.points.has()
         ]
@@ -108,7 +105,7 @@ class Selector(QObject):
 
         anim = self.viewer.anim
         global_t = anim._time
-        camera_info = anim.timeline.get_stored_data_at_right(anim.timeline.camera, global_t).cmpt.points.info
+        camera_info = anim.timeline.camera.current(as_time=global_t).points.info
 
         found: list[Selector.SelectedItem] = []
 

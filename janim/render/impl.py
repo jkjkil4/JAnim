@@ -34,9 +34,9 @@ class DotCloudRenderer(Renderer):
         self.prev_radius = np.array([])
 
     def render(self, item: 'DotCloud') -> None:
-        new_color = item.color.current()._rgbas.data
-        new_radius = item.radius.current()._radii.data
-        new_points = item.points.current()._points.data
+        new_color = item.color._rgbas.data
+        new_radius = item.radius._radii.data
+        new_points = item.points._points.data
 
         if id(new_color) != id(self.prev_color) or len(new_points) != len(self.prev_points):
             color = resize_with_interpolation(new_color, len(new_points))
@@ -96,17 +96,16 @@ class VItemRenderer(Renderer):
         render_data = self.data_ctx.get()
 
         new_camera_info = render_data.camera_info
-        current_points = item.points.current()
 
-        new_points = current_points._points.data
-        new_radius = item.radius.current()._radii.data
-        new_stroke = item.stroke.current()._rgbas.data
-        new_fill = item.fill.current()._rgbas.data
+        new_points = item.points._points.data
+        new_radius = item.radius._radii.data
+        new_stroke = item.stroke._rgbas.data
+        new_fill = item.fill._rgbas.data
 
         is_camera_changed = id(new_camera_info) != id(self.prev_camera_info)
 
         if id(new_radius) != id(self.prev_radius) or id(new_points) != id(self.prev_points) or is_camera_changed:
-            clip_box = render_data.camera_info.map_points(current_points.self_box.get_corners())
+            clip_box = render_data.camera_info.map_points(item.points.self_box.get_corners())
             clip_box *= render_data.camera_info.frame_radius
 
             buff = new_radius.max() + render_data.anti_alias_radius
@@ -160,7 +159,7 @@ class VItemRenderer(Renderer):
 
             bytes = np.hstack([
                 mapped,
-                current_points.get_closepath_flags()[:, np.newaxis],
+                item.points.get_closepath_flags()[:, np.newaxis],
                 np.zeros((len(mapped), 1))
             ]).astype('f4').tobytes()
 
@@ -205,8 +204,8 @@ class ImageItemRenderer(Renderer):
         self.prev_img = None
 
     def render(self, item: 'ImageItem') -> None:
-        new_color = item.color.current()._rgbas.data
-        new_points = item.points.current()._points.data
+        new_color = item.color._rgbas.data
+        new_points = item.points._points.data
 
         if id(new_color) != id(self.prev_color):
             color = resize_with_interpolation(new_color, 4)
@@ -225,12 +224,12 @@ class ImageItemRenderer(Renderer):
             self.vbo_points.write(bytes)
             self.prev_points = new_points
 
-        if self.prev_img is None or item.cmpt.image != self.prev_img:
-            self.texture = get_texture_from_img(item.cmpt.image.get())
+        if self.prev_img is None or item.image != self.prev_img:
+            self.texture = get_texture_from_img(item.image.get())
             self.texture.build_mipmaps()
-            self.prev_img = item.cmpt.image
+            self.prev_img = item.image
 
         self.prog['image'] = 0
-        self.texture.filter = item.cmpt.image.get_filter()
+        self.texture.filter = item.image.get_filter()
         self.texture.use(0)
         self.vao.render(mgl.TRIANGLE_STRIP)

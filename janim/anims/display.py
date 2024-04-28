@@ -18,9 +18,11 @@ class Display(Animation):
     def anim_on(self, local_t: float) -> None:
         super().anim_on(local_t)
 
+        current = self.item.current()
+
         self.set_render_call_list([
             RenderCall(
-                self.item.depth.current(),
-                self.item.render
+                current.depth,
+                current.render
             )
         ])

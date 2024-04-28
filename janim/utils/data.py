@@ -77,24 +77,37 @@ class History[T]:
     class TimedData[DataT]:
         time: float
         data: DataT
+        replaceable: bool
 
     def __init__(self):
         self.lst: list[History.TimedData[T]] = []
 
-    def record_as_time(self, t: float, data: T) -> T:
+    def record_as_time(self, t: float, data: T, *, replaceable=False) -> T:
         '''
         标记在 ``t`` 时刻后，数据为 ``data``
 
         - t 必须比现有的所有时刻都大
         - 如果此时 没有已存储的记录，则将 t 视为 0
         '''
+        # 将 t 之后的 replaceable 数据都移除
+        i = 0
+        for i, timed_data in enumerate(reversed(self.lst)):
+            if not timed_data.replaceable or t >= timed_data.time:
+                break
+        if i != 0:
+            self.lst = self.lst[:-i]
+
+        # 检查是否比最后一个迟，如果不是则抛出异常
         if self.lst and t < self.lst[-1].time:
             for timed_data in self.lst:
                 log.debug(timed_data)
             log.debug(f'{t=}')
             raise RecordFailedError('记录数据失败，可能是因为物件处于动画中')
+
+        # 添加
         self.lst.append(History.TimedData(t if self.lst else 0,
-                                          data))
+                                          data,
+                                          replaceable))
 
     def has_record(self) -> bool:
         return bool(self.lst)
