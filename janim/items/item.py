@@ -353,21 +353,41 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
             cmpt.detect_change(as_time)
 
     def current_parents(self, *, as_time: float | None = None) -> list[Item]:
+        if not self.parents_history.has_record():
+            return self.parents
+
+        # TODO: refactor
         if as_time is None:
             as_time = Animation.global_t_ctx.get(None)
+        if as_time is None:
+            from janim.anims.updater import updater_params_ctx
+            params = updater_params_ctx.get(None)
+            as_time = params.global_t
+
         return self.parents if as_time is None else self.parents_history.get(as_time)
 
     def current_children(self, *, as_time: float | None = None) -> list[Item]:
+        if not self.children_history.has_record():
+            return self.children
+
         if as_time is None:
             as_time = Animation.global_t_ctx.get(None)
+        if as_time is None:
+            from janim.anims.updater import updater_params_ctx
+            params = updater_params_ctx.get(None)
+            as_time = params.global_t
+
         return self.children if as_time is None else self.children_history.get(as_time)
 
-    def current(self, *, as_time: float | None = None, skip_dynamic=True) -> DataItem:
+    def current(self, *, as_time: float | None = None, skip_dynamic=False) -> DataItem:
         return DataItem(self, as_time, skip_dynamic)
 
-    def copy(self) -> Self:
+    def copy(self, *, root_only=False, for_data=False) -> Self:
         '''
         复制物件
+
+        - 若传入 ``root_only=True`` 则不复制后代物件
+        - 对于 ``for_data``，用于 :meth:`~.DataItem.copy`
         '''
         copy_item = copy.copy(self)
 
@@ -377,7 +397,11 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         copy_item.parents_changed()
 
         copy_item.children = []
-        copy_item.add(*[item.copy() for item in self.children])
+        if root_only or for_data:
+            copy_item.children_changed()
+        else:
+            # add 本身就会调用 .children_changed
+            copy_item.add(*[item.copy() for item in self.children])
 
         self.parents_history = History()
         self.children_history = History()
@@ -391,7 +415,7 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
             else:
                 cmpt_copy = cmpt.copy()
 
-            if cmpt.bind is not None:
+            if not for_data and cmpt.bind is not None:
                 cmpt_copy.init_bind(Component.BindInfo(cmpt.bind.decl_cls,
                                                        copy_item,
                                                        key))
@@ -427,6 +451,17 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         timeline = Timeline.get_context(raise_exc=False)
         if timeline is not None and timeline.is_displaying(self):
             timeline.show(self)
+
+        return self
+
+    def restore(self, other: DataItem) -> Self:
+        self.parents = other.parents.copy()
+        self.parents_changed()
+        self.children = other.children.copy()
+        self.children_changed()
+
+        for key in self.components.keys() & other.components.keys():
+            self.components[key].become(other.components[key])
 
         return self
 
@@ -524,9 +559,10 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
     # endregion
 
 
-class DataItem(Item):
-    def __init__(self, item: Item, t: float | None = None, skip_dynamic=True):
+class DataItem[T: Item](Item):
+    def __init__(self, item: T, t: float | None = None, skip_dynamic=False):
         super().__init__()
+        self.src = item
 
         for key, cmpt in item.components.items():
             self.set_component(key, cmpt.current(as_time=t, skip_dynamic=skip_dynamic))
@@ -535,3 +571,35 @@ class DataItem(Item):
         self.children = item.current_children(as_time=t)
 
         self.renderer_cls = item.renderer_cls
+
+    class _CmptGetter:
+        def __init__(self, data: DataItem):
+            self._data = data
+
+        def __getattr__(self, name: str):
+            cmpt = self._data.components.get(name, None)
+            if cmpt is None:
+                raise AttributeError(f"'{self._data.item.__class__.__name__}' 没有叫作 '{name}' 的组件")
+
+            return cmpt
+
+    @property
+    def cmpt(self) -> T:
+        '''
+        将 ``.key`` 写为 ``.cmpt.key`` 可以出现代码提示
+        '''
+        return self._CmptGetter(self)
+
+    def copy(self) -> Self:
+        '''
+        复制物件，不包括后代物件，并且组件没有绑定关系
+        '''
+        copy_item = super().copy(for_data=True)
+        copy_item.parents = self.parents.copy()
+        copy_item.children = self.children.copy()
+        return copy_item
+
+    @classmethod
+    def align_for_interpolate(cls, item1: Item, item2: Item) -> AlignedData[Self]:
+        item = item1.src if isinstance(item1, DataItem) else item1
+        return item.align_for_interpolate(item1, item2)

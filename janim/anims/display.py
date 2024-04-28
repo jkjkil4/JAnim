@@ -13,7 +13,7 @@ class Display(Animation):
     def __init__(self, item: 'Item', **kwargs):
         super().__init__(**kwargs)
         self.item = item
-        self.timeline.record(item)
+        self.timeline.track(item)
 
     def anim_on(self, local_t: float) -> None:
         super().anim_on(local_t)

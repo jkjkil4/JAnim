@@ -1,6 +1,6 @@
 
 from janim.anims.updater import DataUpdater, UpdaterParams
-from janim.items.item import Item
+from janim.items.item import DataItem, Item
 from janim.items.points import Points
 from janim.components.points import Cmpt_Points
 from janim.typing import Vect
@@ -28,7 +28,7 @@ class Rotate(DataUpdater):
             box = item.astype(Points).points.self_box if root_only else item.astype(Points).points.box
             about_point = box.get(about_edge)
 
-        def func(data: Item.Data, p: UpdaterParams) -> None:
+        def func(data: DataItem, p: UpdaterParams) -> None:
             points = data.components.get('points', None)
             if points is None or not isinstance(points, Cmpt_Points):
                 return  # pragma: no cover

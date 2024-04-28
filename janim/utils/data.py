@@ -10,6 +10,7 @@ import numpy.typing as npt
 
 from janim.constants import GET_DATA_DELTA
 from janim.exception import RecordFailedError, RecordNotFoundError
+from janim.logger import log
 
 
 class ContextSetter[T]:
@@ -88,6 +89,9 @@ class History[T]:
         - 如果此时 没有已存储的记录，则将 t 视为 0
         '''
         if self.lst and t < self.lst[-1].time:
+            for timed_data in self.lst:
+                log.debug(timed_data)
+            log.debug(f'{t=}')
             raise RecordFailedError('记录数据失败，可能是因为物件处于动画中')
         self.lst.append(History.TimedData(t if self.lst else 0,
                                           data))

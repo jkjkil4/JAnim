@@ -30,7 +30,7 @@ class FocusOn(DataUpdater[Dot]):
             fill_alpha=0,
         )
         target_data: Item.Data[Dot] = Dot(radius=0, fill_color=color, fill_alpha=alpha).ref_data()
-        self.timeline.record(dot)
+        self.timeline.track(dot)
 
         def updater(data: Item.Data[Dot], p: UpdaterParams):
             if isinstance(point_or_item, Item):

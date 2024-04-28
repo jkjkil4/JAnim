@@ -3,13 +3,14 @@ from __future__ import annotations
 import inspect
 from contextvars import ContextVar
 from dataclasses import dataclass
+from functools import lru_cache
 from typing import Any, Callable, Self
 
 from janim.anims.animation import Animation, RenderCall, TimeRange
+from janim.components.component import Component, DynamicCmpt
 from janim.constants import ANIM_END_DELTA
-from janim.components.component import DynamicData
 from janim.exception import UpdaterError
-from janim.items.item import Item
+from janim.items.item import DataItem, Item
 from janim.utils.simple_functions import clip
 
 
@@ -66,14 +67,14 @@ class DataUpdater[T: Item](Animation):
 
     @dataclass
     class DataGroup:
-        orig_data: Item.Data[Item]
-        data: Item.Data[Item]
+        orig_data: DataItem
+        data: DataItem
         extra_data: Any | None
 
     def __init__(
         self,
         item: T,
-        func: Callable[[Item.Data[T], UpdaterParams], Any],
+        func: Callable[[T | DataItem[T], UpdaterParams], Any],
         *,
         lag_ratio: float = 0,
         hide_at_begin: bool = True,
@@ -93,16 +94,20 @@ class DataUpdater[T: Item](Animation):
         self.skip_null_items = skip_null_items
         self.root_only = root_only
 
-    def create_extra_data(self, data: Item.Data) -> Any | None:
+        for subitem in item.walk_self_and_descendants(root_only):
+            self.timeline.track(subitem)
+
+    def create_extra_data(self, data: DataItem) -> Any | None:
         return None
 
-    def wrap_data(self, updater_data: DataUpdater.DataGroup) -> DynamicData:
+    def wrap_data(self, updater_data: DataUpdater.DataGroup) -> Callable[[float], Item]:
         '''
         以供传入 :meth:`~.Timeline.register_dynamic_data` 使用
         '''
-        def wrapper(global_t: float) -> Item.Data:
+        @lru_cache(maxsize=1)
+        def wrapper(global_t: float) -> Item:
             alpha = self.get_alpha_on_global_t(global_t)
-            data_copy = updater_data.orig_data._copy(updater_data.orig_data)
+            data_copy = updater_data.orig_data.copy()
 
             with UpdaterParams(self,
                                global_t,
@@ -112,25 +117,25 @@ class DataUpdater[T: Item](Animation):
                 self.func(data_copy, params)
 
             return data_copy
+
+        return wrapper
+
+    @staticmethod
+    def wrap_cmpt(data_func: Callable[[float], Item], key: str) -> DynamicCmpt:
+        def wrapper(global_t: float) -> Component:
+            return data_func(global_t).components[key]
         return wrapper
 
     def anim_init(self) -> None:
-        def build_data(data: Item.Data) -> DataUpdater.DataGroup:
-            return DataUpdater.DataGroup(data, data._copy(data), self.create_extra_data(data))
+        def build_data(data: DataItem) -> DataUpdater.DataGroup:
+            return DataUpdater.DataGroup(data, data.copy(), self.create_extra_data(data))
 
         self.datas: dict[Item, DataUpdater.DataGroup] = {
             item: build_data(
-                self.timeline.get_stored_data_at_right(
-                    item,
-                    self.global_range.at,
-                    skip_dynamic_data=True
-                )
+                item.current(as_time=self.global_range.at,
+                             skip_dynamic=True)
             )
-            for item in (
-                [self.item]
-                if self.root_only
-                else self.item.walk_self_and_descendants()
-            )
+            for item in self.item.walk_self_and_descendants(self.root_only)
             if not self.skip_null_items or not item.is_null()
         }
 
@@ -141,15 +146,18 @@ class DataUpdater[T: Item](Animation):
                                    1,
                                    self.global_range,
                                    updater_data.extra_data) as params:
-                    self.func(item.ref_data(), params)
-            self.timeline.register_dynamic_data(item, self.wrap_data(updater_data), self.global_range.at)
+                    self.func(item, params)
 
-        self.timeline.detect_changes([self.item] if self.root_only else self.item.walk_self_and_descendants(),
+            data_func = self.wrap_data(updater_data)
+            for key, cmpt in item.components.items():
+                cmpt.register_dynamic(self.global_range.at, self.wrap_cmpt(data_func, key))
+
+        self.timeline.detect_changes(self.item.walk_self_and_descendants(self.root_only),
                                      as_time=self.global_range.end - ANIM_END_DELTA)
 
         self.set_render_call_list([
             RenderCall(
-                updater_data.data.cmpt.depth,
+                updater_data.data.depth.current(),
                 updater_data.data.render
             )
             for updater_data in self.datas.values()
@@ -166,7 +174,7 @@ class DataUpdater[T: Item](Animation):
         global_t = self.global_t_ctx.get()
         for i, updater_data in enumerate(self.datas.values()):
             sub_alpha = self.get_sub_alpha(alpha, i)
-            updater_data.data._restore(updater_data.orig_data)
+            updater_data.data.restore(updater_data.orig_data)
 
             with UpdaterParams(self,
                                global_t,
@@ -260,8 +268,8 @@ class ItemUpdater(Animation):
 
         self.set_render_call_list([
             RenderCall(
-                sub.depth,
-                sub.ref_data().render
+                sub.depth.current(),
+                sub.render
             )
             for sub in dynamic.walk_self_and_descendants()
         ])

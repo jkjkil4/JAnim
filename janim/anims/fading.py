@@ -3,7 +3,7 @@ from abc import ABCMeta, abstractmethod
 
 import numpy as np
 
-from janim.items.item import Item
+from janim.items.item import DataItem, Item
 from janim.items.points import Points
 from janim.components.rgbas import Cmpt_Rgbas
 from janim.anims.updater import DataUpdater, UpdaterParams
@@ -44,7 +44,7 @@ class Fade(DataUpdater, metaclass=ABCMeta):
         self.about_point = about_point
 
     @abstractmethod
-    def updater(self, data: Item.Data, p: UpdaterParams) -> None:
+    def updater(self, data: DataItem, p: UpdaterParams) -> None:
         pass
 
 
@@ -55,8 +55,8 @@ class FadeIn(Fade):
     - 可以使用 ``shift`` 指定淡入位移
     - 可以使用 ``scale`` 指定淡入缩放
     '''
-    def updater(self, data: Item.Data[Points], p: UpdaterParams) -> None:
-        if not isinstance(data.item, Points):
+    def updater(self, data: DataItem[Points], p: UpdaterParams) -> None:
+        if not isinstance(data.src, Points):
             return
 
         for cmpt in data.components.values():
@@ -98,8 +98,8 @@ class FadeOut(Fade):
             **kwargs
         )
 
-    def updater(self, data: Item.Data[Points], p: UpdaterParams) -> None:
-        if not isinstance(data.item, Points):
+    def updater(self, data: DataItem[Points], p: UpdaterParams) -> None:
+        if not isinstance(data.src, Points):
             return
 
         for cmpt in data.components.values():

@@ -6,7 +6,7 @@ import numpy as np
 from janim.anims.updater import DataUpdater, UpdaterParams
 from janim.components.vpoints import Cmpt_VPoints
 from janim.constants import NAN_POINT
-from janim.items.item import Item
+from janim.items.item import DataItem, Item
 from janim.items.vitem import VItem
 from janim.typing import JAnimColor
 from janim.utils.bezier import integer_interpolate
@@ -29,7 +29,7 @@ class ShowPartial(DataUpdater):
         root_only: bool = False,
         **kwargs
     ):
-        def func(data: Item.Data, p: UpdaterParams) -> None:
+        def func(data: DataItem, p: UpdaterParams) -> None:
             cmpt = data.components.get('points', None)
             if cmpt is None or not isinstance(cmpt, Cmpt_VPoints):
                 return  # pragma: no cover
@@ -125,23 +125,23 @@ class DrawBorderThenFill(DataUpdater):
         self.stroke_radius = stroke_radius
         self.stroke_color = stroke_color
 
-    def create_extra_data(self, data: Item.Data[VItem]) -> Item.Data[VItem] | None:
-        if not isinstance(data.item, VItem):
+    def create_extra_data(self, data: DataItem[VItem]) -> Item | None:
+        if not isinstance(data.src, VItem):
             return None     # pragma: no cover
-        data_copy = data._copy(data)
+        data_copy = data.copy()
         data_copy.cmpt.radius.set(self.stroke_radius)
         data_copy.cmpt.stroke.set(self.stroke_color, 1)
         data_copy.cmpt.fill.set(alpha=0)
         return data_copy
 
-    def updater(self, data: Item.Data[VItem], p: UpdaterParams) -> None:
+    def updater(self, data: DataItem[VItem], p: UpdaterParams) -> None:
         if p.extra_data is None:
             return  # pragma: no cover
         outline = p.extra_data
         index, subalpha = integer_interpolate(0, 2, p.alpha)
 
         if index == 0:
-            data._restore(outline)
+            data.restore(outline)
             data.cmpt.points.pointwise_become_partial(data.cmpt.points, 0, subalpha)
         else:
             data.interpolate(outline, data, subalpha)

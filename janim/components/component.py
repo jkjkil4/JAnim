@@ -12,7 +12,7 @@ from janim.utils.data import AlignedData, History
 if TYPE_CHECKING:   # pragma: no cover
     from janim.items.item import Item
 
-type DynamicData = Callable[[float], Component]
+type DynamicCmpt = Callable[[float], Component]
 
 
 class _CmptMeta(type):
@@ -72,7 +72,7 @@ class Component[ItemT](refresh.Refreshable, metaclass=_CmptMeta):
     def __init__(self) -> None:
         super().__init__()
         self.bind: Component.BindInfo | None = None
-        self.history: History[Self[ItemT] | DynamicData] = History()
+        self.history: History[Self[ItemT] | DynamicCmpt] = History()
         self.history_without_dynamic: History[Self[ItemT]] = History()
 
     def init_bind(self, bind: BindInfo) -> None:
@@ -105,6 +105,7 @@ class Component[ItemT](refresh.Refreshable, metaclass=_CmptMeta):
         cmpt_copy.bind = None
         cmpt_copy.reset_refresh()
         cmpt_copy.history = History()
+        cmpt_copy.history_without_dynamic = History()
         return cmpt_copy
 
     def become(self, other) -> Self: ...
@@ -119,7 +120,7 @@ class Component[ItemT](refresh.Refreshable, metaclass=_CmptMeta):
             self.history.record_as_time(as_time, cmpt_copy)
             history_wo_dnmc.record_as_time(as_time, cmpt_copy)
 
-    def register_dynamic(self, t: float, data: DynamicData) -> None:
+    def register_dynamic(self, t: float, data: DynamicCmpt) -> None:
         self.history.record_as_time(t, data)
 
     def current(self, *, as_time: float | None = None, skip_dynamic=False) -> Self:
@@ -129,6 +130,10 @@ class Component[ItemT](refresh.Refreshable, metaclass=_CmptMeta):
             return self
         if as_time is None:
             as_time = Animation.global_t_ctx.get(None)
+        if as_time is None:
+            from janim.anims.updater import updater_params_ctx
+            params = updater_params_ctx.get(None)
+            as_time = params.global_t
 
         if as_time is None:
             return self

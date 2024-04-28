@@ -4,7 +4,7 @@ from collections import defaultdict
 from typing import Self
 
 from janim.anims.animation import Animation, RenderCall
-from janim.components.component import Component, DynamicData
+from janim.components.component import Component, DynamicCmpt
 from janim.constants import ANIM_END_DELTA, OUT
 from janim.items.item import Item
 from janim.logger import log
@@ -45,6 +45,12 @@ class Transform(Animation):
         self.root_only = root_only
 
         self.init_path_func()
+
+        for item in src_item.walk_self_and_descendants(root_only):
+            self.timeline.track(item)
+        if target_item is not src_item:
+            for item in target_item.walk_self_and_descendants(root_only):
+                self.timeline.track(item)
 
     def init_path_func(self) -> None:
         '''
@@ -143,15 +149,13 @@ class MethodTransform(Transform):
         super().__init__(item, item, **kwargs)
         self.current_alpha = None
 
-        for subitem in item.walk_self_and_descendants():
-            self.timeline.record(subitem)
         self.timeline.detect_changes(item.walk_self_and_descendants())
 
     def do(self, func) -> Self:
         func(self.src_item)
         return self
 
-    def wrap_data(self, item: Item, key: str) -> DynamicData:
+    def wrap_cmpt(self, item: Item, key: str) -> DynamicCmpt:
         '''
         以供传入 :meth:`~.Component.register_dynamic` 使用
         '''
@@ -176,7 +180,7 @@ class MethodTransform(Transform):
             for key, cmpt in item.components.items():
                 if not isinstance(cmpt, SupportsInterpolate):
                     continue
-                cmpt.register_dynamic(self.global_range.at, self.wrap_data(item, key))
+                cmpt.register_dynamic(self.global_range.at, self.wrap_cmpt(item, key))
 
         self.timeline.detect_changes(self.src_item.walk_self_and_descendants(self.root_only),
                                      as_time=self.global_range.end - ANIM_END_DELTA)

@@ -480,7 +480,7 @@ class Timeline(metaclass=ABCMeta):
 
     # region detect_change
 
-    def record(self, item: Item) -> None:
+    def track(self, item: Item) -> None:
         '''
         使得 ``item`` 在每次 ``forward`` 和 ``play`` 时都会被自动调用 :meth:`~.Item.detect_change`
         '''

@@ -35,7 +35,7 @@ class SimpleCurveExample(Timeline):
         item2.color.set(BLUE)
         item2.fill.set(alpha=0.2)
 
-        state = self.camera.store_data()
+        state = self.camera.copy()
         self.play(self.camera.anim.points.scale(0.5))
         self.play(self.camera.anim.become(state))
 
@@ -131,13 +131,13 @@ class UpdaterExample(Timeline):
         brace = Brace(square, UP).show()
 
         def text_updater(p: UpdaterParams):
-            cmpt = self.t2d(brace).cmpt.points
+            cmpt = brace.points.current()
             return cmpt.create_text(f'Width = {cmpt.brace_length:.2f}')
 
         self.prepare(
             DataUpdater(
                 brace,
-                lambda data, p: data.cmpt.points.match(self.t2d(square))
+                lambda data, p: data.points.match(square.current())
             ),
             ItemUpdater(None, text_updater),
             duration=10
@@ -152,7 +152,7 @@ class UpdaterExample(Timeline):
         self.play(
             DataUpdater(
                 square,
-                lambda data, p: data.cmpt.points.set_width(
+                lambda data, p: data.points.set_width(
                     w0 + 0.5 * w0 * math.sin(p.alpha * p.range.duration)
                 )
             ),
