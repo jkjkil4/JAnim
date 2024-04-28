@@ -31,7 +31,7 @@ class Cmpt_Data[ItemT, T](Component[ItemT]):
         self.set(other.copy_func(other.value))
         return self
 
-    def maybe_same(self, other: Cmpt_Data) -> bool:
+    def not_changed(self, other: Cmpt_Data) -> bool:
         assert self.maybe_same_func is not None
         return self.maybe_same_func(self.value, other.value)
 

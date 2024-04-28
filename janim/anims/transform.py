@@ -4,6 +4,7 @@ from collections import defaultdict
 from typing import TYPE_CHECKING, Self
 
 from janim.anims.animation import Animation, RenderCall
+from janim.anims.timeline import Timeline
 from janim.components.component import Component
 from janim.constants import ANIM_END_DELTA, OUT
 from janim.items.item import Item
@@ -80,8 +81,9 @@ class Transform(Animation):
             if tpl in self.aligned:
                 return
 
-            data1 = item1.current(as_time=self.global_range.at, skip_dynamic=True)
-            data2 = item2.current(as_time=self.global_range.end, skip_dynamic=True)
+            with Timeline.CtxBlocker():
+                data1 = item1.current(as_time=self.global_range.at, skip_dynamic=True)
+                data2 = item2.current(as_time=self.global_range.end, skip_dynamic=True)
             aligned = self.aligned[tpl] = data1.align_for_interpolate(data1, data2)
             begin_times[item1] += 1
             end_times[item2] += 1
@@ -160,7 +162,8 @@ class MethodTransform(Transform):
             aligned = self.aligned[(item, item)]
             alpha = self.get_alpha_on_global_t(global_t)
 
-            cmpt = aligned.union.components[key].copy()
+            with Timeline.CtxBlocker():
+                cmpt = aligned.union.components[key].copy()
             assert isinstance(cmpt, SupportsInterpolate)
 
             cmpt.interpolate(aligned.data1.components[key],

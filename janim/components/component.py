@@ -24,7 +24,7 @@ class _CmptMeta(type):
         impl=False,     # 若 impl=True，则会跳过下面的检查
     ):
         if not impl:
-            for key in ('copy', 'become', 'maybe_same'):
+            for key in ('copy', 'become', 'not_changed'):
                 if not callable(attrdict.get(key, None)):
                     raise AttributeError(f'Component 的每一个子类都必须继承并实现 `{key}` 方法，而 {name} 没有')
         return super().__new__(cls, name, bases, attrdict)
@@ -108,15 +108,15 @@ class Component[ItemT](refresh.Refreshable, metaclass=_CmptMeta):
 
     def become(self, other) -> Self: ...
 
-    def maybe_same(self, other) -> bool: ...
+    def not_changed(self, other) -> bool: ...
 
     def detect_change(self, as_time: float) -> None:
         history_wo_dnmc = self.history_without_dynamic
 
-        if not history_wo_dnmc.has_record() or not history_wo_dnmc.latest().data.maybe_same(self):
+        if not history_wo_dnmc.has_record() or not history_wo_dnmc.latest().data.not_changed(self):
             cmpt_copy = self.copy()
-            history_wo_dnmc.record_as_time(as_time, cmpt_copy)
             self.history.record_as_time(as_time, cmpt_copy)
+            history_wo_dnmc.record_as_time(as_time, cmpt_copy)
 
     def register_dynamic(self, t: float, data: DynamicData) -> None:
         self.history.record_as_time(t, data)
@@ -231,7 +231,7 @@ class _CmptGroup(Component):
     def become(self, other) -> Self:    # pragma: no cover
         return self
 
-    def maybe_same(self, other: _CmptGroup) -> bool:
+    def not_changed(self, other: _CmptGroup) -> bool:
         return True
 
     def detect_change(self, as_time: float, *, force=False) -> None:

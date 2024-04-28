@@ -53,7 +53,7 @@ class Cmpt_Points[ItemT](Component[ItemT]):
         Cmpt_Points.set.emit(self)
         return self
 
-    def maybe_same(self, other: Cmpt_Points) -> bool:
+    def not_changed(self, other: Cmpt_Points) -> bool:
         return self._points.is_share(other._points)
 
     @classmethod
@@ -78,7 +78,7 @@ class Cmpt_Points[ItemT](Component[ItemT]):
         *,
         path_func: PathFunc = straight_path
     ) -> None:
-        if cmpt1.maybe_same(cmpt2):
+        if cmpt1.not_changed(cmpt2):
             return
 
         self.set(path_func(cmpt1.get(), cmpt2.get(), alpha))

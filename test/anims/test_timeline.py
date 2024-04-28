@@ -26,7 +26,7 @@ class TimelineTest(unittest.TestCase):
                 # copy.copy 本身就会复制 self.value
                 return super().copy()
 
-            def maybe_same(self, other: MyCmpt) -> bool:
+            def not_changed(self, other: MyCmpt) -> bool:
                 return self.value == other.value
 
             def become(self, other): ...

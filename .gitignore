@@ -1,4 +1,5 @@
 __pycache__
+.VSCodeCounter
 /.vscode/launch.json
 /dist
 /refactor_deprecated

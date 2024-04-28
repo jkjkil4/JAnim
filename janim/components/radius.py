@@ -30,7 +30,7 @@ class Cmpt_Radius[ItemT](Component[ItemT]):
         self.set(other.get())
         return self
 
-    def maybe_same(self, other: Cmpt_Radius) -> bool:
+    def not_changed(self, other: Cmpt_Radius) -> bool:
         return self._radii.is_share(other._radii)
 
     @classmethod
@@ -48,7 +48,7 @@ class Cmpt_Radius[ItemT](Component[ItemT]):
         return AlignedData(cmpt1_copy, cmpt2_copy, cmpt1_copy.copy())
 
     def interpolate(self, cmpt1: Cmpt_Radius, cmpt2: Cmpt_Radius, alpha: float, *, path_func=None) -> None:
-        if cmpt1.maybe_same(cmpt2):
+        if cmpt1.not_changed(cmpt2):
             return
 
         self.set(interpolate(cmpt1.get(), cmpt2.get(), alpha))

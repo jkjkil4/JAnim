@@ -76,7 +76,7 @@ class Cmpt_VPoints[ItemT](Cmpt_Points[ItemT], impl=True):
         cmpt1_copy = cmpt1.copy()
         cmpt2_copy = cmpt2.copy()
 
-        if cmpt1_copy.maybe_same(cmpt2_copy):
+        if cmpt1_copy.not_changed(cmpt2_copy):
             return AlignedData(cmpt1_copy, cmpt2_copy, cmpt1_copy.copy())
 
         if not cmpt1_copy.has():
