@@ -139,8 +139,8 @@ class Arrow(Line):
         self.tip = self.add_tip(**tip_kwargs)
         self.tip_orig_body_length = self.tip.body_length
 
-    def copy(self) -> Self:
-        copy_item = super().copy()
+    def copy(self, *, root_only=False) -> Self:
+        copy_item = super().copy(root_only=root_only)
         copy_item.tip = copy_item[0]
         return copy_item
 
@@ -198,8 +198,8 @@ class DoubleArrow(Arrow):
         super().init_tips(tip_kwargs)
         self.start_tip = self.add_tip(0, True, **tip_kwargs)
 
-    def copy(self) -> Self:
-        copy_item = super().copy()
+    def copy(self, *, root_only=False) -> Self:
+        copy_item = super().copy(root_only=root_only)
         copy_item.start_tip = copy_item[1]
         return copy_item
 

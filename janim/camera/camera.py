@@ -37,8 +37,8 @@ class Cmpt_CameraPoints[ItemT](Cmpt_Points[ItemT]):
 
         return self
 
-    def copy(self) -> Self:
-        cmpt_copy = super().copy()
+    def copy(self, *, root_only=False) -> Self:
+        cmpt_copy = super().copy(root_only=root_only)
         cmpt_copy._size = self._size.copy()
         cmpt_copy.orientation = self.orientation.from_quat(self.orientation.as_quat())
         return cmpt_copy

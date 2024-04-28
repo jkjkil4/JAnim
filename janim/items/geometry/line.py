@@ -8,7 +8,6 @@ import numpy as np
 from janim.components.component import CmptInfo
 from janim.components.vpoints import Cmpt_VPoints
 from janim.constants import LEFT, ORIGIN, RIGHT, UP
-from janim.items.item import Item
 from janim.items.points import Points
 from janim.items.vitem import VItem
 from janim.typing import Vect
@@ -16,7 +15,7 @@ from janim.utils.bezier import PathBuilder
 from janim.utils.simple_functions import clip
 from janim.utils.space_ops import angle_of_vector, get_norm, normalize
 
-type SupportsPointify = Vect | Points | Item.Data[Item]
+type SupportsPointify = Vect | Points
 
 
 class Cmpt_VPoints_LineImpl[ItemT](Cmpt_VPoints[ItemT]):
@@ -120,18 +119,15 @@ class Cmpt_VPoints_LineImpl[ItemT](Cmpt_VPoints[ItemT]):
 
     @staticmethod
     def pointify(
-        item_or_data_or_point: Vect | Points | Item.Data[Points],
+        item_or_data_or_point: SupportsPointify,
         direction: Vect | None = None
     ) -> np.ndarray:
         """
         Take an argument passed into Line (or subclass) and turn
         it into a 3d point.
         """
-        if isinstance(item_or_data_or_point, (Points, Item.Data)):
-            if isinstance(item_or_data_or_point, Points):
-                cmpt = item_or_data_or_point.points
-            else:
-                cmpt = item_or_data_or_point.cmpt.points
+        if isinstance(item_or_data_or_point, Points):
+            cmpt = item_or_data_or_point.points
 
             if direction is None:
                 return cmpt.box.center
