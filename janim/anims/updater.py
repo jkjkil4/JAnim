@@ -6,7 +6,8 @@ from dataclasses import dataclass
 from typing import Any, Callable, Self
 
 from janim.anims.animation import Animation, RenderCall, TimeRange
-from janim.anims.timeline import ANIM_END_DELTA, DynamicData
+from janim.constants import ANIM_END_DELTA
+from janim.components.component import DynamicData
 from janim.exception import UpdaterError
 from janim.items.item import Item
 from janim.utils.simple_functions import clip

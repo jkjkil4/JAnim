@@ -93,10 +93,7 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         self.renderer: Renderer | None = None
 
         self.add(*children)
-
         self.digest_styles(kwargs)
-
-        self.register_to_timeline(raise_exc=False)
 
     @dataclass
     class _CmptInitData:
@@ -134,12 +131,6 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
     def set_component(self, key: str, cmpt: Component) -> None:
         setattr(self, key, cmpt)
         self.components[key] = cmpt
-
-    def register_to_timeline(self, *, raise_exc=True) -> None:
-        from janim.anims.timeline import Timeline
-        timeline = Timeline.get_context(raise_exc=raise_exc)
-        if timeline:
-            timeline.register(self)
 
     def broadcast_refresh_of_component(
         self,
@@ -411,7 +402,6 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         copy_item.components = new_cmpts
         copy_item._astype_mock_cmpt = {}
 
-        copy_item.register_to_timeline(raise_exc=False)
         return copy_item
 
     def become(self, other: Item) -> Self:
@@ -449,9 +439,7 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         '''
         进行数据对齐，以便插值
         '''
-        from janim.anims.timeline import Timeline
-        with Timeline.CtxBlocker():
-            aligned = AlignedData(item1.copy(), item1.copy(), item2.copy())
+        aligned = AlignedData(item1.copy(), item1.copy(), item2.copy())
 
         # align components
         for key, cmpt1 in item1.components.items():

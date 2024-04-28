@@ -32,8 +32,6 @@ from janim.utils.data import ContextSetter
 from janim.utils.iterables import resize_preserving_order
 from janim.utils.simple_functions import clip
 
-type DynamicData = Callable[[float], Component]
-
 
 class Timeline(metaclass=ABCMeta):
     '''
@@ -108,18 +106,6 @@ class Timeline(metaclass=ABCMeta):
             raise TimelineLookupError(f'{f_back.f_code.co_qualname} 无法在 Timeline.construct 之外使用')
         return obj
 
-    class CtxBlocker:
-        '''
-        使得在 ``with Timeline.CtxBlocker():`` 内，物件不会自动调用 :meth:`register`
-
-        用于临时创建物件时
-        '''
-        def __enter__(self) -> Self:
-            self.token = Timeline.ctx_var.set(None)
-
-        def __exit__(self, exc_type, exc_value, tb):
-            Timeline.ctx_var.reset(self.token)
-
     # endregion
 
     @dataclass
@@ -139,18 +125,6 @@ class Timeline(metaclass=ABCMeta):
         func: Callable
         args: list
         kwargs: dict
-
-    @dataclass
-    class TimedItemData:
-        '''
-        表示从 ``time`` 之后，物件的数据
-        '''
-        time: float
-        data: Item.Data | DynamicData
-        '''
-        - 当 ``data`` 的类型为 ``Item.Data`` 时，为静态数据
-        - 否则，对于 ``DynamicData`` ，会在获取时调用以得到对应数据
-        '''
 
     @dataclass
     class PlayAudioInfo:
@@ -331,7 +305,7 @@ class Timeline(metaclass=ABCMeta):
 
         duration = self.current_time - time
 
-        anim = Display(item, duration=duration, root_only=True)
+        anim = Display(item, duration=duration)
         anim.local_range.at += time
         anim.compute_global_range(anim.local_range.at, anim.local_range.duration)
         self.display_anims.append(anim)
@@ -506,9 +480,9 @@ class Timeline(metaclass=ABCMeta):
 
     # region detect_change
 
-    def register(self, item: Item) -> None:
+    def record(self, item: Item) -> None:
         '''
-        在 :meth:`construct` 中创建的物件会自动调用该方法
+        使得 ``item`` 在每次 ``forward`` 和 ``play`` 时都会被自动调用 :meth:`~.Item.detect_change`
         '''
         self.items.append(item)
 

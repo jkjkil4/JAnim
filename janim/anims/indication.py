@@ -29,8 +29,8 @@ class FocusOn(DataUpdater[Dot]):
             fill_color=color,
             fill_alpha=0,
         )
-        with Timeline.CtxBlocker():
-            target_data: Item.Data[Dot] = Dot(radius=0, fill_color=color, fill_alpha=alpha).ref_data()
+        target_data: Item.Data[Dot] = Dot(radius=0, fill_color=color, fill_alpha=alpha).ref_data()
+        self.timeline.record(dot)
 
         def updater(data: Item.Data[Dot], p: UpdaterParams):
             if isinstance(point_or_item, Item):

@@ -10,8 +10,9 @@ from janim.exception import CmptGroupLookupError
 from janim.utils.data import AlignedData, History
 
 if TYPE_CHECKING:   # pragma: no cover
-    from janim.anims.updater import DynamicData
     from janim.items.item import Item
+
+type DynamicData = Callable[[float], Component]
 
 
 class _CmptMeta(type):
