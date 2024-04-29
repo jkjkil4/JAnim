@@ -1,7 +1,7 @@
-unique_nparray
+shape_matchers
 ==============
 
-.. automodule:: janim.utils.unique_nparray
+.. automodule:: janim.items.shape_matchers
    :members:
    :undoc-members:
    :show-inheritance:

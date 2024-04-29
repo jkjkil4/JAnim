@@ -16,5 +16,6 @@ items
    item
    points
    relation
+   shape_matchers
    value_tracker
    vitem

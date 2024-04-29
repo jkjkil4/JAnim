@@ -11,6 +11,7 @@ anims
    creation
    display
    fading
+   indication
    rotation
    timeline
    transform
