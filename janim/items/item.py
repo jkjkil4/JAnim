@@ -20,6 +20,8 @@ from janim.utils.paths import PathFunc, straight_path
 if TYPE_CHECKING:
     from janim.items.points import Group
 
+type DynamicItem = Callable[[float], Item]
+
 CLS_CMPTINFO_NAME = '__cls_cmptinfo'
 CLS_STYLES_NAME = '__cls_styles'
 ALL_STYLES_NAME = '__all_styles'
@@ -78,6 +80,12 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         **kwargs
     ):
         super().__init__(*args)
+        self.stored: bool = False
+        self.stored_parents: list[Item] | None = None
+        self.stored_children: list[Item] | None = None
+
+        from janim.anims.timeline import Timeline
+        self.timeline = Timeline.get_context(raise_exc=False)
 
         self._init_components()
         if depth is not None:
@@ -86,11 +94,10 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         self._astype: type[Item] | None = None
         self._astype_mock_cmpt: dict[str, Component] = {}
 
+        self.renderer: Renderer | None = None
+
         self.add(*children)
-
         self.digest_styles(kwargs)
-
-        self.register_to_timeline(raise_exc=False)
 
     @dataclass
     class _CmptInitData:
@@ -125,11 +132,9 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
 
             self.__dict__[key] = self.components[key] = obj
 
-    def register_to_timeline(self, *, raise_exc=True) -> None:
-        from janim.anims.timeline import Timeline
-        timeline = Timeline.get_context(raise_exc=raise_exc)
-        if timeline:
-            timeline.register(self)
+    def set_component(self, key: str, cmpt: Component) -> None:
+        setattr(self, key, cmpt)
+        self.components[key] = cmpt
 
     def broadcast_refresh_of_component(
         self,
@@ -263,7 +268,7 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         '''
         from janim.items.points import Group
         return Group(
-            *(self.copy() for _ in range(n))
+            *(self.copy() for i in range(n))
         )
 
     # region astype
@@ -341,181 +346,24 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
 
     # region data
 
-    class Data[ItemT: 'Item']:
-        def __init__(
-            self,
-            item: ItemT,
-            components: dict[str, Component],
-            parents: list[Item],
-            children: list[Item],
-        ):
-            self.item = item
-            self.components = components
-            self.parents = parents
-            self.children = children
+    def get_parents(self):
+        return self.stored_parents if self.stored else self.parents
 
-            self.renderer = None
+    def get_children(self):
+        return self.stored_children if self.stored else self.children
 
-        @classmethod
-        def _store[U: 'Item'](cls, item: U) -> Self[U]:
-            return cls._copy(cls._ref(item))
+    def not_changed(self, other: Self) -> bool:
+        if self.get_children() != other.get_children():
+            return False
+        for key, cmpt in self.components.items():
+            if not cmpt.not_changed(other.components[key]):
+                return False
+        return True
 
-        @classmethod
-        def _ref[U: 'Item'](cls, item: U) -> Self[U]:
-            return cls(
-                item,
-                item.components,
-                item.parents,
-                item.children
-            )
+    def current(self, *, as_time: float | None = None, skip_dynamic=False) -> Self:
+        return self.timeline.item_current(self, as_time=as_time, skip_dynamic=skip_dynamic)
 
-        @classmethod
-        def _copy[U: 'Item'](cls, data: Self[U]) -> Self[U]:
-            components: dict[str, Component] = {}
-
-            for key, cmpt in data.components.items():
-                if isinstance(cmpt, _CmptGroup):
-                    # 因为现在的 Python 版本中，dict 取键值保留原序
-                    # 所以 new_cmpts 肯定有 _CmptGroup 所需要的
-                    components[key] = cmpt.copy(new_cmpts=components)
-                else:
-                    components[key] = cmpt.copy()
-
-            parents = data.parents.copy()
-            children = data.children.copy()
-
-            copy_data = cls(data.item, components, parents, children)
-            for key, cmpt in components.items():
-                cmpt.set_at_data(copy_data, key)
-            return copy_data
-
-        def _restore(self, data: Item.Data) -> None:
-            for key in self.components.keys() | data.components.keys():
-                self.components[key].become(data.components[key])
-
-            self.parents.clear()
-            self.parents.extend(data.parents)
-
-            self.children.clear()
-            self.children.extend(data.children)
-
-        def is_changed(self) -> bool:
-            '''
-            检查该数据与 ``item`` 现在的数据是否产生差异
-
-            注：仅检查自身数据，不检查子物件的数据
-            '''
-            for stored_cmpt, item_cmpt in zip(self.components.values(), self.item.components.values()):
-                if stored_cmpt != item_cmpt:
-                    return True
-
-            return self.parents != self.item.parents or self.children != self.item.children
-
-        class _CmptGetter:
-            def __init__(self, data: Item.Data):
-                self._data = data
-
-            def __getattr__(self, name: str):
-                cmpt = self._data.components.get(name, None)
-                if cmpt is None:
-                    raise AttributeError(f"'{self._data.item.__class__.__name__}' 没有叫作 '{name}' 的组件")
-
-                return cmpt
-
-        @property
-        def cmpt(self) -> ItemT:
-            '''
-            将 ``.component['key']`` 简化为 ``.cmpt.key`` 且方便代码提示
-            '''
-            return Item.Data._CmptGetter(self)
-
-        @classmethod
-        def align_for_interpolate(
-            cls,
-            data1: Item.Data,
-            data2: Item.Data,
-        ) -> AlignedData[Self]:
-            aligned = AlignedData(*[
-                cls(data1.item, {}, [], [])
-                for _ in range(3)
-            ])
-
-            # align components
-            for key, cmpt1 in data1.components.items():
-                cmpt2 = data2.components.get(key, None)
-
-                if isinstance(cmpt1, _CmptGroup) and isinstance(cmpt2, _CmptGroup):
-                    cmpt_aligned = cmpt1.align(cmpt1, cmpt2, aligned)
-
-                elif cmpt2 is None or not isinstance(cmpt1, SupportsInterpolate):
-                    cmpt_aligned = AlignedData(cmpt1, cmpt1, cmpt1)
-                else:
-                    cmpt_aligned = cmpt1.align_for_interpolate(cmpt1, cmpt2)
-
-                aligned.data1.components[key] = cmpt_aligned.data1
-                aligned.data2.components[key] = cmpt_aligned.data2
-                aligned.union.components[key] = cmpt_aligned.union
-
-            # align children
-            max_len = max(len(data1.children), len(data2.children))
-            aligned.data1.children = resize_preserving_order(data1.children, max_len)
-            aligned.data2.children = resize_preserving_order(data2.children, max_len)
-
-            return aligned
-
-        def interpolate(
-            self,
-            data1: Item.Data,
-            data2: Item.Data,
-            alpha: float,
-            *,
-            path_func: PathFunc = straight_path,
-        ) -> None:
-            for key, cmpt in self.components.items():
-                cmpt1 = data1.components[key]
-                cmpt2 = data2.components[key]
-
-                if not isinstance(cmpt, SupportsInterpolate):
-                    continue
-
-                cmpt.interpolate(cmpt1, cmpt2, alpha, path_func=path_func)
-
-        def apart_alpha(self, n: int) -> None:
-            for cmpt in self.components.values():
-                if isinstance(cmpt, SupportsApartAlpha):
-                    cmpt.apart_alpha(n)
-
-        def create_renderer(self) -> None:
-            self.renderer = self.item.renderer_cls()
-
-        def render(self) -> None:
-            if self.renderer is None:
-                self.create_renderer()
-
-            if not self.renderer.initialized:
-                self.renderer.init()
-                self.renderer.initialized = True
-            self.renderer.render(self)
-
-    def store_data(self):
-        '''
-        将数据复制，返回复制后的数据
-
-        注：仅复制自身数据，不复制子物件的数据
-        '''
-        return self.Data._store(self)
-
-    def ref_data(self):
-        '''
-        返回数据的引用，不进行复制
-        '''
-        return self.Data._ref(self)
-
-    def restore_data(self, data: Data[Self]) -> Self:
-        self.ref_data()._restore(data)
-        return self
-
-    def copy(self) -> Self:
+    def copy(self, *, root_only=False) -> Self:
         '''
         复制物件
         '''
@@ -524,10 +372,14 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         copy_item.reset_refresh()
 
         copy_item.parents = []
-        copy_item.parents_changed()
-
         copy_item.children = []
-        copy_item.add(*[item.copy() for item in self.children])
+        if root_only:
+            copy_item.stored = True
+            copy_item.stored_parents = self.get_parents().copy()
+            copy_item.stored_children = self.get_children().copy()
+        else:
+            copy_item.add(*[item.copy() for item in self.children])
+            copy_item.parents_changed()
 
         new_cmpts = {}
         for key, cmpt in self.components.items():
@@ -538,9 +390,10 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
             else:
                 cmpt_copy = cmpt.copy()
 
-            cmpt_copy.init_bind(Component.BindInfo(cmpt.bind.decl_cls,
-                                                   copy_item,
-                                                   key))
+            if cmpt.bind is not None:
+                cmpt_copy.init_bind(Component.BindInfo(cmpt.bind.decl_cls,
+                                                       copy_item,
+                                                       key))
 
             new_cmpts[key] = cmpt_copy
             setattr(copy_item, key, cmpt_copy)
@@ -548,8 +401,25 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         copy_item.components = new_cmpts
         copy_item._astype_mock_cmpt = {}
 
-        copy_item.register_to_timeline(raise_exc=False)
         return copy_item
+
+    # TODO: optimize
+    def _current_family(self, *, up: bool) -> list[Item]:   # use DFS
+        lst = self.stored_parents if up else self.stored_children
+        res = []
+
+        for sub_obj in lst:
+            current = sub_obj.current()
+            if current not in res:
+                res.append(current)
+            res.extend(filter(
+                lambda obj: obj not in res,
+                current._current_family(up=up)
+                if current.stored
+                else (current.ancestors() if up else current.descendants())
+            ))
+
+        return res
 
     def become(self, other: Item) -> Self:
         '''
@@ -577,6 +447,93 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
 
         return self
 
+    def store(self) -> Self:
+        return self.copy(root_only=True)
+
+    def restore(self, other: Item) -> Self:
+        self.parents = other.parents.copy()
+        self.parents_changed()
+        self.children = other.children.copy()
+        self.children_changed()
+
+        for key in self.components.keys() & other.components.keys():
+            self.components[key].become(other.components[key])
+
+        return self
+
+    @classmethod
+    def align_for_interpolate(
+        cls,
+        item1: Item,
+        item2: Item
+    ) -> AlignedData[Self]:
+        '''
+        进行数据对齐，以便插值
+        '''
+        aligned = AlignedData(item1.store(),
+                              item1.store(),
+                              item2.store())
+
+        # align components
+        for key, cmpt1 in item1.components.items():
+            cmpt2 = item2.components.get(key, None)
+
+            if isinstance(cmpt1, _CmptGroup) and isinstance(cmpt2, _CmptGroup):
+                cmpt_aligned = cmpt1.align(cmpt1, cmpt2, aligned)
+
+            elif cmpt2 is None or not isinstance(cmpt1, SupportsInterpolate):
+                cmpt_aligned = AlignedData(cmpt1, cmpt1, cmpt1)
+            else:
+                cmpt_aligned = cmpt1.align_for_interpolate(cmpt1, cmpt2)
+
+            aligned.data1.set_component(key, cmpt_aligned.data1)
+            aligned.data2.set_component(key, cmpt_aligned.data2)
+            aligned.union.set_component(key, cmpt_aligned.union)
+
+        # align children
+        max_len = max(len(item1.get_children()), len(item2.get_children()))
+        aligned.data1.stored_children = resize_preserving_order(item1.get_children(), max_len)
+        aligned.data2.stored_children = resize_preserving_order(item2.get_children(), max_len)
+
+        return aligned
+
+    def interpolate(
+        self,
+        item1: Item,
+        item2: Item,
+        alpha: float,
+        *,
+        path_func: PathFunc = straight_path,
+    ) -> None:
+        '''
+        进行插值（仅对该物件进行，不包含后代物件）
+        '''
+        for key, cmpt in self.components.items():
+            cmpt1 = item1.components[key]
+            cmpt2 = item2.components[key]
+
+            if not isinstance(cmpt, SupportsInterpolate):
+                continue
+
+            cmpt.interpolate(cmpt1, cmpt2, alpha, path_func=path_func)
+
+    def apart_alpha(self, n: int) -> None:
+        for cmpt in self.components.values():
+            if isinstance(cmpt, SupportsApartAlpha):
+                cmpt.apart_alpha(n)
+
+    def create_renderer(self) -> None:
+        self.renderer = self.renderer_cls()
+
+    def render(self) -> None:
+        if self.renderer is None:
+            self.create_renderer()
+
+        if not self.renderer.initialized:
+            self.renderer.init()
+            self.renderer.initialized = True
+        self.renderer.render(self)
+
     # endregion
 
     # region timeline
@@ -585,16 +542,14 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         '''
         显示物件
         '''
-        from janim.anims.timeline import Timeline
-        Timeline.get_context().show(self, **kwargs)
+        self.timeline.show(self, **kwargs)
         return self
 
     def hide(self, **kwargs) -> Self:
         '''
         隐藏物件
         '''
-        from janim.anims.timeline import Timeline
-        Timeline.get_context().hide(self, **kwargs)
+        self.timeline.hide(self, **kwargs)
         return self
 
     # endregion

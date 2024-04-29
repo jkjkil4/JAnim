@@ -4,11 +4,11 @@ from contextvars import ContextVar
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Callable
 
-from janim.components.depth import Cmpt_Depth
 from janim.utils.rate_functions import RateFunc, smooth
 
 if TYPE_CHECKING:   # pragma: no cover
     from janim.anims.composition import AnimGroup
+    from janim.components.depth import Cmpt_Depth
 
 
 @dataclass

@@ -52,8 +52,8 @@ class Cmpt_CameraPoints[ItemT](Cmpt_Points[ItemT]):
 
         return self
 
-    def __eq__(self, other: Cmpt_CameraPoints) -> Self:
-        if not super().__eq__(other):
+    def not_changed(self, other: Cmpt_CameraPoints) -> Self:
+        if not super().not_changed(other):
             return False
         if np.any(self.size != other.size) or self.fov != other.fov:
             return False

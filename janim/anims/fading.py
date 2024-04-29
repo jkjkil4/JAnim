@@ -44,7 +44,7 @@ class Fade(DataUpdater, metaclass=ABCMeta):
         self.about_point = about_point
 
     @abstractmethod
-    def updater(self, data: Item.Data, p: UpdaterParams) -> None:
+    def updater(self, data: Item, p: UpdaterParams) -> None:
         pass
 
 
@@ -55,21 +55,21 @@ class FadeIn(Fade):
     - 可以使用 ``shift`` 指定淡入位移
     - 可以使用 ``scale`` 指定淡入缩放
     '''
-    def updater(self, data: Item.Data[Points], p: UpdaterParams) -> None:
-        if not isinstance(data.item, Points):
+    def updater(self, data: Item, p: UpdaterParams) -> None:
+        if not isinstance(data, Points):
             return
 
         for cmpt in data.components.values():
             if not isinstance(cmpt, Cmpt_Rgbas):
                 continue
-            rgbas = cmpt.get()
+            rgbas = cmpt.get().copy()
             rgbas[:, 3] *= p.alpha
             cmpt.set_rgbas(rgbas)
 
         if np.any(self.shift != ORIGIN):
-            data.cmpt.points.shift((1 - p.alpha) * -self.shift)
+            data.points.shift((1 - p.alpha) * -self.shift)
         if self.scale != 1.0:
-            data.cmpt.points.scale(
+            data.points.scale(
                 (1 - p.alpha) * 1 / self.scale + p.alpha,
                 about_point=self.about_point
             )
@@ -98,21 +98,21 @@ class FadeOut(Fade):
             **kwargs
         )
 
-    def updater(self, data: Item.Data[Points], p: UpdaterParams) -> None:
-        if not isinstance(data.item, Points):
+    def updater(self, data: Item, p: UpdaterParams) -> None:
+        if not isinstance(data, Points):
             return
 
         for cmpt in data.components.values():
             if not isinstance(cmpt, Cmpt_Rgbas):
                 continue
-            rgbas = cmpt.get()
+            rgbas = cmpt.get().copy()
             rgbas[:, 3] *= 1 - p.alpha
             cmpt.set_rgbas(rgbas)
 
         if np.any(self.shift != ORIGIN):
-            data.cmpt.points.shift(p.alpha * self.shift)
+            data.points.shift(p.alpha * self.shift)
         if self.scale != 1.0:
-            data.cmpt.points.scale(
+            data.points.scale(
                 p.alpha * self.scale + (1 - p.alpha),
                 about_point=self.about_point
             )

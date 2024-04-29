@@ -28,7 +28,7 @@ class Rotate(DataUpdater):
             box = item.astype(Points).points.self_box if root_only else item.astype(Points).points.box
             about_point = box.get(about_edge)
 
-        def func(data: Item.Data, p: UpdaterParams) -> None:
+        def func(data: Item, p: UpdaterParams) -> None:
             points = data.components.get('points', None)
             if points is None or not isinstance(points, Cmpt_Points):
                 return  # pragma: no cover

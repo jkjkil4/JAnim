@@ -137,21 +137,19 @@ class ImageItem(Points):
 
         return orig + hor * x / width + ver * y / height
 
-    class Data(Item.Data['ImageItem']):
+    @classmethod
+    def align_for_interpolate(
+        cls,
+        item1: ImageItem,
+        item2: ImageItem,
+    ) -> AlignedData[ImageItem]:
+        aligned = super().align_for_interpolate(item1, item2)
 
-        @classmethod
-        def align_for_interpolate(
-            cls,
-            data1: ImageItem.Data,
-            data2: ImageItem.Data,
-        ) -> AlignedData[ImageItem.Data]:
-            aligned = super().align_for_interpolate(data1, data2)
+        for data in (aligned.data1, aligned.data2):
+            points_count = data.points.count()
+            data.color.resize(points_count)
 
-            for data in (aligned.data1, aligned.data2):
-                points_count = data.cmpt.points.count()
-                data.cmpt.color.resize(points_count)
-
-            return aligned
+        return aligned
 
 
 class PixelImageItem(ImageItem):

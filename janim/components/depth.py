@@ -38,6 +38,7 @@ class Cmpt_Depth[ItemT](Component[ItemT]):
     _counter: defaultdict[float, int] = defaultdict(int)
 
     def __init__(self, value: float, order: int | None = None):
+        super().__init__()
         self.set(value, order=order)
 
     def copy(self) -> Self:
@@ -48,7 +49,7 @@ class Cmpt_Depth[ItemT](Component[ItemT]):
         self.set(*other.get_raw())
         return self
 
-    def __eq__(self, other: Cmpt_Depth) -> bool:
+    def not_changed(self, other: Cmpt_Depth) -> bool:
         return self._depth == other._depth and self._order == other._order
 
     def __lt__(self, other: Cmpt_Depth) -> bool:

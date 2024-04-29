@@ -84,30 +84,29 @@ class DotCloud(Points):
 
         return super().set_style(**kwargs)
 
-    class Data(Item.Data['DotCloud']):
-        @classmethod
-        def align_for_interpolate(
-            cls,
-            data1: DotCloud.Data,
-            data2: DotCloud.Data,
-        ) -> AlignedData[DotCloud.Data]:
-            len1 = len(data1.cmpt.points.get())
-            len2 = len(data2.cmpt.points.get())
+    @classmethod
+    def align_for_interpolate(
+        cls,
+        item1: DotCloud,
+        item2: DotCloud,
+    ) -> AlignedData[DotCloud]:
+        len1 = len(item1.points.get())
+        len2 = len(item2.points.get())
 
-            aligned = super().align_for_interpolate(data1, data2)
+        aligned = super().align_for_interpolate(item1, item2)
 
-            for data in (aligned.data1, aligned.data2):
-                points_count = data.cmpt.points.count()
-                data.cmpt.color.resize(points_count)
-                data.cmpt.radius.resize(points_count)
+        for data in (aligned.data1, aligned.data2):
+            points_count = data.points.count()
+            data.color.resize(points_count)
+            data.radius.resize(points_count)
 
-            if len1 != len2:
-                indice_groups = resize_preserving_order_indice_groups(min(len1, len2), max(len1, len2))
+        if len1 != len2:
+            indice_groups = resize_preserving_order_indice_groups(min(len1, len2), max(len1, len2))
 
-                cmpt_to_fade = aligned.data1.cmpt.color if len1 < len2 else aligned.data2.cmpt.color
-                rgbas = cmpt_to_fade.get()
-                for group in indice_groups:
-                    rgbas[group, 3] = apart_alpha(rgbas[group[0], 3], len(group))
-                cmpt_to_fade.set_rgbas(rgbas)
+            cmpt_to_fade = aligned.data1.color if len1 < len2 else aligned.data2.color
+            rgbas = cmpt_to_fade.get().copy()
+            for group in indice_groups:
+                rgbas[group, 3] = apart_alpha(rgbas[group[0], 3], len(group))
+            cmpt_to_fade.set_rgbas(rgbas)
 
-            return aligned
+        return aligned

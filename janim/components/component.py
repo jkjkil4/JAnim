@@ -22,7 +22,7 @@ class _CmptMeta(type):
         impl=False,     # 若 impl=True，则会跳过下面的检查
     ):
         if not impl:
-            for key in ('copy', 'become', '__eq__'):
+            for key in ('copy', 'become', 'not_changed'):
                 if not callable(attrdict.get(key, None)):
                     raise AttributeError(f'Component 的每一个子类都必须继承并实现 `{key}` 方法，而 {name} 没有')
         return super().__new__(cls, name, bases, attrdict)
@@ -66,16 +66,9 @@ class Component[ItemT](refresh.Refreshable, metaclass=_CmptMeta):
         at_item: Item
         key: str
 
-    @dataclass
-    class DataInfo:
-        obj: Item.Data[ItemT]
-        key: str
-
     def __init__(self) -> None:
         super().__init__()
-
         self.bind: Component.BindInfo | None = None
-        self.at_data: Component.DataInfo | None = None    # TODO: 添加注释说明
 
     def init_bind(self, bind: BindInfo) -> None:
         '''
@@ -85,26 +78,8 @@ class Component[ItemT](refresh.Refreshable, metaclass=_CmptMeta):
         '''
         self.bind = bind
 
-    def set_at_data(self, obj: Item.Data[ItemT], key: str) -> None:
-        # TODO: 添加注释说明
-        self.at_data = Component.DataInfo(obj, key)
-
-    def bind_invalid(self) -> bool:
-        '''
-        便于使用 ``@refresh.register(fallback_check=Component.bind_invalid)``
-        '''
-        return self.bind is not None
-
-    def copy(self) -> Self:
-        cmpt_copy = copy.copy(self)
-        cmpt_copy.bind = None
-        cmpt_copy.data = None
-        cmpt_copy.reset_refresh()
-        return cmpt_copy
-
-    def become(self, other) -> Self: ...
-
-    def __eq__(self, other) -> bool: ...
+    def fallback_check(self) -> bool:
+        return self.bind is not None and self.bind.at_item.stored
 
     def mark_refresh(self, func: Callable | str, *, recurse_up=False, recurse_down=False) -> Self:
         '''
@@ -120,65 +95,53 @@ class Component[ItemT](refresh.Refreshable, metaclass=_CmptMeta):
                 recurse_down=recurse_down
             )
 
+    def copy(self) -> Self:
+        cmpt_copy = copy.copy(self)
+        # cmpt_copy.bind = None
+        cmpt_copy.reset_refresh()
+        return cmpt_copy
+
+    def become(self, other) -> Self: ...
+
+    def not_changed(self, other) -> bool: ...
+
     def get_same_cmpt(self, item: Item) -> Self:
+        # TODO: .current
         return self.get_same_cmpt_if_exists(item) or getattr(item.astype(self.bind.decl_cls), self.bind.key)
 
-    def get_same_cmpt_without_mock(self, item: Item | Item.Data) -> Self | None:
+    def get_same_cmpt_without_mock(self, item: Item) -> Self | None:
         return item.components.get(self.bind.key, None)
 
     def get_same_cmpt_if_exists(self, item: Item) -> Self | None:
         cmpt = item.components.get(self.bind.key, None)
         if cmpt is not None:
             return cmpt
-        cmpt = item._astype_mock_cmpt.get(self.bind.key, None)
-        return cmpt
+
+        return item._astype_mock_cmpt.get(self.bind.key, None)
 
     def walk_same_cmpt_of_self_and_descendants_without_mock(
         self,
         root_only: bool = False,
         *,
-        fallback: bool = False
+        timed: bool = False
     ) -> Generator[Self, None, None]:
         yield self
-        if not root_only and self.bind is not None:
-            for item in self.bind.at_item.walk_descendants(self.bind.decl_cls):
+        if root_only or self.bind is None:
+            return
+
+        item = self.bind.at_item
+        walk = None
+        if not item.stored:
+            walk = item.walk_descendants(self.bind.decl_cls)
+        elif timed:
+            walk = item._walk_lst(self.bind.decl_cls, item._current_family(up=False))
+
+        if walk is not None:
+            for item in walk:
                 cmpt = self.get_same_cmpt_without_mock(item)
                 if cmpt is None:
                     continue
                 yield cmpt
-            return
-
-        # fallback 意为，在 self.bind 无效时，
-        # 对每个后代物件使用 get_stored_data_at_right 获得 updater 所处时间的数据
-        if not fallback or self.at_data is None:
-            return
-
-        from janim.anims.updater import updater_params_ctx
-
-        params = updater_params_ctx.get(None)
-        if params is None:
-            return
-        timeline = params.updater.timeline
-
-        def family(data: Item.Data) -> list[Item.Data]:  # use DFS
-            res = []
-
-            for sub_item in data.children:
-                sub_data = timeline.get_stored_data_at_right(sub_item, params.global_t)
-                if sub_data not in res:
-                    res.append(sub_data)
-                res.extend(filter(
-                    lambda data: data not in res,
-                    family(sub_data)
-                ))
-
-            return res
-
-        for data in family(self.at_data.obj):
-            cmpt = data.components.get(self.at_data.key, None)
-            if cmpt is None:
-                continue
-            yield cmpt
 
     @property
     def r(self) -> ItemT:
@@ -249,15 +212,15 @@ class _CmptGroup(Component):
     def become(self, other) -> Self:    # pragma: no cover
         return self
 
-    def __eq__(self, other: _CmptGroup) -> bool:
-        for key in self.objects.keys():
-            if self.objects[key] != other.objects[key]:
+    def not_changed(self, other: _CmptGroup) -> bool:
+        for key, obj in self.objects.items():
+            if not obj.not_changed(other.objects[key]):
                 return False
 
         return True
 
     @classmethod
-    def align(cls, cmpt1: _CmptGroup, cmpt2: _CmptGroup, aligned: AlignedData[Item.Data]):
+    def align(cls, cmpt1: _CmptGroup, cmpt2: _CmptGroup, aligned: AlignedData[Item]):
         cmpt1_copy = cmpt1.copy(new_cmpts=aligned.data1.components)
         cmpt2_copy = cmpt2.copy(new_cmpts=aligned.data2.components)
         cmpt_union = cmpt1.copy(new_cmpts=aligned.union.components)

@@ -1,19 +1,16 @@
 from __future__ import annotations
 
 from collections import defaultdict
-from typing import TYPE_CHECKING, Self
+from typing import Self
 
 from janim.anims.animation import Animation, RenderCall
 from janim.components.component import Component
-from janim.constants import OUT
-from janim.items.item import Item
+from janim.constants import ANIM_END_DELTA, OUT
+from janim.items.item import DynamicItem, Item
 from janim.logger import log
 from janim.typing import Vect
 from janim.utils.data import AlignedData
 from janim.utils.paths import PathFunc, path_along_arc, straight_path
-
-if TYPE_CHECKING:
-    from janim.anims.timeline import DynamicData    # pragma: no cover
 
 
 class Transform(Animation):
@@ -49,6 +46,12 @@ class Transform(Animation):
 
         self.init_path_func()
 
+        for item in src_item.walk_self_and_descendants(root_only):
+            self.timeline.track(item)
+        if target_item is not src_item:
+            for item in target_item.walk_self_and_descendants(root_only):
+                self.timeline.track(item)
+
     def init_path_func(self) -> None:
         '''
         根据传入对象的 ``path_arc`` ``path_arc_axis`` ``path_func`` ，建立 ``self.path_func``
@@ -70,7 +73,7 @@ class Transform(Animation):
         '''
         进行物件数据的对齐
         '''
-        self.aligned: dict[tuple[Item, Item], AlignedData[Item.Data[Item]]] = {}
+        self.aligned: dict[tuple[Item, Item], AlignedData[Item]] = {}
         begin_times: defaultdict[Item, int] = defaultdict(int)
         end_times: defaultdict[Item, int] = defaultdict(int)
 
@@ -80,20 +83,20 @@ class Transform(Animation):
             if tpl in self.aligned:
                 return
 
-            data1 = self.timeline.get_stored_data_at_right(item1, self.global_range.at, skip_dynamic_data=True)
-            data2 = self.timeline.get_stored_data_at_left(item2, self.global_range.end, skip_dynamic_data=True)
+            data1 = item1.current(as_time=self.global_range.at, skip_dynamic=True)
+            data2 = item2.current(as_time=self.global_range.end, skip_dynamic=True)
             aligned = self.aligned[tpl] = data1.align_for_interpolate(data1, data2)
             begin_times[item1] += 1
             end_times[item2] += 1
 
             if recurse:
-                if bool(data1.children) != bool(data2.children):
+                if bool(data1.get_children()) != bool(data2.get_children()):
                     spec1 = f'<"{item1.__class__.__name__}" {id(item1):X}>'
                     spec2 = f'<"{item2.__class__.__name__}" {id(item2):X}>'
                     log.warning(f'{spec1} 和 {spec2} 的子物件无法对齐，因为二者的子物件必须同时为空或同时存在，'
-                                f'但是二者的子物件数量分别是 {len(data1.children)} 和 {len(data2.children)}')
+                                f'但是二者的子物件数量分别是 {len(data1.get_children())} 和 {len(data2.get_children())}')
                 else:
-                    for child1, child2 in zip(aligned.data1.children, aligned.data2.children):
+                    for child1, child2 in zip(aligned.data1.stored_children, aligned.data2.stored_children):
                         align(child1, child2, True)
 
         align(self.src_item, self.target_item, not self.root_only)
@@ -113,7 +116,7 @@ class Transform(Animation):
         # 设置 RenderCall
         self.set_render_call_list([
             RenderCall(
-                aligned.data1.cmpt.depth,
+                aligned.union.depth,
                 aligned.union.render
             )
             for aligned in self.aligned.values()
@@ -152,35 +155,33 @@ class MethodTransform(Transform):
         func(self.src_item)
         return self
 
-    def wrap_data(self, item: Item) -> DynamicData:
+    def wrap_dynamic(self, item: Item) -> DynamicItem:
         '''
-        以供传入 :meth:`~.Timeline.register_dynamic_data` 使用
+        以供传入 :meth:`~.Component.register_dynamic` 使用
         '''
-        def wrapper(global_t: float) -> Item.Data:
+        def wrapper(global_t: float) -> Component:
             aligned = self.aligned[(item, item)]
             alpha = self.get_alpha_on_global_t(global_t)
 
-            union_copy = aligned.union._copy(aligned.union)
+            union_copy = aligned.union.store()
             union_copy.interpolate(aligned.data1, aligned.data2, alpha, path_func=self.path_func)
-            union_copy.children = aligned.data1.children.copy()
+            union_copy.stored_children = aligned.data1.stored_children.copy()
 
             return union_copy
 
         return wrapper
 
     def anim_pre_init(self) -> None:
-        from janim.anims.timeline import ANIM_END_DELTA
-
-        self.timeline.register_dynamic_data(self.src_item, self.wrap_data(self.src_item), self.global_range.at)
-        if not self.root_only:
-            for item in self.src_item.descendants():
-                # if (item, item) not in self.aligned:
-                #     continue
-
-                self.timeline.register_dynamic_data(item, self.wrap_data(item), self.global_range.at)
-
-        self.timeline.detect_changes(self.src_item.walk_self_and_descendants(),
-                                     as_time=self.global_range.end - ANIM_END_DELTA)
+        for item in self.src_item.walk_self_and_descendants(self.root_only):
+            ih = self.timeline.items_history[item]
+            history_wo_dnmc = ih.history_without_dynamic
+            not_changed = history_wo_dnmc.has_record() and history_wo_dnmc.latest().data.not_changed(item)
+            self.timeline.register_dynamic(item,
+                                           self.wrap_dynamic(item),
+                                           None if not_changed else item.store(),
+                                           self.global_range.at,
+                                           self.global_range.end - ANIM_END_DELTA,
+                                           not_changed)
 
     def anim_on_alpha(self, alpha: float) -> None:
         if alpha == self.current_alpha:

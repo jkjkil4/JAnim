@@ -7,8 +7,8 @@ from typing import Self
 from janim.anims.timeline import Timeline
 from janim.components.component import CmptInfo, Component
 from janim.constants import LEFT, RIGHT
-from janim.exception import (NotAnimationError, StoreFailedError,
-                             StoreNotFoundError, TimelineLookupError)
+from janim.exception import (NotAnimationError, RecordFailedError,
+                             RecordNotFoundError, TimelineLookupError)
 from janim.items.item import Item
 from janim.items.points import Points
 
@@ -26,7 +26,7 @@ class TimelineTest(unittest.TestCase):
                 # copy.copy 本身就会复制 self.value
                 return super().copy()
 
-            def __eq__(self, other: MyCmpt) -> bool:
+            def not_changed(self, other: MyCmpt) -> bool:
                 return self.value == other.value
 
             def become(self, other): ...
@@ -37,6 +37,7 @@ class TimelineTest(unittest.TestCase):
         class MyTimeline(Timeline):
             def construct(self) -> None:
                 item1 = MyItem()
+                self.track(item1)
                 item1.cmpt.value = 114
 
                 self.forward(2)
@@ -44,6 +45,7 @@ class TimelineTest(unittest.TestCase):
                 item1.cmpt.value = 514
 
                 item2 = MyItem()
+                self.track(item2)
                 item2.cmpt.value = 1919
 
                 self.forward(1)
@@ -62,8 +64,8 @@ class TimelineTest(unittest.TestCase):
         tl = MyTimeline()
         tl.build(quiet=True)
 
-        self.assertEqual(len(tl.item_stored_datas[tl.item1]), 2)
-        self.assertEqual(len(tl.item_stored_datas[tl.item2]), 2)
+        self.assertEqual(len(tl.items_history[tl.item1].history.lst), 2)
+        self.assertEqual(len(tl.items_history[tl.item2].history.lst), 2)
 
         self.check_data_at_time: list[tuple[MyItem, float, int]] = [
             (tl.item1, 1, 114),
@@ -76,13 +78,13 @@ class TimelineTest(unittest.TestCase):
 
         for item, t, val in self.check_data_at_time:
             self.assertEqual(
-                tl.get_stored_data_at_right(item, t).components['cmpt'].value,
+                item.current(as_time=t).cmpt.value,
                 val,
                 msg=f'check_data_at_time {id(item):X} {t} {val}'
             )
 
-        with self.assertRaises(StoreNotFoundError):
-            tl.get_stored_data_at_right(tl.item3, 1)
+        with self.assertRaises(RecordNotFoundError):
+            tl.items_history[tl.item3].history.get(1)
 
     def test_fmt_time(self) -> None:
         self.assertEqual(  '     21s      ', Timeline.fmt_time(21))
@@ -126,10 +128,10 @@ class TimelineTest(unittest.TestCase):
                 test.assertEqual(self.get_lineno_at_time(0.4), lineno1)
                 test.assertEqual(self.get_lineno_at_time(0.6), lineno2)
 
-                with test.assertRaises(StoreFailedError):
+                with test.assertRaises(RecordFailedError):
                     self.play(p.anim.points.shift(RIGHT))
 
-                with test.assertRaises(StoreFailedError):
+                with test.assertRaises(RecordFailedError):
                     p.points.shift(RIGHT * 2)
                     self.forward()
 

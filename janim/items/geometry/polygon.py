@@ -51,22 +51,21 @@ class Polygon(VItem):
         vertices = self.get_vertices()
         arcs: list[ArcBetweenPoints] = []
 
-        with Timeline.CtxBlocker():
-            for v1, v2, v3 in adjacent_n_tuples(vertices, 3):
-                vect1 = normalize(v2 - v1)
-                vect2 = normalize(v3 - v2)
-                angle = angle_between_vectors(vect1, vect2)
-                # Distance between vertex and start of the arc
-                cut_off_length = radius * np.tan(angle / 2)
-                # Negative radius gives concave curves
-                sign = float(np.sign(radius * cross2d(vect1, vect2)))
-                arc = ArcBetweenPoints(
-                    v2 - vect1 * cut_off_length,
-                    v2 + vect2 * cut_off_length,
-                    angle=sign * angle,
-                    n_components=2,
-                )
-                arcs.append(arc)
+        for v1, v2, v3 in adjacent_n_tuples(vertices, 3):
+            vect1 = normalize(v2 - v1)
+            vect2 = normalize(v3 - v2)
+            angle = angle_between_vectors(vect1, vect2)
+            # Distance between vertex and start of the arc
+            cut_off_length = radius * np.tan(angle / 2)
+            # Negative radius gives concave curves
+            sign = float(np.sign(radius * cross2d(vect1, vect2)))
+            arc = ArcBetweenPoints(
+                v2 - vect1 * cut_off_length,
+                v2 + vect2 * cut_off_length,
+                angle=sign * angle,
+                n_components=2,
+            )
+            arcs.append(arc)
 
         builder = PathBuilder(start_point=arcs[-1].points.get_end())
         for arc in arcs:

@@ -117,38 +117,37 @@ class VItem(Points):
 
         return tip
 
-    class Data(Points.Data['VItem']):
-        @classmethod
-        def align_for_interpolate(cls, data1: VItem.Data, data2: VItem.Data) -> AlignedData[Self]:
-            subpaths1_count = len(data1.cmpt.points.get_subpath_end_indices())
-            subpaths2_count = len(data2.cmpt.points.get_subpath_end_indices())
+    @classmethod
+    def align_for_interpolate(cls, item1: VItem, item2: VItem) -> AlignedData[Self]:
+        subpaths1_count = len(item1.points.get_subpath_end_indices())
+        subpaths2_count = len(item2.points.get_subpath_end_indices())
 
-            aligned = super().align_for_interpolate(data1, data2)
+        aligned = super().align_for_interpolate(item1, item2)
 
-            for data in (aligned.data1, aligned.data2):
-                count = (data.cmpt.points.count() + 1) // 2
-                data.cmpt.color.resize(count)
-                data.cmpt.radius.resize(count)
+        for item in (aligned.data1, aligned.data2):
+            count = (item.points.count() + 1) // 2
+            item.color.resize(count)
+            item.radius.resize(count)
 
-            if subpaths1_count != subpaths2_count:
-                diff = abs(subpaths1_count - subpaths2_count)
-                data = aligned.data1 if subpaths1_count < subpaths2_count else aligned.data2
-                indices = data.cmpt.points.get_subpath_end_indices()
+        if subpaths1_count != subpaths2_count:
+            diff = abs(subpaths1_count - subpaths2_count)
+            item = aligned.data1 if subpaths1_count < subpaths2_count else aligned.data2
+            indices = item.points.get_subpath_end_indices()
 
-                left_end = indices[0] // 2
-                right_start = indices[-1 - diff] // 2 + 1
+            left_end = indices[0] // 2
+            right_start = indices[-1 - diff] // 2 + 1
 
-                rgbas = data.cmpt.stroke.get()
+            rgbas = item.stroke.get().copy()
 
-                left = rgbas[:left_end + 1]
-                right = rgbas[right_start:]
+            left = rgbas[:left_end + 1]
+            right = rgbas[right_start:]
 
-                alphas = np.array([apart_alpha(alpha, diff + 1) for alpha in left[:, 3]])
-                left[:, 3] = alphas
+            alphas = np.array([apart_alpha(alpha, diff + 1) for alpha in left[:, 3]])
+            left[:, 3] = alphas
 
-                alphas = np.array([apart_alpha(alpha, diff + 1) for alpha in right[:, 3]])
-                right[:, 3] = alphas
+            alphas = np.array([apart_alpha(alpha, diff + 1) for alpha in right[:, 3]])
+            right[:, 3] = alphas
 
-                data.cmpt.stroke.set(rgbas)
+            item.stroke.set(rgbas)
 
-            return aligned
+        return aligned

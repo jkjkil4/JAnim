@@ -8,9 +8,8 @@ from colour import Color
 from janim.components.component import Component
 from janim.typing import Alpha, AlphaArray, ColorArray, JAnimColor, RgbaArray
 from janim.utils.bezier import interpolate
-from janim.utils.data import AlignedData
+from janim.utils.data import AlignedData, Array
 from janim.utils.iterables import resize_with_interpolation
-from janim.utils.unique_nparray import UniqueNparray
 
 
 class Cmpt_Rgbas[ItemT](Component[ItemT]):
@@ -20,7 +19,7 @@ class Cmpt_Rgbas[ItemT](Component[ItemT]):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self._rgbas = UniqueNparray()
+        self._rgbas = Array()
         self.clear()
 
     def copy(self) -> Self:
@@ -32,7 +31,7 @@ class Cmpt_Rgbas[ItemT](Component[ItemT]):
         self.set(other.get())
         return self
 
-    def __eq__(self, other: Cmpt_Rgbas) -> bool:
+    def not_changed(self, other: Cmpt_Rgbas) -> bool:
         return self._rgbas.is_share(other._rgbas)
 
     @classmethod
@@ -50,7 +49,7 @@ class Cmpt_Rgbas[ItemT](Component[ItemT]):
         return AlignedData(cmpt1_copy, cmpt2_copy, cmpt1_copy.copy())
 
     def interpolate(self, cmpt1: Cmpt_Rgbas, cmpt2: Cmpt_Rgbas, alpha: float, *, path_func=None) -> None:
-        if cmpt1 == cmpt2:
+        if cmpt1.not_changed(cmpt2):
             return
 
         self.set(interpolate(cmpt1.get(), cmpt2.get(), alpha))
@@ -192,7 +191,7 @@ class Cmpt_Rgbas[ItemT](Component[ItemT]):
         '''
         对每一个颜色数据应用 :func:`~.apart_alpha`
         '''
-        rgbas = self.get()
+        rgbas = self.get().copy()
         for i in range(len(rgbas)):
             rgbas[i, 3] = apart_alpha(rgbas[i, 3], n)
         self.set_rgbas(rgbas)
@@ -200,7 +199,7 @@ class Cmpt_Rgbas[ItemT](Component[ItemT]):
 
     def fade(self, factor: float | Iterable[float], *, root_only: bool = False) -> Self:
         for cmpt in self.walk_same_cmpt_of_self_and_descendants_without_mock(root_only):
-            rgbas = cmpt.get()
+            rgbas = cmpt.get().copy()
             rgbas[:, 3] *= 1 - factor
             cmpt.set_rgbas(rgbas)
 

@@ -146,7 +146,8 @@ class Relation[GRelT: 'Relation'](refresh.Refreshable):
     @staticmethod
     def _walk_lst[RelT](base_cls: type[RelT] | None, lst: list[GRelT]) -> Generator[RelT, None, None]:
         if base_cls is None:
-            base_cls = Relation
+            yield from lst
+            return
 
         for obj in lst:
             if isinstance(obj, base_cls):
@@ -184,19 +185,21 @@ class Relation[GRelT: 'Relation'](refresh.Refreshable):
         '''
         yield from self._walk_lst(base_cls, self.descendants())
 
-    def walk_self_and_ancestors(self) -> Generator[GRelT, None, None]:
+    def walk_self_and_ancestors(self, root_only=False) -> Generator[GRelT, None, None]:
         '''
         遍历自己以及祖先节点
         '''
         yield self
-        yield from self.ancestors()
+        if not root_only:
+            yield from self.ancestors()
 
-    def walk_self_and_descendants(self) -> Generator[GRelT, None, None]:
+    def walk_self_and_descendants(self, root_only=False) -> Generator[GRelT, None, None]:
         '''
         遍历自己以及后代节点
         '''
         yield self
-        yield from self.descendants()
+        if not root_only:
+            yield from self.descendants()
 
     def walk_nearest_ancestors[RelT](self, base_cls: type[RelT]) -> Generator[RelT, None, None]:
         '''

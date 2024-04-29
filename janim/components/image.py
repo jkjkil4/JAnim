@@ -25,7 +25,7 @@ class Cmpt_Image(Component):
         self.set(other.img, other.min_mag_filter)
         return self
 
-    def __eq__(self, other: Cmpt_Image) -> bool:
+    def not_changed(self, other: Cmpt_Image) -> bool:
         return id(self.img) == id(other.img) and self.min_mag_filter == other.min_mag_filter
 
     def set(self, img: Image.Image | None, min_mag_filter: int | None) -> Self:
