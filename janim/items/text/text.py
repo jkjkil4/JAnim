@@ -131,7 +131,9 @@ class TextChar(VItem):
         )
         Cmpt_Points.apply_points_fn.connect(
             self.points,
-            lambda func, about_point: self.mark.points.apply_points_fn(func, about_point=about_point)
+            lambda func, about_point: self.mark.points.apply_points_fn(func,
+                                                                       about_point=about_point,
+                                                                       about_edge=None)
         )
 
     @staticmethod
@@ -210,7 +212,9 @@ class TextLine(VItem, Group[TextChar]):
         self.mark.points.scale(font_size / ORIG_FONT_SIZE, about_point=ORIGIN)
         Cmpt_Points.apply_points_fn.connect(
             self.points,
-            lambda func, about_point: self.mark.points.apply_points_fn(func, about_point=about_point)
+            lambda func, about_point: self.mark.points.apply_points_fn(func,
+                                                                       about_point=about_point,
+                                                                       about_edge=None)
         )
 
     def get_mark_orig(self) -> np.ndarray:

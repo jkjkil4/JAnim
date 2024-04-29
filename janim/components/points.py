@@ -25,6 +25,8 @@ type PointsFn = Callable[[np.ndarray], VectArray]
 type PointFn = Callable[[np.ndarray], Vect]
 type ComplexFn = Callable[[complex], complex]
 
+DEFAULT_POINTS_DATA = np.zeros((0, 3))
+
 
 class Cmpt_Points[ItemT](Component[ItemT]):
     resize_func = staticmethod(resize_and_repeatedly_extend)
@@ -34,7 +36,7 @@ class Cmpt_Points[ItemT](Component[ItemT]):
         super().__init__(*args, **kwargs)
 
         self._points = Array()
-        self.clear()
+        self._points.data = DEFAULT_POINTS_DATA
 
     def init_bind(self, bind: Component.BindInfo):
         super().init_bind(bind)
@@ -128,7 +130,7 @@ class Cmpt_Points[ItemT](Component[ItemT]):
 
     def clear(self) -> Self:
         '''清除点'''
-        self.set(np.zeros((0, 3)))
+        self.set(DEFAULT_POINTS_DATA)
         return self
 
     def extend(self, points: VectArray) -> Self:

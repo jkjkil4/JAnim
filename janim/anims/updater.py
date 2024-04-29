@@ -227,6 +227,8 @@ class ItemUpdater(Animation):
         if not isinstance(ret, Item):
             raise UpdaterError(f'传入 ItemUpdater 的函数必须以一个物件作为返回值，而返回的是 {ret}，'
                                f'函数定义于 {inspect.getfile(self.func)}:{inspect.getsourcelines(self.func)[1]}')
+        for item in ret.walk_self_and_descendants():
+            item.is_temporary = True
         return ret
 
     def anim_init(self) -> None:

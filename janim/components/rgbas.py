@@ -11,6 +11,8 @@ from janim.utils.bezier import interpolate
 from janim.utils.data import AlignedData, Array
 from janim.utils.iterables import resize_with_interpolation
 
+DEFAULT_RGBAS_DATA = np.full((1, 4), 1)
+
 
 class Cmpt_Rgbas[ItemT](Component[ItemT]):
     '''
@@ -20,7 +22,7 @@ class Cmpt_Rgbas[ItemT](Component[ItemT]):
         super().__init__(*args, **kwargs)
 
         self._rgbas = Array()
-        self.clear()
+        self._rgbas.data = DEFAULT_RGBAS_DATA
 
     def copy(self) -> Self:
         cmpt_copy = super().copy()
@@ -173,7 +175,7 @@ class Cmpt_Rgbas[ItemT](Component[ItemT]):
         '''
         将颜色数据重置为默认值
         '''
-        self.set(np.full((1, 4), 1))
+        self.set(DEFAULT_RGBAS_DATA)
         return self
 
     def reverse(self) -> Self:

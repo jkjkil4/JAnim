@@ -154,7 +154,8 @@ def get_brace_orig_points() -> np.ndarray:
     points = svg[0].points.get()
     center = (points.min(axis=0) + points.max(axis=0)) * 0.5
 
-    return points - center
+    brace_orig_points = points - center
+    return brace_orig_points
 
 
 def get_brace_tip_point_index() -> int:

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from dataclasses import dataclass
 from typing import Callable
 from functools import lru_cache
 
@@ -54,10 +55,21 @@ class Font:
         self.face = FT.Face(filepath)
         self.face.select_charmap(FT.FT_ENCODING_UNICODE)
         self.face.set_char_size(48 << 6)
+        self.cached_glyph: dict[int, Font.GlyphData] = {}
+
+    @dataclass
+    class GlyphData:
+        array: np.ndarray
+        advance: tuple[int, int]
 
     def get_glyph_data(self, char: str) -> tuple[np.ndarray, tuple[int, int]]:
+        value = ord(char)
+        cached = self.cached_glyph.get(value, None)
+        if cached is not None:
+            return cached.array, cached.advance
+
         # 读取字符
-        self.face.load_char(char, FT.FT_LOAD_DEFAULT | FT.FT_LOAD_NO_BITMAP)
+        self.face.load_char(value, FT.FT_LOAD_DEFAULT | FT.FT_LOAD_NO_BITMAP)
         glyph: FT.Glyph = self.face.glyph
         outline: FT.Outline = glyph.outline
 
@@ -77,4 +89,8 @@ class Font:
             wrap_points(builder.cubic_to)
         )
 
-        return builder.get(), (glyph.advance.x, glyph.advance.y)
+        data = Font.GlyphData(builder.get(), (glyph.advance.x, glyph.advance.y))
+        data.array.setflags(write=False)
+        self.cached_glyph[value] = data
+
+        return data.array, data.advance

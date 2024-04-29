@@ -243,11 +243,11 @@ class _CmptGroup(Component):
         raise CmptGroupLookupError('CmptGroup 必须要与传入的内容在同一个类的定义中')
 
     def __getattr__(self, name: str):
-        objects = []
-        methods = []
-
         if name == 'objects':
             raise AttributeError()
+
+        objects = []
+        methods = []
 
         for obj in self.objects.values():
             if not hasattr(obj, name):

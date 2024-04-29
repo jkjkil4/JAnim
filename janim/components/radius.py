@@ -19,7 +19,7 @@ class Cmpt_Radius[ItemT](Component[ItemT]):
         self.default_radius = default_radius
 
         self._radii = Array()
-        self.clear()
+        self._radii.data = np.full(1, self.default_radius)
 
     def copy(self) -> Self:
         cmpt_copy = super().copy()

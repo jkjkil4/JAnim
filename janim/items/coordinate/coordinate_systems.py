@@ -144,7 +144,9 @@ class Axes(Group, CoordinateSystem, metaclass=_ItemMeta_ABCMeta):
         if bind:
             Cmpt_Points.apply_points_fn.connect(
                 self.points,
-                lambda func, about_point: graph.points.apply_points_fn(func, about_point=about_point)
+                lambda func, about_point: graph.points.apply_points_fn(func,
+                                                                       about_point=about_point,
+                                                                       about_edge=None)
             )
 
         return graph

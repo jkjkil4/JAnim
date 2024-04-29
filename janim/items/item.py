@@ -70,6 +70,11 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
     覆盖该值以在子类中使用特定的渲染器
     '''
 
+    global_renderer: Renderer | None = None
+    '''
+    共用的渲染器，用于 ``is_temporary=True`` 的物件
+    '''
+
     depth = CmptInfo(Cmpt_Depth[Self], 0)
 
     def __init__(
@@ -80,9 +85,13 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         **kwargs
     ):
         super().__init__(*args)
+
         self.stored: bool = False
         self.stored_parents: list[Item] | None = None
         self.stored_children: list[Item] | None = None
+
+        # 如果 is_temporary 为 True，则不会另外创建渲染器，而是使用共用的渲染器
+        self.is_temporary: bool = False
 
         from janim.anims.timeline import Timeline
         self.timeline = Timeline.get_context(raise_exc=False)
@@ -522,8 +531,17 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
             if isinstance(cmpt, SupportsApartAlpha):
                 cmpt.apart_alpha(n)
 
+    @classmethod
+    def get_global_renderer(cls) -> None:
+        if cls.global_renderer is None:
+            cls.global_renderer = cls.renderer_cls()
+        return cls.global_renderer
+
     def create_renderer(self) -> None:
-        self.renderer = self.renderer_cls()
+        if self.is_temporary:
+            self.renderer = self.get_global_renderer()
+        else:
+            self.renderer = self.renderer_cls()
 
     def render(self) -> None:
         if self.renderer is None:
