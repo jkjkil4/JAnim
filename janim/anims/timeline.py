@@ -512,7 +512,7 @@ class Timeline(metaclass=ABCMeta):
     def _detect_change(item: Item, ih: ItemHistory, *, as_time: float) -> None:
         history_wo_dnmc = ih.history_without_dynamic
         if not history_wo_dnmc.has_record() or not history_wo_dnmc.latest().data.not_changed(item):
-            item_copy = item.copy(root_only=True)
+            item_copy = item.store()
             ih.history.record_as_time(as_time, item_copy)
             history_wo_dnmc.record_as_time(as_time, item_copy)
 
@@ -532,7 +532,7 @@ class Timeline(metaclass=ABCMeta):
             if ih.history_without_dynamic.has_record():
                 static = ih.history_without_dynamic.latest().data
             else:
-                static = item.copy(root_only=True)
+                static = item.store()
         ih.history.record_as_time(end, static, replaceable=static_replaceable)
         ih.history_without_dynamic.record_as_time(end, static, replaceable=static_replaceable)
 

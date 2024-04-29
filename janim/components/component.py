@@ -78,8 +78,8 @@ class Component[ItemT](refresh.Refreshable, metaclass=_CmptMeta):
         '''
         self.bind = bind
 
-    def bind_invalid(self) -> bool:
-        return self.bind is None
+    def fallback_check(self) -> bool:
+        return self.bind is not None and self.bind.at_item.stored
 
     def mark_refresh(self, func: Callable | str, *, recurse_up=False, recurse_down=False) -> Self:
         '''
@@ -97,7 +97,7 @@ class Component[ItemT](refresh.Refreshable, metaclass=_CmptMeta):
 
     def copy(self) -> Self:
         cmpt_copy = copy.copy(self)
-        cmpt_copy.bind = None
+        # cmpt_copy.bind = None
         cmpt_copy.reset_refresh()
         return cmpt_copy
 
@@ -121,11 +121,23 @@ class Component[ItemT](refresh.Refreshable, metaclass=_CmptMeta):
 
     def walk_same_cmpt_of_self_and_descendants_without_mock(
         self,
-        root_only: bool = False
+        root_only: bool = False,
+        *,
+        timed: bool = False
     ) -> Generator[Self, None, None]:
         yield self
-        if not root_only and self.bind is not None:
-            for item in self.bind.at_item.walk_descendants(self.bind.decl_cls):
+        if root_only or self.bind is None:
+            return
+
+        item = self.bind.at_item
+        walk = None
+        if not item.stored:
+            walk = item.walk_descendants(self.bind.decl_cls)
+        elif timed:
+            walk = item._walk_lst(self.bind.decl_cls, item._current_family(up=False))
+
+        if walk is not None:
+            for item in walk:
                 cmpt = self.get_same_cmpt_without_mock(item)
                 if cmpt is None:
                     continue

@@ -90,13 +90,13 @@ class Transform(Animation):
             end_times[item2] += 1
 
             if recurse:
-                if bool(data1.children) != bool(data2.children):
+                if bool(data1.get_children()) != bool(data2.get_children()):
                     spec1 = f'<"{item1.__class__.__name__}" {id(item1):X}>'
                     spec2 = f'<"{item2.__class__.__name__}" {id(item2):X}>'
                     log.warning(f'{spec1} 和 {spec2} 的子物件无法对齐，因为二者的子物件必须同时为空或同时存在，'
-                                f'但是二者的子物件数量分别是 {len(data1.children)} 和 {len(data2.children)}')
+                                f'但是二者的子物件数量分别是 {len(data1.get_children())} 和 {len(data2.get_children())}')
                 else:
-                    for child1, child2 in zip(aligned.data1.children, aligned.data2.children):
+                    for child1, child2 in zip(aligned.data1.stored_children, aligned.data2.stored_children):
                         align(child1, child2, True)
 
         align(self.src_item, self.target_item, not self.root_only)
@@ -116,7 +116,7 @@ class Transform(Animation):
         # 设置 RenderCall
         self.set_render_call_list([
             RenderCall(
-                aligned.data1.depth,
+                aligned.union.depth,
                 aligned.union.render
             )
             for aligned in self.aligned.values()
@@ -163,9 +163,9 @@ class MethodTransform(Transform):
             aligned = self.aligned[(item, item)]
             alpha = self.get_alpha_on_global_t(global_t)
 
-            union_copy = aligned.union.copy(root_only=True)
+            union_copy = aligned.union.store()
             union_copy.interpolate(aligned.data1, aligned.data2, alpha, path_func=self.path_func)
-            union_copy.children = aligned.data1.children.copy()
+            union_copy.stored_children = aligned.data1.stored_children.copy()
 
             return union_copy
 
@@ -178,7 +178,7 @@ class MethodTransform(Transform):
             not_changed = history_wo_dnmc.has_record() and history_wo_dnmc.latest().data.not_changed(item)
             self.timeline.register_dynamic(item,
                                            self.wrap_dynamic(item),
-                                           None if not_changed else item.copy(root_only=True),
+                                           None if not_changed else item.store(),
                                            self.global_range.at,
                                            self.global_range.end - ANIM_END_DELTA,
                                            not_changed)

@@ -79,7 +79,7 @@ class Indicate(DataUpdater):
     def create_extra_data(self, data: Item) -> Points | None:
         if not isinstance(data, Points):
             return None
-        data_copy = data.copy(root_only=True)
+        data_copy = data.store()
         data_copy.points.scale(self.scale_factor, about_point=self.about_point)
         for cmpt in data_copy.components.values():
             if not isinstance(cmpt, Cmpt_Rgbas):

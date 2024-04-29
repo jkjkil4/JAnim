@@ -80,6 +80,9 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         **kwargs
     ):
         super().__init__(*args)
+        self.stored: bool = False
+        self.stored_parents: list[Item] | None = None
+        self.stored_children: list[Item] | None = None
 
         from janim.anims.timeline import Timeline
         self.timeline = Timeline.get_context(raise_exc=False)
@@ -343,8 +346,14 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
 
     # region data
 
+    def get_parents(self):
+        return self.stored_parents if self.stored else self.parents
+
+    def get_children(self):
+        return self.stored_children if self.stored else self.children
+
     def not_changed(self, other: Self) -> bool:
-        if self.children != other.children:
+        if self.get_children() != other.get_children():
             return False
         for key, cmpt in self.components.items():
             if not cmpt.not_changed(other.components[key]):
@@ -362,12 +371,13 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
 
         copy_item.reset_refresh()
 
+        copy_item.parents = []
+        copy_item.children = []
         if root_only:
-            copy_item.parents = self.parents.copy()
-            copy_item.children = self.children.copy()
+            copy_item.stored = True
+            copy_item.stored_parents = self.get_parents().copy()
+            copy_item.stored_children = self.get_children().copy()
         else:
-            copy_item.parents = []
-            copy_item.children = []
             copy_item.add(*[item.copy() for item in self.children])
             copy_item.parents_changed()
 
@@ -380,7 +390,7 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
             else:
                 cmpt_copy = cmpt.copy()
 
-            if not root_only and cmpt.bind is not None:
+            if cmpt.bind is not None:
                 cmpt_copy.init_bind(Component.BindInfo(cmpt.bind.decl_cls,
                                                        copy_item,
                                                        key))
@@ -392,6 +402,22 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         copy_item._astype_mock_cmpt = {}
 
         return copy_item
+
+    # TODO: optimize
+    def _current_family(self, *, up: bool) -> list[Item]:   # use DFS
+        lst = self.stored_parents if up else self.stored_children
+        res = []
+
+        for sub_obj in lst:
+            current = sub_obj.current()
+            if current not in res:
+                res.append(current)
+            res.extend(filter(
+                lambda obj: obj not in res,
+                current._current_family(up=up)
+            ))
+
+        return res
 
     def become(self, other: Item) -> Self:
         '''
@@ -419,6 +445,9 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
 
         return self
 
+    def store(self) -> Self:
+        return self.copy(root_only=True)
+
     def restore(self, other: Item) -> Self:
         self.parents = other.parents.copy()
         self.parents_changed()
@@ -439,9 +468,9 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         '''
         进行数据对齐，以便插值
         '''
-        aligned = AlignedData(item1.copy(root_only=True),
-                              item1.copy(root_only=True),
-                              item2.copy(root_only=True))
+        aligned = AlignedData(item1.store(),
+                              item1.store(),
+                              item2.store())
 
         # align components
         for key, cmpt1 in item1.components.items():
@@ -460,9 +489,9 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
             aligned.union.set_component(key, cmpt_aligned.union)
 
         # align children
-        max_len = max(len(item1.children), len(item2.children))
-        aligned.data1.children = resize_preserving_order(item1.children, max_len)
-        aligned.data2.children = resize_preserving_order(item2.children, max_len)
+        max_len = max(len(item1.get_children()), len(item2.get_children()))
+        aligned.data1.stored_children = resize_preserving_order(item1.get_children(), max_len)
+        aligned.data2.stored_children = resize_preserving_order(item2.get_children(), max_len)
 
         return aligned
 

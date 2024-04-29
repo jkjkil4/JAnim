@@ -97,7 +97,7 @@ class Cmpt_Points[ItemT](Component[ItemT]):
         '''
         point_datas = [
             cmpt.get()
-            for cmpt in self.walk_same_cmpt_of_self_and_descendants_without_mock()
+            for cmpt in self.walk_same_cmpt_of_self_and_descendants_without_mock(timed=True)
         ]
         return np.vstack(point_datas)
 
@@ -207,14 +207,14 @@ class Cmpt_Points[ItemT](Component[ItemT]):
 
     @property
     @set.self_refresh_with_recurse(recurse_up=True)
-    @refresh.register(fallback_check=Component.bind_invalid)
+    @refresh.register(fallback_check=Component.fallback_check)
     def box(self) -> BoundingBox:
         '''
         表示物件（包括后代物件）的矩形包围框
         '''
         box_datas = [
             cmpt.self_box.data
-            for cmpt in self.walk_same_cmpt_of_self_and_descendants_without_mock()
+            for cmpt in self.walk_same_cmpt_of_self_and_descendants_without_mock(timed=True)
             if cmpt.has()
         ]
         return self.BoundingBox(np.vstack(box_datas) if box_datas else [])

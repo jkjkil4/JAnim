@@ -28,6 +28,8 @@ class Selector(QObject):
         max_gly: float
 
     def __init__(self, parent: 'AnimViewer') -> None:
+        # TODO: refactor
+        raise NotImplementedError()
         super().__init__(parent)
         self.viewer = parent
 

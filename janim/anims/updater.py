@@ -104,7 +104,7 @@ class DataUpdater[T: Item](Animation):
         '''
         def wrapper(global_t: float) -> Item:
             alpha = self.get_alpha_on_global_t(global_t)
-            data_copy = updater_data.orig_data.copy(root_only=True)
+            data_copy = updater_data.orig_data.store()
 
             with UpdaterParams(self,
                                global_t,
@@ -119,7 +119,7 @@ class DataUpdater[T: Item](Animation):
 
     def anim_init(self) -> None:
         def build_data(data: Item) -> DataUpdater.DataGroup:
-            return DataUpdater.DataGroup(data, data.copy(root_only=True), self.create_extra_data(data))
+            return DataUpdater.DataGroup(data, data.store(), self.create_extra_data(data))
 
         self.datas: dict[Item, DataUpdater.DataGroup] = {
             item: build_data(
@@ -188,6 +188,7 @@ class DataUpdater[T: Item](Animation):
         return clip((value - lower), 0, 1)
 
 
+# TODO: optimize
 class ItemUpdater(Animation):
     '''
     以时间为参数显示物件

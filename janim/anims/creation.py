@@ -128,7 +128,7 @@ class DrawBorderThenFill(DataUpdater):
     def create_extra_data(self, data: Item) -> VItem | None:
         if not isinstance(data, VItem):
             return None     # pragma: no cover
-        data_copy = data.copy(root_only=True)
+        data_copy = data.store()
         data_copy.radius.set(self.stroke_radius)
         data_copy.stroke.set(self.stroke_color, 1)
         data_copy.fill.set(alpha=0)
