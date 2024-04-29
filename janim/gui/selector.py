@@ -2,12 +2,10 @@
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
-import numpy as np
 from PySide6.QtCore import QEvent, QObject, QPointF, QRectF, Qt
 from PySide6.QtGui import QColor, QMouseEvent, QPainter, QPaintEvent
 
 from janim.anims.display import Display
-from janim.components.points import Cmpt_Points
 from janim.items.item import Item
 from janim.items.points import Points
 
@@ -28,8 +26,6 @@ class Selector(QObject):
         max_gly: float
 
     def __init__(self, parent: 'AnimViewer') -> None:
-        # TODO: refactor
-        raise NotImplementedError()
         super().__init__(parent)
         self.viewer = parent
 
@@ -49,14 +45,6 @@ class Selector(QObject):
 
     def gly_to_overlay_y(self, gly: float) -> float:
         return (-gly + 1) / 2 * self.viewer.overlay.height()
-
-    def get_points_box_of_time(self, item: Item, t: float) -> Cmpt_Points.BoundingBox:
-        box_datas = [
-            sub.current(as_time=t, skip_dynamic=True).points.self_box.data
-            for sub in item.walk_self_and_descendants()
-            if isinstance(sub, Points) and sub.points.has()
-        ]
-        return Cmpt_Points.BoundingBox(np.vstack(box_datas) if box_datas else [])
 
     def eventFilter(self, watched: QObject, event: QEvent) -> bool:
         if watched is self.viewer.glw:
@@ -116,7 +104,7 @@ class Selector(QObject):
             if not display.global_range.at <= global_t < display.global_range.end:
                 continue
 
-            box = self.get_points_box_of_time(display.item, global_t)
+            box = display.item.current(as_time=global_t)(Points).points.box
 
             mapped = camera_info.map_points(box.get_corners())
             min_glx, min_gly = mapped.min(axis=0)
@@ -135,8 +123,8 @@ class Selector(QObject):
                 idx = found.index(self.current)
                 self.current = found[(idx + 1) % len(found)]
 
-            for item in self.current.item.children:
-                box = self.get_points_box_of_time(item, global_t)
+            for item in self.current.item.get_children():
+                box = item.current(as_time=global_t)(Points).points.box
                 mapped = camera_info.map_points(box.get_corners())
                 self.children.append(Selector.SelectedItem(item, *mapped.min(axis=0), *mapped.max(axis=0)))
 

@@ -415,6 +415,8 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
             res.extend(filter(
                 lambda obj: obj not in res,
                 current._current_family(up=up)
+                if current.stored
+                else (current.ancestors() if up else current.descendants())
             ))
 
         return res

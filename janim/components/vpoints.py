@@ -80,9 +80,9 @@ class Cmpt_VPoints[ItemT](Cmpt_Points[ItemT], impl=True):
             return AlignedData(cmpt1_copy, cmpt2_copy, cmpt1_copy.copy())
 
         if not cmpt1_copy.has():
-            cmpt1_copy.set([cmpt2.box.center])
+            cmpt1_copy.set([cmpt2.self_box.center])
         if not cmpt2_copy.has():
-            cmpt2_copy.set([cmpt1.box.center])
+            cmpt2_copy.set([cmpt1.self_box.center])
 
         subpaths1 = cmpt1_copy.get_subpaths()
         subpaths2 = cmpt2_copy.get_subpaths()
