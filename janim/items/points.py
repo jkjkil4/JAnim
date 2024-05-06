@@ -78,9 +78,9 @@ class DotCloud(Points):
         radius: float | Iterable[float] | None = None,
         **kwargs
     ) -> Self:
-        self.color.set(color, alpha)
+        self.color.set(color, alpha, root_only=True)
         if radius is not None:
-            self.radius.set(radius)
+            self.radius.set(radius, root_only=True)
 
         return super().set_style(**kwargs)
 

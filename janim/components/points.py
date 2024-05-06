@@ -374,7 +374,7 @@ class Cmpt_Points[ItemT](Component[ItemT]):
         *,
         about_point: Vect | None = None,
         about_edge: Vect | None = ORIGIN,
-        root_only: bool = False,
+        root_only: bool = False
     ) -> Self:
         '''
         将所有点作为单独的一个参数传入 ``func``，并将 ``func`` 返回的结果作为新的点坐标数据

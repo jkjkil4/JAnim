@@ -54,7 +54,7 @@ class Cmpt_VPoints[ItemT](Cmpt_Points[ItemT], impl=True):
         *,
         about_point: Vect | None = None,
         about_edge: Vect | None = ORIGIN,
-        root_only: bool = False,
+        root_only: bool = False
     ) -> Self:
         super().apply_points_fn(
             func,

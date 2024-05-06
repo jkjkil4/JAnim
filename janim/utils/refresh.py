@@ -69,8 +69,8 @@ class Refreshable:
         '''
         标记指定的 ``func`` 需要进行更新
         '''
-        name = func.__name__ if isinstance(func, Callable) else func
-        data: RefreshData = self.refresh_data.setdefault(name, RefreshData())
+        name = func.__name__ if callable(func) else func
+        data: RefreshData = self.refresh_data[name]
         data.is_required = True
 
         return self

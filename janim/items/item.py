@@ -81,7 +81,7 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         self,
         *args,
         depth: float | None = None,
-        children: list[Item] = [],
+        children: list[Item] | None = None,
         **kwargs
     ):
         super().__init__(*args)
@@ -105,8 +105,9 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
 
         self.renderer: Renderer | None = None
 
-        self.add(*children)
-        self.digest_styles(kwargs)
+        if children is not None:
+            self.add(*children)
+        self.digest_styles(**kwargs)
 
     @dataclass
     class _CmptInitData:
@@ -179,7 +180,10 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         if recurse_down:
             mark(self.descendants())
 
-    def digest_styles(self, styles: dict[str, Any]):
+    def digest_styles(self, **styles):
+        '''
+        设置物件以及子物件的样式
+        '''
         flags = dict.fromkeys(styles.keys(), False)
         for item in self.walk_self_and_descendants():
             available_styles = item.get_available_styles()
@@ -205,8 +209,11 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         depth: float | None = None,
         **kwargs
     ) -> Self:
+        '''
+        设置物件自身的样式，不影响子物件
+        '''
         if depth is not None:
-            self.depth.arrange(depth)
+            self.depth.set(depth)
         return self
 
     def do(self, func: Callable[[Self], Any]) -> Self:

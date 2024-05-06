@@ -65,9 +65,9 @@ class VItem(Points):
             fill_alpha = alpha
 
         if stroke_radius is not None:
-            self.radius.set(stroke_radius)
-        self.stroke.set(stroke_color, stroke_alpha)
-        self.fill.set(fill_color, fill_alpha)
+            self.radius.set(stroke_radius, root_only=True)
+        self.stroke.set(stroke_color, stroke_alpha, root_only=True)
+        self.fill.set(fill_color, fill_alpha, root_only=True)
 
         return super().set_style(**kwargs)
 

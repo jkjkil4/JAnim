@@ -109,8 +109,15 @@ class TextChar(VItem):
     '''
     字符物件，作为 :class:`TextLine` 的子物件，在创建 :class:`TextLine` 时产生
     '''
-    def __init__(self, char: str, fonts: list[Font], font_size: float, **kwargs):
-        super().__init__(**kwargs)
+    def __init__(
+        self,
+        char: str,
+        fonts: list[Font],
+        font_size: float,
+        fill_alpha=None,
+        **kwargs
+    ):
+        super().__init__(fill_alpha=fill_alpha, **kwargs)
         self.char = char
 
         unicode = decode_utf8(char)
@@ -196,7 +203,15 @@ class TextLine(VItem, Group[TextChar]):
     '''
     单行文字物件，作为 :class:`Text` 的子物件，在创建 :class:`Text` 时产生s
     '''
-    def __init__(self, text: str, fonts: list[Font], font_size: float, char_kwargs={}, **kwargs):
+    def __init__(
+        self,
+        text: str,
+        fonts: list[Font],
+        font_size: float,
+        char_kwargs={},
+        fill_alpha=None,
+        **kwargs
+    ):
         self.text = text
 
         super().__init__(
@@ -204,6 +219,7 @@ class TextLine(VItem, Group[TextChar]):
                 TextChar(char, fonts, font_size, **char_kwargs)
                 for char in text
             ],
+            fill_alpha=fill_alpha,
             **kwargs
         )
 
@@ -233,18 +249,15 @@ class TextLine(VItem, Group[TextChar]):
         if len(self.children) == 0:
             return
 
-        pos: np.ndarray = None
+        pos = None
 
-        def update(char: TextChar) -> None:
-            nonlocal pos
+        for i, char in enumerate(self):
+            if i != 0:
+                char.points.shift(pos - char.get_mark_orig())
+
             orig = char.get_mark_orig()
             advance = char.get_mark_advance()
             pos = advance if buff == 0 else advance + buff * normalize(advance - orig)
-
-        update(self[0])
-        for char in self[1:]:
-            char.points.shift(pos - char.get_mark_orig())
-            update(char)
 
         return self
 

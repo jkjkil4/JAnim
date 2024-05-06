@@ -243,18 +243,6 @@ class Signal(Generic[T, P, R]):
 
             slots = all_slots.self_slots_dict[full_qualname]
 
-            # pre-check
-            if slots.self_refresh_slots_with_recurse:
-                from janim.components.component import Component
-                from janim.items.relation import Relation
-
-                if not isinstance(sender, Relation) and not isinstance(sender, Component):
-                    # TODO: i18n
-                    raise TypeError(
-                        f'self_refresh_with_recurse() 无法在类 {sender.__class__} 中使用，'
-                        '只能在 Relation 和 Component 及子类中使用'
-                    )
-
             # self_normal_slots
             for func in slots.self_normal_slots:
                 func(sender, *args, **kwargs)
