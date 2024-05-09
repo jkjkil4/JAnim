@@ -106,7 +106,6 @@ class Component[ItemT](refresh.Refreshable, metaclass=_CmptMeta):
     def not_changed(self, other) -> bool: ...
 
     def get_same_cmpt(self, item: Item) -> Self:
-        # TODO: .current
         return self.get_same_cmpt_if_exists(item) or getattr(item.astype(self.bind.decl_cls), self.bind.key)
 
     def get_same_cmpt_without_mock(self, item: Item) -> Self | None:

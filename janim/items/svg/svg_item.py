@@ -100,7 +100,6 @@ class SVGItem(Group[VItem]):
             se.CubicBezier: (builder.cubic_to, ('control1', 'control2', 'end')),
             se.Arc: (lambda segment: builder.arc_to(_convert_point_to_3d(*segment.end), segment.sweep), None),
         }
-        # TODO: refactor
 
         for segment in path:
             segment_class = segment.__class__

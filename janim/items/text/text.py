@@ -396,6 +396,8 @@ class Text(VItem, Group[TextLine]):
         return self
 
     # TODO: word_wrap
+    # 使用 TypstDoc 可以轻松做到
+    # 我感觉可以不用给 Text 实现这功能了
 
     def apply_rich_text(self) -> None:
         '''

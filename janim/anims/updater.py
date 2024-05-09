@@ -52,14 +52,11 @@ class DataUpdater[T: Item](Animation):
                 self.play(
                     DataUpdater(
                         rect,
-                        lambda data, p: data.cmpt.points.rotate(p.alpha * 180 * DEGREES).shift(p.alpha * 6 * RIGHT)
+                        lambda data, p: data.points.rotate(p.alpha * 180 * DEGREES).shift(p.alpha * 6 * RIGHT)
                     )
                 )
 
-
     会产生一个“矩形从左侧旋转着移动到右侧”的动画
-
-    注：使用 ``data.cmpt`` 即可访问物件的组件，例如物件的组件方法 ``item.points.xxx`` 对于数据来说则是通过 ``data.cmpt.points.xxx`` 来调用
 
     另见：:class:`~.UpdaterExample`
     '''
