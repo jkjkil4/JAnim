@@ -18,7 +18,7 @@ from janim.items.vitem import VItem
 from janim.typing import JAnimColor, Vect
 from janim.utils.bezier import interpolate
 from janim.utils.config import Config
-from janim.utils.rate_functions import RateFunc, there_and_back
+from janim.utils.rate_functions import RateFunc, rush_from, there_and_back
 
 
 class FocusOn(DataUpdater[Dot]):
@@ -95,42 +95,6 @@ class Indicate(DataUpdater):
                 continue
             cmpt.set(self.color)
         return data_copy
-
-
-# class Flash(DataUpdater):
-#     def __init__(
-#         self,
-#         point_or_item: Vect | Item,
-#         *,
-#         color: JAnimColor = YELLOW,
-#         line_length: float = 0.2,
-#         num_lines: int = 12,
-#         flash_radius: float = 0.3,
-#         line_stroke_radius: float = 0.015,
-#         **kwargs
-#     ):
-#         super().__init__(**kwargs)
-#         self.point_or_item = point_or_item
-#         self.color = color
-#         self.line_length = line_length
-#         self.num_lines = num_lines
-#         self.flash_radius = flash_radius
-#         self.line_stroke_radius = line_stroke_radius
-
-#         self.lines = self.create_lines()
-#         super().__init__()
-
-#     def create_lines(self) -> Group:
-#         lines = Group()
-#         for angle in np.arange(0, TAU, TAU / self.num_lines):
-#             line = Line(ORIGIN, self.line_length * RIGHT)
-#             line.points.shift((self.flash_radius - self.line_length) * RIGHT)
-#             line.points.rotate(angle, about_point=ORIGIN)
-#             lines.add(line)
-#         lines(VItem) \
-#             .stroke.set(self.color) \
-#             .r.radius.set(self.line_stroke_radius)
-#         return lines
 
 
 class CircleIndicate(DataUpdater[Circle]):
@@ -268,3 +232,48 @@ class ShowCreationThenFadeAround(AnimationOnSurroundingRect):
                          ShowCreationThenFadeOut,
                          create_kwargs=dict(auto_close_path=False),
                          **kwargs)
+
+
+class Flash(ShowCreationThenDestruction):
+    def __init__(
+        self,
+        point_or_item: Vect | Points,
+        *,
+        color: JAnimColor = YELLOW,
+        line_length: float = 0.2,
+        num_lines: int = 12,
+        flash_radius: float = 0.3,
+        line_stroke_radius: float = 0.015,
+        rate_func: RateFunc = rush_from,
+        **kwargs
+    ):
+        self.point_or_item = point_or_item
+        self.color = color
+        self.line_length = line_length
+        self.num_lines = num_lines
+        self.flash_radius = flash_radius
+        self.line_stroke_radius = line_stroke_radius
+
+        self.lines = self.create_lines()
+        super().__init__(self.lines, **kwargs)
+
+        def updater(data: Points, p: UpdaterParams):
+            if not isinstance(point_or_item, Points):
+                pos = point_or_item
+            else:
+                pos = point_or_item.current().points.box.center
+            data.points.shift(pos)
+
+        self.add_post_updater(updater)
+
+    def create_lines(self) -> Group:
+        lines = Group()
+        for angle in np.arange(0, TAU, TAU / self.num_lines):
+            line = Line(ORIGIN, self.line_length * RIGHT)
+            line.points.shift((self.flash_radius - self.line_length) * RIGHT)
+            line.points.rotate(angle, about_point=ORIGIN)
+            lines.add(line)
+        lines(VItem) \
+            .stroke.set(self.color) \
+            .r.radius.set(self.line_stroke_radius)
+        return lines
