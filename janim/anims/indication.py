@@ -1,14 +1,19 @@
 from __future__ import annotations
 
-from janim.anims.timeline import Timeline
+import numpy as np
+
 from janim.anims.updater import DataUpdater, UpdaterParams
-from janim.constants import GREY, ORIGIN, YELLOW
+from janim.constants import GREY, ORIGIN, YELLOW, TAU, RIGHT
 from janim.items.geometry.arc import Dot
 from janim.items.item import Item
-from janim.items.points import Points
+from janim.items.points import Points, Group
+from janim.items.geometry.line import Line
+from janim.items.geometry.arc import Circle
+from janim.items.vitem import VItem
 from janim.typing import JAnimColor, Vect
 from janim.utils.config import Config
 from janim.utils.rate_functions import RateFunc, there_and_back
+from janim.utils.bezier import interpolate
 from janim.components.rgbas import Cmpt_Rgbas
 
 
@@ -86,3 +91,69 @@ class Indicate(DataUpdater):
                 continue
             cmpt.set(self.color)
         return data_copy
+
+
+# class Flash(DataUpdater):
+#     def __init__(
+#         self,
+#         point_or_item: Vect | Item,
+#         *,
+#         color: JAnimColor = YELLOW,
+#         line_length: float = 0.2,
+#         num_lines: int = 12,
+#         flash_radius: float = 0.3,
+#         line_stroke_radius: float = 0.015,
+#         **kwargs
+#     ):
+#         super().__init__(**kwargs)
+#         self.point_or_item = point_or_item
+#         self.color = color
+#         self.line_length = line_length
+#         self.num_lines = num_lines
+#         self.flash_radius = flash_radius
+#         self.line_stroke_radius = line_stroke_radius
+
+#         self.lines = self.create_lines()
+#         super().__init__()
+
+#     def create_lines(self) -> Group:
+#         lines = Group()
+#         for angle in np.arange(0, TAU, TAU / self.num_lines):
+#             line = Line(ORIGIN, self.line_length * RIGHT)
+#             line.points.shift((self.flash_radius - self.line_length) * RIGHT)
+#             line.points.rotate(angle, about_point=ORIGIN)
+#             lines.add(line)
+#         lines(VItem) \
+#             .stroke.set(self.color) \
+#             .r.radius.set(self.line_stroke_radius)
+#         return lines
+
+
+class CircleIndicate(DataUpdater[Circle]):
+    def __init__(
+        self,
+        item: Points,
+        *,
+        color: JAnimColor = YELLOW,
+        rate_func: RateFunc = there_and_back,
+        scale: float = 1,
+        **kwargs
+    ):
+        start = Circle(color=color, alpha=0)
+        target = Circle(color=color)
+
+        def updater(c: Circle, p: UpdaterParams):
+            c.interpolate(start, target, p.alpha)
+            c.points.surround(item.current())
+            if scale != 1:
+                c.points.scale(interpolate(scale, 1, p.alpha))
+
+        super().__init__(
+            start,
+            updater,
+            rate_func=rate_func,
+            hide_at_begin=False,
+            show_at_end=False,
+            become_at_end=False,
+            **kwargs
+        )
