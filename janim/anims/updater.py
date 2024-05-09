@@ -33,6 +33,8 @@ class UpdaterParams:
 
 updater_params_ctx: ContextVar[UpdaterParams] = ContextVar('updater_params_ctx')
 
+type DataUpdaterFn[T] = Callable[[T, UpdaterParams], Any]
+
 
 class DataUpdater[T: Item](Animation):
     '''
@@ -72,7 +74,7 @@ class DataUpdater[T: Item](Animation):
     def __init__(
         self,
         item: T,
-        func: Callable[[T, UpdaterParams], Any],
+        func: DataUpdaterFn[T],
         *,
         lag_ratio: float = 0,
         hide_at_begin: bool = True,
@@ -92,8 +94,19 @@ class DataUpdater[T: Item](Animation):
         self.skip_null_items = skip_null_items
         self.root_only = root_only
 
+        self.post_updaters: list[DataUpdaterFn[T]] = []
+
         for subitem in item.walk_self_and_descendants(root_only):
             self.timeline.track(subitem)
+
+    def add_post_updater(self, updater: DataUpdaterFn[T]) -> Self:
+        self.post_updaters.append(updater)
+        return self
+
+    def call(self, data: T, p: UpdaterParams) -> None:
+        self.func(data, p)
+        for updater in self.post_updaters:
+            updater(data, p)
 
     def create_extra_data(self, data: Item) -> Any | None:
         return None
@@ -111,7 +124,7 @@ class DataUpdater[T: Item](Animation):
                                alpha,
                                self.global_range,
                                updater_data.extra_data) as params:
-                self.func(data_copy, params)
+                self.call(data_copy, params)
 
             return data_copy
 
@@ -137,7 +150,7 @@ class DataUpdater[T: Item](Animation):
                                    1,
                                    self.global_range,
                                    updater_data.extra_data) as params:
-                    self.func(item, params)
+                    self.call(item, params)
 
             self.timeline.register_dynamic(item,
                                            self.wrap_dynamic(updater_data),
@@ -172,7 +185,7 @@ class DataUpdater[T: Item](Animation):
                                sub_alpha,
                                self.global_range,
                                updater_data.extra_data) as params:
-                self.func(updater_data.data, params)
+                self.call(updater_data.data, params)
 
     def get_sub_alpha(
         self,

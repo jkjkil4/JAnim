@@ -2,19 +2,23 @@ from __future__ import annotations
 
 import numpy as np
 
+from janim.anims.animation import Animation
+from janim.anims.composition import AnimGroup, Succession
+from janim.anims.creation import Create, ShowPartial
+from janim.anims.fading import FadeOut
 from janim.anims.updater import DataUpdater, UpdaterParams
-from janim.constants import GREY, ORIGIN, YELLOW, TAU, RIGHT
-from janim.items.geometry.arc import Dot
-from janim.items.item import Item
-from janim.items.points import Points, Group
+from janim.components.rgbas import Cmpt_Rgbas
+from janim.constants import GREY, ORIGIN, RIGHT, TAU, YELLOW
+from janim.items.geometry.arc import Circle, Dot
 from janim.items.geometry.line import Line
-from janim.items.geometry.arc import Circle
+from janim.items.item import Item
+from janim.items.points import Group, Points
+from janim.items.shape_matchers import SurroundingRect
 from janim.items.vitem import VItem
 from janim.typing import JAnimColor, Vect
+from janim.utils.bezier import interpolate
 from janim.utils.config import Config
 from janim.utils.rate_functions import RateFunc, there_and_back
-from janim.utils.bezier import interpolate
-from janim.components.rgbas import Cmpt_Rgbas
 
 
 class FocusOn(DataUpdater[Dot]):
@@ -157,3 +161,110 @@ class CircleIndicate(DataUpdater[Circle]):
             become_at_end=False,
             **kwargs
         )
+
+
+class ShowPassingFlash(ShowPartial):
+    def __init__(
+        self,
+        item: Points,
+        *,
+        time_width: float = 0.1,
+        auto_close_path: bool = False,
+        **kwargs
+    ):
+        def bound_func(p: UpdaterParams) -> tuple[float, float]:
+            upper = interpolate(0, 1 + time_width, p.alpha)
+            lower = upper - time_width
+            upper = min(upper, 1)
+            lower = max(lower, 0)
+            return (lower, upper)
+
+        super().__init__(
+            item,
+            bound_func,
+            auto_close_path=auto_close_path,
+            hide_at_begin=False,
+            show_at_end=False,
+            become_at_end=False,
+            **kwargs
+        )
+
+
+class ShowCreationThenDestruction(ShowPassingFlash):
+    '''展现创建动画后展现销毁动画'''
+    def __init__(
+        self,
+        item: Points,
+        *,
+        time_width: float = 2.0,
+        duration: float = 1,
+        **kwargs
+    ):
+        super().__init__(item, time_width=time_width, duration=duration, **kwargs)
+
+
+class ShowCreationThenFadeOut(Succession):
+    '''展现创建动画后展现淡出动画'''
+    def __init__(self, item: Points, create_kwargs: dict = {}, fadeout_kwargs: dict = {}, **kwargs):
+        super().__init__(
+            Create(item, **create_kwargs),
+            FadeOut(item, **fadeout_kwargs),
+            **kwargs
+        )
+
+
+class AnimationOnSurroundingRect(AnimGroup):
+    def __init__(
+        self,
+        item: Points,
+        rect_anim: type[Animation],
+        surrounding_rect_config: dict = {},
+        **kwargs
+    ):
+        self.item = item
+        self.surrounding_rect_config = surrounding_rect_config
+
+        rect = self.create_rect()
+        anim = rect_anim(rect, **kwargs)
+        self.apply_updater(anim)
+
+        super().__init__(anim)
+
+    def create_rect(self) -> SurroundingRect:
+        rect = SurroundingRect(
+            self.item,
+            **self.surrounding_rect_config
+        )
+        rect.points.move_to(rect.points.box.center - self.item.points.box.center)
+        return rect
+
+    def updater(self, data: Points, p: UpdaterParams):
+        data.points.shift(self.item.current().points.box.center)
+
+    def apply_updater(self, anim: Animation):
+        if isinstance(anim, DataUpdater):
+            anim.add_post_updater(self.updater)
+        elif isinstance(anim, AnimGroup):
+            for sub in anim.anims:
+                self.apply_updater(sub)
+
+
+class ShowPassingFlashAround(AnimationOnSurroundingRect):
+    '''不完整线条在指定物件周围环绕一圈的动画'''
+    def __init__(self, item: Points, **kwargs) -> None:
+        super().__init__(item, ShowPassingFlash, **kwargs)
+
+
+class ShowCreationThenDestructionAround(AnimationOnSurroundingRect):
+    '''在指定物件周围先创建出完整线条再销毁线条的动画'''
+    def __init__(self, item: Points, **kwargs) -> None:
+        super().__init__(item, ShowCreationThenDestruction, **kwargs)
+
+
+class ShowCreationThenFadeAround(AnimationOnSurroundingRect):
+    '''在指定物件周围先创建出完整线条再淡出线条的动画'''
+    def __init__(self, item: Points, **kwargs) -> None:
+        super().__init__(item,
+                         ShowCreationThenFadeOut,
+                         create_kwargs=dict(auto_close_path=False),
+                         **kwargs)
