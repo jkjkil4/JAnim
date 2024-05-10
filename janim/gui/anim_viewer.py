@@ -642,7 +642,7 @@ class TimelineView(QWidget):
             msg_lst.append(f'Clip: {round(info.clip_range.at, 2)}s ~ {round(info.clip_range.end, 2)}s')
 
         data = info.audio._samples.data
-        indices = np.where(data > np.iinfo(np.int16).max * 0.01)[0]
+        indices = np.where(data > np.iinfo(np.int16).max * 0.02)[0]
         if len(indices) != 0:
             diff_end_indices = np.where(np.diff(indices) > info.audio.framerate * 0.15)[0]
 

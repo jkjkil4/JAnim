@@ -14,13 +14,12 @@ from typing import Callable, Iterable, Self, overload
 
 import moderngl as mgl
 import numpy as np
-
 from janim.anims.animation import Animation, TimeRange
-from janim.anims.updater import updater_params_ctx
 from janim.anims.composition import AnimGroup
 from janim.anims.display import Display
+from janim.anims.updater import updater_params_ctx
 from janim.camera.camera import Camera
-from janim.constants import DEFAULT_DURATION, DOWN, UP
+from janim.constants import DEFAULT_DURATION, DOWN, SMALL_BUFF, UP
 from janim.exception import NotAnimationError, TimelineLookupError
 from janim.items.audio import Audio
 from janim.items.item import DynamicItem, Item
@@ -431,7 +430,8 @@ class Timeline(metaclass=ABCMeta):
         text: str | Iterable[str],
         duration: float = 1,
         delay: float = 0,
-        scale: float | Iterable[float] = 0.8,
+        scale: float | Iterable[float] = 1,
+        base_scale: float = 0.8,
         use_typst_text: bool | Iterable[bool] = False,
         **kwargs
     ) -> TimeRange:
@@ -460,7 +460,7 @@ class Timeline(metaclass=ABCMeta):
                                                reversed(resize_preserving_order(use_typst_lst, len(text_lst)))):
             subtitle = (TypstText if use_typst_text else Text)(text, **kwargs)
             subtitle.depth.set(-1e5)
-            subtitle.points.scale(scale)
+            subtitle.points.scale(scale * base_scale)
             self.place_subtitle(subtitle, range)
             self.subtitle_infos.append(Timeline.SubtitleInfo(text,
                                                              range,
@@ -478,7 +478,7 @@ class Timeline(metaclass=ABCMeta):
             # 如果不加可能导致前一个字幕消失但是后一个字幕凭空出现在更上面
             # （但是我没有测试过是否会出现这个bug，只是根据写 TimelineView 时的经验加了 np.isclose）
             if other.range.at <= range.at < other.range.end and not np.isclose(range.at, other.range.end):
-                subtitle.points.next_to(other.subtitle, UP)
+                subtitle.points.next_to(other.subtitle, UP, buff=SMALL_BUFF)
                 return
         subtitle.points.to_border(DOWN)
 

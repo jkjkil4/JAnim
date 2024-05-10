@@ -450,15 +450,16 @@ class Cmpt_VPoints[ItemT](Cmpt_Points[ItemT], impl=True):
         subpaths = self.get_subpaths()
         self.clear()
         for subpath in subpaths:
+            new_subpath = subpath.copy()
             anchors = subpath[::2]
             match mode:
                 case AnchorMode.Jagged:
-                    subpath[1::2] = 0.5 * (anchors[:-1] + anchors[1:])
+                    new_subpath[1::2] = 0.5 * (anchors[:-1] + anchors[1:])
                 case AnchorMode.ApproxSmooth:
-                    subpath[1::2] = approx_smooth_quadratic_bezier_handles(anchors)
+                    new_subpath[1::2] = approx_smooth_quadratic_bezier_handles(anchors)
                 case AnchorMode.TrueSmooth:
-                    subpath = smooth_quadratic_path(anchors)
-            self.add_subpath(subpath)
+                    new_subpath = smooth_quadratic_path(anchors)
+            self.add_subpath(new_subpath)
         return self
 
     def make_smooth(self, approx=False, root_only=False) -> Self:

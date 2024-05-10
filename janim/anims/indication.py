@@ -255,7 +255,7 @@ class Flash(ShowCreationThenDestruction):
         self.line_stroke_radius = line_stroke_radius
 
         self.lines = self.create_lines()
-        super().__init__(self.lines, **kwargs)
+        super().__init__(self.lines, rate_func=rate_func, **kwargs)
 
         def updater(data: Points, p: UpdaterParams):
             if not isinstance(point_or_item, Points):
