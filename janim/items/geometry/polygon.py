@@ -3,7 +3,6 @@ from typing import Iterable, Self, overload
 
 import numpy as np
 
-from janim.anims.timeline import Timeline
 from janim.constants import DL, DR, PI, RIGHT, UL, UR
 from janim.items.geometry.arc import ArcBetweenPoints
 from janim.items.vitem import VItem

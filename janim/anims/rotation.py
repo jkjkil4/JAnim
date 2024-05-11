@@ -1,11 +1,11 @@
 
 from janim.anims.updater import DataUpdater, UpdaterParams
+from janim.components.points import Cmpt_Points
+from janim.constants import ORIGIN, OUT
 from janim.items.item import Item
 from janim.items.points import Points
-from janim.components.points import Cmpt_Points
 from janim.typing import Vect
 from janim.utils.rate_functions import linear
-from janim.constants import ORIGIN
 
 
 class Rotate(DataUpdater):
@@ -19,6 +19,7 @@ class Rotate(DataUpdater):
         item: Item,
         angle: float,
         *,
+        axis: Vect = OUT,
         about_point: Vect | None = None,
         about_edge: Vect = ORIGIN,
         root_only: bool = False,
@@ -32,7 +33,7 @@ class Rotate(DataUpdater):
             points = data.components.get('points', None)
             if points is None or not isinstance(points, Cmpt_Points):
                 return  # pragma: no cover
-            points.rotate(p.alpha * angle, about_point=about_point, root_only=True)
+            points.rotate(p.alpha * angle, axis=axis, about_point=about_point, root_only=True)
 
         super().__init__(item, func, root_only=root_only, **kwargs)
 
@@ -41,5 +42,5 @@ class Rotating(Rotate):
     '''
     旋转，默认对角度进行线性插值
     '''
-    def __init__(self, item: Points, angle: float, rate_func=linear, **kwargs):
+    def __init__(self, item: Points, angle: float, *, rate_func=linear, **kwargs):
         super().__init__(item, angle, rate_func=rate_func, **kwargs)

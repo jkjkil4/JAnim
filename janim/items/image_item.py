@@ -50,7 +50,8 @@ class ImageItem(Points):
         if height is None:
             self.points.set_size(
                 img.width * Config.get.pixel_to_frame_ratio,
-                img.height * Config.get.pixel_to_frame_ratio)
+                img.height * Config.get.pixel_to_frame_ratio
+            )
         else:
             self.points.set_size(
                 height * img.width / img.height,
@@ -59,13 +60,14 @@ class ImageItem(Points):
 
     def get_orig(self) -> np.ndarray:
         '''图像的左上角'''
-        return self.points[0]
+        return self.points.get()[0]
 
     def get_horizontal_vect(self) -> np.ndarray:
         '''
         从图像的左上角指向右上角的向量
         '''
-        return self.points[2] - self.points[0]
+        points = self.points.get()
+        return points[2] - points[0]
 
     def get_horizontal_dist(self) -> float:
         '''
@@ -77,7 +79,8 @@ class ImageItem(Points):
         '''
         从图像的左上角指向左下角的向量
         '''
-        return self.points[1] - self.points[0]
+        points = self.points.get()
+        return points[1] - points[0]
 
     def get_vertical_dist(self) -> float:
         '''
@@ -92,10 +95,10 @@ class ImageItem(Points):
         img = self.image.get()
         width, height = img.size
         return np.array(
-            img.getpixel(
+            img.getpixel((
                 clip(x, 0, width - 1),
                 clip(y, 0, height - 1)
-            )
+            ))
         ) / 255
 
     def point_to_rgba(self, point: np.ndarray, clamp_to_edge: bool = False) -> np.ndarray:

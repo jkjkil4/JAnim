@@ -1,3 +1,5 @@
+import os
+
 import moderngl as mgl
 from PIL import Image
 
@@ -9,12 +11,14 @@ filepath_to_img_map: dict[str, Image.Image] = {}
 
 def get_img_from_file(file_path: str) -> Image.Image:
     file_path = find_file(file_path)
+    mtime = os.path.getmtime(file_path)
+    key = (file_path, mtime)
 
-    img = filepath_to_img_map.get(file_path, None)
+    img = filepath_to_img_map.get(key, None)
     if img is not None:
         return img
     img = Image.open(file_path).convert('RGBA')
-    filepath_to_img_map[file_path] = img
+    filepath_to_img_map[key] = img
     return img
 
 

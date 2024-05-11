@@ -14,19 +14,23 @@ from typing import Callable, Iterable, Self, overload
 
 import moderngl as mgl
 import numpy as np
+
 from janim.anims.animation import Animation, TimeRange
 from janim.anims.composition import AnimGroup
 from janim.anims.display import Display
 from janim.anims.updater import updater_params_ctx
 from janim.camera.camera import Camera
-from janim.constants import DEFAULT_DURATION, DOWN, SMALL_BUFF, UP
-from janim.exception import NotAnimationError, TimelineLookupError
+from janim.constants import BLACK, DEFAULT_DURATION, DOWN, SMALL_BUFF, UP
+from janim.exception import TimelineLookupError
 from janim.items.audio import Audio
 from janim.items.item import DynamicItem, Item
+from janim.items.points import Group
+from janim.items.shape_matchers import SurroundingRect
 from janim.items.svg.typst import TypstText
 from janim.items.text.text import Text
 from janim.logger import log
 from janim.render.base import RenderData, Renderer, set_global_uniforms
+from janim.typing import JAnimColor
 from janim.utils.config import Config, ConfigGetter, config_ctx_var
 from janim.utils.data import ContextSetter, History
 from janim.utils.iterables import resize_preserving_order
@@ -209,7 +213,10 @@ class Timeline(metaclass=ABCMeta):
         会在进度达到 ``at`` 时，对 ``func`` 进行调用，
         可传入 ``*args`` 和 ``**kwargs``
         '''
-        insort(self.scheduled_tasks, Timeline.ScheduledTask(at, func, args, kwargs), key=lambda x: x.at)
+        rough_at = round(at, 4)   # 防止因为精度误差使得本来计划更迟的任务被更早地执行了
+        task = Timeline.ScheduledTask(rough_at, func, args, kwargs)
+        insort(self.scheduled_tasks, task, key=lambda x: x.at)
+        task.at = at
 
     # region progress
 
@@ -245,25 +252,10 @@ class Timeline(metaclass=ABCMeta):
         '''
         self.forward(t - self.current_time, _detect_changes=_detect_changes)
 
-    @staticmethod
-    def _get_anim_object(anim) -> Animation:
-        attr = getattr(anim, '__anim__', None)
-        if attr is not None and callable(attr):
-            return attr()
-        return anim
-
     def prepare(self, *anims: Animation, **kwargs) -> TimeRange:
         '''
         应用动画
         '''
-        anims = [
-            self._get_anim_object(anim)
-            for anim in anims
-        ]
-        for anim in anims:
-            if not isinstance(anim, Animation):
-                raise NotAnimationError('传入了非动画对象，可能是你忘记使用 .anim 了')
-
         anim = AnimGroup(*anims, **kwargs)
         anim.local_range.at += self.current_time
         anim.compute_global_range(anim.local_range.at, anim.local_range.duration)
@@ -433,6 +425,8 @@ class Timeline(metaclass=ABCMeta):
         scale: float | Iterable[float] = 1,
         base_scale: float = 0.8,
         use_typst_text: bool | Iterable[bool] = False,
+        surrounding_color: JAnimColor = BLACK,
+        surrounding_alpha: float = 0.5,
         **kwargs
     ) -> TimeRange:
         '''
@@ -466,8 +460,18 @@ class Timeline(metaclass=ABCMeta):
                                                              range,
                                                              kwargs,
                                                              subtitle))
-            self.schedule(range.at, subtitle.show)
-            self.schedule(range.end, subtitle.hide)
+
+            subtitle_group = Group(
+                SurroundingRect(subtitle,
+                                color=surrounding_color,
+                                stroke_alpha=0,
+                                fill_alpha=surrounding_alpha),
+                subtitle
+            )
+            subtitle_group.depth.arrange(subtitle.depth.get())
+
+            self.schedule(range.at, subtitle_group.show)
+            self.schedule(range.end, subtitle_group.hide)
 
         return range.copy()
 

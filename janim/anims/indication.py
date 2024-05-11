@@ -18,7 +18,7 @@ from janim.items.vitem import VItem
 from janim.typing import JAnimColor, Vect
 from janim.utils.bezier import interpolate
 from janim.utils.config import Config
-from janim.utils.rate_functions import RateFunc, rush_from, there_and_back
+from janim.utils.rate_functions import RateFunc, there_and_back
 
 
 class FocusOn(DataUpdater[Dot]):
@@ -244,7 +244,6 @@ class Flash(ShowCreationThenDestruction):
         num_lines: int = 12,
         flash_radius: float = 0.3,
         line_stroke_radius: float = 0.015,
-        rate_func: RateFunc = rush_from,
         **kwargs
     ):
         self.point_or_item = point_or_item
@@ -255,7 +254,7 @@ class Flash(ShowCreationThenDestruction):
         self.line_stroke_radius = line_stroke_radius
 
         self.lines = self.create_lines()
-        super().__init__(self.lines, rate_func=rate_func, **kwargs)
+        super().__init__(self.lines, **kwargs)
 
         def updater(data: Points, p: UpdaterParams):
             if not isinstance(point_or_item, Points):

@@ -7,7 +7,6 @@ import numpy as np
 
 from janim.constants import DOWN, LEFT, ORIGIN, RIGHT, UP, np
 from janim.items.geometry.line import Line
-from janim.items.item import Item
 from janim.items.vitem import DEFAULT_STROKE_RADIUS, VItem
 from janim.utils.space_ops import (get_norm, midpoint, normalize,
                                    rotation_between_vectors)
@@ -147,11 +146,6 @@ class Arrow(Line):
         else:
             copy_item.tip = copy_item[0]
         return copy_item
-
-    def become(self, other: Item) -> Self:
-        super().become(other)
-        self.place_tip()
-        return self
 
     def _place_tip(
         self,

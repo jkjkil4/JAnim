@@ -151,7 +151,7 @@ class DataUpdater[T: Item](Animation):
 
             self.timeline.register_dynamic(item,
                                            self.wrap_dynamic(updater_data),
-                                           item.copy() if self.become_at_end else None,
+                                           item.store() if self.become_at_end else None,
                                            self.global_range.at,
                                            self.global_range.end - ANIM_END_DELTA,
                                            not self.become_at_end)

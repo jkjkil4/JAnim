@@ -1,5 +1,6 @@
 
 from janim.anims.animation import Animation
+from janim.exception import NotAnimationError
 from janim.utils.rate_functions import RateFunc, linear
 
 
@@ -38,8 +39,11 @@ class AnimGroup(Animation):
         *anims: Animation,
         duration: float | None = None,
         rate_func: RateFunc = linear,
+        _get_anim_objects: bool = True,
         **kwargs
     ):
+        if _get_anim_objects:
+            anims = self._get_anim_objects(anims)
         self.anims = anims
         self.maxt = 0 if not anims else max(anim.local_range.end for anim in anims)
         if duration is None:
@@ -48,6 +52,25 @@ class AnimGroup(Animation):
         super().__init__(duration=duration, rate_func=rate_func, **kwargs)
         for anim in self.anims:
             anim.parent = self
+
+    @staticmethod
+    def _get_anim_object(anim) -> Animation:
+        attr = getattr(anim, '__anim__', None)
+        if attr is not None and callable(attr):
+            return attr()
+        return anim
+
+    @staticmethod
+    def _get_anim_objects(anims: list[Animation]) -> list[Animation]:
+        anims = [
+            AnimGroup._get_anim_object(anim)
+            for anim in anims
+        ]
+        for anim in anims:
+            if not isinstance(anim, Animation):
+                raise NotAnimationError('传入了非动画对象，可能是你忘记使用 .anim 了')
+
+        return anims
 
     def flatten(self) -> list[Animation]:
         result = [self]
@@ -130,11 +153,12 @@ class Succession(AnimGroup):
         ) # Anim1 在 0~2s 执行，Anim2 在 2.5~4.5s 执行，Anim3 在 5~7s 执行
     '''
     def __init__(self, *anims: Animation, buff: float = 0, **kwargs):
+        anims = self._get_anim_objects(anims)
         end_time = 0
         for anim in anims:
             anim.local_range.at += end_time
             end_time = anim.local_range.end + buff
-        super().__init__(*anims, **kwargs)
+        super().__init__(*anims, _get_anim_objects=False, **kwargs)
 
 
 class Aligned(AnimGroup):
@@ -157,10 +181,11 @@ class Aligned(AnimGroup):
         ) # Anim1 和 Anim2 都在 0~4s 执行
     '''
     def __init__(self, *anims: Animation, duration: float | None = None, **kwargs):
+        anims = self._get_anim_objects(anims)
         if duration is None:
             duration = max(anim.local_range.end for anim in anims)
 
-        super().__init__(*anims, duration=duration, **kwargs)
+        super().__init__(*anims, duration=duration, _get_anim_objects=False, **kwargs)
 
     def compute_global_range(self, at: float, duration: float) -> None:
         Animation.compute_global_range(self, at, duration)
