@@ -24,9 +24,11 @@ class GLWidget(QOpenGLWidget):
     def initializeGL(self) -> None:
         self.ctx = mgl.create_context()
         self.ctx.enable(mgl.BLEND)
+        self.qfuncs = self.context().functions()
 
         self.ctx.clear(*self.anim.cfg.background_color.rgb)
 
     def paintGL(self) -> None:
+        self.qfuncs.glClear(0x00004000 | 0x00000100)    # GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT
         self.anim.render_all(self.ctx)
         self.rendered.emit()
