@@ -6,7 +6,7 @@ from functools import lru_cache
 
 import freetype as FT
 import numpy as np
-from fontTools.ttLib import TTCollection, TTFont
+from fontTools.ttLib import TTCollection, TTFont, TTLibError
 
 from janim.exception import FontNotFoundError
 from janim.utils.bezier import PathBuilder
@@ -28,9 +28,12 @@ def get_fontpath_by_name(font_name: str) -> str:
         fontpaths = findSystemFonts()
 
     for filepath in fontpaths:
-        fonts = TTCollection(filepath).fonts    \
-            if filepath[-3:].endswith('ttc')    \
-            else [TTFont(filepath)]
+        try:
+            fonts = TTCollection(filepath).fonts    \
+                if filepath[-3:].endswith('ttc')    \
+                else [TTFont(filepath)]
+        except TTLibError:
+            continue
 
         for font in fonts:
             if font['name'].getDebugName(4) == font_name:
