@@ -7,7 +7,6 @@ import subprocess as sp
 from typing import Iterable, Self
 
 import numpy as np
-
 from janim.exception import EXITCODE_FFMPEG_NOT_FOUND, ExitException
 from janim.logger import log
 from janim.utils.config import Config
@@ -48,7 +47,15 @@ class Audio:
 
         可以指定 ``begin`` 和 ``end`` 来截取音频的一部分
         '''
-        file_path = find_file(file_path)
+        try:
+            file_path = find_file(file_path)
+        except FileNotFoundError:
+            log.warning(f'无法找到音频 "{file_path}"，已使用 8s 的空白音频代替')
+            self._samples.data = np.zeros(Config.get.audio_framerate * 8)
+            self.framerate = Config.get.audio_framerate
+            self.file_path = file_path
+            self.filename = os.path.basename(file_path)
+            return
 
         mtime = os.path.getmtime(file_path)
         name = os.path.splitext(os.path.basename(file_path))[0]
