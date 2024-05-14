@@ -85,7 +85,7 @@ class Timeline(metaclass=ABCMeta):
             config_ctx_var.reset(self.token)
 
     @classmethod
-    def with_config(cls) -> _WithConfig:
+    def _with_config(cls) -> _WithConfig:
         '''
         使用定义在 :class:`Timeline` 子类中的 config
         '''
@@ -102,7 +102,7 @@ class Timeline(metaclass=ABCMeta):
         '''
         调用该方法可以得到当前正在构建的 :class:`Timeline` 对象
 
-        - 如果在 :meth:`construct` 方法外调用，且 ``raise_exc=True`` （默认），则抛出 ``LookupError``
+        - 如果在 :meth:`construct` 方法外调用，且 ``raise_exc=True`` （默认），则抛出 :class:`~.TimelineLookupError`
         '''
         obj = Timeline.ctx_var.get(None)
         if obj is None and raise_exc:
@@ -180,7 +180,7 @@ class Timeline(metaclass=ABCMeta):
         '''
         构建动画并返回
         '''
-        with self.with_config(), ContextSetter(self.ctx_var, self):
+        with self._with_config(), ContextSetter(self.ctx_var, self):
 
             self.config_getter = ConfigGetter(config_ctx_var.get())
             self.camera = Camera()
@@ -280,6 +280,11 @@ class Timeline(metaclass=ABCMeta):
     # region display
 
     def is_displaying(self, item: Item) -> None:
+        '''
+        判断特定的物件是否正在显示中
+
+        另见：:meth:`show`、:meth:`hide`
+        '''
         return item in self.item_display_times
 
     def _show(self, item: Item) -> None:
@@ -357,6 +362,9 @@ class Timeline(metaclass=ABCMeta):
         return info.range.copy()
 
     def has_audio(self) -> bool:
+        '''
+        是否有可以播放的音频
+        '''
         return len(self.audio_infos) != 0
 
     def get_audio_samples_of_frame(
@@ -365,6 +373,9 @@ class Timeline(metaclass=ABCMeta):
         framerate: int,
         frame: int
     ) -> np.ndarray:
+        '''
+        提取特定帧的音频流
+        '''
         begin = frame / fps
         end = (frame + 1) / fps
 
@@ -476,6 +487,12 @@ class Timeline(metaclass=ABCMeta):
         return range.copy()
 
     def place_subtitle(self, subtitle: Text, range: TimeRange) -> None:
+        '''
+        被 :meth:`subtitle` 调用以将字幕放置到合适的位置：
+
+        - 对于同一批添加的字幕 ``[a, b]``，则 ``a`` 放在 ``b`` 的上面
+        - 如果在上文所述的 ``[a, b]`` 仍存在时，又加入了一个 ``c``，则 ``c`` 放在最上面
+        '''
         for other in reversed(self.subtitle_infos):
             # 根据 TimelineView 中排列显示标签的经验
             # 这里加了一个 np.isclose 的判断
@@ -541,6 +558,9 @@ class Timeline(metaclass=ABCMeta):
         ih.history_without_dynamic.record_as_time(end, static, replaceable=static_replaceable)
 
     def item_current[T](self, item: T, *, as_time: float | None = None, skip_dynamic=False) -> T:
+        '''
+        另见 :meth:`~.Item.current`
+        '''
         ih = self.items_history[item]
         history = ih.history_without_dynamic if skip_dynamic else ih.history
         if not history.has_record():

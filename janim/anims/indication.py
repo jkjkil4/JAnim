@@ -103,6 +103,12 @@ class Indicate(DataUpdater):
 
 
 class CircleIndicate(DataUpdater[Circle]):
+    '''
+    展现以圆圈在指定物件周围淡入淡出进行强调的动画
+
+    - 可以使用 ``rate_func=there_and_back_with_pause`` 使得动画中间停留一段时间
+    - 可以传入 ``scale`` 指定缩放，例如 ``scale=1.2`` 即缩小的同时淡入，并且放大的同时淡出
+    '''
     label_color = C_LABEL_ANIM_INDICATION
 
     def __init__(
@@ -135,6 +141,9 @@ class CircleIndicate(DataUpdater[Circle]):
 
 
 class ShowPassingFlash(ShowPartial):
+    '''
+    基于 ``time_width`` 显示物件的一小段
+    '''
     label_color = C_LABEL_ANIM_ABSTRACT
 
     def __init__(
@@ -191,6 +200,10 @@ class ShowCreationThenFadeOut(Succession):
 
 
 class AnimationOnSurroundingRect(AnimGroup):
+    '''
+    :class:`ShowPassingFlash`、:class:`ShowCreationThenDestructionAround`、
+    :class:`ShowCreationThenFadeAround` 的基类
+    '''
     label_color = C_LABEL_ANIM_ABSTRACT
 
     def __init__(
@@ -256,6 +269,7 @@ class ShowCreationThenFadeAround(AnimationOnSurroundingRect):
 
 
 class Flash(ShowCreationThenDestruction):
+    '''展现以放射状线条进行强调的动画'''
     label_color = C_LABEL_ANIM_INDICATION
 
     def __init__(
@@ -299,3 +313,9 @@ class Flash(ShowCreationThenDestruction):
             .stroke.set(self.color) \
             .r.radius.set(self.line_stroke_radius)
         return lines
+
+
+# TODO: ApplyWave
+# TODO: WiggleOutThenIn
+# TODO: TurnInsideOut
+# TODO: FlashyFadeIn

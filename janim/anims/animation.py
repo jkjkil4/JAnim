@@ -13,6 +13,11 @@ if TYPE_CHECKING:   # pragma: no cover
 
 @dataclass
 class TimeRange:
+    '''
+    标识了从 ``at`` 开始，持续时间为 ``duration`` 的时间区段
+
+    ``end`` 即 ``at + duration``
+    '''
     at: float
     duration: float
 

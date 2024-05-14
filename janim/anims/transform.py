@@ -14,6 +14,12 @@ from janim.utils.paths import PathFunc, path_along_arc, straight_path
 
 
 class Transform(Animation):
+    '''
+    创建从 ``src_item`` 至 ``target_item`` 的插值动画
+
+    - ``path_arc`` 和 ``path_arc_axis`` 可以指定插值的圆弧路径的角度，若不传入则是直线
+    - 也可以直接传入 ``path_func`` 来指定路径方法
+    '''
     label_color = C_LABEL_ANIM_STAY
 
     def __init__(

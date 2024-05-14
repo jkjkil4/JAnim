@@ -377,6 +377,12 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         return True
 
     def current(self, *, as_time: float | None = None, skip_dynamic=False) -> Self:
+        '''
+        当前物件
+
+        - 如果此时在回放和 Updater 中，则返回对应时间的历史物件
+        - 在其余情况下，包括该物件没有历史记录的情况，则返回物件自身
+        '''
         return self.timeline.item_current(self, as_time=as_time, skip_dynamic=skip_dynamic)
 
     def copy(self, *, root_only=False) -> Self:

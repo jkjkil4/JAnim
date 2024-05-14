@@ -11,6 +11,7 @@ anims
    creation
    display
    fading
+   growing
    indication
    rotation
    timeline
