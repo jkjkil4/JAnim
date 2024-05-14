@@ -88,11 +88,14 @@ class TypstExample(Timeline):
         doc = TypstDoc(typst_doc)
         typ = Typst('sum_(i=1)^n x_i')
 
-        self.show(doc)
+        # Applying animations on text is slow
+        self.play(Write(doc), duration=4)
         self.forward()
-        self.hide(doc)
-        self.show(typ)
+        self.play(FadeOut(doc))
+
+        self.play(Write(typ))
         self.forward()
+        self.play(FadeOut(typ))
 
 
 class AnimatingPiExample(Timeline):
