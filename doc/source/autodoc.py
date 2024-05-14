@@ -3,7 +3,7 @@ import os
 doc_src_path = os.path.dirname(__file__)
 janim_path = os.path.abspath(os.path.join(doc_src_path, '../../janim'))
 
-generate_autodoc_exclude = ['janim.constants', 'janim.cli']
+generate_autodoc_exclude = ['janim.constants', 'janim.cli', 'janim.examples']
 force_generate_autodoc = False
 
 
@@ -26,28 +26,8 @@ def generate_autodoc(local_path: str, module_path: str) -> bool:
                 generated_dirs.append(filename)
 
         elif os.path.isfile(sub_path):
-            if filename.endswith('.py') and not filename.startswith('__'):
-                name = filename[:-3]
-                module_name = f'{module_path}.{name}'
-                rst_file_path = os.path.join(rst_path, f'{name}.rst')
-
-                os.makedirs(rst_path, exist_ok=True)
-
-                if not force_generate_autodoc and os.path.exists(rst_file_path):
-                    print('Exists:\t', module_name)
-                else:
-                    with open(rst_file_path, 'w') as f:
-                        f.write(
-                            f'{name}\n'
-                            f'{"=" * len(name)}\n'
-                            '\n'
-                            f'.. automodule:: {module_name}\n'
-                            '   :members:\n'
-                            '   :undoc-members:\n'
-                            '   :show-inheritance:\n\n'
-                        )
-                    print('Generated:\t', module_name)
-
+            name = _generate_autodoc_file(module_path, filename, rst_path)
+            if name is not None:
                 generated_files.append(name)
 
         else:
@@ -79,6 +59,37 @@ def generate_autodoc(local_path: str, module_path: str) -> bool:
         return True
 
     return False
+
+
+def _generate_autodoc_file(module_path: str, filename: str, rst_path: str) -> str | None:
+    if not filename.endswith('.py') or filename.startswith('__'):
+        return None
+
+    name = filename[:-3]
+    module_name = f'{module_path}.{name}'
+    if module_name in generate_autodoc_exclude:
+        print(module_name)
+        return None
+
+    rst_file_path = os.path.join(rst_path, f'{name}.rst')
+    os.makedirs(rst_path, exist_ok=True)
+
+    if not force_generate_autodoc and os.path.exists(rst_file_path):
+        print('Exists:\t', module_name)
+    else:
+        with open(rst_file_path, 'w') as f:
+            f.write(
+                f'{name}\n'
+                f'{"=" * len(name)}\n'
+                '\n'
+                f'.. automodule:: {module_name}\n'
+                '   :members:\n'
+                '   :undoc-members:\n'
+                '   :show-inheritance:\n\n'
+            )
+        print('Generated:\t', module_name)
+
+    return name
 
 
 generate_autodoc('', 'janim')
