@@ -5,7 +5,7 @@ from typing import Self
 
 from janim.anims.animation import Animation, RenderCall
 from janim.components.component import Component
-from janim.constants import ANIM_END_DELTA, OUT
+from janim.constants import ANIM_END_DELTA, OUT, C_LABEL_ANIM_STAY
 from janim.items.item import DynamicItem, Item
 from janim.logger import log
 from janim.typing import Vect
@@ -14,7 +14,7 @@ from janim.utils.paths import PathFunc, path_along_arc, straight_path
 
 
 class Transform(Animation):
-    label_color = (208, 171, 67)
+    label_color = C_LABEL_ANIM_STAY
 
     def __init__(
         self,
@@ -143,7 +143,7 @@ class MethodTransform(Transform):
 
     具体参考 :meth:`~.Item.anim`
     '''
-    label_color = (196, 130, 69)
+    label_color = (196, 130, 69)    # C_LABEL_ANIM_STAY 的变体
 
     def __init__(self, item: Item, **kwargs):
         super().__init__(item, item, **kwargs)

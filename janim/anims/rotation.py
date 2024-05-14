@@ -1,7 +1,7 @@
 
 from janim.anims.updater import DataUpdater, UpdaterParams
 from janim.components.points import Cmpt_Points
-from janim.constants import ORIGIN, OUT
+from janim.constants import C_LABEL_ANIM_STAY, ORIGIN, OUT
 from janim.items.item import Item
 from janim.items.points import Points
 from janim.typing import Vect
@@ -12,7 +12,7 @@ class Rotate(DataUpdater):
     '''
     旋转，默认对角度进行平滑插值
     '''
-    label_color = (64, 181, 126)
+    label_color = C_LABEL_ANIM_STAY
 
     def __init__(
         self,

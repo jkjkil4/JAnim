@@ -5,7 +5,8 @@ import numpy as np
 
 from janim.anims.updater import DataUpdater, UpdaterParams
 from janim.components.vpoints import Cmpt_VPoints
-from janim.constants import NAN_POINT
+from janim.constants import (C_LABEL_ANIM_ABSTRACT, C_LABEL_ANIM_IN,
+                             C_LABEL_ANIM_OUT, NAN_POINT)
 from janim.items.item import Item
 from janim.items.vitem import VItem
 from janim.typing import JAnimColor
@@ -17,7 +18,7 @@ class ShowPartial(DataUpdater):
     '''
     显示物件一部分的动画，显示的部分由 ``bound_func`` 决定
     '''
-    label_color = (54, 164, 186)
+    label_color = C_LABEL_ANIM_ABSTRACT
 
     def __init__(
         self,
@@ -71,6 +72,8 @@ class Create(ShowPartial):
     '''
     显示物件的创建过程
     '''
+    label_color = C_LABEL_ANIM_IN
+
     def __init__(self, item: Item, auto_close_path: bool = True, **kwargs):
         super().__init__(item, lambda p: (0, p.alpha), auto_close_path=auto_close_path, **kwargs)
 
@@ -79,6 +82,8 @@ class Uncreate(ShowPartial):
     '''
     显示物件的销毁过程（:class:`Create` 的倒放）
     '''
+    label_color = C_LABEL_ANIM_OUT
+
     def __init__(
         self,
         item: Item,
@@ -99,7 +104,7 @@ class DrawBorderThenFill(DataUpdater):
     '''
     画出边缘，然后填充颜色
     '''
-    label_color = (54, 164, 186)
+    label_color = C_LABEL_ANIM_IN
 
     def __init__(
         self,

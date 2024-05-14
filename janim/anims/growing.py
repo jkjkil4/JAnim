@@ -6,7 +6,7 @@ import numpy as np
 
 from janim.anims.animation import Animation, RenderCall
 from janim.anims.transform import Transform
-from janim.constants import PI
+from janim.constants import C_LABEL_ANIM_ABSTRACT, C_LABEL_ANIM_IN, PI
 from janim.items.geometry.arrow import Arrow
 from janim.items.points import Points
 
@@ -15,6 +15,8 @@ class GrowFromPoint(Transform):
     '''
     从指定的位置放大显现
     '''
+    label_color = C_LABEL_ANIM_IN
+
     def __init__(
         self,
         item: Points,
@@ -50,6 +52,8 @@ class GrowFromEdge(GrowFromPoint):
 
 class GrowArrowByBoundFunc(Animation):
     '''显示箭头的显现过程，从开头到结尾画出，并自动调整箭头标志位置'''
+    label_color = C_LABEL_ANIM_ABSTRACT
+
     def __init__(
         self,
         arrow: Arrow,
@@ -90,11 +94,21 @@ class GrowArrowByBoundFunc(Animation):
 
 
 class GrowArrow(GrowArrowByBoundFunc):
+    '''显示箭头的显现过程，从开头到结尾画出，并自动调整箭头标志位置'''
+    label_color = C_LABEL_ANIM_IN
+
     def __init__(self, arrow: Arrow, **kwargs):
         super().__init__(arrow, lambda alpha: (0, alpha), **kwargs)
 
 
 class GrowDoubleArrow(GrowArrowByBoundFunc):
+    '''
+    显示箭头的显现过程，默认从中间向两边显现，并自动调整箭头标志位置
+
+    - 传入 ``start_ratio``（默认 ``0.5``） 可以调整开始的位置
+    '''
+    label_color = C_LABEL_ANIM_IN
+
     def __init__(self, arrow: Arrow, start_ratio: float = 0.5, **kwargs):
         super().__init__(
             arrow,

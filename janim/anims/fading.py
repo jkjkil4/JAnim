@@ -3,18 +3,21 @@ from abc import ABCMeta, abstractmethod
 
 import numpy as np
 
+from janim.anims.updater import DataUpdater, UpdaterParams
+from janim.components.rgbas import Cmpt_Rgbas
+from janim.constants import (C_LABEL_ANIM_ABSTRACT, C_LABEL_ANIM_IN,
+                             C_LABEL_ANIM_OUT, ORIGIN)
 from janim.items.item import Item
 from janim.items.points import Points
-from janim.components.rgbas import Cmpt_Rgbas
-from janim.anims.updater import DataUpdater, UpdaterParams
 from janim.typing import Vect
-from janim.constants import ORIGIN
 
 
 class Fade(DataUpdater, metaclass=ABCMeta):
     '''
     :class:`FadeIn` 和 :class:`FadeOut` 的基类
     '''
+    label_color = C_LABEL_ANIM_ABSTRACT
+
     def __init__(
         self,
         item: Item,
@@ -55,6 +58,8 @@ class FadeIn(Fade):
     - 可以使用 ``shift`` 指定淡入位移
     - 可以使用 ``scale`` 指定淡入缩放
     '''
+    label_color = C_LABEL_ANIM_IN
+
     def updater(self, data: Item, p: UpdaterParams) -> None:
         if not isinstance(data, Points):
             return
@@ -82,6 +87,8 @@ class FadeOut(Fade):
     - 可以使用 ``shift`` 指定淡出位移
     - 可以使用 ``scale`` 指定淡出缩放
     '''
+    label_color = C_LABEL_ANIM_OUT
+
     def __init__(
         self,
         item: Item,

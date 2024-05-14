@@ -8,7 +8,8 @@ from janim.anims.creation import Create, ShowPartial
 from janim.anims.fading import FadeOut
 from janim.anims.updater import DataUpdater, UpdaterParams
 from janim.components.rgbas import Cmpt_Rgbas
-from janim.constants import GREY, ORIGIN, RIGHT, TAU, YELLOW
+from janim.constants import (C_LABEL_ANIM_ABSTRACT, C_LABEL_ANIM_INDICATION,
+                             GREY, ORIGIN, RIGHT, TAU, YELLOW)
 from janim.items.geometry.arc import Circle, Dot
 from janim.items.geometry.line import Line
 from janim.items.item import Item
@@ -23,6 +24,8 @@ from janim.utils.rate_functions import RateFunc, there_and_back
 
 class FocusOn(DataUpdater[Dot]):
     '''展现一个逐渐聚焦到指定物件的圆形缩小动画'''
+    label_color = C_LABEL_ANIM_INDICATION
+
     def __init__(
         self,
         point_or_item: Vect | Points,
@@ -56,6 +59,8 @@ class FocusOn(DataUpdater[Dot]):
 
 class Indicate(DataUpdater):
     '''展现指定物件以放大为黄色后回到原状的动画'''
+    label_color = C_LABEL_ANIM_INDICATION
+
     def __init__(
         self,
         item: Points,
@@ -98,6 +103,8 @@ class Indicate(DataUpdater):
 
 
 class CircleIndicate(DataUpdater[Circle]):
+    label_color = C_LABEL_ANIM_INDICATION
+
     def __init__(
         self,
         item: Points,
@@ -128,6 +135,8 @@ class CircleIndicate(DataUpdater[Circle]):
 
 
 class ShowPassingFlash(ShowPartial):
+    label_color = C_LABEL_ANIM_ABSTRACT
+
     def __init__(
         self,
         item: Points,
@@ -156,6 +165,8 @@ class ShowPassingFlash(ShowPartial):
 
 class ShowCreationThenDestruction(ShowPassingFlash):
     '''展现创建动画后展现销毁动画'''
+    label_color = C_LABEL_ANIM_ABSTRACT
+
     def __init__(
         self,
         item: Points,
@@ -169,6 +180,8 @@ class ShowCreationThenDestruction(ShowPassingFlash):
 
 class ShowCreationThenFadeOut(Succession):
     '''展现创建动画后展现淡出动画'''
+    label_color = C_LABEL_ANIM_ABSTRACT
+
     def __init__(self, item: Points, create_kwargs: dict = {}, fadeout_kwargs: dict = {}, **kwargs):
         super().__init__(
             Create(item, **create_kwargs),
@@ -178,6 +191,8 @@ class ShowCreationThenFadeOut(Succession):
 
 
 class AnimationOnSurroundingRect(AnimGroup):
+    label_color = C_LABEL_ANIM_ABSTRACT
+
     def __init__(
         self,
         item: Points,
@@ -215,18 +230,24 @@ class AnimationOnSurroundingRect(AnimGroup):
 
 class ShowPassingFlashAround(AnimationOnSurroundingRect):
     '''不完整线条在指定物件周围环绕一圈的动画'''
+    label_color = C_LABEL_ANIM_INDICATION
+
     def __init__(self, item: Points, **kwargs) -> None:
         super().__init__(item, ShowPassingFlash, **kwargs)
 
 
 class ShowCreationThenDestructionAround(AnimationOnSurroundingRect):
     '''在指定物件周围先创建出完整线条再销毁线条的动画'''
+    label_color = C_LABEL_ANIM_INDICATION
+
     def __init__(self, item: Points, **kwargs) -> None:
         super().__init__(item, ShowCreationThenDestruction, **kwargs)
 
 
 class ShowCreationThenFadeAround(AnimationOnSurroundingRect):
     '''在指定物件周围先创建出完整线条再淡出线条的动画'''
+    label_color = C_LABEL_ANIM_INDICATION
+
     def __init__(self, item: Points, **kwargs) -> None:
         super().__init__(item,
                          ShowCreationThenFadeOut,
@@ -235,6 +256,8 @@ class ShowCreationThenFadeAround(AnimationOnSurroundingRect):
 
 
 class Flash(ShowCreationThenDestruction):
+    label_color = C_LABEL_ANIM_INDICATION
+
     def __init__(
         self,
         point_or_item: Vect | Points,

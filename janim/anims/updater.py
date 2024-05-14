@@ -6,9 +6,9 @@ from dataclasses import dataclass
 from typing import Any, Callable, Self
 
 from janim.anims.animation import Animation, RenderCall, TimeRange
-from janim.constants import ANIM_END_DELTA
+from janim.constants import ANIM_END_DELTA, C_LABEL_ANIM_ABSTRACT
 from janim.exception import UpdaterError
-from janim.items.item import Item, DynamicItem
+from janim.items.item import DynamicItem, Item
 from janim.utils.simple_functions import clip
 
 
@@ -60,7 +60,7 @@ class DataUpdater[T: Item](Animation):
 
     另见：:class:`~.UpdaterExample`
     '''
-    label_color = (49, 155, 191)
+    label_color = C_LABEL_ANIM_ABSTRACT
 
     @dataclass
     class DataGroup:
@@ -213,7 +213,7 @@ class ItemUpdater(Animation):
 
     另见：:class:`~.UpdaterExample`
     '''
-    label_color = DataUpdater.label_color
+    label_color = C_LABEL_ANIM_ABSTRACT
 
     def __init__(
         self,
