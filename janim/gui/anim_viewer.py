@@ -406,6 +406,9 @@ class AnimViewer(QMainWindow):
 
         self.anim.anim_on(self.timeline_view.progress_to_time(progress))
 
+        self.fixed_ratio_widget.set_src_size((self.anim.cfg.pixel_width,
+                                              self.anim.cfg.pixel_height))
+
         self.glw.anim = self.anim
         self.glw.update()
 

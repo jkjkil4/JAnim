@@ -14,6 +14,7 @@ from typing import Callable, Iterable, Self, overload
 
 import moderngl as mgl
 import numpy as np
+from PIL import Image
 
 from janim.anims.animation import Animation, TimeRange
 from janim.anims.composition import AnimGroup
@@ -733,3 +734,29 @@ class TimelineAnim(AnimGroup):
 
         except Exception:
             traceback.print_exc()
+
+    capture_ctx: mgl.Context | None = None
+    capture_fbo: mgl.Framebuffer | None = None
+
+    def capture(self, alpha: float = 0) -> Image.Image:
+        if TimelineAnim.capture_ctx is None:
+            TimelineAnim.capture_ctx = mgl.create_standalone_context(require=430)
+
+            TimelineAnim.capture_fbo = TimelineAnim.capture_ctx.framebuffer(
+                color_attachments=[
+                    TimelineAnim.capture_ctx.texture(
+                        (self.cfg.pixel_width, self.cfg.pixel_height),
+                        4
+                    )
+                ]
+            )
+
+        fbo = TimelineAnim.capture_fbo
+        fbo.use()
+        fbo.clear(*self.cfg.background_color.rgb, alpha=alpha)
+        self.render_all(TimelineAnim.capture_ctx)
+
+        return Image.frombytes(
+            "RGBA", fbo.size, fbo.color_attachments[0].read(),
+            "raw", "RGBA", 0, -1
+        )
