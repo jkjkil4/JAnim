@@ -24,6 +24,12 @@ class GLWidget(QOpenGLWidget):
     def initializeGL(self) -> None:
         self.ctx = mgl.create_context()
         self.ctx.enable(mgl.BLEND)
+        self.ctx.blend_func = (
+            mgl.SRC_ALPHA, mgl.ONE_MINUS_SRC_ALPHA,
+            mgl.ONE, mgl.ONE
+        )
+        self.ctx.blend_equation = mgl.FUNC_ADD, mgl.MAX
+
         self.qfuncs = self.context().functions()
 
         self.ctx.clear(*self.anim.cfg.background_color.rgb)

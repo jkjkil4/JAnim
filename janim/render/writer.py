@@ -29,6 +29,11 @@ class VideoWriter:
         self.anim = anim
         self.ctx = mgl.create_standalone_context()
         self.ctx.enable(mgl.BLEND)
+        self.ctx.blend_func = (
+            mgl.SRC_ALPHA, mgl.ONE_MINUS_SRC_ALPHA,
+            mgl.ONE, mgl.ONE
+        )
+        self.ctx.blend_equation = mgl.FUNC_ADD, mgl.MAX
 
         pw, ph = anim.cfg.pixel_width, anim.cfg.pixel_height
         self.fbo = self.ctx.framebuffer(

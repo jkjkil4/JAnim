@@ -738,25 +738,35 @@ class TimelineAnim(AnimGroup):
     capture_ctx: mgl.Context | None = None
     capture_fbo: mgl.Framebuffer | None = None
 
-    def capture(self, alpha: float = 0) -> Image.Image:
+    def capture(self) -> Image.Image:
         if TimelineAnim.capture_ctx is None:
             TimelineAnim.capture_ctx = mgl.create_standalone_context(require=430)
+            TimelineAnim.capture_ctx.enable(mgl.BLEND)
+            TimelineAnim.capture_ctx.blend_func = (
+                mgl.SRC_ALPHA, mgl.ONE_MINUS_SRC_ALPHA,
+                mgl.ONE, mgl.ONE
+            )
+            TimelineAnim.capture_ctx.blend_equation = mgl.FUNC_ADD, mgl.MAX
 
+            pw, ph = self.cfg.pixel_width, self.cfg.pixel_height
             TimelineAnim.capture_fbo = TimelineAnim.capture_ctx.framebuffer(
-                color_attachments=[
-                    TimelineAnim.capture_ctx.texture(
-                        (self.cfg.pixel_width, self.cfg.pixel_height),
-                        4
-                    )
-                ]
+                color_attachments=TimelineAnim.capture_ctx.texture(
+                    (pw, ph),
+                    components=4,
+                    samples=0,
+                ),
+                depth_attachment=TimelineAnim.capture_ctx.depth_renderbuffer(
+                    (pw, ph),
+                    samples=0
+                )
             )
 
         fbo = TimelineAnim.capture_fbo
         fbo.use()
-        fbo.clear(*self.cfg.background_color.rgb, alpha=alpha)
+        fbo.clear(*self.cfg.background_color.rgb)
         self.render_all(TimelineAnim.capture_ctx)
 
         return Image.frombytes(
-            "RGBA", fbo.size, fbo.color_attachments[0].read(),
+            "RGBA", fbo.size, fbo.read(components=4),
             "raw", "RGBA", 0, -1
         )
