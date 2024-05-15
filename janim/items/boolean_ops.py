@@ -4,6 +4,7 @@ import numpy as np
 import pathops
 
 from janim.exception import BooleanOpsError
+from janim.items.item import Item
 from janim.items.vitem import VItem
 from janim.utils.bezier import PathBuilder
 
@@ -69,12 +70,21 @@ class Union(VItem):
         outpen = pathops.Path()
         pathops.union(
             [
-                _convert_vitem_to_skia_path(vmobject)
-                for vmobject in vitems
+                _convert_vitem_to_skia_path(vitem)
+                for vitem in vitems
             ],
             outpen.getPen()
         )
         _convert_skia_path_to_vitem(outpen, self)
+
+    @staticmethod
+    def from_item(item: Item, **kwargs) -> Union:
+        lst = [
+            sub
+            for sub in item.walk_self_and_descendants()
+            if isinstance(sub, VItem)
+        ]
+        return Union(*lst, **kwargs)
 
 
 class Difference(VItem):
@@ -100,26 +110,35 @@ class Intersection(VItem):
 
     传入两个及以上 :class:`~.VItem`，返回它们区域交集的外轮廓
     '''
-    def __init__(self, *vmobjects: VItem, **kwargs):
-        if len(vmobjects) < 2:
+    def __init__(self, *vitems: VItem, **kwargs):
+        if len(vitems) < 2:
             raise BooleanOpsError("At least 2 items needed for Intersection.")
         super().__init__(**kwargs)
         outpen = pathops.Path()
         pathops.intersection(
-            [_convert_vitem_to_skia_path(vmobjects[0])],
-            [_convert_vitem_to_skia_path(vmobjects[1])],
+            [_convert_vitem_to_skia_path(vitems[0])],
+            [_convert_vitem_to_skia_path(vitems[1])],
             outpen.getPen(),
         )
         new_outpen = outpen
-        for _i in range(2, len(vmobjects)):
+        for _i in range(2, len(vitems)):
             new_outpen = pathops.Path()
             pathops.intersection(
                 [outpen],
-                [_convert_vitem_to_skia_path(vmobjects[_i])],
+                [_convert_vitem_to_skia_path(vitems[_i])],
                 new_outpen.getPen(),
             )
             outpen = new_outpen
         _convert_skia_path_to_vitem(outpen, self)
+
+    @staticmethod
+    def from_item(item: Item) -> Union:
+        lst = [
+            sub
+            for sub in item.walk_self_and_descendants()
+            if isinstance(sub, VItem)
+        ]
+        return Intersection(*lst)
 
 
 class Exclusion(VItem):
