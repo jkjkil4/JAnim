@@ -535,9 +535,13 @@ class Cmpt_Points[ItemT](Component[ItemT]):
         例如传入 ``scale_factor`` 为 ``(2, 0.5, 1)`` 则是在 ``x`` 方向上缩放为两倍，在 ``y`` 方向上压缩为原来的一半，在 ``z`` 方向上保持不变
         '''
         if isinstance(scale_factor, Iterable):
-            scale_factor = np.array(scale_factor).clip(min=min_scale_factor)
+            sgn = np.sign(scale_factor)
+            scale_factor = sgn * abs(np.array(scale_factor)).clip(min=min_scale_factor)
         else:
-            scale_factor = max(scale_factor, min_scale_factor)
+            if scale_factor >= 0:
+                scale_factor = max(scale_factor, min_scale_factor)
+            else:
+                scale_factor = min(scale_factor, -min_scale_factor)
 
         self.apply_points_fn(
             lambda points: scale_factor * points,
