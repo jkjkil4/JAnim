@@ -45,7 +45,7 @@ doc = [
 ]
 
 [tool.flit.sdist]
-exclude = ["doc/", "test/"]
+exclude = [".vscode/", "doc/", "test/"]
 
 [project.urls]
 Home = "https://github.com/jkjkil4/JAnim"

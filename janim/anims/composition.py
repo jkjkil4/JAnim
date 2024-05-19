@@ -1,4 +1,3 @@
-
 from janim.anims.animation import Animation
 from janim.exception import NotAnimationError
 from janim.utils.rate_functions import RateFunc, linear

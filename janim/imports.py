@@ -43,3 +43,4 @@ from janim.utils.paths import *
 from janim.utils.rate_functions import *
 from janim.utils.simple_functions import *
 from janim.utils.space_ops import *
+from janim.exception import *

@@ -597,7 +597,7 @@ class TimelineView(QWidget):
         self._sorted_anims = None
 
         stack: list[Animation] = []
-        for anim in self.flatten:
+        for anim in self.get_sorted_anims():
             # 可能会因为浮点误差导致 <= 中的相等判断错误，所以 +1e-5
             while stack and stack[-1].global_range.end <= anim.global_range.at + 1e-5:
                 stack.pop()
@@ -1010,7 +1010,8 @@ class TimelineView(QWidget):
                                  self.audio_height,
                                  info.audio.filename,
                                  QColor(152, 255, 191),
-                                 QColor(152, 255, 191, 128))
+                                 QColor(152, 255, 191, 128),
+                                 False)
 
             p.setFont(orig_font)
 
@@ -1028,7 +1029,8 @@ class TimelineView(QWidget):
                              self.label_height,
                              info.anim.__class__.__name__,
                              Qt.PenStyle.NoPen,
-                             QColor(*info.anim.label_color).lighter())
+                             QColor(*info.anim.label_color).lighter(),
+                             True)
 
         p.setClipping(False)
 
@@ -1077,19 +1079,29 @@ class TimelineView(QWidget):
         txt: str,
         stroke: QPen | QColor,
         fill: QBrush | QColor,
+        is_anim_lable: bool
     ) -> None:
         range = self.time_range_to_pixel_range(time_range)
         rect = QRectF(range.left, y, range.width, height)
 
         # 标记是否应当绘制文字
-        draw_txt = True
+        out_of_boundary = False
 
-        # 使得超出底端的区段也能看到一条边
-        max_y = self.height() - self.range_tip_height - 4
-        if rect.y() > max_y:
-            rect.setY(max_y)
-            rect.setBottom(self.height() + 2)
-            draw_txt = False
+        if is_anim_lable:
+            # 使得超出底端的区段也能看到一条边
+            max_y = self.height() - self.range_tip_height - 4
+            if rect.y() > max_y:
+                rect.moveTop(max_y)
+                rect.setHeight(4)
+                out_of_boundary = True
+
+            # 使得超出顶端的区段也能看到一条边
+            top_margin = self.audio_height if self.anim.timeline.has_audio() else 0
+            min_bottom = top_margin + 4
+            if rect.bottom() < min_bottom:
+                rect.moveTop(top_margin)
+                rect.setHeight(4)
+                out_of_boundary = True
 
         # 这里的判断使得区段过窄时也能看得见
         if rect.width() > 5:
@@ -1100,7 +1112,8 @@ class TimelineView(QWidget):
             x_adjust = 0
 
         # 绘制背景部分
-        rect.adjust(x_adjust, 2, -x_adjust, -2)
+        if not out_of_boundary:
+            rect.adjust(x_adjust, 2, -x_adjust, -2)
         p.setPen(stroke)
         p.setBrush(fill)
         p.drawRect(rect)
@@ -1111,7 +1124,7 @@ class TimelineView(QWidget):
             rect.setX(0)
 
         # 绘制文字
-        if draw_txt:
+        if not out_of_boundary:
             rect.adjust(1, 1, -1, -1)
             p.setPen(Qt.GlobalColor.black)
             p.drawText(

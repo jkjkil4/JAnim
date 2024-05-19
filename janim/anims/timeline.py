@@ -86,7 +86,7 @@ class Timeline(metaclass=ABCMeta):
             config_ctx_var.reset(self.token)
 
     @classmethod
-    def _with_config(cls) -> _WithConfig:
+    def with_config(cls) -> _WithConfig:
         '''
         使用定义在 :class:`Timeline` 子类中的 config
         '''
@@ -181,7 +181,7 @@ class Timeline(metaclass=ABCMeta):
         '''
         构建动画并返回
         '''
-        with self._with_config(), ContextSetter(self.ctx_var, self):
+        with self.with_config(), ContextSetter(self.ctx_var, self):
 
             self.config_getter = ConfigGetter(config_ctx_var.get())
             self.camera = Camera()
