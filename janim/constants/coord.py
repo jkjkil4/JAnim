@@ -18,3 +18,8 @@ UL = UP + LEFT
 UR = UP + RIGHT
 DL = DOWN + LEFT
 DR = DOWN + RIGHT
+
+for p in (ORIGIN, UP, DOWN, RIGHT, LEFT, IN, OUT,
+          X_AXIS, Y_AXIS, Z_AXIS, NAN_POINT,
+          UL, UR, DL, DR):
+    p.setflags(write=False)
