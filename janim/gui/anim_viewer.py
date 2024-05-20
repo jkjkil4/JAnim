@@ -66,6 +66,8 @@ class AnimViewer(QMainWindow):
         self.anim = anim
         self.interact = interact
 
+        self.setWindowIcon(QIcon(os.path.join(get_janim_dir(), 'gui', 'favicon.ico')))
+
         self.setup_ui()
         self.move_to_position()
         self.socket = None
