@@ -16,6 +16,7 @@ class GLWidget(QOpenGLWidget):
     def __init__(self, anim: TimelineAnim, parent: QWidget | None = None) -> None:
         super().__init__(parent)
         self.anim = anim
+        self.needs_update_clear_color = False
 
     def set_time(self, time: float) -> None:
         self.anim.anim_on(time)
@@ -31,10 +32,15 @@ class GLWidget(QOpenGLWidget):
         self.ctx.blend_equation = mgl.FUNC_ADD, mgl.MAX
 
         self.qfuncs = self.context().functions()
+        self.update_clear_color()
 
-        self.ctx.clear(*self.anim.cfg.background_color.rgb)
+    def update_clear_color(self) -> None:
+        self.needs_update_clear_color = True
 
     def paintGL(self) -> None:
+        if self.needs_update_clear_color:
+            self.qfuncs.glClearColor(*self.anim.cfg.background_color.rgb, 0.)
+            self.needs_update_clear_color = False
         self.qfuncs.glClear(0x00004000 | 0x00000100)    # GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT
         self.anim.render_all(self.ctx)
         self.rendered.emit()

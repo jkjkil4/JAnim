@@ -410,6 +410,7 @@ class AnimViewer(QMainWindow):
                                               self.anim.cfg.pixel_height))
 
         self.glw.anim = self.anim
+        self.glw.update_clear_color()
         self.glw.update()
 
         range = self.timeline_view.range
