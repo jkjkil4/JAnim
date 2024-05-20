@@ -9,7 +9,6 @@ from janim.components.component import CmptInfo
 from janim.components.image import Cmpt_Image
 from janim.components.rgbas import Cmpt_Rgbas
 from janim.constants import DL, DR, OUT, UL, UR
-from janim.items.item import Item
 from janim.items.points import Points
 from janim.render.impl import ImageItemRenderer
 from janim.render.texture import get_img_from_file

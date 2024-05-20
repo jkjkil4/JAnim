@@ -224,10 +224,10 @@ class ImageItemRenderer(Renderer):
             self.vbo_points.write(bytes)
             self.prev_points = new_points
 
-        if self.prev_img is None or item.image != self.prev_img:
+        if self.prev_img is None or item.image.img is not self.prev_img:
             self.texture = get_texture_from_img(item.image.get())
             self.texture.build_mipmaps()
-            self.prev_img = item.image
+            self.prev_img = item.image.img
 
         self.prog['image'] = 0
         self.texture.filter = item.image.get_filter()
