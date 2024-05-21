@@ -26,10 +26,11 @@ img_to_texture_map: dict[int, mgl.Texture] = {}
 
 
 def get_texture_from_img(img: Image.Image) -> mgl.Texture:
-    texture = img_to_texture_map.get(id(img), None)
+    ctx = Renderer.data_ctx.get().ctx
+    key = (ctx, id(img))
+    texture = img_to_texture_map.get(key, None)
     if texture is not None:
         return texture
-    ctx = Renderer.data_ctx.get().ctx
     texture = ctx.texture(
         size=img.size,
         components=len(img.getbands()),
@@ -37,5 +38,5 @@ def get_texture_from_img(img: Image.Image) -> mgl.Texture:
     )
     texture.repeat_x = False
     texture.repeat_y = False
-    img_to_texture_map[id(img)] = texture
+    img_to_texture_map[key] = texture
     return texture
