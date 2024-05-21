@@ -430,7 +430,7 @@ class Text(VItem, Group[TextLine]):
             text_at += 1
 
 
-class Title(Text):
+class Title(Group):
     '''
     标题
 
@@ -447,23 +447,30 @@ class Title(Text):
         underline_width: float | None = None,
         underline_buff: float = MED_SMALL_BUFF,
         match_underline_width_to_text: bool = False,
+        depth: float | None = None,
         **kwargs
     ):
-        super().__init__(text, font=font, font_size=font_size, **kwargs)
-        self.points.to_border(UP)
+        txt = Text(text, font=font, font_size=font_size, **kwargs)
+        txt.points.to_border(UP)
 
-        if underline_width is None and not match_underline_width_to_text:
-            underline_width = Config.get.frame_width - 2
+        super().__init__(txt)
+        self.txt = txt
 
         if include_underline:
+            if underline_width is None and not match_underline_width_to_text:
+                underline_width = Config.get.frame_width - 2
+
             underline = Line(LEFT, RIGHT)
-            underline.points.next_to(self, DOWN, buff=underline_buff)
+            underline.points.next_to(txt, DOWN, buff=underline_buff)
             if match_underline_width_to_text:
-                underline.points.set_width(self.points.box.width)
+                underline.points.set_width(txt.points.box.width)
             else:
                 underline.points.set_width(underline_width)
+
             self.add(underline)
             self.underline = underline
+
+        self.depth.arrange(depth)
 
 
 class SourceDisplayer(Text):
