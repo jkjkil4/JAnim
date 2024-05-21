@@ -80,7 +80,6 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
     def __init__(
         self,
         *args,
-        depth: float | None = None,
         children: list[Item] | None = None,
         **kwargs
     ):
@@ -97,8 +96,6 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         self.timeline = Timeline.get_context(raise_exc=False)
 
         self._init_components()
-        if depth is not None:
-            self.depth.set(depth)
 
         self._astype: type[Item] | None = None
         self._astype_mock_cmpt: dict[str, Component] = {}

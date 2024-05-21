@@ -130,7 +130,7 @@ class Cmpt_Rgbas[ItemT](Component[ItemT]):
           则同时表示了 ``colors`` 和 ``alphas`` 二者，因此不能再传入 ``alphas`` 参数
         '''
         if color is None and alpha is None:
-            return
+            return self
 
         def is_single_color(value: Iterable) -> bool:
             if isinstance(value, str):

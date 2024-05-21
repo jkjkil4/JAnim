@@ -25,8 +25,8 @@ def _convert_point_to_3d(x: float, y: float) -> np.ndarray:
     return np.array([x, y, 0])
 
 
-def _convert_alpha_to_float(x: int | None) -> float:
-    return None if x is None else x / 255
+def _convert_opacity(x: float | None) -> float:
+    return 0. if x is None else x
 
 
 class SVGItem(Group[VItem]):
@@ -113,12 +113,14 @@ class SVGItem(Group[VItem]):
                 ]
                 func(*points)
 
+        opacity = float(path.values.get('opacity', 1))
+
         vitem_styles = dict(
             stroke_radius=path.stroke_width * STROKE_WIDTH_CONVERSION / 2,
             stroke_color=path.stroke.hex,
-            stroke_alpha=_convert_alpha_to_float(path.stroke.alpha),
+            stroke_alpha=_convert_opacity(path.stroke.opacity) * opacity,
             fill_color=path.fill.hex,
-            fill_alpha=_convert_alpha_to_float(path.fill.alpha)
+            fill_alpha=_convert_opacity(path.fill.opacity) * opacity
         )
         vitem_points = builder.get()
         vitem_points[:, :2] += offset
