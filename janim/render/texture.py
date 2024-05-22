@@ -22,7 +22,7 @@ def get_img_from_file(file_path: str) -> Image.Image:
     return img
 
 
-img_to_texture_map: dict[int, mgl.Texture] = {}
+img_to_texture_map: dict[tuple[mgl.Context, int], mgl.Texture] = {}
 
 
 def get_texture_from_img(img: Image.Image) -> mgl.Texture:
