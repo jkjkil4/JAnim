@@ -164,6 +164,8 @@ class Aligned(AnimGroup):
     '''
     动画集合（并列对齐执行）
 
+    也就是忽略了子动画的 ``at`` 和 ``duration``，使所有子动画都一起开始和结束
+
     时间示例：
 
     .. code-block:: python
@@ -174,7 +176,7 @@ class Aligned(AnimGroup):
         ) # Anim1 和 Anim2 都在 0~2s 执行
 
         Aligned(
-            Anim1(duration=1),
+            Anim1(at=1, duration=1),
             Anim2(duration=2),
             duration=4
         ) # Anim1 和 Anim2 都在 0~4s 执行
@@ -190,8 +192,7 @@ class Aligned(AnimGroup):
         Animation.compute_global_range(self, at, duration)
 
         for anim in self.anims:
-            factor = duration / anim.local_range.end
-            anim.compute_global_range(
-                self.global_range.at + anim.local_range.at * factor,
-                anim.local_range.duration * factor
-            )
+            anim.compute_global_range(at, duration)
+
+    def get_anim_t(self, alpha: float, anim: Animation) -> float:
+        return alpha * anim.local_range.duration
