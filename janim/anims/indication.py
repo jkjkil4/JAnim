@@ -19,7 +19,7 @@ from janim.items.vitem import VItem
 from janim.typing import JAnimColor, Vect
 from janim.utils.bezier import interpolate
 from janim.utils.config import Config
-from janim.utils.rate_functions import RateFunc, there_and_back
+from janim.utils.rate_functions import RateFunc, smooth, there_and_back
 
 
 class FocusOn(DataUpdater[Dot]):
@@ -268,6 +268,10 @@ class ShowCreationThenFadeAround(AnimationOnSurroundingRect):
                          **kwargs)
 
 
+def flash_rate_function(t: float, smooth_ratio=0.6) -> float:
+    return smooth_ratio * smooth(t) + (1 - smooth_ratio) * t
+
+
 class Flash(ShowCreationThenDestruction):
     '''展现以放射状线条进行强调的动画'''
     label_color = C_LABEL_ANIM_INDICATION
@@ -281,6 +285,7 @@ class Flash(ShowCreationThenDestruction):
         num_lines: int = 12,
         flash_radius: float = 0.3,
         line_stroke_radius: float = 0.015,
+        rate_func=flash_rate_function,
         **kwargs
     ):
         self.point_or_item = point_or_item
@@ -291,7 +296,11 @@ class Flash(ShowCreationThenDestruction):
         self.line_stroke_radius = line_stroke_radius
 
         self.lines = self.create_lines()
-        super().__init__(self.lines, **kwargs)
+        super().__init__(
+            self.lines,
+            rate_func=rate_func,
+            **kwargs
+        )
 
         def updater(data: Points, p: UpdaterParams):
             if not isinstance(point_or_item, Points):
