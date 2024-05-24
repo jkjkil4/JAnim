@@ -8,6 +8,19 @@ JAnim is a library for simple animation effects.
 
 Inspired by [manim](https://github.com/3b1b/manim).
 
+<table>
+  <tr>
+    <td>
+      <img src="./assets/WriteExample.gif"/>
+    </td>
+    <td>
+      <img src="./assets/TextExample.gif"/>
+    </td>
+    <td>
+      <img src="./assets/NumberPlaneExample.gif"/>
+    </td>
+  </tr>
+</table>
 
 ## Installation
 JAnim runs on Python 3.12+ and OpenGL 4.3+.
