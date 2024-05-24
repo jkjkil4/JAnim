@@ -182,10 +182,19 @@ class Vector(Arrow):
 
     - ``buff`` 默认设为了 0
     '''
-    def __init__(self, direction: np.ndarray = RIGHT, *, buff: float = 0, **kwargs):
+    def __init__(
+        self,
+        direction: np.ndarray = RIGHT,
+        *,
+        buff: float = 0,
+        tip_kwargs: dict = {},
+        **kwargs
+    ):
+        tip_kwargs.setdefault('center_anchor', CenterAnchor.Front)
+
         if len(direction) == 2:
             direction = np.hstack([direction, 0])
-        super().__init__(ORIGIN, direction, buff=buff, **kwargs)
+        super().__init__(ORIGIN, direction, buff=buff, tip_kwargs=tip_kwargs, **kwargs)
 
 
 class DoubleArrow(Arrow):

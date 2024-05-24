@@ -169,6 +169,10 @@ class CmptVPoints_NumberPlaneImpl(Cmpt_VPoints, impl=True):
 class NumberPlane(Axes):
     points = CmptInfo(CmptVPoints_NumberPlaneImpl)
 
+    background_line_style_d: dict = dict(
+        stroke_color=BLUE_D,
+        stroke_radius=0.01,
+    )
     axis_config_d: dict = dict(
         stroke_color=WHITE,
         stroke_radius=0.01,
@@ -185,10 +189,7 @@ class NumberPlane(Axes):
         self,
         x_range: RangeSpecifier = DEFAULT_X_RANGE,
         y_range: RangeSpecifier = DEFAULT_Y_RANGE,
-        background_line_style: dict = dict(
-            stroke_color=BLUE_D,
-            stroke_radius=0.01,
-        ),
+        background_line_style: dict = dict(),
         # Defaults to a faded version of line_config
         faded_line_style: dict = dict(),
         faded_line_ratio: int = 4,
@@ -199,7 +200,7 @@ class NumberPlane(Axes):
             y_range,
             **kwargs
         )
-        self.background_line_style = dict(background_line_style)
+        self.background_line_style = merge_dicts_recursively(self.background_line_style_d, background_line_style)
         self.faded_line_style = dict(faded_line_style)
         self.faded_line_ratio = faded_line_ratio
         self._init_background_lines()
