@@ -9,7 +9,7 @@
     from janim.imports import *
 
     class HelloJAnimExample(Timeline):
-        def construct(self) -> None:
+        def construct(self):
             # define items
             circle = Circle(color=BLUE)
             square = Square(color=GREEN, fill_alpha=0.5)
@@ -28,7 +28,7 @@
     from janim.imports import *
 
     class SimpleCurveExample(Timeline):
-        def construct(self) -> None:
+        def construct(self):
             item1 = VItem(
                 LEFT * 2, DR, UR * 3 + UP, RIGHT * 4, DR * 2, DOWN * 2, LEFT * 2,
                 NAN_POINT,
@@ -63,7 +63,7 @@
     from janim.imports import *
 
     class TextExample(Timeline):
-        def construct(self) -> None:
+        def construct(self):
             txt = Text('Here is a text', font_size=64)
             desc = Group(
                 Text('You can also apply <c BLUE>styles</c> to the text.', format=Text.Format.RichText),
@@ -105,7 +105,7 @@
 
 
     class TypstExample(Timeline):
-        def construct(self) -> None:
+        def construct(self):
             doc = TypstDoc(typst_doc)
             typ = Typst('sum_(i=1)^n x_i')
 
@@ -125,7 +125,7 @@
     from janim.imports import *
 
     class AnimatingPiExample(Timeline):
-        def construct(self) -> None:
+        def construct(self):
             grid = Typst('pi') * 100
             grid.points.scale(2).arrange_in_grid(10, 10, buff=0.2)
             grid.show()
@@ -154,13 +154,39 @@
             self.forward()
 
 
+.. janim-example:: NumberPlaneExample
+    :media: ../_static/videos/NumberPlaneExample.mp4
+
+    from janim.imports import *
+
+    class NumberPlaneExample(Timeline):
+        def construct(self):
+            plane = NumberPlane(faded_line_ratio=1)
+
+            sin_graph = plane.get_graph(lambda x: math.sin(x))
+
+            self.forward(0.2)
+            self.play(Write(plane, lag_ratio=0.05))
+            self.play(Write(sin_graph))
+            self.forward()
+
+            self.play(
+                sin_graph.anim(),
+                plane.anim.points.apply_matrix([
+                    [3, -1],
+                    [1, 2]
+                ]),
+                duration=2
+            )
+            self.forward()
+
 .. janim-example:: UpdaterExample
     :media: ../_static/videos/UpdaterExample.mp4
 
     from janim.imports import *
 
     class UpdaterExample(Timeline):
-        def construct(self) -> None:
+        def construct(self):
             square = Square(fill_color=BLUE_E, fill_alpha=1).show()
             brace = Brace(square, UP).show()
 

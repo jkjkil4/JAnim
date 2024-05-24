@@ -128,6 +128,29 @@ class AnimatingPiExample(Timeline):
         self.forward()
 
 
+class NumberPlaneExample(Timeline):
+    def construct(self) -> None:
+        plane = NumberPlane(faded_line_ratio=1)
+
+        sin_graph = plane.get_graph(lambda x: math.sin(x))
+
+        self.forward(0.2)
+        self.play(Write(plane, lag_ratio=0.05))
+        self.play(Write(sin_graph))
+        self.forward()
+
+        self.play(
+            sin_graph.anim(),
+            plane.anim.points.apply_matrix([
+                [3, -1],
+                [1, 2]
+            ]),
+            duration=2
+        )
+        self.forward()
+
+
+
 class UpdaterExample(Timeline):
     def construct(self) -> None:
         square = Square(fill_color=BLUE_E, fill_alpha=1).show()

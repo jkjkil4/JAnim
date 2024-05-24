@@ -111,7 +111,7 @@ class GrowDoubleArrow(GrowArrowByBoundFunc):
     '''
     显示箭头的显现过程，默认从中间向两边显现，并自动调整箭头标志位置
 
-    - 传入 ``start_ratio``（默认 ``0.5``） 可以调整开始的位置
+    - 传入 ``start_ratio`` （默认 ``0.5``） 可以调整开始的位置
     '''
     label_color = C_LABEL_ANIM_IN
 
