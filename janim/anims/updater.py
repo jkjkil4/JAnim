@@ -110,7 +110,7 @@ class DataUpdater[T: Item](Animation):
 
     def wrap_dynamic(self, updater_data: DataUpdater.DataGroup) -> DynamicItem:
         '''
-        以供传入 :meth:`~.Timeline.register_dynamic_data` 使用
+        以供传入 :meth:`~.Timeline.register_dynamic` 使用
         '''
         def wrapper(global_t: float) -> Item:
             alpha = self.get_alpha_on_global_t(global_t)

@@ -244,6 +244,8 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
                 item.anim(duration=2, rate_func=linear)
                 .points.scale(2).r.color.set('green')
             )
+
+        ``.r`` 表示从组件回到物件，这样就可以调用其它组件的功能
         '''
         from janim.anims.transform import MethodTransformArgsBuilder
         return MethodTransformArgsBuilder(self)

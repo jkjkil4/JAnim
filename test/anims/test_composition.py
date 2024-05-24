@@ -66,5 +66,5 @@ class TestComposition(unittest.TestCase):
             tl.anim4,
             TimeRange(1, 2),
             TimeRange(1, 2),
-            TimeRange(2, 1)
+            TimeRange(1, 2)
         )

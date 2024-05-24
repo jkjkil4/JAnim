@@ -50,8 +50,14 @@ class GrowFromEdge(GrowFromPoint):
         super().__init__(item, point, **kwargs)
 
 
+class SpinInFromNothing(GrowFromCenter):
+    '''从物件的中心旋转半圈放大显现'''
+    def __init__(self, item: Points, *, path_arc=PI, **kwargs):
+        super().__init__(item, path_arc=path_arc, **kwargs)
+
+
 class GrowArrowByBoundFunc(Animation):
-    '''显示箭头的显现过程，从开头到结尾画出，并自动调整箭头标志位置'''
+    ''':class:`GrowArrow` 和 :class:`GrowDoubleArrow` 的基类'''
     label_color = C_LABEL_ANIM_ABSTRACT
 
     def __init__(
@@ -115,9 +121,3 @@ class GrowDoubleArrow(GrowArrowByBoundFunc):
             lambda alpha: (start_ratio * (1 - alpha), 1 - (1 - start_ratio) * (1 - alpha)),
             **kwargs
         )
-
-
-class SpinInFromNothing(GrowFromCenter):
-    '''从物件的中心旋转半圈放大显现'''
-    def __init__(self, item: Points, *, path_arc=PI, **kwargs):
-        super().__init__(item, path_arc=path_arc, **kwargs)
