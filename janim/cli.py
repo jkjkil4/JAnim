@@ -88,16 +88,19 @@ def write(args: Namespace) -> None:
         if not os.path.exists(output_dir):
             os.makedirs(output_dir)
 
-        if both or args.video:
+        writes_video = both or args.video
+        writes_audio = (both or args.audio) and anim.timeline.has_audio()
+
+        if writes_video:
             log.info(f'fps={anim.cfg.fps}')
             log.info(f'resolution="{anim.cfg.pixel_width}x{anim.cfg.pixel_height}"')
             log.info(f'format="{args.format}"')
-        if both or args.audio:
+        if writes_audio:
             log.info(f'audio_format="{args.audio_format}"')
             log.info(f'audio_framerate="{anim.cfg.audio_framerate}"')
         log.info(f'output_dir="{output_dir}"')
 
-        if both or args.video:
+        if writes_video:
             writer = VideoWriter(anim)
             writer.write_all(
                 os.path.join(output_dir,
@@ -106,7 +109,7 @@ def write(args: Namespace) -> None:
             if args.open and anim is built[-1]:
                 open_file(writer.final_file_path)
 
-        if (both or args.audio) and anim.timeline.has_audio():
+        if writes_audio:
             writer = AudioWriter(anim)
             writer.write_all(
                 os.path.join(output_dir,
