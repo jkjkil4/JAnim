@@ -6,6 +6,10 @@ span.caption-text {
     font-size: larger;
 }
 
+div.toctree-wrapper.compound span.caption-text {
+    font-size: x-large;
+}
+
 .reference.internal.image-reference img {
     object-fit: scale-down;
 }

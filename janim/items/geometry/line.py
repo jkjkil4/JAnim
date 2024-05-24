@@ -111,7 +111,7 @@ class Cmpt_VPoints_LineImpl[ItemT](Cmpt_VPoints[ItemT]):
         vect = normalize(rough_end - rough_start)
         # Now that we know the direction between them,
         # we can find the appropriate boundary point from
-        # start and end, if they're mobjects
+        # start and end, if they're items
         return (
             Cmpt_VPoints_LineImpl.pointify(start, vect),
             Cmpt_VPoints_LineImpl.pointify(end, -vect)

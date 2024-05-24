@@ -17,14 +17,14 @@ indication
             ).show()
             group.points.scale(2).arrange(RIGHT, buff=2)
 
-            mobject_or_coord = [
+            item_or_coord = [
                 *group,                             # Items: Dot and "x"
                 group.points.box.right + RIGHT * 2  # Coord
             ]
 
             colors=[GREY, RED, BLUE]
 
-            for obj, color in zip(mobject_or_coord, colors):
+            for obj, color in zip(item_or_coord, colors):
                 self.play(FocusOn(obj, color=color))
 
             self.forward(0.3)
@@ -221,7 +221,7 @@ indication
             ).show()
             group.points.scale(2).arrange(RIGHT, buff=2)
 
-            mobject_or_coord = [
+            item_or_coord = [
                 *group,                             # Items: Dot and "x"
                 group.points.box.right + RIGHT * 2  # Coord
             ]
@@ -230,7 +230,7 @@ indication
 
             self.forward(0.3)
 
-            for obj, color in zip(mobject_or_coord, colors):
+            for obj, color in zip(item_or_coord, colors):
                 self.play(Flash(obj, color=color, flash_radius=0.5))
 
             self.forward(0.3)

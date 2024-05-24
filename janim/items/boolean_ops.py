@@ -8,7 +8,7 @@ from janim.items.item import Item
 from janim.items.vitem import VItem
 from janim.utils.bezier import PathBuilder
 
-# Boolean operations between 2D mobjects
+# Boolean operations between 2D items
 # Borrowed from from https://github.com/ManimCommunity/manim/
 
 

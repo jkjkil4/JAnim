@@ -8,24 +8,25 @@ JAnim 文档
 
 JAnim 是一个用于简易动画效果的库
 
-教程
-------------
-
 .. toctree::
    :maxdepth: 1
+   :caption: 教程
 
    tutorial/installation
    tutorial/get_started
    tutorial/use_gui
    tutorial/examples
 
-参考文档
-------------
-
 .. toctree::
    :maxdepth: 2
+   :caption: 参考文档
 
    janim/modules
+
+.. toctree::
+   :caption: 开发相关
+
+   development/about
 
 目录与表格
 ------------
