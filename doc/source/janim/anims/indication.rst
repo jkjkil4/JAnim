@@ -100,7 +100,11 @@ indication
             group.points.scale(1.5).arrange(RIGHT, buff=2)
 
             self.play(
-                *map(ShowCreationThenDestruction, group)
+                *[
+                    ShowCreationThenDestruction(item, auto_close_path=True)
+                    for item in group
+                ],
+                duration=2
             )
             self.forward()
 
