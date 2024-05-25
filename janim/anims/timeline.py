@@ -370,7 +370,7 @@ class Timeline(metaclass=ABCMeta):
         if clip is ...:
             recommended = audio.recommended_range()
             if recommended is None:
-                clip = (0, -1)
+                clip = None
             else:
                 clip = (math.floor(recommended[0] * 10) / 10,
                         math.ceil(recommended[1] * 10) / 10)
