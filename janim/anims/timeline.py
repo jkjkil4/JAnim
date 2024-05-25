@@ -352,7 +352,7 @@ class Timeline(metaclass=ABCMeta):
         file_path: str,
         subtitle: str | Iterable[str],
         *,
-        clip: tuple[float, float] | types.EllipsisType = ...,
+        clip: tuple[float, float] | None | types.EllipsisType = ...,
         delay: float = 0,
         mul: float | Iterable[float] | None = None,
         **subtitle_kwargs
@@ -360,7 +360,7 @@ class Timeline(metaclass=ABCMeta):
         '''
         播放音频，并在对应的区间显示字幕
 
-        - 如果 ``clip=...`` （默认，省略号），则表示自动确定裁剪区间，将前后的空白去除
+        - 如果 ``clip=...`` （默认，省略号），则表示自动确定裁剪区间，将前后的空白去除（可以传入 ``clip=None`` 禁用自动裁剪）
         - 如果 ``mul`` 不是 ``None``，则会将音频振幅乘以该值
         '''
         audio = Audio(file_path)
