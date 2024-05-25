@@ -4,11 +4,13 @@ from __future__ import annotations
 import copy
 import os
 import subprocess as sp
-from typing import Iterable, Self
+from typing import Generator, Iterable, Self
 
 import numpy as np
+
 from janim.exception import EXITCODE_FFMPEG_NOT_FOUND, ExitException
 from janim.logger import log
+from janim.utils.bezier import interpolate
 from janim.utils.config import Config
 from janim.utils.data import Array
 from janim.utils.file_ops import find_file
@@ -167,3 +169,60 @@ class Audio:
         data = self._samples.data
         data[-frames:] = (data[-frames:] * np.linspace(1, 0, frames)).astype(np.int16)
         self._samples.data = data
+
+    def recommended_ranges(
+        self,
+        *,
+        amplitude_threshold_ratio: float = 0.02,
+        gap_duration: float = 0.15
+    ) -> Generator[tuple[float, float], None, None]:
+        '''
+        得到若干个可用区段 ``(start, end)``，一般用于配音音频，也就是会忽略没声音的部分，得到有声音的区段的起止时间
+
+        与 :meth:`recommended_range` 的区别是，该方法得到的是若干个区段，
+        举个例子，如果在讲了一句话后停了一会，再接着讲，那么前后就会被分成两段
+
+        - ``amplitude_threshould_ratio``: 振幅低于该比率的就认为是没声音的
+        - ``gap_duration``: 如果没声音的时长大于该时间，则将前后分段
+        '''
+        data = self._samples.data
+        indices = np.where(data > np.iinfo(np.int16).max * amplitude_threshold_ratio)[0]
+        if len(indices) == 0:
+            return
+
+        diff_end_indices = np.where(np.diff(indices) > self.framerate * gap_duration)[0]
+
+        starts = [indices[0], *indices[diff_end_indices + 1]]
+        ends = [*indices[diff_end_indices], indices[-1]]
+
+        duration = self.duration()
+
+        starts = interpolate(0, duration, np.array(starts) / len(data))
+        ends = interpolate(0, duration, np.array(ends) / len(data))
+
+        yield from zip(starts, ends)
+
+    def recommended_range(
+        self,
+        *,
+        amplitude_threshold_ratio: float = 0.02
+    ) -> tuple[float, float] | None:
+        '''
+        得到可用区段 ``(start, end)``，一般用于配音音频，也就是会忽略没声音的部分，得到有声音的区段的起止时间
+
+        与 :meth:`recommended_ranges` 的区别是，该方法得到的是最开始到最末尾的整个区段
+
+        - ``amplitude_threshould_ratio``: 振幅低于该比率的就认为是没声音的
+        '''
+        # TODO: cache
+        data = self._samples.data
+        indices = np.where(data > np.iinfo(np.int16).max * amplitude_threshold_ratio)[0]
+        if len(indices) == 0:
+            return None
+
+        duration = self.duration()
+
+        start = interpolate(0, duration, indices[0] / len(data))
+        end = interpolate(0, duration, indices[-1] / len(data))
+
+        return start, end

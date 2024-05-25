@@ -1,7 +1,8 @@
 from __future__ import annotations
 
 import inspect
-from typing import Callable, Iterable, NoReturn, Self, Sequence, TypeVar
+from typing import (Callable, Iterable, NoReturn, Self, Sequence, TypeVar,
+                    overload)
 
 import numpy as np
 from fontTools.cu2qu.cu2qu import curve_to_quadratic
@@ -10,9 +11,9 @@ from janim.constants import DEGREES, NAN_POINT, TAU
 from janim.exception import PointError
 from janim.typing import Vect, VectArray
 from janim.utils.simple_functions import choose
-from janim.utils.space_ops import (angle_between_vectors, cross2d,
+from janim.utils.space_ops import (angle_between_vectors, cross, cross2d,
                                    find_intersection, get_norm, midpoint,
-                                   rotation_between_vectors, cross, z_to_vector)
+                                   rotation_between_vectors, z_to_vector)
 
 CLOSED_THRESHOLD = 0.001
 T = TypeVar("T")
@@ -224,8 +225,13 @@ def partial_quadratic_bezier_points(
 
 # Linear interpolation variants
 
+@overload
+def interpolate(start: T, end: T, alpha: float) -> T: ...
+@overload
+def interpolate(start, end, alpha: np.ndarray) -> np.ndarray: ...
 
-def interpolate(start: T, end: T, alpha: np.ndarray | float) -> T:
+
+def interpolate(start, end, alpha):
     return (1 - alpha) * start + alpha * end
 
 

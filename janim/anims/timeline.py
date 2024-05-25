@@ -5,6 +5,7 @@ import inspect
 import math
 import time
 import traceback
+import types
 from abc import ABCMeta, abstractmethod
 from bisect import bisect, insort
 from collections import defaultdict
@@ -333,6 +334,52 @@ class Timeline(metaclass=ABCMeta):
 
     # endregion
 
+    # region audio_and_subtitle
+
+    def aas(
+        self,
+        file_path: str,
+        subtitle: str | Iterable[str],
+        **kwargs
+    ) -> TimeRange:
+        '''
+        :meth:`audio_and_subtitle` 的简写
+        '''
+        return self.audio_and_subtitle(file_path, subtitle, **kwargs)
+
+    def audio_and_subtitle(
+        self,
+        file_path: str,
+        subtitle: str | Iterable[str],
+        *,
+        clip: tuple[float, float] | types.EllipsisType = ...,
+        delay: float = 0,
+        mul: float | Iterable[float] | None = None,
+        **subtitle_kwargs
+    ) -> TimeRange:
+        '''
+        播放音频，并在对应的区间显示字幕
+
+        - 如果 ``clip=...`` （默认，省略号），则表示自动确定裁剪区间，将前后的空白去除
+        - 如果 ``mul`` 不是 ``None``，则会将音频振幅乘以该值
+        '''
+        audio = Audio(file_path)
+        if mul is not None:
+            audio.mul(mul)
+
+        if clip is ...:
+            recommended = audio.recommended_range()
+            if recommended is None:
+                clip = (0, -1)
+            else:
+                clip = (math.floor(recommended[0] * 10) / 10,
+                        math.ceil(recommended[1] * 10) / 10)
+
+        t = self.play_audio(audio, delay=delay, clip=clip)
+        self.subtitle(subtitle, t, **subtitle_kwargs)
+
+        return t
+
     # region audio
 
     def play_audio(
@@ -342,15 +389,20 @@ class Timeline(metaclass=ABCMeta):
         delay: float = 0,
         begin: float = 0,
         end: float = -1,
+        clip: tuple[float, float] | None = None,
     ) -> TimeRange:
         '''
         在当前位置播放音频
 
         - 可以指定 ``begin`` 和 ``end`` 表示裁剪区段
         - 可以指定在当前位置往后 ``delay`` 秒才开始播放
+        - 若指定 ``clip``，则会覆盖 ``begin`` 和 ``end`` （可以将 ``clip`` 视为这二者的简写）
 
         返回值表示播放的时间段
         '''
+        if clip is not None:
+            begin, end = clip
+
         if end == -1:
             end = audio.duration()
         duration = end - begin
@@ -503,6 +555,8 @@ class Timeline(metaclass=ABCMeta):
                 subtitle.points.next_to(other.subtitle, UP, buff=SMALL_BUFF)
                 return
         subtitle.points.to_border(DOWN)
+
+    # endregion
 
     # endregion
 

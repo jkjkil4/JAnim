@@ -40,7 +40,6 @@ from janim.gui.richtext_editor import RichTextEditor
 from janim.gui.selector import Selector
 from janim.logger import log
 from janim.render.writer import VideoWriter
-from janim.utils.bezier import interpolate
 from janim.utils.file_ops import get_janim_dir
 from janim.utils.simple_functions import clip
 
@@ -647,22 +646,11 @@ class TimelineView(QWidget):
         if info.clip_range != TimeRange(0, info.audio.duration()):
             msg_lst.append(f'Clip: {round(info.clip_range.at, 2)}s ~ {round(info.clip_range.end, 2)}s')
 
-        data = info.audio._samples.data
-        indices = np.where(data > np.iinfo(np.int16).max * 0.02)[0]
-        if len(indices) != 0:
-            diff_end_indices = np.where(np.diff(indices) > info.audio.framerate * 0.15)[0]
-
-            starts = [indices[0], *indices[diff_end_indices + 1]]
-            ends = [*indices[diff_end_indices], indices[-1]]
-
-            starts = interpolate(0, info.audio.duration(), np.array(starts) / len(data))
-            ends = interpolate(0, info.audio.duration(), np.array(ends) / len(data))
-
-            clips = ', '.join(
-                f'{math.floor(start * 10) / 10}s ~ {math.ceil(end * 10) / 10}s'
-                for start, end in zip(starts, ends)
-            )
-
+        clips = ', '.join(
+            f'{math.floor(start * 10) / 10}s ~ {math.ceil(end * 10) / 10}s'
+            for start, end in info.audio.recommended_ranges()
+        )
+        if clips:
             msg_lst.append(f'Recommended clip: {clips}')
 
         label = QLabel('\n'.join(msg_lst))
