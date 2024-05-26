@@ -17,6 +17,7 @@ import time
 import traceback
 from bisect import bisect
 from dataclasses import dataclass
+from typing import TYPE_CHECKING
 
 import numpy as np
 from PySide6.QtCore import (QByteArray, QPoint, QRect, QRectF, Qt, QTimer,
@@ -40,8 +41,12 @@ from janim.gui.richtext_editor import RichTextEditor
 from janim.gui.selector import Selector
 from janim.logger import log
 from janim.render.writer import VideoWriter
+from janim.utils.bezier import interpolate
 from janim.utils.file_ops import get_janim_dir
 from janim.utils.simple_functions import clip
+
+if TYPE_CHECKING:
+    from PySide6.QtCharts import QAreaSeries, QChartView
 
 TIMELINE_VIEW_MIN_DURATION = 0.5
 
@@ -668,7 +673,7 @@ class TimelineView(QWidget):
         self.place_tooltip(self.tooltip, pos)
         self.tooltip.show()
 
-    def create_audio_chart(self, info: Timeline.PlayAudioInfo, near: float | None = None) -> None:
+    def create_audio_chart(self, info: Timeline.PlayAudioInfo, near: float | None = None) -> 'QChartView':
         from PySide6.QtCharts import (QChart, QChartView, QLineSeries,
                                       QValueAxis)
 
@@ -711,27 +716,41 @@ class TimelineView(QWidget):
                             range_end,
                             len(data))
 
-        series = QLineSeries()
-        for t, y in zip(times, data):
-            series.append(t, y)
-
         chart = QChart()
-        chart.addSeries(series)
 
         x_axis = QValueAxis()
         x_axis.setRange(range_begin, range_end)
         x_axis.setTickCount(max(2, 1 + int(range_end - range_begin)))
         chart.addAxis(x_axis, Qt.AlignmentFlag.AlignBottom)
-        series.attachAxis(x_axis)
 
         y_axis = QValueAxis()
         y_axis.setRange(0, 1)
         chart.addAxis(y_axis, Qt.AlignmentFlag.AlignLeft)
-        series.attachAxis(y_axis)
 
         x_clip_axis = QValueAxis()
         x_clip_axis.setRange(clip_begin, clip_end)
         chart.addAxis(x_clip_axis, Qt.AlignmentFlag.AlignBottom)
+
+        series = QLineSeries()
+        for t, y in zip(times, data):
+            series.append(t, y)
+        chart.addSeries(series)
+        series.attachAxis(x_axis)
+        series.attachAxis(y_axis)
+
+        if clip_begin != info.clip_range.at:
+            area = self.create_axvspan(clip_begin, interpolate(clip_begin, clip_end, 0.1),
+                                       QColor(41, 171, 202, 128), QColor(41, 171, 202, 0))
+            chart.addSeries(area)
+            area.attachAxis(x_clip_axis)
+            area.attachAxis(y_axis)
+
+        if clip_end != info.clip_range.end:
+            area = self.create_axvspan(interpolate(clip_begin, clip_end, 0.9), clip_end,
+                                       QColor(41, 171, 202, 0), QColor(41, 171, 202, 128))
+            chart.addSeries(area)
+            area.attachAxis(x_clip_axis)
+            area.attachAxis(y_axis)
 
         chart.legend().setVisible(False)
 
@@ -740,6 +759,32 @@ class TimelineView(QWidget):
         chart_view.setMinimumSize(350, 200)
 
         return chart_view
+
+    @staticmethod
+    def create_axvspan(x1: float, x2: float, c1: QColor, c2: QColor) -> 'QAreaSeries':
+        from PySide6.QtCharts import QAreaSeries, QLineSeries
+        from PySide6.QtGui import QGradient, QLinearGradient
+
+        upper_series = QLineSeries()
+        upper_series.append(x1, 1.)
+        upper_series.append(x2, 1.)
+
+        lower_series = QLineSeries()
+        lower_series.append(x1, 0.)
+        lower_series.append(x2, 0.)
+
+        area = QAreaSeries(upper_series, lower_series)
+        upper_series.setParent(area)
+        lower_series.setParent(area)
+
+        grandient = QLinearGradient(QPoint(0, 0), QPoint(1, 0))
+        grandient.setColorAt(0.0, c1)
+        grandient.setColorAt(1.0, c2)
+        grandient.setCoordinateMode(QGradient.CoordinateMode.ObjectBoundingMode)
+        area.setBrush(grandient)
+        area.setPen(Qt.PenStyle.NoPen)
+
+        return area
 
     def hover_at_anim(self, pos: QPoint, anim: Animation) -> None:
         parents = [anim]
@@ -772,7 +817,7 @@ class TimelineView(QWidget):
         self.place_tooltip(self.tooltip, pos)
         self.tooltip.show()
 
-    def create_anim_chart(self, anim: Animation) -> None:
+    def create_anim_chart(self, anim: Animation) -> 'QChartView':
         from PySide6.QtCharts import QChart, QChartView, QScatterSeries
 
         count = int(anim.global_range.duration * self.anim.cfg.fps)
