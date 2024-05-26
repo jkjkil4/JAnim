@@ -820,7 +820,7 @@ class TimelineView(QWidget):
     def create_anim_chart(self, anim: Animation) -> 'QChartView':
         from PySide6.QtCharts import QChart, QChartView, QScatterSeries
 
-        count = int(anim.global_range.duration * self.anim.cfg.fps)
+        count = min(500, int(anim.global_range.duration * self.anim.cfg.fps))
         times = np.linspace(anim.global_range.at,
                             anim.global_range.end,
                             count)
