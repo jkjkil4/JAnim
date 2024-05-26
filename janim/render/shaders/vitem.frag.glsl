@@ -103,8 +103,6 @@ float distance_bezier(vec2 A, vec2 B, vec2 C, vec2 p)
     return dis;
 }
 
-const int lim = (points.length() - 1) / 2 * 2;
-
 void get_subpath_attr(
     int start_idx,
     out int end_idx,
@@ -112,6 +110,7 @@ void get_subpath_attr(
     out float d,
     out float sgn
 ) {
+    const int lim = (points.length() - 1) / 2 * 2.0;
     end_idx = lim;
     bool is_closed = get_isclosed(start_idx);
 
@@ -188,6 +187,8 @@ void main()
     int start_idx = 0;
     float sp_d;
     float sp_sgn;
+
+    const int lim = (points.length() - 1) / 2 * 2;
 
     while (true) {
         get_subpath_attr(start_idx, start_idx, idx, sp_d, sp_sgn);
