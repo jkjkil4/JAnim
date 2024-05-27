@@ -13,6 +13,7 @@ anims
    fading
    growing
    indication
+   movement
    rotation
    timeline
    transform

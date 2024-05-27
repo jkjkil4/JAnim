@@ -235,7 +235,46 @@ indication
 
             self.forward(0.3)
 
-.. # TODO: ApplyWave
-.. # TODO: WiggleOutThenIn
-.. # TODO: TurnInsideOut
+.. autoclass:: janim.anims.indication.ApplyWave
+    :show-inheritance:
+
+.. janim-example:: ApplyWaveExample
+    :media: ../../_static/videos/ApplyWaveExample.mp4
+
+    from janim.imports import *
+
+    class ApplyWaveExample(Timeline):
+        def construct(self):
+            group = Group(
+                Square(fill_alpha=0.5),
+                Circle(fill_alpha=0.5),
+                Text('Text', font_size=48),
+                color=BLUE
+            ).show()
+            group.points.scale(1.5).arrange(RIGHT, buff=2)
+
+            self.play(*map(ApplyWave, group))
+            self.forward()
+
+.. autoclass:: janim.anims.indication.WiggleOutThenIn
+    :show-inheritance:
+
+.. janim-example:: WiggleOutThenInExample
+    :media: ../../_static/videos/WiggleOutThenInExample.mp4
+
+    from janim.imports import *
+
+    class WiggleOutThenInExample(Timeline):
+        def construct(self) -> None:
+            group = Group(
+                Square(fill_alpha=0.5),
+                Circle(fill_alpha=0.5),
+                Text('Text', font_size=48),
+                color=BLUE
+            ).show()
+            group.points.scale(1.5).arrange(RIGHT, buff=2)
+
+            self.play(*map(WiggleOutThenIn, group))
+            self.forward()
+
 .. # TODO: FlashyFadeIn

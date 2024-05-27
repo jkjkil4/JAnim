@@ -4,6 +4,7 @@ from typing import Callable
 import numpy as np
 
 from janim.anims.updater import DataUpdater, UpdaterParams
+from janim.constants import C_LABEL_ANIM_STAY
 from janim.items.item import Item
 from janim.items.points import Points
 from janim.items.vitem import VItem
@@ -66,6 +67,8 @@ class ComplexHomotopy(Homotopy):
 
 
 class MoveAlongPath(DataUpdater):
+    label_color = C_LABEL_ANIM_STAY
+
     def __init__(
         self,
         item: Item,

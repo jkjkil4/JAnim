@@ -68,7 +68,6 @@ def _generate_autodoc_file(module_path: str, filename: str, rst_path: str) -> st
     name = filename[:-3]
     module_name = f'{module_path}.{name}'
     if module_name in generate_autodoc_exclude:
-        print(module_name)
         return None
 
     rst_file_path = os.path.join(rst_path, f'{name}.rst')

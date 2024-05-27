@@ -1,15 +1,18 @@
 from __future__ import annotations
 
+import math
+
 import numpy as np
 
 from janim.anims.animation import Animation
 from janim.anims.composition import AnimGroup, Succession
 from janim.anims.creation import Create, ShowPartial
 from janim.anims.fading import FadeOut
+from janim.anims.movement import Homotopy
 from janim.anims.updater import DataUpdater, UpdaterParams
 from janim.components.rgbas import Cmpt_Rgbas
 from janim.constants import (C_LABEL_ANIM_ABSTRACT, C_LABEL_ANIM_INDICATION,
-                             GREY, ORIGIN, RIGHT, TAU, YELLOW)
+                             GREY, ORIGIN, RIGHT, TAU, UP, YELLOW)
 from janim.items.geometry.arc import Circle, Dot
 from janim.items.geometry.line import Line
 from janim.items.item import Item
@@ -19,7 +22,7 @@ from janim.items.vitem import VItem
 from janim.typing import JAnimColor, Vect
 from janim.utils.bezier import interpolate
 from janim.utils.config import Config
-from janim.utils.rate_functions import RateFunc, smooth, there_and_back
+from janim.utils.rate_functions import RateFunc, smooth, there_and_back, wiggle
 
 
 class FocusOn(DataUpdater[Dot]):
@@ -324,7 +327,86 @@ class Flash(ShowCreationThenDestruction):
         return lines
 
 
-# TODO: ApplyWave
-# TODO: WiggleOutThenIn
-# TODO: TurnInsideOut
+class ApplyWave(Homotopy):
+    label_color = C_LABEL_ANIM_INDICATION
+
+    def __init__(
+        self,
+        item: Item,
+        direction: Vect = UP,
+        amplitude: float = 0.2,
+        *,
+        duration: float = 1.0,
+        root_only: bool = False,
+        **kwargs
+    ):
+        if root_only:
+            box = item(Points).points.self_box
+        else:
+            box = item(Points).points.box
+
+        left_x = box.left[0]
+        right_x = box.right[0]
+        vect = amplitude * direction
+
+        def homotopy(x, y, z, t):
+            alpha = (x - left_x) / (right_x - left_x)
+            power = math.exp(2.0 * (alpha - 0.5))
+            nudge = there_and_back(t**power)
+            return np.array([x, y, z]) + nudge * vect
+
+        super().__init__(
+            item,
+            homotopy,
+            duration=duration,
+            **kwargs
+        )
+
+
+class WiggleOutThenIn(DataUpdater):
+    label_color = C_LABEL_ANIM_INDICATION
+
+    def __init__(
+        self,
+        item: Item,
+        *,
+        scale: float = 1.1,
+        angle: float = 0.01 * TAU,
+        n_wiggles: int = 6,
+        scale_about_point: Vect | None = None,
+        rotate_about_point: Vect | None = None,
+        duration: float = 2,
+        root_only: bool = False,
+        **kwargs
+    ):
+        if root_only:
+            box = item(Points).points.self_box
+        else:
+            box = item(Points).points.box
+        self.scale = scale
+        self.angle = angle
+        self.n_wiggles = n_wiggles
+        self.scale_about_point = scale_about_point or box.center
+        self.rotate_about_point = rotate_about_point or box.center
+        super().__init__(
+            item,
+            self.updater,
+            duration=duration,
+            root_only=root_only,
+            **kwargs
+        )
+
+    def updater(self, data: Item, p: UpdaterParams) -> None:
+        if not isinstance(data, Points):
+            return
+        data.points.scale(
+            interpolate(1, self.scale, there_and_back(p.alpha)),
+            about_point=self.scale_about_point
+        )
+        data.points.rotate(
+            wiggle(p.alpha, self.n_wiggles) * self.angle,
+            about_point=self.rotate_about_point
+        )
+
+
 # TODO: FlashyFadeIn
