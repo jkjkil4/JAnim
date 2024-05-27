@@ -17,6 +17,7 @@ def main() -> None:
     run_parser(sp.add_parser('run', help='Run timeline(s) from specific namespace'))
     write_parser(sp.add_parser('write', help='Generate video file(s) of timeline(s) from specific namesapce'))
     examples_parser(sp.add_parser('examples', help='Show examples of janim'))
+    tool_parser(sp.add_parser('tool', help='Run useful tools'))
 
     args = parser.parse_args()
 
@@ -108,6 +109,16 @@ def examples_parser(parser: ArgumentParser) -> None:
     parser.set_defaults(interact=False)
 
 
+def tool_parser(parser: ArgumentParser) -> None:
+    parser.add_argument(
+        'tool_name',
+        choices=['richtext', 'fonts'],
+        nargs='*',
+        help='Tool(s) that you want to use'
+    )
+    parser.set_defaults(func=tool)
+
+
 def run(args: Namespace) -> None:
     from janim.cli import run
     run(args)
@@ -116,6 +127,11 @@ def run(args: Namespace) -> None:
 def write(args: Namespace) -> None:
     from janim.cli import write
     write(args)
+
+
+def tool(args: Namespace) -> None:
+    from janim.cli import tool
+    tool(args)
 
 
 if __name__ == '__main__':

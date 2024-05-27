@@ -13,6 +13,7 @@ class RichTextEditor(QWidget):
         super().__init__(parent)
 
         self.setup_ui()
+        self.setWindowTitle('富文本编辑')
         self.resize(600, 400)
         self.check_box_wordwrap.setChecked(True)
 

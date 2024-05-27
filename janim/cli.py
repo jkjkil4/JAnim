@@ -119,6 +119,37 @@ def write(args: Namespace) -> None:
     log.info('======')
 
 
+def tool(args: Namespace) -> None:
+    # 不直接从对应的 module 导入，是为了经过 anim_viewer 中对 pyside6 安装的检查
+    from janim.gui.anim_viewer import FontTable, QWidget, RichTextEditor
+
+    log.info('======')
+    log.info('Constructing window')
+
+    t = time.time()
+
+    from janim.gui.application import Application
+
+    app = Application()
+
+    tool_map: dict[str, type[QWidget]] = {
+        'richtext': RichTextEditor,
+        'fonts': FontTable
+    }
+
+    widgets: list[QWidget] = []
+
+    for key in args.tool_name:
+        widget = tool_map[key]()
+        widgets.append(widget)
+        widget.show()
+
+    log.info(f'Finished constructing in {time.time() - t:.2f} s')
+    log.info('======')
+
+    app.exec()
+
+
 def modify_default_config(args: Namespace) -> None:
     if args.config:
         for key, value in args.config:
