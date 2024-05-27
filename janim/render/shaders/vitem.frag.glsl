@@ -110,7 +110,7 @@ void get_subpath_attr(
     out float d,
     out float sgn
 ) {
-    const int lim = (points.length() - 1) / 2 * 2.0;
+    const int lim = (points.length() - 1) / 2 * 2;
     end_idx = lim;
     bool is_closed = get_isclosed(start_idx);
 
