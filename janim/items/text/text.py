@@ -19,7 +19,7 @@ from janim.items.vitem import VItem
 from janim.logger import log
 from janim.typing import JAnimColor
 from janim.utils.config import Config
-from janim.utils.font import Font, get_fontpath_by_name
+from janim.utils.font import Font, get_font_info_by_name
 from janim.utils.simple_functions import decode_utf8
 from janim.utils.space_ops import get_norm, normalize
 
@@ -292,7 +292,7 @@ class Text(VItem, Group[TextLine]):
             font.extend(cfg_font)
 
         fonts = [
-            Font.get(get_fontpath_by_name(name))
+            Font.get_by_info(get_font_info_by_name(name))
             for name in font
         ]
 

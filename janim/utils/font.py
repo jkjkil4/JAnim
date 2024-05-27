@@ -1,8 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Callable
-from functools import lru_cache
+from typing import TYPE_CHECKING, Callable, Generator
 
 import freetype as FT
 import numpy as np
@@ -10,52 +9,111 @@ from fontTools.ttLib import TTCollection, TTFont, TTLibError
 
 from janim.exception import FontNotFoundError
 from janim.utils.bezier import PathBuilder
+from janim.logger import log
 
-fontpaths: list[str] = None
+if TYPE_CHECKING:
+    # ???
+    from fontTools.ttLib.tables._n_a_m_e import table__n_a_m_e
 
 
-@lru_cache()
-def get_fontpath_by_name(font_name: str) -> str:
-    '''
-    通过字体名得到字体文件路径
+@dataclass
+class FontInfo:
+    filepath: str
+    index: int
+    name: str
+    table: table__n_a_m_e
 
-    例：通过 ``Consolas`` 得到 ``C:\\Windows\\Fonts\\consola.ttf``
-    '''
-    global fontpaths
 
-    if fontpaths is None:
-        from janim.utils.font_manager import findSystemFonts
-        fontpaths = findSystemFonts()
+_font_finder: Generator[FontInfo, None, None] | None = None
+_found_infos: dict[str, FontInfo] = {}
 
-    for filepath in fontpaths:
+
+def _font_finder_func() -> Generator[FontInfo, None, None]:
+    from janim.utils.font_manager import findSystemFonts
+    for filepath in findSystemFonts():
         try:
             fonts = TTCollection(filepath).fonts    \
-                if filepath[-3:].endswith('ttc')    \
+                if filepath.endswith('ttc')         \
                 else [TTFont(filepath)]
         except TTLibError:
+            log.debug(f'Skipped font "{filepath}"')
             continue
 
-        for font in fonts:
-            if font['name'].getDebugName(4) == font_name:
-                return filepath
+        for i, font in enumerate(fonts):
+            table: table__n_a_m_e = font['name']
+            name = table.getDebugName(4)
+            info = FontInfo(filepath, i, name, table)
+            _found_infos[name] = info
+            yield info
 
-    raise FontNotFoundError(f'No font named "{font_name}"')
+
+def _get_font_finder() -> Generator[FontInfo, None, None]:
+    global _font_finder
+    if _font_finder is None:
+        _font_finder = _font_finder_func()
+    return _font_finder
+
+
+def get_font_info_by_name(font_name: str) -> FontInfo:
+    '''
+    通过字体名得到字体文件信息
+
+    例：通过 ``Consolas`` 得到 ``FontInfo('C:\\Windows\\Fonts\\consola.ttf', 0, <'name' table at ...>)``
+    '''
+    info = _found_infos.get(font_name, None)
+    if info is not None:
+        return info
+
+    finder = _get_font_finder()
+
+    try:
+        while True:
+            info = next(finder)
+            if info.name == font_name:
+                return info
+    except StopIteration:
+        raise FontNotFoundError(f'No font named "{font_name}"')
+
+
+def get_found_infos() -> dict[str, FontInfo]:
+    finder = _get_font_finder()
+    try:
+        while True:
+            next(finder)
+    except StopIteration:
+        pass
+
+    return _found_infos
 
 
 class Font:
     filepath_to_font_map: dict[str, Font] = {}
 
     @staticmethod
-    def get(filepath: str) -> FT.Face:
-        if filepath in Font.filepath_to_font_map:
-            return Font.filepath_to_font_map[filepath]
+    def get(filepath: str) -> Font:
+        key = (filepath, 0)
+        cache = Font.filepath_to_font_map.get(key)
+        if cache is not None:
+            return cache
 
         font = Font(filepath)
-        Font.filepath_to_font_map[filepath] = font
+        Font.filepath_to_font_map[key] = font
         return font
 
-    def __init__(self, filepath: str) -> None:
-        self.face = FT.Face(filepath)
+    @staticmethod
+    def get_by_info(info: FontInfo) -> Font:
+        key = (info.filepath, info.index)
+        cache = Font.filepath_to_font_map.get(key)
+        if cache is not None:
+            return cache
+
+        font = Font(info.filepath, info.index)
+        Font.filepath_to_font_map[key] = font
+        return font
+
+    def __init__(self, filepath: str | FontInfo, index: int = 0) -> None:
+        with open(filepath, 'rb') as file:
+            self.face = FT.Face(file, index=index)
         self.face.select_charmap(FT.FT_ENCODING_UNICODE)
         self.face.set_char_size(48 << 6)
         self.cached_glyph: dict[int, Font.GlyphData] = {}
