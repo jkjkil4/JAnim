@@ -35,6 +35,7 @@ from janim.exception import ExitException
 from janim.gui.application import Application
 from janim.gui.audio_player import AudioPlayer
 from janim.gui.fixed_ratio_widget import FixedRatioWidget
+from janim.gui.font_table import FontTable
 from janim.gui.glwidget import GLWidget
 from janim.gui.precise_timer import PreciseTimer
 from janim.gui.richtext_editor import RichTextEditor
@@ -132,6 +133,11 @@ class AnimViewer(QMainWindow):
         self.action_richtext_edit.setShortcut('Ctrl+R')
         self.action_richtext_edit.triggered.connect(self.on_richtext_edit_triggered)
         self.richtext_editor: RichTextEditor | None = None
+
+        self.action_font_table = menu_functions.addAction('字体列表')
+        self.action_font_table.setShortcut('Ctrl+F')
+        self.action_font_table.triggered.connect(self.on_font_table_triggered)
+        self.font_table: FontTable | None = None
 
     def setup_status_bar(self) -> None:
         self.fps_label = QLabel()
@@ -444,6 +450,17 @@ class AnimViewer(QMainWindow):
 
     def on_richtext_editor_destroyed(self) -> None:
         self.richtext_editor = None
+
+    def on_font_table_triggered(self) -> None:
+        if self.font_table is None:
+            self.font_table = FontTable(self)
+            self.font_table.setWindowFlag(Qt.WindowType.Tool)
+            self.font_table.setAttribute(Qt.WidgetAttribute.WA_DeleteOnClose)
+            self.font_table.destroyed.connect(self.on_font_table_destroyed)
+        self.font_table.show()
+
+    def on_font_table_destroyed(self) -> None:
+        self.font_table = None
 
     def on_glw_rendered(self) -> None:
         cur = time.time()

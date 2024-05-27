@@ -41,7 +41,7 @@ def _font_finder_func() -> Generator[FontInfo, None, None]:
 
         for i, font in enumerate(fonts):
             table: table__n_a_m_e = font['name']
-            name = table.getDebugName(4)
+            name = table.getDebugName(4) or ''
             info = FontInfo(filepath, i, name, table)
             _found_infos[name] = info
             yield info
