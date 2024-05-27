@@ -6,7 +6,7 @@ from PIL import Image
 from janim.render.base import Renderer
 from janim.utils.file_ops import find_file
 
-filepath_to_img_map: dict[str, Image.Image] = {}
+filepath_to_img_map: dict[tuple[str, float], Image.Image] = {}
 
 
 def get_img_from_file(file_path: str) -> Image.Image:
