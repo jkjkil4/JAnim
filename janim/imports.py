@@ -10,6 +10,7 @@ from janim.anims.display import *
 from janim.anims.fading import *
 from janim.anims.growing import *
 from janim.anims.indication import *
+from janim.anims.movement import *
 from janim.anims.rotation import *
 from janim.anims.timeline import *
 from janim.anims.transform import *
@@ -17,6 +18,7 @@ from janim.anims.updater import *
 from janim.camera.camera import *
 from janim.camera.camera_info import *
 from janim.components.rgbas import apart_alpha, merge_alpha
+from janim.exception import *
 from janim.items.audio import *
 from janim.items.coordinate.coordinate_systems import *
 from janim.items.coordinate.functions import *
@@ -43,4 +45,3 @@ from janim.utils.paths import *
 from janim.utils.rate_functions import *
 from janim.utils.simple_functions import *
 from janim.utils.space_ops import *
-from janim.exception import *
