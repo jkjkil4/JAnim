@@ -320,6 +320,7 @@ class Timeline(metaclass=ABCMeta):
         for root in roots:
             for item in root.walk_self_and_descendants(root_only):
                 self._show(item)
+                self.track(item)
 
     def _hide(self, item: Item) -> Display:
         time = self.item_display_times.pop(item, None)
