@@ -67,6 +67,7 @@ class DataUpdater[T: Item](Animation):
         orig_data: Item
         data: Item
         extra_data: Any | None
+        alpha_on: float | None = None
 
     def __init__(
         self,
@@ -175,6 +176,12 @@ class DataUpdater[T: Item](Animation):
         global_t = self.global_t_ctx.get()
         for i, updater_data in enumerate(self.datas.values()):
             sub_alpha = self.get_sub_alpha(alpha, i)
+
+            # 如果此时将要插值的 sub_alpha 与上次的相同，则跳过
+            if sub_alpha == updater_data.alpha_on:
+                continue
+
+            updater_data.alpha_on = sub_alpha
             updater_data.data.restore(updater_data.orig_data)
 
             with UpdaterParams(self,
