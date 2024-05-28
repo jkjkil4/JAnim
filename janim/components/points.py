@@ -914,6 +914,31 @@ class Cmpt_Points[ItemT](Component[ItemT]):
         self.to_center()
         return self
 
+    def arrange_by_offset(
+        self,
+        offset: Vect,
+        *,
+        aligned_edge: Vect = ORIGIN,
+        center: bool = True
+    ) -> Self:
+        if self.bind is None or not self.bind.at_item.children:
+            return self
+
+        cmpts = [
+            self.get_same_cmpt(item)
+            for item in self.bind.at_item.children
+        ]
+        offset = np.array(offset)
+
+        for cmpt1, cmpt2 in zip(cmpts, cmpts[1:]):
+            delta = cmpt2.box.get(aligned_edge) - cmpt1.box.get(aligned_edge)
+            cmpt2.shift(offset - delta)
+
+        if center:
+            self.to_center()
+
+        return self
+
     def to_center(self, root_only=False) -> Self:
         '''
         移动到原点 ``(0, 0, 0)``
