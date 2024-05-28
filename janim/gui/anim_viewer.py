@@ -15,7 +15,7 @@ import os
 import sys
 import time
 import traceback
-from bisect import bisect
+from bisect import bisect, bisect_left
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
@@ -93,6 +93,8 @@ class AnimViewer(QMainWindow):
 
         self.audio_player: AudioPlayer | None = None
         self.setup_audio_player()
+
+        self.update_pause_points()
 
         self.fps_counter = 0
         self.fps_record_start = time.time()
@@ -224,6 +226,26 @@ class AnimViewer(QMainWindow):
     def setup_audio_player(self) -> None:
         if self.anim.timeline.has_audio() and self.audio_player is None:
             self.audio_player = AudioPlayer(self.anim.cfg.audio_framerate)
+
+    def update_pause_points(self) -> None:
+        def to_progress(p: Timeline.PausePoint) -> int:
+            rough_progress = p.at * self.anim.cfg.preview_fps
+
+            if rough_progress % 1 < 1e-3:
+                result = int(rough_progress)
+            else:
+                result = int(rough_progress) + 1
+
+            if p.at_previous_frame:
+                result -= 1
+
+            return result
+
+        self._sorted_pause_progresses: list[int] = [
+            to_progress(pause_point)
+            for pause_point in self.anim.timeline.pause_points
+        ]
+        self._sorted_pause_progresses.sort()
 
     # region socket
 
@@ -370,6 +392,14 @@ class AnimViewer(QMainWindow):
             self.audio_player.write(samples.tobytes())
 
         self.timeline_view.set_progress(self.timeline_view.progress() + 1)
+
+        if self._sorted_pause_progresses:
+            progress = self.timeline_view.progress()
+            idx = bisect_left(self._sorted_pause_progresses, progress)
+            if idx < len(self._sorted_pause_progresses) \
+                    and self._sorted_pause_progresses[idx] == progress:
+                self.play_timer.stop()
+
         if self.timeline_view.at_end():
             self.play_finished.emit()
             self.play_timer.stop()
@@ -429,6 +459,8 @@ class AnimViewer(QMainWindow):
         self.timeline_view.set_anim(self.anim)
         self.timeline_view.set_progress(progress)
         self.timeline_view.range = range
+
+        self.update_pause_points()
 
     def on_select_triggered(self) -> None:
         if self.selector is None:

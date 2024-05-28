@@ -151,6 +151,11 @@ class Timeline(metaclass=ABCMeta):
         kwargs: dict
         subtitle: Text
 
+    @dataclass
+    class PausePoint:
+        at: float
+        at_previous_frame: bool
+
     class ItemHistory:
         def __init__(self):
             self.history: History[Item | DynamicItem] = History()
@@ -167,6 +172,8 @@ class Timeline(metaclass=ABCMeta):
         self.display_anims: list[Display] = []
         self.audio_infos: list[Timeline.PlayAudioInfo] = []
         self.subtitle_infos: list[Timeline.SubtitleInfo] = []   # helpful for extracting subtitles
+
+        self.pause_points: list[Timeline.PausePoint] = []
 
         self.items_history: defaultdict[Item, Timeline.ItemHistory] = defaultdict(Timeline.ItemHistory)
         self.item_display_times: dict[Item, int] = {}
@@ -277,6 +284,20 @@ class Timeline(metaclass=ABCMeta):
         t_range = self.prepare(*anims, **kwargs)
         self.forward_to(t_range.end, _detect_changes=False)
 
+    def pause_point(
+        self,
+        *,
+        offset: float = 0,
+        at_previous_frame: bool = True
+    ) -> None:
+        '''
+        标记在预览界面中，执行到当前时间点时会暂停
+
+        - ``at_previous_frame`` 控制是在前一帧暂停（默认）还是在当前帧暂停
+        - ``offset`` 表示偏移多少秒，例如 ``offset=2`` 则是当前位置 2s 后
+        '''
+        self.pause_points.append(Timeline.PausePoint(self.current_time + offset, at_previous_frame))
+
     # endregion
 
     # region display
@@ -297,10 +318,8 @@ class Timeline(metaclass=ABCMeta):
         显示物件
         '''
         for root in roots:
-            self._show(root)
-            if not root_only:
-                for item in root.descendants():
-                    self._show(item)
+            for item in root.walk_self_and_descendants(root_only):
+                self._show(item)
 
     def _hide(self, item: Item) -> Display:
         time = self.item_display_times.pop(item, None)
@@ -320,10 +339,8 @@ class Timeline(metaclass=ABCMeta):
         隐藏物件
         '''
         for root in roots:
-            self._hide(root)
-            if not root_only:
-                for item in root.descendants():
-                    self._hide(item)
+            for item in root.walk_self_and_descendants(root_only):
+                self._hide(item)
 
     def cleanup_display(self) -> None:
         '''
