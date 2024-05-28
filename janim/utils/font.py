@@ -86,7 +86,7 @@ def get_found_infos() -> dict[str, FontInfo]:
 
 
 class Font:
-    filepath_to_font_map: dict[str, Font] = {}
+    filepath_to_font_map: dict[tuple[str, int], Font] = {}
 
     @staticmethod
     def get(filepath: str) -> Font:
