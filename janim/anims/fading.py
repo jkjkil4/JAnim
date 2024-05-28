@@ -37,7 +37,7 @@ class Fade(DataUpdater, metaclass=ABCMeta):
             root_only=root_only,
             **kwargs
         )
-        self.shift = shift
+        self.shift = np.array(shift)
         self.scale = scale
 
         if about_point is None and scale != 1.0:
