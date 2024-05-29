@@ -733,7 +733,7 @@ class SourceTimeline(Timeline):     # pragma: no cover
 
 class TimelineAnim(AnimGroup):
     '''
-    运行 :meth:`Timeline.run` 后返回的动画组
+    运行 :meth:`Timeline.build` 后返回的动画组
 
     - ``self.display_anim`` 是由 :meth:`Timeline.construct` 中执行
       :meth:`Timeline.show` 和 :meth:`Timeline.hide` 而产生的

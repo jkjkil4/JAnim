@@ -8,11 +8,11 @@ class FixedRatioWidget(QWidget):
     '''
     使得传入的 ``inside`` 控件可以以固定比例塞在该控件中
     '''
-    def __init__(self, inside: QWidget, src_size: tuple[float, float], parent: QWidget | None = None) -> None:
+    def __init__(self, inside: QWidget, parent: QWidget | None = None) -> None:
         super().__init__(parent)
         self.inside = inside
         self.inside.setParent(self)
-        self.src_size = src_size
+        self.src_size = (1, 1)
 
     def set_src_size(self, size: tuple[float, float]) -> None:
         self.src_size = size

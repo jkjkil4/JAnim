@@ -5,7 +5,7 @@ from PySide6.QtCore import QTimer, QObject, Qt
 
 
 class PreciseTimer(QTimer):
-    def __init__(self, duration: float, parent: QObject | None = None):
+    def __init__(self, duration: float | None = None, parent: QObject | None = None):
         super().__init__(parent)
 
         self.duration = duration
@@ -13,7 +13,11 @@ class PreciseTimer(QTimer):
         self.setTimerType(Qt.TimerType.PreciseTimer)
         self.timeout.connect(self.on_timeout)
 
+    def set_duration(self, duration: float) -> None:
+        self.duration = duration
+
     def start_precise_timer(self) -> None:
+        assert self.duration is not None
         self.scheduled = 0
         self.start_time = time.time()
         self.start(int(self.duration * 1000))

@@ -13,10 +13,13 @@ class GLWidget(QOpenGLWidget):
     '''
     rendered = Signal()
 
-    def __init__(self, anim: TimelineAnim, parent: QWidget | None = None) -> None:
+    def __init__(self, parent: QWidget | None = None) -> None:
         super().__init__(parent)
-        self.anim = anim
         self.needs_update_clear_color = False
+
+    def set_anim(self, anim: TimelineAnim) -> None:
+        self.anim = anim
+        self.update_clear_color()
 
     def set_time(self, time: float) -> None:
         self.anim.anim_on(time)
