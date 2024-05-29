@@ -544,8 +544,11 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
             if isinstance(cmpt, SupportsApartAlpha):
                 cmpt.apart_alpha(n)
 
-    def fix_in_frame(self, on: bool = True) -> Self:
-        for item in self.walk_self_and_descendants():
+    def fix_in_frame(self, on: bool = True, *, root_only: bool = False) -> Self:
+        '''
+        固定在屏幕上，也就是即使摄像头移动位置也不会改变在屏幕上的位置
+        '''
+        for item in self.walk_self_and_descendants(root_only):
             item._fix_in_frame = on
         return self
 

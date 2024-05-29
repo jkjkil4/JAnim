@@ -32,7 +32,8 @@ class Renderer:
 
     def render(self, item) -> None: ...
 
-    def update_fix_in_frame(self, item: Item, prog: mgl.Program):
+    @staticmethod
+    def update_fix_in_frame(item: Item, prog: mgl.Program):
         if FIX_IN_FRAME_KEY in prog._members:
             prog[FIX_IN_FRAME_KEY] = item._fix_in_frame
 
