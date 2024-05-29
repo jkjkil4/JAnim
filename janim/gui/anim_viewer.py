@@ -65,7 +65,9 @@ class AnimViewer(QMainWindow):
         self.setup_slots()
 
         self.set_anim(anim)
+
         self.timeline_view.value_changed.emit(0)
+        self.action_stay_on_top.setChecked(True)
 
         if auto_play:
             self.switch_play_state()
@@ -140,7 +142,6 @@ class AnimViewer(QMainWindow):
         self.action_stay_on_top = menu_functions.addAction('窗口置前')
         self.action_stay_on_top.setCheckable(True)
         self.action_stay_on_top.setShortcut('Ctrl+T')
-        self.action_stay_on_top.setChecked(True)
 
         menu_functions.addSeparator()
 
