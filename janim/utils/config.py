@@ -89,6 +89,7 @@ class Config(metaclass=_ConfigMeta):
     pixel_width: int = None
     background_color: Color = None
     font: str | Iterable[str] = None
+    subtitle_font: str | Iterable[str] = None
 
     audio_framerate: int = None
 
@@ -128,6 +129,7 @@ default_config = Config(
     pixel_width=1920,
     background_color=Color('#000000'),
     font='Consolas',
+    subtitle_font='',
 
     audio_framerate=44100,
 

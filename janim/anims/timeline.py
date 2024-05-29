@@ -509,6 +509,7 @@ class Timeline(metaclass=ABCMeta):
         use_typst_text: bool | Iterable[bool] = False,
         surrounding_color: JAnimColor = BLACK,
         surrounding_alpha: float = 0.5,
+        font: str | Iterable[str] = [],
         **kwargs
     ) -> TimeRange:
         '''
@@ -531,10 +532,25 @@ class Timeline(metaclass=ABCMeta):
         else:
             range = TimeRange(self.current_time + delay, duration)
 
+        cfg_font = Config.get.subtitle_font
+        if cfg_font:
+            if isinstance(font, str):
+                font = [font]
+            else:
+                font = list(font)
+
+            if isinstance(cfg_font, str):
+                font.append(cfg_font)
+            else:
+                font.extend(cfg_font)
+
         for text, scale, use_typst_text in zip(reversed(text_lst),
                                                reversed(resize_preserving_order(scale_lst, len(text_lst))),
                                                reversed(resize_preserving_order(use_typst_lst, len(text_lst)))):
-            subtitle = (TypstText if use_typst_text else Text)(text, **kwargs)
+            if use_typst_text:
+                subtitle = TypstText(text, **kwargs)
+            else:
+                subtitle = Text(text, font=font, **kwargs)
             subtitle.depth.set(-1e5)
             subtitle.points.scale(scale * base_scale)
             self.place_subtitle(subtitle, range)
