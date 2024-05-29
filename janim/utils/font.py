@@ -111,6 +111,7 @@ class Font:
         return font
 
     def __init__(self, filepath: str | FontInfo, index: int = 0) -> None:
+        self.filepath = filepath
         with open(filepath, 'rb') as file:
             self.face = FT.Face(file, index=index)
         self.face.select_charmap(FT.FT_ENCODING_UNICODE)

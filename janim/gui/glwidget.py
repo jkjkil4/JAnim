@@ -20,6 +20,7 @@ class GLWidget(QOpenGLWidget):
     def set_anim(self, anim: TimelineAnim) -> None:
         self.anim = anim
         self.update_clear_color()
+        self.update()
 
     def set_time(self, time: float) -> None:
         self.anim.anim_on(time)

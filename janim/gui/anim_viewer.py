@@ -60,6 +60,7 @@ class AnimViewer(QMainWindow):
             self.setup_socket()
         else:
             self.socket = None
+        self.audio_player = None
 
         self.setup_slots()
 
@@ -115,7 +116,6 @@ class AnimViewer(QMainWindow):
         # other
         self.play_timer.set_duration(1 / anim.cfg.preview_fps)
 
-        self.audio_player = None
         if self.anim.timeline.has_audio() and self.audio_player is None:
             self.audio_player = AudioPlayer(self.anim.cfg.audio_framerate)
 

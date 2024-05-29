@@ -532,12 +532,15 @@ class TimelineView(QWidget):
 
         # 绘制 pause_progresses
         if self.pause_progresses:
+            p.setPen(QPen(QColor(88, 196, 221), 2))
+            p.setRenderHint(QPainter.RenderHint.Antialiasing, True)
             progress_begin = self.time_to_progress(self.range.at)
             progress_end = self.time_to_progress(self.range.end)
             left = bisect_left(self.pause_progresses, progress_begin)
             right = bisect(self.pause_progresses, progress_end)
             for i in range(left, right):
                 self.paint_line(p, self.progress_to_time(self.pause_progresses[i]))
+            p.setRenderHint(QPainter.RenderHint.Antialiasing, False)
 
         # 绘制音频区段
         if self.anim.timeline.has_audio():
