@@ -49,12 +49,16 @@ class CameraInfo:
         mapped = np.dot(aligned, self.proj_view_matrix.T)
         return mapped[:, :2] / mapped[:, 3].reshape((len(mapped), 1))
 
+    @property
+    def distance_from_plane(self) -> float:
+        up = self.vertical_vect
+        return get_norm(up) / 2 / math.tan(math.radians(self.fov / 2))
+
     def _compute_camera_location(self) -> np.ndarray:
         right = self.horizontal_vect
         up = self.vertical_vect
         normal = get_unit_normal(right, up)
-        distance = get_norm(up) / 2 / math.tan(math.radians(self.fov / 2))
-        return self.center + normal * distance
+        return self.center + normal * self.distance_from_plane
 
     def _compute_view_matrix(self) -> np.ndarray:
         rot_matrix = np.eye(4)

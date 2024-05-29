@@ -4,12 +4,17 @@ import os
 from contextvars import ContextVar
 from collections import defaultdict
 from dataclasses import dataclass
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import moderngl as mgl
 
 from janim.camera.camera_info import CameraInfo
 from janim.utils.file_ops import get_janim_dir, readall
+
+if TYPE_CHECKING:
+    from janim.items.item import Item
+
+FIX_IN_FRAME_KEY = 'JA_FIX_IN_FRAME'
 
 
 class Renderer:
@@ -25,7 +30,11 @@ class Renderer:
 
     def init(self) -> None: ...
 
-    def render(self, data) -> None: ...
+    def render(self, item) -> None: ...
+
+    def update_fix_in_frame(self, item: Item, prog: mgl.Program):
+        if FIX_IN_FRAME_KEY in prog._members:
+            prog[FIX_IN_FRAME_KEY] = item._fix_in_frame
 
 
 @dataclass(kw_only=True)

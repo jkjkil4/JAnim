@@ -554,10 +554,7 @@ class Timeline(metaclass=ABCMeta):
             subtitle.depth.set(-1e5)
             subtitle.points.scale(scale * base_scale)
             self.place_subtitle(subtitle, range)
-            self.subtitle_infos.append(Timeline.SubtitleInfo(text,
-                                                             range,
-                                                             kwargs,
-                                                             subtitle))
+            self.subtitle_infos.append(Timeline.SubtitleInfo(text, range, kwargs, subtitle))
 
             subtitle_group = Group(
                 SurroundingRect(subtitle,
@@ -565,7 +562,7 @@ class Timeline(metaclass=ABCMeta):
                                 stroke_alpha=0,
                                 fill_alpha=surrounding_alpha),
                 subtitle
-            )
+            ).fix_in_frame()
             subtitle_group.depth.arrange(subtitle.depth.get())
 
             self.schedule(range.at, subtitle_group.show)
@@ -586,7 +583,7 @@ class Timeline(metaclass=ABCMeta):
             # 如果不加可能导致前一个字幕消失但是后一个字幕凭空出现在更上面
             # （但是我没有测试过是否会出现这个bug，只是根据写 TimelineView 时的经验加了 np.isclose）
             if other.range.at <= range.at < other.range.end and not np.isclose(range.at, other.range.end):
-                subtitle.points.next_to(other.subtitle, UP, buff=SMALL_BUFF)
+                subtitle.points.next_to(other.subtitle, UP, buff=2 * SMALL_BUFF)
                 return
         subtitle.points.to_border(DOWN)
 
@@ -799,6 +796,7 @@ class TimelineAnim(AnimGroup):
                 set_global_uniforms(
                     ctx,
                     ('JA_VIEW_MATRIX', camera_info.view_matrix.T.flatten()),
+                    ('JA_DISTANCE_FROM_PLANE', camera_info.distance_from_plane),
                     ('JA_PROJ_MATRIX', camera_info.proj_matrix.T.flatten()),
                     ('JA_FRAME_RADIUS', camera_info.frame_radius),
                     ('JA_ANTI_ALIAS_RADIUS', anti_alias_radius)

@@ -67,6 +67,7 @@ class DotCloudRenderer(Renderer):
             self.vbo_points.write(bytes)
             self.prev_points = new_points
 
+        self.update_fix_in_frame(item, self.prog)
         self.vao.render(mgl.POINTS, vertices=len(self.prev_points))
 
 
@@ -85,6 +86,7 @@ class VItemRenderer(Renderer):
 
         self.prev_camera_info = None
 
+        self.prev_fix_in_frame = None
         self.prev_points = np.array([])
         self.prev_radius = np.array([])
         self.prev_stroke = np.array([])
@@ -97,6 +99,7 @@ class VItemRenderer(Renderer):
 
         new_camera_info = render_data.camera_info
 
+        new_fix_in_frame = item._fix_in_frame
         new_points = item.points._points.data
         new_radius = item.radius._radii.data
         new_stroke = item.stroke._rgbas.data
@@ -104,9 +107,15 @@ class VItemRenderer(Renderer):
 
         is_camera_changed = id(new_camera_info) != id(self.prev_camera_info)
 
-        if id(new_radius) != id(self.prev_radius) or id(new_points) != id(self.prev_points) or is_camera_changed:
-            clip_box = render_data.camera_info.map_points(item.points.self_box.get_corners())
-            clip_box *= render_data.camera_info.frame_radius
+        if new_fix_in_frame != self.prev_fix_in_frame \
+                or id(new_radius) != id(self.prev_radius) \
+                or id(new_points) != id(self.prev_points) \
+                or is_camera_changed:
+            if new_fix_in_frame:
+                clip_box = np.array(item.points.self_box.get_corners())[:, :2]
+            else:
+                clip_box = render_data.camera_info.map_points(item.points.self_box.get_corners())
+                clip_box *= render_data.camera_info.frame_radius
 
             buff = new_radius.max() + render_data.anti_alias_radius
             clip_min = np.min(clip_box, axis=0) - buff
@@ -153,9 +162,14 @@ class VItemRenderer(Renderer):
             self.vbo_fill_color.write(bytes)
             self.prev_fill = new_fill
 
-        if id(new_points) != id(self.prev_points) or is_camera_changed:
-            mapped = render_data.camera_info.map_points(new_points)
-            mapped *= render_data.camera_info.frame_radius
+        if id(new_points) != id(self.prev_points) \
+                or new_fix_in_frame != self.prev_fix_in_frame \
+                or is_camera_changed:
+            if new_fix_in_frame:
+                mapped = new_points[:, :2]
+            else:
+                mapped = render_data.camera_info.map_points(new_points)
+                mapped *= render_data.camera_info.frame_radius
 
             bytes = np.hstack([
                 mapped,
@@ -167,6 +181,7 @@ class VItemRenderer(Renderer):
                 self.vbo_mapped_points.orphan(len(bytes))
 
             self.vbo_mapped_points.write(bytes)
+            self.prev_fix_in_frame = new_fix_in_frame
             self.prev_camera_info = new_camera_info
             self.prev_points = new_points
 
@@ -232,4 +247,5 @@ class ImageItemRenderer(Renderer):
         self.prog['image'] = 0
         self.texture.filter = item.image.get_filter()
         self.texture.use(0)
+        self.update_fix_in_frame(item, self.prog)
         self.vao.render(mgl.TRIANGLE_STRIP)

@@ -100,6 +100,7 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         self._astype: type[Item] | None = None
         self._astype_mock_cmpt: dict[str, Component] = {}
 
+        self._fix_in_frame = False
         self.renderer: Renderer | None = None
 
         if children is not None:
@@ -542,6 +543,11 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         for cmpt in self.components.values():
             if isinstance(cmpt, SupportsApartAlpha):
                 cmpt.apart_alpha(n)
+
+    def fix_in_frame(self, on: bool = True) -> Self:
+        for item in self.walk_self_and_descendants():
+            item._fix_in_frame = on
+        return self
 
     @classmethod
     def get_global_renderer(cls) -> None:
