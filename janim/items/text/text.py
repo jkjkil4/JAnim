@@ -283,17 +283,19 @@ class Text(VItem, Group[TextLine]):
     ) -> None:
         # 获取字体
         if isinstance(font, str):
-            font = [font]
+            font_names = [font]
+        else:
+            font_names = list(font)
 
         cfg_font = Config.get.font
         if isinstance(cfg_font, str):
-            font.append(cfg_font)
+            font_names.append(cfg_font)
         else:
-            font.extend(cfg_font)
+            font_names.extend(cfg_font)
 
         fonts = [
             Font.get_by_info(get_font_info_by_name(name))
-            for name in font
+            for name in font_names
         ]
 
         if format is not Text.Format.RichText:

@@ -57,7 +57,7 @@ def get_font_info_by_name(font_name: str) -> FontInfo:
     '''
     通过字体名得到字体文件信息
 
-    例：通过 ``Consolas`` 得到 ``FontInfo('C:\\Windows\\Fonts\\consola.ttf', 0, "Consolas", <'name' table at ...>)``
+    例：通过 ``Consolas`` 得到 ``FontInfo('C:\\Windows\\Fonts\\consola.ttf', 0, 'Consolas', <'name' table at ...>)``
     '''
     info = _found_infos.get(font_name, None)
     if info is not None:
