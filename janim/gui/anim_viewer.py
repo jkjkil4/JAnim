@@ -137,7 +137,7 @@ class AnimViewer(QMainWindow):
         self.resize(800, 608)
         self.setWindowTitle('JAnim Graphics')
         self.setWindowIcon(QIcon(os.path.join(get_janim_dir(), 'gui', 'favicon.ico')))
-        self.setFocus()
+        self.timeline_view.setFocus()
 
     def setup_menu_bar(self) -> None:
         menu_bar = self.menuBar()
@@ -442,7 +442,9 @@ class AnimViewer(QMainWindow):
 
     def on_name_edit_finished(self) -> None:
         if self.name_edit.text().strip() != self.anim.timeline.__class__.__name__:
+            self.play_timer.stop()
             self.on_rebuild_triggered()
+            self.timeline_view.setFocus()
 
     def on_export_clicked(self) -> None:
         self.play_timer.stop()
