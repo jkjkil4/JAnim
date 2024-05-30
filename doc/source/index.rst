@@ -27,6 +27,7 @@ JAnim 是一个用于简易动画效果的库
    :caption: 开发相关
 
    development/about
+   development/contributing
 
 目录与表格
 ------------
