@@ -17,9 +17,9 @@ from bisect import bisect_left
 
 from PySide6.QtCore import QByteArray, Qt, Signal
 from PySide6.QtGui import QCloseEvent, QHideEvent, QIcon, QShowEvent
-from PySide6.QtWidgets import (QApplication, QFileDialog, QLabel, QMainWindow,
-                               QMessageBox, QPushButton, QSizePolicy,
-                               QSplitter, QStackedLayout, QWidget)
+from PySide6.QtWidgets import (QApplication, QFileDialog, QLabel, QLineEdit,
+                               QMainWindow, QMessageBox, QPushButton,
+                               QSizePolicy, QSplitter, QStackedLayout, QWidget)
 
 from janim.anims.timeline import Timeline, TimelineAnim
 from janim.exception import ExitException
@@ -115,6 +115,9 @@ class AnimViewer(QMainWindow):
         self.glw.set_anim(anim)
         self.timeline_view.set_anim(anim, self.pause_progresses)
 
+        # status bar
+        self.name_edit.setText(anim.timeline.__class__.__name__)
+
         # other
         self.play_timer.set_duration(1 / anim.cfg.preview_fps)
 
@@ -134,6 +137,7 @@ class AnimViewer(QMainWindow):
         self.resize(800, 608)
         self.setWindowTitle('JAnim Graphics')
         self.setWindowIcon(QIcon(os.path.join(get_janim_dir(), 'gui', 'favicon.ico')))
+        self.setFocus()
 
     def setup_menu_bar(self) -> None:
         menu_bar = self.menuBar()
@@ -165,6 +169,7 @@ class AnimViewer(QMainWindow):
     def setup_status_bar(self) -> None:
         self.fps_label = QLabel()
         self.time_label = QLabel()
+        self.name_edit = QLineEdit()
         self.btn_export = QPushButton()
         self.btn_export.setIcon(QIcon(os.path.join(get_janim_dir(), 'gui', 'export.png')))
         self.btn_export.setFocusPolicy(Qt.FocusPolicy.NoFocus)
@@ -172,6 +177,7 @@ class AnimViewer(QMainWindow):
         stb = self.statusBar()
         stb.setContentsMargins(0, 0, 0, 0)
         stb.addWidget(self.fps_label)
+        stb.addPermanentWidget(self.name_edit)
         stb.addPermanentWidget(self.time_label)
         stb.addPermanentWidget(self.btn_export)
 
@@ -286,6 +292,7 @@ class AnimViewer(QMainWindow):
 
         self.play_timer.timeout.connect(self.on_play_timer_timeout)
         self.glw.rendered.connect(self.on_glw_rendered)
+        self.name_edit.editingFinished.connect(self.on_name_edit_finished)
         self.btn_export.clicked.connect(self.on_export_clicked)
 
     # region slots-menu
@@ -301,9 +308,15 @@ class AnimViewer(QMainWindow):
         progress = self.timeline_view.progress()
         preview_fps = self.anim.cfg.preview_fps
 
+        name = self.name_edit.text().strip()
+        stay_same = self.anim.timeline.__class__.__name__ == name
+
         loader = importlib.machinery.SourceFileLoader(module.__name__, module.__file__)
         module = loader.load_module()
-        timeline_class: type[Timeline] = getattr(module, self.anim.timeline.__class__.__name__)
+        timeline_class: type[Timeline] = getattr(module, name, None)
+        if not isinstance(timeline_class, type) or not issubclass(timeline_class, Timeline):
+            log.error(f'No timeline named "{name}" in "{module.__file__}"')
+            return
 
         try:
             anim: TimelineAnim = timeline_class().build()
@@ -332,19 +345,23 @@ class AnimViewer(QMainWindow):
             time = self.timeline_view.progress_to_time(self.timeline_view.progress())
             self.send_lineno(self.anim.timeline.get_lineno_at_time(time))
 
-        # 把原来进度（所在第几帧）转换到新的进度
-        # 如果帧率没变，则进度不变
-        # 如果帧率变了，例如从 30fps 到 60fps，则进度 43 对应 进度 86（乘了 2）
-        self.play_timer.duration = 1 / self.anim.cfg.preview_fps
-        progress = int(progress * self.anim.cfg.preview_fps / preview_fps)
-        self.anim.anim_on(self.timeline_view.progress_to_time(progress))
+        if not stay_same:
+            self.anim.anim_on(0)
+            self.timeline_view.set_progress(0)
+        else:
+            # 把原来进度（所在第几帧）转换到新的进度
+            # 如果帧率没变，则进度不变
+            # 如果帧率变了，例如从 30fps 到 60fps，则进度 43 对应 进度 86（乘了 2）
+            self.play_timer.duration = 1 / self.anim.cfg.preview_fps
+            progress = int(progress * self.anim.cfg.preview_fps / preview_fps)
+            self.anim.anim_on(self.timeline_view.progress_to_time(progress))
+            self.timeline_view.set_progress(progress)
 
-        # 设置 range 是为了保留动画标签的相对位置
-        # 比如，本来是 0~1s 和 1~2s 分别一个动画
-        # 重新构建后，只剩下了 0~1s 的动画
-        # 那么仍保留原来的显示范围，使得 0~1s 的显示位置不变，虽然显示范围超出了持续时间
-        self.timeline_view.set_progress(progress)
-        self.timeline_view.range = range
+            # 设置 range 是为了保留动画标签的相对位置
+            # 比如，本来是 0~1s 和 1~2s 分别一个动画
+            # 重新构建后，只剩下了 0~1s 的动画
+            # 那么仍保留原来的显示范围，使得 0~1s 的显示位置不变，虽然显示范围超出了持续时间
+            self.timeline_view.range = range
 
     def on_select_triggered(self) -> None:
         if self.selector is None:
@@ -422,6 +439,10 @@ class AnimViewer(QMainWindow):
         if self.timeline_view.at_end():
             self.play_finished.emit()
             self.play_timer.stop()
+
+    def on_name_edit_finished(self) -> None:
+        if self.name_edit.text().strip() != self.anim.timeline.__class__.__name__:
+            self.on_rebuild_triggered()
 
     def on_export_clicked(self) -> None:
         self.play_timer.stop()
