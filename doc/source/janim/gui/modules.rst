@@ -10,7 +10,9 @@ gui
    application
    audio_player
    fixed_ratio_widget
+   font_table
    glwidget
    precise_timer
    richtext_editor
    selector
+   timeline_view
