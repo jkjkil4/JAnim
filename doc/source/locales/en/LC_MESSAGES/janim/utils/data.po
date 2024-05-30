@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  JAnim\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-03-14 14:52+0800\n"
+"POT-Creation-Date: 2024-05-30 15:49+0800\n"
 "PO-Revision-Date: 2024-01-19 19:54+0800\n"
 "Last-Translator: \n"
 "Language: en\n"
@@ -23,11 +23,73 @@ msgstr ""
 msgid "data"
 msgstr "data"
 
-#: janim.utils.data.AlignedData:1 of
+#: janim.utils.data.AlignedData:1 janim.utils.data.ContextSetter:1
+#: janim.utils.data.History:1 janim.utils.data.History.TimedData:1 of
 msgid "基类：:py:class:`~typing.Generic`"
 msgstr "基类：:py:class:`~typing.Generic`"
 
-#: janim.utils.data.AlignedData:1 of
-msgid "数据对齐后的结构，用于 :meth:`~.Item.Data.align_for_interpolate`"
+#: janim.utils.data.Array:1 janim.utils.data.Margins:1 of
+#, fuzzy
+msgid "基类：:py:class:`object`"
+msgstr "基类：:py:class:`~typing.Generic`"
+
+#: janim.utils.data.Array:1 of
+msgid "使得在使用 ``.data = xxx`` 修改（赋值）后必定是不同的 id"
 msgstr ""
+
+#: janim.utils.data.Array:3 of
+msgid "并且通过 ``.data`` 得到的 numpy 数组必定是只读的"
+msgstr ""
+
+#: janim.utils.data.AlignedData:1 of
+msgid "数据对齐后的结构，用于 :meth:`~.Item.align_for_interpolate`"
+msgstr ""
+
+#: janim.utils.data.History.record_as_time:1 of
+msgid "标记在 ``t`` 时刻后，数据为 ``data``"
+msgstr ""
+
+#: janim.utils.data.History.record_as_time:3 of
+msgid "t 必须比现有的所有时刻都大"
+msgstr ""
+
+#: janim.utils.data.History.record_as_time:4 of
+msgid "如果此时 没有已存储的记录，则将 t 视为 0"
+msgstr ""
+
+#: janim.utils.data.History.get_at_time:1 of
+msgid "得到在指定时间的数据"
+msgstr ""
+
+#: janim.utils.data.History.get_at_time:3 of
+msgid "在两份数据的分界处请使用 :meth:`get_at_right` 和 :meth:`get_at_left` 来明确"
+msgstr ""
+
+#: janim.utils.data.History.get_at_right:1 of
+msgid "得到在指定时间之后的瞬间的数据"
+msgstr ""
+
+#: janim.utils.data.History.get_at_left:1 of
+msgid "得到在指定时间之前的瞬间的数据"
+msgstr ""
+
+#: janim.utils.data.History.get:1 of
+msgid ":meth:`get_at_right` 的简写"
+msgstr ""
+
+#: janim.utils.data.Margins:1 of
+msgid "定义了一组四个边距：左、上、右、下，用于描述矩形周围边框的大小。"
+msgstr ""
+
+#: janim.utils.data.Margins:3 of
+msgid "如果直接传入单个数值，则表示为四个方向皆为该值"
+msgstr ""
+
+#: janim.utils.data.Align:1 of
+#, fuzzy
+msgid "基类：:py:class:`~enum.IntFlag`"
+msgstr "基类：:py:class:`~typing.Generic`"
+
+#~ msgid "数据对齐后的结构，用于 :meth:`~.Item.Data.align_for_interpolate`"
+#~ msgstr ""
 

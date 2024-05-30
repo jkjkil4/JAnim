@@ -6,48 +6,42 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: JAnim\n"
+"Project-Id-Version:  JAnim\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-03-14 15:53+0800\n"
+"POT-Creation-Date: 2024-05-30 15:49+0800\n"
 "PO-Revision-Date: 2024-03-14 15:55+0800\n"
 "Last-Translator: \n"
-"Language-Team: en <LL@li.org>\n"
 "Language: en\n"
+"Language-Team: en <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "Generated-By: Babel 2.14.0\n"
-"X-Generator: Poedit 3.4.2\n"
 
 #: ../../source/janim/anims/transform.rst:2
 msgid "transform"
 msgstr "transform"
 
+#: ../../source/janim/anims/transform.rst:6
+msgid "使用 :class:`~.Transform` 进行不同文字间的变换可能不会有足够好的效果，在使用时请多加斟酌"
+msgstr ""
+
 #: janim.anims.transform.Transform:1 of
 msgid "基类：:py:class:`~janim.anims.animation.Animation`"
 msgstr "基类：:py:class:`~janim.anims.animation.Animation`"
 
-#: janim.anims.transform.Transform.init_path_func:1 of
-msgid ""
-"根据传入对象的 ``path_arc`` ``path_arc_axis`` ``path_func`` ，建立 "
-"``self.path_func``"
+#: janim.anims.transform.Transform:1 of
+msgid "创建从 ``src_item`` 至 ``target_item`` 的插值动画"
 msgstr ""
-"Establishes ``self.path_func`` based on ``path_arc``, ``path_arc_axis``, "
-"and ``path_func``"
 
-#: janim.anims.transform.Transform.init_path_func:3 of
-msgid "不需要手动调用"
-msgstr "No need to call manually."
+#: janim.anims.transform.Transform:3 of
+msgid "``path_arc`` 和 ``path_arc_axis`` 可以指定插值的圆弧路径的角度，若不传入则是直线"
+msgstr ""
 
-#: janim.anims.transform.Transform.anim_init:1 of
-msgid "进行物件数据的对齐"
-msgstr "Align item data"
-
-#: janim.anims.transform.MethodTransform.anim_on_alpha:1
-#: janim.anims.transform.Transform.anim_on_alpha:1 of
-msgid "对物件数据进行过渡插值"
-msgstr "Interpolate item data"
+#: janim.anims.transform.Transform:4 of
+msgid "也可以直接传入 ``path_func`` 来指定路径方法"
+msgstr ""
 
 #: janim.anims.transform.MethodTransform:1 of
 msgid "基类：:py:class:`~janim.anims.transform.Transform`"
@@ -55,28 +49,39 @@ msgstr "基类：:py:class:`~janim.anims.transform.Transform`"
 
 #: janim.anims.transform.MethodTransform:1 of
 msgid "依据物件的变换而创建的补间过程"
-msgstr ""
-"Tweening process created based on the transformation of the object."
+msgstr "Tweening process created based on the transformation of the object."
 
 #: janim.anims.transform.MethodTransform:3 of
 msgid "具体参考 :meth:`~.Item.anim`"
 msgstr "See :meth:`~.Item.anim` for details."
 
-#: janim.anims.transform.MethodTransform.wrap_data:1 of
-msgid "以供传入 :meth:`~.Timeline.register_dynamic_data` 使用"
-msgstr "Used to be passed to :meth:`~.Timeline.register_dynamic_data`."
+#~ msgid ""
+#~ "根据传入对象的 ``path_arc`` ``path_arc_axis`` ``path_func``"
+#~ " ，建立 ``self.path_func``"
+#~ msgstr ""
+#~ "Establishes ``self.path_func`` based on "
+#~ "``path_arc``, ``path_arc_axis``, and ``path_func``"
 
-#: janim.anims.transform.MethodTransform.anim_pre_init:1 of
-msgid ""
-"在 :meth:`~.Timeline.detect_changes_of_all` 执行之前调用的初始化方法"
-msgstr ""
-"Initialization method called before :meth:`~.Timeline."
-"detect_changes_of_all`."
+#~ msgid "不需要手动调用"
+#~ msgstr "No need to call manually."
 
-#: janim.anims.transform.MethodTransformArgsBuilder:1 of
-msgid "基类：:py:class:`object`"
-msgstr "基类：:py:class:`object`"
+#~ msgid "进行物件数据的对齐"
+#~ msgstr "Align item data"
 
-#: janim.anims.transform.MethodTransformArgsBuilder:1 of
-msgid "使得 ``.anim`` 和 ``.anim(...)`` 后可以进行同样的操作"
-msgstr "Allow the same operations after ``.anim`` and ``.anim(...)``."
+#~ msgid "对物件数据进行过渡插值"
+#~ msgstr "Interpolate item data"
+
+#~ msgid "以供传入 :meth:`~.Timeline.register_dynamic_data` 使用"
+#~ msgstr "Used to be passed to :meth:`~.Timeline.register_dynamic_data`."
+
+#~ msgid "在 :meth:`~.Timeline.detect_changes_of_all` 执行之前调用的初始化方法"
+#~ msgstr ""
+#~ "Initialization method called before "
+#~ ":meth:`~.Timeline.detect_changes_of_all`."
+
+#~ msgid "基类：:py:class:`object`"
+#~ msgstr "基类：:py:class:`object`"
+
+#~ msgid "使得 ``.anim`` 和 ``.anim(...)`` 后可以进行同样的操作"
+#~ msgstr "Allow the same operations after ``.anim`` and ``.anim(...)``."
+

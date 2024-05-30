@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: JAnim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-03-14 14:52+0800\n"
+"POT-Creation-Date: 2024-05-30 15:49+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -28,7 +28,7 @@ msgid "在 :class:`Brace` 中对 :class:`Cmpt_VPoints` 的进一步实现"
 msgstr ""
 
 #: janim.items.svg.brace.Cmpt_VPoints_BraceImpl.match:1 of
-msgid "将花括号进行伸缩，使得与 ``item_or_data`` 在 ``direction`` 方向的宽度匹配"
+msgid "将花括号进行伸缩，使得与 ``item`` 在 ``direction`` 方向的宽度匹配"
 msgstr ""
 
 #: janim.items.svg.brace.Cmpt_VPoints_BraceImpl.tip_point:1 of
@@ -66,4 +66,7 @@ msgstr ""
 #: janim.items.svg.brace.Brace:3 of
 msgid "会匹配物件在 ``direction`` 方向的宽度"
 msgstr ""
+
+#~ msgid "将花括号进行伸缩，使得与 ``item_or_data`` 在 ``direction`` 方向的宽度匹配"
+#~ msgstr ""
 

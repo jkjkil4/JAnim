@@ -1,0 +1,77 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2023, jkjkil4
+# This file is distributed under the same license as the JAnim package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2024.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: JAnim \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-05-30 15:49+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: en\n"
+"Language-Team: en <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.14.0\n"
+
+#: ../../source/janim/anims/growing.rst:2
+msgid "growing"
+msgstr ""
+
+#: janim.anims.growing.GrowFromPoint:1 of
+msgid "基类：:py:class:`~janim.anims.transform.Transform`"
+msgstr ""
+
+#: janim.anims.growing.GrowFromPoint:1 of
+msgid "从指定的位置放大显现"
+msgstr ""
+
+#: janim.anims.growing.GrowFromCenter:1 janim.anims.growing.GrowFromEdge:1 of
+msgid "基类：:py:class:`~janim.anims.growing.GrowFromPoint`"
+msgstr ""
+
+#: janim.anims.growing.GrowFromCenter:1 of
+msgid "从物件的中心放大显现"
+msgstr ""
+
+#: janim.anims.growing.GrowFromEdge:1 of
+msgid "从物件的指定边角放大显现"
+msgstr ""
+
+#: janim.anims.growing.SpinInFromNothing:1 of
+msgid "基类：:py:class:`~janim.anims.growing.GrowFromCenter`"
+msgstr ""
+
+#: janim.anims.growing.SpinInFromNothing:1 of
+msgid "从物件的中心旋转半圈放大显现"
+msgstr ""
+
+#: janim.anims.growing.GrowArrowByBoundFunc:1 of
+msgid "基类：:py:class:`~janim.anims.animation.Animation`"
+msgstr ""
+
+#: janim.anims.growing.GrowArrowByBoundFunc:1 of
+msgid ":class:`GrowArrow` 和 :class:`GrowDoubleArrow` 的基类"
+msgstr ""
+
+#: janim.anims.growing.GrowArrow:1 janim.anims.growing.GrowDoubleArrow:1 of
+msgid "基类：:py:class:`~janim.anims.growing.GrowArrowByBoundFunc`"
+msgstr ""
+
+#: janim.anims.growing.GrowArrow:1 of
+msgid "显示箭头的显现过程，从开头到结尾画出，并自动调整箭头标志位置"
+msgstr ""
+
+#: janim.anims.growing.GrowDoubleArrow:1 of
+msgid "显示箭头的显现过程，默认从中间向两边显现，并自动调整箭头标志位置"
+msgstr ""
+
+#: janim.anims.growing.GrowDoubleArrow:3 of
+msgid "传入 ``start_ratio`` （默认 ``0.5``） 可以调整开始的位置"
+msgstr ""
+

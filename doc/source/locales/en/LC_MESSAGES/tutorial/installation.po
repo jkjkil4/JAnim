@@ -1,0 +1,79 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2023, jkjkil4
+# This file is distributed under the same license as the JAnim package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2024.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: JAnim \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-05-30 15:49+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: en\n"
+"Language-Team: en <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.14.0\n"
+
+#: ../../source/tutorial/installation.rst:2
+msgid "安装"
+msgstr ""
+
+#: ../../source/tutorial/installation.rst:6
+msgid "JAnim 运行在 Python 3.12 及更高版本"
+msgstr ""
+
+#: ../../source/tutorial/installation.rst:8
+msgid "并且需要 OpenGL 4.3 及更高版本"
+msgstr ""
+
+#: ../../source/tutorial/installation.rst:11
+msgid "步骤"
+msgstr ""
+
+#: ../../source/tutorial/installation.rst:14
+msgid "安装 Python"
+msgstr ""
+
+#: ../../source/tutorial/installation.rst:16
+msgid "访问 `Python 官网下载页 <https://www.python.org/downloads/>`_ 安装 3.12 或更高版本"
+msgstr ""
+
+#: ../../source/tutorial/installation.rst:21
+msgid "安装依赖项"
+msgstr ""
+
+#: ../../source/tutorial/installation.rst:23
+msgid "所需的系统依赖有："
+msgstr ""
+
+#: ../../source/tutorial/installation.rst:25
+msgid "`FFmpeg <https://ffmpeg.org>`_ （Windows 下安装需要配置 **环境变量**）"
+msgstr ""
+
+#: ../../source/tutorial/installation.rst:26
+msgid ""
+"`typst <https://github.com/typst/typst/releases>`_ （可选，如果需要公式排版则必须，需要配置 "
+"**环境变量**）"
+msgstr ""
+
+#: ../../source/tutorial/installation.rst:29
+msgid "使用 Python 环境安装 JAnim"
+msgstr ""
+
+#: ../../source/tutorial/installation.rst:42
+msgid "安装 vscode"
+msgstr ""
+
+#: ../../source/tutorial/installation.rst:44
+msgid "推荐使用 `vscode <https://code.visualstudio.com/>`_ 进行开发"
+msgstr ""
+
+#: ../../source/tutorial/installation.rst:48
+msgid "请点击页面的右下角的按钮进入下一节，在之后的小节中不再赘述"
+msgstr ""
+

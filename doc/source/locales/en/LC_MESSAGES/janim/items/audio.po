@@ -1,0 +1,122 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2023, jkjkil4
+# This file is distributed under the same license as the JAnim package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2024.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: JAnim \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-05-30 15:49+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: en\n"
+"Language-Team: en <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.14.0\n"
+
+#: ../../source/janim/items/audio.rst:2
+msgid "audio"
+msgstr ""
+
+#: janim.items.audio.Audio:1 of
+msgid "基类：:py:class:`object`"
+msgstr ""
+
+#: janim.items.audio.Audio:1 of
+msgid "不建议使用该类处理多声道音频，因为该类读取时仅保留单声道"
+msgstr ""
+
+#: janim.items.audio.Audio.read:1 of
+msgid "从文件中读取音频"
+msgstr ""
+
+#: janim.items.audio.Audio.read:3 of
+msgid "可以指定 ``begin`` 和 ``end`` 来截取音频的一部分"
+msgstr ""
+
+#: janim.items.audio.Audio.sample_count:1 of
+msgid "所有采样点的数量"
+msgstr ""
+
+#: janim.items.audio.Audio.duration:1 of
+msgid "持续时间"
+msgstr ""
+
+#: janim.items.audio.Audio.clip:1 of
+msgid "裁剪音频"
+msgstr ""
+
+#: janim.items.audio.Audio.clip:3 of
+msgid "保留 ``begin`` 到 ``end`` 之间的部分"
+msgstr ""
+
+#: janim.items.audio.Audio.clip:4 of
+msgid "若 ``begin`` 缺省，则表示从最开始"
+msgstr ""
+
+#: janim.items.audio.Audio.clip:5 of
+msgid "若 ``end`` 缺省(``-1``)，则表示到最末尾"
+msgstr ""
+
+#: janim.items.audio.Audio.mul:1 of
+msgid "乘以给定的 ``value``，``value`` 可以含有多个元素（比如一个列表）"
+msgstr ""
+
+#: janim.items.audio.Audio.mul:3 of
+msgid "例如："
+msgstr ""
+
+#: janim.items.audio.Audio.mul:5 of
+msgid "``audio.mul(0.5)`` 可以使音高减半"
+msgstr ""
+
+#: janim.items.audio.Audio.mul:6 of
+msgid "``audio.mul([1, 0])`` 可以使开始时最强，结束时最弱"
+msgstr ""
+
+#: janim.items.audio.Audio.mul:7 of
+msgid ""
+"``audio.mul(np.sin(np.linspace(0, 2 * np.pi, audio.sample_count())))`` "
+"可以使音高随时间乘以 sin 函数的一个周期"
+msgstr ""
+
+#: janim.items.audio.Audio.fade_in:1 of
+msgid "应用 ``duration`` 秒的淡入"
+msgstr ""
+
+#: janim.items.audio.Audio.fade_out:1 of
+msgid "应用 ``duration`` 秒的淡出"
+msgstr ""
+
+#: janim.items.audio.Audio.recommended_ranges:1 of
+msgid "得到若干个可用区段 ``(start, end)``，一般用于配音音频，也就是会忽略没声音的部分，得到有声音的区段的起止时间"
+msgstr ""
+
+#: janim.items.audio.Audio.recommended_ranges:3 of
+msgid ""
+"与 :meth:`recommended_range` 的区别是，该方法得到的是若干个区段， "
+"举个例子，如果在讲了一句话后停了一会，再接着讲，那么前后就会被分成两段"
+msgstr ""
+
+#: janim.items.audio.Audio.recommended_range:5
+#: janim.items.audio.Audio.recommended_ranges:6 of
+msgid "``amplitude_threshould_ratio``: 振幅低于该比率的就认为是没声音的"
+msgstr ""
+
+#: janim.items.audio.Audio.recommended_ranges:7 of
+msgid "``gap_duration``: 如果没声音的时长大于该时间，则将前后分段"
+msgstr ""
+
+#: janim.items.audio.Audio.recommended_range:1 of
+msgid "得到可用区段 ``(start, end)``，一般用于配音音频，也就是会忽略没声音的部分，得到有声音的区段的起止时间"
+msgstr ""
+
+#: janim.items.audio.Audio.recommended_range:3 of
+msgid "与 :meth:`recommended_ranges` 的区别是，该方法得到的是最开始到最末尾的整个区段"
+msgstr ""
+

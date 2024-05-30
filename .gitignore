@@ -7,6 +7,6 @@ __pycache__
 /doc/build
 /videos
 /.coverage
-/env
+/env*
 /result.json
 /result2.json

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: JAnim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-03-14 14:52+0800\n"
+"POT-Creation-Date: 2024-05-30 15:49+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -58,20 +58,20 @@ msgstr ""
 msgid "For example, if start=0, end=10, alpha=0.46, This would return (4, 0.6)."
 msgstr ""
 
-#: janim.utils.bezier.get_smooth_quadratic_bezier_handle_points:1 of
+#: janim.utils.bezier.approx_smooth_quadratic_bezier_handles:1 of
 msgid ""
 "Figuring out which bezier curves most smoothly connect a sequence of "
 "points."
 msgstr ""
 
-#: janim.utils.bezier.get_smooth_quadratic_bezier_handle_points:3 of
+#: janim.utils.bezier.approx_smooth_quadratic_bezier_handles:3 of
 msgid ""
 "Given three successive points, P0, P1 and P2, you can compute that by "
 "defining h = (1/4) P0 + P1 - (1/4)P2, the bezier curve defined by (P0, h,"
 " P1) will pass through the point P2."
 msgstr ""
 
-#: janim.utils.bezier.get_smooth_quadratic_bezier_handle_points:7 of
+#: janim.utils.bezier.approx_smooth_quadratic_bezier_handles:7 of
 msgid ""
 "So for a given set of four successive points, P0, P1, P2, P3, if we want "
 "to add a handle point h between P1 and P2 so that the quadratic bezier "
@@ -80,6 +80,16 @@ msgid ""
 "through P3, call it smooth_to_right, and another that would produce a "
 "parabola passing through P0, call it smooth_to_left, and use the midpoint"
 " between the two."
+msgstr ""
+
+#: janim.utils.bezier.smooth_quadratic_path:1 of
+msgid "Returns a path defining a smooth quadratic bezier spline through anchors."
+msgstr ""
+
+#: janim.utils.bezier.diag_to_matrix:1 of
+msgid ""
+"Converts array whose rows represent diagonal entries of a matrix into the"
+" matrix itself. See scipy.linalg.solve_banded"
 msgstr ""
 
 #~ msgid ""

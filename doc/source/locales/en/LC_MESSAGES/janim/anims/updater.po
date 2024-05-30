@@ -6,19 +6,18 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: JAnim\n"
+"Project-Id-Version:  JAnim\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-03-14 14:52+0800\n"
+"POT-Creation-Date: 2024-05-30 15:49+0800\n"
 "PO-Revision-Date: 2024-03-14 16:01+0800\n"
 "Last-Translator: \n"
-"Language-Team: en <LL@li.org>\n"
 "Language: en\n"
+"Language-Team: en <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "Generated-By: Babel 2.14.0\n"
-"X-Generator: Poedit 3.4.2\n"
 
 #: ../../source/janim/anims/updater.rst:2
 msgid "updater"
@@ -37,11 +36,11 @@ msgstr ""
 
 #: janim.anims.updater.DataUpdater:1 of
 msgid ""
-"基类：:py:class:`~janim.anims.animation.Animation`, :py:class:`~typing."
-"Generic`"
+"基类：:py:class:`~janim.anims.animation.Animation`, "
+":py:class:`~typing.Generic`"
 msgstr ""
-"基类：:py:class:`~janim.anims.animation.Animation`, :py:class:`~typing."
-"Generic`"
+"基类：:py:class:`~janim.anims.animation.Animation`, "
+":py:class:`~typing.Generic`"
 
 #: janim.anims.updater.DataUpdater:1 of
 msgid "以时间为参数对物件的数据进行修改"
@@ -51,35 +50,27 @@ msgstr "Modifies the data of a item based on time parameters."
 msgid "例如："
 msgstr "For example:"
 
-#: janim.anims.updater.DataUpdater:20 of
+#: janim.anims.updater.DataUpdater:19 of
 msgid "会产生一个“矩形从左侧旋转着移动到右侧”的动画"
 msgstr ""
 "This will create an animation of \"a rectangle rotating and moving from "
 "the left to the right\"."
 
-#: janim.anims.updater.DataUpdater:22 of
-msgid ""
-"注：使用 ``data.cmpt`` 即可访问物件的组件，例如物件的组件方法 ``item."
-"points.xxx`` 对于数据来说则是通过 ``data.cmpt.points.xxx`` 来调用"
-msgstr ""
-"Note: Use ``data.cmpt`` to access components of the item. For example, the "
-"component method of the item ``item.points.xxx`` can be called for data as "
-"``data.cmpt.points.xxx``."
-
-#: janim.anims.updater.DataUpdater:24 janim.anims.updater.ItemUpdater:11 of
+#: janim.anims.updater.DataUpdater:21 janim.anims.updater.ItemUpdater:11 of
 msgid "另见：:class:`~.UpdaterExample`"
 msgstr "See also: :class:`~.UpdaterExample`"
 
-#: janim.anims.updater.DataUpdater.wrap_data:1 of
-msgid "以供传入 :meth:`~.Timeline.register_dynamic_data` 使用"
+#: janim.anims.updater.DataUpdater.wrap_dynamic:1 of
+#, fuzzy
+msgid "以供传入 :meth:`~.Timeline.register_dynamic` 使用"
 msgstr "Used to be passed to :meth:`~.Timeline.register_dynamic_data`."
 
 #: janim.anims.updater.DataUpdater.anim_init:1
 #: janim.anims.updater.ItemUpdater.anim_init:1 of
 msgid "在 :meth:`~.Timeline.detect_changes_of_all` 执行之后调用的初始化方法"
 msgstr ""
-"Initialization method called after :meth:`~.Timeline."
-"detect_changes_of_all`."
+"Initialization method called after "
+":meth:`~.Timeline.detect_changes_of_all`."
 
 #: janim.anims.updater.DataUpdater.anim_on_alpha:1
 #: janim.anims.updater.ItemUpdater.anim_on_alpha:1 of
@@ -99,9 +90,7 @@ msgid "以时间为参数显示物件"
 msgstr "Displays item based on time parameters."
 
 #: janim.anims.updater.ItemUpdater:3 of
-msgid ""
-"也就是说，在 :class:`ItemUpdater` 执行时，对于每帧，都会执行 ``func``，并显"
-"示 ``func`` 返回的物件"
+msgid "也就是说，在 :class:`ItemUpdater` 执行时，对于每帧，都会执行 ``func``，并显示 ``func`` 返回的物件"
 msgstr ""
 "In other words, for each frame of :class:`ItemUpdater`, ``func`` is "
 "executed, and the item returned by ``func`` is displayed."
@@ -112,8 +101,8 @@ msgstr "By default:"
 
 #: janim.anims.updater.ItemUpdater:7 of
 msgid ""
-"传入的 ``item`` 会在动画的末尾被替换为动画最后一帧 ``func`` 所返回的物件，"
-"传入 ``become_at_end=False`` 以禁用"
+"传入的 ``item`` 会在动画的末尾被替换为动画最后一帧 ``func`` 所返回的物件，传入 ``become_at_end=False``"
+" 以禁用"
 msgstr ""
 "The passed ``item`` will be replaced by the item returned by the last "
 "frame of the animation. Set ``become_at_end=False`` to disable this "
@@ -121,8 +110,8 @@ msgstr ""
 
 #: janim.anims.updater.ItemUpdater:8 of
 msgid ""
-"传入的 ``item`` 会在动画开始时隐藏，在动画结束后显示，传入 "
-"``hide_at_begin=False`` 和 ``show_at_end=False`` 以禁用"
+"传入的 ``item`` 会在动画开始时隐藏，在动画结束后显示，传入 ``hide_at_begin=False`` 和 "
+"``show_at_end=False`` 以禁用"
 msgstr ""
 "The passed ``item`` will be hidden at the beginning of the animation and "
 "shown after the animation ends. Set ``hide_at_begin=False`` and "
@@ -131,3 +120,15 @@ msgstr ""
 #: janim.anims.updater.ItemUpdater:9 of
 msgid "若传入 ``item=None``，则以上两点都无效"
 msgstr "If ``item=None`` is passed, both of the above points are invalid."
+
+#~ msgid ""
+#~ "注：使用 ``data.cmpt`` 即可访问物件的组件，例如物件的组件方法 "
+#~ "``item.points.xxx`` 对于数据来说则是通过 ``data.cmpt.points.xxx``"
+#~ " 来调用"
+#~ msgstr ""
+#~ "Note: Use ``data.cmpt`` to access "
+#~ "components of the item. For example, "
+#~ "the component method of the item "
+#~ "``item.points.xxx`` can be called for "
+#~ "data as ``data.cmpt.points.xxx``."
+

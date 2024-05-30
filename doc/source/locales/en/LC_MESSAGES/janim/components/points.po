@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  JAnim\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-03-14 14:52+0800\n"
+"POT-Creation-Date: 2024-05-30 15:49+0800\n"
 "PO-Revision-Date: 2024-01-19 19:53+0800\n"
 "Last-Translator: \n"
 "Language: en\n"
@@ -92,7 +92,7 @@ msgid "得到 ``points`` 的第一个和最后一个点"
 msgstr "Get the last point"
 
 #: janim.components.points.Cmpt_Points.pfp:1 of
-msgid "point_from_proportion 的缩写"
+msgid "``point_from_proportion`` 的缩写"
 msgstr ""
 
 #: janim.components.points.Cmpt_Points.box:1 of
@@ -291,4 +291,7 @@ msgstr ""
 #: janim.components.points.Cmpt_Points.next_to:1 of
 msgid "将该物件放到 ``target`` 旁边"
 msgstr "Position this item next to ``target``"
+
+#~ msgid "point_from_proportion 的缩写"
+#~ msgstr ""
 

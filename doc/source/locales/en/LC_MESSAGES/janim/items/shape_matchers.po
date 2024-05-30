@@ -19,28 +19,16 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.14.0\n"
 
-#: ../../source/janim/utils/font.rst:2
-msgid "font"
+#: ../../source/janim/items/shape_matchers.rst:2
+msgid "shape_matchers"
 msgstr ""
 
-#: janim.utils.font.Font:1 janim.utils.font.Font.GlyphData:1
-#: janim.utils.font.FontInfo:1 of
-msgid "基类：:py:class:`object`"
+#: janim.items.shape_matchers.FrameRect:1
+#: janim.items.shape_matchers.SurroundingRect:1 of
+msgid "基类：:py:class:`~janim.items.geometry.polygon.Rect`"
 msgstr ""
 
-#: janim.utils.font.get_font_info_by_name:1 of
-msgid "通过字体名得到字体文件信息"
+#: janim.items.shape_matchers.Underline:1 of
+msgid "基类：:py:class:`~janim.items.geometry.line.Line`"
 msgstr ""
-
-#: janim.utils.font.get_font_info_by_name:3 of
-msgid ""
-"例：通过 ``Consolas`` 得到 ``FontInfo('C:\\Windows\\Fonts\\consola.ttf', 0, "
-"'Consolas', <'name' table at ...>)``"
-msgstr ""
-
-#~ msgid "通过字体名得到字体文件路径"
-#~ msgstr ""
-
-#~ msgid "例：通过 `Consolas` 得到 `C:\\Windows\\Fonts\\consola.ttf`"
-#~ msgstr ""
 

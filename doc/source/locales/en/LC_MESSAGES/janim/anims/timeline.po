@@ -6,88 +6,88 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: JAnim\n"
+"Project-Id-Version:  JAnim\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-03-14 15:44+0800\n"
+"POT-Creation-Date: 2024-05-30 15:49+0800\n"
 "PO-Revision-Date: 2024-03-14 15:46+0800\n"
 "Last-Translator: \n"
-"Language-Team: en <LL@li.org>\n"
 "Language: en\n"
+"Language-Team: en <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "Generated-By: Babel 2.14.0\n"
-"X-Generator: Poedit 3.4.2\n"
 
 #: ../../source/janim/anims/timeline.rst:2
 msgid "timeline"
 msgstr "timeline"
 
-#: janim.anims.timeline.Timeline:1 janim.anims.timeline.Timeline.CtxBlocker:1
+#: janim.anims.timeline.Timeline:1 janim.anims.timeline.Timeline.ItemHistory:1
+#: janim.anims.timeline.Timeline.PausePoint:1
+#: janim.anims.timeline.Timeline.PlayAudioInfo:1
 #: janim.anims.timeline.Timeline.ScheduledTask:1
-#: janim.anims.timeline.Timeline.TimeOfCode:1
-#: janim.anims.timeline.Timeline.TimedItemData:1 of
+#: janim.anims.timeline.Timeline.SubtitleInfo:1
+#: janim.anims.timeline.Timeline.TimeOfCode:1 of
 msgid "基类：:py:class:`object`"
 msgstr "基类：:py:class:`object`"
 
 #: janim.anims.timeline.Timeline:1 of
 msgid "继承该类并实现 :meth:`construct` 方法，以实现动画的构建逻辑"
 msgstr ""
-"Inherit this class and implement the :meth:`construct` method to implement the "
-"logic of building animations"
+"Inherit this class and implement the :meth:`construct` method to "
+"implement the logic of building animations"
 
 #: janim.anims.timeline.Timeline:3 of
 msgid "调用 :meth:`build` 可以得到构建完成的动画对象"
 msgstr "Call :meth:`build` to get the constructed animation object"
 
+#: ../../docstring janim.anims.timeline.Timeline.CONFIG:1 of
+msgid "在子类中定义该变量可以起到设置配置的作用，例如："
+msgstr ""
+
+#: ../../docstring janim.anims.timeline.Timeline.CONFIG:13 of
+msgid "另见：:class:`~.Config`"
+msgstr ""
+
+#: janim.anims.timeline.Timeline.with_config:1 of
+msgid "使用定义在 :class:`Timeline` 子类中的 config"
+msgstr ""
+
 #: janim.anims.timeline.Timeline.get_context:1 of
 msgid "调用该方法可以得到当前正在构建的 :class:`Timeline` 对象"
 msgstr ""
-"Call this method to get the current :class:`Timeline` object being constructing"
+"Call this method to get the current :class:`Timeline` object being "
+"constructing"
 
 #: janim.anims.timeline.Timeline.get_context:3 of
+#, fuzzy
 msgid ""
 "如果在 :meth:`construct` 方法外调用，且 ``raise_exc=True`` （默认），则抛出 "
-"``LookupError``"
+":class:`~.TimelineLookupError`"
 msgstr ""
-"If called outside of :meth:`construct` and ``raise_exc=True`` (default), raises "
-"a ``LookupError``"
-
-#: janim.anims.timeline.Timeline.CtxBlocker:1 of
-msgid ""
-"使得在 ``with Timeline.CtxBlocker():`` 内，物件不会自动调用 :meth:`register`"
-msgstr ""
-"Prevents items from automatically calling :meth:`register` within ``with "
-"Timeline.CtxBlocker():``."
-
-#: janim.anims.timeline.Timeline.CtxBlocker:3 of
-msgid "用于临时创建物件时"
-msgstr "Used for temporarily creating items."
+"If called outside of :meth:`construct` and ``raise_exc=True`` (default), "
+"raises a ``LookupError``"
 
 #: janim.anims.timeline.Timeline.TimeOfCode:1 of
 msgid "标记 :meth:`~.Timeline.construct` 执行到的代码行数所对应的时间"
 msgstr ""
-"Marks the time corresponding to the line number of code execution in :meth:`~."
-"Timeline.construct`"
+"Marks the time corresponding to the line number of code execution in "
+":meth:`~.Timeline.construct`"
 
 #: janim.anims.timeline.Timeline.ScheduledTask:1 of
 msgid "另见 :meth:`~.Timeline.schedule`"
 msgstr "See :meth:`~.Timeline.schedule`"
 
-#: janim.anims.timeline.Timeline.TimedItemData:1 of
-msgid "表示从 ``time`` 之后，物件的数据"
-msgstr "Represents the data of an item after ``time``"
+#: janim.anims.timeline.Timeline.PlayAudioInfo:1 of
+#, fuzzy
+msgid "调用 :meth:`~.Timeline.play_audio` 的参数信息"
+msgstr "See :meth:`~.Timeline.schedule`"
 
-#: ../../docstring janim.anims.timeline.Timeline.TimedItemData.data:1 of
-msgid "当 ``data`` 的类型为 ``Item.Data`` 时，为静态数据"
-msgstr "When the type of ``data`` is ``Item.Data``, it represents static data."
-
-#: ../../docstring janim.anims.timeline.Timeline.TimedItemData.data:2 of
-msgid "否则，对于 ``DynamicData`` ，会在获取时调用以得到对应数据"
-msgstr ""
-"Otherwise, for ``DynamicData``, it will be called to obtain the corresponding "
-"data when accessed."
+#: janim.anims.timeline.Timeline.SubtitleInfo:1 of
+#, fuzzy
+msgid "调用 :meth:`~.Timeline.subtitle` 的参数信息"
+msgstr "See :meth:`~.Timeline.schedule`"
 
 #: janim.anims.timeline.Timeline.construct:1 of
 msgid "继承该方法以实现动画的构建逻辑"
@@ -103,8 +103,7 @@ msgid "计划执行"
 msgstr "Schedule execution"
 
 #: janim.anims.timeline.Timeline.schedule:3 of
-msgid ""
-"会在进度达到 ``at`` 时，对 ``func`` 进行调用， 可传入 ``*args`` 和 ``**kwargs``"
+msgid "会在进度达到 ``at`` 时，对 ``func`` 进行调用， 可传入 ``*args`` 和 ``**kwargs``"
 msgstr ""
 "Calls ``func`` when the progress reaches ``at``, can pass ``*args`` and "
 "``**kwargs``"
@@ -125,6 +124,26 @@ msgstr "Apply animations"
 msgid "应用动画并推进到动画结束的时候"
 msgstr "Apply animations and advance to the end of the animation"
 
+#: janim.anims.timeline.Timeline.pause_point:1 of
+msgid "标记在预览界面中，执行到当前时间点时会暂停"
+msgstr ""
+
+#: janim.anims.timeline.Timeline.pause_point:3 of
+msgid "``at_previous_frame`` 控制是在前一帧暂停（默认）还是在当前帧暂停"
+msgstr ""
+
+#: janim.anims.timeline.Timeline.pause_point:4 of
+msgid "``offset`` 表示偏移多少秒，例如 ``offset=2`` 则是当前位置 2s 后"
+msgstr ""
+
+#: janim.anims.timeline.Timeline.is_displaying:1 of
+msgid "判断特定的物件是否正在显示中"
+msgstr ""
+
+#: janim.anims.timeline.Timeline.is_displaying:3 of
+msgid "另见：:meth:`show`、:meth:`hide`"
+msgstr ""
+
 #: janim.anims.timeline.Timeline.show:1 of
 msgid "显示物件"
 msgstr "Show item"
@@ -136,29 +155,98 @@ msgstr "Hide item"
 #: janim.anims.timeline.Timeline.cleanup_display:1 of
 msgid "对目前显示中的所有物件调用隐藏，使得正确产生 :class:`~.Display` 对象"
 msgstr ""
-"Hide all currently displayed items to correctly generate :class:`~.Display` "
-"objects"
+"Hide all currently displayed items to correctly generate "
+":class:`~.Display` objects"
 
-#: janim.anims.timeline.Timeline.register:1 of
-msgid "在 :meth:`construct` 中创建的物件会自动调用该方法"
-msgstr "Automatically called for items created in :meth:`construct`"
-
-#: janim.anims.timeline.Timeline.register_dynamic_data:1 of
-msgid "注册动态数据信息"
-msgstr "Registers dynamic data information."
-
-#: janim.anims.timeline.Timeline.register_dynamic_data:3 of
-msgid ""
-"表示在调用 :meth:`get_stored_data_at_time` 时，如果其时间在 ``as_time`` 和下一个"
-"数据的时间之间， 就调用 ``data`` 来产生动态的数据"
+#: janim.anims.timeline.Timeline.aas:1 of
+msgid ":meth:`audio_and_subtitle` 的简写"
 msgstr ""
-"When :meth:`get_stored_data_at_time` is called, if its time is between "
-"``as_time`` and the time of the next data, ``data`` will be called to generate "
-"dynamic data."
 
-#: janim.anims.timeline.Timeline.register_dynamic_data:6 of
-msgid "例如，在 :class:`~.MethodTransform` 中使用到"
-msgstr "For example, used in :class:`~.MethodTransform`."
+#: janim.anims.timeline.Timeline.audio_and_subtitle:1 of
+msgid "播放音频，并在对应的区间显示字幕"
+msgstr ""
+
+#: janim.anims.timeline.Timeline.audio_and_subtitle:3 of
+msgid "如果 ``clip=...`` （默认，省略号），则表示自动确定裁剪区间，将前后的空白去除（可以传入 ``clip=None`` 禁用自动裁剪）"
+msgstr ""
+
+#: janim.anims.timeline.Timeline.audio_and_subtitle:4 of
+msgid "如果 ``mul`` 不是 ``None``，则会将音频振幅乘以该值"
+msgstr ""
+
+#: janim.anims.timeline.Timeline.play_audio:1 of
+msgid "在当前位置播放音频"
+msgstr ""
+
+#: janim.anims.timeline.Timeline.play_audio:3 of
+msgid "可以指定 ``begin`` 和 ``end`` 表示裁剪区段"
+msgstr ""
+
+#: janim.anims.timeline.Timeline.play_audio:4 of
+msgid "可以指定在当前位置往后 ``delay`` 秒才开始播放"
+msgstr ""
+
+#: janim.anims.timeline.Timeline.play_audio:5 of
+msgid "若指定 ``clip``，则会覆盖 ``begin`` 和 ``end`` （可以将 ``clip`` 视为这二者的简写）"
+msgstr ""
+
+#: janim.anims.timeline.Timeline.play_audio:7 of
+msgid "返回值表示播放的时间段"
+msgstr ""
+
+#: janim.anims.timeline.Timeline.has_audio:1 of
+msgid "是否有可以播放的音频"
+msgstr ""
+
+#: janim.anims.timeline.Timeline.get_audio_samples_of_frame:1 of
+msgid "提取特定帧的音频流"
+msgstr ""
+
+#: janim.anims.timeline.Timeline.subtitle:1 of
+msgid "添加字幕"
+msgstr ""
+
+#: janim.anims.timeline.Timeline.subtitle:3 of
+msgid "文字可以传入一个列表，纵向排列显示"
+msgstr ""
+
+#: janim.anims.timeline.Timeline.subtitle:4 of
+msgid "可以指定在当前位置往后 ``delay`` 秒才显示"
+msgstr ""
+
+#: janim.anims.timeline.Timeline.subtitle:5 of
+msgid "``duration`` 表示持续时间"
+msgstr ""
+
+#: janim.anims.timeline.Timeline.subtitle:6 of
+msgid "``scale`` 表示对文字的缩放，默认为 ``0.8``，可以传入列表表示对各个文字的缩放"
+msgstr ""
+
+#: janim.anims.timeline.Timeline.subtitle:7 of
+msgid "``use_typst_text`` 表示是否使用 :class:`TypstText`，可以传入列表表示各个文字是否使用"
+msgstr ""
+
+#: janim.anims.timeline.Timeline.subtitle:9 of
+msgid "返回值表示显示的时间段"
+msgstr ""
+
+#: janim.anims.timeline.Timeline.place_subtitle:1 of
+msgid "被 :meth:`subtitle` 调用以将字幕放置到合适的位置："
+msgstr ""
+
+#: janim.anims.timeline.Timeline.place_subtitle:3 of
+msgid "对于同一批添加的字幕 ``[a, b]``，则 ``a`` 放在 ``b`` 的上面"
+msgstr ""
+
+#: janim.anims.timeline.Timeline.place_subtitle:4 of
+msgid "如果在上文所述的 ``[a, b]`` 仍存在时，又加入了一个 ``c``，则 ``c`` 放在最上面"
+msgstr ""
+
+#: janim.anims.timeline.Timeline.track:1 of
+msgid ""
+"使得 ``item`` 在每次 ``forward`` 和 ``play`` 时都会被自动调用 "
+":meth:`~.Item.detect_change`"
+msgstr ""
 
 #: janim.anims.timeline.Timeline.detect_changes_of_all:1 of
 msgid "检查所有物件是否有产生变化并记录"
@@ -167,45 +255,13 @@ msgstr "Check all items if have changed and record the changes"
 #: janim.anims.timeline.Timeline.detect_changes:1 of
 msgid "检查指定的列表中的物件是否有产生变化并记录（仅检查自身而不包括子物件的）"
 msgstr ""
-"Check items in the specified list if have changed and record the changes (only "
-"checks itself, without descendants)"
+"Check items in the specified list if have changed and record the changes "
+"(only checks itself, without descendants)"
 
-#: janim.anims.timeline.Timeline.get_stored_data_at_time:1 of
-msgid "得到在指定时间物件的数据"
-msgstr "Get the data of the item at the specified time."
-
-#: janim.anims.timeline.Timeline.get_stored_data_at_time:3 of
-msgid ""
-"在两份数据的分界处请使用 :meth:`get_stored_data_at_right` 和 :meth:"
-"`get_stored_at_left` 来明确"
-msgstr ""
-"Use :meth:`get_stored_data_at_right` and :meth:`get_stored_at_left` to "
-"explicitly handle the boundary between two sets of data."
-
-#: janim.anims.timeline.Timeline.get_stored_data_at_right:1 of
-msgid "得到在指定时间之后的瞬间，物件的数据"
-msgstr "Get the data of the item at the instant after the specified time"
-
-#: janim.anims.timeline.Timeline.get_stored_data_at_left:1 of
-msgid "得到在指定时间之前的瞬间，物件的数据"
-msgstr "Get the data of the item at the instant before the specified time"
-
-#: janim.anims.timeline.Timeline.t2d:1 of
-msgid "``t2d`` 是 \"time to data\" 的简写"
-msgstr "Abbreviation for \"time to data\"."
-
-#: janim.anims.timeline.Timeline.t2d:3 of
-msgid ""
-"如果 ``t`` 为 ``None``，则自动设为 :py:obj:`~.UpdaterParams.global_t` 即当前动画"
-"运行到的时间， 用于在 :class:`~.DataUpdater` 和 :class:`~.ItemUpdater` 中简化调用"
-msgstr ""
-"If ``t`` is ``None``, it is automatically set to :class:`~.UpdaterParams."
-"global_t`, which is the current time the animation has reached, used to simplify "
-"calls in :class:`~.DataUpdater` and :class:`~.ItemUpdater`."
-
-#: janim.anims.timeline.Timeline.t2d:5 of
-msgid "等效于调用 :meth:`get_stored_data_at_right`"
-msgstr "Equivalent to calling :meth:`get_stored_data_at_right`."
+#: janim.anims.timeline.Timeline.item_current:1 of
+#, fuzzy
+msgid "另见 :meth:`~.Item.current`"
+msgstr "See :meth:`~.Timeline.schedule`"
 
 #: janim.anims.timeline.Timeline.get_construct_lineno:1 of
 msgid "得到当前在 :meth:`construct` 中执行到的行数"
@@ -230,24 +286,25 @@ msgid "基类：:py:class:`~janim.anims.composition.AnimGroup`"
 msgstr "基类：:py:class:`~janim.anims.composition.AnimGroup`"
 
 #: janim.anims.timeline.TimelineAnim:1 of
-msgid "运行 :meth:`Timeline.run` 后返回的动画组"
+#, fuzzy
+msgid "运行 :meth:`Timeline.build` 后返回的动画组"
 msgstr "Animation group returned after running :meth:`Timeline.run`."
 
 #: janim.anims.timeline.TimelineAnim:3 of
 msgid ""
-"``self.display_anim`` 是由 :meth:`Timeline.construct` 中执行 :meth:`Timeline."
-"show` 和 :meth:`Timeline.hide` 而产生的"
+"``self.display_anim`` 是由 :meth:`Timeline.construct` 中执行 "
+":meth:`Timeline.show` 和 :meth:`Timeline.hide` 而产生的"
 msgstr ""
-"``self.display_anim`` is generated by executing :meth:`Timeline.show` and :meth:"
-"`Timeline.hide` in :meth:`Timeline.construct`."
+"``self.display_anim`` is generated by executing :meth:`Timeline.show` and"
+" :meth:`Timeline.hide` in :meth:`Timeline.construct`."
 
 #: janim.anims.timeline.TimelineAnim:5 of
 msgid ""
-"``self.user_anim`` 是显式使用了 :meth:`Timeline.prepare` 或 :meth:`Timeline."
-"play` 而产生的"
+"``self.user_anim`` 是显式使用了 :meth:`Timeline.prepare` 或 "
+":meth:`Timeline.play` 而产生的"
 msgstr ""
-"``self.user_anim`` is generated explicitly using :meth:`Timeline.prepare` or :"
-"meth:`Timeline.play`."
+"``self.user_anim`` is generated explicitly using :meth:`Timeline.prepare`"
+" or :meth:`Timeline.play`."
 
 #: janim.anims.timeline.TimelineAnim.anim_on:1 of
 msgid "将 ``local_t`` 换算为 ``alpha`` 并调用 :meth:`anim_on_alpha`"
@@ -259,3 +316,81 @@ msgstr "Calls all :class:`RenderCall` objects for rendering."
 
 #~ msgid "用于 :class:`~.Animation` 的初始化以及物件的操作"
 #~ msgstr "Used for initialization of :class:`~.Animation` and operations on items"
+
+#~ msgid "使得在 ``with Timeline.CtxBlocker():`` 内，物件不会自动调用 :meth:`register`"
+#~ msgstr ""
+#~ "Prevents items from automatically calling "
+#~ ":meth:`register` within ``with "
+#~ "Timeline.CtxBlocker():``."
+
+#~ msgid "用于临时创建物件时"
+#~ msgstr "Used for temporarily creating items."
+
+#~ msgid "表示从 ``time`` 之后，物件的数据"
+#~ msgstr "Represents the data of an item after ``time``"
+
+#~ msgid "当 ``data`` 的类型为 ``Item.Data`` 时，为静态数据"
+#~ msgstr "When the type of ``data`` is ``Item.Data``, it represents static data."
+
+#~ msgid "否则，对于 ``DynamicData`` ，会在获取时调用以得到对应数据"
+#~ msgstr ""
+#~ "Otherwise, for ``DynamicData``, it will "
+#~ "be called to obtain the corresponding"
+#~ " data when accessed."
+
+#~ msgid "在 :meth:`construct` 中创建的物件会自动调用该方法"
+#~ msgstr "Automatically called for items created in :meth:`construct`"
+
+#~ msgid "注册动态数据信息"
+#~ msgstr "Registers dynamic data information."
+
+#~ msgid ""
+#~ "表示在调用 :meth:`get_stored_data_at_time` 时，如果其时间在 "
+#~ "``as_time`` 和下一个数据的时间之间， 就调用 ``data`` 来产生动态的数据"
+#~ msgstr ""
+#~ "When :meth:`get_stored_data_at_time` is called, "
+#~ "if its time is between ``as_time`` "
+#~ "and the time of the next data, "
+#~ "``data`` will be called to generate "
+#~ "dynamic data."
+
+#~ msgid "例如，在 :class:`~.MethodTransform` 中使用到"
+#~ msgstr "For example, used in :class:`~.MethodTransform`."
+
+#~ msgid "得到在指定时间物件的数据"
+#~ msgstr "Get the data of the item at the specified time."
+
+#~ msgid ""
+#~ "在两份数据的分界处请使用 :meth:`get_stored_data_at_right` 和 "
+#~ ":meth:`get_stored_at_left` 来明确"
+#~ msgstr ""
+#~ "Use :meth:`get_stored_data_at_right` and "
+#~ ":meth:`get_stored_at_left` to explicitly handle "
+#~ "the boundary between two sets of "
+#~ "data."
+
+#~ msgid "得到在指定时间之后的瞬间，物件的数据"
+#~ msgstr "Get the data of the item at the instant after the specified time"
+
+#~ msgid "得到在指定时间之前的瞬间，物件的数据"
+#~ msgstr "Get the data of the item at the instant before the specified time"
+
+#~ msgid "``t2d`` 是 \"time to data\" 的简写"
+#~ msgstr "Abbreviation for \"time to data\"."
+
+#~ msgid ""
+#~ "如果 ``t`` 为 ``None``，则自动设为 "
+#~ ":py:obj:`~.UpdaterParams.global_t` 即当前动画运行到的时间， 用于在 "
+#~ ":class:`~.DataUpdater` 和 :class:`~.ItemUpdater` "
+#~ "中简化调用"
+#~ msgstr ""
+#~ "If ``t`` is ``None``, it is "
+#~ "automatically set to "
+#~ ":class:`~.UpdaterParams.global_t`, which is the "
+#~ "current time the animation has reached,"
+#~ " used to simplify calls in "
+#~ ":class:`~.DataUpdater` and :class:`~.ItemUpdater`."
+
+#~ msgid "等效于调用 :meth:`get_stored_data_at_right`"
+#~ msgstr "Equivalent to calling :meth:`get_stored_data_at_right`."
+

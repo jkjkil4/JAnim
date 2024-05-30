@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: JAnim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-03-14 14:52+0800\n"
+"POT-Creation-Date: 2024-05-30 15:49+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -23,8 +23,8 @@ msgstr ""
 msgid "base"
 msgstr ""
 
-#: ../../source/rst_utils/tip_of_complex.rst:1
-msgid "**提示：这部分内容涉及 JAnim 实现原理，可能较为复杂，若没有研究源码的需求，你应酌情阅读**"
+#: ../../source/rst_utils/tip_of_complex.rst:3
+msgid "这部分内容涉及 JAnim 实现原理，可能较为复杂，若没有研究源码的需求，你应酌情阅读"
 msgstr ""
 
 #: janim.render.base.RenderData:1 janim.render.base.Renderer:1 of
@@ -78,4 +78,7 @@ msgstr ""
 #: janim.render.base.get_program:10 of
 msgid "注：若 ``filepath`` 对应着色器程序先前已创建过，则会复用先前的对象，否则另外创建新的对象并记录"
 msgstr ""
+
+#~ msgid "**提示：这部分内容涉及 JAnim 实现原理，可能较为复杂，若没有研究源码的需求，你应酌情阅读**"
+#~ msgstr ""
 

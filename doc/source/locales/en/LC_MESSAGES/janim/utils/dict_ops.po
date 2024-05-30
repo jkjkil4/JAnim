@@ -19,28 +19,23 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.14.0\n"
 
-#: ../../source/janim/utils/font.rst:2
-msgid "font"
+#: ../../source/janim/utils/dict_ops.rst:2
+msgid "dict_ops"
 msgstr ""
 
-#: janim.utils.font.Font:1 janim.utils.font.Font.GlyphData:1
-#: janim.utils.font.FontInfo:1 of
-msgid "基类：:py:class:`object`"
+#: janim.utils.dict_ops.merge_dicts_recursively:1 of
+msgid "递归合并字典"
 msgstr ""
 
-#: janim.utils.font.get_font_info_by_name:1 of
-msgid "通过字体名得到字体文件信息"
+#: janim.utils.dict_ops.merge_dicts_recursively:3 of
+msgid "创建一个字典，其键集是所有输入字典的并集"
 msgstr ""
 
-#: janim.utils.font.get_font_info_by_name:3 of
-msgid ""
-"例：通过 ``Consolas`` 得到 ``FontInfo('C:\\Windows\\Fonts\\consola.ttf', 0, "
-"'Consolas', <'name' table at ...>)``"
+#: janim.utils.dict_ops.merge_dicts_recursively:4 of
+msgid "在列表中位置越靠后的字典具有更高的优先级"
 msgstr ""
 
-#~ msgid "通过字体名得到字体文件路径"
-#~ msgstr ""
-
-#~ msgid "例：通过 `Consolas` 得到 `C:\\Windows\\Fonts\\consola.ttf`"
-#~ msgstr ""
+#: janim.utils.dict_ops.merge_dicts_recursively:5 of
+msgid "当值为字典时，将递归应用"
+msgstr ""
 

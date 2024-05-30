@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: JAnim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-03-14 14:52+0800\n"
+"POT-Creation-Date: 2024-05-30 15:49+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -31,16 +31,56 @@ msgstr ""
 msgid "配置"
 msgstr ""
 
-#: janim.utils.config.Config:3 of
+#: janim.utils.config.Config:4 of
+msgid "基础用法"
+msgstr ""
+
+#: janim.utils.config.Config:6 of
 msgid "使用 ``Config.get.xxx`` 得到属性，例如 ``Config.get.fps`` 则得到当前设置的帧率"
 msgstr ""
 
-#: janim.utils.config.Config:5 of
+#: janim.utils.config.Config:8 of
 msgid "使用 ``with Config(key=value):`` 在指定的配置下执行内容，例如："
 msgstr ""
 
-#: janim.utils.config.Config:16 of
+#: janim.utils.config.Config:19 of
 msgid "其中没有设置的属性则采用默认设置 :py:obj:`~.default_config`"
+msgstr ""
+
+#: janim.utils.config.Config:22 of
+msgid "全局配置"
+msgstr ""
+
+#: janim.utils.config.Config:24 of
+msgid "在使用命令行参数时，使用 ``-c 配置名 值`` 可以修改全局配置"
+msgstr ""
+
+#: janim.utils.config.Config:26 of
+msgid "例如 ``janim write your_file.py YourTimeline -c fps 120`` 可以将渲染帧率设置为 120"
+msgstr ""
+
+#: janim.utils.config.Config:28 of
+msgid "可以同时修改多个，例如："
+msgstr ""
+
+#: janim.utils.config.Config:34 of
+msgid "这个命令会将动画以 120 的帧率输出到 ``custom_dir`` 这个指定的文件夹中"
+msgstr ""
+
+#: janim.utils.config.Config:37 of
+msgid "时间轴配置"
+msgstr ""
+
+#: janim.utils.config.Config:39 of
+msgid "定义类变量 ``CONFIG``，例如："
+msgstr ""
+
+#: janim.utils.config.Config:52 of
+msgid "这样则是设定这个时间轴的配置，渲染时帧率 120，预览（显示为窗口）时帧率 30"
+msgstr ""
+
+#: janim.utils.config.Config:54 of
+msgid "另见：:py:obj:`~.Timeline.CONFIG`"
 msgstr ""
 
 #: ../../docstring janim.utils.config.default_config:1 of
@@ -65,5 +105,9 @@ msgstr ""
 
 #: janim.utils.config.ConfigGetter:3 of
 msgid "请仍然使用 ``Config.get.xxx`` 来获取定义在该类中的内容"
+msgstr ""
+
+#: janim.utils.config.ConfigGetter.formated_output_dir:1 of
+msgid "将 ``:/path/to/file`` 转换为相对于 ``relative_path`` 的路径"
 msgstr ""
 

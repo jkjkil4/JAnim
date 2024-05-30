@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: JAnim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-03-14 14:52+0800\n"
+"POT-Creation-Date: 2024-05-30 15:49+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -41,5 +41,17 @@ msgstr ""
 
 #: janim.items.svg.typst.Typst:1 of
 msgid "Typst 公式"
+msgstr ""
+
+#: janim.items.svg.typst.TypstText:1 of
+msgid "基类：:py:class:`~janim.items.svg.typst.Typst`"
+msgstr ""
+
+#: janim.items.svg.typst.TypstText:1 of
+msgid "Typst 文本"
+msgstr ""
+
+#: janim.items.svg.typst.TypstText:3 of
+msgid "相当于 :class:`Typst` 传入 ``use_math_environment=False``"
 msgstr ""
 

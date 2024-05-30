@@ -19,28 +19,27 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.14.0\n"
 
-#: ../../source/janim/utils/font.rst:2
-msgid "font"
+#: ../../source/janim/anims/movement.rst:2
+msgid "movement"
 msgstr ""
 
-#: janim.utils.font.Font:1 janim.utils.font.Font.GlyphData:1
-#: janim.utils.font.FontInfo:1 of
-msgid "基类：:py:class:`object`"
+#: janim.anims.movement.Homotopy:1 janim.anims.movement.MoveAlongPath:1 of
+msgid "基类：:py:class:`~janim.anims.updater.DataUpdater`"
 msgstr ""
 
-#: janim.utils.font.get_font_info_by_name:1 of
-msgid "通过字体名得到字体文件信息"
+#: janim.anims.movement.Homotopy:1 of
+msgid "一个从 (x, y, z, t) 到 (x’, y’, z’) 的函数"
 msgstr ""
 
-#: janim.utils.font.get_font_info_by_name:3 of
-msgid ""
-"例：通过 ``Consolas`` 得到 ``FontInfo('C:\\Windows\\Fonts\\consola.ttf', 0, "
-"'Consolas', <'name' table at ...>)``"
+#: janim.anims.movement.Homotopy:3 of
+msgid "t 的取值范围是 [0, 1]，表示动画进度"
 msgstr ""
 
-#~ msgid "通过字体名得到字体文件路径"
-#~ msgstr ""
+#: janim.anims.movement.ComplexHomotopy:1 of
+msgid "基类：:py:class:`~janim.anims.movement.Homotopy`"
+msgstr ""
 
-#~ msgid "例：通过 `Consolas` 得到 `C:\\Windows\\Fonts\\consola.ttf`"
-#~ msgstr ""
+#: janim.anims.movement.ComplexHomotopy:1 of
+msgid "与 Homotopy 类似，区别是用复数描述坐标"
+msgstr ""
 

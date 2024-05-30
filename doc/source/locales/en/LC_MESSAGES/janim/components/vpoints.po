@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: JAnim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-03-14 14:52+0800\n"
+"POT-Creation-Date: 2024-05-30 15:49+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -69,6 +69,16 @@ msgstr ""
 msgid "使用形如 ``.set([[1.5, 3, 2], [2, 1.5, 0]])`` 的形式"
 msgstr ""
 
+#: janim.components.vpoints.Cmpt_VPoints.apply_points_fn:1 of
+msgid "将所有点作为单独的一个参数传入 ``func``，并将 ``func`` 返回的结果作为新的点坐标数据"
+msgstr ""
+
+#: janim.components.vpoints.Cmpt_VPoints.apply_points_fn:3 of
+msgid ""
+"视 ``about_point`` 为原点，若其为 ``None``，则将物件在 ``about_edge`` 方向上的边界作为 "
+"``about_point``"
+msgstr ""
+
 #: janim.components.vpoints.Cmpt_VPoints.get_anchors:1 of
 msgid "得到曲线的锚点"
 msgstr ""
@@ -123,6 +133,16 @@ msgstr ""
 msgid "将点数据设置为由 ``points`` 构成的折线"
 msgstr ""
 
+#: janim.components.vpoints.Cmpt_VPoints.make_smooth:1 of
+msgid ""
+"Edits the path so as to pass smoothly through all the current anchor "
+"points."
+msgstr ""
+
+#: janim.components.vpoints.Cmpt_VPoints.make_smooth:4 of
+msgid "If approx is False, this may increase the total number of points."
+msgstr ""
+
 #: janim.components.vpoints.Cmpt_VPoints.area_vector:1 of
 msgid "一个向量，其长度为锚点形成的多边形所围成的面积，根据右手定则指向垂直于该多边形的方向"
 msgstr ""
@@ -145,5 +165,9 @@ msgstr ""
 
 #: janim.components.vpoints.Cmpt_VPoints.get_subpaths:1 of
 msgid "得到子路径列表"
+msgstr ""
+
+#: janim.components.vpoints.AnchorMode:1 of
+msgid "基类：:py:class:`~enum.Enum`"
 msgstr ""
 
