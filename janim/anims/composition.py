@@ -1,5 +1,5 @@
 from janim.anims.animation import Animation
-from janim.exception import AnimGroupEmptyError, NotAnimationError
+from janim.exception import NotAnimationError
 from janim.utils.rate_functions import RateFunc, linear
 
 
@@ -41,8 +41,6 @@ class AnimGroup(Animation):
         _get_anim_objects: bool = True,
         **kwargs
     ):
-        if not anims:
-            raise AnimGroupEmptyError(f'At least one animation must be passed to {self.__class__.__name__}')
         if _get_anim_objects:
             anims = self._get_anim_objects(anims)
         self.anims = anims
@@ -90,6 +88,9 @@ class AnimGroup(Animation):
         该方法是被 :meth:`~.Timeline.prepare` 调用以计算的
         '''
         super().compute_global_range(at, duration)
+
+        if not self.anims:
+            return
 
         factor = duration / self.maxt
 
