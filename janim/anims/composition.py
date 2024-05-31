@@ -1,5 +1,5 @@
 from janim.anims.animation import Animation
-from janim.exception import NotAnimationError
+from janim.exception import AnimGroupEmptyError, NotAnimationError
 from janim.utils.rate_functions import RateFunc, linear
 
 
@@ -41,6 +41,8 @@ class AnimGroup(Animation):
         _get_anim_objects: bool = True,
         **kwargs
     ):
+        if not anims:
+            raise AnimGroupEmptyError(f'At least one animation must be passed to {self.__class__.__name__}')
         if _get_anim_objects:
             anims = self._get_anim_objects(anims)
         self.anims = anims
