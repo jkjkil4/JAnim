@@ -19,6 +19,9 @@ class CameraInfo:
     horizontal_dist: float = field(init=False)
     vertical_dist: float = field(init=False)
 
+    distance_from_plane: float = field(init=False)
+    fixed_distance_from_plane: float = field(init=False)
+
     camera_location: np.ndarray = field(init=False)
 
     view_matrix: np.ndarray = field(init=False)
@@ -29,6 +32,9 @@ class CameraInfo:
     def __post_init__(self):
         self.horizontal_dist = get_norm(self.horizontal_vect)
         self.vertical_dist = get_norm(self.vertical_vect)
+
+        self.distance_from_plane = self._compute_distance_from_plane(self.vertical_dist)
+        self.fixed_distance_from_plane = self._compute_distance_from_plane(self.vertical_dist / self.scaled_factor)
 
         self.camera_location = self._compute_camera_location()
 
@@ -49,10 +55,16 @@ class CameraInfo:
         mapped = np.dot(aligned, self.proj_view_matrix.T)
         return mapped[:, :2] / mapped[:, 3].reshape((len(mapped), 1))
 
-    @property
-    def distance_from_plane(self) -> float:
-        up = self.vertical_vect
-        return get_norm(up) / 2 / math.tan(math.radians(self.fov / 2))
+    def map_fixed_in_frame_points(self, points: VectArray) -> np.ndarray:
+        aligned = np.hstack([
+            points - [0, 0, self.fixed_distance_from_plane],
+            np.full((len(points), 1), 1)
+        ])
+        mapped = np.dot(aligned, self.proj_matrix.T)
+        return mapped[:, :2] / mapped[:, 3].reshape((len(mapped), 1))
+
+    def _compute_distance_from_plane(self, vertical_length: float) -> float:
+        return vertical_length / 2 / math.tan(math.radians(self.fov / 2))
 
     def _compute_camera_location(self) -> np.ndarray:
         right = self.horizontal_vect

@@ -10,13 +10,13 @@ out float v_radius;
 
 uniform bool JA_FIX_IN_FRAME;
 uniform mat4 JA_VIEW_MATRIX;
-uniform float JA_DISTANCE_FROM_PLANE;
+uniform float JA_FIXED_DIST_FROM_PLANE;
 uniform mat4 JA_PROJ_MATRIX;
 
 void main()
 {
     if (JA_FIX_IN_FRAME) {
-        v_pos = vec4(in_point - vec3(0.0, 0.0, JA_DISTANCE_FROM_PLANE), 1.0);
+        v_pos = vec4(in_point - vec3(0.0, 0.0, JA_FIXED_DIST_FROM_PLANE), 1.0);
     } else {
         v_pos = JA_VIEW_MATRIX * vec4(in_point, 1.0);
     }

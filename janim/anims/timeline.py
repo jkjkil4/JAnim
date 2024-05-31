@@ -796,7 +796,7 @@ class TimelineAnim(AnimGroup):
                 set_global_uniforms(
                     ctx,
                     ('JA_VIEW_MATRIX', camera_info.view_matrix.T.flatten()),
-                    ('JA_DISTANCE_FROM_PLANE', camera_info.distance_from_plane),
+                    ('JA_FIXED_DIST_FROM_PLANE', camera_info.fixed_distance_from_plane),
                     ('JA_PROJ_MATRIX', camera_info.proj_matrix.T.flatten()),
                     ('JA_FRAME_RADIUS', camera_info.frame_radius),
                     ('JA_ANTI_ALIAS_RADIUS', anti_alias_radius)

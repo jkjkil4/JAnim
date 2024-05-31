@@ -112,10 +112,12 @@ class VItemRenderer(Renderer):
                 or id(new_points) != id(self.prev_points) \
                 or is_camera_changed:
             if new_fix_in_frame:
-                clip_box = np.array(item.points.self_box.get_corners())[:, :2]
+                clip_box = render_data.camera_info.map_fixed_in_frame_points(
+                    np.array(item.points.self_box.get_corners())
+                )
             else:
                 clip_box = render_data.camera_info.map_points(item.points.self_box.get_corners())
-                clip_box *= render_data.camera_info.frame_radius
+            clip_box *= render_data.camera_info.frame_radius
 
             buff = new_radius.max() + render_data.anti_alias_radius
             clip_min = np.min(clip_box, axis=0) - buff
@@ -166,10 +168,10 @@ class VItemRenderer(Renderer):
                 or new_fix_in_frame != self.prev_fix_in_frame \
                 or is_camera_changed:
             if new_fix_in_frame:
-                mapped = new_points[:, :2]
+                mapped = render_data.camera_info.map_fixed_in_frame_points(new_points)
             else:
                 mapped = render_data.camera_info.map_points(new_points)
-                mapped *= render_data.camera_info.frame_radius
+            mapped *= render_data.camera_info.frame_radius
 
             bytes = np.hstack([
                 mapped,
