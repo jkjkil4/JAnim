@@ -329,22 +329,6 @@ class AnimViewer(QMainWindow):
         range = self.timeline_view.range
         self.set_anim(anim)
 
-        # 向 vscode 客户端发送重新构建了的信息
-        if self.socket is not None:
-            msg = json.dumps(dict(
-                janim=dict(
-                    type='rebuilt'
-                )
-            ))
-            for client in self.clients:
-                self.socket.writeDatagram(
-                    QByteArray.fromStdString(msg),
-                    *client
-                )
-
-            time = self.timeline_view.progress_to_time(self.timeline_view.progress())
-            self.send_lineno(self.anim.timeline.get_lineno_at_time(time))
-
         if not stay_same:
             self.anim.anim_on(0)
             self.timeline_view.set_progress(0)
@@ -362,6 +346,22 @@ class AnimViewer(QMainWindow):
             # 重新构建后，只剩下了 0~1s 的动画
             # 那么仍保留原来的显示范围，使得 0~1s 的显示位置不变，虽然显示范围超出了持续时间
             self.timeline_view.range = range
+
+        # 向 vscode 客户端发送重新构建了的信息
+        if self.socket is not None:
+            msg = json.dumps(dict(
+                janim=dict(
+                    type='rebuilt'
+                )
+            ))
+            for client in self.clients:
+                self.socket.writeDatagram(
+                    QByteArray.fromStdString(msg),
+                    *client
+                )
+
+            time = self.timeline_view.progress_to_time(self.timeline_view.progress())
+            self.send_lineno(self.anim.timeline.get_lineno_at_time(time))
 
     def on_select_triggered(self) -> None:
         if self.selector is None:
