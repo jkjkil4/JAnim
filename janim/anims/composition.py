@@ -196,3 +196,13 @@ class Aligned(AnimGroup):
 
     def get_anim_t(self, alpha: float, anim: Animation) -> float:
         return alpha * anim.local_range.duration
+
+
+class Wait(Animation):
+    '''
+    等待特定时间，在 :meth:`~.Succession` 中比较有用
+
+    （其实就是一个空动画）
+    '''
+    def __init__(self, duration: float, **kwargs):
+        super().__init__(duration=duration, **kwargs)
