@@ -175,6 +175,7 @@ class AnimViewer(QMainWindow):
         self.btn_export.setFocusPolicy(Qt.FocusPolicy.NoFocus)
 
         stb = self.statusBar()
+        stb.setFixedHeight(stb.height())
         stb.setContentsMargins(0, 0, 0, 0)
         stb.addWidget(self.fps_label)
         stb.addPermanentWidget(self.name_edit)

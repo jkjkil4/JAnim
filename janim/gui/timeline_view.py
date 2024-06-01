@@ -593,6 +593,7 @@ class TimelineView(QWidget):
         # 绘制视野区域指示（底部的长条）
         left = self.range.at / self.anim.global_range.duration * self.width()
         width = self.range.duration / self.anim.global_range.duration * self.width()
+        width = max(width, self.range_tip_height)
         p.setPen(Qt.PenStyle.NoPen)
         p.setBrush(QColor(77, 102, 132))
         p.drawRoundedRect(
