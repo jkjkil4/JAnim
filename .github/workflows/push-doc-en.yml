@@ -44,7 +44,7 @@ jobs:
     - name: Add remote and reset to it
       run: |
         git remote add doc-en git@github.com:jkjkil4/JAnim-doc-en.git
-        git fetch doc-en
+        git fetch doc-en --depth 1
         git reset remotes/doc-en/docs
 
     - name: Debug remotes
