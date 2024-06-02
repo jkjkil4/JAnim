@@ -203,7 +203,7 @@ class Timeline(metaclass=ABCMeta):
             self.construct()
 
             if self.current_time == 0:
-                self.forward(DEFAULT_DURATION)  # 使得没有任何前进时，产生一点时间，避免除零以及其它问题
+                self.forward(DEFAULT_DURATION, _record_lineno=False)    # 使得没有任何前进时，产生一点时间，避免除零以及其它问题
                 if not quiet:   # pragma: no cover
                     log.info(f'"{self.__class__.__name__}" 构建后没有产生时长，自动产生了 {DEFAULT_DURATION}s 的时长')
             self.cleanup_display()
@@ -228,7 +228,7 @@ class Timeline(metaclass=ABCMeta):
 
     # region progress
 
-    def forward(self, dt: float = 1, *, _detect_changes=True) -> None:
+    def forward(self, dt: float = 1, *, _detect_changes=True, _record_lineno=True) -> None:
         '''
         向前推进 ``dt`` 秒
         '''
@@ -247,12 +247,13 @@ class Timeline(metaclass=ABCMeta):
 
         self.current_time = to_time
 
-        self.times_of_code.append(
-            Timeline.TimeOfCode(
-                self.current_time,
-                self.get_construct_lineno() or -1
+        if _record_lineno:
+            self.times_of_code.append(
+                Timeline.TimeOfCode(
+                    self.current_time,
+                    self.get_construct_lineno() or -1
+                )
             )
-        )
 
     def forward_to(self, t: float, *, _detect_changes=True) -> None:
         '''
