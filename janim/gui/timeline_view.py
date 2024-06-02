@@ -182,8 +182,8 @@ class TimelineView(QWidget):
         clip_begin = info.clip_range.at
         clip_end = info.clip_range.end
         if near is not None:
-            clip_begin = max(clip_begin, near - info.range.at - 4)
-            clip_end = min(clip_end, near - info.range.at + 4)
+            clip_begin = max(clip_begin, near - info.range.at + info.clip_range.at - 4)
+            clip_end = min(clip_end, near - info.range.at + info.clip_range.at + 4)
 
         range_begin = info.range.at + (clip_begin - info.clip_range.at)
         range_end = range_begin + (clip_end - clip_begin)
