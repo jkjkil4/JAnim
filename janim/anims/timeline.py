@@ -222,7 +222,7 @@ class Timeline(metaclass=ABCMeta):
         会在进度达到 ``at`` 时，对 ``func`` 进行调用，
         可传入 ``*args`` 和 ``**kwargs``
         '''
-        rough_at = math.ceil(at * 1e4) / 1e4    # 防止因为精度误差使得本来计划更迟的任务被更早地执行了
+        rough_at = math.floor(at * 1e4) / 1e4    # 防止因为精度误差使得本来计划更迟的任务被更早地执行了
         task = Timeline.ScheduledTask(rough_at, func, args, kwargs)
         insort(self.scheduled_tasks, task, key=lambda x: x.at)
 
