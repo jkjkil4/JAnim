@@ -1,0 +1,35 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2023, jkjkil4
+# This file is distributed under the same license as the JAnim package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2024.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: JAnim \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-05-30 15:49+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: en\n"
+"Language-Team: en <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.14.0\n"
+
+#: ../../source/development/about.rst:2
+msgid "关于"
+msgstr ""
+
+#: ../../source/development/about.rst:4
+msgid "该项目大量借鉴自 `3b1b/manim <https://github.com/3b1b/manim>`_"
+msgstr ""
+
+#: ../../source/development/about.rst:6
+msgid ""
+"文档大量借鉴自 `docs.manim.org.cn <https://docs.manim.org.cn/>`_ （备份文档 `manimgl-"
+"zh.rtfd.io <https://manimgl-zh.rtfd.io>`_）"
+msgstr ""
+

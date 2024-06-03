@@ -6,30 +6,31 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version:  JAnim\n"
+"Project-Id-Version: JAnim\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-05-30 15:49+0800\n"
-"PO-Revision-Date: 2024-01-19 17:56+0800\n"
+"PO-Revision-Date: 2024-06-03 09:43+0800\n"
 "Last-Translator: \n"
-"Language: en\n"
 "Language-Team: en <LL@li.org>\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Language: en\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "Generated-By: Babel 2.14.0\n"
+"X-Generator: Poedit 3.4.2\n"
 
 #: ../../source/index.rst:11
 msgid "教程"
-msgstr ""
+msgstr "Tutorial"
 
 #: ../../source/index.rst:20
 msgid "参考文档"
-msgstr ""
+msgstr "References"
 
 #: ../../source/index.rst:26
 msgid "开发相关"
-msgstr ""
+msgstr "Development"
 
 #: ../../source/index.rst:7
 msgid "JAnim 文档"
@@ -41,7 +42,7 @@ msgstr "JAnim is a library for simple animation effects"
 
 #: ../../source/index.rst:32
 msgid "目录与表格"
-msgstr ""
+msgstr "Indexes"
 
 #: ../../source/index.rst:34
 msgid ":ref:`genindex`"
@@ -55,12 +56,5 @@ msgstr ":ref:`modindex`"
 msgid ":ref:`search`"
 msgstr ":ref:`search`"
 
-#~ msgid "功能实现大量参考 `3b1b/manim <https://github.com/3b1b/manim>`_"
-#~ msgstr ""
-
-#~ msgid "文档参考 `https://docs.manim.org.cn/ <https://docs.manim.org.cn/>`_"
-#~ msgstr ""
-
 #~ msgid "其它"
 #~ msgstr "Other"
-

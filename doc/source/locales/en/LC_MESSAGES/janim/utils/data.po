@@ -6,18 +6,19 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version:  JAnim\n"
+"Project-Id-Version: JAnim\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-05-30 15:49+0800\n"
-"PO-Revision-Date: 2024-01-19 19:54+0800\n"
+"POT-Creation-Date: 2024-06-03 10:12+0800\n"
+"PO-Revision-Date: 2024-06-03 10:16+0800\n"
 "Last-Translator: \n"
-"Language: en\n"
 "Language-Team: en <LL@li.org>\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Language: en\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "Generated-By: Babel 2.14.0\n"
+"X-Generator: Poedit 3.4.2\n"
 
 #: ../../source/janim/utils/data.rst:2
 msgid "data"
@@ -29,67 +30,74 @@ msgid "基类：:py:class:`~typing.Generic`"
 msgstr "基类：:py:class:`~typing.Generic`"
 
 #: janim.utils.data.Array:1 janim.utils.data.Margins:1 of
-#, fuzzy
 msgid "基类：:py:class:`object`"
-msgstr "基类：:py:class:`~typing.Generic`"
+msgstr "基类：:py:class:`object`"
 
 #: janim.utils.data.Array:1 of
 msgid "使得在使用 ``.data = xxx`` 修改（赋值）后必定是不同的 id"
 msgstr ""
+"Ensures that the id is different after modifying (assigning) with ``.data "
+"= xxx``."
 
 #: janim.utils.data.Array:3 of
 msgid "并且通过 ``.data`` 得到的 numpy 数组必定是只读的"
-msgstr ""
+msgstr "And the numpy array obtained through ``.data`` is always read-only."
 
 #: janim.utils.data.AlignedData:1 of
 msgid "数据对齐后的结构，用于 :meth:`~.Item.align_for_interpolate`"
 msgstr ""
+"Structure after data alignment, used for :meth:`~.Item."
+"align_for_interpolate`"
 
 #: janim.utils.data.History.record_as_time:1 of
 msgid "标记在 ``t`` 时刻后，数据为 ``data``"
-msgstr ""
+msgstr "Marks the data as ``data`` at time ``t``"
 
 #: janim.utils.data.History.record_as_time:3 of
-msgid "t 必须比现有的所有时刻都大"
-msgstr ""
+msgid "``t`` 必须比现有的所有时刻都大"
+msgstr "``t`` must be greater than all existing times"
 
 #: janim.utils.data.History.record_as_time:4 of
-msgid "如果此时 没有已存储的记录，则将 t 视为 0"
+msgid "如果此时 没有已存储的记录，则将 ``t`` 视为 ``0``"
 msgstr ""
+"If there is no stored record at this time, ``t`` is considered as ``0``"
 
 #: janim.utils.data.History.get_at_time:1 of
 msgid "得到在指定时间的数据"
-msgstr ""
+msgstr "Retrieves data at the specified time."
 
 #: janim.utils.data.History.get_at_time:3 of
-msgid "在两份数据的分界处请使用 :meth:`get_at_right` 和 :meth:`get_at_left` 来明确"
+msgid ""
+"在两份数据的分界处请使用 :meth:`get_at_right` 和 :meth:`get_at_left` 来明"
+"确"
 msgstr ""
+"Use :meth:`get_at_right` and :meth:`get_at_left` at the boundary between "
+"two data sets for clarity."
 
 #: janim.utils.data.History.get_at_right:1 of
 msgid "得到在指定时间之后的瞬间的数据"
-msgstr ""
+msgstr "Retrieves data at the moment after the specified time."
 
 #: janim.utils.data.History.get_at_left:1 of
 msgid "得到在指定时间之前的瞬间的数据"
-msgstr ""
+msgstr "Retrieves data at the moment before the specified time."
 
 #: janim.utils.data.History.get:1 of
 msgid ":meth:`get_at_right` 的简写"
-msgstr ""
+msgstr "Abbreviation for :meth:`get_at_right`."
 
 #: janim.utils.data.Margins:1 of
 msgid "定义了一组四个边距：左、上、右、下，用于描述矩形周围边框的大小。"
 msgstr ""
+"Defines a set of four margins: left, top, right, bottom, used to describe "
+"the size of the border around a rectangle."
 
 #: janim.utils.data.Margins:3 of
 msgid "如果直接传入单个数值，则表示为四个方向皆为该值"
 msgstr ""
+"If a single value is passed directly, it represents the value for all "
+"four directions."
 
 #: janim.utils.data.Align:1 of
-#, fuzzy
 msgid "基类：:py:class:`~enum.IntFlag`"
-msgstr "基类：:py:class:`~typing.Generic`"
-
-#~ msgid "数据对齐后的结构，用于 :meth:`~.Item.Data.align_for_interpolate`"
-#~ msgstr ""
-
+msgstr "基类：:py:class:`~enum.IntFlag`"

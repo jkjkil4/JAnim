@@ -6,26 +6,30 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: JAnim \n"
+"Project-Id-Version: JAnim\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-03-14 14:52+0800\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language: en\n"
+"PO-Revision-Date: 2024-06-03 09:56+0800\n"
+"Last-Translator: \n"
 "Language-Team: en <LL@li.org>\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Language: en\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "Generated-By: Babel 2.14.0\n"
+"X-Generator: Poedit 3.4.2\n"
 
 #: ../../source/janim/utils/space_ops.rst:2
 msgid "space_ops"
 msgstr ""
 
 #: ../../source/rst_utils/tip_of_manim.rst:1
-msgid "该部分代码来自 `3b1b/manim <https://github.com/3b1b/manim>`_，有待重构"
+msgid ""
+"该部分代码来自 `3b1b/manim <https://github.com/3b1b/manim>`_，有待重构"
 msgstr ""
+"This portion of code is from 3b1b/manim <https://github.com/3b1b/manim>_ "
+"and needs refactoring."
 
 #: janim.utils.space_ops.rotation_matrix:1 of
 msgid "Rotation in R^3 about a specified axis of rotation."
@@ -37,8 +41,8 @@ msgstr ""
 
 #: janim.utils.space_ops.angle_between_vectors:1 of
 msgid ""
-"Returns the angle between two 3D vectors. This angle will always be btw 0"
-" and pi"
+"Returns the angle between two 3D vectors. This angle will always be btw "
+"0 and pi"
 msgstr ""
 
 #: janim.utils.space_ops.line_intersection:1 of
@@ -49,10 +53,10 @@ msgstr ""
 
 #: janim.utils.space_ops.find_intersection:1 of
 msgid ""
-"Return the intersection of a line passing through p0 in direction v0 with"
-" one passing through p1 in direction v1.  (Or array of intersections from"
-" arrays of such points/directions). For 3d values, it returns the point "
-"on the ray p0 + v0 * t closest to the ray p1 + v1 * t"
+"Return the intersection of a line passing through p0 in direction v0 "
+"with one passing through p1 in direction v1.  (Or array of intersections "
+"from arrays of such points/directions). For 3d values, it returns the "
+"point on the ray p0 + v0 * t closest to the ray p1 + v1 * t"
 msgstr ""
 
 #: janim.utils.space_ops.get_closest_point_on_line:1 of
@@ -64,19 +68,3 @@ msgstr ""
 #: janim.utils.space_ops.is_inside_triangle:1 of
 msgid "Test if point p is inside triangle abc"
 msgstr ""
-
-#~ msgid ""
-#~ "Returns a list of indices giving a"
-#~ " triangulation of a polygon, potentially"
-#~ " with holes"
-#~ msgstr ""
-
-#~ msgid "verts is a numpy array of points"
-#~ msgstr ""
-
-#~ msgid ""
-#~ "ring_ends is a list of indices "
-#~ "indicating where the ends of new "
-#~ "paths are"
-#~ msgstr ""
-

@@ -6,26 +6,32 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version:  JAnim\n"
+"Project-Id-Version: JAnim\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-05-30 15:49+0800\n"
-"PO-Revision-Date: 2024-03-14 16:05+0800\n"
+"PO-Revision-Date: 2024-06-03 09:46+0800\n"
 "Last-Translator: \n"
-"Language: en\n"
 "Language-Team: en <LL@li.org>\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Language: en\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "Generated-By: Babel 2.14.0\n"
+"X-Generator: Poedit 3.4.2\n"
 
 #: ../../source/janim/anims/animation.rst:2
 msgid "animation"
 msgstr "animation"
 
 #: ../../source/rst_utils/tip_of_complex.rst:3
-msgid "这部分内容涉及 JAnim 实现原理，可能较为复杂，若没有研究源码的需求，你应酌情阅读"
+msgid ""
+"这部分内容涉及 JAnim 实现原理，可能较为复杂，若没有研究源码的需求，你应酌情阅"
+"读"
 msgstr ""
+"**Tips: This section covers the implementations of JAnim, which may be quite "
+"complex. If you do not have the need to delve into the source code, you may "
+"choose to read it at your discretion.**"
 
 #: janim.anims.animation.Animation:1 janim.anims.animation.RenderCall:1
 #: janim.anims.animation.TimeRange:1 of
@@ -33,14 +39,13 @@ msgid "基类：:py:class:`object`"
 msgstr "基类：:py:class:`object`"
 
 #: janim.anims.animation.TimeRange:1 of
-#, fuzzy
 msgid "标识了从 ``at`` 开始，持续时间为 ``duration`` 的时间区段"
-msgstr "Creates an animation from ``at`` to ``at + duration``"
+msgstr ""
+"Identifies the time period starting at ``at`` and lasting for ``duration``."
 
 #: janim.anims.animation.TimeRange:3 of
-#, fuzzy
 msgid "``end`` 即 ``at + duration``"
-msgstr "Creates an animation from ``at`` to ``at + duration``"
+msgstr "``end`` equals ``at + duration``"
 
 #: janim.anims.animation.Animation:1 of
 msgid "动画基类"
@@ -52,23 +57,21 @@ msgstr "Creates an animation from ``at`` to ``at + duration``"
 
 #: janim.anims.animation.Animation:4 of
 msgid ""
-"指定 ``rate_func`` 可以设定插值函数，默认为 :meth:`janim.utils.rate_functions.smooth` "
-"即平滑插值"
+"指定 ``rate_func`` 可以设定插值函数，默认为 :meth:`janim.utils.rate_functions."
+"smooth` 即平滑插值"
 msgstr ""
-"Specifies the interpolation function ``rate_func``, default is "
-":meth:`janim.utils.rate_functions.smooth` for smooth interpolation"
+"Specifies the interpolation function ``rate_func``, default is :meth:`janim."
+"utils.rate_functions.smooth` for smooth interpolation"
 
 #: janim.anims.animation.Animation.compute_global_range:1 of
-#, fuzzy
 msgid "计算 :class:`~.Timeline` 上的时间范围"
-msgstr "Set the time range on :class:`~.Timeline`."
+msgstr "Set the time range on :class:`~.Timeline`"
 
 #: janim.anims.animation.Animation.compute_global_range:3 of
-#, fuzzy
 msgid "该方法是被 :meth:`~.AnimGroup.set_global_range` 调用以计算的"
 msgstr ""
-"No need to set manually; this method is called by "
-":meth:`~.AnimGroup.set_global_range` for calculation"
+"No need to set manually; this method is called by :meth:`~.AnimGroup."
+"set_global_range` for calculation"
 
 #: janim.anims.animation.Animation.set_render_call_list:1 of
 msgid "设置绘制调用，具体参考 :class:`RenderCall`"
@@ -77,14 +80,12 @@ msgstr "Set render-calls, see :class:`RenderCall` for details."
 #: janim.anims.animation.Animation.anim_pre_init:1 of
 msgid "在 :meth:`~.Timeline.detect_changes_of_all` 执行之前调用的初始化方法"
 msgstr ""
-"Initialization method called before "
-":meth:`~.Timeline.detect_changes_of_all`."
+"Initialization method called before :meth:`~.Timeline.detect_changes_of_all`."
 
 #: janim.anims.animation.Animation.anim_init:1 of
 msgid "在 :meth:`~.Timeline.detect_changes_of_all` 执行之后调用的初始化方法"
 msgstr ""
-"Initialization method called after "
-":meth:`~.Timeline.detect_changes_of_all`."
+"Initialization method called after :meth:`~.Timeline.detect_changes_of_all`."
 
 #: janim.anims.animation.Animation.anim_on:1 of
 msgid "将 ``local_t`` 换算为 ``alpha`` 并调用 :meth:`anim_on_alpha`"
@@ -93,16 +94,16 @@ msgstr "Converts ``local_t`` to ``alpha`` and calls :meth:`anim_on_alpha`"
 #: janim.anims.animation.Animation.get_alpha_on_global_t:1 of
 msgid "传入全局 ``global_t``，得到物件在该时刻应当处于哪个 ``alpha`` 的插值"
 msgstr ""
-"Given the global ``global_t``, returns the interpolation value ``alpha`` "
-"at which the object should be at that moment."
+"Given the global ``global_t``, returns the interpolation value ``alpha`` at "
+"which the object should be at that moment."
 
 #: ../../docstring janim.anims.animation.Animation.global_t_ctx:1 of
 msgid ""
-"对该值进行设置，使得进行 :meth:`anim_on` 和 :meth:`render` 时不需要将 ``global_t`` "
-"作为参数传递也能获取到"
+"对该值进行设置，使得进行 :meth:`anim_on` 和 :meth:`render` 时不需要将 "
+"``global_t`` 作为参数传递也能获取到"
 msgstr ""
-"By setting this value,``global_t`` doesn't need to be passed as a "
-"parameter during :meth:`anim_on` and :meth:`render`."
+"By setting this value,``global_t`` doesn't need to be passed as a parameter "
+"during :meth:`anim_on` and :meth:`render`."
 
 #: janim.anims.animation.Animation.anim_on_alpha:1 of
 msgid "动画在 ``alpha`` 处的行为"
@@ -125,33 +126,36 @@ msgid "具体机制："
 msgstr "Mechanism:"
 
 #: janim.anims.animation.RenderCall:8 of
-msgid "在每个动画对象中，都会使用 :meth:`~.Animation.set_render_call_list` 来设置该动画进行绘制时所执行的函数"
+msgid ""
+"在每个动画对象中，都会使用 :meth:`~.Animation.set_render_call_list` 来设置该动"
+"画进行绘制时所执行的函数"
 msgstr ""
-"In each animation object, :meth:`~.Animation.set_render_call_list` is "
-"used to set the function executed when rendering this animation."
+"In each animation object, :meth:`~.Animation.set_render_call_list` is used to "
+"set the function executed when rendering this animation."
 
 #: janim.anims.animation.RenderCall:9 of
 msgid ""
-"在进行渲染（具体参考 :meth:`~.TimelineAnim.render_all` ）时，会按照深度进行排序，依次对 ``func`` "
-"进行调用，深度越高的越先调用"
+"在进行渲染（具体参考 :meth:`~.TimelineAnim.render_all` ）时，会按照深度进行排"
+"序，依次对 ``func`` 进行调用，深度越高的越先调用"
 msgstr ""
-"During rendering (refer to :meth:`~.TimelineAnim.render_all`), the "
-"functions are called in the order of their depths, with higher depths "
-"being called first."
+"During rendering (refer to :meth:`~.TimelineAnim.render_all`), the functions "
+"are called in the order of their depths, with higher depths being called "
+"first."
 
 #: janim.anims.animation.RenderCall:11 of
 msgid "例："
 msgstr "Example:"
 
 #: janim.anims.animation.RenderCall:13 of
-msgid "在 :class:`~.Display` 中，设置了单个 :class:`RenderCall` ，作用是绘制物件"
+msgid ""
+"在 :class:`~.Display` 中，设置了单个 :class:`RenderCall` ，作用是绘制物件"
 msgstr ""
-"In :class:`~.Display`, a single :class:`RenderCall` is set to draw an "
-"item."
+"In :class:`~.Display`, a single :class:`RenderCall` is set to draw an item."
 
 #: janim.anims.animation.RenderCall:14 of
-msgid "在 :class:`~.Transform` 中，对于每个插值物件都设置了 :class:`RenderCall`，绘制所有的插值物件"
+msgid ""
+"在 :class:`~.Transform` 中，对于每个插值物件都设置了 :class:`RenderCall`，绘制"
+"所有的插值物件"
 msgstr ""
-"In :class:`Transform`, :class:`RenderCall` is set for each interpolated "
-"item to render all of them"
-
+"In :class:`Transform`, :class:`RenderCall` is set for each interpolated item "
+"to render all of them"
