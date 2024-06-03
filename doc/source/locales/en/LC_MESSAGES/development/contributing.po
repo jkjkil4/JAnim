@@ -6,158 +6,196 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: JAnim \n"
+"Project-Id-Version: JAnim\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-06-03 10:12+0800\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language: en\n"
+"PO-Revision-Date: 2024-06-03 10:46+0800\n"
+"Last-Translator: \n"
 "Language-Team: en <LL@li.org>\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Language: en\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "Generated-By: Babel 2.14.0\n"
+"X-Generator: Poedit 3.4.2\n"
 
 #: ../../source/development/contributing.rst:2
 msgid "贡献"
-msgstr ""
+msgstr "Contributing"
 
 #: ../../source/development/contributing.rst:5
 msgid "为源代码作出贡献"
-msgstr ""
+msgstr "Contribute to the Source Code"
 
 #: ../../source/development/contributing.rst:7
 msgid "你可以在 `<github.com/jkjkil4/JAnim>`_ 提 issue 和 PR"
-msgstr ""
+msgstr "You can raise issues and PRs at `<github.com/jkjkil4/JAnim>`_."
 
 #: ../../source/development/contributing.rst:9
-msgid "如果你对现有的 issue 和 PR 模板感到困惑，也完全可以不使用模板，用空 issue 或 PR 开始书写"
+msgid ""
+"如果你对现有的 issue 和 PR 模板感到困惑，也完全可以不使用模板，用空 issue 或 PR "
+"开始书写"
 msgstr ""
+"If you find the existing issue and PR templates confusing, feel free to start "
+"with a blank issue or PR."
 
 #: ../../source/development/contributing.rst:11
-msgid "另外，你也可以在 `<gitee.com/jkjkil4/JAnim>`_ 提 issue 和 PR，但是我在这个链接中回复可能会慢一些"
+msgid ""
+"另外，你也可以在 `<gitee.com/jkjkil4/JAnim>`_ 提 issue 和 PR，但是我在这个链接中"
+"回复可能会慢一些"
 msgstr ""
+"Additionally, you can also raise issues and PRs at `<gitee.com/jkjkil4/"
+"JAnim>`_, but my response may be slower on this platform."
 
 #: ../../source/development/contributing.rst:14
 msgid "为国际化作出贡献"
-msgstr ""
+msgstr "Contribute to Internationalization"
 
 #: ../../source/development/contributing.rst:18
 msgid "已有的文档"
-msgstr ""
+msgstr "Existing Documentation"
 
 #: ../../source/development/contributing.rst:20
 msgid "zh_CN: https://janim.readthedocs.io/zh-cn/latest/"
-msgstr ""
+msgstr "zh_CN: https://janim.readthedocs.io/zh-cn/latest/"
 
 #: ../../source/development/contributing.rst:21
 msgid "en: https://janim.readthedocs.io/en/latest/"
-msgstr ""
+msgstr "en: https://janim.readthedocs.io/en/latest/"
 
 #: ../../source/development/contributing.rst:26
 msgid "生成翻译文件"
-msgstr ""
+msgstr "Generate Translation Files"
 
 #: ../../source/development/contributing.rst:30
 msgid ""
-"大多数情况下，翻译文件（后缀 ``.po``）已经生成到了项目中， 如果你只是想编辑已有的翻译文件，可以跳过 :ref:`generate-po`"
-" 这段，直接到 :ref:`do-translate` 便可以开始翻译"
+"大多数情况下，翻译文件（后缀 ``.po``）已经生成到了项目中， 如果你只是想编辑已有"
+"的翻译文件，可以跳过 :ref:`generate-po` 这段，直接到 :ref:`do-translate` 便可以"
+"开始翻译"
 msgstr ""
+"In most cases, translation files (with the extension ``.po``) have already been "
+"generated in the project.\n"
+"If you just want to edit existing translation files, you can skip the :ref:"
+"`generate-po` section and proceed directly to :ref:`do-translate`."
 
 #: ../../source/development/contributing.rst:35
 msgid "我只知道在 Windows 中，以下步骤有效"
-msgstr ""
+msgstr "I am only aware that the following steps work on Windows."
 
 #: ../../source/development/contributing.rst:39
-msgid "翻译流程可参考 `<https://www.sphinx-doc.org/en/master/usage/advanced/intl.html>`_"
+msgid ""
+"翻译流程可参考 `<https://www.sphinx-doc.org/en/master/usage/advanced/intl."
+"html>`_"
 msgstr ""
+"Translation process can be referred from `<https://www.sphinx-doc.org/en/master/"
+"usage/advanced/intl.html>`_"
 
 #: ../../source/development/contributing.rst:41
 msgid "安装必要环境"
-msgstr ""
+msgstr "Install Necessary Environment"
 
 #: ../../source/development/contributing.rst:43
 msgid "假设你已经 fork 仓库并 clone 到了本地"
-msgstr ""
+msgstr "Assuming you have forked the repository and cloned it locally."
 
 #: ../../source/development/contributing.rst:45
 msgid "使用 ``cd JAnim`` 进入项目文件夹："
-msgstr ""
+msgstr "Navigate to the project folder using ``cd JAnim``:"
 
 #: ../../source/development/contributing.rst:47
 msgid "接着，使用以下命令安装必要的环境："
-msgstr ""
+msgstr "Then, install the necessary environment using the following command:"
 
 #: ../../source/development/contributing.rst:54
 msgid "提取翻译文本"
-msgstr ""
+msgstr "Extract Translatable Text"
 
 #: ../../source/development/contributing.rst:56
 msgid "使用"
-msgstr ""
+msgstr "Using"
 
 #: ../../source/development/contributing.rst:62
 msgid "进入 ``doc/`` 文件夹，并使用"
-msgstr ""
+msgstr "navigate to ``doc/`` folder, and run the following command:"
 
 #: ../../source/development/contributing.rst:68
 msgid "提取可翻译的文本，产生的 pot 文件会输出到 ``doc/build/gettext/`` 中"
 msgstr ""
+"This will extract translatable text, and the generated pot file will be located "
+"at ``doc/build/gettext/``"
 
 #: ../../source/development/contributing.rst:70
 msgid "产生 po 文件"
-msgstr ""
+msgstr "Generate po Files"
 
 #: ../../source/development/contributing.rst:72
-msgid "pot 文件是提取出来的可供翻译的源语言文字，你还需要使用这些文件来产生对应语言的 po 文件"
+msgid ""
+"pot 文件是提取出来的可供翻译的源语言文字，你还需要使用这些文件来产生对应语言的 "
+"po 文件"
 msgstr ""
+"Pot file contains extracted translatable source language text. You need to use "
+"these files to generate po files for corresponding languages."
 
 #: ../../source/development/contributing.rst:78
 msgid "执行后，产生的 po 文件会输出到以下文件夹中"
 msgstr ""
+"After execution, the generated po files will be located in the following "
+"folders:"
 
 #: ../../source/development/contributing.rst:80
 msgid "``doc/source/locales/de/LC_MESSAGES/``"
-msgstr ""
+msgstr "``doc/source/locales/de/LC_MESSAGES/``"
 
 #: ../../source/development/contributing.rst:81
 msgid "``doc/source/locales/ja/LC_MESSAGES/``"
-msgstr ""
+msgstr "``doc/source/locales/ja/LC_MESSAGES/``"
 
 #: ../../source/development/contributing.rst:83
 msgid "其中 ``de`` 和 ``ja`` 分别对应上面命令中所提供的参数"
 msgstr ""
+"where ``de`` and ``ja`` correspond to the parameters provided in the above "
+"command."
 
 #: ../../source/development/contributing.rst:87
-msgid "这里的 ``de`` 表示德语， ``ja`` 表示日语，表明你想要进行对这些语言的翻译工作"
+msgid ""
+"这里的 ``de`` 表示德语， ``ja`` 表示日语，表明你想要进行对这些语言的翻译工作"
 msgstr ""
+"Here, ``de`` indicates German, and ``ja`` indicates Japanese, indicating that "
+"you want to work on translating to these languages."
 
 #: ../../source/development/contributing.rst:89
 msgid "比如，如果你想要进行翻译到英文的工作，那么执行"
-msgstr ""
+msgstr "For example, if you want to work on translating to English, then execute"
 
 #: ../../source/development/contributing.rst:95
 msgid "则会在 ``doc/source/locales/en/LC_MESSAGES`` 中产生可翻译的文件"
 msgstr ""
+"which will generate translatable files in ``doc/source/locales/en/LC_MESSAGES``"
 
 #: ../../source/development/contributing.rst:100
 msgid "进行文档翻译"
-msgstr ""
+msgstr "Translate the Documentation"
 
 #: ../../source/development/contributing.rst:102
 msgid "假设你要进行翻译到英文的工作"
-msgstr ""
+msgstr "Assuming you want to translate to English"
 
 #: ../../source/development/contributing.rst:104
-msgid "现在 ``doc/source/locales/en/LC_MESSAGES`` 中已经存放了翻译文件（后缀 ``.po``）"
+msgid ""
+"现在 ``doc/source/locales/en/LC_MESSAGES`` 中已经存放了翻译文件（后缀 ``.po``）"
 msgstr ""
+"Now the po files (with the extension ``.po``) are already stored in ``doc/"
+"source/locales/en/LC_MESSAGES``"
 
 #: ../../source/development/contributing.rst:106
 msgid "这里推荐使用 Poedit 软件，打开目录内的 po 文件，进行翻译"
 msgstr ""
+"It is recommended to use Poedit software to open the po file in the directory "
+"and start translating."
 
 #: ../../source/development/contributing.rst:108
 msgid "翻译后，提交你的更改，创建合并到 ``main`` 分支的 Pull Request"
 msgstr ""
-
+"After translating, submit your changes and create a Pull Request to merge into "
+"the ``main`` branch."
