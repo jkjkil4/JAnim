@@ -11,6 +11,9 @@ from janim.logger import log
 from janim.typing import Vect
 from janim.utils.data import AlignedData
 from janim.utils.paths import PathFunc, path_along_arc, straight_path
+from janim.locale.i18n import get_local_strings
+
+_ = get_local_strings('transform')
 
 
 class Transform(Animation):
@@ -206,7 +209,10 @@ class MethodTransform(Transform):
 
             attr = getattr(self.cmpt, name, None)
             if attr is None or not callable(attr):
-                raise KeyError(f'{self.cmpt.__class__.__name__} 中没有叫作 {name} 的可调用方法')
+                raise KeyError(
+                    _('There is no callable method named {name} in {cmpt}')
+                    .format(name=name, cmpt=self.cmpt.__class__.__name__)
+                )
 
             def wrapper(*args, **kwargs):
                 attr(*args, **kwargs)
@@ -229,7 +235,10 @@ class MethodTransform(Transform):
                 return self
             return wrapper
 
-        raise KeyError(f'{self.src_item.__class__.__name__} 没有叫作 {name} 的组件或者可调用的方法')
+        raise KeyError(
+            _('{item} has no component or callable method named {name}')
+            .format(item=self.src_item.__class__.__name__, name=name)
+        )
 
     def __anim__(self) -> Animation:
         return self

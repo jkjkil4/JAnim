@@ -30,6 +30,7 @@ from janim.items.points import Group
 from janim.items.shape_matchers import SurroundingRect
 from janim.items.svg.typst import TypstText
 from janim.items.text.text import Text
+from janim.locale.i18n import get_local_strings
 from janim.logger import log
 from janim.render.base import RenderData, Renderer, set_global_uniforms
 from janim.typing import JAnimColor
@@ -37,6 +38,8 @@ from janim.utils.config import Config, ConfigGetter, config_ctx_var
 from janim.utils.data import ContextSetter, History
 from janim.utils.iterables import resize_preserving_order
 from janim.utils.simple_functions import clip
+
+_ = get_local_strings('timeline')
 
 
 class Timeline(metaclass=ABCMeta):
@@ -109,7 +112,10 @@ class Timeline(metaclass=ABCMeta):
         obj = Timeline.ctx_var.get(None)
         if obj is None and raise_exc:
             f_back = inspect.currentframe().f_back
-            raise TimelineLookupError(f'{f_back.f_code.co_qualname} 无法在 Timeline.construct 之外使用')
+            raise TimelineLookupError(
+                _('{name} cannot be used outside of Timeline.construct')
+                .format(name=f_back.f_code.co_qualname)
+            )
         return obj
 
     # endregion
@@ -234,7 +240,7 @@ class Timeline(metaclass=ABCMeta):
         向前推进 ``dt`` 秒
         '''
         if dt <= 0:
-            raise ValueError('dt 必须大于 0')
+            raise ValueError(_('dt must be greater than 0'))
 
         if _detect_changes:
             self.detect_changes_of_all()

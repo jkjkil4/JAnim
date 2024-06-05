@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-06-05 13:59+0800\n"
+"POT-Creation-Date: 2024-06-05 17:37+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,14 +16,14 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: D:\Projects\janim\src\janim\gui\richtext_editor.py:20
+#: janim\gui\richtext_editor.py:20
 msgid "Rich Text Editor"
 msgstr ""
 
-#: D:\Projects\janim\src\janim\gui\richtext_editor.py:25
+#: janim\gui\richtext_editor.py:25
 msgid "Word wrap"
 msgstr ""
 
-#: D:\Projects\janim\src\janim\gui\richtext_editor.py:32
+#: janim\gui\richtext_editor.py:32
 msgid "Recognize rich text format on paste"
 msgstr ""

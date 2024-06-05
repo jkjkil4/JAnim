@@ -22,6 +22,9 @@ from janim.utils.config import Config
 from janim.utils.font import Font, get_font_info_by_name
 from janim.utils.simple_functions import decode_utf8
 from janim.utils.space_ops import get_norm, normalize
+from janim.locale.i18n import get_local_strings
+
+_ = get_local_strings('text')
 
 DEFAULT_FONT_SIZE = 24
 ORIG_FONT_SIZE = 48
@@ -38,7 +41,7 @@ def _get_color_value(key: str) -> JAnimColor:
 
     import janim.constants.colors as colors
     if not hasattr(colors, key):
-        raise ColorNotFoundError(f'No built-in color named {key}')
+        raise ColorNotFoundError(_('No built-in color named {key}').format(key=key))
     return getattr(colors, key)
 
 

@@ -1,5 +1,4 @@
 import os
-import shutil
 import sys
 
 from janim.utils.file_ops import get_janim_dir
@@ -16,12 +15,11 @@ def main() -> None:
         dist = os.path.join(get_janim_dir(), 'locale', lang, 'LC_MESSAGES', file[:-4] + '.po')
         src = os.path.join(src_dir, file)
         if not os.path.exists(dist):
-            print(f'shutil.copy("{src}", "{dist}")')
-            shutil.copy(src, dist)
+            cmd = f'msginit -i "{src}" -o "{dist}" --no-translator'
         else:
             cmd = f'msgmerge -U "{dist}" "{src}" --backup=off'
-            print(cmd)
-            os.system(cmd)
+        print(cmd)
+        os.system(cmd)
 
 
 if __name__ == '__main__':

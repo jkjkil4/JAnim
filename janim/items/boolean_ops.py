@@ -7,6 +7,9 @@ from janim.exception import BooleanOpsError
 from janim.items.item import Item
 from janim.items.vitem import VItem
 from janim.utils.bezier import PathBuilder
+from janim.locale.i18n import get_local_strings
+
+_ = get_local_strings('boolean_ops')
 
 # Boolean operations between 2D items
 # Borrowed from from https://github.com/ManimCommunity/manim/
@@ -51,6 +54,7 @@ def _convert_skia_path_to_vitem(
             elif path_verb == PathVerb.QUAD:
                 builder.conic_to(*points)
             else:
+                # i18n?
                 raise BooleanOpsError(f'Unsupported: {path_verb}')
 
     vitem.points.set([] if builder is None else builder.get()).reverse()
@@ -65,7 +69,7 @@ class Union(VItem):
     '''
     def __init__(self, *vitems: VItem, **kwargs):
         if len(vitems) < 2:
-            raise BooleanOpsError("At least 2 items needed for Union.")
+            raise BooleanOpsError(_('At least 2 items needed for Union.'))
         super().__init__(**kwargs)
         outpen = pathops.Path()
         pathops.union(
@@ -112,7 +116,7 @@ class Intersection(VItem):
     '''
     def __init__(self, *vitems: VItem, **kwargs):
         if len(vitems) < 2:
-            raise BooleanOpsError("At least 2 items needed for Intersection.")
+            raise BooleanOpsError(_('At least 2 items needed for Intersection.'))
         super().__init__(**kwargs)
         outpen = pathops.Path()
         pathops.intersection(
@@ -149,7 +153,7 @@ class Exclusion(VItem):
     '''
     def __init__(self, *vitems: VItem, **kwargs):
         if len(vitems) < 2:
-            raise BooleanOpsError("At least 2 items needed for Exclusion.")
+            raise BooleanOpsError(_('At least 2 items needed for Exclusion.'))
         super().__init__(**kwargs)
         outpen = pathops.Path()
         pathops.xor(

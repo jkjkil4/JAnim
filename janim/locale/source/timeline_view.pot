@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-06-05 13:59+0800\n"
+"POT-Creation-Date: 2024-06-05 17:37+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,10 +16,10 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: D:\Projects\janim\src\janim\gui\timeline_view.py:155
+#: janim\gui\timeline_view.py:155
 msgid "Clip"
 msgstr ""
 
-#: D:\Projects\janim\src\janim\gui\timeline_view.py:162
+#: janim\gui\timeline_view.py:162
 msgid "Recommended clip"
 msgstr ""

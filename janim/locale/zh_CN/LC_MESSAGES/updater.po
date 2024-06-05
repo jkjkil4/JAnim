@@ -1,0 +1,26 @@
+# Chinese translations for PACKAGE package.
+# Copyright (C) 2024 THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# Automatically generated, 2024.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-06-05 16:49+0800\n"
+"PO-Revision-Date: 2024-06-05 17:42+0800\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: none\n"
+"Language: zh_CN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=GBK\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 3.4.2\n"
+
+#: janim\anims\updater.py:249
+msgid ""
+"The function passed to ItemUpdater must return an item, but got {ret} "
+"instead, defined in {file}:{lineno}"
+msgstr ""
+"传入 ItemUpdater 的函数必须以一个物件作为返回值，而返回的是 {ret}，函"
+"数定义于 {file}:{lineno}"

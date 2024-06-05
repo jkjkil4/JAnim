@@ -10,6 +10,7 @@ from janim.components.points import Cmpt_Points, PointsFn
 from janim.constants import NAN_POINT, ORIGIN, OUT, RIGHT
 from janim.exception import PointError
 from janim.items.item import Item
+from janim.locale.i18n import get_local_strings
 from janim.logger import log
 from janim.typing import Vect, VectArray
 from janim.utils.bezier import (PathBuilder,
@@ -19,6 +20,8 @@ from janim.utils.bezier import (PathBuilder,
                                 smooth_quadratic_path)
 from janim.utils.data import AlignedData
 from janim.utils.space_ops import get_norm, get_unit_normal
+
+_ = get_local_strings('vpoints')
 
 
 class Cmpt_VPoints[ItemT](Cmpt_Points[ItemT], impl=True):
@@ -309,7 +312,10 @@ class Cmpt_VPoints[ItemT](Cmpt_Points[ItemT], impl=True):
         得到第 ``n`` 组的贝塞尔曲线控制点 (从 0 开始计数)
         '''
         if n < 0 or n >= self.curves_count():
-            raise PointError(f'n 必须是 0~{self.curves_count() - 1} 的值，{n} 无效')
+            raise PointError(
+                _('n must be a value of 0~{maxn}, {n} is invalid')
+                .format(maxn=self.curves_count() - 1, n=n)
+            )
         return self._points.data[2 * n: 2 * n + 3]
 
     def get_nth_curve_function(self, n: int) -> Callable[[float], np.ndarray]:

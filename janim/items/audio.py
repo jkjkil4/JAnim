@@ -16,6 +16,9 @@ from janim.utils.data import Array
 from janim.utils.file_ops import find_file
 from janim.utils.iterables import resize_with_interpolation
 from janim.utils.simple_functions import clip
+from janim.locale.i18n import get_local_strings
+
+_ = get_local_strings('audio')
 
 
 class Audio:
@@ -94,7 +97,7 @@ class Audio:
                 data = np.frombuffer(reading_process.stdout.read(), dtype=np.int16)
 
         except FileNotFoundError:
-            log.error('无法读取音频，需要安装 ffmpeg 并将其添加到环境变量中')
+            log.error(_('Unable to read audio, please install ffmpeg and add it to the environment variables'))
             raise ExitException(EXITCODE_FFMPEG_NOT_FOUND)
 
         self._samples.data = data

@@ -8,7 +8,7 @@ def main() -> None:
             if not file.endswith('.py'):
                 continue
             dist = os.path.join(get_janim_dir(), 'locale', 'source', file[:-3] + '.pot')
-            source = os.path.join(root, file)
+            source = os.path.relpath(os.path.join(root, file), os.path.join(get_janim_dir(), '..'))
             cmd = f'xgettext -o "{dist}" "{source}"'
             print(cmd)
             os.system(cmd)
