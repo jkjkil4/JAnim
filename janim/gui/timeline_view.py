@@ -475,25 +475,42 @@ class TimelineView(QWidget):
             self.is_pressing.d = True
 
         elif key == Qt.Key.Key_Z:
-            anims = self.sorted_anims
-            time = self.progress_to_time(self._progress)
-            idx = bisect(anims, time - 1e-2, key=lambda x: x.global_range.at)
-            idx -= 1
-            if idx < 0:
-                self.set_progress(0)
+            if event.modifiers() & Qt.KeyboardModifier.ControlModifier:
+                progresses = self.pause_progresses
+                idx = bisect(progresses, self._progress - 1)
+                idx -= 1
+                if idx < 0:
+                    self.set_progress(0)
+                else:
+                    self.set_progress(progresses[idx])
             else:
-                self.set_progress(self.time_to_progress(anims[idx].global_range.at))
+                anims = self.sorted_anims
+                time = self.progress_to_time(self._progress)
+                idx = bisect(anims, time - 1e-2, key=lambda x: x.global_range.at)
+                idx -= 1
+                if idx < 0:
+                    self.set_progress(0)
+                else:
+                    self.set_progress(self.time_to_progress(anims[idx].global_range.at))
 
             self.dragged.emit()
 
         elif key == Qt.Key.Key_C:
-            anims = self.sorted_anims
-            time = self.progress_to_time(self._progress)
-            idx = bisect(anims, time + 1e-2, key=lambda x: x.global_range.at)
-            if idx < len(anims):
-                self.set_progress(self.time_to_progress(anims[idx].global_range.at))
+            if event.modifiers() & Qt.KeyboardModifier.ControlModifier:
+                progresses = self.pause_progresses
+                idx = bisect(progresses, self._progress + 1)
+                if idx < len(progresses):
+                    self.set_progress(progresses[idx])
+                else:
+                    self.set_progress(self._maximum)
             else:
-                self.set_progress(self.time_to_progress(self.anim.global_range.end))
+                anims = self.sorted_anims
+                time = self.progress_to_time(self._progress)
+                idx = bisect(anims, time + 1e-2, key=lambda x: x.global_range.at)
+                if idx < len(anims):
+                    self.set_progress(self.time_to_progress(anims[idx].global_range.at))
+                else:
+                    self.set_progress(self._maximum)
 
             self.dragged.emit()
 

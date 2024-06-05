@@ -547,19 +547,6 @@ class AnimViewer(QMainWindow):
                         if os.path.samefile(janim['file_path'], inspect.getmodule(self.anim.timeline).__file__):
                             self.on_rebuild_triggered()
 
-                    # TODO: remove
-                    # # 重新加载
-                    # case 'reload':
-                    #     file_path = janim['file_path']
-                    #     for module in sys.modules.values():
-                    #         module_file_path = getattr(module, '__file__', None)
-                    #         if module_file_path is not None and os.path.samefile(module_file_path, file_path):
-                    #             importlib.reload(module)
-                    #             log.info(f'已重新加载 {file_path}')
-                    #             break
-                    #     else:
-                    #         log.error(f'{file_path} 之前没被导入过')
-
             except Exception:
                 traceback.print_exc()
 
