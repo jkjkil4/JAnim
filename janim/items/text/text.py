@@ -190,7 +190,10 @@ class TextChar(VItem):
                             ]
                         )
                     except Exception:
-                        log.error(f'应用 {name} 时，{params} 与 {[cvt.__name__ for cvt in converters]} 不匹配')
+                        log.error(
+                            _('While applying {name}, {params} did not match with {cvt_names}.')
+                            .format(name=name, params=params, cvt_names=[cvt.__name__ for cvt in converters])
+                        )
                         raise
 
                     break
@@ -199,7 +202,10 @@ class TextChar(VItem):
                     '[' + ','.join([cvt.__name__ for cvt in act[0]]) + ']'
                     for act in available_act_map[name]
                 ])
-                log.warning(f'应用 "{name}" 时，{params} 与 {txt} 没有匹配项')
+                log.warning(
+                    _('While applying "{name}", {params} did not match any entry in {txt}.')
+                    .format(name=name, params=params, txt=txt)
+                )
 
 
 class TextLine(VItem, Group[TextChar]):

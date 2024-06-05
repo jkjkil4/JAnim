@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-06-05 17:37+0800\n"
+"POT-Creation-Date: 2024-06-05 18:35+0800\n"
 "PO-Revision-Date: 2024-06-05 17:34+0800\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -17,6 +17,6 @@ msgstr ""
 "Language: zh_CN\n"
 "X-Generator: Poedit 3.4.2\n"
 
-#: janim\utils\font.py:78
+#: janim\utils\font.py:79
 msgid "No font named \"{font_name}\""
 msgstr "没有叫作 \"{font_name}\" 的字体"

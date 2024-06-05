@@ -110,6 +110,7 @@ class SVGItem(Group[VItem]):
             elif type(shape) is se.SVGElement:
                 continue
             else:
+                # i18n?
                 log.warning(f'Unsupported element type: {type(shape)}')
 
         SVGItem.vitem_builders_map[key] = builders

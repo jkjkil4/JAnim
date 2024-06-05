@@ -16,14 +16,32 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: janim\gui\richtext_editor.py:20
-msgid "Rich Text Editor"
+#: janim\cli.py:47 janim\cli.py:130
+msgid "Constructing window"
 msgstr ""
 
-#: janim\gui\richtext_editor.py:25
-msgid "Word wrap"
+#: janim\cli.py:58 janim\cli.py:150
+msgid "Finished constructing in {time:.2f} s"
 msgstr ""
 
-#: janim\gui\richtext_editor.py:32
-msgid "Recognize rich text format on paste"
+#: janim\cli.py:165
+msgid "\"{file_name}\" doesn't exist"
+msgstr ""
+
+#: janim\cli.py:189
+msgid "No timeline named \"{name}\""
+msgstr ""
+
+#: janim\cli.py:215
+msgid ""
+"That module has multiple timelines, which ones would you like to render?\n"
+"Timeline Name or Number: "
+msgstr ""
+
+#: janim\cli.py:230
+msgid "Invaild number {num}"
+msgstr ""
+
+#: janim\cli.py:236
+msgid "No timeline named {split_str}"
 msgstr ""

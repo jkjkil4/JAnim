@@ -9,8 +9,11 @@ from argparse import Namespace
 from janim.anims.timeline import Timeline
 from janim.exception import (EXITCODE_MODULE_NOT_FOUND, EXITCODE_NOT_FILE,
                              ExitException)
+from janim.locale.i18n import get_local_strings
 from janim.logger import log
 from janim.utils.config import default_config
+
+_ = get_local_strings('cli')
 
 
 def run(args: Namespace) -> None:
@@ -41,7 +44,7 @@ def run(args: Namespace) -> None:
         widgets.append(viewer)
 
     log.info('======')
-    log.info('Constructing window')
+    log.info(_('Constructing window'))
 
     t = time.time()
 
@@ -52,7 +55,7 @@ def run(args: Namespace) -> None:
 
     QTimer.singleShot(200, widgets[-1].activateWindow)
 
-    log.info(f'Finished constructing in {time.time() - t:.2f} s')
+    log.info(_('Finished constructing in {time:.2f} s').format(time=time.time() - t))
     log.info('======')
 
     app.exec()
@@ -124,7 +127,7 @@ def tool(args: Namespace) -> None:
     from janim.gui.anim_viewer import FontTable, QWidget, RichTextEditor
 
     log.info('======')
-    log.info('Constructing window')
+    log.info(_('Constructing window'))
 
     t = time.time()
 
@@ -144,7 +147,7 @@ def tool(args: Namespace) -> None:
         widgets.append(widget)
         widget.show()
 
-    log.info(f'Finished constructing in {time.time() - t:.2f} s')
+    log.info(_('Finished constructing in {time:.2f} s').format(time=time.time() - t))
     log.info('======')
 
     app.exec()
@@ -159,11 +162,11 @@ def modify_default_config(args: Namespace) -> None:
 
 def get_module(file_name: str):
     if not os.path.exists(file_name):
-        log.error(f'"{file_name}" 不存在')
+        log.error(_('"{file_name}" doesn\'t exist'))
         raise ExitException(EXITCODE_MODULE_NOT_FOUND)
 
     if not os.path.isfile(file_name):
-        log.error(f'"{file_name}" 不是文件')
+        log.error(f'"{file_name}" is\'t a file')
         raise ExitException(EXITCODE_NOT_FILE)
 
     module_name = file_name.replace(os.sep, ".").replace(".py", "")
@@ -183,7 +186,7 @@ def extract_timelines_from_module(args: Namespace, module) -> list[type['Timelin
             try:
                 timelines.append(module.__dict__[name])
             except KeyError:
-                log.error(f'No timeline named "{name}"')
+                log.error(_('No timeline named "{name}"'))
                 err = True
     else:
         import inspect
@@ -209,9 +212,9 @@ def extract_timelines_from_module(args: Namespace, module) -> list[type['Timelin
 
         try:
             user_input = input(
-                "\nThat module has multiple timelines, "
-                "which ones would you like to render?"
-                "\nTimeline Name or Number: "
+                '\n' + _('That module has multiple timelines, '
+                         'which ones would you like to render?'
+                         '\nTimeline Name or Number: ')
             )
         except KeyboardInterrupt:
             user_input = ''
@@ -224,13 +227,13 @@ def extract_timelines_from_module(args: Namespace, module) -> list[type['Timelin
                 if 0 <= idx < len(classes):
                     timelines.append(classes[idx])
                 else:
-                    log.error(f'Invaild number {idx + 1}')
+                    log.error(_('Invaild number {num}').format(num=idx + 1))
                     err = True
             else:
                 try:
                     timelines.append(name_to_class[split_str])
                 except KeyError:
-                    log.error(f'No timeline named {split_str}')
+                    log.error(_('No timeline named {split_str}').format(split_str=split_str))
                     err = True
 
     return [] if err else timelines

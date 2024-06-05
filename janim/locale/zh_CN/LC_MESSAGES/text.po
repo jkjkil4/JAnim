@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-06-05 16:50+0800\n"
-"PO-Revision-Date: 2024-06-05 17:40+0800\n"
+"POT-Creation-Date: 2024-06-05 18:35+0800\n"
+"PO-Revision-Date: 2024-06-05 18:43+0800\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
 "Language: zh_CN\n"
@@ -20,3 +20,11 @@ msgstr ""
 #: janim\items\text\text.py:44
 msgid "No built-in color named {key}"
 msgstr "内置颜色中没有叫作 {key} 的"
+
+#: janim\items\text\text.py:194
+msgid "While applying {name}, {params} did not match with {cvt_names}."
+msgstr "应用 {name} 时，{params} 与 {cvt_names} 不匹配"
+
+#: janim\items\text\text.py:206
+msgid "While applying \"{name}\", {params} did not match any entry in {txt}."
+msgstr "应用 \"{name}\" 时，{params} 与 {txt} 没有匹配项"

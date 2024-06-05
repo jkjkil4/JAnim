@@ -16,14 +16,12 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: janim\gui\richtext_editor.py:20
-msgid "Rich Text Editor"
+#: janim\items\svg\typst.py:60
+msgid ""
+"Could not compile typst file. Please install typst and add it to the "
+"environment variables."
 msgstr ""
 
-#: janim\gui\richtext_editor.py:25
-msgid "Word wrap"
-msgstr ""
-
-#: janim\gui\richtext_editor.py:32
-msgid "Recognize rich text format on paste"
+#: janim\items\svg\typst.py:66
+msgid "Typst compilation error. Please check the output for more information."
 msgstr ""

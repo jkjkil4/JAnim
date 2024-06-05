@@ -55,7 +55,10 @@ class Audio:
         try:
             file_path = find_file(file_path)
         except FileNotFoundError:
-            log.warning(f'无法找到音频 "{file_path}"，已使用 8s 的空白音频代替')
+            log.warning(
+                _('Could not find the audio file "{file_path}". A blank audio of 8 seconds was used instead.')
+                .format(file_path=file_path)
+            )
             self._samples.data = np.zeros(Config.get.audio_framerate * 8)
             self.framerate = Config.get.audio_framerate
             self.file_path = file_path

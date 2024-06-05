@@ -46,7 +46,10 @@ class Cmpt_VPoints[ItemT](Cmpt_Points[ItemT], impl=True):
 
     def set(self, points: VectArray) -> Self:
         if len(points) != 0 and len(points) % 2 == 0:
-            log.warning(f'设置的点数量为 {len(points)}，不是奇数，最后一个点被忽略')
+            log.warning(
+                _('The number of points set is {len}, which is not odd. The last point will be ignored.')
+                .format(len=len(points))
+            )
             points = points[:-1]
         super().set(points)
         return self

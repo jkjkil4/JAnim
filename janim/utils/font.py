@@ -38,6 +38,7 @@ def _font_finder_func() -> Generator[FontInfo, None, None]:
                 if filepath.endswith('ttc')         \
                 else [TTFont(filepath)]
         except TTLibError:
+            # i18n?
             log.debug(f'Skipped font "{filepath}"')
             continue
 

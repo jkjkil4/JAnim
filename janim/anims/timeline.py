@@ -203,7 +203,7 @@ class Timeline(metaclass=ABCMeta):
             self._build_frame = inspect.currentframe()
 
             if not quiet:   # pragma: no cover
-                log.info(f'Building "{self.__class__.__name__}"')
+                log.info(_('Building "{name}"').format(name=self.__class__.__name__))
                 start_time = time.time()
 
             self.construct()
@@ -211,13 +211,20 @@ class Timeline(metaclass=ABCMeta):
             if self.current_time == 0:
                 self.forward(DEFAULT_DURATION)  # 使得没有任何前进时，产生一点时间，避免除零以及其它问题
                 if not quiet:   # pragma: no cover
-                    log.info(f'"{self.__class__.__name__}" 构建后没有产生时长，自动产生了 {DEFAULT_DURATION}s 的时长')
+                    log.info(
+                        _('"{name}" did not produce a duration after construction, '
+                          'automatically generated a duration of {duration}s')
+                        .format(name=self.__class__.__name__, duration=DEFAULT_DURATION)
+                    )
             self.cleanup_display()
             global_anim = TimelineAnim(self)
 
             if not quiet:   # pragma: no cover
                 elapsed = time.time() - start_time
-                log.info(f'Finished building "{self.__class__.__name__}" in {elapsed:.2f} s')
+                log.info(
+                    _('Finished building "{name}" in {elapsed:.2f} s')
+                    .format(name=self.__class__.__name__, elapsed=elapsed)
+                )
 
         return global_anim
 

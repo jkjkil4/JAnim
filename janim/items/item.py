@@ -199,7 +199,10 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
 
         for key, flag in flags.items():
             if not flag:
-                log.warning(f'传入参数 "{key}" 没有匹配任何的样式设置，且没有被任何地方使用')
+                log.warning(
+                    _('The passed parameter "{key}" did not match any style settings and was not used anywhere.')
+                    .format(key=key)
+                )
 
     @classmethod
     def get_available_styles(cls) -> list[str]:

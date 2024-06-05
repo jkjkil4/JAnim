@@ -10,6 +10,9 @@ from janim.items.svg.svg_item import SVGItem
 from janim.logger import log
 from janim.utils.config import Config
 from janim.utils.file_ops import get_janim_dir, get_typst_temp_dir
+from janim.locale.i18n import get_local_strings
+
+_ = get_local_strings('typst')
 
 TYPST_FILENAME = 'temp.typ'
 
@@ -54,12 +57,13 @@ class TypstDoc(SVGItem):
         try:
             process = sp.Popen(commands)
         except FileNotFoundError:
-            log.error('无法编译 typst，需要安装 typst 并将其添加到环境变量中')
+            log.error(_('Could not compile typst file. '
+                        'Please install typst and add it to the environment variables.'))
             raise ExitException(EXITCODE_TYPST_NOT_FOUND)
 
         ret = process.wait()
         if ret != 0:
-            log.error('typst 编译错误，请检查输出信息')
+            log.error(_('Typst compilation error. Please check the output for more information.'))
             raise ExitException(EXITCODE_TYPST_COMPILE_ERROR)
 
         process.terminate()
