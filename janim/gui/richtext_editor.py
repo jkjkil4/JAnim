@@ -7,25 +7,29 @@ from PySide6.QtGui import QColor, QSyntaxHighlighter
 from PySide6.QtWidgets import (QCheckBox, QHBoxLayout, QPlainTextEdit,
                                QVBoxLayout, QWidget)
 
+from janim.locale.i18n import get_local_strings
+
+_ = get_local_strings('richtext_editor')
+
 
 class RichTextEditor(QWidget):
     def __init__(self, parent: QWidget | None = None) -> None:
         super().__init__(parent)
 
         self.setup_ui()
-        self.setWindowTitle('富文本编辑')
+        self.setWindowTitle(_('Rich Text Editor'))
         self.resize(600, 400)
         self.check_box_wordwrap.setChecked(True)
 
     def setup_ui(self):
-        self.check_box_wordwrap = QCheckBox('自动换行')
+        self.check_box_wordwrap = QCheckBox(_('Word wrap'))
         self.check_box_wordwrap.stateChanged.connect(
             lambda state: self.editor.setLineWrapMode(RichTextEdit.LineWrapMode.WidgetWidth
                                                       if state
                                                       else RichTextEdit.LineWrapMode.NoWrap)
         )
 
-        self.check_box_html = QCheckBox('粘贴时识别富文本格式')
+        self.check_box_html = QCheckBox(_('Recognize rich text format on paste'))
         self.check_box_html.stateChanged.connect(self.check_box_html_state_changed)
 
         self.editor = RichTextEdit()
@@ -60,7 +64,6 @@ class RichTextEdit(QPlainTextEdit):
         self.highlighter = RichTextHighlighter(self.document())
 
         self.resize(600, 400)
-        self.setWindowTitle('RichText Editor')
 
         self.convert_html = False
 

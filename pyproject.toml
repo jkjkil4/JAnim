@@ -47,7 +47,12 @@ doc = [
 [tool.flit.sdist]
 exclude = [
     ".vscode/", ".github/", "assets/", "doc/", "test/",
-    ".pypirc"
+    ".pypirc",
+    "janim/locale/source",
+    "janim/locale/compile.py",
+    "janim/locale/gettext.py",
+    "janim/locale/intl.py",
+    "janim/locale/*/LC_MESSAGES/*.po"
 ]
 
 [project.urls]

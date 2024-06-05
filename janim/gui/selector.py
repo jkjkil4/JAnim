@@ -8,9 +8,12 @@ from PySide6.QtGui import QColor, QMouseEvent, QPainter, QPaintEvent
 from janim.anims.display import Display
 from janim.items.item import Item
 from janim.items.points import Points
+from janim.locale.i18n import get_local_strings
 
 if TYPE_CHECKING:
     from janim.gui.anim_viewer import AnimViewer
+
+_ = get_local_strings('selector')
 
 
 class Selector(QObject):
@@ -176,13 +179,17 @@ class Selector(QObject):
             ranges.append((range_start, range_end))
 
         txt_list = [
-            '子物件选择工具（Ctrl+左键: 选择父物件，左键: 选择子物件，右键: 取消选择子物件，Ctrl+右键: 退出）',
-            '选中父物件: ' + (
-                '无'
+            _('Subitem Selection Tool'),
+            _('    Ctrl+Left Click: Select Parent Item'),
+            _('    Left Click: Select Child Item'),
+            _('    Right Click: Deselect Child Item'),
+            _('    Ctrl+Right Click: Exit'),
+            _('Selected Parent Item: ') + (
+                'None'
                 if self.current is None
                 else f'{self.current.item.__class__.__name__} at {id(self.current.item):X}'
             ),
-            '选中子物件: ' + ', '.join(
+            _('Selected Subitems: ') + ', '.join(
                 (
                     f'[{range[0]}]'
                     if range[0] + 1 == range[1]

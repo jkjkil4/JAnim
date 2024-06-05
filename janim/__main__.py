@@ -1,11 +1,21 @@
 import os
 from argparse import ArgumentParser, Namespace
 
+from janim.locale.i18n import set_lang
 from janim.utils.file_ops import get_janim_dir
 
 
 def main() -> None:
     parser = ArgumentParser(description='A library for simple animation effects')
+    parser.add_argument(
+        '--lang',
+        help='Language code, e.g., en, zh_CN'
+    )
+    initial_args = parser.parse_known_args()[0]
+
+    if initial_args.lang:
+        set_lang(initial_args.lang)
+
     parser.set_defaults(func=None)
 
     parser.add_argument(

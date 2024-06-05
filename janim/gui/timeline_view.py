@@ -1,5 +1,5 @@
 import math
-from bisect import bisect_left, bisect
+from bisect import bisect, bisect_left
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
@@ -11,11 +11,14 @@ from PySide6.QtWidgets import QLabel, QVBoxLayout, QWidget
 
 from janim.anims.animation import Animation, TimeRange
 from janim.anims.timeline import Timeline, TimelineAnim
+from janim.locale.i18n import get_local_strings
 from janim.utils.bezier import interpolate
 from janim.utils.simple_functions import clip
 
 if TYPE_CHECKING:
     from PySide6.QtCharts import QAreaSeries, QChartView
+
+_ = get_local_strings('timeline_view')
 
 TIMELINE_VIEW_MIN_DURATION = 0.5
 
@@ -149,14 +152,14 @@ class TimelineView(QWidget):
             info.audio.file_path
         ]
         if info.clip_range != TimeRange(0, info.audio.duration()):
-            msg_lst.append(f'Clip: {round(info.clip_range.at, 2)}s ~ {round(info.clip_range.end, 2)}s')
+            msg_lst.append(_('Clip') + f': {round(info.clip_range.at, 2)}s ~ {round(info.clip_range.end, 2)}s')
 
         clips = ', '.join(
             f'{math.floor(start * 10) / 10}s ~ {math.ceil(end * 10) / 10}s'
             for start, end in info.audio.recommended_ranges()
         )
         if clips:
-            msg_lst.append(f'Recommended clip: {clips}')
+            msg_lst.append(_('Recommended clip') + f': {clips}')
 
         label = QLabel('\n'.join(msg_lst))
         chart_view = self.create_audio_chart(info, near=round(self.pixel_to_time(pos.x())))

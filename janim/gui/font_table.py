@@ -8,18 +8,21 @@ from PySide6.QtWidgets import (QHBoxLayout, QHeaderView, QLabel, QLineEdit,
                                QTableWidget, QTableWidgetItem, QVBoxLayout,
                                QWidget)
 
+from janim.locale.i18n import get_local_strings
 from janim.utils.file_ops import get_janim_dir
 from janim.utils.font import get_found_infos
 
 if TYPE_CHECKING:
     from fontTools.ttLib.tables._n_a_m_e import NameRecord
 
+_ = get_local_strings('font_table')
+
 
 class FontTable(QWidget):
     def __init__(self, parent: QWidget | None = None):
         super().__init__(parent)
         self.setup_ui()
-        self.setWindowTitle('字体列表')
+        self.setWindowTitle(_('Font List'))
         self.resize(760, 640)
 
     def setup_ui(self) -> None:
@@ -50,7 +53,8 @@ class FontTable(QWidget):
         infos = get_found_infos()
         table.setRowCount(len(infos))
         table.setColumnCount(2)
-        table.setHorizontalHeaderLabels(('调用名', '显示名（包含多种语言，善用搜索）'))
+        table.setHorizontalHeaderLabels((_('Invocation Name'),
+                                         _('Display Name (includes multiple languages, make good use of search)')))
         table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.ResizeToContents)
         table.horizontalHeader().setDefaultAlignment(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter)
         table.setHorizontalScrollMode(QTableWidget.ScrollMode.ScrollPerPixel)
