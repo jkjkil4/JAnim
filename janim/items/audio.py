@@ -16,6 +16,9 @@ from janim.utils.data import Array
 from janim.utils.file_ops import find_file
 from janim.utils.iterables import resize_with_interpolation
 from janim.utils.simple_functions import clip
+from janim.locale.i18n import get_local_strings
+
+_ = get_local_strings('audio')
 
 
 class Audio:
@@ -52,7 +55,10 @@ class Audio:
         try:
             file_path = find_file(file_path)
         except FileNotFoundError:
-            log.warning(f'无法找到音频 "{file_path}"，已使用 8s 的空白音频代替')
+            log.warning(
+                _('Could not find the audio file "{file_path}". A blank audio of 8 seconds was used instead.')
+                .format(file_path=file_path)
+            )
             self._samples.data = np.zeros(Config.get.audio_framerate * 8)
             self.framerate = Config.get.audio_framerate
             self.file_path = file_path
@@ -94,7 +100,7 @@ class Audio:
                 data = np.frombuffer(reading_process.stdout.read(), dtype=np.int16)
 
         except FileNotFoundError:
-            log.error('无法读取音频，需要安装 ffmpeg 并将其添加到环境变量中')
+            log.error(_('Unable to read audio, please install ffmpeg and add it to the environment variables'))
             raise ExitException(EXITCODE_FFMPEG_NOT_FOUND)
 
         self._samples.data = data

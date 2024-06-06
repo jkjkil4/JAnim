@@ -22,6 +22,9 @@ from janim.utils.config import Config
 from janim.utils.font import Font, get_font_info_by_name
 from janim.utils.simple_functions import decode_utf8
 from janim.utils.space_ops import get_norm, normalize
+from janim.locale.i18n import get_local_strings
+
+_ = get_local_strings('text')
 
 DEFAULT_FONT_SIZE = 24
 ORIG_FONT_SIZE = 48
@@ -38,7 +41,7 @@ def _get_color_value(key: str) -> JAnimColor:
 
     import janim.constants.colors as colors
     if not hasattr(colors, key):
-        raise ColorNotFoundError(f'No built-in color named {key}')
+        raise ColorNotFoundError(_('No built-in color named {key}').format(key=key))
     return getattr(colors, key)
 
 
@@ -187,7 +190,10 @@ class TextChar(VItem):
                             ]
                         )
                     except Exception:
-                        log.error(f'应用 {name} 时，{params} 与 {[cvt.__name__ for cvt in converters]} 不匹配')
+                        log.error(
+                            _('While applying {name}, {params} did not match with {cvt_names}.')
+                            .format(name=name, params=params, cvt_names=[cvt.__name__ for cvt in converters])
+                        )
                         raise
 
                     break
@@ -196,7 +202,10 @@ class TextChar(VItem):
                     '[' + ','.join([cvt.__name__ for cvt in act[0]]) + ']'
                     for act in available_act_map[name]
                 ])
-                log.warning(f'应用 "{name}" 时，{params} 与 {txt} 没有匹配项')
+                log.warning(
+                    _('While applying "{name}", {params} did not match any entry in {txt}.')
+                    .format(name=name, params=params, txt=txt)
+                )
 
 
 class TextLine(VItem, Group[TextChar]):

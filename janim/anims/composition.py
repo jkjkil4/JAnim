@@ -1,6 +1,9 @@
 from janim.anims.animation import Animation
 from janim.exception import NotAnimationError
+from janim.locale.i18n import get_local_strings
 from janim.utils.rate_functions import RateFunc, linear
+
+_ = get_local_strings('composition')
 
 
 class AnimGroup(Animation):
@@ -67,7 +70,8 @@ class AnimGroup(Animation):
         ]
         for anim in anims:
             if not isinstance(anim, Animation):
-                raise NotAnimationError('传入了非动画对象，可能是你忘记使用 .anim 了')
+                raise NotAnimationError(_('A non-animation object was passed in, '
+                                          'you might have forgotten to use .anim'))
 
         return anims
 
@@ -199,3 +203,13 @@ class Aligned(AnimGroup):
 
     def get_anim_t(self, alpha: float, anim: Animation) -> float:
         return alpha * anim.local_range.duration
+
+
+class Wait(Animation):
+    '''
+    等待特定时间，在 :meth:`~.Succession` 中比较有用
+
+    （其实就是一个空动画）
+    '''
+    def __init__(self, duration: float, **kwargs):
+        super().__init__(duration=duration, **kwargs)

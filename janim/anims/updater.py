@@ -10,6 +10,9 @@ from janim.constants import ANIM_END_DELTA, C_LABEL_ANIM_ABSTRACT
 from janim.exception import UpdaterError
 from janim.items.item import DynamicItem, Item
 from janim.utils.simple_functions import clip
+from janim.locale.i18n import get_local_strings
+
+_ = get_local_strings('updater')
 
 
 @dataclass
@@ -242,8 +245,11 @@ class ItemUpdater(Animation):
     def call(self, p: UpdaterParams) -> Item:
         ret = self.func(p)
         if not isinstance(ret, Item):
-            raise UpdaterError(f'传入 ItemUpdater 的函数必须以一个物件作为返回值，而返回的是 {ret}，'
-                               f'函数定义于 {inspect.getfile(self.func)}:{inspect.getsourcelines(self.func)[1]}')
+            raise UpdaterError(
+                _('The function passed to ItemUpdater must return an item, but got {ret} instead, '
+                  'defined in {file}:{lineno}')
+                .format(ret=ret, file=inspect.getfile(self.func), lineno=inspect.getsourcelines(self.func)[1])
+            )
         for item in ret.walk_self_and_descendants():
             item.is_temporary = True
         return ret

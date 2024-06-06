@@ -1,0 +1,46 @@
+# Chinese translations for PACKAGE package.
+# Copyright (C) 2024 THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# Automatically generated, 2024.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-06-05 17:37+0800\n"
+"PO-Revision-Date: 2024-06-05 17:30+0800\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: none\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=GBK\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: zh_CN\n"
+"X-Generator: Poedit 3.4.2\n"
+
+#: janim\gui\selector.py:182
+msgid "Subitem Selection Tool"
+msgstr "子物件选择工具"
+
+#: janim\gui\selector.py:183
+msgid "    Ctrl+Left Click: Select Parent Item"
+msgstr "    Ctrl+左键: 选择父物件"
+
+#: janim\gui\selector.py:184
+msgid "    Left Click: Select Child Item"
+msgstr "    左键: 选择子物件"
+
+#: janim\gui\selector.py:185
+msgid "    Right Click: Deselect Child Item"
+msgstr "    右键: 取消选择子物件"
+
+#: janim\gui\selector.py:186
+msgid "    Ctrl+Right Click: Exit"
+msgstr "    Ctrl+右键: 退出"
+
+#: janim\gui\selector.py:187
+msgid "Selected Parent Item: "
+msgstr "选中父物件："
+
+#: janim\gui\selector.py:192
+msgid "Selected Subitems: "
+msgstr "选中子物件："

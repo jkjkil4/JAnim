@@ -11,6 +11,9 @@ from janim.logger import log
 from janim.typing import Vect
 from janim.utils.data import AlignedData
 from janim.utils.paths import PathFunc, path_along_arc, straight_path
+from janim.locale.i18n import get_local_strings
+
+_ = get_local_strings('transform')
 
 
 class Transform(Animation):
@@ -99,8 +102,15 @@ class Transform(Animation):
                 if bool(data1.get_children()) != bool(data2.get_children()):
                     spec1 = f'<"{item1.__class__.__name__}" {id(item1):X}>'
                     spec2 = f'<"{item2.__class__.__name__}" {id(item2):X}>'
-                    log.warning(f'{spec1} 和 {spec2} 的子物件无法对齐，因为二者的子物件必须同时为空或同时存在，'
-                                f'但是二者的子物件数量分别是 {len(data1.get_children())} 和 {len(data2.get_children())}')
+                    log.warning(
+                        _('The child items of {spec1} and {spec2} cannot be aligned '
+                          'because their child items must either both be empty or both exist. '
+                          'However, their child item counts are {len1} and {len2}, respectively.')
+                        .format(spec1=spec1,
+                                spec2=spec2,
+                                len1=len(data1.get_children()),
+                                len2=len(data2.get_children()))
+                    )
                 else:
                     for child1, child2 in zip(aligned.data1.stored_children, aligned.data2.stored_children):
                         align(child1, child2, True)
@@ -206,7 +216,10 @@ class MethodTransform(Transform):
 
             attr = getattr(self.cmpt, name, None)
             if attr is None or not callable(attr):
-                raise KeyError(f'{self.cmpt.__class__.__name__} 中没有叫作 {name} 的可调用方法')
+                raise KeyError(
+                    _('There is no callable method named {name} in {cmpt}')
+                    .format(name=name, cmpt=self.cmpt.__class__.__name__)
+                )
 
             def wrapper(*args, **kwargs):
                 attr(*args, **kwargs)
@@ -229,7 +242,10 @@ class MethodTransform(Transform):
                 return self
             return wrapper
 
-        raise KeyError(f'{self.src_item.__class__.__name__} 没有叫作 {name} 的组件或者可调用的方法')
+        raise KeyError(
+            _('{item} has no component or callable method named {name}')
+            .format(item=self.src_item.__class__.__name__, name=name)
+        )
 
     def __anim__(self) -> Animation:
         return self

@@ -1,0 +1,30 @@
+# Chinese translations for PACKAGE package.
+# Copyright (C) 2024 THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# Automatically generated, 2024.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-06-05 18:35+0800\n"
+"PO-Revision-Date: 2024-06-05 17:39+0800\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: none\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=GBK\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: zh_CN\n"
+"X-Generator: Poedit 3.4.2\n"
+
+#: janim\components\points.py:206
+msgid "Cannot call {name} with no points"
+msgstr "无法在没有点的情况下调用 {name}"
+
+#: janim\components\points.py:436
+msgid "Only 2x2 or 3x3 matrix are valid, but a {shape} matrix was passed in"
+msgstr "只有 2x2 或 3x3 矩阵是有效的，而传入的是 {shape} 矩阵"
+
+#: janim\components\points.py:735
+msgid "Cannot position endpoints of closed loop"
+msgstr "闭合回路不存在端点"

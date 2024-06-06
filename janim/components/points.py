@@ -12,6 +12,7 @@ from janim.constants import (DEFAULT_ITEM_TO_EDGE_BUFF,
                              MED_SMALL_BUFF, ORIGIN, OUT, PI, RIGHT, UP)
 from janim.exception import InvaildMatrixError, PointError
 from janim.items.item import Item
+from janim.locale.i18n import get_local_strings
 from janim.typing import Vect, VectArray
 from janim.utils.bezier import integer_interpolate, interpolate
 from janim.utils.config import Config
@@ -20,6 +21,8 @@ from janim.utils.iterables import resize_and_repeatedly_extend
 from janim.utils.paths import PathFunc, straight_path
 from janim.utils.signal import Signal
 from janim.utils.space_ops import angle_of_vector, get_norm, rotation_matrix
+
+_ = get_local_strings('points')
 
 type PointsFn = Callable[[np.ndarray], VectArray]
 type PointFn = Callable[[np.ndarray], Vect]
@@ -200,8 +203,7 @@ class Cmpt_Points[ItemT](Component[ItemT]):
     def _raise_error_if_no_points(self) -> None:
         if not self.has():
             name = inspect.currentframe().f_back.f_code.co_name
-            # TODO: i18n
-            raise PointError(f'Cannot call {name} with no points')
+            raise PointError(_('Cannot call {name} with no points').format(name=name))
 
     # endregion
 
@@ -431,8 +433,8 @@ class Cmpt_Points[ItemT](Component[ItemT]):
         matrix = np.array(matrix)
         if matrix.shape not in ((2, 2), (3, 3)):
             raise InvaildMatrixError(
-                '只有 2x2 或 3x3 矩阵是有效的，'
-                f'而传入的是 {"x".join(str(v) for v in matrix.shape)} 矩阵'
+                _('Only 2x2 or 3x3 matrix are valid, but a {shape} matrix was passed in')
+                .format(shape="x".join(str(v) for v in matrix.shape))
             )
 
         if about_point is None and about_edge is None:
@@ -730,7 +732,7 @@ class Cmpt_Points[ItemT](Component[ItemT]):
         curr_start, curr_end = self.get_start(), self.get_end()
         curr_vect = curr_end - curr_start
         if np.all(curr_vect == 0):
-            raise PointError("Cannot position endpoints of closed loop")
+            raise PointError(_('Cannot position endpoints of closed loop'))
         target_vect = end - start
         self.scale(
             get_norm(target_vect) / get_norm(curr_vect),

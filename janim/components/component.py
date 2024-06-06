@@ -6,10 +6,13 @@ from typing import TYPE_CHECKING, Callable, Generator, Self, overload
 
 import janim.utils.refresh as refresh
 from janim.exception import CmptGroupLookupError
+from janim.locale.i18n import get_local_strings
 from janim.utils.data import AlignedData
 
 if TYPE_CHECKING:   # pragma: no cover
     from janim.items.item import Item
+
+_ = get_local_strings('component')
 
 
 class _CmptMeta(type):
@@ -24,7 +27,11 @@ class _CmptMeta(type):
         if not impl:
             for key in ('copy', 'become', 'not_changed'):
                 if not callable(attrdict.get(key, None)):
-                    raise AttributeError(f'Component 的每一个子类都必须继承并实现 `{key}` 方法，而 {name} 没有')
+                    raise AttributeError(
+                        _('Every subclass of Component must inherit and implement '
+                          'the "{key}" method, but "{name}" does not')
+                        .format(key=key, name=name)
+                    )
         return super().__new__(cls, name, bases, attrdict)
 
 
@@ -239,7 +246,7 @@ class _CmptGroup(Component):
             if val is cmpt_info:
                 return key
 
-        raise CmptGroupLookupError('CmptGroup 必须要与传入的内容在同一个类的定义中')
+        raise CmptGroupLookupError(_('CmptGroup must be defined within the same class as the content passed in'))
 
     def __getattr__(self, name: str):
         if name == 'objects':
@@ -261,7 +268,10 @@ class _CmptGroup(Component):
 
         if not methods:
             cmpt_str = ', '.join(cmpt.__class__.__name__ for cmpt in self.objects)
-            raise AttributeError(f'({cmpt_str}) 中没有组件有叫作 {name} 的方法')
+            raise AttributeError(
+                _('None of the components ({cmpt_str}) have a method named {name}')
+                .format(cmpt_str=cmpt_str, name=name)
+            )
 
         def wrapper(*args, **kwargs):
             ret = [

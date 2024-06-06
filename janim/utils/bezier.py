@@ -14,6 +14,9 @@ from janim.utils.simple_functions import choose
 from janim.utils.space_ops import (angle_between_vectors, cross, cross2d,
                                    find_intersection, get_norm, midpoint,
                                    rotation_between_vectors, z_to_vector)
+from janim.locale.i18n import get_local_strings
+
+_ = get_local_strings('bezier')
 
 CLOSED_THRESHOLD = 0.001
 T = TypeVar("T")
@@ -28,7 +31,7 @@ class PathBuilder:
         use_simple_quadratic_approx: bool = False,
     ):
         if start_point is not None and points is not None:
-            raise PointError('不能同时设置 start_point 和 points')
+            raise PointError(_('Cannot set both start_point and points at the same time'))
         if start_point is not None:
             self.points_list = [[start_point]]
             self.start_point = start_point
@@ -141,8 +144,11 @@ class PathBuilder:
     def _raise_if_no_points(self) -> None | NoReturn:
         if self.end_point is None:
             name = inspect.currentframe().f_back.f_code.co_name
-            raise PointError('PathBuilder 必须在构造时传入 start_point 或 points，'
-                             f'或者以 move_to 为首次调用，否则不能调用 {name}')
+            raise PointError(
+                _('PathBuilder must be initialized with start_point or points during construction, '
+                  'or have move_to as the first call, otherwise {name} cannot be invoked')
+                .format(name=name)
+            )
 
 
 def quadratic_bezier_points_for_arc(

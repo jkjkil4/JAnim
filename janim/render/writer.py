@@ -10,6 +10,9 @@ from tqdm import tqdm as ProgressDisplay
 from janim.anims.timeline import TimelineAnim
 from janim.exception import EXITCODE_FFMPEG_NOT_FOUND, ExitException
 from janim.logger import log
+from janim.locale.i18n import get_local_strings
+
+_ = get_local_strings('writer')
 
 
 class VideoWriter:
@@ -55,7 +58,7 @@ class VideoWriter:
         '''
         name = self.anim.timeline.__class__.__name__
         if not quiet:
-            log.info(f'Writing "{name}"')
+            log.info(_('Writing "{name}"').format(name=name))
             t = time.time()
 
         self.fbo.use()
@@ -81,8 +84,14 @@ class VideoWriter:
         self.close_video_pipe()
 
         if not quiet:
-            log.info(f'Finished writing "{name}" in {time.time() - t:.2f} s')
-            log.info(f'File saved to "{file_path}"')
+            log.info(
+                _('Finished writing "{name}" in {elapsed:.2f} s')
+                .format(name=name, elapsed=time.time() - t)
+            )
+            log.info(
+                _('File saved to "{file_path}"')
+                .format(file_path=file_path)
+            )
 
     def open_video_pipe(self, file_path: str) -> None:
         stem, ext = os.path.splitext(file_path)
@@ -118,7 +127,8 @@ class VideoWriter:
         try:
             self.writing_process = sp.Popen(command, stdin=sp.PIPE)
         except FileNotFoundError:
-            log.error('无法输出视频，需要安装 ffmpeg 并将其添加到环境变量中')
+            log.error(_('Unable to output video. '
+                        'Please install ffmpeg and add it to the environment variables.'))
             raise ExitException(EXITCODE_FFMPEG_NOT_FOUND)
 
     def close_video_pipe(self) -> None:
@@ -139,7 +149,7 @@ class AudioWriter:
     def write_all(self, file_path: str, *, quiet=False) -> None:
         name = self.anim.timeline.__class__.__name__
         if not quiet:
-            log.info(f'Writing audio of "{name}"')
+            log.info(_('Writing audio of "{name}"').format(name=name))
             t = time.time()
 
         fps = self.anim.cfg.fps
@@ -164,8 +174,14 @@ class AudioWriter:
         self.close_audio_pipe()
 
         if not quiet:
-            log.info(f'Finished writing audio of "{name}" in {time.time() - t:.2f} s')
-            log.info(f'File saved to "{file_path}"')
+            log.info(
+                _('Finished writing audio of "{name}" in {elapsed:.2f} s')
+                .format(name=name, elapsed=time.time() - t)
+            )
+            log.info(
+                _('File saved to "{file_path}"')
+                .format(file_path=file_path)
+            )
 
     def open_audio_pipe(self, file_path: str) -> None:
         stem, ext = os.path.splitext(file_path)
@@ -186,7 +202,8 @@ class AudioWriter:
         try:
             self.writing_process = sp.Popen(command, stdin=sp.PIPE)
         except FileNotFoundError:
-            log.error('无法输出音频，需要安装 ffmpeg 并将其添加到环境变量中')
+            log.error(_('Unable to output audio. '
+                        'Please install ffmpeg and add it to the environment variables.'))
             raise ExitException(EXITCODE_FFMPEG_NOT_FOUND)
 
     def close_audio_pipe(self) -> None:

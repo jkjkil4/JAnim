@@ -1,8 +1,12 @@
 try:
     import PySide6  # noqa: F401
 except ImportError:
-    print('使用 GUI 界面时需要安装额外模块，但是未安装')
-    print('你可以使用 pip install janim[gui] 进行安装，并确保你安装在了正确的 Python 版本中')
+    from janim.locale.i18n import get_local_strings
+    _ = get_local_strings('anim_viewer')
+
+    print(_('Additional modules need to be installed when using the GUI interface, but they are not installed'))
+    print(_('You can install them using pip install janim[gui] '
+            'and make sure you install them in the correct Python version'))
 
     from janim.exception import EXITCODE_PYSIDE6_NOT_FOUND, ExitException
     raise ExitException(EXITCODE_PYSIDE6_NOT_FOUND)
@@ -32,9 +36,12 @@ from janim.gui.precise_timer import PreciseTimer
 from janim.gui.richtext_editor import RichTextEditor
 from janim.gui.selector import Selector
 from janim.gui.timeline_view import TimelineView
+from janim.locale.i18n import get_local_strings
 from janim.logger import log
 from janim.render.writer import VideoWriter
 from janim.utils.file_ops import get_janim_dir
+
+_ = get_local_strings('anim_viewer')
 
 
 class AnimViewer(QMainWindow):
@@ -141,28 +148,28 @@ class AnimViewer(QMainWindow):
 
     def setup_menu_bar(self) -> None:
         menu_bar = self.menuBar()
-        menu_functions = menu_bar.addMenu('功能')
+        menu_functions = menu_bar.addMenu(_('Functions'))
 
-        self.action_stay_on_top = menu_functions.addAction('窗口置前')
+        self.action_stay_on_top = menu_functions.addAction(_('Stay on top'))
         self.action_stay_on_top.setCheckable(True)
         self.action_stay_on_top.setShortcut('Ctrl+T')
 
         menu_functions.addSeparator()
 
-        self.action_rebuild = menu_functions.addAction('重新构建')
+        self.action_rebuild = menu_functions.addAction(_('Rebuild'))
         self.action_rebuild.setShortcut('Ctrl+L')
 
         menu_functions.addSeparator()
 
-        self.action_select = menu_functions.addAction('子物件选择')
+        self.action_select = menu_functions.addAction(_('Subitem selector'))
         self.action_select.setShortcut('Ctrl+S')
         self.selector: Selector | None = None
 
-        self.action_richtext_edit = menu_functions.addAction('富文本编辑')
+        self.action_richtext_edit = menu_functions.addAction(_('Rich text editor'))
         self.action_richtext_edit.setShortcut('Ctrl+R')
         self.richtext_editor: RichTextEditor | None = None
 
-        self.action_font_table = menu_functions.addAction('字体列表')
+        self.action_font_table = menu_functions.addAction(_('Font list'))
         self.action_font_table.setShortcut('Ctrl+F')
         self.font_table: FontTable | None = None
 
@@ -214,7 +221,10 @@ class AnimViewer(QMainWindow):
         window_monitor = self.anim.cfg.wnd_monitor
 
         if len(window_position) != 2 or window_position[0] not in 'UOD' or window_position[1] not in 'LOR':
-            log.warning(f'wnd_pos has wrong argument "{window_position}".')
+            log.warning(
+                _('wnd_pos has wrong argument {wnd_pos}.')
+                .format(wnd_pos=window_position)
+            )
             window_position = 'UR'
 
         screens = QApplication.screens()
@@ -222,7 +232,10 @@ class AnimViewer(QMainWindow):
             screen = screens[window_monitor]
         else:
             screen = screens[0]
-            log.warning(f'wnd_monitor has invaild value {window_monitor}, use 0~{len(screens) - 1} instead.')
+            log.warning(
+                _('wnd_monitor has invaild value {wnd_monitor}, use 0~{maxi} instead.')
+                .format(wnd_monitor=window_monitor, maxi=len(screens) - 1)
+            )
         geometry = screen.availableGeometry()
 
         if window_position[1] != 'O':
@@ -316,7 +329,10 @@ class AnimViewer(QMainWindow):
         module = loader.load_module()
         timeline_class: type[Timeline] = getattr(module, name, None)
         if not isinstance(timeline_class, type) or not issubclass(timeline_class, Timeline):
-            log.error(f'No timeline named "{name}" in "{module.__file__}"')
+            log.error(
+                _('No timeline named "{name}" in "{file}"')
+                .format(name=name, file=module.__file__)
+            )
             return
 
         try:
@@ -324,7 +340,7 @@ class AnimViewer(QMainWindow):
         except Exception as e:
             if not isinstance(e, ExitException):
                 traceback.print_exc()
-            log.error('重新构建失败')
+            log.error(_('Failed to rebuild'))
             return
 
         range = self.timeline_view.range
@@ -418,6 +434,7 @@ class AnimViewer(QMainWindow):
         cur = time.time()
         self.fps_counter += 1
         if cur - self.fps_record_start >= 1:
+            # i18n?
             self.fps_label.setText(f'Preview FPS: {self.fps_counter}/{self.anim.cfg.preview_fps}')
             self.fps_counter = 0
             self.fps_record_start = cur
@@ -466,14 +483,18 @@ class AnimViewer(QMainWindow):
         if not file_path:
             return
 
-        QMessageBox.information(self, '提示', '即将进行输出，请留意控制台信息')
+        QMessageBox.information(self,
+                                _('Note'),
+                                _('Output will start shortly. Please check the console for information.'))
         try:
             VideoWriter.writes(self.anim.timeline.__class__().build(), file_path)
         except Exception as e:
             if not isinstance(e, ExitException):
                 traceback.print_exc()
         else:
-            QMessageBox.information(self, '提示', f'已完成输出至 {file_path}')
+            QMessageBox.information(self,
+                                    _('Note'),
+                                    _('Output to {file_path} has been completed.').format(file_path=file_path))
 
     # endregion (slots-anim)
 
@@ -497,7 +518,7 @@ class AnimViewer(QMainWindow):
         self.clients: list[tuple[QHostAddress, int]] = []
         self.lineno = -1
 
-        log.info(f'交互端口已在 {self.socket.localPort()} 开启')
+        log.info(_('Interactive port has been opened at {port}').format(port=self.socket.localPort()))
         self.setWindowTitle(f'{self.windowTitle()} [{self.socket.localPort()}]')
 
     def on_shared_ready_read(self) -> None:
@@ -547,19 +568,6 @@ class AnimViewer(QMainWindow):
                     case 'file_saved':
                         if os.path.samefile(janim['file_path'], inspect.getmodule(self.anim.timeline).__file__):
                             self.on_rebuild_triggered()
-
-                    # TODO: remove
-                    # # 重新加载
-                    # case 'reload':
-                    #     file_path = janim['file_path']
-                    #     for module in sys.modules.values():
-                    #         module_file_path = getattr(module, '__file__', None)
-                    #         if module_file_path is not None and os.path.samefile(module_file_path, file_path):
-                    #             importlib.reload(module)
-                    #             log.info(f'已重新加载 {file_path}')
-                    #             break
-                    #     else:
-                    #         log.error(f'{file_path} 之前没被导入过')
 
             except Exception:
                 traceback.print_exc()

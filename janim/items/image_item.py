@@ -34,7 +34,8 @@ class ImageItem(Points):
         self,
         file_path: str,
         *,
-        height: float = None,
+        width: float | None = None,
+        height: float | None = None,
         min_mag_filter: tuple[int, int] = (mgl.LINEAR_MIPMAP_LINEAR, mgl.LINEAR),
         **kwargs
     ):
@@ -46,16 +47,23 @@ class ImageItem(Points):
         img = get_img_from_file(file_path)
         self.image.set(img, min_mag_filter)
 
-        if height is None:
+        if width is None and height is None:
             self.points.set_size(
                 img.width * Config.get.pixel_to_frame_ratio,
                 img.height * Config.get.pixel_to_frame_ratio
             )
-        else:
+        elif width is None and height is not None:
             self.points.set_size(
                 height * img.width / img.height,
                 height
             )
+        elif width is not None and height is None:
+            self.points.set_size(
+                width,
+                width * img.height / img.width
+            )
+        else:   # width is not None and height is not None
+            self.points.set_size(width, height)
 
     def get_orig(self) -> np.ndarray:
         '''图像的左上角'''

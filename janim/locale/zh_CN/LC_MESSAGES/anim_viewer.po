@@ -1,0 +1,88 @@
+# Chinese translations for PACKAGE package.
+# Copyright (C) 2024 THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# Automatically generated, 2024.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-06-06 09:38+0800\n"
+"PO-Revision-Date: 2024-06-06 09:30+0800\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: none\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=GBK\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: zh_CN\n"
+"X-Generator: Poedit 3.4.2\n"
+
+#: janim\gui\anim_viewer.py:7
+msgid ""
+"Additional modules need to be installed when using the GUI interface, but "
+"they are not installed"
+msgstr "使用 GUI 界面时需要安装额外模块，但是未安装"
+
+#: janim\gui\anim_viewer.py:8
+msgid ""
+"You can install them using pip install janim[gui] and make sure you install "
+"them in the correct Python version"
+msgstr ""
+"你可以使用 pip install janim[gui] 进行安装，并确保你安装在了正确的 Python 版"
+"本中"
+
+#: janim\gui\anim_viewer.py:151
+msgid "Functions"
+msgstr "功能"
+
+#: janim\gui\anim_viewer.py:153
+msgid "Stay on top"
+msgstr "窗口置前"
+
+#: janim\gui\anim_viewer.py:159
+msgid "Rebuild"
+msgstr "重新构建"
+
+#: janim\gui\anim_viewer.py:164
+msgid "Subitem selector"
+msgstr "子物件选择器"
+
+#: janim\gui\anim_viewer.py:168
+msgid "Rich text editor"
+msgstr "富文本编辑器"
+
+#: janim\gui\anim_viewer.py:172
+msgid "Font list"
+msgstr "字体列表"
+
+#: janim\gui\anim_viewer.py:224
+msgid "wnd_pos has wrong argument {wnd_pos}."
+msgstr "wnd_pos 得到了错误的参数 {wnd_pos}"
+
+#: janim\gui\anim_viewer.py:235
+msgid "wnd_monitor has invaild value {wnd_monitor}, use 0~{maxi} instead."
+msgstr "wnd_monitor 得到了无效的值 {wnd_monitor}, 请使用 0~{maxi} 的值"
+
+#: janim\gui\anim_viewer.py:332
+msgid "No timeline named \"{name}\" in \"{file}\""
+msgstr "没有叫作 \"{name}\" 的时间轴，对于文件 \"{file}\" 来说"
+
+#: janim\gui\anim_viewer.py:342
+msgid "Failed to rebuild"
+msgstr "构建失败"
+
+#: janim\gui\anim_viewer.py:486 janim\gui\anim_viewer.py:495
+msgid "Note"
+msgstr "提示"
+
+#: janim\gui\anim_viewer.py:487
+msgid "Output will start shortly. Please check the console for information."
+msgstr "即将进行输出，请留意控制台信息"
+
+#: janim\gui\anim_viewer.py:496
+msgid "Output to {file_path} has been completed."
+msgstr "已完成输出至 {file_path}"
+
+#: janim\gui\anim_viewer.py:520
+msgid "Interactive port has been opened at {port}"
+msgstr "交互端口已在 {port} 开启"

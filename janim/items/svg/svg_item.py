@@ -42,15 +42,41 @@ class SVGItem(Group[VItem]):
     )
     vitem_builders_map: dict[tuple, list[VItemBuilder]] = {}
 
-    def __init__(self, file_path: str, **kwargs):
+    def __init__(
+        self,
+        file_path: str,
+        *,
+        width: float | None = None,
+        height: float | None = None,
+        **kwargs
+    ):
         items = self.get_items_from_file(file_path)
 
         super().__init__(*items, **kwargs)
 
-        self(VItem).points.scale(
-            Config.get.pixel_to_frame_ratio * DEFAULT_SVGITEM_SCALE_FACTOR,
-            about_point=ORIGIN
-        ).flip(RIGHT)
+        box = self.points.box
+
+        if width is None and height is None:
+            self.points.scale(
+                Config.get.pixel_to_frame_ratio * DEFAULT_SVGITEM_SCALE_FACTOR,
+                about_point=ORIGIN
+            )
+        elif width is None and height is not None:
+            self.points.set_size(
+                height * box.width / box.height,
+                height,
+                about_point=ORIGIN
+            )
+        elif width is not None and height is None:
+            self.points.set_size(
+                width,
+                width * box.height / box.width,
+                about_point=ORIGIN
+            )
+        else:   # width is not None and height is not None
+            self.points.set_size(width, height, about_point=ORIGIN)
+
+        self(VItem).points.flip(RIGHT)
 
         self.move_into_position()
 
@@ -84,6 +110,7 @@ class SVGItem(Group[VItem]):
             elif type(shape) is se.SVGElement:
                 continue
             else:
+                # i18n?
                 log.warning(f'Unsupported element type: {type(shape)}')
 
         SVGItem.vitem_builders_map[key] = builders

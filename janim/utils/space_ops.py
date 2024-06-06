@@ -249,6 +249,7 @@ def line_intersection(
 
     div = det(x_diff, y_diff)
     if div == 0:
+        # i18n?
         raise PointError("Lines do not intersect")
     d = (det(*line1), det(*line2))
     x = det(d, x_diff) / div

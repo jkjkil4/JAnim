@@ -16,9 +16,12 @@ from janim.typing import SupportsApartAlpha, SupportsInterpolate
 from janim.utils.data import AlignedData
 from janim.utils.iterables import resize_preserving_order
 from janim.utils.paths import PathFunc, straight_path
+from janim.locale.i18n import get_local_strings
 
 if TYPE_CHECKING:
     from janim.items.points import Group
+
+_ = get_local_strings('item')
 
 type DynamicItem = Callable[[float], Item]
 
@@ -196,7 +199,10 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
 
         for key, flag in flags.items():
             if not flag:
-                log.warning(f'传入参数 "{key}" 没有匹配任何的样式设置，且没有被任何地方使用')
+                log.warning(
+                    _('The passed parameter "{key}" did not match any style settings and was not used anywhere.')
+                    .format(key=key)
+                )
 
     @classmethod
     def get_available_styles(cls) -> list[str]:
@@ -308,8 +314,10 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         也可以使用简写 ``group(VItem).color.set(BLUE)``
         '''
         if not isinstance(cls, type) or not issubclass(cls, Item):
-            # TODO: i18n
-            raise AsTypeError(f'{cls.__name__} 不是以 Item 为基类，无法作为 astype 的参数')
+            raise AsTypeError(
+                _('{name} is not based on Item class and cannot be used as an argument for astype')
+                .format(name=cls.__name__)
+            )
 
         self._astype = cls
         return self

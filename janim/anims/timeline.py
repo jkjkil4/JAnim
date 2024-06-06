@@ -30,6 +30,7 @@ from janim.items.points import Group
 from janim.items.shape_matchers import SurroundingRect
 from janim.items.svg.typst import TypstText
 from janim.items.text.text import Text
+from janim.locale.i18n import get_local_strings
 from janim.logger import log
 from janim.render.base import RenderData, Renderer, set_global_uniforms
 from janim.typing import JAnimColor
@@ -37,6 +38,8 @@ from janim.utils.config import Config, ConfigGetter, config_ctx_var
 from janim.utils.data import ContextSetter, History
 from janim.utils.iterables import resize_preserving_order
 from janim.utils.simple_functions import clip
+
+_ = get_local_strings('timeline')
 
 
 class Timeline(metaclass=ABCMeta):
@@ -109,7 +112,10 @@ class Timeline(metaclass=ABCMeta):
         obj = Timeline.ctx_var.get(None)
         if obj is None and raise_exc:
             f_back = inspect.currentframe().f_back
-            raise TimelineLookupError(f'{f_back.f_code.co_qualname} 无法在 Timeline.construct 之外使用')
+            raise TimelineLookupError(
+                _('{name} cannot be used outside of Timeline.construct')
+                .format(name=f_back.f_code.co_qualname)
+            )
         return obj
 
     # endregion
@@ -197,7 +203,7 @@ class Timeline(metaclass=ABCMeta):
             self._build_frame = inspect.currentframe()
 
             if not quiet:   # pragma: no cover
-                log.info(f'Building "{self.__class__.__name__}"')
+                log.info(_('Building "{name}"').format(name=self.__class__.__name__))
                 start_time = time.time()
 
             self.construct()
@@ -205,13 +211,20 @@ class Timeline(metaclass=ABCMeta):
             if self.current_time == 0:
                 self.forward(DEFAULT_DURATION, _record_lineno=False)    # 使得没有任何前进时，产生一点时间，避免除零以及其它问题
                 if not quiet:   # pragma: no cover
-                    log.info(f'"{self.__class__.__name__}" 构建后没有产生时长，自动产生了 {DEFAULT_DURATION}s 的时长')
+                    log.info(
+                        _('"{name}" did not produce a duration after construction, '
+                          'automatically generated a duration of {duration}s')
+                        .format(name=self.__class__.__name__, duration=DEFAULT_DURATION)
+                    )
             self.cleanup_display()
             global_anim = TimelineAnim(self)
 
             if not quiet:   # pragma: no cover
                 elapsed = time.time() - start_time
-                log.info(f'Finished building "{self.__class__.__name__}" in {elapsed:.2f} s')
+                log.info(
+                    _('Finished building "{name}" in {elapsed:.2f} s')
+                    .format(name=self.__class__.__name__, elapsed=elapsed)
+                )
 
         return global_anim
 
@@ -233,7 +246,7 @@ class Timeline(metaclass=ABCMeta):
         向前推进 ``dt`` 秒
         '''
         if dt <= 0:
-            raise ValueError('dt 必须大于 0')
+            raise ValueError(_('dt must be greater than 0'))
 
         if _detect_changes:
             self.detect_changes_of_all()

@@ -10,9 +10,12 @@ from fontTools.ttLib import TTCollection, TTFont, TTLibError
 from janim.exception import FontNotFoundError
 from janim.utils.bezier import PathBuilder
 from janim.logger import log
+from janim.locale.i18n import get_local_strings
 
 if TYPE_CHECKING:
     from fontTools.ttLib.tables._n_a_m_e import table__n_a_m_e
+
+_ = get_local_strings('font')
 
 
 @dataclass
@@ -35,6 +38,7 @@ def _font_finder_func() -> Generator[FontInfo, None, None]:
                 if filepath.endswith('ttc')         \
                 else [TTFont(filepath)]
         except TTLibError:
+            # i18n?
             log.debug(f'Skipped font "{filepath}"')
             continue
 
@@ -71,7 +75,10 @@ def get_font_info_by_name(font_name: str) -> FontInfo:
             if info.name == font_name:
                 return info
     except StopIteration:
-        raise FontNotFoundError(f'No font named "{font_name}"')
+        raise FontNotFoundError(
+            _('No font named "{font_name}"')
+            .format(font_name=font_name)
+        )
 
 
 def get_found_infos() -> dict[str, FontInfo]:
