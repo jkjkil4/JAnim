@@ -1,0 +1,98 @@
+# Chinese translations for PACKAGE package.
+# Copyright (C) 2024 THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# Automatically generated, 2024.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-06-06 09:49+0800\n"
+"PO-Revision-Date: 2024-06-06 09:50+0800\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: none\n"
+"Language: zh_CN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=GBK\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 3.4.2\n"
+
+#: janim\__main__.py:21
+msgid "A library for simple animation effects"
+msgstr "生成简单动画的工具"
+
+#: janim\__main__.py:26
+msgid "Language code, e.g., en, zh_CN"
+msgstr "语言代码，例如 en、zh_CN"
+
+#: janim\__main__.py:34
+msgid "Run timeline(s) from specific file"
+msgstr "预览特定文件中的 Timeline"
+
+#: janim\__main__.py:35
+msgid "Generate media file(s) of timeline(s) from specific file"
+msgstr "将特定文件中的 Timeline 输出为媒体文件"
+
+#: janim\__main__.py:36
+msgid "Show examples of JAnim"
+msgstr "显示 JAnim 的例子"
+
+#: janim\__main__.py:37
+msgid "Run useful tools"
+msgstr "运行实用工具"
+
+#: janim\__main__.py:60
+msgid "Path to file holding the Python code"
+msgstr "含有 Python 代码的文件路径"
+
+#: janim\__main__.py:77
+msgid "Override config"
+msgstr "覆盖设置"
+
+#: janim\__main__.py:84
+msgid "Name of the Timeline class you want to preview"
+msgstr "要预览的 Timeline 的名称"
+
+#: janim\__main__.py:85
+msgid "Preview all timelines from a file"
+msgstr "预览文件中的所有 Timeline"
+
+#: janim\__main__.py:90
+msgid "Enable the network socket for interacting with vscode"
+msgstr "启用与 vscode 交互的网络端口"
+
+#: janim\__main__.py:98
+msgid "Name of the Timeline class you want to write"
+msgstr "要输出的 Timeline 的名称"
+
+#: janim\__main__.py:99
+msgid "Write all timelines from a file"
+msgstr "输出文件中的所有 Timeline"
+
+#: janim\__main__.py:104
+msgid "Open the video after writing"
+msgstr "在输出后打开视频文件"
+
+#: janim\__main__.py:110
+msgid "Format of the output video"
+msgstr "输出视频的格式"
+
+#: janim\__main__.py:115
+msgid "Format of the output audio"
+msgstr "输出音频的格式"
+
+#: janim\__main__.py:120
+msgid "Video only"
+msgstr "仅视频"
+
+#: janim\__main__.py:125
+msgid "Audio only"
+msgstr "仅音频"
+
+#: janim\__main__.py:135
+msgid "Name of the example you want to see"
+msgstr "要查看的例子的名称"
+
+#: janim\__main__.py:148
+msgid "Tool(s) that you want to use"
+msgstr "你想要使用的工具"
