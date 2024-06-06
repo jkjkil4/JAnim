@@ -162,11 +162,11 @@ def modify_default_config(args: Namespace) -> None:
 
 def get_module(file_name: str):
     if not os.path.exists(file_name):
-        log.error(_('"{file_name}" doesn\'t exist'))
+        log.error(_('"{file_name}" doesn\'t exist').format(file_name=file_name))
         raise ExitException(EXITCODE_MODULE_NOT_FOUND)
 
     if not os.path.isfile(file_name):
-        log.error(f'"{file_name}" is\'t a file')
+        log.error(_('"{file_name}" isn\'t a file').format(file_name=file_name))
         raise ExitException(EXITCODE_NOT_FILE)
 
     module_name = file_name.replace(os.sep, ".").replace(".py", "")
@@ -186,7 +186,7 @@ def extract_timelines_from_module(args: Namespace, module) -> list[type['Timelin
             try:
                 timelines.append(module.__dict__[name])
             except KeyError:
-                log.error(_('No timeline named "{name}"'))
+                log.error(_('No timeline named "{name}"').format(name=name))
                 err = True
     else:
         import inspect
