@@ -49,9 +49,9 @@ def run(args: Namespace) -> None:
     t = time.time()
 
     for i, widget in enumerate(widgets):
+        widget.show()
         if i != 0:
             widget.move(widgets[i - 1].pos() + QPoint(24, 24))
-        widget.show()
 
     QTimer.singleShot(200, widgets[-1].activateWindow)
 
