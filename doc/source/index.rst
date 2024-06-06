@@ -25,6 +25,7 @@ JAnim 是一个用于简易动画效果的库
 
 .. toctree::
    :caption: 开发相关
+   :maxdepth: 2
 
    development/about
    development/contributing

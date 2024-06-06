@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-06-06 10:39+0800\n"
+"POT-Creation-Date: 2024-06-06 14:16+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -52,34 +52,34 @@ msgstr ""
 msgid "Font list"
 msgstr ""
 
-#: janim\gui\anim_viewer.py:224
+#: janim\gui\anim_viewer.py:225
 msgid "wnd_pos has wrong argument {wnd_pos}."
 msgstr ""
 
-#: janim\gui\anim_viewer.py:235
+#: janim\gui\anim_viewer.py:236
 msgid "wnd_monitor has invaild value {wnd_monitor}, use 0~{maxi} instead."
 msgstr ""
 
-#: janim\gui\anim_viewer.py:332
+#: janim\gui\anim_viewer.py:333
 msgid "No timeline named \"{name}\" in \"{file}\""
 msgstr ""
 
-#: janim\gui\anim_viewer.py:342
+#: janim\gui\anim_viewer.py:343
 msgid "Failed to rebuild"
 msgstr ""
 
-#: janim\gui\anim_viewer.py:486 janim\gui\anim_viewer.py:495
+#: janim\gui\anim_viewer.py:487 janim\gui\anim_viewer.py:496
 msgid "Note"
 msgstr ""
 
-#: janim\gui\anim_viewer.py:487
+#: janim\gui\anim_viewer.py:488
 msgid "Output will start shortly. Please check the console for information."
 msgstr ""
 
-#: janim\gui\anim_viewer.py:496
+#: janim\gui\anim_viewer.py:497
 msgid "Output to {file_path} has been completed."
 msgstr ""
 
-#: janim\gui\anim_viewer.py:520
+#: janim\gui\anim_viewer.py:521
 msgid "Interactive port has been opened at {port}"
 msgstr ""
