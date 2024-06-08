@@ -4,11 +4,11 @@
 为源代码作出贡献
 --------------------------
 
-你可以在 `<github.com/jkjkil4/JAnim>`_ 提 issue 和 PR
+你可以在 `github.com/jkjkil4/JAnim <https://github.com/jkjkil4/JAnim>`_ 提 issue 和 PR
 
 如果你对现有的 issue 和 PR 模板感到困惑，也完全可以不使用模板，用空 issue 或 PR 开始书写
 
-另外，你也可以在 `<gitee.com/jkjkil4/JAnim>`_ 提 issue 和 PR，但是我在这个链接中回复可能会慢一些
+另外，你也可以在 `gitee.com/jkjkil4/JAnim <https://gitee.com/jkjkil4/JAnim>`_ 提 issue 和 PR，但是我在这个链接中回复可能会慢一些
 
 为国际化作出贡献
 -------------------------
