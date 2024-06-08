@@ -20,10 +20,10 @@
 安装依赖项
 ------------
 
-所需的系统依赖有：
+所需的依赖有：
 
 - `FFmpeg <https://ffmpeg.org>`_ （Windows 下安装需要配置 **环境变量**）
-- `typst <https://github.com/typst/typst/releases>`_ （可选，如果需要公式排版则必须，需要配置 **环境变量**）
+- `Typst <https://github.com/typst/typst/releases>`_ （可选，如果需要公式排版则必须，需要配置 **环境变量**）
 
 使用 Python 环境安装 JAnim
 ---------------------------

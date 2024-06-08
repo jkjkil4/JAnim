@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: JAnim\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-06-08 23:43+0800\n"
-"PO-Revision-Date: 2024-06-08 23:43+0800\n"
+"POT-Creation-Date: 2024-06-08 23:51+0800\n"
+"PO-Revision-Date: 2024-06-08 23:53+0800\n"
 "Last-Translator: \n"
 "Language-Team: en <LL@li.org>\n"
 "Language: en\n"
@@ -52,12 +52,12 @@ msgstr ""
 "`generate-po` section and proceed directly to :ref:`do-translate`."
 
 #: ../../source/development/contribute-to-doc-i18n.rst:23
-#: ../../source/development/contribute-to-doc-i18n.rst:107
+#: ../../source/development/contribute-to-doc-i18n.rst:117
 msgid "我只知道在 Windows 中，以下步骤有效"
 msgstr "I am only aware that the following steps work on Windows."
 
 #: ../../source/development/contribute-to-doc-i18n.rst:25
-#: ../../source/development/contribute-to-doc-i18n.rst:109
+#: ../../source/development/contribute-to-doc-i18n.rst:119
 msgid "欢迎测试在其它系统中的有效性或补充对应的方法"
 msgstr ""
 "You are welcome to test the effectiveness on other systems or suggest "
@@ -176,27 +176,37 @@ msgstr ""
 "If you have the ability to check the translation, using GPT for translation is "
 "fine (but remember to proofread it)."
 
-#: ../../source/development/contribute-to-doc-i18n.rst:100
+#: ../../source/development/contribute-to-doc-i18n.rst:106
+msgid "对于类似这样的翻译文本，可以直接忽略，或者将其完全复制到结果中"
+msgstr ""
+"For texts like this that require translation, you can either ignore them or "
+"copy them completely into the result."
+
+#: ../../source/development/contribute-to-doc-i18n.rst:108
+msgid "因为这个其实是不需要手动翻译的"
+msgstr "Because this actually doesn't need manual translation."
+
+#: ../../source/development/contribute-to-doc-i18n.rst:110
 msgid "翻译后，提交你的更改，创建合并到 ``main`` 分支的 Pull Request"
 msgstr ""
 "After translating, submit your changes and create a Pull Request to merge into "
 "the ``main`` branch."
 
-#: ../../source/development/contribute-to-doc-i18n.rst:103
+#: ../../source/development/contribute-to-doc-i18n.rst:113
 msgid "在本地构建文档"
 msgstr "Build the Documentation Locally"
 
-#: ../../source/development/contribute-to-doc-i18n.rst:111
+#: ../../source/development/contribute-to-doc-i18n.rst:121
 msgid "首先确保你在 ``doc/`` 目录下："
 msgstr "Make sure you are in the ``doc/`` directory first:"
 
-#: ../../source/development/contribute-to-doc-i18n.rst:117
+#: ../../source/development/contribute-to-doc-i18n.rst:127
 msgid "举个例子，如果你想要在本地构建 zh_CN（简体中文）的文档，可以执行："
 msgstr ""
 "For example, if you want to build the documentation for zh_CN (Simplified "
 "Chinese) locally, you can execute:"
 
-#: ../../source/development/contribute-to-doc-i18n.rst:123
+#: ../../source/development/contribute-to-doc-i18n.rst:133
 msgid ""
 "这样就会在 ``build/html_i18n/zh_CN`` 下生成网页文件，点击其中的 ``index.html`` "
 "即可打开"
@@ -204,7 +214,7 @@ msgstr ""
 "This will generate web files under ``build/html_i18n/zh_CN``, and you can open "
 "``index.html`` in it."
 
-#: ../../source/development/contribute-to-doc-i18n.rst:125
+#: ../../source/development/contribute-to-doc-i18n.rst:135
 msgid "其它的语言同理，把 ``zh_CN`` 改成对应的语言代码就好了"
 msgstr ""
 "For other languages, simply replace ``zh_CN`` with the corresponding language "

@@ -6,74 +6,88 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: JAnim \n"
+"Project-Id-Version: JAnim\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-05-30 15:49+0800\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language: en\n"
+"POT-Creation-Date: 2024-06-09 00:02+0800\n"
+"PO-Revision-Date: 2024-06-09 00:03+0800\n"
+"Last-Translator: \n"
 "Language-Team: en <LL@li.org>\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Language: en\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "Generated-By: Babel 2.14.0\n"
+"X-Generator: Poedit 3.4.2\n"
 
 #: ../../source/tutorial/installation.rst:2
 msgid "安装"
-msgstr ""
+msgstr "Installation"
 
 #: ../../source/tutorial/installation.rst:6
 msgid "JAnim 运行在 Python 3.12 及更高版本"
-msgstr ""
+msgstr "JAnim runs on Python 3.12 and higher"
 
 #: ../../source/tutorial/installation.rst:8
 msgid "并且需要 OpenGL 4.3 及更高版本"
-msgstr ""
+msgstr "Requires OpenGL 4.3 and higher"
 
 #: ../../source/tutorial/installation.rst:11
 msgid "步骤"
-msgstr ""
+msgstr "Steps"
 
 #: ../../source/tutorial/installation.rst:14
 msgid "安装 Python"
-msgstr ""
+msgstr "Install Python"
 
 #: ../../source/tutorial/installation.rst:16
-msgid "访问 `Python 官网下载页 <https://www.python.org/downloads/>`_ 安装 3.12 或更高版本"
+msgid ""
+"访问 `Python 官网下载页 <https://www.python.org/downloads/>`_ 安装 3.12 或"
+"更高版本"
 msgstr ""
+"Visit `Python official download page <https://www.python.org/downloads/"
+">`_ and install version 3.12 or higher."
 
 #: ../../source/tutorial/installation.rst:21
 msgid "安装依赖项"
-msgstr ""
+msgstr "Install Dependencies"
 
 #: ../../source/tutorial/installation.rst:23
-msgid "所需的系统依赖有："
-msgstr ""
+msgid "所需的依赖有："
+msgstr "Required dependencies:"
 
 #: ../../source/tutorial/installation.rst:25
-msgid "`FFmpeg <https://ffmpeg.org>`_ （Windows 下安装需要配置 **环境变量**）"
+msgid ""
+"`FFmpeg <https://ffmpeg.org>`_ （Windows 下安装需要配置 **环境变量**）"
 msgstr ""
+"`FFmpeg <https://ffmpeg.org>`_ (Windows installation requires configuring "
+"**environment variables**)"
 
 #: ../../source/tutorial/installation.rst:26
 msgid ""
-"`typst <https://github.com/typst/typst/releases>`_ （可选，如果需要公式排版则必须，需要配置 "
-"**环境变量**）"
+"`Typst <https://github.com/typst/typst/releases>`_ （可选，如果需要公式排"
+"版则必须，需要配置 **环境变量**）"
 msgstr ""
+"`Typst <https://github.com/typst/typst/releases>`_ (Optional but "
+"necessary for formula typesetting, requires configuring **environment "
+"variables**)"
 
 #: ../../source/tutorial/installation.rst:29
 msgid "使用 Python 环境安装 JAnim"
-msgstr ""
+msgstr "Install JAnim Using Python"
 
 #: ../../source/tutorial/installation.rst:42
 msgid "安装 vscode"
-msgstr ""
+msgstr "Install vscode"
 
 #: ../../source/tutorial/installation.rst:44
 msgid "推荐使用 `vscode <https://code.visualstudio.com/>`_ 进行开发"
 msgstr ""
+"It is recommended to use `vscode <https://code.visualstudio.com/>`_ for "
+"development."
 
 #: ../../source/tutorial/installation.rst:48
 msgid "请点击页面的右下角的按钮进入下一节，在之后的小节中不再赘述"
 msgstr ""
-
+"Please click the button at the bottom right of the page to proceed to the "
+"next section. The subsequent sections will not repeat this information."
