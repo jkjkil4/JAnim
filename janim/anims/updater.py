@@ -20,7 +20,7 @@ class UpdaterParams:
     '''
     ``Updater`` 调用时会传递的参数，用于标注时间信息以及动画进度
     '''
-    updater: DataUpdater | ItemUpdater
+    updater: DataUpdater | GroupUpdater | ItemUpdater
     global_t: float
     alpha: float
     range: TimeRange
@@ -37,6 +37,7 @@ class UpdaterParams:
 updater_params_ctx: ContextVar[UpdaterParams] = ContextVar('updater_params_ctx')
 
 type DataUpdaterFn[T] = Callable[[T, UpdaterParams], Any]
+type GroupUpdaterFn[T] = Callable[[T, UpdaterParams], Any]
 
 
 class DataUpdater[T: Item](Animation):
@@ -112,6 +113,22 @@ class DataUpdater[T: Item](Animation):
     def create_extra_data(self, data: Item) -> Any | None:
         return None
 
+    # TODO: optimize
+    #
+    # 优化的思路：
+    # 1. 对于调用 wrapper 重复的 global_t，不再次调用 self.call，而是返回上一次 self.call 的结果
+    #
+    #    但是这种做法所带来的问题是，每次调用 self.call 可以忽略返回结果后其它地方可能导致的副作用；
+    #    如果使用上一次 self.call 的结果，那么可能导致副作用被延续
+    #
+    #    对于副作用的应对思路：
+    #
+    #    1) 保留上一次 self.call 的结果，每次返回这个结果的拷贝，这样副作用只会存在于这个拷贝上
+    #
+    #    2) 每次检查是否出现了副作用（用 .not_changed 检查），如果出现了副作用就抛出异常
+    #
+    #    3) 给 Item & Component 增加 readonly 选项，self.call 结果的物件设置为只读
+    #       在 readonly=True 时如果修改数据就抛出异常
     def wrap_dynamic(self, updater_data: DataUpdater.DataGroup) -> DynamicItem:
         '''
         以供传入 :meth:`~.Timeline.register_dynamic` 使用
@@ -206,6 +223,80 @@ class DataUpdater[T: Item](Animation):
         value = alpha * full_length
         lower = index * lag_ratio
         return clip((value - lower), 0, 1)
+
+
+class GroupUpdater[T: Item](Animation):
+    '''
+    以时间为参数对一组物件的数据进行修改
+    '''
+    label_color = C_LABEL_ANIM_ABSTRACT
+
+    def __init__(
+        self,
+        item: T,
+        func: GroupUpdaterFn[T],
+        *,
+        hide_at_begin: bool = True,
+        show_at_end: bool = True,
+        become_at_end: bool = True,
+        **kwargs
+    ):
+        super().__init__(**kwargs)
+        self.item = item
+        self.func = func
+        self.hide_at_begin = hide_at_begin
+        self.show_at_end = show_at_end
+        self.become_at_end = become_at_end
+
+        self.post_updaters: list[GroupUpdaterFn[T]] = []
+
+        for subitem in item.walk_self_and_descendants():
+            self.timeline.track(subitem)
+
+    def add_post_updater(self, updater: GroupUpdaterFn[T]) -> Self:
+        self.post_updaters.append(updater)
+        return self
+
+    def call(self, data: T, p: UpdaterParams) -> None:
+        self.func(data, p)
+        for updater in self.post_updaters:
+            updater(data, p)
+
+    def anim_init(self) -> None:
+        self.item_orig = self.item.copy(as_time=self.global_range.at, skip_dynamic=True)
+        self.item_copy = self.item_orig.copy()
+
+        if self.become_at_end:
+            with UpdaterParams(self,
+                               self.global_range.end,
+                               1,
+                               self.global_range,
+                               None) as params:
+                self.call(self.item, params)
+
+        self.set_render_call_list([
+            RenderCall(
+                subitem.depth,
+                subitem.render
+            )
+            for subitem in self.item_copy.walk_self_and_descendants()
+        ])
+
+        if self.hide_at_begin:
+            self.timeline.schedule(self.global_range.at, self.item.hide)
+        if self.show_at_end:
+            self.timeline.schedule(self.global_range.end, self.item.show)
+
+    def anim_on_alpha(self, alpha: float) -> None:
+        global_t = self.global_t_ctx.get()
+        self.item_copy.become(self.item_orig)
+
+        with UpdaterParams(self,
+                           global_t,
+                           alpha,
+                           self.global_range,
+                           None) as params:
+            self.call(self.item_copy, params)
 
 
 # TODO: optimize

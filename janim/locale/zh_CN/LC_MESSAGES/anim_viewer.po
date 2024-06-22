@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-06-06 09:38+0800\n"
+"POT-Creation-Date: 2024-06-22 21:38+0800\n"
 "PO-Revision-Date: 2024-06-06 09:30+0800\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -55,34 +55,34 @@ msgstr "富文本编辑器"
 msgid "Font list"
 msgstr "字体列表"
 
-#: janim\gui\anim_viewer.py:224
+#: janim\gui\anim_viewer.py:225
 msgid "wnd_pos has wrong argument {wnd_pos}."
 msgstr "wnd_pos 得到了错误的参数 {wnd_pos}"
 
-#: janim\gui\anim_viewer.py:235
+#: janim\gui\anim_viewer.py:236
 msgid "wnd_monitor has invaild value {wnd_monitor}, use 0~{maxi} instead."
 msgstr "wnd_monitor 得到了无效的值 {wnd_monitor}, 请使用 0~{maxi} 的值"
 
-#: janim\gui\anim_viewer.py:332
+#: janim\gui\anim_viewer.py:333
 msgid "No timeline named \"{name}\" in \"{file}\""
 msgstr "没有叫作 \"{name}\" 的时间轴，对于文件 \"{file}\" 来说"
 
-#: janim\gui\anim_viewer.py:342
+#: janim\gui\anim_viewer.py:343
 msgid "Failed to rebuild"
 msgstr "构建失败"
 
-#: janim\gui\anim_viewer.py:486 janim\gui\anim_viewer.py:495
+#: janim\gui\anim_viewer.py:487 janim\gui\anim_viewer.py:496
 msgid "Note"
 msgstr "提示"
 
-#: janim\gui\anim_viewer.py:487
+#: janim\gui\anim_viewer.py:488
 msgid "Output will start shortly. Please check the console for information."
 msgstr "即将进行输出，请留意控制台信息"
 
-#: janim\gui\anim_viewer.py:496
+#: janim\gui\anim_viewer.py:497
 msgid "Output to {file_path} has been completed."
 msgstr "已完成输出至 {file_path}"
 
-#: janim\gui\anim_viewer.py:520
+#: janim\gui\anim_viewer.py:521
 msgid "Interactive port has been opened at {port}"
 msgstr "交互端口已在 {port} 开启"

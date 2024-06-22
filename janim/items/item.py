@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING, Any, Callable, Self, overload
 
 from janim.components.component import CmptInfo, Component, _CmptGroup
 from janim.components.depth import Cmpt_Depth
-from janim.exception import AsTypeError
+from janim.exception import AsTypeError, CopyError
 from janim.items.relation import Relation
 from janim.logger import log
 from janim.render.base import Renderer
@@ -393,13 +393,19 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         '''
         return self.timeline.item_current(self, as_time=as_time, skip_dynamic=skip_dynamic)
 
-    def copy(self, *, root_only=False) -> Self:
+    def copy(self, *, root_only=False, as_time: float | None = None, skip_dynamic: bool = False) -> Self:
         '''
         复制物件
         '''
+        if root_only and as_time is not None:
+            raise CopyError(_('When root_only is set to True, as_time cannot be specified. '
+                              'Please use ".current(as_time=...).store()" instead.'))
+
         copy_item = copy.copy(self)
 
         copy_item.reset_refresh()
+
+        src = self if as_time is None else self.current(as_time=as_time, skip_dynamic=skip_dynamic)
 
         copy_item.parents = []
         copy_item.children = []
@@ -408,11 +414,11 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
             copy_item.stored_parents = self.get_parents().copy()
             copy_item.stored_children = self.get_children().copy()
         else:
-            copy_item.add(*[item.copy() for item in self.children])
+            copy_item.add(*[item.copy(as_time=as_time, skip_dynamic=skip_dynamic) for item in src.get_children()])
             copy_item.parents_changed()
 
         new_cmpts = {}
-        for key, cmpt in self.components.items():
+        for key, cmpt in src.components.items():
             if isinstance(cmpt, _CmptGroup):
                 # 因为现在的 Python 版本中，dict 取键值保留原序
                 # 所以 new_cmpts 肯定有 _CmptGroup 所需要的
@@ -481,10 +487,14 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         return self.copy(root_only=True)
 
     def restore(self, other: Item) -> Self:
-        self.parents = other.parents.copy()
-        self.parents_changed()
-        self.children = other.children.copy()
-        self.children_changed()
+        if self.stored:
+            self.stored_parents = other.get_parents().copy()
+            self.stored_children = other.get_children().copy()
+        else:
+            self.parents = other.get_parents().copy()
+            self.parents_changed()
+            self.children = other.get_parents().copy()
+            self.children_changed()
 
         for key in self.components.keys() & other.components.keys():
             self.components[key].become(other.components[key])
