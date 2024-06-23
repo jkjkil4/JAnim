@@ -113,28 +113,15 @@ class DataUpdater[T: Item](Animation):
     def create_extra_data(self, data: Item) -> Any | None:
         return None
 
-    # TODO: optimize
-    #
-    # 优化的思路：
-    # 1. 对于调用 wrapper 重复的 global_t，不再次调用 self.call，而是返回上一次 self.call 的结果
-    #
-    #    但是这种做法所带来的问题是，每次调用 self.call 可以忽略返回结果后其它地方可能导致的副作用；
-    #    如果使用上一次 self.call 的结果，那么可能导致副作用被延续
-    #
-    #    对于副作用的应对思路：
-    #
-    #    1) 保留上一次 self.call 的结果，每次返回这个结果的拷贝，这样副作用只会存在于这个拷贝上
-    #
-    #    2) 每次检查是否出现了副作用（用 .not_changed 检查），如果出现了副作用就抛出异常
-    #
-    #    3) 给 Item & Component 增加 readonly 选项，self.call 结果的物件设置为只读
-    #       在 readonly=True 时如果修改数据就抛出异常
     def wrap_dynamic(self, updater_data: DataUpdater.DataGroup) -> DynamicItem:
         '''
         以供传入 :meth:`~.Timeline.register_dynamic` 使用
         '''
         def wrapper(global_t: float) -> Item:
             alpha = self.get_alpha_on_global_t(global_t)
+            if updater_data.alpha_on == alpha:
+                return updater_data.data.store()
+
             data_copy = updater_data.orig_data.store()
 
             with UpdaterParams(self,
