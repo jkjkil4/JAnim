@@ -249,11 +249,35 @@ class GroupUpdater[T: Item](Animation):
         for updater in self.post_updaters:
             updater(data, p)
 
-    # TODO: wrap_dynamic
+    def wrap_dynamic(self, idx: int) -> DynamicItem:
+        def wrapper(global_t: float) -> Item:
+            alpha = self.get_alpha_on_global_t(global_t)
+
+            if self.alpha_on == alpha:
+                if idx == 0:
+                    return self.item_copy.store()
+                return self.item_copy.descendants()[idx - 1].store()
+
+            item_copy = self.item_orig.copy()
+
+            with UpdaterParams(self,
+                               global_t,
+                               alpha,
+                               self.global_range,
+                               None) as params:
+                self.call(item_copy, params)
+
+            if idx == 0:
+                return item_copy
+            return item_copy.descendants()[idx - 1]
+
+        return wrapper
 
     def anim_init(self) -> None:
         self.item_orig = self.item.copy(as_time=self.global_range.at, skip_dynamic=True)
+
         self.item_copy = self.item_orig.copy()
+        self.alpha_on: float | None = None
 
         if self.become_at_end:
             with UpdaterParams(self,
@@ -262,6 +286,15 @@ class GroupUpdater[T: Item](Animation):
                                self.global_range,
                                None) as params:
                 self.call(self.item, params)
+
+        # 这里假定 self.item 的后代物件结构未发生改变
+        for i, item in enumerate(self.item.walk_self_and_descendants()):
+            self.timeline.register_dynamic(item,
+                                           self.wrap_dynamic(i),
+                                           item.store() if self.become_at_end else None,
+                                           self.global_range.at,
+                                           self.global_range.end - ANIM_END_DELTA,
+                                           not self.become_at_end)
 
         self.set_render_call_list([
             RenderCall(
@@ -281,6 +314,7 @@ class GroupUpdater[T: Item](Animation):
     def anim_on_alpha(self, alpha: float) -> None:
         global_t = self.global_t_ctx.get()
         self.item_copy.become(self.item_orig)
+        self.alpha_on = alpha
 
         with UpdaterParams(self,
                            global_t,
