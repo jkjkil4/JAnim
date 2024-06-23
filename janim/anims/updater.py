@@ -262,6 +262,8 @@ class GroupUpdater[T: Item](Animation):
         for updater in self.post_updaters:
             updater(data, p)
 
+    # TODO: wrap_dynamic
+
     def anim_init(self) -> None:
         self.item_orig = self.item.copy(as_time=self.global_range.at, skip_dynamic=True)
         self.item_copy = self.item_orig.copy()
@@ -282,6 +284,8 @@ class GroupUpdater[T: Item](Animation):
             for subitem in self.item_copy.walk_self_and_descendants()
         ])
 
+        # 在动画开始时自动隐藏，在动画结束时自动显示
+        # 可以将 ``hide_on_begin`` 和 ``show_on_end`` 置为 ``False`` 以禁用
         if self.hide_at_begin:
             self.timeline.schedule(self.global_range.at, self.item.hide)
         if self.show_at_end:

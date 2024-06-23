@@ -1,10 +1,11 @@
 
-from typing import Callable
+from typing import Callable, Iterable
 
 import numpy as np
 
-from janim.anims.updater import DataUpdater, UpdaterParams
-from janim.constants import C_LABEL_ANIM_STAY
+from janim.anims.updater import DataUpdater, GroupUpdater, UpdaterParams
+from janim.constants import (C_LABEL_ANIM_STAY, DEFAULT_ITEM_TO_ITEM_BUFF,
+                             ORIGIN, RIGHT)
 from janim.items.item import Item
 from janim.items.points import Points
 from janim.items.vitem import VItem
@@ -94,3 +95,27 @@ class MoveAlongPath(DataUpdater):
         if not isinstance(data, Points):
             return
         data.points.shift(self.path.points.pfp(p.alpha) - self.center)
+
+
+class Follow(GroupUpdater[Points]):
+    def __init__(
+        self,
+        item: Points,
+        other: Item,
+        direction: Vect = RIGHT,
+        buff: float = DEFAULT_ITEM_TO_ITEM_BUFF,
+        aligned_edge: Vect = ORIGIN,
+        coor_mask: Iterable = (1, 1, 1),
+        item_root_only: bool = False,
+        **kwargs
+    ):
+        super().__init__(
+            item,
+            lambda g, p: g.points.next_to(other.current(),
+                                          direction,
+                                          buff=buff,
+                                          aligned_edge=aligned_edge,
+                                          coor_mask=coor_mask,
+                                          item_root_only=item_root_only),
+            **kwargs
+        )
