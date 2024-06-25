@@ -4,7 +4,9 @@ in vec2 v_coord;
 
 out vec4 f_color;
 
+uniform float JA_CAMERA_SCALED_FACTOR;
 uniform float JA_ANTI_ALIAS_RADIUS;
+uniform bool JA_FIX_IN_FRAME;
 
 const float INFINITY = uintBitsToFloat(0x7F800000);
 
@@ -34,6 +36,9 @@ bool get_isclosed(int idx) {
 }
 
 float get_radius(int idx) {
+    if (JA_FIX_IN_FRAME) {
+        return radii[idx / 4][idx % 4] * JA_CAMERA_SCALED_FACTOR;
+    }
     return radii[idx / 4][idx % 4];
 }
 

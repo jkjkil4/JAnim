@@ -808,6 +808,7 @@ class TimelineAnim(AnimGroup):
 
                 set_global_uniforms(
                     ctx,
+                    ('JA_CAMERA_SCALED_FACTOR', camera_info.scaled_factor),
                     ('JA_VIEW_MATRIX', camera_info.view_matrix.T.flatten()),
                     ('JA_FIXED_DIST_FROM_PLANE', camera_info.fixed_distance_from_plane),
                     ('JA_PROJ_MATRIX', camera_info.proj_matrix.T.flatten()),
