@@ -445,6 +445,7 @@ class Cmpt_VPoints[ItemT](Cmpt_Points[ItemT], impl=True):
         for point in points[1:]:
             builder.line_to(point)
         self.set(builder.get())
+        return self
 
     # endregion
 
