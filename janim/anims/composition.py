@@ -124,7 +124,7 @@ class AnimGroup(Animation):
 
         for anim in self.anims:
             anim_t = self.get_anim_t(alpha, anim)
-            if anim.global_range.at <= global_t < anim.global_range.end:
+            if anim.is_visible(global_t):
                 anim.anim_on(anim_t)
 
 

@@ -91,6 +91,10 @@ class Animation:
         anim_t = self.parent.get_anim_t(self.parent.get_alpha_on_global_t(global_t), self)
         return self.rate_func(anim_t / self.local_range.duration)
 
+    def is_visible(self, global_t: float) -> bool:
+        # + 1e-5 是为了避免在两端的浮点误差
+        return self.global_range.at <= global_t + 1e-5 < self.global_range.end
+
     global_t_ctx: ContextVar[float] = ContextVar('Animation.global_t_ctx')
     '''
     对该值进行设置，使得进行 :meth:`anim_on` 和 :meth:`render` 时不需要将 ``global_t`` 作为参数传递也能获取到

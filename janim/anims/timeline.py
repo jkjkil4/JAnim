@@ -235,7 +235,7 @@ class Timeline(metaclass=ABCMeta):
         会在进度达到 ``at`` 时，对 ``func`` 进行调用，
         可传入 ``*args`` 和 ``**kwargs``
         '''
-        rough_at = round(at, 4)    # 防止因为精度误差使得本来计划更迟的任务被更早地执行了
+        rough_at = round(at, 3)    # 防止因为精度误差使得本来计划更迟的任务被更早地执行了
         task = Timeline.ScheduledTask(rough_at, func, args, kwargs)
         insort(self.scheduled_tasks, task, key=lambda x: x.at)
 
@@ -824,7 +824,7 @@ class TimelineAnim(AnimGroup):
                         *[
                             anim.render_call_list
                             for anim in self.flattened
-                            if anim.render_call_list and anim.global_range.at <= self._time < anim.global_range.end
+                            if anim.render_call_list and anim.is_visible(self._time)
                         ],
                         key=lambda x: x.depth,
                         reverse=True
