@@ -216,7 +216,16 @@ class Timeline(metaclass=ABCMeta):
                           'automatically generated a duration of {duration}s')
                         .format(name=self.__class__.__name__, duration=DEFAULT_DURATION)
                     )
+
             self.cleanup_display()
+
+            for item, ih in self.items_history.items():
+                if ih.history.has_record():
+                    continue
+                item_copy = item.store()
+                ih.history.record_as_time(0, item_copy)
+                ih.history_without_dynamic.record_as_time(0, item_copy)
+
             global_anim = TimelineAnim(self)
 
             if not quiet:   # pragma: no cover
