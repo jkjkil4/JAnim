@@ -225,6 +225,8 @@ class AnimationOnSurroundingRect(AnimGroup):
 
         super().__init__(anim)
 
+        self.timeline.track(item)
+
     def create_rect(self) -> SurroundingRect:
         rect = SurroundingRect(
             self.item,
