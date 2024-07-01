@@ -55,11 +55,9 @@ class Transform(Animation):
 
         self.init_path_func()
 
-        for item in src_item.walk_self_and_descendants(root_only):
-            self.timeline.track(item)
+        self.timeline.track_item_and_descendants(src_item, root_only=root_only)
         if target_item is not src_item:
-            for item in target_item.walk_self_and_descendants(root_only):
-                self.timeline.track(item)
+            self.timeline.track_item_and_descendants(target_item, root_only=root_only)
 
     def init_path_func(self) -> None:
         '''

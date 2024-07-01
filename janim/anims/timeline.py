@@ -621,6 +621,13 @@ class Timeline(metaclass=ABCMeta):
         '''
         self.items_history[item]
 
+    def track_item_and_descendants(self, item: Item, *, root_only: bool = False) -> None:
+        '''
+        相当于对 ``item`` 及其所有的后代物件调用 :meth:`track`
+        '''
+        for subitem in item.walk_self_and_descendants(root_only):
+            self.items_history[subitem]
+
     def detect_changes_of_all(self) -> None:
         '''
         检查所有物件是否有产生变化并记录

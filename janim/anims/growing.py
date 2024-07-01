@@ -75,7 +75,7 @@ class GrowArrowByBoundFunc(Animation):
         self.hide_at_begin = hide_at_begin
         self.show_at_end = show_at_end
 
-        self.timeline.track(arrow)
+        self.timeline.track_item_and_descendants(arrow)
 
     def anim_init(self) -> None:
         self.arrow_copy = self.arrow.copy()

@@ -98,8 +98,7 @@ class DataUpdater[T: Item](Animation):
 
         self.post_updaters: list[DataUpdaterFn[T]] = []
 
-        for subitem in item.walk_self_and_descendants(root_only):
-            self.timeline.track(subitem)
+        self.timeline.track_item_and_descendants(item, root_only=root_only)
 
     def add_post_updater(self, updater: DataUpdaterFn[T]) -> Self:
         self.post_updaters.append(updater)
@@ -237,8 +236,7 @@ class GroupUpdater[T: Item](Animation):
 
         self.post_updaters: list[GroupUpdaterFn[T]] = []
 
-        for subitem in item.walk_self_and_descendants():
-            self.timeline.track(subitem)
+        self.timeline.track_item_and_descendants(item)
 
     def add_post_updater(self, updater: GroupUpdaterFn[T]) -> Self:
         self.post_updaters.append(updater)
