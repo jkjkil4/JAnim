@@ -7,37 +7,41 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-06-22 21:38+0800\n"
-"PO-Revision-Date: 2024-06-06 10:41+0800\n"
+"POT-Creation-Date: 2024-07-01 11:15+0800\n"
+"PO-Revision-Date: 2024-07-01 11:15+0800\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
+"Language: zh_CN\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=GBK\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: zh_CN\n"
 "X-Generator: Poedit 3.4.2\n"
 
-#: janim\cli.py:47 janim\cli.py:130
+#: janim\cli.py:47 janim\cli.py:134
 msgid "Constructing window"
 msgstr "构建窗口中"
 
-#: janim\cli.py:58 janim\cli.py:150
+#: janim\cli.py:58 janim\cli.py:154
 msgid "Finished constructing in {time:.2f} s"
 msgstr "构建完成，耗时 {time:.2f} s"
 
-#: janim\cli.py:165
+#: janim\cli.py:127
+msgid "No tool specified for use"
+msgstr "未指定所使用的工具"
+
+#: janim\cli.py:169
 msgid "\"{file_name}\" doesn't exist"
 msgstr "\"{file_name}\" 不存在"
 
-#: janim\cli.py:169
+#: janim\cli.py:173
 msgid "\"{file_name}\" isn't a file"
 msgstr "\"{file_name}\" 不是一个文件"
 
-#: janim\cli.py:189
+#: janim\cli.py:193
 msgid "No timeline named \"{name}\""
 msgstr "没有叫作 \"{name}\" 的 Timeline"
 
-#: janim\cli.py:215
+#: janim\cli.py:219
 msgid ""
 "That module has multiple timelines, which ones would you like to render?\n"
 "Timeline Name or Number: "
@@ -45,10 +49,10 @@ msgstr ""
 "这个 module 中有多个 Timeline，你想要渲染哪些？\n"
 "时间轴名称或序号："
 
-#: janim\cli.py:230
+#: janim\cli.py:234
 msgid "Invaild number {num}"
 msgstr "序号 {num} 无效"
 
-#: janim\cli.py:236
+#: janim\cli.py:240
 msgid "No timeline named {split_str}"
 msgstr "没有叫作 \"{split_str}\" 的 Timeline"

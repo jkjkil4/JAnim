@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-06-22 21:38+0800\n"
+"POT-Creation-Date: 2024-07-01 11:15+0800\n"
 "PO-Revision-Date: 2024-06-05 17:42+0800\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Language: zh_CN\n"
 "X-Generator: Poedit 3.4.2\n"
 
-#: janim\anims\updater.py:320
+#: janim\anims\updater.py:365
 msgid ""
 "The function passed to ItemUpdater must return an item, but got {ret} "
 "instead, defined in {file}:{lineno}"

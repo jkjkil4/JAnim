@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-06-22 21:39+0800\n"
+"POT-Creation-Date: 2024-07-01 11:15+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,36 +16,40 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: janim\cli.py:47 janim\cli.py:130
+#: janim\cli.py:47 janim\cli.py:134
 msgid "Constructing window"
 msgstr ""
 
-#: janim\cli.py:58 janim\cli.py:150
+#: janim\cli.py:58 janim\cli.py:154
 msgid "Finished constructing in {time:.2f} s"
 msgstr ""
 
-#: janim\cli.py:165
-msgid "\"{file_name}\" doesn't exist"
+#: janim\cli.py:127
+msgid "No tool specified for use"
 msgstr ""
 
 #: janim\cli.py:169
+msgid "\"{file_name}\" doesn't exist"
+msgstr ""
+
+#: janim\cli.py:173
 msgid "\"{file_name}\" isn't a file"
 msgstr ""
 
-#: janim\cli.py:189
+#: janim\cli.py:193
 msgid "No timeline named \"{name}\""
 msgstr ""
 
-#: janim\cli.py:215
+#: janim\cli.py:219
 msgid ""
 "That module has multiple timelines, which ones would you like to render?\n"
 "Timeline Name or Number: "
 msgstr ""
 
-#: janim\cli.py:230
+#: janim\cli.py:234
 msgid "Invaild number {num}"
 msgstr ""
 
-#: janim\cli.py:236
+#: janim\cli.py:240
 msgid "No timeline named {split_str}"
 msgstr ""

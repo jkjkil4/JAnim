@@ -123,6 +123,10 @@ def write(args: Namespace) -> None:
 
 
 def tool(args: Namespace) -> None:
+    if not args.tool_name:
+        log.error(_('No tool specified for use'))
+        return
+
     # 不直接从对应的 module 导入，是为了经过 anim_viewer 中对 pyside6 安装的检查
     from janim.gui.anim_viewer import FontTable, QWidget, RichTextEditor
 
