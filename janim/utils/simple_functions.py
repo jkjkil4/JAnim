@@ -1,7 +1,8 @@
 import inspect
-import numpy as np
 import math
 from functools import lru_cache
+
+import numpy as np
 
 
 def decode_utf8(utf8: str) -> str:

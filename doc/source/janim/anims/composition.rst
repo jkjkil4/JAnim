@@ -84,7 +84,7 @@ composition
             self.play(
                 Succession(
                     *map(FadeIn, group),
-                    buff=1
+                    offset=1
                 )
             )
             self.forward()
@@ -93,7 +93,7 @@ composition
             self.play(
                 Succession(
                     *map(FadeIn, group),
-                    buff=-0.7
+                    offset=-0.7
                 )
             )
             self.forward()

@@ -35,17 +35,39 @@ class AnimGroup(Animation):
             at=1,
             duration=6
         ) # Anim1 在 1~5.5s 执行，Anim2 在 1~7s 执行
+
+        # 关于 lag_ratio 和 offset 的例子有待编写
     '''
     def __init__(
         self,
         *anims: Animation,
         duration: float | None = None,
+        lag_ratio: float = 0,
+        offset: float = 0,
         rate_func: RateFunc = linear,
         _get_anim_objects: bool = True,
         **kwargs
     ):
         if _get_anim_objects:
             anims = self._get_anim_objects(anims)
+
+        if lag_ratio != 0 or offset != 0:
+            start = 0
+            global_offset = 0
+
+            # 将 lag_ratio 和 offset 应用到每个子动画上
+            for anim in anims:
+                anim.local_range.at += start
+                if anim.local_range.at < 0:
+                    global_offset = max(global_offset, -anim.local_range.at)
+                start = anim.local_range.at + lag_ratio * anim.local_range.duration + offset
+
+            # 如果 lag_ratio 或者 offset 很小（一般指负数的情况），会导致后一个动画比前一个还早
+            # 这时候需要将整体向后偏移使得与最早的那个对齐
+            if global_offset != 0:
+                for anim in anims:
+                    anim.local_range.at += global_offset
+
         self.anims = anims
         self.maxt = 0 if not anims else max(anim.local_range.end for anim in anims)
         if duration is None:
@@ -133,8 +155,7 @@ class Succession(AnimGroup):
     动画集合（顺序执行）
 
     - 会将传入的动画依次执行，不并行
-    - 可以传入 `buff` 指定前后动画中间的空白时间
-    - 其余与 `AnimGroup` 相同
+    - 相当于默认值 ``lag_ratio=1`` 的 :class:`~.AnimGroup`
 
     时间示例：
 
@@ -155,16 +176,26 @@ class Succession(AnimGroup):
             Anim1(duration=2),
             Anim2(duration=2),
             Anim3(duration=2),
-            buff=0.5
+            offset=0.5
         ) # Anim1 在 0~2s 执行，Anim2 在 2.5~4.5s 执行，Anim3 在 5~7s 执行
     '''
-    def __init__(self, *anims: Animation, buff: float = 0, **kwargs):
-        anims = self._get_anim_objects(anims)
-        end_time = 0
-        for anim in anims:
-            anim.local_range.at += end_time
-            end_time = anim.local_range.end + buff
-        super().__init__(*anims, _get_anim_objects=False, **kwargs)
+    def __init__(
+        self,
+        *anims: Animation,
+        lag_ratio: float = 1,
+        offset: float = 0,
+        buff: float | None = None,
+        **kwargs
+    ):
+        if buff is not None:
+            from janim.utils.deprecation import deprecated
+            deprecated(
+                'buff',
+                "{name!r} is deprecated and will be removed in JAnim {remove}, use 'offset' instead",
+                remove=(2, 0)
+            )
+            offset = buff
+        super().__init__(*anims, lag_ratio=lag_ratio, offset=offset, **kwargs)
 
 
 class Aligned(AnimGroup):

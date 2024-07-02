@@ -24,7 +24,7 @@ class TestComposition(unittest.TestCase):
                     Animation(),
                     Animation(duration=2),
                     Animation(),
-                    buff=0.5
+                    offset=0.5
                 )
                 self.anim4 = Aligned(
                     Animation(),
