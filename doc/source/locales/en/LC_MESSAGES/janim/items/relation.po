@@ -6,18 +6,19 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version:  JAnim\n"
+"Project-Id-Version: JAnim\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-05-30 15:49+0800\n"
-"PO-Revision-Date: 2024-01-19 19:53+0800\n"
+"PO-Revision-Date: 2024-07-03 19:02+0800\n"
 "Last-Translator: \n"
-"Language: en\n"
 "Language-Team: en <LL@li.org>\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Language: en\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "Generated-By: Babel 2.14.0\n"
+"X-Generator: Poedit 3.4.2\n"
 
 #: ../../source/janim/items/relation.rst:2
 msgid "relation"
@@ -25,17 +26,17 @@ msgstr "relation"
 
 #: janim.items.relation.Relation:1 of
 msgid ""
-"基类：:py:class:`~janim.utils.refresh.Refreshable`, "
-":py:class:`~typing.Generic`"
+"基类：:py:class:`~janim.utils.refresh.Refreshable`, :py:class:`~typing."
+"Generic`"
 msgstr ""
-"基类：:py:class:`~janim.utils.refresh.Refreshable`, "
-":py:class:`~typing.Generic`"
+"基类：:py:class:`~janim.utils.refresh.Refreshable`, :py:class:`~typing."
+"Generic`"
 
 #: janim.items.relation.Relation:1 of
 msgid "定义了有向无环图的包含关系以及一些实用操作"
 msgstr ""
-"Defines the containment relationship of a directed acyclic graph and some"
-" practical operations"
+"Defines the containment relationship of a directed acyclic graph and "
+"some practical operations"
 
 #: janim.items.relation.Relation:3 of
 msgid "也就是，对于每个对象："
@@ -58,14 +59,18 @@ msgid "使用 :meth:`remove()` 取消对象间的关系"
 msgstr "Use :meth:`remove()` to cancel relationships between objects"
 
 #: janim.items.relation.Relation:9 of
-msgid ":meth:`ancestors()` 表示与其直接关联的祖先对象（包括父对象，以及父对象的父对象，......）"
+msgid ""
+":meth:`ancestors()` 表示与其直接关联的祖先对象（包括父对象，以及父对象的"
+"父对象，......）"
 msgstr ""
 ":meth:`ancestors()` represents the ancestor objects directly associated "
-"with it (including parent objects and parent objects' parent objects, "
-"...)"
+"with it (including parent objects and parent objects' parent "
+"objects, ...)"
 
 #: janim.items.relation.Relation:10 of
-msgid ":meth:`descendants()` 表示与其直接关联的后代对象（包括子对象、以及子对象的子对象，......）"
+msgid ""
+":meth:`descendants()` 表示与其直接关联的后代对象（包括子对象、以及子对象"
+"的子对象，......）"
 msgstr ""
 ":meth:`descendants()` represents the descendant objects directly "
 "associated with it (including child objects, and child objects' child "
@@ -102,8 +107,11 @@ msgid "向该对象添加子对象"
 msgstr "Add objects to this object"
 
 #: janim.items.relation.Relation.add:3 of
-msgid "如果 ``insert=True`` （默认为 ``False``），那么插入到子物件列表的开头"
+msgid ""
+"如果 ``insert=True`` （默认为 ``False``），那么插入到子物件列表的开头"
 msgstr ""
+"If `insert=True` (default is `False`), then insert at the beginning of "
+"the list of child items."
 
 #: janim.items.relation.Relation.remove:1 of
 msgid "从该对象移除子对象"
@@ -138,14 +146,17 @@ msgid "遍历自己以及后代节点"
 msgstr "Traverse self and descendant nodes"
 
 #: janim.items.relation.Relation.walk_nearest_ancestors:1 of
-msgid "遍历祖先节点中以 ``base_cls`` 为基类的对象，但是排除已经满足条件的对象的祖先对象"
+msgid ""
+"遍历祖先节点中以 ``base_cls`` 为基类的对象，但是排除已经满足条件的对象的"
+"祖先对象"
 msgstr ""
 "Traverse ancestor nodes with ``base_cls`` as the base class, but exclude "
 "the ancestors of objects that already meet the conditions"
 
 #: janim.items.relation.Relation.walk_nearest_descendants:1 of
-msgid "遍历后代节点中以 ``base_cls`` 为基类的对象，但是排除已经满足条件的对象的后代对象"
+msgid ""
+"遍历后代节点中以 ``base_cls`` 为基类的对象，但是排除已经满足条件的对象的"
+"后代对象"
 msgstr ""
 "Traverse descendant nodes with ``base_cls`` as the base class, but "
 "exclude the descendants of objects that already meet the conditions"
-

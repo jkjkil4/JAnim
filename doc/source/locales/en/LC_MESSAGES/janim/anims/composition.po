@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: JAnim\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-05-30 15:49+0800\n"
-"PO-Revision-Date: 2024-06-03 09:50+0800\n"
+"POT-Creation-Date: 2024-07-03 18:50+0800\n"
+"PO-Revision-Date: 2024-07-03 18:57+0800\n"
 "Last-Translator: \n"
 "Language-Team: en <LL@li.org>\n"
 "Language: en\n"
@@ -23,15 +23,6 @@ msgstr ""
 #: ../../source/janim/anims/composition.rst:2
 msgid "composition"
 msgstr "composition"
-
-#: ../../source/janim/anims/composition.rst:6
-msgid ""
-"为了更好地了解这些动画组合的效果，你可以复制到你的文件中运行，这样你就可以"
-"在界面上看到子动画对应的区段"
-msgstr ""
-"For better understanding the effect of these animation compositions, you "
-"can copy these code into your file and execute, so you can see the ranges "
-"of animations on the GUI."
 
 #: janim.anims.composition.AnimGroup:1 of
 msgid "基类：:py:class:`~janim.anims.animation.Animation`"
@@ -64,18 +55,44 @@ msgstr ""
 "You can also use ``at`` for an overall offset (e.g., if ``at=1``, it "
 "delays the entire animation by 1s)"
 
-#: janim.anims.composition.Aligned:5 janim.anims.composition.AnimGroup:7
-#: janim.anims.composition.Succession:7 of
+#: janim.anims.composition.AnimGroup:7 of
+msgid ""
+"可以使用 ``lag_ratio`` 和 ``offset`` 控制每个子动画相对于前一个子动画的时"
+"间位置："
+msgstr ""
+"You can use `lag_ratio` and `offset` to control the timing position of "
+"each sub-animation relative to the previous one:"
+
+#: janim.anims.composition.AnimGroup:9 of
+msgid "``lag_ratio`` 表示 “前一个动画进行到百分之多少时，进行下一个动画”"
+msgstr ""
+"`lag_ratio` indicates \"the percentage of completion of the previous "
+"animation at which the next animation starts\""
+
+#: janim.anims.composition.AnimGroup:10 of
+msgid "``offset`` 表示 “前一个动画进行多少秒后，进行下一个动画”"
+msgstr ""
+"`offset` indicates \"the number of seconds after the previous animation "
+"starts when the next animation starts\""
+
+#: janim.anims.composition.Aligned:5 janim.anims.composition.AnimGroup:12
+#: janim.anims.composition.Succession:6 of
 msgid "时间示例："
 msgstr "Time Examples:"
 
-#: ../../source/janim/anims/composition.rst:13
-#: ../../source/janim/anims/composition.rst:58
-#: ../../source/janim/anims/composition.rst:106
-msgid "视频示例的代码在下方，不是上方的时间示例"
+#: ../../source/janim/anims/composition.rst:40
+#: ../../source/janim/anims/composition.rst:127
+msgid "``lag_ratio`` 与 ``offset`` 的交互式示例："
+msgstr "An interactive example of ``lag_ratio`` and ``offset``:"
+
+#: ../../source/janim/anims/composition.rst:122
+msgid ""
+"为了更好地了解这些动画组合的效果，你可以复制到你的文件中运行，这样你就可以"
+"在界面上看到子动画对应的区段"
 msgstr ""
-"The code of video example is the code below, not the code of time example "
-"above."
+"For better understanding the effect of these animation compositions, you "
+"can copy these code into your file and execute, so you can see the ranges "
+"of animations on the GUI."
 
 #: janim.anims.composition.Aligned:1 janim.anims.composition.Succession:1 of
 msgid "基类：:py:class:`~janim.anims.composition.AnimGroup`"
@@ -86,18 +103,13 @@ msgid "动画集合（顺序执行）"
 msgstr "Collection of animations (executed sequentially)"
 
 #: janim.anims.composition.Succession:3 of
-msgid "会将传入的动画依次执行，不并行"
-msgstr "Executes the passed animations in sequence, not in parallel"
+msgid "会将传入的动画依次执行"
+msgstr "Executes the passed animations in sequence"
 
 #: janim.anims.composition.Succession:4 of
-msgid "可以传入 `buff` 指定前后动画中间的空白时间"
+msgid "相当于默认值 ``lag_ratio=1`` 的 :class:`~.AnimGroup`"
 msgstr ""
-"You can pass `buff` to specify the blank time between front and back "
-"animations"
-
-#: janim.anims.composition.Succession:5 of
-msgid "其余与 `AnimGroup` 相同"
-msgstr "The rest is the same as `AnimGroup`"
+"Equivalent to :class:`~.AnimGroup` with the default value `lag_ratio=1`"
 
 #: janim.anims.composition.Aligned:1 of
 msgid "动画集合（并列对齐执行）"
@@ -109,6 +121,12 @@ msgid ""
 msgstr ""
 "In other words, it ignores the ``at`` and ``duration`` of sub-animations, "
 "causing all sub-animations to start and end together."
+
+#: ../../source/janim/anims/composition.rst:215
+msgid "视频示例的代码在下方，不是上方的时间示例"
+msgstr ""
+"The code of video example is the code below, not the code of time example "
+"above."
 
 #~ msgid "设置并计算子动画的时间范围"
 #~ msgstr "Set and calculate the time range of child animations"
@@ -138,3 +156,11 @@ msgstr ""
 #~ "In this method, :class:`AnimGroup` converts ``alpha`` to ``local_t`` "
 #~ "of child animations and calls :meth:`~.Animation.anim_on` method of "
 #~ "each child animation."
+
+#~ msgid "可以传入 `buff` 指定前后动画中间的空白时间"
+#~ msgstr ""
+#~ "You can pass `buff` to specify the blank time between front and back "
+#~ "animations"
+
+#~ msgid "其余与 `AnimGroup` 相同"
+#~ msgstr "The rest is the same as `AnimGroup`"

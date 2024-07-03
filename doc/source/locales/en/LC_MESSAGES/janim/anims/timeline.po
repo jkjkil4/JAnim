@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  JAnim\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-05-30 15:49+0800\n"
+"POT-Creation-Date: 2024-07-03 18:50+0800\n"
 "PO-Revision-Date: 2024-03-14 15:46+0800\n"
 "Last-Translator: \n"
 "Language: en\n"
@@ -136,6 +136,10 @@ msgstr ""
 msgid "``offset`` 表示偏移多少秒，例如 ``offset=2`` 则是当前位置 2s 后"
 msgstr ""
 
+#: janim.anims.timeline.Timeline.pause_point:5 of
+msgid "在 GUI 界面中，可以使用 ``Ctrl+Z`` 快速移动到前一个暂停点，``Ctrl+C`` 快速移动到后一个"
+msgstr ""
+
 #: janim.anims.timeline.Timeline.is_displaying:1 of
 msgid "判断特定的物件是否正在显示中"
 msgstr ""
@@ -246,6 +250,10 @@ msgstr ""
 msgid ""
 "使得 ``item`` 在每次 ``forward`` 和 ``play`` 时都会被自动调用 "
 ":meth:`~.Item.detect_change`"
+msgstr ""
+
+#: janim.anims.timeline.Timeline.track_item_and_descendants:1 of
+msgid "相当于对 ``item`` 及其所有的后代物件调用 :meth:`track`"
 msgstr ""
 
 #: janim.anims.timeline.Timeline.detect_changes_of_all:1 of
