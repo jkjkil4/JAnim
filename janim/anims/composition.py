@@ -157,7 +157,7 @@ class Succession(AnimGroup):
     '''
     动画集合（顺序执行）
 
-    - 会将传入的动画依次执行，不并行
+    - 会将传入的动画依次执行
     - 相当于默认值 ``lag_ratio=1`` 的 :class:`~.AnimGroup`
 
     时间示例：
