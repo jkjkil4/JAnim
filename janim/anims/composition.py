@@ -14,29 +14,32 @@ class AnimGroup(Animation):
     - 若传入 ``duration``，则会将子动画的时间进行拉伸，使得终止时间与 ``duration`` 一致
     - 且可以使用 ``at`` 进行总体偏移（如 ``at=1`` 则是总体延后 1s）
 
+    可以使用 ``lag_ratio`` 和 ``offset`` 控制每个子动画相对于前一个子动画的时间位置：
+
+    - ``lag_ratio`` 表示 “前一个动画进行到百分之多少时，进行下一个动画”
+    - ``offset`` 表示 “前一个动画进行多少秒后，进行下一个动画”
+
     时间示例：
 
     .. code-block:: python
 
         AnimGroup(
-            Anim1(duration=3),
-            Anim2(duration=4)
-        ) # Anim1 在 0~3s 执行，Anim2 在 0~4s 执行
+            Anim1(duration=3),  # 0~3s
+            Anim2(duration=4)   # 0~4s
+        )
 
         AnimGroup(
-            Anim1(duration=3),
-            Anim2(duration=4),
+            Anim1(duration=3),  # 0~4.5s
+            Anim2(duration=4),  # 0~6s
             duration=6
-        ) # Anim1 在 0~4.5s 执行，Anim2 在 0~6s 执行
+        )
 
         AnimGroup(
-            Anim1(duration=3),
-            Anim2(duration=4),
+            Anim1(duration=3),  # 1~5.5s
+            Anim2(duration=4),  # 1~7s
             at=1,
             duration=6
-        ) # Anim1 在 1~5.5s 执行，Anim2 在 1~7s 执行
-
-        # 关于 lag_ratio 和 offset 的例子有待编写
+        )
     '''
     def __init__(
         self,
@@ -162,22 +165,22 @@ class Succession(AnimGroup):
     .. code-block:: python
 
         Succession(
-            Anim1(duration=3),
-            Anim2(duration=4)
-        ) # Anim1 在 0~3s 执行，Anim2 在 3~7s 执行
+            Anim1(duration=3),  # 0~3s
+            Anim2(duration=4)   # 3~7s
+        )
 
         Succession(
-            Anim1(duration=2),
-            Anim2(at=1, duration=2),
-            Anim3(at=0.5, duration=2)
-        ) # Anim1 在 0~2s 执行，Anim2 在 3~5s 执行，Anim3 在 5.5~7.5s 执行
+            Anim1(duration=2),          # 0~2s
+            Anim2(at=1, duration=2),    # 3~5s
+            Anim3(at=0.5, duration=2)   # 5.5~7.5s
+        )
 
         Succession(
-            Anim1(duration=2),
-            Anim2(duration=2),
-            Anim3(duration=2),
+            Anim1(duration=2),  # 0~2s
+            Anim2(duration=2),  # 2.5~4.5s
+            Anim3(duration=2),  # 5~7s
             offset=0.5
-        ) # Anim1 在 0~2s 执行，Anim2 在 2.5~4.5s 执行，Anim3 在 5~7s 执行
+        )
     '''
     def __init__(
         self,
@@ -211,13 +214,15 @@ class Aligned(AnimGroup):
         Aligned(
             Anim1(duration=1),
             Anim2(duration=2)
-        ) # Anim1 和 Anim2 都在 0~2s 执行
+        )
+        # Anim1 & Anim2: 0~2s
 
         Aligned(
             Anim1(at=1, duration=1),
             Anim2(duration=2),
             duration=4
-        ) # Anim1 和 Anim2 都在 0~4s 执行
+        )
+        # Anim1 & Anim2: 0~4s
     '''
     def __init__(self, *anims: Animation, duration: float | None = None, **kwargs):
         anims = self._get_anim_objects(anims)

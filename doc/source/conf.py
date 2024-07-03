@@ -43,7 +43,8 @@ html_static_path = ['_static']
 html_css_files = [
     'layout.css',
     'colors.css',
-    'custom.css'
+    'custom.css',
+    'animation_timing_example.css'
 ]
 html_favicon = '_static/favicon.ico'
 

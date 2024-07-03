@@ -1,0 +1,40 @@
+.anim-timing-example {
+    border: 2px solid black;
+    box-shadow: 2px 2px 4px #ddd;
+    margin-bottom: 20px;
+}
+.anim-timing-interactive {
+    padding: 14px;
+    padding-top: 10px;
+    background-color: #fafafa;
+    overflow: hidden;
+}
+.anim-boxes {
+    padding-bottom: 22px;
+}
+.animation-box {
+    width: 100px;
+    height: 30px;
+    background-color: lightblue;
+    position: relative;
+    display: flex;
+    justify-content: left;
+    align-items: center;
+}
+.animation-box>span {
+    margin: 4px;
+}
+.anim-arg-input {
+    display: flex;
+    width: 100%;
+}
+.anim-arg-input>label {
+    white-space: nowrap;
+    margin-right: 8px;
+}
+.anim-arg-input>span {
+    width: 50px;
+}
+.anim-arg-input>input {
+    width: 100%;
+}
