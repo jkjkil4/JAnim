@@ -1,3 +1,10 @@
+body {
+    --janim-box-shadow: #ddd;
+}
+body[data-theme=dark] {
+    --janim-box-shadow: #444;
+}
+
 p {
     font-size: initial;
 }
@@ -30,7 +37,7 @@ div.toctree-wrapper.compound span.caption-text {
 
 .janim-box {
     background-color: #333333;
-    box-shadow: 2px 2px 4px #ddd;
+    box-shadow: 2px 2px 4px var(--janim-box-shadow);
     margin-bottom: 20px;
 }
 

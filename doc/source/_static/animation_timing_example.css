@@ -1,12 +1,19 @@
+body {
+    --animation-box-color: lightblue;
+}
+body[data-theme=dark] {
+    --animation-box-color: darkcyan;
+}
+
 .anim-timing-example {
-    border: 2px solid black;
-    box-shadow: 2px 2px 4px #ddd;
+    border: 2px solid #333333;
+    box-shadow: 2px 2px 4px var(--janim-box-shadow);
     margin-bottom: 20px;
 }
 .anim-timing-interactive {
     padding: 14px;
     padding-top: 10px;
-    background-color: #fafafa;
+    background-color: var(--color-background-primary);
     overflow: hidden;
 }
 .anim-boxes {
@@ -15,7 +22,7 @@
 .animation-box {
     width: 100px;
     height: 30px;
-    background-color: lightblue;
+    background-color: var(--animation-box-color);
     position: relative;
     display: flex;
     justify-content: left;
@@ -33,7 +40,7 @@
     margin-right: 8px;
 }
 .anim-arg-input>span {
-    width: 50px;
+    width: 60px;
 }
 .anim-arg-input>input {
     width: 100%;
