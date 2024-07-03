@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: JAnim\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-05-30 15:49+0800\n"
-"PO-Revision-Date: 2024-06-08 23:56+0800\n"
+"PO-Revision-Date: 2024-07-03 12:20+0800\n"
 "Last-Translator: \n"
 "Language-Team: en <LL@li.org>\n"
 "Language: en\n"
@@ -26,366 +26,504 @@ msgstr "Getting Started"
 
 #: ../../source/tutorial/get_started.rst:5
 msgid "简单示例"
-msgstr ""
+msgstr "Basic Example"
 
 #: ../../source/tutorial/get_started.rst:7
 msgid ""
-"为了让你对 JAnim 的结构有个大概的认知， 你可以在你的文件夹内新建一个 ``learn."
-"py`` 文件"
+"为了让你对 JAnim 的结构有个大概的认知， 你可以在你的文件夹内"
+"新建一个 ``learn.py`` 文件"
 msgstr ""
+"To give you a rough idea of the structure of JAnim, you can "
+"create a new file called ``learn.py`` in your folder."
 
 #: ../../source/tutorial/get_started.rst:10
 msgid "然后将以下代码复制到文件内："
-msgstr ""
+msgstr "Then copy the following code into the file:"
 
 #: ../../source/tutorial/get_started.rst:30
 msgid "接着在命令行中，使用"
-msgstr ""
+msgstr "Next, in the command line, use"
 
 #: ../../source/tutorial/get_started.rst:36
 msgid "会弹出一个窗口，应当会显示和上面视频一致的内容"
 msgstr ""
+"A window will pop up, displaying content that should match "
+"the video above."
 
 #: ../../source/tutorial/get_started.rst:38
 msgid "这个窗口默认是置顶的，你可以在菜单栏中取消"
 msgstr ""
+"This window is set to be on top by default, which you can "
+"disable from the menu bar."
 
 #: ../../source/tutorial/get_started.rst:40
 msgid "然后，我们具体看一下这段代码干了什么："
-msgstr ""
+msgstr "Now, let's take a closer look at what this code does:"
 
 #: ../../source/tutorial/get_started.rst:14
 msgid "这里，我们引入 JAnim 的主要功能，这样就可以在之后使用"
 msgstr ""
+"Here, we import the main features of JAnim, allowing us to "
+"use them later."
 
 #: ../../source/tutorial/get_started.rst:15
 msgid ""
-"这两行代码定义了一个继承自 :class:`~.Timeline` 的类 ``HelloJAnimExample``， "
-"并且实现了 :meth:`~.Timeline.construct` 方法，动画内容就写在该方法中"
+"这两行代码定义了一个继承自 :class:`~.Timeline` 的类 "
+"``HelloJAnimExample``， 并且实现了 :meth:`~.Timeline."
+"construct` 方法，动画内容就写在该方法中"
 msgstr ""
+"These two lines define a class ``HelloJAnimExample`` "
+"inheriting from :class:`~.Timeline`, and implement the :meth:"
+"`~.Timeline.construct` method, where the animation content "
+"is written."
 
 #: ../../source/tutorial/get_started.rst:18
 msgid "``HelloJAnimExample`` 可以写成你想取的名称，随意"
-msgstr ""
+msgstr "``HelloJAnimExample`` can be named whatever you like."
 
+# is there a better way to translate "起手式"?
+# ChatGPT recommended using "opening move"
 #: ../../source/tutorial/get_started.rst:64
-msgid "如果你对这两行感到困惑，可以先背下来，作为一种标准的“起手式”"
+msgid ""
+"如果你对这两行感到困惑，可以先背下来，作为一种标准的“起手式”"
 msgstr ""
+"If you're confused by these two lines, you can memorize them "
+"as a standard step."
 
 #: ../../source/tutorial/get_started.rst:66
 msgid "当然，请将 ``HelloJAnimExample`` 替换为你希望的命名"
 msgstr ""
+"Of course, replace ``HelloJAnimExample`` with your desired "
+"name."
 
 #: ../../source/tutorial/get_started.rst:68
 msgid "我们继续往下看，便是具体动画的部分"
-msgstr ""
+msgstr "Let's continue to the specific animation part."
 
 #: ../../source/tutorial/get_started.rst:15
-msgid "这两行，我们定义了一个圆和一个方形（默认情况下不填充内部）"
+msgid ""
+"这两行，我们定义了一个圆和一个方形（默认情况下不填充内部）"
 msgstr ""
+"These two lines define a circle and a square (by default, "
+"not filled inside)."
 
 #: ../../source/tutorial/get_started.rst:17
 msgid "并且，将圆设置为了蓝色；"
-msgstr ""
+msgstr "The circle is set to blue;"
 
 #: ../../source/tutorial/get_started.rst:18
 msgid "将方形设置为了绿色，并且设置内部有 50% 透明度的填充"
-msgstr ""
+msgstr "The square is set to green with 50% opacity fill."
 
 #: ../../source/tutorial/get_started.rst:82
 msgid "此时，这两个物件还没有显示出来，我们接着看后面的几行"
 msgstr ""
+"At this point, these objects haven't been displayed yet. "
+"Let's look at the next few lines."
 
 #: ../../source/tutorial/get_started.rst:18
 msgid "这里便是产生动画的代码，按照顺序来看："
 msgstr ""
+"Here is the code that produces the animation, in order:"
 
 #: ../../source/tutorial/get_started.rst:20
 msgid ""
-"``self.forward()`` 向前推进 1s；由于此时没有物件显示，所以这 1s 只有空白的背"
-"景"
+"``self.forward()`` 向前推进 1s；由于此时没有物件显示，所以这 "
+"1s 只有空白的背景"
 msgstr ""
+"``self.forward()`` advances 1 second; since no objects are "
+"displayed at this time, this second is just a blank "
+"background."
 
 #: ../../source/tutorial/get_started.rst:21
 msgid "``self.play(Create(circle))`` 显示圆的创建动画"
 msgstr ""
+"``self.play(Create(circle))`` shows the circle creation "
+"animation"
 
 #: ../../source/tutorial/get_started.rst:22
-msgid "``self.play(Transform(circle, square))`` 显示从圆变换到方形的补间动画"
+msgid ""
+"``self.play(Transform(circle, square))`` 显示从圆变换到方形的"
+"补间动画"
 msgstr ""
+"``self.play(Transform(circle, square))`` shows the "
+"interpolating animation from the circle to the square."
 
 #: ../../source/tutorial/get_started.rst:23
 msgid "``self.play(Uncreate(square))`` 显示方形消失的动画"
 msgstr ""
+"``self.play(Uncreate(square))`` shows the square "
+"disappearing animation."
 
 #: ../../source/tutorial/get_started.rst:24
 msgid "``self.forward()`` 向前推进 1s，和前一个类似"
 msgstr ""
+"``self.forward()`` advances 1 second, similar to the "
+"previous one."
 
 #: ../../source/tutorial/get_started.rst:102
 msgid "其中："
-msgstr ""
+msgstr "Among them:"
 
 #: ../../source/tutorial/get_started.rst:104
 msgid ""
-":meth:`~.Timeline.forward` 将相同的画面持续一段时间，默认是 1s，你也可以填入"
-"具体的秒数"
+":meth:`~.Timeline.forward` 将相同的画面持续一段时间，默认是 "
+"1s，你也可以填入具体的秒数"
 msgstr ""
+":meth:`~.Timeline.forward` keeps the same frame for a "
+"period, default is 1 second, you can also specify the "
+"seconds."
 
 #: ../../source/tutorial/get_started.rst:105
 msgid ""
-":meth:`~.Timeline.play` 的基本格式是 ``self.play(动画对象)``，让动画持续一段"
-"时间"
+":meth:`~.Timeline.play` 的基本格式是 ``self.play(动画对"
+"象)``，让动画持续一段时间"
 msgstr ""
+":meth:`~.Timeline.play` basic format is ``self."
+"play(animation object)``, making the animation last for a "
+"period."
 
 #: ../../source/tutorial/get_started.rst:107
 msgid "比如，你可以把变换的那一行加上 ``duration=2``"
 msgstr ""
+"For example, you can add ``duration=2`` to the "
+"transformation line."
 
 #: ../../source/tutorial/get_started.rst:113
 msgid "那么动画过程就会持续 2s"
-msgstr ""
+msgstr "Then the animation process will last for 2 seconds."
 
 #: ../../source/tutorial/get_started.rst:116
 msgid "物件"
-msgstr ""
+msgstr "Items"
 
 #: ../../source/tutorial/get_started.rst:118
 msgid ""
-"上面的例子中，涉及到两个物件：:class:`~.Circle` 和 :class:`~.Square`，它们本"
-"质上都是几何图形物件"
+"上面的例子中，涉及到两个物件：:class:`~.Circle` 和 :class:`~."
+"Square`，它们本质上都是几何图形物件"
 msgstr ""
+"In the example above, we have two items: :class:`~.Circle` "
+"and :class:`~.Square`, which are essentially geometric items."
 
 #: ../../source/tutorial/get_started.rst:121
 msgid "组件"
-msgstr ""
+msgstr "Components"
 
 #: ../../source/tutorial/get_started.rst:125
 msgid "对于物件，有一个重要的概念是“组件”"
 msgstr ""
+"For items, there is an important concept called "
+"\"components\"."
 
 #: ../../source/tutorial/get_started.rst
-msgid "每种物件都包含若干的组件，例如，几何图形其实是由“轮廓的描点”所表示的，"
+msgid ""
+"每种物件都包含若干的组件，例如，几何图形其实是由“轮廓的描"
+"点”所表示的，"
 msgstr ""
+"Each item contains several components, for example, "
+"geometric shapes are represented by \"outline points\"."
 
 #: ../../source/tutorial/get_started.rst
 msgid "因此，对于几何图形物件，这些是它的组件："
 msgstr ""
+"Therefore, for geometric items, these are its components:"
 
 #: ../../source/tutorial/get_started.rst:130
 msgid "轮廓坐标 ``points``"
-msgstr ""
+msgstr "Outline coordinates ``points``"
 
 #: ../../source/tutorial/get_started.rst:131
 msgid "描边粗细 ``radius``"
-msgstr ""
+msgstr "Stroke width ``radius``"
 
 #: ../../source/tutorial/get_started.rst:132
 msgid "描边颜色 ``stroke``"
-msgstr ""
+msgstr "Stroke color ``stroke``"
 
 #: ../../source/tutorial/get_started.rst:133
 msgid "填充颜色 ``fill``"
-msgstr ""
+msgstr "Fill color ``fill``"
 
 #: ../../source/tutorial/get_started.rst:135
-msgid "为了对组件进行操作，你需要 ``物件.组件名.功能()`` ，比如："
+msgid ""
+"为了对组件进行操作，你需要 ``物件.组件名.功能()`` ，比如："
 msgstr ""
+"To manipulate components, you need ``item.component_name."
+"function()``, for example:"
 
 #: ../../source/tutorial/get_started.rst:141
 msgid ""
-"这一行会将圆的填充色设置为红色，并且有 50% 的透明度；你可以把这行插入到上面例"
-"子的 ``circle = Circle(color=BLUE)`` 的下一行，试试效果"
+"这一行会将圆的填充色设置为红色，并且有 50% 的透明度；你可以把"
+"这行插入到上面例子的 ``circle = Circle(color=BLUE)`` 的下一"
+"行，试试效果"
 msgstr ""
+"This line sets the fill color of the circle to red with 50% "
+"opacity; you can insert this line right after ``circle = "
+"Circle(color=BLUE)`` in the above example to see the effect."
 
 #: ../../source/tutorial/get_started.rst:143
 msgid "同样的，``circle.stroke.set(...)`` 会设置描边的颜色"
 msgstr ""
+"Similarly, ``circle.stroke.set(...)`` will set the stroke "
+"color."
 
 #: ../../source/tutorial/get_started.rst:147
 msgid "如果你想将描边和填充的颜色同时进行设置，不必写："
 msgstr ""
+"If you want to set both the stroke and fill color, you don't "
+"have to write:"
 
 #: ../../source/tutorial/get_started.rst:154
 msgid "作为一种更简便的写法，你可以将上面的两行写成这样："
 msgstr ""
+"As a simpler way, you can write the above two lines as:"
 
 #: ../../source/tutorial/get_started.rst:160
 msgid "这里提供了一个 ``color``，可以同时对描边和填充进行操作"
 msgstr ""
+"Here, a single ``color`` is provided to manipulate both "
+"stroke and fill."
 
 #: ../../source/tutorial/get_started.rst:163
 msgid "初始化参数"
-msgstr ""
+msgstr "Initialization Parameters"
 
 #: ../../source/tutorial/get_started.rst:165
 msgid "还记得前面例子的代码吗？"
-msgstr ""
+msgstr "Remember the code from the earlier example?"
 
 #: ../../source/tutorial/get_started.rst:173
 msgid ""
-"这里的代码看起来没有对 ``circle`` 的组件进行操作，那么是如何设置这些物件的颜"
-"色的呢？"
+"这里的代码看起来没有对 ``circle`` 的组件进行操作，那么是如何"
+"设置这些物件的颜色的呢？"
 msgstr ""
+"This code does not seem to manipulate the components of "
+"``circle``, so how are these items' colors set?"
 
 #: ../../source/tutorial/get_started.rst:175
 msgid ""
-"你应该注意到了传入 :class:`~.Circle` 和 :class:`~.Square` 的参数，"
-"``color=XXX`` 以及 ``fill_alpha=XXX``"
+"你应该注意到了传入 :class:`~.Circle` 和 :class:`~.Square` 的"
+"参数，``color=XXX`` 以及 ``fill_alpha=XXX``"
 msgstr ""
+"You might have noticed the parameters passed to :class:`~."
+"Circle` and :class:`~.Square`, ``color=XXX`` and "
+"``fill_alpha=XXX``."
 
 #: ../../source/tutorial/get_started.rst:177
 msgid ""
-"具体来说，在创建物件时对组件属性进行设置，并不需要一行一行地列出来，可以全部"
-"作为参数直接书写，这里列出几何图形物件可用的一些属性："
+"具体来说，在创建物件时对组件属性进行设置，并不需要一行一行地"
+"列出来，可以全部作为参数直接书写，这里列出几何图形物件可用的"
+"一些属性："
 msgstr ""
+"Specifically, setting component properties at the time of "
+"item creation doesn't need to be listed line by line, they "
+"can all be written as parameters directly. Here are some "
+"properties available for geometric items:"
 
 #: ../../source/tutorial/get_started.rst:181
 msgid "``stroke_radius``: 描边的粗细"
-msgstr ""
+msgstr "``stroke_radius``: Stroke thickness"
 
 #: ../../source/tutorial/get_started.rst:183
 msgid "``color``: 描边和填充的颜色"
-msgstr ""
+msgstr "``color``: Stroke and fill color"
 
 #: ../../source/tutorial/get_started.rst:184
 msgid "``stroke_color``: 描边颜色，会覆盖 ``color``"
 msgstr ""
+"``stroke_color``: Stroke color, will override ``color``"
 
 #: ../../source/tutorial/get_started.rst:185
 msgid "``fill_color``: 填充颜色，会覆盖 ``color``"
-msgstr ""
+msgstr "``fill_color``: Fill color, will override ``color``"
 
 #: ../../source/tutorial/get_started.rst:187
 msgid ""
-"``alpha``: 透明度，``1`` 表示完全不透明，``0`` 表示完全透明，``0~1`` 之间的数"
-"则为半透明"
+"``alpha``: 透明度，``1`` 表示完全不透明，``0`` 表示完全透明，"
+"``0~1`` 之间的数则为半透明"
 msgstr ""
+"``alpha``: Opacity, ``1`` means fully opaque, ``0`` means "
+"fully transparent, numbers between ``0~1`` mean semi-"
+"transparent."
 
 #: ../../source/tutorial/get_started.rst:188
 msgid "``stroke_alpha``: 描边透明度，会覆盖 ``alpha``"
 msgstr ""
+"``stroke_alpha``: Stroke opacity, will override ``alpha``"
 
 #: ../../source/tutorial/get_started.rst:189
 msgid "``fill_alpha``: 填充透明度，会覆盖 ``alpha``"
-msgstr ""
+msgstr "``fill_alpha``: Fill opacity, will override ``alpha``"
 
 #: ../../source/tutorial/get_started.rst:192
 msgid "组件动画"
-msgstr ""
+msgstr "Component Animation"
 
 #: ../../source/tutorial/get_started.rst:194
 msgid "通过前面的学习，我们知道，通过"
-msgstr ""
+msgstr "From the previous study, we know that by"
 
 #: ../../source/tutorial/get_started.rst:200
 msgid "可以将圆设置为红色"
-msgstr ""
+msgstr "we can set the circle to red."
 
 #: ../../source/tutorial/get_started.rst:202
 msgid "这种设置是立刻的，但是如果这样写："
-msgstr ""
+msgstr "This setting is immediate, but if written like this:"
 
 #: ../../source/tutorial/get_started.rst:208
 msgid "注意这里的区别是，先写 ``.anim`` 再跟上对组件的操作"
 msgstr ""
+"Notice the difference is adding ``.anim`` before the "
+"component manipulation."
 
 #: ../../source/tutorial/get_started.rst:210
 msgid ""
-"这种写法，不再是“设置为红色”，而是会产生一个“从原来的颜色过渡到红色”的动画，"
-"可以放在 ``self.play(...)`` 里面显示动画"
+"这种写法，不再是“设置为红色”，而是会产生一个“从原来的颜色过渡"
+"到红色”的动画，可以放在 ``self.play(...)`` 里面显示动画"
 msgstr ""
+"This writing creates an animation transitioning from the "
+"original color to red, which can be placed in ``self."
+"play(...)`` to display the animation."
 
 #: ../../source/tutorial/get_started.rst:212
 msgid "比如下面这个例子："
-msgstr ""
+msgstr "For example, the following code:"
 
 #: ../../source/tutorial/get_started.rst:232
 msgid "``self.show(circle)`` 是将圆直接显示出来，没有动画过程"
 msgstr ""
+"``self.show(circle)`` displays the circle immediately, "
+"without an animation process."
 
 #: ../../source/tutorial/get_started.rst:234
 msgid "希望你没忘记，执行的命令是："
 msgstr ""
+"Hopefully, you haven't forgotten that the command to execute "
+"is:"
 
 #: ../../source/tutorial/get_started.rst:240
 msgid "如果上面这段代码也写在了 ``learn.py`` 中，那么就是："
 msgstr ""
+"If the above code is also written in ``learn.py``, then it "
+"is:"
 
 #: ../../source/tutorial/get_started.rst:247
 msgid "导出视频"
-msgstr ""
+msgstr "Exporting Videos"
 
 #: ../../source/tutorial/get_started.rst:251
 msgid ""
-"若要导出视频，请确保安装了 :ref:`FFmpeg <install_dep>` 并正确地将其添加到了环"
-"境变量 ``PATH`` 中"
+"若要导出视频，请确保安装了 :ref:`FFmpeg <install_dep>` 并正确"
+"地将其添加到了环境变量 ``PATH`` 中"
 msgstr ""
+"To export videos, please make sure :ref:`FFmpeg "
+"<install_dep>` is installed and correctly added to the "
+"environment variable ``PATH``."
 
 #: ../../source/tutorial/get_started.rst:253
 msgid "上面进行预览是使用："
-msgstr ""
+msgstr "The preview method mentioned above is used by:"
 
 #: ../../source/tutorial/get_started.rst:259
-msgid "如果你想要将这个动画导出为视频，将 ``run`` 替换为 ``write`` 即可："
+msgid ""
+"如果你想要将这个动画导出为视频，将 ``run`` 替换为 ``write`` "
+"即可："
 msgstr ""
+"If you want to export this animation as a video, replace "
+"``run`` with ``write``:"
 
 #: ../../source/tutorial/get_started.rst:265
 msgid "默认情况下，输出的视频会在目录中的 ``videos/`` 文件夹下"
 msgstr ""
+"By default, the output video will be in the ``videos/`` "
+"folder in the directory."
 
 #: ../../source/tutorial/get_started.rst:267
 msgid "如果再传入 ``-o``，会在导出结束后自动打开视频文件："
 msgstr ""
+"If you add ``-o``, the video file will open automatically "
+"after export:"
 
 #: ../../source/tutorial/get_started.rst:276
 msgid "实时预览"
-msgstr ""
+msgstr "Real-Time Preview"
 
 #: ../../source/tutorial/get_started.rst:278
 msgid ""
-"如果每次修改动画都需要关掉窗口、修改代码、重新执行，那么未免有点太麻烦了"
+"如果每次修改动画都需要关掉窗口、修改代码、重新执行，那么未免"
+"有点太麻烦了"
 msgstr ""
+"If you need to close the window, modify the code, and re-"
+"execute each time you modify the animation, it would be too "
+"troublesome."
 
 #: ../../source/tutorial/get_started.rst:280
 msgid ""
-"因此，你可以在修改并保存代码后，点击窗口左上角“功能”中的“重新构建”（快捷键是 "
-"``Ctrl+L``）， 这样就会更新动画内容，使其和更改后的代码一致"
+"因此，你可以在修改并保存代码后，点击窗口左上角“功能”中的“重新"
+"构建”（快捷键是 ``Ctrl+L``）， 这样就会更新动画内容，使其和更"
+"改后的代码一致"
 msgstr ""
+"Therefore, you can click \"Rebuild\" in the \"Function\" "
+"menu in the top left corner of the window after modifying "
+"and saving the code (shortcut is ``Ctrl+L``), which will "
+"update the animation content to match the modified code."
 
 #: ../../source/tutorial/get_started.rst:285
-msgid "以下的功能需要使用 :ref:`vscode <install_vscode>` 作为编辑器"
+msgid ""
+"以下的功能需要使用 :ref:`vscode <install_vscode>` 作为编辑器"
 msgstr ""
+"The following functionality requires using :ref:`vscode "
+"<install_vscode>` as the editor."
 
 #: ../../source/tutorial/get_started.rst:287
 msgid ""
-"每次修改完都要手动重新构建可能还是有点麻烦了，如果你使用 vscode 开发，可以安"
-"装 vscode 插件 ``janim-toolbox``"
+"每次修改完都要手动重新构建可能还是有点麻烦了，如果你使用 "
+"vscode 开发，可以安装 vscode 插件 ``janim-toolbox``"
 msgstr ""
+"It may still be a bit troublesome to manually rebuild each "
+"time after modification. If you use vscode for development, "
+"you can install the vscode plugin ``janim-toolbox``."
 
 #: ../../source/tutorial/get_started.rst:289
 msgid "运行时，在预览动画的命令中加上 ``-i``，比如："
 msgstr ""
+"When running, add ``-i`` to the preview animation command, "
+"for example:"
 
 #: ../../source/tutorial/get_started.rst:295
-msgid "这样，在执行后，输出内容应当多出这样一句：``交互端口已在 xxxxx 开启``"
+msgid ""
+"这样，在执行后，输出内容应当多出这样一句：``交互端口已在 "
+"xxxxx 开启``"
 msgstr ""
+"After execution, the output should add a line: ``Interactive "
+"port has been opened at xxxxx``."
 
 #: ../../source/tutorial/get_started.rst:299
 msgid "你可能注意到了，预览窗口默认是在右半边屏幕置顶的"
 msgstr ""
+"You might have noticed that the preview window is by default "
+"on top on the right side of the screen."
 
 #: ../../source/tutorial/get_started.rst:301
 msgid "这里推荐将 vscode 放在左半边屏幕，关闭侧边栏进行书写"
 msgstr ""
+"It is recommended to place vscode on the left side of the "
+"screen, close the sidebar for writing."
 
 #: ../../source/tutorial/get_started.rst:303
 msgid ""
-"首先，在 vscode 中，默认情况下，需要按下 ``Ctrl+J Ctrl+C`` （分别按下，这是组"
-"合键），如果成功的话， 会在 vscode 右下角的状态栏中显示 ``已连接到界面端 "
-"xxxxx``"
+"首先，在 vscode 中，默认情况下，需要按下 ``Ctrl+J Ctrl+C`` "
+"（分别按下，这是组合键），如果成功的话， 会在 vscode 右下角的"
+"状态栏中显示 ``已连接到界面端 xxxxx``"
 msgstr ""
+"First, in vscode, by default, you need to press ``Ctrl+J "
+"Ctrl+C`` (press separately, these are combo keys), if "
+"successful, it will show ``已连接到界面端 xxxxx`` in the "
+"status bar in the lower right corner of vscode."
 
 #: ../../source/tutorial/get_started.rst:306
 msgid "接着，对代码进行更改，保存后，就会立即更新预览的内容"
 msgstr ""
+"Next, make changes to the code and save, and the preview "
+"content will be updated immediately."
