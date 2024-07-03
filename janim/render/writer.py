@@ -3,16 +3,19 @@ import shutil
 import subprocess as sp
 import time
 from functools import partial
+from typing import Callable, Generator, Iterable
 
 import moderngl as mgl
 from tqdm import tqdm as ProgressDisplay
 
 from janim.anims.timeline import TimelineAnim
 from janim.exception import EXITCODE_FFMPEG_NOT_FOUND, ExitException
-from janim.logger import log
 from janim.locale.i18n import get_local_strings
+from janim.logger import log
 
 _ = get_local_strings('writer')
+
+type ProgressCallback = Callable[[int, int], bool | None]
 
 
 class VideoWriter:
@@ -51,7 +54,7 @@ class VideoWriter:
             )
         )
 
-    def write_all(self, file_path: str, *, quiet=False) -> None:
+    def write_all(self, file_path: str, *, quiet=False, callback: ProgressCallback | None = None) -> None:
         '''将时间轴动画输出到文件中
 
         - 指定 ``quiet=True``，则不会输出前后的提示信息，但仍有进度条
@@ -66,15 +69,14 @@ class VideoWriter:
 
         self.open_video_pipe(file_path)
 
-        progress_display = ProgressDisplay(
+        iterable = wrap_progress(
             range(round(self.anim.global_range.duration * fps) + 1),
-            leave=False,
-            dynamic_ncols=True
+            callback
         )
 
         rgb = self.anim.cfg.background_color.rgb
 
-        for frame in progress_display:
+        for frame in iterable:
             self.fbo.clear(*rgb)
             self.anim.anim_on(frame / fps)
             self.anim.render_all(self.ctx)
@@ -138,15 +140,15 @@ class VideoWriter:
         shutil.move(self.temp_file_path, self.final_file_path)
 
     @staticmethod
-    def writes(anim: TimelineAnim, file_path: str, *, quiet=False) -> None:
-        VideoWriter(anim).write_all(file_path, quiet=quiet)
+    def writes(anim: TimelineAnim, file_path: str, *, quiet=False, callback: ProgressCallback | None = None) -> None:
+        VideoWriter(anim).write_all(file_path, quiet=quiet, callback=callback)
 
 
 class AudioWriter:
     def __init__(self, anim: TimelineAnim):
         self.anim = anim
 
-    def write_all(self, file_path: str, *, quiet=False) -> None:
+    def write_all(self, file_path: str, *, quiet=False, callback: ProgressCallback | None = None) -> None:
         name = self.anim.timeline.__class__.__name__
         if not quiet:
             log.info(_('Writing audio of "{name}"').format(name=name))
@@ -157,17 +159,16 @@ class AudioWriter:
 
         self.open_audio_pipe(file_path)
 
-        progress_display = ProgressDisplay(
+        iterable = wrap_progress(
             range(round(self.anim.global_range.duration * fps) + 1),
-            leave=False,
-            dynamic_ncols=True
+            callback
         )
 
         get_audio_samples = partial(self.anim.timeline.get_audio_samples_of_frame,
                                     fps,
                                     framerate)
 
-        for frame in progress_display:
+        for frame in iterable:
             samples = get_audio_samples(frame)
             self.writing_process.stdin.write(samples.tobytes())
 
@@ -213,5 +214,27 @@ class AudioWriter:
         shutil.move(self.temp_file_path, self.final_file_path)
 
     @staticmethod
-    def writes(anim: TimelineAnim, file_path: str, *, quiet=False) -> None:
-        AudioWriter(anim).write_all(file_path, quiet=quiet)
+    def writes(anim: TimelineAnim, file_path: str, *, quiet=False, callback: ProgressCallback | None = None) -> None:
+        AudioWriter(anim).write_all(file_path, quiet=quiet, callback=callback)
+
+
+def wrap_progress(range_object: range, callback: ProgressCallback | None = None) -> Iterable[int]:
+    '''
+    使 ``range_object`` 在被遍历时可以显示进度条
+
+    - 当 ``callback=None`` 时，使用 ``tqdm`` 在控制台显示进度条
+    - 否则，将当前进度传递给 ``callback``，可以实现例如在 GUI 界面中显示进度条
+    '''
+    if callback is None:
+        return ProgressDisplay(
+            range_object,
+            leave=False,
+            dynamic_ncols=True
+        )
+
+    def wrapper(range_object) -> Generator[int, None, None]:
+        range_len = len(range_object)
+        for v in range_object:
+            callback(v, range_len)
+            yield v
+    return wrapper(range_object)
