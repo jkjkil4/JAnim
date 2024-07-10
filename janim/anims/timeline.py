@@ -22,7 +22,8 @@ from janim.anims.composition import AnimGroup
 from janim.anims.display import Display
 from janim.anims.updater import updater_params_ctx
 from janim.camera.camera import Camera
-from janim.constants import BLACK, DEFAULT_DURATION, DOWN, SMALL_BUFF, UP
+from janim.constants import (BLACK, DEFAULT_DURATION,
+                             DEFAULT_ITEM_TO_EDGE_BUFF, DOWN, SMALL_BUFF, UP)
 from janim.exception import TimelineLookupError
 from janim.items.audio import Audio
 from janim.items.item import DynamicItem, Item
@@ -593,7 +594,7 @@ class Timeline(metaclass=ABCMeta):
 
         return range.copy()
 
-    def place_subtitle(self, subtitle: Text, range: TimeRange) -> None:
+    def place_subtitle(self, subtitle: Text | TypstText, range: TimeRange) -> None:
         '''
         被 :meth:`subtitle` 调用以将字幕放置到合适的位置：
 
@@ -608,7 +609,13 @@ class Timeline(metaclass=ABCMeta):
             if other.range.at <= range.at < other.range.end and not np.isclose(range.at, other.range.end):
                 subtitle.points.next_to(other.subtitle, UP, buff=2 * SMALL_BUFF)
                 return
-        subtitle.points.to_border(DOWN)
+
+        if isinstance(subtitle, Text):
+            # 相对于 mark_orig 对齐到屏幕底端，这样不同字幕的位置不会上下浮动
+            target_y = -Config.get.frame_y_radius + DEFAULT_ITEM_TO_EDGE_BUFF
+            subtitle.points.set_x(0).shift(UP * (target_y - subtitle[-1].get_mark_orig()[1]))
+        else:
+            subtitle.points.to_border(DOWN)
 
     # endregion
 
