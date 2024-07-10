@@ -92,8 +92,8 @@ class Animation:
         return self.rate_func(anim_t / self.local_range.duration)
 
     def is_visible(self, global_t: float) -> bool:
-        # + 1e-5 是为了避免在两端的浮点误差
-        return self.global_range.at <= global_t + 1e-5 < self.global_range.end
+        # + 1e-3 是为了避免在两端的浮点误差
+        return self.global_range.at <= global_t + 1e-3 < self.global_range.end
 
     global_t_ctx: ContextVar[float] = ContextVar('Animation.global_t_ctx')
     '''
