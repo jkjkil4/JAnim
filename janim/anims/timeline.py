@@ -300,12 +300,13 @@ class Timeline(metaclass=ABCMeta):
 
         return anim.local_range
 
-    def play(self, *anims: Animation, **kwargs) -> None:
+    def play(self, *anims: Animation, **kwargs) -> TimeRange:
         '''
         应用动画并推进到动画结束的时候
         '''
         t_range = self.prepare(*anims, **kwargs)
         self.forward_to(t_range.end, _detect_changes=False)
+        return t_range
 
     def pause_point(
         self,
