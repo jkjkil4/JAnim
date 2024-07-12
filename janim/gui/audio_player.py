@@ -19,13 +19,17 @@ class AudioPlayer:
             pass
 
     def _run(self):
-        p = pyaudio.PyAudio()
-
-        self.stream = p.open(format=pyaudio.paInt16,
-                             channels=1,
-                             rate=self.framerate,
-                             output=True)
-
         while True:
-            data = self.queue.get()
-            self.stream.write(data)
+            p = pyaudio.PyAudio()
+
+            self.stream = p.open(format=pyaudio.paInt16,
+                                 channels=1,
+                                 rate=self.framerate,
+                                 output=True)
+
+            try:
+                while True:
+                    data = self.queue.get()
+                    self.stream.write(data)
+            except OSError:
+                pass
