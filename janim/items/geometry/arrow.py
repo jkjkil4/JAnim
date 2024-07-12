@@ -4,10 +4,11 @@ from enum import Enum
 from typing import Self
 
 import numpy as np
-
-from janim.constants import DOWN, LEFT, ORIGIN, RIGHT, UP, np
+from janim.constants import DOWN, LEFT, ORIGIN, RIGHT, UP
 from janim.items.geometry.line import Line
+from janim.items.points import Points
 from janim.items.vitem import DEFAULT_STROKE_RADIUS, VItem
+from janim.typing import Vect
 from janim.utils.space_ops import (get_norm, midpoint, normalize,
                                    rotation_between_vectors)
 
@@ -118,8 +119,8 @@ class Arrow(Line):
     '''
     def __init__(
         self,
-        start: np.ndarray = LEFT,
-        end: np.ndarray = RIGHT,
+        start: Vect | Points = LEFT,
+        end: Vect | Points = RIGHT,
         *,
         buff: float = 0.25,
         max_length_to_tip_length_ratio: float | None = 0.3,
