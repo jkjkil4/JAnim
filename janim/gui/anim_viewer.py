@@ -5,7 +5,7 @@ except ImportError:
     _ = get_local_strings('anim_viewer')
 
     print(_('Additional modules need to be installed when using the GUI interface, but they are not installed'))
-    print(_('You can install them using pip install janim[gui] '
+    print(_('You can install them using pip install "janim[gui]" '
             'and make sure you install them in the correct Python version'))
 
     from janim.exception import EXITCODE_PYSIDE6_NOT_FOUND, ExitException
