@@ -16,6 +16,8 @@ from janim.utils.config import Config
 from janim.utils.data import AlignedData
 from janim.utils.simple_functions import clip
 from janim.utils.space_ops import cross, det, get_norm, z_to_vector
+from janim.typing import JAnimColor, ColorArray, Alpha, AlphaArray
+from typing import Self
 
 
 class ImageItem(Points):
@@ -64,6 +66,16 @@ class ImageItem(Points):
             )
         else:   # width is not None and height is not None
             self.points.set_size(width, height)
+
+    def set_style(
+        self,
+        color: JAnimColor | ColorArray | None = None,
+        alpha: Alpha | AlphaArray | None = None,
+        **kwargs
+    ) -> Self:
+        self.color.set(color, alpha)
+
+        return super().set_style(**kwargs)
 
     def get_orig(self) -> np.ndarray:
         '''图像的左上角'''
