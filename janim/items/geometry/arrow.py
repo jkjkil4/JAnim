@@ -4,13 +4,18 @@ from enum import Enum
 from typing import Self
 
 import numpy as np
-from janim.constants import DOWN, LEFT, ORIGIN, RIGHT, UP
+
+from janim.constants import (DEFAULT_ITEM_TO_ITEM_BUFF, DOWN, LEFT, ORIGIN,
+                             RIGHT, UP)
 from janim.items.geometry.line import Line
 from janim.items.points import Points
+from janim.items.svg.typst import TypstText
+from janim.items.text.text import Text
 from janim.items.vitem import DEFAULT_STROKE_RADIUS, VItem
 from janim.typing import Vect
-from janim.utils.space_ops import (get_norm, midpoint, normalize,
-                                   rotation_between_vectors)
+from janim.utils.simple_functions import clip
+from janim.utils.space_ops import (angle_of_vector, get_norm, midpoint,
+                                   normalize, rotation_between_vectors)
 
 DEFAULT_ARROWTIP_BODY_LENGTH = 0.2
 DEFAULT_ARROWTIP_BACK_WIDTH = 0.2
@@ -175,6 +180,48 @@ class Arrow(Line):
     def place_tip(self) -> Self:
         self._place_tip(self.tip, self.points.get_end(), self.points.end_direction)
         return self
+
+    def create_text(
+        self,
+        text: str,
+        place: float = 0.5,
+        *,
+        use_typst_text: bool = False,
+        under: bool = False,
+        buff: float = DEFAULT_ITEM_TO_ITEM_BUFF,
+        d_place: float = 1e-6,
+        **kwargs
+    ):
+        '''
+        创建文字并与箭头对齐
+
+        其中 ``under`` 参数的含义是：
+
+        ``under=False``：
+
+        .. code-block::
+
+                  文字
+            ----------------->
+
+        ``under=True``：
+
+        .. code-block::
+
+            ----------------->
+                  文字
+        '''
+        place = clip(place, 0, 1)
+        alpha1 = clip(place - d_place, 0, 1)
+        alpha2 = clip(place + d_place, 0, 1)
+        angle = angle_of_vector(self.points.pfp(alpha2) - self.points.pfp(alpha1))
+        about_point = self.points.pfp(place)
+
+        txt = (TypstText if use_typst_text else Text)(text, **kwargs)
+        txt.points.next_to(about_point, DOWN if under else UP, buff=buff)
+        txt.points.rotate(angle, about_point=about_point)
+
+        return txt
 
 
 class Vector(Arrow):
