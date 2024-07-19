@@ -25,6 +25,13 @@ class _ConfigMeta(type):
 class Config(metaclass=_ConfigMeta):
     '''配置
 
+    大部分的参数不作说明，稍微说明一下这些参数：
+
+    - ``fps``: 输出视频时的帧率
+    - ``preview_fps``: 在预览窗口时的帧率
+    - 在代码内设置 ``background_color`` 时，不能使用 ``background_color='#RRGGBB'``，应使用 ``background_color=Color('#RRGGBB')``
+    - ``output_dir`` 以 ``:`` 开头时，表示相对于 ``.py`` 文件的路径，例如 ``output_dir=':/videos'``
+
     基础用法
     ------------
 

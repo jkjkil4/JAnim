@@ -3,6 +3,8 @@
 '''
 
 # flake8: noqa
+from colour import Color
+
 import janim.items.boolean_ops as boolean_ops
 from janim.anims.composition import *
 from janim.anims.creation import *
