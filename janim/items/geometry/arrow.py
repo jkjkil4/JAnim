@@ -5,7 +5,7 @@ from typing import Self
 
 import numpy as np
 
-from janim.constants import (DEFAULT_ITEM_TO_ITEM_BUFF, DOWN, LEFT, ORIGIN,
+from janim.constants import (DEFAULT_ITEM_TO_ITEM_BUFF, DOWN, LEFT, ORIGIN, PI,
                              RIGHT, UP)
 from janim.items.geometry.line import Line
 from janim.items.points import Points
@@ -214,7 +214,12 @@ class Arrow(Line):
         place = clip(place, 0, 1)
         alpha1 = clip(place - d_place, 0, 1)
         alpha2 = clip(place + d_place, 0, 1)
-        angle = angle_of_vector(self.points.pfp(alpha2) - self.points.pfp(alpha1))
+
+        shift = self.points.pfp(alpha2) - self.points.pfp(alpha1)
+        angle = angle_of_vector(shift)
+        if shift[0] < 0:
+            angle += PI
+
         about_point = self.points.pfp(place)
 
         txt = (TypstText if use_typst_text else Text)(text, **kwargs)
