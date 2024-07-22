@@ -327,7 +327,7 @@ class AnimViewer(QMainWindow):
 
         loader = importlib.machinery.SourceFileLoader(module.__name__, module.__file__)
         module = loader.load_module()
-        timeline_class: type[Timeline] = getattr(module, name, None)
+        timeline_class = getattr(module, name, None)
         if not isinstance(timeline_class, type) or not issubclass(timeline_class, Timeline):
             log.error(
                 _('No timeline named "{name}" in "{file}"')
@@ -345,6 +345,10 @@ class AnimViewer(QMainWindow):
 
         range = self.timeline_view.range
         self.set_anim(anim)
+
+        import gc
+
+        gc.collect()
 
         if not stay_same:
             self.anim.anim_on(0)

@@ -1,9 +1,11 @@
 import functools
 import inspect
+import types
+import weakref
 from collections import defaultdict
 from dataclasses import dataclass
-from typing import (Callable, Concatenate, Generic, ParamSpec, Self,
-                    TypeVar, overload)
+from typing import (Callable, Concatenate, Generic, ParamSpec, Self, TypeVar,
+                    overload)
 
 import janim.utils.refresh as refresh
 
@@ -15,6 +17,8 @@ P = ParamSpec('P')
 T = TypeVar('T')
 R = TypeVar('R')
 
+SIGNAL_CONN_REF_NAME = '_Signal_connect_ref'
+
 
 class _SelfSlots:
     def __init__(self):
@@ -25,7 +29,7 @@ class _SelfSlots:
 
 class _Slots:
     def __init__(self):
-        self.normal_slots: list[Callable] = []
+        self.normal_slots: list[weakref.WeakMethod[Callable] | weakref.ReferenceType[Callable]] = []
         self.refresh_slots: list[_RefreshSlot] = []
 
 
@@ -44,7 +48,7 @@ class _SelfSlotWithRecurse:
 
 @dataclass
 class _RefreshSlot:
-    obj: refresh.Refreshable
+    obj: weakref.ReferenceType[refresh.Refreshable]
     func: Callable | str
 
 
@@ -216,13 +220,25 @@ class Signal(Generic[T, P, R]):
         '''
         all_slots = self.slots[key]
         slots = all_slots.slots_dict[id(sender)]
-        slots.normal_slots.append(func)
+
+        # 只是为了在 sender 中产生一个 func 的引用，没有别的用处
+        lst = getattr(sender, SIGNAL_CONN_REF_NAME, None)
+        if lst is None:
+            lst = []
+            setattr(sender, SIGNAL_CONN_REF_NAME, lst)
+        lst.append(func)
+
+        slots.normal_slots.append(
+            weakref.WeakMethod(func)
+            if isinstance(func, types.MethodType)
+            else weakref.ref(func)
+        )
 
     def connect_refresh(self, sender: object, obj: object, func: Callable | str, *, key: str = '') -> None:
         '''
         使 ``func`` 会在 ``Signal`` 触发时被标记为需要重新计算
         '''
-        slot = _RefreshSlot(obj, func)
+        slot = _RefreshSlot(weakref.ref(obj), func)
 
         all_slots = self.slots[key]
         slots = all_slots.slots_dict[id(sender)]
@@ -260,9 +276,15 @@ class Signal(Generic[T, P, R]):
             slots = all_slots.slots_dict[sender_id]
 
             # normal_slots
-            for func in slots.normal_slots:
+            for func_ref in slots.normal_slots:
+                func = func_ref()
+                if func is None:    # TODO: remove from normal_slots
+                    continue
                 func(*args, **kwargs)
 
             # refresh_slots
             for slot in slots.refresh_slots:
-                slot.obj.mark_refresh(slot.func)
+                obj = slot.obj()
+                if obj is None:     # TODO: remove from refresh_slots
+                    continue
+                obj.mark_refresh(slot.func)

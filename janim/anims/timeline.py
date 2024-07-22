@@ -201,13 +201,16 @@ class Timeline(metaclass=ABCMeta):
             self.config_getter = ConfigGetter(config_ctx_var.get())
             self.camera = Camera()
 
-            self._build_frame = inspect.currentframe()
-
             if not quiet:   # pragma: no cover
                 log.info(_('Building "{name}"').format(name=self.__class__.__name__))
                 start_time = time.time()
 
-            self.construct()
+            self._build_frame = inspect.currentframe()
+
+            try:
+                self.construct()
+            finally:
+                self._build_frame = None
 
             if self.current_time == 0:
                 self.forward(DEFAULT_DURATION, _record_lineno=False)    # 使得没有任何前进时，产生一点时间，避免除零以及其它问题
@@ -791,8 +794,6 @@ class TimelineAnim(AnimGroup):
     - ``self.user_anim`` 是显式使用了 :meth:`Timeline.prepare` 或 :meth:`Timeline.play` 而产生的
     '''
     def __init__(self, timeline: Timeline, **kwargs):
-        self.timeline = timeline
-
         self.display_anim = AnimGroup(*timeline.display_anims)
         self.user_anim = AnimGroup(*timeline.anims)
         super().__init__(self.display_anim, self.user_anim, **kwargs)
