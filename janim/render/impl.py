@@ -1,3 +1,4 @@
+from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
@@ -33,7 +34,7 @@ class DotCloudRenderer(Renderer):
         self.prev_color = np.array([])
         self.prev_radius = np.array([])
 
-    def render(self, item: 'DotCloud') -> None:
+    def render(self, item: DotCloud) -> None:
         new_color = item.color._rgbas.data
         new_radius = item.radius._radii.data
         new_points = item.points._points.data
@@ -92,7 +93,7 @@ class VItemRenderer(Renderer):
         self.prev_stroke = np.array([])
         self.prev_fill = np.array([])
 
-    def render(self, item: 'VItem') -> None:
+    def render(self, item: VItem) -> None:
         if item.points.curves_count() == 0:
             return
         render_data = self.data_ctx.get()
@@ -221,7 +222,7 @@ class ImageItemRenderer(Renderer):
         self.prev_color = np.array([])
         self.prev_img = None
 
-    def render(self, item: 'ImageItem') -> None:
+    def render(self, item: ImageItem) -> None:
         new_color = item.color._rgbas.data
         new_points = item.points._points.data
 

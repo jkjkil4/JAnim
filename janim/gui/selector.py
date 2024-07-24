@@ -1,3 +1,4 @@
+from __future__ import annotations
 
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
@@ -28,7 +29,7 @@ class Selector(QObject):
         max_glx: float
         max_gly: float
 
-    def __init__(self, parent: 'AnimViewer') -> None:
+    def __init__(self, parent: AnimViewer) -> None:
         super().__init__(parent)
         self.viewer = parent
 

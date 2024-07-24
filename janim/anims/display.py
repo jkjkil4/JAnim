@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import TYPE_CHECKING
 
 from janim.anims.animation import Animation, RenderCall
@@ -13,7 +15,7 @@ class Display(Animation):
     '''
     label_color = C_LABEL_ANIM_ABSTRACT
 
-    def __init__(self, item: 'Item', **kwargs):
+    def __init__(self, item: Item, **kwargs):
         super().__init__(**kwargs)
         self.item = item
         self.timeline.track(item)
