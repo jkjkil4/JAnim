@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-06-05 17:37+0800\n"
+"POT-Creation-Date: 2024-07-28 00:35+0800\n"
 "PO-Revision-Date: 2024-06-05 17:30+0800\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -17,30 +17,30 @@ msgstr ""
 "Language: zh_CN\n"
 "X-Generator: Poedit 3.4.2\n"
 
-#: janim\gui\selector.py:182
+#: janim\gui\selector.py:183
 msgid "Subitem Selection Tool"
 msgstr "子物件选择工具"
 
-#: janim\gui\selector.py:183
+#: janim\gui\selector.py:184
 msgid "    Ctrl+Left Click: Select Parent Item"
 msgstr "    Ctrl+左键: 选择父物件"
 
-#: janim\gui\selector.py:184
+#: janim\gui\selector.py:185
 msgid "    Left Click: Select Child Item"
 msgstr "    左键: 选择子物件"
 
-#: janim\gui\selector.py:185
+#: janim\gui\selector.py:186
 msgid "    Right Click: Deselect Child Item"
 msgstr "    右键: 取消选择子物件"
 
-#: janim\gui\selector.py:186
+#: janim\gui\selector.py:187
 msgid "    Ctrl+Right Click: Exit"
 msgstr "    Ctrl+右键: 退出"
 
-#: janim\gui\selector.py:187
+#: janim\gui\selector.py:188
 msgid "Selected Parent Item: "
 msgstr "选中父物件："
 
-#: janim\gui\selector.py:192
+#: janim\gui\selector.py:193
 msgid "Selected Subitems: "
 msgstr "选中子物件："

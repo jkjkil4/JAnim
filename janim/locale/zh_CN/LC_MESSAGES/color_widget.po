@@ -8,16 +8,23 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-07-28 00:35+0800\n"
-"PO-Revision-Date: 2024-06-05 17:34+0800\n"
+"PO-Revision-Date: 2024-07-28 00:36+0800\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
+"Language: zh_CN\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=GBK\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: zh_CN\n"
 "X-Generator: Poedit 3.4.2\n"
 
-#: janim\utils\data.py:107
-msgid ""
-"Failed to record data, possibly because the item is in an animation state"
-msgstr "记录数据失败，可能是因为物件处于动画中"
+#: janim\gui\color_widget.py:44
+msgid "normalized form"
+msgstr "归一化形式"
+
+#: janim\gui\color_widget.py:45
+msgid "Color picker"
+msgstr "拾色器"
+
+#: janim\gui\color_widget.py:46
+msgid "Builtins"
+msgstr "内置"

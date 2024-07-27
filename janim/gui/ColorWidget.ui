@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>514</width>
+    <width>484</width>
     <height>278</height>
    </rect>
   </property>
@@ -184,6 +184,13 @@ QCheckBox {
            <item>
             <layout class="QHBoxLayout" name="layout_norm">
              <item>
+              <widget class="QLineEdit" name="display_label">
+               <property name="readOnly">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item>
               <spacer name="spacer_norm">
                <property name="orientation">
                 <enum>Qt::Horizontal</enum>
@@ -239,10 +246,6 @@ QCheckBox {
           <width>100</width>
           <height>0</height>
          </size>
-        </property>
-        <property name="styleSheet">
-         <string notr="true">border: 2px solid white;
-border-radius: 8px;</string>
         </property>
        </widget>
       </item>

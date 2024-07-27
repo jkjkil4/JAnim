@@ -89,6 +89,7 @@ class ColorWidget(QWidget):
             else:
                 editor.setText(f'{float(editor.text()) * 255:.0f}')
             editor.blockSignals(False)
+        self.update_display_label()
 
     def hex_edited(self, text: str) -> None:
         rgb = self.parse_hex(text)
@@ -121,7 +122,7 @@ class ColorWidget(QWidget):
             return None
 
     def btn_picker_clicked(self) -> None:
-        dialog = QColorDialog()
+        dialog = QColorDialog(self)
         if not dialog.exec():
             return
 
@@ -152,3 +153,9 @@ class ColorWidget(QWidget):
             self.ui.edit_hex.blockSignals(True)
             self.ui.edit_hex.setText(f'#{r:0=2X}{g:0=2X}{b:0=2X}')
             self.ui.edit_hex.blockSignals(False)
+
+        self.update_display_label()
+
+    def update_display_label(self):
+        txt = ', '.join([editor.text() for editor in self.rgb_editors])
+        self.ui.display_label.setText(f'[{txt}]')

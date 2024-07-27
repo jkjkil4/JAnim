@@ -23,7 +23,7 @@ class Ui_ColorWidget(object):
     def setupUi(self, ColorWidget):
         if not ColorWidget.objectName():
             ColorWidget.setObjectName(u"ColorWidget")
-        ColorWidget.resize(514, 278)
+        ColorWidget.resize(484, 278)
         ColorWidget.setStyleSheet(u"QLabel {\n"
 "	background: none;\n"
 "}\n"
@@ -107,6 +107,12 @@ class Ui_ColorWidget(object):
 
         self.layout_norm = QHBoxLayout()
         self.layout_norm.setObjectName(u"layout_norm")
+        self.display_label = QLineEdit(self.widget_RGB)
+        self.display_label.setObjectName(u"display_label")
+        self.display_label.setReadOnly(True)
+
+        self.layout_norm.addWidget(self.display_label)
+
         self.spacer_norm = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
 
         self.layout_norm.addItem(self.spacer_norm)
@@ -137,8 +143,6 @@ class Ui_ColorWidget(object):
         sizePolicy.setHeightForWidth(self.widget.sizePolicy().hasHeightForWidth())
         self.widget.setSizePolicy(sizePolicy)
         self.widget.setMinimumSize(QSize(100, 0))
-        self.widget.setStyleSheet(u"border: 2px solid white;\n"
-"border-radius: 8px;")
 
         self.horizontalLayout.addWidget(self.widget)
 

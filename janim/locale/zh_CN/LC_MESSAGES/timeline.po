@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-07-15 17:58+0800\n"
+"POT-Creation-Date: 2024-07-28 00:35+0800\n"
 "PO-Revision-Date: 2024-06-05 18:53+0800\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -21,20 +21,20 @@ msgstr ""
 msgid "{name} cannot be used outside of Timeline.construct"
 msgstr "{name} 无法在 Timeline.construct 之外使用"
 
-#: janim\anims\timeline.py:207
+#: janim\anims\timeline.py:205
 msgid "Building \"{name}\""
 msgstr "构建 \"{name}\" 中"
 
-#: janim\anims\timeline.py:216
+#: janim\anims\timeline.py:219
 msgid ""
 "\"{name}\" did not produce a duration after construction, automatically "
 "generated a duration of {duration}s"
 msgstr "\"{name}\" 构建后没有产生时长，自动产生了 {duration}s 的时长"
 
-#: janim\anims\timeline.py:235
+#: janim\anims\timeline.py:238
 msgid "Finished building \"{name}\" in {elapsed:.2f} s"
 msgstr "构建 \"{name}\" 完成，耗时 {elapsed:.2f} s"
 
-#: janim\anims\timeline.py:259
+#: janim\anims\timeline.py:262
 msgid "dt must be greater than 0"
 msgstr "dt 必须大于 0"

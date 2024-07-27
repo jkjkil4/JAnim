@@ -181,6 +181,10 @@ class AnimViewer(QMainWindow):
         self.action_font_table.setShortcut('Ctrl+F')
         self.font_table: FontTable | None = None
 
+        self.action_color_widget = menu_functions.addAction(_('Color'))
+        self.action_color_widget.setShortcut('Ctrl+O')
+        self.color_widget: ColorWidget | None = None
+
     def setup_status_bar(self) -> None:
         self.fps_label = QLabel()
         self.time_label = QLabel()
@@ -310,6 +314,7 @@ class AnimViewer(QMainWindow):
         self.action_select.triggered.connect(self.on_select_triggered)
         self.action_richtext_edit.triggered.connect(self.on_richtext_edit_triggered)
         self.action_font_table.triggered.connect(self.on_font_table_triggered)
+        self.action_color_widget.triggered.connect(self.on_color_widget_triggered)
 
         self.timeline_view.value_changed.connect(self.on_value_changed)
         self.timeline_view.dragged.connect(lambda: self.set_play_state(False))
@@ -430,6 +435,17 @@ class AnimViewer(QMainWindow):
 
     def on_font_table_destroyed(self) -> None:
         self.font_table = None
+
+    def on_color_widget_triggered(self) -> None:
+        if self.color_widget is None:
+            self.color_widget = ColorWidget(self)
+            self.color_widget.setWindowFlag(Qt.WindowType.Tool)
+            self.color_widget.setAttribute(Qt.WidgetAttribute.WA_DeleteOnClose)
+            self.color_widget.destroyed.connect(self.on_color_widget_destroyed)
+        self.color_widget.show()
+
+    def on_color_widget_destroyed(self) -> None:
+        self.color_widget = None
 
     # endregion (slots-menu)
 

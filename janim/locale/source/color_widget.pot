@@ -16,8 +16,14 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: janim\anims\updater.py:363
-msgid ""
-"The function passed to ItemUpdater must return an item, but got {ret} "
-"instead, defined in {file}:{lineno}"
+#: janim\gui\color_widget.py:44
+msgid "normalized form"
+msgstr ""
+
+#: janim\gui\color_widget.py:45
+msgid "Color picker"
+msgstr ""
+
+#: janim\gui\color_widget.py:46
+msgid "Builtins"
 msgstr ""
