@@ -31,6 +31,7 @@ from janim.anims.timeline import Timeline, TimelineAnim
 from janim.exception import ExitException
 from janim.gui.application import Application
 from janim.gui.audio_player import AudioPlayer
+from janim.gui.color_widget import ColorWidget
 from janim.gui.fixed_ratio_widget import FixedRatioWidget
 from janim.gui.font_table import FontTable
 from janim.gui.glwidget import GLWidget
@@ -357,6 +358,7 @@ class AnimViewer(QMainWindow):
         self.set_anim(anim)
 
         import gc
+
         from janim.cli import get_all_timelines_from_module
 
         gc.collect()

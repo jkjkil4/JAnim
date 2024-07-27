@@ -143,7 +143,7 @@ def examples_parser(parser: ArgumentParser) -> None:
 def tool_parser(parser: ArgumentParser) -> None:
     parser.add_argument(
         'tool_name',
-        choices=['richtext', 'fonts'],
+        choices=['richtext', 'fonts', 'color'],
         nargs='*',
         help=_('Tool(s) that you want to use')
     )

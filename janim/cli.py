@@ -133,7 +133,7 @@ def tool(args: Namespace) -> None:
         return
 
     # 不直接从对应的 module 导入，是为了经过 anim_viewer 中对 pyside6 安装的检查
-    from janim.gui.anim_viewer import FontTable, QWidget, RichTextEditor
+    from janim.gui.anim_viewer import ColorWidget, FontTable, QWidget, RichTextEditor
 
     log.info('======')
     log.info(_('Constructing window'))
@@ -146,7 +146,8 @@ def tool(args: Namespace) -> None:
 
     tool_map: dict[str, type[QWidget]] = {
         'richtext': RichTextEditor,
-        'fonts': FontTable
+        'fonts': FontTable,
+        'color': ColorWidget
     }
 
     widgets: list[QWidget] = []
