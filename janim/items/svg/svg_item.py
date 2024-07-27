@@ -29,6 +29,14 @@ def _convert_opacity(x: float | None) -> float:
     return 0. if x is None else x
 
 
+def _parse_color(hex, opacity) -> tuple[str, float]:
+    # '#RRGGBBAA'
+    if isinstance(hex, str) and hex.startswith('#') and len(hex) == 9:
+        return hex[:7], int(hex[-2:], 16) / 255     # ('#RRGGBB', Alpha)
+
+    return hex, _convert_opacity(opacity)
+
+
 class SVGItem(Group[VItem]):
     '''
     传入 SVG 文件路径，解析为物件
@@ -142,12 +150,15 @@ class SVGItem(Group[VItem]):
 
         opacity = float(path.values.get('opacity', 1))
 
+        stroke_color, stroke_alpha = _parse_color(path.stroke.hex, path.stroke.opacity)
+        fill_color, fill_alpha = _parse_color(path.fill.hex, path.fill.opacity)
+
         vitem_styles = dict(
             stroke_radius=path.stroke_width * STROKE_WIDTH_CONVERSION / 2,
-            stroke_color=path.stroke.hex,
-            stroke_alpha=_convert_opacity(path.stroke.opacity) * opacity,
-            fill_color=path.fill.hex,
-            fill_alpha=_convert_opacity(path.fill.opacity) * opacity
+            stroke_color=stroke_color,
+            stroke_alpha=stroke_alpha * opacity,
+            fill_color=fill_color,
+            fill_alpha=fill_alpha * opacity
         )
         vitem_points = builder.get()
         vitem_points[:, :2] += offset

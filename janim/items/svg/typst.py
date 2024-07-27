@@ -19,7 +19,7 @@ TYPST_FILENAME = 'temp.typ'
 
 class TypstDoc(SVGItem):
     '''
-    ``Typst`` 文档
+    Typst 文档
     '''
     def __init__(self, text: str, **kwargs):
         self.text = text
