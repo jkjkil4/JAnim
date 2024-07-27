@@ -36,7 +36,6 @@ class Array:
     '''
     def __init__(self, *, dtype=np.float64):
         self._data = np.empty(0, dtype=dtype)
-        self._dtype = dtype
 
     def len(self) -> int:
         return len(self._data)
@@ -53,7 +52,7 @@ class Array:
             return
         # 否则进行拷贝，这里的 np.array 对于 numpy 数组和其它 ArrayLike 数据
         # 都会在原数据之外产生拷贝，不会产生共用内存的情况
-        self._data = np.array(data, dtype=self._dtype)
+        self._data = np.array(data, dtype=self._data.dtype)
         self._data.setflags(write=False)
 
     def copy(self) -> Array:

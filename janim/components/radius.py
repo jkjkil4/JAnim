@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from functools import lru_cache
 from typing import Iterable, Self
 
 import numpy as np
@@ -10,6 +11,13 @@ from janim.utils.data import AlignedData, Array
 from janim.utils.iterables import resize_with_interpolation
 
 
+@lru_cache()
+def _get_array(radius: float) -> Array:
+    array = Array()
+    array.data = np.full(1, radius)
+    return array
+
+
 class Cmpt_Radius[ItemT](Component[ItemT]):
     '''
     半径组件，被用于 :class:`DotCloud` 的点半径，以及 :class:`VItem` 的轮廓线粗细
@@ -18,8 +26,7 @@ class Cmpt_Radius[ItemT](Component[ItemT]):
         super().__init__(*args, **kwargs)
         self.default_radius = default_radius
 
-        self._radii = Array()
-        self._radii.data = np.full(1, self.default_radius)
+        self._radii = _get_array(self.default_radius).copy()
 
     def copy(self) -> Self:
         cmpt_copy = super().copy()

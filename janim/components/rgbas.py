@@ -11,7 +11,8 @@ from janim.utils.bezier import interpolate
 from janim.utils.data import AlignedData, Array
 from janim.utils.iterables import resize_with_interpolation
 
-DEFAULT_RGBAS_DATA = np.full((1, 4), 1)
+DEFAULT_RGBAS_ARRAY = Array()
+DEFAULT_RGBAS_ARRAY.data = np.full((1, 4), 1)
 
 
 class Cmpt_Rgbas[ItemT](Component[ItemT]):
@@ -21,8 +22,7 @@ class Cmpt_Rgbas[ItemT](Component[ItemT]):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self._rgbas = Array()
-        self._rgbas.data = DEFAULT_RGBAS_DATA
+        self._rgbas = DEFAULT_RGBAS_ARRAY.copy()
 
     def copy(self) -> Self:
         cmpt_copy = super().copy()
@@ -112,8 +112,8 @@ class Cmpt_Rgbas[ItemT](Component[ItemT]):
 
     def set(
         self,
-        color: JAnimColor | ColorArray = None,
-        alpha: Alpha | AlphaArray = None,
+        color: JAnimColor | ColorArray | None = None,
+        alpha: Alpha | AlphaArray | None = None,
         *,
         root_only: bool = False,
     ) -> Self:
@@ -141,7 +141,7 @@ class Cmpt_Rgbas[ItemT](Component[ItemT]):
 
         if color is not None and is_single_color(color):
             color = [color]
-        if alpha is not None and not isinstance(alpha, Iterable):
+        if alpha is not None and isinstance(alpha, (int, float)):
             alpha = [alpha]
 
         if alpha is None and not isinstance(color[0], str) and len(color[0]) == 4:
@@ -175,7 +175,7 @@ class Cmpt_Rgbas[ItemT](Component[ItemT]):
         '''
         将颜色数据重置为默认值
         '''
-        self.set(DEFAULT_RGBAS_DATA)
+        self.set(DEFAULT_RGBAS_ARRAY.data)
         return self
 
     def reverse(self) -> Self:
