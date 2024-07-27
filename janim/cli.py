@@ -5,6 +5,7 @@ import platform
 import subprocess as sp
 import time
 from argparse import Namespace
+from functools import lru_cache
 
 from janim.anims.timeline import Timeline
 from janim.exception import (EXITCODE_MODULE_NOT_FOUND, EXITCODE_NOT_FILE,
@@ -29,6 +30,7 @@ def run(args: Namespace) -> None:
     from janim.gui.anim_viewer import AnimViewer
 
     auto_play = len(timelines) == 1
+    available_timeline_names = [timeline.__name__ for timeline in get_all_timelines_from_module(module)]
 
     from PySide6.QtCore import QPoint, QTimer
 
@@ -40,7 +42,10 @@ def run(args: Namespace) -> None:
 
     widgets: list[AnimViewer] = []
     for timeline in timelines:
-        viewer = AnimViewer(timeline().build(), auto_play, args.interact)
+        viewer = AnimViewer(timeline().build(),
+                            auto_play=auto_play,
+                            interact=args.interact,
+                            available_timeline_names=available_timeline_names)
         widgets.append(viewer)
 
     log.info('======')
@@ -158,6 +163,9 @@ def tool(args: Namespace) -> None:
 
 
 def modify_default_config(args: Namespace) -> None:
+    '''
+    用于 CLI 的 ``-c`` 参数
+    '''
     if args.config:
         for key, value in args.config:
             dtype = type(getattr(default_config, key))
@@ -165,6 +173,9 @@ def modify_default_config(args: Namespace) -> None:
 
 
 def get_module(file_name: str):
+    '''
+    根据给定的文件名 ``file_name`` 产生 ``module``
+    '''
     if not os.path.exists(file_name):
         log.error(_('"{file_name}" doesn\'t exist').format(file_name=file_name))
         raise ExitException(EXITCODE_MODULE_NOT_FOUND)
@@ -179,9 +190,10 @@ def get_module(file_name: str):
     return module
 
 
-def extract_timelines_from_module(args: Namespace, module) -> list[type['Timeline']]:
-    from janim.anims.timeline import Timeline
-
+def extract_timelines_from_module(args: Namespace, module) -> list[type[Timeline]]:
+    '''
+    根据指定的 ``module`` 向用户询问使用哪些 :class:`~.Timeline`
+    '''
     timelines = []
     err = False
 
@@ -193,16 +205,7 @@ def extract_timelines_from_module(args: Namespace, module) -> list[type['Timelin
                 log.error(_('No timeline named "{name}"').format(name=name))
                 err = True
     else:
-        import inspect
-
-        classes = [
-            value
-            for value in module.__dict__.values()
-            if isinstance(value, type) and issubclass(value, Timeline) and value.__module__ == module.__name__
-        ]
-        if len(classes) <= 1:
-            return classes
-        classes.sort(key=lambda x: inspect.getsourcelines(x)[1])
+        classes = get_all_timelines_from_module(module)
         if args.all:
             return classes
 
@@ -243,7 +246,42 @@ def extract_timelines_from_module(args: Namespace, module) -> list[type['Timelin
     return [] if err else timelines
 
 
+@lru_cache(maxsize=1)
+def get_all_timelines_from_module(module) -> list[type[Timeline]]:
+    '''
+    从指定的 ``module`` 中得到所有可用的 :class:`~.Timeline`
+
+    会缓存结果，如果 ``module`` 的内容有更新可能需要使用 ``get_all_timelines_from_module.cache_clear()`` 来清空缓存
+    '''
+    classes = [
+        value
+        for value in module.__dict__.values()
+        if (isinstance(value, type)
+            and issubclass(value, Timeline)
+            and value.__module__ == module.__name__                             # 定义于当前模块，排除了 import 导入的
+            and not getattr(value.construct, '__isabstractmethod__', False))    # construct 方法已被实现
+    ]
+    if len(classes) <= 1:
+        return classes
+
+    def key(cls):
+        try:
+            return (0, inspect.getsourcelines(cls)[1])
+        except OSError:
+            # 对于重新载入的 module，如果代码里删除了某个类的代码，这个类仍然会出现在 module 中
+            # 但是此时这个类无法获得到行数，所以会产生 OSError
+            # 这里把已删除的类排序到最后
+            return (1, 0)
+
+    classes.sort(key=key)
+
+    return classes
+
+
 def open_file(file_path: str) -> None:
+    '''
+    打开指定的文件
+    '''
     current_os = platform.system()
     if current_os == "Windows":
         os.startfile(file_path)

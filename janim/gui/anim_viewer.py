@@ -18,12 +18,14 @@ import os
 import time
 import traceback
 from bisect import bisect_left
+from typing import Sequence
 
 from PySide6.QtCore import QByteArray, Qt, Signal
 from PySide6.QtGui import QCloseEvent, QHideEvent, QIcon, QShowEvent
-from PySide6.QtWidgets import (QApplication, QFileDialog, QLabel, QLineEdit,
-                               QMainWindow, QMessageBox, QPushButton,
-                               QSizePolicy, QSplitter, QStackedLayout, QWidget)
+from PySide6.QtWidgets import (QApplication, QCompleter, QFileDialog, QLabel,
+                               QLineEdit, QMainWindow, QMessageBox,
+                               QPushButton, QSizePolicy, QSplitter,
+                               QStackedLayout, QWidget)
 
 from janim.anims.timeline import Timeline, TimelineAnim
 from janim.exception import ExitException
@@ -55,8 +57,10 @@ class AnimViewer(QMainWindow):
     def __init__(
         self,
         anim: TimelineAnim,
+        *,
         auto_play: bool = True,
         interact: bool = False,
+        available_timeline_names: Sequence[str] | None = None,
         parent: QWidget | None = None
     ):
         super().__init__(parent)
@@ -78,6 +82,9 @@ class AnimViewer(QMainWindow):
 
         if auto_play:
             self.switch_play_state()
+
+        if available_timeline_names is not None:
+            self.update_completer(available_timeline_names)
 
     @classmethod
     def views(cls, anim: TimelineAnim) -> None:
@@ -255,6 +262,9 @@ class AnimViewer(QMainWindow):
 
         self.setGeometry(geometry)
 
+    def update_completer(self, completions: Sequence[str]) -> None:
+        self.name_edit.setCompleter(QCompleter(completions))
+
     def showEvent(self, event: QShowEvent) -> None:
         super().showEvent(event)
         if not self.moved_to_position:
@@ -347,8 +357,11 @@ class AnimViewer(QMainWindow):
         self.set_anim(anim)
 
         import gc
+        from janim.cli import get_all_timelines_from_module
 
         gc.collect()
+        get_all_timelines_from_module.cache_clear()
+        self.update_completer([timeline.__name__ for timeline in get_all_timelines_from_module(module)])
 
         if not stay_same:
             self.anim.anim_on(0)
