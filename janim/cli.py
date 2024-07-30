@@ -207,7 +207,7 @@ def extract_timelines_from_module(args: Namespace, module) -> list[type[Timeline
                 err = True
     else:
         classes = get_all_timelines_from_module(module)
-        if args.all:
+        if len(classes) <= 1 or args.all:
             return classes
 
         max_digits = len(str(len(classes)))
