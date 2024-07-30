@@ -7,24 +7,32 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-07-28 00:35+0800\n"
-"PO-Revision-Date: 2024-07-28 00:36+0800\n"
+"POT-Creation-Date: 2024-07-30 16:23+0800\n"
+"PO-Revision-Date: 2024-07-30 16:23+0800\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
-"Language: zh_CN\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=GBK\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Language: zh_CN\n"
 "X-Generator: Poedit 3.4.2\n"
 
-#: janim\gui\color_widget.py:44
+#: janim\gui\color_widget.py:62
+msgid "Color"
+msgstr "颜色"
+
+#: janim\gui\color_widget.py:63
 msgid "normalized form"
 msgstr "归一化形式"
 
-#: janim\gui\color_widget.py:45
+#: janim\gui\color_widget.py:64
 msgid "Color picker"
 msgstr "拾色器"
 
-#: janim\gui\color_widget.py:46
+#: janim\gui\color_widget.py:65
+msgid "Open"
+msgstr "打开"
+
+#: janim\gui\color_widget.py:66
 msgid "Builtins"
 msgstr "内置"

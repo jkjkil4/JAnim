@@ -16,14 +16,14 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
 from PySide6.QtWidgets import (QApplication, QCheckBox, QHBoxLayout, QLabel,
-    QLineEdit, QPushButton, QSizePolicy, QSpacerItem,
-    QVBoxLayout, QWidget)
+    QLineEdit, QPushButton, QScrollArea, QSizePolicy,
+    QSpacerItem, QVBoxLayout, QWidget)
 
 class Ui_ColorWidget(object):
     def setupUi(self, ColorWidget):
         if not ColorWidget.objectName():
             ColorWidget.setObjectName(u"ColorWidget")
-        ColorWidget.resize(484, 278)
+        ColorWidget.resize(597, 379)
         ColorWidget.setStyleSheet(u"QLabel {\n"
 "	background: none;\n"
 "}\n"
@@ -64,7 +64,7 @@ class Ui_ColorWidget(object):
         self.edit_R = QLineEdit(self.widget_RGB)
         self.edit_R.setObjectName(u"edit_R")
         self.edit_R.setMinimumSize(QSize(60, 0))
-        self.edit_R.setMaximumSize(QSize(100, 16777215))
+        self.edit_R.setMaximumSize(QSize(120, 16777215))
 
         self.layout_RGB.addWidget(self.edit_R)
 
@@ -81,7 +81,7 @@ class Ui_ColorWidget(object):
         self.edit_G = QLineEdit(self.widget_RGB)
         self.edit_G.setObjectName(u"edit_G")
         self.edit_G.setMinimumSize(QSize(60, 0))
-        self.edit_G.setMaximumSize(QSize(100, 16777215))
+        self.edit_G.setMaximumSize(QSize(120, 16777215))
 
         self.layout_RGB.addWidget(self.edit_G)
 
@@ -98,7 +98,7 @@ class Ui_ColorWidget(object):
         self.edit_B = QLineEdit(self.widget_RGB)
         self.edit_B.setObjectName(u"edit_B")
         self.edit_B.setMinimumSize(QSize(60, 0))
-        self.edit_B.setMaximumSize(QSize(100, 16777215))
+        self.edit_B.setMaximumSize(QSize(120, 16777215))
 
         self.layout_RGB.addWidget(self.edit_B)
 
@@ -202,6 +202,10 @@ class Ui_ColorWidget(object):
 
         self.layout_picker.addWidget(self.btn_picker)
 
+        self.spacer_bottom = QSpacerItem(20, 0, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
+
+        self.layout_picker.addItem(self.spacer_bottom)
+
 
         self.verticalLayout_3.addLayout(self.layout_picker)
 
@@ -220,25 +224,15 @@ class Ui_ColorWidget(object):
 
         self.layout_builtins.addWidget(self.label_builtins)
 
-        self.widget_builtins = QWidget(ColorWidget)
-        self.widget_builtins.setObjectName(u"widget_builtins")
-        sizePolicy1 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Expanding)
-        sizePolicy1.setHorizontalStretch(0)
-        sizePolicy1.setVerticalStretch(0)
-        sizePolicy1.setHeightForWidth(self.widget_builtins.sizePolicy().hasHeightForWidth())
-        self.widget_builtins.setSizePolicy(sizePolicy1)
-        self.widget_builtins.setStyleSheet(u"#widget_builtins {\n"
-"	background: #3e5b7a;\n"
-"	border-radius: 12px;\n"
-"}")
-        self.horizontalLayout_5 = QHBoxLayout(self.widget_builtins)
-        self.horizontalLayout_5.setObjectName(u"horizontalLayout_5")
-        self.spacer_builtins = QSpacerItem(0, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+        self.scroll_area = QScrollArea(ColorWidget)
+        self.scroll_area.setObjectName(u"scroll_area")
+        self.scroll_area.setWidgetResizable(True)
+        self.scroll_area_widget = QWidget()
+        self.scroll_area_widget.setObjectName(u"scroll_area_widget")
+        self.scroll_area_widget.setGeometry(QRect(0, 0, 395, 217))
+        self.scroll_area.setWidget(self.scroll_area_widget)
 
-        self.horizontalLayout_5.addItem(self.spacer_builtins)
-
-
-        self.layout_builtins.addWidget(self.widget_builtins)
+        self.layout_builtins.addWidget(self.scroll_area)
 
 
         self.layout_bottom.addLayout(self.layout_builtins)
@@ -246,10 +240,6 @@ class Ui_ColorWidget(object):
         self.layout_bottom.setStretch(2, 1)
 
         self.verticalLayout_2.addLayout(self.layout_bottom)
-
-        self.spacer_bottom = QSpacerItem(20, 0, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
-
-        self.verticalLayout_2.addItem(self.spacer_bottom)
 
 
         self.retranslateUi(ColorWidget)

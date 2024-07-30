@@ -1,14 +1,30 @@
 from enum import Enum
 
+from colour import Color
 # from PySide6.QtCore import QRegularExpression
 # from PySide6.QtGui import QRegularExpressionValidator
-from PySide6.QtWidgets import QColorDialog, QLineEdit, QWidget
+from PySide6.QtWidgets import (QColorDialog, QHBoxLayout, QLineEdit,
+                               QPushButton, QVBoxLayout, QWidget)
 
+import janim.constants.colors as colors
 from janim.gui.ui_ColorWidget import Ui_ColorWidget
 from janim.locale.i18n import get_local_strings
 from janim.utils.simple_functions import clip
 
 _ = get_local_strings('color_widget')
+
+builtins_area_qss = '''
+QPushButton {
+    border-radius: 4px;
+    padding: 4px;
+}
+QPushButton:hover {
+    border: 2px solid white;
+}
+QPushButton:pressed {
+    border: 2px solid gray;
+}
+'''
 
 
 class ColorWidget(QWidget):
@@ -22,6 +38,8 @@ class ColorWidget(QWidget):
 
         self.ui = Ui_ColorWidget()
         self.ui.setupUi(self)
+        self.setup_builtins()
+
         self.rgb_editors = (self.ui.edit_R, self.ui.edit_G, self.ui.edit_B)
         self.ui.cbb_norm.stateChanged.connect(self.norm_state_changed)
 
@@ -41,9 +59,46 @@ class ColorWidget(QWidget):
 
         self.ui.btn_picker.clicked.connect(self.btn_picker_clicked)
 
+        self.setWindowTitle(_('Color'))
         self.ui.cbb_norm.setText(_('normalized form'))
         self.ui.label_picker.setText(_('Color picker'))
+        self.ui.btn_picker.setText(_('Open'))
         self.ui.label_builtins.setText(_('Builtins'))
+
+    def setup_builtins(self) -> None:
+        def get_btn(name: str) -> QPushButton:
+            btn = QPushButton(name)
+            color = colors.__dict__[name]
+            text_color = 'white' if sum(Color(color).rgb) / 3 < 0.5 else 'black'
+            btn.setStyleSheet(
+                f'background: {color}\n;'
+                f'color: {text_color};'
+            )
+            btn.clicked.connect(self.btn_builtin_clicked)
+            return btn
+
+        layout = QVBoxLayout()
+        layout.setSizeConstraint(QVBoxLayout.SizeConstraint.SetMaximumSize)
+        self.ui.scroll_area_widget.setLayout(layout)
+        self.ui.scroll_area_widget.setStyleSheet(builtins_area_qss)
+
+        prefixes = ('BLUE', 'TEAL', 'GREEN', 'YELLOW', 'GOLD', 'RED', 'MAROON', 'PURPLE', 'GREY')
+        suffixes = ('E', 'D', 'C', 'B', 'A')
+        for prefix in prefixes:
+            sublayout = QHBoxLayout()
+            layout.addLayout(sublayout)
+            for suffix in suffixes:
+                name = f'{prefix}_{suffix}'
+                sublayout.addWidget(get_btn(name))
+            sublayout.addStretch()
+
+        others = ('WHITE', 'BLACK', 'GREY_BROWN', 'DARK_BROWN', 'LIGHT_BROWN',
+                  'PINK', 'LIGHT_PINK', 'GREEN_SCREEN', 'ORANGE')
+        sublayout = QHBoxLayout()
+        layout.addLayout(sublayout)
+        for name in others:
+            sublayout.addWidget(get_btn(name))
+        sublayout.addStretch()
 
     def rgb_edited(self, text: str) -> None:
         editor: QLineEdit = self.sender()
@@ -128,6 +183,11 @@ class ColorWidget(QWidget):
 
         color = dialog.currentColor()
         self.set_color(color.red(), color.green(), color.blue())
+
+    def btn_builtin_clicked(self) -> None:
+        btn: QPushButton = self.sender()
+        rgb = Color(colors.__dict__[btn.text()]).rgb
+        self.set_color(*[round(v * 255) for v in rgb])
 
     def set_color(self, r: int, g: int, b: int, source=EditSource.Other) -> None:
         assert r <= 255 and g <= 255 and b <= 255

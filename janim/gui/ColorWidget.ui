@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>484</width>
-    <height>278</height>
+    <width>597</width>
+    <height>379</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -45,7 +45,7 @@ QCheckBox {
            <string>RGB</string>
           </property>
           <property name="indent">
-           <number>12</number>
+           <number>10</number>
           </property>
          </widget>
         </item>
@@ -80,7 +80,7 @@ QCheckBox {
                </property>
                <property name="maximumSize">
                 <size>
-                 <width>100</width>
+                 <width>120</width>
                  <height>16777215</height>
                 </size>
                </property>
@@ -125,7 +125,7 @@ QCheckBox {
                </property>
                <property name="maximumSize">
                 <size>
-                 <width>100</width>
+                 <width>120</width>
                  <height>16777215</height>
                 </size>
                </property>
@@ -170,7 +170,7 @@ QCheckBox {
                </property>
                <property name="maximumSize">
                 <size>
-                 <width>100</width>
+                 <width>120</width>
                  <height>16777215</height>
                 </size>
                </property>
@@ -280,7 +280,7 @@ QCheckBox {
             <string>HEX</string>
            </property>
            <property name="indent">
-            <number>12</number>
+            <number>10</number>
            </property>
           </widget>
          </item>
@@ -335,7 +335,7 @@ QCheckBox {
             <string>Color picker</string>
            </property>
            <property name="indent">
-            <number>12</number>
+            <number>10</number>
            </property>
           </widget>
          </item>
@@ -345,6 +345,19 @@ QCheckBox {
             <string>Open</string>
            </property>
           </widget>
+         </item>
+         <item>
+          <spacer name="spacer_bottom">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>20</width>
+             <height>0</height>
+            </size>
+           </property>
+          </spacer>
          </item>
         </layout>
        </item>
@@ -374,57 +387,30 @@ QCheckBox {
           <string>Builtins</string>
          </property>
          <property name="indent">
-          <number>12</number>
+          <number>10</number>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QWidget" name="widget_builtins" native="true">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
+        <widget class="QScrollArea" name="scroll_area">
+         <property name="widgetResizable">
+          <bool>true</bool>
          </property>
-         <property name="styleSheet">
-          <string notr="true">#widget_builtins {
-	background: #3e5b7a;
-	border-radius: 12px;
-}</string>
-         </property>
-         <layout class="QHBoxLayout" name="horizontalLayout_5">
-          <item>
-           <spacer name="spacer_builtins">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>0</width>
-              <height>20</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-         </layout>
+         <widget class="QWidget" name="scroll_area_widget">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>395</width>
+            <height>217</height>
+           </rect>
+          </property>
+         </widget>
         </widget>
        </item>
       </layout>
      </item>
     </layout>
-   </item>
-   <item>
-    <spacer name="spacer_bottom">
-     <property name="orientation">
-      <enum>Qt::Vertical</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>20</width>
-       <height>0</height>
-      </size>
-     </property>
-    </spacer>
    </item>
   </layout>
  </widget>
