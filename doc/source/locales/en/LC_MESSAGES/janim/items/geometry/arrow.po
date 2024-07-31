@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: JAnim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-03-14 14:52+0800\n"
+"POT-Creation-Date: 2024-07-31 22:13+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -98,6 +98,22 @@ msgstr ""
 #: janim.items.geometry.arrow.Arrow.copy:1
 #: janim.items.geometry.arrow.DoubleArrow.copy:1 of
 msgid "复制物件"
+msgstr ""
+
+#: janim.items.geometry.arrow.Arrow.create_text:1 of
+msgid "创建文字并与箭头对齐"
+msgstr ""
+
+#: janim.items.geometry.arrow.Arrow.create_text:3 of
+msgid "其中 ``under`` 参数的含义是："
+msgstr ""
+
+#: janim.items.geometry.arrow.Arrow.create_text:5 of
+msgid "``under=False``："
+msgstr ""
+
+#: janim.items.geometry.arrow.Arrow.create_text:12 of
+msgid "``under=True``："
 msgstr ""
 
 #: janim.items.geometry.arrow.DoubleArrow:1 janim.items.geometry.arrow.Vector:1

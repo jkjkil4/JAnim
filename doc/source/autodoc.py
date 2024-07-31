@@ -3,8 +3,12 @@ import os
 doc_src_path = os.path.dirname(__file__)
 janim_path = os.path.abspath(os.path.join(doc_src_path, '../../janim'))
 
-generate_autodoc_exclude = ['janim.constants', 'janim.cli', 'janim.examples']
+generate_autodoc_exclude = ['janim.constants', 'janim.cli', 'janim.examples', 'janim.locale']
 force_generate_autodoc = False
+
+extra_include = {
+    'janim': ['constants']
+}
 
 
 def generate_autodoc(local_path: str, module_path: str) -> bool:
@@ -52,6 +56,11 @@ def generate_autodoc(local_path: str, module_path: str) -> bool:
 
             for dir in generated_dirs:
                 f_modules.write(f'   {dir}/modules.rst\n')
+
+            extras = extra_include.get(module_path, None)
+            if extras is not None:
+                for extra in extras:
+                    f_modules.write(f'   {extra}\n')
 
             for file in generated_files:
                 f_modules.write(f'   {file}\n')

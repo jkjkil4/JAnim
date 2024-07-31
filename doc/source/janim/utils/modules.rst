@@ -9,6 +9,7 @@ utils
    bezier
    config
    data
+   deprecation
    dict_ops
    file_ops
    font

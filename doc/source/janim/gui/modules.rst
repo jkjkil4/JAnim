@@ -9,6 +9,7 @@ gui
    anim_viewer
    application
    audio_player
+   color_widget
    fixed_ratio_widget
    font_table
    glwidget
@@ -16,3 +17,4 @@ gui
    richtext_editor
    selector
    timeline_view
+   ui_ColorWidget

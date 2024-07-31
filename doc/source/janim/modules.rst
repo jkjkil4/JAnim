@@ -13,6 +13,7 @@ janim
    items/modules.rst
    render/modules.rst
    utils/modules.rst
+   constants
    exception
    imports
    logger

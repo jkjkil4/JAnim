@@ -6,19 +6,18 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: JAnim\n"
+"Project-Id-Version:  JAnim\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-05-30 15:49+0800\n"
+"POT-Creation-Date: 2024-07-31 22:13+0800\n"
 "PO-Revision-Date: 2024-06-03 10:08+0800\n"
 "Last-Translator: \n"
-"Language-Team: en <LL@li.org>\n"
 "Language: en\n"
+"Language-Team: en <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "Generated-By: Babel 2.14.0\n"
-"X-Generator: Poedit 3.4.2\n"
 
 #: ../../source/janim/utils/config.rst:2
 msgid "config"
@@ -32,55 +31,94 @@ msgstr "基类：:py:class:`object`"
 msgid "配置"
 msgstr "Configuration"
 
-#: janim.utils.config.Config:4 of
+#: janim.utils.config.Config:3 of
+msgid "大部分的参数不作说明，稍微说明一下这些参数："
+msgstr ""
+
+#: janim.utils.config.Config:5 of
+msgid "``fps``: 输出视频时的帧率"
+msgstr ""
+
+#: janim.utils.config.Config:6 of
+msgid "``preview_fps``: 在预览窗口时的帧率"
+msgstr ""
+
+#: janim.utils.config.Config:7 of
+msgid ""
+"在代码内设置 ``background_color`` 时，不能使用 ``background_color='#RRGGBB'``，应使用 "
+"``background_color=Color('#RRGGBB')``"
+msgstr ""
+
+#: janim.utils.config.Config:8 of
+msgid ""
+"``output_dir`` 以 ``:`` 开头时，表示相对于 ``.py`` 文件的路径，例如 "
+"``output_dir=':/videos'``"
+msgstr ""
+
+#: janim.utils.config.Config:11 of
 msgid "基础用法"
 msgstr "Basic usage"
 
-#: janim.utils.config.Config:6 of
+#: janim.utils.config.Config:13 of
 msgid "使用 ``Config.get.xxx`` 得到属性，例如 ``Config.get.fps`` 则得到当前设置的帧率"
-msgstr "To obtain attributes using ``Config.get.xxx``, for example, ``Config.get.fps`` retrieves the currently set frame rate."
+msgstr ""
+"To obtain attributes using ``Config.get.xxx``, for example, "
+"``Config.get.fps`` retrieves the currently set frame rate."
 
-#: janim.utils.config.Config:8 of
+#: janim.utils.config.Config:15 of
 msgid "使用 ``with Config(key=value):`` 在指定的配置下执行内容，例如："
-msgstr "Execute under specified configuration using ``with Config(key=value):``, for example:"
+msgstr ""
+"Execute under specified configuration using ``with Config(key=value):``, "
+"for example:"
 
-#: janim.utils.config.Config:19 of
+#: janim.utils.config.Config:26 of
 msgid "其中没有设置的属性则采用默认设置 :py:obj:`~.default_config`"
-msgstr "Any properties not set will use the default settings from :py:obj:`~.default_config`"
+msgstr ""
+"Any properties not set will use the default settings from "
+":py:obj:`~.default_config`"
 
-#: janim.utils.config.Config:22 of
+#: janim.utils.config.Config:29 of
 msgid "全局配置"
 msgstr "Global configuration"
 
-#: janim.utils.config.Config:24 of
+#: janim.utils.config.Config:31 of
 msgid "在使用命令行参数时，使用 ``-c 配置名 值`` 可以修改全局配置"
-msgstr "When using command-line arguments, you can modify global configuration by using ``-c config_name value``."
+msgstr ""
+"When using command-line arguments, you can modify global configuration by"
+" using ``-c config_name value``."
 
-#: janim.utils.config.Config:26 of
+#: janim.utils.config.Config:33 of
 msgid "例如 ``janim write your_file.py YourTimeline -c fps 120`` 可以将渲染帧率设置为 120"
-msgstr "For example, ``janim write your_file.py YourTimeline -c fps 120`` can set the rendering frame rate to 120."
+msgstr ""
+"For example, ``janim write your_file.py YourTimeline -c fps 120`` can set"
+" the rendering frame rate to 120."
 
-#: janim.utils.config.Config:28 of
+#: janim.utils.config.Config:35 of
 msgid "可以同时修改多个，例如："
 msgstr "You can modify multiple settings simultaneously, for example:"
 
-#: janim.utils.config.Config:34 of
+#: janim.utils.config.Config:41 of
 msgid "这个命令会将动画以 120 的帧率输出到 ``custom_dir`` 这个指定的文件夹中"
-msgstr "This command will output the animation at a frame rate of 120 to the ``custom_dir`` specified folder."
+msgstr ""
+"This command will output the animation at a frame rate of 120 to the "
+"``custom_dir`` specified folder."
 
-#: janim.utils.config.Config:37 of
+#: janim.utils.config.Config:44 of
 msgid "时间轴配置"
-msgstr "Timeline configuration\v"
+msgstr "Timeline configuration\\v"
 
-#: janim.utils.config.Config:39 of
+#: janim.utils.config.Config:46 of
 msgid "定义类变量 ``CONFIG``，例如："
 msgstr "Define a class variable named ``CONFIG``, for example:"
 
-#: janim.utils.config.Config:52 of
+#: janim.utils.config.Config:59 of
 msgid "这样则是设定这个时间轴的配置，渲染时帧率 120，预览（显示为窗口）时帧率 30"
-msgstr "In this way, you are setting the configuration for this timeline with a rendering frame rate of 120 and a preview (displayed as a window) frame rate of 30."
+msgstr ""
+"In this way, you are setting the configuration for this timeline with a "
+"rendering frame rate of 120 and a preview (displayed as a window) frame "
+"rate of 30."
 
-#: janim.utils.config.Config:54 of
+#: janim.utils.config.Config:61 of
 msgid "另见：:py:obj:`~.Timeline.CONFIG`"
 msgstr "See also :py:obj:`~.Timeline.CONFIG`"
 
@@ -106,8 +144,11 @@ msgstr "The retrieval of data associated with configuration settings."
 
 #: janim.utils.config.ConfigGetter:3 of
 msgid "请仍然使用 ``Config.get.xxx`` 来获取定义在该类中的内容"
-msgstr "Please continue to use ``Config.get.xxx`` to retrieve the content defined in this class."
+msgstr ""
+"Please continue to use ``Config.get.xxx`` to retrieve the content defined"
+" in this class."
 
 #: janim.utils.config.ConfigGetter.formated_output_dir:1 of
 msgid "将 ``:/path/to/file`` 转换为相对于 ``relative_path`` 的路径"
 msgstr "To convert ``:/path/to/file`` to a path relative to ``relative_path``."
+
