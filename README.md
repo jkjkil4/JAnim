@@ -43,12 +43,12 @@ Additionally, there are other software dependencies to be installed:
 
 ## Using JAnim
 
-You can run
+You can run the following command to see examples.
 ```sh
 janim examples
 ```
-to see examples.
 
+The [Tutorial Page](https://janim.readthedocs.io/en/latest/tutorial/installation.html) of the [Documentation](https://janim.readthedocs.io/en/latest/index.html) provides a brief view to get you started. (You can change the language of the documentation at the bottom-left corner.)
 
 ## License
 
