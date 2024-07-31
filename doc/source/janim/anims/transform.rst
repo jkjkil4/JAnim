@@ -24,6 +24,25 @@ transform
             self.play(Transform(B, C))
             self.forward()
 
+.. autoclass:: janim.anims.transform.TransformInSegments
+    :show-inheritance:
+
+.. janim-example:: TransformInSegmentsExample
+    :media: ../../_static/videos/TransformInSegmentsExample.mp4
+
+    class TransformInSegmentsExample(Timeline):
+        def construct(self):
+            typ1 = Typst('sin x + cos x')
+            typ2 = Typst('cos y + sin y')
+            Group(typ1, typ2).points.scale(3)
+
+            self.show(typ1)
+            self.forward(0.5)
+            self.play(TransformInSegments(typ1, [[0,3,4], [5,8,9]],
+                                          typ2, [None, None],
+                                          lag_ratio=0.5))
+            self.forward(0.5)
+
 .. autoclass:: janim.anims.transform.MethodTransform
     :show-inheritance:
 

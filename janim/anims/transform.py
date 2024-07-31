@@ -1,9 +1,11 @@
 from __future__ import annotations
 
+import itertools as it
 from collections import defaultdict
-from typing import Self
+from typing import Self, Iterable
 
 from janim.anims.animation import Animation, RenderCall
+from janim.anims.composition import AnimGroup
 from janim.components.component import Component
 from janim.constants import ANIM_END_DELTA, OUT, C_LABEL_ANIM_STAY
 from janim.items.item import DynamicItem, Item
@@ -149,6 +151,78 @@ class Transform(Animation):
         '''
         for aligned in self.aligned.values():
             aligned.union.interpolate(aligned.data1, aligned.data2, alpha, path_func=self.path_func)
+
+
+class TransformInSegments(AnimGroup):
+    '''
+    依照切片列表进行 ``src`` 与 ``target`` 之间的变换
+
+    - **基本用法**
+
+      .. code-block:: python
+
+        TransformInSegments(a, [[0,3], [5,7]],
+                            b, [[1,3], [5,7]])
+
+      相当于
+
+      .. code-block:: python
+
+        AnimGroup(Transform(a[0:3], b[1:3]),
+                  Transform(a[5:7], b[5:7]))
+
+    - **省略变换目标的切片**
+
+      使用 ``None`` 表示与变换来源的切片相同
+
+      .. code-block:: python
+
+        TransformInSegments(a, [[0,3], [5,7]],
+                            b, [[1,3], None])
+
+      相当于
+
+      .. code-block:: python
+
+        TransformInSegments(a, [[0,3], [5,7]],
+                            b, [[1,3], [5,7]])
+
+    - **连续切片**
+
+      .. code-block:: python
+
+        TransformInSegments(a, [[0,3], [5,7,9]],
+                            b, [None, [8,12,14]])
+
+      相当于
+
+      .. code-block:: python
+
+        TransformInSegments(a, [[0,3], [5,7], [7,9]],
+                            b, [None, [8,12], [12,14]])
+    '''
+    def __init__(
+        self,
+        src: Item,
+        src_segments: Iterable[Iterable[int]],
+        target: Item,
+        target_segments: Iterable[Iterable[int] | None],
+        *,
+        trs_kwargs: dict = {},
+        **kwargs
+    ):
+        anims = [
+            Transform(src[l1:r1], target[l2:r2], **trs_kwargs)
+            for src_seg, target_seg in zip(src_segments, target_segments, strict=True)
+            for (l1, l2), (r1, r2) in it.pairwise(zip(*self._seg_defaultval(src_seg, target_seg), strict=True))
+        ]
+        super().__init__(*anims, **kwargs)
+
+    @staticmethod
+    def _seg_defaultval(src_seg, target_seg):
+        if not target_seg:
+            target_seg = src_seg
+        return src_seg, target_seg
 
 
 class MethodTransform(Transform):
