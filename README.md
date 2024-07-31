@@ -2,6 +2,11 @@
 
 [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat)](http://choosealicense.com/licenses/mit/)
 
+<div align="center">
+
+**&gt; English &lt;** | [简体中文](README_zh_CN.md)
+
+</div>
 
 ## Introduction
 JAnim is a library for simple animation effects.
@@ -48,7 +53,7 @@ You can run the following command to see examples.
 janim examples
 ```
 
-The [Tutorial Page](https://janim.readthedocs.io/en/latest/tutorial/installation.html) of the [Documentation](https://janim.readthedocs.io/en/latest/index.html) provides a brief view to get you started. (You can change the language of the documentation at the bottom-left corner.)
+The [Tutorial Page](https://janim.readthedocs.io/en/latest/tutorial/installation.html) of the [Documentation](https://janim.readthedocs.io/en/latest/index.html) provides a brief view to get you started. (Note: You can change the language of the documentation at the bottom-left corner.)
 
 ## License
 
