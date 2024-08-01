@@ -162,9 +162,8 @@ class TransformInSegments(AnimGroup):
 
       .. code-block:: python
 
-        TransformInSegments(a, b,
-                            [[0,3], [5,7]],
-                            [[1,3], [5,7]])
+        TransformInSegments(a, [[0,3], [5,7]],
+                            b, [[1,3], [5,7]])
 
       相当于
 
@@ -179,39 +178,35 @@ class TransformInSegments(AnimGroup):
 
       .. code-block:: python
 
-        TransformInSegments(a, b,
-                            [[0,3], [5,7]],
-                            ...)
+        TransformInSegments(a, [[0,3], [5,7]],
+                            b, ...)
 
       相当于
 
       .. code-block:: python
 
-        TransformInSegments(a, b,
-                            [[0,3], [5,7]],
-                            [[0,3], [5,7]])
+        TransformInSegments(a, [[0,3], [5,7]],
+                            b, [[0,3], [5,7]])
 
     - **连续切片**
 
       .. code-block:: python
 
-        TransformInSegments(a, b,
-                            [[0,3], [5,7,9]],
-                            [[1,3], [4,7], [10,14]])
+        TransformInSegments(a, [[0,3], [5,7,9]],
+                            b, [[1,3], [4,7], [10,14]])
 
       相当于
 
       .. code-block:: python
 
-        TransformInSegments(a, b,
-                            [[0,3], [5,7], [7,9]],
-                            [[1,3], [4,7], [10,14]])
+        TransformInSegments(a, [[0,3], [5,7], [7,9]],
+                            b, [[1,3], [4,7], [10,14]])
     '''
     def __init__(
         self,
         src: Item,
-        target: Item,
         src_segments: Iterable[Iterable[int]],
+        target: Item,
         target_segments: Iterable[Iterable[int]] | types.EllipsisType,
         *,
         trs_kwargs: dict = {},
