@@ -86,7 +86,7 @@ class Cmpt_CameraPoints[ItemT](Cmpt_Points[ItemT]):
 
     @size.setter
     def size(self, value: Vect) -> None:
-        self._size = np.array(value)
+        self._size = np.array(value, dtype=np.float64)
         self.mark_refresh(Cmpt_CameraPoints.info.fget)
 
     @property
