@@ -38,8 +38,9 @@ transform
 
             self.show(typ1)
             self.forward(0.5)
-            self.play(TransformInSegments(typ1, [[0,3,4], [5,8,9]],
-                                          typ2, [None, None],
+            self.play(TransformInSegments(typ1, typ2,
+                                          [[0,3,4], [5,8,9]],
+                                          ...,
                                           lag_ratio=0.5))
             self.forward(0.5)
 
