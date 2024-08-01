@@ -27,6 +27,84 @@ transform
 .. autoclass:: janim.anims.transform.TransformInSegments
     :show-inheritance:
 
+**基本用法**
+
+.. code-block:: python
+
+    TransformInSegments(a, [[0,3], [5,7]],
+                        b, [[1,3], [5,7]])
+
+相当于
+
+.. code-block:: python
+
+    AnimGroup(Transform(a[0:3], b[1:3]),
+                Transform(a[5:7], b[5:7]))
+
+**省略变换目标的切片**
+
+使用 ``...`` 表示与变换来源的切片相同
+
+.. code-block:: python
+
+    TransformInSegments(a, [[0,3], [5,7]],
+                        b, ...)
+
+相当于
+
+.. code-block:: python
+
+    TransformInSegments(a, [[0,3], [5,7]],
+                        b, [[0,3], [5,7]])
+
+**连续切片**
+
+.. code-block:: python
+
+    TransformInSegments(a, [[0,3], [5,7,9]],
+                        b, [[1,3], [4,7], [10,14]])
+
+相当于
+
+.. code-block:: python
+
+    TransformInSegments(a, [[0,3], [5,7], [7,9]],
+                        b, [[1,3], [4,7], [10,14]])
+
+**切片简写**
+
+如果总共只有一个切片，可以省略一层嵌套
+
+.. code-block:: python
+
+    TransformInSegments(a, [0, 4, 6, 8],
+                        b, ...)
+
+相当于
+
+.. code-block:: python
+
+    TransformInSegments(a, [[0, 4, 6, 8]],
+                        b, ...)
+
+**连续切片倒序**
+
+倒过来写即可使切片倒序
+
+.. code-block:: python
+
+    TransformInSegments(a, [8, 6, 4, 0],
+                        b, ...)
+
+相当于
+
+.. code-block:: python
+
+    TransformInSegments(a, [[6,8], [4,6], [0,4]],
+                        b, ...)
+
+请留意 Python 切片中左闭右开的原则，对于倒序序列 ``[8, 6, 4, 0]`` 来说则是左开右闭
+
 .. janim-example:: TransformInSegmentsExample
     :media: ../../_static/videos/TransformInSegmentsExample.mp4
 
