@@ -197,6 +197,10 @@ class ConfigGetter:
         return self.frame_width / self.pixel_width
 
     @property
+    def default_pixel_to_frame_ratio(self) -> float:
+        return self.frame_width / default_config.pixel_width
+
+    @property
     def left_side(self) -> Vect:
         return LEFT * self.frame_x_radius
 

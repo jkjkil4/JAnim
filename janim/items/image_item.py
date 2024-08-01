@@ -63,8 +63,8 @@ class ImageItem(Points):
 
         if width is None and height is None:
             self.points.set_size(
-                img.width * Config.get.pixel_to_frame_ratio,
-                img.height * Config.get.pixel_to_frame_ratio
+                img.width * Config.get.default_pixel_to_frame_ratio,
+                img.height * Config.get.default_pixel_to_frame_ratio
             )
         elif width is None and height is not None:
             self.points.set_size(

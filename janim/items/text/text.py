@@ -129,7 +129,7 @@ class TextChar(VItem):
         outline, advance = font_render.get_glyph_data(unicode)
 
         font_scale_factor = font_size / ORIG_FONT_SIZE
-        frame_scale_factor = Config.get.pixel_to_frame_ratio / 32
+        frame_scale_factor = Config.get.default_pixel_to_frame_ratio / 32
         scale_factor = font_scale_factor * frame_scale_factor
 
         self.points.set(outline * scale_factor)

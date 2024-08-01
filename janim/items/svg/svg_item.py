@@ -66,7 +66,7 @@ class SVGItem(Group[VItem]):
 
         if width is None and height is None:
             self.points.scale(
-                Config.get.pixel_to_frame_ratio * DEFAULT_SVGITEM_SCALE_FACTOR,
+                Config.get.default_pixel_to_frame_ratio * DEFAULT_SVGITEM_SCALE_FACTOR,
                 about_point=ORIGIN
             )
         elif width is None and height is not None:
