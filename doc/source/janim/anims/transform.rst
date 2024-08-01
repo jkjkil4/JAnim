@@ -39,7 +39,7 @@ transform
 .. code-block:: python
 
     AnimGroup(Transform(a[0:3], b[1:3]),
-                Transform(a[5:7], b[5:7]))
+              Transform(a[5:7], b[5:7]))
 
 **省略变换目标的切片**
 
