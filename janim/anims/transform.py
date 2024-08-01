@@ -201,13 +201,47 @@ class TransformInSegments(AnimGroup):
 
         TransformInSegments(a, [[0,3], [5,7], [7,9]],
                             b, [[1,3], [4,7], [10,14]])
+
+    - **连续切片简写**
+
+      如果总共只有一个连续切片，可以省略一层嵌套
+
+      .. code-block:: python
+
+        TransformInSegments(a, [0, 4, 6, 8],
+                            b, ...)
+
+      相当于
+
+      .. code-block:: python
+
+        TransformInSegments(a, [[0, 4, 6, 8]],
+                            b, ...)
+
+    - **连续切片倒序**
+
+      倒过来写即可使切片倒序
+
+      .. code-block:: python
+
+        TransformInSegments(a, [8, 6, 4, 0],
+                            b, ...)
+
+      相当于
+
+      .. code-block:: python
+
+        TransformInSegments(a, [[6,8], [4,6], [0,4]],
+                            b, ...)
+
+      请留意 Python 切片中左闭右开的原则，对于倒序序列 ``[8, 6, 4, 0]`` 来说则是左开右闭
     '''
     def __init__(
         self,
         src: Item,
-        src_segments: Iterable[Iterable[int]],
+        src_segments: Iterable[Iterable[int]] | Iterable[int],
         target: Item,
-        target_segments: Iterable[Iterable[int]] | types.EllipsisType,
+        target_segments: Iterable[Iterable[int]] | Iterable[int] | types.EllipsisType,
         *,
         trs_kwargs: dict = {},
         **kwargs
@@ -229,12 +263,17 @@ class TransformInSegments(AnimGroup):
         )
 
     @staticmethod
-    def parse_segment(segs: Iterable[Iterable[int]]) -> Generator[tuple[int, int], None, None]:
+    def parse_segment(segs: Iterable[Iterable[int]] | Iterable[int]) -> Generator[tuple[int, int], None, None]:
         '''
         ``[[a, b, c], [d, e]]`` -> ``[[a, b], [b, c], [d, e]]``
         '''
+        assert len(segs) > 0
+        if not isinstance(segs[0], Iterable):
+            segs = [segs]
+
         for seg in segs:
-            yield from it.pairwise(seg)
+            for a, b in it.pairwise(seg):
+                yield (min(a, b), max(a, b))
 
 
 class MethodTransform(Transform):
