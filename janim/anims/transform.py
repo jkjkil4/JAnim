@@ -214,15 +214,9 @@ class TransformInSegments(AnimGroup):
         anims = [
             Transform(src[l1:r1], target[l2:r2], **trs_kwargs)
             for src_seg, target_seg in zip(src_segments, target_segments, strict=True)
-            for (l1, l2), (r1, r2) in it.pairwise(zip(*self._seg_defaultval(src_seg, target_seg), strict=True))
+            for (l1, l2), (r1, r2) in it.pairwise(zip(src_seg, target_seg or src_seg, strict=True))
         ]
         super().__init__(*anims, **kwargs)
-
-    @staticmethod
-    def _seg_defaultval(src_seg, target_seg):
-        if not target_seg:
-            target_seg = src_seg
-        return src_seg, target_seg
 
 
 class MethodTransform(Transform):
