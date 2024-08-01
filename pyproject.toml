@@ -48,6 +48,8 @@ doc = [
 exclude = [
     ".vscode/", ".github/", "assets/", "doc/", "test/",
     ".pypirc",
+    ".coveragerc",
+    "janim/gui/*.ui",
     "janim/locale/source",
     "janim/locale/compile.py",
     "janim/locale/gettext.py",

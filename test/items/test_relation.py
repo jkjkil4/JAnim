@@ -49,6 +49,9 @@ class RelationTest(unittest.TestCase):
         self.assertListEqual(root.descendants(), [m1, m2, m9])
 
     def test_relation_family(self) -> None:
+        R = Item
+        class C1(R): ...
+        class C2(R): ...
         r'''
         m0(C1)
         | \____
@@ -64,9 +67,6 @@ class RelationTest(unittest.TestCase):
         | /
         m8(R)
         '''
-        R = Item
-        class C1(R): ...
-        class C2(R): ...
 
         m: list[Item] = [C1(), C1(), R(), C2(), C2(), C1(), R(), C2(), R()]
 

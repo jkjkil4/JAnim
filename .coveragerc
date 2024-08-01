@@ -1,0 +1,5 @@
+[run]
+source = janim
+omit =
+    janim/gui/*
+    janim/locale/*

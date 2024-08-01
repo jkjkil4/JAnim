@@ -51,6 +51,10 @@ class VideoWriter:
             )
         )
 
+    @staticmethod
+    def writes(anim: TimelineAnim, file_path: str, *, quiet=False) -> None:
+        VideoWriter(anim).write_all(file_path, quiet=quiet)
+
     def write_all(self, file_path: str, *, quiet=False) -> None:
         '''将时间轴动画输出到文件中
 
@@ -136,10 +140,6 @@ class VideoWriter:
         self.writing_process.wait()
         self.writing_process.terminate()
         shutil.move(self.temp_file_path, self.final_file_path)
-
-    @staticmethod
-    def writes(anim: TimelineAnim, file_path: str, *, quiet=False) -> None:
-        VideoWriter(anim).write_all(file_path, quiet=quiet)
 
 
 class AudioWriter:
