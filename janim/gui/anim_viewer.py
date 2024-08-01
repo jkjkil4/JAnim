@@ -88,7 +88,7 @@ class AnimViewer(QMainWindow):
             self.update_completer(available_timeline_names)
 
     @classmethod
-    def views(cls, anim: TimelineAnim) -> None:
+    def views(cls, anim: TimelineAnim, **kwargs) -> None:
         '''
         直接显示一个浏览构建完成的时间轴动画的窗口
         '''
@@ -96,7 +96,7 @@ class AnimViewer(QMainWindow):
         if app is None:
             app = Application()
 
-        w = cls(anim)
+        w = cls(anim, **kwargs)
         w.show()
 
         app.exec()
