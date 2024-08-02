@@ -7,6 +7,7 @@ import subprocess as sp
 from typing import Generator, Iterable, Self
 
 import numpy as np
+import numpy.typing as npt
 
 from janim.exception import EXITCODE_FFMPEG_NOT_FOUND, ExitException
 from janim.logger import log
@@ -28,18 +29,24 @@ class Audio:
 
     audio_cache_map: dict[tuple, tuple[np.ndarray, int, str, str]] = {}
 
-    def __init__(self, file_path: str, begin: float = -1, end: float = -1, **kwargs):
+    def __init__(self, file_path: str = '', begin: float = -1, end: float = -1, **kwargs):
         super().__init__(**kwargs)
         self._samples = Array(dtype=np.int16)
         self.framerate = 0
         self.file_path = ''
         self.filename = ''
-        self.read(file_path, begin, end)
+        if file_path:
+            self.read(file_path, begin, end)
+        else:
+            self.framerate = Config.get.audio_framerate
 
     def copy(self) -> Self:
         copy_audio = copy.copy(self)
         copy_audio._samples = self._samples.copy()
         return copy_audio
+
+    def set_samples(self, data: npt.ArrayLike) -> None:
+        self._samples.data = data
 
     def read(
         self,

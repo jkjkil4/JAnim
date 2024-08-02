@@ -781,7 +781,7 @@ class SourceTimeline(Timeline):     # pragma: no cover
     def build(self, *, quiet=False) -> TimelineAnim:
         from janim.items.text.text import SourceDisplayer
         with ContextSetter(self.ctx_var, self):
-            SourceDisplayer(self.__class__).show()
+            SourceDisplayer(self.__class__, depth=10000).show()
         return super().build(quiet=quiet)
 
 
