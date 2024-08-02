@@ -16,5 +16,3 @@ janim
    constants
    exception
    imports
-   logger
-   typing

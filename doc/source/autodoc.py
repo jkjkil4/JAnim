@@ -3,7 +3,8 @@ import os
 doc_src_path = os.path.dirname(__file__)
 janim_path = os.path.abspath(os.path.join(doc_src_path, '../../janim'))
 
-generate_autodoc_exclude = ['janim.constants', 'janim.cli', 'janim.examples', 'janim.locale']
+generate_autodoc_exclude = ['janim.constants', 'janim.logger', 'janim.typing',
+                            'janim.cli', 'janim.examples', 'janim.locale']
 force_generate_autodoc = False
 
 extra_include = {
