@@ -463,7 +463,7 @@ class VideoInfo:
         self.nb_frames = int(s_nb_frames)
 
 
-class PixelVideo(ImageItem):
+class PixelVideo(Video):
     '''
     视频物件
 
