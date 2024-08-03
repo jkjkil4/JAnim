@@ -213,6 +213,8 @@ class VideoFrame(ImageItem):
     - ``frame_at``: 位于哪一帧，可以使用秒数或者 ffmpeg 支持的时间定位方式，例如 ``17.4``、``'00:01:12'`` 等
 
     不建议使用该类将视频提取为多帧以达到“读取视频”的目的，因为这会导致巨大的性能浪费以及内存占用
+
+    播放视频请使用 :class:`Video`
     '''
     def __init__(
         self,
@@ -473,7 +475,7 @@ class PixelVideo(ImageItem):
         *,
         width: float | None = None,
         height: float | None = None,
-        min_mag_filter: tuple[int, int] = (mgl.LINEAR_MIPMAP_LINEAR, mgl.NEAREST),
+        min_mag_filter: tuple[int, int] = (mgl.LINEAR, mgl.NEAREST),
         **kwargs
     ):
         super().__init__(file_path, width=width, height=height, min_mag_filter=min_mag_filter, **kwargs)
