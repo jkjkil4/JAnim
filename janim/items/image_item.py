@@ -3,6 +3,7 @@ from __future__ import annotations
 import io
 import math
 import subprocess as sp
+from bisect import bisect
 from typing import Self
 
 import moderngl as mgl
@@ -13,11 +14,12 @@ from janim.components.component import CmptInfo
 from janim.components.image import Cmpt_Image
 from janim.components.rgbas import Cmpt_Rgbas
 from janim.constants import DL, DR, OUT, UL, UR
-from janim.exception import EXITCODE_FFMPEG_NOT_FOUND, ExitException
+from janim.exception import (EXITCODE_FFMPEG_NOT_FOUND, EXITCODE_FFPROBE_ERROR,
+                             ExitException)
 from janim.items.points import Points
 from janim.locale.i18n import get_local_strings
 from janim.logger import log
-from janim.render.impl import ImageItemRenderer
+from janim.render.impl import ImageItemRenderer, VideoRenderer
 from janim.render.texture import get_img_from_file
 from janim.typing import Alpha, AlphaArray, ColorArray, JAnimColor
 from janim.utils.config import Config
@@ -38,8 +40,8 @@ class ImageItem(Points):
 
     renderer_cls = ImageItemRenderer
 
-    image = CmptInfo(Cmpt_Image)
-    color = CmptInfo(Cmpt_Rgbas)
+    image = CmptInfo(Cmpt_Image[Self])
+    color = CmptInfo(Cmpt_Rgbas[Self])
 
     def __init__(
         self,
@@ -51,7 +53,6 @@ class ImageItem(Points):
         **kwargs
     ):
         super().__init__(**kwargs)
-        self.min_mag_filter = min_mag_filter
 
         self.points.set([UL, DL, UR, DR])
 
@@ -247,3 +248,232 @@ class VideoFrame(ImageItem):
 
         image = Image.open(io.BytesIO(data))
         return image
+
+
+class Video(Points):
+    '''
+    视频物件，和图像物件类似，其实本质上是一个内容实时变化的图像
+
+    控制视频播放的方法：
+
+    - 和其它物件一样，使用 :meth:`~.Item.show` 进行显示，默认暂停在第一帧
+    - 调用 :meth:`start` 表示从当前位置开始播放，可以传入 ``speed`` 参数指定倍速
+    - 调用 :meth:`stop` 表示停止在当前位置
+    - 调用 :meth:`seek` 表示跳转视频进度到指定秒数
+
+    例：
+
+    .. code-block:: python
+
+        video = Video(...).show()
+
+        video.start()
+
+        self.forward()
+
+        video.start(speed=0.5)
+
+        self.forward()
+
+        video.stop()
+
+    表示：先播放 1s，然后以 0.5 倍速播放 1s，然后画面静止
+    '''
+
+    color = CmptInfo(Cmpt_Rgbas[Self])
+
+    renderer_cls = VideoRenderer
+
+    def __init__(
+        self,
+        file_path: str,
+        *,
+        width: float | None = None,
+        height: float | None = None,
+        min_mag_filter: tuple[int, int] = (mgl.LINEAR, mgl.LINEAR),
+        frame_components: int = 3,
+        **kwargs
+    ):
+        super().__init__(**kwargs)
+
+        from janim.anims.timeline import Timeline
+        self.timeline = Timeline.get_context()
+
+        self.file_path = find_file(file_path)
+        self.min_mag_filter = min_mag_filter
+        self.frame_components = frame_components
+        self.info = VideoInfo(self.file_path)
+
+        self.points.set([UL, DL, UR, DR])
+        self.actions: list[tuple[float, float, float]] = []
+
+        if width is None and height is None:
+            self.points.set_size(
+                self.info.width * Config.get.default_pixel_to_frame_ratio,
+                self.info.height * Config.get.default_pixel_to_frame_ratio
+            )
+        elif width is None and height is not None:
+            self.points.set_size(
+                height * self.info.width / self.info.height,
+                height
+            )
+        elif width is not None and height is None:
+            self.points.set_size(
+                width,
+                width * self.info.height / self.info.width
+            )
+        else:   # width is not None and height is not None
+            self.points.set_size(width, height)
+
+    def set_style(
+        self,
+        color: JAnimColor | ColorArray | None = None,
+        alpha: Alpha | AlphaArray | None = None,
+        **kwargs
+    ) -> Self:
+        self.color.set(color, alpha)
+
+        return super().set_style(**kwargs)
+
+    def start(self, *, speed: int = 1) -> None:
+        if not self.actions:
+            base = 0
+        else:
+            x, y, last_speed = self.actions[-1]
+            base = y + (self.timeline.current_time - x) * last_speed
+
+        self.actions.append((self.timeline.current_time,
+                             base,
+                             speed))
+
+    def stop(self) -> None:
+        self.start(speed=0)
+
+    def seek(self, t: float) -> None:
+        if not self.actions:
+            speed = 0
+        else:
+            speed = self.actions[-1][2]
+        self.actions.append((self.timeline.current_time,
+                             t,
+                             speed))
+
+    def compute_time(self, t: float) -> None:
+        if not self.actions:
+            return 0
+        idx = bisect(self.actions, t, key=lambda v: v[0]) - 1
+        if idx < 0:
+            return 0
+        x, y, speed = self.actions[idx]
+        return y + (t - x) * speed
+
+    def get_orig(self) -> np.ndarray:
+        '''视频的左上角'''
+        return self.points.get()[0]
+
+    def get_horizontal_vect(self) -> np.ndarray:
+        '''
+        从视频的左上角指向右上角的向量
+        '''
+        points = self.points.get()
+        return points[2] - points[0]
+
+    def get_horizontal_dist(self) -> float:
+        '''
+        :meth:`get_horizontal_vect` 的长度
+        '''
+        return get_norm(self.get_horizontal_vect())
+
+    def get_vertical_vect(self) -> np.ndarray:
+        '''
+        从视频的左上角指向左下角的向量
+        '''
+        points = self.points.get()
+        return points[1] - points[0]
+
+    def get_vertical_dist(self) -> float:
+        '''
+        :meth:`get_vertical_vect` 的长度
+        '''
+        return get_norm(self.get_vertical_vect())
+
+    def pixel_to_point(self, x: float, y: float) -> np.ndarray:
+        '''
+        通过像素坐标获得对应的空间坐标，可以传入浮点值
+
+        - 例如 ``.pixel_to_point(0, 0)`` 会返回原点位置（图片的左上角）
+        - 例如 ``.pixel_to_point(6, 11)`` 会返回 ``(6, 11)`` 像素的左上角
+        - 例如 ``.pixel_to_point(6.5, 11.5)`` 会返回 ``(6, 11)`` 像素的中心
+        '''
+        hor = self.get_horizontal_vect()
+        ver = self.get_vertical_vect()
+        orig = self.get_orig()
+
+        return orig + hor * x / self.info.width + ver * y / self.info.height
+
+    @classmethod
+    def align_for_interpolate(
+        cls,
+        item1: ImageItem,
+        item2: ImageItem,
+    ) -> AlignedData[ImageItem]:
+        aligned = super().align_for_interpolate(item1, item2)
+
+        for data in (aligned.data1, aligned.data2):
+            points_count = data.points.count()
+            data.color.resize(points_count)
+
+        return aligned
+
+
+class VideoInfo:
+    def __init__(self, file_path: str):
+        self.file_path = file_path
+
+        command = [
+            Config.get.ffprobe_bin,
+            '-v', 'error',
+            '-select_streams', 'v:0',
+            '-show_entries', 'stream=width,height,r_frame_rate,nb_frames',
+            '-of', 'csv=p=0',
+            file_path
+        ]
+
+        try:
+            with sp.Popen(command, stdout=sp.PIPE) as process:
+                ret = process.stdout.read().decode('utf-8')
+                code = process.wait()
+        except FileNotFoundError:
+            log.error(_('Unable to read video information, please install ffmpeg'
+                        'and add it (including ffprobe) to the environment variables.'))
+            raise ExitException(EXITCODE_FFMPEG_NOT_FOUND)
+
+        if code != 0:
+            log.error(_('ffprobe error. Please check the output for more information.'))
+            raise ExitException(EXITCODE_FFPROBE_ERROR)
+
+        assert ret
+        s_width, s_height, s_fps, s_nb_frames = ret.split(',')
+
+        self.width = int(s_width)
+        self.height = int(s_height)
+        self.fps_num, self.fps_den = map(int, s_fps.split('/'))
+        self.nb_frames = int(s_nb_frames)
+
+
+class PixelVideo(ImageItem):
+    '''
+    视频物件
+
+    与 :class:`Video` 基本一致，只是在被放大显示时不进行平滑插值处理，使得像素清晰
+    '''
+    def __init__(
+        self,
+        file_path: str,
+        *,
+        width: float | None = None,
+        height: float | None = None,
+        min_mag_filter: tuple[int, int] = (mgl.LINEAR_MIPMAP_LINEAR, mgl.NEAREST),
+        **kwargs
+    ):
+        super().__init__(file_path, width=width, height=height, min_mag_filter=min_mag_filter, **kwargs)

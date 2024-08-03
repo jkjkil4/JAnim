@@ -827,7 +827,7 @@ class TimelineAnim(AnimGroup):
             return
 
         try:
-            with ContextSetter(Animation.global_t_ctx, self._time):
+            with ContextSetter(Animation.global_t_ctx, self._time), self.timeline.with_config():
                 timeline = self.timeline
                 camera_info = timeline.camera.current().points.info
                 anti_alias_radius = self.cfg.anti_alias_width / 2 * camera_info.scaled_factor

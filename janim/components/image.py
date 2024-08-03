@@ -7,7 +7,7 @@ from PIL import Image
 from janim.components.component import Component
 
 
-class Cmpt_Image(Component):
+class Cmpt_Image[ItemT](Component[ItemT]):
     '''
     图像组件，包含一个 PIL 图像以及 ``min_mag_filter``
     '''

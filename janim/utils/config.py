@@ -106,6 +106,7 @@ class Config(metaclass=_ConfigMeta):
     typst_bin: str = None
 
     ffmpeg_bin: str = None
+    ffprobe_bin: str = None
     output_dir: str = None
     temp_dir: str = None
     asset_dir: str | list[str] = None
@@ -146,6 +147,7 @@ default_config = Config(
     typst_bin='typst',
 
     ffmpeg_bin='ffmpeg',
+    ffprobe_bin='ffprobe',
     output_dir='videos',
     temp_dir=os.path.join(tempfile.gettempdir(), 'janim'),
     asset_dir=''
