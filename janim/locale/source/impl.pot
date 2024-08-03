@@ -16,22 +16,8 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: janim\gui\color_widget.py:62
-msgid "Color"
-msgstr ""
-
-#: janim\gui\color_widget.py:63
-msgid "normalized form"
-msgstr ""
-
-#: janim\gui\color_widget.py:64
-msgid "Color picker"
-msgstr ""
-
-#: janim\gui\color_widget.py:65
-msgid "Open"
-msgstr ""
-
-#: janim\gui\color_widget.py:66
-msgid "Builtins"
+#: janim\render\impl.py:387
+msgid ""
+"Unable to read video. Please install ffmpeg and add it to the environment "
+"variables."
 msgstr ""

@@ -17,18 +17,8 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Poedit 3.4.2\n"
 
-#: janim\items\image_item.py:246
+#: janim\render\impl.py:387
 msgid ""
-"Unable to read video frame, please install ffmpeg and add it to the "
-"environment variables"
-msgstr "无法读取视频帧，请安装 ffmpeg 并将其添加到环境变量中"
-
-#: janim\items\image_item.py:447
-msgid ""
-"Unable to read video information, please install ffmpegand add it (including "
-"ffprobe) to the environment variables."
-msgstr "无法读取视频信息，请安装 ffmpeg 并将其（包括 ffprobe）添加到环境变量中"
-
-#: janim\items\image_item.py:452
-msgid "ffprobe error. Please check the output for more information."
-msgstr "ffprobe 错误，请检查输出信息"
+"Unable to read video. Please install ffmpeg and add it to the environment "
+"variables."
+msgstr "无法读取视频，请安装 ffmpeg 并将其添加到环境变量中"
