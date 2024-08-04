@@ -2,14 +2,14 @@ from __future__ import annotations
 
 import io
 import math
+import os
 import subprocess as sp
 from bisect import bisect
+from functools import lru_cache
 from typing import Self
 
 import moderngl as mgl
 import numpy as np
-from PIL import Image
-
 from janim.components.component import CmptInfo
 from janim.components.image import Cmpt_Image
 from janim.components.rgbas import Cmpt_Rgbas
@@ -27,6 +27,7 @@ from janim.utils.data import AlignedData
 from janim.utils.file_ops import find_file
 from janim.utils.simple_functions import clip
 from janim.utils.space_ops import cross, det, get_norm, z_to_vector
+from PIL import Image
 
 _ = get_local_strings('image_item')
 
@@ -228,11 +229,25 @@ class VideoFrame(ImageItem):
         super().__init__(self.capture(file_path, frame_at), width=width, height=height, **kwargs)
 
     @staticmethod
-    def capture(file_path: str, frame_at: str | float) -> Image.Image:
+    def capture(file_path: str, frame_at: str | float, *, cache: bool = True) -> Image.Image:
+        file_path = find_file(file_path)
+        if cache:
+            mtime = os.path.getmtime(file_path)
+            return VideoFrame._capture_with_cache(mtime, file_path, frame_at)
+        else:
+            return VideoFrame._capture(file_path, frame_at)
+
+    @lru_cache(maxsize=128)
+    @staticmethod
+    def _capture_with_cache(mtime: float, file_path: str, frame_at: str | float) -> Image.Image:
+        return VideoFrame._capture(file_path, frame_at)
+
+    @staticmethod
+    def _capture(file_path: str, frame_at: str | float) -> Image.Image:
         command = [
             Config.get.ffmpeg_bin,
             '-ss', str(frame_at),           # where
-            '-i', find_file(file_path),     # file
+            '-i', file_path,     # file
             '-vframes', '1',                # capture only 1 frame
             '-f', 'image2pipe',
             '-vcodec', 'png',
