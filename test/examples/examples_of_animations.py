@@ -189,6 +189,24 @@ class WriteExample(Timeline):
         )
 
 
+class ShowIncreasingSubsetsExample(Timeline):
+    def construct(self):
+        text = Text('ShowIncreasingSubsets')
+        text.points.set_width(11)
+        self.forward(0.5)
+        self.play(ShowIncreasingSubsets(text[0], duration=3))
+        self.forward(0.5)
+
+
+class ShowSubitemsOneByOneExample(Timeline):
+    def construct(self):
+        text = Text('ShowSubitemsOneByOne')
+        text.points.set_width(11)
+        self.forward(0.5)
+        self.play(ShowSubitemsOneByOne(text[0], duration=3))
+        self.forward(0.5)
+
+
 class FadeInExample(Timeline):
     def construct(self) -> None:
         group = Group(

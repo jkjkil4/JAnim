@@ -1,13 +1,17 @@
 
+import math
 from typing import Callable
 
 import numpy as np
+from functools import partial
 
+from janim.anims.animation import Animation, RenderCall
 from janim.anims.updater import DataUpdater, UpdaterParams
 from janim.components.vpoints import Cmpt_VPoints
 from janim.constants import (C_LABEL_ANIM_ABSTRACT, C_LABEL_ANIM_IN,
                              C_LABEL_ANIM_OUT, NAN_POINT)
 from janim.items.item import Item
+from janim.items.points import Group
 from janim.items.vitem import VItem
 from janim.typing import JAnimColor
 from janim.utils.bezier import integer_interpolate
@@ -190,3 +194,63 @@ class Write(DrawBorderThenFill):
             root_only=root_only,
             **kwargs
         )
+
+
+class ShowIncreasingSubsets(Animation):
+    def __init__(
+        self,
+        group: Group[Item],
+        *,
+        hide_at_begin: bool = True,
+        show_at_end: bool = True,
+        int_func=round,
+        **kwargs
+    ):
+        super().__init__(**kwargs)
+        self.group = group
+        self.hide_at_begin = hide_at_begin
+        self.show_at_end = show_at_end
+        self.int_func = int_func
+        self.index = 0
+
+    def anim_init(self) -> None:
+        self.n_children = len(self.group)
+
+        self.set_render_call_list([
+            RenderCall(
+                item.depth,
+                partial(self.render_item, i, item)
+            )
+            for i, child in enumerate(self.group)
+            for item in child.walk_self_and_descendants()
+        ])
+
+        if self.hide_at_begin:
+            self.timeline.schedule(self.global_range.at, self.group.hide)
+        if self.show_at_end:
+            self.timeline.schedule(self.global_range.end, self.group.show)
+
+    def anim_on_alpha(self, alpha: float) -> None:
+        self.index = int(self.int_func(alpha * self.n_children))
+
+    def render_item(self, i: int, item: Item) -> None:
+        if self.is_item_visible(i):
+            item.current().render()
+
+    def is_item_visible(self, i: int) -> bool:
+        return i < self.index
+
+
+class ShowSubitemsOneByOne(ShowIncreasingSubsets):
+    def __init__(
+        self,
+        group: Group,
+        *,
+        show_at_end: bool = False,
+        int_func=math.ceil,
+        **kwargs
+    ):
+        super().__init__(group, show_at_end=show_at_end, int_func=int_func, **kwargs)
+
+    def is_item_visible(self, i: int) -> bool:
+        return i == self.index - 1

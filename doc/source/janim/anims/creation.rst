@@ -130,3 +130,35 @@ creation
                 Write(dots, duration=2),
                 Write(txt, duration=2),
             )
+
+.. autoclass:: janim.anims.creation.ShowIncreasingSubsets
+    :show-inheritance:
+
+.. janim-example:: ShowIncreasingSubsetsExample
+    :media: ../../_static/videos/ShowIncreasingSubsetsExample.mp4
+
+    from janim.imports import *
+
+    class ShowIncreasingSubsetsExample(Timeline):
+        def construct(self):
+            text = Text('ShowIncreasingSubsets')
+            text.points.set_width(11)
+            self.forward(0.5)
+            self.play(ShowIncreasingSubsets(text[0], duration=3))
+            self.forward(0.5)
+
+.. autoclass:: janim.anims.creation.ShowSubitemsOneByOne
+    :show-inheritance:
+
+.. janim-example:: ShowSubitemsOneByOneExample
+    :media: ../../_static/videos/ShowSubitemsOneByOneExample.mp4
+
+    from janim.imports import *
+
+    class ShowSubitemsOneByOneExample(Timeline):
+        def construct(self):
+            text = Text('ShowSubitemsOneByOne')
+            text.points.set_width(11)
+            self.forward(0.5)
+            self.play(ShowSubitemsOneByOne(text[0], duration=3))
+            self.forward(0.5)
