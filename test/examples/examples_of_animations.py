@@ -681,7 +681,7 @@ class MethodTransformExample(Timeline):
 class FadeTransformExample(Timeline):
     def construct(self) -> None:
         rect = Rect(6, 2, color=BLUE, fill_alpha=1).show()
-        txt = Text("Rectangle")
+        txt = Text('Rectangle')
         txt.points.scale(3)
 
         self.forward(0.5)

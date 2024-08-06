@@ -61,7 +61,7 @@ def load_tests(loader, standard_tests, pattern) -> unittest.TestSuite:
                 ref_data = np.frombuffer(buf2, dtype=np.uint8).astype(np.int16)
                 delta = np.abs(render_data - ref_data)
                 error = delta.sum()
-                assert error == 0
+                self.assertEqual(error, 0, f'errors: {error}')
 
         @staticmethod
         def get_frames(video_path: str) -> Generator[bytes, None, None]:
