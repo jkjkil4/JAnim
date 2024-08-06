@@ -28,7 +28,7 @@ class Cmpt_Image[ItemT](Component[ItemT]):
     def not_changed(self, other: Cmpt_Image) -> bool:
         return id(self.img) == id(other.img) and self.min_mag_filter == other.min_mag_filter
 
-    def set(self, img: Image.Image | None, min_mag_filter: int | None) -> Self:
+    def set(self, img: Image.Image | None = None, min_mag_filter: int | None = None) -> Self:
         '''
         设置 PIL 图像
         '''
