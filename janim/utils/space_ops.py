@@ -11,6 +11,7 @@ from janim.constants import *
 from janim.exception import PointError
 from janim.utils.iterables import adjacent_pairs
 from janim.utils.simple_functions import clip
+from janim.typing import Vect, VectArray
 
 
 def cross(v1: np.ndarray, v2: np.ndarray) -> list[np.ndarray]:
@@ -258,38 +259,40 @@ def line_intersection(
 
 
 def find_intersection(
-    p0: npt.ArrayLike,
-    v0: npt.ArrayLike,
-    p1: npt.ArrayLike,
-    v1: npt.ArrayLike,
+    p0: Vect | VectArray,
+    v0: Vect | VectArray,
+    p1: Vect | VectArray,
+    v1: Vect | VectArray,
     threshold: float = 1e-5
 ) -> np.ndarray:
     """
     Return the intersection of a line passing through p0 in direction v0
     with one passing through p1 in direction v1.  (Or array of intersections
     from arrays of such points/directions).
+
     For 3d values, it returns the point on the ray p0 + v0 * t closest to the
     ray p1 + v1 * t
     """
-    p0 = np.array(p0, ndmin=2)
-    v0 = np.array(v0, ndmin=2)
-    p1 = np.array(p1, ndmin=2)
-    v1 = np.array(v1, ndmin=2)
-    m, n = np.shape(p0)
-    assert n in [2, 3]
-
-    numer = np.cross(v1, p1 - p0)
-    denom = np.cross(v1, v0)
-    if n == 3:
-        d = len(np.shape(numer))
-        new_numer = np.multiply(numer, numer).sum(d - 1)
-        new_denom = np.multiply(denom, numer).sum(d - 1)
-        numer, denom = new_numer, new_denom
-
-    denom[abs(denom) < threshold] = np.inf  # So that ratio goes to 0 there
+    p0 = np.asarray(p0, dtype=float)
+    v0 = np.asarray(v0, dtype=float)
+    p1 = np.asarray(p1, dtype=float)
+    v1 = np.asarray(v1, dtype=float)
+    d = len(p0.shape)
+    if d == 1:
+        is_3d = any(arr[2] for arr in (p0, v0, p1, v1))
+    else:
+        is_3d = any(z for arr in (p0, v0, p1, v1) for z in arr.T[2])
+    if not is_3d:
+        numer = np.array(cross2d(v1, p1 - p0))
+        denom = np.array(cross2d(v1, v0))
+    else:
+        cp1 = cross(v1, p1 - p0)
+        cp2 = cross(v1, v0)
+        numer = np.array((cp1 * cp1).sum(d - 1))
+        denom = np.array((cp1 * cp2).sum(d - 1))
+    denom[abs(denom) < threshold] = np.inf
     ratio = numer / denom
-    ratio = np.repeat(ratio, n).reshape((m, n))
-    return p0 + ratio * v0
+    return p0 + (ratio * v0.T).T
 
 
 def get_closest_point_on_line(
