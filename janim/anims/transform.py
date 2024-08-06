@@ -10,6 +10,7 @@ from janim.anims.composition import AnimGroup
 from janim.components.component import Component
 from janim.constants import ANIM_END_DELTA, OUT, C_LABEL_ANIM_STAY
 from janim.items.item import DynamicItem, Item
+from janim.items.points import Points
 from janim.logger import log
 from janim.typing import Vect
 from janim.utils.data import AlignedData
@@ -308,3 +309,36 @@ class MethodTransformArgsBuilder:
 
     def __getattr__(self, name):
         return getattr(MethodTransform(self.item), name)
+
+
+class FadeTransform(AnimGroup):
+    def __init__(
+        self,
+        src: Item,
+        target: Item,
+        *,
+        src_root_only: bool = False,
+        target_root_only: bool = False
+    ):
+        src_copy = src.copy(root_only=src_root_only)
+        src_copy.digest_styles(alpha=0)
+        src_copy(Points) \
+            .points.replace(target, stretch=True, root_only=src_root_only, item_root_only=target_root_only)
+
+        target_copy = target.copy(root_only=target_root_only)
+        target_copy.digest_styles(alpha=0)
+        target_copy(Points) \
+            .points.replace(src, stretch=True, root_only=target_root_only, item_root_only=src_root_only)
+
+        super().__init__(
+            Transform(
+                src, src_copy,
+                show_target=False,
+                root_only=src_root_only
+            ),
+            Transform(
+                target_copy, target,
+                hide_src=False,
+                root_only=target_root_only
+            )
+        )

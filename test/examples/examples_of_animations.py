@@ -676,3 +676,14 @@ class MethodTransformExample(Timeline):
             A.anim.color.set(BLUE)
         )
         self.forward()
+
+
+class FadeTransformExample(Timeline):
+    def construct(self) -> None:
+        rect = Rect(6, 2, color=BLUE, fill_alpha=1).show()
+        txt = Text("Rectangle")
+        txt.points.scale(3)
+
+        self.forward(0.5)
+        self.play(FadeTransform(rect, txt))
+        self.forward(0.5)
