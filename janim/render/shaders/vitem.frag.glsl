@@ -8,6 +8,8 @@ uniform float JA_CAMERA_SCALED_FACTOR;
 uniform float JA_ANTI_ALIAS_RADIUS;
 uniform bool JA_FIX_IN_FRAME;
 
+uniform bool stroke_background;
+
 const float INFINITY = uintBitsToFloat(0x7F800000);
 
 layout(std140, binding = 0) buffer MappedPoints
@@ -219,7 +221,11 @@ void main()
     vec4 stroke_color = mix(colors[anchor_idx], colors[anchor_idx + 1], ratio);
     stroke_color.a *= smoothstep(1, -1, (d - radius) / JA_ANTI_ALIAS_RADIUS);
 
-    f_color = blend_color(stroke_color, fill_color);
+    if (stroke_background) {
+        f_color = blend_color(fill_color, stroke_color);
+    } else {
+        f_color = blend_color(stroke_color, fill_color);
+    }
 
     #if !defined(POLYGON_LINES) && !defined(SDF_PLANE)
     if (f_color.a == 0.0)

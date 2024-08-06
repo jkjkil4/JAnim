@@ -35,6 +35,7 @@ class VItem(Points):
     renderer_cls = VItemRenderer
 
     def __init__(self, *points: Vect, fill_alpha=0, **kwargs):
+        self.stroke_background = False
         super().__init__(*points, fill_alpha=fill_alpha, **kwargs)
 
         def reverse():
@@ -48,6 +49,7 @@ class VItem(Points):
         stroke_radius: float | Iterable[float] | None = None,
         stroke_color: JAnimColor | ColorArray | None = None,
         stroke_alpha: Alpha | AlphaArray | None = None,
+        stroke_background: bool | None = None,
         fill_color: JAnimColor | ColorArray | None = None,
         fill_alpha: Alpha | AlphaArray | None = None,
         color: JAnimColor | ColorArray | None = None,
@@ -64,12 +66,26 @@ class VItem(Points):
         if fill_alpha is None:
             fill_alpha = alpha
 
+        if stroke_background is not None:
+            self.stroke_background = stroke_background
         if stroke_radius is not None:
             self.radius.set(stroke_radius, root_only=True)
         self.stroke.set(stroke_color, stroke_alpha, root_only=True)
         self.fill.set(fill_color, fill_alpha, root_only=True)
 
         return super().set_style(**kwargs)
+
+    def set_stroke_background(self, flag: bool = True, *, root_only: bool = False) -> Self:
+        '''
+        调整描边与填充的绘制顺序
+
+        ``flag=True`` 会使得描边被填充遮盖，``flag=False`` 则会使得填充被描边遮盖
+        '''
+        self.stroke_backgorund = flag
+        if not root_only:
+            for item in self.walk_descendants(VItem):
+                item.stroke_background = flag
+        return self
 
     def add_tip(
         self,

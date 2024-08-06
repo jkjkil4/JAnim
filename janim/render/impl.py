@@ -201,6 +201,7 @@ class VItemRenderer(Renderer):
         self.vbo_stroke_color.bind_to_storage_buffer(2)
         self.vbo_fill_color.bind_to_storage_buffer(3)
         self.update_fix_in_frame(item, self.prog)
+        self.prog['stroke_background'] = item.stroke_background
         self.vao.render(mgl.TRIANGLE_STRIP)
 
 
