@@ -318,7 +318,8 @@ class FadeTransform(AnimGroup):
         target: Item,
         *,
         src_root_only: bool = False,
-        target_root_only: bool = False
+        target_root_only: bool = False,
+        **kwargs
     ):
         src_copy = src.copy(root_only=src_root_only)
         src_copy.digest_styles(alpha=0)
@@ -340,5 +341,6 @@ class FadeTransform(AnimGroup):
                 target_copy, target,
                 hide_src=False,
                 root_only=target_root_only
-            )
+            ),
+            **kwargs
         )
