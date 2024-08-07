@@ -106,7 +106,7 @@ class PathBuilder:
         v2 = anchor - handle2
         angle = angle_between_vectors(v1, v2)
         if self.use_simple_quadratic_approx and angle < 45 * DEGREES:
-            quad_approx = [last, find_intersection(last, v1, anchor, -v2), anchor]
+            quad_approx = [last, *find_intersection(last, v1, anchor, -v2), anchor]
         else:
             quad_approx = get_quadratic_approximation_of_cubic(
                 last, handle1, handle2, anchor
