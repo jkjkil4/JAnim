@@ -161,7 +161,14 @@ default_config = Config(
 - ``temp_dir`` 由操作系统决定
 '''
 
-config_ctx_var.set([default_config])
+cli_config = Config()
+'''
+命令行配置
+
+会被命令行 ``--config`` 参数自动修改
+'''
+
+config_ctx_var.set([default_config, cli_config])
 
 
 class ConfigGetter:

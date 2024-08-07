@@ -12,7 +12,7 @@ from janim.exception import (EXITCODE_MODULE_NOT_FOUND, EXITCODE_NOT_FILE,
                              ExitException)
 from janim.locale.i18n import get_local_strings
 from janim.logger import log
-from janim.utils.config import default_config
+from janim.utils.config import cli_config, default_config
 
 _ = get_local_strings('cli')
 
@@ -133,7 +133,8 @@ def tool(args: Namespace) -> None:
         return
 
     # 不直接从对应的 module 导入，是为了经过 anim_viewer 中对 pyside6 安装的检查
-    from janim.gui.anim_viewer import ColorWidget, FontTable, QWidget, RichTextEditor
+    from janim.gui.anim_viewer import (ColorWidget, FontTable, QWidget,
+                                       RichTextEditor)
 
     log.info('======')
     log.info(_('Constructing window'))
@@ -170,7 +171,7 @@ def modify_default_config(args: Namespace) -> None:
     if args.config:
         for key, value in args.config:
             dtype = type(getattr(default_config, key))
-            setattr(default_config, key, dtype(value))
+            setattr(cli_config, key, dtype(value))
 
 
 def get_module(file_name: str):
