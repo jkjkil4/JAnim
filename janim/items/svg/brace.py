@@ -155,6 +155,7 @@ def get_brace_orig_points() -> np.ndarray:
     center = (points.min(axis=0) + points.max(axis=0)) * 0.5
 
     brace_orig_points = points - center
+    brace_orig_points.setflags(write=False)
     return brace_orig_points
 
 
@@ -181,11 +182,11 @@ def get_brace_left_index() -> int:
 
 
 def get_brace_right_index() -> int:
-    global brace_left_index
-    if brace_left_index is not None:
-        return brace_left_index
+    global brace_right_index
+    if brace_right_index is not None:
+        return brace_right_index
 
     points = get_brace_orig_points()
-    brace_left_index = points[:, 0].argmax()
+    brace_right_index = points[:, 0].argmax()
 
-    return brace_left_index
+    return brace_right_index
