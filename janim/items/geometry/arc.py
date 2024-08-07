@@ -1,5 +1,5 @@
 
-from typing import Iterable, Self
+from typing import Self
 
 import numpy as np
 from janim.components.component import CmptInfo
@@ -29,7 +29,7 @@ class ArcCenter(VItem):
         self._arc_center.set([arc_center])
 
         # 使 _arc_center 与 points 同步变换
-        Cmpt_VPoints.apply_points_fn.connect(
+        Cmpt_Points.apply_points_fn.connect(
             self.points,
             lambda func, about_point: self._arc_center.apply_points_fn(func, about_point=about_point)
         )
