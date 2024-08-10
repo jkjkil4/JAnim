@@ -174,9 +174,13 @@ class Audio:
         '''
         frames = int(self.framerate * duration)
         data = self._samples.data.copy()
-        data[:frames] = (data[:frames] * np.linspace(0, 1, frames)).astype(np.int16)
-        self._samples.data = data
 
+        mul = np.linspace(0, 1, frames)
+        if data.ndim != 1:
+            mul = mul[:, np.newaxis] * np.ones(data.shape[1])
+
+        data[:frames] = (data[:frames] * mul).astype(np.int16)
+        self._samples.data = data
         return self
 
     def fade_out(self, duration: float) -> Self:
@@ -185,7 +189,12 @@ class Audio:
         '''
         frames = int(self.framerate * duration)
         data = self._samples.data.copy()
-        data[-frames:] = (data[-frames:] * np.linspace(1, 0, frames)).astype(np.int16)
+
+        mul = np.linspace(1, 0, frames)
+        if data.ndim != 1:
+            mul = mul[:, np.newaxis] * np.ones(data.shape[1])
+
+        data[-frames:] = (data[-frames:] * mul).astype(np.int16)
         self._samples.data = data
         return self
 
@@ -204,6 +213,7 @@ class Audio:
         - ``amplitude_threshould_ratio``: 振幅低于该比率的就认为是没声音的
         - ``gap_duration``: 如果没声音的时长大于该时间，则将前后分段
         '''
+        # TODO: 验证该函数对多声道的可用性
         data = self._samples.data
         indices = np.where(data > np.iinfo(np.int16).max * amplitude_threshold_ratio)[0]
         if len(indices) == 0:
