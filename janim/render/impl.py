@@ -327,6 +327,8 @@ class VideoRenderer(Renderer):
                 size=(width, height),
                 components=item.frame_components
             )
+            self.texture.repeat_x = False
+            self.texture.repeat_y = False
 
         if self.reader is None or self.reader.info is not item.info:
             self.reader = VideoReader(item.info, item.frame_components)
@@ -336,6 +338,7 @@ class VideoRenderer(Renderer):
         raw_frame = self.reader.get(item.compute_time(global_t))
         if raw_frame is not self.prev_frame:
             self.texture.write(raw_frame)
+            self.texture.build_mipmaps()
             self.prev_frame = raw_frame
 
 

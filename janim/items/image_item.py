@@ -307,7 +307,7 @@ class Video(Points):
         *,
         width: float | None = None,
         height: float | None = None,
-        min_mag_filter: tuple[int, int] = (mgl.LINEAR, mgl.LINEAR),
+        min_mag_filter: tuple[int, int] = (mgl.LINEAR_MIPMAP_LINEAR, mgl.LINEAR),
         frame_components: int = 3,
         **kwargs
     ):
@@ -490,7 +490,7 @@ class PixelVideo(Video):
         *,
         width: float | None = None,
         height: float | None = None,
-        min_mag_filter: tuple[int, int] = (mgl.LINEAR, mgl.NEAREST),
+        min_mag_filter: tuple[int, int] = (mgl.LINEAR_MIPMAP_LINEAR, mgl.NEAREST),
         **kwargs
     ):
         super().__init__(file_path, width=width, height=height, min_mag_filter=min_mag_filter, **kwargs)
