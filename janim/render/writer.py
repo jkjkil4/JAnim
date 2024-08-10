@@ -192,8 +192,8 @@ class AudioWriter:
             self.anim.cfg.ffmpeg_bin,
             '-y',   # overwrite output file if it exists
             '-f', 's16le',
-            '-ar', str(self.anim.cfg.audio_framerate),     # framerate & samplerate
-            '-ac', '1',
+            '-ar', str(self.anim.cfg.audio_framerate),      # framerate & samplerate
+            '-ac', str(self.anim.cfg.audio_channels),
             '-i', '-',
             '-loglevel', 'error',
             self.temp_file_path

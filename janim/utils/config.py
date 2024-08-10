@@ -99,6 +99,7 @@ class Config(metaclass=_ConfigMeta):
     subtitle_font: str | Iterable[str] = None
 
     audio_framerate: int = None
+    audio_channels: int = None
 
     wnd_pos: str = None
     wnd_monitor: int = None
@@ -140,6 +141,7 @@ default_config = Config(
     subtitle_font='',
 
     audio_framerate=44100,
+    audio_channels=1,
 
     wnd_pos='OR',
     wnd_monitor=0,

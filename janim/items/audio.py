@@ -91,11 +91,13 @@ class Audio:
         if end != -1:
             command += ['-to', str(end)]    # clip to
 
+        channels = Config.get.audio_channels
+
         command += [
             '-f', 's16le',
             '-acodec', 'pcm_s16le',
             '-ar', str(Config.get.audio_framerate),     # framerate & samplerate
-            '-ac', '1',
+            '-ac', str(channels),
             '-loglevel', 'error',
             '-',    # output to a pipe
         ]
@@ -109,6 +111,9 @@ class Audio:
         except FileNotFoundError:
             log.error(_('Unable to read audio, please install ffmpeg and add it to the environment variables'))
             raise ExitException(EXITCODE_FFMPEG_NOT_FOUND)
+
+        if channels != 1:
+            data = data.reshape((-1, channels))
 
         self._samples.data = data
         self.framerate = Config.get.audio_framerate
@@ -168,7 +173,7 @@ class Audio:
         应用 ``duration`` 秒的淡入
         '''
         frames = int(self.framerate * duration)
-        data = self._samples.data
+        data = self._samples.data.copy()
         data[:frames] = (data[:frames] * np.linspace(0, 1, frames)).astype(np.int16)
         self._samples.data = data
 
@@ -179,9 +184,10 @@ class Audio:
         应用 ``duration`` 秒的淡出
         '''
         frames = int(self.framerate * duration)
-        data = self._samples.data
+        data = self._samples.data.copy()
         data[-frames:] = (data[-frames:] * np.linspace(1, 0, frames)).astype(np.int16)
         self._samples.data = data
+        return self
 
     def recommended_ranges(
         self,

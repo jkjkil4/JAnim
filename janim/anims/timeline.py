@@ -477,9 +477,13 @@ class Timeline(metaclass=ABCMeta):
         '''
         begin = frame / fps
         end = (frame + 1) / fps
+        channels = self.config_getter.audio_channels
 
         output_sample_count = math.floor(end * framerate) - math.floor(begin * framerate)
-        result = np.zeros(output_sample_count, dtype=np.int16)
+        if channels == 1:
+            result = np.zeros(output_sample_count, dtype=np.int16)
+        else:
+            result = np.zeros((output_sample_count, channels), dtype=np.int16)
 
         for info in self.audio_infos:
             if end < info.range.at or begin > info.range.end:
@@ -499,11 +503,19 @@ class Timeline(metaclass=ABCMeta):
             data = audio._samples.data[max(clip_begin, frame_begin): min(clip_end, frame_end)]
 
             if left_blank != 0 or right_blank != 0:
-                data = np.concatenate([
-                    np.zeros(left_blank, dtype=np.int16),
-                    data,
-                    np.zeros(right_blank, dtype=np.int16)
-                ])
+                if channels == 1:
+                    data = np.concatenate([
+                        np.zeros(left_blank, dtype=np.int16),
+                        data,
+                        np.zeros(right_blank, dtype=np.int16)
+                    ])
+                else:
+                    channels = data.shape[1]
+                    data = np.concatenate([
+                        np.zeros((left_blank, channels), dtype=np.int16),
+                        data,
+                        np.zeros((right_blank, channels), dtype=np.int16)
+                    ])
 
             result += resize_preserving_order(data, output_sample_count)
 

@@ -5,8 +5,9 @@ import pyaudio
 
 
 class AudioPlayer:
-    def __init__(self, framerate: int):
+    def __init__(self, framerate: int, channels: int):
         self.framerate = framerate
+        self.channels = channels
 
         self.queue: Queue = Queue(maxsize=2)
         self.thread = threading.Thread(target=self._run, daemon=True)
@@ -23,7 +24,7 @@ class AudioPlayer:
             p = pyaudio.PyAudio()
 
             self.stream = p.open(format=pyaudio.paInt16,
-                                 channels=1,
+                                 channels=self.channels,
                                  rate=self.framerate,
                                  output=True)
 

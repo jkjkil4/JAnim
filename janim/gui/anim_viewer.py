@@ -137,7 +137,7 @@ class AnimViewer(QMainWindow):
         self.play_timer.set_duration(1 / anim.cfg.preview_fps)
 
         if self.anim.timeline.has_audio() and self.audio_player is None:
-            self.audio_player = AudioPlayer(self.anim.cfg.audio_framerate)
+            self.audio_player = AudioPlayer(self.anim.cfg.audio_framerate, self.anim.cfg.audio_channels)
 
     # region setup_ui
 
@@ -341,7 +341,20 @@ class AnimViewer(QMainWindow):
         name = self.name_edit.text().strip()
         stay_same = self.anim.timeline.__class__.__name__ == name
 
-        loader = importlib.machinery.SourceFileLoader(module.__name__, module.__file__)
+        module_name = module.__name__
+        # If the AnimViewer is run by executing
+        #
+        # if __name__ == '__main__':
+        #     AnimViewer.views(YourTimeline().build())
+        #
+        # directly,
+        # this condition might be triggered during rebuilding.
+        #
+        # To avoid this, I change the module name to '__janim_main__'.
+        if module_name == '__main__':
+            module_name = '__janim_main__'
+
+        loader = importlib.machinery.SourceFileLoader(module_name, module.__file__)
         module = loader.load_module()
         timeline_class = getattr(module, name, None)
         if not isinstance(timeline_class, type) or not issubclass(timeline_class, Timeline):
