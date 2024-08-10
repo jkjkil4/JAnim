@@ -312,6 +312,8 @@ class MethodTransformArgsBuilder:
 
 
 class FadeTransform(AnimGroup):
+    label_color = C_LABEL_ANIM_STAY
+
     def __init__(
         self,
         src: Item,

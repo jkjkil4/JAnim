@@ -1,15 +1,15 @@
 
 import math
+from functools import partial
 from typing import Callable
 
 import numpy as np
-from functools import partial
-
 from janim.anims.animation import Animation, RenderCall
 from janim.anims.updater import DataUpdater, UpdaterParams
 from janim.components.vpoints import Cmpt_VPoints
 from janim.constants import (C_LABEL_ANIM_ABSTRACT, C_LABEL_ANIM_IN,
-                             C_LABEL_ANIM_OUT, NAN_POINT)
+                             C_LABEL_ANIM_INDICATION, C_LABEL_ANIM_OUT,
+                             NAN_POINT)
 from janim.items.item import Item
 from janim.items.points import Group
 from janim.items.vitem import VItem
@@ -197,6 +197,8 @@ class Write(DrawBorderThenFill):
 
 
 class ShowIncreasingSubsets(Animation):
+    label_color = C_LABEL_ANIM_IN
+
     def __init__(
         self,
         group: Group[Item],
@@ -242,6 +244,8 @@ class ShowIncreasingSubsets(Animation):
 
 
 class ShowSubitemsOneByOne(ShowIncreasingSubsets):
+    label_color = C_LABEL_ANIM_INDICATION
+
     def __init__(
         self,
         group: Group,
