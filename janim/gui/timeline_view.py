@@ -300,9 +300,16 @@ class TimelineView(QWidget):
         label1 = QLabel(f'{anim.__class__.__name__} '
                         f'{round(anim.global_range.at, 2)}s ~ {round(anim.global_range.end, 2)}s')
         chart_view = self.create_anim_chart(anim)
+
+        def getname(rate_func) -> str:
+            try:
+                return rate_func.__name__
+            except AttributeError:
+                return '[unknown]'
+
         label2 = QLabel(
             '\n↑\n'.join(
-                f'{anim.rate_func.__name__} ({anim.__class__.__name__})'
+                f'{getname(anim.rate_func)} ({anim.__class__.__name__})'
                 for anim in parents
             )
         )
