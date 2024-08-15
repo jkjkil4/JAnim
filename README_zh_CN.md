@@ -28,6 +28,9 @@ JAnim 是一个用于简易动画效果的库
 </table>
 
 ## 安装
+
+> ⚠️ macOS 无法使用 JAnim
+
 JAnim 运行在 Python 3.12 及更高版本，并且需要 OpenGL 4.3 及更高版本
 
 你可以通过以下命令直接安装 JAnim

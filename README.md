@@ -28,6 +28,9 @@ Inspired by [manim](https://github.com/3b1b/manim).
 </table>
 
 ## Installation
+
+> ⚠️ JAnim does not work on macOS.
+
 JAnim runs on Python 3.12+ and OpenGL 4.3+.
 
 You may install JAnim directly via
