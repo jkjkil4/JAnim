@@ -114,13 +114,21 @@ class Cmpt_CameraPoints[ItemT](Cmpt_Points[ItemT]):
         angle: float,
         *,
         axis: Vect = OUT,
+        absolute: bool = False,
         **kwargs
     ) -> Self:
         '''
         将摄像机绕 ``axis`` 轴进行旋转
+
+        - 默认 ``absolute=False`` 表示绕相机自身坐标系旋转
+        - ``absolute=True`` 表示绕世界坐标系旋转
         '''
         super().rotate(angle, axis=axis, **kwargs)
-        self.orientation *= Rotation.from_rotvec(angle * normalize(axis))
+        if absolute:
+            self.orientation = Rotation.from_rotvec(angle * normalize(axis)) * self.orientation
+        else:
+            self.orientation *= Rotation.from_rotvec(angle * normalize(axis))
+
         return self
 
     @property
