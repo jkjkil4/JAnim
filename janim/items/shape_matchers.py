@@ -1,7 +1,8 @@
 from __future__ import annotations
 
+import janim.items.boolean_ops as boolean_ops
 from janim.camera.camera import Camera
-from janim.constants import DOWN, LEFT, RIGHT, SMALL_BUFF, UP, YELLOW
+from janim.constants import BLACK, DOWN, LEFT, RIGHT, SMALL_BUFF, UP, YELLOW
 from janim.items.geometry.line import Line
 from janim.items.geometry.polygon import Rect
 from janim.items.points import Points
@@ -11,6 +12,9 @@ from janim.utils.data import Align, Margins, MarginsType
 
 
 class SurroundingRect(Rect):
+    '''
+    包围矩形框
+    '''
     def __init__(
         self,
         item: Points,
@@ -49,6 +53,12 @@ class SurroundingRect(Rect):
 
 
 class FrameRect(Rect):
+    '''
+    覆盖整个画面的矩形
+
+    - 可以传入 `camera` 指定以其画面区域为准
+    - 若不传入则产生默认宽高 `frame_width` 和 `frame_height` 的矩形
+    '''
     def __init__(self, camera: Camera | None = None, **kwargs):
         if camera is None:
             super().__init__(Config.get.frame_width, Config.get.frame_height, **kwargs)
@@ -65,6 +75,40 @@ class FrameRect(Rect):
                 center + hvect_half - vvect_half,
                 center + hvect_half + vvect_half
             ])
+
+
+class HighlightRect(boolean_ops.Difference):
+    '''
+    高亮区域，即 :class:`FrameRect` 挖去 :class:`SurroundingRect`
+    '''
+    def __init__(
+        self,
+        # SurroundingRect
+        item: Points,
+
+        # FrameRect
+        camera: Camera | None = None,
+        *,
+        # SurroundingRect
+        buff: MarginsType = SMALL_BUFF,
+        width: float | None = None,
+        height: float | None = None,
+        align: Align = Align.Center,
+
+        # Difference
+        color: JAnimColor = BLACK,
+        fill_alpha: float | None = 0.5,
+        stroke_alpha: float | None = 0,
+        **kwargs
+    ):
+        super().__init__(
+            FrameRect(camera),
+            SurroundingRect(item, buff=buff, width=width, height=height, align=align),
+            color=color,
+            fill_alpha=fill_alpha,
+            stroke_alpha=stroke_alpha,
+            **kwargs
+        )
 
 
 class Underline(Line):
