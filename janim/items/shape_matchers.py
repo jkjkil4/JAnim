@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from janim.camera.camera import Camera
 from janim.constants import DOWN, LEFT, RIGHT, SMALL_BUFF, UP, YELLOW
 from janim.items.geometry.line import Line
 from janim.items.geometry.polygon import Rect
@@ -48,8 +49,22 @@ class SurroundingRect(Rect):
 
 
 class FrameRect(Rect):
-    def __init__(self, **kwargs):
-        super().__init__(Config.get.frame_width, Config.get.frame_height, **kwargs)
+    def __init__(self, camera: Camera | None = None, **kwargs):
+        if camera is None:
+            super().__init__(Config.get.frame_width, Config.get.frame_height, **kwargs)
+        else:
+            super().__init__(1, 1, **kwargs)
+            info = camera.points.info
+            hvect_half = info.horizontal_vect / 2
+            vvect_half = info.vertical_vect / 2
+            center = info.center
+            self.points.set_as_corners([
+                center + hvect_half + vvect_half,
+                center - hvect_half + vvect_half,
+                center - hvect_half - vvect_half,
+                center + hvect_half - vvect_half,
+                center + hvect_half + vvect_half
+            ])
 
 
 class Underline(Line):
