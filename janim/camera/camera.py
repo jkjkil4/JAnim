@@ -123,7 +123,6 @@ class Cmpt_CameraPoints[ItemT](Cmpt_Points[ItemT]):
         - 默认 ``absolute=False`` 表示绕相机自身坐标系旋转，并且此时 ``about_point`` 参数无效
         - ``absolute=True`` 表示绕全局坐标系旋转
         '''
-        # TODO: absolute=True as default on 2.0.0
         if absolute:
             super().rotate(angle, axis=axis, **kwargs)
             self.orientation = Rotation.from_rotvec(angle * normalize(axis)) * self.orientation
