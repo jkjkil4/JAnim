@@ -154,12 +154,35 @@ class TimelineView(QWidget):
         if info.clip_range != TimeRange(0, info.audio.duration()):
             msg_lst.append(_('Clip') + f': {round(info.clip_range.at, 2)}s ~ {round(info.clip_range.end, 2)}s')
 
+        # 只有在这区间内的“建议裁剪区段”才能够被显示
+        visible_clip_begin = info.clip_range.at - 4
+        visible_clip_end = info.clip_range.end + 4
+
+        recommended_ranges = list(info.audio.recommended_ranges())
+
+        def is_visible(start: float, end: float) -> bool:
+            return visible_clip_begin < start < visible_clip_end or visible_clip_begin < end < visible_clip_end
+
         clips = ', '.join(
             f'{math.floor(start * 10) / 10}s ~ {math.ceil(end * 10) / 10}s'
-            for start, end in info.audio.recommended_ranges()
+            for start, end in recommended_ranges
+            if is_visible(start, end)
         )
         if clips:
-            msg_lst.append(_('Recommended clip') + f': {clips}')
+            # 如果 recommended_ranges 的前（后）是被忽略了的，那么在前（后）加上省略号
+            clips = ''.join([
+                '' if is_visible(*recommended_ranges[0]) else '... ',
+                clips,
+                '' if is_visible(*recommended_ranges[-1]) else ' ...'
+            ])
+
+            # 当 clips 不太长的时候（正常情况下），就直接将其作为 msg_lst 的一部分
+            # 否则将其截短（保留前25个字符和最后25个字符）后，再作为 msg_lst 的一部分
+            if len(clips) < 80:
+                msg_lst.append(_('Recommended clip') + f': {clips}')
+            else:
+                msg_lst.append(_('Recommended clip') + f': {clips[:40]} ... {clips[-40:]}')
+                msg_lst.append('    ' + _('(Too many! Unable to display all ranges.)'))
 
         label = QLabel('\n'.join(msg_lst))
         chart_view = self.create_audio_chart(info, near=round(self.pixel_to_time(pos.x())))
@@ -198,6 +221,8 @@ class TimelineView(QWidget):
         right_blank = max(0, end - audio.sample_count())
 
         data = audio._samples.data[max(0, begin): min(end, audio.sample_count())]
+        if data.ndim > 1:
+            data = np.max(data, axis=1)
 
         if left_blank != 0 or right_blank != 0:
             data = np.concatenate([
