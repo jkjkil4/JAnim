@@ -49,15 +49,17 @@ class ArrowTip(VItem):
     - ``body_length``: 箭头的宽度
     - ``back_width``: 箭头的长度
     - ``center_anchor``: 原点所处的位置，请参考 :class:`CenterAnchor`
+    - ``rotation``: 绕方向轴转动的角度，一般用于 3D 中
     '''
 
-    def __init__(   # TODO: 3d-ops
+    def __init__(
         self,
         body_length: float = DEFAULT_ARROWTIP_BODY_LENGTH,
         back_width: float = DEFAULT_ARROWTIP_BACK_WIDTH,
         angle: float = 0,
         *,
         center_anchor: CenterAnchor = CenterAnchor.Back,
+        rotation: float | None = None,
         fill_alpha: float = 1.0,
         stroke_radius: float = DEFAULT_STROKE_RADIUS / 4,
         **kwargs
@@ -73,6 +75,8 @@ class ArrowTip(VItem):
         ])
         self.points.to_center()
         self.rotate_about_anchor(angle)
+        if rotation is not None:
+            self.points.rotate(rotation, axis=self.direction)
 
     def get_center_anchor(self) -> np.ndarray:
         '''
