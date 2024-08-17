@@ -213,8 +213,9 @@ class Audio:
         - ``amplitude_threshould_ratio``: 振幅低于该比率的就认为是没声音的
         - ``gap_duration``: 如果没声音的时长大于该时间，则将前后分段
         '''
-        # TODO: 验证该函数对多声道的可用性
         data = self._samples.data
+        if data.ndim > 1:
+            data = np.max(data, axis=1)
         indices = np.where(data > np.iinfo(np.int16).max * amplitude_threshold_ratio)[0]
         if len(indices) == 0:
             return
@@ -245,6 +246,8 @@ class Audio:
         '''
         # TODO: cache
         data = self._samples.data
+        if data.ndim > 1:
+            data = np.max(data, axis=1)
         indices = np.where(data > np.iinfo(np.int16).max * amplitude_threshold_ratio)[0]
         if len(indices) == 0:
             return None
