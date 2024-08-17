@@ -570,6 +570,9 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
             item._fix_in_frame = on
         return self
 
+    def is_fix_in_frame(self) -> bool:
+        return self._fix_in_frame
+
     @classmethod
     def get_global_renderer(cls) -> None:
         if cls.global_renderer is None:

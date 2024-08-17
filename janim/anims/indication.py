@@ -31,7 +31,7 @@ class FocusOn(DataUpdater[Dot]):
 
     def __init__(
         self,
-        point_or_item: Vect | Points,
+        point_or_item: Vect | Item,
         *,
         about_edge: Vect = ORIGIN,
         color: JAnimColor = GREY,
@@ -39,17 +39,21 @@ class FocusOn(DataUpdater[Dot]):
         duration: float = 2,
         **kwargs
     ) -> None:
+        is_item = isinstance(point_or_item, Item)
+
         dot1 = Dot(
             radius=Config.get.frame_x_radius + Config.get.frame_y_radius,
             fill_color=color,
             fill_alpha=0,
         )
+        if is_item and point_or_item.is_fix_in_frame():
+            dot1.fix_in_frame()
         dot2 = Dot(radius=0, fill_color=color, fill_alpha=alpha)
 
         def updater(data: Dot, p: UpdaterParams):
-            if isinstance(point_or_item, Item):
+            if is_item:
                 target = point_or_item.current()
-                target_point = target.points.box.get(about_edge)
+                target_point = target(Points).points.box.get(about_edge)
             else:
                 target_point = point_or_item
 
@@ -126,6 +130,8 @@ class CircleIndicate(DataUpdater[Circle]):
         **kwargs
     ):
         start = Circle(color=color, alpha=0)
+        if item.is_fix_in_frame():
+            start.fix_in_frame()
         target = Circle(color=color)
 
         def updater(c: Circle, p: UpdaterParams):
@@ -224,6 +230,8 @@ class AnimationOnSurroundingRect(AnimGroup):
         self.surrounding_rect_config = surrounding_rect_config
 
         rect = self.create_rect()
+        if item.is_fix_in_frame():
+            rect.fix_in_frame()
         anim = rect_anim(rect, **kwargs)
         self.apply_updater(anim)
 
@@ -287,7 +295,7 @@ class Flash(ShowCreationThenDestruction):
 
     def __init__(
         self,
-        point_or_item: Vect | Points,
+        point_or_item: Vect | Item,
         *,
         color: JAnimColor = YELLOW,
         line_length: float = 0.2,
@@ -311,14 +319,16 @@ class Flash(ShowCreationThenDestruction):
             **kwargs
         )
 
-        if isinstance(point_or_item, Item):
+        is_item = isinstance(point_or_item, Item)
+
+        if is_item:
             self.timeline.track_item_and_descendants(point_or_item)
 
         def updater(data: Points, p: UpdaterParams):
-            if not isinstance(point_or_item, Points):
-                pos = point_or_item
+            if is_item:
+                pos = point_or_item.current()(Points).points.box.center
             else:
-                pos = point_or_item.current().points.box.center
+                pos = point_or_item
             data.points.shift(pos)
 
         self.add_post_updater(updater)
