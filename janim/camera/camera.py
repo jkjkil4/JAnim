@@ -57,7 +57,7 @@ class Cmpt_CameraPoints[ItemT](Cmpt_Points[ItemT]):
             return False
         if np.any(self.size != other.size) or self.fov != other.fov:
             return False
-        return np.all(self.orientation.as_quat() == other.orientation.as_quat())
+        return np.isclose(self.orientation.as_quat(), other.orientation.as_quat()).all()
 
     def interpolate(
         self,
