@@ -101,7 +101,7 @@ def resize_preserving_order[T](array: list[T], length: int, fall_back: Callable 
 
 
 def resize_preserving_order(
-    array: np.ndarray | list[T],
+    array: np.ndarray | list,
     length: int,
     fall_back: Callable = types.NoneType
 ):
@@ -138,6 +138,18 @@ def resize_preserving_order_indice_groups(len1: int, len2: int) -> list[list[int
     result.append(current)
 
     return result
+
+
+def resize_preserving_head_and_tail(
+    array: np.ndarray,
+    length: int
+):
+    indices = np.round(np.linspace(0, len(array) - 1, length)).astype(int)
+    if len(array) == 0:
+        return np.zeros((0, *array.shape[1:]), dtype=array.dtype)
+    if len(array) == length:
+        return array
+    return array[indices]
 
 
 def resize_and_repeatedly_extend(
