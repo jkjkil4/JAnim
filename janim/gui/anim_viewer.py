@@ -156,32 +156,32 @@ class AnimViewer(QMainWindow):
 
     def setup_menu_bar(self) -> None:
         menu_bar = self.menuBar()
-        menu_functions = menu_bar.addMenu(_('Functions'))
+        menu_functions = menu_bar.addMenu(_('Functions(&F)'))
 
-        self.action_stay_on_top = menu_functions.addAction(_('Stay on top'))
+        self.action_stay_on_top = menu_functions.addAction(_('Stay on top(&T)'))
         self.action_stay_on_top.setCheckable(True)
         self.action_stay_on_top.setShortcut('Ctrl+T')
 
         menu_functions.addSeparator()
 
-        self.action_rebuild = menu_functions.addAction(_('Rebuild'))
+        self.action_rebuild = menu_functions.addAction(_('Rebuild(&L)'))
         self.action_rebuild.setShortcut('Ctrl+L')
 
         menu_functions.addSeparator()
 
-        self.action_select = menu_functions.addAction(_('Subitem selector'))
+        self.action_select = menu_functions.addAction(_('Subitem selector(&S)'))
         self.action_select.setShortcut('Ctrl+S')
         self.selector: Selector | None = None
 
-        self.action_richtext_edit = menu_functions.addAction(_('Rich text editor'))
+        self.action_richtext_edit = menu_functions.addAction(_('Rich text editor(&R)'))
         self.action_richtext_edit.setShortcut('Ctrl+R')
         self.richtext_editor: RichTextEditor | None = None
 
-        self.action_font_table = menu_functions.addAction(_('Font list'))
+        self.action_font_table = menu_functions.addAction(_('Font list(&F)'))
         self.action_font_table.setShortcut('Ctrl+F')
         self.font_table: FontTable | None = None
 
-        self.action_color_widget = menu_functions.addAction(_('Color'))
+        self.action_color_widget = menu_functions.addAction(_('Color(&O)'))
         self.action_color_widget.setShortcut('Ctrl+O')
         self.color_widget: ColorWidget | None = None
 
