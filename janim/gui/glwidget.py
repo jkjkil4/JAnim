@@ -1,6 +1,6 @@
 
 import moderngl as mgl
-from PySide6.QtCore import Signal
+from PySide6.QtCore import QPointF, Signal
 from PySide6.QtOpenGLWidgets import QOpenGLWidget
 from PySide6.QtWidgets import QWidget
 
@@ -25,6 +25,19 @@ class GLWidget(QOpenGLWidget):
     def set_time(self, time: float) -> None:
         self.anim.anim_on(time)
         self.update()
+
+    def map_to_gl2d(self, point: QPointF) -> tuple[float, float]:
+        x, y = point.toTuple()
+        w, h = self.size().toTuple()
+        glx = x / w * 2 - 1
+        gly = y / h * -2 + 1
+        return glx, gly
+
+    def map_to_widget(self, x: float, y: float) -> QPointF:
+        w, h = self.size().toTuple()
+        xx = (x + 1) / 2 * w
+        yy = (-y + 1) / 2 * h
+        return QPointF(xx, yy)
 
     def initializeGL(self) -> None:
         self.ctx = mgl.create_context()

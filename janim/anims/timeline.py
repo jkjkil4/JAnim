@@ -22,6 +22,7 @@ from janim.anims.composition import AnimGroup
 from janim.anims.display import Display
 from janim.anims.updater import updater_params_ctx
 from janim.camera.camera import Camera
+from janim.camera.camera_info import CameraInfo
 from janim.constants import (BLACK, DEFAULT_DURATION,
                              DEFAULT_ITEM_TO_EDGE_BUFF, DOWN, SMALL_BUFF, UP)
 from janim.exception import TimelineLookupError
@@ -821,6 +822,9 @@ class TimelineAnim(AnimGroup):
     @property
     def cfg(self) -> Config | ConfigGetter:
         return self.timeline.config_getter
+
+    def current_camera_info(self) -> CameraInfo:
+        return self.timeline.camera.current(as_time=self._time).points.info
 
     def anim_on(self, local_t: float) -> None:
         # 使最后一帧不空屏

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-08-18 13:25+0800\n"
+"POT-Creation-Date: 2024-08-18 15:58+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -28,62 +28,66 @@ msgid ""
 "install them in the correct Python version"
 msgstr ""
 
-#: janim\gui\anim_viewer.py:159
+#: janim\gui\anim_viewer.py:160
 msgid "Functions(&F)"
 msgstr ""
 
-#: janim\gui\anim_viewer.py:161
+#: janim\gui\anim_viewer.py:162
 msgid "Stay on top(&T)"
 msgstr ""
 
-#: janim\gui\anim_viewer.py:167
+#: janim\gui\anim_viewer.py:168
 msgid "Rebuild(&L)"
 msgstr ""
 
-#: janim\gui\anim_viewer.py:172
+#: janim\gui\anim_viewer.py:173
 msgid "Subitem selector(&S)"
 msgstr ""
 
-#: janim\gui\anim_viewer.py:176
+#: janim\gui\anim_viewer.py:177
+msgid "Draw(&D)"
+msgstr ""
+
+#: janim\gui\anim_viewer.py:181
 msgid "Rich text editor(&R)"
 msgstr ""
 
-#: janim\gui\anim_viewer.py:180
+#: janim\gui\anim_viewer.py:185
 msgid "Font list(&F)"
 msgstr ""
 
-#: janim\gui\anim_viewer.py:184
+#: janim\gui\anim_viewer.py:189
 msgid "Color(&O)"
 msgstr ""
 
-#: janim\gui\anim_viewer.py:237
+#: janim\gui\anim_viewer.py:242
 msgid "wnd_pos has wrong argument {wnd_pos}."
 msgstr ""
 
-#: janim\gui\anim_viewer.py:248
+#: janim\gui\anim_viewer.py:253
 msgid "wnd_monitor has invaild value {wnd_monitor}, use 0~{maxi} instead."
 msgstr ""
 
-#: janim\gui\anim_viewer.py:362
+#: janim\gui\anim_viewer.py:368
 msgid "No timeline named \"{name}\" in \"{file}\""
 msgstr ""
 
-#: janim\gui\anim_viewer.py:372
+#: janim\gui\anim_viewer.py:378
 msgid "Failed to rebuild"
 msgstr ""
 
-#: janim\gui\anim_viewer.py:535 janim\gui\anim_viewer.py:544
+#: janim\gui\anim_viewer.py:552 janim\gui\anim_viewer.py:561
 msgid "Note"
 msgstr ""
 
-#: janim\gui\anim_viewer.py:536
+#: janim\gui\anim_viewer.py:553
 msgid "Output will start shortly. Please check the console for information."
 msgstr ""
 
-#: janim\gui\anim_viewer.py:545
+#: janim\gui\anim_viewer.py:562
 msgid "Output to {file_path} has been completed."
 msgstr ""
 
-#: janim\gui\anim_viewer.py:569
+#: janim\gui\anim_viewer.py:586
 msgid "Interactive port has been opened at {port}"
 msgstr ""

@@ -1,0 +1,46 @@
+# Chinese translations for PACKAGE package.
+# Copyright (C) 2024 THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# Automatically generated, 2024.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-08-18 20:44+0800\n"
+"PO-Revision-Date: 2024-08-18 20:45+0800\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: none\n"
+"Language: zh_CN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=GBK\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 3.4.2\n"
+
+#: janim\gui\painter.py:46
+msgid ""
+"Note: This is used to determine the position on the screen. To actually add "
+"the drawn content, you need to manually add the corresponding code."
+msgstr ""
+"提示：这是在屏幕上确定位置用的，为了将绘制出的东西真正地加进去，你需要手动添"
+"加对应的代码"
+
+#: janim\gui\painter.py:59
+msgid "Draw"
+msgstr "绘制"
+
+#: janim\gui\painter.py:66
+msgid "None"
+msgstr "无"
+
+#: janim\gui\painter.py:71
+msgid "(freehand-path)"
+msgstr "（徒手画路径）"
+
+#: janim\gui\painter.py:77
+msgid "Type"
+msgstr "类型"
+
+#: janim\gui\painter.py:334
+msgid "Count"
+msgstr "数量"

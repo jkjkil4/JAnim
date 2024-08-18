@@ -93,13 +93,11 @@ class Selector(QObject):
         self.children.clear()
         self.selected_children.clear()
 
-        x, y = event.position().toTuple()
-        glx = x / self.viewer.glw.width() * 2 - 1
-        gly = y / self.viewer.glw.height() * -2 + 1
+        glx, gly = self.viewer.glw.map_to_gl2d(event.position())
 
         anim = self.viewer.anim
         global_t = anim._time
-        camera_info = anim.timeline.camera.current(as_time=global_t).points.info
+        camera_info = anim.current_camera_info()
 
         found: list[Selector.SelectedItem] = []
 
@@ -133,9 +131,7 @@ class Selector(QObject):
                 self.children.append(Selector.SelectedItem(item, *mapped.min(axis=0), *mapped.max(axis=0)))
 
     def select_child_item(self, event: QMouseEvent) -> None:
-        x, y = event.position().toTuple()
-        glx = x / self.viewer.glw.width() * 2 - 1
-        gly = y / self.viewer.glw.height() * -2 + 1
+        glx, gly = self.viewer.glw.map_to_gl2d(event.position())
 
         for child in self.children:
             if child in self.selected_children:
@@ -145,9 +141,7 @@ class Selector(QObject):
             self.selected_children.append(child)
 
     def remove_child_item(self, event: QMouseEvent) -> None:
-        x, y = event.position().toTuple()
-        glx = x / self.viewer.glw.width() * 2 - 1
-        gly = y / self.viewer.glw.height() * -2 + 1
+        glx, gly = self.viewer.glw.map_to_gl2d(event.position())
 
         for child in self.selected_children:
             if not child.min_glx <= glx <= child.max_glx or not child.min_gly <= gly <= child.max_gly:

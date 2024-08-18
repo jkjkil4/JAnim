@@ -4,9 +4,9 @@ import re
 from bs4 import BeautifulSoup, Tag
 from PySide6.QtCore import QMimeData, Signal
 from PySide6.QtGui import QColor, QSyntaxHighlighter
-from PySide6.QtWidgets import (QCheckBox, QHBoxLayout, QPlainTextEdit,
-                               QVBoxLayout, QWidget)
+from PySide6.QtWidgets import QCheckBox, QHBoxLayout, QVBoxLayout, QWidget
 
+from janim.gui.text_edit import TextEdit
 from janim.locale.i18n import get_local_strings
 
 _ = get_local_strings('richtext_editor')
@@ -50,16 +50,11 @@ class RichTextEditor(QWidget):
         self.editor.convert_html = state
 
 
-class RichTextEdit(QPlainTextEdit):
+class RichTextEdit(TextEdit):
     html_inserted = Signal()
 
     def __init__(self, parent: QWidget | None = None):
         super().__init__(parent)
-
-        font = self.font()
-        font.setFamily('Consolas')
-        font.setPointSize(10)
-        self.setFont(font)
 
         self.highlighter = RichTextHighlighter(self.document())
 

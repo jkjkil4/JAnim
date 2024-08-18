@@ -35,6 +35,7 @@ from janim.gui.color_widget import ColorWidget
 from janim.gui.fixed_ratio_widget import FixedRatioWidget
 from janim.gui.font_table import FontTable
 from janim.gui.glwidget import GLWidget
+from janim.gui.painter import Painter
 from janim.gui.precise_timer import PreciseTimer
 from janim.gui.richtext_editor import RichTextEditor
 from janim.gui.selector import Selector
@@ -172,6 +173,10 @@ class AnimViewer(QMainWindow):
         self.action_select = menu_functions.addAction(_('Subitem selector(&S)'))
         self.action_select.setShortcut('Ctrl+S')
         self.selector: Selector | None = None
+
+        self.action_painter = menu_functions.addAction(_('Draw(&D)'))
+        self.action_painter.setShortcut('Ctrl+D')
+        self.painter: Painter | None = None
 
         self.action_richtext_edit = menu_functions.addAction(_('Rich text editor(&R)'))
         self.action_richtext_edit.setShortcut('Ctrl+R')
@@ -312,6 +317,7 @@ class AnimViewer(QMainWindow):
         self.action_stay_on_top.toggled.connect(self.on_stay_on_top_toggled)
         self.action_rebuild.triggered.connect(self.on_rebuild_triggered)
         self.action_select.triggered.connect(self.on_select_triggered)
+        self.action_painter.triggered.connect(self.on_painter_triggered)
         self.action_richtext_edit.triggered.connect(self.on_richtext_edit_triggered)
         self.action_font_table.triggered.connect(self.on_font_table_triggered)
         self.action_color_widget.triggered.connect(self.on_color_widget_triggered)
@@ -426,6 +432,17 @@ class AnimViewer(QMainWindow):
 
     def on_selector_destroyed(self) -> None:
         self.selector = None
+
+    def on_painter_triggered(self) -> None:
+        if self.painter is None:
+            self.painter = Painter(self)
+            self.painter.setWindowFlag(Qt.WindowType.Tool)
+            self.painter.setAttribute(Qt.WidgetAttribute.WA_DeleteOnClose)
+            self.painter.destroyed.connect(self.on_painter_destroyed)
+        self.painter.show()
+
+    def on_painter_destroyed(self) -> None:
+        self.painter = None
 
     def on_richtext_edit_triggered(self) -> None:
         if self.richtext_editor is None:
