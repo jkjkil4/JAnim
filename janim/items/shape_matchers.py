@@ -9,6 +9,7 @@ from janim.items.points import Points
 from janim.typing import JAnimColor
 from janim.utils.config import Config
 from janim.utils.data import Align, Margins, MarginsType
+from janim.utils.dict_ops import merge_dicts_recursively
 
 
 class SurroundingRect(Rect):
@@ -81,6 +82,13 @@ class HighlightRect(boolean_ops.Difference):
     '''
     高亮区域，即 :class:`FrameRect` 挖去 :class:`SurroundingRect`
     '''
+
+    difference_config_d = dict(
+        color=BLACK,
+        fill_alpha=0.5,
+        stroke_alpha=0
+    )
+
     def __init__(
         self,
         # SurroundingRect
@@ -96,17 +104,12 @@ class HighlightRect(boolean_ops.Difference):
         align: Align = Align.Center,
 
         # Difference
-        color: JAnimColor = BLACK,
-        fill_alpha: float | None = 0.5,
-        stroke_alpha: float | None = 0,
         **kwargs
     ):
+        kwargs = merge_dicts_recursively(self.difference_config_d, kwargs)
         super().__init__(
             FrameRect(camera),
             SurroundingRect(item, buff=buff, width=width, height=height, align=align),
-            color=color,
-            fill_alpha=fill_alpha,
-            stroke_alpha=stroke_alpha,
             **kwargs
         )
 
