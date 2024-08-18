@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from functools import partial
 from typing import TYPE_CHECKING
 
 import numpy as np
@@ -16,7 +15,7 @@ from janim.constants import DOWN, LEFT, RIGHT, UP
 from janim.gui.text_edit import TextEdit
 from janim.locale.i18n import get_local_strings
 from janim.utils.bezier import approx_smooth_quadratic_bezier_handles
-from janim.utils.iterables import resize_preserving_order
+from janim.utils.iterables import resize_preserving_head_and_tail
 
 if TYPE_CHECKING:
     from janim.gui.anim_viewer import AnimViewer
@@ -56,6 +55,7 @@ class Painter(QWidget):
         layout.addWidget(self.tabs, 1)
 
         self.setLayout(layout)
+        self.setStyleSheet('QScrollArea#itemWidget { border: none; }')
         self.setWindowTitle(_('Draw'))
         self.resize(650, 300)
 
@@ -157,6 +157,9 @@ class Painter(QWidget):
         self.viewer.overlay.update()
 
     def on_glw_mouse_release(self, event: QMouseEvent) -> None:
+        if event.button() != Qt.MouseButton.LeftButton:
+            return
+
         if self.constructing is None:
             assert self.is_none()
             widget: Painter.Widget = self.tabs.currentWidget()
@@ -190,6 +193,7 @@ class Painter(QWidget):
         def __init__(self, viewer: AnimViewer):
             super().__init__()
             self.setWidgetResizable(True)
+            self.setObjectName('itemWidget')
             self.viewer = viewer
 
         def start(self, pos: np.ndarray) -> None: ...
@@ -399,7 +403,7 @@ class Painter(QWidget):
                 if len(self.orig_array) == value:
                     self.array = self.orig_array.copy()
                 else:
-                    self.array = resize_preserving_order(self.orig_array, value)
+                    self.array = resize_preserving_head_and_tail(self.orig_array, value)
                 self.array[1::2] = approx_smooth_quadratic_bezier_handles(self.array[::2])
                 self.viewer.overlay.update()
 
@@ -419,28 +423,6 @@ class Painter(QWidget):
             p.drawPath(path)
 
 
-def _coord_to_str(lstr: str, rstr: str, value: float) -> str | None:
-    if np.isclose(value, 0):
-        return None
-
-    if value > 0:
-        return rstr if np.isclose(value, 1) else f'{rstr}*{value:.2f}'.rstrip('0')
-    else:
-        return lstr if np.isclose(value, -1) else f'{lstr}*{-value:.2f}'.rstrip('0')
-
-
-_coord_to_str_funcs = [
-    partial(_coord_to_str, 'LEFT', 'RIGHT'),
-    partial(_coord_to_str, 'DOWN', 'UP'),
-    partial(_coord_to_str, 'IN', 'OUT')
-]
-
-
 def _glpos_to_str(pos: np.ndarray) -> str:
-    lst: list[str] = []
-    for func, coord in zip(_coord_to_str_funcs, pos):
-        s = func(coord)
-        if s is not None:
-            lst.append(s)
-
-    return ' + '.join(lst) if lst else 'ORIGIN'
+    s = ', '.join(map(lambda coord: f'{coord:.2f}'.rstrip('0').rstrip('.'), pos))
+    return f'[{s}]'
