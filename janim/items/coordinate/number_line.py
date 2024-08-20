@@ -106,10 +106,6 @@ class NumberLine(Line):
     def get_unit_size(self) -> float:
         return self.points.length / (self.x_max - self.x_min)
 
-    def number_to_point(self, number: float | np.ndarray) -> np.ndarray:
-        alpha = (number - self.x_min) / (self.x_max - self.x_min)
-        return outer_interpolate(self.points.get_start(), self.points.get_end(), alpha)
-
     def get_tick_range(self) -> np.ndarray:
         tmp = self.x_min // self.x_step
         mod = self.x_min % self.x_step
@@ -202,7 +198,8 @@ class NumberLine(Line):
             buff=buff
         )
         if x < 0 and direction[0] == 0:
-            num_item.points.shift(num_item[0].points.box.width * LEFT / 2)
+            # Align without the minus sign
+            num_item.points.shift(num_item[0][0].points.box.width * LEFT / 2)
         return num_item
 
     def number_to_point(self, number: float | np.ndarray) -> np.ndarray:
