@@ -80,6 +80,10 @@ class Selector(QObject):
         self.viewer.overlay.update()
 
     def on_glw_mouse_move(self, event: QMouseEvent) -> None:
+        cursor_flag = self.compute_cursor_flag()
+        if cursor_flag != self.painted_cursor_flag:
+            self.viewer.overlay.update()
+
         if not event.modifiers() & Qt.KeyboardModifier.ControlModifier:
             match event.buttons():
                 case Qt.MouseButton.LeftButton:
@@ -148,6 +152,14 @@ class Selector(QObject):
                 continue
             self.selected_children.remove(child)
 
+    def compute_cursor_flag(self) -> bool:
+        '''
+        ``True`` 表示鼠标在画面上半部，反之在下半部
+        '''
+        glw = self.viewer.glw
+        cursor_pos = glw.mapFromGlobal(glw.cursor().pos())
+        return cursor_pos.y() < glw.height() / 2
+
     def on_overlay_paint(self, event: QPaintEvent) -> None:
         rect = self.viewer.overlay.rect().adjusted(2, 2, -2, -2)
 
@@ -215,4 +227,7 @@ class Selector(QObject):
                 )
 
         p.setPen(Qt.GlobalColor.white)
-        p.drawText(rect, Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignTop, '\n'.join(txt_list))
+
+        self.painted_cursor_flag = self.compute_cursor_flag()
+        valign = Qt.AlignmentFlag.AlignBottom if self.painted_cursor_flag else Qt.AlignmentFlag.AlignTop
+        p.drawText(rect, Qt.AlignmentFlag.AlignLeft | valign, '\n'.join(txt_list))

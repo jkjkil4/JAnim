@@ -208,6 +208,8 @@ class AnimViewer(QMainWindow):
 
     def setup_central_widget(self) -> None:
         self.glw = GLWidget(self)
+        self.glw.setMouseTracking(True)
+
         self.overlay = QWidget(self)
         self.overlay.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground)
         self.overlay.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents)
