@@ -173,11 +173,7 @@ class Write(DrawBorderThenFill):
     ):
         length = len([
             item
-            for item in (
-                [self.item]
-                if root_only
-                else item.walk_self_and_descendants()
-            )
+            for item in item.walk_self_and_descendants(root_only=root_only)
             if not skip_null_items or not item.is_null()
         ])
         if duration is None:
