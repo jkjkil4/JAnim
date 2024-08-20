@@ -93,8 +93,8 @@ class VItem(Points):
         reverse: bool = False,
         colorize: bool = True,
         angle: float | None = None,
-        fill_color: JAnimColor = None,
-        stroke_color: JAnimColor = None,
+        fill_color: JAnimColor | None = None,
+        stroke_color: JAnimColor | None = None,
         d_alpha: float = 1e-6,
         **tip_kwargs
     ):
