@@ -72,7 +72,7 @@ class PathBuilder:
 
     def line_to(self, point: Vect) -> Self:
         self._raise_if_no_points()
-        mid = (self.end_point + point) / 2
+        mid = (self.end_point + np.asarray(point)) / 2
         self.points_list.append([mid, point])
         self.end_point = point
         return self
@@ -102,8 +102,8 @@ class PathBuilder:
 
         last = self.end_point
         # Note, this assumes all points are on the xy-plane
-        v1 = handle1 - last
-        v2 = anchor - handle2
+        v1 = np.asarray(handle1) - last
+        v2 = np.asarray(anchor) - handle2
         angle = angle_between_vectors(v1, v2)
         if self.use_simple_quadratic_approx and angle < 45 * DEGREES:
             quad_approx = [last, *find_intersection(last, v1, anchor, -v2), anchor]
@@ -127,7 +127,7 @@ class PathBuilder:
             n_components = int(np.ceil(8 * abs(angle) / TAU))
 
         arc_points = quadratic_bezier_points_for_arc(angle, n_components)
-        target_vect = point - self.end_point
+        target_vect = np.asarray(point) - self.end_point
         curr_vect = arc_points[-1] - arc_points[0]
 
         arc_points = arc_points @ rotation_between_vectors(curr_vect, target_vect).T
