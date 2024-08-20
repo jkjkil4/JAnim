@@ -12,6 +12,7 @@ from janim.items.points import Points
 from janim.locale.i18n import get_local_strings
 
 if TYPE_CHECKING:
+    from janim.camera.camera_info import CameraInfo
     from janim.gui.anim_viewer import AnimViewer
 
 _ = get_local_strings('selector')
@@ -37,12 +38,23 @@ class Selector(QObject):
         self.viewer.overlay.installEventFilter(self)
 
         self.clear()
+        self.fixed_camera_info: CameraInfo | None = None
 
     def clear(self) -> None:
         self.current: Selector.SelectedItem | None = None
         self.children: list[Selector.SelectedItem] = []
         self.selected_children: list[Selector.SelectedItem] = []
         self.viewer.overlay.update()
+
+    def get_fixed_camera_info(self) -> CameraInfo:
+        if self.fixed_camera_info is not None:
+            return self.fixed_camera_info
+
+        from janim.camera.camera import Camera
+        info = Camera().points.info
+
+        self.fixed_camera_info = info
+        return info
 
     def glx_to_overlay_x(self, glx: float) -> float:
         return (glx + 1) / 2 * self.viewer.overlay.width()
@@ -112,7 +124,10 @@ class Selector(QObject):
 
             box = display.item.current(as_time=global_t)(Points).points.box
 
-            mapped = camera_info.map_points(box.get_corners())
+            if display.item.is_fix_in_frame():
+                mapped = self.get_fixed_camera_info().map_points(box.get_corners())
+            else:
+                mapped = camera_info.map_points(box.get_corners())
             min_glx, min_gly = mapped.min(axis=0)
             max_glx, max_gly = mapped.max(axis=0)
             if not min_glx <= glx <= max_glx or not min_gly <= gly <= max_gly:
@@ -131,7 +146,10 @@ class Selector(QObject):
 
             for item in self.current.item.get_children():
                 box = item.current(as_time=global_t)(Points).points.box
-                mapped = camera_info.map_points(box.get_corners())
+                if item.is_fix_in_frame():
+                    mapped = self.get_fixed_camera_info().map_points(box.get_corners())
+                else:
+                    mapped = camera_info.map_points(box.get_corners())
                 self.children.append(Selector.SelectedItem(item, *mapped.min(axis=0), *mapped.max(axis=0)))
 
     def select_child_item(self, event: QMouseEvent) -> None:
