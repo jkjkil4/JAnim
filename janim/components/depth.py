@@ -89,3 +89,5 @@ class Cmpt_Depth[ItemT](Component[ItemT]):
         if self.bind is not None:
             for item in self.bind.at_item.descendants():
                 item.depth.set(depth)
+
+        return self
