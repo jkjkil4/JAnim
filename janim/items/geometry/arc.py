@@ -208,8 +208,8 @@ class SmallDot(Dot):
     '''
     小点，半径默认为 ``0.04``
     '''
-    def __init__(self, *, radius: float = DEFAULT_SMALL_DOT_RADIUS, **kwargs) -> None:
-        super().__init__(radius=radius, **kwargs)
+    def __init__(self, point: np.ndarray = ORIGIN, radius: float = DEFAULT_SMALL_DOT_RADIUS, **kwargs) -> None:
+        super().__init__(point, radius, **kwargs)
 
 
 class Ellipse(Circle):
