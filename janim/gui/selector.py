@@ -38,6 +38,7 @@ class Selector(QObject):
         self.viewer.overlay.installEventFilter(self)
 
         self.clear()
+        self.painted_cursor_flag: bool = True
         self.fixed_camera_info: CameraInfo | None = None
 
     def clear(self) -> None:
@@ -246,6 +247,9 @@ class Selector(QObject):
 
         p.setPen(Qt.GlobalColor.white)
 
-        self.painted_cursor_flag = self.compute_cursor_flag()
+        glw = self.viewer.glw
+        # 只有当鼠标在窗口内时才更新字的位置
+        if glw.rect().contains(glw.mapFromGlobal(glw.cursor().pos())):
+            self.painted_cursor_flag = self.compute_cursor_flag()
         valign = Qt.AlignmentFlag.AlignBottom if self.painted_cursor_flag else Qt.AlignmentFlag.AlignTop
         p.drawText(rect, Qt.AlignmentFlag.AlignLeft | valign, '\n'.join(txt_list))
