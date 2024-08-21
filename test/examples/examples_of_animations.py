@@ -152,6 +152,24 @@ class UncreateExample(Timeline):
         )
 
 
+class DestructionExample(Timeline):
+    def construct(self) -> None:
+        group = Group(
+            Square(),
+            Square(),
+            Circle(fill_alpha=0.5),
+            Text('Text', font_size=48),
+            color=BLUE
+        )
+        group.points.arrange(buff=LARGE_BUFF)
+
+        self.play(
+            Destruction(group[0], auto_close_path=False),
+            Destruction(group[1:]),
+            duration=3
+        )
+
+
 class DrawBorderThenFillExample(Timeline):
     def construct(self) -> None:
         group = Group(

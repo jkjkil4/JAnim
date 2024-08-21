@@ -104,6 +104,28 @@ class Uncreate(ShowPartial):
         )
 
 
+class Destruction(ShowPartial):
+    '''
+    显示物件的销毁过程
+
+    - 与 :class:`Uncreate` 方向相反
+    '''
+    def __init__(
+        self,
+        item: Item,
+        show_at_end: bool = False,
+        auto_close_path: bool = True,
+        **kwargs
+    ):
+        super().__init__(
+            item,
+            lambda p: (p.alpha, 1.0),
+            show_at_end=show_at_end,
+            auto_close_path=auto_close_path,
+            **kwargs
+        )
+
+
 class DrawBorderThenFill(DataUpdater):
     '''
     画出边缘，然后填充颜色
