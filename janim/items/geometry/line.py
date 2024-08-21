@@ -243,8 +243,8 @@ class Elbow(VItem):
     '''
     折线（一般用作直角符号）
 
-    - width 表示宽度
-    - angle 表示角度
+    - ``width`` 表示宽度
+    - ``angle`` 表示角度
     '''
     def __init__(
         self,
