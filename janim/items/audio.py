@@ -24,7 +24,11 @@ _ = get_local_strings('audio')
 
 class Audio:
     '''
-    不建议使用该类处理多声道音频，因为该类读取时仅保留单声道
+    在默认情况下该类读取时仅保留单声道
+
+    - 若需要双声道需要配置 ``audio_channels`` 选项
+
+    另见：:class:`~.Config`
     '''
 
     audio_cache_map: dict[tuple, tuple[np.ndarray, int, str, str]] = {}
@@ -164,6 +168,8 @@ class Audio:
         '''
         if isinstance(value, Iterable):
             value = resize_with_interpolation(value, self.sample_count())
+        if self._samples.data.ndim != 1:
+            value = np.asarray(value)[:, np.newaxis] * np.ones(self._samples.data.shape[1])
         self._samples.data = self._samples.data * value
 
         return self
