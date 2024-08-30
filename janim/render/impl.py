@@ -47,7 +47,7 @@ class DotCloudRenderer(Renderer):
         new_radius = item.radius._radii.data
         new_points = item.points._points.data
 
-        if id(new_color) != id(self.prev_color) or len(new_points) != len(self.prev_points):
+        if new_color is not self.prev_color or len(new_points) != len(self.prev_points):
             color = resize_with_interpolation(new_color, len(new_points))
             bytes = color.astype('f4').tobytes()
 
@@ -57,7 +57,7 @@ class DotCloudRenderer(Renderer):
             self.vbo_color.write(bytes)
             self.prev_color = new_color
 
-        if id(new_radius) != id(self.prev_radius) or len(new_points) != len(self.prev_points):
+        if new_radius is not self.prev_radius or len(new_points) != len(self.prev_points):
             radius = resize_with_interpolation(new_radius, len(new_points))
             bytes = radius.astype('f4').tobytes()
 
@@ -67,7 +67,7 @@ class DotCloudRenderer(Renderer):
             self.vbo_radius.write(bytes)
             self.prev_radius = new_radius
 
-        if id(new_points) != id(self.prev_points):
+        if new_points is not self.prev_points:
             bytes = new_points.astype('f4').tobytes()
 
             if len(bytes) != self.vbo_points.size:
@@ -114,11 +114,11 @@ class VItemRenderer(Renderer):
         new_stroke = item.stroke._rgbas.data
         new_fill = item.fill._rgbas.data
 
-        is_camera_changed = id(new_camera_info) != id(self.prev_camera_info)
+        is_camera_changed = new_camera_info is not self.prev_camera_info
 
         if new_fix_in_frame != self.prev_fix_in_frame \
-                or id(new_radius) != id(self.prev_radius) \
-                or id(new_points) != id(self.prev_points) \
+                or new_radius is not self.prev_radius \
+                or new_points is not self.prev_points \
                 or is_camera_changed:
             if new_fix_in_frame:
                 clip_box = render_data.camera_info.map_fixed_in_frame_points(
@@ -143,7 +143,7 @@ class VItemRenderer(Renderer):
             assert len(bytes) == self.vbo_coord.size
             self.vbo_coord.write(bytes)
 
-        if id(new_radius) != id(self.prev_radius) or len(new_points) != len(self.prev_points):
+        if new_radius is not self.prev_radius or len(new_points) != len(self.prev_points):
             radius = resize_with_interpolation(new_radius, (len(new_points) + 1) // 2)
             bytes = radius.astype('f4').tobytes()
 
@@ -153,7 +153,7 @@ class VItemRenderer(Renderer):
             self.vbo_radius.write(bytes)
             self.prev_radius = new_radius
 
-        if id(new_stroke) != id(self.prev_stroke) or len(new_points) != len(self.prev_points):
+        if new_stroke is not self.prev_stroke or len(new_points) != len(self.prev_points):
             stroke = resize_with_interpolation(new_stroke, (len(new_points) + 1) // 2)
             bytes = stroke.astype('f4').tobytes()
 
@@ -163,7 +163,7 @@ class VItemRenderer(Renderer):
             self.vbo_stroke_color.write(bytes)
             self.prev_stroke = new_stroke
 
-        if id(new_fill) != id(self.prev_fill) or len(new_points) != len(self.prev_points):
+        if new_fill is not self.prev_fill or len(new_points) != len(self.prev_points):
             fill = resize_with_interpolation(new_fill, (len(new_points) + 1) // 2)
             bytes = fill.astype('f4').tobytes()
 
@@ -173,7 +173,7 @@ class VItemRenderer(Renderer):
             self.vbo_fill_color.write(bytes)
             self.prev_fill = new_fill
 
-        if id(new_points) != id(self.prev_points) \
+        if new_points is not self.prev_points \
                 or new_fix_in_frame != self.prev_fix_in_frame \
                 or is_camera_changed:
             if new_fix_in_frame:
@@ -235,7 +235,7 @@ class ImageItemRenderer(Renderer):
         new_color = item.color._rgbas.data
         new_points = item.points._points.data
 
-        if id(new_color) != id(self.prev_color):
+        if new_color is not self.prev_color:
             color = resize_with_interpolation(new_color, 4)
             bytes = color.astype('f4').tobytes()
 
@@ -244,7 +244,7 @@ class ImageItemRenderer(Renderer):
             self.vbo_color.write(bytes)
             self.prev_color = new_color
 
-        if id(new_points) != id(self.prev_points):
+        if new_points is not self.prev_points:
             bytes = new_points.astype('f4').tobytes()
 
             assert len(bytes) == self.vbo_points.size
@@ -296,7 +296,7 @@ class VideoRenderer(Renderer):
         new_color = item.color._rgbas.data
         new_points = item.points._points.data
 
-        if id(new_color) != id(self.prev_color):
+        if new_color is not self.prev_color:
             color = resize_with_interpolation(new_color, 4)
             bytes = color.astype('f4').tobytes()
 
@@ -305,7 +305,7 @@ class VideoRenderer(Renderer):
             self.vbo_color.write(bytes)
             self.prev_color = new_color
 
-        if id(new_points) != id(self.prev_points):
+        if new_points is not self.prev_points:
             bytes = new_points.astype('f4').tobytes()
 
             assert len(bytes) == self.vbo_points.size
