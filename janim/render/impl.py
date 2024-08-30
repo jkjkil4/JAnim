@@ -10,7 +10,7 @@ from janim.anims.animation import Animation
 from janim.exception import EXITCODE_FFMPEG_NOT_FOUND, ExitException
 from janim.locale.i18n import get_local_strings
 from janim.logger import log
-from janim.render.base import Renderer, get_program
+from janim.render.base import Renderer, get_compute_shader, get_program
 from janim.render.texture import get_texture_from_img
 from janim.utils.config import Config
 from janim.utils.iterables import resize_with_interpolation
@@ -82,10 +82,12 @@ class DotCloudRenderer(Renderer):
 
 class VItemRenderer(Renderer):
     def init(self) -> None:
+        self.comp = get_compute_shader('render/shaders/map_points.comp.glsl')
         self.prog = get_program('render/shaders/vitem')
 
         self.ctx = self.data_ctx.get().ctx
         self.vbo_coord = self.ctx.buffer(reserve=4 * 2 * 4)
+        self.vbo_points = self.ctx.buffer(reserve=1)
         self.vbo_mapped_points = self.ctx.buffer(reserve=1)
         self.vbo_radius = self.ctx.buffer(reserve=1)
         self.vbo_stroke_color = self.ctx.buffer(reserve=1)
@@ -120,12 +122,11 @@ class VItemRenderer(Renderer):
                 or new_radius is not self.prev_radius \
                 or new_points is not self.prev_points \
                 or is_camera_changed:
+            corners = np.array(item.points.self_box.get_corners())
             if new_fix_in_frame:
-                clip_box = render_data.camera_info.map_fixed_in_frame_points(
-                    np.array(item.points.self_box.get_corners())
-                )
+                clip_box = render_data.camera_info.map_fixed_in_frame_points(corners)
             else:
-                clip_box = render_data.camera_info.map_points(item.points.self_box.get_corners())
+                clip_box = render_data.camera_info.map_points(corners)
             clip_box *= render_data.camera_info.frame_radius
 
             buff = new_radius.max() + render_data.anti_alias_radius
@@ -173,25 +174,28 @@ class VItemRenderer(Renderer):
             self.vbo_fill_color.write(bytes)
             self.prev_fill = new_fill
 
+        if new_points is not self.prev_points:
+            bytes = np.hstack([
+                new_points,
+                item.points.get_closepath_flags()[:, np.newaxis]
+            ]).astype('f4').tobytes()
+
+            if len(bytes) != self.vbo_points.size:
+                self.vbo_points.orphan(len(bytes))
+
+            self.vbo_points.write(bytes)
+
         if new_points is not self.prev_points \
                 or new_fix_in_frame != self.prev_fix_in_frame \
                 or is_camera_changed:
-            if new_fix_in_frame:
-                mapped = render_data.camera_info.map_fixed_in_frame_points(new_points)
-            else:
-                mapped = render_data.camera_info.map_points(new_points)
-            mapped *= render_data.camera_info.frame_radius
+            if self.vbo_points.size != self.vbo_mapped_points.size:
+                self.vbo_mapped_points.orphan(self.vbo_points.size)
 
-            bytes = np.hstack([
-                mapped,
-                item.points.get_closepath_flags()[:, np.newaxis],
-                np.zeros((len(mapped), 1))
-            ]).astype('f4').tobytes()
+            self.vbo_points.bind_to_storage_buffer(0)
+            self.vbo_mapped_points.bind_to_storage_buffer(1)
+            self.update_fix_in_frame(item, self.comp)
+            self.comp.run(group_x=(len(new_points) + 255) // 256)   # 相当于 len() / 256 向上取整
 
-            if len(bytes) != self.vbo_mapped_points.size:
-                self.vbo_mapped_points.orphan(len(bytes))
-
-            self.vbo_mapped_points.write(bytes)
             self.prev_fix_in_frame = new_fix_in_frame
             self.prev_camera_info = new_camera_info
             self.prev_points = new_points

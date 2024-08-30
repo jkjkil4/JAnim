@@ -14,7 +14,7 @@ uniform mat4 JA_PROJ_MATRIX;
 void main()
 {
 	if (JA_FIX_IN_FRAME) {
-		gl_Position = JA_PROJ_MATRIX * vec4(in_point - vec3(0.0, 0.0, JA_FIXED_DIST_FROM_PLANE), 1.0);
+		gl_Position = JA_PROJ_MATRIX * vec4(in_point.xy, in_point.z - JA_FIXED_DIST_FROM_PLANE, 1.0);
 	} else {
 		gl_Position = JA_PROJ_MATRIX * JA_VIEW_MATRIX * vec4(in_point, 1.0);
 	}

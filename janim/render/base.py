@@ -58,7 +58,7 @@ shader_keys = (
 type UniformPair = tuple[str, Any]
 
 global_uniform_map: dict[mgl.Context, list[UniformPair]] = {}
-program_map: defaultdict[mgl.Context, dict[str, mgl.Program]] = defaultdict(dict)
+program_map: defaultdict[mgl.Context, dict[str, mgl.Program | mgl.ComputeShader]] = defaultdict(dict)
 
 
 def set_global_uniforms(ctx: mgl.Context, *uniforms: UniformPair) -> None:
@@ -80,11 +80,11 @@ def apply_global_uniforms(uniforms: list[UniformPair], prog: mgl.Program) -> Non
 def get_program(filepath: str) -> mgl.Program:
     '''
     给定文件位置自动遍历后缀并读取着色器代码，
-    例如传入 `shaders/dotcloud` 后，会自动读取以下位置的代码：
+    例如传入 `render/shaders/dotcloud` 后，会自动读取以下位置的代码：
 
-    - shaders/dotcloud.vert
-    - shaders/dotcloud.geom
-    - shaders/dotcloud.frag
+    - redner/shaders/dotcloud.vert
+    - render/shaders/dotcloud.geom
+    - render/shaders/dotcloud.frag
 
     若没有则缺省，但要能创建可用的着色器
 
@@ -111,3 +111,29 @@ def get_program(filepath: str) -> mgl.Program:
 
     ctx_program_map[filepath] = prog
     return prog
+
+
+def get_compute_shader(filepath: str) -> mgl.ComputeShader:
+    '''
+    载入指定文件的 ComputeShader，
+    例如 `render/shaders/map_points.comp.glsl` 就会载入这个文件
+
+    注：若 ``filepath`` 对应的 ComputeShader 先前已创建过，则会复用先前的对象，否则另外创建新的对象并记录
+    '''
+    ctx = Renderer.data_ctx.get().ctx
+    ctx_program_map = program_map[ctx]
+
+    comp = ctx_program_map.get(filepath, None)
+    if comp is not None:
+        return comp
+
+    shader_path = os.path.join(get_janim_dir(), filepath)
+
+    comp = ctx.compute_shader(readall(shader_path))
+
+    global_uniforms = global_uniform_map.get(ctx, None)
+    if global_uniforms is not None:
+        apply_global_uniforms(global_uniforms, comp)
+
+    ctx_program_map[filepath] = comp
+    return comp
