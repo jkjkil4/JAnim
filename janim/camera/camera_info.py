@@ -40,7 +40,7 @@ class CameraInfo:
 
         self.view_matrix = self._compute_view_matrix()
         self.proj_matrix = self._compute_proj_matrix()
-        self.proj_view_matrix = np.dot(self.proj_matrix, self.view_matrix)
+        self.proj_view_matrix = self.proj_matrix @ self.view_matrix
         self.frame_radius = np.array([self.horizontal_dist, self.vertical_dist]) / 2
 
     @property
@@ -52,7 +52,7 @@ class CameraInfo:
             points,
             np.full((len(points), 1), 1)
         ])
-        mapped = np.dot(aligned, self.proj_view_matrix.T)
+        mapped = aligned @ self.proj_view_matrix.T
         return mapped[:, :2] / mapped[:, 3].reshape((len(mapped), 1))
 
     def map_fixed_in_frame_points(self, points: VectArray) -> np.ndarray:
@@ -60,7 +60,7 @@ class CameraInfo:
             points - [0, 0, self.fixed_distance_from_plane],
             np.full((len(points), 1), 1)
         ])
-        mapped = np.dot(aligned, self.proj_matrix.T)
+        mapped = aligned @ self.proj_matrix.T
         return mapped[:, :2] / mapped[:, 3].reshape((len(mapped), 1))
 
     def _compute_distance_from_plane(self, vertical_length: float) -> float:
@@ -81,7 +81,7 @@ class CameraInfo:
         shift_matrix = np.eye(4)
         shift_matrix[:3, 3] = -self.camera_location
 
-        return np.dot(rot_matrix, shift_matrix)
+        return rot_matrix @ shift_matrix
 
     def _compute_proj_matrix(self, near=0.1, far=100.0) -> np.ndarray:
         aspect = self.horizontal_dist / self.vertical_dist

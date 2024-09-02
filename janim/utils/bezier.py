@@ -355,7 +355,7 @@ def smooth_quadratic_path(anchors: VectArray) -> np.ndarray:
     if not is_flat:
         normal = cross(anchors[2] - anchors[1], anchors[1] - anchors[0])
         rot = z_to_vector(normal)
-        anchors = np.dot(anchors, rot)
+        anchors = anchors @ rot
         shift = anchors[0, 2]
         anchors[:, 2] -= shift
     h1s, h2s = get_smooth_cubic_bezier_handle_points(anchors)
@@ -374,7 +374,7 @@ def smooth_quadratic_path(anchors: VectArray) -> np.ndarray:
     new_path[:, :2] = quads
     if not is_flat:
         new_path[:, 2] += shift
-        new_path = np.dot(new_path, rot.T)
+        new_path = new_path @ rot.T
     return new_path
 
 

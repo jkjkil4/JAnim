@@ -144,7 +144,7 @@ class ImageItem(Points):
         normal = cross(hor, ver)
 
         if not np.isclose(normal, OUT).all():
-            hor, ver, vert = np.dot((hor, ver, vert), z_to_vector(normal))
+            hor, ver, vert = (hor, ver, vert) @ z_to_vector(normal)
 
         u = det(vert, ver) / det(hor, ver)
         v = det(vert, hor) / det(ver, hor)

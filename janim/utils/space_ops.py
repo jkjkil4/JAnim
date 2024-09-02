@@ -86,7 +86,7 @@ def rotate_vector(
     axis: np.ndarray = OUT
 ) -> np.ndarray | list[float]:
     rot = Rotation.from_rotvec(angle * normalize(axis))
-    return np.dot(vector, rot.as_matrix().T)
+    return vector @ rot.as_matrix().T
 
 
 def rotate_vector_2d(vector: Iterable, angle: float):
@@ -160,7 +160,7 @@ def angle_between_vectors(v1: np.ndarray, v2: np.ndarray) -> float:
 
 def project_along_vector(point: np.ndarray, vector: np.ndarray) -> np.ndarray:
     matrix = np.identity(3) - np.outer(vector, vector)
-    return np.dot(point, matrix.T)
+    return point @ matrix.T
 
 
 def normalize_along_axis(

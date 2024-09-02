@@ -46,10 +46,8 @@ class Cmpt_VPoints_BraceImpl[ItemT](Cmpt_VPoints[ItemT], impl=True):
         else:
             cmpt = item.points
 
-            rot_points = np.dot(
-                cmpt.get() if root_only else cmpt.get_all(),
-                rot.T
-            )   # dot(points, rot.T) == dot(rot, points.T).T
+            # points @ rot.T == (rot @ points.T).T
+            rot_points = (cmpt.get() if root_only else cmpt.get_all()) @ rot.T
 
             box = self.BoundingBox(rot_points)
             self.brace_length = box.width

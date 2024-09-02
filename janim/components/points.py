@@ -453,7 +453,7 @@ class Cmpt_Points[ItemT](Component[ItemT]):
         full_matrix[:matrix.shape[0], :matrix.shape[1]] = matrix
 
         self.apply_points_fn(
-            lambda points: np.dot(points, full_matrix.T),
+            lambda points: points @ full_matrix.T,
             about_point=about_point,
             about_edge=about_edge,
             root_only=root_only
@@ -502,7 +502,7 @@ class Cmpt_Points[ItemT](Component[ItemT]):
         '''
         rot_matrix_T = rotation_matrix(angle, axis).T
         self.apply_points_fn(
-            lambda points: np.dot(points, rot_matrix_T),
+            lambda points: points @ rot_matrix_T,
             about_point=about_point,
             about_edge=about_edge,
             root_only=root_only

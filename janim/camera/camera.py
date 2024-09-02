@@ -144,8 +144,8 @@ class Cmpt_CameraPoints[ItemT](Cmpt_Points[ItemT]):
             self.scaled_factor,
             self.fov,
             self.self_box.center,
-            np.dot(np.array([width, 0, 0]), rot_mat_T),
-            np.dot(np.array([0, height, 0]), rot_mat_T)
+            np.array([width, 0, 0]) @ rot_mat_T,
+            np.array([0, height, 0]) @ rot_mat_T
         )
 
 
