@@ -49,3 +49,53 @@ fading
                 FadeOut(group),
                 duration=2
             )
+
+
+.. autoclass:: janim.anims.fading.FadeInFromPoint
+    :show-inheritance:
+
+.. janim-example:: FadeInFromPointExample
+    :media: ../../_static/videos/FadeInFromPointExample.mp4
+
+    from janim.imports import *
+
+    class FadeInFromPointExample(Timeline):
+        def construct(self):
+            items = Group(
+                Circle(),
+                Circle(fill_alpha=1),
+                Text('Text', font_size=48)
+            )
+            items.points.scale(1.5)
+            items.points.arrange(RIGHT, buff=2)
+
+            self.forward()
+            self.play(
+                *[FadeInFromPoint(item, UP*3) for item in items]
+            )
+            self.forward()
+
+
+.. autoclass:: janim.anims.fading.FadeOutToPoint
+    :show-inheritance:
+
+.. janim-example:: FadeOutToPointExample
+    :media: ../../_static/videos/FadeOutToPointExample.mp4
+
+    from janim.imports import *
+
+    class FadeOutToPointExample(Timeline):
+        def construct(self):
+            items = Group(
+                Circle(),
+                Circle(fill_alpha=1),
+                Text('Text', font_size=48)
+            ).show()
+            items.points.scale(1.5)
+            items.points.arrange(RIGHT, buff=2)
+
+            self.forward()
+            self.play(
+                *[FadeOutToPoint(item, DOWN*3) for item in items]
+            )
+            self.forward()

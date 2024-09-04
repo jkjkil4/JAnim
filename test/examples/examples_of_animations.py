@@ -257,6 +257,40 @@ class FadeOutExample(Timeline):
         )
 
 
+class FadeInFromPointExample(Timeline):
+    def construct(self):
+        items = Group(
+            Circle(),
+            Circle(fill_alpha=1),
+            Text('Text', font_size=48)
+        )
+        items.points.scale(1.5)
+        items.points.arrange(RIGHT, buff=2)
+
+        self.forward()
+        self.play(
+            *[FadeInFromPoint(item, UP*3) for item in items]
+        )
+        self.forward()
+
+
+class FadeOutToPointExample(Timeline):
+    def construct(self):
+        items = Group(
+            Circle(),
+            Circle(fill_alpha=1),
+            Text('Text', font_size=48)
+        ).show()
+        items.points.scale(1.5)
+        items.points.arrange(RIGHT, buff=2)
+
+        self.forward()
+        self.play(
+            *[FadeOutToPoint(item, DOWN*3) for item in items]
+        )
+        self.forward()
+
+
 class GrowFromPointExample(Timeline):
     def construct(self) -> None:
         group = Group(

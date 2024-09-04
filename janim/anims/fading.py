@@ -71,13 +71,13 @@ class FadeIn(Fade):
             rgbas[:, 3] *= p.alpha
             cmpt.set_rgbas(rgbas)
 
-        if np.any(self.shift != ORIGIN):
-            data.points.shift((1 - p.alpha) * -self.shift)
         if self.scale != 1.0:
             data.points.scale(
                 (1 - p.alpha) * 1 / self.scale + p.alpha,
                 about_point=self.about_point
             )
+        if np.any(self.shift != ORIGIN):
+            data.points.shift((1 - p.alpha) * -self.shift)
 
 
 class FadeOut(Fade):
@@ -116,10 +116,30 @@ class FadeOut(Fade):
             rgbas[:, 3] *= 1 - p.alpha
             cmpt.set_rgbas(rgbas)
 
-        if np.any(self.shift != ORIGIN):
-            data.points.shift(p.alpha * self.shift)
         if self.scale != 1.0:
             data.points.scale(
                 p.alpha * self.scale + (1 - p.alpha),
                 about_point=self.about_point
             )
+        if np.any(self.shift != ORIGIN):
+            data.points.shift(p.alpha * self.shift)
+
+
+class FadeInFromPoint(FadeIn):
+    def __init__(self, item: Item, point: Vect, **kwargs):
+        super().__init__(
+            item,
+            shift=item(Points).points.box.center - point,
+            scale=np.inf,
+            **kwargs
+        )
+
+
+class FadeOutToPoint(FadeOut):
+    def __init__(self, item: Item, point: Vect, **kwargs):
+        super().__init__(
+            item,
+            shift=point - item(Points).points.box.center,
+            scale=0,
+            **kwargs
+        )
