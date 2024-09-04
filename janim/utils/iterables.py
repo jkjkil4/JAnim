@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import types
+import itertools as it
 from typing import Callable, Iterable, Sequence, TypeVar, overload
 
 import numpy as np
@@ -9,6 +10,12 @@ T = TypeVar("T")
 S = TypeVar("S")
 
 type ResizeFunc = Callable[[np.ndarray, int], np.ndarray]
+
+
+def flatten(iterable):
+    if not isinstance(iterable, Iterable):
+        return [iterable]
+    return list(it.chain.from_iterable(flatten(x) for x in iterable))
 
 
 def remove_list_redundancies(lst: Iterable[T]) -> list[T]:

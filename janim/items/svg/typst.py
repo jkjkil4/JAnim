@@ -1,16 +1,24 @@
+from __future__ import annotations
 
 import hashlib
+import itertools as it
 import os
 import subprocess as sp
+import types
+from typing import Iterable, overload
 
 from janim.constants import ORIGIN, UP
 from janim.exception import (EXITCODE_TYPST_COMPILE_ERROR,
                              EXITCODE_TYPST_NOT_FOUND, ExitException)
+from janim.items.points import Group
 from janim.items.svg.svg_item import SVGItem
+from janim.items.vitem import VItem
+from janim.locale.i18n import get_local_strings
 from janim.logger import log
 from janim.utils.config import Config
 from janim.utils.file_ops import get_janim_dir, get_typst_temp_dir
-from janim.locale.i18n import get_local_strings
+from janim.utils.iterables import flatten
+from janim.exception import InvalidOrdinalError
 
 _ = get_local_strings('typst')
 
@@ -69,6 +77,190 @@ class TypstDoc(SVGItem):
         process.terminate()
 
         return svg_file_path
+
+    @staticmethod
+    def typstify(obj: TypstDoc | str) -> TypstDoc:
+        '''
+        将字符串变为 :class:`~.Typst` 对象，而本身已经是的则直接返回
+        '''
+        return obj if isinstance(obj, TypstDoc) else Typst(obj)
+
+    # region pattern-matching
+
+    def indices(self, pattern: TypstDoc | str) -> list[int]:
+        '''
+        找出该公式中所有出现了 ``pattern`` 的位置
+
+        - ``pattern`` 支持使用字符串或者 Typst 对象
+        '''
+        pattern = self.typstify(pattern)
+
+        lps = pattern.lps
+        indices, p = [], 0
+
+        for index, shape in enumerate(self):
+            while not (same := shape.points.same_shape(pattern[p])) and p != 0:
+                p = lps[p - 1]
+            if same:
+                p += 1
+            if p == len(pattern):
+                indices.append(index - (p - 1))
+                p = lps[p - 1]
+
+        return indices
+
+    lps_map: dict[str, list[int]] = {}
+
+    @property
+    def lps(self) -> list[int]:
+        '''
+        KMP 算法涉及的部分匹配表
+        '''
+        # 获取缓存
+        lps = TypstDoc.lps_map.get(self.text, None)
+        if lps is not None:
+            return lps
+
+        # 没缓存则计算
+        lps = [0] * len(self)
+        for index, shape in enumerate(self):
+            p, same = index, False
+            while p > 0 and not same:
+                p = lps[p - 1]
+                same = shape.points.same_shape(self[p])
+            if same:
+                p += 1
+            lps[index] = p
+
+        # 缓存并返回
+        TypstDoc.lps_map[self.text] = lps
+        return lps
+
+    @overload
+    def __getitem__(self, key: int) -> VItem: ...
+    @overload
+    def __getitem__(self, key: slice) -> Group[VItem]: ...
+
+    @overload
+    def __getitem__(self, key: str) -> Group[VItem]: ...
+    @overload
+    def __getitem__(self, key: tuple[str, int]) -> Group[VItem]: ...
+    @overload
+    def __getitem__(self, key: tuple[str, Iterable[int]]) -> Group[VItem]: ...
+    @overload
+    def __getitem__(self, key: tuple[str, types.EllipsisType]) -> Group[VItem]: ...
+
+    @overload
+    def __getitem__(self, key: Iterable[int]) -> Group[VItem]: ...
+    @overload
+    def __getitem__(self, key: Iterable[bool]) -> Group[VItem]: ...
+
+    def __getitem__(self, key: int | slice):
+        '''
+        重载了一些字符索引的用法，即 :meth:`get` 和 :meth:`slice` 的组合
+        '''
+        if isinstance(key, Iterable) and not isinstance(key, (str, list)):
+            key = list(key)
+
+        match key:
+            case int() | slice():
+                return super().__getitem__(key)
+
+            # item['pattern']
+            case str(pattern):
+                return self.get(self.slice(pattern, 0))
+            # item['pattern', ordinal]
+            case str(pattern), int(ordinal):
+                return self.get(self.slice(pattern, ordinal))
+            # item['pattern', [o1, o2]]
+            # item['pattern', ...]
+            case str(pattern), ordinal if isinstance(ordinal, (Iterable, types.EllipsisType)):
+                return Group(*self.get(self.slice(pattern, ordinal)))
+
+            # TODO: multi_slice
+
+            case _:
+                return super().__getitem__(key)
+
+    def get(self, slices, gapless: bool = False):
+        '''
+        根据切片得到切分的子物件
+
+        在默认情况下，``gapless=False``：
+
+        - 表示通过给定的 ``slices`` 直接切取子物件，例如
+
+          ``item.get(slice(1, 3)) == item[1:3]``
+
+        - 支持使用列表获取一批的子物件，例如
+
+          ``item.get([slice(1, 3), slice(4, 7)]) == [item[1:3], item[4:7]]``
+
+        - 列表支持嵌套，并且结果保持原嵌套结构，例如
+
+          ``item.get([slice(1, 3), [slice(4, 6), slice(10, 12)]]) == [item[1:3], [item[4:6], item[10:12]]]``
+
+        若 ``gapless=True``：
+
+        - 表示通过给定 ``slices`` 的所有起止位置将所有子物件切分并一起返回，例如
+
+          ``item.get(slice(1, 3), gapless=True) == [item[:1], item[1:3], item[3:]]``
+
+        - 也支持列表以及嵌套的列表，例如
+
+          ``item.get([slice(1, 3), slice(5, 7)]) == [item[:1], item[1:3], item[3:5], item[5:7], item[7:]]``
+
+        - 注：在这种情况下，所有嵌套结构都会先被展平后处理
+        '''
+        if not gapless:
+            if isinstance(slices, slice):
+                return self[slices]
+            else:
+                return [self.get(x) for x in slices]
+        else:
+            indices = {0, len(self)}
+            for i in flatten(slices):
+                assert isinstance(i, slice)
+                indices.update({i.start, i.stop})
+            return [
+                self[start:stop]
+                for start, stop in it.pairwise(sorted(indices))
+            ]
+
+    @overload
+    def slice(self, pattern: TypstDoc | str, ordinal: int) -> slice: ...
+    @overload
+    def slice(self, pattern: TypstDoc | str, ordinal: Iterable[int] | types.EllipsisType) -> list[slice]: ...
+
+    def slice(self, pattern, ordinal=0):
+        '''
+        得到指定 ``pattern`` 在该物件中形状配对的切片
+
+        - 默认返回首个匹配的（即 ``ordinal=0``）
+        - ``ordinal`` 传入其它索引可得到随后匹配的特定部分
+        - ``ordinal`` 传入索引列表可得到多个匹配的特定部分
+        - ``ordinal`` 传入省略号 ``...`` 可以得到所有匹配的部分
+        '''
+        pattern = self.typstify(pattern)
+        indices = self.indices(pattern)
+
+        match ordinal:
+            case int(i):
+                return slice(indices[i], indices[i] + len(pattern))
+            case _ if isinstance(ordinal, Iterable):
+                return [
+                    slice(indices[i], indices[i] + len(pattern))
+                    for i in ordinal
+                ]
+            case types.EllipsisType():
+                return [
+                    slice(i, i + len(pattern))
+                    for i in indices
+                ]
+
+        raise InvalidOrdinalError(_('ordinal {} is invalid').format(ordinal))
+
+    # endregion
 
 
 class Typst(TypstDoc):
