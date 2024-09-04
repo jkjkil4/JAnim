@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-08-03 14:38+0800\n"
+"POT-Creation-Date: 2024-09-04 14:06+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,13 +16,13 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: janim\items\audio.py:66
+#: janim\items\audio.py:70
 msgid ""
 "Could not find the audio file \"{file_path}\". A blank audio of 8 seconds "
 "was used instead."
 msgstr ""
 
-#: janim\items\audio.py:110
+#: janim\items\audio.py:116
 msgid ""
 "Unable to read audio, please install ffmpeg and add it to the environment "
 "variables"

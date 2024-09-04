@@ -183,7 +183,7 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
 
     def digest_styles(self, **styles):
         '''
-        设置物件以及子物件的样式
+        设置物件以及子物件的样式，与 :meth:`set_styles` 只影响自身不同的是，该方法也会影响所有子物件
         '''
         flags = dict.fromkeys(styles.keys(), False)
         for item in self.walk_self_and_descendants():
@@ -215,6 +215,8 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
     ) -> Self:
         '''
         设置物件自身的样式，不影响子物件
+
+        另见：:meth:`digest_styles`
         '''
         if depth is not None:
             self.depth.set(depth)

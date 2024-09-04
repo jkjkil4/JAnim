@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-08-03 14:38+0800\n"
+"POT-Creation-Date: 2024-09-04 14:06+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,12 +16,16 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: janim\items\svg\typst.py:60
+#: janim\items\svg\typst.py:68
 msgid ""
 "Could not compile typst file. Please install typst and add it to the "
 "environment variables."
 msgstr ""
 
-#: janim\items\svg\typst.py:66
+#: janim\items\svg\typst.py:74
 msgid "Typst compilation error. Please check the output for more information."
+msgstr ""
+
+#: janim\items\svg\typst.py:261
+msgid "ordinal {} is invalid"
 msgstr ""

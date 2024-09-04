@@ -7,17 +7,17 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-08-18 20:44+0800\n"
+"POT-Creation-Date: 2024-09-04 14:06+0800\n"
 "PO-Revision-Date: 2024-08-18 20:45+0800\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
-"Language: zh_CN\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=GBK\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Language: zh_CN\n"
 "X-Generator: Poedit 3.4.2\n"
 
-#: janim\gui\painter.py:46
+#: janim\gui\painter.py:45
 msgid ""
 "Note: This is used to determine the position on the screen. To actually add "
 "the drawn content, you need to manually add the corresponding code."
@@ -41,6 +41,6 @@ msgstr "（徒手画路径）"
 msgid "Type"
 msgstr "类型"
 
-#: janim\gui\painter.py:334
+#: janim\gui\painter.py:338
 msgid "Count"
 msgstr "数量"

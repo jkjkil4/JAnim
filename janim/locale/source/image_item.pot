@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-08-03 14:38+0800\n"
+"POT-Creation-Date: 2024-09-04 14:06+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,18 +16,18 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: janim\items\image_item.py:246
+#: janim\items\image_item.py:263
 msgid ""
 "Unable to read video frame, please install ffmpeg and add it to the "
 "environment variables"
 msgstr ""
 
-#: janim\items\image_item.py:447
+#: janim\items\image_item.py:464
 msgid ""
 "Unable to read video information, please install ffmpegand add it (including "
 "ffprobe) to the environment variables."
 msgstr ""
 
-#: janim\items\image_item.py:452
+#: janim\items\image_item.py:469
 msgid "ffprobe error. Please check the output for more information."
 msgstr ""

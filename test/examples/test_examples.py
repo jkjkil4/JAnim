@@ -56,12 +56,16 @@ def load_tests(loader, standard_tests, pattern) -> unittest.TestSuite:
             render_frames = self.get_frames(temp_file)
             ref_frames = self.get_frames(self.ref_path)
 
+            max_errors = 0
+
             for buf1, buf2 in zip(render_frames, ref_frames, strict=True):
                 render_data = np.frombuffer(buf1, dtype=np.uint8).astype(np.int16)
                 ref_data = np.frombuffer(buf2, dtype=np.uint8).astype(np.int16)
                 delta = np.abs(render_data - ref_data)
-                error = delta.sum()
-                self.assertEqual(error, 0, f'errors: {error}')
+                errors = delta.sum()
+                max_errors = max(max_errors, errors)
+
+            self.assertEqual(max_errors, 0, f'max_errors: {max_errors}')
 
         @staticmethod
         def get_frames(video_path: str) -> Generator[bytes, None, None]:

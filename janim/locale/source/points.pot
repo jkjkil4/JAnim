@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-08-03 14:38+0800\n"
+"POT-Creation-Date: 2024-09-04 14:06+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -20,10 +20,10 @@ msgstr ""
 msgid "Cannot call {name} with no points"
 msgstr ""
 
-#: janim\components\points.py:436
+#: janim\components\points.py:444
 msgid "Only 2x2 or 3x3 matrix are valid, but a {shape} matrix was passed in"
 msgstr ""
 
-#: janim\components\points.py:735
+#: janim\components\points.py:743
 msgid "Cannot position endpoints of closed loop"
 msgstr ""
