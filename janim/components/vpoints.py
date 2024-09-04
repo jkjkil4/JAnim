@@ -7,7 +7,7 @@ import numpy as np
 
 import janim.utils.refresh as refresh
 from janim.components.points import Cmpt_Points, PointsFn
-from janim.constants import NAN_POINT, ORIGIN, OUT, RIGHT
+from janim.constants import NAN_POINT, ORIGIN, OUT, RIGHT, UP
 from janim.exception import PointError
 from janim.items.item import Item
 from janim.locale.i18n import get_local_strings
@@ -19,7 +19,8 @@ from janim.utils.bezier import (PathBuilder,
                                 partial_quadratic_bezier_points,
                                 smooth_quadratic_path)
 from janim.utils.data import AlignedData
-from janim.utils.space_ops import get_norm, get_unit_normal
+from janim.utils.space_ops import (get_norm, get_unit_normal, normalize,
+                                   rotation_between_vectors)
 
 _ = get_local_strings('vpoints')
 
@@ -606,6 +607,67 @@ class Cmpt_VPoints[ItemT](Cmpt_Points[ItemT], impl=True):
         else:
             self.extend([NAN_POINT, *points])
         return self
+
+    # endregion
+
+    # region identity
+
+    @property
+    @Cmpt_Points.set.self_refresh()
+    @refresh.register
+    def identity(self) -> tuple[np.ndarray, int]:
+        points = self.get()[:-1]
+        if len(points) < 2:
+            return RIGHT, 0
+
+        # 计算在初始方向上的宽度
+        vect = normalize(self.start_direction)
+        width = self.width_along_direction(vect)
+
+        # 将 points 旋转+归一化
+        rot = rotation_between_vectors(UP, vect)
+        points = points - points[0]
+        points @= rot   # points @ (UP->vect) == ((vect->UP) @ points.T).T
+        points /= width
+        np.round(points, 1, out=points)    # 原位 round
+        points[points == -0.0] = 0.0
+
+        # 计算结果：哈希值 以及 单位方向向量
+        vect.setflags(write=False)
+        return hash(points.tobytes()), vect
+
+    def width_along_direction(self, direction: Vect) -> float:
+        projections = np.dot(np.vstack(self.get_subpaths()), direction)
+        return np.max(projections) - np.min(projections)
+
+    def same_shape(self, other: Cmpt_VPoints | Item) -> bool:
+        '''
+        判断两组点是否有完全相同的形状
+
+        对于相同形状的两组点还可以用 :meth:`same_direction` 衡量方向重合度
+        '''
+        if isinstance(other, Item):
+            cmpt = self.get_same_cmpt(other)
+        else:
+            cmpt = other
+
+        return self.identity[0] == cmpt.identity[0]
+
+    def same_direction(self, other: Cmpt_VPoints | Item) -> bool:
+        '''
+        对于 :meth:`same_shape` 结果为 ``True`` 的两组点，可以通过该方法衡量方向重合度
+
+        - 返回 ``-1`` ~ ``1`` 之间的值
+        - 其中 ``1`` 表示完全同向，``-1`` 表示完全反向，``0`` 表示垂直
+
+        注：对于 :meth:`same_shape` 结果为 ``False`` 的两组点，该方法的结果没有实际含义
+        '''
+        if isinstance(other, Item):
+            cmpt = self.get_same_cmpt(other)
+        else:
+            cmpt = other
+
+        return np.dot(self.identity[1], cmpt.identity[1])
 
     # endregion
 
