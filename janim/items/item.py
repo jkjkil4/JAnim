@@ -68,6 +68,18 @@ class _ItemMeta(type):
 
 
 class Item(Relation['Item'], metaclass=_ItemMeta):
+    '''
+    :class:`~.Item` 是物件的基类
+
+    除了使用 ``item[0]`` ``item[1]`` 进行下标索引外，还可以使用列表索引和布尔索引
+
+    - 列表索引，例如 ``item[0, 1, 3]``, 即 ``Group(item[0], item[1], item[3])``
+
+    - 布尔索引，例如 ``item[False, True, False, True, True]`` 表示取出 ``Group(item[1], item[3], item[4])``，
+
+      也就是将那些为 True 的位置取出组成一个 :class:`~.Group`
+    '''
+
     renderer_cls = Renderer
     '''
     覆盖该值以在子类中使用特定的渲染器
