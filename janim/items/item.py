@@ -4,19 +4,19 @@ import copy
 import inspect
 import itertools as it
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Any, Callable, Self, overload
+from typing import TYPE_CHECKING, Any, Callable, Iterable, Self, overload
 
 from janim.components.component import CmptInfo, Component, _CmptGroup
 from janim.components.depth import Cmpt_Depth
-from janim.exception import AsTypeError, CopyError
+from janim.exception import AsTypeError, CopyError, GetItemError
 from janim.items.relation import Relation
+from janim.locale.i18n import get_local_strings
 from janim.logger import log
 from janim.render.base import Renderer
 from janim.typing import SupportsApartAlpha, SupportsInterpolate
 from janim.utils.data import AlignedData
 from janim.utils.iterables import resize_preserving_order
 from janim.utils.paths import PathFunc, straight_path
-from janim.locale.i18n import get_local_strings
 
 if TYPE_CHECKING:
     from janim.items.points import Group
@@ -262,15 +262,36 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
     def __call__(self, **kwargs) -> Self: ...
 
     @overload
-    def __getitem__(self, value: int) -> Item: ...
+    def __getitem__(self, key: int) -> Item: ...
     @overload
-    def __getitem__(self, value: slice) -> Group: ...
+    def __getitem__(self, key: slice) -> Group: ...
+    @overload
+    def __getitem__(self, key: Iterable[int]) -> Group: ...
+    @overload
+    def __getitem__(self, key: Iterable[bool]) -> Group: ...
 
-    def __getitem__(self, value):
-        if isinstance(value, slice):
-            from janim.items.points import Group
-            return Group(*self.children[value])
-        return self.children[value]
+    def __getitem__(self, key):
+        if isinstance(key, Iterable) and not isinstance(key, list):
+            key = list(key)
+
+        # example: item[0]
+        if isinstance(key, int):
+            return self.children[key]
+
+        from janim.items.points import Group
+
+        match key:
+            # example: item[0:2]
+            case slice():
+                return Group(*self.children[key])
+            # example: item[False, True, True]
+            case list() if all(isinstance(x, bool) for x in key):
+                return Group(*[sub for sub, flag in zip(self, key) if flag])
+            # example: item[0, 3, 4]
+            case list() if all(isinstance(x, int) for x in key):
+                return Group(*[self.children[x] for x in key])
+
+        raise GetItemError(_('Unsupported key {}'.format(key)))
 
     def __iter__(self):
         return iter(self.children)
