@@ -615,7 +615,7 @@ class Cmpt_VPoints[ItemT](Cmpt_Points[ItemT], impl=True):
     @property
     @Cmpt_Points.set.self_refresh()
     @refresh.register
-    def identity(self) -> tuple[np.ndarray, int]:
+    def identity(self) -> tuple[int, np.ndarray]:
         points = self.get()[:-1]
         if len(points) < 2:
             return RIGHT, 0
@@ -629,6 +629,13 @@ class Cmpt_VPoints[ItemT](Cmpt_Points[ItemT], impl=True):
         points = points - points[0]
         points @= rot   # points @ (UP->vect) == ((vect->UP) @ points.T).T
         points /= width
+
+        # 把处于 round 分界部分的坐标稍微加一点
+        # 例如，两个相同的形状在归一化后可能同一个坐标被变换到 “比 0.45 稍微小一点的” 以及 “比 0.45 稍微大一点的”
+        # 它们分别会被 round 到 0.4 和 0.5，这是不符合预期的
+        # 所以这里加上 0.02 使得它们都会被 round 到 0.5，使得 hash 一致
+        points[np.abs(points % 0.1 - 0.05) < 0.01] += 0.02
+
         np.round(points, 1, out=points)    # 原位 round
         points[points == -0.0] = 0.0
 

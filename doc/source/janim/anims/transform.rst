@@ -11,6 +11,8 @@ transform
 .. janim-example:: TransformExample
     :media: ../../_static/videos/TransformExample.mp4
 
+    from janim.imports import *
+
     class TransformExample(Timeline):
         def construct(self):
             A = Text('Text-A', font_size=72)
@@ -108,6 +110,8 @@ transform
 .. janim-example:: TransformInSegmentsExample
     :media: ../../_static/videos/TransformInSegmentsExample.mp4
 
+    from janim.imports import *
+
     class TransformInSegmentsExample(Timeline):
         def construct(self):
             typ1 = Typst('sin x + cos x')
@@ -127,6 +131,8 @@ transform
 .. janim-example:: MethodTransformExample
     :media: ../../_static/videos/MethodTransformExample.mp4
 
+    from janim.imports import *
+
     class MethodTransformExample(Timeline):
         def construct(self):
             A = Text("Text-A")
@@ -140,4 +146,21 @@ transform
             self.play(
                 A.anim.color.set(BLUE)
             )
+            self.forward()
+
+.. autoclass:: janim.anims.transform.TransformMatchingShapes
+    :show-inheritance:
+
+.. janim-example:: TransformMatchingShapesExample
+    :media: ../../_static/videos/TransformMatchingShapesExample.mp4
+
+    class TransformMatchingShapesExample(Timeline):
+        def construct(self):
+            a = Text("the morse code", font_size=48).show()
+            b = Text("here some dots", font_size=48)
+
+            self.forward()
+            self.play(TransformMatchingShapes(a, b, path_arc=PI/2))
+            self.forward()
+            self.play(TransformMatchingShapes(b, a, path_arc=PI/2))
             self.forward()

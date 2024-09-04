@@ -4,13 +4,29 @@ from typing import Callable
 import numpy as np
 
 from janim.constants import OUT
+from janim.typing import Vect
 from janim.utils.bezier import interpolate
-from janim.utils.space_ops import get_norm
-from janim.utils.space_ops import rotation_matrix_transpose
+from janim.utils.space_ops import get_norm, rotation_matrix_transpose
 
 STRAIGHT_PATH_THRESHOLD = 0.01
 
 type PathFunc = Callable[[np.ndarray, np.ndarray, float], np.ndarray]
+
+
+def get_path_func(path_arc: float, path_arc_axis: Vect, path_func: PathFunc | None) -> PathFunc:
+    '''
+    根据 ``path_arc`` ``path_arc_axis`` ``path_func`` ，建立 ``self.path_func``
+    '''
+    if path_func is not None:
+        return path_func
+
+    if path_arc == 0:
+        return straight_path
+    else:
+        return path_along_arc(
+            path_arc,
+            path_arc_axis
+        )
 
 
 def straight_path(

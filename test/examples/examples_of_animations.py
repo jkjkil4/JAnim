@@ -739,3 +739,15 @@ class FadeTransformExample(Timeline):
         self.forward(0.5)
         self.play(FadeTransform(rect, txt))
         self.forward(0.5)
+
+
+class TransformMatchingShapesExample(Timeline):
+    def construct(self):
+        a = Text("the morse code", font_size=48).show()
+        b = Text("here some dots", font_size=48)
+
+        self.forward()
+        self.play(TransformMatchingShapes(a, b, path_arc=PI/2))
+        self.forward()
+        self.play(TransformMatchingShapes(b, a, path_arc=PI/2))
+        self.forward()

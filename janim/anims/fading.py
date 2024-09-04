@@ -6,10 +6,11 @@ import numpy as np
 from janim.anims.updater import DataUpdater, UpdaterParams
 from janim.components.rgbas import Cmpt_Rgbas
 from janim.constants import (C_LABEL_ANIM_ABSTRACT, C_LABEL_ANIM_IN,
-                             C_LABEL_ANIM_OUT, ORIGIN)
+                             C_LABEL_ANIM_OUT, ORIGIN, OUT)
 from janim.items.item import Item
 from janim.items.points import Points
 from janim.typing import Vect
+from janim.utils.paths import PathFunc, get_path_func
 
 
 class Fade(DataUpdater, metaclass=ABCMeta):
@@ -26,6 +27,11 @@ class Fade(DataUpdater, metaclass=ABCMeta):
         *,
         about_point: Vect | None = None,
         about_edge: Vect = ORIGIN,
+
+        path_arc: float = 0,
+        path_arc_axis: Vect = OUT,
+        path_func: PathFunc = None,
+
         become_at_end: bool = False,
         root_only: bool = False,
         **kwargs
@@ -39,6 +45,7 @@ class Fade(DataUpdater, metaclass=ABCMeta):
         )
         self.shift = np.array(shift)
         self.scale = scale
+        self.path_func = get_path_func(path_arc, path_arc_axis, path_func)
 
         if about_point is None and scale != 1.0:
             cmpt = item(Points).points
@@ -77,7 +84,7 @@ class FadeIn(Fade):
                 about_point=self.about_point
             )
         if np.any(self.shift != ORIGIN):
-            data.points.shift((1 - p.alpha) * -self.shift)
+            data.points.shift(self.path_func(-self.shift, ORIGIN, p.alpha))
 
 
 class FadeOut(Fade):
@@ -122,7 +129,7 @@ class FadeOut(Fade):
                 about_point=self.about_point
             )
         if np.any(self.shift != ORIGIN):
-            data.points.shift(p.alpha * self.shift)
+            data.points.shift(self.path_func(ORIGIN, self.shift, p.alpha))
 
 
 class FadeInFromPoint(FadeIn):

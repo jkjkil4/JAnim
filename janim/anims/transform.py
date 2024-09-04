@@ -1,21 +1,23 @@
 from __future__ import annotations
 
-import types
 import itertools as it
+import types
 from collections import defaultdict
-from typing import Self, Iterable, Generator
+from typing import Generator, Iterable, Self
 
 from janim.anims.animation import Animation, RenderCall
 from janim.anims.composition import AnimGroup
+from janim.anims.fading import FadeInFromPoint, FadeOutToPoint
 from janim.components.component import Component
-from janim.constants import ANIM_END_DELTA, OUT, C_LABEL_ANIM_STAY
+from janim.constants import ANIM_END_DELTA, C_LABEL_ANIM_STAY, OUT
 from janim.items.item import DynamicItem, Item
 from janim.items.points import Points
+from janim.items.vitem import VItem
+from janim.locale.i18n import get_local_strings
 from janim.logger import log
 from janim.typing import Vect
 from janim.utils.data import AlignedData
-from janim.utils.paths import PathFunc, path_along_arc, straight_path
-from janim.locale.i18n import get_local_strings
+from janim.utils.paths import PathFunc, get_path_func
 
 _ = get_local_strings('transform')
 
@@ -36,7 +38,7 @@ class Transform(Animation):
         *,
         path_arc: float = 0,
         path_arc_axis: Vect = OUT,
-        path_func: PathFunc = None,
+        path_func: PathFunc | None = None,
 
         hide_src: bool = True,
         show_target: bool = True,
@@ -50,35 +52,16 @@ class Transform(Animation):
 
         self.path_arc = path_arc
         self.path_arc_axis = path_arc_axis
-        self.path_func = path_func
+        self.path_func = get_path_func(path_arc, path_arc_axis, path_func)
 
         self.hide_src = hide_src
         self.show_target = show_target
 
         self.root_only = root_only
 
-        self.init_path_func()
-
         self.timeline.track_item_and_descendants(src_item, root_only=root_only)
         if target_item is not src_item:
             self.timeline.track_item_and_descendants(target_item, root_only=root_only)
-
-    def init_path_func(self) -> None:
-        '''
-        根据传入对象的 ``path_arc`` ``path_arc_axis`` ``path_func`` ，建立 ``self.path_func``
-
-        不需要手动调用
-        '''
-        if self.path_func is not None:
-            return
-
-        if self.path_arc == 0:
-            self.path_func = straight_path
-        else:
-            self.path_func = path_along_arc(
-                self.path_arc,
-                self.path_arc_axis
-            )
 
     def anim_init(self) -> None:
         '''
@@ -345,4 +328,64 @@ class FadeTransform(AnimGroup):
                 root_only=target_root_only
             ),
             **kwargs
+        )
+
+
+class TransformMatchingShapes(AnimGroup):
+    def __init__(
+        self,
+        src: Item,
+        target: Item,
+        duration: float = 2,
+        lag_ratio: float = 0,
+        **kwargs
+    ):
+        def walk_self_and_descendant_with_points(item: Item) -> Generator[VItem, None, None]:
+            for item in item.walk_self_and_descendants():
+                if isinstance(item, VItem) and item.points.has():
+                    yield item
+
+        src_pieces = list(walk_self_and_descendant_with_points(src))
+        target_pieces = list(walk_self_and_descendant_with_points(target))
+
+        src_matched: list[VItem] = []
+        target_matched: list[VItem] = []
+
+        for piece1, piece2 in it.product(src_pieces, target_pieces):
+            if not piece1.points.same_shape(piece2):
+                continue
+            if piece1 in src_matched or piece2 in target_matched:
+                continue
+            src_matched.append(piece1)
+            target_matched.append(piece2)
+
+        src_mismatched = [
+            piece
+            for piece in src_pieces
+            if piece not in src_matched
+        ]
+        target_mismatched = [
+            piece
+            for piece in target_pieces
+            if piece not in target_matched
+        ]
+
+        src_center = src(Points).points.box.center
+        target_center = target(Points).points.box.center
+
+        super().__init__(
+            *[
+                Transform(piece1, piece2, **kwargs)
+                for piece1, piece2 in zip(src_matched, target_matched)
+            ],
+            *[
+                FadeOutToPoint(piece, target_center, **kwargs)
+                for piece in src_mismatched
+            ],
+            *[
+                FadeInFromPoint(piece, src_center, **kwargs)
+                for piece in target_mismatched
+            ],
+            duration=duration,
+            lag_ratio=lag_ratio
         )
