@@ -78,12 +78,12 @@ class TypstDoc(SVGItem):
 
         return svg_file_path
 
-    @staticmethod
-    def typstify(obj: TypstDoc | str) -> TypstDoc:
+    @classmethod
+    def typstify(cls, obj: TypstDoc | str) -> TypstDoc:
         '''
-        将字符串变为 :class:`~.Typst` 对象，而本身已经是的则直接返回
+        将字符串变为 Typst 对象，而本身已经是的则直接返回
         '''
-        return obj if isinstance(obj, TypstDoc) else Typst(obj)
+        return obj if isinstance(obj, TypstDoc) else cls(obj)
 
     # region pattern-matching
 
