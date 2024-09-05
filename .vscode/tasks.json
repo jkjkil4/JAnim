@@ -8,6 +8,18 @@
             "type": "shell",
             "command": "pyside6-uic ${fileDirname}\\${fileBasename} -o ${fileDirname}\\ui_${fileBasenameNoExtension}.py",
             "problemMatcher": []
+        },
+        {
+            "label": "sync docs",
+            "type": "shell",
+            "command": "git checkout docs; git rebase main; git push github docs; git checkout main",
+            "problemMatcher": []
+        },
+        {
+            "label": "sync docs-en",
+            "type": "shell",
+            "command": "git checkout docs-en; git rebase main; git push github docs-en; git checkout main",
+            "problemMatcher": []
         }
     ]
 }
