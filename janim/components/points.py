@@ -771,6 +771,23 @@ class Cmpt_Points[ItemT](Component[ItemT]):
         )
         return self
 
+    @staticmethod
+    def _compute_move_shift(
+        src: Cmpt_Points,
+        target: Item | Vect,
+        aligned_edge: Vect,
+        coor_mask: Iterable,
+        root_only: bool = False,
+        item_root_only: bool = False
+    ) -> np.ndarray:
+        if isinstance(target, Item):
+            cmpt = src.get_same_cmpt(target)
+            box = cmpt.self_box if item_root_only else cmpt.box
+            target = box.get(aligned_edge)
+
+        point_to_align = (src.self_box if root_only else src.box).get(aligned_edge)
+        return (target - point_to_align) * coor_mask
+
     def move_to(
         self,
         target: Item | Vect,
@@ -783,20 +800,50 @@ class Cmpt_Points[ItemT](Component[ItemT]):
         '''
         移动到 ``target`` 的位置
         '''
-        if isinstance(target, Item):
-            cmpt = self.get_same_cmpt(target)
-            box = cmpt.self_box if item_root_only else cmpt.box
-            target = box.get(aligned_edge)
+        self.shift(
+            self._compute_move_shift(self, target, aligned_edge, coor_mask, root_only, item_root_only),
+            root_only=root_only
+        )
+        return self
 
-        point_to_align = self.box.get(aligned_edge)
-        self.shift((target - point_to_align) * coor_mask, root_only=root_only)
+    def move_to_by_indicator(
+        self,
+        indicator: Item,
+        target: Item,
+        *,
+        aligned_edge: Vect = ORIGIN,
+        coor_mask: Iterable = (1, 1, 1),
+        root_only: bool = False,
+        indicator_root_only: bool = False,
+        item_root_only: bool = False
+    ) -> Self:
+        '''
+        与 :meth:`move_to` 类似，但是该方法作用 ``indicator`` 被移动到 ``target`` 所计算出的位移，
+        而不是 :meth:`move_to` 中 ``self`` 被移动到 ``target`` 的位移
 
+        例如：
+
+        .. code-block::
+
+            t1 = Typst('x^2 + y^2')
+            t2 = Typst('x + y')
+            t2.points.move_to_by_indicator(t2[1], t1[2])
+
+        可以将 ``t2`` 移动至 ``t1`` 的位置，
+        并且使得 ``t2`` 的加号与 ``t1`` 的加号对齐
+        '''
+        cmpt = self.get_same_cmpt(indicator)
+        self.shift(
+            cmpt._compute_move_shift(cmpt, target, aligned_edge, coor_mask, indicator_root_only, item_root_only),
+            root_only=root_only
+        )
         return self
 
     def align_to(
         self,
         item_or_point: Item | Vect,
         direction: Vect = ORIGIN,
+        *,
         root_only: bool = False,
         item_root_only: bool = False,
     ) -> Self:
@@ -971,6 +1018,25 @@ class Cmpt_Points[ItemT](Component[ItemT]):
         self.shift(shift_val)
         return self
 
+    @staticmethod
+    def _compute_next_to_shift(
+        src: Cmpt_Points,
+        target: Item | Vect,
+        direction: Vect,
+        buff: float,
+        aligned_edge: Vect,
+        coor_mask: Iterable,
+        root_only: bool,
+        item_root_only: bool
+    ) -> np.ndarray:
+        if isinstance(target, Item):
+            cmpt = src.get_same_cmpt(target)
+            box = cmpt.self_box if item_root_only else cmpt.box
+            target = box.get(aligned_edge + direction)
+
+        point_to_align = (src.self_box if root_only else src.box).get(aligned_edge - direction)
+        return (target - point_to_align + buff * direction) * coor_mask
+
     def next_to(
         self,
         target: Item | Vect,
@@ -985,14 +1051,47 @@ class Cmpt_Points[ItemT](Component[ItemT]):
         '''
         将该物件放到 ``target`` 旁边
         '''
-        if isinstance(target, Item):
-            cmpt = self.get_same_cmpt(target)
-            box = cmpt.self_box if item_root_only else cmpt.box
-            target = box.get(aligned_edge + direction)
-
-        point_to_align = self.box.get(aligned_edge - direction)
         self.shift(
-            (target - point_to_align + buff * direction) * coor_mask,
+            self._compute_next_to_shift(self, target,
+                                        direction, buff, aligned_edge, coor_mask,
+                                        root_only, item_root_only),
+            root_only=root_only
+        )
+        return self
+
+    def next_to_by_indicator(
+        self,
+        indicator: Item,
+        target: Item | Vect,
+        direction: Vect = RIGHT,
+        *,
+        buff: float = DEFAULT_ITEM_TO_ITEM_BUFF,
+        aligned_edge: Vect = ORIGIN,
+        coor_mask: Iterable = (1, 1, 1),
+        root_only: bool = False,
+        indicator_root_only: bool = False,
+        item_root_only: bool = False,
+    ) -> Self:
+        '''
+        与 :meth:`next_to` 类似，但是该方法作用 ``indicator`` 被放到 ``target`` 旁边所计算出的位移，
+        而不是 :meth:`move_to` 中 ``self`` 被放到 ``target`` 旁边的位移
+
+        例如：
+
+        .. code-block::
+
+            t1 = Typst('x^2 + y^2')
+            t2 = Typst('x + y z w')
+            t2.points.next_to_by_indicator(t2[1], t1[2], DOWN)
+
+        可以将 ``t1`` 对齐到 ``t2`` 的下方，
+        并且使得 ``t1`` 的加号在 ``t2`` 的加号的正下方
+        '''
+        cmpt = self.get_same_cmpt(indicator)
+        self.shift(
+            self._compute_next_to_shift(cmpt, target,
+                                        direction, buff, aligned_edge, coor_mask,
+                                        indicator_root_only, item_root_only),
             root_only=root_only
         )
         return self
