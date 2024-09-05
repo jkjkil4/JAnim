@@ -11,6 +11,7 @@ from janim.components.radius import Cmpt_Radius
 from janim.components.rgbas import Cmpt_Rgbas, apart_alpha
 from janim.components.vpoints import Cmpt_VPoints
 from janim.constants import PI
+from janim.items.item import Item, mockable
 from janim.items.points import Points
 from janim.render.impl import VItemRenderer
 from janim.typing import Alpha, AlphaArray, ColorArray, JAnimColor, Vect
@@ -75,15 +76,15 @@ class VItem(Points):
 
         return super().set_style(**kwargs)
 
-    def set_stroke_background(self, flag: bool = True, *, root_only: bool = False) -> Self:
+    @mockable
+    def set_stroke_background(self: Item, flag: bool = True, *, root_only: bool = False) -> Self:
         '''
         调整描边与填充的绘制顺序
 
         ``flag=True`` 会使得描边被填充遮盖，``flag=False`` 则会使得填充被描边遮盖
         '''
-        self.stroke_backgorund = flag
-        if not root_only:
-            for item in self.walk_descendants(VItem):
+        for item in self.walk_self_and_descendants(root_only):
+            if isinstance(item, VItem):
                 item.stroke_background = flag
         return self
 

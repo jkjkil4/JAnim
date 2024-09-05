@@ -3,6 +3,7 @@ from __future__ import annotations
 import copy
 import inspect
 import itertools as it
+import types
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any, Callable, Iterable, Self, overload
 
@@ -28,6 +29,7 @@ type DynamicItem = Callable[[float], Item]
 CLS_CMPTINFO_NAME = '__cls_cmptinfo'
 CLS_STYLES_NAME = '__cls_styles'
 ALL_STYLES_NAME = '__all_styles'
+MOCKABLE_NAME = '__mockable'
 
 
 class _ItemMeta(type):
@@ -65,6 +67,14 @@ class _ItemMeta(type):
             attrdict[ALL_STYLES_NAME] = all_styles
 
         return super().__new__(cls, name, bases, attrdict)
+
+
+def mockable(func):
+    '''
+    使得 ``.astype`` 后可以调用该方法
+    '''
+    setattr(func, MOCKABLE_NAME, True)
+    return func
 
 
 class Item(Relation['Item'], metaclass=_ItemMeta):
@@ -370,7 +380,12 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         if name == '__setstate__':
             raise AttributeError()
 
-        cmpt_info = None if self._astype is None else getattr(self._astype, name, None)
+        mockable_or_cmpt_info = None if self._astype is None else getattr(self._astype, name, None)
+
+        if isinstance(mockable_or_cmpt_info, Callable) and getattr(mockable_or_cmpt_info, MOCKABLE_NAME, False):
+            return types.MethodType(mockable_or_cmpt_info, self)
+
+        cmpt_info = mockable_or_cmpt_info
         if not isinstance(cmpt_info, CmptInfo):
             super().__getattribute__(name)  # raise error
 
