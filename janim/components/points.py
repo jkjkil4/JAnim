@@ -823,7 +823,7 @@ class Cmpt_Points[ItemT](Component[ItemT]):
 
         例如：
 
-        .. code-block::
+        .. code-block:: python
 
             t1 = Typst('x^2 + y^2')
             t2 = Typst('x + y')
@@ -831,6 +831,10 @@ class Cmpt_Points[ItemT](Component[ItemT]):
 
         可以将 ``t2`` 移动至 ``t1`` 的位置，
         并且使得 ``t2`` 的加号与 ``t1`` 的加号对齐
+
+        .. note::
+
+            这个示例使用 :meth:`~.Typst.match_pattern` 会更简洁
         '''
         cmpt = self.get_same_cmpt(indicator)
         self.shift(
@@ -1078,7 +1082,7 @@ class Cmpt_Points[ItemT](Component[ItemT]):
 
         例如：
 
-        .. code-block::
+        .. code-block:: python
 
             t1 = Typst('x^2 + y^2')
             t2 = Typst('x + y z w')
@@ -1086,6 +1090,10 @@ class Cmpt_Points[ItemT](Component[ItemT]):
 
         可以将 ``t1`` 对齐到 ``t2`` 的下方，
         并且使得 ``t1`` 的加号在 ``t2`` 的加号的正下方
+
+        .. note::
+
+            这个示例也可以使用字符索引
         '''
         cmpt = self.get_same_cmpt(indicator)
         self.shift(
