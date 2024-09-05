@@ -71,7 +71,7 @@ class _ItemMeta(type):
 
 def mockable(func):
     '''
-    使得 ``.astype`` 后可以调用该方法
+    使得 ``.astype`` 后可以调用被 ``@mockable`` 修饰的方法
     '''
     setattr(func, MOCKABLE_NAME, True)
     return func
