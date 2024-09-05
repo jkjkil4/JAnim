@@ -22,8 +22,6 @@ from janim.exception import InvalidOrdinalError
 
 _ = get_local_strings('typst')
 
-TYPST_FILENAME = 'temp.typ'
-
 
 class TypstDoc(SVGItem):
     '''
@@ -49,26 +47,25 @@ class TypstDoc(SVGItem):
         if os.path.exists(svg_file_path):
             return svg_file_path
 
-        typst_file_path = os.path.join(typst_temp_dir, TYPST_FILENAME)
-
-        with open(typst_file_path, 'wt') as f:
-            f.write(get_typst_template().replace('[typst_expression]', text))
+        typst_content = get_typst_template().replace('[typst_expression]', text)
 
         commands = [
             Config.get.typst_bin,
             'compile',
-            typst_file_path,
+            '-',
             svg_file_path,
             '-f', 'svg'
         ]
 
         try:
-            process = sp.Popen(commands)
+            process = sp.Popen(commands, stdin=sp.PIPE)
         except FileNotFoundError:
             log.error(_('Could not compile typst file. '
                         'Please install typst and add it to the environment variables.'))
             raise ExitException(EXITCODE_TYPST_NOT_FOUND)
 
+        process.stdin.write(typst_content.encode('utf-8'))
+        process.stdin.close()
         ret = process.wait()
         if ret != 0:
             log.error(_('Typst compilation error. Please check the output for more information.'))
