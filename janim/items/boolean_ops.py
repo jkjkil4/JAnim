@@ -6,8 +6,8 @@ import pathops
 from janim.exception import BooleanOpsError
 from janim.items.item import Item
 from janim.items.vitem import VItem
-from janim.utils.bezier import PathBuilder
 from janim.locale.i18n import get_local_strings
+from janim.utils.bezier import PathBuilder
 
 _ = get_local_strings('boolean_ops')
 
@@ -82,13 +82,26 @@ class Union(VItem):
         _convert_skia_path_to_vitem(outpen, self)
 
     @staticmethod
-    def from_item(item: Item, **kwargs) -> Union:
+    def from_group(item: Item, **kwargs) -> Union:
+        '''
+        传入一个物件，将其所有子物件作并集
+        '''
         lst = [
             sub
             for sub in item.walk_self_and_descendants()
             if isinstance(sub, VItem)
         ]
         return Union(*lst, **kwargs)
+
+    @staticmethod
+    def from_item(item: Item, **kwargs) -> Union:
+        from janim.utils.deprecation import deprecated
+        deprecated(
+            'Union.from_item',
+            "{name!r} is deprecated and will be removed in JAnim {remove}, use 'Union.from_group' instead",
+            remove=(2, 0)
+        )
+        return Union.from_group(item, **kwargs)
 
 
 class Difference(VItem):
@@ -136,13 +149,26 @@ class Intersection(VItem):
         _convert_skia_path_to_vitem(outpen, self)
 
     @staticmethod
-    def from_item(item: Item) -> Union:
+    def from_group(item: Item, **kwargs) -> Union:
+        '''
+        传入一个物件，将其所有子物件作交集
+        '''
         lst = [
             sub
             for sub in item.walk_self_and_descendants()
             if isinstance(sub, VItem)
         ]
-        return Intersection(*lst)
+        return Intersection(*lst, **kwargs)
+
+    @staticmethod
+    def from_item(item: Item, **kwargs) -> Union:
+        from janim.utils.deprecation import deprecated
+        deprecated(
+            'Intersection.from_item',
+            "{name!r} is deprecated and will be removed in JAnim {remove}, use 'Intersection.from_group' instead",
+            remove=(2, 0)
+        )
+        return Intersection.from_group(item, **kwargs)
 
 
 class Exclusion(VItem):
@@ -171,3 +197,15 @@ class Exclusion(VItem):
             )
             outpen = new_outpen
         _convert_skia_path_to_vitem(outpen, self)
+
+    @staticmethod
+    def from_group(item: Item, **kwargs):
+        '''
+        传入一个物件，将其所有子物件依次作补集（XOR）
+        '''
+        lst = [
+            sub
+            for sub in item.walk_self_and_descendants()
+            if isinstance(sub, VItem)
+        ]
+        return Exclusion(*lst, **kwargs)
