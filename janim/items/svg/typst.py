@@ -84,55 +84,6 @@ class TypstDoc(SVGItem):
 
     # region pattern-matching
 
-    def indices(self, pattern: TypstDoc | str) -> list[int]:
-        '''
-        找出该公式中所有出现了 ``pattern`` 的位置
-
-        - ``pattern`` 支持使用字符串或者 Typst 对象
-        '''
-        pattern = self.typstify(pattern)
-
-        lps = pattern.lps
-        indices, p = [], 0
-
-        for index, shape in enumerate(self):
-            while not (same := shape.points.same_shape(pattern[p])) and p != 0:
-                p = lps[p - 1]
-            if same:
-                p += 1
-            if p == len(pattern):
-                indices.append(index - (p - 1))
-                p = lps[p - 1]
-
-        return indices
-
-    lps_map: dict[str, list[int]] = {}
-
-    @property
-    def lps(self) -> list[int]:
-        '''
-        KMP 算法涉及的部分匹配表
-        '''
-        # 获取缓存
-        lps = TypstDoc.lps_map.get(self.text, None)
-        if lps is not None:
-            return lps
-
-        # 没缓存则计算
-        lps = [0] * len(self)
-        for index, shape in enumerate(self):
-            p, same = index, False
-            while p > 0 and not same:
-                p = lps[p - 1]
-                same = shape.points.same_shape(self[p])
-            if same:
-                p += 1
-            lps[index] = p
-
-        # 缓存并返回
-        TypstDoc.lps_map[self.text] = lps
-        return lps
-
     @overload
     def __getitem__(self, key: int) -> VItem: ...
     @overload
@@ -256,6 +207,55 @@ class TypstDoc(SVGItem):
                 ]
 
         raise InvalidOrdinalError(_('ordinal {} is invalid').format(ordinal))
+
+    def indices(self, pattern: TypstDoc | str) -> list[int]:
+        '''
+        找出该公式中所有出现了 ``pattern`` 的位置
+
+        - ``pattern`` 支持使用字符串或者 Typst 对象
+        '''
+        pattern = self.typstify(pattern)
+
+        lps = pattern.lps
+        indices, p = [], 0
+
+        for index, shape in enumerate(self):
+            while not (same := shape.points.same_shape(pattern[p])) and p != 0:
+                p = lps[p - 1]
+            if same:
+                p += 1
+            if p == len(pattern):
+                indices.append(index - (p - 1))
+                p = lps[p - 1]
+
+        return indices
+
+    lps_map: dict[str, list[int]] = {}
+
+    @property
+    def lps(self) -> list[int]:
+        '''
+        KMP 算法涉及的部分匹配表
+        '''
+        # 获取缓存
+        lps = TypstDoc.lps_map.get(self.text, None)
+        if lps is not None:
+            return lps
+
+        # 没缓存则计算
+        lps = [0] * len(self)
+        for index, shape in enumerate(self):
+            p, same = index, False
+            while p > 0 and not same:
+                p = lps[p - 1]
+                same = shape.points.same_shape(self[p])
+            if same:
+                p += 1
+            lps[index] = p
+
+        # 缓存并返回
+        TypstDoc.lps_map[self.text] = lps
+        return lps
 
     # endregion
 
