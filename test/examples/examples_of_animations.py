@@ -704,6 +704,7 @@ class TransformInSegmentsExample(Timeline):
     def construct(self):
         typ1 = Typst('sin x + cos x')
         typ2 = Typst('cos y + sin y')
+        typ2.match_pattern(typ1, '+')
         Group(typ1, typ2).points.scale(3)
 
         self.show(typ1)
