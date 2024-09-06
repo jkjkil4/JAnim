@@ -3,7 +3,7 @@ from __future__ import annotations
 import itertools as it
 import types
 from collections import defaultdict
-from typing import Generator, Iterable, Self
+from typing import Callable, Generator, Iterable, Self
 
 from janim.anims.animation import Animation, RenderCall
 from janim.anims.composition import AnimGroup
@@ -336,10 +336,20 @@ class TransformMatchingShapes(AnimGroup):
         self,
         src: Item,
         target: Item,
+        *,
+        mismatch: tuple[Callable, Callable] = (FadeOutToPoint, FadeInFromPoint),
         duration: float = 2,
         lag_ratio: float = 0,
         **kwargs
     ):
+        '''
+        匹配形状进行变换
+
+        - `mismatch` 表示对于不匹配的形状的处理
+        - 注：所有传入该动画类的额外参数都会被传入 `mismatch` 的方法中
+        '''
+        src_mismatch_method, target_mismatch_method = mismatch
+
         def walk_self_and_descendant_with_points(item: Item) -> Generator[VItem, None, None]:
             for item in item.walk_self_and_descendants():
                 if isinstance(item, VItem) and item.points.has():
@@ -379,11 +389,11 @@ class TransformMatchingShapes(AnimGroup):
                 for piece1, piece2 in zip(src_matched, target_matched)
             ],
             *[
-                FadeOutToPoint(piece, target_center, **kwargs)
+                src_mismatch_method(piece, target_center, **kwargs)
                 for piece in src_mismatched
             ],
             *[
-                FadeInFromPoint(piece, src_center, **kwargs)
+                target_mismatch_method(piece, src_center, **kwargs)
                 for piece in target_mismatched
             ],
             duration=duration,
