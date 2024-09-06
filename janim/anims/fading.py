@@ -55,7 +55,7 @@ class Fade(DataUpdater, metaclass=ABCMeta):
 
     @abstractmethod
     def updater(self, data: Item, p: UpdaterParams) -> None:
-        pass
+        pass    # pragma: no cover
 
 
 class FadeIn(Fade):
