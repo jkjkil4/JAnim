@@ -350,13 +350,15 @@ class TransformMatchingShapes(AnimGroup):
         '''
         src_mismatch_method, target_mismatch_method = mismatch
 
-        def walk_self_and_descendant_with_points(item: Item) -> Generator[VItem, None, None]:
-            for item in item.walk_self_and_descendants():
-                if isinstance(item, VItem) and item.points.has():
-                    yield item
+        def self_and_descendant_with_points(item: Item) -> list[VItem]:
+            return [
+                item
+                for item in item.walk_self_and_descendants()
+                if isinstance(item, VItem) and item.points.has()
+            ]
 
-        src_pieces = list(walk_self_and_descendant_with_points(src))
-        target_pieces = list(walk_self_and_descendant_with_points(target))
+        src_pieces = self_and_descendant_with_points(src)
+        target_pieces = self_and_descendant_with_points(target)
 
         src_matched: list[VItem] = []
         target_matched: list[VItem] = []
