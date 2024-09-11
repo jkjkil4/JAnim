@@ -253,6 +253,12 @@ class Timeline(metaclass=ABCMeta):
         task = Timeline.ScheduledTask(rough_at, func, args, kwargs)
         insort(self.scheduled_tasks, task, key=lambda x: x.at)
 
+    def timeout(self, delay: float, func: Callable, *args, **kwargs) -> None:
+        '''
+        相当于 `schedule(self.current_time + delay, func, *args, **kwargs)`
+        '''
+        self.schedule(self.current_time + delay, func, *args, **kwargs)
+
     # region progress
 
     def forward(self, dt: float = 1, *, _detect_changes=True, _record_lineno=True) -> None:
