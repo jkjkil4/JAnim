@@ -302,6 +302,13 @@ class FadeTransform(AnimGroup):
         src: Item,
         target: Item,
         *,
+        hide_src: bool = True,
+        show_target: bool = True,
+
+        path_arc: float = 0,
+        path_arc_axis: Vect = OUT,
+        path_func: PathFunc | None = None,
+
         src_root_only: bool = False,
         target_root_only: bool = False,
         **kwargs
@@ -319,12 +326,20 @@ class FadeTransform(AnimGroup):
         super().__init__(
             Transform(
                 src, src_copy,
+                hide_src=hide_src,
                 show_target=False,
+                path_arc=path_arc,
+                path_arc_axis=path_arc_axis,
+                path_func=path_func,
                 root_only=src_root_only
             ),
             Transform(
                 target_copy, target,
                 hide_src=False,
+                show_target=show_target,
+                path_arc=path_arc,
+                path_arc_axis=path_arc_axis,
+                path_func=path_func,
                 root_only=target_root_only
             ),
             **kwargs
