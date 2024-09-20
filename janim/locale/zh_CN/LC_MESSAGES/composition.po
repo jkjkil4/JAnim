@@ -7,17 +7,24 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-07-15 17:58+0800\n"
-"PO-Revision-Date: 2024-06-05 17:34+0800\n"
+"POT-Creation-Date: 2024-09-19 11:38+0800\n"
+"PO-Revision-Date: 2024-09-19 11:40+0800\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
+"Language: zh_CN\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=GBK\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: zh_CN\n"
 "X-Generator: Poedit 3.4.2\n"
 
-#: janim\anims\composition.py:98
+#: janim\anims\composition.py:83
+msgid ""
+"Passing misaligned sub-animations to a composition with non-linear rate_func "
+"may cause unexpected behavior"
+msgstr ""
+"将未对齐的子动画传递给具有非线性 rate_func 的动画组，可能会导致意外行为"
+
+#: janim\anims\composition.py:105
 msgid ""
 "A non-animation object was passed in, you might have forgotten to use .anim"
 msgstr "传入了非动画对象，可能是你忘记使用 .anim 了"

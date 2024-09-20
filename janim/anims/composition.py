@@ -1,6 +1,7 @@
 from janim.anims.animation import Animation
 from janim.exception import NotAnimationError
 from janim.locale.i18n import get_local_strings
+from janim.logger import log
 from janim.utils.rate_functions import RateFunc, linear
 
 _ = get_local_strings('composition')
@@ -75,6 +76,12 @@ class AnimGroup(Animation):
         self.maxt = 0 if not anims else max(anim.local_range.end for anim in anims)
         if duration is None:
             duration = self.maxt
+
+        if not isinstance(self, Aligned) and rate_func is not linear \
+                and any((anim.local_range.at != 0 or anim.local_range.duration != duration)
+                        for anim in anims):
+            log.warning(_('Passing misaligned sub-animations to a composition with non-linear rate_func '
+                          'may cause unexpected behavior'))
 
         super().__init__(duration=duration, rate_func=rate_func, **kwargs)
         for anim in self.anims:
