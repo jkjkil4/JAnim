@@ -63,6 +63,8 @@ class Audio:
 
         可以指定 ``begin`` 和 ``end`` 来截取音频的一部分
         '''
+        channels = Config.get.audio_channels
+
         try:
             file_path = find_file(file_path)
         except FileNotFoundError:
@@ -70,7 +72,11 @@ class Audio:
                 _('Could not find the audio file "{file_path}". A blank audio of 8 seconds was used instead.')
                 .format(file_path=file_path)
             )
-            self._samples.data = np.zeros(Config.get.audio_framerate * 8)
+
+            if channels == 1:
+                self._samples.data = np.zeros(Config.get.audio_framerate * 8)
+            else:
+                self._samples.data = np.zeros((Config.get.audio_framerate * 8, channels))
             self.framerate = Config.get.audio_framerate
             self.file_path = file_path
             self.filename = os.path.basename(file_path)
@@ -94,8 +100,6 @@ class Audio:
             command += ['-ss', str(begin)]  # clip from
         if end != -1:
             command += ['-to', str(end)]    # clip to
-
-        channels = Config.get.audio_channels
 
         command += [
             '-f', 's16le',

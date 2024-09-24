@@ -517,7 +517,7 @@ class Timeline(metaclass=ABCMeta):
                         np.zeros(right_blank, dtype=np.int16)
                     ])
                 else:
-                    channels = data.shape[1]
+                    # channels = data.shape[1]
                     data = np.concatenate([
                         np.zeros((left_blank, channels), dtype=np.int16),
                         data,
