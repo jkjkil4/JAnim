@@ -201,6 +201,7 @@ class Timeline(metaclass=ABCMeta):
 
             self.config_getter = ConfigGetter(config_ctx_var.get())
             self.camera = Camera()
+            self.track(self.camera)
 
             if not quiet:   # pragma: no cover
                 log.info(_('Building "{name}"').format(name=self.__class__.__name__))
