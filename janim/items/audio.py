@@ -170,10 +170,12 @@ class Audio:
         - ``audio.mul([1, 0])`` 可以使开始时最强，结束时最弱
         - ``audio.mul(np.sin(np.linspace(0, 2 * np.pi, audio.sample_count())))`` 可以使音高随时间乘以 sin 函数的一个周期
         '''
+        if self._samples.data.ndim != 1:
+            if not isinstance(value, Iterable):
+                value = [value]
+            value = np.asarray(value)[:, np.newaxis] * np.ones(self._samples.data.shape[1])
         if isinstance(value, Iterable):
             value = resize_with_interpolation(value, self.sample_count())
-        if self._samples.data.ndim != 1:
-            value = np.asarray(value)[:, np.newaxis] * np.ones(self._samples.data.shape[1])
         self._samples.data = self._samples.data * value
 
         return self
