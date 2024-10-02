@@ -738,7 +738,7 @@ class Timeline(metaclass=ABCMeta):
         while frame is not None:
             f_back = frame.f_back
 
-            if f_back is self._build_frame:
+            if f_back is self._build_frame and frame.f_code.co_filename == inspect.getfile(self.__class__):
                 return frame.f_lineno
 
             frame = f_back
