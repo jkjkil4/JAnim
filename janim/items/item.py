@@ -96,7 +96,7 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
     覆盖该值以在子类中使用特定的渲染器
     '''
 
-    global_renderer: dict[mgl.Context, Renderer] = {}
+    global_renderer: dict[tuple[type, mgl.Context], Renderer] = {}
     '''
     共用的渲染器，用于 ``is_temporary=True`` 的物件
     '''
@@ -626,7 +626,7 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
 
     @classmethod
     def get_global_renderer(cls) -> None:
-        key = Renderer.data_ctx.get().ctx
+        key = (cls, Renderer.data_ctx.get().ctx)
         renderer = cls.global_renderer.get(key, None)
         if renderer is None:
             renderer = cls.global_renderer[key] = cls.renderer_cls()
