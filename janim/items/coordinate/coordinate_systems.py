@@ -7,7 +7,7 @@ import numpy as np
 from janim.components.component import CmptInfo
 from janim.components.points import Cmpt_Points
 from janim.components.vpoints import Cmpt_VPoints
-from janim.constants import (BLUE_D, DEGREES, DL, LEFT, ORIGIN, SMALL_BUFF,
+from janim.constants import (BLUE_D, DEGREES, DL, UP, ORIGIN, SMALL_BUFF,
                              WHITE)
 from janim.items.coordinate.functions import ParametricCurve
 from janim.items.coordinate.number_line import NumberLine
@@ -70,7 +70,7 @@ class Axes(Group, CoordinateSystem, metaclass=_ItemMeta_ABCMeta):
     )
     x_axis_config_d: dict = {}
     y_axis_config_d: dict = dict(
-        line_to_number_direction=LEFT
+        line_to_number_direction=UP
     )
 
     def __init__(
