@@ -1,15 +1,15 @@
 from __future__ import annotations
 
 import os
-from contextvars import ContextVar
 from collections import defaultdict
+from contextvars import ContextVar
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any
 
 import moderngl as mgl
 
 from janim.camera.camera_info import CameraInfo
-from janim.utils.file_ops import get_janim_dir, readall
+from janim.utils.file_ops import find_file, get_janim_dir, readall
 
 if TYPE_CHECKING:
     from janim.items.item import Item
@@ -79,7 +79,7 @@ def apply_global_uniforms(uniforms: list[UniformPair], prog: mgl.Program) -> Non
 
 def get_program(filepath: str) -> mgl.Program:
     '''
-    给定文件位置自动遍历后缀并读取着色器代码，
+    给定相对于 janim 路径的文件位置，自动遍历后缀并读取着色器代码，
     例如传入 `render/shaders/dotcloud` 后，会自动读取以下位置的代码：
 
     - redner/shaders/dotcloud.vert
@@ -88,7 +88,10 @@ def get_program(filepath: str) -> mgl.Program:
 
     若没有则缺省，但要能创建可用的着色器
 
-    注：若 ``filepath`` 对应着色器程序先前已创建过，则会复用先前的对象，否则另外创建新的对象并记录
+    注：
+
+    - 若 ``filepath`` 对应着色器程序先前已创建过，则会复用先前的对象，否则另外创建新的对象并记录
+    - 该方法只能读取 janim 内置的着色器，读取自定义着色器请使用 :meth:`get_custom_program`
     '''
     ctx = Renderer.data_ctx.get().ctx
     ctx_program_map = program_map[ctx]
@@ -103,6 +106,49 @@ def get_program(filepath: str) -> mgl.Program:
         shader_type: readall(shader_path + suffix)
         for shader_type, suffix in shader_keys
         if os.path.exists(shader_path + suffix)
+    })
+
+    global_uniforms = global_uniform_map.get(ctx, None)
+    if global_uniforms is not None:
+        apply_global_uniforms(global_uniforms, prog)
+
+    ctx_program_map[filepath] = prog
+    return prog
+
+
+def get_custom_program(filepath: str) -> mgl.Program:
+    '''
+    给定文件位置自动遍历后缀并读取着色器代码，
+    例如传入 `shaders/yourshader` 后，会自动读取以下位置的代码：
+
+    - shaders/yourshader.vert
+    - shaders/yourshader.geom
+    - shaders/yourshader.frag
+
+    若没有则缺省，但要能创建可用的着色器
+
+    注：
+
+    - 若 ``filepath`` 对应着色器程序先前已创建过，则会复用先前的对象，否则另外创建新的对象并记录
+    - 该方法只能读取自定义的着色器，读取 janim 内置着色器请使用 :meth:`get_program`
+    '''
+    ctx = Renderer.data_ctx.get().ctx
+    ctx_program_map = program_map[ctx]
+
+    prog = ctx_program_map.get(filepath, None)
+    if prog is not None:
+        return prog
+
+    def find_shader(filepath: str) -> str | None:
+        try:
+            return find_file(filepath)
+        except FileNotFoundError:
+            return None
+
+    prog = ctx.program(**{
+        shader_type: readall(_shader_path)
+        for shader_type, suffix in shader_keys
+        if (_shader_path := find_shader(filepath + suffix)) is not None
     })
 
     global_uniforms = global_uniform_map.get(ctx, None)
