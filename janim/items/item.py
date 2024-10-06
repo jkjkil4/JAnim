@@ -20,6 +20,7 @@ from janim.utils.iterables import resize_preserving_order
 from janim.utils.paths import PathFunc, straight_path
 
 if TYPE_CHECKING:
+    import moderngl as mgl
     from janim.items.points import Group
 
 _ = get_local_strings('item')
@@ -95,7 +96,7 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
     覆盖该值以在子类中使用特定的渲染器
     '''
 
-    global_renderer: Renderer | None = None
+    global_renderer: dict[mgl.Context, Renderer] = {}
     '''
     共用的渲染器，用于 ``is_temporary=True`` 的物件
     '''
@@ -625,9 +626,11 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
 
     @classmethod
     def get_global_renderer(cls) -> None:
-        if cls.global_renderer is None:
-            cls.global_renderer = cls.renderer_cls()
-        return cls.global_renderer
+        key = Renderer.data_ctx.get().ctx
+        renderer = cls.global_renderer.get(key, None)
+        if renderer is None:
+            renderer = cls.global_renderer[key] = cls.renderer_cls()
+        return renderer
 
     def create_renderer(self) -> None:
         if self.is_temporary:
