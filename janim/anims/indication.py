@@ -12,7 +12,8 @@ from janim.anims.movement import Homotopy
 from janim.anims.updater import DataUpdater, UpdaterParams
 from janim.components.rgbas import Cmpt_Rgbas
 from janim.constants import (C_LABEL_ANIM_ABSTRACT, C_LABEL_ANIM_INDICATION,
-                             GREY, ORIGIN, RIGHT, TAU, UP, YELLOW)
+                             GREY, MED_SMALL_BUFF, ORIGIN, RIGHT, TAU, UP,
+                             YELLOW)
 from janim.items.geometry.arc import Circle, Dot
 from janim.items.geometry.line import Line
 from janim.items.item import Item
@@ -127,6 +128,7 @@ class CircleIndicate(DataUpdater[Circle]):
         color: JAnimColor = YELLOW,
         rate_func: RateFunc = there_and_back,
         scale: float = 1,
+        buff: float = MED_SMALL_BUFF,
         **kwargs
     ):
         start = Circle(color=color, alpha=0)
@@ -136,7 +138,7 @@ class CircleIndicate(DataUpdater[Circle]):
 
         def updater(c: Circle, p: UpdaterParams):
             c.interpolate(start, target, p.alpha)
-            c.points.surround(item.current())
+            c.points.surround(item.current(), buff=buff)
             if scale != 1:
                 c.points.scale(interpolate(scale, 1, p.alpha))
 
