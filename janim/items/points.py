@@ -41,6 +41,10 @@ class Group[T](Points):
 
         self.children: list[T]
 
+    @staticmethod
+    def from_iterable(objs: Iterable[T], **kwargs) -> Group[T]:
+        return Group(*objs, **kwargs)
+
     @overload
     def __getitem__(self, value: int) -> T: ...
     @overload
