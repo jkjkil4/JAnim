@@ -46,7 +46,7 @@ class Cmpt_VPoints_LineImpl[ItemT](Cmpt_VPoints[ItemT]):
             # Handle null lines more gracefully
             self.update_points_by_attrs(start, end, buff=0, path_arc=self.path_arc)
             return self
-        return self.put_start_and_end_on(start, end)
+        return super().put_start_and_end_on(start, end)
 
     def update_points_by_attrs(
         self,
