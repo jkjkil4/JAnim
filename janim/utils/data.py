@@ -34,7 +34,7 @@ class Array:
 
     并且通过 ``.data`` 得到的 numpy 数组必定是只读的
     '''
-    def __init__(self, *, dtype=np.float64):
+    def __init__(self, *, dtype=np.float32):
         self._data = np.empty(0, dtype=dtype)
 
     def len(self) -> int:
@@ -56,7 +56,7 @@ class Array:
         self._data.setflags(write=False)
 
     def copy(self) -> Array:
-        ret = Array()
+        ret = Array(dtype=self._data.dtype)
         ret.data = self
         return ret
 

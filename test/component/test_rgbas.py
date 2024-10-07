@@ -37,14 +37,14 @@ class RgbasTest(unittest.TestCase):
 
         item.color.set(alpha=0.7)
 
-        self.assertNparrayEqual(
+        self.assertNparrayClose(
             item.color.get(),
             [[1, 0, 0, 0.7], [1, 1, 1, 0.7], [0, 0, 1, 0.7]]
         )
 
         item.color.set(color='red')
 
-        self.assertNparrayEqual(
+        self.assertNparrayClose(
             item.color.get(),
             [[1, 0, 0, 0.7], [1, 0, 0, 0.7], [1, 0, 0, 0.7]]
         )

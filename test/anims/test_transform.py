@@ -56,13 +56,13 @@ class TransformTest(unittest.TestCase):
         )
 
         tsf_anim.anim_on_alpha(1)
-        self.assertNparrayEqual(
+        self.assertNparrayClose(
             tsf_anim.aligned[(p1, p2)].union.components['points'].get(),
             [LEFT, RIGHT]
         )
 
         tsf_anim.anim_on_alpha(0.3)
-        self.assertNparrayEqual(
+        self.assertNparrayClose(
             tsf_anim.aligned[(p1, p2)].union.components['points'].get(),
             [UP * 0.7 + LEFT * 0.3, DOWN * 0.7 + RIGHT * 0.3]
         )

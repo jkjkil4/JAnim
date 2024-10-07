@@ -38,9 +38,9 @@ class DotCloudRenderer(Renderer):
             (self.vbo_radius, '1f', 'in_radius')
         ])
 
-        self.prev_points = np.array([])
-        self.prev_color = np.array([])
-        self.prev_radius = np.array([])
+        self.prev_points = None
+        self.prev_color = None
+        self.prev_radius = None
 
     def render(self, item: DotCloud) -> None:
         new_color = item.color._rgbas.data
@@ -49,7 +49,8 @@ class DotCloudRenderer(Renderer):
 
         if new_color is not self.prev_color or len(new_points) != len(self.prev_points):
             color = resize_with_interpolation(new_color, len(new_points))
-            bytes = color.astype('f4').tobytes()
+            assert color.dtype == np.float32
+            bytes = color.tobytes()
 
             if len(bytes) != self.vbo_color.size:
                 self.vbo_color.orphan(len(bytes))
@@ -59,7 +60,8 @@ class DotCloudRenderer(Renderer):
 
         if new_radius is not self.prev_radius or len(new_points) != len(self.prev_points):
             radius = resize_with_interpolation(new_radius, len(new_points))
-            bytes = radius.astype('f4').tobytes()
+            assert radius.dtype == np.float32
+            bytes = radius.tobytes()
 
             if len(bytes) != self.vbo_radius.size:
                 self.vbo_radius.orphan(len(bytes))
@@ -68,7 +70,8 @@ class DotCloudRenderer(Renderer):
             self.prev_radius = new_radius
 
         if new_points is not self.prev_points:
-            bytes = new_points.astype('f4').tobytes()
+            assert new_points.dtype == np.float32
+            bytes = new_points.tobytes()
 
             if len(bytes) != self.vbo_points.size:
                 self.vbo_points.orphan(len(bytes))
@@ -98,10 +101,10 @@ class VItemRenderer(Renderer):
         self.prev_camera_info = None
 
         self.prev_fix_in_frame = None
-        self.prev_points = np.array([])
-        self.prev_radius = np.array([])
-        self.prev_stroke = np.array([])
-        self.prev_fill = np.array([])
+        self.prev_points = None
+        self.prev_radius = None
+        self.prev_stroke = None
+        self.prev_fill = None
 
     def render(self, item: VItem) -> None:
         if item.points.curves_count() == 0:
@@ -140,13 +143,14 @@ class VItemRenderer(Renderer):
             ]) / render_data.camera_info.frame_radius
             clip_box = np.clip(clip_box, -1, 1)
 
-            bytes = clip_box.astype('f4').tobytes()
+            bytes = clip_box.astype(np.float32).tobytes()
             assert len(bytes) == self.vbo_coord.size
             self.vbo_coord.write(bytes)
 
         if new_radius is not self.prev_radius or len(new_points) != len(self.prev_points):
             radius = resize_with_interpolation(new_radius, (len(new_points) + 1) // 2)
-            bytes = radius.astype('f4').tobytes()
+            assert radius.dtype == np.float32
+            bytes = radius.tobytes()
 
             if len(bytes) != self.vbo_radius.size:
                 self.vbo_radius.orphan(len(bytes))
@@ -156,7 +160,8 @@ class VItemRenderer(Renderer):
 
         if new_stroke is not self.prev_stroke or len(new_points) != len(self.prev_points):
             stroke = resize_with_interpolation(new_stroke, (len(new_points) + 1) // 2)
-            bytes = stroke.astype('f4').tobytes()
+            assert stroke.dtype == np.float32
+            bytes = stroke.tobytes()
 
             if len(bytes) != self.vbo_stroke_color.size:
                 self.vbo_stroke_color.orphan(len(bytes))
@@ -166,7 +171,8 @@ class VItemRenderer(Renderer):
 
         if new_fill is not self.prev_fill or len(new_points) != len(self.prev_points):
             fill = resize_with_interpolation(new_fill, (len(new_points) + 1) // 2)
-            bytes = fill.astype('f4').tobytes()
+            assert fill.dtype == np.float32
+            bytes = fill.tobytes()
 
             if len(bytes) != self.vbo_fill_color.size:
                 self.vbo_fill_color.orphan(len(bytes))
@@ -177,8 +183,8 @@ class VItemRenderer(Renderer):
         if new_points is not self.prev_points:
             bytes = np.hstack([
                 new_points,
-                item.points.get_closepath_flags()[:, np.newaxis]
-            ]).astype('f4').tobytes()
+                item.points.get_closepath_flags()[:, np.newaxis].astype(np.float32)
+            ]).tobytes()
 
             if len(bytes) != self.vbo_points.size:
                 self.vbo_points.orphan(len(bytes))
@@ -222,7 +228,7 @@ class ImageItemRenderer(Renderer):
                 [0.0, 1.0],     # 左下
                 [1.0, 0.0],     # 右上
                 [1.0, 1.0]      # 右下
-            ]).astype('f4').tobytes()
+            ], dtype=np.float32).tobytes()
         )
 
         self.vao = self.ctx.vertex_array(self.prog, [
@@ -231,8 +237,8 @@ class ImageItemRenderer(Renderer):
             (self.vbo_texcoords, '2f', 'in_texcoord')
         ])
 
-        self.prev_points = np.array([])
-        self.prev_color = np.array([])
+        self.prev_points = None
+        self.prev_color = None
         self.prev_img = None
 
     def render(self, item: ImageItem) -> None:
@@ -241,7 +247,8 @@ class ImageItemRenderer(Renderer):
 
         if new_color is not self.prev_color:
             color = resize_with_interpolation(new_color, 4)
-            bytes = color.astype('f4').tobytes()
+            assert color.dtype == np.float32
+            bytes = color.tobytes()
 
             assert len(bytes) == self.vbo_color.size
 
@@ -249,7 +256,8 @@ class ImageItemRenderer(Renderer):
             self.prev_color = new_color
 
         if new_points is not self.prev_points:
-            bytes = new_points.astype('f4').tobytes()
+            assert new_points.dtype == np.float32
+            bytes = new_points.tobytes()
 
             assert len(bytes) == self.vbo_points.size
 
@@ -281,7 +289,7 @@ class VideoRenderer(Renderer):
                 [0.0, 1.0],     # 左下
                 [1.0, 0.0],     # 右上
                 [1.0, 1.0]      # 右下
-            ]).astype('f4').tobytes()
+            ], dtype=np.float32).tobytes()
         )
 
         self.vao = self.ctx.vertex_array(self.prog, [
@@ -293,8 +301,8 @@ class VideoRenderer(Renderer):
         self.texture: mgl.Texture | None = None
         self.reader: VideoReader | None = None
 
-        self.prev_points = np.array([])
-        self.prev_color = np.array([])
+        self.prev_points = None
+        self.prev_color = None
 
     def render(self, item: Video) -> None:
         new_color = item.color._rgbas.data
@@ -302,7 +310,8 @@ class VideoRenderer(Renderer):
 
         if new_color is not self.prev_color:
             color = resize_with_interpolation(new_color, 4)
-            bytes = color.astype('f4').tobytes()
+            assert color.dtype == np.float32
+            bytes = color.tobytes()
 
             assert len(bytes) == self.vbo_color.size
 
@@ -310,7 +319,8 @@ class VideoRenderer(Renderer):
             self.prev_color = new_color
 
         if new_points is not self.prev_points:
-            bytes = new_points.astype('f4').tobytes()
+            assert new_points.dtype == np.float32
+            bytes = new_points.tobytes()
 
             assert len(bytes) == self.vbo_points.size
 

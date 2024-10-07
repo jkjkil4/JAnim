@@ -24,19 +24,19 @@ class PointsTest(unittest.TestCase):
         p = Points()
 
         p.points.set([[1, 2, 3], [1.3, 1, 3]])
-        self.assertNparrayEqual(
+        self.assertNparrayClose(
             p.points.get(),
             [[1, 2, 3], [1.3, 1, 3]]
         )
 
         p.points.extend([[6, 3, 1]])
-        self.assertNparrayEqual(
+        self.assertNparrayClose(
             p.points.get(),
             [[1, 2, 3], [1.3, 1, 3], [6, 3, 1]]
         )
 
         p.points.reverse()
-        self.assertNparrayEqual(
+        self.assertNparrayClose(
             p.points.get(),
             [[6, 3, 1], [1.3, 1, 3], [1, 2, 3]]
         )
@@ -53,13 +53,13 @@ class PointsTest(unittest.TestCase):
         )
 
         p.points.resize(2)
-        self.assertNparrayEqual(
+        self.assertNparrayClose(
             p.points.get(),
             [[6, 3, 1], [1.3, 1, 3]]
         )
 
         p.points.resize(4)
-        self.assertNparrayEqual(
+        self.assertNparrayClose(
             p.points.get(),
             [[6, 3, 1], [1.3, 1, 3], [1.3, 1, 3], [1.3, 1, 3]]
         )
