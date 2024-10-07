@@ -134,7 +134,13 @@ class Component[ItemT](refresh.Refreshable, metaclass=_CmptMeta):
         yield self
         if root_only or self.bind is None:
             return
+        yield from self.walk_same_cmpt_of_descendants_without_mock(timed=timed)
 
+    def walk_same_cmpt_of_descendants_without_mock(
+        self,
+        *,
+        timed: bool = False
+    ) -> Generator[Self, None, None]:
         item = self.bind.at_item
         walk = None
         if not item.stored:
@@ -155,6 +161,12 @@ class Component[ItemT](refresh.Refreshable, metaclass=_CmptMeta):
         所位于的物件，便于链式调用同物件下其它的组件
         '''
         return self.bind.at_item
+
+    @classmethod
+    def align_for_interpolate(cls, cmpt1, cmpt2) -> AlignedData[Self]:
+        return AlignedData(cmpt1, cmpt1, cmpt1)
+
+    def interpolate(self, cmpt1, cmpt2, alpha: float, *, path_func=None): ...
 
 
 class CmptInfo[T]:

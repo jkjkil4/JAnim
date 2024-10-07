@@ -1,7 +1,5 @@
 from typing import TYPE_CHECKING, Iterable, Protocol, runtime_checkable
 
-from janim.utils.data import AlignedData
-
 if TYPE_CHECKING:
     import numpy as np
 
@@ -18,14 +16,6 @@ type Rgba = Iterable[float] | np.ndarray
 type RgbaArray = Iterable[Rgba] | np.ndarray
 
 type RangeSpecifier = tuple[float, float] | tuple[float, float, float]
-
-
-@runtime_checkable
-class SupportsInterpolate[T](Protocol):
-    @classmethod
-    def align_for_interpolate(cls, obj1: object, obj2: object) -> AlignedData[T]: ...
-
-    def interpolate(self, obj1: object, obj2: object, alpha: float, *, path_func): ...
 
 
 @runtime_checkable

@@ -54,7 +54,7 @@ class Cmpt_Rgbas[ItemT](Component[ItemT]):
         if cmpt1.not_changed(cmpt2):
             return
 
-        self.set(interpolate(cmpt1.get(), cmpt2.get(), alpha))
+        self.set_rgbas(interpolate(cmpt1.get(), cmpt2.get(), alpha))
 
     # region 颜色数据 | Colors
 

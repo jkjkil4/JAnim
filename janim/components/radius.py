@@ -58,7 +58,7 @@ class Cmpt_Radius[ItemT](Component[ItemT]):
         if cmpt1.not_changed(cmpt2):
             return
 
-        self.set(interpolate(cmpt1.get(), cmpt2.get(), alpha))
+        self.set(interpolate(cmpt1.get(), cmpt2.get(), alpha), root_only=True)
 
     # region 半径数据 | Radii
 
@@ -77,13 +77,13 @@ class Cmpt_Radius[ItemT](Component[ItemT]):
         '''
         设置半径数据
         '''
-        if not isinstance(radius, Iterable):
+        if isinstance(radius, (int, float)):
             radius = [radius]
-        radii = Array()
-        radii.data = radius
+        self._radii.data = radius
 
-        for cmpt in self.walk_same_cmpt_of_self_and_descendants_without_mock(root_only):
-            cmpt._radii.data = radii
+        if not root_only:
+            for cmpt in self.walk_same_cmpt_of_descendants_without_mock():
+                cmpt._radii.data = self._radii.copy()
 
         return self
 
