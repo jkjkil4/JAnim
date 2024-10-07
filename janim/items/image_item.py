@@ -138,19 +138,8 @@ class ImageItem(Points):
         '''
         通过空间坐标获得对应的像素颜色
         '''
-        hor = self.get_horizontal_vect()
-        ver = self.get_vertical_vect()
-        vert = point - self.get_orig()
-        normal = cross(hor, ver)
-
-        if not np.isclose(normal, OUT).all():
-            hor, ver, vert = (hor, ver, vert) @ z_to_vector(normal)
-
-        u = det(vert, ver) / det(hor, ver)
-        v = det(vert, hor) / det(ver, hor)
         width, height = self.image.get().size
-        x = math.floor(u * width)
-        y = math.floor(v * height)
+        x, y = self.point_to_pixel(point)
 
         if not clamp_to_edge:
             if x < 0 or x >= width or y < 0 or y >= height:
@@ -172,6 +161,25 @@ class ImageItem(Points):
         width, height = self.image.get().size
 
         return orig + hor * x / width + ver * y / height
+
+    def point_to_pixel(self, point: np.ndarray) -> tuple[int, int]:
+        '''
+        根据空间坐标得到像素坐标（向图像原点取整）
+        '''
+        hor = self.get_horizontal_vect()
+        ver = self.get_vertical_vect()
+        vert = point - self.get_orig()
+        normal = cross(hor, ver)
+
+        if not np.isclose(normal, OUT).all():
+            hor, ver, vert = (hor, ver, vert) @ z_to_vector(normal)
+
+        u = det(vert, ver) / det(hor, ver)
+        v = det(vert, hor) / det(ver, hor)
+        width, height = self.image.get().size
+        x = math.floor(u * width)
+        y = math.floor(v * height)
+        return x, y
 
     @classmethod
     def align_for_interpolate(
