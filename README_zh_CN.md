@@ -9,20 +9,54 @@
 </div>
 
 ## 介绍
-JAnim 是一个用于简易动画效果的库
+JAnim 是一个用于创建流畅动画的库
 
 受到 [manim](https://github.com/3b1b/manim) 的启发
+
+宣传视频：[https://www.bilibili.com/video/BV17s42137SJ/](https://www.bilibili.com/video/BV17s42137SJ/)
 
 <table>
   <tr>
     <td>
-      <img src="./assets/WriteExample.gif"/>
-    </td>
-    <td>
       <img src="./assets/TextExample.gif"/>
     </td>
     <td>
+      <img src="./assets/RiemmanIntegral.gif"/>
+    </td>
+    <td>
       <img src="./assets/NumberPlaneExample.gif"/>
+    </td>
+  </tr>
+</table>
+
+<!-- ffmpeg -i xxx.mp4 -filter:v "setpts=0.5*PTS" -r 15 -s 480x270 xxx.gif -->
+
+<table>
+  <tr>
+    <td rowspan="2">
+      <img src="./assets/RealSolution.gif" style="min-width: 96px; min-height: 54px; max-height: 200px;">
+    </td>
+    <td>
+      视频：<a href="https://www.bilibili.com/video/BV1hCYQe3EpG/?t=179">https://www.bilibili.com/video/BV1hCYQe3EpG/?t=179</a>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      源代码：<a href="https://github.com/jkjkil4/videos/blob/main/2024/VideoEncoding/code.py">https://github.com/jkjkil4/videos/blob/main/2024/VideoEncoding/code.py</a>
+    </td>
+  </tr>
+
+  <tr>
+    <td rowspan="2">
+      <img src="./assets/FragInterp.gif" style="min-width: 96px; min-height: 54px; max-height: 200px;">
+    </td>
+    <td>
+      视频：<a href="https://www.bilibili.com/video/BV1CkxuexEeQ/?p=3&t=118">https://www.bilibili.com/video/BV1CkxuexEeQ/?p=3&t=118</a>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      源代码：<a href="https://github.com/jkjkil4/videos/blob/main/2024/LearnOpenGL-8-MoreAttr/code.py">https://github.com/jkjkil4/videos/blob/main/2024/LearnOpenGL-8-MoreAttr/code.py</a>
     </td>
   </tr>
 </table>

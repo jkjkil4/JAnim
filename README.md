@@ -9,20 +9,54 @@
 </div>
 
 ## Introduction
-JAnim is a library for simple animation effects.
+JAnim is a library for creating smooth animations.
 
 Inspired by [manim](https://github.com/3b1b/manim).
+
+Promotional video: [https://www.bilibili.com/video/BV17s42137SJ/](https://www.bilibili.com/video/BV17s42137SJ/)
 
 <table>
   <tr>
     <td>
-      <img src="./assets/WriteExample.gif"/>
-    </td>
-    <td>
       <img src="./assets/TextExample.gif"/>
     </td>
     <td>
+      <img src="./assets/RiemmanIntegral.gif"/>
+    </td>
+    <td>
       <img src="./assets/NumberPlaneExample.gif"/>
+    </td>
+  </tr>
+</table>
+
+<!-- ffmpeg -i xxx.mp4 -filter:v "setpts=0.5*PTS" -r 15 -s 480x270 xxx.gif -->
+
+<table>
+  <tr>
+    <td rowspan="2">
+      <img src="./assets/RealSolution.gif" style="min-width: 96px; min-height: 54px; max-height: 200px;">
+    </td>
+    <td>
+      Video: <a href="https://www.bilibili.com/video/BV1hCYQe3EpG/?t=179">https://www.bilibili.com/video/BV1hCYQe3EpG/?t=179</a>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      Source code: <a href="https://github.com/jkjkil4/videos/blob/main/2024/VideoEncoding/code.py">https://github.com/jkjkil4/videos/blob/main/2024/VideoEncoding/code.py</a>
+    </td>
+  </tr>
+
+  <tr>
+    <td rowspan="2">
+      <img src="./assets/FragInterp.gif" style="min-width: 96px; min-height: 54px; max-height: 200px;">
+    </td>
+    <td>
+      Video: <a href="https://www.bilibili.com/video/BV1CkxuexEeQ/?p=3&t=118">https://www.bilibili.com/video/BV1CkxuexEeQ/?p=3&t=118</a>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      Source code: <a href="https://github.com/jkjkil4/videos/blob/main/2024/LearnOpenGL-8-MoreAttr/code.py">https://github.com/jkjkil4/videos/blob/main/2024/LearnOpenGL-8-MoreAttr/code.py</a>
     </td>
   </tr>
 </table>
