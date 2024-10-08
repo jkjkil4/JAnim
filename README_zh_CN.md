@@ -29,37 +29,31 @@ JAnim 是一个用于创建流畅动画的库
   </tr>
 </table>
 
-<!-- ffmpeg -i xxx.mp4 -filter:v "setpts=0.5*PTS" -r 15 -s 480x270 xxx.gif -->
+<!-- ffmpeg -i xxx.mp4 -filter:v "setpts=0.5*PTS" -r 15 -s 720x405 xxx.gif -->
 
-<table style="table-layout: fixed; width: 100%;">
-  <tr>
-    <td rowspan="2" style="width: 40%">
-      <img src="./assets/RealSolution.gif">
-    </td>
-    <td style="width: 60%">
-      视频：<a href="https://www.bilibili.com/video/BV1hCYQe3EpG/?t=179">https://www.bilibili.com/video/BV1hCYQe3EpG/?t=179</a>
-    </td>
-  </tr>
-  <tr>
-    <td style="width: 60%">
-      源代码：<a href="https://github.com/jkjkil4/videos/blob/main/2024/VideoEncoding/code.py">https://github.com/jkjkil4/videos/blob/main/2024/VideoEncoding/code.py</a>
-    </td>
-  </tr>
+___
 
-  <tr>
-    <td rowspan="2" style="width: 40%">
-      <img src="./assets/FragInterp.gif">
-    </td>
-    <td style="width: 60%">
-      视频：<a href="https://www.bilibili.com/video/BV1CkxuexEeQ/?p=3&t=118">https://www.bilibili.com/video/BV1CkxuexEeQ/?p=3&t=118</a>
-    </td>
-  </tr>
-  <tr>
-    <td style="width: 60%">
-      源代码：<a href="https://github.com/jkjkil4/videos/blob/main/2024/LearnOpenGL-8-MoreAttr/code.py">https://github.com/jkjkil4/videos/blob/main/2024/LearnOpenGL-8-MoreAttr/code.py</a>
-    </td>
-  </tr>
-</table>
+视频：[https://www.bilibili.com/video/BV1hCYQe3EpG/?t=179](https://www.bilibili.com/video/BV1hCYQe3EpG/?t=179)
+
+源代码：[https://github.com/jkjkil4/videos/blob/main/2024/VideoEncoding/code.py](https://github.com/jkjkil4/videos/blob/main/2024/VideoEncoding/code.py)
+
+<div align="center">
+
+![](./assets/RealSolution.gif)
+
+</div>
+
+___
+
+视频：[https://www.bilibili.com/video/BV1CkxuexEeQ/?p=3&t=118](https://www.bilibili.com/video/BV1CkxuexEeQ/?p=3&t=118)
+
+源代码：[https://github.com/jkjkil4/videos/blob/main/2024/LearnOpenGL-8-MoreAttr/code.py](https://github.com/jkjkil4/videos/blob/main/2024/LearnOpenGL-8-MoreAttr/code.py)
+
+<div align="center">
+
+![](./assets/FragInterp.gif)
+
+</div>
 
 ## 安装
 
