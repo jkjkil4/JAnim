@@ -5,6 +5,7 @@ from typing import Callable, Generator, Iterable, Self
 
 import numpy as np
 
+from janim.utils.paths import PathFunc, straight_path
 import janim.utils.refresh as refresh
 from janim.components.points import Cmpt_Points, PointsFn
 from janim.constants import NAN_POINT, ORIGIN, OUT, RIGHT, UP
@@ -194,6 +195,20 @@ class Cmpt_VPoints[ItemT](Cmpt_Points[ItemT], impl=True):
                 cmpt1_copy, cmpt2_copy = cmpt2_copy, cmpt1_copy
 
         return AlignedData(cmpt1_copy, cmpt2_copy, cmpt1_copy.copy())
+
+    def interpolate(
+        self,
+        cmpt1: Self,
+        cmpt2: Self,
+        alpha: float,
+        *,
+        path_func: PathFunc = straight_path
+    ) -> None:
+        super().interpolate(cmpt1, cmpt2, alpha, path_func=path_func)
+        if np.all(cmpt1.get_closepath_flags() == cmpt2.get_closepath_flags()):
+            data = self.refresh_data[self.get_closepath_flags.__name__]
+            data.is_required = False
+            data.stored = cmpt1.get_closepath_flags()
 
     @staticmethod
     def align_path(path1: np.ndarray, path2: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
@@ -565,6 +580,8 @@ class Cmpt_VPoints[ItemT](Cmpt_Points[ItemT], impl=True):
     def get_subpath_end_indices(self) -> list[int]:
         return list(self.walk_subpath_end_indices())
 
+    @Cmpt_Points.set.self_refresh()
+    @refresh.register
     def get_closepath_flags(self) -> np.ndarray:
         '''
         得到子路径是否闭合的标志，结果长度与点数量相同
