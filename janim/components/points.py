@@ -245,13 +245,13 @@ class Cmpt_Points[ItemT](Component[ItemT]):
             '''
             根据传入的 ``points`` 计算得到包围框的 左下、中心、右上 三个点
             '''
-            points = np.array(points)
+            points = np.asarray(points)
 
             if len(points) == 0:
                 return np.zeros((3, 3))
 
-            mins = np.nanmin(points, 0)
-            maxs = np.nanmax(points, 0)
+            mins = np.nanmin(points, axis=0)
+            maxs = np.nanmax(points, axis=0)
             mids = (mins + maxs) / 2
 
             return np.array([mins, mids, maxs])

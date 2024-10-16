@@ -48,18 +48,19 @@ class CameraInfo:
         return self.horizontal_dist, self.vertical_dist
 
     def map_points(self, points: VectArray) -> np.ndarray:
-        aligned = np.hstack([
-            points,
-            np.full((len(points), 1), 1)
-        ])
+        n = len(points)
+        aligned = np.empty((n, 4))
+        aligned[:, :3] = points
+        aligned[:, -1] = 1
         mapped = aligned @ self.proj_view_matrix.T
         return mapped[:, :2] / mapped[:, 3].reshape((len(mapped), 1))
 
     def map_fixed_in_frame_points(self, points: VectArray) -> np.ndarray:
-        aligned = np.hstack([
-            points - [0, 0, self.fixed_distance_from_plane],
-            np.full((len(points), 1), 1)
-        ])
+        n = len(points)
+        aligned = np.empty((n, 4))
+        aligned[:, :3] = points
+        aligned[:, :3] -= [0, 0, self.fixed_distance_from_plane]
+        aligned[:, -1] = 1
         mapped = aligned @ self.proj_matrix.T
         return mapped[:, :2] / mapped[:, 3].reshape((len(mapped), 1))
 
