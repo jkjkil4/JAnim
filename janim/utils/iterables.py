@@ -191,6 +191,8 @@ def resize_with_interpolation(nparray: np.ndarray, length: int) -> np.ndarray:
         return nparray
     if length == 0:
         return np.zeros((0, *nparray.shape[1:]))
+    if len(nparray) == 1:
+        return np.repeat(nparray, length, axis=0)
     cont_indices = np.linspace(0, len(nparray) - 1, length, dtype=nparray.dtype)
     lh_s = cont_indices.astype(int)
     rh_s = np.ceil(cont_indices).astype(int)
