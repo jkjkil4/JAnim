@@ -30,7 +30,8 @@ class Cmpt_Rgbas[ItemT](Component[ItemT]):
         return cmpt_copy
 
     def become(self, other: Cmpt_Rgbas) -> Self:
-        self.set(other.get())
+        if not self.not_changed(other):
+            self._rgbas = other._rgbas.copy()
         return self
 
     def not_changed(self, other: Cmpt_Rgbas) -> bool:

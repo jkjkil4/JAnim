@@ -54,8 +54,9 @@ class Cmpt_Points[ItemT](Component[ItemT]):
         return cmpt_copy
 
     def become(self, other: Cmpt_Points) -> Self:
-        self._points = other._points.copy()
-        Cmpt_Points.set.emit(self)
+        if not self.not_changed(other):
+            self._points = other._points.copy()
+            Cmpt_Points.set.emit(self)
         return self
 
     def not_changed(self, other: Cmpt_Points) -> bool:

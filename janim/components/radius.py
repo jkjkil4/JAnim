@@ -34,7 +34,8 @@ class Cmpt_Radius[ItemT](Component[ItemT]):
         return cmpt_copy
 
     def become(self, other: Cmpt_Radius) -> Self:
-        self.set(other.get())
+        if not self.not_changed(other):
+            self._radii = other._radii.copy()
         return self
 
     def not_changed(self, other: Cmpt_Radius) -> bool:
