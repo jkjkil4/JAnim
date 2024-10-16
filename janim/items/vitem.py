@@ -141,10 +141,21 @@ class VItem(Points):
 
         aligned = super().align_for_interpolate(item1, item2)
 
-        for item in (aligned.data1, aligned.data2):
-            count = (item.points.count() + 1) // 2
-            item.color.resize(count)
-            item.radius.resize(count)
+        count = (aligned.data1.points.count() + 1) // 2
+        for cmpt_name, array_name in (
+            ('stroke', '_rgbas'),
+            ('fill', '_rgbas'),
+            ('radius', '_radii'),
+        ):
+            cmpt1 = aligned.data1.components[cmpt_name]
+            cmpt2 = aligned.data2.components[cmpt_name]
+            if cmpt1.not_changed(cmpt2):
+                cmpt1.resize(count)
+                # 使用这种方式保持 not_changed 的判断，以优化性能
+                setattr(cmpt2, array_name, getattr(cmpt1, array_name).copy())
+            else:
+                cmpt1.resize(count)
+                cmpt2.resize(count)
 
         if subpaths1_count != subpaths2_count:
             diff = abs(subpaths1_count - subpaths2_count)
