@@ -142,6 +142,9 @@ class TransformInSegments(AnimGroup):
     '''
     依照切片列表进行 ``src`` 与 ``target`` 之间的变换
     '''
+
+    label_color = C_LABEL_ANIM_STAY
+
     def __init__(
         self,
         src: Item,
@@ -347,6 +350,15 @@ class FadeTransform(AnimGroup):
 
 
 class TransformMatchingShapes(AnimGroup):
+    '''
+    匹配形状进行变换
+
+    - `mismatch` 表示对于不匹配的形状的处理
+    - 注：所有传入该动画类的额外参数都会被传入 `mismatch` 的方法中
+    '''
+
+    label_color = C_LABEL_ANIM_STAY
+
     def __init__(
         self,
         src: Item,
@@ -357,12 +369,6 @@ class TransformMatchingShapes(AnimGroup):
         lag_ratio: float = 0,
         **kwargs
     ):
-        '''
-        匹配形状进行变换
-
-        - `mismatch` 表示对于不匹配的形状的处理
-        - 注：所有传入该动画类的额外参数都会被传入 `mismatch` 的方法中
-        '''
         src_mismatch_method, target_mismatch_method = mismatch
 
         def self_and_descendant_with_points(item: Item) -> list[VItem]:

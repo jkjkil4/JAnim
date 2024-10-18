@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import inspect
-from typing import Callable, Iterable, Self
+from typing import Callable, Iterable, Self, overload
 
 import numpy as np
 
