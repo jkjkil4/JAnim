@@ -275,7 +275,9 @@ class AnimViewer(QMainWindow):
         self.setGeometry(geometry)
 
     def update_completer(self, completions: Sequence[str]) -> None:
-        self.name_edit.setCompleter(QCompleter(completions))
+        completer = QCompleter(completions)
+        completer.setFilterMode(Qt.MatchFlag.MatchContains)
+        self.name_edit.setCompleter(completer)
 
     def showEvent(self, event: QShowEvent) -> None:
         super().showEvent(event)
