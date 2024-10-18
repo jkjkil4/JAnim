@@ -76,6 +76,10 @@ class TimelineView(QWidget):
         self.hover_timer.setSingleShot(True)
         self.hover_timer.timeout.connect(self.on_hover_timer_timeout)
 
+        self.drag_timer = QTimer(self)
+        self.drag_timer.setSingleShot(True)
+        self.drag_timer.timeout.connect(self.on_drag_timer_timeout)
+
         self.tooltip: QWidget | None = None
 
         self.key_timer = QTimer(self)
@@ -397,6 +401,15 @@ class TimelineView(QWidget):
         if self.rect().contains(pos):
             self.hover_at(pos)
 
+    def on_drag_timer_timeout(self) -> None:
+        minimum = self.play_space
+        maximum = self.width() - self.play_space
+
+        x = self.mapFromGlobal(self.cursor().pos()).x()
+
+        if x < minimum or x > maximum:
+            self.set_progress_by_x(x)
+
     # endregion
 
     def on_key_timer_timeout(self) -> None:
@@ -478,9 +491,18 @@ class TimelineView(QWidget):
         width = range.duration / self.range.duration * self.width()
         return TimelineView.PixelRange(left, width)
 
+    def set_progress_by_x(self, x: float) -> None:
+        self.set_progress(self.pixel_to_progress(x))
+
+        minimum = self.play_space
+        maximum = self.width() - self.play_space
+
+        if x < minimum or x > maximum:
+            self.drag_timer.start(30)
+
     def mousePressEvent(self, event: QMouseEvent) -> None:
         if event.button() == Qt.MouseButton.LeftButton:
-            self.set_progress(self.pixel_to_progress(event.position().x()))
+            self.set_progress_by_x(event.position().x())
             self.dragged.emit()
 
     def mouseMoveEvent(self, event: QMouseEvent) -> None:
@@ -488,8 +510,12 @@ class TimelineView(QWidget):
         self.hide_tooltip()
 
         if event.buttons() & Qt.MouseButton.LeftButton:
-            self.set_progress(self.pixel_to_progress(event.position().x()))
+            self.set_progress_by_x(event.position().x())
             self.dragged.emit()
+
+    def mouseReleaseEvent(self, event: QMouseEvent) -> None:
+        if event.button() == Qt.MouseButton.LeftButton:
+            self.drag_timer.stop()
 
     def leaveEvent(self, _) -> None:
         self.hide_tooltip()
