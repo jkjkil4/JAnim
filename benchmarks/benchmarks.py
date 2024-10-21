@@ -7,8 +7,6 @@ from janim.imports import Config, Timeline
 def get_all_timelines_from_module(module) -> list[type[Timeline]]:
     '''
     从指定的 ``module`` 中得到所有可用的 :class:`~.Timeline`
-
-    会缓存结果，如果 ``module`` 的内容有更新可能需要使用 ``get_all_timelines_from_module.cache_clear()`` 来清空缓存
     '''
     classes = [
         value
