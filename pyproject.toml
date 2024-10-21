@@ -46,7 +46,7 @@ doc = [
 
 [tool.flit.sdist]
 exclude = [
-    ".vscode/", ".github/", "assets/", "doc/", "test/",
+    ".asv/", ".vscode/", ".github/", "assets/", "doc/", "benchmarks/", "test/",
     ".pypirc",
     ".coveragerc",
     "janim/gui/*.ui",
