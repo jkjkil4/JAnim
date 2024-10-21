@@ -1,3 +1,3 @@
-'''a library for simple animation effects'''
+'''A library for creating smooth animations'''
 
 __version__ = '1.9.1'
