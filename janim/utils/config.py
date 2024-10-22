@@ -112,6 +112,8 @@ class Config(metaclass=_ConfigMeta):
     temp_dir: str = None
     asset_dir: str | list[str] = None
 
+    client_search_port: int = None
+
     def __enter__(self) -> Self:
         lst = config_ctx_var.get()
         self.token = config_ctx_var.set([*lst, self])
@@ -152,7 +154,9 @@ default_config = Config(
     ffprobe_bin='ffprobe',
     output_dir='videos',
     temp_dir=os.path.join(tempfile.gettempdir(), 'janim'),
-    asset_dir=''
+    asset_dir='',
+
+    client_search_port=40565
 )
 '''
 默认配置

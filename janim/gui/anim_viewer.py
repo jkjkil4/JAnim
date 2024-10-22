@@ -70,7 +70,7 @@ class AnimViewer(QMainWindow):
         self.setup_ui()
         self.setup_play_timer()
         if interact:
-            self.setup_socket()
+            self.setup_socket(anim.cfg.client_search_port)
         else:
             self.socket = None
         self.audio_player = None
@@ -252,8 +252,9 @@ class AnimViewer(QMainWindow):
         else:
             screen = screens[0]
             log.warning(
-                _('wnd_monitor has invaild value {wnd_monitor}, use 0~{maxi} instead.')
-                .format(wnd_monitor=window_monitor, maxi=len(screens) - 1)
+                _('wnd_monitor has invalid value {wnd_monitor}, use {range} instead.')
+                .format(wnd_monitor=window_monitor,
+                        range=('0' if len(screens) == 1 else f'0~{len(screens) - 1}'))
             )
         geometry = screen.availableGeometry()
 
@@ -571,13 +572,37 @@ class AnimViewer(QMainWindow):
 
     # region network
 
-    def setup_socket(self) -> None:
+    def setup_socket(self, client_search_port: int) -> None:
         from PySide6.QtNetwork import QHostAddress, QUdpSocket
 
+        ret = False
         self.shared_socket = QUdpSocket()
-        ret = self.shared_socket.bind(40565, QUdpSocket.BindFlag.ShareAddress | QUdpSocket.BindFlag.ReuseAddressHint)
-        log.debug(f'shared_socket.bind(40565, ShareAddress | ReuseAddressHint) = {ret}')
-        self.shared_socket.readyRead.connect(self.on_shared_ready_read)
+        if 1024 <= client_search_port <= 65535:
+            ret = self.shared_socket.bind(client_search_port,
+                                          QUdpSocket.BindFlag.ShareAddress | QUdpSocket.BindFlag.ReuseAddressHint)
+            if ret:
+                self.shared_socket.readyRead.connect(self.on_shared_ready_read)
+                log.debug(
+                    _('Searching port has been opened at {port}')
+                    .format(port=client_search_port)
+                )
+            else:
+                log.warning(
+                    _('Failed to open searching port at {port}')
+                    .format(port=client_search_port)
+                )
+        else:
+            log.warning(
+                _('Searching port {port} is invalid, '
+                  'please use a number between 1024 and 65535 instead')
+                .format(port=client_search_port)
+            )
+
+        if not ret:
+            log.warning(_('Interactive development is disabled '
+                          'because the searching port is not established.'))
+            self.socket = None
+            return
 
         self.socket = QUdpSocket()
         self.socket.bind()

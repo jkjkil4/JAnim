@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-04 14:06+0800\n"
+"POT-Creation-Date: 2024-10-22 11:50+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -65,29 +65,49 @@ msgid "wnd_pos has wrong argument {wnd_pos}."
 msgstr ""
 
 #: janim\gui\anim_viewer.py:255
-msgid "wnd_monitor has invaild value {wnd_monitor}, use 0~{maxi} instead."
+msgid "wnd_monitor has invalid value {wnd_monitor}, use {range} instead."
 msgstr ""
 
-#: janim\gui\anim_viewer.py:370
+#: janim\gui\anim_viewer.py:373
 msgid "No timeline named \"{name}\" in \"{file}\""
 msgstr ""
 
-#: janim\gui\anim_viewer.py:380
+#: janim\gui\anim_viewer.py:383
 msgid "Failed to rebuild"
 msgstr ""
 
-#: janim\gui\anim_viewer.py:554 janim\gui\anim_viewer.py:563
+#: janim\gui\anim_viewer.py:557 janim\gui\anim_viewer.py:566
 msgid "Note"
 msgstr ""
 
-#: janim\gui\anim_viewer.py:555
+#: janim\gui\anim_viewer.py:558
 msgid "Output will start shortly. Please check the console for information."
 msgstr ""
 
-#: janim\gui\anim_viewer.py:564
+#: janim\gui\anim_viewer.py:567
 msgid "Output to {file_path} has been completed."
 msgstr ""
 
-#: janim\gui\anim_viewer.py:588
+#: janim\gui\anim_viewer.py:586
+msgid "Searching port has been opened at {port}"
+msgstr ""
+
+#: janim\gui\anim_viewer.py:591
+msgid "Failed to open searching port at {port}"
+msgstr ""
+
+#: janim\gui\anim_viewer.py:596
+msgid ""
+"Searching port {port} is invalid, please use a number between 1024 and 65535 "
+"instead"
+msgstr ""
+
+#: janim\gui\anim_viewer.py:602
+msgid ""
+"Interactive development is disabled because the searching port is not "
+"established."
+msgstr ""
+
+#: janim\gui\anim_viewer.py:615
 msgid "Interactive port has been opened at {port}"
 msgstr ""

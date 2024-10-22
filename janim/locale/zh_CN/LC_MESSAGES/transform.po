@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-04 14:06+0800\n"
+"POT-Creation-Date: 2024-10-22 11:07+0800\n"
 "PO-Revision-Date: 2024-06-05 18:46+0800\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Language: zh_CN\n"
 "X-Generator: Poedit 3.4.2\n"
 
-#: janim\anims\transform.py:108
+#: janim\anims\transform.py:91
 msgid ""
 "The child items of {spec1} and {spec2} cannot be aligned because their child "
 "items must either both be empty or both exist. However, their child item "
@@ -26,10 +26,10 @@ msgstr ""
 "{spec1} 和 {spec2} 的子物件无法对齐，因为二者的子物件必须同时为空或同时存在，"
 "但是二者的子物件数量分别是 {len1} 和 {len2}"
 
-#: janim\anims\transform.py:266
+#: janim\anims\transform.py:252
 msgid "There is no callable method named {name} in {cmpt}"
 msgstr "{cmpt} 中没有叫作 {name} 的可调用方法"
 
-#: janim\anims\transform.py:292
+#: janim\anims\transform.py:278
 msgid "{item} has no component or callable method named {name}"
 msgstr "{item} 没有叫作 {name} 的组件或者可调用的方法"

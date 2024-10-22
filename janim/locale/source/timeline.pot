@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-04 14:06+0800\n"
+"POT-Creation-Date: 2024-10-22 11:49+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -20,20 +20,20 @@ msgstr ""
 msgid "{name} cannot be used outside of Timeline.construct"
 msgstr ""
 
-#: janim\anims\timeline.py:206
+#: janim\anims\timeline.py:207
 msgid "Building \"{name}\""
 msgstr ""
 
-#: janim\anims\timeline.py:220
+#: janim\anims\timeline.py:221
 msgid ""
 "\"{name}\" did not produce a duration after construction, automatically "
 "generated a duration of {duration}s"
 msgstr ""
 
-#: janim\anims\timeline.py:239
+#: janim\anims\timeline.py:240
 msgid "Finished building \"{name}\" in {elapsed:.2f} s"
 msgstr ""
 
-#: janim\anims\timeline.py:263
+#: janim\anims\timeline.py:270
 msgid "dt must be greater than 0"
 msgstr ""

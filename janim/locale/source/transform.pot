@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-04 14:06+0800\n"
+"POT-Creation-Date: 2024-10-22 11:49+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,17 +16,17 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: janim\anims\transform.py:108
+#: janim\anims\transform.py:91
 msgid ""
 "The child items of {spec1} and {spec2} cannot be aligned because their child "
 "items must either both be empty or both exist. However, their child item "
 "counts are {len1} and {len2}, respectively."
 msgstr ""
 
-#: janim\anims\transform.py:266
+#: janim\anims\transform.py:252
 msgid "There is no callable method named {name} in {cmpt}"
 msgstr ""
 
-#: janim\anims\transform.py:292
+#: janim\anims\transform.py:278
 msgid "{item} has no component or callable method named {name}"
 msgstr ""
