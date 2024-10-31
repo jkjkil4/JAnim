@@ -11,3 +11,4 @@ __pycache__
 /env*
 /result.json
 /result2.json
+/test/__test_tempdir__

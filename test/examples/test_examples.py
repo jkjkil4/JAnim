@@ -49,7 +49,8 @@ def load_tests(loader, standard_tests, pattern) -> unittest.TestSuite:
 
             with Config(pixel_width=WIDTH,
                         pixel_height=HEIGHT,
-                        fps=5):
+                        fps=5,
+                        temp_dir='test/__test_tempdir__'):
                 anim = self.timeline_cls().build(quiet=True)
                 VideoWriter.writes(anim, temp_file, quiet=True)
 
@@ -57,15 +58,18 @@ def load_tests(loader, standard_tests, pattern) -> unittest.TestSuite:
             ref_frames = self.get_frames(self.ref_path)
 
             max_errors = 0
+            frame_number = -1
 
-            for buf1, buf2 in zip(render_frames, ref_frames, strict=True):
+            for i, (buf1, buf2) in enumerate(zip(render_frames, ref_frames, strict=True)):
                 render_data = np.frombuffer(buf1, dtype=np.uint8).astype(np.int16)
                 ref_data = np.frombuffer(buf2, dtype=np.uint8).astype(np.int16)
                 delta = np.abs(render_data - ref_data)
                 errors = delta.sum()
-                max_errors = max(max_errors, errors)
+                if errors > max_errors:
+                    max_errors = errors
+                    frame_number = i
 
-            self.assertEqual(max_errors, 0, f'max_errors: {max_errors}')
+            self.assertEqual(max_errors, 0, f'max_errors: {max_errors}, t: {frame_number / 5}')
 
         @staticmethod
         def get_frames(video_path: str) -> Generator[bytes, None, None]:
