@@ -10,7 +10,7 @@ from PySide6.QtGui import (QBrush, QColor, QKeyEvent, QMouseEvent, QPainter,
 from PySide6.QtWidgets import QLabel, QVBoxLayout, QWidget
 
 from janim.anims.animation import Animation, TimeRange
-from janim.anims.timeline import Timeline, TimelineAnim
+from janim.anims.timeline import SEGMENT_DURATION, Timeline, TimelineAnim
 from janim.locale.i18n import get_local_strings
 from janim.utils.bezier import interpolate
 from janim.utils.simple_functions import clip
@@ -38,6 +38,7 @@ class TimelineView(QWidget):
         '''
         anim: Animation
         row: int
+        segment_left: int  # 为了优化性能使用的
 
     @dataclass
     class PixelRange:
@@ -107,7 +108,8 @@ class TimelineView(QWidget):
         '''
         计算各个动画区段应当被渲染到第几行，以叠放式进行显示
         '''
-        self.labels_info: list[TimelineView.LabelInfo] = []
+        segment_count = math.ceil(self.anim.global_range.duration / SEGMENT_DURATION)
+        self.labels_info_segments: list[list[TimelineView.LabelInfo]] = [[] for _ in range(segment_count)]
         self.max_row = 0
 
         self.flatten = self.anim.user_anim.flatten()[1:]
@@ -119,7 +121,13 @@ class TimelineView(QWidget):
             while stack and stack[-1].global_range.end <= anim.global_range.at + 1e-5:
                 stack.pop()
 
-            self.labels_info.append(TimelineView.LabelInfo(anim, len(stack)))
+            left = math.floor(anim.global_range.at / SEGMENT_DURATION)
+            right = math.ceil(anim.global_range.end / SEGMENT_DURATION)
+
+            info = TimelineView.LabelInfo(anim, len(stack), left)
+            for idx in range(left, right):
+                self.labels_info_segments[idx].append(info)
+
             self.max_row = max(self.max_row, len(stack))
             stack.append(anim)
 
@@ -142,13 +150,18 @@ class TimelineView(QWidget):
                 self.hover_at_audio(pos, info)
                 return
 
-        for info in self.labels_info:
+        idx = math.floor(self.pixel_to_time(pos.x()) / SEGMENT_DURATION)
+        if idx >= len(self.labels_info_segments):
+            return
+
+        for info in self.labels_info_segments[idx]:
             range = self.time_range_to_pixel_range(info.anim.global_range)
             if QRectF(range.left,
                       bottom_rect.y() + self.label_y(info.row),
                       range.width,
                       self.label_height).contains(pos):
                 self.hover_at_anim(pos, info.anim)
+                return
 
     def hover_at_audio(self, pos: QPoint, info: Timeline.PlayAudioInfo) -> None:
         msg_lst = [
@@ -647,18 +660,25 @@ class TimelineView(QWidget):
         bottom_rect = self.bottom_rect
         p.setClipRect(bottom_rect)
 
-        for info in self.labels_info:
-            if info.anim.global_range.end <= self.range.at or info.anim.global_range.at >= self.range.end:
-                continue
+        range_at = self.range.at
+        range_end = self.range.end
 
-            self.paint_label(p,
-                             info.anim.global_range,
-                             bottom_rect.y() + self.label_y(info.row),
-                             self.label_height,
-                             info.anim.__class__.__name__,
-                             Qt.PenStyle.NoPen,
-                             QColor(*info.anim.label_color).lighter(),
-                             True)
+        segment_left = math.floor(range_at / SEGMENT_DURATION)
+        segment_right = math.ceil(range_end / SEGMENT_DURATION)
+        for idx in range(segment_left, segment_right):
+            labels_info = self.labels_info_segments[idx]
+            for info in labels_info:
+                if info.segment_left == idx or (info.segment_left < segment_left and idx == segment_left):
+                    if info.anim.global_range.end <= range_at or info.anim.global_range.at >= range_end:
+                        continue
+                    self.paint_label(p,
+                                     info.anim.global_range,
+                                     bottom_rect.y() + self.label_y(info.row),
+                                     self.label_height,
+                                     info.anim.__class__.__name__,
+                                     Qt.PenStyle.NoPen,
+                                     QColor(*info.anim.label_color).lighter(),
+                                     True)
 
         p.setClipping(False)
 

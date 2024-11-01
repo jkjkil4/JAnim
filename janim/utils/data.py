@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from bisect import bisect_right
 from contextvars import ContextVar
 from dataclasses import dataclass
 from enum import IntFlag
@@ -126,11 +127,11 @@ class History[T]:
         if not self.lst:
             raise RecordNotFoundError()
 
-        for timed_data in reversed(self.lst):
-            if timed_data.time <= t:
-                return timed_data.data
+        index = bisect_right(self.lst, t, key=lambda x: x.time)
+        index -= 1
 
-        assert False    # pragma: no cover
+        assert index >= 0
+        return self.lst[index].data
 
     def get_at_right(self, t: float) -> T:
         '''

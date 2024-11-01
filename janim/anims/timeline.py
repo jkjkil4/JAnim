@@ -805,6 +805,38 @@ class SourceTimeline(Timeline):     # pragma: no cover
         return super().build(quiet=quiet)
 
 
+SEGMENT_DURATION = 10
+
+
+class _LongOptAnimGroup(AnimGroup):
+    '''
+    对含有较多物件、持续时间长的情况进行了优化的 :class:`~.AnimGroup`
+    '''
+    def init_segments(self) -> None:
+        left = math.floor(self.global_range.at / SEGMENT_DURATION)
+        right = math.ceil(self.global_range.end / SEGMENT_DURATION)
+        count = right - left
+
+        self.segment_left = left
+        self.segments: list[list[Animation]] = [[] for _ in range(count)]
+
+        for anim in self.anims:
+            anim_left = math.floor(anim.global_range.at / SEGMENT_DURATION)
+            anim_right = math.ceil(anim.global_range.end / SEGMENT_DURATION)
+
+            for idx in range(anim_left - left, anim_right - left):
+                self.segments[idx].append(anim)
+
+    def anim_on_alpha(self, alpha: float) -> None:
+        global_t = self.global_t_ctx.get()
+
+        idx = math.floor(global_t / SEGMENT_DURATION)
+        for anim in self.segments[idx]:
+            anim_t = self.get_anim_t(alpha, anim)
+            if anim.is_visible(global_t):
+                anim.anim_on(anim_t)
+
+
 class TimelineAnim(AnimGroup):
     '''
     运行 :meth:`Timeline.build` 后返回的动画组
@@ -814,8 +846,8 @@ class TimelineAnim(AnimGroup):
     - ``self.user_anim`` 是显式使用了 :meth:`Timeline.prepare` 或 :meth:`Timeline.play` 而产生的
     '''
     def __init__(self, timeline: Timeline, **kwargs):
-        self.display_anim = AnimGroup(*timeline.display_anims)
-        self.user_anim = AnimGroup(*timeline.anims)
+        self.display_anim = _LongOptAnimGroup(*timeline.display_anims)
+        self.user_anim = _LongOptAnimGroup(*timeline.anims)
         super().__init__(self.display_anim, self.user_anim, **kwargs)
         self.maxt = self.local_range.duration = timeline.current_time
 
@@ -823,7 +855,18 @@ class TimelineAnim(AnimGroup):
         self.user_anim.global_range = self.user_anim.local_range
         self.global_range = self.local_range
 
-        self.flattened = self.flatten()
+        for group in (self.display_anim, self.user_anim):
+            group.init_segments()
+
+        # 按照每 10s 切分区段
+        segment_count = math.ceil(self.global_range.duration / SEGMENT_DURATION)
+        self.segments: list[list[Animation]] = [[] for _ in range(segment_count)]
+        for anim in self.flatten():
+            left = math.floor(anim.global_range.at / SEGMENT_DURATION)
+            right = math.ceil(anim.global_range.end / SEGMENT_DURATION)
+            for idx in range(left, right):
+                self.segments[idx].append(anim)
+
         self._time: float | None = None
 
     @property
@@ -870,11 +913,11 @@ class TimelineAnim(AnimGroup):
                 with ContextSetter(Renderer.data_ctx, RenderData(ctx=ctx,
                                                                  camera_info=camera_info,
                                                                  anti_alias_radius=anti_alias_radius)):
-                    # 使用 heapq 以深度为序调用 RenderCall
+                    idx = math.floor(self._time / SEGMENT_DURATION)
                     render_calls = heapq.merge(
                         *[
                             anim.render_call_list
-                            for anim in self.flattened
+                            for anim in self.segments[idx]
                             if anim.render_call_list and anim.is_visible(self._time)
                         ],
                         key=lambda x: x.depth,
