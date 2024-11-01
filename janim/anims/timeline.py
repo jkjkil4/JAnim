@@ -914,6 +914,7 @@ class TimelineAnim(AnimGroup):
                                                                  camera_info=camera_info,
                                                                  anti_alias_radius=anti_alias_radius)):
                     idx = math.floor(self._time / SEGMENT_DURATION)
+                    # 使用 heapq 以深度为序调用 RenderCall
                     render_calls = heapq.merge(
                         *[
                             anim.render_call_list
