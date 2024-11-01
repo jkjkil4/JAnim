@@ -108,7 +108,7 @@ class TimelineView(QWidget):
         '''
         计算各个动画区段应当被渲染到第几行，以叠放式进行显示
         '''
-        segment_count = math.ceil(self.anim.global_range.duration / SEGMENT_DURATION)
+        segment_count = math.ceil(self.anim.global_range.duration / SEGMENT_DURATION) + 1
         self.labels_info_segments: list[list[TimelineView.LabelInfo]] = [[] for _ in range(segment_count)]
         self.max_row = 0
 
@@ -665,7 +665,7 @@ class TimelineView(QWidget):
 
         segment_left = math.floor(range_at / SEGMENT_DURATION)
         segment_right = math.ceil(range_end / SEGMENT_DURATION)
-        for idx in range(segment_left, segment_right):
+        for idx in range(segment_left, segment_right, len(self.labels_info_segments))):
             labels_info = self.labels_info_segments[idx]
             for info in labels_info:
                 if info.segment_left == idx or (info.segment_left < segment_left and idx == segment_left):

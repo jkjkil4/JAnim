@@ -815,7 +815,7 @@ class _LongOptAnimGroup(AnimGroup):
     def init_segments(self) -> None:
         left = math.floor(self.global_range.at / SEGMENT_DURATION)
         right = math.ceil(self.global_range.end / SEGMENT_DURATION)
-        count = right - left
+        count = right - left + 1
 
         self.segment_left = left
         self.segments: list[list[Animation]] = [[] for _ in range(count)]
@@ -859,7 +859,7 @@ class TimelineAnim(AnimGroup):
             group.init_segments()
 
         # 按照每 10s 切分区段
-        segment_count = math.ceil(self.global_range.duration / SEGMENT_DURATION)
+        segment_count = math.ceil(self.global_range.duration / SEGMENT_DURATION) + 1
         self.segments: list[list[Animation]] = [[] for _ in range(segment_count)]
         for anim in self.flatten():
             left = math.floor(anim.global_range.at / SEGMENT_DURATION)
