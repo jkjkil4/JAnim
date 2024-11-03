@@ -665,7 +665,7 @@ class TimelineView(QWidget):
 
         segment_left = math.floor(range_at / SEGMENT_DURATION)
         segment_right = math.ceil(range_end / SEGMENT_DURATION)
-        for idx in range(segment_left, segment_right, len(self.labels_info_segments))):
+        for idx in range(segment_left, min(segment_right, len(self.labels_info_segments))):
             labels_info = self.labels_info_segments[idx]
             for info in labels_info:
                 if info.segment_left == idx or (info.segment_left < segment_left and idx == segment_left):
