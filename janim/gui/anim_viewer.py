@@ -556,12 +556,19 @@ class AnimViewer(QMainWindow):
         QMessageBox.information(self,
                                 _('Note'),
                                 _('Output will start shortly. Please check the console for information.'))
+        self.hide()
+        QApplication.processEvents()
+        ret = False
         try:
             VideoWriter.writes(self.anim.timeline.__class__().build(), file_path)
         except Exception as e:
             if not isinstance(e, ExitException):
                 traceback.print_exc()
         else:
+            ret = True
+
+        self.show()
+        if ret:
             QMessageBox.information(self,
                                     _('Note'),
                                     _('Output to {file_path} has been completed.').format(file_path=file_path))
