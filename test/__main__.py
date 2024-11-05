@@ -18,7 +18,10 @@ def main() -> None:
     test_runner = unittest.TextTestRunner(verbosity=2, buffer=True, failfast=args.failfast)
     test_runner.run(test_suite)
 
-    shutil.rmtree('test/__test_tempdir__')
+    try:
+        shutil.rmtree('test/__test_tempdir__')
+    except FileNotFoundError:
+        pass
 
 
 if __name__ == '__main__':
