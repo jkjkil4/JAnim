@@ -21,11 +21,11 @@ class SignalTest(unittest.TestCase):
                 self.msg = msg
                 User.set_msg.emit(self)
 
-            @set_msg.self_slot()
+            @set_msg.self_slot
             def notifier(self) -> None:
                 self.notifier_counter += 1
 
-            @set_msg.self_refresh()
+            @set_msg.self_refresh
             @refresh.register
             def get_text(self) -> str:
                 return f'[{self.name}] {self.msg}'
@@ -48,22 +48,22 @@ class SignalTest(unittest.TestCase):
                 A.test.emit(self)
                 A.test.emit(self, key='special')
 
-            @test.self_slot()
+            @test.self_slot
             def fnA(self) -> None:
                 called_list.append(self.fnA)
 
         class B(A):
-            @A.test.self_slot()
+            @A.test.self_slot
             def fnB(self) -> None:
                 called_list.append(self.fnB)
 
         class C(A):
-            @A.test.self_slot()
+            @A.test.self_slot
             def fnC(self) -> None:
                 called_list.append(self.fnC)
 
         class D(C, B):  # test mro()
-            @A.test.self_slot()
+            @A.test.self_slot
             def fnD1(self) -> None:
                 called_list.append(self.fnD1)
 

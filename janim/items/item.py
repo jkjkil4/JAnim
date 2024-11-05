@@ -121,13 +121,13 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         from janim.anims.timeline import Timeline
         self.timeline = Timeline.get_context(raise_exc=False)
 
-        self._init_components()
-
         self._astype: type[Item] | None = None
         self._astype_mock_cmpt: dict[str, Component] = {}
 
         self._fix_in_frame = False
         self.renderer: Renderer | None = None
+
+        self._init_components()
 
         if children is not None:
             self.add(*children)

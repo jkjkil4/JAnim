@@ -538,7 +538,7 @@ class Cmpt_VPoints[ItemT](Cmpt_Points[ItemT], impl=True):
         ])
 
     @property
-    @Cmpt_Points.set.self_refresh()
+    @Cmpt_Points.set.self_refresh
     @refresh.register
     def area_vector(self) -> np.ndarray:
         '''
@@ -547,7 +547,7 @@ class Cmpt_VPoints[ItemT](Cmpt_Points[ItemT], impl=True):
         return self.get_area_vector_from_points(self.get())
 
     @property
-    @Cmpt_Points.set.self_refresh()
+    @Cmpt_Points.set.self_refresh
     @refresh.register
     def unit_normal(self) -> np.ndarray:
         if self.count() < 3:
@@ -580,7 +580,7 @@ class Cmpt_VPoints[ItemT](Cmpt_Points[ItemT], impl=True):
     def get_subpath_end_indices(self) -> list[int]:
         return list(self.walk_subpath_end_indices())
 
-    @Cmpt_Points.set.self_refresh()
+    @Cmpt_Points.set.self_refresh
     @refresh.register
     def get_closepath_flags(self) -> np.ndarray:
         '''
@@ -630,7 +630,7 @@ class Cmpt_VPoints[ItemT](Cmpt_Points[ItemT], impl=True):
     # region identity
 
     @property
-    @Cmpt_Points.set.self_refresh()
+    @Cmpt_Points.set.self_refresh
     @refresh.register
     def identity(self) -> tuple[int, np.ndarray]:
         points = self.get()[:-1]
