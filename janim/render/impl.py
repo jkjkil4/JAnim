@@ -106,18 +106,20 @@ class VItemRenderer(Renderer):
         self.prev_stroke = None
         self.prev_fill = None
 
+        self.points_vec4buffer = np.empty((0, 4), dtype=np.float32)
+
     def render(self, item: VItem) -> None:
-        if item.points.curves_count() == 0:
+        new_points = item.points._points.data
+
+        if len(new_points) < 3:
             return
         render_data = self.data_ctx.get()
 
         new_camera_info = render_data.camera_info
-
         new_fix_in_frame = item._fix_in_frame
-        new_points = item.points._points.data
-        new_radius = item.radius._radii.data
-        new_stroke = item.stroke._rgbas.data
-        new_fill = item.fill._rgbas.data
+        new_radius = item.radius._radii._data
+        new_stroke = item.stroke._rgbas._data
+        new_fill = item.fill._rgbas._data
 
         is_camera_changed = new_camera_info is not self.prev_camera_info
 
@@ -181,15 +183,17 @@ class VItemRenderer(Renderer):
             self.prev_fill = new_fill
 
         if new_points is not self.prev_points:
-            bytes = np.hstack([
-                new_points,
-                item.points.get_closepath_flags()[:, np.newaxis].astype(np.float32)
-            ]).tobytes()
+            if len(self.points_vec4buffer) != len(new_points):
+                self.points_vec4buffer = np.empty((len(new_points), 4), dtype=np.float32)
+
+            self.points_vec4buffer[:, :3] = new_points
+            self.points_vec4buffer[:, 3] = item.points.get_closepath_flags().astype(np.float32)
+            bytes = self.points_vec4buffer.tobytes()
 
             if len(bytes) != self.vbo_points.size:
                 self.vbo_points.orphan(len(bytes))
 
-            self.vbo_points.write(bytes)
+            self.vbo_points.write(self.points_vec4buffer)
 
         if new_points is not self.prev_points \
                 or new_fix_in_frame != self.prev_fix_in_frame \

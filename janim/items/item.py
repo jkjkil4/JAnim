@@ -174,7 +174,6 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         self,
         cmpt: Component,
         func: Callable | str,
-        *,
         recurse_up=False,
         recurse_down=False,
     ) -> Self:
