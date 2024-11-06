@@ -203,7 +203,6 @@ class DataUpdater[T: Item](Animation):
         index: int
     ) -> float:
         '''依据 ``lag_ratio`` 得到特定子物件的 ``sub_alpha``'''
-        # REFACTOR: make this more understanable
         lag_ratio = self.lag_ratio
         full_length = (len(self.datas) - 1) * lag_ratio + 1
         value = alpha * full_length

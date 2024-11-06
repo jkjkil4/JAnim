@@ -276,5 +276,3 @@ indication
 
             self.play(*map(WiggleOutThenIn, group))
             self.forward()
-
-.. # TODO: FlashyFadeIn

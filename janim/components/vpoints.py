@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import math
 from enum import Enum
 from typing import Callable, Generator, Iterable, Self
 
@@ -8,7 +9,7 @@ import numpy as np
 from janim.utils.paths import PathFunc, straight_path
 import janim.utils.refresh as refresh
 from janim.components.points import Cmpt_Points, PointsFn
-from janim.constants import NAN_POINT, ORIGIN, OUT, RIGHT, UP
+from janim.constants import NAN_POINT, ORIGIN, OUT, RIGHT, UP, DEGREES
 from janim.exception import PointError
 from janim.items.item import Item
 from janim.locale.i18n import get_local_strings
@@ -467,7 +468,41 @@ class Cmpt_VPoints[ItemT](Cmpt_Points[ItemT], impl=True):
 
     # region anchor mode
 
-    # TODO: is_smooth
+    def is_smooth(self, angle_tol: float = 1 * DEGREES) -> bool:
+        return (self.get_joint_products() > math.cos(angle_tol)).all()
+
+    @Cmpt_Points.set.self_refresh
+    @refresh.register
+    def get_joint_products(self) -> np.ndarray:
+        '''
+        得到每个锚点前后方向向量的点积
+        '''
+        points = self.get()
+
+        vectors_count = self.curves_count() + 1
+        v1 = np.empty((vectors_count, 3), dtype=np.float32)
+        v2 = np.empty((vectors_count, 3), dtype=np.float32)
+
+        v1[1:] = points[2::2] - points[1::2]
+        v2[:-1] = points[1::2] - points[0:-1:2]
+
+        ends = np.array(self.get_subpath_end_indices())
+        starts = [0, *(ends[:-1] + 2)]
+        for start, end in zip(starts, ends):
+            if start == end:
+                continue
+            i1 = start // 2
+            i2 = end // 2
+            if np.isclose(points[start], points[end]).all():
+                v1[i1] = v1[i2]
+                v2[i2] = v2[i1]
+            else:
+                v1[i1] = v2[i1]
+                v2[i2] = v1[i2]
+
+        v1 /= np.sqrt(v1[:, 0]**2 + v1[:, 1]**2 + v1[:, 2]**2)[:, np.newaxis]
+        v2 /= np.sqrt(v2[:, 0]**2 + v2[:, 1]**2 + v2[:, 2]**2)[:, np.newaxis]
+        return np.sum(v1 * v2, axis=1)
 
     def change_anchor_mode(self, mode: AnchorMode) -> Self:
         if not self.has():

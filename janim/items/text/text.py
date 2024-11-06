@@ -273,7 +273,9 @@ class TextLine(VItem, Group[TextChar]):
 
 class Text(VItem, Group[TextLine]):
     '''
-    文字物件
+    文字物件，支持富文本等功能
+
+    如果对换行排版等有较高的需求可以考虑使用 :class:`~.TypstDoc`
     '''
     class Format(Enum):
         PlainText = 0
@@ -405,10 +407,6 @@ class Text(VItem, Group[TextLine]):
             pos = line.get_mark_orig()
 
         return self
-
-    # TODO: word_wrap
-    # 使用 TypstDoc 可以轻松做到
-    # 我感觉可以不用给 Text 实现这功能了
 
     def apply_rich_text(self) -> None:
         '''

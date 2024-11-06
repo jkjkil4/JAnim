@@ -64,10 +64,6 @@ class ComplexHomotopy(Homotopy):
         super().__init__(item, homotopy, **kwargs)
 
 
-# TODO: PhaseFlow
-# 感觉这个没啥用诶
-
-
 class MoveAlongPath(DataUpdater):
     label_color = C_LABEL_ANIM_STAY
 

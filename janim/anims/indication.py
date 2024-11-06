@@ -428,6 +428,3 @@ class WiggleOutThenIn(DataUpdater):
             wiggle(p.alpha, self.n_wiggles) * self.angle,
             about_point=self.rotate_about_point
         )
-
-
-# TODO: FlashyFadeIn
