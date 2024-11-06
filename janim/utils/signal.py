@@ -1,42 +1,40 @@
-import functools
+from __future__ import annotations
+
+import gc
 import inspect
-import types
 import weakref
 from collections import defaultdict
 from dataclasses import dataclass
+from functools import lru_cache, partial, update_wrapper
 from typing import (Callable, Concatenate, Generic, ParamSpec, Self, TypeVar,
                     overload)
 
 import janim.utils.refresh as refresh
 
+# from janim.logger import log
+
 type Key = str
 type FullQualname = str
 
 # 使 sphinx 可用
-P = ParamSpec('P')
 T = TypeVar('T')
+P = ParamSpec('P')
 R = TypeVar('R')
 
-SIGNAL_CONN_REF_NAME = '_Signal_connect_ref'
+SIGNAL_OBJ_SLOTS_NAME = '__signal_obj_slots'
 
 
 class _SelfSlots:
     def __init__(self):
-        self.self_normal_slots: list[Callable] = []
-        self.self_refresh_slots: list[Callable] = []
-        self.self_refresh_slots_with_recurse: list[_SelfSlotWithRecurse] = []
+        self.normal_slots: list[Callable] = []
+        self.refresh_slots: list[Callable] = []
+        self.refresh_slots_with_recurse: list[_SelfSlotWithRecurse] = []
 
 
-class _Slots:
+class _ObjSlots:
     def __init__(self):
-        self.normal_slots: list[weakref.WeakMethod[Callable] | weakref.ReferenceType[Callable]] = []
+        self.normal_slots: list[Callable] = []
         self.refresh_slots: list[_RefreshSlot] = []
-
-
-class _AllSlots:
-    def __init__(self):
-        self.self_slots_dict: defaultdict[FullQualname, _SelfSlots] = defaultdict(_SelfSlots)
-        self.slots_dict: defaultdict[int, _Slots] = defaultdict(_Slots)
 
 
 @dataclass
@@ -53,98 +51,17 @@ class _RefreshSlot:
 
 
 class Signal(Generic[T, P, R]):
-    '''
-    一般用于在 ``func`` 造成影响后，需要对其它数据进行更新时进行作用
+    # for gc
+    objects_with_slots: weakref.WeakSet[defaultdict[tuple[Signal, Key], _ObjSlots]] = weakref.WeakSet()
 
-    =====
-
-    当 ``func`` 被该类修饰，使用 ``Class.func.emit(self)`` 后，
-
-    对于 ``self_`` 型（修饰）：
-
-    - 会以自身调用所有被 ``func.self_slot()`` 修饰的方法
-    - 会将所有被 ``func.self_refresh()`` 修饰的方法标记需要重新计算
-    - ``func.self_refresh_with_recurse()`` 与 ``func.self_refresh()`` 相比，还可以传入 ``recurse_up/down``
-
-    对于 普通型（绑定）：
-
-    - 会调用所有通过 ``func.connect(...)`` 记录的方法
-    - 会将所有被 ``func.connect_refresh(...)`` 记录的方法标记需要重新计算
-
-    提醒：
-
-    - 可以在上述方法中传入 ``key`` 参数以区分调用
-    - ``emit`` 方法可以传入额外的参数给被调用的 ``slots``
-
-    注意：
-
-    - 以 ``self_`` 开头的修饰器所修饰的方法需要与 ``func`` 在同一个类或者其子类中
-    - ``Signal`` 的绑定与触发相关的调用需要从类名 ``Cls.func.xxx`` 访问，因为 ``obj.func.xxx`` 得到的是原方法
-
-    =====
-
-    例:
-
-    .. code-block:: python
-
-        class User(refresh.Refreshable):
-            def __init__(self, name: str):
-                super().__init__()
-                self.name = name
-                self.msg = ''
-
-            @Signal
-            def set_msg(self, msg: str) -> None:
-                self.msg = msg
-                User.set_msg.emit(self)
-
-            @set_msg.self_slot()
-            def notifier(self) -> None:
-                print("User's message changed")
-
-            @set_msg.self_refresh()
-            @refresh.register
-            def get_text(self) -> str:
-                return f'[{self.name}] {self.msg}'
-
-        user = User('jkjkil')
-        user.set_msg('hello')   # Output: User's message changed
-        print(user.get_text())  # Output: [jkjkil] hello
-
-
-    .. code-block:: python
-
-        class A:
-            @Signal
-            def fn_A(self) -> None:
-                print('fn_A()')
-                A.fn_A.emit(self)
-
-        class B:
-            def fn_B(self) -> None:
-                print('fn_B()')
-
-        a, b = A(), B()
-        A.fn_A.connect(a, b.fn_B)
-
-        a.fn_A()
-        \'\'\'
-        Output:
-        fn_A()
-        fn_B()
-        \'\'\'
-
-
-    另见:
-
-    - :meth:`~.Relation.parents_changed()`
-    - :meth:`~.Relation.children_changed()`
-    '''
     def __init__(self, func: Callable[Concatenate[T, P], R]):
         self.func = func
-        functools.update_wrapper(self, func)
+        update_wrapper(self, func)
 
-        self.slots: defaultdict[Key, _AllSlots] = defaultdict(_AllSlots)
+        self.all_slots: defaultdict[FullQualname, defaultdict[Key, _SelfSlots]] \
+            = defaultdict(lambda: defaultdict(_SelfSlots))
+
+    # region typing
 
     @overload
     def __get__(self, instance: None, owner) -> Self: ...
@@ -157,6 +74,10 @@ class Signal(Generic[T, P, R]):
     def __call__(self, *args, **kwargs):    # pragma: no cover
         return self.func(*args, **kwargs)
 
+    # endregion
+
+    # region utils
+
     @staticmethod
     def _get_cls_full_qualname_from_fback() -> str:
         cls_locals = inspect.currentframe().f_back.f_back.f_locals
@@ -168,48 +89,86 @@ class Signal(Generic[T, P, R]):
     def _get_cls_full_qualname(cls: type) -> str:
         return f'{cls.__module__}.{cls.__qualname__}'
 
-    def self_slot(self, *, key: str = ''):
+    @lru_cache
+    def _get_cls_slots(self, cls: type) -> defaultdict[Key, _SelfSlots]:
+        result: defaultdict[Key, _SelfSlots] = defaultdict(_SelfSlots)
+
+        for sup in cls.mro():
+            full_qualname = self._get_cls_full_qualname(sup)
+
+            sup_slots = self.all_slots.get(full_qualname, None)
+            if sup_slots is None:
+                continue
+
+            for key, value in sup_slots.items():
+                r = result[key]
+                r.normal_slots.extend(value.normal_slots)
+                r.refresh_slots.extend(value.refresh_slots)
+                r.refresh_slots_with_recurse.extend(value.refresh_slots_with_recurse)
+
+        return result
+
+    @staticmethod
+    def _get_obj_slots(sender: object) -> defaultdict[tuple[Signal, Key], _ObjSlots] | None:
+        return getattr(sender, SIGNAL_OBJ_SLOTS_NAME, None)
+
+    @staticmethod
+    def _get_obj_slots_with_default(sender: object) -> defaultdict[tuple[Signal, Key], _ObjSlots]:
+        obj_slots = getattr(sender, SIGNAL_OBJ_SLOTS_NAME, None)
+        if obj_slots is None:
+            obj_slots = defaultdict(_ObjSlots)
+            Signal.objects_with_slots.add(sender)
+            setattr(sender, SIGNAL_OBJ_SLOTS_NAME, obj_slots)
+        return obj_slots
+
+    # endregion
+
+    # region slots
+
+    def self_slot(self, func=None, /, *, key: str = ''):
         '''
         被修饰的方法会在 ``Signal`` 触发时被调用
         '''
-        def decorator(func):
-            full_qualname = self._get_cls_full_qualname_from_fback()
+        full_qualname = self._get_cls_full_qualname_from_fback()
 
-            all_slots = self.slots[key]
-            self_slots = all_slots.self_slots_dict[full_qualname]
-            self_slots.self_normal_slots.append(func)
+        if func is None:
+            # Called with @self_slot()
+            return partial(self._self_slot, full_qualname, key=key)
 
-            return func
+        # Called with @self_slot
+        return self._self_slot(full_qualname, func)
 
-        return decorator
+    def _self_slot[T](self, full_qualname: str, func: T, key: str = '') -> T:
+        self.all_slots[full_qualname][key].normal_slots.append(func)
+        return func
 
-    def self_refresh(self, *, key: str = ''):
+    def self_refresh(self, func=None, *, key: str = ''):
         '''
         被修饰的方法会在 ``Signal`` 触发时，标记需要重新计算
         '''
-        def decorator(func):
-            full_qualname = self._get_cls_full_qualname_from_fback()
+        full_qualname = self._get_cls_full_qualname_from_fback()
 
-            all_slots = self.slots[key]
-            self_slots = all_slots.self_slots_dict[full_qualname]
-            self_slots.self_refresh_slots.append(func)
+        if func is None:
+            # Called with @self_slot()
+            return partial(self._self_refresh, full_qualname, key=key)
 
-            return func
+        # Called with @self_slot
+        return self._self_refresh(full_qualname, func)
 
-        return decorator
+    def _self_refresh[T](self, full_qualname: str, func: T, key: str = '') -> T:
+        self.all_slots[full_qualname][key].refresh_slots.append(func)
+        return func
 
     def self_refresh_with_recurse(self, *, recurse_up: bool = False, recurse_down: bool = False, key: str = ''):
         '''
-        被修饰的方法会在 ``Signal`` 触发时，标记需要重新计算
+        被修饰的方法会在 :class:`~.Signal` 触发时，标记需要重新计算
+
+        并且会根据 ``recurse_up`` 和 ``recurse_down`` 进行递归传递
         '''
         def decorator(func):
             full_qualname = self._get_cls_full_qualname_from_fback()
             slot = _SelfSlotWithRecurse(func, recurse_up, recurse_down)
-
-            all_slots = self.slots[key]
-            self_slots = all_slots.self_slots_dict[full_qualname]
-            self_slots.self_refresh_slots_with_recurse.append(slot)
-
+            self.all_slots[full_qualname][key].refresh_slots_with_recurse.append(slot)
             return func
 
         return decorator
@@ -218,73 +177,79 @@ class Signal(Generic[T, P, R]):
         '''
         使 ``func`` 会在 ``Signal`` 触发时被调用
         '''
-        all_slots = self.slots[key]
-        slots = all_slots.slots_dict[id(sender)]
-
-        # 只是为了在 sender 中产生一个 func 的引用，没有别的用处
-        lst = getattr(sender, SIGNAL_CONN_REF_NAME, None)
-        if lst is None:
-            lst = []
-            setattr(sender, SIGNAL_CONN_REF_NAME, lst)
-        lst.append(func)
-
-        slots.normal_slots.append(
-            weakref.WeakMethod(func)
-            if isinstance(func, types.MethodType)
-            else weakref.ref(func)
-        )
+        obj_slots = self._get_obj_slots_with_default(sender)
+        obj_slots[(self, key)].normal_slots.append(func)
 
     def connect_refresh(self, sender: object, obj: object, func: Callable | str, *, key: str = '') -> None:
         '''
         使 ``func`` 会在 ``Signal`` 触发时被标记为需要重新计算
         '''
+        obj_slots = self._get_obj_slots_with_default(sender)
         slot = _RefreshSlot(weakref.ref(obj), func)
-
-        all_slots = self.slots[key]
-        slots = all_slots.slots_dict[id(sender)]
-        slots.refresh_slots.append(slot)
+        obj_slots[(self, key)].refresh_slots.append(slot)
 
     def emit(self, sender: object, *args, key: str = '', **kwargs):
-        '''
-        触发 ``Signal``
-        '''
-        all_slots = self.slots.get(key, None)
-        if all_slots is None:
+        cls_slots = self._get_cls_slots(sender.__class__)
+        slots = cls_slots[key]
+
+        # @self_slot
+        for func in slots.normal_slots:
+            func(sender, *args, **kwargs)
+
+        # @self_refresh
+        for func in slots.refresh_slots:
+            sender.mark_refresh(func)
+
+        # @self_refresh_with_recurse
+        for slot in slots.refresh_slots_with_recurse:
+            sender.mark_refresh(slot.func, recurse_up=slot.recurse_up, recurse_down=slot.recurse_down)
+
+        ####
+
+        obj_slots = self._get_obj_slots(sender)
+        if obj_slots is None:
+            return
+        slots = obj_slots.get((self, key), None)
+        if slots is None:
             return
 
-        for cls in sender.__class__.mro():
-            full_qualname = self._get_cls_full_qualname(cls)
-            if full_qualname not in all_slots.self_slots_dict:
+        # @connect
+        for func in slots.normal_slots:
+            func(*args, **kwargs)
+
+        # @connect_refresh
+        for slot in slots.refresh_slots:
+            obj = slot.obj()
+            if obj is None:
                 continue
+            obj.mark_refresh(slot.func)
 
-            slots = all_slots.self_slots_dict[full_qualname]
 
-            # self_normal_slots
-            for func in slots.self_normal_slots:
-                func(sender, *args, **kwargs)
+def _signal_gc_callback(phase: str, info: dict) -> None:
+    if phase != 'start' or info['generation'] != 2:
+        return
 
-            # self_refresh_slots
-            for func in slots.self_refresh_slots:
-                sender.mark_refresh(func)
+    total = 0
 
-            # self_refresh_slots_with_recurse
-            for slot in slots.self_refresh_slots_with_recurse:
-                sender.mark_refresh(slot.func, recurse_up=slot.recurse_up, recurse_down=slot.recurse_down)
+    for sender in Signal.objects_with_slots:
+        obj_slots = Signal._get_obj_slots(sender)
+        assert obj_slots is not None
 
-        sender_id = id(sender)
-        if sender_id in all_slots.slots_dict:
-            slots = all_slots.slots_dict[sender_id]
+        for slots in obj_slots.values():
+            len1 = len(slots.refresh_slots)
+            slots.refresh_slots = [
+                slot
+                for slot in slots.refresh_slots
+                if slot.obj() is not None
+            ]
+            len2 = len(slots.refresh_slots)
+            total += (len1 - len2)
 
-            # normal_slots
-            for func_ref in slots.normal_slots:
-                func = func_ref()
-                if func is None:    # TODO: remove from normal_slots
-                    continue
-                func(*args, **kwargs)
+    # if total != 0:
+    #     log.debug(
+    #         'Cleaned {count} references caused by Signal.connect_refresh'
+    #         .format(count=total)
+    #     )
 
-            # refresh_slots
-            for slot in slots.refresh_slots:
-                obj = slot.obj()
-                if obj is None:     # TODO: remove from refresh_slots
-                    continue
-                obj.mark_refresh(slot.func)
+
+gc.callbacks.append(_signal_gc_callback)

@@ -132,7 +132,7 @@ class Cmpt_CameraPoints[ItemT](Cmpt_Points[ItemT]):
         return self
 
     @property
-    @Cmpt_Points.set.self_refresh()
+    @Cmpt_Points.set.self_refresh
     @refresh.register
     def info(self) -> CameraInfo:
         '''

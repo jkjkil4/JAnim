@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import inspect
-from typing import Callable, Iterable, Self, overload
+from typing import Callable, Iterable, Self
 
 import numpy as np
 
@@ -225,7 +225,7 @@ class Cmpt_Points[ItemT](Component[ItemT]):
         return self.BoundingBox(np.vstack(box_datas) if box_datas else [])
 
     @property
-    @set.self_refresh()
+    @set.self_refresh
     @refresh.register
     def self_box(self) -> BoundingBox:
         '''
