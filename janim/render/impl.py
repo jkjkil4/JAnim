@@ -193,7 +193,7 @@ class VItemRenderer(Renderer):
             if len(bytes) != self.vbo_points.size:
                 self.vbo_points.orphan(len(bytes))
 
-            self.vbo_points.write(self.points_vec4buffer)
+            self.vbo_points.write(bytes)
 
         if new_points is not self.prev_points \
                 or new_fix_in_frame != self.prev_fix_in_frame \
