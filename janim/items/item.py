@@ -69,6 +69,25 @@ class _ItemMeta(type):
 
         return super().__new__(cls, name, bases, attrdict)
 
+    @dataclass
+    class _CmptInitData:
+        info: CmptInfo[CmptInfo]
+        decl_cls: type[Item]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.cmpt_init_datas: dict[str, _ItemMeta._CmptInitData] = {}
+        datas = self.cmpt_init_datas
+
+        for cls in reversed(self.mro()):
+            for key, info in cls.__dict__.get(CLS_CMPTINFO_NAME, {}).items():
+                info: CmptInfo
+                if key in datas:
+                    datas[key].info = info
+                else:  # key not in datas
+                    datas[key] = self._CmptInitData(info, cls)
+
 
 def mockable(func):
     '''
@@ -133,11 +152,6 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
             self.add(*children)
         self.digest_styles(**kwargs)
 
-    @dataclass
-    class _CmptInitData:
-        info: CmptInfo[CmptInfo]
-        decl_cls: type[Item]
-
     def _init_components(self) -> None:
         '''
         创建出 CmptInfo 对应的 Component，
@@ -146,17 +160,7 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         因为 CmptInfo 的 __get__ 标注的返回类型是对应的 Component，
         所以以上做法没有影响基于类型标注的代码补全
         '''
-        type CmptKey = str
-
-        datas: dict[CmptKey, Item._CmptInitData] = {}
-
-        for cls in reversed(self.__class__.mro()):
-            for key, info in cls.__dict__.get(CLS_CMPTINFO_NAME, {}).items():
-                info: CmptInfo
-                if key in datas:
-                    datas[key].info = info
-                else:  # key not in datas
-                    datas[key] = self._CmptInitData(info, cls)
+        datas = self.__class__.cmpt_init_datas
 
         self.components: dict[str, Component] = {}
 
