@@ -835,7 +835,7 @@ class Cmpt_Points[ItemT](Component[ItemT]):
 
         .. note::
 
-            这个示例使用 :meth:`~.Typst.match_pattern` 会更简洁
+            这个示例使用 :meth:`~.TypstDoc.match_pattern` 会更简洁
         '''
         cmpt = self.get_same_cmpt(indicator)
         self.shift(

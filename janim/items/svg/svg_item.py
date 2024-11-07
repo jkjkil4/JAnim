@@ -1,6 +1,7 @@
 
 import os
-from typing import Callable
+from collections import defaultdict
+from typing import Any, Callable, Self
 
 import numpy as np
 import svgelements as se
@@ -18,7 +19,9 @@ from janim.utils.file_ops import find_file
 DEFAULT_SVGITEM_SCALE_FACTOR = 3.272
 STROKE_WIDTH_CONVERSION = 0.01
 
-type VItemBuilder = Callable[[], VItem]
+type SVGElemItem = VItem
+type ItemBuilder = Callable[[], SVGElemItem]
+type GroupIndexer = defaultdict[str, list[int]]
 
 
 def _convert_point_to_3d(x: float, y: float) -> np.ndarray:
@@ -37,7 +40,7 @@ def _parse_color(hex, opacity) -> tuple[str, float]:
     return hex, _convert_opacity(opacity)
 
 
-class SVGItem(Group[VItem]):
+class SVGItem(Group[SVGElemItem]):
     '''
     传入 SVG 文件路径，解析为物件
     '''
@@ -48,7 +51,8 @@ class SVGItem(Group[VItem]):
         fill_color=None,
         fill_alpha=0
     )
-    vitem_builders_map: dict[tuple, list[VItemBuilder]] = {}
+    vitem_builders_map: dict[tuple, tuple[list[ItemBuilder], GroupIndexer]] = {}
+    group_key: str | None = None
 
     def __init__(
         self,
@@ -58,7 +62,7 @@ class SVGItem(Group[VItem]):
         height: float | None = None,
         **kwargs
     ):
-        items = self.get_items_from_file(file_path)
+        items, self.groups = self.get_items_from_file(file_path)
 
         super().__init__(*items, **kwargs)
 
@@ -91,8 +95,29 @@ class SVGItem(Group[VItem]):
     def move_into_position(self) -> None:
         pass
 
-    @staticmethod
-    def get_items_from_file(file_path: str) -> list[Item]:
+    def copy(self, *, root_only=False, as_time: float | None = None, skip_dynamic: bool = False) -> Self:
+        copy_item = super().copy(root_only=root_only, as_time=as_time, skip_dynamic=skip_dynamic)
+
+        if not root_only:
+            def get_idx(item: Item) -> int | None:
+                try:
+                    return self.children.index(item)
+                except ValueError:
+                    return None
+
+            copy_item.groups = {
+                key: [
+                    copy_item[idx]
+                    for item in group
+                    if (idx := get_idx(item)) is not None
+                ]
+                for key, group in self.groups.items()
+            }
+
+        return copy_item
+
+    @classmethod
+    def get_items_from_file(cls, file_path: str) -> tuple[list[SVGElemItem], dict[str, list[SVGElemItem]]]:
         '''
         解析文件并得到物件列表
         '''
@@ -103,29 +128,66 @@ class SVGItem(Group[VItem]):
 
         cached = SVGItem.vitem_builders_map.get(key, None)
         if cached is not None:
-            return [builder() for builder in cached]
+            return cls.build_items(*cached)
 
         svg: se.SVG = se.SVG.parse(file_path)
 
         offset = np.array([svg.width / -2, svg.height / -2])
 
-        builders: list[VItemBuilder] = []
+        builders: list[ItemBuilder] = []
+        indexers: GroupIndexer = defaultdict(list)
+        group_finder: defaultdict[Any, list[str]] = defaultdict(list)
         for shape in svg.elements():
-            if isinstance(shape, (se.Group, se.Use)):
+            if isinstance(shape, se.Use):
                 continue
+
+            elif isinstance(shape, se.Group):
+                if cls.group_key is None:
+                    continue
+                name = shape.values.get(cls.group_key, None)
+                if name is None:
+                    continue
+                for elem in shape.select():
+                    if not isinstance(elem, se.Path):
+                        continue
+                    group_finder[id(elem)].append(name)
+                continue
+
             elif isinstance(shape, se.Path):
                 builders.append(SVGItem.convert_path(shape, offset))
+
             elif type(shape) is se.SVGElement:
                 continue
             else:
                 # i18n?
                 log.warning(f'Unsupported element type: {type(shape)}')
+                continue
 
-        SVGItem.vitem_builders_map[key] = builders
-        return [builder() for builder in builders]
+            if not group_finder:
+                continue
+            names = group_finder.get(id(shape), None)
+            if names is None:
+                continue
+            for name in names:
+                indexers[name].append(len(builders) - 1)
+
+        SVGItem.vitem_builders_map[key] = (builders, indexers)
+        return cls.build_items(builders, indexers)
 
     @staticmethod
-    def convert_path(path: se.Path, offset: np.ndarray) -> VItemBuilder:
+    def build_items(
+        builders: list[ItemBuilder],
+        indexers: GroupIndexer
+    ) -> tuple[list[SVGElemItem], dict[str, list[SVGElemItem]]]:
+        items = [builder() for builder in builders]
+        groups = {
+            key: Group.from_iterable(items[idx] for idx in indices)
+            for key, indices in indexers.items()
+        }
+        return items, groups
+
+    @staticmethod
+    def convert_path(path: se.Path, offset: np.ndarray) -> ItemBuilder:
         builder = PathBuilder()
         segment_class_to_func_map = {
             se.Move: (builder.move_to, ('end',)),

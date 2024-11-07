@@ -14,7 +14,7 @@ from janim.exception import (EXITCODE_TYPST_COMPILE_ERROR,
                              EXITCODE_TYPST_NOT_FOUND, ExitException,
                              InvalidOrdinalError)
 from janim.items.points import Group
-from janim.items.svg.svg_item import SVGItem
+from janim.items.svg.svg_item import SVGItem, SVGElemItem
 from janim.items.vitem import VItem
 from janim.locale.i18n import get_local_strings
 from janim.logger import log
@@ -32,6 +32,9 @@ class TypstDoc(SVGItem):
     '''
     Typst 文档
     '''
+
+    group_key = 'data-typst-label'
+
     def __init__(self, text: str, **kwargs):
         self.text = text
 
@@ -88,6 +91,9 @@ class TypstDoc(SVGItem):
         return obj if isinstance(obj, TypstDoc) else cls(obj)
 
     # region pattern-matching
+
+    def get_label(self, name: str) -> Group[SVGElemItem]:
+        return Group.from_iterable(self.groups[name])
 
     def match_pattern(
         self,
