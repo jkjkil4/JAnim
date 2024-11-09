@@ -479,7 +479,8 @@ class Title(Group):
             self.add(underline)
             self.underline = underline
 
-        self.depth.set(depth)
+        if depth is not None:
+            self.depth.set(depth)
 
 
 class SourceDisplayer(Text):

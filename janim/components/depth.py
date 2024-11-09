@@ -69,6 +69,8 @@ class Cmpt_Depth[ItemT](Component[ItemT]):
         '''
         设置物件的深度
         '''
+        assert isinstance(value, (int, float))
+
         if order is None:
             order = self._counter[value]
             for cmpt in self.walk_same_cmpt_of_self_and_descendants_without_mock(root_only):
