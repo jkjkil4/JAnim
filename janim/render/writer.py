@@ -55,14 +55,14 @@ class VideoWriter:
     def writes(anim: TimelineAnim, file_path: str, *, quiet=False) -> None:
         VideoWriter(anim).write_all(file_path, quiet=quiet)
 
-    def write_all(self, file_path: str, *, quiet=False) -> None:
+    def write_all(self, file_path: str, *, quiet=False, _keep_temp: bool = False) -> None:
         '''将时间轴动画输出到文件中
 
         - 指定 ``quiet=True``，则不会输出前后的提示信息，但仍有进度条
         '''
         name = self.anim.timeline.__class__.__name__
         if not quiet:
-            log.info(_('Writing "{name}"').format(name=name))
+            log.info(_('Writing video "{name}"').format(name=name))
             t = time.time()
 
         self.fbo.use()
@@ -85,17 +85,19 @@ class VideoWriter:
             bytes = self.fbo.read(components=4)
             self.writing_process.stdin.write(bytes)
 
-        self.close_video_pipe()
+        self.close_video_pipe(_keep_temp)
 
         if not quiet:
             log.info(
-                _('Finished writing "{name}" in {elapsed:.2f} s')
+                _('Finished writing video "{name}" in {elapsed:.2f} s')
                 .format(name=name, elapsed=time.time() - t)
             )
-            log.info(
-                _('File saved to "{file_path}"')
-                .format(file_path=file_path)
-            )
+
+            if not _keep_temp:
+                log.info(
+                    _('File saved to "{file_path}" (video only)')
+                    .format(file_path=file_path)
+                )
 
     def open_video_pipe(self, file_path: str) -> None:
         stem, ext = os.path.splitext(file_path)
@@ -135,18 +137,19 @@ class VideoWriter:
                         'Please install ffmpeg and add it to the environment variables.'))
             raise ExitException(EXITCODE_FFMPEG_NOT_FOUND)
 
-    def close_video_pipe(self) -> None:
+    def close_video_pipe(self, _keep_temp: bool) -> None:
         self.writing_process.stdin.close()
         self.writing_process.wait()
         self.writing_process.terminate()
-        shutil.move(self.temp_file_path, self.final_file_path)
+        if not _keep_temp:
+            shutil.move(self.temp_file_path, self.final_file_path)
 
 
 class AudioWriter:
     def __init__(self, anim: TimelineAnim):
         self.anim = anim
 
-    def write_all(self, file_path: str, *, quiet=False) -> None:
+    def write_all(self, file_path: str, *, quiet=False, _keep_temp: bool = False) -> None:
         name = self.anim.timeline.__class__.__name__
         if not quiet:
             log.info(_('Writing audio of "{name}"').format(name=name))
@@ -171,17 +174,19 @@ class AudioWriter:
             samples = get_audio_samples(frame)
             self.writing_process.stdin.write(samples.tobytes())
 
-        self.close_audio_pipe()
+        self.close_audio_pipe(_keep_temp)
 
         if not quiet:
             log.info(
                 _('Finished writing audio of "{name}" in {elapsed:.2f} s')
                 .format(name=name, elapsed=time.time() - t)
             )
-            log.info(
-                _('File saved to "{file_path}"')
-                .format(file_path=file_path)
-            )
+
+            if not _keep_temp:
+                log.info(
+                    _('File saved to "{file_path}"')
+                    .format(file_path=file_path)
+                )
 
     def open_audio_pipe(self, file_path: str) -> None:
         stem, ext = os.path.splitext(file_path)
@@ -206,11 +211,12 @@ class AudioWriter:
                         'Please install ffmpeg and add it to the environment variables.'))
             raise ExitException(EXITCODE_FFMPEG_NOT_FOUND)
 
-    def close_audio_pipe(self) -> None:
+    def close_audio_pipe(self, _keep_temp: bool) -> None:
         self.writing_process.stdin.close()
         self.writing_process.wait()
         self.writing_process.terminate()
-        shutil.move(self.temp_file_path, self.final_file_path)
+        if not _keep_temp:
+            shutil.move(self.temp_file_path, self.final_file_path)
 
     @staticmethod
     def writes(anim: TimelineAnim, file_path: str, *, quiet=False) -> None:

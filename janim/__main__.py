@@ -112,7 +112,7 @@ def write_parser(parser: ArgumentParser) -> None:
     parser.add_argument(
         '--audio_format',
         default='mp3',
-        help=_('Format of the output audio')
+        help=_('Format of the output audio (valid only when outputting audio separately)')
     )
     parser.add_argument(
         '--video',

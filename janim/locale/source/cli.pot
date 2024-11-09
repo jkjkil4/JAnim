@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-10-22 11:49+0800\n"
+"POT-Creation-Date: 2024-11-09 23:07+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,40 +16,50 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: janim\cli.py:52 janim\cli.py:140
+#: janim\cli.py:53 janim\cli.py:176
 msgid "Constructing window"
 msgstr ""
 
-#: janim\cli.py:63 janim\cli.py:161
+#: janim\cli.py:64 janim\cli.py:197
 msgid "Finished constructing in {time:.2f} s"
 msgstr ""
 
-#: janim\cli.py:132
+#: janim\cli.py:146
+msgid ""
+"Unable to merge video. Please install ffmpeg and add it to the environment "
+"variables."
+msgstr ""
+
+#: janim\cli.py:157
+msgid "File saved to \"{file_path}\" (merged)"
+msgstr ""
+
+#: janim\cli.py:168
 msgid "No tool specified for use"
 msgstr ""
 
-#: janim\cli.py:182
+#: janim\cli.py:218
 msgid "\"{file_name}\" doesn't exist"
 msgstr ""
 
-#: janim\cli.py:186
+#: janim\cli.py:222
 msgid "\"{file_name}\" isn't a file"
 msgstr ""
 
-#: janim\cli.py:207
+#: janim\cli.py:243
 msgid "No timeline named \"{name}\""
 msgstr ""
 
-#: janim\cli.py:224
+#: janim\cli.py:260
 msgid ""
 "That module has multiple timelines, which ones would you like to render?\n"
 "Timeline Name or Number: "
 msgstr ""
 
-#: janim\cli.py:239
+#: janim\cli.py:275
 msgid "Invaild number {num}"
 msgstr ""
 
-#: janim\cli.py:245
+#: janim\cli.py:281
 msgid "No timeline named {split_str}"
 msgstr ""

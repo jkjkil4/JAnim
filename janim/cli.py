@@ -8,7 +8,8 @@ from argparse import Namespace
 from functools import lru_cache
 
 from janim.anims.timeline import Timeline
-from janim.exception import (EXITCODE_MODULE_NOT_FOUND, EXITCODE_NOT_FILE,
+from janim.exception import (EXITCODE_FFMPEG_NOT_FOUND,
+                             EXITCODE_MODULE_NOT_FOUND, EXITCODE_NOT_FILE,
                              ExitException)
 from janim.locale.i18n import get_local_strings
 from janim.logger import log
@@ -84,7 +85,7 @@ def write(args: Namespace) -> None:
 
     log.info('======')
 
-    both = not args.video and not args.audio
+    merge = not args.video and not args.audio
 
     log.info('======')
 
@@ -96,33 +97,68 @@ def write(args: Namespace) -> None:
         if not os.path.exists(output_dir):
             os.makedirs(output_dir)
 
-        writes_video = both or args.video
-        writes_audio = (both or args.audio) and anim.timeline.has_audio()
+        writes_video = merge or args.video
+        writes_audio = (merge or args.audio) and anim.timeline.has_audio()
 
         if writes_video:
             log.info(f'fps={anim.cfg.fps}')
             log.info(f'resolution="{anim.cfg.pixel_width}x{anim.cfg.pixel_height}"')
             log.info(f'format="{args.format}"')
         if writes_audio:
-            log.info(f'audio_format="{args.audio_format}"')
+            if not merge:
+                log.info(f'audio_format="{args.audio_format}"')
             log.info(f'audio_framerate="{anim.cfg.audio_framerate}"')
         log.info(f'output_dir="{output_dir}"')
 
         if writes_video:
-            writer = VideoWriter(anim)
-            writer.write_all(
+            video_writer = VideoWriter(anim)
+            video_writer.write_all(
                 os.path.join(output_dir,
-                             f'{name}.{args.format}')
+                             f'{name}.{args.format}'),
+                _keep_temp=merge
             )
-            if args.open and anim is built[-1]:
-                open_file(writer.final_file_path)
+            if args.open and not merge and anim is built[-1]:
+                open_file(video_writer.final_file_path)
 
         if writes_audio:
-            writer = AudioWriter(anim)
-            writer.write_all(
+            audio_writer = AudioWriter(anim)
+            audio_writer.write_all(
                 os.path.join(output_dir,
-                             f'{name}.{args.audio_format}')
+                             f'{name}.{args.audio_format}'),
+                _keep_temp=merge
             )
+
+        if merge:
+            command = [
+                anim.cfg.ffmpeg_bin,
+                '-y',
+                '-i', video_writer.temp_file_path,
+                '-i', audio_writer.temp_file_path,
+                '-shortest',
+                '-c:v', 'copy',
+                '-c:a', 'aac',
+                video_writer.final_file_path,
+                '-loglevel', 'error'
+            ]
+            try:
+                merge_process = sp.Popen(command, stdin=sp.PIPE)
+            except FileNotFoundError:
+                log.error(_('Unable to merge video. '
+                            'Please install ffmpeg and add it to the environment variables.'))
+                raise ExitException(EXITCODE_FFMPEG_NOT_FOUND)
+
+            merge_process.wait()
+            merge_process.terminate()
+
+            os.remove(video_writer.temp_file_path)
+            os.remove(audio_writer.temp_file_path)
+
+            log.info(
+                _('File saved to "{file_path}" (merged)')
+                .format(file_path=video_writer.final_file_path)
+            )
+            if args.open and anim is built[-1]:
+                open_file(video_writer.final_file_path)
 
     log.info('======')
 
