@@ -27,7 +27,7 @@ class Rotate(DataUpdater):
         about_point: Vect | None = None,
         about_edge: Vect = ORIGIN,
         root_only: bool = False,
-        absolute: bool = False,
+        absolute: bool = True,
         **kwargs
     ):
         if about_point is None:
