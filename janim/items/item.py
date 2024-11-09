@@ -319,7 +319,7 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
             case list() if all(isinstance(x, int) for x in key):
                 return Group(*[self.children[x] for x in key])
 
-        raise GetItemError(_('Unsupported key {}'.format(key)))
+        raise GetItemError(_('Unsupported key: {}').format(key))
 
     def __iter__(self):
         return iter(self.children)
