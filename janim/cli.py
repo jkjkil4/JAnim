@@ -127,6 +127,8 @@ def write(args: Namespace) -> None:
                              f'{name}.{args.audio_format}'),
                 _keep_temp=merge
             )
+            if args.open and not merge and not writes_video and anim is built[-1]:
+                open_file(audio_writer.final_file_path)
 
         if merge:
             command = [
