@@ -541,6 +541,10 @@ class Timeline(metaclass=ABCMeta):
         delay: float = 0,
         scale: float | Iterable[float] = 0.8,
         use_typst_text: bool | Iterable[bool] = False,
+        surrounding_color: JAnimColor = BLACK,
+        surrounding_alpha: float = 0.5,
+        font: str | Iterable[str] = [],
+        depth: float = -1e5,
         **kwargs
     ) -> TimeRange: ...
 
@@ -558,6 +562,7 @@ class Timeline(metaclass=ABCMeta):
         surrounding_color: JAnimColor = BLACK,
         surrounding_alpha: float = 0.5,
         font: str | Iterable[str] = [],
+        depth: float = -1e5,
         **kwargs
     ) -> TimeRange:
         '''
@@ -571,6 +576,7 @@ class Timeline(metaclass=ABCMeta):
 
         返回值表示显示的时间段
         '''
+        # 处理参数
         text_lst = [text] if isinstance(text, str) else text
         scale_lst = [scale] if not isinstance(scale, Iterable) else scale
         use_typst_lst = [use_typst_text] if not isinstance(use_typst_text, Iterable) else use_typst_text
@@ -580,6 +586,7 @@ class Timeline(metaclass=ABCMeta):
         else:
             range = TimeRange(self.current_time + delay, duration)
 
+        # 处理字体
         cfg_font = Config.get.subtitle_font
         if cfg_font:
             if isinstance(font, str):
@@ -592,6 +599,7 @@ class Timeline(metaclass=ABCMeta):
             else:
                 font.extend(cfg_font)
 
+        # 创建文字
         for text, scale, use_typst_text in zip(reversed(text_lst),
                                                reversed(resize_preserving_order(scale_lst, len(text_lst))),
                                                reversed(resize_preserving_order(use_typst_lst, len(text_lst)))):
@@ -599,7 +607,6 @@ class Timeline(metaclass=ABCMeta):
                 subtitle = TypstText(text, **kwargs)
             else:
                 subtitle = Text(text, font=font, **kwargs)
-            subtitle.depth.set(-1e5)
             subtitle.points.scale(scale * base_scale)
             self.place_subtitle(subtitle, range)
             self.subtitle_infos.append(Timeline.SubtitleInfo(text, range, kwargs, subtitle))
@@ -611,7 +618,7 @@ class Timeline(metaclass=ABCMeta):
                                 fill_alpha=surrounding_alpha),
                 subtitle
             ).fix_in_frame()
-            subtitle_group.depth.arrange(subtitle.depth.get())
+            subtitle_group.depth.set(depth)
 
             self.schedule(range.at, subtitle_group.show)
             self.schedule(range.end, subtitle_group.hide)

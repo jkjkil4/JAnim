@@ -245,7 +245,7 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         另见：:meth:`digest_styles`
         '''
         if depth is not None:
-            self.depth.set(depth)
+            self.depth.set(depth, root_only=True)
         return self
 
     def do(self, func: Callable[[Self], Any]) -> Self:

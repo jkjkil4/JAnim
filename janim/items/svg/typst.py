@@ -252,6 +252,7 @@ class TypstDoc(SVGItem):
 
         match ordinal:
             case int(i):
+                # TODO: PatternMismatchError
                 return slice(indices[i], indices[i] + len(pattern))
             case _ if isinstance(ordinal, Iterable):
                 return [

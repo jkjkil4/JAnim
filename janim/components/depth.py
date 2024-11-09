@@ -39,14 +39,22 @@ class Cmpt_Depth[ItemT](Component[ItemT]):
 
     def __init__(self, value: float, order: int | None = None):
         super().__init__()
-        self.set(value, order=order)
+
+        # 相当于 self.set(value, order, root_only=True)
+        self._depth = value
+        if order is None:
+            self._order = self._counter[value]
+            self._counter[value] -= 1
+        else:
+            self._order = order
 
     def copy(self) -> Self:
         # Component.copy 中的 copy.copy(self) 已将 _value 和 _order 拷贝
         return super().copy()
 
     def become(self, other: Cmpt_Depth) -> Self:
-        self.set(*other.get_raw())
+        self._depth = other._depth
+        self._order = other._order
         return self
 
     def not_changed(self, other: Cmpt_Depth) -> bool:
@@ -57,15 +65,22 @@ class Cmpt_Depth[ItemT](Component[ItemT]):
             return self._depth < other._depth
         return self._order < other._order
 
-    def set(self, value: float, order: int | None = None) -> Self:
+    def set(self, value: float, order: int | None = None, *, root_only: bool = False) -> Self:
         '''
         设置物件的深度
         '''
-        self._depth = value
         if order is None:
             order = self._counter[value]
-            self._counter[value] -= 1
-        self._order = order
+            for cmpt in self.walk_same_cmpt_of_self_and_descendants_without_mock(root_only):
+                cmpt._depth = value
+                cmpt._order = order
+                order -= 1
+            self._counter[value] = order
+        else:
+            for cmpt in self.walk_same_cmpt_of_self_and_descendants_without_mock(root_only):
+                cmpt._depth = value
+                cmpt._order = order
+
         return self
 
     def get(self) -> float:
@@ -83,11 +98,5 @@ class Cmpt_Depth[ItemT](Component[ItemT]):
         '''
         if depth is None:
             depth = self._depth
-
         self.set(depth)
-
-        if self.bind is not None:
-            for item in self.bind.at_item.descendants():
-                item.depth.set(depth)
-
         return self
