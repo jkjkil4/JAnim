@@ -317,12 +317,12 @@ class FadeTransform(AnimGroup):
         **kwargs
     ):
         src_copy = src.copy(root_only=src_root_only)
-        src_copy.digest_styles(alpha=0)
+        src_copy.set(alpha=0)
         src_copy(Points) \
             .points.replace(target, stretch=True, root_only=src_root_only, item_root_only=target_root_only)
 
         target_copy = target.copy(root_only=target_root_only)
-        target_copy.digest_styles(alpha=0)
+        target_copy.set(alpha=0)
         target_copy(Points) \
             .points.replace(src, stretch=True, root_only=target_root_only, item_root_only=src_root_only)
 

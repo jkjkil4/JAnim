@@ -81,7 +81,7 @@ class ImageItem(Points):
         else:   # width is not None and height is not None
             self.points.set_size(width, height)
 
-    def set_style(
+    def apply_style(
         self,
         color: JAnimColor | ColorArray | None = None,
         alpha: Alpha | AlphaArray | None = None,
@@ -89,7 +89,7 @@ class ImageItem(Points):
     ) -> Self:
         self.color.set(color, alpha)
 
-        return super().set_style(**kwargs)
+        return super().apply_style(**kwargs)
 
     def get_orig(self) -> np.ndarray:
         '''图像的左上角'''
@@ -350,7 +350,7 @@ class Video(Points):
         else:   # width is not None and height is not None
             self.points.set_size(width, height)
 
-    def set_style(
+    def apply_style(
         self,
         color: JAnimColor | ColorArray | None = None,
         alpha: Alpha | AlphaArray | None = None,
@@ -358,7 +358,7 @@ class Video(Points):
     ) -> Self:
         self.color.set(color, alpha)
 
-        return super().set_style(**kwargs)
+        return super().apply_style(**kwargs)
 
     def start(self, *, speed: int = 1) -> None:
         if not self.actions:

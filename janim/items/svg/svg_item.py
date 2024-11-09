@@ -227,7 +227,7 @@ class SVGItem(Group[SVGElemItem]):
 
         def vitem_builder() -> VItem:
             vitem = VItem(**SVGItem.svg_part_default_kwargs)
-            vitem.set_style(**vitem_styles)
+            vitem.apply_style(**vitem_styles)
             vitem.points.set(vitem_points)
             return vitem
 

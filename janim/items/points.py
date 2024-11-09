@@ -78,7 +78,7 @@ class DotCloud(Points):
 
         self.points.resize_func = resize_preserving_order
 
-    def set_style(
+    def apply_style(
         self,
         color: JAnimColor | ColorArray | None = None,
         alpha: float | Iterable[float] | None = None,
@@ -89,7 +89,7 @@ class DotCloud(Points):
         if radius is not None:
             self.radius.set(radius, root_only=True)
 
-        return super().set_style(**kwargs)
+        return super().apply_style(**kwargs)
 
     @classmethod
     def align_for_interpolate(

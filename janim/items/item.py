@@ -46,10 +46,10 @@ class _ItemMeta(type):
         }
         attrdict[CLS_CMPTINFO_NAME] = cls_components
 
-        # 记录 set_style 的参数
-        set_style_func = attrdict.get('set_style', None)
-        if set_style_func is not None and callable(set_style_func):
-            sig = inspect.signature(set_style_func)
+        # 记录 apply_style 的参数
+        apply_style_func = attrdict.get('apply_style', None)
+        if apply_style_func is not None and callable(apply_style_func):
+            sig = inspect.signature(apply_style_func)
             styles_name: list[str] = [
                 param.name
                 for param in list(sig.parameters.values())[1:]
@@ -82,7 +82,6 @@ class _ItemMeta(type):
 
         for cls in reversed(self.mro()):
             for key, info in cls.__dict__.get(CLS_CMPTINFO_NAME, {}).items():
-                info: CmptInfo
                 if key in datas:
                     datas[key].info = info
                 else:  # key not in datas
@@ -150,7 +149,7 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
 
         if children is not None:
             self.add(*children)
-        self.digest_styles(**kwargs)
+        self.set(**kwargs)
 
     def _init_components(self) -> None:
         '''
@@ -207,9 +206,9 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         if recurse_down:
             mark(self.descendants())
 
-    def digest_styles(self, **styles):
+    def set(self, **styles) -> None:
         '''
-        设置物件以及子物件的样式，与 :meth:`set_styles` 只影响自身不同的是，该方法也会影响所有子物件
+        设置物件以及子物件的样式，与 :meth:`apply_styles` 只影响自身不同的是，该方法也会影响所有子物件
         '''
         flags = dict.fromkeys(styles.keys(), False)
         for item in self.walk_self_and_descendants():
@@ -221,7 +220,7 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
             }
             for key in apply_styles:
                 flags[key] = True
-            item.set_style(**apply_styles)
+            item.apply_style(**apply_styles)
 
         for key, flag in flags.items():
             if not flag:
@@ -230,11 +229,20 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
                     .format(key=key)
                 )
 
+    def digest_styles(self, **styles) -> None:
+        from janim.utils.deprecation import deprecated
+        deprecated(
+            'Item.digest_styles',
+            "{name!r} is deprecated and will be removed in JAnim {remove}, use 'Item.set' instead",
+            remove=(2, 3)
+        )
+        self.set(**styles)
+
     @classmethod
     def get_available_styles(cls) -> list[str]:
         return getattr(cls, ALL_STYLES_NAME)
 
-    def set_style(
+    def apply_style(
         self,
         depth: float | None = None,
         **kwargs
@@ -242,11 +250,24 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         '''
         设置物件自身的样式，不影响子物件
 
-        另见：:meth:`digest_styles`
+        另见：:meth:`set`
         '''
         if depth is not None:
             self.depth.set(depth, root_only=True)
         return self
+
+    def set_style(
+        self,
+        depth: float | None = None,
+        **kwargs
+    ) -> Self:
+        from janim.utils.deprecation import deprecated
+        deprecated(
+            'Item.set_style',
+            "{name!r} is deprecated and will be removed in JAnim {remove}, use 'Item.apply_style' instead",
+            remove=(2, 3)
+        )
+        self.apply_style(depth, **kwargs)
 
     def do(self, func: Callable[[Self], Any]) -> Self:
         '''

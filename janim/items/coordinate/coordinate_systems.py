@@ -221,8 +221,8 @@ class NumberPlane(Axes):
         self.background_lines = Group(*x_lines1, *y_lines1)
         self.faded_lines = Group(*x_lines2, *y_lines2)
 
-        self.background_lines.digest_styles(**self.background_line_style)
-        self.faded_lines.digest_styles(**self.faded_line_style)
+        self.background_lines.set(**self.background_line_style)
+        self.faded_lines.set(**self.faded_line_style)
 
         self.add(
             self.faded_lines,

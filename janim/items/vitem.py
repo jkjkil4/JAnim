@@ -45,7 +45,7 @@ class VItem(Points):
 
         Cmpt_Points.reverse.connect(self.points, reverse)
 
-    def set_style(
+    def apply_style(
         self,
         stroke_radius: float | Iterable[float] | None = None,
         stroke_color: JAnimColor | ColorArray | None = None,
@@ -74,7 +74,7 @@ class VItem(Points):
         self.stroke.set(stroke_color, stroke_alpha, root_only=True)
         self.fill.set(fill_color, fill_alpha, root_only=True)
 
-        return super().set_style(**kwargs)
+        return super().apply_style(**kwargs)
 
     @mockable
     def set_stroke_background(self: Item, flag: bool = True, *, root_only: bool = False) -> Self:
