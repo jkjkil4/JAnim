@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  JAnim\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-05-30 15:49+0800\n"
+"POT-Creation-Date: 2024-11-10 11:17+0800\n"
 "PO-Revision-Date: 2024-01-19 19:53+0800\n"
 "Last-Translator: \n"
 "Language: en\n"
@@ -23,9 +23,35 @@ msgstr ""
 msgid "item"
 msgstr "item"
 
+#: janim.items.item.mockable:1 of
+msgid "使得 ``.astype`` 后可以调用被 ``@mockable`` 修饰的方法"
+msgstr ""
+
 #: janim.items.item.Item:1 of
 msgid "基类：:py:class:`~janim.items.relation.Relation`\\ [:py:class:`Item`]"
 msgstr "基类：:py:class:`~janim.items.relation.Relation`\\ [:py:class:`Item`]"
+
+#: janim.items.item.Item:1 of
+msgid ":class:`~.Item` 是物件的基类"
+msgstr ""
+
+#: janim.items.item.Item:3 of
+msgid "除了使用 ``item[0]`` ``item[1]`` 进行下标索引外，还可以使用列表索引和布尔索引"
+msgstr ""
+
+#: janim.items.item.Item:5 of
+msgid "列表索引，例如 ``item[0, 1, 3]``, 即 ``Group(item[0], item[1], item[3])``"
+msgstr ""
+
+#: janim.items.item.Item:7 of
+msgid ""
+"布尔索引，例如 ``item[False, True, False, True, True]`` 表示取出 ``Group(item[1], "
+"item[3], item[4])``，"
+msgstr ""
+
+#: janim.items.item.Item:9 of
+msgid "也就是将那些为 True 的位置取出组成一个 :class:`~.Group`"
+msgstr ""
 
 #: janim.render.base.Renderer:1 of
 msgid "覆盖该值以在子类中使用特定的渲染器"
@@ -39,12 +65,16 @@ msgstr ""
 msgid "为 :meth:`~.Component.mark_refresh()` 进行 ``recurse_up/down`` 的处理"
 msgstr "Handles ``recurse_up/down`` for :meth:`~.Component.mark_refresh()`"
 
-#: janim.items.item.Item.digest_styles:1 of
-msgid "设置物件以及子物件的样式"
+#: janim.items.item.Item.set:1 of
+msgid "设置物件以及子物件的样式，与 :meth:`apply_styles` 只影响自身不同的是，该方法也会影响所有子物件"
 msgstr ""
 
-#: janim.items.item.Item.set_style:1 of
+#: janim.items.item.Item.apply_style:1 of
 msgid "设置物件自身的样式，不影响子物件"
+msgstr ""
+
+#: janim.items.item.Item.apply_style:3 of
+msgid "另见：:meth:`set`"
 msgstr ""
 
 #: janim.items.item.Item.do:1 of
@@ -174,4 +204,7 @@ msgstr "Hide item"
 
 #~ msgid "返回数据的引用，不进行复制"
 #~ msgstr "Returns a reference to the data, without copying"
+
+#~ msgid "设置物件以及子物件的样式"
+#~ msgstr ""
 

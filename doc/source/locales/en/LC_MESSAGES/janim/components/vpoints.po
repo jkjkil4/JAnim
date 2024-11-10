@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: JAnim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-05-30 15:49+0800\n"
+"POT-Creation-Date: 2024-11-10 11:17+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -133,6 +133,10 @@ msgstr ""
 msgid "将点数据设置为由 ``points`` 构成的折线"
 msgstr ""
 
+#: janim.components.vpoints.Cmpt_VPoints.get_joint_products:1 of
+msgid "得到每个锚点前后方向向量的点积"
+msgstr ""
+
 #: janim.components.vpoints.Cmpt_VPoints.make_smooth:1 of
 msgid ""
 "Edits the path so as to pass smoothly through all the current anchor "
@@ -165,6 +169,30 @@ msgstr ""
 
 #: janim.components.vpoints.Cmpt_VPoints.get_subpaths:1 of
 msgid "得到子路径列表"
+msgstr ""
+
+#: janim.components.vpoints.Cmpt_VPoints.same_shape:1 of
+msgid "判断两组点是否有完全相同的形状"
+msgstr ""
+
+#: janim.components.vpoints.Cmpt_VPoints.same_shape:3 of
+msgid "对于相同形状的两组点还可以用 :meth:`same_direction` 衡量方向重合度"
+msgstr ""
+
+#: janim.components.vpoints.Cmpt_VPoints.same_direction:1 of
+msgid "对于 :meth:`same_shape` 结果为 ``True`` 的两组点，可以通过该方法衡量方向重合度"
+msgstr ""
+
+#: janim.components.vpoints.Cmpt_VPoints.same_direction:3 of
+msgid "返回 ``-1`` ~ ``1`` 之间的值"
+msgstr ""
+
+#: janim.components.vpoints.Cmpt_VPoints.same_direction:4 of
+msgid "其中 ``1`` 表示完全同向，``-1`` 表示完全反向，``0`` 表示垂直"
+msgstr ""
+
+#: janim.components.vpoints.Cmpt_VPoints.same_direction:6 of
+msgid "注：对于 :meth:`same_shape` 结果为 ``False`` 的两组点，该方法的结果没有实际含义"
 msgstr ""
 
 #: janim.components.vpoints.AnchorMode:1 of

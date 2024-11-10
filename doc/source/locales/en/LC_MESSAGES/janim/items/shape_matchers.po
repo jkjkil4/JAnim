@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: JAnim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-05-30 15:49+0800\n"
+"POT-Creation-Date: 2024-11-10 11:17+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -26,6 +26,30 @@ msgstr ""
 #: janim.items.shape_matchers.FrameRect:1
 #: janim.items.shape_matchers.SurroundingRect:1 of
 msgid "基类：:py:class:`~janim.items.geometry.polygon.Rect`"
+msgstr ""
+
+#: janim.items.shape_matchers.SurroundingRect:1 of
+msgid "包围矩形框"
+msgstr ""
+
+#: janim.items.shape_matchers.FrameRect:1 of
+msgid "覆盖整个画面的矩形"
+msgstr ""
+
+#: janim.items.shape_matchers.FrameRect:3 of
+msgid "可以传入 `camera` 指定以其画面区域为准"
+msgstr ""
+
+#: janim.items.shape_matchers.FrameRect:4 of
+msgid "若不传入则产生默认宽高 `frame_width` 和 `frame_height` 的矩形"
+msgstr ""
+
+#: janim.items.shape_matchers.HighlightRect:1 of
+msgid "基类：:py:class:`~janim.items.boolean_ops.Difference`"
+msgstr ""
+
+#: janim.items.shape_matchers.HighlightRect:1 of
+msgid "高亮区域，即 :class:`FrameRect` 挖去 :class:`SurroundingRect`"
 msgstr ""
 
 #: janim.items.shape_matchers.Underline:1 of

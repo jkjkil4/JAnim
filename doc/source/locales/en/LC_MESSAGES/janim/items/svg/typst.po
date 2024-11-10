@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: JAnim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-07-31 22:13+0800\n"
+"POT-Creation-Date: 2024-11-10 11:17+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -23,6 +23,153 @@ msgstr ""
 msgid "typst"
 msgstr ""
 
+#: ../../source/janim/items/svg/typst.rst:5
+msgid "Typst 物件"
+msgstr ""
+
+#: ../../source/janim/items/svg/typst.rst:7
+msgid "Typst 物件分为三种："
+msgstr ""
+
+#: ../../source/janim/items/svg/typst.rst:9
+msgid ":class:`~.TypstDoc` 是所有其它 Typst 物件的基类，它表示一个 Typst 文档"
+msgstr ""
+
+#: ../../source/janim/items/svg/typst.rst:11
+msgid "这意味着，它会自动与画面的最上方对齐，以便从文档的开头开始查看"
+msgstr ""
+
+#: ../../source/janim/items/svg/typst.rst:13
+msgid ":class:`~.Typst` 表示 Typst 公式，传入的字符串会被包裹在 ``$ $`` 中作为公式进行编译"
+msgstr ""
+
+#: ../../source/janim/items/svg/typst.rst:15
+#: ../../source/janim/items/svg/typst.rst:19
+msgid "它会直接被放到画面的中间"
+msgstr ""
+
+#: ../../source/janim/items/svg/typst.rst:17
+msgid ":class:`~.TypstText` 表示 Typst 文字，传入的字符串不会被 ``$ $`` 所包裹"
+msgstr ""
+
+#: ../../source/janim/items/svg/typst.rst:21
+msgid ""
+"也就是说，:class:`~.Typst` 和 :class:`~.TypstText` 的区别仅是是否被包裹在公式环境中，例如 "
+"``Typst('x^2')`` 和 ``TypstText('$ x^2 $')`` 是等效的"
+msgstr ""
+
+#: ../../source/janim/items/svg/typst.rst:24
+msgid "Typst 子物件索引"
+msgstr ""
+
+#: ../../source/janim/items/svg/typst.rst:26
+msgid "我们知道，对于一般的对象可以使用下标索引或者布尔索引"
+msgstr ""
+
+#: ../../source/janim/items/svg/typst.rst:30
+msgid "以防你不知道，这里补充一下"
+msgstr ""
+
+#: ../../source/janim/items/svg/typst.rst:32
+msgid "下标索引，例如 ``t[0]``， ``t[1]``，这是常用的子物件索引方式"
+msgstr ""
+
+#: ../../source/janim/items/svg/typst.rst:34
+msgid "还有 ``t[0, 1, 4]`` 表示取出指定索引的多个子物件"
+msgstr ""
+
+#: ../../source/janim/items/svg/typst.rst:36
+msgid ""
+"布尔索引，例如 ``t[False, True, False, True, True]`` 表示取出 ``Group(t[1], t[3], "
+"t[4])``，"
+msgstr ""
+
+#: ../../source/janim/items/svg/typst.rst:38
+msgid "也就是将那些为 True 的位置取出组成一个 :class:`~.Group`"
+msgstr ""
+
+#: ../../source/janim/items/svg/typst.rst:40
+msgid "当你要索引 Typst 对象的子物件时，还可以使用字符索引的方式，比如说对于 :class:`~.Typst` 对象 ``t`` 而言"
+msgstr ""
+
+#: ../../source/janim/items/svg/typst.rst:46
+msgid ""
+"可以使用 ``t['cos']`` 得到 cos 对应的部分，这样你可以就可以使用类似于 "
+"``t['cos'].digest_styles(color=BLUE)`` 的方式进行着色"
+msgstr ""
+
+#: ../../source/janim/items/svg/typst.rst:49
+msgid "当出现多个匹配时的处理"
+msgstr ""
+
+#: ../../source/janim/items/svg/typst.rst:51
+msgid ""
+"你应该注意到了这里有两个 \"θ\"（``theta``），当你使用 ``t['theta']`` 的方式进行索引时，将会取出第一个匹配的 "
+"θ，也就是前一个"
+msgstr ""
+
+#: ../../source/janim/items/svg/typst.rst:53
+msgid ""
+"因为他们是从 ``0``、 ``1``、... 依次编号的，所以你可以使用 ``t['theta', 1]`` "
+"得到后一个，如果有更多的匹配则是使用更后面的序号"
+msgstr ""
+
+#: ../../source/janim/items/svg/typst.rst:57
+msgid "这也意味着 ``t['theta']`` 和 ``t['theta', 0]`` 是等效的"
+msgstr ""
+
+#: ../../source/janim/items/svg/typst.rst:59
+msgid ""
+"如果想要同时取出多个，则将多个编号写在一个序列中即可，例如 ``t['theta', (0, 1)]`` 则是取出编号为 ``0`` 和 "
+"``1`` 的匹配项，在这里就是所有匹配到的 θ 符号"
+msgstr ""
+
+#: ../../source/janim/items/svg/typst.rst:61
+msgid "对于这种取出所有匹配项的情况，也可以使用 ``t['theta', ...]``，这里的省略号就表示取出所有的匹配项"
+msgstr ""
+
+#: ../../source/janim/items/svg/typst.rst:64
+msgid "一些特殊情况"
+msgstr ""
+
+#: ../../source/janim/items/svg/typst.rst:66
+msgid "当你想要取出这个 Typst 公式中的上标 \"2\" 时"
+msgstr ""
+
+#: ../../source/janim/items/svg/typst.rst:68
+msgid "使用 ``t['2']`` 无法匹配到它，这是因为普通的 \"2\" 和上标的 \"2\" 长得不同"
+msgstr ""
+
+#: ../../source/janim/items/svg/typst.rst:70
+msgid "为了正确匹配，你需要把索引中的 2 也表示为“上标”的形式，例如 ``t['\"\"^2']`` 或者 ``t['#box[]^2']``"
+msgstr ""
+
+#: ../../source/janim/items/svg/typst.rst:72
+msgid "这两者都是把 \"2\" 作为一个空元素（ ``\"\"`` 或者 ``#box[]`` ）的上标，这样就可以正常匹配了"
+msgstr ""
+
+#: ../../source/janim/items/svg/typst.rst:76
+msgid ""
+"上面以 :class:`~.Typst` 作为字符索引的例子，:class:`~.TypstDoc` 和 :class:`~.TypstText`"
+" 也是几乎一致的，但是会有略微区别"
+msgstr ""
+
+#: ../../source/janim/items/svg/typst.rst:78
+msgid "我们知道，在这三种对象中，只有 :class:`~.Typst` 是在公式环境中的，所以进行它的字符索引时，作为索引的字符串也会在公式环境中解析"
+msgstr ""
+
+#: ../../source/janim/items/svg/typst.rst:80
+msgid "这意味着，对于 :class:`~.TypstDoc` 和 :class:`~.TypstText` 而言，作为索引的字符串不在公式环境中"
+msgstr ""
+
+#: ../../source/janim/items/svg/typst.rst:82
+msgid "这里给出几段示例作为参考："
+msgstr ""
+
+#: ../../source/janim/items/svg/typst.rst:99
+msgid "参考文档"
+msgstr ""
+
 #: janim.items.svg.typst.TypstDoc:1 of
 msgid "基类：:py:class:`~janim.items.svg.svg_item.SVGItem`"
 msgstr ""
@@ -33,6 +180,114 @@ msgstr ""
 
 #: janim.items.svg.typst.TypstDoc.compile_typst:1 of
 msgid "编译 ``Typst`` 文档"
+msgstr ""
+
+#: janim.items.svg.typst.TypstDoc.typstify:1 of
+msgid "将字符串变为 Typst 对象，而本身已经是的则直接返回"
+msgstr ""
+
+#: janim.items.svg.typst.TypstDoc.match_pattern:1 of
+msgid "配对并通过变换使得配对的部分重合"
+msgstr ""
+
+#: janim.items.svg.typst.TypstDoc.match_pattern:3 of
+msgid "例如"
+msgstr ""
+
+#: janim.items.svg.typst.TypstDoc.match_pattern:11 of
+msgid "则会将 ``t2`` 进行变换使得二者的加号重合"
+msgstr ""
+
+#: janim.items.svg.typst.TypstDoc.get:1 of
+msgid "根据切片得到切分的子物件"
+msgstr ""
+
+#: janim.items.svg.typst.TypstDoc.get:3 of
+msgid "在默认情况下，``gapless=False``："
+msgstr ""
+
+#: janim.items.svg.typst.TypstDoc.get:5 of
+msgid "表示通过给定的 ``slices`` 直接切取子物件，例如"
+msgstr ""
+
+#: janim.items.svg.typst.TypstDoc.get:7 of
+msgid "``item.get(slice(1, 3)) == item[1:3]``"
+msgstr ""
+
+#: janim.items.svg.typst.TypstDoc.get:9 of
+msgid "支持使用列表获取一批的子物件，例如"
+msgstr ""
+
+#: janim.items.svg.typst.TypstDoc.get:11 of
+msgid "``item.get([slice(1, 3), slice(4, 7)]) == [item[1:3], item[4:7]]``"
+msgstr ""
+
+#: janim.items.svg.typst.TypstDoc.get:13 of
+msgid "列表支持嵌套，并且结果保持原嵌套结构，例如"
+msgstr ""
+
+#: janim.items.svg.typst.TypstDoc.get:15 of
+msgid ""
+"``item.get([slice(1, 3), [slice(4, 6), slice(10, 12)]]) == [item[1:3], "
+"[item[4:6], item[10:12]]]``"
+msgstr ""
+
+#: janim.items.svg.typst.TypstDoc.get:17 of
+msgid "若 ``gapless=True``："
+msgstr ""
+
+#: janim.items.svg.typst.TypstDoc.get:19 of
+msgid "表示通过给定 ``slices`` 的所有起止位置将所有子物件切分并一起返回，例如"
+msgstr ""
+
+#: janim.items.svg.typst.TypstDoc.get:21 of
+msgid "``item.get(slice(1, 3), gapless=True) == [item[:1], item[1:3], item[3:]]``"
+msgstr ""
+
+#: janim.items.svg.typst.TypstDoc.get:23 of
+msgid "也支持列表以及嵌套的列表，例如"
+msgstr ""
+
+#: janim.items.svg.typst.TypstDoc.get:25 of
+msgid ""
+"``item.get([slice(1, 3), slice(5, 7)]) == [item[:1], item[1:3], "
+"item[3:5], item[5:7], item[7:]]``"
+msgstr ""
+
+#: janim.items.svg.typst.TypstDoc.get:27 of
+msgid "注：在这种情况下，所有嵌套结构都会先被展平后处理"
+msgstr ""
+
+#: janim.items.svg.typst.TypstDoc.slice:1 of
+msgid "得到指定 ``pattern`` 在该物件中形状配对的切片"
+msgstr ""
+
+#: janim.items.svg.typst.TypstDoc.slice:3 of
+msgid "默认返回首个匹配的（即 ``ordinal=0``）"
+msgstr ""
+
+#: janim.items.svg.typst.TypstDoc.slice:4 of
+msgid "``ordinal`` 传入其它索引可得到随后匹配的特定部分"
+msgstr ""
+
+#: janim.items.svg.typst.TypstDoc.slice:5 of
+msgid "``ordinal`` 传入索引列表可得到多个匹配的特定部分"
+msgstr ""
+
+#: janim.items.svg.typst.TypstDoc.slice:6 of
+msgid "``ordinal`` 传入省略号 ``...`` 可以得到所有匹配的部分"
+msgstr ""
+
+#: janim.items.svg.typst.TypstDoc.indices:1 of
+msgid "找出该公式中所有出现了 ``pattern`` 的位置"
+msgstr ""
+
+#: janim.items.svg.typst.TypstDoc.indices:3 of
+msgid "``pattern`` 支持使用字符串或者 Typst 对象"
+msgstr ""
+
+#: janim.items.svg.typst.TypstDoc.lps:1 of
+msgid "KMP 算法涉及的部分匹配表"
 msgstr ""
 
 #: janim.items.svg.typst.Typst:1 of

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: JAnim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-05-30 15:49+0800\n"
+"POT-Creation-Date: 2024-11-10 11:17+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -28,10 +28,13 @@ msgid "基类：:py:class:`~PySide6.QtWidgets.QWidget`"
 msgstr ""
 
 #: janim.gui.richtext_editor.RichTextEdit:1 of
-msgid "基类：:py:class:`~PySide6.QtWidgets.QPlainTextEdit`"
+msgid "基类：:py:class:`~janim.gui.text_edit.TextEdit`"
 msgstr ""
 
 #: janim.gui.richtext_editor.RichTextHighlighter:1 of
 msgid "基类：:py:class:`~PySide6.QtGui.QSyntaxHighlighter`"
 msgstr ""
+
+#~ msgid "基类：:py:class:`~PySide6.QtWidgets.QPlainTextEdit`"
+#~ msgstr ""
 

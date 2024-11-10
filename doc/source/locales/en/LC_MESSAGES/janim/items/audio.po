@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: JAnim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-05-30 15:49+0800\n"
+"POT-Creation-Date: 2024-11-10 11:17+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -28,7 +28,15 @@ msgid "基类：:py:class:`object`"
 msgstr ""
 
 #: janim.items.audio.Audio:1 of
-msgid "不建议使用该类处理多声道音频，因为该类读取时仅保留单声道"
+msgid "在默认情况下该类读取时仅保留单声道"
+msgstr ""
+
+#: janim.items.audio.Audio:3 of
+msgid "若需要双声道需要配置 ``audio_channels`` 选项"
+msgstr ""
+
+#: janim.items.audio.Audio:5 of
+msgid "另见：:class:`~.Config`"
 msgstr ""
 
 #: janim.items.audio.Audio.read:1 of
@@ -119,4 +127,7 @@ msgstr ""
 #: janim.items.audio.Audio.recommended_range:3 of
 msgid "与 :meth:`recommended_ranges` 的区别是，该方法得到的是最开始到最末尾的整个区段"
 msgstr ""
+
+#~ msgid "不建议使用该类处理多声道音频，因为该类读取时仅保留单声道"
+#~ msgstr ""
 

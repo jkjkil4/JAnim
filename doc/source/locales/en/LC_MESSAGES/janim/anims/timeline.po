@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  JAnim\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-07-03 18:50+0800\n"
+"POT-Creation-Date: 2024-11-10 11:17+0800\n"
 "PO-Revision-Date: 2024-03-14 15:46+0800\n"
 "Last-Translator: \n"
 "Language: en\n"
@@ -107,6 +107,10 @@ msgid "会在进度达到 ``at`` 时，对 ``func`` 进行调用， 可传入 ``
 msgstr ""
 "Calls ``func`` when the progress reaches ``at``, can pass ``*args`` and "
 "``**kwargs``"
+
+#: janim.anims.timeline.Timeline.timeout:1 of
+msgid "相当于 `schedule(self.current_time + delay, func, *args, **kwargs)`"
+msgstr ""
 
 #: janim.anims.timeline.Timeline.forward:1 of
 msgid "向前推进 ``dt`` 秒"

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: JAnim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-03-14 14:52+0800\n"
+"POT-Creation-Date: 2024-11-10 11:17+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -24,7 +24,9 @@ msgid "image"
 msgstr ""
 
 #: janim.components.image.Cmpt_Image:1 of
-msgid "基类：:py:class:`~janim.components.component.Component`"
+msgid ""
+"基类：:py:class:`~janim.components.component.Component`, "
+":py:class:`~typing.Generic`"
 msgstr ""
 
 #: janim.components.image.Cmpt_Image:1 of
@@ -34,4 +36,7 @@ msgstr ""
 #: janim.components.image.Cmpt_Image.set:1 of
 msgid "设置 PIL 图像"
 msgstr ""
+
+#~ msgid "基类：:py:class:`~janim.components.component.Component`"
+#~ msgstr ""
 

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: JAnim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-05-30 15:49+0800\n"
+"POT-Creation-Date: 2024-11-10 11:17+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -348,7 +348,11 @@ msgid ""
 msgstr ""
 
 #: janim.items.text.text.Text:1 of
-msgid "文字物件"
+msgid "文字物件，支持富文本等功能"
+msgstr ""
+
+#: janim.items.text.text.Text:3 of
+msgid "如果对换行排版等有较高的需求可以考虑使用 :class:`~.TypstDoc`"
 msgstr ""
 
 #: janim.items.text.text.Text.Format:1 of
@@ -409,5 +413,8 @@ msgstr ""
 #~ msgstr ""
 
 #~ msgid "用于声明可用的富文本格式"
+#~ msgstr ""
+
+#~ msgid "文字物件"
 #~ msgstr ""
 

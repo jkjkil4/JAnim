@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: JAnim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-05-30 15:49+0800\n"
+"POT-Creation-Date: 2024-11-10 11:17+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -31,8 +31,20 @@ msgstr ""
 msgid "贝塞尔曲线拼接物件，具体说明请参考 :class:`~.Cmpt_VPoints` 的文档"
 msgstr ""
 
-#: janim.items.vitem.VItem.set_style:1 of
+#: janim.items.vitem.VItem.apply_style:1 of
 msgid "设置物件自身的样式，不影响子物件"
+msgstr ""
+
+#: janim.items.vitem.VItem.apply_style:3 of
+msgid "另见：:meth:`set`"
+msgstr ""
+
+#: janim.items.vitem.VItem.set_stroke_background:1 of
+msgid "调整描边与填充的绘制顺序"
+msgstr ""
+
+#: janim.items.vitem.VItem.set_stroke_background:3 of
+msgid "``flag=True`` 会使得描边被填充遮盖，``flag=False`` 则会使得填充被描边遮盖"
 msgstr ""
 
 #: janim.items.vitem.VItem.add_tip:1 of

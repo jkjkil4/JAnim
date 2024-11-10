@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: JAnim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-07-31 22:13+0800\n"
+"POT-Creation-Date: 2024-11-10 11:17+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -53,6 +53,10 @@ msgstr ""
 
 #: janim.items.geometry.arrow.ArrowTip:5 of
 msgid "``center_anchor``: 原点所处的位置，请参考 :class:`CenterAnchor`"
+msgstr ""
+
+#: janim.items.geometry.arrow.ArrowTip:6 of
+msgid "``rotation``: 绕方向轴转动的角度，一般用于 3D 中"
 msgstr ""
 
 #: janim.items.geometry.arrow.ArrowTip.get_center_anchor:1 of

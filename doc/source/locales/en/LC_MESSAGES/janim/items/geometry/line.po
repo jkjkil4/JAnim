@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: JAnim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-03-14 14:52+0800\n"
+"POT-Creation-Date: 2024-11-10 11:17+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -92,10 +92,16 @@ msgid "折线（一般用作直角符号）"
 msgstr ""
 
 #: janim.items.geometry.line.Elbow:3 of
-msgid "width 表示宽度"
+msgid "``width`` 表示宽度"
 msgstr ""
 
 #: janim.items.geometry.line.Elbow:4 of
-msgid "angle 表示角度"
+msgid "``angle`` 表示角度"
 msgstr ""
+
+#~ msgid "width 表示宽度"
+#~ msgstr ""
+
+#~ msgid "angle 表示角度"
+#~ msgstr ""
 

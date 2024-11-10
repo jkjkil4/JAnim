@@ -38,9 +38,7 @@
         -   S 缩小
         -   D 右移
 
-.. raw:: html
-
-    <del>有点像 FPS 游戏的键位</del>
+有点像 FPS 游戏的键位
 
 窗口位置
 ~~~~~~~~~~~~
@@ -150,7 +148,7 @@
     :align: center
     :scale: 50%
 
-- ``Rect``: 选择后，在画面上按下，然后拖动，再抬起，会根据起始点得到一个矩形
+- ``Rect``: 选择后，在画面上按下，然后拖动，再抬起，会根据起止点得到一个矩形
 
 .. image:: /_static/images/f_draw_rect.png
     :align: center

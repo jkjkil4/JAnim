@@ -6,19 +6,18 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: JAnim\n"
+"Project-Id-Version:  JAnim\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-05-30 15:49+0800\n"
+"POT-Creation-Date: 2024-11-10 11:17+0800\n"
 "PO-Revision-Date: 2024-07-31 22:23+0800\n"
 "Last-Translator: \n"
-"Language-Team: en <LL@li.org>\n"
 "Language: en\n"
+"Language-Team: en <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "Generated-By: Babel 2.14.0\n"
-"X-Generator: Poedit 3.4.2\n"
 
 #: ../../source/janim/anims/rotation.rst:2
 msgid "rotation"
@@ -26,22 +25,19 @@ msgstr "rotation"
 
 #: ../../source/janim/anims/rotation.rst:6
 msgid ""
-"如果你想要实现旋转效果，请不要尝试直接使用 ``self.play(item.anim."
-"points.rotate(...))``， 因为这只是在当前和结果之间进行 :class:`~."
-"MethodTransform` ，并无旋转效果"
+"如果你想要实现旋转效果，请不要尝试直接使用 ``self.play(item.anim.points.rotate(...))``， "
+"因为这只是在当前和结果之间进行 :class:`~.MethodTransform` ，并无旋转效果"
 msgstr ""
-"If you want to achieve a rotation effect, please avoid attempting "
-"to directly use ``self.play(item.anim.points.rotate(...))``. This "
-"method only performs a :class:`~.MethodTransform` between the "
-"current and resulting states, without creating a rotation effect."
+"If you want to achieve a rotation effect, please avoid attempting to "
+"directly use ``self.play(item.anim.points.rotate(...))``. This method "
+"only performs a :class:`~.MethodTransform` between the current and "
+"resulting states, without creating a rotation effect."
 
 #: ../../source/janim/anims/rotation.rst:9
-msgid ""
-"实现旋转效果请使用下方给出的 :class:`~.Rotate` 和 :class:`~."
-"Rotating`"
+msgid "实现旋转效果请使用下方给出的 :class:`~.Rotate` 和 :class:`~.Rotating`"
 msgstr ""
-"To achieve a rotation effect, please use the provided :class:"
-"`Rotate` and :class:`Rotating` classes as shown below:"
+"To achieve a rotation effect, please use the provided :class:`Rotate` and"
+" :class:`Rotating` classes as shown below:"
 
 #: janim.anims.rotation.Rotate:1 of
 msgid "基类：:py:class:`~janim.anims.updater.DataUpdater`"
@@ -51,6 +47,14 @@ msgstr "基类：:py:class:`~janim.anims.updater.DataUpdater`"
 msgid "旋转，默认对角度进行平滑插值"
 msgstr "Rotation animation, default smooth interpolation for angles."
 
+#: janim.anims.rotation.Rotate:3 of
+msgid "参数和旋转基本一致"
+msgstr ""
+
+#: janim.anims.rotation.Rotate:4 of
+msgid "``absolute`` 参数是为了兼容摄像机物件，对于非摄像机物件该参数无效"
+msgstr ""
+
 #: janim.anims.rotation.Rotating:1 of
 msgid "基类：:py:class:`~janim.anims.rotation.Rotate`"
 msgstr "基类：:py:class:`~janim.anims.rotation.Rotate`"
@@ -58,3 +62,4 @@ msgstr "基类：:py:class:`~janim.anims.rotation.Rotate`"
 #: janim.anims.rotation.Rotating:1 of
 msgid "旋转，默认对角度进行线性插值"
 msgstr "Rotation animation, default linear interpolation for angles."
+

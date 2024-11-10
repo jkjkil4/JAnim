@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: JAnim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-03-14 14:52+0800\n"
+"POT-Creation-Date: 2024-11-10 11:17+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -39,6 +39,14 @@ msgstr ""
 
 #: janim.camera.camera.Cmpt_CameraPoints.rotate:1 of
 msgid "将摄像机绕 ``axis`` 轴进行旋转"
+msgstr ""
+
+#: janim.camera.camera.Cmpt_CameraPoints.rotate:3 of
+msgid "默认 ``absolute=True`` 表示绕全局坐标系旋转"
+msgstr ""
+
+#: janim.camera.camera.Cmpt_CameraPoints.rotate:4 of
+msgid "``absolute=False`` 表示绕相机自身坐标系旋转，并且此时 ``about_point`` 参数无效"
 msgstr ""
 
 #: janim.camera.camera.Cmpt_CameraPoints.info:1 of

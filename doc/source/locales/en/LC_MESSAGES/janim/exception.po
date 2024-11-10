@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: JAnim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-03-14 14:52+0800\n"
+"POT-Creation-Date: 2024-11-10 11:17+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -47,13 +47,18 @@ msgstr ""
 msgid "``ffmpeg`` 未安装时的退出码"
 msgstr ""
 
+#: ../../docstring janim.exception.EXITCODE_FFPROBE_ERROR:1 of
+msgid "``ffprobe`` 执行失败时的退出码"
+msgstr ""
+
 #: janim.exception.JAnimException:1 of
 msgid "基类：:py:class:`Exception`"
 msgstr ""
 
 #: janim.exception.AsTypeError:1 janim.exception.BooleanOpsError:1
 #: janim.exception.CmptGroupLookupError:1 janim.exception.ColorNotFoundError:1
-#: janim.exception.ExitException:1 janim.exception.FontNotFoundError:1
+#: janim.exception.CopyError:1 janim.exception.ExitException:1
+#: janim.exception.FontNotFoundError:1 janim.exception.GetItemError:1
 #: janim.exception.PointError:1 janim.exception.TimelineError:1
 #: janim.exception.UpdaterError:1 of
 msgid "基类：:py:class:`~janim.exception.JAnimException`"
@@ -63,10 +68,15 @@ msgstr ""
 msgid "当 :class:`ExitException` 未被捕获时， 会直接以 ``exit_code`` 退出，不输出 ``traceback`` 信息"
 msgstr ""
 
-#: janim.exception.NotAnimationError:1 janim.exception.StoreFailedError:1
-#: janim.exception.StoreNotFoundError:1 janim.exception.TimelineLookupError:1
+#: janim.exception.NotAnimationError:1 janim.exception.RecordFailedError:1
+#: janim.exception.RecordNotFoundError:1 janim.exception.TimelineLookupError:1
 #: of
 msgid "基类：:py:class:`~janim.exception.TimelineError`"
+msgstr ""
+
+#: janim.exception.InvalidOrdinalError:1 janim.exception.PatternMismatchError:1
+#: of
+msgid "基类：:py:class:`~janim.exception.GetItemError`"
 msgstr ""
 
 #: janim.exception.InvaildMatrixError:1 of
