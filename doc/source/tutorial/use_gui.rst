@@ -139,6 +139,41 @@
 
 选择完后，使用 ``Ctrl+右键`` 退出这个功能
 
+绘制
+~~~~~~~~~~~
+
+为了方便在界面上取坐标以供参考，提供了“绘制”功能：
+
+- ``Dot``: 选择后，点击屏幕可以在工具窗口中得到一个坐标
+
+.. image:: /_static/images/f_draw_dot.png
+    :align: center
+    :scale: 50%
+
+- ``Rect``: 选择后，在画面上按下，然后拖动，再抬起，会根据起始点得到一个矩形
+
+.. image:: /_static/images/f_draw_rect.png
+    :align: center
+    :scale: 50%
+
+- ``VItem``: 选择后，在画面上绘制，可以得到一段曲线；一般情况下顶点会比较多，可以使用拖动条减少点的数量并平滑化
+
+.. image:: /_static/images/f_draw_vitem.png
+    :align: center
+    :scale: 50%
+
+可以同时取多个物件，不同物件会在工具界面上对应多个分页：
+
+.. image:: /_static/images/f_draw_pages.png
+    :align: center
+    :scale: 50%
+
+.. warning::
+
+    这些仅是在屏幕上确定位置用的，为了将绘制出的东西真正地加进去，你需要手动添加对应的代码
+
+如果没有选择任何选项（也就是“无”），在画面上拖动将会控制当前页的物件位置
+
 富文本编辑
 ~~~~~~~~~~~~
 
@@ -151,3 +186,36 @@
     实验性功能：粘贴时识别富文本格式
 
     该选择框启用后，会尝试将粘贴的 html 文本样式转换为 JAnim 富文本样式
+
+.. tip::
+
+    可以在命令行使用 ``janim tool richtext`` 单独打开该界面
+
+字体列表
+~~~~~~~~~~~~~
+
+.. image:: /_static/images/font_table.png
+    :align: center
+    :scale: 65%
+
+提供了字体索引列表，方便查找字体
+
+- 其中“调用名称”也就是可以给 :class:`~.Text` 传入的 ``font`` 参数
+- 善用搜索功能，可以方便地根据字体名称进行查找
+
+.. tip::
+
+    可以在命令行使用 ``janim tool fonts`` 单独打开该界面
+
+颜色
+~~~~~~~~~~~
+
+.. image:: /_static/images/color_table.png
+    :align: center
+    :scale: 65%
+
+提供了便捷的颜色输入、转换、预览和选取的功能
+
+.. tip::
+
+    可以在命令行使用 ``janim tool color`` 单独打开该界面
