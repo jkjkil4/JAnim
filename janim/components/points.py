@@ -20,7 +20,8 @@ from janim.utils.data import AlignedData, Array
 from janim.utils.iterables import resize_and_repeatedly_extend
 from janim.utils.paths import PathFunc, straight_path
 from janim.utils.signal import Signal
-from janim.utils.space_ops import angle_of_vector, get_norm, rotation_matrix
+from janim.utils.space_ops import (angle_of_vector, get_norm, normalize,
+                                   rotation_between_vectors, rotation_matrix)
 
 _ = get_local_strings('points')
 
@@ -732,6 +733,30 @@ class Cmpt_Points[ItemT](Component[ItemT]):
             length = box.length_over_dim(dim_to_match)
             self.scale((length + buff * 2) / length, root_only=root_only)
 
+        return self
+
+    def shear(
+        self,
+        factor: float = 0.2,
+        direction: Vect = RIGHT,
+        *,
+        about_point: Vect | None = None,
+        about_edge: Vect = ORIGIN,
+        root_only: bool = False
+    ) -> Self:
+        mat_shear = [
+            [1, factor, 0],
+            [0, 1, 0],
+            [0, 0, 1]
+        ]
+        if np.isclose(normalize(direction), RIGHT).all():
+            mat = mat_shear
+        else:
+            mat_rot = rotation_between_vectors(direction, RIGHT)
+            # mat_rot.T == mat_rot.I
+            mat = mat_rot.T @ mat_shear @ mat_rot
+
+        self.apply_matrix(mat, about_point=about_point, about_edge=about_edge, root_only=root_only)
         return self
 
     def put_start_and_end_on(self, start: Vect, end: Vect) -> Self:
