@@ -744,6 +744,13 @@ class Cmpt_Points[ItemT](Component[ItemT]):
         about_edge: Vect = ORIGIN,
         root_only: bool = False
     ) -> Self:
+        '''
+        切变
+
+        - ``factor`` 表示切变的程度
+        - ``direction`` 表示切变的方向
+        - 可以传入 ``about_point`` 或 ``about_edge`` 控制参考点
+        '''
         mat_shear = [
             [1, factor, 0],
             [0, 1, 0],
