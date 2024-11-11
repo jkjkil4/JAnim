@@ -6,7 +6,7 @@ from janim.components.component import Component
 from janim.utils.data import AlignedData
 
 type CopyFn[T] = Callable[[T], T]
-type MaybeSameFn[T] = Callable[[T, T], bool]
+type NotChangedFn[T] = Callable[[T, T], bool]
 type InterpolateFn[T] = Callable[[T, T, float], T]
 
 
@@ -16,7 +16,7 @@ class Cmpt_Data[ItemT, T](Component[ItemT]):
     '''
     def __init__(self):
         self.copy_func: CopyFn[T] = None
-        self.maybe_same_func: MaybeSameFn[T] = None
+        self.not_changed_func: NotChangedFn[T] = None
         self.interpolate_func: InterpolateFn[T] = None
 
     def copy(self) -> Self:
@@ -32,8 +32,8 @@ class Cmpt_Data[ItemT, T](Component[ItemT]):
         return self
 
     def not_changed(self, other: Cmpt_Data) -> bool:
-        assert self.maybe_same_func is not None
-        return self.maybe_same_func(self.value, other.value)
+        assert self.not_changed_func is not None
+        return self.not_changed_func(self.value, other.value)
 
     @classmethod
     def align_for_interpolate(cls, cmpt1: Cmpt_Data, cmpt2: Cmpt_Data) -> AlignedData[Self]:
@@ -41,12 +41,9 @@ class Cmpt_Data[ItemT, T](Component[ItemT]):
         cmpt2_copy = cmpt2.copy()
         return AlignedData(cmpt1_copy, cmpt2_copy, cmpt1_copy.copy())
 
-    def interpolate(self, cmpt1: Cmpt_Data, cmpt2: Cmpt_Data, alpha: float, *, path_func=None) -> Self:
-        if cmpt1 == cmpt2:
-            return
-
-        self.set(self.interpolate_func(cmpt1.value, cmpt2.value, alpha))
-        return self
+    def interpolate(self, cmpt1: Cmpt_Data, cmpt2: Cmpt_Data, alpha: float, *, path_func=None) -> None:
+        if not self.not_changed_func(cmpt1, cmpt2):
+            self.set(self.interpolate_func(cmpt1.value, cmpt2.value, alpha))
 
     def set(self, value: T) -> Self:
         '''设置当前数据'''
@@ -65,13 +62,13 @@ class Cmpt_Data[ItemT, T](Component[ItemT]):
     def set_func(
         self,
         copy_func: CopyFn[T] | None = None,
-        maybe_same_func: MaybeSameFn[T] | None = None,
+        not_changed_func: NotChangedFn[T] | None = None,
         interpolate_func: InterpolateFn[T] | None = None
     ) -> Self:
         if copy_func is not None:
             self.copy_func = copy_func
-        if maybe_same_func is not None:
-            self.maybe_same_func = maybe_same_func
+        if not_changed_func is not None:
+            self.not_changed_func = not_changed_func
         if interpolate_func is not None:
             self.interpolate_func = interpolate_func
         return self

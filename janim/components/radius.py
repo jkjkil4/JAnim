@@ -34,7 +34,7 @@ class Cmpt_Radius[ItemT](Component[ItemT]):
         return cmpt_copy
 
     def become(self, other: Cmpt_Radius) -> Self:
-        if not self.not_changed(other):
+        if not self._radii.is_share(other._radii):
             self._radii = other._radii.copy()
         return self
 
@@ -56,10 +56,8 @@ class Cmpt_Radius[ItemT](Component[ItemT]):
         return AlignedData(cmpt1_copy, cmpt2_copy, cmpt1_copy.copy())
 
     def interpolate(self, cmpt1: Cmpt_Radius, cmpt2: Cmpt_Radius, alpha: float, *, path_func=None) -> None:
-        if cmpt1.not_changed(cmpt2):
-            return
-
-        self.set(interpolate(cmpt1.get(), cmpt2.get(), alpha), root_only=True)
+        if not cmpt1._radii.is_share(cmpt2._radii):
+            self.set(interpolate(cmpt1.get(), cmpt2.get(), alpha), root_only=True)
 
     # region 半径数据 | Radii
 

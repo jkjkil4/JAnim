@@ -55,7 +55,7 @@ class Cmpt_Points[ItemT](Component[ItemT]):
         return cmpt_copy
 
     def become(self, other: Cmpt_Points) -> Self:
-        if not self.not_changed(other):
+        if not self._points.is_share(other._points):
             self._points = other._points.copy()
             Cmpt_Points.set.emit(self)
         return self
@@ -85,10 +85,8 @@ class Cmpt_Points[ItemT](Component[ItemT]):
         *,
         path_func: PathFunc = straight_path
     ) -> None:
-        if cmpt1.not_changed(cmpt2):
-            return
-
-        self.set(path_func(cmpt1.get(), cmpt2.get(), alpha))
+        if not cmpt1._points.is_share(cmpt2._points):
+            self.set(path_func(cmpt1.get(), cmpt2.get(), alpha))
 
     # region 点数据 | Points
 

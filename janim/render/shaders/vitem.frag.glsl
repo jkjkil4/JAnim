@@ -9,6 +9,9 @@ uniform float JA_ANTI_ALIAS_RADIUS;
 uniform bool JA_FIX_IN_FRAME;
 
 uniform bool stroke_background;
+uniform bool is_fill_transparent;
+uniform vec4 glow_color;
+uniform float glow_size;
 
 const float INFINITY = uintBitsToFloat(0x7F800000);
 
@@ -225,6 +228,20 @@ void main()
         f_color = blend_color(fill_color, stroke_color);
     } else {
         f_color = blend_color(stroke_color, fill_color);
+    }
+
+    if (glow_color.a != 0.0) {
+        float factor;
+        if (is_fill_transparent) {
+            factor = 1 - d / glow_size;
+        } else {
+            factor = 1 - sgn_d / glow_size;
+        }
+        if (0 < factor && factor <= 1) {
+            vec4 f_glow_color = glow_color;
+            f_glow_color.a *= factor * factor;
+            f_color = blend_color(f_color, f_glow_color);
+        }
     }
 
     #if !defined(POLYGON_LINES) && !defined(SDF_PLANE)

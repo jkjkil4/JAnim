@@ -624,8 +624,11 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         进行插值（仅对该物件进行，不包含后代物件）
         '''
         for key, cmpt in self.components.items():
-            cmpt1 = item1.components[key]
-            cmpt2 = item2.components[key]
+            try:
+                cmpt1 = item1.components[key]
+                cmpt2 = item2.components[key]
+            except KeyError:
+                continue
             cmpt.interpolate(cmpt1, cmpt2, alpha, path_func=path_func)
 
     def apart_alpha(self, n: int) -> None:

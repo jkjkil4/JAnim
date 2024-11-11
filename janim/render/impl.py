@@ -105,6 +105,8 @@ class VItemRenderer(Renderer):
         self.prev_radius = None
         self.prev_stroke = None
         self.prev_fill = None
+        self.fill_transparent = False
+        self.prev_glow_size = -1
 
         self.points_vec4buffer = np.empty((0, 4), dtype=np.float32)
 
@@ -120,11 +122,13 @@ class VItemRenderer(Renderer):
         new_radius = item.radius._radii._data
         new_stroke = item.stroke._rgbas._data
         new_fill = item.fill._rgbas._data
+        new_glow_size = item.glow._size
 
         is_camera_changed = new_camera_info is not self.prev_camera_info
 
         if new_fix_in_frame != self.prev_fix_in_frame \
                 or new_radius is not self.prev_radius \
+                or new_glow_size != self.prev_glow_size \
                 or new_points is not self.prev_points \
                 or is_camera_changed:
             corners = np.array(item.points.self_box.get_corners())
@@ -134,7 +138,7 @@ class VItemRenderer(Renderer):
                 clip_box = render_data.camera_info.map_points(corners)
             clip_box *= render_data.camera_info.frame_radius
 
-            buff = new_radius.max() + render_data.anti_alias_radius
+            buff = max(new_radius.max() + render_data.anti_alias_radius, new_glow_size)
             clip_min = np.min(clip_box, axis=0) - buff
             clip_max = np.max(clip_box, axis=0) + buff
             clip_box = np.array([
@@ -170,6 +174,9 @@ class VItemRenderer(Renderer):
 
             self.vbo_stroke_color.write(bytes)
             self.prev_stroke = new_stroke
+
+        if new_fill is not self.prev_fill:
+            self.fill_transparent = item.fill.is_transparent()
 
         if new_fill is not self.prev_fill or len(new_points) != len(self.prev_points):
             fill = resize_with_interpolation(new_fill, (len(new_points) + 1) // 2)
@@ -216,6 +223,9 @@ class VItemRenderer(Renderer):
         self.vbo_fill_color.bind_to_storage_buffer(3)
         self.update_fix_in_frame(item, self.prog)
         self.prog['stroke_background'] = item.stroke_background
+        self.prog['is_fill_transparent'] = self.fill_transparent
+        self.prog['glow_color'] = item.glow._rgba._data
+        self.prog['glow_size'] = new_glow_size
         self.vao.render(mgl.TRIANGLE_STRIP)
 
 

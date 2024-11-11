@@ -6,6 +6,7 @@ from typing import Iterable, Self
 import numpy as np
 
 from janim.components.component import CmptGroup, CmptInfo
+from janim.components.glow import Cmpt_Glow
 from janim.components.points import Cmpt_Points
 from janim.components.radius import Cmpt_Radius
 from janim.components.rgbas import Cmpt_Rgbas, apart_alpha
@@ -30,6 +31,7 @@ class VItem(Points):
 
     stroke = CmptInfo(Cmpt_Rgbas[Self])
     fill = CmptInfo(Cmpt_Rgbas[Self])
+    glow = CmptInfo(Cmpt_Glow[Self])
 
     color = CmptGroup(stroke, fill)
 
@@ -55,6 +57,9 @@ class VItem(Points):
         fill_alpha: Alpha | AlphaArray | None = None,
         color: JAnimColor | ColorArray | None = None,
         alpha: Alpha | AlphaArray | None = None,
+        glow_color: JAnimColor | None = None,
+        glow_alpha: Alpha | None = None,
+        glow_size: float | None = None,
         **kwargs
     ) -> Self:
         if stroke_color is None:
@@ -73,6 +78,7 @@ class VItem(Points):
             self.radius.set(stroke_radius, root_only=True)
         self.stroke.set(stroke_color, stroke_alpha, root_only=True)
         self.fill.set(fill_color, fill_alpha, root_only=True)
+        self.glow.set(glow_color, glow_alpha, glow_size, root_only=True)
 
         return super().apply_style(**kwargs)
 

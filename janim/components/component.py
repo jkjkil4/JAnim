@@ -162,7 +162,7 @@ class Component[ItemT](refresh.Refreshable, metaclass=_CmptMeta):
     def align_for_interpolate(cls, cmpt1, cmpt2) -> AlignedData[Self]:
         return AlignedData(cmpt1, cmpt1, cmpt1)
 
-    def interpolate(self, cmpt1, cmpt2, alpha: float, *, path_func=None): ...
+    def interpolate(self, cmpt1, cmpt2, alpha: float, *, path_func=None) -> None: ...
 
 
 class CmptInfo[T]:

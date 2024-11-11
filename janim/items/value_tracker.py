@@ -3,7 +3,7 @@ import copy
 from typing import Self
 
 from janim.components.component import CmptInfo
-from janim.components.data import Cmpt_Data, CopyFn, MaybeSameFn, InterpolateFn
+from janim.components.data import Cmpt_Data, CopyFn, NotChangedFn, InterpolateFn
 from janim.items.item import Item
 from janim.utils.bezier import interpolate
 
@@ -32,10 +32,10 @@ class ValueTracker[T](Item):
         self,
         value: T,
         copy_func: CopyFn[T] = copy.copy,
-        maybe_same_func: MaybeSameFn[T] = lambda a, b: a == b,
+        not_changed_func: NotChangedFn[T] = lambda a, b: a == b,
         interpolate_func: InterpolateFn[T] = interpolate,
         **kwargs
     ):
         super().__init__(**kwargs)
-        self.data.set_func(copy_func, maybe_same_func, interpolate_func)
+        self.data.set_func(copy_func, not_changed_func, interpolate_func)
         self.data.set(value)

@@ -30,7 +30,7 @@ class Cmpt_Rgbas[ItemT](Component[ItemT]):
         return cmpt_copy
 
     def become(self, other: Cmpt_Rgbas) -> Self:
-        if not self.not_changed(other):
+        if not self._rgbas.is_share(other._rgbas):
             self._rgbas = other._rgbas.copy()
         return self
 
@@ -52,10 +52,11 @@ class Cmpt_Rgbas[ItemT](Component[ItemT]):
         return AlignedData(cmpt1_copy, cmpt2_copy, cmpt1_copy.copy())
 
     def interpolate(self, cmpt1: Cmpt_Rgbas, cmpt2: Cmpt_Rgbas, alpha: float, *, path_func=None) -> None:
-        if cmpt1.not_changed(cmpt2):
-            return
+        if not cmpt1._rgbas.is_share(cmpt2._rgbas):
+            self.set_rgbas(interpolate(cmpt1.get(), cmpt2.get(), alpha))
 
-        self.set_rgbas(interpolate(cmpt1.get(), cmpt2.get(), alpha))
+    def is_transparent(self) -> None:
+        return (self._rgbas.data[:, 3] == 0).all()
 
     # region 颜色数据 | Colors
 
