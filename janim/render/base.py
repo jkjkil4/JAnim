@@ -33,9 +33,12 @@ class Renderer:
     def render(self, item) -> None: ...
 
     @staticmethod
-    def update_fix_in_frame(item: Item, prog: mgl.Program):
-        if FIX_IN_FRAME_KEY in prog._members:
-            prog[FIX_IN_FRAME_KEY] = item._fix_in_frame
+    def get_u_fix_in_frame(prog: mgl.Program) -> mgl.Uniform:
+        return prog[FIX_IN_FRAME_KEY]
+
+    @staticmethod
+    def update_fix_in_frame(uniform: mgl.Uniform, item: Item) -> None:
+        uniform.value = item._fix_in_frame
 
 
 @dataclass(kw_only=True)

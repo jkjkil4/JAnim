@@ -83,9 +83,7 @@ def write(args: Namespace) -> None:
 
     built = [timeline().build() for timeline in timelines]
 
-    log.info('======')
-
-    merge = not args.video and not args.audio
+    both = not args.video and not args.audio
 
     log.info('======')
 
@@ -97,17 +95,17 @@ def write(args: Namespace) -> None:
         if not os.path.exists(output_dir):
             os.makedirs(output_dir)
 
-        writes_video = merge or args.video
-        writes_audio = (merge or args.audio) and anim.timeline.has_audio()
+        merge = both and anim.timeline.has_audio()
 
-        _merge = merge and writes_audio
+        writes_video = both or args.video
+        writes_audio = (both or args.audio) and anim.timeline.has_audio()
 
         if writes_video:
             log.info(f'fps={anim.cfg.fps}')
             log.info(f'resolution="{anim.cfg.pixel_width}x{anim.cfg.pixel_height}"')
             log.info(f'format="{args.format}"')
         if writes_audio:
-            if not _merge:
+            if not merge:
                 log.info(f'audio_format="{args.audio_format}"')
             log.info(f'audio_framerate="{anim.cfg.audio_framerate}"')
         log.info(f'output_dir="{output_dir}"')
@@ -117,9 +115,9 @@ def write(args: Namespace) -> None:
             video_writer.write_all(
                 os.path.join(output_dir,
                              f'{name}.{args.format}'),
-                _keep_temp=_merge
+                _keep_temp=merge
             )
-            if args.open and not _merge and anim is built[-1]:
+            if args.open and not merge and anim is built[-1]:
                 open_file(video_writer.final_file_path)
 
         if writes_audio:
@@ -127,12 +125,12 @@ def write(args: Namespace) -> None:
             audio_writer.write_all(
                 os.path.join(output_dir,
                              f'{name}.{args.audio_format}'),
-                _keep_temp=_merge
+                _keep_temp=merge
             )
-            if args.open and not _merge and not writes_video and anim is built[-1]:
+            if args.open and not merge and not writes_video and anim is built[-1]:
                 open_file(audio_writer.final_file_path)
 
-        if _merge:
+        if merge:
             command = [
                 anim.cfg.ffmpeg_bin,
                 '-y',
