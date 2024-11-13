@@ -543,14 +543,10 @@ class StepUpdater[T: Item](Animation):
             idx = min(len(tcache) - 1, mod - 1)
             start_n += idx + 1
             data.restore(tcache[idx])
-            # print(f'restrore(tcache[{idx}])')
         else:
             data.restore(self.persistent_cache[start_block])
-            # print(f'restore(self.persistent_cache[{start_block}])')
-        # print(f'{start_n=} {n=}')
 
         for computing_n in range(start_n, n + 1):
-            print(f'{computing_n=}')
             with StepUpdaterParams(self,
                                    global_t,
                                    self.global_range,
@@ -561,7 +557,6 @@ class StepUpdater[T: Item](Animation):
             mod = computing_n % self.pcache_base
             if mod == 0 and computing_block == len(self.persistent_cache):
                 self.persistent_cache.append(data.store())
-                # print(f'pcache {computing_n=} {computing_block=}')
 
             if mod != 0 and generate_temporary_cache:
                 at_tcache = computing_block - at_block + 1
@@ -569,7 +564,6 @@ class StepUpdater[T: Item](Animation):
                     tcache = new_temporary_cache_blocks[at_tcache]
                     if mod == len(tcache) + 1:
                         tcache.append(data.store())
-                        # print(f'tcache {computing_n=} {computing_block=} {mod=}')
 
         if generate_temporary_cache:
             self.tcache_at_block = at_block
