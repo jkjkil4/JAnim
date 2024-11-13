@@ -9,8 +9,9 @@ from janim.anims.animation import Animation, RenderCall, TimeRange
 from janim.constants import ANIM_END_DELTA, C_LABEL_ANIM_ABSTRACT
 from janim.exception import UpdaterError
 from janim.items.item import DynamicItem, Item
-from janim.utils.simple_functions import clip
 from janim.locale.i18n import get_local_strings
+from janim.utils.rate_functions import RateFunc, linear
+from janim.utils.simple_functions import clip
 
 _ = get_local_strings('updater')
 
@@ -20,7 +21,7 @@ class UpdaterParams:
     '''
     ``Updater`` 调用时会传递的参数，用于标注时间信息以及动画进度
     '''
-    updater: DataUpdater | GroupUpdater | ItemUpdater
+    updater: DataUpdater | GroupUpdater | ItemUpdater | StepUpdater
     global_t: float
     alpha: float
     range: TimeRange
@@ -34,10 +35,30 @@ class UpdaterParams:
         updater_params_ctx.reset(self.token)
 
 
+@dataclass
+class StepUpdaterParams:
+    '''
+    :class:`StepUpdater` 调用时会传递的参数，用于标注时间信息以及动画进度
+    '''
+    updater: StepUpdater
+    global_t: float
+    range: TimeRange
+    n: int
+
+    def __enter__(self) -> Self:
+        self.token = updater_params_ctx.set(self)
+        return self
+
+    def __exit__(self, exc_type, exc_value, tb):
+        updater_params_ctx.reset(self.token)
+
+
 updater_params_ctx: ContextVar[UpdaterParams] = ContextVar('updater_params_ctx')
 
 type DataUpdaterFn[T] = Callable[[T, UpdaterParams], Any]
 type GroupUpdaterFn[T] = Callable[[T, UpdaterParams], Any]
+type ItemUpdaterFn = Callable[[UpdaterParams], Item]
+type StepUpdaterFn[T] = Callable[[T, UpdaterParams], Any]
 
 
 class DataUpdater[T: Item](Animation):
@@ -341,7 +362,7 @@ class ItemUpdater(Animation):
     def __init__(
         self,
         item: Item | None,
-        func: Callable[[UpdaterParams], Item],
+        func: ItemUpdaterFn,
         *,
         hide_at_begin: bool = True,
         show_at_end: bool = True,
@@ -403,3 +424,153 @@ class ItemUpdater(Animation):
             )
             for sub in dynamic.walk_self_and_descendants()
         ])
+
+
+class StepUpdater[T: Item](Animation):
+    '''
+    按步更新物件，每次间隔 ``step`` 秒，传入 ``func`` 的是上次更新后的物件
+    '''
+    label_color = C_LABEL_ANIM_ABSTRACT
+
+    def __init__(
+        self,
+        item: T,
+        func: StepUpdaterFn[T],
+        step: float = 0.02,     # 默认每秒 50 次
+        *,
+        persistent_cache_step: float = 1,   # 默认每秒一个持久缓存
+        hide_at_begin: bool = True,
+        show_at_end: bool = True,
+        become_at_end: bool = True,
+        rate_func: RateFunc = linear,
+        **kwargs
+    ):
+        super().__init__(rate_func=rate_func, **kwargs)
+        self.item = item
+        self.func = func
+
+        self.step = step
+        self.persistent_cache_step = persistent_cache_step
+
+        self.hide_at_begin = hide_at_begin
+        self.show_at_end = show_at_end
+        self.become_at_end = become_at_end
+
+        self.post_updaters: list[StepUpdaterFn[T]] = []
+
+        self.timeline.track_item_and_descendants(item, root_only=True)
+
+    def add_post_updater(self, updater: StepUpdaterFn[T]) -> Self:
+        self.post_updaters.append(updater)
+        return self
+
+    def call(self, data: T, p: StepUpdaterParams) -> None:
+        self.func(data, p)
+        for updater in self.post_updaters:
+            updater(data, p)
+
+    def dynamic_item(self, global_t: float) -> T:
+        data_copy = self.data.store()
+        self.compute(data_copy, global_t)
+        return data_copy
+
+    def anim_init(self) -> None:
+        self.first_data = self.item.current(as_time=self.global_range.at,
+                                            skip_dynamic=True)
+        self.data = self.first_data.store()
+
+        # persistent_cache abbr. pcache
+        self.pcache_base = max(1, round(self.persistent_cache_step / self.step))
+        self.persistent_cache: list[T] = [self.first_data]
+        self.tcache_at_block = 0
+        self.temporary_cache_blocks: list[list[T]] = [[], [], []]
+
+        if self.become_at_end:
+            self.compute(self.item, self.global_range.end)
+        self.timeline.register_dynamic(self.item,
+                                       self.dynamic_item,
+                                       self.item.store() if self.become_at_end else None,
+                                       self.global_range.at,
+                                       self.global_range.end - ANIM_END_DELTA,
+                                       not self.become_at_end)
+
+        self.set_render_call_list([
+            RenderCall(
+                self.data.depth,
+                self.data.render
+            )
+        ])
+
+        # 在动画开始时自动隐藏，在动画结束时自动显示
+        # 可以将 ``hide_on_begin`` 和 ``show_on_end`` 置为 ``False`` 以禁用
+        if self.hide_at_begin:
+            self.timeline.schedule(self.global_range.at, self.item.hide, root_only=True)
+        if self.show_at_end:
+            self.timeline.schedule(self.global_range.end, self.item.show, root_only=True)
+
+    def anim_on(self, local_t: float) -> None:
+        super().anim_on(local_t)
+        global_t = self.global_t_ctx.get()
+        self.compute(self.data, global_t, generate_temporary_cache=True)
+
+    def global_t_to_n(self, global_t: float) -> int:
+        return max(0, int((global_t - self.global_range.at) // self.step))
+
+    def compute(self, data: T, global_t: float, *, generate_temporary_cache: bool = False) -> None:
+        n = self.global_t_to_n(global_t)
+        at_block = n // self.pcache_base
+
+        if generate_temporary_cache:
+            offset = clip(at_block - self.tcache_at_block, -3, 3)
+            if offset > 0:
+                left = self.temporary_cache_blocks[offset:]
+                new_temporary_cache_blocks: list[list[T]] = [*left, *([] for _ in range(offset))]
+            elif offset < 0:
+                right = self.temporary_cache_blocks[: 3 + offset]
+                new_temporary_cache_blocks: list[list[T]] = [*([] for _ in range(-offset)), *right]
+            else:
+                new_temporary_cache_blocks = self.temporary_cache_blocks
+
+            assert len(new_temporary_cache_blocks) == 3
+
+        start_block = min(len(self.persistent_cache) - 1, at_block)
+        start_n = start_block * self.pcache_base + 1
+        at_tcache = start_block - self.tcache_at_block + 1
+
+        if 0 <= at_tcache < 3 \
+                and (tcache := self.temporary_cache_blocks[at_tcache]) \
+                and (mod := n % self.pcache_base) > 0:
+            idx = min(len(tcache) - 1, mod - 1)
+            start_n += idx + 1
+            data.restore(tcache[idx])
+            # print(f'restrore(tcache[{idx}])')
+        else:
+            data.restore(self.persistent_cache[start_block])
+            # print(f'restore(self.persistent_cache[{start_block}])')
+        # print(f'{start_n=} {n=}')
+
+        for computing_n in range(start_n, n + 1):
+            print(f'{computing_n=}')
+            with StepUpdaterParams(self,
+                                   global_t,
+                                   self.global_range,
+                                   computing_n) as params:
+                self.call(data, params)
+
+            computing_block = computing_n // self.pcache_base
+            mod = computing_n % self.pcache_base
+            if mod == 0 and computing_block == len(self.persistent_cache):
+                self.persistent_cache.append(data.store())
+                # print(f'pcache {computing_n=} {computing_block=}')
+
+            if mod != 0 and generate_temporary_cache:
+                at_tcache = computing_block - at_block + 1
+                if 0 <= at_tcache < 3:
+                    tcache = new_temporary_cache_blocks[at_tcache]
+                    if mod == len(tcache) + 1:
+                        tcache.append(data.store())
+                        # print(f'tcache {computing_n=} {computing_block=} {mod=}')
+
+        if generate_temporary_cache:
+            self.tcache_at_block = at_block
+            self.temporary_cache_blocks = new_temporary_cache_blocks
