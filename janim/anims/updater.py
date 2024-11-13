@@ -430,9 +430,9 @@ class ItemUpdater(Animation):
 
 class StepUpdater[T: Item](Animation):
     '''
-    按步更新物件，每次间隔 ``step`` 秒，传入 ``func`` 的是上次更新后的物件
+    按步更新物件，每次间隔 ``step`` 秒调用 ``func`` 进行下一步更新
 
-    - 该物件仅对根物件进行操作
+    - 该 Updater 仅对根物件进行操作
     '''
     label_color = C_LABEL_ANIM_ABSTRACT
 
