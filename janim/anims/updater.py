@@ -5,6 +5,8 @@ from contextvars import ContextVar
 from dataclasses import dataclass
 from typing import Any, Callable, Self
 
+from tqdm import tqdm as ProgressDisplay
+
 from janim.anims.animation import Animation, RenderCall, TimeRange
 from janim.constants import ANIM_END_DELTA, C_LABEL_ANIM_ABSTRACT
 from janim.exception import UpdaterError
@@ -429,6 +431,8 @@ class ItemUpdater(Animation):
 class StepUpdater[T: Item](Animation):
     '''
     按步更新物件，每次间隔 ``step`` 秒，传入 ``func`` 的是上次更新后的物件
+
+    - 该物件仅对根物件进行操作
     '''
     label_color = C_LABEL_ANIM_ABSTRACT
 
@@ -443,6 +447,7 @@ class StepUpdater[T: Item](Animation):
         show_at_end: bool = True,
         become_at_end: bool = True,
         rate_func: RateFunc = linear,
+        progress_bar: bool = True,
         **kwargs
     ):
         super().__init__(rate_func=rate_func, **kwargs)
@@ -455,6 +460,8 @@ class StepUpdater[T: Item](Animation):
         self.hide_at_begin = hide_at_begin
         self.show_at_end = show_at_end
         self.become_at_end = become_at_end
+
+        self.progress_bar = progress_bar
 
         self.post_updaters: list[StepUpdaterFn[T]] = []
 
@@ -546,7 +553,16 @@ class StepUpdater[T: Item](Animation):
         else:
             data.restore(self.persistent_cache[start_block])
 
-        for computing_n in range(start_n, n + 1):
+        rg = range(start_n, n + 1)
+        if self.progress_bar and len(rg) > 2 * self.pcache_base:
+            rg = ProgressDisplay(
+                rg,
+                desc=f'StepUpdater({data.__class__.__name__})',
+                leave=False,
+                dynamic_ncols=True
+            )
+
+        for computing_n in rg:
             with StepUpdaterParams(self,
                                    global_t,
                                    self.global_range,
