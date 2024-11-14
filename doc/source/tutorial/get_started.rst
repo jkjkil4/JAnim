@@ -94,9 +94,9 @@
     这里便是产生动画的代码，按照顺序来看：
 
     - ``self.forward()`` 向前推进 1s；由于此时没有物件显示，所以这 1s 只有空白的背景
-    - ``self.play(Create(circle))`` 显示圆的创建动画
-    - ``self.play(Transform(circle, square))`` 显示从圆变换到方形的补间动画
-    - ``self.play(Uncreate(square))`` 显示方形消失的动画
+    - ``self.play(Create(circle))`` 播放圆的创建动画
+    - ``self.play(Transform(circle, square))`` 播放从圆变换到方形的补间动画
+    - ``self.play(Uncreate(square))`` 播放方形消失的动画
     - ``self.forward()`` 向前推进 1s，和前一个类似
 
 其中：
