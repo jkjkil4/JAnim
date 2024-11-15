@@ -93,16 +93,6 @@ class Union(VItem):
         ]
         return Union(*lst, **kwargs)
 
-    @staticmethod
-    def from_item(item: Item, **kwargs) -> Union:
-        from janim.utils.deprecation import deprecated
-        deprecated(
-            'Union.from_item',
-            "{name!r} is deprecated and will be removed in JAnim {remove}, use 'Union.from_group' instead",
-            remove=(2, 0)
-        )
-        return Union.from_group(item, **kwargs)
-
 
 class Difference(VItem):
     '''
@@ -159,16 +149,6 @@ class Intersection(VItem):
             if isinstance(sub, VItem)
         ]
         return Intersection(*lst, **kwargs)
-
-    @staticmethod
-    def from_item(item: Item, **kwargs) -> Union:
-        from janim.utils.deprecation import deprecated
-        deprecated(
-            'Intersection.from_item',
-            "{name!r} is deprecated and will be removed in JAnim {remove}, use 'Intersection.from_group' instead",
-            remove=(2, 0)
-        )
-        return Intersection.from_group(item, **kwargs)
 
 
 class Exclusion(VItem):

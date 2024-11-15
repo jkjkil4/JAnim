@@ -233,7 +233,7 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         from janim.utils.deprecation import deprecated
         deprecated(
             'Item.digest_styles',
-            "{name!r} is deprecated and will be removed in JAnim {remove}, use 'Item.set' instead",
+            'Item.set',
             remove=(2, 3)
         )
         self.set(**styles)
@@ -264,7 +264,7 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         from janim.utils.deprecation import deprecated
         deprecated(
             'Item.set_style',
-            "{name!r} is deprecated and will be removed in JAnim {remove}, use 'Item.apply_style' instead",
+            'Item.apply_style',
             remove=(2, 3)
         )
         self.apply_style(depth, **kwargs)

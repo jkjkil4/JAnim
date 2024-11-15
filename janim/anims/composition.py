@@ -194,17 +194,8 @@ class Succession(AnimGroup):
         *anims: Animation,
         lag_ratio: float = 1,
         offset: float = 0,
-        buff: float | None = None,
         **kwargs
     ):
-        if buff is not None:
-            from janim.utils.deprecation import deprecated
-            deprecated(
-                'buff',
-                "{name!r} is deprecated and will be removed in JAnim {remove}, use 'offset' instead",
-                remove=(2, 0)
-            )
-            offset = buff
         super().__init__(*anims, lag_ratio=lag_ratio, offset=offset, **kwargs)
 
 
