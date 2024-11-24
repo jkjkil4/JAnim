@@ -3,7 +3,7 @@ from __future__ import annotations
 import os
 import tempfile
 from contextvars import ContextVar
-from functools import wraps, partial
+from functools import partial
 from typing import Iterable, Self
 
 import attrs
@@ -14,16 +14,6 @@ from janim.constants import DOWN, LEFT, RIGHT, UP
 from janim.typing import Vect
 
 config_ctx_var: ContextVar[list[Config]] = ContextVar('config_ctx_var')
-
-
-def optional_validator(validator):
-    @wraps(validator)
-    def wrapper(inst, attr, value):
-        if value is None:
-            return
-        validator(inst, attr, value)
-
-    return wrapper
 
 
 def optional_type_validator(type):
