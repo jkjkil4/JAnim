@@ -11,24 +11,30 @@ import psutil
 from colour import Color
 
 from janim.constants import DOWN, LEFT, RIGHT, UP
+from janim.locale.i18n import get_local_strings
 from janim.typing import Vect
+
+_ = get_local_strings('config')
 
 config_ctx_var: ContextVar[list[Config]] = ContextVar('config_ctx_var')
 
 
-def optional_type_validator(type):
+def optional_type_validator(type, typename: str):
     def validator(inst, attr: attrs.Attribute, value):
         if value is None:
             return
         if not isinstance(value, type):
-            raise TypeError(f"'{attr.name}' must be of type {type.__name__} or None")
+            raise TypeError(
+                _("{attrname}={value!r} is incompatible with type {typename}")
+                .format(attrname=attr.name, typename=typename, value=value)
+            )
 
     return validator
 
 
 _field = partial(attrs.field, default=None)
-_opt_int_validator = optional_type_validator(int)
-_opt_float_validator = optional_type_validator(float)
+_opt_int_validator = optional_type_validator(int, 'int')
+_opt_float_validator = optional_type_validator((int, float), 'float')
 
 
 class _ConfigMeta(type):
@@ -110,7 +116,7 @@ class Config(metaclass=_ConfigMeta):
 
     pixel_height: int = _field(validator=_opt_int_validator)
     pixel_width: int = _field(validator=_opt_int_validator)
-    background_color: Color = _field(validator=optional_type_validator(Color))
+    background_color: Color = _field(validator=optional_type_validator(Color, 'Color'))
     font: str | Iterable[str] = None
     subtitle_font: str | Iterable[str] = None
 
