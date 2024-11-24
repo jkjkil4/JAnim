@@ -3,9 +3,10 @@ from __future__ import annotations
 import os
 import tempfile
 from contextvars import ContextVar
-from dataclasses import dataclass
+from functools import wraps, partial
 from typing import Iterable, Self
 
+import attrs
 import psutil
 from colour import Color
 
@@ -15,13 +16,38 @@ from janim.typing import Vect
 config_ctx_var: ContextVar[list[Config]] = ContextVar('config_ctx_var')
 
 
+def optional_validator(validator):
+    @wraps(validator)
+    def wrapper(inst, attr, value):
+        if value is None:
+            return
+        validator(inst, attr, value)
+
+    return wrapper
+
+
+def optional_type_validator(type):
+    def validator(inst, attr: attrs.Attribute, value):
+        if value is None:
+            return
+        if not isinstance(value, type):
+            raise TypeError(f"'{attr.name}' must be of type {type.__name__} or None")
+
+    return validator
+
+
+_field = partial(attrs.field, default=None)
+_opt_int_validator = optional_type_validator(int)
+_opt_float_validator = optional_type_validator(float)
+
+
 class _ConfigMeta(type):
     @property
     def get(self) -> Config | ConfigGetter:
         return config_getter
 
 
-@dataclass(kw_only=True)
+@attrs.define(kw_only=True, slots=False)
 class Config(metaclass=_ConfigMeta):
     '''配置
 
@@ -85,24 +111,24 @@ class Config(metaclass=_ConfigMeta):
 
     另见：:py:obj:`~.Timeline.CONFIG`
     '''
-    fps: int = None
-    preview_fps: int = None
-    anti_alias_width: float = None
+    fps: int = _field(validator=_opt_int_validator)
+    preview_fps: int = _field(validator=_opt_int_validator)
+    anti_alias_width: float = _field(validator=_opt_float_validator)
 
-    frame_height: float = None
-    frame_width: float = None
+    frame_height: float = _field(validator=_opt_float_validator)
+    frame_width: float = _field(validator=_opt_float_validator)
 
-    pixel_height: int = None
-    pixel_width: int = None
-    background_color: Color = None
+    pixel_height: int = _field(validator=_opt_int_validator)
+    pixel_width: int = _field(validator=_opt_int_validator)
+    background_color: Color = _field(validator=optional_type_validator(Color))
     font: str | Iterable[str] = None
     subtitle_font: str | Iterable[str] = None
 
-    audio_framerate: int = None
-    audio_channels: int = None
+    audio_framerate: int = _field(validator=_opt_int_validator)
+    audio_channels: int = _field(validator=_opt_int_validator)
 
     wnd_pos: str = None
-    wnd_monitor: int = None
+    wnd_monitor: int = _field(validator=_opt_int_validator)
 
     typst_bin: str = None
 
@@ -112,7 +138,7 @@ class Config(metaclass=_ConfigMeta):
     temp_dir: str = None
     asset_dir: str | list[str] = None
 
-    client_search_port: int = None
+    client_search_port: int = _field(validator=_opt_int_validator)
 
     def __enter__(self) -> Self:
         lst = config_ctx_var.get()

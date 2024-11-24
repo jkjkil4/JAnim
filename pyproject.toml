@@ -15,6 +15,7 @@ classifiers = [
 ]
 requires-python = ">=3.12"
 dependencies = [
+    "attrs",
     "numpy",
     "scipy",
     "colour",
