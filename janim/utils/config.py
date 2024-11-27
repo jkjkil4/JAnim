@@ -4,7 +4,7 @@ import os
 import tempfile
 from contextvars import ContextVar
 from functools import partial
-from typing import Iterable, Self
+from typing import Generator, Iterable, Self
 
 import attrs
 import psutil
@@ -75,7 +75,7 @@ class Config(metaclass=_ConfigMeta):
     全局配置
     ------------
 
-    在使用命令行参数时，使用 ``-c 配置名 值`` 可以修改全局配置
+    在使用命令行参数时，使用 ``-c 配置名 值`` 可以修改全局配置，设定的全局配置会覆盖其它配置
 
     例如 ``janim write your_file.py YourTimeline -c fps 120`` 可以将渲染帧率设置为 120
 
@@ -196,7 +196,7 @@ cli_config = Config()
 会被命令行 ``--config`` 参数自动修改
 '''
 
-config_ctx_var.set([default_config, cli_config])
+config_ctx_var.set([default_config])
 
 
 class ConfigGetter:
@@ -208,9 +208,12 @@ class ConfigGetter:
     def __init__(self, config_ctx: list[Config] | None = None):
         self.config_ctx = config_ctx
 
+    def walk(self) -> Generator[Config, None, None]:
+        yield cli_config
+        yield from reversed(self.config_ctx or config_ctx_var.get())
+
     def __getattr__(self, name: str) -> None:
-        lst = self.config_ctx or config_ctx_var.get()
-        for config in reversed(lst):
+        for config in self.walk():
             value = getattr(config, name)
             if value is not None:
                 return value
