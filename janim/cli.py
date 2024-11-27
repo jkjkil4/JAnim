@@ -84,6 +84,7 @@ def write(args: Namespace) -> None:
     built = [timeline().build() for timeline in timelines]
 
     both = not args.video and not args.audio
+    is_gif = args.format == 'gif'
 
     log.info('======')
 
@@ -95,10 +96,11 @@ def write(args: Namespace) -> None:
         if not os.path.exists(output_dir):
             os.makedirs(output_dir)
 
-        merge = both and anim.timeline.has_audio()
+        no_audio = not anim.timeline.has_audio() or is_gif
+        merge = both and not no_audio
 
         writes_video = both or args.video
-        writes_audio = (both or args.audio) and anim.timeline.has_audio()
+        writes_audio = (both or args.audio) and not no_audio
 
         if writes_video:
             log.info(f'fps={anim.cfg.fps}')

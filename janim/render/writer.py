@@ -117,17 +117,21 @@ class VideoWriter:
             '-loglevel', 'error',
         ]
 
-        if ext == ".mov":
+        if ext == '.mp4':
+            command += [
+                '-vcodec', 'libx264',
+                '-pix_fmt', 'yuv420p',
+            ]
+        elif ext == '.mov':
             # This is if the background of the exported
             # video should be transparent.
             command += [
                 '-vcodec', 'qtrle',
             ]
+        elif ext == '.gif':
+            pass
         else:
-            command += [
-                '-vcodec', 'libx264',
-                '-pix_fmt', 'yuv420p',
-            ]
+            assert False
 
         command += [self.temp_file_path]
         try:

@@ -105,7 +105,7 @@ def write_parser(parser: ArgumentParser) -> None:
     )
     parser.add_argument(
         '--format',
-        choices=['mp4', 'mov'],
+        choices=['mp4', 'mov', 'gif'],
         default='mp4',
         help=_('Format of the output video')
     )
