@@ -108,27 +108,45 @@ def write_parser(parser: ArgumentParser) -> None:
         action='store_true',
         help=_('Open the video after writing')
     )
-    parser.add_argument(
+
+    format_options = parser.add_argument_group(_('Format Options'),
+                                               _('Options for specifying the format of the output files'))
+    format_options.add_argument(
         '--format',
         choices=['mp4', 'mov', 'gif'],
         default='mp4',
         help=_('Format of the output video')
     )
-    parser.add_argument(
+    format_options.add_argument(
         '--audio_format',
         default='mp3',
         help=_('Format of the output audio (valid only when outputting audio separately)')
     )
-    parser.add_argument(
+
+    output_options = parser.add_argument_group(_('Output Options'),
+                                               _('Options for specifying the parts to be written'))
+    output_options.add_argument(
+        '--video_with_audio',
+        action='store_true',
+        help=_('Video with audio (default; will be replaced by --video if there is no audio, '
+               'and by both --video and --audio if the format is GIF)')
+    )
+    output_options.add_argument(
         '--video',
         action='store_true',
         help=_('Video only')
     )
-    parser.add_argument(
+    output_options.add_argument(
         '--audio',
         action='store_true',
         help=_('Audio only')
     )
+    output_options.add_argument(
+        '--srt',
+        action='store_true',
+        help=_('Generate SRT file')
+    )
+
     parser.set_defaults(func=write)
 
 

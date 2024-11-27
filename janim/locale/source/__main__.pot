@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-11-27 15:50+0800\n"
+"POT-Creation-Date: 2024-11-27 20:53+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -76,27 +76,53 @@ msgstr ""
 msgid "Open the video after writing"
 msgstr ""
 
-#: janim\__main__.py:115
+#: janim\__main__.py:112
+msgid "Format Options"
+msgstr ""
+
+#: janim\__main__.py:113
+msgid "Options for specifying the format of the output files"
+msgstr ""
+
+#: janim\__main__.py:118
 msgid "Format of the output video"
 msgstr ""
 
-#: janim\__main__.py:120
+#: janim\__main__.py:123
 msgid ""
 "Format of the output audio (valid only when outputting audio separately)"
 msgstr ""
 
-#: janim\__main__.py:125
+#: janim\__main__.py:126
+msgid "Output Options"
+msgstr ""
+
+#: janim\__main__.py:127
+msgid "Options for specifying the parts to be written"
+msgstr ""
+
+#: janim\__main__.py:131
+msgid ""
+"Video with audio (default; will be replaced by --video if there is no audio, "
+"and by both --video and --audio if the format is GIF)"
+msgstr ""
+
+#: janim\__main__.py:137
 msgid "Video only"
 msgstr ""
 
-#: janim\__main__.py:130
+#: janim\__main__.py:142
 msgid "Audio only"
 msgstr ""
 
-#: janim\__main__.py:140
+#: janim\__main__.py:147
+msgid "Generate SRT file"
+msgstr ""
+
+#: janim\__main__.py:158
 msgid "Name of the example you want to see"
 msgstr ""
 
-#: janim\__main__.py:153
+#: janim\__main__.py:171
 msgid "Tool(s) that you want to use"
 msgstr ""

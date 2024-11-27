@@ -28,6 +28,9 @@ class TimeRange:
     def copy(self) -> TimeRange:
         return TimeRange(self.at, self.duration)
 
+    def __eq__(self, other: TimeRange) -> bool:
+        return self.at == other.at and self.duration == other.duration
+
 
 class Animation:
     '''

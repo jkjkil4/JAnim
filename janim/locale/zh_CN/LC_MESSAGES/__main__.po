@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-11-27 15:50+0800\n"
-"PO-Revision-Date: 2024-11-27 15:50+0800\n"
+"POT-Creation-Date: 2024-11-27 20:53+0800\n"
+"PO-Revision-Date: 2024-11-27 20:59+0800\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
 "Language: zh_CN\n"
@@ -77,29 +77,63 @@ msgstr "输出文件中的所有 Timeline"
 msgid "Open the video after writing"
 msgstr "在输出后打开视频文件"
 
-#: janim\__main__.py:115
+#: janim\__main__.py:112
+msgid "Format Options"
+msgstr "格式选项"
+
+#: janim\__main__.py:113
+msgid "Options for specifying the format of the output files"
+msgstr "指定输出文件格式的选项"
+
+#: janim\__main__.py:118
 msgid "Format of the output video"
 msgstr "输出视频的格式"
 
-#: janim\__main__.py:120
-msgid "Format of the output audio (valid only when outputting audio separately)"
+#: janim\__main__.py:123
+msgid ""
+"Format of the output audio (valid only when outputting audio separately)"
 msgstr "输出音频的格式（仅在单独输出音频时有效）"
 
-#: janim\__main__.py:125
+#: janim\__main__.py:126
+msgid "Output Options"
+msgstr "输出选项"
+
+#: janim\__main__.py:127
+msgid "Options for specifying the parts to be written"
+msgstr "指定输出哪些部分的选项"
+
+#: janim\__main__.py:131
+msgid ""
+"Video with audio (default; will be replaced by --video if there is no audio, "
+"and by both --video and --audio if the format is GIF)"
+msgstr ""
+"带有音频的视频（默认，当没有音频时会被 --video 替代，当格式为 GIF 时会被 --"
+"video 和 --audio 替代）"
+
+#: janim\__main__.py:137
 msgid "Video only"
 msgstr "仅视频"
 
-#: janim\__main__.py:130
+#: janim\__main__.py:142
 msgid "Audio only"
 msgstr "仅音频"
 
-#: janim\__main__.py:140
+#: janim\__main__.py:147
+msgid "Generate SRT file"
+msgstr "生成 SRT 文件"
+
+#: janim\__main__.py:158
 msgid "Name of the example you want to see"
 msgstr "要查看的示例的名称"
 
-#: janim\__main__.py:153
+#: janim\__main__.py:171
 msgid "Tool(s) that you want to use"
 msgstr "你想要使用的工具"
+
+#~ msgid "Video with audio (by default)"
+#~ msgstr ""
+#~ "带有音频的视频（默认，当本身没有音频时会被 --video 替代，当格式为 gif 时会"
+#~ "被 --video 和 --audio 替代）"
 
 #~ msgid "Format of the output audio"
 #~ msgstr "输出音频的格式"

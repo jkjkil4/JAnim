@@ -77,13 +77,25 @@ def write(args: Namespace) -> None:
     if not timelines:
         return
 
-    from janim.render.writer import AudioWriter, VideoWriter
+    from janim.render.writer import AudioWriter, SRTWriter, VideoWriter
 
     log.info('======')
 
     built = [timeline().build(hide_subtitles=args.hide_subtitles) for timeline in timelines]
 
-    both = not args.video and not args.audio
+    # 当设定 video_with_audio 时，忽略 video 和 audio 选项
+    if args.video_with_audio:
+        if args.video:
+            log.warning(_("'--video' is ignored because '--video_with_audio' is set"))
+            args.video = False
+        if args.audio:
+            log.warning(_("'--audio' is ignored because '--video_with_audio' is set"))
+            args.audio = False
+
+    # 当四个选项都没设定时，将 video_with_audio 作为默认行为
+    if not args.video_with_audio and not args.video and not args.audio and not args.srt:
+        args.video_with_audio = True
+
     is_gif = args.format == 'gif'
 
     log.info('======')
@@ -96,18 +108,28 @@ def write(args: Namespace) -> None:
         if not os.path.exists(output_dir):
             os.makedirs(output_dir)
 
-        no_audio = not anim.timeline.has_audio() or is_gif
-        merge = both and not no_audio
+        video_with_audio = args.video_with_audio
+        video = args.video
+        audio = args.audio
+        srt = args.srt
+        open_result = args.open and anim is built[-1]
 
-        writes_video = both or args.video
-        writes_audio = (both or args.audio) and not no_audio
+        # 如果其实没办法做到 video_with_audio，那么把 video_with_audio 用 video 和 audio 替代
+        fallback = not anim.timeline.has_audio() or is_gif
+        if video_with_audio and fallback:
+            video_with_audio = False
+            video = True
+            audio = True
+
+        writes_video = video_with_audio or video
+        writes_audio = (video_with_audio or audio) and anim.timeline.has_audio()
 
         if writes_video:
             log.info(f'fps={anim.cfg.fps}')
             log.info(f'resolution="{anim.cfg.pixel_width}x{anim.cfg.pixel_height}"')
             log.info(f'format="{args.format}"')
         if writes_audio:
-            if not merge:
+            if not video_with_audio:
                 log.info(f'audio_format="{args.audio_format}"')
             log.info(f'audio_framerate="{anim.cfg.audio_framerate}"')
         log.info(f'output_dir="{output_dir}"')
@@ -117,9 +139,9 @@ def write(args: Namespace) -> None:
             video_writer.write_all(
                 os.path.join(output_dir,
                              f'{name}.{args.format}'),
-                _keep_temp=merge
+                _keep_temp=video_with_audio
             )
-            if args.open and not merge and anim is built[-1]:
+            if open_result and not video_with_audio:
                 open_file(video_writer.final_file_path)
 
         if writes_audio:
@@ -127,12 +149,12 @@ def write(args: Namespace) -> None:
             audio_writer.write_all(
                 os.path.join(output_dir,
                              f'{name}.{args.audio_format}'),
-                _keep_temp=merge
+                _keep_temp=video_with_audio
             )
-            if args.open and not merge and not writes_video and anim is built[-1]:
+            if open_result and not video_with_audio and not writes_video:
                 open_file(audio_writer.final_file_path)
 
-        if merge:
+        if video_with_audio:
             command = [
                 anim.cfg.ffmpeg_bin,
                 '-y',
@@ -161,8 +183,16 @@ def write(args: Namespace) -> None:
                 _('File saved to "{file_path}" (merged)')
                 .format(file_path=video_writer.final_file_path)
             )
-            if args.open and anim is built[-1]:
+            if open_result:
                 open_file(video_writer.final_file_path)
+
+        if srt:
+            file_path = os.path.join(output_dir, f'{name}.srt')
+            SRTWriter.writes(anim, file_path)
+            log.info(
+                _('Generated SRT file "{file_path}"')
+                .format(file_path=file_path)
+            )
 
     log.info('======')
 

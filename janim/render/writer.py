@@ -7,10 +7,10 @@ from functools import partial
 import moderngl as mgl
 from tqdm import tqdm as ProgressDisplay
 
-from janim.anims.timeline import TimelineAnim
+from janim.anims.timeline import Timeline, TimelineAnim, TimeRange
 from janim.exception import EXITCODE_FFMPEG_NOT_FOUND, ExitException
-from janim.logger import log
 from janim.locale.i18n import get_local_strings
+from janim.logger import log
 
 _ = get_local_strings('writer')
 
@@ -153,6 +153,10 @@ class AudioWriter:
     def __init__(self, anim: TimelineAnim):
         self.anim = anim
 
+    @staticmethod
+    def writes(anim: TimelineAnim, file_path: str, *, quiet=False) -> None:
+        AudioWriter(anim).write_all(file_path, quiet=quiet)
+
     def write_all(self, file_path: str, *, quiet=False, _keep_temp: bool = False) -> None:
         name = self.anim.timeline.__class__.__name__
         if not quiet:
@@ -222,6 +226,33 @@ class AudioWriter:
         if not _keep_temp:
             shutil.move(self.temp_file_path, self.final_file_path)
 
+
+class SRTWriter:
     @staticmethod
-    def writes(anim: TimelineAnim, file_path: str, *, quiet=False) -> None:
-        AudioWriter(anim).write_all(file_path, quiet=quiet)
+    def writes(anim: TimelineAnim, file_path: str) -> None:
+        with open(file_path, 'wt') as file:
+            chunks: list[tuple[TimeRange, list[Timeline.SubtitleInfo]]] = []
+
+            for info in anim.timeline.subtitle_infos:
+                if not chunks or chunks[-1][0] != info.range:
+                    chunks.append((info.range, []))
+                chunks[-1][1].append(info)
+
+            for i, chunk in enumerate(chunks, start=1):
+                file.write(f'\n{i}\n')
+                file.write(f'{SRTWriter.t_to_srt_time(chunk[0].at)} --> {SRTWriter.t_to_srt_time(chunk[0].end)}\n')
+                for info in reversed(chunk[1]):
+                    file.write(f'{info.text}\n')
+
+    @staticmethod
+    def t_to_srt_time(t: float):
+        '''
+        将秒数转换为 SRT 时间格式：HH:MM:SS,mmm
+        '''
+        t = round(t, 3)
+        hours = int(t // 3600)
+        minutes = int((t % 3600) // 60)
+        secs = int(t % 60)
+        millis = int((t % 1) * 1000)
+
+        return f"{hours:02}:{minutes:02}:{secs:02},{millis:03}"
