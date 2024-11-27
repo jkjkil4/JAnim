@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-11-27 15:40+0800\n"
-"PO-Revision-Date: 2024-11-27 15:41+0800\n"
+"POT-Creation-Date: 2024-11-27 15:50+0800\n"
+"PO-Revision-Date: 2024-11-27 15:50+0800\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
 "Language: zh_CN\n"
@@ -18,8 +18,8 @@ msgstr ""
 "X-Generator: Poedit 3.4.2\n"
 
 #: janim\__main__.py:21
-msgid "A library for simple animation effects"
-msgstr "生成简单动画的工具"
+msgid "A library for creating smooth animations"
+msgstr "一个用于创建流畅动画的库"
 
 #: janim\__main__.py:26
 msgid "Language code, e.g., en, zh_CN"

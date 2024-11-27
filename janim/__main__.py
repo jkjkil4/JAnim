@@ -18,7 +18,7 @@ def main() -> None:
         set_lang(initial_args.lang)
         _ = get_local_strings('__main__')
 
-    parser = ArgumentParser(description=_('A library for simple animation effects'))
+    parser = ArgumentParser(description=_('A library for creating smooth animations'))
     parser.set_defaults(func=None)
 
     parser.add_argument(
