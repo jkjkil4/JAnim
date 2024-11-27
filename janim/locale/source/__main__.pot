@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-11-09 23:20+0800\n"
+"POT-Creation-Date: 2024-11-27 15:40+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -48,51 +48,55 @@ msgstr ""
 msgid "Override config"
 msgstr ""
 
-#: janim\__main__.py:84
+#: janim\__main__.py:82
+msgid "Hide subtitles"
+msgstr ""
+
+#: janim\__main__.py:89
 msgid "Name of the Timeline class you want to preview"
 msgstr ""
 
-#: janim\__main__.py:85
+#: janim\__main__.py:90
 msgid "Preview all timelines from a file"
 msgstr ""
 
-#: janim\__main__.py:90
+#: janim\__main__.py:95
 msgid "Enable the network socket for interacting with vscode"
 msgstr ""
 
-#: janim\__main__.py:98
+#: janim\__main__.py:103
 msgid "Name of the Timeline class you want to write"
 msgstr ""
 
-#: janim\__main__.py:99
+#: janim\__main__.py:104
 msgid "Write all timelines from a file"
 msgstr ""
 
-#: janim\__main__.py:104
+#: janim\__main__.py:109
 msgid "Open the video after writing"
 msgstr ""
 
-#: janim\__main__.py:110
+#: janim\__main__.py:115
 msgid "Format of the output video"
 msgstr ""
 
-#: janim\__main__.py:115
+#: janim\__main__.py:120
 msgid ""
 "Format of the output audio (valid only when outputting audio separately)"
 msgstr ""
 
-#: janim\__main__.py:120
+#: janim\__main__.py:125
 msgid "Video only"
 msgstr ""
 
-#: janim\__main__.py:125
+#: janim\__main__.py:130
 msgid "Audio only"
 msgstr ""
 
-#: janim\__main__.py:135
+#: janim\__main__.py:140
 msgid "Name of the example you want to see"
 msgstr ""
 
-#: janim\__main__.py:148
+#: janim\__main__.py:153
 msgid "Tool(s) that you want to use"
 msgstr ""

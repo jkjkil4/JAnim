@@ -7,14 +7,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-11-09 23:20+0800\n"
-"PO-Revision-Date: 2024-11-09 23:21+0800\n"
+"POT-Creation-Date: 2024-11-27 15:40+0800\n"
+"PO-Revision-Date: 2024-11-27 15:41+0800\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
+"Language: zh_CN\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=GBK\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: zh_CN\n"
 "X-Generator: Poedit 3.4.2\n"
 
 #: janim\__main__.py:21
@@ -49,52 +49,55 @@ msgstr "含有 Python 代码的文件路径"
 msgid "Override config"
 msgstr "覆盖设置"
 
-#: janim\__main__.py:84
+#: janim\__main__.py:82
+msgid "Hide subtitles"
+msgstr "隐藏字幕"
+
+#: janim\__main__.py:89
 msgid "Name of the Timeline class you want to preview"
 msgstr "要预览的 Timeline 的名称"
 
-#: janim\__main__.py:85
+#: janim\__main__.py:90
 msgid "Preview all timelines from a file"
 msgstr "预览文件中的所有 Timeline"
 
-#: janim\__main__.py:90
+#: janim\__main__.py:95
 msgid "Enable the network socket for interacting with vscode"
 msgstr "启用与 vscode 交互的网络端口"
 
-#: janim\__main__.py:98
+#: janim\__main__.py:103
 msgid "Name of the Timeline class you want to write"
 msgstr "要输出的 Timeline 的名称"
 
-#: janim\__main__.py:99
+#: janim\__main__.py:104
 msgid "Write all timelines from a file"
 msgstr "输出文件中的所有 Timeline"
 
-#: janim\__main__.py:104
+#: janim\__main__.py:109
 msgid "Open the video after writing"
 msgstr "在输出后打开视频文件"
 
-#: janim\__main__.py:110
+#: janim\__main__.py:115
 msgid "Format of the output video"
 msgstr "输出视频的格式"
 
-#: janim\__main__.py:115
-msgid ""
-"Format of the output audio (valid only when outputting audio separately)"
+#: janim\__main__.py:120
+msgid "Format of the output audio (valid only when outputting audio separately)"
 msgstr "输出音频的格式（仅在单独输出音频时有效）"
 
-#: janim\__main__.py:120
+#: janim\__main__.py:125
 msgid "Video only"
 msgstr "仅视频"
 
-#: janim\__main__.py:125
+#: janim\__main__.py:130
 msgid "Audio only"
 msgstr "仅音频"
 
-#: janim\__main__.py:135
+#: janim\__main__.py:140
 msgid "Name of the example you want to see"
 msgstr "要查看的示例的名称"
 
-#: janim\__main__.py:148
+#: janim\__main__.py:153
 msgid "Tool(s) that you want to use"
 msgstr "你想要使用的工具"
 

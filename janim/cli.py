@@ -43,7 +43,7 @@ def run(args: Namespace) -> None:
 
     widgets: list[AnimViewer] = []
     for timeline in timelines:
-        viewer = AnimViewer(timeline().build(),
+        viewer = AnimViewer(timeline().build(hide_subtitles=args.hide_subtitles),
                             auto_play=auto_play,
                             interact=args.interact,
                             available_timeline_names=available_timeline_names)
@@ -81,7 +81,7 @@ def write(args: Namespace) -> None:
 
     log.info('======')
 
-    built = [timeline().build() for timeline in timelines]
+    built = [timeline().build(hide_subtitles=args.hide_subtitles) for timeline in timelines]
 
     both = not args.video and not args.audio
     is_gif = args.format == 'gif'

@@ -76,6 +76,11 @@ def render_args(
         action='append',
         help=_('Override config')
     )
+    parser.add_argument(
+        '--hide_subtitles',
+        action='store_true',
+        help=_('Hide subtitles')
+    )
 
 
 def run_parser(parser: ArgumentParser) -> None:

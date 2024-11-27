@@ -193,7 +193,7 @@ class Timeline(metaclass=ABCMeta):
         '''
         pass    # pragma: no cover
 
-    def build(self, *, quiet=False) -> TimelineAnim:
+    def build(self, *, quiet=False, hide_subtitles=False) -> TimelineAnim:
         '''
         构建动画并返回
         '''
@@ -202,6 +202,7 @@ class Timeline(metaclass=ABCMeta):
             self.config_getter = ConfigGetter(config_ctx_var.get())
             self.camera = Camera()
             self.track(self.camera)
+            self.hide_subtitles = hide_subtitles
 
             if not quiet:   # pragma: no cover
                 log.info(_('Building "{name}"').format(name=self.__class__.__name__))
@@ -620,8 +621,9 @@ class Timeline(metaclass=ABCMeta):
             ).fix_in_frame()
             subtitle_group.depth.set(depth)
 
-            self.schedule(range.at, subtitle_group.show)
-            self.schedule(range.end, subtitle_group.hide)
+            if not self.hide_subtitles:
+                self.schedule(range.at, subtitle_group.show)
+                self.schedule(range.end, subtitle_group.hide)
 
         return range.copy()
 
