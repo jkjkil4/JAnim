@@ -7,14 +7,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-11-28 18:53+0800\n"
-"PO-Revision-Date: 2024-10-22 11:50+0800\n"
+"POT-Creation-Date: 2024-11-28 19:52+0800\n"
+"PO-Revision-Date: 2024-11-28 19:53+0800\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
+"Language: zh_CN\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=GBK\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: zh_CN\n"
 "X-Generator: Poedit 3.4.2\n"
 
 #: janim\gui\anim_viewer.py:7
@@ -79,7 +79,7 @@ msgstr "没有叫作 \"{name}\" 的时间轴，对于文件 \"{file}\" 来说"
 msgid "Failed to rebuild"
 msgstr "构建失败"
 
-#: janim\gui\anim_viewer.py:551 janim\gui\anim_viewer.py:585
+#: janim\gui\anim_viewer.py:551 janim\gui\anim_viewer.py:587
 msgid "Note"
 msgstr "提示"
 
@@ -87,31 +87,35 @@ msgstr "提示"
 msgid "Output will start shortly. Please check the console for information."
 msgstr "即将进行输出，请留意控制台信息"
 
-#: janim\gui\anim_viewer.py:586
+#: janim\gui\anim_viewer.py:580
+msgid "Exporting was cancelled"
+msgstr "导出已取消"
+
+#: janim\gui\anim_viewer.py:588
 msgid "Output to {file_path} has been completed."
 msgstr "已完成输出至 {file_path}"
 
-#: janim\gui\anim_viewer.py:608
+#: janim\gui\anim_viewer.py:610
 msgid "Searching port has been opened at {port}"
 msgstr "搜索端口已在 {port} 开启"
 
-#: janim\gui\anim_viewer.py:613
+#: janim\gui\anim_viewer.py:615
 msgid "Failed to open searching port at {port}"
 msgstr "无法在 {port} 开启搜索端口"
 
-#: janim\gui\anim_viewer.py:618
+#: janim\gui\anim_viewer.py:620
 msgid ""
 "Searching port {port} is invalid, please use a number between 1024 and 65535 "
 "instead"
 msgstr "搜索端口 {port} 无效，请使用 1024 至 65535 之间的数字"
 
-#: janim\gui\anim_viewer.py:624
+#: janim\gui\anim_viewer.py:626
 msgid ""
 "Interactive development is disabled because the searching port is not "
 "established."
 msgstr "由于搜索端口未建立，交互式开发不可用"
 
-#: janim\gui\anim_viewer.py:637
+#: janim\gui\anim_viewer.py:639
 msgid "Interactive port has been opened at {port}"
 msgstr "交互端口已在 {port} 开启"
 

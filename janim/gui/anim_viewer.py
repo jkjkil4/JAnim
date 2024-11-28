@@ -576,6 +576,8 @@ class AnimViewer(QMainWindow):
         except Exception as e:
             if not isinstance(e, ExitException):
                 traceback.print_exc()
+        except KeyboardInterrupt:
+            log.warning(_('Exporting was cancelled'))
         else:
             ret = True
 

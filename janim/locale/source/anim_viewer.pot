@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-11-28 18:53+0800\n"
+"POT-Creation-Date: 2024-11-28 19:52+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -76,7 +76,7 @@ msgstr ""
 msgid "Failed to rebuild"
 msgstr ""
 
-#: janim\gui\anim_viewer.py:551 janim\gui\anim_viewer.py:585
+#: janim\gui\anim_viewer.py:551 janim\gui\anim_viewer.py:587
 msgid "Note"
 msgstr ""
 
@@ -84,30 +84,34 @@ msgstr ""
 msgid "Output will start shortly. Please check the console for information."
 msgstr ""
 
-#: janim\gui\anim_viewer.py:586
+#: janim\gui\anim_viewer.py:580
+msgid "Exporting was cancelled"
+msgstr ""
+
+#: janim\gui\anim_viewer.py:588
 msgid "Output to {file_path} has been completed."
 msgstr ""
 
-#: janim\gui\anim_viewer.py:608
+#: janim\gui\anim_viewer.py:610
 msgid "Searching port has been opened at {port}"
 msgstr ""
 
-#: janim\gui\anim_viewer.py:613
+#: janim\gui\anim_viewer.py:615
 msgid "Failed to open searching port at {port}"
 msgstr ""
 
-#: janim\gui\anim_viewer.py:618
+#: janim\gui\anim_viewer.py:620
 msgid ""
 "Searching port {port} is invalid, please use a number between 1024 and 65535 "
 "instead"
 msgstr ""
 
-#: janim\gui\anim_viewer.py:624
+#: janim\gui\anim_viewer.py:626
 msgid ""
 "Interactive development is disabled because the searching port is not "
 "established."
 msgstr ""
 
-#: janim\gui\anim_viewer.py:637
+#: janim\gui\anim_viewer.py:639
 msgid "Interactive port has been opened at {port}"
 msgstr ""
