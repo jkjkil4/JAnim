@@ -97,7 +97,7 @@ def write(args: Namespace) -> None:
 
     is_gif = args.format == 'gif'
 
-    log.info('======')
+    prev_is_skipped = False
 
     for anim in built:
         name = anim.timeline.__class__.__name__
@@ -122,6 +122,22 @@ def write(args: Namespace) -> None:
 
         writes_video = video_with_audio or video
         writes_audio = (video_with_audio or audio) and anim.timeline.has_audio()
+        writes_srt = srt and anim.timeline.has_subtitle()
+
+        skip = not writes_video and not writes_audio and not writes_srt
+
+        # 这个判断使得连续跳过多个时，不输出额外的分割线
+        if not (prev_is_skipped and skip):
+            log.info('======')
+
+        prev_is_skipped = skip
+
+        if skip:
+            log.info(
+                _('Skipping "{name}": no part to output')
+                .format(name=name)
+            )
+            continue
 
         if writes_video:
             log.info(f'fps={anim.cfg.fps}')
@@ -161,7 +177,7 @@ def write(args: Namespace) -> None:
             if open_result:
                 open_file(video_writer.final_file_path)
 
-        if srt:
+        if writes_srt:
             file_path = os.path.join(output_dir, f'{name}.srt')
             SRTWriter.writes(anim, file_path)
             log.info(

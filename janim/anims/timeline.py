@@ -650,6 +650,9 @@ class Timeline(metaclass=ABCMeta):
         else:
             subtitle.points.to_border(DOWN)
 
+    def has_subtitle(self) -> bool:
+        return len(self.subtitle_infos) != 0
+
     # endregion
 
     # endregion
