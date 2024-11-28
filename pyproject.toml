@@ -50,6 +50,7 @@ exclude = [
     ".asv/", ".vscode/", ".github/", "assets/", "doc/", "benchmarks/", "test/",
     ".pypirc",
     ".coveragerc",
+    "asv.conf.json",
     "janim/gui/*.ui",
     "janim/locale/source",
     "janim/locale/compile.py",
