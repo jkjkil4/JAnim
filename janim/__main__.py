@@ -160,6 +160,7 @@ def examples_parser(parser: ArgumentParser) -> None:
     parser.set_defaults(all=None)
     parser.set_defaults(config=None)
     parser.set_defaults(func=run)
+    parser.set_defaults(hide_subtitles=False)
     parser.set_defaults(interact=False)
 
 
