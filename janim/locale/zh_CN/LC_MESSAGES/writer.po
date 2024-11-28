@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-11-09 23:07+0800\n"
-"PO-Revision-Date: 2024-11-09 23:06+0800\n"
+"POT-Creation-Date: 2024-11-28 18:53+0800\n"
+"PO-Revision-Date: 2024-11-28 18:23+0800\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
 "MIME-Version: 1.0\n"
@@ -29,26 +29,36 @@ msgstr "输出视频 \"{name}\" 完成，耗时 {elapsed:.2f} s"
 msgid "File saved to \"{file_path}\" (video only)"
 msgstr "文件已保存到 \"{file_path}\"（仅视频）"
 
-#: janim\render\writer.py:136
+#: janim\render\writer.py:140
 msgid ""
 "Unable to output video. Please install ffmpeg and add it to the environment "
 "variables."
 msgstr "无法输出视频，需要安装 ffmpeg 并将其添加到环境变量中"
 
-#: janim\render\writer.py:155
+#: janim\render\writer.py:163
 msgid "Writing audio of \"{name}\""
 msgstr "输出音频 \"{name}\" 中"
 
-#: janim\render\writer.py:181
+#: janim\render\writer.py:189
 msgid "Finished writing audio of \"{name}\" in {elapsed:.2f} s"
 msgstr "输出音频 \"{name}\" 完成，耗时 {elapsed:.2f} s"
 
-#: janim\render\writer.py:187
+#: janim\render\writer.py:195
 msgid "File saved to \"{file_path}\""
 msgstr "文件已保存到 \"{file_path}\""
 
-#: janim\render\writer.py:210
+#: janim\render\writer.py:218
 msgid ""
 "Unable to output audio. Please install ffmpeg and add it to the environment "
 "variables."
 msgstr "无法输出音频，需要安装 ffmpeg 并将其添加到环境变量中"
+
+#: janim\render\writer.py:252
+msgid ""
+"Unable to merge video. Please install ffmpeg and add it to the environment "
+"variables."
+msgstr "无法输出视频，需要安装 ffmpeg 并将其添加到环境变量中"
+
+#: janim\render\writer.py:264
+msgid "File saved to \"{file_path}\" (merged)"
+msgstr "文件已保存到 \"{file_path}\" (已合并)"

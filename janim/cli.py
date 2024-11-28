@@ -1,18 +1,16 @@
 import importlib.machinery
 import inspect
 import os
-import platform
-import subprocess as sp
 import time
 from argparse import Namespace
 from functools import lru_cache
 
 from janim.anims.timeline import Timeline
-from janim.exception import (EXITCODE_FFMPEG_NOT_FOUND,
-                             EXITCODE_MODULE_NOT_FOUND, EXITCODE_NOT_FILE,
+from janim.exception import (EXITCODE_MODULE_NOT_FOUND, EXITCODE_NOT_FILE,
                              ExitException)
 from janim.locale.i18n import get_local_strings
 from janim.logger import log
+from janim.utils.file_ops import open_file
 from janim.utils.config import cli_config, default_config
 
 _ = get_local_strings('cli')
@@ -77,7 +75,8 @@ def write(args: Namespace) -> None:
     if not timelines:
         return
 
-    from janim.render.writer import AudioWriter, SRTWriter, VideoWriter
+    from janim.render.writer import (AudioWriter, SRTWriter, VideoWriter,
+                                     merge_video_and_audio)
 
     log.info('======')
 
@@ -155,34 +154,10 @@ def write(args: Namespace) -> None:
                 open_file(audio_writer.final_file_path)
 
         if video_with_audio:
-            command = [
-                anim.cfg.ffmpeg_bin,
-                '-y',
-                '-i', video_writer.temp_file_path,
-                '-i', audio_writer.temp_file_path,
-                '-shortest',
-                '-c:v', 'copy',
-                '-c:a', 'aac',
-                video_writer.final_file_path,
-                '-loglevel', 'error'
-            ]
-            try:
-                merge_process = sp.Popen(command, stdin=sp.PIPE)
-            except FileNotFoundError:
-                log.error(_('Unable to merge video. '
-                            'Please install ffmpeg and add it to the environment variables.'))
-                raise ExitException(EXITCODE_FFMPEG_NOT_FOUND)
-
-            merge_process.wait()
-            merge_process.terminate()
-
-            os.remove(video_writer.temp_file_path)
-            os.remove(audio_writer.temp_file_path)
-
-            log.info(
-                _('File saved to "{file_path}" (merged)')
-                .format(file_path=video_writer.final_file_path)
-            )
+            merge_video_and_audio(anim.cfg.ffmpeg_bin,
+                                  video_writer.temp_file_path,
+                                  audio_writer.temp_file_path,
+                                  video_writer.final_file_path)
             if open_result:
                 open_file(video_writer.final_file_path)
 
@@ -348,26 +323,3 @@ def get_all_timelines_from_module(module) -> list[type[Timeline]]:
     classes.sort(key=key)
 
     return classes
-
-
-def open_file(file_path: str) -> None:
-    '''
-    打开指定的文件
-    '''
-    current_os = platform.system()
-    if current_os == "Windows":
-        os.startfile(file_path)
-    else:
-        commands = []
-        if current_os == "Linux":
-            commands.append("xdg-open")
-        elif current_os.startswith("CYGWIN"):
-            commands.append("cygstart")
-        else:  # Assume macOS
-            commands.append("open")
-
-        commands.append(file_path)
-
-        FNULL = open(os.devnull, 'w')
-        sp.call(commands, stdout=FNULL, stderr=sp.STDOUT)
-        FNULL.close()

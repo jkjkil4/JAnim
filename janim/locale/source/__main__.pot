@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-11-28 13:21+0800\n"
+"POT-Creation-Date: 2024-11-28 18:53+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -122,6 +122,6 @@ msgstr ""
 msgid "Name of the example you want to see"
 msgstr ""
 
-#: janim\__main__.py:171
+#: janim\__main__.py:172
 msgid "Tool(s) that you want to use"
 msgstr ""

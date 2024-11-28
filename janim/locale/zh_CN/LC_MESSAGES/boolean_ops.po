@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-10-22 11:07+0800\n"
+"POT-Creation-Date: 2024-11-28 18:22+0800\n"
 "PO-Revision-Date: 2024-06-05 17:32+0800\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -21,10 +21,10 @@ msgstr ""
 msgid "At least 2 items needed for Union."
 msgstr "至少需要 2 个物件以使用 Union"
 
-#: janim\items\boolean_ops.py:132
+#: janim\items\boolean_ops.py:122
 msgid "At least 2 items needed for Intersection."
 msgstr "至少需要 2 个物件以使用 Intersection"
 
-#: janim\items\boolean_ops.py:182
+#: janim\items\boolean_ops.py:162
 msgid "At least 2 items needed for Exclusion."
 msgstr "至少需要 2 个物件以使用 Exclusion"

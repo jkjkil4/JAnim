@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-10-22 11:50+0800\n"
+"POT-Creation-Date: 2024-11-28 18:53+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,14 +16,14 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: janim\gui\timeline_view.py:159
+#: janim\gui\timeline_view.py:172
 msgid "Clip"
 msgstr ""
 
-#: janim\gui\timeline_view.py:186 janim\gui\timeline_view.py:188
+#: janim\gui\timeline_view.py:199 janim\gui\timeline_view.py:201
 msgid "Recommended clip"
 msgstr ""
 
-#: janim\gui\timeline_view.py:189
+#: janim\gui\timeline_view.py:202
 msgid "(Too many! Unable to display all ranges.)"
 msgstr ""

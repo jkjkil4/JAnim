@@ -227,6 +227,45 @@ class AudioWriter:
             shutil.move(self.temp_file_path, self.final_file_path)
 
 
+def merge_video_and_audio(
+    ffmpeg_bin: str,
+    video_path: str,
+    audio_path: str,
+    result_path: str,
+    remove: bool = True
+) -> None:
+    command = [
+        ffmpeg_bin,
+        '-y',
+        '-i', video_path,
+        '-i', audio_path,
+        '-shortest',
+        '-c:v', 'copy',
+        '-c:a', 'aac',
+        result_path,
+        '-loglevel', 'error'
+    ]
+
+    try:
+        merge_process = sp.Popen(command, stdin=sp.PIPE)
+    except FileNotFoundError:
+        log.error(_('Unable to merge video. '
+                    'Please install ffmpeg and add it to the environment variables.'))
+        raise ExitException(EXITCODE_FFMPEG_NOT_FOUND)
+
+    merge_process.wait()
+    merge_process.terminate()
+
+    if remove:
+        os.remove(video_path)
+        os.remove(audio_path)
+
+    log.info(
+        _('File saved to "{file_path}" (merged)')
+        .format(file_path=result_path)
+    )
+
+
 class SRTWriter:
     @staticmethod
     def writes(anim: TimelineAnim, file_path: str) -> None:

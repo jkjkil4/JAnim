@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-11-27 20:46+0800\n"
+"POT-Creation-Date: 2024-11-28 18:53+0800\n"
 "PO-Revision-Date: 2024-11-27 20:43+0800\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -17,53 +17,43 @@ msgstr ""
 "Language: zh_CN\n"
 "X-Generator: Poedit 3.4.2\n"
 
-#: janim\cli.py:53 janim\cli.py:210
+#: janim\cli.py:51 janim\cli.py:185
 msgid "Constructing window"
 msgstr "构建窗口中"
 
-#: janim\cli.py:64 janim\cli.py:231
+#: janim\cli.py:62 janim\cli.py:206
 msgid "Finished constructing in {time:.2f} s"
 msgstr "构建完成，耗时 {time:.2f} s"
 
-#: janim\cli.py:89
+#: janim\cli.py:88
 msgid "'--video' is ignored because '--video_with_audio' is set"
 msgstr "'--video' 被忽略，因为已设置 '--video_with_audio'"
 
-#: janim\cli.py:92
+#: janim\cli.py:91
 msgid "'--audio' is ignored because '--video_with_audio' is set"
 msgstr "'--audio' 被忽略，因为已设置 '--video_with_audio'"
 
-#: janim\cli.py:172
-msgid ""
-"Unable to merge video. Please install ffmpeg and add it to the environment "
-"variables."
-msgstr "无法合并视频，需要安装 ffmpeg 并将其添加到环境变量中"
-
-#: janim\cli.py:183
-msgid "File saved to \"{file_path}\" (merged)"
-msgstr "文件已保存到 \"{file_path}\"（已合并）"
-
-#: janim\cli.py:193
+#: janim\cli.py:168
 msgid "Generated SRT file \"{file_path}\""
 msgstr "已生成 SRT 文件 \"{file_path}\""
 
-#: janim\cli.py:202
+#: janim\cli.py:177
 msgid "No tool specified for use"
 msgstr "未指定所使用的工具"
 
-#: janim\cli.py:252
+#: janim\cli.py:227
 msgid "\"{file_name}\" doesn't exist"
 msgstr "\"{file_name}\" 不存在"
 
-#: janim\cli.py:256
+#: janim\cli.py:231
 msgid "\"{file_name}\" isn't a file"
 msgstr "\"{file_name}\" 不是一个文件"
 
-#: janim\cli.py:277
+#: janim\cli.py:252
 msgid "No timeline named \"{name}\""
 msgstr "没有叫作 \"{name}\" 的 Timeline"
 
-#: janim\cli.py:294
+#: janim\cli.py:269
 msgid ""
 "That module has multiple timelines, which ones would you like to render?\n"
 "Timeline Name or Number: "
@@ -71,10 +61,18 @@ msgstr ""
 "这个 module 中有多个 Timeline，你想要渲染哪些？\n"
 "时间轴名称或序号："
 
-#: janim\cli.py:309
+#: janim\cli.py:284
 msgid "Invaild number {num}"
 msgstr "序号 {num} 无效"
 
-#: janim\cli.py:315
+#: janim\cli.py:290
 msgid "No timeline named {split_str}"
 msgstr "没有叫作 \"{split_str}\" 的 Timeline"
+
+#~ msgid ""
+#~ "Unable to merge video. Please install ffmpeg and add it to the "
+#~ "environment variables."
+#~ msgstr "无法合并视频，需要安装 ffmpeg 并将其添加到环境变量中"
+
+#~ msgid "File saved to \"{file_path}\" (merged)"
+#~ msgstr "文件已保存到 \"{file_path}\"（已合并）"

@@ -22,16 +22,16 @@ from typing import Sequence
 
 from PySide6.QtCore import QByteArray, Qt, Signal
 from PySide6.QtGui import QCloseEvent, QHideEvent, QIcon, QShowEvent
-from PySide6.QtWidgets import (QApplication, QCompleter, QFileDialog, QLabel,
-                               QLineEdit, QMainWindow, QMessageBox,
-                               QPushButton, QSizePolicy, QSplitter,
-                               QStackedLayout, QWidget)
+from PySide6.QtWidgets import (QApplication, QCompleter, QLabel, QLineEdit,
+                               QMainWindow, QMessageBox, QPushButton,
+                               QSizePolicy, QSplitter, QStackedLayout, QWidget)
 
 from janim.anims.timeline import Timeline, TimelineAnim
 from janim.exception import ExitException
 from janim.gui.application import Application
 from janim.gui.audio_player import AudioPlayer
 from janim.gui.color_widget import ColorWidget
+from janim.gui.export_dialog import ExportDialog
 from janim.gui.fixed_ratio_widget import FixedRatioWidget
 from janim.gui.font_table import FontTable
 from janim.gui.glwidget import GLWidget
@@ -42,8 +42,9 @@ from janim.gui.selector import Selector
 from janim.gui.timeline_view import TimelineView
 from janim.locale.i18n import get_local_strings
 from janim.logger import log
-from janim.render.writer import VideoWriter
-from janim.utils.file_ops import get_janim_dir
+from janim.render.writer import AudioWriter, VideoWriter, merge_video_and_audio
+from janim.utils.config import cli_config
+from janim.utils.file_ops import get_janim_dir, open_file
 
 _ = get_local_strings('anim_viewer')
 
@@ -537,21 +538,14 @@ class AnimViewer(QMainWindow):
     def on_export_clicked(self) -> None:
         self.play_timer.stop()
 
-        relative_path = os.path.dirname(inspect.getfile(self.anim.timeline.__class__))
-
-        output_dir = self.anim.cfg.formated_output_dir(relative_path)
-        if not os.path.exists(output_dir):
-            os.makedirs(output_dir)
-
-        file_path = QFileDialog.getSaveFileName(
-            self,
-            '',
-            os.path.join(output_dir, f'{self.anim.timeline.__class__.__name__}.mp4'),
-            'MP4 (*.mp4);;MOV (*.mov)'
-        )
-        file_path = file_path[0]
-        if not file_path:
+        dialog = ExportDialog(self.anim, self)
+        ret = dialog.exec()
+        if not ret:
             return
+
+        cli_config.fps = dialog.fps()
+        file_path = dialog.file_path()
+        video_with_audio = (self.anim.timeline.has_audio() and not file_path.endswith('gif'))
 
         QMessageBox.information(self,
                                 _('Note'),
@@ -560,7 +554,25 @@ class AnimViewer(QMainWindow):
         QApplication.processEvents()
         ret = False
         try:
-            VideoWriter.writes(self.anim.timeline.__class__().build(), file_path)
+            anim = self.anim.timeline.__class__().build()
+
+            if video_with_audio:
+                video_writer = VideoWriter(anim)
+                video_writer.write_all(file_path, _keep_temp=True)
+
+                audio_file_path = os.path.splitext(file_path)[0] + '.mp3'
+
+                audio_writer = AudioWriter(anim)
+                audio_writer.write_all(audio_file_path, _keep_temp=True)
+
+                merge_video_and_audio(anim.cfg.ffmpeg_bin,
+                                      video_writer.temp_file_path,
+                                      audio_writer.temp_file_path,
+                                      video_writer.final_file_path)
+            else:
+                video_writer = VideoWriter(anim)
+                video_writer.write_all(file_path)
+
         except Exception as e:
             if not isinstance(e, ExitException):
                 traceback.print_exc()
@@ -572,6 +584,9 @@ class AnimViewer(QMainWindow):
             QMessageBox.information(self,
                                     _('Note'),
                                     _('Output to {file_path} has been completed.').format(file_path=file_path))
+
+        if dialog.open():
+            open_file(file_path)
 
     # endregion (slots-anim)
 

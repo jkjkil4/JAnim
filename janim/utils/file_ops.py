@@ -1,6 +1,8 @@
 import importlib.util
 import inspect
 import os
+import platform
+import subprocess as sp
 
 
 def guarantee_existence(path: str) -> str:
@@ -81,3 +83,26 @@ def find_file(file_path: str) -> str:
 
     # not found
     raise FileNotFoundError(file_path)
+
+
+def open_file(file_path: str) -> None:
+    '''
+    打开指定的文件
+    '''
+    current_os = platform.system()
+    if current_os == "Windows":
+        os.startfile(file_path)
+    else:
+        commands = []
+        if current_os == "Linux":
+            commands.append("xdg-open")
+        elif current_os.startswith("CYGWIN"):
+            commands.append("cygstart")
+        else:  # Assume macOS
+            commands.append("open")
+
+        commands.append(file_path)
+
+        FNULL = open(os.devnull, 'w')
+        sp.call(commands, stdout=FNULL, stderr=sp.STDOUT)
+        FNULL.close()

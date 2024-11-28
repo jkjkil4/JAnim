@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-11-09 23:20+0800\n"
+"POT-Creation-Date: 2024-11-28 18:53+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -28,26 +28,36 @@ msgstr ""
 msgid "File saved to \"{file_path}\" (video only)"
 msgstr ""
 
-#: janim\render\writer.py:136
+#: janim\render\writer.py:140
 msgid ""
 "Unable to output video. Please install ffmpeg and add it to the environment "
 "variables."
 msgstr ""
 
-#: janim\render\writer.py:155
+#: janim\render\writer.py:163
 msgid "Writing audio of \"{name}\""
 msgstr ""
 
-#: janim\render\writer.py:181
+#: janim\render\writer.py:189
 msgid "Finished writing audio of \"{name}\" in {elapsed:.2f} s"
 msgstr ""
 
-#: janim\render\writer.py:187
+#: janim\render\writer.py:195
 msgid "File saved to \"{file_path}\""
 msgstr ""
 
-#: janim\render\writer.py:210
+#: janim\render\writer.py:218
 msgid ""
 "Unable to output audio. Please install ffmpeg and add it to the environment "
 "variables."
+msgstr ""
+
+#: janim\render\writer.py:252
+msgid ""
+"Unable to merge video. Please install ffmpeg and add it to the environment "
+"variables."
+msgstr ""
+
+#: janim\render\writer.py:264
+msgid "File saved to \"{file_path}\" (merged)"
 msgstr ""
