@@ -115,12 +115,12 @@ def write_parser(parser: ArgumentParser) -> None:
         '--format',
         choices=['mp4', 'mov', 'gif'],
         default='mp4',
-        help=_('Format of the output video')
+        help=_('Output video format (mp4 by default, mov for transparent background)')
     )
     format_options.add_argument(
         '--audio_format',
         default='mp3',
-        help=_('Format of the output audio (valid only when outputting audio separately)')
+        help=_('Output audio format (valid only when outputting audio separately)')
     )
 
     output_options = parser.add_argument_group(_('Output Options'),

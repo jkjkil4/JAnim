@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-11-27 20:53+0800\n"
-"PO-Revision-Date: 2024-11-27 20:59+0800\n"
+"POT-Creation-Date: 2024-11-28 13:21+0800\n"
+"PO-Revision-Date: 2024-11-28 13:22+0800\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
 "Language: zh_CN\n"
@@ -86,12 +86,11 @@ msgid "Options for specifying the format of the output files"
 msgstr "指定输出文件格式的选项"
 
 #: janim\__main__.py:118
-msgid "Format of the output video"
-msgstr "输出视频的格式"
+msgid "Output video format (mp4 by default, mov for transparent background)"
+msgstr "输出视频的格式（默认 mp4；透明背景需使用 mov）"
 
 #: janim\__main__.py:123
-msgid ""
-"Format of the output audio (valid only when outputting audio separately)"
+msgid "Output audio format (valid only when outputting audio separately)"
 msgstr "输出音频的格式（仅在单独输出音频时有效）"
 
 #: janim\__main__.py:126
@@ -129,6 +128,9 @@ msgstr "要查看的示例的名称"
 #: janim\__main__.py:171
 msgid "Tool(s) that you want to use"
 msgstr "你想要使用的工具"
+
+#~ msgid "Format of the output video"
+#~ msgstr "输出视频的格式"
 
 #~ msgid "Video with audio (by default)"
 #~ msgstr ""

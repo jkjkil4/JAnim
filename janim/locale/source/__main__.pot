@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-11-27 20:53+0800\n"
+"POT-Creation-Date: 2024-11-28 13:21+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -85,12 +85,11 @@ msgid "Options for specifying the format of the output files"
 msgstr ""
 
 #: janim\__main__.py:118
-msgid "Format of the output video"
+msgid "Output video format (mp4 by default, mov for transparent background)"
 msgstr ""
 
 #: janim\__main__.py:123
-msgid ""
-"Format of the output audio (valid only when outputting audio separately)"
+msgid "Output audio format (valid only when outputting audio separately)"
 msgstr ""
 
 #: janim\__main__.py:126
