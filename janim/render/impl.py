@@ -238,10 +238,10 @@ class VItemRenderer(Renderer):
         self.vbo_fill_color.bind_to_storage_buffer(3)
 
         self.update_fix_in_frame(self.u_fix, item)
-        self.u_stroke_background = item.stroke_background
-        self.u_is_fill_transparent = self.fill_transparent
+        self.u_stroke_background.value = item.stroke_background
+        self.u_is_fill_transparent.value = self.fill_transparent
         self.u_glow_color.write(item.glow._rgba._data.tobytes())
-        self.u_glow_size = new_glow_size
+        self.u_glow_size.value = new_glow_size
 
         self.vao.render(mgl.TRIANGLE_STRIP)
 
