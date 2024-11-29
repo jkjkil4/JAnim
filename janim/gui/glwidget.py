@@ -18,11 +18,6 @@ class GLWidget(QOpenGLWidget):
         super().__init__(parent)
         self.needs_update_clear_color = False
 
-        fmt = QSurfaceFormat.defaultFormat()
-        fmt.setVersion(4, 3)
-        fmt.setProfile(QSurfaceFormat.OpenGLContextProfile.CoreProfile)
-        self.setFormat(fmt)
-
     def set_anim(self, anim: TimelineAnim) -> None:
         self.anim = anim
         self.update_clear_color()
