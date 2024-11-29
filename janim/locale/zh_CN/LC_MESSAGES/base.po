@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-11-29 21:26+0800\n"
-"PO-Revision-Date: 2024-11-29 21:27+0800\n"
+"POT-Creation-Date: 2024-11-29 22:14+0800\n"
+"PO-Revision-Date: 2024-11-29 22:15+0800\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
 "Language: zh_CN\n"
@@ -19,9 +19,10 @@ msgstr ""
 
 #: janim\render\base.py:203
 msgid ""
-"An additional module is required to be compatible with OpenGL{version} "
+"An additional module is required to be compatible with OpenGL {version} "
 "(lower than OpenGL 4.3), but it is not installed"
-msgstr "需要额外的模块才能兼容 OpenGL{version}（低于 OpenGL 4.3），但是未安装"
+msgstr ""
+"需要额外的模块才能兼容 OpenGL {version}（低于 OpenGL 4.3），但是未安装"
 
 #: janim\render\base.py:207
 msgid ""

@@ -200,7 +200,7 @@ def check_pyopengl_if_required(ctx: mgl.Context) -> None:
         import OpenGL.GL as gl  # noqa: F401
     except ImportError:
         print(
-            _('An additional module is required to be compatible with OpenGL{version} (lower than OpenGL 4.3), '
+            _('An additional module is required to be compatible with OpenGL {version} (lower than OpenGL 4.3), '
               'but it is not installed')
             .format(version=ctx.info['GL_VERSION'])
         )
