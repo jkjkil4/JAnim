@@ -1,6 +1,7 @@
 
 import moderngl as mgl
 from PySide6.QtCore import QPointF, Signal
+from PySide6.QtGui import QSurfaceFormat
 from PySide6.QtOpenGLWidgets import QOpenGLWidget
 from PySide6.QtWidgets import QWidget
 
@@ -16,6 +17,11 @@ class GLWidget(QOpenGLWidget):
     def __init__(self, parent: QWidget | None = None) -> None:
         super().__init__(parent)
         self.needs_update_clear_color = False
+
+        fmt = QSurfaceFormat.defaultFormat()
+        fmt.setVersion(4, 3)
+        fmt.setProfile(QSurfaceFormat.OpenGLContextProfile.CoreProfile)
+        self.setFormat(fmt)
 
     def set_anim(self, anim: TimelineAnim) -> None:
         self.anim = anim
