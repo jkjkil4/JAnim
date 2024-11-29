@@ -11,6 +11,7 @@ from janim.anims.timeline import Timeline, TimelineAnim, TimeRange
 from janim.exception import EXITCODE_FFMPEG_NOT_FOUND, ExitException
 from janim.locale.i18n import get_local_strings
 from janim.logger import log
+from janim.render.base import check_pyopengl_if_required
 
 _ = get_local_strings('writer')
 
@@ -31,6 +32,7 @@ class VideoWriter:
     def __init__(self, anim: TimelineAnim):
         self.anim = anim
         self.ctx = mgl.create_standalone_context()
+        check_pyopengl_if_required(self.ctx)
         self.ctx.enable(mgl.BLEND)
         self.ctx.blend_func = (
             mgl.SRC_ALPHA, mgl.ONE_MINUS_SRC_ALPHA,

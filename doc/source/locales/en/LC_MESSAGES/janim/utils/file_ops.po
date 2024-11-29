@@ -6,19 +6,18 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: JAnim\n"
+"Project-Id-Version:  JAnim\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-03-14 14:52+0800\n"
+"POT-Creation-Date: 2024-11-29 21:32+0800\n"
 "PO-Revision-Date: 2024-06-03 10:20+0800\n"
 "Last-Translator: \n"
-"Language-Team: en <LL@li.org>\n"
 "Language: en\n"
+"Language-Team: en <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "Generated-By: Babel 2.14.0\n"
-"X-Generator: Poedit 3.4.2\n"
 
 #: ../../source/janim/utils/file_ops.rst:2
 msgid "file_ops"
@@ -31,3 +30,8 @@ msgstr "Get the path to janim."
 #: janim.utils.file_ops.readall:1 of
 msgid "从文件中读取所有字符"
 msgstr "Read all characters from the file."
+
+#: janim.utils.file_ops.open_file:1 of
+msgid "打开指定的文件"
+msgstr ""
+

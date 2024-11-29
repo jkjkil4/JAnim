@@ -34,7 +34,8 @@ from janim.items.svg.typst import TypstText
 from janim.items.text.text import Text
 from janim.locale.i18n import get_local_strings
 from janim.logger import log
-from janim.render.base import RenderData, Renderer, set_global_uniforms
+from janim.render.base import (RenderData, Renderer,
+                               check_pyopengl_if_required, set_global_uniforms)
 from janim.typing import JAnimColor
 from janim.utils.config import Config, ConfigGetter, config_ctx_var
 from janim.utils.data import ContextSetter, History
@@ -947,7 +948,8 @@ class TimelineAnim(AnimGroup):
 
     def capture(self) -> Image.Image:
         if TimelineAnim.capture_ctx is None:
-            TimelineAnim.capture_ctx = mgl.create_standalone_context(require=430)
+            TimelineAnim.capture_ctx = mgl.create_standalone_context()
+            check_pyopengl_if_required(TimelineAnim.capture_ctx)
             TimelineAnim.capture_ctx.enable(mgl.BLEND)
             TimelineAnim.capture_ctx.blend_func = (
                 mgl.SRC_ALPHA, mgl.ONE_MINUS_SRC_ALPHA,

@@ -130,9 +130,7 @@ class BubbleSort(Timeline):
 
 ## Installation
 
-> ⚠️ JAnim does not work on macOS.
-
-JAnim runs on Python 3.12+ and OpenGL 4.3+.
+JAnim runs on Python 3.12+
 
 You may install JAnim directly via
 ```sh

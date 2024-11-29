@@ -1,11 +1,11 @@
 
 import moderngl as mgl
 from PySide6.QtCore import QPointF, Signal
-from PySide6.QtGui import QSurfaceFormat
 from PySide6.QtOpenGLWidgets import QOpenGLWidget
 from PySide6.QtWidgets import QWidget
 
 from janim.anims.timeline import TimelineAnim
+from janim.render.base import check_pyopengl_if_required
 
 
 class GLWidget(QOpenGLWidget):
@@ -17,11 +17,6 @@ class GLWidget(QOpenGLWidget):
     def __init__(self, parent: QWidget | None = None) -> None:
         super().__init__(parent)
         self.needs_update_clear_color = False
-
-        fmt = QSurfaceFormat.defaultFormat()
-        fmt.setVersion(4, 3)
-        fmt.setProfile(QSurfaceFormat.OpenGLContextProfile.CoreProfile)
-        self.setFormat(fmt)
 
     def set_anim(self, anim: TimelineAnim) -> None:
         self.anim = anim
@@ -47,6 +42,7 @@ class GLWidget(QOpenGLWidget):
 
     def initializeGL(self) -> None:
         self.ctx = mgl.create_context()
+        check_pyopengl_if_required(self.ctx)
         self.ctx.enable(mgl.BLEND)
         self.ctx.blend_func = (
             mgl.SRC_ALPHA, mgl.ONE_MINUS_SRC_ALPHA,

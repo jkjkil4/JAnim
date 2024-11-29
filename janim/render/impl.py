@@ -5,8 +5,6 @@ from typing import TYPE_CHECKING
 
 import moderngl as mgl
 import numpy as np
-from OpenGL.raw.GL.ARB.internalformat_query2 import GL_TEXTURE_BUFFER
-from OpenGL.raw.GL.VERSION.GL_1_1 import glBindTexture
 
 from janim.anims.animation import Animation
 from janim.exception import EXITCODE_FFMPEG_NOT_FOUND, ExitException
@@ -142,6 +140,11 @@ class VItemRenderer(Renderer):
             self.sampb_stroke_color, \
             self.sampb_fill_color = gl.glGenTextures(4)
 
+        self.loc_mapped_points = gl.glGetUniformLocation(self.prog.glo, 'points')
+        self.loc_radius = gl.glGetUniformLocation(self.prog.glo, 'radii')
+        self.loc_stroke_color = gl.glGetUniformLocation(self.prog.glo, 'colors')
+        self.loc_fill_color = gl.glGetUniformLocation(self.prog.glo, 'fills')
+
         gl.glBindTexture(gl.GL_TEXTURE_BUFFER, self.sampb_mapped_points)
         gl.glTexBuffer(gl.GL_TEXTURE_BUFFER, gl.GL_RGBA32F, self.vbo_mapped_points.glo)
         gl.glBindTexture(gl.GL_TEXTURE_BUFFER, self.sampb_radius)
@@ -205,8 +208,9 @@ class VItemRenderer(Renderer):
             assert radius.dtype == np.float32
             bytes = radius.tobytes()
 
+            size = (len(bytes) + 31) & ~31  # 保证一定是 32 的倍数
             if len(bytes) != self.vbo_radius.size:
-                self.vbo_radius.orphan(len(bytes))
+                self.vbo_radius.orphan(size)
 
             self.vbo_radius.write(bytes)
             self.prev_radius = new_radius
@@ -259,6 +263,12 @@ class VItemRenderer(Renderer):
             self.prev_fix_in_frame = new_fix_in_frame
             self.prev_camera_info = new_camera_info
             self.prev_points = new_points
+
+        gl.glUseProgram(self.prog.glo)
+        gl.glUniform1i(self.loc_mapped_points, 0)
+        gl.glUniform1i(self.loc_radius, 1)
+        gl.glUniform1i(self.loc_stroke_color, 2)
+        gl.glUniform1i(self.loc_fill_color, 3)
 
         self.u_lim.value = (len(new_points) - 1) // 2 * 2
         gl.glActiveTexture(gl.GL_TEXTURE0)
@@ -328,7 +338,7 @@ class VItemRenderer(Renderer):
         new_radius = item.radius._radii._data
         new_stroke = item.stroke._rgbas._data
         new_fill = item.fill._rgbas._data
-        new_glow_size = item.glow._sizes
+        new_glow_size = item.glow._size
 
         is_camera_changed = new_camera_info is not self.prev_camera_info
 

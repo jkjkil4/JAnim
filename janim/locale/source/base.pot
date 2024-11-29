@@ -16,30 +16,14 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: janim\gui\selector.py:208
-msgid "Subitem Selection Tool"
+#: janim\render\base.py:203
+msgid ""
+"An additional module is required to be compatible with OpenGL{version} "
+"(lower than OpenGL 4.3), but it is not installed"
 msgstr ""
 
-#: janim\gui\selector.py:209
-msgid "    Ctrl+Left Click: Select Parent Item"
-msgstr ""
-
-#: janim\gui\selector.py:210
-msgid "    Left Click: Select Child Item"
-msgstr ""
-
-#: janim\gui\selector.py:211
-msgid "    Right Click: Deselect Child Item"
-msgstr ""
-
-#: janim\gui\selector.py:212
-msgid "    Ctrl+Right Click: Exit"
-msgstr ""
-
-#: janim\gui\selector.py:213
-msgid "Selected Parent Item: "
-msgstr ""
-
-#: janim\gui\selector.py:218
-msgid "Selected Subitems: "
+#: janim\render\base.py:207
+msgid ""
+"You can install it using \"pip install PyOpenGL\" and make sure you install "
+"it in the correct Python version"
 msgstr ""
