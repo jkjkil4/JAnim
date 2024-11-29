@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: JAnim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-05-30 15:49+0800\n"
+"POT-Creation-Date: 2024-11-29 21:32+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -23,7 +23,8 @@ msgstr ""
 msgid "writer"
 msgstr ""
 
-#: janim.render.writer.AudioWriter:1 janim.render.writer.VideoWriter:1 of
+#: janim.render.writer.AudioWriter:1 janim.render.writer.SRTWriter:1
+#: janim.render.writer.VideoWriter:1 of
 msgid "基类：:py:class:`object`"
 msgstr ""
 
@@ -61,5 +62,9 @@ msgstr ""
 
 #: janim.render.writer.VideoWriter.write_all:3 of
 msgid "指定 ``quiet=True``，则不会输出前后的提示信息，但仍有进度条"
+msgstr ""
+
+#: janim.render.writer.SRTWriter.t_to_srt_time:1 of
+msgid "将秒数转换为 SRT 时间格式：HH:MM:SS,mmm"
 msgstr ""
 
