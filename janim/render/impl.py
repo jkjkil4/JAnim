@@ -249,12 +249,12 @@ class VItemRenderer(Renderer):
                 mapped = new_camera_info.map_points(new_points)
             mapped *= new_camera_info.frame_radius
 
-            # TODO: optimize by points_vec4buffer
-            bytes = np.hstack([
-                mapped,
-                item.points.get_closepath_flags()[:, np.newaxis],
-                np.zeros((len(mapped), 1))
-            ]).astype(np.float32).tobytes()
+            if len(self.points_vec4buffer) != len(mapped):
+                self.points_vec4buffer = np.empty((len(mapped), 4), dtype=np.float32)
+
+            self.points_vec4buffer[:, :2] = mapped
+            self.points_vec4buffer[:, 2] = item.points.get_closepath_flags().astype(np.float32)
+            bytes = self.points_vec4buffer.tobytes()
 
             if len(bytes) != self.vbo_mapped_points.size:
                 self.vbo_mapped_points.orphan(len(bytes))
