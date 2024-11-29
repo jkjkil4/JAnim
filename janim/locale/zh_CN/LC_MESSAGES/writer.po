@@ -7,58 +7,58 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-11-28 18:53+0800\n"
+"POT-Creation-Date: 2024-11-29 21:26+0800\n"
 "PO-Revision-Date: 2024-11-28 20:38+0800\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
-"Language: zh_CN\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=GBK\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Language: zh_CN\n"
 "X-Generator: Poedit 3.4.2\n"
 
-#: janim\render\writer.py:65
+#: janim\render\writer.py:67
 msgid "Writing video \"{name}\""
 msgstr "输出视频 \"{name}\" 中"
 
-#: janim\render\writer.py:92
+#: janim\render\writer.py:94
 msgid "Finished writing video \"{name}\" in {elapsed:.2f} s"
 msgstr "输出视频 \"{name}\" 完成，耗时 {elapsed:.2f} s"
 
-#: janim\render\writer.py:98
+#: janim\render\writer.py:100
 msgid "File saved to \"{file_path}\" (video only)"
 msgstr "文件已保存到 \"{file_path}\"（仅视频）"
 
-#: janim\render\writer.py:140
+#: janim\render\writer.py:142
 msgid ""
 "Unable to output video. Please install ffmpeg and add it to the environment "
 "variables."
 msgstr "无法输出视频，需要安装 ffmpeg 并将其添加到环境变量中"
 
-#: janim\render\writer.py:163
+#: janim\render\writer.py:165
 msgid "Writing audio of \"{name}\""
 msgstr "输出音频 \"{name}\" 中"
 
-#: janim\render\writer.py:189
+#: janim\render\writer.py:191
 msgid "Finished writing audio of \"{name}\" in {elapsed:.2f} s"
 msgstr "输出音频 \"{name}\" 完成，耗时 {elapsed:.2f} s"
 
-#: janim\render\writer.py:195
+#: janim\render\writer.py:197
 msgid "File saved to \"{file_path}\""
 msgstr "文件已保存到 \"{file_path}\""
 
-#: janim\render\writer.py:218
+#: janim\render\writer.py:220
 msgid ""
 "Unable to output audio. Please install ffmpeg and add it to the environment "
 "variables."
 msgstr "无法输出音频，需要安装 ffmpeg 并将其添加到环境变量中"
 
-#: janim\render\writer.py:252
+#: janim\render\writer.py:254
 msgid ""
 "Unable to merge video. Please install ffmpeg and add it to the environment "
 "variables."
 msgstr "无法输出视频，需要安装 ffmpeg 并将其添加到环境变量中"
 
-#: janim\render\writer.py:264
+#: janim\render\writer.py:266
 msgid "File saved to \"{file_path}\" (merged)"
 msgstr "文件已保存到 \"{file_path}\"（已合并）"

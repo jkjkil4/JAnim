@@ -9,10 +9,14 @@ from typing import TYPE_CHECKING, Any
 import moderngl as mgl
 
 from janim.camera.camera_info import CameraInfo
+from janim.exception import EXITCODE_PYOPENGL_NOT_FOUND, ExitException
+from janim.locale.i18n import get_local_strings
 from janim.utils.file_ops import find_file, get_janim_dir, readall
 
 if TYPE_CHECKING:
     from janim.items.item import Item
+
+_ = get_local_strings('base')
 
 FIX_IN_FRAME_KEY = 'JA_FIX_IN_FRAME'
 
@@ -186,3 +190,20 @@ def get_compute_shader(filepath: str) -> mgl.ComputeShader:
 
     ctx_program_map[filepath] = comp
     return comp
+
+
+def check_pyopengl_if_required(ctx: mgl.Context) -> None:
+    if ctx.version_code >= 430:
+        return
+
+    try:
+        import OpenGL.GL as gl  # noqa: F401
+    except ImportError:
+        print(
+            _('An additional module is required to be compatible with OpenGL{version} (lower than OpenGL 4.3), '
+              'but it is not installed')
+            .format(version=ctx.info['GL_VERSION'])
+        )
+        print(_('You can install it using "pip install PyOpenGL" '
+                'and make sure you install it in the correct Python version'))
+        raise ExitException(EXITCODE_PYOPENGL_NOT_FOUND)

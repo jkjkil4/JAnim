@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-11-28 20:36+0800\n"
+"POT-Creation-Date: 2024-11-29 21:26+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,11 +16,11 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: janim\cli.py:51 janim\cli.py:193
+#: janim\cli.py:51 janim\cli.py:201
 msgid "Constructing window"
 msgstr ""
 
-#: janim\cli.py:62 janim\cli.py:214
+#: janim\cli.py:62 janim\cli.py:222
 msgid "Finished constructing in {time:.2f} s"
 msgstr ""
 
@@ -32,40 +32,40 @@ msgstr ""
 msgid "'--audio' is ignored because '--video_with_audio' is set"
 msgstr ""
 
-#: janim\cli.py:129
+#: janim\cli.py:137
 msgid "Skipping \"{name}\": no part to output"
 msgstr ""
 
-#: janim\cli.py:176
+#: janim\cli.py:184
 msgid "Generated SRT file \"{file_path}\""
 msgstr ""
 
-#: janim\cli.py:185
+#: janim\cli.py:193
 msgid "No tool specified for use"
 msgstr ""
 
-#: janim\cli.py:235
+#: janim\cli.py:243
 msgid "\"{file_name}\" doesn't exist"
 msgstr ""
 
-#: janim\cli.py:239
+#: janim\cli.py:247
 msgid "\"{file_name}\" isn't a file"
 msgstr ""
 
-#: janim\cli.py:260
+#: janim\cli.py:268
 msgid "No timeline named \"{name}\""
 msgstr ""
 
-#: janim\cli.py:277
+#: janim\cli.py:285
 msgid ""
 "That module has multiple timelines, which ones would you like to render?\n"
 "Timeline Name or Number: "
 msgstr ""
 
-#: janim\cli.py:292
+#: janim\cli.py:300
 msgid "Invaild number {num}"
 msgstr ""
 
-#: janim\cli.py:298
+#: janim\cli.py:306
 msgid "No timeline named {split_str}"
 msgstr ""
