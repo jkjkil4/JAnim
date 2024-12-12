@@ -21,7 +21,7 @@ from bisect import bisect_left
 from typing import Sequence
 
 from PySide6.QtCore import QByteArray, Qt, Signal
-from PySide6.QtGui import QCloseEvent, QHideEvent, QIcon, QShowEvent
+from PySide6.QtGui import QAction, QCloseEvent, QHideEvent, QIcon, QShowEvent
 from PySide6.QtWidgets import (QApplication, QCompleter, QLabel, QLineEdit,
                                QMainWindow, QMessageBox, QPushButton,
                                QSizePolicy, QSplitter, QStackedLayout, QWidget)
@@ -323,10 +323,10 @@ class AnimViewer(QMainWindow):
         self.action_stay_on_top.toggled.connect(self.on_stay_on_top_toggled)
         self.action_rebuild.triggered.connect(self.on_rebuild_triggered)
         self.action_select.triggered.connect(self.on_select_triggered)
-        self.action_painter.triggered.connect(self.on_painter_triggered)
-        self.action_richtext_edit.triggered.connect(self.on_richtext_edit_triggered)
-        self.action_font_table.triggered.connect(self.on_font_table_triggered)
-        self.action_color_widget.triggered.connect(self.on_color_widget_triggered)
+        self.connect_action_widget(self.action_painter, Painter)
+        self.connect_action_widget(self.action_richtext_edit, RichTextEditor)
+        self.connect_action_widget(self.action_font_table, FontTable)
+        self.connect_action_widget(self.action_color_widget, ColorWidget)
 
         self.timeline_view.value_changed.connect(self.on_value_changed)
         self.timeline_view.dragged.connect(lambda: self.set_play_state(False))
@@ -439,49 +439,23 @@ class AnimViewer(QMainWindow):
     def on_selector_destroyed(self) -> None:
         self.selector = None
 
-    def on_painter_triggered(self) -> None:
-        if self.painter is None:
-            self.painter = Painter(self)
-            self.painter.setWindowFlag(Qt.WindowType.Tool)
-            self.painter.setAttribute(Qt.WidgetAttribute.WA_DeleteOnClose)
-            self.painter.destroyed.connect(self.on_painter_destroyed)
-        self.painter.show()
+    def connect_action_widget(self, action: QAction, widget_cls: type[QWidget]) -> None:
+        widget = None
 
-    def on_painter_destroyed(self) -> None:
-        self.painter = None
+        def triggered() -> None:
+            nonlocal widget
+            if widget is None:
+                widget = widget_cls(self)
+                widget.setWindowFlag(Qt.WindowType.Tool)
+                widget.setAttribute(Qt.WidgetAttribute.WA_DeleteOnClose)
+                widget.destroyed.connect(destroyed)
+            widget.show()
 
-    def on_richtext_edit_triggered(self) -> None:
-        if self.richtext_editor is None:
-            self.richtext_editor = RichTextEditor(self)
-            self.richtext_editor.setWindowFlag(Qt.WindowType.Tool)
-            self.richtext_editor.setAttribute(Qt.WidgetAttribute.WA_DeleteOnClose)
-            self.richtext_editor.destroyed.connect(self.on_richtext_editor_destroyed)
-        self.richtext_editor.show()
+        def destroyed() -> None:
+            nonlocal widget
+            widget = None
 
-    def on_richtext_editor_destroyed(self) -> None:
-        self.richtext_editor = None
-
-    def on_font_table_triggered(self) -> None:
-        if self.font_table is None:
-            self.font_table = FontTable(self)
-            self.font_table.setWindowFlag(Qt.WindowType.Tool)
-            self.font_table.setAttribute(Qt.WidgetAttribute.WA_DeleteOnClose)
-            self.font_table.destroyed.connect(self.on_font_table_destroyed)
-        self.font_table.show()
-
-    def on_font_table_destroyed(self) -> None:
-        self.font_table = None
-
-    def on_color_widget_triggered(self) -> None:
-        if self.color_widget is None:
-            self.color_widget = ColorWidget(self)
-            self.color_widget.setWindowFlag(Qt.WindowType.Tool)
-            self.color_widget.setAttribute(Qt.WidgetAttribute.WA_DeleteOnClose)
-            self.color_widget.destroyed.connect(self.on_color_widget_destroyed)
-        self.color_widget.show()
-
-    def on_color_widget_destroyed(self) -> None:
-        self.color_widget = None
+        action.triggered.connect(triggered)
 
     # endregion (slots-menu)
 
