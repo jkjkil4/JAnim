@@ -165,7 +165,7 @@ default_config = Config(
     subtitle_font='',
 
     audio_framerate=44100,
-    audio_channels=1,
+    audio_channels=2,
 
     wnd_pos='OR',
     wnd_monitor=0,
