@@ -230,11 +230,27 @@ class NumberLine(Line):
             num_item.points.shift(num_item[0][0].points.box.width * LEFT / 2)
         return num_item
 
-    def number_to_point(self, number: float | np.ndarray) -> np.ndarray:
+    def number_to_point(self, number: float | Iterable[float] | np.ndarray) -> np.ndarray:
+        '''
+        传入数值得到在坐标轴上对应的位置
+
+        传入的可以是：
+
+        - 单个数，得到单个坐标，表示这个数在坐标轴上的位置；
+          例如 ``n2p(2)`` 得到 2 在坐标轴上的位置
+
+        - 多个数，得到一组坐标，分别表示这些数在坐标轴上的位置；
+          例如 ``n2p([0, 2, 4])`` 分别得到 0、2、4 在坐标轴上的位置
+        '''
+        if not isinstance(number, float):
+            number = np.asarray(number)
         alpha = (number - self.x_min) / (self.x_max - self.x_min)
         return outer_interpolate(self.points.get_start(), self.points.get_end(), alpha)
 
     def point_to_number(self, point: np.ndarray) -> float:
+        '''
+        传入坐标将其映射到坐标轴上，返回在坐标轴上的数值
+        '''
         start = self.points.get_start()
         end = self.points.get_end()
         vect = end - start

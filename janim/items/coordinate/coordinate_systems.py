@@ -7,16 +7,16 @@ import numpy as np
 from janim.components.component import CmptInfo
 from janim.components.points import Cmpt_Points
 from janim.components.vpoints import Cmpt_VPoints
-from janim.constants import (BLUE_D, DEGREES, DL, UP, ORIGIN, SMALL_BUFF,
-                             WHITE)
+from janim.constants import BLUE_D, DEGREES, DL, ORIGIN, SMALL_BUFF, UP, WHITE
 from janim.items.coordinate.functions import ParametricCurve
 from janim.items.coordinate.number_line import NumberLine
 from janim.items.geometry.line import Line
 from janim.items.item import _ItemMeta
 from janim.items.points import Group
 from janim.items.vitem import DEFAULT_STROKE_RADIUS
-from janim.typing import RangeSpecifier, Vect
+from janim.typing import RangeSpecifier, Vect, VectArray
 from janim.utils.dict_ops import merge_dicts_recursively
+from janim.utils.space_ops import cross
 
 DEFAULT_X_RANGE = (-8.0, 8.0, 1.0)
 DEFAULT_Y_RANGE = (-4.0, 4.0, 1.0)
@@ -27,6 +27,15 @@ class _ItemMeta_ABCMeta(_ItemMeta, ABCMeta):
 
 
 class CoordinateSystem(metaclass=ABCMeta):
+    def __init__(
+        self,
+        *args,
+        num_sampled_graph_points_per_tick,
+        **kwargs,
+    ):
+        super().__init__(*args, **kwargs)
+        self.num_sampled_graph_points_per_tick = num_sampled_graph_points_per_tick
+
     @staticmethod
     def create_axis(
         range: RangeSpecifier,
@@ -41,30 +50,94 @@ class CoordinateSystem(metaclass=ABCMeta):
     def get_axes(self) -> list[NumberLine]:
         pass
 
-    def coords_to_point(self, *coords: float | Iterable[float]) -> np.ndarray:
+    def get_origin(self) -> np.ndarray:
         axes = self.get_axes()
-        origin = axes[0].number_to_point(0)
+        return axes[0].number_to_point(0)
+
+    def coords_to_point(self, *coords: float) -> np.ndarray:
+        '''
+        传入坐标得到对应的位置
+
+        例如 ``c2p(1, 3)`` 得到 (1,3) 的位置
+        '''
+        axes = self.get_axes()
+        origin = self.get_origin()
         return origin + sum(
             axis.number_to_point(coord) - origin
             for axis, coord in zip(axes, coords)
         )
 
-    def point_to_coords(self, point: Vect | Iterable[Vect]) -> np.ndarray:
-        raise NotImplementedError()     # TODO: point_to_coords
+    def coords_array_to_points(self, coords_array: VectArray) -> np.ndarray:
+        '''
+        传入一组坐标得到对应的一组位置
 
-    def c2p(self, *coords: float | np.ndarray) -> np.ndarray:
+        例如 ``c2p([[1, 3], [2, 1], [-1, -1]])`` 得到对应的三个位置
+        '''
+        axes = self.get_axes()
+        origin = self.get_origin()
+        coords_array = np.asarray(coords_array)
+        return origin + sum(
+            axis.number_to_point(coord) - origin
+            for axis, coord in zip(axes, coords_array.T)
+        )
+
+    def c2p(self, *coords: float) -> np.ndarray:
         ''':meth:`coords_to_point` 的缩写'''
         return self.coords_to_point(*coords)
 
+    def point_to_coords3d(self, point: Vect | Iterable[Vect]) -> np.ndarray:
+        '''
+        传入位置得到对应的坐标（但是会扩张为三维坐标；对于二维坐标系来说，第三个分量则表示距离二维平面的距离）
+
+        也可以传入一组位置得到一组对应的坐标
+        '''
+        axes = self.get_axes()
+        origin = self.get_origin()
+        vectors = [axe.number_to_point(1) - origin for axe in axes]
+        if len(vectors) == 2:
+            vectors.append(cross(vectors[0], vectors[1]))
+        else:
+            assert len(vectors) == 3
+        mat = np.linalg.inv(np.column_stack(vectors))
+        return (point - origin) @ mat.T
+
+    def p2c3d(self, point: Vect | Iterable[Vect]) -> np.ndarray:
+        ''':meth:`point_to_coords3d` 的简写'''
+        return self.point_to_coords3d(point)
+
+    def point_to_coords(self, point: Vect | Iterable[Vect]) -> np.ndarray:
+        '''
+        传入位置得到对应坐标
+
+        也可以传入一组位置得到一组对应的坐标
+        '''
+        axes = self.get_axes()
+        return self.point_to_coords3d(point)[:len(axes)]
+
     def p2c(self, point: Vect | Iterable[Vect]) -> np.ndarray:
         ''':meth:`point_to_coords` 的缩写'''
-        return self.point_to_coords(self, point)
+        return self.point_to_coords(point)
 
-    def get_origin(self) -> np.ndarray:
-        return self.c2p(*[0] * len(self.get_axes()))
+    def number_to_point(self, number: complex | float) -> np.ndarray:
+        '''传入复数得到对应位置'''
+        number = complex(number)
+        return self.coords_to_point(number.real, number.imag)
+
+    def n2p(self, number: complex | float) -> np.ndarray:
+        ''':meth:`number_to_point` 的缩写'''
+        return self.number_to_point(number)
+
+    def point_to_number(self, point: Vect) -> complex:
+        '''传入位置得到对应复数'''
+        x, y = self.point_to_coords3d(point)[:2]
+        return complex(x, y)
+
+    def p2n(self, point: Vect) -> complex:
+        ''':meth:`point_to_number` 的缩写'''
+        return self.point_to_number(point)
 
 
-class Axes(Group, CoordinateSystem, metaclass=_ItemMeta_ABCMeta):
+class Axes(CoordinateSystem, Group, metaclass=_ItemMeta_ABCMeta):
     axis_config_d: dict = dict(
         numbers_to_exclude=[0]
     )
@@ -87,14 +160,11 @@ class Axes(Group, CoordinateSystem, metaclass=_ItemMeta_ABCMeta):
         unit_size: float = 1.0,
         **kwargs
     ):
-        # REFACTOR: 将 num_sampled_graph_points_per_tick 提取到 CoordinateSystem 中？
-        CoordinateSystem.__init__(self)
         self.x_range = x_range
         self.y_range = y_range
-        self.num_sampled_graph_points_per_tick = num_sampled_graph_points_per_tick
 
         axis_config = dict(**axis_config, unit_size=unit_size)
-        self.x_axis = self.create_axis(
+        self.x_axis = CoordinateSystem.create_axis(
             x_range,
             axis_config=merge_dicts_recursively(
                 self.axis_config_d,
@@ -104,7 +174,7 @@ class Axes(Group, CoordinateSystem, metaclass=_ItemMeta_ABCMeta):
             ),
             length=width
         )
-        self.y_axis = self.create_axis(
+        self.y_axis = CoordinateSystem.create_axis(
             y_range,
             axis_config=merge_dicts_recursively(
                 self.axis_config_d,
@@ -116,7 +186,12 @@ class Axes(Group, CoordinateSystem, metaclass=_ItemMeta_ABCMeta):
         )
         self.y_axis.points.rotate(90 * DEGREES, about_point=ORIGIN)
 
-        Group.__init__(self, self.x_axis, self.y_axis, **kwargs)
+        super().__init__(
+            self.x_axis,
+            self.y_axis,
+            num_sampled_graph_points_per_tick=num_sampled_graph_points_per_tick,
+            **kwargs
+        )
 
     def get_axes(self) -> list[NumberLine]:
         return [self.x_axis, self.y_axis]
@@ -150,6 +225,30 @@ class Axes(Group, CoordinateSystem, metaclass=_ItemMeta_ABCMeta):
             )
 
         return graph
+
+    def get_parametric_curve(
+        self,
+        function: Callable[[float], Vect],
+        bind: bool = True,
+        **kwargs
+    ):
+        graph = ParametricCurve(
+            lambda t: self.coords_to_point(*function(t)),
+            **kwargs
+        )
+
+        if bind:
+            Cmpt_Points.apply_points_fn.connect(
+                self.points,
+                lambda func, about_point: graph.points.apply_points_fn(func,
+                                                                       about_point=about_point,
+                                                                       about_edge=None)
+            )
+
+        return graph
+
+
+# TODO: ThreeDAxes
 
 
 class CmptVPoints_NumberPlaneImpl(Cmpt_VPoints, impl=True):
