@@ -811,11 +811,11 @@ class SourceTimeline(Timeline):     # pragma: no cover
     '''
     与 :class:`Timeline` 相比，会在背景显示源代码
     '''
-    def build(self, *, quiet=False) -> TimelineAnim:
+    def build(self, *, quiet=False, hide_subtitles=False) -> TimelineAnim:
         from janim.items.text.text import SourceDisplayer
         with ContextSetter(self.ctx_var, self), self.with_config():
             SourceDisplayer(self.__class__, depth=10000).show()
-        return super().build(quiet=quiet)
+        return super().build(quiet=quiet, hide_subtitles=hide_subtitles)
 
 
 SEGMENT_DURATION = 10
