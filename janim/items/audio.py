@@ -24,9 +24,9 @@ _ = get_local_strings('audio')
 
 class Audio:
     '''
-    在默认情况下该类读取时仅保留单声道
+    音频
 
-    - 若需要双声道需要配置 ``audio_channels`` 选项
+    可以配置 ``audio_channels`` 选项控制读取的声道数（默认为2）
 
     另见：:class:`~.Config`
     '''
