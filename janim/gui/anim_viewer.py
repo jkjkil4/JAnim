@@ -139,7 +139,9 @@ class AnimViewer(QMainWindow):
         self.play_timer.set_duration(1 / anim.cfg.preview_fps)
 
         if self.anim.timeline.has_audio() and self.audio_player is None:
-            self.audio_player = AudioPlayer(self.anim.cfg.audio_framerate, self.anim.cfg.audio_channels)
+            self.audio_player = AudioPlayer(self.anim.cfg.audio_framerate,
+                                            self.anim.cfg.audio_channels,
+                                            self.anim.cfg.preview_fps)
 
     # region setup_ui
 
