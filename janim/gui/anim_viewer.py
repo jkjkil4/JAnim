@@ -578,7 +578,8 @@ class AnimViewer(QMainWindow):
         ret = False
         self.shared_socket = QUdpSocket()
         if 1024 <= client_search_port <= 65535:
-            ret = self.shared_socket.bind(client_search_port,
+            ret = self.shared_socket.bind(QHostAddress.SpecialAddress.LocalHost,
+                                          client_search_port,
                                           QUdpSocket.BindFlag.ShareAddress | QUdpSocket.BindFlag.ReuseAddressHint)
             if ret:
                 self.shared_socket.readyRead.connect(self.on_shared_ready_read)
