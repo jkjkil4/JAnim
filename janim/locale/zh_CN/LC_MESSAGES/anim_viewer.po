@@ -7,14 +7,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-11-28 19:52+0800\n"
-"PO-Revision-Date: 2024-11-28 19:53+0800\n"
+"POT-Creation-Date: 2024-12-23 01:40+0800\n"
+"PO-Revision-Date: 2024-12-23 01:41+0800\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
+"Language: zh_CN\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=GBK\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: zh_CN\n"
 "X-Generator: Poedit 3.4.2\n"
 
 #: janim\gui\anim_viewer.py:7
@@ -31,91 +31,95 @@ msgstr ""
 "你可以使用 pip install \"janim[gui]\" 进行安装，并确保你安装在了正确的 "
 "Python 版本中"
 
-#: janim\gui\anim_viewer.py:161
+#: janim\gui\anim_viewer.py:163
 msgid "Functions(&F)"
 msgstr "功能(&F)"
 
-#: janim\gui\anim_viewer.py:163
+#: janim\gui\anim_viewer.py:165
 msgid "Stay on top(&T)"
 msgstr "窗口置前(&T)"
 
 #: janim\gui\anim_viewer.py:169
+msgid "Frame skip(&P)"
+msgstr "跳帧(&P)"
+
+#: janim\gui\anim_viewer.py:175
 msgid "Rebuild(&L)"
 msgstr "重新构建(&L)"
 
-#: janim\gui\anim_viewer.py:174
+#: janim\gui\anim_viewer.py:180
 msgid "Subitem selector(&S)"
 msgstr "子物件选择器(&S)"
 
-#: janim\gui\anim_viewer.py:178
+#: janim\gui\anim_viewer.py:184
 msgid "Draw(&D)"
 msgstr "绘制(&D)"
 
-#: janim\gui\anim_viewer.py:182
+#: janim\gui\anim_viewer.py:188
 msgid "Rich text editor(&R)"
 msgstr "富文本编辑器(&R)"
 
-#: janim\gui\anim_viewer.py:186
+#: janim\gui\anim_viewer.py:192
 msgid "Font list(&F)"
 msgstr "字体列表(&F)"
 
-#: janim\gui\anim_viewer.py:190
+#: janim\gui\anim_viewer.py:196
 msgid "Color(&O)"
 msgstr "颜色(&O)"
 
-#: janim\gui\anim_viewer.py:245
+#: janim\gui\anim_viewer.py:251
 msgid "wnd_pos has wrong argument {wnd_pos}."
 msgstr "wnd_pos 得到了错误的参数 {wnd_pos}"
 
-#: janim\gui\anim_viewer.py:256
+#: janim\gui\anim_viewer.py:262
 msgid "wnd_monitor has invalid value {wnd_monitor}, use {range} instead."
 msgstr "wnd_monitor 得到了无效的值 {wnd_monitor}, 请使用 {range} 代替"
 
-#: janim\gui\anim_viewer.py:374
+#: janim\gui\anim_viewer.py:384
 msgid "No timeline named \"{name}\" in \"{file}\""
 msgstr "没有叫作 \"{name}\" 的时间轴，对于文件 \"{file}\" 来说"
 
-#: janim\gui\anim_viewer.py:384
+#: janim\gui\anim_viewer.py:394
 msgid "Failed to rebuild"
 msgstr "构建失败"
 
-#: janim\gui\anim_viewer.py:551 janim\gui\anim_viewer.py:587
+#: janim\gui\anim_viewer.py:538 janim\gui\anim_viewer.py:574
 msgid "Note"
 msgstr "提示"
 
-#: janim\gui\anim_viewer.py:552
+#: janim\gui\anim_viewer.py:539
 msgid "Output will start shortly. Please check the console for information."
 msgstr "即将进行输出，请留意控制台信息"
 
-#: janim\gui\anim_viewer.py:580
+#: janim\gui\anim_viewer.py:567
 msgid "Exporting was cancelled"
 msgstr "导出已取消"
 
-#: janim\gui\anim_viewer.py:588
+#: janim\gui\anim_viewer.py:575
 msgid "Output to {file_path} has been completed."
 msgstr "已完成输出至 {file_path}"
 
-#: janim\gui\anim_viewer.py:610
+#: janim\gui\anim_viewer.py:598
 msgid "Searching port has been opened at {port}"
 msgstr "搜索端口已在 {port} 开启"
 
-#: janim\gui\anim_viewer.py:615
+#: janim\gui\anim_viewer.py:603
 msgid "Failed to open searching port at {port}"
 msgstr "无法在 {port} 开启搜索端口"
 
-#: janim\gui\anim_viewer.py:620
+#: janim\gui\anim_viewer.py:608
 msgid ""
 "Searching port {port} is invalid, please use a number between 1024 and 65535 "
 "instead"
 msgstr "搜索端口 {port} 无效，请使用 1024 至 65535 之间的数字"
 
-#: janim\gui\anim_viewer.py:626
+#: janim\gui\anim_viewer.py:614
 msgid ""
 "Interactive development is disabled because the searching port is not "
 "established."
 msgstr "由于搜索端口未建立，交互式开发不可用"
 
-#: janim\gui\anim_viewer.py:639
+#: janim\gui\anim_viewer.py:627
 msgid "Interactive port has been opened at {port}"
 msgstr "交互端口已在 {port} 开启"
 

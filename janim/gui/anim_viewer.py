@@ -166,6 +166,10 @@ class AnimViewer(QMainWindow):
         self.action_stay_on_top.setCheckable(True)
         self.action_stay_on_top.setShortcut('Ctrl+T')
 
+        self.action_frame_skip = menu_functions.addAction(_('Frame skip(&P)'))
+        self.action_frame_skip.setCheckable(True)
+        # self.action_frame_skip.setShortcut('Ctrl+P')
+
         menu_functions.addSeparator()
 
         self.action_rebuild = menu_functions.addAction(_('Rebuild(&L)'))
@@ -323,6 +327,7 @@ class AnimViewer(QMainWindow):
 
     def setup_slots(self) -> None:
         self.action_stay_on_top.toggled.connect(self.on_stay_on_top_toggled)
+        self.action_frame_skip.toggled.connect(self.on_frame_skip_toggled)
         self.action_rebuild.triggered.connect(self.on_rebuild_triggered)
         self.action_select.triggered.connect(self.on_select_triggered)
         self.connect_action_widget(self.action_painter, Painter)
@@ -346,6 +351,9 @@ class AnimViewer(QMainWindow):
         self.setWindowFlag(Qt.WindowType.WindowStaysOnTopHint, flag)
         if visible:
             self.setVisible(True)
+
+    def on_frame_skip_toggled(self, flag: bool) -> None:
+        self.play_timer.set_skip_enabled(flag)
 
     def on_rebuild_triggered(self) -> None:
         module = inspect.getmodule(self.anim.timeline)
@@ -404,7 +412,7 @@ class AnimViewer(QMainWindow):
             # 把原来进度（所在第几帧）转换到新的进度
             # 如果帧率没变，则进度不变
             # 如果帧率变了，例如从 30fps 到 60fps，则进度 43 对应 进度 86（乘了 2）
-            self.play_timer.duration = 1 / self.anim.cfg.preview_fps
+            self.play_timer.set_duration(1 / self.anim.cfg.preview_fps)
             progress = int(progress * self.anim.cfg.preview_fps / preview_fps)
             self.anim.anim_on(self.timeline_view.progress_to_time(progress))
             self.timeline_view.set_progress(progress)
@@ -482,7 +490,10 @@ class AnimViewer(QMainWindow):
         self.fps_counter += 1
         if cur - self.fps_record_start >= 1:
             # i18n?
-            self.fps_label.setText(f'Preview FPS: {self.fps_counter}/{self.anim.cfg.preview_fps}')
+            if self.action_frame_skip.isChecked():
+                self.fps_label.setText(f'Preview FPS: {self.fps_counter} ({self.anim.cfg.preview_fps})')
+            else:
+                self.fps_label.setText(f'Preview FPS: {self.fps_counter}/{self.anim.cfg.preview_fps}')
             self.fps_counter = 0
             self.fps_record_start = cur
 
@@ -493,7 +504,7 @@ class AnimViewer(QMainWindow):
                                                                     self.timeline_view.progress())
             self.audio_player.write(samples.tobytes())
 
-        self.timeline_view.set_progress(self.timeline_view.progress() + 1)
+        self.timeline_view.set_progress(self.timeline_view.progress() + 1 + self.play_timer.take_skip_count())
 
         if self.pause_progresses:
             progress = self.timeline_view.progress()

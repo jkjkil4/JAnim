@@ -10,11 +10,22 @@ class PreciseTimer(QTimer):
 
         self.duration = duration
 
+        self.skip_enabled = False
+        self.skip_count = 0
+
         self.setTimerType(Qt.TimerType.PreciseTimer)
         self.timeout.connect(self.on_timeout)
 
     def set_duration(self, duration: float) -> None:
         self.duration = duration
+
+    def set_skip_enabled(self, enabled: bool) -> None:
+        self.skip_enabled = enabled
+
+    def take_skip_count(self) -> int:
+        count = self.skip_count
+        self.skip_count = 0
+        return count
 
     def start_precise_timer(self) -> None:
         assert self.duration is not None
@@ -30,9 +41,17 @@ class PreciseTimer(QTimer):
         elapsed = time.time() - self.start_time
 
         delta = self.scheduled - elapsed
+        seconds = self.duration + delta
 
-        if abs(delta) > 2 * self.duration:
-            self.start_precise_timer()
-            return
+        if self.skip_enabled:
+            while seconds < 0:
+                self.scheduled += self.duration
+                seconds += self.duration
+                self.skip_count += 1
 
-        self.start(max(0, int((self.duration + delta) * 1000)))
+        else:
+            if abs(delta) > 2 * self.duration:
+                self.start_precise_timer()
+                return
+
+        self.start(max(0, int(seconds * 1000)))
