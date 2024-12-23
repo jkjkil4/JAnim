@@ -165,36 +165,44 @@ class AnimViewer(QMainWindow):
         self.action_stay_on_top = menu_functions.addAction(_('Stay on top(&T)'))
         self.action_stay_on_top.setCheckable(True)
         self.action_stay_on_top.setShortcut('Ctrl+T')
+        self.action_stay_on_top.setAutoRepeat(False)
 
         self.action_frame_skip = menu_functions.addAction(_('Frame skip(&P)'))
         self.action_frame_skip.setCheckable(True)
         self.action_frame_skip.setShortcut('Ctrl+P')
+        self.action_frame_skip.setAutoRepeat(False)
 
         menu_functions.addSeparator()
 
         self.action_rebuild = menu_functions.addAction(_('Rebuild(&L)'))
         self.action_rebuild.setShortcut('Ctrl+L')
+        self.action_rebuild.setAutoRepeat(False)
 
         menu_functions.addSeparator()
 
         self.action_select = menu_functions.addAction(_('Subitem selector(&S)'))
         self.action_select.setShortcut('Ctrl+S')
+        self.action_select.setAutoRepeat(False)
         self.selector: Selector | None = None
 
         self.action_painter = menu_functions.addAction(_('Draw(&D)'))
         self.action_painter.setShortcut('Ctrl+D')
+        self.action_painter.setAutoRepeat(False)
         self.painter: Painter | None = None
 
         self.action_richtext_edit = menu_functions.addAction(_('Rich text editor(&R)'))
         self.action_richtext_edit.setShortcut('Ctrl+R')
+        self.action_richtext_edit.setAutoRepeat(False)
         self.richtext_editor: RichTextEditor | None = None
 
         self.action_font_table = menu_functions.addAction(_('Font list(&F)'))
         self.action_font_table.setShortcut('Ctrl+F')
+        self.action_font_table.setAutoRepeat(False)
         self.font_table: FontTable | None = None
 
         self.action_color_widget = menu_functions.addAction(_('Color(&O)'))
         self.action_color_widget.setShortcut('Ctrl+O')
+        self.action_color_widget.setAutoRepeat(False)
         self.color_widget: ColorWidget | None = None
 
     def setup_status_bar(self) -> None:
@@ -301,6 +309,7 @@ class AnimViewer(QMainWindow):
         self.play_timer = PreciseTimer(parent=self)
 
         self.fps_counter = 0
+        self.fps_prev = 0
         self.fps_record_start = time.time()
 
     def set_play_state(self, playing: bool) -> None:
@@ -354,6 +363,7 @@ class AnimViewer(QMainWindow):
 
     def on_frame_skip_toggled(self, flag: bool) -> None:
         self.play_timer.set_skip_enabled(flag)
+        self.update_fps_label()
 
     def on_rebuild_triggered(self) -> None:
         module = inspect.getmodule(self.anim.timeline)
@@ -489,22 +499,27 @@ class AnimViewer(QMainWindow):
         cur = time.time()
         self.fps_counter += 1
         if cur - self.fps_record_start >= 1:
-            # i18n?
-            if self.action_frame_skip.isChecked():
-                self.fps_label.setText(f'Preview FPS: {self.fps_counter} ({self.anim.cfg.preview_fps})')
-            else:
-                self.fps_label.setText(f'Preview FPS: {self.fps_counter}/{self.anim.cfg.preview_fps}')
+            self.fps_prev = self.fps_counter
+            self.update_fps_label()
             self.fps_counter = 0
             self.fps_record_start = cur
 
+    def update_fps_label(self) -> None:
+        if self.action_frame_skip.isChecked():
+            self.fps_label.setText(f'Preview FPS: {self.fps_prev} ({self.anim.cfg.preview_fps})')
+        else:
+            self.fps_label.setText(f'Preview FPS: {self.fps_prev}/{self.anim.cfg.preview_fps}')
+
     def on_play_timer_timeout(self) -> None:
+        played_count = 1 + self.play_timer.take_skip_count()
         if self.anim.timeline.has_audio():
             samples = self.anim.timeline.get_audio_samples_of_frame(self.anim.cfg.preview_fps,
                                                                     self.anim.cfg.audio_framerate,
-                                                                    self.timeline_view.progress())
+                                                                    self.timeline_view.progress(),
+                                                                    count=played_count)
             self.audio_player.write(samples.tobytes())
 
-        self.timeline_view.set_progress(self.timeline_view.progress() + 1 + self.play_timer.take_skip_count())
+        self.timeline_view.set_progress(self.timeline_view.progress() + played_count)
 
         if self.pause_progresses:
             progress = self.timeline_view.progress()

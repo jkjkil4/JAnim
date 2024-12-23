@@ -480,13 +480,15 @@ class Timeline(metaclass=ABCMeta):
         self,
         fps: float,
         framerate: int,
-        frame: int
+        frame: int,
+        *,
+        count: int = 1
     ) -> np.ndarray:
         '''
         提取特定帧的音频流
         '''
         begin = frame / fps
-        end = (frame + 1) / fps
+        end = (frame + count) / fps
         channels = self.config_getter.audio_channels
 
         output_sample_count = math.floor(end * framerate) - math.floor(begin * framerate)
