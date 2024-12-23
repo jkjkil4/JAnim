@@ -168,7 +168,7 @@ class AnimViewer(QMainWindow):
 
         self.action_frame_skip = menu_functions.addAction(_('Frame skip(&P)'))
         self.action_frame_skip.setCheckable(True)
-        # self.action_frame_skip.setShortcut('Ctrl+P')
+        self.action_frame_skip.setShortcut('Ctrl+P')
 
         menu_functions.addSeparator()
 
