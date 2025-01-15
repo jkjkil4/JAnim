@@ -1,3 +1,4 @@
+import math
 from typing import Callable
 
 import numpy as np
@@ -109,3 +110,213 @@ def exponential_decay(t: float, half_life: float = 0.1) -> float:
     # The half-life should be rather small to minimize
     # the cut-off error at the end
     return 1 - np.exp(-t / half_life)
+
+
+ELASTIC_CONST = 2 * math.pi / .3
+ELASTIC_CONST2 = .3 / 4
+
+BACK_CONST = 1.70158
+BACK_CONST2 = BACK_CONST * 1.525
+
+BOUNCE_CONST = 1 / 2.75
+
+# constants used to fix expo and elastic curves to start/end at 0/1
+EXPO_OFFSET = 2**(-10)
+ELASTIC_OFFSET_FULL = 2**(-11)
+ELASTIC_OFFSET_HALF = 2**(-10) * math.sin((.5 - ELASTIC_CONST2) * ELASTIC_CONST)
+ELASTIC_OFFSET_QUARTER = 2**(-10) * math.sin((.25 - ELASTIC_CONST2) * ELASTIC_CONST)
+IN_OUT_ELASTIC_OFFSET = 2**(-10) * math.sin((1 - ELASTIC_CONST2 * 1.5) * ELASTIC_CONST / 1.5)
+
+
+def ease_in_quad(t: float) -> float:
+    return t**2
+
+
+def ease_out_quad(t: float) -> float:
+    return t * (2 - t)
+
+
+def ease_inout_quad(t: float) -> float:
+    return (
+        t**2 * 2
+        if t < .5
+        else (t - 1)**2 * -2 + 1
+    )
+
+
+def ease_in_cubic(t: float) -> float:
+    return t**3
+
+
+def ease_out_cubic(t: float) -> float:
+    return (t - 1)**3 + 1
+
+
+def ease_inout_cubic(t: float) -> float:
+    return (
+        t**3 * 4
+        if t < .5
+        else (t - 1)**3 * 4 + 1
+    )
+
+
+def ease_in_quart(t: float) -> float:
+    return t**4
+
+
+def ease_out_quart(t: float) -> float:
+    return 1 - (t - 1)**4
+
+
+def ease_inout_quart(t: float) -> float:
+    return (
+        t**4 * 8
+        if t < .5
+        else (t - 1)**4 * -8 + 1
+    )
+
+
+def ease_in_quint(t: float) -> float:
+    return t**5
+
+
+def ease_out_quint(t: float) -> float:
+    return (t - 1)**5 + 1
+
+
+def ease_inout_quint(t: float) -> float:
+    return (
+        t**5 * 16
+        if t < .5
+        else (t - 1)**5 * 16 + 1
+    )
+
+
+def ease_in_sine(t: float) -> float:
+    return 1 - math.cos(t * math.pi * .5)
+
+
+def ease_out_sine(t: float) -> float:
+    return math.sin(t * math.pi * .5)
+
+
+def ease_inout_sine(t: float) -> float:
+    return .5 - .5 * math.cos(math.pi * t)
+
+
+def ease_in_expo(t: float) -> float:
+    return 2**(10 * (t - 1)) + EXPO_OFFSET * (t - 1)
+
+
+def ease_out_expo(t: float) -> float:
+    return -(2**(-10 * t)) + 1 + EXPO_OFFSET * t
+
+
+def ease_inout_expo(t: float) -> float:
+    return (
+        .5 * 2**(20 * t - 10) + EXPO_OFFSET * (2 * t - 1)
+        if t < .5
+        else 1 - .5 * 2**(-20 * t + 10) + EXPO_OFFSET * (-2 * t + 1)
+    )
+
+
+def ease_in_circ(t: float) -> float:
+    return 1 - math.sqrt(1 - t**2)
+
+
+def ease_out_circ(t: float) -> float:
+    return math.sqrt(1 - (t - 1)**2)
+
+
+def ease_inout_circ(t: float) -> float:
+    t *= 2
+    return (
+        .5 - .5 * math.sqrt(1 - t**2)
+        if t < 1
+        else .5 * math.sqrt(1 - (t - 2)**2) + .5
+    )
+
+
+def ease_in_elastic(t: float) -> float:
+    return -(2**(-10 + 10 * t)) * math.sin((1 - ELASTIC_CONST2 - t) * ELASTIC_CONST) \
+        + ELASTIC_OFFSET_FULL * (1 - t)
+
+
+def ease_out_elastic(t: float) -> float:
+    return 2**(-10 * t) * math.sin((t - ELASTIC_CONST2) * ELASTIC_CONST) \
+        + 1 - ELASTIC_OFFSET_FULL * t
+
+
+def ease_out_elastic_half(t: float) -> float:
+    return 2**(-10 * t) * math.sin((.5 * t - ELASTIC_CONST2) * ELASTIC_CONST) \
+        + 1 - ELASTIC_OFFSET_HALF * t
+
+
+def ease_out_elastic_quarter(t: float) -> float:
+    return 2**(-10 * t) * math.sin((.25 * t - ELASTIC_CONST2) * ELASTIC_CONST) \
+        + 1 - ELASTIC_OFFSET_QUARTER * t
+
+
+def ease_inout_elastic(t: float) -> float:
+    t *= 2
+    if t < 1:
+        return -.5 * (
+            2**(-10 + 10 * t) * math.sin((1 - ELASTIC_CONST2 * 1.5 - t) * ELASTIC_CONST / 1.5)
+            - IN_OUT_ELASTIC_OFFSET * (1 - t)
+        )
+    t -= 1
+    return .5 * (
+        2**(-10 * t) * math.sin((t - ELASTIC_CONST2 * 1.5) * ELASTIC_CONST / 1.5)
+        - IN_OUT_ELASTIC_OFFSET * t
+    ) + 1
+
+
+def ease_in_back(t: float) -> float:
+    return t**2 * ((BACK_CONST + 1) * t - BACK_CONST)
+
+
+def ease_out_back(t: float) -> float:
+    return (t - 1)**2 * ((BACK_CONST + 1) * (t - 1) + BACK_CONST) + 1
+
+
+def ease_inout_back(t: float) -> float:
+    t *= 2
+    if t < 1:
+        return .5 * t**2 * ((BACK_CONST2 + 1) * t - BACK_CONST2)
+    t -= 2
+    return .5 * (t**2 * ((BACK_CONST2 + 1) * t + BACK_CONST2) + 2)
+
+
+def ease_in_bounce(t: float) -> float:
+    t = 1 - t
+    if t < BOUNCE_CONST:
+        return 1 - 7.5625 * t**2
+    if t < 2 * BOUNCE_CONST:
+        t -= 1.5 * BOUNCE_CONST
+        return 1 - (7.5625 * t**2 + .75)
+    if t < 2.5 * BOUNCE_CONST:
+        t -= 2.25 * BOUNCE_CONST
+        return 1 - (7.5625 * t**2 + .9375)
+    t -= 2.625 * BOUNCE_CONST
+    return 1 - (7.5625 * t**2 + .984375)
+
+
+def ease_out_bounce(t: float) -> float:
+    if t < BOUNCE_CONST:
+        return 7.5625 * t**2
+    if t < 2 * BOUNCE_CONST:
+        t -= 1.5 * BOUNCE_CONST
+        return 7.5625 * t**2 + .75
+    if t < 2.5 * BOUNCE_CONST:
+        t -= 2.25 * BOUNCE_CONST
+        return 7.5625 * t**2 + .9375
+    t -= 2.625 * BOUNCE_CONST
+    return 7.5625 * t**2 + .984375
+
+
+def ease_inout_bounce(t: float) -> float:
+    return (
+        .5 - .5 * ease_out_bounce(1 - t * 2)
+        if t < .5
+        else ease_out_bounce((t - .5) * 2) * .5 + .5
+    )
