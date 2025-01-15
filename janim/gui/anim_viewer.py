@@ -137,6 +137,10 @@ class AnimViewer(QMainWindow):
 
         # other
         self.play_timer.set_duration(1 / anim.cfg.preview_fps)
+        if self.play_timer.isActive():
+            self.play_timer.start_precise_timer()
+        if self.play_timer.skip_enabled:
+            self.play_timer.take_skip_count()
 
         if self.anim.timeline.has_audio() and self.audio_player is None:
             self.audio_player = AudioPlayer(self.anim.cfg.audio_framerate,
@@ -448,6 +452,8 @@ class AnimViewer(QMainWindow):
 
             time = self.timeline_view.progress_to_time(self.timeline_view.progress())
             self.send_lineno(self.anim.timeline.get_lineno_at_time(time))
+
+        self.glw.update()
 
     def on_select_triggered(self) -> None:
         if self.selector is None:
