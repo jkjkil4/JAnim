@@ -31,7 +31,10 @@ class VideoWriter:
     '''
     def __init__(self, anim: TimelineAnim):
         self.anim = anim
-        self.ctx = mgl.create_standalone_context()
+        try:
+            self.ctx = mgl.create_standalone_context(require=430)
+        except ValueError:
+            self.ctx = mgl.create_standalone_context(require=330)
         check_pyopengl_if_required(self.ctx)
         self.ctx.enable(mgl.BLEND)
         self.ctx.blend_func = (
