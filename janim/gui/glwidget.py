@@ -58,7 +58,7 @@ class GLWidget(QOpenGLWidget):
 
     def paintGL(self) -> None:
         if self.needs_update_clear_color:
-            self.qfuncs.glClearColor(*self.anim.cfg.background_color.rgb, 0.)
+            self.qfuncs.glClearColor(*self.anim.cfg.background_color.rgb, 1.)
             self.needs_update_clear_color = False
         self.qfuncs.glClear(0x00004000 | 0x00000100)    # GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT
         self.anim.render_all(self.ctx)
