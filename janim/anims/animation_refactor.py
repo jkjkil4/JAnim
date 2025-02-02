@@ -1,11 +1,12 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Self
+from typing import Self, overload
 
 from janim.constants import FOREVER
 from janim.typing import ForeverType
 from janim.utils.rate_functions import RateFunc, linear, smooth
+from janim.items.item import Item
 
 ALIGN_EPSILON = 1e-6
 QUERY_OFFSET = 1e-5
@@ -17,7 +18,7 @@ class Animation:
 
     - 创建一个从 ``at`` 持续至 ``at + duration`` 的动画
     - ``duration`` 可以是 ``FOREVER``
-      （一般用于 :class:`DirectModifier`，
+      （一般用于 :class:`~.Display`，
       以及特殊情况下的 :class:`DataModifier` 等，
       但是 :class:`~.AnimGroup` 及其衍生类不能传入 ``FOREVER``）
     - 指定 ``rate_func`` 可以设定插值函数，默认为 :meth:`janim.utils.rate_funcs.smooth` 即平滑插值
@@ -35,6 +36,11 @@ class Animation:
         # 对于单个动画来说肯定是对齐的，默认为 True，而在 AnimGroup 中有可能是 False
         # 关于 is_aligned 的计算请参见 AnimGroup.__init__ 代码内的注释
         self.is_aligned = True
+
+        # 该值会被 Display 置为 True
+        # 该值置为 True 表示该动画不依赖先前动画的效果，使得进行计算时可以直接从该动画开始而不用考虑更前面的动画效果
+        # 意即“覆盖先前的动画”
+        self._cover_previous_anims = False
 
         # 用于标记该动画的全局时间区段
         self.t_range = TimeRange(
@@ -81,6 +87,38 @@ class Animation:
     # TODO: global_t_ctx
 
     # TODO: anim_on_alpha
+
+
+class ItemAnimation(Animation):
+    def __init__(self, item: Item, **kwargs):
+        self.item = item
+
+    def _time_fixed(self):
+        from janim.anims.timeline_refactor import Timeline
+        timeline = Timeline.get_context()
+        timeline.anim_stacks[self.item].append(self)
+
+    @dataclass
+    class ApplyParams:
+        global_t: float
+        anims: list[ItemAnimation]
+        index: int
+
+    @overload
+    def apply(self, data: Item, p: ApplyParams) -> None: ...
+    @overload
+    def apply(self, data: None, p: ApplyParams) -> Item: ...
+
+    def apply(self, data, params):
+        '''
+        将 ``global_t`` 时的动画效果作用到 ``data`` 上
+
+        其中
+
+        - 对于 :class:`~.Display` 而言，``data`` 是 ``None``，返回值是 :class:`~.Item` 对象
+        - 而对于其它大多数的而言，``data`` 是前一个动画作用的结果，返回值是 ``None``
+        '''
+        pass
 
 
 @dataclass

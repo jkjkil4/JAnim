@@ -228,7 +228,7 @@ class Timeline(metaclass=ABCMeta):
 
     # TODO: region audio_and_subtitle
 
-    # region direct-modifier
+    # region detect-changes
 
     def track(self, item: Item) -> None:
         '''
@@ -245,14 +245,14 @@ class Timeline(metaclass=ABCMeta):
 
     def detect_changes_of_all(self) -> None:
         '''
-        检查物件的变化并将变化记录为 :class:`DirectModifier`
+        检查物件的变化并将变化记录为 :class:`~.Display`
         '''
         for item, stack in self.anim_stacks.items():
             stack.detect_change(item, self.current_time)
 
     def detect_changes(self, items: Iterable[Item]) -> None:
         '''
-        检查指定的列表中物件的变化，并将变化记录为 :class:`DirectModifier`
+        检查指定的列表中物件的变化，并将变化记录为 :class:`~.Display`
 
         （仅检查自身而不包括子物件的）
         '''

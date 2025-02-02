@@ -102,23 +102,6 @@ class AnimGroup(Animation):
 
         super().__init__(at=at, duration=duration, rate_func=rate_func)
 
-    def shift_range(self, delta: float) -> Self:
-        super().shift_range(delta)
-        for anim in self.anims:
-            anim.shift_range(delta)
-        return self
-
-    def scale_range(self, k: float) -> Self:
-        super().scale_range(k)
-        for anim in self.anims:
-            anim.scale_range(k)
-        return self
-
-    def _attach_rate_func(self, rate_func: RateFunc) -> None:
-        super()._attach_rate_func(rate_func)
-        for anim in self.anims:
-            anim._attach_rate_func(rate_func)
-
     def _adjust_t_range(self, lag_ratio: float, offset: float) -> None:
         '''
         对于 :class:`AnimGroup` 和 :class:`Succession` 而言
@@ -161,6 +144,27 @@ class AnimGroup(Animation):
             raise NotAnimationError(_('A non-animation object was passed in, '
                                       'you might have forgotten to use .anim'))
         return attr()
+
+    def shift_range(self, delta: float) -> Self:
+        super().shift_range(delta)
+        for anim in self.anims:
+            anim.shift_range(delta)
+        return self
+
+    def scale_range(self, k: float) -> Self:
+        super().scale_range(k)
+        for anim in self.anims:
+            anim.scale_range(k)
+        return self
+
+    def _attach_rate_func(self, rate_func: RateFunc) -> None:
+        super()._attach_rate_func(rate_func)
+        for anim in self.anims:
+            anim._attach_rate_func(rate_func)
+
+    def _time_fixed(self):
+        for anim in self.anims:
+            anim._time_fixed()
 
     # TODO: flatten
 
