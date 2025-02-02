@@ -1,5 +1,7 @@
 __pycache__
 .VSCodeCounter
+.DS_Store
+._*
 /.asv
 /.vscode/launch.json
 /dist
@@ -8,7 +10,6 @@ __pycache__
 /doc/build
 /videos
 /.coverage
-/.DS_Store
 /env*
 /result.json
 /result2.json
