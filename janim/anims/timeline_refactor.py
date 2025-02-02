@@ -8,16 +8,17 @@ from collections import defaultdict
 from contextvars import ContextVar
 from typing import Iterable, Self
 
+from janim.anims.anim_stack import AnimStack
+from janim.anims.animation_refactor import TimeAligner, TimeRange
+from janim.anims.composition_refactor import AnimGroup
 from janim.camera.camera import Camera
 from janim.exception import TimelineLookupError
-from janim.anims.animation_refactor import TimeRange
-from janim.anims.composition_refactor import AnimGroup
 from janim.items.item_refactor import Item
 from janim.locale.i18n import get_local_strings
 from janim.logger import log
+from janim.typing import SupportsAnim
 from janim.utils.config import Config, ConfigGetter, config_ctx_var
 from janim.utils.data import ContextSetter
-from janim.typing import SupportsAnim
 
 _ = get_local_strings('timeline')
 
@@ -128,7 +129,8 @@ class Timeline(metaclass=ABCMeta):
 
         # TODO: DEPRECATED: items_history
         # TODO: DEPRECATED?: item_display_times
-        self.anim_stacks: defaultdict[Item, AnimStack] = defaultdict(AnimStack)
+        self.time_aligner: TimeAligner = TimeAligner()
+        self.anim_stacks: defaultdict[Item, AnimStack] = defaultdict(lambda: AnimStack(self.time_aligner))
 
     @abstractmethod
     def construct(self) -> None:
@@ -246,7 +248,7 @@ class Timeline(metaclass=ABCMeta):
         检查物件的变化并将变化记录为 :class:`DirectModifier`
         '''
         for item, stack in self.anim_stacks.items():
-            stack.detect_change(item, at=self.current_time)
+            stack.detect_change(item, self.current_time)
 
     def detect_changes(self, items: Iterable[Item]) -> None:
         '''
@@ -255,7 +257,7 @@ class Timeline(metaclass=ABCMeta):
         （仅检查自身而不包括子物件的）
         '''
         for item in items:
-            self.anim_stacks[item].detect_change(item, at=self.current_time)
+            self.anim_stacks[item].detect_change(item, self.current_time)
 
     # endregion
 
