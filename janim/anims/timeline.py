@@ -259,6 +259,17 @@ class Timeline(metaclass=ABCMeta):
         for item in items:
             self.anim_stacks[item].detect_change(item, self.current_time)
 
+    def item_current[T](self, item: T, *, as_time: float | None = None, root_only: bool = False) -> T:
+        '''
+        另见 :meth:`~.Item.current`
+        '''
+        root: Item = self.anim_stacks[item].get_item(as_time=as_time)
+        if not root_only:
+            assert not root.children and root.stored_children
+            root.add(*[self.item_current(sub) for sub in root.stored_children])
+            root.stored = False
+        return root
+
     # endregion
 
     # region lineno

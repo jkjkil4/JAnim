@@ -1,12 +1,13 @@
 from __future__ import annotations
 
+import copy
 import inspect
 import itertools as it
 import types
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any, Callable, Iterable, Self, overload
 
-from janim.components.component import CmptInfo, Component
+from janim.components.component import CmptInfo, Component, _CmptGroup
 from janim.components.depth import Cmpt_Depth
 from janim.exception import AsTypeError, GetItemError
 from janim.items.relation import Relation
@@ -115,9 +116,9 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
     ):
         super().__init__(*args)
 
-        # TODO: self.stored
-        # TODO: self.stored_parents
-        # TODO: self.stored_children
+        self.stored: bool = False
+        self.stored_parents: list[Item] | None = None
+        self.stored_children: list[Item] | None = None
 
         # TODO: self.is_temporary
 
@@ -381,13 +382,11 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
 
     # region data
 
-    # TODO: get_parents (请参考重构前的代码，这里只是为了功能而写了一个暂时性的代码)
     def get_parents(self):
-        return self.parents
+        return self.stored_parents if self.stored else self.parents
 
-    # TODO: get_children（与 get_parents 同理）
     def get_children(self):
-        return self.children
+        return self.stored_children if self.stored else self.children
 
     def not_changed(self, other: Self) -> bool:
         if self.get_children() != other.get_children():
@@ -397,17 +396,109 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
                 return False
         return True
 
-    # TODO: current
+    def current(self, *, as_time: float | None = None, root_only: bool = False) -> Self:
+        '''
+        由当前时间点获得当前物件（考虑动画作用后的结果）
+        '''
+        return self.timeline.item_current(self, as_time=as_time, root_only=root_only)
 
-    # TODO: copy
+    @staticmethod
+    def _copy_cmpts(src: Item, copy_item: Item) -> None:
+        new_cmpts = {}
+        for key, cmpt in src.components.items():
+            if isinstance(cmpt, _CmptGroup):
+                # 因为现在的 Python 版本中，dict 取键值保留原序
+                # 所以 new_cmpts 肯定有 _CmptGroup 所需要的
+                cmpt_copy = cmpt.copy(new_cmpts=new_cmpts)
+            else:
+                cmpt_copy = cmpt.copy()
 
-    # TODO: _current_family
+            if cmpt.bind is not None:
+                cmpt_copy.init_bind(Component.BindInfo(cmpt.bind.decl_cls,
+                                                       copy_item,
+                                                       key))
 
-    # TODO: become
+            new_cmpts[key] = cmpt_copy
+            setattr(copy_item, key, cmpt_copy)
 
-    # TODO: store
+        copy_item.components = new_cmpts
+        copy_item._astype_mock_cmpt = {}
 
-    # TODO: restore
+    def copy(self, *, root_only: bool = False):
+        '''
+        复制物件
+        '''
+        copy_item = copy.copy(self)
+        copy_item.reset_refresh()
+
+        copy_item.parents = []
+        copy_item.children = []
+
+        if root_only:
+            copy_item.children_changed()
+        else:
+            # .add 里已经调用了 .children_changed
+            copy_item.add(*[item.copy() for item in self])
+        copy_item.parents_changed()
+
+        self._copy_cmpts(self, copy_item)
+        return copy_item
+
+    def become(self, other: Item) -> Self:
+        '''
+        将该物件的数据设置为与传入的物件相同（以复制的方式，不是引用）
+        '''
+        # self.parents 不变
+
+        children = self.children.copy()
+        self.clear_children()
+        for old, new in it.zip_longest(children, other.children):
+            if new is None:
+                break
+            if old is None or type(old) is not type(new):
+                self.add(new.copy())
+            else:
+                self.add(old.become(new))
+
+        for key in self.components.keys() | other.components.keys():
+            self.components[key].become(other.components[key])
+
+        from janim.anims.timeline import Timeline
+        timeline = Timeline.get_context(raise_exc=False)
+        # TODO: is_displaying & show
+        if timeline is not None and timeline.is_displaying(self):
+            timeline.show(self)
+
+        return self
+
+    def store(self):
+        copy_item = copy.copy(self)
+        copy_item.reset_refresh()
+
+        copy_item.parents = []
+        copy_item.children = []
+
+        copy_item.stored = True
+        copy_item.stored_parents = self.get_parents().copy()
+        copy_item.stored_children = self.get_children().copy()
+
+        self._copy_cmpts(self, copy_item)
+        return copy_item
+
+    def restore(self, other: Item) -> Self:
+        if self.stored:
+            self.stored_parents = other.get_parents().copy()
+            self.stored_children = other.get_children().copy()
+        else:
+            self.parents = other.get_parents().copy()
+            self.parents_changed()
+            self.children = other.get_parents().copy()
+            self.children_changed()
+
+        for key in self.components.keys() & other.components.keys():
+            self.components[key].become(other.components[key])
+
+        return self
 
     # TODO: align_for_interpolate
 
