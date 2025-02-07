@@ -2,12 +2,13 @@ from __future__ import annotations
 
 import inspect
 import itertools as it
+import types
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any, Callable, Iterable, Self, overload
 
 from janim.components.component import CmptInfo, Component
 from janim.components.depth import Cmpt_Depth
-from janim.exception import GetItemError
+from janim.exception import AsTypeError, GetItemError
 from janim.items.relation import Relation
 from janim.locale.i18n import get_local_strings
 from janim.logger import log
@@ -123,10 +124,10 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         from janim.anims.timeline import Timeline
         self.timeline = Timeline.get_context(raise_exc=False)
 
-        # TODO: self._astype
-        # TODO: self._astype_mock_cmpt
+        self._astype: type[Item] | None = None
+        self._astype_mock_cmpt: dict[str, Component] = {}
 
-        # TODO: self.fix_in_frae
+        # TODO: self.fix_in_frame
         # TODO: self.renderer
 
         self._init_components()
@@ -300,11 +301,81 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
 
     # region astype
 
-    # TODO: astype
+    def astype[T](self, cls: type[T]) -> T:
+        '''
+        使得可以调用当前物件中没有的组件
 
-    # TODO: override __call__
+        例：
 
-    # TODO: __getattr__
+        .. code-block:: python
+
+            group = Group(
+                Rect()
+                Circle()
+            )
+
+        在这个例子中，并不能 ``group.color.set(BLUE)`` 来设置子物件中的颜色，
+        但是可以使用 ``group.astype(VItem).color.set(BLUE)`` 来做到
+
+        也可以使用简写 ``group(VItem).color.set(BLUE)``
+        '''
+        if not isinstance(cls, type) or not issubclass(cls, Item):
+            raise AsTypeError(
+                _('{name} is not based on Item class and cannot be used as an argument for astype')
+                .format(name=cls.__name__)
+            )
+
+        self._astype = cls
+        return self
+
+    @overload
+    def __call__[T](self, cls: type[T]) -> T: ...
+
+    def __call__[T](self, cls: type[T]) -> T:
+        '''
+        等效于调用 ``astype``
+        '''
+        return self.astype(cls)
+
+    def __getattr__(self, name: str):
+        if name == '__setstate__':
+            raise AttributeError()
+
+        mockable_or_cmpt_info = None if self._astype is None else getattr(self._astype, name, None)
+
+        if isinstance(mockable_or_cmpt_info, Callable) and getattr(mockable_or_cmpt_info, MOCKABLE_NAME, False):
+            return types.MethodType(mockable_or_cmpt_info, self)
+
+        cmpt_info = mockable_or_cmpt_info
+        if not isinstance(cmpt_info, CmptInfo):
+            super().__getattribute__(name)  # raise error
+
+        # 找到 cmpt_info 是在哪个类中被定义的
+        decl_cls: type[Item] | None = None
+        for sup in self._astype.mro():
+            if name in sup.__dict__.get(CLS_CMPTINFO_NAME, {}):
+                decl_cls = sup
+
+        assert decl_cls is not None
+
+        # 如果 self 本身就是 decl_cls 的实例
+        # 那么自身肯定有名称为 name 的组件，对于这种情况实际上完全没必要 astype
+        # 为了灵活性，这里将这个已有的组件返回
+        if isinstance(self, decl_cls):
+            return getattr(self, name)
+
+        cmpt = self._astype_mock_cmpt.get(name, None)
+
+        # 如果 astype 需求的组件已经被创建过，并且新类型不是旧类型的子类，那么直接返回
+        if cmpt is not None and (not issubclass(cmpt_info.cls, cmpt.__class__) or cmpt_info.cls is cmpt.__class__):
+            return cmpt
+
+        # astype 需求的组件还没创建，那么创建并记录
+        cmpt = cmpt_info.create()
+        cmpt.init_bind(Component.BindInfo(decl_cls, self, name))
+
+        self._astype_mock_cmpt[name] = cmpt
+        return cmpt
 
     # endregion
 
