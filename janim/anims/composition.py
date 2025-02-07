@@ -1,7 +1,9 @@
+from typing import Iterable, Self
+
 from janim.anims.animation import Animation
-from janim.exception import NotAnimationError
+from janim.exception import AnimGroupError, NotAnimationError
 from janim.locale.i18n import get_local_strings
-from janim.logger import log
+from janim.typing import SupportsAnim
 from janim.utils.rate_functions import RateFunc, linear
 
 _ = get_local_strings('composition')
@@ -12,13 +14,13 @@ class AnimGroup(Animation):
     动画集合（并列执行）
 
     - 若不传入 ``duration``，则将终止时间（子动画结束时间的最大值）作为该动画集合的 ``duration``
-    - 若传入 ``duration``，则会将子动画的时间进行拉伸，使得终止时间与 ``duration`` 一致
+    - 若传入 ``duration``，则会将子动画的生效时间进行拉伸，使得总终止时间与 ``duration`` 一致
     - 且可以使用 ``at`` 进行总体偏移（如 ``at=1`` 则是总体延后 1s）
 
     可以使用 ``lag_ratio`` 和 ``offset`` 控制每个子动画相对于前一个子动画的时间位置：
 
-    - ``lag_ratio`` 表示 “前一个动画进行到百分之多少时，进行下一个动画”
-    - ``offset`` 表示 “前一个动画进行多少秒后，进行下一个动画”
+    - ``lag_ratio`` 表示 “前一个进行到百分之多少时，进行下一个”
+    - ``offset`` 表示 “前一个进行多少秒后，进行下一个”
 
     时间示例：
 
@@ -44,120 +46,129 @@ class AnimGroup(Animation):
     '''
     def __init__(
         self,
-        *anims: Animation,
+        *anims: SupportsAnim,
+        at: float = 0,
         duration: float | None = None,
         lag_ratio: float = 0,
         offset: float = 0,
-        rate_func: RateFunc = linear,
-        _get_anim_objects: bool = True,
-        **kwargs
+        rate_func: RateFunc = linear
     ):
-        if _get_anim_objects:
-            anims = self._get_anim_objects(anims)
+        self.anims = self._get_anim_objects(anims)
+        self._adjust_t_range(lag_ratio, offset)
 
+        if self.anims:
+            # 对于一个 AnimGroup 而言：
+            #   如果它的子动画不对齐（对齐：即每个都 at=0，并且 end 相同）
+            #   如果它的子动画中有 _is_aligned=False
+            # 那么认为父动画 _is_aligned=False
+            end = self.anims[0].t_range.num_end
+            self.is_aligned = all(
+                anim.is_aligned
+                and anim.t_range.at == 0
+                and anim.t_range.num_end == end
+
+                for anim in self.anims
+            )
+
+            # 如果子动画是不对齐的，作用在该 AnimGroup 上的非线性 rate-func 会有意外的结果
+            # 在 JAnim 2 及之前是警告，在 JAnim 3 之后改为了报错
+            # 如果要解决这个问题，需要求 rate-func 的反函数，在设计和效果上不太理想
+            #
+            # 并且改为报错后，也方便对 rate-func 的处理进行优化
+            # 具体来说，在之前的计算中，子动画插值依赖于父 AnimGroup 的传递
+            # 更改后，子动画插值不需要由父 AnimGroup 传递
+            # 并且让 AnimGroup 的作用弱化为了“通过 at, duration, lag_ratio, offfset 等参数影响子动画的区间”
+            if rate_func is not linear:
+                if not self.is_aligned:
+                    raise AnimGroupError(_('Passing misaligned sub-animations to a composition '
+                                           'with non-linear rate_func is not allowed'))
+                for anim in self.anims:
+                    anim._attach_rate_func(rate_func)
+
+            # duration 对子动画区段的拉伸作用
+            maxt = 0 if not self.anims else max(anim.t_range.num_end for anim in self.anims)
+            if duration is None:
+                duration = maxt
+            else:
+                if maxt != duration:
+                    factor = duration / maxt
+                    for anim in self.anims:
+                        anim.scale_range(factor)
+
+            # at 对子动画区段的偏移作用
+            if at != 0:
+                for anim in self.anims:
+                    anim.shift_range(at)
+
+        super().__init__(at=at, duration=duration, rate_func=rate_func)
+
+    def _adjust_t_range(self, lag_ratio: float, offset: float) -> None:
+        '''
+        对于 :class:`AnimGroup` 和 :class:`Succession` 而言
+        是应用 ``lag_ratio`` 和 ``offset`` 的效果
+
+        而对于 :class:`Aligned` 而言会被重载
+        '''
         if lag_ratio != 0 or offset != 0:
             start = 0
             global_offset = 0
 
             # 将 lag_ratio 和 offset 应用到每个子动画上
-            for anim in anims:
-                anim.local_range.at += start
-                if anim.local_range.at < 0:
-                    global_offset = max(global_offset, -anim.local_range.at)
-                start = anim.local_range.at + lag_ratio * anim.local_range.duration + offset
+            for anim in self.anims:
+                anim.shift_range(start)
+                if anim.t_range.at < 0:
+                    global_offset = max(global_offset, -anim.t_range.at)
+                start = anim.t_range.at + lag_ratio * anim.t_range.num_duration + offset
 
             # 如果 lag_ratio 或者 offset 很小（一般指负数的情况），会导致后一个动画比前一个还早
             # 这时候需要将整体向后偏移使得与最早的那个对齐
             if global_offset != 0:
-                for anim in anims:
-                    anim.local_range.at += global_offset
-
-        self.anims = anims
-        self.maxt = 0 if not anims else max(anim.local_range.end for anim in anims)
-        if duration is None:
-            duration = self.maxt
-
-        if not isinstance(self, Aligned) and rate_func is not linear \
-                and any((anim.local_range.at != 0 or anim.local_range.duration != duration)
-                        for anim in anims):
-            log.warning(_('Passing misaligned sub-animations to a composition with non-linear rate_func '
-                          'may cause unexpected behavior'))
-
-        super().__init__(duration=duration, rate_func=rate_func, **kwargs)
-        for anim in self.anims:
-            anim.parent = self
+                for anim in self.anims:
+                    anim.shift_range(global_offset)
 
     @staticmethod
-    def _get_anim_object(anim) -> Animation:
-        attr = getattr(anim, '__anim__', None)
-        if attr is not None and callable(attr):
-            return attr()
-        return anim
-
-    @staticmethod
-    def _get_anim_objects(anims: list[Animation]) -> list[Animation]:
-        anims = [
+    def _get_anim_objects(anims: Iterable[SupportsAnim]) -> list[Animation]:
+        '''
+        将 anims 中的内容都转化为 :class:`~.Animation`
+        具体可参考 :class:`SupportsAnim` 的文档
+        '''
+        return [
             AnimGroup._get_anim_object(anim)
             for anim in anims
         ]
-        for anim in anims:
-            if not isinstance(anim, Animation):
-                raise NotAnimationError(_('A non-animation object was passed in, '
-                                          'you might have forgotten to use .anim'))
 
-        return anims
+    @staticmethod
+    def _get_anim_object(anim: SupportsAnim) -> Animation:
+        attr = getattr(anim, '__anim__', None)
+        if attr is None:
+            raise NotAnimationError(_('A non-animation object was passed in, '
+                                      'you might have forgotten to use .anim'))
+        return attr()
 
-    def flatten(self) -> list[Animation]:
-        result = [self]
+    def shift_range(self, delta: float) -> Self:
+        super().shift_range(delta)
         for anim in self.anims:
-            if isinstance(anim, AnimGroup):
-                result.extend(anim.flatten())
-            else:
-                result.append(anim)
+            anim.shift_range(delta)
+        return self
 
-        return result
-
-    def compute_global_range(self, at: float, duration: float) -> None:
-        '''
-        计算子动画的时间范围
-
-        该方法是被 :meth:`~.Timeline.prepare` 调用以计算的
-        '''
-        super().compute_global_range(at, duration)
-
-        if not self.anims:
-            return
-
-        factor = duration / self.maxt
-
+    def scale_range(self, k: float) -> Self:
+        super().scale_range(k)
         for anim in self.anims:
-            anim.compute_global_range(
-                self.global_range.at + anim.local_range.at * factor,
-                anim.local_range.duration * factor
-            )
+            anim.scale_range(k)
+        return self
 
-    def anim_pre_init(self) -> None:
+    def _attach_rate_func(self, rate_func: RateFunc) -> None:
+        super()._attach_rate_func(rate_func)
         for anim in self.anims:
-            anim.anim_pre_init()
+            anim._attach_rate_func(rate_func)
 
-    def anim_init(self) -> None:
+    def _time_fixed(self):
         for anim in self.anims:
-            anim.anim_init()
+            anim._time_fixed()
 
-    def get_anim_t(self, alpha: float, anim: Animation) -> float:
-        return alpha * self.maxt - anim.local_range.at
+    # TODO: flatten
 
-    def anim_on_alpha(self, alpha: float) -> None:
-        '''
-        在该方法中，:class:`AnimGroup` 通过 ``alpha``
-        换算出子动画的 ``local_t`` 并调用子动画的 :meth:`~.Animation.anim_on` 方法
-        '''
-        global_t = self.global_t_ctx.get()
-
-        for anim in self.anims:
-            anim_t = self.get_anim_t(alpha, anim)
-            if anim.is_visible(global_t):
-                anim.anim_on(anim_t)
+    # TODO: anim_on_alpha
 
 
 class Succession(AnimGroup):
@@ -222,21 +233,19 @@ class Aligned(AnimGroup):
         )
         # Anim1 & Anim2: 0~4s
     '''
-    def __init__(self, *anims: Animation, duration: float | None = None, **kwargs):
-        anims = self._get_anim_objects(anims)
-        if duration is None:
-            duration = max(anim.local_range.end for anim in anims)
+    def __init__(
+        self,
+        *anims: SupportsAnim,
+        at: float = 0,
+        duration: float | None = None,
+        rate_func: RateFunc = linear
+    ):
+        super().__init__(*anims, at=at, duration=duration, rate_func=rate_func)
 
-        super().__init__(*anims, duration=duration, _get_anim_objects=False, **kwargs)
-
-    def compute_global_range(self, at: float, duration: float) -> None:
-        Animation.compute_global_range(self, at, duration)
-
+    def _adjust_t_range(self, lag_ratio, offset):
+        end = max(anim.t_range.num_end for anim in self.anims)
         for anim in self.anims:
-            anim.compute_global_range(at, duration)
-
-    def get_anim_t(self, alpha: float, anim: Animation) -> float:
-        return alpha * anim.local_range.duration
+            anim.t_range.set(0, end)
 
 
 class Wait(Animation):
@@ -245,5 +254,5 @@ class Wait(Animation):
 
     （其实就是一个空动画）
     '''
-    def __init__(self, duration: float, **kwargs):
+    def __init__(self, duration: float = 1, **kwargs):
         super().__init__(duration=duration, **kwargs)

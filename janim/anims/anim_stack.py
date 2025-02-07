@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from janim.anims.animation_refactor import Animation, TimeAligner
-from janim.anims.display_refactor import Display
+from janim.anims.animation import Animation, TimeAligner
+from janim.anims.display import Display
 from janim.constants import FOREVER
 from janim.items.item import Item
 

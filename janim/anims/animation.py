@@ -1,35 +1,15 @@
 from __future__ import annotations
 
-from contextvars import ContextVar
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Callable
+from typing import Self, overload
 
-from janim.utils.rate_functions import RateFunc, smooth
+from janim.constants import FOREVER
+from janim.typing import ForeverType
+from janim.utils.rate_functions import RateFunc, linear, smooth
+from janim.items.item import Item
 
-if TYPE_CHECKING:   # pragma: no cover
-    from janim.anims.composition import AnimGroup
-    from janim.components.depth import Cmpt_Depth
-
-
-@dataclass
-class TimeRange:
-    '''
-    标识了从 ``at`` 开始，持续时间为 ``duration`` 的时间区段
-
-    ``end`` 即 ``at + duration``
-    '''
-    at: float
-    duration: float
-
-    @property
-    def end(self) -> float:
-        return self.at + self.duration
-
-    def copy(self) -> TimeRange:
-        return TimeRange(self.at, self.duration)
-
-    def __eq__(self, other: TimeRange) -> bool:
-        return self.at == other.at and self.duration == other.duration
+ALIGN_EPSILON = 1e-6
+QUERY_OFFSET = 1e-5
 
 
 class Animation:
@@ -37,96 +17,222 @@ class Animation:
     动画基类
 
     - 创建一个从 ``at`` 持续至 ``at + duration`` 的动画
-    - 指定 ``rate_func`` 可以设定插值函数，默认为 :meth:`janim.utils.rate_functions.smooth` 即平滑插值
+    - ``duration`` 可以是 ``FOREVER``
+      （一般用于 :class:`~.Display`，
+      以及特殊情况下的 :class:`DataModifier` 等，
+      但是 :class:`~.AnimGroup` 及其衍生类不能传入 ``FOREVER``）
+    - 指定 ``rate_func`` 可以设定插值函数，默认为 :meth:`janim.utils.rate_funcs.smooth` 即平滑插值
     '''
-    label_color: tuple[float, float, float] = (128, 132, 137)
+    # TODO: label_color
 
     def __init__(
         self,
         *,
         at: float = 0,
-        duration: float = 1.0,
-        rate_func: RateFunc = smooth,
+        duration: float | ForeverType = 1.0,
+        rate_func: RateFunc = smooth
     ):
-        from janim.anims.timeline import Timeline
-        self.timeline = Timeline.get_context()
-        self.parent: AnimGroup = None
-        self.current_alpha = None
+        # 用于在 AnimGroup 中标记子动画是否都对齐；
+        # 对于单个动画来说肯定是对齐的，默认为 True，而在 AnimGroup 中有可能是 False
+        # 关于 is_aligned 的计算请参见 AnimGroup.__init__ 代码内的注释
+        self.is_aligned = True
 
-        self.local_range = TimeRange(at, duration)
-        self.global_range = None
+        # 该值会被 Display 置为 True
+        # 该值置为 True 表示该动画不依赖先前动画的效果，使得进行计算时可以直接从该动画开始而不用考虑更前面的动画效果
+        # 意即“覆盖先前的动画”
+        self._cover_previous_anims = False
+
+        # 用于标记该动画的全局时间区段
+        self.t_range = TimeRange(
+            at,
+            FOREVER if duration is FOREVER else at + duration
+        )
+
+        # 传给该动画对象的 rate_func
         self.rate_func = rate_func
 
-        self.render_call_list: list[RenderCall] = []
+        # 该动画及父动画的 rate_func 组成的列表
+        self.rate_funcs = [] if rate_func is linear else [rate_func]
 
-    def compute_global_range(self, at: float, duration: float) -> None:
+    def __anim__(self) -> Self:
+        return self
+
+    def shift_range(self, delta: float) -> Self:
         '''
-        计算 :class:`~.Timeline` 上的时间范围
-
-        该方法是被 :meth:`~.AnimGroup.set_global_range` 调用以计算的
+        以 ``delta`` 的变化量移动时间区段
         '''
-        self.global_range = TimeRange(at, duration)
+        self.t_range.shift(delta)
 
-    def set_render_call_list(self, lst: list[RenderCall]) -> None:
+    def scale_range(self, k: float) -> Self:
         '''
-        设置绘制调用，具体参考 :class:`RenderCall`
+        以 ``k`` 的倍率缩放时间区段（相对于 ``t=0`` 进行缩放）
         '''
-        self.render_call_list = sorted(lst, key=lambda x: x.depth, reverse=True)
+        self.t_range.scale(k)
 
-    def anim_pre_init(self) -> None: '''在 :meth:`~.Timeline.detect_changes_of_all` 执行之前调用的初始化方法'''
+    def _attach_rate_func(self, rate_func: RateFunc) -> None:
+        self.rate_funcs.insert(0, rate_func)
 
-    def anim_init(self) -> None: '''在 :meth:`~.Timeline.detect_changes_of_all` 执行之后调用的初始化方法'''
-
-    def anim_on(self, local_t: float) -> None:
+    def _time_fixed(self) -> None:
         '''
-        将 ``local_t`` 换算为 ``alpha`` 并调用 :meth:`anim_on_alpha`
+        由子类实现，用于确定该动画的行为，并可用于该对象内容的初始化
         '''
-        alpha = self.rate_func(local_t / self.local_range.duration)
-        self.anim_on_alpha(alpha)
+        pass
 
-    def get_alpha_on_global_t(self, global_t: float) -> float:
+    # TODO: anim_on
+
+    # TODO: get_alpha_on_global_t
+
+    # TODO: is_visible
+
+    # TODO: global_t_ctx
+
+    # TODO: anim_on_alpha
+
+
+class ItemAnimation(Animation):
+    def __init__(self, item: Item, **kwargs):
+        super().__init__(**kwargs)
+        self.item = item
+
+    def _time_fixed(self):
+        from janim.anims.timeline import Timeline
+        timeline = Timeline.get_context()
+        timeline.anim_stacks[self.item].append(self)
+
+    @dataclass
+    class ApplyParams:
+        global_t: float
+        anims: list[ItemAnimation]
+        index: int
+
+    @overload
+    def apply(self, data: Item, p: ApplyParams) -> None: ...
+    @overload
+    def apply(self, data: None, p: ApplyParams) -> Item: ...
+
+    def apply(self, data, params):
         '''
-        传入全局 ``global_t``，得到物件在该时刻应当处于哪个 ``alpha`` 的插值
-        '''
-        if self.parent is None:
-            return self.rate_func((global_t - self.global_range.at) / self.global_range.duration)
+        将 ``global_t`` 时的动画效果作用到 ``data`` 上
 
-        anim_t = self.parent.get_anim_t(self.parent.get_alpha_on_global_t(global_t), self)
-        return self.rate_func(anim_t / self.local_range.duration)
+        其中
 
-    def is_visible(self, global_t: float) -> bool:
-        # + 1e-3 是为了避免在两端的浮点误差
-        return self.global_range.at <= global_t + 1e-3 < self.global_range.end
-
-    global_t_ctx: ContextVar[float] = ContextVar('Animation.global_t_ctx')
-    '''
-    对该值进行设置，使得进行 :meth:`anim_on` 和 :meth:`render` 时不需要将 ``global_t`` 作为参数传递也能获取到
-    '''
-
-    def anim_on_alpha(self, alpha: float) -> None:
-        '''
-        动画在 ``alpha`` 处的行为
+        - 对于 :class:`~.Display` 而言，``data`` 是 ``None``，返回值是 :class:`~.Item` 对象
+        - 而对于其它大多数的而言，``data`` 是前一个动画作用的结果，返回值是 ``None``
         '''
         pass
 
 
 @dataclass
-class RenderCall:
+class TimeRange:
     '''
-    绘制调用
+    标识了从 ``at`` 开始，到 ``end`` 结束的时间区段
 
-    - ``depth``: 该绘制的深度
-    - ``func``: 该绘制所调用的函数
-
-    具体机制：
-
-    - 在每个动画对象中，都会使用 :meth:`~.Animation.set_render_call_list` 来设置该动画进行绘制时所执行的函数
-    - 在进行渲染（具体参考 :meth:`~.TimelineAnim.render_all` ）时，会按照深度进行排序，依次对 ``func`` 进行调用，深度越高的越先调用
-
-    例：
-
-    - 在 :class:`~.Display` 中，设置了单个 :class:`RenderCall` ，作用是绘制物件
-    - 在 :class:`~.Transform` 中，对于每个插值物件都设置了 :class:`RenderCall`，绘制所有的插值物件
+    ``end`` 也可以是 ``FOREVER``
     '''
-    depth: Cmpt_Depth
-    func: Callable[[], None]
+
+    at: float
+    '''时间区段的开始时刻'''
+
+    end: float | ForeverType
+    '''时间区段的结束时刻'''
+
+    @property
+    def duration(self) -> float:
+        '''
+        时间区段的时长，即 ``end - at``，如果 ``end=FOREVER`` 则抛出 ``AssertionError``
+
+        另见 :meth:`num_duration`
+        '''
+        assert self.end is not FOREVER
+        return self.end - self.at
+
+    @property
+    def num_duration(self) -> float:
+        '''
+        - 当 ``end`` 不是 ``FOREVER`` 时，与 :meth:`duration` 一致
+
+        - 当 ``end`` 是 ``FOREVER`` 时，此时返回 ``0``
+
+        （这用于 :class:`~.AnimGroup` 对 ``end=FOREVER`` 的子动画的处理，也就是把这种子动画当成 ``end=at`` 来计算时间）
+        '''
+        return 0 if self.end is FOREVER else self.duration
+
+    @property
+    def num_end(self) -> float:
+        '''
+        - 当 ``end`` 不是 ``FOREVER`` 时，此时返回 ``end``
+
+        - 当 ``end`` 是 ``FOREVER`` 时，此时返回 ``0``
+
+        （这用于 :class:`~.AnimGroup` 对 ``end=FOREVER`` 的子动画的处理，也就是把这种子动画当成 ``end=at`` 来计算时间）
+        '''
+        return self.at if self.end is FOREVER else self.end
+
+    def set(self, at: float, end: float | ForeverType) -> None:
+        '''
+        设置该时间区段的范围
+        '''
+        self.at = at
+        self.end = end
+
+    def shift(self, delta: float) -> None:
+        '''
+        以 ``delta`` 的变化量移动时间区段
+        '''
+        self.at += delta
+        if self.end is not FOREVER:
+            self.end += delta
+
+    def scale(self, k: float) -> None:
+        '''
+        以 ``k`` 的倍率缩放时间区段（相对于 ``t=0`` 进行缩放）
+        '''
+        self.at *= k
+        if self.end is not FOREVER:
+            self.end *= k
+
+    def copy(self) -> TimeRange:
+        return TimeRange(self.at, self.end)
+
+    def __eq__(self, other: TimeRange) -> bool:
+        return self.at == other.at and self.end == other.end
+
+
+class TimeAligner:
+    '''
+    由于浮点数精度的问题，有可能出现比如原本设计上首尾相连的两个动画，却出现判定的错位
+
+    该类用于将相近的浮点数归化到同一个值，使得 :class:`TimeRange` 区间严丝合缝
+    '''
+    def __init__(self):
+        self.recorded_times = []
+
+    def align(self, anim: Animation) -> None:
+        '''
+        归化 ``anim`` 的时间区段，
+        即分别对 ``.t_range.at`` 和 ``.t_range.end`` 进行 :meth:`align_t` 的操作
+        '''
+        rg = anim.t_range
+        rg.at = self.align_t(rg.at)
+        if rg.end is not FOREVER:
+            rg.end = self.align_t(rg.end)
+
+    def align_t(self, t: float) -> float:
+        '''
+        对齐时间 `t`，确保相近的时间点归化到相同的值，返回归化后的时间值
+        '''
+        # 因为在大多数情况下，最新传入的 t 总是出现在列表的最后，所以倒序查找
+        for i, recorded_t in enumerate(reversed(self.recorded_times)):
+            # 尝试归化到已有的值
+            if abs(t - recorded_t) < ALIGN_EPSILON:
+                return recorded_t
+            # 尝试插入到中间位置
+            if t > recorded_t:
+                # len - 1 - i 是 recorded_t 的位置，所以这里用 len - i 表示插入到其后面
+                idx = len(self.recorded_times) - i
+                self.recorded_times.insert(idx, t)
+                return t
+
+        # 循环结束表明所有已记录的都比 t 大，所以将 t 插入到列表开头
+        self.recorded_times.insert(0, t)
+        return t

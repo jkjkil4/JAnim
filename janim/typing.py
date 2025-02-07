@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING, Iterable, Protocol, runtime_checkable
 
 if TYPE_CHECKING:
     import numpy as np
-    from janim.anims.animation_refactor import Animation
+    from janim.anims.animation import Animation
 
 type Vect = Iterable[float] | np.ndarray
 type VectArray = Iterable[Vect] | np.ndarray

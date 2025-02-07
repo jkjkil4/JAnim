@@ -1,33 +1,30 @@
-from __future__ import annotations
-
-from typing import TYPE_CHECKING
-
-from janim.anims.animation import Animation, RenderCall
-from janim.constants import C_LABEL_ANIM_ABSTRACT
-
-if TYPE_CHECKING:   # pragma: no cover
-    from janim.items.item import Item
+from janim.anims.animation import ItemAnimation
+from janim.items.item import Item
 
 
-class Display(Animation):
+class Display(ItemAnimation):
     '''
-    在指定的时间区间上显示物件（不包括后代物件）
+    用于标记物件在特定时间区段中的数据
+
+    一般作为 :meth:`~.AnimStack.detect_change` 的产物，表示“物件从一个特定时间开始，被更改为了这样的数据”
+
+    另见：:meth:`~.Timeline.detect_changes_of_all`
     '''
-    label_color = C_LABEL_ANIM_ABSTRACT
+    def __init__(self, item: Item, data: Item, **kwargs):
+        super().__init__(item, **kwargs)
+        self._cover_previous_anims = True
+        self.data = data
+        self.data_orig = data.store()
 
-    def __init__(self, item: Item, **kwargs):
-        super().__init__(**kwargs)
-        self.item = item
-        self.timeline.track(item)
+    def apply(self, data: None, p: ItemAnimation.ApplyParams) -> Item:
+        '''
+        返回记录的物件数据
 
-    def anim_on(self, local_t: float) -> None:
-        super().anim_on(local_t)
+        - 如果 ``p.anims`` 只有一个元素（也就是自己），那么可以认为返回值不会再次被更改，因此直接返回 ``self.data_orig``
+        - 如果 ``p.anims`` 不止一个元素，那么将 ``self.data`` 重置为 ``self.data_orig`` 的数据并返回，避免 ``self.data_orig`` 被意外更改
+        '''
+        if len(p.anims) == 1:
+            return self.data_orig
 
-        current = self.item.current()
-
-        self.set_render_call_list([
-            RenderCall(
-                current.depth,
-                current.render
-            )
-        ])
+        self.data.restore(self.data_orig)
+        return self.data
