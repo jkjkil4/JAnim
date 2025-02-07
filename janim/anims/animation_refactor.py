@@ -91,6 +91,7 @@ class Animation:
 
 class ItemAnimation(Animation):
     def __init__(self, item: Item, **kwargs):
+        super().__init__(**kwargs)
         self.item = item
 
     def _time_fixed(self):
