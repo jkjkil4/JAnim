@@ -263,9 +263,9 @@ class Timeline(metaclass=ABCMeta):
         '''
         另见 :meth:`~.Item.current`
         '''
-        root: Item = self.anim_stacks[item].get_item(as_time=as_time)
+        root: Item = self.anim_stacks[item].get_item(as_time, False)
         if not root_only:
-            assert not root.children and root.stored_children
+            assert not root.children and root.stored_children is not None
             root.add(*[self.item_current(sub) for sub in root.stored_children])
             root.stored = False
         return root

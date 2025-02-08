@@ -37,9 +37,10 @@ class Animation:
         # 关于 is_aligned 的计算请参见 AnimGroup.__init__ 代码内的注释
         self.is_aligned = True
 
-        # 该值会被 Display 置为 True
-        # 该值置为 True 表示该动画不依赖先前动画的效果，使得进行计算时可以直接从该动画开始而不用考虑更前面的动画效果
         # 意即“覆盖先前的动画”
+        # 把该值置为 True 表示该动画不依赖先前动画的效果，使得进行计算时可以直接从该动画开始而不用考虑更前面的动画效果
+        # 并且如果在 AnimStack 中没有后继动画，AnimStack 会直接使用 .data_orig 作为结果，而不调用 .apply
+        # 例如，该值会被 Display 置为 True，因为 Display 不基于更前面的动画
         self._cover_previous_anims = False
 
         # 用于标记该动画的全局时间区段
