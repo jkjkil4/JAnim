@@ -1,6 +1,6 @@
 from typing import Iterable, Self
 
-from janim.anims.animation import Animation
+from janim.anims.animation import Animation, TimeAligner
 from janim.exception import AnimGroupError, NotAnimationError
 from janim.locale.i18n import get_local_strings
 from janim.typing import SupportsAnim
@@ -161,6 +161,11 @@ class AnimGroup(Animation):
         super()._attach_rate_func(rate_func)
         for anim in self.anims:
             anim._attach_rate_func(rate_func)
+
+    def _align_time(self, aligner: TimeAligner):
+        super()._align_time(aligner)
+        for anim in self.anims:
+            anim._align_time(aligner)
 
     def _time_fixed(self):
         for anim in self.anims:

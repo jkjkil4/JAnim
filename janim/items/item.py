@@ -120,6 +120,7 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         self.stored_parents: list[Item] | None = None
         self.stored_children: list[Item] | None = None
 
+        # TODO: self.is_frozen
         # TODO: self.is_temporary
 
         from janim.anims.timeline import Timeline

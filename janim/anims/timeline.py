@@ -111,8 +111,6 @@ class Timeline(metaclass=ABCMeta):
 
     # TODO: PausePoint
 
-    # TODO: DEPRECATED: ItemHistory
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -212,7 +210,7 @@ class Timeline(metaclass=ABCMeta):
     def prepare(self, *anims: SupportsAnim, at: float = 0, **kwargs) -> TimeRange:
         self.detect_changes_of_all()
         group = AnimGroup(*anims, at=at + self.current_time, **kwargs)
-        # TODO: fix float inprecise
+        group._align_time(self.time_aligner)
         group._time_fixed()
 
     def play(self, *anims: SupportsAnim, **kwargs) -> TimeRange:

@@ -73,6 +73,9 @@ class Animation:
     def _attach_rate_func(self, rate_func: RateFunc) -> None:
         self.rate_funcs.insert(0, rate_func)
 
+    def _align_time(self, aligner: TimeAligner) -> None:
+        aligner.align(self)
+
     def _time_fixed(self) -> None:
         '''
         由子类实现，用于确定该动画的行为，并可用于该对象内容的初始化
