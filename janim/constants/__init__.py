@@ -6,5 +6,5 @@ from janim.constants.degrees import *
 
 GET_DATA_DELTA = 1e-5
 ANIM_END_DELTA = 1e-5 * 2
-DEFAULT_DURATION = 1
+DEFAULT_DURATION = 1.0
 FOREVER = ...
