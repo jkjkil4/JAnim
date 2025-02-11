@@ -129,7 +129,7 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         self._astype: type[Item] | None = None
         self._astype_mock_cmpt: dict[str, Component] = {}
 
-        # TODO: self.fix_in_frame
+        self._fix_in_frame = False
         # TODO: self.renderer
 
         self._init_components()
@@ -510,9 +510,16 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
             if isinstance(cmpt, SupportsApartAlpha):
                 cmpt.apart_alpha(n)
 
-    # TODO: fix_in_frame
+    def fix_in_frame(self, on: bool = True, *, root_only: bool = False) -> Self:
+        '''
+        固定在屏幕上，也就是即使摄像头移动位置也不会改变在屏幕上的位置
+        '''
+        for item in self.walk_self_and_descendants(root_only):
+            item._fix_in_frame = on
+        return self
 
-    # TODO: is_fix_in_frame
+    def is_fix_in_frame(self) -> bool:
+        return self._fix_in_frame
 
     # TODO: get_global_renderer
 
