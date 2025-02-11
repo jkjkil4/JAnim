@@ -12,6 +12,7 @@ from janim.anims.anim_stack import AnimStack
 from janim.anims.animation import TimeAligner, TimeRange
 from janim.anims.composition import AnimGroup
 from janim.camera.camera import Camera
+from janim.constants import DEFAULT_DURATION
 from janim.exception import TimelineLookupError
 from janim.items.item import Item
 from janim.locale.i18n import get_local_strings
@@ -128,7 +129,8 @@ class Timeline(metaclass=ABCMeta):
         # TODO: DEPRECATED: items_history
         # TODO: DEPRECATED?: item_display_times
         self.time_aligner: TimeAligner = TimeAligner()
-        self.anim_stacks: defaultdict[Item, AnimStack] = defaultdict(lambda: AnimStack(self.time_aligner))
+        self.item_appearances: defaultdict[Item, Timeline.ItemAppearance] = \
+            defaultdict(lambda: Timeline.ItemAppearance(self.time_aligner))
 
     @abstractmethod
     def construct(self) -> None:
@@ -183,7 +185,7 @@ class Timeline(metaclass=ABCMeta):
     # region progress
 
     # TODO: arg _record_lineno
-    def forward(self, dt: float = 1, *, _detect_changes=True):
+    def forward(self, dt: float = DEFAULT_DURATION, *, _detect_changes=True):
         '''
         向前推进 ``dt`` 秒
         '''
@@ -222,31 +224,48 @@ class Timeline(metaclass=ABCMeta):
 
     # endregion
 
-    # TODO: region display
-
     # TODO: region audio_and_subtitle
 
-    # region detect-changes
+    # region ItemAppearance
+
+    class ItemAppearance:
+        '''
+        包含与物件显示有关的对象
+
+        - ``self.stack`` 即 :class:`~.AnimStack` 对象
+
+        - ``self.visiblility`` 是一个列表，存储物件显示/隐藏的时间点
+          - 列表中偶数下标（0、2、...）的表示开始显示的时间点，奇数下标（1、3、...）的表示隐藏的时间点
+          - 例如，如果列表中是 ``[3, 4, 8]``，则表示在第 3s 显示，第 4s 隐藏，并且在第 8s 后一直显示
+          - 这种记录方式是 :meth:`Timeline.is_visible`、:meth:`Timeline.show`、:meth:`Timeline.hide` 运作的基础
+        '''
+        def __init__(self, aligner: TimeAligner):
+            self.stack = AnimStack(aligner)
+            self.visibility: list[float] = []
+            # TODO: renderer
+            # self.renderer: Renderer | None = None
+
+    # region ItemAppearance.stack
 
     def track(self, item: Item) -> None:
         '''
         使得 ``item`` 在每次 ``forward`` 和 ``play`` 时都会被自动调用 :meth:`~.Item.detect_change`
         '''
-        self.anim_stacks[item]
+        self.item_appearances[item]
 
     def track_item_and_descendants(self, item: Item, *, root_only: bool = False) -> None:
         '''
         相当于对 ``item`` 及其所有的后代物件调用 :meth:`track`
         '''
         for subitem in item.walk_self_and_descendants(root_only):
-            self.anim_stacks[subitem]
+            self.item_appearances[subitem]
 
     def detect_changes_of_all(self) -> None:
         '''
         检查物件的变化并将变化记录为 :class:`~.Display`
         '''
-        for item, stack in self.anim_stacks.items():
-            stack.detect_change(item, self.current_time)
+        for item, appr in self.item_appearances.items():
+            appr.stack.detect_change(item, self.current_time)
 
     def detect_changes(self, items: Iterable[Item]) -> None:
         '''
@@ -255,18 +274,74 @@ class Timeline(metaclass=ABCMeta):
         （仅检查自身而不包括子物件的）
         '''
         for item in items:
-            self.anim_stacks[item].detect_change(item, self.current_time)
+            self.item_appearances[item].stack.detect_change(item, self.current_time)
 
     def item_current[T](self, item: T, *, as_time: float | None = None, root_only: bool = False) -> T:
         '''
         另见 :meth:`~.Item.current`
         '''
-        root: Item = self.anim_stacks[item].get_item(as_time, False)
+        root: Item = self.item_appearances[item].stack.get_item(as_time, False)
         if not root_only:
             assert not root.children and root.stored_children is not None
             root.add(*[self.item_current(sub) for sub in root.stored_children])
             root.stored = False
         return root
+
+    # endregion
+
+    # region ItemAppearance.visibility
+
+    def is_visible(self, item: Item) -> bool:
+        '''
+        判断特定的物件目前是否可见
+
+        另见：:meth:`show`、:meth:`hide`
+        '''
+        return len(self.item_appearances[item].visibility) % 2 == 1
+
+    def _show(self, item: Item) -> None:
+        gaps = self.item_appearances[item].visibility
+        if len(gaps) % 2 != 1:
+            gaps.append(self.current_time)
+
+    def show(self, *roots: Item, root_only=False) -> None:
+        '''
+        显示物件
+        '''
+        for root in roots:
+            for item in root.walk_self_and_descendants(root_only):
+                self._show(item)
+
+    def _hide(self, item: Item) -> None:
+        gaps = self.item_appearances[item].visibility
+        if len(gaps) % 2 == 1:
+            gaps.append(self.current_time)
+
+    def hide(self, *roots: Item, root_only=False) -> None:
+        '''
+        隐藏物件
+        '''
+        for root in roots:
+            for item in root.walk_self_and_descendants(root_only):
+                self._hide(item)
+
+    def hide_all(self) -> None:
+        '''
+        隐藏显示中的所有物件
+        '''
+        for appr in self.item_appearances.values():
+            gaps = appr.visibility
+            if len(gaps) % 2 == 1:
+                gaps.append(self.current_time)
+
+    def cleanup_display(self) -> None:
+        from janim.utils.deprecation import deprecated
+        deprecated(
+            'Timeline.cleanup_display',
+            'Timeline.hide_all',
+            remove=(3, 3)
+        )
+        self.hide_all()
 
     # endregion
 

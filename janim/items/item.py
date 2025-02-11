@@ -466,8 +466,8 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
 
         from janim.anims.timeline import Timeline
         timeline = Timeline.get_context(raise_exc=False)
-        # TODO: is_displaying & show
-        if timeline is not None and timeline.is_displaying(self):
+        # 如果根物件是可见的，那么 become 的最后会把所有子物件设为可见
+        if timeline is not None and timeline.is_visible(self):
             timeline.show(self)
 
         return self

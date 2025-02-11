@@ -3,10 +3,10 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Self, overload
 
-from janim.constants import FOREVER
+from janim.constants import DEFAULT_DURATION, FOREVER
+from janim.items.item import Item
 from janim.typing import ForeverType
 from janim.utils.rate_functions import RateFunc, linear, smooth
-from janim.items.item import Item
 
 ALIGN_EPSILON = 1e-6
 QUERY_OFFSET = 1e-5
@@ -29,7 +29,7 @@ class Animation:
         self,
         *,
         at: float = 0,
-        duration: float | ForeverType = 1.0,
+        duration: float | ForeverType = DEFAULT_DURATION,
         rate_func: RateFunc = smooth
     ):
         # 用于在 AnimGroup 中标记子动画是否都对齐；
@@ -101,7 +101,7 @@ class ItemAnimation(Animation):
     def _time_fixed(self):
         from janim.anims.timeline import Timeline
         timeline = Timeline.get_context()
-        timeline.anim_stacks[self.item].append(self)
+        timeline.item_appearances[self.item].stack.append(self)
 
     @dataclass
     class ApplyParams:
