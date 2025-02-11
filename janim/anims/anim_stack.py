@@ -45,6 +45,9 @@ class AnimStack:
             # _time_fixed 会产生对 self.append 的调用，因此不用再另外 self.append
             anim._time_fixed()
 
+    def has_detected_change(self) -> bool:
+        return self.prev_display is not None
+
     def append(self, anim: ItemAnimation) -> None:
         '''
         向 :class:`AnimStack` 添加 :class:`~.Animation` 对象

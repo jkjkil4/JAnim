@@ -4,9 +4,11 @@ import inspect
 import math
 import time
 from abc import ABCMeta, abstractmethod
+from bisect import insort
 from collections import defaultdict
 from contextvars import ContextVar
-from typing import Iterable, Self
+from dataclasses import dataclass
+from typing import Callable, Iterable, Self
 
 from janim.anims.anim_stack import AnimStack
 from janim.anims.animation import TimeAligner, TimeRange
@@ -102,10 +104,6 @@ class Timeline(metaclass=ABCMeta):
 
     # endregion
 
-    # TODO: TimeOfCode
-
-    # TODO: ScheduledTask
-
     # TODO: PlayAudioInfo
 
     # TODO: SubtitleInfo
@@ -116,9 +114,9 @@ class Timeline(metaclass=ABCMeta):
         super().__init__(*args, **kwargs)
 
         self.current_time: float = 0
-        # TODO: self.times_of_code
+        self.times_of_code: list[Timeline.TimeOfCode] = []
 
-        # TODO: scheduled_tasks
+        self.scheduled_tasks: list[Timeline.ScheduledTask] = []
         # TODO: DEPRECATED?: self.anims
         # TODO: DEPRECATED?: self.display_anims
         # TODO: audio_infos
@@ -161,11 +159,18 @@ class Timeline(metaclass=ABCMeta):
             finally:
                 self._build_frame = None
 
-            # TODO: if self.current_time == 0
+            if self.current_time == 0:
+                self.forward(DEFAULT_DURATION, _record_lineno=False)    # 使得没有任何前进时，产生一点时间，避免除零以及其它问题
+                if not quiet:   # pragma: no cover
+                    log.info(
+                        _('"{name}" did not produce a duration after construction, '
+                          'automatically generated a duration of {duration}s')
+                        .format(name=self.__class__.__name__, duration=DEFAULT_DURATION)
+                    )
 
-            # TODO: cleanup_display
-
-            # TODO: for item, ih in self.items_history.items():
+            for item, appr in self.item_appearances.items():
+                if not appr.stack.has_detected_change():
+                    appr.stack.detect_change(item, 0)
 
             built = BuiltTimeline(self)
 
@@ -178,14 +183,47 @@ class Timeline(metaclass=ABCMeta):
 
         return built
 
-    # TODO: schedule
+    # region schedule
 
-    # TODO: timeout
+    @dataclass
+    class ScheduledTask:
+        '''
+        另见 :meth:`~.Timeline.schedule`
+        '''
+        at: float
+        func: Callable
+        args: list
+        kwargs: dict
+
+    def schedule(self, at: float, func: Callable, *args, **kwargs) -> None:
+        '''
+        计划执行
+
+        会在进度达到 ``at`` 时，对 ``func`` 进行调用，
+        可传入 ``*args`` 和 ``**kwargs``
+        '''
+        task = Timeline.ScheduledTask(self.time_aligner.align_t(at), func, args, kwargs)
+        insort(self.scheduled_tasks, task, key=lambda x: x.at)
+
+    def timeout(self, delay: float, func: Callable, *args, **kwargs) -> None:
+        '''
+        相当于 `schedule(self.current_time + delay, func, *args, **kwargs)`
+        '''
+        self.schedule(self.current_time + delay, func, *args, **kwargs)
+
+    # endregion
 
     # region progress
 
-    # TODO: arg _record_lineno
-    def forward(self, dt: float = DEFAULT_DURATION, *, _detect_changes=True):
+    @dataclass
+    class TimeOfCode:
+        '''
+        标记 :meth:`~.Timeline.construct` 执行到的代码行数所对应的时间
+        '''
+        time: float
+        line: int
+
+    def forward(self, dt: float = DEFAULT_DURATION, *, _detect_changes=True, _record_lineno=True):
         '''
         向前推进 ``dt`` 秒
         '''
@@ -197,11 +235,20 @@ class Timeline(metaclass=ABCMeta):
 
         to_time = self.current_time + dt
 
-        # TODO: while self.scheduled_tasks
+        while self.scheduled_tasks and self.scheduled_tasks[0].at <= to_time:
+            task = self.scheduled_tasks.pop(0)
+            self.current_time = task.at
+            task.func(*task.args, **task.kwargs)
 
         self.current_time = to_time
 
-        # TODO: if _record_lineno
+        if _record_lineno:
+            self.times_of_code.append(
+                Timeline.TimeOfCode(
+                    self.current_time,
+                    self.get_construct_lineno() or -1
+                )
+            )
 
     def forward_to(self, t: float, *, _detect_changes=True) -> None:
         '''
