@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from bisect import bisect
 
-from janim.anims.animation import QUERY_OFFSET, ItemAnimation, TimeAligner
+from janim.anims.animation import ItemAnimation, TimeAligner
 from janim.anims.display import Display
 from janim.constants import FOREVER
 from janim.items.item import Item
@@ -124,7 +124,7 @@ class AnimStack:
             self.cache_time = as_time
 
             # 计算作用动画后的数据
-            idx = bisect(self.times, as_time + QUERY_OFFSET) - 1
+            idx = bisect(self.times, as_time) - 1
             assert idx >= 0
 
             anims = self.stacks[idx]

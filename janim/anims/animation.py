@@ -10,7 +10,6 @@ from janim.typing import ForeverType
 from janim.utils.rate_functions import RateFunc, linear, smooth
 
 ALIGN_EPSILON = 1e-6
-QUERY_OFFSET = 1e-5
 
 
 class Animation:

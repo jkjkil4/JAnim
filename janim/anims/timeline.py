@@ -14,8 +14,7 @@ from typing import Callable, Iterable, Self
 import moderngl as mgl
 
 from janim.anims.anim_stack import AnimStack
-from janim.anims.animation import (QUERY_OFFSET, Animation, TimeAligner,
-                                   TimeRange)
+from janim.anims.animation import Animation, TimeAligner, TimeRange
 from janim.anims.composition import AnimGroup
 from janim.anims.updater import updater_params_ctx
 from janim.camera.camera import Camera
@@ -302,7 +301,7 @@ class Timeline(metaclass=ABCMeta):
             '''
             在 ``t`` 时刻，物件是否可见
             '''
-            idx = bisect(self.visibility, t + QUERY_OFFSET)
+            idx = bisect(self.visibility, t)
             return idx % 2 == 1
 
         def render(self, data: Item) -> None:
@@ -396,7 +395,7 @@ class Timeline(metaclass=ABCMeta):
     def _show(self, item: Item) -> None:
         gaps = self.item_appearances[item].visibility
         if len(gaps) % 2 != 1:
-            gaps.append(self.current_time)
+            gaps.append(self.time_aligner.align_t(self.current_time))
 
     def show(self, *roots: Item, root_only=False) -> None:
         '''
@@ -409,7 +408,7 @@ class Timeline(metaclass=ABCMeta):
     def _hide(self, item: Item) -> None:
         gaps = self.item_appearances[item].visibility
         if len(gaps) % 2 == 1:
-            gaps.append(self.current_time)
+            gaps.append(self.time_aligner.align_t(self.current_time))
 
     def hide(self, *roots: Item, root_only=False) -> None:
         '''
@@ -426,7 +425,7 @@ class Timeline(metaclass=ABCMeta):
         for appr in self.item_appearances.values():
             gaps = appr.visibility
             if len(gaps) % 2 == 1:
-                gaps.append(self.current_time)
+                gaps.append(self.time_aligner.align_t(self.current_time))
 
     def cleanup_display(self) -> None:
         from janim.utils.deprecation import deprecated
@@ -519,11 +518,12 @@ class BuiltTimeline:
         '''
         渲染所有可见物件
         '''
+        timeline = self.timeline
+        global_t = timeline.time_aligner.align_t(global_t)
         try:
             with ContextSetter(Animation.global_t_ctx, global_t),   \
                  ContextSetter(Timeline.ctx_var, self.timeline),    \
                  self.timeline.with_config():
-                timeline = self.timeline
                 camera = timeline.compute_item(timeline.camera, global_t, True)
                 camera_info = camera.points.info
                 anti_alias_radius = self.cfg.anti_alias_width / 2 * camera_info.scaled_factor
