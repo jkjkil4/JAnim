@@ -346,6 +346,15 @@ class Timeline(metaclass=ABCMeta):
         '''
         return len(self.item_appearances[item].visibility) % 2 == 1
 
+    def is_displaying(self, item: Item) -> bool:
+        from janim.utils.deprecation import deprecated
+        deprecated(
+            'Timeline.is_displaying',
+            'Timeline.is_visible',
+            remove=(3, 3)
+        )
+        return self.is_visible(item)
+
     def _show(self, item: Item) -> None:
         gaps = self.item_appearances[item].visibility
         if len(gaps) % 2 != 1:
