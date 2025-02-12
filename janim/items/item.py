@@ -526,6 +526,24 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
 
     # TODO: render
 
+    # endregion
+
+    # region timeline
+
+    def show(self, root_only=False) -> Self:
+        '''
+        显示物件
+        '''
+        self.timeline.show(self, root_only=root_only)
+
+    def hide(self, root_only=False) -> Self:
+        '''
+        隐藏物件
+        '''
+        self.timeline.hide(self, root_only=root_only)
+
+    # endregion
+
     def _mark_render_disabled(self) -> None:
         '''
         由子类继承，用于标记 _render_disabled
@@ -533,13 +551,3 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         详见 :meth:`~.Timeline.render_all` 中的注释
         '''
         pass
-
-    # endregion
-
-    # region timeline
-
-    # TODO: show
-
-    # TODO: hide
-
-    # endregion
