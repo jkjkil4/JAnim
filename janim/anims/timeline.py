@@ -3,22 +3,28 @@ from __future__ import annotations
 import inspect
 import math
 import time
+import traceback
 from abc import ABCMeta, abstractmethod
-from bisect import insort
+from bisect import bisect, insort
 from collections import defaultdict
 from contextvars import ContextVar
 from dataclasses import dataclass
 from typing import Callable, Iterable, Self
 
+import moderngl as mgl
+
 from janim.anims.anim_stack import AnimStack
-from janim.anims.animation import TimeAligner, TimeRange
+from janim.anims.animation import (QUERY_OFFSET, Animation, TimeAligner,
+                                   TimeRange)
 from janim.anims.composition import AnimGroup
+from janim.anims.updater import updater_params_ctx
 from janim.camera.camera import Camera
 from janim.constants import DEFAULT_DURATION
 from janim.exception import TimelineLookupError
 from janim.items.item import Item
 from janim.locale.i18n import get_local_strings
 from janim.logger import log
+from janim.render.base import RenderData, Renderer, set_global_uniforms
 from janim.typing import SupportsAnim
 from janim.utils.config import Config, ConfigGetter, config_ctx_var
 from janim.utils.data import ContextSetter
@@ -289,8 +295,18 @@ class Timeline(metaclass=ABCMeta):
         def __init__(self, aligner: TimeAligner):
             self.stack = AnimStack(aligner)
             self.visibility: list[float] = []
-            # TODO: renderer
-            # self.renderer: Renderer | None = None
+            self.renderer: Renderer | None = None
+            self.render_disabled: bool = False
+
+        def is_visible_at(self, t: float) -> bool:
+            '''
+            在 ``t`` 时刻，物件是否可见
+            '''
+            idx = bisect(self.visibility, t + QUERY_OFFSET)
+            return idx % 2 == 1
+
+        def render(self, data: Item) -> None:
+            pass
 
     # region ItemAppearance.stack
 
@@ -323,11 +339,27 @@ class Timeline(metaclass=ABCMeta):
         for item in items:
             self.item_appearances[item].stack.detect_change(item, self.current_time)
 
-    def item_current[T](self, item: T, *, as_time: float | None = None, root_only: bool = False) -> T:
+    def compute_item[T](self, item: T, as_time: float, readonly: bool) -> T:
+        '''
+        另见 :meth:`~.AnimStack.compute`
+        '''
+        return self.item_appearances[item].stack.compute(as_time, readonly)
+
+    def item_current[T: Item](self, item: T, *, as_time: float | None = None, root_only: bool = False) -> T:
         '''
         另见 :meth:`~.Item.current`
         '''
-        root: Item = self.item_appearances[item].stack.get_item(as_time, False)
+        if as_time is None:
+            params = updater_params_ctx.get(None)
+            if params is not None:
+                as_time = params.global_t
+        if as_time is None:
+            as_time = Animation.global_t_ctx.get(None)
+
+        if as_time is None:
+            return item.copy(root_only=root_only)
+
+        root = self.compute_item(item, as_time, False)
         if not root_only:
             assert not root.children and root.stored_children is not None
             root.add(*[self.item_current(sub) for sub in root.stored_children])
@@ -344,7 +376,13 @@ class Timeline(metaclass=ABCMeta):
 
         另见：:meth:`show`、:meth:`hide`
         '''
-        return len(self.item_appearances[item].visibility) % 2 == 1
+        # 在运行 construct 过程中，params 是 None，返回值表示最后状态是否可见
+        params = updater_params_ctx.get(None)
+        if params is None:
+            return len(self.item_appearances[item].visibility) % 2 == 1
+
+        # 在 updater 的回调函数中，params 不是弄，返回值表示在这时是否可见
+        return self.item_appearances[item].is_visible_at(params.global_t)
 
     def is_displaying(self, item: Item) -> bool:
         from janim.utils.deprecation import deprecated
@@ -477,8 +515,62 @@ class BuiltTimeline:
     def cfg(self) -> Config | ConfigGetter:
         return self.timeline.config_getter
 
+    def render_all(self, ctx: mgl.Context, global_t: float) -> None:
+        '''
+        渲染所有可见物件
+        '''
+        try:
+            with ContextSetter(Animation.global_t_ctx, global_t),   \
+                 ContextSetter(Timeline.ctx_var, self.timeline),    \
+                 self.timeline.with_config():
+                timeline = self.timeline
+                camera = timeline.compute_item(timeline.camera, global_t, True)
+                camera_info = camera.points.info
+                anti_alias_radius = self.cfg.anti_alias_width / 2 * camera_info.scaled_factor
+
+                set_global_uniforms(
+                    ctx,
+                    ('JA_CAMERA_SCALED_FACTOR', camera_info.scaled_factor),
+                    ('JA_VIEW_MATRIX', camera_info.view_matrix.T.flatten()),
+                    ('JA_FIXED_DIST_FROM_PLANE', camera_info.fixed_distance_from_plane),
+                    ('JA_PROJ_MATRIX', camera_info.proj_matrix.T.flatten()),
+                    ('JA_FRAME_RADIUS', camera_info.frame_radius),
+                    ('JA_ANTI_ALIAS_RADIUS', anti_alias_radius)
+                )
+
+                with ContextSetter(Renderer.data_ctx, RenderData(ctx=ctx,
+                                                                 camera_info=camera_info,
+                                                                 anti_alias_radius=anti_alias_radius)):
+                    # 遍历所有物件，筛选出参与渲染的
+                    render_items = [
+                        (item, appr)
+                        for item, appr in timeline.item_appearances.items()
+                    ]
+                    # 反向遍历一遍所有物件，这是为了让例如 Transform 之类的效果标记原有的物件不进行渲染
+                    # （会把所应用的物件的 render_disabled 置为 True，所以在下面可以判断这个变量过滤掉它们）
+                    for item, _ in reversed(render_items):
+                        item._mark_render_disabled()
+                    # 剔除被标记 render_disabled 的物件，得到 render_items_final，并按深度排序
+                    render_items_final: list[tuple[Item, Timeline.ItemAppearance]] = []
+                    for item, appr in render_items:
+                        if appr.render_disabled:
+                            appr.render_disabled = False    # 重置，因为每次都要重新标记
+                            continue
+                        if not appr.is_visible_at(global_t):
+                            continue
+                        data = appr.stack.compute(global_t, True)
+                        render_items_final.append((data, appr))
+                    render_items_final.sort(key=lambda x: x[0].depth, reverse=True)
+                    # 渲染
+                    for data, appr in render_items_final:
+                        appr.render(data)
+
+        except Exception:
+            traceback.print_exc()
+
     # TODO: anim_on
 
     # TODO: render_all
 
     # TODO: capture
+    # TODO: janim.render.base.create_context

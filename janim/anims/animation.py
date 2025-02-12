@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from contextvars import ContextVar
 from dataclasses import dataclass
 from typing import Self, overload
 
@@ -88,7 +89,7 @@ class Animation:
 
     # TODO: is_visible
 
-    # TODO: global_t_ctx
+    global_t_ctx: ContextVar[float] = ContextVar('Animation.global_t_ctx')
 
     # TODO: anim_on_alpha
 

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from bisect import bisect
 
-from janim.anims.animation import ItemAnimation, TimeAligner
+from janim.anims.animation import QUERY_OFFSET, ItemAnimation, TimeAligner
 from janim.anims.display import Display
 from janim.constants import FOREVER
 from janim.items.item import Item
@@ -26,7 +26,7 @@ class AnimStack:
         self.times: list[float] = [0]
         self.stacks: list[list[ItemAnimation]] = [[]]
 
-        # 用于缓存结果，具体处理另见 get_item 方法
+        # 用于缓存结果，具体处理另见 compute 方法
         self.cache_time: float | None = None
         self.cache_data: Item | None = None
 
@@ -53,7 +53,7 @@ class AnimStack:
         向 :class:`AnimStack` 添加 :class:`~.Animation` 对象
         '''
         # 下面这些代码主要是为了对区段进行优化处理，提前计算出特定区段中存在哪些动画对象
-        # 这样可以避免在 get_item 以及渲染时重复判断哪些动画对象是否作用，提高效率
+        # 这样可以避免在 compute 以及渲染时重复判断哪些动画对象是否作用，提高效率
         t_cnt = len(self.times)
         at = anim.t_range.at
         end = anim.t_range.end
@@ -102,13 +102,13 @@ class AnimStack:
             for idx in range(at_idx, end_idx):
                 self.stacks[idx].append(anim)
 
-    def get_item(self, as_time: float, readonly: bool) -> Item:
+    def compute(self, as_time: float, readonly: bool) -> Item:
         '''
         得到指定时间 ``as_time`` 的物件，考虑了动画的作用
 
         ``readonly`` 用来表示调用方是否会对返回值进行修改
 
-        - 如果 ``readonly=True`` 则表示不会进行修改，可以直接放心返回缓存
+        - 如果 ``readonly=True`` 则表示不会进行修改，该方法会放心地直接返回缓存
           （但是这并没有强制约束性，传入 ``readonly=True`` 时请遵循不修改返回值的原则，以免影响缓存数据）
         - 如果 ``readonly=False`` 则表示会进行修改，此时会返回缓存的拷贝，避免影响缓存数据
 
@@ -124,7 +124,7 @@ class AnimStack:
             self.cache_time = as_time
 
             # 计算作用动画后的数据
-            idx = bisect(self.times, as_time) - 1
+            idx = bisect(self.times, as_time + QUERY_OFFSET) - 1
             assert idx >= 0
 
             anims = self.stacks[idx]

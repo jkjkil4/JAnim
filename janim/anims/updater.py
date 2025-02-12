@@ -7,10 +7,10 @@ from typing import Any, Callable, Self
 
 from tqdm import tqdm as ProgressDisplay
 
-from janim.anims.animation import Animation, RenderCall, TimeRange
+from janim.anims.animation import Animation, TimeRange
 from janim.constants import ANIM_END_DELTA, C_LABEL_ANIM_ABSTRACT
 from janim.exception import UpdaterError
-from janim.items.item import DynamicItem, Item
+from janim.items.item import Item
 from janim.locale.i18n import get_local_strings
 from janim.utils.rate_functions import RateFunc, linear
 from janim.utils.simple_functions import clip

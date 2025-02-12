@@ -13,6 +13,7 @@ from janim.exception import AsTypeError, GetItemError
 from janim.items.relation import Relation
 from janim.locale.i18n import get_local_strings
 from janim.logger import log
+from janim.render.base import Renderer
 from janim.typing import SupportsApartAlpha
 
 if TYPE_CHECKING:
@@ -102,9 +103,7 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
       也就是将那些为 True 的位置取出组成一个 :class:`~.Group`
     '''
 
-    # TODO: renderer_cls
-
-    # TODO: global_renderer
+    renderer_cls = Renderer
 
     depth = CmptInfo(Cmpt_Depth[Self], 0)
 
@@ -397,7 +396,7 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
                 return False
         return True
 
-    def current(self, *, as_time: float | None = None, root_only: bool = False) -> Self:
+    def current(self, *, as_time: float | None = None, root_only=False) -> Self:
         '''
         由当前时间点获得当前物件（考虑动画作用后的结果）
         '''
@@ -526,6 +525,14 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
     # TODO: create_renderer
 
     # TODO: render
+
+    def _mark_render_disabled(self) -> None:
+        '''
+        由子类继承，用于标记 _render_disabled
+
+        详见 :meth:`~.Timeline.render_all` 中的注释
+        '''
+        pass
 
     # endregion
 
