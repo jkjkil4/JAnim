@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from bisect import bisect_left
 from contextvars import ContextVar
 from dataclasses import dataclass
 from typing import Self, overload
@@ -239,4 +240,22 @@ class TimeAligner:
 
         # 循环结束表明所有已记录的都比 t 大，所以将 t 插入到列表开头
         self.recorded_times.insert(0, t)
+        return t
+
+    def align_t_for_render(self, t: float) -> float:
+        '''
+        与 :meth:`align_t` 类似，但区别在于
+
+        - 该方法使用二分查找而不是倒序查找
+        - 该方法在查找后不记录 ``t`` 的值
+        '''
+        idx = bisect_left(self.recorded_times, t)
+        if idx != len(self.recorded_times):
+            recorded_t = self.recorded_times[idx]
+            if abs(t - recorded_t) < ALIGN_EPSILON:
+                return recorded_t
+        if idx != 0:
+            recorded_t = self.recorded_times[idx - 1]
+            if abs(t - recorded_t) < ALIGN_EPSILON:
+                return recorded_t
         return t

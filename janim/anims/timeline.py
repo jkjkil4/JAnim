@@ -27,6 +27,7 @@ from janim.render.base import RenderData, Renderer, set_global_uniforms
 from janim.typing import SupportsAnim
 from janim.utils.config import Config, ConfigGetter, config_ctx_var
 from janim.utils.data import ContextSetter
+from janim.utils.simple_functions import clip
 
 _ = get_local_strings('timeline')
 
@@ -455,7 +456,17 @@ class Timeline(metaclass=ABCMeta):
 
         return None     # pragma: no cover
 
-    # TODO: get_lineno_of_time
+    def get_lineno_at_time(self, time: float):
+        '''
+        根据 ``time`` 得到对应执行到的行数
+        '''
+        toc = self.times_of_code
+        if not toc:
+            return -1
+
+        idx = bisect(toc, time, key=lambda x: x.time)
+        idx = clip(idx, 0, len(toc) - 1)
+        return toc[idx].line
 
     # endregion
 
@@ -519,7 +530,7 @@ class BuiltTimeline:
         渲染所有可见物件
         '''
         timeline = self.timeline
-        global_t = timeline.time_aligner.align_t(global_t)
+        global_t = timeline.time_aligner.align_t_for_render(global_t)
         try:
             with ContextSetter(Animation.global_t_ctx, global_t),   \
                  ContextSetter(Timeline.ctx_var, self.timeline),    \
