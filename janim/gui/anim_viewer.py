@@ -519,10 +519,10 @@ class AnimViewer(QMainWindow):
     def on_play_timer_timeout(self) -> None:
         played_count = 1 + self.play_timer.take_skip_count()
         if self.built.timeline.has_audio():
-            samples = self.built.timeline.get_audio_samples_of_frame(self.built.cfg.preview_fps,
-                                                                    self.built.cfg.audio_framerate,
-                                                                    self.timeline_view.progress(),
-                                                                    count=played_count)
+            samples = self.built.get_audio_samples_of_frame(self.built.cfg.preview_fps,
+                                                            self.built.cfg.audio_framerate,
+                                                            self.timeline_view.progress(),
+                                                            count=played_count)
             self.audio_player.write(samples.tobytes())
 
         self.timeline_view.set_progress(self.timeline_view.progress() + played_count)

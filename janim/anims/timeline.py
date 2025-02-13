@@ -12,6 +12,7 @@ from dataclasses import dataclass
 from typing import Callable, Iterable, Self
 
 import moderngl as mgl
+import numpy as np
 
 from janim.anims.anim_stack import AnimStack
 from janim.anims.animation import Animation, TimeAligner, TimeRange
@@ -20,6 +21,7 @@ from janim.anims.updater import updater_params_ctx
 from janim.camera.camera import Camera
 from janim.constants import DEFAULT_DURATION
 from janim.exception import TimelineLookupError
+from janim.items.audio import Audio
 from janim.items.item import Item
 from janim.locale.i18n import get_local_strings
 from janim.logger import log
@@ -27,6 +29,7 @@ from janim.render.base import RenderData, Renderer, set_global_uniforms
 from janim.typing import SupportsAnim
 from janim.utils.config import Config, ConfigGetter, config_ctx_var
 from janim.utils.data import ContextSetter
+from janim.utils.iterables import resize_preserving_order
 from janim.utils.simple_functions import clip
 
 _ = get_local_strings('timeline')
@@ -114,8 +117,6 @@ class Timeline(metaclass=ABCMeta):
 
     # TODO: SubtitleInfo
 
-    # TODO: PausePoint
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -125,13 +126,11 @@ class Timeline(metaclass=ABCMeta):
         self.scheduled_tasks: list[Timeline.ScheduledTask] = []
         # TODO: DEPRECATED?: self.anims
         # TODO: DEPRECATED?: self.display_anims
-        # TODO: audio_infos
+        self.audio_infos: list[Timeline.PlayAudioInfo] = []
         # TODO: subtitle_infos
 
-        # TODO: self.pause_points
+        self.pause_points: list[Timeline.PausePoint] = []
 
-        # TODO: DEPRECATED: items_history
-        # TODO: DEPRECATED?: item_display_times
         self.time_aligner: TimeAligner = TimeAligner()
         self.item_appearances: defaultdict[Item, Timeline.ItemAppearance] = \
             defaultdict(lambda: Timeline.ItemAppearance(self.time_aligner))
@@ -273,11 +272,85 @@ class Timeline(metaclass=ABCMeta):
         self.forward_to(t_range.end, _detect_changes=False)
         return t_range
 
-    # TODO: pause_point
+    @dataclass
+    class PausePoint:
+        at: float
+        at_previous_frame: bool
+
+    def pause_point(
+        self,
+        *,
+        offset: float = 0,
+        at_previous_frame: bool = True
+    ) -> None:
+        '''
+        标记在预览界面中，执行到当前时间点时会暂停
+
+        - ``at_previous_frame`` 控制是在前一帧暂停（默认）还是在当前帧暂停
+        - ``offset`` 表示偏移多少秒，例如 ``offset=2`` 则是当前位置 2s 后
+        - 在 GUI 界面中，可以使用 ``Ctrl+Z`` 快速移动到前一个暂停点，``Ctrl+C`` 快速移动到后一个
+        '''
+        self.pause_points.append(Timeline.PausePoint(self.current_time + offset, at_previous_frame))
 
     # endregion
 
-    # TODO: region audio_and_subtitle
+    # TODO: aas
+
+    # TODO: audio_and_subtitle
+
+    # region audio
+
+    @dataclass
+    class PlayAudioInfo:
+        '''
+        调用 :meth:`~.Timeline.play_audio` 的参数信息
+        '''
+        audio: Audio
+        range: TimeRange
+        clip_range: TimeRange
+
+    def play_audio(
+        self,
+        audio: Audio,
+        *,
+        delay: float = 0,
+        begin: float = 0,
+        end: float = -1,
+        clip: tuple[float, float] | None = None,
+    ) -> TimeRange:
+        '''
+        在当前位置播放音频
+
+        - 可以指定 ``begin`` 和 ``end`` 表示裁剪区段
+        - 可以指定在当前位置往后 ``delay`` 秒才开始播放
+        - 若指定 ``clip``，则会覆盖 ``begin`` 和 ``end`` （可以将 ``clip`` 视为这二者的简写）
+
+        返回值表示播放的时间段
+        '''
+        if clip is not None:
+            begin, end = clip
+
+        if end == -1:
+            end = audio.duration()
+        duration = end - begin
+        at = self.current_time + delay
+
+        info = Timeline.PlayAudioInfo(audio,
+                                      TimeRange(at, at + duration),
+                                      TimeRange(begin, end))
+        self.audio_infos.append(info)
+
+        return info.range.copy()
+
+    def has_audio(self) -> bool:
+        '''
+        是否有可以播放的音频
+        '''
+        return len(self.audio_infos) != 0
+
+    # endregion
+
+    # TODO: region subtitle
 
     # region ItemAppearance
 
@@ -529,6 +602,63 @@ class BuiltTimeline:
     @property
     def cfg(self) -> Config | ConfigGetter:
         return self.timeline.config_getter
+
+    def get_audio_samples_of_frame(
+        self,
+        fps: float,
+        framerate: int,
+        frame: int,
+        *,
+        count: int = 1
+    ) -> np.ndarray:
+        '''
+        提取特定帧的音频流
+        '''
+        begin = frame / fps
+        end = (frame + count) / fps
+        channels = self.cfg.audio_channels
+
+        output_sample_count = math.floor(end * framerate) - math.floor(begin * framerate)
+        if channels == 1:
+            result = np.zeros(output_sample_count, dtype=np.int16)
+        else:
+            result = np.zeros((output_sample_count, channels), dtype=np.int16)
+
+        for info in self.timeline.audio_infos:
+            if end < info.range.at or begin > info.range.end:
+                continue
+
+            audio = info.audio
+
+            frame_begin = int((begin - info.range.at + info.clip_range.at) * audio.framerate)
+            frame_end = int((end - info.range.at + info.clip_range.at) * audio.framerate)
+
+            clip_begin = max(0, int(audio.framerate * info.clip_range.at))
+            clip_end = min(audio.sample_count(), int(audio.framerate * info.clip_range.end))
+
+            left_blank = max(0, clip_begin - frame_begin)
+            right_blank = max(0, frame_end - clip_end)
+
+            data = audio._samples.data[max(clip_begin, frame_begin): min(clip_end, frame_end)]
+
+            if left_blank != 0 or right_blank != 0:
+                if channels == 1:
+                    data = np.concatenate([
+                        np.zeros(left_blank, dtype=np.int16),
+                        data,
+                        np.zeros(right_blank, dtype=np.int16)
+                    ])
+                else:
+                    # channels = data.shape[1]
+                    data = np.concatenate([
+                        np.zeros((left_blank, channels), dtype=np.int16),
+                        data,
+                        np.zeros((right_blank, channels), dtype=np.int16)
+                    ])
+
+            result += resize_preserving_order(data, output_sample_count)
+
+        return result
 
     def render_all(self, ctx: mgl.Context, global_t: float) -> None:
         '''

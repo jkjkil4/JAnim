@@ -4,7 +4,7 @@ from pathlib import Path
 
 from PySide6.QtWidgets import QDialog, QDialogButtonBox, QFileDialog, QWidget, QMessageBox
 
-from janim.anims.timeline import TimelineAnim
+from janim.anims.timeline import BuiltTimeline
 from janim.gui.ui_ExportDialog import Ui_ExportDialog
 from janim.locale.i18n import get_local_strings
 
@@ -12,9 +12,9 @@ _ = get_local_strings('export_dialog')
 
 
 class ExportDialog(QDialog):
-    def __init__(self, anim: TimelineAnim, parent: QWidget | None = None):
+    def __init__(self, built: BuiltTimeline, parent: QWidget | None = None):
         super().__init__(parent)
-        self.anim = anim
+        self.built = built
 
         self.setup_ui()
         self.setup_contents()
@@ -36,15 +36,15 @@ class ExportDialog(QDialog):
         btn_cancel.setText(_('Cancel'))
 
     def setup_contents(self) -> None:
-        relative_path = os.path.dirname(inspect.getfile(self.anim.timeline.__class__))
-        output_dir = self.anim.cfg.formated_output_dir(relative_path)
+        relative_path = os.path.dirname(inspect.getfile(self.built.timeline.__class__))
+        output_dir = self.built.cfg.formated_output_dir(relative_path)
         if not os.path.exists(output_dir):
             os.makedirs(output_dir)
 
-        file_path = os.path.join(output_dir, f'{self.anim.timeline.__class__.__name__}.mp4')
+        file_path = os.path.join(output_dir, f'{self.built.timeline.__class__.__name__}.mp4')
 
         self.ui.edit_path.setText(file_path)
-        self.ui.spb_fps.setValue(self.anim.cfg.fps)
+        self.ui.spb_fps.setValue(self.built.cfg.fps)
 
     def setup_slots(self) -> None:
         self.ui.btn_browse.clicked.connect(self.on_btn_browse_clicked)
