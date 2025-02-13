@@ -291,6 +291,8 @@ class Timeline(metaclass=ABCMeta):
           - 列表中偶数下标（0、2、...）的表示开始显示的时间点，奇数下标（1、3、...）的表示隐藏的时间点
           - 例如，如果列表中是 ``[3, 4, 8]``，则表示在第 3s 显示，第 4s 隐藏，并且在第 8s 后一直显示
           - 这种记录方式是 :meth:`Timeline.is_visible`、:meth:`Timeline.show`、:meth:`Timeline.hide` 运作的基础
+
+        - ``self.renderer`` 表示所使用的渲染器对象
         '''
         def __init__(self, aligner: TimeAligner):
             self.stack = AnimStack(aligner)
@@ -306,7 +308,9 @@ class Timeline(metaclass=ABCMeta):
             return idx % 2 == 1
 
         def render(self, data: Item) -> None:
-            pass
+            if self.renderer is not None:
+                self.renderer = data.create_renderer()
+            self.renderer.render(data)
 
     # region ItemAppearance.stack
 
@@ -520,6 +524,7 @@ class BuiltTimeline:
     '''
     def __init__(self, timeline: Timeline):
         self.timeline = timeline
+        self.duration = timeline.current_time
 
     @property
     def cfg(self) -> Config | ConfigGetter:

@@ -90,7 +90,7 @@ class Painter(QWidget):
 
     def compute_pos(self, point: QPointF) -> np.ndarray:
         glx, gly = self.viewer.glw.map_to_gl2d(point)
-        info = self.viewer.anim.current_camera_info()
+        info = self.viewer.built.current_camera_info()
 
         center = info.center
         hvec_half = info.horizontal_vect / 2
@@ -178,7 +178,7 @@ class Painter(QWidget):
     def on_overlay_paint(self, event: QPaintEvent) -> None:
         p = QPainter(self.viewer.overlay)
         p.setRenderHint(QPainter.RenderHint.Antialiasing)
-        info = self.viewer.anim.current_camera_info()
+        info = self.viewer.built.current_camera_info()
 
         if self.constructing is not None:
             self.constructing.paint(p, info, True)

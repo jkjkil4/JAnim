@@ -112,7 +112,7 @@ class Selector(QObject):
 
         glx, gly = self.viewer.glw.map_to_gl2d(event.position())
 
-        anim = self.viewer.anim
+        anim = self.viewer.built
         global_t = anim._time
         camera_info = anim.current_camera_info()
 

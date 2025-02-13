@@ -120,7 +120,6 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         self.stored_children: list[Item] | None = None
 
         # TODO: self.is_frozen
-        # TODO: self.is_temporary
 
         from janim.anims.timeline import Timeline
         self.timeline = Timeline.get_context(raise_exc=False)
@@ -520,9 +519,22 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
     def is_fix_in_frame(self) -> bool:
         return self._fix_in_frame
 
-    # TODO: get_global_renderer
+    # endregion
 
-    # TODO: create_renderer
+    # region render
+
+    def create_renderer(self) -> Renderer:
+        return self.renderer_cls()
+
+    def _mark_render_disabled(self) -> None:
+        '''
+        由子类继承，用于标记 _render_disabled
+
+        详见 :meth:`~.Timeline.render_all` 中的注释
+        '''
+        pass
+
+    # TODO: get_global_renderer
 
     # TODO: render
 
@@ -543,11 +555,3 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         self.timeline.hide(self, root_only=root_only)
 
     # endregion
-
-    def _mark_render_disabled(self) -> None:
-        '''
-        由子类继承，用于标记 _render_disabled
-
-        详见 :meth:`~.Timeline.render_all` 中的注释
-        '''
-        pass

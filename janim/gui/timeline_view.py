@@ -10,7 +10,7 @@ from PySide6.QtGui import (QBrush, QColor, QKeyEvent, QMouseEvent, QPainter,
 from PySide6.QtWidgets import QLabel, QVBoxLayout, QWidget
 
 from janim.anims.animation import Animation, TimeRange
-from janim.anims.timeline import SEGMENT_DURATION, Timeline, TimelineAnim
+from janim.anims.timeline import BuiltTimeline, Timeline
 from janim.locale.i18n import get_local_strings
 from janim.utils.bezier import interpolate
 from janim.utils.simple_functions import clip
@@ -20,6 +20,7 @@ if TYPE_CHECKING:
 
 _ = get_local_strings('timeline_view')
 
+SEGMENT_DURATION = 10
 TIMELINE_VIEW_MIN_DURATION = 0.5
 
 
@@ -91,12 +92,12 @@ class TimelineView(QWidget):
         self.setMouseTracking(True)
         self.setMinimumHeight(self.label_height + self.range_tip_height + 10)
 
-    def set_anim(self, anim: TimelineAnim, pause_progresses: list[int]) -> None:
-        self.range = TimeRange(0, min(20, anim.global_range.duration))
+    def set_built(self, built: BuiltTimeline, pause_progresses: list[int]) -> None:
+        self.range = TimeRange(0, min(20, built.duration))
         self.y_offset = 0
-        self.anim = anim
+        self.built = built
         self._progress = 0
-        self._maximum = round(anim.global_range.end * self.anim.cfg.preview_fps)
+        self._maximum = round(built.global_range.end * self.built.cfg.preview_fps)
         self.pause_progresses = pause_progresses
 
         self.is_pressing = TimelineView.Pressing()
@@ -108,11 +109,11 @@ class TimelineView(QWidget):
         '''
         计算各个动画区段应当被渲染到第几行，以叠放式进行显示
         '''
-        segment_count = math.ceil(self.anim.global_range.duration / SEGMENT_DURATION) + 1
+        segment_count = math.ceil(self.built.global_range.duration / SEGMENT_DURATION) + 1
         self.labels_info_segments: list[list[TimelineView.LabelInfo]] = [[] for _ in range(segment_count)]
         self.max_row = 0
 
-        self.flatten = self.anim.user_anim.flatten()[1:]
+        self.flatten = self.built.user_anim.flatten()[1:]
         self.sorted_anims = sorted(self.flatten, key=lambda x: x.global_range.at)
 
         stack: list[Animation] = []
@@ -132,8 +133,8 @@ class TimelineView(QWidget):
             stack.append(anim)
 
     def set_range(self, at: float, duration: float) -> None:
-        duration = min(duration, self.anim.global_range.duration)
-        at = clip(at, 0, self.anim.global_range.duration - duration)
+        duration = min(duration, self.built.global_range.duration)
+        at = clip(at, 0, self.built.global_range.duration - duration)
         self.range = TimeRange(at, duration)
         self.update()
 
@@ -144,7 +145,7 @@ class TimelineView(QWidget):
         bottom_rect = self.bottom_rect
 
         # 因为后出现的音频在绘制时会覆盖前面的音频，所以这里用 reversed，就会得到最上层的
-        for info in reversed(self.anim.timeline.audio_infos):
+        for info in reversed(self.built.timeline.audio_infos):
             range = self.time_range_to_pixel_range(info.range)
             if QRectF(range.left, audio_rect.y(), range.width, self.audio_height).contains(pos):
                 self.hover_at_audio(pos, info)
@@ -248,7 +249,7 @@ class TimelineView(QWidget):
                 np.zeros(right_blank, dtype=np.int16)
             ])
 
-        unit = audio.framerate // self.anim.cfg.fps
+        unit = audio.framerate // self.built.cfg.fps
 
         data: np.ndarray = np.max(
             np.abs(
@@ -335,7 +336,7 @@ class TimelineView(QWidget):
         parents = [anim]
         while True:
             last = parents[-1]
-            if last.parent is None or last.parent is self.anim.user_anim:
+            if last.parent is None or last.parent is self.built.user_anim:
                 break
             parents.append(last.parent)
 
@@ -372,7 +373,7 @@ class TimelineView(QWidget):
     def create_anim_chart(self, anim: Animation) -> 'QChartView':
         from PySide6.QtCharts import QChart, QChartView, QScatterSeries
 
-        count = min(500, int(anim.global_range.duration * self.anim.cfg.fps))
+        count = min(500, int(anim.global_range.duration * self.built.cfg.fps))
         times = np.linspace(anim.global_range.at,
                             anim.global_range.end,
                             count)
@@ -438,7 +439,7 @@ class TimelineView(QWidget):
         elif self.is_pressing.s:
             cursor_time = self.pixel_to_time(self.mapFromGlobal(self.cursor().pos()).x())
 
-            factor = min(self.anim.global_range.duration / self.range.duration, 1 / 0.97)
+            factor = min(self.built.global_range.duration / self.range.duration, 1 / 0.97)
             self.set_range(
                 factor * (self.range.at - cursor_time) + cursor_time,
                 self.range.duration * factor
@@ -482,10 +483,10 @@ class TimelineView(QWidget):
         return self._progress == self._maximum
 
     def progress_to_time(self, progress: int) -> float:
-        return progress / self.anim.cfg.preview_fps
+        return progress / self.built.cfg.preview_fps
 
     def time_to_progress(self, time: float) -> int:
-        return round(time * self.anim.cfg.preview_fps)
+        return round(time * self.built.cfg.preview_fps)
 
     def time_to_pixel(self, time: float) -> float:
         return (time - self.range.at) / self.range.duration * self.width()
@@ -611,7 +612,7 @@ class TimelineView(QWidget):
         orig_font = p.font()
 
         # 绘制每次 forward 或 play 的时刻
-        times_of_code = self.anim.timeline.times_of_code
+        times_of_code = self.built.timeline.times_of_code
         left = bisect_left(times_of_code, self.range.at, key=lambda x: x.time)
         right = bisect(times_of_code, self.range.end, key=lambda x: x.time)
 
@@ -634,14 +635,14 @@ class TimelineView(QWidget):
             p.setRenderHint(QPainter.RenderHint.Antialiasing, False)
 
         # 绘制音频区段
-        if self.anim.timeline.has_audio():
+        if self.built.timeline.has_audio():
             audio_rect = self.audio_rect
 
             font = p.font()
             font.setPointSize(8)
             p.setFont(font)
 
-            for info in self.anim.timeline.audio_infos:
+            for info in self.built.timeline.audio_infos:
                 if info.range.end <= self.range.at or info.range.at >= self.range.end:
                     continue
 
@@ -689,8 +690,8 @@ class TimelineView(QWidget):
         p.setRenderHint(QPainter.RenderHint.Antialiasing, False)
 
         # 绘制视野区域指示（底部的长条）
-        left = self.range.at / self.anim.global_range.duration * self.width()
-        width = self.range.duration / self.anim.global_range.duration * self.width()
+        left = self.range.at / self.built.global_range.duration * self.width()
+        width = self.range.duration / self.built.global_range.duration * self.width()
         width = max(width, self.range_tip_height)
         p.setPen(Qt.PenStyle.NoPen)
         p.setBrush(QColor(77, 102, 132))
@@ -705,14 +706,14 @@ class TimelineView(QWidget):
 
     @property
     def audio_rect(self) -> QRect:
-        if not self.anim.timeline.has_audio():
+        if not self.built.timeline.has_audio():
             return QRect(0, 0, self.width(), 0)
         return QRect(0, 0, self.width(), self.audio_height)
 
     @property
     def bottom_rect(self) -> QRect:
         return self.rect().adjusted(0,
-                                    self.audio_height if self.anim.timeline.has_audio() else 0,
+                                    self.audio_height if self.built.timeline.has_audio() else 0,
                                     0,
                                     -self.range_tip_height)
 
@@ -745,7 +746,7 @@ class TimelineView(QWidget):
                 out_of_boundary = True
 
             # 使得超出顶端的区段也能看到一条边
-            top_margin = self.audio_height if self.anim.timeline.has_audio() else 0
+            top_margin = self.audio_height if self.built.timeline.has_audio() else 0
             min_bottom = top_margin + 4
             if rect.bottom() < min_bottom:
                 rect.moveTop(top_margin)

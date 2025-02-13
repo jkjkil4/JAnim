@@ -14,7 +14,7 @@ from janim.components.vpoints import Cmpt_VPoints
 from janim.constants import PI
 from janim.items.item import Item, mockable
 from janim.items.points import Points
-from janim.render.impl import VItemRenderer
+from janim.render.renderer_vitem import VItemRenderer
 from janim.typing import Alpha, AlphaArray, ColorArray, JAnimColor, Vect
 from janim.utils.data import AlignedData
 from janim.utils.simple_functions import clip

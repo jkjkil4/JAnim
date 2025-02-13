@@ -28,12 +28,6 @@ class Renderer:
     '''
     data_ctx: ContextVar[RenderData] = ContextVar('Renderer.data_ctx')
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.initialized = False
-
-    def init(self) -> None: ...
-
     def render(self, item) -> None: ...
 
     @staticmethod
