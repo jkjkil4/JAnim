@@ -28,7 +28,7 @@ class FontTable(QWidget):
     def setup_ui(self) -> None:
         self.label = QLabel()
         self.label.setScaledContents(True)
-        self.label.setPixmap(QPixmap(os.path.join(get_janim_dir(), 'gui', 'search.png')))
+        self.label.setPixmap(QPixmap(os.path.join(get_janim_dir(), 'gui', 'functions/search.png')))
 
         self.searcher = QLineEdit()
         self.searcher.setMinimumWidth(260)

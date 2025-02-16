@@ -5,14 +5,17 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 from PySide6.QtCore import QPoint, QRect, QRectF, Qt, QTimer, Signal
-from PySide6.QtGui import (QBrush, QColor, QKeyEvent, QMouseEvent, QPainter,
+from PySide6.QtGui import (QColor, QKeyEvent, QMouseEvent, QPainter,
                            QPaintEvent, QPen, QWheelEvent)
 from PySide6.QtWidgets import QLabel, QVBoxLayout, QWidget
 
 from janim.anims.animation import Animation, TimeRange
+from janim.anims.composition import AnimGroup
 from janim.anims.timeline import BuiltTimeline, Timeline
+from janim.gui.label import Label, LabelGroup, PixelRange
 from janim.locale.i18n import get_local_strings
 from janim.utils.bezier import interpolate
+from janim.utils.rate_functions import linear
 from janim.utils.simple_functions import clip
 
 if TYPE_CHECKING:
@@ -20,7 +23,6 @@ if TYPE_CHECKING:
 
 _ = get_local_strings('timeline_view')
 
-SEGMENT_DURATION = 10
 TIMELINE_VIEW_MIN_DURATION = 0.5
 
 
@@ -31,15 +33,8 @@ class TimelineView(QWidget):
     - **w** 键放大区段（使视野精确到一小段中）
     - **s** 键缩小区段（使视野扩展到一大段中）
     - **a** 和 **d** 左右移动区段
+    - 使用鼠标滚轮纵向平移
     '''
-    @dataclass
-    class LabelInfo:
-        '''
-        动画区段被渲染到第几行的标记
-        '''
-        anim: Animation
-        row: int
-        segment_left: int  # 为了优化性能使用的
 
     @dataclass
     class PixelRange:
@@ -66,8 +61,6 @@ class TimelineView(QWidget):
     space_pressed = Signal()
 
     # px
-    audio_height = 20
-    label_height = 24
     range_tip_height = 4
     play_space = 20
 
@@ -90,52 +83,92 @@ class TimelineView(QWidget):
 
         self.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
         self.setMouseTracking(True)
-        self.setMinimumHeight(self.label_height + self.range_tip_height + 10)
+        self.setMinimumHeight(Label.pixel_height + self.range_tip_height + 10)
 
     def set_built(self, built: BuiltTimeline, pause_progresses: list[int]) -> None:
         self.range = TimeRange(0, min(20, built.duration))
-        self.y_offset = 0
+        self.y_pixel_offset: float = 0
         self.built = built
-        self._progress = 0
-        self._maximum = round(built.global_range.end * self.built.cfg.preview_fps)
+        self._progress: int = 0
+        self._maximum = round(built.duration * self.built.cfg.preview_fps)
         self.pause_progresses = pause_progresses
 
         self.is_pressing = TimelineView.Pressing()
 
-        self.init_label_info()
+        self.init_label_group()
         self.update()
 
-    def init_label_info(self) -> None:
+    def init_label_group(self) -> None:
         '''
         计算各个动画区段应当被渲染到第几行，以叠放式进行显示
         '''
-        segment_count = math.ceil(self.built.global_range.duration / SEGMENT_DURATION) + 1
-        self.labels_info_segments: list[list[TimelineView.LabelInfo]] = [[] for _ in range(segment_count)]
-        self.max_row = 0
+        smaller_font = self.font()
+        smaller_font.setPointSizeF(smaller_font.pointSizeF() * 0.7)
 
-        self.flatten = self.built.user_anim.flatten()[1:]
-        self.sorted_anims = sorted(self.flatten, key=lambda x: x.global_range.at)
+        def make_label_from_anim(anim: Animation, header: bool = True) -> Label:
+            name = anim.name or anim.__class__.__name__
+            if isinstance(anim, AnimGroup):
+                return LabelGroup(
+                    name,
+                    anim.t_range,
+                    *[
+                        make_label_from_anim(subanim)
+                        for subanim in anim.anims
+                    ],
+                    collapse=anim.collapse,
+                    header=header,
+                    brush=Qt.GlobalColor.white,
+                    highlight_pen=Qt.GlobalColor.gray,
+                    highlight_brush=QColor(255, 255, 255, 20),
+                    font=smaller_font
+                )
+            else:
+                return Label(
+                    name,
+                    anim.t_range,
+                    brush=Qt.GlobalColor.green,
+                )
 
-        stack: list[Animation] = []
-        for anim in self.sorted_anims:
-            # 可能会因为浮点误差导致 <= 中的相等判断错误，所以 +1e-5
-            while stack and stack[-1].global_range.end <= anim.global_range.at + 1e-5:
-                stack.pop()
+        self.label_group = LabelGroup(
+            '',
+            TimeRange(0, self.built.duration),
+            *[
+                make_label_from_anim(
+                    anim,
+                    len(anim.anims) != 1 or anim.rate_func is not linear
+                )
+                for anim in self.built.timeline.anim_groups
+            ],
+            collapse=False,
+            header=False,
+        )
 
-            left = math.floor(anim.global_range.at / SEGMENT_DURATION)
-            right = math.ceil(anim.global_range.end / SEGMENT_DURATION)
-
-            info = TimelineView.LabelInfo(anim, len(stack), left)
-            for idx in range(left, right):
-                self.labels_info_segments[idx].append(info)
-
-            self.max_row = max(self.max_row, len(stack))
-            stack.append(anim)
+        if self.built.timeline.has_audio():
+            infos = self.built.timeline.audio_infos
+            audio_label_group = LabelGroup(
+                '',
+                TimeRange(
+                    min(info.range.at for info in infos),
+                    max(info.range.end for info in infos)
+                ),
+                *[Label(info.audio.filename for info in infos)],
+                collapse=True,
+                header=True,
+                brush=Qt.GlobalColor.red,
+            )
+            self.label_group = LabelGroup(
+                '',
+                self.label_group.t_range,
+                audio_label_group,
+                self.label_group,
+                collapse=False,
+                header=False,
+            )
 
     def set_range(self, at: float, duration: float) -> None:
-        duration = min(duration, self.built.global_range.duration)
-        at = clip(at, 0, self.built.global_range.duration - duration)
-        self.range = TimeRange(at, duration)
+        duration = min(duration, self.built.duration)
+        at = clip(at, 0, self.built.duration - duration)
+        self.range = TimeRange(at, at + duration)
         self.update()
 
     # region hover
@@ -439,7 +472,7 @@ class TimelineView(QWidget):
         elif self.is_pressing.s:
             cursor_time = self.pixel_to_time(self.mapFromGlobal(self.cursor().pos()).x())
 
-            factor = min(self.built.global_range.duration / self.range.duration, 1 / 0.97)
+            factor = min(self.built.duration / self.range.duration, 1 / 0.97)
             self.set_range(
                 factor * (self.range.at - cursor_time) + cursor_time,
                 self.range.duration * factor
@@ -503,7 +536,7 @@ class TimelineView(QWidget):
     def time_range_to_pixel_range(self, range: TimeRange) -> PixelRange:
         left = (range.at - self.range.at) / self.range.duration * self.width()
         width = range.duration / self.range.duration * self.width()
-        return TimelineView.PixelRange(left, width)
+        return PixelRange(left, width)
 
     def set_progress_by_x(self, x: float) -> None:
         self.set_progress(self.pixel_to_progress(x))
@@ -602,14 +635,15 @@ class TimelineView(QWidget):
             self.is_pressing.d = False
 
     def wheelEvent(self, event: QWheelEvent) -> None:
-        self.y_offset = clip(self.y_offset - event.angleDelta().y() / 240 * self.label_height,
-                             0,
-                             self.max_row * self.label_height)
+        self.y_pixel_offset = clip(
+            self.y_pixel_offset - event.angleDelta().y() / 120 * Label.pixel_height,
+            0,
+            max(0, self.label_group.height - Label.default_height) * Label.pixel_height
+        )
         self.update()
 
     def paintEvent(self, _: QPaintEvent) -> None:
         p = QPainter(self)
-        orig_font = p.font()
 
         # 绘制每次 forward 或 play 的时刻
         times_of_code = self.built.timeline.times_of_code
@@ -634,53 +668,11 @@ class TimelineView(QWidget):
                 self.paint_line(p, self.progress_to_time(self.pause_progresses[i]))
             p.setRenderHint(QPainter.RenderHint.Antialiasing, False)
 
-        # 绘制音频区段
-        if self.built.timeline.has_audio():
-            audio_rect = self.audio_rect
-
-            font = p.font()
-            font.setPointSize(8)
-            p.setFont(font)
-
-            for info in self.built.timeline.audio_infos:
-                if info.range.end <= self.range.at or info.range.at >= self.range.end:
-                    continue
-
-                self.paint_label(p,
-                                 info.range,
-                                 audio_rect.y(),
-                                 self.audio_height,
-                                 info.audio.filename,
-                                 QColor(152, 255, 191),
-                                 QColor(152, 255, 191, 128),
-                                 False)
-
-            p.setFont(orig_font)
-
-        # 绘制动画区段
-        bottom_rect = self.bottom_rect
-        p.setClipRect(bottom_rect)
-
-        range_at = self.range.at
-        range_end = self.range.end
-
-        segment_left = math.floor(range_at / SEGMENT_DURATION)
-        segment_right = math.ceil(range_end / SEGMENT_DURATION)
-        for idx in range(segment_left, min(segment_right, len(self.labels_info_segments))):
-            labels_info = self.labels_info_segments[idx]
-            for info in labels_info:
-                if info.segment_left == idx or (info.segment_left < segment_left and idx == segment_left):
-                    if info.anim.global_range.end <= range_at or info.anim.global_range.at >= range_end:
-                        continue
-                    self.paint_label(p,
-                                     info.anim.global_range,
-                                     bottom_rect.y() + self.label_y(info.row),
-                                     self.label_height,
-                                     info.anim.__class__.__name__,
-                                     Qt.PenStyle.NoPen,
-                                     QColor(*info.anim.label_color).lighter(),
-                                     True)
-
+        # 绘制 labels（包括音频区段和动画区段）
+        labels_rect = self.labels_rect
+        params = Label.PaintParams(labels_rect, self.range, self.y_pixel_offset)
+        p.setClipRect(labels_rect)
+        self.label_group.paint(p, params)
         p.setClipping(False)
 
         # 绘制当前进度指示
@@ -690,8 +682,8 @@ class TimelineView(QWidget):
         p.setRenderHint(QPainter.RenderHint.Antialiasing, False)
 
         # 绘制视野区域指示（底部的长条）
-        left = self.range.at / self.built.global_range.duration * self.width()
-        width = self.range.duration / self.built.global_range.duration * self.width()
+        left = self.range.at / self.built.duration * self.width()
+        width = self.range.duration / self.built.duration * self.width()
         width = max(width, self.range_tip_height)
         p.setPen(Qt.PenStyle.NoPen)
         p.setBrush(QColor(77, 102, 132))
@@ -705,83 +697,8 @@ class TimelineView(QWidget):
         )
 
     @property
-    def audio_rect(self) -> QRect:
-        if not self.built.timeline.has_audio():
-            return QRect(0, 0, self.width(), 0)
-        return QRect(0, 0, self.width(), self.audio_height)
-
-    @property
-    def bottom_rect(self) -> QRect:
-        return self.rect().adjusted(0,
-                                    self.audio_height if self.built.timeline.has_audio() else 0,
-                                    0,
-                                    -self.range_tip_height)
-
-    def label_y(self, row: int) -> float:
-        return -self.y_offset + row * self.label_height
-
-    def paint_label(
-        self,
-        p: QPainter,
-        time_range: TimeRange,
-        y: float,
-        height: float,
-        txt: str,
-        stroke: QPen | QColor,
-        fill: QBrush | QColor,
-        is_anim_lable: bool
-    ) -> None:
-        range = self.time_range_to_pixel_range(time_range)
-        rect = QRectF(range.left, y, range.width, height)
-
-        # 标记是否应当绘制文字
-        out_of_boundary = False
-
-        if is_anim_lable:
-            # 使得超出底端的区段也能看到一条边
-            max_y = self.height() - self.range_tip_height - 4
-            if rect.y() > max_y:
-                rect.moveTop(max_y)
-                rect.setHeight(4)
-                out_of_boundary = True
-
-            # 使得超出顶端的区段也能看到一条边
-            top_margin = self.audio_height if self.built.timeline.has_audio() else 0
-            min_bottom = top_margin + 4
-            if rect.bottom() < min_bottom:
-                rect.moveTop(top_margin)
-                rect.setHeight(4)
-                out_of_boundary = True
-
-        # 这里的判断使得区段过窄时也能看得见
-        if rect.width() > 5:
-            x_adjust = 2
-        elif rect.width() > 1:
-            x_adjust = (rect.width() - 1) / 2
-        else:
-            x_adjust = 0
-
-        # 绘制背景部分
-        if not out_of_boundary:
-            rect.adjust(x_adjust, 2, -x_adjust, -2)
-        p.setPen(stroke)
-        p.setBrush(fill)
-        p.drawRect(rect)
-
-        # 使得在区段的左侧有一部分在显示区域外时，
-        # 文字仍然对齐到屏幕的左端，而不是跑到屏幕外面去
-        if rect.x() < 0:
-            rect.setX(0)
-
-        # 绘制文字
-        if not out_of_boundary:
-            rect.adjust(1, 1, -1, -1)
-            p.setPen(Qt.GlobalColor.black)
-            p.drawText(
-                rect,
-                Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignTop,
-                txt
-            )
+    def labels_rect(self) -> QRect:
+        return self.rect().adjusted(0, 20, 0, -self.range_tip_height)
 
     def paint_line(self, p: QPainter, time: float) -> None:
         pixel_at = self.time_to_pixel(time)

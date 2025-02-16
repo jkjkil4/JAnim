@@ -2,10 +2,11 @@ import inspect
 import os
 from pathlib import Path
 
-from PySide6.QtWidgets import QDialog, QDialogButtonBox, QFileDialog, QWidget, QMessageBox
+from PySide6.QtWidgets import (QDialog, QDialogButtonBox, QFileDialog,
+                               QMessageBox, QWidget)
 
 from janim.anims.timeline import BuiltTimeline
-from janim.gui.ui_ExportDialog import Ui_ExportDialog
+from janim.gui.functions.ui_ExportDialog import Ui_ExportDialog
 from janim.locale.i18n import get_local_strings
 
 _ = get_local_strings('export_dialog')

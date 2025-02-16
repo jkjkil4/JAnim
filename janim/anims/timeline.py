@@ -113,7 +113,37 @@ class Timeline(metaclass=ABCMeta):
 
     # endregion
 
-    # TODO: PlayAudioInfo
+    @dataclass
+    class ScheduledTask:
+        '''
+        另见 :meth:`~.Timeline.schedule`
+        '''
+        at: float
+        func: Callable
+        args: list
+        kwargs: dict
+
+    @dataclass
+    class TimeOfCode:
+        '''
+        标记 :meth:`~.Timeline.construct` 执行到的代码行数所对应的时间
+        '''
+        time: float
+        line: int
+
+    @dataclass
+    class PausePoint:
+        at: float
+        at_previous_frame: bool
+
+    @dataclass
+    class PlayAudioInfo:
+        '''
+        调用 :meth:`~.Timeline.play_audio` 的参数信息
+        '''
+        audio: Audio
+        range: TimeRange
+        clip_range: TimeRange
 
     # TODO: SubtitleInfo
 
@@ -124,12 +154,12 @@ class Timeline(metaclass=ABCMeta):
         self.times_of_code: list[Timeline.TimeOfCode] = []
 
         self.scheduled_tasks: list[Timeline.ScheduledTask] = []
-        # TODO: DEPRECATED?: self.anims
-        # TODO: DEPRECATED?: self.display_anims
         self.audio_infos: list[Timeline.PlayAudioInfo] = []
         # TODO: subtitle_infos
 
         self.pause_points: list[Timeline.PausePoint] = []
+
+        self.anim_groups: list[AnimGroup] = []
 
         self.time_aligner: TimeAligner = TimeAligner()
         self.item_appearances: defaultdict[Item, Timeline.ItemAppearance] = \
@@ -190,16 +220,6 @@ class Timeline(metaclass=ABCMeta):
 
     # region schedule
 
-    @dataclass
-    class ScheduledTask:
-        '''
-        另见 :meth:`~.Timeline.schedule`
-        '''
-        at: float
-        func: Callable
-        args: list
-        kwargs: dict
-
     def schedule(self, at: float, func: Callable, *args, **kwargs) -> None:
         '''
         计划执行
@@ -219,14 +239,6 @@ class Timeline(metaclass=ABCMeta):
     # endregion
 
     # region progress
-
-    @dataclass
-    class TimeOfCode:
-        '''
-        标记 :meth:`~.Timeline.construct` 执行到的代码行数所对应的时间
-        '''
-        time: float
-        line: int
 
     def forward(self, dt: float = DEFAULT_DURATION, *, _detect_changes=True, _record_lineno=True):
         '''
@@ -266,16 +278,13 @@ class Timeline(metaclass=ABCMeta):
         group = AnimGroup(*anims, at=at + self.current_time, **kwargs)
         group._align_time(self.time_aligner)
         group._time_fixed()
+        self.anim_groups.append(group)
+        return group.t_range
 
     def play(self, *anims: SupportsAnim, **kwargs) -> TimeRange:
         t_range = self.prepare(*anims, **kwargs)
         self.forward_to(t_range.end, _detect_changes=False)
         return t_range
-
-    @dataclass
-    class PausePoint:
-        at: float
-        at_previous_frame: bool
 
     def pause_point(
         self,
@@ -299,15 +308,6 @@ class Timeline(metaclass=ABCMeta):
     # TODO: audio_and_subtitle
 
     # region audio
-
-    @dataclass
-    class PlayAudioInfo:
-        '''
-        调用 :meth:`~.Timeline.play_audio` 的参数信息
-        '''
-        audio: Audio
-        range: TimeRange
-        clip_range: TimeRange
 
     def play_audio(
         self,
@@ -381,7 +381,7 @@ class Timeline(metaclass=ABCMeta):
             return idx % 2 == 1
 
         def render(self, data: Item) -> None:
-            if self.renderer is not None:
+            if self.renderer is None:
                 self.renderer = data.create_renderer()
             self.renderer.render(data)
 
@@ -697,7 +697,7 @@ class BuiltTimeline:
                     for item, _ in reversed(render_items):
                         item._mark_render_disabled()
                     # 剔除被标记 render_disabled 的物件，得到 render_items_final，并按深度排序
-                    render_items_final: list[tuple[Item, Timeline.ItemAppearance]] = []
+                    render_items_final: list[tuple[Item, Callable]] = []
                     for item, appr in render_items:
                         if appr.render_disabled:
                             appr.render_disabled = False    # 重置，因为每次都要重新标记
@@ -705,18 +705,16 @@ class BuiltTimeline:
                         if not appr.is_visible_at(global_t):
                             continue
                         data = appr.stack.compute(global_t, True)
-                        render_items_final.append((data, appr))
+                        render_items_final.append((data, appr.render))
                     render_items_final.sort(key=lambda x: x[0].depth, reverse=True)
                     # 渲染
-                    for data, appr in render_items_final:
-                        appr.render(data)
+                    for data, render in render_items_final:
+                        render(data)
 
         except Exception:
             traceback.print_exc()
 
     # TODO: anim_on
-
-    # TODO: render_all
 
     # TODO: capture
     # TODO: janim.render.base.create_context

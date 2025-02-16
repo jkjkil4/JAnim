@@ -43,6 +43,8 @@ class AnimGroup(Animation):
             at=1,
             duration=6
         )
+
+    另外，``collapse`` 表示在预览界面中是否折叠该动画组（默认不折叠，而例如 :class:`~.TransfromMatchingShapes` 默认是折叠的）
     '''
     def __init__(
         self,
@@ -51,9 +53,12 @@ class AnimGroup(Animation):
         duration: float | None = None,
         lag_ratio: float = 0,
         offset: float = 0,
-        rate_func: RateFunc = linear
+        rate_func: RateFunc = linear,
+        name: str | None = None,
+        collapse: bool = False,
     ):
         self.anims = self._get_anim_objects(anims)
+        self.collapse = collapse
         self._adjust_t_range(lag_ratio, offset)
 
         if self.anims:
@@ -100,7 +105,7 @@ class AnimGroup(Animation):
                 for anim in self.anims:
                     anim.shift_range(at)
 
-        super().__init__(at=at, duration=duration, rate_func=rate_func)
+        super().__init__(at=at, duration=duration, rate_func=rate_func, name=name)
 
     def _adjust_t_range(self, lag_ratio: float, offset: float) -> None:
         '''
@@ -243,9 +248,11 @@ class Aligned(AnimGroup):
         *anims: SupportsAnim,
         at: float = 0,
         duration: float | None = None,
-        rate_func: RateFunc = linear
+        rate_func: RateFunc = linear,
+        name: str | None = None,
+        collapse: bool = False,
     ):
-        super().__init__(*anims, at=at, duration=duration, rate_func=rate_func)
+        super().__init__(*anims, at=at, duration=duration, rate_func=rate_func, name=name, collapse=collapse)
 
     def _adjust_t_range(self, lag_ratio, offset):
         end = max(anim.t_range.num_end for anim in self.anims)

@@ -7,7 +7,7 @@ from PySide6.QtWidgets import (QColorDialog, QHBoxLayout, QLineEdit,
                                QPushButton, QVBoxLayout, QWidget)
 
 import janim.constants.colors as colors
-from janim.gui.ui_ColorWidget import Ui_ColorWidget
+from janim.gui.functions.ui_ColorWidget import Ui_ColorWidget
 from janim.locale.i18n import get_local_strings
 from janim.utils.simple_functions import clip
 

@@ -23,6 +23,8 @@ class Animation:
       以及特殊情况下的 :class:`DataModifier` 等，
       但是 :class:`~.AnimGroup` 及其衍生类不能传入 ``FOREVER``）
     - 指定 ``rate_func`` 可以设定插值函数，默认为 :meth:`janim.utils.rate_funcs.smooth` 即平滑插值
+
+    - 设置 ``name`` 可以将文字显示在预览界面的时间轴标签上，不影响渲染（如果不设置则默认为类名）
     '''
     # TODO: label_color
 
@@ -31,8 +33,11 @@ class Animation:
         *,
         at: float = 0,
         duration: float | ForeverType = DEFAULT_DURATION,
-        rate_func: RateFunc = smooth
+        rate_func: RateFunc = smooth,
+        name: str | None = None
     ):
+        self.name = name
+
         # 用于在 AnimGroup 中标记子动画是否都对齐；
         # 对于单个动画来说肯定是对齐的，默认为 True，而在 AnimGroup 中有可能是 False
         # 关于 is_aligned 的计算请参见 AnimGroup.__init__ 代码内的注释

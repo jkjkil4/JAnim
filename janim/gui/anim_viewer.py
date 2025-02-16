@@ -30,15 +30,15 @@ from janim.anims.timeline import BuiltTimeline, Timeline
 from janim.exception import ExitException
 from janim.gui.application import Application
 from janim.gui.audio_player import AudioPlayer
-from janim.gui.color_widget import ColorWidget
-from janim.gui.export_dialog import ExportDialog
 from janim.gui.fixed_ratio_widget import FixedRatioWidget
-from janim.gui.font_table import FontTable
+from janim.gui.functions.color_widget import ColorWidget
+from janim.gui.functions.export_dialog import ExportDialog
+from janim.gui.functions.font_table import FontTable
+from janim.gui.functions.painter import Painter
+from janim.gui.functions.richtext_editor import RichTextEditor
+from janim.gui.functions.selector import Selector
 from janim.gui.glwidget import GLWidget
-from janim.gui.painter import Painter
 from janim.gui.precise_timer import PreciseTimer
-from janim.gui.richtext_editor import RichTextEditor
-from janim.gui.selector import Selector
 from janim.gui.timeline_view import TimelineView
 from janim.locale.i18n import get_local_strings
 from janim.logger import log
@@ -499,7 +499,7 @@ class AnimViewer(QMainWindow):
                 self.send_lineno(line)
 
         self.glw.set_time(time)
-        self.time_label.setText(f'{time:.1f}/{self.built.global_range.duration:.1f} s')
+        self.time_label.setText(f'{time:.1f}/{self.built.duration:.1f} s')
 
     def on_glw_rendered(self) -> None:
         cur = time.time()

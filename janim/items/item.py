@@ -547,11 +547,13 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         显示物件
         '''
         self.timeline.show(self, root_only=root_only)
+        return self
 
     def hide(self, root_only=False) -> Self:
         '''
         隐藏物件
         '''
         self.timeline.hide(self, root_only=root_only)
+        return self
 
     # endregion
