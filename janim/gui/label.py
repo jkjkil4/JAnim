@@ -1,3 +1,4 @@
+from bisect import bisect_left, bisect_right
 from dataclasses import dataclass
 
 from PySide6.QtCore import QRect, QRectF, Qt
@@ -166,6 +167,11 @@ class LabelGroup(Label):
         self.highlight_pen = highlight_pen
         self.highlight_brush = highlight_brush
 
+        # 用于优化绘制的遍历
+        self.ordered_divisions: list[list[Label]] | None = None
+        if len(labels) > 32:   # 该 LabelGroup 中 labels 多于 32 个才进行该优化
+            self.ordered_divisions = []
+
         labels = sorted(labels, key=lambda x: x.t_range.at)
         stack: list[Label | None] = []
 
@@ -174,10 +180,14 @@ class LabelGroup(Label):
 
             found_place: bool = False
             max_len = 0
+            # if-else 地狱 ¯\_(ツ)_/¯
             for i, other in enumerate(stack):
                 if other.t_range.end <= label.t_range.at:
                     if not found_place:
+                        if self.ordered_divisions is not None:
+                            self.ordered_divisions[i].append(label)
                         stack[i] = label
+                        max_len = i + 1
                         found_place = True
                 else:
                     max_len = i + 1
@@ -192,6 +202,11 @@ class LabelGroup(Label):
                 if max_len != len(stack):
                     stack = stack[:max_len]
             else:
+                if self.ordered_divisions is not None:
+                    if len(stack) == len(self.ordered_divisions):
+                        self.ordered_divisions.append([label])
+                    else:
+                        self.ordered_divisions[len(stack)].append(label)
                 stack.append(label)
 
         self.labels = labels
@@ -235,8 +250,17 @@ class LabelGroup(Label):
             if self._header:
                 children_offset += self.header_height
 
-            for label in self.labels:
-                label.paint(p, params, children_offset)
+            if self.ordered_divisions is None:
+                for label in self.labels:
+                    label.paint(p, params, children_offset)
+            else:
+                for division in self.ordered_divisions:
+                    left = bisect_left(division, params.range.at, key=lambda x: x.t_range.at)
+                    left = max(0, left - 1)
+                    right = bisect_right(division, params.range.end, key=lambda x: x.t_range.end)
+                    right = min(len(division), right + 1)
+                    for i in range(left, right):
+                        division[i].paint(p, params, children_offset)
 
         # 绘制标题区
         if self._header:

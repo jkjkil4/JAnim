@@ -273,16 +273,16 @@ class Timeline(metaclass=ABCMeta):
         '''
         self.forward(t - self.current_time, _detect_changes=_detect_changes)
 
-    def prepare(self, *anims: SupportsAnim, at: float = 0, **kwargs) -> TimeRange:
+    def prepare(self, *anims: SupportsAnim, at: float = 0, name: str | None = 'prepare', **kwargs) -> TimeRange:
         self.detect_changes_of_all()
-        group = AnimGroup(*anims, at=at + self.current_time, **kwargs)
+        group = AnimGroup(*anims, at=at + self.current_time, name=name, **kwargs)
         group._align_time(self.time_aligner)
         group._time_fixed()
         self.anim_groups.append(group)
         return group.t_range
 
-    def play(self, *anims: SupportsAnim, **kwargs) -> TimeRange:
-        t_range = self.prepare(*anims, **kwargs)
+    def play(self, *anims: SupportsAnim, name: str | None = 'play', **kwargs) -> TimeRange:
+        t_range = self.prepare(*anims, name=name, **kwargs)
         self.forward_to(t_range.end, _detect_changes=False)
         return t_range
 

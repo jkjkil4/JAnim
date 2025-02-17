@@ -107,7 +107,7 @@ class TimelineView(QWidget):
 
         def make_label_from_anim(anim: Animation, header: bool = True) -> Label:
             name = anim.name or anim.__class__.__name__
-            color = QColor(*anim.label_color)
+            color = QColor(*anim.label_color).lighter()
             if isinstance(anim, AnimGroup):
                 return LabelGroup(
                     name,
@@ -699,7 +699,7 @@ class TimelineView(QWidget):
 
     @property
     def labels_rect(self) -> QRect:
-        return self.rect().adjusted(0, 20, 0, -self.range_tip_height)
+        return self.rect().adjusted(0, 0, 0, -self.range_tip_height)
 
     def paint_line(self, p: QPainter, time: float) -> None:
         pixel_at = self.time_to_pixel(time)
