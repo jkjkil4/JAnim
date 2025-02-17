@@ -26,7 +26,7 @@ class Animation:
 
     - 设置 ``name`` 可以将文字显示在预览界面的时间轴标签上，不影响渲染（如果不设置则默认为类名）
     '''
-    # TODO: label_color
+    label_color: tuple[float, float, float] = (128, 132, 137)
 
     def __init__(
         self,

@@ -107,6 +107,7 @@ class TimelineView(QWidget):
 
         def make_label_from_anim(anim: Animation, header: bool = True) -> Label:
             name = anim.name or anim.__class__.__name__
+            color = QColor(*anim.label_color)
             if isinstance(anim, AnimGroup):
                 return LabelGroup(
                     name,
@@ -117,7 +118,7 @@ class TimelineView(QWidget):
                     ],
                     collapse=anim.collapse,
                     header=header,
-                    brush=Qt.GlobalColor.white,
+                    brush=color,
                     highlight_pen=Qt.GlobalColor.gray,
                     highlight_brush=QColor(255, 255, 255, 20),
                     font=smaller_font
@@ -126,7 +127,7 @@ class TimelineView(QWidget):
                 return Label(
                     name,
                     anim.t_range,
-                    brush=Qt.GlobalColor.green,
+                    brush=color,
                 )
 
         self.label_group = LabelGroup(
