@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 import numpy as np
-from PySide6.QtCore import QPoint, QRect, QRectF, Qt, QTimer, Signal
+from PySide6.QtCore import QPoint, QPointF, QRect, QRectF, Qt, QTimer, Signal
 from PySide6.QtGui import (QColor, QKeyEvent, QMouseEvent, QPainter,
                            QPaintEvent, QPen, QWheelEvent)
 from PySide6.QtWidgets import QLabel, QVBoxLayout, QWidget
@@ -12,7 +12,8 @@ from PySide6.QtWidgets import QLabel, QVBoxLayout, QWidget
 from janim.anims.animation import Animation, TimeRange
 from janim.anims.composition import AnimGroup
 from janim.anims.timeline import BuiltTimeline, Timeline
-from janim.gui.label import Label, LabelGroup, PixelRange
+from janim.gui.label import (LABEL_DEFAULT_HEIGHT, LABEL_PIXEL_HEIGHT_PER_UNIT,
+                             Label, LabelGroup, PixelRange)
 from janim.locale.i18n import get_local_strings
 from janim.utils.bezier import interpolate
 from janim.utils.rate_functions import linear
@@ -83,7 +84,7 @@ class TimelineView(QWidget):
 
         self.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
         self.setMouseTracking(True)
-        self.setMinimumHeight(Label.pixel_height + self.range_tip_height + 10)
+        self.setMinimumHeight(LABEL_DEFAULT_HEIGHT * LABEL_PIXEL_HEIGHT_PER_UNIT + self.range_tip_height + 10)
 
     def set_built(self, built: BuiltTimeline, pause_progresses: list[int]) -> None:
         self.range = TimeRange(0, min(20, built.duration))
@@ -130,7 +131,7 @@ class TimelineView(QWidget):
                     brush=color,
                 )
 
-        self.label_group = LabelGroup(
+        self.anim_label_group = LabelGroup(
             '',
             TimeRange(0, self.built.duration),
             *[
@@ -144,9 +145,11 @@ class TimelineView(QWidget):
             header=False,
         )
 
-        if self.built.timeline.has_audio():
+        if not self.built.timeline.has_audio():
+            self.label_group = self.anim_label_group
+        else:
             infos = self.built.timeline.audio_infos
-            audio_label_group = LabelGroup(
+            self.audio_label_group = LabelGroup(
                 '',
                 TimeRange(
                     min(info.range.at for info in infos),
@@ -159,12 +162,15 @@ class TimelineView(QWidget):
             )
             self.label_group = LabelGroup(
                 '',
-                self.label_group.t_range,
-                audio_label_group,
-                self.label_group,
+                self.anim_label_group.t_range,
+                self.audio_label_group,
+                self.anim_label_group,
                 collapse=False,
                 header=False,
             )
+
+    def query_label_at(self, pos: QPointF, policy: LabelGroup.QueryPolicy) -> Label | LabelGroup | None:
+        return self.label_group.query_at(self.labels_rect, self.range, pos, self.y_pixel_offset, policy)
 
     def set_range(self, at: float, duration: float) -> None:
         duration = min(duration, self.built.duration)
@@ -175,6 +181,7 @@ class TimelineView(QWidget):
     # region hover
 
     def hover_at(self, pos: QPoint) -> None:
+        return
         audio_rect = self.audio_rect
         bottom_rect = self.bottom_rect
 
@@ -523,9 +530,11 @@ class TimelineView(QWidget):
         return round(time * self.built.cfg.preview_fps)
 
     def time_to_pixel(self, time: float) -> float:
+        # 假设 self.labels_rect 的左右与控件没有间隙
         return (time - self.range.at) / self.range.duration * self.width()
 
     def pixel_to_time(self, pixel: float) -> float:
+        # 假设 self.labels_rect 的左右与控件没有间隙
         return pixel / self.width() * self.range.duration + self.range.at
 
     def progress_to_pixel(self, progress: int) -> float:
@@ -550,19 +559,34 @@ class TimelineView(QWidget):
 
     def mousePressEvent(self, event: QMouseEvent) -> None:
         if event.button() == Qt.MouseButton.LeftButton:
-            self.set_progress_by_x(event.position().x())
-            self.dragged.emit()
+            self.press_at = event.position()
+            self.try_to_switch_collapse = self.query_label_at(self.press_at, LabelGroup.QueryPolicy.HeaderOnly)
+
+            if self.try_to_switch_collapse is None:
+                self.set_progress_by_x(event.position().x())
+                self.dragged.emit()
 
     def mouseMoveEvent(self, event: QMouseEvent) -> None:
         self.hover_timer.start(500)
         self.hide_tooltip()
 
         if event.buttons() & Qt.MouseButton.LeftButton:
-            self.set_progress_by_x(event.position().x())
-            self.dragged.emit()
+            if self.try_to_switch_collapse is not None:
+                if abs(self.press_at.x() - event.x()) > 8 or abs(self.press_at.y() - event.y()) > 8:
+                    self.try_to_switch_collapse = None
+
+            if self.try_to_switch_collapse is None:
+                self.set_progress_by_x(event.position().x())
+                self.dragged.emit()
 
     def mouseReleaseEvent(self, event: QMouseEvent) -> None:
         if event.button() == Qt.MouseButton.LeftButton:
+            if self.try_to_switch_collapse is not None:
+                now = self.query_label_at(event.position(), LabelGroup.QueryPolicy.HeaderOnly)
+                if now is self.try_to_switch_collapse:
+                    now.switch_collapse()
+                    self.update()
+
             self.drag_timer.stop()
 
     def leaveEvent(self, _) -> None:
@@ -637,9 +661,9 @@ class TimelineView(QWidget):
 
     def wheelEvent(self, event: QWheelEvent) -> None:
         self.y_pixel_offset = clip(
-            self.y_pixel_offset - event.angleDelta().y() / 120 * Label.pixel_height,
+            self.y_pixel_offset - event.angleDelta().y() / 120 * LABEL_PIXEL_HEIGHT_PER_UNIT,
             0,
-            max(0, self.label_group.height - Label.default_height) * Label.pixel_height
+            max(0, self.label_group.height - LABEL_DEFAULT_HEIGHT) * LABEL_PIXEL_HEIGHT_PER_UNIT
         )
         self.update()
 
