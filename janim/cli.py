@@ -5,13 +5,13 @@ import time
 from argparse import Namespace
 from functools import lru_cache
 
-from janim.anims.timeline import Timeline
+from janim.anims.timeline import BuiltTimeline, Timeline
 from janim.exception import (EXITCODE_MODULE_NOT_FOUND, EXITCODE_NOT_FILE,
                              ExitException)
 from janim.locale.i18n import get_local_strings
 from janim.logger import log
-from janim.utils.file_ops import open_file
 from janim.utils.config import cli_config, default_config
+from janim.utils.file_ops import open_file
 
 _ = get_local_strings('cli')
 
@@ -39,23 +39,26 @@ def run(args: Namespace) -> None:
 
     log.info('======')
 
-    widgets: list[AnimViewer] = []
+    built_timelines: list[BuiltTimeline] = []
+
     for timeline in timelines:
-        viewer = AnimViewer(timeline().build(hide_subtitles=args.hide_subtitles),
-                            auto_play=auto_play,
-                            interact=args.interact,
-                            available_timeline_names=available_timeline_names)
-        widgets.append(viewer)
+        built_timelines.append(timeline().build(hide_subtitles=args.hide_subtitles))
 
     log.info('======')
     log.info(_('Constructing window'))
 
     t = time.time()
 
-    for i, widget in enumerate(widgets):
-        widget.show()
+    widgets: list[AnimViewer] = []
+    for i, built in enumerate(built_timelines):
+        viewer = AnimViewer(built,
+                            auto_play=auto_play,
+                            interact=args.interact,
+                            available_timeline_names=available_timeline_names)
+        widgets.append(viewer)
+        viewer.show()
         if i != 0:
-            widget.move(widgets[i - 1].pos() + QPoint(24, 24))
+            viewer.move(widgets[i - 1].pos() + QPoint(24, 24))
 
     QTimer.singleShot(200, widgets[-1].activateWindow)
 
