@@ -610,14 +610,12 @@ class TimelineView(QWidget):
                 else:
                     self.set_progress(progresses[idx])
             else:
-                anims = self.sorted_anims
                 time = self.progress_to_time(self._progress)
-                idx = bisect(anims, time - 1e-2, key=lambda x: x.global_range.at)
-                idx -= 1
-                if idx < 0:
+                label = self.anim_label_group.find_before(time - 1e-2)
+                if label is None:
                     self.set_progress(0)
                 else:
-                    self.set_progress(self.time_to_progress(anims[idx].global_range.at))
+                    self.set_progress(self.time_to_progress(label.t_range.at))
 
             self.dragged.emit()
 
@@ -630,13 +628,12 @@ class TimelineView(QWidget):
                 else:
                     self.set_progress(self._maximum)
             else:
-                anims = self.sorted_anims
                 time = self.progress_to_time(self._progress)
-                idx = bisect(anims, time + 1e-2, key=lambda x: x.global_range.at)
-                if idx < len(anims):
-                    self.set_progress(self.time_to_progress(anims[idx].global_range.at))
-                else:
+                label = self.anim_label_group.find_after(time + 1e-2)
+                if label is None:
                     self.set_progress(self._maximum)
+                else:
+                    self.set_progress(self.time_to_progress(label.t_range.at))
 
             self.dragged.emit()
 

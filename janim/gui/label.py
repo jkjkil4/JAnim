@@ -360,6 +360,15 @@ class LabelGroup(Label):
                 else:
                     return label._query_at(t, y, policy)
 
+    def find_before(self, t: float) -> Label | None:
+        idx = bisect_left(self.labels, t, key=lambda x: x.t_range.at)
+        idx -= 1
+        return None if idx < 0 else self.labels[idx]
+
+    def find_after(self, t: float) -> Label | None:
+        idx = bisect_right(self.labels, t, key=lambda x: x.t_range.at)
+        return None if idx >= len(self.labels) else self.labels[idx]
+
     # endregion
 
     # region paint
