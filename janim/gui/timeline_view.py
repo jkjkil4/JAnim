@@ -71,6 +71,7 @@ class TimelineView(QWidget):
 
         self.highlighting: LabelGroup | None = None
         self.highlight_hover_timer = QTimer(self)
+        self.highlight_hover_timer.setSingleShot(True)
         self.highlight_hover_timer.timeout.connect(self.on_highlight_hover_timer_timeout)
 
         self.detail_hover_timer = QTimer(self)
