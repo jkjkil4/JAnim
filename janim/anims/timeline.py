@@ -582,7 +582,15 @@ class Timeline(metaclass=ABCMeta):
     # endregion
 
 
-# TODO: SourceTimeline
+class SourceTimeline(Timeline):
+    '''
+    与 :class:`Timeline` 相比，会在背景显示源代码
+    '''
+    def build(self, *, quiet=False, hide_subtitles=False) -> BuiltTimeline:
+        from janim.items.text.text import SourceDisplayer
+        with ContextSetter(self.ctx_var, self), self.with_config():
+            self.source_displayer = SourceDisplayer(self.__class__, depth=10000).show()
+        return super().build(quiet=quiet, hide_subtitles=hide_subtitles)
 
 
 class BuiltTimeline:
