@@ -436,19 +436,20 @@ class LabelGroup(Label):
         p.drawPixmap(rect.x(), rect.y() + (rect.height() - pix.height()) / 2, pix)
         rect.adjust(10, 0, 0, 0)
 
-    def compute_y_offset(self) -> int:
+    def compute_absolute_y(self) -> int:
         y_offset = self.y
         if self.parent:
-            y_offset += self.parent.compute_y_offset()
+            y_offset += self.parent.compute_absolute_y()
             if self.parent._header:
                 y_offset += self.parent.header_height
         return y_offset
 
     def paint_highlight(self, p: QPainter, params: Label.PaintParams) -> None:
-        y_offset = self.compute_y_offset()
+        absolute_y = self.compute_absolute_y()
         range = self.time_range_to_pixel_range(params, self.t_range)
-        y_pixel = params.rect.y() + (self.y + y_offset) * LABEL_PIXEL_HEIGHT_PER_UNIT - params.y_pixel_offset
-        rect = QRectF(range.left, y_pixel, range.width, LABEL_PIXEL_HEIGHT_PER_UNIT * self.height)
+        y_pixel = params.rect.y() + absolute_y * LABEL_PIXEL_HEIGHT_PER_UNIT - params.y_pixel_offset
+        # 这里 range.width - 1 中的 -1 完全只是因为试了一下发现这样更美观
+        rect = QRectF(range.left, y_pixel, range.width - 1, LABEL_PIXEL_HEIGHT_PER_UNIT * self.height)
         p.setPen(self.highlight_pen)
         p.setBrush(self.highlight_brush)
         p.drawRoundedRect(rect, 4, 4)

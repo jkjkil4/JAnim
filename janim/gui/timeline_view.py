@@ -69,9 +69,13 @@ class TimelineView(QWidget):
     def __init__(self, parent: QWidget | None = None):
         super().__init__(parent)
 
-        self.hover_timer = QTimer(self)
-        self.hover_timer.setSingleShot(True)
-        self.hover_timer.timeout.connect(self.on_hover_timer_timeout)
+        self.highlighting: LabelGroup | None = None
+        self.highlight_hover_timer = QTimer(self)
+        self.highlight_hover_timer.timeout.connect(self.on_highlight_hover_timer_timeout)
+
+        self.detail_hover_timer = QTimer(self)
+        self.detail_hover_timer.setSingleShot(True)
+        self.detail_hover_timer.timeout.connect(self.on_detail_hover_timer_timeout)
 
         self.drag_timer = QTimer(self)
         self.drag_timer.setSingleShot(True)
@@ -118,8 +122,8 @@ class TimelineView(QWidget):
                     collapse=anim.collapse,
                     header=header,
                     brush=color,
-                    highlight_pen=Qt.GlobalColor.gray,
-                    highlight_brush=QColor(255, 255, 255, 20),
+                    highlight_pen=QPen(QColor(41, 171, 202), 3),
+                    highlight_brush=QColor(41, 171, 202, 40),
                 )
             else:
                 label = Label(
@@ -445,7 +449,20 @@ class TimelineView(QWidget):
         if self.tooltip is not None:
             self.tooltip = None
 
-    def on_hover_timer_timeout(self) -> None:
+    def on_highlight_hover_timer_timeout(self) -> None:
+        y_pixel_offset = self.y_pixel_offset
+        if self.built.timeline.has_audio():
+            y_pixel_offset -= self.audio_label_group.height * LABEL_PIXEL_HEIGHT_PER_UNIT
+        label = self.anim_label_group.query_at(self.labels_rect,
+                                               self.range,
+                                               self.mapFromGlobal(self.cursor().pos()),
+                                               y_pixel_offset,
+                                               LabelGroup.QueryPolicy.GroupOnly)
+        if label is not self.highlighting:
+            self.highlighting = label
+            self.update()
+
+    def on_detail_hover_timer_timeout(self) -> None:
         pos = self.mapFromGlobal(self.cursor().pos())
         if self.rect().contains(pos):
             self.hover_at(pos)
@@ -561,7 +578,9 @@ class TimelineView(QWidget):
                 self.dragged.emit()
 
     def mouseMoveEvent(self, event: QMouseEvent) -> None:
-        self.hover_timer.start(500)
+        if not self.highlight_hover_timer.isActive():
+            self.highlight_hover_timer.start(50)
+        self.detail_hover_timer.start(500)
         self.hide_tooltip()
 
         if event.buttons() & Qt.MouseButton.LeftButton:
@@ -582,6 +601,8 @@ class TimelineView(QWidget):
             self.drag_timer.stop()
 
     def leaveEvent(self, _) -> None:
+        self.highlighting = None
+        self.highlight_hover_timer.stop()
         self.hide_tooltip()
 
     def keyPressEvent(self, event: QKeyEvent) -> None:
@@ -688,6 +709,9 @@ class TimelineView(QWidget):
         p.setClipRect(labels_rect)
         self.label_group.paint(p, params)
         p.setClipping(False)
+
+        if self.highlighting is not None:
+            self.highlighting.paint_highlight(p, params)
 
         # 绘制当前进度指示
         p.setPen(QPen(Qt.GlobalColor.white, 2))
