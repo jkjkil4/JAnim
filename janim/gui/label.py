@@ -8,6 +8,7 @@ from typing import Callable
 
 from PySide6.QtCore import QPointF, QRect, QRectF, Qt
 from PySide6.QtGui import QFont, QPainter, QPixmap
+from PySide6.QtWidgets import QApplication
 
 from janim.anims.animation import TimeRange
 from janim.utils.file_ops import get_janim_dir
@@ -182,12 +183,10 @@ class LabelGroup(Label):
         header: bool,
         pen=Qt.PenStyle.NoPen,
         brush=Qt.BrushStyle.NoBrush,
-        font: QFont | None = None,
         highlight_pen=Qt.PenStyle.NoPen,
         highlight_brush=Qt.BrushStyle.NoBrush
     ):
-        super().__init__(name, t_range, pen=pen, brush=brush, font=font)
-        self.label_font = self.font     # 用于在 self.switch_collapse 中切换 self.font
+        super().__init__(name, t_range, pen=pen, brush=brush)
         self.highlight_pen = highlight_pen
         self.highlight_brush = highlight_brush
 
@@ -241,6 +240,9 @@ class LabelGroup(Label):
         self._collapse = collapse
         self._header = header
 
+        self.collapse_font = self.get_smaller_font()
+        self.update_font()
+
         self._needs_refresh_height: bool = True
 
     # region property
@@ -263,8 +265,21 @@ class LabelGroup(Label):
 
     def switch_collapse(self) -> None:
         self._collapse = not self._collapse
-        self.font = None if self._collapse else self.label_font
+        self.update_font()
         self.mark_needs_refresh_height()
+
+    def update_font(self) -> None:
+        self.font = None if self._collapse else self.collapse_font
+
+    _smaller_font: QFont | None = None
+
+    @staticmethod
+    def get_smaller_font() -> QFont:
+        if LabelGroup._smaller_font is None:
+            font = QApplication.font()
+            font.setPointSizeF(font.pointSizeF() * 0.7)
+            LabelGroup._smaller_font = font
+        return LabelGroup._smaller_font
 
     def mark_needs_refresh_height(self) -> None:
         self._needs_refresh_height = True

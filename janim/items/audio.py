@@ -73,10 +73,7 @@ class Audio:
                 .format(file_path=file_path)
             )
 
-            if channels == 1:
-                self._samples.data = np.zeros(Config.get.audio_framerate * 8)
-            else:
-                self._samples.data = np.zeros((Config.get.audio_framerate * 8, channels))
+            self._samples.data = np.zeros((Config.get.audio_framerate * 8, channels))
             self.framerate = Config.get.audio_framerate
             self.file_path = file_path
             self.filename = os.path.basename(file_path)
@@ -120,8 +117,7 @@ class Audio:
             log.error(_('Unable to read audio, please install ffmpeg and add it to the environment variables'))
             raise ExitException(EXITCODE_FFMPEG_NOT_FOUND)
 
-        if channels != 1:
-            data = data.reshape((-1, channels))
+        data = data.reshape((-1, channels))
 
         self._samples.data = data
         self.framerate = Config.get.audio_framerate
@@ -170,10 +166,9 @@ class Audio:
         - ``audio.mul([1, 0])`` 可以使开始时最强，结束时最弱
         - ``audio.mul(np.sin(np.linspace(0, 2 * np.pi, audio.sample_count())))`` 可以使音高随时间乘以 sin 函数的一个周期
         '''
-        if self._samples.data.ndim != 1:
-            if not isinstance(value, Iterable):
-                value = [value]
-            value = np.asarray(value)[:, np.newaxis] * np.ones(self._samples.data.shape[1])
+        if not isinstance(value, Iterable):
+            value = [value]
+        value = np.asarray(value)[:, np.newaxis] * np.ones(self._samples.data.shape[1])
         if isinstance(value, Iterable):
             value = resize_with_interpolation(value, self.sample_count())
         self._samples.data = self._samples.data * value
@@ -188,8 +183,7 @@ class Audio:
         data = self._samples.data.copy()
 
         mul = np.linspace(0, 1, frames)
-        if data.ndim != 1:
-            mul = mul[:, np.newaxis] * np.ones(data.shape[1])
+        mul = mul[:, np.newaxis] * np.ones(data.shape[1])
 
         data[:frames] = (data[:frames] * mul).astype(np.int16)
         self._samples.data = data
@@ -203,8 +197,7 @@ class Audio:
         data = self._samples.data.copy()
 
         mul = np.linspace(1, 0, frames)
-        if data.ndim != 1:
-            mul = mul[:, np.newaxis] * np.ones(data.shape[1])
+        mul = mul[:, np.newaxis] * np.ones(data.shape[1])
 
         data[-frames:] = (data[-frames:] * mul).astype(np.int16)
         self._samples.data = data
@@ -225,9 +218,7 @@ class Audio:
         - ``amplitude_threshould_ratio``: 振幅低于该比率的就认为是没声音的
         - ``gap_duration``: 如果没声音的时长大于该时间，则将前后分段
         '''
-        data = self._samples.data
-        if data.ndim > 1:
-            data = np.max(data, axis=1)
+        data = np.max(self._samples.data, axis=1)
         indices = np.where(data > np.iinfo(np.int16).max * amplitude_threshold_ratio)[0]
         if len(indices) == 0:
             return
@@ -257,9 +248,7 @@ class Audio:
         - ``amplitude_threshould_ratio``: 振幅低于该比率的就认为是没声音的
         '''
         # TODO: cache
-        data = self._samples.data
-        if data.ndim > 1:
-            data = np.max(data, axis=1)
+        data = np.max(self._samples.data, axis=1)
         indices = np.where(data > np.iinfo(np.int16).max * amplitude_threshold_ratio)[0]
         if len(indices) == 0:
             return None

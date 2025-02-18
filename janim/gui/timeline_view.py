@@ -104,9 +104,6 @@ class TimelineView(QWidget):
         '''
         构建动画区段信息，以便操作与绘制
         '''
-        smaller_font = self.font()
-        smaller_font.setPointSizeF(smaller_font.pointSizeF() * 0.7)
-
         def make_label_from_anim(anim: Animation, header: bool = True) -> Label:
             name = anim.name or anim.__class__.__name__
             color = QColor(*anim.label_color).lighter()
@@ -123,7 +120,6 @@ class TimelineView(QWidget):
                     brush=color,
                     highlight_pen=Qt.GlobalColor.gray,
                     highlight_brush=QColor(255, 255, 255, 20),
-                    font=smaller_font
                 )
             else:
                 label = Label(
@@ -154,20 +150,23 @@ class TimelineView(QWidget):
             infos = self.built.timeline.audio_infos
 
             def make_audio_label(info: Timeline.PlayAudioInfo) -> Label:
-                label = Label(info.audio.filename, info.range)
+                label = Label(info.audio.filename,
+                              info.range,
+                              pen=QColor(152, 255, 191),
+                              brush=QColor(152, 255, 191, 128))
                 setattr(label, LABEL_OBJ_NAME, info)
                 return label
 
             self.audio_label_group = LabelGroup(
-                '',
+                'audio',
                 TimeRange(
                     0,
                     max(self.built.duration, max(info.range.end for info in infos))
                 ),
                 *[make_audio_label(info) for info in infos],
-                collapse=True,
-                header=True,
-                brush=Qt.GlobalColor.red,
+                collapse=len(infos) != 1,
+                header=len(infos) != 1,
+                brush=QColor(152, 255, 191),
             )
             self.label_group = LabelGroup(
                 '',
