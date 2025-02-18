@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 import numpy as np
-from PySide6.QtCore import QPoint, QPointF, QRect, QRectF, Qt, QTimer, Signal
+from PySide6.QtCore import QPoint, QPointF, QRect, Qt, QTimer, Signal
 from PySide6.QtGui import (QColor, QKeyEvent, QMouseEvent, QPainter,
                            QPaintEvent, QPen, QWheelEvent)
 from PySide6.QtWidgets import QLabel, QVBoxLayout, QWidget
@@ -25,6 +25,7 @@ if TYPE_CHECKING:
 _ = get_local_strings('timeline_view')
 
 TIMELINE_VIEW_MIN_DURATION = 0.5
+LABEL_OBJ_NAME = '__obj'
 
 
 class TimelineView(QWidget):
@@ -101,7 +102,7 @@ class TimelineView(QWidget):
 
     def init_label_group(self) -> None:
         '''
-        计算各个动画区段应当被渲染到第几行，以叠放式进行显示
+        构建动画区段信息，以便操作与绘制
         '''
         smaller_font = self.font()
         smaller_font.setPointSizeF(smaller_font.pointSizeF() * 0.7)
@@ -110,7 +111,7 @@ class TimelineView(QWidget):
             name = anim.name or anim.__class__.__name__
             color = QColor(*anim.label_color).lighter()
             if isinstance(anim, AnimGroup):
-                return LabelGroup(
+                label = LabelGroup(
                     name,
                     anim.t_range,
                     *[
@@ -125,11 +126,13 @@ class TimelineView(QWidget):
                     font=smaller_font
                 )
             else:
-                return Label(
+                label = Label(
                     name,
                     anim.t_range,
                     brush=color,
                 )
+            setattr(label, LABEL_OBJ_NAME, anim)
+            return label
 
         self.anim_label_group = LabelGroup(
             '',
@@ -149,13 +152,19 @@ class TimelineView(QWidget):
             self.label_group = self.anim_label_group
         else:
             infos = self.built.timeline.audio_infos
+
+            def make_audio_label(info: Timeline.PlayAudioInfo) -> Label:
+                label = Label(info.audio.filename, info.range)
+                setattr(label, LABEL_OBJ_NAME, info)
+                return label
+
             self.audio_label_group = LabelGroup(
                 '',
                 TimeRange(
-                    min(info.range.at for info in infos),
-                    max(info.range.end for info in infos)
+                    0,
+                    max(self.built.duration, max(info.range.end for info in infos))
                 ),
-                *[Label(info.audio.filename for info in infos)],
+                *[make_audio_label(info) for info in infos],
                 collapse=True,
                 header=True,
                 brush=Qt.GlobalColor.red,
@@ -181,29 +190,15 @@ class TimelineView(QWidget):
     # region hover
 
     def hover_at(self, pos: QPoint) -> None:
-        return
-        audio_rect = self.audio_rect
-        bottom_rect = self.bottom_rect
-
-        # 因为后出现的音频在绘制时会覆盖前面的音频，所以这里用 reversed，就会得到最上层的
-        for info in reversed(self.built.timeline.audio_infos):
-            range = self.time_range_to_pixel_range(info.range)
-            if QRectF(range.left, audio_rect.y(), range.width, self.audio_height).contains(pos):
-                self.hover_at_audio(pos, info)
-                return
-
-        idx = math.floor(self.pixel_to_time(pos.x()) / SEGMENT_DURATION)
-        if idx >= len(self.labels_info_segments):
+        label = self.query_label_at(pos, LabelGroup.QueryPolicy.HeaderAndLabel)
+        obj = getattr(label, LABEL_OBJ_NAME, None)
+        if obj is None:
             return
 
-        for info in self.labels_info_segments[idx]:
-            range = self.time_range_to_pixel_range(info.anim.global_range)
-            if QRectF(range.left,
-                      bottom_rect.y() + self.label_y(info.row),
-                      range.width,
-                      self.label_height).contains(pos):
-                self.hover_at_anim(pos, info.anim)
-                return
+        if isinstance(obj, Animation):
+            self.hover_at_anim(pos, obj)
+        else:
+            self.hover_at_audio(pos, obj)
 
     def hover_at_audio(self, pos: QPoint, info: Timeline.PlayAudioInfo) -> None:
         msg_lst = [
@@ -377,12 +372,12 @@ class TimelineView(QWidget):
         parents = [anim]
         while True:
             last = parents[-1]
-            if last.parent is None or last.parent is self.built.user_anim:
+            if last.parent is None:
                 break
             parents.append(last.parent)
 
         label1 = QLabel(f'{anim.__class__.__name__} '
-                        f'{round(anim.global_range.at, 2)}s ~ {round(anim.global_range.end, 2)}s')
+                        f'{round(anim.t_range.at, 2)}s ~ {round(anim.t_range.end, 2)}s')
         chart_view = self.create_anim_chart(anim)
 
         def getname(rate_func) -> str:
@@ -414,9 +409,9 @@ class TimelineView(QWidget):
     def create_anim_chart(self, anim: Animation) -> 'QChartView':
         from PySide6.QtCharts import QChart, QChartView, QScatterSeries
 
-        count = min(500, int(anim.global_range.duration * self.built.cfg.fps))
-        times = np.linspace(anim.global_range.at,
-                            anim.global_range.end,
+        count = min(500, int(anim.t_range.duration * self.built.cfg.fps))
+        times = np.linspace(anim.t_range.at,
+                            anim.t_range.end,
                             count)
 
         series = QScatterSeries()
@@ -572,7 +567,7 @@ class TimelineView(QWidget):
 
         if event.buttons() & Qt.MouseButton.LeftButton:
             if self.try_to_switch_collapse is not None:
-                if abs(self.press_at.x() - event.x()) > 8 or abs(self.press_at.y() - event.y()) > 8:
+                if abs(self.press_at.x() - event.x()) > 16 or abs(self.press_at.y() - event.y()) > 16:
                     self.try_to_switch_collapse = None
 
             if self.try_to_switch_collapse is None:
@@ -582,10 +577,8 @@ class TimelineView(QWidget):
     def mouseReleaseEvent(self, event: QMouseEvent) -> None:
         if event.button() == Qt.MouseButton.LeftButton:
             if self.try_to_switch_collapse is not None:
-                now = self.query_label_at(event.position(), LabelGroup.QueryPolicy.HeaderOnly)
-                if now is self.try_to_switch_collapse:
-                    now.switch_collapse()
-                    self.update()
+                self.try_to_switch_collapse.switch_collapse()
+                self.update()
 
             self.drag_timer.stop()
 

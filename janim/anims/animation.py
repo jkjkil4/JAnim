@@ -3,12 +3,15 @@ from __future__ import annotations
 from bisect import bisect_left
 from contextvars import ContextVar
 from dataclasses import dataclass
-from typing import Self, overload
+from typing import TYPE_CHECKING, Self, overload
 
 from janim.constants import DEFAULT_DURATION, FOREVER
 from janim.items.item import Item
 from janim.typing import ForeverType
 from janim.utils.rate_functions import RateFunc, linear, smooth
+
+if TYPE_CHECKING:
+    from janim.anims.composition import AnimGroup
 
 ALIGN_EPSILON = 1e-6
 
@@ -36,6 +39,7 @@ class Animation:
         rate_func: RateFunc = smooth,
         name: str | None = None
     ):
+        self.parent: AnimGroup | None = None
         self.name = name
 
         # 用于在 AnimGroup 中标记子动画是否都对齐；
@@ -90,7 +94,11 @@ class Animation:
 
     # TODO: anim_on
 
-    # TODO: get_alpha_on_global_t
+    def get_alpha_on_global_t(self, global_t: float) -> float:
+        alpha = (global_t - self.t_range.at) / self.t_range.duration
+        for func in self.rate_funcs:
+            alpha = func(alpha)
+        return alpha
 
     # TODO: is_visible
 

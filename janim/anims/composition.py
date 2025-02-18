@@ -58,6 +58,9 @@ class AnimGroup(Animation):
         collapse: bool = False,
     ):
         self.anims = self._get_anim_objects(anims)
+        for anim in self.anims:
+            anim.parent = self
+
         self.collapse = collapse
         self._adjust_t_range(lag_ratio, offset)
 

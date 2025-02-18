@@ -585,12 +585,6 @@ class Timeline(metaclass=ABCMeta):
 # TODO: SourceTimeline
 
 
-# TODO: SEGMENT_DURATION
-
-
-# TODO: _LongOptAnimGroup
-
-
 class BuiltTimeline:
     '''
     运行 :meth:`Timeline.build` 后返回的实例

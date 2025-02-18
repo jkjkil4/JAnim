@@ -171,7 +171,7 @@ class Label:
 
 
 class LabelGroup(Label):
-    header_height = 2
+    header_height_expanded = 2
 
     def __init__(
         self,
@@ -187,6 +187,7 @@ class LabelGroup(Label):
         highlight_brush=Qt.BrushStyle.NoBrush
     ):
         super().__init__(name, t_range, pen=pen, brush=brush, font=font)
+        self.label_font = self.font     # 用于在 self.switch_collapse 中切换 self.font
         self.highlight_pen = highlight_pen
         self.highlight_brush = highlight_brush
 
@@ -262,6 +263,7 @@ class LabelGroup(Label):
 
     def switch_collapse(self) -> None:
         self._collapse = not self._collapse
+        self.font = None if self._collapse else self.label_font
         self.mark_needs_refresh_height()
 
     def mark_needs_refresh_height(self) -> None:
@@ -271,12 +273,16 @@ class LabelGroup(Label):
         if self.parent:
             self.parent.mark_needs_refresh_height()
 
+    @property
+    def header_height(self) -> int:
+        return LABEL_DEFAULT_HEIGHT if self._collapse else self.header_height_expanded
+
     # endregion
 
     # region query
 
     class QueryPolicy(Enum):
-        All = 0
+        HeaderAndLabel = 0
         GroupOnly = 1
         HeaderOnly = 2
 
@@ -293,6 +299,9 @@ class LabelGroup(Label):
         return self._query_at(t, y, policy)
 
     def _query_at(self, t: float, y: int, policy: QueryPolicy) -> Label | LabelGroup | None:
+        if self._collapse:
+            return None
+
         if self._header:
             y -= self.header_height
 
@@ -320,12 +329,16 @@ class LabelGroup(Label):
             return None
 
         match policy:
-            case LabelGroup.QueryPolicy.All:
+            case LabelGroup.QueryPolicy.HeaderAndLabel:
                 if not 0 <= y < label.height:
                     return None
 
                 if isinstance(label, LabelGroup):
-                    return label._query_at(t, y, policy) or label
+                    result = label._query_at(t, y, policy)
+                    if result is not None:
+                        return result
+                    else:
+                        return label if 0 <= y < label.header_height else None
                 else:
                     return label
 
@@ -372,7 +385,7 @@ class LabelGroup(Label):
             # 绘制子 Label
             children_offset = y_offset + self.y
             if self._header:
-                children_offset += self.header_height
+                children_offset += self.header_height_expanded
 
             if self.ordered_divisions is None:
                 for label in self.labels:
@@ -388,10 +401,15 @@ class LabelGroup(Label):
 
         # 绘制标题区
         if self._header:
-            self._paint(p, params, y_offset, self.header_height, post_fn=self._paint_tip)
+            self._paint(p,
+                        params,
+                        y_offset,
+                        self.header_height,
+                        post_fn=self._paint_tip)
 
     def _paint_tip(self, p: QPainter, rect: QRectF) -> None:
-        p.drawPixmap(rect.x(), rect.y(), self.pix_collapse_tip1 if self._collapse else self.pix_collapse_tip2)
+        pix = self.pix_collapse_tip1 if self._collapse else self.pix_collapse_tip2
+        p.drawPixmap(rect.x(), rect.y() + (rect.height() - pix.height()) / 2, pix)
         rect.adjust(10, 0, 0, 0)
 
     def compute_y_offset(self) -> int:
