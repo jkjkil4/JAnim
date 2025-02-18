@@ -5,7 +5,7 @@ from contextvars import ContextVar
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Self, overload
 
-from janim.constants import DEFAULT_DURATION, FOREVER
+from janim.constants import C_LABEL_ANIM_DEFAULT, DEFAULT_DURATION, FOREVER
 from janim.items.item import Item
 from janim.typing import ForeverType
 from janim.utils.rate_functions import RateFunc, linear, smooth
@@ -29,7 +29,7 @@ class Animation:
 
     - 设置 ``name`` 可以将文字显示在预览界面的时间轴标签上，不影响渲染（如果不设置则默认为类名）
     '''
-    label_color: tuple[float, float, float] = (128, 132, 137)
+    label_color: tuple[float, float, float] = C_LABEL_ANIM_DEFAULT
 
     def __init__(
         self,

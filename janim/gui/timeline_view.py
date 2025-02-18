@@ -106,7 +106,7 @@ class TimelineView(QWidget):
         '''
         def make_label_from_anim(anim: Animation, header: bool = True) -> Label:
             name = anim.name or anim.__class__.__name__
-            color = QColor(*anim.label_color).lighter()
+            color = QColor(*anim.label_color)
             if isinstance(anim, AnimGroup):
                 label = LabelGroup(
                     name,
@@ -152,8 +152,8 @@ class TimelineView(QWidget):
             def make_audio_label(info: Timeline.PlayAudioInfo) -> Label:
                 label = Label(info.audio.filename,
                               info.range,
-                              pen=QColor(152, 255, 191),
-                              brush=QColor(152, 255, 191, 128))
+                              pen=QColor(85, 193, 167),
+                              brush=QColor(85, 193, 167, 160))
                 setattr(label, LABEL_OBJ_NAME, info)
                 return label
 
@@ -166,7 +166,7 @@ class TimelineView(QWidget):
                 *[make_audio_label(info) for info in infos],
                 collapse=len(infos) != 1,
                 header=len(infos) != 1,
-                brush=QColor(152, 255, 191),
+                brush=QColor(85, 193, 167),
             )
             self.label_group = LabelGroup(
                 '',
