@@ -153,6 +153,7 @@ class TimelineView(QWidget):
             self.label_group = self.anim_label_group
         else:
             infos = self.built.timeline.audio_infos
+            multiple = len(infos) != 1
 
             def make_audio_label(info: Timeline.PlayAudioInfo) -> Label:
                 label = Label(info.audio.filename,
@@ -169,10 +170,15 @@ class TimelineView(QWidget):
                     max(self.built.duration, max(info.range.end for info in infos))
                 ),
                 *[make_audio_label(info) for info in infos],
-                collapse=len(infos) != 1,
-                header=len(infos) != 1,
+                collapse=multiple,
+                header=multiple,
                 brush=QColor(85, 193, 167),
             )
+            # 只有在播放多个音频，并且音频有重叠区段的时候才折叠组
+            # 因此这里判断如果没有重叠区段，就把折叠取消
+            if multiple and self.audio_label_group.is_exclusive():
+                self.audio_label_group._collapse = False
+                self.audio_label_group._header = False
             self.label_group = LabelGroup(
                 '',
                 self.anim_label_group.t_range,

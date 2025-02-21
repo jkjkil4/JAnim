@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import itertools as it
 import os
 from bisect import bisect_left, bisect_right
 from dataclasses import dataclass
@@ -245,6 +246,17 @@ class LabelGroup(Label):
 
         self._needs_refresh_height: bool = True
 
+    def is_exclusive(self) -> bool:
+        '''
+        若 ``labels`` 没有重叠部分则返回 ``True``
+        '''
+        if self.ordered_divisions is not None:
+            return len(self.ordered_divisions) <= 1
+        return all(
+            a.t_range.end <= b.t_range.at
+            for a, b in it.pairwise(self.labels)
+        )
+
     # region property
 
     @property
@@ -448,8 +460,8 @@ class LabelGroup(Label):
         absolute_y = self.compute_absolute_y()
         range = self.time_range_to_pixel_range(params, self.t_range)
         y_pixel = params.rect.y() + absolute_y * LABEL_PIXEL_HEIGHT_PER_UNIT - params.y_pixel_offset
-        # 这里 range.width - 1 中的 -1 完全只是因为试了一下发现这样更美观
-        rect = QRectF(range.left, y_pixel, range.width - 1, LABEL_PIXEL_HEIGHT_PER_UNIT * self.height)
+        rect = QRectF(range.left, y_pixel, range.width, LABEL_PIXEL_HEIGHT_PER_UNIT * self.height)
+        rect.adjust(1, 1, -1, -1)
         p.setPen(self.highlight_pen)
         p.setBrush(self.highlight_brush)
         p.drawRoundedRect(rect, 4, 4)
