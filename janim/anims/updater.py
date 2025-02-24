@@ -101,13 +101,14 @@ class DataUpdater[T: Item](Animation):
 
             sub_updater = _DataUpdater(item, self.func, self.extra(item), self.lag_ratio, i, count)
             sub_updater.t_range = self.t_range
+            sub_updater.rate_func = self.rate_func
+            sub_updater.rate_funcs = self.rate_funcs
             sub_updater.finalize(timeline.time_aligner)
 
             if self.become_at_end:
                 anims = stack.get_at_left(self.t_range.end)
                 sub_updater.apply(item, ItemAnimation.ApplyParams(self.t_range.end, anims, len(anims) - 1))
-
-            stack.detect_change(item, self.t_range.end)
+                stack.detect_change(item, self.t_range.end)
 
 
 class _DataUpdater(ItemAnimation):
@@ -118,10 +119,9 @@ class _DataUpdater(ItemAnimation):
         extra_data: Any | None,
         lag_ratio: float,
         index: int,
-        count: int,
-        **kwargs
+        count: int
     ):
-        super().__init__(item, **kwargs)
+        super().__init__(item)
         self.func = func
         self.extra_data = extra_data
         self.lag_ratio = lag_ratio
