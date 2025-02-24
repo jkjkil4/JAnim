@@ -420,7 +420,6 @@ class AnimViewer(QMainWindow):
         self.update_completer([timeline.__name__ for timeline in get_all_timelines_from_module(module)])
 
         if not stay_same:
-            self.built.anim_on(0)
             self.timeline_view.set_progress(0)
         else:
             # 把原来进度（所在第几帧）转换到新的进度
@@ -428,7 +427,6 @@ class AnimViewer(QMainWindow):
             # 如果帧率变了，例如从 30fps 到 60fps，则进度 43 对应 进度 86（乘了 2）
             self.play_timer.set_duration(1 / self.built.cfg.preview_fps)
             progress = int(progress * self.built.cfg.preview_fps / preview_fps)
-            self.built.anim_on(self.timeline_view.progress_to_time(progress))
             self.timeline_view.set_progress(progress)
 
             # 设置 range 是为了保留动画标签的相对位置

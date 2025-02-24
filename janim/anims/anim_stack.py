@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from bisect import bisect
+from bisect import bisect_right, bisect_left
 
 from janim.anims.animation import ItemAnimation, TimeAligner
 from janim.anims.display import Display
@@ -11,8 +11,6 @@ from janim.items.item import Item
 class AnimStack:
     '''
     用于在 :class:`~.Timeline` 中记录作用于 :class:`~.Item` 上的 :class:`~.Animation`
-
-    :class:`~.Timeline` 构造结束后会自动调用 :meth:`finalize` 确定动画调用序列以优化性能
     '''
     def __init__(self, time_aligner: TimeAligner):
         self.time_aligner = time_aligner
@@ -40,10 +38,9 @@ class AnimStack:
             at = 0
         if self.prev_display is None or not self.prev_display.data.not_changed(item):
             anim = Display(item, item.store(), at=at, duration=FOREVER)
-            self.time_aligner.align(anim)
+            # finalize 会产生对 self.append 的调用，因此不用再另外 self.append
+            anim.finalize(self.time_aligner)
             self.prev_display = anim
-            # _time_fixed 会产生对 self.append 的调用，因此不用再另外 self.append
-            anim._time_fixed()
 
     def has_detected_change(self) -> bool:
         return self.prev_display is not None
@@ -102,6 +99,15 @@ class AnimStack:
             for idx in range(at_idx, end_idx):
                 self.stacks[idx].append(anim)
 
+    def get_at_left(self, as_time: float) -> list[ItemAnimation]:
+        idx = bisect_left(self.times, as_time) - 1
+        return self.stacks[max(0, idx)]
+
+    def get(self, as_time: float) -> list[ItemAnimation]:
+        idx = bisect_right(self.times, as_time) - 1
+        assert idx >= 0
+        return self.stacks[idx]
+
     def compute(self, as_time: float, readonly: bool) -> Item:
         '''
         得到指定时间 ``as_time`` 的物件，考虑了动画的作用
@@ -124,11 +130,7 @@ class AnimStack:
             self.cache_time = as_time
 
             # 计算作用动画后的数据
-            idx = bisect(self.times, as_time) - 1
-            assert idx >= 0
-
-            anims = self.stacks[idx]
-
+            anims = self.get(as_time)
             if len(anims) == 1:
                 # 只有一个动画，可以认为它是 Display 对象
                 # 因为它没有后继动画，所以直接使用 .data_orig 作为结果，而不调用 .apply

@@ -123,29 +123,17 @@ class Component[ItemT](refresh.Refreshable, metaclass=_CmptMeta):
 
     def walk_same_cmpt_of_self_and_descendants_without_mock(
         self,
-        root_only: bool = False,
-        *,
-        timed: bool = False
+        root_only: bool = False
     ) -> Generator[Self, None, None]:
         yield self
         if root_only or self.bind is None:
             return
-        yield from self.walk_same_cmpt_of_descendants_without_mock(timed=timed)
+        yield from self.walk_same_cmpt_of_descendants_without_mock()
 
-    def walk_same_cmpt_of_descendants_without_mock(
-        self,
-        *,
-        timed: bool = False
-    ) -> Generator[Self, None, None]:
+    def walk_same_cmpt_of_descendants_without_mock(self) -> Generator[Self, None, None]:
         item = self.bind.at_item
-        walk = None
         if not item.stored:
-            walk = item.walk_descendants(self.bind.decl_cls)
-        elif timed:
-            walk = item._walk_lst(self.bind.decl_cls, item._current_family(up=False))
-
-        if walk is not None:
-            for item in walk:
+            for item in item.walk_descendants(self.bind.decl_cls):
                 cmpt = self.get_same_cmpt_without_mock(item)
                 if cmpt is None:
                     continue

@@ -276,8 +276,8 @@ class Timeline(metaclass=ABCMeta):
     def prepare(self, *anims: SupportsAnim, at: float = 0, name: str | None = 'prepare', **kwargs) -> TimeRange:
         self.detect_changes_of_all()
         group = AnimGroup(*anims, at=at + self.current_time, name=name, **kwargs)
-        group._align_time(self.time_aligner)
-        group._time_fixed()
+        group.finalize(self.time_aligner)
+        # 这里的 anim_groups.append 和 AnimStack.append 是不同的，后者已在 finalize 中被调用
         self.anim_groups.append(group)
         return group.t_range
 
@@ -586,10 +586,13 @@ class SourceTimeline(Timeline):
     '''
     与 :class:`Timeline` 相比，会在背景显示源代码
     '''
+    def source_object(self) -> object:
+        return self.__class__
+
     def build(self, *, quiet=False, hide_subtitles=False) -> BuiltTimeline:
         from janim.items.text.text import SourceDisplayer
         with ContextSetter(self.ctx_var, self), self.with_config():
-            self.source_displayer = SourceDisplayer(self.__class__, depth=10000).show()
+            self.source_displayer = SourceDisplayer(self.source_object(), depth=10000).show()
         return super().build(quiet=quiet, hide_subtitles=hide_subtitles)
 
 

@@ -83,6 +83,10 @@ class Animation:
     def _attach_rate_func(self, rate_func: RateFunc) -> None:
         self.rate_funcs.insert(0, rate_func)
 
+    def finalize(self, aligner: TimeAligner) -> None:
+        self._align_time(aligner)
+        self._time_fixed()
+
     def _align_time(self, aligner: TimeAligner) -> None:
         aligner.align(self)
 
@@ -114,8 +118,8 @@ class ItemAnimation(Animation):
 
     def _time_fixed(self):
         from janim.anims.timeline import Timeline
-        timeline = Timeline.get_context()
-        timeline.item_appearances[self.item].stack.append(self)
+        self.timeline = Timeline.get_context()
+        self.timeline.item_appearances[self.item].stack.append(self)
 
     @dataclass
     class ApplyParams:

@@ -218,7 +218,7 @@ class Cmpt_Points[ItemT](Component[ItemT]):
         '''
         box_datas = [
             cmpt.self_box.data
-            for cmpt in self.walk_same_cmpt_of_self_and_descendants_without_mock(timed=True)
+            for cmpt in self.walk_same_cmpt_of_self_and_descendants_without_mock()
             if cmpt.has()
         ]
         return self.BoundingBox(np.vstack(box_datas) if box_datas else [])
