@@ -10,7 +10,7 @@ from janim.constants import (DEFAULT_ITEM_TO_ITEM_BUFF, DOWN, LEFT, ORIGIN, PI,
 from janim.items.geometry.line import Line
 from janim.items.points import Points
 from janim.items.svg.typst import TypstText
-from janim.items.text.text import Text
+from janim.items.text import Text
 from janim.items.vitem import DEFAULT_STROKE_RADIUS, VItem
 from janim.typing import Vect
 from janim.utils.simple_functions import clip

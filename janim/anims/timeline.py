@@ -590,7 +590,7 @@ class SourceTimeline(Timeline):
         return self.__class__
 
     def build(self, *, quiet=False, hide_subtitles=False) -> BuiltTimeline:
-        from janim.items.text.text import SourceDisplayer
+        from janim.items.text import SourceDisplayer
         with ContextSetter(self.ctx_var, self), self.with_config():
             self.source_displayer = SourceDisplayer(self.source_object(), depth=10000).show()
         return super().build(quiet=quiet, hide_subtitles=hide_subtitles)

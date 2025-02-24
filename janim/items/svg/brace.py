@@ -11,7 +11,7 @@ from janim.constants import DEFAULT_ITEM_TO_ITEM_BUFF, DOWN, PI, SMALL_BUFF
 from janim.items.points import Points
 from janim.items.svg.svg_item import SVGItem
 from janim.items.svg.typst import Typst
-from janim.items.text.text import Text
+from janim.items.text import Text
 from janim.items.vitem import VItem
 from janim.typing import Vect
 from janim.utils.file_ops import get_janim_dir

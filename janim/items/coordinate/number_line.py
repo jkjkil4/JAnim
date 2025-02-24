@@ -7,7 +7,7 @@ from janim.constants import DOWN, GREY_B, LEFT, MED_SMALL_BUFF, RIGHT, UP
 from janim.items.geometry.arrow import ArrowTip
 from janim.items.geometry.line import Line
 from janim.items.points import Group
-from janim.items.text.text import Text
+from janim.items.text import Text
 from janim.typing import JAnimColor, RangeSpecifier
 from janim.utils.bezier import interpolate, outer_interpolate
 from janim.utils.dict_ops import merge_dicts_recursively
