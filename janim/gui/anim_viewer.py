@@ -401,7 +401,10 @@ class AnimViewer(QMainWindow):
             return
 
         try:
-            built: BuiltTimeline = timeline_class().build()
+            built: BuiltTimeline = timeline_class().build(
+                hide_subtitles=self.built.timeline.hide_subtitles,
+                show_debug_notice=True
+            )
         except Exception as e:
             if not isinstance(e, ExitException):
                 traceback.print_exc()

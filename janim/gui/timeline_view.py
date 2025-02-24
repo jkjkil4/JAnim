@@ -1,3 +1,4 @@
+import itertools as it
 import math
 from bisect import bisect, bisect_left
 from dataclasses import dataclass
@@ -14,6 +15,7 @@ from janim.anims.composition import AnimGroup
 from janim.anims.timeline import BuiltTimeline, Timeline
 from janim.gui.label import (LABEL_DEFAULT_HEIGHT, LABEL_PIXEL_HEIGHT_PER_UNIT,
                              Label, LabelGroup, PixelRange)
+from janim.items.item import Item
 from janim.locale.i18n import get_local_strings
 from janim.utils.bezier import interpolate
 from janim.utils.rate_functions import linear
@@ -150,7 +152,7 @@ class TimelineView(QWidget):
         )
 
         if not self.built.timeline.has_audio():
-            self.label_group = self.anim_label_group
+            self.audio_label_group = None
         else:
             infos = self.built.timeline.audio_infos
             multiple = len(infos) != 1
@@ -179,14 +181,68 @@ class TimelineView(QWidget):
             if multiple and self.audio_label_group.is_exclusive():
                 self.audio_label_group._collapse = False
                 self.audio_label_group._header = False
-            self.label_group = LabelGroup(
-                '',
+
+        if not self.built.timeline.debug_list:
+            self.debug_label_group = None
+        else:
+            def make_debug_label(item: Item):
+                colors = [
+                    [251, 180, 174], [179, 205, 227], [204, 235, 197],
+                    [222, 203, 228], [254, 217, 166], [255, 255, 204],
+                    [229, 216, 189], [253, 218, 236], [242, 242, 242]
+                ]
+                iter = it.cycle(colors)
+                dct = {}
+
+                def get_color(anim) -> QColor:
+                    color = dct.get(anim, None)
+                    if color is None:
+                        color = dct[anim] = QColor(*next(iter))
+                    return color
+
+                # TODO: visibility
+                stack = self.built.timeline.item_appearances[item].stack
+                return LabelGroup(
+                    repr(item),
+                    self.anim_label_group.t_range,
+                    *[
+                        Label(
+                            f'{anim.__class__.__name__} at {id(anim):X}',
+                            TimeRange(t1, t2),
+                            brush=get_color(anim)
+                        )
+                        for (t1, t2), anims in zip(
+                            it.pairwise([*stack.times, self.anim_label_group.t_range.end + 1]),
+                            stack.stacks
+                        )
+                        for anim in anims
+                    ],
+                    brush=QColor(170, 148, 132),
+                    collapse=False,
+                    header=True
+                )
+
+            self.debug_label_group = LabelGroup(
+                'debug',
                 self.anim_label_group.t_range,
-                self.audio_label_group,
-                self.anim_label_group,
+                *[make_debug_label(item) for item in self.built.timeline.debug_list],
+                brush=QColor(170, 148, 132),
                 collapse=False,
-                header=False,
+                header=True
             )
+
+        self.label_group = LabelGroup(
+            '',
+            self.anim_label_group.t_range,
+            *[
+                label_group
+                for label_group in (self.debug_label_group, self.audio_label_group)
+                if label_group is not None
+            ],
+            self.anim_label_group,
+            collapse=False,
+            header=False,
+        )
 
     def query_label_at(self, pos: QPointF, policy: LabelGroup.QueryPolicy) -> Label | LabelGroup | None:
         return self.label_group.query_at(self.labels_rect, self.range, pos, self.y_pixel_offset, policy)
@@ -458,7 +514,9 @@ class TimelineView(QWidget):
 
     def on_highlight_hover_timer_timeout(self) -> None:
         y_pixel_offset = self.y_pixel_offset
-        if self.built.timeline.has_audio():
+        if self.debug_label_group is not None:
+            y_pixel_offset -= self.debug_label_group.height * LABEL_PIXEL_HEIGHT_PER_UNIT
+        if self.audio_label_group is not None:
             y_pixel_offset -= self.audio_label_group.height * LABEL_PIXEL_HEIGHT_PER_UNIT
         label = self.anim_label_group.query_at(self.labels_rect,
                                                self.range,

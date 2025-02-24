@@ -42,7 +42,7 @@ def run(args: Namespace) -> None:
     built_timelines: list[BuiltTimeline] = []
 
     for timeline in timelines:
-        built_timelines.append(timeline().build(hide_subtitles=args.hide_subtitles))
+        built_timelines.append(timeline().build(hide_subtitles=args.hide_subtitles, show_debug_notice=True))
 
     log.info('======')
     log.info(_('Constructing window'))

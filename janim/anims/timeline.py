@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import inspect
 import math
+import os
 import time
 import traceback
 from abc import ABCMeta, abstractmethod
@@ -165,6 +166,8 @@ class Timeline(metaclass=ABCMeta):
         self.item_appearances: defaultdict[Item, Timeline.ItemAppearance] = \
             defaultdict(lambda: Timeline.ItemAppearance(self.time_aligner))
 
+        self.debug_list: list[Item] = []
+
     @abstractmethod
     def construct(self) -> None:
         '''
@@ -172,7 +175,7 @@ class Timeline(metaclass=ABCMeta):
         '''
         pass    # pragma: no cover
 
-    def build(self, *, quiet=False, hide_subtitles=False) -> BuiltTimeline:
+    def build(self, *, quiet=False, hide_subtitles=False, show_debug_notice=False) -> BuiltTimeline:
         '''
         构建动画并返回
         '''
@@ -182,6 +185,7 @@ class Timeline(metaclass=ABCMeta):
             self.camera = Camera()
             self.track(self.camera)
             self.hide_subtitles = hide_subtitles
+            self.show_debug_notice = show_debug_notice
 
             if not quiet:   # pragma: no cover
                 log.info(_('Building "{name}"').format(name=self.__class__.__name__))
@@ -549,6 +553,18 @@ class Timeline(metaclass=ABCMeta):
 
     # region debug
 
+    def debug(self, item: Item, msg: str | None = None) -> None:
+        if self.show_debug_notice:
+            f_back = inspect.currentframe().f_back
+            filename = os.path.basename(f_back.f_code.co_filename)
+            obj_and_loc = _('Called self.debug({repr}) at {loc}') \
+                .format(repr=repr(item), loc=f'{filename}:{f_back.f_lineno}')
+            if msg is None:
+                log.info(obj_and_loc)
+            else:
+                log.info(obj_and_loc + '\nmsg=' + msg)
+        self.debug_list.append(item)
+
     @staticmethod
     def fmt_time(t: float) -> str:
         time = round(t, 3)
@@ -589,11 +605,11 @@ class SourceTimeline(Timeline):
     def source_object(self) -> object:
         return self.__class__
 
-    def build(self, *, quiet=False, hide_subtitles=False) -> BuiltTimeline:
+    def build(self, *, quiet=False, hide_subtitles=False, show_debug_notice=False) -> BuiltTimeline:
         from janim.items.text import SourceDisplayer
         with ContextSetter(self.ctx_var, self), self.with_config():
             self.source_displayer = SourceDisplayer(self.source_object(), depth=10000).show()
-        return super().build(quiet=quiet, hide_subtitles=hide_subtitles)
+        return super().build(quiet=quiet, hide_subtitles=hide_subtitles, show_debug_notice=show_debug_notice)
 
 
 class BuiltTimeline:
