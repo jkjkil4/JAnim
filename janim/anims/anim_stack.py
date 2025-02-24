@@ -137,15 +137,20 @@ class AnimStack:
                 anims: list[Display]
                 data = anims[0].data_orig
             else:
-                params = ItemAnimation.ApplyParams(as_time, anims, 0)
-
-                for i, anim in enumerate(anims):
-                    if i == 0:
-                        data = anim.apply(None, params)
-                    else:
-                        params.index = i
-                        anim.apply(data, params)
+                data = self.compute_anims(as_time, anims)
 
             self.cache_data = data
 
         return data if readonly else data.store()
+
+    def compute_anims(self, as_time: float, anims: list[ItemAnimation]) -> Item:
+        params = ItemAnimation.ApplyParams(as_time, anims, 0)
+
+        for i, anim in enumerate(anims):
+            if i == 0:
+                data = anim.apply(None, params)
+            else:
+                params.index = i
+                anim.apply(data, params)
+
+        return data

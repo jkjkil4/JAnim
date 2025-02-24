@@ -107,7 +107,7 @@ class DataUpdater[T: Item](Animation):
 
             if self.become_at_end:
                 anims = stack.get_at_left(self.t_range.end)
-                sub_updater.apply(item, ItemAnimation.ApplyParams(self.t_range.end, anims, len(anims) - 1))
+                item.restore(stack.compute_anims(self.t_range.end, anims))
                 stack.detect_change(item, self.t_range.end)
 
 
