@@ -76,6 +76,7 @@ class DataUpdater[T: Item](Animation):
         *,
         extra: Callable[[Item], Any | None] = lambda x: None,
         lag_ratio: float = 0,
+        show_at_begin: bool = True,
         become_at_end: bool = True,
         skip_null_items: bool = True,
         root_only: bool = True,
@@ -86,13 +87,14 @@ class DataUpdater[T: Item](Animation):
         self.func = func
         self.extra = extra
         self.lag_ratio = lag_ratio
+        self.show_at_begin = show_at_begin
         self.become_at_end = become_at_end
         self.skip_null_items = skip_null_items
         self.root_only = root_only
 
     def _time_fixed(self):
         from janim.anims.timeline import Timeline
-        timeline = Timeline.get_context()
+        self.timeline = Timeline.get_context()
 
         items = [
             item
@@ -102,11 +104,17 @@ class DataUpdater[T: Item](Animation):
         count = len(items)
 
         for i, item in enumerate(items):
-            stack = timeline.item_appearances[item].stack
+            stack = self.timeline.item_appearances[item].stack
 
-            sub_updater = _DataUpdater(item, self.func, self.extra(item), self.lag_ratio, i, count)
+            sub_updater = _DataUpdater(item,
+                                       self.func,
+                                       self.extra(item),
+                                       self.lag_ratio,
+                                       i,
+                                       count,
+                                       show_at_begin=self.show_at_begin)
             sub_updater.transfer_params(self)
-            sub_updater.finalize(timeline.time_aligner)
+            sub_updater.finalize(self.timeline.time_aligner)
 
             if self.become_at_end:
                 anims = stack.get_at_left(self.t_range.end)
@@ -122,9 +130,11 @@ class _DataUpdater(ItemAnimation):
         extra_data: Any | None,
         lag_ratio: float,
         index: int,
-        count: int
+        count: int,
+        *,
+        show_at_begin: bool
     ):
-        super().__init__(item)
+        super().__init__(item, show_at_begin=show_at_begin)
         self.func = func
         self.extra_data = extra_data
         self.lag_ratio = lag_ratio
@@ -158,12 +168,14 @@ class GroupUpdater[T: Item](Animation):
         item: T,
         func: GroupUpdaterFn[T],
         *,
+        show_at_begin: bool = True,
         become_at_end: bool = True,
         **kwargs
     ):
         super().__init__(**kwargs)
         self.item = item
         self.func = func
+        self.show_at_begin = show_at_begin
         self.become_at_end = become_at_end
 
     @dataclass
@@ -194,7 +206,7 @@ class GroupUpdater[T: Item](Animation):
         updaters: list[_GroupUpdater] = []
 
         for item in self.item.walk_self_and_descendants():
-            sub_updater = _GroupUpdater(self, item)
+            sub_updater = _GroupUpdater(self, item, show_at_begin=self.show_at_begin)
             sub_updater.transfer_params(self)
             sub_updater.finalize(timeline.time_aligner)
             updaters.append(sub_updater)
@@ -227,9 +239,11 @@ class _GroupUpdater(ItemAnimation):
     def __init__(
         self,
         orig_updater: GroupUpdater,
-        item: Item
+        item: Item,
+        *,
+        show_at_begin: bool
     ):
-        super().__init__(item)
+        super().__init__(item, show_at_begin=show_at_begin)
         self.orig_updater = orig_updater
         self.this: GroupUpdater.DataGroup | None = None
         self.next: GroupUpdater.DataGroup | None = None

@@ -37,7 +37,7 @@ class AnimStack:
         if self.prev_display is None:
             at = 0
         if self.prev_display is None or not self.prev_display.data_orig.not_changed(item):
-            anim = Display(item, item.store(), at=at, duration=FOREVER)
+            anim = Display(item, item.store(), at=at, duration=FOREVER, show_at_begin=False)
             # finalize 会产生对 self.append 的调用，因此不用再另外 self.append
             anim.finalize(self.time_aligner)
             self.prev_display = anim

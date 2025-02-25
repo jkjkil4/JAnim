@@ -10,6 +10,9 @@ class Display(ItemAnimation):
 
     另见：:meth:`~.Timeline.detect_changes_of_all`
     '''
+
+    auto_detect = False
+
     def __init__(self, item: Item, data: Item, **kwargs):
         super().__init__(item, **kwargs)
         self._cover_previous_anims = True
