@@ -127,8 +127,6 @@ class AnimStack:
         if as_time == self.cache_time:
             data = self.cache_data
         else:
-            self.cache_time = as_time
-
             # 计算作用动画后的数据
             anims = self.get(as_time)
             if len(anims) == 1:
@@ -139,6 +137,7 @@ class AnimStack:
             else:
                 data = self.compute_anims(as_time, anims)
 
+            self.cache_time = as_time
             self.cache_data = data
 
         return data if readonly else data.store()

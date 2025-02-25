@@ -34,6 +34,7 @@ class UpdaterParams:
 updater_params_ctx: ContextVar[UpdaterParams] = ContextVar('updater_params_ctx')
 
 type DataUpdaterFn[T] = Callable[[T, UpdaterParams], Any]
+type GroupUpdaterFn[T] = Callable[[T, UpdaterParams], Any]
 
 
 class DataUpdater[T: Item](Animation):
@@ -57,6 +58,8 @@ class DataUpdater[T: Item](Animation):
                 )
 
     会产生一个“矩形从左侧旋转着移动到右侧”的动画
+
+    并且，可以对同一个物件作用多个 updater，各个 updater 会依次调用
 
     注意：默认 ``root_only=True`` 即只对根物件应用该 updater；需要设置 ``root_only=False`` 才会对所有后代物件也应用该 updater
 
@@ -100,9 +103,7 @@ class DataUpdater[T: Item](Animation):
             stack = timeline.item_appearances[item].stack
 
             sub_updater = _DataUpdater(item, self.func, self.extra(item), self.lag_ratio, i, count)
-            sub_updater.t_range = self.t_range
-            sub_updater.rate_func = self.rate_func
-            sub_updater.rate_funcs = self.rate_funcs
+            sub_updater.transfer_params(self)
             sub_updater.finalize(timeline.time_aligner)
 
             if self.become_at_end:

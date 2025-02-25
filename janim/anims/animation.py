@@ -96,19 +96,18 @@ class Animation:
         '''
         pass
 
-    # TODO: anim_on
-
     def get_alpha_on_global_t(self, global_t: float) -> float:
         alpha = (global_t - self.t_range.at) / self.t_range.duration
         for func in self.rate_funcs:
             alpha = func(alpha)
         return alpha
 
-    # TODO: is_visible
+    def transfer_params(self, other: Animation) -> None:
+        self.t_range = other.t_range
+        self.rate_func = other.rate_func
+        self.rate_funcs = other.rate_funcs
 
     global_t_ctx: ContextVar[float] = ContextVar('Animation.global_t_ctx')
-
-    # TODO: anim_on_alpha
 
 
 class ItemAnimation(Animation):
