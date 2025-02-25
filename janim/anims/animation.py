@@ -118,13 +118,14 @@ class ItemAnimation(Animation):
         self.item = item
         self.show_at_begin = show_at_begin
 
-    def _time_fixed(self):
         from janim.anims.timeline import Timeline
         self.timeline = Timeline.get_context()
-        stack = self.timeline.item_appearances[self.item].stack
-        if self.auto_detect and not stack.has_detected_change():
-            stack.detect_change(self.item, 0)
-        stack.append(self)
+        self.stack = self.timeline.item_appearances[self.item].stack
+        if self.auto_detect and not self.stack.has_detected_change():
+            self.stack.detect_change(self.item, 0)
+
+    def _time_fixed(self):
+        self.stack.append(self)
 
         if self.show_at_begin:
             self.timeline.schedule(self.t_range.at, self.item.show, root_only=True)

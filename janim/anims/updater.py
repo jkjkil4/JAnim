@@ -188,6 +188,11 @@ class GroupUpdater[T: Item](Animation):
         from janim.anims.timeline import Timeline
         timeline = Timeline.get_context()
 
+        updaters = [
+            _GroupUpdater(self, item, show_at_begin=self.show_at_begin)
+            for item in self.item.walk_self_and_descendants()
+        ]
+
         stacks = [timeline.item_appearances[item].stack for item in self.item.walk_self_and_descendants()]
 
         if self.become_at_end:
@@ -203,13 +208,9 @@ class GroupUpdater[T: Item](Animation):
 
         self.data = self.item.copy()
 
-        updaters: list[_GroupUpdater] = []
-
-        for item in self.item.walk_self_and_descendants():
-            sub_updater = _GroupUpdater(self, item, show_at_begin=self.show_at_begin)
+        for sub_updater in updaters:
             sub_updater.transfer_params(self)
             sub_updater.finalize(timeline.time_aligner)
-            updaters.append(sub_updater)
 
         self.data_groups = {
             item: GroupUpdater.DataGroup(data, stack, updater)
