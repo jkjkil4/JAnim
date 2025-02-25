@@ -85,8 +85,7 @@ class VideoWriter:
 
         for frame in progress_display:
             self.fbo.clear(*rgb)
-            self.built.anim_on(frame / fps)
-            self.built.render_all(self.ctx)
+            self.built.render_all(self.ctx, frame / fps)
             bytes = self.fbo.read(components=4)
             self.writing_process.stdin.write(bytes)
 

@@ -207,7 +207,7 @@ class TimelineView(QWidget):
                     self.anim_label_group.t_range,
                     *[
                         Label(
-                            f'{anim.__class__.__name__} at {id(anim):X}',
+                            f'{anim.__class__.__name__} at {id(anim):x}',
                             TimeRange(t1, t2),
                             brush=get_color(anim)
                         )
@@ -218,6 +218,8 @@ class TimelineView(QWidget):
                         for anim in anims
                     ],
                     brush=QColor(170, 148, 132),
+                    highlight_pen=QPen(QColor(41, 171, 202), 3),
+                    highlight_brush=QColor(41, 171, 202, 40),
                     collapse=False,
                     header=True
                 )
@@ -227,6 +229,8 @@ class TimelineView(QWidget):
                 self.anim_label_group.t_range,
                 *[make_debug_label(item) for item in self.built.timeline.debug_list],
                 brush=QColor(170, 148, 132),
+                highlight_pen=QPen(QColor(41, 171, 202), 3),
+                highlight_brush=QColor(41, 171, 202, 40),
                 collapse=False,
                 header=True
             )
@@ -513,16 +517,7 @@ class TimelineView(QWidget):
             self.tooltip = None
 
     def on_highlight_hover_timer_timeout(self) -> None:
-        y_pixel_offset = self.y_pixel_offset
-        if self.debug_label_group is not None:
-            y_pixel_offset -= self.debug_label_group.height * LABEL_PIXEL_HEIGHT_PER_UNIT
-        if self.audio_label_group is not None:
-            y_pixel_offset -= self.audio_label_group.height * LABEL_PIXEL_HEIGHT_PER_UNIT
-        label = self.anim_label_group.query_at(self.labels_rect,
-                                               self.range,
-                                               self.mapFromGlobal(self.cursor().pos()),
-                                               y_pixel_offset,
-                                               LabelGroup.QueryPolicy.GroupOnly)
+        label = self.query_label_at(self.mapFromGlobal(self.cursor().pos()), LabelGroup.QueryPolicy.GroupOnly)
         if label is not self.highlighting:
             self.highlighting = label
             self.update()

@@ -1,9 +1,11 @@
 from __future__ import annotations
 
+import itertools as it
 from contextvars import ContextVar
 from dataclasses import dataclass
 from typing import Any, Callable, Self
 
+from janim.anims.anim_stack import AnimStack
 from janim.anims.animation import Animation, ItemAnimation, TimeRange
 from janim.constants import C_LABEL_ANIM_ABSTRACT
 from janim.items.item import Item
@@ -143,3 +145,113 @@ class _DataUpdater(ItemAnimation):
         value = alpha * full_length
         lower = self.index * lag_ratio
         return clip((value - lower), 0, 1)
+
+
+class GroupUpdater[T: Item](Animation):
+    '''
+    以时间为参数对一组物件的数据进行修改
+    '''
+    label_color = C_LABEL_ANIM_ABSTRACT
+
+    def __init__(
+        self,
+        item: T,
+        func: GroupUpdaterFn[T],
+        *,
+        become_at_end: bool = True,
+        **kwargs
+    ):
+        super().__init__(**kwargs)
+        self.item = item
+        self.func = func
+        self.become_at_end = become_at_end
+
+    @dataclass
+    class DataGroup:
+        data: Item
+        stack: AnimStack
+        updater: _GroupUpdater
+
+    def _time_fixed(self):
+        from janim.anims.timeline import Timeline
+        timeline = Timeline.get_context()
+
+        stacks = [timeline.item_appearances[item].stack for item in self.item.walk_self_and_descendants()]
+
+        if self.become_at_end:
+            for item, stack in zip(self.item.walk_self_and_descendants(), stacks):
+                anims = stack.get_at_left(self.t_range.end)
+                item.restore(stack.compute_anims(self.t_range.end, anims))
+
+            with UpdaterParams(self.t_range.end, 1, self.t_range, None) as params:
+                self.func(self.item, params)
+
+            for item, stack in zip(self.item.walk_self_and_descendants(), stacks):
+                stack.detect_change(item, self.t_range.end)
+
+        self.data = self.item.copy()
+
+        updaters: list[_GroupUpdater] = []
+
+        for item in self.item.walk_self_and_descendants():
+            sub_updater = _GroupUpdater(self, item)
+            sub_updater.transfer_params(self)
+            sub_updater.finalize(timeline.time_aligner)
+            updaters.append(sub_updater)
+
+        self.data_groups = {
+            item: GroupUpdater.DataGroup(data, stack, updater)
+            for item, data, stack, updater in zip(self.item.walk_self_and_descendants(),
+                                                  self.data.walk_self_and_descendants(),
+                                                  stacks,
+                                                  updaters)
+        }
+
+        if len(self.data_groups) == 1:
+            group, = self.data_groups.values()
+            group.updater.this = group
+            group.updater.next = group
+        else:
+            first_group: GroupUpdater.DataGroup | None = None
+            for g1, g2 in it.pairwise(self.data_groups.values()):
+                g1.updater.this = g1
+                g1.updater.next = g2
+                if first_group is None:
+                    first_group = g1
+                last_group = g2
+            last_group.updater.this = last_group
+            last_group.updater.next = first_group
+
+
+class _GroupUpdater(ItemAnimation):
+    def __init__(
+        self,
+        orig_updater: GroupUpdater,
+        item: Item
+    ):
+        super().__init__(item)
+        self.orig_updater = orig_updater
+        self.this: GroupUpdater.DataGroup | None = None
+        self.next: GroupUpdater.DataGroup | None = None
+        self.time: float | None = None
+
+    def apply(self, data: Item, p: ItemAnimation.ApplyParams) -> None:
+        assert self.this is not None
+        assert self.next is not None
+
+        self.time = p.global_t
+        self.this.data.restore(data)
+
+        # 原理是，当调用 apply 时，会递归使用 stack.compute 使得每个 _GroupUpdater 都进入 apply 函数
+        # 到最后一个 _GroupUpdater，因为 self.next 是循环指向的，所以进入 else 分支
+        # 因为此时所有 _GroupUpdater 都进入了 apply 函数，所以就可以调用 GroupUpdater 的 func 进行整体更新了
+        if self.next.updater.time != p.global_t:
+            self.next.stack.compute(p.global_t, True)
+        else:
+            with UpdaterParams(p.global_t,
+                               self.get_alpha_on_global_t(p.global_t),
+                               self.t_range,
+                               None) as params:
+                self.orig_updater.func(self.orig_updater.data, params)
+
+        data.restore(self.this.data)

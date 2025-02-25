@@ -488,11 +488,6 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         if self.stored:
             self.stored_parents = other.get_parents().copy()
             self.stored_children = other.get_children().copy()
-        else:
-            self.parents = other.get_parents().copy()
-            self.parents_changed()
-            self.children = other.get_children().copy()
-            self.children_changed()
 
         for key in self.components.keys() & other.components.keys():
             self.components[key].become(other.components[key])
