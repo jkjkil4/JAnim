@@ -114,10 +114,18 @@ class Animation:
 class ItemAnimation(Animation):
     auto_detect = True
 
-    def __init__(self, item: Item, *, show_at_begin: bool = True, **kwargs):
+    def __init__(
+        self,
+        item: Item,
+        *,
+        show_at_begin: bool = True,
+        hide_at_end: bool = False,
+        **kwargs
+    ):
         super().__init__(**kwargs)
         self.item = item
         self.show_at_begin = show_at_begin
+        self.hide_at_end = hide_at_end
 
         from janim.anims.timeline import Timeline
         self.timeline = Timeline.get_context()
@@ -130,6 +138,8 @@ class ItemAnimation(Animation):
 
         if self.show_at_begin:
             self.timeline.schedule(self.t_range.at, self.item.show, root_only=True)
+        if self.hide_at_end:
+            self.timeline.schedule(self.t_range.end, self.item.hide, root_only=True)
 
     @dataclass
     class ApplyParams:

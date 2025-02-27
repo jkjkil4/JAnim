@@ -15,6 +15,9 @@ from janim.locale.i18n import get_local_strings
 from janim.logger import log
 from janim.render.base import Renderer
 from janim.typing import SupportsApartAlpha
+from janim.utils.data import AlignedData
+from janim.utils.iterables import resize_preserving_order
+from janim.utils.paths import PathFunc, straight_path
 
 if TYPE_CHECKING:
     from janim.items.points import Group
@@ -494,9 +497,60 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
 
         return self
 
-    # TODO: align_for_interpolate
+    @classmethod
+    def align_for_interpolate(
+        cls,
+        item1: Item,
+        item2: Item
+    ) -> AlignedData[Self]:
+        '''
+        进行数据对齐，以便插值
+        '''
+        aligned = AlignedData(item1.store(),
+                              item1.store(),
+                              item2.store())
 
-    # TODO: interpolate
+        # align components
+        for key, cmpt1 in item1.components.items():
+            cmpt2 = item2.components.get(key, None)
+
+            if isinstance(cmpt1, _CmptGroup) and isinstance(cmpt2, _CmptGroup):
+                cmpt_aligned = cmpt1.align(cmpt1, cmpt2, aligned)
+
+            elif cmpt2 is None:
+                cmpt_aligned = AlignedData(cmpt1, cmpt1, cmpt1)
+            else:
+                cmpt_aligned = cmpt1.align_for_interpolate(cmpt1, cmpt2)
+
+            aligned.data1.set_component(key, cmpt_aligned.data1)
+            aligned.data2.set_component(key, cmpt_aligned.data2)
+            aligned.union.set_component(key, cmpt_aligned.union)
+
+        # align children
+        max_len = max(len(item1.get_children()), len(item2.get_children()))
+        aligned.data1.stored_children = resize_preserving_order(item1.get_children(), max_len)
+        aligned.data2.stored_children = resize_preserving_order(item2.get_children(), max_len)
+
+        return aligned
+
+    def interpolate(
+        self,
+        item1: Item,
+        item2: Item,
+        alpha: float,
+        *,
+        path_func: PathFunc = straight_path,
+    ) -> None:
+        '''
+        进行插值（仅对该物件进行，不包含后代物件）
+        '''
+        for key, cmpt in self.components.items():
+            try:
+                cmpt1 = item1.components[key]
+                cmpt2 = item2.components[key]
+            except KeyError:
+                continue
+            cmpt.interpolate(cmpt1, cmpt2, alpha, path_func=path_func)
 
     def apart_alpha(self, n: int) -> None:
         for cmpt in self.components.values():

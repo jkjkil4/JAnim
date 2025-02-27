@@ -77,6 +77,7 @@ class DataUpdater[T: Item](Animation):
         extra: Callable[[Item], Any | None] = lambda x: None,
         lag_ratio: float = 0,
         show_at_begin: bool = True,
+        hide_at_end: bool = False,
         become_at_end: bool = True,
         skip_null_items: bool = True,
         root_only: bool = True,
@@ -88,6 +89,7 @@ class DataUpdater[T: Item](Animation):
         self.extra = extra
         self.lag_ratio = lag_ratio
         self.show_at_begin = show_at_begin
+        self.hide_at_end = hide_at_end
         self.become_at_end = become_at_end
         self.skip_null_items = skip_null_items
         self.root_only = root_only
@@ -112,7 +114,8 @@ class DataUpdater[T: Item](Animation):
                                        self.lag_ratio,
                                        i,
                                        count,
-                                       show_at_begin=self.show_at_begin)
+                                       show_at_begin=self.show_at_begin,
+                                       hide_at_end=self.hide_at_end)
             sub_updater.transfer_params(self)
             sub_updater.finalize(self.timeline.time_aligner)
 
@@ -131,9 +134,10 @@ class _DataUpdater(ItemAnimation):
         index: int,
         count: int,
         *,
-        show_at_begin: bool
+        show_at_begin: bool,
+        hide_at_end: bool
     ):
-        super().__init__(item, show_at_begin=show_at_begin)
+        super().__init__(item, show_at_begin=show_at_begin, hide_at_end=hide_at_end)
         self.func = func
         self.extra_data = extra_data
         self.lag_ratio = lag_ratio

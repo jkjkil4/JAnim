@@ -150,6 +150,11 @@ class Timeline(metaclass=ABCMeta):
 
     # TODO: SubtitleInfo
 
+    @dataclass
+    class AdditionalRenderCalls:
+        t_range: TimeRange
+        lst: list[tuple[Item, Callable[[Item], None]]]
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -163,6 +168,7 @@ class Timeline(metaclass=ABCMeta):
         self.pause_points: list[Timeline.PausePoint] = []
 
         self.anim_groups: list[AnimGroup] = []
+        self.additional_render_calls: list[Timeline.AdditionalRenderCalls] = []
 
         self.time_aligner: TimeAligner = TimeAligner()
         self.item_appearances: defaultdict[Item, Timeline.ItemAppearance] = \
@@ -216,8 +222,7 @@ class Timeline(metaclass=ABCMeta):
                     )
 
             for item, appr in self.item_appearances.items():
-                if not appr.stack.has_detected_change():
-                    appr.stack.detect_change(item, 0)
+                appr.stack.detect_change_if_not(item)
                 appr.stack.clear_cache()
 
             built = BuiltTimeline(self)
@@ -529,6 +534,9 @@ class Timeline(metaclass=ABCMeta):
         )
         self.hide_all()
 
+    def add_additional_render_calls(self, rc: Timeline.AdditionalRenderCalls) -> None:
+        self.additional_render_calls.append(rc)
+
     # endregion
 
     # region lineno
@@ -710,15 +718,16 @@ class BuiltTimeline:
                                                                  camera_info=camera_info,
                                                                  anti_alias_radius=anti_alias_radius)):
                     # 遍历所有物件，筛选出参与渲染的
+                    # TODO: optimize (类似之前 LongOpt 的优化方式)
                     render_items = [
                         (item, appr)
                         for item, appr in timeline.item_appearances.items()
                     ]
-                    # 反向遍历一遍所有物件，这是为了让例如 Transform 之类的效果标记原有的物件不进行渲染
+                    # 反向遍历一遍所有物件，这是为了让一些效果标记原有的物件不进行渲染
                     # （会把所应用的物件的 render_disabled 置为 True，所以在下面可以判断这个变量过滤掉它们）
                     for item, _ in reversed(render_items):
                         item._mark_render_disabled()
-                    # 剔除被标记 render_disabled 的物件，得到 render_items_final，并按深度排序
+                    # 剔除被标记 render_disabled 的物件，得到 render_items_final
                     render_items_final: list[tuple[Item, Callable]] = []
                     for item, appr in render_items:
                         if appr.render_disabled:
@@ -728,6 +737,13 @@ class BuiltTimeline:
                             continue
                         data = appr.stack.compute(global_t, True)
                         render_items_final.append((data, appr.render))
+                    # 添加额外的渲染调用，例如 Transform 产生的
+                    # TODO: optimize (类似之前 LongOpt 的优化方式)
+                    for rc in self.timeline.additional_render_calls:
+                        if not rc.t_range.at <= global_t < rc.t_range.end:
+                            continue
+                        render_items_final.extend(rc.lst)
+                    # 按深度排序
                     render_items_final.sort(key=lambda x: x[0].depth, reverse=True)
                     # 渲染
                     for data, render in render_items_final:

@@ -108,9 +108,9 @@ class FadeOut(Fade):
             item,
             shift,
             scale,
+            hide_at_end=hide_at_end,
             **kwargs
         )
-        self.hide_at_end = hide_at_end
 
     def _time_fixed(self) -> None:
         super()._time_fixed()

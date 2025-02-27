@@ -91,14 +91,14 @@ class Uncreate(ShowPartial):
     def __init__(
         self,
         item: Item,
-        show_at_end: bool = False,
+        hide_at_end: bool = True,
         auto_close_path: bool = True,
         **kwargs
     ):
         super().__init__(
             item,
             lambda p: (0, 1.0 - p.alpha),
-            show_at_end=show_at_end,
+            hide_at_end=hide_at_end,
             auto_close_path=auto_close_path,
             **kwargs
         )
@@ -113,14 +113,14 @@ class Destruction(ShowPartial):
     def __init__(
         self,
         item: Item,
-        show_at_end: bool = False,
+        hide_at_end: bool = True,
         auto_close_path: bool = True,
         **kwargs
     ):
         super().__init__(
             item,
             lambda p: (p.alpha, 1.0),
-            show_at_end=show_at_end,
+            hide_at_end=hide_at_end,
             auto_close_path=auto_close_path,
             **kwargs
         )

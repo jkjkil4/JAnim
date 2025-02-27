@@ -48,6 +48,10 @@ class AnimStack:
     def has_detected_change(self) -> bool:
         return self.prev_display is not None
 
+    def detect_change_if_not(self, item: Item) -> None:
+        if not self.has_detected_change():
+            self.detect_change(item, 0)
+
     def append(self, anim: ItemAnimation) -> None:
         '''
         向 :class:`AnimStack` 添加 :class:`~.Animation` 对象
