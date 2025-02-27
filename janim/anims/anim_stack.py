@@ -93,7 +93,7 @@ class AnimStack:
 
         # 如果 _cover_previous_anims=True，则替换覆盖
         # 否则，分别 append 到范围内的 stack 中
-        # 关于标记 _cover_previous_anims 的动机，可以参阅该变量在 Animation 中的声明
+        # 关于标记 _cover_previous_anims 的动机，可以参阅该变量在 ItemAnimation 中的声明
         if anim._cover_previous_anims:
             if at_idx + 1 != end_idx:
                 # 删掉多余的区段

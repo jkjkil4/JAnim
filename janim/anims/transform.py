@@ -1,12 +1,19 @@
 
+import itertools as it
+import types
 from collections import defaultdict
+from enum import Enum
 from functools import partial
-from typing import Callable
+from typing import Callable, Generator, Iterable
 
-from janim.anims.animation import Animation
+from janim.anims.animation import Animation, ItemAnimation
+from janim.anims.composition import AnimGroup
+from janim.anims.fading import FadeInFromPoint, FadeOutToPoint
 from janim.anims.timeline import Timeline
 from janim.constants import C_LABEL_ANIM_STAY, OUT
 from janim.items.item import Item
+from janim.items.points import Points
+from janim.items.vitem import VItem
 from janim.locale.i18n import get_local_strings
 from janim.logger import log
 from janim.typing import Vect
@@ -135,3 +142,256 @@ class Transform(Animation):
         alpha = self.get_alpha_on_global_t(global_t)
         data.interpolate(aligned.data1, aligned.data2, alpha, path_func=self.path_func)
         func(data)
+
+
+class TransformInSegments(AnimGroup):
+    '''
+    依照切片列表进行 ``src`` 与 ``target`` 之间的变换
+    '''
+
+    label_color = C_LABEL_ANIM_STAY
+
+    def __init__(
+        self,
+        src: Item,
+        src_segments: Iterable[Iterable[int]] | Iterable[int],
+        target: Item,
+        target_segments: Iterable[Iterable[int]] | Iterable[int] | types.EllipsisType,
+        *,
+        trs_kwargs: dict = {},
+        **kwargs
+    ):
+        anims = [
+            Transform(src[l1:r1], target[l2:r2], **trs_kwargs)
+            for (l1, r1), (l2, r2) in self.parse_segments(src_segments, target_segments)
+        ]
+        super().__init__(*anims, **kwargs)
+
+    @staticmethod
+    def parse_segments(src_segs, target_segs):
+        if target_segs is ...:
+            target_segs = src_segs
+        return zip(
+            TransformInSegments.parse_segment(src_segs),
+            TransformInSegments.parse_segment(target_segs),
+            strict=True
+        )
+
+    @staticmethod
+    def parse_segment(segs: Iterable[Iterable[int]] | Iterable[int]) -> Generator[tuple[int, int], None, None]:
+        '''
+        ``[[a, b, c], [d, e]]`` -> ``[[a, b], [b, c], [d, e]]``
+        '''
+        assert len(segs) > 0
+        if not isinstance(segs[0], Iterable):
+            segs = [segs]
+
+        for seg in segs:
+            for a, b in it.pairwise(seg):
+                yield (min(a, b), max(a, b))
+
+
+class MethodTransform(Transform):
+    '''
+    依据物件的变换而创建的补间过程
+
+    具体参考 :meth:`~.Item.anim`
+    '''
+    label_color = (255, 189, 129)    # C_LABEL_ANIM_STAY 的变体
+
+    class ActionType(Enum):
+        GetAttr = 0
+        Call = 1
+
+    def __init__(self, item: Item, **kwargs):
+        super().__init__(item, item, **kwargs)
+        self.delayed_actions: list[tuple[MethodTransform.ActionType, str | tuple[tuple, dict]]] = []
+
+    def __getattr__(self, name: str):
+        self.delayed_actions.append((MethodTransform.ActionType.GetAttr, name))
+        return self
+
+    def __call__(self, *args, **kwargs):
+        self.delayed_actions.append((MethodTransform.ActionType.Call, (args, kwargs)))
+        return self
+
+    def _time_fixed(self):
+        obj = self.src_item
+        for type, value in self.delayed_actions:
+            if type is MethodTransform.ActionType.GetAttr:
+                obj = getattr(obj, value)
+            else:
+                args, kwargs = value
+                obj(*args, **kwargs)
+
+        apprs = self.timeline.item_appearances
+
+        for item in self.src_item.walk_self_and_descendants():
+            apprs[item].stack.detect_change(item, self.t_range.end)
+
+        self.align_data()
+
+        for item in self.src_item.walk_self_and_descendants():
+            aligned = self.aligned[(item, item)]
+
+            sub_updater = _MethodTransform(item, self.path_func, aligned)
+            sub_updater.transfer_params(self)
+            sub_updater.finalize(self.timeline.time_aligner)
+
+
+class MethodTransformArgsBuilder:
+    '''
+    使得 ``.anim`` 和 ``.anim(...)`` 后可以进行同样的操作
+    '''
+    def __init__(self, item: Item):
+        self.item = item
+
+    def __call__(self, **kwargs):
+        return MethodTransform(self.item, **kwargs)
+
+    def __getattr__(self, name):
+        return getattr(MethodTransform(self.item), name)
+
+
+class _MethodTransform(ItemAnimation):
+    def __init__(self, item: Item, path_func: PathFunc, aligned: AlignedData[Item]):
+        super().__init__(item)
+        self._cover_previous_anims = True
+        self.path_func = path_func
+        self.aligned = aligned
+
+    def apply(self, data: None, p: ItemAnimation.ApplyParams) -> Item:
+        self.aligned.union.interpolate(
+            self.aligned.data1,
+            self.aligned.data2,
+            self.get_alpha_on_global_t(p.global_t),
+            path_func=self.path_func
+        )
+        return self.aligned.union
+
+
+class FadeTransform(AnimGroup):
+    label_color = C_LABEL_ANIM_STAY
+
+    def __init__(
+        self,
+        src: Item,
+        target: Item,
+        *,
+        hide_src: bool = True,
+        show_target: bool = True,
+
+        path_arc: float = 0,
+        path_arc_axis: Vect = OUT,
+        path_func: PathFunc | None = None,
+
+        src_root_only: bool = False,
+        target_root_only: bool = False,
+        **kwargs
+    ):
+        src_copy = src.copy(root_only=src_root_only)
+        src_copy.set(alpha=0)
+        src_copy(Points) \
+            .points.replace(target, stretch=True, root_only=src_root_only, item_root_only=target_root_only)
+
+        target_copy = target.copy(root_only=target_root_only)
+        target_copy.set(alpha=0)
+        target_copy(Points) \
+            .points.replace(src, stretch=True, root_only=target_root_only, item_root_only=src_root_only)
+
+        super().__init__(
+            Transform(
+                src, src_copy,
+                hide_src=hide_src,
+                show_target=False,
+                path_arc=path_arc,
+                path_arc_axis=path_arc_axis,
+                path_func=path_func,
+                root_only=src_root_only
+            ),
+            Transform(
+                target_copy, target,
+                hide_src=False,
+                show_target=show_target,
+                path_arc=path_arc,
+                path_arc_axis=path_arc_axis,
+                path_func=path_func,
+                root_only=target_root_only
+            ),
+            **kwargs
+        )
+
+
+class TransformMatchingShapes(AnimGroup):
+    '''
+    匹配形状进行变换
+
+    - `mismatch` 表示对于不匹配的形状的处理
+    - 注：所有传入该动画类的额外参数都会被传入 `mismatch` 的方法中
+    '''
+
+    label_color = C_LABEL_ANIM_STAY
+
+    def __init__(
+        self,
+        src: Item,
+        target: Item,
+        *,
+        mismatch: tuple[Callable, Callable] = (FadeOutToPoint, FadeInFromPoint),
+        duration: float = 2,
+        lag_ratio: float = 0,
+        **kwargs
+    ):
+        src_mismatch_method, target_mismatch_method = mismatch
+
+        def self_and_descendant_with_points(item: Item) -> list[VItem]:
+            return [
+                item
+                for item in item.walk_self_and_descendants()
+                if isinstance(item, VItem) and item.points.has()
+            ]
+
+        src_pieces = self_and_descendant_with_points(src)
+        target_pieces = self_and_descendant_with_points(target)
+
+        src_matched: list[VItem] = []
+        target_matched: list[VItem] = []
+
+        for piece1, piece2 in it.product(src_pieces, target_pieces):
+            if not piece1.points.same_shape(piece2):
+                continue
+            if piece1 in src_matched or piece2 in target_matched:
+                continue
+            src_matched.append(piece1)
+            target_matched.append(piece2)
+
+        src_mismatched = [
+            piece
+            for piece in src_pieces
+            if piece not in src_matched
+        ]
+        target_mismatched = [
+            piece
+            for piece in target_pieces
+            if piece not in target_matched
+        ]
+
+        src_center = src(Points).points.box.center
+        target_center = target(Points).points.box.center
+
+        super().__init__(
+            *[
+                Transform(piece1, piece2, **kwargs)
+                for piece1, piece2 in zip(src_matched, target_matched)
+            ],
+            *[
+                src_mismatch_method(piece, target_center, **kwargs)
+                for piece in src_mismatched
+            ],
+            *[
+                target_mismatch_method(piece, src_center, **kwargs)
+                for piece in target_mismatched
+            ],
+            duration=duration,
+            lag_ratio=lag_ratio
+        )

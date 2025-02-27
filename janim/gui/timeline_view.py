@@ -207,7 +207,7 @@ class TimelineView(QWidget):
                     self.anim_label_group.t_range,
                     *[
                         Label(
-                            f'{anim.__class__.__name__} at {id(anim):x}',
+                            f'{anim.__class__.__name__} at 0x{id(anim):x}',
                             TimeRange(t1, t2),
                             brush=get_color(anim)
                         )

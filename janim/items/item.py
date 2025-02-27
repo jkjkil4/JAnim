@@ -131,7 +131,6 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         self._astype_mock_cmpt: dict[str, Component] = {}
 
         self._fix_in_frame = False
-        # TODO: self.renderer
 
         self._init_components()
 
@@ -245,9 +244,36 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
     def is_null(self) -> bool:
         return False
 
-    # TODO: anim
+    @property
+    def anim(self) -> Self:
+        '''
+        例如：
 
-    # TODO: override __call__
+        .. code-block:: python
+
+            self.play(
+                item.anim.points.scale(2).r.color.set('green')
+            )
+
+        该例子会创建将 ``item`` 缩放 2 倍并且设置为绿色的补间动画
+
+        并且可以向动画传入参数：
+
+        .. code-block:: python
+
+            self.play(
+                item.anim(duration=2, rate_func=linear)
+                .points.scale(2).r.color.set('green')
+            )
+
+        ``.r`` 表示从组件回到物件，这样就可以调用其它组件的功能
+        '''
+        from janim.anims.transform import MethodTransformArgsBuilder
+        return MethodTransformArgsBuilder(self)
+
+    # 使得 .anim() 后仍有代码提示
+    @overload
+    def __call__(self, **kwargs) -> Self: ...
 
     @overload
     def __getitem__(self, key: int) -> Item: ...
