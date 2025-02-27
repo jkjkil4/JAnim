@@ -4,6 +4,8 @@ from collections import defaultdict
 from typing import Self
 
 from janim.components.component import Component
+from janim.utils.bezier import interpolate
+from janim.utils.data import AlignedData
 
 
 class Cmpt_Depth[ItemT](Component[ItemT]):
@@ -59,6 +61,17 @@ class Cmpt_Depth[ItemT](Component[ItemT]):
 
     def not_changed(self, other: Cmpt_Depth) -> bool:
         return self._depth == other._depth and self._order == other._order
+
+    @classmethod
+    def align_for_interpolate(cls, cmpt1: Cmpt_Depth, cmpt2: Cmpt_Depth):
+        cmpt1_copy = cmpt1.copy()
+        cmpt2_copy = cmpt2.copy()
+        return AlignedData(cmpt1_copy, cmpt2_copy, cmpt1_copy.copy())
+
+    def interpolate(self, cmpt1: Cmpt_Depth, cmpt2: Cmpt_Depth, alpha: float, *, path_func=None) -> None:
+        d1, o1 = cmpt1.get_raw()
+        d2, o2 = cmpt2.get_raw()
+        self.set(interpolate(d1, d2, alpha), interpolate(o1, o2, alpha), root_only=True)
 
     def __lt__(self, other: Cmpt_Depth) -> bool:
         if self._depth != other._depth:
