@@ -175,11 +175,15 @@ class Timeline(metaclass=ABCMeta):
         '''
         pass    # pragma: no cover
 
+    build_indent_ctx: ContextVar[int] = ContextVar('Timeline.build_indent_ctx')
+
     def build(self, *, quiet=False, hide_subtitles=False, show_debug_notice=False) -> BuiltTimeline:
         '''
         构建动画并返回
         '''
-        with self.with_config(), ContextSetter(self.ctx_var, self):
+        indent = self.build_indent_ctx.get(-2) + 2
+        indent_str = ' ' * indent
+        with self.with_config(), ContextSetter(self.ctx_var, self), ContextSetter(self.build_indent_ctx, indent):
 
             self.config_getter = ConfigGetter(config_ctx_var.get())
             self.camera = Camera()
@@ -188,7 +192,7 @@ class Timeline(metaclass=ABCMeta):
             self.show_debug_notice = show_debug_notice
 
             if not quiet:   # pragma: no cover
-                log.info(_('Building "{name}"').format(name=self.__class__.__name__))
+                log.info(indent_str + _('Building "{name}"').format(name=self.__class__.__name__))
                 start_time = time.time()
 
             self._build_frame = inspect.currentframe()
@@ -202,9 +206,11 @@ class Timeline(metaclass=ABCMeta):
                 self.forward(DEFAULT_DURATION, _record_lineno=False)    # 使得没有任何前进时，产生一点时间，避免除零以及其它问题
                 if not quiet:   # pragma: no cover
                     log.info(
-                        _('"{name}" did not produce a duration after construction, '
-                          'automatically generated a duration of {duration}s')
-                        .format(name=self.__class__.__name__, duration=DEFAULT_DURATION)
+                        indent_str + (
+                            _('"{name}" did not produce a duration after construction, '
+                              'automatically generated a duration of {duration}s')
+                            .format(name=self.__class__.__name__, duration=DEFAULT_DURATION)
+                        )
                     )
 
             for item, appr in self.item_appearances.items():
@@ -217,8 +223,10 @@ class Timeline(metaclass=ABCMeta):
             if not quiet:   # pragma: no cover
                 elapsed = time.time() - start_time
                 log.info(
-                    _('Finished building "{name}" in {elapsed:.2f} s')
-                    .format(name=self.__class__.__name__, elapsed=elapsed)
+                    indent_str + (
+                        _('Finished building "{name}" in {elapsed:.2f} s')
+                        .format(name=self.__class__.__name__, elapsed=elapsed)
+                    )
                 )
 
         return built
