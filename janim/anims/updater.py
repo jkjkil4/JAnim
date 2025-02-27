@@ -177,7 +177,7 @@ class GroupUpdater[T: Item](Animation):
         self.show_at_begin = show_at_begin
         self.become_at_end = become_at_end
 
-        self.time: float | None = None
+        self.applied: bool = False
 
     @dataclass
     class DataGroup:
@@ -212,7 +212,7 @@ class GroupUpdater[T: Item](Animation):
             sub_updater.finalize(timeline.time_aligner)
 
     def apply_for_group(self, global_t: float) -> None:
-        if self.time == global_t:
+        if self.applied:
             return
 
         with UpdaterParams(global_t,
@@ -221,7 +221,7 @@ class GroupUpdater[T: Item](Animation):
                            None) as params:
             self.func(self.data, params)
 
-        self.time = global_t
+        self.applied = True
 
 
 class _GroupUpdater(ApplyAligner):
@@ -239,6 +239,7 @@ class _GroupUpdater(ApplyAligner):
         self.data = data
 
     def pre_apply(self, data: Item, p: ItemAnimation.ApplyParams) -> None:
+        self.orig_updater.applied = False
         self.data.restore(data)
 
     def apply(self, data: Item, p: ItemAnimation.ApplyParams) -> None:
