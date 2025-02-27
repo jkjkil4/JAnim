@@ -5,12 +5,12 @@ import types
 from collections import defaultdict
 from typing import Callable, Generator, Iterable, Self
 
-from janim.anims.animation import Animation, RenderCall
+from janim.anims.animation import Animation
 from janim.anims.composition import AnimGroup
 from janim.anims.fading import FadeInFromPoint, FadeOutToPoint
 from janim.components.component import Component
 from janim.constants import ANIM_END_DELTA, C_LABEL_ANIM_STAY, OUT
-from janim.items.item import DynamicItem, Item
+from janim.items.item import Item
 from janim.items.points import Points
 from janim.items.vitem import VItem
 from janim.locale.i18n import get_local_strings

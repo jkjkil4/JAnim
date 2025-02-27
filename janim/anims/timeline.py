@@ -14,6 +14,7 @@ from typing import Callable, Iterable, Self
 
 import moderngl as mgl
 import numpy as np
+from PIL import Image
 
 from janim.anims.anim_stack import AnimStack
 from janim.anims.animation import Animation, TimeAligner, TimeRange
@@ -26,7 +27,8 @@ from janim.items.audio import Audio
 from janim.items.item import Item
 from janim.locale.i18n import get_local_strings
 from janim.logger import log
-from janim.render.base import RenderData, Renderer, set_global_uniforms
+from janim.render.base import (RenderData, Renderer, create_context,
+                               create_framebuffer, set_global_uniforms)
 from janim.typing import SupportsAnim
 from janim.utils.config import Config, ConfigGetter, config_ctx_var
 from janim.utils.data import ContextSetter
@@ -734,11 +736,31 @@ class BuiltTimeline:
         except Exception:
             traceback.print_exc()
 
+    capture_ctx: mgl.Context | None = None
+    capture_fbo: mgl.Framebuffer | None = None
+
+    def capture(self, global_t: float) -> Image.Image:
+        if BuiltTimeline.capture_ctx is None:
+            try:
+                BuiltTimeline.capture_ctx = create_context(standalone=True, require=430)
+            except ValueError:
+                BuiltTimeline.capture_ctx = create_context(standalone=True, require=330)
+
+            pw, ph = self.cfg.pixel_width, self.cfg.pixel_height
+            BuiltTimeline.capture_fbo = create_framebuffer(BuiltTimeline.capture_ctx, pw, ph)
+
+        fbo = BuiltTimeline.capture_fbo
+        fbo.use()
+        fbo.clear(*self.cfg.background_color.rgb)
+        self.render_all(BuiltTimeline.capture_ctx, global_t)
+
+        return Image.frombytes(
+            "RGBA", fbo.size, fbo.read(components=4),
+            "raw", "RGBA", 0, -1
+        )
+
     def to_item(self, **kwargs) -> TimelineItem:
         return TimelineItem(self, **kwargs)
-
-    # TODO: capture
-    # TODO: janim.render.base.create_context
 
 
 class TimelineItem(Item):

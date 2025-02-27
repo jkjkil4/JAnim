@@ -4,7 +4,7 @@ from typing import Callable
 
 import numpy as np
 
-from janim.anims.animation import Animation, RenderCall
+from janim.anims.animation import Animation
 from janim.anims.transform import Transform
 from janim.constants import C_LABEL_ANIM_ABSTRACT, C_LABEL_ANIM_IN, PI
 from janim.items.geometry.arrow import Arrow
