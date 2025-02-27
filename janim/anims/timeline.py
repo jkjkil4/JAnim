@@ -726,7 +726,31 @@ class BuiltTimeline:
         except Exception:
             traceback.print_exc()
 
-    # TODO: anim_on
+    def to_item(self, **kwargs) -> TimelineItem:
+        return TimelineItem(self, **kwargs)
 
     # TODO: capture
     # TODO: janim.render.base.create_context
+
+
+class TimelineItem(Item):
+    class TIRenderer(Renderer):
+        def render(self, item: TimelineItem):
+            t = Animation.global_t_ctx.get() - item.at
+            if 0 <= t <= item.duration:
+                item._built.render_all(self.data_ctx.get().ctx, t)
+
+    renderer_cls = TIRenderer
+
+    def __init__(self, built: BuiltTimeline, *, delay: float = 0):
+        super().__init__()
+        self._built = built
+        self.at = self.timeline.current_time + delay
+        self.duration = self._built.duration
+
+    @property
+    def end(self) -> float:
+        return self.at + self.duration
+
+
+# TODO: TimelineAdvancedItem
