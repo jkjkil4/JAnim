@@ -222,7 +222,7 @@ class MethodTransform(Transform):
                 obj = getattr(obj, value)
             else:
                 args, kwargs = value
-                obj(*args, **kwargs)
+                obj = obj(*args, **kwargs)
 
         apprs = self.timeline.item_appearances
 

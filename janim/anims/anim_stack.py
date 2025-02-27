@@ -56,13 +56,21 @@ class AnimStack:
         '''
         向 :class:`AnimStack` 添加 :class:`~.Animation` 对象
         '''
+
         # 下面这些代码主要是为了对区段进行优化处理，提前计算出特定区段中存在哪些动画对象
         # 这样可以避免在 compute 以及渲染时重复判断哪些动画对象是否作用，提高效率
+
+        #
         t_cnt = len(self.times)
         at = anim.t_range.at
         end = anim.t_range.end
         at_idx = None
         end_idx = t_cnt if end is FOREVER else None
+
+        # 避免缓存导致的问题
+        if self.cache_time is not None:
+            self.clear_cache()
+
         # 在大多数情况中，anim 会被添加到末尾的区段
         # 所以这里从末尾开始遍历，而不是 bisect 二分查找
         for i, t in enumerate(reversed(self.times)):
