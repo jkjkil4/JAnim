@@ -4,14 +4,13 @@ import subprocess as sp
 import time
 from functools import partial
 
-import moderngl as mgl
 from tqdm import tqdm as ProgressDisplay
 
 from janim.anims.timeline import BuiltTimeline, Timeline, TimeRange
 from janim.exception import EXITCODE_FFMPEG_NOT_FOUND, ExitException
 from janim.locale.i18n import get_local_strings
 from janim.logger import log
-from janim.render.base import check_pyopengl_if_required
+from janim.render.base import create_context, create_framebuffer
 
 _ = get_local_strings('writer')
 
@@ -32,29 +31,12 @@ class VideoWriter:
     def __init__(self, built: BuiltTimeline):
         self.built = built
         try:
-            self.ctx = mgl.create_standalone_context(require=430)
+            self.ctx = create_context(standalone=True, require=430)
         except ValueError:
-            self.ctx = mgl.create_standalone_context(require=330)
-        check_pyopengl_if_required(self.ctx)
-        self.ctx.enable(mgl.BLEND)
-        self.ctx.blend_func = (
-            mgl.SRC_ALPHA, mgl.ONE_MINUS_SRC_ALPHA,
-            mgl.ONE, mgl.ONE
-        )
-        self.ctx.blend_equation = mgl.FUNC_ADD, mgl.MAX
+            self.ctx = create_context(standalone=True, require=330)
 
         pw, ph = built.cfg.pixel_width, built.cfg.pixel_height
-        self.fbo = self.ctx.framebuffer(
-            color_attachments=self.ctx.texture(
-                (pw, ph),
-                components=4,
-                samples=0,
-            ),
-            depth_attachment=self.ctx.depth_renderbuffer(
-                (pw, ph),
-                samples=0
-            )
-        )
+        self.fbo = create_framebuffer(self.ctx, pw, ph)
 
     @staticmethod
     def writes(built: BuiltTimeline, file_path: str, *, quiet=False) -> None:

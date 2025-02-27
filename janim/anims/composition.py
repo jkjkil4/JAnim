@@ -179,10 +179,6 @@ class AnimGroup(Animation):
         for anim in self.anims:
             anim._time_fixed()
 
-    # TODO: flatten
-
-    # TODO: anim_on_alpha
-
 
 class Succession(AnimGroup):
     '''

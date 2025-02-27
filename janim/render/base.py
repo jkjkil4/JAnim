@@ -21,6 +21,32 @@ _ = get_local_strings('base')
 FIX_IN_FRAME_KEY = 'JA_FIX_IN_FRAME'
 
 
+def create_context(**kwargs) -> mgl.Context:
+    ctx = mgl.create_context(**kwargs)
+    check_pyopengl_if_required(ctx)
+    ctx.enable(mgl.BLEND)
+    ctx.blend_func = (
+        mgl.SRC_ALPHA, mgl.ONE_MINUS_SRC_ALPHA,
+        mgl.ONE, mgl.ONE
+    )
+    ctx.blend_equation = mgl.FUNC_ADD, mgl.MAX
+    return ctx
+
+
+def create_framebuffer(ctx: mgl.Context, pw: int, ph: int) -> mgl.Framebuffer:
+    return ctx.framebuffer(
+        color_attachments=ctx.texture(
+            (pw, ph),
+            components=4,
+            samples=0,
+        ),
+        depth_attachment=ctx.depth_renderbuffer(
+            (pw, ph),
+            samples=0
+        )
+    )
+
+
 class Renderer:
     '''渲染器的基类
 

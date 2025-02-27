@@ -1,11 +1,10 @@
 
-import moderngl as mgl
 from PySide6.QtCore import QPointF, Signal
 from PySide6.QtOpenGLWidgets import QOpenGLWidget
 from PySide6.QtWidgets import QWidget
 
 from janim.anims.timeline import BuiltTimeline
-from janim.render.base import check_pyopengl_if_required
+from janim.render.base import create_context
 
 
 class GLWidget(QOpenGLWidget):
@@ -41,14 +40,7 @@ class GLWidget(QOpenGLWidget):
         return QPointF(xx, yy)
 
     def initializeGL(self) -> None:
-        self.ctx = mgl.create_context()
-        check_pyopengl_if_required(self.ctx)
-        self.ctx.enable(mgl.BLEND)
-        self.ctx.blend_func = (
-            mgl.SRC_ALPHA, mgl.ONE_MINUS_SRC_ALPHA,
-            mgl.ONE, mgl.ONE
-        )
-        self.ctx.blend_equation = mgl.FUNC_ADD, mgl.MAX
+        self.ctx = create_context()
 
         self.qfuncs = self.context().functions()
         self.update_clear_color()
