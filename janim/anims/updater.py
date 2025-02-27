@@ -118,7 +118,7 @@ class DataUpdater[T: Item](Animation):
 
             if self.become_at_end:
                 item.restore(stack.compute(self.t_range.end, True, get_at_left=True))
-                stack.detect_change(item, self.t_range.end)
+                stack.detect_change(item, self.t_range.end, force=True)
 
 
 class _DataUpdater(ItemAnimation):
@@ -205,7 +205,7 @@ class GroupUpdater[T: Item](Animation):
                 self.func(self.item, params)
 
             for item, stack in zip(self.item.walk_self_and_descendants(), stacks):
-                stack.detect_change(item, self.t_range.end)
+                stack.detect_change(item, self.t_range.end, force=True)
 
         for sub_updater in updaters:
             sub_updater.transfer_params(self)

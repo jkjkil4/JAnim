@@ -31,7 +31,7 @@ class AnimStack:
         # 用于缓存结果，具体处理另见 compute 方法
         self.clear_cache()
 
-    def detect_change(self, item: Item, at: float) -> None:
+    def detect_change(self, item: Item, at: float, *, force: bool = False) -> None:
         '''
         检查物件相比 ``self.prev_display`` 所记录的物件而言是否发生变化
 
@@ -39,7 +39,7 @@ class AnimStack:
         '''
         if self.prev_display is None:
             at = 0
-        if self.prev_display is None or not self.prev_display.data_orig.not_changed(item):
+        if self.prev_display is None or force or not self.prev_display.data_orig.not_changed(item):
             anim = Display(item, item.store(), at=at, duration=FOREVER, show_at_begin=False)
             # finalize 会产生对 self.append 的调用，因此不用再另外 self.append
             anim.finalize(self.time_aligner)
