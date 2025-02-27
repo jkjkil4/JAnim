@@ -210,6 +210,7 @@ class Timeline(metaclass=ABCMeta):
             for item, appr in self.item_appearances.items():
                 if not appr.stack.has_detected_change():
                     appr.stack.detect_change(item, 0)
+                appr.stack.clear_cache()
 
             built = BuiltTimeline(self)
 

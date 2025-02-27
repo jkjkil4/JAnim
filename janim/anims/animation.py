@@ -11,6 +11,7 @@ from janim.typing import ForeverType
 from janim.utils.rate_functions import RateFunc, linear, smooth
 
 if TYPE_CHECKING:
+    from janim.anims.anim_stack import AnimStack
     from janim.anims.composition import AnimGroup
 
 ALIGN_EPSILON = 1e-6
@@ -113,7 +114,7 @@ class Animation:
 class ItemAnimation(Animation):
     auto_detect = True
 
-    def __init__(self, item: Item, show_at_begin: bool = True, **kwargs):
+    def __init__(self, item: Item, *, show_at_begin: bool = True, **kwargs):
         super().__init__(**kwargs)
         self.item = item
         self.show_at_begin = show_at_begin
@@ -150,6 +151,15 @@ class ItemAnimation(Animation):
         - 对于 :class:`~.Display` 而言，``data`` 是 ``None``，返回值是 :class:`~.Item` 对象
         - 而对于其它大多数的而言，``data`` 是前一个动画作用的结果，返回值是 ``None``
         '''
+        pass
+
+
+class ApplyAligner(ItemAnimation):
+    def __init__(self, item: Item, stacks: list[AnimStack], **kwargs):
+        super().__init__(item, **kwargs)
+        self.stacks = stacks
+
+    def pre_apply(self, data: Item, p: ItemAnimation.ApplyParams) -> None:
         pass
 
 

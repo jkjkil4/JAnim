@@ -1,11 +1,15 @@
 from __future__ import annotations
 
-from bisect import bisect_right, bisect_left
+from bisect import bisect_left, bisect_right
+from collections import defaultdict
+from typing import Generator
 
-from janim.anims.animation import ItemAnimation, TimeAligner
+from janim.anims.animation import ApplyAligner, ItemAnimation, TimeAligner
 from janim.anims.display import Display
 from janim.constants import FOREVER
 from janim.items.item import Item
+
+type ComputeAnimsGenerator = Generator[ApplyAligner, None, Item]
 
 
 class AnimStack:
@@ -25,8 +29,7 @@ class AnimStack:
         self.stacks: list[list[ItemAnimation]] = [[]]
 
         # 用于缓存结果，具体处理另见 compute 方法
-        self.cache_time: float | None = None
-        self.cache_data: Item | None = None
+        self.clear_cache()
 
     def detect_change(self, item: Item, at: float) -> None:
         '''
@@ -108,7 +111,7 @@ class AnimStack:
         assert idx >= 0
         return self.stacks[idx]
 
-    def compute(self, as_time: float, readonly: bool) -> Item:
+    def compute(self, as_time: float, readonly: bool, *, get_at_left: bool = False) -> Item:
         '''
         得到指定时间 ``as_time`` 的物件，考虑了动画的作用
 
@@ -124,32 +127,89 @@ class AnimStack:
 
         - 例如用于绘制时的调用时 ``readonly=True``，因为绘制时不会对物件数据产生影响
         '''
-        if as_time == self.cache_time:
-            data = self.cache_data
-        else:
-            # 计算作用动画后的数据
-            anims = self.get(as_time)
-            if len(anims) == 1:
-                # 只有一个动画，可以认为它是 Display 对象
-                # 因为它没有后继动画，所以直接使用 .data_orig 作为结果，而不调用 .apply
-                anims: list[Display]
-                data = anims[0].data_orig
+        if as_time != self.cache_time:
+            anims = (self.get_at_left if get_at_left else self.get)(as_time)
+            generator = self.compute_anims(as_time, anims)
+
+            try:
+                aligner = next(generator)
+            except StopIteration as e:
+                self.cache_time = as_time
+                self.cache_data = e.value
             else:
-                data = self.compute_anims(as_time, anims)
+                type Stacks = list[AnimStack]
+                type Computing = dict[AnimStack, tuple[ComputeAnimsGenerator, ApplyAligner]]
+                computing: Computing = {self: (generator, aligner)}
+                stacks_map: dict[int, Stacks] = {}
 
-            self.cache_time = as_time
-            self.cache_data = data
+                def append_stacks(stacks: Stacks) -> None:
+                    stacks_map[id(stacks)] = stacks
+                    for stack in stacks:
+                        if stack in computing:
+                            continue
+                        anims = (stack.get_at_left if get_at_left else stack.get)(as_time)
+                        generator = stack.compute_anims(as_time, anims)
+                        aligner = next(generator)
+                        computing[stack] = (generator, aligner)
+                        if id(aligner.stacks) not in stacks_map:
+                            append_stacks(aligner.stacks)
 
-        return data if readonly else data.store()
+                append_stacks(aligner.stacks)
 
-    def compute_anims(self, as_time: float, anims: list[ItemAnimation]) -> Item:
+                while computing:
+                    counter: defaultdict[int, int] = defaultdict(int)
+                    for stack, (generator, aligner) in computing.items():
+                        sid = id(aligner.stacks)
+                        counter[sid] += 1
+                        if counter[sid] == len(aligner.stacks):
+                            stacks_found = aligner.stacks
+                            break
+                    else:
+                        assert False
+
+                    iterates = [
+                        (stack, generator)
+                        for stack, (generator, _) in computing.items()
+                        if stack in stacks_found
+                    ]
+
+                    drop: list[AnimStack] = []
+
+                    for stack, generator in iterates:
+                        try:
+                            aligner = next(generator)
+                            computing[stack] = (generator, aligner)
+                        except StopIteration as e:
+                            drop.append(stack)
+                            stack.cache_time = as_time
+                            stack.cache_data = e.value
+                        else:
+                            if id(aligner.stacks) not in stacks_map:
+                                append_stacks(aligner.stacks)
+
+                    computing = {
+                        stack: tup
+                        for stack, tup in computing.items()
+                        if stack not in drop
+                    }
+
+        return self.cache_data if readonly else self.cache_data.store()
+
+    def compute_anims(self, as_time: float, anims: list[ItemAnimation]) -> ComputeAnimsGenerator:
         params = ItemAnimation.ApplyParams(as_time, anims, 0)
 
         for i, anim in enumerate(anims):
             if i == 0:
                 data = anim.apply(None, params)
             else:
+                if isinstance(anim, ApplyAligner):
+                    anim.pre_apply(data, params)
+                    yield anim
                 params.index = i
                 anim.apply(data, params)
 
         return data
+
+    def clear_cache(self) -> None:
+        self.cache_time: float | None = None
+        self.cache_data: Item | None = None
