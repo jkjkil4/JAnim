@@ -25,5 +25,7 @@ class Display(ItemAnimation):
 
         将 ``self.data`` 重置为 ``self.data_orig`` 的数据并返回，避免 ``self.data_orig`` 被意外更改
         '''
+        if len(p.anims) == 1:
+            return self.data_orig
         self.data.restore(self.data_orig)
         return self.data

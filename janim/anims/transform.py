@@ -71,14 +71,14 @@ class Transform(Animation):
     def _time_fixed(self) -> None:
         self.align_data()
 
-        rc = Timeline.AdditionalRenderCalls(
+        self.additional_calls = [
+            (aligned.union, partial(self.render, aligned, aligned.union.renderer_cls().render))
+            for aligned in self.aligned.values()
+        ]
+        self.timeline.add_additional_render_calls_callback(
             self.t_range,
-            [
-                (aligned.union, partial(self.render, aligned, aligned.union.renderer_cls().render))
-                for aligned in self.aligned.values()
-            ]
+            lambda: self.additional_calls
         )
-        self.timeline.add_additional_render_calls(rc)
 
         # 在动画开始时自动隐藏源对象，在动画结束时自动显示目标对象
         # 可以将 ``hide_src`` 和 ``show_target`` 置为 ``False`` 以禁用

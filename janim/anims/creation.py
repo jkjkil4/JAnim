@@ -1,5 +1,6 @@
 
 import math
+from dataclasses import dataclass
 from functools import partial
 from typing import Callable
 
@@ -32,6 +33,7 @@ class ShowPartial(DataUpdater):
         auto_close_path: bool = False,
         become_at_end: bool = False,
         root_only: bool = False,
+        zero_bound: int | None = None,
         **kwargs
     ):
         def func(data: Item, p: UpdaterParams) -> None:
@@ -41,8 +43,21 @@ class ShowPartial(DataUpdater):
             if not cmpt.has():
                 return  # pragma: no cover
 
+            lower, higher = bound_func(p)
+
+            if self.lag_ratio != 0:
+                if lower <= 0 and higher >= 1:
+                    return
+
+                if lower == higher and zero_bound is not None:
+                    if p.extra_data is None:
+                        p._updater.extra_data = cmpt.pointwise_become_partial(cmpt, zero_bound, zero_bound).copy()
+                    else:
+                        cmpt.become(p.extra_data)
+                    return
+
             if not auto_close_path:
-                cmpt.pointwise_become_partial(cmpt, *bound_func(p))     # pragma: no cover
+                cmpt.pointwise_become_partial(cmpt, lower, higher)     # pragma: no cover
             else:
                 end_indices = np.array(cmpt.get_subpath_end_indices())
                 begin_indices = np.array([0, *[indice + 2 for indice in end_indices[:-1]]])
@@ -50,7 +65,7 @@ class ShowPartial(DataUpdater):
                 points = cmpt.get()
                 cond1 = np.isclose(points[begin_indices], points[end_indices]).all(axis=1)
 
-                cmpt.pointwise_become_partial(cmpt, *bound_func(p))
+                cmpt.pointwise_become_partial(cmpt, lower, higher)
 
                 points = cmpt.get().copy()
                 cond2 = ~np.isclose(points[begin_indices], points[end_indices]).all(axis=1)
@@ -79,7 +94,7 @@ class Create(ShowPartial):
     label_color = C_LABEL_ANIM_IN
 
     def __init__(self, item: Item, auto_close_path: bool = True, **kwargs):
-        super().__init__(item, lambda p: (0, p.alpha), auto_close_path=auto_close_path, **kwargs)
+        super().__init__(item, lambda p: (0, p.alpha), auto_close_path=auto_close_path, zero_bound=0, **kwargs)
 
 
 class Uncreate(ShowPartial):
@@ -100,6 +115,7 @@ class Uncreate(ShowPartial):
             lambda p: (0, 1.0 - p.alpha),
             hide_at_end=hide_at_end,
             auto_close_path=auto_close_path,
+            zero_bound=0,
             **kwargs
         )
 
@@ -122,6 +138,7 @@ class Destruction(ShowPartial):
             lambda p: (p.alpha, 1.0),
             hide_at_end=hide_at_end,
             auto_close_path=auto_close_path,
+            zero_bound=1,
             **kwargs
         )
 
@@ -157,6 +174,11 @@ class DrawBorderThenFill(DataUpdater):
         self.stroke_radius = stroke_radius
         self.stroke_color = stroke_color
 
+    @dataclass
+    class ExtraData:
+        outline: VItem
+        zero_data: VItem
+
     def create_extra_data(self, data: Item) -> VItem | None:
         if not isinstance(data, VItem):
             return None     # pragma: no cover
@@ -164,12 +186,23 @@ class DrawBorderThenFill(DataUpdater):
         data_copy.radius.set(self.stroke_radius)
         data_copy.stroke.set(self.stroke_color, 1)
         data_copy.fill.set(alpha=0)
-        return data_copy
+        return DrawBorderThenFill.ExtraData(data_copy, None)
 
     def updater(self, data: VItem, p: UpdaterParams) -> None:
         if p.extra_data is None:
             return  # pragma: no cover
-        outline = p.extra_data
+
+        if self.lag_ratio != 0:
+            if p.alpha >= 1:
+                return
+            if p.alpha <= 0:
+                if p.extra_data.zero_data is None:
+                    p.extra_data.zero_data = data.points.pointwise_become_partial(data.points, 0, 0).copy()
+                else:
+                    data.points.become(p.extra_data.zero_data)
+                return
+
+        outline = p.extra_data.outline
         index, subalpha = integer_interpolate(0, 2, p.alpha)
 
         if index == 0:

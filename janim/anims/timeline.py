@@ -151,9 +151,10 @@ class Timeline(metaclass=ABCMeta):
     # TODO: SubtitleInfo
 
     @dataclass
-    class AdditionalRenderCalls:
+    class AdditionalRenderCallsCallback:
+        type Func = Callable[[], list[tuple[Item, Callable[[Item], None]]]]
         t_range: TimeRange
-        lst: list[tuple[Item, Callable[[Item], None]]]
+        func: Func
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -168,7 +169,7 @@ class Timeline(metaclass=ABCMeta):
         self.pause_points: list[Timeline.PausePoint] = []
 
         self.anim_groups: list[AnimGroup] = []
-        self.additional_render_calls: list[Timeline.AdditionalRenderCalls] = []
+        self.additional_render_calls_callbacks: list[Timeline.AdditionalRenderCallsCallback] = []
 
         self.time_aligner: TimeAligner = TimeAligner()
         self.item_appearances: defaultdict[Item, Timeline.ItemAppearance] = \
@@ -534,8 +535,12 @@ class Timeline(metaclass=ABCMeta):
         )
         self.hide_all()
 
-    def add_additional_render_calls(self, rc: Timeline.AdditionalRenderCalls) -> None:
-        self.additional_render_calls.append(rc)
+    def add_additional_render_calls_callback(
+        self,
+        t_range: TimeRange,
+        func: Timeline.AdditionalRenderCallsCallback.Func
+    ) -> None:
+        self.additional_render_calls_callbacks.append(Timeline.AdditionalRenderCallsCallback(t_range, func))
 
     # endregion
 
@@ -739,10 +744,10 @@ class BuiltTimeline:
                         render_items_final.append((data, appr.render))
                     # 添加额外的渲染调用，例如 Transform 产生的
                     # TODO: optimize (类似之前 LongOpt 的优化方式)
-                    for rc in self.timeline.additional_render_calls:
-                        if not rc.t_range.at <= global_t < rc.t_range.end:
+                    for rcc in self.timeline.additional_render_calls_callbacks:
+                        if not rcc.t_range.at <= global_t < rcc.t_range.end:
                             continue
-                        render_items_final.extend(rc.lst)
+                        render_items_final.extend(rcc.func())
                     # 按深度排序
                     render_items_final.sort(key=lambda x: x[0].depth, reverse=True)
                     # 渲染

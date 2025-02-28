@@ -25,6 +25,8 @@ class UpdaterParams:
     range: TimeRange
     extra_data: Any | None
 
+    _updater: _DataUpdater | GroupUpdater | None
+
     def __enter__(self) -> Self:
         self.token = updater_params_ctx.set(self)
         return self
@@ -148,7 +150,8 @@ class _DataUpdater(ItemAnimation):
         with UpdaterParams(p.global_t,
                            self.get_sub_alpha(self.get_alpha_on_global_t(p.global_t)),
                            self.t_range,
-                           self.extra_data) as params:
+                           self.extra_data,
+                           self) as params:
             self.func(data, params)
 
     def get_sub_alpha(self, alpha: float) -> float:
@@ -205,7 +208,7 @@ class GroupUpdater[T: Item](Animation):
             for item, stack in zip(self.item.walk_self_and_descendants(), stacks):
                 item.restore(stack.compute(self.t_range.end, True, get_at_left=True))
 
-            with UpdaterParams(self.t_range.end, 1, self.t_range, None) as params:
+            with UpdaterParams(self.t_range.end, 1, self.t_range, None, self) as params:
                 self.func(self.item, params)
 
             for item, stack in zip(self.item.walk_self_and_descendants(), stacks):
@@ -222,7 +225,8 @@ class GroupUpdater[T: Item](Animation):
         with UpdaterParams(global_t,
                            self.get_alpha_on_global_t(global_t),
                            self.t_range,
-                           None) as params:
+                           None,
+                           self) as params:
             self.func(self.data, params)
 
         self.applied = True
