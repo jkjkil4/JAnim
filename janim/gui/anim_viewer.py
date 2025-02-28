@@ -412,15 +412,6 @@ class AnimViewer(QMainWindow):
             return
 
         range = self.timeline_view.range
-        self.set_built(built)
-
-        import gc
-
-        from janim.cli import get_all_timelines_from_module
-
-        gc.collect()
-        get_all_timelines_from_module.cache_clear()
-        self.update_completer([timeline.__name__ for timeline in get_all_timelines_from_module(module)])
 
         if not stay_same:
             self.timeline_view.set_progress(0)
@@ -437,6 +428,16 @@ class AnimViewer(QMainWindow):
             # 重新构建后，只剩下了 0~1s 的动画
             # 那么仍保留原来的显示范围，使得 0~1s 的显示位置不变，虽然显示范围超出了持续时间
             self.timeline_view.range = range
+
+        self.set_built(built)
+
+        import gc
+
+        from janim.cli import get_all_timelines_from_module
+
+        gc.collect()
+        get_all_timelines_from_module.cache_clear()
+        self.update_completer([timeline.__name__ for timeline in get_all_timelines_from_module(module)])
 
         # 向 vscode 客户端发送重新构建了的信息
         if self.socket is not None:

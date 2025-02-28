@@ -94,6 +94,7 @@ class Indicate(DataUpdater):
         super().__init__(
             item,
             updater,
+            extra=self.create_extra_data,
             rate_func=rate_func,
             become_at_end=False,
             root_only=root_only,

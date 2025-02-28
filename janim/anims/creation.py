@@ -147,6 +147,7 @@ class DrawBorderThenFill(DataUpdater):
         super().__init__(
             item,
             self.updater,
+            extra=self.create_extra_data,
             duration=duration,
             rate_func=rate_func,
             become_at_end=become_at_end,

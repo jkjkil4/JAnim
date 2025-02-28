@@ -13,6 +13,7 @@ from colour import Color
 from janim.constants import DOWN, LEFT, RIGHT, UP
 from janim.locale.i18n import get_local_strings
 from janim.typing import Vect
+from janim.utils.file_ops import guarantee_existence
 
 _ = get_local_strings('config')
 
@@ -175,7 +176,7 @@ default_config = Config(
     ffmpeg_bin='ffmpeg',
     ffprobe_bin='ffprobe',
     output_dir='videos',
-    temp_dir=os.path.join(tempfile.gettempdir(), 'janim'),
+    temp_dir=guarantee_existence(os.path.join(tempfile.gettempdir(), 'janim')),
     asset_dir='',
 
     client_search_port=40565

@@ -95,8 +95,8 @@ class SVGItem(Group[SVGElemItem]):
     def move_into_position(self) -> None:
         pass
 
-    def copy(self, *, root_only=False, as_time: float | None = None, skip_dynamic: bool = False) -> Self:
-        copy_item = super().copy(root_only=root_only, as_time=as_time, skip_dynamic=skip_dynamic)
+    def copy(self, *, root_only=False) -> Self:
+        copy_item = super().copy(root_only=root_only)
 
         if not root_only:
             def get_idx(item: Item) -> int | None:
