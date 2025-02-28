@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import inspect
 from contextvars import ContextVar
 from dataclasses import dataclass
 from typing import Any, Callable, Self
@@ -8,8 +9,10 @@ from janim.anims.anim_stack import AnimStack
 from janim.anims.animation import (Animation, ApplyAligner, ItemAnimation,
                                    TimeRange)
 from janim.constants import C_LABEL_ANIM_ABSTRACT
+from janim.exception import UpdaterError
 from janim.items.item import Item
 from janim.locale.i18n import get_local_strings
+from janim.render.base import Renderer
 from janim.utils.simple_functions import clip
 
 _ = get_local_strings('updater')
@@ -39,6 +42,8 @@ updater_params_ctx: ContextVar[UpdaterParams] = ContextVar('updater_params_ctx')
 
 type DataUpdaterFn[T] = Callable[[T, UpdaterParams], Any]
 type GroupUpdaterFn[T] = Callable[[T, UpdaterParams], Any]
+type ItemUpdaterFn = Callable[[UpdaterParams], Item]
+type StepUpdaterFn[T] = Callable[[T, UpdaterParams], Any]
 
 
 class DataUpdater[T: Item](Animation):
@@ -253,3 +258,96 @@ class _GroupUpdater(ApplyAligner):
     def apply(self, data: Item, p: ItemAnimation.ApplyParams) -> None:
         self.orig_updater.apply_for_group(p.global_t)
         data.restore(self.data)
+
+
+class ItemUpdater(Animation):
+    '''
+    以时间为参数显示物件
+
+    也就是说，在 :class:`ItemUpdater` 执行时，对于每帧，都会执行 ``func``，并显示 ``func`` 返回的物件
+
+    在默认情况下：
+
+    - 传入的 ``item`` 会在动画的末尾被替换为动画最后一帧 ``func`` 所返回的物件，传入 ``become_at_end=False`` 以禁用
+    - 传入的 ``item`` 会在动画开始时隐藏，在动画结束后显示，传入 ``hide_at_begin=False`` 和 ``show_at_end=False`` 以禁用
+    - 若传入 ``item=None``，则以上两点都无效
+
+    另见：:class:`~.UpdaterExample`
+    '''
+    label_color = C_LABEL_ANIM_ABSTRACT
+
+    def __init__(
+        self,
+        item: Item | None,
+        func: ItemUpdaterFn,
+        *,
+        hide_at_begin: bool = True,
+        show_at_end: bool = True,
+        become_at_end: bool = True,
+        **kwargs
+    ):
+        super().__init__(**kwargs)
+        self.func = func
+        self.item = item
+        self.hide_at_begin = hide_at_begin
+        self.show_at_end = show_at_end
+        self.become_at_end = become_at_end
+
+        self.renderers: dict[type, Renderer] = {}
+
+    def _time_fixed(self):
+        from janim.anims.timeline import Timeline
+        timeline = Timeline.get_context()
+        timeline.add_additional_render_calls_callback(self.t_range, self.render_calls_callback)
+
+        if self.item is None:
+            return
+
+        # 在动画开始时自动隐藏，在动画结束时自动显示
+        # 可以将 ``hide_on_begin`` 和 ``show_on_end`` 置为 ``False`` 以禁用
+        if self.hide_at_begin:
+            timeline.schedule(self.t_range.at, self.item.hide)
+        if self.show_at_end:
+            timeline.schedule(self.t_range.end, self.item.show)
+
+        # 在动画结束后，自动使用动画最后一帧的物件替换原有的
+        if self.become_at_end:
+            with UpdaterParams(self.t_range.end,
+                               1,
+                               self.t_range,
+                               None,
+                               self) as params:
+                self.item.become(self.call(params))
+                for item in self.item.walk_self_and_descendants():
+                    timeline.item_appearances[item].stack.detect_change(item, self.t_range.end, force=True)
+
+    def call(self, p: UpdaterParams) -> Item:
+        ret = self.func(p)
+        if not isinstance(ret, Item):
+            raise UpdaterError(
+                _('The function passed to ItemUpdater must return an item, but got {ret} instead, '
+                  'defined in {file}:{lineno}')
+                .format(ret=ret, file=inspect.getfile(self.func), lineno=inspect.getsourcelines(self.func)[1])
+            )
+        return ret
+
+    def get_renderer(self, item: Item) -> Renderer:
+        renderer = self.renderers.get(item.__class__, None)
+        if renderer is None:
+            renderer = self.renderers[item.__class__] = item.renderer_cls()
+        return renderer
+
+    def render_calls_callback(self) -> None:
+        global_t = Animation.global_t_ctx.get()
+        alpha = self.get_alpha_on_global_t(global_t)
+        with UpdaterParams(global_t,
+                           alpha,
+                           self.t_range,
+                           None,
+                           self) as params:
+            ret = self.call(params)
+
+        return [
+            (item, self.get_renderer(item).render)
+            for item in ret.walk_self_and_descendants()
+        ]

@@ -220,7 +220,7 @@ class MethodTransform(Transform):
         for type, value in self.delayed_actions:
             if type is MethodTransform.ActionType.GetAttr:
                 obj = getattr(obj, value)
-            else:
+            else:   # Call
                 args, kwargs = value
                 obj = obj(*args, **kwargs)
 

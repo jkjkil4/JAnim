@@ -37,6 +37,8 @@ from janim.utils.simple_functions import clip
 
 _ = get_local_strings('timeline')
 
+type RenderCallsFn = Callable[[], list[tuple[Item, Callable[[Item], None]]]]
+
 
 class Timeline(metaclass=ABCMeta):
     '''
@@ -152,9 +154,8 @@ class Timeline(metaclass=ABCMeta):
 
     @dataclass
     class AdditionalRenderCallsCallback:
-        type Func = Callable[[], list[tuple[Item, Callable[[Item], None]]]]
         t_range: TimeRange
-        func: Func
+        func: RenderCallsFn
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -538,7 +539,7 @@ class Timeline(metaclass=ABCMeta):
     def add_additional_render_calls_callback(
         self,
         t_range: TimeRange,
-        func: Timeline.AdditionalRenderCallsCallback.Func
+        func: RenderCallsFn
     ) -> None:
         self.additional_render_calls_callbacks.append(Timeline.AdditionalRenderCallsCallback(t_range, func))
 

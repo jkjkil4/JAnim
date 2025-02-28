@@ -102,7 +102,7 @@ class Cmpt_Points[ItemT](Component[ItemT]):
         '''
         point_datas = [
             cmpt.get()
-            for cmpt in self.walk_same_cmpt_of_self_and_descendants_without_mock(timed=True)
+            for cmpt in self.walk_same_cmpt_of_self_and_descendants_without_mock()
         ]
         return np.vstack(point_datas)
 

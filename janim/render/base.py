@@ -50,7 +50,7 @@ def create_framebuffer(ctx: mgl.Context, pw: int, ph: int) -> mgl.Framebuffer:
 class Renderer:
     '''渲染器的基类
 
-    重写 :meth:`init` 和 :meth:`render` 以实现具体功能
+    重写 :meth:`render` 以实现具体功能
     '''
     data_ctx: ContextVar[RenderData] = ContextVar('Renderer.data_ctx')
 
