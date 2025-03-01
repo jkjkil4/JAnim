@@ -493,11 +493,9 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         for key in self.components.keys() | other.components.keys():
             self.components[key].become(other.components[key])
 
-        from janim.anims.timeline import Timeline
-        timeline = Timeline.get_context(raise_exc=False)
         # 如果根物件是可见的，那么 become 的最后会把所有子物件设为可见
-        if timeline is not None and timeline.is_visible(self):
-            timeline.show(self)
+        if self.timeline is not None and self.timeline.is_visible(self):
+            self.timeline.show(self)
 
         return self
 

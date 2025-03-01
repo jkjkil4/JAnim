@@ -9,7 +9,6 @@ from typing import Callable, Generator, Iterable
 from janim.anims.animation import Animation, ItemAnimation
 from janim.anims.composition import AnimGroup
 from janim.anims.fading import FadeInFromPoint, FadeOutToPoint
-from janim.anims.timeline import Timeline
 from janim.constants import C_LABEL_ANIM_STAY, OUT
 from janim.items.item import Item
 from janim.items.points import Points
@@ -59,7 +58,6 @@ class Transform(Animation):
 
         self.root_only = root_only
 
-        self.timeline = Timeline.get_context()
         apprs = self.timeline.item_appearances
 
         for item in self.src_item.walk_self_and_descendants(root_only):
@@ -340,6 +338,7 @@ class TransformMatchingShapes(AnimGroup):
         mismatch: tuple[Callable, Callable] = (FadeOutToPoint, FadeInFromPoint),
         duration: float = 2,
         lag_ratio: float = 0,
+        collapse: bool = True,
         **kwargs
     ):
         src_mismatch_method, target_mismatch_method = mismatch
@@ -393,5 +392,6 @@ class TransformMatchingShapes(AnimGroup):
                 for piece in target_mismatched
             ],
             duration=duration,
-            lag_ratio=lag_ratio
+            lag_ratio=lag_ratio,
+            collapse=collapse
         )

@@ -60,6 +60,9 @@ class Animation:
         # 该动画及父动画的 rate_func 组成的列表
         self.rate_funcs = [] if rate_func is linear else [rate_func]
 
+        from janim.anims.timeline import Timeline
+        self.timeline = Timeline.get_context()
+
     def __anim__(self) -> Self:
         return self
 
@@ -127,8 +130,6 @@ class ItemAnimation(Animation):
         # 例如，该值会被 Display 置为 True，因为 Display 不基于更前面的动画
         self._cover_previous_anims = False
 
-        from janim.anims.timeline import Timeline
-        self.timeline = Timeline.get_context()
         self.stack = self.timeline.item_appearances[self.item].stack
         if self.auto_detect and not self.stack.has_detected_change():
             self.stack.detect_change(self.item, 0)

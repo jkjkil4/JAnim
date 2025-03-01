@@ -18,7 +18,6 @@ import os
 import time
 import traceback
 from bisect import bisect_left
-from typing import Sequence
 
 from PySide6.QtCore import QByteArray, Qt, Signal
 from PySide6.QtGui import QAction, QCloseEvent, QHideEvent, QIcon, QShowEvent
@@ -63,7 +62,7 @@ class AnimViewer(QMainWindow):
         *,
         auto_play: bool = True,
         interact: bool = False,
-        available_timeline_names: Sequence[str] | None = None,
+        available_timeline_names: list[str] | None = None,
         parent: QWidget | None = None
     ):
         super().__init__(parent)
@@ -294,7 +293,7 @@ class AnimViewer(QMainWindow):
 
         self.setGeometry(geometry)
 
-    def update_completer(self, completions: Sequence[str]) -> None:
+    def update_completer(self, completions: list[str]) -> None:
         completer = QCompleter(completions)
         completer.setFilterMode(Qt.MatchFlag.MatchContains)
         self.name_edit.setCompleter(completer)

@@ -1,7 +1,6 @@
 
 import math
 from dataclasses import dataclass
-from functools import partial
 from typing import Callable
 
 import numpy as np
@@ -249,6 +248,12 @@ class Write(DrawBorderThenFill):
 
 
 class ShowIncreasingSubsets(Animation):
+    '''
+    因为这个动画的实现方式并不作用于原物件，
+    所以这里参数命名是 ``hide_at_begin`` 和 ``show_at_end`` 而不是常见的 ``show_at_begin`` 和 ``hide_at_end``
+
+    语义上表示在动画区间内隐藏原物件，由该动画代管渲染
+    '''
     label_color = C_LABEL_ANIM_IN
 
     def __init__(
@@ -267,29 +272,31 @@ class ShowIncreasingSubsets(Animation):
         self.int_func = int_func
         self.index = 0
 
-    def anim_init(self) -> None:
+    def _time_fixed(self) -> None:
         self.n_children = len(self.group)
 
-        self.set_render_call_list([
-            RenderCall(
-                item.depth,
-                partial(self.render_item, i, item)
-            )
+        apprs = self.timeline.item_appearances
+        self.items = [
+            (i, [apprs[item] for item in child.walk_self_and_descendants()])
             for i, child in enumerate(self.group)
-            for item in child.walk_self_and_descendants()
-        ])
+        ]
+        self.timeline.add_additional_render_calls_callback(self.t_range, self.render_calls_callback)
 
         if self.hide_at_begin:
-            self.timeline.schedule(self.global_range.at, self.group.hide)
+            self.timeline.schedule(self.t_range.at, self.group.hide)
         if self.show_at_end:
-            self.timeline.schedule(self.global_range.end, self.group.show)
+            self.timeline.schedule(self.t_range.end, self.group.show)
 
-    def anim_on_alpha(self, alpha: float) -> None:
+    def render_calls_callback(self):
+        global_t = Animation.global_t_ctx.get()
+        alpha = self.get_alpha_on_global_t(global_t)
         self.index = int(self.int_func(alpha * self.n_children))
-
-    def render_item(self, i: int, item: Item) -> None:
-        if self.is_item_visible(i):
-            item.current().render()
+        return [
+            (appr.stack.compute(global_t, True), appr.render)
+            for i, items in self.items
+            if self.is_item_visible(i)
+            for appr in items
+        ]
 
     def is_item_visible(self, i: int) -> bool:
         return i < self.index

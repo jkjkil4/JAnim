@@ -46,6 +46,11 @@ type ItemUpdaterFn = Callable[[UpdaterParams], Item]
 type StepUpdaterFn[T] = Callable[[T, UpdaterParams], Any]
 
 
+def _call_two_func(func1: Callable, func2: Callable, *args, **kwargs) -> None:
+    func1(*args, **kwargs)
+    func2(*args, **kwargs)
+
+
 class DataUpdater[T: Item](Animation):
     '''
     以时间为参数对物件的数据进行修改
@@ -101,10 +106,12 @@ class DataUpdater[T: Item](Animation):
         self.skip_null_items = skip_null_items
         self.root_only = root_only
 
-    def _time_fixed(self):
-        from janim.anims.timeline import Timeline
-        self.timeline = Timeline.get_context()
+    def add_post_updater(self, func: DataUpdaterFn[T]) -> Self:
+        orig_func = self.func
+        self.func = lambda data, p: _call_two_func(orig_func, func, data, p)
+        return self
 
+    def _time_fixed(self):
         items = [
             item
             for item in self.item.walk_self_and_descendants(self.root_only)
@@ -191,6 +198,11 @@ class GroupUpdater[T: Item](Animation):
 
         self.applied: bool = False
 
+    def add_post_updater(self, func: GroupUpdaterFn[T]) -> Self:
+        orig_func = self.func
+        self.func = lambda data, p: _call_two_func(orig_func, func, data, p)
+        return self
+
     @dataclass
     class DataGroup:
         data: Item
@@ -198,12 +210,12 @@ class GroupUpdater[T: Item](Animation):
         updater: _GroupUpdater
 
     def _time_fixed(self):
-        from janim.anims.timeline import Timeline
-        timeline = Timeline.get_context()
-
         self.data = self.item.copy()
 
-        stacks = [timeline.item_appearances[item].stack for item in self.item.walk_self_and_descendants()]
+        stacks = [
+            self.timeline.item_appearances[item].stack
+            for item in self.item.walk_self_and_descendants()
+        ]
         updaters = [
             _GroupUpdater(self, item, data, stacks, show_at_begin=self.show_at_begin)
             for item, data in zip(self.item.walk_self_and_descendants(), self.data.walk_self_and_descendants())
@@ -221,7 +233,7 @@ class GroupUpdater[T: Item](Animation):
 
         for sub_updater in updaters:
             sub_updater.transfer_params(self)
-            sub_updater.finalize(timeline.time_aligner)
+            sub_updater.finalize(self.timeline.time_aligner)
 
     def apply_for_group(self, global_t: float) -> None:
         if self.applied:
@@ -296,9 +308,7 @@ class ItemUpdater(Animation):
         self.renderers: dict[type, Renderer] = {}
 
     def _time_fixed(self):
-        from janim.anims.timeline import Timeline
-        timeline = Timeline.get_context()
-        timeline.add_additional_render_calls_callback(self.t_range, self.render_calls_callback)
+        self.timeline.add_additional_render_calls_callback(self.t_range, self.render_calls_callback)
 
         if self.item is None:
             return
@@ -306,9 +316,9 @@ class ItemUpdater(Animation):
         # 在动画开始时自动隐藏，在动画结束时自动显示
         # 可以将 ``hide_on_begin`` 和 ``show_on_end`` 置为 ``False`` 以禁用
         if self.hide_at_begin:
-            timeline.schedule(self.t_range.at, self.item.hide)
+            self.timeline.schedule(self.t_range.at, self.item.hide)
         if self.show_at_end:
-            timeline.schedule(self.t_range.end, self.item.show)
+            self.timeline.schedule(self.t_range.end, self.item.show)
 
         # 在动画结束后，自动使用动画最后一帧的物件替换原有的
         if self.become_at_end:
@@ -319,7 +329,7 @@ class ItemUpdater(Animation):
                                self) as params:
                 self.item.become(self.call(params))
                 for item in self.item.walk_self_and_descendants():
-                    timeline.item_appearances[item].stack.detect_change(item, self.t_range.end, force=True)
+                    self.timeline.item_appearances[item].stack.detect_change(item, self.t_range.end, force=True)
 
     def call(self, p: UpdaterParams) -> Item:
         ret = self.func(p)
@@ -337,7 +347,7 @@ class ItemUpdater(Animation):
             renderer = self.renderers[item.__class__] = item.renderer_cls()
         return renderer
 
-    def render_calls_callback(self) -> None:
+    def render_calls_callback(self):
         global_t = Animation.global_t_ctx.get()
         alpha = self.get_alpha_on_global_t(global_t)
         with UpdaterParams(global_t,
@@ -351,3 +361,6 @@ class ItemUpdater(Animation):
             (item, self.get_renderer(item).render)
             for item in ret.walk_self_and_descendants()
         ]
+
+
+# TODO: StepUpdater

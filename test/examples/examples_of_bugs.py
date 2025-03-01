@@ -32,3 +32,13 @@ class TestFloatInpreciseBug(Timeline):
         self.schedule(0.1 + 0.2, circle.show)
         self.schedule(0.3, circle.hide)
         self.forward()
+
+
+class TestIndicateSubitem(Timeline):
+    def construct(self):
+        text = Text('abcdefg', font_size=60)
+
+        self.play(
+            text.anim.points.shift(RIGHT * 2),
+            CircleIndicate(text[0][2:5])
+        )
