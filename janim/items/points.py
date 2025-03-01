@@ -7,7 +7,7 @@ from janim.components.points import Cmpt_Points
 from janim.components.radius import Cmpt_Radius
 from janim.components.rgbas import Cmpt_Rgbas, apart_alpha
 from janim.items.item import Item
-from janim.render.impl import DotCloudRenderer
+from janim.render.renderer_dotcloud import DotCloudRenderer
 from janim.typing import ColorArray, JAnimColor, Vect
 from janim.utils.data import AlignedData
 from janim.utils.iterables import (resize_preserving_order,

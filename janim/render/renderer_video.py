@@ -10,146 +10,20 @@ from janim.anims.animation import Animation
 from janim.exception import EXITCODE_FFMPEG_NOT_FOUND, ExitException
 from janim.locale.i18n import get_local_strings
 from janim.logger import log
-from janim.render.base import Renderer, get_compute_shader, get_program
-from janim.render.texture import get_texture_from_img
+from janim.render.base import Renderer, get_program
 from janim.utils.config import Config
 from janim.utils.iterables import resize_with_interpolation
 
 if TYPE_CHECKING:
-    from janim.items.image_item import ImageItem, Video, VideoInfo
-    from janim.items.points import DotCloud
-    from janim.items.vitem import VItem
+    from janim.items.image_item import Video, VideoInfo
 
-_ = get_local_strings('impl')
-
-
-class DotCloudRenderer(Renderer):
-    def init(self) -> None:
-        self.prog = get_program('render/shaders/dotcloud')
-
-        self.u_fix = self.get_u_fix_in_frame(self.prog)
-
-        self.ctx = self.data_ctx.get().ctx
-        self.vbo_points = self.ctx.buffer(reserve=1)
-        self.vbo_color = self.ctx.buffer(reserve=1)
-        self.vbo_radius = self.ctx.buffer(reserve=1)
-
-        self.vao = self.ctx.vertex_array(self.prog, [
-            (self.vbo_points, '3f', 'in_point'),
-            (self.vbo_color, '4f', 'in_color'),
-            (self.vbo_radius, '1f', 'in_radius')
-        ])
-
-        self.prev_points = None
-        self.prev_color = None
-        self.prev_radius = None
-
-    def render(self, item: DotCloud) -> None:
-        new_color = item.color._rgbas.data
-        new_radius = item.radius._radii.data
-        new_points = item.points._points.data
-
-        if new_color is not self.prev_color or len(new_points) != len(self.prev_points):
-            color = resize_with_interpolation(new_color, len(new_points))
-            assert color.dtype == np.float32
-            bytes = color.tobytes()
-
-            if len(bytes) != self.vbo_color.size:
-                self.vbo_color.orphan(len(bytes))
-
-            self.vbo_color.write(bytes)
-            self.prev_color = new_color
-
-        if new_radius is not self.prev_radius or len(new_points) != len(self.prev_points):
-            radius = resize_with_interpolation(new_radius, len(new_points))
-            assert radius.dtype == np.float32
-            bytes = radius.tobytes()
-
-            if len(bytes) != self.vbo_radius.size:
-                self.vbo_radius.orphan(len(bytes))
-
-            self.vbo_radius.write(bytes)
-            self.prev_radius = new_radius
-
-        if new_points is not self.prev_points:
-            assert new_points.dtype == np.float32
-            bytes = new_points.tobytes()
-
-            if len(bytes) != self.vbo_points.size:
-                self.vbo_points.orphan(len(bytes))
-
-            self.vbo_points.write(bytes)
-            self.prev_points = new_points
-
-        self.update_fix_in_frame(self.u_fix, item)
-        self.vao.render(mgl.POINTS, vertices=len(self.prev_points))
-
-
-class ImageItemRenderer(Renderer):
-    def init(self) -> None:
-        self.prog = get_program('render/shaders/image')
-
-        self.u_fix = self.get_u_fix_in_frame(self.prog)
-        self.u_image = self.prog['image']
-
-        self.ctx = self.data_ctx.get().ctx
-        self.vbo_points = self.ctx.buffer(reserve=4 * 3 * 4)
-        self.vbo_color = self.ctx.buffer(reserve=4 * 4 * 4)
-        self.vbo_texcoords = self.ctx.buffer(
-            data=np.array([
-                [0.0, 0.0],     # 左上
-                [0.0, 1.0],     # 左下
-                [1.0, 0.0],     # 右上
-                [1.0, 1.0]      # 右下
-            ], dtype=np.float32).tobytes()
-        )
-
-        self.vao = self.ctx.vertex_array(self.prog, [
-            (self.vbo_points, '3f', 'in_point'),
-            (self.vbo_color, '4f', 'in_color'),
-            (self.vbo_texcoords, '2f', 'in_texcoord')
-        ])
-
-        self.prev_points = None
-        self.prev_color = None
-        self.prev_img = None
-
-    def render(self, item: ImageItem) -> None:
-        new_color = item.color._rgbas.data
-        new_points = item.points._points.data
-
-        if new_color is not self.prev_color:
-            color = resize_with_interpolation(new_color, 4)
-            assert color.dtype == np.float32
-            bytes = color.tobytes()
-
-            assert len(bytes) == self.vbo_color.size
-
-            self.vbo_color.write(bytes)
-            self.prev_color = new_color
-
-        if new_points is not self.prev_points:
-            assert new_points.dtype == np.float32
-            bytes = new_points.tobytes()
-
-            assert len(bytes) == self.vbo_points.size
-
-            self.vbo_points.write(bytes)
-            self.prev_points = new_points
-
-        if self.prev_img is None or item.image.img is not self.prev_img:
-            self.texture = get_texture_from_img(item.image.get())
-            self.texture.build_mipmaps()
-            self.prev_img = item.image.img
-
-        self.u_image.value = 0
-        self.texture.filter = item.image.get_filter()
-        self.texture.use(0)
-        self.update_fix_in_frame(self.u_fix, item)
-        self.vao.render(mgl.TRIANGLE_STRIP)
+_ = get_local_strings('renderer_video')
 
 
 class VideoRenderer(Renderer):
+    def __init__(self):
+        self.initialized: bool = False
+
     def init(self) -> None:
         self.prog = get_program('render/shaders/image')
 
@@ -181,6 +55,10 @@ class VideoRenderer(Renderer):
         self.prev_color = None
 
     def render(self, item: Video) -> None:
+        if not self.initialized:
+            self.init()
+            self.initialized = True
+
         new_color = item.color._rgbas.data
         new_points = item.points._points.data
 
