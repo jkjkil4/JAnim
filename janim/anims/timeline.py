@@ -5,12 +5,13 @@ import math
 import os
 import time
 import traceback
+import types
 from abc import ABCMeta, abstractmethod
 from bisect import bisect, insort
 from collections import defaultdict
 from contextvars import ContextVar
 from dataclasses import dataclass
-from typing import Callable, Iterable, Self
+from typing import Callable, Iterable, Self, overload
 
 import moderngl as mgl
 import numpy as np
@@ -21,15 +22,20 @@ from janim.anims.animation import Animation, TimeAligner, TimeRange
 from janim.anims.composition import AnimGroup
 from janim.anims.updater import updater_params_ctx
 from janim.camera.camera import Camera
-from janim.constants import DEFAULT_DURATION
+from janim.constants import (BLACK, DEFAULT_DURATION,
+                             DEFAULT_ITEM_TO_EDGE_BUFF, DOWN, SMALL_BUFF, UP)
 from janim.exception import TimelineLookupError
 from janim.items.audio import Audio
 from janim.items.item import Item
+from janim.items.points import Group
+from janim.items.shape_matchers import SurroundingRect
+from janim.items.svg.typst import TypstText
+from janim.items.text import Text
 from janim.locale.i18n import get_local_strings
 from janim.logger import log
 from janim.render.base import (RenderData, Renderer, create_context,
                                create_framebuffer, set_global_uniforms)
-from janim.typing import SupportsAnim
+from janim.typing import JAnimColor, SupportsAnim
 from janim.utils.config import Config, ConfigGetter, config_ctx_var
 from janim.utils.data import ContextSetter
 from janim.utils.iterables import resize_preserving_order
@@ -150,7 +156,15 @@ class Timeline(metaclass=ABCMeta):
         range: TimeRange
         clip_range: TimeRange
 
-    # TODO: SubtitleInfo
+    @dataclass
+    class SubtitleInfo:
+        '''
+        调用 :meth:`~.Timeline.subtitle` 的参数信息
+        '''
+        text: str
+        range: TimeRange
+        kwargs: dict
+        subtitle: Text
 
     @dataclass
     class AdditionalRenderCallsCallback:
@@ -165,7 +179,7 @@ class Timeline(metaclass=ABCMeta):
 
         self.scheduled_tasks: list[Timeline.ScheduledTask] = []
         self.audio_infos: list[Timeline.PlayAudioInfo] = []
-        # TODO: subtitle_infos
+        self.subtitle_infos: list[Timeline.SubtitleInfo] = []   # helpful for extracting subtitles
 
         self.pause_points: list[Timeline.PausePoint] = []
 
@@ -325,9 +339,49 @@ class Timeline(metaclass=ABCMeta):
 
     # endregion
 
-    # TODO: aas
+    def aas(
+        self,
+        file_path: str,
+        subtitle: str | Iterable[str],
+        **kwargs
+    ) -> TimeRange:
+        '''
+        :meth:`audio_and_subtitle` 的简写
+        '''
+        return self.audio_and_subtitle(file_path, subtitle, **kwargs)
 
-    # TODO: audio_and_subtitle
+    def audio_and_subtitle(
+        self,
+        file_path: str,
+        subtitle: str | Iterable[str],
+        *,
+        clip: tuple[float, float] | None | types.EllipsisType = ...,
+        delay: float = 0,
+        mul: float | Iterable[float] | None = None,
+        **subtitle_kwargs
+    ) -> TimeRange:
+        '''
+        播放音频，并在对应的区间显示字幕
+
+        - 如果 ``clip=...`` （默认，省略号），则表示自动确定裁剪区间，将前后的空白去除（可以传入 ``clip=None`` 禁用自动裁剪）
+        - 如果 ``mul`` 不是 ``None``，则会将音频振幅乘以该值
+        '''
+        audio = Audio(file_path)
+        if mul is not None:
+            audio.mul(mul)
+
+        if clip is ...:
+            recommended = audio.recommended_range()
+            if recommended is None:
+                clip = None
+            else:
+                clip = (math.floor(recommended[0] * 10) / 10,
+                        math.ceil(recommended[1] * 10) / 10)
+
+        t = self.play_audio(audio, delay=delay, clip=clip)
+        self.subtitle(subtitle, t, **subtitle_kwargs)
+
+        return t
 
     # region audio
 
@@ -372,7 +426,128 @@ class Timeline(metaclass=ABCMeta):
 
     # endregion
 
-    # TODO: region subtitle
+    # region subtitle
+
+    @overload
+    def subtitle(
+        self,
+        text: str | Iterable[str],
+        duration: float = 1,
+        delay: float = 0,
+        scale: float | Iterable[float] = 0.8,
+        use_typst_text: bool | Iterable[bool] = False,
+        surrounding_color: JAnimColor = BLACK,
+        surrounding_alpha: float = 0.5,
+        font: str | Iterable[str] = [],
+        depth: float = -1e5,
+        **kwargs
+    ) -> TimeRange: ...
+
+    @overload
+    def subtitle(self, text: str | Iterable[str], range: TimeRange, **kwargs) -> TimeRange: ...
+
+    def subtitle(
+        self,
+        text: str | Iterable[str],
+        duration: float = 1,
+        delay: float = 0,
+        scale: float | Iterable[float] = 1,
+        base_scale: float = 0.8,
+        use_typst_text: bool | Iterable[bool] = False,
+        surrounding_color: JAnimColor = BLACK,
+        surrounding_alpha: float = 0.5,
+        font: str | Iterable[str] = [],
+        depth: float = -1e5,
+        **kwargs
+    ) -> TimeRange:
+        '''
+        添加字幕
+
+        - 文字可以传入一个列表，纵向排列显示
+        - 可以指定在当前位置往后 ``delay`` 秒才显示
+        - ``duration`` 表示持续时间
+        - ``scale`` 表示对文字的缩放，默认为 ``0.8``，可以传入列表表示对各个文字的缩放
+        - ``use_typst_text`` 表示是否使用 :class:`TypstText`，可以传入列表表示各个文字是否使用
+
+        返回值表示显示的时间段
+        '''
+        # 处理参数
+        text_lst = [text] if isinstance(text, str) else text
+        scale_lst = [scale] if not isinstance(scale, Iterable) else scale
+        use_typst_lst = [use_typst_text] if not isinstance(use_typst_text, Iterable) else use_typst_text
+
+        if isinstance(duration, TimeRange):
+            range = duration
+        else:
+            range = TimeRange(self.current_time + delay, duration)
+
+        # 处理字体
+        cfg_font = Config.get.subtitle_font
+        if cfg_font:
+            if isinstance(font, str):
+                font = [font]
+            else:
+                font = list(font)
+
+            if isinstance(cfg_font, str):
+                font.append(cfg_font)
+            else:
+                font.extend(cfg_font)
+
+        # 创建文字
+        for text, scale, use_typst_text in zip(reversed(text_lst),
+                                               reversed(resize_preserving_order(scale_lst, len(text_lst))),
+                                               reversed(resize_preserving_order(use_typst_lst, len(text_lst)))):
+            if use_typst_text:
+                subtitle = TypstText(text, **kwargs)
+            else:
+                subtitle = Text(text, font=font, **kwargs)
+            subtitle.points.scale(scale * base_scale)
+            self.place_subtitle(subtitle, range)
+            self.subtitle_infos.append(Timeline.SubtitleInfo(text, range, kwargs, subtitle))
+
+            subtitle_group = Group(
+                SurroundingRect(subtitle,
+                                color=surrounding_color,
+                                stroke_alpha=0,
+                                fill_alpha=surrounding_alpha),
+                subtitle
+            ).fix_in_frame()
+            subtitle_group.depth.set(depth)
+
+            if not self.hide_subtitles:
+                self.schedule(range.at, subtitle_group.show)
+                self.schedule(range.end, subtitle_group.hide)
+
+        return range.copy()
+
+    def place_subtitle(self, subtitle: Text | TypstText, range: TimeRange) -> None:
+        '''
+        被 :meth:`subtitle` 调用以将字幕放置到合适的位置：
+
+        - 对于同一批添加的字幕 ``[a, b]``，则 ``a`` 放在 ``b`` 的上面
+        - 如果在上文所述的 ``[a, b]`` 仍存在时，又加入了一个 ``c``，则 ``c`` 放在最上面
+        '''
+        for other in reversed(self.subtitle_infos):
+            # 根据 TimelineView 中排列显示标签的经验
+            # 这里加了一个 np.isclose 的判断
+            # 如果不加可能导致前一个字幕消失但是后一个字幕凭空出现在更上面
+            # （但是我没有测试过是否会出现这个bug，只是根据写 TimelineView 时的经验加了 np.isclose）
+            if other.range.at <= range.at < other.range.end and not np.isclose(range.at, other.range.end):
+                subtitle.points.next_to(other.subtitle, UP, buff=2 * SMALL_BUFF)
+                return
+
+        if isinstance(subtitle, Text):
+            # 相对于 mark_orig 对齐到屏幕底端，这样不同字幕的位置不会上下浮动
+            target_y = -Config.get.frame_y_radius + DEFAULT_ITEM_TO_EDGE_BUFF
+            subtitle.points.set_x(0).shift(UP * (target_y - subtitle[-1].get_mark_orig()[1]))
+        else:
+            subtitle.points.to_border(DOWN)
+
+    def has_subtitle(self) -> bool:
+        return len(self.subtitle_infos) != 0
+
+    # endregion
 
     # region ItemAppearance
 

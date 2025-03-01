@@ -193,7 +193,7 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         if recurse_down:
             mark(self.descendants())
 
-    def set(self, **styles) -> None:
+    def set(self, **styles) -> Self:
         '''
         设置物件以及子物件的样式，与 :meth:`apply_styles` 只影响自身不同的是，该方法也会影响所有子物件
         '''
@@ -215,6 +215,8 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
                     _('The passed parameter "{key}" did not match any style settings and was not used anywhere.')
                     .format(key=key)
                 )
+
+        return self
 
     @classmethod
     def get_available_styles(cls) -> list[str]:
