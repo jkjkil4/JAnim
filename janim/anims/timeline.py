@@ -479,7 +479,8 @@ class Timeline(metaclass=ABCMeta):
         if isinstance(duration, TimeRange):
             range = duration
         else:
-            range = TimeRange(self.current_time + delay, duration)
+            at = self.current_time + delay
+            range = TimeRange(at, at + duration)
 
         # 处理字体
         cfg_font = Config.get.subtitle_font
