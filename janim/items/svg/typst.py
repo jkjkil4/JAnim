@@ -35,27 +35,45 @@ class TypstDoc(SVGItem):
 
     group_key = 'data-typst-label'
 
-    def __init__(self, text: str, **kwargs):
+    def __init__(
+        self,
+        text: str,
+        *,
+        shared_preamble: str | None = None,
+        additional_preamble: str | None = None,
+        **kwargs
+    ):
         self.text = text
+        if shared_preamble is None:
+            shared_preamble = Config.get.typst_shared_preamble
+        if additional_preamble is None:
+            additional_preamble = ''
 
-        super().__init__(self.compile_typst(text), **kwargs)
+        super().__init__(self.compile_typst(text, shared_preamble, additional_preamble), **kwargs)
 
     def move_into_position(self) -> None:
         self.points.scale(0.9, about_point=ORIGIN).to_border(UP)
 
     @staticmethod
-    def compile_typst(text: str) -> str:
+    def compile_typst(text: str, shared_preamble: str, additional_preamble: str) -> str:
         '''
         编译 ``Typst`` 文档
         '''
         typst_temp_dir = get_typst_temp_dir()
-        hash_hex = hashlib.md5(text.encode()).hexdigest()
+        md5 = hashlib.md5(text.encode())
+        md5.update(shared_preamble.encode())
+        md5.update(additional_preamble.encode())
+        hash_hex = md5.hexdigest()
 
         svg_file_path = os.path.join(typst_temp_dir, hash_hex + '.svg')
         if os.path.exists(svg_file_path):
             return svg_file_path
 
-        typst_content = get_typst_template().replace('[typst_expression]', text)
+        typst_content = get_typst_template().format(
+            shared_preamble=shared_preamble,
+            additional_preamble=additional_preamble,
+            typst_expression=text
+        )
 
         commands = [
             Config.get.typst_bin,
@@ -329,13 +347,28 @@ class TypstDoc(SVGItem):
     # endregion
 
 
-class Typst(TypstDoc):
+class TypstText(TypstDoc):
     '''
-    Typst 公式
+    Typst 文本
     '''
-    def __init__(self, text: str, *, use_math_environment: bool = True, **kwargs):
+    def __init__(
+        self,
+        text: str,
+        *,
+        shared_preamble: str | None = None,
+        preamble: str | None = None,
+        use_math_environment: bool = False,
+        **kwargs
+    ):
+        if preamble is None:
+            if use_math_environment:
+                preamble = Config.get.typst_math_preamble
+            else:
+                preamble = Config.get.typst_text_preamble
         super().__init__(
             f'$ {text} $' if use_math_environment else text,
+            shared_preamble=shared_preamble,
+            additional_preamble=preamble,
             **kwargs
         )
 
@@ -343,18 +376,39 @@ class Typst(TypstDoc):
         self.points.to_center()
 
 
-class TypstText(Typst):
+class TypstMath(TypstText):
     '''
-    Typst 文本
+    Typst 公式
 
-    相当于 :class:`Typst` 传入 ``use_math_environment=False``
+    相当于 :class:`Typst` 传入 ``use_math_environment=True``
     '''
-    def __init__(self, text: str, use_math_environment: bool = False, **kwargs):
+    def __init__(
+        self,
+        text: str,
+        *,
+        shared_preamble: str | None = None,
+        preamble: str | None = None,
+        use_math_environment: bool = True,
+        **kwargs
+    ):
         super().__init__(
             text,
+            shared_preamble=shared_preamble,
+            preamble=preamble,
             use_math_environment=use_math_environment,
             **kwargs
         )
+
+
+class Typst(TypstMath):
+    def __init__(self, text: str, **kwargs):
+        from janim.utils.deprecation import deprecated
+        deprecated(
+            'Typst',
+            'TypstMath',
+            remove=(3, 3)
+        )
+        super().__init__(text, **kwargs)
 
 
 cached_typst_template: str | None = None

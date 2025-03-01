@@ -23,3 +23,12 @@ class TestSuccessionFadeOutBug(Timeline):
                 duration=0.9 + 0.2 * random.random()
             )
             self.forward(0.3)
+
+
+class TestFloatInpreciseBug(Timeline):
+    def construct(self):
+        circle = Circle()
+
+        self.schedule(0.1 + 0.2, circle.show)
+        self.schedule(0.3, circle.hide)
+        self.forward()

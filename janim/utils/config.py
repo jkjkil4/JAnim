@@ -128,6 +128,9 @@ class Config(metaclass=_ConfigMeta):
     wnd_monitor: int = _field(validator=_opt_int_validator)
 
     typst_bin: str = None
+    typst_shared_preamble: str = None
+    typst_text_preamble: str = None
+    typst_math_preamble: str = None
 
     ffmpeg_bin: str = None
     ffprobe_bin: str = None
@@ -172,6 +175,9 @@ default_config = Config(
     wnd_monitor=0,
 
     typst_bin='typst',
+    typst_shared_preamble='',
+    typst_text_preamble='',
+    typst_math_preamble='',
 
     ffmpeg_bin='ffmpeg',
     ffprobe_bin='ffprobe',

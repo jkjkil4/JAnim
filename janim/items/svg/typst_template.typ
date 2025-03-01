@@ -1,4 +1,8 @@
 #set page(fill: none)
 #set text(white)
 
-[typst_expression]
+{shared_preamble}
+
+{additional_preamble}
+
+{typst_expression}
