@@ -6,7 +6,6 @@ from typing import TYPE_CHECKING
 from PySide6.QtCore import QEvent, QObject, QPointF, QRectF, Qt
 from PySide6.QtGui import QColor, QMouseEvent, QPainter, QPaintEvent
 
-from janim.anims.display import Display
 from janim.items.item import Item
 from janim.items.points import Points
 from janim.locale.i18n import get_local_strings
@@ -112,20 +111,18 @@ class Selector(QObject):
 
         glx, gly = self.viewer.glw.map_to_gl2d(event.position())
 
-        anim = self.viewer.built
-        global_t = anim._time
-        camera_info = anim.current_camera_info()
+        built = self.viewer.built
+        global_t = built._time
+        camera_info = built.current_camera_info()
 
         found: list[Selector.SelectedItem] = []
 
-        for display in anim.display_anim.anims:
-            display: Display
-            if not display.global_range.at <= global_t < display.global_range.end:
+        for item, appr in built.visible_item_segments.get(global_t):
+            if not appr.is_visible_at(global_t):
                 continue
+            box = item.current(as_time=global_t)(Points).points.box
 
-            box = display.item.current(as_time=global_t)(Points).points.box
-
-            if display.item.is_fix_in_frame():
+            if item.is_fix_in_frame():
                 mapped = self.get_fixed_camera_info().map_points(box.get_corners())
             else:
                 mapped = camera_info.map_points(box.get_corners())
@@ -134,7 +131,7 @@ class Selector(QObject):
             if not min_glx <= glx <= max_glx or not min_gly <= gly <= max_gly:
                 continue
 
-            found.append(Selector.SelectedItem(display.item, min_glx, min_gly, max_glx, max_gly))
+            found.append(Selector.SelectedItem(item, min_glx, min_gly, max_glx, max_gly))
 
         if not found:
             self.current = None
@@ -213,7 +210,7 @@ class Selector(QObject):
             _('Selected Parent Item: ') + (
                 'None'
                 if self.current is None
-                else f'{self.current.item.__class__.__name__} at {id(self.current.item):X}'
+                else f'{self.current.item.__class__.__name__} at 0x{id(self.current.item):x}'
             ),
             _('Selected Subitems: ') + ', '.join(
                 (

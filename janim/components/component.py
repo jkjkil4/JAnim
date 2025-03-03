@@ -85,9 +85,6 @@ class Component[ItemT](refresh.Refreshable, metaclass=_CmptMeta):
         '''
         self.bind = bind
 
-    def fallback_check(self) -> bool:
-        return self.bind is not None and self.bind.at_item.stored
-
     def mark_refresh(self, func: Callable | str, *, recurse_up=False, recurse_down=False) -> Self:
         '''
         详见： :meth:`~.Item.broadcast_refresh_of_component`

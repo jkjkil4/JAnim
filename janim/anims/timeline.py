@@ -640,8 +640,9 @@ class Timeline(metaclass=ABCMeta):
         root = self.compute_item(item, as_time, False)
         if not root_only:
             assert not root.children and root.stored_children is not None
-            root.add(*[self.item_current(sub) for sub in root.stored_children])
             root.stored = False
+            root.add(*[self.item_current(sub) for sub in root.stored_children])
+            root.reset_refresh()
         return root
 
     # endregion

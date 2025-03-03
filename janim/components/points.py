@@ -211,7 +211,7 @@ class Cmpt_Points[ItemT](Component[ItemT]):
 
     @property
     @set.self_refresh_with_recurse(recurse_up=True)
-    @refresh.register(fallback_check=Component.fallback_check)
+    @refresh.register
     def box(self) -> BoundingBox:
         '''
         表示物件（包括后代物件）的矩形包围框

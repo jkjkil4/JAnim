@@ -134,11 +134,14 @@ class DataUpdater[T: Item](Animation):
         return self
 
     def _time_fixed(self):
-        items = [
-            item
-            for item in self.item.walk_self_and_descendants(self.root_only)
-            if not self.skip_null_items or not item.is_null()
-        ]
+        items: list[Item] = []
+        for item in self.item.walk_self_and_descendants(self.root_only):
+            if self.skip_null_items and item.is_null():
+                # 这两行是为了 selector 中能够正确选择到物件
+                self.timeline.track(item)
+                self.schedule_show_and_hide(item, self.show_at_begin, self.hide_at_end)
+            else:
+                items.append(item)
         count = len(items)
 
         for i, item in enumerate(items):

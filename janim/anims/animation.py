@@ -108,6 +108,12 @@ class Animation:
 
     global_t_ctx: ContextVar[float] = ContextVar('Animation.global_t_ctx')
 
+    def schedule_show_and_hide(self, item: Item, show_at_begin: bool, hide_at_end: bool) -> None:
+        if show_at_begin:
+            self.timeline.schedule(self.t_range.at, item.show, root_only=True)
+        if hide_at_end:
+            self.timeline.schedule(self.t_range.end, item.hide, root_only=True)
+
 
 class ItemAnimation(Animation):
     auto_detect = True
@@ -137,11 +143,7 @@ class ItemAnimation(Animation):
 
     def _time_fixed(self):
         self.stack.append(self)
-
-        if self.show_at_begin:
-            self.timeline.schedule(self.t_range.at, self.item.show, root_only=True)
-        if self.hide_at_end:
-            self.timeline.schedule(self.t_range.end, self.item.hide, root_only=True)
+        self.schedule_show_and_hide(self.item, self.show_at_begin, self.hide_at_end)
 
     @dataclass
     class ApplyParams:
