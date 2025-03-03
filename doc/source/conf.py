@@ -29,7 +29,7 @@ autodoc_member_order = 'bysource'
 # autodoc_default_flags = ['members', 'show-inheritance']
 
 templates_path = ['_templates']
-exclude_patterns = []
+exclude_patterns = ['._*', '**/._*']
 
 language = 'zh_CN'
 locale_dirs = ['locales/']
