@@ -23,6 +23,7 @@ from janim.anims.animation import Animation, TimeAligner, TimeRange
 from janim.anims.composition import AnimGroup
 from janim.anims.updater import updater_params_ctx
 from janim.camera.camera import Camera
+from janim.camera.camera_info import CameraInfo
 from janim.constants import (BLACK, DEFAULT_DURATION,
                              DEFAULT_ITEM_TO_EDGE_BUFF, DOWN, SMALL_BUFF, UP)
 from janim.exception import TimelineLookupError
@@ -822,6 +823,8 @@ class BuiltTimeline:
         self.timeline = timeline
         self.duration = timeline.time_aligner.align_t(timeline.current_time)
 
+        self._time: float = 0
+
     @property
     def cfg(self) -> Config | ConfigGetter:
         return self.timeline.config_getter
@@ -873,6 +876,9 @@ class BuiltTimeline:
 
         return result
 
+    def current_camera_info(self) -> CameraInfo:
+        return self.timeline.compute_item(self.timeline.camera, self._time, True).points.info
+
     def render_all(self, ctx: mgl.Context, global_t: float) -> None:
         '''
         渲染所有可见物件
@@ -882,6 +888,7 @@ class BuiltTimeline:
         # 使得最后一帧采用略提早一点点的时间渲染，使得一些结束在结尾的动画不突变
         if global_t == self.duration:
             global_t -= 1e-4
+        self._time = global_t
         try:
             with ContextSetter(Animation.global_t_ctx, global_t),   \
                  ContextSetter(Timeline.ctx_var, self.timeline),    \
