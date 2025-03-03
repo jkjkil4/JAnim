@@ -6,6 +6,7 @@ import os
 import time
 import traceback
 import types
+import itertools as it
 from abc import ABCMeta, abstractmethod
 from bisect import bisect, insort
 from collections import defaultdict
@@ -819,7 +820,7 @@ class BuiltTimeline:
     '''
     def __init__(self, timeline: Timeline):
         self.timeline = timeline
-        self.duration = timeline.current_time
+        self.duration = timeline.time_aligner.align_t(timeline.current_time)
 
     @property
     def cfg(self) -> Config | ConfigGetter:
@@ -878,6 +879,9 @@ class BuiltTimeline:
         '''
         timeline = self.timeline
         global_t = timeline.time_aligner.align_t_for_render(global_t)
+        # 使得最后一帧采用略提早一点点的时间渲染，使得一些结束在结尾的动画不突变
+        if global_t == self.duration:
+            global_t -= 1e-4
         try:
             with ContextSetter(Animation.global_t_ctx, global_t),   \
                  ContextSetter(Timeline.ctx_var, self.timeline),    \
@@ -909,6 +913,14 @@ class BuiltTimeline:
                     # （会把所应用的物件的 render_disabled 置为 True，所以在下面可以判断这个变量过滤掉它们）
                     for item, _ in reversed(render_items):
                         item._mark_render_disabled()
+                    # 添加额外的渲染调用，例如 Transform 产生的
+                    # 这里也有可能产生 render_disabled 标记
+                    # TODO: optimize (类似之前 LongOpt 的优化方式)
+                    additional: list[list[tuple[Item, Callable[[Item], None]]]] = []
+                    for rcc in self.timeline.additional_render_calls_callbacks:
+                        if not rcc.t_range.at <= global_t < rcc.t_range.end:
+                            continue
+                        additional.append(rcc.func())
                     # 剔除被标记 render_disabled 的物件，得到 render_items_final
                     render_items_final: list[tuple[Item, Callable]] = []
                     for item, appr in render_items:
@@ -919,12 +931,7 @@ class BuiltTimeline:
                             continue
                         data = appr.stack.compute(global_t, True)
                         render_items_final.append((data, appr.render))
-                    # 添加额外的渲染调用，例如 Transform 产生的
-                    # TODO: optimize (类似之前 LongOpt 的优化方式)
-                    for rcc in self.timeline.additional_render_calls_callbacks:
-                        if not rcc.t_range.at <= global_t < rcc.t_range.end:
-                            continue
-                        render_items_final.extend(rcc.func())
+                    render_items_final.extend(it.chain(*additional))
                     # 按深度排序
                     render_items_final.sort(key=lambda x: x[0].depth, reverse=True)
                     # 渲染
