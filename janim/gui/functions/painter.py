@@ -129,11 +129,11 @@ class Painter(QWidget):
             return
 
         if self.rdb_dot.isChecked():
-            self.constructing = self.Dot(self.viewer)
+            self.constructing = self.PDot(self.viewer)
         elif self.rdb_rect.isChecked():
-            self.constructing = self.Rect(self.viewer)
+            self.constructing = self.PRect(self.viewer)
         elif self.rdb_path.isChecked():
-            self.constructing = self.VItem(self.viewer)
+            self.constructing = self.PVItem(self.viewer)
         else:
             assert False
 
@@ -206,7 +206,7 @@ class Painter(QWidget):
 
         def paint(self, p: QPainter, info: CameraInfo, is_active: bool) -> None: ...
 
-    class Dot(Widget):
+    class PDot(Widget):
         def start(self, pos: np.ndarray) -> None:
             self.moved(pos)
 
@@ -247,7 +247,7 @@ class Painter(QWidget):
                           3, 3)
 
     # TODO: 3d
-    class Rect(Widget):
+    class PRect(Widget):
         def start(self, pos: np.ndarray) -> None:
             self.pos1 = self.pos2 = pos
 
@@ -310,7 +310,7 @@ class Painter(QWidget):
 
             p.drawPath(path)
 
-    class VItem(Widget):
+    class PVItem(Widget):
         def __init__(self, viewer: AnimViewer):
             super().__init__(viewer)
             self.path: list[np.ndarray] = []

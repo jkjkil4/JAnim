@@ -131,9 +131,11 @@ class AnimStack:
 
         - 如果 ``readonly=True`` 则表示不会进行修改，该方法会放心地直接返回缓存
           （但是这并没有强制约束性，传入 ``readonly=True`` 时请遵循不修改返回值的原则，以免影响缓存数据）
+
         - 如果 ``readonly=False`` 则表示会进行修改，此时会返回缓存的拷贝，避免影响缓存数据
 
         例如：
+
         - :meth:`~.Timeline.item_current` 中的调用是 ``readonly=False`` 的，
           因为 :meth:`~.Timeline.item_current` 的返回值最终会被用户使用，我们不能保证用户是否会修改，所以我们干脆假定用户会修改
 

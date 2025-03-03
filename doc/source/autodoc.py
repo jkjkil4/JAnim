@@ -7,6 +7,8 @@ generate_autodoc_exclude = ['janim.constants', 'janim.logger', 'janim.typing',
                             'janim.cli', 'janim.examples', 'janim.locale']
 force_generate_autodoc = False
 
+exclude_substrings = ['._', 'ui_']
+
 extra_include = {
     'janim': ['constants']
 }
@@ -24,6 +26,13 @@ def generate_autodoc(local_path: str, module_path: str) -> bool:
     generated_files = []
 
     for filename in lst:
+        skip = False
+        for substr in exclude_substrings:
+            if substr in filename:
+                skip = True
+                break
+        if skip:
+            continue
         sub_path = os.path.join(search_path, filename)
 
         if os.path.isdir(sub_path):

@@ -155,7 +155,7 @@ text
 参考文档
 ------------
 
-.. automodule:: janim.items.text.text
+.. automodule:: janim.items.text
    :members:
    :undoc-members:
    :show-inheritance:

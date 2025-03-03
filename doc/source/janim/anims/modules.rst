@@ -6,15 +6,16 @@ anims
 .. toctree::
    :maxdepth: 1
 
-   animation
-   composition
+   timeline
    creation
-   display
    fading
    growing
    indication
    movement
    rotation
-   timeline
    transform
    updater
+   animation
+   composition
+   display
+   anim_stack

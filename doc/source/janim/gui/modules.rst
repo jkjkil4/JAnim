@@ -6,15 +6,12 @@ gui
 .. toctree::
    :maxdepth: 1
 
+   functions/modules.rst
    anim_viewer
    application
    audio_player
-   color_widget
-   fixed_ratio_widget
-   font_table
    glwidget
+   fixed_ratio_widget
    precise_timer
-   richtext_editor
-   selector
    timeline_view
-   ui_ColorWidget
+   label

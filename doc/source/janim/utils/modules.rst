@@ -9,7 +9,6 @@ utils
    bezier
    config
    data
-   deprecation
    dict_ops
    file_ops
    font
@@ -21,3 +20,4 @@ utils
    signal
    simple_functions
    space_ops
+   deprecation

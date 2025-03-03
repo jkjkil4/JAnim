@@ -7,6 +7,9 @@ render
    :maxdepth: 1
 
    base
-   impl
+   renderer_dotcloud
    texture
    writer
+   renderer_imageitem
+   renderer_video
+   renderer_vitem

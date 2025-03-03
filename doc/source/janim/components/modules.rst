@@ -14,3 +14,4 @@ components
    radius
    rgbas
    vpoints
+   glow

@@ -1,7 +1,7 @@
-ui_ColorWidget
+renderer_video
 ==============
 
-.. automodule:: janim.gui.ui_ColorWidget
+.. automodule:: janim.render.renderer_video
    :members:
    :undoc-members:
    :show-inheritance:

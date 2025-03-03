@@ -1,7 +1,7 @@
-selector
-========
+glow
+====
 
-.. automodule:: janim.gui.selector
+.. automodule:: janim.components.glow
    :members:
    :undoc-members:
    :show-inheritance:
