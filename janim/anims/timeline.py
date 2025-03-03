@@ -312,7 +312,7 @@ class Timeline(metaclass=ABCMeta):
     def prepare(self, *anims: SupportsAnim, at: float = 0, name: str | None = 'prepare', **kwargs) -> TimeRange:
         self.detect_changes_of_all()
         group = AnimGroup(*anims, at=at + self.current_time, name=name, **kwargs)
-        group.finalize(self.time_aligner)
+        group.finalize()
         # 这里的 anim_groups.append 和 AnimStack.append 是不同的，后者已在 finalize 中被调用
         self.anim_groups.append(group)
         return group.t_range

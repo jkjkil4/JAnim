@@ -248,55 +248,47 @@ class Write(DrawBorderThenFill):
 
 
 class ShowIncreasingSubsets(Animation):
-    '''
-    因为这个动画的实现方式并不作用于原物件，
-    所以这里参数命名是 ``hide_at_begin`` 和 ``show_at_end`` 而不是常见的 ``show_at_begin`` 和 ``hide_at_end``
-
-    语义上表示在动画区间内隐藏原物件，由该动画代管渲染
-    '''
     label_color = C_LABEL_ANIM_IN
 
     def __init__(
         self,
         group: Group[Item],
         *,
-        hide_at_begin: bool = True,
-        show_at_end: bool = True,
-        int_func=round,
+        int_func: Callable[[float], int] = round,
+        show_at_begin: bool = True,
+        hide_at_end: bool = False,
         **kwargs
     ):
         super().__init__(**kwargs)
         self.group = group
-        self.hide_at_begin = hide_at_begin
-        self.show_at_end = show_at_end
         self.int_func = int_func
-        self.index = 0
+        self.show_at_begin = show_at_begin
+        self.hide_at_end = hide_at_end
 
     def _time_fixed(self) -> None:
-        self.n_children = len(self.group)
+        if self.show_at_begin:
+            self.timeline.schedule(self.t_range.at, self.group.show)
+        if self.hide_at_end:
+            self.timeline.schedule(self.t_range.end, self.group.hide)
 
         apprs = self.timeline.item_appearances
-        self.items = [
+
+        self.i_apprs = [
             (i, [apprs[item] for item in child.walk_self_and_descendants()])
             for i, child in enumerate(self.group)
         ]
-        self.timeline.add_additional_render_calls_callback(self.t_range, self.render_calls_callback)
+        self.n_children = len(self.group)
+        self.timeline.add_additional_render_calls_callback(self.t_range,  self.additional_callback)
 
-        if self.hide_at_begin:
-            self.timeline.schedule(self.t_range.at, self.group.hide)
-        if self.show_at_end:
-            self.timeline.schedule(self.t_range.end, self.group.show)
-
-    def render_calls_callback(self):
+    def additional_callback(self):
         global_t = Animation.global_t_ctx.get()
         alpha = self.get_alpha_on_global_t(global_t)
-        self.index = int(self.int_func(alpha * self.n_children))
-        return [
-            (appr.stack.compute(global_t, True), appr.render)
-            for i, items in self.items
-            if self.is_item_visible(i)
-            for appr in items
-        ]
+        for i, apprs in self.i_apprs:
+            self.index = int(self.int_func(alpha * self.n_children))
+            if not self.is_item_visible(i):
+                for appr in apprs:
+                    appr.render_disabled = True
+        return []
 
     def is_item_visible(self, i: int) -> bool:
         return i < self.index
@@ -309,11 +301,11 @@ class ShowSubitemsOneByOne(ShowIncreasingSubsets):
         self,
         group: Group,
         *,
-        show_at_end: bool = False,
         int_func=math.ceil,
+        hide_at_end: bool = True,
         **kwargs
     ):
-        super().__init__(group, show_at_end=show_at_end, int_func=int_func, **kwargs)
+        super().__init__(group, int_func=int_func, hide_at_end=hide_at_end, **kwargs)
 
     def is_item_visible(self, i: int) -> bool:
         return i == self.index - 1

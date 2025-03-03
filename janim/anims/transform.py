@@ -234,7 +234,7 @@ class MethodTransform(Transform):
 
             sub_updater = _MethodTransform(item, self.path_func, aligned)
             sub_updater.transfer_params(self)
-            sub_updater.finalize(self.timeline.time_aligner)
+            sub_updater.finalize()
 
 
 class MethodTransformArgsBuilder:

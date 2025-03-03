@@ -122,8 +122,6 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         self.stored_parents: list[Item] | None = None
         self.stored_children: list[Item] | None = None
 
-        # TODO: self.is_frozen
-
         from janim.anims.timeline import Timeline
         self.timeline = Timeline.get_context(raise_exc=False)
 
@@ -608,10 +606,6 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         详见 :meth:`~.Timeline.render_all` 中的注释
         '''
         pass
-
-    # TODO: get_global_renderer
-
-    # TODO: render
 
     # endregion
 

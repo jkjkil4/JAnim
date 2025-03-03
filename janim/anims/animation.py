@@ -81,8 +81,8 @@ class Animation:
     def _attach_rate_func(self, rate_func: RateFunc) -> None:
         self.rate_funcs.insert(0, rate_func)
 
-    def finalize(self, aligner: TimeAligner) -> None:
-        self._align_time(aligner)
+    def finalize(self) -> None:
+        self._align_time(self.timeline.time_aligner)
         self._time_fixed()
 
     def _align_time(self, aligner: TimeAligner) -> None:

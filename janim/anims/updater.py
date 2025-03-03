@@ -131,7 +131,7 @@ class DataUpdater[T: Item](Animation):
                                        show_at_begin=self.show_at_begin,
                                        hide_at_end=self.hide_at_end)
             sub_updater.transfer_params(self)
-            sub_updater.finalize(self.timeline.time_aligner)
+            sub_updater.finalize()
 
             if self.become_at_end:
                 item.restore(stack.compute(self.t_range.end, True, get_at_left=True))
@@ -233,7 +233,7 @@ class GroupUpdater[T: Item](Animation):
 
         for sub_updater in updaters:
             sub_updater.transfer_params(self)
-            sub_updater.finalize(self.timeline.time_aligner)
+            sub_updater.finalize()
 
     def apply_for_group(self, global_t: float) -> None:
         if self.applied:
