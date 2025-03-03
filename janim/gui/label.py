@@ -166,9 +166,6 @@ class Label:
     def paint(self, p: QPainter, params: PaintParams, y_offset: int) -> None:
         self._paint(p, params, y_offset, self.height)
 
-    def paint_thumb(self, p: QPainter, params: PaintParams, y_offset: int) -> None:
-        pass
-
     # endregion
 
 

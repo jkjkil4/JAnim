@@ -1,9 +1,10 @@
 from __future__ import annotations
 
+import math
 from bisect import bisect_left
 from contextvars import ContextVar
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Self, overload
+from typing import TYPE_CHECKING, Callable, Iterable, Self, overload
 
 from janim.constants import C_LABEL_ANIM_DEFAULT, DEFAULT_DURATION, FOREVER
 from janim.items.item import Item
@@ -306,3 +307,27 @@ class TimeAligner:
             if abs(t - recorded_t) < ALIGN_EPSILON:
                 return recorded_t
         return t
+
+
+class TimeSegments[T]:
+    def __init__(self, iterable: Iterable[T], key: Callable[[T], TimeRange | Iterable[TimeRange]], *, step: float = 4):
+        self.step = step
+        self.segments: list[list[T]] = []
+
+        for val in iterable:
+            ret = key(val)
+            prev_right = None
+            for t_range in [ret] if isinstance(ret, TimeRange) else ret:
+                left = math.floor(t_range.at / step)
+                right = math.ceil(t_range.end / step)
+                if prev_right is not None and left < prev_right:
+                    left = prev_right
+                if len(self.segments) < right:
+                    self.segments.extend([].copy() for _ in range(right - len(self.segments)))
+                for i in range(left, right):
+                    self.segments[i].append(val)
+                prev_right = right
+
+    def get(self, t: float) -> list[T]:
+        idx = math.floor(t / self.step)
+        return self.segments[idx] if idx < len(self.segments) else []

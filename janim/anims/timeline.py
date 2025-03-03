@@ -1,12 +1,12 @@
 from __future__ import annotations
 
 import inspect
+import itertools as it
 import math
 import os
 import time
 import traceback
 import types
-import itertools as it
 from abc import ABCMeta, abstractmethod
 from bisect import bisect, insort
 from collections import defaultdict
@@ -19,7 +19,8 @@ import numpy as np
 from PIL import Image
 
 from janim.anims.anim_stack import AnimStack
-from janim.anims.animation import Animation, TimeAligner, TimeRange
+from janim.anims.animation import (Animation, TimeAligner, TimeRange,
+                                   TimeSegments)
 from janim.anims.composition import AnimGroup
 from janim.anims.updater import updater_params_ctx
 from janim.camera.camera import Camera
@@ -823,6 +824,21 @@ class BuiltTimeline:
         self.timeline = timeline
         self.duration = timeline.time_aligner.align_t(timeline.current_time)
 
+        self.visible_item_segments = TimeSegments(
+            (
+                (item, appr)
+                for item, appr in timeline.item_appearances.items()
+            ),
+            lambda x: (
+                TimeRange(*range) if len(range) == 2 else TimeRange(*range, self.duration + 1)
+                for range in it.batched(x[1].visibility, 2)
+            )
+        )
+        self.visible_additional_callbacks_segments = TimeSegments(
+            self.timeline.additional_render_calls_callbacks,
+            lambda x: x.t_range
+        )
+
         self._time: float = 0
 
     @property
@@ -910,21 +926,15 @@ class BuiltTimeline:
                 with ContextSetter(Renderer.data_ctx, RenderData(ctx=ctx,
                                                                  camera_info=camera_info,
                                                                  anti_alias_radius=anti_alias_radius)):
-                    # 遍历所有物件，筛选出参与渲染的
-                    # TODO: optimize (类似之前 LongOpt 的优化方式)
-                    render_items = [
-                        (item, appr)
-                        for item, appr in timeline.item_appearances.items()
-                    ]
+                    render_items = self.visible_item_segments.get(global_t)
                     # 反向遍历一遍所有物件，这是为了让一些效果标记原有的物件不进行渲染
                     # （会把所应用的物件的 render_disabled 置为 True，所以在下面可以判断这个变量过滤掉它们）
                     for item, _ in reversed(render_items):
                         item._mark_render_disabled()
                     # 添加额外的渲染调用，例如 Transform 产生的
                     # 这里也有可能产生 render_disabled 标记
-                    # TODO: optimize (类似之前 LongOpt 的优化方式)
                     additional: list[list[tuple[Item, Callable[[Item], None]]]] = []
-                    for rcc in self.timeline.additional_render_calls_callbacks:
+                    for rcc in self.visible_additional_callbacks_segments.get(global_t):
                         if not rcc.t_range.at <= global_t < rcc.t_range.end:
                             continue
                         additional.append(rcc.func())
