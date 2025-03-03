@@ -254,7 +254,7 @@ class ShowIncreasingSubsets(Animation):
         self,
         group: Group[Item],
         *,
-        int_func: Callable[[float], int] = round,
+        int_func=round,
         show_at_begin: bool = True,
         hide_at_end: bool = False,
         **kwargs
@@ -278,7 +278,7 @@ class ShowIncreasingSubsets(Animation):
             for i, child in enumerate(self.group)
         ]
         self.n_children = len(self.group)
-        self.timeline.add_additional_render_calls_callback(self.t_range,  self.additional_callback)
+        self.timeline.add_additional_render_calls_callback(self.t_range, self.additional_callback)
 
     def additional_callback(self):
         global_t = Animation.global_t_ctx.get()
