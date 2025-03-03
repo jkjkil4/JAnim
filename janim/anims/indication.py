@@ -94,6 +94,7 @@ class Indicate(DataUpdater):
         super().__init__(
             item,
             updater,
+            extra=self.create_extra_data,
             rate_func=rate_func,
             become_at_end=False,
             root_only=root_only,
@@ -146,8 +147,7 @@ class CircleIndicate(DataUpdater[Circle]):
             start,
             updater,
             rate_func=rate_func,
-            hide_at_begin=False,
-            show_at_end=False,
+            hide_at_end=True,
             become_at_end=False,
             **kwargs
         )
@@ -180,8 +180,7 @@ class ShowPassingFlash(ShowPartial):
             item,
             bound_func,
             auto_close_path=auto_close_path,
-            hide_at_begin=False,
-            show_at_end=False,
+            hide_at_end=True,
             become_at_end=False,
             **kwargs
         )
@@ -206,10 +205,18 @@ class ShowCreationThenFadeOut(Succession):
     '''展现创建动画后展现淡出动画'''
     label_color = C_LABEL_ANIM_ABSTRACT
 
-    def __init__(self, item: Points, create_kwargs: dict = {}, fadeout_kwargs: dict = {}, **kwargs):
+    def __init__(
+        self,
+        item: Points,
+        create_kwargs: dict = {},
+        fadeout_kwargs: dict = {},
+        collapse: bool = True,
+        **kwargs
+    ):
         super().__init__(
             Create(item, **create_kwargs),
             FadeOut(item, **fadeout_kwargs),
+            collapse=collapse,
             **kwargs
         )
 
@@ -226,6 +233,7 @@ class AnimationOnSurroundingRect(AnimGroup):
         item: Points,
         rect_anim: type[Animation],
         surrounding_rect_config: dict = {},
+        collapse: bool = True,
         **kwargs
     ):
         self.item = item
@@ -237,7 +245,7 @@ class AnimationOnSurroundingRect(AnimGroup):
         anim = rect_anim(rect, **kwargs)
         self.apply_updater(anim)
 
-        super().__init__(anim)
+        super().__init__(anim, collapse=collapse)
 
         self.timeline.track_item_and_descendants(item)
 

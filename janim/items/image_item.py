@@ -10,6 +10,8 @@ from typing import Self
 
 import moderngl as mgl
 import numpy as np
+from PIL import Image
+
 from janim.components.component import CmptInfo
 from janim.components.image import Cmpt_Image
 from janim.components.rgbas import Cmpt_Rgbas
@@ -19,7 +21,8 @@ from janim.exception import (EXITCODE_FFMPEG_NOT_FOUND, EXITCODE_FFPROBE_ERROR,
 from janim.items.points import Points
 from janim.locale.i18n import get_local_strings
 from janim.logger import log
-from janim.render.impl import ImageItemRenderer, VideoRenderer
+from janim.render.renderer_imageitem import ImageItemRenderer
+from janim.render.renderer_video import VideoRenderer
 from janim.render.texture import get_img_from_file
 from janim.typing import Alpha, AlphaArray, ColorArray, JAnimColor
 from janim.utils.config import Config
@@ -27,7 +30,6 @@ from janim.utils.data import AlignedData
 from janim.utils.file_ops import find_file
 from janim.utils.simple_functions import clip
 from janim.utils.space_ops import cross, det, get_norm, z_to_vector
-from PIL import Image
 
 _ = get_local_strings('image_item')
 

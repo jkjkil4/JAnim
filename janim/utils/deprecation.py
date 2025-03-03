@@ -8,11 +8,16 @@ type VersionTuple = tuple[int, int]
 
 
 def _get_version_tuple() -> VersionTuple:
-    dot1 = __version__.index('.')
-    dot2 = __version__.index('.', dot1 + 1)
+    try:
+        idx = __version__.index('-')
+        public = __version__[:idx]
+    except ValueError:
+        public = __version__
+    dot1 = public.index('.')
+    dot2 = public.index('.', dot1 + 1)
     return (
-        int(__version__[:dot1]),
-        int(__version__[dot1 + 1: dot2])
+        int(public[:dot1]),
+        int(public[dot1 + 1: dot2])
     )
 
 

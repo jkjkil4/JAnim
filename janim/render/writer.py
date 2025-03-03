@@ -4,14 +4,13 @@ import subprocess as sp
 import time
 from functools import partial
 
-import moderngl as mgl
 from tqdm import tqdm as ProgressDisplay
 
-from janim.anims.timeline import Timeline, TimelineAnim, TimeRange
+from janim.anims.timeline import BuiltTimeline, Timeline, TimeRange
 from janim.exception import EXITCODE_FFMPEG_NOT_FOUND, ExitException
 from janim.locale.i18n import get_local_strings
 from janim.logger import log
-from janim.render.base import check_pyopengl_if_required
+from janim.render.base import create_context, create_framebuffer
 
 _ = get_local_strings('writer')
 
@@ -29,64 +28,46 @@ class VideoWriter:
     - 最后结束 ffmpeg 的调用，完成 _temp 文件的输出
     - 将 _temp 文件改名，删去 "_temp" 后缀，完成视频输出
     '''
-    def __init__(self, anim: TimelineAnim):
-        self.anim = anim
+    def __init__(self, built: BuiltTimeline):
+        self.built = built
         try:
-            self.ctx = mgl.create_standalone_context(require=430)
+            self.ctx = create_context(standalone=True, require=430)
         except ValueError:
-            self.ctx = mgl.create_standalone_context(require=330)
-        check_pyopengl_if_required(self.ctx)
-        self.ctx.enable(mgl.BLEND)
-        self.ctx.blend_func = (
-            mgl.SRC_ALPHA, mgl.ONE_MINUS_SRC_ALPHA,
-            mgl.ONE, mgl.ONE
-        )
-        self.ctx.blend_equation = mgl.FUNC_ADD, mgl.MAX
+            self.ctx = create_context(standalone=True, require=330)
 
-        pw, ph = anim.cfg.pixel_width, anim.cfg.pixel_height
-        self.fbo = self.ctx.framebuffer(
-            color_attachments=self.ctx.texture(
-                (pw, ph),
-                components=4,
-                samples=0,
-            ),
-            depth_attachment=self.ctx.depth_renderbuffer(
-                (pw, ph),
-                samples=0
-            )
-        )
+        pw, ph = built.cfg.pixel_width, built.cfg.pixel_height
+        self.fbo = create_framebuffer(self.ctx, pw, ph)
 
     @staticmethod
-    def writes(anim: TimelineAnim, file_path: str, *, quiet=False) -> None:
-        VideoWriter(anim).write_all(file_path, quiet=quiet)
+    def writes(built: BuiltTimeline, file_path: str, *, quiet=False) -> None:
+        VideoWriter(built).write_all(file_path, quiet=quiet)
 
     def write_all(self, file_path: str, *, quiet=False, _keep_temp: bool = False) -> None:
         '''将时间轴动画输出到文件中
 
         - 指定 ``quiet=True``，则不会输出前后的提示信息，但仍有进度条
         '''
-        name = self.anim.timeline.__class__.__name__
+        name = self.built.timeline.__class__.__name__
         if not quiet:
             log.info(_('Writing video "{name}"').format(name=name))
             t = time.time()
 
         self.fbo.use()
-        fps = self.anim.cfg.fps
+        fps = self.built.cfg.fps
 
         self.open_video_pipe(file_path)
 
         progress_display = ProgressDisplay(
-            range(round(self.anim.global_range.duration * fps) + 1),
+            range(round(self.built.duration * fps) + 1),
             leave=False,
             dynamic_ncols=True
         )
 
-        rgb = self.anim.cfg.background_color.rgb
+        rgb = self.built.cfg.background_color.rgb
 
         for frame in progress_display:
             self.fbo.clear(*rgb)
-            self.anim.anim_on(frame / fps)
-            self.anim.render_all(self.ctx)
+            self.built.render_all(self.ctx, frame / fps)
             bytes = self.fbo.read(components=4)
             self.writing_process.stdin.write(bytes)
 
@@ -110,12 +91,12 @@ class VideoWriter:
         self.temp_file_path = stem + '_temp' + ext
 
         command = [
-            self.anim.cfg.ffmpeg_bin,
+            self.built.cfg.ffmpeg_bin,
             '-y',   # overwrite output file if it exists
             '-f', 'rawvideo',
-            '-s', f'{self.anim.cfg.pixel_width}x{self.anim.cfg.pixel_height}',  # size of one frame
+            '-s', f'{self.built.cfg.pixel_width}x{self.built.cfg.pixel_height}',  # size of one frame
             '-pix_fmt', 'rgba',
-            '-r', str(self.anim.cfg.fps),  # frames per second
+            '-r', str(self.built.cfg.fps),  # frames per second
             '-i', '-',  # The input comes from a pipe
             '-vf', 'vflip',
             '-an',  # Tells FFMPEG not to expect any audio
@@ -155,31 +136,31 @@ class VideoWriter:
 
 
 class AudioWriter:
-    def __init__(self, anim: TimelineAnim):
-        self.anim = anim
+    def __init__(self, built: BuiltTimeline):
+        self.built = built
 
     @staticmethod
-    def writes(anim: TimelineAnim, file_path: str, *, quiet=False) -> None:
-        AudioWriter(anim).write_all(file_path, quiet=quiet)
+    def writes(built: BuiltTimeline, file_path: str, *, quiet=False) -> None:
+        AudioWriter(built).write_all(file_path, quiet=quiet)
 
     def write_all(self, file_path: str, *, quiet=False, _keep_temp: bool = False) -> None:
-        name = self.anim.timeline.__class__.__name__
+        name = self.built.timeline.__class__.__name__
         if not quiet:
             log.info(_('Writing audio of "{name}"').format(name=name))
             t = time.time()
 
-        fps = self.anim.cfg.fps
-        framerate = self.anim.cfg.audio_framerate
+        fps = self.built.cfg.fps
+        framerate = self.built.cfg.audio_framerate
 
         self.open_audio_pipe(file_path)
 
         progress_display = ProgressDisplay(
-            range(round(self.anim.global_range.duration * fps) + 1),
+            range(round(self.built.duration * fps) + 1),
             leave=False,
             dynamic_ncols=True
         )
 
-        get_audio_samples = partial(self.anim.timeline.get_audio_samples_of_frame,
+        get_audio_samples = partial(self.built.get_audio_samples_of_frame,
                                     fps,
                                     framerate)
 
@@ -207,11 +188,11 @@ class AudioWriter:
         self.temp_file_path = stem + '_temp' + ext
 
         command = [
-            self.anim.cfg.ffmpeg_bin,
+            self.built.cfg.ffmpeg_bin,
             '-y',   # overwrite output file if it exists
             '-f', 's16le',
-            '-ar', str(self.anim.cfg.audio_framerate),      # framerate & samplerate
-            '-ac', str(self.anim.cfg.audio_channels),
+            '-ar', str(self.built.cfg.audio_framerate),      # framerate & samplerate
+            '-ac', str(self.built.cfg.audio_channels),
             '-i', '-',
             '-loglevel', 'error',
             self.temp_file_path
@@ -273,11 +254,11 @@ def merge_video_and_audio(
 
 class SRTWriter:
     @staticmethod
-    def writes(anim: TimelineAnim, file_path: str) -> None:
+    def writes(built: BuiltTimeline, file_path: str) -> None:
         with open(file_path, 'wt') as file:
             chunks: list[tuple[TimeRange, list[Timeline.SubtitleInfo]]] = []
 
-            for info in anim.timeline.subtitle_infos:
+            for info in built.timeline.subtitle_infos:
                 if not chunks or chunks[-1][0] != info.range:
                     chunks.append((info.range, []))
                 chunks[-1][1].append(info)

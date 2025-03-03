@@ -171,11 +171,11 @@
             self.forward()
 
             self.play(
-                sin_graph.anim(),
                 plane.anim.points.apply_matrix([
                     [3, -1],
                     [1, 2]
                 ]),
+                sin_graph.anim(),
                 duration=2
             )
             self.forward()

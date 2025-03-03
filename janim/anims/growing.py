@@ -4,14 +4,13 @@ from typing import Callable
 
 import numpy as np
 
-from janim.anims.animation import Animation, RenderCall
-from janim.anims.transform import Transform
+from janim.anims.updater import DataUpdater, GroupUpdater, UpdaterParams
 from janim.constants import C_LABEL_ANIM_ABSTRACT, C_LABEL_ANIM_IN, PI
 from janim.items.geometry.arrow import Arrow
 from janim.items.points import Points
 
 
-class GrowFromPoint(Transform):
+class GrowFromPoint(DataUpdater[Points]):
     '''
     从指定的位置放大显现
     '''
@@ -21,19 +20,16 @@ class GrowFromPoint(Transform):
         self,
         item: Points,
         point: np.ndarray,
-        *,
-        hide_src: bool = True,
+        root_only: bool = False,
         **kwargs
     ):
         self.point = point
-        self.start_item = item.copy()
-        self.start_item.points.scale(0).move_to(point)
-        super().__init__(self.start_item, item, hide_src=hide_src, **kwargs)
-
-    def anim_init(self) -> None:
-        super().anim_init()
-        if self.hide_src:
-            self.timeline.schedule(self.global_range.at, self.target_item.hide, root_only=self.root_only)
+        super().__init__(
+            item,
+            lambda data, p: data.points.scale(p.alpha, about_point=point),
+            root_only=root_only,
+            **kwargs
+        )
 
 
 class GrowFromCenter(GrowFromPoint):
@@ -52,11 +48,12 @@ class GrowFromEdge(GrowFromPoint):
 
 class SpinInFromNothing(GrowFromCenter):
     '''从物件的中心旋转半圈放大显现'''
-    def __init__(self, item: Points, *, path_arc=PI, **kwargs):
-        super().__init__(item, path_arc=path_arc, **kwargs)
+    def __init__(self, item: Points, *, path_arc=PI / 2, **kwargs):
+        super().__init__(item, **kwargs)
+        self.add_post_updater(lambda data, p: data.points.rotate(path_arc * (p.alpha - 1), about_point=self.point))
 
 
-class GrowArrowByBoundFunc(Animation):
+class GrowArrowByBoundFunc(GroupUpdater):
     ''':class:`GrowArrow` 和 :class:`GrowDoubleArrow` 的基类'''
     label_color = C_LABEL_ANIM_ABSTRACT
 
@@ -64,39 +61,19 @@ class GrowArrowByBoundFunc(Animation):
         self,
         arrow: Arrow,
         bound_func: Callable[[float], tuple[float, float]],
-        *,
-        hide_at_begin: bool = True,
-        show_at_end: bool = True,
         **kwargs
     ):
-        super().__init__(**kwargs)
+        super().__init__(
+            arrow,
+            self.updater,
+            **kwargs
+        )
         self.arrow = arrow
         self.bound_func = bound_func
-        self.hide_at_begin = hide_at_begin
-        self.show_at_end = show_at_end
 
-        self.timeline.track_item_and_descendants(arrow)
-
-    def anim_init(self) -> None:
-        self.arrow_copy = self.arrow.copy()
-        self.arrow_anim = self.arrow.copy()
-
-        self.set_render_call_list([
-            RenderCall(
-                item.depth,
-                item.render
-            )
-            for item in self.arrow_anim.walk_self_and_descendants()
-        ])
-
-        if self.hide_at_begin:
-            self.timeline.schedule(self.global_range.at, self.arrow.hide)
-        if self.show_at_end:
-            self.timeline.schedule(self.global_range.end, self.arrow.show)
-
-    def anim_on_alpha(self, alpha: float) -> None:
-        self.arrow_anim.points.pointwise_become_partial(self.arrow_copy, *self.bound_func(alpha))
-        self.arrow_anim.place_tip()
+    def updater(self, arrow: Arrow, p: UpdaterParams) -> None:
+        arrow.points.pointwise_become_partial(arrow, *self.bound_func(p.alpha))
+        arrow.place_tip()
 
 
 class GrowArrow(GrowArrowByBoundFunc):

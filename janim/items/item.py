@@ -9,7 +9,7 @@ from typing import TYPE_CHECKING, Any, Callable, Iterable, Self, overload
 
 from janim.components.component import CmptInfo, Component, _CmptGroup
 from janim.components.depth import Cmpt_Depth
-from janim.exception import AsTypeError, CopyError, GetItemError
+from janim.exception import AsTypeError, GetItemError
 from janim.items.relation import Relation
 from janim.locale.i18n import get_local_strings
 from janim.logger import log
@@ -20,12 +20,9 @@ from janim.utils.iterables import resize_preserving_order
 from janim.utils.paths import PathFunc, straight_path
 
 if TYPE_CHECKING:
-    import moderngl as mgl
     from janim.items.points import Group
 
 _ = get_local_strings('item')
-
-type DynamicItem = Callable[[float], Item]
 
 CLS_CMPTINFO_NAME = '__cls_cmptinfo'
 CLS_STYLES_NAME = '__cls_styles'
@@ -110,14 +107,6 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
     '''
 
     renderer_cls = Renderer
-    '''
-    覆盖该值以在子类中使用特定的渲染器
-    '''
-
-    global_renderer: dict[tuple[type, mgl.Context], Renderer] = {}
-    '''
-    共用的渲染器，用于 ``is_temporary=True`` 的物件
-    '''
 
     depth = CmptInfo(Cmpt_Depth[Self], 0)
 
@@ -133,9 +122,6 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         self.stored_parents: list[Item] | None = None
         self.stored_children: list[Item] | None = None
 
-        # 如果 is_temporary 为 True，则不会另外创建渲染器，而是使用共用的渲染器
-        self.is_temporary: bool = False
-
         from janim.anims.timeline import Timeline
         self.timeline = Timeline.get_context(raise_exc=False)
 
@@ -143,7 +129,6 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         self._astype_mock_cmpt: dict[str, Component] = {}
 
         self._fix_in_frame = False
-        self.renderer: Renderer | None = None
 
         self._init_components()
 
@@ -206,7 +191,7 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         if recurse_down:
             mark(self.descendants())
 
-    def set(self, **styles) -> None:
+    def set(self, **styles) -> Self:
         '''
         设置物件以及子物件的样式，与 :meth:`apply_styles` 只影响自身不同的是，该方法也会影响所有子物件
         '''
@@ -229,14 +214,7 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
                     .format(key=key)
                 )
 
-    def digest_styles(self, **styles) -> None:
-        from janim.utils.deprecation import deprecated
-        deprecated(
-            'Item.digest_styles',
-            'Item.set',
-            remove=(2, 3)
-        )
-        self.set(**styles)
+        return self
 
     @classmethod
     def get_available_styles(cls) -> list[str]:
@@ -255,19 +233,6 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         if depth is not None:
             self.depth.set(depth, root_only=True)
         return self
-
-    def set_style(
-        self,
-        depth: float | None = None,
-        **kwargs
-    ) -> Self:
-        from janim.utils.deprecation import deprecated
-        deprecated(
-            'Item.set_style',
-            'Item.apply_style',
-            remove=(2, 3)
-        )
-        self.apply_style(depth, **kwargs)
 
     def do(self, func: Callable[[Self], Any]) -> Self:
         '''
@@ -459,39 +424,14 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
                 return False
         return True
 
-    def current(self, *, as_time: float | None = None, skip_dynamic=False) -> Self:
+    def current(self, *, as_time: float | None = None, root_only=False) -> Self:
         '''
-        当前物件
-
-        - 如果此时在回放和 Updater 中，则返回对应时间的历史物件
-        - 在其余情况下，包括该物件没有历史记录的情况，则返回物件自身
+        由当前时间点获得当前物件（考虑动画作用后的结果）
         '''
-        return self.timeline.item_current(self, as_time=as_time, skip_dynamic=skip_dynamic)
+        return self.timeline.item_current(self, as_time=as_time, root_only=root_only)
 
-    def copy(self, *, root_only=False, as_time: float | None = None, skip_dynamic: bool = False) -> Self:
-        '''
-        复制物件
-        '''
-        if root_only and as_time is not None:
-            raise CopyError(_('When root_only is set to True, as_time cannot be specified. '
-                              'Please use ".current(as_time=...).store()" instead.'))
-
-        copy_item = copy.copy(self)
-
-        copy_item.reset_refresh()
-
-        src = self if as_time is None else self.current(as_time=as_time, skip_dynamic=skip_dynamic)
-
-        copy_item.parents = []
-        copy_item.children = []
-        if root_only:
-            copy_item.stored = True
-            copy_item.stored_parents = self.get_parents().copy()
-            copy_item.stored_children = self.get_children().copy()
-        else:
-            copy_item.add(*[item.copy(as_time=as_time, skip_dynamic=skip_dynamic) for item in src.get_children()])
-            copy_item.parents_changed()
-
+    @staticmethod
+    def _copy_cmpts(src: Item, copy_item: Item) -> None:
         new_cmpts = {}
         for key, cmpt in src.components.items():
             if isinstance(cmpt, _CmptGroup):
@@ -512,25 +452,25 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         copy_item.components = new_cmpts
         copy_item._astype_mock_cmpt = {}
 
+    def copy(self, *, root_only: bool = False):
+        '''
+        复制物件
+        '''
+        copy_item = copy.copy(self)
+        copy_item.reset_refresh()
+
+        copy_item.parents = []
+        copy_item.children = []
+
+        if root_only:
+            copy_item.children_changed()
+        else:
+            # .add 里已经调用了 .children_changed
+            copy_item.add(*[item.copy() for item in self])
+        copy_item.parents_changed()
+
+        self._copy_cmpts(self, copy_item)
         return copy_item
-
-    # TODO: optimize
-    def _current_family(self, *, up: bool) -> list[Item]:   # use DFS
-        lst = self.stored_parents if up else self.stored_children
-        res = []
-
-        for sub_obj in lst:
-            current = sub_obj.current()
-            if current not in res:
-                res.append(current)
-            res.extend(filter(
-                lambda obj: obj not in res,
-                current._current_family(up=up)
-                if current.stored
-                else (current.ancestors() if up else current.descendants())
-            ))
-
-        return res
 
     def become(self, other: Item) -> Self:
         '''
@@ -551,25 +491,30 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         for key in self.components.keys() | other.components.keys():
             self.components[key].become(other.components[key])
 
-        from janim.anims.timeline import Timeline
-        timeline = Timeline.get_context(raise_exc=False)
-        if timeline is not None and timeline.is_displaying(self):
-            timeline.show(self)
+        # 如果根物件是可见的，那么 become 的最后会把所有子物件设为可见
+        if self.timeline is not None and self.timeline.is_visible(self):
+            self.timeline.show(self)
 
         return self
 
-    def store(self) -> Self:
-        return self.copy(root_only=True)
+    def store(self):
+        copy_item = copy.copy(self)
+        copy_item.reset_refresh()
+
+        copy_item.parents = []
+        copy_item.children = []
+
+        copy_item.stored = True
+        copy_item.stored_parents = self.get_parents().copy()
+        copy_item.stored_children = self.get_children().copy()
+
+        self._copy_cmpts(self, copy_item)
+        return copy_item
 
     def restore(self, other: Item) -> Self:
         if self.stored:
             self.stored_parents = other.get_parents().copy()
             self.stored_children = other.get_children().copy()
-        else:
-            self.parents = other.get_parents().copy()
-            self.parents_changed()
-            self.children = other.get_parents().copy()
-            self.children_changed()
 
         for key in self.components.keys() & other.components.keys():
             self.components[key].become(other.components[key])
@@ -647,45 +592,37 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
     def is_fix_in_frame(self) -> bool:
         return self._fix_in_frame
 
-    @classmethod
-    def get_global_renderer(cls) -> None:
-        key = (cls, Renderer.data_ctx.get().ctx)
-        renderer = cls.global_renderer.get(key, None)
-        if renderer is None:
-            renderer = cls.global_renderer[key] = cls.renderer_cls()
-        return renderer
+    # endregion
 
-    def create_renderer(self) -> None:
-        if self.is_temporary:
-            self.renderer = self.get_global_renderer()
-        else:
-            self.renderer = self.renderer_cls()
+    # region render
 
-    def render(self) -> None:
-        if self.renderer is None:
-            self.create_renderer()
+    def create_renderer(self) -> Renderer:
+        return self.renderer_cls()
 
-        if not self.renderer.initialized:
-            self.renderer.init()
-            self.renderer.initialized = True
-        self.renderer.render(self)
+    def _mark_render_disabled(self) -> None:
+        '''
+        由子类继承，用于标记 _render_disabled
+
+        详见 :meth:`~.Timeline.render_all` 中的注释
+        '''
+        pass
 
     # endregion
 
     # region timeline
 
-    def show(self, **kwargs) -> Self:
+    def show(self, root_only=False) -> Self:
         '''
         显示物件
         '''
-        self.timeline.show(self, **kwargs)
+        self.timeline.show(self, root_only=root_only)
         return self
 
-    def hide(self, **kwargs) -> Self:
+    def hide(self, root_only=False) -> Self:
         '''
         隐藏物件
         '''
-        self.timeline.hide(self, **kwargs)
+        self.timeline.hide(self, root_only=root_only)
         return self
 
     # endregion

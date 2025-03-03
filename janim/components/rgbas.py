@@ -95,6 +95,21 @@ class Cmpt_Rgbas[ItemT](Component[ItemT]):
         return colors
 
     @staticmethod
+    def format_color(color: JAnimColor) -> np.ndarray:
+        '''
+        将 字符串、``[r, g, b]`` 等统一为 ``[r, g, b]`` 数值数组的格式
+        '''
+        rgb = np.array(
+            color
+            if isinstance(color, Iterable) and not isinstance(color, str)
+            else Color(color).rgb
+        )
+
+        assert rgb.ndim == 1
+        assert rgb.shape[0] == 3
+        return rgb
+
+    @staticmethod
     def format_alphas(alphas: AlphaArray) -> np.ndarray:
         '''
         将传入值转为数值数组
@@ -202,9 +217,30 @@ class Cmpt_Rgbas[ItemT](Component[ItemT]):
         return self
 
     def fade(self, factor: float | Iterable[float], *, root_only: bool = False) -> Self:
+        '''
+        淡化颜色，``factor`` 是 0~1 的值，例如 0 没有效果，0.5 淡化一半，1 完全淡化（变得不可见）
+        '''
         for cmpt in self.walk_same_cmpt_of_self_and_descendants_without_mock(root_only):
             rgbas = cmpt.get().copy()
             rgbas[:, 3] *= 1 - factor
+            cmpt.set_rgbas(rgbas)
+
+        return self
+
+    def mix(
+        self,
+        color: JAnimColor | ColorArray,
+        factor: float | Iterable[float] = 0.5,
+        *,
+        root_only: bool = False
+    ) -> Self:
+        '''
+        混合颜色，默认得到与 ``color`` 混合的中间色
+        '''
+        for cmpt in self.walk_same_cmpt_of_self_and_descendants_without_mock(root_only):
+            rgbas = cmpt.get().copy()
+            rgbas[:, :3] *= 1 - factor
+            rgbas[:, :3] += self.format_color(color) * factor
             cmpt.set_rgbas(rgbas)
 
         return self

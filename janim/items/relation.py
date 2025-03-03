@@ -27,7 +27,22 @@ class Relation[GRelT: 'Relation'](refresh.Refreshable):
         super().__init__()
 
         self.parents: list[GRelT] = []
+        '''
+        .. warning::
+
+            不要直接对该变量作出修改，请使用 :meth:`add` 和 :meth:`remove` 等方法
+
+            对该变量的直接访问仅是为了方便遍历等操作
+        '''
+
         self.children: list[GRelT] = []
+        '''
+        .. warning::
+
+            不要直接对该变量作出修改，请使用 :meth:`add` 和 :meth:`remove` 等方法
+
+            对该变量的直接访问仅是为了方便遍历等操作
+        '''
 
     def mark_refresh(self, func: Callable | str, *, recurse_up=False, recurse_down=False) -> Self:
         super().mark_refresh(func)

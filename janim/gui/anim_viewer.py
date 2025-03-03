@@ -18,7 +18,6 @@ import os
 import time
 import traceback
 from bisect import bisect_left
-from typing import Sequence
 
 from PySide6.QtCore import QByteArray, Qt, Signal
 from PySide6.QtGui import QAction, QCloseEvent, QHideEvent, QIcon, QShowEvent
@@ -26,19 +25,19 @@ from PySide6.QtWidgets import (QApplication, QCompleter, QLabel, QLineEdit,
                                QMainWindow, QMessageBox, QPushButton,
                                QSizePolicy, QSplitter, QStackedLayout, QWidget)
 
-from janim.anims.timeline import Timeline, TimelineAnim
+from janim.anims.timeline import BuiltTimeline, Timeline
 from janim.exception import ExitException
 from janim.gui.application import Application
 from janim.gui.audio_player import AudioPlayer
-from janim.gui.color_widget import ColorWidget
-from janim.gui.export_dialog import ExportDialog
 from janim.gui.fixed_ratio_widget import FixedRatioWidget
-from janim.gui.font_table import FontTable
+from janim.gui.functions.color_widget import ColorWidget
+from janim.gui.functions.export_dialog import ExportDialog
+from janim.gui.functions.font_table import FontTable
+from janim.gui.functions.painter import Painter
+from janim.gui.functions.richtext_editor import RichTextEditor
+from janim.gui.functions.selector import Selector
 from janim.gui.glwidget import GLWidget
-from janim.gui.painter import Painter
 from janim.gui.precise_timer import PreciseTimer
-from janim.gui.richtext_editor import RichTextEditor
-from janim.gui.selector import Selector
 from janim.gui.timeline_view import TimelineView
 from janim.locale.i18n import get_local_strings
 from janim.logger import log
@@ -59,11 +58,11 @@ class AnimViewer(QMainWindow):
 
     def __init__(
         self,
-        anim: TimelineAnim,
+        built: BuiltTimeline,
         *,
         auto_play: bool = True,
         interact: bool = False,
-        available_timeline_names: Sequence[str] | None = None,
+        available_timeline_names: list[str] | None = None,
         parent: QWidget | None = None
     ):
         super().__init__(parent)
@@ -71,14 +70,14 @@ class AnimViewer(QMainWindow):
         self.setup_ui()
         self.setup_play_timer()
         if interact:
-            self.setup_socket(anim.cfg.client_search_port)
+            self.setup_socket(built.cfg.client_search_port)
         else:
             self.socket = None
         self.audio_player = None
 
         self.setup_slots()
 
-        self.set_anim(anim)
+        self.set_built(built)
 
         self.timeline_view.value_changed.emit(0)
         self.action_stay_on_top.setChecked(True)
@@ -90,7 +89,7 @@ class AnimViewer(QMainWindow):
             self.update_completer(available_timeline_names)
 
     @classmethod
-    def views(cls, anim: TimelineAnim, **kwargs) -> None:
+    def views(cls, anim: BuiltTimeline, **kwargs) -> None:
         '''
         直接显示一个浏览构建完成的时间轴动画的窗口
         '''
@@ -103,12 +102,12 @@ class AnimViewer(QMainWindow):
 
         app.exec()
 
-    def set_anim(self, anim: TimelineAnim) -> None:
-        self.anim = anim
+    def set_built(self, built: BuiltTimeline) -> None:
+        self.built = built
 
         # data
         def to_progress(p: Timeline.PausePoint) -> int:
-            rough_progress = p.at * self.anim.cfg.preview_fps
+            rough_progress = p.at * self.built.cfg.preview_fps
 
             if rough_progress % 1 < 1e-3:
                 result = int(rough_progress)
@@ -120,7 +119,7 @@ class AnimViewer(QMainWindow):
 
             return result
 
-        self.pause_progresses = list(map(to_progress, anim.timeline.pause_points))
+        self.pause_progresses = list(map(to_progress, built.timeline.pause_points))
         self.pause_progresses.sort()
 
         # menu bar
@@ -128,24 +127,24 @@ class AnimViewer(QMainWindow):
             self.selector.deleteLater()
 
         # central widget
-        self.fixed_ratio_widget.set_src_size((anim.cfg.pixel_width, anim.cfg.pixel_height))
-        self.glw.set_anim(anim)
-        self.timeline_view.set_anim(anim, self.pause_progresses)
+        self.fixed_ratio_widget.set_src_size((built.cfg.pixel_width, built.cfg.pixel_height))
+        self.glw.set_built(built)
+        self.timeline_view.set_built(built, self.pause_progresses)
 
         # status bar
-        self.name_edit.setText(anim.timeline.__class__.__name__)
+        self.name_edit.setText(built.timeline.__class__.__name__)
 
         # other
-        self.play_timer.set_duration(1 / anim.cfg.preview_fps)
+        self.play_timer.set_duration(1 / built.cfg.preview_fps)
         if self.play_timer.isActive():
             self.play_timer.start_precise_timer()
         if self.play_timer.skip_enabled:
             self.play_timer.take_skip_count()
 
-        if self.anim.timeline.has_audio() and self.audio_player is None:
-            self.audio_player = AudioPlayer(self.anim.cfg.audio_framerate,
-                                            self.anim.cfg.audio_channels,
-                                            self.anim.cfg.preview_fps)
+        if self.built.timeline.has_audio() and self.audio_player is None:
+            self.audio_player = AudioPlayer(self.built.cfg.audio_framerate,
+                                            self.built.cfg.audio_channels,
+                                            self.built.cfg.preview_fps)
 
     # region setup_ui
 
@@ -255,8 +254,8 @@ class AnimViewer(QMainWindow):
         self.setCentralWidget(self.vsplitter)
 
     def move_to_position(self) -> None:
-        window_position = self.anim.cfg.wnd_pos
-        window_monitor = self.anim.cfg.wnd_monitor
+        window_position = self.built.cfg.wnd_pos
+        window_monitor = self.built.cfg.wnd_monitor
 
         if len(window_position) != 2 or window_position[0] not in 'UOD' or window_position[1] not in 'LOR':
             log.warning(
@@ -294,7 +293,7 @@ class AnimViewer(QMainWindow):
 
         self.setGeometry(geometry)
 
-    def update_completer(self, completions: Sequence[str]) -> None:
+    def update_completer(self, completions: list[str]) -> None:
         completer = QCompleter(completions)
         completer.setFilterMode(Qt.MatchFlag.MatchContains)
         self.name_edit.setCompleter(completer)
@@ -370,12 +369,12 @@ class AnimViewer(QMainWindow):
         self.update_fps_label()
 
     def on_rebuild_triggered(self) -> None:
-        module = inspect.getmodule(self.anim.timeline)
+        module = inspect.getmodule(self.built.timeline)
         progress = self.timeline_view.progress()
-        preview_fps = self.anim.cfg.preview_fps
+        preview_fps = self.built.cfg.preview_fps
 
         name = self.name_edit.text().strip()
-        stay_same = self.anim.timeline.__class__.__name__ == name
+        stay_same = self.built.timeline.__class__.__name__ == name
 
         module_name = module.__name__
         # If the AnimViewer is run by executing
@@ -401,7 +400,10 @@ class AnimViewer(QMainWindow):
             return
 
         try:
-            anim: TimelineAnim = timeline_class().build()
+            built: BuiltTimeline = timeline_class().build(
+                hide_subtitles=self.built.timeline.hide_subtitles,
+                show_debug_notice=True
+            )
         except Exception as e:
             if not isinstance(e, ExitException):
                 traceback.print_exc()
@@ -409,7 +411,24 @@ class AnimViewer(QMainWindow):
             return
 
         range = self.timeline_view.range
-        self.set_anim(anim)
+
+        if not stay_same:
+            self.timeline_view.set_progress(0)
+        else:
+            # 把原来进度（所在第几帧）转换到新的进度
+            # 如果帧率没变，则进度不变
+            # 如果帧率变了，例如从 30fps 到 60fps，则进度 43 对应 进度 86（乘了 2）
+            self.play_timer.set_duration(1 / self.built.cfg.preview_fps)
+            progress = int(progress * self.built.cfg.preview_fps / preview_fps)
+            self.timeline_view.set_progress(progress)
+
+            # 设置 range 是为了保留动画标签的相对位置
+            # 比如，本来是 0~1s 和 1~2s 分别一个动画
+            # 重新构建后，只剩下了 0~1s 的动画
+            # 那么仍保留原来的显示范围，使得 0~1s 的显示位置不变，虽然显示范围超出了持续时间
+            self.timeline_view.range = range
+
+        self.set_built(built)
 
         import gc
 
@@ -418,24 +437,6 @@ class AnimViewer(QMainWindow):
         gc.collect()
         get_all_timelines_from_module.cache_clear()
         self.update_completer([timeline.__name__ for timeline in get_all_timelines_from_module(module)])
-
-        if not stay_same:
-            self.anim.anim_on(0)
-            self.timeline_view.set_progress(0)
-        else:
-            # 把原来进度（所在第几帧）转换到新的进度
-            # 如果帧率没变，则进度不变
-            # 如果帧率变了，例如从 30fps 到 60fps，则进度 43 对应 进度 86（乘了 2）
-            self.play_timer.set_duration(1 / self.anim.cfg.preview_fps)
-            progress = int(progress * self.anim.cfg.preview_fps / preview_fps)
-            self.anim.anim_on(self.timeline_view.progress_to_time(progress))
-            self.timeline_view.set_progress(progress)
-
-            # 设置 range 是为了保留动画标签的相对位置
-            # 比如，本来是 0~1s 和 1~2s 分别一个动画
-            # 重新构建后，只剩下了 0~1s 的动画
-            # 那么仍保留原来的显示范围，使得 0~1s 的显示位置不变，虽然显示范围超出了持续时间
-            self.timeline_view.range = range
 
         # 向 vscode 客户端发送重新构建了的信息
         if self.socket is not None:
@@ -451,7 +452,7 @@ class AnimViewer(QMainWindow):
                 )
 
             time = self.timeline_view.progress_to_time(self.timeline_view.progress())
-            self.send_lineno(self.anim.timeline.get_lineno_at_time(time))
+            self.send_lineno(self.built.timeline.get_lineno_at_time(time))
 
         self.glw.update()
 
@@ -491,7 +492,7 @@ class AnimViewer(QMainWindow):
         time = self.timeline_view.progress_to_time(value)
 
         if self.socket is not None:
-            line = self.anim.timeline.get_lineno_at_time(time)
+            line = self.built.timeline.get_lineno_at_time(time)
 
             if line != self.lineno:
                 self.lineno = line
@@ -499,7 +500,7 @@ class AnimViewer(QMainWindow):
                 self.send_lineno(line)
 
         self.glw.set_time(time)
-        self.time_label.setText(f'{time:.1f}/{self.anim.global_range.duration:.1f} s')
+        self.time_label.setText(f'{time:.1f}/{self.built.duration:.1f} s')
 
     def on_glw_rendered(self) -> None:
         cur = time.time()
@@ -512,17 +513,17 @@ class AnimViewer(QMainWindow):
 
     def update_fps_label(self) -> None:
         if self.action_frame_skip.isChecked():
-            self.fps_label.setText(f'Preview FPS: {self.fps_prev} ({self.anim.cfg.preview_fps})')
+            self.fps_label.setText(f'Preview FPS: {self.fps_prev} ({self.built.cfg.preview_fps})')
         else:
-            self.fps_label.setText(f'Preview FPS: {self.fps_prev}/{self.anim.cfg.preview_fps}')
+            self.fps_label.setText(f'Preview FPS: {self.fps_prev}/{self.built.cfg.preview_fps}')
 
     def on_play_timer_timeout(self) -> None:
         played_count = 1 + self.play_timer.take_skip_count()
-        if self.anim.timeline.has_audio():
-            samples = self.anim.timeline.get_audio_samples_of_frame(self.anim.cfg.preview_fps,
-                                                                    self.anim.cfg.audio_framerate,
-                                                                    self.timeline_view.progress(),
-                                                                    count=played_count)
+        if self.built.timeline.has_audio():
+            samples = self.built.get_audio_samples_of_frame(self.built.cfg.preview_fps,
+                                                            self.built.cfg.audio_framerate,
+                                                            self.timeline_view.progress(),
+                                                            count=played_count)
             self.audio_player.write(samples.tobytes())
 
         self.timeline_view.set_progress(self.timeline_view.progress() + played_count)
@@ -538,7 +539,7 @@ class AnimViewer(QMainWindow):
             self.play_timer.stop()
 
     def on_name_edit_finished(self) -> None:
-        if self.name_edit.text().strip() != self.anim.timeline.__class__.__name__:
+        if self.name_edit.text().strip() != self.built.timeline.__class__.__name__:
             self.play_timer.stop()
             self.on_rebuild_triggered()
             self.timeline_view.setFocus()
@@ -546,14 +547,14 @@ class AnimViewer(QMainWindow):
     def on_export_clicked(self) -> None:
         self.play_timer.stop()
 
-        dialog = ExportDialog(self.anim, self)
+        dialog = ExportDialog(self.built, self)
         ret = dialog.exec()
         if not ret:
             return
 
         cli_config.fps = dialog.fps()
         file_path = dialog.file_path()
-        video_with_audio = (self.anim.timeline.has_audio() and not file_path.endswith('gif'))
+        video_with_audio = (self.built.timeline.has_audio() and not file_path.endswith('gif'))
 
         QMessageBox.information(self,
                                 _('Note'),
@@ -562,7 +563,7 @@ class AnimViewer(QMainWindow):
         QApplication.processEvents()
         ret = False
         try:
-            anim = self.anim.timeline.__class__().build()
+            anim = self.built.timeline.__class__().build()
 
             if video_with_audio:
                 video_writer = VideoWriter(anim)
@@ -664,7 +665,7 @@ class AnimViewer(QMainWindow):
                             type='find_re',
                             data=dict(
                                 port=self.socket.localPort(),
-                                file_path=os.path.abspath(inspect.getfile(self.anim.timeline.__class__))
+                                file_path=os.path.abspath(inspect.getfile(self.built.timeline.__class__))
                             )
                         )
                     ))
@@ -693,7 +694,7 @@ class AnimViewer(QMainWindow):
 
                     # 重新构建
                     case 'file_saved':
-                        if os.path.samefile(janim['file_path'], inspect.getmodule(self.anim.timeline).__file__):
+                        if os.path.samefile(janim['file_path'], inspect.getmodule(self.built.timeline).__file__):
                             self.on_rebuild_triggered()
 
             except Exception:

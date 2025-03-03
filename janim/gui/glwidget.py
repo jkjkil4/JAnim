@@ -1,11 +1,10 @@
 
-import moderngl as mgl
 from PySide6.QtCore import QPointF, Signal
 from PySide6.QtOpenGLWidgets import QOpenGLWidget
 from PySide6.QtWidgets import QWidget
 
-from janim.anims.timeline import TimelineAnim
-from janim.render.base import check_pyopengl_if_required
+from janim.anims.timeline import BuiltTimeline
+from janim.render.base import create_context
 
 
 class GLWidget(QOpenGLWidget):
@@ -18,13 +17,13 @@ class GLWidget(QOpenGLWidget):
         super().__init__(parent)
         self.needs_update_clear_color = False
 
-    def set_anim(self, anim: TimelineAnim) -> None:
-        self.anim = anim
+    def set_built(self, built: BuiltTimeline) -> None:
+        self.built = built
         self.update_clear_color()
         self.update()
 
     def set_time(self, time: float) -> None:
-        self.anim.anim_on(time)
+        self.global_t = time
         self.update()
 
     def map_to_gl2d(self, point: QPointF) -> tuple[float, float]:
@@ -41,14 +40,7 @@ class GLWidget(QOpenGLWidget):
         return QPointF(xx, yy)
 
     def initializeGL(self) -> None:
-        self.ctx = mgl.create_context()
-        check_pyopengl_if_required(self.ctx)
-        self.ctx.enable(mgl.BLEND)
-        self.ctx.blend_func = (
-            mgl.SRC_ALPHA, mgl.ONE_MINUS_SRC_ALPHA,
-            mgl.ONE, mgl.ONE
-        )
-        self.ctx.blend_equation = mgl.FUNC_ADD, mgl.MAX
+        self.ctx = create_context()
 
         self.qfuncs = self.context().functions()
         self.update_clear_color()
@@ -58,8 +50,8 @@ class GLWidget(QOpenGLWidget):
 
     def paintGL(self) -> None:
         if self.needs_update_clear_color:
-            self.qfuncs.glClearColor(*self.anim.cfg.background_color.rgb, 1.)
+            self.qfuncs.glClearColor(*self.built.cfg.background_color.rgb, 1.)
             self.needs_update_clear_color = False
         self.qfuncs.glClear(0x00004000 | 0x00000100)    # GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT
-        self.anim.render_all(self.ctx)
+        self.built.render_all(self.ctx, self.global_t)
         self.rendered.emit()

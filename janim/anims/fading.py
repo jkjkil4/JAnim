@@ -13,7 +13,7 @@ from janim.typing import Vect
 from janim.utils.paths import PathFunc, get_path_func
 
 
-class Fade(DataUpdater, metaclass=ABCMeta):
+class Fade(DataUpdater[Item], metaclass=ABCMeta):
     '''
     :class:`FadeIn` 和 :class:`FadeOut` 的基类
     '''
@@ -101,16 +101,21 @@ class FadeOut(Fade):
         item: Item,
         shift: Vect = ORIGIN,
         scale: float = 1.0,
-        show_at_end: float = False,
+        hide_at_end: float = True,
         **kwargs
     ):
         super().__init__(
             item,
             shift,
             scale,
-            show_at_end=show_at_end,
+            hide_at_end=hide_at_end,
             **kwargs
         )
+
+    def _time_fixed(self) -> None:
+        super()._time_fixed()
+        if self.hide_at_end:
+            self.timeline.schedule(self.t_range.end, self.item.hide, self.root_only)
 
     def updater(self, data: Item, p: UpdaterParams) -> None:
         if not isinstance(data, Points):

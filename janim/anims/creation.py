@@ -1,10 +1,10 @@
 
 import math
-from functools import partial
+from dataclasses import dataclass
 from typing import Callable
 
 import numpy as np
-from janim.anims.animation import Animation, RenderCall
+from janim.anims.animation import Animation
 from janim.anims.updater import DataUpdater, UpdaterParams
 from janim.components.vpoints import Cmpt_VPoints
 from janim.constants import (C_LABEL_ANIM_ABSTRACT, C_LABEL_ANIM_IN,
@@ -32,6 +32,7 @@ class ShowPartial(DataUpdater):
         auto_close_path: bool = False,
         become_at_end: bool = False,
         root_only: bool = False,
+        zero_bound: int | None = None,
         **kwargs
     ):
         def func(data: Item, p: UpdaterParams) -> None:
@@ -41,8 +42,21 @@ class ShowPartial(DataUpdater):
             if not cmpt.has():
                 return  # pragma: no cover
 
+            lower, higher = bound_func(p)
+
+            if self.lag_ratio != 0:
+                if lower <= 0 and higher >= 1:
+                    return
+
+                if lower == higher and zero_bound is not None:
+                    if p.extra_data is None:
+                        p._updater.extra_data = cmpt.pointwise_become_partial(cmpt, zero_bound, zero_bound).copy()
+                    else:
+                        cmpt.become(p.extra_data)
+                    return
+
             if not auto_close_path:
-                cmpt.pointwise_become_partial(cmpt, *bound_func(p))     # pragma: no cover
+                cmpt.pointwise_become_partial(cmpt, lower, higher)     # pragma: no cover
             else:
                 end_indices = np.array(cmpt.get_subpath_end_indices())
                 begin_indices = np.array([0, *[indice + 2 for indice in end_indices[:-1]]])
@@ -50,7 +64,7 @@ class ShowPartial(DataUpdater):
                 points = cmpt.get()
                 cond1 = np.isclose(points[begin_indices], points[end_indices]).all(axis=1)
 
-                cmpt.pointwise_become_partial(cmpt, *bound_func(p))
+                cmpt.pointwise_become_partial(cmpt, lower, higher)
 
                 points = cmpt.get().copy()
                 cond2 = ~np.isclose(points[begin_indices], points[end_indices]).all(axis=1)
@@ -79,7 +93,7 @@ class Create(ShowPartial):
     label_color = C_LABEL_ANIM_IN
 
     def __init__(self, item: Item, auto_close_path: bool = True, **kwargs):
-        super().__init__(item, lambda p: (0, p.alpha), auto_close_path=auto_close_path, **kwargs)
+        super().__init__(item, lambda p: (0, p.alpha), auto_close_path=auto_close_path, zero_bound=0, **kwargs)
 
 
 class Uncreate(ShowPartial):
@@ -91,15 +105,16 @@ class Uncreate(ShowPartial):
     def __init__(
         self,
         item: Item,
-        show_at_end: bool = False,
+        hide_at_end: bool = True,
         auto_close_path: bool = True,
         **kwargs
     ):
         super().__init__(
             item,
             lambda p: (0, 1.0 - p.alpha),
-            show_at_end=show_at_end,
+            hide_at_end=hide_at_end,
             auto_close_path=auto_close_path,
+            zero_bound=0,
             **kwargs
         )
 
@@ -113,15 +128,16 @@ class Destruction(ShowPartial):
     def __init__(
         self,
         item: Item,
-        show_at_end: bool = False,
+        hide_at_end: bool = True,
         auto_close_path: bool = True,
         **kwargs
     ):
         super().__init__(
             item,
             lambda p: (p.alpha, 1.0),
-            show_at_end=show_at_end,
+            hide_at_end=hide_at_end,
             auto_close_path=auto_close_path,
+            zero_bound=1,
             **kwargs
         )
 
@@ -147,6 +163,7 @@ class DrawBorderThenFill(DataUpdater):
         super().__init__(
             item,
             self.updater,
+            extra=self.create_extra_data,
             duration=duration,
             rate_func=rate_func,
             become_at_end=become_at_end,
@@ -156,6 +173,11 @@ class DrawBorderThenFill(DataUpdater):
         self.stroke_radius = stroke_radius
         self.stroke_color = stroke_color
 
+    @dataclass
+    class ExtraData:
+        outline: VItem
+        zero_data: VItem
+
     def create_extra_data(self, data: Item) -> VItem | None:
         if not isinstance(data, VItem):
             return None     # pragma: no cover
@@ -163,12 +185,23 @@ class DrawBorderThenFill(DataUpdater):
         data_copy.radius.set(self.stroke_radius)
         data_copy.stroke.set(self.stroke_color, 1)
         data_copy.fill.set(alpha=0)
-        return data_copy
+        return DrawBorderThenFill.ExtraData(data_copy, None)
 
     def updater(self, data: VItem, p: UpdaterParams) -> None:
         if p.extra_data is None:
             return  # pragma: no cover
-        outline = p.extra_data
+
+        if self.lag_ratio != 0:
+            if p.alpha >= 1:
+                return
+            if p.alpha <= 0:
+                if p.extra_data.zero_data is None:
+                    p.extra_data.zero_data = data.points.pointwise_become_partial(data.points, 0, 0).copy()
+                else:
+                    data.points.become(p.extra_data.zero_data)
+                return
+
+        outline = p.extra_data.outline
         index, subalpha = integer_interpolate(0, 2, p.alpha)
 
         if index == 0:
@@ -221,41 +254,41 @@ class ShowIncreasingSubsets(Animation):
         self,
         group: Group[Item],
         *,
-        hide_at_begin: bool = True,
-        show_at_end: bool = True,
         int_func=round,
+        show_at_begin: bool = True,
+        hide_at_end: bool = False,
         **kwargs
     ):
         super().__init__(**kwargs)
         self.group = group
-        self.hide_at_begin = hide_at_begin
-        self.show_at_end = show_at_end
         self.int_func = int_func
-        self.index = 0
+        self.show_at_begin = show_at_begin
+        self.hide_at_end = hide_at_end
 
-    def anim_init(self) -> None:
-        self.n_children = len(self.group)
+    def _time_fixed(self) -> None:
+        if self.show_at_begin:
+            self.timeline.schedule(self.t_range.at, self.group.show)
+        if self.hide_at_end:
+            self.timeline.schedule(self.t_range.end, self.group.hide)
 
-        self.set_render_call_list([
-            RenderCall(
-                item.depth,
-                partial(self.render_item, i, item)
-            )
+        apprs = self.timeline.item_appearances
+
+        self.i_apprs = [
+            (i, [apprs[item] for item in child.walk_self_and_descendants()])
             for i, child in enumerate(self.group)
-            for item in child.walk_self_and_descendants()
-        ])
+        ]
+        self.n_children = len(self.group)
+        self.timeline.add_additional_render_calls_callback(self.t_range, self.additional_callback)
 
-        if self.hide_at_begin:
-            self.timeline.schedule(self.global_range.at, self.group.hide)
-        if self.show_at_end:
-            self.timeline.schedule(self.global_range.end, self.group.show)
-
-    def anim_on_alpha(self, alpha: float) -> None:
-        self.index = int(self.int_func(alpha * self.n_children))
-
-    def render_item(self, i: int, item: Item) -> None:
-        if self.is_item_visible(i):
-            item.current().render()
+    def additional_callback(self):
+        global_t = Animation.global_t_ctx.get()
+        alpha = self.get_alpha_on_global_t(global_t)
+        for i, apprs in self.i_apprs:
+            self.index = int(self.int_func(alpha * self.n_children))
+            if not self.is_item_visible(i):
+                for appr in apprs:
+                    appr.render_disabled = True
+        return []
 
     def is_item_visible(self, i: int) -> bool:
         return i < self.index
@@ -268,11 +301,11 @@ class ShowSubitemsOneByOne(ShowIncreasingSubsets):
         self,
         group: Group,
         *,
-        show_at_end: bool = False,
         int_func=math.ceil,
+        hide_at_end: bool = True,
         **kwargs
     ):
-        super().__init__(group, show_at_end=show_at_end, int_func=int_func, **kwargs)
+        super().__init__(group, int_func=int_func, hide_at_end=hide_at_end, **kwargs)
 
     def is_item_visible(self, i: int) -> bool:
         return i == self.index - 1

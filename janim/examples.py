@@ -86,7 +86,7 @@ The difference between #text(green)[`TypstDoc`] and #text(green)[`Typst`]:
 class TypstExample(Timeline):
     def construct(self) -> None:
         doc = TypstDoc(typst_doc)
-        typ = Typst('sum_(i=1)^n x_i')
+        typ = TypstMath('sum_(i=1)^n x_i')
 
         # Applying animations on text is slow
         self.play(Write(doc), duration=4)
@@ -140,11 +140,11 @@ class NumberPlaneExample(Timeline):
         self.forward()
 
         self.play(
-            sin_graph.anim(),
             plane.anim.points.apply_matrix([
                 [3, -1],
                 [1, 2]
             ]),
+            sin_graph.anim(),
             duration=2
         )
         self.forward()

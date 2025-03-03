@@ -1,14 +1,15 @@
 __pycache__
 .VSCodeCounter
+.DS_Store
+._*
+*_deprecated.py
 /.asv
 /.vscode/launch.json
 /dist
-/refactor_deprecated
 /test_some_code
 /doc/build
 /videos
 /.coverage
-/.DS_Store
 /env*
 /result.json
 /result2.json
