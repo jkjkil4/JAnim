@@ -64,7 +64,9 @@ class AnimGroup(Animation):
         self.collapse = collapse
         self._adjust_t_range(lag_ratio, offset)
 
-        if self.anims:
+        if not self.anims:
+            duration = 0
+        else:
             # 对于一个 AnimGroup 而言：
             #   如果它的子动画不对齐（对齐：即每个都 at=0，并且 end 相同）
             #   如果它的子动画中有 _is_aligned=False
@@ -94,11 +96,11 @@ class AnimGroup(Animation):
                     anim._attach_rate_func(rate_func)
 
             # duration 对子动画区段的拉伸作用
-            maxt = 0 if not self.anims else max(anim.t_range.num_end for anim in self.anims)
+            maxt = max(anim.t_range.num_end for anim in self.anims)
             if duration is None:
                 duration = maxt
             else:
-                if maxt != duration:
+                if maxt != 0 and maxt != duration:
                     factor = duration / maxt
                     for anim in self.anims:
                         anim.scale_range(factor)

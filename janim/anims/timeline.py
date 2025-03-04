@@ -283,8 +283,8 @@ class Timeline(metaclass=ABCMeta):
         '''
         向前推进 ``dt`` 秒
         '''
-        if dt <= 0:
-            raise ValueError(_('dt must be greater than 0'))
+        if dt < 0:
+            raise ValueError(_('dt can\'t be negative'))
 
         if _detect_changes:
             self.detect_changes_of_all()

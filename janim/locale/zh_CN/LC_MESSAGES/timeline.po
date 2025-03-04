@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-04 09:32+0800\n"
-"PO-Revision-Date: 2025-03-04 09:38+0800\n"
+"POT-Creation-Date: 2025-03-04 10:00+0800\n"
+"PO-Revision-Date: 2025-03-04 10:01+0800\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
 "Language: zh_CN\n"
@@ -40,10 +40,13 @@ msgid "Finished building \"{name}\" in {elapsed:.2f} s"
 msgstr "构建 \"{name}\" 完成，耗时 {elapsed:.2f} s"
 
 #: janim/anims/timeline.py:287
-msgid "dt must be greater than 0"
-msgstr "dt 必须大于 0"
+msgid "dt can't be negative"
+msgstr "dt 不能为负"
 
 #: janim/anims/timeline.py:765
 #, python-brace-format
 msgid "Called self.debug({repr}) at {loc}"
 msgstr "调用了 self.debug({repr}) 在 {loc}"
+
+#~ msgid "dt must be greater than 0"
+#~ msgstr "dt 必须大于 0"
