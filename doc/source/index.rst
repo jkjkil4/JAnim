@@ -16,6 +16,7 @@ JAnim 是一个用于简易动画效果的库
    tutorial/get_started
    tutorial/use_gui
    tutorial/examples
+   tutorial/faq
 
 .. toctree::
    :maxdepth: 2

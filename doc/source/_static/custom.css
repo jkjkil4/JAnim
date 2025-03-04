@@ -91,3 +91,7 @@ h5.example-header {
     margin: 0px;
     margin-bottom: -0.1em;
 }
+
+.page-faq h2 {
+    font-size: 1.5em;
+}
