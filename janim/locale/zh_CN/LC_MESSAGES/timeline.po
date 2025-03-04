@@ -7,34 +7,43 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-11-29 21:26+0800\n"
-"PO-Revision-Date: 2024-06-05 18:53+0800\n"
+"POT-Creation-Date: 2025-03-04 09:32+0800\n"
+"PO-Revision-Date: 2025-03-04 09:38+0800\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
+"Language: zh_CN\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=GBK\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: zh_CN\n"
-"X-Generator: Poedit 3.4.2\n"
+"X-Generator: Poedit 3.5\n"
 
-#: janim\anims\timeline.py:119
+#: janim/anims/timeline.py:123
+#, python-brace-format
 msgid "{name} cannot be used outside of Timeline.construct"
 msgstr "{name} 无法在 Timeline.construct 之外使用"
 
-#: janim\anims\timeline.py:209
+#: janim/anims/timeline.py:222
+#, python-brace-format
 msgid "Building \"{name}\""
 msgstr "构建 \"{name}\" 中"
 
-#: janim\anims\timeline.py:223
+#: janim/anims/timeline.py:237
+#, python-brace-format
 msgid ""
 "\"{name}\" did not produce a duration after construction, automatically "
 "generated a duration of {duration}s"
 msgstr "\"{name}\" 构建后没有产生时长，自动产生了 {duration}s 的时长"
 
-#: janim\anims\timeline.py:242
+#: janim/anims/timeline.py:253
+#, python-brace-format
 msgid "Finished building \"{name}\" in {elapsed:.2f} s"
 msgstr "构建 \"{name}\" 完成，耗时 {elapsed:.2f} s"
 
-#: janim\anims\timeline.py:272
+#: janim/anims/timeline.py:287
 msgid "dt must be greater than 0"
 msgstr "dt 必须大于 0"
+
+#: janim/anims/timeline.py:765
+#, python-brace-format
+msgid "Called self.debug({repr}) at {loc}"
+msgstr "调用了 self.debug({repr}) 在 {loc}"

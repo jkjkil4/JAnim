@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: JAnim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-05-30 15:49+0800\n"
+"POT-Creation-Date: 2025-03-04 09:09+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -17,14 +17,16 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.14.0\n"
+"Generated-By: Babel 2.17.0\n"
 
 #: ../../source/janim/anims/growing.rst:2
 msgid "growing"
 msgstr ""
 
 #: janim.anims.growing.GrowFromPoint:1 of
-msgid "基类：:py:class:`~janim.anims.transform.Transform`"
+msgid ""
+"基类：:py:class:`~janim.anims.updater.DataUpdater`\\ "
+"[:py:class:`~janim.items.points.Points`]"
 msgstr ""
 
 #: janim.anims.growing.GrowFromPoint:1 of
@@ -52,7 +54,7 @@ msgid "从物件的中心旋转半圈放大显现"
 msgstr ""
 
 #: janim.anims.growing.GrowArrowByBoundFunc:1 of
-msgid "基类：:py:class:`~janim.anims.animation.Animation`"
+msgid "基类：:py:class:`~janim.anims.updater.GroupUpdater`"
 msgstr ""
 
 #: janim.anims.growing.GrowArrowByBoundFunc:1 of
@@ -74,4 +76,10 @@ msgstr ""
 #: janim.anims.growing.GrowDoubleArrow:3 of
 msgid "传入 ``start_ratio`` （默认 ``0.5``） 可以调整开始的位置"
 msgstr ""
+
+#~ msgid "基类：:py:class:`~janim.anims.transform.Transform`"
+#~ msgstr ""
+
+#~ msgid "基类：:py:class:`~janim.anims.animation.Animation`"
+#~ msgstr ""
 

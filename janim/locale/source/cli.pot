@@ -8,64 +8,73 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-11-29 21:26+0800\n"
+"POT-Creation-Date: 2025-03-04 09:38+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: janim\cli.py:51 janim\cli.py:201
+#: janim/cli.py:48 janim/cli.py:204
 msgid "Constructing window"
 msgstr ""
 
-#: janim\cli.py:62 janim\cli.py:222
+#: janim/cli.py:65 janim/cli.py:225
+#, python-brace-format
 msgid "Finished constructing in {time:.2f} s"
 msgstr ""
 
-#: janim\cli.py:88
+#: janim/cli.py:91
 msgid "'--video' is ignored because '--video_with_audio' is set"
 msgstr ""
 
-#: janim\cli.py:91
+#: janim/cli.py:94
 msgid "'--audio' is ignored because '--video_with_audio' is set"
 msgstr ""
 
-#: janim\cli.py:137
+#: janim/cli.py:140
+#, python-brace-format
 msgid "Skipping \"{name}\": no part to output"
 msgstr ""
 
-#: janim\cli.py:184
+#: janim/cli.py:187
+#, python-brace-format
 msgid "Generated SRT file \"{file_path}\""
 msgstr ""
 
-#: janim\cli.py:193
+#: janim/cli.py:196
 msgid "No tool specified for use"
 msgstr ""
 
-#: janim\cli.py:243
+#: janim/cli.py:246
+#, python-brace-format
 msgid "\"{file_name}\" doesn't exist"
 msgstr ""
 
-#: janim\cli.py:247
+#: janim/cli.py:250
+#, python-brace-format
 msgid "\"{file_name}\" isn't a file"
 msgstr ""
 
-#: janim\cli.py:268
+#: janim/cli.py:271
+#, python-brace-format
 msgid "No timeline named \"{name}\""
 msgstr ""
 
-#: janim\cli.py:285
+#: janim/cli.py:288
 msgid ""
 "That module has multiple timelines, which ones would you like to render?\n"
 "Timeline Name or Number: "
 msgstr ""
 
-#: janim\cli.py:300
+#: janim/cli.py:303
+#, python-brace-format
 msgid "Invaild number {num}"
 msgstr ""
 
-#: janim\cli.py:306
+#: janim/cli.py:309
+#, python-brace-format
 msgid "No timeline named {split_str}"
 msgstr ""

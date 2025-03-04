@@ -8,25 +8,28 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-11-29 21:26+0800\n"
+"POT-Creation-Date: 2025-03-04 09:38+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: janim\components\component.py:31
+#: janim/components/component.py:31
+#, python-brace-format
 msgid ""
 "Every subclass of Component must inherit and implement the \"{key}\" method, "
 "but \"{name}\" does not"
 msgstr ""
 
-#: janim\components\component.py:257
+#: janim/components/component.py:242
 msgid ""
 "CmptGroup must be defined within the same class as the content passed in"
 msgstr ""
 
-#: janim\components\component.py:280
+#: janim/components/component.py:265
+#, python-brace-format
 msgid "None of the components ({cmpt_str}) have a method named {name}"
 msgstr ""

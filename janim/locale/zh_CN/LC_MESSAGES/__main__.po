@@ -7,101 +7,101 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-11-28 18:22+0800\n"
+"POT-Creation-Date: 2025-03-04 09:32+0800\n"
 "PO-Revision-Date: 2024-11-28 13:22+0800\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
+"Language: zh_CN\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=GBK\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: zh_CN\n"
 "X-Generator: Poedit 3.4.2\n"
 
-#: janim\__main__.py:21
+#: janim/__main__.py:21
 msgid "A library for creating smooth animations"
 msgstr "一个用于创建流畅动画的库"
 
-#: janim\__main__.py:26
+#: janim/__main__.py:26
 msgid "Language code, e.g., en, zh_CN"
 msgstr "语言代码，例如 en、zh_CN"
 
-#: janim\__main__.py:34
+#: janim/__main__.py:34
 msgid "Run timeline(s) from specific file"
 msgstr "预览特定文件中的 Timeline"
 
-#: janim\__main__.py:35
+#: janim/__main__.py:35
 msgid "Generate media file(s) of timeline(s) from specific file"
 msgstr "将特定文件中的 Timeline 输出为媒体文件"
 
-#: janim\__main__.py:36
+#: janim/__main__.py:36
 msgid "Show examples of JAnim"
 msgstr "显示 JAnim 的例子"
 
-#: janim\__main__.py:37
+#: janim/__main__.py:37
 msgid "Run useful tools"
 msgstr "运行实用工具"
 
-#: janim\__main__.py:60
+#: janim/__main__.py:60
 msgid "Path to file holding the Python code"
 msgstr "含有 Python 代码的文件路径"
 
-#: janim\__main__.py:77
+#: janim/__main__.py:77
 msgid "Override config"
 msgstr "覆盖设置"
 
-#: janim\__main__.py:82
+#: janim/__main__.py:82
 msgid "Hide subtitles"
 msgstr "隐藏字幕"
 
-#: janim\__main__.py:89
+#: janim/__main__.py:89
 msgid "Name of the Timeline class you want to preview"
 msgstr "要预览的 Timeline 的名称"
 
-#: janim\__main__.py:90
+#: janim/__main__.py:90
 msgid "Preview all timelines from a file"
 msgstr "预览文件中的所有 Timeline"
 
-#: janim\__main__.py:95
+#: janim/__main__.py:95
 msgid "Enable the network socket for interacting with vscode"
 msgstr "启用与 vscode 交互的网络端口"
 
-#: janim\__main__.py:103
+#: janim/__main__.py:103
 msgid "Name of the Timeline class you want to write"
 msgstr "要输出的 Timeline 的名称"
 
-#: janim\__main__.py:104
+#: janim/__main__.py:104
 msgid "Write all timelines from a file"
 msgstr "输出文件中的所有 Timeline"
 
-#: janim\__main__.py:109
+#: janim/__main__.py:109
 msgid "Open the video after writing"
 msgstr "在输出后打开视频文件"
 
-#: janim\__main__.py:112
+#: janim/__main__.py:112
 msgid "Format Options"
 msgstr "格式选项"
 
-#: janim\__main__.py:113
+#: janim/__main__.py:113
 msgid "Options for specifying the format of the output files"
 msgstr "指定输出文件格式的选项"
 
-#: janim\__main__.py:118
+#: janim/__main__.py:118
 msgid "Output video format (mp4 by default, mov for transparent background)"
 msgstr "输出视频的格式（默认 mp4；透明背景需使用 mov）"
 
-#: janim\__main__.py:123
+#: janim/__main__.py:123
 msgid "Output audio format (valid only when outputting audio separately)"
 msgstr "输出音频的格式（仅在单独输出音频时有效）"
 
-#: janim\__main__.py:126
+#: janim/__main__.py:126
 msgid "Output Options"
 msgstr "输出选项"
 
-#: janim\__main__.py:127
+#: janim/__main__.py:127
 msgid "Options for specifying the parts to be written"
 msgstr "指定输出哪些部分的选项"
 
-#: janim\__main__.py:131
+#: janim/__main__.py:131
 msgid ""
 "Video with audio (default; will be replaced by --video if there is no audio, "
 "and by both --video and --audio if the format is GIF)"
@@ -109,23 +109,23 @@ msgstr ""
 "带有音频的视频（默认，当没有音频时会被 --video 替代，当格式为 GIF 时会被 --"
 "video 和 --audio 替代）"
 
-#: janim\__main__.py:137
+#: janim/__main__.py:137
 msgid "Video only"
 msgstr "仅视频"
 
-#: janim\__main__.py:142
+#: janim/__main__.py:142
 msgid "Audio only"
 msgstr "仅音频"
 
-#: janim\__main__.py:147
+#: janim/__main__.py:147
 msgid "Generate SRT file"
 msgstr "生成 SRT 文件"
 
-#: janim\__main__.py:158
+#: janim/__main__.py:158
 msgid "Name of the example you want to see"
 msgstr "要查看的示例的名称"
 
-#: janim\__main__.py:172
+#: janim/__main__.py:172
 msgid "Tool(s) that you want to use"
 msgstr "你想要使用的工具"
 

@@ -8,22 +8,23 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-11-29 21:26+0800\n"
+"POT-Creation-Date: 2025-03-04 09:38+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: janim\items\boolean_ops.py:72
+#: janim/items/boolean_ops.py:72
 msgid "At least 2 items needed for Union."
 msgstr ""
 
-#: janim\items\boolean_ops.py:122
+#: janim/items/boolean_ops.py:122
 msgid "At least 2 items needed for Intersection."
 msgstr ""
 
-#: janim\items\boolean_ops.py:162
+#: janim/items/boolean_ops.py:162
 msgid "At least 2 items needed for Exclusion."
 msgstr ""

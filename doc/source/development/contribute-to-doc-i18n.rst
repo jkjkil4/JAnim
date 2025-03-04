@@ -20,7 +20,7 @@
 
 .. warning::
 
-    我只知道在 Windows 中，以下步骤有效
+    我只知道在 Windows 和 MacOS 中，以下步骤有效
 
     欢迎测试在其它系统中的有效性或补充对应的方法
 
@@ -49,9 +49,15 @@
 
 进入 ``doc/`` 文件夹，并使用
 
-.. code-block:: sh
+.. code-block:: batch
 
     ./make gettext
+
+或（在 MacOS 中）
+
+.. code-block:: sh
+
+    make gettext
 
 提取可翻译的文本，产生的 pot 文件会输出到 ``doc/build/gettext/`` 中
 
@@ -114,9 +120,39 @@ pot 文件是提取出来的可供翻译的源语言文字，你还需要使用�
 
 .. warning::
 
-    我只知道在 Windows 中，以下步骤有效
+    我只知道在 Windows 和 MacOS 中，以下步骤有效
 
     欢迎测试在其它系统中的有效性或补充对应的方法
+
+.. note::
+
+    别忘了安装必要的环境
+
+    .. code-block:: sh
+
+        pip install -e .[gui,doc]
+
+Windows 系统
+~~~~~~~~~~~~~~~
+
+首先确保你在 ``doc/`` 目录下：
+
+.. code-block:: batch
+
+    cd doc
+
+举个例子，如果你想要在本地构建 zh_CN（简体中文）的文档，可以执行：
+
+.. code-block:: batch
+
+    .\make_i18n zh_CN
+
+这样就会在 ``build/html_i18n/zh_CN`` 下生成网页文件，点击其中的 ``index.html`` 即可打开
+
+其它的语言同理，把 ``zh_CN`` 改成对应的语言代码就好了
+
+MacOS 系统
+~~~~~~~~~~~~~~~~~
 
 首先确保你在 ``doc/`` 目录下：
 
@@ -128,7 +164,7 @@ pot 文件是提取出来的可供翻译的源语言文字，你还需要使用�
 
 .. code-block:: sh
 
-    .\make_i18n zh_CN
+    ./make_i18n.sh zh_CN
 
 这样就会在 ``build/html_i18n/zh_CN`` 下生成网页文件，点击其中的 ``index.html`` 即可打开
 

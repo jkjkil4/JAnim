@@ -8,21 +8,22 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-11-29 21:26+0800\n"
+"POT-Creation-Date: 2025-03-04 09:38+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: janim\anims\composition.py:83
+#: janim/anims/composition.py:91
 msgid ""
 "Passing misaligned sub-animations to a composition with non-linear rate_func "
-"may cause unexpected behavior"
+"is not allowed"
 msgstr ""
 
-#: janim\anims\composition.py:105
+#: janim/anims/composition.py:152
 msgid ""
 "A non-animation object was passed in, you might have forgotten to use .anim"
 msgstr ""

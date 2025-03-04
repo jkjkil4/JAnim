@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: JAnim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-03-14 14:52+0800\n"
+"POT-Creation-Date: 2025-03-04 09:09+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -17,7 +17,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.14.0\n"
+"Generated-By: Babel 2.17.0\n"
 
 #: ../../source/janim/components/rgbas.rst:2
 msgid "rgbas"
@@ -41,6 +41,10 @@ msgstr ""
 msgid ""
 "将 ``ColorArray`` （每个元素有可能是 字符串、``[r, g, b]`` ） 格式化为元素仅有 ``[r, g, b]`` "
 "的数值数组的格式"
+msgstr ""
+
+#: janim.components.rgbas.Cmpt_Rgbas.format_color:1 of
+msgid "将 字符串、``[r, g, b]`` 等统一为 ``[r, g, b]`` 数值数组的格式"
 msgstr ""
 
 #: janim.components.rgbas.Cmpt_Rgbas.format_alphas:1 of
@@ -81,6 +85,14 @@ msgstr ""
 
 #: janim.components.rgbas.Cmpt_Rgbas.apart_alpha:1 of
 msgid "对每一个颜色数据应用 :func:`~.apart_alpha`"
+msgstr ""
+
+#: janim.components.rgbas.Cmpt_Rgbas.fade:1 of
+msgid "淡化颜色，``factor`` 是 0~1 的值，例如 0 没有效果，0.5 淡化一半，1 完全淡化（变得不可见）"
+msgstr ""
+
+#: janim.components.rgbas.Cmpt_Rgbas.mix:1 of
+msgid "混合颜色，默认得到与 ``color`` 混合的中间色"
 msgstr ""
 
 #: janim.components.rgbas.merge_alpha:1 of

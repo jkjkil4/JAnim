@@ -7,24 +7,24 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-11-28 18:22+0800\n"
+"POT-Creation-Date: 2025-03-04 09:32+0800\n"
 "PO-Revision-Date: 2024-08-17 11:41+0800\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
+"Language: zh_CN\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=GBK\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: zh_CN\n"
 "X-Generator: Poedit 3.4.2\n"
 
-#: janim\gui\timeline_view.py:172
+#: janim/gui/timeline_view.py:279
 msgid "Clip"
 msgstr "裁剪区段"
 
-#: janim\gui\timeline_view.py:199 janim\gui\timeline_view.py:201
+#: janim/gui/timeline_view.py:306 janim/gui/timeline_view.py:308
 msgid "Recommended clip"
 msgstr "建议的裁剪区段"
 
-#: janim\gui\timeline_view.py:202
+#: janim/gui/timeline_view.py:309
 msgid "(Too many! Unable to display all ranges.)"
 msgstr "（太多了！无法显示所有区段）"

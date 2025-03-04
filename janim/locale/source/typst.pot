@@ -8,32 +8,35 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-11-29 21:26+0800\n"
+"POT-Creation-Date: 2025-03-04 09:38+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: janim\items\svg\typst.py:71
+#: janim/items/svg/typst.py:89
 msgid ""
 "Could not compile typst file. Please install typst and add it to the "
 "environment variables."
 msgstr ""
 
-#: janim\items\svg\typst.py:79
+#: janim/items/svg/typst.py:97
 msgid "Typst compilation error. Please check the output for more information."
 msgstr ""
 
-#: janim\items\svg\typst.py:255
+#: janim/items/svg/typst.py:273
+#, python-brace-format
 msgid "No matches found for {pattern}"
 msgstr ""
 
-#: janim\items\svg\typst.py:262
+#: janim/items/svg/typst.py:280
+#, python-brace-format
 msgid "{ordinal} is out of range for {count} matches"
 msgstr ""
 
-#: janim\items\svg\typst.py:278
+#: janim/items/svg/typst.py:296
 msgid "ordinal {} is invalid"
 msgstr ""

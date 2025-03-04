@@ -1,0 +1,42 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2023, jkjkil4
+# This file is distributed under the same license as the JAnim package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: JAnim \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-03-04 09:09+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: en\n"
+"Language-Team: en <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.17.0\n"
+
+#: ../../source/janim/gui/label.rst:2
+msgid "label"
+msgstr ""
+
+#: janim.gui.label.Label:1 janim.gui.label.Label.PaintParams:1
+#: janim.gui.label.PixelRange:1 of
+msgid "基类：:py:class:`object`"
+msgstr ""
+
+#: janim.gui.label.LabelGroup:1 of
+msgid "基类：:py:class:`~janim.gui.label.Label`"
+msgstr ""
+
+#: janim.gui.label.LabelGroup.is_exclusive:1 of
+msgid "若 ``labels`` 没有重叠部分则返回 ``True``"
+msgstr ""
+
+#: janim.gui.label.LabelGroup.QueryPolicy:1 of
+msgid "基类：:py:class:`~enum.Enum`"
+msgstr ""
+

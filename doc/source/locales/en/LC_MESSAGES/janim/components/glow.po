@@ -1,0 +1,63 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2023, jkjkil4
+# This file is distributed under the same license as the JAnim package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: JAnim \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-03-04 09:09+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: en\n"
+"Language-Team: en <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.17.0\n"
+
+#: ../../source/janim/components/glow.rst:2
+msgid "glow"
+msgstr ""
+
+#: janim.components.glow.Cmpt_Glow:1 of
+msgid ""
+"基类：:py:class:`~janim.components.component.Component`, "
+":py:class:`~typing.Generic`"
+msgstr ""
+
+#: janim.components.glow.Cmpt_Glow:1 of
+msgid "泛光组件"
+msgstr ""
+
+#: janim.components.glow.Cmpt_Glow.set:1 of
+msgid ""
+"``color`` 表示传入的 ``RGB`` 颜色数据，单个颜色 （支持 ``'#FF0000'`` ``'red'`` ``[1, 0, "
+"0.5]`` 的表示）"
+msgstr ""
+
+#: janim.components.glow.Cmpt_Glow.set:3 of
+msgid "``alpha`` 表示传入的透明度数据 （``1`` 表示不透明，``0`` 表示完全透明）"
+msgstr ""
+
+#: janim.components.glow.Cmpt_Glow.set:5 of
+msgid "``size`` 表示泛光的大小"
+msgstr ""
+
+#: janim.components.glow.Cmpt_Glow.set:6 of
+msgid "默认情况下会将所有子物件也设置成指定的属性，传入 ``root_only=True`` 可以只设置根物件的"
+msgstr ""
+
+#: janim.components.glow.Cmpt_Glow.set:8 of
+msgid "特殊传参："
+msgstr ""
+
+#: janim.components.glow.Cmpt_Glow.set:10 of
+msgid ""
+"当 ``color`` 为四分量 ``RGBA`` 颜色数据时， 则同时表示了 ``color`` 和 ``alpha`` 二者，因此不能再传入 "
+"``alpha`` 参数"
+msgstr ""
+

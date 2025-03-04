@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  JAnim\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-11-10 11:17+0800\n"
+"POT-Creation-Date: 2025-03-04 09:09+0800\n"
 "PO-Revision-Date: 2024-03-14 15:46+0800\n"
 "Last-Translator: \n"
 "Language: en\n"
@@ -17,13 +17,15 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.14.0\n"
+"Generated-By: Babel 2.17.0\n"
 
 #: ../../source/janim/anims/timeline.rst:2
 msgid "timeline"
 msgstr "timeline"
 
-#: janim.anims.timeline.Timeline:1 janim.anims.timeline.Timeline.ItemHistory:1
+#: janim.anims.timeline.BuiltTimeline:1 janim.anims.timeline.Timeline:1
+#: janim.anims.timeline.Timeline.AdditionalRenderCallsCallback:1
+#: janim.anims.timeline.Timeline.ItemAppearance:1
 #: janim.anims.timeline.Timeline.PausePoint:1
 #: janim.anims.timeline.Timeline.PlayAudioInfo:1
 #: janim.anims.timeline.Timeline.ScheduledTask:1
@@ -39,7 +41,8 @@ msgstr ""
 "implement the logic of building animations"
 
 #: janim.anims.timeline.Timeline:3 of
-msgid "调用 :meth:`build` 可以得到构建完成的动画对象"
+#, fuzzy
+msgid "调用 :meth:`build` 可以得到构建完成的 :class:`Timeline` 对象"
 msgstr "Call :meth:`build` to get the constructed animation object"
 
 #: ../../docstring janim.anims.timeline.Timeline.CONFIG:1 of
@@ -69,15 +72,15 @@ msgstr ""
 "If called outside of :meth:`construct` and ``raise_exc=True`` (default), "
 "raises a ``LookupError``"
 
+#: janim.anims.timeline.Timeline.ScheduledTask:1 of
+msgid "另见 :meth:`~.Timeline.schedule`"
+msgstr "See :meth:`~.Timeline.schedule`"
+
 #: janim.anims.timeline.Timeline.TimeOfCode:1 of
 msgid "标记 :meth:`~.Timeline.construct` 执行到的代码行数所对应的时间"
 msgstr ""
 "Marks the time corresponding to the line number of code execution in "
 ":meth:`~.Timeline.construct`"
-
-#: janim.anims.timeline.Timeline.ScheduledTask:1 of
-msgid "另见 :meth:`~.Timeline.schedule`"
-msgstr "See :meth:`~.Timeline.schedule`"
 
 #: janim.anims.timeline.Timeline.PlayAudioInfo:1 of
 #, fuzzy
@@ -120,14 +123,6 @@ msgstr "Advance by ``dt`` seconds"
 msgid "向前推进到 ``t`` 秒的时候"
 msgstr "Advance to time ``t``"
 
-#: janim.anims.timeline.Timeline.prepare:1 of
-msgid "应用动画"
-msgstr "Apply animations"
-
-#: janim.anims.timeline.Timeline.play:1 of
-msgid "应用动画并推进到动画结束的时候"
-msgstr "Apply animations and advance to the end of the animation"
-
 #: janim.anims.timeline.Timeline.pause_point:1 of
 msgid "标记在预览界面中，执行到当前时间点时会暂停"
 msgstr ""
@@ -143,28 +138,6 @@ msgstr ""
 #: janim.anims.timeline.Timeline.pause_point:5 of
 msgid "在 GUI 界面中，可以使用 ``Ctrl+Z`` 快速移动到前一个暂停点，``Ctrl+C`` 快速移动到后一个"
 msgstr ""
-
-#: janim.anims.timeline.Timeline.is_displaying:1 of
-msgid "判断特定的物件是否正在显示中"
-msgstr ""
-
-#: janim.anims.timeline.Timeline.is_displaying:3 of
-msgid "另见：:meth:`show`、:meth:`hide`"
-msgstr ""
-
-#: janim.anims.timeline.Timeline.show:1 of
-msgid "显示物件"
-msgstr "Show item"
-
-#: janim.anims.timeline.Timeline.hide:1 of
-msgid "隐藏物件"
-msgstr "Hide item"
-
-#: janim.anims.timeline.Timeline.cleanup_display:1 of
-msgid "对目前显示中的所有物件调用隐藏，使得正确产生 :class:`~.Display` 对象"
-msgstr ""
-"Hide all currently displayed items to correctly generate "
-":class:`~.Display` objects"
 
 #: janim.anims.timeline.Timeline.aas:1 of
 msgid ":meth:`audio_and_subtitle` 的简写"
@@ -204,10 +177,6 @@ msgstr ""
 
 #: janim.anims.timeline.Timeline.has_audio:1 of
 msgid "是否有可以播放的音频"
-msgstr ""
-
-#: janim.anims.timeline.Timeline.get_audio_samples_of_frame:1 of
-msgid "提取特定帧的音频流"
 msgstr ""
 
 #: janim.anims.timeline.Timeline.subtitle:1 of
@@ -250,6 +219,31 @@ msgstr ""
 msgid "如果在上文所述的 ``[a, b]`` 仍存在时，又加入了一个 ``c``，则 ``c`` 放在最上面"
 msgstr ""
 
+#: janim.anims.timeline.Timeline.ItemAppearance:1 of
+msgid "包含与物件显示有关的对象"
+msgstr ""
+
+#: janim.anims.timeline.Timeline.ItemAppearance:3 of
+msgid "``self.stack`` 即 :class:`~.AnimStack` 对象"
+msgstr ""
+
+#: janim.anims.timeline.Timeline.ItemAppearance:5 of
+msgid ""
+"``self.visiblility`` 是一个列表，存储物件显示/隐藏的时间点 - "
+"列表中偶数下标（0、2、...）的表示开始显示的时间点，奇数下标（1、3、...）的表示隐藏的时间点 - 例如，如果列表中是 ``[3, 4, "
+"8]``，则表示在第 3s 显示，第 4s 隐藏，并且在第 8s 后一直显示 - 这种记录方式是 "
+":meth:`Timeline.is_visible`、:meth:`Timeline.show`、:meth:`Timeline.hide` "
+"运作的基础"
+msgstr ""
+
+#: janim.anims.timeline.Timeline.ItemAppearance:10 of
+msgid "``self.renderer`` 表示所使用的渲染器对象"
+msgstr ""
+
+#: janim.anims.timeline.Timeline.ItemAppearance.is_visible_at:1 of
+msgid "在 ``t`` 时刻，物件是否可见"
+msgstr ""
+
 #: janim.anims.timeline.Timeline.track:1 of
 msgid ""
 "使得 ``item`` 在每次 ``forward`` 和 ``play`` 时都会被自动调用 "
@@ -261,19 +255,46 @@ msgid "相当于对 ``item`` 及其所有的后代物件调用 :meth:`track`"
 msgstr ""
 
 #: janim.anims.timeline.Timeline.detect_changes_of_all:1 of
-msgid "检查所有物件是否有产生变化并记录"
-msgstr "Check all items if have changed and record the changes"
+msgid "检查物件的变化并将变化记录为 :class:`~.Display`"
+msgstr ""
 
 #: janim.anims.timeline.Timeline.detect_changes:1 of
-msgid "检查指定的列表中的物件是否有产生变化并记录（仅检查自身而不包括子物件的）"
+msgid "检查指定的列表中物件的变化，并将变化记录为 :class:`~.Display`"
 msgstr ""
-"Check items in the specified list if have changed and record the changes "
-"(only checks itself, without descendants)"
+
+#: janim.anims.timeline.Timeline.detect_changes:3 of
+msgid "（仅检查自身而不包括子物件的）"
+msgstr ""
+
+#: janim.anims.timeline.Timeline.compute_item:1 of
+#, fuzzy
+msgid "另见 :meth:`~.AnimStack.compute`"
+msgstr "See :meth:`~.Timeline.schedule`"
 
 #: janim.anims.timeline.Timeline.item_current:1 of
 #, fuzzy
 msgid "另见 :meth:`~.Item.current`"
 msgstr "See :meth:`~.Timeline.schedule`"
+
+#: janim.anims.timeline.Timeline.is_visible:1 of
+msgid "判断特定的物件目前是否可见"
+msgstr ""
+
+#: janim.anims.timeline.Timeline.is_visible:3 of
+msgid "另见：:meth:`show`、:meth:`hide`"
+msgstr ""
+
+#: janim.anims.timeline.Timeline.show:1 of
+msgid "显示物件"
+msgstr "Show item"
+
+#: janim.anims.timeline.Timeline.hide:1 of
+msgid "隐藏物件"
+msgstr "Hide item"
+
+#: janim.anims.timeline.Timeline.hide_all:1 of
+msgid "隐藏显示中的所有物件"
+msgstr ""
 
 #: janim.anims.timeline.Timeline.get_construct_lineno:1 of
 msgid "得到当前在 :meth:`construct` 中执行到的行数"
@@ -293,38 +314,28 @@ msgstr ""
 "Compared to :class:`Timeline`, this will display the source code in the "
 "background."
 
-#: janim.anims.timeline.TimelineAnim:1 of
-msgid "基类：:py:class:`~janim.anims.composition.AnimGroup`"
-msgstr "基类：:py:class:`~janim.anims.composition.AnimGroup`"
-
-#: janim.anims.timeline.TimelineAnim:1 of
+#: janim.anims.timeline.BuiltTimeline:1 of
 #, fuzzy
-msgid "运行 :meth:`Timeline.build` 后返回的动画组"
+msgid "运行 :meth:`Timeline.build` 后返回的实例"
 msgstr "Animation group returned after running :meth:`Timeline.run`."
 
-#: janim.anims.timeline.TimelineAnim:3 of
-msgid ""
-"``self.display_anim`` 是由 :meth:`Timeline.construct` 中执行 "
-":meth:`Timeline.show` 和 :meth:`Timeline.hide` 而产生的"
+#: janim.anims.timeline.BuiltTimeline.get_audio_samples_of_frame:1 of
+msgid "提取特定帧的音频流"
 msgstr ""
-"``self.display_anim`` is generated by executing :meth:`Timeline.show` and"
-" :meth:`Timeline.hide` in :meth:`Timeline.construct`."
 
-#: janim.anims.timeline.TimelineAnim:5 of
-msgid ""
-"``self.user_anim`` 是显式使用了 :meth:`Timeline.prepare` 或 "
-":meth:`Timeline.play` 而产生的"
+#: janim.anims.timeline.BuiltTimeline.render_all:1 of
+msgid "渲染所有可见物件"
 msgstr ""
-"``self.user_anim`` is generated explicitly using :meth:`Timeline.prepare`"
-" or :meth:`Timeline.play`."
 
-#: janim.anims.timeline.TimelineAnim.anim_on:1 of
-msgid "将 ``local_t`` 换算为 ``alpha`` 并调用 :meth:`anim_on_alpha`"
-msgstr "Converts ``local_t`` to ``alpha`` and calls :meth:`anim_on_alpha`"
+#: janim.anims.timeline.TimelineItem:1 of
+#, fuzzy
+msgid "基类：:py:class:`~janim.items.item.Item`"
+msgstr "基类：:py:class:`~janim.anims.timeline.Timeline`"
 
-#: janim.anims.timeline.TimelineAnim.render_all:1 of
-msgid "调用所有的 :class:`RenderCall` 进行渲染"
-msgstr "Calls all :class:`RenderCall` objects for rendering."
+#: janim.anims.timeline.TimelineItem.TIRenderer:1 of
+#, fuzzy
+msgid "基类：:py:class:`~janim.render.base.Renderer`"
+msgstr "基类：:py:class:`~janim.anims.timeline.Timeline`"
 
 #~ msgid "用于 :class:`~.Animation` 的初始化以及物件的操作"
 #~ msgstr "Used for initialization of :class:`~.Animation` and operations on items"
@@ -405,4 +416,54 @@ msgstr "Calls all :class:`RenderCall` objects for rendering."
 
 #~ msgid "等效于调用 :meth:`get_stored_data_at_right`"
 #~ msgstr "Equivalent to calling :meth:`get_stored_data_at_right`."
+
+#~ msgid "应用动画"
+#~ msgstr "Apply animations"
+
+#~ msgid "应用动画并推进到动画结束的时候"
+#~ msgstr "Apply animations and advance to the end of the animation"
+
+#~ msgid "判断特定的物件是否正在显示中"
+#~ msgstr ""
+
+#~ msgid "对目前显示中的所有物件调用隐藏，使得正确产生 :class:`~.Display` 对象"
+#~ msgstr ""
+#~ "Hide all currently displayed items to"
+#~ " correctly generate :class:`~.Display` objects"
+
+#~ msgid "检查所有物件是否有产生变化并记录"
+#~ msgstr "Check all items if have changed and record the changes"
+
+#~ msgid "检查指定的列表中的物件是否有产生变化并记录（仅检查自身而不包括子物件的）"
+#~ msgstr ""
+#~ "Check items in the specified list "
+#~ "if have changed and record the "
+#~ "changes (only checks itself, without "
+#~ "descendants)"
+
+#~ msgid "基类：:py:class:`~janim.anims.composition.AnimGroup`"
+#~ msgstr "基类：:py:class:`~janim.anims.composition.AnimGroup`"
+
+#~ msgid ""
+#~ "``self.display_anim`` 是由 :meth:`Timeline.construct` "
+#~ "中执行 :meth:`Timeline.show` 和 :meth:`Timeline.hide`"
+#~ " 而产生的"
+#~ msgstr ""
+#~ "``self.display_anim`` is generated by "
+#~ "executing :meth:`Timeline.show` and "
+#~ ":meth:`Timeline.hide` in :meth:`Timeline.construct`."
+
+#~ msgid ""
+#~ "``self.user_anim`` 是显式使用了 :meth:`Timeline.prepare` 或"
+#~ " :meth:`Timeline.play` 而产生的"
+#~ msgstr ""
+#~ "``self.user_anim`` is generated explicitly "
+#~ "using :meth:`Timeline.prepare` or "
+#~ ":meth:`Timeline.play`."
+
+#~ msgid "将 ``local_t`` 换算为 ``alpha`` 并调用 :meth:`anim_on_alpha`"
+#~ msgstr "Converts ``local_t`` to ``alpha`` and calls :meth:`anim_on_alpha`"
+
+#~ msgid "调用所有的 :class:`RenderCall` 进行渲染"
+#~ msgstr "Calls all :class:`RenderCall` objects for rendering."
 

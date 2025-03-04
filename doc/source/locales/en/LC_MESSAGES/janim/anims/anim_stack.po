@@ -1,0 +1,77 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2023, jkjkil4
+# This file is distributed under the same license as the JAnim package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: JAnim \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-03-04 09:09+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: en\n"
+"Language-Team: en <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.17.0\n"
+
+#: ../../source/janim/anims/anim_stack.rst:2
+msgid "anim_stack"
+msgstr ""
+
+#: janim.anims.anim_stack.AnimStack:1 of
+msgid "基类：:py:class:`object`"
+msgstr ""
+
+#: janim.anims.anim_stack.AnimStack:1 of
+msgid "用于在 :class:`~.Timeline` 中记录作用于 :class:`~.Item` 上的 :class:`~.Animation`"
+msgstr ""
+
+#: janim.anims.anim_stack.AnimStack.detect_change:1 of
+msgid "检查物件相比 ``self.prev_display`` 所记录的物件而言是否发生变化"
+msgstr ""
+
+#: janim.anims.anim_stack.AnimStack.detect_change:3 of
+msgid "若有变化则记录为 :class:`Display` 对象"
+msgstr ""
+
+#: janim.anims.anim_stack.AnimStack.append:1 of
+msgid "向 :class:`AnimStack` 添加 :class:`~.Animation` 对象"
+msgstr ""
+
+#: janim.anims.anim_stack.AnimStack.compute:1 of
+msgid "得到指定时间 ``as_time`` 的物件，考虑了动画的作用"
+msgstr ""
+
+#: janim.anims.anim_stack.AnimStack.compute:3 of
+msgid "``readonly`` 用来表示调用方是否会对返回值进行修改"
+msgstr ""
+
+#: janim.anims.anim_stack.AnimStack.compute:5 of
+msgid ""
+"如果 ``readonly=True`` 则表示不会进行修改，该方法会放心地直接返回缓存 （但是这并没有强制约束性，传入 "
+"``readonly=True`` 时请遵循不修改返回值的原则，以免影响缓存数据）"
+msgstr ""
+
+#: janim.anims.anim_stack.AnimStack.compute:8 of
+msgid "如果 ``readonly=False`` 则表示会进行修改，此时会返回缓存的拷贝，避免影响缓存数据"
+msgstr ""
+
+#: janim.anims.anim_stack.AnimStack.compute:10 of
+msgid "例如："
+msgstr ""
+
+#: janim.anims.anim_stack.AnimStack.compute:12 of
+msgid ""
+":meth:`~.Timeline.item_current` 中的调用是 ``readonly=False`` 的， 因为 "
+":meth:`~.Timeline.item_current` 的返回值最终会被用户使用，我们不能保证用户是否会修改，所以我们干脆假定用户会修改"
+msgstr ""
+
+#: janim.anims.anim_stack.AnimStack.compute:15 of
+msgid "例如用于绘制时的调用时 ``readonly=True``，因为绘制时不会对物件数据产生影响"
+msgstr ""
+
