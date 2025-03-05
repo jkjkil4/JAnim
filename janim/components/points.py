@@ -749,6 +749,11 @@ class Cmpt_Points[ItemT](Component[ItemT]):
 
         return self
 
+    @register_updater(
+        lambda self, p, factor=0.2, direction=RIGHT, **kwargs:
+            self.shear(factor * p.alpha, direction, **kwargs),
+        grouply=True
+    )
     def shear(
         self,
         factor: float = 0.2,
