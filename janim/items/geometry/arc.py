@@ -28,6 +28,8 @@ class ArcCenter(VItem):
 
         self._arc_center.set([arc_center])
 
+    def init_connect(self) -> None:
+        super().init_connect()
         # 使 _arc_center 与 points 同步变换
         Cmpt_Points.apply_points_fn.connect(
             self.points,

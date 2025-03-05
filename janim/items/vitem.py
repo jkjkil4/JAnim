@@ -41,6 +41,9 @@ class VItem(Points):
         self.stroke_background = False
         super().__init__(*points, fill_alpha=fill_alpha, **kwargs)
 
+    def init_connect(self) -> None:
+        super().init_connect()
+
         def reverse():
             for cmpt in (self.radius, self.stroke, self.fill):
                 cmpt.reverse()

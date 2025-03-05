@@ -9,6 +9,7 @@ from typing import Any, Callable, Concatenate, Iterable, Self
 
 import numpy as np
 
+from janim.components.component import CmptInfo
 from janim.components.points import Cmpt_Points
 from janim.constants import (DOWN, GREY, LEFT, MED_SMALL_BUFF, ORIGIN, RIGHT,
                              UL, UP)
@@ -16,13 +17,13 @@ from janim.exception import ColorNotFoundError
 from janim.items.geometry.line import Line
 from janim.items.points import Group, Points
 from janim.items.vitem import VItem
+from janim.locale.i18n import get_local_strings
 from janim.logger import log
 from janim.typing import JAnimColor
 from janim.utils.config import Config
 from janim.utils.font import Font, get_font_info_by_name
 from janim.utils.simple_functions import decode_utf8
 from janim.utils.space_ops import get_norm, normalize
-from janim.locale.i18n import get_local_strings
 
 _ = get_local_strings('text')
 
@@ -112,6 +113,8 @@ class TextChar(VItem):
     '''
     字符物件，作为 :class:`TextLine` 的子物件，在创建 :class:`TextLine` 时产生
     '''
+    mark = CmptInfo(Cmpt_Points[Self])
+
     def __init__(
         self,
         char: str,
@@ -135,15 +138,18 @@ class TextChar(VItem):
         self.points.set(outline * scale_factor)
 
         # 标记位置
-        self.mark = Points(
+        self.mark.set([
             ORIGIN, RIGHT * font_scale_factor, UP * font_scale_factor,
             [advance[0] * scale_factor, advance[1] * scale_factor, 0]
-        )
+        ])
+
+    def init_connect(self) -> None:
+        super().init_connect()
         Cmpt_Points.apply_points_fn.connect(
             self.points,
-            lambda func, about_point: self.mark.points.apply_points_fn(func,
-                                                                       about_point=about_point,
-                                                                       about_edge=None)
+            lambda func, about_point: self.mark.apply_points_fn(func,
+                                                                about_point=about_point,
+                                                                about_edge=None)
         )
 
     @staticmethod
@@ -160,16 +166,16 @@ class TextChar(VItem):
         return font_render
 
     def get_mark_orig(self) -> np.ndarray:
-        return self.mark.points._points.data[0]
+        return self.mark._points.data[0]
 
     def get_mark_right(self) -> np.ndarray:
-        return self.mark.points._points.data[1]
+        return self.mark._points.data[1]
 
     def get_mark_up(self) -> np.ndarray:
-        return self.mark.points._points.data[2]
+        return self.mark._points.data[2]
 
     def get_mark_advance(self) -> np.ndarray:
-        return self.mark.points._points.data[3]
+        return self.mark._points.data[3]
 
     def get_advance_length(self) -> float:
         return get_norm(self.get_mark_advance() - self.get_mark_orig())
@@ -212,6 +218,8 @@ class TextLine(VItem, Group[TextChar]):
     '''
     单行文字物件，作为 :class:`Text` 的子物件，在创建 :class:`Text` 时产生s
     '''
+    mark = CmptInfo(Cmpt_Points[Self])
+
     def __init__(
         self,
         text: str,
@@ -233,23 +241,26 @@ class TextLine(VItem, Group[TextChar]):
         )
 
         # 标记位置
-        self.mark = Points(ORIGIN, RIGHT, UP)
-        self.mark.points.scale(font_size / ORIG_FONT_SIZE, about_point=ORIGIN)
+        self.mark.set([ORIGIN, RIGHT, UP])
+        self.mark.scale(font_size / ORIG_FONT_SIZE, about_point=ORIGIN)
+
+    def init_connect(self) -> None:
+        super().init_connect()
         Cmpt_Points.apply_points_fn.connect(
             self.points,
-            lambda func, about_point: self.mark.points.apply_points_fn(func,
-                                                                       about_point=about_point,
-                                                                       about_edge=None)
+            lambda func, about_point: self.mark.apply_points_fn(func,
+                                                                about_point=about_point,
+                                                                about_edge=None)
         )
 
     def get_mark_orig(self) -> np.ndarray:
-        return self.mark.points._points.data[0]
+        return self.mark._points.data[0]
 
     def get_mark_right(self) -> np.ndarray:
-        return self.mark.points._points.data[1]
+        return self.mark._points.data[1]
 
     def get_mark_up(self) -> np.ndarray:
-        return self.mark.points._points.data[2]
+        return self.mark._points.data[2]
 
     def arrange_in_line(self, buff: float = 0) -> Self:
         '''

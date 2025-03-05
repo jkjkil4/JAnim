@@ -18,6 +18,7 @@ from janim.typing import SupportsApartAlpha
 from janim.utils.data import AlignedData
 from janim.utils.iterables import resize_preserving_order
 from janim.utils.paths import PathFunc, straight_path
+from janim.utils.signal import SIGNAL_OBJ_SLOTS_NAME
 
 if TYPE_CHECKING:
     from janim.items.points import Group
@@ -135,6 +136,11 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         if children is not None:
             self.add(*children)
         self.set(**kwargs)
+
+        self.init_connect()
+
+    def init_connect(self) -> None:
+        pass
 
     def _init_components(self) -> None:
         '''
@@ -475,6 +481,7 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         '''
         copy_item = copy.copy(self)
         copy_item.reset_refresh()
+        setattr(copy_item, SIGNAL_OBJ_SLOTS_NAME, None)
 
         copy_item.parents = []
         copy_item.children = []
@@ -487,6 +494,7 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         copy_item.parents_changed()
 
         self._copy_cmpts(self, copy_item)
+        copy_item.init_connect()
         return copy_item
 
     def become(self, other: Item) -> Self:
@@ -517,6 +525,7 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
     def store(self):
         copy_item = copy.copy(self)
         copy_item.reset_refresh()
+        setattr(copy_item, SIGNAL_OBJ_SLOTS_NAME, None)
 
         copy_item.parents = []
         copy_item.children = []
@@ -526,6 +535,7 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         copy_item.stored_children = self.get_children().copy()
 
         self._copy_cmpts(self, copy_item)
+        copy_item.init_connect()
         return copy_item
 
     def restore(self, other: Item) -> Self:

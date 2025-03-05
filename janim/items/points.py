@@ -74,9 +74,11 @@ class DotCloud(Points):
     ):
         super().__init__(*args, **kwargs)
 
-        Cmpt_Points.reverse.connect(self.points, lambda: self.radius.reverse())
-
         self.points.resize_func = resize_preserving_order
+
+    def init_connect(self) -> None:
+        super().init_connect()
+        Cmpt_Points.reverse.connect(self.points, lambda: self.radius.reverse())
 
     def apply_style(
         self,

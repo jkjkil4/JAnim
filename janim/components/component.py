@@ -9,6 +9,7 @@ from janim.anims.method_updater_meta import METHOD_UPDATER_KEY
 from janim.exception import CmptGroupLookupError
 from janim.locale.i18n import get_local_strings
 from janim.utils.data import AlignedData
+from janim.utils.signal import SIGNAL_OBJ_SLOTS_NAME
 
 if TYPE_CHECKING:   # pragma: no cover
     from janim.items.item import Item
@@ -100,6 +101,7 @@ class Component[ItemT](refresh.Refreshable, metaclass=_CmptMeta):
         cmpt_copy = copy.copy(self)
         # cmpt_copy.bind = None
         cmpt_copy.reset_refresh()
+        setattr(cmpt_copy, SIGNAL_OBJ_SLOTS_NAME, None)
         return cmpt_copy
 
     def become(self, other) -> Self: ...
