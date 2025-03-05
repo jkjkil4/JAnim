@@ -411,14 +411,16 @@ class AnimViewer(QMainWindow):
             return
 
         range = self.timeline_view.range
+        self.set_built(built)
 
         if not stay_same:
-            self.timeline_view.set_progress(0)
+            # self.set_built 里面调用了 timeline_view.set_built，其中已经将 _progress 置为 0
+            # self.timeline_view.set_progress(0)
+            self.glw.set_time(0)
         else:
             # 把原来进度（所在第几帧）转换到新的进度
             # 如果帧率没变，则进度不变
             # 如果帧率变了，例如从 30fps 到 60fps，则进度 43 对应 进度 86（乘了 2）
-            self.play_timer.set_duration(1 / self.built.cfg.preview_fps)
             progress = int(progress * self.built.cfg.preview_fps / preview_fps)
             self.timeline_view.set_progress(progress)
 
@@ -427,8 +429,6 @@ class AnimViewer(QMainWindow):
             # 重新构建后，只剩下了 0~1s 的动画
             # 那么仍保留原来的显示范围，使得 0~1s 的显示位置不变，虽然显示范围超出了持续时间
             self.timeline_view.range = range
-
-        self.set_built(built)
 
         import gc
 
