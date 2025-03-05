@@ -983,10 +983,49 @@ class BuiltTimeline:
         )
 
     def to_item(self, **kwargs) -> TimelineItem:
+        '''
+        使用该方法可以在一个 Timeline 中插入另一个 Timeline
+
+        例如：
+
+        .. code-block:: python
+
+            class Sub1(Timeline):
+                def construct(self):
+                    text = Text('text from Sub1')
+                    text.points.shift(UP)
+                    self.play(
+                        Rotate(text, TAU, about_point=LEFT * 2),
+                        duration=4
+                    )
+
+
+            class Sub2(Timeline):
+                def construct(self):
+                    text = Text('text from Sub2')
+                    text.points.shift(DOWN)
+                    self.play(
+                        Rotate(text, TAU, about_point=RIGHT * 2),
+                        duration=4
+                    )
+
+
+            class Test(Timeline):
+                def construct(self):
+                    tl1 = Sub1().build().to_item().show()
+                    tl2 = Sub2().build().to_item().show()
+                    self.forward_to(tl2.end)
+
+        这个例子中，在 ``Test`` 中插入了 ``Sub1`` 和 ``Sub2``
+        '''
         return TimelineItem(self, **kwargs)
 
 
 class TimelineItem(Item):
+    '''
+    详见 :meth:`BuiltTimeline.to_item`
+    '''
+
     class TIRenderer(Renderer):
         def render(self, item: TimelineItem):
             t = Animation.global_t_ctx.get() - item.at
