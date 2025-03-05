@@ -168,7 +168,7 @@ void main()
     #ifdef CONTROL_POINTS
 
     d = distance(v_coord, get_point(0));
-    for (int i = 1; i < points.length(); i++) {
+    for (int i = 1; i < lim; i++) {
         d = min(d, distance(v_coord, get_point(i)));
     }
     if (d < 0.06) {
@@ -253,9 +253,8 @@ void main()
 
     #ifdef POLYGON_LINES
 
-    const int num = points.length();
     d = dot(v_coord - get_point(0), v_coord - get_point(0));
-    for(int i = 1, j = 0; i < num; j = i, i++)
+    for(int i = 1, j = 0; i < lim; j = i, i++)
     {
         if (get_point(j) == get_point(i)) {
             i++;
