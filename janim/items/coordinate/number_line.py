@@ -242,7 +242,7 @@ class NumberLine(Line):
         - 多个数，得到一组坐标，分别表示这些数在坐标轴上的位置；
           例如 ``n2p([0, 2, 4])`` 分别得到 0、2、4 在坐标轴上的位置
         '''
-        if not isinstance(number, float):
+        if not isinstance(number, (int, float)):
             number = np.asarray(number)
         alpha = (number - self.x_min) / (self.x_max - self.x_min)
         return outer_interpolate(self.points.get_start(), self.points.get_end(), alpha)

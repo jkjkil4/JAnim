@@ -6,6 +6,7 @@ from typing import Callable, Iterable, Self
 import numpy as np
 
 import janim.utils.refresh as refresh
+from janim.anims.method_updater_meta import register_updater
 from janim.components.component import Component
 from janim.constants import (DEFAULT_ITEM_TO_EDGE_BUFF,
                              DEFAULT_ITEM_TO_ITEM_BUFF, DOWN, IN, LEFT,
@@ -488,6 +489,11 @@ class Cmpt_Points[ItemT](Component[ItemT]):
         )
         return self
 
+    @register_updater(
+        lambda self, p, angle, **kwargs:
+            self.rotate(angle * p.alpha, **kwargs),
+        grouply=True
+    )
     def rotate(
         self,
         angle: float,
@@ -529,6 +535,11 @@ class Cmpt_Points[ItemT](Component[ItemT]):
         )
         return self
 
+    @register_updater(
+        lambda self, p, scale_factor, **kwargs:
+            self.scale((np.asarray(scale_factor) - 1) * p.alpha + 1, **kwargs),
+        grouply=True
+    )
     def scale(
         self,
         scale_factor: float | Iterable,
@@ -546,7 +557,7 @@ class Cmpt_Points[ItemT](Component[ItemT]):
         '''
         if isinstance(scale_factor, Iterable):
             sgn = np.sign(scale_factor)
-            scale_factor = sgn * abs(np.array(scale_factor)).clip(min=min_scale_factor)
+            scale_factor = sgn * abs(np.asarray(scale_factor)).clip(min=min_scale_factor)
         else:
             if scale_factor >= 0:
                 scale_factor = max(scale_factor, min_scale_factor)
@@ -561,6 +572,11 @@ class Cmpt_Points[ItemT](Component[ItemT]):
         )
         return self
 
+    @register_updater(
+        lambda self, p, factor, **kwargs:
+            self.stretch((factor - 1) * p.alpha + 1, **kwargs),
+        grouply=True
+    )
     def stretch(
         self,
         factor: float,
@@ -791,6 +807,10 @@ class Cmpt_Points[ItemT](Component[ItemT]):
 
     # region 位移 | movement
 
+    @register_updater(
+        lambda self, p, vector, *, root_only=False:
+            self.shift(np.asarray(vector) * p.alpha, root_only=root_only)
+    )
     def shift(self, vector: Vect, *, root_only=False) -> Self:
         '''
         相对移动 ``vector`` 向量
@@ -1031,7 +1051,7 @@ class Cmpt_Points[ItemT](Component[ItemT]):
 
         return self
 
-    def to_center(self, root_only=False) -> Self:
+    def to_center(self, *, root_only=False) -> Self:
         '''
         移动到原点 ``(0, 0, 0)``
         '''

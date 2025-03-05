@@ -271,7 +271,24 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         from janim.anims.transform import MethodTransformArgsBuilder
         return MethodTransformArgsBuilder(self)
 
-    # 使得 .anim() 后仍有代码提示
+    @property
+    def update(self) -> Self:
+        '''
+        例如：
+
+        .. code-block:: python
+
+            self.play(
+                item.update.points.shift(RIGHT * 2),
+                item.update(rate_func=rush_into).color.set(GREEN)
+            )
+
+        该例子会创建将 ``item`` 向右移动两个单位并且设置为绿色的 updater，并且二者的 ``rate_func`` 不同
+        '''
+        from janim.anims.updater import MethodUpdaterArgsBuilder
+        return MethodUpdaterArgsBuilder(self)
+
+    # 使得 .anim() .update() 后仍有代码提示
     @overload
     def __call__(self, **kwargs) -> Self: ...
 

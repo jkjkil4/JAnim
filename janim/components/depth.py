@@ -3,6 +3,7 @@ from __future__ import annotations
 from collections import defaultdict
 from typing import Self
 
+from janim.anims.method_updater_meta import register_updater
 from janim.components.component import Component
 from janim.utils.bezier import interpolate
 from janim.utils.data import AlignedData
@@ -78,6 +79,13 @@ class Cmpt_Depth[ItemT](Component[ItemT]):
             return self._depth < other._depth
         return self._order < other._order
 
+    def _set_updater(self, p, value, order=None, *, root_only: bool = False) -> None:
+        if order is None:
+            order = self._order
+        self._depth = interpolate(self._depth, value, p.alpha)
+        self._order = interpolate(self._order, order, p.alpha)
+
+    @register_updater(_set_updater)
     def set(self, value: float, order: int | None = None, *, root_only: bool = False) -> Self:
         '''
         设置物件的深度

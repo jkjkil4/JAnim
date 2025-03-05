@@ -5,6 +5,7 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING, Callable, Generator, Self, overload
 
 import janim.utils.refresh as refresh
+from janim.anims.method_updater_meta import METHOD_UPDATER_KEY
 from janim.exception import CmptGroupLookupError
 from janim.locale.i18n import get_local_strings
 from janim.utils.data import AlignedData
@@ -273,6 +274,10 @@ class _CmptGroup(Component):
             ]
 
             return self if all(a is b for a, b in zip(ret, objects)) else ret
+
+        meta = getattr(methods[0], METHOD_UPDATER_KEY, None)
+        if meta is not None:
+            setattr(wrapper, METHOD_UPDATER_KEY, meta)
 
         return wrapper
 

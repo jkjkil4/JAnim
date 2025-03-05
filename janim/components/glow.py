@@ -5,13 +5,14 @@ from typing import Iterable, Self
 import numpy as np
 from colour import Color
 
+from janim.anims.method_updater_meta import register_updater
 from janim.components.component import Component
 from janim.typing import Alpha, JAnimColor, Rgba
 from janim.utils.bezier import interpolate
 from janim.utils.data import AlignedData, Array
 
-DEFAULT_BLOOM_ARRAY = Array()
-DEFAULT_BLOOM_ARRAY.data = [1, 1, 0, 0]
+DEFAULT_GLOW_ARRAY = Array()
+DEFAULT_GLOW_ARRAY.data = [1, 1, 0, 0]
 
 
 class Cmpt_Glow[ItemT](Component[ItemT]):
@@ -20,7 +21,7 @@ class Cmpt_Glow[ItemT](Component[ItemT]):
     '''
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self._rgba = DEFAULT_BLOOM_ARRAY.copy()
+        self._rgba = DEFAULT_GLOW_ARRAY.copy()
         self._size: float = 0.2
 
     def copy(self) -> Self:
@@ -76,6 +77,16 @@ class Cmpt_Glow[ItemT](Component[ItemT]):
         assert rgb.shape[0] == 3
         return rgb
 
+    def _set_updater(self, p, color=None, alpha=None, size=None, *, root_only=False):
+        if color is not None:
+            self.mix(color, p.alpha, root_only=root_only)
+        if alpha is not None:
+            self.mix_alpha(alpha, p.alpha, root_only=root_only)
+        if size is not None:
+            for cmpt in self.walk_same_cmpt_of_self_and_descendants_without_mock(root_only):
+                cmpt._size = interpolate(cmpt._size, size, p.alpha)
+
+    @register_updater(_set_updater)
     def set(
         self,
         color: JAnimColor | None = None,
@@ -126,3 +137,28 @@ class Cmpt_Glow[ItemT](Component[ItemT]):
 
     def get_size(self) -> None:
         return self._size
+
+    @register_updater(
+        lambda self, p, color, factor=0.5, *, root_only=False:
+            self.mix(color, factor * p.alpha, root_only=root_only)
+    )
+    def mix(self, color: JAnimColor, factor: float = 0.5, *, root_only: bool = False) -> Self:
+        color = self.format_color(color)
+        for cmpt in self.walk_same_cmpt_of_self_and_descendants_without_mock(root_only):
+            data = cmpt.get().copy()
+            data[:3] *= 1 - factor
+            data[:3] += color * factor
+            cmpt.set(data)
+        return self
+
+    @register_updater(
+        lambda self, p, alpha, factor=0.5, *, root_only=False:
+            self.mix_alpha(alpha, factor * p.alpha, root_only=root_only)
+    )
+    def mix_alpha(self, alpha: Alpha, factor: float = 0.5, *, root_only: bool = False) -> Self:
+        for cmpt in self.walk_same_cmpt_of_self_and_descendants_without_mock(root_only):
+            data = cmpt.get().copy()
+            data[3] *= 1 - factor
+            data[3] += alpha * factor
+            cmpt.set(data)
+        return self

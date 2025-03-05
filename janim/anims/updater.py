@@ -3,6 +3,7 @@ from __future__ import annotations
 import inspect
 from contextvars import ContextVar
 from dataclasses import dataclass
+from enum import Enum
 from typing import Any, Callable, Self
 
 from tqdm import tqdm as ProgressDisplay
@@ -10,6 +11,9 @@ from tqdm import tqdm as ProgressDisplay
 from janim.anims.anim_stack import AnimStack
 from janim.anims.animation import (Animation, ApplyAligner, ItemAnimation,
                                    TimeRange)
+from janim.anims.method_updater_meta import (METHOD_UPDATER_KEY,
+                                             MethodUpdaterInfo)
+from janim.components.component import Component
 from janim.constants import C_LABEL_ANIM_ABSTRACT
 from janim.exception import UpdaterError
 from janim.items.item import Item
@@ -295,6 +299,113 @@ class _GroupUpdater(ApplyAligner):
     def apply(self, data: Item, p: ItemAnimation.ApplyParams) -> None:
         self.orig_updater.apply_for_group(p.global_t)
         data.restore(self.data)
+
+
+class MethodUpdater(Animation):
+    '''
+    依据物件的变换而创建的 updater
+
+    具体参考 :meth:`~.Item.update`
+    '''
+    label_color = (214, 185, 253)   # C_LABEL_ANIM_ABSTRACT 的变体
+
+    class ActionType(Enum):
+        GetAttr = 0
+        Call = 1
+
+    def __init__(self, item: Item, **kwargs):
+        super().__init__(**kwargs)
+        self.item = item
+
+        self.updaters: list[tuple[str | None, Callable, tuple, dict, bool | None]] = []
+        self.grouply: bool = False
+
+    class _FakeCmpt:
+        def __init__(self, anim: MethodUpdater, cmpt_name: str, cmpt: Component):
+            self.anim = anim
+            self.cmpt_name = cmpt_name
+            self.cmpt = cmpt
+
+        def __getattr__(self, name: str):
+            if name == 'r':
+                return self.anim
+
+            attr = getattr(self.cmpt, name, None)
+            info: MethodUpdaterInfo = getattr(attr, METHOD_UPDATER_KEY, None)
+            if info is None:
+                raise UpdaterError(
+                    _('There is no updatable method named {name} in {cmpt}')
+                    .format(name=name, cmpt=self.cmpt.__class__.__name__)
+                )
+
+            def wrapper(*args, root_only: bool | None = None, **kwargs):
+                if info.grouply:
+                    self.anim.grouply = True
+                self.anim.updaters.append((self.cmpt_name, info.updater, args, kwargs, root_only))
+                return self
+            return wrapper
+
+        def __anim__(self) -> Animation:
+            return self.anim
+
+    def __getattr__(self, name: str):
+        attr = getattr(self.item, name, None)
+        if isinstance(attr, Component):
+            return MethodUpdater._FakeCmpt(self, name, attr)
+
+        info: MethodUpdaterInfo = getattr(attr, METHOD_UPDATER_KEY, None)
+        if info is None:
+            raise UpdaterError(
+                _('{item} has no component or updatable method named {name}')
+                .format(item=self.item.__class__.__name__, name=name)
+            )
+
+        def wrapper(*args, root_only: bool | None = None, **kwargs):
+            if info.grouply:
+                self.grouply = True
+            self.updaters.append((None, info.updater, args, kwargs, root_only))
+            return self
+        return wrapper
+
+    def updater(self, data: Item, p: UpdaterParams) -> None:
+        for cmpt_name, updater, args, kwargs, root_only in self.updaters:
+            obj = data if cmpt_name is None else data.components[cmpt_name]
+            if root_only is None:
+                updater(obj, p, *args, **kwargs)
+            else:
+                if self.grouply or p.extra_data:
+                    updater(obj, p, *args, **kwargs, root_only=root_only)
+
+    def _time_fixed(self):
+        if not self.grouply:
+            sub_updater = DataUpdater(
+                self.item,
+                self.updater,
+                extra=lambda item: item is self.item,   # 只有根物件的 extra_data 为 True，用于辅助 root_only
+                root_only=False
+            )
+        else:
+            sub_updater = GroupUpdater(
+                self.item,
+                self.updater,
+            )
+
+        sub_updater.transfer_params(self)
+        sub_updater.finalize()
+
+
+class MethodUpdaterArgsBuilder:
+    '''
+    使得 ``.anim`` 和 ``.anim(...)`` 后可以进行同样的操作
+    '''
+    def __init__(self, item: Item):
+        self.item = item
+
+    def __call__(self, **kwargs):
+        return MethodUpdater(self.item, **kwargs)
+
+    def __getattr__(self, name):
+        return getattr(MethodUpdater(self.item), name)
 
 
 class ItemUpdater(Animation):

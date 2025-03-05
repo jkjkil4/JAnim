@@ -5,6 +5,7 @@ from typing import Iterable, Self
 
 import numpy as np
 
+from janim.anims.method_updater_meta import register_updater
 from janim.components.component import Component
 from janim.utils.bezier import interpolate
 from janim.utils.data import AlignedData, Array
@@ -67,6 +68,22 @@ class Cmpt_Radius[ItemT](Component[ItemT]):
         '''
         return self._radii.data
 
+    def _set_updater(self, p, radius, *, root_only=False):
+        if isinstance(radius, (int, float)):
+            radius = [radius]
+        data2 = np.asarray(radius)
+
+        for cmpt in self.walk_same_cmpt_of_self_and_descendants_without_mock(root_only):
+            data1 = cmpt.get()
+            len1, len2 = len(data1), len(data2)
+            if len1 < len2:
+                data1 = resize_with_interpolation(data1, len2)
+            elif len1 > len2:
+                data2 = resize_with_interpolation(data2, len1)
+
+            cmpt.set(interpolate(data1, data2, p.alpha), root_only=True)
+
+    @register_updater(_set_updater)
     def set(
         self,
         radius: float | Iterable[float],
