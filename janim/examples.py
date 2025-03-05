@@ -100,7 +100,7 @@ class TypstExample(Timeline):
 
 class AnimatingPiExample(Timeline):
     def construct(self) -> None:
-        grid = Typst('pi') * 100
+        grid = TypstMath('pi') * 100
         grid.points.scale(2).arrange_in_grid(10, 10, buff=0.2)
         grid.show()
 
