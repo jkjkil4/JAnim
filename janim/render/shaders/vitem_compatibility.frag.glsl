@@ -223,7 +223,11 @@ void main()
         if (is_fill_transparent) {
             factor = 1 - d / glow_size;
         } else {
-            factor = 1 - sgn_d / glow_size;
+            if (sgn_d >= 0) {
+                factor = 1 - sgn_d / glow_size;
+            } else {
+                factor = 1 - (-sgn_d) / JA_ANTI_ALIAS_RADIUS / 2;
+            }
         }
         if (0 < factor && factor <= 1) {
             vec4 f_glow_color = glow_color;
