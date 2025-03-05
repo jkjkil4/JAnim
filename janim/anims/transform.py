@@ -213,7 +213,7 @@ class MethodTransform(Transform):
         self.delayed_actions.append((MethodTransform.ActionType.Call, (args, kwargs)))
         return self
 
-    def _time_fixed(self):
+    def _time_fixed(self) -> None:
         obj = self.src_item
         for type, value in self.delayed_actions:
             if type is MethodTransform.ActionType.GetAttr:

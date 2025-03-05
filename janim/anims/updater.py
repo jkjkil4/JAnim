@@ -137,7 +137,7 @@ class DataUpdater[T: Item](Animation):
         self.func = lambda data, p: _call_two_func(orig_func, func, data, p)
         return self
 
-    def _time_fixed(self):
+    def _time_fixed(self) -> None:
         items: list[Item] = []
         for item in self.item.walk_self_and_descendants(self.root_only):
             if self.skip_null_items and item.is_null():
@@ -238,7 +238,7 @@ class GroupUpdater[T: Item](Animation):
         stack: AnimStack
         updater: _GroupUpdater
 
-    def _time_fixed(self):
+    def _time_fixed(self) -> None:
         self.data = self.item.copy()
 
         stacks = [
@@ -376,7 +376,7 @@ class MethodUpdater(Animation):
                 if self.grouply or p.extra_data:
                     updater(obj, p, *args, **kwargs, root_only=root_only)
 
-    def _time_fixed(self):
+    def _time_fixed(self) -> None:
         if not self.grouply:
             sub_updater = DataUpdater(
                 self.item,
@@ -443,7 +443,7 @@ class ItemUpdater(Animation):
 
         self.renderers: dict[type, Renderer] = {}
 
-    def _time_fixed(self):
+    def _time_fixed(self) -> None:
         self.timeline.add_additional_render_calls_callback(self.t_range, self.render_calls_callback)
 
         if self.item is None:
@@ -542,7 +542,7 @@ class StepUpdater[T: Item](Animation):
         orig_func = self.func
         self.func = lambda data, p: _call_two_func(orig_func, updater, data, p)
 
-    def _time_fixed(self):
+    def _time_fixed(self) -> None:
         for item in self.item.walk_self_and_descendants(self.root_only):
             sub_updater = _StepUpdater(item,
                                        self.func,
@@ -578,7 +578,7 @@ class _StepUpdater(ItemAnimation):
         self.become_at_end = become_at_end
         self.progress_bar = progress_bar
 
-    def _time_fixed(self):
+    def _time_fixed(self) -> None:
         self.first_data = self.timeline.compute_item(self.item, self.t_range.at, True)
 
         super()._time_fixed()

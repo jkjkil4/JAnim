@@ -30,6 +30,34 @@ class Animation:
     - 指定 ``rate_func`` 可以设定插值函数，默认为 :meth:`janim.utils.rate_funcs.smooth` 即平滑插值
 
     - 设置 ``name`` 可以将文字显示在预览界面的时间轴标签上，不影响渲染（如果不设置则默认为类名）
+
+    .. warning::
+
+        动画对象不能复用，例如这样会导致意外行为：
+
+        .. code-block:: python
+
+            class Test(Timeline):
+                def construct(self):
+                    a = Square()
+                    b = Circle()
+                    anim1 = Transform(a, b)
+                    anim2 = Transform(b, a)
+                    self.play(anim1)
+                    self.play(anim2)
+                    self.play(anim1)
+
+        正确写法：
+
+        .. code-block:: python
+
+            class Test(Timeline):
+                def construct(self):
+                    a = Square()
+                    b = Circle()
+                    self.play(Transform(a, b))
+                    self.play(Transform(b, a))
+                    self.play(Transform(a, b))
     '''
     label_color: tuple[float, float, float] = C_LABEL_ANIM_DEFAULT
 
@@ -143,7 +171,7 @@ class ItemAnimation(Animation):
         if self.auto_detect and not self.stack.has_detected_change():
             self.stack.detect_change(self.item, 0)
 
-    def _time_fixed(self):
+    def _time_fixed(self) -> None:
         self.stack.append(self)
         self.schedule_show_and_hide(self.item, self.show_at_begin, self.hide_at_end)
 

@@ -177,7 +177,7 @@ class AnimGroup(Animation):
         for anim in self.anims:
             anim._align_time(aligner)
 
-    def _time_fixed(self):
+    def _time_fixed(self) -> None:
         for anim in self.anims:
             anim._time_fixed()
 
