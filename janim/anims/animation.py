@@ -96,6 +96,8 @@ class Animation:
         pass
 
     def get_alpha_on_global_t(self, global_t: float) -> float:
+        if self.t_range.end is FOREVER:
+            return 0
         alpha = (global_t - self.t_range.at) / self.t_range.duration
         for func in self.rate_funcs:
             alpha = func(alpha)

@@ -10,7 +10,7 @@ from PySide6.QtGui import (QColor, QKeyEvent, QMouseEvent, QPainter,
                            QPaintEvent, QPen, QWheelEvent)
 from PySide6.QtWidgets import QLabel, QVBoxLayout, QWidget
 
-from janim.anims.animation import Animation, TimeRange
+from janim.anims.animation import FOREVER, Animation, TimeRange
 from janim.anims.composition import AnimGroup
 from janim.anims.timeline import BuiltTimeline, Timeline
 from janim.gui.label import (LABEL_DEFAULT_HEIGHT, LABEL_PIXEL_HEIGHT_PER_UNIT,
@@ -115,13 +115,17 @@ class TimelineView(QWidget):
             name = anim.name or anim.__class__.__name__
             color = QColor(*anim.label_color)
             if isinstance(anim, AnimGroup):
+                labels = [
+                    make_label_from_anim(subanim)
+                    for subanim in anim.anims
+                ]
                 label = LabelGroup(
                     name,
-                    anim.t_range,
-                    *[
-                        make_label_from_anim(subanim)
-                        for subanim in anim.anims
-                    ],
+                    TimeRange(      # 这里不直接使用 anim.t_range 是为了处理 FOREVER 的子动画
+                        min(label.t_range.at for label in labels),
+                        max(label.t_range.end for label in labels)
+                    ),
+                    *labels,
                     collapse=anim.collapse,
                     header=header,
                     brush=color,
@@ -131,7 +135,11 @@ class TimelineView(QWidget):
             else:
                 label = Label(
                     name,
-                    anim.t_range,
+
+                    anim.t_range
+                    if anim.t_range.end is not FOREVER
+                    else TimeRange(anim.t_range.at, self.built.duration),
+
                     brush=color,
                 )
             setattr(label, LABEL_OBJ_NAME, anim)
@@ -446,27 +454,32 @@ class TimelineView(QWidget):
                 break
             parents.append(last.parent)
 
+        is_forever = anim.t_range.end is FOREVER
+        end = 'FOREVER' if is_forever else f'{round(anim.t_range.end, 2)}s'
         label1 = QLabel(f'{anim.__class__.__name__} '
-                        f'{round(anim.t_range.at, 2)}s ~ {round(anim.t_range.end, 2)}s')
-        chart_view = self.create_anim_chart(anim)
+                        f'{round(anim.t_range.at, 2)}s ~ {end}')
 
-        def getname(rate_func) -> str:
-            try:
-                return rate_func.__name__
-            except AttributeError:
-                return '[unknown]'
+        if not is_forever:
+            chart_view = self.create_anim_chart(anim)
 
-        label2 = QLabel(
-            '\n↑\n'.join(
-                f'{getname(anim.rate_func)} ({anim.__class__.__name__})'
-                for anim in parents
+            def getname(rate_func) -> str:
+                try:
+                    return rate_func.__name__
+                except AttributeError:
+                    return '[unknown]'
+
+            label2 = QLabel(
+                '\n↑\n'.join(
+                    f'{getname(anim.rate_func)} ({anim.__class__.__name__})'
+                    for anim in parents
+                )
             )
-        )
 
         layout = QVBoxLayout()
         layout.addWidget(label1)
-        layout.addWidget(chart_view)
-        layout.addWidget(label2)
+        if not is_forever:
+            layout.addWidget(chart_view)
+            layout.addWidget(label2)
 
         self.tooltip = QWidget()
         self.tooltip.setWindowFlag(Qt.WindowType.ToolTip)

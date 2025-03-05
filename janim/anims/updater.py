@@ -9,8 +9,8 @@ from typing import Any, Callable, Self
 from tqdm import tqdm as ProgressDisplay
 
 from janim.anims.anim_stack import AnimStack
-from janim.anims.animation import (Animation, ApplyAligner, ItemAnimation,
-                                   TimeRange)
+from janim.anims.animation import (FOREVER, Animation, ApplyAligner,
+                                   ItemAnimation, TimeRange)
 from janim.anims.method_updater_meta import (METHOD_UPDATER_KEY,
                                              MethodUpdaterInfo)
 from janim.components.component import Component
@@ -162,7 +162,7 @@ class DataUpdater[T: Item](Animation):
             sub_updater.transfer_params(self)
             sub_updater.finalize()
 
-            if self.become_at_end:
+            if self.become_at_end and self.t_range.end is not FOREVER:
                 item.restore(stack.compute(self.t_range.end, True, get_at_left=True))
                 stack.detect_change(item, self.t_range.end, force=True)
 
@@ -250,7 +250,7 @@ class GroupUpdater[T: Item](Animation):
             for item, data in zip(self.item.walk_self_and_descendants(), self.data.walk_self_and_descendants())
         ]
 
-        if self.become_at_end:
+        if self.become_at_end and self.t_range.end is not FOREVER:
             for item, stack in zip(self.item.walk_self_and_descendants(), stacks):
                 item.restore(stack.compute(self.t_range.end, True, get_at_left=True))
 
@@ -457,7 +457,7 @@ class ItemUpdater(Animation):
             self.timeline.schedule(self.t_range.end, self.item.show)
 
         # 在动画结束后，自动使用动画最后一帧的物件替换原有的
-        if self.become_at_end:
+        if self.become_at_end and self.t_range.end is not FOREVER:
             with UpdaterParams(self.t_range.end,
                                1,
                                self.t_range,
@@ -592,7 +592,7 @@ class _StepUpdater(ItemAnimation):
         self.tcache_at_block = 0
         self.temporary_cache_blocks: list[list[Item]] = [[], [], []]
 
-        if self.become_at_end:
+        if self.become_at_end and self.t_range.end is not FOREVER:
             self.compute(self.item, self.t_range.end)
 
     def apply(self, data: None, p: ItemAnimation.ApplyParams) -> Item:
