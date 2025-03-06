@@ -6,12 +6,13 @@ from typing import Any, Callable, Self
 import numpy as np
 import svgelements as se
 
-from janim.constants import ORIGIN, RIGHT
+from janim.constants import ORIGIN, RIGHT, TAU
 from janim.items.item import Item
 from janim.items.points import Group
 from janim.items.vitem import VItem
 from janim.logger import log
-from janim.utils.bezier import PathBuilder
+from janim.utils.bezier import (PathBuilder, quadratic_bezier_points_for_arc,
+                                rotation_matrix)
 from janim.utils.config import Config
 from janim.utils.file_ops import find_file
 
@@ -189,21 +190,42 @@ class SVGItem(Group[SVGElemItem]):
     @staticmethod
     def convert_path(path: se.Path, offset: np.ndarray) -> ItemBuilder:
         builder = PathBuilder()
+
+        def convert_arc(arc: se.Arc):
+            transform = se.Matrix(path.values.get('transform', ''))
+
+            rot = np.array([
+                [transform.a, transform.c],
+                [transform.b, transform.d]
+            ])
+            shift = np.array([transform.e, transform.f, 0])
+            arc *= transform.inverse()
+
+            n_components = int(np.ceil(8 * abs(arc.sweep) / TAU))
+
+            arc_points = quadratic_bezier_points_for_arc(arc.sweep, arc.get_start_t(), n_components)
+            arc_points[:, 0] *= arc.rx
+            arc_points[:, 1] *= arc.ry
+            arc_points @= rotation_matrix(arc.get_rotation().as_radians, [0, 0, 1]).T
+            arc_points += [*arc.center, 0]
+            arc_points[:, :2] @= rot.T
+            arc_points += shift
+            builder.append(arc_points[1:])
+
         segment_class_to_func_map = {
             se.Move: (builder.move_to, ('end',)),
             se.Close: (builder.close_path, ()),
             se.Line: (builder.line_to, ('end',)),
             se.QuadraticBezier: (builder.conic_to, ('control', 'end')),
             se.CubicBezier: (builder.cubic_to, ('control1', 'control2', 'end')),
-            se.Arc: (lambda segment: builder.arc_to(_convert_point_to_3d(*segment.end), segment.sweep), None),
         }
 
         for segment in path:
             segment_class = segment.__class__
-            func, attr_names = segment_class_to_func_map[segment_class]
-            if attr_names is None:
-                func(segment)
+            if segment_class is se.Arc:
+                convert_arc(segment)
             else:
+                func, attr_names = segment_class_to_func_map[segment_class]
                 points = [
                     _convert_point_to_3d(*getattr(segment, attr_name))
                     for attr_name in attr_names

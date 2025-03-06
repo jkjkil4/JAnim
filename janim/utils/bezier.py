@@ -9,12 +9,12 @@ from fontTools.cu2qu.cu2qu import curve_to_quadratic
 
 from janim.constants import DEGREES, NAN_POINT, TAU
 from janim.exception import PointError
+from janim.locale.i18n import get_local_strings
 from janim.typing import Vect, VectArray
 from janim.utils.simple_functions import choose
 from janim.utils.space_ops import (angle_between_vectors, cross, cross2d,
                                    find_intersection, get_norm, midpoint,
                                    rotation_between_vectors, z_to_vector)
-from janim.locale.i18n import get_local_strings
 
 _ = get_local_strings('bezier')
 
@@ -115,7 +115,7 @@ class PathBuilder:
         self.end_point = quad_approx[-1]
         return self
 
-    def arc_to(self, point: Vect, angle: float, n_components: int | None = None, threshold: float = 1e-3) -> Self:
+    def arc_to(self, point: Vect, angle: float, *, n_components: int | None = None, threshold: float = 1e-3) -> Self:
         self._raise_if_no_points()
 
         if abs(angle) < threshold:
@@ -126,7 +126,7 @@ class PathBuilder:
         if n_components is None:
             n_components = int(np.ceil(8 * abs(angle) / TAU))
 
-        arc_points = quadratic_bezier_points_for_arc(angle, n_components)
+        arc_points = quadratic_bezier_points_for_arc(angle, n_components=n_components)
         target_vect = np.asarray(point) - self.end_point
         curr_vect = arc_points[-1] - arc_points[0]
 
