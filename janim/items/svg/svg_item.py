@@ -11,10 +11,10 @@ from janim.items.item import Item
 from janim.items.points import Group
 from janim.items.vitem import VItem
 from janim.logger import log
-from janim.utils.bezier import (PathBuilder, quadratic_bezier_points_for_arc,
-                                rotation_matrix)
+from janim.utils.bezier import PathBuilder, quadratic_bezier_points_for_arc
 from janim.utils.config import Config
 from janim.utils.file_ops import find_file
+from janim.utils.space_ops import rotation_matrix
 
 # 这里的 3.272 是手动试出来的
 DEFAULT_SVGITEM_SCALE_FACTOR = 3.272
