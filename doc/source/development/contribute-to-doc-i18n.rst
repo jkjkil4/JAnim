@@ -118,12 +118,6 @@ pot 文件是提取出来的可供翻译的源语言文字，你还需要使用�
 在本地构建文档
 ----------------------
 
-.. warning::
-
-    我只知道在 Windows 和 MacOS 中，以下步骤有效
-
-    欢迎测试在其它系统中的有效性或补充对应的方法
-
 .. note::
 
     别忘了安装必要的环境
@@ -132,40 +126,62 @@ pot 文件是提取出来的可供翻译的源语言文字，你还需要使用�
 
         pip install -e .[gui,doc]
 
-Windows 系统
-~~~~~~~~~~~~~~~
+.. tabs::
 
-首先确保你在 ``doc/`` 目录下：
+    .. tab:: Windows
 
-.. code-block:: batch
+        首先确保你在 ``doc/`` 目录下：
 
-    cd doc
+        .. code-block:: batch
 
-举个例子，如果你想要在本地构建 zh_CN（简体中文）的文档，可以执行：
+            cd doc
 
-.. code-block:: batch
+        举个例子，如果你想要在本地构建 zh_CN（简体中文）的文档，可以执行：
 
-    .\make_i18n zh_CN
+        .. code-block:: batch
 
-这样就会在 ``build/html_i18n/zh_CN`` 下生成网页文件，点击其中的 ``index.html`` 即可打开
+            .\make_i18n zh_CN
 
-其它的语言同理，把 ``zh_CN`` 改成对应的语言代码就好了
+        这样就会在 ``build/html_i18n/zh_CN`` 下生成网页文件，点击其中的 ``index.html`` 即可打开
 
-MacOS 系统
-~~~~~~~~~~~~~~~~~
+        其它的语言同理，把 ``zh_CN`` 改成对应的语言代码就好了
 
-首先确保你在 ``doc/`` 目录下：
+    .. tab:: MacOS
 
-.. code-block:: sh
+        首先确保你在 ``doc/`` 目录下：
 
-    cd doc
+        .. code-block:: sh
 
-举个例子，如果你想要在本地构建 zh_CN（简体中文）的文档，可以执行：
+            cd doc
 
-.. code-block:: sh
+        举个例子，如果你想要在本地构建 zh_CN（简体中文）的文档，可以执行：
 
-    ./make_i18n.sh zh_CN
+        .. code-block:: sh
 
-这样就会在 ``build/html_i18n/zh_CN`` 下生成网页文件，点击其中的 ``index.html`` 即可打开
+            ./make_i18n.sh zh_CN
 
-其它的语言同理，把 ``zh_CN`` 改成对应的语言代码就好了
+        这样就会在 ``build/html_i18n/zh_CN`` 下生成网页文件，点击其中的 ``index.html`` 即可打开
+
+        其它的语言同理，把 ``zh_CN`` 改成对应的语言代码就好了
+
+    .. tab:: Linux
+
+        .. warning::
+
+            以下方法未在 Linux 上测试，欢迎测试在 Linux 中的有效性或补充对应的方法
+
+        首先确保你在 ``doc/`` 目录下：
+
+        .. code-block:: sh
+
+            cd doc
+
+        举个例子，如果你想要在本地构建 zh_CN（简体中文）的文档，可以执行：
+
+        .. code-block:: sh
+
+            ./make_i18n.sh zh_CN
+
+        这样就会在 ``build/html_i18n/zh_CN`` 下生成网页文件，点击其中的 ``index.html`` 即可打开
+
+        其它的语言同理，把 ``zh_CN`` 改成对应的语言代码就好了

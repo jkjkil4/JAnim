@@ -22,6 +22,7 @@ release = __version__
 extensions = [
     'sphinx.ext.autodoc',
     'sphinx_copybutton',
+    'sphinx_tabs.tabs',
     'extensions.janim_example_ext',
     'extensions.code_desc_ext'
 ]
