@@ -6,7 +6,7 @@ from typing import Any, Callable, Self
 import numpy as np
 import svgelements as se
 
-from janim.constants import ORIGIN, RIGHT, TAU
+from janim.constants import ORIGIN, OUT, RIGHT, TAU
 from janim.items.item import Item
 from janim.items.points import Group
 from janim.items.vitem import VItem
@@ -191,22 +191,34 @@ class SVGItem(Group[SVGElemItem]):
     def convert_path(path: se.Path, offset: np.ndarray) -> ItemBuilder:
         builder = PathBuilder()
 
-        def convert_arc(arc: se.Arc):
-            transform = se.Matrix(path.values.get('transform', ''))
+        transform_cache: tuple[se.Matrix, np.ndarray, np.ndarray] | None = None
 
+        def get_transform() -> tuple[se.Matrix, np.ndarray, np.ndarray]:
+            nonlocal transform_cache
+            if transform_cache is not None:
+                return transform_cache
+
+            transform = se.Matrix(path.values.get('transform', ''))
             rot = np.array([
                 [transform.a, transform.c],
                 [transform.b, transform.d]
             ])
             shift = np.array([transform.e, transform.f, 0])
-            arc *= transform.inverse()
+            transform.inverse()
+            transform_cache = (transform, rot, shift)
+            return transform_cache
+
+        def convert_arc(arc: se.Arc):
+            transform, rot, shift = get_transform()
+
+            arc *= transform
 
             n_components = int(np.ceil(8 * abs(arc.sweep) / TAU))
 
             arc_points = quadratic_bezier_points_for_arc(arc.sweep, arc.get_start_t(), n_components)
             arc_points[:, 0] *= arc.rx
             arc_points[:, 1] *= arc.ry
-            arc_points @= rotation_matrix(arc.get_rotation().as_radians, [0, 0, 1]).T
+            arc_points @= rotation_matrix(arc.get_rotation().as_radians, OUT).T
             arc_points += [*arc.center, 0]
             arc_points[:, :2] @= rot.T
             arc_points += shift

@@ -11,6 +11,5 @@ __pycache__
 /videos
 /.coverage
 /env*
-/result.json
-/result2.json
+/result*.json
 /test/__test_tempdir__
