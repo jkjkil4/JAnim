@@ -1,4 +1,5 @@
 
+import math
 import os
 from collections import defaultdict
 from typing import Any, Callable, Self
@@ -6,7 +7,7 @@ from typing import Any, Callable, Self
 import numpy as np
 import svgelements as se
 
-from janim.constants import ORIGIN, OUT, RIGHT, TAU
+from janim.constants import ORIGIN, RIGHT, TAU
 from janim.items.item import Item
 from janim.items.points import Group
 from janim.items.vitem import VItem
@@ -14,11 +15,10 @@ from janim.logger import log
 from janim.utils.bezier import PathBuilder, quadratic_bezier_points_for_arc
 from janim.utils.config import Config
 from janim.utils.file_ops import find_file
-from janim.utils.space_ops import rotation_matrix
+from janim.utils.space_ops import rotation_about_z
 
 # 这里的 3.272 是手动试出来的
 DEFAULT_SVGITEM_SCALE_FACTOR = 3.272
-STROKE_WIDTH_CONVERSION = 0.01
 
 type SVGElemItem = VItem
 type ItemBuilder = Callable[[], SVGElemItem]
@@ -46,7 +46,7 @@ class SVGItem(Group[SVGElemItem]):
     传入 SVG 文件路径，解析为物件
     '''
     svg_part_default_kwargs = dict(
-        stroke_radius=1.0 * STROKE_WIDTH_CONVERSION / 2,
+        stroke_radius=1.0 / 2,
         stroke_color=None,
         stroke_alpha=0,
         fill_color=None,
@@ -70,27 +70,31 @@ class SVGItem(Group[SVGElemItem]):
         box = self.points.box
 
         if width is None and height is None:
+            factor = Config.get.default_pixel_to_frame_ratio * DEFAULT_SVGITEM_SCALE_FACTOR
             self.points.scale(
-                Config.get.default_pixel_to_frame_ratio * DEFAULT_SVGITEM_SCALE_FACTOR,
+                factor,
                 about_point=ORIGIN
             )
         elif width is None and height is not None:
+            factor = height / box.height
             self.points.set_size(
-                height * box.width / box.height,
+                box.width * factor,
                 height,
                 about_point=ORIGIN
             )
         elif width is not None and height is None:
+            factor = width / box.width
             self.points.set_size(
                 width,
-                width * box.height / box.width,
+                box.height * factor,
                 about_point=ORIGIN
             )
         else:   # width is not None and height is not None
+            factor = min(width / box.width, height / box.height)
             self.points.set_size(width, height, about_point=ORIGIN)
 
         self(VItem).points.flip(RIGHT)
-
+        self.scale_descendants_stroke_radius(factor)
         self.move_into_position()
 
     def move_into_position(self) -> None:
@@ -116,6 +120,11 @@ class SVGItem(Group[SVGElemItem]):
             }
 
         return copy_item
+
+    def scale_descendants_stroke_radius(self, factor: float) -> Self:
+        '''将所有后代物件的 stroke_radius 都乘上一个值'''
+        for item in self.walk_descendants(VItem):
+            item.radius.set(item.radius.get() * factor)
 
     @classmethod
     def get_items_from_file(cls, file_path: str) -> tuple[list[SVGElemItem], dict[str, list[SVGElemItem]]]:
@@ -218,7 +227,7 @@ class SVGItem(Group[SVGElemItem]):
             arc_points = quadratic_bezier_points_for_arc(arc.sweep, arc.get_start_t(), n_components)
             arc_points[:, 0] *= arc.rx
             arc_points[:, 1] *= arc.ry
-            arc_points @= rotation_matrix(arc.get_rotation().as_radians, OUT).T
+            arc_points @= np.array(rotation_about_z(arc.get_rotation().as_radians)).T
             arc_points += [*arc.center, 0]
             arc_points[:, :2] @= rot.T
             arc_points += shift
@@ -250,7 +259,7 @@ class SVGItem(Group[SVGElemItem]):
         fill_color, fill_alpha = _parse_color(path.fill.hex, path.fill.opacity)
 
         vitem_styles = dict(
-            stroke_radius=path.stroke_width * STROKE_WIDTH_CONVERSION / 2,
+            stroke_radius=path.stroke_width / 2,        # stroke_width 貌似不会为 None，所以这里直接使用
             stroke_color=stroke_color,
             stroke_alpha=stroke_alpha * opacity,
             fill_color=fill_color,
