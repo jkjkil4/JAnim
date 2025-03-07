@@ -207,6 +207,8 @@ class SVGItem(Group[SVGElemItem]):
             if transform_cache is not None:
                 return transform_cache
 
+            # 通过这种方式得到的 transform 是考虑了 svg 中所有父级 group 的 transform 共同作用的
+            # 所以可以通过这个 transform 对 arc 作逆变换，正确计算 arc 路径，再变换回来
             transform = se.Matrix(path.values.get('transform', ''))
             rot = np.array([
                 [transform.a, transform.c],
@@ -220,17 +222,24 @@ class SVGItem(Group[SVGElemItem]):
         def convert_arc(arc: se.Arc):
             transform, rot, shift = get_transform()
 
+            # 对 arc 作逆变换，使得 arc 的路径可以被正确计算
             arc *= transform
 
             n_components = int(np.ceil(8 * abs(arc.sweep) / TAU))
 
+            # 得到单位圆上所需角度的片段
             arc_points = quadratic_bezier_points_for_arc(arc.sweep, arc.get_start_t(), n_components)
+
+            # 变换至椭圆，并考虑旋转参数，以及平移椭圆中心
             arc_points[:, 0] *= arc.rx
             arc_points[:, 1] *= arc.ry
             arc_points @= np.array(rotation_about_z(arc.get_rotation().as_radians)).T
             arc_points += [*arc.center, 0]
+
+            # 变换回来
             arc_points[:, :2] @= rot.T
             arc_points += shift
+
             builder.append(arc_points[1:])
 
         segment_class_to_func_map = {
