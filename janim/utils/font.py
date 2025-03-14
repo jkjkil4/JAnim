@@ -1,16 +1,18 @@
 from __future__ import annotations
 
+from collections import defaultdict
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Callable, Generator
+from enum import StrEnum
+from typing import TYPE_CHECKING, Callable, Literal
 
 import freetype as FT
 import numpy as np
 from fontTools.ttLib import TTCollection, TTFont, TTLibError
 
 from janim.exception import FontNotFoundError
-from janim.utils.bezier import PathBuilder
-from janim.logger import log
 from janim.locale.i18n import get_local_strings
+from janim.logger import log
+from janim.utils.bezier import PathBuilder
 
 if TYPE_CHECKING:
     from fontTools.ttLib.tables._n_a_m_e import table__n_a_m_e
@@ -18,78 +20,175 @@ if TYPE_CHECKING:
 _ = get_local_strings('font')
 
 
+class Weight(StrEnum):
+    Thin = 'thin'
+    ExtraLight = 'extralight'
+    Light = 'light'
+    Regular = 'regular'
+    Medium = 'medium'
+    SemiBold = 'semibold'
+    Bold = 'bold'
+    ExtraBold = 'extrabold'
+    Black = 'black'
+
+
+class Style(StrEnum):
+    Normal = 'normal'
+    Italic = 'italic'
+    Oblique = 'oblique'
+
+
+type WeightName = Literal['thin', 'extralight', 'light', 'regular', 'medium', 'semibold', 'bold', 'extrabold', 'black']
+type StyleName = Literal['normal', 'italic', 'oblique']
+
+weight_mapping = {
+    Weight.Thin: 100,
+    Weight.ExtraLight: 200,
+    Weight.Light: 300,
+    Weight.Regular: 400,
+    Weight.Medium: 500,
+    Weight.SemiBold: 600,
+    Weight.Bold: 700,
+    Weight.ExtraBold: 800,
+    Weight.Black: 900,
+}
+
+
 @dataclass
+class FontDatabase:
+    family_by_name: defaultdict[str, FontFamily]
+    font_by_full_name: dict[str, FontInfo]
+
+
+class FontFamily:
+    def __init__(self):
+        self.infos: list[FontInfo] = []
+
+    def add(self, info: FontInfo) -> None:
+        self.infos.append(info)
+
+    def find_best_variant(self, weight: int | Weight, style: Style) -> FontInfo:
+        if len(self.infos) == 1:
+            return self.infos[0]
+
+        if not isinstance(weight, int):
+            weight = weight_mapping[weight]
+
+        for i, info in enumerate(self.infos):
+            key = (
+                self.style_distance(info.style, style),
+                abs(info.weight - weight),
+                -info.weight
+            )
+            if i == 0 or key < best_key:
+                best = info
+                best_key = key
+
+        return best
+
+    @staticmethod
+    def style_distance(s1: Style, s2: Style) -> int:
+        if s1 == s2:
+            return 0
+        if s1 != Style.Normal and s2 != Style.Normal:
+            return 1
+        return 2
+
+
 class FontInfo:
-    filepath: str
-    index: int
-    name: str
-    table: table__n_a_m_e
+    def __init__(self, filepath: str, font: TTFont, index: int):
+        self.filepath = filepath
+        self.font = font
+        self.index = index
+
+        self.table_name: table__n_a_m_e = font['name']
+
+    @property
+    def family_name(self) -> str:
+        return self.table_name.getBestFamilyName()
+
+    @property
+    def weight(self) -> int:
+        os2 = self.font.get('OS/2', None)
+        if os2 is None:
+            return 400
+        return os2.usWeightClass
+
+    @property
+    def style(self) -> Style:
+        os2 = self.font.get('OS/2', None)
+        if os2 is None:
+            return Style.Normal
+
+        fs_selection = os2.fsSelection
+        if fs_selection & 0x01:
+            return Style.Italic
+        if fs_selection & 0x200:
+            return Style.Oblique
+
+        return Style.Normal
 
 
-_font_finder: Generator[FontInfo, None, None] | None = None
-_found_infos: dict[str, FontInfo] = {}
+_database: FontDatabase | None = None
 
 
-def _font_finder_func() -> Generator[FontInfo, None, None]:
+def get_database() -> FontDatabase:
+    global _database
+
+    if _database is not None:
+        return _database
+
     from janim.utils.font_manager import findSystemFonts
+
+    family_by_name = defaultdict(FontFamily)
+    font_by_full_name = {}
+
     for filepath in findSystemFonts():
         try:
-            fonts = TTCollection(filepath).fonts    \
-                if filepath.endswith('ttc')         \
-                else [TTFont(filepath)]
+            fonts = TTCollection(filepath, lazy=True).fonts \
+                if filepath.endswith('ttc')                 \
+                else [TTFont(filepath, lazy=True)]
         except TTLibError:
-            # i18n?
-            log.debug(f'Skipped font "{filepath}"')
+            log.debug(_('Skipped font "{filepath}"').format(filepath=filepath))
             continue
 
         for i, font in enumerate(fonts):
-            table: table__n_a_m_e = font['name']
-            name = table.getDebugName(4) or ''
-            info = FontInfo(filepath, i, name, table)
-            _found_infos[name] = info
-            yield info
+            info = FontInfo(filepath, font, i)
+            family_name = info.family_name
+            family_by_name[family_name].add(info)
+            font_by_full_name[info.table_name.getBestFullName()] = info
+
+    _database = FontDatabase(family_by_name, font_by_full_name)
+    return _database
 
 
-def _get_font_finder() -> Generator[FontInfo, None, None]:
-    global _font_finder
-    if _font_finder is None:
-        _font_finder = _font_finder_func()
-    return _font_finder
+def get_font_info_by_attrs(name: str, weight: int | Weight | WeightName, style: Style | StyleName) -> FontInfo:
+    db = get_database()
 
+    # e.g. ('LXGW WenKai Lite', 'medium', 'normal')
+    family = db.family_by_name.get(name, None)
+    if family is not None:
+        return family.find_best_variant(weight, style)
 
-def get_font_info_by_name(font_name: str) -> FontInfo:
-    '''
-    通过字体名得到字体文件信息
-
-    例：通过 ``Consolas`` 得到 ``FontInfo('C:\\Windows\\Fonts\\consola.ttf', 0, 'Consolas', <'name' table at ...>)``
-    '''
-    info = _found_infos.get(font_name, None)
+    # e.g. 'LXGW WenKai Lite Medium'
+    info = db.font_by_full_name.get(name, None)
     if info is not None:
         return info
 
-    finder = _get_font_finder()
+    # deprecated
+    for full_name, info in db.font_by_full_name.items():
+        if info.table_name.getDebugName(4) == name:
+            log.warning(
+                _('font="{deprecated}" is deprecated and will no longer be available in JAnim 3.3, '
+                  'use font="{full_name}" instead')
+                .format(deprecated=name, full_name=full_name)
+            )
+            return info
 
-    try:
-        while True:
-            info = next(finder)
-            if info.name == font_name:
-                return info
-    except StopIteration:
-        raise FontNotFoundError(
-            _('No font named "{font_name}"')
-            .format(font_name=font_name)
-        )
-
-
-def get_found_infos() -> dict[str, FontInfo]:
-    finder = _get_font_finder()
-    try:
-        while True:
-            next(finder)
-    except StopIteration:
-        pass
-
-    return _found_infos
+    raise FontNotFoundError(
+        _('No font named "{font_name}"')
+        .format(font_name=name)
+    )
 
 
 class Font:

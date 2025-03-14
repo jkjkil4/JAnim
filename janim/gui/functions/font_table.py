@@ -10,7 +10,7 @@ from PySide6.QtWidgets import (QHBoxLayout, QHeaderView, QLabel, QLineEdit,
 
 from janim.locale.i18n import get_local_strings
 from janim.utils.file_ops import get_janim_dir
-from janim.utils.font import get_found_infos
+from janim.utils.font import get_database
 
 if TYPE_CHECKING:
     from fontTools.ttLib.tables._n_a_m_e import NameRecord
@@ -50,19 +50,25 @@ class FontTable(QWidget):
 
     @staticmethod
     def setup_table(table: QTableWidget) -> None:
-        infos = get_found_infos()
+        db = get_database()
+        infos = [
+            info
+            for family in db.family_by_name.values()
+            for info in family.infos
+        ]
         table.setRowCount(len(infos))
-        table.setColumnCount(2)
-        table.setHorizontalHeaderLabels((_('Invocation Name'),
+        table.setColumnCount(3)
+        table.setHorizontalHeaderLabels((_('Family Name'),
+                                         _('Full Name'),
                                          _('Display Name (includes multiple languages, make good use of search)')))
         table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.ResizeToContents)
         table.horizontalHeader().setDefaultAlignment(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter)
         table.setHorizontalScrollMode(QTableWidget.ScrollMode.ScrollPerPixel)
 
-        for row, (name, info) in enumerate(infos.items()):
+        for row, info in enumerate(infos):
             records: list[NameRecord] = [
                 record
-                for record in info.table.names
+                for record in info.table_name.names
                 if record.nameID == 1
             ]
             records.sort(key=lambda x: x.langID, reverse=True)
@@ -76,7 +82,8 @@ class FontTable(QWidget):
                 names.append(f'({platform_id},{locale.windows_locale.get(language_id, language_id)}){displayname}')
 
             contents = (
-                name,
+                info.family_name,
+                info.table_name.getBestFullName(),
                 ', '.join(names)
             )
             for col, content in enumerate(contents):

@@ -21,7 +21,8 @@ from janim.locale.i18n import get_local_strings
 from janim.logger import log
 from janim.typing import JAnimColor
 from janim.utils.config import Config
-from janim.utils.font import Font, get_font_info_by_name
+from janim.utils.font import (Font, Style, StyleName, Weight, WeightName,
+                              get_font_info_by_attrs)
 from janim.utils.simple_functions import decode_utf8
 from janim.utils.space_ops import get_norm, normalize
 
@@ -297,6 +298,8 @@ class Text(VItem, Group[TextLine]):
         text: str,
         font: str | Iterable[str] = [],
         font_size: float = DEFAULT_FONT_SIZE,
+        weight: int | Weight | WeightName = 400,   # = 'regular'
+        style: Style | StyleName = Style.Normal,
         format: Format = Format.PlainText,
         line_kwargs: dict = {},
         stroke_alpha: float = 0,
@@ -316,7 +319,7 @@ class Text(VItem, Group[TextLine]):
             font_names.extend(cfg_font)
 
         fonts = [
-            Font.get_by_info(get_font_info_by_name(name))
+            Font.get_by_info(get_font_info_by_attrs(name, weight, style))
             for name in font_names
         ]
 

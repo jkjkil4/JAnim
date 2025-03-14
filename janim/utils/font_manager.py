@@ -144,7 +144,7 @@ def _get_fontconfig_fonts():
     return [Path(os.fsdecode(fname)) for fname in out.split(b'\n')]
 
 
-def findSystemFonts(fontpaths=None, fontext='ttf'):
+def findSystemFonts(fontpaths=None, fontext='ttf') -> list[str]:
     """
     Search for fonts in the specified font paths.  If no paths are
     given, will use a standard set of system paths, as well as the
