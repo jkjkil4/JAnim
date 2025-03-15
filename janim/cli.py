@@ -26,13 +26,12 @@ def run(args: Namespace) -> None:
     if not timelines:
         return
 
-    from janim.gui.anim_viewer import AnimViewer
-
     auto_play = len(timelines) == 1
     available_timeline_names = [timeline.__name__ for timeline in get_all_timelines_from_module(module)]
 
+    # isort: off
+    from janim.gui.anim_viewer import AnimViewer    # 把这个放在第一个导入，确保进行其中对 pyside6 的检测
     from PySide6.QtCore import QPoint, QTimer
-
     from janim.gui.application import Application
 
     app = Application()

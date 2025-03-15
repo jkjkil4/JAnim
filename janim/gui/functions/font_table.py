@@ -83,7 +83,7 @@ class FontTable(QWidget):
 
             contents = (
                 info.family_name,
-                info.table_name.getBestFullName(),
+                info.full_name,
                 ', '.join(names)
             )
             for col, content in enumerate(contents):

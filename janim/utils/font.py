@@ -82,7 +82,7 @@ class FontFamily:
             )
             if i == 0 or key < best_key:
                 best = info
-                best_key = key
+                best_key = key  # noqa: F841
 
         return best
 
@@ -106,6 +106,10 @@ class FontInfo:
     @property
     def family_name(self) -> str:
         return self.table_name.getBestFamilyName()
+
+    @property
+    def full_name(self) -> str:
+        return self.table_name.getBestFullName()
 
     @property
     def weight(self) -> int:
@@ -154,9 +158,8 @@ def get_database() -> FontDatabase:
 
         for i, font in enumerate(fonts):
             info = FontInfo(filepath, font, i)
-            family_name = info.family_name
-            family_by_name[family_name].add(info)
-            font_by_full_name[info.table_name.getBestFullName()] = info
+            family_by_name[info.family_name].add(info)
+            font_by_full_name[info.full_name] = info
 
     _database = FontDatabase(family_by_name, font_by_full_name)
     return _database
