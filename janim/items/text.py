@@ -15,7 +15,7 @@ from janim.constants import (DOWN, GREY, LEFT, MED_SMALL_BUFF, ORIGIN, RIGHT,
                              UL, UP)
 from janim.exception import ColorNotFoundError
 from janim.items.geometry.line import Line
-from janim.items.points import Group, Points
+from janim.items.points import Group
 from janim.items.vitem import VItem
 from janim.locale.i18n import get_local_strings
 from janim.logger import log
@@ -132,8 +132,16 @@ class TextChar(VItem):
 
         outline, advance = font_render.get_glyph_data(unicode)
 
+        # 因为 get_glyph_data 得到的字形是 font_size=48 的字形（具体参考 janim.utils.font.Font.__init__ 中的 set_char_size）
+        # 所以这里使用 font_size / ORIG_FONT_SIZE 缩放到目标字号
         font_scale_factor = font_size / ORIG_FONT_SIZE
-        frame_scale_factor = Config.get.default_pixel_to_frame_ratio / 32
+        # frame_scale_factor 中包含了两个缩放因素：
+        # - 1/64：
+        #       这是因为使用 get_glyph_data 得到的字形坐标仍然是 26.6 数值格式，所以需要右移 6 位也就是除以 64
+        # - Config.get.default_pixel_to_frame_ratio:
+        #       在使用 1/64 缩放后，得到的是像素大小，还需要使用 pixel_to_frame 进行转换
+        frame_scale_factor = Config.get.default_pixel_to_frame_ratio / 64
+
         scale_factor = font_scale_factor * frame_scale_factor
 
         self.points.set(outline * scale_factor)
@@ -304,6 +312,7 @@ class Text(VItem, Group[TextLine]):
         line_kwargs: dict = {},
         stroke_alpha: float = 0,
         fill_alpha: float = 1,
+        center: bool = True,
         **kwargs
     ) -> None:
         # 获取字体
@@ -367,7 +376,8 @@ class Text(VItem, Group[TextLine]):
         for line in self.children:
             line.arrange_in_line()
         self.arrange_in_lines()
-        self.astype(Points).points.to_center()
+        if center:
+            self.points.to_center()
 
     def is_null(self) -> bool:
         return True

@@ -1,19 +1,20 @@
 
 import os
 from collections import defaultdict
-from typing import Any, Callable, Self
 from functools import partial
+from typing import Any, Callable, Self
 
 import numpy as np
 import svgelements as se
 
-from janim.constants import ORIGIN, RIGHT, TAU
+from janim.constants import FRAME_PPI, ORIGIN, RIGHT, TAU
+from janim.items.geometry.arc import Circle
+from janim.items.geometry.line import Line
+from janim.items.geometry.polygon import Polygon, Polyline, Rect, RoundedRect
 from janim.items.item import Item
 from janim.items.points import Group
+from janim.items.text import Text, TextLine
 from janim.items.vitem import VItem
-from janim.items.geometry.line import Line
-from janim.items.geometry.arc import Circle
-from janim.items.geometry.polygon import Rect, Polygon, Polyline, RoundedRect
 from janim.locale.i18n import get_local_strings
 from janim.logger import log
 from janim.utils.bezier import PathBuilder, quadratic_bezier_points_for_arc
@@ -22,9 +23,6 @@ from janim.utils.file_ops import find_file
 from janim.utils.space_ops import rotation_about_z
 
 _ = get_local_strings('svg_item')
-
-# 这里的 3.272 是手动试出来的
-DEFAULT_SVGITEM_SCALE_FACTOR = 3.272
 
 type SVGElemItem = VItem
 type ItemBuilder = Callable[[], SVGElemItem]
@@ -58,6 +56,7 @@ class SVGItem(Group[SVGElemItem]):
         self,
         file_path: str,
         *,
+        scale: float = 1.0,     # 缩放系数，仅当 width 和 height 都为 None 时有效
         width: float | None = None,
         height: float | None = None,
         **kwargs
@@ -69,7 +68,8 @@ class SVGItem(Group[SVGElemItem]):
         box = self.points.box
 
         if width is None and height is None:
-            factor = Config.get.default_pixel_to_frame_ratio * DEFAULT_SVGITEM_SCALE_FACTOR
+            # 因为解析 svg 时按照默认的 PPI=96 读取，而 janim 默认 PPI=144，所以要缩放 (FRAME_PPI / 96)
+            factor = Config.get.default_pixel_to_frame_ratio * (FRAME_PPI / 96) * scale
             self.points.scale(
                 factor,
                 about_point=ORIGIN
@@ -92,7 +92,7 @@ class SVGItem(Group[SVGElemItem]):
             factor = min(width / box.width, height / box.height)
             self.points.set_size(width, height, about_point=ORIGIN)
 
-        self.points.flip(RIGHT)
+        self.points.flip(RIGHT, about_edge=None)
         self.scale_descendants_stroke_radius(factor)
         self.move_into_position()
 
@@ -139,7 +139,7 @@ class SVGItem(Group[SVGElemItem]):
         if cached is not None:
             return cls.build_items(*cached)
 
-        svg: se.SVG = se.SVG.parse(file_path)
+        svg: se.SVG = se.SVG.parse(file_path)   # PPI=96
 
         offset = np.array([svg.width / -2, svg.height / -2])
 
@@ -174,8 +174,10 @@ class SVGItem(Group[SVGElemItem]):
                 builder = SVGItem.convert_polygon(shape, offset)
             elif isinstance(shape, se.Polyline):
                 builder = SVGItem.convert_polyline(shape, offset)
-            # elif isinstance(shape, se.Text):
-            #     builder = SVGItem.convert_text(shape, offset)
+            elif isinstance(shape, se.Text):
+                if shape.text is None:
+                    continue
+                builder = SVGItem.convert_text(shape, offset)
             # elif isinstance(shape, se.Image):
             #     builder = SVGItem.convert_image(shape, offset)
 
@@ -226,6 +228,15 @@ class SVGItem(Group[SVGElemItem]):
         )
 
     @staticmethod
+    def get_rot_and_shift_from_matrix(mat: se.Matrix) -> tuple[np.ndarray, np.ndarray]:
+        rot = np.array([
+            [mat.a, mat.c],
+            [mat.b, mat.d]
+        ])
+        shift = np.array([mat.e, mat.f, 0])
+        return rot, shift
+
+    @staticmethod
     def convert_path(path: se.Path, offset: np.ndarray) -> ItemBuilder:
         builder = PathBuilder()
 
@@ -239,11 +250,7 @@ class SVGItem(Group[SVGElemItem]):
             # 通过这种方式得到的 transform 是考虑了 svg 中所有父级 group 的 transform 共同作用的
             # 所以可以通过这个 transform 对 arc 作逆变换，正确计算 arc 路径，再变换回来
             transform = se.Matrix(path.values.get('transform', ''))
-            rot = np.array([
-                [transform.a, transform.c],
-                [transform.b, transform.d]
-            ])
-            shift = np.array([transform.e, transform.f, 0])
+            rot, shift = SVGItem.get_rot_and_shift_from_matrix(transform)
             transform.inverse()
             transform_cache = (transform, rot, shift)
             return transform_cache
@@ -366,8 +373,43 @@ class SVGItem(Group[SVGElemItem]):
 
     @staticmethod
     def convert_text(text: se.Text, offset: np.ndarray) -> ItemBuilder:
-        # TODO: convert_text
-        pass
+        styles = SVGItem.get_styles_from_shape(text)
+
+        transform = se.Matrix(text.values.get('transform', ''))
+        rot, shift = SVGItem.get_rot_and_shift_from_matrix(transform)
+
+        family = text.font_family.strip('"').strip('\'')
+        ratio = Config.get.default_pixel_to_frame_ratio
+        # 因为字体默认 PPI=72，而 janim 默认 PPI=144，所以乘上 (72 / FRAME_PPI)
+        font_size = text.font_size / ratio * (72 / FRAME_PPI)
+
+        offset_3d = _point_to_3d(*offset)
+
+        def points_fn(points: np.ndarray) -> np.ndarray:
+            points = points.copy()
+            points[:, :2] @= rot.T
+            points += shift + offset_3d
+            return points
+
+        def builder() -> TextLine:
+            txt = Text(text.text,
+                       font=family,
+                       font_size=font_size,
+                       weight=text.font_weight,
+                       style=text.font_style,
+                       center=False,
+                       **styles)
+            assert len(txt) == 1
+            line = txt[0]
+            assert np.all(line.get_mark_orig() == ORIGIN)
+            # 貌似 svgelements 对于列表的 x y dx dy 只能解析出一个值
+            # 所以这里直接处理为 x+dx 和 y+dy，比较粗糙
+            line.points.shift([text.x + text.dx, -(text.y + text.dy), 0]).flip(RIGHT, about_edge=None)
+            line.points.apply_points_fn(points_fn, about_edge=None)
+
+            return line
+
+        return builder
 
     @staticmethod
     def convert_image(image: se.Image, offset: np.ndarray) -> ItemBuilder:

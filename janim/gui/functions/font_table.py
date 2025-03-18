@@ -68,7 +68,7 @@ class FontTable(QWidget):
         for row, info in enumerate(infos):
             records: list[NameRecord] = [
                 record
-                for record in info.table_name.names
+                for record in info.name.names
                 if record.nameID == 1
             ]
             records.sort(key=lambda x: x.langID, reverse=True)

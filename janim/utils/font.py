@@ -9,6 +9,7 @@ import freetype as FT
 import numpy as np
 from fontTools.ttLib import TTCollection, TTFont, TTLibError
 
+from janim.constants import FRAME_PPI
 from janim.exception import FontNotFoundError
 from janim.locale.i18n import get_local_strings
 from janim.logger import log
@@ -16,6 +17,7 @@ from janim.utils.bezier import PathBuilder
 
 if TYPE_CHECKING:
     from fontTools.ttLib.tables._n_a_m_e import table__n_a_m_e
+    from fontTools.ttLib.tables.O_S_2f_2 import table_O_S_2f_2
 
 _ = get_local_strings('font')
 
@@ -25,6 +27,7 @@ class Weight(StrEnum):
     ExtraLight = 'extralight'
     Light = 'light'
     Regular = 'regular'
+    Normal = 'normal'
     Medium = 'medium'
     SemiBold = 'semibold'
     Bold = 'bold'
@@ -38,7 +41,8 @@ class Style(StrEnum):
     Oblique = 'oblique'
 
 
-type WeightName = Literal['thin', 'extralight', 'light', 'regular', 'medium', 'semibold', 'bold', 'extrabold', 'black']
+type WeightName = Literal['thin', 'extralight', 'light', 'regular', 'normal',
+                          'medium', 'semibold', 'bold', 'extrabold', 'black']
 type StyleName = Literal['normal', 'italic', 'oblique']
 
 weight_mapping = {
@@ -46,6 +50,7 @@ weight_mapping = {
     Weight.ExtraLight: 200,
     Weight.Light: 300,
     Weight.Regular: 400,
+    Weight.Normal: 400,
     Weight.Medium: 500,
     Weight.SemiBold: 600,
     Weight.Bold: 700,
@@ -98,33 +103,31 @@ class FontFamily:
 class FontInfo:
     def __init__(self, filepath: str, font: TTFont, index: int):
         self.filepath = filepath
-        self.font = font
         self.index = index
 
-        self.table_name: table__n_a_m_e = font['name']
+        self.name: table__n_a_m_e = font['name']
+        self.os2: table_O_S_2f_2 = font.get('OS/2', None)
 
     @property
     def family_name(self) -> str:
-        return self.table_name.getBestFamilyName()
+        return self.name.getBestFamilyName()
 
     @property
     def full_name(self) -> str:
-        return self.table_name.getBestFullName()
+        return self.name.getBestFullName()
 
     @property
     def weight(self) -> int:
-        os2 = self.font.get('OS/2', None)
-        if os2 is None:
+        if self.os2 is None:
             return 400
-        return os2.usWeightClass
+        return self.os2.usWeightClass
 
     @property
     def style(self) -> Style:
-        os2 = self.font.get('OS/2', None)
-        if os2 is None:
+        if self.os2 is None:
             return Style.Normal
 
-        fs_selection = os2.fsSelection
+        fs_selection = self.os2.fsSelection
         if fs_selection & 0x01:
             return Style.Italic
         if fs_selection & 0x200:
@@ -180,7 +183,7 @@ def get_font_info_by_attrs(name: str, weight: int | Weight | WeightName, style: 
 
     # deprecated
     for full_name, info in db.font_by_full_name.items():
-        if info.table_name.getDebugName(4) == name:
+        if info.name.getDebugName(4) == name:
             log.warning(
                 _('font="{deprecated}" is deprecated and will no longer be available in JAnim 3.3, '
                   'use font="{full_name}" instead')
@@ -223,8 +226,15 @@ class Font:
         self.filepath = filepath
         with open(filepath, 'rb') as file:
             self.face = FT.Face(file, index=index)
+
         self.face.select_charmap(FT.FT_ENCODING_UNICODE)
-        self.face.set_char_size(48 << 6)
+
+        # 将字号为 48 的字形作为读取的基准
+        # 这里使用 48 << 6 是因为 freetype 里的点数是用 26.6 数值格式存储的，所以需要 << 6 空出 6 个小数位
+        # （26.6 数值格式也可以理解成单位为 1/64 点）
+        # 这里我们使用的 dpi/ppi 为 FRAME_PPI（默认为 144）
+        self.face.set_char_size(48 << 6, 0, FRAME_PPI, FRAME_PPI)
+
         self.cached_glyph: dict[int, Font.GlyphData] = {}
 
     @dataclass

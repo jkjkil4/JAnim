@@ -39,6 +39,7 @@ class TypstDoc(SVGItem):
         self,
         text: str,
         *,
+        scale: float = 24 / 11,     # 因为 Typst 默认字号=11，janim 默认字号=24，为了默认显示效果一致，将 Typst 内容缩放 24/11
         shared_preamble: str | None = None,
         additional_preamble: str | None = None,
         **kwargs
@@ -49,7 +50,7 @@ class TypstDoc(SVGItem):
         if additional_preamble is None:
             additional_preamble = ''
 
-        super().__init__(self.compile_typst(text, shared_preamble, additional_preamble), **kwargs)
+        super().__init__(self.compile_typst(text, shared_preamble, additional_preamble), scale=scale, **kwargs)
 
     def move_into_position(self) -> None:
         self.points.scale(0.9, about_point=ORIGIN).to_border(UP)
