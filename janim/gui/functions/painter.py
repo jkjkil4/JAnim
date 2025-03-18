@@ -169,7 +169,7 @@ class Painter(QWidget):
             self.constructing.finish()
 
             self.rdb_none.setChecked(True)
-            self.tabs.addTab(self.constructing, self.constructing.__class__.__name__)
+            self.tabs.addTab(self.constructing, self.constructing.__class__.__name__.lstrip('P'))
             self.tabs.setCurrentWidget(self.constructing)
             self.constructing = None
 
