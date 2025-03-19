@@ -92,7 +92,7 @@ class SVGItem(Group[SVGElemItem]):
             factor = min(width / box.width, height / box.height)
             self.points.set_size(width, height, about_point=ORIGIN)
 
-        self.points.flip(RIGHT, about_edge=None)
+        self(VItem).points.flip(RIGHT, about_edge=None)
         self.scale_descendants_stroke_radius(factor)
         self.move_into_position()
 
