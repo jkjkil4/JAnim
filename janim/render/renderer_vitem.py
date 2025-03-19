@@ -296,7 +296,7 @@ class VItemRenderer(Renderer):
             clip_box *= new_camera_info.frame_radius
 
             buff = new_radius.max() + render_data.anti_alias_radius
-            if item.glow._rgba._data[3] != 0:
+            if new_glow_alpha != 0:
                 buff = max(buff, new_glow_size)
             clip_min = np.min(clip_box, axis=0) - buff
             clip_max = np.max(clip_box, axis=0) + buff
