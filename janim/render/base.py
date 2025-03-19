@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import os
 from collections import defaultdict
+from contextlib import contextmanager
 from contextvars import ContextVar
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any
@@ -11,9 +12,10 @@ import moderngl as mgl
 from janim.camera.camera_info import CameraInfo
 from janim.exception import EXITCODE_PYOPENGL_NOT_FOUND, ExitException
 from janim.locale.i18n import get_local_strings
-from janim.utils.file_ops import find_file, get_janim_dir, readall
+from janim.utils.file_ops import find_file_or_none, get_janim_dir, readall
 
 if TYPE_CHECKING:
+    from janim.gui.glwidget import GLWidget
     from janim.items.item import Item
 
 _ = get_local_strings('base')
@@ -33,8 +35,20 @@ def create_context(**kwargs) -> mgl.Context:
     return ctx
 
 
+_qt_glwidget: GLWidget | None = None
+
+
+def register_qt_glwidget(w: GLWidget) -> None:
+    global _qt_glwidget
+    _qt_glwidget = w
+
+
 def create_framebuffer(ctx: mgl.Context, pw: int, ph: int) -> mgl.Framebuffer:
-    return ctx.framebuffer(
+    on_qt = _qt_glwidget is not None and _qt_glwidget.ctx is ctx
+    if on_qt:
+        prev = _qt_glwidget.qfuncs.glGetIntegerv(0x8CA6)   # GL_FRAMEBUFFER_BINDING
+
+    fbo = ctx.framebuffer(
         color_attachments=ctx.texture(
             (pw, ph),
             components=4,
@@ -45,6 +59,33 @@ def create_framebuffer(ctx: mgl.Context, pw: int, ph: int) -> mgl.Framebuffer:
             samples=0
         )
     )
+
+    if on_qt:
+        if prev is _qt_glwidget.defaultFramebufferObject():
+            _qt_glwidget.qfuncs.glBindFramebuffer(0x8D40, prev)     # GL_FRAMEBUFFER
+            _qt_glwidget.qfuncs.glViewport(0, 0, _qt_glwidget.width(), _qt_glwidget.height())
+            _qt_glwidget.update_clear_color()
+
+    return fbo
+
+
+@contextmanager
+def framebuffer_context(fbo: mgl.Framebuffer):
+    on_qt = _qt_glwidget is not None and _qt_glwidget.ctx is fbo.ctx
+    if on_qt:
+        prev = _qt_glwidget.qfuncs.glGetIntegerv(0x8CA6)   # GL_FRAMEBUFFER_BINDING
+
+    prev_fbo = fbo.ctx.fbo
+    fbo.use()
+    try:
+        yield
+    finally:
+        prev_fbo.use()
+
+        if on_qt and prev is _qt_glwidget.defaultFramebufferObject():
+            _qt_glwidget.qfuncs.glBindFramebuffer(0x8D40, prev)     # GL_FRAMEBUFFER
+            _qt_glwidget.qfuncs.glViewport(0, 0, _qt_glwidget.width(), _qt_glwidget.height())
+            _qt_glwidget.update_clear_color()
 
 
 class Renderer:
@@ -166,16 +207,10 @@ def get_custom_program(filepath: str) -> mgl.Program:
     if prog is not None:
         return prog
 
-    def find_shader(filepath: str) -> str | None:
-        try:
-            return find_file(filepath)
-        except FileNotFoundError:
-            return None
-
     prog = ctx.program(**{
         shader_type: readall(_shader_path)
         for shader_type, suffix in shader_keys
-        if (_shader_path := find_shader(filepath + suffix)) is not None
+        if (_shader_path := find_file_or_none(filepath + suffix)) is not None
     })
 
     global_uniforms = global_uniform_map.get(ctx, None)
@@ -188,8 +223,8 @@ def get_custom_program(filepath: str) -> mgl.Program:
 
 def get_compute_shader(filepath: str) -> mgl.ComputeShader:
     '''
-    载入指定文件的 ComputeShader，
-    例如 `render/shaders/map_points.comp.glsl` 就会载入这个文件
+    载入相对于 janim 目录的指定文件的 ComputeShader，
+    例如 `render/shaders/map_points.comp.glsl` 就会载入 janim 文件夹中的这个文件
 
     注：若 ``filepath`` 对应的 ComputeShader 先前已创建过，则会复用先前的对象，否则另外创建新的对象并记录
     '''

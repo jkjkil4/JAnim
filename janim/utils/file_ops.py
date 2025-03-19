@@ -85,6 +85,13 @@ def find_file(file_path: str) -> str:
     raise FileNotFoundError(file_path)
 
 
+def find_file_or_none(file_path: str) -> str | None:
+    try:
+        return find_file(file_path)
+    except FileNotFoundError:
+        return None
+
+
 def open_file(file_path: str) -> None:
     '''
     打开指定的文件

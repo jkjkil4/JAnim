@@ -4,7 +4,7 @@ from PySide6.QtOpenGLWidgets import QOpenGLWidget
 from PySide6.QtWidgets import QWidget
 
 from janim.anims.timeline import BuiltTimeline
-from janim.render.base import create_context
+from janim.render.base import create_context, register_qt_glwidget
 
 
 class GLWidget(QOpenGLWidget):
@@ -44,6 +44,8 @@ class GLWidget(QOpenGLWidget):
 
         self.qfuncs = self.context().functions()
         self.update_clear_color()
+
+        register_qt_glwidget(self)
 
     def update_clear_color(self) -> None:
         self.needs_update_clear_color = True

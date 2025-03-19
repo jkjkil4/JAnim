@@ -233,11 +233,11 @@ void main()
     if (glow_color.a != 0.0) {
         float factor;
         if (is_fill_transparent) {
-            factor = 1 - d / glow_size;
+            factor = 1.0 - d / glow_size;
         } else {
-            factor = 1 - sgn_d / glow_size;
+            factor = 1.0 - sgn_d / glow_size;
         }
-        if (0 < factor && factor <= 1) {
+        if (0.0 < factor && factor <= 1.0) {
             vec4 f_glow_color = glow_color;
             f_glow_color.a *= factor * factor;
             f_color = blend_color(f_color, f_glow_color);

@@ -25,6 +25,7 @@ from janim.items.audio import *
 from janim.items.coordinate.coordinate_systems import *
 from janim.items.coordinate.functions import *
 from janim.items.coordinate.number_line import *
+from janim.items.effect.frame_effect import *
 from janim.items.geometry.arc import *
 from janim.items.geometry.arrow import *
 from janim.items.geometry.line import *

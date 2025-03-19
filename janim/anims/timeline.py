@@ -927,11 +927,14 @@ class BuiltTimeline:
                 with ContextSetter(Renderer.data_ctx, RenderData(ctx=ctx,
                                                                  camera_info=camera_info,
                                                                  anti_alias_radius=anti_alias_radius)):
-                    render_items = self.visible_item_segments.get(global_t)
+                    render_items: list[tuple[Item, Timeline.ItemAppearance]] = []
                     # 反向遍历一遍所有物件，这是为了让一些效果标记原有的物件不进行渲染
                     # （会把所应用的物件的 render_disabled 置为 True，所以在下面可以判断这个变量过滤掉它们）
-                    for item, _ in reversed(render_items):
+                    for item, appr in reversed(self.visible_item_segments.get(global_t)):
+                        if not appr.is_visible_at(global_t):
+                            continue
                         item._mark_render_disabled()
+                        render_items.append((item, appr))
                     # 添加额外的渲染调用，例如 Transform 产生的
                     # 这里也有可能产生 render_disabled 标记
                     additional: list[list[tuple[Item, Callable[[Item], None]]]] = []
@@ -944,8 +947,6 @@ class BuiltTimeline:
                     for item, appr in render_items:
                         if appr.render_disabled:
                             appr.render_disabled = False    # 重置，因为每次都要重新标记
-                            continue
-                        if not appr.is_visible_at(global_t):
                             continue
                         data = appr.stack.compute(global_t, True)
                         render_items_final.append((data, appr.render))
