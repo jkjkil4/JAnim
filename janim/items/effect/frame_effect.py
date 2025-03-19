@@ -13,6 +13,8 @@ from janim.typing import JAnimColor
 
 _ = get_local_strings('frame_effect')
 
+_frame_effect_warning_displayed: bool = False
+
 
 class FrameEffect(Item):
     renderer_cls = FrameEffectRenderer
@@ -27,6 +29,11 @@ class FrameEffect(Item):
         root_only: bool = False,
         **kwargs
     ):
+        global _frame_effect_warning_displayed
+        if not _frame_effect_warning_displayed:
+            log.warning('FrameEffect is incomplete and may not work as expected')
+            _frame_effect_warning_displayed = True
+
         super().__init__(**kwargs)
         self.fragment_shader = fragment_shader
         self.clear_color = Cmpt_Rgbas.format_color(clear_color)
