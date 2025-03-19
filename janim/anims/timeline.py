@@ -274,9 +274,10 @@ class Timeline(metaclass=ABCMeta):
         与 :meth:`schedule` 类似，但是在调用 ``func`` 后会记录变化的物件的状态
         '''
         def wrapper(*args, **kwargs) -> None:
+            print(args, kwargs)
             func(*args, **kwargs)
             self.detect_changes_of_all()
-        self.schedule(at, wrapper, args, kwargs)
+        self.schedule(at, wrapper, *args, *kwargs)
 
     def timeout(self, delay: float, func: Callable, *args, **kwargs) -> None:
         '''
@@ -291,7 +292,7 @@ class Timeline(metaclass=ABCMeta):
         def wrapper(*args, **kwargs) -> None:
             func(*args, **kwargs)
             self.detect_changes_of_all()
-        self.timeout(delay, wrapper, args, kwargs)
+        self.timeout(delay, wrapper, *args, *kwargs)
 
     # endregion
 
