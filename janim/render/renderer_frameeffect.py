@@ -32,7 +32,6 @@ void main()
 
 class FrameEffectRenderer(Renderer):
     def __init__(self):
-        self.item: FrameEffect | None = None
         self.initialized: bool = False
 
     def init(self, fragment_shader: str) -> None:
@@ -65,22 +64,20 @@ class FrameEffectRenderer(Renderer):
     def render(self, item: FrameEffect) -> None:
         if not self.initialized:
             self.init(item.fragment_shader)
-            self.item = item
             self.initialized = True
-        else:
-            assert self.item is item
 
         if self.u_fbo is not None:
             t = Animation.global_t_ctx.get()
 
             with framebuffer_context(self.fbo):
                 self.fbo.clear(*item.clear_color)
-                render_items = [
+                render_datas = [
                     (appr, appr.stack.compute(t, True))
                     for appr in item.apprs
+                    if appr.is_visible_at(t)
                 ]
-                render_items.sort(key=lambda x: x[1].depth, reverse=True)
-                for appr, data in render_items:
+                render_datas.sort(key=lambda x: x[1].depth, reverse=True)
+                for appr, data in render_datas:
                     appr.render(data)
 
             self.fbo.color_attachments[0].use(0)

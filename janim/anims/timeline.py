@@ -826,13 +826,10 @@ class BuiltTimeline:
         self.duration = timeline.time_aligner.align_t(timeline.current_time)
 
         self.visible_item_segments = TimeSegments(
-            (
-                (item, appr)
-                for item, appr in timeline.item_appearances.items()
-            ),
+            timeline.item_appearances.values(),
             lambda x: (
                 TimeRange(*range) if len(range) == 2 else TimeRange(*range, self.duration + 1)
-                for range in it.batched(x[1].visibility, 2)
+                for range in it.batched(x.visibility, 2)
             )
         )
         self.visible_additional_callbacks_segments = TimeSegments(
@@ -927,14 +924,15 @@ class BuiltTimeline:
                 with ContextSetter(Renderer.data_ctx, RenderData(ctx=ctx,
                                                                  camera_info=camera_info,
                                                                  anti_alias_radius=anti_alias_radius)):
-                    render_items: list[tuple[Item, Timeline.ItemAppearance]] = []
+                    render_datas: list[tuple[Timeline.ItemAppearance, Item]] = []
                     # 反向遍历一遍所有物件，这是为了让一些效果标记原有的物件不进行渲染
                     # （会把所应用的物件的 render_disabled 置为 True，所以在下面可以判断这个变量过滤掉它们）
-                    for item, appr in reversed(self.visible_item_segments.get(global_t)):
+                    for appr in reversed(self.visible_item_segments.get(global_t)):
                         if not appr.is_visible_at(global_t):
                             continue
-                        item._mark_render_disabled()
-                        render_items.append((item, appr))
+                        data = appr.stack.compute(global_t, True)
+                        data._mark_render_disabled()
+                        render_datas.append((appr, data))
                     # 添加额外的渲染调用，例如 Transform 产生的
                     # 这里也有可能产生 render_disabled 标记
                     additional: list[list[tuple[Item, Callable[[Item], None]]]] = []
@@ -943,18 +941,17 @@ class BuiltTimeline:
                             continue
                         additional.append(rcc.func())
                     # 剔除被标记 render_disabled 的物件，得到 render_items_final
-                    render_items_final: list[tuple[Item, Callable]] = []
-                    for item, appr in render_items:
+                    render_datas_final: list[tuple[Item, Callable]] = []
+                    for appr, data in render_datas:
                         if appr.render_disabled:
                             appr.render_disabled = False    # 重置，因为每次都要重新标记
                             continue
-                        data = appr.stack.compute(global_t, True)
-                        render_items_final.append((data, appr.render))
-                    render_items_final.extend(it.chain(*additional))
+                        render_datas_final.append((data, appr.render))
+                    render_datas_final.extend(it.chain(*additional))
                     # 按深度排序
-                    render_items_final.sort(key=lambda x: x[0].depth, reverse=True)
+                    render_datas_final.sort(key=lambda x: x[0].depth, reverse=True)
                     # 渲染
-                    for data, render in render_items_final:
+                    for data, render in render_datas_final:
                         render(data)
 
         except Exception:
