@@ -4,6 +4,7 @@ from abc import ABCMeta, abstractmethod
 import numpy as np
 
 from janim.anims.updater import DataUpdater, UpdaterParams
+from janim.components.glow import Cmpt_Glow
 from janim.components.rgbas import Cmpt_Rgbas
 from janim.constants import (C_LABEL_ANIM_ABSTRACT, C_LABEL_ANIM_IN,
                              C_LABEL_ANIM_OUT, ORIGIN, OUT)
@@ -72,11 +73,12 @@ class FadeIn(Fade):
             return
 
         for cmpt in data.components.values():
-            if not isinstance(cmpt, Cmpt_Rgbas):
-                continue
-            rgbas = cmpt.get().copy()
-            rgbas[:, 3] *= p.alpha
-            cmpt.set_rgbas(rgbas)
+            if isinstance(cmpt, Cmpt_Rgbas):
+                rgbas = cmpt.get().copy()
+                rgbas[:, 3] *= p.alpha
+                cmpt.set_rgbas(rgbas)
+            elif isinstance(cmpt, Cmpt_Glow):
+                cmpt.mix_alpha(0, 1 - p.alpha)
 
         if self.scale != 1.0:
             data.points.scale(
@@ -122,11 +124,12 @@ class FadeOut(Fade):
             return
 
         for cmpt in data.components.values():
-            if not isinstance(cmpt, Cmpt_Rgbas):
-                continue
-            rgbas = cmpt.get().copy()
-            rgbas[:, 3] *= 1 - p.alpha
-            cmpt.set_rgbas(rgbas)
+            if isinstance(cmpt, Cmpt_Rgbas):
+                rgbas = cmpt.get().copy()
+                rgbas[:, 3] *= 1 - p.alpha
+                cmpt.set_rgbas(rgbas)
+            elif isinstance(cmpt, Cmpt_Glow):
+                cmpt.mix_alpha(0, p.alpha)
 
         if self.scale != 1.0:
             data.points.scale(

@@ -59,6 +59,7 @@ class VItemRenderer(Renderer):
         self.prev_fill = None
         self.fill_transparent = False
         self.prev_glow_size = -1
+        self.prev_glow_alpha = -1
 
         self.points_vec4buffer = np.empty((0, 4), dtype=np.float32)
 
@@ -100,12 +101,14 @@ class VItemRenderer(Renderer):
         new_stroke = item.stroke._rgbas._data
         new_fill = item.fill._rgbas._data
         new_glow_size = item.glow._size
+        new_glow_alpha = item.glow._rgba._data[3]
 
         is_camera_changed = new_camera_info is not self.prev_camera_info
 
         if new_fix_in_frame != self.prev_fix_in_frame \
                 or new_radius is not self.prev_radius \
                 or new_glow_size != self.prev_glow_size \
+                or new_glow_alpha != self.prev_glow_alpha \
                 or new_points is not self.prev_points \
                 or is_camera_changed:
             corners = np.array(item.points.self_box.get_corners())
@@ -116,7 +119,7 @@ class VItemRenderer(Renderer):
             clip_box *= new_camera_info.frame_radius
 
             buff = new_radius.max() + render_data.anti_alias_radius
-            if item.glow._rgba._data[3] != 0:
+            if new_glow_alpha != 0:
                 buff = max(buff, new_glow_size)
             clip_min = np.min(clip_box, axis=0) - buff
             clip_max = np.max(clip_box, axis=0) + buff
@@ -254,6 +257,7 @@ class VItemRenderer(Renderer):
         self.prev_fill = None
         self.fill_transparent = False
         self.prev_glow_size = -1
+        self.prev_glow_alpha = -1
 
         self.points_vec4buffer = np.empty((0, 4), dtype=np.float32)
 
@@ -274,12 +278,14 @@ class VItemRenderer(Renderer):
         new_stroke = item.stroke._rgbas._data
         new_fill = item.fill._rgbas._data
         new_glow_size = item.glow._size
+        new_glow_alpha = item.glow._rgba._data[3]
 
         is_camera_changed = new_camera_info is not self.prev_camera_info
 
         if new_fix_in_frame != self.prev_fix_in_frame \
                 or new_radius is not self.prev_radius \
                 or new_glow_size != self.prev_glow_size \
+                or new_glow_alpha != self.prev_glow_alpha \
                 or new_points is not self.prev_points \
                 or is_camera_changed:
             corners = np.array(item.points.self_box.get_corners())
