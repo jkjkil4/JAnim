@@ -269,11 +269,29 @@ class Timeline(metaclass=ABCMeta):
         task = Timeline.ScheduledTask(self.time_aligner.align_t(at), func, args, kwargs)
         insort(self.scheduled_tasks, task, key=lambda x: x.at)
 
+    def schedule_and_detect_changes(self, at: float, func: Callable, *args, **kwargs) -> None:
+        '''
+        与 :meth:`schedule` 类似，但是在调用 ``func`` 后会记录变化的物件的状态
+        '''
+        def wrapper(*args, **kwargs) -> None:
+            func(*args, **kwargs)
+            self.detect_changes_of_all()
+        self.schedule(at, wrapper, args, kwargs)
+
     def timeout(self, delay: float, func: Callable, *args, **kwargs) -> None:
         '''
         相当于 `schedule(self.current_time + delay, func, *args, **kwargs)`
         '''
         self.schedule(self.current_time + delay, func, *args, **kwargs)
+
+    def timeout_and_detect_changes(self, delay: float, func: Callable, *args, **kwargs) -> None:
+        '''
+        与 :meth:`timeout` 类似，但是在调用 ``func`` 后会记录变化的物件的状态
+        '''
+        def wrapper(*args, **kwargs) -> None:
+            func(*args, **kwargs)
+            self.detect_changes_of_all()
+        self.timeout(delay, wrapper, args, kwargs)
 
     # endregion
 
