@@ -22,75 +22,43 @@ EXCEPTION_MAP = {
     # The old version of Arial-Black, published by Microsoft in 1996 in their
     # "core fonts for the web" project, has a wrong weight of 400.
     # See https://corefonts.sourceforge.net/.
-    "Arial-Black":
-        lambda: FontException(weight=900),
+    "Arial-Black": FontException(weight=900),
     # Fandol fonts designed for Chinese typesetting.
     # See https://ctan.org/tex-archive/fonts/fandol/.
-    "FandolHei-Bold":
-        lambda: FontException(weight=700),
-    "FandolSong-Bold":
-        lambda: FontException(weight=700),
+    "FandolHei-Bold": FontException(weight=700),
+    "FandolSong-Bold": FontException(weight=700),
     # Noto fonts
-    "NotoNaskhArabicUISemi-Bold":
-        lambda: FontException(weight=600),
-    "NotoSansSoraSompengSemi-Bold":
-        lambda: FontException(weight=600),
+    "NotoNaskhArabicUISemi-Bold": FontException(weight=600),
+    "NotoSansSoraSompengSemi-Bold": FontException(weight=600),
     # New Computer Modern
-    "NewCM08-Book":
-        lambda: FontException(weight=450),
-    "NewCM08-BookItalic":
-        lambda: FontException(weight=450),
-    "NewCM10-Book":
-        lambda: FontException(weight=450),
-    "NewCM10-BookItalic":
-        lambda: FontException(weight=450),
-    "NewCMMath-Book":
-        lambda: FontException(weight=450),
-    "NewCMMono10-Book":
-        lambda: FontException(weight=450),
-    "NewCMMono10-BookItalic":
-        lambda: FontException(weight=450),
-    "NewCMSans08-Book":
-        lambda: FontException(weight=450),
-    "NewCMSans08-BookOblique":
-        lambda: FontException(weight=450),
-    "NewCMSans10-Book":
-        lambda: FontException(weight=450),
-    "NewCMSans10-BookOblique":
-        lambda: FontException(weight=450, style=Style.Oblique),
-    "NewCMSans10-Oblique":
-        lambda: FontException(style=Style.Oblique),
-    "NewCMUncial08-Book":
-        lambda: FontException(weight=450),
-    "NewCMUncial10-Book":
-        lambda: FontException(weight=450),
+    "NewCM08-Book": FontException(weight=450),
+    "NewCM08-BookItalic": FontException(weight=450),
+    "NewCM10-Book": FontException(weight=450),
+    "NewCM10-BookItalic": FontException(weight=450),
+    "NewCMMath-Book": FontException(weight=450),
+    "NewCMMono10-Book": FontException(weight=450),
+    "NewCMMono10-BookItalic": FontException(weight=450),
+    "NewCMSans08-Book": FontException(weight=450),
+    "NewCMSans08-BookOblique": FontException(weight=450),
+    "NewCMSans10-Book": FontException(weight=450),
+    "NewCMSans10-BookOblique": FontException(weight=450, style=Style.Oblique),
+    "NewCMSans10-Oblique": FontException(style=Style.Oblique),
+    "NewCMUncial08-Book": FontException(weight=450),
+    "NewCMUncial10-Book": FontException(weight=450),
     # Latin Modern
-    "LMMonoLt10-BoldOblique":
-        lambda: FontException(style=Style.Oblique),
-    "LMMonoLt10-Regular":
-        lambda: FontException(weight=300),
-    "LMMonoLt10-Oblique":
-        lambda: FontException(weight=300, style=Style.Oblique),
-    "LMMonoLtCond10-Regular":
-        lambda: FontException(weight=300, stretch=666),
-    "LMMonoLtCond10-Oblique":
-        lambda: FontException(weight=300, style=Style.Oblique, stretch=666),
-    "LMMonoPropLt10-Regular":
-        lambda: FontException(weight=300),
-    "LMMonoPropLt10-Oblique":
-        lambda: FontException(weight=300),
+    "LMMonoLt10-BoldOblique": FontException(style=Style.Oblique),
+    "LMMonoLt10-Regular": FontException(weight=300),
+    "LMMonoLt10-Oblique": FontException(weight=300, style=Style.Oblique),
+    "LMMonoLtCond10-Regular": FontException(weight=300, stretch=666),
+    "LMMonoLtCond10-Oblique": FontException(weight=300, style=Style.Oblique, stretch=666),
+    "LMMonoPropLt10-Regular": FontException(weight=300),
+    "LMMonoPropLt10-Oblique": FontException(weight=300),
     # STKaiti is a set of Kai fonts. Their weight values need to be corrected
     # according to their PostScript names.
-    "STKaitiSC-Regular":
-        lambda: FontException(weight=400),
-    "STKaitiTC-Regular":
-        lambda: FontException(weight=400),
-    "STKaitiSC-Bold":
-        lambda: FontException(weight=700),
-    "STKaitiTC-Bold":
-        lambda: FontException(weight=700),
-    "STKaitiSC-Black":
-        lambda: FontException(weight=900),
-    "STKaitiTC-Black":
-        lambda: FontException(weight=900),
+    "STKaitiSC-Regular": FontException(weight=400),
+    "STKaitiTC-Regular": FontException(weight=400),
+    "STKaitiSC-Bold": FontException(weight=700),
+    "STKaitiTC-Bold": FontException(weight=700),
+    "STKaitiSC-Black": FontException(weight=900),
+    "STKaitiTC-Black": FontException(weight=900),
 }

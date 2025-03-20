@@ -73,8 +73,7 @@ class FontInfo:
         self.name: table__n_a_m_e = font['name']
         self.os2: table_O_S_2f_2 = font.get('OS/2', None)
 
-        exc_f = EXCEPTION_MAP.get(self.postscript_name, None)
-        self.exception = None if exc_f is None else exc_f()
+        self.exception = EXCEPTION_MAP.get(self.postscript_name, None)
 
     @property
     def family_name(self) -> str:
