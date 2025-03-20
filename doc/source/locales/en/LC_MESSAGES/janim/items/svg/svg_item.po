@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: JAnim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-11-10 11:17+0800\n"
+"POT-Creation-Date: 2025-03-20 11:45+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -17,7 +17,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.14.0\n"
+"Generated-By: Babel 2.17.0\n"
 
 #: ../../source/janim/items/svg/svg_item.rst:2
 msgid "svg_item"
@@ -35,6 +35,10 @@ msgstr ""
 
 #: janim.items.svg.svg_item.SVGItem.copy:1 of
 msgid "复制物件"
+msgstr ""
+
+#: janim.items.svg.svg_item.SVGItem.scale_descendants_stroke_radius:1 of
+msgid "将所有后代物件的 stroke_radius 都乘上一个值"
 msgstr ""
 
 #: janim.items.svg.svg_item.SVGItem.get_items_from_file:1 of

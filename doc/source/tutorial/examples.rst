@@ -96,10 +96,10 @@
     #let x = 5
     $ #x < 17 $
 
-    The difference between #text(green)[`TypstDoc`] and #text(green)[`Typst`]:
+    The difference between #text(green)[`TypstDoc`] and #text(green)[`TypstMath`]:
     - #text(green)[`TypstDoc`] automatically align to the top of view,
     so you can see the document from the start.
-    - The content of #text(green)[`Typst`] is wrapped by math environment
+    - The content of #text(green)[`TypstMath`] is wrapped by math environment
     and move to the center by default.
     '''
 
@@ -107,7 +107,7 @@
     class TypstExample(Timeline):
         def construct(self):
             doc = TypstDoc(typst_doc)
-            typ = Typst('sum_(i=1)^n x_i')
+            typ = TypstMath('sum_(i=1)^n x_i')
 
             # Applying animations on text is slow
             self.play(Write(doc), duration=4)
@@ -126,7 +126,7 @@
 
     class AnimatingPiExample(Timeline):
         def construct(self):
-            grid = Typst('pi') * 100
+            grid = TypstMath('pi') * 100
             grid.points.scale(2).arrange_in_grid(10, 10, buff=0.2)
             grid.show()
 

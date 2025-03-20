@@ -10,7 +10,7 @@ from janim.components.vpoints import Cmpt_VPoints
 from janim.constants import DEFAULT_ITEM_TO_ITEM_BUFF, DOWN, PI, SMALL_BUFF
 from janim.items.points import Points
 from janim.items.svg.svg_item import SVGItem
-from janim.items.svg.typst import Typst
+from janim.items.svg.typst import TypstMath
 from janim.items.text import Text
 from janim.items.vitem import VItem
 from janim.typing import Vect
@@ -109,9 +109,9 @@ class Cmpt_VPoints_BraceImpl[ItemT](Cmpt_VPoints[ItemT], impl=True):
         self.put_at_tip(txt, use_next_to=use_next_to, buff=buff)
         return txt
 
-    def create_typst(self, typst: str, buff: float = SMALL_BUFF, use_next_to: bool = True, **kwargs) -> Typst:
+    def create_typst(self, typst: str, buff: float = SMALL_BUFF, use_next_to: bool = True, **kwargs) -> TypstMath:
         '''创建一个位于花括号中间凸出处的 Typst 公式'''
-        typ = Typst(typst, **kwargs)
+        typ = TypstMath(typst, **kwargs)
         self.put_at_tip(typ, use_next_to=use_next_to, buff=buff)
         return typ
 

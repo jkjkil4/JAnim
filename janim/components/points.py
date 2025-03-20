@@ -881,8 +881,8 @@ class Cmpt_Points[ItemT](Component[ItemT]):
 
         .. code-block:: python
 
-            t1 = Typst('x^2 + y^2')
-            t2 = Typst('x + y')
+            t1 = TypstMath('x^2 + y^2')
+            t2 = TypstMath('x + y')
             t2.points.move_to_by_indicator(t2[1], t1[2])
 
         可以将 ``t2`` 移动至 ``t1`` 的位置，

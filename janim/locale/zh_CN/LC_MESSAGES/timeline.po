@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-04 10:00+0800\n"
+"POT-Creation-Date: 2025-03-20 11:50+0800\n"
 "PO-Revision-Date: 2025-03-04 10:01+0800\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -39,11 +39,11 @@ msgstr "\"{name}\" 构建后没有产生时长，自动产生了 {duration}s 的时长"
 msgid "Finished building \"{name}\" in {elapsed:.2f} s"
 msgstr "构建 \"{name}\" 完成，耗时 {elapsed:.2f} s"
 
-#: janim/anims/timeline.py:287
+#: janim/anims/timeline.py:306
 msgid "dt can't be negative"
 msgstr "dt 不能为负"
 
-#: janim/anims/timeline.py:765
+#: janim/anims/timeline.py:784
 #, python-brace-format
 msgid "Called self.debug({repr}) at {loc}"
 msgstr "调用了 self.debug({repr}) 在 {loc}"

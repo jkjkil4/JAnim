@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-04 10:00+0800\n"
+"POT-Creation-Date: 2025-03-20 11:53+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -39,11 +39,11 @@ msgstr ""
 msgid "Finished building \"{name}\" in {elapsed:.2f} s"
 msgstr ""
 
-#: janim/anims/timeline.py:287
+#: janim/anims/timeline.py:306
 msgid "dt can't be negative"
 msgstr ""
 
-#: janim/anims/timeline.py:765
+#: janim/anims/timeline.py:784
 #, python-brace-format
 msgid "Called self.debug({repr}) at {loc}"
 msgstr ""

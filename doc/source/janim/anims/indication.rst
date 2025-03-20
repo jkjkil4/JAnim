@@ -13,7 +13,7 @@ indication
         def construct(self):
             group = Group(
                 Dot(),
-                Typst('x')
+                TypstMath('x')
             ).show()
             group.points.scale(2).arrange(RIGHT, buff=2)
 
@@ -39,7 +39,7 @@ indication
 
     class IndicateExample(Timeline):
         def construct(self):
-            formula = Typst('f(x)')
+            formula = TypstMath('f(x)')
             dot = Dot()
 
             group = Group(formula, dot).show()
@@ -62,7 +62,7 @@ indication
         def construct(self):
             group = Group(
                 Dot(),
-                Typst('x')
+                TypstMath('x')
             ).show()
             group.points.scale(2).arrange(RIGHT, buff=2)
 
@@ -217,7 +217,7 @@ indication
         def construct(self):
             group = Group(
                 Dot(),
-                Typst('x')
+                TypstMath('x')
             ).show()
             group.points.scale(2).arrange(RIGHT, buff=2)
 

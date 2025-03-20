@@ -21,7 +21,7 @@ from janim.locale.i18n import get_local_strings
 from janim.logger import log
 from janim.typing import JAnimColor
 from janim.utils.config import Config
-from janim.utils.font import Font, get_font_info_by_attrs
+from janim.utils.font.database import Font, get_font_info_by_attrs
 from janim.utils.font.variant import Style, StyleName, Weight, WeightName
 from janim.utils.simple_functions import decode_utf8
 from janim.utils.space_ops import get_norm, normalize

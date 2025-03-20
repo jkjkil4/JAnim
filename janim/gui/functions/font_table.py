@@ -10,7 +10,7 @@ from PySide6.QtWidgets import (QHBoxLayout, QHeaderView, QLabel, QLineEdit,
 
 from janim.locale.i18n import get_local_strings
 from janim.utils.file_ops import get_janim_dir
-from janim.utils.font import get_database
+from janim.utils.font.database import get_database
 
 if TYPE_CHECKING:
     from fontTools.ttLib.tables._n_a_m_e import NameRecord

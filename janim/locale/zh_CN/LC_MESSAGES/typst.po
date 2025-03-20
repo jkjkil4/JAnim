@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-04 09:32+0800\n"
+"POT-Creation-Date: 2025-03-20 11:50+0800\n"
 "PO-Revision-Date: 2024-11-09 15:20+0800\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -17,26 +17,26 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Poedit 3.4.2\n"
 
-#: janim/items/svg/typst.py:89
+#: janim/items/svg/typst.py:90
 msgid ""
 "Could not compile typst file. Please install typst and add it to the "
 "environment variables."
 msgstr "无法编译 typst 文件，需要安装 typst 并将其添加到环境变量中"
 
-#: janim/items/svg/typst.py:97
+#: janim/items/svg/typst.py:98
 msgid "Typst compilation error. Please check the output for more information."
 msgstr "typst 编译错误，请检查输出信息"
 
-#: janim/items/svg/typst.py:273
+#: janim/items/svg/typst.py:274
 #, python-brace-format
 msgid "No matches found for {pattern}"
 msgstr "未找到与 {pattern} 匹配的结果"
 
-#: janim/items/svg/typst.py:280
+#: janim/items/svg/typst.py:281
 #, python-brace-format
 msgid "{ordinal} is out of range for {count} matches"
 msgstr "{ordinal} 超出范围，只有 {count} 个匹配项"
 
-#: janim/items/svg/typst.py:296
+#: janim/items/svg/typst.py:297
 msgid "ordinal {} is invalid"
 msgstr "序数索引 {} 无效"

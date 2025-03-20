@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  JAnim\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-04 09:11+0800\n"
+"POT-Creation-Date: 2025-03-20 11:45+0800\n"
 "PO-Revision-Date: 2024-06-08 23:53+0800\n"
 "Last-Translator: \n"
 "Language: en\n"
@@ -50,13 +50,11 @@ msgstr ""
 ":ref:`generate-po` section and proceed directly to :ref:`do-translate`."
 
 #: ../../source/development/contribute-to-doc-i18n.rst:23
-#: ../../source/development/contribute-to-doc-i18n.rst:123
 #, fuzzy
 msgid "我只知道在 Windows 和 MacOS 中，以下步骤有效"
 msgstr "I am only aware that the following steps work on Windows."
 
 #: ../../source/development/contribute-to-doc-i18n.rst:25
-#: ../../source/development/contribute-to-doc-i18n.rst:125
 msgid "欢迎测试在其它系统中的有效性或补充对应的方法"
 msgstr ""
 "You are welcome to test the effectiveness on other systems or suggest "
@@ -194,45 +192,63 @@ msgstr ""
 msgid "在本地构建文档"
 msgstr "Build the Documentation Locally"
 
-#: ../../source/development/contribute-to-doc-i18n.rst:129
+#: ../../source/development/contribute-to-doc-i18n.rst:123
 #, fuzzy
 msgid "别忘了安装必要的环境"
 msgstr "Install Necessary Environment"
 
-#: ../../source/development/contribute-to-doc-i18n.rst:136
-msgid "Windows 系统"
+#: ../../source/development/contribute-to-doc-i18n.rst:131
+msgid "Windows"
 msgstr ""
 
-#: ../../source/development/contribute-to-doc-i18n.rst:138
-#: ../../source/development/contribute-to-doc-i18n.rst:157
+#: ../../source/development/contribute-to-doc-i18n.rst:133
+#: ../../source/development/contribute-to-doc-i18n.rst:151
+#: ../../source/development/contribute-to-doc-i18n.rst:173
 msgid "首先确保你在 ``doc/`` 目录下："
 msgstr "Make sure you are in the ``doc/`` directory first:"
 
-#: ../../source/development/contribute-to-doc-i18n.rst:144
-#: ../../source/development/contribute-to-doc-i18n.rst:163
+#: ../../source/development/contribute-to-doc-i18n.rst:139
+#: ../../source/development/contribute-to-doc-i18n.rst:157
+#: ../../source/development/contribute-to-doc-i18n.rst:179
 msgid "举个例子，如果你想要在本地构建 zh_CN（简体中文）的文档，可以执行："
 msgstr ""
 "For example, if you want to build the documentation for zh_CN (Simplified"
 " Chinese) locally, you can execute:"
 
-#: ../../source/development/contribute-to-doc-i18n.rst:150
-#: ../../source/development/contribute-to-doc-i18n.rst:169
+#: ../../source/development/contribute-to-doc-i18n.rst:145
+#: ../../source/development/contribute-to-doc-i18n.rst:163
+#: ../../source/development/contribute-to-doc-i18n.rst:185
 msgid "这样就会在 ``build/html_i18n/zh_CN`` 下生成网页文件，点击其中的 ``index.html`` 即可打开"
 msgstr ""
 "This will generate web files under ``build/html_i18n/zh_CN``, and you can"
 " open ``index.html`` in it."
 
-#: ../../source/development/contribute-to-doc-i18n.rst:152
-#: ../../source/development/contribute-to-doc-i18n.rst:171
+#: ../../source/development/contribute-to-doc-i18n.rst:147
+#: ../../source/development/contribute-to-doc-i18n.rst:165
+#: ../../source/development/contribute-to-doc-i18n.rst:187
 msgid "其它的语言同理，把 ``zh_CN`` 改成对应的语言代码就好了"
 msgstr ""
 "For other languages, simply replace ``zh_CN`` with the corresponding "
 "language code."
 
-#: ../../source/development/contribute-to-doc-i18n.rst:155
-msgid "MacOS 系统"
+#: ../../source/development/contribute-to-doc-i18n.rst:149
+msgid "MacOS"
+msgstr ""
+
+#: ../../source/development/contribute-to-doc-i18n.rst:167
+msgid "Linux"
+msgstr ""
+
+#: ../../source/development/contribute-to-doc-i18n.rst:171
+msgid "以下方法未在 Linux 上测试，欢迎测试在 Linux 中的有效性或补充对应的方法"
 msgstr ""
 
 #~ msgid "TODO"
 #~ msgstr "TODO"
+
+#~ msgid "Windows 系统"
+#~ msgstr ""
+
+#~ msgid "MacOS 系统"
+#~ msgstr ""
 

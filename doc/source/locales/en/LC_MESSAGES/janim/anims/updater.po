@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  JAnim\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-04 09:09+0800\n"
+"POT-Creation-Date: 2025-03-20 11:45+0800\n"
 "PO-Revision-Date: 2024-07-03 18:52+0800\n"
 "Last-Translator: \n"
 "Language: en\n"
@@ -24,6 +24,7 @@ msgid "updater"
 msgstr "updater"
 
 #: janim.anims.updater.GroupUpdater.DataGroup:1
+#: janim.anims.updater.MethodUpdaterArgsBuilder:1
 #: janim.anims.updater.StepUpdaterParams:1 janim.anims.updater.UpdaterParams:1
 #: of
 msgid "基类：:py:class:`object`"
@@ -83,9 +84,26 @@ msgstr "See also: :class:`~.UpdaterExample`"
 msgid "以时间为参数对一组物件的数据进行修改"
 msgstr "Modifies the data of a group based on time parameters."
 
-#: janim.anims.updater.ItemUpdater:1 of
+#: janim.anims.updater.ItemUpdater:1 janim.anims.updater.MethodUpdater:1 of
 msgid "基类：:py:class:`~janim.anims.animation.Animation`"
 msgstr "基类：:py:class:`~janim.anims.animation.Animation`"
+
+#: janim.anims.updater.MethodUpdater:1 of
+msgid "依据物件的变换而创建的 updater"
+msgstr ""
+
+#: janim.anims.updater.MethodUpdater:3 of
+msgid "具体参考 :meth:`~.Item.update`"
+msgstr ""
+
+#: janim.anims.updater.MethodUpdater.ActionType:1 of
+#, fuzzy
+msgid "基类：:py:class:`~enum.Enum`"
+msgstr "基类：:py:class:`object`"
+
+#: janim.anims.updater.MethodUpdaterArgsBuilder:1 of
+msgid "使得 ``.anim`` 和 ``.anim(...)`` 后可以进行同样的操作"
+msgstr ""
 
 #: janim.anims.updater.ItemUpdater:1 of
 msgid "以时间为参数显示物件"

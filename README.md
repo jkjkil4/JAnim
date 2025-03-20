@@ -145,7 +145,7 @@ pip install -e .
 
 Additionally, there are other software dependencies to be installed:
 - To generate video files, install [ffmpeg](https://ffmpeg.org/).
-- To use `Typst`, install [typst](https://github.com/typst/typst).
+- To use Typst, install [Typst](https://github.com/typst/typst).
 
 
 ## Using JAnim

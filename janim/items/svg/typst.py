@@ -58,7 +58,7 @@ class TypstDoc(SVGItem):
     @staticmethod
     def compile_typst(text: str, shared_preamble: str, additional_preamble: str) -> str:
         '''
-        编译 ``Typst`` 文档
+        编译 Typst 文档
         '''
         typst_temp_dir = get_typst_temp_dir()
         md5 = hashlib.md5(text.encode())
@@ -128,8 +128,8 @@ class TypstDoc(SVGItem):
 
         .. code-block:: python
 
-            t1 = Typst('x^2 + y^2')
-            t2 = Typst('x + y')
+            t1 = TypstMath('x^2 + y^2')
+            t2 = TypstMath('x + y')
             t2.points.match_pattern(t1, '+')
 
         则会将 ``t2`` 进行变换使得二者的加号重合
@@ -381,7 +381,7 @@ class TypstMath(TypstText):
     '''
     Typst 公式
 
-    相当于 :class:`Typst` 传入 ``use_math_environment=True``
+    相当于 :class:`TypstText` 传入 ``use_math_environment=True``
     '''
     def __init__(
         self,

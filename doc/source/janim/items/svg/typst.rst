@@ -10,15 +10,15 @@ Typst 物件分为三种：
 
   这意味着，它会自动与画面的最上方对齐，以便从文档的开头开始查看
 
-- :class:`~.Typst` 表示 Typst 公式，传入的字符串会被包裹在 ``$ $`` 中作为公式进行编译
-
-  它会直接被放到画面的中间
-
 - :class:`~.TypstText` 表示 Typst 文字，传入的字符串不会被 ``$ $`` 所包裹
 
   它会直接被放到画面的中间
 
-也就是说，:class:`~.Typst` 和 :class:`~.TypstText` 的区别仅是是否被包裹在公式环境中，例如 ``Typst('x^2')`` 和 ``TypstText('$ x^2 $')`` 是等效的
+- :class:`~.TypstMath` 表示 Typst 公式，传入的字符串会被包裹在 ``$ $`` 中作为公式进行编译
+
+  它会直接被放到画面的中间
+
+也就是说，:class:`~.TypstText` 和 :class:`~.TypstMath` 的区别仅是是否被包裹在公式环境中，例如 ``TypstMath('x^2')`` 和 ``TypstText('$ x^2 $')`` 是等效的
 
 Typst 子物件索引
 ------------------------------
@@ -37,11 +37,11 @@ Typst 子物件索引
 
       也就是将那些为 True 的位置取出组成一个 :class:`~.Group`
 
-当你要索引 Typst 对象的子物件时，还可以使用字符索引的方式，比如说对于 :class:`~.Typst` 对象 ``t`` 而言
+当你要索引 Typst 对象的子物件时，还可以使用字符索引的方式，比如说对于 :class:`~.TypstMath` 对象 ``t`` 而言
 
 .. code-block:: python
 
-    t = Typst('cos^2 theta + sin^2 theta = 1')
+    t = TypstMath('cos^2 theta + sin^2 theta = 1')
 
 可以使用 ``t['cos']`` 得到 cos 对应的部分，这样你可以就可以使用类似于 ``t['cos'].digest_styles(color=BLUE)`` 的方式进行着色
 
@@ -73,9 +73,9 @@ Typst 子物件索引
 
 .. important::
 
-    上面以 :class:`~.Typst` 作为字符索引的例子，:class:`~.TypstDoc` 和 :class:`~.TypstText` 也是几乎一致的，但是会有略微区别
+    上面以 :class:`~.TypstMath` 作为字符索引的例子，:class:`~.TypstDoc` 和 :class:`~.TypstText` 也是几乎一致的，但是会有略微区别
 
-    我们知道，在这三种对象中，只有 :class:`~.Typst` 是在公式环境中的，所以进行它的字符索引时，作为索引的字符串也会在公式环境中解析
+    我们知道，在这三种对象中，只有 :class:`~.TypstMath` 是在公式环境中的，所以进行它的字符索引时，作为索引的字符串也会在公式环境中解析
 
     这意味着，对于 :class:`~.TypstDoc` 和 :class:`~.TypstText` 而言，作为索引的字符串不在公式环境中
 
@@ -83,7 +83,7 @@ Typst 子物件索引
 
     .. code-block:: python
 
-        t = Typst('cos theta')
+        t = TypstMath('cos theta')
         t['theta']
 
         t = TypstText('$ cos theta $')

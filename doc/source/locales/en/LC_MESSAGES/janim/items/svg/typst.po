@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: JAnim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-04 09:09+0800\n"
+"POT-Creation-Date: 2025-03-20 11:45+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -40,7 +40,7 @@ msgid "这意味着，它会自动与画面的最上方对齐，以便从文档�
 msgstr ""
 
 #: ../../source/janim/items/svg/typst.rst:13
-msgid ":class:`~.Typst` 表示 Typst 公式，传入的字符串会被包裹在 ``$ $`` 中作为公式进行编译"
+msgid ":class:`~.TypstText` 表示 Typst 文字，传入的字符串不会被 ``$ $`` 所包裹"
 msgstr ""
 
 #: ../../source/janim/items/svg/typst.rst:15
@@ -49,13 +49,13 @@ msgid "它会直接被放到画面的中间"
 msgstr ""
 
 #: ../../source/janim/items/svg/typst.rst:17
-msgid ":class:`~.TypstText` 表示 Typst 文字，传入的字符串不会被 ``$ $`` 所包裹"
+msgid ":class:`~.TypstMath` 表示 Typst 公式，传入的字符串会被包裹在 ``$ $`` 中作为公式进行编译"
 msgstr ""
 
 #: ../../source/janim/items/svg/typst.rst:21
 msgid ""
-"也就是说，:class:`~.Typst` 和 :class:`~.TypstText` 的区别仅是是否被包裹在公式环境中，例如 "
-"``Typst('x^2')`` 和 ``TypstText('$ x^2 $')`` 是等效的"
+"也就是说，:class:`~.TypstText` 和 :class:`~.TypstMath` 的区别仅是是否被包裹在公式环境中，例如 "
+"``TypstMath('x^2')`` 和 ``TypstText('$ x^2 $')`` 是等效的"
 msgstr ""
 
 #: ../../source/janim/items/svg/typst.rst:24
@@ -89,7 +89,7 @@ msgid "也就是将那些为 True 的位置取出组成一个 :class:`~.Group`"
 msgstr ""
 
 #: ../../source/janim/items/svg/typst.rst:40
-msgid "当你要索引 Typst 对象的子物件时，还可以使用字符索引的方式，比如说对于 :class:`~.Typst` 对象 ``t`` 而言"
+msgid "当你要索引 Typst 对象的子物件时，还可以使用字符索引的方式，比如说对于 :class:`~.TypstMath` 对象 ``t`` 而言"
 msgstr ""
 
 #: ../../source/janim/items/svg/typst.rst:46
@@ -150,12 +150,14 @@ msgstr ""
 
 #: ../../source/janim/items/svg/typst.rst:76
 msgid ""
-"上面以 :class:`~.Typst` 作为字符索引的例子，:class:`~.TypstDoc` 和 :class:`~.TypstText`"
-" 也是几乎一致的，但是会有略微区别"
+"上面以 :class:`~.TypstMath` 作为字符索引的例子，:class:`~.TypstDoc` 和 "
+":class:`~.TypstText` 也是几乎一致的，但是会有略微区别"
 msgstr ""
 
 #: ../../source/janim/items/svg/typst.rst:78
-msgid "我们知道，在这三种对象中，只有 :class:`~.Typst` 是在公式环境中的，所以进行它的字符索引时，作为索引的字符串也会在公式环境中解析"
+msgid ""
+"我们知道，在这三种对象中，只有 :class:`~.TypstMath` "
+"是在公式环境中的，所以进行它的字符索引时，作为索引的字符串也会在公式环境中解析"
 msgstr ""
 
 #: ../../source/janim/items/svg/typst.rst:80
@@ -179,7 +181,7 @@ msgid "Typst 文档"
 msgstr ""
 
 #: janim.items.svg.typst.TypstDoc.compile_typst:1 of
-msgid "编译 ``Typst`` 文档"
+msgid "编译 Typst 文档"
 msgstr ""
 
 #: janim.items.svg.typst.TypstDoc.typstify:1 of
@@ -307,7 +309,7 @@ msgid "Typst 公式"
 msgstr ""
 
 #: janim.items.svg.typst.TypstMath:3 of
-msgid "相当于 :class:`Typst` 传入 ``use_math_environment=True``"
+msgid "相当于 :class:`TypstText` 传入 ``use_math_environment=True``"
 msgstr ""
 
 #: janim.items.svg.typst.Typst:1 of
@@ -321,5 +323,33 @@ msgstr ""
 #~ msgstr ""
 
 #~ msgid "相当于 :class:`Typst` 传入 ``use_math_environment=False``"
+#~ msgstr ""
+
+#~ msgid ":class:`~.Typst` 表示 Typst 公式，传入的字符串会被包裹在 ``$ $`` 中作为公式进行编译"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "也就是说，:class:`~.Typst` 和 :class:`~.TypstText` "
+#~ "的区别仅是是否被包裹在公式环境中，例如 ``Typst('x^2')`` 和 "
+#~ "``TypstText('$ x^2 $')`` 是等效的"
+#~ msgstr ""
+
+#~ msgid "当你要索引 Typst 对象的子物件时，还可以使用字符索引的方式，比如说对于 :class:`~.Typst` 对象 ``t`` 而言"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "上面以 :class:`~.Typst` 作为字符索引的例子，:class:`~.TypstDoc` 和"
+#~ " :class:`~.TypstText` 也是几乎一致的，但是会有略微区别"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "我们知道，在这三种对象中，只有 :class:`~.Typst` "
+#~ "是在公式环境中的，所以进行它的字符索引时，作为索引的字符串也会在公式环境中解析"
+#~ msgstr ""
+
+#~ msgid "编译 ``Typst`` 文档"
+#~ msgstr ""
+
+#~ msgid "相当于 :class:`Typst` 传入 ``use_math_environment=True``"
 #~ msgstr ""
 

@@ -75,10 +75,10 @@ $ cal(A) :=
 #let x = 5
 $ #x < 17 $
 
-The difference between #text(green)[`TypstDoc`] and #text(green)[`Typst`]:
+The difference between #text(green)[`TypstDoc`] and #text(green)[`TypstMath`]:
 - #text(green)[`TypstDoc`] automatically align to the top of view,
   so you can see the document from the start.
-- The content of #text(green)[`Typst`] is wrapped by math environment
+- The content of #text(green)[`TypstMath`] is wrapped by math environment
   and move to the center by default.
 '''
 

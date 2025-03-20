@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  JAnim\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-04 09:09+0800\n"
+"POT-Creation-Date: 2025-03-20 11:45+0800\n"
 "PO-Revision-Date: 2024-03-14 15:46+0800\n"
 "Last-Translator: \n"
 "Language: en\n"
@@ -111,8 +111,16 @@ msgstr ""
 "Calls ``func`` when the progress reaches ``at``, can pass ``*args`` and "
 "``**kwargs``"
 
+#: janim.anims.timeline.Timeline.schedule_and_detect_changes:1 of
+msgid "与 :meth:`schedule` 类似，但是在调用 ``func`` 后会记录变化的物件的状态"
+msgstr ""
+
 #: janim.anims.timeline.Timeline.timeout:1 of
 msgid "相当于 `schedule(self.current_time + delay, func, *args, **kwargs)`"
+msgstr ""
+
+#: janim.anims.timeline.Timeline.timeout_and_detect_changes:1 of
+msgid "与 :meth:`timeout` 类似，但是在调用 ``func`` 后会记录变化的物件的状态"
 msgstr ""
 
 #: janim.anims.timeline.Timeline.forward:1 of
@@ -327,10 +335,27 @@ msgstr ""
 msgid "渲染所有可见物件"
 msgstr ""
 
+#: janim.anims.timeline.BuiltTimeline.to_item:1 of
+msgid "使用该方法可以在一个 Timeline 中插入另一个 Timeline"
+msgstr ""
+
+#: janim.anims.timeline.BuiltTimeline.to_item:3 of
+msgid "例如："
+msgstr ""
+
+#: janim.anims.timeline.BuiltTimeline.to_item:33 of
+msgid "这个例子中，在 ``Test`` 中插入了 ``Sub1`` 和 ``Sub2``"
+msgstr ""
+
 #: janim.anims.timeline.TimelineItem:1 of
 #, fuzzy
 msgid "基类：:py:class:`~janim.items.item.Item`"
 msgstr "基类：:py:class:`~janim.anims.timeline.Timeline`"
+
+#: janim.anims.timeline.TimelineItem:1 of
+#, fuzzy
+msgid "详见 :meth:`BuiltTimeline.to_item`"
+msgstr "See :meth:`~.Timeline.schedule`"
 
 #: janim.anims.timeline.TimelineItem.TIRenderer:1 of
 #, fuzzy

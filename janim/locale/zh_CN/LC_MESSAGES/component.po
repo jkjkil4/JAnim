@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-04 09:32+0800\n"
+"POT-Creation-Date: 2025-03-20 11:50+0800\n"
 "PO-Revision-Date: 2024-06-05 17:33+0800\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Poedit 3.4.2\n"
 
-#: janim/components/component.py:31
+#: janim/components/component.py:33
 #, python-brace-format
 msgid ""
 "Every subclass of Component must inherit and implement the \"{key}\" method, "
@@ -25,12 +25,12 @@ msgid ""
 msgstr ""
 "Component 的每一个子类都必须继承并实现 \"{key}\" 方法，而 \"{name}\" 没有"
 
-#: janim/components/component.py:242
+#: janim/components/component.py:245
 msgid ""
 "CmptGroup must be defined within the same class as the content passed in"
 msgstr "CmptGroup 必须要与传入的内容在同一个类的定义中"
 
-#: janim/components/component.py:265
+#: janim/components/component.py:268
 #, python-brace-format
 msgid "None of the components ({cmpt_str}) have a method named {name}"
 msgstr "({cmpt_str}) 中没有组件有叫作 {name} 的方法"

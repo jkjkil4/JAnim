@@ -403,7 +403,7 @@ class FocusOnExample(Timeline):
     def construct(self) -> None:
         group = Group(
             Dot(),
-            Typst('x')
+            TypstMath('x')
         ).show()
         group.points.scale(2).arrange(RIGHT, buff=2)
 
@@ -422,7 +422,7 @@ class FocusOnExample(Timeline):
 
 class IndicateExample(Timeline):
     def construct(self) -> None:
-        formula = Typst('f(x)')
+        formula = TypstMath('f(x)')
         dot = Dot()
 
         group = Group(formula, dot).show()
@@ -438,7 +438,7 @@ class CircleIndicateExample(Timeline):
     def construct(self):
         group = Group(
             Dot(),
-            Typst('x')
+            TypstMath('x')
         ).show()
         group.points.scale(2).arrange(RIGHT, buff=2)
 
@@ -541,7 +541,7 @@ class FlashExample(Timeline):
     def construct(self):
         group = Group(
             Dot(),
-            Typst('x')
+            TypstMath('x')
         ).show()
         group.points.scale(2).arrange(RIGHT, buff=2)
 
@@ -702,8 +702,8 @@ class TransformExample(Timeline):
 
 class TransformInSegmentsExample(Timeline):
     def construct(self):
-        typ1 = Typst('sin x + cos x')
-        typ2 = Typst('cos y + sin y')
+        typ1 = TypstMath('sin x + cos x')
+        typ2 = TypstMath('cos y + sin y')
         typ2.match_pattern(typ1, '+')
         Group(typ1, typ2).points.scale(3)
 

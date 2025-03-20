@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: JAnim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-04 09:09+0800\n"
+"POT-Creation-Date: 2025-03-20 11:45+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -110,7 +110,9 @@ msgid "该方法只能读取自定义的着色器，读取 janim 内置着色器
 msgstr ""
 
 #: janim.render.base.get_compute_shader:1 of
-msgid "载入指定文件的 ComputeShader， 例如 `render/shaders/map_points.comp.glsl` 就会载入这个文件"
+msgid ""
+"载入相对于 janim 目录的指定文件的 ComputeShader， 例如 "
+"`render/shaders/map_points.comp.glsl` 就会载入 janim 文件夹中的这个文件"
 msgstr ""
 
 #: janim.render.base.get_compute_shader:4 of
@@ -136,5 +138,10 @@ msgstr ""
 #~ msgstr ""
 
 #~ msgid "重写 :meth:`init` 和 :meth:`render` 以实现具体功能"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "载入指定文件的 ComputeShader， 例如 "
+#~ "`render/shaders/map_points.comp.glsl` 就会载入这个文件"
 #~ msgstr ""
 
