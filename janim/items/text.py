@@ -21,8 +21,8 @@ from janim.locale.i18n import get_local_strings
 from janim.logger import log
 from janim.typing import JAnimColor
 from janim.utils.config import Config
-from janim.utils.font import (Font, Style, StyleName, Weight, WeightName,
-                              get_font_info_by_attrs)
+from janim.utils.font import Font, get_font_info_by_attrs
+from janim.utils.font.variant import Style, StyleName, Weight, WeightName
 from janim.utils.simple_functions import decode_utf8
 from janim.utils.space_ops import get_norm, normalize
 
@@ -304,14 +304,19 @@ class Text(VItem, Group[TextLine]):
     def __init__(
         self,
         text: str,
+
         font: str | Iterable[str] = [],
         font_size: float = DEFAULT_FONT_SIZE,
         weight: int | Weight | WeightName = 400,   # = 'regular'
         style: Style | StyleName = Style.Normal,
+        force_full_name: bool = False,      # 一般情况下用不到，只是为了在 family-name 调用不符合预期时，使用该参数强制作为 full-name
+
         format: Format = Format.PlainText,
         line_kwargs: dict = {},
+
         stroke_alpha: float = 0,
         fill_alpha: float = 1,
+
         center: bool = True,
         **kwargs
     ) -> None:
@@ -328,7 +333,7 @@ class Text(VItem, Group[TextLine]):
             font_names.extend(cfg_font)
 
         fonts = [
-            Font.get_by_info(get_font_info_by_attrs(name, weight, style))
+            Font.get_by_info(get_font_info_by_attrs(name, weight, style, force_full_name))
             for name in font_names
         ]
 

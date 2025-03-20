@@ -2,8 +2,7 @@ from __future__ import annotations
 
 from collections import defaultdict
 from dataclasses import dataclass
-from enum import StrEnum
-from typing import TYPE_CHECKING, Callable, Literal
+from typing import TYPE_CHECKING, Callable
 
 import freetype as FT
 import numpy as np
@@ -14,49 +13,15 @@ from janim.exception import FontNotFoundError
 from janim.locale.i18n import get_local_strings
 from janim.logger import log
 from janim.utils.bezier import PathBuilder
+from janim.utils.font.exception import EXCEPTION_MAP
+from janim.utils.font.variant import (WEIGHT_MAP, Style, StyleName, Weight,
+                                      WeightName)
 
 if TYPE_CHECKING:
     from fontTools.ttLib.tables._n_a_m_e import table__n_a_m_e
     from fontTools.ttLib.tables.O_S_2f_2 import table_O_S_2f_2
 
 _ = get_local_strings('font')
-
-
-class Weight(StrEnum):
-    Thin = 'thin'
-    ExtraLight = 'extralight'
-    Light = 'light'
-    Regular = 'regular'
-    Normal = 'normal'
-    Medium = 'medium'
-    SemiBold = 'semibold'
-    Bold = 'bold'
-    ExtraBold = 'extrabold'
-    Black = 'black'
-
-
-class Style(StrEnum):
-    Normal = 'normal'
-    Italic = 'italic'
-    Oblique = 'oblique'
-
-
-type WeightName = Literal['thin', 'extralight', 'light', 'regular', 'normal',
-                          'medium', 'semibold', 'bold', 'extrabold', 'black']
-type StyleName = Literal['normal', 'italic', 'oblique']
-
-weight_mapping = {
-    Weight.Thin: 100,
-    Weight.ExtraLight: 200,
-    Weight.Light: 300,
-    Weight.Regular: 400,
-    Weight.Normal: 400,
-    Weight.Medium: 500,
-    Weight.SemiBold: 600,
-    Weight.Bold: 700,
-    Weight.ExtraBold: 800,
-    Weight.Black: 900,
-}
 
 
 @dataclass
@@ -77,7 +42,7 @@ class FontFamily:
             return self.infos[0]
 
         if not isinstance(weight, int):
-            weight = weight_mapping[weight]
+            weight = WEIGHT_MAP[weight]
 
         for i, info in enumerate(self.infos):
             key = (
@@ -108,6 +73,9 @@ class FontInfo:
         self.name: table__n_a_m_e = font['name']
         self.os2: table_O_S_2f_2 = font.get('OS/2', None)
 
+        exc_f = EXCEPTION_MAP.get(self.postscript_name, None)
+        self.exception = None if exc_f is None else exc_f()
+
     @property
     def family_name(self) -> str:
         return self.name.getBestFamilyName()
@@ -117,13 +85,21 @@ class FontInfo:
         return self.name.getBestFullName()
 
     @property
+    def postscript_name(self) -> str:
+        return self.name.getDebugName(6)
+
+    @property
     def weight(self) -> int:
+        if self.exception is not None and self.exception.weight is not None:
+            return self.exception.weight
         if self.os2 is None:
             return 400
         return self.os2.usWeightClass
 
     @property
     def style(self) -> Style:
+        if self.exception is not None and self.exception.style is not None:
+            return self.exception.style
         if self.os2 is None:
             return Style.Normal
 
@@ -168,13 +144,19 @@ def get_database() -> FontDatabase:
     return _database
 
 
-def get_font_info_by_attrs(name: str, weight: int | Weight | WeightName, style: Style | StyleName) -> FontInfo:
+def get_font_info_by_attrs(
+    name: str,
+    weight: int | Weight | WeightName,
+    style: Style | StyleName,
+    force_full_name: bool = False
+) -> FontInfo:
     db = get_database()
 
     # e.g. ('LXGW WenKai Lite', 'medium', 'normal')
-    family = db.family_by_name.get(name, None)
-    if family is not None:
-        return family.find_best_variant(weight, style)
+    if not force_full_name:
+        family = db.family_by_name.get(name, None)
+        if family is not None:
+            return family.find_best_variant(weight, style)
 
     # e.g. 'LXGW WenKai Lite Medium'
     info = db.font_by_full_name.get(name, None)
