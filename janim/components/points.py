@@ -1094,6 +1094,8 @@ class Cmpt_Points[ItemT](Component[ItemT]):
             box = cmpt.self_box if item_root_only else cmpt.box
             target = box.get(aligned_edge + direction)
 
+        direction = np.asarray(direction)
+
         point_to_align = (src.self_box if root_only else src.box).get(aligned_edge - direction)
         return (target - point_to_align + buff * direction) * coor_mask
 
