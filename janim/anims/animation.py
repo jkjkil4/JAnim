@@ -247,7 +247,7 @@ class TimeRange:
         '''
         - 当 ``end`` 不是 ``FOREVER`` 时，此时返回 ``end``
 
-        - 当 ``end`` 是 ``FOREVER`` 时，此时返回 ``0``
+        - 当 ``end`` 是 ``FOREVER`` 时，此时返回 ``at``
 
         （这用于 :class:`~.AnimGroup` 对 ``end=FOREVER`` 的子动画的处理，也就是把这种子动画当成 ``end=at`` 来计算时间）
         '''

@@ -111,14 +111,17 @@ class TimelineView(QWidget):
         '''
         构建动画区段信息，以便操作与绘制
         '''
-        def make_label_from_anim(anim: Animation, header: bool = True) -> Label:
+        def make_label_from_anim(anim: Animation, header: bool = True) -> Label | None:
             name = anim.name or anim.__class__.__name__
             color = QColor(*anim.label_color)
             if isinstance(anim, AnimGroup):
                 labels = [
-                    make_label_from_anim(subanim)
+                    label
                     for subanim in anim.anims
+                    if (label := make_label_from_anim(subanim)) is not None
                 ]
+                if not labels:
+                    return None
                 label = LabelGroup(
                     name,
                     TimeRange(      # 这里不直接使用 anim.t_range 是为了处理 FOREVER 的子动画
@@ -149,11 +152,14 @@ class TimelineView(QWidget):
             '',
             TimeRange(0, self.built.duration),
             *[
-                make_label_from_anim(
-                    anim,
-                    len(anim.anims) != 1 or anim.rate_func is not linear
-                )
+                label
                 for anim in self.built.timeline.anim_groups
+                if (
+                    label := make_label_from_anim(
+                        anim,
+                        len(anim.anims) != 1 or anim.rate_func is not linear
+                    )
+                ) is not None
             ],
             collapse=False,
             header=False,
