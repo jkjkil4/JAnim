@@ -21,6 +21,7 @@ if TYPE_CHECKING:
 _ = get_local_strings('base')
 
 FIX_IN_FRAME_KEY = 'JA_FIX_IN_FRAME'
+FRAME_BUFFER_BINDING = 15
 
 
 def create_context(**kwargs) -> mgl.Context:
@@ -60,7 +61,7 @@ def create_framebuffer(ctx: mgl.Context, pw: int, ph: int) -> mgl.Framebuffer:
         )
     )
 
-    if on_qt and prev is _qt_glwidget.defaultFramebufferObject():
+    if on_qt and prev == _qt_glwidget.defaultFramebufferObject():
         # 如果这里不调用 glBindFramebuffer，PyOpenGL 会出现 invalid framebuffer operation 的报错
         # 这里通过 qt 调用 OpenGL 函数，把 framebuffer bind 回先前的就好了
         # 推测可能是因为 moderngl、PyOpenGL、QtOpenGL 的一些状态没有同步
@@ -80,16 +81,19 @@ def framebuffer_context(fbo: mgl.Framebuffer):
 
     prev_fbo = fbo.ctx.fbo
     fbo.use()
+    fbo.color_attachments[0].use(FRAME_BUFFER_BINDING)
     try:
         yield
     finally:
         prev_fbo.use()
 
-        if on_qt and prev is _qt_glwidget.defaultFramebufferObject():
+        if on_qt and prev == _qt_glwidget.defaultFramebufferObject():
             # 这里的处理，请参考 create_framebuffer 中对应部分的注释
             _qt_glwidget.qfuncs.glBindFramebuffer(0x8D40, prev)     # GL_FRAMEBUFFER
             _qt_glwidget.qfuncs.glViewport(0, 0, _qt_glwidget.width(), _qt_glwidget.height())
             _qt_glwidget.update_clear_color()
+        else:
+            prev_fbo.color_attachments[0].use(FRAME_BUFFER_BINDING)
 
 
 class Renderer:
@@ -131,15 +135,39 @@ type UniformPair = tuple[str, Any]
 
 global_uniform_map: dict[mgl.Context, list[UniformPair]] = {}
 program_map: defaultdict[mgl.Context, dict[str, mgl.Program | mgl.ComputeShader]] = defaultdict(dict)
+additional_programs: defaultdict[mgl.Context, list[mgl.Program]] = defaultdict(list)
 
 
-def set_global_uniforms(ctx: mgl.Context, *uniforms: UniformPair) -> None:
+def programs(ctx: mgl.Context):
+    yield from program_map[ctx].values()
+    yield from additional_programs[ctx]
+
+
+def set_global_uniforms(ctx: mgl.Context, uniforms: list[UniformPair]) -> None:
     '''
     设置在每个着色器中都可以访问到的 ``uniforms`` （需要在着色器中声明后使用）
     '''
     global_uniform_map[ctx] = uniforms
-    for prog in program_map[ctx].values():
+    for prog in programs(ctx):
         apply_global_uniforms(uniforms, prog)
+
+
+def update_global_uniform(ctx: mgl.Context, uniform: UniformPair) -> None:
+    '''
+    更新指定的一个 uniform
+    '''
+    u_key, u_value = uniform
+    uniforms = global_uniform_map[ctx]
+    for i, (key, _) in enumerate(uniforms):
+        if key == u_key:
+            uniforms[i] = (key, u_value)
+            break
+    else:
+        uniforms.append(uniform)
+
+    for prog in programs(ctx):
+        if u_key in prog._members:
+            prog[u_key] = u_value
 
 
 def apply_global_uniforms(uniforms: list[UniformPair], prog: mgl.Program) -> None:
@@ -147,6 +175,51 @@ def apply_global_uniforms(uniforms: list[UniformPair], prog: mgl.Program) -> Non
     for key, value in uniforms:
         if key in prog._members:
             prog[key] = value
+
+
+@contextmanager
+def global_uniforms_context(ctx: mgl.Context, uniforms: list[UniformPair]):
+    prev = global_uniform_map.get(ctx, None)
+    set_global_uniforms(ctx, uniforms)
+    try:
+        yield
+    finally:
+        if prev is None:
+            del global_uniform_map[ctx]
+        else:
+            set_global_uniforms(ctx, prev)
+
+
+injection_ja_finish_up = '''if (!JA_BLENDING) {
+        vec2 coord = gl_FragCoord.xy / vec2(textureSize(JA_FRAMEBUFFER, 0));
+        vec4 back = texture(JA_FRAMEBUFFER, coord);
+        float a = f_color.a + back.a * (1 - f_color.a);
+        f_color = clamp(
+            vec4(
+                (f_color.rgb * f_color.a + back.rgb * back.a * (1 - f_color.a)) / a,
+                a
+            ),
+            0.0, 1.0
+        );
+    }
+'''
+
+
+shader_injection = {
+    'fragment_shader': [
+        ('#[JA_FINISH_UP]', injection_ja_finish_up)
+    ]
+}
+
+
+def inject_shader(shader_type: str, shader: str) -> str:
+    injection = shader_injection.get(shader_type, None)
+    if injection is None:
+        return shader
+
+    for key, content in injection:
+        shader = shader.replace(key, content)
+    return shader
 
 
 def get_program(filepath: str) -> mgl.Program:
@@ -175,7 +248,7 @@ def get_program(filepath: str) -> mgl.Program:
     shader_path = os.path.join(get_janim_dir(), filepath)
 
     prog = ctx.program(**{
-        shader_type: readall(shader_path + suffix)
+        shader_type: inject_shader(shader_type, readall(shader_path + suffix))
         for shader_type, suffix in shader_keys
         if os.path.exists(shader_path + suffix)
     })
@@ -212,7 +285,7 @@ def get_custom_program(filepath: str) -> mgl.Program:
         return prog
 
     prog = ctx.program(**{
-        shader_type: readall(_shader_path)
+        shader_type: inject_shader(shader_type, readall(_shader_path))
         for shader_type, suffix in shader_keys
         if (_shader_path := find_file_or_none(filepath + suffix)) is not None
     })
@@ -223,6 +296,14 @@ def get_custom_program(filepath: str) -> mgl.Program:
 
     ctx_program_map[filepath] = prog
     return prog
+
+
+def register_additional_program(prog: mgl.Program) -> None:
+    ctx = prog.ctx
+    global_uniforms = global_uniform_map.get(ctx, None)
+    if global_uniforms is not None:
+        apply_global_uniforms(global_uniforms, prog)
+    additional_programs[ctx].append(prog)
 
 
 def get_compute_shader(filepath: str) -> mgl.ComputeShader:
@@ -249,6 +330,29 @@ def get_compute_shader(filepath: str) -> mgl.ComputeShader:
 
     ctx_program_map[filepath] = comp
     return comp
+
+
+_blending: bool = True
+
+
+@contextmanager
+def blend_context(ctx: mgl.Context, on: bool):
+    if on == _blending:
+        yield
+        return
+
+    switch_blending(ctx)
+    try:
+        yield
+    finally:
+        switch_blending(ctx)
+
+
+def switch_blending(ctx: mgl.Context):
+    global _blending
+    _blending = not _blending
+    (ctx.enable if _blending else ctx.disable)(mgl.BLEND)
+    update_global_uniform(ctx, ('JA_BLENDING', _blending))
 
 
 def check_pyopengl_if_required(ctx: mgl.Context) -> None:

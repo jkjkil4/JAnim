@@ -9,6 +9,10 @@ out vec4 f_color;
 
 uniform float JA_ANTI_ALIAS_RADIUS;
 
+// used by JA_FINISH_UP
+uniform bool JA_BLENDING;
+uniform sampler2D JA_FRAMEBUFFER;
+
 void main()
 {
     vec2 diff = g_point - g_center;
@@ -18,4 +22,6 @@ void main()
         discard;
     f_color = g_color;
     f_color.a *= smoothstep(1, -1, signed_dist / JA_ANTI_ALIAS_RADIUS);
+
+    #[JA_FINISH_UP]
 }

@@ -36,8 +36,9 @@ from janim.items.svg.typst import TypstText
 from janim.items.text import Text
 from janim.locale.i18n import get_local_strings
 from janim.logger import log
-from janim.render.base import (RenderData, Renderer, create_context,
-                               create_framebuffer, set_global_uniforms)
+from janim.render.base import (FRAME_BUFFER_BINDING, RenderData, Renderer,
+                               blend_context, create_context,
+                               create_framebuffer, global_uniforms_context)
 from janim.typing import JAnimColor, SupportsAnim
 from janim.utils.config import Config, ConfigGetter, config_ctx_var
 from janim.utils.data import ContextSetter
@@ -930,17 +931,20 @@ class BuiltTimeline:
                 camera_info = camera.points.info
                 anti_alias_radius = self.cfg.anti_alias_width / 2 * camera_info.scaled_factor
 
-                set_global_uniforms(
-                    ctx,
+                global_uniforms = [
+                    ('JA_BLENDING', True),
+                    ('JA_FRAMEBUFFER', FRAME_BUFFER_BINDING),
                     ('JA_CAMERA_SCALED_FACTOR', camera_info.scaled_factor),
                     ('JA_VIEW_MATRIX', camera_info.view_matrix.T.flatten()),
                     ('JA_FIXED_DIST_FROM_PLANE', camera_info.fixed_distance_from_plane),
                     ('JA_PROJ_MATRIX', camera_info.proj_matrix.T.flatten()),
                     ('JA_FRAME_RADIUS', camera_info.frame_radius),
                     ('JA_ANTI_ALIAS_RADIUS', anti_alias_radius)
-                )
+                ]
 
-                with ContextSetter(Renderer.data_ctx, RenderData(ctx=ctx,
+                with global_uniforms_context(ctx, global_uniforms), \
+                     blend_context(ctx, True), \
+                     ContextSetter(Renderer.data_ctx, RenderData(ctx=ctx,
                                                                  camera_info=camera_info,
                                                                  anti_alias_radius=anti_alias_radius)):
                     render_datas: list[tuple[Timeline.ItemAppearance, Item]] = []

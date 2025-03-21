@@ -15,6 +15,10 @@ uniform float glow_size;
 
 const float INFINITY = uintBitsToFloat(0x7F800000);
 
+// used by JA_FINISH_UP
+uniform bool JA_BLENDING;
+uniform sampler2D JA_FRAMEBUFFER;
+
 layout(std140, binding = 0) buffer MappedPoints
 {
     vec4 points[];  // vec4(x, y, isclosed, 0)
@@ -280,4 +284,6 @@ void main()
     f_color.a = max(line_ratio, f_color.a);
 
     #endif
+
+    #[JA_FINISH_UP]
 }

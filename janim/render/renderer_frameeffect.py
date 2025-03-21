@@ -6,9 +6,9 @@ import moderngl as mgl
 import numpy as np
 
 from janim.anims.animation import Animation
-from janim.render.base import (Renderer, apply_global_uniforms,
-                               create_framebuffer, framebuffer_context,
-                               global_uniform_map)
+from janim.render.base import (Renderer, blend_context, create_framebuffer,
+                               framebuffer_context, inject_shader,
+                               register_additional_program)
 from janim.utils.config import Config
 
 if TYPE_CHECKING:
@@ -38,8 +38,9 @@ class FrameEffectRenderer(Renderer):
         self.ctx = Renderer.data_ctx.get().ctx
         self.prog = self.ctx.program(
             vertex_shader=vertex_shader,
-            fragment_shader=fragment_shader
+            fragment_shader=inject_shader('fragment_shader', fragment_shader)
         )
+        register_additional_program(self.prog)
 
         self.u_fbo = self.prog.get('fbo', None)
         if self.u_fbo is not None:
@@ -67,10 +68,13 @@ class FrameEffectRenderer(Renderer):
             self.initialized = True
 
         if self.u_fbo is not None:
+            import OpenGL.GL as gl
+
             t = Animation.global_t_ctx.get()
 
-            with framebuffer_context(self.fbo):
-                self.fbo.clear(*item.clear_color)
+            with blend_context(self.ctx, False), framebuffer_context(self.fbo):
+                self.fbo.clear()
+                gl.glFlush()
                 render_datas = [
                     (appr, appr.stack.compute(t, True))
                     for appr in item.apprs
@@ -79,11 +83,8 @@ class FrameEffectRenderer(Renderer):
                 render_datas.sort(key=lambda x: x[1].depth, reverse=True)
                 for appr, data in render_datas:
                     appr.render(data)
+                    gl.glFlush()
 
             self.fbo.color_attachments[0].use(0)
-
-        global_uniforms = global_uniform_map.get(self.ctx, None)
-        if global_uniforms is not None:
-            apply_global_uniforms(global_uniforms, self.prog)
 
         self.vao.render(mgl.TRIANGLE_STRIP)
