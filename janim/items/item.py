@@ -5,7 +5,8 @@ import inspect
 import itertools as it
 import types
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Any, Callable, Iterable, Self, overload
+from typing import (TYPE_CHECKING, Any, Callable, Iterable, Self,
+                    SupportsIndex, overload)
 
 from janim.components.component import CmptInfo, Component, _CmptGroup
 from janim.components.depth import Cmpt_Depth
@@ -312,7 +313,7 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
             key = list(key)
 
         # example: item[0]
-        if isinstance(key, int):
+        if isinstance(key, SupportsIndex):
             return self.children[key]
 
         from janim.items.points import Group
@@ -325,7 +326,7 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
             case list() if all(isinstance(x, bool) for x in key):
                 return Group(*[sub for sub, flag in zip(self, key) if flag])
             # example: item[0, 3, 4]
-            case list() if all(isinstance(x, int) for x in key):
+            case list() if all(isinstance(x, SupportsIndex) for x in key):
                 return Group(*[self.children[x] for x in key])
 
         raise GetItemError(_('Unsupported key: {}').format(key))
