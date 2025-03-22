@@ -3,15 +3,12 @@ from typing import Self
 from janim.anims.timeline import Timeline
 from janim.components.component import CmptInfo
 from janim.components.simple import Cmpt_List
-from janim.exception import EXITCODE_PYOPENGL_NOT_FOUND, ExitException
 from janim.items.item import Item
 from janim.locale.i18n import get_local_strings
 from janim.logger import log
 from janim.render.renderer_frameeffect import FrameEffectRenderer
 
 _ = get_local_strings('frame_effect')
-
-_frame_effect_warning_displayed: bool = False
 
 
 class FrameEffect(Item):
@@ -23,27 +20,18 @@ class FrameEffect(Item):
         self,
         *items: Item,
         fragment_shader: str,
+        cache_key: str | None = None,
         root_only: bool = False,
         **kwargs
     ):
-        try:
-            import OpenGL.GL as gl  # noqa: F401
-        except ImportError:
-            print(_('An additional module is required to use `FrameEffect`, '
-                    'but it is not installed'))
-            print(_('You can install it using "pip install PyOpenGL" '
-                    'and make sure you install it in the correct Python version'))
-            raise ExitException(EXITCODE_PYOPENGL_NOT_FOUND)
-
-        global _frame_effect_warning_displayed
-        if not _frame_effect_warning_displayed:
-            log.warning('FrameEffect is incomplete and may not work as expected')
-            _frame_effect_warning_displayed = True
-
         super().__init__(**kwargs)
         self.fragment_shader = fragment_shader
+        self.cache_key = cache_key
 
         self.apply(*items, root_only=root_only)
+
+    def uniforms(self) -> dict:
+        return {}
 
     def add(self, *objs, insert=False) -> Self:
         log.warning(

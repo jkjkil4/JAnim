@@ -10,12 +10,14 @@ import types
 from abc import ABCMeta, abstractmethod
 from bisect import bisect, insort
 from collections import defaultdict
+from contextlib import nullcontext
 from contextvars import ContextVar
 from dataclasses import dataclass
 from typing import Callable, Iterable, Self, overload
 
 import moderngl as mgl
 import numpy as np
+import OpenGL.GL as gl
 from PIL import Image
 
 from janim.anims.anim_stack import AnimStack
@@ -36,9 +38,10 @@ from janim.items.svg.typst import TypstText
 from janim.items.text import Text
 from janim.locale.i18n import get_local_strings
 from janim.logger import log
-from janim.render.base import (FRAME_BUFFER_BINDING, RenderData, Renderer,
-                               blend_context, create_context,
-                               create_framebuffer, global_uniforms_context)
+from janim.render.base import RenderData, Renderer, create_context
+from janim.render.framebuffer import (FRAME_BUFFER_BINDING, blend_context,
+                                      create_framebuffer, uniforms)
+from janim.render.uniform import get_uniforms_context_var
 from janim.typing import JAnimColor, SupportsAnim
 from janim.utils.config import Config, ConfigGetter, config_ctx_var
 from janim.utils.data import ContextSetter
@@ -913,10 +916,12 @@ class BuiltTimeline:
     def current_camera_info(self) -> CameraInfo:
         return self.timeline.compute_item(self.timeline.camera, self._time, True).points.info
 
-    def render_all(self, ctx: mgl.Context, global_t: float) -> None:
+    def render_all(self, ctx: mgl.Context, global_t: float, *, blend_on: bool = True) -> None:
         '''
         渲染所有可见物件
         '''
+        blending = not blend_on and not get_uniforms_context_var(ctx).get().get('JA_BLENDING')
+
         timeline = self.timeline
         global_t = timeline.time_aligner.align_t_for_render(global_t)
         # 使得最后一帧采用略提早一点点的时间渲染，使得一些结束在结尾的动画不突变
@@ -931,19 +936,15 @@ class BuiltTimeline:
                 camera_info = camera.points.info
                 anti_alias_radius = self.cfg.anti_alias_width / 2 * camera_info.scaled_factor
 
-                global_uniforms = [
-                    ('JA_BLENDING', True),
-                    ('JA_FRAMEBUFFER', FRAME_BUFFER_BINDING),
-                    ('JA_CAMERA_SCALED_FACTOR', camera_info.scaled_factor),
-                    ('JA_VIEW_MATRIX', camera_info.view_matrix.T.flatten()),
-                    ('JA_FIXED_DIST_FROM_PLANE', camera_info.fixed_distance_from_plane),
-                    ('JA_PROJ_MATRIX', camera_info.proj_matrix.T.flatten()),
-                    ('JA_FRAME_RADIUS', camera_info.frame_radius),
-                    ('JA_ANTI_ALIAS_RADIUS', anti_alias_radius)
-                ]
-
-                with global_uniforms_context(ctx, global_uniforms), \
-                     blend_context(ctx, True), \
+                with blend_context(ctx, True) if blend_on else nullcontext(), \
+                     uniforms(ctx,
+                              JA_FRAMEBUFFER=FRAME_BUFFER_BINDING,
+                              JA_CAMERA_SCALED_FACTOR=camera_info.scaled_factor,
+                              JA_VIEW_MATRIX=camera_info.view_matrix.T.flatten(),
+                              JA_FIXED_DIST_FROM_PLANE=camera_info.fixed_distance_from_plane,
+                              JA_PROJ_MATRIX=camera_info.proj_matrix.T.flatten(),
+                              JA_FRAME_RADIUS=camera_info.frame_radius,
+                              JA_ANTI_ALIAS_RADIUS=anti_alias_radius), \
                      ContextSetter(Renderer.data_ctx, RenderData(ctx=ctx,
                                                                  camera_info=camera_info,
                                                                  anti_alias_radius=anti_alias_radius)):
@@ -976,6 +977,10 @@ class BuiltTimeline:
                     # 渲染
                     for data, render in render_datas_final:
                         render(data)
+                        # 如果没有 blending，我们认为当前是在向透明 framebuffer 绘制
+                        # 所以每次都需要使用 glFlush 更新 framebuffer 信息使得正确渲染
+                        if not blending:
+                            gl.glFlush()
 
         except Exception:
             traceback.print_exc()
@@ -1051,7 +1056,7 @@ class TimelineItem(Item):
         def render(self, item: TimelineItem):
             t = Animation.global_t_ctx.get() - item.at
             if 0 <= t <= item.duration:
-                item._built.render_all(self.data_ctx.get().ctx, t)
+                item._built.render_all(self.data_ctx.get().ctx, t, blend_on=False)
 
     renderer_cls = TIRenderer
 

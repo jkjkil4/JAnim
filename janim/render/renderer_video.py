@@ -10,7 +10,8 @@ from janim.anims.animation import Animation
 from janim.exception import EXITCODE_FFMPEG_NOT_FOUND, ExitException
 from janim.locale.i18n import get_local_strings
 from janim.logger import log
-from janim.render.base import Renderer, get_program
+from janim.render.base import Renderer
+from janim.render.program import get_janim_program
 from janim.utils.config import Config
 from janim.utils.iterables import resize_with_interpolation
 
@@ -25,7 +26,7 @@ class VideoRenderer(Renderer):
         self.initialized: bool = False
 
     def init(self) -> None:
-        self.prog = get_program('render/shaders/image')
+        self.prog = get_janim_program('render/shaders/image')
 
         self.u_fix = self.get_u_fix_in_frame(self.prog)
         self.u_image = self.prog['image']

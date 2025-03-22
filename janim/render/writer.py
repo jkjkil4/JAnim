@@ -4,13 +4,15 @@ import subprocess as sp
 import time
 from functools import partial
 
+import OpenGL.GL as gl
 from tqdm import tqdm as ProgressDisplay
 
 from janim.anims.timeline import BuiltTimeline, Timeline, TimeRange
 from janim.exception import EXITCODE_FFMPEG_NOT_FOUND, ExitException
 from janim.locale.i18n import get_local_strings
 from janim.logger import log
-from janim.render.base import create_context, create_framebuffer
+from janim.render.base import create_context
+from janim.render.framebuffer import create_framebuffer, framebuffer_context
 
 _ = get_local_strings('writer')
 
@@ -52,7 +54,6 @@ class VideoWriter:
             log.info(_('Writing video "{name}"').format(name=name))
             t = time.time()
 
-        self.fbo.use()
         fps = self.built.cfg.fps
 
         self.open_video_pipe(file_path)
@@ -65,11 +66,21 @@ class VideoWriter:
 
         rgb = self.built.cfg.background_color.rgb
 
-        for frame in progress_display:
-            self.fbo.clear(*rgb)
-            self.built.render_all(self.ctx, frame / fps)
-            bytes = self.fbo.read(components=4)
-            self.writing_process.stdin.write(bytes)
+        transparent = self.ext == '.mov'
+
+        with framebuffer_context(self.fbo):
+            for frame in progress_display:
+                self.fbo.clear(*rgb, not transparent)
+                # 在输出 mov 时，framebuffer 是透明的
+                # 为了颜色能被正确渲染到透明 framebuffer 上
+                # 这里需要禁用自带 blending 的并使用 shader 里自定义的 blending（参考 program.py 的 injection_ja_finish_up）
+                # 但是 shader 里的 blending 依赖 framebuffer 信息
+                # 所以这里需要使用 glFlush 更新 framebuffer 信息使得正确渲染
+                if transparent:
+                    gl.glFlush()
+                self.built.render_all(self.ctx, frame / fps, blend_on=not transparent)
+                bytes = self.fbo.read(components=4)
+                self.writing_process.stdin.write(bytes)
 
         self.close_video_pipe(_keep_temp)
 
@@ -86,9 +97,9 @@ class VideoWriter:
                 )
 
     def open_video_pipe(self, file_path: str) -> None:
-        stem, ext = os.path.splitext(file_path)
+        stem, self.ext = os.path.splitext(file_path)
         self.final_file_path = file_path
-        self.temp_file_path = stem + '_temp' + ext
+        self.temp_file_path = stem + '_temp' + self.ext
 
         command = [
             self.built.cfg.ffmpeg_bin,
@@ -103,18 +114,18 @@ class VideoWriter:
             '-loglevel', 'error',
         ]
 
-        if ext == '.mp4':
+        if self.ext == '.mp4':
             command += [
                 '-vcodec', 'libx264',
                 '-pix_fmt', 'yuv420p',
             ]
-        elif ext == '.mov':
+        elif self.ext == '.mov':
             # This is if the background of the exported
             # video should be transparent.
             command += [
                 '-vcodec', 'qtrle',
             ]
-        elif ext == '.gif':
+        elif self.ext == '.gif':
             pass
         else:
             assert False

@@ -4,7 +4,8 @@ from PySide6.QtOpenGLWidgets import QOpenGLWidget
 from PySide6.QtWidgets import QWidget
 
 from janim.anims.timeline import BuiltTimeline
-from janim.render.base import create_context, register_qt_glwidget
+from janim.render.base import create_context
+from janim.render.framebuffer import FRAME_BUFFER_BINDING, register_qt_glwidget
 
 
 class GLWidget(QOpenGLWidget):
@@ -47,6 +48,9 @@ class GLWidget(QOpenGLWidget):
 
         register_qt_glwidget(self)
 
+        # null_texture 目的是避免还没有 framebuffer 绑定至纹理单元时，在渲染的时候出现警告
+        self.null_texture = self.ctx.texture((1, 1), 1)
+
     def update_clear_color(self) -> None:
         self.needs_update_clear_color = True
 
@@ -55,5 +59,6 @@ class GLWidget(QOpenGLWidget):
             self.qfuncs.glClearColor(*self.built.cfg.background_color.rgb, 1.)
             self.needs_update_clear_color = False
         self.qfuncs.glClear(0x00004000 | 0x00000100)    # GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT
+        self.null_texture.use(FRAME_BUFFER_BINDING)
         self.built.render_all(self.ctx, self.global_t)
         self.rendered.emit()
