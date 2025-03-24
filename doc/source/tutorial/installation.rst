@@ -31,6 +31,12 @@
     # 通过 pip 安装 JAnim
     pip install janim[gui]
 
+    # 或通过 uv 虚拟环境安装 Janim
+    # 在目前路径下新建JanimProjects文件夹并引入虚拟环境
+    uv init JAnimProjects
+    # 安装 JAnim
+    uv add janim[gui]
+
     # 运行样例
     janim examples
 
