@@ -920,8 +920,6 @@ class BuiltTimeline:
         '''
         渲染所有可见物件
         '''
-        blending = not blend_on and not get_uniforms_context_var(ctx).get().get('JA_BLENDING')
-
         timeline = self.timeline
         global_t = timeline.time_aligner.align_t_for_render(global_t)
         # 使得最后一帧采用略提早一点点的时间渲染，使得一些结束在结尾的动画不突变
@@ -975,6 +973,7 @@ class BuiltTimeline:
                     # 按深度排序
                     render_datas_final.sort(key=lambda x: x[0].depth, reverse=True)
                     # 渲染
+                    blending = get_uniforms_context_var(ctx).get().get('JA_BLENDING')
                     for data, render in render_datas_final:
                         render(data)
                         # 如果没有 blending，我们认为当前是在向透明 framebuffer 绘制
