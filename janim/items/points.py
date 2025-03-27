@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import Iterable, Self, overload
 
 from janim.components.component import CmptInfo
+from janim.components.mark import Cmpt_Mark
 from janim.components.points import Cmpt_Points
 from janim.components.radius import Cmpt_Radius
 from janim.components.rgbas import Cmpt_Rgbas, apart_alpha
@@ -30,6 +31,30 @@ class Points(Item):
 
     def is_null(self) -> bool:
         return not self.points.has()
+
+
+class MarkedItem(Points):
+    mark = CmptInfo(Cmpt_Mark[Self])
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._blocking_signals = False
+
+    def init_connect(self) -> None:
+        super().init_connect()
+
+        Cmpt_Points.apply_points_fn.connect(self.points, self._points_to_mark_slot)
+        Cmpt_Mark.set.connect(self.mark, self._mark_to_points_slot)
+
+    def _points_to_mark_slot(self, func, about_point) -> None:
+        if self._blocking_signals:
+            return
+        self.mark.apply_points_fn(func, about_point)
+
+    def _mark_to_points_slot(self, vector, root_only) -> None:
+        self._blocking_signals = True
+        self.points.shift(vector, root_only=root_only)
+        self._blocking_signals = False
 
 
 class Group[T](Points):

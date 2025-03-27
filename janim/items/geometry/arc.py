@@ -2,11 +2,13 @@
 from typing import Self
 
 import numpy as np
+
 from janim.components.component import CmptInfo
 from janim.components.points import Cmpt_Points
 from janim.components.vpoints import Cmpt_VPoints
 from janim.constants import LEFT, MED_SMALL_BUFF, NAN_POINT, ORIGIN, RIGHT, TAU
 from janim.items.item import Item
+from janim.items.points import MarkedItem
 from janim.items.vitem import VItem
 from janim.typing import Alpha, AlphaArray, Vect
 from janim.utils.bezier import PathBuilder, quadratic_bezier_points_for_arc
@@ -17,32 +19,22 @@ DEFAULT_DOT_RADIUS = 0.08
 DEFAULT_SMALL_DOT_RADIUS = 0.04
 
 
-class ArcCenter(VItem):
+class ArcCenter(MarkedItem, VItem):
     '''
     与圆弧有关的类的基类，被 :class:`Arc` 和 :class:`AnnularSector` 所继承
     '''
-    _arc_center = CmptInfo(Cmpt_Points[Self])
-
     def __init__(self, *args, arc_center: Vect = ORIGIN, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self._arc_center.set([arc_center])
-
-    def init_connect(self) -> None:
-        super().init_connect()
-        # 使 _arc_center 与 points 同步变换
-        Cmpt_Points.apply_points_fn.connect(
-            self.points,
-            lambda func, about_point: self._arc_center.apply_points_fn(func, about_point=about_point)
-        )
+        self.mark.set_points([arc_center])
 
     def get_arc_center(self) -> np.ndarray:
         '''得到圆弧所对应的圆心'''
-        return self._arc_center.get()[0]
+        return self.mark.get()
 
     def move_arc_center_to(self, point: Vect) -> Self:
         '''将圆弧圆心移动到指定的位置'''
-        self.points.shift(point - self.get_arc_center())
+        self.mark.set(point)
         return self
 
 
