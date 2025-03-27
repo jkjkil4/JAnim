@@ -37,7 +37,7 @@ class MarkedItem(Points):
     '''
     带有标记点的物件
 
-    例如 :class:`~.TextChar`、 :class:`~.TextLine` 和 :class:`~.Arc` 都以该类作为基类，
+    例如 :class:`~.TextChar`、 :class:`~.TextLine`、 :class:`~.Arc` 和 :class:`~.RegularPolygon` 都以该类作为基类，
     使得可以
 
     - 通过 ``.mark.get(...)`` 的方式得到标记点位置，并会因为 ``points`` 的变化而同步更新

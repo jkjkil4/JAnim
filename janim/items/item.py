@@ -76,8 +76,8 @@ class _ItemMeta(type):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.cmpt_init_datas: dict[str, _ItemMeta._CmptInitData] = {}
-        datas = self.cmpt_init_datas
+        self._cmpt_init_datas: dict[str, _ItemMeta._CmptInitData] = {}
+        datas = self._cmpt_init_datas
 
         for cls in reversed(self.mro()):
             for key, info in cls.__dict__.get(CLS_CMPTINFO_NAME, {}).items():
@@ -151,7 +151,7 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         因为 CmptInfo 的 __get__ 标注的返回类型是对应的 Component，
         所以以上做法没有影响基于类型标注的代码补全
         '''
-        datas = self.__class__.cmpt_init_datas
+        datas = self.__class__._cmpt_init_datas
 
         self.components: dict[str, Component] = {}
 

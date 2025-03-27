@@ -4,7 +4,6 @@ from typing import Self
 import numpy as np
 
 from janim.components.component import CmptInfo
-from janim.components.points import Cmpt_Points
 from janim.components.vpoints import Cmpt_VPoints
 from janim.constants import LEFT, MED_SMALL_BUFF, NAN_POINT, ORIGIN, RIGHT, TAU
 from janim.items.item import Item
@@ -45,8 +44,6 @@ class Arc(ArcCenter):
     - ``start_angle`` 表示起始的角度
     - ``angle`` 表示圆心角
     '''
-    _arc_center = CmptInfo(Cmpt_Points[Self])
-
     def __init__(
         self,
         start_angle: float = 0,
