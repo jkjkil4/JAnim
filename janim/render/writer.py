@@ -40,6 +40,39 @@ class VideoWriter:
         pw, ph = built.cfg.pixel_width, built.cfg.pixel_height
         self.fbo = create_framebuffer(self.ctx, pw, ph)
 
+        # PBO 相关初始化
+        self.use_pbo = True  # 是否启用PBO优化
+        self.pbo_count = 10
+        self.pbos = []       # PBO句柄列表
+        self.byte_size = pw * ph * 4  # 每帧的字节大小 (RGBA)
+
+        if self.use_pbo:
+            self._init_pbos()
+
+    def _init_pbos(self):
+        """初始化PBO缓冲区"""
+        self.pbos = []
+        self.pbos = gl.glGenBuffers(self.pbo_count)
+        if not isinstance(self.pbos, (list, tuple)):
+            self.pbos = [self.pbos]
+
+        for pbos in self.pbos:
+            self.pbos = pbos
+            for pbo in pbos:
+
+                gl.glBindBuffer(gl.GL_PIXEL_PACK_BUFFER, pbo)
+                    # 分配空间，GL_STREAM_READ表明数据将从GPU读取到CPU，并且每帧都会更新
+                gl.glBufferData(gl.GL_PIXEL_PACK_BUFFER, self.byte_size, None, gl.GL_STREAM_READ)
+
+        gl.glBindBuffer(gl.GL_PIXEL_PACK_BUFFER, 0)  # 解绑PBO
+
+    def _cleanup_pbos(self):
+        if self.use_pbo and self.pbos.all():
+            gl.glBindBuffer(gl.GL_PIXEL_PACK_BUFFER, 0)  # 确保解绑
+            # 正确删除多个缓冲区
+            gl.glDeleteBuffers(len(self.pbos), self.pbos)
+            self.pbos = []
+
     @staticmethod
     def writes(built: BuiltTimeline, file_path: str, *, quiet=False) -> None:
         VideoWriter(built).write_all(file_path, quiet=quiet)
@@ -68,21 +101,71 @@ class VideoWriter:
 
         transparent = self.ext == '.mov'
 
-        with framebuffer_context(self.fbo):
-            for frame in progress_display:
-                self.fbo.clear(*rgb, not transparent)
-                # 在输出 mov 时，framebuffer 是透明的
-                # 为了颜色能被正确渲染到透明 framebuffer 上
-                # 这里需要禁用自带 blending 的并使用 shader 里自定义的 blending（参考 program.py 的 injection_ja_finish_up）
-                # 但是 shader 里的 blending 依赖 framebuffer 信息
-                # 所以这里需要使用 glFlush 更新 framebuffer 信息使得正确渲染
-                if transparent:
-                    gl.glFlush()
-                self.built.render_all(self.ctx, frame / fps, blend_on=not transparent)
-                bytes = self.fbo.read(components=4)
-                self.writing_process.stdin.write(bytes)
+        if self.use_pbo:
+            # 使用PBO优化的渲染循环
+            with framebuffer_context(self.fbo):
+                for frame_idx in progress_display:
+                    # 渲染当前帧
+                    self.fbo.clear(*rgb, not transparent)
+
+                    if transparent:
+                        gl.glFlush()
+
+                    self.built.render_all(self.ctx, frame_idx / fps, blend_on=not transparent)
+
+                    # 当前PBO索引和读取PBO索引
+                    current_idx = frame_idx % self.pbo_count
+                    read_idx = (frame_idx + 1) % self.pbo_count if frame_idx > self.pbo_count - 1 else None
+
+                    # 绑定当前PBO来存储新帧
+                    gl.glBindBuffer(gl.GL_PIXEL_PACK_BUFFER, self.pbos[current_idx])
+                    # 注意: 当PBO绑定时，最后一个参数是偏移量而不是指针
+                    gl.glReadPixels(0, 0, self.built.cfg.pixel_width, self.built.cfg.pixel_height,
+                                   gl.GL_RGBA, gl.GL_UNSIGNED_BYTE, 0)
+
+                    # 如果不是第一帧，处理上一帧的数据
+                    if read_idx is not None:
+                        # 绑定上一个PBO读取数据
+                        gl.glBindBuffer(gl.GL_PIXEL_PACK_BUFFER, self.pbos[read_idx])
+
+                        # 使用numpy从映射的内存中读取数据
+                        import numpy as np
+                        ptr = gl.glMapBuffer(gl.GL_PIXEL_PACK_BUFFER, gl.GL_READ_ONLY)
+                        if ptr:
+                            # 创建一个numpy数组来引用映射的内存
+                            data = np.ctypeslib.as_array(
+                                gl.ctypes.cast(ptr, gl.ctypes.POINTER(gl.ctypes.c_ubyte)),
+                                shape=(self.byte_size,)
+                            )
+
+                            # 写入数据到ffmpeg
+                            self.writing_process.stdin.write(data.tobytes())
+                            gl.glUnmapBuffer(gl.GL_PIXEL_PACK_BUFFER)
+
+                # 处理最后一帧
+                last_idx = frame_idx % self.pbo_count
+                gl.glBindBuffer(gl.GL_PIXEL_PACK_BUFFER, self.pbos[last_idx])
+                data = gl.glGetBufferSubData(gl.GL_PIXEL_PACK_BUFFER, 0, self.byte_size)
+                self.writing_process.stdin.write(data)
+
+                # 最终解绑PBO
+                gl.glBindBuffer(gl.GL_PIXEL_PACK_BUFFER, 0)
+        else:
+            # 原始渲染循环（不使用PBO）
+            with framebuffer_context(self.fbo):
+                for frame in progress_display:
+                    self.fbo.clear(*rgb, not transparent)
+                    if transparent:
+                        gl.glFlush()
+                    self.built.render_all(self.ctx, frame / fps, blend_on=not transparent)
+                    bytes = self.fbo.read(components=4)
+                    self.writing_process.stdin.write(bytes)
 
         self.close_video_pipe(_keep_temp)
+
+        # 清理PBO资源
+        if self.use_pbo:
+            self._cleanup_pbos()
 
         if not quiet:
             log.info(
