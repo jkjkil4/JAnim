@@ -3,8 +3,9 @@ from typing import Iterable, Self, overload
 
 import numpy as np
 
-from janim.constants import DL, DR, PI, RIGHT, UL, UR
+from janim.constants import DL, DR, ORIGIN, PI, RIGHT, UL, UR
 from janim.items.geometry.arc import ArcBetweenPoints
+from janim.items.points import MarkedItem
 from janim.items.vitem import VItem
 from janim.typing import Vect, VectArray
 from janim.utils.bezier import PathBuilder
@@ -89,23 +90,28 @@ class Polyline(Polygon):
         super().__init__(*verts, close_path=close_path, **kwargs)
 
 
-class RegularPolygon(Polygon):
+class RegularPolygon(MarkedItem, Polygon):
     '''正多边形
 
     传入数字 ``n`` 表示边数
+
+    可通过 ``.mark.get()`` 得到多边形的中心
     '''
     def __init__(
         self,
         n: int = 6,
         *,
+        radius: float = 1,
         start_angle: float | None = None,
         **kwargs
     ):
         if start_angle is None:
             start_angle = (n % 2) * PI / 2
-        start_vect = rotate_vector(RIGHT, start_angle)
+        start_vect = rotate_vector(RIGHT * radius, start_angle)
         vertices = compass_directions(n, start_vect)
         super().__init__(*vertices, **kwargs)
+
+        self.mark.set_points([ORIGIN])
 
 
 class Triangle(RegularPolygon):

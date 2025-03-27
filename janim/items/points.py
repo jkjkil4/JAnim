@@ -37,8 +37,8 @@ class MarkedItem(Points):
     mark = CmptInfo(Cmpt_Mark[Self])
 
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
         self._blocking_signals = False
+        super().__init__(*args, **kwargs)
 
     def init_connect(self) -> None:
         super().init_connect()

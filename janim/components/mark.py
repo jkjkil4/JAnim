@@ -6,10 +6,10 @@ import numpy as np
 
 from janim.anims.method_updater_meta import register_updater
 from janim.components.component import Component
-from janim.components.points import PointsFn
+from janim.components.points import DEFAULT_POINTS_ARRAY, PointsFn
 from janim.typing import Vect, VectArray
 from janim.utils.bezier import interpolate
-from janim.utils.data import AlignedData, Array
+from janim.utils.data import AlignedData
 from janim.utils.iterables import resize_and_repeatedly_extend
 from janim.utils.paths import PathFunc, straight_path
 from janim.utils.signal import Signal
@@ -21,7 +21,7 @@ class Cmpt_Mark[ItemT](Component[ItemT]):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self._points = Array()
+        self._points = DEFAULT_POINTS_ARRAY.copy()
 
     def copy(self) -> Self:
         cmpt_copy = super().copy()
