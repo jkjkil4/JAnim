@@ -114,8 +114,7 @@ class Cmpt_Points[ItemT](Component[ItemT]):
 
         使用形如 ``.set([[1.5, 3, 2], [2, 1.5, 0]])`` 的形式
         '''
-        if not isinstance(points, np.ndarray):
-            points = np.array(points)
+        points = np.asarray(points)
         if points.size == 0:
             points = np.zeros((0, 3))
 

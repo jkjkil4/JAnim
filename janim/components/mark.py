@@ -44,9 +44,9 @@ class Cmpt_Mark[ItemT](Component[ItemT]):
         cmpt2_copy = cmpt2.copy()
 
         if len1 < len2:
-            cmpt1_copy.set(resize_and_repeatedly_extend(cmpt1.get_points(), len(cmpt2.get_points())))
+            cmpt1_copy.set_points(resize_and_repeatedly_extend(cmpt1.get_points(), len(cmpt2.get_points())))
         elif len1 > len2:
-            cmpt2_copy.set(resize_and_repeatedly_extend(cmpt2.get_points(), len(cmpt1.get_points())))
+            cmpt2_copy.set_points(resize_and_repeatedly_extend(cmpt2.get_points(), len(cmpt1.get_points())))
 
         return AlignedData(cmpt1_copy, cmpt2_copy, cmpt1_copy.copy())
 
@@ -78,8 +78,7 @@ class Cmpt_Mark[ItemT](Component[ItemT]):
         '''
         直接设置记录的所有坐标点数据，不会对 ``points`` 产生影响
         '''
-        if not isinstance(points, np.ndarray):
-            points = np.array(points)
+        points = np.asarray(points)
         if points.size == 0:
             points = np.zeros((0, 3))
 
@@ -100,6 +99,11 @@ class Cmpt_Mark[ItemT](Component[ItemT]):
 
         更改会同步到 ``points`` 上
         '''
+        point = np.asarray(point)
+
+        assert point.ndim == 1
+        assert point.shape[0] == 3
+
         index = self.format_index(index)
         vector = point - self.get(index)
         self.set_points(self.get_points() + vector)
