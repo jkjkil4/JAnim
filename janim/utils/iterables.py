@@ -185,12 +185,11 @@ def resize_and_repeatedly_extend(
 
 
 def resize_with_interpolation(nparray: np.ndarray, length: int) -> np.ndarray:
-    if not isinstance(nparray, np.ndarray):
-        nparray = np.array(nparray)
+    nparray = np.asarray(nparray)
     if len(nparray) == length:
         return nparray
     if length == 0:
-        return np.zeros((0, *nparray.shape[1:]))
+        return np.zeros((0, *nparray.shape[1:]), dtype=nparray.dtype)
     if len(nparray) == 1:
         return np.repeat(nparray, length, axis=0)
     cont_indices = np.linspace(0, len(nparray) - 1, length, dtype=nparray.dtype)
