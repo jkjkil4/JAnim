@@ -34,6 +34,28 @@ class Points(Item):
 
 
 class MarkedItem(Points):
+    '''
+    带有标记点的物件
+
+    例如 :class:`~.TextChar`、 :class:`~.TextLine` 和 :class:`~.Arc` 都以该类作为基类，
+    使得可以
+
+    - 通过 ``.mark.get(...)`` 的方式得到标记点位置，并会因为 ``points`` 的变化而同步更新
+    - 通过 ``.mark.set(...)`` 的方式移动标记点位置，并让 ``points`` 同步移动
+
+    自定义物件示例：
+
+    .. code-block:: python
+
+        class MarkedSquare(MarkedItem, Square):
+            def __init__(self, side_length: float = 2.0, **kwargs) -> None:
+                super().__init__(side_lenght, **kwargs)
+                self.mark.set_points([RIGHT * side_length / 4])
+
+    这段代码的 ``self.mark.set_points([RIGHT * side_length / 4])`` 设置了在 x 轴方向上 75% 处的一个标记点，
+    这个标记点会自动跟踪物件的坐标变换，具体参考 :ref:`样例学习 <examples>` 中的对应代码
+    '''
+
     mark = CmptInfo(Cmpt_Mark[Self])
 
     def __init__(self, *args, **kwargs):
