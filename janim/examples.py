@@ -197,8 +197,6 @@ class MarkedItemExample(Timeline):
     def construct(self):
         square = MarkedSquare()
 
-        dots = DotCloud(RIGHT, LEFT)
-
         tri1 = Triangle(radius=0.2, color=GREEN)
         tri2 = Triangle(radius=0.2, color=BLUE)
         dots = DotCloud(color=RED)
