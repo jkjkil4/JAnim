@@ -229,7 +229,7 @@
     from janim.imports import *
 
     class MarkedSquare(MarkedItem, Square):
-        def __init__(self, side_length: float = 2.0, **kwargs) -> None:
+        def __init__(self, side_length: float = 2.0, **kwargs):
             super().__init__(side_length, **kwargs)
             self.mark.set_points([RIGHT * side_length / 4, DOWN * side_length / 4])
 
