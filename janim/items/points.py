@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import Iterable, Self, overload
 
 from janim.components.component import CmptInfo
+from janim.components.mark import Cmpt_Mark
 from janim.components.points import Cmpt_Points
 from janim.components.radius import Cmpt_Radius
 from janim.components.rgbas import Cmpt_Rgbas, apart_alpha
@@ -30,6 +31,52 @@ class Points(Item):
 
     def is_null(self) -> bool:
         return not self.points.has()
+
+
+class MarkedItem(Points):
+    '''
+    带有标记点的物件
+
+    例如 :class:`~.TextChar`、 :class:`~.TextLine`、 :class:`~.Arc` 和 :class:`~.RegularPolygon` 都以该类作为基类，
+    使得可以
+
+    - 通过 ``.mark.get(...)`` 的方式得到标记点位置，并会因为 ``points`` 的变化而同步更新
+    - 通过 ``.mark.set(...)`` 的方式移动标记点位置，并让 ``points`` 同步移动
+
+    自定义物件示例：
+
+    .. code-block:: python
+
+        class MarkedSquare(MarkedItem, Square):
+            def __init__(self, side_length: float = 2.0, **kwargs) -> None:
+                super().__init__(side_lenght, **kwargs)
+                self.mark.set_points([RIGHT * side_length / 4])
+
+    这段代码的 ``self.mark.set_points([RIGHT * side_length / 4])`` 设置了在 x 轴方向上 75% 处的一个标记点，
+    这个标记点会自动跟踪物件的坐标变换，具体参考 :ref:`样例学习 <examples>` 中的对应代码
+    '''
+
+    mark = CmptInfo(Cmpt_Mark[Self])
+
+    def __init__(self, *args, **kwargs):
+        self._blocking_signals = False
+        super().__init__(*args, **kwargs)
+
+    def init_connect(self) -> None:
+        super().init_connect()
+
+        Cmpt_Points.apply_points_fn.connect(self.points, self._points_to_mark_slot)
+        Cmpt_Mark.set.connect(self.mark, self._mark_to_points_slot)
+
+    def _points_to_mark_slot(self, func, about_point) -> None:
+        if self._blocking_signals:
+            return
+        self.mark.apply_points_fn(func, about_point)
+
+    def _mark_to_points_slot(self, vector, root_only) -> None:
+        self._blocking_signals = True
+        self.points.shift(vector, root_only=root_only)
+        self._blocking_signals = False
 
 
 class Group[T](Points):

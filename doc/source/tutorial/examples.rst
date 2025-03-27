@@ -1,3 +1,5 @@
+.. _examples:
+
 样例学习
 ==========
 
@@ -219,3 +221,45 @@
                 duration=5
             )
             self.forward()
+
+
+.. janim-example:: MarkedItemExample
+    :media: ../_static/videos/MarkedItemExample.mp4
+
+    from janim.imports import *
+
+    class MarkedSquare(MarkedItem, Square):
+        def __init__(self, side_length: float = 2.0, **kwargs):
+            super().__init__(side_length, **kwargs)
+            self.mark.set_points([RIGHT * side_length / 4, DOWN * side_length / 4])
+
+    class MarkedItemExample(Timeline):
+        def construct(self):
+            square = MarkedSquare()
+
+            tri1 = Triangle(radius=0.2, color=GREEN)
+            tri2 = Triangle(radius=0.2, color=BLUE)
+            dots = DotCloud(color=RED)
+
+            self.play(
+                square.update.points.rotate(TAU),
+                DataUpdater(
+                    square,
+                    lambda data, p: data.points.shift(RIGHT * math.sin(4 * math.pi * p.alpha))
+                ),
+
+                DataUpdater(
+                    tri1,
+                    lambda data, p: data.mark.set(square.current().mark.get(0))
+                ),
+                DataUpdater(
+                    tri2,
+                    lambda data, p: data.mark.set(square.current().mark.get(1))
+                ),
+                DataUpdater(
+                    dots,
+                    lambda data, p: data.points.set(square.current().mark.get_points()),
+                    skip_null_items=False
+                ),
+                duration=4
+            )

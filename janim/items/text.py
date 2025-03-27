@@ -5,21 +5,22 @@ import itertools as it
 import re
 from collections import defaultdict
 from enum import Enum
-from typing import Any, Callable, Concatenate, Iterable, Self
+from typing import (TYPE_CHECKING, Any, Callable, Concatenate, Iterable,
+                    Literal, Self)
 
 import numpy as np
 
 from janim.components.component import CmptInfo
-from janim.components.points import Cmpt_Points
+from janim.components.mark import Cmpt_Mark
 from janim.constants import (DOWN, GREY, LEFT, MED_SMALL_BUFF, ORIGIN, RIGHT,
                              UL, UP)
 from janim.exception import ColorNotFoundError
 from janim.items.geometry.line import Line
-from janim.items.points import Group
+from janim.items.points import Group, MarkedItem
 from janim.items.vitem import VItem
 from janim.locale.i18n import get_local_strings
 from janim.logger import log
-from janim.typing import JAnimColor
+from janim.typing import JAnimColor, Vect
 from janim.utils.config import Config
 from janim.utils.font.database import Font, get_font_info_by_attrs
 from janim.utils.font.variant import Style, StyleName, Weight, WeightName
@@ -110,11 +111,48 @@ _register_acts(
 )
 
 
-class TextChar(VItem):
+class Cmpt_Mark_TextCharImpl[ItemT](Cmpt_Mark[ItemT], impl=True):
+    names = ['orig', 'right', 'up', 'advance']
+
+    if TYPE_CHECKING:
+        def get(
+            self,
+            index: int | Literal['orig', 'right', 'up', 'advance'] = 0
+        ) -> np.ndarray: ...
+
+        def set(
+            self,
+            point: Vect,
+            index: int | Literal['orig', 'right', 'up', 'advance'] = 0,
+            *,
+            root_only: bool = False
+        ) -> Self: ...
+
+
+class Cmpt_Mark_TextLineImpl[ItemT](Cmpt_Mark[ItemT], impl=True):
+    names = ['orig', 'right', 'up']
+
+    if TYPE_CHECKING:
+        def get(
+            self,
+            index: int | Literal['orig', 'right', 'up'] = 0
+        ) -> np.ndarray: ...
+
+        def set(
+            self,
+            point: Vect,
+            index: int | Literal['orig', 'right', 'up'] = 0,
+            *,
+            root_only: bool = False
+        ) -> Self: ...
+
+
+class TextChar(MarkedItem, VItem):
     '''
     字符物件，作为 :class:`TextLine` 的子物件，在创建 :class:`TextLine` 时产生
     '''
-    mark = CmptInfo(Cmpt_Points[Self])
+
+    mark = CmptInfo(Cmpt_Mark_TextCharImpl[Self])
 
     def __init__(
         self,
@@ -147,19 +185,10 @@ class TextChar(VItem):
         self.points.set(outline * scale_factor)
 
         # 标记位置
-        self.mark.set([
+        self.mark.set_points([
             ORIGIN, RIGHT * font_scale_factor, UP * font_scale_factor,
             [advance[0] * scale_factor, advance[1] * scale_factor, 0]
         ])
-
-    def init_connect(self) -> None:
-        super().init_connect()
-        Cmpt_Points.apply_points_fn.connect(
-            self.points,
-            lambda func, about_point: self.mark.apply_points_fn(func,
-                                                                about_point=about_point,
-                                                                about_edge=None)
-        )
 
     @staticmethod
     def get_font_for_render(unicode: str, fonts: list[Font]) -> Font:
@@ -175,16 +204,16 @@ class TextChar(VItem):
         return font_render
 
     def get_mark_orig(self) -> np.ndarray:
-        return self.mark._points.data[0]
+        return self.mark.get(0)
 
     def get_mark_right(self) -> np.ndarray:
-        return self.mark._points.data[1]
+        return self.mark.get(1)
 
     def get_mark_up(self) -> np.ndarray:
-        return self.mark._points.data[2]
+        return self.mark.get(2)
 
     def get_mark_advance(self) -> np.ndarray:
-        return self.mark._points.data[3]
+        return self.mark.get(3)
 
     def get_advance_length(self) -> float:
         return get_norm(self.get_mark_advance() - self.get_mark_orig())
@@ -223,11 +252,12 @@ class TextChar(VItem):
                 )
 
 
-class TextLine(VItem, Group[TextChar]):
+class TextLine(MarkedItem, VItem, Group[TextChar]):
     '''
     单行文字物件，作为 :class:`Text` 的子物件，在创建 :class:`Text` 时产生s
     '''
-    mark = CmptInfo(Cmpt_Points[Self])
+
+    mark = CmptInfo(Cmpt_Mark_TextLineImpl[Self])
 
     def __init__(
         self,
@@ -250,26 +280,17 @@ class TextLine(VItem, Group[TextChar]):
         )
 
         # 标记位置
-        self.mark.set([ORIGIN, RIGHT, UP])
-        self.mark.scale(font_size / ORIG_FONT_SIZE, about_point=ORIGIN)
-
-    def init_connect(self) -> None:
-        super().init_connect()
-        Cmpt_Points.apply_points_fn.connect(
-            self.points,
-            lambda func, about_point: self.mark.apply_points_fn(func,
-                                                                about_point=about_point,
-                                                                about_edge=None)
-        )
+        scale = font_size / ORIG_FONT_SIZE
+        self.mark.set_points([ORIGIN * scale, RIGHT * scale, UP * scale])
 
     def get_mark_orig(self) -> np.ndarray:
-        return self.mark._points.data[0]
+        return self.mark.get(0)
 
     def get_mark_right(self) -> np.ndarray:
-        return self.mark._points.data[1]
+        return self.mark.get(1)
 
     def get_mark_up(self) -> np.ndarray:
-        return self.mark._points.data[2]
+        return self.mark.get(2)
 
     def arrange_in_line(self, buff: float = 0) -> Self:
         '''
