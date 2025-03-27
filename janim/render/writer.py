@@ -42,7 +42,7 @@ class VideoWriter:
 
         # PBO 相关初始化
         self.use_pbo = True  # 是否启用PBO优化
-        self.pbo_count = 10
+        self.pbo_count = 20
         self.pbos = []       # PBO句柄列表
         self.byte_size = pw * ph * 4  # 每帧的字节大小 (RGBA)
 
@@ -197,9 +197,31 @@ class VideoWriter:
             '-loglevel', 'error',
         ]
 
+        # call ffmpeg to test nvenc/amf support
+        test_availability = sp.Popen(
+            [self.built.cfg.ffmpeg_bin, '-hide_banner', '-encoders'],
+            stdout=sp.PIPE,
+            stderr=sp.PIPE
+        )
+        out, err = test_availability.communicate()
+        if b'h264_nvenc' in out:
+            command += [
+                '-c:v', 'h264_nvenc',
+            ]
+            log.info(_('Using h264_nvenc for encoding'))
+        elif b'h264_amf' in out:
+            command += [
+                '-c:v', 'h264_amf',
+            ]
+            log.info(_('Using h264_amf for encoding'))
+        else:
+            command += [
+                '-c:v', 'libx264',
+            ]
+            log.info(_('No hardware encoder found. Using libx264 for encoding'))
+
         if self.ext == '.mp4':
             command += [
-                '-vcodec', 'libx264',
                 '-pix_fmt', 'yuv420p',
             ]
         elif self.ext == '.mov':
