@@ -7,65 +7,77 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-04 09:32+0800\n"
-"PO-Revision-Date: 2024-11-28 20:38+0800\n"
+"POT-Creation-Date: 2025-03-28 11:07+0800\n"
+"PO-Revision-Date: 2025-03-28 11:11+0800\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
 "Language: zh_CN\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=GBK\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 3.4.2\n"
+"X-Generator: Poedit 3.5\n"
 
-#: janim/render/writer.py:52
+#: janim/render/writer.py:84
 #, python-brace-format
 msgid "Writing video \"{name}\""
 msgstr "输出视频 \"{name}\" 中"
 
-#: janim/render/writer.py:78
+#: janim/render/writer.py:160
 #, python-brace-format
 msgid "Finished writing video \"{name}\" in {elapsed:.2f} s"
 msgstr "输出视频 \"{name}\" 完成，耗时 {elapsed:.2f} s"
 
-#: janim/render/writer.py:84
+#: janim/render/writer.py:166
 #, python-brace-format
 msgid "File saved to \"{file_path}\" (video only)"
 msgstr "文件已保存到 \"{file_path}\"（仅视频）"
 
-#: janim/render/writer.py:126
+#: janim/render/writer.py:227
+msgid "Using h264_nvenc for encoding"
+msgstr "使用 h264_nvenc 进行编码"
+
+#: janim/render/writer.py:230
+msgid "Using h264_amf for encoding"
+msgstr "使用 h264_amf 进行编码"
+
+#: janim/render/writer.py:233
+msgid "No hardware encoder found. Using libx264 for encoding"
+msgstr "未找到硬件编码器，使用 libx264 进行编码"
+
+#: janim/render/writer.py:251
 msgid ""
 "Unable to output video. Please install ffmpeg and add it to the environment "
 "variables."
 msgstr "无法输出视频，需要安装 ffmpeg 并将其添加到环境变量中"
 
-#: janim/render/writer.py:149
+#: janim/render/writer.py:267
 #, python-brace-format
 msgid "Writing audio of \"{name}\""
 msgstr "输出音频 \"{name}\" 中"
 
-#: janim/render/writer.py:175
+#: janim/render/writer.py:293
 #, python-brace-format
 msgid "Finished writing audio of \"{name}\" in {elapsed:.2f} s"
 msgstr "输出音频 \"{name}\" 完成，耗时 {elapsed:.2f} s"
 
-#: janim/render/writer.py:181
+#: janim/render/writer.py:299
 #, python-brace-format
 msgid "File saved to \"{file_path}\""
 msgstr "文件已保存到 \"{file_path}\""
 
-#: janim/render/writer.py:204
+#: janim/render/writer.py:322
 msgid ""
 "Unable to output audio. Please install ffmpeg and add it to the environment "
 "variables."
 msgstr "无法输出音频，需要安装 ffmpeg 并将其添加到环境变量中"
 
-#: janim/render/writer.py:238
+#: janim/render/writer.py:356
 msgid ""
 "Unable to merge video. Please install ffmpeg and add it to the environment "
 "variables."
 msgstr "无法输出视频，需要安装 ffmpeg 并将其添加到环境变量中"
 
-#: janim/render/writer.py:250
+#: janim/render/writer.py:368
 #, python-brace-format
 msgid "File saved to \"{file_path}\" (merged)"
 msgstr "文件已保存到 \"{file_path}\"（已合并）"
