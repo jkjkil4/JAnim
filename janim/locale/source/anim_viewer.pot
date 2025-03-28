@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-20 11:53+0800\n"
+"POT-Creation-Date: 2025-03-28 16:16+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -29,102 +29,106 @@ msgid ""
 "install them in the correct Python version"
 msgstr ""
 
-#: janim/gui/anim_viewer.py:166
+#: janim/gui/anim_viewer.py:167
 msgid "Functions(&F)"
 msgstr ""
 
-#: janim/gui/anim_viewer.py:168
+#: janim/gui/anim_viewer.py:169
 msgid "Stay on top(&T)"
 msgstr ""
 
-#: janim/gui/anim_viewer.py:173
+#: janim/gui/anim_viewer.py:174
 msgid "Frame skip(&P)"
 msgstr ""
 
-#: janim/gui/anim_viewer.py:180
+#: janim/gui/anim_viewer.py:181
 msgid "Rebuild(&L)"
 msgstr ""
 
-#: janim/gui/anim_viewer.py:186
+#: janim/gui/anim_viewer.py:187
 msgid "Subitem selector(&S)"
 msgstr ""
 
-#: janim/gui/anim_viewer.py:191
+#: janim/gui/anim_viewer.py:192
 msgid "Draw(&D)"
 msgstr ""
 
-#: janim/gui/anim_viewer.py:196
+#: janim/gui/anim_viewer.py:197
 msgid "Rich text editor(&R)"
 msgstr ""
 
-#: janim/gui/anim_viewer.py:201
+#: janim/gui/anim_viewer.py:202
 msgid "Font list(&F)"
 msgstr ""
 
-#: janim/gui/anim_viewer.py:206
+#: janim/gui/anim_viewer.py:207
 msgid "Color(&O)"
 msgstr ""
 
-#: janim/gui/anim_viewer.py:262
+#: janim/gui/anim_viewer.py:263
 #, python-brace-format
 msgid "wnd_pos has wrong argument {wnd_pos}."
 msgstr ""
 
-#: janim/gui/anim_viewer.py:273
+#: janim/gui/anim_viewer.py:274
 #, python-brace-format
 msgid "wnd_monitor has invalid value {wnd_monitor}, use {range} instead."
 msgstr ""
 
-#: janim/gui/anim_viewer.py:397
+#: janim/gui/anim_viewer.py:399
 #, python-brace-format
 msgid "No timeline named \"{name}\" in \"{file}\""
 msgstr ""
 
-#: janim/gui/anim_viewer.py:410
+#: janim/gui/anim_viewer.py:412
 msgid "Failed to rebuild"
 msgstr ""
 
-#: janim/gui/anim_viewer.py:560 janim/gui/anim_viewer.py:596
+#: janim/gui/anim_viewer.py:521
+msgid "An error occurred during rendering, playback stopped"
+msgstr ""
+
+#: janim/gui/anim_viewer.py:573 janim/gui/anim_viewer.py:609
 msgid "Note"
 msgstr ""
 
-#: janim/gui/anim_viewer.py:561
+#: janim/gui/anim_viewer.py:574
 msgid "Output will start shortly. Please check the console for information."
 msgstr ""
 
-#: janim/gui/anim_viewer.py:589
+#: janim/gui/anim_viewer.py:602
 msgid "Exporting was cancelled"
 msgstr ""
 
-#: janim/gui/anim_viewer.py:597
+#: janim/gui/anim_viewer.py:610
 #, python-brace-format
 msgid "Output to {file_path} has been completed."
 msgstr ""
 
-#: janim/gui/anim_viewer.py:620
+#: janim/gui/anim_viewer.py:633
 #, python-brace-format
 msgid "Searching port has been opened at {port}"
 msgstr ""
 
-#: janim/gui/anim_viewer.py:625
+#: janim/gui/anim_viewer.py:638
 #, python-brace-format
 msgid "Failed to open searching port at {port}"
 msgstr ""
 
-#: janim/gui/anim_viewer.py:630
+#: janim/gui/anim_viewer.py:643
 #, python-brace-format
 msgid ""
 "Searching port {port} is invalid, please use a number between 1024 and 65535 "
 "instead"
 msgstr ""
 
-#: janim/gui/anim_viewer.py:636
+#: janim/gui/anim_viewer.py:649
 msgid ""
 "Interactive development is disabled because the searching port is not "
 "established."
 msgstr ""
 
-#: janim/gui/anim_viewer.py:649
+#: janim/gui/anim_viewer.py:662
 #, python-brace-format
 msgid "Interactive port has been opened at {port}"
 msgstr ""

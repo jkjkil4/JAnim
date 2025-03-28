@@ -516,6 +516,7 @@ class AnimViewer(QMainWindow):
     def on_error_occurred(self) -> None:
         if not self.playback_stopped and self.play_timer.isActive():
             self.play_timer.stop()
+            # 这里使用 QTimer.singleShot 是为了让这个消息尽量在 traceback 后再显示
             QTimer.singleShot(
                 0,
                 lambda: log.warning(_('An error occurred during rendering, playback stopped'))
