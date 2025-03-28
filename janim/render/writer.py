@@ -132,7 +132,6 @@ class VideoWriter:
 
                 # 处理最后一批
                 for read_idx in read_idx_iter:
-                    read_idx = frame_idx % PBO_COUNT
                     gl.glBindBuffer(gl.GL_PIXEL_PACK_BUFFER, self.pbos[read_idx])
                     data = gl.glGetBufferSubData(gl.GL_PIXEL_PACK_BUFFER, 0, self.byte_size)
                     self.writing_process.stdin.write(data)
