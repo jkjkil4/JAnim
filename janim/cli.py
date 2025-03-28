@@ -156,6 +156,7 @@ def write(args: Namespace) -> None:
             video_writer.write_all(
                 os.path.join(output_dir,
                              f'{name}.{args.format}'),
+                use_pbo=not args.disable_pbo,
                 _keep_temp=video_with_audio
             )
             if open_result and not video_with_audio:

@@ -147,6 +147,14 @@ def write_parser(parser: ArgumentParser) -> None:
         help=_('Generate SRT file')
     )
 
+    other_options = parser.add_argument_group(_('Other Options'),
+                                              _('Other options for writing the output files'))
+    other_options.add_argument(
+        '--disable_pbo',
+        action='store_true',
+        help=_('Disable PBO (Pixel Buffer Object) for writing video')
+    )
+
     parser.set_defaults(func=write)
 
 
