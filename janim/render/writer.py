@@ -2,7 +2,9 @@ import os
 import shutil
 import subprocess as sp
 import time
+from contextlib import contextmanager
 from functools import partial
+from typing import Generator
 
 import OpenGL.GL as gl
 from tqdm import tqdm as ProgressDisplay
@@ -15,6 +17,8 @@ from janim.render.base import create_context
 from janim.render.framebuffer import create_framebuffer, framebuffer_context
 
 _ = get_local_strings('writer')
+
+PBO_COUNT = 3
 
 
 class VideoWriter:
@@ -38,13 +42,39 @@ class VideoWriter:
             self.ctx = create_context(standalone=True, require=330)
 
         pw, ph = built.cfg.pixel_width, built.cfg.pixel_height
+        self.frame_count = round(built.duration * built.cfg.fps) + 1
         self.fbo = create_framebuffer(self.ctx, pw, ph)
 
-    @staticmethod
-    def writes(built: BuiltTimeline, file_path: str, *, quiet=False) -> None:
-        VideoWriter(built).write_all(file_path, quiet=quiet)
+        # PBO 相关初始化
+        self.byte_size = pw * ph * 4  # 每帧的字节大小 (RGBA)
 
-    def write_all(self, file_path: str, *, quiet=False, _keep_temp: bool = False) -> None:
+    def _init_pbos(self) -> None:
+        '''初始化PBO缓冲区'''
+        self.pbos = gl.glGenBuffers(PBO_COUNT)
+
+        for pbo in self.pbos:
+            gl.glBindBuffer(gl.GL_PIXEL_PACK_BUFFER, pbo)
+            # 分配空间，GL_STREAM_READ 表明数据将从 GPU 读取到 CPU，并且每帧都会更新
+            gl.glBufferData(gl.GL_PIXEL_PACK_BUFFER, self.byte_size, None, gl.GL_STREAM_READ)
+
+        gl.glBindBuffer(gl.GL_PIXEL_PACK_BUFFER, 0)  # 解绑PBO
+
+    def _read_idx_iter(self) -> Generator[int | None, None, None]:
+        for _ in range(PBO_COUNT - 1):
+            yield None
+        for frame_idx in range(self.frame_count):
+            yield frame_idx % PBO_COUNT
+
+    def _cleanup_pbos(self) -> None:
+        gl.glBindBuffer(gl.GL_PIXEL_PACK_BUFFER, 0)  # 确保解绑
+        # 正确删除多个缓冲区
+        gl.glDeleteBuffers(len(self.pbos), self.pbos)
+
+    @staticmethod
+    def writes(built: BuiltTimeline, file_path: str, *, quiet=False, use_pbo=True) -> None:
+        VideoWriter(built).write_all(file_path, quiet=quiet, use_pbo=use_pbo)
+
+    def write_all(self, file_path: str, *, quiet=False, use_pbo=True, _keep_temp: bool = False) -> None:
         '''将时间轴动画输出到文件中
 
         - 指定 ``quiet=True``，则不会输出前后的提示信息，但仍有进度条
@@ -59,7 +89,7 @@ class VideoWriter:
         self.open_video_pipe(file_path)
 
         progress_display = ProgressDisplay(
-            range(round(self.built.duration * fps) + 1),
+            range(self.frame_count),
             leave=False,
             dynamic_ncols=True
         )
@@ -68,19 +98,60 @@ class VideoWriter:
 
         transparent = self.ext == '.mov'
 
-        with framebuffer_context(self.fbo):
-            for frame in progress_display:
-                self.fbo.clear(*rgb, not transparent)
-                # 在输出 mov 时，framebuffer 是透明的
-                # 为了颜色能被正确渲染到透明 framebuffer 上
-                # 这里需要禁用自带 blending 的并使用 shader 里自定义的 blending（参考 program.py 的 injection_ja_finish_up）
-                # 但是 shader 里的 blending 依赖 framebuffer 信息
-                # 所以这里需要使用 glFlush 更新 framebuffer 信息使得正确渲染
-                if transparent:
-                    gl.glFlush()
-                self.built.render_all(self.ctx, frame / fps, blend_on=not transparent)
-                bytes = self.fbo.read(components=4)
-                self.writing_process.stdin.write(bytes)
+        if use_pbo:
+            self._init_pbos()
+
+            # 使用PBO优化的渲染循环
+            with framebuffer_context(self.fbo):
+                read_idx_iter = self._read_idx_iter()
+                for frame_idx, read_idx in zip(progress_display, read_idx_iter):
+                    # 渲染当前帧
+                    self.fbo.clear(*rgb, not transparent)
+                    if transparent:
+                        gl.glFlush()
+                    self.built.render_all(self.ctx, frame_idx / fps, blend_on=not transparent)
+
+                    # 绑定当前PBO来存储新帧
+                    gl.glBindBuffer(gl.GL_PIXEL_PACK_BUFFER, self.pbos[frame_idx % PBO_COUNT])
+                    # 注意: 当PBO绑定时，最后一个参数是偏移量而不是指针
+                    gl.glReadPixels(0, 0, self.built.cfg.pixel_width, self.built.cfg.pixel_height,
+                                    gl.GL_RGBA, gl.GL_UNSIGNED_BYTE, 0)
+
+                    # 如果不是第一批，处理上一批的数据
+                    if read_idx is not None:
+                        # 绑定对应的PBO，用于读取数据
+                        gl.glBindBuffer(gl.GL_PIXEL_PACK_BUFFER, self.pbos[read_idx])
+
+                        # 使用numpy从映射的内存中读取数据
+                        ptr = gl.glMapBuffer(gl.GL_PIXEL_PACK_BUFFER, gl.GL_READ_ONLY)
+                        assert ptr
+                        data = gl.ctypes.string_at(ptr, self.byte_size)
+                        # 写入数据到ffmpeg
+                        self.writing_process.stdin.write(data)
+                        gl.glUnmapBuffer(gl.GL_PIXEL_PACK_BUFFER)
+
+                # 处理最后一批
+                for read_idx in read_idx_iter:
+                    gl.glBindBuffer(gl.GL_PIXEL_PACK_BUFFER, self.pbos[read_idx])
+                    data = gl.glGetBufferSubData(gl.GL_PIXEL_PACK_BUFFER, 0, self.byte_size)
+                    self.writing_process.stdin.write(data)
+
+            self._cleanup_pbos()
+        else:
+            # 原始渲染循环（不使用PBO）
+            with framebuffer_context(self.fbo):
+                for frame in progress_display:
+                    self.fbo.clear(*rgb, not transparent)
+                    # 在输出 mov 时，framebuffer 是透明的
+                    # 为了颜色能被正确渲染到透明 framebuffer 上
+                    # 这里需要禁用自带 blending 的并使用 shader 里自定义的 blending（参考 program.py 的 injection_ja_finish_up）
+                    # 但是 shader 里的 blending 依赖 framebuffer 信息
+                    # 所以这里需要使用 glFlush 更新 framebuffer 信息使得正确渲染
+                    if transparent:
+                        gl.glFlush()
+                    self.built.render_all(self.ctx, frame / fps, blend_on=not transparent)
+                    bytes = self.fbo.read(components=4)
+                    self.writing_process.stdin.write(bytes)
 
         self.close_video_pipe(_keep_temp)
 
@@ -116,8 +187,8 @@ class VideoWriter:
 
         if self.ext == '.mp4':
             command += [
-                '-vcodec', 'libx264',
                 '-pix_fmt', 'yuv420p',
+                '-vcodec', self.find_encoder(self.built.cfg.ffmpeg_bin),
             ]
         elif self.ext == '.mov':
             # This is if the background of the exported
@@ -131,12 +202,38 @@ class VideoWriter:
             assert False
 
         command += [self.temp_file_path]
-        try:
+        with self.handle_ffmpeg_not_found():
             self.writing_process = sp.Popen(command, stdin=sp.PIPE)
-        except FileNotFoundError:
-            log.error(_('Unable to output video. '
-                        'Please install ffmpeg and add it to the environment variables.'))
-            raise ExitException(EXITCODE_FFMPEG_NOT_FOUND)
+
+    encoder_cache: str | None = None
+
+    @staticmethod
+    def find_encoder(ffmpeg_bin: str) -> str:
+        '''查找编码器，优先使用硬件编码器'''
+        if VideoWriter.encoder_cache is not None:
+            return VideoWriter.encoder_cache
+
+        # call ffmpeg to test nvenc/amf support
+        with VideoWriter.handle_ffmpeg_not_found():
+            test_availability = sp.Popen(
+                [ffmpeg_bin, '-hide_banner', '-encoders'],
+                stdout=sp.PIPE,
+                stderr=sp.PIPE
+            )
+
+        out, err = test_availability.communicate()
+        if b'h264_nvenc' in out:
+            encoder = 'h264_nvenc'
+            log.info(_('Using h264_nvenc for encoding'))
+        elif b'h264_amf' in out:
+            encoder = 'h264_amf'
+            log.info(_('Using h264_amf for encoding'))
+        else:
+            encoder = 'libx264'
+            log.info(_('No hardware encoder found. Using libx264 for encoding'))
+
+        VideoWriter.encoder_cache = encoder
+        return encoder
 
     def close_video_pipe(self, _keep_temp: bool) -> None:
         self.writing_process.stdin.close()
@@ -144,6 +241,16 @@ class VideoWriter:
         self.writing_process.terminate()
         if not _keep_temp:
             shutil.move(self.temp_file_path, self.final_file_path)
+
+    @staticmethod
+    @contextmanager
+    def handle_ffmpeg_not_found():
+        try:
+            yield
+        except FileNotFoundError:
+            log.error(_('Unable to output video. '
+                        'Please install ffmpeg and add it to the environment variables.'))
+            raise ExitException(EXITCODE_FFMPEG_NOT_FOUND)
 
 
 class AudioWriter:
