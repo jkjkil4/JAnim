@@ -74,7 +74,7 @@ class VideoWriter:
     def writes(built: BuiltTimeline, file_path: str, *, quiet=False, use_pbo=True) -> None:
         VideoWriter(built).write_all(file_path, quiet=quiet, use_pbo=use_pbo)
 
-    def write_all(self, file_path: str, *, quiet=False, use_pbo=True, _keep_temp: bool = False) -> None:
+    def write_all(self, file_path: str, *, quiet=False, use_pbo=True, _keep_temp=False) -> None:
         '''将时间轴动画输出到文件中
 
         - 指定 ``quiet=True``，则不会输出前后的提示信息，但仍有进度条
@@ -261,7 +261,7 @@ class AudioWriter:
     def writes(built: BuiltTimeline, file_path: str, *, quiet=False) -> None:
         AudioWriter(built).write_all(file_path, quiet=quiet)
 
-    def write_all(self, file_path: str, *, quiet=False, _keep_temp: bool = False) -> None:
+    def write_all(self, file_path: str, *, quiet=False, _keep_temp=False) -> None:
         name = self.built.timeline.__class__.__name__
         if not quiet:
             log.info(_('Writing audio of "{name}"').format(name=name))
@@ -336,7 +336,9 @@ def merge_video_and_audio(
     video_path: str,
     audio_path: str,
     result_path: str,
-    remove: bool = True
+    remove: bool = True,
+    *,
+    quiet: bool = False,
 ) -> None:
     command = [
         ffmpeg_bin,
@@ -364,10 +366,11 @@ def merge_video_and_audio(
         os.remove(video_path)
         os.remove(audio_path)
 
-    log.info(
-        _('File saved to "{file_path}" (merged)')
-        .format(file_path=result_path)
-    )
+    if not quiet:
+        log.info(
+            _('File saved to "{file_path}" (merged)')
+            .format(file_path=result_path)
+        )
 
 
 class SRTWriter:
