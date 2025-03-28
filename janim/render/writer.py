@@ -2,6 +2,7 @@ import os
 import shutil
 import subprocess as sp
 import time
+from contextlib import contextmanager
 from functools import partial
 from typing import Generator
 
@@ -185,32 +186,10 @@ class VideoWriter:
             '-loglevel', 'error',
         ]
 
-        # call ffmpeg to test nvenc/amf support
-        test_availability = sp.Popen(
-            [self.built.cfg.ffmpeg_bin, '-hide_banner', '-encoders'],
-            stdout=sp.PIPE,
-            stderr=sp.PIPE
-        )
-        out, err = test_availability.communicate()
-        if b'h264_nvenc' in out:
-            command += [
-                '-c:v', 'h264_nvenc',
-            ]
-            log.info(_('Using h264_nvenc for encoding'))
-        elif b'h264_amf' in out:
-            command += [
-                '-c:v', 'h264_amf',
-            ]
-            log.info(_('Using h264_amf for encoding'))
-        else:
-            command += [
-                '-c:v', 'libx264',
-            ]
-            log.info(_('No hardware encoder found. Using libx264 for encoding'))
-
         if self.ext == '.mp4':
             command += [
                 '-pix_fmt', 'yuv420p',
+                '-vcodec', self.find_encoder(self.built.cfg.ffmpeg_bin),
             ]
         elif self.ext == '.mov':
             # This is if the background of the exported
@@ -224,12 +203,38 @@ class VideoWriter:
             assert False
 
         command += [self.temp_file_path]
-        try:
+        with self.handle_ffmpeg_not_found():
             self.writing_process = sp.Popen(command, stdin=sp.PIPE)
-        except FileNotFoundError:
-            log.error(_('Unable to output video. '
-                        'Please install ffmpeg and add it to the environment variables.'))
-            raise ExitException(EXITCODE_FFMPEG_NOT_FOUND)
+
+    encoder_cache: str | None = None
+
+    @staticmethod
+    def find_encoder(ffmpeg_bin: str) -> str:
+        '''查找编码器，优先使用硬件编码器'''
+        if VideoWriter.encoder_cache is not None:
+            return VideoWriter.encoder_cache
+
+        # call ffmpeg to test nvenc/amf support
+        with VideoWriter.handle_ffmpeg_not_found():
+            test_availability = sp.Popen(
+                [ffmpeg_bin, '-hide_banner', '-encoders'],
+                stdout=sp.PIPE,
+                stderr=sp.PIPE
+            )
+
+        out, err = test_availability.communicate()
+        if b'h264_nvenc' in out:
+            encoder = 'h264_nvenc'
+            log.info(_('Using h264_nvenc for encoding'))
+        elif b'h264_amf' in out:
+            encoder = 'h264_amf'
+            log.info(_('Using h264_amf for encoding'))
+        else:
+            encoder = 'libx264'
+            log.info(_('No hardware encoder found. Using libx264 for encoding'))
+
+        VideoWriter.encoder_cache = encoder
+        return encoder
 
     def close_video_pipe(self, _keep_temp: bool) -> None:
         self.writing_process.stdin.close()
@@ -237,6 +242,16 @@ class VideoWriter:
         self.writing_process.terminate()
         if not _keep_temp:
             shutil.move(self.temp_file_path, self.final_file_path)
+
+    @staticmethod
+    @contextmanager
+    def handle_ffmpeg_not_found():
+        try:
+            yield
+        except FileNotFoundError:
+            log.error(_('Unable to output video. '
+                        'Please install ffmpeg and add it to the environment variables.'))
+            raise ExitException(EXITCODE_FFMPEG_NOT_FOUND)
 
 
 class AudioWriter:
