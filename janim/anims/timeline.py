@@ -916,7 +916,7 @@ class BuiltTimeline:
     def current_camera_info(self) -> CameraInfo:
         return self.timeline.compute_item(self.timeline.camera, self._time, True).points.info
 
-    def render_all(self, ctx: mgl.Context, global_t: float, *, blend_on: bool = True) -> None:
+    def render_all(self, ctx: mgl.Context, global_t: float, *, blend_on: bool = True) -> bool:
         '''
         渲染所有可见物件
         '''
@@ -983,6 +983,9 @@ class BuiltTimeline:
 
         except Exception:
             traceback.print_exc()
+            return False
+
+        return True
 
     capture_ctx: mgl.Context | None = None
     capture_fbo: mgl.Framebuffer | None = None

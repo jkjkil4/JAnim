@@ -19,7 +19,7 @@ import time
 import traceback
 from bisect import bisect_left
 
-from PySide6.QtCore import QByteArray, Qt, Signal
+from PySide6.QtCore import QByteArray, Qt, QTimer, Signal
 from PySide6.QtGui import QAction, QCloseEvent, QHideEvent, QIcon, QShowEvent
 from PySide6.QtWidgets import (QApplication, QCompleter, QLabel, QLineEdit,
                                QMainWindow, QMessageBox, QPushButton,
@@ -84,6 +84,7 @@ class AnimViewer(QMainWindow):
 
         if auto_play:
             self.switch_play_state()
+        self.playback_stopped: bool = False
 
         if available_timeline_names is not None:
             self.update_completer(available_timeline_names)
@@ -353,6 +354,7 @@ class AnimViewer(QMainWindow):
 
         self.play_timer.timeout.connect(self.on_play_timer_timeout)
         self.glw.rendered.connect(self.on_glw_rendered)
+        self.glw.error_occurred.connect(self.on_error_occurred)
         self.name_edit.editingFinished.connect(self.on_name_edit_finished)
         self.btn_export.clicked.connect(self.on_export_clicked)
 
@@ -510,6 +512,17 @@ class AnimViewer(QMainWindow):
             self.update_fps_label()
             self.fps_counter = 0
             self.fps_record_start = cur
+
+    def on_error_occurred(self) -> None:
+        if not self.playback_stopped and self.play_timer.isActive():
+            self.play_timer.stop()
+            QTimer.singleShot(
+                0,
+                lambda: log.warning(_('An error occurred during rendering, playback stopped'))
+            )
+
+        # 没把这个放在 if 分支里，是为了在 inactive 的时候也设置为 True
+        self.playback_stopped = True
 
     def update_fps_label(self) -> None:
         if self.action_frame_skip.isChecked():

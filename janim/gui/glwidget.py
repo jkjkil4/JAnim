@@ -13,6 +13,7 @@ class GLWidget(QOpenGLWidget):
     窗口中央的渲染界面
     '''
     rendered = Signal()
+    error_occurred = Signal()
 
     def __init__(self, parent: QWidget | None = None) -> None:
         super().__init__(parent)
@@ -60,5 +61,7 @@ class GLWidget(QOpenGLWidget):
             self.needs_update_clear_color = False
         self.qfuncs.glClear(0x00004000 | 0x00000100)    # GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT
         self.null_texture.use(FRAME_BUFFER_BINDING)
-        self.built.render_all(self.ctx, self.global_t)
+        ret = self.built.render_all(self.ctx, self.global_t)
         self.rendered.emit()
+        if not ret:
+            self.error_occurred.emit()
