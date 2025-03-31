@@ -134,6 +134,7 @@ class VItemRenderer(Renderer):
             self.vbo_coord.write(bytes)
 
             self.prev_glow_size = new_glow_size
+            self.prev_glow_visible = new_glow_visible
 
         if new_radius is not self.prev_radius or len(new_points) != len(self.prev_points):
             radius = resize_with_interpolation(new_radius, (len(new_points) + 1) // 2)
@@ -311,6 +312,7 @@ class VItemRenderer(Renderer):
             self.vbo_coord.write(bytes)
 
             self.prev_glow_size = new_glow_size
+            self.prev_glow_visible = new_glow_visible
 
         if new_radius is not self.prev_radius or len(new_points) != len(self.prev_points):
             radius = resize_with_interpolation(new_radius, (len(new_points) + 1) // 2)
