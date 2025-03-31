@@ -609,9 +609,8 @@ class AnimViewer(QMainWindow):
             QMessageBox.information(self,
                                     _('Note'),
                                     _('Output to {file_path} has been completed.').format(file_path=file_path))
-
-        if dialog.open():
-            open_file(file_path)
+            if dialog.open():
+                open_file(file_path)
 
     # endregion (slots-anim)
 
