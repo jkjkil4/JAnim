@@ -559,8 +559,8 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         进行数据对齐，以便插值
         '''
         aligned = AlignedData(item1.store(),
-                              item1.store(),
-                              item2.store())
+                              item2.store(),
+                              item1.store())
 
         # align components
         for key, cmpt1 in item1.components.items():
