@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: JAnim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-03-14 14:52+0800\n"
+"POT-Creation-Date: 2025-04-01 09:30+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -17,7 +17,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.14.0\n"
+"Generated-By: Babel 2.17.0\n"
 
 #: ../../source/janim/items/geometry/polygon.rst:2
 msgid "polygon"
@@ -36,7 +36,7 @@ msgid "传入顶点列表 ``verts`` 进行表示"
 msgstr ""
 
 #: janim.items.geometry.polygon.Polyline:1 janim.items.geometry.polygon.Rect:1
-#: janim.items.geometry.polygon.RegularPolygon:1 of
+#: of
 msgid "基类：:py:class:`~janim.items.geometry.polygon.Polygon`"
 msgstr ""
 
@@ -49,11 +49,21 @@ msgid "与 :class:`Polygon` 的区别是，不会自动将最后一个点与第�
 msgstr ""
 
 #: janim.items.geometry.polygon.RegularPolygon:1 of
+msgid ""
+"基类：:py:class:`~janim.items.points.MarkedItem`, "
+":py:class:`~janim.items.geometry.polygon.Polygon`"
+msgstr ""
+
+#: janim.items.geometry.polygon.RegularPolygon:1 of
 msgid "正多边形"
 msgstr ""
 
 #: janim.items.geometry.polygon.RegularPolygon:3 of
 msgid "传入数字 ``n`` 表示边数"
+msgstr ""
+
+#: janim.items.geometry.polygon.RegularPolygon:5 of
+msgid "可通过 ``.mark.get()`` 得到多边形的中心"
 msgstr ""
 
 #: janim.items.geometry.polygon.Triangle:1 of

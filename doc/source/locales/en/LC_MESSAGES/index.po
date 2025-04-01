@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: JAnim\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-05-30 15:49+0800\n"
-"PO-Revision-Date: 2024-06-03 09:43+0800\n"
+"POT-Creation-Date: 2025-04-01 09:30+0800\n"
+"PO-Revision-Date: 2025-04-01 09:34+0800\n"
 "Last-Translator: \n"
 "Language-Team: en <LL@li.org>\n"
 "Language: en\n"
@@ -17,18 +17,18 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"Generated-By: Babel 2.14.0\n"
-"X-Generator: Poedit 3.4.2\n"
+"Generated-By: Babel 2.17.0\n"
+"X-Generator: Poedit 3.6\n"
 
 #: ../../source/index.rst:11
 msgid "教程"
 msgstr "Tutorial"
 
-#: ../../source/index.rst:20
+#: ../../source/index.rst:21
 msgid "参考文档"
 msgstr "References"
 
-#: ../../source/index.rst:26
+#: ../../source/index.rst:27
 msgid "开发相关"
 msgstr "Development"
 
@@ -37,22 +37,22 @@ msgid "JAnim 文档"
 msgstr "JAnim Documentation"
 
 #: ../../source/index.rst:9
-msgid "JAnim 是一个用于简易动画效果的库"
-msgstr "JAnim is a library for simple animation effects"
+msgid "JAnim 是一个用于创建流畅动画的库"
+msgstr "JAnim is a library for creating smooth animations"
 
-#: ../../source/index.rst:32
+#: ../../source/index.rst:35
 msgid "目录与表格"
 msgstr "Indexes"
 
-#: ../../source/index.rst:34
+#: ../../source/index.rst:37
 msgid ":ref:`genindex`"
 msgstr ":ref:`genindex`"
 
-#: ../../source/index.rst:35
+#: ../../source/index.rst:38
 msgid ":ref:`modindex`"
 msgstr ":ref:`modindex`"
 
-#: ../../source/index.rst:36
+#: ../../source/index.rst:39
 msgid ":ref:`search`"
 msgstr ":ref:`search`"
 

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  JAnim\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-11-10 11:17+0800\n"
+"POT-Creation-Date: 2025-04-01 09:30+0800\n"
 "PO-Revision-Date: 2024-03-14 15:55+0800\n"
 "Last-Translator: \n"
 "Language: en\n"
@@ -17,7 +17,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.14.0\n"
+"Generated-By: Babel 2.17.0\n"
 
 #: ../../source/janim/anims/transform.rst:2
 msgid "transform"
@@ -41,6 +41,16 @@ msgstr ""
 
 #: janim.anims.transform.Transform:4 of
 msgid "也可以直接传入 ``path_func`` 来指定路径方法"
+msgstr ""
+
+#: janim.anims.transform.Transform:5 of
+msgid ""
+"在默认情况（``flatten=False``）下需要保证两个物件的子物件结构能够对齐，否则会报错；可以传入 ``flatten=True`` "
+"来忽略子物件结构"
+msgstr ""
+
+#: janim.anims.transform.Transform:6 of
+msgid "``root_only`` 可以指定只对两个物件的根物件进行插值，而不对子物件进行插值"
 msgstr ""
 
 #: janim.anims.transform.TransformInSegments:1

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  JAnim\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-20 11:45+0800\n"
+"POT-Creation-Date: 2025-04-01 09:30+0800\n"
 "PO-Revision-Date: 2024-06-03 09:46+0800\n"
 "Last-Translator: \n"
 "Language: en\n"
@@ -134,8 +134,7 @@ msgstr ""
 msgid "当 ``end`` 不是 ``FOREVER`` 时，与 :meth:`duration` 一致"
 msgstr ""
 
-#: janim.anims.animation.TimeRange.num_duration:3
-#: janim.anims.animation.TimeRange.num_end:3 of
+#: janim.anims.animation.TimeRange.num_duration:3 of
 msgid "当 ``end`` 是 ``FOREVER`` 时，此时返回 ``0``"
 msgstr ""
 
@@ -148,6 +147,10 @@ msgstr ""
 
 #: janim.anims.animation.TimeRange.num_end:1 of
 msgid "当 ``end`` 不是 ``FOREVER`` 时，此时返回 ``end``"
+msgstr ""
+
+#: janim.anims.animation.TimeRange.num_end:3 of
+msgid "当 ``end`` 是 ``FOREVER`` 时，此时返回 ``at``"
 msgstr ""
 
 #: janim.anims.animation.TimeRange.set:1 of
