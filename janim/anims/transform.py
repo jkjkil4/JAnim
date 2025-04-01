@@ -17,6 +17,7 @@ from janim.locale.i18n import get_local_strings
 from janim.logger import log
 from janim.typing import Vect
 from janim.utils.data import AlignedData
+from janim.utils.iterables import resize_preserving_order
 from janim.utils.paths import PathFunc, get_path_func
 
 _ = get_local_strings('transform')
@@ -28,6 +29,8 @@ class Transform(Animation):
 
     - ``path_arc`` 和 ``path_arc_axis`` 可以指定插值的圆弧路径的角度，若不传入则是直线
     - 也可以直接传入 ``path_func`` 来指定路径方法
+    - 在默认情况（``flatten=False``）下需要保证两个物件的子物件结构能够对齐，否则会报错；可以传入 ``flatten=True`` 来忽略子物件结构
+    - ``root_only`` 可以指定只对两个物件的根物件进行插值，而不对子物件进行插值
     '''
     label_color = C_LABEL_ANIM_STAY
 
@@ -42,6 +45,8 @@ class Transform(Animation):
 
         hide_src: bool = True,
         show_target: bool = True,
+
+        flatten: bool = False,
         root_only: bool = False,
         **kwargs
     ):
@@ -56,6 +61,7 @@ class Transform(Animation):
         self.hide_src = hide_src
         self.show_target = show_target
 
+        self.flatten = flatten
         self.root_only = root_only
 
         apprs = self.timeline.item_appearances
@@ -121,7 +127,26 @@ class Transform(Animation):
                     for child1, child2 in zip(aligned.data1.stored_children, aligned.data2.stored_children):
                         align(child1, child2, True)
 
-        align(self.src_item, self.target_item, not self.root_only)
+        if not self.flatten:
+            align(self.src_item, self.target_item, not self.root_only)
+        else:
+            src_items = [
+                item
+                for item in self.src_item.walk_self_and_descendants(self.root_only)
+                if not item.is_null()
+            ]
+            target_items = [
+                item
+                for item in self.target_item.walk_self_and_descendants(self.root_only)
+                if not item.is_null()
+            ]
+
+            max_len = max(len(src_items), len(target_items))
+            src_items = resize_preserving_order(src_items, max_len)
+            target_items = resize_preserving_order(target_items, max_len)
+
+            for item1, item2 in zip(src_items, target_items):
+                align(item1, item2, False)
 
         # 因为对齐后，可能会有多个一样的物件重叠在一起
         # 所以这里需要拆分这些物件的透明度，使得重叠在一起的相同物件在颜色混合后仍表现为原有的样子
