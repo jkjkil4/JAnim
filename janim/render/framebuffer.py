@@ -43,7 +43,8 @@ def create_framebuffer(ctx: mgl.Context, pw: int, ph: int) -> mgl.Framebuffer:
         # 推测可能是因为 moderngl、PyOpenGL、QtOpenGL 的一些状态没有同步
         # 下面 framebuffer_context 中的处理与这同理
         _qt_glwidget.qfuncs.glBindFramebuffer(0x8D40, prev)     # GL_FRAMEBUFFER
-        _qt_glwidget.qfuncs.glViewport(0, 0, _qt_glwidget.width(), _qt_glwidget.height())
+        ratio = _qt_glwidget.devicePixelRatio()
+        _qt_glwidget.qfuncs.glViewport(0, 0, int(_qt_glwidget.width() * ratio), int(_qt_glwidget.height() * ratio))
         _qt_glwidget.update_clear_color()
 
     return fbo
@@ -67,7 +68,8 @@ def framebuffer_context(fbo: mgl.Framebuffer):
         if on_qt and prev == _qt_glwidget.defaultFramebufferObject():
             # 这里的处理，请参考 create_framebuffer 中对应部分的注释
             _qt_glwidget.qfuncs.glBindFramebuffer(0x8D40, prev)     # GL_FRAMEBUFFER
-            _qt_glwidget.qfuncs.glViewport(0, 0, _qt_glwidget.width(), _qt_glwidget.height())
+            ratio = _qt_glwidget.devicePixelRatio()
+            _qt_glwidget.qfuncs.glViewport(0, 0, int(_qt_glwidget.width() * ratio), int(_qt_glwidget.height() * ratio))
             _qt_glwidget.update_clear_color()
         elif prev_fbo is not None:
             prev_fbo.color_attachments[0].use(FRAME_BUFFER_BINDING)
