@@ -77,7 +77,8 @@ def framebuffer_context(fbo: mgl.Framebuffer):
 
 @contextmanager
 def blend_context(ctx: mgl.Context, on: bool):
-    blending = get_uniforms_context_var(ctx).get().get('JA_BLENDING', False)
+    # 因为需要在第一次调用的时候也设置 True/False，所以这里 get 默认值为 None，使得 on == blending 不成立
+    blending = get_uniforms_context_var(ctx).get().get('JA_BLENDING', None)
     if on == blending:
         yield
         return

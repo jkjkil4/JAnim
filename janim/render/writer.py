@@ -14,7 +14,8 @@ from janim.exception import EXITCODE_FFMPEG_NOT_FOUND, ExitException
 from janim.locale.i18n import get_local_strings
 from janim.logger import log
 from janim.render.base import create_context
-from janim.render.framebuffer import create_framebuffer, framebuffer_context
+from janim.render.framebuffer import (blend_context, create_framebuffer,
+                                      framebuffer_context)
 
 _ = get_local_strings('writer')
 
@@ -102,7 +103,7 @@ class VideoWriter:
             self._init_pbos()
 
             # 使用PBO优化的渲染循环
-            with framebuffer_context(self.fbo):
+            with framebuffer_context(self.fbo), blend_context(self.ctx, not transparent):
                 read_idx_iter = self._read_idx_iter()
                 for frame_idx, read_idx in zip(progress_display, read_idx_iter):
                     # 渲染当前帧
@@ -139,7 +140,7 @@ class VideoWriter:
             self._cleanup_pbos()
         else:
             # 原始渲染循环（不使用PBO）
-            with framebuffer_context(self.fbo):
+            with framebuffer_context(self.fbo), blend_context(self.ctx, not transparent):
                 for frame in progress_display:
                     self.fbo.clear(*rgb, not transparent)
                     # 在输出 mov 时，framebuffer 是透明的
