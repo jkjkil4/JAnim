@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Self
+from typing import Iterable, Self
 
 import numpy as np
 
@@ -21,6 +21,41 @@ _ = get_local_strings('frame_effect')
 
 
 class FrameEffect(Item):
+    '''
+    将传入的着色器 ``fragment_shader`` 应用到 ``items`` 上
+
+    着色器基本格式：
+
+    .. code-block:: glsl
+
+        #version 330 core
+
+        in vec2 v_texcoord; // 传入的纹理坐标
+        out vec4 f_color;   // 输出的颜色
+
+        uniform sampler2D fbo; // 传入的纹理（承载了 items 的渲染结果）
+
+        // used by JA_FINISH_UP
+        uniform bool JA_BLENDING;
+        uniform sampler2D JA_FRAMEBUFFER;
+
+        void main()
+        {
+            // 进行处理，例如
+            f_color = texture(fbo, v_texcoord); // 读取纹理颜色
+            f_color.rgb = 1.0 - f_color.rgb; // 反色
+
+            #[JA_FINISH_UP]
+        }
+
+    其中 ``#[JA_FINISH_UP]`` 是一个占位符，JAnim 会在这里做一些额外的操作
+
+    上述代码最核心的是 ``main`` 中“进行处理”的部分，其余的代码作为固定的写法照抄即可
+
+    如果懒得抄，可以用 :class:`SimpleFrameEffect`，这个类只要写“进行处理”这部分就好了，因为它把其余代码都封装了
+
+    完整示例请参考 :ref:`样例学习 <examples>` 中的对应代码
+    '''
     renderer_cls = FrameEffectRenderer
 
     apprs = CmptInfo(Cmpt_List[Self, Timeline.ItemAppearance])
@@ -98,6 +133,62 @@ class FrameEffect(Item):
     def _mark_render_disabled(self):
         for appr in self.apprs:
             appr.render_disabled = True
+
+
+simple_frameeffect_shader = '''
+#version 330 core
+
+in vec2 v_texcoord;
+
+out vec4 f_color;
+
+uniform sampler2D fbo;
+
+#[JA_SIMPLE_FRAMEEFFECT_UNIFORMS]
+
+// used by JA_FINISH_UP
+uniform bool JA_BLENDING;
+uniform sampler2D JA_FRAMEBUFFER;
+
+void main()
+{
+    #[JA_SIMPLE_FRAMEEFFECT_SHADER]
+
+    #[JA_FINISH_UP]
+}
+'''
+
+
+class SimpleFrameEffect(FrameEffect):
+    '''
+    :class:`FrameEffect` 的简化封装，具体请参考 :class:`FrameEffect` 中的说明
+
+    .. warning::
+
+        若着色器代码中出现报错，报错行数无法与 ``shader`` 代码中的行对应
+    '''
+    def __init__(
+        self,
+        *items: Item,
+        shader: str,
+        uniforms: Iterable[str] = [],
+        cache_key: str | None = None,
+        root_only: bool = False,
+        **kwargs
+    ):
+        uniforms_code = '\n'.join(
+            f'uniform {uniform};'
+            for uniform in uniforms
+        )
+        super().__init__(
+            *items,
+            fragment_shader=simple_frameeffect_shader
+                .replace('#[JA_SIMPLE_FRAMEEFFECT_UNIFORMS]', uniforms_code)
+                .replace('#[JA_SIMPLE_FRAMEEFFECT_SHADER]', shader),
+            cache_key=cache_key,
+            root_only=root_only,
+            **kwargs
+        )
 
 
 frameclip_fragment_shader = '''
@@ -193,6 +284,12 @@ class Cmpt_FrameClip[ItemT](Component[ItemT]):
 
 
 class FrameClip(FrameEffect):
+    '''
+    一个用于创建简单矩形裁剪效果的类
+
+    ``clip`` 参数表示裁剪区域的四个边界，分别是左、上、右、下，范围是 0~1 表示百分比
+    '''
+
     clip = CmptInfo(Cmpt_FrameClip[Self])
 
     def __init__(
@@ -244,6 +341,45 @@ void main()
 
 
 class Shadertoy(FrameEffect):
+    '''
+    一个用于创建类似 Shadertoy 着色器效果的类
+
+    例:
+
+    .. code-block:: python
+
+        Shadertoy(
+            \'''
+            void mainImage( out vec4 fragColor, in vec2 fragCoord ) {
+                vec2 uv = fragCoord.xy / iResolution.xy;
+                vec3 color = vec3(uv.x, uv.y, 0.5);
+                fragColor = vec4(color, 1.0);
+            }
+            \'''
+        ).show()
+
+    .. warning::
+
+        实际的报错行数要减去 10
+
+        例如，如果在上面的例子中将 ``iResolution`` 误写为了 ``Resolution``，
+        会导致 ``0(12) : error C1503: undefined variable "Resolution"`` 的报错，
+        报错信息说的是在第 12 行，实际是第 2 行
+
+        行数标注：
+
+        .. code-block:: python
+
+            Shadertoy(
+                0 \'''
+                1 void mainImage( out vec4 fragColor, in vec2 fragCoord ) {
+                2     vec2 uv = fragCoord.xy / iResolution.xy;
+                3     vec3 color = vec3(uv.x, uv.y, 0.5);
+                4     fragColor = vec4(color, 1.0);
+                5 }
+                6 \'''
+            ).show()
+    '''
     def __init__(
         self,
         shader: str,

@@ -14,7 +14,7 @@ from janim.render.program import get_program_from_string
 from janim.utils.config import Config
 
 if TYPE_CHECKING:
-    from janim.items.effect.frame_effect import FrameEffect
+    from janim.items.frame_effect import FrameEffect
 
 
 vertex_shader = '''
