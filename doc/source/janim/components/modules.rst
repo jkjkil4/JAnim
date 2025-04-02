@@ -9,9 +9,11 @@ components
    component
    data
    depth
+   glow
    image
+   mark
    points
    radius
    rgbas
+   simple
    vpoints
-   glow

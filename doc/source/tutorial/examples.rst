@@ -263,3 +263,57 @@
                 ),
                 duration=4
             )
+
+
+.. janim-example:: FrameEffectExample
+    :media: ../_static/videos/FrameEffectExample.mp4
+
+    from janim.imports import *
+
+    class FrameEffectExample(Timeline):
+        def construct(self):
+            squares = Square(0.5, color=BLUE, fill_alpha=0.3) * 49
+            squares.points.arrange_in_grid()
+
+            effect1 = SimpleFrameEffect(    # (2~8s) [::2] 的方块产生渐变色
+                squares[::2],
+                shader='''
+                f_color = texture(fbo, v_texcoord);
+                f_color.gb *= v_texcoord;
+                '''
+            )
+
+            effect2 = SimpleFrameEffect(    # (4~8s) [1::2] 的方块产生故障效果
+                squares[1::2],
+                shader='''
+                vec2 uv = v_texcoord;
+
+                float glitchStrength = sin(time) * 0.02;
+                vec2 offset = vec2(glitchStrength, 0.0);
+
+                float r = texture(fbo, uv + offset).r;
+                float g = texture(fbo, uv).g;
+                float b = texture(fbo, uv - offset).b;
+                float a = max(texture(fbo, uv + offset).a, max(texture(fbo, uv).a, texture(fbo, uv - offset).a));
+
+                float lineNoise = step(0.5, fract(uv.y * 10.0 + time));
+                r *= lineNoise;
+                b *= lineNoise;
+
+                f_color = vec4(r, g, b, a);
+                ''',
+                uniforms=['float time']
+            )
+
+
+            self.schedule(2, effect1.show)
+
+            self.play(
+                Rotate(squares, TAU, duration=8),
+                DataUpdater(
+                    effect2,
+                    lambda data, p: data.apply_uniforms(time=p.global_t - p.range.at),
+                    at=4,
+                    duration=4
+                )
+            )

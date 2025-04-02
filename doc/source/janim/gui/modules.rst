@@ -10,8 +10,8 @@ gui
    anim_viewer
    application
    audio_player
-   glwidget
    fixed_ratio_widget
+   glwidget
+   label
    precise_timer
    timeline_view
-   label

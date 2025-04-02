@@ -11,11 +11,12 @@ items
    svg/modules.rst
    audio
    boolean_ops
+   frame_effect
    image_item
-   vitem
+   item
    points
    relation
    shape_matchers
-   value_tracker
-   item
    text
+   value_tracker
+   vitem

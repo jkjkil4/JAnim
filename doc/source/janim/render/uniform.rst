@@ -1,7 +1,7 @@
-font
-====
+uniform
+=======
 
-.. automodule:: janim.utils.font
+.. automodule:: janim.render.uniform
    :members:
    :undoc-members:
    :show-inheritance:
