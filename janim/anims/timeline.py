@@ -40,7 +40,8 @@ from janim.locale.i18n import get_local_strings
 from janim.logger import log
 from janim.render.base import RenderData, Renderer, create_context
 from janim.render.framebuffer import (FRAME_BUFFER_BINDING, blend_context,
-                                      create_framebuffer, uniforms)
+                                      create_framebuffer, framebuffer_context,
+                                      uniforms)
 from janim.render.uniform import get_uniforms_context_var
 from janim.typing import JAnimColor, SupportsAnim
 from janim.utils.config import Config, ConfigGetter, config_ctx_var
@@ -1003,7 +1004,9 @@ class BuiltTimeline:
         fbo = BuiltTimeline.capture_fbo
         fbo.use()
         fbo.clear(*self.cfg.background_color.rgb)
-        self.render_all(BuiltTimeline.capture_ctx, global_t)
+        gl.glFlush()
+        with framebuffer_context(self.capture_fbo):
+            self.render_all(BuiltTimeline.capture_ctx, global_t, blend_on=False)
 
         return Image.frombytes(
             "RGBA", fbo.size, fbo.read(components=4),
