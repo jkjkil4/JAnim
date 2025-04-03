@@ -10,7 +10,7 @@ import types
 from abc import ABCMeta, abstractmethod
 from bisect import bisect, insort
 from collections import defaultdict
-from contextlib import nullcontext
+from contextlib import contextmanager, nullcontext
 from contextvars import ContextVar
 from dataclasses import dataclass
 from typing import Callable, Iterable, Self, overload
@@ -61,7 +61,6 @@ class Timeline(metaclass=ABCMeta):
     调用 :meth:`build` 可以得到构建完成的 :class:`Timeline` 对象
     '''
 
-    # region config
 
     CONFIG: Config | None = None
     '''
@@ -79,36 +78,6 @@ class Timeline(metaclass=ABCMeta):
 
     另见：:class:`~.Config`
     '''
-
-    class _WithConfig:
-        def __init__(self, cls: type[Timeline]):
-            self.cls = cls
-
-            self.lst: list[Config] = []
-            for sup in self.cls.mro():
-                config: Config | None = getattr(sup, 'CONFIG', None)
-                if config is None or config in self.lst:
-                    continue
-                self.lst.append(config)
-
-            self.lst.reverse()
-
-        def __enter__(self) -> Self:
-            lst = [*config_ctx_var.get(), *self.lst]
-            self.token = config_ctx_var.set(lst)
-            return self
-
-        def __exit__(self, exc_type, exc_value, tb) -> None:
-            config_ctx_var.reset(self.token)
-
-    @classmethod
-    def with_config(cls) -> _WithConfig:
-        '''
-        使用定义在 :class:`Timeline` 子类中的 config
-        '''
-        return cls._WithConfig(cls)
-
-    # endregion
 
     # region context
 
@@ -184,6 +153,8 @@ class Timeline(metaclass=ABCMeta):
 
         self.current_time: float = 0
         self.times_of_code: list[Timeline.TimeOfCode] = []
+
+        self._frozen_config: list[Config] | None = None
 
         self.scheduled_tasks: list[Timeline.ScheduledTask] = []
         self.audio_infos: list[Timeline.PlayAudioInfo] = []
@@ -261,6 +232,29 @@ class Timeline(metaclass=ABCMeta):
                 )
 
         return built
+
+    @contextmanager
+    def with_config(self):
+        '''
+        如果是第一次调用，会在当前 context 的基础上作用定义在 :class:`Timeline` 子类中的 config，并记录
+
+        如果是之后的调用，则会直接设置为已记录的，确保在不同情境下的一致性
+        '''
+        if self._frozen_config is None:
+            cls_config: list[Config] = []
+            for sup in self.__class__.mro():
+                config: Config | None = getattr(sup, 'CONFIG', None)
+                if config is None or config in cls_config:
+                    continue
+                cls_config.append(config)
+
+            self._frozen_config = [*config_ctx_var.get(), *reversed(cls_config)]
+
+        token = config_ctx_var.set(self._frozen_config)
+        try:
+            yield
+        finally:
+            config_ctx_var.reset(token)
 
     # region schedule
 
