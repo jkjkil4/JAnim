@@ -46,6 +46,9 @@ doc = [
     "jinja2",
     "docutils",
 ]
+test = [
+    "opencv-python",
+]
 
 [tool.flit.sdist]
 exclude = [
