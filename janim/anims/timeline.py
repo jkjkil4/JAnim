@@ -13,7 +13,7 @@ from collections import defaultdict
 from contextlib import contextmanager, nullcontext
 from contextvars import ContextVar
 from dataclasses import dataclass
-from typing import Callable, Iterable, Self, overload
+from typing import Callable, Iterable, overload
 
 import moderngl as mgl
 import numpy as np
@@ -60,7 +60,6 @@ class Timeline(metaclass=ABCMeta):
 
     调用 :meth:`build` 可以得到构建完成的 :class:`Timeline` 对象
     '''
-
 
     CONFIG: Config | None = None
     '''
@@ -844,10 +843,13 @@ class BuiltTimeline:
         self.duration = timeline.time_aligner.align_t(timeline.current_time)
 
         self.visible_item_segments = TimeSegments(
-            timeline.item_appearances.values(),
+            (
+                (item, appr)
+                for item, appr in timeline.item_appearances.items()
+            ),
             lambda x: (
                 TimeRange(*range) if len(range) == 2 else TimeRange(*range, self.duration + 1)
-                for range in it.batched(x.visibility, 2)
+                for range in it.batched(x[1].visibility, 2)
             )
         )
         self.visible_additional_callbacks_segments = TimeSegments(
@@ -944,7 +946,7 @@ class BuiltTimeline:
                     render_datas: list[tuple[Timeline.ItemAppearance, Item]] = []
                     # 反向遍历一遍所有物件，这是为了让一些效果标记原有的物件不进行渲染
                     # （会把所应用的物件的 render_disabled 置为 True，所以在下面可以判断这个变量过滤掉它们）
-                    for appr in reversed(self.visible_item_segments.get(global_t)):
+                    for _, appr in reversed(self.visible_item_segments.get(global_t)):
                         if not appr.is_visible_at(global_t):
                             continue
                         data = appr.stack.compute(global_t, True)
