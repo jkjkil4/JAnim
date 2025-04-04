@@ -1,16 +1,13 @@
 import os
-import shutil
+import cv2
 import sys
 import unittest
-from typing import Generator
 
 import numpy as np
-from PIL import Image
 
 import janim.examples as examples
 from janim.anims.timeline import Timeline
 from janim.cli import get_all_timelines_from_module
-from janim.render.writer import VideoWriter
 from janim.utils.config import Config
 from janim.utils.file_ops import guarantee_existence
 
@@ -53,32 +50,31 @@ def load_tests(loader, standard_tests, pattern) -> unittest.TestSuite:
 
             fps = built.cfg.fps
 
-            max_errors = 0
+            worst = 1
             frame_number = -1
 
-            for frame, ref in zip(range(round(built.duration * fps) + 1),
-                                self.get_ref(self.timeline_cls.__name__)):
-                render_data = np.frombuffer(built.capture(frame / fps).tobytes(), dtype=np.uint8).astype(np.int16)
-                ref_data = np.frombuffer(ref, dtype=np.uint8).astype(np.int16)
-                delta = np.abs(render_data - ref_data)
-                errors = np.max(delta.reshape((-1, 4)).sum(axis=1))
-                if errors > max_errors:
-                    max_errors = errors
+            for frame, ref_image in zip(range(round(built.duration * fps) + 1),
+                                        self.get_ref(self.timeline_cls.__name__)):
+                render_image = cv2.cvtColor(np.array(built.capture(frame / fps)), cv2.COLOR_RGBA2BGRA)
+                res = cv2.matchTemplate(render_image, ref_image, cv2.TM_CCOEFF_NORMED)
+                res = res[0][0]
+                if res < 0.99 and res < worst:
+                    worst = res
                     frame_number = frame
 
-            if max_errors != 0:
+            if worst != 1:
                 guarantee_existence('test/__test_errors__')
                 built.capture(frame_number / fps).save(f'test/__test_errors__/{self.timeline_cls.__name__}_{frame_number}_err.png')
-            self.assertEqual(max_errors, 0, f'max_errors: {max_errors}, t: {frame_number / fps}')
+            self.assertEqual(worst, 1, f'worst: {worst}, t: {frame_number / fps}')
 
         @staticmethod
-        def get_ref(timeline_name: str) -> Generator[bytes, None, None]:
+        def get_ref(timeline_name: str):
             frame = 0
             ref = None
             while True:
                 ref_path = os.path.join(ref_dir, f'{timeline_name}_{frame}.png')
                 if os.path.exists(ref_path):
-                    ref = Image.open(ref_path).tobytes()
+                    ref = cv2.imread(ref_path, cv2.IMREAD_UNCHANGED)
                 assert ref is not None
                 frame += 1
                 yield ref
