@@ -8,12 +8,14 @@
 步骤
 ~~~~~~~~
 
+.. _install_dep:
+
 安装依赖项
 ------------
 
 以下依赖需要全局安装在系统中：
 
-- `FFmpeg <https://ffmpeg.org>`_ （必需，用于输出视频文件，在 Windows 下安装需要配置 **环境变量**）
+- `FFmpeg <https://ffmpeg.org>`_ （用于输出视频文件，在 Windows 下安装需要配置 **环境变量**）
 - `Typst <https://github.com/typst/typst/releases>`_ （可选，用于公式排版，需要配置 **环境变量**）
 
 .. tabs::
@@ -27,7 +29,8 @@
         安装完包管理器（或者自带 Winget），以 Winget 为例，按 ``Win + R`` 输入 ``powershell`` 或者在开始菜单中输入 powershell 打开 Powershell，输入 ``winget install typst`` 以及 ``winget install ffmpeg`` 即可完成安装。其他两种也是同理。
 
         .. tip::
-            如果不熟悉命令行，希望使用图形化界面，也可以安装 `UniGetUI <https://github.com/marticliment/UniGetUI>`_ 来对包管理器进行统一展示和调用，注意它只是包管理器的图形界面，仍然需要环境中存在对应包管理器才能使用。
+
+            如果不熟悉命令行，希望使用图形化界面，也可以安装 `UniGetUI <https://github.com/marticliment/UniGetUI>`_ 来对包管理器进行统一展示和调用，注意它只是包管理器的图形界面，仍然需要环境中存在对应包管理器才能使用
 
     .. tab:: Windows + 直接下载二进制
 
@@ -43,7 +46,29 @@
 
         尝试一下有没有正确识别。在“开始”菜单输入并打开 PowerShell 或者 Cmd，运行 ``ffmpeg --version`` 和 ``typst --version``，输出版本号则安装成功。
 
-    .. tab:: macOS / Linux
+    .. tab:: MacOS
+
+        推荐使用包管理器安装，这里使用常见的 `Homebrew <https://brew.sh/>`_ 作为示例。
+
+        Homebrew 是 macOS 上最常用的包管理器，使用下面这个命令即可安装（如果你已经安装过了，可以跳过）：
+
+        .. code-block:: bash
+
+            /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
+        接着便可以使用 Homebrew 安装 FFmpeg 和 Typst
+
+        .. code-block:: bash
+
+            # FFmpeg
+            brew install ffmpeg
+            ffmpeg --version # 输出版本号则安装成功
+
+            # Typst
+            brew install typst
+            typst --version # 输出版本号则安装成功
+
+    .. tab:: Linux
 
         考虑到使用 `类 UNIX <https://zh.wikipedia.org/wiki/%E7%B1%BBUnix%E7%B3%BB%E7%BB%9F>`_ 的用户一般对命令行更有了解，而且相应的发行版多，包管理没有通用的命令。这里仅给出 Ubuntu 的安装方法。
 
@@ -73,7 +98,7 @@
 
 JAnim 是一个库并且提供了可以直接调用的二进制，熟悉 Python 库的开发者可以自行选用合适的方法安装。整体上来说有两种安装思路，各有优势。安装在全局的好处是所有项目都可以调用同一套库，可以直接调用命令而不需要先切换环境和目录；安装在虚拟环境的好处是做到项目间的依赖隔离，并且不会污染全局的指令。
 
-以下简单介绍几种常见的安装方法。由于在此之后的操作或多或少要涉及到命令行操作，所以简单介绍一下打开命令行的方式，以下不再指出。在 Windows 上推荐使用自带的 Powershell，❶简单的打开方式是“Win 徽标键 + R”打开“运行”窗口，输入 ``powershell``（Powershell 7.x 需要输入 ``pwsh``），❷也可以如上所说在开始菜单中输入“powershell”然后回车，或者❸在 VS Code 中按下 ``ctrl + ```。在 macOS / Linux 上一般是右键选择“终端”或者找到自带的终端图标。
+以下简单介绍几种常见的安装方法。由于在此之后的操作或多或少要涉及到命令行操作，所以简单介绍一下打开命令行的方式，以下不再指出。在 Windows 上推荐使用自带的 Powershell，❶简单的打开方式是 “Win 徽标键 + R” 打开 “运行” 窗口，输入 ``powershell`` （Powershell 7.x 需要输入 ``pwsh``），❷也可以如上所说在开始菜单中输入“powershell”然后回车，或者❸在 VS Code 中按下 ``ctrl + ```。在 macOS / Linux 上一般是右键选择“终端”或者找到自带的终端图标。
 
 .. tabs::
 
@@ -81,11 +106,13 @@ JAnim 是一个库并且提供了可以直接调用的二进制，熟悉 Python 
 
         `uv <https://github.com/astral-sh/uv>`_ 是一套用于 Python 项目管理的工具链，目前已经相对完善，对于需要频繁使用 Python 多版本和多依赖库的开发者来说很方便。官方提供了很多安装方法，可以用上文提到的包管理工具安装，也可以独立安装。
 
-        .. tip::
+        .. note::
 
             这一条目借鉴了 `manimCE 项目的安装文档 <https://docs.manim.community/en/stable/installation/uv.html>`_，命令行安装 ``uv`` 以及进一步新建项目的命令都可以参考其中相应段落
 
-        本节介绍每个文件夹下创建独立虚拟环境的方式。假如你在一个适当的文件路径（以下用“/my/path”指代）下，想在一个叫“JAnim-folder”的文件夹下集中开发，那么请逐行运行以下命令，它会自动创建“JAnim-folder”并在其中创建虚拟环境。
+            如果你对使用 ``uv`` 还不熟悉并略有困惑，可以点击上面分页中的 “Python + 全局” 切换到更为经典的安装方式，这样你可能会更容易理解，但我们仍然推荐使用 ``uv`` 进行管理
+
+        本节介绍每个文件夹下创建独立虚拟环境的方式。假如你在一个适当的文件路径（以下用 “/my/path” 指代）下，想在一个叫 “JAnim-folder” 的文件夹下集中开发，那么请逐行运行以下命令，它会自动创建 “JAnim-folder” 并在其中创建虚拟环境。
 
         .. code-block:: bash
 
@@ -97,6 +124,10 @@ JAnim 是一个库并且提供了可以直接调用的二进制，熟悉 Python 
 
         用这种方式安装后，文档中所有 ``janim`` 指令都要换成 ``uv run janim``，如果仍然要直接调用 ``janim``，则需要先 `激活虚拟环境 <https://docs.astral.sh/uv/pip/environments/#using-a-virtual-environment>`_，这是出于全局和本项目隔离的目的。
 
+        .. tip::
+
+            一切就绪后，可以使用 ``uv run janim examples`` 查看内置示例，进一步检验 JAnim 以及依赖项的安装情况
+
     .. tab:: uv + 全局
 
         要想用 ``uv`` 把 ``janim`` 安装在全局的话，``uv`` 工具的安装方式请参考“uv + 虚拟环境”标签。全局安装不需要指定用来开发项目的文件夹。
@@ -106,21 +137,28 @@ JAnim 是一个库并且提供了可以直接调用的二进制，熟悉 Python 
             uv tool install janim[gui]
             janim --version # 看到版本号说明安装完成
 
+        .. tip::
+
+            一切就绪后，可以使用 ``janim examples`` 查看内置示例，进一步检验 JAnim 以及依赖项的安装情况
+
     .. tab:: Python + 全局
 
         Python 可以直接安装，而且多版本可以共存。访问 `Python 官网下载页 <https://www.python.org/downloads/>`_ 选择 3.12 或更高版本，下载安装。
 
-        使用 Python 自带的 pip 工具，会自动将依赖安装在全局。打开命令行输入以下命令。
+        使用 Python 自带的 pip 工具，会自动将依赖安装在全局。打开命令行输入该命令即可：
 
         .. code-block:: bash
 
-            # 通过 pip 安装 JAnim
             pip install janim[gui]
+            janim --version # 看到版本号说明安装完成
 
-            # 运行样例
-            janim examples
+        .. tip::
+
+            一切就绪后，可以使用 ``janim examples`` 查看内置示例，进一步检验 JAnim 以及依赖项的安装情况
 
     .. tab:: Conda + 全局（TODO）
+
+        有待完善，欢迎补充
 
 .. _install_vscode:
 
