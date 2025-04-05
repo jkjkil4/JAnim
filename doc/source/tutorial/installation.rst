@@ -46,7 +46,7 @@
 
         尝试一下有没有正确识别。在“开始”菜单输入并打开 PowerShell 或者 Cmd，运行 ``ffmpeg --version`` 和 ``typst --version``，输出版本号则安装成功。
 
-    .. tab:: MacOS
+    .. tab:: macOS
 
         推荐使用包管理器安装，这里使用常见的 `Homebrew <https://brew.sh/>`_ 作为示例。
 
