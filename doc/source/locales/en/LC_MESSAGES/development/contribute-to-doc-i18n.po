@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  JAnim\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-20 11:45+0800\n"
+"POT-Creation-Date: 2025-04-05 16:52+0800\n"
 "PO-Revision-Date: 2024-06-08 23:53+0800\n"
 "Last-Translator: \n"
 "Language: en\n"
@@ -51,7 +51,7 @@ msgstr ""
 
 #: ../../source/development/contribute-to-doc-i18n.rst:23
 #, fuzzy
-msgid "我只知道在 Windows 和 MacOS 中，以下步骤有效"
+msgid "我只知道在 Windows 和 macOS 中，以下步骤有效"
 msgstr "I am only aware that the following steps work on Windows."
 
 #: ../../source/development/contribute-to-doc-i18n.rst:25
@@ -91,7 +91,7 @@ msgid "进入 ``doc/`` 文件夹，并使用"
 msgstr "navigate to ``doc/`` folder, and run the following command:"
 
 #: ../../source/development/contribute-to-doc-i18n.rst:56
-msgid "或（在 MacOS 中）"
+msgid "或（在 macOS 中）"
 msgstr ""
 
 #: ../../source/development/contribute-to-doc-i18n.rst:62
@@ -232,7 +232,7 @@ msgstr ""
 "language code."
 
 #: ../../source/development/contribute-to-doc-i18n.rst:149
-msgid "MacOS"
+msgid "macOS"
 msgstr ""
 
 #: ../../source/development/contribute-to-doc-i18n.rst:167
@@ -250,5 +250,11 @@ msgstr ""
 #~ msgstr ""
 
 #~ msgid "MacOS 系统"
+#~ msgstr ""
+
+#~ msgid "或（在 MacOS 中）"
+#~ msgstr ""
+
+#~ msgid "MacOS"
 #~ msgstr ""
 
