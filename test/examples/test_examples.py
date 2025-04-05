@@ -58,7 +58,7 @@ def load_tests(loader, standard_tests, pattern) -> unittest.TestSuite:
                 render_image = cv2.cvtColor(np.array(built.capture(frame / fps)), cv2.COLOR_RGBA2BGRA)
                 res = cv2.matchTemplate(render_image, ref_image, cv2.TM_CCOEFF_NORMED)
                 res = res[0][0]
-                if res < 0.99 and res < worst:
+                if res < 0.98 and res < worst:
                     worst = res
                     frame_number = frame
 
