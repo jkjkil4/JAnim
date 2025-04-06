@@ -182,11 +182,13 @@ class LabelGroup(Label):
         pen=Qt.PenStyle.NoPen,
         brush=Qt.BrushStyle.NoBrush,
         highlight_pen=Qt.PenStyle.NoPen,
-        highlight_brush=Qt.BrushStyle.NoBrush
+        highlight_brush=Qt.BrushStyle.NoBrush,
+        skip_grouponly_query=False
     ):
         super().__init__(name, t_range, pen=pen, brush=brush)
         self.highlight_pen = highlight_pen
         self.highlight_brush = highlight_brush
+        self.skip_grouponly_query = skip_grouponly_query
 
         self.pix_collapse_tip1 = self.get_pix_collapse_tip1()
         self.pix_collapse_tip2 = self.get_pix_collapse_tip2()
@@ -371,7 +373,9 @@ class LabelGroup(Label):
                     return None
                 if not isinstance(label, LabelGroup):
                     return None
-                return label._query_at(t, y, policy) or label
+                if (ret := label._query_at(t, y, policy)) is not None:
+                    return ret
+                return None if label.skip_grouponly_query else label
 
             case LabelGroup.QueryPolicy.HeaderOnly:
                 if not 0 <= y < label.height:

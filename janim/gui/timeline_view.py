@@ -200,6 +200,43 @@ class TimelineView(QWidget):
             self.debug_label_group = None
         else:
             def make_debug_label(item: Item):
+                return LabelGroup(
+                    repr(item),
+                    self.anim_label_group.t_range,
+                    make_visibility_debug_label(item),
+                    make_anim_debug_label(item),
+                    brush=QColor(170, 148, 132),
+                    highlight_pen=QPen(QColor(41, 171, 202), 3),
+                    highlight_brush=QColor(41, 171, 202, 40),
+                    collapse=False,
+                    header=True
+                )
+
+            class VisibilityLabel(Label):
+                def __init__(self, t_range: TimeRange):
+                    super().__init__('', t_range, brush=QColor(255, 255, 128, 200))
+
+                @property
+                def height(self) -> int:
+                    return 1
+
+            def make_visibility_debug_label(item: Item):
+                visibility = self.built.timeline.item_appearances[item].visibility
+                if len(visibility) % 2 != 0:
+                    visibility.append(self.built.duration + 1)
+                return LabelGroup(
+                    '',
+                    self.anim_label_group.t_range,
+                    *[
+                        VisibilityLabel(TimeRange(visibility[i * 2], visibility[i * 2 + 1]))
+                        for i in range(len(visibility) // 2)
+                    ],
+                    collapse=False,
+                    header=False,
+                    skip_grouponly_query=True
+                )
+
+            def make_anim_debug_label(item: Item):
                 colors = [
                     [251, 180, 174], [179, 205, 227], [204, 235, 197],
                     [222, 203, 228], [254, 217, 166], [255, 255, 204],
@@ -214,10 +251,9 @@ class TimelineView(QWidget):
                         color = dct[anim] = QColor(*next(iter))
                     return color
 
-                # TODO: visibility
                 stack = self.built.timeline.item_appearances[item].stack
                 return LabelGroup(
-                    repr(item),
+                    '',
                     self.anim_label_group.t_range,
                     *[
                         Label(
@@ -236,11 +272,9 @@ class TimelineView(QWidget):
                         )
                         for anim in anims
                     ],
-                    brush=QColor(170, 148, 132),
-                    highlight_pen=QPen(QColor(41, 171, 202), 3),
-                    highlight_brush=QColor(41, 171, 202, 40),
                     collapse=False,
-                    header=True
+                    header=False,
+                    skip_grouponly_query=True
                 )
 
             self.debug_label_group = LabelGroup(

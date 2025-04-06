@@ -779,6 +779,10 @@ class Timeline(metaclass=ABCMeta):
         '''
         将物件的动画栈显示在时间轴中
 
+        .. tip::
+
+            显示在时间轴中的一个黄色扁条表示在哪些区段中物件是可见的
+
         .. warning::
 
             有些动画是覆盖性的，例如直接数据改变（``Display``） 和 ``.anim`` （``MethodTransform``），不要因为没有看到预期的栈结构而感到困惑
