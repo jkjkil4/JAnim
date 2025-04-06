@@ -776,6 +776,13 @@ class Timeline(metaclass=ABCMeta):
     # region debug
 
     def debug(self, item: Item, msg: str | None = None) -> None:
+        '''
+        将物件的动画栈显示在时间轴中
+
+        .. warning::
+
+            有些动画是覆盖性的，例如直接数据改变（``Display``） 和 ``.anim`` （``MethodTransform``），不要因为没有看到预期的栈结构而感到困惑
+        '''
         if self.show_debug_notice:
             f_back = inspect.currentframe().f_back
             filename = os.path.basename(f_back.f_code.co_filename)
