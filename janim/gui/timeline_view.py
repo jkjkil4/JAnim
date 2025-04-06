@@ -111,6 +111,32 @@ class TimelineView(QWidget):
         '''
         构建动画区段信息，以便操作与绘制
         '''
+        self.anim_label_group = self.make_anim_label_group()
+
+        if not self.built.timeline.has_audio():
+            self.audio_label_group = None
+        else:
+            self.audio_label_group = self.make_audio_label_group()
+
+        if not self.built.timeline.debug_list:
+            self.debug_label_group = None
+        else:
+            self.debug_label_group = self.make_debug_label_group()
+
+        self.label_group = LabelGroup(
+            '',
+            self.anim_label_group.t_range,
+            *[
+                label_group
+                for label_group in (self.debug_label_group, self.audio_label_group)
+                if label_group is not None
+            ],
+            self.anim_label_group,
+            collapse=False,
+            header=False,
+        )
+
+    def make_anim_label_group(self) -> LabelGroup:
         def make_label_from_anim(anim: Animation, header: bool = True) -> Label | None:
             name = anim.name or anim.__class__.__name__
             color = QColor(*anim.label_color)
@@ -148,7 +174,7 @@ class TimelineView(QWidget):
             setattr(label, LABEL_OBJ_NAME, anim)
             return label
 
-        self.anim_label_group = LabelGroup(
+        return LabelGroup(
             '',
             TimeRange(0, self.built.duration),
             *[
@@ -165,122 +191,44 @@ class TimelineView(QWidget):
             header=False,
         )
 
-        if not self.built.timeline.has_audio():
-            self.audio_label_group = None
-        else:
-            infos = self.built.timeline.audio_infos
-            multiple = len(infos) != 1
+    def make_audio_label_group(self) -> LabelGroup:
+        infos = self.built.timeline.audio_infos
+        multiple = len(infos) != 1
 
-            def make_audio_label(info: Timeline.PlayAudioInfo) -> Label:
-                label = Label(info.audio.filename,
-                              info.range,
-                              pen=QColor(85, 193, 167),
-                              brush=QColor(85, 193, 167, 160))
-                setattr(label, LABEL_OBJ_NAME, info)
-                return label
+        def make_audio_label(info: Timeline.PlayAudioInfo) -> Label:
+            label = Label(info.audio.filename,
+                          info.range,
+                          pen=QColor(85, 193, 167),
+                          brush=QColor(85, 193, 167, 160))
+            setattr(label, LABEL_OBJ_NAME, info)
+            return label
 
-            self.audio_label_group = LabelGroup(
-                'audio',
-                TimeRange(
-                    0,
-                    max(self.built.duration, max(info.range.end for info in infos))
-                ),
-                *[make_audio_label(info) for info in infos],
-                collapse=multiple,
-                header=multiple,
-                brush=QColor(85, 193, 167),
-            )
-            # 只有在播放多个音频，并且音频有重叠区段的时候才折叠组
-            # 因此这里判断如果没有重叠区段，就把折叠取消
-            if multiple and self.audio_label_group.is_exclusive():
-                self.audio_label_group._collapse = False
-                self.audio_label_group._header = False
+        audio_label_group = LabelGroup(
+            'audio',
+            TimeRange(
+                0,
+                max(self.built.duration, max(info.range.end for info in infos))
+            ),
+            *[make_audio_label(info) for info in infos],
+            collapse=multiple,
+            header=multiple,
+            brush=QColor(85, 193, 167),
+        )
+        # 只有在播放多个音频，并且音频有重叠区段的时候才折叠组
+        # 因此这里判断如果没有重叠区段，就把折叠取消
+        if multiple and self.audio_label_group.is_exclusive():
+            audio_label_group._collapse = False
+            audio_label_group._header = False
 
-        if not self.built.timeline.debug_list:
-            self.debug_label_group = None
-        else:
-            def make_debug_label(item: Item):
-                return LabelGroup(
-                    repr(item),
-                    self.anim_label_group.t_range,
-                    make_visibility_debug_label(item),
-                    make_anim_debug_label(item),
-                    brush=QColor(170, 148, 132),
-                    highlight_pen=QPen(QColor(41, 171, 202), 3),
-                    highlight_brush=QColor(41, 171, 202, 40),
-                    collapse=False,
-                    header=True
-                )
+        return audio_label_group
 
-            class VisibilityLabel(Label):
-                def __init__(self, t_range: TimeRange):
-                    super().__init__('', t_range, brush=QColor(255, 255, 128, 200))
-
-                @property
-                def height(self) -> int:
-                    return 1
-
-            def make_visibility_debug_label(item: Item):
-                visibility = self.built.timeline.item_appearances[item].visibility
-                if len(visibility) % 2 != 0:
-                    visibility.append(self.built.duration + 1)
-                return LabelGroup(
-                    '',
-                    self.anim_label_group.t_range,
-                    *[
-                        VisibilityLabel(TimeRange(visibility[i * 2], visibility[i * 2 + 1]))
-                        for i in range(len(visibility) // 2)
-                    ],
-                    collapse=False,
-                    header=False,
-                    skip_grouponly_query=True
-                )
-
-            def make_anim_debug_label(item: Item):
-                colors = [
-                    [251, 180, 174], [179, 205, 227], [204, 235, 197],
-                    [222, 203, 228], [254, 217, 166], [255, 255, 204],
-                    [229, 216, 189], [253, 218, 236], [242, 242, 242]
-                ]
-                iter = it.cycle(colors)
-                dct = {}
-
-                def get_color(anim) -> QColor:
-                    color = dct.get(anim, None)
-                    if color is None:
-                        color = dct[anim] = QColor(*next(iter))
-                    return color
-
-                stack = self.built.timeline.item_appearances[item].stack
-                return LabelGroup(
-                    '',
-                    self.anim_label_group.t_range,
-                    *[
-                        Label(
-                            (
-                                f'{anim.__class__.__name__} at 0x{id(anim):x}'
-                                if anim._generate_by is None
-                                else f'{anim.__class__.__name__} at 0x{id(anim):x} '
-                                f'(from {anim._generate_by.__class__.__name__} at 0x{id(anim._generate_by):x})'
-                            ),
-                            TimeRange(t1, t2),
-                            brush=get_color(anim)
-                        )
-                        for (t1, t2), anims in zip(
-                            it.pairwise([*stack.times, self.anim_label_group.t_range.end + 1]),
-                            stack.stacks
-                        )
-                        for anim in anims
-                    ],
-                    collapse=False,
-                    header=False,
-                    skip_grouponly_query=True
-                )
-
-            self.debug_label_group = LabelGroup(
-                'debug',
+    def make_debug_label_group(self) -> LabelGroup:
+        def make_debug_label(item: Item):
+            return LabelGroup(
+                repr(item),
                 self.anim_label_group.t_range,
-                *[make_debug_label(item) for item in self.built.timeline.debug_list],
+                make_visibility_debug_label(item),
+                make_anim_debug_label(item),
                 brush=QColor(170, 148, 132),
                 highlight_pen=QPen(QColor(41, 171, 202), 3),
                 highlight_brush=QColor(41, 171, 202, 40),
@@ -288,17 +236,80 @@ class TimelineView(QWidget):
                 header=True
             )
 
-        self.label_group = LabelGroup(
-            '',
+        class VisibilityLabel(Label):
+            def __init__(self, t_range: TimeRange):
+                super().__init__('', t_range, brush=QColor(255, 255, 128, 200))
+
+            @property
+            def height(self) -> int:
+                return 1
+
+        def make_visibility_debug_label(item: Item):
+            visibility = self.built.timeline.item_appearances[item].visibility
+            if len(visibility) % 2 != 0:
+                visibility.append(self.built.duration + 1)
+            return LabelGroup(
+                '',
+                self.anim_label_group.t_range,
+                *[
+                    VisibilityLabel(TimeRange(visibility[i * 2], visibility[i * 2 + 1]))
+                    for i in range(len(visibility) // 2)
+                ],
+                collapse=False,
+                header=False,
+                skip_grouponly_query=True
+            )
+
+        def make_anim_debug_label(item: Item):
+            colors = [
+                [251, 180, 174], [179, 205, 227], [204, 235, 197],
+                [222, 203, 228], [254, 217, 166], [255, 255, 204],
+                [229, 216, 189], [253, 218, 236], [242, 242, 242]
+            ]
+            iter = it.cycle(colors)
+            dct = {}
+
+            def get_color(anim) -> QColor:
+                color = dct.get(anim, None)
+                if color is None:
+                    color = dct[anim] = QColor(*next(iter))
+                return color
+
+            stack = self.built.timeline.item_appearances[item].stack
+            return LabelGroup(
+                '',
+                self.anim_label_group.t_range,
+                *[
+                    Label(
+                        (
+                            f'{anim.__class__.__name__} at 0x{id(anim):x}'
+                            if anim._generate_by is None
+                            else f'{anim.__class__.__name__} at 0x{id(anim):x} '
+                            f'(from {anim._generate_by.__class__.__name__} at 0x{id(anim._generate_by):x})'
+                        ),
+                        TimeRange(t1, t2),
+                        brush=get_color(anim)
+                    )
+                    for (t1, t2), anims in zip(
+                        it.pairwise([*stack.times, self.anim_label_group.t_range.end + 1]),
+                        stack.stacks
+                    )
+                    for anim in anims
+                ],
+                collapse=False,
+                header=False,
+                skip_grouponly_query=True
+            )
+
+        return LabelGroup(
+            'debug',
             self.anim_label_group.t_range,
-            *[
-                label_group
-                for label_group in (self.debug_label_group, self.audio_label_group)
-                if label_group is not None
-            ],
-            self.anim_label_group,
+            *[make_debug_label(item) for item in self.built.timeline.debug_list],
+            brush=QColor(170, 148, 132),
+            highlight_pen=QPen(QColor(41, 171, 202), 3),
+            highlight_brush=QColor(41, 171, 202, 40),
             collapse=False,
-            header=False,
+            header=True
         )
 
     def query_label_at(self, pos: QPointF, policy: LabelGroup.QueryPolicy) -> Label | LabelGroup | None:
