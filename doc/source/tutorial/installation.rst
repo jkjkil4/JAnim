@@ -40,9 +40,11 @@
 
         然后安装 Typst。点击 https://github.com/typst/typst/releases/latest/download/typst-x86_64-pc-windows-msvc.zip 下载压缩包（如果网络错误可以反复尝试几次），解压，将 ``typst-x86_64-pc-windows-msvc`` 移到适当的位置，把该文件夹改名为 ``typst``。
 
-        最后添加环境变量。如果使用的是 Windows 11，可以按“Windows 徽标”键或者点击“开始”按钮，输入“环境变量”。（如果使用之前的版本可以右键此电脑 - 属性 - 高级系统设置）。点击“环境变量”，双击“用户变量”（或“系统变量”，任选其一）的“Path”，右键刚刚的 ``typst`` 文件夹并“复制文件地址”，在 Path 窗口点击“新建”并把文件地址粘贴进去（注意不要带引号）。类似操作，将 ``ffmpeg\bin`` 也就是刚刚得到的 ffmpeg 下的 bin 文件夹的文件地址粘贴进去。
+        最后添加环境变量。如果使用的是 Windows 11，可以按“Windows 徽标”键或者点击“开始”按钮，输入“环境变量”。（如果使用之前的版本可以右键此电脑 - 属性 - 高级系统设置）。点击“环境变量”，双击“用户变量”（或“系统变量”，任选其一）的“Path”，右键刚刚的 ``typst`` 文件夹并“复制文件地址”，在 Path 窗口（如下图）点击“新建”并把文件地址粘贴进去（注意不要带引号）。类似操作，将 ``ffmpeg\bin`` 也就是刚刚得到的 ffmpeg 下的 bin 文件夹的文件地址粘贴进去。
 
-        TODO：补个截图
+        .. image:: /_static/images/envedit.png
+            :align: center
+            :scale: 80%
 
         尝试一下有没有正确识别。在“开始”菜单输入并打开 PowerShell 或者 Cmd，运行 ``ffmpeg --version`` 和 ``typst --version``，输出版本号则安装成功。
 
@@ -81,7 +83,6 @@
 
         .. image:: /_static/images/portaudio_pydist.png
             :align: center
-            :scale: 95%
 
         接下来便可以按照后面的教程安装 JAnim 了，如果在安装 JAnim 时遇到 portaudio 的问题，可以再来检查一下上述路径是否配置正确
 
