@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-28 11:07+0800\n"
-"PO-Revision-Date: 2025-03-28 11:09+0800\n"
+"POT-Creation-Date: 2025-04-06 16:48+0800\n"
+"PO-Revision-Date: 2025-04-06 16:48+0800\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
 "Language: zh_CN\n"
@@ -133,11 +133,15 @@ msgstr "输出文件的其他选项"
 msgid "Disable PBO (Pixel Buffer Object) for writing video"
 msgstr "在输出视频时禁用 PBO（像素缓冲对象）"
 
-#: janim/__main__.py:166
+#: janim/__main__.py:160
+msgid "Use hardware acceleration for writing video"
+msgstr "在输出视频时使用硬件加速"
+
+#: janim/__main__.py:171
 msgid "Name of the example you want to see"
 msgstr "要查看的示例的名称"
 
-#: janim/__main__.py:180
+#: janim/__main__.py:185
 msgid "Tool(s) that you want to use"
 msgstr "你想要使用的工具"
 

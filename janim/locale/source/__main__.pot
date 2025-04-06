@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-28 11:07+0800\n"
+"POT-Creation-Date: 2025-04-06 16:48+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -131,10 +131,14 @@ msgstr ""
 msgid "Disable PBO (Pixel Buffer Object) for writing video"
 msgstr ""
 
-#: janim/__main__.py:166
+#: janim/__main__.py:160
+msgid "Use hardware acceleration for writing video"
+msgstr ""
+
+#: janim/__main__.py:171
 msgid "Name of the example you want to see"
 msgstr ""
 
-#: janim/__main__.py:180
+#: janim/__main__.py:185
 msgid "Tool(s) that you want to use"
 msgstr ""
