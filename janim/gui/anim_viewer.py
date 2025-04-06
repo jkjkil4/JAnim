@@ -15,11 +15,12 @@ import importlib.machinery
 import inspect
 import json
 import os
+import sys
 import time
 import traceback
 from bisect import bisect_left
 
-from PySide6.QtCore import QByteArray, Qt, QTimer, Signal
+from PySide6.QtCore import QByteArray, QEvent, Qt, QTimer, Signal
 from PySide6.QtGui import QAction, QCloseEvent, QHideEvent, QIcon, QShowEvent
 from PySide6.QtWidgets import (QApplication, QCompleter, QLabel, QLineEdit,
                                QMainWindow, QMessageBox, QPushButton,
@@ -46,6 +47,8 @@ from janim.utils.config import cli_config
 from janim.utils.file_ops import get_janim_dir, open_file
 
 _ = get_local_strings('anim_viewer')
+
+ACTION_WIDGET_FLAG_KEY = '__action_widget'
 
 
 class AnimViewer(QMainWindow):
@@ -163,6 +166,11 @@ class AnimViewer(QMainWindow):
         self.setWindowFlags(Qt.WindowType.Window)
         self.timeline_view.setFocus()
 
+        # 在 macOS 中，设置了 WindowStaysOnTopHint 后，点击窗口会把 Tool 窗口遮挡
+        # 所以这里监听窗口事件，只要点击了窗口，就手动把 Tool 窗口放到最上面
+        if sys.platform == "darwin":
+            QApplication.instance().installEventFilter(self)
+
     def setup_menu_bar(self) -> None:
         menu_bar = self.menuBar()
         menu_functions = menu_bar.addMenu(_('Functions(&F)'))
@@ -193,22 +201,18 @@ class AnimViewer(QMainWindow):
         self.action_painter = menu_functions.addAction(_('Draw(&D)'))
         self.action_painter.setShortcut('Ctrl+D')
         self.action_painter.setAutoRepeat(False)
-        self.painter: Painter | None = None
 
         self.action_richtext_edit = menu_functions.addAction(_('Rich text editor(&R)'))
         self.action_richtext_edit.setShortcut('Ctrl+R')
         self.action_richtext_edit.setAutoRepeat(False)
-        self.richtext_editor: RichTextEditor | None = None
 
         self.action_font_table = menu_functions.addAction(_('Font list(&F)'))
         self.action_font_table.setShortcut('Ctrl+F')
         self.action_font_table.setAutoRepeat(False)
-        self.font_table: FontTable | None = None
 
         self.action_color_widget = menu_functions.addAction(_('Color(&O)'))
         self.action_color_widget.setShortcut('Ctrl+O')
         self.action_color_widget.setAutoRepeat(False)
-        self.color_widget: ColorWidget | None = None
 
     def setup_status_bar(self) -> None:
         self.fps_label = QLabel()
@@ -480,6 +484,8 @@ class AnimViewer(QMainWindow):
                 widget.setAttribute(Qt.WidgetAttribute.WA_DeleteOnClose)
                 widget.setAttribute(Qt.WidgetAttribute.WA_MacAlwaysShowToolWindow)
                 widget.destroyed.connect(destroyed)
+                if sys.platform == "darwin":
+                    setattr(widget, ACTION_WIDGET_FLAG_KEY, True)
             widget.show()
 
         def destroyed() -> None:
@@ -741,5 +747,14 @@ class AnimViewer(QMainWindow):
                     QByteArray.fromStdString(msg),
                     *client
                 )
+
+    if sys.platform == "darwin":
+        def eventFilter(self, watched, event):
+            if self.windowFlags() & Qt.WindowType.WindowStaysOnTopHint:
+                if event.type() in (QEvent.Type.MouseButtonPress, QEvent.Type.NonClientAreaMouseButtonPress):
+                    for obj in self.children():
+                        if getattr(obj, ACTION_WIDGET_FLAG_KEY, False):
+                            obj.raise_()
+            return super().eventFilter(watched, event)
 
     # endregion
