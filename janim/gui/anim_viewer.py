@@ -160,6 +160,7 @@ class AnimViewer(QMainWindow):
         self.resize(800, 608)
         self.setWindowTitle('JAnim Graphics')
         self.setWindowIcon(QIcon(os.path.join(get_janim_dir(), 'gui', 'favicon.ico')))
+        self.setWindowFlags(Qt.WindowType.Window)
         self.timeline_view.setFocus()
 
     def setup_menu_bar(self) -> None:
@@ -477,6 +478,7 @@ class AnimViewer(QMainWindow):
                 widget = widget_cls(self)
                 widget.setWindowFlag(Qt.WindowType.Tool)
                 widget.setAttribute(Qt.WidgetAttribute.WA_DeleteOnClose)
+                widget.setAttribute(Qt.WidgetAttribute.WA_MacAlwaysShowToolWindow)
                 widget.destroyed.connect(destroyed)
             widget.show()
 
