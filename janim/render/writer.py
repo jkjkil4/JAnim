@@ -132,6 +132,10 @@ class VideoWriter:
 
                 # 处理最后一批
                 for read_idx in read_idx_iter:
+                    # 在大多数情况下 read_idx 并不是 None
+                    # 只有在 Timeline 时长特别短的时候会出现 None
+                    if read_idx is None:
+                        continue
                     gl.glBindBuffer(gl.GL_PIXEL_PACK_BUFFER, self.pbos[read_idx])
                     data = gl.glGetBufferSubData(gl.GL_PIXEL_PACK_BUFFER, 0, self.byte_size)
                     self.writing_process.stdin.write(data)
