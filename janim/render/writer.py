@@ -14,8 +14,7 @@ from janim.exception import EXITCODE_FFMPEG_NOT_FOUND, ExitException
 from janim.locale.i18n import get_local_strings
 from janim.logger import log
 from janim.render.base import create_context
-from janim.render.framebuffer import (blend_context, create_framebuffer,
-                                      framebuffer_context)
+from janim.render.framebuffer import create_framebuffer, framebuffer_context
 
 _ = get_local_strings('writer')
 
@@ -72,10 +71,10 @@ class VideoWriter:
         gl.glDeleteBuffers(len(self.pbos), self.pbos)
 
     @staticmethod
-    def writes(built: BuiltTimeline, file_path: str, *, quiet=False, use_pbo=True) -> None:
-        VideoWriter(built).write_all(file_path, quiet=quiet, use_pbo=use_pbo)
+    def writes(built: BuiltTimeline, file_path: str, *, quiet=False, use_pbo=True, hwaccel=False) -> None:
+        VideoWriter(built).write_all(file_path, quiet=quiet, use_pbo=use_pbo, hwaccel=hwaccel)
 
-    def write_all(self, file_path: str, *, quiet=False, use_pbo=True, _keep_temp=False) -> None:
+    def write_all(self, file_path: str, *, quiet=False, use_pbo=True, hwaccel=False, _keep_temp=False) -> None:
         '''将时间轴动画输出到文件中
 
         - 指定 ``quiet=True``，则不会输出前后的提示信息，但仍有进度条
@@ -87,7 +86,7 @@ class VideoWriter:
 
         fps = self.built.cfg.fps
 
-        self.open_video_pipe(file_path)
+        self.open_video_pipe(file_path, hwaccel)
 
         progress_display = ProgressDisplay(
             range(self.frame_count),
@@ -168,7 +167,7 @@ class VideoWriter:
                     .format(file_path=file_path)
                 )
 
-    def open_video_pipe(self, file_path: str) -> None:
+    def open_video_pipe(self, file_path: str, hwaccel: bool) -> None:
         stem, self.ext = os.path.splitext(file_path)
         self.final_file_path = file_path
         self.temp_file_path = stem + '_temp' + self.ext
@@ -189,7 +188,7 @@ class VideoWriter:
         if self.ext == '.mp4':
             command += [
                 '-pix_fmt', 'yuv420p',
-                '-vcodec', self.find_encoder(self.built.cfg.ffmpeg_bin),
+                '-vcodec', self.find_encoder(self.built.cfg.ffmpeg_bin, hwaccel),
             ]
         elif self.ext == '.mov':
             # This is if the background of the exported
@@ -206,34 +205,36 @@ class VideoWriter:
         with self.handle_ffmpeg_not_found():
             self.writing_process = sp.Popen(command, stdin=sp.PIPE)
 
-    encoder_cache: str | None = None
+    hwencoder_cache: str | None = None
 
     @staticmethod
-    def find_encoder(ffmpeg_bin: str) -> str:
-        '''查找编码器，优先使用硬件编码器'''
-        if VideoWriter.encoder_cache is not None:
-            return VideoWriter.encoder_cache
-
-        # call ffmpeg to test nvenc/amf support
-        with VideoWriter.handle_ffmpeg_not_found():
-            test_availability = sp.Popen(
-                [ffmpeg_bin, '-hide_banner', '-encoders'],
-                stdout=sp.PIPE,
-                stderr=sp.PIPE
-            )
-
-        out, err = test_availability.communicate()
-        if b'h264_nvenc' in out:
-            encoder = 'h264_nvenc'
-            log.info(_('Using h264_nvenc for encoding'))
-        elif b'h264_amf' in out:
-            encoder = 'h264_amf'
-            log.info(_('Using h264_amf for encoding'))
-        else:
+    def find_encoder(ffmpeg_bin: str, hwaccel: bool) -> str:
+        '''查找编码器，若 ``hwaccel=True`` 则优先使用硬件编码器'''
+        if not hwaccel:
             encoder = 'libx264'
-            log.info(_('No hardware encoder found. Using libx264 for encoding'))
+        else:
+            if VideoWriter.hwencoder_cache is not None:
+                encoder = VideoWriter.hwencoder_cache
+            else:
+                # call ffmpeg to test nvenc/amf support
+                with VideoWriter.handle_ffmpeg_not_found():
+                    test_availability = sp.Popen(
+                        [ffmpeg_bin, '-hide_banner', '-encoders'],
+                        stdout=sp.PIPE,
+                        stderr=sp.PIPE
+                    )
 
-        VideoWriter.encoder_cache = encoder
+                out, err = test_availability.communicate()
+                if b'h264_nvenc' in out:
+                    encoder = 'h264_nvenc'
+                elif b'h264_amf' in out:
+                    encoder = 'h264_amf'
+                else:
+                    encoder = 'libx264'
+                    log.info(_('No hardware encoder found.'))
+                VideoWriter.hwencoder_cache = encoder
+
+        log.info(_('Using {encoder} for encoding').format(encoder=encoder))
         return encoder
 
     def close_video_pipe(self, _keep_temp: bool) -> None:

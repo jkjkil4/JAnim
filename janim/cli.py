@@ -157,6 +157,7 @@ def write(args: Namespace) -> None:
                 os.path.join(output_dir,
                              f'{name}.{args.format}'),
                 use_pbo=not args.disable_pbo,
+                hwaccel=args.hwaccel,
                 _keep_temp=video_with_audio
             )
             if open_result and not video_with_audio:

@@ -154,6 +154,11 @@ def write_parser(parser: ArgumentParser) -> None:
         action='store_true',
         help=_('Disable PBO (Pixel Buffer Object) for writing video')
     )
+    other_options.add_argument(
+        '--hwaccel',
+        action='store_true',
+        help=_('Use hardware acceleration for writing video')
+    )
 
     parser.set_defaults(func=write)
 
