@@ -20,7 +20,7 @@
 
 .. warning::
 
-    我只知道在 Windows 和 MacOS 中，以下步骤有效
+    我只知道在 Windows 和 macOS 中，以下步骤有效
 
     欢迎测试在其它系统中的有效性或补充对应的方法
 
@@ -53,7 +53,7 @@
 
     ./make gettext
 
-或（在 MacOS 中）
+或（在 macOS 中）
 
 .. code-block:: sh
 
@@ -146,7 +146,7 @@ pot 文件是提取出来的可供翻译的源语言文字，你还需要使用�
 
         其它的语言同理，把 ``zh_CN`` 改成对应的语言代码就好了
 
-    .. tab:: MacOS
+    .. tab:: macOS
 
         首先确保你在 ``doc/`` 目录下：
 
