@@ -62,11 +62,28 @@
 
             # FFmpeg
             brew install ffmpeg
-            ffmpeg --version # 输出版本号则安装成功
+            ffmpeg --version    # 输出版本号则安装成功
 
             # Typst
             brew install typst
-            typst --version # 输出版本号则安装成功
+            typst --version     # 输出版本号则安装成功
+
+        另外，在 macOS 上使用 JAnim 窗口还需要安装 portaudio
+
+        .. code-block:: bash
+
+            brew install portaudio
+            brew link portaudio     # 可能需要执行这条命令，通常情况下是已经链接好的，只是以防万一
+
+        使用 ``brew --prefix portaudio`` 命令查看 portaudio 的安装路径，记下这个路径，后面会用到。（例：在笔者设备上查看的结果是 ``/opt/homebrew/opt/portaudio``）
+
+        在用户主目录下创建 .pydistutils.cfg 配置文件，根据我们刚刚记下的路径，添加 include 路径和 lib 路径并保存，例如在笔者设备上创建的文件内容如下图红框所示：
+
+        .. image:: /_static/images/portaudio_pydist.png
+            :align: center
+            :scale: 90%
+
+        接下来便可以按照后面的教程安装 JAnim 了，如果在安装 JAnim 时遇到 portaudio 的问题，可以再来检查一下上述路径是否配置正确
 
     .. tab:: Linux
 
@@ -79,7 +96,7 @@
             # FFmpeg
             sudo apt update
             sudo apt install ffmpeg
-            ffmpeg --version # 输出版本号则安装成功
+            ffmpeg --version    # 输出版本号则安装成功
 
         Typst 由于相对较新且未进入稳定版，直接从源代码仓库下载安装。
 
@@ -88,7 +105,7 @@
             # Typst （参考 https://lindevs.com/install-typst-on-ubuntu）
             wget -qO typst.tar.xz https://github.com/typst/typst/releases/latest/download/typst-x86_64-unknown-linux-musl.tar.xz
             sudo tar xf typst.tar.xz --strip-components=1 -C /usr/local/bin typst-x86_64-unknown-linux-musl/typst
-            typst --version # 输出版本号则安装成功
+            typst --version     # 输出版本号则安装成功
             rm -rf typst.tar.xz
 
         笔者仅在一台虚拟机上尝试过以上安装，不保证真实环境也能做到。网络波动、本地命令不存在、文件重名等等原因都可能导致安装失败。有安装问题请在 GitHub 或群聊中及时提出并附带错误信息和/或截图。
@@ -120,7 +137,7 @@ JAnim 是一个库并且提供了可以直接调用的二进制，熟悉 Python 
             uv init "JAnim-folder"
             cd "JAnim-folder"
             uv add janim[gui]
-            uv run janim --version # 看到版本号说明安装完成
+            uv run janim --version  # 看到版本号说明安装完成
 
         用这种方式安装后，文档中所有 ``janim`` 指令都要换成 ``uv run janim``，如果仍然要直接调用 ``janim``，则需要先 `激活虚拟环境 <https://docs.astral.sh/uv/pip/environments/#using-a-virtual-environment>`_，这是出于全局和本项目隔离的目的。
 
@@ -143,7 +160,7 @@ JAnim 是一个库并且提供了可以直接调用的二进制，熟悉 Python 
         .. code-block:: bash
 
             uv tool install janim[gui]
-            janim --version # 看到版本号说明安装完成
+            janim --version     # 看到版本号说明安装完成
 
         .. tip::
 
@@ -158,7 +175,7 @@ JAnim 是一个库并且提供了可以直接调用的二进制，熟悉 Python 
         .. code-block:: bash
 
             pip install janim[gui]
-            janim --version # 看到版本号说明安装完成
+            janim --version     # 看到版本号说明安装完成
 
         .. tip::
 
