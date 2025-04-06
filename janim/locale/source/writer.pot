@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-28 11:07+0800\n"
+"POT-Creation-Date: 2025-04-06 14:20+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -32,52 +32,49 @@ msgstr ""
 msgid "File saved to \"{file_path}\" (video only)"
 msgstr ""
 
-#: janim/render/writer.py:227
-msgid "Using h264_nvenc for encoding"
+#: janim/render/writer.py:234
+msgid "No hardware encoder found"
 msgstr ""
 
-#: janim/render/writer.py:230
-msgid "Using h264_amf for encoding"
+#: janim/render/writer.py:237
+#, python-brace-format
+msgid "Using {encoder} for encoding"
 msgstr ""
 
-#: janim/render/writer.py:233
-msgid "No hardware encoder found. Using libx264 for encoding"
-msgstr ""
-
-#: janim/render/writer.py:251
+#: janim/render/writer.py:253
 msgid ""
 "Unable to output video. Please install ffmpeg and add it to the environment "
 "variables."
 msgstr ""
 
-#: janim/render/writer.py:267
+#: janim/render/writer.py:269
 #, python-brace-format
 msgid "Writing audio of \"{name}\""
 msgstr ""
 
-#: janim/render/writer.py:293
+#: janim/render/writer.py:295
 #, python-brace-format
 msgid "Finished writing audio of \"{name}\" in {elapsed:.2f} s"
 msgstr ""
 
-#: janim/render/writer.py:299
+#: janim/render/writer.py:301
 #, python-brace-format
 msgid "File saved to \"{file_path}\""
 msgstr ""
 
-#: janim/render/writer.py:322
+#: janim/render/writer.py:324
 msgid ""
 "Unable to output audio. Please install ffmpeg and add it to the environment "
 "variables."
 msgstr ""
 
-#: janim/render/writer.py:356
+#: janim/render/writer.py:360
 msgid ""
 "Unable to merge video. Please install ffmpeg and add it to the environment "
 "variables."
 msgstr ""
 
-#: janim/render/writer.py:368
+#: janim/render/writer.py:373
 #, python-brace-format
 msgid "File saved to \"{file_path}\" (merged)"
 msgstr ""

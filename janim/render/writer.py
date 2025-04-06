@@ -231,7 +231,7 @@ class VideoWriter:
                     encoder = 'h264_amf'
                 else:
                     encoder = 'libx264'
-                    log.info(_('No hardware encoder found.'))
+                    log.info(_('No hardware encoder found'))
                 VideoWriter.hwencoder_cache = encoder
 
         log.info(_('Using {encoder} for encoding').format(encoder=encoder))

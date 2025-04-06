@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-28 11:07+0800\n"
-"PO-Revision-Date: 2025-03-28 11:11+0800\n"
+"POT-Creation-Date: 2025-04-06 14:20+0800\n"
+"PO-Revision-Date: 2025-04-06 14:20+0800\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
 "Language: zh_CN\n"
@@ -32,52 +32,52 @@ msgstr "输出视频 \"{name}\" 完成，耗时 {elapsed:.2f} s"
 msgid "File saved to \"{file_path}\" (video only)"
 msgstr "文件已保存到 \"{file_path}\"（仅视频）"
 
-#: janim/render/writer.py:227
-msgid "Using h264_nvenc for encoding"
-msgstr "使用 h264_nvenc 进行编码"
+#: janim/render/writer.py:234
+msgid "No hardware encoder found"
+msgstr "未找到硬件编码器"
 
-#: janim/render/writer.py:230
-msgid "Using h264_amf for encoding"
-msgstr "使用 h264_amf 进行编码"
+#: janim/render/writer.py:237
+#, python-brace-format
+msgid "Using {encoder} for encoding"
+msgstr "使用 {encoder} 进行编码"
 
-#: janim/render/writer.py:233
-msgid "No hardware encoder found. Using libx264 for encoding"
-msgstr "未找到硬件编码器，使用 libx264 进行编码"
-
-#: janim/render/writer.py:251
+#: janim/render/writer.py:253
 msgid ""
 "Unable to output video. Please install ffmpeg and add it to the environment "
 "variables."
 msgstr "无法输出视频，需要安装 ffmpeg 并将其添加到环境变量中"
 
-#: janim/render/writer.py:267
+#: janim/render/writer.py:269
 #, python-brace-format
 msgid "Writing audio of \"{name}\""
 msgstr "输出音频 \"{name}\" 中"
 
-#: janim/render/writer.py:293
+#: janim/render/writer.py:295
 #, python-brace-format
 msgid "Finished writing audio of \"{name}\" in {elapsed:.2f} s"
 msgstr "输出音频 \"{name}\" 完成，耗时 {elapsed:.2f} s"
 
-#: janim/render/writer.py:299
+#: janim/render/writer.py:301
 #, python-brace-format
 msgid "File saved to \"{file_path}\""
 msgstr "文件已保存到 \"{file_path}\""
 
-#: janim/render/writer.py:322
+#: janim/render/writer.py:324
 msgid ""
 "Unable to output audio. Please install ffmpeg and add it to the environment "
 "variables."
 msgstr "无法输出音频，需要安装 ffmpeg 并将其添加到环境变量中"
 
-#: janim/render/writer.py:356
+#: janim/render/writer.py:360
 msgid ""
 "Unable to merge video. Please install ffmpeg and add it to the environment "
 "variables."
 msgstr "无法输出视频，需要安装 ffmpeg 并将其添加到环境变量中"
 
-#: janim/render/writer.py:368
+#: janim/render/writer.py:373
 #, python-brace-format
 msgid "File saved to \"{file_path}\" (merged)"
 msgstr "文件已保存到 \"{file_path}\"（已合并）"
+
+#~ msgid "Using h264_amf for encoding"
+#~ msgstr "使用 h264_amf 进行编码"
