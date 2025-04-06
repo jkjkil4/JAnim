@@ -25,7 +25,7 @@ class Animation:
     - 创建一个从 ``at`` 持续至 ``at + duration`` 的动画
     - ``duration`` 可以是 ``FOREVER``
       （一般用于 :class:`~.Display`，
-      以及特殊情况下的 :class:`DataModifier` 等，
+      以及特殊情况下的 :class:`DataUpdater` 等，
       但是 :class:`~.AnimGroup` 及其衍生类不能传入 ``FOREVER``）
     - 指定 ``rate_func`` 可以设定插值函数，默认为 :meth:`janim.utils.rate_funcs.smooth` 即平滑插值
 
@@ -160,6 +160,10 @@ class ItemAnimation(Animation):
         self.item = item
         self.show_at_begin = show_at_begin
         self.hide_at_end = hide_at_end
+
+        # 有些动画是被其它动画生成的，例如 MethodTransform -> _MethodTransform，DataUpdater -> _DataUpdater 等
+        # 记录这个信息，用于 Timeline.debug 显示在时间轴上时，得知原始的动画是那个
+        self._generate_by: Animation | None = None
 
         # 意即“覆盖先前的动画”
         # 把该值置为 True 表示该动画不依赖先前动画的效果，使得进行计算时可以直接从该动画开始而不用考虑更前面的动画效果

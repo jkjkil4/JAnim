@@ -257,7 +257,7 @@ class MethodTransform(Transform):
         for item in self.src_item.walk_self_and_descendants():
             aligned = self.aligned[(item, item)]
 
-            sub_updater = _MethodTransform(item, self.path_func, aligned)
+            sub_updater = _MethodTransform(self, item, self.path_func, aligned)
             sub_updater.transfer_params(self)
             sub_updater.finalize()
 
@@ -277,8 +277,9 @@ class MethodTransformArgsBuilder:
 
 
 class _MethodTransform(ItemAnimation):
-    def __init__(self, item: Item, path_func: PathFunc, aligned: AlignedData[Item]):
+    def __init__(self, generate_by: MethodTransform, item: Item, path_func: PathFunc, aligned: AlignedData[Item]):
         super().__init__(item)
+        self._generate_by = generate_by
         self._cover_previous_anims = True
         self.path_func = path_func
         self.aligned = aligned

@@ -221,7 +221,12 @@ class TimelineView(QWidget):
                     self.anim_label_group.t_range,
                     *[
                         Label(
-                            f'{anim.__class__.__name__} at 0x{id(anim):x}',
+                            (
+                                f'{anim.__class__.__name__} at 0x{id(anim):x}'
+                                if anim._generate_by is None
+                                else f'{anim.__class__.__name__} at 0x{id(anim):x} '
+                                f'(from {anim._generate_by.__class__.__name__} at 0x{id(anim._generate_by):x})'
+                            ),
                             TimeRange(t1, t2),
                             brush=get_color(anim)
                         )

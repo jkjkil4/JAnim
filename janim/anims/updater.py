@@ -151,7 +151,8 @@ class DataUpdater[T: Item](Animation):
         for i, item in enumerate(items):
             stack = self.timeline.item_appearances[item].stack
 
-            sub_updater = _DataUpdater(item,
+            sub_updater = _DataUpdater(self,
+                                       item,
                                        self.func,
                                        self.extra(item),
                                        self.lag_ratio,
@@ -170,6 +171,7 @@ class DataUpdater[T: Item](Animation):
 class _DataUpdater(ItemAnimation):
     def __init__(
         self,
+        generate_by: DataUpdater,
         item: Item,
         func: DataUpdaterFn,
         extra_data: Any | None,
@@ -181,6 +183,7 @@ class _DataUpdater(ItemAnimation):
         hide_at_end: bool
     ):
         super().__init__(item, show_at_begin=show_at_begin, hide_at_end=hide_at_end)
+        self._generate_by = generate_by
         self.func = func
         self.extra_data = extra_data
         self.lag_ratio = lag_ratio
@@ -281,7 +284,7 @@ class GroupUpdater[T: Item](Animation):
 class _GroupUpdater(ApplyAligner):
     def __init__(
         self,
-        orig_updater: GroupUpdater,
+        generate_by: GroupUpdater,
         item: Item,
         data: Item,
         stacks: list[AnimStack],
@@ -289,15 +292,15 @@ class _GroupUpdater(ApplyAligner):
         show_at_begin: bool
     ):
         super().__init__(item, stacks, show_at_begin=show_at_begin)
-        self.orig_updater = orig_updater
+        self._generate_by = generate_by
         self.data = data
 
     def pre_apply(self, data: Item, p: ItemAnimation.ApplyParams) -> None:
-        self.orig_updater.applied = False
+        self._generate_by.applied = False
         self.data.restore(data)
 
     def apply(self, data: Item, p: ItemAnimation.ApplyParams) -> None:
-        self.orig_updater.apply_for_group(p.global_t)
+        self._generate_by.apply_for_group(p.global_t)
         data.restore(self.data)
 
 
@@ -390,6 +393,7 @@ class MethodUpdater(Animation):
                 self.updater,
             )
 
+        sub_updater._generate_by = self
         sub_updater.transfer_params(self)
         sub_updater.finalize()
 
@@ -544,7 +548,8 @@ class StepUpdater[T: Item](Animation):
 
     def _time_fixed(self) -> None:
         for item in self.item.walk_self_and_descendants(self.root_only):
-            sub_updater = _StepUpdater(item,
+            sub_updater = _StepUpdater(self,
+                                       item,
                                        self.func,
                                        self.step,
                                        self.persistent_cache_step,
@@ -559,6 +564,7 @@ class StepUpdater[T: Item](Animation):
 class _StepUpdater(ItemAnimation):
     def __init__(
         self,
+        generate_by: StepUpdater,
         item: Item,
         func: StepUpdaterFn,
         step: float,
@@ -570,6 +576,7 @@ class _StepUpdater(ItemAnimation):
         hide_at_end: bool
     ):
         super().__init__(item, show_at_begin=show_at_begin, hide_at_end=hide_at_end)
+        self._generate_by = generate_by
         self._cover_previous_anims = True
 
         self.func = func
