@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: JAnim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-01 09:30+0800\n"
+"POT-Creation-Date: 2025-04-07 10:55+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -65,10 +65,13 @@ msgid "指定 ``quiet=True``，则不会输出前后的提示信息，但仍有�
 msgstr ""
 
 #: janim.render.writer.VideoWriter.find_encoder:1 of
-msgid "查找编码器，优先使用硬件编码器"
+msgid "查找编码器，若 ``hwaccel=True`` 则优先使用硬件编码器"
 msgstr ""
 
 #: janim.render.writer.SRTWriter.t_to_srt_time:1 of
 msgid "将秒数转换为 SRT 时间格式：HH:MM:SS,mmm"
 msgstr ""
+
+#~ msgid "查找编码器，优先使用硬件编码器"
+#~ msgstr ""
 

@@ -20,7 +20,7 @@
 
 .. tabs::
 
-    .. tab:: Windows + 使用包管理器（推荐）
+    .. translatable-tab:: Windows + 使用包管理器（推荐）
 
         Windows 系统的包管理不一定是开箱即用的，通常需要略微熟悉命令行操作并且需要少量配置。这个配置过程相对来说比较费时，但是一旦配置好就能自动处理很多琐事。笔者此处推荐使用包管理器。
 
@@ -32,7 +32,7 @@
 
             如果不熟悉命令行，希望使用图形化界面，也可以安装 `UniGetUI <https://github.com/marticliment/UniGetUI>`_ 来对包管理器进行统一展示和调用，注意它只是包管理器的图形界面，仍然需要环境中存在对应包管理器才能使用
 
-    .. tab:: Windows + 直接下载二进制
+    .. translatable-tab:: Windows + 直接下载二进制
 
         直接下载二进制文件，需要的环节更少，但是需要手动处理安装位置、添加环境变量、更新二进制的问题。
 
@@ -48,7 +48,7 @@
 
         尝试一下有没有正确识别。在“开始”菜单输入并打开 PowerShell 或者 Cmd，运行 ``ffmpeg --version`` 和 ``typst --version``，输出版本号则安装成功。
 
-    .. tab:: macOS
+    .. translatable-tab:: macOS
 
         推荐使用包管理器安装，这里使用常见的 `Homebrew <https://brew.sh/>`_ 作为示例。
 
@@ -86,7 +86,7 @@
 
         接下来便可以按照后面的教程安装 JAnim 了，如果在安装 JAnim 时遇到 portaudio 的问题，可以再来检查一下上述路径是否配置正确
 
-    .. tab:: Linux
+    .. translatable-tab:: Linux
 
         考虑到使用 `类 UNIX <https://zh.wikipedia.org/wiki/%E7%B1%BBUnix%E7%B3%BB%E7%BB%9F>`_ 的用户一般对命令行更有了解，而且相应的发行版多，包管理没有通用的命令。这里仅给出 Ubuntu 的安装方法。
 
@@ -120,7 +120,7 @@ JAnim 是一个库并且提供了可以直接调用的二进制，熟悉 Python 
 
 .. tabs::
 
-    .. tab:: uv + 虚拟环境
+    .. translatable-tab:: uv + 虚拟环境
 
         `uv <https://github.com/astral-sh/uv>`_ 是一套用于 Python 项目管理的工具链，目前已经相对完善，对于需要频繁使用 Python 多版本和多依赖库的开发者来说很方便。官方提供了很多安装方法，可以用上文提到的包管理工具安装，也可以独立安装。
 
@@ -146,7 +146,7 @@ JAnim 是一个库并且提供了可以直接调用的二进制，熟悉 Python 
 
             一切就绪后，可以使用 ``uv run janim examples`` 查看内置示例，进一步检验 JAnim 以及依赖项的安装情况
 
-    .. tab:: uv + 全局
+    .. translatable-tab:: uv + 全局
 
         `uv <https://github.com/astral-sh/uv>`_ 是一套用于 Python 项目管理的工具链，目前已经相对完善，对于需要频繁使用 Python 多版本和多依赖库的开发者来说很方便。官方提供了很多安装方法，可以用上文提到的包管理工具安装，也可以独立安装。
 
@@ -167,7 +167,7 @@ JAnim 是一个库并且提供了可以直接调用的二进制，熟悉 Python 
 
             一切就绪后，可以使用 ``janim examples`` 查看内置示例，进一步检验 JAnim 以及依赖项的安装情况
 
-    .. tab:: Python + 全局
+    .. translatable-tab:: Python + 全局
 
         Python 可以直接安装，而且多版本可以共存。访问 `Python 官网下载页 <https://www.python.org/downloads/>`_ 选择 3.12 或更高版本，下载安装。
 
@@ -182,7 +182,7 @@ JAnim 是一个库并且提供了可以直接调用的二进制，熟悉 Python 
 
             一切就绪后，可以使用 ``janim examples`` 查看内置示例，进一步检验 JAnim 以及依赖项的安装情况
 
-    .. tab:: Conda + 全局（TODO）
+    .. translatable-tab:: Conda + 全局（TODO）
 
         有待完善，欢迎补充
 

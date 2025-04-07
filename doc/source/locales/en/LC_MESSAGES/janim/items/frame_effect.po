@@ -1,0 +1,114 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2023, jkjkil4
+# This file is distributed under the same license as the JAnim package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: JAnim \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-04-05 16:52+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: en\n"
+"Language-Team: en <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.17.0\n"
+
+#: ../../source/janim/items/frame_effect.rst:2
+msgid "frame_effect"
+msgstr ""
+
+#: janim.items.frame_effect.FrameEffect:1 of
+msgid "基类：:py:class:`~janim.items.item.Item`"
+msgstr ""
+
+#: janim.items.frame_effect.FrameEffect:1 of
+msgid "将传入的着色器 ``fragment_shader`` 应用到 ``items`` 上"
+msgstr ""
+
+#: janim.items.frame_effect.FrameEffect:3 of
+msgid "着色器基本格式："
+msgstr ""
+
+#: janim.items.frame_effect.FrameEffect:27 of
+msgid "其中 ``#[JA_FINISH_UP]`` 是一个占位符，JAnim 会在这里做一些额外的操作"
+msgstr ""
+
+#: janim.items.frame_effect.FrameEffect:29 of
+msgid "上述代码最核心的是 ``main`` 中“进行处理”的部分，其余的代码作为固定的写法照抄即可"
+msgstr ""
+
+#: janim.items.frame_effect.FrameEffect:31 of
+msgid "如果懒得抄，可以用 :class:`SimpleFrameEffect`，这个类只要写“进行处理”这部分就好了，因为它把其余代码都封装了"
+msgstr ""
+
+#: janim.items.frame_effect.FrameEffect:33 of
+msgid "完整示例请参考 :ref:`样例学习 <examples>` 中的对应代码"
+msgstr ""
+
+#: janim.items.frame_effect.FrameEffect.add:1 of
+msgid "向该对象添加子对象"
+msgstr ""
+
+#: janim.items.frame_effect.FrameEffect.add:3 of
+msgid "如果 ``insert=True`` （默认为 ``False``），那么插入到子物件列表的开头"
+msgstr ""
+
+#: janim.items.frame_effect.FrameEffect.remove:1 of
+msgid "从该对象移除子对象"
+msgstr ""
+
+#: janim.items.frame_effect.FrameClip:1 janim.items.frame_effect.Shadertoy:1
+#: janim.items.frame_effect.SimpleFrameEffect:1 of
+msgid "基类：:py:class:`~janim.items.frame_effect.FrameEffect`"
+msgstr ""
+
+#: janim.items.frame_effect.SimpleFrameEffect:1 of
+msgid ":class:`FrameEffect` 的简化封装，具体请参考 :class:`FrameEffect` 中的说明"
+msgstr ""
+
+#: janim.items.frame_effect.SimpleFrameEffect:5 of
+msgid "若着色器代码中出现报错，报错行数无法与 ``shader`` 代码中的行对应"
+msgstr ""
+
+#: janim.items.frame_effect.Cmpt_FrameClip:1 of
+msgid ""
+"基类：:py:class:`~janim.components.component.Component`, "
+":py:class:`~typing.Generic`"
+msgstr ""
+
+#: janim.items.frame_effect.FrameClip:1 of
+msgid "一个用于创建简单矩形裁剪效果的类"
+msgstr ""
+
+#: janim.items.frame_effect.FrameClip:3 of
+msgid "``clip`` 参数表示裁剪区域的四个边界，分别是左、上、右、下，范围是 0~1 表示百分比"
+msgstr ""
+
+#: janim.items.frame_effect.Shadertoy:1 of
+msgid "一个用于创建类似 Shadertoy 着色器效果的类"
+msgstr ""
+
+#: janim.items.frame_effect.Shadertoy:3 of
+msgid "例:"
+msgstr ""
+
+#: janim.items.frame_effect.Shadertoy:19 of
+msgid "实际的报错行数要减去 10"
+msgstr ""
+
+#: janim.items.frame_effect.Shadertoy:21 of
+msgid ""
+"例如，如果在上面的例子中将 ``iResolution`` 误写为了 ``Resolution``， 会导致 ``0(12) : error "
+"C1503: undefined variable \"Resolution\"`` 的报错， 报错信息说的是在第 12 行，实际是第 2 行"
+msgstr ""
+
+#: janim.items.frame_effect.Shadertoy:25 of
+msgid "行数标注："
+msgstr ""
+

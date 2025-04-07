@@ -6,19 +6,18 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: JAnim\n"
+"Project-Id-Version:  JAnim\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-20 11:45+0800\n"
+"POT-Creation-Date: 2025-04-05 16:52+0800\n"
 "PO-Revision-Date: 2025-03-20 11:48+0800\n"
 "Last-Translator: \n"
-"Language-Team: en <LL@li.org>\n"
 "Language: en\n"
+"Language-Team: en <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "Generated-By: Babel 2.17.0\n"
-"X-Generator: Poedit 3.5\n"
 
 #: ../../source/tutorial/use_gui.rst:2
 msgid "界面使用"
@@ -55,14 +54,14 @@ msgstr "Press the space bar to control play and pause"
 #: ../../source/tutorial/use_gui.rst:23
 msgid "如果播放到了末尾按下空格键，会从头播放"
 msgstr ""
-"If playback has reached the end, pressing the space bar will start it from the "
-"beginning"
+"If playback has reached the end, pressing the space bar will start it "
+"from the beginning"
 
 #: ../../source/tutorial/use_gui.rst:25
 msgid "也可以在时间轴中左键拖动当前时刻，调整到你要查看的地方"
 msgstr ""
-"You can also drag the current time with the left mouse button on the timeline "
-"to adjust to the desired point"
+"You can also drag the current time with the left mouse button on the "
+"timeline to adjust to the desired point"
 
 #: ../../source/tutorial/use_gui.rst:28
 msgid "时间轴显示区段控制"
@@ -99,32 +98,32 @@ msgstr "Window Position"
 #: ../../source/tutorial/use_gui.rst:46
 msgid "默认的窗口位置是占据右半边屏幕，你可以通过自定义配置来更改"
 msgstr ""
-"The default window position occupies the right half of the screen, but you can "
-"change this through custom configuration"
+"The default window position occupies the right half of the screen, but "
+"you can change this through custom configuration"
 
 #: ../../source/tutorial/use_gui.rst:48
 msgid "你可以修改全局配置，在命令行参数中加上 ``-c wnd_pos UR``，比如："
 msgstr ""
-"You can modify the global configuration by adding ``-c wnd_pos UR`` in the "
-"command-line parameters, for example:"
+"You can modify the global configuration by adding ``-c wnd_pos UR`` in "
+"the command-line parameters, for example:"
 
 #: ../../source/tutorial/use_gui.rst:56
 msgid "修改全局配置的格式是 ``-c 配置名 值``，更多的配置请参考 :class:`~.Config`"
 msgstr ""
-"The format for modifying global configuration is ``-c config_name value``. For "
-"more configurations, see :class:`~.Config`"
+"The format for modifying global configuration is ``-c config_name "
+"value``. For more configurations, see :class:`~.Config`"
 
 #: ../../source/tutorial/use_gui.rst:58
 msgid "``UR`` 表示 ``UP & RIGHT``，即窗口占据屏幕右上角"
 msgstr ""
-"``UR`` stands for ``UP & RIGHT``, meaning the window occupies the top-right "
-"corner of the screen"
+"``UR`` stands for ``UP & RIGHT``, meaning the window occupies the top-"
+"right corner of the screen"
 
 #: ../../source/tutorial/use_gui.rst:60
 msgid "也就是说，前一个字符表示在纵向的位置，后一个字符表示在横向的位置"
 msgstr ""
-"The first character indicates vertical positioning, and the second character "
-"indicates horizontal positioning"
+"The first character indicates vertical positioning, and the second "
+"character indicates horizontal positioning"
 
 #: ../../source/tutorial/use_gui.rst:62
 msgid "以下是可用的位置字符（括号内表示这个字符的含义）："
@@ -179,8 +178,8 @@ msgstr "Right side"
 #: ../../source/tutorial/use_gui.rst:82
 msgid "除了修改全局配置，你也可以修改时间轴配置，请参考：:class:`~.Config`"
 msgstr ""
-"Besides modifying global settings, you can also adjust timeline configurations. "
-"See :class:`~.Config`"
+"Besides modifying global settings, you can also adjust timeline "
+"configurations. See :class:`~.Config`"
 
 #: ../../source/tutorial/use_gui.rst:85
 msgid "进阶功能"
@@ -193,8 +192,8 @@ msgstr "Detailed Information"
 #: ../../source/tutorial/use_gui.rst:90
 msgid "鼠标悬停在时间轴动画标签上可以显示具体信息，例如时间区段、插值函数散点图等"
 msgstr ""
-"Hovering over an animation label on the timeline displays specific details, "
-"such as time-ranges and interpolation function scatter plots"
+"Hovering over an animation label on the timeline displays specific "
+"details, such as time-ranges and interpolation function scatter plots"
 
 #: ../../source/tutorial/use_gui.rst:97
 msgid "重新构建"
@@ -210,52 +209,50 @@ msgstr "Sub-item Selector"
 
 #: ../../source/tutorial/use_gui.rst:106
 msgid ""
-"对于子物件复杂的物件（比如 :class:`~.Text` 和 :class:`~.TypstMath`）， 取其切片"
-"就会比较麻烦，因此预览界面提供了进行子物件选择的功能"
+"对于子物件复杂的物件（比如 :class:`~.Text` 和 :class:`~.TypstMath`）， "
+"取其切片就会比较麻烦，因此预览界面提供了进行子物件选择的功能"
 msgstr ""
-"For complex items with sub-items (such as :class:`~.Text` and :class:`~."
-"TypstMath`),\n"
-"taking a slice can be troublesome, so the preview interface provides a sub-item "
-"selector"
+"For complex items with sub-items (such as :class:`~.Text` and "
+":class:`~.TypstMath`),\n"
+"taking a slice can be troublesome, so the preview interface provides a "
+"sub-item selector"
 
 #: ../../source/tutorial/use_gui.rst:109
 msgid "点击窗口左上角“功能”中的“子物件选择”，左上角会多出这样的内容："
 msgstr ""
-"Click \"Subitem Selector\" in \"Functions\" in the top-left corner of the "
-"window, and you will see content like this in the top-left:"
+"Click \"Subitem Selector\" in \"Functions\" in the top-left corner of the"
+" window, and you will see content like this in the top-left:"
 
 #: ../../source/tutorial/use_gui.rst:115
 msgid ""
-"首先，如果说我们需要取出一行文本 :class:`~.TextLine` 的某一些字符，我们需要首先"
-"找到这行文本， 那么可以使用 ``Ctrl+左键`` 点击进行选中"
+"首先，如果说我们需要取出一行文本 :class:`~.TextLine` 的某一些字符，我们需要首先找到这行文本， 那么可以使用 "
+"``Ctrl+左键`` 点击进行选中"
 msgstr ""
-"First, if we need to extract certain characters from a line of text (:class:`~."
-"TextLine`), we must locate this line of text. Use ``Ctrl + Left-click`` to "
-"select it."
+"First, if we need to extract certain characters from a line of text "
+"(:class:`~.TextLine`), we must locate this line of text. Use ``Ctrl + "
+"Left-click`` to select it."
 
 #: ../../source/tutorial/use_gui.rst:120
 msgid ""
-"为了选中 :class:`~.TextLine`，由于它是 :class:`~.Text` 的子物件，所以点击一下"
-"后，首先会选中整段文本，我们再点击一下便可以选中这一行的 :class:`~.TextLine`"
+"为了选中 :class:`~.TextLine`，由于它是 :class:`~.Text` "
+"的子物件，所以点击一下后，首先会选中整段文本，我们再点击一下便可以选中这一行的 :class:`~.TextLine`"
 msgstr ""
-"To select a :class:`~.TextLine`, since it is a sub-item of :class:`~.Text`, "
-"clicking once will select the entire paragraph of text. Clicking again will "
-"select the :class:`~.TextLine`"
+"To select a :class:`~.TextLine`, since it is a sub-item of "
+":class:`~.Text`, clicking once will select the entire paragraph of text. "
+"Clicking again will select the :class:`~.TextLine`"
 
 #: ../../source/tutorial/use_gui.rst:126
-msgid ""
-"选中这行文本后，松开按着 ``Ctrl`` 的手，直接用 ``左键`` 点击这行文本中的字符（可"
-"以长按扫动），就可以选出它们，左上角会显示对应的下标"
+msgid "选中这行文本后，松开按着 ``Ctrl`` 的手，直接用 ``左键`` 点击这行文本中的字符（可以长按扫动），就可以选出它们，左上角会显示对应的下标"
 msgstr ""
-"Once the line of text is selected, release ``Ctrl`` and directly use ``Left-"
-"click`` to select characters within the line (you can long-press and swipe to "
-"select). The top-left will display the corresponding indices"
+"Once the line of text is selected, release ``Ctrl`` and directly use "
+"``Left-click`` to select characters within the line (you can long-press "
+"and swipe to select). The top-left will display the corresponding indices"
 
 #: ../../source/tutorial/use_gui.rst:134
 msgid "这里选中的是 \"first\" 和 \"ne\"，对应的切片是 ``[4:9]`` 和 ``[12:14]``"
 msgstr ""
-"Here, \"first\" and \"ne\" are selected, corresponding to slices ``[4:9]`` and "
-"``[12:14]``"
+"Here, \"first\" and \"ne\" are selected, corresponding to slices "
+"``[4:9]`` and ``[12:14]``"
 
 #: ../../source/tutorial/use_gui.rst:136
 msgid "如果选多了，可以 ``右键`` 取消"
@@ -272,48 +269,45 @@ msgstr "Draw"
 #: ../../source/tutorial/use_gui.rst:143
 msgid "为了方便在界面上取坐标以供参考，提供了“绘制”功能："
 msgstr ""
-"For easy coordinate reference on the interface, a \"Draw\" function is provided:"
+"For easy coordinate reference on the interface, a \"Draw\" function is "
+"provided:"
 
 #: ../../source/tutorial/use_gui.rst:145
 msgid "``Dot``: 选择后，点击屏幕可以在工具窗口中得到一个坐标"
 msgstr ""
-"``Dot``: After selecting, click the screen to get a coordinate in the tool "
-"window"
+"``Dot``: After selecting, click the screen to get a coordinate in the "
+"tool window"
 
 #: ../../source/tutorial/use_gui.rst:151
 msgid "``Rect``: 选择后，在画面上按下，然后拖动，再抬起，会根据起止点得到一个矩形"
 msgstr ""
-"``Rect``: After selecting, press down on the screen, then drag and release to "
-"create a rectangle based on the start and end point"
+"``Rect``: After selecting, press down on the screen, then drag and "
+"release to create a rectangle based on the start and end point"
 
 #: ../../source/tutorial/use_gui.rst:157
-msgid ""
-"``VItem``: 选择后，在画面上绘制，可以得到一段曲线；一般情况下顶点会比较多，可以"
-"使用拖动条减少点的数量并平滑化"
+msgid "``VItem``: 选择后，在画面上绘制，可以得到一段曲线；一般情况下顶点会比较多，可以使用拖动条减少点的数量并平滑化"
 msgstr ""
-"``VItem``: After selecting, draw on the screen to get a curve. Typically, it "
-"has many vertices, and you can use the slider to reduce the number of points "
-"and smooth it"
+"``VItem``: After selecting, draw on the screen to get a curve. Typically,"
+" it has many vertices, and you can use the slider to reduce the number of"
+" points and smooth it"
 
 #: ../../source/tutorial/use_gui.rst:163
 msgid "可以同时取多个物件，不同物件会在工具界面上对应多个分页："
 msgstr ""
-"Multiple items can be created, and each will correspond to a separate page in "
-"the tool window"
+"Multiple items can be created, and each will correspond to a separate "
+"page in the tool window"
 
 #: ../../source/tutorial/use_gui.rst:171
-msgid ""
-"这些仅是在屏幕上确定位置用的，为了将绘制出的东西真正地加进去，你需要手动添加对应"
-"的代码"
+msgid "这些仅是在屏幕上确定位置用的，为了将绘制出的东西真正地加进去，你需要手动添加对应的代码"
 msgstr ""
-"This is used to determine the position on the screen. To actually add the drawn "
-"content, you need to manually add the corresponding code"
+"This is used to determine the position on the screen. To actually add the"
+" drawn content, you need to manually add the corresponding code"
 
 #: ../../source/tutorial/use_gui.rst:173
 msgid "如果没有选择任何选项（也就是“无”），在画面上拖动将会控制当前页的物件位置"
 msgstr ""
-"If no option is selected (i.e., \"None\"), dragging on the screen will control "
-"the position of the current page's item"
+"If no option is selected (i.e., \"None\"), dragging on the screen will "
+"control the position of the current page's item"
 
 #: ../../source/tutorial/use_gui.rst:176
 msgid "富文本编辑"
@@ -334,13 +328,14 @@ msgstr "Experimental feature: Recognizing rich text format on paste"
 #: ../../source/tutorial/use_gui.rst:186
 msgid "该选择框启用后，会尝试将粘贴的 html 文本样式转换为 JAnim 富文本样式"
 msgstr ""
-"With this checkbox enabled, the editor will attempt to convert pasted HTML text "
-"styles to JAnim's rich text style"
+"With this checkbox enabled, the editor will attempt to convert pasted "
+"HTML text styles to JAnim's rich text style"
 
 #: ../../source/tutorial/use_gui.rst:190
 msgid "可以在命令行使用 ``janim tool richtext`` 单独打开该界面"
 msgstr ""
-"Use ``janim tool richtext`` in the command line to open this window separately"
+"Use ``janim tool richtext`` in the command line to open this window "
+"separately"
 
 #: ../../source/tutorial/use_gui.rst:193
 msgid "字体列表"
@@ -351,31 +346,35 @@ msgid "提供了字体索引列表，方便查找字体"
 msgstr "A font index list is provided for easy font lookup"
 
 #: ../../source/tutorial/use_gui.rst:201
-msgid "其中“调用名称”也就是可以给 :class:`~.Text` 传入的 ``font`` 参数"
+#, fuzzy
+msgid "其中“字体族名”和“全名”都是可以传给 :class:`~.Text` 的 ``font`` 参数，例如："
 msgstr ""
-"\"Invocation Name\" is the name you can pass to the ``font`` parameter in :"
-"class:`~.Text`"
+"\"Invocation Name\" is the name you can pass to the ``font`` parameter in"
+" :class:`~.Text`"
 
-#: ../../source/tutorial/use_gui.rst:202
+#: ../../source/tutorial/use_gui.rst:209
 msgid "善用搜索功能，可以方便地根据字体名称进行查找"
 msgstr "Utilize the search function to find fonts easily by name"
 
-#: ../../source/tutorial/use_gui.rst:206
+#: ../../source/tutorial/use_gui.rst:213
 msgid "可以在命令行使用 ``janim tool fonts`` 单独打开该界面"
 msgstr ""
-"Use ``janim tool fonts`` in the command line to open this window separately"
+"Use ``janim tool fonts`` in the command line to open this window "
+"separately"
 
-#: ../../source/tutorial/use_gui.rst:209
+#: ../../source/tutorial/use_gui.rst:216
 msgid "颜色"
 msgstr "Color"
 
-#: ../../source/tutorial/use_gui.rst:215
+#: ../../source/tutorial/use_gui.rst:222
 msgid "提供了便捷的颜色输入、转换、预览和选取的功能"
 msgstr ""
-"A convenient feature for color input, conversion, preview, and selection is "
-"provided"
+"A convenient feature for color input, conversion, preview, and selection "
+"is provided"
 
-#: ../../source/tutorial/use_gui.rst:219
+#: ../../source/tutorial/use_gui.rst:226
 msgid "可以在命令行使用 ``janim tool color`` 单独打开该界面"
 msgstr ""
-"Use ``janim tool color`` in the command line to open this window separately"
+"Use ``janim tool color`` in the command line to open this window "
+"separately"
+

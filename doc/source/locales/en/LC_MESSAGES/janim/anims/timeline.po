@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  JAnim\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-20 11:45+0800\n"
+"POT-Creation-Date: 2025-04-07 10:55+0800\n"
 "PO-Revision-Date: 2024-03-14 15:46+0800\n"
 "Last-Translator: \n"
 "Language: en\n"
@@ -51,10 +51,6 @@ msgstr ""
 
 #: ../../docstring janim.anims.timeline.Timeline.CONFIG:13 of
 msgid "另见：:class:`~.Config`"
-msgstr ""
-
-#: janim.anims.timeline.Timeline.with_config:1 of
-msgid "使用定义在 :class:`Timeline` 子类中的 config"
 msgstr ""
 
 #: janim.anims.timeline.Timeline.get_context:1 of
@@ -100,6 +96,14 @@ msgstr "Implement this method to build the animation logic"
 #: janim.anims.timeline.Timeline.build:1 of
 msgid "构建动画并返回"
 msgstr "Build the animation and return it"
+
+#: janim.anims.timeline.Timeline.with_config:1 of
+msgid "如果是第一次调用，会在当前 context 的基础上作用定义在 :class:`Timeline` 子类中的 config，并记录"
+msgstr ""
+
+#: janim.anims.timeline.Timeline.with_config:3 of
+msgid "如果是之后的调用，则会直接设置为已记录的，确保在不同情境下的一致性"
+msgstr ""
 
 #: janim.anims.timeline.Timeline.schedule:1 of
 msgid "计划执行"
@@ -312,6 +316,20 @@ msgstr "Get the current line number being executed in :meth:`construct`"
 msgid "根据 ``time`` 得到对应执行到的行数"
 msgstr "Get the corresponding line number based on ``time``."
 
+#: janim.anims.timeline.Timeline.debug:1 of
+msgid "将物件的动画栈显示在时间轴中"
+msgstr ""
+
+#: janim.anims.timeline.Timeline.debug:5 of
+msgid "显示在时间轴中的一个黄色扁条表示在哪些区段中物件是可见的"
+msgstr ""
+
+#: janim.anims.timeline.Timeline.debug:9 of
+msgid ""
+"有些动画是覆盖性的，例如直接数据改变（``Display``） 和 ``.anim`` "
+"（``MethodTransform``），不要因为没有看到预期的栈结构而感到困惑"
+msgstr ""
+
 #: janim.anims.timeline.SourceTimeline:1 of
 msgid "基类：:py:class:`~janim.anims.timeline.Timeline`"
 msgstr "基类：:py:class:`~janim.anims.timeline.Timeline`"
@@ -491,4 +509,7 @@ msgstr "基类：:py:class:`~janim.anims.timeline.Timeline`"
 
 #~ msgid "调用所有的 :class:`RenderCall` 进行渲染"
 #~ msgstr "Calls all :class:`RenderCall` objects for rendering."
+
+#~ msgid "使用定义在 :class:`Timeline` 子类中的 config"
+#~ msgstr ""
 

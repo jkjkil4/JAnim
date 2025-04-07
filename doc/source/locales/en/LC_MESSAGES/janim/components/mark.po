@@ -1,0 +1,59 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2023, jkjkil4
+# This file is distributed under the same license as the JAnim package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: JAnim \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-04-05 16:52+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: en\n"
+"Language-Team: en <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.17.0\n"
+
+#: ../../source/janim/components/mark.rst:2
+msgid "mark"
+msgstr ""
+
+#: janim.components.mark.Cmpt_Mark:1 of
+msgid ""
+"基类：:py:class:`~janim.components.component.Component`, "
+":py:class:`~typing.Generic`"
+msgstr ""
+
+#: janim.components.mark.Cmpt_Mark.get_points:1 of
+msgid "直接得到记录的所有坐标点数据"
+msgstr ""
+
+#: janim.components.mark.Cmpt_Mark.get:1 of
+msgid "得到指定索引（默认为 0）记录的坐标点"
+msgstr ""
+
+#: janim.components.mark.Cmpt_Mark.set_points:1 of
+msgid "直接设置记录的所有坐标点数据，不会对 ``points`` 产生影响"
+msgstr ""
+
+#: janim.components.mark.Cmpt_Mark.set:1 of
+msgid "设置指定索引（默认为 0）记录的坐标点"
+msgstr ""
+
+#: janim.components.mark.Cmpt_Mark.set:3 of
+msgid "更改会同步到 ``points`` 上"
+msgstr ""
+
+#: janim.components.mark.Cmpt_Mark.apply_points_fn:1 of
+msgid "将所有点作为单独的一个参数传入 ``func``，并将 ``func`` 返回的结果作为新的点坐标数据"
+msgstr ""
+
+#: janim.components.mark.Cmpt_Mark.apply_points_fn:3 of
+msgid "用于同步与 ``points`` 的变换，已经在 :class:`~.MarkedItem` 里绑定了同步，不需要手动设置和调用"
+msgstr ""
+
