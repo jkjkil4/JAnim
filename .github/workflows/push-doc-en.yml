@@ -26,6 +26,7 @@ jobs:
         !/.gitignore
         !/.readthedocs.yaml
         !/pyproject.toml
+        !/LICENSE
 
         __pycache__
         EOF
