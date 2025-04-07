@@ -6,20 +6,12 @@ import weakref
 from collections import defaultdict
 from dataclasses import dataclass
 from functools import lru_cache, partial, update_wrapper
-from typing import (Callable, Concatenate, Generic, ParamSpec, Self, TypeVar,
-                    overload)
+from typing import Callable, Concatenate, Self, overload
 
 import janim.utils.refresh as refresh
 
-# from janim.logger import log
-
 type Key = str
 type FullQualname = str
-
-# 使 sphinx 可用
-T = TypeVar('T')
-P = ParamSpec('P')
-R = TypeVar('R')
 
 SIGNAL_OBJ_SLOTS_NAME = '__signal_obj_slots'
 
@@ -50,7 +42,7 @@ class _RefreshSlot:
     func: Callable | str
 
 
-class Signal(Generic[T, P, R]):
+class Signal[T, **P, R]:
     # for gc
     objects_with_slots: weakref.WeakSet[defaultdict[tuple[Signal, Key], _ObjSlots]] = weakref.WeakSet()
 
