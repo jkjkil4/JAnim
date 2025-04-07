@@ -522,6 +522,7 @@ class StepUpdater[T: Item](Animation):
         become_at_end: bool = True,
 
         rate_func: RateFunc = linear,
+        skip_null_items: bool = True,
         root_only: bool = True,
 
         progress_bar: bool = True,
@@ -538,6 +539,7 @@ class StepUpdater[T: Item](Animation):
         self.hide_at_end = hide_at_end
         self.become_at_end = become_at_end
 
+        self.skip_null_items = skip_null_items
         self.root_only = root_only
 
         self.progress_bar = progress_bar
@@ -548,6 +550,12 @@ class StepUpdater[T: Item](Animation):
 
     def _time_fixed(self) -> None:
         for item in self.item.walk_self_and_descendants(self.root_only):
+            if self.skip_null_items and item.is_null():
+                # 这两行是为了 selector 中能够正确选择到物件
+                self.timeline.track(item)
+                self.schedule_show_and_hide(item, self.show_at_begin, self.hide_at_end)
+                continue
+
             sub_updater = _StepUpdater(self,
                                        item,
                                        self.func,
