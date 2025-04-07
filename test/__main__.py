@@ -9,8 +9,15 @@ def main() -> None:
         '--failfast',
         action='store_true'
     )
+    parser.add_argument(
+        '--skip_examples',
+        action='store_true',
+    )
 
     args = parser.parse_args()
+    if args.skip_examples:
+        import examples.test_examples as test_examples
+        test_examples.disabled = True
 
     test_loader = unittest.TestLoader()
     test_suite = test_loader.discover('test', pattern='test_*.py')

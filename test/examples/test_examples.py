@@ -19,6 +19,8 @@ import examples_of_bugs as bug_examples
 WIDTH = 192 * 2
 HEIGHT = 108 * 2
 
+disabled: bool = False
+
 
 def get_ref_dir() -> str:
     return os.path.join(os.path.dirname(__file__), 'ref')
@@ -80,13 +82,14 @@ def load_tests(loader, standard_tests, pattern) -> unittest.TestSuite:
                 yield ref
 
 
-    ref_dir = get_ref_dir()
-    timelines = get_timelines_for_test()
     suite = unittest.TestSuite()
-    suite.addTests([
-        ExampleTester(timeline)
-        for timeline in timelines
-    ])
+    if not disabled:
+        ref_dir = get_ref_dir()
+        timelines = get_timelines_for_test()
+        suite.addTests([
+            ExampleTester(timeline)
+            for timeline in timelines
+        ])
     return suite
 
 
