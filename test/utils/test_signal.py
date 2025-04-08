@@ -20,6 +20,7 @@ class SignalTest(unittest.TestCase):
             def set_msg(self, msg: str) -> None:
                 self.msg = msg
                 User.set_msg.emit(self)
+                User.set_msg.emit(self, key='special')
 
             @set_msg.self_slot
             def notifier(self) -> None:
@@ -30,6 +31,11 @@ class SignalTest(unittest.TestCase):
             def get_text(self) -> str:
                 return f'[{self.name}] {self.msg}'
 
+            @set_msg.self_refresh(key='special')
+            @refresh.register
+            def get_text2(self) -> str:
+                return f'[{self.name}] {self.msg}'
+
         user = User('jkjkil')
 
         self.assertEqual(user.notifier_counter, 0)
@@ -37,6 +43,7 @@ class SignalTest(unittest.TestCase):
         self.assertEqual(user.notifier_counter, 1)
 
         self.assertEqual(user.get_text(), '[jkjkil] hello')
+        self.assertEqual(user.get_text2(), '[jkjkil] hello')
 
     def test_self_signal_with_inherit(self) -> None:
         called_list = []

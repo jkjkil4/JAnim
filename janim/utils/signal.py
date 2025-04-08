@@ -213,7 +213,7 @@ class Signal[T, **P, R]:
         for slot in slots.refresh_slots:
             obj = slot.obj()
             if obj is None:
-                continue
+                continue    # pragma: no cover
             obj.mark_refresh(slot.func)
 
 
