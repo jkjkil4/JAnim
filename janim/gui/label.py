@@ -446,7 +446,9 @@ class LabelGroup(Label):
 
     def _paint_tip(self, p: QPainter, rect: QRectF) -> None:
         pix = self.pix_collapse_tip1 if self._collapse else self.pix_collapse_tip2
+        p.setClipRect(rect)
         p.drawPixmap(rect.x(), rect.y() + (rect.height() - pix.height()) / 2, pix)
+        p.setClipping(False)
         rect.adjust(10, 0, 0, 0)
 
     def compute_absolute_y(self) -> int:
