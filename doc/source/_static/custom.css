@@ -9,6 +9,10 @@ p {
     font-size: initial;
 }
 
+.mj-comparison-table p {
+    font-size: 0.5em;
+}
+
 span.caption-text {
     font-size: larger;
 }

@@ -16,6 +16,7 @@ JAnim 是一个用于创建流畅动画的库
    tutorial/get_started
    tutorial/use_gui
    tutorial/examples
+   tutorial/guide_for_manim_users
    tutorial/faq
 
 .. toctree::
