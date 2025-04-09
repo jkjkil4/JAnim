@@ -658,7 +658,7 @@ class Timeline(metaclass=ABCMeta):
         if not root_only:
             assert not root.children and root.stored_children is not None
             root.stored = False
-            root.add(*[self.item_current(sub) for sub in root.stored_children])
+            root.add(*[self.item_current(sub, as_time=as_time) for sub in root.stored_children])
             root.reset_refresh()
         return root
 
