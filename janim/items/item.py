@@ -35,7 +35,11 @@ CLS_STYLES_NAME = '__cls_styles'
 ALL_STYLES_NAME = '__all_styles'
 MOCKABLE_NAME = '__mockable'
 
-
+#? Item 的元类
+#?
+#? 根据类中的 CmptInfo 字段初始化 __cls_cmptinfo，类型为 dict[str, Component]
+#? 根据类中的 apply_style 方法参数初始化 __cls_styles，类型为 list[str]
+#? 根据自身和所有基类的 __cls_styles 初始化 __all_styles，类型为 list[str]
 class _ItemMeta(type):
     """
     作为 metaclass 记录定义在类中的所有 CmptInfo
