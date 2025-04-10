@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: JAnim\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-09 11:18+0800\n"
-"PO-Revision-Date: 2025-04-09 11:24+0800\n"
+"POT-Creation-Date: 2025-04-10 10:13+0800\n"
+"PO-Revision-Date: 2025-04-10 10:14+0800\n"
 "Last-Translator: \n"
 "Language-Team: en <LL@li.org>\n"
 "Language: en\n"
@@ -25,12 +25,18 @@ msgid "面向 Manim 用户的指南"
 msgstr "Guide for Manim Users"
 
 #: ../../source/tutorial/guide_for_manim_users.rst:4
-msgid "JAnim 在使用上与 Manim 有很多相似之处，尤其是对于 Manim 的用户来说，上手使用 JAnim 会更容易。"
-msgstr "JAnim has many similarities with Manim in usage, especially for users of Manim, it will be easier to get started with JAnim."
+msgid ""
+"JAnim 在使用上与 Manim 有很多相似之处，尤其是对于 Manim 的用户来说，上手"
+"使用 JAnim 会更容易。"
+msgstr ""
+"JAnim has many similarities with Manim in usage, especially for users of "
+"Manim, it will be easier to get started with JAnim."
 
 #: ../../source/tutorial/guide_for_manim_users.rst:6
 msgid "下面是 Manim 和 JAnim 之间一些功能的对照表："
-msgstr "Below is a comparison table of some functionalities between Manim and JAnim:"
+msgstr ""
+"Below is a comparison table of some functionalities between Manim and "
+"JAnim:"
 
 #: ../../source/tutorial/guide_for_manim_users.rst:15
 msgid "功能"
@@ -140,10 +146,56 @@ msgstr "``xxx.radius.set(stroke_radius)``"
 msgid "二者粗细的含义不同，请自行尝试"
 msgstr "The meaning of stroke width differs, please try it yourself"
 
+#: ../../source/tutorial/guide_for_manim_users.rst:47
+msgid "物件作用动画"
+msgstr "Object Animation"
+
+#: ../../source/tutorial/guide_for_manim_users.rst:48
+msgid "``xxx.animate``"
+msgstr "``xxx.animate``"
+
+#: ../../source/tutorial/guide_for_manim_users.rst:49
+msgid "``xxx.anim``"
+msgstr "``xxx.anim``"
+
+#: ../../source/tutorial/guide_for_manim_users.rst:51
+msgid "动画组"
+msgstr "Animation Group"
+
 #: ../../source/tutorial/guide_for_manim_users.rst:52
-msgid "进一步的学习请阅读 :ref:`入门 <get_started>` 页面的内容"
-msgstr "For further learning, please read the content on the :ref:`Getting Started <get_started>` page."
+msgid "``AnimationGroup``"
+msgstr "``AnimationGroup``"
+
+#: ../../source/tutorial/guide_for_manim_users.rst:53
+msgid "``AnimGroup``"
+msgstr "``AnimGroup``"
 
 #: ../../source/tutorial/guide_for_manim_users.rst:54
+msgid "效果上有一些差异"
+msgstr "There are some differences in effects"
+
+#: ../../source/tutorial/guide_for_manim_users.rst:55
+msgid "Updaters"
+msgstr "Updaters"
+
+#: ../../source/tutorial/guide_for_manim_users.rst:56
+msgid "``xxx.add_updater``"
+msgstr "``xxx.add_updater``"
+
+#: ../../source/tutorial/guide_for_manim_users.rst:57
+msgid ":class:`~.DataUpdater`, :class:`~.GroupUpdater`, 等"
+msgstr ":class:`~.DataUpdater`, :class:`~.GroupUpdater`, etc."
+
+#: ../../source/tutorial/guide_for_manim_users.rst:58
+msgid "使用上的差异较大"
+msgstr "Significant differences in usage"
+
+#: ../../source/tutorial/guide_for_manim_users.rst:66
+msgid "进一步的学习请阅读 :ref:`入门 <get_started>` 页面的内容"
+msgstr ""
+"For further learning, please read the content on the :ref:`Getting "
+"Started <get_started>` page."
+
+#: ../../source/tutorial/guide_for_manim_users.rst:68
 msgid "欢迎在该页面补充更多信息！"
 msgstr "Feel free to add more information to this page!"

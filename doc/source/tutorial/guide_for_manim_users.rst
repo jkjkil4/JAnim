@@ -44,6 +44,18 @@ JAnim 在使用上与 Manim 有很多相似之处，尤其是对于 Manim 的用
         -   ``xxx.set_stroke(width=粗细)``
         -   ``xxx.radius.set(粗细半径)``
         -   二者粗细的含义不同，请自行尝试
+    *   -   物件作用动画
+        -   ``xxx.animate``
+        -   ``xxx.anim``
+        -
+    *   -   动画组
+        -   ``AnimationGroup``
+        -   ``AnimGroup``
+        -   效果上有一些差异
+    *   -   Updaters
+        -   ``xxx.add_updater``
+        -   :class:`~.DataUpdater`, :class:`~.GroupUpdater`, 等
+        -   使用上的差异较大
 
 .. raw:: html
 
