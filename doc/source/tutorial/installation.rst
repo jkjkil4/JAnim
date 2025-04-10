@@ -126,7 +126,7 @@ JAnim 是一个库并且提供了可以直接调用的二进制，熟悉 Python 
 
         .. note::
 
-            这一条目借鉴了 `manimCE 项目的安装文档 <https://docs.manim.community/en/stable/installation/uv.html>`_，命令行安装 ``uv`` 以及进一步新建项目的命令都可以参考其中相应段落
+            这一条目借鉴了 `ManimCE 项目的安装文档 <https://docs.manim.community/en/stable/installation/uv.html>`_，命令行安装 ``uv`` 以及进一步新建项目的命令都可以参考其中相应段落
 
             如果你对使用 ``uv`` 还不熟悉并略有困惑，可以点击上面分页中的 “Python + 全局” 切换到更为经典的安装方式，这样你可能会更容易理解，但我们仍然推荐使用 ``uv`` 进行管理
 
@@ -152,7 +152,7 @@ JAnim 是一个库并且提供了可以直接调用的二进制，熟悉 Python 
 
         .. note::
 
-            这一条目借鉴了 `manimCE 项目的安装文档 <https://docs.manim.community/en/stable/installation/uv.html>`_，命令行安装 ``uv`` 以及进一步新建项目的命令都可以参考其中相应段落
+            这一条目借鉴了 `ManimCE 项目的安装文档 <https://docs.manim.community/en/stable/installation/uv.html>`_，命令行安装 ``uv`` 以及进一步新建项目的命令都可以参考其中相应段落
 
             如果你对使用 ``uv`` 还不熟悉并略有困惑，可以点击上面分页中的 “Python + 全局” 切换到更为经典的安装方式，这样你可能会更容易理解，但我们仍然推荐使用 ``uv`` 进行管理
 
