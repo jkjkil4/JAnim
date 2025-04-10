@@ -48,7 +48,7 @@ shader_keys = (
 def get_janim_program(filepath: str) -> mgl.Program:
     '''
     给定相对于 janim 路径的文件位置，自动遍历后缀并读取着色器代码，
-    例如传入 `render/shaders/dotcloud` 后，会自动读取以下位置的代码：
+    例如传入 ``render/shaders/dotcloud`` 后，会自动读取以下位置的代码：
 
     - redner/shaders/dotcloud.vert.glsl
     - render/shaders/dotcloud.geom.glsl
@@ -85,7 +85,7 @@ def get_janim_program(filepath: str) -> mgl.Program:
 def get_custom_program(filepath: str) -> mgl.Program:
     '''
     给定文件位置自动遍历后缀并读取着色器代码，
-    例如传入 `shaders/yourshader` 后，会自动读取以下位置的代码：
+    例如传入 ``shaders/yourshader`` 后，会自动读取以下位置的代码：
 
     - shaders/yourshader.vert.glsl
     - shaders/yourshader.geom.glsl
@@ -96,7 +96,7 @@ def get_custom_program(filepath: str) -> mgl.Program:
     注：
 
     - 若 ``filepath`` 对应着色器程序先前已创建过，则会复用先前的对象，否则另外创建新的对象并记录
-    - 该方法只能读取自定义的着色器，读取 janim 内置着色器请使用 :meth:`get_program`
+    - 该方法只能读取自定义的着色器，读取 janim 内置着色器请使用 :meth:`get_janim_program`
     '''
     ctx = Renderer.data_ctx.get().ctx
     programs = programs_map[ctx]
@@ -153,7 +153,7 @@ def get_program_from_string(
 def get_janim_compute_shader(filepath: str) -> mgl.ComputeShader:
     '''
     载入相对于 janim 目录的指定文件的 ComputeShader，
-    例如 `render/shaders/map_points.comp.glsl` 就会载入 janim 文件夹中的这个文件
+    例如 ``render/shaders/map_points.comp.glsl`` 就会载入 janim 文件夹中的这个文件
 
     注：若 ``filepath`` 对应的 ComputeShader 先前已创建过，则会复用先前的对象，否则另外创建新的对象并记录
     '''
