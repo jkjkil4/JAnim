@@ -216,7 +216,7 @@ class TimelineView(QWidget):
         )
         # 只有在播放多个音频，并且音频有重叠区段的时候才折叠组
         # 因此这里判断如果没有重叠区段，就把折叠取消
-        if multiple and self.audio_label_group.is_exclusive():
+        if multiple and audio_label_group.is_exclusive():
             audio_label_group._collapse = False
             audio_label_group._header = False
 
