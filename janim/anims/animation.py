@@ -7,13 +7,17 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING, Callable, Iterable, Self, overload
 
 from janim.constants import C_LABEL_ANIM_DEFAULT, DEFAULT_DURATION, FOREVER
+from janim.exception import AnimationError
 from janim.items.item import Item
+from janim.locale.i18n import get_local_strings
 from janim.typing import ForeverType
 from janim.utils.rate_functions import RateFunc, linear, smooth
 
 if TYPE_CHECKING:
     from janim.anims.anim_stack import AnimStack
     from janim.anims.composition import AnimGroup
+
+_ = get_local_strings('animation')
 
 ALIGN_EPSILON = 1e-6
 
@@ -116,6 +120,8 @@ class Animation:
 
     def _align_time(self, aligner: TimeAligner) -> None:
         aligner.align(self)
+        if self.t_range.at < 0:
+            raise AnimationError(_('Animation start time cannot be negative'))
 
     def _time_fixed(self) -> None:
         '''
@@ -310,6 +316,7 @@ class TimeAligner:
         '''
         对齐时间 `t`，确保相近的时间点归化到相同的值，返回归化后的时间值
         '''
+        t = float(t)    # 避免 numpy 类型浮点数可能导致的问题（例如影响到 GUI 绘制时传给 Qt 的类型）
         # 因为在大多数情况下，最新传入的 t 总是出现在列表的最后，所以倒序查找
         for i, recorded_t in enumerate(reversed(self.recorded_times)):
             # 尝试归化到已有的值
