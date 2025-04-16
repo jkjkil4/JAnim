@@ -16,7 +16,8 @@ class AnimStack:
     '''
     用于在 :class:`~.Timeline` 中记录作用于 :class:`~.Item` 上的 :class:`~.Animation`
     '''
-    def __init__(self, time_aligner: TimeAligner):
+    def __init__(self, item: Item, time_aligner: TimeAligner):
+        self.item = item
         self.time_aligner = time_aligner
 
         # 在跟踪物件变化时，该变量用于对比物件与先前记录的 Display 对象进行对比
@@ -210,6 +211,9 @@ class AnimStack:
         return self.cache_data if readonly else self.cache_data.store()
 
     def compute_anims(self, as_time: float, anims: list[ItemAnimation]) -> ComputeAnimsGenerator:
+        if not anims:
+            return self.item
+        
         params = ItemAnimation.ApplyParams(as_time, anims, 0)
 
         for i, anim in enumerate(anims):

@@ -165,8 +165,7 @@ class Timeline(metaclass=ABCMeta):
         self.additional_render_calls_callbacks: list[Timeline.AdditionalRenderCallsCallback] = []
 
         self.time_aligner: TimeAligner = TimeAligner()
-        self.item_appearances: defaultdict[Item, Timeline.ItemAppearance] = \
-            defaultdict(lambda: Timeline.ItemAppearance(self.time_aligner))
+        self.item_appearances = Timeline.ItemAppearancesDict(self.time_aligner)
 
         self.debug_list: list[Item] = []
 
@@ -585,8 +584,8 @@ class Timeline(metaclass=ABCMeta):
 
         - ``self.renderer`` 表示所使用的渲染器对象
         '''
-        def __init__(self, aligner: TimeAligner):
-            self.stack = AnimStack(aligner)
+        def __init__(self, item: Item, aligner: TimeAligner):
+            self.stack = AnimStack(item, aligner)
             self.visibility: list[float] = []
             self.renderer: Renderer | None = None
             self.render_disabled: bool = False
@@ -602,6 +601,14 @@ class Timeline(metaclass=ABCMeta):
             if self.renderer is None:
                 self.renderer = data.create_renderer()
             self.renderer.render(data)
+
+    class ItemAppearancesDict(defaultdict[Item, ItemAppearance]):
+        def __init__(self, time_aligner: TimeAligner):
+            super().__init__(lambda key: Timeline.ItemAppearance(key, time_aligner))
+            
+        def __missing__(self, key: Item) -> Timeline.ItemAppearance:
+            self[key] = value = self.default_factory(key)
+            return value
 
     # region ItemAppearance.stack
 
