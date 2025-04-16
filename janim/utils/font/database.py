@@ -21,7 +21,7 @@ if TYPE_CHECKING:
     from fontTools.ttLib.tables._n_a_m_e import table__n_a_m_e
     from fontTools.ttLib.tables.O_S_2f_2 import table_O_S_2f_2
 
-_ = get_local_strings('font')
+_ = get_local_strings('database')
 
 
 @dataclass
