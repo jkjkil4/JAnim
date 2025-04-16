@@ -54,11 +54,13 @@ class Label:
         self.downs: list[Label] = []
 
         self._needs_refresh_y: bool = True
+        self._all_downs_cache: list[Label] | None = None
 
     # region property
 
     @property
     def y(self) -> int:
+        # _needs_refresh_y 在 LabelGroup.mark_needs_refresh_height 中被设置为 True
         if not self._needs_refresh_y:
             return self._y
 
@@ -73,12 +75,23 @@ class Label:
     def height(self) -> int:
         return self._height
 
-    def mark_needs_refresh_y(self) -> None:
-        self._needs_refresh_y = True
-        for other in self.downs:
-            other.mark_needs_refresh_y()
-        if self.parent:
-            self.parent.mark_needs_refresh_height()
+    @property
+    def all_downs(self) -> list[Label]:     # use DFS
+        if self._all_downs_cache is not None:
+            return self._all_downs_cache
+
+        res = []
+
+        for down in self.downs:
+            if down not in res:
+                res.append(down)
+            res.extend(filter(
+                lambda obj: obj not in res,
+                down.all_downs
+            ))
+
+        self._all_downs_cache = res
+        return res
 
     # endregion
 
@@ -294,8 +307,8 @@ class LabelGroup(Label):
 
     def mark_needs_refresh_height(self) -> None:
         self._needs_refresh_height = True
-        for other in self.downs:
-            other.mark_needs_refresh_y()
+        for other in self.all_downs:
+            other._needs_refresh_y = True
         if self.parent:
             self.parent.mark_needs_refresh_height()
 
