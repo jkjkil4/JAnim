@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Iterable, Self, overload
+from typing import TYPE_CHECKING, Generic, Iterable, Self, TypeVar, overload
 
 from janim.components.component import CmptInfo
 from janim.components.mark import Cmpt_Mark
@@ -79,7 +79,13 @@ class MarkedItem(Points):
         self._blocking_signals = False
 
 
-class Group[T](Points):
+if TYPE_CHECKING:
+    T = TypeVar('T', default=Item)
+else:
+    T = TypeVar('T')
+
+
+class Group(Points, Generic[T]):
     '''
     将物件组成一组
     '''
