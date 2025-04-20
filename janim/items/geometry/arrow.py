@@ -57,6 +57,7 @@ class ArrowTip(VItem):
         body_length: float = DEFAULT_ARROWTIP_BODY_LENGTH,
         back_width: float = DEFAULT_ARROWTIP_BACK_WIDTH,
         angle: float = 0,
+        scale: float = 1,
         *,
         center_anchor: CenterAnchor = CenterAnchor.Back,
         rotation: float | None = None,
@@ -67,12 +68,15 @@ class ArrowTip(VItem):
         super().__init__(fill_alpha=fill_alpha, stroke_radius=stroke_radius, **kwargs)
         self.center_anchor = center_anchor
 
+        body_length *= scale
+        back_width *= scale
         self.points.set_as_corners([
             body_length * RIGHT,
             back_width / 2 * UP,
             back_width / 2 * DOWN,
             body_length * RIGHT
         ])
+
         self.points.to_center()
         self.rotate_about_anchor(angle)
         if rotation is not None:
