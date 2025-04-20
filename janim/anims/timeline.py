@@ -605,7 +605,7 @@ class Timeline(metaclass=ABCMeta):
     class ItemAppearancesDict(defaultdict[Item, ItemAppearance]):
         def __init__(self, time_aligner: TimeAligner):
             super().__init__(lambda key: Timeline.ItemAppearance(key, time_aligner))
-            
+
         def __missing__(self, key: Item) -> Timeline.ItemAppearance:
             self[key] = value = self.default_factory(key)
             return value
@@ -1005,7 +1005,7 @@ class BuiltTimeline:
     capture_ctx: mgl.Context | None = None
     capture_fbo: mgl.Framebuffer | None = None
 
-    def capture(self, global_t: float) -> Image.Image:
+    def capture(self, global_t: float, *, transparent: bool = True) -> Image.Image:
         if BuiltTimeline.capture_ctx is None:
             try:
                 BuiltTimeline.capture_ctx = create_context(standalone=True, require=430)
@@ -1017,10 +1017,11 @@ class BuiltTimeline:
 
         fbo = BuiltTimeline.capture_fbo
         fbo.use()
-        fbo.clear(*self.cfg.background_color.rgb)
-        gl.glFlush()
+        fbo.clear(*self.cfg.background_color.rgb, not transparent)
+        if transparent:
+            gl.glFlush()
         with framebuffer_context(self.capture_fbo):
-            self.render_all(BuiltTimeline.capture_ctx, global_t, blend_on=False)
+            self.render_all(BuiltTimeline.capture_ctx, global_t, blend_on=not transparent)
 
         return Image.frombytes(
             "RGBA", fbo.size, fbo.read(components=4),
