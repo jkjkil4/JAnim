@@ -574,8 +574,9 @@ class AnimViewer(QMainWindow):
         if not ret:
             return
 
-        cli_config.fps = dialog.fps()
         file_path = dialog.file_path()
+        cli_config.fps = dialog.fps()
+        hwaccel = dialog.hwaccel()
         video_with_audio = (self.built.timeline.has_audio() and not file_path.endswith('gif'))
 
         QMessageBox.information(self,
@@ -589,7 +590,7 @@ class AnimViewer(QMainWindow):
 
             if video_with_audio:
                 video_writer = VideoWriter(anim)
-                video_writer.write_all(file_path, _keep_temp=True)
+                video_writer.write_all(file_path, hwaccel=hwaccel, _keep_temp=True)
 
                 audio_file_path = os.path.splitext(file_path)[0] + '.mp3'
 
@@ -602,7 +603,7 @@ class AnimViewer(QMainWindow):
                                       video_writer.final_file_path)
             else:
                 video_writer = VideoWriter(anim)
-                video_writer.write_all(file_path)
+                video_writer.write_all(file_path, hwaccel=hwaccel)
 
         except Exception as e:
             if not isinstance(e, ExitException):

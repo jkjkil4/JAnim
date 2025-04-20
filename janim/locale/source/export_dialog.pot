@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-20 11:53+0800\n"
+"POT-Creation-Date: 2025-04-20 15:34+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,45 +17,49 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: janim/gui/functions/export_dialog.py:28
+#: janim\gui\functions\export_dialog.py:28
 msgid "Export"
 msgstr ""
 
-#: janim/gui/functions/export_dialog.py:29
+#: janim\gui\functions\export_dialog.py:29
 msgid "Export Path:"
 msgstr ""
 
-#: janim/gui/functions/export_dialog.py:30
+#: janim\gui\functions\export_dialog.py:30
 msgid "FPS:"
 msgstr ""
 
-#: janim/gui/functions/export_dialog.py:31
+#: janim\gui\functions\export_dialog.py:31
+msgid "Hardware Acceleration"
+msgstr ""
+
+#: janim\gui\functions\export_dialog.py:32
 msgid "Open the video after exporting"
 msgstr ""
 
-#: janim/gui/functions/export_dialog.py:34
+#: janim\gui\functions\export_dialog.py:35
 msgid "OK"
 msgstr ""
 
-#: janim/gui/functions/export_dialog.py:37
+#: janim\gui\functions\export_dialog.py:38
 msgid "Cancel"
 msgstr ""
 
-#: janim/gui/functions/export_dialog.py:90
+#: janim\gui\functions\export_dialog.py:94
 msgid "Confirm Export"
 msgstr ""
 
-#: janim/gui/functions/export_dialog.py:91
+#: janim\gui\functions\export_dialog.py:95
 #, python-brace-format
 msgid ""
 "{filename} already exists.\n"
 "Do you want to replace it?"
 msgstr ""
 
-#: janim/gui/functions/export_dialog.py:97
+#: janim\gui\functions\export_dialog.py:101
 msgid "Yes(&Y)"
 msgstr ""
 
-#: janim/gui/functions/export_dialog.py:98
+#: janim\gui\functions\export_dialog.py:102
 msgid "No(&N)"
 msgstr ""

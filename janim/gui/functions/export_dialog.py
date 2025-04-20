@@ -28,6 +28,7 @@ class ExportDialog(QDialog):
         self.setWindowTitle(_('Export'))
         self.ui.label_path.setText(_('Export Path:'))
         self.ui.label_fps.setText(_('FPS:'))
+        self.ui.ckb_hwaccel.setText(_('Hardware Acceleration'))
         self.ui.ckb_open.setText(_('Open the video after exporting'))
 
         btn_ok = self.ui.btn_box.button(QDialogButtonBox.StandardButton.Ok)
@@ -56,6 +57,9 @@ class ExportDialog(QDialog):
 
     def fps(self) -> int:
         return self.ui.spb_fps.value()
+
+    def hwaccel(self) -> bool:
+        return self.ui.ckb_hwaccel.isChecked()
 
     def open(self) -> bool:
         return self.ui.ckb_open.isChecked()

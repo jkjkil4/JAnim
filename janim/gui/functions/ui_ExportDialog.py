@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'ExportDialog.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.7.2
+## Created by: Qt User Interface Compiler version 6.8.3
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -24,7 +24,7 @@ class Ui_ExportDialog(object):
     def setupUi(self, ExportDialog):
         if not ExportDialog.objectName():
             ExportDialog.setObjectName(u"ExportDialog")
-        ExportDialog.resize(418, 160)
+        ExportDialog.resize(418, 188)
         self.verticalLayout = QVBoxLayout(ExportDialog)
         self.verticalLayout.setObjectName(u"verticalLayout")
         self.vspacer1 = QSpacerItem(20, 0, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
@@ -33,6 +33,28 @@ class Ui_ExportDialog(object):
 
         self.gridlayout = QGridLayout()
         self.gridlayout.setObjectName(u"gridlayout")
+        self.label_fps = QLabel(ExportDialog)
+        self.label_fps.setObjectName(u"label_fps")
+
+        self.gridlayout.addWidget(self.label_fps, 2, 0, 1, 1)
+
+        self.hlayout_fps = QHBoxLayout()
+        self.hlayout_fps.setObjectName(u"hlayout_fps")
+        self.spb_fps = QSpinBox(ExportDialog)
+        self.spb_fps.setObjectName(u"spb_fps")
+        self.spb_fps.setMinimum(1)
+        self.spb_fps.setMaximum(999)
+        self.spb_fps.setValue(60)
+
+        self.hlayout_fps.addWidget(self.spb_fps)
+
+        self.horizontalSpacer = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+
+        self.hlayout_fps.addItem(self.horizontalSpacer)
+
+
+        self.gridlayout.addLayout(self.hlayout_fps, 2, 1, 1, 1)
+
         self.label_path = QLabel(ExportDialog)
         self.label_path.setObjectName(u"label_path")
 
@@ -57,30 +79,22 @@ class Ui_ExportDialog(object):
 
         self.gridlayout.addLayout(self.hlayout_path, 1, 1, 1, 1)
 
-        self.label_fps = QLabel(ExportDialog)
-        self.label_fps.setObjectName(u"label_fps")
-
-        self.gridlayout.addWidget(self.label_fps, 2, 0, 1, 1)
-
-        self.hlayout_fps = QHBoxLayout()
-        self.hlayout_fps.setObjectName(u"hlayout_fps")
-        self.spb_fps = QSpinBox(ExportDialog)
-        self.spb_fps.setObjectName(u"spb_fps")
-        self.spb_fps.setMinimum(1)
-        self.spb_fps.setMaximum(999)
-        self.spb_fps.setValue(60)
-
-        self.hlayout_fps.addWidget(self.spb_fps)
-
-        self.horizontalSpacer = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
-
-        self.hlayout_fps.addItem(self.horizontalSpacer)
-
-
-        self.gridlayout.addLayout(self.hlayout_fps, 2, 1, 1, 1)
-
 
         self.verticalLayout.addLayout(self.gridlayout)
+
+        self.hlayout_hwaccel = QHBoxLayout()
+        self.hlayout_hwaccel.setObjectName(u"hlayout_hwaccel")
+        self.spacer_hwaccel = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+
+        self.hlayout_hwaccel.addItem(self.spacer_hwaccel)
+
+        self.ckb_hwaccel = QCheckBox(ExportDialog)
+        self.ckb_hwaccel.setObjectName(u"ckb_hwaccel")
+
+        self.hlayout_hwaccel.addWidget(self.ckb_hwaccel)
+
+
+        self.verticalLayout.addLayout(self.hlayout_hwaccel)
 
         self.hlayout_open = QHBoxLayout()
         self.hlayout_open.setObjectName(u"hlayout_open")
@@ -102,8 +116,8 @@ class Ui_ExportDialog(object):
 
         self.btn_box = QDialogButtonBox(ExportDialog)
         self.btn_box.setObjectName(u"btn_box")
-        self.btn_box.setOrientation(Qt.Horizontal)
-        self.btn_box.setStandardButtons(QDialogButtonBox.Cancel|QDialogButtonBox.Ok)
+        self.btn_box.setOrientation(Qt.Orientation.Horizontal)
+        self.btn_box.setStandardButtons(QDialogButtonBox.StandardButton.Cancel|QDialogButtonBox.StandardButton.Ok)
 
         self.verticalLayout.addWidget(self.btn_box)
 
@@ -120,9 +134,10 @@ class Ui_ExportDialog(object):
 
     def retranslateUi(self, ExportDialog):
         ExportDialog.setWindowTitle(QCoreApplication.translate("ExportDialog", u"Export", None))
+        self.label_fps.setText(QCoreApplication.translate("ExportDialog", u"_", None))
         self.label_path.setText(QCoreApplication.translate("ExportDialog", u"_", None))
         self.btn_browse.setText(QCoreApplication.translate("ExportDialog", u"...", None))
-        self.label_fps.setText(QCoreApplication.translate("ExportDialog", u"_", None))
+        self.ckb_hwaccel.setText(QCoreApplication.translate("ExportDialog", u"_", None))
         self.ckb_open.setText(QCoreApplication.translate("ExportDialog", u"_", None))
     # retranslateUi
 
