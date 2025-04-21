@@ -586,11 +586,10 @@ class AnimViewer(QMainWindow):
         transparent = dialog.transparent()
 
         ret = False
-        self.glw.context().doneCurrent()
+        t = self.timeline_view.progress_to_time(self.timeline_view.progress())
         try:
             # 这里每次截图都重新构建一下，因为如果复用原来的对象会使得和 GUI 的上下文冲突
             built = self.built.timeline.__class__().build()
-            t = self.timeline_view.progress_to_time(self.timeline_view.progress())
             built.capture(t, transparent=transparent).save(file_path)
 
         except Exception as e:
@@ -600,7 +599,7 @@ class AnimViewer(QMainWindow):
             ret = True
 
         if ret:
-            log.info(_('File saved to "{file_path}"').format(file_path=file_path))
+            log.info(_('Frame t={t:.2f} saved to "{file_path}"').format(t=t, file_path=file_path))
             QMessageBox.information(self,
                                     _('Note'),
                                     _('Captured to {file_path}').format(file_path=file_path))
