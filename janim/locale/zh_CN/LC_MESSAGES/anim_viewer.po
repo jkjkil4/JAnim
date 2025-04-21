@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-20 15:49+0800\n"
-"PO-Revision-Date: 2025-04-21 11:49+0800\n"
+"POT-Creation-Date: 2025-04-21 15:47+0800\n"
+"PO-Revision-Date: 2025-04-21 15:47+0800\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
 "Language: zh_CN\n"
@@ -90,53 +90,58 @@ msgstr "构建失败"
 msgid "An error occurred during rendering, playback stopped"
 msgstr "渲染过程中出现错误，播放停止"
 
-#: janim\gui\anim_viewer.py:604 janim\gui\anim_viewer.py:623
-#: janim\gui\anim_viewer.py:659
+#: janim\gui\anim_viewer.py:603
+#, python-brace-format
+msgid "File saved to \"{file_path}\""
+msgstr "文件已保存到 \"{file_path}\""
+
+#: janim\gui\anim_viewer.py:605 janim\gui\anim_viewer.py:624
+#: janim\gui\anim_viewer.py:660
 msgid "Note"
 msgstr "提示"
 
-#: janim\gui\anim_viewer.py:605
+#: janim\gui\anim_viewer.py:606
 #, python-brace-format
 msgid "Captured to {file_path}"
 msgstr "已截取至 {file_path}"
 
-#: janim\gui\anim_viewer.py:624
+#: janim\gui\anim_viewer.py:625
 msgid "Output will start shortly. Please check the console for information."
 msgstr "即将进行输出，请留意控制台信息"
 
-#: janim\gui\anim_viewer.py:652
+#: janim\gui\anim_viewer.py:653
 msgid "Exporting was cancelled"
 msgstr "导出已取消"
 
-#: janim\gui\anim_viewer.py:660
+#: janim\gui\anim_viewer.py:661
 #, python-brace-format
 msgid "Output to {file_path} has been completed."
 msgstr "已完成输出至 {file_path}"
 
-#: janim\gui\anim_viewer.py:682
+#: janim\gui\anim_viewer.py:683
 #, python-brace-format
 msgid "Searching port has been opened at {port}"
 msgstr "搜索端口已在 {port} 开启"
 
-#: janim\gui\anim_viewer.py:687
+#: janim\gui\anim_viewer.py:688
 #, python-brace-format
 msgid "Failed to open searching port at {port}"
 msgstr "无法在 {port} 开启搜索端口"
 
-#: janim\gui\anim_viewer.py:692
+#: janim\gui\anim_viewer.py:693
 #, python-brace-format
 msgid ""
 "Searching port {port} is invalid, please use a number between 1024 and 65535 "
 "instead"
 msgstr "搜索端口 {port} 无效，请使用 1024 至 65535 之间的数字"
 
-#: janim\gui\anim_viewer.py:698
+#: janim\gui\anim_viewer.py:699
 msgid ""
 "Interactive development is disabled because the searching port is not "
 "established."
 msgstr "由于搜索端口未建立，交互式开发不可用"
 
-#: janim\gui\anim_viewer.py:711
+#: janim\gui\anim_viewer.py:712
 #, python-brace-format
 msgid "Interactive port has been opened at {port}"
 msgstr "交互端口已在 {port} 开启"

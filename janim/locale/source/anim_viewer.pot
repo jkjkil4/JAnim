@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-20 15:49+0800\n"
+"POT-Creation-Date: 2025-04-21 15:47+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -88,53 +88,58 @@ msgstr ""
 msgid "An error occurred during rendering, playback stopped"
 msgstr ""
 
-#: janim\gui\anim_viewer.py:604 janim\gui\anim_viewer.py:623
-#: janim\gui\anim_viewer.py:659
+#: janim\gui\anim_viewer.py:603
+#, python-brace-format
+msgid "File saved to \"{file_path}\""
+msgstr ""
+
+#: janim\gui\anim_viewer.py:605 janim\gui\anim_viewer.py:624
+#: janim\gui\anim_viewer.py:660
 msgid "Note"
 msgstr ""
 
-#: janim\gui\anim_viewer.py:605
+#: janim\gui\anim_viewer.py:606
 #, python-brace-format
 msgid "Captured to {file_path}"
 msgstr ""
 
-#: janim\gui\anim_viewer.py:624
+#: janim\gui\anim_viewer.py:625
 msgid "Output will start shortly. Please check the console for information."
 msgstr ""
 
-#: janim\gui\anim_viewer.py:652
+#: janim\gui\anim_viewer.py:653
 msgid "Exporting was cancelled"
 msgstr ""
 
-#: janim\gui\anim_viewer.py:660
+#: janim\gui\anim_viewer.py:661
 #, python-brace-format
 msgid "Output to {file_path} has been completed."
 msgstr ""
 
-#: janim\gui\anim_viewer.py:682
+#: janim\gui\anim_viewer.py:683
 #, python-brace-format
 msgid "Searching port has been opened at {port}"
 msgstr ""
 
-#: janim\gui\anim_viewer.py:687
+#: janim\gui\anim_viewer.py:688
 #, python-brace-format
 msgid "Failed to open searching port at {port}"
 msgstr ""
 
-#: janim\gui\anim_viewer.py:692
+#: janim\gui\anim_viewer.py:693
 #, python-brace-format
 msgid ""
 "Searching port {port} is invalid, please use a number between 1024 and 65535 "
 "instead"
 msgstr ""
 
-#: janim\gui\anim_viewer.py:698
+#: janim\gui\anim_viewer.py:699
 msgid ""
 "Interactive development is disabled because the searching port is not "
 "established."
 msgstr ""
 
-#: janim\gui\anim_viewer.py:711
+#: janim\gui\anim_viewer.py:712
 #, python-brace-format
 msgid "Interactive port has been opened at {port}"
 msgstr ""

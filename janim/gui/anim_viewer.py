@@ -600,6 +600,7 @@ class AnimViewer(QMainWindow):
             ret = True
 
         if ret:
+            log.info(_('File saved to "{file_path}"').format(file_path=file_path))
             QMessageBox.information(self,
                                     _('Note'),
                                     _('Captured to {file_path}').format(file_path=file_path))
