@@ -5,14 +5,15 @@ import itertools as it
 import os
 import subprocess as sp
 import types
-from typing import Iterable, Literal, Self, Sequence, overload
+from typing import Iterable, Literal, Self, overload
 
 import numpy as np
 
 from janim.constants import FRAME_PPI, ORIGIN, UP
 from janim.exception import (EXITCODE_TYPST_COMPILE_ERROR,
                              EXITCODE_TYPST_NOT_FOUND, ExitException,
-                             InvalidOrdinalError, PatternMismatchError)
+                             InvalidOrdinalError, InvalidTypstVarError,
+                             PatternMismatchError)
 from janim.items.points import Group, Points
 from janim.items.svg.svg_item import SVGElemItem, SVGItem
 from janim.items.vitem import VItem
@@ -26,7 +27,7 @@ from janim.utils.space_ops import rotation_between_vectors
 _ = get_local_strings('typst')
 
 type TypstPattern = TypstDoc | str
-type TypstVar = Points | Sequence[TypstVar] | dict[str, TypstVar]
+type TypstVar = Points | dict[str, TypstVar] | Iterable[TypstVar]
 
 
 class TypstDoc(SVGItem):
@@ -160,20 +161,23 @@ class TypstDoc(SVGItem):
             mapping[label] = var
             return f'[#__jabox(width: {width}, height: {height})<{label}>]'
 
-        elif isinstance(var, Sequence):
-            return '(' + ', '.join([
-                TypstDoc.var_str(v, f'{label}__{i}', unit_or_scale, mapping)
-                for i, v in enumerate(var)
-            ]) + ')'
-
         elif isinstance(var, dict):
             return '(' + ', '.join([
                 f'{key}: {TypstDoc.var_str(v, f'{label}__{key}', unit_or_scale, mapping)}'
                 for key, v in var.items()
             ]) + ')'
 
+        elif isinstance(var, Iterable):
+            return '(' + ', '.join([
+                TypstDoc.var_str(v, f'{label}__{i}', unit_or_scale, mapping)
+                for i, v in enumerate(var)
+            ]) + ')'
+
         else:
-            assert False
+            raise InvalidTypstVarError(
+                _('{var} is not a valid value for embedding in Typst')
+                .format(var=repr(var))
+            )
 
     @staticmethod
     def length_str(length: float, unit_or_scale: str | int) -> str:
