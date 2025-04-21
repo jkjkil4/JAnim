@@ -6,13 +6,13 @@ from PySide6.QtWidgets import (QDialog, QDialogButtonBox, QFileDialog,
                                QMessageBox, QWidget)
 
 from janim.anims.timeline import BuiltTimeline
-from janim.gui.functions.ui_ExportDialog import Ui_ExportDialog
+from janim.gui.functions.ui_CaptureDialog import Ui_CaptureDialog
 from janim.locale.i18n import get_local_strings
 
-_ = get_local_strings('export_dialog')
+_ = get_local_strings('capture_dialog')
 
 
-class ExportDialog(QDialog):
+class CaptureDialog(QDialog):
     def __init__(self, built: BuiltTimeline, parent: QWidget | None = None):
         super().__init__(parent)
         self.built = built
@@ -22,14 +22,13 @@ class ExportDialog(QDialog):
         self.setup_slots()
 
     def setup_ui(self) -> None:
-        self.ui = Ui_ExportDialog()
+        self.ui = Ui_CaptureDialog()
         self.ui.setupUi(self)
 
-        self.setWindowTitle(_('Export'))
-        self.ui.label_path.setText(_('Export Path:'))
-        self.ui.label_fps.setText(_('FPS:'))
-        self.ui.ckb_hwaccel.setText(_('Hardware Acceleration'))
-        self.ui.ckb_open.setText(_('Open the video after exporting'))
+        self.setWindowTitle(_('Capture'))
+        self.ui.label_path.setText(_('Save Path:'))
+        self.ui.ckb_transparent.setText(_('Transparent Background'))
+        self.ui.ckb_open.setText(_('Open the image after capturing'))
 
         btn_ok = self.ui.btn_box.button(QDialogButtonBox.StandardButton.Ok)
         btn_ok.setText(_('OK'))
@@ -43,10 +42,9 @@ class ExportDialog(QDialog):
         if not os.path.exists(output_dir):
             os.makedirs(output_dir)
 
-        file_path = os.path.join(output_dir, f'{self.built.timeline.__class__.__name__}.mp4')
+        file_path = os.path.join(output_dir, f'{self.built.timeline.__class__.__name__}.png')
 
         self.ui.edit_path.setText(file_path)
-        self.ui.spb_fps.setValue(self.built.cfg.fps)
 
     def setup_slots(self) -> None:
         self.ui.btn_browse.clicked.connect(self.on_btn_browse_clicked)
@@ -55,11 +53,8 @@ class ExportDialog(QDialog):
     def file_path(self) -> str:
         return self.ui.edit_path.text()
 
-    def fps(self) -> int:
-        return self.ui.spb_fps.value()
-
-    def hwaccel(self) -> bool:
-        return self.ui.ckb_hwaccel.isChecked()
+    def transparent(self) -> bool:
+        return self.ui.ckb_transparent.isChecked()
 
     def open(self) -> bool:
         return self.ui.ckb_open.isChecked()
@@ -69,14 +64,14 @@ class ExportDialog(QDialog):
             self,
             '',
             self.ui.edit_path.text(),
-            'MP4 (*.mp4);;MOV (*.mov);;GIF (*.gif)',
+            'PNG (*.png)',
             '',
             QFileDialog.Option.DontConfirmOverwrite
         )
         if not file_path:
             return
 
-        path = Path(file_path).resolve()
+        path = Path(file_path)
         cwd = Path.cwd()
         try:
             path = path.relative_to(cwd)

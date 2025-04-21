@@ -31,6 +31,7 @@ from janim.exception import ExitException
 from janim.gui.application import Application
 from janim.gui.audio_player import AudioPlayer
 from janim.gui.fixed_ratio_widget import FixedRatioWidget
+from janim.gui.functions.capture_dialog import CaptureDialog
 from janim.gui.functions.color_widget import ColorWidget
 from janim.gui.functions.export_dialog import ExportDialog
 from janim.gui.functions.font_table import FontTable
@@ -218,6 +219,11 @@ class AnimViewer(QMainWindow):
         self.fps_label = QLabel()
         self.time_label = QLabel()
         self.name_edit = QLineEdit()
+
+        self.btn_capture = QPushButton()
+        self.btn_capture.setIcon(QIcon(os.path.join(get_janim_dir(), 'gui', 'capture.png')))
+        self.btn_capture.setFocusPolicy(Qt.FocusPolicy.NoFocus)
+
         self.btn_export = QPushButton()
         self.btn_export.setIcon(QIcon(os.path.join(get_janim_dir(), 'gui', 'export.png')))
         self.btn_export.setFocusPolicy(Qt.FocusPolicy.NoFocus)
@@ -228,6 +234,7 @@ class AnimViewer(QMainWindow):
         stb.addWidget(self.fps_label)
         stb.addPermanentWidget(self.name_edit)
         stb.addPermanentWidget(self.time_label)
+        stb.addPermanentWidget(self.btn_capture)
         stb.addPermanentWidget(self.btn_export)
 
     def setup_central_widget(self) -> None:
@@ -361,6 +368,7 @@ class AnimViewer(QMainWindow):
         self.glw.rendered.connect(self.on_glw_rendered)
         self.glw.error_occurred.connect(self.on_error_occurred)
         self.name_edit.editingFinished.connect(self.on_name_edit_finished)
+        self.btn_capture.clicked.connect(self.on_capture_clicked)
         self.btn_export.clicked.connect(self.on_export_clicked)
 
     # region slots-menu
@@ -566,6 +574,38 @@ class AnimViewer(QMainWindow):
             self.on_rebuild_triggered()
             self.timeline_view.setFocus()
 
+    def on_capture_clicked(self) -> None:
+        self.play_timer.stop()
+
+        dialog = CaptureDialog(self.built, self)
+        ret = dialog.exec()
+        if not ret:
+            return
+
+        file_path = dialog.file_path()
+        transparent = dialog.transparent()
+
+        ret = False
+        self.glw.context().doneCurrent()
+        try:
+            # 这里每次截图都重新构建一下，因为如果复用原来的对象会使得和 GUI 的上下文冲突
+            built = self.built.timeline.__class__().build()
+            t = self.timeline_view.progress_to_time(self.timeline_view.progress())
+            built.capture(t, transparent=transparent).save(file_path)
+
+        except Exception as e:
+            if not isinstance(e, ExitException):
+                traceback.print_exc()
+        else:
+            ret = True
+
+        if ret:
+            QMessageBox.information(self,
+                                    _('Note'),
+                                    _('Captured to {file_path}').format(file_path=file_path))
+            if dialog.open():
+                open_file(file_path)
+
     def on_export_clicked(self) -> None:
         self.play_timer.stop()
 
@@ -586,23 +626,23 @@ class AnimViewer(QMainWindow):
         QApplication.processEvents()
         ret = False
         try:
-            anim = self.built.timeline.__class__().build()
+            built = self.built.timeline.__class__().build()
 
             if video_with_audio:
-                video_writer = VideoWriter(anim)
+                video_writer = VideoWriter(built)
                 video_writer.write_all(file_path, hwaccel=hwaccel, _keep_temp=True)
 
                 audio_file_path = os.path.splitext(file_path)[0] + '.mp3'
 
-                audio_writer = AudioWriter(anim)
+                audio_writer = AudioWriter(built)
                 audio_writer.write_all(audio_file_path, _keep_temp=True)
 
-                merge_video_and_audio(anim.cfg.ffmpeg_bin,
+                merge_video_and_audio(built.cfg.ffmpeg_bin,
                                       video_writer.temp_file_path,
                                       audio_writer.temp_file_path,
                                       video_writer.final_file_path)
             else:
-                video_writer = VideoWriter(anim)
+                video_writer = VideoWriter(built)
                 video_writer.write_all(file_path, hwaccel=hwaccel)
 
         except Exception as e:

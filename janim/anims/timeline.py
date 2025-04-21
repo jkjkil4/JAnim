@@ -877,6 +877,8 @@ class BuiltTimeline:
 
         self._time: float = 0
 
+        self.capture_ctx: mgl.Context | None = None
+
     @property
     def cfg(self) -> Config | ConfigGetter:
         return self.timeline.config_getter
@@ -1002,26 +1004,22 @@ class BuiltTimeline:
 
         return True
 
-    capture_ctx: mgl.Context | None = None
-    capture_fbo: mgl.Framebuffer | None = None
-
     def capture(self, global_t: float, *, transparent: bool = True) -> Image.Image:
-        if BuiltTimeline.capture_ctx is None:
+        if self.capture_ctx is None:
             try:
-                BuiltTimeline.capture_ctx = create_context(standalone=True, require=430)
+                self.capture_ctx = create_context(standalone=True, require=430)
             except ValueError:
-                BuiltTimeline.capture_ctx = create_context(standalone=True, require=330)
+                self.capture_ctx = create_context(standalone=True, require=330)
 
             pw, ph = self.cfg.pixel_width, self.cfg.pixel_height
-            BuiltTimeline.capture_fbo = create_framebuffer(BuiltTimeline.capture_ctx, pw, ph)
+            self.capture_fbo = create_framebuffer(self.capture_ctx, pw, ph)
 
-        fbo = BuiltTimeline.capture_fbo
-        fbo.use()
-        fbo.clear(*self.cfg.background_color.rgb, not transparent)
-        if transparent:
-            gl.glFlush()
+        fbo = self.capture_fbo
         with framebuffer_context(self.capture_fbo):
-            self.render_all(BuiltTimeline.capture_ctx, global_t, blend_on=not transparent)
+            fbo.clear(*self.cfg.background_color.rgb, not transparent)
+            if transparent:
+                gl.glFlush()
+            self.render_all(self.capture_ctx, global_t, blend_on=not transparent)
 
         return Image.frombytes(
             "RGBA", fbo.size, fbo.read(components=4),

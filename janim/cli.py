@@ -82,7 +82,7 @@ def write(args: Namespace) -> None:
 
     log.info('======')
 
-    built = [timeline().build(hide_subtitles=args.hide_subtitles) for timeline in timelines]
+    builts = [timeline().build(hide_subtitles=args.hide_subtitles) for timeline in timelines]
 
     # 当设定 video_with_audio 时，忽略 video 和 audio 选项
     if args.video_with_audio:
@@ -101,11 +101,11 @@ def write(args: Namespace) -> None:
 
     prev_is_skipped = False
 
-    for anim in built:
-        name = anim.timeline.__class__.__name__
-        relative_path = os.path.dirname(inspect.getfile(anim.timeline.__class__))
+    for built in builts:
+        name = built.timeline.__class__.__name__
+        relative_path = os.path.dirname(inspect.getfile(built.timeline.__class__))
 
-        output_dir = os.path.normpath(anim.cfg.formated_output_dir(relative_path))
+        output_dir = os.path.normpath(built.cfg.formated_output_dir(relative_path))
         if not os.path.exists(output_dir):
             os.makedirs(output_dir)
 
@@ -113,18 +113,18 @@ def write(args: Namespace) -> None:
         video = args.video
         audio = args.audio
         srt = args.srt
-        open_result = args.open and anim is built[-1]
+        open_result = args.open and built is builts[-1]
 
         # 如果其实没办法做到 video_with_audio，那么把 video_with_audio 用 video 和 audio 替代
-        fallback = not anim.timeline.has_audio() or is_gif
+        fallback = not built.timeline.has_audio() or is_gif
         if video_with_audio and fallback:
             video_with_audio = False
             video = True
             audio = True
 
         writes_video = video_with_audio or video
-        writes_audio = (video_with_audio or audio) and anim.timeline.has_audio()
-        writes_srt = srt and anim.timeline.has_subtitle()
+        writes_audio = (video_with_audio or audio) and built.timeline.has_audio()
+        writes_srt = srt and built.timeline.has_subtitle()
 
         skip = not writes_video and not writes_audio and not writes_srt
 
@@ -142,17 +142,17 @@ def write(args: Namespace) -> None:
             continue
 
         if writes_video:
-            log.info(f'fps={anim.cfg.fps}')
-            log.info(f'resolution="{anim.cfg.pixel_width}x{anim.cfg.pixel_height}"')
+            log.info(f'fps={built.cfg.fps}')
+            log.info(f'resolution="{built.cfg.pixel_width}x{built.cfg.pixel_height}"')
             log.info(f'format="{args.format}"')
         if writes_audio:
             if not video_with_audio:
                 log.info(f'audio_format="{args.audio_format}"')
-            log.info(f'audio_framerate="{anim.cfg.audio_framerate}"')
+            log.info(f'audio_framerate="{built.cfg.audio_framerate}"')
         log.info(f'output_dir="{output_dir}"')
 
         if writes_video:
-            video_writer = VideoWriter(anim)
+            video_writer = VideoWriter(built)
             video_writer.write_all(
                 os.path.join(output_dir,
                              f'{name}.{args.format}'),
@@ -164,7 +164,7 @@ def write(args: Namespace) -> None:
                 open_file(video_writer.final_file_path)
 
         if writes_audio:
-            audio_writer = AudioWriter(anim)
+            audio_writer = AudioWriter(built)
             audio_writer.write_all(
                 os.path.join(output_dir,
                              f'{name}.{args.audio_format}'),
@@ -174,7 +174,7 @@ def write(args: Namespace) -> None:
                 open_file(audio_writer.final_file_path)
 
         if video_with_audio:
-            merge_video_and_audio(anim.cfg.ffmpeg_bin,
+            merge_video_and_audio(built.cfg.ffmpeg_bin,
                                   video_writer.temp_file_path,
                                   audio_writer.temp_file_path,
                                   video_writer.final_file_path)
@@ -183,7 +183,7 @@ def write(args: Namespace) -> None:
 
         if writes_srt:
             file_path = os.path.join(output_dir, f'{name}.srt')
-            SRTWriter.writes(anim, file_path)
+            SRTWriter.writes(built, file_path)
             log.info(
                 _('Generated SRT file "{file_path}"')
                 .format(file_path=file_path)
