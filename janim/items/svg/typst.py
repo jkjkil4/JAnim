@@ -5,15 +5,15 @@ import itertools as it
 import os
 import subprocess as sp
 import types
-from typing import Iterable, Self, overload
+from typing import Iterable, Literal, Self, Sequence, overload
 
 import numpy as np
 
-from janim.constants import ORIGIN, UP
+from janim.constants import FRAME_PPI, ORIGIN, UP
 from janim.exception import (EXITCODE_TYPST_COMPILE_ERROR,
                              EXITCODE_TYPST_NOT_FOUND, ExitException,
                              InvalidOrdinalError, PatternMismatchError)
-from janim.items.points import Group
+from janim.items.points import Group, Points
 from janim.items.svg.svg_item import SVGElemItem, SVGItem
 from janim.items.vitem import VItem
 from janim.locale.i18n import get_local_strings
@@ -26,6 +26,7 @@ from janim.utils.space_ops import rotation_between_vectors
 _ = get_local_strings('typst')
 
 type TypstPattern = TypstDoc | str
+type TypstVar = Points | Sequence[TypstVar] | dict[str, TypstVar]
 
 
 class TypstDoc(SVGItem):
@@ -39,6 +40,8 @@ class TypstDoc(SVGItem):
         self,
         text: str,
         *,
+        vars: dict[str, TypstVar] | None = None,
+        vars_size_unit: Literal['pt', 'mm', 'cm', 'in', 'pt'] | None = None,
         scale: float = 24 / 11,     # 因为 Typst 默认字号=11，janim 默认字号=24，为了默认显示效果一致，将 Typst 内容缩放 24/11
         shared_preamble: str | None = None,
         additional_preamble: str | None = None,
@@ -50,13 +53,42 @@ class TypstDoc(SVGItem):
         if additional_preamble is None:
             additional_preamble = ''
 
-        super().__init__(self.compile_typst(text, shared_preamble, additional_preamble), scale=scale, **kwargs)
+        if vars is not None:
+            factor = Config.get.default_pixel_to_frame_ratio * (FRAME_PPI / 96) * scale
+            vars_str, vars_mapping = self.vars_str(vars, vars_size_unit or 1 / factor)
+        else:
+            vars_str = ''
+
+        super().__init__(
+            self.compile_typst(text, shared_preamble, additional_preamble, vars_str),
+            scale=scale,
+            **kwargs
+        )
+
+        # 把占位元素替换为实际物件
+        if vars is not None:
+            new_children = self.children.copy()
+            for label, item in vars_mapping.items():
+                placeholders = self.get_label(label)
+
+                for i, placeholder in enumerate(placeholders):
+                    phbox = placeholder.points.box
+
+                    item_to_replace = item if i == 0 else item.copy()
+                    item_to_replace.points.set_size(width=phbox.width, height=phbox.height).move_to(placeholder)
+
+                    idx = new_children.index(placeholder)
+                    new_children.pop(idx)
+                    new_children.insert(idx, item_to_replace)
+
+            self.clear_children()
+            self.add(*new_children)
 
     def move_into_position(self) -> None:
         self.points.scale(0.9, about_point=ORIGIN).to_border(UP)
 
     @staticmethod
-    def compile_typst(text: str, shared_preamble: str, additional_preamble: str) -> str:
+    def compile_typst(text: str, shared_preamble: str, additional_preamble: str, vars: str) -> str:
         '''
         编译 Typst 文档
         '''
@@ -64,6 +96,7 @@ class TypstDoc(SVGItem):
         md5 = hashlib.md5(text.encode())
         md5.update(shared_preamble.encode())
         md5.update(additional_preamble.encode())
+        md5.update(vars.encode())
         hash_hex = md5.hexdigest()
 
         svg_file_path = os.path.join(typst_temp_dir, hash_hex + '.svg')
@@ -73,6 +106,7 @@ class TypstDoc(SVGItem):
         typst_content = get_typst_template().format(
             shared_preamble=shared_preamble,
             additional_preamble=additional_preamble,
+            vars=vars,
             typst_expression=text
         )
 
@@ -108,6 +142,47 @@ class TypstDoc(SVGItem):
         将字符串变为 Typst 对象，而本身已经是的则直接返回
         '''
         return obj if isinstance(obj, TypstDoc) else cls(obj)
+
+    @staticmethod
+    def vars_str(vars: dict[str, TypstVar], unit_or_scale: str | int) -> tuple[str, dict[str, Points]]:
+        mapping = {}
+        lst = [
+            f'#let {key} = {TypstDoc.var_str(var, f'__ja__{key}', unit_or_scale, mapping)}'
+            for key, var in vars.items()
+        ]
+        return '#let __jabox = box.with(stroke: white)\n' + '\n'.join(lst), mapping
+
+    @staticmethod
+    def var_str(var: TypstVar, label: str, unit_or_scale: str | int, mapping: dict[str, Points]) -> str:
+        if isinstance(var, Points):
+            width = TypstDoc.length_str(var.points.box.width, unit_or_scale)
+            height = TypstDoc.length_str(var.points.box.height, unit_or_scale)
+            mapping[label] = var
+            return f'[#__jabox(width: {width}, height: {height})<{label}>]'
+
+        elif isinstance(var, Sequence):
+            return '(' + ', '.join([
+                TypstDoc.var_str(v, f'{label}__{i}', unit_or_scale, mapping)
+                for i, v in enumerate(var)
+            ]) + ')'
+
+        elif isinstance(var, dict):
+            return '(' + ', '.join([
+                f'{key}: {TypstDoc.var_str(v, f'{label}__{key}', unit_or_scale, mapping)}'
+                for key, v in var.items()
+            ]) + ')'
+
+        else:
+            assert False
+
+    @staticmethod
+    def length_str(length: float, unit_or_scale: str | int) -> str:
+        if isinstance(unit_or_scale, (int, float)):
+            return f'{length * unit_or_scale}pt'
+        elif isinstance(unit_or_scale, str):
+            return f'{length}{unit_or_scale}'
+        else:
+            assert False
 
     # region pattern-matching
 

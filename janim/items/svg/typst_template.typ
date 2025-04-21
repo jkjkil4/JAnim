@@ -5,4 +5,6 @@
 
 {additional_preamble}
 
+{vars}
+
 {typst_expression}
