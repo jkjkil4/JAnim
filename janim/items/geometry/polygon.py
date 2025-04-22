@@ -1,17 +1,21 @@
 
+import itertools as it
 from typing import Iterable, Self, overload
 
 import numpy as np
 
-from janim.constants import DL, DR, ORIGIN, PI, RIGHT, UL, UR
+from janim.constants import DL, DR, ORIGIN, PI, RIGHT, TAU, UL, UR
 from janim.items.geometry.arc import ArcBetweenPoints
 from janim.items.points import MarkedItem
 from janim.items.vitem import VItem
+from janim.locale.i18n import get_local_strings
 from janim.typing import Vect, VectArray
 from janim.utils.bezier import PathBuilder
 from janim.utils.iterables import adjacent_n_tuples
 from janim.utils.space_ops import (angle_between_vectors, compass_directions,
                                    cross2d, get_norm, normalize, rotate_vector)
+
+_ = get_local_strings('polygon')
 
 
 class Polygon(VItem):
@@ -166,3 +170,53 @@ class RoundedRect(Rect):
     def __init__(self, v1=4.0, v2=2.0, /, corner_radius: float = 0.5, **kwargs) -> None:
         super().__init__(v1, v2, **kwargs)
         self.round_corners(corner_radius)
+
+
+class Star(Polygon):
+    '''
+    星形
+
+    - ``n`` 表示顶点数，默认为 5
+    - ``outer_radius`` 表示外半径
+    - ``inner_radius`` 表示内半径，默认为 ``None``，由 ``density`` 决定
+    - ``density`` 表示密度，数值越高，内半径越小，取值范围 ``[1, n/2]``
+    - ``start_angle`` 表示起始角度，即星形的旋转角度
+    '''
+    def __init__(
+        self,
+        n: int = 5,
+        *,
+        outer_radius: float = 1,
+        inner_radius: float | None = None,
+        density: int = 2,
+        start_angle: float | None = TAU / 4,
+        **kwargs
+    ):
+        inner_angle = TAU / (2 * n)
+
+        if inner_radius is None:
+            # See https://math.stackexchange.com/a/2136292 for an
+            # overview of how to calculate the inner radius of a
+            # perfect star.
+
+            if density <= 0 or density >= n / 2:
+                raise ValueError(
+                    _('Incompatible density {density} for number of points {n}')
+                    .format(density=density, n=n),
+                )
+
+            outer_angle = TAU * density / n
+            inverse_x = 1 - np.tan(inner_angle) * (
+                (np.cos(outer_angle) - 1) / np.sin(outer_angle)
+            )
+
+            inner_radius = outer_radius / (np.cos(inner_angle) * inverse_x)
+
+        start_vect = rotate_vector(RIGHT * outer_radius, start_angle)
+        outer_vertices = compass_directions(n, start_vect)
+
+        start_vect = rotate_vector(RIGHT * inner_radius, start_angle + inner_angle)
+        inner_vertices = compass_directions(n, start_vect)
+
+        super().__init__(*it.chain.from_iterable(zip(outer_vertices, inner_vertices)), **kwargs)
+        self.start_angle = start_angle
