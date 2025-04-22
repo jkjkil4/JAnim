@@ -1,4 +1,4 @@
-#set page(fill: none)
+#set page(fill: none, height: auto)
 #set text(white)
 
 {shared_preamble}
