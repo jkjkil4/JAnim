@@ -1,3 +1,4 @@
+from __future__ import annotations
 
 import os
 from collections import defaultdict
@@ -7,13 +8,13 @@ from typing import Any, Callable, Self
 import numpy as np
 import svgelements as se
 
-from janim.constants import FRAME_PPI, ORIGIN, RIGHT, TAU
+from janim.constants import FRAME_PPI, ORIGIN, RIGHT, TAU, UP
 from janim.items.geometry.arc import Circle
 from janim.items.geometry.line import Line
 from janim.items.geometry.polygon import Polygon, Polyline, Rect, RoundedRect
 from janim.items.item import Item
 from janim.items.points import Group
-from janim.items.text import Text, TextLine
+from janim.items.text import BasepointVItem, Text, TextLine
 from janim.items.vitem import VItem
 from janim.locale.i18n import get_local_strings
 from janim.logger import log
@@ -24,7 +25,8 @@ from janim.utils.space_ops import rotation_about_z
 
 _ = get_local_strings('svg_item')
 
-type SVGElemItem = VItem
+
+type SVGElemItem = VItem | BasepointVItem | TextLine
 type ItemBuilder = Callable[[], SVGElemItem]
 type GroupIndexer = defaultdict[str, list[int]]
 
@@ -59,9 +61,10 @@ class SVGItem(Group[SVGElemItem]):
         scale: float = 1.0,     # 缩放系数，仅当 width 和 height 都为 None 时有效
         width: float | None = None,
         height: float | None = None,
+        mark_basepoint: bool = False,
         **kwargs
     ):
-        items, self.groups = self.get_items_from_file(file_path)
+        items, self.groups = self.get_items_from_file(file_path, mark_basepoint)
 
         super().__init__(*items, **kwargs)
 
@@ -126,7 +129,11 @@ class SVGItem(Group[SVGElemItem]):
             item.radius.set(item.radius.get() * factor)
 
     @classmethod
-    def get_items_from_file(cls, file_path: str) -> tuple[list[SVGElemItem], dict[str, list[SVGElemItem]]]:
+    def get_items_from_file(
+        cls,
+        file_path: str,
+        mark_basepoint: bool = False
+    ) -> tuple[list[SVGElemItem], dict[str, list[SVGElemItem]]]:
         '''
         解析文件并得到物件列表
         '''
@@ -163,7 +170,7 @@ class SVGItem(Group[SVGElemItem]):
                 continue
 
             elif isinstance(shape, se.Path):
-                builder = SVGItem.convert_path(shape, offset)
+                builder = SVGItem.convert_path(shape, offset, mark_basepoint)
             elif isinstance(shape, se.SimpleLine):
                 builder = SVGItem.convert_line(shape, offset)
             elif isinstance(shape, se.Rect):
@@ -237,7 +244,7 @@ class SVGItem(Group[SVGElemItem]):
         return rot, shift
 
     @staticmethod
-    def convert_path(path: se.Path, offset: np.ndarray) -> ItemBuilder:
+    def convert_path(path: se.Path, offset: np.ndarray, mark_basepoint: bool = False) -> ItemBuilder:
         builder = PathBuilder()
 
         transform_cache: tuple[se.Matrix, np.ndarray, np.ndarray] | None = None
@@ -302,10 +309,25 @@ class SVGItem(Group[SVGElemItem]):
         vitem_points = builder.get()
         vitem_points[:, :2] += offset
 
-        def vitem_builder() -> VItem:
-            vitem = VItem(**vitem_styles)
-            vitem.points.set(vitem_points)
-            return vitem
+        if mark_basepoint:
+            # 对于 Typst 生成的 SVG，SVG 对象在没有 transform 作用的情况下
+            # 原点就在其基线上，所以将原点作用 transform 即可得到 SVG 对象（一般而言是文字）的基线
+            transform = se.Matrix(path.values.get('transform', ''))
+            rot, shift = SVGItem.get_rot_and_shift_from_matrix(transform)
+            marks = np.array([ORIGIN, RIGHT, UP])
+            marks[:, :2] @= rot.T
+            marks[:, :2] += shift[:2] + offset
+
+            def vitem_builder() -> BasepointVItem:
+                vitem = BasepointVItem(**vitem_styles)
+                vitem.points.set(vitem_points)
+                vitem.mark.set_points(marks)
+                return vitem
+        else:
+            def vitem_builder() -> VItem:
+                vitem = VItem(**vitem_styles)
+                vitem.points.set(vitem_points)
+                return vitem
 
         return vitem_builder
 

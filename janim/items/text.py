@@ -4,7 +4,7 @@ import inspect
 import itertools as it
 import re
 from collections import defaultdict
-from enum import Enum
+from enum import Enum, StrEnum
 from typing import (TYPE_CHECKING, Any, Callable, Concatenate, Iterable,
                     Literal, Self)
 
@@ -147,7 +147,37 @@ class Cmpt_Mark_TextLineImpl[ItemT](Cmpt_Mark[ItemT], impl=True):
         ) -> Self: ...
 
 
-class TextChar(MarkedItem, VItem):
+class ProjType(StrEnum):
+    Horizontal = 'horizontal'
+    Vertical = 'vertial'
+    H = 'h'
+    V = 'v'
+
+
+class BasepointVItem(MarkedItem, VItem):
+    def offset_to(
+        self,
+        other: BasepointVItem,
+        proj: ProjType | Literal['horizontal', 'vertical', 'h', 'v'] | Vect | None = None
+    ) -> np.ndarray:
+        # 假定 [0] 是 basepoint，[1] 是 right，[2] 是 up
+        offset = other.mark.get(0) - self.mark.get(0)
+        if proj is None:
+            return offset
+
+        match proj:
+            case ProjType.Horizontal | ProjType.H:
+                proj_vect = self.mark.get(1) - self.mark.get(0)
+            case ProjType.Vertical | ProjType.V:
+                proj_vect = self.mark.get(2) - self.mark.get(0)
+            case _:
+                proj_vect = np.array(proj)
+
+        scalar = np.dot(offset, proj_vect) / np.dot(proj_vect, proj_vect)
+        return scalar * proj_vect
+
+
+class TextChar(BasepointVItem):
     '''
     字符物件，作为 :class:`TextLine` 的子物件，在创建 :class:`TextLine` 时产生
     '''
@@ -252,7 +282,7 @@ class TextChar(MarkedItem, VItem):
                 )
 
 
-class TextLine(MarkedItem, VItem, Group[TextChar]):
+class TextLine(BasepointVItem, Group[TextChar]):
     '''
     单行文字物件，作为 :class:`Text` 的子物件，在创建 :class:`Text` 时产生s
     '''
