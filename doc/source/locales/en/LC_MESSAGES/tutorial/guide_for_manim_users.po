@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: JAnim\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-10 10:13+0800\n"
-"PO-Revision-Date: 2025-04-10 10:14+0800\n"
+"POT-Creation-Date: 2025-04-27 00:38+0800\n"
+"PO-Revision-Date: 2025-04-27 00:38+0800\n"
 "Last-Translator: \n"
 "Language-Team: en <LL@li.org>\n"
 "Language: en\n"
@@ -190,12 +190,24 @@ msgstr ":class:`~.DataUpdater`, :class:`~.GroupUpdater`, etc."
 msgid "使用上的差异较大"
 msgstr "Significant differences in usage"
 
-#: ../../source/tutorial/guide_for_manim_users.rst:66
+#: ../../source/tutorial/guide_for_manim_users.rst:59
+msgid "移动到屏幕边上/角落"
+msgstr "Move to the edge/corner of the screen"
+
+#: ../../source/tutorial/guide_for_manim_users.rst:60
+msgid "``to_edge``, ``to_corner``"
+msgstr "``to_edge``, ``to_corner``"
+
+#: ../../source/tutorial/guide_for_manim_users.rst:61
+msgid ":meth:`~.Cmpt_Points.to_border`"
+msgstr ":meth:`~.Cmpt_Points.to_border`"
+
+#: ../../source/tutorial/guide_for_manim_users.rst:68
 msgid "进一步的学习请阅读 :ref:`入门 <get_started>` 页面的内容"
 msgstr ""
 "For further learning, please read the content on the :ref:`Getting "
 "Started <get_started>` page."
 
-#: ../../source/tutorial/guide_for_manim_users.rst:68
+#: ../../source/tutorial/guide_for_manim_users.rst:70
 msgid "欢迎在该页面补充更多信息！"
 msgstr "Feel free to add more information to this page!"

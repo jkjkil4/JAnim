@@ -56,6 +56,10 @@ JAnim 在使用上与 Manim 有很多相似之处，尤其是对于 Manim 的用
         -   ``xxx.add_updater``
         -   :class:`~.DataUpdater`, :class:`~.GroupUpdater`, 等
         -   使用上的差异较大
+    *   -   移动到屏幕边上/角落
+        -   ``to_edge``, ``to_corner``
+        -   :meth:`~.Cmpt_Points.to_border`
+        -
 
 .. raw:: html
 
