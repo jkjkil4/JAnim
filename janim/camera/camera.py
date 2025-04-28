@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import Iterable, Self
 
 import numpy as np
-from scipy.spatial.transform import Rotation, Slerp
+from pyquaternion import Quaternion
 
 import janim.utils.refresh as refresh
 from janim.camera.camera_info import CameraInfo
@@ -16,7 +16,6 @@ from janim.utils.bezier import interpolate
 from janim.utils.config import Config
 from janim.utils.paths import PathFunc, straight_path
 from janim.utils.simple_functions import clip
-from janim.utils.space_ops import normalize
 
 
 class Cmpt_CameraPoints[ItemT](Cmpt_Points[ItemT]):
@@ -33,22 +32,21 @@ class Cmpt_CameraPoints[ItemT](Cmpt_Points[ItemT]):
         self.set([ORIGIN])
         self.size = [Config.get.frame_width, Config.get.frame_height]
         self.fov = 45
-        self.orientation = Rotation.identity()
+        self.orientation = Quaternion()     # 单位四元数
 
         return self
 
     def copy(self) -> Self:
         cmpt_copy = super().copy()
         cmpt_copy._size = self._size.copy()
-        cmpt_copy.orientation = self.orientation.from_quat(self.orientation.as_quat())
+        cmpt_copy.orientation = Quaternion(self.orientation.elements)
         return cmpt_copy
 
     def become(self, other: Cmpt_CameraPoints) -> Self:
         self.set(other.get())
         self.size = other.size
         self.fov = other.fov
-        # 有无更好的复制方法？
-        self.orientation = Rotation.from_rotvec(other.orientation.as_rotvec())
+        self.orientation = Quaternion(other.orientation.elements)
 
         return self
 
@@ -57,7 +55,7 @@ class Cmpt_CameraPoints[ItemT](Cmpt_Points[ItemT]):
             return False
         if np.any(self.size != other.size) or self.fov != other.fov:
             return False
-        return np.isclose(self.orientation.as_quat(), other.orientation.as_quat()).all()
+        return np.allclose(self.orientation.elements, other.orientation.elements)
 
     def interpolate(
         self,
@@ -67,14 +65,12 @@ class Cmpt_CameraPoints[ItemT](Cmpt_Points[ItemT]):
         *,
         path_func: PathFunc = straight_path
     ) -> None:
-        # 下面对 Slerp 的调用有次出现了 ValueError: Interpolation times must be within the range [0, 1], both inclusive.
-        # 所以这里限制一下 alpha（本来我觉得没必要的，但是为什么会有上面这个报错呢）
         alpha = clip(alpha, 0, 1)
 
         super().interpolate(cmpt1, cmpt2, alpha)
         self.size = interpolate(cmpt1.size, cmpt2.size, alpha)
         self.fov = interpolate(cmpt1.fov, cmpt2.fov, alpha)
-        self.orientation = Slerp([0, 1], Rotation.concatenate([cmpt1.orientation, cmpt2.orientation]))(alpha)
+        self.orientation = Quaternion.slerp(cmpt1.orientation, cmpt2.orientation, amount=alpha)
 
     @property
     def scaled_factor(self) -> float:
@@ -123,11 +119,12 @@ class Cmpt_CameraPoints[ItemT](Cmpt_Points[ItemT]):
         - 默认 ``absolute=True`` 表示绕全局坐标系旋转
         - ``absolute=False`` 表示绕相机自身坐标系旋转，并且此时 ``about_point`` 参数无效
         '''
+        q_rot = Quaternion(axis=axis, angle=angle)
         if absolute:
             super().rotate(angle, axis=axis, **kwargs)
-            self.orientation = Rotation.from_rotvec(angle * normalize(axis)) * self.orientation
+            self.orientation = q_rot * self.orientation
         else:
-            self.orientation *= Rotation.from_rotvec(angle * normalize(axis))
+            self.orientation *= q_rot
 
         return self
 
@@ -138,7 +135,7 @@ class Cmpt_CameraPoints[ItemT](Cmpt_Points[ItemT]):
         '''
         摄像机的几何属性
         '''
-        rot_mat_T = self.orientation.as_matrix().T
+        rot_mat_T = self.orientation.rotation_matrix.T
         width, height = self.size
         return CameraInfo(
             self.scaled_factor,

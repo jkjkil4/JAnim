@@ -378,67 +378,164 @@ def smooth_quadratic_path(anchors: VectArray) -> np.ndarray:
     return new_path
 
 
+# borrowed from https://github.com/ManimCommunity/manim/blob/main/manim/utils/bezier.py
+# Figuring out which Bézier curves most smoothly connect a sequence of points
 def get_smooth_cubic_bezier_handle_points(
-    points: VectArray
+    anchors: VectArray,
 ) -> tuple[np.ndarray, np.ndarray]:
+    '''
+    See https://docs.manim.community/en/stable/reference/manim.utils.bezier.html#manim.utils.bezier.get_smooth_cubic_bezier_handle_points
+    '''
+    anchors = np.asarray(anchors)
+    n_anchors = anchors.shape[0]
 
-    from scipy import linalg
-
-    points = np.array(points)
-    num_handles = len(points) - 1
-    dim = points.shape[1]
-    if num_handles < 1:
+    # If there's a single anchor, there's no Bézier curve.
+    # Return empty arrays.
+    if n_anchors == 1:
+        dim = anchors.shape[1]
         return np.zeros((0, dim)), np.zeros((0, dim))
-    # Must solve 2*num_handles equations to get the handles.
-    # l and u are the number of lower an upper diagonal rows
-    # in the matrix to solve.
-    l, u = 2, 1
-    # diag is a representation of the matrix in diagonal form
-    # See https://www.particleincell.com/2012/bezier-splines/
-    # for how to arrive at these equations
-    diag = np.zeros((l + u + 1, 2 * num_handles))
-    diag[0, 1::2] = -1
-    diag[0, 2::2] = 1
-    diag[1, 0::2] = 2
-    diag[1, 1::2] = 1
-    diag[2, 1:-2:2] = -2
-    diag[3, 0:-3:2] = 1
-    # last
-    diag[2, -2] = -1
-    diag[1, -1] = 2
-    # This is the b as in Ax = b, where we are solving for x,
-    # and A is represented using diag.  However, think of entries
-    # to x and b as being points in space, not numbers
-    b = np.zeros((2 * num_handles, dim))
-    b[1::2] = 2 * points[1:]
-    b[0] = points[0]
-    b[-1] = points[-1]
 
-    def solve_func(b):
-        return linalg.solve_banded((l, u), diag, b)
+    # If there are only two anchors (thus only one pair of handles),
+    # they can only be an interpolation of these two anchors with alphas
+    # 1/3 and 2/3, which will draw a straight line between the anchors.
+    if n_anchors == 2:
+        val = interpolate(anchors[0], anchors[1], np.array([[1 / 3], [2 / 3]]))
+        return (val[0], val[1])
 
-    use_closed_solve_function = is_closed(points)
-    if use_closed_solve_function:
-        # Get equations to relate first and last points
-        matrix = diag_to_matrix((l, u), diag)
-        # last row handles second derivative
-        matrix[-1, [0, 1, -2, -1]] = [2, -1, 1, -2]
-        # first row handles first derivative
-        matrix[0, :] = np.zeros(matrix.shape[1])
-        matrix[0, [0, -1]] = [1, 1]
-        b[0] = 2 * points[0]
-        b[-1] = np.zeros(dim)
+    # Handle different cases depending on whether the points form a closed
+    # curve or not
+    curve_is_closed = is_closed(anchors)
+    if curve_is_closed:
+        return get_smooth_closed_cubic_bezier_handle_points(anchors)
+    else:
+        return get_smooth_open_cubic_bezier_handle_points(anchors)
 
-        def closed_curve_solve_func(b):
-            return linalg.solve(matrix, b)
 
-    handle_pairs = np.zeros((2 * num_handles, dim))
-    for i in range(dim):
-        if use_closed_solve_function:
-            handle_pairs[:, i] = closed_curve_solve_func(b[:, i])
-        else:
-            handle_pairs[:, i] = solve_func(b[:, i])
-    return handle_pairs[0::2], handle_pairs[1::2]
+CP_CLOSED_MEMO = np.array([1 / 3])
+UP_CLOSED_MEMO = np.array([1 / 3])
+
+
+# borrowed from https://github.com/ManimCommunity/manim/blob/main/manim/utils/bezier.py
+def get_smooth_closed_cubic_bezier_handle_points(
+    anchors: VectArray,
+) -> tuple[np.ndarray, np.ndarray]:
+    '''
+    See https://docs.manim.community/en/stable/reference/manim.utils.bezier.html#manim.utils.bezier.get_smooth_closed_cubic_bezier_handle_points
+    '''
+    global CP_CLOSED_MEMO
+    global UP_CLOSED_MEMO
+
+    A = np.asarray(anchors)
+    N = A.shape[0] - 1
+    dim = A.shape[1]
+
+    # Calculate cp (c prime) and up (u prime) with help from
+    # CP_CLOSED_MEMO and UP_CLOSED_MEMO.
+    len_memo = CP_CLOSED_MEMO.size
+    if len_memo < N - 1:
+        cp = np.empty(N - 1)
+        up = np.empty(N - 1)
+        cp[:len_memo] = CP_CLOSED_MEMO
+        up[:len_memo] = UP_CLOSED_MEMO
+        # Forward Substitution 1
+        # Calculate up (at the same time we calculate cp).
+        for i in range(len_memo, N - 1):
+            cp[i] = 1 / (4 - cp[i - 1])
+            up[i] = -cp[i] * up[i - 1]
+        CP_CLOSED_MEMO = cp
+        UP_CLOSED_MEMO = up
+    else:
+        cp = CP_CLOSED_MEMO[: N - 1]
+        up = UP_CLOSED_MEMO[: N - 1]
+
+    # The last element of u' is different
+    cp_last_division = 1 / (3 - cp[N - 2])
+    up_last = cp_last_division * (1 - up[N - 2])
+
+    # Backward Substitution 1
+    # Calculate q.
+    q = np.empty((N, dim))
+    q[N - 1] = up_last
+    for i in range(N - 2, -1, -1):
+        q[i] = up[i] - cp[i] * q[i + 1]
+
+    # Forward Substitution 2
+    # Calculate Dp (D prime).
+    Dp = np.empty((N, dim))
+    AUX = 4 * A[:N] + 2 * A[1:]  # Vectorize the sum for efficiency.
+    Dp[0] = AUX[0] / 3
+    for i in range(1, N - 1):
+        Dp[i] = cp[i] * (AUX[i] - Dp[i - 1])
+    Dp[N - 1] = cp_last_division * (AUX[N - 1] - Dp[N - 2])
+
+    # Backward Substitution
+    # Calculate Y, which is defined as a view of Dp for efficiency
+    # and semantic convenience at the same time.
+    Y = Dp
+    # Y[N-1] = Dp[N-1] (redundant)
+    for i in range(N - 2, -1, -1):
+        Y[i] = Dp[i] - cp[i] * Y[i + 1]
+
+    # Calculate H1.
+    H1 = Y - 1 / (1 + q[0] + q[N - 1]) * q * (Y[0] + Y[N - 1])
+
+    # Calculate H2.
+    H2 = np.empty((N, dim))
+    H2[0 : N - 1] = 2 * A[1:N] - H1[1:N]
+    H2[N - 1] = 2 * A[N] - H1[0]
+
+    return H1, H2
+
+
+CP_OPEN_MEMO = np.array([0.5])
+
+
+# borrowed from https://github.com/ManimCommunity/manim/blob/main/manim/utils/bezier.py
+def get_smooth_open_cubic_bezier_handle_points(
+    anchors: VectArray,
+) -> tuple[np.ndarray, np.ndarray]:
+    '''
+    See https://docs.manim.community/en/stable/reference/manim.utils.bezier.html#manim.utils.bezier.get_smooth_open_cubic_bezier_handle_points
+    '''
+    global CP_OPEN_MEMO
+
+    A = np.asarray(anchors)
+    N = A.shape[0] - 1
+    dim = A.shape[1]
+
+    # Calculate cp (c prime) with help from CP_OPEN_MEMO.
+    len_memo = CP_OPEN_MEMO.size
+    if len_memo < N - 1:
+        cp = np.empty(N - 1)
+        cp[:len_memo] = CP_OPEN_MEMO
+        for i in range(len_memo, N - 1):
+            cp[i] = 1 / (4 - cp[i - 1])
+        CP_OPEN_MEMO = cp
+    else:
+        cp = CP_OPEN_MEMO[: N - 1]
+
+    # Calculate Dp (D prime).
+    Dp = np.empty((N, dim))
+    Dp[0] = 0.5 * A[0] + A[1]
+    AUX = 4 * A[1 : N - 1] + 2 * A[2:N]  # Vectorize the sum for efficiency.
+    for i in range(1, N - 1):
+        Dp[i] = cp[i] * (AUX[i - 1] - Dp[i - 1])
+    Dp[N - 1] = (1 / (7 - 2 * cp[N - 2])) * (8 * A[N - 1] + A[N] - 2 * Dp[N - 2])
+
+    # Backward Substitution.
+    # H1 (array of the first handles) is defined as a view of Dp for efficiency
+    # and semantic convenience at the same time.
+    H1 = Dp
+    # H1[N-1] = Dp[N-1] (redundant)
+    for i in range(N - 2, -1, -1):
+        H1[i] = Dp[i] - cp[i] * H1[i + 1]
+
+    # Calculate H2.
+    H2 = np.empty((N, dim))
+    H2[0 : N - 1] = 2 * A[1:N] - H1[1:N]
+    H2[N - 1] = 0.5 * (A[N] + H1[N - 1])
+
+    return H1, H2
 
 
 def diag_to_matrix(

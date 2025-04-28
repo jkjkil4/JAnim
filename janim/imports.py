@@ -20,6 +20,7 @@ from janim.anims.updater import *
 from janim.camera.camera import *
 from janim.camera.camera_info import *
 from janim.components.rgbas import apart_alpha, merge_alpha
+from janim.constants import *
 from janim.exception import *
 from janim.items.audio import *
 from janim.items.coordinate.coordinate_systems import *
