@@ -155,7 +155,7 @@ You can run the following command to see examples.
 janim examples
 ```
 
-The [Tutorial Page](https://janim.readthedocs.io/en/latest/tutorial/installation.html) of the [Documentation](https://janim.readthedocs.io/en/latest/index.html) provides a brief view to get you started. (Note: You can change the language of the documentation at the bottom-left corner.)
+The [Tutorial Page](https://janim.readthedocs.io/zh-cn/latest/tutorial/installation.html) of the [Documentation](https://janim.readthedocs.io/zh-cn/latest/index.html) provides a brief guide to get you started. (Note: You can change the documentation language using the flyout menu at the corner of the page.)
 
 ## License
 

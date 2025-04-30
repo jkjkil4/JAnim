@@ -155,7 +155,7 @@ pip install -e .
 janim examples
 ```
 
-[文档](https://janim.readthedocs.io/zh-cn/latest/index.html)的[教程页面](https://janim.readthedocs.io/zh-cn/latest/tutorial/installation.html)提供了一个简要的入门指南（注：你可以在文档的左下角更改语言）
+[文档](https://janim.readthedocs.io/zh-cn/latest/index.html)的[教程页面](https://janim.readthedocs.io/zh-cn/latest/tutorial/installation.html)提供了一个简要的入门指南（注：你可以使用页面角落的弹出菜单来更改文档语言）
 
 ## License
 
