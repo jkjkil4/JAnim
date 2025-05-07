@@ -1,21 +1,24 @@
 from __future__ import annotations
 
 import math
-from typing import Self
+from typing import Literal, Self
 
 import numpy as np
 
 from janim.components.component import CmptInfo
 from janim.components.vpoints import Cmpt_VPoints
-from janim.constants import LEFT, ORIGIN, RIGHT, UP
-from janim.items.points import Points, MarkedItem
+from janim.constants import LEFT, ORIGIN, RIGHT, UP, WHITE, DEGREES
+from janim.items.geometry.arc import Arc, Dot
+from janim.items.points import Group, MarkedItem, Points
 from janim.items.vitem import VItem
-from janim.typing import Vect
+from janim.typing import JAnimColor, Vect
 from janim.utils.bezier import PathBuilder
 from janim.utils.simple_functions import clip
-from janim.utils.space_ops import angle_of_vector, get_norm, normalize
+from janim.utils.space_ops import (angle_of_vector, get_norm,
+                                   line_intersection, normalize)
 
 type SupportsPointify = Vect | Points
+type AngleQuadrant = tuple[Literal[-1, 1], Literal[-1, 1]]
 
 
 class Cmpt_VPoints_LineImpl[ItemT](Cmpt_VPoints[ItemT]):
@@ -257,6 +260,133 @@ class Elbow(MarkedItem, VItem):
         self.points.set_width(width, about_point=ORIGIN)
         self.points.rotate(angle, about_point=ORIGIN)
         self.mark.set_points([ORIGIN])
+
+
+# borrowed from https://github.com/ManimCommunity/manim/blob/main/manim/mobject/geometry/line.py
+# TODO: Angle docs
+class Angle(MarkedItem, VItem):
+    def __init__(
+        self,
+        line1: Line,
+        line2: Line,
+        radius: float | None = None,
+        quadrant: AngleQuadrant = (1, 1),
+        other_angle: bool = False,
+        dot: bool = False,
+        dot_radius: float | None = None,
+        dot_distance: float = 0.55,
+        dot_color: JAnimColor = WHITE,
+        elbow: bool = False,
+        **kwargs
+    ):
+        super().__init__(**kwargs)
+        self.lines = (line1, line2)
+        self.quadrant = quadrant
+        self.dot_distance = dot_distance
+        self.elbow = elbow
+        inter = line_intersection(
+            [line1.points.get_start(), line1.points.get_end()],
+            [line2.points.get_start(), line2.points.get_end()]
+        )
+
+        if radius is None:
+            if quadrant[0] == 1:
+                dist_1 = np.linalg.norm(line1.points.get_end() - inter)
+            else:
+                dist_1 = np.linalg.norm(line1.points.get_start() - inter)
+            if quadrant[1] == 1:
+                dist_2 = np.linalg.norm(line2.points.get_end() - inter)
+            else:
+                dist_2 = np.linalg.norm(line2.points.get_start() - inter)
+            if np.minimum(dist_1, dist_2) < 0.6:
+                radius = (2 / 3) * np.minimum(dist_1, dist_2)
+            else:
+                radius = 0.4
+        else:
+            self.radius = radius
+
+        anchor_angle_1 = inter + quadrant[0] * radius * line1.points.unit_vector
+        anchor_angle_2 = inter + quadrant[1] * radius * line2.points.unit_vector
+
+        if elbow:
+            anchor_middle = (
+                inter
+                + quadrant[0] * radius * line1.points.unit_vector
+                + quadrant[1] * radius * line2.points.unit_vector
+            )
+            angle_item = Elbow(**kwargs)
+            angle_item.points.set_as_corners([
+                anchor_angle_1, anchor_middle, anchor_angle_2
+            ])
+        else:
+            angle_1 = angle_of_vector(anchor_angle_1 - inter)
+            angle_2 = angle_of_vector(anchor_angle_2 - inter)
+
+            if not other_angle:
+                start_angle = angle_1
+                if angle_2 > angle_1:
+                    angle_fin = angle_2 - angle_1
+                else:
+                    angle_fin = 2 * np.pi - (angle_1 - angle_2)
+            else:
+                start_angle = angle_1
+                if angle_2 < angle_1:
+                    angle_fin = -angle_1 + angle_2
+                else:
+                    angle_fin = -2 * np.pi + (angle_2 - angle_1)
+
+            self.angle_value = angle_fin
+
+            angle_item = Arc(
+                radius=radius,
+                angle=self.angle_value,
+                start_angle=start_angle,
+                arc_center=inter,
+                **kwargs,
+            )
+
+            if dot:
+                if dot_radius is None:
+                    dot_radius = radius / 10
+                else:
+                    self.dot_radius = dot_radius
+                right_dot = Dot(ORIGIN, radius=dot_radius, color=dot_color)
+                dot_anchor = (
+                    inter
+                    + (angle_item.points.box.center - inter)
+                    / np.linalg.norm(angle_item.points.box.center - inter)
+                    * radius
+                    * dot_distance
+                )
+                right_dot.points.move_to(dot_anchor)
+                self.add(right_dot)
+
+        self.points.set(angle_item.points.get())
+        self.mark.set_points([inter])
+
+    def get_lines(self) -> Group:
+        return Group(*self.lines)
+
+    def get_value(self, degrees: bool = False) -> float:
+        return self.angle_value / DEGREES if degrees else self.angle_value
+
+    @staticmethod
+    def from_three_points(
+        A: Vect, B: Vect, C: Vect, **kwargs
+    ) -> Angle:
+        return Angle(Line(B, A), Line(B, C), **kwargs)
+
+
+# TODO: RightAngle docs
+class RightAngle(Angle):
+    def __init__(
+        self,
+        line1: Line,
+        line2: Line,
+        length: float | None = None,
+        **kwargs,
+    ) -> None:
+        super().__init__(line1, line2, radius=length, elbow=True, **kwargs)
 
 
 # TODO: CubicBezier
