@@ -8,7 +8,7 @@ import numpy as np
 from janim.components.component import CmptInfo
 from janim.components.vpoints import Cmpt_VPoints
 from janim.constants import LEFT, ORIGIN, RIGHT, UP
-from janim.items.points import Points
+from janim.items.points import Points, MarkedItem
 from janim.items.vitem import VItem
 from janim.typing import Vect
 from janim.utils.bezier import PathBuilder
@@ -239,7 +239,7 @@ class TangentLine(Line):
         self.points.scale(length / self.points.length)
 
 
-class Elbow(VItem):
+class Elbow(MarkedItem, VItem):
     '''
     折线（一般用作直角符号）
 
@@ -256,6 +256,7 @@ class Elbow(VItem):
         self.points.set_as_corners([UP, UP + RIGHT, RIGHT])
         self.points.set_width(width, about_point=ORIGIN)
         self.points.rotate(angle, about_point=ORIGIN)
+        self.mark.set_points([ORIGIN])
 
 
 # TODO: CubicBezier
