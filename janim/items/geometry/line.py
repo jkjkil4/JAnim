@@ -263,8 +263,31 @@ class Elbow(MarkedItem, VItem):
 
 
 # borrowed from https://github.com/ManimCommunity/manim/blob/main/manim/mobject/geometry/line.py
-# TODO: Angle docs
 class Angle(MarkedItem, VItem):
+    '''
+    一个圆弧或直角标记对象，用于表示两条线之间的夹角
+
+    - ``radius``: 圆弧的半径
+
+    - ``quadrant``:
+        | 由两个整数构成的序列，用于确定应使用哪一个象限为基准；
+        | 第一个值表示在第一条线上以终点(1)或起点(-1)为基准，第二个值同理作用于第二条线；
+        | 可选值包括： ``(1, 1)``, ``(1, -1)``, ``(-1, 1)``, ``(-1, -1)``
+
+    - ``other_angle``:
+        | 在两个可能的夹角之间切换。默认 ``False``，则弧线从 ``line1`` 到 ``line2`` 按逆时针绘制；
+        | 如果为 ``True``，则按顺时针方向绘制
+
+    - ``dot``: 是否在弧线上添加一个点，通常用于指示直角
+
+    - ``dot_radius``: 点的半径，默认为弧半径的 ``1/10``
+
+    - ``dot_distance``: 点到圆心的相对距离，其中 ``0`` 表示在圆心处，``1`` 表示在圆弧上，默认为 ``0.55``
+
+    - ``dot_color``: 点的颜色
+
+    - ``elbow``: 是否使用直角标记的形式，参考 :class:`RightAngle` 类
+    '''
     def __init__(
         self,
         line1: Line,
@@ -365,20 +388,35 @@ class Angle(MarkedItem, VItem):
         self.mark.set_points([inter])
 
     def get_lines(self) -> Group:
+        '''
+        返回一个包含构成该角的两个 :class:`~.Line` 的 :class:`~.Group` 对象
+        '''
         return Group(*self.lines)
 
     def get_value(self, degrees: bool = False) -> float:
+        '''
+        获取该角的数值
+
+        - ``degrees``: 是否以角度的形式返回，默认为 ``False``，即弧度制
+        '''
         return self.angle_value / DEGREES if degrees else self.angle_value
 
     @staticmethod
     def from_three_points(
         A: Vect, B: Vect, C: Vect, **kwargs
     ) -> Angle:
+        '''
+        由三点构造一个角，表示 ∠ABC，点 ``B`` 为角的顶点
+        '''
         return Angle(Line(B, A), Line(B, C), **kwargs)
 
 
-# TODO: RightAngle docs
 class RightAngle(Angle):
+    '''
+    一个用于表示直角的 :class:`Elbow` 样式的对象（L 形折角）
+
+    - ``length``: 直角标记的边长
+    '''
     def __init__(
         self,
         line1: Line,
