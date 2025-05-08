@@ -465,6 +465,7 @@ class VideoInfo:
             '-v', 'error',
             '-select_streams', 'v:0',
             '-show_entries', 'stream=width,height,r_frame_rate,nb_frames',
+            '-show_entries', 'format=duration',
             '-of', 'csv=p=0',
             file_path
         ]
@@ -483,12 +484,15 @@ class VideoInfo:
             raise ExitException(EXITCODE_FFPROBE_ERROR)
 
         assert ret
-        s_width, s_height, s_fps, s_nb_frames = ret.split(',')
+        lines = ret.strip().split('\n')
+        s_width, s_height, s_fps, s_nb_frames = lines[0].split(',')
+        s_duration = lines[1]
 
         self.width = int(s_width)
         self.height = int(s_height)
         self.fps_num, self.fps_den = map(int, s_fps.split('/'))
         self.nb_frames = int(s_nb_frames)
+        self.duration = float(s_duration)
 
 
 class PixelVideo(Video):
