@@ -362,7 +362,7 @@ class Video(Points):
 
         return super().apply_style(**kwargs)
 
-    def start(self, *, speed: int = 1) -> None:
+    def start(self, *, speed: int = 1) -> Self:
         if not self.actions:
             base = 0
         else:
@@ -372,11 +372,13 @@ class Video(Points):
         self.actions.append((self.timeline.current_time,
                              base,
                              speed))
+        return self
 
-    def stop(self) -> None:
+    def stop(self) -> Self:
         self.start(speed=0)
+        return self
 
-    def seek(self, t: float) -> None:
+    def seek(self, t: float) -> Self:
         if not self.actions:
             speed = 0
         else:
@@ -384,8 +386,9 @@ class Video(Points):
         self.actions.append((self.timeline.current_time,
                              t,
                              speed))
+        return self
 
-    def compute_time(self, t: float) -> None:
+    def compute_time(self, t: float) -> float:
         if not self.actions:
             return 0
         idx = bisect(self.actions, t, key=lambda v: v[0]) - 1
