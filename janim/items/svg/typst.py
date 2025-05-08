@@ -122,8 +122,8 @@ class TypstDoc(SVGItem):
         try:
             process = sp.Popen(commands, stdin=sp.PIPE)
         except FileNotFoundError:
-            log.error(_('Could not compile typst file. '
-                        'Please install typst and add it to the environment variables.'))
+            log.error(_('Could not compile Typst file. '
+                        'Please install Typst and add it to the environment variables.'))
             raise ExitException(EXITCODE_TYPST_NOT_FOUND)
 
         process.stdin.write(typst_content.encode('utf-8'))

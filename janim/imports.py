@@ -38,6 +38,7 @@ from janim.items.shape_matchers import *
 from janim.items.svg.brace import *
 from janim.items.svg.svg_item import *
 from janim.items.svg.typst import *
+from janim.items.svg.typst_types import *
 from janim.items.text import *
 from janim.items.value_tracker import *
 from janim.items.vitem import *

@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-21 21:50+0800\n"
-"PO-Revision-Date: 2025-04-21 21:50+0800\n"
+"POT-Creation-Date: 2025-05-08 12:44+0800\n"
+"PO-Revision-Date: 2025-05-08 12:44+0800\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
 "Language: zh_CN\n"
@@ -19,13 +19,13 @@ msgstr ""
 
 #: janim\items\svg\typst.py:125
 msgid ""
-"Could not compile typst file. Please install typst and add it to the "
+"Could not compile Typst file. Please install Typst and add it to the "
 "environment variables."
-msgstr "无法编译 typst 文件，需要安装 typst 并将其添加到环境变量中"
+msgstr "无法编译 Typst 文件，需要安装 Typst 并将其添加到环境变量中"
 
 #: janim\items\svg\typst.py:133
 msgid "Typst compilation error. Please check the output for more information."
-msgstr "typst 编译错误，请检查输出信息"
+msgstr "Typst 编译错误，请检查输出信息"
 
 #: janim\items\svg\typst.py:178
 #, python-brace-format
