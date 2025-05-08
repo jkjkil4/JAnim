@@ -364,7 +364,7 @@ class Cmpt_VPoints[ItemT](Cmpt_Points[ItemT], impl=True):
             return (0, 0.0)
         partials: list[float] = [0]
         for tup in self.get_bezier_tuples():
-            if (tup[0] == tup[1]).all():
+            if np.isnan(tup[1]).all():
                 # Don't consider null curves
                 arclen = 0
             else:
@@ -373,7 +373,7 @@ class Cmpt_VPoints[ItemT](Cmpt_Points[ItemT], impl=True):
             partials.append(partials[-1] + arclen)
         full = partials[-1]
         if full == 0:
-            return len(partials), 1.0
+            return len(partials) - 2, 1.0
         # First index where the partial length is more than alpha times the full length
         index = next(
             (i for i, x in enumerate(partials) if x >= full * alpha),
