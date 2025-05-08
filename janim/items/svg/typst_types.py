@@ -11,11 +11,10 @@ typst_matrix_template = '''
 #set math.mat(
 {typst_args_str}
 )
-$
-mat(
+
+$ mat(
 {typst_str}
-)
-$
+) $
 '''
 
 
@@ -59,6 +58,20 @@ class TypstMatrix(TypstText):
             augment=2,
             gap='0.5em',
         )
+
+    .. code-block:: python
+
+        TypstMatrix(
+            [
+                [1, 2, 3],
+                [4, Circle(radius=0.25, fill_alpha=0.5), 6],
+                [7, 8, 9]
+            ],
+            delim='[',
+            augment=2,
+            column_gap='0.7em',
+            preamble='#set text(size: 3em)'
+        ).show()
     '''
 
     def __init__(
