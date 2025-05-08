@@ -101,8 +101,8 @@ class VItem(Points):
         self,
         alpha: float = 1.0,
         reverse: bool = False,
-        colorize: bool = True,
         angle: float | None = None,
+        colorize: bool = True,
         fill_color: JAnimColor | None = None,
         stroke_color: JAnimColor | None = None,
         d_alpha: float = 1e-6,
@@ -132,9 +132,9 @@ class VItem(Points):
 
         if colorize:
             if fill_color is None:
-                fill_color = self.fill.get()[0][:3]
+                fill_color = self.fill.get()[0, :3]
             if stroke_color is None:
-                stroke_color = self.stroke.get()[0][:3]
+                stroke_color = self.stroke.get()[0, :3]
 
         from janim.items.geometry.arrow import ArrowTip
         tip = ArrowTip(angle=angle, fill_color=fill_color, stroke_color=stroke_color, **tip_kwargs)
