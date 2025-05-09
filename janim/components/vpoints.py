@@ -344,6 +344,21 @@ class Cmpt_VPoints[ItemT](Cmpt_Points[ItemT], impl=True):
         '''
         return bezier(self.get_nth_curve_points(n))
 
+    def get_nth_curve_length_pieces(
+        self,
+        n: int,
+        sample_points: int | None = None,
+    ) -> np.ndarray:
+        if sample_points is None:
+            sample_points = 10
+
+        curve = self.get_nth_curve_function(n)
+        points = np.array([curve(a) for a in np.linspace(0, 1, sample_points)])
+        diffs = np.diff(points, axis=0)
+        norms = np.linalg.norm(diffs, axis=1)
+
+        return norms
+
     def quick_point_from_proportion(self, alpha: float) -> np.ndarray:
         '''
         相比 :meth:`point_from_proportion` 而言，更快
@@ -393,16 +408,28 @@ class Cmpt_VPoints[ItemT](Cmpt_Points[ItemT], impl=True):
         return self.get_nth_curve_function(index)(residue)
 
     def pointwise_become_partial(self, other: Cmpt_VPoints | Item, a: float, b: float) -> Self:
+        '''
+        将传入对象的曲线截取 ``[a, b]`` 区间（最大范围 ``[0, 1]`` 表示整个曲线）的部分后，设置到该对象上，且保持点的数量不变（将区间外的点都放到起点/终点处）
+        '''
         if isinstance(other, Item):
             cmpt = self.get_same_cmpt(other)
         else:
             cmpt = other
 
-        points = cmpt.get()
+        new_points = self.partial_points(cmpt.get(), a, b)
+        self.set(new_points)
+        return self
+
+    @staticmethod
+    def partial_points(points: np.ndarray, a: float, b: float) -> np.ndarray:
+        '''
+        得到 ``points`` 所表示的曲线中 ``[a, b]`` 的部分（最大范围 ``[0, 1]`` 表示整个曲线），且保持点的数量不变（将区间外的点都放到起点/终点处）
+
+        注：当 ``a <= 0`` 且 ``b >= 1`` 时，直接返回 ``points``，不作拷贝
+        '''
         if a <= 0 and b >= 1:
-            self.set(points)
-            return self
-        num_curves = cmpt.curves_count()
+            return points
+        num_curves = (len(points) - 1) // 2
 
         # Partial curve includes three portions:
         # - A start, which is some ending portion of an inner quadratic
@@ -419,7 +446,7 @@ class Cmpt_VPoints[ItemT](Cmpt_Points[ItemT], impl=True):
         new_points = points.copy()
         if num_curves == 0:
             new_points[:] = 0
-            return self
+            return new_points
         if lower_index == upper_index:
             tup = partial_quadratic_bezier_points(points[i1:i2], lower_residue, upper_residue)
             new_points[:i1] = tup[0]
@@ -433,8 +460,49 @@ class Cmpt_VPoints[ItemT](Cmpt_Points[ItemT], impl=True):
             # Keep new_points i2:i3 as they are
             new_points[i3:i4] = high_tup
             new_points[i4:] = high_tup[2]
+
+        return new_points
+
+    def pointwise_become_partial_reduced(self, other: Cmpt_VPoints | Item, a: float, b: float) -> Self:
+        '''
+        将传入对象的曲线截取 ``[a, b]`` 区间（最大范围 ``[0, 1]`` 表示整个曲线）的部分后，设置到该对象上，丢弃区间外的点
+        '''
+        if isinstance(other, Item):
+            cmpt = self.get_same_cmpt(other)
+        else:
+            cmpt = other
+
+        new_points = self.partial_points_reduced(cmpt.get(), a, b)
         self.set(new_points)
         return self
+
+    @staticmethod
+    def partial_points_reduced(points: np.ndarray, a: float, b: float) -> np.ndarray:
+        '''
+        得到 ``points`` 所表示的曲线中 ``[a, b]`` 的部分（最大范围 ``[0, 1]`` 表示整个曲线），丢弃区间外的点
+
+        注：当 ``a <= 0`` 且 ``b >= 1`` 时，直接返回 ``points``，不作拷贝
+        '''
+        if a <= 0 and b >= 1:
+            return points
+        num_curves = (len(points) - 1) // 2
+        if num_curves == 0:
+            return np.zeros_like(points, dtype=points.dtype)
+
+        lower_index, lower_residue = integer_interpolate(0, num_curves, a)
+        upper_index, upper_residue = integer_interpolate(0, num_curves, b)
+        i1 = 2 * lower_index
+        i2 = 2 * lower_index + 3
+        i3 = 2 * upper_index
+        i4 = 2 * upper_index + 3
+
+        if lower_index == upper_index:
+            tup = partial_quadratic_bezier_points(points[i1:i2], lower_residue, upper_residue)
+            return np.array(tup, dtype=points.dtype)
+
+        low_tup = partial_quadratic_bezier_points(points[i1:i2], lower_residue, 1)
+        high_tup = partial_quadratic_bezier_points(points[i3:i4], 0, upper_residue)
+        return np.vstack([low_tup, points[i2 + 1: i3], high_tup[1:]])
 
     # endregion
 

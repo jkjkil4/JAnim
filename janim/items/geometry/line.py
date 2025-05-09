@@ -7,10 +7,10 @@ import numpy as np
 
 from janim.components.component import CmptInfo
 from janim.components.vpoints import Cmpt_VPoints
-from janim.constants import LEFT, ORIGIN, RIGHT, UP, WHITE, DEGREES
+from janim.constants import DEGREES, LEFT, ORIGIN, RIGHT, UP, WHITE
 from janim.items.geometry.arc import Arc, Dot
 from janim.items.points import Group, MarkedItem, Points
-from janim.items.vitem import VItem
+from janim.items.vitem import DashedVItem, VItem
 from janim.typing import JAnimColor, Vect
 from janim.utils.bezier import PathBuilder
 from janim.utils.simple_functions import clip
@@ -19,6 +19,8 @@ from janim.utils.space_ops import (angle_of_vector, get_norm,
 
 type SupportsPointify = Vect | Points
 type AngleQuadrant = tuple[Literal[-1, 1], Literal[-1, 1]]
+
+DEFAULT_DASH_LENGTH = 0.1
 
 
 class Cmpt_VPoints_LineImpl[ItemT](Cmpt_VPoints[ItemT]):
@@ -216,7 +218,58 @@ class Line(VItem):
         self.points.update_points_by_attrs(start, end, buff, path_arc)
 
 
-# TODO: DashedLine
+class Cmpt_VPoints_DashedLineImpl[ItemT](Cmpt_VPoints_LineImpl[ItemT], impl=True):
+    '''
+    在虚线中，对 :class:`~.Cmpt_VPoints` 的进一步实现
+    '''
+    def get_start(self) -> np.ndarray:
+        assert self.bind is not None
+        sub = self.bind.at_item.children[0]
+        assert isinstance(sub, VItem)
+        return sub.points.get_start()
+
+    def get_end(self) -> np.ndarray:
+        assert self.bind is not None
+        sub = self.bind.at_item.children[-1]
+        assert isinstance(sub, VItem)
+        return sub.points.get_end()
+
+
+class DashedLine(Line, Group[VItem]):
+    '''
+    虚线
+
+    - ``dash_length``: 每段虚线的长度
+    - ``dashed_ratio``: 虚线段的占比，默认为 ``0.5``，即虚线段与空白段长度相等，但可能因为虚线段描边存在粗细而导致视觉上空白长度略小
+    '''
+    def __init__(
+        self,
+        start: Vect | Points = LEFT,
+        end: Vect | Points = RIGHT,
+        *,
+        dash_length: float = DEFAULT_DASH_LENGTH,
+        dashed_ratio: float = 0.5,
+        **kwargs
+    ) -> None:
+        self.dash_length = dash_length
+        self.dashed_ratio = dashed_ratio
+        super().__init__(start, end, **kwargs)
+        dashes = DashedVItem(
+            self,
+            num_dashes=self._calculate_num_dashes(),
+            dashed_ratio=dashed_ratio,
+        )
+        self.points.clear()
+        self.add(*dashes)
+
+    def _calculate_num_dashes(self) -> int:
+        '''
+        基于线段长度计算所需虚线段的数量
+        '''
+        return max(
+            2,
+            int(np.ceil((self.points.length / self.dash_length) * self.dashed_ratio)),
+        )
 
 
 class TangentLine(Line):
