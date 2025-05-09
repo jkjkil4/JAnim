@@ -28,7 +28,7 @@ def get_qt_glwidget(ctx: mgl.Context) -> GLWidget | None:
 def create_framebuffer(ctx: mgl.Context, pw: int, ph: int) -> mgl.Framebuffer:
     _qt_glwidget = get_qt_glwidget(ctx)
 
-    on_qt = _qt_glwidget is not None and _qt_glwidget.ctx is ctx
+    on_qt = _qt_glwidget is not None
     if on_qt:
         prev = _qt_glwidget.qfuncs.glGetIntegerv(0x8CA6)   # GL_FRAMEBUFFER_BINDING
 
@@ -61,7 +61,7 @@ def create_framebuffer(ctx: mgl.Context, pw: int, ph: int) -> mgl.Framebuffer:
 def framebuffer_context(fbo: mgl.Framebuffer):
     _qt_glwidget = get_qt_glwidget(fbo.ctx)
 
-    on_qt = _qt_glwidget is not None and _qt_glwidget.ctx is fbo.ctx
+    on_qt = _qt_glwidget is not None
     if on_qt:
         prev = _qt_glwidget.qfuncs.glGetIntegerv(0x8CA6)   # GL_FRAMEBUFFER_BINDING
 
