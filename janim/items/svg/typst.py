@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import itertools as it
+import numbers
 import os
 import subprocess as sp
 import types
@@ -181,7 +182,7 @@ class TypstDoc(SVGItem):
 
     @staticmethod
     def length_str(length: float, unit_or_scale: str | int) -> str:
-        if isinstance(unit_or_scale, (int, float)):
+        if isinstance(unit_or_scale, numbers.Real):
             return f'{length * unit_or_scale}pt'
         elif isinstance(unit_or_scale, str):
             return f'{length}{unit_or_scale}'

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import numbers
 from typing import Iterable, Self
 
 import numpy as np
@@ -166,7 +167,7 @@ class Cmpt_Rgbas[ItemT](Component[ItemT]):
 
         if color is not None and is_single_color(color):
             color = [color]
-        if alpha is not None and isinstance(alpha, (int, float)):
+        if alpha is not None and isinstance(alpha, numbers.Real):
             alpha = [alpha]
 
         if alpha is None and not isinstance(color[0], str) and len(color[0]) == 4:

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import numbers
 from functools import lru_cache
 from typing import Iterable, Self
 
@@ -69,7 +70,7 @@ class Cmpt_Radius[ItemT](Component[ItemT]):
         return self._radii.data
 
     def _set_updater(self, p, radius, *, root_only=False):
-        if isinstance(radius, (int, float)):
+        if isinstance(radius, numbers.Real):
             radius = [radius]
         data2 = np.asarray(radius)
 
@@ -93,7 +94,7 @@ class Cmpt_Radius[ItemT](Component[ItemT]):
         '''
         设置半径数据
         '''
-        if isinstance(radius, (int, float)):
+        if isinstance(radius, numbers.Real):
             radius = [radius]
         self._radii.data = radius
 

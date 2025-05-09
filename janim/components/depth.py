@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import numbers
 from collections import defaultdict
 from typing import Self
 
@@ -90,7 +91,7 @@ class Cmpt_Depth[ItemT](Component[ItemT]):
         '''
         设置物件的深度
         '''
-        assert isinstance(value, (int, float))
+        assert isinstance(value, numbers.Real)
 
         if order is None:
             order = self._counter[value]
