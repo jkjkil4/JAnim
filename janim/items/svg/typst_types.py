@@ -114,7 +114,7 @@ class TypstMatrix(TypstText):
 
         converted = [
             [
-                f'#box({register(item)})' if isinstance(item, Points) else str(item)
+                f'#move(box({register(item)}))' if isinstance(item, Points) else str(item)
                 for item in row
             ]
             for row in matrix
