@@ -1,6 +1,7 @@
 import importlib.machinery
 import inspect
 import os
+import sys
 import time
 from argparse import Namespace
 from functools import lru_cache
@@ -250,6 +251,8 @@ def get_module(file_name: str):
     if not os.path.isfile(file_name):
         log.error(_('"{file_name}" isn\'t a file').format(file_name=file_name))
         raise ExitException(EXITCODE_NOT_FILE)
+
+    sys.path.insert(0, os.path.abspath(os.path.dirname(file_name)))
 
     module_name = file_name.replace(os.sep, ".").replace(".py", "")
     loader = importlib.machinery.SourceFileLoader(module_name, file_name)
