@@ -48,5 +48,6 @@ from janim.utils.file_ops import *
 from janim.utils.iterables import *
 from janim.utils.paths import *
 from janim.utils.rate_functions import *
+from janim.utils.reload import reloads
 from janim.utils.simple_functions import *
 from janim.utils.space_ops import *
