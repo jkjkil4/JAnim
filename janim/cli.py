@@ -21,7 +21,7 @@ def run(args: Namespace) -> None:
     module = get_module(args.filepath)
     if module is None:
         return
-    modify_default_config(args)
+    modify_cli_config(args)
 
     timelines = extract_timelines_from_module(args, module)
     if not timelines:
@@ -72,7 +72,7 @@ def write(args: Namespace) -> None:
     module = get_module(args.filepath)
     if module is None:
         return
-    modify_default_config(args)
+    modify_cli_config(args)
 
     timelines = extract_timelines_from_module(args, module)
     if not timelines:
@@ -230,7 +230,7 @@ def tool(args: Namespace) -> None:
     app.exec()
 
 
-def modify_default_config(args: Namespace) -> None:
+def modify_cli_config(args: Namespace) -> None:
     '''
     用于 CLI 的 ``-c`` 参数
     '''
