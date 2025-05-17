@@ -93,10 +93,18 @@
     :align: center
     :scale: 50%
 
-重新构建
+vscode 插件
 ~~~~~~~~~~~~
 
-已在 :ref:`实时预览 <realtime_preview>` 中提及
+可在 vscode 中安装 ``janim-toolbox`` 插件，提供了一些额外的功能
+
+- 重新构建：已在 :ref:`实时预览 <realtime_preview>` 中提及
+
+- 当前行高亮：编辑器中会高亮显示当前动画的代码行
+
+- 自动定位：随着预览窗口中动画的播放，自动定位到当前的代码行，默认情况下可以使用 ``Ctrl+J Ctrl+A`` 启用/关闭自动定位
+
+- 手动定位：默认情况下可以使用 ``Ctrl+J Ctrl+L`` 手动定位到当前的代码行
 
 .. _subitem_selector:
 
