@@ -705,7 +705,7 @@ class AnimViewer(QMainWindow):
 
         self.socket.readyRead.connect(self.on_ready_read)
 
-        self.clients: list[tuple[QHostAddress, int]] = []
+        self.clients: set[tuple[QHostAddress, int]] = set()
         self.lineno = -1
 
         log.info(_('Interactive port has been opened at {port}').format(port=self.socket.localPort()))
@@ -751,7 +751,7 @@ class AnimViewer(QMainWindow):
 
                 match janim['type']:
                     case 'register_client':
-                        self.clients.append((datagram.senderAddress(), datagram.senderPort()))
+                        self.clients.add((datagram.senderAddress(), datagram.senderPort()))
                         self.send_lineno(self.lineno)
 
                     # 重新构建
