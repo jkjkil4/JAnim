@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: JAnim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-11-10 11:17+0800\n"
+"POT-Creation-Date: 2025-05-17 23:55+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -17,7 +17,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.14.0\n"
+"Generated-By: Babel 2.17.0\n"
 
 #: ../../source/janim/components/vpoints.rst:2
 msgid "vpoints"
@@ -123,6 +123,31 @@ msgstr ""
 
 #: janim.components.vpoints.Cmpt_VPoints.curve_and_prop_of_partial_point:1 of
 msgid "如果你想要得到沿着整个曲线上所在比例为 alpha 处的点， 这个函数会返回这个比例所对应的曲线部分的索引，以及在这个曲线部分上需要行进的比例"
+msgstr ""
+
+#: janim.components.vpoints.Cmpt_VPoints.pointwise_become_partial:1 of
+msgid ""
+"将传入对象的曲线截取 ``[a, b]`` 区间（最大范围 ``[0, 1]`` "
+"表示整个曲线）的部分后，设置到该对象上，且保持点的数量不变（将区间外的点都放到起点/终点处）"
+msgstr ""
+
+#: janim.components.vpoints.Cmpt_VPoints.partial_points:1 of
+msgid ""
+"得到 ``points`` 所表示的曲线中 ``[a, b]`` 的部分（最大范围 ``[0, 1]`` "
+"表示整个曲线），且保持点的数量不变（将区间外的点都放到起点/终点处）"
+msgstr ""
+
+#: janim.components.vpoints.Cmpt_VPoints.partial_points:3
+#: janim.components.vpoints.Cmpt_VPoints.partial_points_reduced:3 of
+msgid "注：当 ``a <= 0`` 且 ``b >= 1`` 时，直接返回 ``points``，不作拷贝"
+msgstr ""
+
+#: janim.components.vpoints.Cmpt_VPoints.pointwise_become_partial_reduced:1 of
+msgid "将传入对象的曲线截取 ``[a, b]`` 区间（最大范围 ``[0, 1]`` 表示整个曲线）的部分后，设置到该对象上，丢弃区间外的点"
+msgstr ""
+
+#: janim.components.vpoints.Cmpt_VPoints.partial_points_reduced:1 of
+msgid "得到 ``points`` 所表示的曲线中 ``[a, b]`` 的部分（最大范围 ``[0, 1]`` 表示整个曲线），丢弃区间外的点"
 msgstr ""
 
 #: janim.components.vpoints.Cmpt_VPoints.add_as_corners:1 of

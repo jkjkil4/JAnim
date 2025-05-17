@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: JAnim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-11-10 11:17+0800\n"
+"POT-Creation-Date: 2025-05-17 23:55+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -17,7 +17,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.14.0\n"
+"Generated-By: Babel 2.17.0\n"
 
 #: ../../source/janim/items/geometry/line.rst:2
 msgid "line"
@@ -47,7 +47,7 @@ msgstr ""
 msgid "Return projection of a point onto the line"
 msgstr ""
 
-#: janim.items.geometry.line.Elbow:1 janim.items.geometry.line.Line:1 of
+#: janim.items.geometry.line.Line:1 of
 msgid "基类：:py:class:`~janim.items.vitem.VItem`"
 msgstr ""
 
@@ -65,6 +65,45 @@ msgstr ""
 
 #: janim.items.geometry.line.Line:6 of
 msgid "``path_arc``: 表示线段的弯曲角度"
+msgstr ""
+
+#: janim.items.geometry.line.Cmpt_VPoints_DashedLineImpl:1 of
+msgid ""
+"基类：:py:class:`~janim.items.geometry.line.Cmpt_VPoints_LineImpl`, "
+":py:class:`~typing.Generic`"
+msgstr ""
+
+#: janim.items.geometry.line.Cmpt_VPoints_DashedLineImpl:1 of
+msgid "在虚线中，对 :class:`~.Cmpt_VPoints` 的进一步实现"
+msgstr ""
+
+#: janim.items.geometry.line.Cmpt_VPoints_DashedLineImpl.get_start:1 of
+msgid "得到 ``points`` 的第一个点"
+msgstr ""
+
+#: janim.items.geometry.line.Cmpt_VPoints_DashedLineImpl.get_end:1 of
+msgid "得到 ``points`` 的最后一个点"
+msgstr ""
+
+#: janim.items.geometry.line.DashedLine:1 of
+msgid ""
+"基类：:py:class:`~janim.items.geometry.line.Line`, "
+":py:class:`~janim.items.points.Group`\\ "
+"[:py:class:`~janim.items.vitem.VItem`]"
+msgstr ""
+
+#: janim.items.geometry.line.DashedLine:1 of
+msgid "虚线"
+msgstr ""
+
+#: janim.items.geometry.line.DashedLine:3 of
+msgid "``dash_length``: 每段虚线的长度"
+msgstr ""
+
+#: janim.items.geometry.line.DashedLine:4 of
+msgid ""
+"``dashed_ratio``: 虚线段的占比，默认为 "
+"``0.5``，即虚线段与空白段长度相等，但可能因为虚线段描边存在粗细而导致视觉上空白长度略小"
 msgstr ""
 
 #: janim.items.geometry.line.TangentLine:1 of
@@ -87,6 +126,12 @@ msgstr ""
 msgid "``d_alpha``: 精细程度，越小越精细（默认 ``1e-6``）"
 msgstr ""
 
+#: janim.items.geometry.line.Angle:1 janim.items.geometry.line.Elbow:1 of
+msgid ""
+"基类：:py:class:`~janim.items.points.MarkedItem`, "
+":py:class:`~janim.items.vitem.VItem`"
+msgstr ""
+
 #: janim.items.geometry.line.Elbow:1 of
 msgid "折线（一般用作直角符号）"
 msgstr ""
@@ -97,6 +142,90 @@ msgstr ""
 
 #: janim.items.geometry.line.Elbow:4 of
 msgid "``angle`` 表示角度"
+msgstr ""
+
+#: janim.items.geometry.line.Angle:1 of
+msgid "一个圆弧或直角标记对象，用于表示两条线之间的夹角"
+msgstr ""
+
+#: janim.items.geometry.line.Angle:3 of
+msgid "``radius``: 圆弧的半径"
+msgstr ""
+
+#: janim.items.geometry.line.Angle:5 of
+msgid "``quadrant``:"
+msgstr ""
+
+#: janim.items.geometry.line.Angle of
+msgid "由两个整数构成的序列，用于确定应使用哪一个象限为基准；"
+msgstr ""
+
+#: janim.items.geometry.line.Angle of
+msgid "第一个值表示在第一条线上以终点(1)或起点(-1)为基准，第二个值同理作用于第二条线；"
+msgstr ""
+
+#: janim.items.geometry.line.Angle of
+msgid "可选值包括： ``(1, 1)``, ``(1, -1)``, ``(-1, 1)``, ``(-1, -1)``"
+msgstr ""
+
+#: janim.items.geometry.line.Angle:10 of
+msgid "``other_angle``:"
+msgstr ""
+
+#: janim.items.geometry.line.Angle of
+msgid "在两个可能的夹角之间切换。默认 ``False``，则弧线从 ``line1`` 到 ``line2`` 按逆时针绘制；"
+msgstr ""
+
+#: janim.items.geometry.line.Angle of
+msgid "如果为 ``True``，则按顺时针方向绘制"
+msgstr ""
+
+#: janim.items.geometry.line.Angle:14 of
+msgid "``dot``: 是否在弧线上添加一个点，通常用于指示直角"
+msgstr ""
+
+#: janim.items.geometry.line.Angle:16 of
+msgid "``dot_radius``: 点的半径，默认为弧半径的 ``1/10``"
+msgstr ""
+
+#: janim.items.geometry.line.Angle:18 of
+msgid "``dot_distance``: 点到圆心的相对距离，其中 ``0`` 表示在圆心处，``1`` 表示在圆弧上，默认为 ``0.55``"
+msgstr ""
+
+#: janim.items.geometry.line.Angle:20 of
+msgid "``dot_color``: 点的颜色"
+msgstr ""
+
+#: janim.items.geometry.line.Angle:22 of
+msgid "``elbow``: 是否使用直角标记的形式，参考 :class:`RightAngle` 类"
+msgstr ""
+
+#: janim.items.geometry.line.Angle.get_lines:1 of
+msgid "返回一个包含构成该角的两个 :class:`~.Line` 的 :class:`~.Group` 对象"
+msgstr ""
+
+#: janim.items.geometry.line.Angle.get_value:1 of
+msgid "获取该角的数值"
+msgstr ""
+
+#: janim.items.geometry.line.Angle.get_value:3 of
+msgid "``degrees``: 是否以角度的形式返回，默认为 ``False``，即弧度制"
+msgstr ""
+
+#: janim.items.geometry.line.Angle.from_three_points:1 of
+msgid "由三点构造一个角，表示 ∠ABC，点 ``B`` 为角的顶点"
+msgstr ""
+
+#: janim.items.geometry.line.RightAngle:1 of
+msgid "基类：:py:class:`~janim.items.geometry.line.Angle`"
+msgstr ""
+
+#: janim.items.geometry.line.RightAngle:1 of
+msgid "一个用于表示直角的 :class:`Elbow` 样式的对象（L 形折角）"
+msgstr ""
+
+#: janim.items.geometry.line.RightAngle:3 of
+msgid "``length``: 直角标记的边长"
 msgstr ""
 
 #~ msgid "width 表示宽度"

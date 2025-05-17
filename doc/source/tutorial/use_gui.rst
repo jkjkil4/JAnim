@@ -93,10 +93,12 @@
     :align: center
     :scale: 50%
 
-vscode 插件
+.. _vscode_extension:
+
+VS Code 插件
 ~~~~~~~~~~~~
 
-可在 vscode 中安装 ``janim-toolbox`` 插件，提供了一些额外的功能
+可在 VS Code 中安装 ``janim-toolbox`` 插件，提供了一些额外的功能
 
 - 重新构建：已在 :ref:`实时预览 <realtime_preview>` 中提及
 

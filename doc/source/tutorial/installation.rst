@@ -191,7 +191,9 @@ JAnim 是一个库并且提供了可以直接调用的二进制，熟悉 Python 
 安装 VS Code
 ------------
 
-推荐使用 `VS Code <https://code.visualstudio.com/>`_ 进行开发，GUI 的布局是为之适配的
+推荐使用 `VS Code <https://code.visualstudio.com/>`_ 进行开发，这样可以通过其中的 ``janim-toolbox`` 插件让 JAnim 的使用更加方便
+
+具体可以参考 :ref:`VS Code 插件 <vscode_extension>` 中的介绍
 
 .. tip::
 
