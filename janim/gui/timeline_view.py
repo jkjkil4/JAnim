@@ -434,9 +434,14 @@ class TimelineView(QWidget):
 
         chart = QChart()
 
+        font = chart.font()
+        font.setPointSize(7)
+
         x_axis = QValueAxis()
         x_axis.setRange(range_begin, range_end)
         x_axis.setTickCount(max(2, 1 + int(range_end - range_begin)))
+        x_axis.setTitleText(_('Global Progress'))
+        x_axis.setTitleFont(font)
         chart.addAxis(x_axis, Qt.AlignmentFlag.AlignBottom)
 
         y_axis = QValueAxis()
@@ -445,7 +450,9 @@ class TimelineView(QWidget):
 
         x_clip_axis = QValueAxis()
         x_clip_axis.setRange(clip_begin, clip_end)
-        chart.addAxis(x_clip_axis, Qt.AlignmentFlag.AlignBottom)
+        x_clip_axis.setTitleText(_('Audio Progress'))
+        x_clip_axis.setTitleFont(font)
+        chart.addAxis(x_clip_axis, Qt.AlignmentFlag.AlignTop)
 
         series = QLineSeries()
         for t, y in zip(times, data):
@@ -472,7 +479,7 @@ class TimelineView(QWidget):
 
         chart_view = QChartView(chart)
         chart_view.setRenderHint(QPainter.RenderHint.Antialiasing)
-        chart_view.setMinimumSize(350, 200)
+        chart_view.setMinimumSize(350, 270)
 
         return chart_view
 
