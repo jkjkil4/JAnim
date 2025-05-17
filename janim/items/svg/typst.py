@@ -56,8 +56,9 @@ class TypstDoc(SVGItem):
             additional_preamble = ''
 
         if vars is not None:
-            factor = Config.get.default_pixel_to_frame_ratio * (FRAME_PPI / 96) * scale
-            vars_str, vars_mapping = self.vars_str(vars, vars_size_unit or 1 / factor)
+            factor_pt = Config.get.default_pixel_to_frame_ratio * (FRAME_PPI / 96) * scale
+            factor_px = factor_pt * 4 / 3
+            vars_str, vars_mapping = self.vars_str(vars, vars_size_unit or 1 / factor_px)
         else:
             vars_str = ''
 
@@ -146,7 +147,7 @@ class TypstDoc(SVGItem):
         return obj if isinstance(obj, TypstDoc) else cls(obj)
 
     @staticmethod
-    def vars_str(vars: dict[str, TypstVar], unit_or_scale: str | int) -> tuple[str, dict[str, Points]]:
+    def vars_str(vars: dict[str, TypstVar], unit_or_scale: str | float) -> tuple[str, dict[str, Points]]:
         mapping = {}
         lst = [
             f'#let {key} = {TypstDoc.var_str(var, f'__ja__{key}', unit_or_scale, mapping)}'
@@ -155,7 +156,7 @@ class TypstDoc(SVGItem):
         return '#let __jabox = box.with(stroke: white)\n' + '\n'.join(lst), mapping
 
     @staticmethod
-    def var_str(var: TypstVar, label: str, unit_or_scale: str | int, mapping: dict[str, Points]) -> str:
+    def var_str(var: TypstVar, label: str, unit_or_scale: str | float, mapping: dict[str, Points]) -> str:
         if isinstance(var, Points):
             width = TypstDoc.length_str(var.points.box.width, unit_or_scale)
             height = TypstDoc.length_str(var.points.box.height, unit_or_scale)
@@ -181,7 +182,7 @@ class TypstDoc(SVGItem):
             )
 
     @staticmethod
-    def length_str(length: float, unit_or_scale: str | int) -> str:
+    def length_str(length: float, unit_or_scale: str | float) -> str:
         if isinstance(unit_or_scale, numbers.Real):
             return f'{length * unit_or_scale}pt'
         elif isinstance(unit_or_scale, str):
