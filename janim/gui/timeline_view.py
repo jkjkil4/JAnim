@@ -365,7 +365,7 @@ class TimelineView(QWidget):
             ])
 
             # 当 clips 不太长的时候（正常情况下），就直接将其作为 msg_lst 的一部分
-            # 否则将其截短（保留前25个字符和最后25个字符）后，再作为 msg_lst 的一部分
+            # 否则将其截短（保留前40个字符和最后40个字符）后，再作为 msg_lst 的一部分
             if len(clips) < 80:
                 msg_lst.append(_('Recommended clip') + f': {clips}')
             else:
