@@ -3,7 +3,7 @@ import importlib
 import sys
 from contextlib import contextmanager
 
-builtin_import = builtins.__import__
+_builtin_import = builtins.__import__
 
 
 @contextmanager
@@ -33,12 +33,12 @@ def reloads():
     try:
         yield
     finally:
-        builtins.__import__ = builtin_import
+        builtins.__import__ = _builtin_import
 
 
 @contextmanager
 def _disable_reloads():
-    builtins.__import__ = builtin_import
+    builtins.__import__ = _builtin_import
     try:
         yield
     finally:
@@ -54,4 +54,4 @@ def _reload_import_hook(name, globals=None, locals=None, fromlist=(), level=0):
         return module
 
     with _disable_reloads():
-        return builtin_import(name, globals, locals, fromlist, level)
+        return _builtin_import(name, globals, locals, fromlist, level)
