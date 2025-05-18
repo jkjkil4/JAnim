@@ -100,7 +100,7 @@ VS Code 插件
 
 可在 VS Code 中安装 ``janim-toolbox`` 插件，提供了一些额外的功能
 
-- 重新构建：已在 :ref:`实时预览 <realtime_preview>` 中提及
+- 重新构建：已在 :ref:`实时预览 <realtime_preview>` 中提及；关于多文件重新构建时的处理，另见 :func:`~.reloads`
 
 - 当前行高亮：编辑器中会高亮显示当前动画的代码行
 
