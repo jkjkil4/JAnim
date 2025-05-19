@@ -140,7 +140,7 @@ class Timeline(metaclass=ABCMeta):
         text: str
         range: TimeRange
         kwargs: dict
-        subtitle: Text
+        subtitle: Text | TypstText
 
     @dataclass
     class AdditionalRenderCallsCallback:

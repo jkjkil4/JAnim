@@ -350,8 +350,8 @@ class TransformMatchingShapes(AnimGroup):
     '''
     匹配形状进行变换
 
-    - `mismatch` 表示对于不匹配的形状的处理
-    - 注：所有传入该动画类的额外参数都会被传入 `mismatch` 的方法中
+    - ``mismatch`` 表示对于不匹配的形状的处理
+    - 注：所有传入该动画类的额外参数都会被传入 ``mismatch`` 的方法中
     '''
 
     label_color = C_LABEL_ANIM_STAY
