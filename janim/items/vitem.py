@@ -111,6 +111,7 @@ class VItem(Points):
         colorize: bool = True,
         fill_color: JAnimColor | None = None,
         stroke_color: JAnimColor | None = None,
+        color: JAnimColor | None = None,
         d_alpha: float = 1e-6,
         **tip_kwargs
     ):
@@ -135,6 +136,11 @@ class VItem(Points):
             angle = math.atan2(angle_vert[1], angle_vert[0])
         if reverse:
             angle += PI
+
+        if fill_color is None and color is not None:
+            fill_color = color
+        if stroke_color is None and color is not None:
+            stroke_color = color
 
         if colorize:
             if fill_color is None:
