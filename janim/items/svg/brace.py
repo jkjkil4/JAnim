@@ -7,13 +7,14 @@ import numpy as np
 
 from janim.components.component import CmptInfo
 from janim.components.vpoints import Cmpt_VPoints
-from janim.constants import DEFAULT_ITEM_TO_ITEM_BUFF, DOWN, PI, SMALL_BUFF
+from janim.constants import (DEFAULT_ITEM_TO_ITEM_BUFF, DOWN, LEFT, PI,
+                             SMALL_BUFF)
 from janim.items.points import Points
-from janim.items.svg.svg_item import SVGItem
 from janim.items.svg.typst import TypstMath
 from janim.items.text import Text
 from janim.items.vitem import VItem
 from janim.typing import Vect
+from janim.utils.bezier import PathBuilder
 from janim.utils.file_ops import get_janim_dir
 from janim.utils.space_ops import normalize, rotation_about_z
 
@@ -36,13 +37,12 @@ class Cmpt_VPoints_BraceImpl[ItemT](Cmpt_VPoints[ItemT], impl=True):
         if direction is None:
             direction = self.direction if self.has() else DOWN
 
-        self.set(get_brace_orig_points())
-
-        angle = math.atan2(direction[1], direction[0]) + PI / 2
-        rot = np.array(rotation_about_z(-angle))
+        angle = math.atan2(direction[1], direction[0])
+        rot = np.array(rotation_about_z(-angle + PI))
 
         if item is None:
-            self.brace_length = self.box.width
+            self.brace_length = get_brace_default_length()
+            self.set(get_brace_unique_points())
         else:
             cmpt = item.points
 
@@ -50,10 +50,28 @@ class Cmpt_VPoints_BraceImpl[ItemT](Cmpt_VPoints[ItemT], impl=True):
             rot_points = (cmpt.get() if root_only else cmpt.get_all()) @ rot.T
 
             box = self.BoundingBox(rot_points)
-            self.brace_length = box.width
+            self.brace_length = box.height
 
-            self.set_width(box.width, stretch=box.width > self.box.width)
-            self.move_to(box.bottom + DOWN * (buff + self.box.height / 2))
+            delta = self.brace_length - get_brace_default_length()
+            if delta <= 0:
+                self.set(get_brace_unique_points())
+                self.set_height(self.brace_length)
+                min_thickness = get_brace_default_thickness() / 2
+                if self.box.width < min_thickness:
+                    self.set_width(min_thickness, stretch=True)
+            else:
+                offset = delta / 2
+                path1, path2, path3, path4 = get_brace_paths()
+                path1 = path1 + [0, -offset, 0]
+                path3 = path3 + [0, offset, 0]
+                builder = PathBuilder(points=path1)
+                for path in (path2, path3, path4):
+                    builder.line_to(path[0])
+                    builder.append(path[1:])
+                builder.close_path()
+                self.set(builder.get())
+
+            self.move_to(box.left + LEFT * (buff + self.box.width / 2))
 
         self.apply_matrix(rot.T)     # rot.T == rot.I
 
@@ -77,7 +95,7 @@ class Cmpt_VPoints_BraceImpl[ItemT](Cmpt_VPoints[ItemT], impl=True):
     @property
     def direction(self) -> np.ndarray:
         '''得到括号指向的方向'''
-        return normalize(self.tip_point - self.box.center)
+        return normalize(self.tip_point - (self.brace_left + self.brace_right) / 2)
 
     def put_at_tip(
         self,
@@ -129,62 +147,79 @@ class Brace(VItem):
         item: Points | None = None,
         direction: np.ndarray = DOWN,
         buff: float = SMALL_BUFF,
+        root_only: bool = False,
         stroke_alpha: float = 0,
         fill_alpha: float = 1,
         **kwargs
     ):
         super().__init__(stroke_alpha=stroke_alpha, fill_alpha=fill_alpha, **kwargs)
-        self.points.match(item, direction, buff)
+        self.points.match(item, direction, buff, root_only)
 
 
-brace_orig_points: np.ndarray | None = None
-brace_tip_point_index: int | None = None
-brace_left_index: int | None = None
-brace_right_index: int | None = None
+_brace_unique_points: np.ndarray | None = None
+_brace_default_length: float | None = None
+_brace_default_thickness: float | None = None
+_brace_tip_point_index: int | None = None
+_brace_left_index: int | None = None
+_brace_right_index: int | None = None
+
+_brace_paths: tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray] | None = None
 
 
-def get_brace_orig_points() -> np.ndarray:
-    global brace_orig_points
-    if brace_orig_points is not None:
-        return brace_orig_points
+def get_brace_unique_points() -> np.ndarray:
+    global _brace_unique_points
+    if _brace_unique_points is None:
+        _brace_unique_points = np.load(os.path.join(get_janim_dir(), 'items', 'svg', 'brace_unique.npy'))
+        _brace_unique_points.setflags(write=False)
+    return _brace_unique_points
 
-    svg = SVGItem(os.path.join(get_janim_dir(), 'items', 'svg', 'brace.svg'))
-    points = svg[0].points.get()
-    center = (points.min(axis=0) + points.max(axis=0)) * 0.5
 
-    brace_orig_points = points - center
-    brace_orig_points.setflags(write=False)
-    return brace_orig_points
+def get_brace_default_length() -> float:
+    global _brace_default_length
+    if _brace_default_length is None:
+        points = get_brace_unique_points()
+        _brace_default_length = points[:, 1].max() - points[:, 1].min()
+    return _brace_default_length
+
+
+def get_brace_default_thickness() -> float:
+    global _brace_default_thickness
+    if _brace_default_thickness is None:
+        points = get_brace_unique_points()
+        _brace_default_thickness = points[:, 0].max() - points[:, 0].min()
+    return _brace_default_thickness
 
 
 def get_brace_tip_point_index() -> int:
-    global brace_tip_point_index
-    if brace_tip_point_index is not None:
-        return brace_tip_point_index
-
-    points = get_brace_orig_points()
-    brace_tip_point_index = points[:, 1].argmin()
-
-    return brace_tip_point_index
+    global _brace_tip_point_index
+    if _brace_tip_point_index is None:
+        _brace_tip_point_index = get_brace_unique_points()[:, 0].argmin()
+    return _brace_tip_point_index
 
 
-def get_brace_left_index() -> int:
-    global brace_left_index
-    if brace_left_index is not None:
-        return brace_left_index
-
-    points = get_brace_orig_points()
-    brace_left_index = points[:, 0].argmin()
-
-    return brace_left_index
+def get_brace_left_index() -> int:      # 注：“left”表示“括号指向方向的左侧”，在原顶点数据中实为顶部
+    global _brace_left_index
+    if _brace_left_index is None:
+        _brace_left_index = get_brace_unique_points()[:, 1].argmax()
+    return _brace_left_index
 
 
-def get_brace_right_index() -> int:
-    global brace_right_index
-    if brace_right_index is not None:
-        return brace_right_index
+def get_brace_right_index() -> int:     # 注：“right”表示“括号指向方向的右侧”，在原顶点数据中实为底部
+    global _brace_right_index
+    if _brace_right_index is None:
+        _brace_right_index = get_brace_unique_points()[:, 1].argmin()
+    return _brace_right_index
 
-    points = get_brace_orig_points()
-    brace_right_index = points[:, 0].argmax()
 
-    return brace_right_index
+def get_brace_paths() -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+    global _brace_paths
+
+    if _brace_paths is None:
+        def get_path(i: int):
+            path: np.ndarray = np.load(os.path.join(get_janim_dir(), 'items', 'svg', f'brace_path{i}.npy'))
+            path.setflags(write=False)
+            return path
+
+        _brace_paths = tuple(get_path(i) for i in range(1, 5))
+
+    return _brace_paths

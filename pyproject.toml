@@ -52,7 +52,7 @@ test = [
 
 [tool.flit.sdist]
 exclude = [
-    ".asv/", ".vscode/", ".github/", "assets/", "doc/", "benchmarks/", "test/",
+    ".asv/", ".vscode/", ".github/", "assets/", "doc/", "benchmarks/", "test/", "scripts/",
     ".pypirc",
     ".coveragerc",
     "asv.conf.json",
