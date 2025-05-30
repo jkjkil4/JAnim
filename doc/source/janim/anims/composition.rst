@@ -238,3 +238,6 @@ composition
                 )
             )
             self.forward()
+
+.. autoclass:: janim.anims.composition.Wait
+    :show-inheritance:
