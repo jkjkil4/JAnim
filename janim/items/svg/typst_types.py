@@ -3,7 +3,7 @@ from typing import Iterable, Literal
 from janim.items.points import Points
 from janim.items.svg.typst import TypstText
 
-type TypMatDelim = Literal['(', ')', '[', ']', '{', '}']
+type TypMatDelim = Literal['(', ')', '[', ']', '{', '}', '|']
 type TypAlignment = Literal['start', 'end', 'left', 'center', 'right', 'top', 'horizon', 'bottom']
 type TypMatAlignment = Literal['start', 'left', 'center', 'right', 'end']   # 矩阵不支持 'top', 'horizon', 'bottom'
 
