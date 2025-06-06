@@ -45,13 +45,27 @@ def _disable_reloads():
         builtins.__import__ = _reload_import_hook
 
 
-def _reload_import_hook(name, globals=None, locals=None, fromlist=(), level=0):
-    # 如果 name 在 sys.modules 中，则重新加载它
-    module = sys.modules.get(name, None)
-    if module is not None and hasattr(module, '__file__'):
-        with _disable_reloads():
-            importlib.reload(module)
-        return module
+_loaded_modules: list[str] = []
 
+
+def reset_reloads_state() -> None:
+    _loaded_modules.clear()
+
+
+def _reload_import_hook(name, globals=None, locals=None, fromlist=(), level=0):
     with _disable_reloads():
-        return _builtin_import(name, globals, locals, fromlist, level)
+        # 如果 name 在这一次重新构建过程中已经被重新加载过了，那么就不需要再重新加载，直接 import
+        if name in _loaded_modules:
+            return _builtin_import(name, globals, locals, fromlist, level)
+
+        # 如果 name 在 sys.modules 中，则重新加载它
+        module = sys.modules.get(name, None)
+        if module is not None and hasattr(module, '__file__'):
+            importlib.reload(module)
+            _loaded_modules.append(name)
+            return module
+
+        # 对于没有加载过的，直接调用内置 import 进行加载
+        module = _builtin_import(name, globals, locals, fromlist, level)
+        _loaded_modules.append(name)
+        return module

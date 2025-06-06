@@ -46,6 +46,7 @@ from janim.logger import log
 from janim.render.writer import AudioWriter, VideoWriter, merge_video_and_audio
 from janim.utils.config import cli_config
 from janim.utils.file_ops import get_janim_dir, open_file
+from janim.utils.reload import reset_reloads_state
 
 _ = get_local_strings('anim_viewer')
 
@@ -404,6 +405,7 @@ class AnimViewer(QMainWindow):
         if module_name == '__main__':
             module_name = '__janim_main__'
 
+        reset_reloads_state()
         loader = importlib.machinery.SourceFileLoader(module_name, module.__file__)
         module = loader.load_module()
         timeline_class = getattr(module, name, None)
