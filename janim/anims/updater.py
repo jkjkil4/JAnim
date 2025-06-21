@@ -453,12 +453,11 @@ class ItemUpdater(Animation):
         if self.item is None:
             return
 
-        # 在动画开始时自动隐藏，在动画结束时自动显示
-        # 可以将 ``hide_on_begin`` 和 ``show_on_end`` 置为 ``False`` 以禁用
-        if self.hide_at_begin:
-            self.timeline.schedule(self.t_range.at, self.item.hide)
-        if self.show_at_end:
-            self.timeline.schedule(self.t_range.end, self.item.show)
+        # 因为如果需要在动画结束后替换物件，那么前后的后代物件可能会不同
+        # 因此这里采用先记录后代物件的方式，再 schedule 对这些记录的物件的隐藏和显示
+        # 而不是直接 schedule 物件的隐藏和显示
+        hide_items = list(self.item.walk_self_and_descendants())
+        show_items = hide_items
 
         # 在动画结束后，自动使用动画最后一帧的物件替换原有的
         if self.become_at_end and self.t_range.end is not FOREVER:
@@ -467,9 +466,17 @@ class ItemUpdater(Animation):
                                self.t_range,
                                None,
                                self) as params:
-                self.item.become(self.call(params))
-                for item in self.item.walk_self_and_descendants():
+                self.item.become(self.call(params), auto_visible=False)
+                show_items = list(self.item.walk_self_and_descendants())
+                for item in show_items:
                     self.timeline.item_appearances[item].stack.detect_change(item, self.t_range.end, force=True)
+
+        # 在动画开始时自动隐藏，在动画结束时自动显示
+        # 可以将 ``hide_on_begin`` 和 ``show_on_end`` 置为 ``False`` 以禁用
+        if self.hide_at_begin:
+            self.timeline.schedule(self.t_range.at, lambda: self.timeline.hide(*hide_items, root_only=True))
+        if self.show_at_end:
+            self.timeline.schedule(self.t_range.end, lambda: self.timeline.show(*show_items, root_only=True))
 
     def call(self, p: UpdaterParams) -> Item:
         ret = self.func(p)

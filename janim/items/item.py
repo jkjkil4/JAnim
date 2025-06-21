@@ -498,7 +498,7 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         copy_item.init_connect()
         return copy_item
 
-    def become(self, other: Item) -> Self:
+    def become(self, other: Item, *, auto_visible: bool = True) -> Self:
         '''
         将该物件的数据设置为与传入的物件相同（以复制的方式，不是引用）
         '''
@@ -512,13 +512,14 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
             if old is None or type(old) is not type(new):
                 self.add(new.copy())
             else:
-                self.add(old.become(new))
+                self.add(old.become(new, auto_visible=auto_visible))
 
         for key in self.components.keys() | other.components.keys():
             self.components[key].become(other.components[key])
 
-        # 如果根物件是可见的，那么 become 的最后会把所有子物件设为可见
-        if self.timeline is not None and self.timeline.is_visible(self):
+        # 如果设置了 auto_visible 且根物件是可见的
+        # 那么 become 的最后会把所有子物件设为可见
+        if auto_visible and self.timeline is not None and self.timeline.is_visible(self):
             self.timeline.show(self)
 
         return self
