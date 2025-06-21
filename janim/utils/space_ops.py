@@ -59,11 +59,18 @@ def quaternion_mult(*quats: Sequence[float]) -> list[float]:
     return result
 
 
+def quaternion_object_from_angle_axis(angle: float, axis: np.ndarray) -> Quaternion:
+    # 这个函数只是为了规避 axis 是零向量的情况，其余情况的效果与直接构造 Quaternion 相同
+    if np.all(axis == 0):
+        return Quaternion()
+    return Quaternion(axis=axis, angle=angle)
+
+
 def quaternion_from_angle_axis(
     angle: float,
     axis: np.ndarray,
 ) -> list[float]:
-    q = Quaternion(axis=axis, angle=angle)
+    q = quaternion_object_from_angle_axis(angle, axis)
     return [q.x, q.y, q.z, q.w]
 
 
@@ -93,7 +100,7 @@ def rotate_vector(
     angle: float,
     axis: np.ndarray = OUT
 ) -> np.ndarray | list[float]:
-    q = Quaternion(axis=axis, angle=angle)
+    q = quaternion_object_from_angle_axis(angle, axis)
     vector = np.asarray(vector)
     rotated = q.rotate(vector)
     return rotated
@@ -123,7 +130,7 @@ def rotation_matrix(angle: float, axis: np.ndarray) -> np.ndarray:
     """
     Rotation in R^3 about a specified axis of rotation.
     """
-    q = Quaternion(axis=axis, angle=angle)
+    q = quaternion_object_from_angle_axis(angle, axis)
     return q.rotation_matrix
 
 
