@@ -474,9 +474,9 @@ class ItemUpdater(Animation):
         # 在动画开始时自动隐藏，在动画结束时自动显示
         # 可以将 ``hide_on_begin`` 和 ``show_on_end`` 置为 ``False`` 以禁用
         if self.hide_at_begin:
-            self.timeline.schedule(self.t_range.at, lambda: self.timeline.hide(*hide_items, root_only=True))
+            self.timeline.schedule(self.t_range.at, self.timeline.hide, *hide_items, root_only=True)
         if self.show_at_end:
-            self.timeline.schedule(self.t_range.end, lambda: self.timeline.show(*show_items, root_only=True))
+            self.timeline.schedule(self.t_range.end, self.timeline.show, *show_items, root_only=True)
 
     def call(self, p: UpdaterParams) -> Item:
         ret = self.func(p)
