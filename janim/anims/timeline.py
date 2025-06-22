@@ -1062,7 +1062,10 @@ class BuiltTimeline:
 
         这个例子中，在 ``Test`` 中插入了 ``Sub1`` 和 ``Sub2``
 
-        额外参数请参考 :class:`TimelineItem`
+        额外参数：
+
+        - ``delay``: 延迟多少秒开始该 Timeline 的播放
+        - ``keep_last_frame``: 是否在 Timeline 结束后仍然保留最后一帧的显示
         '''
         return TimelineItem(self, **kwargs)
 
