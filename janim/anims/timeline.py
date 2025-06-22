@@ -1061,6 +1061,8 @@ class BuiltTimeline:
                     self.forward_to(tl2.end)
 
         这个例子中，在 ``Test`` 中插入了 ``Sub1`` 和 ``Sub2``
+
+        额外参数请参考 :class:`TimelineItem`
         '''
         return TimelineItem(self, **kwargs)
 
@@ -1075,14 +1077,17 @@ class TimelineItem(Item):
             t = Animation.global_t_ctx.get() - item.at
             if 0 <= t <= item.duration:
                 item._built.render_all(self.data_ctx.get().ctx, t, blend_on=False)
+            elif item.keep_last_frame and t > item.duration:
+                item._built.render_all(self.data_ctx.get().ctx, item._built.duration, blend_on=False)
 
     renderer_cls = TIRenderer
 
-    def __init__(self, built: BuiltTimeline, *, delay: float = 0):
+    def __init__(self, built: BuiltTimeline, *, delay: float = 0, keep_last_frame: bool = False):
         super().__init__()
         self._built = built
         self.at = self.timeline.current_time + delay
         self.duration = self._built.duration
+        self.keep_last_frame = keep_last_frame
 
     @property
     def end(self) -> float:
