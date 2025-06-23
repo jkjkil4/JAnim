@@ -200,6 +200,7 @@ out vec4 f_color;
 
 uniform sampler2D fbo;
 uniform vec4 u_clip;    // left top right bottom
+uniform vec2 u_offset;  // x, y
 uniform bool u_debug;
 
 // used by JA_FINISH_UP
@@ -208,9 +209,11 @@ uniform sampler2D JA_FRAMEBUFFER;
 
 void main()
 {
+    vec2 uv = v_texcoord - u_offset;
+
     if (
-        v_texcoord.x < u_clip[0] || v_texcoord.x > 1.0 - u_clip[2] ||
-        v_texcoord.y < u_clip[3] || v_texcoord.y > 1.0 - u_clip[1]
+        uv.x < u_clip[0] || uv.x > 1.0 - u_clip[2] ||
+        uv.y < u_clip[3] || uv.y > 1.0 - u_clip[1]
     ) {
         if (u_debug) {
             f_color = vec4(1.0, 0.0, 0.0, 0.2);
@@ -220,7 +223,7 @@ void main()
         }
     }
 
-    f_color = texture(fbo, v_texcoord);
+    f_color = texture(fbo, uv);
 
     #[JA_FINISH_UP]
 }
@@ -232,27 +235,33 @@ class Cmpt_FrameClip[ItemT](Component[ItemT]):
         super().__init__(*args, **kwargs)
 
         self._clip = np.zeros(4, dtype=np.float32)
+        self._offset = np.zeros(2, dtype=np.float32)
 
     def copy(self) -> Self:
         cmpt_copy = super().copy()
         cmpt_copy._clip = self._clip.copy()
+        cmpt_copy._offset = self._offset.copy()
         return cmpt_copy
 
     def become(self, other: Cmpt_FrameClip) -> Self:
         self._clip = other._clip.copy()
+        self._offset = other._offset.copy()
         return self
 
     def not_changed(self, other: Cmpt_FrameClip) -> bool:
-        return np.all(self._clip == other._clip)
+        return np.all(self._clip == other._clip) and np.all(self._offset == other._offset)
 
     @classmethod
     def align_for_interpolate(cls, cmpt1: Cmpt_FrameClip, cmpt2: Cmpt_FrameClip):
         return AlignedData(cmpt1.copy(), cmpt2.copy(), cmpt1.copy())
 
     def interpolate(self, cmpt1: Self, cmpt2: Self, alpha: float, *, path_func=None) -> None:
-        self.set(*interpolate(cmpt1._clip, cmpt2._clip, alpha))
+        self.set(
+            *interpolate(cmpt1._clip, cmpt2._clip, alpha),
+            *interpolate(cmpt1._offset, cmpt2._offset, alpha),
+        )
 
-    def _set_updater(self, p, left=None, top=None, right=None, bottom=None):
+    def _set_updater(self, p, left=None, top=None, right=None, bottom=None, x_offset=None, y_offset=None):
         if left is not None:
             left = interpolate(self._clip[0], left, p.alpha)
         if top is not None:
@@ -261,7 +270,11 @@ class Cmpt_FrameClip[ItemT](Component[ItemT]):
             right = interpolate(self._clip[2], right, p.alpha)
         if bottom is not None:
             bottom = interpolate(self._clip[3], bottom, p.alpha)
-        self.set(left, top, right, bottom)
+        if x_offset is not None:
+            x_offset = interpolate(self._offset[0], x_offset, p.alpha)
+        if y_offset is not None:
+            y_offset = interpolate(self._offset[1], y_offset, p.alpha)
+        self.set(left, top, right, bottom, x_offset, y_offset)
 
     @register_updater(_set_updater)
     def set(
@@ -270,6 +283,8 @@ class Cmpt_FrameClip[ItemT](Component[ItemT]):
         top: float | None = None,
         right: float | None = None,
         bottom: float | None = None,
+        x_offset: float | None = None,
+        y_offset: float | None = None,
     ) -> Self:
         if left is not None:
             self._clip[0] = left
@@ -279,6 +294,10 @@ class Cmpt_FrameClip[ItemT](Component[ItemT]):
             self._clip[2] = right
         if bottom is not None:
             self._clip[3] = bottom
+        if x_offset is not None:
+            self._offset[0] = x_offset
+        if y_offset is not None:
+            self._offset[1] = y_offset
 
         return self
 
@@ -296,6 +315,7 @@ class FrameClip(FrameEffect):
         self,
         *items: Item,
         clip: tuple[float, float, float, float] = (0, 0, 0, 0),
+        offset: tuple[float, float] = (0, 0),
         debug: bool = False,
         root_only: bool = False,
         **kwargs
@@ -309,10 +329,10 @@ class FrameClip(FrameEffect):
         )
 
         self.apply_uniforms(u_debug=debug)
-        self.clip.set(*clip)
+        self.clip.set(*clip, *offset)
 
     def dynamic_uniforms(self):
-        return dict(u_clip=self.clip._clip.data)
+        return dict(u_clip=self.clip._clip.data, u_offset=self.clip._offset.data)
 
 
 shadertoy_fragment_shader = '''
@@ -396,7 +416,9 @@ class Shadertoy(FrameEffect):
         )
 
         self.apply_uniforms(
-            iResolution=np.array([Config.get.frame_width, Config.get.frame_height]) / Config.get.default_pixel_to_frame_ratio,
+            iResolution=np.array([
+                Config.get.frame_width, Config.get.frame_height
+            ]) / Config.get.default_pixel_to_frame_ratio,
             iTime=0,
             optional=True
         )

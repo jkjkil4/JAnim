@@ -2,7 +2,7 @@
     "todo-tree.tree.scanMode": "workspace only",
     "flake8.args": [
         "--max-line-length=120",
-        "--ignore=E701,E704,E731,F821,F811,E221,E241,E272,W503",
+        "--ignore=E131,E701,E704,E731,F821,F811,E221,E241,E272,W503",
         "--exclude=test/*"
     ],
     "todo-tree.highlights.customHighlight": {
