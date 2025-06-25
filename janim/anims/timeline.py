@@ -1085,8 +1085,8 @@ class TimelineItem(Item):
 
     renderer_cls = TIRenderer
 
-    def __init__(self, built: BuiltTimeline, *, delay: float = 0, keep_last_frame: bool = False):
-        super().__init__()
+    def __init__(self, built: BuiltTimeline, *, delay: float = 0, keep_last_frame: bool = False, **kwargs):
+        super().__init__(**kwargs)
         self._built = built
         self.at = self.timeline.current_time + delay
         self.duration = self._built.duration
