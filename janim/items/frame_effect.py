@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import numbers
 from typing import Iterable, Self
 
 import numpy as np
@@ -466,12 +467,15 @@ class TransformableFrameClip(FrameEffect):
         *items: Item,
         clip: tuple[float, float, float, float] = (0, 0, 0, 0),
         offset: tuple[float, float] = (0, 0),
-        scale: tuple[float, float] = (1, 1),
+        scale: tuple[float, float] | float = (1, 1),
         rotate: float = 0,
         debug: bool = False,
         root_only: bool = False,
         **kwargs
     ):
+        if isinstance(scale, numbers.Real):
+            scale = (scale, scale)
+
         super().__init__(
             *items,
             fragment_shader=transformable_frameclip_fragment_shader,
