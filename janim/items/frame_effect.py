@@ -326,6 +326,8 @@ uniform vec2 u_scale;   // x, y
 uniform float u_rotate;
 uniform bool u_debug;
 
+uniform vec2 JA_FRAME_RADIUS;
+
 // used by JA_FINISH_UP
 uniform bool JA_BLENDING;
 uniform sampler2D JA_FRAMEBUFFER;
@@ -338,12 +340,16 @@ void main()
         uv -= vec2(0.5, 0.5);
 
         if (u_rotate != 0.0) {
+            uv *= JA_FRAME_RADIUS;
+
             float cos_v = cos(-u_rotate);
             float sin_v = sin(-u_rotate);
             uv = vec2(
                 uv.x * cos_v - uv.y * sin_v,
                 uv.x * sin_v + uv.y * cos_v
             );
+
+            uv /= JA_FRAME_RADIUS;
         }
 
         if (any(u_scale != vec2(1.0))) {
