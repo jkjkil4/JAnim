@@ -336,7 +336,7 @@ void main()
 {
     vec2 uv = v_texcoord - u_offset;
 
-    if (u_rotate != 0.0 || any(u_scale != vec2(1.0))) {
+    if (u_rotate != 0.0 || any(notEqual(u_scale, vec2(1.0)))) {
         uv -= vec2(0.5, 0.5);
 
         if (u_rotate != 0.0) {
@@ -352,7 +352,7 @@ void main()
             uv /= JA_FRAME_RADIUS;
         }
 
-        if (any(u_scale != vec2(1.0))) {
+        if (any(notEqual(u_scale, vec2(1.0)))) {
             uv /= u_scale;
         }
 
