@@ -726,10 +726,11 @@ class Timeline(metaclass=ABCMeta):
         '''
         隐藏显示中的所有物件
         '''
+        t = self.time_aligner.align_t(self.current_time)
         for appr in self.item_appearances.values():
             gaps = appr.visibility
             if len(gaps) % 2 == 1:
-                gaps.append(self.time_aligner.align_t(self.current_time))
+                gaps.append(t)
 
     def cleanup_display(self) -> None:
         from janim.utils.deprecation import deprecated
@@ -739,6 +740,13 @@ class Timeline(metaclass=ABCMeta):
             remove=(3, 3)
         )
         self.hide_all()
+
+    def visible_items(self) -> list[Item]:
+        return [
+            item
+            for item, appr in self.item_appearances.items()
+            if len(appr.visibility) % 2 == 1
+        ]
 
     def add_additional_render_calls_callback(
         self,
