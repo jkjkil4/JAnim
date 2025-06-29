@@ -311,6 +311,8 @@ class FadeTransform(AnimGroup):
 
         src_root_only: bool = False,
         target_root_only: bool = False,
+
+        collapse: bool = True,
         **kwargs
     ):
         src_copy = src.copy(root_only=src_root_only)
@@ -342,6 +344,7 @@ class FadeTransform(AnimGroup):
                 path_func=path_func,
                 root_only=target_root_only
             ),
+            collapse=collapse,
             **kwargs
         )
 
