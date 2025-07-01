@@ -169,6 +169,8 @@ class Timeline(metaclass=ABCMeta):
 
         self.debug_list: list[Item] = []
 
+        self.subtimeline_items: list[TimelineItem] = []
+
     @abstractmethod
     def construct(self) -> None:
         '''
@@ -439,9 +441,20 @@ class Timeline(metaclass=ABCMeta):
 
     def has_audio(self) -> bool:
         '''
-        是否有可以播放的音频
+        该 Timeline 自身是否有可以播放的音频
         '''
         return len(self.audio_infos) != 0
+
+    def has_audio_for_all(self) -> bool:
+        '''
+        考虑所有子 Timeline，是否有可以播放的音频
+        '''
+        if len(self.audio_infos) != 0:
+            return True
+        return any(
+            item._built.timeline.has_audio_for_all()
+            for item in self.subtimeline_items
+        )
 
     # endregion
 
@@ -909,6 +922,7 @@ class BuiltTimeline:
         output_sample_count = math.floor(end * framerate) - math.floor(begin * framerate)
         result = np.zeros((output_sample_count, channels), dtype=np.int16)
 
+        # 合并自身的 audio
         for info in self.timeline.audio_infos:
             if end < info.range.at or begin > info.range.end:
                 continue
@@ -934,6 +948,14 @@ class BuiltTimeline:
                     np.zeros((right_blank, channels), dtype=np.int16)
                 ])
 
+            result += resize_preserving_order(data, output_sample_count)
+
+        # 合并子 Timeline 的 audio
+        for item in self.timeline.subtimeline_items:
+            built = item._built
+            frame_offset = int(item.at * fps)
+
+            data = built.get_audio_samples_of_frame(fps, framerate, frame - frame_offset, count=count)
             result += resize_preserving_order(data, output_sample_count)
 
         return result
@@ -1099,6 +1121,10 @@ class TimelineItem(Item):
         self.at = self.timeline.current_time + delay
         self.duration = self._built.duration
         self.keep_last_frame = keep_last_frame
+
+        parent_timeline = Timeline.get_context(raise_exc=False)
+        if parent_timeline is not None:
+            parent_timeline.subtimeline_items.append(self)
 
     @property
     def end(self) -> float:

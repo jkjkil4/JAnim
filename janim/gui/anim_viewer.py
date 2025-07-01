@@ -147,7 +147,7 @@ class AnimViewer(QMainWindow):
         if self.play_timer.skip_enabled:
             self.play_timer.take_skip_count()
 
-        if self.built.timeline.has_audio() and self.audio_player is None:
+        if self.built.timeline.has_audio_for_all() and self.audio_player is None:
             self.audio_player = AudioPlayer(self.built.cfg.audio_framerate,
                                             self.built.cfg.audio_channels,
                                             self.built.cfg.preview_fps)
@@ -551,7 +551,7 @@ class AnimViewer(QMainWindow):
 
     def on_play_timer_timeout(self) -> None:
         played_count = 1 + self.play_timer.take_skip_count()
-        if self.built.timeline.has_audio():
+        if self.built.timeline.has_audio_for_all():
             samples = self.built.get_audio_samples_of_frame(self.built.cfg.preview_fps,
                                                             self.built.cfg.audio_framerate,
                                                             self.timeline_view.progress(),
@@ -619,7 +619,7 @@ class AnimViewer(QMainWindow):
         file_path = dialog.file_path()
         cli_config.fps = dialog.fps()
         hwaccel = dialog.hwaccel()
-        video_with_audio = (self.built.timeline.has_audio() and not file_path.endswith('gif'))
+        video_with_audio = (self.built.timeline.has_audio_for_all() and not file_path.endswith('gif'))
 
         QMessageBox.information(self,
                                 _('Note'),

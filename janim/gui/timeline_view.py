@@ -12,9 +12,9 @@ from PySide6.QtWidgets import QLabel, QVBoxLayout, QWidget
 
 from janim.anims.animation import FOREVER, Animation, TimeRange
 from janim.anims.composition import AnimGroup
-from janim.anims.timeline import BuiltTimeline, Timeline
+from janim.anims.timeline import BuiltTimeline, Timeline, TimelineItem
 from janim.gui.label import (LABEL_DEFAULT_HEIGHT, LABEL_PIXEL_HEIGHT_PER_UNIT,
-                             Label, LabelGroup, PixelRange)
+                             Label, LabelGroup, LazyLabelGroup, PixelRange)
 from janim.items.item import Item
 from janim.locale.i18n import get_local_strings
 from janim.utils.bezier import interpolate
@@ -28,6 +28,8 @@ _ = get_local_strings('timeline_view')
 
 TIMELINE_VIEW_MIN_DURATION = 0.5
 LABEL_OBJ_NAME = '__obj'
+SUBTIMELINE_LABEL_GROUP_NAME = '__subtimeline_label_group'
+SUBTIMELINE_CLASS_NAME = '__subtimeline_class'
 
 
 class TimelineView(QWidget):
@@ -70,6 +72,7 @@ class TimelineView(QWidget):
 
     def __init__(self, parent: QWidget | None = None):
         super().__init__(parent)
+        self.label_group: LabelGroup | None = None
 
         self.highlighting: LabelGroup | None = None
         self.highlight_hover_timer = QTimer(self)
@@ -95,6 +98,12 @@ class TimelineView(QWidget):
         self.setMinimumHeight(LABEL_DEFAULT_HEIGHT * LABEL_PIXEL_HEIGHT_PER_UNIT + self.range_tip_height + 10)
 
     def set_built(self, built: BuiltTimeline, pause_progresses: list[int]) -> None:
+        # 记录先前展开的的 subtimeline labels
+        has_prev = self.label_group is not None
+        if has_prev:
+            stored = self.LabelGroupExpandedInfo(self.label_group)
+
+        # 设置属性
         self.range = TimeRange(0, min(20, built.duration))
         self.y_pixel_offset: float = 0
         self.built = built
@@ -104,39 +113,85 @@ class TimelineView(QWidget):
 
         self.is_pressing = TimelineView.Pressing()
 
+        # 初始化新的 labels
         self.init_label_group()
+
+        # 还原先前展开的 subtimeline labels
+        if has_prev:
+            stored.restore(self.label_group)
+
+        # 触发画面更新
         self.update()
+
+    class LabelGroupExpandedInfo:
+        # 语义：
+        # 如果 self.expanded 为 None，则 subtimeline_label_group 就未展开或不存在
+        # 如果 self.expanded 是 list，则 list 中的 subtimeline 已展开
+        def __init__(self, label_group: LabelGroup | LazyLabelGroup):
+            if label_group._collapse:
+                self.expanded = None
+                return
+
+            subtimeline_label_group: LabelGroup | None = getattr(label_group, SUBTIMELINE_LABEL_GROUP_NAME)
+            if subtimeline_label_group is None or subtimeline_label_group._collapse:
+                self.expanded = None
+                return
+
+            self.expanded: list[tuple[int, str, TimelineView.LabelGroupExpandedInfo]] = []
+            for i, sub in enumerate(subtimeline_label_group.labels):
+                sub: LazyLabelGroup
+                if sub._collapse:
+                    continue
+                name = getattr(sub, SUBTIMELINE_CLASS_NAME)
+                self.expanded.append((i, name, TimelineView.LabelGroupExpandedInfo(sub)))
+
+        def restore(self, label_group: LabelGroup | LazyLabelGroup):
+            if self.expanded is None:
+                return
+
+            subtimeline_label_group: LabelGroup | None = getattr(label_group, SUBTIMELINE_LABEL_GROUP_NAME)
+            if subtimeline_label_group is None:
+                return
+
+            subtimeline_label_group.switch_collapse()
+            labels = subtimeline_label_group.labels
+            for i, name, sub_info in self.expanded:
+                if i >= len(labels):
+                    continue
+
+                label: LazyLabelGroup = labels[i]
+                if name != getattr(label, SUBTIMELINE_CLASS_NAME):
+                    continue
+
+                label.switch_collapse()
+                sub_info.restore(label)
 
     def init_label_group(self) -> None:
         '''
         构建动画区段信息，以便操作与绘制
         '''
-        self.anim_label_group = self.make_anim_label_group()
+        self.debug_label_group = self.make_debug_label_group(self.built)
+        self.audio_label_group = self.make_audio_label_group(self.built)
+        self.anim_label_group = self.make_anim_label_group(self.built)
 
-        if not self.built.timeline.has_audio():
-            self.audio_label_group = None
-        else:
-            self.audio_label_group = self.make_audio_label_group()
-
-        if not self.built.timeline.debug_list:
-            self.debug_label_group = None
-        else:
-            self.debug_label_group = self.make_debug_label_group()
+        self.subtimeline_label_group = self.make_subtimeline_label_group(self.built)
 
         self.label_group = LabelGroup(
             '',
             self.anim_label_group.t_range,
             *[
                 label_group
-                for label_group in (self.debug_label_group, self.audio_label_group)
+                for label_group in (self.subtimeline_label_group, self.debug_label_group, self.audio_label_group)
                 if label_group is not None
             ],
             self.anim_label_group,
             collapse=False,
             header=False,
         )
+        setattr(self.label_group, SUBTIMELINE_LABEL_GROUP_NAME, self.subtimeline_label_group)
 
-    def make_anim_label_group(self) -> LabelGroup:
+    @staticmethod
+    def make_anim_label_group(built: BuiltTimeline) -> LabelGroup:
         def make_label_from_anim(anim: Animation, header: bool = True) -> Label | None:
             name = anim.name or anim.__class__.__name__
             color = QColor(*anim.label_color)
@@ -167,7 +222,7 @@ class TimelineView(QWidget):
 
                     anim.t_range
                     if anim.t_range.end is not FOREVER
-                    else TimeRange(anim.t_range.at, self.built.duration),
+                    else TimeRange(anim.t_range.at, built.duration),
 
                     brush=color,
                 )
@@ -176,10 +231,10 @@ class TimelineView(QWidget):
 
         return LabelGroup(
             '',
-            TimeRange(0, self.built.duration),
+            TimeRange(0, built.duration),
             *[
                 label
-                for anim in self.built.timeline.anim_groups
+                for anim in built.timeline.anim_groups
                 if (
                     label := make_label_from_anim(
                         anim,
@@ -191,8 +246,12 @@ class TimelineView(QWidget):
             header=False,
         )
 
-    def make_audio_label_group(self) -> LabelGroup:
-        infos = self.built.timeline.audio_infos
+    @staticmethod
+    def make_audio_label_group(built: BuiltTimeline) -> LabelGroup | None:
+        if not built.timeline.has_audio():
+            return None
+
+        infos = built.timeline.audio_infos
         multiple = len(infos) != 1
 
         def make_audio_label(info: Timeline.PlayAudioInfo) -> Label:
@@ -207,12 +266,13 @@ class TimelineView(QWidget):
             'audio',
             TimeRange(
                 0,
-                max(self.built.duration, max(info.range.end for info in infos))
+                max(built.duration, max(info.range.end for info in infos))
             ),
             *[make_audio_label(info) for info in infos],
             collapse=multiple,
             header=multiple,
             brush=QColor(85, 193, 167),
+            skip_grouponly_query=True
         )
         # 只有在播放多个音频，并且音频有重叠区段的时候才折叠组
         # 因此这里判断如果没有重叠区段，就把折叠取消
@@ -222,11 +282,17 @@ class TimelineView(QWidget):
 
         return audio_label_group
 
-    def make_debug_label_group(self) -> LabelGroup:
+    @staticmethod
+    def make_debug_label_group(built: BuiltTimeline) -> LabelGroup | None:
+        if not built.timeline.debug_list:
+            return None
+
+        built_t_range = TimeRange(0, built.duration)
+
         def make_debug_label(item: Item):
             return LabelGroup(
                 repr(item),
-                self.anim_label_group.t_range,
+                built_t_range,
                 make_visibility_debug_label(item),
                 make_anim_debug_label(item),
                 brush=QColor(170, 148, 132),
@@ -245,12 +311,12 @@ class TimelineView(QWidget):
                 return 1
 
         def make_visibility_debug_label(item: Item):
-            visibility = self.built.timeline.item_appearances[item].visibility
+            visibility = built.timeline.item_appearances[item].visibility
             if len(visibility) % 2 != 0:
-                visibility.append(self.built.duration + 1)
+                visibility.append(built.duration + 1)
             return LabelGroup(
                 '',
-                self.anim_label_group.t_range,
+                built_t_range,
                 *[
                     VisibilityLabel(TimeRange(visibility[i * 2], visibility[i * 2 + 1]))
                     for i in range(len(visibility) // 2)
@@ -275,23 +341,23 @@ class TimelineView(QWidget):
                     color = dct[anim] = QColor(*next(iter))
                 return color
 
-            stack = self.built.timeline.item_appearances[item].stack
+            stack = built.timeline.item_appearances[item].stack
             return LabelGroup(
                 '',
-                self.anim_label_group.t_range,
+                built_t_range,
                 *[
                     Label(
                         (
-                            f'{anim.__class__.__name__} at 0x{id(anim):x}'
+                            f'{anim.__class__.__name__} at 0x{id(anim):X}'
                             if anim._generate_by is None
-                            else f'{anim.__class__.__name__} at 0x{id(anim):x} '
-                            f'(from {anim._generate_by.__class__.__name__} at 0x{id(anim._generate_by):x})'
+                            else f'{anim.__class__.__name__} at 0x{id(anim):X} '
+                            f'(from {anim._generate_by.__class__.__name__} at 0x{id(anim._generate_by):X})'
                         ),
                         TimeRange(t1, t2),
                         brush=get_color(anim)
                     )
                     for (t1, t2), anims in zip(
-                        it.pairwise([*stack.times, self.anim_label_group.t_range.end + 1]),
+                        it.pairwise([*stack.times, built.duration + 1]),
                         stack.stacks
                     )
                     for anim in anims
@@ -303,14 +369,78 @@ class TimelineView(QWidget):
 
         return LabelGroup(
             'debug',
-            self.anim_label_group.t_range,
-            *[make_debug_label(item) for item in self.built.timeline.debug_list],
+            built_t_range,
+            *[make_debug_label(item) for item in built.timeline.debug_list],
             brush=QColor(170, 148, 132),
             highlight_pen=QPen(QColor(41, 171, 202), 3),
             highlight_brush=QColor(41, 171, 202, 40),
             collapse=False,
             header=True
         )
+
+    @staticmethod
+    def make_subtimeline_label_group(built: BuiltTimeline) -> LabelGroup | None:
+        items = built.timeline.subtimeline_items
+
+        if not items:
+            return None
+
+        multiple = len(items) != 1
+
+        def make_subtimeline_label(item: TimelineItem) -> LazyLabelGroup:
+            def callback() -> list[LabelGroup]:
+                debug_label_group = TimelineView.make_debug_label_group(item._built)
+                audio_label_group = TimelineView.make_audio_label_group(item._built)
+                anim_label_group = TimelineView.make_anim_label_group(item._built)
+
+                subtimeline_label_group = TimelineView.make_subtimeline_label_group(item._built)
+                setattr(group, SUBTIMELINE_LABEL_GROUP_NAME, subtimeline_label_group)
+
+                lst = [
+                    *[
+                        label_group
+                        for label_group in (subtimeline_label_group, debug_label_group, audio_label_group)
+                        if label_group is not None
+                    ],
+                    anim_label_group
+                ]
+                for label_group in lst:
+                    label_group.shift_time_range(group.t_range.at)
+                return lst
+
+            timeline = item._built.timeline
+
+            group = LazyLabelGroup(
+                f'{timeline.__class__.__name__} at 0x{id(timeline):X} (item at 0x{id(item):X})',
+                TimeRange(item.at, item.end),
+                callback,
+                brush=QColor(177, 137, 198, 190),
+                pen=QColor(177, 137, 198),
+                highlight_pen=QPen(QColor(41, 171, 202), 3),
+                highlight_brush=QColor(41, 171, 202, 40),
+            )
+            setattr(group, SUBTIMELINE_CLASS_NAME, timeline.__class__.__name__)
+            return group
+
+        subtimeline_label_group = LabelGroup(
+            'sub-timeline',
+            TimeRange(
+                0,
+                max(built.duration, max(item.end for item in items))
+            ),
+            *[make_subtimeline_label(item) for item in items],
+            collapse=multiple,
+            header=multiple,
+            brush=QColor(177, 137, 198),
+            skip_grouponly_query=True
+        )
+        # 只有在含有多个子 Timeline，并且有重叠区段的时候才折叠组
+        # 因此这里判断如果没有重叠区段，就把折叠取消
+        if multiple and subtimeline_label_group.is_exclusive():
+            subtimeline_label_group._collapse = False
+            subtimeline_label_group._header = False
+
+        return subtimeline_label_group
 
     def query_label_at(self, pos: QPointF, policy: LabelGroup.QueryPolicy) -> Label | LabelGroup | None:
         return self.label_group.query_at(self.labels_rect, self.range, pos, self.y_pixel_offset, policy)
@@ -440,7 +570,7 @@ class TimelineView(QWidget):
         x_axis = QValueAxis()
         x_axis.setRange(range_begin, range_end)
         x_axis.setTickCount(max(2, 1 + int(range_end - range_begin)))
-        x_axis.setTitleText(_('Global Progress'))
+        x_axis.setTitleText(_('Timeline Progress'))
         x_axis.setTitleFont(font)
         chart.addAxis(x_axis, Qt.AlignmentFlag.AlignBottom)
 

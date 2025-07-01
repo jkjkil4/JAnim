@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-05-18 00:29+0800\n"
+"POT-Creation-Date: 2025-07-01 11:17+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,22 +17,22 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: janim\gui\timeline_view.py:343
+#: janim\gui\timeline_view.py:473
 msgid "Clip"
 msgstr ""
 
-#: janim\gui\timeline_view.py:370 janim\gui\timeline_view.py:372
+#: janim\gui\timeline_view.py:500 janim\gui\timeline_view.py:502
 msgid "Recommended clip"
 msgstr ""
 
-#: janim\gui\timeline_view.py:373
+#: janim\gui\timeline_view.py:503
 msgid "(Too many! Unable to display all ranges.)"
 msgstr ""
 
-#: janim\gui\timeline_view.py:443
-msgid "Global Progress"
+#: janim\gui\timeline_view.py:573
+msgid "Timeline Progress"
 msgstr ""
 
-#: janim\gui\timeline_view.py:453
+#: janim\gui\timeline_view.py:583
 msgid "Audio Progress"
 msgstr ""

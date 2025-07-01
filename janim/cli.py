@@ -116,15 +116,17 @@ def write(args: Namespace) -> None:
         srt = args.srt
         open_result = args.open and built is builts[-1]
 
+        has_audio = built.timeline.has_audio_for_all()
+
         # 如果其实没办法做到 video_with_audio，那么把 video_with_audio 用 video 和 audio 替代
-        fallback = not built.timeline.has_audio() or is_gif
+        fallback = not has_audio or is_gif
         if video_with_audio and fallback:
             video_with_audio = False
             video = True
             audio = True
 
         writes_video = video_with_audio or video
-        writes_audio = (video_with_audio or audio) and built.timeline.has_audio()
+        writes_audio = (video_with_audio or audio) and has_audio
         writes_srt = srt and built.timeline.has_subtitle()
 
         skip = not writes_video and not writes_audio and not writes_srt
