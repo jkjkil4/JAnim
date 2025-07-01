@@ -5,7 +5,7 @@ import os
 from bisect import bisect_left, bisect_right
 from dataclasses import dataclass
 from enum import Enum
-from typing import Callable
+from typing import Callable, Iterable
 
 from PySide6.QtCore import QPointF, QRect, QRectF, Qt
 from PySide6.QtGui import QFont, QPainter, QPixmap
@@ -55,6 +55,10 @@ class Label:
 
         self._needs_refresh_y: bool = True
         self._all_downs_cache: list[Label] | None = None
+
+    def shift_time_range(self, delta: float) -> None:
+        self.t_range = self.t_range.copy()
+        self.t_range.shift(delta)
 
     # region property
 
@@ -206,6 +210,23 @@ class LabelGroup(Label):
         self.pix_collapse_tip1 = self.get_pix_collapse_tip1()
         self.pix_collapse_tip2 = self.get_pix_collapse_tip2()
 
+        self.init_labels(labels)
+
+        self._height = 0
+        self._collapse = collapse
+        self._header = header
+
+        self.collapse_font = self.get_smaller_font()
+        self.update_font()
+
+        self._needs_refresh_height: bool = True
+
+    def shift_time_range(self, delta: float) -> None:
+        super().shift_time_range(delta)
+        for label in self.labels:
+            label.shift_time_range(delta)
+
+    def init_labels(self, labels: Iterable[Label]) -> None:
         # 用于优化绘制的遍历
         self.ordered_divisions: list[list[Label]] | None = None
         if len(labels) > 32:   # 该 LabelGroup 中 labels 多于 32 个才进行该优化
@@ -249,14 +270,6 @@ class LabelGroup(Label):
                 stack.append(label)
 
         self.labels = labels
-        self._height = 0
-        self._collapse = collapse
-        self._header = header
-
-        self.collapse_font = self.get_smaller_font()
-        self.update_font()
-
-        self._needs_refresh_height: bool = True
 
     def is_exclusive(self) -> bool:
         '''
@@ -483,3 +496,22 @@ class LabelGroup(Label):
         p.drawRoundedRect(rect, 4, 4)
 
     # endregion
+
+
+class LazyLabelGroup(LabelGroup):
+    def __init__(
+        self,
+        name: str,
+        t_range: TimeRange,
+        make_labels_callback: Callable[[], Iterable[Label]],
+        **kwargs
+    ):
+        super().__init__(name, t_range, collapse=True, header=True, **kwargs)
+        self.initialized: bool = False
+        self.callback = make_labels_callback
+
+    def switch_collapse(self) -> None:
+        if not self.initialized:
+            self.init_labels(self.callback())
+            self.initialized = True
+        super().switch_collapse()

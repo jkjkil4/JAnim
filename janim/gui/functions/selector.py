@@ -210,7 +210,7 @@ class Selector(QObject):
             _('Selected Parent Item: ') + (
                 'None'
                 if self.current is None
-                else f'{self.current.item.__class__.__name__} at 0x{id(self.current.item):x}'
+                else f'{self.current.item.__class__.__name__} at 0x{id(self.current.item):X}'
             ),
             _('Selected Subitems: ') + ', '.join(
                 (

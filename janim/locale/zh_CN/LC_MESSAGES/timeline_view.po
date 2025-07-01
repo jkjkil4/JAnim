@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-05-18 00:29+0800\n"
-"PO-Revision-Date: 2025-05-18 00:29+0800\n"
+"POT-Creation-Date: 2025-07-01 11:17+0800\n"
+"PO-Revision-Date: 2025-07-01 11:17+0800\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
 "Language: zh_CN\n"
@@ -17,22 +17,25 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Poedit 3.6\n"
 
-#: janim\gui\timeline_view.py:343
+#: janim\gui\timeline_view.py:473
 msgid "Clip"
 msgstr "裁剪区段"
 
-#: janim\gui\timeline_view.py:370 janim\gui\timeline_view.py:372
+#: janim\gui\timeline_view.py:500 janim\gui\timeline_view.py:502
 msgid "Recommended clip"
 msgstr "建议的裁剪区段"
 
-#: janim\gui\timeline_view.py:373
+#: janim\gui\timeline_view.py:503
 msgid "(Too many! Unable to display all ranges.)"
 msgstr "（太多了！无法显示所有区段）"
 
-#: janim\gui\timeline_view.py:443
-msgid "Global Progress"
-msgstr "全局进度"
+#: janim\gui\timeline_view.py:573
+msgid "Timeline Progress"
+msgstr "Timeline 进度"
 
-#: janim\gui\timeline_view.py:453
+#: janim\gui\timeline_view.py:583
 msgid "Audio Progress"
 msgstr "音频进度"
+
+#~ msgid "Global Progress"
+#~ msgstr "全局进度"
