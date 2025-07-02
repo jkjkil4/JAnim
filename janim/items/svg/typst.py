@@ -44,6 +44,7 @@ class TypstDoc(SVGItem):
         *,
         vars: dict[str, TypstVar] | None = None,
         vars_size_unit: Literal['pt', 'mm', 'cm', 'in', 'pt'] | None = None,
+        sys_inputs: dict[str, str] = {},
         scale: float = 24 / 11,     # 因为 Typst 默认字号=11，janim 默认字号=24，为了默认显示效果一致，将 Typst 内容缩放 24/11
         shared_preamble: str | None = None,
         additional_preamble: str | None = None,
@@ -63,7 +64,7 @@ class TypstDoc(SVGItem):
             vars_str = ''
 
         super().__init__(
-            self.compile_typst(text, shared_preamble, additional_preamble, vars_str),
+            self.compile_typst(text, shared_preamble, additional_preamble, vars_str, sys_inputs),
             scale=scale,
             **kwargs
         )
@@ -91,15 +92,27 @@ class TypstDoc(SVGItem):
         self.points.scale(0.9, about_point=ORIGIN).to_border(UP)
 
     @staticmethod
-    def compile_typst(text: str, shared_preamble: str, additional_preamble: str, vars: str) -> str:
+    def compile_typst(
+        text: str,
+        shared_preamble: str,
+        additional_preamble: str,
+        vars: str,
+        sys_inputs: dict[str, str]
+    ) -> str:
         '''
         编译 Typst 文档
         '''
+        sys_inputs_pairs = [
+            f'{key}={value}'
+            for key, value in sys_inputs.items()
+        ]
+
         typst_temp_dir = get_typst_temp_dir()
         md5 = hashlib.md5(text.encode())
         md5.update(shared_preamble.encode())
         md5.update(additional_preamble.encode())
         md5.update(vars.encode())
+        md5.update('\n'.join(sys_inputs_pairs).encode())
         hash_hex = md5.hexdigest()
 
         svg_file_path = os.path.join(typst_temp_dir, hash_hex + '.svg')
@@ -120,6 +133,11 @@ class TypstDoc(SVGItem):
             svg_file_path,
             '-f', 'svg'
         ]
+
+        for pair in sys_inputs_pairs:
+            commands += [
+                '--input', pair
+            ]
 
         try:
             process = sp.Popen(commands, stdin=sp.PIPE)
