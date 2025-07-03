@@ -13,7 +13,7 @@ from collections import defaultdict
 from contextlib import contextmanager, nullcontext
 from contextvars import ContextVar
 from dataclasses import dataclass
-from typing import Callable, Iterable, overload
+from typing import Callable, Iterable, Self, overload
 
 import moderngl as mgl
 import numpy as np
@@ -1099,6 +1099,45 @@ class BuiltTimeline:
         '''
         return TimelineItem(self, **kwargs)
 
+    def to_playback_control_item(self, **kwargs) -> TimelinePlaybackControlItem:
+        '''
+        使用该方法可以在一个 Timeline 中插入另一个 Timeline
+
+        并且与 :class:`~.Video` 类似，可以使用 ``start``、``stop`` 以及 ``seek`` 控制播放进度
+
+        例：
+
+        .. code-block:: python
+
+            class Sub(Timeline):
+                def construct(self):
+                    self.play(
+                        ItemUpdater(
+                            None,
+                            lambda p: Text(f'{p.global_t:.2f}')
+                        ),
+                        duration=8
+                    )
+
+
+            class Test(Timeline):
+                def construct(self):
+                    sub = Sub().build().to_playback_control_item().show()
+                    sub.start()
+                    self.forward(2)
+                    sub.start(speed=0.1)
+                    self.forward(2)
+                    sub.seek(0).start(speed=4)
+                    self.forward(2)
+
+        注意：在默认情况下未开始播放，需要使用 ``start`` 以开始播放
+
+        额外参数：
+
+        - ``keep_last_frame``: 是否在 Timeline 结束后仍然保留最后一帧的显示
+        '''
+        return TimelinePlaybackControlItem(self, **kwargs)
+
 
 class TimelineItem(Item):
     '''
@@ -1131,4 +1170,69 @@ class TimelineItem(Item):
         return self.at + self.duration
 
 
-# TODO: TimelineAdvancedItem
+class PlaybackControl:
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.timeline = Timeline.get_context()
+
+        self.actions: list[tuple[float, float, float]] = []
+
+    def start(self, *, speed: int = 1) -> Self:
+        if not self.actions:
+            base = 0
+        else:
+            x, y, last_speed = self.actions[-1]
+            base = y + (self.timeline.current_time - x) * last_speed
+
+        self.actions.append((self.timeline.current_time,
+                             base,
+                             speed))
+        return self
+
+    def stop(self) -> Self:
+        self.start(speed=0)
+        return self
+
+    def seek(self, t: float) -> Self:
+        if not self.actions:
+            speed = 0
+        else:
+            speed = self.actions[-1][2]
+        self.actions.append((self.timeline.current_time,
+                             t,
+                             speed))
+        return self
+
+    def compute_time(self, t: float) -> float:
+        if not self.actions:
+            return 0
+        idx = bisect(self.actions, t, key=lambda v: v[0]) - 1
+        if idx < 0:
+            return 0
+        x, y, speed = self.actions[idx]
+        return y + (t - x) * speed
+
+
+class TimelinePlaybackControlItem(PlaybackControl, Item):
+    '''
+    详见 :meth:`BuiltTimeline.to_playback_control_item`
+    '''
+
+    class TPCIRenderer(Renderer):
+        def render(self, item: TimelinePlaybackControlItem):
+            t = Animation.global_t_ctx.get()
+            t = item.compute_time(t)
+            t = max(0, t)
+            if 0 <= t <= item.duration:
+                item._built.render_all(self.data_ctx.get().ctx, t, blend_on=False)
+            elif item.keep_last_frame and t > item.duration:
+                item._built.render_all(self.data_ctx.get().ctx, item._built.duration, blend_on=False)
+
+    renderer_cls = TPCIRenderer
+
+    def __init__(self, built: BuiltTimeline, *, keep_last_frame: bool = False, **kwargs):
+        super().__init__(**kwargs)
+        self._built = built
+        self.duration = self._built.duration
+        self.keep_last_frame = keep_last_frame

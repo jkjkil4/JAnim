@@ -4,7 +4,6 @@ import io
 import math
 import os
 import subprocess as sp
-from bisect import bisect
 from functools import lru_cache
 from typing import Self
 
@@ -12,6 +11,7 @@ import moderngl as mgl
 import numpy as np
 from PIL import Image
 
+from janim.anims.timeline import PlaybackControl
 from janim.components.component import CmptInfo
 from janim.components.image import Cmpt_Image
 from janim.components.rgbas import Cmpt_Rgbas
@@ -277,16 +277,18 @@ class VideoFrame(ImageItem):
         return image
 
 
-class Video(Points):
+class Video(PlaybackControl, Points):
     '''
     视频物件，和图像物件类似，其实本质上是一个内容实时变化的图像
 
     控制视频播放的方法：
 
     - 和其它物件一样，使用 :meth:`~.Item.show` 进行显示，默认暂停在第一帧
-    - 调用 :meth:`start` 表示从当前位置开始播放，可以传入 ``speed`` 参数指定倍速
-    - 调用 :meth:`stop` 表示停止在当前位置
-    - 调用 :meth:`seek` 表示跳转视频进度到指定秒数
+    - 调用 ``start`` 表示从当前位置开始播放，可以传入 ``speed`` 参数指定倍速
+    - 调用 ``stop`` 表示停止在当前位置
+    - 调用 ``seek`` 表示跳转视频进度到指定秒数
+
+    注意：在默认情况下未开始播放，需要使用 ``start`` 以开始播放
 
     例：
 
@@ -323,16 +325,12 @@ class Video(Points):
     ):
         super().__init__(**kwargs)
 
-        from janim.anims.timeline import Timeline
-        self.timeline = Timeline.get_context()
-
         self.file_path = find_file(file_path)
         self.min_mag_filter = min_mag_filter
         self.frame_components = frame_components
         self.info = VideoInfo(self.file_path)
 
         self.points.set([UL, DL, UR, DR])
-        self.actions: list[tuple[float, float, float]] = []
 
         if width is None and height is None:
             self.points.set_size(
@@ -361,41 +359,6 @@ class Video(Points):
         self.color.set(color, alpha)
 
         return super().apply_style(**kwargs)
-
-    def start(self, *, speed: int = 1) -> Self:
-        if not self.actions:
-            base = 0
-        else:
-            x, y, last_speed = self.actions[-1]
-            base = y + (self.timeline.current_time - x) * last_speed
-
-        self.actions.append((self.timeline.current_time,
-                             base,
-                             speed))
-        return self
-
-    def stop(self) -> Self:
-        self.start(speed=0)
-        return self
-
-    def seek(self, t: float) -> Self:
-        if not self.actions:
-            speed = 0
-        else:
-            speed = self.actions[-1][2]
-        self.actions.append((self.timeline.current_time,
-                             t,
-                             speed))
-        return self
-
-    def compute_time(self, t: float) -> float:
-        if not self.actions:
-            return 0
-        idx = bisect(self.actions, t, key=lambda v: v[0]) - 1
-        if idx < 0:
-            return 0
-        x, y, speed = self.actions[idx]
-        return y + (t - x) * speed
 
     def get_orig(self) -> np.ndarray:
         '''视频的左上角'''
