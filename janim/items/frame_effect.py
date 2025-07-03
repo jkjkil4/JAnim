@@ -479,7 +479,7 @@ class TransformableFrameClip(FrameEffect):
         super().__init__(
             *items,
             fragment_shader=transformable_frameclip_fragment_shader,
-            cache_key='frameclip',
+            cache_key='transformable_frameclip',
             root_only=root_only,
             **kwargs
         )
