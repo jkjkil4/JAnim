@@ -160,7 +160,8 @@ class VItemRenderer(Renderer):
             self.prev_stroke = new_stroke
 
         if new_fill is not self.prev_fill:
-            self.fill_transparent = item.fill.is_transparent()
+            # 这里使用 bool 将 np.bool 进行转换，使得能正常传入 uniform
+            self.fill_transparent = bool(item.fill.is_transparent())
 
         if new_fill is not self.prev_fill or len(new_points) != len(self.prev_points):
             fill = resize_with_interpolation(new_fill, (len(new_points) + 1) // 2)
