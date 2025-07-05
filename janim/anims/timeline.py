@@ -28,7 +28,8 @@ from janim.anims.updater import updater_params_ctx
 from janim.camera.camera import Camera
 from janim.camera.camera_info import CameraInfo
 from janim.constants import (BLACK, DEFAULT_DURATION,
-                             DEFAULT_ITEM_TO_EDGE_BUFF, DOWN, SMALL_BUFF, UP)
+                             DEFAULT_ITEM_TO_EDGE_BUFF, DOWN, FOREVER,
+                             SMALL_BUFF, UP)
 from janim.exception import TimelineLookupError
 from janim.items.audio import Audio
 from janim.items.item import Item
@@ -893,7 +894,9 @@ class BuiltTimeline:
         )
         self.visible_additional_callbacks_segments = TimeSegments(
             self.timeline.additional_render_calls_callbacks,
-            lambda x: x.t_range
+            lambda x: (
+                x.t_range if x.t_range.end is not FOREVER else TimeRange(x.t_range.at, self.duration + 1)
+            )
         )
 
         self._time: float = 0
@@ -1006,8 +1009,12 @@ class BuiltTimeline:
                     # 这里也有可能产生 render_disabled 标记
                     additional: list[list[tuple[Item, Callable[[Item], None]]]] = []
                     for rcc in self.visible_additional_callbacks_segments.get(global_t):
-                        if not rcc.t_range.at <= global_t < rcc.t_range.end:
-                            continue
+                        if rcc.t_range.end is FOREVER:
+                            if not rcc.t_range.at <= global_t:
+                                continue
+                        else:
+                            if not rcc.t_range.at <= global_t < rcc.t_range.end:
+                                continue
                         additional.append(rcc.func())
                     # 剔除被标记 render_disabled 的物件，得到 render_items_final
                     render_datas_final: list[tuple[Item, Callable]] = []
