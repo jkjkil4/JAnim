@@ -315,7 +315,7 @@ class FrameClip(FrameEffect):
     def dynamic_uniforms(self):
         return dict(u_clip=self.clip._attrs)
 
-    def get_border_rect(self, **kwargs) -> Rect:
+    def create_border_rect(self, **kwargs) -> Rect:
         '''
         得到裁剪后的显示区域的包围矩形
         '''
@@ -509,7 +509,7 @@ class TransformableFrameClip(FrameEffect):
             u_rotate=self.clip._attrs[8]
         )
 
-    def get_border_rect(self, **kwargs) -> Rect:
+    def create_border_rect(self, **kwargs) -> Rect:
         '''
         得到裁剪后的显示区域的包围矩形
         '''
