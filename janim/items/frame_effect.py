@@ -9,7 +9,8 @@ from janim.anims.method_updater_meta import register_updater
 from janim.anims.timeline import Timeline
 from janim.anims.updater import DataUpdater, UpdaterParams
 from janim.components.component import CmptInfo, Component
-from janim.components.simple import Cmpt_List, Cmpt_Float
+from janim.components.simple import Cmpt_Float, Cmpt_List
+from janim.items.geometry.polygon import Rect
 from janim.items.item import Item
 from janim.locale.i18n import get_local_strings
 from janim.logger import log
@@ -314,6 +315,17 @@ class FrameClip(FrameEffect):
     def dynamic_uniforms(self):
         return dict(u_clip=self.clip._attrs)
 
+    def get_border_rect(self, **kwargs) -> Rect:
+        '''
+        得到裁剪后的显示区域的包围矩形
+        '''
+        dl = Config.get.left_side + Config.get.bottom
+        width, height = Config.get.frame_width, Config.get.frame_height
+        left, top, right, bottom = self.clip._attrs
+        p1 = dl + [width * left, height * bottom, 0]
+        p2 = dl + [width * (1 - right), height * (1 - top), 0]
+        return Rect(p1, p2, **kwargs)
+
 
 transformable_frameclip_fragment_shader = '''
 #version 330 core
@@ -496,6 +508,22 @@ class TransformableFrameClip(FrameEffect):
             u_scale=self.clip._attrs[6:8],
             u_rotate=self.clip._attrs[8]
         )
+
+    def get_border_rect(self, **kwargs) -> Rect:
+        '''
+        得到裁剪后的显示区域的包围矩形
+        '''
+        left, top, right, bottom, x_offset, y_offset, x_scale, y_scale, rotate = self.clip._attrs
+
+        dl = Config.get.left_side + Config.get.bottom
+        width, height = Config.get.frame_width, Config.get.frame_height
+        p1 = dl + [width * left, height * bottom, 0]
+        p2 = dl + [width * (1 - right), height * (1 - top), 0]
+
+        rect = Rect(p1, p2, **kwargs)
+        rect.points.shift([width * x_offset, height * y_offset, 0]).scale([x_scale, y_scale, 1]).rotate(rotate)
+
+        return rect
 
 
 shadertoy_fragment_shader = '''
