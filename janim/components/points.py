@@ -864,7 +864,7 @@ class Cmpt_Points[ItemT](Component[ItemT]):
     def move_to_by_indicator(
         self,
         indicator: Item,
-        target: Item,
+        target: Item | Vect,
         *,
         aligned_edge: Vect = ORIGIN,
         coor_mask: Iterable = (1, 1, 1),
