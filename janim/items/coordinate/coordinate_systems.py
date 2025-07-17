@@ -7,14 +7,16 @@ import numpy as np
 from janim.components.component import CmptInfo
 from janim.components.points import Cmpt_Points
 from janim.components.vpoints import Cmpt_VPoints
-from janim.constants import BLUE_D, DEGREES, DL, ORIGIN, SMALL_BUFF, UP, WHITE
+from janim.constants import (BLUE, BLUE_D, DEGREES, DL, ORIGIN, SMALL_BUFF, UP,
+                             WHITE)
 from janim.items.coordinate.functions import ParametricCurve
 from janim.items.coordinate.number_line import NumberLine
 from janim.items.geometry.line import Line
+from janim.items.geometry.polygon import Polygon
 from janim.items.item import _ItemMeta
 from janim.items.points import Group
 from janim.items.vitem import DEFAULT_STROKE_RADIUS
-from janim.typing import RangeSpecifier, Vect, VectArray
+from janim.typing import JAnimColor, RangeSpecifier, Vect, VectArray
 from janim.utils.dict_ops import merge_dicts_recursively
 from janim.utils.space_ops import cross
 
@@ -225,6 +227,50 @@ class Axes(CoordinateSystem, Group, metaclass=_ItemMeta_ABCMeta):
             )
 
         return graph
+
+    def get_area(
+        self,
+        graph: ParametricCurve,
+        x_range: tuple[float, float] | None = None,
+        color: JAnimColor = BLUE,
+        alpha: float = 0.3,
+        stroke_alpha: float | None = None,
+        fill_alpha: float | None = None,
+        bounded_graph: ParametricCurve = None,
+        **kwargs
+    ) -> Polygon:
+        if x_range is None:
+            a, b, _ = graph.t_range
+        else:
+            a, b = x_range
+
+        if bounded_graph is None:
+            points = [
+                self.c2p(a),
+                graph.t_func(a),
+                *[p for p in graph.points.get_anchors() if a < self.p2c(p)[0] < b],
+                graph.t_func(b),
+                self.c2p(b)
+            ]
+        else:
+            graph_points, bounded_graph_points = (
+                [
+                    g.t_func(a),
+                    *[p for p in g.points.get_anchors() if a < self.p2c(p)[0] < b],
+                    g.t_func(b)
+                ]
+                for g in (graph, bounded_graph)
+            )
+            points = graph_points + bounded_graph_points[::-1]
+
+        return Polygon(
+            *points,
+            color=color,
+            alpha=alpha,
+            stroke_alpha=stroke_alpha,
+            fill_alpha=fill_alpha,
+            **kwargs
+        )
 
     def get_parametric_curve(
         self,
