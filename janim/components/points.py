@@ -788,6 +788,8 @@ class Cmpt_Points[ItemT](Component[ItemT]):
         '''
         通过旋转和缩放，使得物件的起点和终点被置于 ``start`` 和 ``end``
         '''
+        start, end = np.asarray(start), np.asarray(end)
+
         curr_start, curr_end = self.get_start(), self.get_end()
         curr_vect = curr_end - curr_start
         if np.all(curr_vect == 0):

@@ -46,6 +46,8 @@ class Cmpt_VPoints_LineImpl[ItemT](Cmpt_VPoints[ItemT]):
         return super().not_changed(other)
 
     def put_start_and_end_on(self, start: Vect, end: Vect) -> Self:
+        start, end = np.asarray(start), np.asarray(end)
+
         curr_start, curr_end = self.get_start_and_end()
         if np.isclose(curr_start, curr_end).all():
             # Handle null lines more gracefully
