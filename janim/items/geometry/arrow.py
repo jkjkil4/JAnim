@@ -5,9 +5,10 @@ from typing import Self
 
 import numpy as np
 
+from janim.components.component import CmptInfo
 from janim.constants import (DEFAULT_ITEM_TO_ITEM_BUFF, DOWN, LEFT, ORIGIN, PI,
                              RIGHT, UP)
-from janim.items.geometry.line import Line
+from janim.items.geometry.line import Cmpt_VPoints_LineImpl, Line
 from janim.items.points import Points
 from janim.items.svg.typst import TypstText
 from janim.items.text import Text
@@ -123,6 +124,14 @@ class ArrowTip(VItem):
         return self
 
 
+class Cmpt_VPoints_ArrowImpl[ItemT](Cmpt_VPoints_LineImpl[ItemT], impl=True):
+    def put_start_and_end_on(self, start: Vect, end: Vect) -> Self:
+        super().put_start_and_end_on(start, end)
+        if self.bind is not None:
+            self.bind.at_item.place_tip()
+        return self
+
+
 class Arrow(Line):
     '''
     带箭头的线段，箭头大小自动
@@ -130,6 +139,8 @@ class Arrow(Line):
     - ``buff``: 箭头首尾的空余量，默认为 ``0.25``
     - ``max_length_to_tip_length_ratio``: 箭头长度和直线长度最大比例
     '''
+    points = CmptInfo(Cmpt_VPoints_ArrowImpl[Self])
+
     def __init__(
         self,
         start: Vect | Points = LEFT,
