@@ -1,6 +1,6 @@
 
 from abc import ABCMeta, abstractmethod
-from typing import Callable, Iterable, Self, Sequence
+from typing import Callable, Iterable, Self
 
 import numpy as np
 
@@ -50,6 +50,9 @@ class CoordinateSystem(metaclass=ABCMeta):
 
     @abstractmethod
     def get_axes(self) -> list[NumberLine]:
+        '''
+        得到由各方向 :class:`~.NumberLine` 所组成的列表
+        '''
         pass
 
     def get_origin(self) -> np.ndarray:
@@ -201,10 +204,25 @@ class Axes(CoordinateSystem, Group, metaclass=_ItemMeta_ABCMeta):
     def get_graph(
         self,
         function: Callable[[float], float],
-        x_range: Sequence[float] | None = None,
+        x_range: RangeSpecifier | None = None,
         bind: bool = True,
         **kwargs
     ) -> ParametricCurve:
+        '''
+        基于坐标轴的坐标构造函数曲线，使用 :class:`~.ParametricCurve`
+
+        - ``function``: 用于构造曲线的函数
+        - ``x_range``: 图像定义域
+        - ``bind``: 在默认情况下为 ``True``，会使得函数曲线自动同步应用于坐标系上的变换，也可同步动画，详见 :ref:`examples` 中的 ``NumberPlaneExample``
+
+        .. warning::
+
+            当 ``bind=True`` 时，请勿将函数曲线与坐标系放在同一个 :class:`~.Group` 中进行坐标变换
+
+            因为会导致变换效果被重复作用，（一次由 :class:`~.Group` 导致的作用，另一次由 ``bind=True`` 导致的作用）
+
+            如果你有放在同一个 :class:`~.Group` 里的需求，请传入 ``bind=False`` 以避免该情况
+        '''
         x_range = x_range or self.x_range
         t_range = np.ones(3)
         t_range[:len(x_range)] = x_range
@@ -239,6 +257,13 @@ class Axes(CoordinateSystem, Group, metaclass=_ItemMeta_ABCMeta):
         bounded_graph: ParametricCurve = None,
         **kwargs
     ) -> Polygon:
+        '''
+        构造 ``x_range`` 区间内，``graph`` 与坐标轴所围成的区域，使用 :class:`~.Polygon` 表示
+
+        - ``graph``: 函数曲线，另见 :meth:`get_graph`
+        - ``x_range``: ``x`` 区间的最小值与最大值，``x_range = [x_min, x_max]``
+        - ``bounded_graph``: 如果指定该参数，那么将会构造 ``graph`` 与 ``bounded_graph`` 所围成的区域，而非与坐标轴
+        '''
         if x_range is None:
             a, b, _ = graph.t_range
         else:
@@ -278,6 +303,20 @@ class Axes(CoordinateSystem, Group, metaclass=_ItemMeta_ABCMeta):
         bind: bool = True,
         **kwargs
     ):
+        '''
+        基于坐标轴的坐标构造参数曲线，即 :class:`~.ParametricCurve`
+
+        - ``function``: 将值映射为坐标系上的一个点的参数函数
+        - ``bind``: 在默认情况下为 ``True``，会使得参数曲线自动同步应用于坐标系上的变换，也可同步动画，详见 :ref:`examples` 中的 ``NumberPlaneExample``
+
+        .. warning::
+
+            当 ``bind=True`` 时，请勿将参数曲线与坐标系放在同一个 :class:`~.Group` 中进行坐标变换
+
+            因为会导致变换效果被重复作用，（一次由 :class:`~.Group` 导致的作用，另一次由 ``bind=True`` 导致的作用）
+
+            如果你有放在同一个 :class:`~.Group` 里的需求，请传入 ``bind=False`` 以避免该情况
+        '''
         graph = ParametricCurve(
             lambda t: self.coords_to_point(*function(t)),
             **kwargs
