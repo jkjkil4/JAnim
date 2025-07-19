@@ -102,7 +102,7 @@ JAnim 提供了内置包可以在 Typst 中使用 ``#import`` 进行引入
 
 - ``#import "@janim/colors:0.0.0": *``
 
-  提供了 JAnim 中的颜色常量，可以直接在 Typst 中使用
+  提供了 JAnim 中的颜色常量，以便在 Typst 中使用
 
   .. code-block:: typst
 
