@@ -26,6 +26,11 @@ p.color-hex-s {
     color: WHITE;
 }
 
+div.color-group {
+    display: flex;
+    flex-wrap: wrap;
+}
+
 .colors {
     float: left;
     padding: 10px;
@@ -261,6 +266,21 @@ p.color-hex-s {
     color: #222222;
 }
 
+.PURE_RED {
+    background: #FF0000;
+    color: #FF0000;
+}
+
+.PURE_GREEN {
+    background: #00FF00;
+    color: #00FF00;
+}
+
+.PURE_BLUE {
+    background: #0000FF;
+    color: #0000FF;
+}
+
 .WHITE {
     background: #FFFFFF;
     color: #FFFFFF;
@@ -286,6 +306,11 @@ p.color-hex-s {
     color: #CD853F;
 }
 
+.ORANGE {
+    background: #FF862F;
+    color: #FF862F;
+}
+
 .PINK {
     background: #D147BD;
     color: #D147BD;
@@ -294,14 +319,4 @@ p.color-hex-s {
 .LIGHT_PINK {
     background: #DC75CD;
     color: #DC75CD;
-}
-
-.GREEN_SCREEN {
-    background: #00FF00;
-    color: #00FF00;
-}
-
-.ORANGE {
-    background: #FF862F;
-    color: #FF862F;
 }

@@ -44,6 +44,11 @@ GREY_D = "#444444"
 GREY_C = "#888888"
 GREY_B = "#BBBBBB"
 GREY_A = "#DDDDDD"
+
+PURE_RED = "#FF0000"
+PURE_GREEN = "#00FF00"
+PURE_BLUE = "#0000FF"
+
 WHITE = "#FFFFFF"
 BLACK = "#000000"
 GREY_BROWN = "#736357"
@@ -51,8 +56,10 @@ DARK_BROWN = "#8B4513"
 LIGHT_BROWN = "#CD853F"
 PINK = "#D147BD"
 LIGHT_PINK = "#DC75CD"
-GREEN_SCREEN = "#00FF00"
 ORANGE = "#FF862F"
+
+# Be compatible with the old names
+GREEN_SCREEN = "#00FF00"
 
 # Abbreviated names for the "median" colors
 BLUE = BLUE_C
