@@ -5,10 +5,24 @@ p.color-text {
     color: WHITE;
 }
 
-p.color-text-small {
-    font-size: small;
+p.color-text-s {
+    font-size: x-small;
     font-family: var(--font-stack--monospace);
     margin-top: 28px;
+    color: WHITE;
+}
+
+p.color-hex {
+    font-size: small;
+    font-family: var(--font-stack--monospace);
+    margin-top: 15px;
+    color: WHITE;
+}
+
+p.color-hex-s {
+    font-size: small;
+    font-family: var(--font-stack--monospace);
+    margin-top: 18px;
     color: WHITE;
 }
 

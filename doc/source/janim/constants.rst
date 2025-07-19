@@ -80,85 +80,85 @@ JAnim 使用三维坐标，并且用 ``ndarray`` 的类型
 
     <div style="float: left;">
         <h3>BLUE</h3>
-        <div class="colors BLUE_E"><p class="color-text">BLUE_E</p></div>
-        <div class="colors BLUE_D"><p class="color-text">BLUE_D</p></div>
-        <div class="colors BLUE_C"><p class="color-text">BLUE_C</p></div>
-        <div class="colors BLUE_B"><p class="color-text">BLUE_B</p></div>
-        <div class="colors BLUE_A"><p class="color-text">BLUE_A</p></div>
+        <div class="colors BLUE_E"><p class="color-text">BLUE_E</p><p class="color-hex">#1C758A</p></div>
+        <div class="colors BLUE_D"><p class="color-text">BLUE_D</p><p class="color-hex">#29ABCA</p></div>
+        <div class="colors BLUE_C"><p class="color-text">BLUE_C</p><p class="color-hex">#58C4DD</p></div>
+        <div class="colors BLUE_B"><p class="color-text">BLUE_B</p><p class="color-hex">#9CDCEB</p></div>
+        <div class="colors BLUE_A"><p class="color-text">BLUE_A</p><p class="color-hex">#C7E9F1</p></div>
     </div>
     <div style="float: left;">
         <h3>TEAL</h3>
-        <div class="colors TEAL_E"><p class="color-text">TEAL_E</p></div>
-        <div class="colors TEAL_D"><p class="color-text">TEAL_D</p></div>
-        <div class="colors TEAL_C"><p class="color-text">TEAL_C</p></div>
-        <div class="colors TEAL_B"><p class="color-text">TEAL_B</p></div>
-        <div class="colors TEAL_A"><p class="color-text">TEAL_A</p></div>
+        <div class="colors TEAL_E"><p class="color-text">TEAL_E</p><p class="color-hex">#49A88F</p></div>
+        <div class="colors TEAL_D"><p class="color-text">TEAL_D</p><p class="color-hex">#55C1A7</p></div>
+        <div class="colors TEAL_C"><p class="color-text">TEAL_C</p><p class="color-hex">#5CD0B3</p></div>
+        <div class="colors TEAL_B"><p class="color-text">TEAL_B</p><p class="color-hex">#76DDC0</p></div>
+        <div class="colors TEAL_A"><p class="color-text">TEAL_A</p><p class="color-hex">#ACEAD7</p></div>
     </div>
     <div style="float: left;">
         <h3>GREEN</h3>
-        <div class="colors GREEN_E"><p class="color-text">GREEN_E</p></div>
-        <div class="colors GREEN_D"><p class="color-text">GREEN_D</p></div>
-        <div class="colors GREEN_C"><p class="color-text">GREEN_C</p></div>
-        <div class="colors GREEN_B"><p class="color-text">GREEN_B</p></div>
-        <div class="colors GREEN_A"><p class="color-text">GREEN_A</p></div>
+        <div class="colors GREEN_E"><p class="color-text">GREEN_E</p><p class="color-hex">#699C52</p></div>
+        <div class="colors GREEN_D"><p class="color-text">GREEN_D</p><p class="color-hex">#77B05D</p></div>
+        <div class="colors GREEN_C"><p class="color-text">GREEN_C</p><p class="color-hex">#83C167</p></div>
+        <div class="colors GREEN_B"><p class="color-text">GREEN_B</p><p class="color-hex">#A6CF8C</p></div>
+        <div class="colors GREEN_A"><p class="color-text">GREEN_A</p><p class="color-hex">#C9E2AE</p></div>
     </div>
     <div style="float: left;">
         <h3>YELLOW</h3>
-        <div class="colors YELLOW_E"><p class="color-text">YELLOW_E</p></div>
-        <div class="colors YELLOW_D"><p class="color-text">YELLOW_D</p></div>
-        <div class="colors YELLOW_C"><p class="color-text">YELLOW_C</p></div>
-        <div class="colors YELLOW_B"><p class="color-text">YELLOW_B</p></div>
-        <div class="colors YELLOW_A"><p class="color-text">YELLOW_A</p></div>
+        <div class="colors YELLOW_E"><p class="color-text">YELLOW_E</p><p class="color-hex">#E8C11C</p></div>
+        <div class="colors YELLOW_D"><p class="color-text">YELLOW_D</p><p class="color-hex">#F4D345</p></div>
+        <div class="colors YELLOW_C"><p class="color-text">YELLOW_C</p><p class="color-hex">#FFFF00</p></div>
+        <div class="colors YELLOW_B"><p class="color-text">YELLOW_B</p><p class="color-hex">#FFEA94</p></div>
+        <div class="colors YELLOW_A"><p class="color-text">YELLOW_A</p><p class="color-hex">#FFF1B6</p></div>
     </div>
     <div style="float: left;">
         <h3>GOLD</h3>
-        <div class="colors GOLD_E"><p class="color-text">GOLD_E</p></div>
-        <div class="colors GOLD_D"><p class="color-text">GOLD_D</p></div>
-        <div class="colors GOLD_C"><p class="color-text">GOLD_C</p></div>
-        <div class="colors GOLD_B"><p class="color-text">GOLD_B</p></div>
-        <div class="colors GOLD_A"><p class="color-text">GOLD_A</p></div>
+        <div class="colors GOLD_E"><p class="color-text">GOLD_E</p><p class="color-hex">#C78D46</p></div>
+        <div class="colors GOLD_D"><p class="color-text">GOLD_D</p><p class="color-hex">#E1A158</p></div>
+        <div class="colors GOLD_C"><p class="color-text">GOLD_C</p><p class="color-hex">#F0AC5F</p></div>
+        <div class="colors GOLD_B"><p class="color-text">GOLD_B</p><p class="color-hex">#F9B775</p></div>
+        <div class="colors GOLD_A"><p class="color-text">GOLD_A</p><p class="color-hex">#F7C797</p></div>
     </div>
     <div style="float: left;">
         <h3>RED</h3>
-        <div class="colors RED_E"><p class="color-text">RED_E</p></div>
-        <div class="colors RED_D"><p class="color-text">RED_D</p></div>
-        <div class="colors RED_C"><p class="color-text">RED_C</p></div>
-        <div class="colors RED_B"><p class="color-text">RED_B</p></div>
-        <div class="colors RED_A"><p class="color-text">RED_A</p></div>
+        <div class="colors RED_E"><p class="color-text">RED_E</p><p class="color-hex">#CF5044</p></div>
+        <div class="colors RED_D"><p class="color-text">RED_D</p><p class="color-hex">#E65A4C</p></div>
+        <div class="colors RED_C"><p class="color-text">RED_C</p><p class="color-hex">#FC6255</p></div>
+        <div class="colors RED_B"><p class="color-text">RED_B</p><p class="color-hex">#FF8080</p></div>
+        <div class="colors RED_A"><p class="color-text">RED_A</p><p class="color-hex">#F7A1A3</p></div>
     </div>
     <div style="float: left;">
         <h3>MAROON</h3>
-        <div class="colors MAROON_E"><p class="color-text">MAROON_E</p></div>
-        <div class="colors MAROON_D"><p class="color-text">MAROON_D</p></div>
-        <div class="colors MAROON_C"><p class="color-text">MAROON_C</p></div>
-        <div class="colors MAROON_B"><p class="color-text">MAROON_B</p></div>
-        <div class="colors MAROON_A"><p class="color-text">MAROON_A</p></div>
+        <div class="colors MAROON_E"><p class="color-text">MAROON_E</p><p class="color-hex">#94424F</p></div>
+        <div class="colors MAROON_D"><p class="color-text">MAROON_D</p><p class="color-hex">#A24D61</p></div>
+        <div class="colors MAROON_C"><p class="color-text">MAROON_C</p><p class="color-hex">#C55F73</p></div>
+        <div class="colors MAROON_B"><p class="color-text">MAROON_B</p><p class="color-hex">#EC92AB</p></div>
+        <div class="colors MAROON_A"><p class="color-text">MAROON_A</p><p class="color-hex">#ECABC1</p></div>
     </div>
     <div style="float: left;">
         <h3>PURPLE</h3>
-        <div class="colors PURPLE_E"><p class="color-text">PURPLE_E</p></div>
-        <div class="colors PURPLE_D"><p class="color-text">PURPLE_D</p></div>
-        <div class="colors PURPLE_C"><p class="color-text">PURPLE_C</p></div>
-        <div class="colors PURPLE_B"><p class="color-text">PURPLE_B</p></div>
-        <div class="colors PURPLE_A"><p class="color-text">PURPLE_A</p></div>
+        <div class="colors PURPLE_E"><p class="color-text">PURPLE_E</p><p class="color-hex">#644172</p></div>
+        <div class="colors PURPLE_D"><p class="color-text">PURPLE_D</p><p class="color-hex">#715582</p></div>
+        <div class="colors PURPLE_C"><p class="color-text">PURPLE_C</p><p class="color-hex">#9A72AC</p></div>
+        <div class="colors PURPLE_B"><p class="color-text">PURPLE_B</p><p class="color-hex">#B189C6</p></div>
+        <div class="colors PURPLE_A"><p class="color-text">PURPLE_A</p><p class="color-hex">#CAA3E8</p></div>
     </div>
     <div style="float: left;">
         <h3>GREY</h3>
-        <div class="colors GREY_E"><p class="color-text">GREY_E</p></div>
-        <div class="colors GREY_D"><p class="color-text">GREY_D</p></div>
-        <div class="colors GREY_C"><p class="color-text">GREY_C</p></div>
-        <div class="colors GREY_B"><p class="color-text">GREY_B</p></div>
-        <div class="colors GREY_A"><p class="color-text">GREY_A</p></div>
+        <div class="colors GREY_E"><p class="color-text">GREY_E</p><p class="color-hex">#222222</p></div>
+        <div class="colors GREY_D"><p class="color-text">GREY_D</p><p class="color-hex">#444444</p></div>
+        <div class="colors GREY_C"><p class="color-text">GREY_C</p><p class="color-hex">#888888</p></div>
+        <div class="colors GREY_B"><p class="color-text">GREY_B</p><p class="color-hex">#BBBBBB</p></div>
+        <div class="colors GREY_A"><p class="color-text">GREY_A</p><p class="color-hex">#DDDDDD</p></div>
     </div>
     <div style="float: left;">
         <h3>Others</h3>
-        <div class="colors WHITE"><p class="color-text" style="color: BLACK">WHITE</p></div>
-        <div class="colors BLACK"><p class="color-text">BLACK</p></div>
-        <div class="colors GREY_BROWN"><p class="color-text-small">GREY_BROWN</p></div>
-        <div class="colors DARK_BROWN"><p class="color-text-small">DARK_BROWN</p></div>
-        <div class="colors LIGHT_BROWN"><p class="color-text-small">LIGHT_BROWN</p></div>
-        <div class="colors PINK"><p class="color-text">PINK</p></div>
-        <div class="colors LIGHT_PINK"><p class="color-text-small">LIGHT_PINK</p></div>
-        <div class="colors GREEN_SCREEN"><p class="color-text-small">GREEN_SCREEN</p></div>
-        <div class="colors ORANGE"><p class="color-text">ORANGE</p></div>
+        <div class="colors WHITE"><p class="color-text" style="color: BLACK">WHITE</p><p class="color-hex" style="color: BLACK">#FFFFFF</p></div>
+        <div class="colors BLACK"><p class="color-text">BLACK</p><p class="color-hex">#000000</p></div>
+        <div class="colors GREY_BROWN"><p class="color-text-s">GREY_BROWN</p><p class="color-hex-s">#736357</p></div>
+        <div class="colors DARK_BROWN"><p class="color-text-s">DARK_BROWN</p><p class="color-hex-s">#8B4513</p></div>
+        <div class="colors LIGHT_BROWN"><p class="color-text-s">LIGHT_BROWN</p><p class="color-hex-s">#CD853F</p></div>
+        <div class="colors PINK"><p class="color-text">PINK</p><p class="color-hex">#D147BD</p></div>
+        <div class="colors LIGHT_PINK"><p class="color-text-s">LIGHT_PINK</p><p class="color-hex-s">#DC75CD</p></div>
+        <div class="colors GREEN_SCREEN"><p class="color-text-s">GREEN_SCREEN</p><p class="color-hex-s">#00FF00</p></div>
+        <div class="colors ORANGE"><p class="color-text">ORANGE</p><p class="color-hex">#FF862F</p></div>
     </div>
