@@ -173,6 +173,12 @@ JAnim 提供了内置包可以在 Typst 中使用 ``#import`` 进行引入
       #let PURPLE = PURPLE_C
       #let GREY = GREY_C
 
+.. note::
+
+    如果你需要在外部 ``.typ`` 文件中也能引入 JAnim 的内置包
+
+    你需要将 ``<site-packages>/janim/items/svg`` 完整路径通过 ``--package-path`` 选项传递给 Typst 编译器或 Tinymist 插件的 ``"tinymist.typstExtraArgs"`` 选项
+
 参考文档
 ------------
 
