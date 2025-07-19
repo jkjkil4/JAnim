@@ -1,0 +1,6 @@
+[package]
+name = "colors"
+version = "0.0.0"
+entrypoint = "lib.typ"
+license = "MIT"
+description = "JAnim pre-defined colors."

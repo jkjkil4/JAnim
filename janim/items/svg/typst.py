@@ -21,7 +21,8 @@ from janim.items.vitem import VItem
 from janim.locale.i18n import get_local_strings
 from janim.logger import log
 from janim.utils.config import Config
-from janim.utils.file_ops import get_janim_dir, get_typst_temp_dir
+from janim.utils.file_ops import (get_janim_dir, get_typst_packages_dir,
+                                  get_typst_temp_dir)
 from janim.utils.iterables import flatten
 from janim.utils.space_ops import rotation_between_vectors
 
@@ -131,7 +132,8 @@ class TypstDoc(SVGItem):
             'compile',
             '-',
             svg_file_path,
-            '-f', 'svg'
+            '-f', 'svg',
+            '--package-path', get_typst_packages_dir()
         ]
 
         for pair in sys_inputs_pairs:
