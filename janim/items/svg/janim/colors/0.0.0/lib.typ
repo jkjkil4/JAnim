@@ -44,6 +44,11 @@
 #let GREY_C = rgb("#888888")
 #let GREY_B = rgb("#BBBBBB")
 #let GREY_A = rgb("#DDDDDD")
+
+#let PURE_RED = rgb("#FF0000")
+#let PURE_GREEN = rgb("#00FF00")
+#let PURE_BLUE = rgb("#0000FF")
+
 #let WHITE = rgb("#FFFFFF")
 #let BLACK = rgb("#000000")
 #let GREY_BROWN = rgb("#736357")
@@ -53,6 +58,9 @@
 #let LIGHT_PINK = rgb("#DC75CD")
 #let GREEN_SCREEN = rgb("#00FF00")
 #let ORANGE = rgb("#FF862F")
+
+// Be compatible with the old names
+#let GREEN_SCREEN = rgb("#00FF00")
 
 // Abbreviated names for the "median" colors
 #let BLUE = BLUE_C
