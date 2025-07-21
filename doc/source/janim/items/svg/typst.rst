@@ -152,6 +152,11 @@ JAnim 提供了内置包可以在 Typst 中使用 ``#import`` 进行引入
       #let GREY_C = rgb("#888888")
       #let GREY_B = rgb("#BBBBBB")
       #let GREY_A = rgb("#DDDDDD")
+
+      #let PURE_RED = rgb("#FF0000")
+      #let PURE_GREEN = rgb("#00FF00")
+      #let PURE_BLUE = rgb("#0000FF")
+
       #let WHITE = rgb("#FFFFFF")
       #let BLACK = rgb("#000000")
       #let GREY_BROWN = rgb("#736357")
@@ -161,6 +166,9 @@ JAnim 提供了内置包可以在 Typst 中使用 ``#import`` 进行引入
       #let LIGHT_PINK = rgb("#DC75CD")
       #let GREEN_SCREEN = rgb("#00FF00")
       #let ORANGE = rgb("#FF862F")
+
+      // Be compatible with the old names
+      #let GREEN_SCREEN = rgb("#00FF00")
 
       // Abbreviated names for the "median" colors
       #let BLUE = BLUE_C
@@ -178,6 +186,43 @@ JAnim 提供了内置包可以在 Typst 中使用 ``#import`` 进行引入
     如果你需要在外部 ``.typ`` 文件中也能引入 JAnim 的内置包
 
     你需要将 ``<site-packages>/janim/items/svg`` 完整路径通过 ``--package-path`` 选项传递给 Typst 编译器或 Tinymist 插件的 ``"tinymist.typstExtraArgs"`` 选项
+
+其它
+------------
+
+如果你使用了 VSCode 插件 ``janim-toolbox``，
+会自动给 :class:`TypstDoc` 和 :class:`TypstText` 中出现的 raw 字符串（形如 ``R'...'``） 进行 Typst 语法高亮，例如
+
+.. code-block:: python
+
+    typ = TypstText(R'#box(width: 10em)[#lorem(20)]').show()
+
+.. note::
+
+  该页面中没有效果，你可以将代码复制到编辑器中试一试
+
+对于同样需要 Typst 语法高亮的函数，你可以使用 ``t_`` 函数来标注需要 Typst 高亮，例如
+
+.. code-block:: python
+
+    LightTyp = partial(TypstText, color=YELLOW)
+
+    typ = LightTyp(t_(R'#box(width: 10em)[#lorem(20)]')).show()
+
+.. code-block:: python
+
+    with Config(typst_shared_preamble='#set box(width: 3em, height: 3em)'):
+        group = Group.from_iterable(
+            TypstText(content) for content in t_(
+                R'#box(stroke: red)',
+                R'#box(fill: red)',
+                R'#box(stroke: red, outset: 2pt)[ab]',
+                R'#box(fill: aqua)[A]',
+            )
+        )
+
+    group.points.arrange()
+    group.show()
 
 参考文档
 ------------

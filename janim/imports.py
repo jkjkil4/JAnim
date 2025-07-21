@@ -42,6 +42,7 @@ from janim.items.svg.typst_types import *
 from janim.items.text import *
 from janim.items.value_tracker import *
 from janim.items.vitem import *
+from janim.typing import *
 from janim.utils.bezier import *
 from janim.utils.config import Config
 from janim.utils.file_ops import *
