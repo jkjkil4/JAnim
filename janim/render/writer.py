@@ -382,7 +382,7 @@ def merge_video_and_audio(
 class SRTWriter:
     @staticmethod
     def writes(built: BuiltTimeline, file_path: str) -> None:
-        with open(file_path, 'wt') as file:
+        with open(file_path, 'wt', encoding='utf-8') as file:
             chunks: list[tuple[TimeRange, list[Timeline.SubtitleInfo]]] = []
 
             for info in built.timeline.subtitle_infos:
