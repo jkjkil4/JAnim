@@ -667,11 +667,11 @@ class Cmpt_Points[ItemT](Component[ItemT]):
         depth: float | None = None,
         **kwargs
     ) -> Self:
-        if width:
+        if width is not None:
             self.set_width(width, stretch=True, **kwargs)
-        if height:
+        if height is not None:
             self.set_height(height, stretch=True, **kwargs)
-        if depth:
+        if depth is not None:
             self.set_depth(depth, stretch=True, **kwargs)
         return self
 
