@@ -203,6 +203,7 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         设置物件以及子物件的样式，与 :meth:`apply_styles` 只影响自身不同的是，该方法也会影响所有子物件
         '''
         flags = dict.fromkeys(styles.keys(), False)
+        renderable_count = 0
         for item in self.walk_self_and_descendants():
             available_styles = item.get_available_styles()
             apply_styles = {
@@ -210,16 +211,23 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
                 for key, style in styles.items()
                 if key in available_styles
             }
-            for key in apply_styles:
-                flags[key] = True
             item.apply_style(**apply_styles)
 
-        for key, flag in flags.items():
-            if not flag:
-                log.warning(
-                    _('The passed parameter "{key}" did not match any style settings and was not used anywhere.')
-                    .format(key=key)
-                )
+            # 记录哪些样式被应用了，以便在遍历所有后代物件后，警告未标记到的样式
+            for key in apply_styles:
+                flags[key] = True
+            # 由于空 Group 本身就没有可应用的样式，所以对于空 Group 我们应当忽略对未使用样式的警告
+            # 这里的处理方法是，如果自己以及所有后代物件都不是可渲染的，即 count==0，那么就忽略样式警告
+            if item.renderer_cls is not Renderer:
+                renderable_count += 1
+
+        if renderable_count != 0:
+            for key, flag in flags.items():
+                if not flag:
+                    log.warning(
+                        _('The passed parameter "{key}" did not match any style settings and was not used anywhere.')
+                        .format(key=key)
+                    )
 
         return self
 
