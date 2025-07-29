@@ -48,7 +48,7 @@ class SimpleCurveExample(Timeline):
 
 class TextExample(Timeline):
     def construct(self) -> None:
-        txt = Text('Here is a text', font_size=64)
+        txt = Text('Here is some text', font_size=64)
         desc = Group(
             Text('You can also apply <c BLUE>styles</c> to the text.', format=Text.Format.RichText),
             Text('You can also apply <c GREEN><fs 1.4>styles</fs></c> to the text.', format=Text.Format.RichText),
