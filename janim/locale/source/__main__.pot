@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-06 16:48+0800\n"
+"POT-Creation-Date: 2025-08-02 07:30+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,128 +17,132 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: janim/__main__.py:21
+#: janim\__main__.py:21
 msgid "A library for creating smooth animations"
 msgstr ""
 
-#: janim/__main__.py:26
+#: janim\__main__.py:26
 msgid "Language code, e.g., en, zh_CN"
 msgstr ""
 
-#: janim/__main__.py:34
+#: janim\__main__.py:35
+msgid "Set the logging level (default: INFO)"
+msgstr ""
+
+#: janim\__main__.py:39
 msgid "Run timeline(s) from specific file"
 msgstr ""
 
-#: janim/__main__.py:35
+#: janim\__main__.py:40
 msgid "Generate media file(s) of timeline(s) from specific file"
 msgstr ""
 
-#: janim/__main__.py:36
+#: janim\__main__.py:41
 msgid "Show examples of JAnim"
 msgstr ""
 
-#: janim/__main__.py:37
+#: janim\__main__.py:42
 msgid "Run useful tools"
 msgstr ""
 
-#: janim/__main__.py:60
+#: janim\__main__.py:68
 msgid "Path to file holding the Python code"
 msgstr ""
 
-#: janim/__main__.py:77
+#: janim\__main__.py:85
 msgid "Override config"
 msgstr ""
 
-#: janim/__main__.py:82
+#: janim\__main__.py:90
 msgid "Hide subtitles"
 msgstr ""
 
-#: janim/__main__.py:89
+#: janim\__main__.py:97
 msgid "Name of the Timeline class you want to preview"
 msgstr ""
 
-#: janim/__main__.py:90
+#: janim\__main__.py:98
 msgid "Preview all timelines from a file"
 msgstr ""
 
-#: janim/__main__.py:95
+#: janim\__main__.py:103
 msgid "Enable the network socket for interacting with vscode"
 msgstr ""
 
-#: janim/__main__.py:103
+#: janim\__main__.py:111
 msgid "Name of the Timeline class you want to write"
 msgstr ""
 
-#: janim/__main__.py:104
+#: janim\__main__.py:112
 msgid "Write all timelines from a file"
 msgstr ""
 
-#: janim/__main__.py:109
+#: janim\__main__.py:117
 msgid "Open the video after writing"
 msgstr ""
 
-#: janim/__main__.py:112
+#: janim\__main__.py:120
 msgid "Format Options"
 msgstr ""
 
-#: janim/__main__.py:113
+#: janim\__main__.py:121
 msgid "Options for specifying the format of the output files"
 msgstr ""
 
-#: janim/__main__.py:118
+#: janim\__main__.py:126
 msgid "Output video format (mp4 by default, mov for transparent background)"
 msgstr ""
 
-#: janim/__main__.py:123
+#: janim\__main__.py:131
 msgid "Output audio format (valid only when outputting audio separately)"
 msgstr ""
 
-#: janim/__main__.py:126
+#: janim\__main__.py:134
 msgid "Output Options"
 msgstr ""
 
-#: janim/__main__.py:127
+#: janim\__main__.py:135
 msgid "Options for specifying the parts to be written"
 msgstr ""
 
-#: janim/__main__.py:131
+#: janim\__main__.py:139
 msgid ""
 "Video with audio (default; will be replaced by --video if there is no audio, "
 "and by both --video and --audio if the format is GIF)"
 msgstr ""
 
-#: janim/__main__.py:137
+#: janim\__main__.py:145
 msgid "Video only"
 msgstr ""
 
-#: janim/__main__.py:142
+#: janim\__main__.py:150
 msgid "Audio only"
 msgstr ""
 
-#: janim/__main__.py:147
+#: janim\__main__.py:155
 msgid "Generate SRT file"
 msgstr ""
 
-#: janim/__main__.py:150
+#: janim\__main__.py:158
 msgid "Other Options"
 msgstr ""
 
-#: janim/__main__.py:151
+#: janim\__main__.py:159
 msgid "Other options for writing the output files"
 msgstr ""
 
-#: janim/__main__.py:155
+#: janim\__main__.py:163
 msgid "Disable PBO (Pixel Buffer Object) for writing video"
 msgstr ""
 
-#: janim/__main__.py:160
+#: janim\__main__.py:168
 msgid "Use hardware acceleration for writing video"
 msgstr ""
 
-#: janim/__main__.py:171
+#: janim\__main__.py:179
 msgid "Name of the example you want to see"
 msgstr ""
 
-#: janim/__main__.py:185
+#: janim\__main__.py:193
 msgid "Tool(s) that you want to use"
 msgstr ""

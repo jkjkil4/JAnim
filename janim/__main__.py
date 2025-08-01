@@ -29,6 +29,11 @@ def main() -> None:
         '-v', '--version',
         action='store_true'
     )
+    parser.add_argument(
+        '--loglevel', default='INFO', choices=['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'],
+        type=str.upper,
+        help=_('Set the logging level (default: INFO)')
+    )
 
     sp = parser.add_subparsers()
     run_parser(sp.add_parser('run', help=_('Run timeline(s) from specific file')))
@@ -46,6 +51,9 @@ def main() -> None:
         if not args.version:
             parser.print_help()
         return
+
+    from janim.logger import log
+    log.setLevel(args.loglevel)
 
     args.func(args)
 

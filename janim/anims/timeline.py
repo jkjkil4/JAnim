@@ -855,7 +855,7 @@ class Timeline(metaclass=ABCMeta):
 
         time = self.fmt_time(self.current_time)
 
-        log.debug(f't={time}  {ext_msg}at construct.{self.get_construct_lineno()}')
+        log.info(f't={time}  {ext_msg}at construct.{self.get_construct_lineno()}')
 
     # endregion
 

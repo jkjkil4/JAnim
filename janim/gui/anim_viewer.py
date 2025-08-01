@@ -680,7 +680,7 @@ class AnimViewer(QMainWindow):
                                           QUdpSocket.BindFlag.ShareAddress | QUdpSocket.BindFlag.ReuseAddressHint)
             if ret:
                 self.shared_socket.readyRead.connect(self.on_shared_ready_read)
-                log.debug(
+                log.info(
                     _('Searching port has been opened at {port}')
                     .format(port=client_search_port)
                 )

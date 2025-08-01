@@ -10,4 +10,4 @@ logging.basicConfig(
 )
 
 log = logging.getLogger("janim")
-log.setLevel("DEBUG")
+log.setLevel("INFO")
