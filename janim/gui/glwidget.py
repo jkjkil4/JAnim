@@ -4,6 +4,7 @@ from PySide6.QtOpenGLWidgets import QOpenGLWidget
 from PySide6.QtWidgets import QWidget
 
 from janim.anims.timeline import BuiltTimeline
+from janim.logger import log
 from janim.render.base import create_context
 from janim.render.framebuffer import FRAME_BUFFER_BINDING, register_qt_glwidget
 
@@ -42,7 +43,10 @@ class GLWidget(QOpenGLWidget):
         return QPointF(xx, yy)
 
     def initializeGL(self) -> None:
+        log.debug('Initializing OpenGL context for GLWidget ..')
+
         self.ctx = create_context()
+        log.debug('Obtained OpenGL context of GLWidget')
 
         self.qfuncs = self.context().functions()
         self.update_clear_color()

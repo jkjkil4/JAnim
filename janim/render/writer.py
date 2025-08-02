@@ -36,10 +36,13 @@ class VideoWriter:
     '''
     def __init__(self, built: BuiltTimeline):
         self.built = built
+
+        log.debug('Initializing OpenGL context for VideoWriter ..')
         try:
             self.ctx = create_context(standalone=True, require=430)
         except ValueError:
             self.ctx = create_context(standalone=True, require=330)
+        log.debug('Created OpenGL context for VideoWriter')
 
         pw, ph = built.cfg.pixel_width, built.cfg.pixel_height
         self.frame_count = round(built.duration * built.cfg.fps) + 1
@@ -87,6 +90,11 @@ class VideoWriter:
         fps = self.built.cfg.fps
 
         self.open_video_pipe(file_path, hwaccel)
+        log.debug('Opened video pipe')
+
+        if use_pbo:
+            self._init_pbos()
+            log.debug('Created PBOs')
 
         progress_display = ProgressDisplay(
             range(self.frame_count),
@@ -99,8 +107,6 @@ class VideoWriter:
         transparent = self.ext == '.mov'
 
         if use_pbo:
-            self._init_pbos()
-
             # 使用PBO优化的渲染循环
             with framebuffer_context(self.fbo):
                 read_idx_iter = self._read_idx_iter()
@@ -157,7 +163,10 @@ class VideoWriter:
                     bytes = self.fbo.read(components=4)
                     self.writing_process.stdin.write(bytes)
 
+        log.debug('Finished writing frames to video pipe')
+
         self.close_video_pipe(_keep_temp)
+        log.debug('Closed video pipe')
 
         if not quiet:
             log.info(
@@ -277,6 +286,7 @@ class AudioWriter:
         framerate = self.built.cfg.audio_framerate
 
         self.open_audio_pipe(file_path)
+        log.debug('Opened audio pipe')
 
         progress_display = ProgressDisplay(
             range(round(self.built.duration * fps) + 1),
@@ -292,7 +302,10 @@ class AudioWriter:
             samples = get_audio_samples(frame)
             self.writing_process.stdin.write(samples.tobytes())
 
+        log.debug('Finished writing audio samples to pipe')
+
         self.close_audio_pipe(_keep_temp)
+        log.debug('Closed audio pipe')
 
         if not quiet:
             log.info(
