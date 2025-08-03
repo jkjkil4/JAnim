@@ -1178,8 +1178,9 @@ class TimelineItem(Item):
 
 
 class PlaybackControl:
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, loop: bool = False, **kwargs):
         super().__init__(*args, **kwargs)
+        self.loop = loop
 
         self.timeline = Timeline.get_context()
 
@@ -1211,14 +1212,18 @@ class PlaybackControl:
                              speed))
         return self
 
-    def compute_time(self, t: float) -> float:
+    def compute_time(self, t: float, total: float | None = None) -> float:
         if not self.actions:
             return 0
         idx = bisect(self.actions, t, key=lambda v: v[0]) - 1
         if idx < 0:
             return 0
         x, y, speed = self.actions[idx]
-        return y + (t - x) * speed
+        result = y + (t - x) * speed
+
+        if total is not None and self.loop:
+            return result % total
+        return result
 
 
 class TimelinePlaybackControlItem(PlaybackControl, Item):
@@ -1229,7 +1234,7 @@ class TimelinePlaybackControlItem(PlaybackControl, Item):
     class TPCIRenderer(Renderer):
         def render(self, item: TimelinePlaybackControlItem):
             t = Animation.global_t_ctx.get()
-            t = item.compute_time(t)
+            t = item.compute_time(t, item.duration)
             t = max(0, t)
             if 0 <= t <= item.duration:
                 item._built.render_all(self.data_ctx.get().ctx, t, blend_on=False)

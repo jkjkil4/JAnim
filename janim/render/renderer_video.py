@@ -104,7 +104,7 @@ class VideoRenderer(Renderer):
             self.prev_frame: bytes | None = None
 
         global_t = Animation.global_t_ctx.get()
-        raw_frame = self.reader.get(item.compute_time(global_t))
+        raw_frame = self.reader.get(item.compute_time(global_t, item.info.duration))
         if raw_frame is not self.prev_frame:
             self.texture.write(raw_frame)
             self.texture.build_mipmaps()
