@@ -258,7 +258,8 @@ class Aligned(AnimGroup):
     def _adjust_t_range(self, lag_ratio, offset):
         end = max(anim.t_range.num_end for anim in self.anims)
         for anim in self.anims:
-            anim.t_range.set(0, end)
+            anim.shift_range(-anim.t_range.at)
+            anim.scale_range(end / anim.t_range.num_end)
 
 
 class Wait(Animation):
