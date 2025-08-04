@@ -1,3 +1,5 @@
+.. _janim_anims_rotation:
+
 rotation
 ========
 

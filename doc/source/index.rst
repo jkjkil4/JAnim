@@ -10,14 +10,38 @@ JAnim 是一个用于创建流畅动画的库
 
 .. toctree::
    :maxdepth: 1
-   :caption: 教程
+   :caption: 安装并快速上手
 
-   tutorial/installation
-   tutorial/get_started
-   tutorial/use_gui
-   tutorial/examples
-   tutorial/guide_for_manim_users
-   tutorial/faq
+   installation
+   get_started
+
+如果你在安装时遇到困难，或是在使用时有任何问题，可以在 Github 的 `Discussions 页面 <https://github.com/jkjkil4/JAnim/discussions>`_ 提问，或加入 QQ 群 970174336
+
+.. toctree::
+   :maxdepth: 1
+   :caption: 基础教程 - 了解基本概念
+
+   tutorials/coordinates
+   tutorials/bounding_box
+   tutorials/anim_group
+   tutorials/config_system
+   tutorials/updaters
+
+.. toctree::
+   :maxdepth: 1
+   :caption: 其它教程
+
+   tutorials/3d_coordinates
+   tutorials/essence_of_points
+
+.. toctree::
+   :maxdepth: 1
+   :caption: 其它
+
+   other/use_gui
+   other/examples
+   other/guide_for_manim_users
+   other/faq
 
 .. toctree::
    :maxdepth: 2

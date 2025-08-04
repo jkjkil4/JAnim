@@ -12,7 +12,7 @@
 然后将以下代码复制到文件内：
 
 .. janim-example:: HelloJAnimExample
-    :media: ../_static/videos/HelloJAnimExample.mp4
+    :media: _static/videos/HelloJAnimExample.mp4
 
     from janim.imports import *
 
@@ -214,7 +214,7 @@
 比如下面这个例子：
 
 .. janim-example:: CmptAnimExample
-    :media: ../_static/videos/CmptAnimExample.mp4
+    :media: _static/videos/CmptAnimExample.mp4
 
     from janim.imports import *
 
