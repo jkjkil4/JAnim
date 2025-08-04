@@ -6,7 +6,7 @@ JAnim 的坐标系统不以像素为单位，而是采用水平方向约 ``-7.11
 原点位于画面中心，向右向上为正方向，下图展现了创建在 JAnim 画面上的坐标系网格以及放置于原点处的单位圆：
 
 .. janim-example:: CoordinatesGrid
-    :media: ../_static/tutorial/coordinates_grid.png
+    :media: ../_static/tutorial/CoordinatesGrid.png
     :hide_name:
 
     NumberPlane(faded_line_ratio=0).show()
@@ -50,7 +50,7 @@ JAnim 的坐标系统不以像素为单位，而是采用水平方向约 ``-7.11
 例如，使用 ``.move_to(RIGHT * 3 + UP * 2)`` 可以将物件移动到坐标系中 ``(3,2)`` 的位置：
 
 .. janim-example:: MoveTo
-    :media: ../_static/tutorial/move_to.png
+    :media: ../_static/tutorial/MoveTo.png
     :hide_name:
 
     circle = Circle(color=YELLOW).show()
@@ -64,7 +64,7 @@ JAnim 的坐标系统不以像素为单位，而是采用水平方向约 ``-7.11
 JAnim 还内置了更多额外方向，如图所示：
 
 .. janim-example:: BuiltinDirections
-    :media: ../_static/tutorial/builtin_directions.png
+    :media: ../_static/tutorial/BuiltinDirections.png
     :hide_name:
     :hide_code:
 
@@ -86,6 +86,8 @@ JAnim 还内置了更多额外方向，如图所示：
     但在大多数情况下，我们只需要关注前两个坐标轴（x 和 y）就够用了，将 z 轴取为 0 即可。
 
     关于三维坐标的更多内容，可以参考 :ref:`3d_coordinates`。
+
+.. _relative_placement:
 
 相对放置
 ----------------
