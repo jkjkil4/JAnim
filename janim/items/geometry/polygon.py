@@ -172,7 +172,7 @@ class RoundedRect(Rect):
         self.round_corners(corner_radius)
 
 
-class Star(Polygon):
+class Star(MarkedItem, Polygon):
     '''
     星形
 
@@ -220,3 +220,5 @@ class Star(Polygon):
 
         super().__init__(*it.chain.from_iterable(zip(outer_vertices, inner_vertices)), **kwargs)
         self.start_angle = start_angle
+
+        self.mark.set_points([ORIGIN])
