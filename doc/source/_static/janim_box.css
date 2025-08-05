@@ -74,3 +74,11 @@ div.example-ref p {
 p.example-ref-prefix {
     white-space: nowrap;
 }
+
+.janim-content {
+    background-color: var(--color-background-primary);
+    padding: 0px 8px 0px 10px;
+    margin: 0px;
+    border: 2px solid #333333;
+    border-top-width: 0px;
+}

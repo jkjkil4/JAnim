@@ -34,13 +34,6 @@ div.toctree-wrapper.compound span.caption-text {
     font-size: large;
 }
 
-.janim-content {
-    background-color: var(--color-background-primary);
-    padding: 0px 8px 0px 10px;
-    margin: 0px;
-    border: 2px solid #333333;
-}
-
 .page-faq h2 {
     font-size: 1.5em;
 }
