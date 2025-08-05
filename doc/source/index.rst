@@ -23,8 +23,8 @@ JAnim 是一个用于创建流畅动画的库
 
    tutorials/coordinates
    tutorials/bounding_box
+   tutorials/basic_animations
    tutorials/item_group
-   tutorials/anim_group
    tutorials/config_system
    tutorials/updaters
 

@@ -25,6 +25,30 @@
             self.forward()
 
 
+.. janim-example:: BasicAnimationExample
+    :media: ../_static/videos/BasicAnimationExample.mp4
+    :ref: :class:`~.Create` :class:`~.SpinInFromNothing` :meth:`~.Item.anim`
+
+    from janim.imports import *
+
+    class BasicAnimationExample(Timeline):
+        def construct(self):
+            circle = Circle()
+            tri = Triangle()
+
+            self.forward()
+
+            self.play(Create(circle))
+            self.play(circle.anim.points.shift(LEFT * 3).scale(1.5))
+            self.play(circle.anim.set(color=RED, fill_alpha=0.5))
+
+            self.play(SpinInFromNothing(tri))
+            self.play(tri.anim.points.shift(RIGHT * 3).scale(1.5))
+            self.play(tri.anim.set(color=BLUE, fill_alpha=0.5))
+
+            self.forward()
+
+
 .. janim-example:: TextExample
     :media: ../_static/videos/TextExample.mp4
     :ref: :class:`~.Text` :class:`~.Write` :class:`~.FadeIn` :class:`~.Transform`
