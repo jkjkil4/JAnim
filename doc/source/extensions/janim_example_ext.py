@@ -8,6 +8,7 @@ class JAnimExampleDirective(Directive):
     optional_arguments = 0
     option_spec = {
         'media': str,
+        'ref': str,
         'hide_name': bool,
         'hide_code': bool
     }
@@ -39,10 +40,11 @@ class JAnimExampleDirective(Directive):
             scene_name_lowercase=scene_name.lower(),
             media_url=media_url,
             source_block=source_block,
+            ref=self.options.get('ref', ''),
 
             is_video=is_video,
             hide_name=hide_name,
-            hide_code=hide_code,
+            hide_code=hide_code
         )
 
         state_machine.insert_input(
@@ -84,6 +86,19 @@ TEMPLATE = R'''
 
 {% if not hide_code %}
 {{ source_block }}
+{% endif %}
+
+{% if ref %}
+.. raw:: html
+
+    <div class="example-ref">
+        <p class="example-ref-prefix">参考：</p>
+
+{{ ref }}
+
+.. raw:: html
+
+    </div>
 {% endif %}
 
 .. raw:: html

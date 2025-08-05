@@ -7,6 +7,7 @@
 
 .. janim-example:: HelloJAnimExample
     :media: ../_static/videos/HelloJAnimExample.mp4
+    :ref: :class:`~.Circle` :class:`~.Square` :class:`~.Create` :class:`~.Transform` :class:`~.Uncreate`
 
     from janim.imports import *
 
@@ -26,6 +27,7 @@
 
 .. janim-example:: TextExample
     :media: ../_static/videos/TextExample.mp4
+    :ref: :class:`~.Text` :class:`~.Write` :class:`~.FadeIn` :class:`~.Transform`
 
     from janim.imports import *
 
@@ -48,6 +50,7 @@
 
 .. janim-example:: TypstExample
     :media: ../_static/videos/TypstExample.mp4
+    :ref: :class:`~.TypstDoc` :class:`~.TypstText` :class:`~.TypstMath`
 
     from janim.imports import *
 
@@ -88,6 +91,7 @@
 
 .. janim-example:: AnimatingPiExample
     :media: ../_static/videos/AnimatingPiExample.mp4
+    :ref: :meth:`~.Cmpt_Points.arrange_in_grid` :meth:`~.Cmpt_Points.apply_complex_fn` :meth:`~.Cmpt_Points.apply_point_fn`
 
     from janim.imports import *
 
@@ -123,6 +127,7 @@
 
 .. janim-example:: NumberPlaneExample
     :media: ../_static/videos/NumberPlaneExample.mp4
+    :ref: :class:`~.NumberPlane` :meth:`~.Axes.get_graph` :meth:`~.Cmpt_Points.apply_matrix`
 
     from janim.imports import *
 
@@ -149,6 +154,7 @@
 
 .. janim-example:: UpdaterExample
     :media: ../_static/videos/UpdaterExample.mp4
+    :ref: :class:`~.DataUpdater` :class:`~.ItemUpdater`
 
     from janim.imports import *
 
@@ -190,6 +196,7 @@
 
 .. janim-example:: MarkedItemExample
     :media: ../_static/videos/MarkedItemExample.mp4
+    :ref: :class:`~.MarkedItem` :class:`~.DataUpdater`
 
     from janim.imports import *
 
@@ -232,6 +239,7 @@
 
 .. janim-example:: FrameEffectExample
     :media: ../_static/videos/FrameEffectExample.mp4
+    :ref: :class:`~.SimpleFrameEffect` :class:`~.Rotate` :class:`~.DataUpdater`
 
     from janim.imports import *
 

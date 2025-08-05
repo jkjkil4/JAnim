@@ -46,7 +46,8 @@ html_css_files = [
     'layout.css',
     'colors.css',
     'custom.css',
-    'animation_timing_example.css'
+    'animation_timing_example.css',
+    'janim_box.css'
 ]
 html_favicon = '_static/favicon.ico'
 
