@@ -40,6 +40,18 @@
       <layout class="QHBoxLayout" name="hlayout_fps">
        <item>
         <widget class="QSpinBox" name="spb_fps">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>80</width>
+           <height>0</height>
+          </size>
+         </property>
          <property name="minimum">
           <number>1</number>
          </property>
