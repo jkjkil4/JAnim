@@ -1,3 +1,5 @@
+.. _rate_functions:
+
 rate_functions
 ==============
 
