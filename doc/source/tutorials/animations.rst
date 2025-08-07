@@ -54,7 +54,7 @@
 上面这些参数可以调整动画的表现细节，例如 ``duration`` 可以调整动画快慢，控制节奏， ``at`` 可以控制动画的开始时机；
 当你想要让物体快速进入并逐渐减速时，可以考虑使用 :func:`~.rush_into` 作为缓动函数；总之，可以多多地探索这些参数的使用，获得更好的动画效果。
 
-以下是对上面 ``BasicAnimationExample`` 的动画参数进行一些调整后的示例：
+以下是对上面的动画参数进行一些调整后的示例：
 
 .. janim-example:: BasicAnimationExampleWithParams
     :media: ../_static/tutorial/BasicAnimationExampleWithParams.mp4
