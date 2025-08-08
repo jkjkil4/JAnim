@@ -137,7 +137,7 @@
 .. janim-example:: NestedGroupExample
     :media: ../_static/tutorial/NestedGroupExample.mp4
     :hide_name:
-    :ref: :class:`~.Group` :class:`~.Arrow` :class:`~.Transform`
+    :ref: :class:`~.Text` :class:`~.Group` :class:`~.Arrow` :class:`~.Transform`
 
     txt = Text('self.play(Transform(circle, square))')
 
