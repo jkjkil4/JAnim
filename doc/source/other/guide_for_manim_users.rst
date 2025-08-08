@@ -50,7 +50,7 @@ JAnim 在使用上与 Manim 有很多相似之处，尤其是对于 Manim 的用
         -
     *   -   动画组
         -   ``AnimationGroup``
-        -   ``AnimGroup``
+        -   :class:`~.AnimGroup`
         -   效果上有一些差异
     *   -   Updaters
         -   ``xxx.add_updater``
