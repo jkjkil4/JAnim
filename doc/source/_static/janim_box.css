@@ -36,7 +36,11 @@ h5.example-header {
     margin-bottom: -0.2em;
 }
 
-.janim-box .highlight {
+.janim-box>.highlight-python.notranslate {
+    margin: 0px;
+}
+
+.janim-box>.highlight-python.notranslate>.highlight {
     background-color: #fafafa;
     border: 2px solid #333333;
     padding: 8px 8px 10px 8px;
@@ -44,15 +48,11 @@ h5.example-header {
     overflow: auto;
 }
 
-.janim-box .highlight pre {
+.janim-box>.highlight-python.notranslate>.highlight pre {
     background-color: inherit;
     border-left: none;
     margin: 0;
     padding: 0 6px 0 6px;
-}
-
-.janim-box .highlight-python.notranslate {
-    margin: 0px;
 }
 
 div.example-ref {
