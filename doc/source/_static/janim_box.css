@@ -41,11 +41,14 @@ h5.example-header {
 }
 
 .janim-box>.highlight-python.notranslate>.highlight {
-    background-color: #fafafa;
     border: 2px solid #333333;
     padding: 8px 8px 10px 8px;
     margin: 0;
     overflow: auto;
+}
+
+body:not([data-theme=dark]) .janim-box>.highlight-python.notranslate>.highlight {
+    background-color: #fafafa;
 }
 
 .janim-box>.highlight-python.notranslate>.highlight pre {
