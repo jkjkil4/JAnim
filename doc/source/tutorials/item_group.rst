@@ -54,7 +54,7 @@
 
     将填充颜色整体淡化 70%。
 
-    由于 :class:`~.Group` 没有像几何图形物件 :class:`~.VItem` 一样的复杂属性，因此不能直接使用类似 ``group.fill.fade(0.5)`` 这样的方式来淡化颜色。
+    由于 :class:`~.Group` 没有像几何图形物件 :class:`~.VItem` 一样的复杂属性，因此不能直接使用类似 ``group.fill.fade(0.7)`` 这样的方式来淡化颜色。
 
     但是可以通过 ``group.astype(VItem).fill.fade(0.7)`` 的方式，把 ``group`` “当作”一个 :class:`~.VItem` 来使用原本没有的组件，可以简写为
 
