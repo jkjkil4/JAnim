@@ -11,6 +11,7 @@
 .. janim-example:: GroupExample1
     :media: ../_static/tutorial/GroupExample1.mp4
     :hide_name:
+    :ref: :class:`~.Group` :meth:`~.Cmpt_Points.arrange` :meth:`~.Cmpt_Rgbas.fade`
 
     group = Group(
         Star(), Circle(), RegularPolygon(6),
@@ -77,6 +78,7 @@
 .. janim-example:: GroupExample2
     :media: ../_static/tutorial/GroupExample2.mp4
     :hide_name:
+    :ref: :class:`~.Group` :meth:`~.Cmpt_Points.arrange` :class:`~.Indicate`
 
     group = Group(
         Star(color=GOLD, fill_alpha=0.5),
@@ -135,6 +137,7 @@
 .. janim-example:: NestedGroupExample
     :media: ../_static/tutorial/NestedGroupExample.mp4
     :hide_name:
+    :ref: :class:`~.Group` :class:`~.Arrow` :class:`~.Transform`
 
     txt = Text('self.play(Transform(circle, square))')
 
