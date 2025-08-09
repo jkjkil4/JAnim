@@ -15,16 +15,16 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QFont, QFontDatabase, QGradient, QIcon,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
-from PySide6.QtWidgets import (QAbstractButton, QApplication, QCheckBox, QDialog,
-    QDialogButtonBox, QGridLayout, QHBoxLayout, QLabel,
-    QLineEdit, QPushButton, QSizePolicy, QSpacerItem,
-    QSpinBox, QVBoxLayout, QWidget)
+from PySide6.QtWidgets import (QAbstractButton, QApplication, QCheckBox, QComboBox,
+    QDialog, QDialogButtonBox, QGridLayout, QHBoxLayout,
+    QLabel, QLineEdit, QPushButton, QSizePolicy,
+    QSpacerItem, QSpinBox, QVBoxLayout, QWidget)
 
 class Ui_ExportDialog(object):
     def setupUi(self, ExportDialog):
         if not ExportDialog.objectName():
             ExportDialog.setObjectName(u"ExportDialog")
-        ExportDialog.resize(418, 188)
+        ExportDialog.resize(418, 217)
         self.verticalLayout = QVBoxLayout(ExportDialog)
         self.verticalLayout.setObjectName(u"verticalLayout")
         self.vspacer1 = QSpacerItem(20, 0, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
@@ -33,11 +33,6 @@ class Ui_ExportDialog(object):
 
         self.gridlayout = QGridLayout()
         self.gridlayout.setObjectName(u"gridlayout")
-        self.label_fps = QLabel(ExportDialog)
-        self.label_fps.setObjectName(u"label_fps")
-
-        self.gridlayout.addWidget(self.label_fps, 2, 0, 1, 1)
-
         self.hlayout_fps = QHBoxLayout()
         self.hlayout_fps.setObjectName(u"hlayout_fps")
         self.spb_fps = QSpinBox(ExportDialog)
@@ -84,6 +79,31 @@ class Ui_ExportDialog(object):
         self.hlayout_path.setStretch(0, 1)
 
         self.gridlayout.addLayout(self.hlayout_path, 1, 1, 1, 1)
+
+        self.label_fps = QLabel(ExportDialog)
+        self.label_fps.setObjectName(u"label_fps")
+
+        self.gridlayout.addWidget(self.label_fps, 2, 0, 1, 1)
+
+        self.label_size = QLabel(ExportDialog)
+        self.label_size.setObjectName(u"label_size")
+
+        self.gridlayout.addWidget(self.label_size, 3, 0, 1, 1)
+
+        self.hlayou_size = QHBoxLayout()
+        self.hlayou_size.setObjectName(u"hlayou_size")
+        self.cbb_size = QComboBox(ExportDialog)
+        self.cbb_size.setObjectName(u"cbb_size")
+        self.cbb_size.setMinimumSize(QSize(160, 0))
+
+        self.hlayou_size.addWidget(self.cbb_size)
+
+        self.spacer_size = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+
+        self.hlayou_size.addItem(self.spacer_size)
+
+
+        self.gridlayout.addLayout(self.hlayou_size, 3, 1, 1, 1)
 
 
         self.verticalLayout.addLayout(self.gridlayout)
@@ -140,9 +160,10 @@ class Ui_ExportDialog(object):
 
     def retranslateUi(self, ExportDialog):
         ExportDialog.setWindowTitle(QCoreApplication.translate("ExportDialog", u"Export", None))
-        self.label_fps.setText(QCoreApplication.translate("ExportDialog", u"_", None))
         self.label_path.setText(QCoreApplication.translate("ExportDialog", u"_", None))
         self.btn_browse.setText(QCoreApplication.translate("ExportDialog", u"...", None))
+        self.label_fps.setText(QCoreApplication.translate("ExportDialog", u"_", None))
+        self.label_size.setText(QCoreApplication.translate("ExportDialog", u"_", None))
         self.ckb_hwaccel.setText(QCoreApplication.translate("ExportDialog", u"_", None))
         self.ckb_open.setText(QCoreApplication.translate("ExportDialog", u"_", None))
     # retranslateUi

@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-20 15:34+0800\n"
-"PO-Revision-Date: 2025-04-20 15:39+0800\n"
+"POT-Creation-Date: 2025-08-09 21:26+0800\n"
+"PO-Revision-Date: 2025-08-09 21:27+0800\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
 "Language: zh_CN\n"
@@ -27,21 +27,25 @@ msgstr "导出路径："
 
 #: janim\gui\functions\export_dialog.py:30
 msgid "FPS:"
-msgstr "FPS:"
+msgstr "FPS："
 
 #: janim\gui\functions\export_dialog.py:31
+msgid "Size:"
+msgstr "尺寸："
+
+#: janim\gui\functions\export_dialog.py:32
 msgid "Hardware Acceleration"
 msgstr "硬件加速"
 
-#: janim\gui\functions\export_dialog.py:32
+#: janim\gui\functions\export_dialog.py:33
 msgid "Open the video after exporting"
 msgstr "导出后打开视频"
 
-#: janim\gui\functions\export_dialog.py:35
+#: janim\gui\functions\export_dialog.py:36
 msgid "OK"
 msgstr "确定"
 
-#: janim\gui\functions\export_dialog.py:38
+#: janim\gui\functions\export_dialog.py:39
 msgid "Cancel"
 msgstr "取消"
 

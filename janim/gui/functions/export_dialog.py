@@ -1,4 +1,5 @@
 import inspect
+import math
 import os
 from pathlib import Path
 
@@ -28,6 +29,7 @@ class ExportDialog(QDialog):
         self.setWindowTitle(_('Export'))
         self.ui.label_path.setText(_('Export Path:'))
         self.ui.label_fps.setText(_('FPS:'))
+        self.ui.label_size.setText(_('Size:'))
         self.ui.ckb_hwaccel.setText(_('Hardware Acceleration'))
         self.ui.ckb_open.setText(_('Open the video after exporting'))
 
@@ -48,6 +50,20 @@ class ExportDialog(QDialog):
         self.ui.edit_path.setText(file_path)
         self.ui.spb_fps.setValue(self.built.cfg.fps)
 
+        w, h = self.built.cfg.pixel_width, self.built.cfg.pixel_height
+        for factor, desc in [
+            (2, '200%'),         # 4K
+            (4 / 3, '133.33%'),  # 1440p
+            (1, '100%'),         # 1080p
+            (2 / 3, '66.67%'),   # 720p
+            (4 / 9, '44.44%'),   # 480p
+            (1 / 3, '33.33%'),   # 360p
+        ]:
+            scaled_w = math.ceil(w * factor)
+            scaled_h = math.ceil(h * factor)
+            self.ui.cbb_size.addItem(f'{scaled_w}x{scaled_h} ({desc})', (factor, scaled_w, scaled_h))
+            self.ui.cbb_size.setCurrentIndex(2)
+
     def setup_slots(self) -> None:
         self.ui.btn_browse.clicked.connect(self.on_btn_browse_clicked)
         self.ui.btn_box.accepted.connect(self.on_accepted)
@@ -57,6 +73,14 @@ class ExportDialog(QDialog):
 
     def fps(self) -> int:
         return self.ui.spb_fps.value()
+
+    def has_size_set(self) -> bool:
+        factor, _, _ = self.ui.cbb_size.currentData()
+        return factor != 1
+
+    def size(self) -> tuple[int, int]:
+        _, w, h = self.ui.cbb_size.currentData()
+        return w, h
 
     def hwaccel(self) -> bool:
         return self.ui.ckb_hwaccel.isChecked()

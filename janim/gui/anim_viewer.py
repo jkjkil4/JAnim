@@ -19,6 +19,7 @@ import sys
 import time
 import traceback
 from bisect import bisect_left
+from contextlib import contextmanager, nullcontext
 
 from PySide6.QtCore import QByteArray, QEvent, Qt, QTimer, Signal
 from PySide6.QtGui import QAction, QCloseEvent, QHideEvent, QIcon, QShowEvent
@@ -628,24 +629,25 @@ class AnimViewer(QMainWindow):
         QApplication.processEvents()
         ret = False
         try:
-            built = self.built.timeline.__class__().build()
+            with self.change_export_size(dialog.size()) if dialog.has_size_set() else nullcontext():
+                built = self.built.timeline.__class__().build()
 
-            if video_with_audio:
-                video_writer = VideoWriter(built)
-                video_writer.write_all(file_path, hwaccel=hwaccel, _keep_temp=True)
+                if video_with_audio:
+                    video_writer = VideoWriter(built)
+                    video_writer.write_all(file_path, hwaccel=hwaccel, _keep_temp=True)
 
-                audio_file_path = os.path.splitext(file_path)[0] + '.mp3'
+                    audio_file_path = os.path.splitext(file_path)[0] + '.mp3'
 
-                audio_writer = AudioWriter(built)
-                audio_writer.write_all(audio_file_path, _keep_temp=True)
+                    audio_writer = AudioWriter(built)
+                    audio_writer.write_all(audio_file_path, _keep_temp=True)
 
-                merge_video_and_audio(built.cfg.ffmpeg_bin,
-                                      video_writer.temp_file_path,
-                                      audio_writer.temp_file_path,
-                                      video_writer.final_file_path)
-            else:
-                video_writer = VideoWriter(built)
-                video_writer.write_all(file_path, hwaccel=hwaccel)
+                    merge_video_and_audio(built.cfg.ffmpeg_bin,
+                                          video_writer.temp_file_path,
+                                          audio_writer.temp_file_path,
+                                          video_writer.final_file_path)
+                else:
+                    video_writer = VideoWriter(built)
+                    video_writer.write_all(file_path, hwaccel=hwaccel)
 
         except Exception as e:
             if not isinstance(e, ExitException):
@@ -662,6 +664,15 @@ class AnimViewer(QMainWindow):
                                     _('Output to {file_path} has been completed.').format(file_path=file_path))
             if dialog.open():
                 open_file(file_path)
+
+    @contextmanager
+    def change_export_size(self, size: tuple[int, int]):
+        old_size = cli_config.pixel_width, cli_config.pixel_height
+        cli_config.pixel_width, cli_config.pixel_height = size
+        try:
+            yield
+        finally:
+            cli_config.pixel_width, cli_config.pixel_height = old_size
 
     # endregion (slots-anim)
 
