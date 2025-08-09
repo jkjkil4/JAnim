@@ -1,14 +1,16 @@
-import inspect
 import math
 import os
 from pathlib import Path
 
+from PySide6.QtCore import QSettings
 from PySide6.QtWidgets import (QDialog, QDialogButtonBox, QFileDialog,
                                QMessageBox, QWidget)
 
 from janim.anims.timeline import BuiltTimeline
 from janim.gui.functions.ui_ExportDialog import Ui_ExportDialog
 from janim.locale.i18n import get_local_strings
+from janim.utils.config import Config
+from janim.utils.file_ops import getfile_or_empty
 
 _ = get_local_strings('export_dialog')
 
@@ -17,6 +19,7 @@ class ExportDialog(QDialog):
     def __init__(self, built: BuiltTimeline, parent: QWidget | None = None):
         super().__init__(parent)
         self.built = built
+        self.code_file_path = getfile_or_empty(self.built.timeline.__class__)
 
         self.setup_ui()
         self.setup_contents()
@@ -40,16 +43,6 @@ class ExportDialog(QDialog):
         btn_cancel.setText(_('Cancel'))
 
     def setup_contents(self) -> None:
-        relative_path = os.path.dirname(inspect.getfile(self.built.timeline.__class__))
-        output_dir = self.built.cfg.formated_output_dir(relative_path)
-        if not os.path.exists(output_dir):
-            os.makedirs(output_dir)
-
-        file_path = os.path.join(output_dir, f'{self.built.timeline.__class__.__name__}.mp4')
-
-        self.ui.edit_path.setText(file_path)
-        self.ui.spb_fps.setValue(self.built.cfg.fps)
-
         w, h = self.built.cfg.pixel_width, self.built.cfg.pixel_height
         for factor, desc in [
             (2, '200%'),         # 4K
@@ -64,9 +57,50 @@ class ExportDialog(QDialog):
             self.ui.cbb_size.addItem(f'{scaled_w}x{scaled_h} ({desc})', (factor, scaled_w, scaled_h))
             self.ui.cbb_size.setCurrentIndex(2)
 
+        self.load_options()
+
     def setup_slots(self) -> None:
         self.ui.btn_browse.clicked.connect(self.on_btn_browse_clicked)
         self.ui.btn_box.accepted.connect(self.on_accepted)
+
+    def load_options(self) -> None:
+        settings = QSettings(os.path.join(Config.get.temp_dir, 'export_dialog.ini'), QSettings.Format.IniFormat)
+        settings.beginGroup(self.code_file_path)
+        output_dir = settings.value('output_dir', None)
+        fps = settings.value('fps', self.built.cfg.fps, type=int)
+        scale = settings.value('scale', 1.0, type=float)
+        hwaccel = settings.value('hwaccel', False, type=bool)
+        open_after_export = settings.value('open', False, type=bool)
+        settings.endGroup()
+
+        if output_dir is None:
+            relative_path = os.path.dirname(self.code_file_path)
+            output_dir = self.built.cfg.formated_output_dir(relative_path)
+
+        if not os.path.exists(output_dir):
+            os.makedirs(output_dir)
+
+        file_path = os.path.join(output_dir, f'{self.built.timeline.__class__.__name__}.mp4')
+
+        self.ui.edit_path.setText(file_path)
+        self.ui.spb_fps.setValue(fps)
+        for i in range(self.ui.cbb_size.count()):
+            factor, _, _ = self.ui.cbb_size.itemData(i)
+            if factor == scale:
+                self.ui.cbb_size.setCurrentIndex(i)
+                break
+        self.ui.ckb_hwaccel.setChecked(hwaccel)
+        self.ui.ckb_open.setChecked(open_after_export)
+
+    def save_options(self) -> None:
+        settings = QSettings(os.path.join(Config.get.temp_dir, 'export_dialog.ini'), QSettings.Format.IniFormat)
+        settings.beginGroup(self.code_file_path)
+        settings.setValue('output_dir', os.path.dirname(self.ui.edit_path.text()))
+        settings.setValue('fps', self.ui.spb_fps.value())
+        settings.setValue('scale', self.ui.cbb_size.currentData()[0])
+        settings.setValue('hwaccel', self.ui.ckb_hwaccel.isChecked())
+        settings.setValue('open', self.ui.ckb_open.isChecked())
+        settings.endGroup()
 
     def file_path(self) -> str:
         return self.ui.edit_path.text()
@@ -127,4 +161,5 @@ class ExportDialog(QDialog):
             if ret == QMessageBox.StandardButton.No:
                 return
 
+        self.save_options()
         self.accept()

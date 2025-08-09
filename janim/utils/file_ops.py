@@ -12,6 +12,16 @@ def guarantee_existence(path: str) -> str:
     return os.path.abspath(path)
 
 
+def getfile_or_empty(cls: type) -> str:
+    '''
+    获取类的文件路径，如果类没有文件路径，则返回空字符串
+    '''
+    try:
+        return inspect.getfile(cls)
+    except OSError:
+        return ''
+
+
 def get_janim_dir() -> str:
     '''
     得到 janim 的路径

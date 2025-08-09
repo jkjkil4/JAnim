@@ -21,7 +21,7 @@ import traceback
 from bisect import bisect_left
 from contextlib import contextmanager, nullcontext
 
-from PySide6.QtCore import QByteArray, QEvent, Qt, QTimer, Signal
+from PySide6.QtCore import QByteArray, QEvent, QSettings, Qt, QTimer, Signal
 from PySide6.QtGui import QAction, QCloseEvent, QHideEvent, QIcon, QShowEvent
 from PySide6.QtWidgets import (QApplication, QCompleter, QLabel, QLineEdit,
                                QMainWindow, QMessageBox, QPushButton,
@@ -45,8 +45,8 @@ from janim.gui.timeline_view import TimelineView
 from janim.locale.i18n import get_local_strings
 from janim.logger import log
 from janim.render.writer import AudioWriter, VideoWriter, merge_video_and_audio
-from janim.utils.config import cli_config
-from janim.utils.file_ops import get_janim_dir, open_file
+from janim.utils.config import Config, cli_config
+from janim.utils.file_ops import get_janim_dir, getfile_or_empty, open_file
 from janim.utils.reload import reset_reloads_state
 
 _ = get_local_strings('anim_viewer')
@@ -72,6 +72,7 @@ class AnimViewer(QMainWindow):
         parent: QWidget | None = None
     ):
         super().__init__(parent)
+        self.code_file_path = getfile_or_empty(built.timeline.__class__)
 
         self.setup_ui()
         self.setup_play_timer()
@@ -168,6 +169,8 @@ class AnimViewer(QMainWindow):
         self.setWindowIcon(QIcon(os.path.join(get_janim_dir(), 'gui', 'favicon.ico')))
         self.setWindowFlags(Qt.WindowType.Window)
         self.timeline_view.setFocus()
+
+        self.load_options()
 
         # 在 macOS 中，设置了 WindowStaysOnTopHint 后，点击窗口会把 Tool 窗口遮挡
         # 所以这里监听窗口事件，只要点击了窗口，就手动把 Tool 窗口放到最上面
@@ -320,6 +323,24 @@ class AnimViewer(QMainWindow):
             self.moved_to_position = True
 
     # endregion (setup_ui)
+
+    # region options
+
+    def load_options(self) -> None:
+        settings = QSettings(os.path.join(Config.get.temp_dir, 'anim_viewer.ini'), QSettings.Format.IniFormat)
+        settings.beginGroup(self.code_file_path)
+        frame_skip = settings.value('frame_skip', False, type=bool)
+        settings.endGroup()
+
+        self.action_frame_skip.setChecked(frame_skip)
+
+    def save_options(self) -> None:
+        settings = QSettings(os.path.join(Config.get.temp_dir, 'anim_viewer.ini'), QSettings.Format.IniFormat)
+        settings.beginGroup(self.code_file_path)
+        settings.setValue('frame_skip', self.action_frame_skip.isChecked())
+        settings.endGroup()
+
+    # endregion
 
     # region play_timer
 
@@ -790,6 +811,7 @@ class AnimViewer(QMainWindow):
 
     def closeEvent(self, event: QCloseEvent) -> None:
         super().closeEvent(event)
+
         if self.socket is not None:
             msg = json.dumps(dict(
                 janim=dict(
@@ -801,6 +823,8 @@ class AnimViewer(QMainWindow):
                     QByteArray.fromStdString(msg),
                     *client
                 )
+
+        self.save_options()
 
     if sys.platform == "darwin":
         def eventFilter(self, watched, event):

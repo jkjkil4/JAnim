@@ -1,13 +1,15 @@
-import inspect
 import os
 from pathlib import Path
 
+from PySide6.QtCore import QSettings
 from PySide6.QtWidgets import (QDialog, QDialogButtonBox, QFileDialog,
                                QMessageBox, QWidget)
 
 from janim.anims.timeline import BuiltTimeline
 from janim.gui.functions.ui_CaptureDialog import Ui_CaptureDialog
 from janim.locale.i18n import get_local_strings
+from janim.utils.config import Config
+from janim.utils.file_ops import getfile_or_empty
 
 _ = get_local_strings('capture_dialog')
 
@@ -16,6 +18,7 @@ class CaptureDialog(QDialog):
     def __init__(self, built: BuiltTimeline, parent: QWidget | None = None):
         super().__init__(parent)
         self.built = built
+        self.code_file_path = getfile_or_empty(self.built.timeline.__class__)
 
         self.setup_ui()
         self.setup_contents()
@@ -37,18 +40,39 @@ class CaptureDialog(QDialog):
         btn_cancel.setText(_('Cancel'))
 
     def setup_contents(self) -> None:
-        relative_path = os.path.dirname(inspect.getfile(self.built.timeline.__class__))
-        output_dir = self.built.cfg.formated_output_dir(relative_path)
-        if not os.path.exists(output_dir):
-            os.makedirs(output_dir)
-
-        file_path = os.path.join(output_dir, f'{self.built.timeline.__class__.__name__}.png')
-
-        self.ui.edit_path.setText(file_path)
+        self.load_options()
 
     def setup_slots(self) -> None:
         self.ui.btn_browse.clicked.connect(self.on_btn_browse_clicked)
         self.ui.btn_box.accepted.connect(self.on_accepted)
+
+    def load_options(self) -> None:
+        settings = QSettings(os.path.join(Config.get.temp_dir, 'capture_dialog.ini'), QSettings.Format.IniFormat)
+        settings.beginGroup(self.code_file_path)
+        output_dir = settings.value('output_dir', None)
+        transparent = settings.value('transparent', True, type=bool)
+        open_after_capture = settings.value('open', False, type=bool)
+        settings.endGroup()
+
+        if output_dir is None:
+            relative_path = os.path.dirname(self.code_file_path)
+            output_dir = self.built.cfg.formated_output_dir(relative_path)
+
+        if not os.path.exists(output_dir):
+            os.makedirs(output_dir)
+
+        file_path = os.path.join(output_dir, f'{self.built.timeline.__class__.__name__}.png')
+        self.ui.edit_path.setText(file_path)
+        self.ui.ckb_transparent.setChecked(transparent)
+        self.ui.ckb_open.setChecked(open_after_capture)
+
+    def save_options(self) -> None:
+        settings = QSettings(os.path.join(Config.get.temp_dir, 'capture_dialog.ini'), QSettings.Format.IniFormat)
+        settings.beginGroup(self.code_file_path)
+        settings.setValue('output_dir', os.path.dirname(self.file_path()))
+        settings.setValue('transparent', self.transparent())
+        settings.setValue('open', self.open())
+        settings.endGroup()
 
     def file_path(self) -> str:
         return self.ui.edit_path.text()
@@ -98,4 +122,5 @@ class CaptureDialog(QDialog):
             if ret == QMessageBox.StandardButton.No:
                 return
 
+        self.save_options()
         self.accept()
