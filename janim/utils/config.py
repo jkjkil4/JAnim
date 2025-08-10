@@ -58,7 +58,7 @@ class Config(metaclass=_ConfigMeta):
     设置配置
     ----------------
 
-    设置配置的两种方式：
+    设置配置的三种方式：
 
     1.  在 Python 代码中，将配置写在时间轴类里
 
@@ -81,6 +81,22 @@ class Config(metaclass=_ConfigMeta):
 
             janim write your_file.py YourTimeline -c fps 120 -c output_dir custom_dir
 
+    3.  修改局部代码块的配置
+
+        .. code-block:: python
+
+            class YourTimeline(Timeline):
+                def construct(self):
+                    txt1 = Text('Using default font')
+
+                    with Config(font='Noto Serif CJK SC'):
+                        txt2 = Text('Using "Noto Serif CJK SC" font')
+
+                    txt3 = Text('Using default font again')
+
+                    group = Group(txt1, txt2, txt3).show()
+                    group.points.arrange(DOWN, aligned_edge=LEFT)
+
     获取配置
     -------------
 
@@ -92,27 +108,7 @@ class Config(metaclass=_ConfigMeta):
             def construct(self):
                 print(Config.get.fps)
 
-    更多内容可以参考文档教程的 :doc:`配置系统 <../../tutorial/config_system>` 页面
-
-    本质用法
-    ------------
-
-    .. note::
-
-        该小节中的内容只是作为 JAnim 配置系统在原理层面的一个介绍，在使用 JAnim 时并不需要过多关心
-
-    使用 ``with Config(key=value):`` 在指定的配置下执行内容，例如：
-
-    .. code-block:: python
-
-        print(Config.get.fps)   # 60
-
-        with Config(fps=120, pixel_width=1280):
-            print(Config.get.fps)           # 120
-            print(Config.get.pixel_width)   # 1280
-            print(Config.get.pixel_height)  # 1080
-
-    其中没有设置的属性则采用默认设置 :py:obj:`~.default_config`
+    更多内容可以参考文档教程的 :doc:`配置系统 <../../tutorials/config_system>` 页面
     '''
     fps: int = _field(validator=_opt_int_validator)
     preview_fps: int = _field(validator=_opt_int_validator)

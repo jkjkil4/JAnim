@@ -46,7 +46,9 @@
 
     使用场景侧重于在有复杂文件结构时，将输出文件放到每个代码文件附近单独的位置
 
-设定配置 - 两种方法
+对于更多的配置项可以参考 :class:`~.Config` 的文档
+
+设定配置 - 三种方法
 ----------------------------------
 
 了解了上面这些配置，我们也要了解如何设置它们。
@@ -89,6 +91,9 @@
             output_dir=':/local_videos'
         )
 
+        def construct(self):
+            ...
+
 在这个例子中，子类 ``YourTimeline`` 覆盖了父类的 ``output_dir``，其余配置保留 ``AwesomeTemplate`` 中的设置，这在创建模板以及覆盖模板选项时比较实用。
 
 方法二 - 全局配置
@@ -105,6 +110,27 @@
     janim write your_file.py YourTimeline -c fps 120 -c output_dir custom_dir
 
 这个命令会将动画以 120 的帧率输出到 ``custom_dir`` 这个指定的文件夹中。
+
+方法三 - 局部配置
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+局部配置，指的是只在代码块的一部分应用特定的配置，例如只想在某一段代码上设置特别的字体：
+
+.. code-block:: python
+
+    class YourTimeline(Timeline):
+        def construct(self):
+            txt1 = Text('Using default font')
+
+            with Config(font='Noto Serif CJK SC'):
+                txt2 = Text('Using "Noto Serif CJK SC" font')
+
+            txt3 = Text('Using default font again')
+
+            group = Group(txt1, txt2, txt3).show()
+            group.points.arrange(DOWN, aligned_edge=LEFT)
+
+也就是说，使用 ``with Config(key=value):`` 可以使其所包含的代码块在指定的配置下执行内容，而不影响到外部代码块的配置。
 
 获取配置
 -----------------
@@ -127,11 +153,11 @@
             print(Config.get.left_side, Config.get.right_side)
             print(Config.get.bottom, Config.get.top)
 
+其中没有设置的属性则采用默认设置 :py:obj:`~.default_config`
+
 .. hint::
 
     在这个例子中，我们输出了配置项 ``preview_fps`` ``fps`` ``frame_width`` ``frame_height`` 的值。
 
     但后面两行的涉及的 ``left_side`` ``right_side`` ``bottom`` ``top`` 其实并不是可以直接配置的选项，
     而是由视框大小 ``frame_width`` 和 ``frame_height`` 这一组配置所决定的，这里相当于提供了一种“衍生功能”。
-
-以上是对配置系统的介绍，这里我们讨论了最常用的方式与技巧，对于简要说明和一些细枝末节的内容可以参考 :class:`~.Config` 的文档
