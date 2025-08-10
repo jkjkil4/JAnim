@@ -132,6 +132,16 @@
 
 也就是说，使用 ``with Config(key=value):`` 可以使其所包含的代码块在指定的配置下执行内容，而不影响到外部代码块的配置。
 
+.. hint::
+
+    在上面的这个例子中，其实可以使用
+
+    .. code-block:: python
+
+        txt2 = Text('Using "Noto Serif CJK SC" font', font='Noto Serif CJK SC')
+
+    来设置 ``txt2`` 的字体，而不必使用 ``with Config(font='Noto Serif CJK SC'):``，这里只是作为一个示例用于演示局部配置的用法。
+
 获取配置
 -----------------
 
