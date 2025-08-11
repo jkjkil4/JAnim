@@ -51,10 +51,11 @@ class TextExample(Timeline):
         self.forward()
 
 
-typst_doc = '''
-JAnim provides #text(green)[`TypstDoc`] class to insert typst document.
+typst_doc = t_(
+R'''
+JAnim provides `TypstText` and `TypstMath` classes to insert Typst content.
 
-Math expressions are also available.
+Math expressions are also supported.
 
 $ A = pi r^2 $
 $ "area" = pi dot "radius"^2 $
@@ -63,27 +64,40 @@ $ cal(A) :=
 #let x = 5
 $ #x < 17 $
 
-The difference between #text(green)[`TypstDoc`] and #text(green)[`TypstMath`]:
-- #text(green)[`TypstDoc`] automatically align to the top of view,
-  so you can see the document from the start.
-- The content of #text(green)[`TypstMath`] is wrapped by math environment
-  and move to the center by default.
-'''
+You can also use `TypstDoc`, which automatically align to the top of the viewport,
+instead of the center.
+''')
 
 
 class TypstExample(Timeline):
+    CONFIG = Config(
+        typst_shared_preamble=t_(
+            R'''
+            #import "@janim/colors:0.0.0": *
+            #show raw: set text(BLUE)
+            ''')
+    )
+
     def construct(self) -> None:
         doc = TypstDoc(typst_doc)
-        typ = TypstMath('sum_(i=1)^n x_i')
 
-        # Applying animations on text is slow
+        group = Group(
+            Text('TypstText', color=BLUE),
+            TypstText('This is a sentence with a math expression $f(x)=x^2$'),
+            Text('TypstMath', color=BLUE),
+            TypstMath('sum_(i=1)^n x_i = x_1 + x_2 + dots.c + x_n')
+        )
+        group.points.arrange_in_grid()
+
+        # 作用于文本的动画的渲染速度较慢
+        # The rendering speed of animations applied to text is relatively slow
         self.play(Write(doc), duration=4)
         self.forward()
         self.play(FadeOut(doc))
 
-        self.play(Write(typ))
+        self.play(Write(group))
         self.forward()
-        self.play(FadeOut(typ))
+        self.play(FadeOut(group))
 
 
 class AnimatingPiExample(Timeline):
@@ -202,6 +216,7 @@ class CombineUpdatersExample(Timeline):
         square.points.to_border(LEFT)
 
         # 这里每次 play 都多一个 Updater，用于演示 动画复合 的效果
+        # Each `play` call adds an extra updater to demonstrate the effect of combining animations
 
         self.play(
             square.anim.points.to_border(RIGHT),
