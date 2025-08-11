@@ -86,8 +86,11 @@ class Cmpt_Points[ItemT](Component[ItemT]):
         *,
         path_func: PathFunc = straight_path
     ) -> None:
-        if not cmpt1._points.is_share(cmpt2._points):
-            self.set(path_func(cmpt1.get(), cmpt2.get(), alpha))
+        if not cmpt1._points.is_share(cmpt2._points) or not cmpt1._points.is_share(self._points):
+            if cmpt1._points.is_share(cmpt2._points):
+                self._points = cmpt1._points.copy()
+            else:
+                self.set(path_func(cmpt1.get(), cmpt2.get(), alpha))
 
     # region 点数据 | Points
 

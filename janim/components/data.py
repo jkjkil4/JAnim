@@ -42,8 +42,11 @@ class Cmpt_Data[ItemT, T](Component[ItemT]):
         return AlignedData(cmpt1_copy, cmpt2_copy, cmpt1_copy.copy())
 
     def interpolate(self, cmpt1: Cmpt_Data, cmpt2: Cmpt_Data, alpha: float, *, path_func=None) -> None:
-        if not self.not_changed_func(cmpt1, cmpt2):
-            self.set(self.interpolate_func(cmpt1.value, cmpt2.value, alpha))
+        if not self.not_changed_func(cmpt1, cmpt2) or not self.not_changed_func(cmpt1, self):
+            if self.not_changed_func(cmpt1, cmpt2):
+                self.set(cmpt1.copy_func(cmpt1.value))
+            else:
+                self.set(self.interpolate_func(cmpt1.value, cmpt2.value, alpha))
 
     def set(self, value: T) -> Self:
         '''设置当前数据'''

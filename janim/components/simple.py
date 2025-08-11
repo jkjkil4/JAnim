@@ -31,7 +31,7 @@ class Cmpt_Float[ItemT](Component[ItemT]):
         return AlignedData(cmpt1_copy, cmpt2_copy, cmpt1_copy.copy())
 
     def interpolate(self, cmpt1: Cmpt_Float, cmpt2: Cmpt_Float, alpha: float, *, path_func=None) -> None:
-        if cmpt1._value != cmpt2._value:
+        if cmpt1._value != cmpt2._value or cmpt1._value != self._value:
             self._value = interpolate(cmpt1._value, cmpt2._value, alpha)
 
     def set(self, value: float) -> Self:

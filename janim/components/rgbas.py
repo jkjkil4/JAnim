@@ -54,8 +54,11 @@ class Cmpt_Rgbas[ItemT](Component[ItemT]):
         return AlignedData(cmpt1_copy, cmpt2_copy, cmpt1_copy.copy())
 
     def interpolate(self, cmpt1: Cmpt_Rgbas, cmpt2: Cmpt_Rgbas, alpha: float, *, path_func=None) -> None:
-        if not cmpt1._rgbas.is_share(cmpt2._rgbas):
-            self.set_rgbas(interpolate(cmpt1.get(), cmpt2.get(), alpha))
+        if not cmpt1._rgbas.is_share(cmpt2._rgbas) or not cmpt1._rgbas.is_share(self._rgbas):
+            if cmpt1._rgbas.is_share(cmpt2._rgbas):
+                self._rgbas = cmpt1._rgbas.copy()
+            else:
+                self.set_rgbas(interpolate(cmpt1.get(), cmpt2.get(), alpha))
 
     def is_transparent(self) -> None:
         return (self._rgbas.data[:, 3] == 0).all()

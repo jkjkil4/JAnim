@@ -58,8 +58,11 @@ class Cmpt_Mark[ItemT](Component[ItemT]):
         *,
         path_func: PathFunc = straight_path
     ) -> None:
-        if not cmpt1._points.is_share(cmpt2._points):
-            self.set_points(path_func(cmpt1.get_points(), cmpt2.get_points(), alpha))
+        if not cmpt1._points.is_share(cmpt2._points) or not cmpt1._points.is_share(self._points):
+            if cmpt1._points.is_share(cmpt2._points):
+                self._points = cmpt1._points.copy()
+            else:
+                self.set_points(path_func(cmpt1.get_points(), cmpt2.get_points(), alpha))
 
     def get_points(self) -> np.ndarray:
         '''

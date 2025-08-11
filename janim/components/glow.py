@@ -46,10 +46,13 @@ class Cmpt_Glow[ItemT](Component[ItemT]):
         return AlignedData(cmpt1_copy, cmpt2_copy, cmpt1_copy.copy())
 
     def interpolate(self, cmpt1: Cmpt_Glow, cmpt2: Cmpt_Glow, alpha: float, *, path_func=None) -> None:
-        if not cmpt1._rgba.is_share(cmpt2._rgba):
-            self.set_rgba(interpolate(cmpt1.get(), cmpt2.get(), alpha))
+        if not cmpt1._rgba.is_share(cmpt2._rgba) or not cmpt1._rgba.is_share(self._rgba):
+            if cmpt1._rgba.is_share(cmpt2._rgba):
+                self._rgba = cmpt1._rgba.copy()
+            else:
+                self.set_rgba(interpolate(cmpt1.get(), cmpt2.get(), alpha))
 
-        if cmpt1._size != cmpt2._size:
+        if cmpt1._size != cmpt2._size or cmpt1._size != self._size:
             self._size = interpolate(cmpt1._size, cmpt2._size, alpha)
 
     def set_rgba(self, rgba: Rgba) -> Self:

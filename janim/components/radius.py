@@ -58,8 +58,11 @@ class Cmpt_Radius[ItemT](Component[ItemT]):
         return AlignedData(cmpt1_copy, cmpt2_copy, cmpt1_copy.copy())
 
     def interpolate(self, cmpt1: Cmpt_Radius, cmpt2: Cmpt_Radius, alpha: float, *, path_func=None) -> None:
-        if not cmpt1._radii.is_share(cmpt2._radii):
-            self.set(interpolate(cmpt1.get(), cmpt2.get(), alpha), root_only=True)
+        if not cmpt1._radii.is_share(cmpt2._radii) or not cmpt1._radii.is_share(self._radii):
+            if cmpt1._radii.is_share(cmpt2._radii):
+                self._radii = cmpt1._radii.copy()
+            else:
+                self.set(interpolate(cmpt1.get(), cmpt2.get(), alpha), root_only=True)
 
     # region 半径数据 | Radii
 
