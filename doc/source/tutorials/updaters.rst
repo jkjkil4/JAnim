@@ -224,6 +224,7 @@ JAnim 的各个 ``Updater`` 并非孤立，不仅可以使用 ``.current()`` 获
 .. janim-example:: RotatingPieExample
     :media: ../_static/videos/RotatingPieExample.mp4
     :hide_name:
+    :ref: :class:`~.Sector` :func:`~.rotate_vector`
 
     pie = Group(*[
         Sector(start_angle=i * TAU / 4, angle=TAU / 4, radius=1.5, color=color, fill_alpha=1, stroke_alpha=0)
@@ -280,6 +281,7 @@ JAnim 的各个 ``Updater`` 并非孤立，不仅可以使用 ``.current()`` 获
 
 .. janim-example:: UpdaterExample
     :media: ../_static/videos/UpdaterExample.mp4
+    :ref: :class:`~.Brace`
 
     square = Square(fill_color=BLUE_E, fill_alpha=1).show()
     brace = Brace(square, UP).show()

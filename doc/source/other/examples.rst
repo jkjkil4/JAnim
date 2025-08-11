@@ -178,7 +178,7 @@
 
 .. janim-example:: UpdaterExample
     :media: ../_static/videos/UpdaterExample.mp4
-    :ref: :class:`~.DataUpdater` :class:`~.ItemUpdater`
+    :ref: :class:`~.Brace` :class:`~.DataUpdater` :class:`~.ItemUpdater`
 
     from janim.imports import *
 
@@ -291,7 +291,7 @@
 
 .. janim-example:: RotatingPieExample
     :media: ../_static/videos/RotatingPieExample.mp4
-    :ref: :class:`~.GroupUpdater` :class:`~.DataUpdater`
+    :ref: :class:`~.Sector` :func:`~.rotate_vector` :class:`~.GroupUpdater` :class:`~.DataUpdater`
 
     from janim.imports import *
 
