@@ -138,7 +138,6 @@ class NumberPlaneExample(Timeline):
         self.forward()
 
 
-
 class UpdaterExample(Timeline):
     def construct(self) -> None:
         square = Square(fill_color=BLUE_E, fill_alpha=1).show()
