@@ -147,7 +147,6 @@ pip install -e .
 - 要生成视频文件，请安装 [ffmpeg](https://ffmpeg.org/).
 - 要使用 Typst，请安装 [Typst](https://github.com/typst/typst).
 
-
 ## 使用 JAnim
 
 你可以使用如下的命令来查看示例
@@ -155,7 +154,7 @@ pip install -e .
 janim examples
 ```
 
-[文档](https://janim.readthedocs.io/zh-cn/latest/index.html)的[教程页面](https://janim.readthedocs.io/zh-cn/latest/tutorial/installation.html)提供了一个简要的入门指南（注：你可以使用页面角落的弹出菜单来更改文档语言）
+[文档](https://janim.readthedocs.io/zh-cn/latest/index.html)提供了更为详细的 JAnim 安装与使用教程（注：你可以使用页面角落的弹出菜单来更改文档语言）
 
 ## License
 

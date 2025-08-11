@@ -147,7 +147,6 @@ Additionally, there are other software dependencies to be installed:
 - To generate video files, install [ffmpeg](https://ffmpeg.org/).
 - To use Typst, install [Typst](https://github.com/typst/typst).
 
-
 ## Using JAnim
 
 You can run the following command to see examples.
@@ -155,7 +154,7 @@ You can run the following command to see examples.
 janim examples
 ```
 
-The [Tutorial Page](https://janim.readthedocs.io/zh-cn/latest/tutorial/installation.html) of the [Documentation](https://janim.readthedocs.io/zh-cn/latest/index.html) provides a brief guide to get you started. (Note: You can change the documentation language using the flyout menu at the corner of the page.)
+The [Documentation](https://janim.readthedocs.io/zh-cn/latest/index.html) provides a more detailed guide on installing and using JAnim. (Note: You can change the documentation language using the flyout menu at the corner of the page.)
 
 ## License
 
