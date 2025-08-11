@@ -175,6 +175,28 @@ class UpdaterExample(Timeline):
         self.forward()
 
 
+class ArrowPointingExample(Timeline):
+    def construct(self):
+        dot1 = Dot(LEFT * 3)
+        dot2 = Dot()
+
+        arrow = Arrow(dot1, dot2, color=YELLOW)
+
+        self.show(dot1, dot2, arrow)
+        self.play(
+            dot2.update.points.rotate(TAU, about_point=RIGHT * 2),
+            GroupUpdater(
+                arrow,
+                lambda data, p:
+                    data.points.set_start_and_end(
+                        dot1.points.box.center,
+                        dot2.current().points.box.center
+                    ).r.place_tip()
+            ),
+            duration=4
+        )
+
+
 class MarkedSquare(MarkedItem, Square):
     def __init__(self, side_length: float = 2.0, **kwargs):
         super().__init__(side_length, **kwargs)
