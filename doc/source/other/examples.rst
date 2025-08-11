@@ -246,6 +246,80 @@
             )
 
 
+.. janim-example:: CombineUpdatersExample
+    :media: ../_static/videos/CombineUpdatersExample.mp4
+    :ref: :meth:`~.Item.anim` :meth:`~.Item.update` :class:`~.DataUpdater`
+
+    class CombineUpdatersExample(Timeline):
+        def construct(self):
+            square = Square()
+            square.points.to_border(LEFT)
+
+            # 这里每次 play 都多一个 Updater，用于演示 动画复合 的效果
+
+            self.play(
+                square.anim.points.to_border(RIGHT),
+                duration=2
+            )
+
+            ###############################
+
+            square.points.to_border(LEFT)
+            self.play(
+                square.anim.points.to_border(RIGHT),
+                DataUpdater(
+                    square,
+                    lambda data, p: data.points.shift(UP * math.sin(p.alpha * 4 * PI)),
+                    become_at_end=False
+                ),
+                duration=2
+            )
+
+            ###############################
+
+            square.points.to_border(LEFT)
+            self.play(
+                square.anim.points.to_border(RIGHT),
+                DataUpdater(
+                    square,
+                    lambda data, p: data.points.shift(UP * math.sin(p.alpha * 4 * PI)),
+                    become_at_end=False
+                ),
+                square.update(become_at_end=False).color.set(BLUE).r.points.rotate(-TAU),
+                duration=2
+            )
+
+.. janim-example:: RotatingPieExample
+    :media: ../_static/videos/RotatingPieExample.mp4
+    :ref: :class:`~.GroupUpdater` :class:`~.DataUpdater`
+
+    from janim.imports import *
+
+    class RotatingPieExample(Timeline):
+        def construct(self) -> None:
+            pie = Group(*[
+                Sector(start_angle=i * TAU / 4, angle=TAU / 4, radius=1.5, color=color, fill_alpha=1, stroke_alpha=0)
+                    .points.shift(rotate_vector(UR * 0.05, i * TAU / 4))
+                    .r
+                for i, color in enumerate([RED, PURPLE, MAROON, GOLD])
+            ])
+
+            self.play(
+                GroupUpdater(
+                    pie,
+                    lambda data, p: data.points.rotate(p.alpha * TAU, about_point=ORIGIN),
+                    duration=5
+                ),
+                DataUpdater(
+                    pie[0],
+                    lambda data, p: data.points.shift(normalize(data.mark.get()) * p.alpha),
+                    rate_func=there_and_back,
+                    become_at_end=False,
+                    at=2,
+                    duration=2
+                )
+            )
+
 .. janim-example:: MarkedItemExample
     :media: ../_static/videos/MarkedItemExample.mp4
     :ref: :class:`~.MarkedItem` :class:`~.DataUpdater`
