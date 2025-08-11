@@ -213,7 +213,7 @@ class AnimStack:
     def compute_anims(self, as_time: float, anims: list[ItemAnimation]) -> ComputeAnimsGenerator:
         if not anims:
             return self.item
-        
+
         params = ItemAnimation.ApplyParams(as_time, anims, 0)
 
         for i, anim in enumerate(anims):
