@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  JAnim\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-27 00:36+0800\n"
+"POT-Creation-Date: 2025-08-11 22:08+0800\n"
 "PO-Revision-Date: 2024-03-14 15:46+0800\n"
 "Last-Translator: \n"
 "Language: en\n"
@@ -23,7 +23,8 @@ msgstr ""
 msgid "timeline"
 msgstr "timeline"
 
-#: janim.anims.timeline.BuiltTimeline:1 janim.anims.timeline.Timeline:1
+#: janim.anims.timeline.BuiltTimeline:1 janim.anims.timeline.PlaybackControl:1
+#: janim.anims.timeline.Timeline:1
 #: janim.anims.timeline.Timeline.AdditionalRenderCallsCallback:1
 #: janim.anims.timeline.Timeline.ItemAppearance:1
 #: janim.anims.timeline.Timeline.PausePoint:1
@@ -188,7 +189,11 @@ msgid "返回值表示播放的时间段"
 msgstr ""
 
 #: janim.anims.timeline.Timeline.has_audio:1 of
-msgid "是否有可以播放的音频"
+msgid "该 Timeline 自身是否有可以播放的音频"
+msgstr ""
+
+#: janim.anims.timeline.Timeline.has_audio_for_all:1 of
+msgid "考虑所有子 Timeline，是否有可以播放的音频"
 msgstr ""
 
 #: janim.anims.timeline.Timeline.subtitle:1 of
@@ -360,7 +365,8 @@ msgstr ""
 msgid "渲染所有可见物件"
 msgstr ""
 
-#: janim.anims.timeline.BuiltTimeline.to_item:1 of
+#: janim.anims.timeline.BuiltTimeline.to_item:1
+#: janim.anims.timeline.BuiltTimeline.to_playback_control_item:1 of
 msgid "使用该方法可以在一个 Timeline 中插入另一个 Timeline"
 msgstr ""
 
@@ -370,6 +376,32 @@ msgstr ""
 
 #: janim.anims.timeline.BuiltTimeline.to_item:33 of
 msgid "这个例子中，在 ``Test`` 中插入了 ``Sub1`` 和 ``Sub2``"
+msgstr ""
+
+#: janim.anims.timeline.BuiltTimeline.to_item:35
+#: janim.anims.timeline.BuiltTimeline.to_playback_control_item:32 of
+msgid "额外参数："
+msgstr ""
+
+#: janim.anims.timeline.BuiltTimeline.to_item:37 of
+msgid "``delay``: 延迟多少秒开始该 Timeline 的播放"
+msgstr ""
+
+#: janim.anims.timeline.BuiltTimeline.to_item:38
+#: janim.anims.timeline.BuiltTimeline.to_playback_control_item:34 of
+msgid "``keep_last_frame``: 是否在 Timeline 结束后仍然保留最后一帧的显示"
+msgstr ""
+
+#: janim.anims.timeline.BuiltTimeline.to_playback_control_item:3 of
+msgid "并且与 :class:`~.Video` 类似，可以使用 ``start``、``stop`` 以及 ``seek`` 控制播放进度"
+msgstr ""
+
+#: janim.anims.timeline.BuiltTimeline.to_playback_control_item:5 of
+msgid "例："
+msgstr ""
+
+#: janim.anims.timeline.BuiltTimeline.to_playback_control_item:30 of
+msgid "注意：在默认情况下未开始播放，需要使用 ``start`` 以开始播放"
 msgstr ""
 
 #: janim.anims.timeline.TimelineItem:1 of
@@ -382,10 +414,23 @@ msgstr "基类：:py:class:`~janim.anims.timeline.Timeline`"
 msgid "详见 :meth:`BuiltTimeline.to_item`"
 msgstr "See :meth:`~.Timeline.schedule`"
 
-#: janim.anims.timeline.TimelineItem.TIRenderer:1 of
+#: janim.anims.timeline.TimelineItem.TIRenderer:1
+#: janim.anims.timeline.TimelinePlaybackControlItem.TPCIRenderer:1 of
 #, fuzzy
 msgid "基类：:py:class:`~janim.render.base.Renderer`"
 msgstr "基类：:py:class:`~janim.anims.timeline.Timeline`"
+
+#: janim.anims.timeline.TimelinePlaybackControlItem:1 of
+#, fuzzy
+msgid ""
+"基类：:py:class:`~janim.anims.timeline.PlaybackControl`, "
+":py:class:`~janim.items.item.Item`"
+msgstr "基类：:py:class:`~janim.anims.timeline.Timeline`"
+
+#: janim.anims.timeline.TimelinePlaybackControlItem:1 of
+#, fuzzy
+msgid "详见 :meth:`BuiltTimeline.to_playback_control_item`"
+msgstr "See :meth:`~.Timeline.schedule`"
 
 #~ msgid "用于 :class:`~.Animation` 的初始化以及物件的操作"
 #~ msgstr "Used for initialization of :class:`~.Animation` and operations on items"
@@ -518,5 +563,8 @@ msgstr "基类：:py:class:`~janim.anims.timeline.Timeline`"
 #~ msgstr "Calls all :class:`RenderCall` objects for rendering."
 
 #~ msgid "使用定义在 :class:`Timeline` 子类中的 config"
+#~ msgstr ""
+
+#~ msgid "是否有可以播放的音频"
 #~ msgstr ""
 

@@ -19,28 +19,19 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.17.0\n"
 
-#: ../../source/janim/gui/label.rst:2
-msgid "label"
+#: ../../source/janim/items/svg/typst_types.rst:2
+msgid "typst_types"
 msgstr ""
 
-#: janim.gui.label.Label:1 janim.gui.label.Label.PaintParams:1
-#: janim.gui.label.PixelRange:1 of
-msgid "基类：:py:class:`object`"
+#: janim.items.svg.typst_types.TypstMatrix:1 of
+msgid "基类：:py:class:`~janim.items.svg.typst.TypstText`"
 msgstr ""
 
-#: janim.gui.label.LabelGroup:1 of
-msgid "基类：:py:class:`~janim.gui.label.Label`"
+#: janim.items.svg.typst_types.TypstMatrix:1 of
+msgid "使用 Typst 进行矩阵布局"
 msgstr ""
 
-#: janim.gui.label.LabelGroup.is_exclusive:1 of
-msgid "若 ``labels`` 没有重叠部分则返回 ``True``"
-msgstr ""
-
-#: janim.gui.label.LabelGroup.QueryPolicy:1 of
-msgid "基类：:py:class:`~enum.Enum`"
-msgstr ""
-
-#: janim.gui.label.LazyLabelGroup:1 of
-msgid "基类：:py:class:`~janim.gui.label.LabelGroup`"
+#: janim.items.svg.typst_types.TypstMatrix:3 of
+msgid "传参请参考 Typst 文档 https://typst.app/docs/reference/math/mat/ ，以下给出部分示例"
 msgstr ""
 

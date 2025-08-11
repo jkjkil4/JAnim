@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: JAnim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-20 11:45+0800\n"
+"POT-Creation-Date: 2025-08-11 22:08+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -94,8 +94,8 @@ msgstr ""
 
 #: ../../source/janim/items/svg/typst.rst:46
 msgid ""
-"可以使用 ``t['cos']`` 得到 cos 对应的部分，这样你可以就可以使用类似于 "
-"``t['cos'].digest_styles(color=BLUE)`` 的方式进行着色"
+"可以使用 ``t['cos']`` 得到 cos 对应的部分，这样你可以就可以使用类似于 ``t['cos'].set(color=BLUE)``"
+" 的方式进行着色"
 msgstr ""
 
 #: ../../source/janim/items/svg/typst.rst:49
@@ -169,6 +169,50 @@ msgid "这里给出几段示例作为参考："
 msgstr ""
 
 #: ../../source/janim/items/svg/typst.rst:99
+msgid "内置包"
+msgstr ""
+
+#: ../../source/janim/items/svg/typst.rst:101
+msgid "JAnim 提供了内置包可以在 Typst 中使用 ``#import`` 进行引入"
+msgstr ""
+
+#: ../../source/janim/items/svg/typst.rst:103
+msgid "``#import \"@janim/colors:0.0.0\": *``"
+msgstr ""
+
+#: ../../source/janim/items/svg/typst.rst:105
+msgid "提供了 JAnim 中的颜色常量，以便在 Typst 中使用"
+msgstr ""
+
+#: ../../source/janim/items/svg/typst.rst:186
+msgid "如果你需要在外部 ``.typ`` 文件中也能引入 JAnim 的内置包"
+msgstr ""
+
+#: ../../source/janim/items/svg/typst.rst:188
+msgid ""
+"你需要将 ``<site-packages>/janim/items/svg`` 完整路径通过 ``--package-path`` 选项传递给 "
+"Typst 编译器或 Tinymist 插件的 ``\"tinymist.typstExtraArgs\"`` 选项"
+msgstr ""
+
+#: ../../source/janim/items/svg/typst.rst:191
+msgid "其它"
+msgstr ""
+
+#: ../../source/janim/items/svg/typst.rst:193
+msgid ""
+"如果你使用了 VSCode 插件 ``janim-toolbox``， 会自动给 :class:`TypstDoc` 和 "
+":class:`TypstText` 中出现的 raw 字符串（形如 ``R'...'``） 进行 Typst 语法高亮，例如"
+msgstr ""
+
+#: ../../source/janim/items/svg/typst.rst:202
+msgid "该页面中没有效果，你可以将代码复制到编辑器中试一试"
+msgstr ""
+
+#: ../../source/janim/items/svg/typst.rst:204
+msgid "对于同样需要 Typst 语法高亮的函数，你可以使用 ``t_`` 函数来标注需要 Typst 高亮，例如"
+msgstr ""
+
+#: ../../source/janim/items/svg/typst.rst:228
 msgid "参考文档"
 msgstr ""
 
@@ -351,5 +395,10 @@ msgstr ""
 #~ msgstr ""
 
 #~ msgid "相当于 :class:`Typst` 传入 ``use_math_environment=True``"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "可以使用 ``t['cos']`` 得到 cos 对应的部分，这样你可以就可以使用类似于"
+#~ " ``t['cos'].digest_styles(color=BLUE)`` 的方式进行着色"
 #~ msgstr ""
 

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  JAnim\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-04 09:09+0800\n"
+"POT-Creation-Date: 2025-08-11 22:08+0800\n"
 "PO-Revision-Date: 2024-07-03 18:57+0800\n"
 "Last-Translator: \n"
 "Language: en\n"
@@ -23,7 +23,7 @@ msgstr ""
 msgid "composition"
 msgstr "composition"
 
-#: janim.anims.composition.AnimGroup:1 of
+#: janim.anims.composition.AnimGroup:1 janim.anims.composition.Wait:1 of
 msgid "基类：:py:class:`~janim.anims.animation.Animation`"
 msgstr "基类：:py:class:`~janim.anims.animation.Animation`"
 
@@ -125,6 +125,14 @@ msgid "视频示例的代码在下方，不是上方的时间示例"
 msgstr ""
 "The code of video example is the code below, not the code of time example"
 " above."
+
+#: janim.anims.composition.Wait:1 of
+msgid "等待特定时间，在 :meth:`~.Succession` 中比较有用"
+msgstr ""
+
+#: janim.anims.composition.Wait:3 of
+msgid "（其实就是一个空动画）"
+msgstr ""
 
 #~ msgid "设置并计算子动画的时间范围"
 #~ msgstr "Set and calculate the time range of child animations"

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: JAnim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-05 16:52+0800\n"
+"POT-Creation-Date: 2025-08-11 22:08+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -64,7 +64,8 @@ msgid "从该对象移除子对象"
 msgstr ""
 
 #: janim.items.frame_effect.FrameClip:1 janim.items.frame_effect.Shadertoy:1
-#: janim.items.frame_effect.SimpleFrameEffect:1 of
+#: janim.items.frame_effect.SimpleFrameEffect:1
+#: janim.items.frame_effect.TransformableFrameClip:1 of
 msgid "基类：:py:class:`~janim.items.frame_effect.FrameEffect`"
 msgstr ""
 
@@ -76,7 +77,8 @@ msgstr ""
 msgid "若着色器代码中出现报错，报错行数无法与 ``shader`` 代码中的行对应"
 msgstr ""
 
-#: janim.items.frame_effect.Cmpt_FrameClip:1 of
+#: janim.items.frame_effect.Cmpt_FrameClip:1
+#: janim.items.frame_effect.Cmpt_TransformableFrameClip:1 of
 msgid ""
 "基类：:py:class:`~janim.components.component.Component`, "
 ":py:class:`~typing.Generic`"
@@ -86,8 +88,35 @@ msgstr ""
 msgid "一个用于创建简单矩形裁剪效果的类"
 msgstr ""
 
-#: janim.items.frame_effect.FrameClip:3 of
+#: janim.items.frame_effect.FrameClip:3
+#: janim.items.frame_effect.TransformableFrameClip:3 of
 msgid "``clip`` 参数表示裁剪区域的四个边界，分别是左、上、右、下，范围是 0~1 表示百分比"
+msgstr ""
+
+#: janim.items.frame_effect.FrameClip:4
+#: janim.items.frame_effect.TransformableFrameClip:7 of
+msgid "``debug`` 参数表示是否开启调试模式，开启后裁剪区域外的部分会显示为半透明红色"
+msgstr ""
+
+#: janim.items.frame_effect.FrameClip.create_border_rect:1
+#: janim.items.frame_effect.TransformableFrameClip.create_border_rect:1 of
+msgid "得到裁剪后的显示区域的包围矩形"
+msgstr ""
+
+#: janim.items.frame_effect.TransformableFrameClip:1 of
+msgid "与 :class:`FrameClip` 类似，但支持更多的变换操作（偏移、缩放、旋转）"
+msgstr ""
+
+#: janim.items.frame_effect.TransformableFrameClip:4 of
+msgid "``offset`` 参数表示裁剪区域 x 与 y 方向的的偏移量，单位是百分比"
+msgstr ""
+
+#: janim.items.frame_effect.TransformableFrameClip:5 of
+msgid "``scale`` 参数表示裁剪区域 x 与 y 方向的缩放量，单位是百分比"
+msgstr ""
+
+#: janim.items.frame_effect.TransformableFrameClip:6 of
+msgid "``rotate`` 参数表示裁剪区域的旋转角度"
 msgstr ""
 
 #: janim.items.frame_effect.Shadertoy:1 of
@@ -110,5 +139,9 @@ msgstr ""
 
 #: janim.items.frame_effect.Shadertoy:25 of
 msgid "行数标注："
+msgstr ""
+
+#: janim.items.frame_effect.AlphaEffect:1 of
+msgid "基类：:py:class:`~janim.items.frame_effect.SimpleFrameEffect`"
 msgstr ""
 

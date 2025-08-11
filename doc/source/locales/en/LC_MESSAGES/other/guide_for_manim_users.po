@@ -1,0 +1,205 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2023, jkjkil4
+# This file is distributed under the same license as the JAnim package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: JAnim \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-08-11 22:08+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: en\n"
+"Language-Team: en <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.17.0\n"
+
+#: ../../source/other/guide_for_manim_users.rst:2
+msgid "面向 Manim 用户的指南"
+msgstr ""
+
+#: ../../source/other/guide_for_manim_users.rst:4
+msgid "JAnim 在使用上与 Manim 有很多相似之处，尤其是对于 Manim 的用户来说，上手使用 JAnim 会更容易。"
+msgstr ""
+
+#: ../../source/other/guide_for_manim_users.rst:6
+msgid "下面是 Manim 和 JAnim 之间一些功能的对照表："
+msgstr ""
+
+#: ../../source/other/guide_for_manim_users.rst:15
+msgid "功能"
+msgstr ""
+
+#: ../../source/other/guide_for_manim_users.rst:16
+msgid "Manim"
+msgstr ""
+
+#: ../../source/other/guide_for_manim_users.rst:17
+msgid "JAnim"
+msgstr ""
+
+#: ../../source/other/guide_for_manim_users.rst:18
+msgid "备注"
+msgstr ""
+
+#: ../../source/other/guide_for_manim_users.rst:19
+msgid "对象/物件"
+msgstr ""
+
+#: ../../source/other/guide_for_manim_users.rst:20
+msgid "``Mobject``, ``VMobject``"
+msgstr ""
+
+#: ../../source/other/guide_for_manim_users.rst:21
+msgid ":class:`~.Item`, :class:`~.VItem`"
+msgstr ""
+
+#: ../../source/other/guide_for_manim_users.rst:23
+msgid "前进一段时间"
+msgstr ""
+
+#: ../../source/other/guide_for_manim_users.rst:24
+msgid "``self.wait(时长)``"
+msgstr ""
+
+#: ../../source/other/guide_for_manim_users.rst:25
+msgid "``self.forward(时长)``"
+msgstr ""
+
+#: ../../source/other/guide_for_manim_users.rst:27
+msgid "将物件添加到场景中"
+msgstr ""
+
+#: ../../source/other/guide_for_manim_users.rst:28
+msgid "``self.add(xxx)``"
+msgstr ""
+
+#: ../../source/other/guide_for_manim_users.rst:29
+msgid "``self.show(xxx)``"
+msgstr ""
+
+#: ../../source/other/guide_for_manim_users.rst:30
+msgid "也可以使用 ``xxx.show()``"
+msgstr ""
+
+#: ../../source/other/guide_for_manim_users.rst:31
+msgid "矩形"
+msgstr ""
+
+#: ../../source/other/guide_for_manim_users.rst:32
+msgid "``Rectangle``"
+msgstr ""
+
+#: ../../source/other/guide_for_manim_users.rst:33
+msgid ":class:`~.Rect`"
+msgstr ""
+
+#: ../../source/other/guide_for_manim_users.rst:35
+msgid "圆角矩形"
+msgstr ""
+
+#: ../../source/other/guide_for_manim_users.rst:36
+msgid "``RoundedRectangle``"
+msgstr ""
+
+#: ../../source/other/guide_for_manim_users.rst:37
+msgid ":class:`~.RoundedRect`"
+msgstr ""
+
+#: ../../source/other/guide_for_manim_users.rst:39
+msgid "包围矩形"
+msgstr ""
+
+#: ../../source/other/guide_for_manim_users.rst:40
+msgid "``SurroundingRectangle``"
+msgstr ""
+
+#: ../../source/other/guide_for_manim_users.rst:41
+msgid ":class:`~.SurroundingRect`"
+msgstr ""
+
+#: ../../source/other/guide_for_manim_users.rst:43
+msgid "设置 :class:`~.VItem` 描边粗细"
+msgstr ""
+
+#: ../../source/other/guide_for_manim_users.rst:44
+msgid "``xxx.set_stroke(width=粗细)``"
+msgstr ""
+
+#: ../../source/other/guide_for_manim_users.rst:45
+msgid "``xxx.radius.set(粗细半径)``"
+msgstr ""
+
+#: ../../source/other/guide_for_manim_users.rst:46
+msgid "二者粗细的含义不同，请自行尝试"
+msgstr ""
+
+#: ../../source/other/guide_for_manim_users.rst:47
+msgid "物件作用动画"
+msgstr ""
+
+#: ../../source/other/guide_for_manim_users.rst:48
+msgid "``xxx.animate``"
+msgstr ""
+
+#: ../../source/other/guide_for_manim_users.rst:49
+msgid "``xxx.anim``"
+msgstr ""
+
+#: ../../source/other/guide_for_manim_users.rst:51
+msgid "动画组"
+msgstr ""
+
+#: ../../source/other/guide_for_manim_users.rst:52
+msgid "``AnimationGroup``"
+msgstr ""
+
+#: ../../source/other/guide_for_manim_users.rst:53
+msgid ":class:`~.AnimGroup`"
+msgstr ""
+
+#: ../../source/other/guide_for_manim_users.rst:54
+msgid "效果上有一些差异"
+msgstr ""
+
+#: ../../source/other/guide_for_manim_users.rst:55
+msgid "Updaters"
+msgstr ""
+
+#: ../../source/other/guide_for_manim_users.rst:56
+msgid "``xxx.add_updater``"
+msgstr ""
+
+#: ../../source/other/guide_for_manim_users.rst:57
+msgid ":class:`~.DataUpdater`, :class:`~.GroupUpdater`, 等"
+msgstr ""
+
+#: ../../source/other/guide_for_manim_users.rst:58
+msgid "使用上的差异较大"
+msgstr ""
+
+#: ../../source/other/guide_for_manim_users.rst:59
+msgid "移动到屏幕边上/角落"
+msgstr ""
+
+#: ../../source/other/guide_for_manim_users.rst:60
+msgid "``to_edge``, ``to_corner``"
+msgstr ""
+
+#: ../../source/other/guide_for_manim_users.rst:61
+msgid ":meth:`~.Cmpt_Points.to_border`"
+msgstr ""
+
+#: ../../source/other/guide_for_manim_users.rst:68
+msgid "进一步的学习请阅读 :ref:`入门 <get_started>` 页面的内容"
+msgstr ""
+
+#: ../../source/other/guide_for_manim_users.rst:70
+msgid "欢迎在该页面补充更多信息！"
+msgstr ""
+

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  JAnim\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-01 09:30+0800\n"
+"POT-Creation-Date: 2025-08-11 22:08+0800\n"
 "PO-Revision-Date: 2024-03-14 15:55+0800\n"
 "Last-Translator: \n"
 "Language: en\n"
@@ -124,11 +124,11 @@ msgid "匹配形状进行变换"
 msgstr ""
 
 #: janim.anims.transform.TransformMatchingShapes:3 of
-msgid "`mismatch` 表示对于不匹配的形状的处理"
+msgid "``mismatch`` 表示对于不匹配的形状的处理"
 msgstr ""
 
 #: janim.anims.transform.TransformMatchingShapes:4 of
-msgid "注：所有传入该动画类的额外参数都会被传入 `mismatch` 的方法中"
+msgid "注：所有传入该动画类的额外参数都会被传入 ``mismatch`` 的方法中"
 msgstr ""
 
 #~ msgid ""
@@ -160,4 +160,10 @@ msgstr ""
 
 #~ msgid "使得 ``.anim`` 和 ``.anim(...)`` 后可以进行同样的操作"
 #~ msgstr "Allow the same operations after ``.anim`` and ``.anim(...)``."
+
+#~ msgid "`mismatch` 表示对于不匹配的形状的处理"
+#~ msgstr ""
+
+#~ msgid "注：所有传入该动画类的额外参数都会被传入 `mismatch` 的方法中"
+#~ msgstr ""
 

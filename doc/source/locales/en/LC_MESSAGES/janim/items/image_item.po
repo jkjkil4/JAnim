@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: JAnim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-11-10 11:17+0800\n"
+"POT-Creation-Date: 2025-08-11 22:08+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -17,13 +17,13 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.14.0\n"
+"Generated-By: Babel 2.17.0\n"
 
 #: ../../source/janim/items/image_item.rst:2
 msgid "image_item"
 msgstr ""
 
-#: janim.items.image_item.ImageItem:1 janim.items.image_item.Video:1 of
+#: janim.items.image_item.ImageItem:1 of
 msgid "基类：:py:class:`~janim.items.points.Points`"
 msgstr ""
 
@@ -135,6 +135,12 @@ msgid "播放视频请使用 :class:`Video`"
 msgstr ""
 
 #: janim.items.image_item.Video:1 of
+msgid ""
+"基类：:py:class:`~janim.anims.timeline.PlaybackControl`, "
+":py:class:`~janim.items.points.Points`"
+msgstr ""
+
+#: janim.items.image_item.Video:1 of
 msgid "视频物件，和图像物件类似，其实本质上是一个内容实时变化的图像"
 msgstr ""
 
@@ -147,22 +153,34 @@ msgid "和其它物件一样，使用 :meth:`~.Item.show` 进行显示，默认�
 msgstr ""
 
 #: janim.items.image_item.Video:6 of
-msgid "调用 :meth:`start` 表示从当前位置开始播放，可以传入 ``speed`` 参数指定倍速"
+msgid "调用 ``start`` 表示从当前位置开始播放，可以传入 ``speed`` 参数指定倍速"
 msgstr ""
 
 #: janim.items.image_item.Video:7 of
-msgid "调用 :meth:`stop` 表示停止在当前位置"
+msgid "调用 ``stop`` 表示停止在当前位置"
 msgstr ""
 
 #: janim.items.image_item.Video:8 of
-msgid "调用 :meth:`seek` 表示跳转视频进度到指定秒数"
+msgid "调用 ``seek`` 表示跳转视频进度到指定秒数"
 msgstr ""
 
 #: janim.items.image_item.Video:10 of
+msgid "传入参数："
+msgstr ""
+
+#: janim.items.image_item.Video:12 of
+msgid "使用 ``loop`` 可控制是否循环播放"
+msgstr ""
+
+#: janim.items.image_item.Video:14 of
+msgid "注意：在默认情况下未开始播放，需要使用 ``start`` 以开始播放"
+msgstr ""
+
+#: janim.items.image_item.Video:16 of
 msgid "例："
 msgstr ""
 
-#: janim.items.image_item.Video:26 of
+#: janim.items.image_item.Video:32 of
 msgid "表示：先播放 1s，然后以 0.5 倍速播放 1s，然后画面静止"
 msgstr ""
 
@@ -195,5 +213,14 @@ msgid "与 :class:`Video` 基本一致，只是在被放大显示时不进行平
 msgstr ""
 
 #~ msgid "基类：:py:class:`~janim.items.item.Item.Data`\\ [:py:class:`ImageItem`]"
+#~ msgstr ""
+
+#~ msgid "调用 :meth:`start` 表示从当前位置开始播放，可以传入 ``speed`` 参数指定倍速"
+#~ msgstr ""
+
+#~ msgid "调用 :meth:`stop` 表示停止在当前位置"
+#~ msgstr ""
+
+#~ msgid "调用 :meth:`seek` 表示跳转视频进度到指定秒数"
 #~ msgstr ""
 
