@@ -227,3 +227,23 @@
 - :doc:`../janim/anims/rotation`
 - :doc:`../janim/anims/transform`
 - :doc:`../janim/anims/updater`
+
+JAnim 还有一个重要的特性是“动画复合”，我们将在 :ref:`updaters` 中详细介绍这一特性。
+
+``.r`` 的使用
+---------------------
+
+在 JAnim 中，由于 **物件-组件** 的结构关系，导致在一个组件中进行完操作后，
+需要使用 ``.r`` 来返回物件级别，从而再访问物件或是其它组件中的功能，例如：
+
+.. code-block:: python
+
+    item.points.shift(LEFT * 2).r.color.fade(0.5)
+
+或是对于动画而言
+
+.. code-block:: python
+
+    self.play(
+        item.anim.points.shift(LEFT * 2).r.fade(0.5)
+    )

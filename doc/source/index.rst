@@ -32,6 +32,7 @@ JAnim 是一个用于创建流畅动画的库
    :maxdepth: 1
    :caption: 其它教程
 
+   tutorials/sub_timeline
    tutorials/3d_coordinates
    tutorials/essence_of_points
 
