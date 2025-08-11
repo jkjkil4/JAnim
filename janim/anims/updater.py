@@ -316,9 +316,10 @@ class MethodUpdater(Animation):
         GetAttr = 0
         Call = 1
 
-    def __init__(self, item: Item, **kwargs):
+    def __init__(self, item: Item, become_at_end: bool = True, **kwargs):
         super().__init__(**kwargs)
         self.item = item
+        self.become_at_end = become_at_end
 
         self.updaters: list[tuple[str | None, Callable, tuple, dict, bool | None]] = []
         self.grouply: bool = False
@@ -385,12 +386,14 @@ class MethodUpdater(Animation):
                 self.item,
                 self.updater,
                 extra=lambda item: item is self.item,   # 只有根物件的 extra_data 为 True，用于辅助 root_only
-                root_only=False
+                root_only=False,
+                become_at_end=self.become_at_end
             )
         else:
             sub_updater = GroupUpdater(
                 self.item,
                 self.updater,
+                become_at_end=self.become_at_end
             )
 
         sub_updater._generate_by = self
