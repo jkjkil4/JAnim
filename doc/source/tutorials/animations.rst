@@ -245,5 +245,5 @@ JAnim 还有一个重要的特性是“动画复合”，我们将在 :ref:`upda
 .. code-block:: python
 
     self.play(
-        item.anim.points.shift(LEFT * 2).r.fade(0.5)
+        item.anim.points.shift(LEFT * 2).r.color.fade(0.5)
     )
