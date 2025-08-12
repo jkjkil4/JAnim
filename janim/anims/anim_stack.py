@@ -7,9 +7,13 @@ from typing import Generator
 from janim.anims.animation import ApplyAligner, ItemAnimation, TimeAligner
 from janim.anims.display import Display
 from janim.constants import FOREVER
+from janim.exception import ApplyAlignerBrokenError
 from janim.items.item import Item
+from janim.locale.i18n import get_local_strings
 
 type ComputeAnimsGenerator = Generator[ApplyAligner, None, Item]
+
+_ = get_local_strings('anim_stack')
 
 
 class AnimStack:
@@ -164,10 +168,21 @@ class AnimStack:
                             continue
                         anims = (stack.get_at_left if get_at_left else stack.get)(as_time)
                         generator = stack.compute_anims(as_time, anims)
-                        aligner = next(generator)
-                        computing[stack] = (generator, aligner)
-                        if id(aligner.stacks) not in stacks_map:
-                            append_stacks(aligner.stacks)
+                        # 一般情况下 next(generator) 不会触发 StopIteration
+                        # 但是当 GroupUpdater 中的部分物件的动画栈被覆盖性动画覆盖后（例如 .anim 或者未传入 become_at_end 的 Updater）
+                        # 就会触发 StopIteration，此时给出报错
+                        try:
+                            aligner = next(generator)
+                        except StopIteration:
+                            raise ApplyAlignerBrokenError(
+                                _('The GroupUpdater structure was broken by an overriding animation, '
+                                  'possibly caused by .anim or by an Updater '
+                                  'that ended earlier without passing become_at_end=False')
+                            )
+                        else:
+                            computing[stack] = (generator, aligner)
+                            if id(aligner.stacks) not in stacks_map:
+                                append_stacks(aligner.stacks)
 
                 append_stacks(aligner.stacks)
 
