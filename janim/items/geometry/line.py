@@ -115,6 +115,8 @@ class Cmpt_VPoints_LineImpl[ItemT](Cmpt_VPoints[ItemT]):
         # gives their centers
         rough_start = Cmpt_VPoints_LineImpl.pointify(start)
         rough_end = Cmpt_VPoints_LineImpl.pointify(end)
+        if np.isclose(rough_start, rough_end).all():
+            rough_end[0] += 1e-6
         vect = normalize(rough_end - rough_start)
         # Now that we know the direction between them,
         # we can find the appropriate boundary point from
