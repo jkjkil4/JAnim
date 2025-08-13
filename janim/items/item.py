@@ -419,12 +419,6 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
 
         assert decl_cls is not None
 
-        # 如果 self 本身就是 decl_cls 的实例
-        # 那么自身肯定有名称为 name 的组件，对于这种情况实际上完全没必要 astype
-        # 为了灵活性，这里将这个已有的组件返回
-        if isinstance(self, decl_cls):
-            return getattr(self, name)
-
         cmpt = self._astype_mock_cmpt.get(name, None)
 
         # 如果 astype 需求的组件已经被创建过，并且新类型不是旧类型的子类，那么直接返回

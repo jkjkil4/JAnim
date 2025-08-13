@@ -152,6 +152,32 @@ class Component[ItemT](refresh.Refreshable, metaclass=_CmptMeta):
 
     def interpolate(self, cmpt1, cmpt2, alpha: float, *, path_func=None) -> None: ...
 
+    def __getattr__(self, name: str):
+        # 使用场景例如 group(VItem).points.insert_n_curves(4)
+
+        # 判断 SIGNAL_OBJ_SLOTS_NAME 是因为经过实际测试，发现 SIGNAL_OBJ_SLOTS_NAME 会经常被 __getattr__ 捕获，所以这里提前判断并结束 __getattr__
+        # 判断 '__setstate__' 是为了让 copy 功能正常运作
+        if name in (SIGNAL_OBJ_SLOTS_NAME, '__setstate__'):
+            raise AttributeError()
+
+        if self.bind is None or self.bind.at_item._astype is None:
+            self.__getattribute__(name)     # 触发默认的 AttributeError
+
+        if not hasattr(self.bind.at_item._astype, self.bind.key):
+            self.__getattribute__(name)     # 触发默认的 AttributeError
+
+        mock = self.bind.at_item.__getattr__(self.bind.key)
+        mock_bind = mock.bind
+        mock.bind = None
+        try:
+            has = hasattr(mock, name)
+        finally:
+            mock.bind = mock_bind
+        if not has:
+            self.__getattribute__(name)     # 触发默认的 AttributeError
+
+        return getattr(mock, name)
+
 
 class CmptInfo[T]:
     '''
