@@ -153,7 +153,8 @@ class TimelineView(QWidget):
             if subtimeline_label_group is None:
                 return
 
-            subtimeline_label_group.switch_collapse()
+            if subtimeline_label_group._collapse:
+                subtimeline_label_group.switch_collapse()
             labels = subtimeline_label_group.labels
             for i, name, sub_info in self.expanded:
                 if i >= len(labels):
