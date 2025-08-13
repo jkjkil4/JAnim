@@ -51,11 +51,11 @@ class Cmpt_VPoints_LineImpl[ItemT](Cmpt_VPoints[ItemT]):
         curr_start, curr_end = self.get_start_and_end()
         if np.isclose(curr_start, curr_end).all():
             # Handle null lines more gracefully
-            self.update_points_by_attrs(start, end, buff=0, path_arc=self.path_arc)
+            self.update_by_attrs(start, end, buff=0, path_arc=self.path_arc)
             return self
         return super().put_start_and_end_on(start, end)
 
-    def update_points_by_attrs(
+    def update_by_attrs(
         self,
         start: np.ndarray | None = None,
         end: np.ndarray | None = None,
@@ -109,17 +109,26 @@ class Cmpt_VPoints_LineImpl[ItemT](Cmpt_VPoints[ItemT]):
         self.set(points)
         return self
 
+    def update_points_by_attrs(self, *args, **kwargs) -> Self:
+        from janim.utils.deprecation import deprecated
+        deprecated(
+            'update_points_by_attrs',
+            'update_by_attrs',
+            remove=(4, 3)
+        )
+        return self.update_by_attrs(*args, **kwargs)
+
     def set_buff(self, buff: float) -> Self:
-        self.update_points_by_attrs(buff=buff)
+        self.update_by_attrs(buff=buff)
         return self
 
     def set_path_arc(self, path_arc: float) -> Self:
-        self.update_points_by_attrs(path_arc=path_arc)
+        self.update_by_attrs(path_arc=path_arc)
         return self
 
     def set_start_and_end(self, start: SupportsPointify, end: SupportsPointify) -> Self:
         start, end = self.pointify_start_and_end(start, end)
-        self.update_points_by_attrs(start=start, end=end)
+        self.update_by_attrs(start=start, end=end)
         return self
 
     @staticmethod
@@ -232,7 +241,7 @@ class Line(VItem):
         super().__init__(**kwargs)
 
         start, end = self.points.pointify_start_and_end(start, end)
-        self.points.update_points_by_attrs(start, end, buff, path_arc)
+        self.points.update_by_attrs(start, end, buff, path_arc)
 
 
 class Cmpt_VPoints_DashedLineImpl[ItemT](Cmpt_VPoints_LineImpl[ItemT], impl=True):
