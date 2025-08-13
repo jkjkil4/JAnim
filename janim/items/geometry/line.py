@@ -95,7 +95,8 @@ class Cmpt_VPoints_LineImpl[ItemT](Cmpt_VPoints[ItemT]):
             alpha = min(buff / self.arc_length, 0.5)
             points = self.partial_points(points, alpha, 1 - alpha)
         elif buff < 0:
-            start_dir, end_dir = normalize(self.start_direction), normalize(self.end_direction)
+            start_dir = normalize(self.start_direction_from_points(points))
+            end_dir = normalize(self.end_direction_from_points(points))
             if path_arc == 0:
                 points[0] += start_dir * buff
                 points[-1] -= end_dir * buff

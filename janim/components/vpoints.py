@@ -278,16 +278,22 @@ class Cmpt_VPoints[ItemT](Cmpt_Points[ItemT], impl=True):
 
     @property
     def start_direction(self) -> np.ndarray:
-        points = self._points.data
+        return self.start_direction_from_points(self._points.data)
+
+    @property
+    def end_direction(self) -> np.ndarray:
+        return self.end_direction_from_points(self._points.data)
+
+    @staticmethod
+    def start_direction_from_points(points: np.ndarray) -> np.ndarray:
         start = points[0]
         for pos in points[1:]:
             if not np.isclose(start, pos).all():
                 return pos - start
         return RIGHT
 
-    @property
-    def end_direction(self) -> np.ndarray:
-        points = self._points.data
+    @staticmethod
+    def end_direction_from_points(points: np.ndarray) -> np.ndarray:
         end = points[-1]
         for pos in points[-2::-1]:
             if not np.isclose(end, pos).all():
