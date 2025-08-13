@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import math
 from typing import Literal, Self
 
 import numpy as np
@@ -14,7 +13,7 @@ from janim.items.vitem import DashedVItem, VItem
 from janim.typing import JAnimColor, Vect
 from janim.utils.bezier import PathBuilder
 from janim.utils.simple_functions import clip
-from janim.utils.space_ops import (angle_of_vector, get_norm,
+from janim.utils.space_ops import (angle_of_vector, get_arc_length, get_norm,
                                    line_intersection, normalize)
 
 type SupportsPointify = Vect | Points
@@ -92,7 +91,8 @@ class Cmpt_VPoints_LineImpl[ItemT](Cmpt_VPoints[ItemT]):
 
         # Apply buffer
         if buff > 0:
-            alpha = min(buff / self.arc_length, 0.5)
+            arc_len = get_arc_length(get_norm(points[-1] - points[0]), path_arc)
+            alpha = min(buff / arc_len, 0.5)
             points = self.partial_points(points, alpha, 1 - alpha)
         elif buff < 0:
             start_dir = normalize(self.start_direction_from_points(points))
@@ -213,10 +213,7 @@ class Cmpt_VPoints_LineImpl[ItemT](Cmpt_VPoints[ItemT]):
 
     @property
     def arc_length(self) -> float:
-        arc_len = get_norm(self.vector)
-        if self.path_arc > 0:
-            arc_len *= self.path_arc / (2 * math.sin(self.path_arc / 2))
-        return arc_len
+        return get_arc_length(get_norm(self.vector), self.path_arc)
 
 
 class Line(VItem):
