@@ -88,12 +88,25 @@ class Cmpt_VPoints_LineImpl[ItemT](Cmpt_VPoints[ItemT]):
 
         builder = PathBuilder(start_point=start)
         builder.arc_to(end, path_arc)
-        self.set(builder.get())
+        points = builder.get()
 
         # Apply buffer
         if buff > 0:
             alpha = min(buff / self.arc_length, 0.5)
-            self.pointwise_become_partial(self, alpha, 1 - alpha)
+            points = self.partial_points(points, alpha, 1 - alpha)
+        elif buff < 0:
+            start_dir, end_dir = normalize(self.start_direction), normalize(self.end_direction)
+            if path_arc == 0:
+                points[0] += start_dir * buff
+                points[-1] -= end_dir * buff
+            else:
+                points = np.vstack([
+                    [points[0] + start_dir * buff, points[0] + start_dir * (0.5 * buff)],
+                    points,
+                    [points[-1] - end_dir * (0.5 * buff), points[-1] - end_dir * buff]
+                ])
+
+        self.set(points)
         return self
 
     def set_buff(self, buff: float) -> Self:
