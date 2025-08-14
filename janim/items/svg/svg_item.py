@@ -3,7 +3,7 @@ from __future__ import annotations
 import os
 from collections import defaultdict
 from functools import partial
-from typing import Any, Callable, Self
+from typing import Any, Callable, Iterable, Self
 
 import numpy as np
 import svgelements as se
@@ -62,6 +62,7 @@ class SVGItem(Group[SVGElemItem]):
         width: float | None = None,
         height: float | None = None,
         mark_basepoint: bool = False,
+        stroke_radius: float | Iterable[float] | None = None,
         **kwargs
     ):
         items, self.groups = self.get_items_from_file(file_path, mark_basepoint)
@@ -97,6 +98,8 @@ class SVGItem(Group[SVGElemItem]):
 
         self(VItem).points.flip(RIGHT, about_edge=None)
         self.scale_descendants_stroke_radius(factor)
+        if stroke_radius is not None:
+            self(VItem).radius.set(stroke_radius)
         self.move_into_position()
 
     def move_into_position(self) -> None:
