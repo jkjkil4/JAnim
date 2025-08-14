@@ -134,3 +134,11 @@ class TypstMatrix(TypstText):
             vars=vars,
             **kwargs
         )
+
+    def get_inserted(self, index: int) -> Points:
+        '''
+        获取插入的第 ``index`` 个 JAnim 物件
+
+        ``index`` 从 0 开始计数
+        '''
+        return self.get_label(f'__ja__mat_{index}')[0]
