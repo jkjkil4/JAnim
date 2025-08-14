@@ -141,4 +141,4 @@ class TypstMatrix(TypstText):
 
         ``index`` 从 0 开始计数
         '''
-        return self.get_label(f'__ja__mat_{index}')[0]
+        return self.groups[f'__ja__mat_{index}'][0]
