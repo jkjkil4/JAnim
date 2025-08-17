@@ -1,15 +1,15 @@
 from __future__ import annotations
 
 import math
+import numbers
 from enum import Enum
 from typing import Callable, Generator, Iterable, Self
 
 import numpy as np
 
-from janim.utils.paths import PathFunc, straight_path
 import janim.utils.refresh as refresh
 from janim.components.points import Cmpt_Points, PointsFn
-from janim.constants import NAN_POINT, ORIGIN, OUT, RIGHT, UP, DEGREES
+from janim.constants import DEGREES, NAN_POINT, ORIGIN, OUT, RIGHT, UP
 from janim.exception import PointError
 from janim.items.item import Item
 from janim.locale.i18n import get_local_strings
@@ -21,10 +21,13 @@ from janim.utils.bezier import (PathBuilder,
                                 partial_quadratic_bezier_points,
                                 smooth_quadratic_path)
 from janim.utils.data import AlignedData
+from janim.utils.paths import PathFunc, straight_path
 from janim.utils.space_ops import (get_norm, get_unit_normal, normalize,
                                    rotation_between_vectors)
 
 _ = get_local_strings('vpoints')
+
+SCALE_STROKE_RADIUS_KEY = 'scale_stroke_radius'
 
 
 class Cmpt_VPoints[ItemT](Cmpt_Points[ItemT], impl=True):
@@ -77,6 +80,18 @@ class Cmpt_VPoints[ItemT](Cmpt_Points[ItemT], impl=True):
             cmpt.make_approximately_smooth()
 
         return self
+
+    def scale(
+        self,
+        scale_factor: float | Iterable,
+        scale_stroke_radius: bool = False,
+        *,
+        root_only: bool = False,
+        **kwargs
+    ) -> Self:
+        if scale_stroke_radius and self.bind is not None and isinstance(scale_factor, numbers.Real):
+            Cmpt_Points.apply_points_fn.emit(self, scale_factor, root_only, key=SCALE_STROKE_RADIUS_KEY)
+        return super().scale(scale_factor, **kwargs)
 
     # region align
 
