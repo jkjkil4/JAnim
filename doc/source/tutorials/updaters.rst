@@ -125,7 +125,6 @@ Updater 的使用
 
 .. janim-example:: ArrowPointingExample
     :media: ../_static/videos/ArrowPointingExample.mp4
-    :hide_name:
 
     dot1 = Dot(LEFT * 3)
     dot2 = Dot()
@@ -223,7 +222,6 @@ JAnim 的各个 ``Updater`` 并非孤立，不仅可以使用 ``.current()`` 获
 
 .. janim-example:: RotatingPieExample
     :media: ../_static/videos/RotatingPieExample.mp4
-    :hide_name:
     :ref: :class:`~.Sector` :func:`~.rotate_vector`
 
     pie = Group(*[
