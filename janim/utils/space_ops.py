@@ -39,6 +39,12 @@ def normalize(vect: np.ndarray, fall_back: np.ndarray | None = None) -> np.ndarr
         return np.zeros(len(vect))
 
 
+def get_arc_length(vector_length: float, path_arc: float) -> float:
+    if path_arc != 0:
+        return vector_length * path_arc / (2 * math.sin(path_arc / 2))
+    return vector_length
+
+
 # Operations related to rotation
 
 

@@ -124,4 +124,16 @@ class Cmpt_Radius[ItemT](Component[ItemT]):
     def count(self) -> int:
         return len(self.get())
 
+    def scale(self, factor: float, *, root_only: bool = False) -> Self:
+        '''
+        缩放线条半径数据
+        '''
+        self._radii.data = self._radii.data * factor
+
+        if not root_only:
+            for cmpt in self.walk_same_cmpt_of_descendants_without_mock():
+                cmpt._radii.data = cmpt._radii.data * factor
+
+        return self
+
     # endregion

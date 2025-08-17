@@ -81,6 +81,7 @@ class TypstDoc(SVGItem):
 
                     item_to_replace = item if i == 0 else item.copy()
                     item_to_replace.points.set_size(width=phbox.width, height=phbox.height).move_to(phbox.center)
+                    self.groups[label] = [item_to_replace]
 
                     idx = new_children.index(placeholder)
                     new_children.pop(idx)

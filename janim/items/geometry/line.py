@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import math
 from typing import Literal, Self
 
 import numpy as np
@@ -14,7 +13,7 @@ from janim.items.vitem import DashedVItem, VItem
 from janim.typing import JAnimColor, Vect
 from janim.utils.bezier import PathBuilder
 from janim.utils.simple_functions import clip
-from janim.utils.space_ops import (angle_of_vector, get_norm,
+from janim.utils.space_ops import (angle_of_vector, get_arc_length, get_norm,
                                    line_intersection, normalize)
 
 type SupportsPointify = Vect | Points
@@ -51,11 +50,11 @@ class Cmpt_VPoints_LineImpl[ItemT](Cmpt_VPoints[ItemT]):
         curr_start, curr_end = self.get_start_and_end()
         if np.isclose(curr_start, curr_end).all():
             # Handle null lines more gracefully
-            self.update_points_by_attrs(start, end, buff=0, path_arc=self.path_arc)
+            self.update_by_attrs(start, end, buff=0, path_arc=self.path_arc)
             return self
         return super().put_start_and_end_on(start, end)
 
-    def update_points_by_attrs(
+    def update_by_attrs(
         self,
         start: np.ndarray | None = None,
         end: np.ndarray | None = None,
@@ -92,10 +91,12 @@ class Cmpt_VPoints_LineImpl[ItemT](Cmpt_VPoints[ItemT]):
 
         # Apply buffer
         if buff > 0:
-            alpha = min(buff / self.arc_length, 0.5)
+            arc_len = get_arc_length(get_norm(points[-1] - points[0]), path_arc)
+            alpha = min(buff / arc_len, 0.5)
             points = self.partial_points(points, alpha, 1 - alpha)
         elif buff < 0:
-            start_dir, end_dir = normalize(self.start_direction), normalize(self.end_direction)
+            start_dir = normalize(self.start_direction_from_points(points))
+            end_dir = normalize(self.end_direction_from_points(points))
             if path_arc == 0:
                 points[0] += start_dir * buff
                 points[-1] -= end_dir * buff
@@ -109,17 +110,26 @@ class Cmpt_VPoints_LineImpl[ItemT](Cmpt_VPoints[ItemT]):
         self.set(points)
         return self
 
+    def update_points_by_attrs(self, *args, **kwargs) -> Self:
+        from janim.utils.deprecation import deprecated
+        deprecated(
+            'update_points_by_attrs',
+            'update_by_attrs',
+            remove=(4, 3)
+        )
+        return self.update_by_attrs(*args, **kwargs)
+
     def set_buff(self, buff: float) -> Self:
-        self.update_points_by_attrs(buff=buff)
+        self.update_by_attrs(buff=buff)
         return self
 
     def set_path_arc(self, path_arc: float) -> Self:
-        self.update_points_by_attrs(path_arc=path_arc)
+        self.update_by_attrs(path_arc=path_arc)
         return self
 
     def set_start_and_end(self, start: SupportsPointify, end: SupportsPointify) -> Self:
         start, end = self.pointify_start_and_end(start, end)
-        self.update_points_by_attrs(start=start, end=end)
+        self.update_by_attrs(start=start, end=end)
         return self
 
     @staticmethod
@@ -203,10 +213,7 @@ class Cmpt_VPoints_LineImpl[ItemT](Cmpt_VPoints[ItemT]):
 
     @property
     def arc_length(self) -> float:
-        arc_len = get_norm(self.vector)
-        if self.path_arc > 0:
-            arc_len *= self.path_arc / (2 * math.sin(self.path_arc / 2))
-        return arc_len
+        return get_arc_length(get_norm(self.vector), self.path_arc)
 
 
 class Line(VItem):
@@ -232,7 +239,7 @@ class Line(VItem):
         super().__init__(**kwargs)
 
         start, end = self.points.pointify_start_and_end(start, end)
-        self.points.update_points_by_attrs(start, end, buff, path_arc)
+        self.points.update_by_attrs(start, end, buff, path_arc)
 
 
 class Cmpt_VPoints_DashedLineImpl[ItemT](Cmpt_VPoints_LineImpl[ItemT], impl=True):
