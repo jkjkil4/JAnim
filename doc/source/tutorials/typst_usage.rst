@@ -56,7 +56,7 @@ Typst 子物件索引
 
   typ = TypstMath('cos^2 theta + sin^2 theta = 1')
 
-可以使用 ``typ['cos']`` 得到 ``cos`` 对应的部分，这样你就可以使用类似于 ``t['cos'].set(color=BLUE)`` 的方式进行着色，或进行其它处理。
+可以使用 ``typ['cos']`` 得到 ``cos`` 对应的部分，这样你就可以使用类似于 ``typ['cos'].set(color=BLUE)`` 的方式进行着色，或进行其它处理。
 
 当出现多个匹配时的处理
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -227,8 +227,8 @@ JAnim 提供了内置包可以在 Typst 中使用 ``#import`` 引入
 
     你需要将 ``<site-packages>/janim/items/svg`` 完整路径通过 ``--package-path`` 选项传递给 Typst 编译器或 Tinymist 插件的 ``"tinymist.typstExtraArgs"`` 选项
 
-其它
---------------
+语法高亮
+----------------
 
 前面提到，如果你使用了 VSCode 插件 ``janim-toolbox``，
 会自动给 :class:`TypstDoc` 和 :class:`TypstText` 中出现的 Raw-字符串（形如 ``R'...'``） 进行 Typst 语法高亮。
@@ -255,6 +255,84 @@ JAnim 提供了内置包可以在 Typst 中使用 ``#import`` 引入
 
     group.points.arrange()
     group.show()
+
+嵌入 JAnim 物件
+----------------------
+
+Typst 物件支持传入 ``vars`` 参数嵌入 JAnim 物件：
+
+.. janim-example:: TypstVars
+    :media: ../_static/tutorial/TypstVars.mp4
+    :hide_name:
+    :ref: :class:`~.TypstText` :class:`~.Video`
+
+    typ1 = TypstText(
+        R'This is a sentence with an inserted #star JAnim item',
+        vars={
+            'star': Star(outer_radius=0.5, color=YELLOW, fill_alpha=0.5)
+        },
+        vars_size_unit='em'
+    )
+
+    typ2 = TypstText(
+        R'''
+        #box(fill: luma(40%), inset: 8pt)[
+            This is a grid containing JAnim items
+            #grid(
+                columns: 2,
+                fill: luma(20%),
+                gutter: 4pt,
+                inset: 8pt,
+
+                [$f(x)$\ math content],
+                gif,
+                star,
+                [QwQ\ text content]
+            )
+        ]
+        ''',
+        vars={
+            'gif': Video('Ayana.gif', loop=True).start(),
+            'star': Star(),
+        },
+    )
+
+    Group(typ1, typ2).show().points.arrange(DOWN)
+    self.forward(4)
+
+.. hint::
+
+    未传入 ``vars_size_unit`` 时，嵌入的 JAnim 物件会保留在 JAnim 中原有的大小，若传入了 ``vars_size_unit`` 则将其大小乘上对应的单位。
+
+    例如对于一个在 JAnim 中高度为 1 的物件，如果直接插入 Typst 文字中会显得很大，此时设置 ``vars_size_unit='em'`` 使其插入高度变为 ``1em``，则基本与文字高度匹配。
+
+``vars`` 是一个字典，它的键会作为 Typst 代码中可以使用的变量名，值会作为变量名对应的 JAnim 物件，并且支持进一步嵌套列表和字典：
+
+.. code-block::
+
+    TypstText(
+        ...,
+        vars=dict(
+            shapes=[
+                Star(),
+                Square(),
+                Circle()
+            ],
+            mapping=dict(
+                txt=Text('This is a JAnim sentence'),
+                vid=Video('example.mp4').start()
+            )
+        )
+    )
+
+.. note::
+
+    在 Typst 中嵌入 JAnim 物件，从原理上来讲是创建了一个对应大小的占位 ``box``，然后在 Typst 物件创建后，将其替换为 JAnim 物件，从而做到嵌入的目的。
+
+特殊类型的 Typst 物件
+-----------------------------
+
+- :class:`~.TypstMatrix` 使用 Typst 进行矩阵布局
 
 参考文档
 -------------
