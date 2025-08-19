@@ -74,7 +74,7 @@
 
 .. janim-example:: TypstExample
     :media: ../_static/videos/TypstExample.mp4
-    :ref: :class:`~.TypstDoc` :class:`~.TypstText` :class:`~.TypstMath`
+    :ref: :class:`~.TypstDoc` :class:`~.TypstText` :class:`~.TypstMath` :ref:`typst_usage`
 
     from janim.imports import *
 
@@ -129,7 +129,7 @@
 
 .. janim-example:: TypstColorizeExample
     :media: ../_static/videos/TypstColorizeExample.mp4
-    :ref: :class:`~.TypstMath`
+    :ref: :class:`~.TypstMath` :ref:`typst_usage`
 
     from janim.imports import *
 

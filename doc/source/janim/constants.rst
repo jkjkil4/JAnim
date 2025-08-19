@@ -65,6 +65,8 @@ JAnim 使用三维坐标，并且用 ``ndarray`` 的类型
     # when juxtaposed with expressions like 30 * DEGREES
     RADIANS = 1
 
+.. _constants_colors:
+
 颜色
 ---------------------
 
