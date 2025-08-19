@@ -100,6 +100,21 @@ class TypstExample(Timeline):
         self.play(FadeOut(group))
 
 
+class TypstColorizeExample(Timeline):
+    def construct(self):
+        typ = TypstMath('cos^2 theta + sin^2 theta = 1', scale=3).show()
+
+        self.forward()
+        self.play(typ['cos'].anim.set(color=BLUE))
+        self.play(typ['sin'].anim.set(color=BLUE))
+        self.play(typ['theta', 0].anim.set(color=GOLD))
+        self.play(typ['theta', 1].anim.set(color=ORANGE))
+        self.forward()
+        self.play(typ['theta', ...].anim.set(color=GREEN))
+        self.play(typ['space^2', ...].anim.set(color=RED))
+        self.forward()
+
+
 class AnimatingPiExample(Timeline):
     def construct(self) -> None:
         grid = TypstMath('pi') * 100
