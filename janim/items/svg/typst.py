@@ -85,6 +85,11 @@ class TypstDoc(SVGItem):
 
                     item_to_replace = item if i == 0 else item.copy()
                     item_to_replace.points.set_size(width=phbox.width, height=phbox.height).move_to(phbox.center)
+
+                    for suborder, sub in enumerate(item_to_replace.walk_self_and_descendants()):
+                        sub.depth._depth = placeholder.depth._depth
+                        sub.depth._order = placeholder.depth._order + 1e-4 * suborder
+
                     self.groups[label] = [item_to_replace]
 
                     idx = new_children.index(placeholder)
