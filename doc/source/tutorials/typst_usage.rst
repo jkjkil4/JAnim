@@ -308,7 +308,7 @@ Typst 物件支持传入 ``vars`` 参数嵌入 JAnim 物件：
 
 ``vars`` 是一个字典，它的键会作为 Typst 代码中可以使用的变量名，值会作为变量名对应的 JAnim 物件，并且支持进一步嵌套列表和字典：
 
-.. code-block::
+.. code-block:: python
 
     TypstText(
         ...,
