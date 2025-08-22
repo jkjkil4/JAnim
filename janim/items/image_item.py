@@ -59,7 +59,7 @@ class ImageItem(Points):
 
         self.points.set([UL, DL, UR, DR])
 
-        if isinstance(file_path_or_image, str):
+        if isinstance(file_path_or_image, (str, os.PathLike)):
             img = get_img_from_file(file_path_or_image)
         else:
             img = file_path_or_image
