@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-20 11:53+0800\n"
+"POT-Creation-Date: 2025-08-11 19:28+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,16 +17,16 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: janim/components/points.py:207
+#: janim\components\points.py:209
 #, python-brace-format
 msgid "Cannot call {name} with no points"
 msgstr ""
 
-#: janim/components/points.py:445
+#: janim\components\points.py:447
 #, python-brace-format
 msgid "Only 2x2 or 3x3 matrix are valid, but a {shape} matrix was passed in"
 msgstr ""
 
-#: janim/components/points.py:795
+#: janim\components\points.py:799
 msgid "Cannot position endpoints of closed loop"
 msgstr ""

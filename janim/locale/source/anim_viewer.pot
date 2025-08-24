@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-21 19:04+0800\n"
+"POT-Creation-Date: 2025-08-24 11:02+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -29,117 +29,133 @@ msgid ""
 "install them in the correct Python version"
 msgstr ""
 
-#: janim\gui\anim_viewer.py:177
-msgid "Functions(&F)"
+#: janim\gui\anim_viewer.py:183
+msgid "File(&F)"
 msgstr ""
 
-#: janim\gui\anim_viewer.py:179
+#: janim\gui\anim_viewer.py:185
+msgid "Export(&E)"
+msgstr ""
+
+#: janim\gui\anim_viewer.py:189
+msgid "Capture(&C)"
+msgstr ""
+
+#: janim\gui\anim_viewer.py:193
+msgid "View(&V)"
+msgstr ""
+
+#: janim\gui\anim_viewer.py:195
 msgid "Stay on top(&T)"
 msgstr ""
 
-#: janim\gui\anim_viewer.py:184
+#: janim\gui\anim_viewer.py:200
 msgid "Frame skip(&P)"
 msgstr ""
 
-#: janim\gui\anim_viewer.py:191
+#: janim\gui\anim_viewer.py:205
+msgid "Tools(&T)"
+msgstr ""
+
+#: janim\gui\anim_viewer.py:207
 msgid "Rebuild(&L)"
 msgstr ""
 
-#: janim\gui\anim_viewer.py:197
-msgid "Subitem selector(&S)"
+#: janim\gui\anim_viewer.py:213
+msgid "Subitem selector(&I)"
 msgstr ""
 
-#: janim\gui\anim_viewer.py:202
+#: janim\gui\anim_viewer.py:218
 msgid "Draw(&D)"
 msgstr ""
 
-#: janim\gui\anim_viewer.py:206
+#: janim\gui\anim_viewer.py:222
 msgid "Rich text editor(&R)"
 msgstr ""
 
-#: janim\gui\anim_viewer.py:210
+#: janim\gui\anim_viewer.py:226
 msgid "Font list(&F)"
 msgstr ""
 
-#: janim\gui\anim_viewer.py:214
+#: janim\gui\anim_viewer.py:230
 msgid "Color(&O)"
 msgstr ""
 
-#: janim\gui\anim_viewer.py:275
+#: janim\gui\anim_viewer.py:291
 #, python-brace-format
 msgid "wnd_pos has wrong argument {wnd_pos}."
 msgstr ""
 
-#: janim\gui\anim_viewer.py:286
+#: janim\gui\anim_viewer.py:302
 #, python-brace-format
 msgid "wnd_monitor has invalid value {wnd_monitor}, use {range} instead."
 msgstr ""
 
-#: janim\gui\anim_viewer.py:412
+#: janim\gui\anim_viewer.py:449
 #, python-brace-format
 msgid "No timeline named \"{name}\" in \"{file}\""
 msgstr ""
 
-#: janim\gui\anim_viewer.py:425
+#: janim\gui\anim_viewer.py:462
 msgid "Failed to rebuild"
 msgstr ""
 
-#: janim\gui\anim_viewer.py:538
+#: janim\gui\anim_viewer.py:575
 msgid "An error occurred during rendering, playback stopped"
 msgstr ""
 
-#: janim\gui\anim_viewer.py:602
+#: janim\gui\anim_viewer.py:639
 #, python-brace-format
 msgid "Frame t={t:.2f} saved to \"{file_path}\""
 msgstr ""
 
-#: janim\gui\anim_viewer.py:604 janim\gui\anim_viewer.py:623
-#: janim\gui\anim_viewer.py:659
+#: janim\gui\anim_viewer.py:641 janim\gui\anim_viewer.py:660
+#: janim\gui\anim_viewer.py:697
 msgid "Note"
 msgstr ""
 
-#: janim\gui\anim_viewer.py:605
+#: janim\gui\anim_viewer.py:642
 #, python-brace-format
 msgid "Captured to {file_path}"
 msgstr ""
 
-#: janim\gui\anim_viewer.py:624
+#: janim\gui\anim_viewer.py:661
 msgid "Output will start shortly. Please check the console for information."
 msgstr ""
 
-#: janim\gui\anim_viewer.py:652
+#: janim\gui\anim_viewer.py:690
 msgid "Exporting was cancelled"
 msgstr ""
 
-#: janim\gui\anim_viewer.py:660
+#: janim\gui\anim_viewer.py:698
 #, python-brace-format
 msgid "Output to {file_path} has been completed."
 msgstr ""
 
-#: janim\gui\anim_viewer.py:682
+#: janim\gui\anim_viewer.py:729
 #, python-brace-format
 msgid "Searching port has been opened at {port}"
 msgstr ""
 
-#: janim\gui\anim_viewer.py:687
+#: janim\gui\anim_viewer.py:734
 #, python-brace-format
 msgid "Failed to open searching port at {port}"
 msgstr ""
 
-#: janim\gui\anim_viewer.py:692
+#: janim\gui\anim_viewer.py:739
 #, python-brace-format
 msgid ""
 "Searching port {port} is invalid, please use a number between 1024 and 65535 "
 "instead"
 msgstr ""
 
-#: janim\gui\anim_viewer.py:698
+#: janim\gui\anim_viewer.py:745
 msgid ""
 "Interactive development is disabled because the searching port is not "
 "established."
 msgstr ""
 
-#: janim\gui\anim_viewer.py:711
+#: janim\gui\anim_viewer.py:758
 #, python-brace-format
 msgid "Interactive port has been opened at {port}"
 msgstr ""

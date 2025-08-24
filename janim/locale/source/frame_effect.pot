@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-21 08:31+0800\n"
+"POT-Creation-Date: 2025-07-05 22:33+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,26 +17,14 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: janim/items/effect/frame_effect.py:32
-msgid ""
-"An additional module is required to use `FrameEffect`, but it is not "
-"installed"
-msgstr ""
-
-#: janim/items/effect/frame_effect.py:34
-msgid ""
-"You can install it using \"pip install PyOpenGL\" and make sure you install "
-"it in the correct Python version"
-msgstr ""
-
-#: janim/items/effect/frame_effect.py:50
+#: janim\items\frame_effect.py:106
 #, python-brace-format
 msgid ""
 "Calling {cls}.add is unusual and may not work as expected. If you want to "
 "apply additional items, use `apply` instead."
 msgstr ""
 
-#: janim/items/effect/frame_effect.py:59
+#: janim\items\frame_effect.py:116
 #, python-brace-format
 msgid ""
 "Calling {cls}.remove is unusual and may not work as expected. If you want to "

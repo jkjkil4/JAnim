@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-21 11:42+0800\n"
+"POT-Creation-Date: 2025-08-09 22:44+0800\n"
 "PO-Revision-Date: 2025-04-21 11:46+0800\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -18,35 +18,35 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 "X-Generator: Poedit 3.6\n"
 
-#: janim\gui\functions\capture_dialog.py:28
+#: janim\gui\functions\capture_dialog.py:31
 msgid "Capture"
 msgstr "截取"
 
-#: janim\gui\functions\capture_dialog.py:29
+#: janim\gui\functions\capture_dialog.py:32
 msgid "Save Path:"
 msgstr "保存路径："
 
-#: janim\gui\functions\capture_dialog.py:30
+#: janim\gui\functions\capture_dialog.py:33
 msgid "Transparent Background"
 msgstr "透明背景"
 
-#: janim\gui\functions\capture_dialog.py:31
+#: janim\gui\functions\capture_dialog.py:34
 msgid "Open the image after capturing"
 msgstr "截取图像后打开"
 
-#: janim\gui\functions\capture_dialog.py:34
+#: janim\gui\functions\capture_dialog.py:37
 msgid "OK"
 msgstr "确定"
 
-#: janim\gui\functions\capture_dialog.py:37
+#: janim\gui\functions\capture_dialog.py:40
 msgid "Cancel"
 msgstr "取消"
 
-#: janim\gui\functions\capture_dialog.py:88
+#: janim\gui\functions\capture_dialog.py:112
 msgid "Confirm Export"
 msgstr "确认到处"
 
-#: janim\gui\functions\capture_dialog.py:89
+#: janim\gui\functions\capture_dialog.py:113
 #, python-brace-format
 msgid ""
 "{filename} already exists.\n"
@@ -55,10 +55,10 @@ msgstr ""
 "{filename} 已存在。\n"
 "要替换它吗？"
 
-#: janim\gui\functions\capture_dialog.py:95
+#: janim\gui\functions\capture_dialog.py:119
 msgid "Yes(&Y)"
 msgstr "是(&Y)"
 
-#: janim\gui\functions\capture_dialog.py:96
+#: janim\gui\functions\capture_dialog.py:120
 msgid "No(&N)"
 msgstr "否(&N)"

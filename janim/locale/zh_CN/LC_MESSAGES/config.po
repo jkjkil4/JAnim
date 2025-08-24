@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-04 09:32+0800\n"
+"POT-Creation-Date: 2025-08-22 16:52+0800\n"
 "PO-Revision-Date: 2024-11-24 14:36+0800\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Poedit 3.4.2\n"
 
-#: janim/utils/config.py:29
+#: janim\utils\config.py:30
 msgid "{attrname}={value!r} is incompatible with type {typename}"
 msgstr "{attrname}={value!r} 与类型 {typename} 不兼容"
 

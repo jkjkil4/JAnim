@@ -5,21 +5,19 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: \n"
+"Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-08-03 15:33+0800\n"
-"PO-Revision-Date: 2025-03-04 09:37+0800\n"
+"POT-Creation-Date: 2025-08-17 08:18+0800\n"
+"PO-Revision-Date: 2025-08-17 08:18+0800\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
 "Language: en_US\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Type: text/plain; charset=CP1252\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 3.5\n"
 
-#: janim\render\renderer_video.py:160
-msgid ""
-"Unable to read video. Please install ffmpeg and add it to the environment "
-"variables."
-msgstr "无法读取视频，请安装 ffmpeg 并将其添加到环境变量中"
+#: janim\items\vitem.py:407
+#, python-brace-format
+msgid "Invalid value for equal_lengths: {equal_lengths}"
+msgstr "Invalid value for equal_lengths: {equal_lengths}"
