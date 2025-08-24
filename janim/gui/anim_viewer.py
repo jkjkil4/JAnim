@@ -344,6 +344,14 @@ class AnimViewer(QMainWindow):
         settings.endGroup()
 
         self.action_frame_skip.setChecked(frame_skip)
+        if frame_skip:
+            # 在渲染后才真正启用 frame_skip，避免启动时跳过太多帧
+            def slot() -> None:
+                self.play_timer.start_precise_timer()   # 重置时间
+                self.play_timer.set_skip_enabled(True)
+                self.glw.rendered.disconnect(slot)
+
+            self.glw.rendered.connect(slot)
 
     def save_options(self) -> None:
         settings = QSettings(os.path.join(Config.get.temp_dir, 'anim_viewer.ini'), QSettings.Format.IniFormat)
