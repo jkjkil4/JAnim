@@ -625,9 +625,10 @@ class AnimViewer(QMainWindow):
         ret = False
         t = self.timeline_view.progress_to_time(self.timeline_view.progress())
         try:
-            # 这里每次截图都重新构建一下，因为如果复用原来的对象会使得和 GUI 的上下文冲突
-            built = self.built.timeline.__class__().build()
-            built.capture(t, transparent=transparent).save(file_path)
+            with self.change_export_size(dialog.pixel_size()) if dialog.has_size_set() else nullcontext():
+                # 这里每次截图都重新构建一下，因为如果复用原来的对象会使得和 GUI 的上下文冲突
+                built = self.built.timeline.__class__().build()
+                built.capture(t, transparent=transparent).save(file_path)
 
         except Exception as e:
             if not isinstance(e, ExitException):
@@ -663,7 +664,7 @@ class AnimViewer(QMainWindow):
         QApplication.processEvents()
         ret = False
         try:
-            with self.change_export_size(dialog.size()) if dialog.has_size_set() else nullcontext():
+            with self.change_export_size(dialog.pixel_size()) if dialog.has_size_set() else nullcontext():
                 built = self.built.timeline.__class__().build()
 
                 if video_with_audio:
