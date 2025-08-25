@@ -44,8 +44,7 @@ class CoordinateSystem(metaclass=ABCMeta):
         axis_config: dict,
         length: float | None
     ) -> NumberLine:
-        axis = NumberLine(range, width=length, **axis_config)
-        axis.points.shift(-axis.n2p(0))
+        axis = NumberLine(range, width=length, center=False, **axis_config)
         return axis
 
     @abstractmethod

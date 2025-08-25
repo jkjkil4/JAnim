@@ -4,10 +4,11 @@ from typing import Iterable
 
 import numpy as np
 
-from janim.constants import DOWN, GREY_B, LEFT, MED_SMALL_BUFF, RIGHT, UP
+from janim.constants import (DOWN, GREY_B, LEFT, MED_SMALL_BUFF, ORIGIN, RIGHT,
+                             UP)
 from janim.items.geometry.arrow import ArrowTip
 from janim.items.geometry.line import Line
-from janim.items.points import Group
+from janim.items.points import Group, MarkedItem
 from janim.items.text import Text
 from janim.typing import JAnimColor, RangeSpecifier
 from janim.utils.bezier import interpolate, outer_interpolate
@@ -15,7 +16,7 @@ from janim.utils.dict_ops import merge_dicts_recursively
 from janim.utils.simple_functions import fdiv
 
 
-class NumberLine(Line):
+class NumberLine(MarkedItem, Line):
     '''
     数轴
     '''
@@ -55,6 +56,7 @@ class NumberLine(Line):
         line_to_number_direction: np.ndarray = DOWN,            # 详见 get_number_item
         line_to_number_buff: float = MED_SMALL_BUFF,            # 详见 get_number_item
         decimal_number_config: dict = {},                       # 数字属性
+        center: bool = True,                                    # 创建后是否使整体居中
         **kwargs
     ) -> None:
         if len(x_range) == 2:
@@ -90,13 +92,16 @@ class NumberLine(Line):
             stroke_radius=stroke_radius,
             **kwargs
         )
+        self.mark.set_points([ORIGIN])
 
         if width:
-            self.points.set_width(width)
+            self.points.set_width(width, about_point=ORIGIN)
             self.unit_size = self.get_unit_size()
         else:
             self.points.scale(self.unit_size)
-        self.points.to_center()
+
+        if center:
+            self.points.to_center()
 
         index = 0
 
