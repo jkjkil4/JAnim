@@ -215,6 +215,9 @@ class NumberLine(MarkedItem, Line):
         buff: float | None = None,
         **number_config
     ) -> Text:
+        if np.isclose(x, 0.):
+            x = 0.
+
         number_config = self.decimal_number_config.copy()
         number_config.update(number_config)
 
@@ -224,8 +227,9 @@ class NumberLine(MarkedItem, Line):
             buff = self.line_to_number_buff
 
         places = number_config.pop('num_decimal_places')
+        num = round(x, places)
 
-        num_item = Text(str(round(x, places)), **number_config)
+        num_item = Text(str(num), **number_config)
         num_item.points.next_to(
             self.number_to_point(x),
             direction=direction,
