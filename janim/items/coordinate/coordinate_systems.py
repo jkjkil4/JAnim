@@ -56,7 +56,7 @@ class CoordinateSystem(metaclass=ABCMeta):
 
     def get_origin(self) -> np.ndarray:
         axes = self.get_axes()
-        return axes[0].number_to_point(0)
+        return axes[0].mark.get()
 
     def coords_to_point(self, *coords: float) -> np.ndarray:
         '''
