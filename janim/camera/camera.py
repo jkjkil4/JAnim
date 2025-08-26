@@ -97,12 +97,27 @@ class Cmpt_CameraPoints[ItemT](Cmpt_Points[ItemT]):
     def scale(
         self,
         scale_factor: float | Iterable,
+        *,
+        about_point: Vect | None = None,
+        about_edge: Vect = ORIGIN,
         **kwargs
     ) -> Self:
         '''
         将摄像机缩放指定倍数
         '''
+        if about_point is not None or about_edge is not ORIGIN:
+            if about_point is None:
+                rot_mat_T = self.orientation.rotation_matrix.T
+                width, height = self.size
+                vect = np.array([width / 2, height / 2, 0]) * np.sign(about_edge)
+                vect @= rot_mat_T
+                about_point = self.get()[0] + vect
+
+            new_center = (self.get()[0] - about_point) * scale_factor + about_point
+            self.set([new_center])
+
         self._size *= scale_factor
+
         return self
 
     def rotate(
@@ -140,7 +155,7 @@ class Cmpt_CameraPoints[ItemT](Cmpt_Points[ItemT]):
         return CameraInfo(
             self.scaled_factor,
             self.fov,
-            self.self_box.center,
+            self.get()[0],
             np.array([width, 0, 0]) @ rot_mat_T,
             np.array([0, height, 0]) @ rot_mat_T
         )

@@ -65,12 +65,14 @@ JAnim 使用三维坐标，并且用 ``ndarray`` 的类型
     # when juxtaposed with expressions like 30 * DEGREES
     RADIANS = 1
 
+.. _constants_colors:
+
 颜色
 ---------------------
 
 颜色相关工具和预览可以使用：
 
-- JAnim 自带工具：在命令行中输入 ``janim tool color`` 或者在 GUI 界面左上角的“功能”中点击“颜色”
+- JAnim 自带工具：在命令行中输入 ``janim tool color`` 或者在 GUI 界面左上角的“工具”中点击“颜色”
 - 在线工具：`颜色工具 - MK官网 <https://manim.org.cn/tool/color>`_
 
 这里是 JAnim 中定义的颜色的预览：(修改自

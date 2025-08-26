@@ -179,44 +179,55 @@ class AnimViewer(QMainWindow):
 
     def setup_menu_bar(self) -> None:
         menu_bar = self.menuBar()
-        menu_functions = menu_bar.addMenu(_('Functions(&F)'))
 
-        self.action_stay_on_top = menu_functions.addAction(_('Stay on top(&T)'))
+        menu_file = menu_bar.addMenu(_('File(&F)'))
+
+        self.action_export = menu_file.addAction(_('Export(&E)'))
+        self.action_export.setShortcut('Ctrl+S')
+        self.action_export.setAutoRepeat(False)
+
+        self.action_capture = menu_file.addAction(_('Capture(&C)'))
+        self.action_capture.setShortcut('Ctrl+Alt+S')
+        self.action_capture.setAutoRepeat(False)
+
+        menu_view = menu_bar.addMenu(_('View(&V)'))
+
+        self.action_stay_on_top = menu_view.addAction(_('Stay on top(&T)'))
         self.action_stay_on_top.setCheckable(True)
         self.action_stay_on_top.setShortcut('Ctrl+T')
         self.action_stay_on_top.setAutoRepeat(False)
 
-        self.action_frame_skip = menu_functions.addAction(_('Frame skip(&P)'))
+        self.action_frame_skip = menu_view.addAction(_('Frame skip(&P)'))
         self.action_frame_skip.setCheckable(True)
         self.action_frame_skip.setShortcut('Ctrl+P')
         self.action_frame_skip.setAutoRepeat(False)
 
-        menu_functions.addSeparator()
+        menu_tools = menu_bar.addMenu(_('Tools(&T)'))
 
-        self.action_rebuild = menu_functions.addAction(_('Rebuild(&L)'))
+        self.action_rebuild = menu_tools.addAction(_('Rebuild(&L)'))
         self.action_rebuild.setShortcut('Ctrl+L')
         self.action_rebuild.setAutoRepeat(False)
 
-        menu_functions.addSeparator()
+        menu_tools.addSeparator()
 
-        self.action_select = menu_functions.addAction(_('Subitem selector(&S)'))
-        self.action_select.setShortcut('Ctrl+S')
+        self.action_select = menu_tools.addAction(_('Subitem selector(&I)'))
+        self.action_select.setShortcut('Ctrl+I')
         self.action_select.setAutoRepeat(False)
         self.selector: Selector | None = None
 
-        self.action_painter = menu_functions.addAction(_('Draw(&D)'))
+        self.action_painter = menu_tools.addAction(_('Draw(&D)'))
         self.action_painter.setShortcut('Ctrl+D')
         self.action_painter.setAutoRepeat(False)
 
-        self.action_richtext_edit = menu_functions.addAction(_('Rich text editor(&R)'))
+        self.action_richtext_edit = menu_tools.addAction(_('Rich text editor(&R)'))
         self.action_richtext_edit.setShortcut('Ctrl+R')
         self.action_richtext_edit.setAutoRepeat(False)
 
-        self.action_font_table = menu_functions.addAction(_('Font list(&F)'))
+        self.action_font_table = menu_tools.addAction(_('Font list(&F)'))
         self.action_font_table.setShortcut('Ctrl+F')
         self.action_font_table.setAutoRepeat(False)
 
-        self.action_color_widget = menu_functions.addAction(_('Color(&O)'))
+        self.action_color_widget = menu_tools.addAction(_('Color(&O)'))
         self.action_color_widget.setShortcut('Ctrl+O')
         self.action_color_widget.setAutoRepeat(False)
 
@@ -333,6 +344,14 @@ class AnimViewer(QMainWindow):
         settings.endGroup()
 
         self.action_frame_skip.setChecked(frame_skip)
+        if frame_skip:
+            # 在渲染后才真正启用 frame_skip，避免启动时跳过太多帧
+            def slot() -> None:
+                self.play_timer.start_precise_timer()   # 重置时间
+                self.play_timer.set_skip_enabled(True)
+                self.glw.rendered.disconnect(slot)
+
+            self.glw.rendered.connect(slot)
 
     def save_options(self) -> None:
         settings = QSettings(os.path.join(Config.get.temp_dir, 'anim_viewer.ini'), QSettings.Format.IniFormat)
@@ -374,6 +393,8 @@ class AnimViewer(QMainWindow):
     # region slots
 
     def setup_slots(self) -> None:
+        self.action_export.triggered.connect(self.on_export_clicked)
+        self.action_capture.triggered.connect(self.on_capture_clicked)
         self.action_stay_on_top.toggled.connect(self.on_stay_on_top_toggled)
         self.action_frame_skip.toggled.connect(self.on_frame_skip_toggled)
         self.action_rebuild.triggered.connect(self.on_rebuild_triggered)
@@ -612,9 +633,10 @@ class AnimViewer(QMainWindow):
         ret = False
         t = self.timeline_view.progress_to_time(self.timeline_view.progress())
         try:
-            # 这里每次截图都重新构建一下，因为如果复用原来的对象会使得和 GUI 的上下文冲突
-            built = self.built.timeline.__class__().build()
-            built.capture(t, transparent=transparent).save(file_path)
+            with self.change_export_size(dialog.pixel_size()) if dialog.has_size_set() else nullcontext():
+                # 这里每次截图都重新构建一下，因为如果复用原来的对象会使得和 GUI 的上下文冲突
+                built = self.built.timeline.__class__().build()
+                built.capture(t, transparent=transparent).save(file_path)
 
         except Exception as e:
             if not isinstance(e, ExitException):
@@ -650,7 +672,7 @@ class AnimViewer(QMainWindow):
         QApplication.processEvents()
         ret = False
         try:
-            with self.change_export_size(dialog.size()) if dialog.has_size_set() else nullcontext():
+            with self.change_export_size(dialog.pixel_size()) if dialog.has_size_set() else nullcontext():
                 built = self.built.timeline.__class__().build()
 
                 if video_with_audio:

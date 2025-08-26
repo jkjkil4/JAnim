@@ -37,6 +37,7 @@ JAnim 是一个用于创建流畅动画的库
    tutorials/audio_and_subtitle
    tutorials/sub_timeline
    tutorials/depth_detail
+   tutorials/custom_data
    tutorials/3d_coordinates
    tutorials/essence_of_points
 

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-04 09:32+0800\n"
+"POT-Creation-Date: 2025-02-17 02:14+0800\n"
 "PO-Revision-Date: 2024-06-05 17:29+0800\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -17,14 +17,14 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Poedit 3.4.2\n"
 
-#: janim/gui/functions/richtext_editor.py:20
+#: janim\gui\functions\richtext_editor.py:20
 msgid "Rich Text Editor"
 msgstr "富文本编辑器"
 
-#: janim/gui/functions/richtext_editor.py:25
+#: janim\gui\functions\richtext_editor.py:25
 msgid "Word wrap"
 msgstr "自动换行"
 
-#: janim/gui/functions/richtext_editor.py:32
+#: janim\gui\functions\richtext_editor.py:32
 msgid "Recognize rich text format on paste"
 msgstr "粘贴时识别富文本格式"

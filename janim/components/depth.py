@@ -110,9 +110,11 @@ class Cmpt_Depth[ItemT](Component[ItemT]):
     def get(self) -> float:
         return self._depth
 
-    def get_raw(self) -> tuple[float, int]:
+    def get_raw(self) -> tuple[float, int | float]:
         '''
         返回元组 ``(depth, order)``
+
+        在一些特殊情况下，``order`` 可能是浮点数
         '''
         return (self._depth, self._order)
 

@@ -14,7 +14,7 @@ from janim.items.coordinate.number_line import NumberLine
 from janim.items.geometry.line import Line
 from janim.items.geometry.polygon import Polygon
 from janim.items.item import _ItemMeta
-from janim.items.points import Group
+from janim.items.points import Group, MarkedItem
 from janim.items.vitem import DEFAULT_STROKE_RADIUS
 from janim.typing import JAnimColor, RangeSpecifier, Vect, VectArray
 from janim.utils.dict_ops import merge_dicts_recursively
@@ -44,8 +44,7 @@ class CoordinateSystem(metaclass=ABCMeta):
         axis_config: dict,
         length: float | None
     ) -> NumberLine:
-        axis = NumberLine(range, width=length, **axis_config)
-        axis.points.shift(-axis.n2p(0))
+        axis = NumberLine(range, width=length, center=False, **axis_config)
         return axis
 
     @abstractmethod
@@ -57,7 +56,7 @@ class CoordinateSystem(metaclass=ABCMeta):
 
     def get_origin(self) -> np.ndarray:
         axes = self.get_axes()
-        return axes[0].number_to_point(0)
+        return axes[0].mark.get()
 
     def coords_to_point(self, *coords: float) -> np.ndarray:
         '''
@@ -142,7 +141,7 @@ class CoordinateSystem(metaclass=ABCMeta):
         return self.point_to_number(point)
 
 
-class Axes(CoordinateSystem, Group, metaclass=_ItemMeta_ABCMeta):
+class Axes(CoordinateSystem, MarkedItem, Group, metaclass=_ItemMeta_ABCMeta):
     axis_config_d: dict = dict(
         numbers_to_exclude=[0]
     )
@@ -197,6 +196,7 @@ class Axes(CoordinateSystem, Group, metaclass=_ItemMeta_ABCMeta):
             num_sampled_graph_points_per_tick=num_sampled_graph_points_per_tick,
             **kwargs
         )
+        self.mark.set_points([ORIGIN])
 
     def get_axes(self) -> list[NumberLine]:
         return [self.x_axis, self.y_axis]

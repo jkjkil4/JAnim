@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-06 14:20+0800\n"
+"POT-Creation-Date: 2025-08-02 08:10+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,64 +17,64 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: janim/render/writer.py:84
+#: janim\render\writer.py:87
 #, python-brace-format
 msgid "Writing video \"{name}\""
 msgstr ""
 
-#: janim/render/writer.py:160
+#: janim\render\writer.py:173
 #, python-brace-format
 msgid "Finished writing video \"{name}\" in {elapsed:.2f} s"
 msgstr ""
 
-#: janim/render/writer.py:166
+#: janim\render\writer.py:179
 #, python-brace-format
 msgid "File saved to \"{file_path}\" (video only)"
 msgstr ""
 
-#: janim/render/writer.py:234
+#: janim\render\writer.py:247
 msgid "No hardware encoder found"
 msgstr ""
 
-#: janim/render/writer.py:237
+#: janim\render\writer.py:250
 #, python-brace-format
 msgid "Using {encoder} for encoding"
 msgstr ""
 
-#: janim/render/writer.py:253
+#: janim\render\writer.py:266
 msgid ""
 "Unable to output video. Please install ffmpeg and add it to the environment "
 "variables."
 msgstr ""
 
-#: janim/render/writer.py:269
+#: janim\render\writer.py:282
 #, python-brace-format
 msgid "Writing audio of \"{name}\""
 msgstr ""
 
-#: janim/render/writer.py:295
+#: janim\render\writer.py:312
 #, python-brace-format
 msgid "Finished writing audio of \"{name}\" in {elapsed:.2f} s"
 msgstr ""
 
-#: janim/render/writer.py:301
+#: janim\render\writer.py:318
 #, python-brace-format
 msgid "File saved to \"{file_path}\""
 msgstr ""
 
-#: janim/render/writer.py:324
+#: janim\render\writer.py:341
 msgid ""
 "Unable to output audio. Please install ffmpeg and add it to the environment "
 "variables."
 msgstr ""
 
-#: janim/render/writer.py:360
+#: janim\render\writer.py:377
 msgid ""
 "Unable to merge video. Please install ffmpeg and add it to the environment "
 "variables."
 msgstr ""
 
-#: janim/render/writer.py:373
+#: janim\render\writer.py:390
 #, python-brace-format
 msgid "File saved to \"{file_path}\" (merged)"
 msgstr ""

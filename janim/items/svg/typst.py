@@ -46,12 +46,16 @@ class TypstDoc(SVGItem):
         vars: dict[str, TypstVar] | None = None,
         vars_size_unit: Literal['pt', 'mm', 'cm', 'in', 'pt'] | None = None,
         sys_inputs: dict[str, str] = {},
-        scale: float = 24 / 11,     # 因为 Typst 默认字号=11，janim 默认字号=24，为了默认显示效果一致，将 Typst 内容缩放 24/11
+        scale: float = 1.0,
         shared_preamble: str | None = None,
         additional_preamble: str | None = None,
         **kwargs
     ):
         self.text = text
+
+        # 因为 Typst 默认字号=11，janim 默认字号=24，为了默认显示效果一致，将 Typst 内容缩放 24/11
+        scale *= 24 / 11
+
         if shared_preamble is None:
             shared_preamble = Config.get.typst_shared_preamble
         if additional_preamble is None:
@@ -81,6 +85,11 @@ class TypstDoc(SVGItem):
 
                     item_to_replace = item if i == 0 else item.copy()
                     item_to_replace.points.set_size(width=phbox.width, height=phbox.height).move_to(phbox.center)
+
+                    for suborder, sub in enumerate(item_to_replace.walk_self_and_descendants()):
+                        sub.depth._depth = placeholder.depth._depth
+                        sub.depth._order = placeholder.depth._order + 1e-4 * suborder
+
                     self.groups[label] = [item_to_replace]
 
                     idx = new_children.index(placeholder)

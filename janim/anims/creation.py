@@ -17,6 +17,8 @@ from janim.typing import JAnimColor
 from janim.utils.bezier import integer_interpolate
 from janim.utils.rate_functions import RateFunc, double_smooth, linear
 
+DEFAULT_DRAWBORDER_THENFILL_STROKE_RADIUS = 0.01
+
 
 class ShowPartial(DataUpdater):
     '''
@@ -145,6 +147,10 @@ class Destruction(ShowPartial):
 class DrawBorderThenFill(DataUpdater):
     '''
     画出边缘，然后填充颜色
+
+    -   可以使用 ``stroke_radius`` 参数调整“画出边缘”时的描边粗细，在默认画面下的值是 0.01
+
+        如果设置了 ``scale_with_camera`` 参数，描边粗细会随着 ``camera`` 大小的变化而调整，画面尺寸越小，描边越细
     '''
     label_color = C_LABEL_ANIM_IN
 
@@ -153,7 +159,8 @@ class DrawBorderThenFill(DataUpdater):
         item: Item,
         *,
         duration: float = 2.0,
-        stroke_radius: float = 0.01,
+        stroke_radius: float = DEFAULT_DRAWBORDER_THENFILL_STROKE_RADIUS,
+        scale_with_camera: bool = False,
         stroke_color: JAnimColor = None,
         rate_func: RateFunc = double_smooth,
         become_at_end: bool = False,
@@ -170,6 +177,9 @@ class DrawBorderThenFill(DataUpdater):
             root_only=root_only,
             **kwargs
         )
+
+        if scale_with_camera:
+            stroke_radius *= self.timeline.camera.points.scaled_factor
         self.stroke_radius = stroke_radius
         self.stroke_color = stroke_color
 

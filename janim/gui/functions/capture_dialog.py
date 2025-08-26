@@ -6,6 +6,7 @@ from PySide6.QtWidgets import (QDialog, QDialogButtonBox, QFileDialog,
                                QMessageBox, QWidget)
 
 from janim.anims.timeline import BuiltTimeline
+from janim.gui.functions.export_dialog import ExportDialog
 from janim.gui.functions.ui_CaptureDialog import Ui_CaptureDialog
 from janim.locale.i18n import get_local_strings
 from janim.utils.config import Config
@@ -30,6 +31,7 @@ class CaptureDialog(QDialog):
 
         self.setWindowTitle(_('Capture'))
         self.ui.label_path.setText(_('Save Path:'))
+        self.ui.label_size.setText(_('Size:'))
         self.ui.ckb_transparent.setText(_('Transparent Background'))
         self.ui.ckb_open.setText(_('Open the image after capturing'))
 
@@ -40,6 +42,9 @@ class CaptureDialog(QDialog):
         btn_cancel.setText(_('Cancel'))
 
     def setup_contents(self) -> None:
+        w, h = self.built.cfg.pixel_width, self.built.cfg.pixel_height
+        ExportDialog.setup_size_combobox(self.ui.cbb_size, w, h)
+
         self.load_options()
 
     def setup_slots(self) -> None:
@@ -50,6 +55,7 @@ class CaptureDialog(QDialog):
         settings = QSettings(os.path.join(Config.get.temp_dir, 'capture_dialog.ini'), QSettings.Format.IniFormat)
         settings.beginGroup(self.code_file_path)
         output_dir = settings.value('output_dir', None)
+        scale = settings.value('scale', 1.0, type=float)
         transparent = settings.value('transparent', True, type=bool)
         open_after_capture = settings.value('open', False, type=bool)
         settings.endGroup()
@@ -63,6 +69,7 @@ class CaptureDialog(QDialog):
 
         file_path = os.path.join(output_dir, f'{self.built.timeline.__class__.__name__}.png')
         self.ui.edit_path.setText(file_path)
+        ExportDialog.load_size_combobox(self.ui.cbb_size, scale)
         self.ui.ckb_transparent.setChecked(transparent)
         self.ui.ckb_open.setChecked(open_after_capture)
 
@@ -70,12 +77,21 @@ class CaptureDialog(QDialog):
         settings = QSettings(os.path.join(Config.get.temp_dir, 'capture_dialog.ini'), QSettings.Format.IniFormat)
         settings.beginGroup(self.code_file_path)
         settings.setValue('output_dir', os.path.dirname(self.file_path()))
+        settings.setValue('scale', self.ui.cbb_size.currentData()[0])
         settings.setValue('transparent', self.transparent())
         settings.setValue('open', self.open())
         settings.endGroup()
 
     def file_path(self) -> str:
         return self.ui.edit_path.text()
+
+    def has_size_set(self) -> bool:
+        factor, _, _ = self.ui.cbb_size.currentData()
+        return factor != 1
+
+    def pixel_size(self) -> tuple[int, int]:
+        _, w, h = self.ui.cbb_size.currentData()
+        return w, h
 
     def transparent(self) -> bool:
         return self.ui.ckb_transparent.isChecked()

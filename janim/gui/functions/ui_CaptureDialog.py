@@ -15,16 +15,16 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QFont, QFontDatabase, QGradient, QIcon,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
-from PySide6.QtWidgets import (QAbstractButton, QApplication, QCheckBox, QDialog,
-    QDialogButtonBox, QGridLayout, QHBoxLayout, QLabel,
-    QLineEdit, QPushButton, QSizePolicy, QSpacerItem,
-    QVBoxLayout, QWidget)
+from PySide6.QtWidgets import (QAbstractButton, QApplication, QCheckBox, QComboBox,
+    QDialog, QDialogButtonBox, QGridLayout, QHBoxLayout,
+    QLabel, QLineEdit, QPushButton, QSizePolicy,
+    QSpacerItem, QVBoxLayout, QWidget)
 
 class Ui_CaptureDialog(object):
     def setupUi(self, CaptureDialog):
         if not CaptureDialog.objectName():
             CaptureDialog.setObjectName(u"CaptureDialog")
-        CaptureDialog.resize(418, 160)
+        CaptureDialog.resize(418, 189)
         self.verticalLayout = QVBoxLayout(CaptureDialog)
         self.verticalLayout.setObjectName(u"verticalLayout")
         self.vspacer1 = QSpacerItem(20, 0, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
@@ -56,6 +56,26 @@ class Ui_CaptureDialog(object):
         self.label_path.setObjectName(u"label_path")
 
         self.gridlayout.addWidget(self.label_path, 1, 0, 1, 1)
+
+        self.label_size = QLabel(CaptureDialog)
+        self.label_size.setObjectName(u"label_size")
+
+        self.gridlayout.addWidget(self.label_size, 2, 0, 1, 1)
+
+        self.hlayou_size = QHBoxLayout()
+        self.hlayou_size.setObjectName(u"hlayou_size")
+        self.cbb_size = QComboBox(CaptureDialog)
+        self.cbb_size.setObjectName(u"cbb_size")
+        self.cbb_size.setMinimumSize(QSize(160, 0))
+
+        self.hlayou_size.addWidget(self.cbb_size)
+
+        self.spacer_size = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+
+        self.hlayou_size.addItem(self.spacer_size)
+
+
+        self.gridlayout.addLayout(self.hlayou_size, 2, 1, 1, 1)
 
 
         self.verticalLayout.addLayout(self.gridlayout)
@@ -115,6 +135,7 @@ class Ui_CaptureDialog(object):
         CaptureDialog.setWindowTitle(QCoreApplication.translate("CaptureDialog", u"Export", None))
         self.btn_browse.setText(QCoreApplication.translate("CaptureDialog", u"...", None))
         self.label_path.setText(QCoreApplication.translate("CaptureDialog", u"_", None))
+        self.label_size.setText(QCoreApplication.translate("CaptureDialog", u"_", None))
         self.ckb_transparent.setText(QCoreApplication.translate("CaptureDialog", u"_", None))
         self.ckb_open.setText(QCoreApplication.translate("CaptureDialog", u"_", None))
     # retranslateUi

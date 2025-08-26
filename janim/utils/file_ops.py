@@ -4,9 +4,10 @@ import os
 import platform
 import subprocess as sp
 from functools import lru_cache
+from pathlib import Path
 
 
-def guarantee_existence(path: str) -> str:
+def guarantee_existence(path: str | Path) -> str:
     if not os.path.exists(path):
         os.makedirs(path)
     return os.path.abspath(path)
@@ -39,7 +40,7 @@ def get_typst_packages_dir() -> str:
     return os.path.join(get_janim_dir(), 'items', 'svg')
 
 
-def readall(filepath: str) -> str:
+def readall(filepath: str | Path) -> str:
     '''
     从文件中读取所有字符
     '''
@@ -47,16 +48,16 @@ def readall(filepath: str) -> str:
         return f.read()
 
 
-def find_file_in_path(path: str, file_path: str) -> str | None:
+def find_file_in_path(path: str | Path, file_path: str | Path) -> str | None:
     joined_filepath = os.path.join(path, file_path)
     return joined_filepath if os.path.exists(joined_filepath) else None
 
 
-def find_file_in_asset_dir(prefix: str, file_path: str) -> str | None:
+def find_file_in_asset_dir(prefix: str | Path, file_path: str | Path) -> str | None:
     from janim.utils.config import Config
 
     asset_dir = Config.get.asset_dir
-    if isinstance(asset_dir, str):
+    if isinstance(asset_dir, (str, os.PathLike)):
         # in asset_dir
         found_path = find_file_in_path(os.path.join(prefix, asset_dir), file_path)
         if found_path is not None:
@@ -70,7 +71,7 @@ def find_file_in_asset_dir(prefix: str, file_path: str) -> str | None:
     return None
 
 
-def find_file(file_path: str) -> str:
+def find_file(file_path: str | Path) -> str:
     # find in default path
     found_path = find_file_in_path('', file_path)
     if found_path is not None:
@@ -101,14 +102,14 @@ def find_file(file_path: str) -> str:
     raise FileNotFoundError(file_path)
 
 
-def find_file_or_none(file_path: str) -> str | None:
+def find_file_or_none(file_path: str | Path) -> str | None:
     try:
         return find_file(file_path)
     except FileNotFoundError:
         return None
 
 
-def open_file(file_path: str) -> None:
+def open_file(file_path: str | Path) -> None:
     '''
     打开指定的文件
     '''
@@ -124,7 +125,7 @@ def open_file(file_path: str) -> None:
         else:  # Assume macOS
             commands.append("open")
 
-        commands.append(file_path)
+        commands.append(str(file_path))
 
         FNULL = open(os.devnull, 'w')
         sp.call(commands, stdout=FNULL, stderr=sp.STDOUT)

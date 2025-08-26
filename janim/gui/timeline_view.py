@@ -887,7 +887,7 @@ class TimelineView(QWidget):
         elif key == Qt.Key.Key_D:
             self.is_pressing.d = True
 
-        elif key == Qt.Key.Key_Z:
+        elif key == Qt.Key.Key_Left:
             if event.modifiers() & Qt.KeyboardModifier.ControlModifier:
                 progresses = self.pause_progresses
                 idx = bisect(progresses, self._progress - 1)
@@ -906,7 +906,7 @@ class TimelineView(QWidget):
 
             self.dragged.emit()
 
-        elif key == Qt.Key.Key_C:
+        elif key == Qt.Key.Key_Right:
             if event.modifiers() & Qt.KeyboardModifier.ControlModifier:
                 progresses = self.pause_progresses
                 idx = bisect(progresses, self._progress + 1)

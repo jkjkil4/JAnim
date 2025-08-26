@@ -354,7 +354,7 @@ class Timeline(metaclass=ABCMeta):
 
         - ``at_previous_frame`` 控制是在前一帧暂停（默认）还是在当前帧暂停
         - ``offset`` 表示偏移多少秒，例如 ``offset=2`` 则是当前位置 2s 后
-        - 在 GUI 界面中，可以使用 ``Ctrl+Z`` 快速移动到前一个暂停点，``Ctrl+C`` 快速移动到后一个
+        - 在 GUI 界面中，可以使用 ``Ctrl+左方向键`` 快速移动到前一个暂停点，``Ctrl+右方向键`` 快速移动到后一个
         '''
         self.pause_points.append(Timeline.PausePoint(self.current_time + offset, at_previous_frame))
 

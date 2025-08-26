@@ -4,6 +4,7 @@ import os
 import tempfile
 from contextvars import ContextVar
 from functools import partial
+from pathlib import Path
 from typing import Generator, Iterable, Self
 
 import attrs
@@ -137,8 +138,8 @@ class Config(metaclass=_ConfigMeta):
     ffmpeg_bin: str = None
     ffprobe_bin: str = None
     output_dir: str = None
-    temp_dir: str = None
-    asset_dir: str | list[str] = None
+    temp_dir: str | Path = None
+    asset_dir: str | Path | list[str | Path] = None
 
     client_search_port: int = _field(validator=_opt_int_validator)
 
