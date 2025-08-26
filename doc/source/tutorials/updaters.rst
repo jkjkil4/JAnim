@@ -329,8 +329,27 @@ JAnim 的各个 ``Updater`` 并非孤立，不仅可以使用 ``.current()`` 获
 ``StepUpdater`` 的使用
 ------------------------------------
 
-按步更新物件
+按步更新物件，适合用于 **“需要基于上一刻的状态更新下一刻状态”** 的情景，例如物理模拟或是微分方程数值演示等。
 
-.. note::
+以下是一个最简单（但也是最没必要使用 :class:`~.StepUpdater`）的一个示例：
 
-    文档有待完善
+.. janim-example:: SimplestStepUpdater
+    :media: ../_static/tutorial/SimplestStepUpdater.mp4
+    :hide_name:
+
+    NumberPlane(faded_line_ratio=1).show()
+
+    circle = Circle(0.5, color=YELLOW, fill_alpha=0.6).show()
+
+    self.forward()
+    self.play(
+        StepUpdater(
+            circle,
+            lambda data, p: data.points.shift(RIGHT / 50)
+        ),
+        duration=2
+    )
+    self.forward()
+
+在这个示例中，:class:`~.StepUpdater` 的函数会每次将圆形向右移动 1/50 个单位，
+由于 :class:`~.StepUpdater` 默认情况下每秒钟会执行 50 次，所以圆形每秒会向右移动 1 个单位，经过两秒则时间则向右移动了 2 个单位。
