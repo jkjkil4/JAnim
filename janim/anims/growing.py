@@ -61,6 +61,7 @@ class ShrinkToPoint(DataUpdater[Points]):
             lambda data, p: data.points.scale((1 - p.alpha), about_point=point),
             root_only=root_only,
             hide_at_end=True,
+            become_at_end=False,
             **kwargs,
         )
 
