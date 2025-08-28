@@ -226,8 +226,16 @@ class MethodTransform(Transform):
         GetAttr = 0
         Call = 1
 
-    def __init__(self, item: Item, **kwargs):
+    def __init__(
+        self,
+        item: Item,
+        show_at_begin: bool = True,
+        hide_at_end: bool = False,
+        **kwargs
+    ):
         super().__init__(item, item, **kwargs)
+        self.show_at_begin = show_at_begin
+        self.hide_at_end = hide_at_end
         self.delayed_actions: list[tuple[MethodTransform.ActionType, str | tuple[tuple, dict]]] = []
 
     def __getattr__(self, name: str):
@@ -257,7 +265,12 @@ class MethodTransform(Transform):
         for item in self.src_item.walk_self_and_descendants():
             aligned = self.aligned[(item, item)]
 
-            sub_updater = _MethodTransform(self, item, self.path_func, aligned)
+            sub_updater = _MethodTransform(self,
+                                           item,
+                                           self.path_func,
+                                           aligned,
+                                           show_at_begin=self.show_at_begin,
+                                           hide_at_end=self.hide_at_end)
             sub_updater.transfer_params(self)
             sub_updater.finalize()
 
@@ -277,8 +290,15 @@ class MethodTransformArgsBuilder:
 
 
 class _MethodTransform(ItemAnimation):
-    def __init__(self, generate_by: MethodTransform, item: Item, path_func: PathFunc, aligned: AlignedData[Item]):
-        super().__init__(item)
+    def __init__(
+        self,
+        generate_by: MethodTransform,
+        item: Item,
+        path_func: PathFunc,
+        aligned: AlignedData[Item],
+        **kwargs
+    ):
+        super().__init__(item, **kwargs)
         self._generate_by = generate_by
         self._cover_previous_anims = True
         self.path_func = path_func

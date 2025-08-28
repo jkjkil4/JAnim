@@ -178,11 +178,9 @@ class _DataUpdater(ItemAnimation):
         lag_ratio: float,
         index: int,
         count: int,
-        *,
-        show_at_begin: bool,
-        hide_at_end: bool
+        **kwargs
     ):
-        super().__init__(item, show_at_begin=show_at_begin, hide_at_end=hide_at_end)
+        super().__init__(item, **kwargs)
         self._generate_by = generate_by
         self.func = func
         self.extra_data = extra_data
@@ -219,6 +217,7 @@ class GroupUpdater[T: Item](Animation):
         func: GroupUpdaterFn[T],
         *,
         show_at_begin: bool = True,
+        hide_at_end: bool = False,
         become_at_end: bool = True,
         **kwargs
     ):
@@ -226,6 +225,7 @@ class GroupUpdater[T: Item](Animation):
         self.item = item
         self.func = func
         self.show_at_begin = show_at_begin
+        self.hide_at_end = hide_at_end
         self.become_at_end = become_at_end
 
         self.applied: bool = False
@@ -249,7 +249,7 @@ class GroupUpdater[T: Item](Animation):
             for item in self.item.walk_self_and_descendants()
         ]
         updaters = [
-            _GroupUpdater(self, item, data, stacks, show_at_begin=self.show_at_begin)
+            _GroupUpdater(self, item, data, stacks, show_at_begin=self.show_at_begin, hide_at_end=self.hide_at_end)
             for item, data in zip(self.item.walk_self_and_descendants(), self.data.walk_self_and_descendants())
         ]
 
@@ -288,10 +288,9 @@ class _GroupUpdater(ApplyAligner):
         item: Item,
         data: Item,
         stacks: list[AnimStack],
-        *,
-        show_at_begin: bool
+        **kwargs
     ):
-        super().__init__(item, stacks, show_at_begin=show_at_begin)
+        super().__init__(item, stacks, **kwargs)
         self._generate_by = generate_by
         self.data = data
 
@@ -316,9 +315,18 @@ class MethodUpdater(Animation):
         GetAttr = 0
         Call = 1
 
-    def __init__(self, item: Item, become_at_end: bool = True, **kwargs):
+    def __init__(
+        self,
+        item: Item,
+        show_at_begin: bool = True,
+        hide_at_end: bool = False,
+        become_at_end: bool = True,
+        **kwargs
+    ):
         super().__init__(**kwargs)
         self.item = item
+        self.show_at_begin = show_at_begin
+        self.hide_at_end = hide_at_end
         self.become_at_end = become_at_end
 
         self.updaters: list[tuple[str | None, Callable, tuple, dict, bool | None]] = []
@@ -387,12 +395,16 @@ class MethodUpdater(Animation):
                 self.updater,
                 extra=lambda item: item is self.item,   # 只有根物件的 extra_data 为 True，用于辅助 root_only
                 root_only=False,
+                show_at_begin=self.show_at_begin,
+                hide_at_end=self.hide_at_end,
                 become_at_end=self.become_at_end
             )
         else:
             sub_updater = GroupUpdater(
                 self.item,
                 self.updater,
+                show_at_begin=self.show_at_begin,
+                hide_at_end=self.hide_at_end,
                 become_at_end=self.become_at_end
             )
 
