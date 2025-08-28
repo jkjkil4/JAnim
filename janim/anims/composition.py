@@ -270,3 +270,17 @@ class Wait(Animation):
     '''
     def __init__(self, duration: float = 1, **kwargs):
         super().__init__(duration=duration, **kwargs)
+
+
+class Do(Animation):
+    '''
+    在动画的特定时间执行指定操作
+    '''
+    def __init__(self, func, *args, at: float = 0, **kwargs):
+        super().__init__(at=at, duration=0)
+        self.func = func
+        self.args = args
+        self.kwargs = kwargs
+
+    def _time_fixed(self) -> None:
+        self.timeline.schedule(self.t_range.at, self.func, *self.args, **self.kwargs)
