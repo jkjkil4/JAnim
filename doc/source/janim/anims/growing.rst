@@ -83,6 +83,86 @@ growing
 
         self.forward()
 
+.. autoclass:: janim.anims.growing.ShrinkToPoint
+    :show-inheritance:
+
+.. janim-example:: ShrinkToPointExample
+    :media: ../../_static/videos/ShrinkToPointExample.mp4
+
+    from janim.imports import *
+
+    class ShrinkToPointExample(Timeline):
+        def construct(self):
+            group = Group(
+                Square(fill_alpha=0.5),
+                Circle(fill_alpha=0.5),
+                Text('Text', font_size=48),
+                color=BLUE
+            )
+            group.points.arrange(buff=LARGE_BUFF)
+
+            directions=[UP,LEFT,DOWN,RIGHT]
+
+            for direction in directions:
+                self.play(
+                    *[
+                        ShrinkToPoint(item, item.points.box.center + direction * 3)
+                        for item in group
+                    ]
+                )
+
+            self.forward()
+
+.. autoclass:: janim.anims.growing.ShrinkToCenter
+    :show-inheritance:
+
+.. janim-example:: ShrinkToCenterExample
+    :media: ../../_static/videos/ShrinkToCenterExample.mp4
+
+    from janim.imports import *
+
+    class ShrinkToCenterExample(Timeline):
+        def construct(self):
+            group = Group(
+                Square(fill_alpha=0.5),
+                Circle(fill_alpha=0.5),
+                Text('Text', font_size=48),
+                color=BLUE
+            )
+            group.points.arrange(buff=LARGE_BUFF)
+
+            self.play(*map(ShrinkToCenter, group))
+
+            self.forward()
+
+.. autoclass:: janim.anims.growing.ShrinkToEdge
+    :show-inheritance:
+
+.. janim-example:: ShrinkToEdgeExample
+    :media: ../../_static/videos/ShrinkToEdgeExample.mp4
+
+    class ShrinkToEdgeExample(Timeline):
+        def construct(self):
+            group = Group(
+                Square(fill_alpha=0.5),
+                Circle(fill_alpha=0.5),
+                Text('Text', font_size=48),
+                color=BLUE
+            )
+            group.points.arrange(buff=LARGE_BUFF)
+
+            directions=[UP,LEFT,DOWN,RIGHT]
+
+            for direction in directions:
+                self.play(
+                    *[
+                        ShrinkToEdge(item, direction)
+                        for item in group
+                    ]
+                )
+
+            self.forward()
+
 .. autoclass:: janim.anims.growing.SpinInFromNothing
     :show-inheritance:
 
