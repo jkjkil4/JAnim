@@ -272,7 +272,10 @@ def extract_timelines_from_module(args: Namespace, module) -> list[type[Timeline
     if not args.all and args.timeline_names:
         for name in args.timeline_names:
             try:
-                timelines.append(module.__dict__[name])
+                timeline = module.__dict__[name]
+                if not isinstance(timeline, type) or not issubclass(timeline, Timeline):
+                    raise KeyError()
+                timelines.append(timeline)
             except KeyError:
                 log.error(_('No timeline named "{name}"').format(name=name))
                 err = True
