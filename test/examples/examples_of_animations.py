@@ -430,6 +430,23 @@ class SpinInFromNothingExample(Timeline):
         self.forward()
 
 
+class SpinOutToNothingExample(Timeline):
+    def construct(self) -> None:
+        group = Group(
+            Square(fill_alpha=0.5),
+            Circle(fill_alpha=0.5),
+            Text('Text', font_size=48),
+            color=BLUE
+        )
+        group.points.arrange(buff=LARGE_BUFF)
+
+        self.play(
+            *map(SpinOutToNothing, group),
+            duration=2
+        )
+        self.forward()
+
+
 class GrowArrowExample(Timeline):
     def construct(self) -> None:
         group = Group(

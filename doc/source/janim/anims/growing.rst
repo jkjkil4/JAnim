@@ -141,6 +141,8 @@ growing
 .. janim-example:: ShrinkToEdgeExample
     :media: ../../_static/videos/ShrinkToEdgeExample.mp4
 
+    from janim.imports import *
+
     class ShrinkToEdgeExample(Timeline):
         def construct(self):
             group = Group(
@@ -183,6 +185,30 @@ growing
 
             self.play(
                 *map(SpinInFromNothing, group),
+                duration=2
+            )
+            self.forward()
+
+.. autoclass:: janim.anims.growing.SpinOutToNothing
+    :show-inheritance:
+
+.. janim-example:: SpinOutToNothingExample
+    :media: ../../_static/videos/SpinOutToNothingExample.mp4
+
+    from janim.imports import *
+
+    class SpinOutToNothingExample(Timeline):
+        def construct(self):
+            group = Group(
+                Square(fill_alpha=0.5),
+                Circle(fill_alpha=0.5),
+                Text('Text', font_size=48),
+                color=BLUE
+            )
+            group.points.arrange(buff=LARGE_BUFF)
+
+            self.play(
+                *map(SpinOutToNothing, group),
                 duration=2
             )
             self.forward()

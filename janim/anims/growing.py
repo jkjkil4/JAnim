@@ -5,9 +5,11 @@ from typing import Callable
 import numpy as np
 
 from janim.anims.updater import DataUpdater, GroupUpdater, UpdaterParams
-from janim.constants import C_LABEL_ANIM_ABSTRACT, C_LABEL_ANIM_IN, C_LABEL_ANIM_OUT, PI
+from janim.constants import (C_LABEL_ANIM_ABSTRACT, C_LABEL_ANIM_IN,
+                             C_LABEL_ANIM_OUT, PI)
 from janim.items.geometry.arrow import Arrow
 from janim.items.points import Points
+from janim.utils.rate_functions import rush_into
 
 
 class GrowFromPoint(DataUpdater[Points]):
@@ -101,6 +103,18 @@ class SpinInFromNothing(GrowFromCenter):
         self.add_post_updater(
             lambda data, p: data.points.rotate(
                 path_arc * (p.alpha - 1), about_point=self.point
+            )
+        )
+
+
+class SpinOutToNothing(ShrinkToCenter):
+    '''向物件的中心旋转半圈缩小消失'''
+
+    def __init__(self, item: Points, *, path_arc=PI / 2, rate_func=rush_into, **kwargs):
+        super().__init__(item, rate_func=rate_func, **kwargs)
+        self.add_post_updater(
+            lambda data, p: data.points.rotate(
+                path_arc * p.alpha, about_point=self.point
             )
         )
 
