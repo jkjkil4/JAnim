@@ -142,21 +142,31 @@ class NumberLine(MarkedItem, Line):
         return self.points.length / (self.x_max - self.x_min)
 
     def get_tick_range(self) -> np.ndarray:
-        tmp = self.x_min // self.x_step
-        mod = self.x_min % self.x_step
+        return self.compute_tick_range(self.x_min, self.x_max, self.x_step)
+
+    @staticmethod
+    def compute_tick_range(x_min: float, x_max: float, x_step: float) -> np.ndarray:
+        # 这里的处理本质上是通过 x_min // x_step * x_step 得出 “比 x_min 低的第一个刻度位置”
+        # 但是这样得到的刻度位置会跑到数轴外面，所以，如果 x_min 没有刚好落在刻度位置，就需要把它加 1 往数轴里面调整
+        # “没有刚好落在刻度位置” 这个判定需要考虑浮点误差，所以这里使用了 mod >= 1e-5 而不是 mod != 0
+        tmp = x_min // x_step
+        mod = x_min % x_step
         if mod >= 1e-5:
             tmp += 1
-        x_min = self.x_step * tmp
+        r_x_min = x_step * tmp
 
-        tmp = self.x_max // self.x_step
-        mod = self.x_max % self.x_step
-        if self.x_step - mod < 1e-5:
+        # 这里的处理本质上是通过 x_max // x_step * x_step 得出 “比 x_max 低的第一个刻度位置”
+        # 但是因为 arange 不会取到最后一项，所以需要手动加上 0.5 使得 arange 能取到这个刻度位置
+        # 不过这里 x_step - mod < 1e-5 时却是加上 1.5，因为判定成立时 x_max 已经几乎在下一个刻度位置了，理应算成这个位置，所以多加了 1
+        tmp = x_max // x_step
+        mod = x_max % x_step
+        if x_step - mod < 1e-5:
             tmp += 1.5
         else:
             tmp += 0.5
-        x_max = self.x_step * tmp
+        r_x_max = x_step * tmp
 
-        r = np.arange(x_min, x_max, self.x_step)
+        r = np.arange(r_x_min, r_x_max, x_step)
         return r
 
     def add_ticks(

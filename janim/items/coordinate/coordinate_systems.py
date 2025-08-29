@@ -428,14 +428,22 @@ class NumberPlane(Axes):
 
         lines1 = Group()
         lines2 = Group()
-        inputs = np.arange(axis2.x_min, axis2.x_max + step, step)
+        inputs = NumberLine.compute_tick_range(axis2.x_min, axis2.x_max, step)
+
+        if len(inputs) == 0:  # 为了 inputs[0] 的有效性
+            return lines1, lines2
+
+        # 因为 inputs 的起始位置并不总是 not-faded line，所以这里要计算出 i 的偏移量
+        i_offset = round(inputs[0] / step)
+
         for i, x in enumerate(inputs):
             if abs(x) < 1e-8:
                 continue
             new_line = line.copy()
             new_line.points.shift(axis2.n2p(x) - axis2.n2p(0))
-            if i % (1 + ratio) == 0:
+            if (i_offset + i) % (1 + ratio) == 0:
                 lines1.add(new_line)
             else:
                 lines2.add(new_line)
+
         return lines1, lines2
