@@ -159,6 +159,8 @@ def write(args: Namespace) -> None:
             video_writer.write_all(
                 os.path.join(output_dir,
                              f'{name}.{args.format}'),
+                args.in_point,
+                args.out_point,
                 use_pbo=not args.disable_pbo,
                 hwaccel=args.hwaccel,
                 _keep_temp=video_with_audio

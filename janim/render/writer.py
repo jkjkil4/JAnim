@@ -15,6 +15,7 @@ from janim.locale.i18n import get_local_strings
 from janim.logger import log
 from janim.render.base import create_context
 from janim.render.framebuffer import create_framebuffer, framebuffer_context
+from janim.utils.simple_functions import clip
 
 _ = get_local_strings('writer')
 
@@ -62,10 +63,10 @@ class VideoWriter:
 
         gl.glBindBuffer(gl.GL_PIXEL_PACK_BUFFER, 0)  # 解绑PBO
 
-    def _read_idx_iter(self) -> Generator[int | None, None, None]:
+    def _read_idx_iter(self, start_frame: int, end_frame: int) -> Generator[int | None, None, None]:
         for _ in range(PBO_COUNT - 1):
             yield None
-        for frame_idx in range(self.frame_count):
+        for frame_idx in range(start_frame, end_frame):
             yield frame_idx % PBO_COUNT
 
     def _cleanup_pbos(self) -> None:
@@ -77,7 +78,17 @@ class VideoWriter:
     def writes(built: BuiltTimeline, file_path: str, *, quiet=False, use_pbo=True, hwaccel=False) -> None:
         VideoWriter(built).write_all(file_path, quiet=quiet, use_pbo=use_pbo, hwaccel=hwaccel)
 
-    def write_all(self, file_path: str, *, quiet=False, use_pbo=True, hwaccel=False, _keep_temp=False) -> None:
+    def write_all(
+        self,
+        file_path: str,
+        in_point: float | None = None,
+        out_point: float | None = None,
+        *,
+        quiet=False,
+        use_pbo=True,
+        hwaccel=False,
+        _keep_temp=False
+    ) -> None:
         '''将时间轴动画输出到文件中
 
         - 指定 ``quiet=True``，则不会输出前后的提示信息，但仍有进度条
@@ -96,8 +107,23 @@ class VideoWriter:
             self._init_pbos()
             log.debug('Created PBOs')
 
+        if in_point < 0:
+            in_point += self.built.duration
+        if out_point < 0:
+            out_point += self.built.duration
+
+        start_frame = (
+            0
+            if in_point is None
+            else clip(round(in_point * fps), 0, self.frame_count - 1)
+        )
+        end_frame = (
+            self.frame_count
+            if out_point is None
+            else clip(round(out_point * fps), start_frame + 1, self.frame_count)
+        )
         progress_display = ProgressDisplay(
-            range(self.frame_count),
+            range(start_frame, end_frame),
             leave=False,
             dynamic_ncols=True
         )
@@ -109,7 +135,7 @@ class VideoWriter:
         if use_pbo:
             # 使用PBO优化的渲染循环
             with framebuffer_context(self.fbo):
-                read_idx_iter = self._read_idx_iter()
+                read_idx_iter = self._read_idx_iter(start_frame, end_frame)
                 for frame_idx, read_idx in zip(progress_display, read_idx_iter):
                     # 渲染当前帧
                     self.fbo.clear(*rgb, not transparent)

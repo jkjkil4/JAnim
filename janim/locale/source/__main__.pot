@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-08-02 07:36+0800\n"
+"POT-Creation-Date: 2025-08-31 22:54+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -124,25 +124,41 @@ msgid "Generate SRT file"
 msgstr ""
 
 #: janim\__main__.py:158
-msgid "Other Options"
+msgid "Range Options"
 msgstr ""
 
 #: janim\__main__.py:159
+msgid "Options for specifying in/out point"
+msgstr ""
+
+#: janim\__main__.py:164
+msgid "Set In Point; use negative value to indicate time relative to the end"
+msgstr ""
+
+#: janim\__main__.py:170
+msgid "Set Out Point; use negative value to indicate time relative to the end"
+msgstr ""
+
+#: janim\__main__.py:173
+msgid "Other Options"
+msgstr ""
+
+#: janim\__main__.py:174
 msgid "Other options for writing the output files"
 msgstr ""
 
-#: janim\__main__.py:163
+#: janim\__main__.py:178
 msgid "Disable PBO (Pixel Buffer Object) for writing video"
 msgstr ""
 
-#: janim\__main__.py:168
+#: janim\__main__.py:183
 msgid "Use hardware acceleration for writing video"
 msgstr ""
 
-#: janim\__main__.py:179
+#: janim\__main__.py:194
 msgid "Name of the example you want to see"
 msgstr ""
 
-#: janim\__main__.py:193
+#: janim\__main__.py:208
 msgid "Tool(s) that you want to use"
 msgstr ""
