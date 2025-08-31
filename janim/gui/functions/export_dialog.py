@@ -79,7 +79,7 @@ class ExportDialog(QDialog):
         settings = QSettings(os.path.join(Config.get.temp_dir, 'export_dialog.ini'), QSettings.Format.IniFormat)
         settings.beginGroup(self.code_file_path)
         output_dir = settings.value('output_dir', None)
-        output_format = settings.value('output_format', 'mp4')
+        output_format = settings.value('output_format', '.mp4')
         fps = settings.value('fps', self.built.cfg.fps, type=int)
         scale = settings.value('scale', 1.0, type=float)
         hwaccel = settings.value('hwaccel', False, type=bool)
@@ -93,19 +93,22 @@ class ExportDialog(QDialog):
         if not os.path.exists(output_dir):
             os.makedirs(output_dir)
 
-        file_path = os.path.join(output_dir, f'{self.built.timeline.__class__.__name__}.{output_format}')
+        file_path = os.path.join(output_dir, f'{self.built.timeline.__class__.__name__}{output_format}')
 
         self.ui.edit_path.setText(file_path)
         self.ui.spb_fps.setValue(fps)
         self.load_size_combobox(self.ui.cbb_size, scale)
+        self.ui.ckb_hwaccel.setEnabled(output_format == '.mp4')
         self.ui.ckb_hwaccel.setChecked(hwaccel)
         self.ui.ckb_open.setChecked(open_after_export)
 
     def save_options(self) -> None:
+        path = Path(self.ui.edit_path.text())
+
         settings = QSettings(os.path.join(Config.get.temp_dir, 'export_dialog.ini'), QSettings.Format.IniFormat)
         settings.beginGroup(self.code_file_path)
-        settings.setValue('output_dir', os.path.dirname(self.ui.edit_path.text()))
-        settings.setValue('output_format', self.ui.edit_path.text().split('.')[-1])
+        settings.setValue('output_dir', path.parent)
+        settings.setValue('output_format', path.suffix)
         settings.setValue('fps', self.ui.spb_fps.value())
         settings.setValue('scale', self.ui.cbb_size.currentData()[0])
         settings.setValue('hwaccel', self.ui.ckb_hwaccel.isChecked())
@@ -138,7 +141,7 @@ class ExportDialog(QDialog):
             '',
             self.ui.edit_path.text(),
             'MP4 (*.mp4);;MOV (*.mov);;GIF (*.gif)',
-            '',
+            suffix_to_filter_map[Path(self.ui.edit_path.text()).suffix],
             QFileDialog.Option.DontConfirmOverwrite
         )
         if not file_path:
@@ -152,6 +155,7 @@ class ExportDialog(QDialog):
             pass
 
         self.ui.edit_path.setText(str(path))
+        self.ui.ckb_hwaccel.setEnabled(path.suffix == '.mp4')
 
     def on_accepted(self) -> None:
         file_path = self.file_path()
@@ -173,3 +177,10 @@ class ExportDialog(QDialog):
 
         self.save_options()
         self.accept()
+
+
+suffix_to_filter_map = {
+    '.mp4': 'MP4 (*.mp4)',
+    '.mov': 'MOV (*.mov)',
+    '.gif': 'GIF (*.gif)',
+}
