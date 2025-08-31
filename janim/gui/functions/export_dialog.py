@@ -16,9 +16,10 @@ _ = get_local_strings('export_dialog')
 
 
 class ExportDialog(QDialog):
-    def __init__(self, built: BuiltTimeline, parent: QWidget | None = None):
+    def __init__(self, built: BuiltTimeline, is_inout_point_set: bool, parent: QWidget | None = None):
         super().__init__(parent)
         self.built = built
+        self.is_inout_point_set = is_inout_point_set
         self.code_file_path = getfile_or_empty(self.built.timeline.__class__)
 
         self.setup_ui()
@@ -33,6 +34,15 @@ class ExportDialog(QDialog):
         self.ui.label_path.setText(_('Export Path:'))
         self.ui.label_fps.setText(_('FPS:'))
         self.ui.label_size.setText(_('Size:'))
+
+        self.ui.label_range.setText(_('Range:'))
+        self.ui.rbtn_full.setText(_('Full'))
+        if self.is_inout_point_set:
+            self.ui.rbtn_inout.setText(_('In/Out Point'))
+        else:
+            self.ui.rbtn_inout.setText(_('In/Out Point (Not Set)'))
+            self.ui.rbtn_inout.setEnabled(False)
+
         self.ui.ckb_hwaccel.setText(_('Hardware Acceleration'))
         self.ui.ckb_open.setText(_('Open the video after exporting'))
 
@@ -82,6 +92,7 @@ class ExportDialog(QDialog):
         output_format = settings.value('output_format', '.mp4')
         fps = settings.value('fps', self.built.cfg.fps, type=int)
         scale = settings.value('scale', 1.0, type=float)
+        using_inout_point = settings.value('using_inout_point', False, type=bool)
         hwaccel = settings.value('hwaccel', False, type=bool)
         open_after_export = settings.value('open', False, type=bool)
         settings.endGroup()
@@ -98,6 +109,10 @@ class ExportDialog(QDialog):
         self.ui.edit_path.setText(file_path)
         self.ui.spb_fps.setValue(fps)
         self.load_size_combobox(self.ui.cbb_size, scale)
+
+        if using_inout_point and self.ui.rbtn_inout.isEnabled():
+            self.ui.rbtn_inout.setChecked(True)
+
         self.ui.ckb_hwaccel.setEnabled(output_format == '.mp4')
         self.ui.ckb_hwaccel.setChecked(hwaccel)
         self.ui.ckb_open.setChecked(open_after_export)
@@ -111,6 +126,7 @@ class ExportDialog(QDialog):
         settings.setValue('output_format', path.suffix)
         settings.setValue('fps', self.ui.spb_fps.value())
         settings.setValue('scale', self.ui.cbb_size.currentData()[0])
+        settings.setValue('using_inout_point', self.ui.rbtn_inout.isChecked())
         settings.setValue('hwaccel', self.ui.ckb_hwaccel.isChecked())
         settings.setValue('open', self.ui.ckb_open.isChecked())
         settings.endGroup()
@@ -128,6 +144,9 @@ class ExportDialog(QDialog):
     def pixel_size(self) -> tuple[int, int]:
         _, w, h = self.ui.cbb_size.currentData()
         return w, h
+
+    def using_inout_point(self) -> bool:
+        return self.ui.rbtn_inout.isChecked()
 
     def hwaccel(self) -> bool:
         return self.ui.ckb_hwaccel.isChecked()

@@ -110,6 +110,7 @@ class TimelineView(QWidget):
         self._progress: int = 0
         self._maximum = round(built.duration * self.built.cfg.preview_fps)
         self.pause_progresses = pause_progresses
+        self.inout_point: tuple[float, float] | None = None
 
         self.is_pressing = TimelineView.Pressing()
 
@@ -779,6 +780,36 @@ class TimelineView(QWidget):
 
             self.update()
 
+    def set_in_point(self) -> None:
+        t = self.progress_to_time(self._progress)
+
+        if self.inout_point is None:
+            self.inout_point = (t, self.built.duration)
+        else:
+            if t >= self.inout_point[1]:
+                self.inout_point = (t, self.built.duration)
+            else:
+                self.inout_point = (t, self.inout_point[1])
+
+        self.update()
+
+    def set_out_point(self) -> None:
+        t = self.progress_to_time(self._progress)
+
+        if self.inout_point is None:
+            self.inout_point = (0, t)
+        else:
+            if t <= self.inout_point[0]:
+                self.inout_point = (0, t)
+            else:
+                self.inout_point = (self.inout_point[0], t)
+
+        self.update()
+
+    def reset_inout_point(self) -> None:
+        self.inout_point = None
+        self.update()
+
     # endregion
 
     # region progress
@@ -968,6 +999,15 @@ class TimelineView(QWidget):
 
     def paintEvent(self, _: QPaintEvent) -> None:
         p = QPainter(self)
+
+        # 绘制 inout_point 区段
+        if self.inout_point is not None:
+            inp, outp = self.inout_point
+            # 可见的时候才绘制
+            if inp < self.range.end and outp > self.range.at:
+                x1 = self.time_to_pixel(max(inp, self.range.at))
+                x2 = self.time_to_pixel(min(outp, self.range.end))
+                p.fillRect(x1, 0, x2 - x1, self.height(), QColor(17, 58, 81))
 
         # 绘制每次 forward 或 play 的时刻
         times_of_code = self.built.timeline.times_of_code

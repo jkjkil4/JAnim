@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-08-24 11:02+0800\n"
-"PO-Revision-Date: 2025-08-24 11:03+0800\n"
+"POT-Creation-Date: 2025-08-31 23:04+0800\n"
+"PO-Revision-Date: 2025-08-31 23:05+0800\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
 "Language: zh_CN\n"
@@ -43,121 +43,133 @@ msgstr "导出(&E)"
 msgid "Capture(&C)"
 msgstr "截取(&C)"
 
-#: janim\gui\anim_viewer.py:193
+#: janim\gui\anim_viewer.py:195
+msgid "Set In Point(&I)"
+msgstr "设置入点(&I)"
+
+#: janim\gui\anim_viewer.py:199
+msgid "Set Out Point(&O)"
+msgstr "设置出点(&O)"
+
+#: janim\gui\anim_viewer.py:203
+msgid "Reset In/Out Point(&R)"
+msgstr "重置入点/出点(&R)"
+
+#: janim\gui\anim_viewer.py:206
 msgid "View(&V)"
 msgstr "视图(&V)"
 
-#: janim\gui\anim_viewer.py:195
+#: janim\gui\anim_viewer.py:208
 msgid "Stay on top(&T)"
 msgstr "窗口置前(&T)"
 
-#: janim\gui\anim_viewer.py:200
+#: janim\gui\anim_viewer.py:213
 msgid "Frame skip(&P)"
 msgstr "跳帧(&P)"
 
-#: janim\gui\anim_viewer.py:205
+#: janim\gui\anim_viewer.py:218
 msgid "Tools(&T)"
 msgstr "工具(&T)"
 
-#: janim\gui\anim_viewer.py:207
+#: janim\gui\anim_viewer.py:220
 msgid "Rebuild(&L)"
 msgstr "重新构建(&L)"
 
-#: janim\gui\anim_viewer.py:213
+#: janim\gui\anim_viewer.py:226
 msgid "Subitem selector(&I)"
 msgstr "子物件选择器(&I)"
 
-#: janim\gui\anim_viewer.py:218
+#: janim\gui\anim_viewer.py:231
 msgid "Draw(&D)"
 msgstr "绘制(&D)"
 
-#: janim\gui\anim_viewer.py:222
+#: janim\gui\anim_viewer.py:235
 msgid "Rich text editor(&R)"
 msgstr "富文本编辑器(&R)"
 
-#: janim\gui\anim_viewer.py:226
+#: janim\gui\anim_viewer.py:239
 msgid "Font list(&F)"
 msgstr "字体列表(&F)"
 
-#: janim\gui\anim_viewer.py:230
+#: janim\gui\anim_viewer.py:243
 msgid "Color(&O)"
 msgstr "颜色(&O)"
 
-#: janim\gui\anim_viewer.py:291
+#: janim\gui\anim_viewer.py:304
 #, python-brace-format
 msgid "wnd_pos has wrong argument {wnd_pos}."
 msgstr "wnd_pos 得到了错误的参数 {wnd_pos}"
 
-#: janim\gui\anim_viewer.py:302
+#: janim\gui\anim_viewer.py:315
 #, python-brace-format
 msgid "wnd_monitor has invalid value {wnd_monitor}, use {range} instead."
 msgstr "wnd_monitor 得到了无效的值 {wnd_monitor}, 请使用 {range} 代替"
 
-#: janim\gui\anim_viewer.py:449
+#: janim\gui\anim_viewer.py:473
 #, python-brace-format
 msgid "No timeline named \"{name}\" in \"{file}\""
 msgstr "没有叫作 \"{name}\" 的时间轴，对于文件 \"{file}\" 来说"
 
-#: janim\gui\anim_viewer.py:462
+#: janim\gui\anim_viewer.py:486
 msgid "Failed to rebuild"
 msgstr "构建失败"
 
-#: janim\gui\anim_viewer.py:575
+#: janim\gui\anim_viewer.py:606
 msgid "An error occurred during rendering, playback stopped"
 msgstr "渲染过程中出现错误，播放停止"
 
-#: janim\gui\anim_viewer.py:639
+#: janim\gui\anim_viewer.py:671
 #, python-brace-format
 msgid "Frame t={t:.2f} saved to \"{file_path}\""
 msgstr "帧 t={t:.2f} 已保存到 \"{file_path}\""
 
-#: janim\gui\anim_viewer.py:641 janim\gui\anim_viewer.py:660
-#: janim\gui\anim_viewer.py:697
+#: janim\gui\anim_viewer.py:673 janim\gui\anim_viewer.py:692
+#: janim\gui\anim_viewer.py:729
 msgid "Note"
 msgstr "提示"
 
-#: janim\gui\anim_viewer.py:642
+#: janim\gui\anim_viewer.py:674
 #, python-brace-format
 msgid "Captured to {file_path}"
 msgstr "已截取至 {file_path}"
 
-#: janim\gui\anim_viewer.py:661
+#: janim\gui\anim_viewer.py:693
 msgid "Output will start shortly. Please check the console for information."
 msgstr "即将进行输出，请留意控制台信息"
 
-#: janim\gui\anim_viewer.py:690
+#: janim\gui\anim_viewer.py:722
 msgid "Exporting was cancelled"
 msgstr "导出已取消"
 
-#: janim\gui\anim_viewer.py:698
+#: janim\gui\anim_viewer.py:730
 #, python-brace-format
 msgid "Output to {file_path} has been completed."
 msgstr "已完成输出至 {file_path}"
 
-#: janim\gui\anim_viewer.py:729
+#: janim\gui\anim_viewer.py:761
 #, python-brace-format
 msgid "Searching port has been opened at {port}"
 msgstr "搜索端口已在 {port} 开启"
 
-#: janim\gui\anim_viewer.py:734
+#: janim\gui\anim_viewer.py:766
 #, python-brace-format
 msgid "Failed to open searching port at {port}"
 msgstr "无法在 {port} 开启搜索端口"
 
-#: janim\gui\anim_viewer.py:739
+#: janim\gui\anim_viewer.py:771
 #, python-brace-format
 msgid ""
 "Searching port {port} is invalid, please use a number between 1024 and 65535 "
 "instead"
 msgstr "搜索端口 {port} 无效，请使用 1024 至 65535 之间的数字"
 
-#: janim\gui\anim_viewer.py:745
+#: janim\gui\anim_viewer.py:777
 msgid ""
 "Interactive development is disabled because the searching port is not "
 "established."
 msgstr "由于搜索端口未建立，交互式开发不可用"
 
-#: janim\gui\anim_viewer.py:758
+#: janim\gui\anim_viewer.py:790
 #, python-brace-format
 msgid "Interactive port has been opened at {port}"
 msgstr "交互端口已在 {port} 开启"

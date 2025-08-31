@@ -107,9 +107,9 @@ class VideoWriter:
             self._init_pbos()
             log.debug('Created PBOs')
 
-        if in_point < 0:
+        if in_point is not None and in_point < 0:
             in_point += self.built.duration
-        if out_point < 0:
+        if in_point is not None and out_point < 0:
             out_point += self.built.duration
 
         start_frame = (

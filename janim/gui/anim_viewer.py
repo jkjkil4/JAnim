@@ -190,6 +190,19 @@ class AnimViewer(QMainWindow):
         self.action_capture.setShortcut('Ctrl+Alt+S')
         self.action_capture.setAutoRepeat(False)
 
+        menu_file.addSeparator()
+
+        self.action_set_in_point = menu_file.addAction(_('Set In Point(&I)'))
+        self.action_set_in_point.setShortcut('[')
+        self.action_set_in_point.setAutoRepeat(False)
+
+        self.action_set_out_point = menu_file.addAction(_('Set Out Point(&O)'))
+        self.action_set_out_point.setShortcut(']')
+        self.action_set_out_point.setAutoRepeat(False)
+
+        self.action_reset_inout_point = menu_file.addAction(_('Reset In/Out Point(&R)'))
+        self.action_reset_inout_point.setAutoRepeat(False)
+
         menu_view = menu_bar.addMenu(_('View(&V)'))
 
         self.action_stay_on_top = menu_view.addAction(_('Stay on top(&T)'))
@@ -395,6 +408,9 @@ class AnimViewer(QMainWindow):
     def setup_slots(self) -> None:
         self.action_export.triggered.connect(self.on_export_clicked)
         self.action_capture.triggered.connect(self.on_capture_clicked)
+        self.action_set_in_point.triggered.connect(self.timeline_view.set_in_point)
+        self.action_set_out_point.triggered.connect(self.timeline_view.set_out_point)
+        self.action_reset_inout_point.triggered.connect(self.timeline_view.reset_inout_point)
         self.action_stay_on_top.toggled.connect(self.on_stay_on_top_toggled)
         self.action_frame_skip.toggled.connect(self.on_frame_skip_toggled)
         self.action_rebuild.triggered.connect(self.on_rebuild_triggered)
@@ -471,6 +487,8 @@ class AnimViewer(QMainWindow):
             return
 
         range = self.timeline_view.range
+        inout_point = self.timeline_view.inout_point
+
         self.set_built(built)
 
         if not stay_same:
@@ -489,6 +507,11 @@ class AnimViewer(QMainWindow):
             # 重新构建后，只剩下了 0~1s 的动画
             # 那么仍保留原来的显示范围，使得 0~1s 的显示位置不变，虽然显示范围超出了持续时间
             self.timeline_view.range = range
+
+            # 设置回 入点/出点 信息，并根据当前的总时长进行调整
+            # 后一个判断对应“如果入点比总时长还大，那么就不设置回 入点/出点 信息了”
+            if inout_point is not None and inout_point[0] < built.duration:
+                self.timeline_view.inout_point = (inout_point[0], min(inout_point[1], built.duration))
 
         import gc
 
@@ -655,13 +678,14 @@ class AnimViewer(QMainWindow):
     def on_export_clicked(self) -> None:
         self.play_timer.stop()
 
-        dialog = ExportDialog(self.built, self)
+        dialog = ExportDialog(self.built, self.timeline_view.inout_point is not None, self)
         ret = dialog.exec()
         if not ret:
             return
 
         file_path = dialog.file_path()
         cli_config.fps = dialog.fps()
+        using_inout_point = dialog.using_inout_point()
         hwaccel = dialog.hwaccel()
         video_with_audio = (self.built.timeline.has_audio_for_all() and not file_path.endswith('gif'))
 
@@ -675,9 +699,13 @@ class AnimViewer(QMainWindow):
             with self.change_export_size(dialog.pixel_size()) if dialog.has_size_set() else nullcontext():
                 built = self.built.timeline.__class__().build()
 
+                args = [file_path]
+                if using_inout_point:
+                    args += self.timeline_view.inout_point
+
                 if video_with_audio:
                     video_writer = VideoWriter(built)
-                    video_writer.write_all(file_path, hwaccel=hwaccel, _keep_temp=True)
+                    video_writer.write_all(*args, hwaccel=hwaccel, _keep_temp=True)
 
                     audio_file_path = os.path.splitext(file_path)[0] + '.mp3'
 
@@ -690,7 +718,7 @@ class AnimViewer(QMainWindow):
                                           video_writer.final_file_path)
                 else:
                     video_writer = VideoWriter(built)
-                    video_writer.write_all(file_path, hwaccel=hwaccel)
+                    video_writer.write_all(*args, hwaccel=hwaccel)
 
         except Exception as e:
             if not isinstance(e, ExitException):
