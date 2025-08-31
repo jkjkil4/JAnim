@@ -21,9 +21,7 @@ uniform samplerBuffer radii;    // radii[idx / 4][idx % 4]
 uniform samplerBuffer colors;
 uniform samplerBuffer fills;
 
-// used by JA_FINISH_UP
-uniform bool JA_BLENDING;
-uniform sampler2D JA_FRAMEBUFFER;
+#[JA_FINISH_UP_UNIFORMS]
 
 vec2 get_point(int idx) {
     return texelFetch(points, idx).xy;

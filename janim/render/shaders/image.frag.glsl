@@ -7,9 +7,7 @@ out vec4 f_color;
 
 uniform sampler2D image;
 
-// used by JA_FINISH_UP
-uniform bool JA_BLENDING;
-uniform sampler2D JA_FRAMEBUFFER;
+#[JA_FINISH_UP_UNIFORMS]
 
 void main()
 {

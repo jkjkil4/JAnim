@@ -15,9 +15,7 @@ uniform float glow_size;
 
 const float INFINITY = uintBitsToFloat(0x7F800000);
 
-// used by JA_FINISH_UP
-uniform bool JA_BLENDING;
-uniform sampler2D JA_FRAMEBUFFER;
+#[JA_FINISH_UP_UNIFORMS]
 
 layout(std140, binding = 0) buffer MappedPoints
 {

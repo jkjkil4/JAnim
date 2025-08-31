@@ -9,9 +9,7 @@ out vec4 f_color;
 
 uniform float JA_ANTI_ALIAS_RADIUS;
 
-// used by JA_FINISH_UP
-uniform bool JA_BLENDING;
-uniform sampler2D JA_FRAMEBUFFER;
+#[JA_FINISH_UP_UNIFORMS]
 
 void main()
 {

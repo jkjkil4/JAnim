@@ -7,7 +7,7 @@ import numpy as np
 
 from janim.render.base import Renderer
 from janim.render.framebuffer import FRAME_BUFFER_BINDING
-from janim.render.program import get_janim_program
+from janim.render.program import get_program_from_file_prefix
 from janim.render.texture import get_texture_from_img
 from janim.utils.iterables import resize_with_interpolation
 
@@ -20,7 +20,7 @@ class ImageItemRenderer(Renderer):
         self.initialized: bool = False
 
     def init(self) -> None:
-        self.prog = get_janim_program('render/shaders/image')
+        self.prog = get_program_from_file_prefix('render/shaders/image')
 
         self.u_fix = self.get_u_fix_in_frame(self.prog)
         self.u_image = self.prog['image']

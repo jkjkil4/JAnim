@@ -11,6 +11,7 @@ from janim.render.base import Renderer
 from janim.render.framebuffer import (blend_context, create_framebuffer,
                                       framebuffer_context)
 from janim.render.program import get_program_from_string
+from janim.render.shader import shader_injections_ctx
 from janim.utils.config import Config
 
 if TYPE_CHECKING:
@@ -36,13 +37,19 @@ class FrameEffectRenderer(Renderer):
     def __init__(self):
         self.initialized: bool = False
 
-    def init(self, fragment_shader: str, cache_key: str) -> None:
+    def init(self, item: FrameEffect) -> None:
         self.ctx = Renderer.data_ctx.get().ctx
-        self.prog = get_program_from_string(
-            vertex_shader,
-            fragment_shader,
-            cache_key=cache_key
-        )
+
+        token = shader_injections_ctx.set(item.injections)
+        try:
+            self.prog = get_program_from_string(
+                vertex_shader,
+                item.fragment_shader,
+                cache_key=item.cache_key,
+                shader_name=item.__class__.__name__
+            )
+        finally:
+            shader_injections_ctx.reset(token)
 
         self.u_fbo = self.prog.get('fbo', None)
         if self.u_fbo is not None:
@@ -66,7 +73,7 @@ class FrameEffectRenderer(Renderer):
 
     def render(self, item: FrameEffect) -> None:
         if not self.initialized:
-            self.init(item.fragment_shader, item.cache_key)
+            self.init(item)
             self.initialized = True
 
         if self.u_fbo is not None:

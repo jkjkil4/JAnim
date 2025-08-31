@@ -6,7 +6,7 @@ import moderngl as mgl
 import numpy as np
 
 from janim.render.base import Renderer
-from janim.render.program import get_janim_program
+from janim.render.program import get_program_from_file_prefix
 from janim.utils.iterables import resize_with_interpolation
 
 if TYPE_CHECKING:
@@ -18,7 +18,7 @@ class DotCloudRenderer(Renderer):
         self.initialized = False
 
     def init(self) -> None:
-        self.prog = get_janim_program('render/shaders/dotcloud')
+        self.prog = get_program_from_file_prefix('render/shaders/dotcloud')
 
         self.u_fix = self.get_u_fix_in_frame(self.prog)
 
