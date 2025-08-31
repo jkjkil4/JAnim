@@ -79,6 +79,7 @@ class ExportDialog(QDialog):
         settings = QSettings(os.path.join(Config.get.temp_dir, 'export_dialog.ini'), QSettings.Format.IniFormat)
         settings.beginGroup(self.code_file_path)
         output_dir = settings.value('output_dir', None)
+        output_format = settings.value('output_format', 'mp4')
         fps = settings.value('fps', self.built.cfg.fps, type=int)
         scale = settings.value('scale', 1.0, type=float)
         hwaccel = settings.value('hwaccel', False, type=bool)
@@ -92,7 +93,7 @@ class ExportDialog(QDialog):
         if not os.path.exists(output_dir):
             os.makedirs(output_dir)
 
-        file_path = os.path.join(output_dir, f'{self.built.timeline.__class__.__name__}.mp4')
+        file_path = os.path.join(output_dir, f'{self.built.timeline.__class__.__name__}.{output_format}')
 
         self.ui.edit_path.setText(file_path)
         self.ui.spb_fps.setValue(fps)
@@ -104,6 +105,7 @@ class ExportDialog(QDialog):
         settings = QSettings(os.path.join(Config.get.temp_dir, 'export_dialog.ini'), QSettings.Format.IniFormat)
         settings.beginGroup(self.code_file_path)
         settings.setValue('output_dir', os.path.dirname(self.ui.edit_path.text()))
+        settings.setValue('output_format', self.ui.edit_path.text().split('.')[-1])
         settings.setValue('fps', self.ui.spb_fps.value())
         settings.setValue('scale', self.ui.cbb_size.currentData()[0])
         settings.setValue('hwaccel', self.ui.ckb_hwaccel.isChecked())
