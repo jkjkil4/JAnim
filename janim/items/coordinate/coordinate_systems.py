@@ -7,8 +7,8 @@ import numpy as np
 from janim.components.component import CmptInfo
 from janim.components.points import Cmpt_Points
 from janim.components.vpoints import Cmpt_VPoints
-from janim.constants import (BLUE, BLUE_D, DEGREES, DL, ORIGIN, SMALL_BUFF, UP,
-                             WHITE)
+from janim.constants import (BLUE, BLUE_D, DEGREES, DL, DOWN, ORIGIN, OUT, PI,
+                             SMALL_BUFF, UP, WHITE)
 from janim.items.coordinate.functions import ParametricCurve
 from janim.items.coordinate.number_line import NumberLine
 from janim.items.geometry.line import Line
@@ -18,7 +18,7 @@ from janim.items.points import Group, MarkedItem
 from janim.items.vitem import DEFAULT_STROKE_RADIUS
 from janim.typing import JAnimColor, RangeSpecifier, Vect, VectArray
 from janim.utils.dict_ops import merge_dicts_recursively
-from janim.utils.space_ops import cross
+from janim.utils.space_ops import angle_of_vector, cross
 
 DEFAULT_X_RANGE = (-8.0, 8.0, 1.0)
 DEFAULT_Y_RANGE = (-4.0, 4.0, 1.0)
@@ -44,7 +44,7 @@ class CoordinateSystem(metaclass=ABCMeta):
         axis_config: dict,
         length: float | None
     ) -> NumberLine:
-        axis = NumberLine(range, width=length, center=False, **axis_config)
+        axis = NumberLine(range, length=length, center=False, **axis_config)
         return axis
 
     @abstractmethod
@@ -159,11 +159,31 @@ class Axes(CoordinateSystem, MarkedItem, Group, metaclass=_ItemMeta_ABCMeta):
         axis_config: dict = {},
         x_axis_config: dict = {},
         y_axis_config: dict = {},
+        x_length: float | None = None,
+        y_length: float | None = None,
         height: float | None = None,
         width: float | None = None,
         unit_size: float = 1.0,
         **kwargs
     ):
+        if height is not None:
+            from janim.utils.deprecation import deprecated
+            deprecated(
+                'height',
+                'y_length',
+                remove=(4, 3)
+            )
+            y_length = height
+
+        if width is not None:
+            from janim.utils.deprecation import deprecated
+            deprecated(
+                'width',
+                'x_length',
+                remove=(4, 3)
+            )
+            x_length = width
+
         self.x_range = x_range
         self.y_range = y_range
 
@@ -176,7 +196,7 @@ class Axes(CoordinateSystem, MarkedItem, Group, metaclass=_ItemMeta_ABCMeta):
                 axis_config,
                 x_axis_config
             ),
-            length=width
+            length=x_length
         )
         self.y_axis = CoordinateSystem.create_axis(
             y_range,
@@ -186,7 +206,7 @@ class Axes(CoordinateSystem, MarkedItem, Group, metaclass=_ItemMeta_ABCMeta):
                 axis_config,
                 y_axis_config
             ),
-            length=height
+            length=y_length
         )
         self.y_axis.points.rotate(90 * DEGREES, about_point=ORIGIN)
 
@@ -333,7 +353,43 @@ class Axes(CoordinateSystem, MarkedItem, Group, metaclass=_ItemMeta_ABCMeta):
         return graph
 
 
-# TODO: ThreeDAxes
+class ThreeDAxes(Axes):
+    z_axis_config_d = {}
+
+    def __init__(
+        self,
+        x_range: RangeSpecifier = (-6, 6, 1),
+        y_range: RangeSpecifier = (-5, 5, 1),
+        z_range: RangeSpecifier = (-4, 4, 1),
+        *,
+        axis_config: dict = {},
+        z_length: float | None = None,
+        z_axis_config: dict = {},
+        z_normal: Vect = DOWN,
+        **kwargs
+    ):
+        super().__init__(x_range, y_range, axis_config=axis_config, **kwargs)
+
+        self.z_range = z_range
+        self.z_axis = CoordinateSystem.create_axis(
+            z_range,
+            axis_config=merge_dicts_recursively(
+                self.axis_config_d,
+                self.z_axis_config_d,
+                axis_config,
+                z_axis_config
+            ),
+            length=z_length
+        )
+        self.z_axis.points \
+            .rotate(-PI / 2, axis=UP, about_point=ORIGIN) \
+            .rotate(angle_of_vector(z_normal), axis=OUT, about_point=ORIGIN) \
+            .shift(self.x_axis.mark.get())
+
+        self.add(self.z_axis)
+
+    def get_axes(self):
+        return [*super().get_axes(), self.z_axis]
 
 
 class CmptVPoints_NumberPlaneImpl(Cmpt_VPoints, impl=True):
