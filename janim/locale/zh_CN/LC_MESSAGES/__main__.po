@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-08-02 07:30+0800\n"
-"PO-Revision-Date: 2025-08-02 07:32+0800\n"
+"POT-Creation-Date: 2025-08-31 22:54+0800\n"
+"PO-Revision-Date: 2025-08-31 22:56+0800\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
 "Language: zh_CN\n"
@@ -126,28 +126,50 @@ msgid "Generate SRT file"
 msgstr "生成 SRT 文件"
 
 #: janim\__main__.py:158
+msgid "Range Options"
+msgstr "区段选项"
+
+#: janim\__main__.py:159
+msgid "Options for specifying in/out point"
+msgstr "用于指定入点/出点的选项"
+
+#: janim\__main__.py:164
+msgid "Set In Point; use negative value to indicate time relative to the end"
+msgstr "设置入点; 使用负值表示相对结尾的时间点"
+
+#: janim\__main__.py:170
+msgid "Set Out Point; use negative value to indicate time relative to the end"
+msgstr "设置出点; 使用负值表示相对结尾的时间点"
+
+#: janim\__main__.py:173
 msgid "Other Options"
 msgstr "其它选项"
 
-#: janim\__main__.py:159
+#: janim\__main__.py:174
 msgid "Other options for writing the output files"
 msgstr "输出文件的其他选项"
 
-#: janim\__main__.py:163
+#: janim\__main__.py:178
 msgid "Disable PBO (Pixel Buffer Object) for writing video"
 msgstr "在输出视频时禁用 PBO（像素缓冲对象）"
 
-#: janim\__main__.py:168
+#: janim\__main__.py:183
 msgid "Use hardware acceleration for writing video"
 msgstr "在输出视频时使用硬件加速"
 
-#: janim\__main__.py:179
+#: janim\__main__.py:194
 msgid "Name of the example you want to see"
 msgstr "要查看的示例的名称"
 
-#: janim\__main__.py:193
+#: janim\__main__.py:208
 msgid "Tool(s) that you want to use"
 msgstr "你想要使用的工具"
+
+#~ msgid "Set In Point"
+#~ msgstr "设置入点"
+
+#~ msgid "Set Out Point"
+#~ msgstr "设置出点"
 
 #~ msgid "Format of the output video"
 #~ msgstr "输出视频的格式"

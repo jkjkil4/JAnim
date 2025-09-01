@@ -352,6 +352,67 @@ class GrowFromEdgeExample(Timeline):
         self.forward()
 
 
+class ShrinkToPointExample(Timeline):
+    def construct(self) -> None:
+        group = Group(
+            Square(fill_alpha=0.5),
+            Circle(fill_alpha=0.5),
+            Text('Text', font_size=48),
+            color=BLUE
+        )
+        group.points.arrange(buff=LARGE_BUFF)
+
+        directions=[UP,LEFT,DOWN,RIGHT]
+
+        for direction in directions:
+            self.play(
+                *[
+                    ShrinkToPoint(item, item.points.box.center + direction * 3)
+                    for item in group
+                ]
+            )
+
+        self.forward()
+
+
+class ShrinkToCenterExample(Timeline):
+    def construct(self) -> None:
+        group = Group(
+            Square(fill_alpha=0.5),
+            Circle(fill_alpha=0.5),
+            Text('Text', font_size=48),
+            color=BLUE
+        )
+        group.points.arrange(buff=LARGE_BUFF)
+
+        self.play(*map(ShrinkToCenter, group))
+
+        self.forward()
+
+
+class ShrinkToEdgeExample(Timeline):
+    def construct(self) -> None:
+        group = Group(
+            Square(fill_alpha=0.5),
+            Circle(fill_alpha=0.5),
+            Text('Text', font_size=48),
+            color=BLUE
+        )
+        group.points.arrange(buff=LARGE_BUFF)
+
+        directions=[UP,LEFT,DOWN,RIGHT]
+
+        for direction in directions:
+            self.play(
+                *[
+                    ShrinkToEdge(item, direction)
+                    for item in group
+                ]
+            )
+
+        self.forward()
+
+
 class SpinInFromNothingExample(Timeline):
     def construct(self) -> None:
         group = Group(
@@ -364,6 +425,23 @@ class SpinInFromNothingExample(Timeline):
 
         self.play(
             *map(SpinInFromNothing, group),
+            duration=2
+        )
+        self.forward()
+
+
+class SpinOutToNothingExample(Timeline):
+    def construct(self) -> None:
+        group = Group(
+            Square(fill_alpha=0.5),
+            Circle(fill_alpha=0.5),
+            Text('Text', font_size=48),
+            color=BLUE
+        )
+        group.points.arrange(buff=LARGE_BUFF)
+
+        self.play(
+            *map(SpinOutToNothing, group),
             duration=2
         )
         self.forward()

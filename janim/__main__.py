@@ -155,6 +155,21 @@ def write_parser(parser: ArgumentParser) -> None:
         help=_('Generate SRT file')
     )
 
+    range_options = parser.add_argument_group(_('Range Options'),
+                                              _('Options for specifying in/out point'))
+    range_options.add_argument(
+        '--from',
+        dest='in_point',
+        type=float,
+        help=_('Set In Point; use negative value to indicate time relative to the end')
+    )
+    range_options.add_argument(
+        '--to',
+        dest='out_point',
+        type=float,
+        help=_('Set Out Point; use negative value to indicate time relative to the end')
+    )
+
     other_options = parser.add_argument_group(_('Other Options'),
                                               _('Other options for writing the output files'))
     other_options.add_argument(

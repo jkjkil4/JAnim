@@ -23,6 +23,7 @@ def getfile_or_empty(cls: type) -> str:
         return ''
 
 
+@lru_cache(maxsize=1)
 def get_janim_dir() -> str:
     '''
     得到 janim 的路径
@@ -81,8 +82,8 @@ def find_file(file_path: str | Path) -> str:
     from janim.anims.timeline import Timeline
 
     timeline = Timeline.get_context(raise_exc=False)
-    relative_path = None if timeline is None else os.path.dirname(inspect.getfile(timeline.__class__))
-    if relative_path is not None:
+    if timeline is not None:
+        relative_path = os.path.dirname(inspect.getfile(timeline.__class__))
         found_path = find_file_in_path(relative_path, file_path)
         if found_path is not None:
             return found_path
