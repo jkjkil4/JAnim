@@ -4,7 +4,7 @@ import inspect
 import itertools as it
 import re
 from collections import defaultdict
-from enum import Enum, StrEnum
+from enum import StrEnum
 from typing import (TYPE_CHECKING, Any, Callable, Concatenate, Iterable,
                     Literal, Self)
 
@@ -348,9 +348,9 @@ class Text(VItem, Group[TextLine]):
 
     如果对换行排版等有较高的需求可以考虑使用 :class:`~.TypstDoc`
     '''
-    class Format(Enum):
-        PlainText = 0
-        RichText = 1
+    class Format(StrEnum):
+        PlainText = 'plain'
+        RichText = 'rich'
 
     def __init__(
         self,
@@ -362,7 +362,7 @@ class Text(VItem, Group[TextLine]):
         style: Style | StyleName = Style.Normal,
         force_full_name: bool = False,      # 一般情况下用不到，只是为了在 family-name 调用不符合预期时，使用该参数强制作为 full-name
 
-        format: Format = Format.PlainText,
+        format: Format | Literal['plain', 'rich'] = Format.PlainText,
         line_kwargs: dict = {},
 
         stroke_alpha: float = 0,
@@ -388,7 +388,7 @@ class Text(VItem, Group[TextLine]):
             for name in font_names
         ]
 
-        if format is not Text.Format.RichText:
+        if format != Text.Format.RichText:
             self.text = text
         else:
             # 如果是 RichText，获取属性列表
@@ -427,7 +427,7 @@ class Text(VItem, Group[TextLine]):
             **kwargs
         )
 
-        if format is Text.Format.RichText:
+        if format == Text.Format.RichText:
             self.apply_rich_text()
         for line in self.children:
             line.arrange_in_line()
