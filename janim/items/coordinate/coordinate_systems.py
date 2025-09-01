@@ -142,11 +142,11 @@ class CoordinateSystem(metaclass=ABCMeta):
 
 
 class Axes(CoordinateSystem, MarkedItem, Group, metaclass=_ItemMeta_ABCMeta):
-    axis_config_d: dict = dict(
+    axis_config_d = dict(
         numbers_to_exclude=[0]
     )
-    x_axis_config_d: dict = {}
-    y_axis_config_d: dict = dict(
+    x_axis_config_d = {}
+    y_axis_config_d = dict(
         line_to_number_direction=UP
     )
 
@@ -353,11 +353,11 @@ class CmptVPoints_NumberPlaneImpl(Cmpt_VPoints, impl=True):
 class NumberPlane(Axes):
     points = CmptInfo(CmptVPoints_NumberPlaneImpl)
 
-    background_line_style_d: dict = dict(
+    background_line_style_d = dict(
         stroke_color=BLUE_D,
         stroke_radius=0.01,
     )
-    axis_config_d: dict = dict(
+    axis_config_d = dict(
         stroke_color=WHITE,
         stroke_radius=0.01,
         include_ticks=False,
@@ -365,17 +365,17 @@ class NumberPlane(Axes):
         line_to_number_buff=SMALL_BUFF,
         line_to_number_direction=DL
     )
-    y_axis_config_d: dict = dict(
-        line_to_number_direction=DL
+    y_axis_config_d = dict(
+        line_to_number_direction=DL,
     )
 
     def __init__(
         self,
         x_range: RangeSpecifier = DEFAULT_X_RANGE,
         y_range: RangeSpecifier = DEFAULT_Y_RANGE,
-        background_line_style: dict = dict(),
+        background_line_style: dict = {},
         # Defaults to a faded version of line_config
-        faded_line_style: dict = dict(),
+        faded_line_style: dict = {},
         faded_line_ratio: int = 4,
         **kwargs
     ):
