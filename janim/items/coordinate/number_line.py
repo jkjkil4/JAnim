@@ -1,7 +1,7 @@
 
 import numbers
 from typing import Iterable
-
+from decimal import Decimal
 import numpy as np
 
 from janim.constants import (DOWN, GREY_B, LEFT, MED_SMALL_BUFF, ORIGIN, RIGHT,
@@ -59,6 +59,10 @@ class NumberLine(MarkedItem, Line):
     -   ``line_to_number_direction``: 数字放在刻度点的哪个方向
 
     -   ``line_to_number_buff``: 数字与刻度点的间距
+
+    -   ``number_places``: 数字的小数位数，默认会根据刻度步长自动确定
+
+    -   ``number_config``: 提供给数字的额外参数，另见 :class:`~.Text`
     '''
 
     tip_config_d = dict(
@@ -99,7 +103,7 @@ class NumberLine(MarkedItem, Line):
         numbers_to_exclude: Iterable[float] = [],               # 需要排除的数字
         line_to_number_direction: np.ndarray = DOWN,            # 数字放在刻度点的哪个方向
         line_to_number_buff: float = MED_SMALL_BUFF,            # 数字与刻度点的间距
-        number_places: int = 0,                                 # 数字位数
+        number_places: int | None = None,                       # 数字位数
         number_config: dict = {},                               # 数字属性
         decimal_number_config: dict | None = None,
         **kwargs
@@ -152,7 +156,11 @@ class NumberLine(MarkedItem, Line):
 
         self.line_to_number_direction = line_to_number_direction
         self.line_to_number_buff = line_to_number_buff
-        self.number_places = number_places
+        if number_places is not None:
+            self.number_places = number_places
+        else:
+            exponent = Decimal(str(self.x_step)).as_tuple().exponent
+            self.number_places = max(0, -exponent)
         self.number_config = merge_dicts_recursively(
             self.number_config_d,
             number_config
