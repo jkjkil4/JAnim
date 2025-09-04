@@ -21,6 +21,7 @@ from janim.utils.data import AlignedData, Array
 from janim.utils.iterables import resize_and_repeatedly_extend
 from janim.utils.paths import PathFunc, straight_path
 from janim.utils.signal import Signal
+from janim.utils.simple_functions import clip
 from janim.utils.space_ops import (angle_of_vector, get_norm, normalize,
                                    rotation_between_vectors, rotation_matrix)
 
@@ -1168,13 +1169,70 @@ class Cmpt_Points[ItemT](Component[ItemT]):
 
     def shift_onto_screen(self, **kwargs) -> Self:
         space_lengths = [Config.get.frame_x_radius, Config.get.frame_y_radius]
+        buff = kwargs.get("buff", DEFAULT_ITEM_TO_EDGE_BUFF)
         for vect in UP, DOWN, LEFT, RIGHT:
             dim = np.argmax(np.abs(vect))
-            buff = kwargs.get("buff", DEFAULT_ITEM_TO_EDGE_BUFF)
             max_val = space_lengths[dim] - buff
             edge_center = self.box.get(vect)
             if np.dot(edge_center, vect) > max_val:
                 self.to_border(vect, **kwargs)
+        return self
+
+    def shift_onto_screen_along_direction(
+        self,
+        direction: Vect,
+        *,
+        buff: float = DEFAULT_ITEM_TO_EDGE_BUFF
+    ) -> Self:
+        center = self.box.center
+        x_radius = Config.get.frame_x_radius - self.box.width / 2 - buff
+        y_radius = Config.get.frame_y_radius - self.box.height / 2 - buff
+
+        # 如果已经在内部了，那么就不用移动了
+        if -x_radius <= center[0] <= x_radius and -y_radius <= center[1] <= y_radius:
+            return self
+
+        # (X, Y, Distance)
+        candidates: list[tuple[float, float, float]] = []
+
+        # 计算 direction 方向的直线与两条竖线的交点
+        for x in (-x_radius, x_radius):
+            # 如果 direction 几乎垂直，那么直接将横向吸附点加到 candidates 中
+            # 否则就计算交点加到 candidates 中
+            if np.isclose(direction[0], 0):
+                y = center[1]
+                dist = abs(x - center[0])
+            else:
+                y = center[1] + direction[1] * (x - center[0]) / direction[0]
+                if -y_radius <= y <= y_radius:
+                    dist = 0
+                else:
+                    dist = min(abs(y + y_radius), abs(y - y_radius))
+
+            candidates.append((x, clip(y, -y_radius, y_radius), dist))
+
+        # 计算 direction 方向的直线与两条横线的交点
+        for y in (-y_radius, y_radius):
+            # 如果 direction 几乎水平，那么直接将纵向吸附点加到 candidates 中
+            # 否则就计算交点加到 candidates 中
+            if np.isclose(direction[1], 0):
+                x = center[0]
+                dist = abs(y - center[1])
+            else:
+                x = center[0] + direction[0] * (y - center[1]) / direction[1]
+                if -x_radius <= x <= x_radius:
+                    dist = 0
+                else:
+                    dist = min(abs(x + x_radius), abs(x - x_radius))
+
+            candidates.append((clip(x, -x_radius, x_radius), y, dist))
+
+        # 筛选出最佳的位置
+        min_dist = min(p[2] for p in candidates)
+        filtered = [p for p in candidates if np.isclose(p[2], min_dist)]
+        best = min(filtered, key=lambda p: get_norm(p[:2] - center[:2]))
+
+        self.move_to([*best[:2], center[2]])
         return self
 
     def set_coord(self, value: float, *, dim: int, direction: Vect = ORIGIN, root_only=False) -> Self:
