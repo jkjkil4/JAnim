@@ -5,12 +5,13 @@ from typing import Iterable
 import numpy as np
 
 from janim.constants import (DOWN, GREY_B, LEFT, MED_SMALL_BUFF, ORIGIN, RIGHT,
-                             UP)
+                             UP, UR)
 from janim.items.geometry.arrow import ArrowTip
 from janim.items.geometry.line import Line
-from janim.items.points import Group, MarkedItem
+from janim.items.points import Group, MarkedItem, Points
+from janim.items.svg.typst import TypstMath
 from janim.items.text import Text
-from janim.typing import JAnimColor, RangeSpecifier
+from janim.typing import JAnimColor, RangeSpecifier, Vect
 from janim.utils.bezier import interpolate, outer_interpolate
 from janim.utils.dict_ops import merge_dicts_recursively
 from janim.utils.simple_functions import fdiv
@@ -90,12 +91,12 @@ class NumberLine(MarkedItem, Line):
         # tip
         include_tip: bool = False,                              # 是否显示箭头
         tip_config: dict = {},                                  # 箭头属性
-        # tick
+        # ticks
         include_ticks: bool = True,                             # 是否显示刻度
         tick_size: float = 0.1,                                 # 刻度大小
         longer_tick_multiple: float = 1.5,                      # 长刻度大小倍数
         numbers_with_elongated_ticks: Iterable[float] = [],     # 指定哪些数字是长刻度
-        # number
+        # numbers
         include_numbers: bool = False,                          # 是否显示数字
         numbers_to_exclude: Iterable[float] = [],               # 需要排除的数字
         line_to_number_direction: np.ndarray = DOWN,            # 数字放在刻度点的哪个方向
@@ -302,6 +303,24 @@ class NumberLine(MarkedItem, Line):
             # Align without the minus sign
             num_item.points.shift(num_item[0][0].points.box.width * LEFT / 2)
         return num_item
+
+    def get_axis_label(
+        self,
+        label: str | Points,
+        *,
+        alpha: float = 1,
+        direction: Vect = UR,
+        buff=MED_SMALL_BUFF,
+        ensure_on_screen: bool = False,
+        **kwargs
+    ) -> TypstMath:
+        if isinstance(label, str):
+            label = TypstMath(label, **kwargs)
+            label.points.scale(1.4)
+        label.points.next_to(self.points.pfp(alpha), direction, buff=buff)
+        if ensure_on_screen:
+            label.points.shift_onto_screen_along_direction(self.points.vector, buff=MED_SMALL_BUFF)
+        return label
 
     def number_to_point(self, number: float | Iterable[float] | np.ndarray) -> np.ndarray:
         '''
