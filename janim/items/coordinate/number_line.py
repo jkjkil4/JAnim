@@ -5,12 +5,13 @@ from decimal import Decimal
 import numpy as np
 
 from janim.constants import (DOWN, GREY_B, LEFT, MED_SMALL_BUFF, ORIGIN, RIGHT,
-                             UP)
+                             UP, UR)
 from janim.items.geometry.arrow import ArrowTip
 from janim.items.geometry.line import Line
-from janim.items.points import Group, MarkedItem
+from janim.items.points import Group, MarkedItem, Points
+from janim.items.svg.typst import TypstMath
 from janim.items.text import Text
-from janim.typing import JAnimColor, RangeSpecifier
+from janim.typing import JAnimColor, RangeSpecifier, Vect
 from janim.utils.bezier import interpolate, outer_interpolate
 from janim.utils.dict_ops import merge_dicts_recursively
 from janim.utils.simple_functions import fdiv
@@ -93,12 +94,12 @@ class NumberLine(MarkedItem, Line):
         # tip
         include_tip: bool = False,                              # 是否显示箭头
         tip_config: dict = {},                                  # 箭头属性
-        # tick
+        # ticks
         include_ticks: bool = True,                             # 是否显示刻度
         tick_size: float = 0.1,                                 # 刻度大小
         longer_tick_multiple: float = 1.5,                      # 长刻度大小倍数
         numbers_with_elongated_ticks: Iterable[float] = [],     # 指定哪些数字是长刻度
-        # number
+        # numbers
         include_numbers: bool = False,                          # 是否显示数字
         numbers_to_exclude: Iterable[float] = [],               # 需要排除的数字
         line_to_number_direction: np.ndarray = DOWN,            # 数字放在刻度点的哪个方向
@@ -325,6 +326,40 @@ class NumberLine(MarkedItem, Line):
             # Align without the minus sign
             num_item.points.shift(num_item[0][0].points.box.width * LEFT / 2)
         return num_item
+
+    def get_axis_label(
+        self,
+        label: str | Points,
+        *,
+        alpha: float = 1,
+        direction: Vect = UR,
+        buff=MED_SMALL_BUFF,
+        ensure_on_screen: bool = False,
+        **kwargs
+    ) -> TypstMath | Points:
+        '''
+        得到坐标轴标签文字
+
+        如果 ``label`` 是字符串，则会将其作为 Typst 公式解析成为 :class:`~.TypstMath` 物件
+
+        物件会被放置到合适的地方，默认情况下是坐标轴尖端的旁边，具体来说由 ``alpha`` ``direction`` 和 ``buff`` 控制：
+
+        - ``alpha`` 控制物件被放到坐标轴哪个点的旁边，该数值表示坐标轴上的百分比位置，例如默认的 ``1`` 即为坐标轴末尾，``0`` 则为坐标轴起点
+
+        - ``direction`` 控制物件被放到前面所述的点的哪个方向，默认是 ``UR`` 表示右上方
+
+        - ``buff`` 控制物件与前面所述的点的间距
+
+        如果坐标轴比较长，坐标轴标签有可能会超出屏幕，
+        此时如果设置 ``ensure_on_screen=True``，坐标轴标签会自动调整位置移动到默认屏幕区域内
+        '''
+        if isinstance(label, str):
+            label = TypstMath(label, **kwargs)
+            label.points.scale(1.4)
+        label.points.next_to(self.points.pfp(alpha), direction, buff=buff)
+        if ensure_on_screen:
+            label.points.shift_onto_screen_along_direction(self.points.vector, buff=MED_SMALL_BUFF)
+        return label
 
     def number_to_point(self, number: float | Iterable[float] | np.ndarray) -> np.ndarray:
         '''

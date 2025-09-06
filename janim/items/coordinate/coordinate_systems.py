@@ -14,7 +14,8 @@ from janim.items.coordinate.number_line import NumberLine
 from janim.items.geometry.line import Line
 from janim.items.geometry.polygon import Polygon
 from janim.items.item import _ItemMeta
-from janim.items.points import Group, MarkedItem
+from janim.items.points import Group, MarkedItem, Points
+from janim.items.svg.typst import TypstMath
 from janim.items.vitem import DEFAULT_STROKE_RADIUS
 from janim.typing import JAnimColor, RangeSpecifier, Vect, VectArray
 from janim.utils.dict_ops import merge_dicts_recursively
@@ -266,6 +267,41 @@ class Axes(CoordinateSystem, MarkedItem, Group, metaclass=_ItemMeta_ABCMeta):
 
         return graph
 
+    def get_parametric_curve(
+        self,
+        function: Callable[[float], Vect],
+        bind: bool = True,
+        **kwargs
+    ):
+        '''
+        基于坐标轴的坐标构造参数曲线，即 :class:`~.ParametricCurve`
+
+        - ``function``: 将值映射为坐标系上的一个点的参数函数
+        - ``bind``: 在默认情况下为 ``True``，会使得参数曲线自动同步应用于坐标系上的变换，也可同步动画，详见 :ref:`examples` 中的 ``NumberPlaneExample``
+
+        .. warning::
+
+            当 ``bind=True`` 时，请勿将参数曲线与坐标系放在同一个 :class:`~.Group` 中进行坐标变换
+
+            因为会导致变换效果被重复作用，（一次由 :class:`~.Group` 导致的作用，另一次由 ``bind=True`` 导致的作用）
+
+            如果你有放在同一个 :class:`~.Group` 里的需求，请传入 ``bind=False`` 以避免该情况
+        '''
+        graph = ParametricCurve(
+            lambda t: self.coords_to_point(*function(t)),
+            **kwargs
+        )
+
+        if bind:
+            Cmpt_Points.apply_points_fn.connect(
+                self.points,
+                lambda func, about_point: graph.points.apply_points_fn(func,
+                                                                       about_point=about_point,
+                                                                       about_edge=None)
+            )
+
+        return graph
+
     def get_area(
         self,
         graph: ParametricCurve,
@@ -317,40 +353,47 @@ class Axes(CoordinateSystem, MarkedItem, Group, metaclass=_ItemMeta_ABCMeta):
             **kwargs
         )
 
-    def get_parametric_curve(
+    def get_axis_labels(
         self,
-        function: Callable[[float], Vect],
-        bind: bool = True,
-        **kwargs
-    ):
+        x_label: str | Points = 'x',
+        y_label: str | Points = 'y',
+        x_kwargs: dict = {},
+        y_kwargs: dict = {},
+        **kwargs,
+    ) -> Group[TypstMath | Points]:
         '''
-        基于坐标轴的坐标构造参数曲线，即 :class:`~.ParametricCurve`
+        详见 :meth:`~.NumberLine.get_axis_label`
 
-        - ``function``: 将值映射为坐标系上的一个点的参数函数
-        - ``bind``: 在默认情况下为 ``True``，会使得参数曲线自动同步应用于坐标系上的变换，也可同步动画，详见 :ref:`examples` 中的 ``NumberPlaneExample``
-
-        .. warning::
-
-            当 ``bind=True`` 时，请勿将参数曲线与坐标系放在同一个 :class:`~.Group` 中进行坐标变换
-
-            因为会导致变换效果被重复作用，（一次由 :class:`~.Group` 导致的作用，另一次由 ``bind=True`` 导致的作用）
-
-            如果你有放在同一个 :class:`~.Group` 里的需求，请传入 ``bind=False`` 以避免该情况
+        如果设置 ``ensure_on_screen=True``，坐标轴标签会自动调整位置移动到默认屏幕区域内
         '''
-        graph = ParametricCurve(
-            lambda t: self.coords_to_point(*function(t)),
-            **kwargs
+        return Group(
+            self.get_x_axis_label(x_label, **x_kwargs, **kwargs),
+            self.get_y_axis_label(y_label, **y_kwargs, **kwargs),
         )
 
-        if bind:
-            Cmpt_Points.apply_points_fn.connect(
-                self.points,
-                lambda func, about_point: graph.points.apply_points_fn(func,
-                                                                       about_point=about_point,
-                                                                       about_edge=None)
-            )
+    def get_x_axis_label(
+        self,
+        label: str | Points = 'x',
+        **kwargs
+    ) -> TypstMath | Points:
+        '''
+        详见 :meth:`~.NumberLine.get_axis_label`
 
-        return graph
+        如果设置 ``ensure_on_screen=True``，坐标轴标签会自动调整位置移动到默认屏幕区域内
+        '''
+        return self.x_axis.get_axis_label(label, **kwargs)
+
+    def get_y_axis_label(
+        self,
+        label: str | Points = 'y',
+        **kwargs
+    ) -> TypstMath | Points:
+        '''
+        详见 :meth:`~.NumberLine.get_axis_label`
+
+        如果设置 ``ensure_on_screen=True``，坐标轴标签会自动调整位置移动到默认屏幕区域内
+        '''
+        return self.y_axis.get_axis_label(label, **kwargs)
 
 
 class ThreeDAxes(Axes):
@@ -388,7 +431,7 @@ class ThreeDAxes(Axes):
 
         self.add(self.z_axis)
 
-    def get_axes(self):
+    def get_axes(self) -> list[NumberLine]:
         return [*super().get_axes(), self.z_axis]
 
 

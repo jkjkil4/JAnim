@@ -182,6 +182,12 @@ class AnimViewer(QMainWindow):
 
         menu_file = menu_bar.addMenu(_('File(&F)'))
 
+        self.action_rebuild = menu_file.addAction(_('Rebuild(&L)'))
+        self.action_rebuild.setShortcut('Ctrl+L')
+        self.action_rebuild.setAutoRepeat(False)
+
+        menu_file.addSeparator()
+
         self.action_export = menu_file.addAction(_('Export(&E)'))
         self.action_export.setShortcut('Ctrl+S')
         self.action_export.setAutoRepeat(False)
@@ -216,12 +222,6 @@ class AnimViewer(QMainWindow):
         self.action_frame_skip.setAutoRepeat(False)
 
         menu_tools = menu_bar.addMenu(_('Tools(&T)'))
-
-        self.action_rebuild = menu_tools.addAction(_('Rebuild(&L)'))
-        self.action_rebuild.setShortcut('Ctrl+L')
-        self.action_rebuild.setAutoRepeat(False)
-
-        menu_tools.addSeparator()
 
         self.action_select = menu_tools.addAction(_('Subitem selector(&I)'))
         self.action_select.setShortcut('Ctrl+I')
@@ -406,6 +406,7 @@ class AnimViewer(QMainWindow):
     # region slots
 
     def setup_slots(self) -> None:
+        self.action_rebuild.triggered.connect(self.on_rebuild_triggered)
         self.action_export.triggered.connect(self.on_export_clicked)
         self.action_capture.triggered.connect(self.on_capture_clicked)
         self.action_set_in_point.triggered.connect(self.timeline_view.set_in_point)
@@ -413,7 +414,6 @@ class AnimViewer(QMainWindow):
         self.action_reset_inout_point.triggered.connect(self.timeline_view.reset_inout_point)
         self.action_stay_on_top.toggled.connect(self.on_stay_on_top_toggled)
         self.action_frame_skip.toggled.connect(self.on_frame_skip_toggled)
-        self.action_rebuild.triggered.connect(self.on_rebuild_triggered)
         self.action_select.triggered.connect(self.on_select_triggered)
         self.connect_action_widget(self.action_painter, Painter)
         self.connect_action_widget(self.action_richtext_edit, RichTextEditor)

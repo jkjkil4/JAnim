@@ -6,7 +6,7 @@ from janim.items.svg.svg_item import SVGElemItem
 from janim.items.svg.typst import TypstText
 from janim.locale.i18n import get_local_strings
 
-type TypMatDelim = Literal['(', ')', '[', ']', '{', '}', '|']
+type TypMatDelim = Literal['(', ')', '[', ']', '{', '}', '|', 'none']
 type TypAlignment = Literal['start', 'end', 'left', 'center', 'right', 'top', 'horizon', 'bottom']
 type TypMatAlignment = Literal['start', 'left', 'center', 'right', 'end']   # 矩阵不支持 'top', 'horizon', 'bottom'
 
