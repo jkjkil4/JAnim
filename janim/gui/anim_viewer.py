@@ -18,7 +18,7 @@ import os
 import sys
 import time
 import traceback
-from bisect import bisect_left
+from bisect import bisect_right
 from contextlib import contextmanager, nullcontext
 
 from PySide6.QtCore import QByteArray, QEvent, QSettings, Qt, QTimer, Signal
@@ -617,21 +617,29 @@ class AnimViewer(QMainWindow):
 
     def on_play_timer_timeout(self) -> None:
         played_count = 1 + self.play_timer.take_skip_count()
+        prev_progress = self.timeline_view.progress()
+        curr_progress = prev_progress + played_count
+
+        # 播放 prev_progress ~ curr_progress 之间的音频
         if self.built.timeline.has_audio_for_all():
             samples = self.built.get_audio_samples_of_frame(self.built.cfg.preview_fps,
                                                             self.built.cfg.audio_framerate,
-                                                            self.timeline_view.progress(),
+                                                            prev_progress,
                                                             count=played_count)
             self.audio_player.write(samples.tobytes())
 
-        self.timeline_view.set_progress(self.timeline_view.progress() + played_count)
-
+        # 查找 (prev_progress, curr_progress] 的区段的第一个 pause_point，如果有则暂停到特定位置
         if self.pause_progresses:
-            progress = self.timeline_view.progress()
-            idx = bisect_left(self.pause_progresses, progress)
-            if idx < len(self.pause_progresses) and self.pause_progresses[idx] == progress:
+            # 找到第一个大于 prev_progress 的位置
+            idx = bisect_right(self.pause_progresses, prev_progress)
+            # 确认这个数是否 <= curr_progress
+            if idx < len(self.pause_progresses) and self.pause_progresses[idx] <= curr_progress:
+                curr_progress = self.pause_progresses[idx]
                 self.play_timer.stop()
 
+        self.timeline_view.set_progress(curr_progress)
+
+        # 如果播放到了结尾则停止 timer
         if self.timeline_view.at_end():
             self.play_finished.emit()
             self.play_timer.stop()
