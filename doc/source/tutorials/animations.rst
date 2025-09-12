@@ -213,6 +213,51 @@
 
     从原理上来讲，其实 ``play`` 就是 ``prepare + forward`` 的组合。
 
+动画序列控制
+---------------------------
+
+在 :class:`~.Succession` 的动画序列中，我们可以插入一些额外的控制，例如：
+
+- 使用 :class:`~.Wait` 插入等待时间
+
+- 使用 :class:`~.Do` 在动画序列的特定时间执行指定操作
+
+.. janim-example:: CompositionControl
+    :media: ../_static/tutorial/CompositionControl.mp4
+    :hide_name:
+    :ref: :class:`~.MoveAlongPath` :class:`~.Follow`
+
+    dot = Dot(RIGHT * 2).show()
+    txt = Text('just a dot').show()
+    txt.points.next_to(dot, DOWN)
+
+    star = Star(start_angle=0, outer_radius=2)
+    star.points.shift(dot.points.box.center - star.points.get()[0])
+
+    txt1 = Text('Rotating...', font_size=60, color=GREY_D, depth=1)
+    txt2 = Text('Drawing a star!', font_size=60, color=GREY_D, depth=1)
+
+    self.forward()
+    self.play(
+        Aligned(
+            Succession(
+                Do(txt1.show),
+                Rotate(dot, TAU, about_point=ORIGIN, duration=2),
+                Do(txt1.hide),
+                Wait(0.5),
+                Do(txt2.show),
+                AnimGroup(
+                    MoveAlongPath(dot, star),
+                    Create(star, auto_close_path=False),
+                    duration=2
+                ),
+                Do(txt2.hide)
+            ),
+            Follow(txt, dot, DOWN)
+        )
+    )
+    self.forward()
+
 内置动画
 ------------------
 
