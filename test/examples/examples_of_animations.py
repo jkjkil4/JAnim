@@ -718,6 +718,24 @@ class MoveAlongPathExample(Timeline):
         self.forward(0.3)
 
 
+class FollowExample(Timeline):
+    def construct(self):
+        dot = Dot(RIGHT * 2).show()
+        txt = Text('dot').show()
+        txt.points.next_to(dot, DOWN)
+
+        self.forward()
+        self.play(
+            Succession(
+                Rotate(dot, PI * 3 / 2, about_point=ORIGIN),
+                dot.anim.points.shift(UP * 4),
+                duration=3
+            ),
+            Follow(txt, dot, DOWN, duration=3),
+        )
+        self.forward()
+
+
 class RotateExample(Timeline):
     def construct(self):
         square = Square(side_length=4).show()
