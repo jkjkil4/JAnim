@@ -258,6 +258,8 @@
     )
     self.forward()
 
+.. image:: /_static/tutorial/CompositionControl_TimelineScreenshot.png
+
 内置动画
 ------------------
 
