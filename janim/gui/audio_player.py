@@ -1,7 +1,10 @@
 import threading
 from queue import Empty, Full, Queue
 
-import pyaudio
+from janim.locale.i18n import get_local_strings
+from janim.logger import log
+
+_ = get_local_strings('audio_player')
 
 
 class AudioPlayer:
@@ -12,6 +15,18 @@ class AudioPlayer:
         self.empty_data = bytes(self.framerate // fps)
 
         self.queue: Queue = Queue(maxsize=2)
+
+        try:
+            import pyaudio  # noqa: F401
+        except ImportError:
+            log.warning(
+                _('pyaudio is not installed, unable to play audio in the preview window.\n'
+                  'You can install it with `pip install pyaudio`. If you encounter issues, '
+                  'please refer to the documentation: '
+                  'https://janim.readthedocs.io/en/latest/installation.html#install-dep')
+            )
+            return
+
         self.thread = threading.Thread(target=self._run, daemon=True)
         self.thread.start()
 
@@ -22,6 +37,8 @@ class AudioPlayer:
             pass
 
     def _run(self):
+        import pyaudio
+
         while True:
             p = pyaudio.PyAudio()
 
