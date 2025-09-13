@@ -116,6 +116,8 @@
 - `FFmpeg <https://ffmpeg.org>`_ （用于输出视频文件，在 Windows 下安装需要配置 **环境变量**）
 - `Typst <https://github.com/typst/typst/releases>`_ （用于公式排版，需要配置 **环境变量**）
 
+- 对于 Linux 和 macOS，需要安装 portaudio 以便成功安装 pyaudio，从而在预览界面播放音频，在具体操作系统的分页中有详细介绍。
+
 .. tabs::
 
     .. translatable-tab:: Windows + 使用包管理器（推荐）
@@ -168,7 +170,7 @@
             brew install typst
             typst --version     # 输出版本号则安装成功
 
-        另外，在 macOS 上使用 JAnim 窗口还需要安装 portaudio
+        另外，在 macOS 上使用 JAnim 窗口预览音频还需要安装 portaudio：
 
         .. code-block:: bash
 
@@ -182,7 +184,7 @@
         .. image:: /_static/images/portaudio_pydist.png
             :align: center
 
-        接下来便可以按照后面的教程安装 JAnim 了，如果在安装 JAnim 时遇到 portaudio 的问题，可以再来检查一下上述路径是否配置正确
+        接着就可以使用 ``uv`` 或者 ``pip`` 安装 ``pyaudio`` 了。
 
     .. translatable-tab:: Linux
 
@@ -207,6 +209,15 @@
             typst --version     # 输出版本号则安装成功
             rm -rf typst.tar.xz
 
+        另外，在 Linux 上使用 JAnim 窗口预览音频还需要安装 portaudio：
+
+        .. code-block:: bash
+
+            # portaudio
+            sudo apt install portaudio19-dev
+
+        接着就可以使用 ``uv`` 或者 ``pip`` 安装 ``pyaudio`` 了。
+
         笔者仅在一台虚拟机上尝试过以上安装，不保证真实环境也能做到。网络波动、本地命令不存在、文件重名等等原因都可能导致安装失败。有安装问题请在 GitHub 或群聊中及时提出并附带错误信息和/或截图。
 
 .. _install_vscode:
@@ -217,6 +228,8 @@
 推荐使用 `VS Code <https://code.visualstudio.com/>`_ 进行开发，这样可以通过其中的 ``janim-toolbox`` 插件让 JAnim 的使用更加方便
 
 具体可以参考 :ref:`VS Code 插件 <vscode_extension>` 中的介绍
+
+----
 
 .. tip::
 
