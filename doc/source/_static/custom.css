@@ -38,6 +38,10 @@ div.toctree-wrapper.compound span.caption-text {
     font-size: 1.5em;
 }
 
+.page-insert_medias h2 {
+    font-size: 1.65em;
+}
+
 .detail-box {
     border: 1px solid #a0b3bf;
     padding: 1rem;
