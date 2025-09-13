@@ -8,15 +8,113 @@
 步骤
 ~~~~~~~~
 
+安装 JAnim
+---------------------------
+
+安装 JAnim 时，外部依赖项并不是必须的，所以我们可以直接安装 JAnim，再按需安装依赖项。
+
+熟悉 Python 库的开发者可以自行选用合适的方法安装。整体上来说有两种安装思路，各有优势：
+
+- 安装在 **全局** 的好处是所有项目都可以调用同一套库，可以直接调用命令而不需要先切换环境和目录；
+
+- 安装在 **虚拟环境** 的好处是做到项目间的依赖隔离，并且不会污染全局的指令。
+
+由于在此之后的操作或多或少要涉及到命令行操作，希望你对命令行有一定的了解
+
+.. raw:: html
+
+    <details>
+    <summary>点击展开打开命令行的简要说明</summary>
+    <div class="detail-box">
+
+
+这里我们简单介绍一下打开命令行的方式，以后不再指出。在 Windows 上推荐使用自带的 Powershell，
+❶简单的打开方式是 “Win 徽标键 + R” 打开 “运行” 窗口，输入 ``powershell`` （Powershell 7.x 需要输入 ``pwsh``），
+❷也可以在开始菜单中输入“powershell”然后回车，
+或者❸在 VS Code 中按下 ``ctrl + ```。在 macOS / Linux 上一般是右键选择“终端”或者找到自带的终端图标。
+
+.. raw:: html
+
+    </div>
+    </details>
+
+以下简单介绍几种常见的安装方法：
+
+.. tabs::
+
+    .. translatable-tab:: uv + 虚拟环境
+
+        `uv <https://github.com/astral-sh/uv>`_ 是一套用于 Python 项目管理的工具链，目前已经相对完善，对于需要频繁使用 Python 多版本和多依赖库的开发者来说很方便。官方提供了很多安装方法，可以用上文提到的包管理工具安装，也可以独立安装。
+
+        .. note::
+
+            这一条目借鉴了 `ManimCE 项目的安装文档 <https://docs.manim.community/en/stable/installation/uv.html>`_，命令行安装 ``uv`` 以及进一步新建项目的命令都可以参考其中相应段落
+
+            如果你对使用 ``uv`` 还不熟悉并略有困惑，可以点击上面分页中的 “Python + 全局” 切换到更为经典的安装方式，这样你可能会更容易理解，但我们仍然推荐使用 ``uv`` 进行管理
+
+        本节介绍每个文件夹下创建独立虚拟环境的方式。假如你在一个适当的文件路径（以下用 “/my/path” 指代）下，想在一个叫 “JAnim-folder” 的文件夹下集中开发，那么请逐行运行以下命令，它会自动创建 “JAnim-folder” 并在其中创建虚拟环境。
+
+        .. code-block:: bash
+
+            cd "/my/path"
+            uv init "JAnim-folder"
+            cd "JAnim-folder"
+            uv add janim[gui]
+            uv run janim --version  # 看到版本号说明安装完成
+
+        用这种方式安装后，文档中所有 ``janim`` 指令都要换成 ``uv run janim``，如果仍然要直接调用 ``janim``，则需要先 `激活虚拟环境 <https://docs.astral.sh/uv/pip/environments/#using-a-virtual-environment>`_，这是出于全局和本项目隔离的目的。
+
+        .. tip::
+
+            一切就绪后，可以使用 ``uv run janim examples`` 查看内置示例，进一步检验 JAnim 以及依赖项的安装情况
+
+    .. translatable-tab:: uv + 全局
+
+        `uv <https://github.com/astral-sh/uv>`_ 是一套用于 Python 项目管理的工具链，目前已经相对完善，对于需要频繁使用 Python 多版本和多依赖库的开发者来说很方便。官方提供了很多安装方法，可以用上文提到的包管理工具安装，也可以独立安装。
+
+        .. note::
+
+            这一条目借鉴了 `ManimCE 项目的安装文档 <https://docs.manim.community/en/stable/installation/uv.html>`_，命令行安装 ``uv`` 以及进一步新建项目的命令都可以参考其中相应段落
+
+            如果你对使用 ``uv`` 还不熟悉并略有困惑，可以点击上面分页中的 “Python + 全局” 切换到更为经典的安装方式，这样你可能会更容易理解，但我们仍然推荐使用 ``uv`` 进行管理
+
+        和在虚拟环境中安装不同的是，全局安装不需要指定用来开发项目的文件夹。
+
+        .. code-block:: bash
+
+            uv tool install janim[gui]
+            janim --version     # 看到版本号说明安装完成
+
+        .. tip::
+
+            一切就绪后，可以使用 ``janim examples`` 查看内置示例，进一步检验 JAnim 以及依赖项的安装情况
+
+    .. translatable-tab:: Python + 全局
+
+        Python 可以直接安装，而且多版本可以共存。访问 `Python 官网下载页 <https://www.python.org/downloads/>`_ 选择 3.12 或更高版本，下载安装。
+
+        使用 Python 自带的 pip 工具，会自动将依赖安装在全局。打开命令行输入该命令即可：
+
+        .. code-block:: bash
+
+            pip install janim[gui]
+            janim --version     # 看到版本号说明安装完成
+
+        .. tip::
+
+            一切就绪后，可以使用 ``janim examples`` 查看内置示例，进一步检验 JAnim 以及依赖项的安装情况
+
+    .. translatable-tab:: Conda + 全局（TODO）
+
+        有待完善，欢迎补充
+
 .. _install_dep:
 
-安装依赖项
-------------
-
-以下依赖需要全局安装在系统中：
+安装可选依赖项
+-----------------
 
 - `FFmpeg <https://ffmpeg.org>`_ （用于输出视频文件，在 Windows 下安装需要配置 **环境变量**）
-- `Typst <https://github.com/typst/typst/releases>`_ （可选，用于公式排版，需要配置 **环境变量**）
+- `Typst <https://github.com/typst/typst/releases>`_ （用于公式排版，需要配置 **环境变量**）
 
 .. tabs::
 
@@ -110,81 +208,6 @@
             rm -rf typst.tar.xz
 
         笔者仅在一台虚拟机上尝试过以上安装，不保证真实环境也能做到。网络波动、本地命令不存在、文件重名等等原因都可能导致安装失败。有安装问题请在 GitHub 或群聊中及时提出并附带错误信息和/或截图。
-
-安装 JAnim
----------------------------
-
-JAnim 是一个库并且提供了可以直接调用的二进制，熟悉 Python 库的开发者可以自行选用合适的方法安装。整体上来说有两种安装思路，各有优势。安装在全局的好处是所有项目都可以调用同一套库，可以直接调用命令而不需要先切换环境和目录；安装在虚拟环境的好处是做到项目间的依赖隔离，并且不会污染全局的指令。
-
-以下简单介绍几种常见的安装方法。由于在此之后的操作或多或少要涉及到命令行操作，所以简单介绍一下打开命令行的方式，以后不再指出。在 Windows 上推荐使用自带的 Powershell，❶简单的打开方式是 “Win 徽标键 + R” 打开 “运行” 窗口，输入 ``powershell`` （Powershell 7.x 需要输入 ``pwsh``），❷也可以如上所说在开始菜单中输入“powershell”然后回车，或者❸在 VS Code 中按下 ``ctrl + ```。在 macOS / Linux 上一般是右键选择“终端”或者找到自带的终端图标。
-
-.. tabs::
-
-    .. translatable-tab:: uv + 虚拟环境
-
-        `uv <https://github.com/astral-sh/uv>`_ 是一套用于 Python 项目管理的工具链，目前已经相对完善，对于需要频繁使用 Python 多版本和多依赖库的开发者来说很方便。官方提供了很多安装方法，可以用上文提到的包管理工具安装，也可以独立安装。
-
-        .. note::
-
-            这一条目借鉴了 `ManimCE 项目的安装文档 <https://docs.manim.community/en/stable/installation/uv.html>`_，命令行安装 ``uv`` 以及进一步新建项目的命令都可以参考其中相应段落
-
-            如果你对使用 ``uv`` 还不熟悉并略有困惑，可以点击上面分页中的 “Python + 全局” 切换到更为经典的安装方式，这样你可能会更容易理解，但我们仍然推荐使用 ``uv`` 进行管理
-
-        本节介绍每个文件夹下创建独立虚拟环境的方式。假如你在一个适当的文件路径（以下用 “/my/path” 指代）下，想在一个叫 “JAnim-folder” 的文件夹下集中开发，那么请逐行运行以下命令，它会自动创建 “JAnim-folder” 并在其中创建虚拟环境。
-
-        .. code-block:: bash
-
-            cd "/my/path"
-            uv init "JAnim-folder"
-            cd "JAnim-folder"
-            uv add janim[gui]
-            uv run janim --version  # 看到版本号说明安装完成
-
-        用这种方式安装后，文档中所有 ``janim`` 指令都要换成 ``uv run janim``，如果仍然要直接调用 ``janim``，则需要先 `激活虚拟环境 <https://docs.astral.sh/uv/pip/environments/#using-a-virtual-environment>`_，这是出于全局和本项目隔离的目的。
-
-        .. tip::
-
-            一切就绪后，可以使用 ``uv run janim examples`` 查看内置示例，进一步检验 JAnim 以及依赖项的安装情况
-
-    .. translatable-tab:: uv + 全局
-
-        `uv <https://github.com/astral-sh/uv>`_ 是一套用于 Python 项目管理的工具链，目前已经相对完善，对于需要频繁使用 Python 多版本和多依赖库的开发者来说很方便。官方提供了很多安装方法，可以用上文提到的包管理工具安装，也可以独立安装。
-
-        .. note::
-
-            这一条目借鉴了 `ManimCE 项目的安装文档 <https://docs.manim.community/en/stable/installation/uv.html>`_，命令行安装 ``uv`` 以及进一步新建项目的命令都可以参考其中相应段落
-
-            如果你对使用 ``uv`` 还不熟悉并略有困惑，可以点击上面分页中的 “Python + 全局” 切换到更为经典的安装方式，这样你可能会更容易理解，但我们仍然推荐使用 ``uv`` 进行管理
-
-        和在虚拟环境中安装不同的是，全局安装不需要指定用来开发项目的文件夹。
-
-        .. code-block:: bash
-
-            uv tool install janim[gui]
-            janim --version     # 看到版本号说明安装完成
-
-        .. tip::
-
-            一切就绪后，可以使用 ``janim examples`` 查看内置示例，进一步检验 JAnim 以及依赖项的安装情况
-
-    .. translatable-tab:: Python + 全局
-
-        Python 可以直接安装，而且多版本可以共存。访问 `Python 官网下载页 <https://www.python.org/downloads/>`_ 选择 3.12 或更高版本，下载安装。
-
-        使用 Python 自带的 pip 工具，会自动将依赖安装在全局。打开命令行输入该命令即可：
-
-        .. code-block:: bash
-
-            pip install janim[gui]
-            janim --version     # 看到版本号说明安装完成
-
-        .. tip::
-
-            一切就绪后，可以使用 ``janim examples`` 查看内置示例，进一步检验 JAnim 以及依赖项的安装情况
-
-    .. translatable-tab:: Conda + 全局（TODO）
-
-        有待完善，欢迎补充
 
 .. _install_vscode:
 

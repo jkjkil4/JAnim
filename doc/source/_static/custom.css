@@ -99,3 +99,8 @@ h5.example-header {
 .page-faq h2 {
     font-size: 1.5em;
 }
+
+.detail-box {
+    border: 1px solid #a0b3bf;
+    padding: 1rem;
+}
