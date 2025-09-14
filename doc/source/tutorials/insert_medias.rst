@@ -7,7 +7,7 @@
 
 JAnim 支持通过 :class:`~.ImageItem` 、 :class:`~.VideoFrame` 和 :class:`~.Video` 插入图片或视频，也可以使用 :class:`~.SVGItem` 解析 SVG 矢量图。
 
-插入图像/视频截取
+插入图像/截取视频帧
 ----------------------------
 
 :class:`~.ImageItem` 插入的图片默认以原始尺寸转换到 JAnim 坐标系中显示，可以传入 ``width`` 和 ``height`` 参数指定显示尺寸。
@@ -19,7 +19,7 @@ JAnim 支持通过 :class:`~.ImageItem` 、 :class:`~.VideoFrame` 和 :class:`~.
 插入视频
 ---------------------
 
-可使用 :class:`~.Video` 插入的视频，参数设置与 :class:`~.ImageItem` 基本一致。
+可使用 :class:`~.Video` 插入视频，参数设置与 :class:`~.ImageItem` 基本一致。
 
 还支持使用 ``loop`` 参数控制是否循环播放（对于 ``.gif`` 格式会比较实用），使用 ``frame_components=4`` 插入带透明通道的视频（如 ``.mov`` 视频）。
 

@@ -61,7 +61,7 @@ JAnim 也可以通过 :meth:`~.Timeline.subtitle` 方法插入字幕，并与音
     t = self.aas('audio.mp3', 'This is a subtitle')
     self.forward(t.duration)
 
-.. tip::
+.. hint::
 
     :meth:`~.Timeline.audio_and_subtitle` 可以简写为 :meth:`~.Timeline.aas`。
 
