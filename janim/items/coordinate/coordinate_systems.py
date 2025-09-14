@@ -143,11 +143,12 @@ class CoordinateSystem(metaclass=ABCMeta):
 
 
 class Axes(CoordinateSystem, MarkedItem, Group, metaclass=_ItemMeta_ABCMeta):
-    axis_config_d = {}
+    axis_config_d = dict(
+        numbers_to_exclude=[0]
+    )
     x_axis_config_d = {}
     y_axis_config_d = dict(
         line_to_number_direction=UP,
-        numbers_to_exclude=[0]
     )
 
     def __init__(
