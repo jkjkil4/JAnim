@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import numbers
-from typing import Iterable, Self
+from typing import Any, Iterable, Self
 
 import numpy as np
 
@@ -9,7 +9,7 @@ from janim.anims.method_updater_meta import register_updater
 from janim.anims.timeline import Timeline
 from janim.anims.updater import DataUpdater, UpdaterParams
 from janim.components.component import CmptInfo, Component
-from janim.components.simple import Cmpt_Float, Cmpt_List
+from janim.components.simple import Cmpt_Dict, Cmpt_Float, Cmpt_List
 from janim.items.geometry.polygon import Rect
 from janim.items.item import Item
 from janim.locale.i18n import get_local_strings
@@ -62,6 +62,9 @@ class FrameEffect(Item):
 
     apprs = CmptInfo(Cmpt_List[Self, Timeline.ItemAppearance])
 
+    _uniforms = CmptInfo(Cmpt_Dict[Self, str, Any])
+    _optional_uniforms = CmptInfo(Cmpt_Dict[Self, str, Any])
+
     def __init__(
         self,
         *items: Item,
@@ -74,9 +77,6 @@ class FrameEffect(Item):
         self.fragment_shader = fragment_shader
         self.cache_key = cache_key
 
-        self._uniforms = {}
-        self._optional_uniforms = {}
-
         self.apply(*items, root_only=root_only)
 
     def apply_uniforms(self, *, optional: bool = False, **kwargs) -> None:
@@ -84,18 +84,6 @@ class FrameEffect(Item):
             self._optional_uniforms.update(kwargs)
         else:
             self._uniforms.update(kwargs)
-
-    def _pop_uniforms(self) -> dict:
-        uniforms = self._uniforms
-        if self.cache_key is None:
-            self._uniforms = {}
-        return uniforms
-
-    def _pop_optional_uniforms(self) -> dict:
-        uniforms = self._optional_uniforms
-        if self.cache_key is None:
-            self._optional_uniforms = {}
-        return uniforms
 
     def dynamic_uniforms(self) -> dict:
         return {}
