@@ -21,8 +21,8 @@ from janim.typing import JAnimColor, RangeSpecifier, Vect, VectArray
 from janim.utils.dict_ops import merge_dicts_recursively
 from janim.utils.space_ops import angle_of_vector, cross
 
-DEFAULT_X_RANGE = (-8.0, 8.0, 1.0)
-DEFAULT_Y_RANGE = (-4.0, 4.0, 1.0)
+DEFAULT_X_RANGE = (-8.0, 8.0, 1)
+DEFAULT_Y_RANGE = (-4.0, 4.0, 1)
 
 
 class _ItemMeta_ABCMeta(_ItemMeta, ABCMeta):
@@ -143,12 +143,11 @@ class CoordinateSystem(metaclass=ABCMeta):
 
 
 class Axes(CoordinateSystem, MarkedItem, Group, metaclass=_ItemMeta_ABCMeta):
-    axis_config_d = dict(
-        numbers_to_exclude=[0]
-    )
+    axis_config_d = {}
     x_axis_config_d = {}
     y_axis_config_d = dict(
-        line_to_number_direction=UP
+        line_to_number_direction=UP,
+        numbers_to_exclude=[0]
     )
 
     def __init__(
@@ -466,6 +465,7 @@ class NumberPlane(Axes):
     )
     y_axis_config_d = dict(
         line_to_number_direction=DL,
+        numbers_to_exclude=[0]
     )
 
     def __init__(
