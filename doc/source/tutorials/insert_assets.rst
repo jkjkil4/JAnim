@@ -3,7 +3,7 @@
 
 .. raw:: html
 
-    <div class="page-insert_medias">
+    <div class="page-insert_assets">
 
 JAnim 支持通过 :class:`~.ImageItem` 、 :class:`~.VideoFrame` 和 :class:`~.Video` 插入图片或视频，也可以使用 :class:`~.SVGItem` 解析 SVG 矢量图。
 
