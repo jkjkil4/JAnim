@@ -21,11 +21,11 @@ def read_shader(file_path: str) -> str:
 
 
 def read_shader_or_none(file_path: str) -> str | None:
-    lines = []
     try:
         found_path = find_shader_file(file_path)
     except FileNotFoundError:
         return None
+    lines = []
     max_version = _read_shader(found_path, lines)
     return (
         f'#version {max_version} core\n'
