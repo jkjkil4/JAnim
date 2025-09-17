@@ -4,7 +4,8 @@ from pathlib import Path
 
 from janim.exception import ShaderInjectionNotFoundError
 from janim.locale.i18n import get_local_strings
-from janim.utils.file_ops import find_file, get_janim_dir, readall, find_file_in_path
+from janim.utils.file_ops import (find_file, find_file_in_path, get_janim_dir,
+                                  readall)
 
 _ = get_local_strings('shader')
 
@@ -32,11 +33,19 @@ def read_shader_or_none(file_path: str) -> str | None:
     )
 
 
-def find_shader_file(file_path: str) -> str:
-    # 优先在 janim 目录中查找，其次用 find_file 查找
+def find_shader_file(file_path: str, dir_path: str | None = None) -> str:
+    # 优先在 dir_path 中查找
+    if dir_path is not None:
+        found_path = find_file_in_path(dir_path, file_path)
+        if found_path is not None:
+            return found_path
+
+    # 其次在 janim 目录中查找
     found_path = find_file_in_path(get_janim_dir(), file_path)
     if found_path is not None:
         return found_path
+
+    # 最后用 find_file 查找
     return find_file(file_path)
 
 
@@ -46,30 +55,32 @@ _regex_injection = re.compile(r'^\s*#\[\s*([^\]]+)\s*\]\s*$')
 
 
 def _read_shader(file_path: str, lines: list[str]) -> int:
+    path = Path(file_path).resolve()
+
     # 简化插入 glsl "#line" 的路径
-    path = Path(file_path)
+    rel_path = path
     try:
-        path = path.relative_to(get_janim_dir())
+        rel_path = path.relative_to(get_janim_dir())
     except ValueError:
         try:
-            path = path.relative_to(Path.cwd())
+            rel_path = path.relative_to(Path.cwd())
         except ValueError:
             pass
-    path_str = repr(str(path))
+    rel_path_str = repr(str(rel_path))
 
-    return _preprocess_shader(path_str, readall(file_path), lines)
+    return _preprocess_shader(rel_path_str, readall(file_path), lines, str(path.parent))
 
 
-def preprocess_shader(name: str, source: str) -> str:
+def preprocess_shader(name: str, source: str, dir_path: str | None = None) -> str:
     lines = []
-    max_version = _preprocess_shader(name, source, lines)
+    max_version = _preprocess_shader(name, source, lines, dir_path)
     return (
         f'#version {max_version} core\n'
         + '\n'.join(lines)
     )
 
 
-def _preprocess_shader(name: str, source: str, lines: list[str]) -> int:
+def _preprocess_shader(name: str, source: str, lines: list[str], dir_path: str | None) -> int:
     max_version = 330
     lines.append(f'#line 1 "{name}"')
 
@@ -85,7 +96,7 @@ def _preprocess_shader(name: str, source: str, lines: list[str]) -> int:
         match = _regex_include.match(line)
         if match:
             included_file = match.group(1)
-            found_file = find_shader_file(included_file)
+            found_file = find_shader_file(included_file, dir_path)
             # 递归读取包含的文件
             included_max_version = _read_shader(found_file, lines)
             max_version = max(max_version, included_max_version)
