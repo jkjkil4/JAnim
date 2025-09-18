@@ -32,7 +32,7 @@ class VItemRenderer(Renderer):
     # region compatibility
 
     def init_compatibility(self) -> None:
-        self.prog = get_program_from_file_prefix('render/shaders/vitem_compatibility')
+        self.prog = get_program_from_file_prefix('render/shaders/vitem/vitem_compatibility')
 
         self.u_lim = self.prog['lim']
 
@@ -231,7 +231,7 @@ class VItemRenderer(Renderer):
 
         self.comp_u_fix = self.get_u_fix_in_frame(self.comp)
 
-        self.prog = get_program_from_file_prefix('render/shaders/vitem')
+        self.prog = get_program_from_file_prefix('render/shaders/vitem/vitem')
 
         self.u_fix = self.get_u_fix_in_frame(self.prog)
         self.u_stroke_background: mgl.Uniform = self.prog['stroke_background']

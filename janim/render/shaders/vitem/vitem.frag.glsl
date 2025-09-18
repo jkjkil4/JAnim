@@ -49,7 +49,7 @@ float get_radius(int idx) {
     return radii[idx / 4][idx % 4];
 }
 
-#include "../includes/blend_color.glsl"
+#include "../../includes/blend_color.glsl"
 #include "vitem_subpath_attr.glsl"
 
 // #define CONTROL_POINTS

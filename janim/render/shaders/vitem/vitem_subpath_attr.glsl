@@ -2,7 +2,7 @@
 //  vec2 get_point(int idx)
 //  bool get_isclosed(int idx)
 
-#include "../includes/bezier_sdf.glsl"
+#include "../../includes/bezier_sdf.glsl"
 
 float cross2d(vec2 a, vec2 b) {
     return a.x * b.y - a.y * b.x;
