@@ -42,15 +42,24 @@ bool get_isclosed(int idx) {
     return bool(points[idx].z);
 }
 
-float get_radius(int idx) {
+float get_radius(int anchor_idx) {
     if (JA_FIX_IN_FRAME) {
-        return radii[idx / 4][idx % 4] * JA_CAMERA_SCALED_FACTOR;
+        return radii[anchor_idx / 4][anchor_idx % 4] * JA_CAMERA_SCALED_FACTOR;
     }
-    return radii[idx / 4][idx % 4];
+    return radii[anchor_idx / 4][anchor_idx % 4];
+}
+
+vec4 get_color(int anchor_idx) {
+    return colors[anchor_idx];
+}
+
+vec4 get_fill(int anchor_idx) {
+    return fills[anchor_idx];
 }
 
 #include "../../includes/blend_color.glsl"
 #include "vitem_subpath_attr.glsl"
+#include "vitem_color.glsl"
 #include "vitem_debug.glsl"
 
 // #define CONTROL_POINTS
@@ -83,40 +92,8 @@ void main()
             break;
         start_idx += 2;
     }
-    int anchor_idx = idx / 2;
-    float sgn_d = sgn * d;
 
-    vec2 e = get_point(idx + 2) - get_point(idx);
-    vec2 w = v_coord - get_point(idx);
-    float ratio = clamp(dot(w, e) / dot(e, e), 0.0, 1.0);
-
-    float radius = mix(get_radius(anchor_idx), get_radius(anchor_idx + 1), ratio);
-
-    vec4 fill_color = get_isclosed(idx) ? mix(fills[anchor_idx], fills[anchor_idx + 1], ratio) : vec4(0.0);
-    fill_color.a *= smoothstep(1, -1, (sgn_d) / JA_ANTI_ALIAS_RADIUS);
-
-    vec4 stroke_color = mix(colors[anchor_idx], colors[anchor_idx + 1], ratio);
-    stroke_color.a *= smoothstep(1, -1, (d - radius) / JA_ANTI_ALIAS_RADIUS);
-
-    if (stroke_background) {
-        f_color = blend_color(fill_color, stroke_color);
-    } else {
-        f_color = blend_color(stroke_color, fill_color);
-    }
-
-    if (glow_color.a != 0.0) {
-        float factor;
-        if (is_fill_transparent) {
-            factor = 1.0 - d / glow_size;
-        } else {
-            factor = 1.0 - sgn_d / glow_size;
-        }
-        if (0.0 < factor && factor <= 1.0) {
-            vec4 f_glow_color = glow_color;
-            f_glow_color.a *= factor * factor;
-            f_color = blend_color(f_color, f_glow_color);
-        }
-    }
+    f_color = get_vitem_color(d, sgn, idx);
 
     #if !defined(POLYGON_LINES) && !defined(SDF_PLANE)
     if (f_color.a == 0.0)
