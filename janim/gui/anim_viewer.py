@@ -603,7 +603,7 @@ class AnimViewer(QMainWindow):
             # 这里使用 QTimer.singleShot 是为了让这个消息尽量在 traceback 后再显示
             QTimer.singleShot(
                 0,
-                lambda: log.warning(_('An error occurred during rendering, playback stopped'))
+                lambda: log.error(_('An error occurred during rendering, playback stopped'))
             )
 
         # 没把这个放在 if 分支里，是为了在 inactive 的时候也设置为 True
