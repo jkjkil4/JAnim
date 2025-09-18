@@ -40,6 +40,7 @@ float get_radius(int idx) {
 
 #include "../../includes/blend_color.glsl"
 #include "vitem_subpath_attr.glsl"
+#include "vitem_debug.glsl"
 
 // #define CONTROL_POINTS
 // #define POLYGON_LINES
@@ -47,23 +48,13 @@ float get_radius(int idx) {
 
 void main()
 {
-    float d;
-
     #ifdef CONTROL_POINTS
-
-    d = distance(v_coord, get_point(0));
-    for (int i = 1; i < lim; i++) {
-        d = min(d, distance(v_coord, get_point(i)));
-    }
-    if (d < 0.06) {
-        f_color = vec4(1.0 - smoothstep(0.048, 0.052, d));
+    if (debug_control_points(lim * 2 + 1))
         return;
-    }
-
     #endif
 
     int idx;
-    d = INFINITY;
+    float d = INFINITY;
     float sgn = 1.0;
 
     int start_idx = 0;
@@ -126,34 +117,11 @@ void main()
     #endif
 
     #ifdef SDF_PLANE
-
-    vec4 df_color = vec4(1.0) - sgn * vec4(0.1, 0.4, 0.7, 0.0);
-    df_color *= 0.8 + 0.2 * cos(140. * d / 3.0);
-    df_color = mix(df_color, vec4(1.0), 1.0 - smoothstep(0.0, 0.02, abs(d)));
-    df_color.a = 0.5;
-    f_color = blend_color(df_color, f_color);
-
+    debug_sdf_plane(sgn, d);
     #endif
 
     #ifdef POLYGON_LINES
-
-    d = dot(v_coord - get_point(0), v_coord - get_point(0));
-    for(int i = 1, j = 0; i < lim; j = i, i++)
-    {
-        if (get_point(j) == get_point(i)) {
-            i++;
-            continue;
-        }
-        // distance
-        vec2 e = get_point(j) - get_point(i);
-        vec2 w = v_coord - get_point(i);
-        vec2 b = w - e * clamp(dot(w, e) / dot(e, e), 0.0, 1.0);
-        d = min(d, dot(b, b));
-    }
-    float line_ratio = smoothstep(1.15, 0.85, sqrt(d) / 0.02);
-    f_color.g = max(line_ratio, f_color.g);
-    f_color.a = max(line_ratio, f_color.a);
-
+    debug_polygon_lines(lim * 2 + 1);
     #endif
 
     #[JA_FINISH_UP]
