@@ -639,6 +639,9 @@ class _StepUpdater(ItemAnimation):
     def global_t_to_n(self, global_t: float) -> int:
         return max(0, int((global_t - self.t_range.at) // self.step))
 
+    def n_to_global_t(self, n: int) -> float:
+        return n * self.step + self.t_range.at
+
     def compute(self, data: Item, global_t: float, *, generate_temporary_cache: bool = False) -> None:
         n = self.global_t_to_n(global_t)
         at_block = n // self.pcache_base
@@ -679,7 +682,7 @@ class _StepUpdater(ItemAnimation):
             )
 
         for computing_n in rg:
-            with StepUpdaterParams(global_t,
+            with StepUpdaterParams(self.n_to_global_t(computing_n),
                                    self.t_range,
                                    computing_n,
                                    self) as params:
