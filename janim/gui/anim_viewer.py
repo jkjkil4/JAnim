@@ -21,8 +21,10 @@ import traceback
 from bisect import bisect_right
 from contextlib import contextmanager, nullcontext
 
-from PySide6.QtCore import QByteArray, QEvent, QSettings, Qt, QTimer, Signal
-from PySide6.QtGui import QAction, QCloseEvent, QHideEvent, QIcon, QShowEvent
+from PySide6.QtCore import (QByteArray, QEvent, QPoint, QSettings, Qt, QTimer,
+                            Signal)
+from PySide6.QtGui import (QAction, QCloseEvent, QGuiApplication, QHideEvent,
+                           QIcon, QShowEvent)
 from PySide6.QtWidgets import (QApplication, QCompleter, QLabel, QLineEdit,
                                QMainWindow, QMessageBox, QPushButton,
                                QSizePolicy, QSplitter, QStackedLayout, QWidget)
@@ -244,9 +246,15 @@ class AnimViewer(QMainWindow):
         self.action_color_widget.setShortcut('Ctrl+O')
         self.action_color_widget.setAutoRepeat(False)
 
+        menu_tools.addSeparator()
+
+        self.action_copy_time = menu_tools.addAction(_('Copy time point(&T)'))
+        self.action_copy_time.setShortcut('T')
+        self.action_copy_time.setAutoRepeat(False)
+
     def setup_status_bar(self) -> None:
         self.fps_label = QLabel()
-        self.time_label = QLabel()
+        self.time_label = QPushButton()
         self.name_edit = QLineEdit()
 
         self.btn_capture = QPushButton()
@@ -419,6 +427,7 @@ class AnimViewer(QMainWindow):
         self.connect_action_widget(self.action_richtext_edit, RichTextEditor)
         self.connect_action_widget(self.action_font_table, FontTable)
         self.connect_action_widget(self.action_color_widget, ColorWidget)
+        self.action_copy_time.triggered.connect(self.on_copy_time_triggered)
 
         self.timeline_view.value_changed.connect(self.on_value_changed)
         self.timeline_view.dragged.connect(lambda: self.set_play_state(False))
@@ -428,6 +437,7 @@ class AnimViewer(QMainWindow):
         self.glw.rendered.connect(self.on_glw_rendered)
         self.glw.error_occurred.connect(self.on_error_occurred)
         self.name_edit.editingFinished.connect(self.on_name_edit_finished)
+        self.time_label.clicked.connect(self.on_copy_time_triggered)
         self.btn_capture.clicked.connect(self.on_capture_clicked)
         self.btn_export.clicked.connect(self.on_export_clicked)
 
@@ -569,6 +579,32 @@ class AnimViewer(QMainWindow):
             widget = None
 
         action.triggered.connect(triggered)
+
+    def on_copy_time_triggered(self) -> None:
+        view = self.timeline_view
+        clipboard = QGuiApplication.clipboard()
+        clipboard.setText(f'{view.progress_to_time(view.progress()):.2f}')
+
+        self.copied_label = QLabel(_('Copied!'))
+        self.copied_label.setStyleSheet(
+            '''
+            background-color: #232629;
+            border: 1px solid white;
+            padding: 2px 4px;
+            border-radius: 6px;
+            font-size: 12px;
+            '''
+        )
+        self.copied_label.setWindowFlag(Qt.WindowType.ToolTip)
+        self.copied_label.adjustSize()
+
+        pos = QPoint(self.time_label.width() // 2, self.time_label.height() // 2)
+        pos = self.time_label.mapToGlobal(pos)
+        pos -= QPoint(self.copied_label.width() // 2, self.copied_label.height() // 2)
+
+        self.copied_label.move(pos)
+        self.copied_label.show()
+        QTimer.singleShot(500, self.copied_label.hide)
 
     # endregion (slots-menu)
 
