@@ -674,6 +674,9 @@ class Cmpt_VPoints[ItemT](Cmpt_Points[ItemT], impl=True):
     @Cmpt_Points.set.self_refresh
     @refresh.register
     def unit_normal(self) -> np.ndarray:
+        '''
+        单位法向量
+        '''
         if self.count() < 3:
             return OUT
 

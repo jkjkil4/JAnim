@@ -1,7 +1,8 @@
 from __future__ import annotations
 
 import inspect
-from typing import Callable, Iterable, Self
+import types
+from typing import TYPE_CHECKING, Callable, Iterable, Self
 
 import numpy as np
 
@@ -24,6 +25,9 @@ from janim.utils.signal import Signal
 from janim.utils.simple_functions import clip
 from janim.utils.space_ops import (angle_of_vector, get_norm, normalize,
                                    rotation_between_vectors, rotation_matrix)
+
+if TYPE_CHECKING:
+    from janim.camera.camera import Camera
 
 _ = get_local_strings('points')
 
@@ -813,6 +817,77 @@ class Cmpt_Points[ItemT](Component[ItemT]):
         self.shift(start - self.get_start())
         return self
 
+    @property
+    @set.self_refresh
+    @refresh.register
+    def unit_normal(self) -> np.ndarray:
+        '''
+        计算三维点集的拟合平面的单位法向量
+        '''
+        points = self.get()
+
+        # 质心
+        centroid = np.mean(points, axis=0)
+
+        # 协方差矩阵
+        A = points - centroid
+        C = A.T @ A
+
+        # 求特征值和特征向量，最小特征值对应的特征向量就是法向量
+        eigvals, eigvecs = np.linalg.eigh(C)
+        normal = eigvecs[:, np.argmin(eigvals)]
+        return normalize(normal)
+
+    def face_to_camera(
+        self,
+        camera: Camera | types.EllipsisType = ...,
+        *,
+        rotate: float = 0,
+        inverse: bool = False,
+        normal_vector: Vect | types.EllipsisType = ...,
+        about_point: Vect | None = None,
+        about_edge: Vect | None = ORIGIN,
+        root_only: bool = False,
+    ) -> Self:
+        if camera is ...:
+            from janim.anims.timeline import Timeline
+            camera = Timeline.get_context().camera.current()
+
+        if normal_vector is ...:
+            vectors = [
+                cmpt.unit_normal
+                for cmpt in self.walk_same_cmpt_of_self_and_descendants_without_mock(root_only)
+                if cmpt.has()
+            ]
+            normal_vector = np.sum(vectors, axis=0)
+            if np.allclose(normal_vector, 0):
+                normal_vector = normalize(vectors[0])
+            else:
+                normal_vector = normalize(normal_vector)
+
+        if inverse:
+            normal_vector = -normal_vector
+
+        info = camera.points.info
+        camera_axis = info.camera_location - info.center
+        camera_transform = rotation_between_vectors(normal_vector, camera_axis)
+
+        up = np.cross(normal_vector, RIGHT)
+        if inverse:
+            up = -up
+        mapped_up = up @ camera_transform.T
+
+        rot_transform = rotation_between_vectors(mapped_up, info.vertical_vect)
+        if rotate != 0:
+            rot_transform @= rotation_matrix(rotate, camera_axis)
+
+        self.apply_matrix(
+            rot_transform @ camera_transform,
+            about_point=about_point,
+            about_edge=about_edge
+        )
+        return self
+
     # endregion
 
     # region 位移 | movement
@@ -1250,3 +1325,5 @@ class Cmpt_Points[ItemT](Component[ItemT]):
 
     def set_z(self, z: float, direction: Vect = ORIGIN) -> Self:
         return self.set_coord(z, dim=2, direction=direction)
+
+    # endregion
