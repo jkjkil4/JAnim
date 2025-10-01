@@ -15,6 +15,9 @@ uniform mat4 JA_PROJ_MATRIX;
 uniform vec2 JA_FRAME_RADIUS;
 uniform float JA_ANTI_ALIAS_RADIUS;
 
+uniform vec4 glow_color;
+uniform float glow_size;
+
 vec4 normalize_w(vec4 vect)
 {
     return vect / vect.w;
@@ -22,6 +25,12 @@ vec4 normalize_w(vec4 vect)
 
 void main()
 {
+    float inner_factor = 1.0;
+    float radius = v_radius[0];
+    if (glow_color.a > 0.0) {
+        inner_factor = radius / (radius + glow_size);
+        radius += glow_size;
+    }
     vec4 corners[4];
     for (int i = 0; i < 4; i++) {
         vec2 direction = vec2(
@@ -29,7 +38,7 @@ void main()
             2 * (i / 2) - 1
         );
         corners[i] = v_pos[0];
-        corners[i].xy += v_radius[0] * direction;
+        corners[i].xy += radius * direction;
         corners[i] = normalize_w(JA_PROJ_MATRIX * corners[i]);
         corners[i].xy *= JA_FRAME_RADIUS;
         corners[i].xy += JA_ANTI_ALIAS_RADIUS * direction;
@@ -38,6 +47,7 @@ void main()
     g_center = normalize_w(JA_PROJ_MATRIX * v_pos[0]).xy * JA_FRAME_RADIUS;
     g_color = v_color[0];
     g_radius = (corners[1].x - corners[0].x) / 2.0 - JA_ANTI_ALIAS_RADIUS;
+    g_radius *= inner_factor;
 
     for (int i = 0; i < 4; i++) {
         g_point = corners[i].xy;
