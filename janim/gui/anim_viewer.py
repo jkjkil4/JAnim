@@ -18,11 +18,13 @@ import os
 import sys
 import time
 import traceback
-from bisect import bisect_left
+from bisect import bisect_right
 from contextlib import contextmanager, nullcontext
 
-from PySide6.QtCore import QByteArray, QEvent, QSettings, Qt, QTimer, Signal
-from PySide6.QtGui import QAction, QCloseEvent, QHideEvent, QIcon, QShowEvent
+from PySide6.QtCore import (QByteArray, QEvent, QPoint, QSettings, Qt, QTimer,
+                            Signal)
+from PySide6.QtGui import (QAction, QCloseEvent, QGuiApplication, QHideEvent,
+                           QIcon, QShowEvent)
 from PySide6.QtWidgets import (QApplication, QCompleter, QLabel, QLineEdit,
                                QMainWindow, QMessageBox, QPushButton,
                                QSizePolicy, QSplitter, QStackedLayout, QWidget)
@@ -182,6 +184,12 @@ class AnimViewer(QMainWindow):
 
         menu_file = menu_bar.addMenu(_('File(&F)'))
 
+        self.action_rebuild = menu_file.addAction(_('Rebuild(&L)'))
+        self.action_rebuild.setShortcut('Ctrl+L')
+        self.action_rebuild.setAutoRepeat(False)
+
+        menu_file.addSeparator()
+
         self.action_export = menu_file.addAction(_('Export(&E)'))
         self.action_export.setShortcut('Ctrl+S')
         self.action_export.setAutoRepeat(False)
@@ -189,6 +197,19 @@ class AnimViewer(QMainWindow):
         self.action_capture = menu_file.addAction(_('Capture(&C)'))
         self.action_capture.setShortcut('Ctrl+Alt+S')
         self.action_capture.setAutoRepeat(False)
+
+        menu_file.addSeparator()
+
+        self.action_set_in_point = menu_file.addAction(_('Set In Point(&I)'))
+        self.action_set_in_point.setShortcut('[')
+        self.action_set_in_point.setAutoRepeat(False)
+
+        self.action_set_out_point = menu_file.addAction(_('Set Out Point(&O)'))
+        self.action_set_out_point.setShortcut(']')
+        self.action_set_out_point.setAutoRepeat(False)
+
+        self.action_reset_inout_point = menu_file.addAction(_('Reset In/Out Point(&R)'))
+        self.action_reset_inout_point.setAutoRepeat(False)
 
         menu_view = menu_bar.addMenu(_('View(&V)'))
 
@@ -203,12 +224,6 @@ class AnimViewer(QMainWindow):
         self.action_frame_skip.setAutoRepeat(False)
 
         menu_tools = menu_bar.addMenu(_('Tools(&T)'))
-
-        self.action_rebuild = menu_tools.addAction(_('Rebuild(&L)'))
-        self.action_rebuild.setShortcut('Ctrl+L')
-        self.action_rebuild.setAutoRepeat(False)
-
-        menu_tools.addSeparator()
 
         self.action_select = menu_tools.addAction(_('Subitem selector(&I)'))
         self.action_select.setShortcut('Ctrl+I')
@@ -231,9 +246,15 @@ class AnimViewer(QMainWindow):
         self.action_color_widget.setShortcut('Ctrl+O')
         self.action_color_widget.setAutoRepeat(False)
 
+        menu_tools.addSeparator()
+
+        self.action_copy_time = menu_tools.addAction(_('Copy time point(&T)'))
+        self.action_copy_time.setShortcut('T')
+        self.action_copy_time.setAutoRepeat(False)
+
     def setup_status_bar(self) -> None:
         self.fps_label = QLabel()
-        self.time_label = QLabel()
+        self.time_label = QPushButton()
         self.name_edit = QLineEdit()
 
         self.btn_capture = QPushButton()
@@ -393,16 +414,20 @@ class AnimViewer(QMainWindow):
     # region slots
 
     def setup_slots(self) -> None:
+        self.action_rebuild.triggered.connect(self.on_rebuild_triggered)
         self.action_export.triggered.connect(self.on_export_clicked)
         self.action_capture.triggered.connect(self.on_capture_clicked)
+        self.action_set_in_point.triggered.connect(self.timeline_view.set_in_point)
+        self.action_set_out_point.triggered.connect(self.timeline_view.set_out_point)
+        self.action_reset_inout_point.triggered.connect(self.timeline_view.reset_inout_point)
         self.action_stay_on_top.toggled.connect(self.on_stay_on_top_toggled)
         self.action_frame_skip.toggled.connect(self.on_frame_skip_toggled)
-        self.action_rebuild.triggered.connect(self.on_rebuild_triggered)
         self.action_select.triggered.connect(self.on_select_triggered)
         self.connect_action_widget(self.action_painter, Painter)
         self.connect_action_widget(self.action_richtext_edit, RichTextEditor)
         self.connect_action_widget(self.action_font_table, FontTable)
         self.connect_action_widget(self.action_color_widget, ColorWidget)
+        self.action_copy_time.triggered.connect(self.on_copy_time_triggered)
 
         self.timeline_view.value_changed.connect(self.on_value_changed)
         self.timeline_view.dragged.connect(lambda: self.set_play_state(False))
@@ -412,6 +437,7 @@ class AnimViewer(QMainWindow):
         self.glw.rendered.connect(self.on_glw_rendered)
         self.glw.error_occurred.connect(self.on_error_occurred)
         self.name_edit.editingFinished.connect(self.on_name_edit_finished)
+        self.time_label.clicked.connect(self.on_copy_time_triggered)
         self.btn_capture.clicked.connect(self.on_capture_clicked)
         self.btn_export.clicked.connect(self.on_export_clicked)
 
@@ -471,6 +497,8 @@ class AnimViewer(QMainWindow):
             return
 
         range = self.timeline_view.range
+        inout_point = self.timeline_view.inout_point
+
         self.set_built(built)
 
         if not stay_same:
@@ -489,6 +517,11 @@ class AnimViewer(QMainWindow):
             # 重新构建后，只剩下了 0~1s 的动画
             # 那么仍保留原来的显示范围，使得 0~1s 的显示位置不变，虽然显示范围超出了持续时间
             self.timeline_view.range = range
+
+            # 设置回 入点/出点 信息，并根据当前的总时长进行调整
+            # 后一个判断对应“如果入点比总时长还大，那么就不设置回 入点/出点 信息了”
+            if inout_point is not None and inout_point[0] < built.duration:
+                self.timeline_view.inout_point = (inout_point[0], min(inout_point[1], built.duration))
 
         import gc
 
@@ -547,6 +580,32 @@ class AnimViewer(QMainWindow):
 
         action.triggered.connect(triggered)
 
+    def on_copy_time_triggered(self) -> None:
+        view = self.timeline_view
+        clipboard = QGuiApplication.clipboard()
+        clipboard.setText(f'{view.progress_to_time(view.progress()):.2f}')
+
+        self.copied_label = QLabel(_('Copied!'))
+        self.copied_label.setStyleSheet(
+            '''
+            background-color: #232629;
+            border: 1px solid white;
+            padding: 2px 4px;
+            border-radius: 6px;
+            font-size: 12px;
+            '''
+        )
+        self.copied_label.setWindowFlag(Qt.WindowType.ToolTip)
+        self.copied_label.adjustSize()
+
+        pos = QPoint(self.time_label.width() // 2, self.time_label.height() // 2)
+        pos = self.time_label.mapToGlobal(pos)
+        pos -= QPoint(self.copied_label.width() // 2, self.copied_label.height() // 2)
+
+        self.copied_label.move(pos)
+        self.copied_label.show()
+        QTimer.singleShot(500, self.copied_label.hide)
+
     # endregion (slots-menu)
 
     # region slots-anim
@@ -580,7 +639,7 @@ class AnimViewer(QMainWindow):
             # 这里使用 QTimer.singleShot 是为了让这个消息尽量在 traceback 后再显示
             QTimer.singleShot(
                 0,
-                lambda: log.warning(_('An error occurred during rendering, playback stopped'))
+                lambda: log.error(_('An error occurred during rendering, playback stopped'))
             )
 
         # 没把这个放在 if 分支里，是为了在 inactive 的时候也设置为 True
@@ -594,21 +653,29 @@ class AnimViewer(QMainWindow):
 
     def on_play_timer_timeout(self) -> None:
         played_count = 1 + self.play_timer.take_skip_count()
+        prev_progress = self.timeline_view.progress()
+        curr_progress = prev_progress + played_count
+
+        # 播放 prev_progress ~ curr_progress 之间的音频
         if self.built.timeline.has_audio_for_all():
             samples = self.built.get_audio_samples_of_frame(self.built.cfg.preview_fps,
                                                             self.built.cfg.audio_framerate,
-                                                            self.timeline_view.progress(),
+                                                            prev_progress,
                                                             count=played_count)
             self.audio_player.write(samples.tobytes())
 
-        self.timeline_view.set_progress(self.timeline_view.progress() + played_count)
-
+        # 查找 (prev_progress, curr_progress] 的区段的第一个 pause_point，如果有则暂停到特定位置
         if self.pause_progresses:
-            progress = self.timeline_view.progress()
-            idx = bisect_left(self.pause_progresses, progress)
-            if idx < len(self.pause_progresses) and self.pause_progresses[idx] == progress:
+            # 找到第一个大于 prev_progress 的位置
+            idx = bisect_right(self.pause_progresses, prev_progress)
+            # 确认这个数是否 <= curr_progress
+            if idx < len(self.pause_progresses) and self.pause_progresses[idx] <= curr_progress:
+                curr_progress = self.pause_progresses[idx]
                 self.play_timer.stop()
 
+        self.timeline_view.set_progress(curr_progress)
+
+        # 如果播放到了结尾则停止 timer
         if self.timeline_view.at_end():
             self.play_finished.emit()
             self.play_timer.stop()
@@ -655,13 +722,14 @@ class AnimViewer(QMainWindow):
     def on_export_clicked(self) -> None:
         self.play_timer.stop()
 
-        dialog = ExportDialog(self.built, self)
+        dialog = ExportDialog(self.built, self.timeline_view.inout_point is not None, self)
         ret = dialog.exec()
         if not ret:
             return
 
         file_path = dialog.file_path()
         cli_config.fps = dialog.fps()
+        using_inout_point = dialog.using_inout_point()
         hwaccel = dialog.hwaccel()
         video_with_audio = (self.built.timeline.has_audio_for_all() and not file_path.endswith('gif'))
 
@@ -675,9 +743,13 @@ class AnimViewer(QMainWindow):
             with self.change_export_size(dialog.pixel_size()) if dialog.has_size_set() else nullcontext():
                 built = self.built.timeline.__class__().build()
 
+                args = [file_path]
+                if using_inout_point:
+                    args += self.timeline_view.inout_point
+
                 if video_with_audio:
                     video_writer = VideoWriter(built)
-                    video_writer.write_all(file_path, hwaccel=hwaccel, _keep_temp=True)
+                    video_writer.write_all(*args, hwaccel=hwaccel, _keep_temp=True)
 
                     audio_file_path = os.path.splitext(file_path)[0] + '.mp3'
 
@@ -690,7 +762,7 @@ class AnimViewer(QMainWindow):
                                           video_writer.final_file_path)
                 else:
                     video_writer = VideoWriter(built)
-                    video_writer.write_all(file_path, hwaccel=hwaccel)
+                    video_writer.write_all(*args, hwaccel=hwaccel)
 
         except Exception as e:
             if not isinstance(e, ExitException):

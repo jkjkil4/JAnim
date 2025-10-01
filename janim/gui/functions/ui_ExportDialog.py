@@ -16,15 +16,16 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
 from PySide6.QtWidgets import (QAbstractButton, QApplication, QCheckBox, QComboBox,
-    QDialog, QDialogButtonBox, QGridLayout, QHBoxLayout,
-    QLabel, QLineEdit, QPushButton, QSizePolicy,
-    QSpacerItem, QSpinBox, QVBoxLayout, QWidget)
+    QDialog, QDialogButtonBox, QFrame, QGridLayout,
+    QHBoxLayout, QLabel, QLineEdit, QPushButton,
+    QRadioButton, QSizePolicy, QSpacerItem, QSpinBox,
+    QVBoxLayout, QWidget)
 
 class Ui_ExportDialog(object):
     def setupUi(self, ExportDialog):
         if not ExportDialog.objectName():
             ExportDialog.setObjectName(u"ExportDialog")
-        ExportDialog.resize(418, 217)
+        ExportDialog.resize(409, 221)
         self.verticalLayout = QVBoxLayout(ExportDialog)
         self.verticalLayout.setObjectName(u"verticalLayout")
         self.vspacer1 = QSpacerItem(20, 0, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
@@ -108,6 +109,43 @@ class Ui_ExportDialog(object):
 
         self.verticalLayout.addLayout(self.gridlayout)
 
+        self.hlayout_d = QHBoxLayout()
+        self.hlayout_d.setObjectName(u"hlayout_d")
+        self.frame = QFrame(ExportDialog)
+        self.frame.setObjectName(u"frame")
+        self.frame.setFrameShape(QFrame.Shape.StyledPanel)
+        self.frame.setFrameShadow(QFrame.Shadow.Plain)
+        self.gridLayout = QGridLayout(self.frame)
+        self.gridLayout.setObjectName(u"gridLayout")
+        self.gridLayout.setHorizontalSpacing(8)
+        self.gridLayout.setVerticalSpacing(2)
+        self.gridLayout.setContentsMargins(4, 4, 20, 4)
+        self.label_range = QLabel(self.frame)
+        self.label_range.setObjectName(u"label_range")
+        self.label_range.setAlignment(Qt.AlignmentFlag.AlignLeading|Qt.AlignmentFlag.AlignLeft|Qt.AlignmentFlag.AlignTop)
+
+        self.gridLayout.addWidget(self.label_range, 0, 0, 1, 1)
+
+        self.rbtn_full = QRadioButton(self.frame)
+        self.rbtn_full.setObjectName(u"rbtn_full")
+        self.rbtn_full.setChecked(True)
+
+        self.gridLayout.addWidget(self.rbtn_full, 0, 1, 1, 1)
+
+        self.rbtn_inout = QRadioButton(self.frame)
+        self.rbtn_inout.setObjectName(u"rbtn_inout")
+
+        self.gridLayout.addWidget(self.rbtn_inout, 1, 1, 1, 1)
+
+
+        self.hlayout_d.addWidget(self.frame)
+
+        self.spacer_d = QSpacerItem(20, 20, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
+
+        self.hlayout_d.addItem(self.spacer_d)
+
+        self.vlayout_dr = QVBoxLayout()
+        self.vlayout_dr.setObjectName(u"vlayout_dr")
         self.hlayout_hwaccel = QHBoxLayout()
         self.hlayout_hwaccel.setObjectName(u"hlayout_hwaccel")
         self.spacer_hwaccel = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
@@ -120,7 +158,7 @@ class Ui_ExportDialog(object):
         self.hlayout_hwaccel.addWidget(self.ckb_hwaccel)
 
 
-        self.verticalLayout.addLayout(self.hlayout_hwaccel)
+        self.vlayout_dr.addLayout(self.hlayout_hwaccel)
 
         self.hlayout_open = QHBoxLayout()
         self.hlayout_open.setObjectName(u"hlayout_open")
@@ -134,7 +172,13 @@ class Ui_ExportDialog(object):
         self.hlayout_open.addWidget(self.ckb_open)
 
 
-        self.verticalLayout.addLayout(self.hlayout_open)
+        self.vlayout_dr.addLayout(self.hlayout_open)
+
+
+        self.hlayout_d.addLayout(self.vlayout_dr)
+
+
+        self.verticalLayout.addLayout(self.hlayout_d)
 
         self.verticalSpacer = QSpacerItem(20, 10, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Fixed)
 
@@ -164,6 +208,9 @@ class Ui_ExportDialog(object):
         self.btn_browse.setText(QCoreApplication.translate("ExportDialog", u"...", None))
         self.label_fps.setText(QCoreApplication.translate("ExportDialog", u"_", None))
         self.label_size.setText(QCoreApplication.translate("ExportDialog", u"_", None))
+        self.label_range.setText(QCoreApplication.translate("ExportDialog", u"_", None))
+        self.rbtn_full.setText(QCoreApplication.translate("ExportDialog", u"_", None))
+        self.rbtn_inout.setText(QCoreApplication.translate("ExportDialog", u"_", None))
         self.ckb_hwaccel.setText(QCoreApplication.translate("ExportDialog", u"_", None))
         self.ckb_open.setText(QCoreApplication.translate("ExportDialog", u"_", None))
     # retranslateUi

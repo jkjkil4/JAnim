@@ -54,7 +54,7 @@ movement
     from janim.imports import *
 
     class MoveAlongPathExample(Timeline):
-        def construct(self) -> None:
+        def construct(self):
             line = Line(ORIGIN, RIGHT * Config.get.frame_width, buff=1)
             dot1 = Dot(color=YELLOW)
 
@@ -73,3 +73,28 @@ movement
                 duration=2
             )
             self.forward(0.3)
+
+.. autoclass:: janim.anims.movement.Follow
+    :show-inheritance:
+
+.. janim-example:: FollowExample
+    :media: ../../_static/videos/FollowExample.mp4
+
+    from janim.imports import *
+
+    class FollowExample(Timeline):
+        def construct(self):
+            dot = Dot(RIGHT * 2).show()
+            txt = Text('dot').show()
+            txt.points.next_to(dot, DOWN)
+
+            self.forward()
+            self.play(
+                Succession(
+                    Rotate(dot, PI * 3 / 2, about_point=ORIGIN),
+                    dot.anim.points.shift(UP * 4),
+                    duration=3
+                ),
+                Follow(txt, dot, DOWN, duration=3),
+            )
+            self.forward()

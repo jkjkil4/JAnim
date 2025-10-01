@@ -291,8 +291,11 @@ class Video(PlaybackControl, Points):
     传入参数：
 
     - 使用 ``loop`` 可控制是否循环播放
+    - 如果需要插入带透明通道的视频（如 ``.mov`` 视频），需要设置 ``frame_components=4``
 
     注意：在默认情况下未开始播放，需要使用 ``start`` 以开始播放
+
+    注：可以使用 `.info` 获取视频如时长等额外信息
 
     例：
 

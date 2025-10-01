@@ -99,9 +99,9 @@ class FrameEffectRenderer(Renderer):
 
             self.fbo.color_attachments[0].use(0)
 
-        for key, value in item._pop_uniforms().items():
+        for key, value in item._uniforms.items():
             self.prog[key] = value
-        for key, value in item._pop_optional_uniforms().items():
+        for key, value in item._optional_uniforms.items():
             if key in self.prog._members:
                 self.prog[key] = value
         for key, value in item.dynamic_uniforms().items():

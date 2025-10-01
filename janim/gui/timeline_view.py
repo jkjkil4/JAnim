@@ -110,6 +110,7 @@ class TimelineView(QWidget):
         self._progress: int = 0
         self._maximum = round(built.duration * self.built.cfg.preview_fps)
         self.pause_progresses = pause_progresses
+        self.inout_point: tuple[float, float] | None = None
 
         self.is_pressing = TimelineView.Pressing()
 
@@ -122,6 +123,8 @@ class TimelineView(QWidget):
 
         # 触发画面更新
         self.update()
+
+    # region labels
 
     class LabelGroupExpandedInfo:
         # 语义：
@@ -446,11 +449,7 @@ class TimelineView(QWidget):
     def query_label_at(self, pos: QPointF, policy: LabelGroup.QueryPolicy) -> Label | LabelGroup | None:
         return self.label_group.query_at(self.labels_rect, self.range, pos, self.y_pixel_offset, policy)
 
-    def set_range(self, at: float, duration: float) -> None:
-        duration = min(duration, self.built.duration)
-        at = clip(at, 0, self.built.duration - duration)
-        self.range = TimeRange(at, at + duration)
-        self.update()
+    # endregion
 
     # region hover
 
@@ -745,6 +744,14 @@ class TimelineView(QWidget):
 
     # endregion
 
+    # region range
+
+    def set_range(self, at: float, duration: float) -> None:
+        duration = min(duration, self.built.duration)
+        at = clip(at, 0, self.built.duration - duration)
+        self.range = TimeRange(at, at + duration)
+        self.update()
+
     def on_key_timer_timeout(self) -> None:
         if self.is_pressing.w:
             cursor_time = self.pixel_to_time(self.mapFromGlobal(self.cursor().pos()).x())
@@ -773,6 +780,40 @@ class TimelineView(QWidget):
 
             self.update()
 
+    def set_in_point(self) -> None:
+        t = self.progress_to_time(self._progress)
+
+        if self.inout_point is None:
+            self.inout_point = (t, self.built.duration)
+        else:
+            if t >= self.inout_point[1]:
+                self.inout_point = (t, self.built.duration)
+            else:
+                self.inout_point = (t, self.inout_point[1])
+
+        self.update()
+
+    def set_out_point(self) -> None:
+        t = self.progress_to_time(self._progress)
+
+        if self.inout_point is None:
+            self.inout_point = (0, t)
+        else:
+            if t <= self.inout_point[0]:
+                self.inout_point = (0, t)
+            else:
+                self.inout_point = (self.inout_point[0], t)
+
+        self.update()
+
+    def reset_inout_point(self) -> None:
+        self.inout_point = None
+        self.update()
+
+    # endregion
+
+    # region progress
+
     def set_progress(self, progress: int) -> None:
         progress = clip(progress, 0, self._maximum)
         if progress != self._progress:
@@ -795,11 +836,24 @@ class TimelineView(QWidget):
             self.value_changed.emit(progress)
             self.update()
 
+    def set_progress_by_x(self, x: float) -> None:
+        self.set_progress(self.pixel_to_progress(x))
+
+        minimum = self.play_space
+        maximum = self.width() - self.play_space
+
+        if x < minimum or x > maximum:
+            self.drag_timer.start(30)
+
     def progress(self) -> int:
         return self._progress
 
     def at_end(self) -> bool:
         return self._progress == self._maximum
+
+    # endregion
+
+    # region conversion
 
     def progress_to_time(self, progress: int) -> float:
         return progress / self.built.cfg.preview_fps
@@ -826,14 +880,9 @@ class TimelineView(QWidget):
         width = range.duration / self.range.duration * self.width()
         return PixelRange(left, width)
 
-    def set_progress_by_x(self, x: float) -> None:
-        self.set_progress(self.pixel_to_progress(x))
+    # endregion
 
-        minimum = self.play_space
-        maximum = self.width() - self.play_space
-
-        if x < minimum or x > maximum:
-            self.drag_timer.start(30)
+    # region events
 
     def mousePressEvent(self, event: QMouseEvent) -> None:
         if event.button() == Qt.MouseButton.LeftButton:
@@ -944,8 +993,21 @@ class TimelineView(QWidget):
         )
         self.update()
 
+    # endregion
+
+    # region paint
+
     def paintEvent(self, _: QPaintEvent) -> None:
         p = QPainter(self)
+
+        # 绘制 inout_point 区段
+        if self.inout_point is not None:
+            inp, outp = self.inout_point
+            # 可见的时候才绘制
+            if inp < self.range.end and outp > self.range.at:
+                x1 = self.time_to_pixel(max(inp, self.range.at))
+                x2 = self.time_to_pixel(min(outp, self.range.end))
+                p.fillRect(x1, 0, x2 - x1, self.height(), QColor(17, 58, 81))
 
         # 绘制每次 forward 或 play 的时刻
         times_of_code = self.built.timeline.times_of_code
@@ -1008,3 +1070,5 @@ class TimelineView(QWidget):
     def paint_line(self, p: QPainter, time: float) -> None:
         pixel_at = self.time_to_pixel(time)
         p.drawLine(pixel_at, 0, pixel_at, self.height())
+
+    # endregion
