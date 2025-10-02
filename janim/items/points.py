@@ -3,13 +3,14 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Generic, Iterable, Self, TypeVar, overload
 
 from janim.components.component import CmptInfo
+from janim.components.glow import Cmpt_Glow
 from janim.components.mark import Cmpt_Mark
 from janim.components.points import Cmpt_Points
 from janim.components.radius import Cmpt_Radius
 from janim.components.rgbas import Cmpt_Rgbas, apart_alpha
 from janim.items.item import Item
 from janim.render.renderer_dotcloud import DotCloudRenderer
-from janim.typing import ColorArray, JAnimColor, Vect
+from janim.typing import Alpha, ColorArray, JAnimColor, Vect
 from janim.utils.data import AlignedData
 from janim.utils.iterables import (resize_preserving_order,
                                    resize_preserving_order_indice_groups)
@@ -118,6 +119,8 @@ class DotCloud(Points):
     color = CmptInfo(Cmpt_Rgbas[Self])
     radius = CmptInfo(Cmpt_Radius[Self], 0.05)
 
+    glow = CmptInfo(Cmpt_Glow[Self])
+
     renderer_cls = DotCloudRenderer
 
     def __init__(
@@ -138,11 +141,15 @@ class DotCloud(Points):
         color: JAnimColor | ColorArray | None = None,
         alpha: float | Iterable[float] | None = None,
         radius: float | Iterable[float] | None = None,
+        glow_color: JAnimColor | None = None,
+        glow_alpha: Alpha | None = None,
+        glow_size: float | None = None,
         **kwargs
     ) -> Self:
         self.color.set(color, alpha, root_only=True)
         if radius is not None:
             self.radius.set(radius, root_only=True)
+        self.glow.set(glow_color, glow_alpha, glow_size, root_only=True)
 
         return super().apply_style(**kwargs)
 
@@ -172,3 +179,8 @@ class DotCloud(Points):
             cmpt_to_fade.set_rgbas(rgbas)
 
         return aligned
+
+
+class GlowDot(DotCloud):
+    def __init__(self, *args, glow_alpha=0.5, **kwargs):
+        super().__init__(*args, glow_alpha=glow_alpha, **kwargs)

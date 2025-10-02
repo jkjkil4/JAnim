@@ -241,3 +241,6 @@ composition
 
 .. autoclass:: janim.anims.composition.Wait
     :show-inheritance:
+
+.. autoclass:: janim.anims.composition.Do
+    :show-inheritance:

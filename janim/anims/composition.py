@@ -276,11 +276,15 @@ class Do(Animation):
     '''
     在动画的特定时间执行指定操作
     '''
-    def __init__(self, func, *args, at: float = 0, **kwargs):
+    def __init__(self, func, *args, at: float = 0, detect_changes: bool = True, **kwargs):
         super().__init__(at=at, duration=0)
         self.func = func
         self.args = args
+        self.detect_changes = detect_changes
         self.kwargs = kwargs
 
     def _time_fixed(self) -> None:
-        self.timeline.schedule(self.t_range.at, self.func, *self.args, **self.kwargs)
+        if self.detect_changes:
+            self.timeline.schedule_and_detect_changes(self.t_range.at, self.func, *self.args, **self.kwargs)
+        else:
+            self.timeline.schedule(self.t_range.at, self.func, *self.args, **self.kwargs)

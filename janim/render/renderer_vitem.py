@@ -7,7 +7,7 @@ import numpy as np
 import OpenGL.GL as gl
 
 from janim.render.base import Renderer
-from janim.render.program import get_janim_compute_shader, get_janim_program
+from janim.render.program import get_compute_shader_from_file, get_program_from_file_prefix
 from janim.utils.iterables import resize_with_interpolation
 
 if TYPE_CHECKING:
@@ -32,7 +32,7 @@ class VItemRenderer(Renderer):
     # region compatibility
 
     def init_compatibility(self) -> None:
-        self.prog = get_janim_program('render/shaders/vitem_compatibility')
+        self.prog = get_program_from_file_prefix('render/shaders/vitem/vitem_compatibility')
 
         self.u_lim = self.prog['lim']
 
@@ -227,11 +227,11 @@ class VItemRenderer(Renderer):
     # region normal
 
     def init_normal(self) -> None:
-        self.comp = get_janim_compute_shader('render/shaders/map_points.comp.glsl')
+        self.comp = get_compute_shader_from_file('render/shaders/map_points.comp.glsl')
 
         self.comp_u_fix = self.get_u_fix_in_frame(self.comp)
 
-        self.prog = get_janim_program('render/shaders/vitem')
+        self.prog = get_program_from_file_prefix('render/shaders/vitem/vitem')
 
         self.u_fix = self.get_u_fix_in_frame(self.prog)
         self.u_stroke_background: mgl.Uniform = self.prog['stroke_background']

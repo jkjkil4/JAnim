@@ -6,7 +6,7 @@ import moderngl as mgl
 import numpy as np
 
 from janim.render.base import Renderer
-from janim.render.program import get_janim_program
+from janim.render.program import get_program_from_file_prefix
 from janim.utils.iterables import resize_with_interpolation
 
 if TYPE_CHECKING:
@@ -18,9 +18,11 @@ class DotCloudRenderer(Renderer):
         self.initialized = False
 
     def init(self) -> None:
-        self.prog = get_janim_program('render/shaders/dotcloud')
+        self.prog = get_program_from_file_prefix('render/shaders/dotcloud')
 
         self.u_fix = self.get_u_fix_in_frame(self.prog)
+        self.u_glow_color = self.prog['glow_color']
+        self.u_glow_size = self.prog['glow_size']
 
         self.ctx = self.data_ctx.get().ctx
         self.vbo_points = self.ctx.buffer(reserve=1)
@@ -79,4 +81,7 @@ class DotCloudRenderer(Renderer):
             self.prev_points = new_points
 
         self.update_fix_in_frame(self.u_fix, item)
+        self.u_glow_color.write(item.glow._rgba._data.tobytes())
+        self.u_glow_size.value = item.glow._size
+
         self.vao.render(mgl.POINTS, vertices=len(self.prev_points))

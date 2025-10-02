@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-08-31 23:04+0800\n"
+"POT-Creation-Date: 2025-09-23 15:06+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -29,145 +29,153 @@ msgid ""
 "install them in the correct Python version"
 msgstr ""
 
-#: janim\gui\anim_viewer.py:183
+#: janim\gui\anim_viewer.py:185
 msgid "File(&F)"
 msgstr ""
 
-#: janim\gui\anim_viewer.py:185
-msgid "Export(&E)"
-msgstr ""
-
-#: janim\gui\anim_viewer.py:189
-msgid "Capture(&C)"
-msgstr ""
-
-#: janim\gui\anim_viewer.py:195
-msgid "Set In Point(&I)"
-msgstr ""
-
-#: janim\gui\anim_viewer.py:199
-msgid "Set Out Point(&O)"
-msgstr ""
-
-#: janim\gui\anim_viewer.py:203
-msgid "Reset In/Out Point(&R)"
-msgstr ""
-
-#: janim\gui\anim_viewer.py:206
-msgid "View(&V)"
-msgstr ""
-
-#: janim\gui\anim_viewer.py:208
-msgid "Stay on top(&T)"
-msgstr ""
-
-#: janim\gui\anim_viewer.py:213
-msgid "Frame skip(&P)"
-msgstr ""
-
-#: janim\gui\anim_viewer.py:218
-msgid "Tools(&T)"
-msgstr ""
-
-#: janim\gui\anim_viewer.py:220
+#: janim\gui\anim_viewer.py:187
 msgid "Rebuild(&L)"
 msgstr ""
 
+#: janim\gui\anim_viewer.py:193
+msgid "Export(&E)"
+msgstr ""
+
+#: janim\gui\anim_viewer.py:197
+msgid "Capture(&C)"
+msgstr ""
+
+#: janim\gui\anim_viewer.py:203
+msgid "Set In Point(&I)"
+msgstr ""
+
+#: janim\gui\anim_viewer.py:207
+msgid "Set Out Point(&O)"
+msgstr ""
+
+#: janim\gui\anim_viewer.py:211
+msgid "Reset In/Out Point(&R)"
+msgstr ""
+
+#: janim\gui\anim_viewer.py:214
+msgid "View(&V)"
+msgstr ""
+
+#: janim\gui\anim_viewer.py:216
+msgid "Stay on top(&T)"
+msgstr ""
+
+#: janim\gui\anim_viewer.py:221
+msgid "Frame skip(&P)"
+msgstr ""
+
 #: janim\gui\anim_viewer.py:226
+msgid "Tools(&T)"
+msgstr ""
+
+#: janim\gui\anim_viewer.py:228
 msgid "Subitem selector(&I)"
 msgstr ""
 
-#: janim\gui\anim_viewer.py:231
+#: janim\gui\anim_viewer.py:233
 msgid "Draw(&D)"
 msgstr ""
 
-#: janim\gui\anim_viewer.py:235
+#: janim\gui\anim_viewer.py:237
 msgid "Rich text editor(&R)"
 msgstr ""
 
-#: janim\gui\anim_viewer.py:239
+#: janim\gui\anim_viewer.py:241
 msgid "Font list(&F)"
 msgstr ""
 
-#: janim\gui\anim_viewer.py:243
+#: janim\gui\anim_viewer.py:245
 msgid "Color(&O)"
 msgstr ""
 
-#: janim\gui\anim_viewer.py:304
+#: janim\gui\anim_viewer.py:251
+msgid "Copy time point(&T)"
+msgstr ""
+
+#: janim\gui\anim_viewer.py:312
 #, python-brace-format
 msgid "wnd_pos has wrong argument {wnd_pos}."
 msgstr ""
 
-#: janim\gui\anim_viewer.py:315
+#: janim\gui\anim_viewer.py:323
 #, python-brace-format
 msgid "wnd_monitor has invalid value {wnd_monitor}, use {range} instead."
 msgstr ""
 
-#: janim\gui\anim_viewer.py:473
+#: janim\gui\anim_viewer.py:483
 #, python-brace-format
 msgid "No timeline named \"{name}\" in \"{file}\""
 msgstr ""
 
-#: janim\gui\anim_viewer.py:486
+#: janim\gui\anim_viewer.py:496
 msgid "Failed to rebuild"
 msgstr ""
 
-#: janim\gui\anim_viewer.py:606
+#: janim\gui\anim_viewer.py:588
+msgid "Copied!"
+msgstr ""
+
+#: janim\gui\anim_viewer.py:642
 msgid "An error occurred during rendering, playback stopped"
 msgstr ""
 
-#: janim\gui\anim_viewer.py:671
+#: janim\gui\anim_viewer.py:715
 #, python-brace-format
 msgid "Frame t={t:.2f} saved to \"{file_path}\""
 msgstr ""
 
-#: janim\gui\anim_viewer.py:673 janim\gui\anim_viewer.py:692
-#: janim\gui\anim_viewer.py:729
+#: janim\gui\anim_viewer.py:717 janim\gui\anim_viewer.py:737
+#: janim\gui\anim_viewer.py:778
 msgid "Note"
 msgstr ""
 
-#: janim\gui\anim_viewer.py:674
+#: janim\gui\anim_viewer.py:718
 #, python-brace-format
 msgid "Captured to {file_path}"
 msgstr ""
 
-#: janim\gui\anim_viewer.py:693
+#: janim\gui\anim_viewer.py:738
 msgid "Output will start shortly. Please check the console for information."
 msgstr ""
 
-#: janim\gui\anim_viewer.py:722
+#: janim\gui\anim_viewer.py:771
 msgid "Exporting was cancelled"
 msgstr ""
 
-#: janim\gui\anim_viewer.py:730
+#: janim\gui\anim_viewer.py:779
 #, python-brace-format
 msgid "Output to {file_path} has been completed."
 msgstr ""
 
-#: janim\gui\anim_viewer.py:761
+#: janim\gui\anim_viewer.py:810
 #, python-brace-format
 msgid "Searching port has been opened at {port}"
 msgstr ""
 
-#: janim\gui\anim_viewer.py:766
+#: janim\gui\anim_viewer.py:815
 #, python-brace-format
 msgid "Failed to open searching port at {port}"
 msgstr ""
 
-#: janim\gui\anim_viewer.py:771
+#: janim\gui\anim_viewer.py:820
 #, python-brace-format
 msgid ""
 "Searching port {port} is invalid, please use a number between 1024 and 65535 "
 "instead"
 msgstr ""
 
-#: janim\gui\anim_viewer.py:777
+#: janim\gui\anim_viewer.py:826
 msgid ""
 "Interactive development is disabled because the searching port is not "
 "established."
 msgstr ""
 
-#: janim\gui\anim_viewer.py:790
+#: janim\gui\anim_viewer.py:839
 #, python-brace-format
 msgid "Interactive port has been opened at {port}"
 msgstr ""
