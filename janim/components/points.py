@@ -901,7 +901,8 @@ class Cmpt_Points[ItemT](Component[ItemT]):
         self.apply_matrix(
             rot_transform @ camera_transform,
             about_point=about_point,
-            about_edge=about_edge
+            about_edge=about_edge,
+            root_only=root_only
         )
         return self
 
