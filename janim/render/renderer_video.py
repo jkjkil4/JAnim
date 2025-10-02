@@ -164,6 +164,6 @@ class VideoReader:
 
 class _Popen(sp.Popen):
     def __del__(self) -> None:
-        self.terminate()
+        self.kill()
         self.wait()
         super().__del__()
