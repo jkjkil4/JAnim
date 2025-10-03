@@ -1,13 +1,16 @@
 from __future__ import annotations
 
+from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 import moderngl as mgl
 import numpy as np
 import OpenGL.GL as gl
 
-from janim.render.base import Renderer
-from janim.render.program import get_compute_shader_from_file, get_program_from_file_prefix
+from janim.camera.camera_info import CameraInfo
+from janim.render.base import RenderData, Renderer
+from janim.render.program import (get_compute_shader_from_file,
+                                  get_program_from_file_prefix)
 from janim.utils.iterables import resize_with_interpolation
 
 if TYPE_CHECKING:
@@ -29,39 +32,13 @@ class VItemRenderer(Renderer):
 
         self.render(item)
 
-    # region compatibility
+    # region init
 
     def init_compatibility(self) -> None:
         self.prog = get_program_from_file_prefix('render/shaders/vitem/vitem_compatibility')
+        self.init_common()
 
         self.u_lim = self.prog['lim']
-
-        self.u_fix = self.get_u_fix_in_frame(self.prog)
-        self.u_stroke_background: mgl.Uniform = self.prog['stroke_background']
-        self.u_is_fill_transparent = self.prog['is_fill_transparent']
-        self.u_glow_color = self.prog['glow_color']
-        self.u_glow_size = self.prog['glow_size']
-
-        self.vbo_coord = self.ctx.buffer(reserve=4 * 2 * 4)
-        self.vbo_mapped_points = self.ctx.buffer(reserve=1)
-        self.vbo_radius = self.ctx.buffer(reserve=1)
-        self.vbo_stroke_color = self.ctx.buffer(reserve=1)
-        self.vbo_fill_color = self.ctx.buffer(reserve=1)
-
-        self.vao = self.ctx.vertex_array(self.prog, self.vbo_coord, 'in_coord')
-
-        self.prev_camera_info = None
-
-        self.prev_fix_in_frame = None
-        self.prev_points = None
-        self.prev_radius = None
-        self.prev_stroke = None
-        self.prev_fill = None
-        self.fill_transparent = False
-        self.prev_glow_size = -1
-        self.prev_glow_visible = -1
-
-        self.points_vec4buffer = np.empty((0, 4), dtype=np.float32)
 
         self.sampb_mapped_points, \
             self.sampb_radius, \
@@ -82,121 +59,106 @@ class VItemRenderer(Renderer):
         gl.glBindTexture(gl.GL_TEXTURE_BUFFER, self.sampb_fill_color)
         gl.glTexBuffer(gl.GL_TEXTURE_BUFFER, gl.GL_RGBA32F, self.vbo_fill_color.glo)
 
+    def init_normal(self) -> None:
+        self.prog = get_program_from_file_prefix('render/shaders/vitem/vitem')
+        self.init_common()
+
+        self.comp = get_compute_shader_from_file('render/shaders/map_points.comp.glsl')
+        self.comp_u_fix = self.get_u_fix_in_frame(self.comp)
+        self.vbo_points = self.ctx.buffer(reserve=1)
+
+    @dataclass(slots=True)
+    class RenderAttrs:
+        camera_info: CameraInfo | None = None
+
+        fix_in_frame: bool | None = None
+        points: np.ndarray | None = None
+        radius: np.ndarray | None = None
+        stroke: np.ndarray | None = None
+        fill: np.ndarray | None = None
+        glow_size: float | None = None
+        glow_visible: bool | None = None
+
+        @staticmethod
+        def get(render_data: RenderData, item: VItem) -> VItemRenderer.RenderAttrs:
+            return VItemRenderer.RenderAttrs(
+                render_data.camera_info,
+                item._fix_in_frame,
+                item.points._points._data,
+                item.radius._radii._data,
+                item.stroke._rgbas._data,
+                item.fill._rgbas._data,
+                item.glow._size,
+                item.glow._rgba._data[3] != 0.0
+            )
+
+    def init_common(self) -> None:
+        self.u_fix = self.get_u_fix_in_frame(self.prog)
+        self.u_stroke_background: mgl.Uniform = self.prog['stroke_background']
+        self.u_is_fill_transparent = self.prog['is_fill_transparent']
+        self.u_glow_color = self.prog['glow_color']
+        self.u_glow_size = self.prog['glow_size']
+
+        self.vbo_coord = self.ctx.buffer(reserve=4 * 2 * 4)
+        self.vbo_mapped_points = self.ctx.buffer(reserve=1)
+        self.vbo_radius = self.ctx.buffer(reserve=1)
+        self.vbo_stroke_color = self.ctx.buffer(reserve=1)
+        self.vbo_fill_color = self.ctx.buffer(reserve=1)
+
+        self.vao = self.ctx.vertex_array(self.prog, self.vbo_coord, 'in_coord')
+
+        self.attrs = self.RenderAttrs()
+        self.fill_transparent = False
+
+        self.points_vec4buffer = np.empty((0, 4), dtype=np.float32)
+
+    # endregion
+
+    # region render
+
     def render_compatibility(self, item: VItem) -> None:
         if not self.initialized:
             self.init_compatibility()
             self.initialized = True
 
-        new_points = item.points._points.data
-
-        if len(new_points) < 3:
-            return
         render_data = self.data_ctx.get()
+        new_attrs = self.RenderAttrs.get(render_data, item)
+        points_cnt_changed = self.attrs.points is None or len(new_attrs.points) != len(self.attrs.points)
+        resize_target = (len(new_attrs.points) + 1) // 2
 
-        new_camera_info = render_data.camera_info
-        new_fix_in_frame = item._fix_in_frame
-        new_radius = item.radius._radii._data
-        new_stroke = item.stroke._rgbas._data
-        new_fill = item.fill._rgbas._data
-        new_glow_size = item.glow._size
-        new_glow_visible = item.glow._rgba._data[3] != 0.0
+        if len(new_attrs.points) < 3:
+            return
 
-        is_camera_changed = new_camera_info is not self.prev_camera_info
+        if self._needs_update_clip_box(new_attrs):
+            self._update_clip_box(item, render_data, new_attrs)
 
-        if new_fix_in_frame != self.prev_fix_in_frame \
-                or new_radius is not self.prev_radius \
-                or new_glow_size != self.prev_glow_size \
-                or new_glow_visible != self.prev_glow_visible \
-                or new_points is not self.prev_points \
-                or is_camera_changed:
-            corners = np.array(item.points.self_box.get_corners())
-            if new_fix_in_frame:
-                clip_box = new_camera_info.map_fixed_in_frame_points(corners)
-            else:
-                clip_box = new_camera_info.map_points(corners)
-            clip_box *= new_camera_info.frame_radius
+            self.attrs.glow_size = new_attrs.glow_size
+            self.attrs.glow_visible = new_attrs.glow_visible
 
-            buff = new_radius.max() + render_data.anti_alias_radius
-            if new_glow_visible:
-                buff = max(buff, new_glow_size)
-            clip_min = np.min(clip_box, axis=0) - buff
-            clip_max = np.max(clip_box, axis=0) + buff
-            clip_box = np.array([
-                clip_min,
-                [clip_min[0], clip_max[1]],
-                [clip_max[0], clip_min[1]],
-                clip_max
-            ]) / new_camera_info.frame_radius
-            clip_box = np.clip(clip_box, -1, 1)
+        if new_attrs.radius is not self.attrs.radius or points_cnt_changed:
+            self._update_buffer_data(new_attrs.radius,
+                                     self.vbo_radius,
+                                     resize_target,
+                                     use_32byte_align=True)
+            self.attrs.radius = new_attrs.radius
 
-            bytes = clip_box.astype(np.float32).tobytes()
-            assert len(bytes) == self.vbo_coord.size
-            self.vbo_coord.write(bytes)
+        if new_attrs.stroke is not self.attrs.stroke or points_cnt_changed:
+            self._update_buffer_data(new_attrs.stroke,
+                                     self.vbo_stroke_color,
+                                     resize_target)
+            self.attrs.stroke = new_attrs.stroke
 
-            self.prev_glow_size = new_glow_size
-            self.prev_glow_visible = new_glow_visible
-
-        if new_radius is not self.prev_radius or len(new_points) != len(self.prev_points):
-            radius = resize_with_interpolation(new_radius, (len(new_points) + 1) // 2)
-            assert radius.dtype == np.float32
-            bytes = radius.tobytes()
-
-            size = (len(bytes) + 31) & ~31  # 保证一定是 32 的倍数
-            if len(bytes) != self.vbo_radius.size:
-                self.vbo_radius.orphan(size)
-
-            self.vbo_radius.write(bytes)
-            self.prev_radius = new_radius
-
-        if new_stroke is not self.prev_stroke or len(new_points) != len(self.prev_points):
-            stroke = resize_with_interpolation(new_stroke, (len(new_points) + 1) // 2)
-            assert stroke.dtype == np.float32
-            bytes = stroke.tobytes()
-
-            if len(bytes) != self.vbo_stroke_color.size:
-                self.vbo_stroke_color.orphan(len(bytes))
-
-            self.vbo_stroke_color.write(bytes)
-            self.prev_stroke = new_stroke
-
-        if new_fill is not self.prev_fill:
+        if new_attrs.fill is not self.attrs.fill:
             # 这里使用 bool 将 np.bool 进行转换，使得能正常传入 uniform
             self.fill_transparent = bool(item.fill.is_transparent())
 
-        if new_fill is not self.prev_fill or len(new_points) != len(self.prev_points):
-            fill = resize_with_interpolation(new_fill, (len(new_points) + 1) // 2)
-            assert fill.dtype == np.float32
-            bytes = fill.tobytes()
+        if new_attrs.fill is not self.attrs.fill or points_cnt_changed:
+            self._update_buffer_data(new_attrs.fill,
+                                     self.vbo_fill_color,
+                                     resize_target)
+            self.attrs.fill = new_attrs.fill
 
-            if len(bytes) != self.vbo_fill_color.size:
-                self.vbo_fill_color.orphan(len(bytes))
-
-            self.vbo_fill_color.write(bytes)
-            self.prev_fill = new_fill
-
-        if new_points is not self.prev_points \
-                or new_fix_in_frame != self.prev_fix_in_frame \
-                or is_camera_changed:
-            if new_fix_in_frame:
-                mapped = new_camera_info.map_fixed_in_frame_points(new_points)
-            else:
-                mapped = new_camera_info.map_points(new_points)
-            mapped *= new_camera_info.frame_radius
-
-            if len(self.points_vec4buffer) != len(mapped):
-                self.points_vec4buffer = np.empty((len(mapped), 4), dtype=np.float32)
-
-            self.points_vec4buffer[:, :2] = mapped
-            self.points_vec4buffer[:, 2] = item.points.get_closepath_flags().astype(np.float32)
-            bytes = self.points_vec4buffer.tobytes()
-
-            if len(bytes) != self.vbo_mapped_points.size:
-                self.vbo_mapped_points.orphan(len(bytes))
-
-            self.vbo_mapped_points.write(bytes)
-            self.prev_fix_in_frame = new_fix_in_frame
-            self.prev_camera_info = new_camera_info
-            self.prev_points = new_points
+        self._update_points_compatibility(item, new_attrs)
 
         gl.glUseProgram(self.prog.glo)
         gl.glUniform1i(self.loc_mapped_points, 0)
@@ -204,7 +166,7 @@ class VItemRenderer(Renderer):
         gl.glUniform1i(self.loc_stroke_color, 2)
         gl.glUniform1i(self.loc_fill_color, 3)
 
-        self.u_lim.value = (len(new_points) - 1) // 2 * 2
+        self.u_lim.value = (len(new_attrs.points) - 1) // 2 * 2
         gl.glActiveTexture(gl.GL_TEXTURE0)
         gl.glBindTexture(gl.GL_TEXTURE_BUFFER, self.sampb_mapped_points)
         gl.glActiveTexture(gl.GL_TEXTURE1)
@@ -218,167 +180,52 @@ class VItemRenderer(Renderer):
         self.u_stroke_background.value = item.stroke_background
         self.u_is_fill_transparent.value = self.fill_transparent
         self.u_glow_color.write(item.glow._rgba._data.tobytes())
-        self.u_glow_size.value = new_glow_size
+        self.u_glow_size.value = new_attrs.glow_size
 
         self.vao.render(mgl.TRIANGLE_STRIP)
-
-    # endregion
-
-    # region normal
-
-    def init_normal(self) -> None:
-        self.comp = get_compute_shader_from_file('render/shaders/map_points.comp.glsl')
-
-        self.comp_u_fix = self.get_u_fix_in_frame(self.comp)
-
-        self.prog = get_program_from_file_prefix('render/shaders/vitem/vitem')
-
-        self.u_fix = self.get_u_fix_in_frame(self.prog)
-        self.u_stroke_background: mgl.Uniform = self.prog['stroke_background']
-        self.u_is_fill_transparent = self.prog['is_fill_transparent']
-        self.u_glow_color = self.prog['glow_color']
-        self.u_glow_size = self.prog['glow_size']
-
-        self.vbo_coord = self.ctx.buffer(reserve=4 * 2 * 4)
-        self.vbo_points = self.ctx.buffer(reserve=1)
-        self.vbo_mapped_points = self.ctx.buffer(reserve=1)
-        self.vbo_radius = self.ctx.buffer(reserve=1)
-        self.vbo_stroke_color = self.ctx.buffer(reserve=1)
-        self.vbo_fill_color = self.ctx.buffer(reserve=1)
-
-        self.vao = self.ctx.vertex_array(self.prog, self.vbo_coord, 'in_coord')
-
-        self.prev_camera_info = None
-
-        self.prev_fix_in_frame = None
-        self.prev_points = None
-        self.prev_radius = None
-        self.prev_stroke = None
-        self.prev_fill = None
-        self.fill_transparent = False
-        self.prev_glow_size = -1
-        self.prev_glow_visible = -1
-
-        self.points_vec4buffer = np.empty((0, 4), dtype=np.float32)
 
     def render_normal(self, item: VItem) -> None:
         if not self.initialized:
             self.init_normal()
             self.initialized = True
 
-        new_points = item.points._points.data
-
-        if len(new_points) < 3:
-            return
         render_data = self.data_ctx.get()
+        new_attrs = self.RenderAttrs.get(render_data, item)
+        points_cnt_changed = self.attrs.points is None or len(new_attrs.points) != len(self.attrs.points)
+        resize_target = (len(new_attrs.points) + 1) // 2
 
-        new_camera_info = render_data.camera_info
-        new_fix_in_frame = item._fix_in_frame
-        new_radius = item.radius._radii._data
-        new_stroke = item.stroke._rgbas._data
-        new_fill = item.fill._rgbas._data
-        new_glow_size = item.glow._size
-        new_glow_visible = item.glow._rgba._data[3] != 0.0
+        if len(new_attrs.points) < 3:
+            return
 
-        is_camera_changed = new_camera_info is not self.prev_camera_info
+        if self._needs_update_clip_box(new_attrs):
+            self._update_clip_box(item, render_data, new_attrs)
 
-        if new_fix_in_frame != self.prev_fix_in_frame \
-                or new_radius is not self.prev_radius \
-                or new_glow_size != self.prev_glow_size \
-                or new_glow_visible != self.prev_glow_visible \
-                or new_points is not self.prev_points \
-                or is_camera_changed:
-            corners = np.array(item.points.self_box.get_corners())
-            if new_fix_in_frame:
-                clip_box = new_camera_info.map_fixed_in_frame_points(corners)
-            else:
-                clip_box = new_camera_info.map_points(corners)
-            clip_box *= new_camera_info.frame_radius
+            self.attrs.glow_size = new_attrs.glow_size
+            self.attrs.glow_visible = new_attrs.glow_visible
 
-            buff = new_radius.max() + render_data.anti_alias_radius
-            if new_glow_visible:
-                buff = max(buff, new_glow_size)
-            clip_min = np.min(clip_box, axis=0) - buff
-            clip_max = np.max(clip_box, axis=0) + buff
-            clip_box = np.array([
-                clip_min,
-                [clip_min[0], clip_max[1]],
-                [clip_max[0], clip_min[1]],
-                clip_max
-            ]) / new_camera_info.frame_radius
-            clip_box = np.clip(clip_box, -1, 1)
+        if new_attrs.radius is not self.attrs.radius or points_cnt_changed:
+            self._update_buffer_data(new_attrs.radius,
+                                     self.vbo_radius,
+                                     resize_target)
+            self.attrs.radius = new_attrs.radius
 
-            bytes = clip_box.astype(np.float32).tobytes()
-            assert len(bytes) == self.vbo_coord.size
-            self.vbo_coord.write(bytes)
+        if new_attrs.stroke is not self.attrs.stroke or points_cnt_changed:
+            self._update_buffer_data(new_attrs.stroke,
+                                     self.vbo_stroke_color,
+                                     resize_target)
+            self.attrs.stroke = new_attrs.stroke
 
-            self.prev_glow_size = new_glow_size
-            self.prev_glow_visible = new_glow_visible
-
-        if new_radius is not self.prev_radius or len(new_points) != len(self.prev_points):
-            radius = resize_with_interpolation(new_radius, (len(new_points) + 1) // 2)
-            assert radius.dtype == np.float32
-            bytes = radius.tobytes()
-
-            if len(bytes) != self.vbo_radius.size:
-                self.vbo_radius.orphan(len(bytes))
-
-            self.vbo_radius.write(bytes)
-            self.prev_radius = new_radius
-
-        if new_stroke is not self.prev_stroke or len(new_points) != len(self.prev_points):
-            stroke = resize_with_interpolation(new_stroke, (len(new_points) + 1) // 2)
-            assert stroke.dtype == np.float32
-            bytes = stroke.tobytes()
-
-            if len(bytes) != self.vbo_stroke_color.size:
-                self.vbo_stroke_color.orphan(len(bytes))
-
-            self.vbo_stroke_color.write(bytes)
-            self.prev_stroke = new_stroke
-
-        if new_fill is not self.prev_fill:
+        if new_attrs.fill is not self.attrs.fill:
             # 这里使用 bool 将 np.bool 进行转换，使得能正常传入 uniform
             self.fill_transparent = bool(item.fill.is_transparent())
 
-        if new_fill is not self.prev_fill or len(new_points) != len(self.prev_points):
-            fill = resize_with_interpolation(new_fill, (len(new_points) + 1) // 2)
-            assert fill.dtype == np.float32
-            bytes = fill.tobytes()
+        if new_attrs.fill is not self.attrs.fill or points_cnt_changed:
+            self._update_buffer_data(new_attrs.fill,
+                                     self.vbo_fill_color,
+                                     resize_target)
+            self.attrs.fill = new_attrs.fill
 
-            if len(bytes) != self.vbo_fill_color.size:
-                self.vbo_fill_color.orphan(len(bytes))
-
-            self.vbo_fill_color.write(bytes)
-            self.prev_fill = new_fill
-
-        if new_points is not self.prev_points:
-            if len(self.points_vec4buffer) != len(new_points):
-                self.points_vec4buffer = np.empty((len(new_points), 4), dtype=np.float32)
-
-            self.points_vec4buffer[:, :3] = new_points
-            self.points_vec4buffer[:, 3] = item.points.get_closepath_flags().astype(np.float32)
-            bytes = self.points_vec4buffer.tobytes()
-
-            if len(bytes) != self.vbo_points.size:
-                self.vbo_points.orphan(len(bytes))
-
-            self.vbo_points.write(bytes)
-
-        if new_points is not self.prev_points \
-                or new_fix_in_frame != self.prev_fix_in_frame \
-                or is_camera_changed:
-            if self.vbo_points.size != self.vbo_mapped_points.size:
-                self.vbo_mapped_points.orphan(self.vbo_points.size)
-
-            self.vbo_points.bind_to_storage_buffer(0)
-            self.vbo_mapped_points.bind_to_storage_buffer(1)
-            self.update_fix_in_frame(self.comp_u_fix, item)
-            self.comp.run(group_x=(len(new_points) + 255) // 256)   # 相当于 len() / 256 向上取整
-
-            self.prev_fix_in_frame = new_fix_in_frame
-            self.prev_camera_info = new_camera_info
-            self.prev_points = new_points
+        self._update_points_normal(item, new_attrs)
 
         self.vbo_mapped_points.bind_to_storage_buffer(0)
         self.vbo_radius.bind_to_storage_buffer(1)
@@ -389,8 +236,118 @@ class VItemRenderer(Renderer):
         self.u_stroke_background.value = item.stroke_background
         self.u_is_fill_transparent.value = self.fill_transparent
         self.u_glow_color.write(item.glow._rgba._data.tobytes())
-        self.u_glow_size.value = new_glow_size
+        self.u_glow_size.value = new_attrs.glow_size
 
         self.vao.render(mgl.TRIANGLE_STRIP)
+
+    def _needs_update_clip_box(self, new_attrs: RenderAttrs) -> bool:
+        return (
+            new_attrs.fix_in_frame != self.attrs.fix_in_frame
+            or new_attrs.radius is not self.attrs.radius
+            or new_attrs.glow_size != self.attrs.glow_size
+            or new_attrs.glow_visible != self.attrs.glow_visible
+            or new_attrs.points is not self.attrs.points
+            or new_attrs.camera_info is not self.attrs.camera_info
+        )
+
+    def _update_clip_box(self, item: VItem, render_data: RenderData, new_attrs: RenderAttrs) -> None:
+        corners = np.array(item.points.self_box.get_corners())
+        if new_attrs.fix_in_frame:
+            clip_box = new_attrs.camera_info.map_fixed_in_frame_points(corners)
+        else:
+            clip_box = new_attrs.camera_info.map_points(corners)
+        clip_box *= new_attrs.camera_info.frame_radius
+
+        buff = new_attrs.radius.max() + render_data.anti_alias_radius
+        if new_attrs.glow_visible:
+            buff = max(buff, new_attrs.glow_size)
+        clip_min = np.min(clip_box, axis=0) - buff
+        clip_max = np.max(clip_box, axis=0) + buff
+        clip_box = np.array([
+            clip_min,
+            [clip_min[0], clip_max[1]],
+            [clip_max[0], clip_min[1]],
+            clip_max
+        ]) / new_attrs.camera_info.frame_radius
+        clip_box = np.clip(clip_box, -1, 1)
+
+        bytes = clip_box.astype(np.float32).tobytes()
+        assert len(bytes) == self.vbo_coord.size
+        self.vbo_coord.write(bytes)
+
+    @staticmethod
+    def _update_buffer_data(
+        new_data: np.ndarray,
+        vbo: mgl.Buffer,
+        resize_target: int,
+        use_32byte_align: bool = False
+    ) -> None:
+        processed_data = resize_with_interpolation(new_data, resize_target)
+        assert processed_data.dtype == np.float32
+        bytes_data = processed_data.tobytes()
+
+        size = (
+            ((len(bytes_data) + 31) & ~31)
+            if use_32byte_align
+            else len(bytes_data)
+        )
+        if size != vbo.size:
+            vbo.orphan(size)
+
+        vbo.write(bytes_data)
+
+    def _update_points_compatibility(self, item: VItem, new_attrs: RenderAttrs) -> None:
+        if new_attrs.points is not self.attrs.points \
+                or new_attrs.fix_in_frame != self.attrs.fix_in_frame \
+                or new_attrs.camera_info is not self.attrs.camera_info:
+            if new_attrs.fix_in_frame:
+                mapped = new_attrs.camera_info.map_fixed_in_frame_points(new_attrs.points)
+            else:
+                mapped = new_attrs.camera_info.map_points(new_attrs.points)
+            mapped *= new_attrs.camera_info.frame_radius
+
+            if len(self.points_vec4buffer) != len(mapped):
+                self.points_vec4buffer = np.empty((len(mapped), 4), dtype=np.float32)
+
+            self.points_vec4buffer[:, :2] = mapped
+            self.points_vec4buffer[:, 2] = item.points.get_closepath_flags().astype(np.float32)
+            bytes = self.points_vec4buffer.tobytes()
+
+            if len(bytes) != self.vbo_mapped_points.size:
+                self.vbo_mapped_points.orphan(len(bytes))
+
+            self.vbo_mapped_points.write(bytes)
+            self.attrs.fix_in_frame = new_attrs.fix_in_frame
+            self.attrs.camera_info = new_attrs.camera_info
+            self.attrs.points = new_attrs.points
+
+    def _update_points_normal(self, item: VItem, new_attrs: RenderAttrs) -> None:
+        if new_attrs.points is not self.attrs.points:
+            if len(self.points_vec4buffer) != len(new_attrs.points):
+                self.points_vec4buffer = np.empty((len(new_attrs.points), 4), dtype=np.float32)
+
+            self.points_vec4buffer[:, :3] = new_attrs.points
+            self.points_vec4buffer[:, 3] = item.points.get_closepath_flags().astype(np.float32)
+            bytes = self.points_vec4buffer.tobytes()
+
+            if len(bytes) != self.vbo_points.size:
+                self.vbo_points.orphan(len(bytes))
+
+            self.vbo_points.write(bytes)
+
+        if new_attrs.points is not self.attrs.points \
+                or new_attrs.fix_in_frame != self.attrs.fix_in_frame \
+                or new_attrs.camera_info is not self.attrs.camera_info:
+            if self.vbo_points.size != self.vbo_mapped_points.size:
+                self.vbo_mapped_points.orphan(self.vbo_points.size)
+
+            self.vbo_points.bind_to_storage_buffer(0)
+            self.vbo_mapped_points.bind_to_storage_buffer(1)
+            self.update_fix_in_frame(self.comp_u_fix, item)
+            self.comp.run(group_x=(len(new_attrs.points) + 255) // 256)   # 相当于 len() / 256 向上取整
+
+            self.attrs.fix_in_frame = new_attrs.fix_in_frame
+            self.attrs.camera_info = new_attrs.camera_info
+            self.attrs.points = new_attrs.points
 
     # endregion
