@@ -13,7 +13,6 @@ from janim.logger import log
 from janim.render.base import Renderer
 from janim.render.program import get_program_from_file_prefix
 from janim.utils.config import Config
-from janim.utils.iterables import resize_with_interpolation
 
 if TYPE_CHECKING:
     from janim.items.image_item import Video, VideoInfo
@@ -64,13 +63,7 @@ class VideoRenderer(Renderer):
         new_points = item.points._points.data
 
         if new_color is not self.prev_color:
-            color = resize_with_interpolation(new_color, 4)
-            assert color.dtype == np.float32
-            bytes = color.tobytes()
-
-            assert len(bytes) == self.vbo_color.size
-
-            self.vbo_color.write(bytes)
+            self.update_static_buffer_data(new_color, self.vbo_color, 4)
             self.prev_color = new_color
 
         if new_points is not self.prev_points:

@@ -11,7 +11,6 @@ from janim.camera.camera_info import CameraInfo
 from janim.render.base import RenderData, Renderer
 from janim.render.program import (get_compute_shader_from_file,
                                   get_program_from_file_prefix)
-from janim.utils.iterables import resize_with_interpolation
 
 if TYPE_CHECKING:
     from janim.items.vitem import VItem
@@ -136,16 +135,16 @@ class VItemRenderer(Renderer):
             self.attrs.glow_visible = new_attrs.glow_visible
 
         if new_attrs.radius is not self.attrs.radius or points_cnt_changed:
-            self._update_buffer_data(new_attrs.radius,
-                                     self.vbo_radius,
-                                     resize_target,
-                                     use_32byte_align=True)
+            self.update_dynamic_buffer_data(new_attrs.radius,
+                                            self.vbo_radius,
+                                            resize_target,
+                                            use_32byte_align=True)
             self.attrs.radius = new_attrs.radius
 
         if new_attrs.stroke is not self.attrs.stroke or points_cnt_changed:
-            self._update_buffer_data(new_attrs.stroke,
-                                     self.vbo_stroke_color,
-                                     resize_target)
+            self.update_dynamic_buffer_data(new_attrs.stroke,
+                                            self.vbo_stroke_color,
+                                            resize_target)
             self.attrs.stroke = new_attrs.stroke
 
         if new_attrs.fill is not self.attrs.fill:
@@ -153,9 +152,9 @@ class VItemRenderer(Renderer):
             self.fill_transparent = bool(item.fill.is_transparent())
 
         if new_attrs.fill is not self.attrs.fill or points_cnt_changed:
-            self._update_buffer_data(new_attrs.fill,
-                                     self.vbo_fill_color,
-                                     resize_target)
+            self.update_dynamic_buffer_data(new_attrs.fill,
+                                            self.vbo_fill_color,
+                                            resize_target)
             self.attrs.fill = new_attrs.fill
 
         self._update_points_compatibility(item, new_attrs)
@@ -204,15 +203,15 @@ class VItemRenderer(Renderer):
             self.attrs.glow_visible = new_attrs.glow_visible
 
         if new_attrs.radius is not self.attrs.radius or points_cnt_changed:
-            self._update_buffer_data(new_attrs.radius,
-                                     self.vbo_radius,
-                                     resize_target)
+            self.update_dynamic_buffer_data(new_attrs.radius,
+                                            self.vbo_radius,
+                                            resize_target)
             self.attrs.radius = new_attrs.radius
 
         if new_attrs.stroke is not self.attrs.stroke or points_cnt_changed:
-            self._update_buffer_data(new_attrs.stroke,
-                                     self.vbo_stroke_color,
-                                     resize_target)
+            self.update_dynamic_buffer_data(new_attrs.stroke,
+                                            self.vbo_stroke_color,
+                                            resize_target)
             self.attrs.stroke = new_attrs.stroke
 
         if new_attrs.fill is not self.attrs.fill:
@@ -220,9 +219,9 @@ class VItemRenderer(Renderer):
             self.fill_transparent = bool(item.fill.is_transparent())
 
         if new_attrs.fill is not self.attrs.fill or points_cnt_changed:
-            self._update_buffer_data(new_attrs.fill,
-                                     self.vbo_fill_color,
-                                     resize_target)
+            self.update_dynamic_buffer_data(new_attrs.fill,
+                                            self.vbo_fill_color,
+                                            resize_target)
             self.attrs.fill = new_attrs.fill
 
         self._update_points_normal(item, new_attrs)
@@ -274,27 +273,6 @@ class VItemRenderer(Renderer):
         bytes = clip_box.astype(np.float32).tobytes()
         assert len(bytes) == self.vbo_coord.size
         self.vbo_coord.write(bytes)
-
-    @staticmethod
-    def _update_buffer_data(
-        new_data: np.ndarray,
-        vbo: mgl.Buffer,
-        resize_target: int,
-        use_32byte_align: bool = False
-    ) -> None:
-        processed_data = resize_with_interpolation(new_data, resize_target)
-        assert processed_data.dtype == np.float32
-        bytes_data = processed_data.tobytes()
-
-        size = (
-            ((len(bytes_data) + 31) & ~31)
-            if use_32byte_align
-            else len(bytes_data)
-        )
-        if size != vbo.size:
-            vbo.orphan(size)
-
-        vbo.write(bytes_data)
 
     def _update_points_compatibility(self, item: VItem, new_attrs: RenderAttrs) -> None:
         if new_attrs.points is not self.attrs.points \
