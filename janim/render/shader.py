@@ -16,6 +16,7 @@ def read_shader(file_path: str) -> str:
     lines = []
     found_path = find_shader_file(file_path)
     max_version = _read_shader(found_path, lines)
+    lines.append('//')      # 避免可能出现在结尾的 #line 没有后续代码导致在部分平台上报错
     return (
         f'#version {max_version} core\n'
         + '\n'.join(lines)
@@ -29,6 +30,7 @@ def read_shader_or_none(file_path: str) -> str | None:
         return None
     lines = []
     max_version = _read_shader(found_path, lines)
+    lines.append('//')      # 避免可能出现在结尾的 #line 没有后续代码导致在部分平台上报错
     return (
         f'#version {max_version} core\n'
         + '\n'.join(lines)
@@ -76,18 +78,24 @@ def convert_error_nameidx_to_name(error: mgl.Error) -> None:
     if len(error.args) != 1:
         return
 
-    msg = error.args[0]
+    msg: str = error.args[0]
 
     def replace_line(line: str) -> str:
-        match = re.match(r'^.*?: (\d+):\d+: .*$', line)
-        if not match:
-            return line
-        nameidx = int(match.group(1))
-        start, end = match.span(1)
-        name = idx_to_name(nameidx)
-        if name is None:
-            return line
-        return line[:start] + name + line[end:]
+        for regex in [
+            r'^(\d+)\(\d+\) : .*$',     # Windows?
+            r'^.*?: (\d+):\d+: .*$',    # macOS?
+        ]:
+            match = re.match(regex, line)
+            if not match:
+                continue
+            nameidx = int(match.group(1))
+            start, end = match.span(1)
+            name = idx_to_name(nameidx)
+            if name is None:
+                return line
+            return line[:start] + name + line[end:]
+
+        return line
 
     lines = [replace_line(line) for line in msg.splitlines()]
 

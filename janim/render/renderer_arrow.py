@@ -21,5 +21,4 @@ class ArrowRenderer(VItemRenderer):
     def _update_others(self, item: Arrow, render_data: RenderData, new_attrs: VItemRenderer.RenderAttrs) -> None:
         if new_attrs.points is not self.attrs.points:
             self.shrink_values = item._get_shrink_values()
-            print(self.shrink_values)
         self.u_shrink.value = self.shrink_values

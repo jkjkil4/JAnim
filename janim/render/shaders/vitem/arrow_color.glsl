@@ -16,7 +16,8 @@ vec4 get_arrow_color(
     vec2 e = get_point(idx + 2) - get_point(idx);
     float el = length(e);
     vec2 w = v_coord - get_point(idx);
-    float ratio = clamp(dot(w, e) / dot(e, e), 0.0, 1.0);
+    float orig_ratio = dot(w, e) / dot(e, e);
+    float ratio = clamp(orig_ratio, 0.0, 1.0);
 
     float radius = mix(get_radius(anchor_idx), get_radius(anchor_idx + 1), ratio);
 
@@ -25,10 +26,10 @@ vec4 get_arrow_color(
     radius *= min(
         shrink_left_length == -1.0
             ? 1.0
-            : smoothstep(left_ratio * 0.95, left_ratio, ratio),
+            : smoothstep(left_ratio * 0.95 - 1e-5, left_ratio, orig_ratio),
         shrink_right_length == -1.0
             ? 1.0
-            : smoothstep(right_ratio * 0.95, right_ratio, 1.0 - ratio)
+            : smoothstep(right_ratio * 0.95 - 1e-5, right_ratio, 1.0 - orig_ratio)
     );
     if (radius <= 0.0)
         radius = -JA_ANTI_ALIAS_RADIUS; // 避免因抗锯齿而被渲染为一个细线
