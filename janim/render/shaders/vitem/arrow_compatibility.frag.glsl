@@ -13,6 +13,8 @@ uniform bool is_fill_transparent;
 uniform vec4 glow_color;
 uniform float glow_size;
 
+uniform vec2 shrink; // (left_length, right_length)
+
 const float INFINITY = 1.0 / 0.0;
 
 #[JA_FINISH_UP_UNIFORMS]
@@ -48,7 +50,7 @@ vec4 get_fill(int anchor_idx) {
 
 #include "../../includes/blend_color.glsl"
 #include "vitem_subpath_attr.glsl"
-#include "vitem_color.glsl"
+#include "arrow_color.glsl"
 #include "vitem_debug.glsl"
 
 // #define CONTROL_POINTS
@@ -80,7 +82,18 @@ void main()
         start_idx += 2;
     }
 
-    f_color = get_vitem_color(d, sgn, idx);
+    float shrink_left_length = -1.0;
+    float shrink_right_length = -1.0;
+    if (idx == 0) {
+        shrink_left_length = shrink.x;
+    }
+    if (idx == lim - 2) {
+        shrink_right_length = shrink.y;
+    }
+    f_color = get_arrow_color(
+        d, sgn, idx,
+        shrink_left_length, shrink_right_length
+    );
 
     #if !defined(POLYGON_LINES) && !defined(SDF_PLANE)
     if (f_color.a == 0.0)

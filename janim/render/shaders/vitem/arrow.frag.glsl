@@ -1,4 +1,4 @@
-#version 330 core
+#version 430 core
 
 in vec2 v_coord;
 
@@ -13,42 +13,55 @@ uniform bool is_fill_transparent;
 uniform vec4 glow_color;
 uniform float glow_size;
 
-const float INFINITY = 1.0 / 0.0;
+uniform vec2 shrink; // (left_length, right_length)
+
+const float INFINITY = uintBitsToFloat(0x7F800000);
 
 #[JA_FINISH_UP_UNIFORMS]
 
-uniform int lim;
-uniform samplerBuffer points;   // vec4(x, y, isclosed, 0)
-uniform samplerBuffer radii;    // radii[idx / 4][idx % 4]
-uniform samplerBuffer colors;
-uniform samplerBuffer fills;
+layout(std140, binding = 0) buffer MappedPoints
+{
+    vec4 points[];  // vec4(x, y, isclosed, 0)
+};
+layout(std140, binding = 1) buffer Radii
+{
+    vec4 radii[];   // radii[idx / 4][idx % 4]
+};
+layout(std140, binding = 2) buffer Colors
+{
+    vec4 colors[];
+};
+layout(std140, binding = 3) buffer Fills
+{
+    vec4 fills[];
+};
 
 vec2 get_point(int idx) {
-    return texelFetch(points, idx).xy;
+    return points[idx].xy;
 }
 
 bool get_isclosed(int idx) {
-    return bool(texelFetch(points, idx).z);
+    return bool(points[idx].z);
 }
 
 float get_radius(int anchor_idx) {
     if (JA_FIX_IN_FRAME) {
-        return texelFetch(radii, anchor_idx / 4)[anchor_idx % 4] * JA_CAMERA_SCALED_FACTOR;
+        return radii[anchor_idx / 4][anchor_idx % 4] * JA_CAMERA_SCALED_FACTOR;
     }
-    return texelFetch(radii, anchor_idx / 4)[anchor_idx % 4];
+    return radii[anchor_idx / 4][anchor_idx % 4];
 }
 
 vec4 get_color(int anchor_idx) {
-    return texelFetch(colors, anchor_idx);
+    return colors[anchor_idx];
 }
 
 vec4 get_fill(int anchor_idx) {
-    return texelFetch(fills, anchor_idx);
+    return fills[anchor_idx];
 }
 
 #include "../../includes/blend_color.glsl"
 #include "vitem_subpath_attr.glsl"
-#include "vitem_color.glsl"
+#include "arrow_color.glsl"
 #include "vitem_debug.glsl"
 
 // #define CONTROL_POINTS
@@ -58,7 +71,7 @@ vec4 get_fill(int anchor_idx) {
 void main()
 {
     #ifdef CONTROL_POINTS
-    if (debug_control_points(lim + 1))
+    if (debug_control_points(points.length()))
         return;
     #endif
 
@@ -70,6 +83,8 @@ void main()
     float sp_d;
     float sp_sgn;
 
+    const int lim = (points.length() - 1) / 2 * 2;
+
     while (true) {
         get_subpath_attr(start_idx, lim, start_idx, idx, sp_d, sp_sgn);
         d = min(d, sp_d);
@@ -80,7 +95,18 @@ void main()
         start_idx += 2;
     }
 
-    f_color = get_vitem_color(d, sgn, idx);
+    float shrink_left_length = -1.0;
+    float shrink_right_length = -1.0;
+    if (idx == 0) {
+        shrink_left_length = shrink.x;
+    }
+    if (idx == lim - 2) {
+        shrink_right_length = shrink.y;
+    }
+    f_color = get_arrow_color(
+        d, sgn, idx,
+        shrink_left_length, shrink_right_length
+    );
 
     #if !defined(POLYGON_LINES) && !defined(SDF_PLANE)
     if (f_color.a == 0.0)
@@ -92,7 +118,7 @@ void main()
     #endif
 
     #ifdef POLYGON_LINES
-    debug_polygon_lines(lim + 1);
+    debug_polygon_lines(points.length());
     #endif
 
     #[JA_FINISH_UP]

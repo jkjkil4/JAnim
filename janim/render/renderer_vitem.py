@@ -17,6 +17,9 @@ if TYPE_CHECKING:
 
 
 class VItemRenderer(Renderer):
+    shader_path_compatibility = 'render/shaders/vitem/vitem_compatibility'
+    shader_path_normal = 'render/shaders/vitem/vitem'
+
     def __init__(self):
         self.initialized: bool = False
 
@@ -34,7 +37,7 @@ class VItemRenderer(Renderer):
     # region init
 
     def init_compatibility(self) -> None:
-        self.prog = get_program_from_file_prefix('render/shaders/vitem/vitem_compatibility')
+        self.prog = get_program_from_file_prefix(self.shader_path_compatibility)
         self.init_common()
 
         self.u_lim = self.prog['lim']
@@ -59,7 +62,7 @@ class VItemRenderer(Renderer):
         gl.glTexBuffer(gl.GL_TEXTURE_BUFFER, gl.GL_RGBA32F, self.vbo_fill_color.glo)
 
     def init_normal(self) -> None:
-        self.prog = get_program_from_file_prefix('render/shaders/vitem/vitem')
+        self.prog = get_program_from_file_prefix(self.shader_path_normal)
         self.init_common()
 
         self.comp = get_compute_shader_from_file('render/shaders/map_points.comp.glsl')
@@ -127,6 +130,8 @@ class VItemRenderer(Renderer):
 
         if len(new_attrs.points) < 3:
             return
+
+        self._update_others(item, render_data, new_attrs)
 
         if self._needs_update_clip_box(new_attrs):
             self._update_clip_box(item, render_data, new_attrs)
@@ -196,6 +201,8 @@ class VItemRenderer(Renderer):
         if len(new_attrs.points) < 3:
             return
 
+        self._update_others(item, render_data, new_attrs)
+
         if self._needs_update_clip_box(new_attrs):
             self._update_clip_box(item, render_data, new_attrs)
 
@@ -238,6 +245,9 @@ class VItemRenderer(Renderer):
         self.u_glow_size.value = new_attrs.glow_size
 
         self.vao.render(mgl.TRIANGLE_STRIP)
+
+    def _update_others(self, item: VItem, render_data: RenderData, new_attrs: RenderAttrs) -> None:
+        pass
 
     def _needs_update_clip_box(self, new_attrs: RenderAttrs) -> bool:
         return (
