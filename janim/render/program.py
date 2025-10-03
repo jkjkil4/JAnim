@@ -2,7 +2,8 @@
 import moderngl as mgl
 
 from janim.render.base import Renderer, programs_map
-from janim.render.shader import (preprocess_shader, read_shader,
+from janim.render.shader import (convert_error_nameidx_to_name,
+                                 preprocess_shader, read_shader,
                                  read_shader_or_none)
 from janim.render.uniform import apply_uniforms
 
@@ -33,11 +34,15 @@ def get_program_from_file_prefix(filepath_prefix: str) -> mgl.Program:
     if prog is not None:
         return prog
 
-    prog = ctx.program(**{
-        shader_type: shader_code
-        for shader_type, suffix in shader_keys
-        if (shader_code := read_shader_or_none(filepath_prefix + suffix)) is not None
-    })
+    try:
+        prog = ctx.program(**{
+            shader_type: shader_code
+            for shader_type, suffix in shader_keys
+            if (shader_code := read_shader_or_none(filepath_prefix + suffix)) is not None
+        })
+    except mgl.Error as e:
+        convert_error_nameidx_to_name(e)
+        raise
     apply_uniforms(prog)
 
     programs.cache[filepath_prefix] = prog
@@ -63,11 +68,15 @@ def get_program_from_files(
     if prog is not None:
         return prog
 
-    prog = ctx.program(
-        vertex_shader=read_shader(vertex_shader_file),
-        fragment_shader=None if fragment_shader_file is None else read_shader(fragment_shader_file),
-        geometry_shader=None if geometry_shader_file is None else read_shader(geometry_shader_file)
-    )
+    try:
+        prog = ctx.program(
+            vertex_shader=read_shader(vertex_shader_file),
+            fragment_shader=None if fragment_shader_file is None else read_shader(fragment_shader_file),
+            geometry_shader=None if geometry_shader_file is None else read_shader(geometry_shader_file)
+        )
+    except mgl.Error as e:
+        convert_error_nameidx_to_name(e)
+        raise
     apply_uniforms(prog)
 
     programs.cache[key] = prog
@@ -95,11 +104,15 @@ def get_program_from_string(
         if prog is not None:
             return prog
 
-    prog = ctx.program(
-        vertex_shader=preprocess_shader(shader_name, vertex_shader),
-        fragment_shader=None if fragment_shader is None else preprocess_shader(shader_name, fragment_shader),
-        geometry_shader=None if geometry_shader is None else preprocess_shader(shader_name, geometry_shader)
-    )
+    try:
+        prog = ctx.program(
+            vertex_shader=preprocess_shader(shader_name, vertex_shader),
+            fragment_shader=None if fragment_shader is None else preprocess_shader(shader_name, fragment_shader),
+            geometry_shader=None if geometry_shader is None else preprocess_shader(shader_name, geometry_shader)
+        )
+    except mgl.Error as e:
+        convert_error_nameidx_to_name(e)
+        raise
     apply_uniforms(prog)
 
     if cache_key is not None:

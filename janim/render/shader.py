@@ -2,6 +2,8 @@ import re
 from contextvars import ContextVar
 from pathlib import Path
 
+import moderngl as mgl
+
 from janim.exception import ShaderInjectionNotFoundError
 from janim.locale.i18n import get_local_strings
 from janim.utils.file_ops import (find_file, find_file_in_path, get_janim_dir,
@@ -49,6 +51,49 @@ def find_shader_file(file_path: str, dir_path: str | None = None) -> str:
     return find_file(file_path)
 
 
+_shader_nameidx_mapping: dict[str, int] = {}
+
+
+def name_to_idx(name: str) -> int:
+    idx = _shader_nameidx_mapping.get(name, None)
+    if idx is None:
+        idx = len(_shader_nameidx_mapping) + 1
+        _shader_nameidx_mapping[name] = idx
+    return idx
+
+
+def idx_to_name(idx: int) -> str | None:
+    for name, i in _shader_nameidx_mapping.items():
+        if i == idx:
+            return name
+    return None
+
+
+def convert_error_nameidx_to_name(error: mgl.Error) -> None:
+    '''
+    将 ModernGL 报错信息中的 nameidx 转换为 name
+    '''
+    if len(error.args) != 1:
+        return
+
+    msg = error.args[0]
+
+    def replace_line(line: str) -> str:
+        match = re.match(r'^.*?: (\d+):\d+: .*$', line)
+        if not match:
+            return line
+        nameidx = int(match.group(1))
+        start, end = match.span(1)
+        name = idx_to_name(nameidx)
+        if name is None:
+            return line
+        return line[:start] + name + line[end:]
+
+    lines = [replace_line(line) for line in msg.splitlines()]
+
+    error.args = ('\n'.join(lines),)
+
+
 _regex_version = re.compile(r'^\s*#\s*version\s+(\d+)\s+core\s*$')
 _regex_include = re.compile(r'^\s*#\s*include\s+"([^"]+)"\s*$')
 _regex_injection = re.compile(r'^\s*#\[\s*([^\]]+)\s*\]\s*$')
@@ -57,7 +102,7 @@ _regex_injection = re.compile(r'^\s*#\[\s*([^\]]+)\s*\]\s*$')
 def _read_shader(file_path: str, lines: list[str]) -> int:
     path = Path(file_path).resolve()
 
-    # 简化插入 glsl "#line" 的路径
+    # 简化插入 glsl "#line" 对应的路径
     rel_path = path
     try:
         rel_path = path.relative_to(get_janim_dir())
@@ -82,7 +127,8 @@ def preprocess_shader(name: str, source: str, dir_path: str | None = None) -> st
 
 def _preprocess_shader(name: str, source: str, lines: list[str], dir_path: str | None) -> int:
     max_version = 330
-    lines.append(f'#line 1 "{name}"')
+    nameidx = name_to_idx(name)
+    lines.append(f'#line 1 {nameidx}')
 
     for i, line in enumerate(source.splitlines(), start=1):
         # 匹配例如 #version 330 core，提取最大需求版本
@@ -101,7 +147,7 @@ def _preprocess_shader(name: str, source: str, lines: list[str], dir_path: str |
             included_max_version = _read_shader(found_file, lines)
             max_version = max(max_version, included_max_version)
             # 返回原先的文件，所以需要恢复行号
-            lines.append(f'#line {i + 1} "{name}"')
+            lines.append(f'#line {i + 1} {nameidx}')
             continue
 
         # 匹配例如 #[xxx]
@@ -110,7 +156,7 @@ def _preprocess_shader(name: str, source: str, lines: list[str], dir_path: str |
             # 插入 injection
             _read_shader_from_injection(match.group(1), lines)
             # 返回原先的文件，所以需要恢复行号
-            lines.append(f'#line {i + 1} "{name}"')
+            lines.append(f'#line {i + 1} {nameidx}')
             continue
 
         lines.append(line)
@@ -168,5 +214,6 @@ class ShaderInjection:
 
 
 def _read_shader_from_injection(name: str, lines: list[str]) -> None:
-    lines.append(f'#line 1 "{repr(f"#[{name}]")}"')
+    nameidx = name_to_idx(name)
+    lines.append(f'#line 1 {nameidx}')
     lines.extend(ShaderInjection.find(name).splitlines())
