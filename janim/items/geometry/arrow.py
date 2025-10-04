@@ -184,16 +184,17 @@ class Arrow(Line):
     @staticmethod
     def _get_shrink_length(tip: ArrowTip) -> float:
         '''
-        返回用于着色器的 (shrink_ratio, shrink_length)
+        返回用于着色器的 shrink_length
         '''
         tipcur = tip.current()  # TODO: optimize
+        bodylen = tipcur.body_length
         match tipcur.center_anchor:
             case CenterAnchor.Back:
-                return 0.0
+                return -bodylen * 0.05
             case CenterAnchor.Center:
-                return tipcur.body_length / 2
+                return bodylen / 2 - bodylen * 0.05
             case CenterAnchor.Front:
-                return tipcur.body_length
+                return bodylen - bodylen * 0.05
 
     def _place_tip(
         self,

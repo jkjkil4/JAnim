@@ -26,10 +26,10 @@ vec4 get_arrow_color(
     radius *= min(
         shrink_left_length == -1.0
             ? 1.0
-            : smoothstep(left_ratio * 0.95 - 1e-5, left_ratio, orig_ratio),
+            : smoothstep(left_ratio - 1e-5, left_ratio, orig_ratio),
         shrink_right_length == -1.0
             ? 1.0
-            : smoothstep(right_ratio * 0.95 - 1e-5, right_ratio, 1.0 - orig_ratio)
+            : smoothstep(right_ratio - 1e-5, right_ratio, 1.0 - orig_ratio)
     );
     if (radius <= 0.0)
         radius = -JA_ANTI_ALIAS_RADIUS; // 避免因抗锯齿而被渲染为一个细线
