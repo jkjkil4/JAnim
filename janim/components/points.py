@@ -849,6 +849,23 @@ class Cmpt_Points[ItemT](Component[ItemT]):
         about_edge: Vect | None = ORIGIN,
         root_only: bool = False,
     ) -> Self:
+        '''
+        使物件面向摄像机
+
+        实用参数：
+
+        - ``rotate``：在面向摄像机的基础上，绕摄像机视角旋转的角度
+
+        - ``inverse``：是否让物件背向摄像机
+
+        - 视 ``about_point`` 为参考点，若其为 ``None``，则将物件在 ``about_edge`` 方向上的边界作为 ``about_point``
+
+        可手动指定 ``camera`` 和法向量 ``normal_vector``，若无则会自动获取：
+
+        - ``camera`` 默认为时间轴的 ``self.camera``
+
+        - ``normal_vector`` 默认通过 :meth:`unit_normal` 计算
+        '''
         if camera is ...:
             from janim.anims.timeline import Timeline
             camera = Timeline.get_context().camera.current()
@@ -884,7 +901,8 @@ class Cmpt_Points[ItemT](Component[ItemT]):
         self.apply_matrix(
             rot_transform @ camera_transform,
             about_point=about_point,
-            about_edge=about_edge
+            about_edge=about_edge,
+            root_only=root_only
         )
         return self
 

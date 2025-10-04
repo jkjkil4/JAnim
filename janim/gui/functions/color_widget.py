@@ -92,13 +92,16 @@ class ColorWidget(QWidget):
                 sublayout.addWidget(get_btn(name))
             sublayout.addStretch()
 
-        others = ('WHITE', 'BLACK', 'GREY_BROWN', 'DARK_BROWN', 'LIGHT_BROWN',
-                  'PINK', 'LIGHT_PINK', 'GREEN_SCREEN', 'ORANGE')
-        sublayout = QHBoxLayout()
-        layout.addLayout(sublayout)
-        for name in others:
-            sublayout.addWidget(get_btn(name))
-        sublayout.addStretch()
+        others_list = [
+            ('PURE_RED', 'PURE_GREEN', 'PURE_BLUE', 'WHITE', 'BLACK'),
+            ('GREY_BROWN', 'DARK_BROWN', 'LIGHT_BROWN', 'PINK', 'LIGHT_PINK', 'ORANGE')
+        ]
+        for others in others_list:
+            sublayout = QHBoxLayout()
+            layout.addLayout(sublayout)
+            for name in others:
+                sublayout.addWidget(get_btn(name))
+            sublayout.addStretch()
 
     def rgb_edited(self, text: str) -> None:
         editor: QLineEdit = self.sender()

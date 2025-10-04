@@ -455,7 +455,8 @@ class VideoInfo:
 
         assert ret
         lines = ret.strip().split('\n')
-        s_width, s_height, s_fps, s_nb_frames = lines[0].split(',')
+        # 实际使用发现结尾可能会多一个逗号，所以这里用 rstrip(',') 先把它去掉
+        s_width, s_height, s_fps, s_nb_frames = lines[0].rstrip(',').split(',')
         s_duration = lines[1]
 
         self.width = int(s_width)
