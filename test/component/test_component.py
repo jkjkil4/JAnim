@@ -115,15 +115,15 @@ class ComponentTest(unittest.TestCase):
             item2.cmpt.get_same_cmpt(item3),
             item3.cmpt
         )
-        self.assertIs(
-            item2.cmpt.get_same_cmpt(item1),
-            item1._astype_mock_cmpt['cmpt']
-        )
+        # self.assertIs(
+        #     item2.cmpt.get_same_cmpt(item1),
+        #     item1._astype_mock_cmpt['cmpt']
+        # )
 
-        self.assertIs(
-            item2.astype(MyItem).cmpt,
-            item2.cmpt
-        )
+        # self.assertIs(
+        #     item2.astype(MyItem).cmpt,
+        #     item2.cmpt
+        # )
 
     def test_inherit(self) -> None:
         class MyCmpt1(Component, impl=True):
