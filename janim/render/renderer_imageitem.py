@@ -82,4 +82,5 @@ class ImageItemRenderer(Renderer):
             self.prog['JA_FRAMEBUFFER'] = FRAME_BUFFER_BINDING
             self.ctx.fbo.color_attachments[0].use(FRAME_BUFFER_BINDING)
 
-        self.vao.render(mgl.TRIANGLE_STRIP)
+        with self.depth_test_if_enabled(self.ctx, item):
+            self.vao.render(mgl.TRIANGLE_STRIP)

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from collections import defaultdict
+from contextlib import contextmanager
 from contextvars import ContextVar
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Any
@@ -86,6 +87,18 @@ class Renderer:
         assert len(bytes_data) == vbo.size
 
         vbo.write(bytes_data)
+
+    @staticmethod
+    @contextmanager
+    def depth_test_if_enabled(ctx: mgl.Context, item: Item):
+        if item._depth_test:
+            ctx.enable(mgl.DEPTH_TEST)
+            try:
+                yield
+            finally:
+                ctx.disable(mgl.DEPTH_TEST)
+        else:
+            yield
 
 
 @dataclass(kw_only=True)

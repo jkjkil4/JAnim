@@ -260,11 +260,7 @@ class VItemRenderer(Renderer):
             self.u_unit_normal.value = self.unit_normal
             self.u_start_point.value = new_attrs.points[0]
 
-            self.ctx.enable(mgl.DEPTH_TEST)
-            self.vao.render(mgl.TRIANGLE_STRIP)
-            self.ctx.disable(mgl.DEPTH_TEST)
-
-        else:
+        with self.depth_test_if_enabled(self.ctx, item):
             self.vao.render(mgl.TRIANGLE_STRIP)
 
     def _update_others(self, item: VItem, render_data: RenderData, new_attrs: RenderAttrs) -> None:
