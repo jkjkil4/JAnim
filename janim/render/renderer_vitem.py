@@ -101,6 +101,10 @@ class VItemRenderer(Renderer):
         self.u_glow_color = self.prog['glow_color']
         self.u_glow_size = self.prog['glow_size']
 
+        self.u_unit_normal = self.prog['unit_normal']
+        self.u_start_point = self.prog['start_point']
+        self.u_DEPTH_TEST = self.prog['DEPTH_TEST']
+
         self.vbo_coord = self.ctx.buffer(reserve=4 * 2 * 4)
         self.vbo_mapped_points = self.ctx.buffer(reserve=1)
         self.vbo_radius = self.ctx.buffer(reserve=1)
@@ -111,6 +115,7 @@ class VItemRenderer(Renderer):
 
         self.attrs = self.RenderAttrs()
         self.fill_transparent = False
+        self.unit_normal: np.ndarray | None = None
 
         self.points_vec4buffer = np.empty((0, 4), dtype=np.float32)
 
@@ -162,6 +167,10 @@ class VItemRenderer(Renderer):
                                             resize_target)
             self.attrs.fill = new_attrs.fill
 
+        if item._depth_test:
+            if new_attrs.points is not self.attrs.points:
+                self.unit_normal = item.points.unit_normal
+
         self._update_points_compatibility(item, new_attrs)
 
         gl.glUseProgram(self.prog.glo)
@@ -180,13 +189,7 @@ class VItemRenderer(Renderer):
         gl.glActiveTexture(gl.GL_TEXTURE3)
         gl.glBindTexture(gl.GL_TEXTURE_BUFFER, self.sampb_fill_color)
 
-        self.update_fix_in_frame(self.u_fix, item)
-        self.u_stroke_background.value = item.stroke_background
-        self.u_is_fill_transparent.value = self.fill_transparent
-        self.u_glow_color.write(item.glow._rgba._data.tobytes())
-        self.u_glow_size.value = new_attrs.glow_size
-
-        self.vao.render(mgl.TRIANGLE_STRIP)
+        self.render_common(item, render_data, new_attrs)
 
     def render_normal(self, item: VItem) -> None:
         if not self.initialized:
@@ -231,6 +234,10 @@ class VItemRenderer(Renderer):
                                             resize_target)
             self.attrs.fill = new_attrs.fill
 
+        if item._depth_test:
+            if new_attrs.points is not self.attrs.points or self.unit_normal is None:
+                self.unit_normal = item.points.unit_normal
+
         self._update_points_normal(item, new_attrs)
 
         self.vbo_mapped_points.bind_to_storage_buffer(0)
@@ -238,13 +245,27 @@ class VItemRenderer(Renderer):
         self.vbo_stroke_color.bind_to_storage_buffer(2)
         self.vbo_fill_color.bind_to_storage_buffer(3)
 
+        self.render_common(item, render_data, new_attrs)
+
+    def render_common(self, item: VItem, render_data: RenderData, new_attrs: RenderAttrs) -> None:
         self.update_fix_in_frame(self.u_fix, item)
         self.u_stroke_background.value = item.stroke_background
         self.u_is_fill_transparent.value = self.fill_transparent
         self.u_glow_color.write(item.glow._rgba._data.tobytes())
         self.u_glow_size.value = new_attrs.glow_size
 
-        self.vao.render(mgl.TRIANGLE_STRIP)
+        self.u_DEPTH_TEST.value = item._depth_test
+
+        if item._depth_test:
+            self.u_unit_normal.value = self.unit_normal
+            self.u_start_point.value = new_attrs.points[0]
+
+            self.ctx.enable(mgl.DEPTH_TEST)
+            self.vao.render(mgl.TRIANGLE_STRIP)
+            self.ctx.disable(mgl.DEPTH_TEST)
+
+        else:
+            self.vao.render(mgl.TRIANGLE_STRIP)
 
     def _update_others(self, item: VItem, render_data: RenderData, new_attrs: RenderAttrs) -> None:
         pass

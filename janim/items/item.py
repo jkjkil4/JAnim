@@ -132,6 +132,7 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         self._astype_mock_cmpt: dict[str, Component] = {}
 
         self._fix_in_frame = False
+        self._depth_test = False
 
         self._init_components()
 
@@ -771,6 +772,14 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
 
     def is_fix_in_frame(self) -> bool:
         return self._fix_in_frame
+
+    def apply_depth_test(self, on: bool = True, *, root_only: bool = False) -> Self:
+        for item in self.walk_self_and_descendants(root_only):
+            item._depth_test = on
+        return self
+
+    def is_applied_depth_test(self) -> bool:
+        return self._depth_test
 
     # endregion
 
