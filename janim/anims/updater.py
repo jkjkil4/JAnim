@@ -318,6 +318,7 @@ class MethodUpdater(Animation):
     def __init__(
         self,
         item: Item,
+        obj: Item | Item._AsTypeWrapper,
         show_at_begin: bool = True,
         hide_at_end: bool = False,
         become_at_end: bool = True,
@@ -325,6 +326,7 @@ class MethodUpdater(Animation):
     ):
         super().__init__(**kwargs)
         self.item = item
+        self.obj = obj
         self.show_at_begin = show_at_begin
         self.hide_at_end = hide_at_end
         self.become_at_end = become_at_end
@@ -333,17 +335,18 @@ class MethodUpdater(Animation):
         self.grouply: bool = False
 
     class _FakeCmpt:
-        def __init__(self, anim: MethodUpdater, cmpt_name: str, cmpt: Component):
+        def __init__(self, anim: MethodUpdater, cmpt_name: str, cmpt: Component, obj: Component | Item._AsTypeWrapper):
             self.anim = anim
             self.cmpt_name = cmpt_name
             self.cmpt = cmpt
+            self.obj = obj
 
         def __getattr__(self, name: str):
             if name == 'r':
                 return self.anim
 
-            attr = getattr(self.cmpt, name, None)
-            info: MethodUpdaterInfo = getattr(attr, METHOD_UPDATER_KEY, None)
+            attr = getattr(self.obj, name, None)
+            info: MethodUpdaterInfo | None = getattr(attr, METHOD_UPDATER_KEY, None)
             if info is None:
                 raise UpdaterError(
                     _('There is no updatable method named {name} in {cmpt}')
@@ -361,11 +364,12 @@ class MethodUpdater(Animation):
             return self.anim
 
     def __getattr__(self, name: str):
-        attr = getattr(self.item, name, None)
-        if isinstance(attr, Component):
-            return MethodUpdater._FakeCmpt(self, name, attr)
+        attr = getattr(self.obj, name, None)
+        cmpt = self.get_real_component(attr)
+        if cmpt is not None:
+            return MethodUpdater._FakeCmpt(self, name, cmpt, attr)
 
-        info: MethodUpdaterInfo = getattr(attr, METHOD_UPDATER_KEY, None)
+        info: MethodUpdaterInfo | None = getattr(attr, METHOD_UPDATER_KEY, None)
         if info is None:
             raise UpdaterError(
                 _('{item} has no component or updatable method named {name}')
@@ -378,6 +382,14 @@ class MethodUpdater(Animation):
             self.updaters.append((None, info.updater, args, kwargs, root_only))
             return self
         return wrapper
+
+    @staticmethod
+    def get_real_component(attr: Component | Item._AsTypeWrapper) -> Component | None:
+        if isinstance(attr, Component):
+            return attr
+        if isinstance(attr, Item._AsTypeWrapper) and isinstance(attr._astype_obj, Component):
+            return attr._astype_obj
+        return None
 
     def updater(self, data: Item, p: UpdaterParams) -> None:
         for cmpt_name, updater, args, kwargs, root_only in self.updaters:
@@ -415,16 +427,17 @@ class MethodUpdater(Animation):
 
 class MethodUpdaterArgsBuilder:
     '''
-    使得 ``.anim`` 和 ``.anim(...)`` 后可以进行同样的操作
+    使得 ``.update`` 和 ``.update(...)`` 后可以进行同样的操作
     '''
     def __init__(self, item: Item):
         self.item = item
+        self.obj = item._astype_wrapper or item
 
     def __call__(self, **kwargs):
-        return MethodUpdater(self.item, **kwargs)
+        return MethodUpdater(self.item, self.obj, **kwargs)
 
     def __getattr__(self, name):
-        return getattr(MethodUpdater(self.item), name)
+        return getattr(MethodUpdater(self.item, self.obj), name)
 
 
 class ItemUpdater(Animation):
