@@ -8,23 +8,10 @@ uniform float JA_CAMERA_SCALED_FACTOR;
 uniform float JA_ANTI_ALIAS_RADIUS;
 uniform bool JA_FIX_IN_FRAME;
 
-uniform vec3 JA_CAMERA_LOC;
-uniform vec3 JA_CAMERA_CENTER;
-uniform vec3 JA_CAMERA_RIGHT;
-uniform vec3 JA_CAMERA_UP;
-uniform vec2 JA_FRAME_RADIUS;
-
-uniform mat4 JA_VIEW_MATRIX;
-uniform mat4 JA_PROJ_MATRIX;
-
 uniform bool stroke_background;
 uniform bool is_fill_transparent;
 uniform vec4 glow_color;
 uniform float glow_size;
-
-uniform vec3 unit_normal;
-uniform vec3 start_point;
-uniform bool DEPTH_TEST;
 
 const float INFINITY = uintBitsToFloat(0x7F800000);
 
@@ -74,6 +61,7 @@ vec4 get_fill(int anchor_idx) {
 #include "vitem_subpath_attr.glsl"
 #include "vitem_color.glsl"
 #include "vitem_debug.glsl"
+#include "compute_depth.glsl"
 
 // #define CONTROL_POINTS
 // #define POLYGON_LINES
@@ -107,21 +95,7 @@ void main()
     }
 
     f_color = get_vitem_color(d, sgn, idx);
-
-    if (DEPTH_TEST) {
-        // 像素在摄像机画面上的位置
-        vec3 pixel_pos = JA_CAMERA_CENTER + JA_CAMERA_RIGHT * v_coord.x + JA_CAMERA_UP * v_coord.y;
-
-        // 求解从摄像机位置发出的射线与平面的交点
-        vec3 ray = pixel_pos - JA_CAMERA_LOC;
-        float t = dot(unit_normal, start_point - JA_CAMERA_LOC) / dot(unit_normal, ray);
-        vec3 p = JA_CAMERA_LOC + ray * t;
-
-        // 计算深度值
-        vec4 clip_space_pos = JA_PROJ_MATRIX * JA_VIEW_MATRIX * vec4(p, 1.0);
-        float ndc_depth = clip_space_pos.z / clip_space_pos.w * 0.1;
-        gl_FragDepth = (ndc_depth + 1.0) / 2.0;
-    }
+    compute_depth_if_needed();
 
     #if !defined(POLYGON_LINES) && !defined(SDF_PLANE)
     if (f_color.a == 0.0)

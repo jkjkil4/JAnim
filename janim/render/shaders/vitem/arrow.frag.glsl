@@ -63,6 +63,7 @@ vec4 get_fill(int anchor_idx) {
 #include "vitem_subpath_attr.glsl"
 #include "arrow_color.glsl"
 #include "vitem_debug.glsl"
+#include "compute_depth.glsl"
 
 // #define CONTROL_POINTS
 // #define POLYGON_LINES
@@ -107,6 +108,7 @@ void main()
         d, sgn, idx,
         shrink_left_length, shrink_right_length
     );
+    compute_depth_if_needed();
 
     #if !defined(POLYGON_LINES) && !defined(SDF_PLANE)
     if (f_color.a == 0.0)
