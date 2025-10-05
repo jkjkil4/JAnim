@@ -9,9 +9,10 @@ import numpy as np
 
 import janim.utils.refresh as refresh
 from janim.components.points import Cmpt_Points, PointsFn
+from janim.components.radius import Cmpt_Radius
 from janim.constants import DEGREES, NAN_POINT, ORIGIN, OUT, RIGHT, UP
 from janim.exception import PointError
-from janim.items.item import Item
+from janim.items.item import Item, mockable
 from janim.locale.i18n import get_local_strings
 from janim.logger import log
 from janim.typing import Vect, VectArray
@@ -26,8 +27,6 @@ from janim.utils.space_ops import (get_norm, get_unit_normal, normalize,
                                    rotation_between_vectors)
 
 _ = get_local_strings('vpoints')
-
-SCALE_STROKE_RADIUS_KEY = 'scale_stroke_radius'
 
 
 class Cmpt_VPoints[ItemT](Cmpt_Points[ItemT], impl=True):
@@ -81,17 +80,24 @@ class Cmpt_VPoints[ItemT](Cmpt_Points[ItemT], impl=True):
 
         return self
 
+    @mockable
     def scale(
-        self,
+        self: Cmpt_Points,
         scale_factor: float | Iterable,
         scale_stroke_radius: bool = False,
         *,
         root_only: bool = False,
         **kwargs
     ) -> Self:
+        assert isinstance(self, Cmpt_Points)
+
         if scale_stroke_radius and self.bind is not None and isinstance(scale_factor, numbers.Real):
-            Cmpt_Points.apply_points_fn.emit(self, scale_factor, root_only, key=SCALE_STROKE_RADIUS_KEY)
-        return super().scale(scale_factor, **kwargs)
+            # 如果是 mock 的情况，既然能调用 Cmpt_VPoints.scale
+            # 那么基本上可以确定 item 现在已经处在 VItem 的 astype 下
+            # 所以这里可以直接访问 .radius 来缩放半径
+            self.bind.at_item.radius.scale(scale_factor)
+
+        return Cmpt_Points.scale(self, scale_factor, **kwargs)
 
     # region align
 

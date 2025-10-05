@@ -403,9 +403,6 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
             finally:
                 self._astype_item._astype_wrapper = prev
 
-        def _astype_copy(self) -> Self:
-            return Item._AsTypeWrapper(self._astype_item, self._astype_obj, self._astype_cls)
-
         def _getattr_for_item(self, name: str):
             # 在物件级别获取属性，分为以下几种情况：
             # 获取组件：
@@ -579,7 +576,8 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         if wrapper is None:
             self.__getattribute__(name)
 
-        return getattr(wrapper._astype_copy(), name)
+        new_wrapper = Item._AsTypeWrapper(wrapper._astype_item, wrapper._astype_item, wrapper._astype_cls)
+        return getattr(new_wrapper, name)
 
     # endregion
 

@@ -10,7 +10,7 @@ from janim.components.glow import Cmpt_Glow
 from janim.components.points import Cmpt_Points
 from janim.components.radius import Cmpt_Radius
 from janim.components.rgbas import Cmpt_Rgbas, apart_alpha
-from janim.components.vpoints import SCALE_STROKE_RADIUS_KEY, Cmpt_VPoints
+from janim.components.vpoints import Cmpt_VPoints
 from janim.constants import PI
 from janim.items.item import Item, mockable
 from janim.items.points import Group, Points
@@ -55,12 +55,6 @@ class VItem(Points):
                 cmpt.reverse()
 
         Cmpt_Points.reverse.connect(self.points, reverse)
-
-        Cmpt_Points.apply_points_fn.connect(
-            self.points,
-            lambda factor, root_only: self.radius.scale(factor, root_only=root_only),
-            key=SCALE_STROKE_RADIUS_KEY
-        )
 
     def apply_style(
         self,
