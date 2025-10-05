@@ -512,17 +512,6 @@ class TypstMath(TypstText):
         )
 
 
-class Typst(TypstMath):
-    def __init__(self, text: str, **kwargs):
-        from janim.utils.deprecation import deprecated
-        deprecated(
-            'Typst',
-            'TypstMath',
-            remove=(3, 3)
-        )
-        super().__init__(text, **kwargs)
-
-
 cached_typst_template: str | None = None
 
 

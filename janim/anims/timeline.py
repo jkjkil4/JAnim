@@ -700,15 +700,6 @@ class Timeline(metaclass=ABCMeta):
         # 在 updater 的回调函数中，params 不是 None，返回值表示在这时是否可见
         return self.item_appearances[item].is_visible_at(params.global_t)
 
-    def is_displaying(self, item: Item) -> bool:
-        from janim.utils.deprecation import deprecated
-        deprecated(
-            'Timeline.is_displaying',
-            'Timeline.is_visible',
-            remove=(3, 3)
-        )
-        return self.is_visible(item)
-
     def _show(self, item: Item) -> None:
         gaps = self.item_appearances[item].visibility
         if len(gaps) % 2 != 1:
@@ -744,15 +735,6 @@ class Timeline(metaclass=ABCMeta):
             gaps = appr.visibility
             if len(gaps) % 2 == 1:
                 gaps.append(t)
-
-    def cleanup_display(self) -> None:
-        from janim.utils.deprecation import deprecated
-        deprecated(
-            'Timeline.cleanup_display',
-            'Timeline.hide_all',
-            remove=(3, 3)
-        )
-        self.hide_all()
 
     def visible_items(self) -> list[Item]:
         return [
