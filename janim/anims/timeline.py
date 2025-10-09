@@ -1135,23 +1135,48 @@ class TimelineItem(Item):
     class TIRenderer(Renderer):
         def render(self, item: TimelineItem):
             t = Animation.global_t_ctx.get() - item.at
+
             if 0 <= t <= item.duration:
-                item._built.render_all(self.data_ctx.get().ctx, t, blend_on=False)
+                if t < item.first_frame_duration:
+                    item._built.render_all(self.data_ctx.get().ctx, 0, blend_on=False)
+                else:
+                    item._built.render_all(self.data_ctx.get().ctx, t - item.first_frame_duration, blend_on=False)
             elif item.keep_last_frame and t > item.duration:
                 item._built.render_all(self.data_ctx.get().ctx, item._built.duration, blend_on=False)
 
     renderer_cls = TIRenderer
 
-    def __init__(self, built: BuiltTimeline, *, delay: float = 0, keep_last_frame: bool = False, **kwargs):
+    def __init__(
+        self,
+        built: BuiltTimeline,
+        *,
+        delay: float = 0,
+        first_frame_duration: float = 0,
+        keep_last_frame: bool = False,
+        **kwargs
+    ):
         super().__init__(**kwargs)
         self._built = built
         self.at = self.timeline.current_time + delay
-        self.duration = self._built.duration
+        self.first_frame_duration = first_frame_duration
+        self.duration = first_frame_duration + self._built.duration
         self.keep_last_frame = keep_last_frame
 
         parent_timeline = Timeline.get_context(raise_exc=False)
         if parent_timeline is not None:
             parent_timeline.subtimeline_items.append(self)
+
+    def start(self) -> Self:
+        '''
+        从当前时刻开始播放子时间轴，在此时刻之前保持显示第一帧
+        '''
+        parent_timeline = Timeline.get_context()
+        current_time = parent_timeline.current_time
+        if self.at > current_time:
+            self.at = current_time
+        self.first_frame_duration = current_time - self.at
+        self.duration = self.first_frame_duration + self._built.duration
+        return self
 
     @property
     def end(self) -> float:

@@ -409,7 +409,7 @@ class TimelineView(QWidget):
                     anim_label_group
                 ]
                 for label_group in lst:
-                    label_group.shift_time_range(group.t_range.at)
+                    label_group.shift_time_range(group.t_range.at + item.first_frame_duration)
                 return lst
 
             timeline = item._built.timeline
