@@ -1101,6 +1101,7 @@ class BuiltTimeline:
         额外参数：
 
         - ``delay``: 延迟多少秒开始该 Timeline 的播放
+        - ``first_frame_duration``: 第一帧持续多少秒
         - ``keep_last_frame``: 是否在 Timeline 结束后仍然保留最后一帧的显示
         '''
         return TimelineItem(self, **kwargs)
