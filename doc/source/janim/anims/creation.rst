@@ -5,7 +5,7 @@ creation
     :show-inheritance:
 
 .. janim-example:: ShowPartialExample
-    :media: ../../_static/videos/ShowPartialExample.mp4
+    :media: _static/videos/ShowPartialExample.mp4
 
     from janim.imports import *
 
@@ -34,7 +34,7 @@ creation
     :show-inheritance:
 
 .. janim-example:: CreateExample
-    :media: ../../_static/videos/CreateExample.mp4
+    :media: _static/videos/CreateExample.mp4
 
     from janim.imports import *
 
@@ -59,7 +59,7 @@ creation
     :show-inheritance:
 
 .. janim-example:: UncreateExample
-    :media: ../../_static/videos/UncreateExample.mp4
+    :media: _static/videos/UncreateExample.mp4
 
     from janim.imports import *
 
@@ -84,7 +84,7 @@ creation
     :show-inheritance:
 
 .. janim-example:: DestructionExample
-    :media: ../../_static/videos/DestructionExample.mp4
+    :media: _static/videos/DestructionExample.mp4
 
     class DestructionExample(Timeline):
         def construct(self):
@@ -107,7 +107,7 @@ creation
     :show-inheritance:
 
 .. janim-example:: DrawBorderThenFillExample
-    :media: ../../_static/videos/DrawBorderThenFillExample.mp4
+    :media: _static/videos/DrawBorderThenFillExample.mp4
 
     from janim.imports import *
 
@@ -137,7 +137,7 @@ creation
     :show-inheritance:
 
 .. janim-example:: WriteExample
-    :media: ../../_static/videos/WriteExample.mp4
+    :media: _static/videos/WriteExample.mp4
 
     from janim.imports import *
 
@@ -158,7 +158,7 @@ creation
     :show-inheritance:
 
 .. janim-example:: ShowIncreasingSubsetsExample
-    :media: ../../_static/videos/ShowIncreasingSubsetsExample.mp4
+    :media: _static/videos/ShowIncreasingSubsetsExample.mp4
 
     from janim.imports import *
 
@@ -174,7 +174,7 @@ creation
     :show-inheritance:
 
 .. janim-example:: ShowSubitemsOneByOneExample
-    :media: ../../_static/videos/ShowSubitemsOneByOneExample.mp4
+    :media: _static/videos/ShowSubitemsOneByOneExample.mp4
 
     from janim.imports import *
 

@@ -18,7 +18,7 @@ Updater 的使用
 :class:`~.DataUpdater` 是最基础也是应用范围最广的一种 ``Updater``，它的作用是以时间为参数对物件进行修改：
 
 .. janim-example:: BasicDataUpdater
-    :media: ../_static/tutorial/BasicDataUpdater.mp4
+    :media: _static/tutorial/BasicDataUpdater.mp4
     :hide_name:
 
     square = Square()
@@ -82,7 +82,7 @@ Updater 的使用
 以下示例展示了使用 :class:`~.DataUpdater` 和 :class:`~.GroupUpdater` 进行旋转的区别：
 
 .. janim-example:: DataUpdaterVsGroupUpdater
-    :media: ../_static/tutorial/DataUpdaterVsGroupUpdater.mp4
+    :media: _static/tutorial/DataUpdaterVsGroupUpdater.mp4
     :hide_name:
 
     squares1 = Square() * 2
@@ -124,7 +124,7 @@ Updater 的使用
     如果不加 :meth:`~.Item.current`，只会得到 ``construct`` 函数中对应物件的最终状态，而非动画过程中的状态。
 
 .. janim-example:: ArrowPointingExample
-    :media: ../_static/videos/ArrowPointingExample.mp4
+    :media: _static/videos/ArrowPointingExample.mp4
 
     dot1 = Dot(LEFT * 3)
     dot2 = Dot()
@@ -171,7 +171,7 @@ JAnim 的各个 ``Updater`` 并非孤立，不仅可以使用 ``.current()`` 获
 在下面这个例子中，我们每两秒加入一个新的 ``Updater``，以演示“动画复合”的作用：
 
 .. janim-example:: CombineUpdatersExample
-    :media: ../_static/videos/CombineUpdatersExample.mp4
+    :media: _static/videos/CombineUpdatersExample.mp4
 
     square = Square()
     square.points.to_border(LEFT)
@@ -221,7 +221,7 @@ JAnim 的各个 ``Updater`` 并非孤立，不仅可以使用 ``.current()`` 获
 这里另外再给出一个“动画复合”的示例：
 
 .. janim-example:: RotatingPieExample
-    :media: ../_static/videos/RotatingPieExample.mp4
+    :media: _static/videos/RotatingPieExample.mp4
     :ref: :class:`~.Sector` :func:`~.rotate_vector`
 
     pie = Group(*[
@@ -256,7 +256,7 @@ JAnim 的各个 ``Updater`` 并非孤立，不仅可以使用 ``.current()`` 获
 :class:`~.ItemUpdater` 的使用场景是在动画过程中动态创建物件以显示，例如数值持续变化的文字：
 
 .. janim-example:: DynamicNumber
-    :media: ../_static/tutorial/DynamicNumber.mp4
+    :media: _static/tutorial/DynamicNumber.mp4
     :hide_name:
 
     v = ValueTracker(0)
@@ -278,7 +278,7 @@ JAnim 的各个 ``Updater`` 并非孤立，不仅可以使用 ``.current()`` 获
     self.forward()
 
 .. janim-example:: UpdaterExample
-    :media: ../_static/videos/UpdaterExample.mp4
+    :media: _static/videos/UpdaterExample.mp4
     :ref: :class:`~.Brace`
 
     square = Square(fill_color=BLUE_E, fill_alpha=1).show()
@@ -334,7 +334,7 @@ JAnim 的各个 ``Updater`` 并非孤立，不仅可以使用 ``.current()`` 获
 以下是一个最简单（但也是最没必要使用 :class:`~.StepUpdater`）的一个示例：
 
 .. janim-example:: SimplestStepUpdater
-    :media: ../_static/tutorial/SimplestStepUpdater.mp4
+    :media: _static/tutorial/SimplestStepUpdater.mp4
     :hide_name:
 
     NumberPlane(faded_line_ratio=1).show()

@@ -1,0 +1,22 @@
+/* 随机切换按钮 */
+.random-choice .random-button {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    padding: 0.4rem 0.8rem;
+    font-size: 0.9rem;
+    background-color: #2563eb; /* 蓝色按钮 */
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    transition: background-color 0.2s;
+}
+
+/* 按钮悬停效果 */
+.random-choice .random-button:hover {
+    background-color: #1e40af;
+}

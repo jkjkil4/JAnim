@@ -56,7 +56,7 @@ class FrameEffect(Item):
 
     如果懒得抄，可以用 :class:`SimpleFrameEffect`，这个类只要写“进行处理”这部分就好了，因为它把其余代码都封装了
 
-    完整示例请参考 :ref:`样例学习 <examples>` 中的对应代码
+    完整示例请参考 :ref:`样例学习 <basic_examples>` 中的对应代码
     '''
     renderer_cls = FrameEffectRenderer
 

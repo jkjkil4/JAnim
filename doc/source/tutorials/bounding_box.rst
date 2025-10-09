@@ -11,7 +11,7 @@
 以下是各种常见几何图形的外接矩形，即边界框区域：
 
 .. janim-example:: BoundingBoxForCommonShapes
-    :media: ../_static/tutorial/BoundingBoxForCommonShapes.png
+    :media: _static/tutorial/BoundingBoxForCommonShapes.png
     :hide_name:
     :hide_code:
 
@@ -29,7 +29,7 @@
 如果你想获取边界框上的几个特殊点的位置，例如边界框的左侧中心点，右侧中心点等，以单位圆为例：
 
 .. janim-example:: BoundingBoxPoints
-    :media: ../_static/tutorial/BoundingBoxPoints.png
+    :media: _static/tutorial/BoundingBoxPoints.png
     :hide_name:
 
     circle = Circle().show()
@@ -65,7 +65,7 @@
 除了使用以上方式获取边界框四周的点之外，还可以通过 ``.points.box.center`` 得到边界框的中心点
 
 .. janim-example:: BoundingBoxCenterForCommonShapes
-    :media: ../_static/tutorial/BoundingBoxCenterForCommonShapes.png
+    :media: _static/tutorial/BoundingBoxCenterForCommonShapes.png
     :hide_name:
     :hide_code:
 
@@ -82,7 +82,7 @@
 这些几何图形的几何中心，也就是淡绿色的点，在 JAnim 中被打上了额外的标记，你可以通过 ``.mark.get()`` 来获取，例如：
 
 .. janim-example:: TwoCenterOfTriangle
-    :media: ../_static/tutorial/TwoCenterOfTriangle.png
+    :media: _static/tutorial/TwoCenterOfTriangle.png
     :hide_name:
 
     tri = Triangle(radius=3).show()

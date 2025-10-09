@@ -5,7 +5,7 @@ growing
     :show-inheritance:
 
 .. janim-example:: GrowFromPointExample
-    :media: ../../_static/videos/GrowFromPointExample.mp4
+    :media: _static/videos/GrowFromPointExample.mp4
 
     from janim.imports import *
 
@@ -35,7 +35,7 @@ growing
     :show-inheritance:
 
 .. janim-example:: GrowFromCenterExample
-    :media: ../../_static/videos/GrowFromCenterExample.mp4
+    :media: _static/videos/GrowFromCenterExample.mp4
 
     from janim.imports import *
 
@@ -57,7 +57,7 @@ growing
     :show-inheritance:
 
 .. janim-example:: GrowFromEdgeExample
-    :media: ../../_static/videos/GrowFromEdgeExample.mp4
+    :media: _static/videos/GrowFromEdgeExample.mp4
 
     from janim.imports import *
 
@@ -87,7 +87,7 @@ growing
     :show-inheritance:
 
 .. janim-example:: ShrinkToPointExample
-    :media: ../../_static/videos/ShrinkToPointExample.mp4
+    :media: _static/videos/ShrinkToPointExample.mp4
 
     from janim.imports import *
 
@@ -117,7 +117,7 @@ growing
     :show-inheritance:
 
 .. janim-example:: ShrinkToCenterExample
-    :media: ../../_static/videos/ShrinkToCenterExample.mp4
+    :media: _static/videos/ShrinkToCenterExample.mp4
 
     from janim.imports import *
 
@@ -139,7 +139,7 @@ growing
     :show-inheritance:
 
 .. janim-example:: ShrinkToEdgeExample
-    :media: ../../_static/videos/ShrinkToEdgeExample.mp4
+    :media: _static/videos/ShrinkToEdgeExample.mp4
 
     from janim.imports import *
 
@@ -169,7 +169,7 @@ growing
     :show-inheritance:
 
 .. janim-example:: SpinInFromNothingExample
-    :media: ../../_static/videos/SpinInFromNothingExample.mp4
+    :media: _static/videos/SpinInFromNothingExample.mp4
 
     from janim.imports import *
 
@@ -193,7 +193,7 @@ growing
     :show-inheritance:
 
 .. janim-example:: SpinOutToNothingExample
-    :media: ../../_static/videos/SpinOutToNothingExample.mp4
+    :media: _static/videos/SpinOutToNothingExample.mp4
 
     from janim.imports import *
 
@@ -220,7 +220,7 @@ growing
     :show-inheritance:
 
 .. janim-example:: GrowArrowExample
-    :media: ../../_static/videos/GrowArrowExample.mp4
+    :media: _static/videos/GrowArrowExample.mp4
 
     from janim.imports import *
 
@@ -243,7 +243,7 @@ growing
     :show-inheritance:
 
 .. janim-example:: GrowDoubleArrowExample
-    :media: ../../_static/videos/GrowDoubleArrowExample.mp4
+    :media: _static/videos/GrowDoubleArrowExample.mp4
 
     from janim.imports import *
 

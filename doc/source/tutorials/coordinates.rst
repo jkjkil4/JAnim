@@ -6,7 +6,7 @@ JAnim 的坐标系统不以像素为单位，而是采用水平方向约 ``-7.11
 原点位于画面中心，向右向上为正方向，下图展现了创建在 JAnim 画面上的坐标系网格以及放置于原点处的单位圆：
 
 .. janim-example:: CoordinatesGrid
-    :media: ../_static/tutorial/CoordinatesGrid.png
+    :media: _static/tutorial/CoordinatesGrid.png
     :hide_name:
 
     NumberPlane(faded_line_ratio=0).show()
@@ -50,7 +50,7 @@ JAnim 的坐标系统不以像素为单位，而是采用水平方向约 ``-7.11
 例如，使用 ``.move_to(RIGHT * 3 + UP * 2)`` 可以将物件移动到坐标系中 ``(3,2)`` 的位置：
 
 .. janim-example:: MoveTo
-    :media: ../_static/tutorial/MoveTo.png
+    :media: _static/tutorial/MoveTo.png
     :hide_name:
 
     circle = Circle(color=YELLOW).show()
@@ -64,7 +64,7 @@ JAnim 的坐标系统不以像素为单位，而是采用水平方向约 ``-7.11
 JAnim 还内置了更多额外方向，如图所示：
 
 .. janim-example:: BuiltinDirections
-    :media: ../_static/tutorial/BuiltinDirections.png
+    :media: _static/tutorial/BuiltinDirections.png
     :hide_name:
     :hide_code:
 
@@ -124,7 +124,7 @@ JAnim 还内置了更多额外方向，如图所示：
         circle.anim.points.next_to(...)
 
 .. janim-example:: RelativePlacement
-    :media: ../_static/tutorial/RelativePlacement_SpeedDown.mp4
+    :media: _static/tutorial/RelativePlacement_SpeedDown.mp4
     :hide_name:
 
     square = Square().show()
@@ -199,7 +199,7 @@ JAnim 还内置了更多额外方向，如图所示：
 让我们结合动画来演示这些方法的使用，这里是将一个正六边形进行若干形状变换：
 
 .. janim-example:: ShapeTransformation
-    :media: ../_static/tutorial/ShapeTransformation_SpeedDown.mp4
+    :media: _static/tutorial/ShapeTransformation_SpeedDown.mp4
     :hide_name:
 
     poly = RegularPolygon(6).show()

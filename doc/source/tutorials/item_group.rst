@@ -9,7 +9,7 @@
 以下给出了两个示例及其解析：
 
 .. janim-example:: GroupExample1
-    :media: ../_static/tutorial/GroupExample1.mp4
+    :media: _static/tutorial/GroupExample1.mp4
     :hide_name:
     :ref: :class:`~.Group` :meth:`~.Cmpt_Points.arrange` :meth:`~.Cmpt_Rgbas.fade`
 
@@ -76,7 +76,7 @@
     默认 ``0`` 表示同时淡出，这里设置了 ``0.5`` 表示前一个淡出 50% 后开始淡出下一个。
 
 .. janim-example:: GroupExample2
-    :media: ../_static/tutorial/GroupExample2.mp4
+    :media: _static/tutorial/GroupExample2.mp4
     :hide_name:
     :ref: :class:`~.Group` :meth:`~.Cmpt_Points.arrange` :class:`~.Indicate`
 
@@ -135,7 +135,7 @@
 显而易见，我们完全可以把一个 :class:`~.Group` 作为另一个 :class:`~.Group` 的子物件（这里笔者随便搓了一个 ``HelloJAnimExample`` 代码的示意动画）：
 
 .. janim-example:: NestedGroupExample
-    :media: ../_static/tutorial/NestedGroupExample.mp4
+    :media: _static/tutorial/NestedGroupExample.mp4
     :hide_name:
     :ref: :class:`~.Text` :class:`~.Group` :class:`~.Arrow` :class:`~.Transform`
 
@@ -198,7 +198,7 @@
 所产生的层级结构而言，它们有如下的关系：
 
 .. janim-example:: Group_WordDesc
-    :media: ../_static/tutorial/Group_WordDesc.png
+    :media: _static/tutorial/Group_WordDesc.png
     :hide_name:
     :hide_code:
 

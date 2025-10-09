@@ -7,7 +7,7 @@
 JAnim 的深度机制控制了物件的绘制顺序，深度越大的物件，会被深度越低的物件遮挡：
 
 .. janim-example:: Depth1
-    :media: ../_static/tutorial/Depth1.png
+    :media: _static/tutorial/Depth1.png
     :hide_name:
 
     txt = Text('Example Text', font_size=40).show()
@@ -18,7 +18,7 @@ JAnim 的深度机制控制了物件的绘制顺序，深度越大的物件，�
 如果两个物件具有相同的深度，它们的遮挡关系遵循 **“越早创建的物件，越会被遮挡”** 即 **“更迟创建的物件，显示在其它物件的前面”** 的原则：
 
 .. janim-example:: Depth2
-    :media: ../_static/tutorial/Depth2.png
+    :media: _static/tutorial/Depth2.png
     :hide_name:
 
     txt = Text('Example Text', font_size=40).show()
@@ -32,7 +32,7 @@ JAnim 的深度机制控制了物件的绘制顺序，深度越大的物件，�
 对于同深度的物件，在有需要的情况下，你可以重新设置其深度，以更新它们的遮挡关系：
 
 .. janim-example:: Depth3
-    :media: ../_static/tutorial/Depth3.png
+    :media: _static/tutorial/Depth3.png
     :hide_name:
 
     txt = Text('Example Text', font_size=40).show()
@@ -84,7 +84,7 @@ JAnim 的深度机制控制了物件的绘制顺序，深度越大的物件，�
 哪怕把他们都放到一个 :class:`~.Group` 中，也不会按照在 :class:`~.Group` 中出现的顺序来调整深度，仍然保持原有的深度：
 
 .. janim-example:: GroupDepth1
-    :media: ../_static/tutorial/GroupDepth1.png
+    :media: _static/tutorial/GroupDepth1.png
     :hide_name:
 
     star = Star(fill_alpha=1, outer_radius=1.5, color=YELLOW).show()
@@ -102,7 +102,7 @@ JAnim 的深度机制控制了物件的绘制顺序，深度越大的物件，�
 但是，如果我们此时对 ``group`` 使用 :meth:`~.Cmpt_Depth.arrange` 方法，或者在其构造时传入 ``depth`` 参数，则会按照 ``group`` 的深度重新设置：
 
 .. janim-example:: GroupDepth2
-    :media: ../_static/tutorial/GroupDepth2.png
+    :media: _static/tutorial/GroupDepth2.png
     :hide_name:
 
     star = Star(fill_alpha=1, outer_radius=1.5, color=YELLOW).show()
@@ -133,7 +133,7 @@ JAnim 的深度机制控制了物件的绘制顺序，深度越大的物件，�
 物件深度“序号”的具体值可以使用 :meth:`~.Cmpt_Depth.get_raw` 获取，这是一个包含两个值的 ``tuple``，分别是 ``(depth, order)``：
 
 .. janim-example:: DepthRawDisplay
-    :media: ../_static/tutorial/DepthRawDisplay.png
+    :media: _static/tutorial/DepthRawDisplay.png
     :hide_name:
 
     txt = Text('Example Text', font_size=120).show()

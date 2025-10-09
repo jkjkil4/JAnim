@@ -9,7 +9,7 @@ transform
     :show-inheritance:
 
 .. janim-example:: TransformExample
-    :media: ../../_static/videos/TransformExample.mp4
+    :media: _static/videos/TransformExample.mp4
 
     from janim.imports import *
 
@@ -108,7 +108,7 @@ transform
 请留意 Python 切片中左闭右开的原则，对于倒序序列 ``[8, 6, 4, 0]`` 来说则是左开右闭
 
 .. janim-example:: TransformInSegmentsExample
-    :media: ../../_static/videos/TransformInSegmentsExample.mp4
+    :media: _static/videos/TransformInSegmentsExample.mp4
 
     from janim.imports import *
 
@@ -130,7 +130,7 @@ transform
     :show-inheritance:
 
 .. janim-example:: MethodTransformExample
-    :media: ../../_static/videos/MethodTransformExample.mp4
+    :media: _static/videos/MethodTransformExample.mp4
 
     from janim.imports import *
 
@@ -153,7 +153,7 @@ transform
     :show-inheritance:
 
 .. janim-example:: TransformMatchingShapesExample
-    :media: ../../_static/videos/TransformMatchingShapesExample.mp4
+    :media: _static/videos/TransformMatchingShapesExample.mp4
 
     class TransformMatchingShapesExample(Timeline):
         def construct(self):

@@ -70,7 +70,7 @@ Typst 子物件索引
    这也意味着 ``t['theta']`` 和 ``t['theta', 0]`` 是等效的
 
 .. janim-example:: TypstColorizeExample
-    :media: ../_static/videos/TypstColorizeExample.mp4
+    :media: _static/videos/TypstColorizeExample.mp4
 
     typ = TypstMath('cos^2 theta + sin^2 theta = 1', scale=3).show()
 
@@ -262,7 +262,7 @@ JAnim 提供了内置包可以在 Typst 中使用 ``#import`` 引入
 Typst 物件支持传入 ``vars`` 参数嵌入 JAnim 物件：
 
 .. janim-example:: TypstVars
-    :media: ../_static/tutorial/TypstVars.mp4
+    :media: _static/tutorial/TypstVars.mp4
     :hide_name:
     :ref: :class:`~.TypstText` :class:`~.Video`
 
