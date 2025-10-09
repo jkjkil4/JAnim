@@ -1,4 +1,4 @@
-![logo](logo.png)
+![logo](https://raw.githubusercontent.com/jkjkil4/JAnim/main/assets/logo.png)
 
 [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat)](http://choosealicense.com/licenses/mit/)
 
@@ -20,13 +20,13 @@ JAnim 是一个用于创建流畅动画的库
 <table>
   <tr>
     <td>
-      <img src="./assets/TextExample.gif"/>
+      <img src="https://raw.githubusercontent.com/jkjkil4/JAnim/main/assets/TextExample.gif"/>
     </td>
     <td>
-      <img src="./assets/RiemmanIntegral.gif"/>
+      <img src="https://raw.githubusercontent.com/jkjkil4/JAnim/main/assets/RiemmanIntegral.gif"/>
     </td>
     <td>
-      <img src="./assets/NumberPlaneExample.gif"/>
+      <img src="https://raw.githubusercontent.com/jkjkil4/JAnim/main/assets/NumberPlaneExample.gif"/>
     </td>
   </tr>
 </table>
@@ -37,7 +37,7 @@ ___
 
 <div align="center">
 
-![](./assets/RealSolution.gif)
+![](https://raw.githubusercontent.com/jkjkil4/JAnim/main/assets/RealSolution.gif)
 
 [视频(bilibili)](https://www.bilibili.com/video/BV1hCYQe3EpG/?t=179) | [源代码](https://github.com/jkjkil4/videos/blob/main/2024/VideoEncoding/code.py)
 
@@ -47,7 +47,7 @@ ___
 
 <div align="center">
 
-![](./assets/FragInterp.gif)
+![](https://raw.githubusercontent.com/jkjkil4/JAnim/main/assets/FragInterp.gif)
 
 [视频(bilibili)](https://www.bilibili.com/video/BV1CkxuexEeQ/?p=3&t=118) | [源代码](https://github.com/jkjkil4/videos/blob/main/2024/LearnOpenGL-8-MoreAttr/code.py)
 
@@ -108,7 +108,7 @@ class BubbleSort(Timeline):
 
 <div align="center">
 
-![](./assets/BubbleSort.gif)
+![](https://raw.githubusercontent.com/jkjkil4/JAnim/main/assets/BubbleSort.gif)
 
 </div>
 
@@ -116,7 +116,7 @@ class BubbleSort(Timeline):
 
 <div align="center">
 
-![](./assets/CodeRefresh.gif)
+![](https://raw.githubusercontent.com/jkjkil4/JAnim/main/assets/CodeRefresh.gif)
 
 </div>
 
@@ -124,7 +124,7 @@ class BubbleSort(Timeline):
 
 <div align="center">
 
-![](./assets/PreviewControl.gif)
+![](https://raw.githubusercontent.com/jkjkil4/JAnim/main/assets/PreviewControl.gif)
 
 </div>
 
@@ -144,7 +144,7 @@ pip install -e .
 ```
 
 另外，还需要安装其他软件依赖:
-- 要生成视频文件，请安装 [ffmpeg](https://ffmpeg.org/).
+- 要生成视频文件，请安装 [FFmpeg](https://ffmpeg.org/).
 - 要使用 Typst，请安装 [Typst](https://github.com/typst/typst).
 
 ## 使用 JAnim
