@@ -17,6 +17,8 @@ class unwrap_random_options(nodes.General, nodes.Element):
 
 def visit_random_choice_html(self, node):
     self.body.append(f'<div class="random-choice" id="{node["id"]}">')
+    if node.get("start-text"):
+        self.body.append(f'<div class="random-placeholder">{node["start-text"]}</div>')
 
 
 def depart_random_choice_html(self, node):
@@ -41,11 +43,15 @@ def depart_unwrap_random_options_html(self, node):
 
 class RandomChoiceDirective(Directive):
     has_content = True
+    option_spec = {
+        'start-text': str
+    }
 
     def run(self):
         # env = self.state.document.settings.env
         node = random_choice()
         node['id'] = f"random-{uuid.uuid4().hex[:8]}"
+        node['start-text'] = self.options.get('start-text')
         self.state.nested_parse(self.content, self.content_offset, node)
         return [node]
 
@@ -85,10 +91,14 @@ def setup(app):
         document.querySelectorAll(".random-choice").forEach(container => {
             const items = Array.from(container.querySelectorAll(".random-item"));
             const button = container.querySelector(".random-button");
+            const placeholder = container.querySelector(".random-placeholder");
             let current = -1;
             let firstShown = true;
 
             function showRandom() {
+                if (placeholder)
+                    placeholder.style.display = "none";
+
                 if (current >= 0 && current < items.length) {
                     const prevItem = items[current];
                     prevItem.querySelectorAll("video").forEach(v => {
@@ -129,7 +139,9 @@ def setup(app):
             }
 
             button.addEventListener("click", showRandom);
-            showRandom();
+            if (!placeholder) {
+                showRandom();
+            }
         });
         document.querySelectorAll(".unwrap-random-options").forEach(container => {
             const items = Array.from(container.querySelectorAll(".random-item"));
@@ -143,4 +155,4 @@ def setup(app):
         });
     });
     """)
-    return {'version': '0.2', 'parallel_read_safe': True}
+    return {'parallel_read_safe': True, 'parallel_write_safe': True}

@@ -24,9 +24,10 @@ extensions = [
     'sphinx_copybutton',
     'sphinx_tabs.tabs',
     'extensions.janim_example_ext',
+    'extensions.bili_example',
     'extensions.code_desc_ext',
     'extensions.translatable_tab_ext',
-    'extensions.random_choice'
+    'extensions.random_choice',
 ]
 autodoc_member_order = 'bysource'
 # autodoc_default_flags = ['members', 'show-inheritance']
