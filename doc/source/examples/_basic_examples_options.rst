@@ -30,7 +30,7 @@
         class BasicAnimationExample(Timeline):
             def construct(self):
                 circle = Circle()
-                tri = Triangle()
+                star = Star()
 
                 self.forward()
 
@@ -38,9 +38,9 @@
                 self.play(circle.anim.points.shift(LEFT * 3).scale(1.5))
                 self.play(circle.anim.set(color=RED, fill_alpha=0.5))
 
-                self.play(SpinInFromNothing(tri))
-                self.play(tri.anim.points.shift(RIGHT * 3).scale(1.5))
-                self.play(tri.anim.set(color=BLUE, fill_alpha=0.5))
+                self.play(SpinInFromNothing(star))
+                self.play(star.anim.points.shift(RIGHT * 3).scale(1.5))
+                self.play(star.anim.set(color=YELLOW, fill_alpha=0.5))
 
                 self.forward()
 
