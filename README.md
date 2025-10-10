@@ -9,7 +9,7 @@
 </div>
 
 ## Introduction
-JAnim is a library for creating smooth animations.
+JAnim is a library for creating smooth animations, built around the core concept of programmatic animation. It supports real-time editing, live preview, and a wide range of additional powerful features.
 
 Inspired by [manim](https://github.com/3b1b/manim).
 
@@ -20,36 +20,22 @@ Introduction video: [https://www.bilibili.com/video/BV17s42137SJ/](https://www.b
 <table>
   <tr>
     <td>
-      <img src="https://raw.githubusercontent.com/jkjkil4/JAnim/main/assets/TextExample.gif"/>
-    </td>
-    <td>
-      <img src="https://raw.githubusercontent.com/jkjkil4/JAnim/main/assets/RiemmanIntegral.gif"/>
+      <img src="https://raw.githubusercontent.com/jkjkil4/JAnim/main/assets/RealSolution.gif"/>
     </td>
     <td>
       <img src="https://raw.githubusercontent.com/jkjkil4/JAnim/main/assets/NumberPlaneExample.gif"/>
+    </td>
+    <td>
+      <img src="https://raw.githubusercontent.com/jkjkil4/JAnim/main/assets/FragInterp.gif"/>
     </td>
   </tr>
 </table>
 
 <!-- ffmpeg -i xxx.mp4 -filter:v "setpts=0.5*PTS" -r 15 -s 720x405 xxx.gif -->
 
-___
-
 <div align="center">
 
-![](https://raw.githubusercontent.com/jkjkil4/JAnim/main/assets/RealSolution.gif)
-
-[Video(bilibili)](https://www.bilibili.com/video/BV1hCYQe3EpG/?t=179) | [Source code](https://github.com/jkjkil4/videos/blob/main/2024/VideoEncoding/code.py)
-
-</div>
-
-___
-
-<div align="center">
-
-![](https://raw.githubusercontent.com/jkjkil4/JAnim/main/assets/FragInterp.gif)
-
-[Video(bilibili)](https://www.bilibili.com/video/BV1CkxuexEeQ/?p=3&t=118) | [Source code](https://github.com/jkjkil4/videos/blob/main/2024/LearnOpenGL-8-MoreAttr/code.py)
+[- More Examples -](https://janim.readthedocs.io/en/latest/)
 
 </div>
 

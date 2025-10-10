@@ -9,7 +9,7 @@
 </div>
 
 ## 介绍
-JAnim 是一个用于创建流畅动画的库
+JAnim 是一个用于创建流畅动画的库，以程序化动画为核心理念，并支持实时编辑、实时预览，并支持更多其它丰富的功能。
 
 受到 [manim](https://github.com/3b1b/manim) 的启发
 
@@ -20,36 +20,22 @@ JAnim 是一个用于创建流畅动画的库
 <table>
   <tr>
     <td>
-      <img src="https://raw.githubusercontent.com/jkjkil4/JAnim/main/assets/TextExample.gif"/>
-    </td>
-    <td>
-      <img src="https://raw.githubusercontent.com/jkjkil4/JAnim/main/assets/RiemmanIntegral.gif"/>
+      <img src="https://raw.githubusercontent.com/jkjkil4/JAnim/main/assets/RealSolution.gif"/>
     </td>
     <td>
       <img src="https://raw.githubusercontent.com/jkjkil4/JAnim/main/assets/NumberPlaneExample.gif"/>
+    </td>
+    <td>
+      <img src="https://raw.githubusercontent.com/jkjkil4/JAnim/main/assets/FragInterp.gif"/>
     </td>
   </tr>
 </table>
 
 <!-- ffmpeg -i xxx.mp4 -filter:v "setpts=0.5*PTS" -r 15 -s 720x405 xxx.gif -->
 
-___
-
 <div align="center">
 
-![](https://raw.githubusercontent.com/jkjkil4/JAnim/main/assets/RealSolution.gif)
-
-[视频(bilibili)](https://www.bilibili.com/video/BV1hCYQe3EpG/?t=179) | [源代码](https://github.com/jkjkil4/videos/blob/main/2024/VideoEncoding/code.py)
-
-</div>
-
-___
-
-<div align="center">
-
-![](https://raw.githubusercontent.com/jkjkil4/JAnim/main/assets/FragInterp.gif)
-
-[视频(bilibili)](https://www.bilibili.com/video/BV1CkxuexEeQ/?p=3&t=118) | [源代码](https://github.com/jkjkil4/videos/blob/main/2024/LearnOpenGL-8-MoreAttr/code.py)
+[- 更多样例 -](https://janim.readthedocs.io/zh-cn/latest/)
 
 </div>
 
