@@ -18,7 +18,9 @@ def visit_bili_html(self, node):
     <div class="janim-box">
         <div class="bili-video-content">
             <iframe style="position: absolute; width: 100%; height: 100%; left: 0; top: 0;"
-                src="{url}" frameborder="no" scrolling="no"></iframe>
+                src="https://player.bilibili.com/player.html?isOutside=true&{url}&autoplay=0"
+                frameborder="no" scrolling="no">
+            </iframe>
         </div>
         <h5 class="example-header bili-video-header">
             {header_content}
