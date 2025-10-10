@@ -109,6 +109,15 @@ p.example-ref-prefix {
     margin-bottom: -2px;    /* 避免有些时候视频 iframe 下方有一小点空白 */
 }
 
+.bili-video-author {
+    font-size: 0.8rem;
+    white-space: nowrap;
+}
+
+.bili-video-author a {
+    color: white;
+}
+
 .example-source-link {
     background-color: var(--color-background-secondary);
     padding: 7px 12px;

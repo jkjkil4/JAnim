@@ -12,7 +12,7 @@ def visit_bili_html(self, node):
 
     header_content = f'<span>{title}</span>'
     if node['author']:
-        header_content += f'<span style="font-size: 0.8rem; white-space: nowrap;">by {node["author"]}</span>'
+        header_content += f'<span class="bili-video-author">by {node["author"]}</span>'
 
     self.body.append(f'''
     <div class="janim-box">

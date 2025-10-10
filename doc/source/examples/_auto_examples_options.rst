@@ -17,3 +17,11 @@
     .. bili-example:: aid=113940549930518&bvid=BV1FJPoewEQx&cid=28202896554&p=1
         :title: 数千行代码，带来拜年纪燃曲《天星问》Rizline自制谱！!1(动画)
         :author: 破壁人五号
+
+.. random-option::
+
+    .. bili-example:: aid=113542577522001&bvid=BV1fkzcY6Ejh&cid=27002145387&p=1
+        :title: 【AI喝牛奶】让我们一起「在银河中孤独摇摆」吧!
+        :author: <a href="https://aka.lovemilk.top/github">lovemilk</a>
+
+        画面以及音频可视化

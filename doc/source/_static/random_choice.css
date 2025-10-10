@@ -20,3 +20,9 @@
 .random-choice .random-button:hover {
     background-color: #1e40af;
 }
+
+.random-placeholder {
+    text-align: center;
+    margin-top: 1.5em;
+    margin-bottom: 1.5em;
+}
