@@ -14,6 +14,10 @@ body[data-theme=dark] {
     margin-bottom: 16pt;
 }
 
+.random-item .janim-box {
+    margin-bottom: 0;
+}
+
 .janim-box .separator {
     width: 100%;
     height: 2px;
