@@ -12,7 +12,7 @@ def visit_bili_html(self, node):
 
     header_content = f'<span>{title}</span>'
     if node['author']:
-        header_content += f'<span style="font-size: 0.8rem;">by {node["author"]}</span>'
+        header_content += f'<span style="font-size: 0.8rem; white-space: nowrap;">by {node["author"]}</span>'
 
     self.body.append(f'''
     <div class="janim-box">
@@ -20,7 +20,7 @@ def visit_bili_html(self, node):
             <iframe style="position: absolute; width: 100%; height: 100%; left: 0; top: 0;"
                 src="{url}" frameborder="no" scrolling="no"></iframe>
         </div>
-        <h5 class="example-header line", style="margin-top: 0; margin-bottom: 0;">
+        <h5 class="example-header bili-video-header">
             {header_content}
         </h5>
     ''')

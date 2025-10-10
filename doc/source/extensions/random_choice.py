@@ -16,7 +16,7 @@ class unwrap_random_options(nodes.General, nodes.Element):
 
 
 def visit_random_choice_html(self, node):
-    self.body.append(f'<div class="random-choice" id="{node["id"]}">')
+    self.body.append(f'<div class="random-choice" id="{node["id"]}" destroy="{int(node["destroy"])}">')
     if node.get("start-text"):
         self.body.append(f'<div class="random-placeholder">{node["start-text"]}</div>')
 
@@ -44,7 +44,8 @@ def depart_unwrap_random_options_html(self, node):
 class RandomChoiceDirective(Directive):
     has_content = True
     option_spec = {
-        'start-text': str
+        'start-text': str,
+        'destroy': bool
     }
 
     def run(self):
@@ -52,6 +53,7 @@ class RandomChoiceDirective(Directive):
         node = random_choice()
         node['id'] = f"random-{uuid.uuid4().hex[:8]}"
         node['start-text'] = self.options.get('start-text')
+        node['destroy'] = 'destroy' in self.options
         self.state.nested_parse(self.content, self.content_offset, node)
         return [node]
 
@@ -92,6 +94,7 @@ def setup(app):
             const items = Array.from(container.querySelectorAll(".random-item"));
             const button = container.querySelector(".random-button");
             const placeholder = container.querySelector(".random-placeholder");
+            const destroy = container.getAttribute('destroy') === "1";
             let current = -1;
             let firstShown = true;
 
@@ -105,6 +108,11 @@ def setup(app):
                         v.pause();
                         v.currentTime = 0;
                     });
+
+                    if (destroy) {
+                        const lazyContent = prevItem.querySelector('.lazy-random-item-content');
+                        if (lazyContent) lazyContent.innerHTML = '';
+                    }
                 }
 
                 items.forEach(el => el.style.display = 'none');
