@@ -31,20 +31,6 @@
 
 .. random-option::
 
-    .. bili-example:: aid=113010723195116&bvid=BV1mVWDe6EM6&p=3
-        :title: Python 图形编程 | 入门篇 第一部分 绘制一个矩形 | 3-安装与创建窗口
-        :author: jkjkil-jiang
-        :source-link: https://github.com/jkjkil4/videos/blob/main/2024/LearnOpenGL-3-InstallationAndWindow/code.py
-
-.. random-option::
-
-    .. bili-example:: aid=113010723195116&bvid=BV1mVWDe6EM6&p=4
-        :title: Python 图形编程 | 入门篇 第一部分 绘制一个矩形 | 4-处理输入与背景颜色
-        :author: jkjkil-jiang
-        :source-link: https://github.com/jkjkil4/videos/blob/main/2024/LearnOpenGL-4-InputAndBackground/code.py
-
-.. random-option::
-
     .. bili-example:: aid=113010723195116&bvid=BV1mVWDe6EM6&p=5
         :title: Python 图形编程 | 入门篇 第一部分 绘制一个矩形 | 5-你好，三角形
         :author: jkjkil-jiang
