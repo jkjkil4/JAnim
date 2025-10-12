@@ -457,7 +457,7 @@
                     Rotate(squares, TAU, duration=8),
                     DataUpdater(
                         effect2,
-                        lambda data, p: data.apply_uniforms(time=p.global_t - p.range.at),
+                        lambda data, p: data.apply_uniforms(time=p.elapsed),
                         at=4,
                         duration=4
                     )

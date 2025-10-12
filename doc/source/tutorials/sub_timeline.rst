@@ -96,7 +96,7 @@ JAnim 引入了子时间轴机制，使得在主时间轴中可以嵌套子时�
             self.play(
                 DataUpdater(
                     effect,
-                    lambda data, p: data.apply_uniforms(time=p.global_t - p.range.at)
+                    lambda data, p: data.apply_uniforms(time=p.elapsed)
                 ),
                 duration=tl1.duration
             )

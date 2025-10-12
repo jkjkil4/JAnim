@@ -37,6 +37,10 @@ class UpdaterParams:
 
     _updater: _DataUpdater | GroupUpdater | None
 
+    @property
+    def elapsed(self) -> float:
+        return self.global_t - self.range.at
+
     def __enter__(self) -> Self:
         self.token = updater_params_ctx.set(self)
         return self

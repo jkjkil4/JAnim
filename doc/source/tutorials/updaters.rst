@@ -59,7 +59,7 @@ Updater 的使用
 
 .. hint::
 
-    你可以使用 ``p.global_t - p.range.at`` 得知，到当前时刻动画持续了多久。
+    你可以使用 ``p.elapsed`` 得知，到当前时刻动画持续了多久，这是对 ``p.global_t - p.range.at`` 的简写。
 
 需要注意的是，如果传递给 :class:`~.DataUpdater` 的物件有子物件，
 在默认情况下 ``root_only=True`` 只对根物件自身进行操作，

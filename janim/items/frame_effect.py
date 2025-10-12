@@ -608,7 +608,7 @@ class Shadertoy(FrameEffect):
     @staticmethod
     def updater(data: Shadertoy, p: UpdaterParams) -> None:
         data.apply_uniforms(
-            iTime=p.global_t - p.range.at,
+            iTime=p.elapsed,
             optional=True
         )
 
