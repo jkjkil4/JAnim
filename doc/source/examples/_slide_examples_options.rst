@@ -78,3 +78,21 @@
         :author: 破壁人五号
 
         动画效果使用 JAnim 制作，“信息量”可视化结果是插入的现成图片
+
+.. random-option::
+
+    .. bili-example:: aid=114724616275294&bvid=BV1gzNDz4EyL&p=1
+        :title: 用重要极限证明欧拉公式
+        :author: Cirpix
+
+.. random-option::
+
+    .. bili-example:: aid=114834171497241&bvid=BV1ByugzvEpE&p=1
+        :title: 2017年高联B卷第10题
+        :author: Cirpix
+
+.. random-option::
+
+    .. bili-example:: aid=114936747460344&bvid=BV1px8ozoEqt&p=1
+        :title: 用排序不等式证明柯西不等式
+        :author: Cirpix
