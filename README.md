@@ -1,6 +1,8 @@
 ![logo](https://raw.githubusercontent.com/jkjkil4/JAnim/main/assets/logo.png)
 
 [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat)](http://choosealicense.com/licenses/mit/)
+[![PyPI Latest Release](https://img.shields.io/pypi/v/janim.svg?style=flat&logo=pypi)](https://pypi.org/project/JAnim/)
+[![en Documentation Status](https://readthedocs.org/projects/JAnim-en/badge/?version=latest)](https://janim.readthedocs.io/en/latest/)
 
 <div align="center">
 
