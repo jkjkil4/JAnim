@@ -65,12 +65,21 @@ class Union(VItem):
     '''
     并集
 
-    传入两个及以上 :class:`~.VItem`，返回他它们区域的并集的外轮廓
+    常见情况下，传入两个及以上 :class:`~.VItem`，返回他它们区域的并集的外轮廓
+
+    另外，如果只传入单个物件，则拷贝原路径
+
+    该方法只有根物件参与计算，如果需要考虑所有子物件的并集，例如对 :class:`~.Text` 所有后代物件的并集，请参考 :meth:`from_group`
     '''
     def __init__(self, *vitems: VItem, **kwargs):
-        if len(vitems) < 2:
-            raise BooleanOpsError(_('At least 2 items needed for Union.'))
+        if not vitems:
+            raise BooleanOpsError(_('At least 1 item needed for Union.'))
         super().__init__(**kwargs)
+
+        if len(vitems) == 1:
+            self.points.set(vitems[0].points.get())
+            return
+
         outpen = pathops.Path()
         pathops.union(
             [
@@ -84,7 +93,7 @@ class Union(VItem):
     @staticmethod
     def from_group(item: Item, **kwargs) -> Union:
         '''
-        传入一个物件，将其所有子物件作并集
+        传入一个物件，将其所有后代物件作并集
         '''
         lst = [
             sub
@@ -115,12 +124,21 @@ class Intersection(VItem):
     '''
     交集
 
-    传入两个及以上 :class:`~.VItem`，返回它们区域交集的外轮廓
+    常见情况下，传入两个及以上 :class:`~.VItem`，返回它们区域交集的外轮廓
+
+    另外，如果只传入单个物件，则拷贝原路径
+
+    该方法只有根物件参与计算，如果需要考虑所有后代物件的交集，请参考 :meth:`from_group`
     '''
     def __init__(self, *vitems: VItem, **kwargs):
-        if len(vitems) < 2:
-            raise BooleanOpsError(_('At least 2 items needed for Intersection.'))
+        if not vitems:
+            raise BooleanOpsError(_('At least 1 item needed for Intersection.'))
         super().__init__(**kwargs)
+
+        if len(vitems) == 1:
+            self.points.set(vitems[0].points.get())
+            return
+
         outpen = pathops.Path()
         pathops.intersection(
             [_convert_vitem_to_skia_path(vitems[0])],
@@ -141,7 +159,7 @@ class Intersection(VItem):
     @staticmethod
     def from_group(item: Item, **kwargs) -> Union:
         '''
-        传入一个物件，将其所有子物件作交集
+        传入一个物件，将其所有后代物件作交集
         '''
         lst = [
             sub
@@ -153,14 +171,23 @@ class Intersection(VItem):
 
 class Exclusion(VItem):
     '''
-    补集
+    对称差集
 
     传入两个及以上 :class:`~.VItem`，返回它们的区域经过 XOR 运算后的外轮廓
+
+    另外，如果只传入单个物件，则拷贝原路径
+
+    该方法只有根物件参与计算，如果需要考虑所有后代物件的对称差集，请参考 :meth:`Exclusion.from_group`
     '''
     def __init__(self, *vitems: VItem, **kwargs):
-        if len(vitems) < 2:
-            raise BooleanOpsError(_('At least 2 items needed for Exclusion.'))
+        if not vitems:
+            raise BooleanOpsError(_('At least 1 item needed for Exclusion.'))
         super().__init__(**kwargs)
+
+        if len(vitems) == 1:
+            self.points.set(vitems[0].points.get())
+            return
+
         outpen = pathops.Path()
         pathops.xor(
             [_convert_vitem_to_skia_path(vitems[0])],
@@ -181,7 +208,7 @@ class Exclusion(VItem):
     @staticmethod
     def from_group(item: Item, **kwargs):
         '''
-        传入一个物件，将其所有子物件依次作补集（XOR）
+        传入一个物件，将其所有子物件依次作对称差集
         '''
         lst = [
             sub
