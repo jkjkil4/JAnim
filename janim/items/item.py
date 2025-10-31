@@ -370,6 +370,10 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
             self._astype_obj = obj
             self._astype_cls = cls
 
+        # 调用 __anim__ 直接结束 Wrapper，返回内层的 __anim__ 调用
+        def __anim__(self):
+            return self._astype_obj.__anim__()
+
         def __getattr__(self, name: str):
             with self._astype_context():
                 match self._astype_obj:
