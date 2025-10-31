@@ -8,7 +8,7 @@
 2. 通过 ``动画名(物件, 动画参数)`` 为物件应用内置的特殊动画效果
 
 .. janim-example:: BasicAnimationExample
-    :media: ../_static/videos/BasicAnimationExample.mp4
+    :media: _static/videos/BasicAnimationExample.mp4
     :hide_name:
     :ref: :class:`~.Create` :class:`~.SpinInFromNothing` :meth:`~.Item.anim`
 
@@ -57,7 +57,7 @@
 以下是对上面的动画参数进行一些调整后的示例：
 
 .. janim-example:: BasicAnimationExampleWithParams
-    :media: ../_static/tutorial/BasicAnimationExampleWithParams.mp4
+    :media: _static/tutorial/BasicAnimationExampleWithParams.mp4
     :hide_name:
 
     circle = Circle()
@@ -107,7 +107,7 @@
 首先是最基础的， 放在同一个 ``self.play`` 函数中的动画会一起执行，你也可以给动画分别传入 ``at`` 参数来控制它们的开始时机：
 
 .. janim-example:: GroupedAnimation
-    :media: ../_static/tutorial/GroupedAnimation.mp4
+    :media: _static/tutorial/GroupedAnimation.mp4
     :hide_name:
     :ref: :class:`~.FadeIn` :meth:`~.Item.anim` :meth:`~.Cmpt_Points.to_border`
 
@@ -137,7 +137,7 @@
 - :class:`~.Succession` 则会将多个动画串联起来，前一个动画结束后再开始下一个动画
 
 .. janim-example:: ComplexGroupedAnimation
-    :media: ../_static/tutorial/ComplexGroupedAnimation.mp4
+    :media: _static/tutorial/ComplexGroupedAnimation.mp4
     :hide_name:
     :ref: :class:`~.Succession` :class:`~.AnimGroup` :class:`~.ShowCreationThenDestructionAround`
 
@@ -188,7 +188,7 @@
 因此，JAnim 提供了一个实用的功能——预先设置动画，但不在时间上前进，可以调用 ``self.prepare`` 做到：
 
 .. janim-example:: PrepareAnimation
-    :media: ../_static/tutorial/PrepareAnimation.mp4
+    :media: _static/tutorial/PrepareAnimation.mp4
     :hide_name:
     :ref: :meth:`~.Timeline.prepare` :class:`~.Text` :class:`~.CircleIndicate`
 
@@ -223,7 +223,7 @@
 - 使用 :class:`~.Do` 在动画序列的特定时间执行指定操作
 
 .. janim-example:: CompositionControl
-    :media: ../_static/tutorial/CompositionControl.mp4
+    :media: _static/tutorial/CompositionControl.mp4
     :hide_name:
     :ref: :class:`~.MoveAlongPath` :class:`~.Follow`
 

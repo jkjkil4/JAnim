@@ -53,6 +53,7 @@ TEMPLATE = '''
 
 .. raw:: html
 
+        <div class="separator"></div>
         <div class="janim-content">
 
 {{ desc_block }}

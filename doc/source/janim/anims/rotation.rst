@@ -14,7 +14,7 @@ rotation
     :show-inheritance:
 
 .. janim-example:: RotateExample
-    :media: ../../_static/videos/RotateExample.mp4
+    :media: _static/videos/RotateExample.mp4
 
     from janim.imports import *
 
@@ -44,7 +44,7 @@ rotation
     :show-inheritance:
 
 .. janim-example:: RotatingExample
-    :media: ../../_static/videos/RotatingExample.mp4
+    :media: _static/videos/RotatingExample.mp4
 
     from janim.imports import *
 

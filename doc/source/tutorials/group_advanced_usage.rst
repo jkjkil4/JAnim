@@ -9,7 +9,7 @@
 举个例子，对于一个圆形物件 ``Circle()``，我们可以在其后面使用 ``* 数量`` 表示 “复制出指定数量的圆形，放到一个 :class:`~.Group` 中”：
 
 .. janim-example:: MultipleCircle
-    :media: ../_static/tutorial/MultipleCircle.png
+    :media: _static/tutorial/MultipleCircle.png
     :hide_name:
 
     circles = Circle() * 5
@@ -24,7 +24,7 @@
 以下是另一个示例：
 
 .. janim-example:: MultipleText
-    :media: ../_static/tutorial/MultipleText.png
+    :media: _static/tutorial/MultipleText.png
     :hide_name:
 
     txts = Text('This is some text') * 9
@@ -42,7 +42,7 @@
 我们已经知道索引的基础用法，可以使用下标索引子物件，或是使用切片得到一组子物件：
 
 .. janim-example:: GroupBasicIndexing
-    :media: ../_static/tutorial/GroupBasicIndexing.png
+    :media: _static/tutorial/GroupBasicIndexing.png
     :hide_name:
 
     circles = Circle(radius=0.5) * 10
@@ -58,7 +58,7 @@
 除了这两种基础方法，你还可以通过以下方式：
 
 .. janim-example:: GroupAdvancedIndexing
-    :media: ../_static/tutorial/GroupAdvancedIndexing.mp4
+    :media: _static/tutorial/GroupAdvancedIndexing.mp4
     :hide_name:
 
     circles = Circle(radius=0.5) * 10
@@ -101,7 +101,7 @@
 除了使用 :meth:`~.Relation.descendants` 得到所有后代物件，还可以使用 :meth:`~.Relation.walk_descendants` 来指定获得什么类型的后代物件：
 
 .. janim-example:: WalkDescendants
-    :media: ../_static/tutorial/WalkDescendants.png
+    :media: _static/tutorial/WalkDescendants.png
     :hide_name:
 
     group1 = Group(Circle(), Rect())

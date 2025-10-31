@@ -1,3 +1,6 @@
+import os
+from pathlib import Path
+
 import jinja2
 from docutils.parsers.rst import Directive
 
@@ -19,6 +22,12 @@ class JAnimExampleDirective(Directive):
         media_url = self.options["media"]
         hide_name = 'hide_name' in self.options
         hide_code = 'hide_code' in self.options
+
+        env = self.state.document.settings.env
+        source_file = Path(env.doc2path(env.docname, base=None))
+        source_dir = source_file.parent
+        root_dir = Path(env.app.srcdir)
+        media_url = os.path.relpath(root_dir / media_url, root_dir / source_dir).replace('\\', '/')
 
         if any(media_url.endswith(ext) for ext in ['.png', '.jpg', '.gif']):
             is_video = False

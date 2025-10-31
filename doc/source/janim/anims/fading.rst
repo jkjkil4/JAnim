@@ -8,7 +8,7 @@ fading
     :show-inheritance:
 
 .. janim-example:: FadeInExample
-    :media: ../../_static/videos/FadeInExample.mp4
+    :media: _static/videos/FadeInExample.mp4
 
     from janim.imports import *
 
@@ -31,7 +31,7 @@ fading
     :show-inheritance:
 
 .. janim-example:: FadeOutExample
-    :media: ../../_static/videos/FadeOutExample.mp4
+    :media: _static/videos/FadeOutExample.mp4
 
     from janim.imports import *
 
@@ -55,7 +55,7 @@ fading
     :show-inheritance:
 
 .. janim-example:: FadeInFromPointExample
-    :media: ../../_static/videos/FadeInFromPointExample.mp4
+    :media: _static/videos/FadeInFromPointExample.mp4
 
     from janim.imports import *
 
@@ -80,7 +80,7 @@ fading
     :show-inheritance:
 
 .. janim-example:: FadeOutToPointExample
-    :media: ../../_static/videos/FadeOutToPointExample.mp4
+    :media: _static/videos/FadeOutToPointExample.mp4
 
     from janim.imports import *
 

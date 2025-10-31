@@ -80,7 +80,7 @@ composition
     </script>
 
 .. janim-example:: AnimGroupExample
-    :media: ../../_static/videos/AnimGroupExample.mp4
+    :media: _static/videos/AnimGroupExample.mp4
 
     from janim.imports import *
 
@@ -167,7 +167,7 @@ composition
     </script>
 
 .. janim-example:: SuccessionExample
-    :media: ../../_static/videos/SuccessionExample.mp4
+    :media: _static/videos/SuccessionExample.mp4
 
     from janim.imports import *
 
@@ -215,7 +215,7 @@ composition
     视频示例的代码在下方，不是上方的时间示例
 
 .. janim-example:: AlignedExample
-    :media: ../../_static/videos/AlignedExample.mp4
+    :media: _static/videos/AlignedExample.mp4
 
     from janim.imports import *
 

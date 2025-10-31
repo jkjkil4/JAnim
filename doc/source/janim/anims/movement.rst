@@ -5,7 +5,7 @@ movement
     :show-inheritance:
 
 .. janim-example:: HomotopyExample
-    :media: ../../_static/videos/HomotopyExample.mp4
+    :media: _static/videos/HomotopyExample.mp4
 
     from janim.imports import *
 
@@ -22,7 +22,7 @@ movement
     :show-inheritance:
 
 .. janim-example:: ComplexHomotopyExample
-    :media: ../../_static/videos/ComplexHomotopyExample.mp4
+    :media: _static/videos/ComplexHomotopyExample.mp4
 
     from janim.imports import *
 
@@ -49,7 +49,7 @@ movement
     :show-inheritance:
 
 .. janim-example:: MoveAlongPathExample
-    :media: ../../_static/videos/MoveAlongPathExample.mp4
+    :media: _static/videos/MoveAlongPathExample.mp4
 
     from janim.imports import *
 
@@ -78,7 +78,7 @@ movement
     :show-inheritance:
 
 .. janim-example:: FollowExample
-    :media: ../../_static/videos/FollowExample.mp4
+    :media: _static/videos/FollowExample.mp4
 
     from janim.imports import *
 

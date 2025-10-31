@@ -234,7 +234,7 @@ class Axes(CoordinateSystem, MarkedItem, Group, metaclass=_ItemMeta_ABCMeta):
 
         - ``function``: 用于构造曲线的函数
         - ``x_range``: 图像定义域
-        - ``bind``: 在默认情况下为 ``True``，会使得函数曲线自动同步应用于坐标系上的变换，也可同步动画，详见 :ref:`examples` 中的 ``NumberPlaneExample``
+        - ``bind``: 在默认情况下为 ``True``，会使得函数曲线自动同步应用于坐标系上的变换，也可同步动画，详见 :ref:`basic_examples` 中的 ``NumberPlaneExample``
 
         .. warning::
 
@@ -277,7 +277,7 @@ class Axes(CoordinateSystem, MarkedItem, Group, metaclass=_ItemMeta_ABCMeta):
         基于坐标轴的坐标构造参数曲线，即 :class:`~.ParametricCurve`
 
         - ``function``: 将值映射为坐标系上的一个点的参数函数
-        - ``bind``: 在默认情况下为 ``True``，会使得参数曲线自动同步应用于坐标系上的变换，也可同步动画，详见 :ref:`examples` 中的 ``NumberPlaneExample``
+        - ``bind``: 在默认情况下为 ``True``，会使得参数曲线自动同步应用于坐标系上的变换，也可同步动画，详见 :ref:`basic_examples` 中的 ``NumberPlaneExample``
 
         .. warning::
 

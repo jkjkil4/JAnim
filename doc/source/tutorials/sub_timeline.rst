@@ -4,7 +4,7 @@
 JAnim 引入了子时间轴机制，使得在主时间轴中可以嵌套子时间轴，从而实现复杂逻辑的分离，以及更好的可复用性。
 
 .. janim-example:: SubTimeline1
-    :media: ../_static/tutorial/SubTimeline1.mp4
+    :media: _static/tutorial/SubTimeline1.mp4
     :hide_name:
     :ref: :meth:`~.BuiltTimeline.to_item`
 
@@ -71,7 +71,7 @@ JAnim 引入了子时间轴机制，使得在主时间轴中可以嵌套子时�
 并且子时间轴在主时间轴中作为一个整体物件，可以更加方便地传入 :class:`~.FrameEffect` 及其派生类应用复杂的视觉效果：
 
 .. janim-example:: SubTimeline2
-    :media: ../_static/tutorial/SubTimeline2.mp4
+    :media: _static/tutorial/SubTimeline2.mp4
     :hide_name:
     :ref: :class:`~.SimpleFrameEffect` :class:`~.TransformableFrameClip`
 
@@ -96,7 +96,7 @@ JAnim 引入了子时间轴机制，使得在主时间轴中可以嵌套子时�
             self.play(
                 DataUpdater(
                     effect,
-                    lambda data, p: data.apply_uniforms(time=p.global_t - p.range.at)
+                    lambda data, p: data.apply_uniforms(time=p.elapsed)
                 ),
                 duration=tl1.duration
             )
@@ -111,7 +111,7 @@ JAnim 引入了子时间轴机制，使得在主时间轴中可以嵌套子时�
 并且，子 Timeline 机制让 Timeline 有了极高的可复用性：
 
 .. janim-example:: SubTimeline3
-    :media: ../_static/tutorial/SubTimeline3.mp4
+    :media: _static/tutorial/SubTimeline3.mp4
     :hide_name:
 
     from janim.imports import *
@@ -171,3 +171,7 @@ JAnim 引入了子时间轴机制，使得在主时间轴中可以嵌套子时�
                 frameclip = TransformableFrameClip(tl, clip=(clip, 0, clip, 0), offset=offset).show()
 
             self.forward(4)
+
+.. note::
+
+    有待完善关于 :meth:`~.BuiltTimeline.to_playback_control_item` 的说明

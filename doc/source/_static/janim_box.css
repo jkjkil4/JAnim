@@ -6,7 +6,7 @@ body[data-theme=dark] {
 }
 
 .janim-box {
-    background-color: #333333;
+    border: 2px solid #333333;
     box-shadow: 2px 2px 4px var(--janim-box-shadow);
     display: flex;
     flex-direction: column;
@@ -14,8 +14,18 @@ body[data-theme=dark] {
     margin-bottom: 16pt;
 }
 
+.random-choice .janim-box {
+    margin-bottom: 0;
+}
+
+.janim-box .separator {
+    width: 100%;
+    height: 2px;
+    background-color: #333333;
+}
+
 .janim-box .janim-video {
-    width: 99.9%;
+    /* width: 99.9%; */
     padding: 0;
     outline: 0;
 }
@@ -24,7 +34,9 @@ body[data-theme=dark] {
     margin-bottom: 0;
 }
 
-h5.example-header {
+.example-header {
+    background-color: #333333;
+    border-radius: 0;
     font-size: 18px;
     font-weight: bold;
     padding: 10px 16px;
@@ -36,12 +48,19 @@ h5.example-header {
     margin-bottom: -0.2em;
 }
 
+.bili-video-header {
+    margin-top: 0;
+    margin-bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
 .janim-box>.highlight-python.notranslate {
     margin: 0px;
 }
 
 .janim-box>.highlight-python.notranslate>.highlight {
-    border: 2px solid #333333;
     padding: 8px 8px 10px 8px;
     margin: 0;
     overflow: auto;
@@ -80,8 +99,39 @@ p.example-ref-prefix {
 
 .janim-content {
     background-color: var(--color-background-primary);
-    padding: 0px 8px 0px 10px;
-    margin: 0px;
-    border: 2px solid #333333;
+    padding: 0px 10px 0px 10px;
     border-top-width: 0px;
+}
+
+.bili-video-content {
+    position: relative;
+    padding: 30% 45%;
+    margin-bottom: -2px;    /* 避免有些时候视频 iframe 下方有一小点空白 */
+}
+
+.bili-video-author {
+    font-size: 0.8rem;
+    white-space: nowrap;
+}
+
+.bili-video-author a {
+    color: white;
+}
+
+.example-source-link {
+    background-color: var(--color-background-secondary);
+    padding: 7px 12px;
+    border-top-width: 0px;
+    border-bottom-width: 0px;
+    font-size: 0.75rem;
+    display: inline-block;
+    text-align: center;
+}
+
+/* 链接样式 */
+.example-source-link a {
+    color: #1a73e8;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s ease-in-out;
 }

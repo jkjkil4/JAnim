@@ -24,8 +24,10 @@ extensions = [
     'sphinx_copybutton',
     'sphinx_tabs.tabs',
     'extensions.janim_example_ext',
+    'extensions.bili_example',
     'extensions.code_desc_ext',
-    'extensions.translatable_tab_ext'
+    'extensions.translatable_tab_ext',
+    'extensions.random_choice',
 ]
 autodoc_member_order = 'bysource'
 # autodoc_default_flags = ['members', 'show-inheritance']
@@ -47,7 +49,8 @@ html_css_files = [
     'colors.css',
     'custom.css',
     'animation_timing_example.css',
-    'janim_box.css'
+    'janim_box.css',
+    'random_choice.css'
 ]
 html_favicon = '_static/favicon.ico'
 

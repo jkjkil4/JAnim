@@ -1,6 +1,8 @@
-![logo](logo.png)
+![logo](https://raw.githubusercontent.com/jkjkil4/JAnim/main/assets/logo.png)
 
 [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat)](http://choosealicense.com/licenses/mit/)
+[![PyPI Latest Release](https://img.shields.io/pypi/v/janim.svg?style=flat&logo=pypi)](https://pypi.org/project/JAnim/)
+[![en Documentation Status](https://readthedocs.org/projects/JAnim-en/badge/?version=latest)](https://janim.readthedocs.io/en/latest/)
 
 <div align="center">
 
@@ -9,7 +11,7 @@
 </div>
 
 ## Introduction
-JAnim is a library for creating smooth animations.
+JAnim is a library for creating smooth animations, built around the core concept of programmatic animation. It supports real-time editing, live preview, and a wide range of additional powerful features.
 
 Inspired by [manim](https://github.com/3b1b/manim).
 
@@ -20,36 +22,22 @@ Introduction video: [https://www.bilibili.com/video/BV17s42137SJ/](https://www.b
 <table>
   <tr>
     <td>
-      <img src="./assets/TextExample.gif"/>
+      <img src="https://raw.githubusercontent.com/jkjkil4/JAnim/main/assets/RealSolution.gif"/>
     </td>
     <td>
-      <img src="./assets/RiemmanIntegral.gif"/>
+      <img src="https://raw.githubusercontent.com/jkjkil4/JAnim/main/assets/NumberPlaneExample.gif"/>
     </td>
     <td>
-      <img src="./assets/NumberPlaneExample.gif"/>
+      <img src="https://raw.githubusercontent.com/jkjkil4/JAnim/main/assets/FragInterp.gif"/>
     </td>
   </tr>
 </table>
 
 <!-- ffmpeg -i xxx.mp4 -filter:v "setpts=0.5*PTS" -r 15 -s 720x405 xxx.gif -->
 
-___
-
 <div align="center">
 
-![](./assets/RealSolution.gif)
-
-[Video(bilibili)](https://www.bilibili.com/video/BV1hCYQe3EpG/?t=179) | [Source code](https://github.com/jkjkil4/videos/blob/main/2024/VideoEncoding/code.py)
-
-</div>
-
-___
-
-<div align="center">
-
-![](./assets/FragInterp.gif)
-
-[Video(bilibili)](https://www.bilibili.com/video/BV1CkxuexEeQ/?p=3&t=118) | [Source code](https://github.com/jkjkil4/videos/blob/main/2024/LearnOpenGL-8-MoreAttr/code.py)
+[- More Examples -](https://janim.readthedocs.io/en/latest/)
 
 </div>
 
@@ -108,7 +96,7 @@ class BubbleSort(Timeline):
 
 <div align="center">
 
-![](./assets/BubbleSort.gif)
+![](https://raw.githubusercontent.com/jkjkil4/JAnim/main/assets/BubbleSort.gif)
 
 </div>
 
@@ -116,7 +104,7 @@ class BubbleSort(Timeline):
 
 <div align="center">
 
-![](./assets/CodeRefresh.gif)
+![](https://raw.githubusercontent.com/jkjkil4/JAnim/main/assets/CodeRefresh.gif)
 
 </div>
 
@@ -124,7 +112,7 @@ class BubbleSort(Timeline):
 
 <div align="center">
 
-![](./assets/PreviewControl.gif)
+![](https://raw.githubusercontent.com/jkjkil4/JAnim/main/assets/PreviewControl.gif)
 
 </div>
 
@@ -144,7 +132,7 @@ pip install -e .
 ```
 
 Additionally, there are other software dependencies to be installed:
-- To generate video files, install [ffmpeg](https://ffmpeg.org/).
+- To generate video files, install [FFmpeg](https://ffmpeg.org/).
 - To use Typst, install [Typst](https://github.com/typst/typst).
 
 ## Using JAnim

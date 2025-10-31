@@ -5,7 +5,7 @@ indication
     :show-inheritance:
 
 .. janim-example:: FocusOnExample
-    :media: ../../_static/videos/FocusOnExample.mp4
+    :media: _static/videos/FocusOnExample.mp4
 
     from janim.imports import *
 
@@ -33,7 +33,7 @@ indication
     :show-inheritance:
 
 .. janim-example:: IndicateExample
-    :media: ../../_static/videos/IndicateExample.mp4
+    :media: _static/videos/IndicateExample.mp4
 
     from janim.imports import *
 
@@ -54,7 +54,7 @@ indication
     :show-inheritance:
 
 .. janim-example:: CircleIndicateExample
-    :media: ../../_static/videos/CircleIndicateExample.mp4
+    :media: _static/videos/CircleIndicateExample.mp4
 
     from janim.imports import *
 
@@ -85,7 +85,7 @@ indication
     :show-inheritance:
 
 .. janim-example:: ShowCreationThenDestructionExample
-    :media: ../../_static/videos/ShowCreationThenDestructionExample.mp4
+    :media: _static/videos/ShowCreationThenDestructionExample.mp4
 
     from janim.imports import *
 
@@ -112,7 +112,7 @@ indication
     :show-inheritance:
 
 .. janim-example:: ShowCreationThenFadeOutExample
-    :media: ../../_static/videos/ShowCreationThenFadeOutExample.mp4
+    :media: _static/videos/ShowCreationThenFadeOutExample.mp4
 
     from janim.imports import *
 
@@ -140,7 +140,7 @@ indication
     :show-inheritance:
 
 .. janim-example:: ShowPassingFlashAroundExample
-    :media: ../../_static/videos/ShowPassingFlashAroundExample.mp4
+    :media: _static/videos/ShowPassingFlashAroundExample.mp4
 
     from janim.imports import *
 
@@ -163,7 +163,7 @@ indication
     :show-inheritance:
 
 .. janim-example:: ShowCreationThenDestructionAroundExample
-    :media: ../../_static/videos/ShowCreationThenDestructionAroundExample.mp4
+    :media: _static/videos/ShowCreationThenDestructionAroundExample.mp4
 
     from janim.imports import *
 
@@ -186,7 +186,7 @@ indication
     :show-inheritance:
 
 .. janim-example:: ShowCreationThenFadeAroundExample
-    :media: ../../_static/videos/ShowCreationThenFadeAroundExample.mp4
+    :media: _static/videos/ShowCreationThenFadeAroundExample.mp4
 
     from janim.imports import *
 
@@ -209,7 +209,7 @@ indication
     :show-inheritance:
 
 .. janim-example:: FlashExample
-    :media: ../../_static/videos/FlashExample.mp4
+    :media: _static/videos/FlashExample.mp4
 
     from janim.imports import *
 
@@ -239,7 +239,7 @@ indication
     :show-inheritance:
 
 .. janim-example:: ApplyWaveExample
-    :media: ../../_static/videos/ApplyWaveExample.mp4
+    :media: _static/videos/ApplyWaveExample.mp4
 
     from janim.imports import *
 
@@ -260,7 +260,7 @@ indication
     :show-inheritance:
 
 .. janim-example:: WiggleOutThenInExample
-    :media: ../../_static/videos/WiggleOutThenInExample.mp4
+    :media: _static/videos/WiggleOutThenInExample.mp4
 
     from janim.imports import *
 

@@ -1,6 +1,8 @@
-![logo](logo.png)
+![logo](https://raw.githubusercontent.com/jkjkil4/JAnim/main/assets/logo.png)
 
 [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat)](http://choosealicense.com/licenses/mit/)
+[![PyPI Latest Release](https://img.shields.io/pypi/v/janim.svg?style=flat&logo=pypi)](https://pypi.org/project/JAnim/)
+[![zh-CN Documentation Status](https://readthedocs.org/projects/JAnim/badge/?version=latest)](https://janim.readthedocs.io/zh-cn/latest/)
 
 <div align="center">
 
@@ -9,7 +11,7 @@
 </div>
 
 ## 介绍
-JAnim 是一个用于创建流畅动画的库
+JAnim 是一个用于创建流畅动画的库，以程序化动画为核心理念，并支持实时编辑、实时预览，并支持更多其它丰富的功能。
 
 受到 [manim](https://github.com/3b1b/manim) 的启发
 
@@ -20,36 +22,22 @@ JAnim 是一个用于创建流畅动画的库
 <table>
   <tr>
     <td>
-      <img src="./assets/TextExample.gif"/>
+      <img src="https://raw.githubusercontent.com/jkjkil4/JAnim/main/assets/RealSolution.gif"/>
     </td>
     <td>
-      <img src="./assets/RiemmanIntegral.gif"/>
+      <img src="https://raw.githubusercontent.com/jkjkil4/JAnim/main/assets/NumberPlaneExample.gif"/>
     </td>
     <td>
-      <img src="./assets/NumberPlaneExample.gif"/>
+      <img src="https://raw.githubusercontent.com/jkjkil4/JAnim/main/assets/FragInterp.gif"/>
     </td>
   </tr>
 </table>
 
 <!-- ffmpeg -i xxx.mp4 -filter:v "setpts=0.5*PTS" -r 15 -s 720x405 xxx.gif -->
 
-___
-
 <div align="center">
 
-![](./assets/RealSolution.gif)
-
-[视频(bilibili)](https://www.bilibili.com/video/BV1hCYQe3EpG/?t=179) | [源代码](https://github.com/jkjkil4/videos/blob/main/2024/VideoEncoding/code.py)
-
-</div>
-
-___
-
-<div align="center">
-
-![](./assets/FragInterp.gif)
-
-[视频(bilibili)](https://www.bilibili.com/video/BV1CkxuexEeQ/?p=3&t=118) | [源代码](https://github.com/jkjkil4/videos/blob/main/2024/LearnOpenGL-8-MoreAttr/code.py)
+[- 更多样例 -](https://janim.readthedocs.io/zh-cn/latest/)
 
 </div>
 
@@ -108,7 +96,7 @@ class BubbleSort(Timeline):
 
 <div align="center">
 
-![](./assets/BubbleSort.gif)
+![](https://raw.githubusercontent.com/jkjkil4/JAnim/main/assets/BubbleSort.gif)
 
 </div>
 
@@ -116,7 +104,7 @@ class BubbleSort(Timeline):
 
 <div align="center">
 
-![](./assets/CodeRefresh.gif)
+![](https://raw.githubusercontent.com/jkjkil4/JAnim/main/assets/CodeRefresh.gif)
 
 </div>
 
@@ -124,7 +112,7 @@ class BubbleSort(Timeline):
 
 <div align="center">
 
-![](./assets/PreviewControl.gif)
+![](https://raw.githubusercontent.com/jkjkil4/JAnim/main/assets/PreviewControl.gif)
 
 </div>
 
@@ -144,7 +132,7 @@ pip install -e .
 ```
 
 另外，还需要安装其他软件依赖:
-- 要生成视频文件，请安装 [ffmpeg](https://ffmpeg.org/).
+- 要生成视频文件，请安装 [FFmpeg](https://ffmpeg.org/).
 - 要使用 Typst，请安装 [Typst](https://github.com/typst/typst).
 
 ## 使用 JAnim
