@@ -336,6 +336,7 @@ def get_all_timelines_from_module(module) -> list[type[Timeline]]:
         if (isinstance(value, type)
             and issubclass(value, Timeline)
             and value.__module__ == module.__name__                             # 定义于当前模块，排除了 import 导入的
+            and not value.__name__.startswith('_')                              # 排除以下划线开头的
             and not getattr(value.construct, '__isabstractmethod__', False))    # construct 方法已被实现
     ]
     if len(classes) <= 1:
