@@ -244,6 +244,11 @@ class _CmptGroup(Component):
 
         raise CmptGroupLookupError(_('CmptGroup must be defined within the same class as the content passed in'))
 
+    def _returned_self(self, cmpt: Component | Item._AsTypeWrapper, ret) -> bool:
+        if isinstance(cmpt, Component):
+            return cmpt is ret
+        return cmpt._astype_obj is ret._astype_obj
+
     def __getattr__(self, name: str):
         if name == 'objects':
             raise AttributeError()
@@ -275,7 +280,7 @@ class _CmptGroup(Component):
                 for method in methods
             ]
 
-            return self if all(a is b for a, b in zip(ret, objects)) else ret
+            return self if all(self._returned_self(a, b) for a, b in zip(objects, ret)) else ret
 
         meta = getattr(methods[0], METHOD_UPDATER_KEY, None)
         if meta is not None:
