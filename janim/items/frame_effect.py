@@ -619,7 +619,8 @@ class AlphaEffect(SimpleFrameEffect):
     def __init__(
         self,
         *items: Item,
-        root_only: bool = False
+        root_only: bool = False,
+        **kwargs
     ):
         super().__init__(
             *items,
@@ -627,6 +628,7 @@ class AlphaEffect(SimpleFrameEffect):
             shader='f_color = texture(fbo, v_texcoord); f_color.a *= alpha;',
             uniforms=['float alpha'],
             cache_key='alpha_effect',
+            **kwargs
         )
 
     def dynamic_uniforms(self):
