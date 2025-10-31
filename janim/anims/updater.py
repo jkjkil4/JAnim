@@ -494,7 +494,7 @@ class ItemUpdater(Animation):
         # 可以将 ``hide_on_begin`` 和 ``show_on_end`` 置为 ``False`` 以禁用
         if self.hide_at_begin:
             self.timeline.schedule(self.t_range.at, self.timeline.hide, *hide_items, root_only=True)
-        if self.show_at_end:
+        if self.show_at_end and self.t_range.end is not FOREVER:
             self.timeline.schedule(self.t_range.end, self.timeline.show, *show_items, root_only=True)
 
     def call(self, p: UpdaterParams) -> Item:
