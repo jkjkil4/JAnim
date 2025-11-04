@@ -558,6 +558,19 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
 
         return self
 
+    def become_current(self) -> Self:
+        '''
+        使用该方法可以中断动画过程，使物件立刻成为当前动画作用下的结果
+
+        .. tip::
+
+            物件本身是不会一直随着动画改变数据的
+
+        在需要使用动画后的状态进行 ``.anim`` 等操作时较为实用
+        '''
+        self.become(self.current(as_time=self.timeline.current_time))
+        return self
+
     @classmethod
     def align_for_interpolate(
         cls,
