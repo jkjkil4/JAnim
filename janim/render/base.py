@@ -58,7 +58,7 @@ class Renderer:
         new_data: np.ndarray,
         vbo: mgl.Buffer,
         resize_target: int,
-        use_32byte_align: bool = False
+        use_32bit_align: bool = False
     ) -> None:
         processed_data = resize_with_interpolation(new_data, resize_target)
         assert processed_data.dtype == np.float32
@@ -66,7 +66,7 @@ class Renderer:
 
         size = (
             ((len(bytes_data) + 31) & ~31)
-            if use_32byte_align
+            if use_32bit_align
             else len(bytes_data)
         )
         if size != vbo.size:

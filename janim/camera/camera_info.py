@@ -55,6 +55,14 @@ class CameraInfo:
         mapped = aligned @ self.proj_view_matrix.T
         return mapped[:, :2] / mapped[:, 3][:, np.newaxis]
 
+    def map_points_with_depth(self, points: VectArray) -> np.ndarray:
+        n = len(points)
+        aligned = np.empty((n, 4))
+        aligned[:, :3] = points
+        aligned[:, -1] = 1
+        mapped = aligned @ self.proj_view_matrix.T
+        return mapped[:, :3] / mapped[:, 3][:, np.newaxis]
+
     def map_fixed_in_frame_points(self, points: VectArray) -> np.ndarray:
         n = len(points)
         aligned = np.empty((n, 4))
@@ -63,6 +71,15 @@ class CameraInfo:
         aligned[:, -1] = 1
         mapped = aligned @ self.proj_matrix.T
         return mapped[:, :2] / mapped[:, 3][:, np.newaxis]
+
+    def map_fixed_in_frame_points_with_depth(self, points: VectArray) -> np.ndarray:
+        n = len(points)
+        aligned = np.empty((n, 4))
+        aligned[:, :3] = points
+        aligned[:, :3] -= [0, 0, self.fixed_distance_from_plane]
+        aligned[:, -1] = 1
+        mapped = aligned @ self.proj_matrix.T
+        return mapped[:, :3] / mapped[:, 3][:, np.newaxis]
 
     def _compute_distance_from_plane(self, vertical_length: float) -> float:
         return vertical_length / 2 / math.tan(math.radians(self.fov / 2))
