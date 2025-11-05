@@ -167,6 +167,31 @@ class Transform(Animation):
         func(data)
 
 
+class MoveToTarget(Transform):
+    '''
+    详见 :meth:`~.Item.generate_target`
+    '''
+
+    def __init__(self, item: Item, **kwargs):
+        super().__init__(
+            item,
+            item.target,
+            **kwargs,
+            hide_src=True,
+            show_target=False,
+            root_only=False
+        )
+
+    def _time_fixed(self):
+        super()._time_fixed()
+
+        def at_end():
+            self.src_item.become(self.src_item.target, auto_visible=False)    # 因为下一句就是 show，所以传入了 auto_visible=False
+            self.src_item.show()
+
+        self.timeline.schedule(self.t_range.end, at_end)
+
+
 class TransformInSegments(AnimGroup):
     '''
     依照切片列表进行 ``src`` 与 ``target`` 之间的变换

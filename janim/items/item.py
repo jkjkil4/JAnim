@@ -642,6 +642,34 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
     def is_fix_in_frame(self) -> bool:
         return self._fix_in_frame
 
+    def generate_target(self) -> Self:
+        '''
+        拷贝生成一个 ``.target`` 物件，用于设置目标状态，最后使用 :class:`~.MoveToTarget` 创建过渡动画
+
+        例如：
+
+        .. code-block:: python
+
+            txt = Text('A Matrix')
+            mat = TypstMatrix([
+                [1, 2, 3],
+                [4, 5, 6],
+                [7, 8, 9]
+            ])
+
+            self.play(Write(txt))
+
+            Group(txt.generate_target(), mat).points.arrange(DOWN)
+
+            self.play(
+                MoveToTarget(txt),
+                FadeIn(mat, UP)
+            )
+            self.forward()
+        '''
+        self.target = self.copy()
+        return self.target
+
     # endregion
 
     # region render
