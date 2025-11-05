@@ -341,6 +341,7 @@ class AnimViewer(QMainWindow):
         margins = self.windowHandle().frameMargins()
         geometry.adjust(margins.left(), margins.top(), margins.right(), margins.bottom())
 
+        self.windowHandle().setScreen(screen)   # 在 Windows 中不需要这句也行，但是 macOS 中需要这句才能正确移动到副屏
         self.setGeometry(geometry)
 
     def update_completer(self, completions: list[str]) -> None:
