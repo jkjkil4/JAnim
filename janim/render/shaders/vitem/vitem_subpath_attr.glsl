@@ -1,4 +1,5 @@
 // Required:
+//  in vec2 v_coord;
 //  vec2 get_point(int idx)
 //  bool get_isclosed(int idx)
 
