@@ -336,7 +336,7 @@ class VItemPlaneRenderer(Renderer):
             self.vbo_points.bind_to_storage_buffer(0)
             self.vbo_mapped_points.bind_to_storage_buffer(1)
             self.update_fix_in_frame(self.comp_u_fix, item)
-            self.comp.run(group_x=(len(new_attrs.points) + 255) // 256)   # 相当于 len() / 256 向上取整
+            self.comp.run(group_x=(len(new_attrs.points) + 255) // 256)     # 相当于 len() / 256 向上取整
 
             self.attrs.fix_in_frame = new_attrs.fix_in_frame
             self.attrs.camera_info = new_attrs.camera_info

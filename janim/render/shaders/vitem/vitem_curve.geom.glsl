@@ -14,6 +14,7 @@ flat out int prev_idx;
 flat out int next_idx;
 
 uniform float JA_CAMERA_SCALED_FACTOR;
+uniform vec2 JA_FRAME_RADIUS;
 uniform float JA_ANTI_ALIAS_RADIUS;
 uniform bool JA_FIX_IN_FRAME;
 
@@ -63,12 +64,16 @@ void main()
     vec3 A = get_point_with_depth(idx);
     vec3 B = get_point_with_depth(idx + 1);
     vec3 C = get_point_with_depth(idx + 2);
+    if (A == B || B == C) {
+        B = (A + C) * 0.5;
+    }
 
     float expand_radius = max(get_radius(anchor_idx), get_radius(anchor_idx + 1));
     if (glow_color.a != 0.0) {
         expand_radius = max(expand_radius, glow_size);
     }
     expand_radius += JA_ANTI_ALIAS_RADIUS;
+    expand_radius += 0.05;
 
     vec2 v1 = normalize(B.xy - A.xy);
     vec2 v2 = normalize(C.xy - B.xy);
@@ -89,27 +94,27 @@ void main()
     }
 
     v_coord = A_base + A_offset;
-    gl_Position = vec4(v_coord, A.z * 0.1, 1.0);
+    gl_Position = vec4(v_coord / JA_FRAME_RADIUS, A.z * 0.1, 1.0);
     EmitVertex();
 
     v_coord = A_base - A_offset;
-    gl_Position = vec4(v_coord, A.z * 0.1, 1.0);
+    gl_Position = vec4(v_coord / JA_FRAME_RADIUS, A.z * 0.1, 1.0);
     EmitVertex();
 
     v_coord = B.xy + B_offset1;
-    gl_Position = vec4(v_coord, B.z * 0.1, 1.0);
+    gl_Position = vec4(v_coord / JA_FRAME_RADIUS, B.z * 0.1, 1.0);
     EmitVertex();
 
     v_coord = C_base + C_offset;
-    gl_Position = vec4(v_coord, C.z * 0.1, 1.0);
+    gl_Position = vec4(v_coord / JA_FRAME_RADIUS, C.z * 0.1, 1.0);
     EmitVertex();
 
     v_coord = B.xy + B_offset2;
-    gl_Position = vec4(v_coord, B.z * 0.1, 1.0);
+    gl_Position = vec4(v_coord / JA_FRAME_RADIUS, B.z * 0.1, 1.0);
     EmitVertex();
 
     v_coord = C_base - C_offset;
-    gl_Position = vec4(v_coord, C.z * 0.1, 1.0);
+    gl_Position = vec4(v_coord / JA_FRAME_RADIUS, C.z * 0.1, 1.0);
     EmitVertex();
 
     EndPrimitive();
