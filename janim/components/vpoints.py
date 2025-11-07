@@ -272,8 +272,10 @@ class Cmpt_VPoints[ItemT](Cmpt_Points[ItemT], impl=True):
 
         return np.vstack(new_points)
 
+    @mockable
     def insert_n_curves(self, n: int, root_only=False) -> Self:
         for cmpt in self.walk_same_cmpt_of_self_and_descendants_without_mock(root_only):
+            print(cmpt)
             if not isinstance(cmpt, Cmpt_VPoints) or cmpt.curves_count() == 0:
                 continue
             points = cmpt.insert_n_curves_to_point_list(n, cmpt.get())
