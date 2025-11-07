@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from enum import Enum
-from typing import Self
+from enum import StrEnum
+from typing import Literal, Self
 
 import numpy as np
 
@@ -22,7 +22,7 @@ DEFAULT_ARROWTIP_BODY_LENGTH = 0.2
 DEFAULT_ARROWTIP_BACK_WIDTH = 0.2
 
 
-class CenterAnchor(Enum):
+class CenterAnchor(StrEnum):
     '''
     箭头原点所处位置的选项
 
@@ -38,9 +38,9 @@ class CenterAnchor(Enum):
         |        -----
         .-----
     '''
-    Back = 0
-    Center = 1
-    Front = 2
+    Back = 'back'
+    Center = 'center'
+    Front = 'front'
 
 
 class ArrowTip(VItem):
@@ -60,7 +60,7 @@ class ArrowTip(VItem):
         angle: float = 0,
         scale: float = 1,
         *,
-        center_anchor: CenterAnchor = CenterAnchor.Back,
+        center_anchor: CenterAnchor | Literal['back', 'center', 'front'] = CenterAnchor.Back,
         rotation: float | None = None,
         fill_alpha: float = 1.0,
         stroke_radius: float = DEFAULT_STROKE_RADIUS / 4,
