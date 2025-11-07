@@ -1,7 +1,7 @@
 #version 430 core
 
 layout(points) in;
-layout(triangle_strip, max_vertices = 8) out;
+layout(triangle_strip, max_vertices = 6) out;
 
 in int v_prev_idx[1];
 in int v_next_idx[1];
@@ -58,9 +58,7 @@ void emit_coord(vec2 coord, float depth)
     EmitVertex();
 }
 
-// 对于曲线，如果 inverse = true，则说明结束的点在曲线左侧，否则在右侧
-
-bool emit_points_near_control_right(int idx, float expand_radius)
+void emit_points_near_control(int idx, float expand_radius)
 {
     vec3 A = get_point_with_depth(idx);
     vec3 B = get_point_with_depth(idx + 1);
@@ -73,59 +71,26 @@ bool emit_points_near_control_right(int idx, float expand_radius)
 
         emit_coord(center.xy + vec, center.z);
         emit_coord(center.xy - vec, center.z);
-        return false;
     } else {
-        vec2 v1 = B.xy - A.xy, v2 = C.xy - B.xy;
-        vec2 sum_vec = -v1 + v2;
-        vec2 expand_vec = expand_radius * normalize(sum_vec);
-        float det = cross2d(v1, v2);
-
-        emit_coord(B.xy - expand_vec, B.z);
-        emit_coord(B.xy + sum_vec * 0.5 + expand_vec, B.z);
-
-        vec2 rot_vec = normalize(det < 0 ? rotate_90_ccw(v2) : rotate_90_cw(v2));
-        emit_coord(B.xy + rot_vec * expand_radius, B.z);
-        return det < 0;
-    }
-}
-
-void emit_points_near_control_left(int idx, float expand_radius, bool inverse)
-{
-    vec3 A = get_point_with_depth(idx);
-    vec3 B = get_point_with_depth(idx + 1);
-    vec3 C = get_point_with_depth(idx + 2);
-
-    if (is_approx_line(A.xy, B.xy, C.xy)) {
-        // 不直接使用 B，是为了避免 B 和 A 或 C 重合的情况
+        vec2 v1 = B.xy - A.xy, v2 = C.xy - B.xy, v = C.xy - A.xy;
         vec3 center = (A + C) * 0.5;
-        vec2 vec = expand_radius * rotate_90_ccw(normalize(C.xy - A.xy));
-
-        if (inverse) {
-            vec = -vec;
-        }
-        emit_coord(center.xy + vec, center.z);
-        emit_coord(center.xy - vec, center.z);
-    } else {
-        vec2 v1 = B.xy - A.xy, v2 = C.xy - B.xy;
-        vec2 sum_vec = -v1 + v2;
-        vec2 expand_vec = expand_radius * normalize(sum_vec);
         float det = cross2d(v1, v2);
+        vec2 rot_vec = normalize(det < 0.0 ? rotate_90_ccw(v) : rotate_90_cw(v));
 
-        vec2 rot_vec = normalize(det < 0 ? rotate_90_ccw(v1) : rotate_90_cw(v1));
-
-        if (inverse == (det < 0)) {
-            emit_coord(B.xy + sum_vec * 0.5 + expand_vec, B.z);
-            emit_coord(B.xy + rot_vec * expand_radius, B.z);
-            emit_coord(B.xy - expand_vec, B.z);
+        float proj_len = dot(v1, rot_vec);
+        vec2 p1 = center.xy + rot_vec * (proj_len + expand_radius);
+        vec2 p2 = center.xy - rot_vec * expand_radius;
+        if (det < 0.0) {
+            emit_coord(p1, center.z);
+            emit_coord(p2, center.z);
         } else {
-            emit_coord(B.xy + rot_vec * expand_radius, B.z);
-            emit_coord(B.xy + sum_vec * 0.5 + expand_vec, B.z);
-            emit_coord(B.xy - expand_vec, B.z);
+            emit_coord(p2, center.z);
+            emit_coord(p1, center.z);
         }
     }
 }
 
-void emit_points_near_anchor(float expand_radius, bool inverse)
+void emit_points_near_anchor(float expand_radius)
 {
     vec3 p0 = get_point_with_depth(prev_idx);
     vec3 p1 = get_point_with_depth(prev_idx + 1);
@@ -142,16 +107,13 @@ void emit_points_near_anchor(float expand_radius, bool inverse)
     if (is_approx_line(p1.xy, p2.xy, p3.xy)) {
         vec2 vec = expand_radius * rotate_90_ccw(normalize(p3.xy - p2.xy));
 
-        if (inverse) {
-            vec = -vec;
-        }
         emit_coord(p2.xy + vec, p2.z);
         emit_coord(p2.xy - vec, p2.z);
     } else {
         vec2 v1 = normalize(p2.xy - p1.xy), v2 = normalize(p3.xy - p2.xy);
         vec2 v = normalize(-v1 + v2);
         float det = cross2d(v1, v2);
-        if (inverse != (det < 0)) {
+        if (det < 0.0) {
             v = -v;
         }
 
@@ -169,7 +131,7 @@ void emit_points_at_start(int idx, float expand_radius)
 
 }
 
-void emit_points_at_end(int idx, float expand_radius, bool inverse)
+void emit_points_at_end(int idx, float expand_radius)
 {
 
 }
@@ -191,7 +153,7 @@ void main()
         expand_radius += JA_ANTI_ALIAS_RADIUS;
 
         emit_points_at_start(next_idx, expand_radius);
-        emit_points_near_control_left(next_idx, expand_radius, false);
+        emit_points_near_control(next_idx, expand_radius);
     } else if (next_idx == -1) {
         int prev_anchor_idx = prev_idx / 2;
 
@@ -201,8 +163,8 @@ void main()
         }
         expand_radius += JA_ANTI_ALIAS_RADIUS;
 
-        bool flag = emit_points_near_control_right(prev_idx, expand_radius);
-        emit_points_at_end(prev_idx, expand_radius, flag);
+        emit_points_near_control(prev_idx, expand_radius);
+        emit_points_at_end(prev_idx, expand_radius);
     } else {
         int prev_anchor_idx = prev_idx / 2;
         int next_anchor_idx = next_idx / 2;
@@ -217,9 +179,9 @@ void main()
         }
         r += JA_ANTI_ALIAS_RADIUS;
 
-        bool flag = emit_points_near_control_right(prev_idx, max(r.x, r.y));
-        emit_points_near_anchor(r.y, flag);
-        emit_points_near_control_left(next_idx, max(r.y, r.z), flag);
+        emit_points_near_control(prev_idx, max(r.x, r.y));
+        emit_points_near_anchor(r.y);
+        emit_points_near_control(next_idx, max(r.y, r.z));
     }
     EndPrimitive();
 }

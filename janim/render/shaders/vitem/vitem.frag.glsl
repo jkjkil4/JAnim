@@ -63,7 +63,7 @@ vec4 get_fill(int anchor_idx) {
 #include "vitem_debug.glsl"
 #include "compute_depth.glsl"
 
-#define CONTROL_POINTS
+// #define CONTROL_POINTS
 // #define POLYGON_LINES
 // #define SDF_PLANE
 
