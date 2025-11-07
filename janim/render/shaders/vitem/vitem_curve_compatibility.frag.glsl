@@ -13,7 +13,7 @@ uniform bool JA_FIX_IN_FRAME;
 uniform vec4 glow_color;
 uniform float glow_size;
 
-const float INFINITY = uintBitsToFloat(0x7F800000);
+const float INFINITY = 1.0 / 0.0;
 
 #[JA_FINISH_UP_UNIFORMS]
 
@@ -22,17 +22,10 @@ const float INFINITY = uintBitsToFloat(0x7F800000);
 #include "vitem_curve_frag_utils.glsl"
 #include "vitem_debug.glsl"
 
-// #define CONTROL_POINTS
 // #define FRAG_AREA
 
 void main()
 {
-    #ifdef CONTROL_POINTS
-    if (debug_control_points(points.length())) {
-        return;
-    }
-    #endif
-
     float d = distance_to_curve(curr_idx);
     f_color = get_vitem_curve_color(d, curr_idx);
 

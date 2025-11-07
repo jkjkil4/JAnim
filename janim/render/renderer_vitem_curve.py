@@ -46,7 +46,7 @@ class VItemCurveRenderer(Renderer):
 
         self.sampb_mapped_points, \
             self.sampb_radius, \
-            self.sampb_stroke_color = gl.glGenTextures(4)
+            self.sampb_stroke_color = gl.glGenTextures(3)
 
         self.loc_mapped_points = gl.glGetUniformLocation(self.prog.glo, 'points')
         self.loc_radius = gl.glGetUniformLocation(self.prog.glo, 'radii')
@@ -98,7 +98,6 @@ class VItemCurveRenderer(Renderer):
         self.vbo_mapped_points = self.ctx.buffer(reserve=1)
         self.vbo_radius = self.ctx.buffer(reserve=1)
         self.vbo_stroke_color = self.ctx.buffer(reserve=1)
-        self.vbo_fill_color = self.ctx.buffer(reserve=1)
 
         self.vao = self.ctx.vertex_array(self.prog, self.vbo_indices, 'in_indices')
 
@@ -128,19 +127,15 @@ class VItemCurveRenderer(Renderer):
         if new_attrs.radius is not self.attrs.radius or points_cnt_changed:
             self.update_dynamic_buffer_data(new_attrs.radius,
                                             self.vbo_radius,
-                                            resize_target)
+                                            resize_target,
+                                            use_32bit_align=True)
             self.attrs.radius = new_attrs.radius
 
         if new_attrs.stroke is not self.attrs.stroke or points_cnt_changed:
             self.update_dynamic_buffer_data(new_attrs.stroke,
                                             self.vbo_stroke_color,
                                             resize_target)
-
-        if new_attrs.fill is not self.attrs.fill or points_cnt_changed:
-            self.update_dynamic_buffer_data(new_attrs.fill,
-                                            self.vbo_fill_color,
-                                            resize_target)
-            self.attrs.fill = new_attrs.fill
+            self.attrs.stroke = new_attrs.stroke
 
         if new_attrs.points is not self.attrs.points:
             self._update_indices(item, new_attrs)
@@ -186,12 +181,7 @@ class VItemCurveRenderer(Renderer):
             self.update_dynamic_buffer_data(new_attrs.stroke,
                                             self.vbo_stroke_color,
                                             resize_target)
-
-        if new_attrs.fill is not self.attrs.fill or points_cnt_changed:
-            self.update_dynamic_buffer_data(new_attrs.fill,
-                                            self.vbo_fill_color,
-                                            resize_target)
-            self.attrs.fill = new_attrs.fill
+            self.attrs.stroke = new_attrs.stroke
 
         if new_attrs.points is not self.attrs.points:
             self._update_indices(item, new_attrs)
@@ -201,7 +191,6 @@ class VItemCurveRenderer(Renderer):
         self.vbo_mapped_points.bind_to_storage_buffer(0)
         self.vbo_radius.bind_to_storage_buffer(1)
         self.vbo_stroke_color.bind_to_storage_buffer(2)
-        self.vbo_fill_color.bind_to_storage_buffer(3)
 
         self.render_common(item, render_data, new_attrs)
 
