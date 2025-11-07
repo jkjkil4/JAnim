@@ -132,6 +132,8 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
 
         self._fix_in_frame = False
 
+        self._saved_states: dict[str, Item.SavedState[Self]] = {}
+
         self._init_components()
 
         if children is not None:
@@ -641,6 +643,94 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
 
     def is_fix_in_frame(self) -> bool:
         return self._fix_in_frame
+
+    # endregion
+
+    # region state and target
+
+    @dataclass
+    class SavedState[T]:
+        state: T
+        root_only: bool
+
+    def save_state(self, key: str = '', root_only: bool = False) -> Self:
+        '''
+        保存物件状态，后续可使用 :meth:`load_state` 恢复，例如：
+
+        .. code-block:: python
+
+            item.save_state()
+
+            # ...
+
+            item.load_state()
+
+        或者创建恢复动画：
+
+        .. code-block:: python
+
+            self.play(item.anim.load_state())
+
+        例如可以用在，保存摄像机初始状态，在复杂的动画后恢复摄像机位置等场景中
+
+        .. code-block:: python
+
+            NumberPlane((-2, 2), (-2, 2), faded_line_ratio=1).show()
+
+            self.camera.save_state()
+
+            self.play(
+                self.camera.anim.points.rotate(40 * DEGREES)
+            )
+            self.play(
+                self.camera.anim.points.rotate(70 * DEGREES, axis=UP)
+            )
+
+            self.play(
+                self.camera.anim.load_state()
+            )
+        '''
+        self._saved_states[key] = self.SavedState(self.store() if root_only else self.copy(), root_only)
+        return self
+
+    def load_state(self, key: str = '') -> Self:
+        '''
+        恢复物件状态，详见 :meth:`save_state`
+        '''
+        saved_state = self._saved_states[key]
+        if saved_state.root_only:
+            self.restore(saved_state.state)
+        else:
+            self.become(saved_state.state)
+        return self
+
+    def generate_target(self) -> Self:
+        '''
+        拷贝生成一个 ``.target`` 物件，用于设置目标状态，最后使用 :class:`~.MoveToTarget` 创建过渡动画
+
+        例如：
+
+        .. code-block:: python
+
+            txt = Text('A Matrix')
+            mat = TypstMatrix([
+                [1, 2, 3],
+                [4, 5, 6],
+                [7, 8, 9]
+            ])
+
+            self.play(Write(txt))
+
+            Group(txt.generate_target(), mat).points.arrange(DOWN)
+
+            self.play(
+                MoveToTarget(txt),
+                FadeIn(mat, UP)
+            )
+            self.forward()
+        '''
+        self.target = self.copy()
+        return self.target
 
     # endregion
 
