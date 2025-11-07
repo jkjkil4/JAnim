@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from collections import defaultdict
+from contextlib import contextmanager
 from contextvars import ContextVar
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Any
@@ -57,7 +58,7 @@ class Renderer:
         new_data: np.ndarray,
         vbo: mgl.Buffer,
         resize_target: int,
-        use_32byte_align: bool = False
+        use_32bit_align: bool = False
     ) -> None:
         processed_data = resize_with_interpolation(new_data, resize_target)
         assert processed_data.dtype == np.float32
@@ -65,7 +66,7 @@ class Renderer:
 
         size = (
             ((len(bytes_data) + 31) & ~31)
-            if use_32byte_align
+            if use_32bit_align
             else len(bytes_data)
         )
         if size != vbo.size:
@@ -86,6 +87,18 @@ class Renderer:
         assert len(bytes_data) == vbo.size
 
         vbo.write(bytes_data)
+
+    @staticmethod
+    @contextmanager
+    def depth_test_if_enabled(ctx: mgl.Context, item: Item):
+        if item._depth_test:
+            ctx.enable(mgl.DEPTH_TEST)
+            try:
+                yield
+            finally:
+                ctx.disable(mgl.DEPTH_TEST)
+        else:
+            yield
 
 
 @dataclass(kw_only=True)

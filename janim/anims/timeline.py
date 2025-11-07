@@ -49,6 +49,7 @@ from janim.utils.config import Config, ConfigGetter, config_ctx_var
 from janim.utils.data import ContextSetter
 from janim.utils.iterables import resize_preserving_order
 from janim.utils.simple_functions import clip
+from janim.utils.space_ops import normalize
 
 _ = get_local_strings('timeline')
 
@@ -969,6 +970,10 @@ class BuiltTimeline:
                      uniforms(ctx,
                               JA_FRAMEBUFFER=FRAME_BUFFER_BINDING,
                               JA_CAMERA_SCALED_FACTOR=camera_info.scaled_factor,
+                              JA_CAMERA_CENTER=camera_info.center,
+                              JA_CAMERA_LOC=camera_info.camera_location,
+                              JA_CAMERA_RIGHT=normalize(camera_info.horizontal_vect),
+                              JA_CAMERA_UP=normalize(camera_info.vertical_vect),
                               JA_VIEW_MATRIX=camera_info.view_matrix.T.flatten(),
                               JA_FIXED_DIST_FROM_PLANE=camera_info.fixed_distance_from_plane,
                               JA_PROJ_MATRIX=camera_info.proj_matrix.T.flatten(),

@@ -20,36 +20,10 @@ const float INFINITY = 1.0 / 0.0;
 #[JA_FINISH_UP_UNIFORMS]
 
 uniform int lim;
-uniform samplerBuffer points;   // vec4(x, y, isclosed, 0)
-uniform samplerBuffer radii;    // radii[idx / 4][idx % 4]
-uniform samplerBuffer colors;
-uniform samplerBuffer fills;
-
-vec2 get_point(int idx) {
-    return texelFetch(points, idx).xy;
-}
-
-bool get_isclosed(int idx) {
-    return bool(texelFetch(points, idx).z);
-}
-
-float get_radius(int anchor_idx) {
-    if (JA_FIX_IN_FRAME) {
-        return texelFetch(radii, anchor_idx / 4)[anchor_idx % 4] * JA_CAMERA_SCALED_FACTOR;
-    }
-    return texelFetch(radii, anchor_idx / 4)[anchor_idx % 4];
-}
-
-vec4 get_color(int anchor_idx) {
-    return texelFetch(colors, anchor_idx);
-}
-
-vec4 get_fill(int anchor_idx) {
-    return texelFetch(fills, anchor_idx);
-}
+#include "layouts/layout_compatibility.glsl"
 
 #include "../../includes/blend_color.glsl"
-#include "vitem_subpath_attr.glsl"
+#include "vitem_plane_frag_utils.glsl"
 #include "arrow_color.glsl"
 #include "vitem_debug.glsl"
 
@@ -94,6 +68,7 @@ void main()
         d, sgn, idx,
         shrink_left_length, shrink_right_length
     );
+    compute_depth_if_needed();
 
     #if !defined(POLYGON_LINES) && !defined(SDF_PLANE)
     if (f_color.a == 0.0)

@@ -80,7 +80,9 @@ class VideoRenderer(Renderer):
         self.texture.filter = item.min_mag_filter
         self.texture.use(0)
         self.update_fix_in_frame(self.u_fix, item)
-        self.vao.render(mgl.TRIANGLE_STRIP)
+
+        with self.depth_test_if_enabled(self.ctx, item):
+            self.vao.render(mgl.TRIANGLE_STRIP)
 
     def update_texture(self, item: Video) -> None:
         if self.texture is None:

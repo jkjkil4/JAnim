@@ -1,4 +1,4 @@
-#version 330 core
+#version 430 core
 
 in vec2 v_coord;
 
@@ -13,42 +13,15 @@ uniform bool is_fill_transparent;
 uniform vec4 glow_color;
 uniform float glow_size;
 
-const float INFINITY = 1.0 / 0.0;
+const float INFINITY = uintBitsToFloat(0x7F800000);
 
 #[JA_FINISH_UP_UNIFORMS]
 
-uniform int lim;
-uniform samplerBuffer points;   // vec4(x, y, isclosed, 0)
-uniform samplerBuffer radii;    // radii[idx / 4][idx % 4]
-uniform samplerBuffer colors;
-uniform samplerBuffer fills;
-
-vec2 get_point(int idx) {
-    return texelFetch(points, idx).xy;
-}
-
-bool get_isclosed(int idx) {
-    return bool(texelFetch(points, idx).z);
-}
-
-float get_radius(int anchor_idx) {
-    if (JA_FIX_IN_FRAME) {
-        return texelFetch(radii, anchor_idx / 4)[anchor_idx % 4] * JA_CAMERA_SCALED_FACTOR;
-    }
-    return texelFetch(radii, anchor_idx / 4)[anchor_idx % 4];
-}
-
-vec4 get_color(int anchor_idx) {
-    return texelFetch(colors, anchor_idx);
-}
-
-vec4 get_fill(int anchor_idx) {
-    return texelFetch(fills, anchor_idx);
-}
+#include "layouts/layout.glsl"
 
 #include "../../includes/blend_color.glsl"
-#include "vitem_subpath_attr.glsl"
-#include "vitem_color.glsl"
+#include "vitem_plane_frag_utils.glsl"
+#include "vitem_plane_color.glsl"
 #include "vitem_debug.glsl"
 
 // #define CONTROL_POINTS
@@ -58,7 +31,7 @@ vec4 get_fill(int anchor_idx) {
 void main()
 {
     #ifdef CONTROL_POINTS
-    if (debug_control_points(lim + 1))
+    if (debug_control_points(points.length()))
         return;
     #endif
 
@@ -69,6 +42,8 @@ void main()
     int start_idx = 0;
     float sp_d;
     float sp_sgn;
+
+    const int lim = (points.length() - 1) / 2 * 2;
 
     while (true) {
         get_subpath_attr(start_idx, lim, start_idx, idx, sp_d, sp_sgn);
@@ -81,6 +56,7 @@ void main()
     }
 
     f_color = get_vitem_color(d, sgn, idx);
+    compute_depth_if_needed();
 
     #if !defined(POLYGON_LINES) && !defined(SDF_PLANE)
     if (f_color.a == 0.0)
@@ -92,7 +68,7 @@ void main()
     #endif
 
     #ifdef POLYGON_LINES
-    debug_polygon_lines(lim + 1);
+    debug_polygon_lines(points.length());
     #endif
 
     #[JA_FINISH_UP]
