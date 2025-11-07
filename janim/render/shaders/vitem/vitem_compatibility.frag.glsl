@@ -47,10 +47,9 @@ vec4 get_fill(int anchor_idx) {
 }
 
 #include "../../includes/blend_color.glsl"
-#include "vitem_subpath_attr.glsl"
-#include "vitem_color.glsl"
+#include "vitem_plane_frag_utils.glsl"
+#include "vitem_plane_color.glsl"
 #include "vitem_debug.glsl"
-#include "compute_depth.glsl"
 
 // #define CONTROL_POINTS
 // #define POLYGON_LINES
