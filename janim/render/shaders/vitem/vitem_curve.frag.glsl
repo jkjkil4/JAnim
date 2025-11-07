@@ -1,8 +1,8 @@
 #version 430 core
 
 in vec2 v_coord;
+in vec4 v_color;
 
-flat in int idx;
 flat in int prev_idx;
 flat in int next_idx;
 
@@ -59,68 +59,34 @@ vec4 get_fill(int anchor_idx) {
 
 #include "distance_to_curve.glsl"
 #include "vitem_curve_color.glsl"
+#include "vitem_debug.glsl"
 
-// #define FRAG_AREA
+#define CONTROL_POINTS
+#define FRAG_AREA
 
 void main()
 {
-    // float d = distance_to_curve(idx);
-    // float prev_d = distance_to_curve(prev_idx);
-    // float next_d = distance_to_curve(next_idx);
-
-    // // 优先给距离最小的渲染
-    // if (prev_d <= d || next_d < d) {
-    //     #ifdef FRAG_AREA
-    //     f_color = vec4(1.0, 0.0, 0.0, 0.5);
-    //     return;
-    //     #endif
-
-    //     discard;
-    // }
-
-    if (prev_idx != -1) {
-        float dot1 = dot(
-            normalize(get_point(idx + 1) - get_point(idx)),
-            normalize(v_coord - get_point(idx))
-        );
-        float dot2 = dot(
-            normalize(get_point(prev_idx + 1) - get_point(prev_idx + 2)),
-            normalize(v_coord - get_point(prev_idx + 2))
-        );
-        if (dot1 < dot2) {
-            #ifdef FRAG_AREA
-            f_color = vec4(1.0, 0.0, 0.0, 0.5);
-            return;
-            #endif
-
-            discard;
-        }
+    #ifdef CONTROL_POINTS
+    if (debug_control_points(points.length())) {
+        return;
     }
-    if (next_idx != -1) {
-        float dot2 = dot(
-            normalize(get_point(idx + 1) - get_point(idx + 2)),
-            normalize(v_coord - get_point(idx + 2))
-        );
-        float dot3 = dot(
-            normalize(get_point(next_idx + 1) - get_point(next_idx)),
-            normalize(v_coord - get_point(next_idx))
-        );
-        if (dot2 <= dot3) {
-            #ifdef FRAG_AREA
-            f_color = vec4(0.0, 1.0, 0.0, 0.5);
-            return;
-            #endif
+    #endif
 
-            discard;
-        }
-    }
+    float prev_d = distance_to_curve(prev_idx);
+    float next_d = distance_to_curve(next_idx);
+
+    int idx = prev_d < next_d ? prev_idx : next_idx;
 
     float d = distance_to_curve(idx);
     f_color = get_vitem_curve_color(d, idx);
 
+    // f_color = blend_color(v_color, f_color);
+    // return;
+
     if (f_color.a == 0.0) {
         #ifdef FRAG_AREA
-        f_color = vec4(1.0, 0.5, 0.0, 0.5);
+        // f_color = vec4(1.0, 0.5, 0.0, 0.5);
+        f_color = v_color;
         return;
         #endif
 

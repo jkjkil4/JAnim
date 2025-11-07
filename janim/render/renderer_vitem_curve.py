@@ -150,7 +150,7 @@ class VItemCurveRenderer(Renderer):
         self.u_glow_color.write(item.glow._rgba._data.tobytes())
         self.u_glow_size.value = item.glow._size
 
-        self.vao.render(mgl.POINTS, vertices=self.vbo_indices.size // 4 // 3)
+        self.vao.render(mgl.POINTS, vertices=self.vbo_indices.size // 4 // 2)
 
     def _update_others(self, item: VItem, render_data: RenderData, new_attrs: RenderAttrs) -> None:
         pass
@@ -161,18 +161,21 @@ class VItemCurveRenderer(Renderer):
 
         start_idx = 0
         for end_idx in item.points.walk_subpath_end_indices():
-            indices = np.empty(((end_idx - start_idx) // 2, 3), dtype=np.int32)
-            indices[:, 0] = np.arange(start_idx, end_idx, 2, dtype=np.int32)
-            if np.isclose(points[end_idx], points[start_idx]).all():
-                indices[:, 1] = np.roll(indices[:, 0], 1)
-                indices[:, 2] = np.roll(indices[:, 0], -1)
-            else:
-                indices[0, 1] = -1
-                indices[1:, 1] = indices[1:, 0]
-                indices[-1, 2] = -1
-                indices[:-1, 2] = indices[:-1, 0]
+            is_closed = np.isclose(points[end_idx], points[start_idx]).all()
 
-            indices_list.append(indices)
+            next_indices = np.arange(start_idx, end_idx, 2, dtype=np.int32)
+            mask = np.isclose(points[next_indices], points[next_indices + 2])
+            mask = np.all(mask, axis=1)
+            next_indices = next_indices[~mask]
+
+            prev_indices = np.empty_like(next_indices)
+            if len(prev_indices) != 0:
+                prev_indices[1:] = next_indices[:-1]
+                prev_indices[0] = next_indices[-1] if is_closed else -1
+
+            indices_list.append(
+                np.vstack([prev_indices, next_indices]).T
+            )
 
         all_indices = indices_list[0] if len(indices_list) == 1 else np.vstack(indices_list)
         bytes = all_indices.tobytes()
