@@ -150,7 +150,8 @@ class VItemCurveRenderer(Renderer):
         self.u_glow_color.write(item.glow._rgba._data.tobytes())
         self.u_glow_size.value = item.glow._size
 
-        self.vao.render(mgl.POINTS, vertices=self.vbo_indices.size // 4 // 2)
+        with self.depth_test_if_enabled(self.ctx, item):
+            self.vao.render(mgl.POINTS, vertices=self.vbo_indices.size // 4 // 3)
 
     def _update_others(self, item: VItem, render_data: RenderData, new_attrs: RenderAttrs) -> None:
         pass
@@ -163,18 +164,23 @@ class VItemCurveRenderer(Renderer):
         for end_idx in item.points.walk_subpath_end_indices():
             is_closed = np.isclose(points[end_idx], points[start_idx]).all()
 
-            next_indices = np.arange(start_idx, end_idx, 2, dtype=np.int32)
-            mask = np.isclose(points[next_indices], points[next_indices + 2])
+            curr_indices = np.arange(start_idx, end_idx, 2, dtype=np.int32)
+            mask = np.isclose(points[curr_indices], points[curr_indices + 2])
             mask = np.all(mask, axis=1)
-            next_indices = next_indices[~mask]
+            curr_indices = curr_indices[~mask]
 
-            prev_indices = np.empty_like(next_indices)
+            prev_indices = np.empty_like(curr_indices)
             if len(prev_indices) != 0:
-                prev_indices[1:] = next_indices[:-1]
-                prev_indices[0] = next_indices[-1] if is_closed else -1
+                prev_indices[1:] = curr_indices[:-1]
+                prev_indices[0] = curr_indices[-1] if is_closed else -1
+
+            next_indices = np.empty_like(curr_indices)
+            if len(next_indices) != 0:
+                next_indices[:-1] = curr_indices[1:]
+                next_indices[-1] = curr_indices[0] if is_closed else -1
 
             indices_list.append(
-                np.vstack([prev_indices, next_indices]).T
+                np.vstack([prev_indices, curr_indices, next_indices]).T
             )
 
         all_indices = indices_list[0] if len(indices_list) == 1 else np.vstack(indices_list)

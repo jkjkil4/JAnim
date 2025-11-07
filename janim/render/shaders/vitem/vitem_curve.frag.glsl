@@ -1,10 +1,8 @@
 #version 430 core
 
 in vec2 v_coord;
-in vec4 v_color;
 
-flat in int prev_idx;
-flat in int next_idx;
+flat in int curr_idx;
 
 out vec4 f_color;
 
@@ -61,8 +59,8 @@ vec4 get_fill(int anchor_idx) {
 #include "vitem_curve_color.glsl"
 #include "vitem_debug.glsl"
 
-#define CONTROL_POINTS
-#define FRAG_AREA
+// #define CONTROL_POINTS
+// #define FRAG_AREA
 
 void main()
 {
@@ -72,21 +70,15 @@ void main()
     }
     #endif
 
-    float prev_d = distance_to_curve(prev_idx);
-    float next_d = distance_to_curve(next_idx);
-
-    int idx = prev_d < next_d ? prev_idx : next_idx;
-
-    float d = distance_to_curve(idx);
-    f_color = get_vitem_curve_color(d, idx);
+    float d = distance_to_curve(curr_idx);
+    f_color = get_vitem_curve_color(d, curr_idx);
 
     // f_color = blend_color(v_color, f_color);
     // return;
 
     if (f_color.a == 0.0) {
         #ifdef FRAG_AREA
-        // f_color = vec4(1.0, 0.5, 0.0, 0.5);
-        f_color = v_color;
+        f_color = vec4(1.0, 0.5, 0.0, 0.5);
         return;
         #endif
 

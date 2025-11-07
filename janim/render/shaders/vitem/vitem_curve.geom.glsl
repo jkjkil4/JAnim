@@ -1,16 +1,15 @@
 #version 430 core
 
 layout(points) in;
-layout(triangle_strip, max_vertices = 6) out;
+layout(triangle_strip, max_vertices = 7) out;
 
 in int v_prev_idx[1];
+in int v_curr_idx[1];
 in int v_next_idx[1];
 
 out vec2 v_coord;
-out vec4 v_color;
 
-flat out int prev_idx;
-flat out int next_idx;
+flat out int curr_idx;
 
 uniform float JA_CAMERA_SCALED_FACTOR;
 uniform vec2 JA_FRAME_RADIUS;
@@ -29,6 +28,10 @@ layout(std140, binding = 1) buffer Radii
 {
     vec4 radii[];   // radii[idx / 4][idx % 4]
 };
+
+vec2 get_point(int idx) {
+    return points[idx].xy;
+}
 
 vec3 get_point_with_depth(int idx) {
     return points[idx].xyz;
@@ -58,130 +61,85 @@ void emit_coord(vec2 coord, float depth)
     EmitVertex();
 }
 
-void emit_points_near_control(int idx, float expand_radius)
-{
-    vec3 A = get_point_with_depth(idx);
-    vec3 B = get_point_with_depth(idx + 1);
-    vec3 C = get_point_with_depth(idx + 2);
-
-    if (is_approx_line(A.xy, B.xy, C.xy)) {
-        // 不直接使用 B，是为了避免 B 和 A 或 C 重合的情况
-        vec3 center = (A + C) * 0.5;
-        vec2 vec = expand_radius * rotate_90_ccw(normalize(C.xy - A.xy));
-
-        emit_coord(center.xy + vec, center.z);
-        emit_coord(center.xy - vec, center.z);
-    } else {
-        vec2 v1 = B.xy - A.xy, v2 = C.xy - B.xy, v = C.xy - A.xy;
-        vec3 center = (A + C) * 0.5;
-        float det = cross2d(v1, v2);
-        vec2 rot_vec = normalize(det < 0.0 ? rotate_90_ccw(v) : rotate_90_cw(v));
-
-        float proj_len = dot(v1, rot_vec);
-        vec2 p1 = center.xy + rot_vec * (proj_len + expand_radius);
-        vec2 p2 = center.xy - rot_vec * expand_radius;
-        if (det < 0.0) {
-            emit_coord(p1, center.z);
-            emit_coord(p2, center.z);
-        } else {
-            emit_coord(p2, center.z);
-            emit_coord(p1, center.z);
-        }
-    }
-}
-
-void emit_points_near_anchor(float expand_radius)
-{
-    vec3 p0 = get_point_with_depth(prev_idx);
-    vec3 p1 = get_point_with_depth(prev_idx + 1);
-    vec3 p2 = get_point_with_depth(next_idx);
-    vec3 p3 = get_point_with_depth(next_idx + 1);
-    vec3 p4 = get_point_with_depth(next_idx + 2);
-    if (p1 == p0 || p1 == p2) {
-        p1 = (p0 + p2) * 0.5;
-    }
-    if (p3 == p4 || p3 == p2) {
-        p3 = (p4 + p2) * 0.5;
-    }
-
-    if (is_approx_line(p1.xy, p2.xy, p3.xy)) {
-        vec2 vec = expand_radius * rotate_90_ccw(normalize(p3.xy - p2.xy));
-
-        emit_coord(p2.xy + vec, p2.z);
-        emit_coord(p2.xy - vec, p2.z);
-    } else {
-        vec2 v1 = normalize(p2.xy - p1.xy), v2 = normalize(p3.xy - p2.xy);
-        vec2 v = normalize(-v1 + v2);
-        float det = cross2d(v1, v2);
-        if (det < 0.0) {
-            v = -v;
-        }
-
-        float cos_value = dot(v2, v);
-        float sin_value = sqrt(1.0 - cos_value * cos_value);
-        float dist = expand_radius / sin_value;
-
-        emit_coord(p2.xy + v * dist, p2.z);
-        emit_coord(p2.xy - v * dist, p2.z);
-    }
-}
-
-void emit_points_at_start(int idx, float expand_radius)
-{
-
-}
-
-void emit_points_at_end(int idx, float expand_radius)
-{
-
-}
-
 void main()
 {
-    prev_idx = v_prev_idx[0];
-    next_idx = v_next_idx[0];
+    int prev_idx = v_prev_idx[0];
+    curr_idx = v_curr_idx[0];
+    int next_idx = v_next_idx[0];
 
-    v_color = mix(vec4(1.0, 0.0, 0.0, 1.0), vec4(0.0, 1.0, 0.0, 1.0), next_idx / 14.0);
+    vec3 A = get_point_with_depth(curr_idx);
+    vec3 B = get_point_with_depth(curr_idx + 1);
+    vec3 C = get_point_with_depth(curr_idx + 2);
+    if (B == A || B == C) {
+        B = (A + C) * 0.5;
+    }
 
+    vec2 v1 = normalize(B.xy - A.xy);
+    vec2 v2 = normalize(C.xy - B.xy);
+    bool flag = cross2d(v1, v2) < 0.0;
+
+    int curr_anchor = curr_idx / 2;
+    vec2 r = vec2(get_radius(curr_anchor), get_radius(curr_anchor + 1));
+    if (glow_color.a != 0.0) {
+        r = max(r, glow_size);
+    }
+    r += JA_ANTI_ALIAS_RADIUS;
+
+    vec2 expand_start;
     if (prev_idx == -1) {
-        int next_anchor_idx = next_idx / 2;
-
-        float expand_radius = max(get_radius(next_anchor_idx), get_radius(next_anchor_idx + 1));
-        if (glow_color.a != 0.0) {
-            expand_radius = max(expand_radius, glow_size);
-        }
-        expand_radius += JA_ANTI_ALIAS_RADIUS;
-
-        emit_points_at_start(next_idx, expand_radius);
-        emit_points_near_control(next_idx, expand_radius);
-    } else if (next_idx == -1) {
-        int prev_anchor_idx = prev_idx / 2;
-
-        float expand_radius = max(get_radius(prev_anchor_idx), get_radius(prev_anchor_idx + 1));
-        if (glow_color.a != 0.0) {
-            expand_radius = max(expand_radius, glow_size);
-        }
-        expand_radius += JA_ANTI_ALIAS_RADIUS;
-
-        emit_points_near_control(prev_idx, expand_radius);
-        emit_points_at_end(prev_idx, expand_radius);
+        expand_start = r.x * (flag ? rotate_90_cw(v1) : rotate_90_ccw(v1));
+        A.xy -= r.x * v1;
     } else {
-        int prev_anchor_idx = prev_idx / 2;
-        int next_anchor_idx = next_idx / 2;
-
-        vec3 r = vec3(
-            get_radius(prev_anchor_idx),
-            get_radius(next_anchor_idx),
-            get_radius(next_anchor_idx + 1)
-        );
-        if (glow_color.a != 0.0) {
-            r = max(r, glow_size);
+        vec2 before_A = get_point(prev_idx + 1);
+        vec2 start_dir;
+        if (before_A == A.xy) {
+            start_dir = normalize(before_A - get_point(prev_idx));
+        } else {
+            start_dir = normalize(A.xy - before_A);
         }
-        r += JA_ANTI_ALIAS_RADIUS;
+        float start_cos = sqrt((dot(start_dir, v1) + 1.0) * 0.5);
 
-        emit_points_near_control(prev_idx, max(r.x, r.y));
-        emit_points_near_anchor(r.y);
-        emit_points_near_control(next_idx, max(r.y, r.z));
+        expand_start = normalize(start_dir + v1) * r.x / start_cos;
+        expand_start = flag ? rotate_90_cw(expand_start) : rotate_90_ccw(expand_start);
+    }
+
+    vec2 expand_end;
+    if (next_idx == -1) {
+        expand_end = r.y * (flag ? rotate_90_cw(v2) : rotate_90_ccw(v2));
+        C.xy += r.y * v2;
+    } else {
+        vec2 after_C = get_point(next_idx + 1);
+        vec2 end_dir;
+        if (after_C == C.xy) {
+            end_dir = normalize(get_point(next_idx + 2) - after_C);
+        } else {
+            end_dir = normalize(after_C - C.xy);
+        }
+        float end_cos = sqrt((dot(end_dir, v2) + 1.0) * 0.5);
+
+        expand_end = normalize(end_dir + v2) * r.y / end_cos;
+        expand_end = flag ? rotate_90_cw(expand_end) : rotate_90_ccw(expand_end);
+    }
+
+    vec2 p1 = A.xy + expand_start;
+    vec2 p2 = A.xy - expand_start;
+    vec2 p3 = C.xy + expand_end;
+    vec2 p4 = C.xy - expand_end;
+    if (is_approx_line(A.xy, B.xy, C.xy)) {
+        emit_coord(p1, A.z);
+        emit_coord(p2, A.z);
+        emit_coord(p3, C.z);
+        emit_coord(p4, C.z);
+    } else {
+        // vec2 p = line_intersection(p1, v1, p3, v2);
+        vec2 p_anchor1 = B.xy + r.x * (flag ? rotate_90_ccw(v1) : rotate_90_cw(v1));
+        vec2 p_anchor2 = B.xy + r.y * (flag ? rotate_90_ccw(v2) : rotate_90_cw(v2));
+        emit_coord(p1, A.z);
+        emit_coord(p2, A.z);
+        emit_coord(p3, C.z);
+        emit_coord(p_anchor1, B.z);
+        emit_coord(p4, C.z);
+        emit_coord(p_anchor2, B.z);
     }
     EndPrimitive();
 }

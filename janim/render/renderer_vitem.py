@@ -19,8 +19,19 @@ class VItemRenderer(Renderer):
         self.plane_renderer = self.plane_renderer_cls()
         self.curve_renderer = self.curve_renderer_cls()
 
+        self.prev_fill = None
+
     def render(self, item: VItem) -> None:
-        if item.fill.is_transparent():
-            self.curve_renderer.render(item)
+        if item._depth_test:
+            new_fill = item.fill._rgbas._data
+            if new_fill is not self.prev_fill:
+                self.fill_transparent = item.fill.is_transparent()
+                self.prev_fill = new_fill
+
+            if self.fill_transparent:
+                self.curve_renderer.render(item)
+            else:
+                self.plane_renderer.render(item)
+
         else:
             self.plane_renderer.render(item)

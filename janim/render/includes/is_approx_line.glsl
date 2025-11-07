@@ -4,9 +4,6 @@ float cross2d(vec2 a, vec2 b) {
 }
 
 bool is_approx_line(vec2 A, vec2 B, vec2 C) {
-    if (B == A || B == C) {
-        return true;
-    }
     vec2 v1 = normalize(B - A);
     vec2 v2 = normalize(C - B);
     // REFACTOR: 使用更好的判断可近似为直线的方法
