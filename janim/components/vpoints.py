@@ -620,6 +620,7 @@ class Cmpt_VPoints[ItemT](Cmpt_Points[ItemT], impl=True):
             self.add_subpath(new_subpath)
         return self
 
+    @mockable
     def make_smooth(self, approx=False, root_only=False) -> Self:
         '''
         Edits the path so as to pass smoothly through all
@@ -636,10 +637,12 @@ class Cmpt_VPoints[ItemT](Cmpt_Points[ItemT], impl=True):
 
         return self
 
+    @mockable
     def make_approximately_smooth(self, root_only=False) -> Self:
-        self.make_smooth(approx=True, root_only=root_only)
+        Cmpt_VPoints.make_smooth(self, approx=True, root_only=root_only)
         return self
 
+    @mockable
     def make_jagged(self, root_only=False) -> Self:
         for cmpt in self.walk_same_cmpt_of_self_and_descendants_without_mock(root_only):
             if not isinstance(cmpt, Cmpt_VPoints):
