@@ -17,45 +17,7 @@ const float INFINITY = uintBitsToFloat(0x7F800000);
 
 #[JA_FINISH_UP_UNIFORMS]
 
-layout(std140, binding = 0) buffer MappedPoints
-{
-    vec4 points[];  // vec4(x, y, isclosed, 0)
-};
-layout(std140, binding = 1) buffer Radii
-{
-    vec4 radii[];   // radii[idx / 4][idx % 4]
-};
-layout(std140, binding = 2) buffer Colors
-{
-    vec4 colors[];
-};
-layout(std140, binding = 3) buffer Fills
-{
-    vec4 fills[];
-};
-
-vec2 get_point(int idx) {
-    return points[idx].xy;
-}
-
-bool get_isclosed(int idx) {
-    return bool(points[idx].z);
-}
-
-float get_radius(int anchor_idx) {
-    if (JA_FIX_IN_FRAME) {
-        return radii[anchor_idx / 4][anchor_idx % 4] * JA_CAMERA_SCALED_FACTOR;
-    }
-    return radii[anchor_idx / 4][anchor_idx % 4];
-}
-
-vec4 get_color(int anchor_idx) {
-    return colors[anchor_idx];
-}
-
-vec4 get_fill(int anchor_idx) {
-    return fills[anchor_idx];
-}
+#include "layouts/layout.glsl"
 
 #include "../../includes/blend_color.glsl"
 #include "vitem_plane_frag_utils.glsl"

@@ -19,30 +19,7 @@ uniform bool JA_FIX_IN_FRAME;
 uniform vec4 glow_color;
 uniform float glow_size;
 
-layout(std140, binding = 0) buffer MappedPoints
-{
-    vec4 points[];  // vec4(x, y, depth, 0)
-};
-
-layout(std140, binding = 1) buffer Radii
-{
-    vec4 radii[];   // radii[idx / 4][idx % 4]
-};
-
-vec2 get_point(int idx) {
-    return points[idx].xy;
-}
-
-vec3 get_point_with_depth(int idx) {
-    return points[idx].xyz;
-}
-
-float get_radius(int anchor_idx) {
-    if (JA_FIX_IN_FRAME) {
-        return radii[anchor_idx / 4][anchor_idx % 4] * JA_CAMERA_SCALED_FACTOR;
-    }
-    return radii[anchor_idx / 4][anchor_idx % 4];
-}
+#include "layouts/layout.glsl"
 
 vec2 rotate_90_ccw(vec2 v) {
     return vec2(-v.y, v.x);
