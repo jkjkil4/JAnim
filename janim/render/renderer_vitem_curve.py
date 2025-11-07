@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 
 import moderngl as mgl
 import numpy as np
+import OpenGL.GL as gl
 
 from janim.camera.camera_info import CameraInfo
 from janim.render.base import RenderData, Renderer
@@ -43,8 +44,20 @@ class VItemCurveRenderer(Renderer):
         self.prog = get_program_from_file_prefix(self.shader_path_compatibility)
         self.init_common()
 
-        # TODO
-        raise NotImplementedError()
+        self.sampb_mapped_points, \
+            self.sampb_radius, \
+            self.sampb_stroke_color = gl.glGenTextures(4)
+
+        self.loc_mapped_points = gl.glGetUniformLocation(self.prog.glo, 'points')
+        self.loc_radius = gl.glGetUniformLocation(self.prog.glo, 'radii')
+        self.loc_stroke_color = gl.glGetUniformLocation(self.prog.glo, 'colors')
+
+        gl.glBindTexture(gl.GL_TEXTURE_BUFFER, self.sampb_mapped_points)
+        gl.glTexBuffer(gl.GL_TEXTURE_BUFFER, gl.GL_RGBA32F, self.vbo_mapped_points.glo)
+        gl.glBindTexture(gl.GL_TEXTURE_BUFFER, self.sampb_radius)
+        gl.glTexBuffer(gl.GL_TEXTURE_BUFFER, gl.GL_RGBA32F, self.vbo_radius.glo)
+        gl.glBindTexture(gl.GL_TEXTURE_BUFFER, self.sampb_stroke_color)
+        gl.glTexBuffer(gl.GL_TEXTURE_BUFFER, gl.GL_RGBA32F, self.vbo_stroke_color.glo)
 
     def init_normal(self) -> None:
         self.prog = get_program_from_file_prefix(self.shader_path_normal)
@@ -102,7 +115,51 @@ class VItemCurveRenderer(Renderer):
             self.init_compatibility()
             self.initialized = True
 
-        raise NotImplementedError()
+        render_data = self.data_ctx.get()
+        new_attrs = self.RenderAttrs.get(render_data, item)
+        points_cnt_changed = self.attrs.points is None or len(new_attrs.points) != len(self.attrs.points)
+        resize_target = (len(new_attrs.points) + 1) // 2
+
+        if len(new_attrs.points) < 3:
+            return
+
+        self._update_others(item, render_data, new_attrs)
+
+        if new_attrs.radius is not self.attrs.radius or points_cnt_changed:
+            self.update_dynamic_buffer_data(new_attrs.radius,
+                                            self.vbo_radius,
+                                            resize_target)
+            self.attrs.radius = new_attrs.radius
+
+        if new_attrs.stroke is not self.attrs.stroke or points_cnt_changed:
+            self.update_dynamic_buffer_data(new_attrs.stroke,
+                                            self.vbo_stroke_color,
+                                            resize_target)
+
+        if new_attrs.fill is not self.attrs.fill or points_cnt_changed:
+            self.update_dynamic_buffer_data(new_attrs.fill,
+                                            self.vbo_fill_color,
+                                            resize_target)
+            self.attrs.fill = new_attrs.fill
+
+        if new_attrs.points is not self.attrs.points:
+            self._update_indices(item, new_attrs)
+
+        self._update_points_compatibility(item, new_attrs)
+
+        gl.glUseProgram(self.prog.glo)
+        gl.glUniform1i(self.loc_mapped_points, 0)
+        gl.glUniform1i(self.loc_radius, 1)
+        gl.glUniform1i(self.loc_stroke_color, 2)
+
+        gl.glActiveTexture(gl.GL_TEXTURE0)
+        gl.glBindTexture(gl.GL_TEXTURE_BUFFER, self.sampb_mapped_points)
+        gl.glActiveTexture(gl.GL_TEXTURE1)
+        gl.glBindTexture(gl.GL_TEXTURE_BUFFER, self.sampb_radius)
+        gl.glActiveTexture(gl.GL_TEXTURE2)
+        gl.glBindTexture(gl.GL_TEXTURE_BUFFER, self.sampb_stroke_color)
+
+        self.render_common(item, render_data, new_attrs)
 
     def render_normal(self, item: VItem) -> None:
         if not self.initialized:
@@ -146,6 +203,9 @@ class VItemCurveRenderer(Renderer):
         self.vbo_stroke_color.bind_to_storage_buffer(2)
         self.vbo_fill_color.bind_to_storage_buffer(3)
 
+        self.render_common(item, render_data, new_attrs)
+
+    def render_common(self, item: VItem, render_data: RenderData, new_attrs: RenderAttrs) -> None:
         self.update_fix_in_frame(self.u_fix, item)
         self.u_glow_color.write(item.glow._rgba._data.tobytes())
         self.u_glow_size.value = item.glow._size
@@ -192,7 +252,28 @@ class VItemCurveRenderer(Renderer):
         self.vbo_indices.write(bytes)
 
     def _update_points_compatibility(self, item: VItem, new_attrs: RenderAttrs) -> None:
-        raise NotImplementedError()
+        if new_attrs.points is not self.attrs.points \
+                or new_attrs.fix_in_frame != self.attrs.fix_in_frame \
+                or new_attrs.camera_info is not self.attrs.camera_info:
+            if new_attrs.fix_in_frame:
+                mapped = new_attrs.camera_info.map_fixed_in_frame_points_with_depth(new_attrs.points)
+            else:
+                mapped = new_attrs.camera_info.map_points_with_depth(new_attrs.points)
+            mapped[:, :2] *= new_attrs.camera_info.frame_radius
+
+            if len(self.points_vec4buffer) != len(mapped):
+                self.points_vec4buffer = np.empty((len(mapped), 4), dtype=np.float32)
+
+            self.points_vec4buffer[:, :3] = mapped
+            bytes = self.points_vec4buffer.tobytes()
+
+            if len(bytes) != self.vbo_mapped_points.size:
+                self.vbo_mapped_points.orphan(len(bytes))
+
+            self.vbo_mapped_points.write(bytes)
+            self.attrs.fix_in_frame = new_attrs.fix_in_frame
+            self.attrs.camera_info = new_attrs.camera_info
+            self.attrs.points = new_attrs.points
 
     def _update_points_normal(self, item: VItem, new_attrs: RenderAttrs) -> None:
         if new_attrs.points is not self.attrs.points:
