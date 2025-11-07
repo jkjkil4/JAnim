@@ -3,14 +3,13 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from janim.render.base import RenderData
-from janim.render.renderer_vitem import (VItemCurveRenderer,
-                                         VItemPlaneRenderer, VItemRenderer)
+from janim.render.renderer_vitem import VItemPlaneRenderer
 
 if TYPE_CHECKING:
     from janim.items.geometry.arrow import Arrow
 
 
-class ArrowPlaneRenderer(VItemPlaneRenderer):
+class ArrowRenderer(VItemPlaneRenderer):
     shader_path_compatibility = 'render/shaders/vitem/arrow_compatibility'
     shader_path_normal = 'render/shaders/vitem/arrow'
 
@@ -25,10 +24,4 @@ class ArrowPlaneRenderer(VItemPlaneRenderer):
         self.u_shrink.value = self.shrink_values
 
 
-class ArrowCurveRenderer(VItemCurveRenderer):
-    pass
-
-
-class ArrowRenderer(VItemRenderer):
-    plane_renderer_cls = ArrowPlaneRenderer
-    curve_renderer_cls = ArrowCurveRenderer
+# Arrow 未支持 CurveRenderer
