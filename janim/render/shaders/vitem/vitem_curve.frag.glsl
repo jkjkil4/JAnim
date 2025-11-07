@@ -55,8 +55,7 @@ vec4 get_fill(int anchor_idx) {
     return fills[anchor_idx];
 }
 
-#include "distance_to_curve.glsl"
-#include "vitem_curve_color.glsl"
+#include "vitem_curve_frag_utils.glsl"
 #include "vitem_debug.glsl"
 
 // #define CONTROL_POINTS
@@ -72,9 +71,6 @@ void main()
 
     float d = distance_to_curve(curr_idx);
     f_color = get_vitem_curve_color(d, curr_idx);
-
-    // f_color = blend_color(v_color, f_color);
-    // return;
 
     if (f_color.a == 0.0) {
         #ifdef FRAG_AREA
