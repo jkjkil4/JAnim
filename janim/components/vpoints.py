@@ -542,7 +542,7 @@ class Cmpt_VPoints[ItemT](Cmpt_Points[ItemT], impl=True):
         以折线的方式将 ``points`` 添加
         '''
         if not self.has():
-            self.set(points[0])
+            self.set([points[0]])
 
         builder = PathBuilder(start_point=self.get_end())
         for point in points:
