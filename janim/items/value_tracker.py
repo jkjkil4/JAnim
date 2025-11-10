@@ -39,3 +39,6 @@ class ValueTracker[T](Item):
         super().__init__(**kwargs)
         self.data.set_func(copy_func, not_changed_func, interpolate_func)
         self.data.set(value)
+
+        if self.timeline is not None:
+            self.timeline.show(self, root_only=True)
