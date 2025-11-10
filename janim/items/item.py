@@ -364,6 +364,19 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
             *(self.copy() for i in range(n))
         )
 
+    def join[T](self, lst: Iterable[T]) -> Group[Self | T]:
+        from janim.items.points import Group
+        it = iter(lst)
+        items = []
+        try:
+            items.append(next(it))
+        except StopIteration:
+            return Group()
+        for item in it:
+            items.append(self.copy())
+            items.append(item)
+        return Group(*items)
+
     # region astype
 
     class _AsTypeWrapper:
