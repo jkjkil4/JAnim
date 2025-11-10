@@ -212,6 +212,8 @@ class _DataUpdater(ItemAnimation):
 class GroupUpdater[T: Item](Animation):
     '''
     以时间为参数对一组物件的数据进行修改
+
+    注意：该 Updater 假设 ``func`` 不会改变 ``item`` 后代物件结构，如果改变结构（例如增删子物件、:meth:`~.Item.become` 结构不一致等情况），则可能导致意外行为
     '''
     label_color = C_LABEL_ANIM_ABSTRACT
 
@@ -248,23 +250,24 @@ class GroupUpdater[T: Item](Animation):
     def _time_fixed(self) -> None:
         self.data = self.item.copy()
 
+        sub_items = list(self.item.walk_self_and_descendants())
         stacks = [
             self.timeline.item_appearances[item].stack
-            for item in self.item.walk_self_and_descendants()
+            for item in sub_items
         ]
         updaters = [
             _GroupUpdater(self, item, data, stacks, show_at_begin=self.show_at_begin, hide_at_end=self.hide_at_end)
-            for item, data in zip(self.item.walk_self_and_descendants(), self.data.walk_self_and_descendants())
+            for item, data in zip(sub_items, self.data.walk_self_and_descendants())
         ]
 
         if self.become_at_end and self.t_range.end is not FOREVER:
-            for item, stack in zip(self.item.walk_self_and_descendants(), stacks):
+            for item, stack in zip(sub_items, stacks):
                 item.restore(stack.compute(self.t_range.end, True, get_at_left=True))
 
             with UpdaterParams(self.t_range.end, 1, self.t_range, None, self) as params:
                 self.func(self.item, params)
 
-            for item, stack in zip(self.item.walk_self_and_descendants(), stacks):
+            for item, stack in zip(sub_items, stacks):
                 stack.detect_change(item, self.t_range.end, force=True)
 
         for sub_updater in updaters:

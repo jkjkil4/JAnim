@@ -402,8 +402,6 @@ class Angle(MarkedItem, VItem):
                 radius = (2 / 3) * np.minimum(dist_1, dist_2)
             else:
                 radius = 0.4
-        else:
-            self.radius = radius
 
         anchor_angle_1 = inter + quadrant[0] * radius * line1.points.unit_vector
         anchor_angle_2 = inter + quadrant[1] * radius * line2.points.unit_vector

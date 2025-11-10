@@ -3,6 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
+import numpy as np
 from PySide6.QtCore import QEvent, QObject, QPointF, QRectF, Qt
 from PySide6.QtGui import QColor, QMouseEvent, QPainter, QPaintEvent
 
@@ -117,6 +118,8 @@ class Selector(QObject):
 
         found: list[Selector.SelectedItem] = []
 
+        tolerance = np.array([6 / self.viewer.glw.width(), 6 / self.viewer.glw.height()])
+
         for item, appr in built.visible_item_segments.get(global_t):
             if not appr.is_visible_at(global_t):
                 continue
@@ -126,8 +129,8 @@ class Selector(QObject):
                 mapped = self.get_fixed_camera_info().map_points(box.get_corners())
             else:
                 mapped = camera_info.map_points(box.get_corners())
-            min_glx, min_gly = mapped.min(axis=0)
-            max_glx, max_gly = mapped.max(axis=0)
+            min_glx, min_gly = mapped.min(axis=0) - tolerance
+            max_glx, max_gly = mapped.max(axis=0) + tolerance
             if not min_glx <= glx <= max_glx or not min_gly <= gly <= max_gly:
                 continue
 
@@ -148,7 +151,13 @@ class Selector(QObject):
                     mapped = self.get_fixed_camera_info().map_points(box.get_corners())
                 else:
                     mapped = camera_info.map_points(box.get_corners())
-                self.children.append(Selector.SelectedItem(item, *mapped.min(axis=0), *mapped.max(axis=0)))
+                self.children.append(
+                    Selector.SelectedItem(
+                        item,
+                        *(mapped.min(axis=0) - tolerance),
+                        *(mapped.max(axis=0) + tolerance)
+                    )
+                )
 
     def select_child_item(self, event: QMouseEvent) -> None:
         glx, gly = self.viewer.glw.map_to_gl2d(event.position())

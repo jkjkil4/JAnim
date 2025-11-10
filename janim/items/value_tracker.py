@@ -39,3 +39,7 @@ class ValueTracker[T](Item):
         super().__init__(**kwargs)
         self.data.set_func(copy_func, not_changed_func, interpolate_func)
         self.data.set(value)
+
+        if self.timeline is not None:
+            # 使得 ValueTracker 的内容更改哪怕没有 show 和 anim 也可以被跟踪
+            self.timeline.item_appearances[self]

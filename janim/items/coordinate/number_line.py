@@ -179,7 +179,7 @@ class NumberLine(MarkedItem, Line):
             self.points.set_width(length, about_point=ORIGIN)
             self.unit_size = self.get_unit_size()
         else:
-            self.points.scale(self.unit_size)
+            self.points.scale(self.unit_size, about_point=ORIGIN)
 
         if center:
             self.points.to_center()
