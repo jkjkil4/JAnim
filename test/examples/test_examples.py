@@ -54,6 +54,7 @@ def load_tests(loader, standard_tests, pattern) -> unittest.TestSuite:
 
             worst = 1
             frame_number = -1
+            frame_numbers = []
 
             for frame, ref_image in zip(range(round(built.duration * fps) + 1),
                                         self.get_ref(self.timeline_cls.__name__)):
@@ -63,10 +64,13 @@ def load_tests(loader, standard_tests, pattern) -> unittest.TestSuite:
                 if res < 0.98 and res < worst:
                     worst = res
                     frame_number = frame
+                    frame_numbers.append(frame)
 
             if worst != 1:
                 guarantee_existence('test/__test_errors__')
-                built.capture(frame_number / fps).save(f'test/__test_errors__/{self.timeline_cls.__name__}_{frame_number}_err.png')
+                for frame in frame_numbers:
+                    built.capture(frame / fps).save(f'test/__test_errors__/{self.timeline_cls.__name__}_{frame}_err.png')
+
             self.assertEqual(worst, 1, f'worst: {worst}, t: {frame_number / fps}')
 
         @staticmethod
