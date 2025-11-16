@@ -268,6 +268,10 @@
 
     </details>
 
+.. raw:: html
+
+    </div>
+
 .. _install_vscode:
 
 安装 VS Code
