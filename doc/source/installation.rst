@@ -23,9 +23,9 @@
 
 .. raw:: html
 
+    <div class="detail-box">
     <details>
     <summary>点击展开打开命令行的简要说明</summary>
-    <div class="detail-box">
 
 
 这里我们简单介绍一下打开命令行的方式，以后不再指出。在 Windows 上推荐使用自带的 Powershell，
@@ -35,8 +35,8 @@
 
 .. raw:: html
 
-    </div>
     </details>
+    </div>
 
 以下简单介绍几种常见的安装方法：
 
@@ -219,6 +219,54 @@
         接着就可以使用 ``uv`` 或者 ``pip`` 安装 ``pyaudio`` 了。
 
         笔者仅在一台虚拟机上尝试过以上安装，不保证真实环境也能做到。网络波动、本地命令不存在、文件重名等等原因都可能导致安装失败。有安装问题请在 GitHub 或群聊中及时提出并附带错误信息和/或截图。
+
+可能出现的问题
+-----------------
+
+.. raw:: html
+
+    <div class="detail-box">
+
+.. raw:: html
+
+    <details>
+    <summary>Microsoft Visual C++ 14.0 or greater is required.</summary>
+
+安装时， ``glcontext`` 包出现以下报错：
+
+.. code-block::
+
+    error: Microsoft Visual C++ 14.0 or greater is required. Get it with "Microsoft C++ Build Tools":
+    https://visualstudio.microsoft.com/visual-cpp-build-tools/
+
+只需要按照他给出的链接 https://visualstudio.microsoft.com/visual-cpp-build-tools/ 下载，然后进行安装。
+
+在安装组件时勾选 **“使用 C++ 的桌面开发”** 后点击安装按钮，如下图
+
+.. image:: /_static/images/VCpp.png
+
+安装完成后再次尝试安装 ``JAnim`` 即可。
+
+如果仍然失败，可以尝试重启终端、编辑器，或者重启电脑后再次尝试。
+
+.. raw:: html
+
+    </details>
+
+.. raw:: html
+
+    <details>
+    <summary>'portaudio.h': No such file or directory</summary>
+
+两种可能：
+
+1. 在 macOS 或 Linux 下，未按照上一节的内容安装 PortAudio 依赖
+
+2. 截至 2025/11/16，PyAudio 暂未兼容 Python 3.14+ 版本
+
+.. raw:: html
+
+    </details>
 
 .. _install_vscode:
 

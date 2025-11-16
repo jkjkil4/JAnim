@@ -7,6 +7,7 @@ __pycache__
 /.vscode/launch.json
 /dist
 /test_some_code
+/test_code
 /doc/build
 /videos
 /.coverage
