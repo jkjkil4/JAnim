@@ -45,6 +45,7 @@ class PathBuilder:
             self.start_point = None
             self.end_point = None
 
+        self.is_prev_move = start_point is not None
         self.use_simple_quadratic_approx = use_simple_quadratic_approx
 
     def get(self) -> np.ndarray:
@@ -59,6 +60,8 @@ class PathBuilder:
         if self.start_point is None:
             self.start_point = points[0]
         self.end_point = points[-1]
+
+        self.is_prev_move = False
         return self
 
     def move_to(self, point: Vect) -> Self:
@@ -68,6 +71,18 @@ class PathBuilder:
             self.points_list.append([NAN_POINT, point])
         self.start_point = point
         self.end_point = point
+
+        self.is_prev_move = True
+        return self
+
+    def move_to_and_ignore_previous_move(self, point: Vect) -> Self:
+        if self.is_prev_move:
+            self.start_point = point
+            self.end_point = point
+            self.points_list[-1][-1] = point
+        else:
+            self.move_to(point)
+
         return self
 
     def line_to(self, point: Vect) -> Self:
@@ -75,12 +90,16 @@ class PathBuilder:
         mid = (self.end_point + np.asarray(point)) / 2
         self.points_list.append([mid, point])
         self.end_point = point
+
+        self.is_prev_move = False
         return self
 
     def conic_to(self, handle: Vect, point: Vect) -> Self:
         self._raise_if_no_points()
         self.points_list.append([handle, point])
         self.end_point = point
+
+        self.is_prev_move = False
         return self
 
     def cubic_to(
@@ -113,6 +132,8 @@ class PathBuilder:
             )
         self.points_list.append(quad_approx[1:])
         self.end_point = quad_approx[-1]
+
+        self.is_prev_move = False
         return self
 
     def arc_to(self, point: Vect, angle: float, *, n_components: int | None = None, threshold: float = 1e-3) -> Self:
@@ -134,11 +155,15 @@ class PathBuilder:
         arc_points *= get_norm(target_vect) / get_norm(curr_vect)
         arc_points += (self.end_point - arc_points[0])
         self.append(arc_points[1:])
+
+        self.is_prev_move = False
         return self
 
     def close_path(self) -> Self:
         self._raise_if_no_points()
         self.line_to(self.start_point)
+
+        self.is_prev_move = False
         return self
 
     def _raise_if_no_points(self) -> None | NoReturn:

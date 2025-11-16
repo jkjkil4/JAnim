@@ -289,7 +289,7 @@ class SVGItem(Group[SVGElemItem]):
             builder.append(arc_points[1:])
 
         segment_class_to_func_map = {
-            se.Move: (builder.move_to, ('end',)),
+            se.Move: (builder.move_to_and_ignore_previous_move, ('end',)),
             se.Close: (builder.close_path, ()),
             se.Line: (builder.line_to, ('end',)),
             se.QuadraticBezier: (builder.conic_to, ('control', 'end')),
