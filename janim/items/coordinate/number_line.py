@@ -1,7 +1,7 @@
 
 import numbers
 from typing import Iterable
-
+from decimal import Decimal
 import numpy as np
 
 from janim.constants import (DOWN, GREY_B, LEFT, MED_SMALL_BUFF, ORIGIN, RIGHT,
@@ -60,6 +60,10 @@ class NumberLine(MarkedItem, Line):
     -   ``line_to_number_direction``: 数字放在刻度点的哪个方向
 
     -   ``line_to_number_buff``: 数字与刻度点的间距
+
+    -   ``number_places``: 数字的小数位数，默认会根据刻度步长自动确定
+
+    -   ``number_config``: 提供给数字的额外参数，另见 :class:`~.Text`
     '''
 
     tip_config_d = dict(
@@ -70,8 +74,7 @@ class NumberLine(MarkedItem, Line):
     箭头的默认属性
     '''
 
-    decimal_number_config_d = dict(
-        num_decimal_places=0,
+    number_config_d = dict(
         font_size=16
     )
     '''
@@ -101,7 +104,9 @@ class NumberLine(MarkedItem, Line):
         numbers_to_exclude: Iterable[float] = [],               # 需要排除的数字
         line_to_number_direction: np.ndarray = DOWN,            # 数字放在刻度点的哪个方向
         line_to_number_buff: float = MED_SMALL_BUFF,            # 数字与刻度点的间距
-        decimal_number_config: dict = {},                       # 数字属性
+        number_places: int | None = None,                       # 数字位数
+        number_config: dict = {},                               # 数字属性
+        decimal_number_config: dict | None = None,
         **kwargs
     ) -> None:
         if width is not None:
@@ -112,6 +117,24 @@ class NumberLine(MarkedItem, Line):
                 remove=(4, 3)
             )
             length = width
+
+        if decimal_number_config is not None:
+            from janim.utils.deprecation import deprecated
+            deprecated(
+                'decimal_number_config',
+                'number_config',
+                remove=(4, 3)
+            )
+            number_config = merge_dicts_recursively(decimal_number_config, number_config)
+
+        if 'num_decimal_places' in number_config:
+            from janim.utils.deprecation import deprecated
+            deprecated(
+                'number_config -> num_decimal_places',
+                'number_places',
+                remove=(4, 3)
+            )
+            number_places = number_config.pop('num_decimal_places')
 
         if len(x_range) == 2:
             x_range = [*x_range, 1]
@@ -134,10 +157,14 @@ class NumberLine(MarkedItem, Line):
 
         self.line_to_number_direction = line_to_number_direction
         self.line_to_number_buff = line_to_number_buff
-
-        self.decimal_number_config = merge_dicts_recursively(
-            self.decimal_number_config_d,
-            decimal_number_config
+        if number_places is not None:
+            self.number_places = number_places
+        else:
+            exponent = Decimal(str(self.x_step)).as_tuple().exponent
+            self.number_places = max(0, -exponent)
+        self.number_config = merge_dicts_recursively(
+            self.number_config_d,
+            number_config
         )
 
         super().__init__(
@@ -255,7 +282,6 @@ class NumberLine(MarkedItem, Line):
         self,
         x_values: Iterable[float] | None = None,
         excluding: Iterable[float] | None = None,
-        font_size: int = 24,
         **kwargs
     ) -> Group[Text]:
         if x_values is None:
@@ -268,7 +294,7 @@ class NumberLine(MarkedItem, Line):
         for x in x_values:
             if np.isclose(excluding, x).any():
                 continue
-            numbers.add(self.get_number_item(x, font_size=font_size, **kwargs))
+            numbers.add(self.get_number_item(x, **kwargs))
         self.add(numbers)
         return numbers
 
@@ -282,18 +308,15 @@ class NumberLine(MarkedItem, Line):
         if np.isclose(x, 0.):
             x = 0.
 
-        number_config = self.decimal_number_config.copy()
-        number_config.update(number_config)
+        config = self.number_config.copy()
+        config.update(number_config)
 
         if direction is None:
             direction = self.line_to_number_direction
         if buff is None:
             buff = self.line_to_number_buff
 
-        places = number_config.pop('num_decimal_places')
-        num = round(x, places)
-
-        num_item = Text(str(num), **number_config)
+        num_item = Text(f'{x:.{self.number_places}f}', **config)
         num_item.points.next_to(
             self.number_to_point(x),
             direction=direction,

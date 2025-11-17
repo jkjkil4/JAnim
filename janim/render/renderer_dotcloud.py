@@ -6,8 +6,7 @@ import moderngl as mgl
 import numpy as np
 
 from janim.render.base import Renderer
-from janim.render.program import get_janim_program
-from janim.utils.iterables import resize_with_interpolation
+from janim.render.program import get_program_from_file_prefix
 
 if TYPE_CHECKING:
     from janim.items.points import DotCloud
@@ -18,7 +17,7 @@ class DotCloudRenderer(Renderer):
         self.initialized = False
 
     def init(self) -> None:
-        self.prog = get_janim_program('render/shaders/dotcloud')
+        self.prog = get_program_from_file_prefix('render/shaders/dotcloud')
 
         self.u_fix = self.get_u_fix_in_frame(self.prog)
         self.u_glow_color = self.prog['glow_color']
@@ -49,25 +48,11 @@ class DotCloudRenderer(Renderer):
         new_points = item.points._points.data
 
         if new_color is not self.prev_color or len(new_points) != len(self.prev_points):
-            color = resize_with_interpolation(new_color, len(new_points))
-            assert color.dtype == np.float32
-            bytes = color.tobytes()
-
-            if len(bytes) != self.vbo_color.size:
-                self.vbo_color.orphan(len(bytes))
-
-            self.vbo_color.write(bytes)
+            self.update_dynamic_buffer_data(new_color, self.vbo_color, len(new_points))
             self.prev_color = new_color
 
         if new_radius is not self.prev_radius or len(new_points) != len(self.prev_points):
-            radius = resize_with_interpolation(new_radius, len(new_points))
-            assert radius.dtype == np.float32
-            bytes = radius.tobytes()
-
-            if len(bytes) != self.vbo_radius.size:
-                self.vbo_radius.orphan(len(bytes))
-
-            self.vbo_radius.write(bytes)
+            self.update_dynamic_buffer_data(new_radius, self.vbo_radius, len(new_points))
             self.prev_radius = new_radius
 
         if new_points is not self.prev_points:
@@ -84,4 +69,5 @@ class DotCloudRenderer(Renderer):
         self.u_glow_color.write(item.glow._rgba._data.tobytes())
         self.u_glow_size.value = item.glow._size
 
-        self.vao.render(mgl.POINTS, vertices=len(self.prev_points))
+        with self.depth_test_if_enabled(self.ctx, item):
+            self.vao.render(mgl.POINTS, vertices=len(self.prev_points))

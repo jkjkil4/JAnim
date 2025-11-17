@@ -4,6 +4,7 @@ import copy
 import inspect
 import itertools as it
 import types
+from contextlib import contextmanager
 from dataclasses import dataclass
 from typing import (TYPE_CHECKING, Any, Callable, Iterable, Self,
                     SupportsIndex, overload)
@@ -127,10 +128,11 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         from janim.anims.timeline import Timeline
         self.timeline = Timeline.get_context(raise_exc=False)
 
-        self._astype: type[Item] | None = None
+        self._astype_wrapper: Item._AsTypeWrapper | None = None
         self._astype_mock_cmpt: dict[str, Component] = {}
 
         self._fix_in_frame = False
+        self._depth_test = False
 
         self._saved_states: dict[str, Item.SavedState[Self]] = {}
 
@@ -362,7 +364,194 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
             *(self.copy() for i in range(n))
         )
 
+    def join[T](self, lst: Iterable[T]) -> Group[Self | T]:
+        from janim.items.points import Group
+        it = iter(lst)
+        items = []
+        try:
+            items.append(next(it))
+        except StopIteration:
+            return Group()
+        for item in it:
+            items.append(self.copy())
+            items.append(item)
+        return Group(*items)
+
     # region astype
+
+    class _AsTypeWrapper:
+        def __init__(self, item: Item, obj: Item | Component | Callable, cls: type[Item]):
+            self._astype_item = item
+
+            self._astype_obj = obj
+            self._astype_cls = cls
+
+        # 调用 __anim__ 直接结束 Wrapper，返回内层的 __anim__ 调用
+        def __anim__(self):
+            return self._astype_obj.__anim__()
+
+        def __getattr__(self, name: str):
+            with self._astype_context():
+                match self._astype_obj:
+                    case Item():
+                        attr = self._getattr_for_item(name)
+                    case Component():
+                        attr = self._getattr_for_cmpt(name)
+                    case _:
+                        attr = getattr(self._astype_obj, name)
+
+            if not isinstance(attr, (Item, Component, Callable)):
+                return attr
+
+            return Item._AsTypeWrapper(self._astype_item, attr, self._astype_cls)
+
+        def __call__(self, *args, **kwargs):
+            with self._astype_context():
+                attr = self._astype_obj(*args, **kwargs)
+
+            if not isinstance(attr, (Item, Component, Callable)):
+                return attr
+
+            return Item._AsTypeWrapper(self._astype_item, attr, self._astype_cls)
+
+        @contextmanager
+        def _astype_context(self):
+            prev = self._astype_item._astype_wrapper
+            self._astype_item._astype_wrapper = self
+            try:
+                yield
+            finally:
+                self._astype_item._astype_wrapper = prev
+
+        def _getattr_for_item(self, name: str):
+            # 在物件级别获取属性，分为以下几种情况：
+            # 获取组件：
+            #   - 当物件本身存在 name 所指的组件时，直接返回
+            #   - 当物件不存在 name 所指的组件时，创建 mock 组件返回
+            # 获取方法：
+            #   - 当物件本身存在 name 所指的方法时：
+            #       - 如果 item.__class__ 是 cls 的子类，这意味着 item 比 cls 还更高级，那么就直接返回该方法
+            #       - 如果相反，那么就在 cls.mro() 中寻找 mockable 方法，如果找不到或者回到了 item.__class__，则直接返回原方法
+            #   - 当物件本身不存在 name 所指的方法时：
+            #       在 cls.mro() 中寻找 mockable 方法，如果找不到或者回到了 item.__class__，则直接返回原方法
+            # 获取其它属性：
+            #   直接获取
+
+            # 但是以上表述需要整理成以下形式方便处理（上面这段注释和下面这段注释是对同一流程的相同表述，只是结构上的区别）：
+            # 当物件中存在 name 所指的属性时 (else)：
+            #   - 如果是组件，直接返回
+            #   - 如果是方法:
+            #       - 如果 item.__class__ 是 cls 的子类，这意味着 Item 比 cls 还更高级，那么就直接返回该方法
+            #       - 如果相反，那么就在 cls.mro() 中寻找 mockable 方法，如果找不到或者回到了 item.__class__，则直接返回原方法
+            #   - 如果是其它属性：
+            #       直接获取
+            # 当物件中不存在 name 所指的属性时，那么在 cls 中查找 (except):
+            #   - 如果在 cls 中是组件:
+            #       则创建 mock 组件返回
+            #   - 如果在 cls 中是方法:
+            #       则在 cls.mro() 中寻找 mockable 方法，如果找不到或者回到了 item.__class__，则报错
+            #   - 如果是其它属性:
+            #       报错
+            item = self._astype_obj
+            itemcls = self._astype_obj.__class__
+            try:
+                attr = item.__getattribute__(name)
+            except AttributeError:
+                cls_attr = getattr(self._astype_cls, name, None)
+                attr = None
+
+                if isinstance(cls_attr, CmptInfo):
+                    attr = self._get_mock_cmpt(cls_attr, name)
+                elif isinstance(cls_attr, Callable):
+                    attr = self._get_mockable_method(self._astype_cls, name, itemcls)
+
+                if attr is None:
+                    raise
+            else:
+                if isinstance(attr, Component):
+                    pass
+                elif isinstance(attr, Callable):
+                    if not issubclass(itemcls, self._astype_cls):
+                        ret = self._get_mockable_method(self._astype_cls, name, itemcls)
+                        if ret is not None:
+                            attr = ret
+            return attr
+
+        def _getattr_for_cmpt(self, name: str):
+            # 当组件中存在 name 所指的属性时 (else):
+            #   - 如果是方法:
+            #       - 如果 astype 里有同名组件:
+            #           - 如果 cmpt.__class__ 是 cmpt_info.cls 的子类，这意味着 item 比 cmpt_info.cls 还更高级，那么就直接返回该方法
+            #           - 如果相反，那么就在 cmpt_info.cls.mro() 中寻找 mockable 方法，如果找不到或者回到了 cmptcls，则直接返回原方法
+            #       - 如果 astype 里没有同名组件:
+            #           直接返回
+            #   - 如果是其它属性:
+            #       直接返回
+            # 当组件中不存在 name 所指的属性时 (except):
+            #   - 如果 astype 里有同名组件:
+            #       - 如果在 cmpt_info.cls 中是方法:
+            #           则在 cmpt_info.cls.mro() 中寻找 mockable 方法，如果找不到或者回到了 cmptcls，则报错
+            #       - 如果是其它属性:
+            #           报错
+            #   - 如果 astype 里没有同名组件:
+            #       报错
+            cmpt = self._astype_obj
+            cmptcls = cmpt.__class__
+            try:
+                attr = getattr(cmpt, name)
+            except AttributeError:
+                cmpt_info: CmptInfo | None = getattr(self._astype_cls, cmpt.bind.key, None)
+                if cmpt_info is None:
+                    raise
+                other_attr = getattr(cmpt_info.cls, name, None)
+                if other_attr is None:
+                    raise
+                attr = self._get_mockable_method(cmpt_info.cls, name, cmptcls)
+                if attr is None:
+                    raise
+            else:
+                if isinstance(attr, Callable):
+                    cmpt_info: CmptInfo | None = getattr(self._astype_cls, cmpt.bind.key, None)
+                    if not issubclass(cmptcls, cmpt_info.cls):
+                        ret = self._get_mockable_method(cmpt_info.cls, name, cmptcls)
+                        if ret is not None:
+                            attr = ret
+            return attr
+
+        def _get_mock_cmpt(self, cmpt_info: CmptInfo, name: str) -> Component:
+            item = self._astype_obj
+
+            # 找到 cmpt_info 是在哪个类中被定义的
+            decl_cls: type[Item] | None = None
+            for sup in self._astype_cls.mro():
+                if name in sup.__dict__.get(CLS_CMPTINFO_NAME, {}):
+                    decl_cls = sup
+
+            assert decl_cls is not None
+
+            cmpt = item._astype_mock_cmpt.get(name, None)
+
+            # 如果 astype 需求的组件已经被创建过，并且新类型不是旧类型的子类，那么直接返回
+            if cmpt is not None and issubclass(cmpt.__class__, cmpt_info.cls):
+                return cmpt
+
+            # astype 需求的组件还没创建，那么创建并记录
+            cmpt = cmpt_info.create()
+            cmpt.init_bind(Component.BindInfo(decl_cls, item, name))
+
+            item._astype_mock_cmpt[name] = cmpt
+            return cmpt
+
+        def _get_mockable_method(self, base: type[Item], name: str, until: type[Item]) -> Callable | None:
+            for sup in base.mro():
+                if sup is until:
+                    break
+                method = getattr(sup, name, None)
+                if method is None:
+                    break
+                if isinstance(method, Callable) and getattr(method, MOCKABLE_NAME, False):
+                    return types.MethodType(method, self._astype_obj)
+            return None
 
     def astype[T](self, cls: type[T]) -> T:
         '''
@@ -388,8 +577,7 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
                 .format(name=cls.__name__)
             )
 
-        self._astype = cls
-        return self
+        return Item._AsTypeWrapper(self, self, cls)
 
     @overload
     def __call__[T](self, cls: type[T]) -> T: ...
@@ -404,41 +592,12 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         if name == '__setstate__':
             raise AttributeError()
 
-        mockable_or_cmpt_info = None if self._astype is None else getattr(self._astype, name, None)
+        wrapper = self._astype_wrapper
+        if wrapper is None:
+            self.__getattribute__(name)
 
-        if isinstance(mockable_or_cmpt_info, Callable) and getattr(mockable_or_cmpt_info, MOCKABLE_NAME, False):
-            return types.MethodType(mockable_or_cmpt_info, self)
-
-        cmpt_info = mockable_or_cmpt_info
-        if not isinstance(cmpt_info, CmptInfo):
-            super().__getattribute__(name)  # raise error
-
-        # 找到 cmpt_info 是在哪个类中被定义的
-        decl_cls: type[Item] | None = None
-        for sup in self._astype.mro():
-            if name in sup.__dict__.get(CLS_CMPTINFO_NAME, {}):
-                decl_cls = sup
-
-        assert decl_cls is not None
-
-        # 如果 self 本身就是 decl_cls 的实例
-        # 那么自身肯定有名称为 name 的组件，对于这种情况实际上完全没必要 astype
-        # 为了灵活性，这里将这个已有的组件返回
-        if isinstance(self, decl_cls):
-            return getattr(self, name)
-
-        cmpt = self._astype_mock_cmpt.get(name, None)
-
-        # 如果 astype 需求的组件已经被创建过，并且新类型不是旧类型的子类，那么直接返回
-        if cmpt is not None and (not issubclass(cmpt_info.cls, cmpt.__class__) or cmpt_info.cls is cmpt.__class__):
-            return cmpt
-
-        # astype 需求的组件还没创建，那么创建并记录
-        cmpt = cmpt_info.create()
-        cmpt.init_bind(Component.BindInfo(decl_cls, self, name))
-
-        self._astype_mock_cmpt[name] = cmpt
-        return cmpt
+        new_wrapper = Item._AsTypeWrapper(wrapper._astype_item, wrapper._astype_item, wrapper._astype_cls)
+        return getattr(new_wrapper, name)
 
     # endregion
 
@@ -643,6 +802,14 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
 
     def is_fix_in_frame(self) -> bool:
         return self._fix_in_frame
+
+    def apply_depth_test(self, on: bool = True, *, root_only: bool = False) -> Self:
+        for item in self.walk_self_and_descendants(root_only):
+            item._depth_test = on
+        return self
+
+    def is_applied_depth_test(self) -> bool:
+        return self._depth_test
 
     # endregion
 

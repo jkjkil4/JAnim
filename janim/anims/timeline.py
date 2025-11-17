@@ -49,6 +49,7 @@ from janim.utils.config import Config, ConfigGetter, config_ctx_var
 from janim.utils.data import ContextSetter
 from janim.utils.iterables import resize_preserving_order
 from janim.utils.simple_functions import clip
+from janim.utils.space_ops import normalize
 
 _ = get_local_strings('timeline')
 
@@ -700,15 +701,6 @@ class Timeline(metaclass=ABCMeta):
         # 在 updater 的回调函数中，params 不是 None，返回值表示在这时是否可见
         return self.item_appearances[item].is_visible_at(params.global_t)
 
-    def is_displaying(self, item: Item) -> bool:
-        from janim.utils.deprecation import deprecated
-        deprecated(
-            'Timeline.is_displaying',
-            'Timeline.is_visible',
-            remove=(3, 3)
-        )
-        return self.is_visible(item)
-
     def _show(self, item: Item) -> None:
         gaps = self.item_appearances[item].visibility
         if len(gaps) % 2 != 1:
@@ -744,15 +736,6 @@ class Timeline(metaclass=ABCMeta):
             gaps = appr.visibility
             if len(gaps) % 2 == 1:
                 gaps.append(t)
-
-    def cleanup_display(self) -> None:
-        from janim.utils.deprecation import deprecated
-        deprecated(
-            'Timeline.cleanup_display',
-            'Timeline.hide_all',
-            remove=(3, 3)
-        )
-        self.hide_all()
 
     def visible_items(self) -> list[Item]:
         return [
@@ -987,6 +970,10 @@ class BuiltTimeline:
                      uniforms(ctx,
                               JA_FRAMEBUFFER=FRAME_BUFFER_BINDING,
                               JA_CAMERA_SCALED_FACTOR=camera_info.scaled_factor,
+                              JA_CAMERA_CENTER=camera_info.center,
+                              JA_CAMERA_LOC=camera_info.camera_location,
+                              JA_CAMERA_RIGHT=normalize(camera_info.horizontal_vect),
+                              JA_CAMERA_UP=normalize(camera_info.vertical_vect),
                               JA_VIEW_MATRIX=camera_info.view_matrix.T.flatten(),
                               JA_FIXED_DIST_FROM_PLANE=camera_info.fixed_distance_from_plane,
                               JA_PROJ_MATRIX=camera_info.proj_matrix.T.flatten(),

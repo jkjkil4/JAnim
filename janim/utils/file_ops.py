@@ -82,6 +82,7 @@ def find_file(file_path: str | Path) -> str:
     from janim.anims.timeline import Timeline
 
     timeline = Timeline.get_context(raise_exc=False)
+    relative_path: str | None = None
     if timeline is not None:
         relative_path = os.path.dirname(inspect.getfile(timeline.__class__))
         found_path = find_file_in_path(relative_path, file_path)

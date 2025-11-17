@@ -162,16 +162,6 @@ def get_font_info_by_attrs(
     if info is not None:
         return info
 
-    # deprecated
-    for full_name, info in db.font_by_full_name.items():
-        if info.name.getDebugName(4) == name:
-            log.warning(
-                _('font="{deprecated}" is deprecated and will no longer be available in JAnim 3.3, '
-                  'use font="{full_name}" instead')
-                .format(deprecated=name, full_name=full_name)
-            )
-            return info
-
     raise FontNotFoundError(
         _('No font named "{font_name}"')
         .format(font_name=name)

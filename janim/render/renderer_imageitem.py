@@ -7,9 +7,8 @@ import numpy as np
 
 from janim.render.base import Renderer
 from janim.render.framebuffer import FRAME_BUFFER_BINDING
-from janim.render.program import get_janim_program
+from janim.render.program import get_program_from_file_prefix
 from janim.render.texture import get_texture_from_img
-from janim.utils.iterables import resize_with_interpolation
 
 if TYPE_CHECKING:
     from janim.items.image_item import ImageItem
@@ -20,7 +19,7 @@ class ImageItemRenderer(Renderer):
         self.initialized: bool = False
 
     def init(self) -> None:
-        self.prog = get_janim_program('render/shaders/image')
+        self.prog = get_program_from_file_prefix('render/shaders/image')
 
         self.u_fix = self.get_u_fix_in_frame(self.prog)
         self.u_image = self.prog['image']
@@ -56,13 +55,7 @@ class ImageItemRenderer(Renderer):
         new_points = item.points._points.data
 
         if new_color is not self.prev_color:
-            color = resize_with_interpolation(new_color, 4)
-            assert color.dtype == np.float32
-            bytes = color.tobytes()
-
-            assert len(bytes) == self.vbo_color.size
-
-            self.vbo_color.write(bytes)
+            self.update_static_buffer_data(new_color, self.vbo_color, 4)
             self.prev_color = new_color
 
         if new_points is not self.prev_points:
@@ -89,4 +82,5 @@ class ImageItemRenderer(Renderer):
             self.prog['JA_FRAMEBUFFER'] = FRAME_BUFFER_BINDING
             self.ctx.fbo.color_attachments[0].use(FRAME_BUFFER_BINDING)
 
-        self.vao.render(mgl.TRIANGLE_STRIP)
+        with self.depth_test_if_enabled(self.ctx, item):
+            self.vao.render(mgl.TRIANGLE_STRIP)

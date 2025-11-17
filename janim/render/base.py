@@ -1,14 +1,17 @@
 from __future__ import annotations
 
 from collections import defaultdict
+from contextlib import contextmanager
 from contextvars import ContextVar
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Any
 
 import moderngl as mgl
+import numpy as np
 
 from janim.camera.camera_info import CameraInfo
 from janim.locale.i18n import get_local_strings
+from janim.utils.iterables import resize_with_interpolation
 
 if TYPE_CHECKING:
     from janim.items.item import Item
@@ -49,6 +52,53 @@ class Renderer:
     @staticmethod
     def update_fix_in_frame(uniform: mgl.Uniform, item: Item) -> None:
         uniform.value = item._fix_in_frame
+
+    @staticmethod
+    def update_dynamic_buffer_data(
+        new_data: np.ndarray,
+        vbo: mgl.Buffer,
+        resize_target: int,
+        use_32bit_align: bool = False
+    ) -> None:
+        processed_data = resize_with_interpolation(new_data, resize_target)
+        assert processed_data.dtype == np.float32
+        bytes_data = processed_data.tobytes()
+
+        size = (
+            ((len(bytes_data) + 31) & ~31)
+            if use_32bit_align
+            else len(bytes_data)
+        )
+        if size != vbo.size:
+            vbo.orphan(size)
+
+        vbo.write(bytes_data)
+
+    @staticmethod
+    def update_static_buffer_data(
+        new_data: np.ndarray,
+        vbo: mgl.Buffer,
+        resize_target: int
+    ) -> None:
+        processed_data = resize_with_interpolation(new_data, resize_target)
+        assert processed_data.dtype == np.float32
+        bytes_data = processed_data.tobytes()
+
+        assert len(bytes_data) == vbo.size
+
+        vbo.write(bytes_data)
+
+    @staticmethod
+    @contextmanager
+    def depth_test_if_enabled(ctx: mgl.Context, item: Item):
+        if item._depth_test:
+            ctx.enable(mgl.DEPTH_TEST)
+            try:
+                yield
+            finally:
+                ctx.disable(mgl.DEPTH_TEST)
+        else:
+            yield
 
 
 @dataclass(kw_only=True)

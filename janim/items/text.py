@@ -367,6 +367,7 @@ class Text(VItem, Group[TextLine]):
 
         stroke_alpha: float = 0,
         fill_alpha: float = 1,
+        stroke_background: bool = True,
 
         center: bool = True,
         **kwargs
@@ -424,6 +425,7 @@ class Text(VItem, Group[TextLine]):
             ],
             stroke_alpha=stroke_alpha,
             fill_alpha=fill_alpha,
+            stroke_background=stroke_background,
             **kwargs
         )
 

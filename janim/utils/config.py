@@ -248,7 +248,7 @@ class ConfigGetter:
 
     @property
     def default_pixel_to_frame_ratio(self) -> float:
-        return self.frame_width / default_config.pixel_width
+        return default_config.frame_width / default_config.pixel_width
 
     @property
     def left_side(self) -> Vect:

@@ -254,11 +254,13 @@ class MethodTransform(Transform):
     def __init__(
         self,
         item: Item,
+        obj: Item | Item._AsTypeWrapper,
         show_at_begin: bool = True,
         hide_at_end: bool = False,
         **kwargs
     ):
         super().__init__(item, item, **kwargs)
+        self.obj = obj
         self.show_at_begin = show_at_begin
         self.hide_at_end = hide_at_end
         self.delayed_actions: list[tuple[MethodTransform.ActionType, str | tuple[tuple, dict]]] = []
@@ -272,7 +274,7 @@ class MethodTransform(Transform):
         return self
 
     def _time_fixed(self) -> None:
-        obj = self.src_item
+        obj = self.obj
         for type, value in self.delayed_actions:
             if type is MethodTransform.ActionType.GetAttr:
                 obj = getattr(obj, value)
@@ -306,12 +308,13 @@ class MethodTransformArgsBuilder:
     '''
     def __init__(self, item: Item):
         self.item = item
+        self.obj = item._astype_wrapper or item
 
     def __call__(self, **kwargs):
-        return MethodTransform(self.item, **kwargs)
+        return MethodTransform(self.item, self.obj, **kwargs)
 
     def __getattr__(self, name):
-        return getattr(MethodTransform(self.item), name)
+        return getattr(MethodTransform(self.item, self.obj), name)
 
 
 class _MethodTransform(ItemAnimation):

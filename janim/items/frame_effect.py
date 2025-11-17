@@ -15,6 +15,7 @@ from janim.items.item import Item
 from janim.locale.i18n import get_local_strings
 from janim.logger import log
 from janim.render.renderer_frameeffect import FrameEffectRenderer
+from janim.render.shader import ShaderInjection, shader_injections_ctx
 from janim.utils.bezier import interpolate
 from janim.utils.config import Config
 from janim.utils.data import AlignedData
@@ -37,9 +38,7 @@ class FrameEffect(Item):
 
         uniform sampler2D fbo; // 传入的纹理（承载了 items 的渲染结果）
 
-        // used by JA_FINISH_UP
-        uniform bool JA_BLENDING;
-        uniform sampler2D JA_FRAMEBUFFER;
+        #[JA_FINISH_UP_UNIFORMS]
 
         void main()
         {
@@ -50,7 +49,7 @@ class FrameEffect(Item):
             #[JA_FINISH_UP]
         }
 
-    其中 ``#[JA_FINISH_UP]`` 是一个占位符，JAnim 会在这里做一些额外的操作
+    其中 ``#[JA_FINISH_UP]`` 是一个占位符，JAnim 会在这里做一些额外的操作，前面的 ``#[JA_FINISH_UP_UNIFORMS]`` 与之对应
 
     上述代码最核心的是 ``main`` 中“进行处理”的部分，其余的代码作为固定的写法照抄即可
 
@@ -76,6 +75,7 @@ class FrameEffect(Item):
         super().__init__(**kwargs)
         self.fragment_shader = fragment_shader
         self.cache_key = cache_key
+        self.injections = shader_injections_ctx.get()
 
         self.apply(*items, root_only=root_only)
 
@@ -138,9 +138,7 @@ uniform sampler2D fbo;
 
 #[JA_SIMPLE_FRAMEEFFECT_UNIFORMS]
 
-// used by JA_FINISH_UP
-uniform bool JA_BLENDING;
-uniform sampler2D JA_FRAMEBUFFER;
+#[JA_FINISH_UP_UNIFORMS]
 
 void main()
 {
@@ -172,15 +170,17 @@ class SimpleFrameEffect(FrameEffect):
             f'uniform {uniform};'
             for uniform in uniforms
         )
-        super().__init__(
-            *items,
-            fragment_shader=simple_frameeffect_shader
-                .replace('#[JA_SIMPLE_FRAMEEFFECT_UNIFORMS]', uniforms_code)
-                .replace('#[JA_SIMPLE_FRAMEEFFECT_SHADER]', shader),
-            cache_key=cache_key,
-            root_only=root_only,
-            **kwargs
-        )
+        with ShaderInjection(
+            JA_SIMPLE_FRAMEEFFECT_UNIFORMS=uniforms_code,
+            JA_SIMPLE_FRAMEEFFECT_SHADER=shader.strip()
+        ):
+            super().__init__(
+                *items,
+                fragment_shader=simple_frameeffect_shader,
+                cache_key=cache_key,
+                root_only=root_only,
+                **kwargs
+            )
 
 
 frameclip_fragment_shader = '''
@@ -194,9 +194,7 @@ uniform sampler2D fbo;
 uniform vec4 u_clip;    // left top right bottom
 uniform bool u_debug;
 
-// used by JA_FINISH_UP
-uniform bool JA_BLENDING;
-uniform sampler2D JA_FRAMEBUFFER;
+#[JA_FINISH_UP_UNIFORMS]
 
 void main()
 {
@@ -331,9 +329,7 @@ uniform bool u_debug;
 
 uniform vec2 JA_FRAME_RADIUS;
 
-// used by JA_FINISH_UP
-uniform bool JA_BLENDING;
-uniform sampler2D JA_FRAMEBUFFER;
+#[JA_FINISH_UP_UNIFORMS]
 
 void main()
 {
@@ -526,9 +522,7 @@ uniform float iTime;
 
 #[JA_SHADERTOY]
 
-// used by JA_FINISH_UP
-uniform bool JA_BLENDING;
-uniform sampler2D JA_FRAMEBUFFER;
+#[JA_FINISH_UP_UNIFORMS]
 
 void main()
 {
