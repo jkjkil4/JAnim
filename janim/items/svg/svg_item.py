@@ -143,7 +143,7 @@ class SVGItem(Group[SVGElemItem]):
         file_path = find_file(file_path)
         mtime = os.path.getmtime(file_path)
         name = os.path.splitext(os.path.basename(file_path))[0]
-        key = (name, mtime)
+        key = (name, mtime, mark_basepoint)
 
         cached = SVGItem.vitem_builders_map.get(key, None)
         if cached is not None:
