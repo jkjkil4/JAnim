@@ -95,9 +95,9 @@ class Cmpt_VPoints[ItemT](Cmpt_Points[ItemT], impl=True):
             # 如果是 mock 的情况，既然能调用 Cmpt_VPoints.scale
             # 那么基本上可以确定 item 现在已经处在 VItem 的 astype 下
             # 所以这里可以直接访问 .radius 来缩放半径
-            self.bind.at_item.radius.scale(scale_factor)
+            self.bind.at_item.radius.scale(scale_factor, root_only=root_only)
 
-        return Cmpt_Points.scale(self, scale_factor, **kwargs)
+        return Cmpt_Points.scale(self, scale_factor, root_only=root_only, **kwargs)
 
     # region align
 
