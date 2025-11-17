@@ -61,7 +61,11 @@ class NumberLine(MarkedItem, Line):
 
     -   ``line_to_number_buff``: 数字与刻度点的间距
 
-    -   ``number_places``: 数字的小数位数，默认会根据刻度步长自动确定
+    -   ``number_places``:
+
+        数字的小数位数，默认会根据刻度步长自动确定
+
+        注：对于 `x_range` 的 `步长`，根据其自动确定小数位数时，`1` 和 `1.0` 是不同的，前者会使刻度保留整数，而后者会使刻度保留一位小数
 
     -   ``number_config``: 提供给数字的额外参数，另见 :class:`~.Text`
     '''
