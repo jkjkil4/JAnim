@@ -1,30 +1,23 @@
 from __future__ import annotations
 
-import hashlib
 import itertools as it
 import numbers
-import os
-import subprocess as sp
 import types
 from typing import Iterable, Literal, Self, overload
 
 import numpy as np
 
 from janim.constants import FRAME_PPI, ORIGIN, UP
-from janim.exception import (EXITCODE_TYPST_COMPILE_ERROR,
-                             EXITCODE_TYPST_NOT_FOUND, ExitException,
-                             InvalidOrdinalError, InvalidTypstVarError,
+from janim.exception import (InvalidOrdinalError, InvalidTypstVarError,
                              PatternMismatchError)
 from janim.items.points import Group, Points
 from janim.items.svg.svg_item import BasepointVItem, SVGElemItem, SVGItem
 from janim.items.vitem import VItem
 from janim.locale.i18n import get_local_strings
-from janim.logger import log
 from janim.utils.config import Config
-from janim.utils.file_ops import (get_janim_dir, get_typst_packages_dir,
-                                  get_typst_temp_dir)
 from janim.utils.iterables import flatten
 from janim.utils.space_ops import rotation_between_vectors
+from janim.utils.typst_compile import compile_typst
 
 _ = get_local_strings('typst')
 
@@ -69,7 +62,7 @@ class TypstDoc(SVGItem):
             vars_str = ''
 
         super().__init__(
-            self.compile_typst(text, shared_preamble, additional_preamble, vars_str, sys_inputs),
+            compile_typst(text, shared_preamble, additional_preamble, vars_str, sys_inputs),
             scale=scale,
             **kwargs
         )
@@ -102,79 +95,14 @@ class TypstDoc(SVGItem):
     def move_into_position(self) -> None:
         self.points.scale(0.9, about_point=ORIGIN).to_border(UP)
 
-    @staticmethod
-    def compile_typst(
-        text: str,
-        shared_preamble: str,
-        additional_preamble: str,
-        vars: str,
-        sys_inputs: dict[str, str]
-    ) -> str:
-        '''
-        编译 Typst 文档
-        '''
-        sys_inputs_pairs = [
-            f'{key}={value}'
-            for key, value in sys_inputs.items()
-        ]
-
-        typst_temp_dir = get_typst_temp_dir()
-        md5 = hashlib.md5(text.encode())
-        md5.update(shared_preamble.encode())
-        md5.update(additional_preamble.encode())
-        md5.update(vars.encode())
-        md5.update('\n'.join(sys_inputs_pairs).encode())
-        hash_hex = md5.hexdigest()
-
-        svg_file_path = os.path.join(typst_temp_dir, hash_hex + '.svg')
-        if os.path.exists(svg_file_path):
-            return svg_file_path
-
-        typst_content = get_typst_template().format(
-            shared_preamble=shared_preamble,
-            additional_preamble=additional_preamble,
-            vars=vars,
-            typst_expression=text
-        )
-
-        commands = [
-            Config.get.typst_bin,
-            'compile',
-            '-',
-            svg_file_path,
-            '-f', 'svg',
-            '--package-path', get_typst_packages_dir()
-        ]
-
-        for pair in sys_inputs_pairs:
-            commands += [
-                '--input', pair
-            ]
-
-        try:
-            process = sp.Popen(commands, stdin=sp.PIPE)
-        except FileNotFoundError:
-            log.error(_('Could not compile Typst file. '
-                        'Please install Typst and add it to the environment variables.'))
-            raise ExitException(EXITCODE_TYPST_NOT_FOUND)
-
-        process.stdin.write(typst_content.encode('utf-8'))
-        process.stdin.close()
-        ret = process.wait()
-        if ret != 0:
-            log.error(_('Typst compilation error. Please check the output for more information.'))
-            raise ExitException(EXITCODE_TYPST_COMPILE_ERROR)
-
-        process.terminate()
-
-        return svg_file_path
-
     @classmethod
     def typstify(cls, obj: TypstPattern) -> TypstDoc:
         '''
         将字符串变为 Typst 对象，而本身已经是的则直接返回
         '''
         return obj if isinstance(obj, TypstDoc) else cls(obj)
+
+    # region vars
 
     @staticmethod
     def vars_str(vars: dict[str, TypstVar], unit_or_scale: str | float) -> tuple[str, dict[str, Points]]:
@@ -219,6 +147,8 @@ class TypstDoc(SVGItem):
             return f'{length}{unit_or_scale}'
         else:
             assert False
+
+    # endregion
 
     # region pattern-matching
 
@@ -510,19 +440,3 @@ class TypstMath(TypstText):
             use_math_environment=use_math_environment,
             **kwargs
         )
-
-
-cached_typst_template: str | None = None
-
-
-def get_typst_template() -> str:
-    global cached_typst_template
-
-    if cached_typst_template is not None:
-        return cached_typst_template
-
-    with open(os.path.join(get_janim_dir(), 'items', 'svg', 'typst_template.typ')) as f:
-        text = f.read()
-
-    cached_typst_template = text
-    return text

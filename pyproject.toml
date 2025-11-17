@@ -29,6 +29,7 @@ dependencies = [
     "freetype-py",
     "pillow",
     "svgelements",
+    "typst>=0.14.1",
 ]
 
 [project.optional-dependencies]

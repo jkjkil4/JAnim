@@ -89,6 +89,11 @@ def render_args(
         action='store_true',
         help=_('Hide subtitles')
     )
+    parser.add_argument(
+        '--external_typst',
+        action='store_true',
+        help=_('Use external Typst executable for compiling Typst documents')
+    )
 
 
 def run_parser(parser: ArgumentParser) -> None:
@@ -198,6 +203,7 @@ def examples_parser(parser: ArgumentParser) -> None:
     parser.set_defaults(func=run)
     parser.set_defaults(hide_subtitles=False)
     parser.set_defaults(interact=False)
+    parser.set_defaults(external_typst=False)
 
 
 def tool_parser(parser: ArgumentParser) -> None:
