@@ -277,5 +277,39 @@ class ConfigGetter:
 
         return output_dir
 
+    def scaled_pixel_size(self, scale: float) -> dict[str, int]:
+        '''
+        根据缩放比例计算缩放后的像素尺寸
+
+        使用示例：
+
+        .. code-block:: python
+
+            Config(
+                **Config.get.scaled_pixel_size(0.5)
+            )
+        '''
+        return {
+            'pixel_width': int(self.pixel_width * scale),
+            'pixel_height': int(self.pixel_height * scale)
+        }
+
+    def scaled_frame_size(self, scale: float) -> dict[str, float]:
+        '''
+        根据缩放比例计算缩放后的画面尺寸
+
+        使用示例：
+
+        .. code-block:: python
+
+            Config(
+                **Config.get.scaled_frame_size(0.5)
+            )
+        '''
+        return {
+            'frame_width': self.frame_width * scale,
+            'frame_height': self.frame_height * scale
+        }
+
 
 config_getter = ConfigGetter()
