@@ -9,7 +9,6 @@ import numpy as np
 
 import janim.utils.refresh as refresh
 from janim.components.points import Cmpt_Points, PointsFn
-from janim.components.radius import Cmpt_Radius
 from janim.constants import DEGREES, NAN_POINT, ORIGIN, OUT, RIGHT, UP
 from janim.exception import PointError
 from janim.items.item import Item, mockable
