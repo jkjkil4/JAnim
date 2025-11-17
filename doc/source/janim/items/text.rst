@@ -52,6 +52,8 @@ text
 
    :class:`~.TextLine` 也有类似的结构，但是只有 ``orig`` 、 ``right`` 和 ``up``，没有 ``advance``
 
+有关更多与基线原点有关的内容，请参考 :class:`~.BasepointVItem`。
+
 .. _rich_text:
 
 富文本

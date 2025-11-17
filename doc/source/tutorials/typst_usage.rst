@@ -329,6 +329,37 @@ Typst 物件支持传入 ``vars`` 参数嵌入 JAnim 物件：
 
     在 Typst 中嵌入 JAnim 物件，从原理上来讲是创建了一个对应大小的占位 ``box``，然后在 Typst 物件创建后，将其替换为 JAnim 物件，从而做到嵌入的目的。
 
+标记基点位置
+----------------------
+
+标记基点位置的功能默认是关闭的，如果你希望给 Typst 物件的每个元素都标记基点位置，可以通过传入 ``mark_basepoint=True`` 来开启该功能：
+
+.. code-block:: python
+
+    TypstText('This is a sentence', mark_basepoint=True)
+
+.. janim-example:: TypstMarkBasepoint
+    :media: _static/images/typ_mark.png
+    :hide_name:
+
+    typ = TypstText('Ggf', scale=4, mark_basepoint=True, fill_alpha=0.5).show()
+
+    for elem in typ:
+        orig, right, up = elem.mark.get_points()
+        right = orig + 4 * (right - orig)
+        up = orig + 4 * (up - orig)
+
+        Arrow(orig, right, buff=0, color=BLUE).show()
+        Arrow(orig, up, buff=0, color=BLUE).show()
+        Dot(orig, 0.06, fill_color=BLACK, stroke_color=BLUE, stroke_alpha=1).show()
+
+
+关于基点位置的使用，请参考 :class:`~.BasepointVItem`。
+
+.. note::
+
+    ``mark_basepoint`` 其实是 :class:`~.SVGItem` 提供的一个参数，但是由于我们主要在 Typst 物件中使用它，所以放在这里进行说明。
+
 特殊类型的 Typst 物件
 -----------------------------
 

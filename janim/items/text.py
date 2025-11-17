@@ -160,6 +160,11 @@ class BasepointVItem(MarkedItem, VItem):
         other: BasepointVItem,
         proj: ProjType | Literal['horizontal', 'vertical', 'h', 'v'] | Vect | None = None
     ) -> np.ndarray:
+        '''
+        计算从 ``self`` 到 ``other`` 的偏移量，如果指定了 ``proj`` 则只计算在该方向上的投影量
+
+        例如当我们想要让一段文字和另一段文字的基线对齐，可以使用 ``.offset_to(other, 'v')`` 计算基线垂直方向的偏移量，从而根据该量移动来对齐基线。
+        '''
         # 假定 [0] 是 basepoint，[1] 是 right，[2] 是 up
         offset = other.mark.get(0) - self.mark.get(0)
         if proj is None:
