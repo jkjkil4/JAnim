@@ -211,6 +211,10 @@ class AnimViewer(QMainWindow):
         self.action_reset_inout_point = menu_file.addAction(_('Reset In/Out Point(&R)'))
         self.action_reset_inout_point.setAutoRepeat(False)
 
+        menu_file.addSeparator()
+
+        self.action_clear_font_cache = menu_file.addAction(_('Clear Font Cache(&C)'))
+
         menu_view = menu_bar.addMenu(_('View(&V)'))
 
         self.action_stay_on_top = menu_view.addAction(_('Stay on top(&T)'))
@@ -421,6 +425,7 @@ class AnimViewer(QMainWindow):
         self.action_set_in_point.triggered.connect(self.timeline_view.set_in_point)
         self.action_set_out_point.triggered.connect(self.timeline_view.set_out_point)
         self.action_reset_inout_point.triggered.connect(self.timeline_view.reset_inout_point)
+        self.action_clear_font_cache.triggered.connect(self.on_clear_font_cache_triggered)
         self.action_stay_on_top.toggled.connect(self.on_stay_on_top_toggled)
         self.action_frame_skip.toggled.connect(self.on_frame_skip_toggled)
         self.action_select.triggered.connect(self.on_select_triggered)
@@ -789,6 +794,18 @@ class AnimViewer(QMainWindow):
             yield
         finally:
             cli_config.pixel_width, cli_config.pixel_height = old_size
+
+    def on_clear_font_cache_triggered(self) -> None:
+        import janim.utils.font.database as fontdb
+        import janim.utils.typst_compile as typcompile
+        fontdb._database = None
+        typcompile._typst_fonts = None
+        QMessageBox.information(
+            self,
+            'JAnim',
+            _('Font cache cleared.\n'
+              'Tip: Use this to load newly installed fonts without restarting JAnim.')
+        )
 
     # endregion (slots-anim)
 
