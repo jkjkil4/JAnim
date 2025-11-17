@@ -22,8 +22,8 @@ class AudioPlayer:
             log.warning(
                 _('pyaudio is not installed, unable to play audio in the preview window.\n'
                   'You can install it with `pip install pyaudio`. If you encounter issues, '
-                  'please refer to the documentation: '
-                  'https://janim.readthedocs.io/en/latest/installation.html#install-dep')
+                  'please refer to the documentation: {url}')
+                .format(url='https://janim.readthedocs.io/en/latest/installation.html#install-dep')
             )
             return
 

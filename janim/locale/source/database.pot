@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-16 11:01+0800\n"
+"POT-Creation-Date: 2025-11-17 16:22+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -22,14 +22,7 @@ msgstr ""
 msgid "Skipped font \"{filepath}\""
 msgstr ""
 
-#: janim\utils\font\database.py:169
-#, python-brace-format
-msgid ""
-"font=\"{deprecated}\" is deprecated and will no longer be available in JAnim "
-"3.3, use font=\"{full_name}\" instead"
-msgstr ""
-
-#: janim\utils\font\database.py:176
+#: janim\utils\font\database.py:166
 #, python-brace-format
 msgid "No font named \"{font_name}\""
 msgstr ""

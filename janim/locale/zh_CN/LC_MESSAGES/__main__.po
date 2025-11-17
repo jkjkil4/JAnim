@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-08-31 22:54+0800\n"
-"PO-Revision-Date: 2025-08-31 22:56+0800\n"
+"POT-Creation-Date: 2025-11-17 18:33+0800\n"
+"PO-Revision-Date: 2025-11-17 19:37+0800\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
 "Language: zh_CN\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=GBK\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 3.6\n"
+"X-Generator: Poedit 3.8\n"
 
 #: janim\__main__.py:21
 msgid "A library for creating smooth animations"
@@ -57,55 +57,59 @@ msgstr "覆盖设置"
 msgid "Hide subtitles"
 msgstr "隐藏字幕"
 
-#: janim\__main__.py:97
+#: janim\__main__.py:95
+msgid "Use external Typst executable for compiling Typst documents"
+msgstr "使用外部 Typst 可执行文件来编译 Typst 文档"
+
+#: janim\__main__.py:102
 msgid "Name of the Timeline class you want to preview"
 msgstr "要预览的 Timeline 的名称"
 
-#: janim\__main__.py:98
+#: janim\__main__.py:103
 msgid "Preview all timelines from a file"
 msgstr "预览文件中的所有 Timeline"
 
-#: janim\__main__.py:103
+#: janim\__main__.py:108
 msgid "Enable the network socket for interacting with vscode"
 msgstr "启用与 vscode 交互的网络端口"
 
-#: janim\__main__.py:111
+#: janim\__main__.py:116
 msgid "Name of the Timeline class you want to write"
 msgstr "要输出的 Timeline 的名称"
 
-#: janim\__main__.py:112
+#: janim\__main__.py:117
 msgid "Write all timelines from a file"
 msgstr "输出文件中的所有 Timeline"
 
-#: janim\__main__.py:117
+#: janim\__main__.py:122
 msgid "Open the video after writing"
 msgstr "在输出后打开视频文件"
 
-#: janim\__main__.py:120
+#: janim\__main__.py:125
 msgid "Format Options"
 msgstr "格式选项"
 
-#: janim\__main__.py:121
+#: janim\__main__.py:126
 msgid "Options for specifying the format of the output files"
 msgstr "指定输出文件格式的选项"
 
-#: janim\__main__.py:126
+#: janim\__main__.py:131
 msgid "Output video format (mp4 by default, mov for transparent background)"
 msgstr "输出视频的格式（默认 mp4；透明背景需使用 mov）"
 
-#: janim\__main__.py:131
+#: janim\__main__.py:136
 msgid "Output audio format (valid only when outputting audio separately)"
 msgstr "输出音频的格式（仅在单独输出音频时有效）"
 
-#: janim\__main__.py:134
+#: janim\__main__.py:139
 msgid "Output Options"
 msgstr "输出选项"
 
-#: janim\__main__.py:135
+#: janim\__main__.py:140
 msgid "Options for specifying the parts to be written"
 msgstr "指定输出哪些部分的选项"
 
-#: janim\__main__.py:139
+#: janim\__main__.py:144
 msgid ""
 "Video with audio (default; will be replaced by --video if there is no audio, "
 "and by both --video and --audio if the format is GIF)"
@@ -113,55 +117,55 @@ msgstr ""
 "带有音频的视频（默认，当没有音频时会被 --video 替代，当格式为 GIF 时会被 --"
 "video 和 --audio 替代）"
 
-#: janim\__main__.py:145
+#: janim\__main__.py:150
 msgid "Video only"
 msgstr "仅视频"
 
-#: janim\__main__.py:150
+#: janim\__main__.py:155
 msgid "Audio only"
 msgstr "仅音频"
 
-#: janim\__main__.py:155
+#: janim\__main__.py:160
 msgid "Generate SRT file"
 msgstr "生成 SRT 文件"
 
-#: janim\__main__.py:158
+#: janim\__main__.py:163
 msgid "Range Options"
 msgstr "区段选项"
 
-#: janim\__main__.py:159
+#: janim\__main__.py:164
 msgid "Options for specifying in/out point"
 msgstr "用于指定入点/出点的选项"
 
-#: janim\__main__.py:164
+#: janim\__main__.py:169
 msgid "Set In Point; use negative value to indicate time relative to the end"
 msgstr "设置入点; 使用负值表示相对结尾的时间点"
 
-#: janim\__main__.py:170
+#: janim\__main__.py:175
 msgid "Set Out Point; use negative value to indicate time relative to the end"
 msgstr "设置出点; 使用负值表示相对结尾的时间点"
 
-#: janim\__main__.py:173
+#: janim\__main__.py:178
 msgid "Other Options"
 msgstr "其它选项"
 
-#: janim\__main__.py:174
+#: janim\__main__.py:179
 msgid "Other options for writing the output files"
 msgstr "输出文件的其他选项"
 
-#: janim\__main__.py:178
+#: janim\__main__.py:183
 msgid "Disable PBO (Pixel Buffer Object) for writing video"
 msgstr "在输出视频时禁用 PBO（像素缓冲对象）"
 
-#: janim\__main__.py:183
+#: janim\__main__.py:188
 msgid "Use hardware acceleration for writing video"
 msgstr "在输出视频时使用硬件加速"
 
-#: janim\__main__.py:194
+#: janim\__main__.py:199
 msgid "Name of the example you want to see"
 msgstr "要查看的示例的名称"
 
-#: janim\__main__.py:208
+#: janim\__main__.py:214
 msgid "Tool(s) that you want to use"
 msgstr "你想要使用的工具"
 

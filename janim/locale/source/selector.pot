@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-07-01 11:29+0800\n"
+"POT-Creation-Date: 2025-11-17 02:05+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,30 +17,30 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: janim\gui\functions\selector.py:205
+#: janim\gui\functions\selector.py:214
 msgid "Subitem Selection Tool"
 msgstr ""
 
-#: janim\gui\functions\selector.py:206
+#: janim\gui\functions\selector.py:215
 msgid "    Ctrl+Left Click: Select Parent Item"
 msgstr ""
 
-#: janim\gui\functions\selector.py:207
+#: janim\gui\functions\selector.py:216
 msgid "    Left Click: Select Child Item"
 msgstr ""
 
-#: janim\gui\functions\selector.py:208
+#: janim\gui\functions\selector.py:217
 msgid "    Right Click: Deselect Child Item"
 msgstr ""
 
-#: janim\gui\functions\selector.py:209
+#: janim\gui\functions\selector.py:218
 msgid "    Ctrl+Right Click: Exit"
 msgstr ""
 
-#: janim\gui\functions\selector.py:210
+#: janim\gui\functions\selector.py:219
 msgid "Selected Parent Item: "
 msgstr ""
 
-#: janim\gui\functions\selector.py:215
+#: janim\gui\functions\selector.py:224
 msgid "Selected Subitems: "
 msgstr ""

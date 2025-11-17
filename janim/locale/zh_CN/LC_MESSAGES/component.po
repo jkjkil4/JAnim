@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-05 09:31+0800\n"
+"POT-Creation-Date: 2025-11-17 15:33+0800\n"
 "PO-Revision-Date: 2024-06-05 17:33+0800\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -30,7 +30,7 @@ msgid ""
 "CmptGroup must be defined within the same class as the content passed in"
 msgstr "CmptGroup 必须要与传入的内容在同一个类的定义中"
 
-#: janim\components\component.py:268
+#: janim\components\component.py:273
 #, python-brace-format
 msgid "None of the components ({cmpt_str}) have a method named {name}"
 msgstr "({cmpt_str}) 中没有组件有叫作 {name} 的方法"

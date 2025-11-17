@@ -128,7 +128,7 @@ def _compile_typst_by_external_executable(
     try:
         process = sp.Popen(commands, stdin=sp.PIPE)
     except FileNotFoundError:
-        log.error(_('Could not compile Typst file by external executable. '
+        log.error(_('Could not compile Typst document by external executable. '
                     'Please install Typst and add it to the environment variables, or use internal Typst instead.'))
         raise ExitException(EXITCODE_TYPST_NOT_FOUND)
 

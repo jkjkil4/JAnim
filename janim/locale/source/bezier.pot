@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-28 11:00+0800\n"
+"POT-Creation-Date: 2025-11-17 15:33+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -21,7 +21,7 @@ msgstr ""
 msgid "Cannot set both start_point and points at the same time"
 msgstr ""
 
-#: janim\utils\bezier.py:148
+#: janim\utils\bezier.py:173
 #, python-brace-format
 msgid ""
 "PathBuilder must be initialized with start_point or points during "
