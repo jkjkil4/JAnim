@@ -352,6 +352,16 @@ class Text(VItem, Group[TextLine]):
     文字物件，支持富文本等功能
 
     如果对换行排版等有较高的需求可以考虑使用 :class:`~.TypstDoc` 以及 :class:`~.TypstText`
+
+    示例：
+
+    .. code-block:: python
+
+        Text('Hello World!')
+
+    .. code-block:: python
+
+        Text('Hello <c RED>World</c>!', format='rich')
     '''
     class Format(StrEnum):
         PlainText = 'plain'
@@ -454,15 +464,37 @@ class Text(VItem, Group[TextLine]):
             idx -= len(line)
         return len(self) - 1, idx
 
-    def select_parts(self, pattern):
+    def select_parts(self, pattern, group: int = 0):
         '''
-        根据 ``pattern`` 获得文字中的部分
+        根据 ``pattern`` **正则表达式**获得文字中的部分，可以使用正则表达式
+
+        - ``pattern``: 用于匹配的正则表达式
+
+        - ``group``: 对于正则表达式，指定使用第几个分组进行匹配，默认 ``0`` 表示整个匹配片段，其余数字表示对应的分组
+
+        提示：如果不希望使用正则表达式，可以使用 ``re.escape`` 进行转义，例如 ``re.escape('a[i]')`` 来正确匹配字符串中的 `a[i]`
+
+        示例：
+
+        .. code-block:: python
+
+            txt = Text('Hello World!')
+            txt.select_parts('World').set(color=RED)
+
+        上面这个示例会选取出 `Hello World!` 中的 `World` 部分，并将其颜色设置为红色
+
+        .. code-block:: python
+
+            txt = Text('for i in range(100) if i % 3 == 0 or i % 5 == 0')
+            txt.select_parts(r'[^f](or)', 1).set(color=BLUE)
+
+        上面这个示例会选取出其中的 `or` 部分，并且避免选取 `for` 中的 `or`
         '''
         total_text: str = ''.join([line.text for line in self])
         parts = []
         for mch in re.finditer(pattern, total_text):
-            l_row, l_col = self.idx_to_row_col(mch.start())
-            r_row, r_col = self.idx_to_row_col(mch.end())
+            l_row, l_col = self.idx_to_row_col(mch.start(group))
+            r_row, r_col = self.idx_to_row_col(mch.end(group))
             if l_row == r_row:
                 parts.append(self[l_row][l_col:r_col])
             else:
