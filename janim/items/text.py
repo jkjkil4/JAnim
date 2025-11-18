@@ -351,7 +351,7 @@ class Text(VItem, Group[TextLine]):
     '''
     文字物件，支持富文本等功能
 
-    如果对换行排版等有较高的需求可以考虑使用 :class:`~.TypstDoc`
+    如果对换行排版等有较高的需求可以考虑使用 :class:`~.TypstDoc` 以及 :class:`~.TypstText`
     '''
     class Format(StrEnum):
         PlainText = 'plain'
@@ -401,24 +401,23 @@ class Text(VItem, Group[TextLine]):
             self.text = ''
             self.act_params_list: list[tuple[ActAt, ActStart | ActEnd]] = []
             idx = 0
-            iter = re.finditer(r'(<+)(/?[^<]*?)>', text)
+            iter = re.finditer(r'<<|<(\/?[^>]*?)>', text)
             for match in iter:
                 match: re.Match
                 start, end = match.span()
-                left, mid = match.group(1, 2)
-
                 self.text += text[idx:start]
                 idx = end
 
-                left_cnt = len(left)
-                self.text += '<' * (left_cnt // 2)
-                if left_cnt % 2 == 0:
-                    self.text += mid + '>'
+                groups = match.groups()
+
+                if groups[0] is None:   # <<
+                    self.text += '<'
                 else:
-                    if mid.startswith('/'):
-                        self.act_params_list.append((len(self.text), mid[1:]))
+                    act = groups[0]
+                    if act.startswith('/'):
+                        self.act_params_list.append((len(self.text), act[1:]))
                     else:
-                        split = mid.split()
+                        split = act.split()
                         self.act_params_list.append((len(self.text), (split[0], split[1:])))
 
             self.text += text[idx:]

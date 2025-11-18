@@ -147,20 +147,20 @@ class RichTextEdit(TextEdit):
 
 
 class RichTextHighlighter(QSyntaxHighlighter):
-    regex = re.compile(r'(<+)/?[^<]*?>')
-    color = QColor(86, 156, 214)
+    regex = re.compile(r'<<|<(\/?[^>]*?)>')
+    escape_color1 = QColor(130, 130, 130)
+    escape_color2 = QColor(249, 183, 117)
+    act_color = QColor(86, 156, 214)
 
     def highlightBlock(self, text: str) -> None:
         iter = re.finditer(self.regex, text)
         for match in iter:
             match: re.Match
             start, end = match.span()
-            left = match.group(1)
+            groups = match.groups()
 
-            left_cnt = len(left)
-
-            if left_cnt % 2 == 0:
-                continue
+            if groups[0] is None:   # <<
+                self.setFormat(start, 1, self.escape_color1)
+                self.setFormat(start + 1, 1, self.escape_color2)
             else:
-                start += left_cnt // 2
-                self.setFormat(start, end - start, self.color)
+                self.setFormat(start, end - start, self.act_color)
