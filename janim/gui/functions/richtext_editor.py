@@ -92,7 +92,7 @@ class RichTextEdit(TextEdit):
                     ret.append('')
                 case _:
                     if child.text:
-                        ret.append(child.text)
+                        ret.append(RichTextEdit.parse_text(child.text))
 
         return ('\n' if has_div else '').join(ret)
 
@@ -104,9 +104,9 @@ class RichTextEdit(TextEdit):
             style = RichTextEdit.parse_style(span.get('style', ''))
 
         return (
-            f'<fc {RichTextEdit.parse_color(style['color'])}>{span.text}</fc>'
+            f'<fc {RichTextEdit.parse_color(style['color'])}>{RichTextEdit.parse_text(span.text)}</fc>'
             if style is not None and 'color' in style
-            else span.text
+            else RichTextEdit.parse_text(span.text)
         )
 
     @staticmethod
@@ -140,6 +140,10 @@ class RichTextEdit(TextEdit):
             key, value = split
             ret[key.strip()] = value.strip()
         return ret
+
+    @staticmethod
+    def parse_text(text: str) -> str:
+        return text.replace('<', '<<')
 
 
 class RichTextHighlighter(QSyntaxHighlighter):
