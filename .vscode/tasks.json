@@ -10,6 +10,12 @@
             "problemMatcher": []
         },
         {
+            "label": "sync feat",
+            "type": "shell",
+            "command": "git checkout feat; git rebase main; git push github feat; git checkout main",
+            "problemMatcher": []
+        },
+        {
             "label": "sync docs",
             "type": "shell",
             "command": "git checkout docs; git rebase main; git push github docs; git checkout main",
