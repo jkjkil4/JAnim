@@ -411,7 +411,7 @@ class Text(VItem, Group[TextLine]):
             self.text = ''
             self.act_params_list: list[tuple[ActAt, ActStart | ActEnd]] = []
             idx = 0
-            iter = re.finditer(r'<<|<(\/?[^>]*?)>', text)
+            iter = re.finditer(r'<<|<(\/?[^>]*)>', text)
             for match in iter:
                 match: re.Match
                 start, end = match.span()

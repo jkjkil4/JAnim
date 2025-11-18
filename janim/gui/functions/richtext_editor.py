@@ -147,7 +147,7 @@ class RichTextEdit(TextEdit):
 
 
 class RichTextHighlighter(QSyntaxHighlighter):
-    regex = re.compile(r'<<|<(\/?[^>]*?)>')
+    regex = re.compile(r'<<|<(\/?[^>]*)>')
     escape_color1 = QColor(130, 130, 130)
     escape_color2 = QColor(249, 183, 117)
     act_color = QColor(86, 156, 214)
