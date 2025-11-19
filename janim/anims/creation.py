@@ -186,7 +186,8 @@ class DrawBorderThenFill(DataUpdater):
     @dataclass
     class ExtraData:
         outline: VItem
-        zero_data: VItem
+        zero_data: VItem | None
+        stroke_transparent: bool
 
     def create_extra_data(self, data: Item) -> VItem | None:
         if not isinstance(data, VItem):
@@ -195,29 +196,35 @@ class DrawBorderThenFill(DataUpdater):
         data_copy.radius.set(self.stroke_radius)
         data_copy.stroke.set(self.stroke_color, 1)
         data_copy.fill.set(alpha=0)
-        return DrawBorderThenFill.ExtraData(data_copy, None)
+        return DrawBorderThenFill.ExtraData(data_copy, None, data.stroke.is_transparent())
 
     def updater(self, data: VItem, p: UpdaterParams) -> None:
-        if p.extra_data is None:
+        extra: DrawBorderThenFill.ExtraData | None = p.extra_data
+        if extra is None:
             return  # pragma: no cover
 
         if self.lag_ratio != 0:
             if p.alpha >= 1:
                 return
             if p.alpha <= 0:
-                if p.extra_data.zero_data is None:
-                    p.extra_data.zero_data = data.points.pointwise_become_partial(data.points, 0, 0).copy()
+                if extra.zero_data is None:
+                    extra.zero_data = data.points.pointwise_become_partial(data.points, 0, 0).copy()
                 else:
-                    data.points.become(p.extra_data.zero_data)
+                    data.points.become(extra.zero_data)
                 return
 
-        outline = p.extra_data.outline
+        outline = extra.outline
         index, subalpha = integer_interpolate(0, 2, p.alpha)
 
         if index == 0:
             data.restore(outline)
             data.points.pointwise_become_partial(data.points, 0, subalpha)
         else:
+            if extra.stroke_transparent:
+                # 在原始描边透明的情况下，限制描边半径不超过原始描边半径，以免“晕开”影响视觉效果
+                radii = data.radius.get()
+                data.radius.set(np.clip(radii, a_min=None, a_max=self.stroke_radius))
+
             data.interpolate(outline, data, subalpha)
 
 
