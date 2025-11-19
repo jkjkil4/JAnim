@@ -36,26 +36,30 @@ void main()
     #endif
 
     int idx;
-    float d = INFINITY;
-    float sgn = 1.0;
+    float stroke_d = INFINITY;
+    float fill_d = INFINITY;
+    float fill_sgn = 1.0;
 
     int start_idx = 0;
-    float sp_d;
-    float sp_sgn;
+    float sp_stroke_d;
+    float sp_fill_d;
+    float sp_fill_sgn;
 
     const int lim = (points.length() - 1) / 2 * 2;
 
     while (true) {
-        get_subpath_attr(start_idx, lim, start_idx, idx, sp_d, sp_sgn);
-        d = min(d, sp_d);
-        sgn *= sp_sgn;
+        get_subpath_attr(start_idx, lim, start_idx, idx, sp_stroke_d, sp_fill_d, sp_fill_sgn);
+
+        stroke_d = min(stroke_d, sp_stroke_d);
+        fill_d = min(fill_d, sp_fill_d);
+        fill_sgn *= sp_fill_sgn;
 
         if (start_idx >= lim)
             break;
         start_idx += 2;
     }
 
-    f_color = get_vitem_color(d, sgn, idx);
+    f_color = get_vitem_color(stroke_d, fill_d * fill_sgn, idx);
     compute_depth_if_needed();
 
     #if !defined(POLYGON_LINES) && !defined(SDF_PLANE)
@@ -64,7 +68,7 @@ void main()
     #endif
 
     #ifdef SDF_PLANE
-    debug_sdf_plane(sgn, d);
+    debug_sdf_plane(fill_sgn, fill_d);
     #endif
 
     #ifdef POLYGON_LINES

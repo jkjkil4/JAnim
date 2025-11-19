@@ -1,5 +1,5 @@
-#ifndef __BLEND_COLOR_GLSL__
-#define __BLEND_COLOR_GLSL__
+#ifndef _BLEND_COLOR_GLSL_
+#define _BLEND_COLOR_GLSL_
 
 vec4 blend_color(vec4 fore, vec4 back) {
     float a = fore.a + back.a * (1 - fore.a);
