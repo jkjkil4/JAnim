@@ -289,7 +289,7 @@ class TextChar(BasepointVItem):
 
 class TextLine(BasepointVItem, Group[TextChar]):
     '''
-    单行文字物件，作为 :class:`Text` 的子物件，在创建 :class:`Text` 时产生s
+    单行文字物件，作为 :class:`Text` 的子物件，在创建 :class:`Text` 时产生
     '''
 
     mark = CmptInfo(Cmpt_Mark_TextLineImpl[Self])
@@ -466,7 +466,7 @@ class Text(VItem, Group[TextLine]):
 
     def select_parts(self, pattern, group: int = 0):
         '''
-        根据 ``pattern`` **正则表达式**获得文字中的部分，可以使用正则表达式
+        根据 ``pattern`` **正则表达式**获得文字中的部分
 
         - ``pattern``: 用于匹配的正则表达式
 
