@@ -221,7 +221,7 @@ class DrawBorderThenFill(DataUpdater):
             data.points.pointwise_become_partial(data.points, 0, subalpha)
         else:
             if extra.stroke_transparent:
-                # 在原始描边透明的情况下，限制描边半径不超过原始描边半径，以免“晕开”影响视觉效果
+                # 在原始描边透明的情况下，限制描边半径不超过 outline 描边半径，以免“晕开”影响视觉效果
                 radii = data.radius.get()
                 data.radius.set(np.clip(radii, a_min=None, a_max=self.stroke_radius))
 
