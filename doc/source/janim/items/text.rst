@@ -69,6 +69,12 @@ text
 
    Text('Hello <c BLUE>JAnim</c>!', format=Text.Format.RichText)
 
+``format=Text.Format.RichText`` 也可以简写为 ``format='rich'``
+
+.. code-block:: python
+
+   Text('Hello <c BLUE>JAnim</c>!', format='rich')
+
 .. note::
 
    这里的 ``c`` 是 ``color`` 的简写
@@ -153,6 +159,14 @@ text
       - 一个数
       - ``Hello <fs 1.2>JAnim</fs>``
       -
+
+.. tip::
+
+   如果你想直接输入 ``<`` 符号，不希望其被解析为富文本标记，可以使用 ``<<`` 来表示一个 ``<`` 符号，例如：
+
+   .. code-block:: python
+
+      Text('if x << 10 <c RED>and</c> x > 2:', format='rich')
 
 参考文档
 ------------
