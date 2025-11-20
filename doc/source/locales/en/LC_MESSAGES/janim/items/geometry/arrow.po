@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: JAnim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-08-11 22:08+0800\n"
+"POT-Creation-Date: 2025-11-20 08:21+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -24,7 +24,7 @@ msgid "arrow"
 msgstr ""
 
 #: janim.items.geometry.arrow.CenterAnchor:1 of
-msgid "基类：:py:class:`~enum.Enum`"
+msgid "基类：:py:class:`~enum.StrEnum`"
 msgstr ""
 
 #: janim.items.geometry.arrow.CenterAnchor:1 of
@@ -97,15 +97,15 @@ msgstr ""
 msgid "基类：:py:class:`~janim.items.geometry.line.Line`"
 msgstr ""
 
-#: janim.items.geometry.arrow.Arrow:1 of
+#: janim.render.renderer_arrow.ArrowRenderer:1 of
 msgid "带箭头的线段，箭头大小自动"
 msgstr ""
 
-#: janim.items.geometry.arrow.Arrow:3 of
+#: janim.render.renderer_arrow.ArrowRenderer:3 of
 msgid "``buff``: 箭头首尾的空余量，默认为 ``0.25``"
 msgstr ""
 
-#: janim.items.geometry.arrow.Arrow:4 of
+#: janim.render.renderer_arrow.ArrowRenderer:4 of
 msgid "``max_length_to_tip_length_ratio``: 箭头长度和直线长度最大比例"
 msgstr ""
 
@@ -150,4 +150,7 @@ msgstr ""
 #: janim.items.geometry.arrow.DoubleArrow:3 of
 msgid "参数请参考 :class:`Arrow`"
 msgstr ""
+
+#~ msgid "基类：:py:class:`~enum.Enum`"
+#~ msgstr ""
 

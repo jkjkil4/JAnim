@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: JAnim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-08-11 22:08+0800\n"
+"POT-Creation-Date: 2025-11-20 08:21+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -23,7 +23,46 @@ msgstr ""
 msgid "子时间轴机制"
 msgstr ""
 
-#: ../../source/tutorials/sub_timeline.rst:6
-msgid "文档有待完善"
+#: ../../source/tutorials/sub_timeline.rst:4
+msgid "JAnim 引入了子时间轴机制，使得在主时间轴中可以嵌套子时间轴，从而实现复杂逻辑的分离，以及更好的可复用性。"
 msgstr ""
+
+#: ../../source/tutorials/sub_timeline.rst:74
+msgid ":meth:`~.BuiltTimeline.to_item`"
+msgstr ""
+
+#: ../../source/tutorials/sub_timeline.rst:63
+msgid ""
+"在上面这个例子中，我们向主时间轴 ``MainTimeline`` 中插入了两个子时间轴 ``DrawingStarInNumberPlane``"
+" 和 ``Texts`` 。"
+msgstr ""
+
+#: ../../source/tutorials/sub_timeline.rst:65
+msgid "子时间轴的引入使得每个子时间轴都可以独立地控制自己的动画，我们可以在主时间轴中更灵活地组织和管理动画逻辑。"
+msgstr ""
+
+#: ../../source/tutorials/sub_timeline.rst:69
+msgid ""
+"上面这个例子中，文字不随另一个时间轴的动画而移动，这个效果也可以使用 :meth:`~.Item.fix_in_frame` "
+"方法来实现，你可以另行参阅。"
+msgstr ""
+
+#: ../../source/tutorials/sub_timeline.rst:71
+msgid "并且子时间轴在主时间轴中作为一个整体物件，可以更加方便地传入 :class:`~.FrameEffect` 及其派生类应用复杂的视觉效果："
+msgstr ""
+
+#: ../../source/tutorials/sub_timeline.rst:55
+msgid ":class:`~.SimpleFrameEffect` :class:`~.TransformableFrameClip`"
+msgstr ""
+
+#: ../../source/tutorials/sub_timeline.rst:111
+msgid "并且，子 Timeline 机制让 Timeline 有了极高的可复用性："
+msgstr ""
+
+#: ../../source/tutorials/sub_timeline.rst:177
+msgid "有待完善关于 :meth:`~.BuiltTimeline.to_playback_control_item` 的说明"
+msgstr ""
+
+#~ msgid "文档有待完善"
+#~ msgstr ""
 

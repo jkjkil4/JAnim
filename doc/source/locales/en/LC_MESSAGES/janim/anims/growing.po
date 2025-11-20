@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: JAnim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-04 09:09+0800\n"
+"POT-Creation-Date: 2025-11-20 08:21+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -23,7 +23,7 @@ msgstr ""
 msgid "growing"
 msgstr ""
 
-#: janim.anims.growing.GrowFromPoint:1 of
+#: janim.anims.growing.GrowFromPoint:1 janim.anims.growing.ShrinkToPoint:1 of
 msgid ""
 "基类：:py:class:`~janim.anims.updater.DataUpdater`\\ "
 "[:py:class:`~janim.items.points.Points`]"
@@ -45,12 +45,36 @@ msgstr ""
 msgid "从物件的指定边角放大显现"
 msgstr ""
 
+#: janim.anims.growing.ShrinkToPoint:1 of
+msgid "缩小到指定的位置消失"
+msgstr ""
+
+#: janim.anims.growing.ShrinkToCenter:1 janim.anims.growing.ShrinkToEdge:1 of
+msgid "基类：:py:class:`~janim.anims.growing.ShrinkToPoint`"
+msgstr ""
+
+#: janim.anims.growing.ShrinkToCenter:1 of
+msgid "缩小到物件的中心消失"
+msgstr ""
+
+#: janim.anims.growing.ShrinkToEdge:1 of
+msgid "缩小到物件的指定边角消失"
+msgstr ""
+
 #: janim.anims.growing.SpinInFromNothing:1 of
 msgid "基类：:py:class:`~janim.anims.growing.GrowFromCenter`"
 msgstr ""
 
 #: janim.anims.growing.SpinInFromNothing:1 of
 msgid "从物件的中心旋转半圈放大显现"
+msgstr ""
+
+#: janim.anims.growing.SpinOutToNothing:1 of
+msgid "基类：:py:class:`~janim.anims.growing.ShrinkToCenter`"
+msgstr ""
+
+#: janim.anims.growing.SpinOutToNothing:1 of
+msgid "向物件的中心旋转半圈缩小消失"
 msgstr ""
 
 #: janim.anims.growing.GrowArrowByBoundFunc:1 of

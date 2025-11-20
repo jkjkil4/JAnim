@@ -19,14 +19,11 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.17.0\n"
 
-#: ../../source/tutorials/3d_coordinates.rst:4
-msgid "三维坐标 (TODO)"
+#: ../../source/examples/_slide_examples_options.rst:9
+msgid "嗯，这个本身就是用 JAnim 制作的"
 msgstr ""
 
-#: ../../source/tutorials/3d_coordinates.rst:8
-msgid "文档有待完善"
+#: ../../source/examples/_slide_examples_options.rst:80
+msgid "动画效果使用 JAnim 制作，“信息量”可视化结果是插入的现成图片"
 msgstr ""
-
-#~ msgid "三维坐标"
-#~ msgstr ""
 

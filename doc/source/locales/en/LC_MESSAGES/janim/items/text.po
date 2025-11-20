@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: JAnim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-27 00:36+0800\n"
+"POT-Creation-Date: 2025-11-20 08:22+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -95,213 +95,217 @@ msgid ""
 "``advance``"
 msgstr ""
 
-#: ../../source/janim/items/text.rst:58
-msgid "富文本"
+#: ../../source/janim/items/text.rst:55
+msgid "有关更多与基线原点有关的内容，请参考 :class:`~.BasepointVItem`。"
 msgstr ""
 
 #: ../../source/janim/items/text.rst:60
-msgid "可以使用起始标记和结束标记（像 html 那样的）应用富文本格式："
+msgid "富文本"
 msgstr ""
 
 #: ../../source/janim/items/text.rst:62
-msgid "具体写法是： ``<格式名 参数>被应用对应格式的文本</格式名>``"
+msgid "可以使用起始标记和结束标记（像 html 那样的）应用富文本格式："
 msgstr ""
 
 #: ../../source/janim/items/text.rst:64
+msgid "具体写法是： ``<格式名 参数>被应用对应格式的文本</格式名>``"
+msgstr ""
+
+#: ../../source/janim/items/text.rst:66
 msgid "比如，要想让文字的一部分变为蓝色，可以这样书写："
 msgstr ""
 
-#: ../../source/janim/items/text.rst:72
+#: ../../source/janim/items/text.rst:74
 msgid "这里的 ``c`` 是 ``color`` 的简写"
 msgstr ""
 
-#: ../../source/janim/items/text.rst:76
+#: ../../source/janim/items/text.rst:78
 msgid ":class:`~.Text` 使用富文本需要传入 ``format=Text.Format.RichText``，否则默认情况下视作普通文本"
 msgstr ""
 
-#: ../../source/janim/items/text.rst:78
+#: ../../source/janim/items/text.rst:80
 msgid "以下列出了可用的格式："
 msgstr ""
 
-#: ../../source/janim/items/text.rst:82
+#: ../../source/janim/items/text.rst:84
 msgid "名称"
 msgstr ""
 
-#: ../../source/janim/items/text.rst:83
+#: ../../source/janim/items/text.rst:85
 msgid "缩写"
 msgstr ""
 
-#: ../../source/janim/items/text.rst:84
+#: ../../source/janim/items/text.rst:86
 msgid "作用"
 msgstr ""
 
-#: ../../source/janim/items/text.rst:85
+#: ../../source/janim/items/text.rst:87
 msgid "参数"
 msgstr ""
 
-#: ../../source/janim/items/text.rst:86
+#: ../../source/janim/items/text.rst:88
 msgid "示例"
 msgstr ""
 
-#: ../../source/janim/items/text.rst:87
+#: ../../source/janim/items/text.rst:89
 msgid "备注"
 msgstr ""
 
-#: ../../source/janim/items/text.rst:88
+#: ../../source/janim/items/text.rst:90
 msgid "color"
 msgstr ""
 
-#: ../../source/janim/items/text.rst:89
+#: ../../source/janim/items/text.rst:91
 msgid "c"
 msgstr ""
 
-#: ../../source/janim/items/text.rst:90
+#: ../../source/janim/items/text.rst:92
 msgid "颜色"
 msgstr ""
 
-#: ../../source/janim/items/text.rst:91
+#: ../../source/janim/items/text.rst:93
 msgid "颜色名称"
 msgstr ""
 
-#: ../../source/janim/items/text.rst:92
+#: ../../source/janim/items/text.rst:94
 msgid "``<c BLUE>JAnim</c>``"
 msgstr ""
 
-#: ../../source/janim/items/text.rst:97
+#: ../../source/janim/items/text.rst:99
 msgid "十六进制值"
 msgstr ""
 
-#: ../../source/janim/items/text.rst:98
+#: ../../source/janim/items/text.rst:100
 msgid "``<c #00ff00>JAnim</c>``"
 msgstr ""
 
-#: ../../source/janim/items/text.rst:103
+#: ../../source/janim/items/text.rst:105
 msgid "r g b"
 msgstr ""
 
-#: ../../source/janim/items/text.rst:104
+#: ../../source/janim/items/text.rst:106
 msgid "``<c 0 1.0 0.5>JAnim</c>``"
 msgstr ""
 
-#: ../../source/janim/items/text.rst:109
+#: ../../source/janim/items/text.rst:111
 msgid "r g b a"
 msgstr ""
 
-#: ../../source/janim/items/text.rst:110
+#: ../../source/janim/items/text.rst:112
 msgid "``<c 0 1.0 0.5 0.5>JAnim</c>``"
 msgstr ""
 
-#: ../../source/janim/items/text.rst:111 ../../source/janim/items/text.rst:129
+#: ../../source/janim/items/text.rst:113 ../../source/janim/items/text.rst:131
 msgid "描边也被设置为半透明"
 msgstr ""
 
-#: ../../source/janim/items/text.rst:112
+#: ../../source/janim/items/text.rst:114
 msgid "stroke_color"
 msgstr ""
 
-#: ../../source/janim/items/text.rst:113
+#: ../../source/janim/items/text.rst:115
 msgid "sc"
 msgstr ""
 
-#: ../../source/janim/items/text.rst:114
+#: ../../source/janim/items/text.rst:116
 msgid "描边颜色"
 msgstr ""
 
-#: ../../source/janim/items/text.rst:115 ../../source/janim/items/text.rst:121
-#: ../../source/janim/items/text.rst:133 ../../source/janim/items/text.rst:139
+#: ../../source/janim/items/text.rst:117 ../../source/janim/items/text.rst:123
+#: ../../source/janim/items/text.rst:135 ../../source/janim/items/text.rst:141
 msgid "同上"
 msgstr ""
 
-#: ../../source/janim/items/text.rst:118
+#: ../../source/janim/items/text.rst:120
 msgid "fill_color"
 msgstr ""
 
-#: ../../source/janim/items/text.rst:119
+#: ../../source/janim/items/text.rst:121
 msgid "fc"
 msgstr ""
 
-#: ../../source/janim/items/text.rst:120
+#: ../../source/janim/items/text.rst:122
 msgid "填充颜色"
 msgstr ""
 
-#: ../../source/janim/items/text.rst:124
+#: ../../source/janim/items/text.rst:126
 msgid "alpha"
 msgstr ""
 
-#: ../../source/janim/items/text.rst:125
+#: ../../source/janim/items/text.rst:127
 msgid "a"
 msgstr ""
 
-#: ../../source/janim/items/text.rst:126
+#: ../../source/janim/items/text.rst:128
 msgid "透明度"
 msgstr ""
 
-#: ../../source/janim/items/text.rst:127 ../../source/janim/items/text.rst:145
-#: ../../source/janim/items/text.rst:151
+#: ../../source/janim/items/text.rst:129 ../../source/janim/items/text.rst:147
+#: ../../source/janim/items/text.rst:153
 msgid "一个数"
 msgstr ""
 
-#: ../../source/janim/items/text.rst:128
+#: ../../source/janim/items/text.rst:130
 msgid "``<a 0.5>JAnim</a>``"
 msgstr ""
 
-#: ../../source/janim/items/text.rst:130
+#: ../../source/janim/items/text.rst:132
 msgid "stroke_alpha"
 msgstr ""
 
-#: ../../source/janim/items/text.rst:131
+#: ../../source/janim/items/text.rst:133
 msgid "sa"
 msgstr ""
 
-#: ../../source/janim/items/text.rst:132
+#: ../../source/janim/items/text.rst:134
 msgid "描边透明度"
 msgstr ""
 
-#: ../../source/janim/items/text.rst:136
+#: ../../source/janim/items/text.rst:138
 msgid "fill_alpha"
 msgstr ""
 
-#: ../../source/janim/items/text.rst:137
+#: ../../source/janim/items/text.rst:139
 msgid "fa"
 msgstr ""
 
-#: ../../source/janim/items/text.rst:138
+#: ../../source/janim/items/text.rst:140
 msgid "填充透明度"
 msgstr ""
 
-#: ../../source/janim/items/text.rst:142
+#: ../../source/janim/items/text.rst:144
 msgid "stroke"
 msgstr ""
 
-#: ../../source/janim/items/text.rst:143
+#: ../../source/janim/items/text.rst:145
 msgid "s"
 msgstr ""
 
-#: ../../source/janim/items/text.rst:144
+#: ../../source/janim/items/text.rst:146
 msgid "描边半径"
 msgstr ""
 
-#: ../../source/janim/items/text.rst:146
+#: ../../source/janim/items/text.rst:148
 msgid "``<s 0.01>JAnim<s>``"
 msgstr ""
 
-#: ../../source/janim/items/text.rst:148
+#: ../../source/janim/items/text.rst:150
 msgid "font_scale"
 msgstr ""
 
-#: ../../source/janim/items/text.rst:149
+#: ../../source/janim/items/text.rst:151
 msgid "fs"
 msgstr ""
 
-#: ../../source/janim/items/text.rst:150
+#: ../../source/janim/items/text.rst:152
 msgid "缩放倍数"
 msgstr ""
 
-#: ../../source/janim/items/text.rst:152
+#: ../../source/janim/items/text.rst:154
 msgid "``Hello <fs 1.2>JAnim</fs>``"
 msgstr ""
 
-#: ../../source/janim/items/text.rst:156
+#: ../../source/janim/items/text.rst:158
 msgid "参考文档"
 msgstr ""
 
@@ -312,7 +316,7 @@ msgid ""
 ":py:class:`~typing.Generic`"
 msgstr ""
 
-#: janim.items.text.ProjType:1 of
+#: janim.items.text.ProjType:1 janim.items.text.Text.Format:1 of
 msgid "基类：:py:class:`~enum.StrEnum`"
 msgstr ""
 
@@ -320,6 +324,16 @@ msgstr ""
 msgid ""
 "基类：:py:class:`~janim.items.points.MarkedItem`, "
 ":py:class:`~janim.items.vitem.VItem`"
+msgstr ""
+
+#: janim.items.text.BasepointVItem.offset_to:1 of
+msgid "计算从 ``self`` 到 ``other`` 的偏移量，如果指定了 ``proj`` 则只计算在该方向上的投影量"
+msgstr ""
+
+#: janim.items.text.BasepointVItem.offset_to:3 of
+msgid ""
+"例如当我们想要让一段文字和另一段文字的基线对齐，可以使用 ``.offset_to(other, 'v')`` "
+"计算基线垂直方向的偏移量，从而根据该量移动来对齐基线。"
 msgstr ""
 
 #: janim.items.text.TextChar:1 of
@@ -346,7 +360,7 @@ msgid ""
 msgstr ""
 
 #: janim.items.text.TextLine:1 of
-msgid "单行文字物件，作为 :class:`Text` 的子物件，在创建 :class:`Text` 时产生s"
+msgid "单行文字物件，作为 :class:`Text` 的子物件，在创建 :class:`Text` 时产生"
 msgstr ""
 
 #: janim.items.text.TextLine.arrange_in_line:1 of
@@ -365,11 +379,11 @@ msgid "文字物件，支持富文本等功能"
 msgstr ""
 
 #: janim.items.text.Text:3 of
-msgid "如果对换行排版等有较高的需求可以考虑使用 :class:`~.TypstDoc`"
+msgid "如果对换行排版等有较高的需求可以考虑使用 :class:`~.TypstDoc` 以及 :class:`~.TypstText`"
 msgstr ""
 
-#: janim.items.text.Text.Format:1 of
-msgid "基类：:py:class:`~enum.Enum`"
+#: janim.items.text.Text:5 janim.items.text.Text.select_parts:9 of
+msgid "示例："
 msgstr ""
 
 #: janim.items.text.Text.idx_to_row_col:1 of
@@ -377,7 +391,29 @@ msgid "由字符索引得到 行数、列数 索引"
 msgstr ""
 
 #: janim.items.text.Text.select_parts:1 of
-msgid "根据 ``pattern`` 获得文字中的部分"
+msgid "根据 ``pattern`` **正则表达式** 获得文字中的部分"
+msgstr ""
+
+#: janim.items.text.Text.select_parts:3 of
+msgid "``pattern``: 用于匹配的正则表达式"
+msgstr ""
+
+#: janim.items.text.Text.select_parts:5 of
+msgid "``group``: 对于正则表达式，指定使用第几个分组进行匹配，默认 ``0`` 表示整个匹配片段，其余数字表示对应的分组"
+msgstr ""
+
+#: janim.items.text.Text.select_parts:7 of
+msgid ""
+"提示：如果不希望使用正则表达式，可以使用 ``re.escape`` 进行转义，例如 ``re.escape('a[i]')`` "
+"来正确匹配字符串中的 `a[i]`"
+msgstr ""
+
+#: janim.items.text.Text.select_parts:16 of
+msgid "上面这个示例会选取出 `Hello World!` 中的 `World` 部分，并将其颜色设置为红色"
+msgstr ""
+
+#: janim.items.text.Text.select_parts:23 of
+msgid "上面这个示例会选取出其中的 `or` 部分，并且避免选取 `for` 中的 `or`"
 msgstr ""
 
 #: janim.items.text.Text.arrange_in_lines:1 of
@@ -460,5 +496,17 @@ msgstr ""
 #~ ":py:class:`~janim.items.vitem.VItem`, "
 #~ ":py:class:`~janim.items.points.Group`\\ "
 #~ "[:py:class:`~janim.items.text.TextChar`]"
+#~ msgstr ""
+
+#~ msgid "单行文字物件，作为 :class:`Text` 的子物件，在创建 :class:`Text` 时产生s"
+#~ msgstr ""
+
+#~ msgid "如果对换行排版等有较高的需求可以考虑使用 :class:`~.TypstDoc`"
+#~ msgstr ""
+
+#~ msgid "基类：:py:class:`~enum.Enum`"
+#~ msgstr ""
+
+#~ msgid "根据 ``pattern`` 获得文字中的部分"
 #~ msgstr ""
 

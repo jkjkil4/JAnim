@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: JAnim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-08-11 22:08+0800\n"
+"POT-Creation-Date: 2025-11-20 08:21+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -39,49 +39,49 @@ msgstr ""
 msgid ":class:`~.Group` :meth:`~.Cmpt_Points.arrange` :meth:`~.Cmpt_Rgbas.fade`"
 msgstr ""
 
-#: ../../source/tutorials/item_group.rst:19
+#: ../../source/tutorials/item_group.rst:20
 msgid ""
 "这里创建了一个 ``group``，其中包含了三个子物件： ``Star`` 、 ``Circle`` 和 "
 "``RegularPolygon``，并将它们统一设置为蓝色且完全填充。"
 msgstr ""
 
-#: ../../source/tutorials/item_group.rst:21
+#: ../../source/tutorials/item_group.rst:22
 msgid ""
 "并通过 :meth:`~.Cmpt_Points.arrange` 方法，将 ``group`` 中的子物件依次向右排列，前后间距为 "
 "``MED_LARGE_BUFF``。"
 msgstr ""
 
-#: ../../source/tutorials/item_group.rst:25
+#: ../../source/tutorials/item_group.rst:26
 msgid ""
 ":meth:`~.Cmpt_Points.arrange` 是 JAnim 中排列物件的一个相当实用的方法， 还有 "
 ":meth:`~.Cmpt_Points.arrange_in_grid` 方法提供了网格排列的功能， 可另行参考阅读。"
 msgstr ""
 
-#: ../../source/tutorials/item_group.rst:14
+#: ../../source/tutorials/item_group.rst:15
 msgid "将填充颜色整体淡化 70%。"
 msgstr ""
 
-#: ../../source/tutorials/item_group.rst:16
+#: ../../source/tutorials/item_group.rst:17
 msgid ""
 "由于 :class:`~.Group` 没有像几何图形物件 :class:`~.VItem` 一样的复杂属性，因此不能直接使用类似 "
 "``group.fill.fade(0.7)`` 这样的方式来淡化颜色。"
 msgstr ""
 
-#: ../../source/tutorials/item_group.rst:18
+#: ../../source/tutorials/item_group.rst:19
 msgid ""
 "但是可以通过 ``group.astype(VItem).fill.fade(0.7)`` 的方式，把 ``group`` “当作”一个 "
 ":class:`~.VItem` 来使用原本没有的组件，可以简写为"
 msgstr ""
 
-#: ../../source/tutorials/item_group.rst:24
+#: ../../source/tutorials/item_group.rst:25
 msgid "形式上来讲，写法是： ``group(当作什么物件).组件.操作``。"
 msgstr ""
 
-#: ../../source/tutorials/item_group.rst:26
+#: ../../source/tutorials/item_group.rst:27
 msgid "因为这里是用作动画，所以形式上是 ``group(当作什么物件).anim.组件.操作``。"
 msgstr ""
 
-#: ../../source/tutorials/item_group.rst:14
+#: ../../source/tutorials/item_group.rst:15
 msgid ""
 ":class:`~.FadeOut` 动画的 ``lag_ratio`` 参数可以控制子物件淡出的延迟比率， 默认 ``0`` "
 "表示同时淡出，这里设置了 ``0.5`` 表示前一个淡出 50% 后开始淡出下一个。"
@@ -91,19 +91,19 @@ msgstr ""
 msgid ":class:`~.Group` :meth:`~.Cmpt_Points.arrange` :class:`~.Indicate`"
 msgstr ""
 
-#: ../../source/tutorials/item_group.rst:18
+#: ../../source/tutorials/item_group.rst:19
 msgid "这里创建了一个 ``group``，其中包含了三个子物件，每个子物件初始化了不同的颜色。"
 msgstr ""
 
-#: ../../source/tutorials/item_group.rst:16
+#: ../../source/tutorials/item_group.rst:17
 msgid "首先用 :class:`~.Indicate` 动画高亮显示整个 ``group``"
 msgstr ""
 
-#: ../../source/tutorials/item_group.rst:18
+#: ../../source/tutorials/item_group.rst:19
 msgid "并且我们可以使用 ``for`` 遍历组内的子物件，依次使用 :class:`~.Indicate` 动画高亮它们。"
 msgstr ""
 
-#: ../../source/tutorials/item_group.rst:14
+#: ../../source/tutorials/item_group.rst:15
 msgid ""
 "通过 ``group[1]`` 访问 ``group`` 中下标为 1 的，即第二个子物件 ``Circle``，将其填充透明度设置为 "
 "``0.5``。"
@@ -186,7 +186,7 @@ msgid "它下面所有层，在这个例子中的绿色层和蓝色层的物件�
 msgstr ""
 
 #: ../../source/tutorials/item_group.rst:220
-msgid "可以使用 ``.descendants()`` 方法得知所有后代物件。"
+msgid "可以使用 :meth:`~.Relation.descendants` 方法得知所有后代物件。"
 msgstr ""
 
 #: ../../source/tutorials/item_group.rst:222
@@ -202,4 +202,7 @@ msgstr ""
 #: ../../source/tutorials/item_group.rst:228
 msgid "从设计上来说，一个物件可能会有多个父物件，但其实在使用时并不太需要关心这一点， 因为使用时我们主要讨论子物件与后代物件在各个功能中发挥的作用。"
 msgstr ""
+
+#~ msgid "可以使用 ``.descendants()`` 方法得知所有后代物件。"
+#~ msgstr ""
 

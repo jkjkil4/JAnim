@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  JAnim\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-20 11:45+0800\n"
+"POT-Creation-Date: 2025-11-20 08:21+0800\n"
 "PO-Revision-Date: 2024-01-19 19:53+0800\n"
 "Last-Translator: \n"
 "Language: en\n"
@@ -75,7 +75,8 @@ msgstr ""
 "Performs an operation on the item using ``func`` and returns ``self`` for"
 " convenient chain calling"
 
-#: janim.items.item.Item.anim:1 janim.items.item.Item.update:1 of
+#: janim.items.item.Item.anim:1 janim.items.item.Item.generate_target:3
+#: janim.items.item.Item.update:1 of
 #, fuzzy
 msgid "例如："
 msgstr "Examples:"
@@ -138,6 +139,18 @@ msgstr ""
 msgid "将该物件的数据设置为与传入的物件相同（以复制的方式，不是引用）"
 msgstr ""
 
+#: janim.items.item.Item.become_current:1 of
+msgid "使用该方法可以中断动画过程，使物件立刻成为当前动画作用下的结果"
+msgstr ""
+
+#: janim.items.item.Item.become_current:5 of
+msgid "物件本身是不会一直随着动画改变数据的"
+msgstr ""
+
+#: janim.items.item.Item.become_current:7 of
+msgid "在需要使用动画后的状态进行 ``.anim`` 等操作时较为实用"
+msgstr ""
+
 #: janim.items.item.Item.align_for_interpolate:1 of
 msgid "进行数据对齐，以便插值"
 msgstr ""
@@ -148,6 +161,30 @@ msgstr ""
 
 #: janim.items.item.Item.fix_in_frame:1 of
 msgid "固定在屏幕上，也就是即使摄像头移动位置也不会改变在屏幕上的位置"
+msgstr ""
+
+#: janim.items.item.Item.SavedState:1 of
+msgid "基类：:py:class:`~typing.Generic`"
+msgstr ""
+
+#: janim.items.item.Item.save_state:1 of
+msgid "保存物件状态，后续可使用 :meth:`load_state` 恢复，例如："
+msgstr ""
+
+#: janim.items.item.Item.save_state:11 of
+msgid "或者创建恢复动画："
+msgstr ""
+
+#: janim.items.item.Item.save_state:17 of
+msgid "例如可以用在，保存摄像机初始状态，在复杂的动画后恢复摄像机位置等场景中"
+msgstr ""
+
+#: janim.items.item.Item.load_state:1 of
+msgid "恢复物件状态，详见 :meth:`save_state`"
+msgstr ""
+
+#: janim.items.item.Item.generate_target:1 of
+msgid "拷贝生成一个 ``.target`` 物件，用于设置目标状态，最后使用 :class:`~.MoveToTarget` 创建过渡动画"
 msgstr ""
 
 #: janim.items.item.Item.show:1 of

@@ -19,14 +19,23 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.17.0\n"
 
-#: ../../source/tutorials/3d_coordinates.rst:4
-msgid "三维坐标 (TODO)"
+#: ../../source/examples/auto_examples.rst:2
+msgid "自动化解析与生成"
 msgstr ""
 
-#: ../../source/tutorials/3d_coordinates.rst:8
-msgid "文档有待完善"
+#: ../../source/examples/auto_examples.rst:6
+msgid "欢迎联系我们将你使用 JAnim 创作的作品添加到该页面中"
 msgstr ""
 
-#~ msgid "三维坐标"
-#~ msgstr ""
+#: ../../source/examples/auto_examples.rst:8
+msgid "QQ 群：970174336"
+msgstr ""
+
+#: ../../source/examples/auto_examples.rst:10
+msgid "Email：1173374788@qq.com"
+msgstr ""
+
+#: ../../source/examples/_auto_examples_options.rst:27
+msgid "画面以及音频可视化"
+msgstr ""
 

@@ -1,0 +1,84 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2023, jkjkil4
+# This file is distributed under the same license as the JAnim package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: JAnim \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-11-20 08:21+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: en\n"
+"Language-Team: en <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.17.0\n"
+
+#: ../../source/tutorials/group_advanced_usage.rst:2
+msgid "物件组进阶使用"
+msgstr ""
+
+#: ../../source/tutorials/group_advanced_usage.rst:4
+msgid "前文回顾：:doc:`item_group`"
+msgstr ""
+
+#: ../../source/tutorials/group_advanced_usage.rst:7
+msgid "物件的批量复制"
+msgstr ""
+
+#: ../../source/tutorials/group_advanced_usage.rst:9
+msgid ""
+"举个例子，对于一个圆形物件 ``Circle()``，我们可以在其后面使用 ``* 数量`` 表示 “复制出指定数量的圆形，放到一个 "
+":class:`~.Group` 中”："
+msgstr ""
+
+#: ../../source/tutorials/group_advanced_usage.rst:21
+msgid ""
+"复制出来的物件都会保持相同的属性和状态，所以他们会重叠在一起， 如果你想让他们排列开来，使用 "
+":meth:`~.Cmpt_Points.arrange` 或是 :meth:`~.Cmpt_Points.arrange_in_grid` "
+"会是比较方便的做法。"
+msgstr ""
+
+#: ../../source/tutorials/group_advanced_usage.rst:24
+msgid "以下是另一个示例："
+msgstr ""
+
+#: ../../source/tutorials/group_advanced_usage.rst:40
+msgid "物件组的进阶索引"
+msgstr ""
+
+#: ../../source/tutorials/group_advanced_usage.rst:42
+msgid "我们已经知道索引的基础用法，可以使用下标索引子物件，或是使用切片得到一组子物件："
+msgstr ""
+
+#: ../../source/tutorials/group_advanced_usage.rst:58
+msgid "除了这两种基础方法，你还可以通过以下方式："
+msgstr ""
+
+#: ../../source/tutorials/group_advanced_usage.rst:15
+msgid "这里使用多个索引 ``[1, 3, 6, 7]``，将这些子物件设置为红色"
+msgstr ""
+
+#: ../../source/tutorials/group_advanced_usage.rst:15
+msgid "这里使用布尔索引 ``[True, False, True, True]``，即为按照顺序，将对应位置为 ``True`` 的子物件设置为蓝色"
+msgstr ""
+
+#: ../../source/tutorials/group_advanced_usage.rst:99
+msgid "后代物件的遍历"
+msgstr ""
+
+#: ../../source/tutorials/group_advanced_usage.rst:101
+msgid ""
+"除了使用 :meth:`~.Relation.descendants` 得到所有后代物件，还可以使用 "
+":meth:`~.Relation.walk_descendants` 来指定获得什么类型的后代物件："
+msgstr ""
+
+#: ../../source/tutorials/group_advanced_usage.rst:121
+msgid "在这个例子中，:class:`~.Triangle` 派生自 :class:`~.RegularPolygon`，所以它也被选中了"
+msgstr ""
+

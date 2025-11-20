@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: JAnim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-08-11 22:08+0800\n"
+"POT-Creation-Date: 2025-11-20 08:21+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -212,7 +212,7 @@ msgid ""
 msgstr ""
 
 #: ../../source/other/use_gui.rst:119
-msgid "点击窗口左上角“功能”中的“子物件选择”，左上角会多出这样的内容："
+msgid "点击窗口左上角“工具”中的“子物件选择”，左上角会多出这样的内容："
 msgstr ""
 
 #: ../../source/other/use_gui.rst:125
@@ -330,4 +330,7 @@ msgstr ""
 #: ../../source/other/use_gui.rst:236
 msgid "可以在命令行使用 ``janim tool color`` 单独打开该界面"
 msgstr ""
+
+#~ msgid "点击窗口左上角“功能”中的“子物件选择”，左上角会多出这样的内容："
+#~ msgstr ""
 

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  JAnim\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-20 11:45+0800\n"
+"POT-Creation-Date: 2025-11-20 08:21+0800\n"
 "PO-Revision-Date: 2024-07-03 18:52+0800\n"
 "Last-Translator: \n"
 "Language: en\n"
@@ -84,6 +84,12 @@ msgstr "See also: :class:`~.UpdaterExample`"
 msgid "以时间为参数对一组物件的数据进行修改"
 msgstr "Modifies the data of a group based on time parameters."
 
+#: janim.anims.updater.GroupUpdater:3 of
+msgid ""
+"注意：该 Updater 假设 ``func`` 不会改变 ``item`` "
+"后代物件结构，如果改变结构（例如增删子物件、:meth:`~.Item.become` 结构不一致等情况），则可能导致意外行为"
+msgstr ""
+
 #: janim.anims.updater.ItemUpdater:1 janim.anims.updater.MethodUpdater:1 of
 msgid "基类：:py:class:`~janim.anims.animation.Animation`"
 msgstr "基类：:py:class:`~janim.anims.animation.Animation`"
@@ -102,7 +108,7 @@ msgid "基类：:py:class:`~enum.Enum`"
 msgstr "基类：:py:class:`object`"
 
 #: janim.anims.updater.MethodUpdaterArgsBuilder:1 of
-msgid "使得 ``.anim`` 和 ``.anim(...)`` 后可以进行同样的操作"
+msgid "使得 ``.update`` 和 ``.update(...)`` 后可以进行同样的操作"
 msgstr ""
 
 #: janim.anims.updater.ItemUpdater:1 of
@@ -174,5 +180,8 @@ msgstr ""
 #~ msgstr ""
 
 #~ msgid "将 ``local_t`` 换算为 ``alpha`` 并调用 :meth:`anim_on_alpha`"
+#~ msgstr ""
+
+#~ msgid "使得 ``.anim`` 和 ``.anim(...)`` 后可以进行同样的操作"
 #~ msgstr ""
 

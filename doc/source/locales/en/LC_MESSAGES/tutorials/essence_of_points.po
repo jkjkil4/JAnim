@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: JAnim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-08-11 22:08+0800\n"
+"POT-Creation-Date: 2025-11-20 08:21+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -20,10 +20,13 @@ msgstr ""
 "Generated-By: Babel 2.17.0\n"
 
 #: ../../source/tutorials/essence_of_points.rst:2
-msgid "points 的本质"
+msgid "points 的本质  (TODO)"
 msgstr ""
 
 #: ../../source/tutorials/essence_of_points.rst:6
 msgid "文档有待完善"
 msgstr ""
+
+#~ msgid "points 的本质"
+#~ msgstr ""
 

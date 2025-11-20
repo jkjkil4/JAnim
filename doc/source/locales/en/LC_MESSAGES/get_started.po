@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: JAnim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-08-11 22:08+0800\n"
+"POT-Creation-Date: 2025-11-20 08:21+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -51,17 +51,17 @@ msgstr ""
 msgid "然后，我们具体看一下这段代码干了什么："
 msgstr ""
 
-#: ../../source/get_started.rst:14
+#: ../../source/get_started.rst:15
 msgid "这里，我们引入 JAnim 的主要功能，这样就可以在之后使用"
 msgstr ""
 
-#: ../../source/get_started.rst:15
+#: ../../source/get_started.rst:16
 msgid ""
 "这两行代码定义了一个继承自 :class:`~.Timeline` 的类 ``HelloJAnimExample``， 并且实现了 "
 ":meth:`~.Timeline.construct` 方法，动画内容就写在该方法中"
 msgstr ""
 
-#: ../../source/get_started.rst:18
+#: ../../source/get_started.rst:19
 msgid "``HelloJAnimExample`` 可以写成你想取的名称，随意"
 msgstr ""
 
@@ -77,15 +77,15 @@ msgstr ""
 msgid "我们继续往下看，便是具体动画的部分"
 msgstr ""
 
-#: ../../source/get_started.rst:15
+#: ../../source/get_started.rst:16
 msgid "这两行，我们定义了一个圆和一个方形（默认情况下不填充内部）"
 msgstr ""
 
-#: ../../source/get_started.rst:17
+#: ../../source/get_started.rst:18
 msgid "并且，将圆设置为了蓝色；"
 msgstr ""
 
-#: ../../source/get_started.rst:18
+#: ../../source/get_started.rst:19
 msgid "将方形设置为了绿色，并且设置内部有 50% 透明度的填充"
 msgstr ""
 
@@ -93,27 +93,27 @@ msgstr ""
 msgid "此时，这两个物件还没有显示出来，我们接着看后面的几行"
 msgstr ""
 
-#: ../../source/get_started.rst:18
+#: ../../source/get_started.rst:19
 msgid "这里便是产生动画的代码，按照顺序来看："
 msgstr ""
 
-#: ../../source/get_started.rst:20
+#: ../../source/get_started.rst:21
 msgid "``self.forward()`` 向前推进 1s；由于此时没有物件显示，所以这 1s 只有空白的背景"
 msgstr ""
 
-#: ../../source/get_started.rst:21
+#: ../../source/get_started.rst:22
 msgid "``self.play(Create(circle))`` 播放圆的创建动画"
 msgstr ""
 
-#: ../../source/get_started.rst:22
+#: ../../source/get_started.rst:23
 msgid "``self.play(Transform(circle, square))`` 播放从圆变换到方形的补间动画"
 msgstr ""
 
-#: ../../source/get_started.rst:23
+#: ../../source/get_started.rst:24
 msgid "``self.play(Uncreate(square))`` 播放方形消失的动画"
 msgstr ""
 
-#: ../../source/get_started.rst:24
+#: ../../source/get_started.rst:25
 msgid "``self.forward()`` 向前推进 1s，和前一个类似"
 msgstr ""
 
@@ -327,7 +327,7 @@ msgstr ""
 
 #: ../../source/get_started.rst:282
 msgid ""
-"因此，你可以在修改并保存代码后，点击窗口左上角“功能”中的“重新构建”（快捷键是 ``Ctrl+L``）， "
+"因此，你可以在修改并保存代码后，点击窗口左上角“工具”中的“重新构建”（快捷键是 ``Ctrl+L``）， "
 "这样就会更新动画内容，使其和更改后的代码一致"
 msgstr ""
 
@@ -364,4 +364,9 @@ msgstr ""
 #: ../../source/get_started.rst:308
 msgid "接着，对代码进行更改，保存后，就会立即更新预览的内容"
 msgstr ""
+
+#~ msgid ""
+#~ "因此，你可以在修改并保存代码后，点击窗口左上角“功能”中的“重新构建”（快捷键是 ``Ctrl+L``）， "
+#~ "这样就会更新动画内容，使其和更改后的代码一致"
+#~ msgstr ""
 

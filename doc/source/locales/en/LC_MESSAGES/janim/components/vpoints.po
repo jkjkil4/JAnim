@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: JAnim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-05-17 23:55+0800\n"
+"POT-Creation-Date: 2025-11-20 08:21+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -77,6 +77,16 @@ msgstr ""
 msgid ""
 "视 ``about_point`` 为原点，若其为 ``None``，则将物件在 ``about_edge`` 方向上的边界作为 "
 "``about_point``"
+msgstr ""
+
+#: janim.components.vpoints.Cmpt_VPoints.scale:1 of
+msgid "将物件缩放指定倍数"
+msgstr ""
+
+#: janim.components.vpoints.Cmpt_VPoints.scale:3 of
+msgid ""
+"如果传入的倍数是可遍历的对象，那么则将其中的各个元素作为坐标各分量缩放的倍数， 例如传入 ``scale_factor`` 为 ``(2, "
+"0.5, 1)`` 则是在 ``x`` 方向上缩放为两倍，在 ``y`` 方向上压缩为原来的一半，在 ``z`` 方向上保持不变"
 msgstr ""
 
 #: janim.components.vpoints.Cmpt_VPoints.get_anchors:1 of
@@ -174,6 +184,10 @@ msgstr ""
 
 #: janim.components.vpoints.Cmpt_VPoints.area_vector:1 of
 msgid "一个向量，其长度为锚点形成的多边形所围成的面积，根据右手定则指向垂直于该多边形的方向"
+msgstr ""
+
+#: janim.components.vpoints.Cmpt_VPoints.unit_normal:1 of
+msgid "单位法向量"
 msgstr ""
 
 #: janim.components.vpoints.Cmpt_VPoints.walk_subpath_end_indices:1 of

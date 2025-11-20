@@ -19,14 +19,11 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.17.0\n"
 
-#: ../../source/tutorials/3d_coordinates.rst:4
-msgid "三维坐标 (TODO)"
+#: ../../source/tutorials/custom_data.rst:2
+msgid "自定义数据 (TODO)"
 msgstr ""
 
-#: ../../source/tutorials/3d_coordinates.rst:8
+#: ../../source/tutorials/custom_data.rst:6
 msgid "文档有待完善"
 msgstr ""
-
-#~ msgid "三维坐标"
-#~ msgstr ""
 

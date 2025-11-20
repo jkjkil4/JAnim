@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: JAnim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-08-11 22:08+0800\n"
+"POT-Creation-Date: 2025-11-20 08:21+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -193,64 +193,84 @@ msgid "从原理上来讲，其实 ``play`` 就是 ``prepare + forward`` 的组�
 msgstr ""
 
 #: ../../source/tutorials/animations.rst:217
-msgid "内置动画"
+msgid "动画序列控制"
 msgstr ""
 
 #: ../../source/tutorials/animations.rst:219
-msgid "关于更多可用的内置动画，可查阅以下列表中的内容："
+msgid "在 :class:`~.Succession` 的动画序列中，我们可以插入一些额外的控制，例如："
 msgstr ""
 
 #: ../../source/tutorials/animations.rst:221
-msgid ":doc:`../janim/anims/composition`"
-msgstr ""
-
-#: ../../source/tutorials/animations.rst:222
-msgid ":doc:`../janim/anims/creation`"
+msgid "使用 :class:`~.Wait` 插入等待时间"
 msgstr ""
 
 #: ../../source/tutorials/animations.rst:223
+msgid "使用 :class:`~.Do` 在动画序列的特定时间执行指定操作"
+msgstr ""
+
+#: ../../source/tutorials/animations.rst:53
+msgid ":class:`~.MoveAlongPath` :class:`~.Follow`"
+msgstr ""
+
+#: ../../source/tutorials/animations.rst:264
+msgid "内置动画"
+msgstr ""
+
+#: ../../source/tutorials/animations.rst:266
+msgid "关于更多可用的内置动画，可查阅以下列表中的内容："
+msgstr ""
+
+#: ../../source/tutorials/animations.rst:268
+msgid ":doc:`../janim/anims/composition`"
+msgstr ""
+
+#: ../../source/tutorials/animations.rst:269
+msgid ":doc:`../janim/anims/creation`"
+msgstr ""
+
+#: ../../source/tutorials/animations.rst:270
 msgid ":doc:`../janim/anims/fading`"
 msgstr ""
 
-#: ../../source/tutorials/animations.rst:224
+#: ../../source/tutorials/animations.rst:271
 msgid ":doc:`../janim/anims/growing`"
 msgstr ""
 
-#: ../../source/tutorials/animations.rst:225
+#: ../../source/tutorials/animations.rst:272
 msgid ":doc:`../janim/anims/indication`"
 msgstr ""
 
-#: ../../source/tutorials/animations.rst:226
+#: ../../source/tutorials/animations.rst:273
 msgid ":doc:`../janim/anims/movement`"
 msgstr ""
 
-#: ../../source/tutorials/animations.rst:227
+#: ../../source/tutorials/animations.rst:274
 msgid ":doc:`../janim/anims/rotation`"
 msgstr ""
 
-#: ../../source/tutorials/animations.rst:228
+#: ../../source/tutorials/animations.rst:275
 msgid ":doc:`../janim/anims/transform`"
 msgstr ""
 
-#: ../../source/tutorials/animations.rst:229
+#: ../../source/tutorials/animations.rst:276
 msgid ":doc:`../janim/anims/updater`"
 msgstr ""
 
-#: ../../source/tutorials/animations.rst:231
+#: ../../source/tutorials/animations.rst:278
 msgid "JAnim 还有一个重要的特性是“动画复合”，我们将在 :ref:`updaters` 中详细介绍这一特性。"
 msgstr ""
 
-#: ../../source/tutorials/animations.rst:234
+#: ../../source/tutorials/animations.rst:281
 msgid "``.r`` 的使用"
 msgstr ""
 
-#: ../../source/tutorials/animations.rst:236
+#: ../../source/tutorials/animations.rst:283
 msgid ""
 "在 JAnim 中，由于 **物件-组件** 的结构关系，导致在一个组件中进行完操作后， 需要使用 ``.r`` "
 "来返回物件级别，从而再访问物件或是其它组件中的功能，例如："
 msgstr ""
 
-#: ../../source/tutorials/animations.rst:243
+#: ../../source/tutorials/animations.rst:290
 msgid "或是对于动画而言"
 msgstr ""
 

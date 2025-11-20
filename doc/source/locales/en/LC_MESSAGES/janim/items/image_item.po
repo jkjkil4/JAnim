@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: JAnim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-08-11 22:08+0800\n"
+"POT-Creation-Date: 2025-11-20 08:21+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -172,15 +172,23 @@ msgstr ""
 msgid "使用 ``loop`` 可控制是否循环播放"
 msgstr ""
 
-#: janim.items.image_item.Video:14 of
+#: janim.items.image_item.Video:13 of
+msgid "如果需要插入带透明通道的视频（如 ``.mov`` 视频），需要设置 ``frame_components=4``"
+msgstr ""
+
+#: janim.items.image_item.Video:15 of
 msgid "注意：在默认情况下未开始播放，需要使用 ``start`` 以开始播放"
 msgstr ""
 
-#: janim.items.image_item.Video:16 of
+#: janim.items.image_item.Video:17 of
+msgid "注：可以使用 `.info` 获取视频如时长等额外信息"
+msgstr ""
+
+#: janim.items.image_item.Video:19 of
 msgid "例："
 msgstr ""
 
-#: janim.items.image_item.Video:32 of
+#: janim.items.image_item.Video:35 of
 msgid "表示：先播放 1s，然后以 0.5 倍速播放 1s，然后画面静止"
 msgstr ""
 

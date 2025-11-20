@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  JAnim\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-08-11 22:08+0800\n"
+"POT-Creation-Date: 2025-11-20 08:21+0800\n"
 "PO-Revision-Date: 2024-03-14 15:46+0800\n"
 "Last-Translator: \n"
 "Language: en\n"
@@ -149,7 +149,7 @@ msgid "``offset`` 表示偏移多少秒，例如 ``offset=2`` 则是当前位置
 msgstr ""
 
 #: janim.anims.timeline.Timeline.pause_point:5 of
-msgid "在 GUI 界面中，可以使用 ``Ctrl+Z`` 快速移动到前一个暂停点，``Ctrl+C`` 快速移动到后一个"
+msgid "在 GUI 界面中，可以使用 ``Ctrl+左方向键`` 快速移动到前一个暂停点，``Ctrl+右方向键`` 快速移动到后一个"
 msgstr ""
 
 #: janim.anims.timeline.Timeline.aas:1 of
@@ -387,7 +387,11 @@ msgstr ""
 msgid "``delay``: 延迟多少秒开始该 Timeline 的播放"
 msgstr ""
 
-#: janim.anims.timeline.BuiltTimeline.to_item:38
+#: janim.anims.timeline.BuiltTimeline.to_item:38 of
+msgid "``first_frame_duration``: 第一帧持续多少秒"
+msgstr ""
+
+#: janim.anims.timeline.BuiltTimeline.to_item:39
 #: janim.anims.timeline.BuiltTimeline.to_playback_control_item:34 of
 msgid "``keep_last_frame``: 是否在 Timeline 结束后仍然保留最后一帧的显示"
 msgstr ""
@@ -419,6 +423,10 @@ msgstr "See :meth:`~.Timeline.schedule`"
 #, fuzzy
 msgid "基类：:py:class:`~janim.render.base.Renderer`"
 msgstr "基类：:py:class:`~janim.anims.timeline.Timeline`"
+
+#: janim.anims.timeline.TimelineItem.start:1 of
+msgid "从当前时刻开始播放子时间轴，在此时刻之前保持显示第一帧"
+msgstr ""
 
 #: janim.anims.timeline.TimelinePlaybackControlItem:1 of
 #, fuzzy
@@ -566,5 +574,8 @@ msgstr "See :meth:`~.Timeline.schedule`"
 #~ msgstr ""
 
 #~ msgid "是否有可以播放的音频"
+#~ msgstr ""
+
+#~ msgid "在 GUI 界面中，可以使用 ``Ctrl+Z`` 快速移动到前一个暂停点，``Ctrl+C`` 快速移动到后一个"
 #~ msgstr ""
 

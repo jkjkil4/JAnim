@@ -1,0 +1,81 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2023, jkjkil4
+# This file is distributed under the same license as the JAnim package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: JAnim \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-11-20 08:21+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: en\n"
+"Language-Team: en <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.17.0\n"
+
+#: ../../source/tutorials/audio_and_subtitle.rst:2
+msgid "音频与字幕"
+msgstr ""
+
+#: ../../source/tutorials/audio_and_subtitle.rst:5
+msgid "插入音频"
+msgstr ""
+
+#: ../../source/tutorials/audio_and_subtitle.rst:7
+msgid "JAnim 支持插入音频，并在导出时合并到视频中："
+msgstr ""
+
+#: ../../source/tutorials/audio_and_subtitle.rst:14
+msgid "默认情况下，音频会在当前时刻开始播放；关于播放音频的具体细节请参考 :meth:`~.Timeline.play_audio` 方法。"
+msgstr ""
+
+#: ../../source/tutorials/audio_and_subtitle.rst:17
+msgid "利用时段信息进行同步"
+msgstr ""
+
+#: ../../source/tutorials/audio_and_subtitle.rst:19
+msgid ":meth:`~.Timeline.play_audio` 方法还会返回一个 :class:`~.TimeRange` 对象，使得这样成为可能："
+msgstr ""
+
+#: ../../source/tutorials/audio_and_subtitle.rst:33
+msgid "也就是说，通过获知音频的时段信息，例如这里的时长，可以进行如同步音频与动画等各种灵活的操作。"
+msgstr ""
+
+#: ../../source/tutorials/audio_and_subtitle.rst:35
+msgid "JAnim 也可以通过 :meth:`~.Timeline.subtitle` 方法插入字幕，并与音频同步："
+msgstr ""
+
+#: ../../source/tutorials/audio_and_subtitle.rst:48
+msgid "关于字幕的具体细节请参考 :meth:`~.Timeline.subtitle` 方法。"
+msgstr ""
+
+#: ../../source/tutorials/audio_and_subtitle.rst:52
+msgid ":meth:`~.Timeline.subtitle` 同样会返回一个 :class:`~.TimeRange` 对象，提供了字幕的时段信息。"
+msgstr ""
+
+#: ../../source/tutorials/audio_and_subtitle.rst:55
+msgid "插入字幕及其配音的简便方法"
+msgstr ""
+
+#: ../../source/tutorials/audio_and_subtitle.rst:57
+msgid ""
+"如果你想要插入一段字幕及其配音，可以使用 :meth:`~.Timeline.audio_and_subtitle` 方法，这是对 "
+":meth:`~.Timeline.play_audio` 和 :meth:`~.Timeline.subtitle` 的封装："
+msgstr ""
+
+#: ../../source/tutorials/audio_and_subtitle.rst:66
+msgid ":meth:`~.Timeline.audio_and_subtitle` 可以简写为 :meth:`~.Timeline.aas`。"
+msgstr ""
+
+#: ../../source/tutorials/audio_and_subtitle.rst:70
+msgid ""
+":meth:`~.Timeline.audio_and_subtitle` 方法默认会自动去除音频前后多余的空白，可以传入 "
+"``clip=None`` 以禁用，或是使用 ``clip=(start, end)`` 来手动确定裁剪区段。"
+msgstr ""
+

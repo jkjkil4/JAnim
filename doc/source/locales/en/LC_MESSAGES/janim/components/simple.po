@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: JAnim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-08-11 22:08+0800\n"
+"POT-Creation-Date: 2025-11-20 08:21+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -42,5 +42,12 @@ msgstr ""
 
 #: janim.components.simple.Cmpt_List.copy:1 of
 msgid "Return a shallow copy of the list."
+msgstr ""
+
+#: janim.components.simple.Cmpt_Dict:1 of
+msgid ""
+"基类：:py:class:`dict`\\ [:py:obj:`~typing.K`, :py:obj:`~typing.V`], "
+":py:class:`~janim.components.component.Component`, "
+":py:class:`~typing.Generic`"
 msgstr ""
 

@@ -466,7 +466,7 @@ class Text(VItem, Group[TextLine]):
 
     def select_parts(self, pattern, group: int = 0):
         '''
-        根据 ``pattern`` **正则表达式**获得文字中的部分
+        根据 ``pattern`` **正则表达式** 获得文字中的部分
 
         - ``pattern``: 用于匹配的正则表达式
 

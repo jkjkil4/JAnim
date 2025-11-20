@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: JAnim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-08-11 22:08+0800\n"
+"POT-Creation-Date: 2025-11-20 08:21+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -28,7 +28,8 @@ msgid "基类：:py:class:`object`"
 msgstr ""
 
 #: janim.items.coordinate.coordinate_systems.Axes.get_axes:1
-#: janim.items.coordinate.coordinate_systems.CoordinateSystem.get_axes:1 of
+#: janim.items.coordinate.coordinate_systems.CoordinateSystem.get_axes:1
+#: janim.items.coordinate.coordinate_systems.ThreeDAxes.get_axes:1 of
 msgid "得到由各方向 :class:`~.NumberLine` 所组成的列表"
 msgstr ""
 
@@ -101,7 +102,8 @@ msgstr ""
 #: janim.items.coordinate.coordinate_systems.Axes:1 of
 msgid ""
 "基类：:py:class:`~janim.items.coordinate.coordinate_systems.CoordinateSystem`,"
-" :py:class:`~janim.items.points.Group`"
+" :py:class:`~janim.items.points.MarkedItem`, "
+":py:class:`~janim.items.points.Group`"
 msgstr ""
 
 #: janim.items.coordinate.coordinate_systems.Axes.get_graph:1 of
@@ -119,7 +121,7 @@ msgstr ""
 #: janim.items.coordinate.coordinate_systems.Axes.get_graph:5 of
 msgid ""
 "``bind``: 在默认情况下为 ``True``，会使得函数曲线自动同步应用于坐标系上的变换，也可同步动画，详见 "
-":ref:`examples` 中的 ``NumberPlaneExample``"
+":ref:`basic_examples` 中的 ``NumberPlaneExample``"
 msgstr ""
 
 #: janim.items.coordinate.coordinate_systems.Axes.get_graph:9 of
@@ -134,6 +136,24 @@ msgstr ""
 #: janim.items.coordinate.coordinate_systems.Axes.get_graph:13
 #: janim.items.coordinate.coordinate_systems.Axes.get_parametric_curve:12 of
 msgid "如果你有放在同一个 :class:`~.Group` 里的需求，请传入 ``bind=False`` 以避免该情况"
+msgstr ""
+
+#: janim.items.coordinate.coordinate_systems.Axes.get_parametric_curve:1 of
+msgid "基于坐标轴的坐标构造参数曲线，即 :class:`~.ParametricCurve`"
+msgstr ""
+
+#: janim.items.coordinate.coordinate_systems.Axes.get_parametric_curve:3 of
+msgid "``function``: 将值映射为坐标系上的一个点的参数函数"
+msgstr ""
+
+#: janim.items.coordinate.coordinate_systems.Axes.get_parametric_curve:4 of
+msgid ""
+"``bind``: 在默认情况下为 ``True``，会使得参数曲线自动同步应用于坐标系上的变换，也可同步动画，详见 "
+":ref:`basic_examples` 中的 ``NumberPlaneExample``"
+msgstr ""
+
+#: janim.items.coordinate.coordinate_systems.Axes.get_parametric_curve:8 of
+msgid "当 ``bind=True`` 时，请勿将参数曲线与坐标系放在同一个 :class:`~.Group` 中进行坐标变换"
 msgstr ""
 
 #: janim.items.coordinate.coordinate_systems.Axes.get_area:1 of
@@ -154,34 +174,44 @@ msgid ""
 "所围成的区域，而非与坐标轴"
 msgstr ""
 
-#: janim.items.coordinate.coordinate_systems.Axes.get_parametric_curve:1 of
-msgid "基于坐标轴的坐标构造参数曲线，即 :class:`~.ParametricCurve`"
+#: janim.items.coordinate.coordinate_systems.Axes.get_axis_labels:1
+#: janim.items.coordinate.coordinate_systems.Axes.get_x_axis_label:1
+#: janim.items.coordinate.coordinate_systems.Axes.get_y_axis_label:1 of
+msgid "详见 :meth:`~.NumberLine.get_axis_label`"
 msgstr ""
 
-#: janim.items.coordinate.coordinate_systems.Axes.get_parametric_curve:3 of
-msgid "``function``: 将值映射为坐标系上的一个点的参数函数"
+#: janim.items.coordinate.coordinate_systems.Axes.get_axis_labels:3
+#: janim.items.coordinate.coordinate_systems.Axes.get_x_axis_label:3
+#: janim.items.coordinate.coordinate_systems.Axes.get_y_axis_label:3 of
+msgid "如果设置 ``ensure_on_screen=True``，坐标轴标签会自动调整位置移动到默认屏幕区域内"
 msgstr ""
 
-#: janim.items.coordinate.coordinate_systems.Axes.get_parametric_curve:4 of
-msgid ""
-"``bind``: 在默认情况下为 ``True``，会使得参数曲线自动同步应用于坐标系上的变换，也可同步动画，详见 "
-":ref:`examples` 中的 ``NumberPlaneExample``"
-msgstr ""
-
-#: janim.items.coordinate.coordinate_systems.Axes.get_parametric_curve:8 of
-msgid "当 ``bind=True`` 时，请勿将参数曲线与坐标系放在同一个 :class:`~.Group` 中进行坐标变换"
+#: janim.items.coordinate.coordinate_systems.NumberPlane:1
+#: janim.items.coordinate.coordinate_systems.ThreeDAxes:1 of
+msgid "基类：:py:class:`~janim.items.coordinate.coordinate_systems.Axes`"
 msgstr ""
 
 #: janim.items.coordinate.coordinate_systems.CmptVPoints_NumberPlaneImpl:1 of
 msgid "基类：:py:class:`~janim.components.vpoints.Cmpt_VPoints`"
 msgstr ""
 
-#: janim.items.coordinate.coordinate_systems.NumberPlane:1 of
-msgid "基类：:py:class:`~janim.items.coordinate.coordinate_systems.Axes`"
-msgstr ""
-
 #~ msgid ""
 #~ "基类：:py:class:`~janim.items.points.Group`, "
 #~ ":py:class:`~janim.items.coordinate.coordinate_systems.CoordinateSystem`"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "基类：:py:class:`~janim.items.coordinate.coordinate_systems.CoordinateSystem`,"
+#~ " :py:class:`~janim.items.points.Group`"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "``bind``: 在默认情况下为 ``True``，会使得函数曲线自动同步应用于坐标系上的变换，也可同步动画，详见"
+#~ " :ref:`examples` 中的 ``NumberPlaneExample``"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "``bind``: 在默认情况下为 ``True``，会使得参数曲线自动同步应用于坐标系上的变换，也可同步动画，详见"
+#~ " :ref:`examples` 中的 ``NumberPlaneExample``"
 #~ msgstr ""
 
