@@ -145,7 +145,7 @@ text
       - s
       - 描边半径
       - 一个数
-      - ``<s 0.01>JAnim<s>``
+      - ``<s 0.01>JAnim</s>``
       -
    *  - font_scale
       - fs
