@@ -259,6 +259,13 @@ class TextChar(BasepointVItem):
         '''
         for name, params_stack in act_params_map.items():
             params = params_stack[-1]
+            if name not in available_act_map:
+                log.warning(
+                    _('"{name}" is not a valid rich text tag. ("<{name} {params}>")')
+                    .format(name=name, params=' '.join(params))
+                )
+                continue
+
             for converters, caller in available_act_map[name]:
                 if len(converters) == len(params):
                     try:
@@ -533,6 +540,7 @@ class Text(VItem, Group[TextLine]):
         text_at = 0
         act_idx = 0
         act_params_map: defaultdict[str, ActParamsStack] = defaultdict(list)
+        print(self.act_params_list)
         for line in self.children:
             for char in line.children:
                 while act_idx < len(self.act_params_list):
@@ -542,7 +550,13 @@ class Text(VItem, Group[TextLine]):
 
                     if isinstance(next_act, str):   # ActEnd
                         stack = act_params_map[next_act]
-                        stack.pop()
+                        try:
+                            stack.pop()
+                        except IndexError:
+                            log.warning(
+                                _('Unmatched end tag "</{name}>", ignored.')
+                                .format(name=next_act)
+                            )
                         if not stack:
                             del act_params_map[next_act]
                     else:   # ActStart
