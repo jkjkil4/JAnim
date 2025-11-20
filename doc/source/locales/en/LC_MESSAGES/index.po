@@ -21,24 +21,24 @@ msgstr ""
 
 #: ../../source/index.rst:45
 msgid "安装并快速上手"
-msgstr ""
+msgstr "Installation and Quick Start"
 
 #: ../../source/index.rst:54
 msgid "基础教程 - 了解基本概念"
-msgstr ""
+msgstr "Basic Tutorials - Understanding Basic Concepts"
 
 #: ../../source/index.rst:65
 #, fuzzy
 msgid "其它教程"
-msgstr "Tutorial"
+msgstr "Other Tutorials"
 
 #: ../../source/index.rst:80
 msgid "其它"
-msgstr ""
+msgstr "Other"
 
 #: ../../source/index.rst:88
 msgid "样例索引"
-msgstr ""
+msgstr "Example Index"
 
 #: ../../source/index.rst:97
 msgid "参考文档"
@@ -54,15 +54,15 @@ msgstr "JAnim Documentation"
 
 #: ../../source/index.rst:9
 msgid "JAnim 是一个用于创建流畅动画的库，以程序化动画为核心理念，并支持实时编辑、实时预览，并支持更多其它丰富的功能。"
-msgstr ""
+msgstr "JAnim is a library for creating smooth animations, with programmatic animation as its core concept, supporting real-time editing, real-time preview, and many other rich features."
 
 #: ../../source/index.rst:11
 msgid "以下是一部分样例展示（注：可以直接点击分页标题快速折叠这部分内容）"
-msgstr ""
+msgstr "Below are some example showcases (Note: you can click on the tab titles to quickly collapse this section)"
 
 #: ../../source/index.rst:15
 msgid "基础样例"
-msgstr ""
+msgstr "Basic Examples"
 
 #: ../../source/index.rst:44
 msgid ""
@@ -131,93 +131,96 @@ msgstr ""
 
 #: ../../source/index.rst:21
 msgid "类 Slide 演示"
-msgstr ""
+msgstr "Slide-like Demonstrations"
 
 #: ../../source/examples/_slide_examples_options.rst:9
 msgid "嗯，这个本身就是用 JAnim 制作的"
-msgstr ""
+msgstr "Well, this itself is made with JAnim"
 
 #: ../../source/examples/_slide_examples_options.rst:80
-msgid "动画效果使用 JAnim 制作，“信息量”可视化结果是插入的现成图片"
-msgstr ""
+msgid "动画效果使用 JAnim 制作，"信息量"可视化结果是插入的现成图片"
+msgstr "Animation effects are made with JAnim, the \"information content\" visualization result is an inserted ready-made image"
 
 #: ../../source/index.rst:29
 msgid "自动化解析与生成"
-msgstr ""
+msgstr "Automated Parsing and Generation"
 
 #: ../../source/examples/_auto_examples_options.rst:27
 msgid "画面以及音频可视化"
-msgstr ""
+msgstr "Visual and audio visualization"
 
 #: ../../source/index.rst:37
 msgid "视频注解"
-msgstr ""
+msgstr "Video Annotations"
 
 #: ../../source/examples/_note_examples_options.rst:9
-msgid "除了 00:00 - 01:25 的“类 Slide 演示”之外，作为视频注解出现的区段："
-msgstr ""
+msgid "除了 00:00 - 01:25 的"类 Slide 演示"之外，作为视频注解出现的区段："
+msgstr "Sections appearing as video annotations, excluding the \"Slide-like demonstration\" from 00:00 - 01:25:"
 
 #: ../../source/examples/_note_examples_options.rst:11
 msgid "03\\:18 - 03\\:31 : 演示了 ``create_window`` 函数的参数含义"
-msgstr ""
+msgstr "03\\:18 - 03\\:31 : Demonstrates the meaning of ``create_window`` function parameters"
 
 #: ../../source/examples/_note_examples_options.rst:12
 msgid "03\\:57 - 04\\:48 : 演示了 ``viewport`` 的概念"
-msgstr ""
+msgstr "03\\:57 - 04\\:48 : Demonstrates the concept of ``viewport``"
 
 #: ../../source/examples/_note_examples_options.rst:21
-msgid "除了 00:00 - 00:25 的“类 Slide 演示”之外，作为视频注解出现的区段："
-msgstr ""
+msgid "除了 00:00 - 00:25 的"类 Slide 演示"之外，作为视频注解出现的区段："
+msgstr "Sections appearing as video annotations, excluding the \"Slide-like demonstration\" from 00:00 - 00:25:"
 
 #: ../../source/examples/_note_examples_options.rst:23
 msgid "00\\:50 - 01\\:02 : 演示了 ``get_key`` 的用法"
-msgstr ""
+msgstr "00\\:50 - 01\\:02 : Demonstrates the usage of ``get_key``"
 
 #: ../../source/examples/_note_examples_options.rst:24
-msgid "01\\:10 - 01\\:17 : 对“渲染循环”部分代码的强调"
-msgstr ""
+msgid "01\\:10 - 01\\:17 : 对"渲染循环"部分代码的强调"
+msgstr "01\\:10 - 01\\:17 : Emphasis on the \"rendering loop\" code section"
 
 #: ../../source/examples/_note_examples_options.rst:25
 msgid "02\\:01 - 02\\:18 : 演示了 ``RGB`` 颜色的概念"
-msgstr ""
+msgstr "02\\:01 - 02\\:18 : Demonstrates the concept of ``RGB`` colors"
 
 #: ../../source/examples/_note_examples_options.rst:34
 msgid "作为视频注解出现的区段（由于区段太多，省略了一些无关紧要的部分）："
-msgstr ""
+msgstr "Sections appearing as video annotations (some less important parts are omitted due to too many sections):"
 
 #: ../../source/examples/_note_examples_options.rst:36
 msgid "00\\:58 - 01\\:12 : 演示了 ``img`` 的成员"
-msgstr ""
+msgstr "00\\:58 - 01\\:12 : Demonstrates the members of ``img``"
 
 #: ../../source/examples/_note_examples_options.rst:37
 msgid "02\\:43 - 02\\:52 : 跟随光标编辑出现的备注说明"
-msgstr ""
+msgstr "02\\:43 - 02\\:52 : Notes that appear when following cursor editing"
 
 #: ../../source/examples/_note_examples_options.rst:38
 msgid "02\\:52 - 02\\:57 : 示意了颜色采样"
-msgstr ""
+msgstr "02\\:52 - 02\\:57 : Illustrates color sampling"
 
 #: ../../source/examples/_note_examples_options.rst:39
 msgid "03\\:28 - 03\\:36 : 示意了采样的参数"
-msgstr ""
+msgstr "03\\:28 - 03\\:36 : Illustrates sampling parameters"
 
 #: ../../source/examples/_note_examples_options.rst:40
 msgid "03\\:54 - 04\\:14 : 示意了绑定纹理"
-msgstr ""
+msgstr "03\\:54 - 04\\:14 : Illustrates texture binding"
 
 #: ../../source/examples/_note_examples_options.rst:41
 msgid "06\\:04 - 06\\:22 : 演示了 ``mix`` 函数的颜色混合效果"
-msgstr ""
+msgstr "06\\:04 - 06\\:22 : Demonstrates the color blending effect of the ``mix`` function"
 
 #: ../../source/examples/_note_examples_options.rst:42
 msgid "07\\:42 - 08\\:01 : 说明了纹理上下颠倒的原因"
-msgstr ""
+msgstr "07\\:42 - 08\\:01 : Explains why textures are flipped upside down"
 
 #: ../../source/index.rst:52
 msgid ""
 "如果你在安装时遇到困难，或是在使用时有任何问题，可以在 Github 的 `Discussions 页面 "
 "<https://github.com/jkjkil4/JAnim/discussions>`_ 提问，或加入 QQ 群 970174336"
 msgstr ""
+"If you encounter difficulties during installation or have any questions while "
+"using it, you can ask questions on the Github `Discussions page "
+"<https://github.com/jkjkil4/JAnim/discussions>`_ or join QQ group 970174336"
 
 #: ../../source/index.rst:111
 msgid "目录与表格"

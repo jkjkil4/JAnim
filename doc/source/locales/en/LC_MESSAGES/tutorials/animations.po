@@ -21,65 +21,75 @@ msgstr ""
 
 #: ../../source/tutorials/animations.rst:2
 msgid "动画系统"
-msgstr ""
+msgstr "Animation System"
 
 #: ../../source/tutorials/animations.rst:4
 msgid "到目前为止，你已经见到了两种动画创建方式："
-msgstr ""
+msgstr "So far, you have seen two ways to create animations:"
 
 #: ../../source/tutorials/animations.rst:6
 msgid "通过 ``物件.anim`` 创建组件插值动画"
-msgstr ""
+msgstr "Creating component interpolation animations through ``item.anim``"
 
 #: ../../source/tutorials/animations.rst:8
 msgid "通过 ``动画名(物件, 动画参数)`` 为物件应用内置的特殊动画效果"
-msgstr ""
+msgstr "Applying built-in special animation effects to items through ``AnimationName(item, animation_parameters)``"
 
 #: ../../source/tutorials/animations.rst:37
 msgid ":class:`~.Create` :class:`~.SpinInFromNothing` :meth:`~.Item.anim`"
-msgstr ""
+msgstr ":class:`~.Create` :class:`~.SpinInFromNothing` :meth:`~.Item.anim`"
 
 #: ../../source/tutorials/animations.rst:31
 msgid "基础动画参数"
-msgstr ""
+msgstr "Basic Animation Parameters"
 
 #: ../../source/tutorials/animations.rst:33
 msgid "无论是哪种创建动画的方式，它们都有几个关键的参数"
-msgstr ""
+msgstr "Regardless of which method is used to create animations, they all have several key parameters"
 
 #: ../../source/tutorials/animations.rst:35
 msgid "``duration``: 动画持续时间"
-msgstr ""
+msgstr "``duration``: Animation duration"
 
 #: ../../source/tutorials/animations.rst:37
 msgid "大多数动画的默认时长是 1 秒，如果你需要更长或者更短的时间可以额外设置"
-msgstr ""
+msgstr "Most animations have a default duration of 1 second. If you need a longer or shorter time, you can set it additionally"
 
 #: ../../source/tutorials/animations.rst:39
 msgid "``at``: 动画开始的时间点"
-msgstr ""
+msgstr "``at``: The time point when the animation starts"
 
 #: ../../source/tutorials/animations.rst:41
 msgid "意味着动画会在当前时刻的多少秒之后才开始，比如 ``at=1, duration=2`` 意味着动画会在当前时刻的 1 秒后开始，进行 2 秒"
 msgstr ""
+"Means the animation will start after how many seconds from the current time. "
+"For example, ``at=1, duration=2`` means the animation will start 1 second "
+"after the current time and last for 2 seconds"
 
 #: ../../source/tutorials/animations.rst:43
-msgid "这个参数在接下来将要讲的“动画组”的内容中，会更加实用"
-msgstr ""
+msgid "这个参数在接下来将要讲的"动画组"的内容中，会更加实用"
+msgstr "This parameter will be more practical in the \"Animation Groups\" content that will be discussed next"
 
 #: ../../source/tutorials/animations.rst:45
 msgid "``rate_func``: 动画的缓动函数"
-msgstr ""
+msgstr "``rate_func``: The easing function of the animation"
 
 #: ../../source/tutorials/animations.rst:47
 msgid "大多数动画默认以 :func:`~.smooth` 的方式进行插值，使得动画过程在开始和结束的时候较慢，中间过程较快，总体上表现为一个平滑的过渡"
 msgstr ""
+"Most animations default to interpolating in the :func:`~.smooth` way, making "
+"the animation process slower at the beginning and end, faster in the middle, "
+"overall showing as a smooth transition"
 
 #: ../../source/tutorials/animations.rst:49
 msgid ""
 "其它一些常用的缓动函数还有 :func:`~.linear`，使得动画全程匀速进行； 以及 :func:`~.rush_into` "
 ":func:`~.rush_from` 等，具体请参考 :ref:`rate_functions` 中的介绍"
 msgstr ""
+"Other commonly used easing functions include :func:`~.linear`, which makes "
+"the animation proceed at a constant speed throughout; and :func:`~.rush_into` "
+":func:`~.rush_from`, etc. For details, please refer to the introduction in "
+":ref:`rate_functions`"
 
 #: ../../source/tutorials/animations.rst:54
 msgid ""
@@ -87,190 +97,233 @@ msgid ""
 "当你想要让物体快速进入并逐渐减速时，可以考虑使用 :func:`~.rush_into` "
 "作为缓动函数；总之，可以多多地探索这些参数的使用，获得更好的动画效果。"
 msgstr ""
+"These parameters can adjust the performance details of animations. For "
+"example, ``duration`` can adjust the speed of animations and control rhythm, "
+"``at`` can control the start timing of animations; when you want objects to "
+"enter quickly and gradually slow down, you can consider using :func:`~.rush_into` "
+"as the easing function; in short, you can explore the use of these parameters "
+"more to achieve better animation effects."
 
 #: ../../source/tutorials/animations.rst:57
 msgid "以下是对上面的动画参数进行一些调整后的示例："
-msgstr ""
+msgstr "The following is an example with some adjustments to the animation parameters above:"
 
 #: ../../source/tutorials/animations.rst:90
 msgid ""
 "将 :class:`~.Create` 和 :class:`~.SpinInFromNothing` 的缓动函数改为了 "
 ":func:`~.rush_from`，并缩短它们进入的时长"
 msgstr ""
+"Changed the easing function of :class:`~.Create` and :class:`~.SpinInFromNothing` "
+"to :func:`~.rush_from`, and shortened their entry duration"
 
 #: ../../source/tutorials/animations.rst:92
 msgid "将移动动画的缓动函数改为了 :func:`~.ease_out_bounce`，使得物体在移动终点处有一个弹跳的效果"
 msgstr ""
+"Changed the easing function of the movement animation to :func:`~.ease_out_bounce`, "
+"making the object have a bouncing effect at the end of movement"
 
 #: ../../source/tutorials/animations.rst:94
 msgid "将变色动画的时长改为了 2 秒"
-msgstr ""
+msgstr "Changed the color-changing animation duration to 2 seconds"
 
 #: ../../source/tutorials/animations.rst:98
 msgid "在 ``.anim`` 后紧跟括号填入参数即可改变其动画参数。"
-msgstr ""
+msgstr "You can change animation parameters by adding parentheses after ``.anim`` and filling in parameters."
 
 #: ../../source/tutorials/animations.rst:100
 msgid "在合适的地方增加换行可以优化代码的可读性，特别是在动画调用较长的时候。"
-msgstr ""
+msgstr "Adding line breaks in appropriate places can optimize code readability, especially when animation calls are long."
 
 #: ../../source/tutorials/animations.rst:103
 msgid "动画组"
-msgstr ""
+msgstr "Animation Groups"
 
 #: ../../source/tutorials/animations.rst:105
 msgid "动画并不是只能像上面一样单独依次执行，我们还可以让多个动画一起执行，创建更加丰富的动画效果。"
 msgstr ""
+"Animations are not limited to executing individually and sequentially as above. "
+"We can also make multiple animations execute together to create richer animation effects."
 
 #: ../../source/tutorials/animations.rst:107
 msgid "首先是最基础的， 放在同一个 ``self.play`` 函数中的动画会一起执行，你也可以给动画分别传入 ``at`` 参数来控制它们的开始时机："
 msgstr ""
+"First, the most basic: animations placed in the same ``self.play`` function will "
+"execute together. You can also pass ``at`` parameters to animations separately "
+"to control their start timing:"
 
 #: ../../source/tutorials/animations.rst:39
 msgid ":class:`~.FadeIn` :meth:`~.Item.anim` :meth:`~.Cmpt_Points.to_border`"
-msgstr ""
+msgstr ":class:`~.FadeIn` :meth:`~.Item.anim` :meth:`~.Cmpt_Points.to_border`"
 
 #: ../../source/tutorials/animations.rst:131
 msgid "你还可以使用 :class:`~.AnimGroup` :class:`~.Succession` 等方式来组合多个动画。"
-msgstr ""
+msgstr "You can also use :class:`~.AnimGroup` :class:`~.Succession` and other methods to combine multiple animations."
 
 #: ../../source/tutorials/animations.rst:133
 msgid "其中 :class:`~.AnimGroup` 只是单纯地将多个动画组合到一起，可以统一应用 ``at`` 和 ``duration`` 等参数"
 msgstr ""
+"Among them, :class:`~.AnimGroup` simply combines multiple animations together "
+"and can uniformly apply parameters such as ``at`` and ``duration``"
 
 #: ../../source/tutorials/animations.rst:135
 msgid ":class:`~.AnimGroup` 会根据传入的 ``duration`` 参数将内部动画结构进行整体伸缩以匹配时长"
 msgstr ""
+":class:`~.AnimGroup` will scale the internal animation structure as a whole "
+"according to the ``duration`` parameter to match the duration"
 
 #: ../../source/tutorials/animations.rst:137
 msgid ":class:`~.Succession` 则会将多个动画串联起来，前一个动画结束后再开始下一个动画"
 msgstr ""
+":class:`~.Succession` will chain multiple animations together, starting the "
+"next animation after the previous one ends"
 
 #: ../../source/tutorials/animations.rst:48
 msgid ""
 ":class:`~.Succession` :class:`~.AnimGroup` "
 ":class:`~.ShowCreationThenDestructionAround`"
 msgstr ""
+":class:`~.Succession` :class:`~.AnimGroup` "
+":class:`~.ShowCreationThenDestructionAround`"
 
 #: ../../source/tutorials/animations.rst:174
 msgid ""
 "其实 ``self.play`` 函数本身就充当一个 :class:`~.AnimGroup` 的角色， 所以你可以直接将多个动画放在 "
 "``self.play`` 中，并应用 ``at`` 和 ``duration`` 等参数。"
 msgstr ""
+"In fact, the ``self.play`` function itself acts as a :class:`~.AnimGroup`, "
+"so you can directly place multiple animations in ``self.play`` and apply "
+"parameters such as ``at`` and ``duration``."
 
 #: ../../source/tutorials/animations.rst:179
 msgid ""
 "关于动画组的更多内容，可以参考 :doc:`../janim/anims/composition` 中的介绍， 其中还提及了关于 "
 "``lag_ratio`` 和 ``offset`` 参数的使用，这里不再展开叙述。"
 msgstr ""
+"For more information about animation groups, refer to the introduction in "
+":doc:`../janim/anims/composition`, which also mentions the use of ``lag_ratio`` "
+"and ``offset`` parameters, which will not be expanded here."
 
 #: ../../source/tutorials/animations.rst:183
 msgid "预先设置动画"
-msgstr ""
+msgstr "Preparing Animations"
 
 #: ../../source/tutorials/animations.rst:185
 msgid ""
 "当我们使用 ``self.play`` 播放一个长达 4 秒的动画之后，当前时刻便会跳转至 4 秒后， 但是我们就失去了在这 4 "
 "秒内创建其它动画的机会，因为只能往前走而不能倒退。"
 msgstr ""
+"When we use ``self.play`` to play an animation that lasts 4 seconds, the "
+"current time will jump to 4 seconds later, but we lose the opportunity to "
+"create other animations during these 4 seconds, because we can only move "
+"forward and not backward."
 
 #: ../../source/tutorials/animations.rst:188
 msgid "因此，JAnim 提供了一个实用的功能——预先设置动画，但不在时间上前进，可以调用 ``self.prepare`` 做到："
 msgstr ""
+"Therefore, JAnim provides a practical feature - preparing animations in advance "
+"without advancing in time, which can be done by calling ``self.prepare``:"
 
 #: ../../source/tutorials/animations.rst:34
 msgid ":meth:`~.Timeline.prepare` :class:`~.Text` :class:`~.CircleIndicate`"
-msgstr ""
+msgstr ":meth:`~.Timeline.prepare` :class:`~.Text` :class:`~.CircleIndicate`"
 
 #: ../../source/tutorials/animations.rst:209
 msgid ""
 "在该示例中，我们使用 ``self.prepare`` 预先设置了一个 :class:`~.CircleIndicate` 动画， "
 "使得在文字在后续的移动动画中，能够在预先设置的时间段看到黄圈高亮的效果。"
 msgstr ""
+"In this example, we use ``self.prepare`` to pre-set a :class:`~.CircleIndicate` "
+"animation, so that in the subsequent movement animation of the text, we can "
+"see the yellow circle highlighting effect during the pre-set time period."
 
 #: ../../source/tutorials/animations.rst:214
 msgid "从原理上来讲，其实 ``play`` 就是 ``prepare + forward`` 的组合。"
-msgstr ""
+msgstr "In principle, ``play`` is actually a combination of ``prepare + forward``."
 
 #: ../../source/tutorials/animations.rst:217
 msgid "动画序列控制"
-msgstr ""
+msgstr "Animation Sequence Control"
 
 #: ../../source/tutorials/animations.rst:219
 msgid "在 :class:`~.Succession` 的动画序列中，我们可以插入一些额外的控制，例如："
-msgstr ""
+msgstr "In the animation sequence of :class:`~.Succession`, we can insert some additional controls, for example:"
 
 #: ../../source/tutorials/animations.rst:221
 msgid "使用 :class:`~.Wait` 插入等待时间"
-msgstr ""
+msgstr "Using :class:`~.Wait` to insert waiting time"
 
 #: ../../source/tutorials/animations.rst:223
 msgid "使用 :class:`~.Do` 在动画序列的特定时间执行指定操作"
-msgstr ""
+msgstr "Using :class:`~.Do` to execute specified operations at specific times in the animation sequence"
 
 #: ../../source/tutorials/animations.rst:53
 msgid ":class:`~.MoveAlongPath` :class:`~.Follow`"
-msgstr ""
+msgstr ":class:`~.MoveAlongPath` :class:`~.Follow`"
 
 #: ../../source/tutorials/animations.rst:264
 msgid "内置动画"
-msgstr ""
+msgstr "Built-in Animations"
 
 #: ../../source/tutorials/animations.rst:266
 msgid "关于更多可用的内置动画，可查阅以下列表中的内容："
-msgstr ""
+msgstr "For more available built-in animations, refer to the following list:"
 
 #: ../../source/tutorials/animations.rst:268
 msgid ":doc:`../janim/anims/composition`"
-msgstr ""
+msgstr ":doc:`../janim/anims/composition`"
 
 #: ../../source/tutorials/animations.rst:269
 msgid ":doc:`../janim/anims/creation`"
-msgstr ""
+msgstr ":doc:`../janim/anims/creation`"
 
 #: ../../source/tutorials/animations.rst:270
 msgid ":doc:`../janim/anims/fading`"
-msgstr ""
+msgstr ":doc:`../janim/anims/fading`"
 
 #: ../../source/tutorials/animations.rst:271
 msgid ":doc:`../janim/anims/growing`"
-msgstr ""
+msgstr ":doc:`../janim/anims/growing`"
 
 #: ../../source/tutorials/animations.rst:272
 msgid ":doc:`../janim/anims/indication`"
-msgstr ""
+msgstr ":doc:`../janim/anims/indication`"
 
 #: ../../source/tutorials/animations.rst:273
 msgid ":doc:`../janim/anims/movement`"
-msgstr ""
+msgstr ":doc:`../janim/anims/movement`"
 
 #: ../../source/tutorials/animations.rst:274
 msgid ":doc:`../janim/anims/rotation`"
-msgstr ""
+msgstr ":doc:`../janim/anims/rotation`"
 
 #: ../../source/tutorials/animations.rst:275
 msgid ":doc:`../janim/anims/transform`"
-msgstr ""
+msgstr ":doc:`../janim/anims/transform`"
 
 #: ../../source/tutorials/animations.rst:276
 msgid ":doc:`../janim/anims/updater`"
-msgstr ""
+msgstr ":doc:`../janim/anims/updater`"
 
 #: ../../source/tutorials/animations.rst:278
-msgid "JAnim 还有一个重要的特性是“动画复合”，我们将在 :ref:`updaters` 中详细介绍这一特性。"
+msgid "JAnim 还有一个重要的特性是"动画复合"，我们将在 :ref:`updaters` 中详细介绍这一特性。"
 msgstr ""
+"JAnim also has an important feature called \"animation composition\", which we "
+"will detail in :ref:`updaters`."
 
 #: ../../source/tutorials/animations.rst:281
 msgid "``.r`` 的使用"
-msgstr ""
+msgstr "Usage of ``.r``"
 
 #: ../../source/tutorials/animations.rst:283
 msgid ""
 "在 JAnim 中，由于 **物件-组件** 的结构关系，导致在一个组件中进行完操作后， 需要使用 ``.r`` "
 "来返回物件级别，从而再访问物件或是其它组件中的功能，例如："
 msgstr ""
+"In JAnim, due to the **item-component** structural relationship, after "
+"completing operations in a component, you need to use ``.r`` to return to the "
+"item level, so as to access item or other component functions, for example:"
 
 #: ../../source/tutorials/animations.rst:290
 msgid "或是对于动画而言"
-msgstr ""
+msgstr "Or for animations"
 

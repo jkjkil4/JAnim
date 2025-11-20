@@ -21,55 +21,72 @@ msgstr ""
 
 #: ../../source/tutorials/depth_detail.rst:2
 msgid "详解深度"
-msgstr ""
+msgstr "Depth Details"
 
 #: ../../source/tutorials/depth_detail.rst:5
 msgid "基础知识"
-msgstr ""
+msgstr "Basic Knowledge"
 
 #: ../../source/tutorials/depth_detail.rst:7
 msgid "JAnim 的深度机制控制了物件的绘制顺序，深度越大的物件，会被深度越低的物件遮挡："
 msgstr ""
+"JAnim's depth mechanism controls the drawing order of items. Items with "
+"greater depth will be occluded by items with lower depth:"
 
 #: ../../source/tutorials/depth_detail.rst:16
 msgid "在上面这个示例中，我们将圆的深度设置为 1，而文字的深度默认为 0，因此圆会被文字遮挡。"
 msgstr ""
+"In the above example, we set the circle's depth to 1, while the text's depth "
+"defaults to 0, so the circle will be occluded by the text."
 
 #: ../../source/tutorials/depth_detail.rst:18
 msgid ""
-"如果两个物件具有相同的深度，它们的遮挡关系遵循 **“越早创建的物件，越会被遮挡”** 即 **“更迟创建的物件，显示在其它物件的前面”** "
+"如果两个物件具有相同的深度，它们的遮挡关系遵循 **"越早创建的物件，越会被遮挡"** 即 **"更迟创建的物件，显示在其它物件的前面"** "
 "的原则："
 msgstr ""
+"If two items have the same depth, their occlusion relationship follows the "
+"principle of **\"items created earlier will be occluded\"**, i.e., "
+"**\"items created later will be displayed in front of other items\"**:"
 
 #: ../../source/tutorials/depth_detail.rst:27
 msgid "在上面这个示例中，文字和圆的深度都是 0，但是文字会被圆遮挡，因为文字先创建，而圆后创建。"
 msgstr ""
+"In the above example, both text and circle have depth 0, but the text will "
+"be occluded by the circle because the text was created first and the circle "
+"was created later."
 
 #: ../../source/tutorials/depth_detail.rst:30
 msgid "重新设置深度"
-msgstr ""
+msgstr "Resetting Depth"
 
 #: ../../source/tutorials/depth_detail.rst:32
 msgid "对于同深度的物件，在有需要的情况下，你可以重新设置其深度，以更新它们的遮挡关系："
 msgstr ""
+"For items with the same depth, when needed, you can reset their depth to "
+"update their occlusion relationships:"
 
 #: ../../source/tutorials/depth_detail.rst:43
 msgid ""
 "这样，文字的深度虽然一开始是 0，但是我们通过 ``txt.depth.set(0)`` 将其深度再次设置为 "
 "0，更新了深度设置的先后顺序，这样文字又重新出现在了圆的前面。"
 msgstr ""
+"Thus, although the text's depth was initially 0, we set its depth to 0 again "
+"through ``txt.depth.set(0)``, updating the order of depth settings, so the "
+"text appears in front of the circle again."
 
 #: ../../source/tutorials/depth_detail.rst:47
-msgid "所以，上文提到的 **“更迟创建的物件，显示在其它物件的前面”** 的本质其实是："
+msgid "所以，上文提到的 **"更迟创建的物件，显示在其它物件的前面"** 的本质其实是："
 msgstr ""
+"So, the essence of **\"items created later will be displayed in front of "
+"other items\"** mentioned above is actually:"
 
 #: ../../source/tutorials/depth_detail.rst:53
-msgid "**“更迟设置深度的物件，显示在其它物件的前面”**"
-msgstr ""
+msgid "**"更迟设置深度的物件，显示在其它物件的前面"**"
+msgstr "**\"Items with depth set later will be displayed in front of other items\"**"
 
 #: ../../source/tutorials/depth_detail.rst:59
 msgid "当然，这句话只是深度相同时遵循的原则。"
-msgstr ""
+msgstr "Of course, this principle only applies when depths are the same."
 
 #: ../../source/tutorials/depth_detail.rst:63
 msgid ""
@@ -77,74 +94,114 @@ msgid ""
 ":meth:`~.Cmpt_Depth.arrange` 在不指定深度时，就会将当前带有的深度值传入 "
 ":meth:`~.Cmpt_Depth.set` 进行调用， 起到与 ``txt.depth.set(0)`` 一样的效果。"
 msgstr ""
+"In the above example, ``txt.depth.set(0)`` can be completely replaced with "
+"``txt.depth.arrange()``, because when :meth:`~.Cmpt_Depth.arrange` does not "
+"specify depth, it will pass the current depth value to :meth:`~.Cmpt_Depth.set` "
+"for calling, achieving the same effect as ``txt.depth.set(0)``."
 
 #: ../../source/tutorials/depth_detail.rst:68
 msgid "深度的排列"
-msgstr ""
+msgstr "Depth Arrangement"
 
 #: ../../source/tutorials/depth_detail.rst:70
 msgid "将多个物件放到一个 :class:`~.Group` 中时，并不会改变它们原有的深度，例如对于"
 msgstr ""
+"When placing multiple items into a :class:`~.Group`, their original depths "
+"will not be changed, for example for"
 
 #: ../../source/tutorials/depth_detail.rst:82
 msgid "我们显然可以知道，圆会显示在星星的前面，并且方形还会显示在圆的前面。"
 msgstr ""
+"We can obviously know that the circle will be displayed in front of the star, "
+"and the square will be displayed in front of the circle."
 
 #: ../../source/tutorials/depth_detail.rst:84
 msgid ""
 "哪怕把他们都放到一个 :class:`~.Group` 中，也不会按照在 :class:`~.Group` "
 "中出现的顺序来调整深度，仍然保持原有的深度："
 msgstr ""
+"Even if they are all placed in a :class:`~.Group`, the depth will not be "
+"adjusted according to the order they appear in the :class:`~.Group`, still "
+"maintaining the original depth:"
 
 #: ../../source/tutorials/depth_detail.rst:100
 msgid ""
 "上面这个例子中，我们故意把 ``star`` ``circle`` ``square`` 倒过来放到 ``group`` "
 "中，确实仍然是星星在最后面，方形在最前面。"
 msgstr ""
+"In the above example, we deliberately put ``star`` ``circle`` ``square`` in "
+"reverse order into ``group``, and indeed the star is still at the back and "
+"the square is at the front."
 
 #: ../../source/tutorials/depth_detail.rst:102
 msgid ""
 "但是，如果我们此时对 ``group`` 使用 :meth:`~.Cmpt_Depth.arrange` 方法，或者在其构造时传入 "
 "``depth`` 参数，则会按照 ``group`` 的深度重新设置："
 msgstr ""
+"However, if we use the :meth:`~.Cmpt_Depth.arrange` method on ``group`` at "
+"this time, or pass the ``depth`` parameter during its construction, it will "
+"be reset according to ``group``'s depth:"
 
 #: ../../source/tutorials/depth_detail.rst:119
 msgid "可以看到，在执行了 :meth:`~.Cmpt_Depth.arrange` 后，方形就到了最后面，而星星出现在了最前面。"
 msgstr ""
+"It can be seen that after executing :meth:`~.Cmpt_Depth.arrange`, the square "
+"is at the back and the star appears at the front."
 
 #: ../../source/tutorials/depth_detail.rst:122
 msgid "渲染顺序的原理"
-msgstr ""
+msgstr "Principles of Rendering Order"
 
 #: ../../source/rst_utils/tip_of_complex.rst:3
 msgid "这部分内容涉及 JAnim 实现原理，可能较为复杂，若没有研究源码的需求，你应酌情阅读"
 msgstr ""
+"This section involves JAnim implementation principles and may be relatively "
+"complex. If you don't need to study the source code, you should read it as "
+"appropriate."
 
 #: ../../source/tutorials/depth_detail.rst:126
 msgid "对于不同深度值的物件，它们的渲染顺序非常浅显易懂，只需按照深度的大小排列即可。"
 msgstr ""
+"For items with different depth values, their rendering order is very "
+"straightforward - just arrange them according to depth size."
 
 #: ../../source/tutorials/depth_detail.rst:128
-msgid "于是这里主要讨论相同深度值的物件，是怎么做到“更迟设置深度的物件，显示在其它物件的前面”的。"
+msgid "于是这里主要讨论相同深度值的物件，是怎么做到"更迟设置深度的物件，显示在其它物件的前面"的。"
 msgstr ""
+"So here we mainly discuss how items with the same depth value achieve "
+"\"items with depth set later will be displayed in front of other items\"."
 
 #: ../../source/tutorials/depth_detail.rst:130
 msgid ""
-"其实，深度信息不止 ``.set(...)`` 所传入的值，他还暗藏一个“序号”，越后面设置的物件，它的“序号”就越低， "
-"所以，对于相同深度值的物件，JAnim 判定渲染顺序的方法便是使用“序号”作为依据。"
+"其实，深度信息不止 ``.set(...)`` 所传入的值，他还暗藏一个"序号"，越后面设置的物件，它的"序号"就越低， "
+"所以，对于相同深度值的物件，JAnim 判定渲染顺序的方法便是使用"序号"作为依据。"
 msgstr ""
+"In fact, depth information is not just the value passed to ``.set(...)``, "
+"it also hides an \"order\". The later an item's depth is set, the lower its "
+"\"order\" will be. So, for items with the same depth value, JAnim's method "
+"of determining rendering order is to use \"order\" as the basis."
 
 #: ../../source/tutorials/depth_detail.rst:133
 msgid ""
-"物件深度“序号”的具体值可以使用 :meth:`~.Cmpt_Depth.get_raw` 获取，这是一个包含两个值的 ``tuple``，分别是"
+"物件深度"序号"的具体值可以使用 :meth:`~.Cmpt_Depth.get_raw` 获取，这是一个包含两个值的 ``tuple``，分别是"
 " ``(depth, order)``："
 msgstr ""
+"The specific value of an item's depth \"order\" can be obtained using "
+":meth:`~.Cmpt_Depth.get_raw`, which is a ``tuple`` containing two values: "
+"``(depth, order)``:"
 
 #: ../../source/tutorials/depth_detail.rst:147
 msgid "在同一次的程序执行过程中，哪怕重新构建时间轴，或是导出动画，物件深度的计数不会重置，因此在上面这个示例中，显示值在每次重新构建时间轴后都会进一步递减。"
 msgstr ""
+"During the same program execution, even if the timeline is rebuilt or the "
+"animation is exported, the item depth count will not reset. Therefore, in "
+"the above example, the displayed value will further decrease after each "
+"timeline rebuild."
 
 #: ../../source/tutorials/depth_detail.rst:149
-msgid "因此在创建动画过程时，动画效果绝对不要依赖于物件深度“序号”的具体值，否则会影响效果的一致性。"
+msgid "因此在创建动画过程时，动画效果绝对不要依赖于物件深度"序号"的具体值，否则会影响效果的一致性。"
 msgstr ""
+"Therefore, when creating animations, animation effects should never depend on "
+"the specific value of item depth \"order\", otherwise it will affect the "
+"consistency of effects."
 

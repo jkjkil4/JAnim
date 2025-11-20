@@ -21,79 +21,117 @@ msgstr ""
 
 #: ../../source/tutorials/bounding_box.rst:4
 msgid "边界框"
-msgstr ""
+msgstr "Bounding Box"
 
 #: ../../source/tutorials/bounding_box.rst:7
 msgid "简要介绍"
-msgstr ""
+msgstr "Brief Introduction"
 
 #: ../../source/tutorials/bounding_box.rst:9
 msgid "边界框是几何物件的一个重要概念。具体来说，边界框是一个外接矩形，反映了物件的坐标范围。"
 msgstr ""
+"Bounding box is an important concept for geometric items. Specifically, a "
+"bounding box is a circumscribed rectangle that reflects the coordinate range "
+"of an item."
 
 #: ../../source/tutorials/bounding_box.rst:11
 msgid "以下是各种常见几何图形的外接矩形，即边界框区域："
 msgstr ""
+"The following shows the circumscribed rectangles, i.e., bounding box regions, "
+"of various common geometric shapes:"
 
 #: ../../source/tutorials/bounding_box.rst:18
 msgid "可以看出，背景的红色包围矩形正好把几何图形框在里面，矩形的四条边恰好覆盖到图形的最左、最右、最上、最下方。"
 msgstr ""
+"It can be seen that the red bounding rectangle in the background exactly "
+"frames the geometric shapes, with the four edges of the rectangle covering "
+"the leftmost, rightmost, topmost, and bottommost parts of the shapes."
 
 #: ../../source/tutorials/bounding_box.rst:22
 msgid "只有未旋转的矩形与其边界框完全重合"
-msgstr ""
+msgstr "Only unrotated rectangles completely coincide with their bounding boxes"
 
 #: ../../source/tutorials/bounding_box.rst:24
 msgid ""
 "边界框正是 JAnim 用来处理上一节中 :ref:`relative_placement` 的方式 —— "
 "他们本质上是以物件的边界框为依据进行对齐和放置的。"
 msgstr ""
+"Bounding boxes are exactly how JAnim handles :ref:`relative_placement` in "
+"the previous section - they essentially align and place items based on the "
+"items' bounding boxes."
 
 #: ../../source/tutorials/bounding_box.rst:27
 msgid "获取关键坐标"
-msgstr ""
+msgstr "Getting Key Coordinates"
 
 #: ../../source/tutorials/bounding_box.rst:29
 msgid "如果你想获取边界框上的几个特殊点的位置，例如边界框的左侧中心点，右侧中心点等，以单位圆为例："
 msgstr ""
+"If you want to get the positions of several special points on the bounding "
+"box, such as the left center point, right center point, etc., taking a unit "
+"circle as an example:"
 
 #: ../../source/tutorials/bounding_box.rst:41
 msgid ""
 "可以发现，边界框的所有信息，都可以通过 ``.points.box`` 获取； 如果你有大量访问边界框信息的需求，甚至可以先将 "
 "``.points.box`` 赋值给一个变量，然后再使用这个变量来获取边界框的相关信息："
 msgstr ""
+"It can be found that all information about the bounding box can be obtained "
+"through ``.points.box``; if you have a large need to access bounding box "
+"information, you can even assign ``.points.box`` to a variable first, and "
+"then use this variable to get bounding box related information:"
 
 #: ../../source/tutorials/bounding_box.rst:63
 msgid "在物件移动后，原先赋值的 ``box`` 变量仍保留原有的信息"
 msgstr ""
+"After the item moves, the previously assigned ``box`` variable still retains "
+"the original information"
 
 #: ../../source/tutorials/bounding_box.rst:65
 msgid "除了使用以上方式获取边界框四周的点之外，还可以通过 ``.points.box.center`` 得到边界框的中心点"
 msgstr ""
+"In addition to using the above methods to get points around the bounding box, "
+"you can also get the center point of the bounding box through ``.points.box.center``"
 
 #: ../../source/tutorials/bounding_box.rst:72
 msgid ""
 "其实，边界框的中心点正是 :meth:`~.Cmpt_Points.move_to` 等函数的参考位置：当你使用 ``move_to`` "
 "尝试将物件移动至某个位置时，JAnim 所做的就是将物件移动，使其边界框中心点到达你所指定的位置。"
 msgstr ""
+"In fact, the center point of the bounding box is exactly the reference "
+"position for functions like :meth:`~.Cmpt_Points.move_to`: when you use "
+"``move_to`` to try to move an item to a certain position, what JAnim does is "
+"move the item so that its bounding box center point reaches the position you "
+"specified."
 
 #: ../../source/tutorials/bounding_box.rst:75
 msgid "边界框的局限性"
-msgstr ""
+msgstr "Limitations of Bounding Boxes"
 
 #: ../../source/tutorials/bounding_box.rst:77
-msgid "边界框对物件几何特征的刻画足以应对大多数情况下的需求，但是当我们讨论“几何中心”时，边界框中心时常与形状的“几何中心”不重合。"
+msgid "边界框对物件几何特征的刻画足以应对大多数情况下的需求，但是当我们讨论"几何中心"时，边界框中心时常与形状的"几何中心"不重合。"
 msgstr ""
+"Bounding boxes' characterization of item geometric features is sufficient for "
+"most needs, but when we discuss \"geometric center\", the bounding box center "
+"often does not coincide with the shape's \"geometric center\"."
 
 #: ../../source/tutorials/bounding_box.rst:79
 msgid "你可能注意到了上图中用淡绿色标记的点，这就是他们的几何中心： 只有圆和方形的边界框中心与几何中心重合，其余图形的边界框中心则偏离了几何中心。"
 msgstr ""
+"You may have noticed the points marked in light green in the figure above, "
+"which are their geometric centers: only circles and squares have bounding box "
+"centers that coincide with geometric centers, while the bounding box centers "
+"of other shapes deviate from their geometric centers."
 
 #: ../../source/tutorials/bounding_box.rst:82
 msgid "这些几何图形的几何中心，也就是淡绿色的点，在 JAnim 中被打上了额外的标记，你可以通过 ``.mark.get()`` 来获取，例如："
 msgstr ""
+"The geometric centers of these geometric shapes, i.e., the light green points, "
+"are marked with additional markers in JAnim. You can get them through "
+"``.mark.get()``, for example:"
 
 #: ../../source/tutorials/bounding_box.rst:93
 msgid "对于有关内容，可参考 :class:`~.MarkedItem` 与 :class:`~.Cmpt_Mark`"
 msgstr ""
+"For related content, refer to :class:`~.MarkedItem` and :class:`~.Cmpt_Mark`"
 

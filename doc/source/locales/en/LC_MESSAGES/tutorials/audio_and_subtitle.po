@@ -21,61 +21,68 @@ msgstr ""
 
 #: ../../source/tutorials/audio_and_subtitle.rst:2
 msgid "音频与字幕"
-msgstr ""
+msgstr "Audio and Subtitles"
 
 #: ../../source/tutorials/audio_and_subtitle.rst:5
 msgid "插入音频"
-msgstr ""
+msgstr "Inserting Audio"
 
 #: ../../source/tutorials/audio_and_subtitle.rst:7
 msgid "JAnim 支持插入音频，并在导出时合并到视频中："
-msgstr ""
+msgstr "JAnim supports inserting audio and merging it into videos during export:"
 
 #: ../../source/tutorials/audio_and_subtitle.rst:14
 msgid "默认情况下，音频会在当前时刻开始播放；关于播放音频的具体细节请参考 :meth:`~.Timeline.play_audio` 方法。"
-msgstr ""
+msgstr "By default, audio will start playing at the current time; for specific details about playing audio, refer to the :meth:`~.Timeline.play_audio` method."
 
 #: ../../source/tutorials/audio_and_subtitle.rst:17
 msgid "利用时段信息进行同步"
-msgstr ""
+msgstr "Synchronization Using Time Range Information"
 
 #: ../../source/tutorials/audio_and_subtitle.rst:19
 msgid ":meth:`~.Timeline.play_audio` 方法还会返回一个 :class:`~.TimeRange` 对象，使得这样成为可能："
-msgstr ""
+msgstr "The :meth:`~.Timeline.play_audio` method also returns a :class:`~.TimeRange` object, making this possible:"
 
 #: ../../source/tutorials/audio_and_subtitle.rst:33
 msgid "也就是说，通过获知音频的时段信息，例如这里的时长，可以进行如同步音频与动画等各种灵活的操作。"
-msgstr ""
+msgstr "That is, by knowing the time range information of audio, such as the duration here, various flexible operations such as synchronizing audio with animations can be performed."
 
 #: ../../source/tutorials/audio_and_subtitle.rst:35
 msgid "JAnim 也可以通过 :meth:`~.Timeline.subtitle` 方法插入字幕，并与音频同步："
-msgstr ""
+msgstr "JAnim can also insert subtitles through the :meth:`~.Timeline.subtitle` method and synchronize them with audio:"
 
 #: ../../source/tutorials/audio_and_subtitle.rst:48
 msgid "关于字幕的具体细节请参考 :meth:`~.Timeline.subtitle` 方法。"
-msgstr ""
+msgstr "For specific details about subtitles, refer to the :meth:`~.Timeline.subtitle` method."
 
 #: ../../source/tutorials/audio_and_subtitle.rst:52
 msgid ":meth:`~.Timeline.subtitle` 同样会返回一个 :class:`~.TimeRange` 对象，提供了字幕的时段信息。"
-msgstr ""
+msgstr ":meth:`~.Timeline.subtitle` also returns a :class:`~.TimeRange` object, providing the time range information of the subtitle."
 
 #: ../../source/tutorials/audio_and_subtitle.rst:55
 msgid "插入字幕及其配音的简便方法"
-msgstr ""
+msgstr "Convenient Method for Inserting Subtitles and Their Audio"
 
 #: ../../source/tutorials/audio_and_subtitle.rst:57
 msgid ""
 "如果你想要插入一段字幕及其配音，可以使用 :meth:`~.Timeline.audio_and_subtitle` 方法，这是对 "
 ":meth:`~.Timeline.play_audio` 和 :meth:`~.Timeline.subtitle` 的封装："
 msgstr ""
+"If you want to insert a subtitle and its audio, you can use the "
+":meth:`~.Timeline.audio_and_subtitle` method, which is a wrapper around "
+":meth:`~.Timeline.play_audio` and :meth:`~.Timeline.subtitle`:"
 
 #: ../../source/tutorials/audio_and_subtitle.rst:66
 msgid ":meth:`~.Timeline.audio_and_subtitle` 可以简写为 :meth:`~.Timeline.aas`。"
-msgstr ""
+msgstr ":meth:`~.Timeline.audio_and_subtitle` can be abbreviated as :meth:`~.Timeline.aas`."
 
 #: ../../source/tutorials/audio_and_subtitle.rst:70
 msgid ""
 ":meth:`~.Timeline.audio_and_subtitle` 方法默认会自动去除音频前后多余的空白，可以传入 "
 "``clip=None`` 以禁用，或是使用 ``clip=(start, end)`` 来手动确定裁剪区段。"
 msgstr ""
+"The :meth:`~.Timeline.audio_and_subtitle` method automatically removes "
+"excessive silence before and after audio by default. You can pass "
+"``clip=None`` to disable this, or use ``clip=(start, end)`` to manually "
+"determine the clipping segment."
 

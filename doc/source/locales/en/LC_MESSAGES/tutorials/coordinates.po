@@ -21,81 +21,100 @@ msgstr ""
 
 #: ../../source/tutorials/coordinates.rst:2
 msgid "坐标系统"
-msgstr ""
+msgstr "Coordinate System"
 
 #: ../../source/tutorials/coordinates.rst:4
 msgid ""
 "JAnim 的坐标系统不以像素为单位，而是采用水平方向约 ``-7.11 ~ 7.11``，垂直方向 ``-4 ~ 4`` 的坐标范围，形成一个 "
 "16:9 的画面。"
 msgstr ""
+"JAnim's coordinate system is not in pixels, but uses a coordinate range of "
+"approximately ``-7.11 ~ 7.11`` horizontally and ``-4 ~ 4`` vertically, "
+"forming a 16:9 frame."
 
 #: ../../source/tutorials/coordinates.rst:6
 msgid "原点位于画面中心，向右向上为正方向，下图展现了创建在 JAnim 画面上的坐标系网格以及放置于原点处的单位圆："
 msgstr ""
+"The origin is at the center of the frame, with right and up as positive "
+"directions. The following figure shows the coordinate grid created on the "
+"JAnim frame and a unit circle placed at the origin:"
 
 #: ../../source/tutorials/coordinates.rst:18
 msgid "这里的 ``xxx.show()`` 与 ``self.show(xxx)`` 一样，都是将物件直接显示出来"
 msgstr ""
+"Here, ``xxx.show()`` is the same as ``self.show(xxx)``, both directly "
+"display the item"
 
 #: ../../source/tutorials/coordinates.rst:22
 msgid "为了方便起见，这里提供的代码省略了 ``construct`` 方法之外的内容，只展示 ``construct`` 的核心部分"
 msgstr ""
+"For convenience, the code provided here omits content outside the "
+"``construct`` method, only showing the core part of ``construct``"
 
 #: ../../source/tutorials/coordinates.rst:24
 msgid "类似情况不再赘述"
-msgstr ""
+msgstr "Similar cases will not be repeated"
 
 #: ../../source/tutorials/coordinates.rst:26
 msgid ""
 "在之前的简要介绍中，我们提到 JAnim 的几何 **物件** 含有多个 **组件**，包括 ``points``、 ``stroke``、 "
 "``fill`` 等； 而其中与坐标系统相关的组件是 ``points``，它决定了物件的形状和位置。"
 msgstr ""
+"In the previous brief introduction, we mentioned that JAnim's geometric "
+"**items** contain multiple **components**, including ``points``, "
+"``stroke``, ``fill``, etc.; among them, the component related to the "
+"coordinate system is ``points``, which determines the shape and position of "
+"the item."
 
 #: ../../source/tutorials/coordinates.rst:29
-msgid "所以在大多数情况下，当我们想要“操作物件的坐标”时，先 ``.points`` 再做具体操作就对了！"
+msgid "所以在大多数情况下，当我们想要"操作物件的坐标"时，先 ``.points`` 再做具体操作就对了！"
 msgstr ""
+"So in most cases, when we want to \"manipulate the coordinates of an item\", "
+"we first use ``.points`` and then perform specific operations!"
 
 #: ../../source/tutorials/coordinates.rst:32
 msgid "坐标平移"
-msgstr ""
+msgstr "Coordinate Translation"
 
 #: ../../source/tutorials/coordinates.rst:34
 msgid "``points`` 组件提供了多种方法来操作物件的坐标，这里先介绍两个基础方法："
 msgstr ""
+"The ``points`` component provides various methods to manipulate item "
+"coordinates. Here we first introduce two basic methods:"
 
 #: ../../source/tutorials/coordinates.rst:38
 #: ../../source/tutorials/coordinates.rst:99
 #: ../../source/tutorials/coordinates.rst:183
 msgid "方法"
-msgstr ""
+msgstr "Method"
 
 #: ../../source/tutorials/coordinates.rst:39
 #: ../../source/tutorials/coordinates.rst:100
 #: ../../source/tutorials/coordinates.rst:184
 msgid "示例"
-msgstr ""
+msgstr "Example"
 
 #: ../../source/tutorials/coordinates.rst:40
 #: ../../source/tutorials/coordinates.rst:101
 #: ../../source/tutorials/coordinates.rst:185
 msgid "描述"
-msgstr ""
+msgstr "Description"
 
 #: ../../source/tutorials/coordinates.rst:42
 msgid ":meth:`~.Cmpt_Points.shift`"
-msgstr ""
+msgstr ":meth:`~.Cmpt_Points.shift`"
 
 #: ../../source/tutorials/coordinates.rst:43
 msgid "``.shift(RIGHT * 3 + UP * 2)``"
-msgstr ""
+msgstr "``.shift(RIGHT * 3 + UP * 2)``"
 
 #: ../../source/tutorials/coordinates.rst:44
 msgid "根据给定的位移平移物件"
-msgstr ""
+msgstr "Translate the item according to the given displacement"
 
 #: ../../source/tutorials/coordinates.rst:46
 msgid ":meth:`~.Cmpt_Points.move_to`"
-msgstr ""
+msgstr ":meth:`~.Cmpt_Points.move_to`"
 
 #: ../../source/tutorials/coordinates.rst:47
 msgid "``.move_to(ORIGIN)``"

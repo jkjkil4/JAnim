@@ -21,187 +21,246 @@ msgstr ""
 
 #: ../../source/tutorials/item_group.rst:2
 msgid "物件组"
-msgstr ""
+msgstr "Item Groups"
 
 #: ../../source/tutorials/item_group.rst:4
 msgid "可以使用 :class:`~.Group` 将多个物件组合在一起，这样便可以依照整体的边界框进行整体位移、排列和对齐，以及设置属性与应用动画。"
 msgstr ""
+"You can use :class:`~.Group` to combine multiple items together, allowing "
+"overall translation, arrangement, and alignment based on the overall bounding "
+"box, as well as setting properties and applying animations."
 
 #: ../../source/tutorials/item_group.rst:7
 msgid "物件组的常用方法"
-msgstr ""
+msgstr "Common Methods for Item Groups"
 
 #: ../../source/tutorials/item_group.rst:9
 msgid "以下给出了两个示例及其解析："
-msgstr ""
+msgstr "The following provides two examples and their explanations:"
 
 #: ../../source/tutorials/item_group.rst:34
 msgid ":class:`~.Group` :meth:`~.Cmpt_Points.arrange` :meth:`~.Cmpt_Rgbas.fade`"
-msgstr ""
+msgstr ":class:`~.Group` :meth:`~.Cmpt_Points.arrange` :meth:`~.Cmpt_Rgbas.fade`"
 
 #: ../../source/tutorials/item_group.rst:20
 msgid ""
 "这里创建了一个 ``group``，其中包含了三个子物件： ``Star`` 、 ``Circle`` 和 "
 "``RegularPolygon``，并将它们统一设置为蓝色且完全填充。"
 msgstr ""
+"Here a ``group`` is created, containing three child items: ``Star``, "
+"``Circle``, and ``RegularPolygon``, and they are all set to blue with full "
+"fill."
 
 #: ../../source/tutorials/item_group.rst:22
 msgid ""
 "并通过 :meth:`~.Cmpt_Points.arrange` 方法，将 ``group`` 中的子物件依次向右排列，前后间距为 "
 "``MED_LARGE_BUFF``。"
 msgstr ""
+"And through the :meth:`~.Cmpt_Points.arrange` method, the child items in "
+"``group`` are arranged sequentially to the right with spacing of "
+"``MED_LARGE_BUFF``."
 
 #: ../../source/tutorials/item_group.rst:26
 msgid ""
 ":meth:`~.Cmpt_Points.arrange` 是 JAnim 中排列物件的一个相当实用的方法， 还有 "
 ":meth:`~.Cmpt_Points.arrange_in_grid` 方法提供了网格排列的功能， 可另行参考阅读。"
 msgstr ""
+":meth:`~.Cmpt_Points.arrange` is a quite practical method for arranging items "
+"in JAnim. There is also the :meth:`~.Cmpt_Points.arrange_in_grid` method "
+"that provides grid arrangement functionality, which can be referenced separately."
 
 #: ../../source/tutorials/item_group.rst:15
 msgid "将填充颜色整体淡化 70%。"
-msgstr ""
+msgstr "Fade the fill color overall by 70%."
 
 #: ../../source/tutorials/item_group.rst:17
 msgid ""
 "由于 :class:`~.Group` 没有像几何图形物件 :class:`~.VItem` 一样的复杂属性，因此不能直接使用类似 "
 "``group.fill.fade(0.7)`` 这样的方式来淡化颜色。"
 msgstr ""
+"Since :class:`~.Group` does not have complex properties like geometric items "
+":class:`~.VItem`, you cannot directly use methods like ``group.fill.fade(0.7)`` "
+"to fade colors."
 
 #: ../../source/tutorials/item_group.rst:19
 msgid ""
-"但是可以通过 ``group.astype(VItem).fill.fade(0.7)`` 的方式，把 ``group`` “当作”一个 "
+"但是可以通过 ``group.astype(VItem).fill.fade(0.7)`` 的方式，把 ``group`` "当作"一个 "
 ":class:`~.VItem` 来使用原本没有的组件，可以简写为"
 msgstr ""
+"But you can use ``group.astype(VItem).fill.fade(0.7)`` to treat ``group`` "
+"as a :class:`~.VItem` to use components it doesn't originally have, which "
+"can be abbreviated as"
 
 #: ../../source/tutorials/item_group.rst:25
 msgid "形式上来讲，写法是： ``group(当作什么物件).组件.操作``。"
 msgstr ""
+"Formally speaking, the writing is: ``group(treat_as_what_item).component.operation``."
 
 #: ../../source/tutorials/item_group.rst:27
 msgid "因为这里是用作动画，所以形式上是 ``group(当作什么物件).anim.组件.操作``。"
 msgstr ""
+"Since this is used for animation, the form is ``group(treat_as_what_item).anim.component.operation``."
 
 #: ../../source/tutorials/item_group.rst:15
 msgid ""
 ":class:`~.FadeOut` 动画的 ``lag_ratio`` 参数可以控制子物件淡出的延迟比率， 默认 ``0`` "
 "表示同时淡出，这里设置了 ``0.5`` 表示前一个淡出 50% 后开始淡出下一个。"
 msgstr ""
+"The ``lag_ratio`` parameter of the :class:`~.FadeOut` animation can control "
+"the delay ratio of child items fading out. Default ``0`` means fading out "
+"simultaneously. Here ``0.5`` is set, meaning the next one starts fading out "
+"after the previous one has faded 50%."
 
 #: ../../source/tutorials/item_group.rst:39
 msgid ":class:`~.Group` :meth:`~.Cmpt_Points.arrange` :class:`~.Indicate`"
-msgstr ""
+msgstr ":class:`~.Group` :meth:`~.Cmpt_Points.arrange` :class:`~.Indicate`"
 
 #: ../../source/tutorials/item_group.rst:19
 msgid "这里创建了一个 ``group``，其中包含了三个子物件，每个子物件初始化了不同的颜色。"
 msgstr ""
+"Here a ``group`` is created containing three child items, each initialized "
+"with different colors."
 
 #: ../../source/tutorials/item_group.rst:17
 msgid "首先用 :class:`~.Indicate` 动画高亮显示整个 ``group``"
-msgstr ""
+msgstr "First, use the :class:`~.Indicate` animation to highlight the entire ``group``"
 
 #: ../../source/tutorials/item_group.rst:19
 msgid "并且我们可以使用 ``for`` 遍历组内的子物件，依次使用 :class:`~.Indicate` 动画高亮它们。"
 msgstr ""
+"And we can use ``for`` to iterate through child items in the group, using "
+":class:`~.Indicate` animation to highlight them sequentially."
 
 #: ../../source/tutorials/item_group.rst:15
 msgid ""
 "通过 ``group[1]`` 访问 ``group`` 中下标为 1 的，即第二个子物件 ``Circle``，将其填充透明度设置为 "
 "``0.5``。"
 msgstr ""
+"Access the item at index 1 in ``group``, i.e., the second child item "
+"``Circle``, through ``group[1]``, and set its fill opacity to ``0.5``."
 
 #: ../../source/tutorials/item_group.rst:133
 msgid "物件组的嵌套"
-msgstr ""
+msgstr "Nesting of Item Groups"
 
 #: ../../source/tutorials/item_group.rst:135
 msgid ""
 "显而易见，我们完全可以把一个 :class:`~.Group` 作为另一个 :class:`~.Group` 的子物件（这里笔者随便搓了一个 "
 "``HelloJAnimExample`` 代码的示意动画）："
 msgstr ""
+"Obviously, we can completely use a :class:`~.Group` as a child item of "
+"another :class:`~.Group` (here the author casually created a schematic "
+"animation of the ``HelloJAnimExample`` code):"
 
 #: ../../source/tutorials/item_group.rst:45
 msgid ":class:`~.Text` :class:`~.Group` :class:`~.Arrow` :class:`~.Transform`"
-msgstr ""
+msgstr ":class:`~.Text` :class:`~.Group` :class:`~.Arrow` :class:`~.Transform`"
 
 #: ../../source/tutorials/item_group.rst:165
-msgid "这里将一个“圆形指向方形”的 ``shapes`` 组对齐到文字的下方，然后又和文字创建了一个 ``group`` 组。"
+msgid "这里将一个"圆形指向方形"的 ``shapes`` 组对齐到文字的下方，然后又和文字创建了一个 ``group`` 组。"
 msgstr ""
+"Here a ``shapes`` group of \"circle pointing to square\" is aligned below the "
+"text, and then a ``group`` is created with the text."
 
 #: ../../source/tutorials/item_group.rst:167
 msgid "在进行动画时，通过对各元素的操作以及对物件组的切片（例如 ``shapes[1:]``）来创建各种动画效果。"
 msgstr ""
+"When animating, various animation effects are created through operations on "
+"each element and slicing of item groups (e.g., ``shapes[1:]``)."
 
 #: ../../source/tutorials/item_group.rst:169
 msgid "有关物件组的用法你可以继续挖掘，探索更多可能！"
-msgstr ""
+msgstr "You can continue exploring the usage of item groups and discover more possibilities!"
 
 #: ../../source/tutorials/item_group.rst:173
-msgid "其实文字物件就是一个嵌套的物件组，其中包含了多个“文字行”物件，每个“文字行”物件又包含多个“字符”物件。"
+msgid "其实文字物件就是一个嵌套的物件组，其中包含了多个"文字行"物件，每个"文字行"物件又包含多个"字符"物件。"
 msgstr ""
+"In fact, text items are nested item groups, containing multiple \"text line\" "
+"items, and each \"text line\" item contains multiple \"character\" items."
 
 #: ../../source/tutorials/item_group.rst:175
 msgid "具体可参阅 :doc:`../janim/items/text` 文档中的介绍。"
-msgstr ""
+msgstr "For details, refer to the introduction in :doc:`../janim/items/text` documentation."
 
 #: ../../source/tutorials/item_group.rst:178
 msgid "名词解释"
-msgstr ""
+msgstr "Terminology"
 
 #: ../../source/tutorials/item_group.rst:180
 msgid ":class:`~.Group` 的嵌套形成了一个层级结构，当我们讨论物件组时，往往会涉及多个名词指代这个层级结构的不同部分。"
 msgstr ""
+"The nesting of :class:`~.Group` forms a hierarchical structure. When "
+"discussing item groups, we often involve multiple terms referring to "
+"different parts of this hierarchical structure."
 
 #: ../../source/tutorials/item_group.rst:182
 msgid "以具体例子来说，对于"
-msgstr ""
+msgstr "Taking a concrete example, for"
 
 #: ../../source/tutorials/item_group.rst:198
 msgid "所产生的层级结构而言，它们有如下的关系："
-msgstr ""
+msgstr "the hierarchical structure produced, they have the following relationships:"
 
 #: ../../source/tutorials/item_group.rst:205
 msgid "在以 ``Group #1`` 作为 **根物件** 的这个层级结构中："
-msgstr ""
+msgstr "In this hierarchical structure with ``Group #1`` as the **root item**:"
 
 #: ../../source/tutorials/item_group.rst:207
 msgid "直接与它相关的下一层，也就是绿色这一层的物件，被称为 **子物件**。"
 msgstr ""
+"The next layer directly related to it, i.e., the items in the green layer, "
+"are called **child items**."
 
 #: ../../source/tutorials/item_group.rst:209
 msgid "可以使用 ``for sub in group:`` 的形式来遍历子物件。"
-msgstr ""
+msgstr "You can use the form ``for sub in group:`` to iterate through child items."
 
 #: ../../source/tutorials/item_group.rst:213
 msgid ""
 "可以直接访问 ``.children`` 列表，但请勿直接删改， 应通过 :meth:`~.Relation.add` "
 ":meth:`~.Relation.remove` 等方法，否则会造成意料之外的效果。"
 msgstr ""
+"You can directly access the ``.children`` list, but please do not directly "
+"modify it. You should use methods like :meth:`~.Relation.add` "
+":meth:`~.Relation.remove`, otherwise unexpected effects will occur."
 
 #: ../../source/tutorials/item_group.rst:216
 msgid "这里暴露对 ``.children`` 的访问只是为了方便遍历等操作。"
 msgstr ""
+"Exposing access to ``.children`` here is only for convenience in operations "
+"like iteration."
 
 #: ../../source/tutorials/item_group.rst:218
 msgid "它下面所有层，在这个例子中的绿色层和蓝色层的物件，被统称为 **后代物件**。"
 msgstr ""
+"All layers below it, in this example the green and blue layer items, are "
+"collectively called **descendant items**."
 
 #: ../../source/tutorials/item_group.rst:220
 msgid "可以使用 :meth:`~.Relation.descendants` 方法得知所有后代物件。"
 msgstr ""
+"You can use the :meth:`~.Relation.descendants` method to know all descendant items."
 
 #: ../../source/tutorials/item_group.rst:222
 msgid "与 **子物件** 与 **后代物件** 的概念类似，层级向上还有 **父物件** 与 **祖先物件** 的概念："
 msgstr ""
+"Similar to the concepts of **child items** and **descendant items**, going "
+"up the hierarchy there are also concepts of **parent items** and **ancestor items**:"
 
 #: ../../source/tutorials/item_group.rst:224
 msgid ""
 "对于 ``Star`` 物件，若将其当作根物件，那么 ``Group #2`` 则是它的父物件， ``Group #2`` 和 ``Group "
 "#1`` 是它的祖先物件。"
 msgstr ""
+"For the ``Star`` item, if we treat it as the root item, then ``Group #2`` is "
+"its parent item, and ``Group #2`` and ``Group #1`` are its ancestor items."
 
 #: ../../source/tutorials/item_group.rst:228
 msgid "从设计上来说，一个物件可能会有多个父物件，但其实在使用时并不太需要关心这一点， 因为使用时我们主要讨论子物件与后代物件在各个功能中发挥的作用。"
 msgstr ""
+"From a design perspective, an item may have multiple parent items, but this "
+"is not something we need to worry about much in use, because in use we "
+"mainly discuss the roles of child items and descendant items in various functions."
 
 #~ msgid "可以使用 ``.descendants()`` 方法得知所有后代物件。"
 #~ msgstr ""

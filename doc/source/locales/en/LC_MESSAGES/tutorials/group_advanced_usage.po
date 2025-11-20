@@ -21,21 +21,24 @@ msgstr ""
 
 #: ../../source/tutorials/group_advanced_usage.rst:2
 msgid "物件组进阶使用"
-msgstr ""
+msgstr "Advanced Usage of Item Groups"
 
 #: ../../source/tutorials/group_advanced_usage.rst:4
 msgid "前文回顾：:doc:`item_group`"
-msgstr ""
+msgstr "Previous Review: :doc:`item_group`"
 
 #: ../../source/tutorials/group_advanced_usage.rst:7
 msgid "物件的批量复制"
-msgstr ""
+msgstr "Batch Copying of Items"
 
 #: ../../source/tutorials/group_advanced_usage.rst:9
 msgid ""
-"举个例子，对于一个圆形物件 ``Circle()``，我们可以在其后面使用 ``* 数量`` 表示 “复制出指定数量的圆形，放到一个 "
-":class:`~.Group` 中”："
+"举个例子，对于一个圆形物件 ``Circle()``，我们可以在其后面使用 ``* 数量`` 表示 "复制出指定数量的圆形，放到一个 "
+":class:`~.Group` 中"："
 msgstr ""
+"For example, for a circular item ``Circle()``, we can use ``* number`` after "
+"it to mean \"copy the specified number of circles and put them in a "
+":class:`~.Group`\":"
 
 #: ../../source/tutorials/group_advanced_usage.rst:21
 msgid ""
@@ -43,42 +46,55 @@ msgid ""
 ":meth:`~.Cmpt_Points.arrange` 或是 :meth:`~.Cmpt_Points.arrange_in_grid` "
 "会是比较方便的做法。"
 msgstr ""
+"Copied items will all maintain the same properties and state, so they will "
+"overlap. If you want them arranged, using :meth:`~.Cmpt_Points.arrange` or "
+":meth:`~.Cmpt_Points.arrange_in_grid` would be convenient approaches."
 
 #: ../../source/tutorials/group_advanced_usage.rst:24
 msgid "以下是另一个示例："
-msgstr ""
+msgstr "Here is another example:"
 
 #: ../../source/tutorials/group_advanced_usage.rst:40
 msgid "物件组的进阶索引"
-msgstr ""
+msgstr "Advanced Indexing of Item Groups"
 
 #: ../../source/tutorials/group_advanced_usage.rst:42
 msgid "我们已经知道索引的基础用法，可以使用下标索引子物件，或是使用切片得到一组子物件："
 msgstr ""
+"We already know the basic usage of indexing. We can use subscript to index "
+"child items, or use slicing to get a group of child items:"
 
 #: ../../source/tutorials/group_advanced_usage.rst:58
 msgid "除了这两种基础方法，你还可以通过以下方式："
-msgstr ""
+msgstr "In addition to these two basic methods, you can also use the following:"
 
 #: ../../source/tutorials/group_advanced_usage.rst:15
 msgid "这里使用多个索引 ``[1, 3, 6, 7]``，将这些子物件设置为红色"
 msgstr ""
+"Here multiple indices ``[1, 3, 6, 7]`` are used to set these child items to red"
 
 #: ../../source/tutorials/group_advanced_usage.rst:15
 msgid "这里使用布尔索引 ``[True, False, True, True]``，即为按照顺序，将对应位置为 ``True`` 的子物件设置为蓝色"
 msgstr ""
+"Here boolean indexing ``[True, False, True, True]`` is used, i.e., in order, "
+"set child items at positions corresponding to ``True`` to blue"
 
 #: ../../source/tutorials/group_advanced_usage.rst:99
 msgid "后代物件的遍历"
-msgstr ""
+msgstr "Traversing Descendant Items"
 
 #: ../../source/tutorials/group_advanced_usage.rst:101
 msgid ""
 "除了使用 :meth:`~.Relation.descendants` 得到所有后代物件，还可以使用 "
 ":meth:`~.Relation.walk_descendants` 来指定获得什么类型的后代物件："
 msgstr ""
+"In addition to using :meth:`~.Relation.descendants` to get all descendant "
+"items, you can also use :meth:`~.Relation.walk_descendants` to specify what "
+"type of descendant items to get:"
 
 #: ../../source/tutorials/group_advanced_usage.rst:121
 msgid "在这个例子中，:class:`~.Triangle` 派生自 :class:`~.RegularPolygon`，所以它也被选中了"
 msgstr ""
+"In this example, :class:`~.Triangle` is derived from :class:`~.RegularPolygon`, "
+"so it is also selected"
 

@@ -21,189 +21,218 @@ msgstr ""
 
 #: ../../source/tutorials/config_system.rst:4
 msgid "配置系统"
-msgstr ""
+msgstr "Configuration System"
 
 #: ../../source/tutorials/config_system.rst:6
 msgid "配置系统的功能围绕 :class:`~.Config` 展开。"
-msgstr ""
+msgstr "The configuration system's functionality revolves around :class:`~.Config`."
 
 #: ../../source/tutorials/config_system.rst:9
 msgid "常用配置"
-msgstr ""
+msgstr "Common Configurations"
 
 #: ../../source/tutorials/config_system.rst:11
 msgid ":class:`~.Config` 提供了若干可配置项，包括但不限于："
-msgstr ""
+msgstr ":class:`~.Config` provides several configurable options, including but not limited to:"
 
 #: ../../source/tutorials/config_system.rst:13
 msgid "``preview_fps``: 预览界面的帧率"
-msgstr ""
+msgstr "``preview_fps``: Frame rate of the preview interface"
 
 #: ../../source/tutorials/config_system.rst:14
 msgid "``fps``: 导出视频的帧率"
-msgstr ""
+msgstr "``fps``: Frame rate of exported videos"
 
 #: ../../source/tutorials/config_system.rst:18
 msgid ""
 "预览界面的帧率 ``preview_fps`` 和导出视频的帧率 ``fps`` 是两个不同的值， "
-"这是考虑到部分用户可能会有“在预览时降低帧率提高渲染效率，在导出时提高帧率以获得更流畅的视频”的需求。"
+"这是考虑到部分用户可能会有"在预览时降低帧率提高渲染效率，在导出时提高帧率以获得更流畅的视频"的需求。"
 msgstr ""
+"The frame rate ``preview_fps`` of the preview interface and the frame rate "
+"``fps`` of exported videos are two different values. This is to accommodate "
+"users who may want to lower the frame rate during preview to improve "
+"rendering efficiency, and increase the frame rate during export to get "
+"smoother videos."
 
 #: ../../source/tutorials/config_system.rst:21
-msgid "顺便一提，为了在预览时提高渲染效率，还有一种策略是打开窗口左上角“功能”菜单中的“跳帧”功能。"
+msgid "顺便一提，为了在预览时提高渲染效率，还有一种策略是打开窗口左上角"功能"菜单中的"跳帧"功能。"
 msgstr ""
+"By the way, to improve rendering efficiency during preview, another strategy "
+"is to enable the \"frame skipping\" feature in the \"Function\" menu at the "
+"top left corner of the window."
 
 #: ../../source/tutorials/config_system.rst:23
 msgid "``background_color``: 画面的背景颜色"
-msgstr ""
+msgstr "``background_color``: Background color of the scene"
 
 #: ../../source/tutorials/config_system.rst:27
 msgid "背景颜色在设置时不能使用类似 ``background_color='#RRGGBB'`` 的形式，应使用"
-msgstr ""
+msgstr "When setting the background color, you cannot use forms like ``background_color='#RRGGBB'``, you should use"
 
 #: ../../source/tutorials/config_system.rst:29
 msgid "``background_color=Color('#RRGGBB')``"
-msgstr ""
+msgstr "``background_color=Color('#RRGGBB')``"
 
 #: ../../source/tutorials/config_system.rst:31
 msgid "``background_color=Color(BLUE)``"
-msgstr ""
+msgstr "``background_color=Color(BLUE)``"
 
 #: ../../source/tutorials/config_system.rst:33
 msgid "等形式"
-msgstr ""
+msgstr "and similar forms"
 
 #: ../../source/tutorials/config_system.rst:35
 msgid "``font``: :class:`~.Text` 类所使用的默认字体"
-msgstr ""
+msgstr "``font``: Default font used by the :class:`~.Text` class"
 
 #: ../../source/tutorials/config_system.rst:37
 msgid ""
 "既可以使用单个字符串 ``'Consolas'``，也可以使用一个列表来提供多个备选字体 ``['Consolas', 'Noto Serif "
 "CJK SC']``"
 msgstr ""
+"You can use either a single string ``'Consolas'`` or a list to provide "
+"multiple fallback fonts ``['Consolas', 'Noto Serif CJK SC']``"
 
 #: ../../source/tutorials/config_system.rst:39
 msgid "``output_dir``: 输出路径，有两种格式："
-msgstr ""
+msgstr "``output_dir``: Output path, with two formats:"
 
 #: ../../source/tutorials/config_system.rst:41
 msgid "不以 ``:`` 符号开头时，表示相对于工作目录的路径，例如 ``videos``"
-msgstr ""
+msgstr "When not starting with the ``:`` symbol, it represents a path relative to the working directory, e.g., ``videos``"
 
 #: ../../source/tutorials/config_system.rst:43
 msgid "使用场景侧重于在有复杂文件结构时，将输出文件统一放到工作目录下的 ``videos`` 文件夹"
-msgstr ""
+msgstr "Use case focuses on placing output files uniformly in the ``videos`` folder under the working directory when there is a complex file structure"
 
 #: ../../source/tutorials/config_system.rst:45
 msgid "以 ``:`` 符号开头时，表示相对于 Timeline 所在代码文件的路径，例如 ``:/videos``"
-msgstr ""
+msgstr "When starting with the ``:`` symbol, it represents a path relative to the code file where Timeline is located, e.g., ``:/videos``"
 
 #: ../../source/tutorials/config_system.rst:47
 msgid "使用场景侧重于在有复杂文件结构时，将输出文件放到每个代码文件附近单独的位置"
-msgstr ""
+msgstr "Use case focuses on placing output files in separate locations near each code file when there is a complex file structure"
 
 #: ../../source/tutorials/config_system.rst:49
 msgid "对于更多的配置项可以参考 :class:`~.Config` 的文档"
-msgstr ""
+msgstr "For more configuration options, refer to the documentation of :class:`~.Config`"
 
 #: ../../source/tutorials/config_system.rst:52
 msgid "设定配置 - 三种方法"
-msgstr ""
+msgstr "Setting Configuration - Three Methods"
 
 #: ../../source/tutorials/config_system.rst:54
 msgid "了解了上面这些配置，我们也要了解如何设置它们。"
-msgstr ""
+msgstr "Now that we understand these configurations, we also need to know how to set them."
 
 #: ../../source/tutorials/config_system.rst:57
 msgid "方法一 - 时间轴配置"
-msgstr ""
+msgstr "Method One - Timeline Configuration"
 
 #: ../../source/tutorials/config_system.rst:59
 msgid "最常用的做法是，将配置信息和你继承的 :class:`~.Timeline` 写在一起，例如："
-msgstr ""
+msgstr "The most common approach is to write the configuration together with your inherited :class:`~.Timeline`, for example:"
 
 #: ../../source/tutorials/config_system.rst:73
 msgid "这样就可以更改 ``YourTimeline`` 在运行时的配置，调整了帧率和背景颜色。"
-msgstr ""
+msgstr "This way, you can change the configuration of ``YourTimeline`` at runtime, adjusting the frame rate and background color."
 
 #: ../../source/tutorials/config_system.rst:75
 msgid "并且，和时间轴类写在一起的配置信息，也支持继承和覆盖："
-msgstr ""
+msgstr "Moreover, configuration information written together with the Timeline class also supports inheritance and overriding:"
 
 #: ../../source/tutorials/config_system.rst:97
 msgid ""
 "在这个例子中，子类 ``YourTimeline`` 覆盖了父类的 ``output_dir``，其余配置保留 "
 "``AwesomeTemplate`` 中的设置，这在创建模板以及覆盖模板选项时比较实用。"
 msgstr ""
+"In this example, the subclass ``YourTimeline`` overrides the parent's "
+"``output_dir``, while the remaining configurations retain the settings from "
+"``AwesomeTemplate``, which is useful when creating templates and overriding "
+"template options."
 
 #: ../../source/tutorials/config_system.rst:100
 msgid "方法二 - 全局配置"
-msgstr ""
+msgstr "Method Two - Global Configuration"
 
 #: ../../source/tutorials/config_system.rst:102
 msgid "在使用命令行参数时，使用 ``-c 配置名 值`` 可以修改全局配置，设定的全局配置会覆盖其它配置。"
-msgstr ""
+msgstr "When using command-line arguments, using ``-c config_name value`` can modify global configuration, and the set global configuration will override other configurations."
 
 #: ../../source/tutorials/config_system.rst:104
 msgid ""
 "例如 ``janim write your_file.py YourTimeline -c fps 120`` 可以将本次执行时的渲染帧率设置为 "
 "120。"
 msgstr ""
+"For example, ``janim write your_file.py YourTimeline -c fps 120`` can set "
+"the rendering frame rate for this execution to 120."
 
 #: ../../source/tutorials/config_system.rst:106
 msgid "也可以同时修改多个配置项，例如："
-msgstr ""
+msgstr "You can also modify multiple configuration items at the same time, for example:"
 
 #: ../../source/tutorials/config_system.rst:112
 msgid "这个命令会将动画以 120 的帧率输出到 ``custom_dir`` 这个指定的文件夹中。"
-msgstr ""
+msgstr "This command will output the animation at 120 fps to the specified folder ``custom_dir``."
 
 #: ../../source/tutorials/config_system.rst:115
 msgid "方法三 - 局部配置"
-msgstr ""
+msgstr "Method Three - Local Configuration"
 
 #: ../../source/tutorials/config_system.rst:117
 msgid "局部配置，指的是只在代码块的一部分应用特定的配置，例如只想在某一段代码上设置特别的字体："
-msgstr ""
+msgstr "Local configuration refers to applying specific configuration only to part of a code block, for example, if you only want to set a special font on a certain segment of code:"
 
 #: ../../source/tutorials/config_system.rst:133
 msgid "也就是说，使用 ``with Config(key=value):`` 可以使其所包含的代码块在指定的配置下执行内容，而不影响到外部代码块的配置。"
-msgstr ""
+msgstr "That is, using ``with Config(key=value):`` allows the code block it contains to execute under the specified configuration without affecting the configuration of external code blocks."
 
 #: ../../source/tutorials/config_system.rst:137
 msgid "在上面的这个例子中，其实可以使用"
-msgstr ""
+msgstr "In the above example, you can actually use"
 
 #: ../../source/tutorials/config_system.rst:143
 msgid ""
 "来设置 ``txt2`` 的字体，而不必使用 ``with Config(font='Noto Serif CJK "
 "SC'):``，这里只是作为一个示例用于演示局部配置的用法。"
 msgstr ""
+"to set the font of ``txt2``, without having to use ``with Config(font='Noto "
+"Serif CJK SC'):``, this is just an example to demonstrate the usage of local "
+"configuration."
 
 #: ../../source/tutorials/config_system.rst:146
 msgid "获取配置"
-msgstr ""
+msgstr "Getting Configuration"
 
 #: ../../source/tutorials/config_system.rst:148
 msgid ""
 "这些配置在更改后一般是用来改变 JAnim 进行渲染时的一些行为，如果你需要手动获取配置项具体的值，你可以使用 "
 "``Config.get.xxx`` 的形式，例如："
 msgstr ""
+"These configurations are generally used to change some behaviors of JAnim "
+"during rendering after modification. If you need to manually get the "
+"specific value of a configuration item, you can use the form ``Config.get.xxx``, "
+"for example:"
 
 #: ../../source/tutorials/config_system.rst:166
 msgid "其中没有设置的属性则采用默认设置 :py:obj:`~.default_config`"
-msgstr ""
+msgstr "Attributes that are not set will use the default settings :py:obj:`~.default_config`"
 
 #: ../../source/tutorials/config_system.rst:170
 msgid ""
 "在这个例子中，我们输出了配置项 ``preview_fps`` ``fps`` ``frame_width`` ``frame_height`` "
 "的值。"
 msgstr ""
+"In this example, we output the values of configuration items ``preview_fps`` "
+"``fps`` ``frame_width`` ``frame_height``."
 
 #: ../../source/tutorials/config_system.rst:172
 msgid ""
 "但后面两行的涉及的 ``left_side`` ``right_side`` ``bottom`` ``top`` 其实并不是可以直接配置的选项，"
-" 而是由视框大小 ``frame_width`` 和 ``frame_height`` 这一组配置所决定的，这里相当于提供了一种“衍生功能”。"
+" 而是由视框大小 ``frame_width`` 和 ``frame_height`` 这一组配置所决定的，这里相当于提供了一种"衍生功能"。"
 msgstr ""
+"However, the ``left_side`` ``right_side`` ``bottom`` ``top`` involved in the "
+"last two lines are not directly configurable options, but are determined by "
+"the viewport size configurations ``frame_width`` and ``frame_height``. This "
+"is equivalent to providing a kind of \"derived functionality\"."
 

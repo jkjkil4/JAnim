@@ -21,57 +21,78 @@ msgstr ""
 
 #: ../../source/installation.rst:2
 msgid "安装"
-msgstr ""
+msgstr "Installation"
 
 #: ../../source/installation.rst:6
 msgid ""
 "JAnim 是一个动画库，运行在 Python 3.12 及更高版本上。用 JAnim 制作动画的过程需要编写 Python "
 "程序，因此要求使用者对编程有一定的了解"
 msgstr ""
+"JAnim is an animation library that runs on Python 3.12 and higher. Creating "
+"animations with JAnim requires writing Python programs, so users need to "
+"have some understanding of programming"
 
 #: ../../source/installation.rst:9
 msgid "步骤"
-msgstr ""
+msgstr "Steps"
 
 #: ../../source/installation.rst:12
 msgid "安装 JAnim"
-msgstr ""
+msgstr "Installing JAnim"
 
 #: ../../source/installation.rst:14
 msgid "安装 JAnim 时，外部依赖项并不是必须的，所以我们可以直接安装 JAnim，再按需安装依赖项。"
 msgstr ""
+"When installing JAnim, external dependencies are not required, so we can "
+"install JAnim directly and install dependencies as needed."
 
 #: ../../source/installation.rst:16
 msgid "熟悉 Python 库的开发者可以自行选用合适的方法安装。整体上来说有两种安装思路，各有优势："
 msgstr ""
+"Developers familiar with Python libraries can choose appropriate installation "
+"methods. Overall, there are two installation approaches, each with advantages:"
 
 #: ../../source/installation.rst:18
 msgid "安装在 **全局** 的好处是所有项目都可以调用同一套库，可以直接调用命令而不需要先切换环境和目录；"
 msgstr ""
+"Installing **globally** allows all projects to use the same library, and "
+"commands can be called directly without switching environments and "
+"directories first;"
 
 #: ../../source/installation.rst:20
 msgid "安装在 **虚拟环境** 的好处是做到项目间的依赖隔离，并且不会污染全局的指令。"
 msgstr ""
+"Installing in a **virtual environment** provides dependency isolation between "
+"projects and does not pollute global commands."
 
 #: ../../source/installation.rst:22
 msgid "由于在此之后的操作或多或少要涉及到命令行操作，希望你对命令行有一定的了解"
 msgstr ""
+"Since subsequent operations will more or less involve command-line "
+"operations, we hope you have some understanding of the command line"
 
 #: ../../source/installation.rst:31
 msgid ""
-"这里我们简单介绍一下打开命令行的方式，以后不再指出。在 Windows 上推荐使用自带的 Powershell， ❶简单的打开方式是 “Win "
-"徽标键 + R” 打开 “运行” 窗口，输入 ``powershell`` （Powershell 7.x 需要输入 ``pwsh``）， "
-"❷也可以在开始菜单中输入“powershell”然后回车， 或者❸在 VS Code 中按下 ``ctrl + ```。在 macOS / "
-"Linux 上一般是右键选择“终端”或者找到自带的终端图标。"
+"这里我们简单介绍一下打开命令行的方式，以后不再指出。在 Windows 上推荐使用自带的 Powershell， ❶简单的打开方式是 "Win "
+"徽标键 + R" 打开 "运行" 窗口，输入 ``powershell`` （Powershell 7.x 需要输入 ``pwsh``）， "
+"❷也可以在开始菜单中输入"powershell"然后回车， 或者❸在 VS Code 中按下 ``ctrl + ```。在 macOS / "
+"Linux 上一般是右键选择"终端"或者找到自带的终端图标。"
 msgstr ""
+"Here we briefly introduce how to open the command line, and will not mention "
+"it again later. On Windows, it is recommended to use the built-in "
+"PowerShell. ❶ A simple way to open it is to press "Win logo key + R" to "
+"open the "Run" window, enter ``powershell`` (PowerShell 7.x requires "
+"entering ``pwsh``), ❷ you can also enter "powershell" in the Start menu "
+"and press Enter, or ❸ press ``ctrl + ``` in VS Code. On macOS / Linux, "
+"generally right-click to select "Terminal" or find the built-in terminal icon."
 
 #: ../../source/installation.rst:41
 msgid "以下简单介绍几种常见的安装方法："
-msgstr ""
+msgstr "The following briefly introduces several common installation methods:"
 
 #: ../../source/installation.rst:45
 msgid "uv + 虚拟环境"
-msgstr ""
+msgstr "uv + Virtual Environment"
 
 #: ../../source/installation.rst:47 ../../source/installation.rst:73
 msgid ""
@@ -79,6 +100,11 @@ msgid ""
 "项目管理的工具链，目前已经相对完善，对于需要频繁使用 Python "
 "多版本和多依赖库的开发者来说很方便。官方提供了很多安装方法，可以用上文提到的包管理工具安装，也可以独立安装。"
 msgstr ""
+"`uv <https://github.com/astral-sh/uv>`_ is a toolchain for Python project "
+"management, currently relatively mature, and convenient for developers who "
+"frequently use multiple Python versions and multiple dependency libraries. "
+"The official provides many installation methods, which can be installed using "
+"the package managers mentioned above, or installed independently."
 
 #: ../../source/installation.rst:51 ../../source/installation.rst:77
 msgid ""
@@ -86,12 +112,20 @@ msgid ""
 "<https://docs.manim.community/en/stable/installation/uv.html>`_，命令行安装 "
 "``uv`` 以及进一步新建项目的命令都可以参考其中相应段落"
 msgstr ""
+"This entry borrows from the `ManimCE project's installation documentation "
+"<https://docs.manim.community/en/stable/installation/uv.html>`_, command-line "
+"installation of ``uv`` and further commands for creating new projects can "
+"refer to the corresponding paragraphs therein"
 
 #: ../../source/installation.rst:53 ../../source/installation.rst:79
 msgid ""
-"如果你对使用 ``uv`` 还不熟悉并略有困惑，可以 **点击上面分页中的 “Python + 全局” "
+"如果你对使用 ``uv`` 还不熟悉并略有困惑，可以 **点击上面分页中的 "Python + 全局" "
 "切换到更为经典的安装方式**，这样你可能会更容易理解，但我们仍然推荐使用 ``uv`` 进行管理"
 msgstr ""
+"If you are not yet familiar with using ``uv`` and are slightly confused, "
+"you can **click on the "Python + Global" tab above to switch to a more "
+"classic installation method**, which you may find easier to understand, but "
+"we still recommend using ``uv`` for management"
 
 #: ../../source/installation.rst:55
 msgid ""

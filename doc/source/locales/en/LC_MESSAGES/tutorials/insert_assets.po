@@ -21,57 +21,77 @@ msgstr ""
 
 #: ../../source/tutorials/insert_assets.rst:2
 msgid "插入外部素材"
-msgstr ""
+msgstr "Inserting External Assets"
 
 #: ../../source/tutorials/insert_assets.rst:8
 msgid ""
 "JAnim 支持通过 :class:`~.ImageItem` 、 :class:`~.VideoFrame` 和 "
 ":class:`~.Video` 插入图片或视频，也可以使用 :class:`~.SVGItem` 解析 SVG 矢量图。"
 msgstr ""
+"JAnim supports inserting images or videos through :class:`~.ImageItem`, "
+":class:`~.VideoFrame`, and :class:`~.Video`, and can also use "
+":class:`~.SVGItem` to parse SVG vector graphics."
 
 #: ../../source/tutorials/insert_assets.rst:11
 msgid "插入图像/截取视频帧"
-msgstr ""
+msgstr "Inserting Images/Extracting Video Frames"
 
 #: ../../source/tutorials/insert_assets.rst:13
 msgid ""
 ":class:`~.ImageItem` 插入的图片默认以原始尺寸转换到 JAnim 坐标系中显示，可以传入 ``width`` 和 "
 "``height`` 参数指定显示尺寸。"
 msgstr ""
+":class:`~.ImageItem` inserted images are displayed in the JAnim coordinate "
+"system at their original size by default. You can pass ``width`` and "
+"``height`` parameters to specify the display size."
 
 #: ../../source/tutorials/insert_assets.rst:15
 msgid ""
 "``width`` 和 ``height`` 参数表示在 JAnim "
 "坐标系中的尺寸，如果只指定其中一个参数，另一个参数会按照图片的原始宽高比自动计算，亦即，会保持图片的宽高比不变。"
 msgstr ""
+"The ``width`` and ``height`` parameters represent sizes in the JAnim "
+"coordinate system. If only one parameter is specified, the other will be "
+"automatically calculated according to the image's original aspect ratio, i.e., "
+"the image's aspect ratio will be maintained."
 
 #: ../../source/tutorials/insert_assets.rst:17
 msgid ":class:`~.VideoFrame` 会截取视频在指定时刻的画面，作为图像插入，其它参数与 :class:`~.ImageItem` 一致。"
 msgstr ""
+":class:`~.VideoFrame` extracts the frame at a specified time from a video "
+"and inserts it as an image. Other parameters are consistent with "
+":class:`~.ImageItem`."
 
 #: ../../source/tutorials/insert_assets.rst:20
 msgid "插入视频"
-msgstr ""
+msgstr "Inserting Videos"
 
 #: ../../source/tutorials/insert_assets.rst:22
 msgid "可使用 :class:`~.Video` 插入视频，参数设置与 :class:`~.ImageItem` 基本一致。"
 msgstr ""
+"You can use :class:`~.Video` to insert videos. Parameter settings are "
+"basically consistent with :class:`~.ImageItem`."
 
 #: ../../source/tutorials/insert_assets.rst:24
 msgid ""
 "还支持使用 ``loop`` 参数控制是否循环播放（对于 ``.gif`` 格式会比较实用），使用 ``frame_components=4`` "
 "插入带透明通道的视频（如 ``.mov`` 视频）。"
 msgstr ""
+"It also supports using the ``loop`` parameter to control whether to loop "
+"(useful for ``.gif`` format), and using ``frame_components=4`` to insert "
+"videos with alpha channels (such as ``.mov`` videos)."
 
 #: ../../source/tutorials/insert_assets.rst:26
 msgid "具体用法请参考 :class:`~.Video` 文档。"
-msgstr ""
+msgstr "For specific usage, refer to the :class:`~.Video` documentation."
 
 #: ../../source/tutorials/insert_assets.rst:29
 msgid "插入 SVG 矢量图"
-msgstr ""
+msgstr "Inserting SVG Vector Graphics"
 
 #: ../../source/tutorials/insert_assets.rst:31
 msgid ":class:`~.SVGItem` 可解析 SVG 矢量图，将其转化为 JAnim 物件组。"
 msgstr ""
+":class:`~.SVGItem` can parse SVG vector graphics and convert them into JAnim "
+"item groups."
 

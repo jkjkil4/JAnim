@@ -21,47 +21,62 @@ msgstr ""
 
 #: ../../source/tutorials/sub_timeline.rst:2
 msgid "子时间轴机制"
-msgstr ""
+msgstr "Sub-Timeline Mechanism"
 
 #: ../../source/tutorials/sub_timeline.rst:4
 msgid "JAnim 引入了子时间轴机制，使得在主时间轴中可以嵌套子时间轴，从而实现复杂逻辑的分离，以及更好的可复用性。"
 msgstr ""
+"JAnim introduces a sub-timeline mechanism, allowing sub-timelines to be "
+"nested within the main timeline, thereby achieving separation of complex "
+"logic and better reusability."
 
 #: ../../source/tutorials/sub_timeline.rst:74
 msgid ":meth:`~.BuiltTimeline.to_item`"
-msgstr ""
+msgstr ":meth:`~.BuiltTimeline.to_item`"
 
 #: ../../source/tutorials/sub_timeline.rst:63
 msgid ""
 "在上面这个例子中，我们向主时间轴 ``MainTimeline`` 中插入了两个子时间轴 ``DrawingStarInNumberPlane``"
 " 和 ``Texts`` 。"
 msgstr ""
+"In the above example, we inserted two sub-timelines ``DrawingStarInNumberPlane`` "
+"and ``Texts`` into the main timeline ``MainTimeline``."
 
 #: ../../source/tutorials/sub_timeline.rst:65
 msgid "子时间轴的引入使得每个子时间轴都可以独立地控制自己的动画，我们可以在主时间轴中更灵活地组织和管理动画逻辑。"
 msgstr ""
+"The introduction of sub-timelines allows each sub-timeline to independently "
+"control its own animations, and we can more flexibly organize and manage "
+"animation logic in the main timeline."
 
 #: ../../source/tutorials/sub_timeline.rst:69
 msgid ""
 "上面这个例子中，文字不随另一个时间轴的动画而移动，这个效果也可以使用 :meth:`~.Item.fix_in_frame` "
 "方法来实现，你可以另行参阅。"
 msgstr ""
+"In the above example, the text does not move with the animation of another "
+"timeline. This effect can also be achieved using the :meth:`~.Item.fix_in_frame` "
+"method, which you can refer to separately."
 
 #: ../../source/tutorials/sub_timeline.rst:71
 msgid "并且子时间轴在主时间轴中作为一个整体物件，可以更加方便地传入 :class:`~.FrameEffect` 及其派生类应用复杂的视觉效果："
 msgstr ""
+"And sub-timelines act as a whole item in the main timeline, making it more "
+"convenient to pass them to :class:`~.FrameEffect` and its derived classes to "
+"apply complex visual effects:"
 
 #: ../../source/tutorials/sub_timeline.rst:55
 msgid ":class:`~.SimpleFrameEffect` :class:`~.TransformableFrameClip`"
-msgstr ""
+msgstr ":class:`~.SimpleFrameEffect` :class:`~.TransformableFrameClip`"
 
 #: ../../source/tutorials/sub_timeline.rst:111
 msgid "并且，子 Timeline 机制让 Timeline 有了极高的可复用性："
-msgstr ""
+msgstr "Moreover, the sub-Timeline mechanism gives Timeline extremely high reusability:"
 
 #: ../../source/tutorials/sub_timeline.rst:177
 msgid "有待完善关于 :meth:`~.BuiltTimeline.to_playback_control_item` 的说明"
 msgstr ""
+"Documentation needs to be improved regarding :meth:`~.BuiltTimeline.to_playback_control_item`"
 
 #~ msgid "文档有待完善"
 #~ msgstr ""
