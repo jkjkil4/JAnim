@@ -184,7 +184,7 @@ msgstr "For items, there is an important concept called \"components\"."
 msgid "每种物件都包含若干的组件，例如，几何图形其实是由“轮廓的描点”所表示的，"
 msgstr ""
 "Each item contains several components, for example, geometric shapes are "
-"represented by “outline points”."
+"represented by \"outline points\"."
 
 #: ../../source/get_started.rst
 msgid "因此，对于几何图形物件，这些是它的组件："
@@ -388,11 +388,11 @@ msgstr ""
 
 #: ../../source/get_started.rst:282
 msgid ""
-"因此，你可以在修改并保存代码后，点击窗口左上角“工具”中的“重新构建”（快捷键是 ``Ctrl+L``）， "
+"因此，你可以在修改并保存代码后，点击窗口左上角“文件”中的“重新构建”（快捷键是 ``Ctrl+L``）， "
 "这样就会更新动画内容，使其和更改后的代码一致"
 msgstr ""
 "Therefore, after modifying and saving the code, you can click “Rebuild” in "
-"the “Tools” menu in the top left corner of the window (shortcut is "
+"the “Files” menu in the top left corner of the window (shortcut is "
 "``Ctrl+L``), which will update the animation content to match the modified "
 "code."
 
@@ -437,8 +437,8 @@ msgid ""
 "Code 右下角的状态栏中显示 ``已连接到界面端 xxxxx``"
 msgstr ""
 "First, in VS Code, by default, you need to press ``Ctrl+J Ctrl+C`` (press"
-" separately, these are combo keys), if successful, it will show ``Connected "
-"to interface xxxxx`` in the status bar in the lower right corner of VS Code."
+" separately, these are combo keys), if successful, it will show ``已连接到界面端 xxxxx``"
+" in the status bar in the lower right corner of VS Code."
 
 #: ../../source/get_started.rst:308
 msgid "接着，对代码进行更改，保存后，就会立即更新预览的内容"

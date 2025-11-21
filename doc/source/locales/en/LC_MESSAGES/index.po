@@ -151,7 +151,7 @@ msgstr "Well, this itself is made with JAnim"
 
 #: ../../source/examples/_slide_examples_options.rst:80
 msgid "动画效果使用 JAnim 制作，“信息量”可视化结果是插入的现成图片"
-msgstr "Animation effects are made with JAnim, the \"information content\" visualization result is an inserted ready-made image"
+msgstr "Animation effects are made with JAnim, the \"information quantity\" visualization result is an inserted ready-made image"
 
 #: ../../source/index.rst:29
 msgid "自动化解析与生成"
@@ -159,7 +159,7 @@ msgstr "Automated Parsing and Generation"
 
 #: ../../source/examples/_auto_examples_options.rst:27
 msgid "画面以及音频可视化"
-msgstr "Visual and audio visualization"
+msgstr "Visualization of frames and audio"
 
 #: ../../source/index.rst:37
 msgid "视频叠加动画"
@@ -167,63 +167,63 @@ msgstr "Video Overlay Animations"
 
 #: ../../source/examples/_note_examples_options.rst:9
 msgid "除了 00:00 - 01:25 的“类 Slide 演示”之外，作为视频叠加动画出现的区段："
-msgstr "Sections appearing as video overlay animations, excluding the \"Slide-style demonstration\" from 00:00 - 01:25:"
+msgstr "Segments appearing as video overlay animations, excluding the \"Slide-style Demonstration\" from 00:00 - 01:25:"
 
 #: ../../source/examples/_note_examples_options.rst:11
 msgid "03\\:18 - 03\\:31 : 演示了 ``create_window`` 函数的参数含义"
-msgstr "03\\:18 - 03\\:31 : Demonstrates the meaning of ``create_window`` function parameters"
+msgstr "03:18 - 03:31: Demonstrates the parameter meanings of the ``create_window`` function"
 
 #: ../../source/examples/_note_examples_options.rst:12
 msgid "03\\:57 - 04\\:48 : 演示了 ``viewport`` 的概念"
-msgstr "03\\:57 - 04\\:48 : Demonstrates the concept of ``viewport``"
+msgstr "03:57 - 04:48: Demonstrates the concept of ``viewport``"
 
 #: ../../source/examples/_note_examples_options.rst:21
 msgid "除了 00:00 - 00:25 的“类 Slide 演示”之外，作为视频叠加动画出现的区段："
-msgstr "Sections appearing as video overlay animations, excluding the \"Slide-style demonstration\" from 00:00 - 00:25:"
+msgstr "Segments appearing as video overlay animations, excluding the \"Slide-style Demonstration\" from 00:00 - 00:25:"
 
 #: ../../source/examples/_note_examples_options.rst:23
 msgid "00\\:50 - 01\\:02 : 演示了 ``get_key`` 的用法"
-msgstr "00\\:50 - 01\\:02 : Demonstrates the usage of ``get_key``"
+msgstr "00:50 - 01:02: Demonstrates the usage of ``get_key``"
 
 #: ../../source/examples/_note_examples_options.rst:24
 msgid "01\\:10 - 01\\:17 : 对“渲染循环”部分代码的强调"
-msgstr "01\\:10 - 01\\:17 : Emphasis on the \"rendering loop\" code section"
+msgstr "01:10 - 01:17: Emphasis on the \"rendering loop\" code section"
 
 #: ../../source/examples/_note_examples_options.rst:25
 msgid "02\\:01 - 02\\:18 : 演示了 ``RGB`` 颜色的概念"
-msgstr "02\\:01 - 02\\:18 : Demonstrates the concept of ``RGB`` colors"
+msgstr "02:01 - 02:18: Demonstrates the concept of ``RGB`` colors"
 
 #: ../../source/examples/_note_examples_options.rst:34
 msgid "作为视频叠加动画出现的区段（由于区段太多，省略了一些无关紧要的部分）："
-msgstr "Sections appearing as video overlay animations (some less important parts are omitted due to too many sections):"
+msgstr "Segments appearing as video overlay animations (some less important parts are omitted due to too many segments):"
 
 #: ../../source/examples/_note_examples_options.rst:36
 msgid "00\\:58 - 01\\:12 : 演示了 ``img`` 的成员"
-msgstr "00\\:58 - 01\\:12 : Demonstrates the members of ``img``"
+msgstr "00:58 - 01:12: Demonstrates the members of ``img``"
 
 #: ../../source/examples/_note_examples_options.rst:37
 msgid "02\\:43 - 02\\:52 : 跟随光标编辑出现的备注说明"
-msgstr "02\\:43 - 02\\:52 : Notes that appear when following cursor editing"
+msgstr "02:43 - 02:52: Notes that appear when following cursor editing"
 
 #: ../../source/examples/_note_examples_options.rst:38
 msgid "02\\:52 - 02\\:57 : 示意了颜色采样"
-msgstr "02\\:52 - 02\\:57 : Illustrates color sampling"
+msgstr "02:52 - 02:57: Illustrates color sampling"
 
 #: ../../source/examples/_note_examples_options.rst:39
 msgid "03\\:28 - 03\\:36 : 示意了采样的参数"
-msgstr "03\\:28 - 03\\:36 : Illustrates sampling parameters"
+msgstr "03:28 - 03:36: Illustrates sampling parameters"
 
 #: ../../source/examples/_note_examples_options.rst:40
 msgid "03\\:54 - 04\\:14 : 示意了绑定纹理"
-msgstr "03\\:54 - 04\\:14 : Illustrates texture binding"
+msgstr "03:54 - 04:14: Illustrates texture binding"
 
 #: ../../source/examples/_note_examples_options.rst:41
 msgid "06\\:04 - 06\\:22 : 演示了 ``mix`` 函数的颜色混合效果"
-msgstr "06\\:04 - 06\\:22 : Demonstrates the color blending effect of the ``mix`` function"
+msgstr "06:04 - 06:22: Demonstrates the color blending effect of the ``mix`` function"
 
 #: ../../source/examples/_note_examples_options.rst:42
 msgid "07\\:42 - 08\\:01 : 说明了纹理上下颠倒的原因"
-msgstr "07\\:42 - 08\\:01 : Explains why textures are flipped upside down"
+msgstr "07:42 - 08:01: Explains the reason for texture being upside down"
 
 #: ../../source/index.rst:52
 msgid ""
