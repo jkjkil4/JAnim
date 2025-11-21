@@ -21,7 +21,7 @@ msgstr ""
 
 #: ../../source/tutorials/updaters.rst:4
 msgid "Updater 的使用"
-msgstr "Usage of Updater"
+msgstr "Updater Usage"
 
 #: ../../source/tutorials/updaters.rst:6
 msgid ""

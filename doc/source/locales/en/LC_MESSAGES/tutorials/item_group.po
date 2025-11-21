@@ -21,7 +21,7 @@ msgstr ""
 
 #: ../../source/tutorials/item_group.rst:2
 msgid "物件组"
-msgstr "Item Groups"
+msgstr "Item Group"
 
 #: ../../source/tutorials/item_group.rst:4
 msgid "可以使用 :class:`~.Group` 将多个物件组合在一起，这样便可以依照整体的边界框进行整体位移、排列和对齐，以及设置属性与应用动画。"

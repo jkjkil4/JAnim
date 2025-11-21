@@ -21,7 +21,7 @@ msgstr ""
 
 #: ../../source/tutorials/group_advanced_usage.rst:2
 msgid "物件组进阶使用"
-msgstr "Advanced Usage of Item Groups"
+msgstr "Advanced Usage of Groups"
 
 #: ../../source/tutorials/group_advanced_usage.rst:4
 msgid "前文回顾：:doc:`item_group`"

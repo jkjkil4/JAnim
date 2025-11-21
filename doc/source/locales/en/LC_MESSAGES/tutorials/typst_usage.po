@@ -21,7 +21,7 @@ msgstr ""
 
 #: ../../source/tutorials/typst_usage.rst:4
 msgid "Typst 的使用"
-msgstr "Usage of Typst"
+msgstr "Typst Usage"
 
 #: ../../source/tutorials/typst_usage.rst:7
 msgid "简要介绍"
