@@ -21,93 +21,112 @@ msgstr ""
 
 #: ../../source/janim/components/rgbas.rst:2
 msgid "rgbas"
-msgstr ""
+msgstr "rgbas"
 
 #: janim.components.rgbas.Cmpt_Rgbas:1 of
 msgid ""
 "基类：:py:class:`~janim.components.component.Component`, "
 ":py:class:`~typing.Generic`"
 msgstr ""
+"Base class: :py:class:`~janim.components.component.Component`, "
+":py:class:`~typing.Generic`"
 
 #: janim.components.rgbas.Cmpt_Rgbas:1 of
 msgid "颜色组件"
-msgstr ""
+msgstr "Color component"
 
 #: janim.components.rgbas.Cmpt_Rgbas.format_rgbas:1 of
 msgid "将传入值转换为数值数组"
-msgstr ""
+msgstr "Convert the passed value to a numeric array"
 
 #: janim.components.rgbas.Cmpt_Rgbas.format_colors:1 of
 msgid ""
 "将 ``ColorArray`` （每个元素有可能是 字符串、``[r, g, b]`` ） 格式化为元素仅有 ``[r, g, b]`` "
 "的数值数组的格式"
 msgstr ""
+"Format ``ColorArray`` (each element may be a string or ``[r, g, b]``) into "
+"a numeric array format where elements are only ``[r, g, b]``"
 
 #: janim.components.rgbas.Cmpt_Rgbas.format_color:1 of
 msgid "将 字符串、``[r, g, b]`` 等统一为 ``[r, g, b]`` 数值数组的格式"
-msgstr ""
+msgstr "Unify strings, ``[r, g, b]``, etc. into ``[r, g, b]`` numeric array format"
 
 #: janim.components.rgbas.Cmpt_Rgbas.format_alphas:1 of
 msgid "将传入值转为数值数组"
-msgstr ""
+msgstr "Convert the passed value to a numeric array"
 
 #: janim.components.rgbas.Cmpt_Rgbas.set_rgbas:1 of
 msgid "直接设置 rgba 数据"
-msgstr ""
+msgstr "Directly set rgba data"
 
 #: janim.components.rgbas.Cmpt_Rgbas.set:1 of
 msgid ""
 "``colors`` 表示传入的 ``RGB`` 颜色数据，可以是单个颜色也可以颜色数组 （对于单个数据，支持 ``'#FF0000'`` "
 "``'red'`` ``[1, 0, 0.5]`` 的表示）"
 msgstr ""
+"``colors`` represents the ``RGB`` color data passed in, which can be a "
+"single color or a color array (for single data, supports formats like "
+"``'#FF0000'``, ``'red'``, ``[1, 0, 0.5]``)"
 
 #: janim.components.rgbas.Cmpt_Rgbas.set:3 of
 msgid "``alphas`` 表示传入的透明度数据，可以是单个数也可以是一个数组 （对于单个数据，``1`` 表示不透明，``0`` 表示完全透明）"
 msgstr ""
+"``alphas`` represents the transparency data passed in, which can be a "
+"single number or an array (for single data, ``1`` means opaque, ``0`` "
+"means fully transparent)"
 
 #: janim.components.rgbas.Cmpt_Rgbas.set:5 of
 msgid "默认情况下会将所有子物件也设置成指定的颜色，传入 ``root_only=True`` 可以只设置根物件的"
 msgstr ""
+"By default, all child items will also be set to the specified color; "
+"passing ``root_only=True`` will only set the root item's color"
 
 #: janim.components.rgbas.Cmpt_Rgbas.set:7 of
 msgid "特殊传参："
-msgstr ""
+msgstr "Special parameter passing:"
 
 #: janim.components.rgbas.Cmpt_Rgbas.set:9 of
 msgid ""
 "当 ``colors`` 为四分量 ``RGBA`` 颜色数据时， 则同时表示了 ``colors`` 和 ``alphas`` "
 "二者，因此不能再传入 ``alphas`` 参数"
 msgstr ""
+"When ``colors`` is four-component ``RGBA`` color data, it represents both "
+"``colors`` and ``alphas``, so the ``alphas`` parameter cannot be passed "
+"separately"
 
 #: janim.components.rgbas.Cmpt_Rgbas.clear:1 of
 msgid "将颜色数据重置为默认值"
-msgstr ""
+msgstr "Reset color data to default value"
 
 #: janim.components.rgbas.Cmpt_Rgbas.apart_alpha:1 of
 msgid "对每一个颜色数据应用 :func:`~.apart_alpha`"
-msgstr ""
+msgstr "Apply :func:`~.apart_alpha` to each color data"
 
 #: janim.components.rgbas.Cmpt_Rgbas.fade:1 of
 msgid "淡化颜色，``factor`` 是 0~1 的值，例如 0 没有效果，0.5 淡化一半，1 完全淡化（变得不可见）"
 msgstr ""
+"Fade color, ``factor`` is a value from 0~1, for example 0 has no effect, "
+"0.5 fades half, 1 completely fades (becomes invisible)"
 
 #: janim.components.rgbas.Cmpt_Rgbas.mix:1 of
 msgid "混合颜色，默认得到与 ``color`` 混合的中间色"
-msgstr ""
+msgstr "Mix colors, by default get the intermediate color mixed with ``color``"
 
 #: janim.components.rgbas.Cmpt_Rgbas.mix_alpha:1 of
 msgid "混合透明度，默认得到与 ``alpha`` 混合的中间色"
-msgstr ""
+msgstr "Mix transparency, by default get the intermediate color mixed with ``alpha``"
 
 #: janim.components.rgbas.merge_alpha:1 of
 msgid "计算透明度 ``alpha`` 在重叠 ``n`` 次混合后的透明度"
-msgstr ""
+msgstr "Calculate the transparency after ``alpha`` is overlapped and mixed ``n`` times"
 
 #: janim.components.rgbas.apart_alpha:1 of
 msgid "将透明度分离为 ``n`` 份，使得这 ``n`` 份混合后仍然表现为原来的透明度"
 msgstr ""
+"Separate transparency into ``n`` parts, so that when these ``n`` parts are "
+"mixed, they still appear as the original transparency"
 
 #: janim.components.rgbas.apart_alpha:3 of
 msgid "使得在对齐时产生的重复部分能够更好地渲染"
-msgstr ""
+msgstr "Enables better rendering of overlapping parts that occur during alignment"
 

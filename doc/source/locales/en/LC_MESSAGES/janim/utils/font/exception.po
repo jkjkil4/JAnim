@@ -21,9 +21,9 @@ msgstr ""
 
 #: ../../source/janim/utils/font/exception.rst:2
 msgid "exception"
-msgstr ""
+msgstr "exception"
 
 #: janim.utils.font.exception.FontException:1 of
 msgid "基类：:py:class:`object`"
-msgstr ""
+msgstr "Base class: :py:class:`object`"
 

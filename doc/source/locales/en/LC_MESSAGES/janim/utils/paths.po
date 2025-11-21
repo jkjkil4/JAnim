@@ -21,7 +21,7 @@ msgstr ""
 
 #: ../../source/janim/utils/paths.rst:2
 msgid "paths"
-msgstr ""
+msgstr "paths"
 
 #: ../../source/rst_utils/tip_of_manim.rst:1
 msgid "该部分代码来自 `3b1b/manim <https://github.com/3b1b/manim>`_，有待重构"
@@ -32,6 +32,8 @@ msgstr ""
 #: janim.utils.paths.get_path_func:1 of
 msgid "根据 ``path_arc`` ``path_arc_axis`` ``path_func`` ，建立 ``self.path_func``"
 msgstr ""
+"Build ``self.path_func`` based on ``path_arc``, ``path_arc_axis``, and "
+"``path_func``"
 
 #: janim.utils.paths.straight_path:1 of
 msgid ""
@@ -39,10 +41,15 @@ msgid ""
 " to determine how a set of points move to another set.  For instance, it "
 "should be a specific case of path_along_arc"
 msgstr ""
+"Same function as interpolate, but renamed to reflect intent of being used"
+" to determine how a set of points move to another set.  For instance, it "
+"should be a specific case of path_along_arc"
 
 #: janim.utils.paths.path_along_arc:1 of
 msgid ""
 "If vect is vector from start to end, [vect[:,1], -vect[:,0]] is "
 "perpendicular to vect in the left direction."
 msgstr ""
+"If vect is vector from start to end, [vect[:,1], -vect[:,0]] is "
+"perpendicular to vect in the left direction."
 

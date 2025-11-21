@@ -26,46 +26,55 @@ msgstr "transform"
 #: ../../source/janim/anims/transform.rst:6
 msgid "使用 :class:`~.Transform` 进行不同文字间的变换可能不会有足够好的效果，在使用时请多加斟酌"
 msgstr ""
+"Using :class:`~.Transform` for transformations between different texts may "
+"not produce sufficiently good results; please consider carefully when using it"
 
 #: janim.anims.transform.Transform:1 of
 msgid "基类：:py:class:`~janim.anims.animation.Animation`"
-msgstr "基类：:py:class:`~janim.anims.animation.Animation`"
+msgstr "Base class: :py:class:`~janim.anims.animation.Animation`"
 
 #: janim.anims.transform.Transform:1 of
 msgid "创建从 ``src_item`` 至 ``target_item`` 的插值动画"
-msgstr ""
+msgstr "Create an interpolation animation from ``src_item`` to ``target_item``"
 
 #: janim.anims.transform.Transform:3 of
 msgid "``path_arc`` 和 ``path_arc_axis`` 可以指定插值的圆弧路径的角度，若不传入则是直线"
 msgstr ""
+"``path_arc`` and ``path_arc_axis`` can specify the angle of the arc path "
+"for interpolation; if not provided, it will be a straight line"
 
 #: janim.anims.transform.Transform:4 of
 msgid "也可以直接传入 ``path_func`` 来指定路径方法"
-msgstr ""
+msgstr "You can also directly pass ``path_func`` to specify the path method"
 
 #: janim.anims.transform.Transform:5 of
 msgid ""
 "在默认情况（``flatten=False``）下需要保证两个物件的子物件结构能够对齐，否则会报错；可以传入 ``flatten=True`` "
 "来忽略子物件结构"
 msgstr ""
+"In the default case (``flatten=False``), the child item structures of the "
+"two items must be aligned, otherwise an error will be raised; you can pass "
+"``flatten=True`` to ignore the child item structure"
 
 #: janim.anims.transform.Transform:6 of
 msgid "``root_only`` 可以指定只对两个物件的根物件进行插值，而不对子物件进行插值"
 msgstr ""
+"``root_only`` can specify to interpolate only the root items of the two "
+"items, without interpolating child items"
 
 #: janim.anims.transform.TransformInSegments:1
 #: janim.anims.transform.TransformMatchingShapes:1 of
 #, fuzzy
 msgid "基类：:py:class:`~janim.anims.composition.AnimGroup`"
-msgstr "基类：:py:class:`~janim.anims.animation.Animation`"
+msgstr "Base class: :py:class:`~janim.anims.composition.AnimGroup`"
 
 #: janim.anims.transform.TransformInSegments:1 of
 msgid "依照切片列表进行 ``src`` 与 ``target`` 之间的变换"
-msgstr ""
+msgstr "Transform between ``src`` and ``target`` according to the slice list"
 
 #: ../../source/janim/anims/transform.rst:32
 msgid "**基本用法**"
-msgstr ""
+msgstr "**Basic Usage**"
 
 #: ../../source/janim/anims/transform.rst:39
 #: ../../source/janim/anims/transform.rst:55
@@ -73,43 +82,45 @@ msgstr ""
 #: ../../source/janim/anims/transform.rst:85
 #: ../../source/janim/anims/transform.rst:101
 msgid "相当于"
-msgstr ""
+msgstr "Equivalent to"
 
 #: ../../source/janim/anims/transform.rst:46
 msgid "**省略变换目标的切片**"
-msgstr ""
+msgstr "**Omitting Target Slices**"
 
 #: ../../source/janim/anims/transform.rst:48
 msgid "使用 ``...`` 表示与变换来源的切片相同"
-msgstr ""
+msgstr "Use ``...`` to indicate the same slice as the transformation source"
 
 #: ../../source/janim/anims/transform.rst:62
 msgid "**连续切片**"
-msgstr ""
+msgstr "**Consecutive Slices**"
 
 #: ../../source/janim/anims/transform.rst:76
 msgid "**切片简写**"
-msgstr ""
+msgstr "**Slice Shorthand**"
 
 #: ../../source/janim/anims/transform.rst:78
 msgid "如果总共只有一个切片，可以省略一层嵌套"
-msgstr ""
+msgstr "If there is only one slice in total, one level of nesting can be omitted"
 
 #: ../../source/janim/anims/transform.rst:92
 msgid "**连续切片倒序**"
-msgstr ""
+msgstr "**Consecutive Slices in Reverse**"
 
 #: ../../source/janim/anims/transform.rst:94
 msgid "倒过来写即可使切片倒序"
-msgstr ""
+msgstr "Writing it backwards will reverse the slices"
 
 #: ../../source/janim/anims/transform.rst:108
 msgid "请留意 Python 切片中左闭右开的原则，对于倒序序列 ``[8, 6, 4, 0]`` 来说则是左开右闭"
 msgstr ""
+"Note the left-closed right-open principle in Python slicing; for reverse "
+"sequences like ``[8, 6, 4, 0]``, it is left-open right-closed"
 
 #: janim.anims.transform.MethodTransform:1 of
 msgid "基类：:py:class:`~janim.anims.transform.Transform`"
-msgstr "基类：:py:class:`~janim.anims.transform.Transform`"
+msgstr "Base class: :py:class:`~janim.anims.transform.Transform`"
 
 #: janim.anims.transform.MethodTransform:1 of
 msgid "依据物件的变换而创建的补间过程"
@@ -121,15 +132,17 @@ msgstr "See :meth:`~.Item.anim` for details."
 
 #: janim.anims.transform.TransformMatchingShapes:1 of
 msgid "匹配形状进行变换"
-msgstr ""
+msgstr "Transform by matching shapes"
 
 #: janim.anims.transform.TransformMatchingShapes:3 of
 msgid "``mismatch`` 表示对于不匹配的形状的处理"
-msgstr ""
+msgstr "``mismatch`` indicates how to handle shapes that do not match"
 
 #: janim.anims.transform.TransformMatchingShapes:4 of
 msgid "注：所有传入该动画类的额外参数都会被传入 ``mismatch`` 的方法中"
 msgstr ""
+"Note: All additional parameters passed to this animation class will be "
+"passed to the ``mismatch`` method"
 
 #~ msgid ""
 #~ "根据传入对象的 ``path_arc`` ``path_arc_axis`` ``path_func``"
@@ -156,7 +169,7 @@ msgstr ""
 #~ ":meth:`~.Timeline.detect_changes_of_all`."
 
 #~ msgid "基类：:py:class:`object`"
-#~ msgstr "基类：:py:class:`object`"
+#~ msgstr "Base class: :py:class:`object`"
 
 #~ msgid "使得 ``.anim`` 和 ``.anim(...)`` 后可以进行同样的操作"
 #~ msgstr "Allow the same operations after ``.anim`` and ``.anim(...)``."

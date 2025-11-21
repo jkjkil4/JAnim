@@ -210,6 +210,8 @@ msgid ""
 "重新构建：已在 :ref:`实时预览 <realtime_preview>` 中提及；关于多文件重新构建时的处理，另见 "
 ":func:`~.reloads`"
 msgstr ""
+"Rebuild: Already mentioned in :ref:`实时预览 <realtime_preview>`; for "
+"handling multi-file rebuilds, see also :func:`~.reloads`"
 
 #: ../../source/other/use_gui.rst:105
 msgid "当前行高亮：编辑器中会高亮显示当前动画的代码行"
@@ -245,8 +247,10 @@ msgstr ""
 "sub-item selector"
 
 #: ../../source/other/use_gui.rst:119
-msgid "点击窗口左上角“工具”中的“子物件选择”，左上角会多出这样的内容："
+msgid "点击窗口左上角"工具"中的"子物件选择"，左上角会多出这样的内容："
 msgstr ""
+"Click \"Sub-item Selector\" in the \"Tools\" menu in the top-left corner "
+"of the window, and you will see content like this in the top-left:"
 
 #: ../../source/other/use_gui.rst:125
 msgid ""

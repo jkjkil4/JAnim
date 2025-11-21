@@ -21,9 +21,9 @@ msgstr ""
 
 #: ../../source/janim/anims/method_updater_meta.rst:2
 msgid "method_updater_meta"
-msgstr ""
+msgstr "method_updater_meta"
 
 #: janim.anims.method_updater_meta.MethodUpdaterInfo:1 of
 msgid "基类：:py:class:`object`"
-msgstr ""
+msgstr "Base class: :py:class:`object`"
 

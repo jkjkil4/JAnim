@@ -21,9 +21,9 @@ msgstr ""
 
 #: ../../source/janim/utils/font/variant.rst:2
 msgid "variant"
-msgstr ""
+msgstr "variant"
 
 #: janim.utils.font.variant.Style:1 janim.utils.font.variant.Weight:1 of
 msgid "基类：:py:class:`~enum.StrEnum`"
-msgstr ""
+msgstr "Base class: :py:class:`~enum.StrEnum`"
 

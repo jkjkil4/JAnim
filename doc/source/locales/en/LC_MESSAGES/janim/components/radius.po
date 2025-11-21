@@ -21,31 +21,35 @@ msgstr ""
 
 #: ../../source/janim/components/radius.rst:2
 msgid "radius"
-msgstr ""
+msgstr "radius"
 
 #: janim.components.radius.Cmpt_Radius:1 of
 msgid ""
 "基类：:py:class:`~janim.components.component.Component`, "
 ":py:class:`~typing.Generic`"
 msgstr ""
+"Base class: :py:class:`~janim.components.component.Component`, "
+":py:class:`~typing.Generic`"
 
 #: janim.components.radius.Cmpt_Radius:1 of
 msgid "半径组件，被用于 :class:`DotCloud` 的点半径，以及 :class:`VItem` 的轮廓线粗细"
 msgstr ""
+"Radius component, used for point radius in :class:`DotCloud` and stroke "
+"width in :class:`VItem`"
 
 #: janim.components.radius.Cmpt_Radius.get:1 of
 msgid "得到半径数据"
-msgstr ""
+msgstr "Get radius data"
 
 #: janim.components.radius.Cmpt_Radius.set:1 of
 msgid "设置半径数据"
-msgstr ""
+msgstr "Set radius data"
 
 #: janim.components.radius.Cmpt_Radius.clear:1 of
 msgid "将半径数据重置为默认值"
-msgstr ""
+msgstr "Reset radius data to default value"
 
 #: janim.components.radius.Cmpt_Radius.scale:1 of
 msgid "缩放线条半径数据"
-msgstr ""
+msgstr "Scale line radius data"
 

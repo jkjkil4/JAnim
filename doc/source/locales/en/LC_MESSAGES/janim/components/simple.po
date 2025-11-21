@@ -21,17 +21,19 @@ msgstr ""
 
 #: ../../source/janim/components/simple.rst:2
 msgid "simple"
-msgstr ""
+msgstr "simple"
 
 #: janim.components.simple.Cmpt_Float:1 of
 msgid ""
 "基类：:py:class:`~janim.components.component.Component`, "
 ":py:class:`~typing.Generic`"
 msgstr ""
+"Base class: :py:class:`~janim.components.component.Component`, "
+":py:class:`~typing.Generic`"
 
 #: janim.components.simple.Cmpt_Float:1 of
 msgid "对 float 的 Component 封装"
-msgstr ""
+msgstr "Component wrapper for float"
 
 #: janim.components.simple.Cmpt_List:1 of
 msgid ""
@@ -39,10 +41,13 @@ msgid ""
 ":py:class:`~janim.components.component.Component`, "
 ":py:class:`~typing.Generic`"
 msgstr ""
+"Base class: :py:class:`list`\\ [:py:obj:`~typing.T`], "
+":py:class:`~janim.components.component.Component`, "
+":py:class:`~typing.Generic`"
 
 #: janim.components.simple.Cmpt_List.copy:1 of
 msgid "Return a shallow copy of the list."
-msgstr ""
+msgstr "Return a shallow copy of the list."
 
 #: janim.components.simple.Cmpt_Dict:1 of
 msgid ""

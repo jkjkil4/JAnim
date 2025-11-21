@@ -21,9 +21,9 @@ msgstr ""
 
 #: ../../source/janim/gui/ui_ColorWidget.rst:2
 msgid "ui_ColorWidget"
-msgstr ""
+msgstr "ui_ColorWidget"
 
 #: janim.gui.ui_ColorWidget.Ui_ColorWidget:1 of
 msgid "基类：:py:class:`object`"
-msgstr ""
+msgstr "Base class: :py:class:`object`"
 

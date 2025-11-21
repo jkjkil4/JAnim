@@ -21,83 +21,86 @@ msgstr ""
 
 #: ../../source/janim/items/coordinate/coordinate_systems.rst:2
 msgid "coordinate_systems"
-msgstr ""
+msgstr "coordinate_systems"
 
 #: janim.items.coordinate.coordinate_systems.CoordinateSystem:1 of
 msgid "基类：:py:class:`object`"
-msgstr ""
+msgstr "Base class: :py:class:`object`"
 
 #: janim.items.coordinate.coordinate_systems.Axes.get_axes:1
 #: janim.items.coordinate.coordinate_systems.CoordinateSystem.get_axes:1
 #: janim.items.coordinate.coordinate_systems.ThreeDAxes.get_axes:1 of
 msgid "得到由各方向 :class:`~.NumberLine` 所组成的列表"
-msgstr ""
+msgstr "Get a list composed of :class:`~.NumberLine` in each direction"
 
 #: janim.items.coordinate.coordinate_systems.CoordinateSystem.coords_to_point:1
 #: of
 msgid "传入坐标得到对应的位置"
-msgstr ""
+msgstr "Pass coordinates to get the corresponding position"
 
 #: janim.items.coordinate.coordinate_systems.CoordinateSystem.coords_to_point:3
 #: of
 msgid "例如 ``c2p(1, 3)`` 得到 (1,3) 的位置"
-msgstr ""
+msgstr "For example, ``c2p(1, 3)`` gets the position (1,3)"
 
 #: janim.items.coordinate.coordinate_systems.CoordinateSystem.coords_array_to_points:1
 #: of
 msgid "传入一组坐标得到对应的一组位置"
-msgstr ""
+msgstr "Pass a set of coordinates to get the corresponding set of positions"
 
 #: janim.items.coordinate.coordinate_systems.CoordinateSystem.coords_array_to_points:3
 #: of
 msgid "例如 ``c2p([[1, 3], [2, 1], [-1, -1]])`` 得到对应的三个位置"
-msgstr ""
+msgstr "For example, ``c2p([[1, 3], [2, 1], [-1, -1]])`` gets the corresponding three positions"
 
 #: janim.items.coordinate.coordinate_systems.CoordinateSystem.c2p:1 of
 msgid ":meth:`coords_to_point` 的缩写"
-msgstr ""
+msgstr "Abbreviation for :meth:`coords_to_point`"
 
 #: janim.items.coordinate.coordinate_systems.CoordinateSystem.point_to_coords3d:1
 #: of
 msgid "传入位置得到对应的坐标（但是会扩张为三维坐标；对于二维坐标系来说，第三个分量则表示距离二维平面的距离）"
 msgstr ""
+"Pass a position to get the corresponding coordinates (but will be expanded to "
+"3D coordinates; for 2D coordinate systems, the third component represents the "
+"distance from the 2D plane)"
 
 #: janim.items.coordinate.coordinate_systems.CoordinateSystem.point_to_coords:3
 #: janim.items.coordinate.coordinate_systems.CoordinateSystem.point_to_coords3d:3
 #: of
 msgid "也可以传入一组位置得到一组对应的坐标"
-msgstr ""
+msgstr "Can also pass a set of positions to get a corresponding set of coordinates"
 
 #: janim.items.coordinate.coordinate_systems.CoordinateSystem.p2c3d:1 of
 msgid ":meth:`point_to_coords3d` 的简写"
-msgstr ""
+msgstr "Abbreviation for :meth:`point_to_coords3d`"
 
 #: janim.items.coordinate.coordinate_systems.CoordinateSystem.point_to_coords:1
 #: of
 msgid "传入位置得到对应坐标"
-msgstr ""
+msgstr "Pass a position to get the corresponding coordinates"
 
 #: janim.items.coordinate.coordinate_systems.CoordinateSystem.p2c:1 of
 msgid ":meth:`point_to_coords` 的缩写"
-msgstr ""
+msgstr "Abbreviation for :meth:`point_to_coords`"
 
 #: janim.items.coordinate.coordinate_systems.CoordinateSystem.number_to_point:1
 #: of
 msgid "传入复数得到对应位置"
-msgstr ""
+msgstr "Pass a complex number to get the corresponding position"
 
 #: janim.items.coordinate.coordinate_systems.CoordinateSystem.n2p:1 of
 msgid ":meth:`number_to_point` 的缩写"
-msgstr ""
+msgstr "Abbreviation for :meth:`number_to_point`"
 
 #: janim.items.coordinate.coordinate_systems.CoordinateSystem.point_to_number:1
 #: of
 msgid "传入位置得到对应复数"
-msgstr ""
+msgstr "Pass a position to get the corresponding complex number"
 
 #: janim.items.coordinate.coordinate_systems.CoordinateSystem.p2n:1 of
 msgid ":meth:`point_to_number` 的缩写"
-msgstr ""
+msgstr "Abbreviation for :meth:`point_to_number`"
 
 #: janim.items.coordinate.coordinate_systems.Axes:1 of
 msgid ""
@@ -105,95 +108,111 @@ msgid ""
 " :py:class:`~janim.items.points.MarkedItem`, "
 ":py:class:`~janim.items.points.Group`"
 msgstr ""
+"Base class: :py:class:`~janim.items.coordinate.coordinate_systems.CoordinateSystem`,"
+" :py:class:`~janim.items.points.MarkedItem`, "
+":py:class:`~janim.items.points.Group`"
 
 #: janim.items.coordinate.coordinate_systems.Axes.get_graph:1 of
 msgid "基于坐标轴的坐标构造函数曲线，使用 :class:`~.ParametricCurve`"
-msgstr ""
+msgstr "Constructs a function curve based on coordinate axes, using :class:`~.ParametricCurve`"
 
 #: janim.items.coordinate.coordinate_systems.Axes.get_graph:3 of
 msgid "``function``: 用于构造曲线的函数"
-msgstr ""
+msgstr "``function``: Function used to construct the curve"
 
 #: janim.items.coordinate.coordinate_systems.Axes.get_graph:4 of
 msgid "``x_range``: 图像定义域"
-msgstr ""
+msgstr "``x_range``: Domain of the function"
 
 #: janim.items.coordinate.coordinate_systems.Axes.get_graph:5 of
 msgid ""
 "``bind``: 在默认情况下为 ``True``，会使得函数曲线自动同步应用于坐标系上的变换，也可同步动画，详见 "
 ":ref:`basic_examples` 中的 ``NumberPlaneExample``"
 msgstr ""
+"``bind``: By default is ``True``, makes the function curve automatically "
+"synchronize with transformations applied to the coordinate system, can also "
+"synchronize animations. For details, see ``NumberPlaneExample`` in "
+":ref:`basic_examples`"
 
 #: janim.items.coordinate.coordinate_systems.Axes.get_graph:9 of
 msgid "当 ``bind=True`` 时，请勿将函数曲线与坐标系放在同一个 :class:`~.Group` 中进行坐标变换"
-msgstr ""
+msgstr "When ``bind=True``, do not place the function curve and coordinate system in the same :class:`~.Group` for coordinate transformations"
 
 #: janim.items.coordinate.coordinate_systems.Axes.get_graph:11
 #: janim.items.coordinate.coordinate_systems.Axes.get_parametric_curve:10 of
 msgid "因为会导致变换效果被重复作用，（一次由 :class:`~.Group` 导致的作用，另一次由 ``bind=True`` 导致的作用）"
 msgstr ""
+"Because it will cause the transformation effect to be applied twice (once by "
+":class:`~.Group` and once by ``bind=True``)"
 
 #: janim.items.coordinate.coordinate_systems.Axes.get_graph:13
 #: janim.items.coordinate.coordinate_systems.Axes.get_parametric_curve:12 of
 msgid "如果你有放在同一个 :class:`~.Group` 里的需求，请传入 ``bind=False`` 以避免该情况"
-msgstr ""
+msgstr "If you need to place them in the same :class:`~.Group`, pass ``bind=False`` to avoid this situation"
 
 #: janim.items.coordinate.coordinate_systems.Axes.get_parametric_curve:1 of
 msgid "基于坐标轴的坐标构造参数曲线，即 :class:`~.ParametricCurve`"
-msgstr ""
+msgstr "Constructs a parametric curve based on coordinate axes, i.e., :class:`~.ParametricCurve`"
 
 #: janim.items.coordinate.coordinate_systems.Axes.get_parametric_curve:3 of
 msgid "``function``: 将值映射为坐标系上的一个点的参数函数"
-msgstr ""
+msgstr "``function``: Parametric function that maps values to points on the coordinate system"
 
 #: janim.items.coordinate.coordinate_systems.Axes.get_parametric_curve:4 of
 msgid ""
 "``bind``: 在默认情况下为 ``True``，会使得参数曲线自动同步应用于坐标系上的变换，也可同步动画，详见 "
 ":ref:`basic_examples` 中的 ``NumberPlaneExample``"
 msgstr ""
+"``bind``: By default is ``True``, makes the parametric curve automatically "
+"synchronize with transformations applied to the coordinate system, can also "
+"synchronize animations. For details, see ``NumberPlaneExample`` in "
+":ref:`basic_examples`"
 
 #: janim.items.coordinate.coordinate_systems.Axes.get_parametric_curve:8 of
 msgid "当 ``bind=True`` 时，请勿将参数曲线与坐标系放在同一个 :class:`~.Group` 中进行坐标变换"
-msgstr ""
+msgstr "When ``bind=True``, do not place the parametric curve and coordinate system in the same :class:`~.Group` for coordinate transformations"
 
 #: janim.items.coordinate.coordinate_systems.Axes.get_area:1 of
 msgid "构造 ``x_range`` 区间内，``graph`` 与坐标轴所围成的区域，使用 :class:`~.Polygon` 表示"
-msgstr ""
+msgstr "Constructs the region enclosed by ``graph`` and the coordinate axes within the ``x_range`` interval, represented using :class:`~.Polygon`"
 
 #: janim.items.coordinate.coordinate_systems.Axes.get_area:3 of
 msgid "``graph``: 函数曲线，另见 :meth:`get_graph`"
-msgstr ""
+msgstr "``graph``: Function curve, see also :meth:`get_graph`"
 
 #: janim.items.coordinate.coordinate_systems.Axes.get_area:4 of
 msgid "``x_range``: ``x`` 区间的最小值与最大值，``x_range = [x_min, x_max]``"
-msgstr ""
+msgstr "``x_range``: Minimum and maximum values of the ``x`` interval, ``x_range = [x_min, x_max]``"
 
 #: janim.items.coordinate.coordinate_systems.Axes.get_area:5 of
 msgid ""
 "``bounded_graph``: 如果指定该参数，那么将会构造 ``graph`` 与 ``bounded_graph`` "
 "所围成的区域，而非与坐标轴"
 msgstr ""
+"``bounded_graph``: If this parameter is specified, the region enclosed by "
+"``graph`` and ``bounded_graph`` will be constructed, rather than with the "
+"coordinate axes"
 
 #: janim.items.coordinate.coordinate_systems.Axes.get_axis_labels:1
 #: janim.items.coordinate.coordinate_systems.Axes.get_x_axis_label:1
 #: janim.items.coordinate.coordinate_systems.Axes.get_y_axis_label:1 of
 msgid "详见 :meth:`~.NumberLine.get_axis_label`"
-msgstr ""
+msgstr "For details, see :meth:`~.NumberLine.get_axis_label`"
 
 #: janim.items.coordinate.coordinate_systems.Axes.get_axis_labels:3
 #: janim.items.coordinate.coordinate_systems.Axes.get_x_axis_label:3
 #: janim.items.coordinate.coordinate_systems.Axes.get_y_axis_label:3 of
 msgid "如果设置 ``ensure_on_screen=True``，坐标轴标签会自动调整位置移动到默认屏幕区域内"
-msgstr ""
+msgstr "If ``ensure_on_screen=True`` is set, axis labels will automatically adjust their position to move within the default screen area"
 
 #: janim.items.coordinate.coordinate_systems.NumberPlane:1
 #: janim.items.coordinate.coordinate_systems.ThreeDAxes:1 of
 msgid "基类：:py:class:`~janim.items.coordinate.coordinate_systems.Axes`"
-msgstr ""
+msgstr "Base class: :py:class:`~janim.items.coordinate.coordinate_systems.Axes`"
 
 #: janim.items.coordinate.coordinate_systems.CmptVPoints_NumberPlaneImpl:1 of
 msgid "基类：:py:class:`~janim.components.vpoints.Cmpt_VPoints`"
-msgstr ""
+msgstr "Base class: :py:class:`~janim.components.vpoints.Cmpt_VPoints`"
 
 #~ msgid ""
 #~ "基类：:py:class:`~janim.items.points.Group`, "

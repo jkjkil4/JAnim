@@ -21,9 +21,9 @@ msgstr ""
 
 #: ../../source/janim/render/renderer_dotcloud.rst:2
 msgid "renderer_dotcloud"
-msgstr ""
+msgstr "renderer_dotcloud"
 
 #: janim.render.renderer_dotcloud.DotCloudRenderer:1 of
 msgid "基类：:py:class:`~janim.render.base.Renderer`"
-msgstr ""
+msgstr "Base class: :py:class:`~janim.render.base.Renderer`"
 

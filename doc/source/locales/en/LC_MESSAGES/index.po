@@ -69,24 +69,28 @@ msgid ""
 ":class:`~.Circle` :class:`~.Square` :class:`~.Create` "
 ":class:`~.Transform` :class:`~.Uncreate`"
 msgstr ""
+":class:`~.Circle` :class:`~.Square` :class:`~.Create` "
+":class:`~.Transform` :class:`~.Uncreate`"
 
 #: ../../source/index.rst:48
 msgid ":class:`~.Create` :class:`~.SpinInFromNothing` :meth:`~.Item.anim`"
-msgstr ""
+msgstr ":class:`~.Create` :class:`~.SpinInFromNothing` :meth:`~.Item.anim`"
 
 #: ../../source/index.rst:47
 msgid ":class:`~.Text` :class:`~.Write` :class:`~.FadeIn` :class:`~.Transform`"
-msgstr ""
+msgstr ":class:`~.Text` :class:`~.Write` :class:`~.FadeIn` :class:`~.Transform`"
 
 #: ../../source/index.rst:79
 msgid ""
 ":class:`~.TypstDoc` :class:`~.TypstText` :class:`~.TypstMath` "
 ":ref:`typst_usage`"
 msgstr ""
+":class:`~.TypstDoc` :class:`~.TypstText` :class:`~.TypstMath` "
+":ref:`typst_usage`"
 
 #: ../../source/index.rst:45
 msgid ":class:`~.TypstMath` :ref:`typst_usage`"
-msgstr ""
+msgstr ":class:`~.TypstMath` :ref:`typst_usage`"
 
 #: ../../source/index.rst:60
 msgid ""
@@ -94,40 +98,49 @@ msgid ""
 ":meth:`~.Cmpt_Points.apply_complex_fn` "
 ":meth:`~.Cmpt_Points.apply_point_fn`"
 msgstr ""
+":meth:`~.Cmpt_Points.arrange_in_grid` "
+":meth:`~.Cmpt_Points.apply_complex_fn` "
+":meth:`~.Cmpt_Points.apply_point_fn`"
 
 #: ../../source/index.rst:52
 msgid ""
 ":class:`~.NumberPlane` :meth:`~.Axes.get_graph` "
 ":meth:`~.Cmpt_Points.apply_matrix`"
 msgstr ""
+":class:`~.NumberPlane` :meth:`~.Axes.get_graph` "
+":meth:`~.Cmpt_Points.apply_matrix`"
 
 #: ../../source/index.rst:66
 msgid ":class:`~.Brace` :class:`~.DataUpdater` :class:`~.ItemUpdater`"
-msgstr ""
+msgstr ":class:`~.Brace` :class:`~.DataUpdater` :class:`~.ItemUpdater`"
 
 #: ../../source/index.rst:52
 msgid ""
 ":class:`~.Dot` :class:`~.Arrow` :meth:`~.Item.update` "
 ":class:`~.GroupUpdater`"
 msgstr ""
+":class:`~.Dot` :class:`~.Arrow` :meth:`~.Item.update` "
+":class:`~.GroupUpdater`"
 
 #: ../../source/index.rst:68
 msgid ":meth:`~.Item.anim` :meth:`~.Item.update` :class:`~.DataUpdater`"
-msgstr ""
+msgstr ":meth:`~.Item.anim` :meth:`~.Item.update` :class:`~.DataUpdater`"
 
 #: ../../source/index.rst:56
 msgid ""
 ":class:`~.Sector` :func:`~.rotate_vector` :class:`~.GroupUpdater` "
 ":class:`~.DataUpdater`"
 msgstr ""
+":class:`~.Sector` :func:`~.rotate_vector` :class:`~.GroupUpdater` "
+":class:`~.DataUpdater`"
 
 #: ../../source/index.rst:67
 msgid ":class:`~.MarkedItem` :class:`~.DataUpdater`"
-msgstr ""
+msgstr ":class:`~.MarkedItem` :class:`~.DataUpdater`"
 
 #: ../../source/index.rst:79
 msgid ":class:`~.SimpleFrameEffect` :class:`~.Rotate` :class:`~.DataUpdater`"
-msgstr ""
+msgstr ":class:`~.SimpleFrameEffect` :class:`~.Rotate` :class:`~.DataUpdater`"
 
 #: ../../source/index.rst:21
 msgid "类 Slide 演示"

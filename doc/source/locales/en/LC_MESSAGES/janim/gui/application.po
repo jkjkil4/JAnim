@@ -21,13 +21,13 @@ msgstr ""
 
 #: ../../source/janim/gui/application.rst:2
 msgid "application"
-msgstr ""
+msgstr "application"
 
 #: janim.gui.application.Application:1 of
 msgid "基类：:py:class:`~PySide6.QtWidgets.QApplication`"
-msgstr ""
+msgstr "Base class: :py:class:`~PySide6.QtWidgets.QApplication`"
 
 #: janim.gui.application.Application:1 of
 msgid "在 ``QApplication`` 的基础上载入 ``qdarkstyle``"
-msgstr ""
+msgstr "Loads ``qdarkstyle`` on top of ``QApplication``"
 

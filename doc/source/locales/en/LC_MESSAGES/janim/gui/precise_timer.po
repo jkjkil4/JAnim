@@ -21,9 +21,9 @@ msgstr ""
 
 #: ../../source/janim/gui/precise_timer.rst:2
 msgid "precise_timer"
-msgstr ""
+msgstr "precise_timer"
 
 #: janim.gui.precise_timer.PreciseTimer:1 of
 msgid "基类：:py:class:`~PySide6.QtCore.QTimer`"
-msgstr ""
+msgstr "Base class: :py:class:`~PySide6.QtCore.QTimer`"
 

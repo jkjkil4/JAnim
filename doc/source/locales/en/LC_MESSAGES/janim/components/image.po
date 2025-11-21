@@ -21,21 +21,23 @@ msgstr ""
 
 #: ../../source/janim/components/image.rst:2
 msgid "image"
-msgstr ""
+msgstr "image"
 
 #: janim.components.image.Cmpt_Image:1 of
 msgid ""
 "基类：:py:class:`~janim.components.component.Component`, "
 ":py:class:`~typing.Generic`"
 msgstr ""
+"Base class: :py:class:`~janim.components.component.Component`, "
+":py:class:`~typing.Generic`"
 
 #: janim.components.image.Cmpt_Image:1 of
 msgid "图像组件，包含一个 PIL 图像以及 ``min_mag_filter``"
-msgstr ""
+msgstr "Image component, containing a PIL image and ``min_mag_filter``"
 
 #: janim.components.image.Cmpt_Image.set:1 of
 msgid "设置 PIL 图像"
-msgstr ""
+msgstr "Set PIL image"
 
 #~ msgid "基类：:py:class:`~janim.components.component.Component`"
 #~ msgstr ""

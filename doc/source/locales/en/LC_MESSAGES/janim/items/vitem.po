@@ -21,51 +21,51 @@ msgstr ""
 
 #: ../../source/janim/items/vitem.rst:2
 msgid "vitem"
-msgstr ""
+msgstr "vitem"
 
 #: janim.items.vitem.VItem:1 of
 msgid "基类：:py:class:`~janim.items.points.Points`"
-msgstr ""
+msgstr "Base class: :py:class:`~janim.items.points.Points`"
 
 #: janim.items.vitem.VItem:1 of
 msgid "贝塞尔曲线拼接物件，具体说明请参考 :class:`~.Cmpt_VPoints` 的文档"
-msgstr ""
+msgstr "Bezier curve spliced item, for details refer to the documentation of :class:`~.Cmpt_VPoints`"
 
 #: janim.items.vitem.VItem.apply_style:1 of
 msgid "设置物件自身的样式，不影响子物件"
-msgstr ""
+msgstr "Sets the style of the item itself, does not affect child items"
 
 #: janim.items.vitem.VItem.apply_style:3 of
 msgid "另见：:meth:`set`"
-msgstr ""
+msgstr "See also: :meth:`set`"
 
 #: janim.items.vitem.VItem.set_stroke_background:1 of
 msgid "调整描边与填充的绘制顺序"
-msgstr ""
+msgstr "Adjusts the drawing order of stroke and fill"
 
 #: janim.items.vitem.VItem.set_stroke_background:3 of
 msgid "``flag=True`` 会使得描边被填充遮盖，``flag=False`` 则会使得填充被描边遮盖"
-msgstr ""
+msgstr "``flag=True`` makes the stroke covered by fill, ``flag=False`` makes the fill covered by stroke"
 
 #: janim.items.vitem.VItem.add_tip:1 of
 msgid "在 ``alpha`` 处创建一个箭头"
-msgstr ""
+msgstr "Creates an arrow at ``alpha``"
 
 #: janim.items.vitem.VItem.add_tip:3 of
 msgid "默认情况下，箭头与路径方向同向；若传入 ``reverse=True`` 则反向"
-msgstr ""
+msgstr "By default, the arrow points in the same direction as the path; if ``reverse=True`` is passed, it points in the opposite direction"
 
 #: janim.items.vitem.VItem.add_tip:4 of
 msgid "若传入 ``colorize=True`` （默认），则会使箭头的颜色与路径的颜色相同"
-msgstr ""
+msgstr "If ``colorize=True`` is passed (default), the arrow's color will match the path's color"
 
 #: janim.items.vitem.VItem.add_tip:5 of
 msgid "其余参数请参考 :class:`~.ArrowTip`"
-msgstr ""
+msgstr "For other parameters, refer to :class:`~.ArrowTip`"
 
 #: janim.items.vitem.VItem.align_for_interpolate:1 of
 msgid "进行数据对齐，以便插值"
-msgstr ""
+msgstr "Performs data alignment for interpolation"
 
 #: janim.items.vitem.DashedVItem:1 of
 msgid ""
@@ -73,42 +73,45 @@ msgid ""
 ":py:class:`~janim.items.points.Group`\\ "
 "[:py:class:`~janim.items.vitem.VItem`]"
 msgstr ""
+"Base class: :py:class:`~janim.items.vitem.VItem`, "
+":py:class:`~janim.items.points.Group`\\ "
+"[:py:class:`~janim.items.vitem.VItem`]"
 
 #: janim.items.vitem.DashedVItem:1 of
 msgid "创建传入的 ``vitem`` 的虚线化版本"
-msgstr ""
+msgstr "Creates a dashed version of the passed ``vitem``"
 
 #: janim.items.vitem.DashedVItem:3 of
 msgid "``num_dashes``: 虚线段的数量"
-msgstr ""
+msgstr "``num_dashes``: Number of dash segments"
 
 #: janim.items.vitem.DashedVItem:4 of
 msgid "``dashed_ratio``: 虚线段的占比，剩下的占比即为空白段"
-msgstr ""
+msgstr "``dashed_ratio``: Ratio of dash segments, the remaining ratio is the gap segments"
 
 #: janim.items.vitem.DashedVItem:5 of
 msgid "``dash_offset``: 将虚线段的起始点沿着路径偏移的比率，例如 ``1`` 表示偏移一个虚线段的长度"
-msgstr ""
+msgstr "``dash_offset``: Ratio to offset the starting point of dash segments along the path, e.g., ``1`` means offset by one dash segment length"
 
 #: janim.items.vitem.DashedVItem:6 of
 msgid "``equal_lengths``: 虚线段的长度是否相等，取值为 ``'equal'``、``'approx'`` 或 ``'none'``"
-msgstr ""
+msgstr "``equal_lengths``: Whether dash segment lengths are equal, values are ``'equal'``, ``'approx'``, or ``'none'``"
 
 #: janim.items.vitem.DashedVItem:7 of
 msgid "``'equal'``: 虚线段长度几乎相等"
-msgstr ""
+msgstr "``'equal'``: Dash segment lengths are almost equal"
 
 #: janim.items.vitem.DashedVItem:8 of
 msgid "``'approx'``: 虚线段长度近似相等"
-msgstr ""
+msgstr "``'approx'``: Dash segment lengths are approximately equal"
 
 #: janim.items.vitem.DashedVItem:9 of
 msgid "``'none'``: 虚线段将按照曲线的参数 t 均匀分布，一般来说长度不相等"
-msgstr ""
+msgstr "``'none'``: Dash segments will be evenly distributed according to the curve parameter t, generally lengths are not equal"
 
 #: janim.items.vitem.DashedVItem.get_dashed_list:1 of
 msgid "将 ``points`` 所表示的路径分割，返回一个包含各虚线段的列表"
-msgstr ""
+msgstr "Splits the path represented by ``points``, returns a list containing each dash segment"
 
 #~ msgid "基类：:py:class:`~janim.items.item.Item.Data`\\ [:py:class:`VItem`]"
 #~ msgstr ""

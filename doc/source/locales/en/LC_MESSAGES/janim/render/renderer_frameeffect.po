@@ -21,9 +21,9 @@ msgstr ""
 
 #: ../../source/janim/render/renderer_frameeffect.rst:2
 msgid "renderer_frameeffect"
-msgstr ""
+msgstr "renderer_frameeffect"
 
 #: janim.render.renderer_frameeffect.FrameEffectRenderer:1 of
 msgid "基类：:py:class:`~janim.render.base.Renderer`"
-msgstr ""
+msgstr "Base class: :py:class:`~janim.render.base.Renderer`"
 

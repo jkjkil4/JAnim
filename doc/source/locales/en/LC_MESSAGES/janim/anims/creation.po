@@ -26,7 +26,7 @@ msgstr "creation"
 #: janim.anims.creation.DrawBorderThenFill:1 janim.anims.creation.ShowPartial:1
 #: of
 msgid "基类：:py:class:`~janim.anims.updater.DataUpdater`"
-msgstr "基类：:py:class:`~janim.anims.updater.DataUpdater`"
+msgstr "Base class: :py:class:`~janim.anims.updater.DataUpdater`"
 
 #: janim.anims.creation.ShowPartial:1 of
 msgid "显示物件一部分的动画，显示的部分由 ``bound_func`` 决定"
@@ -35,7 +35,7 @@ msgstr "Animation to show a part of a item, determined by ``bound_func``."
 #: janim.anims.creation.Create:1 janim.anims.creation.Destruction:1
 #: janim.anims.creation.Uncreate:1 of
 msgid "基类：:py:class:`~janim.anims.creation.ShowPartial`"
-msgstr "基类：:py:class:`~janim.anims.creation.ShowPartial`"
+msgstr "Base class: :py:class:`~janim.anims.creation.ShowPartial`"
 
 #: janim.anims.creation.Create:1 of
 msgid "显示物件的创建过程"
@@ -54,23 +54,28 @@ msgstr "Show the creation process of a item"
 
 #: janim.anims.creation.Destruction:3 of
 msgid "与 :class:`Uncreate` 方向相反"
-msgstr ""
+msgstr "Opposite direction to :class:`Uncreate`"
 
 #: janim.anims.creation.DrawBorderThenFill:1 of
 msgid "画出边缘，然后填充颜色"
 msgstr "Draws the outline and then fills."
 
 #: janim.anims.creation.DrawBorderThenFill:3 of
-msgid "可以使用 ``stroke_radius`` 参数调整“画出边缘”时的描边粗细，在默认画面下的值是 0.01"
+msgid "可以使用 ``stroke_radius`` 参数调整"画出边缘"时的描边粗细，在默认画面下的值是 0.01"
 msgstr ""
+"You can use the ``stroke_radius`` parameter to adjust the stroke width when "
+"\"drawing the outline\", the default value is 0.01"
 
 #: janim.anims.creation.DrawBorderThenFill:5 of
 msgid "如果设置了 ``scale_with_camera`` 参数，描边粗细会随着 ``camera`` 大小的变化而调整，画面尺寸越小，描边越细"
 msgstr ""
+"If the ``scale_with_camera`` parameter is set, the stroke width will adjust "
+"with changes in ``camera`` size; the smaller the frame size, the thinner the "
+"stroke"
 
 #: janim.anims.creation.Write:1 of
 msgid "基类：:py:class:`~janim.anims.creation.DrawBorderThenFill`"
-msgstr "基类：:py:class:`~janim.anims.creation.DrawBorderThenFill`"
+msgstr "Base class: :py:class:`~janim.anims.creation.DrawBorderThenFill`"
 
 #: janim.anims.creation.Write:1 of
 msgid "显示书写过程（对每个子物件应用 :class:`DrawBorderThenFill`）"
@@ -81,10 +86,10 @@ msgstr ""
 #: janim.anims.creation.ShowIncreasingSubsets:1 of
 #, fuzzy
 msgid "基类：:py:class:`~janim.anims.animation.Animation`"
-msgstr "基类：:py:class:`~janim.anims.creation.ShowPartial`"
+msgstr "Base class: :py:class:`~janim.anims.creation.ShowPartial`"
 
 #: janim.anims.creation.ShowSubitemsOneByOne:1 of
 #, fuzzy
 msgid "基类：:py:class:`~janim.anims.creation.ShowIncreasingSubsets`"
-msgstr "基类：:py:class:`~janim.anims.creation.ShowPartial`"
+msgstr "Base class: :py:class:`~janim.anims.creation.ShowPartial`"
 

@@ -25,7 +25,7 @@ msgstr "config"
 
 #: janim.utils.config.Config:1 janim.utils.config.ConfigGetter:1 of
 msgid "基类：:py:class:`object`"
-msgstr "基类：:py:class:`object`"
+msgstr "Base class: :py:class:`object`"
 
 #: janim.utils.config.Config:1 of
 msgid "配置"
@@ -33,40 +33,43 @@ msgstr "Configuration"
 
 #: janim.utils.config.Config:3 of
 msgid "大部分的参数不作说明，稍微说明一下这些参数："
-msgstr ""
+msgstr "Most parameters are not explained, but here are some notes on these parameters:"
 
 #: janim.utils.config.Config:5 of
 msgid "``fps``: 输出视频时的帧率"
-msgstr ""
+msgstr "``fps``: Frame rate when outputting video"
 
 #: janim.utils.config.Config:6 of
 msgid "``preview_fps``: 在预览窗口时的帧率"
-msgstr ""
+msgstr "``preview_fps``: Frame rate in the preview window"
 
 #: janim.utils.config.Config:7 of
 msgid ""
 "在代码内设置 ``background_color`` 时，不能使用 ``background_color='#RRGGBB'``，应使用 "
 "``background_color=Color('#RRGGBB')``"
 msgstr ""
+"When setting ``background_color`` in code, you cannot use "
+"``background_color='#RRGGBB'``, you should use ``background_color=Color('#RRGGBB')``"
 
 #: janim.utils.config.Config:8 of
 msgid ""
 "``output_dir`` 以 ``:`` 开头时，表示相对于 ``.py`` 文件的路径，例如 "
 "``output_dir=':/videos'``"
 msgstr ""
+"When ``output_dir`` starts with ``:``, it represents a path relative to the "
+"``.py`` file, for example ``output_dir=':/videos'``"
 
 #: janim.utils.config.Config:11 of
-#, fuzzy
 msgid "设置配置"
-msgstr "Configuration"
+msgstr "Setting configuration"
 
 #: janim.utils.config.Config:13 of
 msgid "设置配置的三种方式："
-msgstr ""
+msgstr "Three ways to set configuration:"
 
 #: janim.utils.config.Config:15 of
 msgid "在 Python 代码中，将配置写在时间轴类里"
-msgstr ""
+msgstr "In Python code, write the configuration in the timeline class"
 
 #: janim.utils.config.Config:28 of
 msgid "另见：:py:obj:`~.Timeline.CONFIG`"
@@ -74,27 +77,23 @@ msgstr "See also :py:obj:`~.Timeline.CONFIG`"
 
 #: janim.utils.config.Config:30 of
 msgid "使用命令行参数修改全局配置"
-msgstr ""
+msgstr "Modify global configuration using command-line arguments"
 
 #: janim.utils.config.Config:36 of
 msgid "修改局部代码块的配置"
-msgstr ""
+msgstr "Modify configuration for local code blocks"
 
 #: janim.utils.config.Config:53 of
-#, fuzzy
 msgid "获取配置"
-msgstr "Configuration"
+msgstr "Getting configuration"
 
 #: janim.utils.config.Config:55 of
-#, fuzzy
 msgid "使用 ``Config.get.xxx`` 得到属性，例如："
-msgstr ""
-"Please continue to use ``Config.get.xxx`` to retrieve the content defined"
-" in this class."
+msgstr "Use ``Config.get.xxx`` to get attributes, for example:"
 
 #: janim.utils.config.Config:63 of
 msgid "更多内容可以参考文档教程的 :doc:`配置系统 <../../tutorials/config_system>` 页面"
-msgstr ""
+msgstr "For more information, refer to the :doc:`Configuration System <../../tutorials/config_system>` page in the documentation tutorials"
 
 #: ../../docstring janim.utils.config.default_config:1 of
 msgid "默认配置"
@@ -114,11 +113,11 @@ msgstr "``temp_dir`` is determined by the operating system."
 
 #: ../../docstring janim.utils.config.cli_config:1 of
 msgid "命令行配置"
-msgstr ""
+msgstr "Command-line configuration"
 
 #: ../../docstring janim.utils.config.cli_config:3 of
 msgid "会被命令行 ``--config`` 参数自动修改"
-msgstr ""
+msgstr "Will be automatically modified by the command-line ``--config`` parameter"
 
 #: janim.utils.config.ConfigGetter:1 of
 msgid "与配置数据相关联的数据的获取"
@@ -136,16 +135,16 @@ msgstr "To convert ``:/path/to/file`` to a path relative to ``relative_path``."
 
 #: janim.utils.config.ConfigGetter.scaled_pixel_size:1 of
 msgid "根据缩放比例计算缩放后的像素尺寸"
-msgstr ""
+msgstr "Calculate scaled pixel size based on the scaling factor"
 
 #: janim.utils.config.ConfigGetter.scaled_frame_size:3
 #: janim.utils.config.ConfigGetter.scaled_pixel_size:3 of
 msgid "使用示例："
-msgstr ""
+msgstr "Usage example:"
 
 #: janim.utils.config.ConfigGetter.scaled_frame_size:1 of
 msgid "根据缩放比例计算缩放后的画面尺寸"
-msgstr ""
+msgstr "Calculate scaled frame size based on the scaling factor"
 
 #~ msgid "基础用法"
 #~ msgstr "Basic usage"

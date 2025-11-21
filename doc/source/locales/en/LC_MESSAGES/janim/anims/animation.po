@@ -34,7 +34,7 @@ msgstr ""
 #: janim.anims.animation.ItemAnimation.ApplyParams:1
 #: janim.anims.animation.TimeAligner:1 janim.anims.animation.TimeRange:1 of
 msgid "基类：:py:class:`object`"
-msgstr "基类：:py:class:`object`"
+msgstr "Base class: :py:class:`object`"
 
 #: janim.anims.animation.Animation:1 of
 msgid "动画基类"
@@ -49,6 +49,9 @@ msgid ""
 "``duration`` 可以是 ``FOREVER`` （一般用于 :class:`~.Display`， 以及特殊情况下的 "
 ":class:`DataUpdater` 等， 但是 :class:`~.AnimGroup` 及其衍生类不能传入 ``FOREVER``）"
 msgstr ""
+"``duration`` can be ``FOREVER`` (generally used for :class:`~.Display`, and "
+"in special cases for :class:`DataUpdater`, etc., but :class:`~.AnimGroup` "
+"and its derived classes cannot accept ``FOREVER``)"
 
 #: janim.anims.animation.Animation:8 of
 #, fuzzy
@@ -60,48 +63,54 @@ msgstr ""
 #: janim.anims.animation.Animation:10 of
 msgid "设置 ``name`` 可以将文字显示在预览界面的时间轴标签上，不影响渲染（如果不设置则默认为类名）"
 msgstr ""
+"Setting ``name`` displays text on the timeline label in the preview "
+"interface, does not affect rendering (if not set, defaults to class name)"
 
 #: janim.anims.animation.Animation:14 of
 msgid "动画对象不能复用，例如这样会导致意外行为："
-msgstr ""
+msgstr "Animation objects cannot be reused, for example, this will cause unexpected behavior:"
 
 #: janim.anims.animation.Animation:28 of
 msgid "正确写法："
-msgstr ""
+msgstr "Correct way:"
 
 #: janim.anims.animation.Animation.shift_range:1
 #: janim.anims.animation.TimeRange.shift:1 of
 msgid "以 ``delta`` 的变化量移动时间区段"
-msgstr ""
+msgstr "Shift the time segment by ``delta``"
 
 #: janim.anims.animation.Animation.scale_range:1
 #: janim.anims.animation.TimeRange.scale:1 of
 msgid "以 ``k`` 的倍率缩放时间区段（相对于 ``t=0`` 进行缩放）"
-msgstr ""
+msgstr "Scale the time segment by factor ``k`` (scaled relative to ``t=0``)"
 
 #: janim.anims.animation.ItemAnimation:1 of
 msgid "基类：:py:class:`~janim.anims.animation.Animation`"
-msgstr ""
+msgstr "Base class: :py:class:`~janim.anims.animation.Animation`"
 
 #: janim.anims.animation.ItemAnimation.apply:1 of
 msgid "将 ``global_t`` 时的动画效果作用到 ``data`` 上"
-msgstr ""
+msgstr "Apply the animation effect at ``global_t`` to ``data``"
 
 #: janim.anims.animation.ItemAnimation.apply:3 of
 msgid "其中"
-msgstr ""
+msgstr "Where"
 
 #: janim.anims.animation.ItemAnimation.apply:5 of
 msgid "对于 :class:`~.Display` 而言，``data`` 是 ``None``，返回值是 :class:`~.Item` 对象"
 msgstr ""
+"For :class:`~.Display`, ``data`` is ``None``, and the return value is a "
+":class:`~.Item` object"
 
 #: janim.anims.animation.ItemAnimation.apply:6 of
 msgid "而对于其它大多数的而言，``data`` 是前一个动画作用的结果，返回值是 ``None``"
 msgstr ""
+"For most others, ``data`` is the result of the previous animation, and the "
+"return value is ``None``"
 
 #: janim.anims.animation.ApplyAligner:1 of
 msgid "基类：:py:class:`~janim.anims.animation.ItemAnimation`"
-msgstr ""
+msgstr "Base class: :py:class:`~janim.anims.animation.ItemAnimation`"
 
 #: janim.anims.animation.TimeRange:1 of
 #, fuzzy
@@ -112,31 +121,33 @@ msgstr ""
 
 #: janim.anims.animation.TimeRange:3 of
 msgid "``end`` 也可以是 ``FOREVER``"
-msgstr ""
+msgstr "``end`` can also be ``FOREVER``"
 
 #: ../../docstring janim.anims.animation.TimeRange.at:1 of
 msgid "时间区段的开始时刻"
-msgstr ""
+msgstr "Start time of the time segment"
 
 #: ../../docstring janim.anims.animation.TimeRange.end:1 of
 msgid "时间区段的结束时刻"
-msgstr ""
+msgstr "End time of the time segment"
 
 #: janim.anims.animation.TimeRange.duration:1 of
 msgid "时间区段的时长，即 ``end - at``，如果 ``end=FOREVER`` 则抛出 ``AssertionError``"
 msgstr ""
+"Duration of the time segment, i.e., ``end - at``. If ``end=FOREVER``, "
+"raises ``AssertionError``"
 
 #: janim.anims.animation.TimeRange.duration:3 of
 msgid "另见 :meth:`num_duration`"
-msgstr ""
+msgstr "See also :meth:`num_duration`"
 
 #: janim.anims.animation.TimeRange.num_duration:1 of
 msgid "当 ``end`` 不是 ``FOREVER`` 时，与 :meth:`duration` 一致"
-msgstr ""
+msgstr "When ``end`` is not ``FOREVER``, same as :meth:`duration`"
 
 #: janim.anims.animation.TimeRange.num_duration:3 of
 msgid "当 ``end`` 是 ``FOREVER`` 时，此时返回 ``0``"
-msgstr ""
+msgstr "When ``end`` is ``FOREVER``, returns ``0``"
 
 #: janim.anims.animation.TimeRange.num_duration:5
 #: janim.anims.animation.TimeRange.num_end:5 of
@@ -144,53 +155,64 @@ msgid ""
 "（这用于 :class:`~.AnimGroup` 对 ``end=FOREVER`` 的子动画的处理，也就是把这种子动画当成 "
 "``end=at`` 来计算时间）"
 msgstr ""
+"(This is used for :class:`~.AnimGroup` to handle child animations with "
+"``end=FOREVER``, i.e., treating such child animations as ``end=at`` for time "
+"calculation)"
 
 #: janim.anims.animation.TimeRange.num_end:1 of
 msgid "当 ``end`` 不是 ``FOREVER`` 时，此时返回 ``end``"
-msgstr ""
+msgstr "When ``end`` is not ``FOREVER``, returns ``end``"
 
 #: janim.anims.animation.TimeRange.num_end:3 of
 msgid "当 ``end`` 是 ``FOREVER`` 时，此时返回 ``at``"
-msgstr ""
+msgstr "When ``end`` is ``FOREVER``, returns ``at``"
 
 #: janim.anims.animation.TimeRange.set:1 of
 msgid "设置该时间区段的范围"
-msgstr ""
+msgstr "Set the range of this time segment"
 
 #: janim.anims.animation.TimeAligner:1 of
 msgid "由于浮点数精度的问题，有可能出现比如原本设计上首尾相连的两个动画，却出现判定的错位"
 msgstr ""
+"Due to floating-point precision issues, it is possible that two animations "
+"designed to be connected end-to-end may have misaligned judgments"
 
 #: janim.anims.animation.TimeAligner:3 of
 msgid "该类用于将相近的浮点数归化到同一个值，使得 :class:`TimeRange` 区间严丝合缝"
 msgstr ""
+"This class is used to normalize similar floating-point numbers to the same "
+"value, ensuring that :class:`TimeRange` intervals fit perfectly"
 
 #: janim.anims.animation.TimeAligner.align:1 of
 msgid ""
 "归化 ``anim`` 的时间区段， 即分别对 ``.t_range.at`` 和 ``.t_range.end`` 进行 "
 ":meth:`align_t` 的操作"
 msgstr ""
+"Normalize the time segment of ``anim``, i.e., perform :meth:`align_t` "
+"operations on ``.t_range.at`` and ``.t_range.end`` respectively"
 
 #: janim.anims.animation.TimeAligner.align_t:1 of
 msgid "对齐时间 `t`，确保相近的时间点归化到相同的值，返回归化后的时间值"
 msgstr ""
+"Align time `t`, ensuring that similar time points are normalized to the same "
+"value, returns the normalized time value"
 
 #: janim.anims.animation.TimeAligner.align_t_for_render:1 of
 msgid "与 :meth:`align_t` 类似，但区别在于"
-msgstr ""
+msgstr "Similar to :meth:`align_t`, but differs in that"
 
 #: janim.anims.animation.TimeAligner.align_t_for_render:3 of
 msgid "该方法使用二分查找而不是倒序查找"
-msgstr ""
+msgstr "This method uses binary search instead of reverse search"
 
 #: janim.anims.animation.TimeAligner.align_t_for_render:4 of
 msgid "该方法在查找后不记录 ``t`` 的值"
-msgstr ""
+msgstr "This method does not record the value of ``t`` after searching"
 
 #: janim.anims.animation.TimeSegments:1 of
 #, fuzzy
 msgid "基类：:py:class:`~typing.Generic`"
-msgstr "基类：:py:class:`object`"
+msgstr "Base class: :py:class:`~typing.Generic`"
 
 #~ msgid "``end`` 即 ``at + duration``"
 #~ msgstr "``end`` equals ``at + duration``"

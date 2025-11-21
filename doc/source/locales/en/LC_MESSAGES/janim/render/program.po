@@ -63,7 +63,7 @@ msgstr ""
 
 #: janim.render.program.get_program_from_files:1 of
 msgid "具体给定文件路径，读取着色器代码"
-msgstr ""
+msgstr "Given specific file paths, read shader code"
 
 #: janim.render.program.get_program_from_files:3 of
 #, fuzzy
@@ -80,6 +80,9 @@ msgstr "Creates a shader program from shader strings"
 #: janim.render.program.get_program_from_string:3 of
 msgid "注：可以指定 ``cache_key`` 提供缓存，若先前创建过 ``cache_key`` 对应的着色器程序，则会复用先前的对象"
 msgstr ""
+"Note: You can specify ``cache_key`` to provide caching. If a shader program "
+"corresponding to ``cache_key`` has been created before, it will reuse the "
+"previous object"
 
 #: janim.render.program.get_compute_shader_from_file:1 of
 #, fuzzy
@@ -94,6 +97,9 @@ msgstr ""
 #: janim.render.program.get_compute_shader_from_file:4 of
 msgid "注：若 ``filepath`` 对应的 ComputeShader 先前已创建过，则会复用先前的对象，否则另外创建新的对象并记录"
 msgstr ""
+"Note: If the ComputeShader corresponding to ``filepath`` has been created "
+"before, it will reuse the previous object; otherwise, it will create a new "
+"one and cache it"
 "If the ComputeShader for the given filepath has been created before, it "
 "will reuse the existing object; otherwise, it will create a new one and "
 "cache it"

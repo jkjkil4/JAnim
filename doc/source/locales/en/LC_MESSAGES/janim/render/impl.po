@@ -21,18 +21,21 @@ msgstr ""
 
 #: ../../source/janim/render/impl.rst:2
 msgid "impl"
-msgstr ""
+msgstr "impl"
 
 #: ../../source/rst_utils/tip_of_complex.rst:3
 msgid "这部分内容涉及 JAnim 实现原理，可能较为复杂，若没有研究源码的需求，你应酌情阅读"
 msgstr ""
+"This section covers JAnim implementation principles and may be complex. "
+"If you don't need to study the source code, you should read it as "
+"appropriate"
 
 #: janim.render.impl.DotCloudRenderer:1 janim.render.impl.ImageItemRenderer:1
 #: janim.render.impl.VItemRenderer:1 janim.render.impl.VideoRenderer:1 of
 msgid "基类：:py:class:`~janim.render.base.Renderer`"
-msgstr ""
+msgstr "Base class: :py:class:`~janim.render.base.Renderer`"
 
 #: janim.render.impl.VideoReader:1 of
 msgid "基类：:py:class:`object`"
-msgstr ""
+msgstr "Base class: :py:class:`object`"
 

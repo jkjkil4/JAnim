@@ -21,27 +21,27 @@ msgstr ""
 
 #: ../../source/janim/anims/movement.rst:2
 msgid "movement"
-msgstr ""
+msgstr "movement"
 
 #: janim.anims.movement.Homotopy:1 janim.anims.movement.MoveAlongPath:1 of
 msgid "基类：:py:class:`~janim.anims.updater.DataUpdater`"
-msgstr ""
+msgstr "Base class: :py:class:`~janim.anims.updater.DataUpdater`"
 
 #: janim.anims.movement.Homotopy:1 of
-msgid "一个从 (x, y, z, t) 到 (x’, y’, z’) 的函数"
-msgstr ""
+msgid "一个从 (x, y, z, t) 到 (x', y', z') 的函数"
+msgstr "A function from (x, y, z, t) to (x', y', z')"
 
 #: janim.anims.movement.Homotopy:3 of
 msgid "t 的取值范围是 [0, 1]，表示动画进度"
-msgstr ""
+msgstr "The range of t is [0, 1], representing animation progress"
 
 #: janim.anims.movement.ComplexHomotopy:1 of
 msgid "基类：:py:class:`~janim.anims.movement.Homotopy`"
-msgstr ""
+msgstr "Base class: :py:class:`~janim.anims.movement.Homotopy`"
 
 #: janim.anims.movement.ComplexHomotopy:1 of
 msgid "与 Homotopy 类似，区别是用复数描述坐标"
-msgstr ""
+msgstr "Similar to Homotopy, but uses complex numbers to describe coordinates"
 
 #: janim.anims.movement.Follow:1 of
 msgid ""

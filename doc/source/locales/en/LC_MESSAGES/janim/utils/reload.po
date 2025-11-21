@@ -21,19 +21,27 @@ msgstr ""
 
 #: ../../source/janim/utils/reload.rst:2
 msgid "reload"
-msgstr ""
+msgstr "reload"
 
 #: janim.utils.reload.reloads:1 of
 msgid ""
 "在一般情况下，使用 import 导入时，已经加载过的模块不会重新加载，导致 :ref:`重新构建 <realtime_preview>` "
 "时无法响应外部文件的变化。"
 msgstr ""
+"In general, when using import, already loaded modules will not be reloaded, "
+"causing :ref:`rebuild <realtime_preview>` to fail to respond to changes in "
+"external files."
 
 #: janim.utils.reload.reloads:3 of
 msgid "例如在以下代码中，重新构建时无法响应 ``your_custom_module`` 中产生的更改"
 msgstr ""
+"For example, in the following code, rebuild cannot respond to changes in "
+"``your_custom_module``"
 
 #: janim.utils.reload.reloads:11 of
 msgid "此时可以使用 ``with reloads():`` 强制其中的 import 语句重新加载模块， 使得可以响应外部文件的更改，如以下代码所示"
 msgstr ""
+"At this point, you can use ``with reloads():`` to force the import "
+"statements inside to reload modules, enabling response to changes in "
+"external files, as shown in the following code"
 

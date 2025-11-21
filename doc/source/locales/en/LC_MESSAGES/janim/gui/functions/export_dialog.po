@@ -21,9 +21,9 @@ msgstr ""
 
 #: ../../source/janim/gui/functions/export_dialog.rst:2
 msgid "export_dialog"
-msgstr ""
+msgstr "export_dialog"
 
 #: janim.gui.functions.export_dialog.ExportDialog:1 of
 msgid "基类：:py:class:`~PySide6.QtWidgets.QDialog`"
-msgstr ""
+msgstr "Base class: :py:class:`~PySide6.QtWidgets.QDialog`"
 

@@ -21,13 +21,13 @@ msgstr ""
 
 #: ../../source/janim/render/renderer_video.rst:2
 msgid "renderer_video"
-msgstr ""
+msgstr "renderer_video"
 
 #: janim.render.renderer_video.VideoRenderer:1 of
 msgid "基类：:py:class:`~janim.render.base.Renderer`"
-msgstr ""
+msgstr "Base class: :py:class:`~janim.render.base.Renderer`"
 
 #: janim.render.renderer_video.VideoReader:1 of
 msgid "基类：:py:class:`object`"
-msgstr ""
+msgstr "Base class: :py:class:`object`"
 

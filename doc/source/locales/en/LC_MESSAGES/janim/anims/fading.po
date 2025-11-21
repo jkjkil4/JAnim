@@ -28,7 +28,7 @@ msgstr "fading"
 msgid ""
 "基类：:py:class:`~janim.anims.updater.DataUpdater`\\ "
 "[:py:class:`~janim.items.item.Item`]"
-msgstr "基类：:py:class:`~janim.anims.updater.DataUpdater`"
+msgstr "Base class: :py:class:`~janim.anims.updater.DataUpdater`"
 
 #: janim.anims.fading.Fade:1 of
 msgid ":class:`FadeIn` 和 :class:`FadeOut` 的基类"
@@ -36,7 +36,7 @@ msgstr "Base class for :class:`FadeIn` and :class:`FadeOut`."
 
 #: janim.anims.fading.FadeIn:1 janim.anims.fading.FadeOut:1 of
 msgid "基类：:py:class:`~janim.anims.fading.Fade`"
-msgstr "基类：:py:class:`~janim.anims.fading.Fade`"
+msgstr "Base class: :py:class:`~janim.anims.fading.Fade`"
 
 #: janim.anims.fading.FadeIn:1 of
 msgid "淡入"
@@ -65,10 +65,10 @@ msgstr "``scale`` can be used to specify the fade-out scale."
 #: janim.anims.fading.FadeInFromPoint:1 of
 #, fuzzy
 msgid "基类：:py:class:`~janim.anims.fading.FadeIn`"
-msgstr "基类：:py:class:`~janim.anims.fading.Fade`"
+msgstr "Base class: :py:class:`~janim.anims.fading.Fade`"
 
 #: janim.anims.fading.FadeOutToPoint:1 of
 #, fuzzy
 msgid "基类：:py:class:`~janim.anims.fading.FadeOut`"
-msgstr "基类：:py:class:`~janim.anims.fading.Fade`"
+msgstr "Base class: :py:class:`~janim.anims.fading.Fade`"
 

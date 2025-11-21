@@ -84,4 +84,6 @@ msgstr ""
 #: ../../source/janim/constants.rst:178
 msgid "由于历史遗留因素，这里的 ``YELLOW_C`` 与 ``YELLOW_`` 系的颜色并不一致"
 msgstr ""
+"Due to historical reasons, ``YELLOW_C`` here is inconsistent with the "
+"``YELLOW_`` series of colors"
 

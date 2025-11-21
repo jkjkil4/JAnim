@@ -25,11 +25,11 @@ msgstr "data"
 
 #: janim.utils.data.AlignedData:1 janim.utils.data.ContextSetter:1 of
 msgid "基类：:py:class:`~typing.Generic`"
-msgstr "基类：:py:class:`~typing.Generic`"
+msgstr "Base class: :py:class:`~typing.Generic`"
 
 #: janim.utils.data.Array:1 janim.utils.data.Margins:1 of
 msgid "基类：:py:class:`object`"
-msgstr "基类：:py:class:`object`"
+msgstr "Base class: :py:class:`object`"
 
 #: janim.utils.data.Array:1 of
 msgid "使得在使用 ``.data = xxx`` 修改（赋值）后必定是不同的 id"
@@ -61,7 +61,7 @@ msgstr ""
 
 #: janim.utils.data.Align:1 of
 msgid "基类：:py:class:`~enum.IntFlag`"
-msgstr "基类：:py:class:`~enum.IntFlag`"
+msgstr "Base class: :py:class:`~enum.IntFlag`"
 
 #~ msgid "标记在 ``t`` 时刻后，数据为 ``data``"
 #~ msgstr "Marks the data as ``data`` at time ``t``"

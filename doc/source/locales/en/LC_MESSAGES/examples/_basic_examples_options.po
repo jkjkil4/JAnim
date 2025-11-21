@@ -27,21 +27,23 @@ msgstr ""
 
 #: ../../source/examples/_basic_examples_options.rst:48
 msgid ":class:`~.Create` :class:`~.SpinInFromNothing` :meth:`~.Item.anim`"
-msgstr ""
+msgstr ":class:`~.Create` :class:`~.SpinInFromNothing` :meth:`~.Item.anim`"
 
 #: ../../source/examples/_basic_examples_options.rst:47
 msgid ":class:`~.Text` :class:`~.Write` :class:`~.FadeIn` :class:`~.Transform`"
-msgstr ""
+msgstr ":class:`~.Text` :class:`~.Write` :class:`~.FadeIn` :class:`~.Transform`"
 
 #: ../../source/examples/_basic_examples_options.rst:79
 msgid ""
 ":class:`~.TypstDoc` :class:`~.TypstText` :class:`~.TypstMath` "
 ":ref:`typst_usage`"
 msgstr ""
+":class:`~.TypstDoc` :class:`~.TypstText` :class:`~.TypstMath` "
+":ref:`typst_usage`"
 
 #: ../../source/examples/_basic_examples_options.rst:45
 msgid ":class:`~.TypstMath` :ref:`typst_usage`"
-msgstr ""
+msgstr ":class:`~.TypstMath` :ref:`typst_usage`"
 
 #: ../../source/examples/_basic_examples_options.rst:60
 msgid ""
@@ -49,38 +51,47 @@ msgid ""
 ":meth:`~.Cmpt_Points.apply_complex_fn` "
 ":meth:`~.Cmpt_Points.apply_point_fn`"
 msgstr ""
+":meth:`~.Cmpt_Points.arrange_in_grid` "
+":meth:`~.Cmpt_Points.apply_complex_fn` "
+":meth:`~.Cmpt_Points.apply_point_fn`"
 
 #: ../../source/examples/_basic_examples_options.rst:52
 msgid ""
 ":class:`~.NumberPlane` :meth:`~.Axes.get_graph` "
 ":meth:`~.Cmpt_Points.apply_matrix`"
 msgstr ""
+":class:`~.NumberPlane` :meth:`~.Axes.get_graph` "
+":meth:`~.Cmpt_Points.apply_matrix`"
 
 #: ../../source/examples/_basic_examples_options.rst:66
 msgid ":class:`~.Brace` :class:`~.DataUpdater` :class:`~.ItemUpdater`"
-msgstr ""
+msgstr ":class:`~.Brace` :class:`~.DataUpdater` :class:`~.ItemUpdater`"
 
 #: ../../source/examples/_basic_examples_options.rst:52
 msgid ""
 ":class:`~.Dot` :class:`~.Arrow` :meth:`~.Item.update` "
 ":class:`~.GroupUpdater`"
 msgstr ""
+":class:`~.Dot` :class:`~.Arrow` :meth:`~.Item.update` "
+":class:`~.GroupUpdater`"
 
 #: ../../source/examples/_basic_examples_options.rst:68
 msgid ":meth:`~.Item.anim` :meth:`~.Item.update` :class:`~.DataUpdater`"
-msgstr ""
+msgstr ":meth:`~.Item.anim` :meth:`~.Item.update` :class:`~.DataUpdater`"
 
 #: ../../source/examples/_basic_examples_options.rst:56
 msgid ""
 ":class:`~.Sector` :func:`~.rotate_vector` :class:`~.GroupUpdater` "
 ":class:`~.DataUpdater`"
 msgstr ""
+":class:`~.Sector` :func:`~.rotate_vector` :class:`~.GroupUpdater` "
+":class:`~.DataUpdater`"
 
 #: ../../source/examples/_basic_examples_options.rst:67
 msgid ":class:`~.MarkedItem` :class:`~.DataUpdater`"
-msgstr ""
+msgstr ":class:`~.MarkedItem` :class:`~.DataUpdater`"
 
 #: ../../source/examples/_basic_examples_options.rst:79
 msgid ":class:`~.SimpleFrameEffect` :class:`~.Rotate` :class:`~.DataUpdater`"
-msgstr ""
+msgstr ":class:`~.SimpleFrameEffect` :class:`~.Rotate` :class:`~.DataUpdater`"
 

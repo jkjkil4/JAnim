@@ -26,27 +26,31 @@ msgstr "display"
 #: janim.anims.display.Display:1 of
 #, fuzzy
 msgid "基类：:py:class:`~janim.anims.animation.ItemAnimation`"
-msgstr "基类：:py:class:`~janim.anims.animation.Animation`"
+msgstr "Base class: :py:class:`~janim.anims.animation.ItemAnimation`"
 
 #: janim.anims.display.Display:1 of
 msgid "用于标记物件在特定时间区段中的数据"
-msgstr ""
+msgstr "Used to mark the data of an item in a specific time segment"
 
 #: janim.anims.display.Display:3 of
-msgid "一般作为 :meth:`~.AnimStack.detect_change` 的产物，表示“物件从一个特定时间开始，被更改为了这样的数据”"
+msgid "一般作为 :meth:`~.AnimStack.detect_change` 的产物，表示"物件从一个特定时间开始，被更改为了这样的数据""
 msgstr ""
+"Generally produced by :meth:`~.AnimStack.detect_change`, indicating "
+"\"the item has been changed to this data starting from a specific time\""
 
 #: janim.anims.display.Display:5 of
 msgid "另见：:meth:`~.Timeline.detect_changes_of_all`"
-msgstr ""
+msgstr "See also: :meth:`~.Timeline.detect_changes_of_all`"
 
 #: janim.anims.display.Display.apply:1 of
 msgid "返回记录的物件数据"
-msgstr ""
+msgstr "Returns the recorded item data"
 
 #: janim.anims.display.Display.apply:3 of
 msgid "将 ``self.data`` 重置为 ``self.data_orig`` 的数据并返回，避免 ``self.data_orig`` 被意外更改"
 msgstr ""
+"Resets ``self.data`` to the data of ``self.data_orig`` and returns it, "
+"preventing ``self.data_orig`` from being accidentally changed"
 
 #~ msgid "在指定的时间区间上显示物件（不包括后代物件）"
 #~ msgstr ""

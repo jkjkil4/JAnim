@@ -21,9 +21,9 @@ msgstr ""
 
 #: ../../source/janim/gui/functions/capture_dialog.rst:2
 msgid "capture_dialog"
-msgstr ""
+msgstr "capture_dialog"
 
 #: janim.gui.functions.capture_dialog.CaptureDialog:1 of
 msgid "基类：:py:class:`~PySide6.QtWidgets.QDialog`"
-msgstr ""
+msgstr "Base class: :py:class:`~PySide6.QtWidgets.QDialog`"
 

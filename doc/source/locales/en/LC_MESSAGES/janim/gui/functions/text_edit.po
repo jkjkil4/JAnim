@@ -21,9 +21,9 @@ msgstr ""
 
 #: ../../source/janim/gui/functions/text_edit.rst:2
 msgid "text_edit"
-msgstr ""
+msgstr "text_edit"
 
 #: janim.gui.functions.text_edit.TextEdit:1 of
 msgid "基类：:py:class:`~PySide6.QtWidgets.QPlainTextEdit`"
-msgstr ""
+msgstr "Base class: :py:class:`~PySide6.QtWidgets.QPlainTextEdit`"
 

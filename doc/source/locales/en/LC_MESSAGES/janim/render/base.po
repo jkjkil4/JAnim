@@ -21,32 +21,35 @@ msgstr ""
 
 #: ../../source/janim/render/base.rst:2
 msgid "base"
-msgstr ""
+msgstr "base"
 
 #: ../../source/rst_utils/tip_of_complex.rst:3
 msgid "这部分内容涉及 JAnim 实现原理，可能较为复杂，若没有研究源码的需求，你应酌情阅读"
 msgstr ""
+"This section covers JAnim implementation principles and may be complex. "
+"If you don't need to study the source code, you should read it as "
+"appropriate"
 
 #: janim.render.base.Programs:1 janim.render.base.RenderData:1
 #: janim.render.base.Renderer:1 of
 msgid "基类：:py:class:`object`"
-msgstr ""
+msgstr "Base class: :py:class:`object`"
 
 #: janim.render.base.Renderer:1 of
 msgid "渲染器的基类"
-msgstr ""
+msgstr "Base class for renderers"
 
 #: janim.render.base.Renderer:3 of
 msgid "重写 :meth:`render` 以实现具体功能"
-msgstr ""
+msgstr "Override :meth:`render` to implement specific functionality"
 
 #: janim.render.base.RenderData:1 of
 msgid "在渲染过程中需要配置的属性"
-msgstr ""
+msgstr "Properties that need to be configured during rendering"
 
 #: janim.render.base.RenderData:3 of
 msgid "通过 :py:obj:`Renderer.data_ctx` 进行设置和获取"
-msgstr ""
+msgstr "Set and get through :py:obj:`Renderer.data_ctx`"
 
 #~ msgid "**提示：这部分内容涉及 JAnim 实现原理，可能较为复杂，若没有研究源码的需求，你应酌情阅读**"
 #~ msgstr ""

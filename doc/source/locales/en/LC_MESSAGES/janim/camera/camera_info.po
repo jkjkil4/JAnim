@@ -21,9 +21,9 @@ msgstr ""
 
 #: ../../source/janim/camera/camera_info.rst:2
 msgid "camera_info"
-msgstr ""
+msgstr "camera_info"
 
 #: janim.camera.camera_info.CameraInfo:1 of
 msgid "基类：:py:class:`object`"
-msgstr ""
+msgstr "Base class: :py:class:`object`"
 

@@ -25,10 +25,10 @@ msgstr "typing"
 
 #: janim.typing.SupportsInterpolate:1 of
 msgid "基类：:py:class:`~typing.Protocol`, :py:class:`~typing.Generic`"
-msgstr "基类：:py:class:`~typing.Protocol`, :py:class:`~typing.Generic`"
+msgstr "Base class: :py:class:`~typing.Protocol`, :py:class:`~typing.Generic`"
 
 #: janim.typing.SupportsApartAlpha:1 of
 #, fuzzy
 msgid "基类：:py:class:`~typing.Protocol`"
-msgstr "基类：:py:class:`~typing.Protocol`, :py:class:`~typing.Generic`"
+msgstr "Base class: :py:class:`~typing.Protocol`, :py:class:`~typing.Generic`"
 

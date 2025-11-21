@@ -38,12 +38,12 @@ msgid ""
 "基类：:py:class:`~janim.utils.refresh.Refreshable`, :py:class:`~typing."
 "Generic`"
 msgstr ""
-"基类：:py:class:`~janim.utils.refresh.Refreshable`, :py:class:`~typing."
+"Base class: :py:class:`~janim.utils.refresh.Refreshable`, :py:class:`~typing."
 "Generic`"
 
 #: janim.components.component.Component.BindInfo:1 of
 msgid "基类：:py:class:`object`"
-msgstr "基类：:py:class:`object`"
+msgstr "Base class: :py:class:`object`"
 
 #: janim.components.component.Component.BindInfo:1 of
 msgid "对组件定义信息的封装"
@@ -91,7 +91,7 @@ msgstr ""
 
 #: janim.components.component.CmptInfo:1 of
 msgid "基类：:py:class:`~typing.Generic`"
-msgstr "基类：:py:class:`~typing.Generic`"
+msgstr "Base class: :py:class:`~typing.Generic`"
 
 #: janim.components.component.CmptInfo:1 of
 msgid "在类中定义组件需要使用该类"

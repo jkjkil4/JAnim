@@ -22,7 +22,7 @@ msgstr ""
 
 #: ../../source/janim/utils/iterables.rst:2
 msgid "iterables"
-msgstr ""
+msgstr "iterables"
 
 #: ../../source/rst_utils/tip_of_manim.rst:1
 msgid ""
@@ -36,12 +36,16 @@ msgid ""
 "Used instead of list(set(l)) to maintain order Keeps the last occurrence "
 "of each element"
 msgstr ""
+"Used instead of list(set(l)) to maintain order Keeps the last occurrence "
+"of each element"
 
 #: janim.utils.iterables.list_update:1 of
 msgid ""
 "Used instead of list(set(l1).update(l2)) to maintain order, making sure "
 "duplicates are removed from l1, not l2."
 msgstr ""
+"Used instead of list(set(l1).update(l2)) to maintain order, making sure "
+"duplicates are removed from l1, not l2."
 
 #: janim.utils.iterables.batch_by_property:1 of
 msgid ""
@@ -50,7 +54,13 @@ msgid ""
 "and such that chaining all these batches together would give the "
 "original list (i.e. order is preserved)"
 msgstr ""
+"Takes in a list, and returns a list of tuples, (batch, prop) such that "
+"all items in a batch have the same output when put into property_func, "
+"and such that chaining all these batches together would give the "
+"original list (i.e. order is preserved)"
 
 #: janim.utils.iterables.resize_and_repeatedly_extend:1 of
 msgid "注意：这个函数在 length <= len(array) 时，不会产生 array 的拷贝"
 msgstr ""
+"Note: This function does not create a copy of array when length <= "
+"len(array)"

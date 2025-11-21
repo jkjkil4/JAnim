@@ -26,7 +26,7 @@ msgstr "composition"
 #: janim.anims.composition.AnimGroup:1 janim.anims.composition.Do:1
 #: janim.anims.composition.Wait:1 of
 msgid "基类：:py:class:`~janim.anims.animation.Animation`"
-msgstr "基类：:py:class:`~janim.anims.animation.Animation`"
+msgstr "Base class: :py:class:`~janim.anims.animation.Animation`"
 
 #: janim.anims.composition.AnimGroup:1 of
 msgid "动画集合（并列执行）"
@@ -82,6 +82,9 @@ msgid ""
 "另外，``collapse`` 表示在预览界面中是否折叠该动画组（默认不折叠，而例如 "
 ":class:`~.TransfromMatchingShapes` 默认是折叠的）"
 msgstr ""
+"In addition, ``collapse`` indicates whether to collapse this animation group "
+"in the preview interface (default is not collapsed, while for example "
+":class:`~.TransfromMatchingShapes` is collapsed by default)"
 
 #: ../../source/janim/anims/composition.rst:40
 #: ../../source/janim/anims/composition.rst:127
@@ -97,7 +100,7 @@ msgstr ""
 
 #: janim.anims.composition.Aligned:1 janim.anims.composition.Succession:1 of
 msgid "基类：:py:class:`~janim.anims.composition.AnimGroup`"
-msgstr "基类：:py:class:`~janim.anims.composition.AnimGroup`"
+msgstr "Base class: :py:class:`~janim.anims.composition.AnimGroup`"
 
 #: janim.anims.composition.Succession:1 of
 msgid "动画集合（顺序执行）"
@@ -129,15 +132,15 @@ msgstr ""
 
 #: janim.anims.composition.Wait:1 of
 msgid "等待特定时间，在 :meth:`~.Succession` 中比较有用"
-msgstr ""
+msgstr "Wait for a specific time, useful in :meth:`~.Succession`"
 
 #: janim.anims.composition.Wait:3 of
 msgid "（其实就是一个空动画）"
-msgstr ""
+msgstr "(Actually just an empty animation)"
 
 #: janim.anims.composition.Do:1 of
 msgid "在动画的特定时间执行指定操作"
-msgstr ""
+msgstr "Execute a specified operation at a specific time in the animation"
 
 #~ msgid "设置并计算子动画的时间范围"
 #~ msgstr "Set and calculate the time range of child animations"

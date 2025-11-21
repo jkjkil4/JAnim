@@ -21,44 +21,44 @@ msgstr ""
 
 #: ../../source/janim/gui/timeline_view.rst:2
 msgid "timeline_view"
-msgstr ""
+msgstr "timeline_view"
 
 #: janim.gui.timeline_view.TimelineView:1 of
 msgid "基类：:py:class:`~PySide6.QtWidgets.QWidget`"
-msgstr ""
+msgstr "Base class: :py:class:`~PySide6.QtWidgets.QWidget`"
 
 #: janim.gui.timeline_view.TimelineView:1 of
 msgid "窗口下方的进度条和动画区段指示器"
-msgstr ""
+msgstr "Progress bar and animation segment indicator at the bottom of the window"
 
 #: janim.gui.timeline_view.TimelineView:3 of
 msgid "**w** 键放大区段（使视野精确到一小段中）"
-msgstr ""
+msgstr "**w** key zooms in on segments (makes the view precise to a small segment)"
 
 #: janim.gui.timeline_view.TimelineView:4 of
 msgid "**s** 键缩小区段（使视野扩展到一大段中）"
-msgstr ""
+msgstr "**s** key zooms out segments (expands the view to a large segment)"
 
 #: janim.gui.timeline_view.TimelineView:5 of
 msgid "**a** 和 **d** 左右移动区段"
-msgstr ""
+msgstr "**a** and **d** keys move segments left and right"
 
 #: janim.gui.timeline_view.TimelineView:6 of
 msgid "使用鼠标滚轮纵向平移"
-msgstr ""
+msgstr "Use mouse wheel for vertical panning"
 
 #: janim.gui.timeline_view.TimelineView.PixelRange:1
 #: janim.gui.timeline_view.TimelineView.Pressing:1 of
 msgid "基类：:py:class:`object`"
-msgstr ""
+msgstr "Base class: :py:class:`object`"
 
 #: janim.gui.timeline_view.TimelineView.Pressing:1 of
 msgid "记录按键状态"
-msgstr ""
+msgstr "Records key press state"
 
 #: janim.gui.timeline_view.TimelineView.init_label_group:1 of
 msgid "构建动画区段信息，以便操作与绘制"
-msgstr ""
+msgstr "Build animation segment information for manipulation and rendering"
 
 #~ msgid "动画区段被渲染到第几行的标记"
 #~ msgstr ""

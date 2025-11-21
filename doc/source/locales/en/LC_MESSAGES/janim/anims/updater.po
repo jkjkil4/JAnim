@@ -28,7 +28,7 @@ msgstr "updater"
 #: janim.anims.updater.StepUpdaterParams:1 janim.anims.updater.UpdaterParams:1
 #: of
 msgid "基类：:py:class:`object`"
-msgstr "基类：:py:class:`object`"
+msgstr "Base class: :py:class:`object`"
 
 #: janim.anims.updater.UpdaterParams:1 of
 msgid "``Updater`` 调用时会传递的参数，用于标注时间信息以及动画进度"
@@ -40,8 +40,8 @@ msgstr ""
 #, fuzzy
 msgid ":class:`StepUpdater` 调用时会传递的参数，用于标注时间信息以及动画进度"
 msgstr ""
-"Parameters passed when calling the function of ``Updater``, used to mark "
-"time information and animation progress."
+"Parameters passed when calling the function of :class:`StepUpdater`, used to "
+"mark time information and animation progress."
 
 #: janim.anims.updater.DataUpdater:1 janim.anims.updater.GroupUpdater:1
 #: janim.anims.updater.StepUpdater:1 of
@@ -49,7 +49,7 @@ msgid ""
 "基类：:py:class:`~janim.anims.animation.Animation`, "
 ":py:class:`~typing.Generic`"
 msgstr ""
-"基类：:py:class:`~janim.anims.animation.Animation`, "
+"Base class: :py:class:`~janim.anims.animation.Animation`, "
 ":py:class:`~typing.Generic`"
 
 #: janim.anims.updater.DataUpdater:1 of
@@ -69,12 +69,17 @@ msgstr ""
 #: janim.anims.updater.DataUpdater:21 of
 msgid "并且，可以对同一个物件作用多个 updater，各个 updater 会依次调用"
 msgstr ""
+"Additionally, multiple updaters can be applied to the same item, and each "
+"updater will be called sequentially"
 
 #: janim.anims.updater.DataUpdater:23 of
 msgid ""
 "注意：默认 ``root_only=True`` 即只对根物件应用该 updater；需要设置 ``root_only=False`` "
 "才会对所有后代物件也应用该 updater"
 msgstr ""
+"Note: By default ``root_only=True`` means the updater is only applied to the "
+"root item; you need to set ``root_only=False`` to apply the updater to all "
+"descendant items as well"
 
 #: janim.anims.updater.DataUpdater:25 janim.anims.updater.ItemUpdater:11 of
 msgid "另见：:class:`~.UpdaterExample`"
@@ -89,27 +94,33 @@ msgid ""
 "注意：该 Updater 假设 ``func`` 不会改变 ``item`` "
 "后代物件结构，如果改变结构（例如增删子物件、:meth:`~.Item.become` 结构不一致等情况），则可能导致意外行为"
 msgstr ""
+"Note: This Updater assumes that ``func`` will not change the descendant item "
+"structure of ``item``. If the structure is changed (e.g., adding/removing "
+"child items, :meth:`~.Item.become` with inconsistent structure, etc.), it "
+"may lead to unexpected behavior"
 
 #: janim.anims.updater.ItemUpdater:1 janim.anims.updater.MethodUpdater:1 of
 msgid "基类：:py:class:`~janim.anims.animation.Animation`"
-msgstr "基类：:py:class:`~janim.anims.animation.Animation`"
+msgstr "Base class: :py:class:`~janim.anims.animation.Animation`"
 
 #: janim.anims.updater.MethodUpdater:1 of
 msgid "依据物件的变换而创建的 updater"
-msgstr ""
+msgstr "Updater created based on item transformations"
 
 #: janim.anims.updater.MethodUpdater:3 of
 msgid "具体参考 :meth:`~.Item.update`"
-msgstr ""
+msgstr "See :meth:`~.Item.update` for details"
 
 #: janim.anims.updater.MethodUpdater.ActionType:1 of
 #, fuzzy
 msgid "基类：:py:class:`~enum.Enum`"
-msgstr "基类：:py:class:`object`"
+msgstr "Base class: :py:class:`~enum.Enum`"
 
 #: janim.anims.updater.MethodUpdaterArgsBuilder:1 of
 msgid "使得 ``.update`` 和 ``.update(...)`` 后可以进行同样的操作"
 msgstr ""
+"Allows the same operations to be performed after both ``.update`` and "
+"``.update(...)``"
 
 #: janim.anims.updater.ItemUpdater:1 of
 msgid "以时间为参数显示物件"
@@ -150,6 +161,8 @@ msgstr "If ``item=None`` is passed, both of the above points are invalid."
 #: janim.anims.updater.StepUpdater:1 of
 msgid "按步更新物件，每次间隔 ``step`` 秒调用 ``func`` 进行下一步更新"
 msgstr ""
+"Updates the item step by step, calling ``func`` every ``step`` seconds to "
+"perform the next update"
 
 #~ msgid ""
 #~ "注：使用 ``data.cmpt`` 即可访问物件的组件，例如物件的组件方法 "

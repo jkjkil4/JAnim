@@ -31,13 +31,12 @@ msgstr ""
 " you may choose to read it at your discretion.**"
 
 #: janim.utils.signal.Signal:1 of
-#, fuzzy
 msgid ""
 "基类：:py:class:`~typing.Generic`\\ [:py:obj:`~typing.T`, "
 ":py:obj:`~typing.P`, :py:obj:`~typing.R`]"
 msgstr ""
-"基类：:py:class:`~typing.Generic`\\ [:py:obj:`~janim.utils.signal.T`, "
-":py:obj:`~janim.utils.signal.P`, :py:obj:`~janim.utils.signal.R`]"
+"Base class: :py:class:`~typing.Generic`\\ [:py:obj:`~typing.T`, "
+":py:obj:`~typing.P`, :py:obj:`~typing.R`]"
 
 #: janim.utils.signal.Signal.self_slot:1 of
 msgid "被修饰的方法会在 ``Signal`` 触发时被调用"
@@ -50,15 +49,16 @@ msgstr ""
 "the ``Signal`` is triggered"
 
 #: janim.utils.signal.Signal.self_refresh_with_recurse:1 of
-#, fuzzy
 msgid "被修饰的方法会在 :class:`~.Signal` 触发时，标记需要重新计算"
 msgstr ""
 "The decorated method will be marked as needing to be recalculated when "
-"the ``Signal`` is triggered"
+"the :class:`~.Signal` is triggered"
 
 #: janim.utils.signal.Signal.self_refresh_with_recurse:3 of
 msgid "并且会根据 ``recurse_up`` 和 ``recurse_down`` 进行递归传递"
 msgstr ""
+"And will recursively propagate according to ``recurse_up`` and "
+"``recurse_down``"
 
 #: janim.utils.signal.Signal.connect:1 of
 msgid "使 ``func`` 会在 ``Signal`` 触发时被调用"

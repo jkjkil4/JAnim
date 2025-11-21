@@ -21,13 +21,13 @@ msgstr ""
 
 #: ../../source/janim/items/coordinate/functions.rst:2
 msgid "functions"
-msgstr ""
+msgstr "functions"
 
 #: janim.items.coordinate.functions.ParametricCurve:1 of
 msgid "基类：:py:class:`~janim.items.vitem.VItem`"
-msgstr ""
+msgstr "Base class: :py:class:`~janim.items.vitem.VItem`"
 
 #: janim.items.coordinate.functions.FunctionGraph:1 of
 msgid "基类：:py:class:`~janim.items.coordinate.functions.ParametricCurve`"
-msgstr ""
+msgstr "Base class: :py:class:`~janim.items.coordinate.functions.ParametricCurve`"
 

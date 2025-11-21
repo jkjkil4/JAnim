@@ -21,19 +21,22 @@ msgstr ""
 
 #: ../../source/janim/gui/fixed_ratio_widget.rst:2
 msgid "fixed_ratio_widget"
-msgstr ""
+msgstr "fixed_ratio_widget"
 
 #: janim.gui.fixed_ratio_widget.FixedRatioWidget:1 of
 msgid "基类：:py:class:`~PySide6.QtWidgets.QWidget`"
-msgstr ""
+msgstr "Base class: :py:class:`~PySide6.QtWidgets.QWidget`"
 
 #: janim.gui.fixed_ratio_widget.FixedRatioWidget:1 of
 msgid "使得传入的 ``inside`` 控件可以以固定比例塞在该控件中"
-msgstr ""
+msgstr "Allows the passed ``inside`` widget to fit within this widget at a fixed ratio"
 
 #: janim.gui.fixed_ratio_widget.get_proportional_scale_size:1 of
 msgid ""
 "根据 ``(tg_width, tg_height)`` 的目标大小信息， 得到 ``(src_width, src_height)`` "
 "在进行等比缩放后能塞进目标区域的最大大小"
 msgstr ""
+"Based on the target size information ``(tg_width, tg_height)``, get the "
+"maximum size that ``(src_width, src_height)`` can fit into the target area "
+"after proportional scaling"
 

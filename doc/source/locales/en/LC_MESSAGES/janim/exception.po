@@ -21,43 +21,45 @@ msgstr ""
 
 #: ../../source/janim/exception.rst:2
 msgid "exception"
-msgstr ""
+msgstr "exception"
 
 #: ../../docstring janim.exception.EXITCODE_PYSIDE6_NOT_FOUND:1 of
 msgid "``PySide6`` 未安装时的退出码"
-msgstr ""
+msgstr "Exit code when ``PySide6`` is not installed"
 
 #: ../../docstring janim.exception.EXITCODE_MODULE_NOT_FOUND:1 of
 msgid "使用 ``run`` 或 ``write`` 指定的文件未找到时的退出码"
-msgstr ""
+msgstr "Exit code when the file specified by ``run`` or ``write`` is not found"
 
 #: ../../docstring janim.exception.EXITCODE_NOT_FILE:1 of
 msgid "使用 ``run`` 或 ``write`` 指定路径不是文件时的退出码"
-msgstr ""
+msgstr "Exit code when the path specified by ``run`` or ``write`` is not a file"
 
 #: ../../docstring janim.exception.EXITCODE_PYOPENGL_NOT_FOUND:1 of
 msgid "``PyOpenGL`` 未安装时的退出码（仅在设备不支持 OpenGL4.3 的情况下需要安装 PyOpenGL）"
 msgstr ""
+"Exit code when ``PyOpenGL`` is not installed (PyOpenGL is only needed when "
+"the device does not support OpenGL 4.3)"
 
 #: ../../docstring janim.exception.EXITCODE_TYPST_NOT_FOUND:1 of
 msgid "Typst 未安装时的退出码"
-msgstr ""
+msgstr "Exit code when Typst is not installed"
 
 #: ../../docstring janim.exception.EXITCODE_TYPST_COMPILE_ERROR:1 of
 msgid "Typst 编译失败时的退出码"
-msgstr ""
+msgstr "Exit code when Typst compilation fails"
 
 #: ../../docstring janim.exception.EXITCODE_FFMPEG_NOT_FOUND:1 of
 msgid "ffmpeg 未安装时的退出码"
-msgstr ""
+msgstr "Exit code when ffmpeg is not installed"
 
 #: ../../docstring janim.exception.EXITCODE_FFPROBE_ERROR:1 of
 msgid "ffprobe 执行失败时的退出码"
-msgstr ""
+msgstr "Exit code when ffprobe execution fails"
 
 #: janim.exception.JAnimException:1 of
 msgid "基类：:py:class:`Exception`"
-msgstr ""
+msgstr "Base class: :py:class:`Exception`"
 
 #: janim.exception.AsTypeError:1 janim.exception.BooleanOpsError:1
 #: janim.exception.CmptGroupLookupError:1 janim.exception.ColorNotFoundError:1
@@ -66,29 +68,31 @@ msgstr ""
 #: janim.exception.PointError:1 janim.exception.TimelineError:1
 #: janim.exception.UpdaterError:1 of
 msgid "基类：:py:class:`~janim.exception.JAnimException`"
-msgstr ""
+msgstr "Base class: :py:class:`~janim.exception.JAnimException`"
 
 #: janim.exception.ExitException:1 of
 msgid "当 :class:`ExitException` 未被捕获时， 会直接以 ``exit_code`` 退出，不输出 ``traceback`` 信息"
 msgstr ""
+"When :class:`ExitException` is not caught, it will exit directly with "
+"``exit_code`` without outputting ``traceback`` information"
 
 #: janim.exception.AnimationError:1 janim.exception.NotAnimationError:1
 #: janim.exception.TimelineLookupError:1 of
 msgid "基类：:py:class:`~janim.exception.TimelineError`"
-msgstr ""
+msgstr "Base class: :py:class:`~janim.exception.TimelineError`"
 
 #: janim.exception.AnimGroupError:1 of
 msgid "基类：:py:class:`~janim.exception.AnimationError`"
-msgstr ""
+msgstr "Base class: :py:class:`~janim.exception.AnimationError`"
 
 #: janim.exception.InvalidOrdinalError:1 janim.exception.PatternMismatchError:1
 #: of
 msgid "基类：:py:class:`~janim.exception.GetItemError`"
-msgstr ""
+msgstr "Base class: :py:class:`~janim.exception.GetItemError`"
 
 #: janim.exception.InvaildMatrixError:1 of
 msgid "基类：:py:class:`~janim.exception.PointError`"
-msgstr ""
+msgstr "Base class: :py:class:`~janim.exception.PointError`"
 
 #~ msgid "``Typst`` 未安装时的退出码"
 #~ msgstr ""

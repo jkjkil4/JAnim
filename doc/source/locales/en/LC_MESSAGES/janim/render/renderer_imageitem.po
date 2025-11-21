@@ -21,9 +21,9 @@ msgstr ""
 
 #: ../../source/janim/render/renderer_imageitem.rst:2
 msgid "renderer_imageitem"
-msgstr ""
+msgstr "renderer_imageitem"
 
 #: janim.render.renderer_imageitem.ImageItemRenderer:1 of
 msgid "基类：:py:class:`~janim.render.base.Renderer`"
-msgstr ""
+msgstr "Base class: :py:class:`~janim.render.base.Renderer`"
 

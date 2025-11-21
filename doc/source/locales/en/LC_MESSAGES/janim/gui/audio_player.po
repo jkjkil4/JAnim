@@ -21,9 +21,9 @@ msgstr ""
 
 #: ../../source/janim/gui/audio_player.rst:2
 msgid "audio_player"
-msgstr ""
+msgstr "audio_player"
 
 #: janim.gui.audio_player.AudioPlayer:1 of
 msgid "基类：:py:class:`object`"
-msgstr ""
+msgstr "Base class: :py:class:`object`"
 

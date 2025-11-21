@@ -21,38 +21,38 @@ msgstr ""
 
 #: ../../source/janim/items/shape_matchers.rst:2
 msgid "shape_matchers"
-msgstr ""
+msgstr "shape_matchers"
 
 #: janim.items.shape_matchers.FrameRect:1
 #: janim.items.shape_matchers.SurroundingRect:1 of
 msgid "基类：:py:class:`~janim.items.geometry.polygon.Rect`"
-msgstr ""
+msgstr "Base class: :py:class:`~janim.items.geometry.polygon.Rect`"
 
 #: janim.items.shape_matchers.SurroundingRect:1 of
 msgid "包围矩形框"
-msgstr ""
+msgstr "Surrounding rectangle"
 
 #: janim.items.shape_matchers.FrameRect:1 of
 msgid "覆盖整个画面的矩形"
-msgstr ""
+msgstr "Rectangle covering the entire frame"
 
 #: janim.items.shape_matchers.FrameRect:3 of
 msgid "可以传入 `camera` 指定以其画面区域为准"
-msgstr ""
+msgstr "Can pass `camera` to specify using its frame area"
 
 #: janim.items.shape_matchers.FrameRect:4 of
 msgid "若不传入则产生默认宽高 `frame_width` 和 `frame_height` 的矩形"
-msgstr ""
+msgstr "If not passed, creates a rectangle with default width and height `frame_width` and `frame_height`"
 
 #: janim.items.shape_matchers.HighlightRect:1 of
 msgid "基类：:py:class:`~janim.items.boolean_ops.Difference`"
-msgstr ""
+msgstr "Base class: :py:class:`~janim.items.boolean_ops.Difference`"
 
 #: janim.items.shape_matchers.HighlightRect:1 of
 msgid "高亮区域，即 :class:`FrameRect` 挖去 :class:`SurroundingRect`"
-msgstr ""
+msgstr "Highlighted area, i.e., :class:`FrameRect` minus :class:`SurroundingRect`"
 
 #: janim.items.shape_matchers.Underline:1 of
 msgid "基类：:py:class:`~janim.items.geometry.line.Line`"
-msgstr ""
+msgstr "Base class: :py:class:`~janim.items.geometry.line.Line`"
 

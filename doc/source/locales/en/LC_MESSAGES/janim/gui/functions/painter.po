@@ -21,19 +21,19 @@ msgstr ""
 
 #: ../../source/janim/gui/functions/painter.rst:2
 msgid "painter"
-msgstr ""
+msgstr "painter"
 
 #: janim.gui.functions.painter.Painter:1 of
 msgid "基类：:py:class:`~PySide6.QtWidgets.QWidget`"
-msgstr ""
+msgstr "Base class: :py:class:`~PySide6.QtWidgets.QWidget`"
 
 #: janim.gui.functions.painter.Painter.Widget:1 of
 msgid "基类：:py:class:`~PySide6.QtWidgets.QScrollArea`"
-msgstr ""
+msgstr "Base class: :py:class:`~PySide6.QtWidgets.QScrollArea`"
 
 #: janim.gui.functions.painter.Painter.PDot:1
 #: janim.gui.functions.painter.Painter.PRect:1
 #: janim.gui.functions.painter.Painter.PVItem:1 of
 msgid "基类：:py:class:`~janim.gui.functions.painter.Painter.Widget`"
-msgstr ""
+msgstr "Base class: :py:class:`~janim.gui.functions.painter.Painter.Widget`"
 

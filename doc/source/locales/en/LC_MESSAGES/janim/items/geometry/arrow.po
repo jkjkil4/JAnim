@@ -21,135 +21,137 @@ msgstr ""
 
 #: ../../source/janim/items/geometry/arrow.rst:2
 msgid "arrow"
-msgstr ""
+msgstr "arrow"
 
 #: janim.items.geometry.arrow.CenterAnchor:1 of
 msgid "基类：:py:class:`~enum.StrEnum`"
-msgstr ""
+msgstr "Base class: :py:class:`~enum.StrEnum`"
 
 #: janim.items.geometry.arrow.CenterAnchor:1 of
 msgid "箭头原点所处位置的选项"
-msgstr ""
+msgstr "Options for the position of the arrow origin"
 
 #: janim.items.geometry.arrow.CenterAnchor:3 of
 msgid "图形示意："
-msgstr ""
+msgstr "Graphical illustration:"
 
 #: janim.items.geometry.arrow.ArrowTip:1 of
 msgid "基类：:py:class:`~janim.items.vitem.VItem`"
-msgstr ""
+msgstr "Base class: :py:class:`~janim.items.vitem.VItem`"
 
 #: janim.items.geometry.arrow.ArrowTip:1 of
 msgid "箭头标志"
-msgstr ""
+msgstr "Arrow tip"
 
 #: janim.items.geometry.arrow.ArrowTip:3 of
 msgid "``body_length``: 箭头的宽度"
-msgstr ""
+msgstr "``body_length``: Width of the arrow"
 
 #: janim.items.geometry.arrow.ArrowTip:4 of
 msgid "``back_width``: 箭头的长度"
-msgstr ""
+msgstr "``back_width``: Length of the arrow"
 
 #: janim.items.geometry.arrow.ArrowTip:5 of
 msgid "``center_anchor``: 原点所处的位置，请参考 :class:`CenterAnchor`"
-msgstr ""
+msgstr "``center_anchor``: Position of the origin, refer to :class:`CenterAnchor`"
 
 #: janim.items.geometry.arrow.ArrowTip:6 of
 msgid "``rotation``: 绕方向轴转动的角度，一般用于 3D 中"
-msgstr ""
+msgstr "``rotation``: Rotation angle around the direction axis, generally used in 3D"
 
 #: janim.items.geometry.arrow.ArrowTip.get_center_anchor:1 of
 msgid "根据设定的 ``center_anchor`` 得到原点位置， 请参考 :class:`ArrowTip.CenterAnchor`"
-msgstr ""
+msgstr "Get the origin position based on the set ``center_anchor``, refer to :class:`ArrowTip.CenterAnchor`"
 
 #: janim.items.geometry.arrow.ArrowTip.direction:1 of
 msgid "得到箭头的方向（单位向量）"
-msgstr ""
+msgstr "Get the direction of the arrow (unit vector)"
 
 #: janim.items.geometry.arrow.ArrowTip.body_length:1 of
 msgid "得到箭头的长度"
-msgstr ""
+msgstr "Get the length of the arrow"
 
 #: janim.items.geometry.arrow.ArrowTip.back_width:1 of
 msgid "得到箭头的宽度"
-msgstr ""
+msgstr "Get the width of the arrow"
 
 #: janim.items.geometry.arrow.ArrowTip.rotate_about_anchor:1 of
 msgid "相对于原点位置进行旋转"
-msgstr ""
+msgstr "Rotate relative to the origin position"
 
 #: janim.items.geometry.arrow.ArrowTip.move_anchor_to:1 of
 msgid "将原点移动到指定位置"
-msgstr ""
+msgstr "Move the origin to the specified position"
 
 #: janim.items.geometry.arrow.Cmpt_VPoints_ArrowImpl:1 of
 msgid ""
 "基类：:py:class:`~janim.items.geometry.line.Cmpt_VPoints_LineImpl`, "
 ":py:class:`~typing.Generic`"
 msgstr ""
+"Base class: :py:class:`~janim.items.geometry.line.Cmpt_VPoints_LineImpl`, "
+":py:class:`~typing.Generic`"
 
 #: janim.items.geometry.arrow.Cmpt_VPoints_ArrowImpl.put_start_and_end_on:1 of
 msgid "通过旋转和缩放，使得物件的起点和终点被置于 ``start`` 和 ``end``"
-msgstr ""
+msgstr "Through rotation and scaling, place the item's start and end points at ``start`` and ``end``"
 
 #: janim.items.geometry.arrow.Arrow:1 of
 msgid "基类：:py:class:`~janim.items.geometry.line.Line`"
-msgstr ""
+msgstr "Base class: :py:class:`~janim.items.geometry.line.Line`"
 
 #: janim.render.renderer_arrow.ArrowRenderer:1 of
 msgid "带箭头的线段，箭头大小自动"
-msgstr ""
+msgstr "Line segment with arrow, arrow size is automatic"
 
 #: janim.render.renderer_arrow.ArrowRenderer:3 of
 msgid "``buff``: 箭头首尾的空余量，默认为 ``0.25``"
-msgstr ""
+msgstr "``buff``: Buffer space at the arrow's head and tail, default is ``0.25``"
 
 #: janim.render.renderer_arrow.ArrowRenderer:4 of
 msgid "``max_length_to_tip_length_ratio``: 箭头长度和直线长度最大比例"
-msgstr ""
+msgstr "``max_length_to_tip_length_ratio``: Maximum ratio of arrow length to line length"
 
 #: janim.items.geometry.arrow.Arrow.copy:1
 #: janim.items.geometry.arrow.DoubleArrow.copy:1 of
 msgid "复制物件"
-msgstr ""
+msgstr "Copy item"
 
 #: janim.items.geometry.arrow.Arrow.create_text:1 of
 msgid "创建文字并与箭头对齐"
-msgstr ""
+msgstr "Create text and align it with the arrow"
 
 #: janim.items.geometry.arrow.Arrow.create_text:3 of
 msgid "其中 ``under`` 参数的含义是："
-msgstr ""
+msgstr "The meaning of the ``under`` parameter is:"
 
 #: janim.items.geometry.arrow.Arrow.create_text:5 of
 msgid "``under=False``："
-msgstr ""
+msgstr "``under=False``:"
 
 #: janim.items.geometry.arrow.Arrow.create_text:12 of
 msgid "``under=True``："
-msgstr ""
+msgstr "``under=True``:"
 
 #: janim.items.geometry.arrow.DoubleArrow:1 janim.items.geometry.arrow.Vector:1
 #: of
 msgid "基类：:py:class:`~janim.items.geometry.arrow.Arrow`"
-msgstr ""
+msgstr "Base class: :py:class:`~janim.items.geometry.arrow.Arrow`"
 
 #: janim.items.geometry.arrow.Vector:1 of
 msgid "起点为 ORIGIN 的箭头，终点为 ``direction``"
-msgstr ""
+msgstr "Arrow with start point at ORIGIN and end point at ``direction``"
 
 #: janim.items.geometry.arrow.Vector:3 of
 msgid "``buff`` 默认设为了 0"
-msgstr ""
+msgstr "``buff`` is set to 0 by default"
 
 #: janim.items.geometry.arrow.DoubleArrow:1 of
 msgid "双向箭头"
-msgstr ""
+msgstr "Double arrow"
 
 #: janim.items.geometry.arrow.DoubleArrow:3 of
 msgid "参数请参考 :class:`Arrow`"
-msgstr ""
+msgstr "For parameters, refer to :class:`Arrow`"
 
 #~ msgid "基类：:py:class:`~enum.Enum`"
 #~ msgstr ""
