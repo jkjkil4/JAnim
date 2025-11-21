@@ -20,8 +20,8 @@ msgstr ""
 "Generated-By: Babel 2.17.0\n"
 
 #: ../../source/examples/_note_examples_options.rst:9
-msgid "除了 00:00 - 01:25 的“类 Slide 演示”之外，作为视频注解出现的区段："
-msgstr "Segments appearing as video annotations, excluding the \"Slide-like Demonstration\" from 00:00 - 01:25:"
+msgid "除了 00:00 - 01:25 的“类 Slide 演示”之外，作为视频叠加动画出现的区段："
+msgstr "Segments appearing as video overlay animations, excluding the \"Slide-style Demonstration\" from 00:00 - 01:25:"
 
 #: ../../source/examples/_note_examples_options.rst:11
 msgid "03\\:18 - 03\\:31 : 演示了 ``create_window`` 函数的参数含义"
@@ -32,8 +32,8 @@ msgid "03\\:57 - 04\\:48 : 演示了 ``viewport`` 的概念"
 msgstr "03:57 - 04:48: Demonstrates the concept of ``viewport``"
 
 #: ../../source/examples/_note_examples_options.rst:21
-msgid "除了 00:00 - 00:25 的“类 Slide 演示”之外，作为视频注解出现的区段："
-msgstr "Segments appearing as video annotations, excluding the \"Slide-like Demonstration\" from 00:00 - 00:25:"
+msgid "除了 00:00 - 00:25 的“类 Slide 演示”之外，作为视频叠加动画出现的区段："
+msgstr "Segments appearing as video overlay animations, excluding the \"Slide-style Demonstration\" from 00:00 - 00:25:"
 
 #: ../../source/examples/_note_examples_options.rst:23
 msgid "00\\:50 - 01\\:02 : 演示了 ``get_key`` 的用法"
@@ -48,8 +48,8 @@ msgid "02\\:01 - 02\\:18 : 演示了 ``RGB`` 颜色的概念"
 msgstr "02:01 - 02:18: Demonstrates the concept of ``RGB`` colors"
 
 #: ../../source/examples/_note_examples_options.rst:34
-msgid "作为视频注解出现的区段（由于区段太多，省略了一些无关紧要的部分）："
-msgstr "Segments appearing as video annotations (some less important parts are omitted due to too many segments):"
+msgid "作为视频叠加动画出现的区段（由于区段太多，省略了一些无关紧要的部分）："
+msgstr "Segments appearing as video overlay animations (some less important parts are omitted due to too many segments):"
 
 #: ../../source/examples/_note_examples_options.rst:36
 msgid "00\\:58 - 01\\:12 : 演示了 ``img`` 的成员"

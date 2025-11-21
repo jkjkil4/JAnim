@@ -6,7 +6,7 @@
         :author: jkjkil-jiang
         :source-link: https://github.com/jkjkil4/videos/blob/main/2024/LearnOpenGL-3-InstallationAndWindow/code.py
 
-        除了 00:00 - 01:25 的“类 Slide 演示”之外，作为视频注解出现的区段：
+        除了 00:00 - 01:25 的“类 Slide 演示”之外，作为视频叠加动画出现的区段：
 
         - 03\:18 - 03\:31 : 演示了 ``create_window`` 函数的参数含义
         - 03\:57 - 04\:48 : 演示了 ``viewport`` 的概念
@@ -18,7 +18,7 @@
         :author: jkjkil-jiang
         :source-link: https://github.com/jkjkil4/videos/blob/main/2024/LearnOpenGL-4-InputAndBackground/code.py
 
-        除了 00:00 - 00:25 的“类 Slide 演示”之外，作为视频注解出现的区段：
+        除了 00:00 - 00:25 的“类 Slide 演示”之外，作为视频叠加动画出现的区段：
 
         - 00\:50 - 01\:02 : 演示了 ``get_key`` 的用法
         - 01\:10 - 01\:17 : 对“渲染循环”部分代码的强调
@@ -31,7 +31,7 @@
         :author: jkjkil-jiang
         :source-link: https://github.com/jkjkil4/videos/blob/main/2025/LearnOpenGL-10-TextureUsage/code.py
 
-        作为视频注解出现的区段（由于区段太多，省略了一些无关紧要的部分）：
+        作为视频叠加动画出现的区段（由于区段太多，省略了一些无关紧要的部分）：
 
         - 00\:58 - 01\:12 : 演示了 ``img`` 的成员
         - 02\:43 - 02\:52 : 跟随光标编辑出现的备注说明

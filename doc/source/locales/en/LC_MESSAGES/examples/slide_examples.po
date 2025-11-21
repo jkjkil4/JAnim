@@ -21,7 +21,7 @@ msgstr ""
 
 #: ../../source/examples/slide_examples.rst:2
 msgid "类 Slide 演示"
-msgstr "Slide-like Demonstrations"
+msgstr "Slide-style Demonstrations"
 
 #: ../../source/examples/slide_examples.rst:6
 msgid "欢迎联系我们将你使用 JAnim 创作的作品添加到该页面中"
