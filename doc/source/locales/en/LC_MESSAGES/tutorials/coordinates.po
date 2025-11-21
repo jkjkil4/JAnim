@@ -67,7 +67,7 @@ msgstr ""
 "the item."
 
 #: ../../source/tutorials/coordinates.rst:29
-msgid "所以在大多数情况下，当我们想要"操作物件的坐标"时，先 ``.points`` 再做具体操作就对了！"
+msgid "所以在大多数情况下，当我们想要“操作物件的坐标”时，先 ``.points`` 再做具体操作就对了！"
 msgstr ""
 "So in most cases, when we want to \"manipulate the coordinates of an item\", "
 "we first use ``.points`` and then perform specific operations!"
