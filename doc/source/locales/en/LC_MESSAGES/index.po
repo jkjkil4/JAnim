@@ -28,7 +28,6 @@ msgid "基础教程 - 了解基本概念"
 msgstr "Basic Tutorials - Understanding Basic Concepts"
 
 #: ../../source/index.rst:65
-#, fuzzy
 msgid "其它教程"
 msgstr "Other Tutorials"
 
@@ -54,7 +53,7 @@ msgstr "JAnim Documentation"
 
 #: ../../source/index.rst:9
 msgid "JAnim 是一个用于创建流畅动画的库，以程序化动画为核心理念，并支持实时编辑、实时预览，并支持更多其它丰富的功能。"
-msgstr "JAnim is a library for creating smooth animations, with programmatic animation as its core concept, supporting real-time editing, real-time preview, and many other rich features."
+msgstr "JAnim is a library for creating smooth animations, built around the core concept of programmatic animation. It supports real-time editing, live preview, and a wide range of additional powerful features."
 
 #: ../../source/index.rst:11
 msgid "以下是一部分样例展示（注：可以直接点击分页标题快速折叠这部分内容）"
@@ -250,9 +249,6 @@ msgstr ":ref:`modindex`"
 #: ../../source/index.rst:115
 msgid ":ref:`search`"
 msgstr ":ref:`search`"
-
-#~ msgid "其它"
-#~ msgstr "Other"
 
 #~ msgid "JAnim 是一个用于创建流畅动画的库"
 #~ msgstr "JAnim is a library for creating smooth animations"
