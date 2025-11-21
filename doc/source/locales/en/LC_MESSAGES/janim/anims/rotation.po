@@ -1,4 +1,4 @@
-# SOME DESCRIPTIVE TITLE.
+﻿# SOME DESCRIPTIVE TITLE.
 # Copyright (C) 2023, jkjkil4
 # This file is distributed under the same license as the JAnim package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2024.
@@ -41,7 +41,7 @@ msgstr ""
 
 #: janim.anims.rotation.Rotate:1 of
 msgid "基类：:py:class:`~janim.anims.updater.DataUpdater`"
-msgstr "Base class: :py:class:`~janim.anims.updater.DataUpdater`"
+msgstr "基类：:py:class:`~janim.anims.updater.DataUpdater`"
 
 #: janim.anims.rotation.Rotate:1 of
 msgid "旋转，默认对角度进行平滑插值"
@@ -59,9 +59,11 @@ msgstr ""
 
 #: janim.anims.rotation.Rotating:1 of
 msgid "基类：:py:class:`~janim.anims.rotation.Rotate`"
-msgstr "Base class: :py:class:`~janim.anims.rotation.Rotate`"
+msgstr "基类：:py:class:`~janim.anims.rotation.Rotate`"
 
 #: janim.anims.rotation.Rotating:1 of
 msgid "旋转，默认对角度进行线性插值"
 msgstr "Rotation animation, default linear interpolation for angles."
+
+
 

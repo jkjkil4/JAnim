@@ -1,4 +1,4 @@
-# SOME DESCRIPTIVE TITLE.
+﻿# SOME DESCRIPTIVE TITLE.
 # Copyright (C) 2023, jkjkil4
 # This file is distributed under the same license as the JAnim package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2024.
@@ -25,7 +25,7 @@ msgstr "anim_viewer"
 
 #: janim.gui.anim_viewer.AnimViewer:1 of
 msgid "基类：:py:class:`~PySide6.QtWidgets.QMainWindow`"
-msgstr "Base class: :py:class:`~PySide6.QtWidgets.QMainWindow`"
+msgstr "基类：:py:class:`~PySide6.QtWidgets.QMainWindow`"
 
 #: janim.gui.anim_viewer.AnimViewer:1 of
 msgid "用于显示构建完成的时间轴动画"
@@ -65,4 +65,6 @@ msgstr "Directly display a window for viewing completed timeline animations"
 
 #~ msgid "计算各个动画区段应当被渲染到第几行，以叠放式进行显示"
 #~ msgstr ""
+
+
 

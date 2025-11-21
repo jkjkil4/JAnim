@@ -1,4 +1,4 @@
-# SOME DESCRIPTIVE TITLE.
+﻿# SOME DESCRIPTIVE TITLE.
 # Copyright (C) 2023, jkjkil4
 # This file is distributed under the same license as the JAnim package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2024.
@@ -25,9 +25,11 @@ msgstr "glwidget"
 
 #: janim.gui.glwidget.GLWidget:1 of
 msgid "基类：:py:class:`~PySide6.QtOpenGLWidgets.QOpenGLWidget`"
-msgstr "Base class: :py:class:`~PySide6.QtOpenGLWidgets.QOpenGLWidget`"
+msgstr "基类：:py:class:`~PySide6.QtOpenGLWidgets.QOpenGLWidget`"
 
 #: janim.gui.glwidget.GLWidget:1 of
 msgid "窗口中央的渲染界面"
 msgstr "Rendering interface in the center of the window"
+
+
 

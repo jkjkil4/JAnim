@@ -1,4 +1,4 @@
-# SOME DESCRIPTIVE TITLE.
+﻿# SOME DESCRIPTIVE TITLE.
 # Copyright (C) 2023, jkjkil4
 # This file is distributed under the same license as the JAnim package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2024.
@@ -30,7 +30,7 @@ msgstr "Allows calling methods decorated with ``@mockable`` after ``.astype``"
 
 #: janim.items.item.Item:1 of
 msgid "基类：:py:class:`~janim.items.relation.Relation`\\ [:py:class:`Item`]"
-msgstr "Base class: :py:class:`~janim.items.relation.Relation`\\ [:py:class:`Item`]"
+msgstr "基类：:py:class:`~janim.items.relation.Relation`\\ [:py:class:`Item`]"
 
 #: janim.items.item.Item:1 of
 msgid ":class:`~.Item` 是物件的基类"
@@ -155,7 +155,7 @@ msgstr "Fixes the item on the screen, meaning even if the camera moves, its posi
 
 #: janim.items.item.Item.SavedState:1 of
 msgid "基类：:py:class:`~typing.Generic`"
-msgstr "Base class: :py:class:`~typing.Generic`"
+msgstr "基类：:py:class:`~typing.Generic`"
 
 #: janim.items.item.Item.save_state:1 of
 msgid "保存物件状态，后续可使用 :meth:`load_state` 恢复，例如："
@@ -189,7 +189,7 @@ msgstr "Hide item"
 #~ msgstr "Copies the data of the item and returns it"
 
 #~ msgid "基类：:py:class:`~janim.items.item.Item`, :py:class:`~typing.Generic`"
-#~ msgstr "Base class: :py:class:`~janim.items.item.Item`, :py:class:`~typing.Generic`"
+#~ msgstr "基类：:py:class:`~janim.items.item.Item`, :py:class:`~typing.Generic`"
 
 #~ msgid "将物件组成一组"
 #~ msgstr "Groups items into a collection"
@@ -211,3 +211,5 @@ msgstr "Hide item"
 
 #~ msgid "返回数据的引用，不进行复制"
 #~ msgstr "Returns a reference to the data, without copying"
+
+

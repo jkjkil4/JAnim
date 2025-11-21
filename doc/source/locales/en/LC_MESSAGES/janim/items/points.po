@@ -1,4 +1,4 @@
-# SOME DESCRIPTIVE TITLE.
+﻿# SOME DESCRIPTIVE TITLE.
 # Copyright (C) 2023, jkjkil4
 # This file is distributed under the same license as the JAnim package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2024.
@@ -26,7 +26,7 @@ msgstr "points"
 
 #: janim.items.points.Points:1 of
 msgid "基类：:py:class:`~janim.items.item.Item`"
-msgstr "Base class: :py:class:`~janim.items.item.Item`"
+msgstr "基类：:py:class:`~janim.items.item.Item`"
 
 #: janim.items.points.Points:1 of
 msgid "点集"
@@ -110,3 +110,5 @@ msgstr "基类：:py:class:`~janim.items.points.DotCloud`"
 
 #~ msgid "基类：:py:class:`~janim.items.item.Item.Data`\\ [:py:class:`DotCloud`]"
 #~ msgstr "基类：:py:class:`~janim.items.item.Item`"
+
+

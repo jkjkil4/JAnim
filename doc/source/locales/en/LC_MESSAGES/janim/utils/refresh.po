@@ -1,4 +1,4 @@
-# SOME DESCRIPTIVE TITLE.
+﻿# SOME DESCRIPTIVE TITLE.
 # Copyright (C) 2023, jkjkil4
 # This file is distributed under the same license as the JAnim package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2024.
@@ -66,7 +66,7 @@ msgstr "``test.utils.test_refresh.RefreshTest``."
 
 #: janim.utils.refresh.RefreshData:1 janim.utils.refresh.Refreshable:1 of
 msgid "基类：:py:class:`object`"
-msgstr "Base class: :py:class:`object`"
+msgstr "基类：:py:class:`object`"
 
 #: janim.utils.refresh.Refreshable.mark_refresh:1 of
 msgid "标记指定的 ``func`` 需要进行更新"
@@ -82,4 +82,6 @@ msgstr "Marks the specified ``func`` for an update"
 #~ " the cache will be ignored, and "
 #~ "the result will not be recorded in"
 #~ " the cache."
+
+
 

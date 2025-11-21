@@ -1,4 +1,4 @@
-# SOME DESCRIPTIVE TITLE.
+﻿# SOME DESCRIPTIVE TITLE.
 # Copyright (C) 2023, jkjkil4
 # This file is distributed under the same license as the JAnim package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
@@ -25,7 +25,7 @@ msgstr "frame_effect"
 
 #: janim.items.frame_effect.FrameEffect:1 of
 msgid "基类：:py:class:`~janim.items.item.Item`"
-msgstr "Base class: :py:class:`~janim.items.item.Item`"
+msgstr "基类：:py:class:`~janim.items.item.Item`"
 
 #: janim.items.frame_effect.FrameEffect:1 of
 msgid "将传入的着色器 ``fragment_shader`` 应用到 ``items`` 上"
@@ -76,7 +76,7 @@ msgstr "Remove child objects from this object"
 #: janim.items.frame_effect.SimpleFrameEffect:1
 #: janim.items.frame_effect.TransformableFrameClip:1 of
 msgid "基类：:py:class:`~janim.items.frame_effect.FrameEffect`"
-msgstr "Base class: :py:class:`~janim.items.frame_effect.FrameEffect`"
+msgstr "基类：:py:class:`~janim.items.frame_effect.FrameEffect`"
 
 #: janim.items.frame_effect.SimpleFrameEffect:1 of
 msgid ":class:`FrameEffect` 的简化封装，具体请参考 :class:`FrameEffect` 中的说明"
@@ -158,11 +158,13 @@ msgstr "Line number annotation:"
 
 #: janim.items.frame_effect.AlphaEffect:1 of
 msgid "基类：:py:class:`~janim.items.frame_effect.SimpleFrameEffect`"
-msgstr "Base class: :py:class:`~janim.items.frame_effect.SimpleFrameEffect`"
+msgstr "基类：:py:class:`~janim.items.frame_effect.SimpleFrameEffect`"
 
 #~ msgid "其中 ``#[JA_FINISH_UP]`` 是一个占位符，JAnim 会在这里做一些额外的操作"
 #~ msgstr ""
 
 #~ msgid "完整示例请参考 :ref:`样例学习 <examples>` 中的对应代码"
 #~ msgstr ""
+
+
 

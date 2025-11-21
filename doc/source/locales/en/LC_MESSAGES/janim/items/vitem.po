@@ -1,4 +1,4 @@
-# SOME DESCRIPTIVE TITLE.
+﻿# SOME DESCRIPTIVE TITLE.
 # Copyright (C) 2023, jkjkil4
 # This file is distributed under the same license as the JAnim package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2024.
@@ -25,7 +25,7 @@ msgstr "vitem"
 
 #: janim.items.vitem.VItem:1 of
 msgid "基类：:py:class:`~janim.items.points.Points`"
-msgstr "Base class: :py:class:`~janim.items.points.Points`"
+msgstr "基类：:py:class:`~janim.items.points.Points`"
 
 #: janim.items.vitem.VItem:1 of
 msgid "贝塞尔曲线拼接物件，具体说明请参考 :class:`~.Cmpt_VPoints` 的文档"
@@ -115,4 +115,6 @@ msgstr "Splits the path represented by ``points``, returns a list containing eac
 
 #~ msgid "基类：:py:class:`~janim.items.item.Item.Data`\\ [:py:class:`VItem`]"
 #~ msgstr ""
+
+
 

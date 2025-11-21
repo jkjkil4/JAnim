@@ -1,4 +1,4 @@
-# SOME DESCRIPTIVE TITLE.
+﻿# SOME DESCRIPTIVE TITLE.
 # Copyright (C) 2023, jkjkil4
 # This file is distributed under the same license as the JAnim package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2024.
@@ -47,7 +47,7 @@ msgstr "Move the arc center to the specified position"
 
 #: janim.items.geometry.arc.AnnularSector:1 janim.items.geometry.arc.Arc:1 of
 msgid "基类：:py:class:`~janim.items.geometry.arc.ArcCenter`"
-msgstr "Base class: :py:class:`~janim.items.geometry.arc.ArcCenter`"
+msgstr "基类：:py:class:`~janim.items.geometry.arc.ArcCenter`"
 
 #: janim.items.geometry.arc.Arc:1 of
 msgid "圆弧"
@@ -78,7 +78,7 @@ msgstr "Get the ending angle"
 #: janim.items.geometry.arc.ArcBetweenPoints:1
 #: janim.items.geometry.arc.Sector:1 of
 msgid "基类：:py:class:`~janim.items.geometry.arc.Arc`"
-msgstr "Base class: :py:class:`~janim.items.geometry.arc.Arc`"
+msgstr "基类：:py:class:`~janim.items.geometry.arc.Arc`"
 
 #: janim.items.geometry.arc.ArcBetweenPoints:1 of
 msgid "两点之间的圆弧"
@@ -121,7 +121,7 @@ msgstr "Get the radius"
 
 #: janim.items.geometry.arc.Annulus:1 janim.items.geometry.arc.Circle:1 of
 msgid "基类：:py:class:`~janim.items.vitem.VItem`"
-msgstr "Base class: :py:class:`~janim.items.vitem.VItem`"
+msgstr "基类：:py:class:`~janim.items.vitem.VItem`"
 
 #: janim.items.geometry.arc.Circle:1 of
 msgid "圆"
@@ -137,7 +137,7 @@ msgstr "Radius is specified by passing ``radius``"
 
 #: janim.items.geometry.arc.Dot:1 janim.items.geometry.arc.Ellipse:1 of
 msgid "基类：:py:class:`~janim.items.geometry.arc.Circle`"
-msgstr "Base class: :py:class:`~janim.items.geometry.arc.Circle`"
+msgstr "基类：:py:class:`~janim.items.geometry.arc.Circle`"
 
 #: janim.items.geometry.arc.Dot:1 of
 msgid "点，半径默认为 ``0.08``"
@@ -145,7 +145,7 @@ msgstr "Dot, default radius is ``0.08``"
 
 #: janim.items.geometry.arc.SmallDot:1 of
 msgid "基类：:py:class:`~janim.items.geometry.arc.Dot`"
-msgstr "Base class: :py:class:`~janim.items.geometry.arc.Dot`"
+msgstr "基类：:py:class:`~janim.items.geometry.arc.Dot`"
 
 #: janim.items.geometry.arc.SmallDot:1 of
 msgid "小点，半径默认为 ``0.04``"
@@ -193,4 +193,6 @@ msgstr "For parameters, refer to ``Arc``"
 #: janim.items.geometry.arc.Annulus:1 of
 msgid "圆环"
 msgstr "Annulus"
+
+
 

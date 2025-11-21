@@ -1,4 +1,4 @@
-# SOME DESCRIPTIVE TITLE.
+﻿# SOME DESCRIPTIVE TITLE.
 # Copyright (C) 2023, jkjkil4
 # This file is distributed under the same license as the JAnim package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2024.
@@ -34,7 +34,7 @@ msgstr ""
 #: janim.anims.animation.Animation:1 janim.anims.animation.ItemAnimation.ApplyParams:1
 #: janim.anims.animation.TimeAligner:1 janim.anims.animation.TimeRange:1 of
 msgid "基类：:py:class:`object`"
-msgstr "Base class: :py:class:`object`"
+msgstr "基类：:py:class:`object`"
 
 #: janim.anims.animation.Animation:1 of
 msgid "动画基类"
@@ -85,7 +85,7 @@ msgstr "Scale the time segment by factor ``k`` (scaled relative to ``t=0``)"
 
 #: janim.anims.animation.ItemAnimation:1 of
 msgid "基类：:py:class:`~janim.anims.animation.Animation`"
-msgstr "Base class: :py:class:`~janim.anims.animation.Animation`"
+msgstr "基类：:py:class:`~janim.anims.animation.Animation`"
 
 #: janim.anims.animation.ItemAnimation.apply:1 of
 msgid "将 ``global_t`` 时的动画效果作用到 ``data`` 上"
@@ -109,7 +109,7 @@ msgstr ""
 
 #: janim.anims.animation.ApplyAligner:1 of
 msgid "基类：:py:class:`~janim.anims.animation.ItemAnimation`"
-msgstr "Base class: :py:class:`~janim.anims.animation.ItemAnimation`"
+msgstr "基类：:py:class:`~janim.anims.animation.ItemAnimation`"
 
 #: janim.anims.animation.TimeRange:1 of
 msgid "标识了从 ``at`` 开始，到 ``end`` 结束的时间区段"
@@ -283,3 +283,4 @@ msgstr "基类：:py:class:`~typing.Generic`"
 #~ msgstr ""
 #~ "In :class:`Transform`, :class:`RenderCall` is set for each interpolated item to render "
 #~ "all of them"
+

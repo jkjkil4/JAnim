@@ -1,4 +1,4 @@
-# SOME DESCRIPTIVE TITLE.
+﻿# SOME DESCRIPTIVE TITLE.
 # Copyright (C) 2023, jkjkil4
 # This file is distributed under the same license as the JAnim package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
@@ -25,7 +25,7 @@ msgstr "typst_types"
 
 #: janim.items.svg.typst_types.TypstMatrix:1 of
 msgid "基类：:py:class:`~janim.items.svg.typst.TypstText`"
-msgstr "Base class: :py:class:`~janim.items.svg.typst.TypstText`"
+msgstr "基类：:py:class:`~janim.items.svg.typst.TypstText`"
 
 #: janim.items.svg.typst_types.TypstMatrix:1 of
 msgid "使用 Typst 进行矩阵布局"
@@ -83,4 +83,6 @@ msgstr "Get the left brace element"
 #: janim.items.svg.typst_types.TypstMatrix.get_right_brace:1 of
 msgid "获取右大括号元素"
 msgstr "Get the right brace element"
+
+
 

@@ -1,4 +1,4 @@
-# SOME DESCRIPTIVE TITLE.
+﻿# SOME DESCRIPTIVE TITLE.
 # Copyright (C) 2023, jkjkil4
 # This file is distributed under the same license as the JAnim package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2024.
@@ -37,7 +37,7 @@ msgstr "Grow and appear from the specified position"
 
 #: janim.anims.growing.GrowFromCenter:1 janim.anims.growing.GrowFromEdge:1 of
 msgid "基类：:py:class:`~janim.anims.growing.GrowFromPoint`"
-msgstr "Base class: :py:class:`~janim.anims.growing.GrowFromPoint`"
+msgstr "基类：:py:class:`~janim.anims.growing.GrowFromPoint`"
 
 #: janim.anims.growing.GrowFromCenter:1 of
 msgid "从物件的中心放大显现"
@@ -53,7 +53,7 @@ msgstr "Shrink and disappear to the specified position"
 
 #: janim.anims.growing.ShrinkToCenter:1 janim.anims.growing.ShrinkToEdge:1 of
 msgid "基类：:py:class:`~janim.anims.growing.ShrinkToPoint`"
-msgstr "Base class: :py:class:`~janim.anims.growing.ShrinkToPoint`"
+msgstr "基类：:py:class:`~janim.anims.growing.ShrinkToPoint`"
 
 #: janim.anims.growing.ShrinkToCenter:1 of
 msgid "缩小到物件的中心消失"
@@ -65,7 +65,7 @@ msgstr "Shrink and disappear to the specified corner of the item"
 
 #: janim.anims.growing.SpinInFromNothing:1 of
 msgid "基类：:py:class:`~janim.anims.growing.GrowFromCenter`"
-msgstr "Base class: :py:class:`~janim.anims.growing.GrowFromCenter`"
+msgstr "基类：:py:class:`~janim.anims.growing.GrowFromCenter`"
 
 #: janim.anims.growing.SpinInFromNothing:1 of
 msgid "从物件的中心旋转半圈放大显现"
@@ -73,7 +73,7 @@ msgstr "Rotate half a turn from the center of the item and grow to appear"
 
 #: janim.anims.growing.SpinOutToNothing:1 of
 msgid "基类：:py:class:`~janim.anims.growing.ShrinkToCenter`"
-msgstr "Base class: :py:class:`~janim.anims.growing.ShrinkToCenter`"
+msgstr "基类：:py:class:`~janim.anims.growing.ShrinkToCenter`"
 
 #: janim.anims.growing.SpinOutToNothing:1 of
 msgid "向物件的中心旋转半圈缩小消失"
@@ -81,7 +81,7 @@ msgstr "Rotate half a turn toward the center of the item and shrink to disappear
 
 #: janim.anims.growing.GrowArrowByBoundFunc:1 of
 msgid "基类：:py:class:`~janim.anims.updater.GroupUpdater`"
-msgstr "Base class: :py:class:`~janim.anims.updater.GroupUpdater`"
+msgstr "基类：:py:class:`~janim.anims.updater.GroupUpdater`"
 
 #: janim.anims.growing.GrowArrowByBoundFunc:1 of
 msgid ":class:`GrowArrow` 和 :class:`GrowDoubleArrow` 的基类"
@@ -89,7 +89,7 @@ msgstr "Base class for :class:`GrowArrow` and :class:`GrowDoubleArrow`"
 
 #: janim.anims.growing.GrowArrow:1 janim.anims.growing.GrowDoubleArrow:1 of
 msgid "基类：:py:class:`~janim.anims.growing.GrowArrowByBoundFunc`"
-msgstr "Base class: :py:class:`~janim.anims.growing.GrowArrowByBoundFunc`"
+msgstr "基类：:py:class:`~janim.anims.growing.GrowArrowByBoundFunc`"
 
 #: janim.anims.growing.GrowArrow:1 of
 msgid "显示箭头的显现过程，从开头到结尾画出，并自动调整箭头标志位置"
@@ -113,4 +113,6 @@ msgstr ""
 
 #~ msgid "基类：:py:class:`~janim.anims.animation.Animation`"
 #~ msgstr ""
+
+
 

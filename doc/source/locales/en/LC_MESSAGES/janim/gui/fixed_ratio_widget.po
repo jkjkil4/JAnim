@@ -1,4 +1,4 @@
-# SOME DESCRIPTIVE TITLE.
+﻿# SOME DESCRIPTIVE TITLE.
 # Copyright (C) 2023, jkjkil4
 # This file is distributed under the same license as the JAnim package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2024.
@@ -25,7 +25,7 @@ msgstr "fixed_ratio_widget"
 
 #: janim.gui.fixed_ratio_widget.FixedRatioWidget:1 of
 msgid "基类：:py:class:`~PySide6.QtWidgets.QWidget`"
-msgstr "Base class: :py:class:`~PySide6.QtWidgets.QWidget`"
+msgstr "基类：:py:class:`~PySide6.QtWidgets.QWidget`"
 
 #: janim.gui.fixed_ratio_widget.FixedRatioWidget:1 of
 msgid "使得传入的 ``inside`` 控件可以以固定比例塞在该控件中"
@@ -39,4 +39,6 @@ msgstr ""
 "Based on the target size information ``(tg_width, tg_height)``, get the "
 "maximum size that ``(src_width, src_height)`` can fit into the target area "
 "after proportional scaling"
+
+
 

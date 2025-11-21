@@ -1,4 +1,4 @@
-# SOME DESCRIPTIVE TITLE.
+﻿# SOME DESCRIPTIVE TITLE.
 # Copyright (C) 2023, jkjkil4
 # This file is distributed under the same license as the JAnim package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2024.
@@ -55,7 +55,7 @@ msgstr "Return projection of a point onto the line"
 
 #: janim.items.geometry.line.Line:1 of
 msgid "基类：:py:class:`~janim.items.vitem.VItem`"
-msgstr "Base class: :py:class:`~janim.items.vitem.VItem`"
+msgstr "基类：:py:class:`~janim.items.vitem.VItem`"
 
 #: janim.items.geometry.line.Line:1 of
 msgid "线段"
@@ -122,7 +122,7 @@ msgstr ""
 
 #: janim.items.geometry.line.TangentLine:1 of
 msgid "基类：:py:class:`~janim.items.geometry.line.Line`"
-msgstr "Base class: :py:class:`~janim.items.geometry.line.Line`"
+msgstr "基类：:py:class:`~janim.items.geometry.line.Line`"
 
 #: janim.items.geometry.line.TangentLine:1 of
 msgid "切线"
@@ -243,7 +243,7 @@ msgstr "Construct an angle from three points, representing ∠ABC, where point `
 
 #: janim.items.geometry.line.RightAngle:1 of
 msgid "基类：:py:class:`~janim.items.geometry.line.Angle`"
-msgstr "Base class: :py:class:`~janim.items.geometry.line.Angle`"
+msgstr "基类：:py:class:`~janim.items.geometry.line.Angle`"
 
 #: janim.items.geometry.line.RightAngle:1 of
 msgid "一个用于表示直角的 :class:`Elbow` 样式的对象（L 形折角）"
@@ -258,4 +258,6 @@ msgstr "``length``: Side length of the right angle marker"
 
 #~ msgid "angle 表示角度"
 #~ msgstr ""
+
+
 

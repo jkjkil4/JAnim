@@ -1,4 +1,4 @@
-# SOME DESCRIPTIVE TITLE.
+﻿# SOME DESCRIPTIVE TITLE.
 # Copyright (C) 2023, jkjkil4
 # This file is distributed under the same license as the JAnim package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2024.
@@ -25,7 +25,7 @@ msgstr "timeline_view"
 
 #: janim.gui.timeline_view.TimelineView:1 of
 msgid "基类：:py:class:`~PySide6.QtWidgets.QWidget`"
-msgstr "Base class: :py:class:`~PySide6.QtWidgets.QWidget`"
+msgstr "基类：:py:class:`~PySide6.QtWidgets.QWidget`"
 
 #: janim.gui.timeline_view.TimelineView:1 of
 msgid "窗口下方的进度条和动画区段指示器"
@@ -50,7 +50,7 @@ msgstr "Use mouse wheel for vertical panning"
 #: janim.gui.timeline_view.TimelineView.PixelRange:1
 #: janim.gui.timeline_view.TimelineView.Pressing:1 of
 msgid "基类：:py:class:`object`"
-msgstr "Base class: :py:class:`object`"
+msgstr "基类：:py:class:`object`"
 
 #: janim.gui.timeline_view.TimelineView.Pressing:1 of
 msgid "记录按键状态"
@@ -65,4 +65,6 @@ msgstr "Build animation segment information for manipulation and rendering"
 
 #~ msgid "计算各个动画区段应当被渲染到第几行，以叠放式进行显示"
 #~ msgstr ""
+
+
 

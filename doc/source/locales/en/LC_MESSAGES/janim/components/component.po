@@ -1,4 +1,4 @@
-# SOME DESCRIPTIVE TITLE.
+﻿# SOME DESCRIPTIVE TITLE.
 # Copyright (C) 2023, jkjkil4
 # This file is distributed under the same license as the JAnim package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2024.
@@ -43,7 +43,7 @@ msgstr ""
 
 #: janim.components.component.Component.BindInfo:1 of
 msgid "基类：:py:class:`object`"
-msgstr "Base class: :py:class:`object`"
+msgstr "基类：:py:class:`object`"
 
 #: janim.components.component.Component.BindInfo:1 of
 msgid "对组件定义信息的封装"
@@ -91,7 +91,7 @@ msgstr ""
 
 #: janim.components.component.CmptInfo:1 of
 msgid "基类：:py:class:`~typing.Generic`"
-msgstr "Base class: :py:class:`~typing.Generic`"
+msgstr "基类：:py:class:`~typing.Generic`"
 
 #: janim.components.component.CmptInfo:1 of
 msgid "在类中定义组件需要使用该类"
@@ -101,3 +101,5 @@ msgstr "When defining components in a class, you should use this class to wrap"
 msgid "用于将多个组件打包，使得可以同时调用"
 msgstr ""
 "Used to package multiple components, allowing them to be called simultaneously"
+
+

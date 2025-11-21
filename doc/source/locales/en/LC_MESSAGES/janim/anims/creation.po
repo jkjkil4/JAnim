@@ -27,7 +27,7 @@ msgstr "creation"
 #: janim.anims.creation.DrawBorderThenFill:1 janim.anims.creation.ShowPartial:1
 #: of
 msgid "基类：:py:class:`~janim.anims.updater.DataUpdater`"
-msgstr "Base class: :py:class:`~janim.anims.updater.DataUpdater`"
+msgstr "基类：:py:class:`~janim.anims.updater.DataUpdater`"
 
 #: janim.anims.creation.ShowPartial:1 of
 msgid "显示物件一部分的动画，显示的部分由 ``bound_func`` 决定"
@@ -79,7 +79,7 @@ msgstr ""
 
 #: janim.anims.creation.Write:1 of
 msgid "基类：:py:class:`~janim.anims.creation.DrawBorderThenFill`"
-msgstr "Base class: :py:class:`~janim.anims.creation.DrawBorderThenFill`"
+msgstr "基类：:py:class:`~janim.anims.creation.DrawBorderThenFill`"
 
 #: janim.anims.creation.Write:1 of
 msgid "显示书写过程（对每个子物件应用 :class:`DrawBorderThenFill`）"

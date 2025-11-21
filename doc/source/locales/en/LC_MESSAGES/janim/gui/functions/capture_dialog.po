@@ -1,4 +1,4 @@
-# SOME DESCRIPTIVE TITLE.
+﻿# SOME DESCRIPTIVE TITLE.
 # Copyright (C) 2023, jkjkil4
 # This file is distributed under the same license as the JAnim package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
@@ -25,5 +25,7 @@ msgstr "capture_dialog"
 
 #: janim.gui.functions.capture_dialog.CaptureDialog:1 of
 msgid "基类：:py:class:`~PySide6.QtWidgets.QDialog`"
-msgstr "Base class: :py:class:`~PySide6.QtWidgets.QDialog`"
+msgstr "基类：:py:class:`~PySide6.QtWidgets.QDialog`"
+
+
 

@@ -1,4 +1,4 @@
-# SOME DESCRIPTIVE TITLE.
+﻿# SOME DESCRIPTIVE TITLE.
 # Copyright (C) 2023, jkjkil4
 # This file is distributed under the same license as the JAnim package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2024.
@@ -25,7 +25,7 @@ msgstr "coordinate_systems"
 
 #: janim.items.coordinate.coordinate_systems.CoordinateSystem:1 of
 msgid "基类：:py:class:`object`"
-msgstr "Base class: :py:class:`object`"
+msgstr "基类：:py:class:`object`"
 
 #: janim.items.coordinate.coordinate_systems.Axes.get_axes:1
 #: janim.items.coordinate.coordinate_systems.CoordinateSystem.get_axes:1
@@ -208,11 +208,11 @@ msgstr "If ``ensure_on_screen=True`` is set, axis labels will automatically adju
 #: janim.items.coordinate.coordinate_systems.NumberPlane:1
 #: janim.items.coordinate.coordinate_systems.ThreeDAxes:1 of
 msgid "基类：:py:class:`~janim.items.coordinate.coordinate_systems.Axes`"
-msgstr "Base class: :py:class:`~janim.items.coordinate.coordinate_systems.Axes`"
+msgstr "基类：:py:class:`~janim.items.coordinate.coordinate_systems.Axes`"
 
 #: janim.items.coordinate.coordinate_systems.CmptVPoints_NumberPlaneImpl:1 of
 msgid "基类：:py:class:`~janim.components.vpoints.Cmpt_VPoints`"
-msgstr "Base class: :py:class:`~janim.components.vpoints.Cmpt_VPoints`"
+msgstr "基类：:py:class:`~janim.components.vpoints.Cmpt_VPoints`"
 
 #~ msgid ""
 #~ "基类：:py:class:`~janim.items.points.Group`, "
@@ -233,4 +233,6 @@ msgstr "Base class: :py:class:`~janim.components.vpoints.Cmpt_VPoints`"
 #~ "``bind``: 在默认情况下为 ``True``，会使得参数曲线自动同步应用于坐标系上的变换，也可同步动画，详见"
 #~ " :ref:`examples` 中的 ``NumberPlaneExample``"
 #~ msgstr ""
+
+
 

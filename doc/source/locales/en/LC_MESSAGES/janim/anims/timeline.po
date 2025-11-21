@@ -1,4 +1,4 @@
-# SOME DESCRIPTIVE TITLE.
+﻿# SOME DESCRIPTIVE TITLE.
 # Copyright (C) 2023, jkjkil4
 # This file is distributed under the same license as the JAnim package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2024.
@@ -30,7 +30,7 @@ msgstr "timeline"
 #: janim.anims.timeline.Timeline.PlayAudioInfo:1 janim.anims.timeline.Timeline.ScheduledTask:1
 #: janim.anims.timeline.Timeline.SubtitleInfo:1 janim.anims.timeline.Timeline.TimeOfCode:1 of
 msgid "基类：:py:class:`object`"
-msgstr "Base class: :py:class:`object`"
+msgstr "基类：:py:class:`object`"
 
 #: janim.anims.timeline.Timeline:1 of
 msgid "继承该类并实现 :meth:`construct` 方法，以实现动画的构建逻辑"
@@ -368,7 +368,7 @@ msgstr ""
 
 #: janim.anims.timeline.SourceTimeline:1 of
 msgid "基类：:py:class:`~janim.anims.timeline.Timeline`"
-msgstr "Base class: :py:class:`~janim.anims.timeline.Timeline`"
+msgstr "基类：:py:class:`~janim.anims.timeline.Timeline`"
 
 #: janim.anims.timeline.SourceTimeline:1 of
 msgid "与 :class:`Timeline` 相比，会在背景显示源代码"
@@ -546,7 +546,7 @@ msgstr "See :meth:`BuiltTimeline.to_playback_control_item` for details"
 #~ "itself, without descendants)"
 
 #~ msgid "基类：:py:class:`~janim.anims.composition.AnimGroup`"
-#~ msgstr "Base class: :py:class:`~janim.anims.composition.AnimGroup`"
+#~ msgstr "基类：:py:class:`~janim.anims.composition.AnimGroup`"
 
 #~ msgid ""
 #~ "``self.display_anim`` 是由 :meth:`Timeline.construct` 中执行 :meth:`Timeline.show` "
@@ -566,3 +566,5 @@ msgstr "See :meth:`BuiltTimeline.to_playback_control_item` for details"
 
 #~ msgid "调用所有的 :class:`RenderCall` 进行渲染"
 #~ msgstr "Calls all :class:`RenderCall` objects for rendering."
+
+

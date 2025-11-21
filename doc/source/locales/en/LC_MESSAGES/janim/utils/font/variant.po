@@ -1,4 +1,4 @@
-# SOME DESCRIPTIVE TITLE.
+﻿# SOME DESCRIPTIVE TITLE.
 # Copyright (C) 2023, jkjkil4
 # This file is distributed under the same license as the JAnim package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
@@ -25,5 +25,7 @@ msgstr "variant"
 
 #: janim.utils.font.variant.Style:1 janim.utils.font.variant.Weight:1 of
 msgid "基类：:py:class:`~enum.StrEnum`"
-msgstr "Base class: :py:class:`~enum.StrEnum`"
+msgstr "基类：:py:class:`~enum.StrEnum`"
+
+
 

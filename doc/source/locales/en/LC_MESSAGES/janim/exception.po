@@ -59,7 +59,7 @@ msgstr "Exit code when ffprobe execution fails"
 
 #: janim.exception.JAnimException:1 of
 msgid "基类：:py:class:`Exception`"
-msgstr "Base class: :py:class:`Exception`"
+msgstr "基类：:py:class:`Exception`"
 
 #: janim.exception.AsTypeError:1 janim.exception.BooleanOpsError:1
 #: janim.exception.CmptGroupLookupError:1 janim.exception.ColorNotFoundError:1
@@ -68,7 +68,7 @@ msgstr "Base class: :py:class:`Exception`"
 #: janim.exception.PointError:1 janim.exception.TimelineError:1
 #: janim.exception.UpdaterError:1 of
 msgid "基类：:py:class:`~janim.exception.JAnimException`"
-msgstr "Base class: :py:class:`~janim.exception.JAnimException`"
+msgstr "基类：:py:class:`~janim.exception.JAnimException`"
 
 #: janim.exception.ExitException:1 of
 msgid "当 :class:`ExitException` 未被捕获时， 会直接以 ``exit_code`` 退出，不输出 ``traceback`` 信息"
@@ -79,20 +79,20 @@ msgstr ""
 #: janim.exception.AnimationError:1 janim.exception.NotAnimationError:1
 #: janim.exception.TimelineLookupError:1 of
 msgid "基类：:py:class:`~janim.exception.TimelineError`"
-msgstr "Base class: :py:class:`~janim.exception.TimelineError`"
+msgstr "基类：:py:class:`~janim.exception.TimelineError`"
 
 #: janim.exception.AnimGroupError:1 of
 msgid "基类：:py:class:`~janim.exception.AnimationError`"
-msgstr "Base class: :py:class:`~janim.exception.AnimationError`"
+msgstr "基类：:py:class:`~janim.exception.AnimationError`"
 
 #: janim.exception.InvalidOrdinalError:1 janim.exception.PatternMismatchError:1
 #: of
 msgid "基类：:py:class:`~janim.exception.GetItemError`"
-msgstr "Base class: :py:class:`~janim.exception.GetItemError`"
+msgstr "基类：:py:class:`~janim.exception.GetItemError`"
 
 #: janim.exception.InvaildMatrixError:1 of
 msgid "基类：:py:class:`~janim.exception.PointError`"
-msgstr "Base class: :py:class:`~janim.exception.PointError`"
+msgstr "基类：:py:class:`~janim.exception.PointError`"
 
 #~ msgid "``Typst`` 未安装时的退出码"
 #~ msgstr ""

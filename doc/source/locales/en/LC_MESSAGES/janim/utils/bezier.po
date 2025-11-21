@@ -1,4 +1,4 @@
-# SOME DESCRIPTIVE TITLE.
+﻿# SOME DESCRIPTIVE TITLE.
 # Copyright (C) 2023, jkjkil4
 # This file is distributed under the same license as the JAnim package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2024.
@@ -31,7 +31,7 @@ msgstr ""
 
 #: janim.utils.bezier.PathBuilder:1 of
 msgid "基类：:py:class:`object`"
-msgstr "Base class: :py:class:`object`"
+msgstr "基类：:py:class:`object`"
 
 #: janim.utils.bezier.quadratic_bezier_points_for_arc:1 of
 msgid "得到使用二次贝塞尔曲线模拟的圆弧"
@@ -145,4 +145,6 @@ msgstr ""
 #~ "the matrix itself. See "
 #~ "scipy.linalg.solve_banded"
 #~ msgstr ""
+
+
 

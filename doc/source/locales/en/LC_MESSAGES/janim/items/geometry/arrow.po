@@ -1,4 +1,4 @@
-# SOME DESCRIPTIVE TITLE.
+﻿# SOME DESCRIPTIVE TITLE.
 # Copyright (C) 2023, jkjkil4
 # This file is distributed under the same license as the JAnim package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2024.
@@ -25,7 +25,7 @@ msgstr "arrow"
 
 #: janim.items.geometry.arrow.CenterAnchor:1 of
 msgid "基类：:py:class:`~enum.StrEnum`"
-msgstr "Base class: :py:class:`~enum.StrEnum`"
+msgstr "基类：:py:class:`~enum.StrEnum`"
 
 #: janim.items.geometry.arrow.CenterAnchor:1 of
 msgid "箭头原点所处位置的选项"
@@ -37,7 +37,7 @@ msgstr "Graphical illustration:"
 
 #: janim.items.geometry.arrow.ArrowTip:1 of
 msgid "基类：:py:class:`~janim.items.vitem.VItem`"
-msgstr "Base class: :py:class:`~janim.items.vitem.VItem`"
+msgstr "基类：:py:class:`~janim.items.vitem.VItem`"
 
 #: janim.items.geometry.arrow.ArrowTip:1 of
 msgid "箭头标志"
@@ -97,7 +97,7 @@ msgstr "Through rotation and scaling, place the item's start and end points at `
 
 #: janim.items.geometry.arrow.Arrow:1 of
 msgid "基类：:py:class:`~janim.items.geometry.line.Line`"
-msgstr "Base class: :py:class:`~janim.items.geometry.line.Line`"
+msgstr "基类：:py:class:`~janim.items.geometry.line.Line`"
 
 #: janim.render.renderer_arrow.ArrowRenderer:1 of
 msgid "带箭头的线段，箭头大小自动"
@@ -135,7 +135,7 @@ msgstr "``under=True``:"
 #: janim.items.geometry.arrow.DoubleArrow:1 janim.items.geometry.arrow.Vector:1
 #: of
 msgid "基类：:py:class:`~janim.items.geometry.arrow.Arrow`"
-msgstr "Base class: :py:class:`~janim.items.geometry.arrow.Arrow`"
+msgstr "基类：:py:class:`~janim.items.geometry.arrow.Arrow`"
 
 #: janim.items.geometry.arrow.Vector:1 of
 msgid "起点为 ORIGIN 的箭头，终点为 ``direction``"
@@ -155,4 +155,6 @@ msgstr "For parameters, refer to :class:`Arrow`"
 
 #~ msgid "基类：:py:class:`~enum.Enum`"
 #~ msgstr ""
+
+
 

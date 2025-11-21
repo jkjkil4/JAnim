@@ -1,4 +1,4 @@
-# SOME DESCRIPTIVE TITLE.
+﻿# SOME DESCRIPTIVE TITLE.
 # Copyright (C) 2023, jkjkil4
 # This file is distributed under the same license as the JAnim package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2024.
@@ -26,7 +26,7 @@ msgstr "movement"
 
 #: janim.anims.movement.Homotopy:1 janim.anims.movement.MoveAlongPath:1 of
 msgid "基类：:py:class:`~janim.anims.updater.DataUpdater`"
-msgstr "Base class: :py:class:`~janim.anims.updater.DataUpdater`"
+msgstr "基类：:py:class:`~janim.anims.updater.DataUpdater`"
 
 #: janim.anims.movement.Homotopy:1 of
 msgid "一个从 (x, y, z, t) 到 (x', y', z') 的函数"
@@ -38,7 +38,7 @@ msgstr "The range of t is [0, 1], representing animation progress"
 
 #: janim.anims.movement.ComplexHomotopy:1 of
 msgid "基类：:py:class:`~janim.anims.movement.Homotopy`"
-msgstr "Base class: :py:class:`~janim.anims.movement.Homotopy`"
+msgstr "基类：:py:class:`~janim.anims.movement.Homotopy`"
 
 #: janim.anims.movement.ComplexHomotopy:1 of
 msgid "与 Homotopy 类似，区别是用复数描述坐标"
@@ -51,3 +51,5 @@ msgid ""
 msgstr ""
 "基类：:py:class:`~janim.anims.updater.GroupUpdater`\\ "
 "[:py:class:`~janim.items.points.Points`]"
+
+

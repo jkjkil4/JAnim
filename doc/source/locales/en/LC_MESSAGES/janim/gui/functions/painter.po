@@ -1,4 +1,4 @@
-# SOME DESCRIPTIVE TITLE.
+﻿# SOME DESCRIPTIVE TITLE.
 # Copyright (C) 2023, jkjkil4
 # This file is distributed under the same license as the JAnim package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
@@ -25,15 +25,17 @@ msgstr "painter"
 
 #: janim.gui.functions.painter.Painter:1 of
 msgid "基类：:py:class:`~PySide6.QtWidgets.QWidget`"
-msgstr "Base class: :py:class:`~PySide6.QtWidgets.QWidget`"
+msgstr "基类：:py:class:`~PySide6.QtWidgets.QWidget`"
 
 #: janim.gui.functions.painter.Painter.Widget:1 of
 msgid "基类：:py:class:`~PySide6.QtWidgets.QScrollArea`"
-msgstr "Base class: :py:class:`~PySide6.QtWidgets.QScrollArea`"
+msgstr "基类：:py:class:`~PySide6.QtWidgets.QScrollArea`"
 
 #: janim.gui.functions.painter.Painter.PDot:1
 #: janim.gui.functions.painter.Painter.PRect:1
 #: janim.gui.functions.painter.Painter.PVItem:1 of
 msgid "基类：:py:class:`~janim.gui.functions.painter.Painter.Widget`"
-msgstr "Base class: :py:class:`~janim.gui.functions.painter.Painter.Widget`"
+msgstr "基类：:py:class:`~janim.gui.functions.painter.Painter.Widget`"
+
+
 

@@ -1,4 +1,4 @@
-# SOME DESCRIPTIVE TITLE.
+﻿# SOME DESCRIPTIVE TITLE.
 # Copyright (C) 2023, jkjkil4
 # This file is distributed under the same license as the JAnim package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2024.
@@ -38,7 +38,7 @@ msgstr "Show a circular shrinking animation that gradually focuses on the specif
 #: janim.anims.indication.Indicate:1 janim.anims.indication.WiggleOutThenIn:1
 #: of
 msgid "基类：:py:class:`~janim.anims.updater.DataUpdater`"
-msgstr "Base class: :py:class:`~janim.anims.updater.DataUpdater`"
+msgstr "基类：:py:class:`~janim.anims.updater.DataUpdater`"
 
 #: janim.anims.indication.Indicate:1 of
 msgid "展现指定物件以放大为黄色后回到原状的动画"
@@ -68,7 +68,7 @@ msgstr ""
 
 #: janim.anims.indication.ShowPassingFlash:1 of
 msgid "基类：:py:class:`~janim.anims.creation.ShowPartial`"
-msgstr "Base class: :py:class:`~janim.anims.creation.ShowPartial`"
+msgstr "基类：:py:class:`~janim.anims.creation.ShowPartial`"
 
 #: janim.anims.indication.ShowPassingFlash:1 of
 msgid "基于 ``time_width`` 显示物件的一小段"
@@ -76,7 +76,7 @@ msgstr "Display a small segment of the item based on ``time_width``"
 
 #: janim.anims.indication.ShowCreationThenDestruction:1 of
 msgid "基类：:py:class:`~janim.anims.indication.ShowPassingFlash`"
-msgstr "Base class: :py:class:`~janim.anims.indication.ShowPassingFlash`"
+msgstr "基类：:py:class:`~janim.anims.indication.ShowPassingFlash`"
 
 #: janim.anims.indication.ShowCreationThenDestruction:1 of
 msgid "展现创建动画后展现销毁动画"
@@ -84,7 +84,7 @@ msgstr "Show creation animation followed by destruction animation"
 
 #: janim.anims.indication.ShowCreationThenFadeOut:1 of
 msgid "基类：:py:class:`~janim.anims.composition.Succession`"
-msgstr "Base class: :py:class:`~janim.anims.composition.Succession`"
+msgstr "基类：:py:class:`~janim.anims.composition.Succession`"
 
 #: janim.anims.indication.ShowCreationThenFadeOut:1 of
 msgid "展现创建动画后展现淡出动画"
@@ -92,7 +92,7 @@ msgstr "Show creation animation followed by fade-out animation"
 
 #: janim.anims.indication.AnimationOnSurroundingRect:1 of
 msgid "基类：:py:class:`~janim.anims.composition.AnimGroup`"
-msgstr "Base class: :py:class:`~janim.anims.composition.AnimGroup`"
+msgstr "基类：:py:class:`~janim.anims.composition.AnimGroup`"
 
 #: janim.anims.indication.AnimationOnSurroundingRect:1 of
 msgid ""
@@ -106,7 +106,7 @@ msgstr ""
 #: janim.anims.indication.ShowCreationThenFadeAround:1
 #: janim.anims.indication.ShowPassingFlashAround:1 of
 msgid "基类：:py:class:`~janim.anims.indication.AnimationOnSurroundingRect`"
-msgstr "Base class: :py:class:`~janim.anims.indication.AnimationOnSurroundingRect`"
+msgstr "基类：:py:class:`~janim.anims.indication.AnimationOnSurroundingRect`"
 
 #: janim.anims.indication.ShowPassingFlashAround:1 of
 msgid "不完整线条在指定物件周围环绕一圈的动画"
@@ -122,7 +122,7 @@ msgstr "Animation that first creates a complete line around the specified item a
 
 #: janim.anims.indication.Flash:1 of
 msgid "基类：:py:class:`~janim.anims.indication.ShowCreationThenDestruction`"
-msgstr "Base class: :py:class:`~janim.anims.indication.ShowCreationThenDestruction`"
+msgstr "基类：:py:class:`~janim.anims.indication.ShowCreationThenDestruction`"
 
 #: janim.anims.indication.Flash:1 of
 msgid "展现以放射状线条进行强调的动画"
@@ -130,5 +130,7 @@ msgstr "Show an animation with radial lines for emphasis"
 
 #: janim.anims.indication.ApplyWave:1 of
 msgid "基类：:py:class:`~janim.anims.movement.Homotopy`"
-msgstr "Base class: :py:class:`~janim.anims.movement.Homotopy`"
+msgstr "基类：:py:class:`~janim.anims.movement.Homotopy`"
+
+
 

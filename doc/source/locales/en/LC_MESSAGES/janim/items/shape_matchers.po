@@ -1,4 +1,4 @@
-# SOME DESCRIPTIVE TITLE.
+﻿# SOME DESCRIPTIVE TITLE.
 # Copyright (C) 2023, jkjkil4
 # This file is distributed under the same license as the JAnim package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2024.
@@ -26,7 +26,7 @@ msgstr "shape_matchers"
 #: janim.items.shape_matchers.FrameRect:1
 #: janim.items.shape_matchers.SurroundingRect:1 of
 msgid "基类：:py:class:`~janim.items.geometry.polygon.Rect`"
-msgstr "Base class: :py:class:`~janim.items.geometry.polygon.Rect`"
+msgstr "基类：:py:class:`~janim.items.geometry.polygon.Rect`"
 
 #: janim.items.shape_matchers.SurroundingRect:1 of
 msgid "包围矩形框"
@@ -46,7 +46,7 @@ msgstr "If not passed, creates a rectangle with default width and height `frame_
 
 #: janim.items.shape_matchers.HighlightRect:1 of
 msgid "基类：:py:class:`~janim.items.boolean_ops.Difference`"
-msgstr "Base class: :py:class:`~janim.items.boolean_ops.Difference`"
+msgstr "基类：:py:class:`~janim.items.boolean_ops.Difference`"
 
 #: janim.items.shape_matchers.HighlightRect:1 of
 msgid "高亮区域，即 :class:`FrameRect` 挖去 :class:`SurroundingRect`"
@@ -54,5 +54,7 @@ msgstr "Highlighted area, i.e., :class:`FrameRect` minus :class:`SurroundingRect
 
 #: janim.items.shape_matchers.Underline:1 of
 msgid "基类：:py:class:`~janim.items.geometry.line.Line`"
-msgstr "Base class: :py:class:`~janim.items.geometry.line.Line`"
+msgstr "基类：:py:class:`~janim.items.geometry.line.Line`"
+
+
 

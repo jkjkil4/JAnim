@@ -1,4 +1,4 @@
-# SOME DESCRIPTIVE TITLE.
+﻿# SOME DESCRIPTIVE TITLE.
 # Copyright (C) 2023, jkjkil4
 # This file is distributed under the same license as the JAnim package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2024.
@@ -25,7 +25,7 @@ msgstr "image_item"
 
 #: janim.items.image_item.ImageItem:1 of
 msgid "基类：:py:class:`~janim.items.points.Points`"
-msgstr "Base class: :py:class:`~janim.items.points.Points`"
+msgstr "基类：:py:class:`~janim.items.points.Points`"
 
 #: janim.items.image_item.ImageItem:1 janim.items.image_item.PixelImageItem:1
 #: of
@@ -118,7 +118,7 @@ msgstr "Perform data alignment for interpolation"
 #: janim.items.image_item.PixelImageItem:1 janim.items.image_item.VideoFrame:1
 #: of
 msgid "基类：:py:class:`~janim.items.image_item.ImageItem`"
-msgstr "Base class: :py:class:`~janim.items.image_item.ImageItem`"
+msgstr "基类：:py:class:`~janim.items.image_item.ImageItem`"
 
 #: janim.items.image_item.PixelImageItem:3 of
 msgid "与 :class:`ImageItem` 基本一致，只是在图像被放大显示时不进行平滑插值处理，使得像素清晰"
@@ -242,11 +242,11 @@ msgstr "Vector from the top-left corner to the bottom-left corner of the video"
 
 #: janim.items.image_item.VideoInfo:1 of
 msgid "基类：:py:class:`object`"
-msgstr "Base class: :py:class:`object`"
+msgstr "基类：:py:class:`object`"
 
 #: janim.items.image_item.PixelVideo:1 of
 msgid "基类：:py:class:`~janim.items.image_item.Video`"
-msgstr "Base class: :py:class:`~janim.items.image_item.Video`"
+msgstr "基类：:py:class:`~janim.items.image_item.Video`"
 
 #: janim.items.image_item.PixelVideo:1 of
 msgid "视频物件"
@@ -269,4 +269,6 @@ msgstr ""
 
 #~ msgid "调用 :meth:`seek` 表示跳转视频进度到指定秒数"
 #~ msgstr ""
+
+
 

@@ -1,4 +1,4 @@
-# SOME DESCRIPTIVE TITLE.
+﻿# SOME DESCRIPTIVE TITLE.
 # Copyright (C) 2023, jkjkil4
 # This file is distributed under the same license as the JAnim package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2024.
@@ -25,7 +25,7 @@ msgstr "typst"
 
 #: janim.items.svg.typst.TypstDoc:1 of
 msgid "基类：:py:class:`~janim.items.svg.svg_item.SVGItem`"
-msgstr "Base class: :py:class:`~janim.items.svg.svg_item.SVGItem`"
+msgstr "基类：:py:class:`~janim.items.svg.svg_item.SVGItem`"
 
 #: janim.items.svg.typst.TypstDoc:1 of
 msgid "Typst 文档"
@@ -145,7 +145,7 @@ msgstr "Partial match table used in the KMP algorithm"
 
 #: janim.items.svg.typst.TypstText:1 of
 msgid "基类：:py:class:`~janim.items.svg.typst.TypstDoc`"
-msgstr "Base class: :py:class:`~janim.items.svg.typst.TypstDoc`"
+msgstr "基类：:py:class:`~janim.items.svg.typst.TypstDoc`"
 
 #: janim.items.svg.typst.TypstText:1 of
 msgid "Typst 文本"
@@ -153,7 +153,7 @@ msgstr "Typst text"
 
 #: janim.items.svg.typst.TypstMath:1 of
 msgid "基类：:py:class:`~janim.items.svg.typst.TypstText`"
-msgstr "Base class: :py:class:`~janim.items.svg.typst.TypstText`"
+msgstr "基类：:py:class:`~janim.items.svg.typst.TypstText`"
 
 #: janim.items.svg.typst.TypstMath:1 of
 msgid "Typst 公式"
@@ -363,4 +363,6 @@ msgstr "Equivalent to :class:`TypstText` with ``use_math_environment=True``"
 
 #~ msgid "基类：:py:class:`~janim.items.svg.typst.TypstMath`"
 #~ msgstr ""
+
+
 

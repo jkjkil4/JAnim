@@ -1,4 +1,4 @@
-# SOME DESCRIPTIVE TITLE.
+﻿# SOME DESCRIPTIVE TITLE.
 # Copyright (C) 2023, jkjkil4
 # This file is distributed under the same license as the JAnim package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2024.
@@ -108,7 +108,7 @@ msgstr ""
 
 #: janim.components.points.Cmpt_Points.BoundingBox:1 of
 msgid "基类：:py:class:`object`"
-msgstr "Base class: :py:class:`object`"
+msgstr "基类：:py:class:`object`"
 
 #: janim.components.points.Cmpt_Points.BoundingBox:1 of
 msgid "边界框，``self.data`` 包含三个元素，分别为左下，中心，右上"
@@ -410,3 +410,5 @@ msgstr ""
 #: janim.components.points.Cmpt_Points.next_to_by_indicator:17 of
 msgid "这个示例也可以使用字符索引"
 msgstr "This example can also use character indexing"
+
+

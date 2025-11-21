@@ -1,4 +1,4 @@
-# SOME DESCRIPTIVE TITLE.
+﻿# SOME DESCRIPTIVE TITLE.
 # Copyright (C) 2023, jkjkil4
 # This file is distributed under the same license as the JAnim package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
@@ -25,7 +25,7 @@ msgstr "anim_stack"
 
 #: janim.anims.anim_stack.AnimStack:1 of
 msgid "基类：:py:class:`object`"
-msgstr "Base class: :py:class:`object`"
+msgstr "基类：:py:class:`object`"
 
 #: janim.anims.anim_stack.AnimStack:1 of
 msgid "用于在 :class:`~.Timeline` 中记录作用于 :class:`~.Item` 上的 :class:`~.Animation`"
@@ -86,4 +86,5 @@ msgid "例如用于绘制时的调用时 ``readonly=True``，因为绘制时不�
 msgstr ""
 "For example, when used for rendering, the call is ``readonly=True`` because "
 "rendering does not affect item data"
+
 

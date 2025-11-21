@@ -1,4 +1,4 @@
-# SOME DESCRIPTIVE TITLE.
+﻿# SOME DESCRIPTIVE TITLE.
 # Copyright (C) 2023, jkjkil4
 # This file is distributed under the same license as the JAnim package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2024.
@@ -25,7 +25,7 @@ msgstr "polygon"
 
 #: janim.items.geometry.polygon.Polygon:1 of
 msgid "基类：:py:class:`~janim.items.vitem.VItem`"
-msgstr "Base class: :py:class:`~janim.items.vitem.VItem`"
+msgstr "基类：:py:class:`~janim.items.vitem.VItem`"
 
 #: janim.items.geometry.polygon.Polygon:1 of
 msgid "多边形"
@@ -38,7 +38,7 @@ msgstr "Pass a vertex list ``verts`` for representation"
 #: janim.items.geometry.polygon.Polyline:1 janim.items.geometry.polygon.Rect:1
 #: janim.items.geometry.polygon.Star:1 of
 msgid "基类：:py:class:`~janim.items.geometry.polygon.Polygon`"
-msgstr "Base class: :py:class:`~janim.items.geometry.polygon.Polygon`"
+msgstr "基类：:py:class:`~janim.items.geometry.polygon.Polygon`"
 
 #: janim.items.geometry.polygon.Polyline:1 of
 msgid "多边形折线"
@@ -70,7 +70,7 @@ msgstr "Can get the center of the polygon via ``.mark.get()``"
 
 #: janim.items.geometry.polygon.Triangle:1 of
 msgid "基类：:py:class:`~janim.items.geometry.polygon.RegularPolygon`"
-msgstr "Base class: :py:class:`~janim.items.geometry.polygon.RegularPolygon`"
+msgstr "基类：:py:class:`~janim.items.geometry.polygon.RegularPolygon`"
 
 #: janim.items.geometry.polygon.Triangle:1 of
 msgid "正三角形"
@@ -91,7 +91,7 @@ msgstr "Can also be constructed by passing diagonal vertices like ``Rect(p1, p2)
 #: janim.items.geometry.polygon.RoundedRect:1
 #: janim.items.geometry.polygon.Square:1 of
 msgid "基类：:py:class:`~janim.items.geometry.polygon.Rect`"
-msgstr "Base class: :py:class:`~janim.items.geometry.polygon.Rect`"
+msgstr "基类：:py:class:`~janim.items.geometry.polygon.Rect`"
 
 #: janim.items.geometry.polygon.Square:1 of
 msgid "正方形"
@@ -128,4 +128,6 @@ msgstr "``density`` represents density, higher values mean smaller inner radius,
 #: janim.items.geometry.polygon.Star:7 of
 msgid "``start_angle`` 表示起始角度，即星形的旋转角度"
 msgstr "``start_angle`` represents the starting angle, i.e., the rotation angle of the star"
+
+
 

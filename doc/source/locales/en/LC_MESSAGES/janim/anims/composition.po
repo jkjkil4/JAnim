@@ -1,4 +1,4 @@
-# SOME DESCRIPTIVE TITLE.
+﻿# SOME DESCRIPTIVE TITLE.
 # Copyright (C) 2023, jkjkil4
 # This file is distributed under the same license as the JAnim package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2024.
@@ -27,7 +27,7 @@ msgstr "composition"
 #: janim.anims.composition.AnimGroup:1 janim.anims.composition.Do:1
 #: janim.anims.composition.Wait:1 of
 msgid "基类：:py:class:`~janim.anims.animation.Animation`"
-msgstr "Base class: :py:class:`~janim.anims.animation.Animation`"
+msgstr "基类：:py:class:`~janim.anims.animation.Animation`"
 
 #: janim.anims.composition.AnimGroup:1 of
 msgid "动画集合（并列执行）"
@@ -105,7 +105,7 @@ msgstr ""
 
 #: janim.anims.composition.Aligned:1 janim.anims.composition.Succession:1 of
 msgid "基类：:py:class:`~janim.anims.composition.AnimGroup`"
-msgstr "Base class: :py:class:`~janim.anims.composition.AnimGroup`"
+msgstr "基类：:py:class:`~janim.anims.composition.AnimGroup`"
 
 #: janim.anims.composition.Succession:1 of
 msgid "动画集合（顺序执行）"
@@ -181,3 +181,5 @@ msgstr "Execute a specified operation at a specific time in the animation"
 
 #~ msgid "其余与 `AnimGroup` 相同"
 #~ msgstr "The rest is the same as `AnimGroup`"
+
+

@@ -1,4 +1,4 @@
-# SOME DESCRIPTIVE TITLE.
+﻿# SOME DESCRIPTIVE TITLE.
 # Copyright (C) 2023, jkjkil4
 # This file is distributed under the same license as the JAnim package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2024.
@@ -33,7 +33,7 @@ msgstr ""
 #: janim.render.base.Programs:1 janim.render.base.RenderData:1
 #: janim.render.base.Renderer:1 of
 msgid "基类：:py:class:`object`"
-msgstr "Base class: :py:class:`object`"
+msgstr "基类：:py:class:`object`"
 
 #: janim.render.base.Renderer:1 of
 msgid "渲染器的基类"
@@ -132,4 +132,6 @@ msgstr "Set and get through :py:obj:`Renderer.data_ctx`"
 
 #~ msgid "注：若 ``filepath`` 对应的 ComputeShader 先前已创建过，则会复用先前的对象，否则另外创建新的对象并记录"
 #~ msgstr ""
+
+
 

@@ -1,4 +1,4 @@
-# SOME DESCRIPTIVE TITLE.
+﻿# SOME DESCRIPTIVE TITLE.
 # Copyright (C) 2023, jkjkil4
 # This file is distributed under the same license as the JAnim package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2024.
@@ -25,9 +25,11 @@ msgstr "application"
 
 #: janim.gui.application.Application:1 of
 msgid "基类：:py:class:`~PySide6.QtWidgets.QApplication`"
-msgstr "Base class: :py:class:`~PySide6.QtWidgets.QApplication`"
+msgstr "基类：:py:class:`~PySide6.QtWidgets.QApplication`"
 
 #: janim.gui.application.Application:1 of
 msgid "在 ``QApplication`` 的基础上载入 ``qdarkstyle``"
 msgstr "Loads ``qdarkstyle`` on top of ``QApplication``"
+
+
 

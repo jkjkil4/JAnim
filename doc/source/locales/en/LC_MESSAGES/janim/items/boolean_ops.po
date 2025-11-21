@@ -1,4 +1,4 @@
-# SOME DESCRIPTIVE TITLE.
+﻿# SOME DESCRIPTIVE TITLE.
 # Copyright (C) 2023, jkjkil4
 # This file is distributed under the same license as the JAnim package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2024.
@@ -26,7 +26,7 @@ msgstr "boolean_ops"
 #: janim.items.boolean_ops.Difference:1 janim.items.boolean_ops.Exclusion:1
 #: janim.items.boolean_ops.Intersection:1 janim.items.boolean_ops.Union:1 of
 msgid "基类：:py:class:`~janim.items.vitem.VItem`"
-msgstr "Base class: :py:class:`~janim.items.vitem.VItem`"
+msgstr "基类：:py:class:`~janim.items.vitem.VItem`"
 
 #: janim.items.boolean_ops.Union:1 of
 msgid "并集"
@@ -111,4 +111,6 @@ msgstr "Pass an item and perform symmetric difference on all its child items seq
 
 #~ msgid "传入一个物件，将其所有子物件依次作补集（XOR）"
 #~ msgstr ""
+
+
 

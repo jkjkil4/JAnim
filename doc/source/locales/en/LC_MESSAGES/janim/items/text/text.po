@@ -1,4 +1,4 @@
-# SOME DESCRIPTIVE TITLE.
+﻿# SOME DESCRIPTIVE TITLE.
 # Copyright (C) 2023, jkjkil4
 # This file is distributed under the same license as the JAnim package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
@@ -323,7 +323,7 @@ msgstr "Reference documentation"
 
 #: janim.items.text.text.TextChar:1 of
 msgid "基类：:py:class:`~janim.items.vitem.VItem`"
-msgstr "Base class: :py:class:`~janim.items.vitem.VItem`"
+msgstr "基类：:py:class:`~janim.items.vitem.VItem`"
 
 #: janim.items.text.text.TextChar:1 of
 msgid "字符物件，作为 :class:`TextLine` 的子物件，在创建 :class:`TextLine` 时产生"
@@ -375,7 +375,7 @@ msgstr "If you have higher requirements for line breaks and typesetting, conside
 
 #: janim.items.text.text.Text.Format:1 of
 msgid "基类：:py:class:`~enum.Enum`"
-msgstr "Base class: :py:class:`~enum.Enum`"
+msgstr "基类：:py:class:`~enum.Enum`"
 
 #: janim.items.text.text.Text.idx_to_row_col:1 of
 msgid "由字符索引得到 行数、列数 索引"
@@ -404,7 +404,7 @@ msgstr "Apply rich text effects"
 
 #: janim.items.text.text.Title:1 of
 msgid "基类：:py:class:`~janim.items.points.Group`"
-msgstr "Base class: :py:class:`~janim.items.points.Group`"
+msgstr "基类：:py:class:`~janim.items.points.Group`"
 
 #: janim.items.text.text.Title:1 of
 msgid "标题"
@@ -424,9 +424,11 @@ msgstr "``match_underline_width_to_text=True`` matches the underline length to t
 
 #: janim.items.text.text.SourceDisplayer:1 of
 msgid "基类：:py:class:`~janim.items.text.text.Text`"
-msgstr "Base class: :py:class:`~janim.items.text.text.Text`"
+msgstr "基类：:py:class:`~janim.items.text.text.Text`"
 
 #: janim.items.text.text.SourceDisplayer:1 of
 msgid "显示 ``obj`` 的源代码"
 msgstr "Display the source code of ``obj``"
+
+
 
