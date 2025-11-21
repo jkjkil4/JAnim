@@ -33,10 +33,10 @@ msgid "用于标记物件在特定时间区段中的数据"
 msgstr "Used to mark the data of an item in a specific time segment"
 
 #: janim.anims.display.Display:3 of
-msgid "一般作为 :meth:`~.AnimStack.detect_change` 的产物，表示"物件从一个特定时间开始，被更改为了这样的数据""
+msgid "一般作为 :meth:`~.AnimStack.detect_change` 的产物，表示“物件从一个特定时间开始，被更改为了这样的数据”"
 msgstr ""
 "Generally produced by :meth:`~.AnimStack.detect_change`, indicating "
-"\"the item has been changed to this data starting from a specific time\""
+"“the item has been changed to this data starting from a specific time”"
 
 #: janim.anims.display.Display:5 of
 msgid "另见：:meth:`~.Timeline.detect_changes_of_all`"

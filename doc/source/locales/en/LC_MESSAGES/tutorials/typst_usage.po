@@ -97,7 +97,7 @@ msgid ""
 msgstr ""
 ":class:`~.TypstDoc` differs from :class:`~.TypstText` and "
 ":class:`~.TypstMath`. It automatically aligns with the top of the frame, "
-"giving a feeling of \"viewing from the beginning of the document\""
+"giving a feeling of “viewing from the beginning of the document”"
 
 #: ../../source/tutorials/typst_usage.rst:43
 msgid ""
@@ -144,7 +144,7 @@ msgid ""
 "你应该注意到了这里有两个“θ”（``theta``），当你使用 ``typ['theta']`` 的方式进行索引时，将会取出第一个匹配的 "
 "θ，也就是前一个。"
 msgstr ""
-"You should have noticed there are two "θ" (``theta``) here. When you use "
+"You should have noticed there are two “θ” (``theta``) here. When you use "
 "``typ['theta']`` for indexing, it will take the first matching θ, which is "
 "the previous one."
 
@@ -185,19 +185,19 @@ msgid "当你想要取出"
 msgstr "When you want to extract"
 
 #: ../../source/tutorials/typst_usage.rst:100
-msgid "中的上标 "2" 时，使用 ``typ['2']`` 无法匹配到它，这是因为上标的 "2" 和普通的 "2" 长得不同。"
+msgid "中的上标 “2” 时，使用 ``typ['2']`` 无法匹配到它，这是因为上标的 “2” 和普通的 “2” 长得不同。"
 msgstr ""
-"the superscript "2" in it, using ``typ['2']`` cannot match it, because the "
-"superscript "2" looks different from the regular "2"."
+"the superscript “2” in it, using ``typ['2']`` cannot match it, because the "
+"superscript “2” looks different from the regular “2”."
 
 #: ../../source/tutorials/typst_usage.rst:102
 msgid ""
-"为了正确匹配，你需要把索引中的 2 也表示为"上标"的形式，例如 ``typ['\"\"^2']`` 或者 ``typ['space^2']``，"
-" 这两者都是把 "2" 作为一个空元素（ ``\"\"`` 或者 ``space`` ） 的上标，这样就可以正确匹配了。"
+"为了正确匹配，你需要把索引中的 2 也表示为“上标”的形式，例如 ``typ['\"\"^2']`` 或者 ``typ['space^2']``，"
+" 这两者都是把 “2” 作为一个空元素（ ``\"\"`` 或者 ``space`` ） 的上标，这样就可以正确匹配了。"
 msgstr ""
 "To match correctly, you need to represent the 2 in the index as a "
-"\"superscript\" form, for example ``typ['\"\"^2']`` or ``typ['space^2']``. "
-"Both treat "2" as a superscript of an empty element (``\"\"`` or ``space``), "
+"“superscript” form, for example ``typ['\"\"^2']`` or ``typ['space^2']``. "
+"Both treat “2” as a superscript of an empty element (``\"\"`` or ``space``), "
 "so it can be matched correctly."
 
 #: ../../source/tutorials/typst_usage.rst:107

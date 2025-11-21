@@ -46,7 +46,7 @@ msgstr "``fps``: Frame rate of exported videos"
 #: ../../source/tutorials/config_system.rst:18
 msgid ""
 "预览界面的帧率 ``preview_fps`` 和导出视频的帧率 ``fps`` 是两个不同的值， "
-"这是考虑到部分用户可能会有"在预览时降低帧率提高渲染效率，在导出时提高帧率以获得更流畅的视频"的需求。"
+"这是考虑到部分用户可能会有“在预览时降低帧率提高渲染效率，在导出时提高帧率以获得更流畅的视频”的需求。"
 msgstr ""
 "The frame rate ``preview_fps`` of the preview interface and the frame rate "
 "``fps`` of exported videos are two different values. This is to accommodate "
@@ -55,10 +55,10 @@ msgstr ""
 "smoother videos."
 
 #: ../../source/tutorials/config_system.rst:21
-msgid "顺便一提，为了在预览时提高渲染效率，还有一种策略是打开窗口左上角"功能"菜单中的"跳帧"功能。"
+msgid "顺便一提，为了在预览时提高渲染效率，还有一种策略是打开窗口左上角“功能”菜单中的“跳帧”功能。"
 msgstr ""
 "By the way, to improve rendering efficiency during preview, another strategy "
-"is to enable the \"frame skipping\" feature in the \"Function\" menu at the "
+"is to enable the “frame skipping” feature in the “Function” menu at the "
 "top left corner of the window."
 
 #: ../../source/tutorials/config_system.rst:23
@@ -229,10 +229,10 @@ msgstr ""
 #: ../../source/tutorials/config_system.rst:172
 msgid ""
 "但后面两行的涉及的 ``left_side`` ``right_side`` ``bottom`` ``top`` 其实并不是可以直接配置的选项，"
-" 而是由视框大小 ``frame_width`` 和 ``frame_height`` 这一组配置所决定的，这里相当于提供了一种"衍生功能"。"
+" 而是由视框大小 ``frame_width`` 和 ``frame_height`` 这一组配置所决定的，这里相当于提供了一种“衍生功能”。"
 msgstr ""
 "However, the ``left_side`` ``right_side`` ``bottom`` ``top`` involved in the "
 "last two lines are not directly configurable options, but are determined by "
 "the viewport size configurations ``frame_width`` and ``frame_height``. This "
-"is equivalent to providing a kind of \"derived functionality\"."
+"is equivalent to providing a kind of “derived functionality”."
 

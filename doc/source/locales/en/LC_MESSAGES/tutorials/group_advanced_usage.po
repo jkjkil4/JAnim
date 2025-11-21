@@ -33,8 +33,8 @@ msgstr "Batch Copying of Items"
 
 #: ../../source/tutorials/group_advanced_usage.rst:9
 msgid ""
-"举个例子，对于一个圆形物件 ``Circle()``，我们可以在其后面使用 ``* 数量`` 表示 "复制出指定数量的圆形，放到一个 "
-":class:`~.Group` 中"："
+"举个例子，对于一个圆形物件 ``Circle()``，我们可以在其后面使用 ``* 数量`` 表示 “复制出指定数量的圆形，放到一个 :class:`"
+"~.Group` 中”："
 msgstr ""
 "For example, for a circular item ``Circle()``, we can use ``* number`` after "
 "it to mean \"copy the specified number of circles and put them in a "

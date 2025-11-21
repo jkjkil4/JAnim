@@ -61,10 +61,10 @@ msgid "画出边缘，然后填充颜色"
 msgstr "Draws the outline and then fills."
 
 #: janim.anims.creation.DrawBorderThenFill:3 of
-msgid "可以使用 ``stroke_radius`` 参数调整"画出边缘"时的描边粗细，在默认画面下的值是 0.01"
+msgid "可以使用 ``stroke_radius`` 参数调整“画出边缘”时的描边粗细，在默认画面下的值是 0.01"
 msgstr ""
 "You can use the ``stroke_radius`` parameter to adjust the stroke width when "
-"\"drawing the outline\", the default value is 0.01"
+"“drawing the outline”, the default value is 0.01"
 
 #: janim.anims.creation.DrawBorderThenFill:5 of
 msgid "如果设置了 ``scale_with_camera`` 参数，描边粗细会随着 ``camera`` 大小的变化而调整，画面尺寸越小，描边越细"

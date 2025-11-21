@@ -109,11 +109,11 @@ msgid "边界框的局限性"
 msgstr "Limitations of Bounding Boxes"
 
 #: ../../source/tutorials/bounding_box.rst:77
-msgid "边界框对物件几何特征的刻画足以应对大多数情况下的需求，但是当我们讨论"几何中心"时，边界框中心时常与形状的"几何中心"不重合。"
+msgid "边界框对物件几何特征的刻画足以应对大多数情况下的需求，但是当我们讨论“几何中心”时，边界框中心时常与形状的“几何中心”不重合。"
 msgstr ""
 "Bounding boxes' characterization of item geometric features is sufficient for "
-"most needs, but when we discuss \"geometric center\", the bounding box center "
-"often does not coincide with the shape's \"geometric center\"."
+"most needs, but when we discuss “geometric center”, the bounding box center "
+"often does not coincide with the shape's “geometric center”."
 
 #: ../../source/tutorials/bounding_box.rst:79
 msgid "你可能注意到了上图中用淡绿色标记的点，这就是他们的几何中心： 只有圆和方形的边界框中心与几何中心重合，其余图形的边界框中心则偏离了几何中心。"

@@ -144,10 +144,10 @@ msgstr ""
 "time formats, e.g., ``17.4``, ``'00:01:12'``, etc."
 
 #: janim.items.image_item.VideoFrame:6 of
-msgid "不建议使用该类将视频提取为多帧以达到"读取视频"的目的，因为这会导致巨大的性能浪费以及内存占用"
+msgid "不建议使用该类将视频提取为多帧以达到“读取视频”的目的，因为这会导致巨大的性能浪费以及内存占用"
 msgstr ""
 "It is not recommended to use this class to extract multiple frames from a "
-"video for the purpose of \"reading video\", as this will cause significant "
+"video for the purpose of “reading video”, as this will cause significant "
 "performance waste and memory usage"
 
 #: janim.items.image_item.VideoFrame:8 of

@@ -64,12 +64,12 @@ msgstr ""
 
 #: ../../source/janim/items/text/text.rst:33
 msgid ""
-"对于这种复杂的嵌套结构，如果你想要取子物件列表的切片，手动数数可能有点繁琐（比如上面例子的首行中，\"first\" 对应的切片是 "
+"对于这种复杂的嵌套结构，如果你想要取子物件列表的切片，手动数数可能有点繁琐（比如上面例子的首行中，“first” 对应的切片是 "
 "``[4:9]``）"
 msgstr ""
 "For such complex nested structures, if you want to slice the child items "
 "list, manually counting can be tedious (e.g., in the first line of the "
-"above example, the slice corresponding to \"first\" is ``[4:9]``)"
+"above example, the slice corresponding to “first” is ``[4:9]``)"
 
 #: ../../source/janim/items/text/text.rst:35
 msgid "为了解决这个问题，你可以参考预览界面的 :ref:`子物件选择 <subitem_selector>` 功能"
@@ -80,7 +80,7 @@ msgid "字符的标记属性"
 msgstr "Mark properties of characters"
 
 #: ../../source/janim/items/text/text.rst:40
-msgid ":class:`~.TextChar` 有四个标记属性，比如对于 "Ggf" 中的 "g" 字符而言："
+msgid ":class:`~.TextChar` 有四个标记属性，比如对于 “Ggf” 中的 “g” 字符而言："
 msgstr ":class:`~.TextChar` has four mark properties, for example, for the \"g\" character in \"Ggf\":"
 
 #: ../../source/janim/items/text/text.rst:46

@@ -69,7 +69,7 @@ msgstr ""
 #: ../../source/tutorials/coordinates.rst:29
 msgid "所以在大多数情况下，当我们想要“操作物件的坐标”时，先 ``.points`` 再做具体操作就对了！"
 msgstr ""
-"So in most cases, when we want to \"manipulate the coordinates of an item\", "
+"So in most cases, when we want to “manipulate the coordinates of an item”, "
 "we first use ``.points`` and then perform specific operations!"
 
 #: ../../source/tutorials/coordinates.rst:32
@@ -418,7 +418,7 @@ msgstr ""
 "rotate around the origin."
 
 #: ../../source/tutorials/coordinates.rst:15
-msgid "这两行看起来都是"将物件绕原点逆时针旋转 120 度"，但其实存在本质上的差异。"
+msgid "这两行看起来都是“将物件绕原点逆时针旋转 120 度”，但其实存在本质上的差异。"
 msgstr ""
 "These two lines both appear to \"rotate the item 120 degrees counterclockwise "
 "around the origin\", but there is an essential difference."

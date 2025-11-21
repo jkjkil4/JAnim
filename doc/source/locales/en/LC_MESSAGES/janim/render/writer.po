@@ -59,9 +59,9 @@ msgid "最后结束 ffmpeg 的调用，完成 _temp 文件的输出"
 msgstr "Finally end the ffmpeg call and complete the output of the _temp file"
 
 #: janim.render.writer.VideoWriter:10 of
-msgid "将 _temp 文件改名，删去 \"_temp\" 后缀，完成视频输出"
+msgid "将 _temp 文件改名，删去 “_temp” 后缀，完成视频输出"
 msgstr ""
-"Rename the _temp file, remove the \"_temp\" suffix, and complete video "
+"Rename the _temp file, remove the “_temp” suffix, and complete video "
 "output"
 
 #: janim.render.writer.VideoWriter.write_all:1 of

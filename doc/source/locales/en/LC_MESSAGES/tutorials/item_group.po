@@ -84,7 +84,7 @@ msgstr ""
 
 #: ../../source/tutorials/item_group.rst:19
 msgid ""
-"但是可以通过 ``group.astype(VItem).fill.fade(0.7)`` 的方式，把 ``group`` "当作"一个 "
+"但是可以通过 ``group.astype(VItem).fill.fade(0.7)`` 的方式，把 ``group`` “当作”一个 "
 ":class:`~.VItem` 来使用原本没有的组件，可以简写为"
 msgstr ""
 "But you can use ``group.astype(VItem).fill.fade(0.7)`` to treat ``group`` "
@@ -157,9 +157,9 @@ msgid ":class:`~.Text` :class:`~.Group` :class:`~.Arrow` :class:`~.Transform`"
 msgstr ":class:`~.Text` :class:`~.Group` :class:`~.Arrow` :class:`~.Transform`"
 
 #: ../../source/tutorials/item_group.rst:165
-msgid "这里将一个"圆形指向方形"的 ``shapes`` 组对齐到文字的下方，然后又和文字创建了一个 ``group`` 组。"
+msgid "这里将一个“圆形指向方形”的 ``shapes`` 组对齐到文字的下方，然后又和文字创建了一个 ``group`` 组。"
 msgstr ""
-"Here a ``shapes`` group of \"circle pointing to square\" is aligned below the "
+"Here a ``shapes`` group of “circle pointing to square” is aligned below the "
 "text, and then a ``group`` is created with the text."
 
 #: ../../source/tutorials/item_group.rst:167
@@ -173,10 +173,10 @@ msgid "有关物件组的用法你可以继续挖掘，探索更多可能！"
 msgstr "You can continue exploring the usage of item groups and discover more possibilities!"
 
 #: ../../source/tutorials/item_group.rst:173
-msgid "其实文字物件就是一个嵌套的物件组，其中包含了多个"文字行"物件，每个"文字行"物件又包含多个"字符"物件。"
+msgid "其实文字物件就是一个嵌套的物件组，其中包含了多个“文字行”物件，每个“文字行”物件又包含多个“字符”物件。"
 msgstr ""
-"In fact, text items are nested item groups, containing multiple \"text line\" "
-"items, and each \"text line\" item contains multiple \"character\" items."
+"In fact, text items are nested item groups, containing multiple “text line” "
+"items, and each “text line” item contains multiple “character” items."
 
 #: ../../source/tutorials/item_group.rst:175
 msgid "具体可参阅 :doc:`../janim/items/text` 文档中的介绍。"

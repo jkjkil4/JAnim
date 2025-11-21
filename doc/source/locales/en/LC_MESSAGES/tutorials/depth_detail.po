@@ -41,12 +41,12 @@ msgstr ""
 
 #: ../../source/tutorials/depth_detail.rst:18
 msgid ""
-"如果两个物件具有相同的深度，它们的遮挡关系遵循 **"越早创建的物件，越会被遮挡"** 即 **"更迟创建的物件，显示在其它物件的前面"** "
+"如果两个物件具有相同的深度，它们的遮挡关系遵循 **“越早创建的物件，越会被遮挡”** 即 **“更迟创建的物件，显示在其它物件的前面”** "
 "的原则："
 msgstr ""
 "If two items have the same depth, their occlusion relationship follows the "
-"principle of **\"items created earlier will be occluded\"**, i.e., "
-"**\"items created later will be displayed in front of other items\"**:"
+"principle of **“items created earlier will be occluded”**, i.e., "
+"**“items created later will be displayed in front of other items”**:"
 
 #: ../../source/tutorials/depth_detail.rst:27
 msgid "在上面这个示例中，文字和圆的深度都是 0，但是文字会被圆遮挡，因为文字先创建，而圆后创建。"
@@ -75,13 +75,13 @@ msgstr ""
 "text appears in front of the circle again."
 
 #: ../../source/tutorials/depth_detail.rst:47
-msgid "所以，上文提到的 **"更迟创建的物件，显示在其它物件的前面"** 的本质其实是："
+msgid "所以，上文提到的 **“更迟创建的物件，显示在其它物件的前面”** 的本质其实是："
 msgstr ""
 "So, the essence of **\"items created later will be displayed in front of "
 "other items\"** mentioned above is actually:"
 
 #: ../../source/tutorials/depth_detail.rst:53
-msgid "**"更迟设置深度的物件，显示在其它物件的前面"**"
+msgid "**“更迟设置深度的物件，显示在其它物件的前面”**"
 msgstr "**\"Items with depth set later will be displayed in front of other items\"**"
 
 #: ../../source/tutorials/depth_detail.rst:59
@@ -166,27 +166,27 @@ msgstr ""
 "straightforward - just arrange them according to depth size."
 
 #: ../../source/tutorials/depth_detail.rst:128
-msgid "于是这里主要讨论相同深度值的物件，是怎么做到"更迟设置深度的物件，显示在其它物件的前面"的。"
+msgid "于是这里主要讨论相同深度值的物件，是怎么做到“更迟设置深度的物件，显示在其它物件的前面”的。"
 msgstr ""
 "So here we mainly discuss how items with the same depth value achieve "
-"\"items with depth set later will be displayed in front of other items\"."
+"“items with depth set later will be displayed in front of other items”."
 
 #: ../../source/tutorials/depth_detail.rst:130
 msgid ""
-"其实，深度信息不止 ``.set(...)`` 所传入的值，他还暗藏一个"序号"，越后面设置的物件，它的"序号"就越低， "
-"所以，对于相同深度值的物件，JAnim 判定渲染顺序的方法便是使用"序号"作为依据。"
+"其实，深度信息不止 ``.set(...)`` 所传入的值，他还暗藏一个“序号”，越后面设置的物件，它的“序号”就越低， "
+"所以，对于相同深度值的物件，JAnim 判定渲染顺序的方法便是使用“序号”作为依据。"
 msgstr ""
 "In fact, depth information is not just the value passed to ``.set(...)``, "
-"it also hides an \"order\". The later an item's depth is set, the lower its "
-"\"order\" will be. So, for items with the same depth value, JAnim's method "
-"of determining rendering order is to use \"order\" as the basis."
+"it also hides an “order”. The later an item's depth is set, the lower its "
+"“order” will be. So, for items with the same depth value, JAnim's method "
+"of determining rendering order is to use “order” as the basis."
 
 #: ../../source/tutorials/depth_detail.rst:133
 msgid ""
-"物件深度"序号"的具体值可以使用 :meth:`~.Cmpt_Depth.get_raw` 获取，这是一个包含两个值的 ``tuple``，分别是"
+"物件深度“序号”的具体值可以使用 :meth:`~.Cmpt_Depth.get_raw` 获取，这是一个包含两个值的 ``tuple``，分别是"
 " ``(depth, order)``："
 msgstr ""
-"The specific value of an item's depth \"order\" can be obtained using "
+"The specific value of an item's depth “order” can be obtained using "
 ":meth:`~.Cmpt_Depth.get_raw`, which is a ``tuple`` containing two values: "
 "``(depth, order)``:"
 
@@ -199,9 +199,9 @@ msgstr ""
 "timeline rebuild."
 
 #: ../../source/tutorials/depth_detail.rst:149
-msgid "因此在创建动画过程时，动画效果绝对不要依赖于物件深度"序号"的具体值，否则会影响效果的一致性。"
+msgid "因此在创建动画过程时，动画效果绝对不要依赖于物件深度“序号”的具体值，否则会影响效果的一致性。"
 msgstr ""
 "Therefore, when creating animations, animation effects should never depend on "
-"the specific value of item depth \"order\", otherwise it will affect the "
+"the specific value of item depth “order”, otherwise it will affect the "
 "consistency of effects."
 

@@ -67,7 +67,7 @@ msgstr ""
 "after the current time and last for 2 seconds"
 
 #: ../../source/tutorials/animations.rst:43
-msgid "这个参数在接下来将要讲的"动画组"的内容中，会更加实用"
+msgid "这个参数在接下来将要讲的“动画组”的内容中，会更加实用"
 msgstr "This parameter will be more practical in the \"Animation Groups\" content that will be discussed next"
 
 #: ../../source/tutorials/animations.rst:45
@@ -305,9 +305,9 @@ msgid ":doc:`../janim/anims/updater`"
 msgstr ":doc:`../janim/anims/updater`"
 
 #: ../../source/tutorials/animations.rst:278
-msgid "JAnim 还有一个重要的特性是"动画复合"，我们将在 :ref:`updaters` 中详细介绍这一特性。"
+msgid "JAnim 还有一个重要的特性是“动画复合”，我们将在 :ref:`updaters` 中详细介绍这一特性。"
 msgstr ""
-"JAnim also has an important feature called \"animation composition\", which we "
+"JAnim also has an important feature called “animation composition”, which we "
 "will detail in :ref:`updaters`."
 
 #: ../../source/tutorials/animations.rst:281

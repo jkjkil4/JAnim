@@ -44,16 +44,16 @@ msgstr ""
 "operations, and the preceding ``#[JA_FINISH_UP_UNIFORMS]`` corresponds to it"
 
 #: janim.items.frame_effect.FrameEffect:27 of
-msgid "上述代码最核心的是 ``main`` 中"进行处理"的部分，其余的代码作为固定的写法照抄即可"
+msgid "上述代码最核心的是 ``main`` 中“进行处理”的部分，其余的代码作为固定的写法照抄即可"
 msgstr ""
-"The core of the above code is the \"processing\" part in ``main``, the rest "
+"The core of the above code is the “processing” part in ``main``, the rest "
 "of the code can be copied as fixed patterns"
 
 #: janim.items.frame_effect.FrameEffect:29 of
-msgid "如果懒得抄，可以用 :class:`SimpleFrameEffect`，这个类只要写"进行处理"这部分就好了，因为它把其余代码都封装了"
+msgid "如果懒得抄，可以用 :class:`SimpleFrameEffect`，这个类只要写“进行处理”这部分就好了，因为它把其余代码都封装了"
 msgstr ""
 "If you don't want to copy, you can use :class:`SimpleFrameEffect`, which only "
-"requires writing the \"processing\" part, as it encapsulates the rest of the "
+"requires writing the “processing” part, as it encapsulates the rest of the "
 "code"
 
 #: janim.items.frame_effect.FrameEffect:31 of
@@ -145,11 +145,11 @@ msgstr "The actual error line number should be subtracted by 10"
 #: janim.items.frame_effect.Shadertoy:21 of
 msgid ""
 "例如，如果在上面的例子中将 ``iResolution`` 误写为了 ``Resolution``， 会导致 ``0(12) : error "
-"C1503: undefined variable \"Resolution\"`` 的报错， 报错信息说的是在第 12 行，实际是第 2 行"
+"C1503: undefined variable “Resolution”`` 的报错， 报错信息说的是在第 12 行，实际是第 2 行"
 msgstr ""
 "For example, if in the above example ``iResolution`` is mistakenly written as "
 "``Resolution``, it will cause an error ``0(12) : error C1503: undefined "
-"variable \"Resolution\"``. The error message says line 12, but the actual "
+"variable “Resolution”``. The error message says line 12, but the actual "
 "line is 2"
 
 #: janim.items.frame_effect.Shadertoy:25 of

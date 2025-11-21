@@ -36,7 +36,7 @@ msgid "Email：1173374788@qq.com"
 msgstr "Email: 1173374788@qq.com"
 
 #: ../../source/examples/_note_examples_options.rst:9
-msgid "除了 00:00 - 01:25 的"类 Slide 演示"之外，作为视频注解出现的区段："
+msgid "除了 00:00 - 01:25 的“类 Slide 演示”之外，作为视频注解出现的区段："
 msgstr "Segments appearing as video annotations, excluding the \"Slide-like Demonstration\" from 00:00 - 01:25:"
 
 #: ../../source/examples/_note_examples_options.rst:11
@@ -48,7 +48,7 @@ msgid "03\\:57 - 04\\:48 : 演示了 ``viewport`` 的概念"
 msgstr "03:57 - 04:48: Demonstrates the concept of ``viewport``"
 
 #: ../../source/examples/_note_examples_options.rst:21
-msgid "除了 00:00 - 00:25 的"类 Slide 演示"之外，作为视频注解出现的区段："
+msgid "除了 00:00 - 00:25 的“类 Slide 演示”之外，作为视频注解出现的区段："
 msgstr "Segments appearing as video annotations, excluding the \"Slide-like Demonstration\" from 00:00 - 00:25:"
 
 #: ../../source/examples/_note_examples_options.rst:23
@@ -56,7 +56,7 @@ msgid "00\\:50 - 01\\:02 : 演示了 ``get_key`` 的用法"
 msgstr "00:50 - 01:02: Demonstrates the usage of ``get_key``"
 
 #: ../../source/examples/_note_examples_options.rst:24
-msgid "01\\:10 - 01\\:17 : 对"渲染循环"部分代码的强调"
+msgid "01\\:10 - 01\\:17 : 对“渲染循环”部分代码的强调"
 msgstr "01:10 - 01:17: Emphasis on the \"rendering loop\" code section"
 
 #: ../../source/examples/_note_examples_options.rst:25

@@ -37,10 +37,10 @@ msgstr ""
 #: ../../source/tutorials/updaters.rst:9
 msgid ""
 "学懂 :class:`~.DataUpdater` :class:`~.GroupUpdater` 以及 "
-":class:`~.ItemUpdater` 后，你就可以从基础教程"毕业"了！"
+":class:`~.ItemUpdater` 后，你就可以从基础教程“毕业”了！"
 msgstr ""
 "After learning :class:`~.DataUpdater`, :class:`~.GroupUpdater`, and "
-":class:`~.ItemUpdater`, you can \"graduate\" from the basic tutorials!"
+":class:`~.ItemUpdater`, you can “graduate” from the basic tutorials!"
 
 #: ../../source/tutorials/updaters.rst:13
 msgid ""
@@ -138,10 +138,10 @@ msgstr ""
 #: ../../source/tutorials/updaters.rst:72
 msgid ""
 "原则上来说，传入 :class:`~.DataUpdater` 以及 :class:`~.GroupUpdater` 等 ``Updater`` "
-"的函数不应产生"副作用"，也就是只能改变 ``data`` 的状态，应避免产生对函数之外其它变量的影响。"
+"的函数不应产生“副作用”，也就是只能改变 ``data`` 的状态，应避免产生对函数之外其它变量的影响。"
 msgstr ""
 "In principle, functions passed to ``Updater`` such as :class:`~.DataUpdater` "
-"and :class:`~.GroupUpdater` should not produce \"side effects\", meaning they "
+"and :class:`~.GroupUpdater` should not produce “side effects”, meaning they "
 "should only change the state of ``data`` and avoid affecting other variables "
 "outside the function."
 
@@ -158,12 +158,12 @@ msgstr ""
 #: ../../source/tutorials/updaters.rst:79
 msgid ""
 "但正如在上一小节对 :class:`~.DataUpdater` 的介绍中提到的，:class:`~.GroupUpdater` "
-"侧重于将传入物件及其后代物件作为一个整体操作， 这在处理如"整体旋转"和"整体对齐"等操作时比较实用。"
+"侧重于将传入物件及其后代物件作为一个整体操作， 这在处理如“整体旋转”和“整体对齐”等操作时比较实用。"
 msgstr ""
 "But as mentioned in the previous section about :class:`~.DataUpdater`, "
 ":class:`~.GroupUpdater` focuses on operating on the passed item and its "
 "descendant items as a whole, which is practical when handling operations like "
-"\"overall rotation\" and \"overall alignment\"."
+"“overall rotation” and “overall alignment”."
 
 #: ../../source/tutorials/updaters.rst:82
 msgid "以下示例展示了使用 :class:`~.DataUpdater` 和 :class:`~.GroupUpdater` 进行旋转的区别："
@@ -234,10 +234,10 @@ msgstr ""
 "effects sequentially."
 
 #: ../../source/tutorials/updaters.rst:171
-msgid "在下面这个例子中，我们每两秒加入一个新的 ``Updater``，以演示"动画复合"的作用："
+msgid "在下面这个例子中，我们每两秒加入一个新的 ``Updater``，以演示“动画复合”的作用："
 msgstr ""
 "In the following example, we add a new ``Updater`` every two seconds to "
-"demonstrate the effect of \"animation composition\":"
+"demonstrate the effect of “animation composition”:"
 
 #: ../../source/tutorials/updaters.rst:213
 msgid "可以给 ``Updater`` 传入 ``become_at_end=False`` 使物件在动画后回到最初的状态。"
@@ -252,13 +252,13 @@ msgstr ""
 "``square.points.to_border(LEFT)`` each time."
 
 #: ../../source/tutorials/updaters.rst:219
-msgid "``.anim`` 所创建的动画具有覆盖性，当其参与"动画复合"时，应将其放在最开始使用。"
+msgid "``.anim`` 所创建的动画具有覆盖性，当其参与“动画复合”时，应将其放在最开始使用。"
 msgstr ""
 "Animations created by ``.anim`` are overriding. When participating in "
-"\"animation composition\", they should be placed at the beginning."
+"“animation composition”, they should be placed at the beginning."
 
 #: ../../source/tutorials/updaters.rst:221
-msgid "这里另外再给出一个"动画复合"的示例："
+msgid "这里另外再给出一个“动画复合”的示例："
 msgstr "Here is another example of \"animation composition\":"
 
 #: ../../source/tutorials/updaters.rst:52
@@ -336,7 +336,7 @@ msgid "``StepUpdater`` 的使用"
 msgstr "Usage of ``StepUpdater``"
 
 #: ../../source/tutorials/updaters.rst:364
-msgid "按步更新物件，适合用于 **"需要基于上一刻的状态更新下一刻状态"** 的情景，例如物理模拟或是微分方程数值演示等。"
+msgid "按步更新物件，适合用于 **“需要基于上一刻的状态更新下一刻状态”** 的情景，例如物理模拟或是微分方程数值演示等。"
 msgstr ""
 "Update items step by step, suitable for scenarios **\"requiring updating the "
 "next state based on the previous state\"**, such as physics simulations or "
