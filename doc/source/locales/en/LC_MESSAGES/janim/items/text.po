@@ -64,16 +64,16 @@ msgstr ""
 
 #: ../../source/janim/items/text.rst:33
 msgid ""
-"对于这种复杂的嵌套结构，如果你想要取子物件列表的切片，手动数数可能有点繁琐（比如上面例子的首行中，“first” 对应的切片是 "
+"对于这种复杂的嵌套结构，如果你想要取子物件列表的切片，手动数数可能有点繁琐（比如上面例子的首行中，\"first\" 对应的切片是 "
 "``[4:9]``）"
 msgstr ""
 "For such complex nested structures, if you want to slice the child items "
 "list, manually counting can be tedious (e.g., in the first line of the "
-"above example, the slice corresponding to “first” is ``[4:9]``)"
+"above example, the slice corresponding to \"first\" is ``[4:9]``)"
 
 #: ../../source/janim/items/text.rst:35
-msgid "为了解决这个问题，你可以参考预览界面的 :ref:`子物件选择 <subitem_selector>` 功能"
-msgstr "To solve this problem, you can refer to the :ref:`subitem selector <subitem_selector>` feature in the preview interface"
+msgid "为了解决这个问题，你可以参考预览界面的 :ref:`subitem_selector` 功能"
+msgstr "To solve this problem, you can refer to the :ref:`subitem_selector` feature in the preview interface"
 
 #: ../../source/janim/items/text.rst:38
 msgid "字符的标记属性"
@@ -116,7 +116,7 @@ msgid "富文本"
 msgstr "Rich text"
 
 #: ../../source/janim/items/text.rst:62
-msgid "可以使用起始标记和结束标记（像 html 那样的）应用富文本格式："
+msgid "可以使用起始标记和结束标记（像 HTML 那样的）应用富文本格式："
 msgstr "Can use start and end tags (like HTML) to apply rich text formatting:"
 
 #: ../../source/janim/items/text.rst:64
@@ -132,8 +132,8 @@ msgid "这里的 ``c`` 是 ``color`` 的简写"
 msgstr "Here ``c`` is an abbreviation for ``color``"
 
 #: ../../source/janim/items/text.rst:78
-msgid ":class:`~.Text` 使用富文本需要传入 ``format=Text.Format.RichText``，否则默认情况下视作普通文本"
-msgstr ":class:`~.Text` requires passing ``format=Text.Format.RichText`` to use rich text, otherwise it is treated as plain text by default"
+msgid ":class:`~.Text` 使用富文本需要传入 ``format=Text.Format.RichText`` 或者 ``format='rich'``，否则默认情况下视作普通文本"
+msgstr ":class:`~.Text` requires passing ``format=Text.Format.RichText`` or ``format='rich'`` to use rich text, otherwise it is treated as plain text by default"
 
 #: ../../source/janim/items/text.rst:80
 msgid "以下列出了可用的格式："
@@ -431,19 +431,19 @@ msgstr "``group``: For regular expressions, specify which group to use for match
 #: janim.items.text.Text.select_parts:7 of
 msgid ""
 "提示：如果不希望使用正则表达式，可以使用 ``re.escape`` 进行转义，例如 ``re.escape('a[i]')`` "
-"来正确匹配字符串中的 `a[i]`"
+"来正确匹配字符串中的 ``a[i]``"
 msgstr ""
 "Tip: If you don't want to use regular expressions, you can use ``re.escape`` "
-"to escape, for example ``re.escape('a[i]')`` to correctly match `a[i]` in "
+"to escape, for example ``re.escape('a[i]')`` to correctly match ``a[i]`` in "
 "the string"
 
 #: janim.items.text.Text.select_parts:16 of
-msgid "上面这个示例会选取出 `Hello World!` 中的 `World` 部分，并将其颜色设置为红色"
-msgstr "This example will select the `World` part from `Hello World!` and set its color to red"
+msgid "上面这个示例会选取出 ``Hello World!`` 中的 ``World`` 部分，并将其颜色设置为红色"
+msgstr "This example will select the ``World`` part from ``Hello World!`` and set its color to red"
 
 #: janim.items.text.Text.select_parts:23 of
-msgid "上面这个示例会选取出其中的 `or` 部分，并且避免选取 `for` 中的 `or`"
-msgstr "This example will select the `or` part and avoid selecting `or` in `for`"
+msgid "上面这个示例会选取出其中的 ``or`` 部分，并且避免选取 ``for`` 中的 ``or``"
+msgstr "This example will select the ``or`` part and avoid selecting ``or`` in ``for``"
 
 #: janim.items.text.Text.arrange_in_lines:1 of
 msgid "``buff``: 每行之间的额外间距"

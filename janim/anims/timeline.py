@@ -281,7 +281,7 @@ class Timeline(metaclass=ABCMeta):
 
     def timeout(self, delay: float, func: Callable, *args, **kwargs) -> None:
         '''
-        相当于 `schedule(self.current_time + delay, func, *args, **kwargs)`
+        相当于 ``schedule(self.current_time + delay, func, *args, **kwargs)``
         '''
         self.schedule(self.current_time + delay, func, *args, **kwargs)
 
@@ -650,7 +650,7 @@ class Timeline(metaclass=ABCMeta):
         '''
         检查指定的列表中物件的变化，并将变化记录为 :class:`~.Display`
 
-        （仅检查自身而不包括子物件的）
+        （仅检查自身而不包括后代物件的）
         '''
         for item in items:
             self.item_appearances[item].stack.detect_change(item, self.current_time)
@@ -1124,7 +1124,9 @@ class BuiltTimeline:
                     sub.seek(0).start(speed=4)
                     self.forward(2)
 
-        注意：在默认情况下未开始播放，需要使用 ``start`` 以开始播放
+        .. warning::
+
+            在默认情况下未开始播放，需要使用 ``start`` 以开始播放
 
         额外参数：
 

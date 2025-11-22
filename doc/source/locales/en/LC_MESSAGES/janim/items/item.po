@@ -94,8 +94,8 @@ msgid "该例子会创建将 ``item`` 向右移动两个单位并且设置为绿
 msgstr "This example creates an updater that moves ``item`` two units to the right and sets it to green, with different ``rate_func`` for each"
 
 #: janim.items.item.Item.replicate:1 of
-msgid "复制 n 个自身，并作为一个 :class:`Group` 返回"
-msgstr "Replicates n copies of itself and returns them as a :class:`Group`"
+msgid "复制 n 个自身，并作为一个 :class:`~.Group` 返回"
+msgstr "Replicates n copies of itself and returns them as a :class:`~.Group`"
 
 #: janim.items.item.Item.replicate:3 of
 msgid "可以将 ``item * n`` 作为该方法的简写"
@@ -110,12 +110,12 @@ msgid "例："
 msgstr "Examples:"
 
 #: janim.items.item.Item.astype:12 of
-msgid "在这个例子中，并不能 ``group.color.set(BLUE)`` 来设置子物件中的颜色， 但是可以使用 ``group.astype(VItem).color.set(BLUE)`` 来做到"
-msgstr "In this example, you cannot use ``group.color.set(BLUE)`` to set the color of the child items, but you can achieve this using ``group.astype(VItem).color.set(BLUE)``"
+msgid "在这个例子中，并不能 ``group.color.set(BLUE)`` 来设置后代物件中的颜色， 但是可以使用 ``group.astype(VItem).color.set(BLUE)`` 来做到"
+msgstr "In this example, you cannot use ``group.color.set(BLUE)`` to set the color of descendant items, but you can achieve this using ``group.astype(VItem).color.set(BLUE)``"
 
 #: janim.items.item.Item.astype:15 of
-msgid "也可以使用简写 ``group(VItem).color.set(BLUE)``"
-msgstr "You can also use the shorthand ``group(VItem).color.set(BLUE)``"
+msgid "也可以使用简写"
+msgstr "You can also use the shorthand"
 
 #: janim.items.item.Item.current:1 of
 msgid "由当前时间点获得当前物件（考虑动画作用后的结果）"

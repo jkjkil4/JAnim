@@ -53,7 +53,7 @@ msgstr ""
 
 #: ../../source/tutorials/coordinates.rst:24
 msgid "类似情况不再赘述"
-msgstr "Similar cases will not be repeated"
+msgstr "This note will not be repeated for similar cases"
 
 #: ../../source/tutorials/coordinates.rst:26
 msgid ""

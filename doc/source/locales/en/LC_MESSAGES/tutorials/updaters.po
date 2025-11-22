@@ -104,7 +104,7 @@ msgstr ""
 
 #: ../../source/tutorials/updaters.rst:54
 msgid "从而产生矩形物件旋转的动画效果。"
-msgstr "Thus creating a rotating animation effect for the rectangular item."
+msgstr "Thus creating a rotating animation effect for the rectangle item."
 
 #: ../../source/tutorials/updaters.rst:58
 msgid "其实上面这个示例正是 :class:`~.Rotate` 和 :class:`~.Rotating` 动画的实现方式"
@@ -221,7 +221,7 @@ msgstr ""
 
 #: ../../source/tutorials/updaters.rst:167
 msgid "动画复合"
-msgstr "Animation Composition"
+msgstr "Animation Combination"
 
 #: ../../source/tutorials/updaters.rst:169
 msgid ""
@@ -237,7 +237,7 @@ msgstr ""
 msgid "在下面这个例子中，我们每两秒加入一个新的 ``Updater``，以演示“动画复合”的作用："
 msgstr ""
 "In the following example, we add a new ``Updater`` every two seconds to "
-"demonstrate the effect of “animation composition”:"
+"demonstrate the effect of “animation combination”:"
 
 #: ../../source/tutorials/updaters.rst:213
 msgid "可以给 ``Updater`` 传入 ``become_at_end=False`` 使物件在动画后回到最初的状态。"
@@ -255,11 +255,11 @@ msgstr ""
 msgid "``.anim`` 所创建的动画具有覆盖性，当其参与“动画复合”时，应将其放在最开始使用。"
 msgstr ""
 "Animations created by ``.anim`` are overriding. When participating in "
-"“animation composition”, they should be placed at the beginning."
+"“animation combination”, they should be placed at the beginning."
 
 #: ../../source/tutorials/updaters.rst:221
 msgid "这里另外再给出一个“动画复合”的示例："
-msgstr "Here is another example of \"animation composition\":"
+msgstr "Here is another example of \"animation combination\":"
 
 #: ../../source/tutorials/updaters.rst:52
 msgid ":class:`~.Sector` :func:`~.rotate_vector`"
@@ -318,8 +318,8 @@ msgstr ""
 #: ../../source/tutorials/updaters.rst:327
 msgid "所以 :class:`~.ItemUpdater` 可以不传入物件，传入 ``None`` 也是可以的。"
 msgstr ""
-"So :class:`~.ItemUpdater` can be used without passing an item, and passing "
-"``None`` is also acceptable."
+"So :class:`~.ItemUpdater` can be used without passing an item, passing "
+"``None`` is acceptable."
 
 #: ../../source/tutorials/updaters.rst:330
 msgid "``duration=FOREVER`` 的使用"

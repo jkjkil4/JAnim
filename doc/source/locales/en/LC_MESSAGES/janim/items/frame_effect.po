@@ -57,8 +57,8 @@ msgstr ""
 "code"
 
 #: janim.items.frame_effect.FrameEffect:31 of
-msgid "完整示例请参考 :ref:`样例学习 <basic_examples>` 中的对应代码"
-msgstr "For complete examples, refer to the corresponding code in :ref:`Example Learning <basic_examples>`"
+msgid "完整示例请参考 :ref:`基础样例 <basic_examples>` 中的对应代码"
+msgstr "For complete examples, refer to the corresponding code in :ref:`Basic Examples <basic_examples>`"
 
 #: janim.items.frame_effect.FrameEffect.add:1 of
 msgid "向该对象添加子对象"
@@ -145,11 +145,11 @@ msgstr "The actual error line number should be subtracted by 10"
 #: janim.items.frame_effect.Shadertoy:21 of
 msgid ""
 "例如，如果在上面的例子中将 ``iResolution`` 误写为了 ``Resolution``， 会导致 ``0(12) : error "
-"C1503: undefined variable “Resolution”`` 的报错， 报错信息说的是在第 12 行，实际是第 2 行"
+"C1503: undefined variable \"Resolution\"`` 的报错， 报错信息说的是在第 12 行，实际是第 2 行"
 msgstr ""
 "For example, if in the above example ``iResolution`` is mistakenly written as "
 "``Resolution``, it will cause an error ``0(12) : error C1503: undefined "
-"variable “Resolution”``. The error message says line 12, but the actual "
+"variable \"Resolution\"``. The error message says line 12, but the actual "
 "line is 2"
 
 #: janim.items.frame_effect.Shadertoy:25 of

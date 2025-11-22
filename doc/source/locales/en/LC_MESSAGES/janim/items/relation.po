@@ -28,7 +28,7 @@ msgid ""
 "基类：:py:class:`~janim.utils.refresh.Refreshable`, "
 ":py:class:`~typing.Generic`"
 msgstr ""
-"Base class: :py:class:`~janim.utils.refresh.Refreshable`, "
+"基类：:py:class:`~janim.utils.refresh.Refreshable`, "
 ":py:class:`~typing.Generic`"
 
 #: janim.items.relation.Relation:1 of

@@ -89,8 +89,8 @@ msgid "传入 ``start``, ``end`` 表示起点终点"
 msgstr "Pass ``start`` and ``end`` to represent the start and end points"
 
 #: janim.items.geometry.arc.ArcBetweenPoints:5 of
-msgid "其余参数同 ``Arc``"
-msgstr "Other parameters are the same as ``Arc``"
+msgid "其余参数同 :class:`Arc`"
+msgstr "Other parameters are the same as :class:`Arc`"
 
 #: janim.items.geometry.arc.Cmpt_VPoints_CircleImpl:1 of
 msgid ""
@@ -128,8 +128,8 @@ msgid "圆"
 msgstr "Circle"
 
 #: janim.items.geometry.arc.Circle:3 of
-msgid "参数同 ``Arc``"
-msgstr "Parameters are the same as ``Arc``"
+msgid "参数同 :class:`Arc`"
+msgstr "Parameters are the same as :class:`Arc`"
 
 #: janim.items.geometry.arc.Circle:4 of
 msgid "半径传入 ``radius`` 指定"
@@ -187,8 +187,8 @@ msgid "扇形"
 msgstr "Sector"
 
 #: janim.items.geometry.arc.Sector:3 of
-msgid "传入参数请参考 ``Arc``"
-msgstr "For parameters, refer to ``Arc``"
+msgid "传入参数请参考 :class:`Arc`"
+msgstr "For parameters, refer to :class:`Arc`"
 
 #: janim.items.geometry.arc.Annulus:1 of
 msgid "圆环"

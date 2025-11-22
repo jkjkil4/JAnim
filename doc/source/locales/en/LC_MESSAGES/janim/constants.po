@@ -62,7 +62,7 @@ msgid ""
 "具”中点击“颜色”"
 msgstr ""
 "JAnim built-in tool: Enter ``janim tool color`` in the command line or click "
-"“Color” in the “Functions” menu at the top left of the GUI"
+"“Color” in the “Tools” menu at the top left of the GUI"
 
 #: ../../source/janim/constants.rst:76
 msgid "在线工具：`颜色工具 - MK官网 <https://manim.org.cn/tool/color>`_"

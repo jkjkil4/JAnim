@@ -155,9 +155,9 @@ msgstr "Principles of Rendering Order"
 #: ../../source/rst_utils/tip_of_complex.rst:3
 msgid "这部分内容涉及 JAnim 实现原理，可能较为复杂，若没有研究源码的需求，你应酌情阅读"
 msgstr ""
-"This section involves JAnim implementation principles and may be relatively "
-"complex. If you don't need to study the source code, you should read it as "
-"appropriate."
+"This section covers the implementations of JAnim, which may be "
+"quite complex. If you do not have the need to delve into the source "
+"code, you may choose to read it at your discretion."
 
 #: ../../source/tutorials/depth_detail.rst:126
 msgid "对于不同深度值的物件，它们的渲染顺序非常浅显易懂，只需按照深度的大小排列即可。"

@@ -84,5 +84,5 @@ msgstr ""
 "The :meth:`~.Timeline.audio_and_subtitle` method automatically removes "
 "excessive silence before and after audio by default. You can pass "
 "``clip=None`` to disable this, or use ``clip=(start, end)`` to manually "
-"determine the clipping segment."
+"determine the clipping range."
 

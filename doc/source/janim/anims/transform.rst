@@ -26,6 +26,9 @@ transform
             self.play(Transform(B, C))
             self.forward()
 
+.. autoclass:: janim.anims.transform.MoveToTarget
+    :show-inheritance:
+
 .. autoclass:: janim.anims.transform.TransformInSegments
     :show-inheritance:
 

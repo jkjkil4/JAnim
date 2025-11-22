@@ -105,7 +105,7 @@ msgstr "Apply ``duration`` seconds of fade-out"
 
 #: janim.items.audio.Audio.recommended_ranges:1 of
 msgid "得到若干个可用区段 ``(start, end)``，一般用于配音音频，也就是会忽略没声音的部分，得到有声音的区段的起止时间"
-msgstr "Get several usable segments ``(start, end)``, generally used for voice-over audio, i.e., ignores silent parts and gets the start and end times of segments with sound"
+msgstr "Get several usable ranges ``(start, end)``, generally used for voice-over audio, i.e., ignores silent parts and gets the start and end times of segments with sound"
 
 #: janim.items.audio.Audio.recommended_ranges:3 of
 msgid ""
@@ -127,7 +127,7 @@ msgstr "``gap_duration``: If the duration of silence is greater than this time, 
 
 #: janim.items.audio.Audio.recommended_range:1 of
 msgid "得到可用区段 ``(start, end)``，一般用于配音音频，也就是会忽略没声音的部分，得到有声音的区段的起止时间"
-msgstr "Get a usable segment ``(start, end)``, generally used for voice-over audio, i.e., ignores silent parts and gets the start and end times of segments with sound"
+msgstr "Get a usable range ``(start, end)``, generally used for voice-over audio, i.e., ignores silent parts and gets the start and end times of segments with sound"
 
 #: janim.items.audio.Audio.recommended_range:3 of
 msgid "与 :meth:`recommended_ranges` 的区别是，该方法得到的是最开始到最末尾的整个区段"

@@ -19,9 +19,9 @@ def get_program_from_file_prefix(filepath_prefix: str) -> mgl.Program:
     给定相对于 janim 路径或用户路径的文件位置，自动遍历后缀并读取着色器代码，
     例如传入 ``render/shaders/dotcloud`` 后，会自动读取以下位置的代码：
 
-    - render/shaders/dotcloud.vert.glsl
-    - render/shaders/dotcloud.geom.glsl
-    - render/shaders/dotcloud.frag.glsl
+    - ``render/shaders/dotcloud.vert.glsl``
+    - ``render/shaders/dotcloud.geom.glsl``
+    - ``render/shaders/dotcloud.frag.glsl``
 
     若没有则缺省，但要能创建可用的着色器
 
@@ -125,10 +125,10 @@ def get_program_from_string(
 
 def get_compute_shader_from_file(filepath: str) -> mgl.ComputeShader:
     '''
-    载入相对于 janim 路径或用户路径的 ComputeShader，
+    载入相对于 janim 路径或用户路径的 ``ComputeShader``，
     例如 ``render/shaders/map_points.comp.glsl`` 就会载入 janim 文件夹中的这个文件
 
-    注：若 ``filepath`` 对应的 ComputeShader 先前已创建过，则会复用先前的对象，否则另外创建新的对象并记录
+    注：若 ``filepath`` 对应的 ``ComputeShader`` 先前已创建过，则会复用先前的对象，否则另外创建新的对象并记录
     '''
     ctx = Renderer.data_ctx.get().ctx
     programs = programs_map[ctx]

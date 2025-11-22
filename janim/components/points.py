@@ -205,7 +205,7 @@ class Cmpt_Points[ItemT](Component[ItemT]):
         return interpolate(points[i], points[i + 1], subalpha)
 
     def pfp(self, alpha) -> np.ndarray:
-        '''``point_from_proportion`` 的缩写'''
+        ''':meth:`point_from_proportion` 的缩写'''
         return self.point_from_proportion(alpha)
 
     def _raise_error_if_no_points(self) -> None:
@@ -269,8 +269,8 @@ class Cmpt_Points[ItemT](Component[ItemT]):
 
             例如：
 
-            - 传入 UR，则返回边界框右上角的坐标
-            - 传入 RIGHT，则返回边界框右侧中心的坐标
+            - 传入 ``UR``，则返回边界框右上角的坐标
+            - 传入 ``RIGHT``，则返回边界框右侧中心的坐标
             '''
             indices = (np.sign(direction) + 1).astype(int)
             return np.array([
@@ -425,7 +425,9 @@ class Cmpt_Points[ItemT](Component[ItemT]):
         root_only: bool = False,
     ) -> Self:
         '''
-        对每个点依次传入 ``func`` 进行变换；以默认的原点作用变换，而不是物件的中心
+        把每个点依次传入 ``func`` 进行变换
+
+        以默认的原点作用变换，而不是物件的中心
         '''
         self.apply_points_fn(
             lambda points: np.array([func(p) for p in points]),
@@ -444,7 +446,9 @@ class Cmpt_Points[ItemT](Component[ItemT]):
         root_only: bool = False,
     ) -> Self:
         '''
-        将矩阵变换作用于 ``points``；以默认的原点作用变换，而不是物件的中心
+        将矩阵变换作用于 ``points``
+
+        以默认的原点作用变换，而不是物件的中心
         '''
         matrix = np.array(matrix)
         if matrix.shape not in ((2, 2), (3, 3)):
@@ -478,7 +482,9 @@ class Cmpt_Points[ItemT](Component[ItemT]):
         root_only: bool = False,
     ) -> Self:
         '''
-        将复变函数作用于 ``points``；以默认的原点作用变换，而不是物件的中心
+        将复变函数作用于 ``points``
+
+        以默认的原点作用变换，而不是物件的中心
         '''
         def R3_func(point):
             x, y, z = point

@@ -207,15 +207,15 @@ msgstr ""
 "you need to set ``frame_components=4``"
 
 #: janim.items.image_item.Video:15 of
-msgid "注意：在默认情况下未开始播放，需要使用 ``start`` 以开始播放"
+msgid "在默认情况下未开始播放，需要使用 ``start`` 以开始播放"
 msgstr ""
-"Note: By default, playback has not started, you need to use ``start`` to "
+"By default, playback has not started, you need to use ``start`` to "
 "begin playback"
 
 #: janim.items.image_item.Video:17 of
-msgid "注：可以使用 `.info` 获取视频如时长等额外信息"
+msgid "可以使用 ``.info`` 获取视频如时长等额外信息"
 msgstr ""
-"Note: You can use `.info` to get additional information about the video, "
+"You can use ``.info`` to get additional information about the video, "
 "such as duration"
 
 #: janim.items.image_item.Video:19 of

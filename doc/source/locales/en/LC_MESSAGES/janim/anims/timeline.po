@@ -115,8 +115,8 @@ msgstr ""
 "Similar to :meth:`schedule`, but records the state of changed items after calling ``func``"
 
 #: janim.anims.timeline.Timeline.timeout:1 of
-msgid "相当于 `schedule(self.current_time + delay, func, *args, **kwargs)`"
-msgstr "Equivalent to `schedule(self.current_time + delay, func, *args, **kwargs)`"
+msgid "相当于 ``schedule(self.current_time + delay, func, *args, **kwargs)``"
+msgstr "Equivalent to ``schedule(self.current_time + delay, func, *args, **kwargs)``"
 
 #: janim.anims.timeline.Timeline.timeout_and_detect_changes:1 of
 msgid "与 :meth:`timeout` 类似，但是在调用 ``func`` 后会记录变化的物件的状态"
@@ -197,7 +197,7 @@ msgstr ""
 
 #: janim.anims.timeline.Timeline.play_audio:7 of
 msgid "返回值表示播放的时间段"
-msgstr "Return value represents the playback time segment"
+msgstr "Return value represents the playback time range"
 
 #: janim.anims.timeline.Timeline.has_audio:1 of
 msgid "该 Timeline 自身是否有可以播放的音频"
@@ -237,7 +237,7 @@ msgstr ""
 
 #: janim.anims.timeline.Timeline.subtitle:9 of
 msgid "返回值表示显示的时间段"
-msgstr "Return value represents the display time segment"
+msgstr "Return value represents the display time range"
 
 #: janim.anims.timeline.Timeline.place_subtitle:1 of
 msgid "被 :meth:`subtitle` 调用以将字幕放置到合适的位置："
@@ -311,8 +311,8 @@ msgid "检查指定的列表中物件的变化，并将变化记录为 :class:`~
 msgstr "Check changes of items in the specified list and record them as :class:`~.Display`"
 
 #: janim.anims.timeline.Timeline.detect_changes:3 of
-msgid "（仅检查自身而不包括子物件的）"
-msgstr "(Only checks itself, excluding child items)"
+msgid "（仅检查自身而不包括后代物件的）"
+msgstr "(Only checks itself, excluding descendant items)"
 
 #: janim.anims.timeline.Timeline.compute_item:1 of
 msgid "另见 :meth:`~.AnimStack.compute`"
@@ -356,7 +356,7 @@ msgstr "Display the item's animation stack in the timeline"
 
 #: janim.anims.timeline.Timeline.debug:5 of
 msgid "显示在时间轴中的一个黄色扁条表示在哪些区段中物件是可见的"
-msgstr "A yellow bar displayed in the timeline indicates in which segments the item is visible"
+msgstr "A yellow bar displayed in the timeline indicates in which ranges the item is visible"
 
 #: janim.anims.timeline.Timeline.debug:9 of
 msgid ""
@@ -428,8 +428,8 @@ msgid "例："
 msgstr "Example:"
 
 #: janim.anims.timeline.BuiltTimeline.to_playback_control_item:30 of
-msgid "注意：在默认情况下未开始播放，需要使用 ``start`` 以开始播放"
-msgstr "Note: By default, playback is not started; you need to use ``start`` to begin playback"
+msgid "在默认情况下未开始播放，需要使用 ``start`` 以开始播放"
+msgstr "By default, playback is not started; you need to use ``start`` to begin playback"
 
 #: janim.anims.timeline.TimelineItem:1 of
 msgid "基类：:py:class:`~janim.items.item.Item`"

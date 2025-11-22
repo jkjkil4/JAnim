@@ -282,7 +282,7 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
 
             self.play(
                 item.anim(duration=2, rate_func=linear)
-                .points.scale(2).r.color.set('green')
+                    .points.scale(2).r.color.set('green')
             )
 
         ``.r`` 表示从组件回到物件，这样就可以调用其它组件的功能
@@ -355,7 +355,7 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
 
     def replicate(self, n: int) -> Group[Self]:
         '''
-        复制 n 个自身，并作为一个 :class:`Group` 返回
+        复制 n 个自身，并作为一个 :class:`~.Group` 返回
 
         可以将 ``item * n`` 作为该方法的简写
         '''
@@ -566,10 +566,14 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
                 Circle()
             )
 
-        在这个例子中，并不能 ``group.color.set(BLUE)`` 来设置子物件中的颜色，
+        在这个例子中，并不能 ``group.color.set(BLUE)`` 来设置后代物件中的颜色，
         但是可以使用 ``group.astype(VItem).color.set(BLUE)`` 来做到
 
-        也可以使用简写 ``group(VItem).color.set(BLUE)``
+        也可以使用简写
+
+        .. code-block:: python
+
+            group(VItem).color.set(BLUE)
         '''
         if not isinstance(cls, type) or not issubclass(cls, Item):
             raise AsTypeError(

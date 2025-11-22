@@ -54,9 +54,9 @@ msgid "``size`` 表示泛光的大小"
 msgstr "``size`` represents the size of the glow"
 
 #: janim.components.glow.Cmpt_Glow.set:6 of
-msgid "默认情况下会将所有子物件也设置成指定的属性，传入 ``root_only=True`` 可以只设置根物件的"
+msgid "默认情况下会将所有后代物件也设置成指定的属性，传入 ``root_only=True`` 可以只设置根物件的"
 msgstr ""
-"By default, all child items will also be set to the specified properties; "
+"By default, all descendant items will also be set to the specified properties; "
 "passing ``root_only=True`` will only set the root item's properties"
 
 #: janim.components.glow.Cmpt_Glow.set:8 of

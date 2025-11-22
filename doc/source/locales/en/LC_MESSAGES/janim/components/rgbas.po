@@ -76,9 +76,9 @@ msgstr ""
 "means fully transparent)"
 
 #: janim.components.rgbas.Cmpt_Rgbas.set:5 of
-msgid "默认情况下会将所有子物件也设置成指定的颜色，传入 ``root_only=True`` 可以只设置根物件的"
+msgid "默认情况下会将所有后代物件也设置成指定的颜色，传入 ``root_only=True`` 可以只设置根物件的"
 msgstr ""
-"By default, all child items will also be set to the specified color; "
+"By default, all descendant items will also be set to the specified color; "
 "passing ``root_only=True`` will only set the root item's color"
 
 #: janim.components.rgbas.Cmpt_Rgbas.set:7 of

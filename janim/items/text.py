@@ -472,7 +472,7 @@ class Text(VItem, Group[TextLine]):
 
         - ``group``: 对于正则表达式，指定使用第几个分组进行匹配，默认 ``0`` 表示整个匹配片段，其余数字表示对应的分组
 
-        提示：如果不希望使用正则表达式，可以使用 ``re.escape`` 进行转义，例如 ``re.escape('a[i]')`` 来正确匹配字符串中的 `a[i]`
+        提示：如果不希望使用正则表达式，可以使用 ``re.escape`` 进行转义，例如 ``re.escape('a[i]')`` 来正确匹配字符串中的 ``a[i]``
 
         示例：
 
@@ -481,14 +481,14 @@ class Text(VItem, Group[TextLine]):
             txt = Text('Hello World!')
             txt.select_parts('World').set(color=RED)
 
-        上面这个示例会选取出 `Hello World!` 中的 `World` 部分，并将其颜色设置为红色
+        上面这个示例会选取出 ``Hello World!`` 中的 ``World`` 部分，并将其颜色设置为红色
 
         .. code-block:: python
 
             txt = Text('for i in range(100) if i % 3 == 0 or i % 5 == 0')
             txt.select_parts(r'[^f](or)', 1).set(color=BLUE)
 
-        上面这个示例会选取出其中的 `or` 部分，并且避免选取 `for` 中的 `or`
+        上面这个示例会选取出其中的 ``or`` 部分，并且避免选取 ``for`` 中的 ``or``
         '''
         total_text: str = ''.join([line.text for line in self])
         parts = []

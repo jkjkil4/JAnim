@@ -87,7 +87,7 @@ class ArrowTip(VItem):
     def get_center_anchor(self) -> np.ndarray:
         '''
         根据设定的 ``center_anchor`` 得到原点位置，
-        请参考 :class:`ArrowTip.CenterAnchor`
+        请参考 :class:`CenterAnchor`
         '''
         points = self.points._points.data
         if self.center_anchor == CenterAnchor.Back:
@@ -134,14 +134,15 @@ class Cmpt_VPoints_ArrowImpl[ItemT](Cmpt_VPoints_LineImpl[ItemT], impl=True):
 
 
 class Arrow(Line):
-    renderer_cls = ArrowRenderer
-
     '''
     带箭头的线段，箭头大小自动
 
     - ``buff``: 箭头首尾的空余量，默认为 ``0.25``
     - ``max_length_to_tip_length_ratio``: 箭头长度和直线长度最大比例
     '''
+
+    renderer_cls = ArrowRenderer
+
     points = CmptInfo(Cmpt_VPoints_ArrowImpl[Self])
 
     def __init__(

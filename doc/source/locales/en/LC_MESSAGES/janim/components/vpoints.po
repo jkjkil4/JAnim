@@ -80,18 +80,20 @@ msgid "使用形如 ``.set([[1.5, 3, 2], [2, 1.5, 0]])`` 的形式"
 msgstr "Use the form like ``.set([[1.5, 3, 2], [2, 1.5, 0]])``"
 
 #: janim.components.vpoints.Cmpt_VPoints.apply_points_fn:1 of
-msgid "将所有点作为单独的一个参数传入 ``func``，并将 ``func`` 返回的结果作为新的点坐标数据"
+msgid ""
+"将所有点作为单独的一个参数传入 ``func``，并将 ``func`` 返回的结果作为新的点坐标"
+"数据"
 msgstr ""
-"Pass all points as a single parameter to ``func``, and use the result "
-"returned by ``func`` as the new point coordinate data"
+"Applies the given function ``func`` to all points as a single parameter, and "
+"see the result as new points"
 
 #: janim.components.vpoints.Cmpt_VPoints.apply_points_fn:3 of
 msgid ""
-"视 ``about_point`` 为原点，若其为 ``None``，则将物件在 ``about_edge`` 方向上的边界作为 "
-"``about_point``"
+"视 ``about_point`` 为原点，若其为 ``None``，则将物件在 ``about_edge`` 方向上的"
+"边界作为 ``about_point``"
 msgstr ""
-"Treat ``about_point`` as the origin. If it is ``None``, use the boundary of "
-"the item in the ``about_edge`` direction as ``about_point``"
+"Considers ``about_point`` as the origin. If it's ``None``, then the edge in "
+"the ``about_edge`` direction is considered as ``about_point``"
 
 #: janim.components.vpoints.Cmpt_VPoints.scale:1 of
 msgid "将物件缩放指定倍数"
@@ -99,14 +101,15 @@ msgstr "Scale the item by a specified factor"
 
 #: janim.components.vpoints.Cmpt_VPoints.scale:3 of
 msgid ""
-"如果传入的倍数是可遍历的对象，那么则将其中的各个元素作为坐标各分量缩放的倍数， 例如传入 ``scale_factor`` 为 ``(2, "
-"0.5, 1)`` 则是在 ``x`` 方向上缩放为两倍，在 ``y`` 方向上压缩为原来的一半，在 ``z`` 方向上保持不变"
+"如果传入的倍数是可遍历的对象，那么则将其中的各个元素作为坐标各分量缩放的倍数， "
+"例如传入 ``scale_factor`` 为 ``(2, 0.5, 1)`` 则是在 ``x`` 方向上缩放为两倍，在 "
+"``y`` 方向上压缩为原来的一半，在 ``z`` 方向上保持不变"
 msgstr ""
-"If the scale factor provided is an iterable object, each element will be "
-"used as the scaling factor for the corresponding coordinate component. For "
-"example, if ``scale_factor`` is ``(2, 0.5, 1)``, the item will be scaled by "
-"a factor of 2 along the ``x`` axis, compressed by half along the ``y`` axis, "
-"and remain unchanged along the ``z`` axis"
+"If the scale factor provided is an iterable object, each element will be used "
+"as the scaling factor for the corresponding coordinate component. For example, "
+"if ``scale_factor`` is ``(2, 0.5, 1)``, the item will be scaled by a factor of "
+"2 along the ``x`` axis, compressed by half along the ``y`` axis, and remain "
+"unchanged along the ``z`` axis"
 
 #: janim.components.vpoints.Cmpt_VPoints.get_anchors:1 of
 msgid "得到曲线的锚点"

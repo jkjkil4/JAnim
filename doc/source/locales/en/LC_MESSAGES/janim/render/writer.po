@@ -43,10 +43,10 @@ msgid "主要流程在 :meth:`write_all` 中："
 msgstr "The main process is in :meth:`write_all`:"
 
 #: janim.render.writer.VideoWriter:7 of
-msgid "首先调用 ffmpeg，这里用它生成视频（先输出到 _temp 文件中）"
+msgid "首先调用 ffmpeg，这里用它生成视频（先输出到 ``_temp`` 文件中）"
 msgstr ""
 "First call ffmpeg, which is used here to generate video (initially output "
-"to _temp file)"
+"to ``_temp`` file)"
 
 #: janim.render.writer.VideoWriter:8 of
 msgid "然后遍历动画的每一帧，进行渲染，并将像素数据传递给 ffmpeg"
@@ -55,13 +55,13 @@ msgstr ""
 "pixel data to ffmpeg"
 
 #: janim.render.writer.VideoWriter:9 of
-msgid "最后结束 ffmpeg 的调用，完成 _temp 文件的输出"
-msgstr "Finally end the ffmpeg call and complete the output of the _temp file"
+msgid "最后结束 ffmpeg 的调用，完成 ``_temp`` 文件的输出"
+msgstr "Finally end the ffmpeg call and complete the output of the ``_temp`` file"
 
 #: janim.render.writer.VideoWriter:10 of
-msgid "将 _temp 文件改名，删去 “_temp” 后缀，完成视频输出"
+msgid "将 ``_temp`` 文件改名，删去 ``_temp`` 后缀，完成视频输出"
 msgstr ""
-"Rename the _temp file, remove the “_temp” suffix, and complete video "
+"Rename the ``_temp`` file, remove the ``_temp`` suffix, and complete video "
 "output"
 
 #: janim.render.writer.VideoWriter.write_all:1 of

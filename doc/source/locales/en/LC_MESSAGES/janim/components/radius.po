@@ -50,6 +50,6 @@ msgid "将半径数据重置为默认值"
 msgstr "Reset radius data to default value"
 
 #: janim.components.radius.Cmpt_Radius.scale:1 of
-msgid "缩放线条半径数据"
-msgstr "Scale line radius data"
+msgid "缩放半径数据"
+msgstr "Scale radius data"
 

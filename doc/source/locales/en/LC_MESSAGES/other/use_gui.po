@@ -207,10 +207,10 @@ msgstr ""
 
 #: ../../source/other/use_gui.rst:103
 msgid ""
-"重新构建：已在 :ref:`实时预览 <realtime_preview>` 中提及；关于多文件重新构建时的处理，另见 "
+"重新构建：已在 :ref:`realtime_preview` 中提及；关于多文件重新构建时的处理，另见 "
 ":func:`~.reloads`"
 msgstr ""
-"Rebuild: Already mentioned in :ref:`实时预览 <realtime_preview>`; for "
+"Rebuild: Already mentioned in :ref:`realtime_preview`; for "
 "handling multi-file rebuilds, see also :func:`~.reloads`"
 
 #: ../../source/other/use_gui.rst:105
@@ -249,7 +249,7 @@ msgstr ""
 #: ../../source/other/use_gui.rst:119
 msgid "点击窗口左上角“工具”中的“子物件选择”，左上角会多出这样的内容："
 msgstr ""
-"Click “Sub-item Selector” in the “Tools” menu in the top-left corner "
+"Click “Subitem Selector” in the “Tools” menu in the top-left corner "
 "of the window, and you will see content like this in the top-left:"
 
 #: ../../source/other/use_gui.rst:125
@@ -278,7 +278,7 @@ msgstr ""
 "and swipe to select). The top-left will display the corresponding indices"
 
 #: ../../source/other/use_gui.rst:144
-msgid "这里选中的是 “first” 和 “ne”，对应的切片是 ``[4:9]`` 和 ``[12:14]``"
+msgid "这里选中的是 \"first\" 和 \"ne\"，对应的切片是 ``[4:9]`` 和 ``[12:14]``"
 msgstr ""
 "Here, “first” and “ne” are selected, corresponding to slices "
 "``[4:9]`` and ``[12:14]``"
@@ -335,7 +335,7 @@ msgstr ""
 #: ../../source/other/use_gui.rst:183
 msgid "如果没有选择任何选项（也就是“无”），在画面上拖动将会控制当前页的物件位置"
 msgstr ""
-"If no option is selected (i.e., “None”), dragging on the screen will "
+"If no option is selected (i.e., "None"), dragging on the screen will "
 "control the position of the current page's item"
 
 #: ../../source/other/use_gui.rst:186
@@ -377,7 +377,7 @@ msgstr "A font index list is provided for easy font lookup"
 #: ../../source/other/use_gui.rst:211
 msgid "其中“字体族名”和“全名”都是可以传给 :class:`~.Text` 的 ``font`` 参数，例如："
 msgstr ""
-"Both “Family Name” and “Full Name” can be passed to the `font` "
+"Both \"Family Name\" and \"Full Name\" can be passed to the ``font`` "
 "parameter of :class:`~.Text`, for example:"
 
 #: ../../source/other/use_gui.rst:219

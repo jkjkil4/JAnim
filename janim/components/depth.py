@@ -35,9 +35,9 @@ class Cmpt_Depth[ItemT](Component[ItemT]):
 
     上面这个例子的绘制顺序（从最早被绘制的到最迟被绘制的）：
 
-    d2、d3、d1
+    ``d2``, ``d3``, ``d1``
 
-    也就是 d3 会盖住 d2；d1 会盖住 d2 和 d3
+    也就是 ``d3`` 会盖住 ``d2``； ``d1`` 会盖住 ``d2`` 和 ``d3``
     '''
     _counter: defaultdict[float, int] = defaultdict(int)
 
@@ -120,7 +120,7 @@ class Cmpt_Depth[ItemT](Component[ItemT]):
 
     def arrange(self, depth: float | None = None) -> Self:
         '''
-        将子物件排序深度
+        将后代物件排序深度
         '''
         if depth is None:
             depth = self._depth

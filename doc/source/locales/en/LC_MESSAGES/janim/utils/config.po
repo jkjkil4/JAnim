@@ -61,7 +61,7 @@ msgstr ""
 
 #: janim.utils.config.Config:11 of
 msgid "设置配置"
-msgstr "Setting configuration"
+msgstr "Setting Configuration"
 
 #: janim.utils.config.Config:13 of
 msgid "设置配置的三种方式："
@@ -85,7 +85,7 @@ msgstr "Modify configuration for local code blocks"
 
 #: janim.utils.config.Config:53 of
 msgid "获取配置"
-msgstr "Getting configuration"
+msgstr "Getting Configuration"
 
 #: janim.utils.config.Config:55 of
 msgid "使用 ``Config.get.xxx`` 得到属性，例如："

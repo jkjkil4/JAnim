@@ -127,7 +127,7 @@ class SVGItem(Group[SVGElemItem]):
         return copy_item
 
     def scale_descendants_stroke_radius(self, factor: float) -> Self:
-        '''将所有后代物件的 stroke_radius 都乘上一个值'''
+        '''将所有后代物件的 ``stroke_radius`` 都乘上一个值'''
         for item in self.walk_descendants(VItem):
             item.radius.set(item.radius.get() * factor)
 

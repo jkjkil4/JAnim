@@ -64,12 +64,12 @@ msgid "上面这个例子的绘制顺序（从最早被绘制的到最迟被绘�
 msgstr "Rendering order for the above example (from earliest to latest rendered):"
 
 #: janim.components.depth.Cmpt_Depth:25 of
-msgid "d2、d3、d1"
-msgstr "d2, d3, d1"
+msgid "``d2``, ``d3``, ``d1``"
+msgstr "``d2``, ``d3``, ``d1``"
 
 #: janim.components.depth.Cmpt_Depth:27 of
-msgid "也就是 d3 会盖住 d2；d1 会盖住 d2 和 d3"
-msgstr "That is, d3 will cover d2; d1 will cover both d2 and d3"
+msgid "也就是 ``d3`` 会盖住 ``d2``； ``d1`` 会盖住 ``d2`` 和 ``d3``"
+msgstr "That is, ``d3`` will cover ``d2``; ``d1`` will cover both ``d2`` and ``d3``"
 
 #: janim.components.depth.Cmpt_Depth.set:1 of
 msgid "设置物件的深度"
@@ -84,6 +84,6 @@ msgid "在一些特殊情况下，``order`` 可能是浮点数"
 msgstr "In some special cases, ``order`` may be a floating-point number"
 
 #: janim.components.depth.Cmpt_Depth.arrange:1 of
-msgid "将子物件排序深度"
-msgstr "Sort child items by depth"
+msgid "将后代物件排序深度"
+msgstr "Sort descendant items by depth"
 

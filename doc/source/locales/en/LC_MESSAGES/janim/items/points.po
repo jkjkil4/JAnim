@@ -72,13 +72,13 @@ msgstr "Custom item example:"
 #: janim.items.points.MarkedItem:18 of
 msgid ""
 "这段代码的 ``self.mark.set_points([RIGHT * side_length / 4])`` 设置了在 x 轴方向"
-"上 75% 处的一个标记点， 这个标记点会自动跟踪物件的坐标变换，具体参考 :ref:`样例学"
-"习 <basic_examples>` 中的对应代码"
+"上 75% 处的一个标记点， 这个标记点会自动跟踪物件的坐标变换，具体参考 :ref:`基本样"
+"例 <basic_examples>` 中的对应代码"
 msgstr ""
 "In this code, ``self.mark.set_points([RIGHT * side_length / 4])`` sets a marked "
 "point at 75% along the x-axis. This marked point will automatically track the "
 "item's coordinate transformations. For details, refer to the corresponding code "
-"in :ref:`Example Learning <basic_examples>`"
+"in :ref:`Basic Examples <basic_examples>`"
 
 #: janim.items.points.Group:1 of
 msgid ""

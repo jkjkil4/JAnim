@@ -133,11 +133,11 @@ msgstr ""
 
 #: janim.items.coordinate.number_line.NumberLine:47 of
 msgid ""
-"注：对于 `x_range` 的 `步长`，根据其自动确定小数位数时，`1` 和 `1.0` "
+"注：对于 ``x_range`` 的 ``步长``，根据其自动确定小数位数时，``1`` 和 ``1.0`` "
 "是不同的，前者会使刻度保留整数，而后者会使刻度保留一位小数"
 msgstr ""
-"Note: For the `step` of `x_range`, when automatically determining decimal "
-"places, `1` and `1.0` are different. The former keeps ticks as integers, "
+"Note: For the ``step`` of ``x_range``, when automatically determining decimal "
+"places, ``1`` and ``1.0`` are different. The former keeps ticks as integers, "
 "while the latter keeps ticks with one decimal place"
 
 #: janim.items.coordinate.number_line.NumberLine:49 of

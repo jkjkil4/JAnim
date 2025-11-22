@@ -35,16 +35,16 @@ msgstr ""
 "read the following files:"
 
 #: janim.render.program.get_program_from_file_prefix:4 of
-msgid "render/shaders/dotcloud.vert.glsl"
-msgstr "render/shaders/dotcloud.vert.glsl"
+msgid "``render/shaders/dotcloud.vert.glsl``"
+msgstr "``render/shaders/dotcloud.vert.glsl``"
 
 #: janim.render.program.get_program_from_file_prefix:5 of
-msgid "render/shaders/dotcloud.geom.glsl"
-msgstr "render/shaders/dotcloud.geom.glsl"
+msgid "``render/shaders/dotcloud.geom.glsl``"
+msgstr "``render/shaders/dotcloud.geom.glsl``"
 
 #: janim.render.program.get_program_from_file_prefix:6 of
-msgid "render/shaders/dotcloud.frag.glsl"
-msgstr "render/shaders/dotcloud.frag.glsl"
+msgid "``render/shaders/dotcloud.frag.glsl``"
+msgstr "``render/shaders/dotcloud.frag.glsl``"
 
 #: janim.render.program.get_program_from_file_prefix:8 of
 msgid "若没有则缺省，但要能创建可用的着色器"
@@ -57,7 +57,7 @@ msgid ""
 "注：若 ``filepath`` 对应着色器程序先前已创建过，则会复用先前的对象，否则另外"
 "创建新的对象并记录"
 msgstr ""
-"If the shader program for the given ``filepath`` has been created before, "
+"Note: If the shader program for the given ``filepath`` has been created before, "
 "it will reuse the existing object; otherwise, it will create a new one and "
 "cache it"
 
@@ -70,7 +70,7 @@ msgid ""
 "注：若对应的着色器程序先前已创建过，则会复用先前的对象，否则另外创建新的对象"
 "并记录"
 msgstr ""
-"If the corresponding shader program has been created before, it will reuse "
+"Note: If the corresponding shader program has been created before, it will reuse "
 "the existing object; otherwise, it will create a new one and cache it"
 
 #: janim.render.program.get_program_from_string:1 of
@@ -88,19 +88,19 @@ msgstr ""
 
 #: janim.render.program.get_compute_shader_from_file:1 of
 msgid ""
-"载入相对于 janim 路径或用户路径的 ComputeShader， 例如 ``render/shaders/"
+"载入相对于 janim 路径或用户路径的 ``ComputeShader``， 例如 ``render/shaders/"
 "map_points.comp.glsl`` 就会载入 janim 文件夹中的这个文件"
 msgstr ""
-"Loads a ComputeShader relative to the janim directory or the user "
+"Loads a ``ComputeShader`` relative to the janim directory or the user "
 "directory. For example, passing ``render/shaders/map_points.comp.glsl`` "
 "will load this file from the janim directory"
 
 #: janim.render.program.get_compute_shader_from_file:4 of
 msgid ""
-"注：若 ``filepath`` 对应的 ComputeShader 先前已创建过，则会复用先前的对象，"
+"注：若 ``filepath`` 对应的 ``ComputeShader`` 先前已创建过，则会复用先前的对象，"
 "否则另外创建新的对象并记录"
 msgstr ""
-"Note: If the ComputeShader corresponding to ``filepath`` has been created "
+"Note: If the ``ComputeShader`` corresponding to ``filepath`` has been created "
 "before, it will reuse the previous object; otherwise, it will create a new "
 "one and cache it"
 

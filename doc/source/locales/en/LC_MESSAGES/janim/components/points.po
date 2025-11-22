@@ -93,8 +93,8 @@ msgid "得到 ``points`` 的第一个和最后一个点"
 msgstr "Get the first and last points"
 
 #: janim.components.points.Cmpt_Points.pfp:1 of
-msgid "``point_from_proportion`` 的缩写"
-msgstr "Abbreviation for `point_from_proportion`"
+msgid ":meth:`point_from_proportion` 的缩写"
+msgstr "Abbreviation for :meth:`point_from_proportion`"
 
 #: janim.components.points.Cmpt_Points.box:1 of
 msgid "表示物件（包括后代物件）的矩形包围框"
@@ -133,15 +133,15 @@ msgid "例如："
 msgstr "Examples:"
 
 #: janim.components.points.Cmpt_Points.BoundingBox.get:5 of
-msgid "传入 UR，则返回边界框右上角的坐标"
+msgid "传入 ``UR``，则返回边界框右上角的坐标"
 msgstr ""
-"If UR is passed, it returns the coordinates of the upper-right corner of the "
+"If ``UR`` is passed, it returns the coordinates of the upper-right corner of the "
 "bounding box"
 
 #: janim.components.points.Cmpt_Points.BoundingBox.get:6 of
-msgid "传入 RIGHT，则返回边界框右侧中心的坐标"
+msgid "传入 ``RIGHT``，则返回边界框右侧中心的坐标"
 msgstr ""
-"If RIGHT is passed, it returns the coordinates of the center on the right side "
+"If ``RIGHT`` is passed, it returns the coordinates of the center on the right side "
 "of the bounding box"
 
 #: janim.components.points.Cmpt_Points.BoundingBox.get_continuous:1 of
@@ -172,26 +172,25 @@ msgstr ""
 
 #: janim.components.points.Cmpt_Points.apply_point_fn:1 of
 msgid ""
-"对每个点依次传入 ``func`` 进行变换；以默认的原点作用变换，而不是物件的中心"
+"把每个点依次传入 ``func`` 进行变换"
 msgstr ""
 "Applies the given function ``func`` to each point individually for "
-"transformation\n"
-"\n"
-"Default transformation center is the origin, not the center of the object"
+"transformation"
+
 
 #: janim.components.points.Cmpt_Points.apply_matrix:1 of
-msgid "将矩阵变换作用于 ``points``；以默认的原点作用变换，而不是物件的中心"
-msgstr ""
-"Apply a matrix transformation to the ``points``\n"
-"\n"
-"Default to applying the transformation about the origin, not items center"
+msgid "将矩阵变换作用于 ``points``"
+msgstr "Apply a matrix transformation to the ``points``"
 
 #: janim.components.points.Cmpt_Points.apply_complex_fn:1 of
-msgid "将复变函数作用于 ``points``；以默认的原点作用变换，而不是物件的中心"
-msgstr ""
-"Apply a complex-valued function to the ``points``\n"
-"\n"
-"Default to applying the transformation about the origin, not items center"
+msgid "将复变函数作用于 ``points``"
+msgstr ""Apply a complex-valued function to the ``points``"
+
+#: janim.components.points.Cmpt_Points.apply_point_fn:3
+#: janim.components.points.Cmpt_Points.apply_matrix:3
+#: janim.components.points.Cmpt_Points.apply_complex_fn:3 of
+msgid "以默认的原点作用变换，而不是物件的中心"
+msgstr "Default to applying the transformation about the origin, not items center"
 
 #: janim.components.points.Cmpt_Points.rotate:1 of
 msgid ""
@@ -311,11 +310,11 @@ msgstr "``normal_vector`` is calculated by :meth:`unit_normal` by default"
 
 #: janim.components.points.Cmpt_Points.shift:1 of
 msgid "相对移动 ``vector`` 向量"
-msgstr "Shift the object by the specified ``vector``"
+msgstr "Shift by the specified ``vector``"
 
 #: janim.components.points.Cmpt_Points.move_to:1 of
 msgid "移动到 ``target`` 的位置"
-msgstr "Move this item to the position of ``target``"
+msgstr "Move to the position of ``target``"
 
 #: janim.components.points.Cmpt_Points.move_to_by_indicator:1 of
 msgid ""
@@ -384,7 +383,7 @@ msgstr "Move this item to the origin ``(0, 0, 0)``"
 
 #: janim.components.points.Cmpt_Points.to_border:1 of
 msgid "移动到视框的边界"
-msgstr "Move to the border of the viewport"
+msgstr "Move to the border of the frame"
 
 #: janim.components.points.Cmpt_Points.next_to:1 of
 msgid "将该物件放到 ``target`` 旁边"

@@ -60,8 +60,8 @@ msgid "``rotation``: 绕方向轴转动的角度，一般用于 3D 中"
 msgstr "``rotation``: Rotation angle around the direction axis, generally used in 3D"
 
 #: janim.items.geometry.arrow.ArrowTip.get_center_anchor:1 of
-msgid "根据设定的 ``center_anchor`` 得到原点位置， 请参考 :class:`ArrowTip.CenterAnchor`"
-msgstr "Get the origin position based on the set ``center_anchor``, refer to :class:`ArrowTip.CenterAnchor`"
+msgid "根据设定的 ``center_anchor`` 得到原点位置， 请参考 :class:`CenterAnchor`"
+msgstr "Get the origin position based on the set ``center_anchor``, refer to :class:`CenterAnchor`"
 
 #: janim.items.geometry.arrow.ArrowTip.direction:1 of
 msgid "得到箭头的方向（单位向量）"
