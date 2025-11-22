@@ -1,6 +1,15 @@
+import uuid
+
 from docutils import nodes
 from docutils.parsers.rst import Directive
-import uuid
+from docutils.statemachine import ViewList
+
+BTN_TEXT = '🎲 随机切换'
+
+
+# 用来让 gettext 提取文本用的
+class i18n_message(nodes.paragraph):
+    pass
 
 
 class random_choice(nodes.General, nodes.Element):
@@ -15,14 +24,32 @@ class unwrap_random_options(nodes.General, nodes.Element):
     pass
 
 
+def visit_i18n_message_html(self, node):
+    raise nodes.SkipNode
+
+
 def visit_random_choice_html(self, node):
+    button_text = BTN_TEXT
+    start_text = ''
+
+    for child in node.children:
+        if isinstance(child, i18n_message):
+            match child['msg_type']:
+                case 'button':
+                    button_text = child.astext()
+                case 'start-text':
+                    start_text = child.astext()
+
     self.body.append(f'<div class="random-choice" id="{node["id"]}" destroy="{int(node["destroy"])}">')
-    if node.get("start-text"):
-        self.body.append(f'<div class="random-placeholder">{node["start-text"]}</div>')
+    if start_text:
+        self.body.append(f'<div class="random-placeholder">{start_text}</div>')
+
+    node['final_button_text'] = button_text
 
 
 def depart_random_choice_html(self, node):
-    self.body.append('<button class="random-button">🎲 随机切换</button></div>')
+    btn_text = node.get('final_button_text', BTN_TEXT)
+    self.body.append(f'<button class="random-button">{btn_text}</button></div>')
 
 
 def visit_random_option_html(self, node):
@@ -49,11 +76,36 @@ class RandomChoiceDirective(Directive):
     }
 
     def run(self):
-        # env = self.state.document.settings.env
         node = random_choice()
         node['id'] = f"random-{uuid.uuid4().hex[:8]}"
-        node['start-text'] = self.options.get('start-text')
         node['destroy'] = 'destroy' in self.options
+
+        # 让 start-text 能被 gettext 提取
+        if 'start-text' in self.options:
+            text = self.options.get('start-text')
+
+            msg_node = i18n_message()
+            msg_node['msg_type'] = 'start-text'
+
+            rst = ViewList()
+            for line in text.splitlines():
+                rst.append(line, source='<random-choice-option>')
+            self.state.nested_parse(rst, 0, msg_node)
+
+            node += msg_node
+
+        # 让 按钮文本 能被 gettext 提取
+        default_btn = "🎲 随机切换"
+        btn_node = i18n_message()
+        btn_node['msg_type'] = 'button'
+
+        rst_btn = ViewList()
+        rst_btn.append(default_btn, source='<random-choice-ui>')
+        self.state.nested_parse(rst_btn, 0, btn_node)
+
+        node += btn_node
+
+        # 解析内部内容
         self.state.nested_parse(self.content, self.content_offset, node)
         return [node]
 
@@ -77,12 +129,16 @@ class UnwrapRandomOptionsDirective(Directive):
 
 
 def setup(app):
+    app.add_node(i18n_message,
+                 html=(visit_i18n_message_html, None))
+
     app.add_node(random_choice,
                  html=(visit_random_choice_html, depart_random_choice_html))
     app.add_node(random_option,
                  html=(visit_random_option_html, depart_random_option_html))
     app.add_node(unwrap_random_options,
                  html=(visit_unwrap_random_options_html, depart_unwrap_random_options_html))
+
     app.add_directive("random-choice", RandomChoiceDirective)
     app.add_directive("random-option", RandomOptionDirective)
     app.add_directive("unwrap-random-options", UnwrapRandomOptionsDirective)
