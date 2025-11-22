@@ -8,11 +8,11 @@
 
         class HelloJAnimExample(Timeline):
             def construct(self):
-                # define items
+                # 定义物件
                 circle = Circle(color=BLUE)
                 square = Square(color=GREEN, fill_alpha=0.5)
 
-                # do animations
+                # 进行动画
                 self.forward()
                 self.play(Create(circle))
                 self.play(Transform(circle, square))
@@ -115,7 +115,6 @@
                 group.points.arrange_in_grid()
 
                 # 作用于文本的动画的渲染速度较慢
-                # The rendering speed of animations applied to text is relatively slow
                 self.play(Write(doc), duration=4)
                 self.forward()
                 self.play(FadeOut(doc))

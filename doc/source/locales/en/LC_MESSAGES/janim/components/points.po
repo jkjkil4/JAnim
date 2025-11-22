@@ -1,4 +1,3 @@
-﻿# SOME DESCRIPTIVE TITLE.
 # Copyright (C) 2023, jkjkil4
 # This file is distributed under the same license as the JAnim package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2024.
@@ -8,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: JAnim\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-20 08:21+0800\n"
-"PO-Revision-Date: 2025-11-21 17:21+0800\n"
+"POT-Creation-Date: 2025-11-22 21:20+0800\n"
+"PO-Revision-Date: 2025-11-22 22:09+0800\n"
 "Last-Translator: \n"
 "Language-Team: en <LL@li.org>\n"
 "Language: en\n"
@@ -135,14 +134,14 @@ msgstr "Examples:"
 #: janim.components.points.Cmpt_Points.BoundingBox.get:5 of
 msgid "传入 ``UR``，则返回边界框右上角的坐标"
 msgstr ""
-"If ``UR`` is passed, it returns the coordinates of the upper-right corner of the "
-"bounding box"
+"If ``UR`` is passed, it returns the coordinates of the upper-right corner of "
+"the bounding box"
 
 #: janim.components.points.Cmpt_Points.BoundingBox.get:6 of
 msgid "传入 ``RIGHT``，则返回边界框右侧中心的坐标"
 msgstr ""
-"If ``RIGHT`` is passed, it returns the coordinates of the center on the right side "
-"of the bounding box"
+"If ``RIGHT`` is passed, it returns the coordinates of the center on the right "
+"side of the bounding box"
 
 #: janim.components.points.Cmpt_Points.BoundingBox.get_continuous:1 of
 msgid "得到从中心发出的方向为 ``direction`` 的射线与边界框的交点"
@@ -164,19 +163,23 @@ msgstr ""
 
 #: janim.components.points.Cmpt_Points.apply_points_fn:3 of
 msgid ""
-"视 ``about_point`` 为原点，若其为 ``None``，则将物件在 ``about_edge`` 方向上的"
-"边界作为 ``about_point``"
+"视 ``about_point`` 为原点，若其为 ``None``，则将物件在 ``about_edge`` 方向上的边"
+"界作为 ``about_point``"
 msgstr ""
-"Considers ``about_point`` as the origin. If it's ``None``, then the edge in "
-"the ``about_edge`` direction is considered as ``about_point``"
+"Considers ``about_point`` as the origin. If it's ``None``, then the edge in the "
+"``about_edge`` direction is considered as ``about_point``"
 
 #: janim.components.points.Cmpt_Points.apply_point_fn:1 of
-msgid ""
-"把每个点依次传入 ``func`` 进行变换"
+msgid "把每个点依次传入 ``func`` 进行变换"
 msgstr ""
 "Applies the given function ``func`` to each point individually for "
 "transformation"
 
+#: janim.components.points.Cmpt_Points.apply_complex_fn:3
+#: janim.components.points.Cmpt_Points.apply_matrix:3
+#: janim.components.points.Cmpt_Points.apply_point_fn:3 of
+msgid "以默认的原点作用变换，而不是物件的中心"
+msgstr "Default to applying the transformation about the origin, not items center"
 
 #: janim.components.points.Cmpt_Points.apply_matrix:1 of
 msgid "将矩阵变换作用于 ``points``"
@@ -184,21 +187,15 @@ msgstr "Apply a matrix transformation to the ``points``"
 
 #: janim.components.points.Cmpt_Points.apply_complex_fn:1 of
 msgid "将复变函数作用于 ``points``"
-msgstr ""Apply a complex-valued function to the ``points``"
-
-#: janim.components.points.Cmpt_Points.apply_point_fn:3
-#: janim.components.points.Cmpt_Points.apply_matrix:3
-#: janim.components.points.Cmpt_Points.apply_complex_fn:3 of
-msgid "以默认的原点作用变换，而不是物件的中心"
-msgstr "Default to applying the transformation about the origin, not items center"
+msgstr "\"Apply a complex-valued function to the ``points``"
 
 #: janim.components.points.Cmpt_Points.rotate:1 of
 msgid ""
 "以 ``axis`` 为方向，``angle`` 为角度旋转，可传入 ``about_point`` 指定相对于以哪"
 "个点为中心"
 msgstr ""
-"Rotate the item by an ``angle`` around the specified ``axis``, with an "
-"optional ``about_point`` about which the rotation should be performed"
+"Rotate the item by an ``angle`` around the specified ``axis``, with an optional "
+"``about_point`` about which the rotation should be performed"
 
 #: janim.components.points.Cmpt_Points.flip:1 of
 msgid "绕 axis 轴翻转"
@@ -261,8 +258,8 @@ msgstr ""
 #: janim.components.points.Cmpt_Points.put_start_and_end_on:1 of
 msgid "通过旋转和缩放，使得物件的起点和终点被置于 ``start`` 和 ``end``"
 msgstr ""
-"Rotate and scale this item such that its start and end points are positioned "
-"at ``start`` and ``end``"
+"Rotate and scale this item such that its start and end points are positioned at "
+"``start`` and ``end``"
 
 #: janim.components.points.Cmpt_Points.unit_normal:1 of
 msgid "计算三维点集的拟合平面的单位法向量"
@@ -279,8 +276,8 @@ msgstr "Useful parameters:"
 #: janim.components.points.Cmpt_Points.face_to_camera:5 of
 msgid "``rotate``：在面向摄像机的基础上，绕摄像机视角旋转的角度"
 msgstr ""
-"``rotate``: The angle to rotate around the camera's view direction after "
-"facing the camera"
+"``rotate``: The angle to rotate around the camera's view direction after facing "
+"the camera"
 
 #: janim.components.points.Cmpt_Points.face_to_camera:7 of
 msgid "``inverse``：是否让物件背向摄像机"
@@ -288,17 +285,17 @@ msgstr "``inverse``: Whether to make the item face away from the camera"
 
 #: janim.components.points.Cmpt_Points.face_to_camera:9 of
 msgid ""
-"视 ``about_point`` 为参考点，若其为 ``None``，则将物件在 ``about_edge`` 方向上"
-"的边界作为 ``about_point``"
+"视 ``about_point`` 为参考点，若其为 ``None``，则将物件在 ``about_edge`` 方向上的"
+"边界作为 ``about_point``"
 msgstr ""
-"Considers ``about_point`` as the origin. If it's ``None``, then the edge in "
-"the ``about_edge`` direction is considered as ``about_point``"
+"Considers ``about_point`` as the origin. If it's ``None``, then the edge in the "
+"``about_edge`` direction is considered as ``about_point``"
 
 #: janim.components.points.Cmpt_Points.face_to_camera:11 of
 msgid "可手动指定 ``camera`` 和法向量 ``normal_vector``，若无则会自动获取："
 msgstr ""
-"You can manually specify ``camera`` and normal vector ``normal_vector``; if "
-"not provided, they will be automatically obtained:"
+"You can manually specify ``camera`` and normal vector ``normal_vector``; if not "
+"provided, they will be automatically obtained:"
 
 #: janim.components.points.Cmpt_Points.face_to_camera:13 of
 msgid "``camera`` 默认为时间轴的 ``self.camera``"
@@ -318,12 +315,22 @@ msgstr "Move to the position of ``target``"
 
 #: janim.components.points.Cmpt_Points.move_to_by_indicator:1 of
 msgid ""
-"与 :meth:`move_to` 类似，但是该方法作用 ``indicator`` 被移动到 ``target`` 所计"
-"算出的位移， 而不是 :meth:`move_to` 中 ``self`` 被移动到 ``target`` 的位移"
+"与 :meth:`move_to` 类似，但是该方法作用 ``indicator`` 被移动到 ``target`` 所计算"
+"出的位移， 而不是 :meth:`move_to` 中 ``self`` 被移动到 ``target`` 的位移"
 msgstr ""
 "Similar to :meth:`move_to`, but this method calculates the displacement where "
 "the ``indicator`` is moved to ``target``, rather than the displacement where "
 "``self`` is moved to ``target`` in :meth:`move_to`"
+
+#: janim.components.points.Cmpt_Points.move_to_by_indicator:6 of
+msgid ""
+"t1 = TypstMath('x^2 + y^2')\n"
+"t2 = TypstMath('x + y')\n"
+"t2.points.move_to_by_indicator(t2[1], t1[2])"
+msgstr ""
+"t1 = TypstMath('x^2 + y^2')\n"
+"t2 = TypstMath('x + y')\n"
+"t2.points.move_to_by_indicator(t2[1], t1[2])"
 
 #: janim.components.points.Cmpt_Points.move_to_by_indicator:12 of
 msgid ""
@@ -334,8 +341,7 @@ msgstr ""
 
 #: janim.components.points.Cmpt_Points.move_to_by_indicator:17 of
 msgid "这个示例使用 :meth:`~.TypstDoc.match_pattern` 会更简洁"
-msgstr ""
-"This example would be more concise using :meth:`~.TypstDoc.match_pattern`"
+msgstr "This example would be more concise using :meth:`~.TypstDoc.match_pattern`"
 
 #: janim.components.points.Cmpt_Points.align_to:1 of
 msgid "对齐"
@@ -343,8 +349,8 @@ msgstr "Align"
 
 #: janim.components.points.Cmpt_Points.align_to:3 of
 msgid ""
-"例如，``item1.align_to(item2, UP)`` 会将 ``item1`` 垂直移动，顶部与 ``item2`` "
-"的上边缘对齐"
+"例如，``item1.align_to(item2, UP)`` 会将 ``item1`` 垂直移动，顶部与 ``item2`` 的"
+"上边缘对齐"
 msgstr ""
 "For example, ``item1.align_to(item2, UP)`` will move ``item1`` vertically so "
 "that its top aligns with the top edge of ``item2``"
@@ -371,8 +377,8 @@ msgstr "``aligned_edge``: Aligned edge"
 
 #: janim.components.points.Cmpt_Points.arrange_in_grid:6 of
 msgid ""
-"``by_center_point``: 默认为 ``False``；若设置为 ``True``，则仅将物件视为中心"
-"点，不考虑物件的宽高"
+"``by_center_point``: 默认为 ``False``；若设置为 ``True``，则仅将物件视为中心点，"
+"不考虑物件的宽高"
 msgstr ""
 "``by_center_point``: Default is ``False``; if set to ``True``, items are "
 "treated only as center points, ignoring their width and height"
@@ -391,23 +397,31 @@ msgstr "Position this item next to ``target``"
 
 #: janim.components.points.Cmpt_Points.next_to_by_indicator:1 of
 msgid ""
-"与 :meth:`next_to` 类似，但是该方法作用 ``indicator`` 被放到 ``target`` 旁边所"
-"计算出的位移， 而不是 :meth:`move_to` 中 ``self`` 被放到 ``target`` 旁边的位移"
+"与 :meth:`next_to` 类似，但是该方法作用 ``indicator`` 被放到 ``target`` 旁边所计"
+"算出的位移， 而不是 :meth:`move_to` 中 ``self`` 被放到 ``target`` 旁边的位移"
 msgstr ""
 "Similar to :meth:`next_to`, but this method calculates the displacement where "
 "the ``indicator`` is placed next to ``target``, rather than the displacement "
 "where ``self`` is placed next to ``target`` in :meth:`move_to`"
+
+#: janim.components.points.Cmpt_Points.next_to_by_indicator:6 of
+msgid ""
+"t1 = Typst('x^2 + y^2')\n"
+"t2 = Typst('x + y z w')\n"
+"t2.points.next_to_by_indicator(t2[1], t1[2], DOWN)"
+msgstr ""
+"t1 = Typst('x^2 + y^2')\n"
+"t2 = Typst('x + y z w')\n"
+"t2.points.next_to_by_indicator(t2[1], t1[2], DOWN)"
 
 #: janim.components.points.Cmpt_Points.next_to_by_indicator:12 of
 msgid ""
 "可以将 ``t1`` 对齐到 ``t2`` 的下方， 并且使得 ``t1`` 的加号在 ``t2`` 的加号的正"
 "下方"
 msgstr ""
-"Can align ``t1`` below ``t2``, and place the plus sign of ``t1`` directly "
-"below the plus sign of ``t2``"
+"Can align ``t1`` below ``t2``, and place the plus sign of ``t1`` directly below "
+"the plus sign of ``t2``"
 
 #: janim.components.points.Cmpt_Points.next_to_by_indicator:17 of
 msgid "这个示例也可以使用字符索引"
 msgstr "This example can also use character indexing"
-
-

@@ -1,4 +1,3 @@
-﻿# SOME DESCRIPTIVE TITLE.
 # Copyright (C) 2023, jkjkil4
 # This file is distributed under the same license as the JAnim package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2024.
@@ -8,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: JAnim\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-20 08:21+0800\n"
-"PO-Revision-Date: 2025-11-21 17:29+0800\n"
+"POT-Creation-Date: 2025-11-22 21:20+0800\n"
+"PO-Revision-Date: 2025-11-22 22:12+0800\n"
 "Last-Translator: \n"
 "Language-Team: en <LL@li.org>\n"
 "Language: en\n"
@@ -50,42 +49,57 @@ msgid ""
 "和 :class:`~.RegularPolygon` 都以该类作为基类， 使得可以"
 msgstr ""
 "For example, :class:`~.TextChar`, :class:`~.TextLine`, :class:`~.Arc`, "
-"and :class:`~.RegularPolygon` all use this class as their base class, enabling"
+"and :class:`~.RegularPolygon` all use this class as their base class, "
+"enabling"
 
 #: janim.items.points.MarkedItem:6 of
 msgid ""
-"通过 ``.mark.get(...)`` 的方式得到标记点位置，并会因为 ``points`` 的变化而同步更新"
+"通过 ``.mark.get(...)`` 的方式得到标记点位置，并会因为 ``points`` 的变化而同"
+"步更新"
 msgstr ""
-"Get marked point positions via ``.mark.get(...)``, which will be synchronously "
-"updated when ``points`` changes"
+"Get marked point positions via ``.mark.get(...)``, which will be "
+"synchronously updated when ``points`` changes"
 
 #: janim.items.points.MarkedItem:7 of
 msgid "通过 ``.mark.set(...)`` 的方式移动标记点位置，并让 ``points`` 同步移动"
 msgstr ""
-"Move marked point positions via ``.mark.set(...)``, which will cause ``points`` "
-"to move synchronously"
+"Move marked point positions via ``.mark.set(...)``, which will cause "
+"``points`` to move synchronously"
 
 #: janim.items.points.MarkedItem:9 of
 msgid "自定义物件示例："
 msgstr "Custom item example:"
 
+#: janim.items.points.MarkedItem:11 of
+msgid ""
+"class MarkedSquare(MarkedItem, Square):\n"
+"    def __init__(self, side_length: float = 2.0, **kwargs) -> None:\n"
+"        super().__init__(side_lenght, **kwargs)\n"
+"        self.mark.set_points([RIGHT * side_length / 4])"
+msgstr ""
+"class MarkedSquare(MarkedItem, Square):\n"
+"    def __init__(self, side_length: float = 2.0, **kwargs) -> None:\n"
+"        super().__init__(side_lenght, **kwargs)\n"
+"        self.mark.set_points([RIGHT * side_length / 4])"
+
 #: janim.items.points.MarkedItem:18 of
 msgid ""
-"这段代码的 ``self.mark.set_points([RIGHT * side_length / 4])`` 设置了在 x 轴方向"
-"上 75% 处的一个标记点， 这个标记点会自动跟踪物件的坐标变换，具体参考 :ref:`基本样"
-"例 <basic_examples>` 中的对应代码"
+"这段代码的 ``self.mark.set_points([RIGHT * side_length / 4])`` 设置了在 x 轴"
+"方向上 75% 处的一个标记点， 这个标记点会自动跟踪物件的坐标变换，具体参"
+"考 :ref:`基本样例 <basic_examples>` 中的对应代码"
 msgstr ""
-"In this code, ``self.mark.set_points([RIGHT * side_length / 4])`` sets a marked "
-"point at 75% along the x-axis. This marked point will automatically track the "
-"item's coordinate transformations. For details, refer to the corresponding code "
-"in :ref:`Basic Examples <basic_examples>`"
+"In this code, ``self.mark.set_points([RIGHT * side_length / 4])`` sets a "
+"marked point at 75% along the x-axis. This marked point will automatically "
+"track the item's coordinate transformations. For details, refer to the "
+"corresponding code in :ref:`Basic Examples <basic_examples>`"
 
 #: janim.items.points.Group:1 of
 msgid ""
 "基类：:py:class:`~janim.items.points.Points`, :py:class:`~typing.Generic`\\ "
 "[:py:obj:`~janim.items.points.T`]"
 msgstr ""
-"Base class: :py:class:`~janim.items.points.Points`, :py:class:`~typing.Generic`\\ "
+"Base "
+"class: :py:class:`~janim.items.points.Points`, :py:class:`~typing.Generic`\\ "
 "[:py:obj:`~janim.items.points.T`]"
 
 #: janim.items.points.Group:1 of
@@ -108,7 +122,6 @@ msgstr "Perform data alignment for interpolation"
 msgid "基类：:py:class:`~janim.items.points.DotCloud`"
 msgstr "基类：:py:class:`~janim.items.points.DotCloud`"
 
-#~ msgid "基类：:py:class:`~janim.items.item.Item.Data`\\ [:py:class:`DotCloud`]"
+#~ msgid ""
+#~ "基类：:py:class:`~janim.items.item.Item.Data`\\ [:py:class:`DotCloud`]"
 #~ msgstr "基类：:py:class:`~janim.items.item.Item`"
-
-

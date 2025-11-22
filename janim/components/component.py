@@ -162,16 +162,16 @@ class CmptInfo[T]:
     .. code-block:: python
 
         class MyItem(Item):
-            # Wrong!
+            # 错误！
             # cmpt1 = MyCmpt()
 
-            # Right
+            # 正确
             cmpt1 = CmptInfo(MyCmpt[Self])
 
-            # Wrong!
+            # 错误！
             # cmpt2 = MyCmptWithArgs(1)
 
-            # Right
+            # 正确
             cmpt2 = CmptInfo(MyCmptWithArgs[Self], 1)
     '''
     def __init__(self, cls: type[T], *args, **kwargs):
@@ -303,7 +303,7 @@ def CmptGroup[T](*cmpt_info_list: CmptInfo[T]) -> CmptInfo[T]:
             color = CmptGroup(stroke, fill)
 
         item = MyItem()
-        item.stroke.set(...)    # 只有 stroke 的被调用 | Only the method of stroke be called
-        item.color.set(...)     # stroke 和 fill 的都被调用了 | the methods of stroke and fill are both called
+        item.stroke.set(...)    # 只有 stroke 的被调用
+        item.color.set(...)     # stroke 和 fill 的都被调用了
     '''
     return CmptInfo(_CmptGroup, cmpt_info_list)

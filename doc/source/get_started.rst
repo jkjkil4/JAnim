@@ -18,11 +18,11 @@
 
     class HelloJAnimExample(Timeline):
         def construct(self):
-            # define items
+            # 定义物件
             circle = Circle(color=BLUE)
             square = Square(color=GREEN, fill_alpha=0.5)
 
-            # do animations
+            # 进行动画
             self.forward()
             self.play(Create(circle))
             self.play(Transform(circle, square))
@@ -168,7 +168,7 @@
 
 .. code-block::
 
-    # define items
+    # 定义物件
     circle = Circle(color=BLUE)
     square = Square(color=GREEN, fill_alpha=0.5)
 
@@ -237,7 +237,7 @@
 
 .. code-block:: sh
 
-    janim run 文件名 动画名
+    janim run 文件名 时间轴名
 
 如果上面这段代码也写在了 ``learn.py`` 中，那么就是：
 

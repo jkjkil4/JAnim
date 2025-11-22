@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: JAnim\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-05 16:52+0800\n"
-"PO-Revision-Date: 2025-04-10 10:06+0800\n"
+"POT-Creation-Date: 2025-11-22 21:20+0800\n"
+"PO-Revision-Date: 2025-11-22 21:39+0800\n"
 "Last-Translator: \n"
 "Language-Team: en <LL@li.org>\n"
 "Language: en\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "Generated-By: Babel 2.17.0\n"
-"X-Generator: Poedit 3.6\n"
+"X-Generator: Poedit 3.8\n"
 
 #: ../../source/development/contribute-to-doc-i18n.rst:2
 msgid "为文档国际化作出贡献"
@@ -85,17 +85,40 @@ msgstr "Navigate to the project folder using ``cd JAnim``:"
 msgid "接着，使用以下命令安装必要的环境："
 msgstr "Then, install the necessary environment using the following command:"
 
+#: ../../source/development/contribute-to-doc-i18n.rst:39
+msgid ""
+"pip install -e .[gui,doc]\n"
+"pip install sphinx-intl"
+msgstr ""
+"pip install -e .[gui,doc]\n"
+"pip install sphinx-intl"
+
 #: ../../source/development/contribute-to-doc-i18n.rst:44
 msgid "提取翻译文本"
 msgstr "Extract Translatable Text"
+
+#: ../../source/development/contribute-to-doc-i18n.rst:46
+#: ../../source/development/contribute-to-doc-i18n.rst:135
+#: ../../source/development/contribute-to-doc-i18n.rst:153
+#: ../../source/development/contribute-to-doc-i18n.rst:175
+msgid "cd doc"
+msgstr "cd doc"
 
 #: ../../source/development/contribute-to-doc-i18n.rst:50
 msgid "进入 ``doc/`` 文件夹，并使用"
 msgstr "navigate to ``doc/`` folder, and run the following command:"
 
+#: ../../source/development/contribute-to-doc-i18n.rst:52
+msgid "./make gettext"
+msgstr "./make gettext"
+
 #: ../../source/development/contribute-to-doc-i18n.rst:56
 msgid "或（在 macOS 中）"
 msgstr "or (on macOS)"
+
+#: ../../source/development/contribute-to-doc-i18n.rst:58
+msgid "make gettext"
+msgstr "make gettext"
 
 #: ../../source/development/contribute-to-doc-i18n.rst:62
 msgid "提取可翻译的文本，产生的 pot 文件会输出到 ``doc/build/gettext/`` 中"
@@ -114,6 +137,10 @@ msgid ""
 msgstr ""
 "Pot file contains extracted translatable source language text. You need to use "
 "these files to generate po files for corresponding languages."
+
+#: ../../source/development/contribute-to-doc-i18n.rst:68
+msgid "sphinx-intl update -p build/gettext -l de -l ja"
+msgstr "sphinx-intl update -p build/gettext -l de -l ja"
 
 #: ../../source/development/contribute-to-doc-i18n.rst:72
 msgid "执行后，产生的 po 文件会输出到以下文件夹中"
@@ -145,6 +172,10 @@ msgstr ""
 #: ../../source/development/contribute-to-doc-i18n.rst:83
 msgid "比如，如果你想要进行翻译到英文的工作，那么执行"
 msgstr "For example, if you want to work on translating to English, then execute"
+
+#: ../../source/development/contribute-to-doc-i18n.rst:85
+msgid "sphinx-intl update -p build/gettext -l en"
+msgstr "sphinx-intl update -p build/gettext -l en"
 
 #: ../../source/development/contribute-to-doc-i18n.rst:89
 msgid "则会在 ``doc/source/locales/en/LC_MESSAGES/`` 中产生可翻译的文件"
@@ -178,6 +209,10 @@ msgstr ""
 "If you have the ability to check the translation, using GPT for translation is "
 "fine (but remember to proofread it)."
 
+#: ../../source/development/contribute-to-doc-i18n.rst:108
+msgid "基类：:py:class:`......`"
+msgstr "基类：:py:class:`......`"
+
 #: ../../source/development/contribute-to-doc-i18n.rst:112
 msgid "对于类似这样的翻译文本，可以直接忽略，或者将其完全复制到结果中"
 msgstr ""
@@ -202,6 +237,10 @@ msgstr "Build the Documentation Locally"
 msgid "别忘了安装必要的环境"
 msgstr "Don't forget to install the necessary environment"
 
+#: ../../source/development/contribute-to-doc-i18n.rst:125
+msgid "pip install -e .[gui,doc]"
+msgstr "pip install -e .[gui,doc]"
+
 #: ../../source/development/contribute-to-doc-i18n.rst:131
 msgid "Windows"
 msgstr "Windows"
@@ -219,6 +258,10 @@ msgid "举个例子，如果你想要在本地构建 zh_CN（简体中文）的�
 msgstr ""
 "For example, if you want to build the documentation for zh_CN (Simplified "
 "Chinese) locally, you can execute:"
+
+#: ../../source/development/contribute-to-doc-i18n.rst:141
+msgid ".\\make_i18n zh_CN"
+msgstr ".\\make_i18n zh_CN"
 
 #: ../../source/development/contribute-to-doc-i18n.rst:145
 #: ../../source/development/contribute-to-doc-i18n.rst:163
@@ -241,6 +284,11 @@ msgstr ""
 #: ../../source/development/contribute-to-doc-i18n.rst:149
 msgid "macOS"
 msgstr "macOS"
+
+#: ../../source/development/contribute-to-doc-i18n.rst:159
+#: ../../source/development/contribute-to-doc-i18n.rst:181
+msgid "./make_i18n.sh zh_CN"
+msgstr "./make_i18n.sh zh_CN"
 
 #: ../../source/development/contribute-to-doc-i18n.rst:167
 msgid "Linux"

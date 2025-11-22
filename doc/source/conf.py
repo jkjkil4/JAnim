@@ -38,6 +38,7 @@ exclude_patterns = ['._*', '**/._*']
 language = 'zh_CN'
 locale_dirs = ['locales/']
 gettext_compact = False     # optional
+gettext_additional_targets = ["literal-block"]  # make code-block translatable
 
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output

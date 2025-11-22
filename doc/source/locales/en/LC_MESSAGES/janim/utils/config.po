@@ -1,4 +1,3 @@
-﻿# SOME DESCRIPTIVE TITLE.
 # Copyright (C) 2023, jkjkil4
 # This file is distributed under the same license as the JAnim package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2024.
@@ -6,18 +5,19 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version:  JAnim\n"
+"Project-Id-Version: JAnim\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-20 08:21+0800\n"
-"PO-Revision-Date: 2024-06-03 10:08+0800\n"
+"POT-Creation-Date: 2025-11-22 21:20+0800\n"
+"PO-Revision-Date: 2025-11-22 22:13+0800\n"
 "Last-Translator: \n"
-"Language: en\n"
 "Language-Team: en <LL@li.org>\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Language: en\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "Generated-By: Babel 2.17.0\n"
+"X-Generator: Poedit 3.8\n"
 
 #: ../../source/janim/utils/config.rst:2
 msgid "config"
@@ -33,7 +33,8 @@ msgstr "Configuration"
 
 #: janim.utils.config.Config:3 of
 msgid "大部分的参数不作说明，稍微说明一下这些参数："
-msgstr "Most parameters are not explained, but here are some notes on these parameters:"
+msgstr ""
+"Most parameters are not explained, but here are some notes on these parameters:"
 
 #: janim.utils.config.Config:5 of
 msgid "``fps``: 输出视频时的帧率"
@@ -45,11 +46,12 @@ msgstr "``preview_fps``: Frame rate in the preview window"
 
 #: janim.utils.config.Config:7 of
 msgid ""
-"在代码内设置 ``background_color`` 时，不能使用 ``background_color='#RRGGBB'``，应使用 "
-"``background_color=Color('#RRGGBB')``"
+"在代码内设置 ``background_color`` 时，不能使用 ``background_color='#RRGGBB'``，"
+"应使用 ``background_color=Color('#RRGGBB')``"
 msgstr ""
 "When setting ``background_color`` in code, you cannot use "
-"``background_color='#RRGGBB'``, you should use ``background_color=Color('#RRGGBB')``"
+"``background_color='#RRGGBB'``, you should use "
+"``background_color=Color('#RRGGBB')``"
 
 #: janim.utils.config.Config:8 of
 msgid ""
@@ -71,6 +73,26 @@ msgstr "Three ways to set configuration:"
 msgid "在 Python 代码中，将配置写在时间轴类里"
 msgstr "In Python code, write the configuration in the timeline class"
 
+#: janim.utils.config.Config:17 of
+msgid ""
+"class YourTimeline(Timeline):\n"
+"    CONFIG = Config(\n"
+"        fps=120,\n"
+"        preview_fps=30\n"
+"    )\n"
+"\n"
+"    def construct(self) -> None:\n"
+"        ..."
+msgstr ""
+"class YourTimeline(Timeline):\n"
+"    CONFIG = Config(\n"
+"        fps=120,\n"
+"        preview_fps=30\n"
+"    )\n"
+"\n"
+"    def construct(self) -> None:\n"
+"        ..."
+
 #: janim.utils.config.Config:28 of
 msgid "另见：:py:obj:`~.Timeline.CONFIG`"
 msgstr "See also :py:obj:`~.Timeline.CONFIG`"
@@ -79,9 +101,39 @@ msgstr "See also :py:obj:`~.Timeline.CONFIG`"
 msgid "使用命令行参数修改全局配置"
 msgstr "Modify global configuration using command-line arguments"
 
+#: janim.utils.config.Config:32 of
+msgid "janim write your_file.py YourTimeline -c fps 120 -c output_dir custom_dir"
+msgstr "janim write your_file.py YourTimeline -c fps 120 -c output_dir custom_dir"
+
 #: janim.utils.config.Config:36 of
 msgid "修改局部代码块的配置"
 msgstr "Modify configuration for local code blocks"
+
+#: janim.utils.config.Config:38 of
+msgid ""
+"class YourTimeline(Timeline):\n"
+"    def construct(self):\n"
+"        txt1 = Text('Using default font')\n"
+"\n"
+"        with Config(font='Noto Serif CJK SC'):\n"
+"            txt2 = Text('Using \"Noto Serif CJK SC\" font')\n"
+"\n"
+"        txt3 = Text('Using default font again')\n"
+"\n"
+"        group = Group(txt1, txt2, txt3).show()\n"
+"        group.points.arrange(DOWN, aligned_edge=LEFT)"
+msgstr ""
+"class YourTimeline(Timeline):\n"
+"    def construct(self):\n"
+"        txt1 = Text('Using default font')\n"
+"\n"
+"        with Config(font='Noto Serif CJK SC'):\n"
+"            txt2 = Text('Using \"Noto Serif CJK SC\" font')\n"
+"\n"
+"        txt3 = Text('Using default font again')\n"
+"\n"
+"        group = Group(txt1, txt2, txt3).show()\n"
+"        group.points.arrange(DOWN, aligned_edge=LEFT)"
 
 #: janim.utils.config.Config:53 of
 msgid "获取配置"
@@ -91,9 +143,22 @@ msgstr "Getting Configuration"
 msgid "使用 ``Config.get.xxx`` 得到属性，例如："
 msgstr "Use ``Config.get.xxx`` to get attributes, for example:"
 
+#: janim.utils.config.Config:57 of
+msgid ""
+"class YourTimeline(Timeline):\n"
+"    def construct(self):\n"
+"        print(Config.get.fps)"
+msgstr ""
+"class YourTimeline(Timeline):\n"
+"    def construct(self):\n"
+"        print(Config.get.fps)"
+
 #: janim.utils.config.Config:63 of
-msgid "更多内容可以参考文档教程的 :doc:`配置系统 <../../tutorials/config_system>` 页面"
-msgstr "For more information, refer to the :doc:`Configuration System <../../tutorials/config_system>` page in the documentation tutorials"
+msgid ""
+"更多内容可以参考文档教程的 :doc:`配置系统 <../../tutorials/config_system>` 页面"
+msgstr ""
+"For more information, refer to the :doc:`Configuration System <../../tutorials/"
+"config_system>` page in the documentation tutorials"
 
 #: ../../docstring janim.utils.config.default_config:1 of
 msgid "默认配置"
@@ -126,8 +191,8 @@ msgstr "The retrieval of data associated with configuration settings."
 #: janim.utils.config.ConfigGetter:3 of
 msgid "请仍然使用 ``Config.get.xxx`` 来获取定义在该类中的内容"
 msgstr ""
-"Please continue to use ``Config.get.xxx`` to retrieve the content defined"
-" in this class."
+"Please continue to use ``Config.get.xxx`` to retrieve the content defined in "
+"this class."
 
 #: janim.utils.config.ConfigGetter.formated_output_dir:1 of
 msgid "将 ``:/path/to/file`` 转换为相对于 ``relative_path`` 的路径"
@@ -142,43 +207,65 @@ msgstr "Calculate scaled pixel size based on the scaling factor"
 msgid "使用示例："
 msgstr "Usage example:"
 
+#: janim.utils.config.ConfigGetter.scaled_pixel_size:5 of
+msgid ""
+"Config(\n"
+"    **Config.get.scaled_pixel_size(0.5)\n"
+")"
+msgstr ""
+"Config(\n"
+"    **Config.get.scaled_pixel_size(0.5)\n"
+")"
+
 #: janim.utils.config.ConfigGetter.scaled_frame_size:1 of
 msgid "根据缩放比例计算缩放后的画面尺寸"
 msgstr "Calculate scaled frame size based on the scaling factor"
 
+#: janim.utils.config.ConfigGetter.scaled_frame_size:5 of
+msgid ""
+"Config(\n"
+"    **Config.get.scaled_frame_size(0.5)\n"
+")"
+msgstr ""
+"Config(\n"
+"    **Config.get.scaled_frame_size(0.5)\n"
+")"
+
 #~ msgid "基础用法"
 #~ msgstr "Basic usage"
 
-#~ msgid "使用 ``Config.get.xxx`` 得到属性，例如 ``Config.get.fps`` 则得到当前设置的帧率"
+#~ msgid ""
+#~ "使用 ``Config.get.xxx`` 得到属性，例如 ``Config.get.fps`` 则得到当前设置的帧"
+#~ "率"
 #~ msgstr ""
-#~ "To obtain attributes using ``Config.get.xxx``,"
-#~ " for example, ``Config.get.fps`` retrieves "
-#~ "the currently set frame rate."
+#~ "To obtain attributes using ``Config.get.xxx``, for example, "
+#~ "``Config.get.fps`` retrieves the currently set frame rate."
 
 #~ msgid "使用 ``with Config(key=value):`` 在指定的配置下执行内容，例如："
 #~ msgstr ""
-#~ "Execute under specified configuration using"
-#~ " ``with Config(key=value):``, for example:"
+#~ "Execute under specified configuration using ``with Config(key=value):``, for "
+#~ "example:"
 
 #~ msgid "其中没有设置的属性则采用默认设置 :py:obj:`~.default_config`"
 #~ msgstr ""
-#~ "Any properties not set will use "
-#~ "the default settings from "
-#~ ":py:obj:`~.default_config`"
+#~ "Any properties not set will use the default settings "
+#~ "from :py:obj:`~.default_config`"
 
 #~ msgid "全局配置"
 #~ msgstr "Global configuration"
 
-#~ msgid "在使用命令行参数时，使用 ``-c 配置名 值`` 可以修改全局配置，设定的全局配置会覆盖其它配置"
+#~ msgid ""
+#~ "在使用命令行参数时，使用 ``-c 配置名 值`` 可以修改全局配置，设定的全局配置会"
+#~ "覆盖其它配置"
 #~ msgstr ""
-#~ "When using command-line arguments, you"
-#~ " can modify global configuration by "
+#~ "When using command-line arguments, you can modify global configuration by "
 #~ "using ``-c config_name value``."
 
-#~ msgid "例如 ``janim write your_file.py YourTimeline -c fps 120`` 可以将渲染帧率设置为 120"
+#~ msgid ""
+#~ "例如 ``janim write your_file.py YourTimeline -c fps 120`` 可以将渲染帧率设置"
+#~ "为 120"
 #~ msgstr ""
-#~ "For example, ``janim write your_file.py "
-#~ "YourTimeline -c fps 120`` can set "
+#~ "For example, ``janim write your_file.py YourTimeline -c fps 120`` can set "
 #~ "the rendering frame rate to 120."
 
 #~ msgid "可以同时修改多个，例如："
@@ -186,9 +273,8 @@ msgstr "Calculate scaled frame size based on the scaling factor"
 
 #~ msgid "这个命令会将动画以 120 的帧率输出到 ``custom_dir`` 这个指定的文件夹中"
 #~ msgstr ""
-#~ "This command will output the animation"
-#~ " at a frame rate of 120 to "
-#~ "the ``custom_dir`` specified folder."
+#~ "This command will output the animation at a frame rate of 120 to the "
+#~ "``custom_dir`` specified folder."
 
 #~ msgid "时间轴配置"
 #~ msgstr "Timeline configuration\\v"
@@ -196,13 +282,9 @@ msgstr "Calculate scaled frame size based on the scaling factor"
 #~ msgid "定义类变量 ``CONFIG``，例如："
 #~ msgstr "Define a class variable named ``CONFIG``, for example:"
 
-#~ msgid "这样则是设定这个时间轴的配置，渲染时帧率 120，预览（显示为窗口）时帧率 30"
+#~ msgid ""
+#~ "这样则是设定这个时间轴的配置，渲染时帧率 120，预览（显示为窗口）时帧率 30"
 #~ msgstr ""
-#~ "In this way, you are setting the"
-#~ " configuration for this timeline with "
-#~ "a rendering frame rate of 120 and"
-#~ " a preview (displayed as a window)"
-#~ " frame rate of 30."
-
-
-
+#~ "In this way, you are setting the configuration for this timeline with a "
+#~ "rendering frame rate of 120 and a preview (displayed as a window) frame rate "
+#~ "of 30."

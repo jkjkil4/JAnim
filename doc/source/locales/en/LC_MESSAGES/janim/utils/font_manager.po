@@ -6,18 +6,19 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: JAnim \n"
+"Project-Id-Version: JAnim\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-03-14 14:52+0800\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language: en\n"
+"POT-Creation-Date: 2025-11-22 21:20+0800\n"
+"PO-Revision-Date: 2025-11-22 22:13+0800\n"
+"Last-Translator: \n"
 "Language-Team: en <LL@li.org>\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Language: en\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.14.0\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Generated-By: Babel 2.17.0\n"
+"X-Generator: Poedit 3.8\n"
 
 #: ../../source/janim/utils/font_manager.rst:2
 msgid "font_manager"
@@ -47,6 +48,16 @@ msgstr ""
 "Return the user-specified font directory for Win32.  This is looked up "
 "from the registry key ::"
 
+#: janim.utils.font_manager.win32FontDirectory:4 of
+msgid ""
+"\\"
+"\\HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Shell "
+"Folders\\Fonts"
+msgstr ""
+"\\"
+"\\HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Shell "
+"Folders\\Fonts"
+
 #: janim.utils.font_manager.win32FontDirectory:6 of
 msgid "If the key is not found, ``%WINDIR%\\Fonts`` will be returned."
 msgstr "If the key is not found, ``%WINDIR%\\Fonts`` will be returned."
@@ -62,4 +73,3 @@ msgstr ""
 "will use a standard set of system paths, as well as the list of fonts "
 "tracked by fontconfig if fontconfig is installed and available.  A list "
 "of TrueType fonts are returned by default with AFM fonts as an option."
-
