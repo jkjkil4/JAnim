@@ -1,4 +1,3 @@
-﻿# SOME DESCRIPTIVE TITLE.
 # Copyright (C) 2023, jkjkil4
 # This file is distributed under the same license as the JAnim package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2024.
@@ -8,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: JAnim\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-08-11 22:08+0800\n"
-"PO-Revision-Date: 2025-11-21 17:20+0800\n"
+"POT-Creation-Date: 2025-11-22 20:19+0800\n"
+"PO-Revision-Date: 2025-11-22 20:20+0800\n"
 "Last-Translator: \n"
 "Language-Team: en <LL@li.org>\n"
 "Language: en\n"
@@ -67,6 +66,15 @@ msgstr ""
 "``root_only`` can specify to interpolate only the root items of the two items, "
 "without interpolating child items"
 
+#: janim.anims.transform.MethodTransform:1 janim.anims.transform.MoveToTarget:1
+#: of
+msgid "基类：:py:class:`~janim.anims.transform.Transform`"
+msgstr "基类：:py:class:`~janim.anims.transform.Transform`"
+
+#: janim.anims.transform.MoveToTarget:1 of
+msgid "详见 :meth:`~.Item.generate_target`"
+msgstr "See :meth:`~.Item.generate_target` for details"
+
 #: janim.anims.transform.TransformInSegments:1
 #: janim.anims.transform.TransformMatchingShapes:1 of
 msgid "基类：:py:class:`~janim.anims.composition.AnimGroup`"
@@ -76,57 +84,53 @@ msgstr "基类：:py:class:`~janim.anims.composition.AnimGroup`"
 msgid "依照切片列表进行 ``src`` 与 ``target`` 之间的变换"
 msgstr "Transform between ``src`` and ``target`` according to the slice list"
 
-#: ../../source/janim/anims/transform.rst:32
+#: ../../source/janim/anims/transform.rst:35
 msgid "**基本用法**"
 msgstr "**Basic Usage**"
 
-#: ../../source/janim/anims/transform.rst:39
-#: ../../source/janim/anims/transform.rst:55
-#: ../../source/janim/anims/transform.rst:69
-#: ../../source/janim/anims/transform.rst:85
-#: ../../source/janim/anims/transform.rst:101
+#: ../../source/janim/anims/transform.rst:42
+#: ../../source/janim/anims/transform.rst:58
+#: ../../source/janim/anims/transform.rst:72
+#: ../../source/janim/anims/transform.rst:88
+#: ../../source/janim/anims/transform.rst:104
 msgid "相当于"
 msgstr "Equivalent to"
 
-#: ../../source/janim/anims/transform.rst:46
+#: ../../source/janim/anims/transform.rst:49
 msgid "**省略变换目标的切片**"
 msgstr "**Omitting Target Slices**"
 
-#: ../../source/janim/anims/transform.rst:48
+#: ../../source/janim/anims/transform.rst:51
 msgid "使用 ``...`` 表示与变换来源的切片相同"
 msgstr "Use ``...`` to indicate the same slice as the transformation source"
 
-#: ../../source/janim/anims/transform.rst:62
+#: ../../source/janim/anims/transform.rst:65
 msgid "**连续切片**"
 msgstr "**Consecutive Slices**"
 
-#: ../../source/janim/anims/transform.rst:76
+#: ../../source/janim/anims/transform.rst:79
 msgid "**切片简写**"
 msgstr "**Slice Shorthand**"
 
-#: ../../source/janim/anims/transform.rst:78
+#: ../../source/janim/anims/transform.rst:81
 msgid "如果总共只有一个切片，可以省略一层嵌套"
 msgstr "If there is only one slice in total, one level of nesting can be omitted"
 
-#: ../../source/janim/anims/transform.rst:92
+#: ../../source/janim/anims/transform.rst:95
 msgid "**连续切片倒序**"
 msgstr "**Consecutive Slices in Reverse**"
 
-#: ../../source/janim/anims/transform.rst:94
+#: ../../source/janim/anims/transform.rst:97
 msgid "倒过来写即可使切片倒序"
 msgstr "Writing it backwards will reverse the slices"
 
-#: ../../source/janim/anims/transform.rst:108
+#: ../../source/janim/anims/transform.rst:111
 msgid ""
 "请留意 Python 切片中左闭右开的原则，对于倒序序列 ``[8, 6, 4, 0]`` 来说则是左开"
 "右闭"
 msgstr ""
 "Note the left-closed right-open principle in Python slicing; for reverse "
 "sequences like ``[8, 6, 4, 0]``, it is left-open right-closed"
-
-#: janim.anims.transform.MethodTransform:1 of
-msgid "基类：:py:class:`~janim.anims.transform.Transform`"
-msgstr "基类：:py:class:`~janim.anims.transform.Transform`"
 
 #: janim.anims.transform.MethodTransform:1 of
 msgid "依据物件的变换而创建的补间过程"
@@ -179,5 +183,3 @@ msgstr ""
 
 #~ msgid "使得 ``.anim`` 和 ``.anim(...)`` 后可以进行同样的操作"
 #~ msgstr "Allow the same operations after ``.anim`` and ``.anim(...)``."
-
-

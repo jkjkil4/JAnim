@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: JAnim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-27 00:36+0800\n"
+"POT-Creation-Date: 2025-11-22 20:19+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -35,12 +35,6 @@ msgstr "Exit code when the file specified by ``run`` or ``write`` is not found"
 msgid "使用 ``run`` 或 ``write`` 指定路径不是文件时的退出码"
 msgstr "Exit code when the path specified by ``run`` or ``write`` is not a file"
 
-#: ../../docstring janim.exception.EXITCODE_PYOPENGL_NOT_FOUND:1 of
-msgid "``PyOpenGL`` 未安装时的退出码（仅在设备不支持 OpenGL4.3 的情况下需要安装 PyOpenGL）"
-msgstr ""
-"Exit code when ``PyOpenGL`` is not installed (PyOpenGL is only needed when "
-"the device does not support OpenGL 4.3)"
-
 #: ../../docstring janim.exception.EXITCODE_TYPST_NOT_FOUND:1 of
 msgid "Typst 未安装时的退出码"
 msgstr "Exit code when Typst is not installed"
@@ -65,8 +59,8 @@ msgstr "基类：:py:class:`Exception`"
 #: janim.exception.CmptGroupLookupError:1 janim.exception.ColorNotFoundError:1
 #: janim.exception.ExitException:1 janim.exception.FontNotFoundError:1
 #: janim.exception.GetItemError:1 janim.exception.InvalidTypstVarError:1
-#: janim.exception.PointError:1 janim.exception.TimelineError:1
-#: janim.exception.UpdaterError:1 of
+#: janim.exception.PointError:1 janim.exception.ShaderInjectionNotFoundError:1
+#: janim.exception.TimelineError:1 janim.exception.UpdaterError:1 of
 msgid "基类：:py:class:`~janim.exception.JAnimException`"
 msgstr "基类：:py:class:`~janim.exception.JAnimException`"
 
@@ -81,7 +75,8 @@ msgstr ""
 msgid "基类：:py:class:`~janim.exception.TimelineError`"
 msgstr "基类：:py:class:`~janim.exception.TimelineError`"
 
-#: janim.exception.AnimGroupError:1 of
+#: janim.exception.AnimGroupError:1 janim.exception.ApplyAlignerBrokenError:1
+#: of
 msgid "基类：:py:class:`~janim.exception.AnimationError`"
 msgstr "基类：:py:class:`~janim.exception.AnimationError`"
 
@@ -105,4 +100,11 @@ msgstr "基类：:py:class:`~janim.exception.PointError`"
 
 #~ msgid "``ffprobe`` 执行失败时的退出码"
 #~ msgstr ""
+
+#~ msgid "``PyOpenGL`` 未安装时的退出码（仅在设备不支持 OpenGL4.3 的情况下需要安装 PyOpenGL）"
+#~ msgstr ""
+#~ "Exit code when ``PyOpenGL`` is not "
+#~ "installed (PyOpenGL is only needed when"
+#~ " the device does not support OpenGL"
+#~ " 4.3)"
 

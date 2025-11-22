@@ -9,11 +9,15 @@ render
    base
    framebuffer
    program
+   renderer_arrow
    renderer_dotcloud
    renderer_frameeffect
    renderer_imageitem
    renderer_video
    renderer_vitem
+   renderer_vitem_curve
+   renderer_vitem_plane
+   shader
    texture
    uniform
    writer

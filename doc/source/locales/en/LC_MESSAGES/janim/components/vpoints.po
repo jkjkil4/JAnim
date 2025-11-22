@@ -1,4 +1,3 @@
-﻿# SOME DESCRIPTIVE TITLE.
 # Copyright (C) 2023, jkjkil4
 # This file is distributed under the same license as the JAnim package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2024.
@@ -8,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: JAnim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-20 08:21+0800\n"
+"POT-Creation-Date: 2025-11-22 20:19+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -58,18 +57,15 @@ msgid ""
 "例如对于点坐标列表 ``[a, b, c, d, e, NAN_POINT, f, g, h]``，则表示两段子路径：``[a, b, c, d,"
 " e]`` 和 ``[f, g, h]``"
 msgstr ""
-"For example, for a point coordinate list ``[a, b, c, d, e, NAN_POINT, f, g, "
-"h]``, it represents two subpaths: ``[a, b, c, d, e]`` and ``[f, g, h]``"
+"For example, for a point coordinate list ``[a, b, c, d, e, NAN_POINT, f, "
+"g, h]``, it represents two subpaths: ``[a, b, c, d, e]`` and ``[f, g, "
+"h]``"
 
 #: janim.components.vpoints.Cmpt_VPoints:11 of
 msgid "如果子路径的终止点和起始点相同，则该段子路径被视为闭合路径。"
 msgstr ""
-"If the end point and start point of a subpath are the same, that subpath is "
-"considered a closed path."
-
-#: janim.components.vpoints.Cmpt_VPoints:13 of
-msgid "只有闭合的子路径，才能够进行填充色的渲染"
-msgstr "Only closed subpaths can be rendered with fill color"
+"If the end point and start point of a subpath are the same, that subpath "
+"is considered a closed path."
 
 #: janim.components.vpoints.Cmpt_VPoints.set:1 of
 msgid "设置点坐标数据，每个坐标点都有三个分量"
@@ -80,20 +76,18 @@ msgid "使用形如 ``.set([[1.5, 3, 2], [2, 1.5, 0]])`` 的形式"
 msgstr "Use the form like ``.set([[1.5, 3, 2], [2, 1.5, 0]])``"
 
 #: janim.components.vpoints.Cmpt_VPoints.apply_points_fn:1 of
-msgid ""
-"将所有点作为单独的一个参数传入 ``func``，并将 ``func`` 返回的结果作为新的点坐标"
-"数据"
+msgid "将所有点作为单独的一个参数传入 ``func``，并将 ``func`` 返回的结果作为新的点坐标数据"
 msgstr ""
-"Applies the given function ``func`` to all points as a single parameter, and "
-"see the result as new points"
+"Applies the given function ``func`` to all points as a single parameter, "
+"and see the result as new points"
 
 #: janim.components.vpoints.Cmpt_VPoints.apply_points_fn:3 of
 msgid ""
-"视 ``about_point`` 为原点，若其为 ``None``，则将物件在 ``about_edge`` 方向上的"
-"边界作为 ``about_point``"
+"视 ``about_point`` 为原点，若其为 ``None``，则将物件在 ``about_edge`` 方向上的边界作为 "
+"``about_point``"
 msgstr ""
-"Considers ``about_point`` as the origin. If it's ``None``, then the edge in "
-"the ``about_edge`` direction is considered as ``about_point``"
+"Considers ``about_point`` as the origin. If it's ``None``, then the edge "
+"in the ``about_edge`` direction is considered as ``about_point``"
 
 #: janim.components.vpoints.Cmpt_VPoints.scale:1 of
 msgid "将物件缩放指定倍数"
@@ -101,15 +95,14 @@ msgstr "Scale the item by a specified factor"
 
 #: janim.components.vpoints.Cmpt_VPoints.scale:3 of
 msgid ""
-"如果传入的倍数是可遍历的对象，那么则将其中的各个元素作为坐标各分量缩放的倍数， "
-"例如传入 ``scale_factor`` 为 ``(2, 0.5, 1)`` 则是在 ``x`` 方向上缩放为两倍，在 "
-"``y`` 方向上压缩为原来的一半，在 ``z`` 方向上保持不变"
+"如果传入的倍数是可遍历的对象，那么则将其中的各个元素作为坐标各分量缩放的倍数， 例如传入 ``scale_factor`` 为 ``(2, "
+"0.5, 1)`` 则是在 ``x`` 方向上缩放为两倍，在 ``y`` 方向上压缩为原来的一半，在 ``z`` 方向上保持不变"
 msgstr ""
-"If the scale factor provided is an iterable object, each element will be used "
-"as the scaling factor for the corresponding coordinate component. For example, "
-"if ``scale_factor`` is ``(2, 0.5, 1)``, the item will be scaled by a factor of "
-"2 along the ``x`` axis, compressed by half along the ``y`` axis, and remain "
-"unchanged along the ``z`` axis"
+"If the scale factor provided is an iterable object, each element will be "
+"used as the scaling factor for the corresponding coordinate component. "
+"For example, if ``scale_factor`` is ``(2, 0.5, 1)``, the item will be "
+"scaled by a factor of 2 along the ``x`` axis, compressed by half along "
+"the ``y`` axis, and remain unchanged along the ``z`` axis"
 
 #: janim.components.vpoints.Cmpt_VPoints.get_anchors:1 of
 msgid "得到曲线的锚点"
@@ -121,8 +114,7 @@ msgstr "Get the control points of the curve"
 
 #: janim.components.vpoints.Cmpt_VPoints.get_bezier_tuples_from_points:1 of
 msgid "由 ``points`` 得到由每一组贝塞尔曲线控制点组成的列表"
-msgstr ""
-"Get a list of Bézier curve control point groups from ``points``"
+msgstr "Get a list of Bézier curve control point groups from ``points``"
 
 #: janim.components.vpoints.Cmpt_VPoints.get_bezier_tuples_from_points:3 of
 msgid ""
@@ -135,8 +127,8 @@ msgstr ""
 #: janim.components.vpoints.Cmpt_VPoints.get_bezier_tuples:1 of
 msgid "得到由每一组贝塞尔曲线控制点组成的列表，具体参考 :meth:`get_bezier_tuples_from_points`"
 msgstr ""
-"Get a list of Bézier curve control point groups. See :meth:`get_bezier_tuples_from_points` "
-"for details"
+"Get a list of Bézier curve control point groups. See "
+":meth:`get_bezier_tuples_from_points` for details"
 
 #: janim.components.vpoints.Cmpt_VPoints.curves_count:1 of
 msgid "得到曲线数量"
@@ -144,14 +136,13 @@ msgstr "Get the number of curves"
 
 #: janim.components.vpoints.Cmpt_VPoints.get_nth_curve_points:1 of
 msgid "得到第 ``n`` 组的贝塞尔曲线控制点 (从 0 开始计数)"
-msgstr ""
-"Get the control points of the ``n``-th Bézier curve group (0-indexed)"
+msgstr "Get the control points of the ``n``-th Bézier curve group (0-indexed)"
 
 #: janim.components.vpoints.Cmpt_VPoints.get_nth_curve_function:1 of
 msgid "返回值是第 ``n`` 组贝塞尔曲线的描点函数，传入 [0, 1] 之间的值，得到对应的在曲线上的点"
 msgstr ""
-"Returns a point function for the ``n``-th Bézier curve group. Pass a value "
-"between [0, 1] to get the corresponding point on the curve"
+"Returns a point function for the ``n``-th Bézier curve group. Pass a "
+"value between [0, 1] to get the corresponding point on the curve"
 
 #: janim.components.vpoints.Cmpt_VPoints.quick_point_from_proportion:1 of
 msgid "相比 :meth:`point_from_proportion` 而言，更快"
@@ -160,14 +151,15 @@ msgstr "Faster than :meth:`point_from_proportion`"
 #: janim.components.vpoints.Cmpt_VPoints.quick_point_from_proportion:3 of
 msgid "但是这里假设所有的曲线都有相同的长度，所以是不准确的"
 msgstr ""
-"However, this assumes all curves have the same length, so it is not accurate"
+"However, this assumes all curves have the same length, so it is not "
+"accurate"
 
 #: janim.components.vpoints.Cmpt_VPoints.curve_and_prop_of_partial_point:1 of
 msgid "如果你想要得到沿着整个曲线上所在比例为 alpha 处的点， 这个函数会返回这个比例所对应的曲线部分的索引，以及在这个曲线部分上需要行进的比例"
 msgstr ""
-"If you want to get the point at proportion alpha along the entire curve, this "
-"function returns the index of the curve segment corresponding to this "
-"proportion, and the proportion to travel on that curve segment"
+"If you want to get the point at proportion alpha along the entire curve, "
+"this function returns the index of the curve segment corresponding to "
+"this proportion, and the proportion to travel on that curve segment"
 
 #: janim.components.vpoints.Cmpt_VPoints.pointwise_become_partial:1 of
 msgid ""
@@ -176,23 +168,25 @@ msgid ""
 msgstr ""
 "Extract the ``[a, b]`` interval (maximum range ``[0, 1]`` represents the "
 "entire curve) from the passed object's curve, set it to this object, and "
-"keep the number of points unchanged (points outside the interval are placed at "
-"the start/end point)"
+"keep the number of points unchanged (points outside the interval are "
+"placed at the start/end point)"
 
 #: janim.components.vpoints.Cmpt_VPoints.partial_points:1 of
 msgid ""
 "得到 ``points`` 所表示的曲线中 ``[a, b]`` 的部分（最大范围 ``[0, 1]`` "
 "表示整个曲线），且保持点的数量不变（将区间外的点都放到起点/终点处）"
 msgstr ""
-"Get the ``[a, b]`` portion of the curve represented by ``points`` (maximum "
-"range ``[0, 1]`` represents the entire curve), keeping the number of points "
-"unchanged (points outside the interval are placed at the start/end point)"
+"Get the ``[a, b]`` portion of the curve represented by ``points`` "
+"(maximum range ``[0, 1]`` represents the entire curve), keeping the "
+"number of points unchanged (points outside the interval are placed at the"
+" start/end point)"
 
 #: janim.components.vpoints.Cmpt_VPoints.partial_points:3
 #: janim.components.vpoints.Cmpt_VPoints.partial_points_reduced:3 of
 msgid "注：当 ``a <= 0`` 且 ``b >= 1`` 时，直接返回 ``points``，不作拷贝"
 msgstr ""
-"Note: When ``a <= 0`` and ``b >= 1``, directly return ``points`` without copying"
+"Note: When ``a <= 0`` and ``b >= 1``, directly return ``points`` without "
+"copying"
 
 #: janim.components.vpoints.Cmpt_VPoints.pointwise_become_partial_reduced:1 of
 msgid "将传入对象的曲线截取 ``[a, b]`` 区间（最大范围 ``[0, 1]`` 表示整个曲线）的部分后，设置到该对象上，丢弃区间外的点"
@@ -204,9 +198,9 @@ msgstr ""
 #: janim.components.vpoints.Cmpt_VPoints.partial_points_reduced:1 of
 msgid "得到 ``points`` 所表示的曲线中 ``[a, b]`` 的部分（最大范围 ``[0, 1]`` 表示整个曲线），丢弃区间外的点"
 msgstr ""
-"Get the ``[a, b]`` portion of the curve represented by ``points`` (maximum "
-"range ``[0, 1]`` represents the entire curve), discarding points outside the "
-"interval"
+"Get the ``[a, b]`` portion of the curve represented by ``points`` "
+"(maximum range ``[0, 1]`` represents the entire curve), discarding points"
+" outside the interval"
 
 #: janim.components.vpoints.Cmpt_VPoints.add_as_corners:1 of
 msgid "以折线的方式将 ``points`` 添加"
@@ -218,7 +212,9 @@ msgstr "Set the point data to a polyline formed by ``points``"
 
 #: janim.components.vpoints.Cmpt_VPoints.get_joint_products:1 of
 msgid "得到每个锚点前后方向向量的点积"
-msgstr "Get the dot product of direction vectors before and after each anchor point"
+msgstr ""
+"Get the dot product of direction vectors before and after each anchor "
+"point"
 
 #: janim.components.vpoints.Cmpt_VPoints.make_smooth:1 of
 msgid ""
@@ -235,9 +231,9 @@ msgstr "If approx is False, this may increase the total number of points."
 #: janim.components.vpoints.Cmpt_VPoints.area_vector:1 of
 msgid "一个向量，其长度为锚点形成的多边形所围成的面积，根据右手定则指向垂直于该多边形的方向"
 msgstr ""
-"A vector whose length is the area enclosed by the polygon formed by anchor "
-"points, pointing in the direction perpendicular to the polygon according to "
-"the right-hand rule"
+"A vector whose length is the area enclosed by the polygon formed by "
+"anchor points, pointing in the direction perpendicular to the polygon "
+"according to the right-hand rule"
 
 #: janim.components.vpoints.Cmpt_VPoints.unit_normal:1 of
 msgid "单位法向量"
@@ -250,12 +246,14 @@ msgstr "Iterate over the end indices of each subpath"
 #: janim.components.vpoints.Cmpt_VPoints.get_closepath_flags:1 of
 msgid "得到子路径是否闭合的标志，结果长度与点数量相同"
 msgstr ""
-"Get flags indicating whether subpaths are closed. The result length is the "
-"same as the number of points"
+"Get flags indicating whether subpaths are closed. The result length is "
+"the same as the number of points"
 
 #: janim.components.vpoints.Cmpt_VPoints.get_closepath_flags:3 of
 msgid "对于闭合路径，结果中对应部分会被设置为 ``True``"
-msgstr "For closed paths, the corresponding parts in the result will be set to ``True``"
+msgstr ""
+"For closed paths, the corresponding parts in the result will be set to "
+"``True``"
 
 #: janim.components.vpoints.Cmpt_VPoints.get_parts_by_end_indices:1 of
 msgid "根据子路径结尾下标的列表，将 ``array`` 分段"
@@ -272,14 +270,14 @@ msgstr "Determine whether two groups of points have exactly the same shape"
 #: janim.components.vpoints.Cmpt_VPoints.same_shape:3 of
 msgid "对于相同形状的两组点还可以用 :meth:`same_direction` 衡量方向重合度"
 msgstr ""
-"For two groups of points with the same shape, you can also use :meth:`same_direction` "
-"to measure direction alignment"
+"For two groups of points with the same shape, you can also use "
+":meth:`same_direction` to measure direction alignment"
 
 #: janim.components.vpoints.Cmpt_VPoints.same_direction:1 of
 msgid "对于 :meth:`same_shape` 结果为 ``True`` 的两组点，可以通过该方法衡量方向重合度"
 msgstr ""
-"For two groups of points where :meth:`same_shape` returns ``True``, you can "
-"use this method to measure direction alignment"
+"For two groups of points where :meth:`same_shape` returns ``True``, you "
+"can use this method to measure direction alignment"
 
 #: janim.components.vpoints.Cmpt_VPoints.same_direction:3 of
 msgid "返回 ``-1`` ~ ``1`` 之间的值"
@@ -288,18 +286,19 @@ msgstr "Returns a value between ``-1`` and ``1``"
 #: janim.components.vpoints.Cmpt_VPoints.same_direction:4 of
 msgid "其中 ``1`` 表示完全同向，``-1`` 表示完全反向，``0`` 表示垂直"
 msgstr ""
-"Where ``1`` means completely same direction, ``-1`` means completely opposite "
-"direction, and ``0`` means perpendicular"
+"Where ``1`` means completely same direction, ``-1`` means completely "
+"opposite direction, and ``0`` means perpendicular"
 
 #: janim.components.vpoints.Cmpt_VPoints.same_direction:6 of
 msgid "注：对于 :meth:`same_shape` 结果为 ``False`` 的两组点，该方法的结果没有实际含义"
 msgstr ""
-"Note: For two groups of points where :meth:`same_shape` returns ``False``, "
-"the result of this method has no practical meaning"
+"Note: For two groups of points where :meth:`same_shape` returns "
+"``False``, the result of this method has no practical meaning"
 
 #: janim.components.vpoints.AnchorMode:1 of
 msgid "基类：:py:class:`~enum.Enum`"
 msgstr "基类：:py:class:`~enum.Enum`"
 
-
+#~ msgid "只有闭合的子路径，才能够进行填充色的渲染"
+#~ msgstr "Only closed subpaths can be rendered with fill color"
 
