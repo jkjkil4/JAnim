@@ -5,7 +5,10 @@ dl.py.class {
     margin-top: 32px;
 }
 dl.py.method {
-    margin-bottom: 32px;
+    margin-bottom: 20px;
+}
+dl.py.property {
+    margin-bottom: 20px;
 }
 section {
     margin-bottom: 32px;
