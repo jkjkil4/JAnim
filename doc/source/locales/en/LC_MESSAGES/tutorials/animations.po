@@ -99,7 +99,7 @@ msgid ""
 msgstr ""
 "These parameters can adjust the performance details of animations. For "
 "example, ``duration`` can adjust the speed of animations and control rhythm, "
-"``at`` can control the start timing of animations; when you want objects to "
+"``at`` can control the start timing of animations; when you want items to "
 "enter quickly and gradually slow down, you can consider using :func:`~.rush_into` "
 "as the easing function; in short, you can explore the use of these parameters "
 "more to achieve better animation effects."
@@ -120,7 +120,7 @@ msgstr ""
 msgid "将移动动画的缓动函数改为了 :func:`~.ease_out_bounce`，使得物体在移动终点处有一个弹跳的效果"
 msgstr ""
 "Changed the easing function of the movement animation to :func:`~.ease_out_bounce`, "
-"making the object have a bouncing effect at the end of movement"
+"making the item have a bouncing effect at the end of movement"
 
 #: ../../source/tutorials/animations.rst:94
 msgid "将变色动画的时长改为了 2 秒"
@@ -157,12 +157,12 @@ msgstr ":class:`~.FadeIn` :meth:`~.Item.anim` :meth:`~.Cmpt_Points.to_border`"
 
 #: ../../source/tutorials/animations.rst:131
 msgid "你还可以使用 :class:`~.AnimGroup` :class:`~.Succession` 等方式来组合多个动画。"
-msgstr "You can also use :class:`~.AnimGroup` :class:`~.Succession` and other methods to combine multiple animations."
+msgstr "You can also use :class:`~.AnimGroup`, :class:`~.Succession`, and similar classes to compose multiple animations."
 
 #: ../../source/tutorials/animations.rst:133
 msgid "其中 :class:`~.AnimGroup` 只是单纯地将多个动画组合到一起，可以统一应用 ``at`` 和 ``duration`` 等参数"
 msgstr ""
-"Among them, :class:`~.AnimGroup` simply combines multiple animations together "
+"Among them, :class:`~.AnimGroup` simply composes multiple animations together "
 "and can uniformly apply parameters such as ``at`` and ``duration``"
 
 #: ../../source/tutorials/animations.rst:135
@@ -307,7 +307,7 @@ msgstr ":doc:`../janim/anims/updater`"
 #: ../../source/tutorials/animations.rst:278
 msgid "JAnim 还有一个重要的特性是“动画复合”，我们将在 :ref:`updaters` 中详细介绍这一特性。"
 msgstr ""
-"JAnim also has an important feature called “animation composition”, which we "
+"JAnim also has an important feature called “animation combination”, which we "
 "will detail in :ref:`updaters`."
 
 #: ../../source/tutorials/animations.rst:281
