@@ -30,10 +30,10 @@ class VideoWriter:
 
     主要流程在 :meth:`write_all` 中：
 
-    - 首先调用 ffmpeg，这里用它生成视频（先输出到 _temp 文件中）
+    - 首先调用 ffmpeg，这里用它生成视频（先输出到 ``_temp`` 文件中）
     - 然后遍历动画的每一帧，进行渲染，并将像素数据传递给 ffmpeg
-    - 最后结束 ffmpeg 的调用，完成 _temp 文件的输出
-    - 将 _temp 文件改名，删去 "_temp" 后缀，完成视频输出
+    - 最后结束 ffmpeg 的调用，完成 ``_temp`` 文件的输出
+    - 将 ``_temp`` 文件改名，删去 ``_temp`` 后缀，完成视频输出
     '''
     def __init__(self, built: BuiltTimeline):
         self.built = built

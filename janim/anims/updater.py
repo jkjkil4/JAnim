@@ -105,9 +105,11 @@ class DataUpdater[T: Item](Animation):
 
     并且，可以对同一个物件作用多个 updater，各个 updater 会依次调用
 
-    注意：默认 ``root_only=True`` 即只对根物件应用该 updater；需要设置 ``root_only=False`` 才会对所有后代物件也应用该 updater
+    .. hint::
 
-    另见：:class:`~.UpdaterExample`
+        默认 ``root_only=True`` 即只对根物件应用该 updater；需要设置 ``root_only=False`` 才会对所有后代物件也应用该 updater
+
+    另见 :ref:`basic_examples` 中的 ``UpdaterExample``
     '''
     label_color = C_LABEL_ANIM_ABSTRACT
 
@@ -213,7 +215,9 @@ class GroupUpdater[T: Item](Animation):
     '''
     以时间为参数对一组物件的数据进行修改
 
-    注意：该 Updater 假设 ``func`` 不会改变 ``item`` 后代物件结构，如果改变结构（例如增删子物件、:meth:`~.Item.become` 结构不一致等情况），则可能导致意外行为
+    .. warning::
+
+        该 Updater 假设 ``func`` 不会改变 ``item`` 后代物件结构，如果改变结构（例如增删子物件、:meth:`~.Item.become` 结构不一致等情况），则可能导致意外行为
     '''
     label_color = C_LABEL_ANIM_ABSTRACT
 
@@ -459,7 +463,7 @@ class ItemUpdater(Animation):
     - 传入的 ``item`` 会在动画开始时隐藏，在动画结束后显示，传入 ``hide_at_begin=False`` 和 ``show_at_end=False`` 以禁用
     - 若传入 ``item=None``，则以上两点都无效
 
-    另见：:class:`~.UpdaterExample`
+    另见 :ref:`basic_examples` 中的 ``UpdaterExample``
     '''
     label_color = C_LABEL_ANIM_ABSTRACT
 

@@ -1,4 +1,4 @@
-# SOME DESCRIPTIVE TITLE.
+﻿# SOME DESCRIPTIVE TITLE.
 # Copyright (C) 2023, jkjkil4
 # This file is distributed under the same license as the JAnim package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
@@ -21,12 +21,14 @@ msgstr ""
 
 #: ../../source/janim/utils/font/database.rst:2
 msgid "database"
-msgstr ""
+msgstr "database"
 
 #: janim.utils.font.database.Font:1 janim.utils.font.database.Font.GlyphData:1
 #: janim.utils.font.database.FontDatabase:1
 #: janim.utils.font.database.FontFamily:1 janim.utils.font.database.FontInfo:1
 #: of
 msgid "基类：:py:class:`object`"
-msgstr ""
+msgstr "基类：:py:class:`object`"
+
+
 

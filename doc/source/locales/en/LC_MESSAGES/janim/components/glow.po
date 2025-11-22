@@ -21,43 +21,54 @@ msgstr ""
 
 #: ../../source/janim/components/glow.rst:2
 msgid "glow"
-msgstr ""
+msgstr "glow"
 
 #: janim.components.glow.Cmpt_Glow:1 of
 msgid ""
 "基类：:py:class:`~janim.components.component.Component`, "
 ":py:class:`~typing.Generic`"
 msgstr ""
+"Base class: :py:class:`~janim.components.component.Component`, "
+":py:class:`~typing.Generic`"
 
 #: janim.components.glow.Cmpt_Glow:1 of
 msgid "泛光组件"
-msgstr ""
+msgstr "Glow component"
 
 #: janim.components.glow.Cmpt_Glow.set:1 of
 msgid ""
 "``color`` 表示传入的 ``RGB`` 颜色数据，单个颜色 （支持 ``'#FF0000'`` ``'red'`` ``[1, 0, "
 "0.5]`` 的表示）"
 msgstr ""
+"``color`` represents the ``RGB`` color data passed in, a single color "
+"(supports formats like ``'#FF0000'``, ``'red'``, ``[1, 0, 0.5]``)"
 
 #: janim.components.glow.Cmpt_Glow.set:3 of
 msgid "``alpha`` 表示传入的透明度数据 （``1`` 表示不透明，``0`` 表示完全透明）"
 msgstr ""
+"``alpha`` represents the transparency data passed in (``1`` means opaque, "
+"``0`` means fully transparent)"
 
 #: janim.components.glow.Cmpt_Glow.set:5 of
 msgid "``size`` 表示泛光的大小"
-msgstr ""
+msgstr "``size`` represents the size of the glow"
 
 #: janim.components.glow.Cmpt_Glow.set:6 of
-msgid "默认情况下会将所有子物件也设置成指定的属性，传入 ``root_only=True`` 可以只设置根物件的"
+msgid "默认情况下会将所有后代物件也设置成指定的属性，传入 ``root_only=True`` 可以只设置根物件的"
 msgstr ""
+"By default, all descendant items will also be set to the specified properties; "
+"passing ``root_only=True`` will only set the root item's properties"
 
 #: janim.components.glow.Cmpt_Glow.set:8 of
 msgid "特殊传参："
-msgstr ""
+msgstr "Special parameter passing:"
 
 #: janim.components.glow.Cmpt_Glow.set:10 of
 msgid ""
 "当 ``color`` 为四分量 ``RGBA`` 颜色数据时， 则同时表示了 ``color`` 和 ``alpha`` 二者，因此不能再传入 "
 "``alpha`` 参数"
 msgstr ""
+"When ``color`` is four-component ``RGBA`` color data, it represents both "
+"``color`` and ``alpha``, so the ``alpha`` parameter cannot be passed "
+"separately"
 

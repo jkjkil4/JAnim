@@ -6,81 +6,68 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: JAnim \n"
+"Project-Id-Version: JAnim\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-11-20 08:21+0800\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language: en\n"
+"PO-Revision-Date: 2025-11-21 17:11+0800\n"
+"Last-Translator: \n"
 "Language-Team: en <LL@li.org>\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Language: en\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "Generated-By: Babel 2.17.0\n"
+"X-Generator: Poedit 3.8\n"
 
 #: ../../source/examples/_basic_examples_options.rst:44
-msgid ""
-":class:`~.Circle` :class:`~.Square` :class:`~.Create` "
-":class:`~.Transform` :class:`~.Uncreate`"
-msgstr ""
+msgid ":class:`~.Circle` :class:`~.Square` :class:`~.Create` :class:`~.Transform` :class:`~.Uncreate`"
+msgstr ":class:`~.Circle` :class:`~.Square` :class:`~.Create` :class:`~.Transform` :class:`~.Uncreate`"
 
 #: ../../source/examples/_basic_examples_options.rst:48
 msgid ":class:`~.Create` :class:`~.SpinInFromNothing` :meth:`~.Item.anim`"
-msgstr ""
+msgstr ":class:`~.Create` :class:`~.SpinInFromNothing` :meth:`~.Item.anim`"
 
 #: ../../source/examples/_basic_examples_options.rst:47
 msgid ":class:`~.Text` :class:`~.Write` :class:`~.FadeIn` :class:`~.Transform`"
-msgstr ""
+msgstr ":class:`~.Text` :class:`~.Write` :class:`~.FadeIn` :class:`~.Transform`"
 
 #: ../../source/examples/_basic_examples_options.rst:79
-msgid ""
-":class:`~.TypstDoc` :class:`~.TypstText` :class:`~.TypstMath` "
-":ref:`typst_usage`"
-msgstr ""
+msgid ":class:`~.TypstDoc` :class:`~.TypstText` :class:`~.TypstMath` :ref:`typst_usage`"
+msgstr ":class:`~.TypstDoc` :class:`~.TypstText` :class:`~.TypstMath` :ref:`typst_usage`"
 
 #: ../../source/examples/_basic_examples_options.rst:45
 msgid ":class:`~.TypstMath` :ref:`typst_usage`"
-msgstr ""
+msgstr ":class:`~.TypstMath` :ref:`typst_usage`"
 
 #: ../../source/examples/_basic_examples_options.rst:60
-msgid ""
-":meth:`~.Cmpt_Points.arrange_in_grid` "
-":meth:`~.Cmpt_Points.apply_complex_fn` "
-":meth:`~.Cmpt_Points.apply_point_fn`"
-msgstr ""
+msgid ":meth:`~.Cmpt_Points.arrange_in_grid` :meth:`~.Cmpt_Points.apply_complex_fn` :meth:`~.Cmpt_Points.apply_point_fn`"
+msgstr ":meth:`~.Cmpt_Points.arrange_in_grid` :meth:`~.Cmpt_Points.apply_complex_fn` :meth:`~.Cmpt_Points.apply_point_fn`"
 
 #: ../../source/examples/_basic_examples_options.rst:52
-msgid ""
-":class:`~.NumberPlane` :meth:`~.Axes.get_graph` "
-":meth:`~.Cmpt_Points.apply_matrix`"
-msgstr ""
+msgid ":class:`~.NumberPlane` :meth:`~.Axes.get_graph` :meth:`~.Cmpt_Points.apply_matrix`"
+msgstr ":class:`~.NumberPlane` :meth:`~.Axes.get_graph` :meth:`~.Cmpt_Points.apply_matrix`"
 
 #: ../../source/examples/_basic_examples_options.rst:66
 msgid ":class:`~.Brace` :class:`~.DataUpdater` :class:`~.ItemUpdater`"
-msgstr ""
+msgstr ":class:`~.Brace` :class:`~.DataUpdater` :class:`~.ItemUpdater`"
 
 #: ../../source/examples/_basic_examples_options.rst:52
-msgid ""
-":class:`~.Dot` :class:`~.Arrow` :meth:`~.Item.update` "
-":class:`~.GroupUpdater`"
-msgstr ""
+msgid ":class:`~.Dot` :class:`~.Arrow` :meth:`~.Item.update` :class:`~.GroupUpdater`"
+msgstr ":class:`~.Dot` :class:`~.Arrow` :meth:`~.Item.update` :class:`~.GroupUpdater`"
 
 #: ../../source/examples/_basic_examples_options.rst:68
 msgid ":meth:`~.Item.anim` :meth:`~.Item.update` :class:`~.DataUpdater`"
-msgstr ""
+msgstr ":meth:`~.Item.anim` :meth:`~.Item.update` :class:`~.DataUpdater`"
 
 #: ../../source/examples/_basic_examples_options.rst:56
-msgid ""
-":class:`~.Sector` :func:`~.rotate_vector` :class:`~.GroupUpdater` "
-":class:`~.DataUpdater`"
-msgstr ""
+msgid ":class:`~.Sector` :func:`~.rotate_vector` :class:`~.GroupUpdater` :class:`~.DataUpdater`"
+msgstr ":class:`~.Sector` :func:`~.rotate_vector` :class:`~.GroupUpdater` :class:`~.DataUpdater`"
 
 #: ../../source/examples/_basic_examples_options.rst:67
 msgid ":class:`~.MarkedItem` :class:`~.DataUpdater`"
-msgstr ""
+msgstr ":class:`~.MarkedItem` :class:`~.DataUpdater`"
 
 #: ../../source/examples/_basic_examples_options.rst:79
 msgid ":class:`~.SimpleFrameEffect` :class:`~.Rotate` :class:`~.DataUpdater`"
-msgstr ""
-
+msgstr ":class:`~.SimpleFrameEffect` :class:`~.Rotate` :class:`~.DataUpdater`"

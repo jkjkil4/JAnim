@@ -21,21 +21,21 @@ msgstr ""
 
 #: ../../source/examples/auto_examples.rst:2
 msgid "自动化解析与生成"
-msgstr ""
+msgstr "Automated Parsing and Generation"
 
 #: ../../source/examples/auto_examples.rst:6
 msgid "欢迎联系我们将你使用 JAnim 创作的作品添加到该页面中"
-msgstr ""
+msgstr "Welcome to contact us to add your JAnim creations to this page"
 
 #: ../../source/examples/auto_examples.rst:8
 msgid "QQ 群：970174336"
-msgstr ""
+msgstr "QQ Group: 970174336"
 
 #: ../../source/examples/auto_examples.rst:10
 msgid "Email：1173374788@qq.com"
-msgstr ""
+msgstr "Email: 1173374788@qq.com"
 
 #: ../../source/examples/_auto_examples_options.rst:27
 msgid "画面以及音频可视化"
-msgstr ""
+msgstr "Visualization of frames and audio"
 

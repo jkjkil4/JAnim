@@ -21,17 +21,17 @@ msgstr ""
 
 #: ../../source/janim/items/value_tracker.rst:2
 msgid "value_tracker"
-msgstr ""
+msgstr "value_tracker"
 
 #: janim.items.value_tracker.ValueTracker:1 of
 msgid "记录一个数值数据（传入的数据作为初始值），可以进行动画插值"
-msgstr ""
+msgstr "Records a numerical value (the passed data as the initial value), can perform animation interpolation"
 
 #: janim.items.value_tracker.ValueTracker:3 of
 msgid "例如："
-msgstr ""
+msgstr "For example:"
 
 #: janim.items.value_tracker.ValueTracker:14 of
 msgid "可以使用 :meth:`~.Cmpt_Data.set_func` 自定义插值以及其它的行为"
-msgstr ""
+msgstr "You can use :meth:`~.Cmpt_Data.set_func` to customize interpolation and other behaviors"
 

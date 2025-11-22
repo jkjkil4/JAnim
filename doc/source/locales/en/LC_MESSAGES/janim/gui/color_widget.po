@@ -1,4 +1,4 @@
-# SOME DESCRIPTIVE TITLE.
+﻿# SOME DESCRIPTIVE TITLE.
 # Copyright (C) 2023, jkjkil4
 # This file is distributed under the same license as the JAnim package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
@@ -21,13 +21,15 @@ msgstr ""
 
 #: ../../source/janim/gui/color_widget.rst:2
 msgid "color_widget"
-msgstr ""
+msgstr "color_widget"
 
 #: janim.gui.color_widget.ColorWidget:1 of
 msgid "基类：:py:class:`~PySide6.QtWidgets.QWidget`"
-msgstr ""
+msgstr "基类：:py:class:`~PySide6.QtWidgets.QWidget`"
 
 #: janim.gui.color_widget.ColorWidget.EditSource:1 of
 msgid "基类：:py:class:`~enum.Enum`"
-msgstr ""
+msgstr "基类：:py:class:`~enum.Enum`"
+
+
 

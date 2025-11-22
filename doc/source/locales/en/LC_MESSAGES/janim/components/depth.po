@@ -21,67 +21,69 @@ msgstr ""
 
 #: ../../source/janim/components/depth.rst:2
 msgid "depth"
-msgstr ""
+msgstr "depth"
 
 #: janim.components.depth.Cmpt_Depth:1 of
 msgid ""
 "基类：:py:class:`~janim.components.component.Component`, "
 ":py:class:`~typing.Generic`"
 msgstr ""
+"Base class: :py:class:`~janim.components.component.Component`, "
+":py:class:`~typing.Generic`"
 
 #: janim.components.depth.Cmpt_Depth:1 of
 msgid "深度组件"
-msgstr ""
+msgstr "Depth component"
 
 #: janim.components.depth.Cmpt_Depth:3 of
 msgid "如果某个对象的深度值更小，那么它在 ``>`` 和 ``<`` 的判断中也就更小"
-msgstr ""
+msgstr "If an object has a smaller depth value, it is also smaller in ``>`` and ``<`` comparisons"
 
 #: janim.components.depth.Cmpt_Depth:4 of
 msgid "如果两个对象的深度值相同，那么后创建的对象在 ``>`` 和 ``<`` 的判断中更小"
-msgstr ""
+msgstr "If two objects have the same depth value, the later created object is smaller in ``>`` and ``<`` comparisons"
 
 #: janim.components.depth.Cmpt_Depth:6 of
 msgid "被用于绘制时，也就是说："
-msgstr ""
+msgstr "When used for rendering, that is:"
 
 #: janim.components.depth.Cmpt_Depth:8 of
 msgid "深度大的会被深度小的遮盖"
-msgstr ""
+msgstr "Objects with larger depth will be covered by objects with smaller depth"
 
 #: janim.components.depth.Cmpt_Depth:9 of
 msgid "深度一样时，先创建的会被后创建的遮盖"
-msgstr ""
+msgstr "When depths are the same, earlier created objects will be covered by later created ones"
 
 #: janim.components.depth.Cmpt_Depth:11 of
 msgid "例："
-msgstr ""
+msgstr "Example:"
 
 #: janim.components.depth.Cmpt_Depth:23 of
 msgid "上面这个例子的绘制顺序（从最早被绘制的到最迟被绘制的）："
-msgstr ""
+msgstr "Rendering order for the above example (from earliest to latest rendered):"
 
 #: janim.components.depth.Cmpt_Depth:25 of
-msgid "d2、d3、d1"
-msgstr ""
+msgid "``d2``, ``d3``, ``d1``"
+msgstr "``d2``, ``d3``, ``d1``"
 
 #: janim.components.depth.Cmpt_Depth:27 of
-msgid "也就是 d3 会盖住 d2；d1 会盖住 d2 和 d3"
-msgstr ""
+msgid "也就是 ``d3`` 会盖住 ``d2``； ``d1`` 会盖住 ``d2`` 和 ``d3``"
+msgstr "That is, ``d3`` will cover ``d2``; ``d1`` will cover both ``d2`` and ``d3``"
 
 #: janim.components.depth.Cmpt_Depth.set:1 of
 msgid "设置物件的深度"
-msgstr ""
+msgstr "Set the depth of the item"
 
 #: janim.components.depth.Cmpt_Depth.get_raw:1 of
 msgid "返回元组 ``(depth, order)``"
-msgstr ""
+msgstr "Return tuple ``(depth, order)``"
 
 #: janim.components.depth.Cmpt_Depth.get_raw:3 of
 msgid "在一些特殊情况下，``order`` 可能是浮点数"
-msgstr ""
+msgstr "In some special cases, ``order`` may be a floating-point number"
 
 #: janim.components.depth.Cmpt_Depth.arrange:1 of
-msgid "将子物件排序深度"
-msgstr ""
+msgid "将后代物件排序深度"
+msgstr "Sort descendant items by depth"
 

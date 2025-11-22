@@ -1,4 +1,4 @@
-# SOME DESCRIPTIVE TITLE.
+﻿# SOME DESCRIPTIVE TITLE.
 # Copyright (C) 2023, jkjkil4
 # This file is distributed under the same license as the JAnim package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2024.
@@ -21,57 +21,70 @@ msgstr ""
 
 #: ../../source/janim/render/writer.rst:2
 msgid "writer"
-msgstr ""
+msgstr "writer"
 
 #: janim.render.writer.AudioWriter:1 janim.render.writer.SRTWriter:1
 #: janim.render.writer.VideoWriter:1 of
 msgid "基类：:py:class:`object`"
-msgstr ""
+msgstr "基类：:py:class:`object`"
 
 #: janim.render.writer.VideoWriter:1 of
 msgid "将时间轴动画生成视频输出到文件中"
-msgstr ""
+msgstr "Generate video from timeline animation and output to file"
 
 #: janim.render.writer.VideoWriter:3 of
 msgid "可以直接调用 ``VideoWriter.writes(MyTimeline().build())`` 进行输出"
 msgstr ""
+"You can directly call ``VideoWriter.writes(MyTimeline().build())`` to "
+"output"
 
 #: janim.render.writer.VideoWriter:5 of
 msgid "主要流程在 :meth:`write_all` 中："
-msgstr ""
+msgstr "The main process is in :meth:`write_all`:"
 
 #: janim.render.writer.VideoWriter:7 of
-msgid "首先调用 ffmpeg，这里用它生成视频（先输出到 _temp 文件中）"
+msgid "首先调用 ffmpeg，这里用它生成视频（先输出到 ``_temp`` 文件中）"
 msgstr ""
+"First call ffmpeg, which is used here to generate video (initially output "
+"to ``_temp`` file)"
 
 #: janim.render.writer.VideoWriter:8 of
 msgid "然后遍历动画的每一帧，进行渲染，并将像素数据传递给 ffmpeg"
 msgstr ""
+"Then iterate through each frame of the animation, render it, and pass the "
+"pixel data to ffmpeg"
 
 #: janim.render.writer.VideoWriter:9 of
-msgid "最后结束 ffmpeg 的调用，完成 _temp 文件的输出"
-msgstr ""
+msgid "最后结束 ffmpeg 的调用，完成 ``_temp`` 文件的输出"
+msgstr "Finally end the ffmpeg call and complete the output of the ``_temp`` file"
 
 #: janim.render.writer.VideoWriter:10 of
-msgid "将 _temp 文件改名，删去 \"_temp\" 后缀，完成视频输出"
+msgid "将 ``_temp`` 文件改名，删去 ``_temp`` 后缀，完成视频输出"
 msgstr ""
+"Rename the ``_temp`` file, remove the ``_temp`` suffix, and complete video "
+"output"
 
 #: janim.render.writer.VideoWriter.write_all:1 of
 msgid "将时间轴动画输出到文件中"
-msgstr ""
+msgstr "Output timeline animation to file"
 
 #: janim.render.writer.VideoWriter.write_all:3 of
 msgid "指定 ``quiet=True``，则不会输出前后的提示信息，但仍有进度条"
 msgstr ""
+"If ``quiet=True`` is specified, prompt messages before and after will not "
+"be output, but the progress bar will still be shown"
 
 #: janim.render.writer.VideoWriter.find_encoder:1 of
 msgid "查找编码器，若 ``hwaccel=True`` 则优先使用硬件编码器"
 msgstr ""
+"Find encoder, if ``hwaccel=True``, prioritize using hardware encoder"
 
 #: janim.render.writer.SRTWriter.t_to_srt_time:1 of
 msgid "将秒数转换为 SRT 时间格式：HH:MM:SS,mmm"
-msgstr ""
+msgstr "Convert seconds to SRT time format: HH:MM:SS,mmm"
 
 #~ msgid "查找编码器，优先使用硬件编码器"
 #~ msgstr ""
+
+
 

@@ -21,9 +21,9 @@ msgstr ""
 
 #: ../../source/examples/_slide_examples_options.rst:9
 msgid "嗯，这个本身就是用 JAnim 制作的"
-msgstr ""
+msgstr "Well, this itself is made with JAnim"
 
 #: ../../source/examples/_slide_examples_options.rst:80
 msgid "动画效果使用 JAnim 制作，“信息量”可视化结果是插入的现成图片"
-msgstr ""
+msgstr "Animation effects are made with JAnim, the \"information quantity\" visualization result is an inserted ready-made image"
 

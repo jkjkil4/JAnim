@@ -1,4 +1,4 @@
-# SOME DESCRIPTIVE TITLE.
+﻿# SOME DESCRIPTIVE TITLE.
 # Copyright (C) 2023, jkjkil4
 # This file is distributed under the same license as the JAnim package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
@@ -21,57 +21,70 @@ msgstr ""
 
 #: ../../source/janim/anims/anim_stack.rst:2
 msgid "anim_stack"
-msgstr ""
+msgstr "anim_stack"
 
 #: janim.anims.anim_stack.AnimStack:1 of
 msgid "基类：:py:class:`object`"
-msgstr ""
+msgstr "基类：:py:class:`object`"
 
 #: janim.anims.anim_stack.AnimStack:1 of
 msgid "用于在 :class:`~.Timeline` 中记录作用于 :class:`~.Item` 上的 :class:`~.Animation`"
-msgstr ""
+msgstr "Used to record :class:`~.Animation` objects acting on :class:`~.Item` in :class:`~.Timeline`"
 
 #: janim.anims.anim_stack.AnimStack.detect_change:1 of
 msgid "检查物件相比 ``self.prev_display`` 所记录的物件而言是否发生变化"
-msgstr ""
+msgstr "Check if the item has changed compared to the item recorded in ``self.prev_display``"
 
 #: janim.anims.anim_stack.AnimStack.detect_change:3 of
 msgid "若有变化则记录为 :class:`Display` 对象"
-msgstr ""
+msgstr "If there are changes, record them as a :class:`Display` object"
 
 #: janim.anims.anim_stack.AnimStack.append:1 of
 msgid "向 :class:`AnimStack` 添加 :class:`~.Animation` 对象"
-msgstr ""
+msgstr "Add an :class:`~.Animation` object to :class:`AnimStack`"
 
 #: janim.anims.anim_stack.AnimStack.compute:1 of
 msgid "得到指定时间 ``as_time`` 的物件，考虑了动画的作用"
-msgstr ""
+msgstr "Get the item at the specified time ``as_time``, taking into account the effects of animations"
 
 #: janim.anims.anim_stack.AnimStack.compute:3 of
 msgid "``readonly`` 用来表示调用方是否会对返回值进行修改"
-msgstr ""
+msgstr "``readonly`` indicates whether the caller will modify the return value"
 
 #: janim.anims.anim_stack.AnimStack.compute:5 of
 msgid ""
 "如果 ``readonly=True`` 则表示不会进行修改，该方法会放心地直接返回缓存 （但是这并没有强制约束性，传入 "
 "``readonly=True`` 时请遵循不修改返回值的原则，以免影响缓存数据）"
 msgstr ""
+"If ``readonly=True``, it means no modification will be made, and the method "
+"will safely return the cache directly (but this is not a hard constraint; "
+"when passing ``readonly=True``, please follow the principle of not modifying "
+"the return value to avoid affecting cached data)"
 
 #: janim.anims.anim_stack.AnimStack.compute:8 of
 msgid "如果 ``readonly=False`` 则表示会进行修改，此时会返回缓存的拷贝，避免影响缓存数据"
 msgstr ""
+"If ``readonly=False``, it means modification will be made, and a copy of "
+"the cache will be returned to avoid affecting cached data"
 
 #: janim.anims.anim_stack.AnimStack.compute:10 of
 msgid "例如："
-msgstr ""
+msgstr "For example:"
 
 #: janim.anims.anim_stack.AnimStack.compute:12 of
 msgid ""
 ":meth:`~.Timeline.item_current` 中的调用是 ``readonly=False`` 的， 因为 "
 ":meth:`~.Timeline.item_current` 的返回值最终会被用户使用，我们不能保证用户是否会修改，所以我们干脆假定用户会修改"
 msgstr ""
+"The call in :meth:`~.Timeline.item_current` is ``readonly=False`` because "
+"the return value of :meth:`~.Timeline.item_current` will eventually be used "
+"by the user, and we cannot guarantee whether the user will modify it, so we "
+"simply assume the user will modify it"
 
 #: janim.anims.anim_stack.AnimStack.compute:15 of
 msgid "例如用于绘制时的调用时 ``readonly=True``，因为绘制时不会对物件数据产生影响"
 msgstr ""
+"For example, when used for rendering, the call is ``readonly=True`` because "
+"rendering does not affect item data"
+
 

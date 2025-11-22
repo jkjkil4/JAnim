@@ -1,4 +1,4 @@
-# SOME DESCRIPTIVE TITLE.
+﻿# SOME DESCRIPTIVE TITLE.
 # Copyright (C) 2023, jkjkil4
 # This file is distributed under the same license as the JAnim package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2024.
@@ -21,204 +21,242 @@ msgstr ""
 
 #: ../../source/janim/items/image_item.rst:2
 msgid "image_item"
-msgstr ""
+msgstr "image_item"
 
 #: janim.items.image_item.ImageItem:1 of
 msgid "基类：:py:class:`~janim.items.points.Points`"
-msgstr ""
+msgstr "基类：:py:class:`~janim.items.points.Points`"
 
 #: janim.items.image_item.ImageItem:1 janim.items.image_item.PixelImageItem:1
 #: of
 msgid "图像物件"
-msgstr ""
+msgstr "Image item"
 
 #: janim.items.image_item.ImageItem:3 of
 msgid "会读取给定的文件路径的图像"
-msgstr ""
+msgstr "Reads the image from the given file path"
 
 #: janim.items.image_item.ImageItem.apply_style:1
 #: janim.items.image_item.Video.apply_style:1 of
 msgid "设置物件自身的样式，不影响子物件"
-msgstr ""
+msgstr "Set the item's own style, does not affect child items"
 
 #: janim.items.image_item.ImageItem.apply_style:3
 #: janim.items.image_item.Video.apply_style:3 of
 msgid "另见：:meth:`set`"
-msgstr ""
+msgstr "See also: :meth:`set`"
 
 #: janim.items.image_item.ImageItem.get_orig:1 of
 msgid "图像的左上角"
-msgstr ""
+msgstr "Top-left corner of the image"
 
 #: janim.items.image_item.ImageItem.get_horizontal_vect:1 of
 msgid "从图像的左上角指向右上角的向量"
-msgstr ""
+msgstr "Vector from the top-left corner to the top-right corner of the image"
 
 #: janim.items.image_item.ImageItem.get_horizontal_dist:1
 #: janim.items.image_item.Video.get_horizontal_dist:1 of
 msgid ":meth:`get_horizontal_vect` 的长度"
-msgstr ""
+msgstr "Length of :meth:`get_horizontal_vect`"
 
 #: janim.items.image_item.ImageItem.get_vertical_vect:1 of
 msgid "从图像的左上角指向左下角的向量"
-msgstr ""
+msgstr "Vector from the top-left corner to the bottom-left corner of the image"
 
 #: janim.items.image_item.ImageItem.get_vertical_dist:1
 #: janim.items.image_item.Video.get_vertical_dist:1 of
 msgid ":meth:`get_vertical_vect` 的长度"
-msgstr ""
+msgstr "Length of :meth:`get_vertical_vect`"
 
 #: janim.items.image_item.ImageItem.pixel_to_rgba:1 of
 msgid "根据像素坐标得到颜色"
-msgstr ""
+msgstr "Get color based on pixel coordinates"
 
 #: janim.items.image_item.ImageItem.point_to_rgba:1 of
 msgid "通过空间坐标获得对应的像素颜色"
-msgstr ""
+msgstr "Get the corresponding pixel color through spatial coordinates"
 
 #: janim.items.image_item.ImageItem.pixel_to_point:1
 #: janim.items.image_item.Video.pixel_to_point:1 of
 msgid "通过像素坐标获得对应的空间坐标，可以传入浮点值"
 msgstr ""
+"Get the corresponding spatial coordinates through pixel coordinates, can pass "
+"floating-point values"
 
 #: janim.items.image_item.ImageItem.pixel_to_point:3
 #: janim.items.image_item.Video.pixel_to_point:3 of
 msgid "例如 ``.pixel_to_point(0, 0)`` 会返回原点位置（图片的左上角）"
 msgstr ""
+"For example, ``.pixel_to_point(0, 0)`` returns the origin position (top-left "
+"corner of the image)"
 
 #: janim.items.image_item.ImageItem.pixel_to_point:4
 #: janim.items.image_item.Video.pixel_to_point:4 of
 msgid "例如 ``.pixel_to_point(6, 11)`` 会返回 ``(6, 11)`` 像素的左上角"
 msgstr ""
+"For example, ``.pixel_to_point(6, 11)`` returns the top-left corner of pixel "
+"``(6, 11)``"
 
 #: janim.items.image_item.ImageItem.pixel_to_point:5
 #: janim.items.image_item.Video.pixel_to_point:5 of
 msgid "例如 ``.pixel_to_point(6.5, 11.5)`` 会返回 ``(6, 11)`` 像素的中心"
 msgstr ""
+"For example, ``.pixel_to_point(6.5, 11.5)`` returns the center of pixel "
+"``(6, 11)``"
 
 #: janim.items.image_item.ImageItem.point_to_pixel:1 of
 msgid "根据空间坐标得到像素坐标（向图像原点取整）"
 msgstr ""
+"Get pixel coordinates based on spatial coordinates (rounded toward the image "
+"origin)"
 
 #: janim.items.image_item.ImageItem.align_for_interpolate:1
 #: janim.items.image_item.Video.align_for_interpolate:1 of
 msgid "进行数据对齐，以便插值"
-msgstr ""
+msgstr "Perform data alignment for interpolation"
 
 #: janim.items.image_item.PixelImageItem:1 janim.items.image_item.VideoFrame:1
 #: of
 msgid "基类：:py:class:`~janim.items.image_item.ImageItem`"
-msgstr ""
+msgstr "基类：:py:class:`~janim.items.image_item.ImageItem`"
 
 #: janim.items.image_item.PixelImageItem:3 of
 msgid "与 :class:`ImageItem` 基本一致，只是在图像被放大显示时不进行平滑插值处理，使得像素清晰"
 msgstr ""
+"Basically the same as :class:`ImageItem`, except that when the image is "
+"enlarged for display, no smooth interpolation is performed, making pixels "
+"clear"
 
 #: janim.items.image_item.VideoFrame:1 of
 msgid "视频帧，用于提取视频在指定时间处的一帧图像"
 msgstr ""
+"Video frame, used to extract a single frame image from the video at a "
+"specified time"
 
 #: janim.items.image_item.VideoFrame:3 of
 msgid "``file_path``: 文件路径"
-msgstr ""
+msgstr "``file_path``: File path"
 
 #: janim.items.image_item.VideoFrame:4 of
 msgid "``frame_at``: 位于哪一帧，可以使用秒数或者 ffmpeg 支持的时间定位方式，例如 ``17.4``、``'00:01:12'`` 等"
 msgstr ""
+"``frame_at``: Which frame to extract, can use seconds or ffmpeg-supported "
+"time formats, e.g., ``17.4``, ``'00:01:12'``, etc."
 
 #: janim.items.image_item.VideoFrame:6 of
 msgid "不建议使用该类将视频提取为多帧以达到“读取视频”的目的，因为这会导致巨大的性能浪费以及内存占用"
 msgstr ""
+"It is not recommended to use this class to extract multiple frames from a "
+"video for the purpose of “reading video”, as this will cause significant "
+"performance waste and memory usage"
 
 #: janim.items.image_item.VideoFrame:8 of
 msgid "播放视频请使用 :class:`Video`"
-msgstr ""
+msgstr "For playing video, use :class:`Video`"
 
 #: janim.items.image_item.Video:1 of
 msgid ""
 "基类：:py:class:`~janim.anims.timeline.PlaybackControl`, "
 ":py:class:`~janim.items.points.Points`"
 msgstr ""
+"Base class: :py:class:`~janim.anims.timeline.PlaybackControl`, "
+":py:class:`~janim.items.points.Points`"
 
 #: janim.items.image_item.Video:1 of
 msgid "视频物件，和图像物件类似，其实本质上是一个内容实时变化的图像"
 msgstr ""
+"Video item, similar to image items, essentially an image with real-time "
+"changing content"
 
 #: janim.items.image_item.Video:3 of
 msgid "控制视频播放的方法："
-msgstr ""
+msgstr "Methods for controlling video playback:"
 
 #: janim.items.image_item.Video:5 of
 msgid "和其它物件一样，使用 :meth:`~.Item.show` 进行显示，默认暂停在第一帧"
 msgstr ""
+"Like other items, use :meth:`~.Item.show` to display, paused on the first "
+"frame by default"
 
 #: janim.items.image_item.Video:6 of
 msgid "调用 ``start`` 表示从当前位置开始播放，可以传入 ``speed`` 参数指定倍速"
 msgstr ""
+"Call ``start`` to begin playback from the current position, can pass a "
+"``speed`` parameter to specify playback speed"
 
 #: janim.items.image_item.Video:7 of
 msgid "调用 ``stop`` 表示停止在当前位置"
-msgstr ""
+msgstr "Call ``stop`` to pause at the current position"
 
 #: janim.items.image_item.Video:8 of
 msgid "调用 ``seek`` 表示跳转视频进度到指定秒数"
-msgstr ""
+msgstr "Call ``seek`` to jump the video progress to a specified number of seconds"
 
 #: janim.items.image_item.Video:10 of
 msgid "传入参数："
-msgstr ""
+msgstr "Parameters:"
 
 #: janim.items.image_item.Video:12 of
 msgid "使用 ``loop`` 可控制是否循环播放"
-msgstr ""
+msgstr "Use ``loop`` to control whether to loop playback"
 
 #: janim.items.image_item.Video:13 of
 msgid "如果需要插入带透明通道的视频（如 ``.mov`` 视频），需要设置 ``frame_components=4``"
 msgstr ""
+"If you need to insert videos with alpha channel (such as ``.mov`` videos), "
+"you need to set ``frame_components=4``"
 
 #: janim.items.image_item.Video:15 of
-msgid "注意：在默认情况下未开始播放，需要使用 ``start`` 以开始播放"
+msgid "在默认情况下未开始播放，需要使用 ``start`` 以开始播放"
 msgstr ""
+"By default, playback has not started, you need to use ``start`` to "
+"begin playback"
 
 #: janim.items.image_item.Video:17 of
-msgid "注：可以使用 `.info` 获取视频如时长等额外信息"
+msgid "可以使用 ``.info`` 获取视频如时长等额外信息"
 msgstr ""
+"You can use ``.info`` to get additional information about the video, "
+"such as duration"
 
 #: janim.items.image_item.Video:19 of
 msgid "例："
-msgstr ""
+msgstr "Example:"
 
 #: janim.items.image_item.Video:35 of
 msgid "表示：先播放 1s，然后以 0.5 倍速播放 1s，然后画面静止"
 msgstr ""
+"Means: play for 1s first, then play at 0.5x speed for 1s, then the frame "
+"stays still"
 
 #: janim.items.image_item.Video.get_orig:1 of
 msgid "视频的左上角"
-msgstr ""
+msgstr "Top-left corner of the video"
 
 #: janim.items.image_item.Video.get_horizontal_vect:1 of
 msgid "从视频的左上角指向右上角的向量"
-msgstr ""
+msgstr "Vector from the top-left corner to the top-right corner of the video"
 
 #: janim.items.image_item.Video.get_vertical_vect:1 of
 msgid "从视频的左上角指向左下角的向量"
-msgstr ""
+msgstr "Vector from the top-left corner to the bottom-left corner of the video"
 
 #: janim.items.image_item.VideoInfo:1 of
 msgid "基类：:py:class:`object`"
-msgstr ""
+msgstr "基类：:py:class:`object`"
 
 #: janim.items.image_item.PixelVideo:1 of
 msgid "基类：:py:class:`~janim.items.image_item.Video`"
-msgstr ""
+msgstr "基类：:py:class:`~janim.items.image_item.Video`"
 
 #: janim.items.image_item.PixelVideo:1 of
 msgid "视频物件"
-msgstr ""
+msgstr "Video item"
 
 #: janim.items.image_item.PixelVideo:3 of
 msgid "与 :class:`Video` 基本一致，只是在被放大显示时不进行平滑插值处理，使得像素清晰"
 msgstr ""
+"Basically the same as :class:`Video`, except that when enlarged for display, "
+"no smooth interpolation is performed, making pixels clear"
 
 #~ msgid "基类：:py:class:`~janim.items.item.Item.Data`\\ [:py:class:`ImageItem`]"
 #~ msgstr ""
@@ -231,4 +269,6 @@ msgstr ""
 
 #~ msgid "调用 :meth:`seek` 表示跳转视频进度到指定秒数"
 #~ msgstr ""
+
+
 

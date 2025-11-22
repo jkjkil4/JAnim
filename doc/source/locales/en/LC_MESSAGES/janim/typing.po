@@ -6,18 +6,19 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version:  JAnim\n"
+"Project-Id-Version: JAnim\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-03-14 14:52+0800\n"
-"PO-Revision-Date: 2024-01-19 19:53+0800\n"
+"PO-Revision-Date: 2025-11-21 17:35+0800\n"
 "Last-Translator: \n"
-"Language: en\n"
 "Language-Team: en <LL@li.org>\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Language: en\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "Generated-By: Babel 2.14.0\n"
+"X-Generator: Poedit 3.8\n"
 
 #: ../../source/janim/typing.rst:2
 msgid "typing"
@@ -28,7 +29,5 @@ msgid "基类：:py:class:`~typing.Protocol`, :py:class:`~typing.Generic`"
 msgstr "基类：:py:class:`~typing.Protocol`, :py:class:`~typing.Generic`"
 
 #: janim.typing.SupportsApartAlpha:1 of
-#, fuzzy
 msgid "基类：:py:class:`~typing.Protocol`"
-msgstr "基类：:py:class:`~typing.Protocol`, :py:class:`~typing.Generic`"
-
+msgstr "基类：:py:class:`~typing.Protocol`"

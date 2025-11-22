@@ -54,7 +54,7 @@ class MarkedItem(Points):
                 self.mark.set_points([RIGHT * side_length / 4])
 
     这段代码的 ``self.mark.set_points([RIGHT * side_length / 4])`` 设置了在 x 轴方向上 75% 处的一个标记点，
-    这个标记点会自动跟踪物件的坐标变换，具体参考 :ref:`样例学习 <basic_examples>` 中的对应代码
+    这个标记点会自动跟踪物件的坐标变换，具体参考 :ref:`基本样例 <basic_examples>` 中的对应代码
     '''
 
     mark = CmptInfo(Cmpt_Mark[Self])

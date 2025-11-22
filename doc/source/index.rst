@@ -34,7 +34,7 @@ JAnim 是一个用于创建流畅动画的库，以程序化动画为核心理�
 
          .. include:: examples/_auto_examples_options.rst
 
-   .. translatable-tab:: 视频注解
+   .. translatable-tab:: 视频叠加动画
 
       .. random-choice::
          :start-text: 🎲 点击“随机切换”显示一个样例

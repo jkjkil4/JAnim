@@ -21,11 +21,11 @@ msgstr ""
 
 #: ../../source/tutorials/essence_of_points.rst:2
 msgid "points 的本质  (TODO)"
-msgstr ""
+msgstr "The Essence of points (TODO)"
 
 #: ../../source/tutorials/essence_of_points.rst:6
 msgid "文档有待完善"
-msgstr ""
+msgstr "Documentation needs to be improved"
 
 #~ msgid "points 的本质"
 #~ msgstr ""

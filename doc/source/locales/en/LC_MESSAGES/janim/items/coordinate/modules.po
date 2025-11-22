@@ -21,5 +21,5 @@ msgstr ""
 
 #: ../../source/janim/items/coordinate/modules.rst:2
 msgid "coordinate"
-msgstr ""
+msgstr "coordinate"
 

@@ -179,7 +179,7 @@
 
         使用 ``brew --prefix portaudio`` 命令查看 portaudio 的安装路径，记下这个路径，后面会用到。（例：在笔者设备上查看的结果是 ``/opt/homebrew/opt/portaudio``）
 
-        在用户主目录（``/Users/你的用户名/`` 或者等价的 ``~``）下创建 .pydistutils.cfg 配置文件，根据我们刚刚记下的路径，添加 include 路径和 lib 路径并保存，例如在笔者设备上创建的文件内容如下图红框所示：
+        在用户主目录（``/Users/你的用户名/`` 或者等价的 ``~``）下创建 ``.pydistutils.cfg`` 配置文件，根据我们刚刚记下的路径，添加 include 路径和 lib 路径并保存，例如在笔者设备上创建的文件内容如下图红框所示：
 
         .. image:: /_static/images/portaudio_pydist.png
             :align: center

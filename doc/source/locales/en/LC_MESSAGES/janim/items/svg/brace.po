@@ -21,51 +21,51 @@ msgstr ""
 
 #: ../../source/janim/items/svg/brace.rst:2
 msgid "brace"
-msgstr ""
+msgstr "brace"
 
 #: janim.items.svg.brace.Cmpt_VPoints_BraceImpl:1 of
 msgid "在 :class:`Brace` 中对 :class:`Cmpt_VPoints` 的进一步实现"
-msgstr ""
+msgstr "Further implementation of :class:`Cmpt_VPoints` in :class:`Brace`"
 
 #: janim.items.svg.brace.Cmpt_VPoints_BraceImpl.match:1 of
 msgid "将花括号进行伸缩，使得与 ``item`` 在 ``direction`` 方向的宽度匹配"
-msgstr ""
+msgstr "Stretch the brace so that it matches the width of ``item`` in the ``direction`` direction"
 
 #: janim.items.svg.brace.Cmpt_VPoints_BraceImpl.tip_point:1 of
 msgid "得到花括号中间凸出处的坐标"
-msgstr ""
+msgstr "Get the coordinates of the protrusion in the middle of the brace"
 
 #: janim.items.svg.brace.Cmpt_VPoints_BraceImpl.brace_left:1 of
 msgid "得到括号指向方向左边的尖端处的坐标"
-msgstr ""
+msgstr "Get the coordinates of the tip on the left side of the brace's pointing direction"
 
 #: janim.items.svg.brace.Cmpt_VPoints_BraceImpl.brace_right:1 of
 msgid "得到括号指向方向右边的尖端处的坐标"
-msgstr ""
+msgstr "Get the coordinates of the tip on the right side of the brace's pointing direction"
 
 #: janim.items.svg.brace.Cmpt_VPoints_BraceImpl.direction:1 of
 msgid "得到括号指向的方向"
-msgstr ""
+msgstr "Get the direction the brace points to"
 
 #: janim.items.svg.brace.Cmpt_VPoints_BraceImpl.put_at_tip:1 of
 msgid "将物件放置在花括号中间的凸出处"
-msgstr ""
+msgstr "Place the item at the protrusion in the middle of the brace"
 
 #: janim.items.svg.brace.Cmpt_VPoints_BraceImpl.create_text:1 of
 msgid "创建一个位于花括号中间凸出处的文字"
-msgstr ""
+msgstr "Create text located at the protrusion in the middle of the brace"
 
 #: janim.items.svg.brace.Cmpt_VPoints_BraceImpl.create_typst:1 of
 msgid "创建一个位于花括号中间凸出处的 Typst 公式"
-msgstr ""
+msgstr "Create a Typst formula located at the protrusion in the middle of the brace"
 
 #: janim.items.svg.brace.Brace:1 of
 msgid "花括号物件"
-msgstr ""
+msgstr "Brace item"
 
 #: janim.items.svg.brace.Brace:3 of
 msgid "会匹配物件在 ``direction`` 方向的宽度"
-msgstr ""
+msgstr "Will match the width of the item in the ``direction`` direction"
 
 #~ msgid "将花括号进行伸缩，使得与 ``item_or_data`` 在 ``direction`` 方向的宽度匹配"
 #~ msgstr ""

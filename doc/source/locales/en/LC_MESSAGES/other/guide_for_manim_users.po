@@ -165,7 +165,7 @@ msgstr "``AnimationGroup``"
 
 #: ../../source/other/guide_for_manim_users.rst:53
 msgid ":class:`~.AnimGroup`"
-msgstr ""
+msgstr ":class:`~.AnimGroup`"
 
 #: ../../source/other/guide_for_manim_users.rst:54
 msgid "效果上有一些差异"

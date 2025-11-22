@@ -1,4 +1,4 @@
-# SOME DESCRIPTIVE TITLE.
+﻿# SOME DESCRIPTIVE TITLE.
 # Copyright (C) 2023, jkjkil4
 # This file is distributed under the same license as the JAnim package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2024.
@@ -21,109 +21,113 @@ msgstr ""
 
 #: ../../source/janim/items/geometry/polygon.rst:2
 msgid "polygon"
-msgstr ""
+msgstr "polygon"
 
 #: janim.items.geometry.polygon.Polygon:1 of
 msgid "基类：:py:class:`~janim.items.vitem.VItem`"
-msgstr ""
+msgstr "基类：:py:class:`~janim.items.vitem.VItem`"
 
 #: janim.items.geometry.polygon.Polygon:1 of
 msgid "多边形"
-msgstr ""
+msgstr "Polygon"
 
 #: janim.items.geometry.polygon.Polygon:3 of
 msgid "传入顶点列表 ``verts`` 进行表示"
-msgstr ""
+msgstr "Pass a vertex list ``verts`` for representation"
 
 #: janim.items.geometry.polygon.Polyline:1 janim.items.geometry.polygon.Rect:1
 #: janim.items.geometry.polygon.Star:1 of
 msgid "基类：:py:class:`~janim.items.geometry.polygon.Polygon`"
-msgstr ""
+msgstr "基类：:py:class:`~janim.items.geometry.polygon.Polygon`"
 
 #: janim.items.geometry.polygon.Polyline:1 of
 msgid "多边形折线"
-msgstr ""
+msgstr "Polyline"
 
 #: janim.items.geometry.polygon.Polyline:3 of
 msgid "与 :class:`Polygon` 的区别是，不会自动将最后一个点与第一个点连接"
-msgstr ""
+msgstr "The difference from :class:`Polygon` is that it does not automatically connect the last point to the first point"
 
 #: janim.items.geometry.polygon.RegularPolygon:1 of
 msgid ""
 "基类：:py:class:`~janim.items.points.MarkedItem`, "
 ":py:class:`~janim.items.geometry.polygon.Polygon`"
 msgstr ""
+"Base class: :py:class:`~janim.items.points.MarkedItem`, "
+":py:class:`~janim.items.geometry.polygon.Polygon`"
 
 #: janim.items.geometry.polygon.RegularPolygon:1 of
 msgid "正多边形"
-msgstr ""
+msgstr "Regular polygon"
 
 #: janim.items.geometry.polygon.RegularPolygon:3 of
 msgid "传入数字 ``n`` 表示边数"
-msgstr ""
+msgstr "Pass a number ``n`` to represent the number of sides"
 
 #: janim.items.geometry.polygon.RegularPolygon:5 of
 msgid "可通过 ``.mark.get()`` 得到多边形的中心"
-msgstr ""
+msgstr "Can get the center of the polygon via ``.mark.get()``"
 
 #: janim.items.geometry.polygon.Triangle:1 of
 msgid "基类：:py:class:`~janim.items.geometry.polygon.RegularPolygon`"
-msgstr ""
+msgstr "基类：:py:class:`~janim.items.geometry.polygon.RegularPolygon`"
 
 #: janim.items.geometry.polygon.Triangle:1 of
 msgid "正三角形"
-msgstr ""
+msgstr "Equilateral triangle"
 
 #: janim.items.geometry.polygon.Rect:1 of
 msgid "矩形"
-msgstr ""
+msgstr "Rectangle"
 
 #: janim.items.geometry.polygon.Rect:3 of
 msgid "可以使用 ``Rect(4, 2)`` 的传入宽高的方式进行构建"
-msgstr ""
+msgstr "Can be constructed by passing width and height like ``Rect(4, 2)``"
 
 #: janim.items.geometry.polygon.Rect:4 of
 msgid "也可以使用 ``Rect(p1, p2)`` 的传入对角顶点的方式进行构建"
-msgstr ""
+msgstr "Can also be constructed by passing diagonal vertices like ``Rect(p1, p2)``"
 
 #: janim.items.geometry.polygon.RoundedRect:1
 #: janim.items.geometry.polygon.Square:1 of
 msgid "基类：:py:class:`~janim.items.geometry.polygon.Rect`"
-msgstr ""
+msgstr "基类：:py:class:`~janim.items.geometry.polygon.Rect`"
 
 #: janim.items.geometry.polygon.Square:1 of
 msgid "正方形"
-msgstr ""
+msgstr "Square"
 
 #: janim.items.geometry.polygon.Square:3 of
 msgid "``side_length`` 表示正方形边长"
-msgstr ""
+msgstr "``side_length`` represents the side length of the square"
 
 #: janim.items.geometry.polygon.RoundedRect:1 of
 msgid "圆角矩形"
-msgstr ""
+msgstr "Rounded rectangle"
 
 #: janim.items.geometry.polygon.Star:1 of
 msgid "星形"
-msgstr ""
+msgstr "Star"
 
 #: janim.items.geometry.polygon.Star:3 of
 msgid "``n`` 表示顶点数，默认为 5"
-msgstr ""
+msgstr "``n`` represents the number of vertices, default is 5"
 
 #: janim.items.geometry.polygon.Star:4 of
 msgid "``outer_radius`` 表示外半径"
-msgstr ""
+msgstr "``outer_radius`` represents the outer radius"
 
 #: janim.items.geometry.polygon.Star:5 of
 msgid "``inner_radius`` 表示内半径，默认为 ``None``，由 ``density`` 决定"
-msgstr ""
+msgstr "``inner_radius`` represents the inner radius, default is ``None``, determined by ``density``"
 
 #: janim.items.geometry.polygon.Star:6 of
 msgid "``density`` 表示密度，数值越高，内半径越小，取值范围 ``[1, n/2]``"
-msgstr ""
+msgstr "``density`` represents density, higher values mean smaller inner radius, value range is ``[1, n/2]``"
 
 #: janim.items.geometry.polygon.Star:7 of
 msgid "``start_angle`` 表示起始角度，即星形的旋转角度"
-msgstr ""
+msgstr "``start_angle`` represents the starting angle, i.e., the rotation angle of the star"
+
+
 

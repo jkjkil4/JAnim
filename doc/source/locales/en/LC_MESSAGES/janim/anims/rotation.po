@@ -1,4 +1,4 @@
-# SOME DESCRIPTIVE TITLE.
+﻿# SOME DESCRIPTIVE TITLE.
 # Copyright (C) 2023, jkjkil4
 # This file is distributed under the same license as the JAnim package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2024.
@@ -48,12 +48,14 @@ msgid "旋转，默认对角度进行平滑插值"
 msgstr "Rotation animation, default smooth interpolation for angles."
 
 #: janim.anims.rotation.Rotate:3 of
-msgid "参数和旋转基本一致"
-msgstr ""
+msgid "参数和 :meth:`~.Cmpt_Points.rotate` 基本一致"
+msgstr "Parameters are basically the same as :meth:`~.Cmpt_Points.rotate`"
 
 #: janim.anims.rotation.Rotate:4 of
 msgid "``absolute`` 参数是为了兼容摄像机物件，对于非摄像机物件该参数无效"
 msgstr ""
+"The ``absolute`` parameter is for compatibility with camera items; for "
+"non-camera items, this parameter has no effect"
 
 #: janim.anims.rotation.Rotating:1 of
 msgid "基类：:py:class:`~janim.anims.rotation.Rotate`"
@@ -62,4 +64,6 @@ msgstr "基类：:py:class:`~janim.anims.rotation.Rotate`"
 #: janim.anims.rotation.Rotating:1 of
 msgid "旋转，默认对角度进行线性插值"
 msgstr "Rotation animation, default linear interpolation for angles."
+
+
 

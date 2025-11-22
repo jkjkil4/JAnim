@@ -1,4 +1,4 @@
-# SOME DESCRIPTIVE TITLE.
+﻿# SOME DESCRIPTIVE TITLE.
 # Copyright (C) 2023, jkjkil4
 # This file is distributed under the same license as the JAnim package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2024.
@@ -89,4 +89,6 @@ msgstr "基类：:py:class:`~enum.IntFlag`"
 
 #~ msgid ":meth:`get_at_right` 的简写"
 #~ msgstr "Abbreviation for :meth:`get_at_right`."
+
+
 

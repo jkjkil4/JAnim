@@ -1,4 +1,4 @@
-# SOME DESCRIPTIVE TITLE.
+﻿# SOME DESCRIPTIVE TITLE.
 # Copyright (C) 2023, jkjkil4
 # This file is distributed under the same license as the JAnim package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2024.
@@ -21,39 +21,45 @@ msgstr ""
 
 #: ../../source/janim/camera/camera.rst:2
 msgid "camera"
-msgstr ""
+msgstr "camera"
 
 #: janim.camera.camera.Cmpt_CameraPoints:1 of
 msgid ""
 "基类：:py:class:`~janim.components.points.Cmpt_Points`, "
 ":py:class:`~typing.Generic`"
 msgstr ""
+"Base class: :py:class:`~janim.components.points.Cmpt_Points`, "
+":py:class:`~typing.Generic`"
 
 #: janim.camera.camera.Cmpt_CameraPoints.reset:1 of
 msgid "将摄像机几何属性设置为初始状态"
-msgstr ""
+msgstr "Reset camera geometric properties to initial state"
 
 #: janim.camera.camera.Cmpt_CameraPoints.scale:1 of
 msgid "将摄像机缩放指定倍数"
-msgstr ""
+msgstr "Scale the camera by a specified factor"
 
 #: janim.camera.camera.Cmpt_CameraPoints.rotate:1 of
 msgid "将摄像机绕 ``axis`` 轴进行旋转"
-msgstr ""
+msgstr "Rotate the camera around the ``axis``"
 
 #: janim.camera.camera.Cmpt_CameraPoints.rotate:3 of
 msgid "默认 ``absolute=True`` 表示绕全局坐标系旋转"
-msgstr ""
+msgstr "Default ``absolute=True`` means rotating around the global coordinate system"
 
 #: janim.camera.camera.Cmpt_CameraPoints.rotate:4 of
 msgid "``absolute=False`` 表示绕相机自身坐标系旋转，并且此时 ``about_point`` 参数无效"
 msgstr ""
+"``absolute=False`` means rotating around the camera's own coordinate system, "
+"and the ``about_point`` parameter is invalid in this case"
 
 #: janim.camera.camera.Cmpt_CameraPoints.info:1 of
 msgid "摄像机的几何属性"
-msgstr ""
+msgstr "Geometric properties of the camera"
 
 #: janim.camera.camera.Camera:1 of
 msgid "基类：:py:class:`~janim.items.points.Points`"
-msgstr ""
+msgstr "基类：:py:class:`~janim.items.points.Points`"
+
+
 

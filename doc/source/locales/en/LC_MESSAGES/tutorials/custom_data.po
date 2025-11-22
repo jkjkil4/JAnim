@@ -21,9 +21,9 @@ msgstr ""
 
 #: ../../source/tutorials/custom_data.rst:2
 msgid "自定义数据 (TODO)"
-msgstr ""
+msgstr "Custom Data (TODO)"
 
 #: ../../source/tutorials/custom_data.rst:6
 msgid "文档有待完善"
-msgstr ""
+msgstr "Documentation needs to be improved"
 

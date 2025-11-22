@@ -1,4 +1,4 @@
-# SOME DESCRIPTIVE TITLE.
+﻿# SOME DESCRIPTIVE TITLE.
 # Copyright (C) 2023, jkjkil4
 # This file is distributed under the same license as the JAnim package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2024.
@@ -21,21 +21,23 @@ msgstr ""
 
 #: ../../source/janim/gui/selector.rst:2
 msgid "selector"
-msgstr ""
+msgstr "selector"
 
 #: janim.gui.selector.Selector:1 of
 msgid "基类：:py:class:`~PySide6.QtCore.QObject`"
-msgstr ""
+msgstr "基类：:py:class:`~PySide6.QtCore.QObject`"
 
 #: janim.gui.selector.Selector:1 of
 msgid "子物件选择工具"
-msgstr ""
+msgstr "Child item selection tool"
 
 #: janim.gui.selector.Selector.SelectedItem:1 of
 msgid "基类：:py:class:`object`"
-msgstr ""
+msgstr "基类：:py:class:`object`"
 
 #: janim.gui.selector.Selector.compute_cursor_flag:1 of
 msgid "``True`` 表示鼠标在画面上半部，反之在下半部"
-msgstr ""
+msgstr "``True`` indicates the mouse is in the upper half of the screen, otherwise in the lower half"
+
+
 

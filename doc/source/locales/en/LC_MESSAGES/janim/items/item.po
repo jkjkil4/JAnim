@@ -1,4 +1,4 @@
-# SOME DESCRIPTIVE TITLE.
+﻿# SOME DESCRIPTIVE TITLE.
 # Copyright (C) 2023, jkjkil4
 # This file is distributed under the same license as the JAnim package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2024.
@@ -6,18 +6,19 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version:  JAnim\n"
+"Project-Id-Version: JAnim\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-11-20 08:21+0800\n"
-"PO-Revision-Date: 2024-01-19 19:53+0800\n"
+"PO-Revision-Date: 2025-11-21 17:28+0800\n"
 "Last-Translator: \n"
-"Language: en\n"
 "Language-Team: en <LL@li.org>\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Language: en\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "Generated-By: Babel 2.17.0\n"
+"X-Generator: Poedit 3.8\n"
 
 #: ../../source/janim/items/item.rst:2
 msgid "item"
@@ -25,7 +26,7 @@ msgstr "item"
 
 #: janim.items.item.mockable:1 of
 msgid "使得 ``.astype`` 后可以调用被 ``@mockable`` 修饰的方法"
-msgstr ""
+msgstr "Allows calling methods decorated with ``@mockable`` after ``.astype``"
 
 #: janim.items.item.Item:1 of
 msgid "基类：:py:class:`~janim.items.relation.Relation`\\ [:py:class:`Item`]"
@@ -33,25 +34,23 @@ msgstr "基类：:py:class:`~janim.items.relation.Relation`\\ [:py:class:`Item`]
 
 #: janim.items.item.Item:1 of
 msgid ":class:`~.Item` 是物件的基类"
-msgstr ""
+msgstr ":class:`~.Item` is the base class for items"
 
 #: janim.items.item.Item:3 of
 msgid "除了使用 ``item[0]`` ``item[1]`` 进行下标索引外，还可以使用列表索引和布尔索引"
-msgstr ""
+msgstr "In addition to using ``item[0]`` ``item[1]`` for subscript indexing, you can also use list indexing and boolean indexing"
 
 #: janim.items.item.Item:5 of
 msgid "列表索引，例如 ``item[0, 1, 3]``, 即 ``Group(item[0], item[1], item[3])``"
-msgstr ""
+msgstr "List indexing, for example ``item[0, 1, 3]``, which is equivalent to ``Group(item[0], item[1], item[3])``"
 
 #: janim.items.item.Item:7 of
-msgid ""
-"布尔索引，例如 ``item[False, True, False, True, True]`` 表示取出 ``Group(item[1], "
-"item[3], item[4])``，"
-msgstr ""
+msgid "布尔索引，例如 ``item[False, True, False, True, True]`` 表示取出 ``Group(item[1], item[3], item[4])``，"
+msgstr "Boolean indexing, for example ``item[False, True, False, True, True]`` represents extracting ``Group(item[1], item[3], item[4])``,"
 
 #: janim.items.item.Item:9 of
 msgid "也就是将那些为 True 的位置取出组成一个 :class:`~.Group`"
-msgstr ""
+msgstr "that is, extracting those positions that are True to form a :class:`~.Group`"
 
 #: janim.items.item.Item.broadcast_refresh_of_component:1 of
 msgid "为 :meth:`~.Component.mark_refresh()` 进行 ``recurse_up/down`` 的处理"
@@ -59,51 +58,48 @@ msgstr "Handles ``recurse_up/down`` for :meth:`~.Component.mark_refresh()`"
 
 #: janim.items.item.Item.set:1 of
 msgid "设置物件以及子物件的样式，与 :meth:`apply_styles` 只影响自身不同的是，该方法也会影响所有子物件"
-msgstr ""
+msgstr "Sets the style of the item and its child items. Unlike :meth:`apply_styles` which only affects itself, this method also affects all child items"
 
 #: janim.items.item.Item.apply_style:1 of
 msgid "设置物件自身的样式，不影响子物件"
-msgstr ""
+msgstr "Sets the style of the item itself, does not affect child items"
 
 #: janim.items.item.Item.apply_style:3 of
 msgid "另见：:meth:`set`"
-msgstr ""
+msgstr "See also: :meth:`set`"
 
 #: janim.items.item.Item.do:1 of
 msgid "使用 ``func`` 对物件进行操作，并返回 ``self`` 以方便链式调用"
-msgstr ""
-"Performs an operation on the item using ``func`` and returns ``self`` for"
-" convenient chain calling"
+msgstr "Performs an operation on the item using ``func`` and returns ``self`` for convenient chain calling"
 
 #: janim.items.item.Item.anim:1 janim.items.item.Item.generate_target:3
 #: janim.items.item.Item.update:1 of
-#, fuzzy
 msgid "例如："
-msgstr "Examples:"
+msgstr "For example:"
 
 #: janim.items.item.Item.anim:9 of
 msgid "该例子会创建将 ``item`` 缩放 2 倍并且设置为绿色的补间动画"
-msgstr ""
+msgstr "This example creates a tween animation that scales ``item`` by 2x and sets it to green"
 
 #: janim.items.item.Item.anim:11 of
 msgid "并且可以向动画传入参数："
-msgstr ""
+msgstr "And parameters can be passed to the animation:"
 
 #: janim.items.item.Item.anim:20 of
 msgid "``.r`` 表示从组件回到物件，这样就可以调用其它组件的功能"
-msgstr ""
+msgstr "``.r`` means returning from component to item, allowing you to call functions of other components"
 
 #: janim.items.item.Item.update:10 of
 msgid "该例子会创建将 ``item`` 向右移动两个单位并且设置为绿色的 updater，并且二者的 ``rate_func`` 不同"
-msgstr ""
+msgstr "This example creates an updater that moves ``item`` two units to the right and sets it to green, with different ``rate_func`` for each"
 
 #: janim.items.item.Item.replicate:1 of
-msgid "复制 n 个自身，并作为一个 :class:`Group` 返回"
-msgstr ""
+msgid "复制 n 个自身，并作为一个 :class:`~.Group` 返回"
+msgstr "Replicates n copies of itself and returns them as a :class:`~.Group`"
 
 #: janim.items.item.Item.replicate:3 of
 msgid "可以将 ``item * n`` 作为该方法的简写"
-msgstr ""
+msgstr "You can use ``item * n`` as a shorthand for this method"
 
 #: janim.items.item.Item.astype:1 of
 msgid "使得可以调用当前物件中没有的组件"
@@ -114,78 +110,72 @@ msgid "例："
 msgstr "Examples:"
 
 #: janim.items.item.Item.astype:12 of
-#, fuzzy
-msgid ""
-"在这个例子中，并不能 ``group.color.set(BLUE)`` 来设置子物件中的颜色， 但是可以使用 "
-"``group.astype(VItem).color.set(BLUE)`` 来做到"
-msgstr ""
-"In this example, you cannot use ``group.points.get_all()`` to get all "
-"points in the child objects, but you can use "
-"``group.astype(Points).points.get_all()`` to achieve that"
+msgid "在这个例子中，并不能 ``group.color.set(BLUE)`` 来设置后代物件中的颜色， 但是可以使用 ``group.astype(VItem).color.set(BLUE)`` 来做到"
+msgstr "In this example, you cannot use ``group.color.set(BLUE)`` to set the color of descendant items, but you can achieve this using ``group.astype(VItem).color.set(BLUE)``"
 
 #: janim.items.item.Item.astype:15 of
-msgid "也可以使用简写 ``group(VItem).color.set(BLUE)``"
-msgstr ""
+msgid "也可以使用简写"
+msgstr "You can also use the shorthand"
 
 #: janim.items.item.Item.current:1 of
 msgid "由当前时间点获得当前物件（考虑动画作用后的结果）"
-msgstr ""
+msgstr "Gets the current item from the current time point (considering the result after animation effects)"
 
 #: janim.items.item.Item.copy:1 of
 msgid "复制物件"
-msgstr ""
+msgstr "Copy item"
 
 #: janim.items.item.Item.become:1 of
 msgid "将该物件的数据设置为与传入的物件相同（以复制的方式，不是引用）"
-msgstr ""
+msgstr "Sets the data of this item to be the same as the passed item (by copying, not by reference)"
 
 #: janim.items.item.Item.become_current:1 of
 msgid "使用该方法可以中断动画过程，使物件立刻成为当前动画作用下的结果"
-msgstr ""
+msgstr "Using this method can interrupt the animation process, making the item immediately become the result under the current animation effect"
 
 #: janim.items.item.Item.become_current:5 of
 msgid "物件本身是不会一直随着动画改变数据的"
-msgstr ""
+msgstr "The item itself does not continuously change data with animation"
 
 #: janim.items.item.Item.become_current:7 of
 msgid "在需要使用动画后的状态进行 ``.anim`` 等操作时较为实用"
-msgstr ""
+msgstr "Useful when you need to perform operations like ``.anim`` using the state after animation"
 
 #: janim.items.item.Item.align_for_interpolate:1 of
 msgid "进行数据对齐，以便插值"
-msgstr ""
+msgstr "Performs data alignment for interpolation"
 
 #: janim.items.item.Item.interpolate:1 of
 msgid "进行插值（仅对该物件进行，不包含后代物件）"
-msgstr ""
+msgstr "Performs interpolation (only on this item, does not include descendant items)"
 
 #: janim.items.item.Item.fix_in_frame:1 of
 msgid "固定在屏幕上，也就是即使摄像头移动位置也不会改变在屏幕上的位置"
-msgstr ""
+msgstr "Fixes the item on the screen, meaning even if the camera moves, its position on the screen will not change"
 
 #: janim.items.item.Item.SavedState:1 of
 msgid "基类：:py:class:`~typing.Generic`"
-msgstr ""
+msgstr "基类：:py:class:`~typing.Generic`"
 
 #: janim.items.item.Item.save_state:1 of
 msgid "保存物件状态，后续可使用 :meth:`load_state` 恢复，例如："
-msgstr ""
+msgstr "Saves the item state, which can later be restored using :meth:`load_state`, for example:"
 
 #: janim.items.item.Item.save_state:11 of
 msgid "或者创建恢复动画："
-msgstr ""
+msgstr "Or create a restoration animation:"
 
 #: janim.items.item.Item.save_state:17 of
 msgid "例如可以用在，保存摄像机初始状态，在复杂的动画后恢复摄像机位置等场景中"
-msgstr ""
+msgstr "For example, it can be used to save the initial camera state and restore the camera position after complex animations"
 
 #: janim.items.item.Item.load_state:1 of
 msgid "恢复物件状态，详见 :meth:`save_state`"
-msgstr ""
+msgstr "Restores the item state, see :meth:`save_state` for details"
 
 #: janim.items.item.Item.generate_target:1 of
 msgid "拷贝生成一个 ``.target`` 物件，用于设置目标状态，最后使用 :class:`~.MoveToTarget` 创建过渡动画"
-msgstr ""
+msgstr "Copies and generates a ``.target`` item for setting the target state, then uses :class:`~.MoveToTarget` to create a transition animation"
 
 #: janim.items.item.Item.show:1 of
 msgid "显示物件"
@@ -204,22 +194,14 @@ msgstr "Hide item"
 #~ msgid "将物件组成一组"
 #~ msgstr "Groups items into a collection"
 
-#~ msgid "基类：:py:class:`~typing.Generic`"
-#~ msgstr "基类：:py:class:`~typing.Generic`"
-
 #~ msgid "检查该数据与 ``item`` 现在的数据是否产生差异"
-#~ msgstr ""
-#~ "Checks whether there is a difference "
-#~ "between the stored data and the "
-#~ "current data of ``item``"
+#~ msgstr "Checks whether there is a difference between the stored data and the current data of ``item``"
 
 #~ msgid "注：仅检查自身数据，不检查子物件的数据"
 #~ msgstr "Note: Only checks its own data, not the data of child items"
 
 #~ msgid "将 ``.component['key']`` 简化为 ``.cmpt.key`` 且方便代码提示"
-#~ msgstr ""
-#~ "Simplifies ``.component['key']`` to ``.cmpt.key``"
-#~ " and facilitates code completion"
+#~ msgstr "Simplifies ``.component['key']`` to ``.cmpt.key`` and facilitates code completion"
 
 #~ msgid "将数据复制，返回复制后的数据"
 #~ msgstr "Copies the data of the item and returns the copied data"
@@ -230,21 +212,4 @@ msgstr "Hide item"
 #~ msgid "返回数据的引用，不进行复制"
 #~ msgstr "Returns a reference to the data, without copying"
 
-#~ msgid "设置物件以及子物件的样式"
-#~ msgstr ""
-
-#~ msgid "覆盖该值以在子类中使用特定的渲染器"
-#~ msgstr ""
-
-#~ msgid "共用的渲染器，用于 ``is_temporary=True`` 的物件"
-#~ msgstr ""
-
-#~ msgid "当前物件"
-#~ msgstr ""
-
-#~ msgid "如果此时在回放和 Updater 中，则返回对应时间的历史物件"
-#~ msgstr ""
-
-#~ msgid "在其余情况下，包括该物件没有历史记录的情况，则返回物件自身"
-#~ msgstr ""
 

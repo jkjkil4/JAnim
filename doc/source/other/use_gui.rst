@@ -100,7 +100,7 @@ VS Code 插件
 
 可在 VS Code 中安装 ``janim-toolbox`` 插件，提供了一些额外的功能
 
-- 重新构建：已在 :ref:`实时预览 <realtime_preview>` 中提及；关于多文件重新构建时的处理，另见 :func:`~.reloads`
+- 重新构建：已在 :ref:`realtime_preview` 中提及；关于多文件重新构建时的处理，另见 :func:`~.reloads`
 
 - 当前行高亮：编辑器中会高亮显示当前动画的代码行
 
@@ -120,7 +120,7 @@ VS Code 插件
 
 .. image:: /_static/images/subitem_selector1.png
     :align: center
-    :scale: 65%
+    :scale: 45%
 
 首先，如果说我们需要取出一行文本 :class:`~.TextLine` 的某一些字符，我们需要首先找到这行文本，
 那么可以使用 ``Ctrl+左键`` 点击进行选中
@@ -131,13 +131,13 @@ VS Code 插件
 
 .. image:: /_static/images/subitem_selector2.png
     :align: center
-    :scale: 65%
+    :scale: 45%
 
 选中这行文本后，松开按着 ``Ctrl`` 的手，直接用 ``左键`` 点击这行文本中的字符（可以长按扫动），就可以选出它们，左上角会显示对应的下标
 
 .. image:: /_static/images/subitem_selector3.png
     :align: center
-    :scale: 65%
+    :scale: 45%
 
 .. note::
 

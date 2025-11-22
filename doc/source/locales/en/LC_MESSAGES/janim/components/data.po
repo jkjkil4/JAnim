@@ -21,21 +21,21 @@ msgstr ""
 
 #: ../../source/janim/components/data.rst:2
 msgid "data"
-msgstr ""
+msgstr "data"
 
 #: janim.components.data.Cmpt_Data:1 of
 msgid "详见 :class:`~.ValueTracker`"
-msgstr ""
+msgstr "See :class:`~.ValueTracker` for details"
 
 #: janim.components.data.Cmpt_Data.set:1 of
 msgid "设置当前数据"
-msgstr ""
+msgstr "Set current data"
 
 #: janim.components.data.Cmpt_Data.increment:1 of
 msgid "将值增加 ``value``"
-msgstr ""
+msgstr "Increment the value by ``value``"
 
 #: janim.components.data.Cmpt_Data.get:1 of
 msgid "得到当前数据"
-msgstr ""
+msgstr "Get current data"
 

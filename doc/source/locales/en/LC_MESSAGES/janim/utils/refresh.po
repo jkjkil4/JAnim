@@ -1,4 +1,4 @@
-# SOME DESCRIPTIVE TITLE.
+﻿# SOME DESCRIPTIVE TITLE.
 # Copyright (C) 2023, jkjkil4
 # This file is distributed under the same license as the JAnim package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2024.
@@ -26,9 +26,9 @@ msgstr "refresh"
 #: ../../source/rst_utils/tip_of_complex.rst:3
 msgid "这部分内容涉及 JAnim 实现原理，可能较为复杂，若没有研究源码的需求，你应酌情阅读"
 msgstr ""
-"**Tips: This section covers the implementations of JAnim, which may be "
+"This section covers the implementations of JAnim, which may be "
 "quite complex. If you do not have the need to delve into the source code,"
-" you may choose to read it at your discretion.**"
+" you may choose to read it at your discretion."
 
 #: janim.utils.refresh.register:1 of
 msgid "用于在需要时才进行值的重新计算，提升性能"
@@ -82,4 +82,6 @@ msgstr "Marks the specified ``func`` for an update"
 #~ " the cache will be ignored, and "
 #~ "the result will not be recorded in"
 #~ " the cache."
+
+
 

@@ -1,4 +1,4 @@
-# SOME DESCRIPTIVE TITLE.
+﻿# SOME DESCRIPTIVE TITLE.
 # Copyright (C) 2023, jkjkil4
 # This file is distributed under the same license as the JAnim package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2024.
@@ -21,9 +21,11 @@ msgstr ""
 
 #: ../../source/janim/gui/audio_player.rst:2
 msgid "audio_player"
-msgstr ""
+msgstr "audio_player"
 
 #: janim.gui.audio_player.AudioPlayer:1 of
 msgid "基类：:py:class:`object`"
-msgstr ""
+msgstr "基类：:py:class:`object`"
+
+
 

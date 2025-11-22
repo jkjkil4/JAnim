@@ -41,8 +41,6 @@ class Cmpt_VPoints[ItemT](Cmpt_Points[ItemT], impl=True):
       例如对于点坐标列表 ``[a, b, c, d, e, NAN_POINT, f, g, h]``，则表示两段子路径：``[a, b, c, d, e]`` 和 ``[f, g, h]``
 
     - 如果子路径的终止点和起始点相同，则该段子路径被视为闭合路径。
-
-      只有闭合的子路径，才能够进行填充色的渲染
     '''
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

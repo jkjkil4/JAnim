@@ -126,7 +126,7 @@ class Cmpt_Radius[ItemT](Component[ItemT]):
 
     def scale(self, factor: float, *, root_only: bool = False) -> Self:
         '''
-        缩放线条半径数据
+        缩放半径数据
         '''
         self._radii.data = self._radii.data * factor
 

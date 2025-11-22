@@ -13,7 +13,7 @@ class Rotate(DataUpdater):
     '''
     旋转，默认对角度进行平滑插值
 
-    - 参数和旋转基本一致
+    - 参数和 :meth:`~.Cmpt_Points.rotate` 基本一致
     - ``absolute`` 参数是为了兼容摄像机物件，对于非摄像机物件该参数无效
     '''
     label_color = C_LABEL_ANIM_STAY

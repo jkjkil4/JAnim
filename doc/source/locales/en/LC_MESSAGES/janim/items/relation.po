@@ -89,11 +89,15 @@ msgstr "The order of the objects is DFS order"
 #: janim.items.relation.Relation.parents:3 of
 msgid "不要直接对该变量作出修改，请使用 :meth:`add` 和 :meth:`remove` 等方法"
 msgstr ""
+"Do not directly modify this variable; please use methods like :meth:`add` "
+"and :meth:`remove`"
 
 #: ../../docstring janim.items.relation.Relation.children:5
 #: janim.items.relation.Relation.parents:5 of
 msgid "对该变量的直接访问仅是为了方便遍历等操作"
 msgstr ""
+"Direct access to this variable is only for convenience in operations such "
+"as iteration"
 
 #: janim.items.relation.Relation.mark_refresh:1 of
 msgid "标记指定的 ``func`` 需要进行更新"

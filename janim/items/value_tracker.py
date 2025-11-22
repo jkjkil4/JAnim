@@ -42,4 +42,4 @@ class ValueTracker[T](Item):
 
         if self.timeline is not None:
             # 使得 ValueTracker 的内容更改哪怕没有 show 和 anim 也可以被跟踪
-            self.timeline.item_appearances[self]
+            self.timeline.track(self)

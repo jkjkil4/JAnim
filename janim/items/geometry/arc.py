@@ -91,7 +91,7 @@ class ArcBetweenPoints(Arc):
 
     - 传入 ``start``, ``end`` 表示起点终点
     - ``angle`` 表示圆心角
-    - 其余参数同 ``Arc``
+    - 其余参数同 :class:`Arc`
     '''
     def __init__(
         self,
@@ -150,7 +150,7 @@ class Circle(VItem):
     '''
     圆
 
-    - 参数同 ``Arc``
+    - 参数同 :class:`Arc`
     - 半径传入 ``radius`` 指定
     '''
     points = CmptInfo(Cmpt_VPoints_CircleImpl[Self])
@@ -262,7 +262,7 @@ class Sector(Arc):
     '''
     扇形
 
-    传入参数请参考 ``Arc``
+    传入参数请参考 :class:`Arc`
     '''
     def __init__(self, *, arc_center: np.ndarray = ORIGIN, **kwargs) -> None:
         super().__init__(arc_center=arc_center, **kwargs)

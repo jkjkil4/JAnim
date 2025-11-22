@@ -21,5 +21,5 @@ msgstr ""
 
 #: ../../source/janim/render/framebuffer.rst:2
 msgid "framebuffer"
-msgstr ""
+msgstr "framebuffer"
 

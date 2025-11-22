@@ -14,7 +14,7 @@ from janim.typing import Vect
 
 class Homotopy(DataUpdater):
     '''
-    一个从 (x, y, z, t) 到 (x’, y’, z’) 的函数
+    一个从 (x, y, z, t) 到 (x', y', z') 的函数
 
     t 的取值范围是 [0, 1]，表示动画进度
     '''

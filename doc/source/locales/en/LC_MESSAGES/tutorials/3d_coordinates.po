@@ -21,11 +21,11 @@ msgstr ""
 
 #: ../../source/tutorials/3d_coordinates.rst:4
 msgid "三维坐标 (TODO)"
-msgstr ""
+msgstr "3D Coordinates (TODO)"
 
 #: ../../source/tutorials/3d_coordinates.rst:8
 msgid "文档有待完善"
-msgstr ""
+msgstr "Documentation needs to be improved"
 
 #~ msgid "三维坐标"
 #~ msgstr ""

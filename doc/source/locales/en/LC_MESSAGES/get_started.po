@@ -388,9 +388,13 @@ msgstr ""
 
 #: ../../source/get_started.rst:282
 msgid ""
-"因此，你可以在修改并保存代码后，点击窗口左上角“工具”中的“重新构建”（快捷键是 ``Ctrl+L``）， "
+"因此，你可以在修改并保存代码后，点击窗口左上角“文件”中的“重新构建”（快捷键是 ``Ctrl+L``）， "
 "这样就会更新动画内容，使其和更改后的代码一致"
 msgstr ""
+"Therefore, after modifying and saving the code, you can click “Rebuild” in "
+"the “Files” menu in the top left corner of the window (shortcut is "
+"``Ctrl+L``), which will update the animation content to match the modified "
+"code."
 
 #: ../../source/get_started.rst:287
 msgid "以下的功能需要使用 :ref:`VS Code <install_vscode>` 作为编辑器"
@@ -413,7 +417,7 @@ msgstr "When running, add ``-i`` to the preview animation command, for example:"
 msgid "这样，在执行后，输出内容应当多出这样一句：``交互端口已在 xxxxx 开启``"
 msgstr ""
 "After execution, the output should add a line: ``Interactive port has "
-"been opened at xxxxx``."
+"been opened at xxxxx``"
 
 #: ../../source/get_started.rst:301
 msgid "你可能注意到了，预览窗口默认是在右半边屏幕置顶的"
@@ -433,8 +437,8 @@ msgid ""
 "Code 右下角的状态栏中显示 ``已连接到界面端 xxxxx``"
 msgstr ""
 "First, in VS Code, by default, you need to press ``Ctrl+J Ctrl+C`` (press"
-" separately, these are combo keys), if successful, it will show ``已连接到界面端"
-" xxxxx`` in the status bar in the lower right corner of VS Code."
+" separately, these are combo keys), if successful, it will show ``已连接到界面端 xxxxx``"
+" in the status bar in the lower right corner of VS Code."
 
 #: ../../source/get_started.rst:308
 msgid "接着，对代码进行更改，保存后，就会立即更新预览的内容"
