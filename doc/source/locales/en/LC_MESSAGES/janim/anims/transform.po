@@ -130,7 +130,7 @@ msgstr "基类：:py:class:`~janim.anims.transform.Transform`"
 
 #: janim.anims.transform.MethodTransform:1 of
 msgid "依据物件的变换而创建的补间过程"
-msgstr "Tweening process created based on the transformation of the object."
+msgstr "Tweening process created based on the transformation of the item."
 
 #: janim.anims.transform.MethodTransform:3 of
 msgid "具体参考 :meth:`~.Item.anim`"
@@ -148,7 +148,7 @@ msgstr "``mismatch`` indicates how to handle shapes that do not match"
 msgid "注：所有传入该动画类的额外参数都会被传入 ``mismatch`` 的方法中"
 msgstr ""
 "Note: All additional parameters passed to this animation class will be passed "
-"to the ``mismatch`` method"
+"to the methods in ``mismatch``"
 
 #~ msgid ""
 #~ "根据传入对象的 ``path_arc`` ``path_arc_axis`` ``path_func`` ，建立 "

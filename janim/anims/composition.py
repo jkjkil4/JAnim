@@ -44,7 +44,7 @@ class AnimGroup(Animation):
             duration=6
         )
 
-    另外，``collapse`` 表示在预览界面中是否折叠该动画组（默认不折叠，而例如 :class:`~.TransfromMatchingShapes` 默认是折叠的）
+    另外，``collapse`` 表示在预览界面中是否折叠该动画组（默认不折叠，而例如 :class:`~.TransformMatchingShapes` 默认是折叠的）
     '''
     def __init__(
         self,
@@ -274,7 +274,7 @@ class Wait(Animation):
 
 class Do(Animation):
     '''
-    在动画的特定时间执行指定操作
+    在动画过程的特定时间执行指定操作
     '''
     def __init__(self, func, *args, at: float = 0, detect_changes: bool = True, **kwargs):
         super().__init__(at=at, duration=0)

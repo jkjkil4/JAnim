@@ -77,11 +77,11 @@ msgstr "Correct way:"
 
 #: janim.anims.animation.Animation.shift_range:1 janim.anims.animation.TimeRange.shift:1 of
 msgid "以 ``delta`` 的变化量移动时间区段"
-msgstr "Shift the time segment by ``delta``"
+msgstr "Shift the time-range by ``delta``"
 
 #: janim.anims.animation.Animation.scale_range:1 janim.anims.animation.TimeRange.scale:1 of
 msgid "以 ``k`` 的倍率缩放时间区段（相对于 ``t=0`` 进行缩放）"
-msgstr "Scale the time segment by factor ``k`` (scaled relative to ``t=0``)"
+msgstr "Scale the time-range by factor ``k`` (scaled relative to ``t=0``)"
 
 #: janim.anims.animation.ItemAnimation:1 of
 msgid "基类：:py:class:`~janim.anims.animation.Animation`"
@@ -121,16 +121,16 @@ msgstr "``end`` can also be ``FOREVER``"
 
 #: ../../docstring janim.anims.animation.TimeRange.at:1 of
 msgid "时间区段的开始时刻"
-msgstr "Start time of the time segment"
+msgstr "Start time of the time-range"
 
 #: ../../docstring janim.anims.animation.TimeRange.end:1 of
 msgid "时间区段的结束时刻"
-msgstr "End time of the time segment"
+msgstr "End time of the time-range"
 
 #: janim.anims.animation.TimeRange.duration:1 of
 msgid "时间区段的时长，即 ``end - at``，如果 ``end=FOREVER`` 则抛出 ``AssertionError``"
 msgstr ""
-"Duration of the time segment, i.e., ``end - at``. If ``end=FOREVER``, raises "
+"Duration of the time-range, i.e., ``end - at``. If ``end=FOREVER``, raises "
 "``AssertionError``"
 
 #: janim.anims.animation.TimeRange.duration:3 of
@@ -163,7 +163,7 @@ msgstr "When ``end`` is ``FOREVER``, returns ``at``"
 
 #: janim.anims.animation.TimeRange.set:1 of
 msgid "设置该时间区段的范围"
-msgstr "Set the range of this time segment"
+msgstr "Set the range of this time-range"
 
 #: janim.anims.animation.TimeAligner:1 of
 msgid "由于浮点数精度的问题，有可能出现比如原本设计上首尾相连的两个动画，却出现判定的错位"
@@ -182,13 +182,13 @@ msgid ""
 "归化 ``anim`` 的时间区段， 即分别对 ``.t_range.at`` 和 ``.t_range.end`` 进"
 "行 :meth:`align_t` 的操作"
 msgstr ""
-"Normalize the time segment of ``anim``, i.e., perform :meth:`align_t` operations on "
+"Normalize the time-range of ``anim``, i.e., perform :meth:`align_t` operations on "
 "``.t_range.at`` and ``.t_range.end`` respectively"
 
 #: janim.anims.animation.TimeAligner.align_t:1 of
-msgid "对齐时间 `t`，确保相近的时间点归化到相同的值，返回归化后的时间值"
+msgid "对齐时间 ``t``，确保相近的时间点归化到相同的值，返回归化后的时间值"
 msgstr ""
-"Align time `t`, ensuring that similar time points are normalized to the same value, returns "
+"Align time ``t``, ensuring that similar time points are normalized to the same value, returns "
 "the normalized time value"
 
 #: janim.anims.animation.TimeAligner.align_t_for_render:1 of

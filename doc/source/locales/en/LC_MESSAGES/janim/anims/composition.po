@@ -60,19 +60,19 @@ msgid ""
 "可以使用 ``lag_ratio`` 和 ``offset`` 控制每个子动画相对于前一个子动画的时间位"
 "置："
 msgstr ""
-"You can use `lag_ratio` and `offset` to control the timing position of each "
+"You can use ``lag_ratio`` and ``offset`` to control the timing position of each "
 "sub-animation relative to the previous one:"
 
 #: janim.anims.composition.AnimGroup:9 of
 msgid "``lag_ratio`` 表示 “前一个进行到百分之多少时，进行下一个”"
 msgstr ""
-"`lag_ratio` indicates \"the percentage of completion of the previous "
+"``lag_ratio`` indicates \"the percentage of completion of the previous "
 "animation at which the next animation starts\""
 
 #: janim.anims.composition.AnimGroup:10 of
 msgid "``offset`` 表示 “前一个进行多少秒后，进行下一个”"
 msgstr ""
-"`offset` indicates \"the number of seconds after the previous animation "
+"``offset`` indicates \"the number of seconds after the previous animation "
 "starts when the next animation starts\""
 
 #: janim.anims.composition.Aligned:5 janim.anims.composition.AnimGroup:12
@@ -83,11 +83,11 @@ msgstr "Time Examples:"
 #: janim.anims.composition.AnimGroup:34 of
 msgid ""
 "另外，``collapse`` 表示在预览界面中是否折叠该动画组（默认不折叠，而例"
-"如 :class:`~.TransfromMatchingShapes` 默认是折叠的）"
+"如 :class:`~.TransformMatchingShapes` 默认是折叠的）"
 msgstr ""
 "In addition, ``collapse`` indicates whether to collapse this animation group "
 "in the preview interface (default is not collapsed, while for "
-"example :class:`~.TransfromMatchingShapes` is collapsed by default)"
+"example :class:`~.TransformMatchingShapes` is collapsed by default)"
 
 #: ../../source/janim/anims/composition.rst:40
 #: ../../source/janim/anims/composition.rst:127
@@ -117,7 +117,7 @@ msgstr "Executes the passed animations in sequence"
 
 #: janim.anims.composition.Succession:4 of
 msgid "相当于默认值 ``lag_ratio=1`` 的 :class:`~.AnimGroup`"
-msgstr "Equivalent to :class:`~.AnimGroup` with the default value `lag_ratio=1`"
+msgstr "Equivalent to :class:`~.AnimGroup` with the default value ``lag_ratio=1``"
 
 #: janim.anims.composition.Aligned:1 of
 msgid "动画集合（并列对齐执行）"
@@ -145,8 +145,8 @@ msgid "（其实就是一个空动画）"
 msgstr "(Actually just an empty animation)"
 
 #: janim.anims.composition.Do:1 of
-msgid "在动画的特定时间执行指定操作"
-msgstr "Execute a specified operation at a specific time in the animation"
+msgid "在动画过程的特定时间执行指定操作"
+msgstr "Execute a specified operation at a specific time in the animation progress"
 
 #~ msgid "设置并计算子动画的时间范围"
 #~ msgstr "Set and calculate the time range of child animations"

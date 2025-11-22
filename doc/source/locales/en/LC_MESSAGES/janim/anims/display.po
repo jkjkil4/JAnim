@@ -30,7 +30,7 @@ msgstr "基类：:py:class:`~janim.anims.animation.ItemAnimation`"
 
 #: janim.anims.display.Display:1 of
 msgid "用于标记物件在特定时间区段中的数据"
-msgstr "Used to mark the data of an item in a specific time segment"
+msgstr "Used to mark the data of an item in a specific time-range"
 
 #: janim.anims.display.Display:3 of
 msgid ""

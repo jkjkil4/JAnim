@@ -37,11 +37,11 @@ msgstr "Check if the item has changed compared to the item recorded in ``self.pr
 
 #: janim.anims.anim_stack.AnimStack.detect_change:3 of
 msgid "若有变化则记录为 :class:`Display` 对象"
-msgstr "If there are changes, record them as :class:`Display` objects"
+msgstr "If there are changes, record them as a :class:`Display` object"
 
 #: janim.anims.anim_stack.AnimStack.append:1 of
 msgid "向 :class:`AnimStack` 添加 :class:`~.Animation` 对象"
-msgstr "Add :class:`~.Animation` objects to :class:`AnimStack`"
+msgstr "Add an :class:`~.Animation` object to :class:`AnimStack`"
 
 #: janim.anims.anim_stack.AnimStack.compute:1 of
 msgid "得到指定时间 ``as_time`` 的物件，考虑了动画的作用"

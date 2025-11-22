@@ -70,20 +70,20 @@ msgstr ""
 msgid "并且，可以对同一个物件作用多个 updater，各个 updater 会依次调用"
 msgstr ""
 "Additionally, multiple updaters can be applied to the same item, and each "
-"updater will be called sequentially"
+"updater will be called sequentially."
 
 #: janim.anims.updater.DataUpdater:23 of
 msgid ""
-"注意：默认 ``root_only=True`` 即只对根物件应用该 updater；需要设置 "
+"默认 ``root_only=True`` 即只对根物件应用该 updater；需要设置 "
 "``root_only=False`` 才会对所有后代物件也应用该 updater"
 msgstr ""
-"Note: By default ``root_only=True`` means the updater is only applied to the "
+"By default ``root_only=True`` means the updater is only applied to the "
 "root item; you need to set ``root_only=False`` to apply the updater to all "
-"descendant items as well"
+"descendant items as well."
 
 #: janim.anims.updater.DataUpdater:25 janim.anims.updater.ItemUpdater:11 of
-msgid "另见：:class:`~.UpdaterExample`"
-msgstr "See also: :class:`~.UpdaterExample`"
+msgid "另见 :ref:`basic_examples` 中的 ``UpdaterExample``"
+msgstr "See also the ``UpdaterExample`` in :ref:`basic_examples`"
 
 #: janim.anims.updater.GroupUpdater:1 of
 msgid "以时间为参数对一组物件的数据进行修改"
@@ -91,11 +91,11 @@ msgstr "Modifies the data of a group based on time parameters."
 
 #: janim.anims.updater.GroupUpdater:3 of
 msgid ""
-"注意：该 Updater 假设 ``func`` 不会改变 ``item`` 后代物件结构，如果改变结构"
+"该 Updater 假设 ``func`` 不会改变 ``item`` 后代物件结构，如果改变结构"
 "（例如增删子物件、:meth:`~.Item.become` 结构不一致等情况），则可能导致意外行"
 "为"
 msgstr ""
-"Note: This Updater assumes that ``func`` will not change the descendant item "
+"This Updater assumes that ``func`` will not change the descendant item "
 "structure of ``item``. If the structure is changed (e.g., adding/removing "
 "child items, :meth:`~.Item.become` with inconsistent structure, etc.), it "
 "may lead to unexpected behavior"

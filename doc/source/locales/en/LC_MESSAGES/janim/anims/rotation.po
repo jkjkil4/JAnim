@@ -48,8 +48,8 @@ msgid "旋转，默认对角度进行平滑插值"
 msgstr "Rotation animation, default smooth interpolation for angles."
 
 #: janim.anims.rotation.Rotate:3 of
-msgid "参数和旋转基本一致"
-msgstr "Parameters are basically the same as rotation"
+msgid "参数和 :meth:`~.Cmpt_Points.rotate` 基本一致"
+msgstr "Parameters are basically the same as :meth:`~.Cmpt_Points.rotate`"
 
 #: janim.anims.rotation.Rotate:4 of
 msgid "``absolute`` 参数是为了兼容摄像机物件，对于非摄像机物件该参数无效"

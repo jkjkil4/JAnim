@@ -45,7 +45,7 @@ msgstr "Grow and appear from the center of the item"
 
 #: janim.anims.growing.GrowFromEdge:1 of
 msgid "从物件的指定边角放大显现"
-msgstr "Grow and appear from the specified corner of the item"
+msgstr "Grow and appear from the specified edge of the item"
 
 #: janim.anims.growing.ShrinkToPoint:1 of
 msgid "缩小到指定的位置消失"
@@ -61,7 +61,7 @@ msgstr "Shrink and disappear to the center of the item"
 
 #: janim.anims.growing.ShrinkToEdge:1 of
 msgid "缩小到物件的指定边角消失"
-msgstr "Shrink and disappear to the specified corner of the item"
+msgstr "Shrink and disappear to the specified edge of the item"
 
 #: janim.anims.growing.SpinInFromNothing:1 of
 msgid "基类：:py:class:`~janim.anims.growing.GrowFromCenter`"
