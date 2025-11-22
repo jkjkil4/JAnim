@@ -19,3 +19,8 @@ h1, h2, h3, h4{
 p.tab-p {
     margin: 0px;
 }
+details summary p {
+    display: inline; /* 变为行内元素，消除换行 */
+    margin: 0;       /* 消除段落自带的上下边距 */
+    padding: 0;
+}

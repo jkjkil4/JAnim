@@ -138,7 +138,13 @@ JAnim 提供了内置包可以在 Typst 中使用 ``#import`` 引入
   .. raw:: html
 
     <details>
-    <summary>点击展开 @janim/colors 的具体定义</summary>
+    <summary>
+
+  点击展开 ``@janim/colors`` 的具体定义
+
+  .. raw:: html
+
+    </summary>
 
   .. code-block:: typst
 

@@ -25,7 +25,13 @@
 
     <div class="detail-box">
     <details>
-    <summary>点击展开打开命令行的简要说明</summary>
+    <summary>
+
+点击展开打开命令行的简要说明
+
+.. raw:: html
+
+    </summary>
 
 
 这里我们简单介绍一下打开命令行的方式，以后不再指出。在 Windows 上推荐使用自带的 Powershell，
