@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: JAnim\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-22 21:20+0800\n"
-"PO-Revision-Date: 2025-11-22 22:14+0800\n"
+"POT-Creation-Date: 2025-11-23 08:38+0800\n"
+"PO-Revision-Date: 2025-11-23 08:39+0800\n"
 "Last-Translator: \n"
 "Language-Team: en <LL@li.org>\n"
 "Language: en\n"
@@ -70,7 +70,15 @@ msgstr ""
 "\n"
 "self.forward()"
 
-#: ../../source/tutorials/animations.rst:37
+#: ../../source/tutorials/animations.rst:33
+#: ../../source/tutorials/animations.rst:36
+#: ../../source/tutorials/animations.rst:38
+#: ../../source/tutorials/animations.rst:47
+#: ../../source/tutorials/animations.rst:52
+msgid "参考："
+msgstr "See also:"
+
+#: ../../source/tutorials/animations.rst:38
 msgid ":class:`~.Create` :class:`~.SpinInFromNothing` :meth:`~.Item.anim`"
 msgstr ":class:`~.Create` :class:`~.SpinInFromNothing` :meth:`~.Item.anim`"
 
@@ -305,7 +313,7 @@ msgstr ""
 "        .points.to_border(DR, buff=LARGE_BUFF)\n"
 ")"
 
-#: ../../source/tutorials/animations.rst:39
+#: ../../source/tutorials/animations.rst:40
 msgid ":class:`~.FadeIn` :meth:`~.Item.anim` :meth:`~.Cmpt_Points.to_border`"
 msgstr ":class:`~.FadeIn` :meth:`~.Item.anim` :meth:`~.Cmpt_Points.to_border`"
 
@@ -393,7 +401,7 @@ msgstr ""
 "    )\n"
 ")"
 
-#: ../../source/tutorials/animations.rst:48
+#: ../../source/tutorials/animations.rst:49
 msgid ":class:`~.Succession` :class:`~.AnimGroup` :class:`~.ShowCreationThenDestructionAround`"
 msgstr ":class:`~.Succession` :class:`~.AnimGroup` :class:`~.ShowCreationThenDestructionAround`"
 
@@ -463,7 +471,7 @@ msgstr ""
 "self.play(txt.anim.points.shift(RIGHT * 4).scale(2), duration=2)\n"
 "self.play(txt.anim.points.shift(LEFT * 4).scale(0.5), duration=2)"
 
-#: ../../source/tutorials/animations.rst:34
+#: ../../source/tutorials/animations.rst:35
 msgid ":meth:`~.Timeline.prepare` :class:`~.Text` :class:`~.CircleIndicate`"
 msgstr ":meth:`~.Timeline.prepare` :class:`~.Text` :class:`~.CircleIndicate`"
 
@@ -564,7 +572,7 @@ msgstr ""
 ")\n"
 "self.forward()"
 
-#: ../../source/tutorials/animations.rst:53
+#: ../../source/tutorials/animations.rst:54
 msgid ":class:`~.MoveAlongPath` :class:`~.Follow`"
 msgstr ":class:`~.MoveAlongPath` :class:`~.Follow`"
 

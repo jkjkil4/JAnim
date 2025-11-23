@@ -93,8 +93,10 @@ div.example-ref p {
     margin: 0em;
 }
 
-p.example-ref-prefix {
+div.example-ref p.example-ref-prefix {
     white-space: nowrap;
+    margin-left: 8px;
+    margin-right: 8px;
 }
 
 .janim-content {

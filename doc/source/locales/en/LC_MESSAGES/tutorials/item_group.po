@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: JAnim\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-22 21:20+0800\n"
-"PO-Revision-Date: 2025-11-22 22:17+0800\n"
+"POT-Creation-Date: 2025-11-23 08:38+0800\n"
+"PO-Revision-Date: 2025-11-23 08:39+0800\n"
 "Last-Translator: \n"
 "Language-Team: en <LL@li.org>\n"
 "Language: en\n"
@@ -67,7 +67,13 @@ msgstr ""
 "self.play(Rotate(group, TAU), duration=3)\n"
 "self.play(FadeOut(group, lag_ratio=0.5))"
 
-#: ../../source/tutorials/item_group.rst:34
+#: ../../source/tutorials/item_group.rst:33
+#: ../../source/tutorials/item_group.rst:38
+#: ../../source/tutorials/item_group.rst:44
+msgid "参考："
+msgstr "See also:"
+
+#: ../../source/tutorials/item_group.rst:35
 msgid ":class:`~.Group` :meth:`~.Cmpt_Points.arrange` :meth:`~.Cmpt_Rgbas.fade`"
 msgstr ":class:`~.Group` :meth:`~.Cmpt_Points.arrange` :meth:`~.Cmpt_Rgbas.fade`"
 
@@ -206,7 +212,7 @@ msgstr ""
 "\n"
 "self.play(FadeOut(group, lag_ratio=0.5))"
 
-#: ../../source/tutorials/item_group.rst:39
+#: ../../source/tutorials/item_group.rst:40
 msgid ":class:`~.Group` :meth:`~.Cmpt_Points.arrange` :class:`~.Indicate`"
 msgstr ":class:`~.Group` :meth:`~.Cmpt_Points.arrange` :class:`~.Indicate`"
 
@@ -327,7 +333,7 @@ msgstr ""
 "    Transform(shapes[0], Square(color=GREEN, fill_alpha=0.5))\n"
 ")"
 
-#: ../../source/tutorials/item_group.rst:45
+#: ../../source/tutorials/item_group.rst:46
 msgid ":class:`~.Text` :class:`~.Group` :class:`~.Arrow` :class:`~.Transform`"
 msgstr ":class:`~.Text` :class:`~.Group` :class:`~.Arrow` :class:`~.Transform`"
 

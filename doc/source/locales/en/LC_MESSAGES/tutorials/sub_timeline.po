@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: JAnim\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-22 21:20+0800\n"
-"PO-Revision-Date: 2025-11-22 22:17+0800\n"
+"POT-Creation-Date: 2025-11-23 08:38+0800\n"
+"PO-Revision-Date: 2025-11-23 08:39+0800\n"
 "Last-Translator: \n"
 "Language-Team: en <LL@li.org>\n"
 "Language: en\n"
@@ -139,7 +139,12 @@ msgstr ""
 "\n"
 "        self.forward(tl1.duration)"
 
-#: ../../source/tutorials/sub_timeline.rst:74
+#: ../../source/tutorials/sub_timeline.rst:54
+#: ../../source/tutorials/sub_timeline.rst:73
+msgid "参考："
+msgstr "See also:"
+
+#: ../../source/tutorials/sub_timeline.rst:75
 msgid ":meth:`~.BuiltTimeline.to_item`"
 msgstr ":meth:`~.BuiltTimeline.to_item`"
 
@@ -253,7 +258,7 @@ msgstr ""
 "            Write(frameclip.create_border_rect())\n"
 "        )"
 
-#: ../../source/tutorials/sub_timeline.rst:55
+#: ../../source/tutorials/sub_timeline.rst:56
 msgid ":class:`~.SimpleFrameEffect` :class:`~.TransformableFrameClip`"
 msgstr ":class:`~.SimpleFrameEffect` :class:`~.TransformableFrameClip`"
 

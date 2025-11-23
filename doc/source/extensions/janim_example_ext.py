@@ -98,16 +98,14 @@ TEMPLATE = R'''
 {% endif %}
 
 {% if ref %}
-.. raw:: html
+.. container:: example-ref
 
-    <div class="example-ref">
-        <p class="example-ref-prefix">参考：</p>
+    .. rst-class:: example-ref-prefix
 
-{{ ref }}
+    参考：
 
-.. raw:: html
+    {{ ref }}
 
-    </div>
 {% endif %}
 
 .. raw:: html
