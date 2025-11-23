@@ -66,6 +66,7 @@ JAnim 是一个用于创建流畅动画的库，以程序化动画为核心理�
    :maxdepth: 1
    :caption: 其它教程
 
+   tutorials/use_gui
    tutorials/insert_assets
    tutorials/group_advanced_usage
    tutorials/typst_usage
@@ -81,7 +82,6 @@ JAnim 是一个用于创建流畅动画的库，以程序化动画为核心理�
    :maxdepth: 1
    :caption: 其它
 
-   other/use_gui
    other/guide_for_manim_users
    other/faq
 
