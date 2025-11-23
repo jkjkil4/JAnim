@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: JAnim\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-22 21:20+0800\n"
-"PO-Revision-Date: 2025-11-22 22:09+0800\n"
+"POT-Creation-Date: 2025-11-23 12:16+0800\n"
+"PO-Revision-Date: 2025-11-23 12:16+0800\n"
 "Last-Translator: \n"
 "Language-Team: en <LL@li.org>\n"
 "Language: en\n"
@@ -90,6 +90,20 @@ msgstr "Get the last point"
 #: janim.components.points.Cmpt_Points.get_start_and_end:1 of
 msgid "得到 ``points`` 的第一个和最后一个点"
 msgstr "Get the first and last points"
+
+#: janim.components.points.Cmpt_Points.point_from_proportion:1 of
+msgid "将点视为折线连接的路径，得到整条路径上占比为 ``alpha`` 处的点"
+msgstr ""
+"Treats the points as a path connected by line segments, and returns the point "
+"at proportion ``alpha`` along the entire path."
+
+#: janim.components.points.Cmpt_Points.point_from_proportion:3 of
+msgid ""
+"对于曲线路径组件 :class:`~.Cmpt_VPoints` 而言行为不同，另请参"
+"考 :meth:`~.Cmpt_VPoints.point_from_proportion`"
+msgstr ""
+"The behavior is different for the curve path component :class:`~.Cmpt_VPoints`. "
+"Please refer to :meth:`~.Cmpt_VPoints.point_from_proportion`."
 
 #: janim.components.points.Cmpt_Points.pfp:1 of
 msgid ":meth:`point_from_proportion` 的缩写"

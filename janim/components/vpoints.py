@@ -425,6 +425,9 @@ class Cmpt_VPoints[ItemT](Cmpt_Points[ItemT], impl=True):
         return index - 1, residue
 
     def point_from_proportion(self, alpha: float) -> np.ndarray:
+        '''
+        得到整条路径上占比为 ``alpha`` 处的点
+        '''
         if alpha <= 0:
             return self.get_start()
         elif alpha >= 1:

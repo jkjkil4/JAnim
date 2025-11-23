@@ -200,6 +200,11 @@ class Cmpt_Points[ItemT](Component[ItemT]):
         return (self.get_start(), self.get_end())
 
     def point_from_proportion(self, alpha: float) -> np.ndarray:
+        '''
+        将点视为折线连接的路径，得到整条路径上占比为 ``alpha`` 处的点
+
+        对于曲线路径组件 :class:`~.Cmpt_VPoints` 而言行为不同，另请参考 :meth:`~.Cmpt_VPoints.point_from_proportion`
+        '''
         points = self._points.data
         i, subalpha = integer_interpolate(0, len(points) - 1, alpha)
         return interpolate(points[i], points[i + 1], subalpha)
