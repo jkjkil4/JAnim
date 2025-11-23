@@ -1,6 +1,6 @@
 
-uniform samplerBuffer points;   // vec4(x, y, isclosed or depth, 0)
-                                // 在 vitem_plane 中 z 分量表示 isclosed，在 vitem_curve 中表示 depth
+uniform samplerBuffer points;   // vec4(x, y, 0 or depth, 0)
+                                // 在 vitem_plane 中 z 分量为 0，在 vitem_curve 中表示 depth
 
 uniform samplerBuffer radii;    // radii[idx / 4][idx % 4]
 uniform samplerBuffer colors;
@@ -8,10 +8,6 @@ uniform samplerBuffer fills;
 
 vec2 get_point(int idx) {
     return texelFetch(points, idx).xy;
-}
-
-bool get_isclosed(int idx) {
-    return bool(texelFetch(points, idx).z);
 }
 
 vec3 get_point_with_depth(int idx) {

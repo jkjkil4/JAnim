@@ -319,7 +319,6 @@ class VItemPlaneRenderer(Renderer):
                 self.points_vec4buffer = np.empty((len(mapped), 4), dtype=np.float32)
 
             self.points_vec4buffer[:, :2] = mapped
-            self.points_vec4buffer[:, 2] = item.points.get_closepath_flags().astype(np.float32)
             bytes = self.points_vec4buffer.tobytes()
 
             if len(bytes) != self.vbo_mapped_points.size:
@@ -336,7 +335,6 @@ class VItemPlaneRenderer(Renderer):
                 self.points_vec4buffer = np.empty((len(new_attrs.points), 4), dtype=np.float32)
 
             self.points_vec4buffer[:, :3] = new_attrs.points
-            self.points_vec4buffer[:, 3] = item.points.get_closepath_flags().astype(np.float32)
             bytes = self.points_vec4buffer.tobytes()
 
             if len(bytes) != self.vbo_points.size:

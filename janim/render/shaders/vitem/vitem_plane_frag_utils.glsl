@@ -1,7 +1,6 @@
 // Required:
 //  in vec2 v_coord;
 //  vec2 get_point(int idx)
-//  bool get_isclosed(int idx)
 
 #include "../../includes/is_approx_line.glsl"
 #include "../../includes/bezier_sdf.glsl"
@@ -52,7 +51,6 @@ void get_subpath_attr(
     out float fill_sgn
 ) {
     end_idx = lim;
-    bool is_closed = get_isclosed(start_idx);
 
     stroke_d = INFINITY;
     fill_sgn = 1.0;

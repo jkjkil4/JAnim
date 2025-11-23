@@ -1,7 +1,6 @@
 // Required:
 //  in vec2 v_coord;
 //  vec2 get_point(int idx);
-//  bool get_isclosed(int idx);
 //  float get_radius(int anchor_idx);
 //  vec4 get_color(int anchor_idx);
 //  vec4 get_fill(int anchor_idx);

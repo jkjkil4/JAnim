@@ -1,8 +1,8 @@
 
 layout(std140, binding = 0) buffer MappedPoints
 {
-    vec4 points[];  // vec4(x, y, isclosed or depth, 0)
-                    // 在 vitem_plane 中 z 分量表示 isclosed，在 vitem_curve 中表示 depth
+    vec4 points[];  // vec4(x, y, 0 or depth, 0)
+                    // 在 vitem_plane 中 z 分量为 0，在 vitem_curve 中表示 depth
 };
 layout(std140, binding = 1) buffer Radii
 {
@@ -19,10 +19,6 @@ layout(std140, binding = 3) buffer Fills
 
 vec2 get_point(int idx) {
     return points[idx].xy;
-}
-
-bool get_isclosed(int idx) {
-    return bool(points[idx].z);
 }
 
 vec3 get_point_with_depth(int idx) {
