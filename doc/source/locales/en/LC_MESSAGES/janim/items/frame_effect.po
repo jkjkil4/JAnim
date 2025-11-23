@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: JAnim\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-23 11:40+0800\n"
-"PO-Revision-Date: 2025-11-23 11:41+0800\n"
+"POT-Creation-Date: 2025-11-23 12:01+0800\n"
+"PO-Revision-Date: 2025-11-23 12:03+0800\n"
 "Last-Translator: \n"
 "Language-Team: en <LL@li.org>\n"
 "Language: en\n"
@@ -104,19 +104,19 @@ msgstr ""
 "For complete examples, refer to the corresponding code in :ref:`Basic Examples "
 "<basic_examples>`"
 
-#: janim.items.frame_effect.FrameEffect.add:1 of
+#: janim.items.frame_effect.FrameEffect.add:3 of
 msgid "调用 :meth:`add` 很可能不会按预期工作"
 msgstr "Calling :meth:`add` is unlikely to work as expected."
 
-#: janim.items.frame_effect.FrameEffect.add:3 of
+#: janim.items.frame_effect.FrameEffect.add:5 of
 msgid "如果你想应用额外的物件，需要使用 :meth:`apply`"
 msgstr "If you want to apply additional items, use :meth:`apply`."
 
-#: janim.items.frame_effect.FrameEffect.remove:1 of
+#: janim.items.frame_effect.FrameEffect.remove:3 of
 msgid "调用 :meth:`remove` 很可能不会按预期工作"
 msgstr "Calling :meth:`remove` is unlikely to work as expected."
 
-#: janim.items.frame_effect.FrameEffect.remove:3 of
+#: janim.items.frame_effect.FrameEffect.remove:5 of
 msgid "如果你想应用额外的物件，需要使用 :meth:`discard`"
 msgstr "If you want to discard applied items, use :meth:`discard`."
 
@@ -141,10 +141,11 @@ msgstr ""
 "description in :class:`FrameEffect`"
 
 #: janim.items.frame_effect.SimpleFrameEffect:5 of
-msgid "若着色器代码中出现报错，报错行数无法与 ``shader`` 代码中的行对应"
+msgid ""
+"如果该着色器代码中出现报错，会显示为 ``JA_SIMPLE_FRAMEEFFECT_SHADER`` 中出现的"
 msgstr ""
-"If errors occur in the shader code, the error line numbers cannot correspond to "
-"the lines in the ``shader`` code"
+"If an error occurs in the shader code, it will be displayed as occurring in "
+"``JA_SIMPLE_FRAMEEFFECT_SHADER``."
 
 #: janim.items.frame_effect.Cmpt_FrameClip:1
 #: janim.items.frame_effect.Cmpt_TransformableFrameClip:1 of
@@ -234,46 +235,10 @@ msgstr ""
 ").show()"
 
 #: janim.items.frame_effect.Shadertoy:19 of
-msgid "实际的报错行数要减去 10"
-msgstr "The actual error line number should be subtracted by 10"
-
-#: janim.items.frame_effect.Shadertoy:21 of
-msgid ""
-"例如，如果在上面的例子中将 ``iResolution`` 误写为了 ``Resolution``， 会导致 "
-"``0(12) : error C1503: undefined variable \"Resolution\"`` 的报错， 报错信息说的"
-"是在第 12 行，实际是第 2 行"
+msgid "如果该着色器代码中出现报错，会显示为 ``JA_SHADERTOY`` 中出现的"
 msgstr ""
-"For example, if in the above example ``iResolution`` is mistakenly written as "
-"``Resolution``, it will cause an error ``0(12) : error C1503: undefined "
-"variable \"Resolution\"``. The error message says line 12, but the actual line "
-"is 2"
-
-#: janim.items.frame_effect.Shadertoy:25 of
-msgid "行数标注："
-msgstr "Line number annotation:"
-
-#: janim.items.frame_effect.Shadertoy:27 of
-#, python-brace-format
-msgid ""
-"Shadertoy(\n"
-"    0 '''\n"
-"    1 void mainImage( out vec4 fragColor, in vec2 fragCoord ) {\n"
-"    2     vec2 uv = fragCoord.xy / iResolution.xy;\n"
-"    3     vec3 color = vec3(uv.x, uv.y, 0.5);\n"
-"    4     fragColor = vec4(color, 1.0);\n"
-"    5 }\n"
-"    6 '''\n"
-").show()"
-msgstr ""
-"Shadertoy(\n"
-"    0 '''\n"
-"    1 void mainImage( out vec4 fragColor, in vec2 fragCoord ) {\n"
-"    2     vec2 uv = fragCoord.xy / iResolution.xy;\n"
-"    3     vec3 color = vec3(uv.x, uv.y, 0.5);\n"
-"    4     fragColor = vec4(color, 1.0);\n"
-"    5 }\n"
-"    6 '''\n"
-").show()"
+"If an error occurs in the shader code, it will be displayed as occurring in "
+"``JA_SHADERTOY``."
 
 #: janim.items.frame_effect.AlphaEffect:1 of
 msgid "基类：:py:class:`~janim.items.frame_effect.SimpleFrameEffect`"
@@ -289,3 +254,40 @@ msgstr "基类：:py:class:`~janim.items.frame_effect.SimpleFrameEffect`"
 
 #~ msgid "从该对象移除子对象"
 #~ msgstr "Remove child objects from this object"
+
+#~ msgid "实际的报错行数要减去 10"
+#~ msgstr "The actual error line number should be subtracted by 10"
+
+#~ msgid ""
+#~ "例如，如果在上面的例子中将 ``iResolution`` 误写为了 ``Resolution``， 会导致 "
+#~ "``0(12) : error C1503: undefined variable \"Resolution\"`` 的报错， 报错信息"
+#~ "说的是在第 12 行，实际是第 2 行"
+#~ msgstr ""
+#~ "For example, if in the above example ``iResolution`` is mistakenly written "
+#~ "as ``Resolution``, it will cause an error ``0(12) : error C1503: undefined "
+#~ "variable \"Resolution\"``. The error message says line 12, but the actual "
+#~ "line is 2"
+
+#~ msgid "行数标注："
+#~ msgstr "Line number annotation:"
+
+#~ msgid ""
+#~ "Shadertoy(\n"
+#~ "    0 '''\n"
+#~ "    1 void mainImage( out vec4 fragColor, in vec2 fragCoord ) {\n"
+#~ "    2     vec2 uv = fragCoord.xy / iResolution.xy;\n"
+#~ "    3     vec3 color = vec3(uv.x, uv.y, 0.5);\n"
+#~ "    4     fragColor = vec4(color, 1.0);\n"
+#~ "    5 }\n"
+#~ "    6 '''\n"
+#~ ").show()"
+#~ msgstr ""
+#~ "Shadertoy(\n"
+#~ "    0 '''\n"
+#~ "    1 void mainImage( out vec4 fragColor, in vec2 fragCoord ) {\n"
+#~ "    2     vec2 uv = fragCoord.xy / iResolution.xy;\n"
+#~ "    3     vec3 color = vec3(uv.x, uv.y, 0.5);\n"
+#~ "    4     fragColor = vec4(color, 1.0);\n"
+#~ "    5 }\n"
+#~ "    6 '''\n"
+#~ ").show()"
