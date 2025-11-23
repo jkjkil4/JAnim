@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: JAnim\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-22 21:20+0800\n"
-"PO-Revision-Date: 2025-11-22 22:11+0800\n"
+"POT-Creation-Date: 2025-11-23 11:40+0800\n"
+"PO-Revision-Date: 2025-11-23 11:41+0800\n"
 "Last-Translator: \n"
 "Language-Team: en <LL@li.org>\n"
 "Language: en\n"
@@ -105,18 +105,28 @@ msgstr ""
 "<basic_examples>`"
 
 #: janim.items.frame_effect.FrameEffect.add:1 of
-msgid "向该对象添加子对象"
-msgstr "Add child objects to this object"
+msgid "调用 :meth:`add` 很可能不会按预期工作"
+msgstr "Calling :meth:`add` is unlikely to work as expected."
 
 #: janim.items.frame_effect.FrameEffect.add:3 of
-msgid "如果 ``insert=True`` （默认为 ``False``），那么插入到子物件列表的开头"
-msgstr ""
-"If ``insert=True`` (default is ``False``), then insert at the beginning of the "
-"child items list"
+msgid "如果你想应用额外的物件，需要使用 :meth:`apply`"
+msgstr "If you want to apply additional items, use :meth:`apply`."
 
 #: janim.items.frame_effect.FrameEffect.remove:1 of
-msgid "从该对象移除子对象"
-msgstr "Remove child objects from this object"
+msgid "调用 :meth:`remove` 很可能不会按预期工作"
+msgstr "Calling :meth:`remove` is unlikely to work as expected."
+
+#: janim.items.frame_effect.FrameEffect.remove:3 of
+msgid "如果你想应用额外的物件，需要使用 :meth:`discard`"
+msgstr "If you want to discard applied items, use :meth:`discard`."
+
+#: janim.items.frame_effect.FrameEffect.apply:1 of
+msgid "对更多物件应用效果"
+msgstr "Apply the effect to more items."
+
+#: janim.items.frame_effect.FrameEffect.discard:1 of
+msgid "对指定物件的取消应用效果"
+msgstr "Remove the effect from the specified items."
 
 #: janim.items.frame_effect.FrameClip:1 janim.items.frame_effect.Shadertoy:1
 #: janim.items.frame_effect.SimpleFrameEffect:1
@@ -268,3 +278,14 @@ msgstr ""
 #: janim.items.frame_effect.AlphaEffect:1 of
 msgid "基类：:py:class:`~janim.items.frame_effect.SimpleFrameEffect`"
 msgstr "基类：:py:class:`~janim.items.frame_effect.SimpleFrameEffect`"
+
+#~ msgid "向该对象添加子对象"
+#~ msgstr "Add child objects to this object"
+
+#~ msgid "如果 ``insert=True`` （默认为 ``False``），那么插入到子物件列表的开头"
+#~ msgstr ""
+#~ "If ``insert=True`` (default is ``False``), then insert at the beginning of "
+#~ "the child items list"
+
+#~ msgid "从该对象移除子对象"
+#~ msgstr "Remove child objects from this object"

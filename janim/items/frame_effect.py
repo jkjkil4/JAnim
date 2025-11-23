@@ -89,6 +89,13 @@ class FrameEffect(Item):
         return {}
 
     def add(self, *objs, insert=False) -> Self:
+        '''
+        .. warning::
+
+            调用 :meth:`add` 很可能不会按预期工作
+
+            如果你想应用额外的物件，需要使用 :meth:`apply`
+        '''
         if objs:
             log.warning(
                 _('Calling {cls}.add is unusual and may not work as expected. '
@@ -99,6 +106,13 @@ class FrameEffect(Item):
         return self
 
     def remove(self, *objs) -> Self:
+        '''
+        .. warning::
+
+            调用 :meth:`remove` 很可能不会按预期工作
+
+            如果你想应用额外的物件，需要使用 :meth:`discard`
+        '''
         if objs:
             log.warning(
                 _('Calling {cls}.remove is unusual and may not work as expected. '
@@ -108,6 +122,9 @@ class FrameEffect(Item):
         return super().remove(*objs)
 
     def apply(self, *items: Item, root_only: bool = False) -> Self:
+        '''
+        对更多物件应用效果
+        '''
         self.apprs.extend(
             self.timeline.item_appearances[sub]
             for item in items
@@ -115,6 +132,9 @@ class FrameEffect(Item):
         )
 
     def discard(self, *items: Item, root_only: bool = False) -> Self:
+        '''
+        对指定物件的取消应用效果
+        '''
         for item in items:
             for sub in item.walk_self_and_descendants(root_only):
                 try:
