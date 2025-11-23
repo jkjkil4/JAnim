@@ -540,7 +540,6 @@ class Text(VItem, Group[TextLine]):
         text_at = 0
         act_idx = 0
         act_params_map: defaultdict[str, ActParamsStack] = defaultdict(list)
-        print(self.act_params_list)
         for line in self.children:
             for char in line.children:
                 while act_idx < len(self.act_params_list):
