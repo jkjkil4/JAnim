@@ -52,3 +52,4 @@ from janim.utils.rate_functions import *
 from janim.utils.reload import reloads
 from janim.utils.simple_functions import *
 from janim.utils.space_ops import *
+from janim.utils.typst_compile import set_use_external_typst

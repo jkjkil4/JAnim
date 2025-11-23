@@ -119,8 +119,14 @@
 安装可选依赖项
 -----------------
 
-- `FFmpeg <https://ffmpeg.org>`_ （用于输出视频文件，在 Windows 下安装需要配置 **环境变量**）
-- `Typst <https://github.com/typst/typst/releases>`_ （用于公式排版，需要配置 **环境变量**）
+-   为了输出视频文件，或者进行音视频读取，需要安装 `FFmpeg <https://ffmpeg.org>`_ 。
+
+    但值得注意的是，使用 GUI 界面预览动画效果并不依赖 FFmpeg，只有在最后导出视频时才需要 FFmpeg，因此你完全可以先上手体验 JAnim，等需要输出视频的时候再另行安装。
+
+-   当需要书写公式或高级排版时，在 JAnim 中我们会用到 `Typst <https://github.com/typst/typst/releases>`_ 。
+
+    Typst 已经集成到 JAnim 的安装中了（基于 `typst-py <https://github.com/messense/typst-py>`_ 包），因此不需要另外安装。
+    但是，如果你有使用外部 Typst 可执行文件的需求，这里也提供了外部 Typst 的安装方法。
 
 - 对于 Linux 和 macOS，需要安装 portaudio 以便成功安装 pyaudio，从而在预览界面播放音频，在具体操作系统的分页中有详细介绍。
 

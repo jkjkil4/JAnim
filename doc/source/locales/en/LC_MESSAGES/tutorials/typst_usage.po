@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: JAnim\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-23 08:28+0800\n"
-"PO-Revision-Date: 2025-11-23 08:30+0800\n"
+"POT-Creation-Date: 2025-11-23 12:40+0800\n"
+"PO-Revision-Date: 2025-11-23 12:43+0800\n"
 "Last-Translator: \n"
 "Language-Team: en <LL@li.org>\n"
 "Language: en\n"
@@ -805,3 +805,36 @@ msgstr ""
 #: ../../source/tutorials/typst_usage.rst:379
 msgid "Typst 官方文档： `typst.app/docs <https://typst.app/docs>`_"
 msgstr "Typst Official Documentation: `typst.app/docs <https://typst.app/docs>`_"
+
+#: ../../source/tutorials/typst_usage.rst:382
+msgid "其它"
+msgstr "Others"
+
+#: ../../source/tutorials/typst_usage.rst:384
+msgid ""
+"Typst 已经作为 `typst-py <https://github.com/messense/typst-py>`_ 包集成到 "
+"JAnim 中了，不需要另外安装。"
+msgstr ""
+"Typst is already integrated into JAnim as the `typst-py <https://github.com/"
+"messense/typst-py>`_ package and does not need to be installed separately."
+
+#: ../../source/tutorials/typst_usage.rst:386
+msgid ""
+"但是如果你有使用外部 Typst 可执行文件的需求，首先参考 :ref:`install_dep` 中提及"
+"的安装方法，然后使用以下方法启用外部 Typst："
+msgstr ""
+"However, if you need to use an external Typst executable, first refer to the "
+"installation instructions in :ref:`install_dep`, and then use one of the "
+"following methods to enable it:"
+
+#: ../../source/tutorials/typst_usage.rst:388
+msgid "对于 CLI，可以传递 ``--external_typst`` 选项启用外部 Typst"
+msgstr ""
+"For the CLI, you can pass the ``--external_typst`` option to enable external "
+"Typst"
+
+#: ../../source/tutorials/typst_usage.rst:390
+msgid "或者代码中，可以通过 ``set_use_external_typst(True)`` 启用外部 Typst"
+msgstr ""
+"Alternatively, in your code, you can enable it via "
+"``set_use_external_typst(True)``"
