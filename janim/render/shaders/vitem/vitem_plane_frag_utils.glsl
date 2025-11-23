@@ -9,9 +9,9 @@ void get_curve_attr(
     vec2 A,
     vec2 B,
     vec2 C,
-    out bool match,
-    out float d,
-    out float sgn
+    inout bool match,
+    inout float d,
+    inout float sgn
 ) {
     if (A == B && B == C)
         return;
@@ -65,6 +65,7 @@ void get_subpath_attr(
         }
         vec2 A = get_point(i), C = get_point(i + 2);
 
+        match = false;
         get_curve_attr(A, B, C, match, stroke_d, fill_sgn);
         if (match) {
             idx = i;
