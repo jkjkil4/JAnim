@@ -138,7 +138,7 @@ You can run the following command to see examples.
 janim examples
 ```
 
-The [Documentation](https://janim.readthedocs.io/zh-cn/latest/index.html) provides a more detailed guide on installing and using JAnim. (Note: You can change the documentation language using the flyout menu at the corner of the page.)
+The [Documentation](https://janim.readthedocs.io/en/latest/index.html) provides a more detailed guide on installing and using JAnim. (Note: You can change the documentation language using the flyout menu at the corner of the page.)
 
 ## License
 
