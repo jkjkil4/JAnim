@@ -131,10 +131,6 @@ cd JAnim
 pip install -e .
 ```
 
-另外，还需要安装其他软件依赖:
-- 要生成视频文件，请安装 [FFmpeg](https://ffmpeg.org/).
-- 要使用 Typst，请安装 [Typst](https://github.com/typst/typst).
-
 ## 使用 JAnim
 
 你可以使用如下的命令来查看示例
