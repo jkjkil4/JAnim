@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-11-26 14:12+0800\n"
-"PO-Revision-Date: 2025-11-26 14:16+0800\n"
+"PO-Revision-Date: 2025-11-26 19:22+0800\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
 "Language: zh_CN\n"
@@ -35,7 +35,7 @@ msgstr ""
 msgid ""
 "Changes messages from the VS Code extension will be ignored in direct watch "
 "mode"
-msgstr "直接监听时，将忽略 VS Code 插件传递的变更消息"
+msgstr "直接监测时，将忽略 VS Code 插件传递的变更消息"
 
 #: janim\gui\anim_viewer.py:196
 msgid "File(&F)"
@@ -203,7 +203,7 @@ msgstr "交互端口已在 {port} 开启"
 #: janim\gui\anim_viewer.py:939
 #, python-brace-format
 msgid "Directly watching changes to \"{file}\""
-msgstr "直接监听 \"{file}\" 的变动"
+msgstr "直接监测 \"{file}\" 的变动中"
 
 #~ msgid "Functions(&F)"
 #~ msgstr "功能(&F)"
