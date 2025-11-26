@@ -939,6 +939,7 @@ class AnimViewer(QMainWindow):
 
         self.watcher = QFileSystemWatcher([code_file_path], self)
         self.watcher.fileChanged.connect(self.watcher_timer.start)
+        self.watcher_retries = 0
         log.info(_('Directly watching changes to "{file}"').format(file=code_file_path))
 
     def on_watcher_timer_timeout(self) -> None:
@@ -947,8 +948,14 @@ class AnimViewer(QMainWindow):
         # 所以我们尝试将文件重新 watch，如果 watch 成功说明文件开始存在了，这样我们就可以安心地读取新的代码内容了
         if not self.watcher.files():
             self.watcher.addPath(self.code_file_path)
+            # 如果文件真的被删除了会一直触发，所以最多重试 20 次
+            self.watcher_retries += 1
+            if self.watcher_retries >= 20:
+                self.watcher_retries = 0
+                self.watcher_timer.stop()
             return
 
+        self.watcher_retries = 0
         self.watcher_timer.stop()
         self.on_rebuild_triggered()
 
