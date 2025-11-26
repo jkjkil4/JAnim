@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-15 10:06+0800\n"
+"POT-Creation-Date: 2025-11-22 19:59+0800\n"
 "PO-Revision-Date: 2024-08-03 14:41+0800\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -23,12 +23,12 @@ msgid ""
 "environment variables"
 msgstr "无法读取视频帧，请安装 ffmpeg 并将其添加到环境变量中"
 
-#: janim\items\image_item.py:448
+#: janim\items\image_item.py:452
 msgid ""
 "Unable to read video information, please install ffmpegand add it (including "
 "ffprobe) to the environment variables."
 msgstr "无法读取视频信息，请安装 ffmpeg 并将其（包括 ffprobe）添加到环境变量中"
 
-#: janim\items\image_item.py:453
+#: janim\items\image_item.py:457
 msgid "ffprobe error. Please check the output for more information."
 msgstr "ffprobe 错误，请检查输出信息"

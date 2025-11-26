@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-20 10:51+0800\n"
+"POT-Creation-Date: 2025-11-23 17:18+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -37,7 +37,7 @@ msgstr ""
 msgid "While applying \"{name}\", {params} did not match any entry in {txt}."
 msgstr ""
 
-#: janim\items\text.py:557
+#: janim\items\text.py:556
 #, python-brace-format
 msgid "Unmatched end tag \"</{name}>\", ignored."
 msgstr ""

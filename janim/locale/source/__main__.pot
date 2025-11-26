@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-17 19:41+0800\n"
+"POT-Creation-Date: 2025-11-26 14:14+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -70,99 +70,103 @@ msgid "Preview all timelines from a file"
 msgstr ""
 
 #: janim\__main__.py:108
-msgid "Enable the network socket for interacting with vscode"
+msgid "Enable the network socket for interacting with VS Code"
 msgstr ""
 
-#: janim\__main__.py:116
+#: janim\__main__.py:113
+msgid "Watches the file and rebuild on changes"
+msgstr ""
+
+#: janim\__main__.py:121
 msgid "Name of the Timeline class you want to write"
 msgstr ""
 
-#: janim\__main__.py:117
+#: janim\__main__.py:122
 msgid "Write all timelines from a file"
 msgstr ""
 
-#: janim\__main__.py:122
+#: janim\__main__.py:127
 msgid "Open the video after writing"
 msgstr ""
 
-#: janim\__main__.py:125
+#: janim\__main__.py:130
 msgid "Format Options"
 msgstr ""
 
-#: janim\__main__.py:126
+#: janim\__main__.py:131
 msgid "Options for specifying the format of the output files"
 msgstr ""
 
-#: janim\__main__.py:131
+#: janim\__main__.py:136
 msgid "Output video format (mp4 by default, mov for transparent background)"
 msgstr ""
 
-#: janim\__main__.py:136
+#: janim\__main__.py:141
 msgid "Output audio format (valid only when outputting audio separately)"
 msgstr ""
 
-#: janim\__main__.py:139
+#: janim\__main__.py:144
 msgid "Output Options"
 msgstr ""
 
-#: janim\__main__.py:140
+#: janim\__main__.py:145
 msgid "Options for specifying the parts to be written"
 msgstr ""
 
-#: janim\__main__.py:144
+#: janim\__main__.py:149
 msgid ""
 "Video with audio (default; will be replaced by --video if there is no audio, "
 "and by both --video and --audio if the format is GIF)"
 msgstr ""
 
-#: janim\__main__.py:150
+#: janim\__main__.py:155
 msgid "Video only"
 msgstr ""
 
-#: janim\__main__.py:155
+#: janim\__main__.py:160
 msgid "Audio only"
 msgstr ""
 
-#: janim\__main__.py:160
+#: janim\__main__.py:165
 msgid "Generate SRT file"
 msgstr ""
 
-#: janim\__main__.py:163
+#: janim\__main__.py:168
 msgid "Range Options"
 msgstr ""
 
-#: janim\__main__.py:164
+#: janim\__main__.py:169
 msgid "Options for specifying in/out point"
 msgstr ""
 
-#: janim\__main__.py:169
+#: janim\__main__.py:174
 msgid "Set In Point; use negative value to indicate time relative to the end"
 msgstr ""
 
-#: janim\__main__.py:175
+#: janim\__main__.py:180
 msgid "Set Out Point; use negative value to indicate time relative to the end"
 msgstr ""
 
-#: janim\__main__.py:178
+#: janim\__main__.py:183
 msgid "Other Options"
 msgstr ""
 
-#: janim\__main__.py:179
+#: janim\__main__.py:184
 msgid "Other options for writing the output files"
 msgstr ""
 
-#: janim\__main__.py:183
+#: janim\__main__.py:188
 msgid "Disable PBO (Pixel Buffer Object) for writing video"
 msgstr ""
 
-#: janim\__main__.py:188
+#: janim\__main__.py:193
 msgid "Use hardware acceleration for writing video"
 msgstr ""
 
-#: janim\__main__.py:199
+#: janim\__main__.py:204
 msgid "Name of the example you want to see"
 msgstr ""
 
-#: janim\__main__.py:214
+#: janim\__main__.py:219
 msgid "Tool(s) that you want to use"
 msgstr ""

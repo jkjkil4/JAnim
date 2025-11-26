@@ -37,6 +37,6 @@ class SupportsAnim(Protocol):
 
 def t_(*x):
     '''
-    提供给 janim-toolbox vscode 插件，用于标注其中包含的字符串需要 Typst 高亮
+    提供给 janim-toolbox VS Code 插件，用于标注其中包含的字符串需要 Typst 高亮
     '''
     return x[0] if len(x) == 1 else x

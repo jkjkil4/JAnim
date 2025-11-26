@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-17 18:47+0800\n"
+"POT-Creation-Date: 2025-11-26 11:40+0800\n"
 "PO-Revision-Date: 2024-11-28 20:35+0800\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -17,53 +17,53 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Poedit 3.4.2\n"
 
-#: janim\cli.py:49 janim\cli.py:212
+#: janim\cli.py:49 janim\cli.py:213
 msgid "Constructing window"
 msgstr "构建窗口中"
 
-#: janim\cli.py:66 janim\cli.py:233
+#: janim\cli.py:67 janim\cli.py:234
 #, python-brace-format
 msgid "Finished constructing in {time:.2f} s"
 msgstr "构建完成，耗时 {time:.2f} s"
 
-#: janim\cli.py:93
+#: janim\cli.py:94
 msgid "'--video' is ignored because '--video_with_audio' is set"
 msgstr "'--video' 被忽略，因为已设置 '--video_with_audio'"
 
-#: janim\cli.py:96
+#: janim\cli.py:97
 msgid "'--audio' is ignored because '--video_with_audio' is set"
 msgstr "'--audio' 被忽略，因为已设置 '--video_with_audio'"
 
-#: janim\cli.py:144
+#: janim\cli.py:145
 #, python-brace-format
 msgid "Skipping \"{name}\": no part to output"
 msgstr "跳过 \"{name}\": 没有需要输出的部分"
 
-#: janim\cli.py:195
+#: janim\cli.py:196
 #, python-brace-format
 msgid "Generated SRT file \"{file_path}\""
 msgstr "已生成 SRT 文件 \"{file_path}\""
 
-#: janim\cli.py:204
+#: janim\cli.py:205
 msgid "No tool specified for use"
 msgstr "未指定所使用的工具"
 
-#: janim\cli.py:262
+#: janim\cli.py:263
 #, python-brace-format
 msgid "\"{file_name}\" doesn't exist"
 msgstr "\"{file_name}\" 不存在"
 
-#: janim\cli.py:266
+#: janim\cli.py:267
 #, python-brace-format
 msgid "\"{file_name}\" isn't a file"
 msgstr "\"{file_name}\" 不是一个文件"
 
-#: janim\cli.py:292
+#: janim\cli.py:293
 #, python-brace-format
 msgid "No timeline named \"{name}\""
 msgstr "没有叫作 \"{name}\" 的 Timeline"
 
-#: janim\cli.py:309
+#: janim\cli.py:310
 msgid ""
 "That module has multiple timelines, which ones would you like to render?\n"
 "Timeline Name or Number: "
@@ -71,12 +71,12 @@ msgstr ""
 "这个 module 中有多个 Timeline，你想要渲染哪些？\n"
 "时间轴名称或序号："
 
-#: janim\cli.py:324
+#: janim\cli.py:325
 #, python-brace-format
 msgid "Invaild number {num}"
 msgstr "序号 {num} 无效"
 
-#: janim\cli.py:330
+#: janim\cli.py:331
 #, python-brace-format
 msgid "No timeline named {split_str}"
 msgstr "没有叫作 \"{split_str}\" 的 Timeline"

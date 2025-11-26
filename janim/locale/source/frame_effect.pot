@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-17 15:33+0800\n"
+"POT-Creation-Date: 2025-11-23 17:18+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,14 +17,14 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: janim\items\frame_effect.py:94
+#: janim\items\frame_effect.py:101
 #, python-brace-format
 msgid ""
 "Calling {cls}.add is unusual and may not work as expected. If you want to "
 "apply additional items, use `apply` instead."
 msgstr ""
 
-#: janim\items\frame_effect.py:104
+#: janim\items\frame_effect.py:118
 #, python-brace-format
 msgid ""
 "Calling {cls}.remove is unusual and may not work as expected. If you want to "

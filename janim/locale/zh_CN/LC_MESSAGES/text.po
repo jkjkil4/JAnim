@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-20 10:51+0800\n"
+"POT-Creation-Date: 2025-11-23 17:18+0800\n"
 "PO-Revision-Date: 2025-11-20 10:50+0800\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -37,7 +37,7 @@ msgstr "应用 {name} 时，{params} 与 {cvt_names} 不匹配"
 msgid "While applying \"{name}\", {params} did not match any entry in {txt}."
 msgstr "应用 \"{name}\" 时，{params} 与 {txt} 没有匹配项"
 
-#: janim\items\text.py:557
+#: janim\items\text.py:556
 #, python-brace-format
 msgid "Unmatched end tag \"</{name}>\", ignored."
 msgstr "未匹配的结束标签 \"</{name}>\"，已忽略"

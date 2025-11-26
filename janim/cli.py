@@ -55,6 +55,7 @@ def run(args: Namespace) -> None:
         viewer = AnimViewer(built,
                             auto_play=auto_play,
                             interact=args.interact,
+                            watch=args.watch,
                             available_timeline_names=available_timeline_names)
         widgets.append(viewer)
         viewer.show()

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-17 15:33+0800\n"
+"POT-Creation-Date: 2025-11-23 17:18+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,14 +17,14 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: janim\components\vpoints.py:54
+#: janim\components\vpoints.py:52
 #, python-brace-format
 msgid ""
 "The number of points set is {len}, which is not odd. The last point will be "
 "ignored."
 msgstr ""
 
-#: janim\components\vpoints.py:363
+#: janim\components\vpoints.py:361
 #, python-brace-format
 msgid "n must be a value of 0~{maxn}, {n} is invalid"
 msgstr ""

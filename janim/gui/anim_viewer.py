@@ -22,7 +22,7 @@ from bisect import bisect_right
 from contextlib import contextmanager, nullcontext
 
 from PySide6.QtCore import (QByteArray, QEvent, QPoint, QSettings, Qt, QTimer,
-                            Signal)
+                            Signal, QFileSystemWatcher)
 from PySide6.QtGui import (QAction, QCloseEvent, QGuiApplication, QHideEvent,
                            QIcon, QShowEvent)
 from PySide6.QtWidgets import (QApplication, QCompleter, QLabel, QLineEdit,
@@ -70,6 +70,7 @@ class AnimViewer(QMainWindow):
         *,
         auto_play: bool = True,
         interact: bool = False,
+        watch: bool = False,
         available_timeline_names: list[str] | None = None,
         parent: QWidget | None = None
     ):
@@ -78,10 +79,20 @@ class AnimViewer(QMainWindow):
 
         self.setup_ui()
         self.setup_play_timer()
+
         if interact:
             self.setup_socket(built.cfg.client_search_port)
         else:
             self.socket = None
+
+        if watch and self.code_file_path:
+            self.setup_watcher(self.code_file_path)
+        else:
+            self.watcher = None
+
+        if self.watcher is not None and self.socket is not None:
+            log.info(_('Changes messages from the VS Code extension will be ignored in direct watch mode'))
+
         self.audio_player = None
 
         self.setup_slots()
@@ -902,8 +913,9 @@ class AnimViewer(QMainWindow):
 
                     # 重新构建
                     case 'file_saved':
-                        if os.path.samefile(janim['file_path'], inspect.getmodule(self.built.timeline).__file__):
-                            self.on_rebuild_triggered()
+                        if self.watcher is not None:    # 如果已经用 watcher 来监视文件变化，则跳过，避免功能重复
+                            if os.path.samefile(janim['file_path'], inspect.getmodule(self.built.timeline).__file__):
+                                self.on_rebuild_triggered()
 
             except Exception:
                 traceback.print_exc()
@@ -920,6 +932,25 @@ class AnimViewer(QMainWindow):
                 QByteArray.fromStdString(msg),
                 *client
             )
+
+    def setup_watcher(self, code_file_path: str) -> None:
+        self.watcher_timer = QTimer(self, interval=1)
+        self.watcher_timer.timeout.connect(self.on_watcher_timer_timeout)
+
+        self.watcher = QFileSystemWatcher([code_file_path], self)
+        self.watcher.fileChanged.connect(self.watcher_timer.start)
+        log.info(_('Directly watching changes to "{file}"').format(file=code_file_path))
+
+    def on_watcher_timer_timeout(self) -> None:
+        # 有些编辑器，比如 vim，并不是真正“写入文件”，而是“把原来的移动走”再“把新的写入原来位置”
+        # 这种情况下会导致 watch 追踪丢失，并且文件在某一段时间处于“不存在”的状态
+        # 所以我们尝试将文件重新 watch，如果 watch 成功说明文件开始存在了，这样我们就可以安心地读取新的代码内容了
+        if not self.watcher.files():
+            self.watcher.addPath(self.code_file_path)
+            return
+
+        self.watcher_timer.stop()
+        self.on_rebuild_triggered()
 
     def closeEvent(self, event: QCloseEvent) -> None:
         super().closeEvent(event)

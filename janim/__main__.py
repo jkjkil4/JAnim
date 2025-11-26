@@ -105,7 +105,12 @@ def run_parser(parser: ArgumentParser) -> None:
     parser.add_argument(
         '-i', '--interact',
         action='store_true',
-        help=_('Enable the network socket for interacting with vscode')
+        help=_('Enable the network socket for interacting with VS Code')
+    )
+    parser.add_argument(
+        '-w', '--watch',
+        action='store_true',
+        help=_('Watches the file and rebuild on changes')
     )
     parser.set_defaults(func=run)
 
