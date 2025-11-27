@@ -281,7 +281,7 @@ class ConfigGetter:
 
     def scaled_pixel_size(self, scale: float) -> dict[str, int]:
         '''
-        根据缩放比例计算缩放后的像素尺寸
+        根据缩放比例计算缩放后的 **像素尺寸**
 
         使用示例：
 
@@ -298,7 +298,7 @@ class ConfigGetter:
 
     def scaled_frame_size(self, scale: float) -> dict[str, float]:
         '''
-        根据缩放比例计算缩放后的画面尺寸
+        根据缩放比例计算缩放后的 **画面尺寸**
 
         使用示例：
 
@@ -311,6 +311,76 @@ class ConfigGetter:
         return {
             'frame_width': self.frame_width * scale,
             'frame_height': self.frame_height * scale
+        }
+
+    def scaled_width(self, scale: float) -> dict[str, float]:
+        '''
+        根据缩放比例计算缩放后的 **画面宽度和像素宽度**
+
+        使用示例：
+
+        .. code-block:: python
+
+            Config(
+                **Config.get.scaled_width(0.5)
+            )
+        '''
+        return {
+            'pixel_width': int(self.pixel_width * scale),
+            'frame_width': self.frame_width * scale
+        }
+
+    def scaled_height(self, scale: float) -> dict[str, float]:
+        '''
+        根据缩放比例计算缩放后的 **画面高度和像素高度**
+
+        使用示例：
+
+        .. code-block:: python
+
+            Config(
+                **Config.get.scaled_height(0.5)
+            )
+        '''
+        return {
+            'pixel_height': int(self.pixel_height * scale),
+            'frame_height': self.frame_height * scale
+        }
+
+    def scaled_size(self, scale: float) -> dict[str, float]:
+        '''
+        根据缩放比例计算缩放后的 **画面尺寸和像素尺寸**
+
+        使用示例：
+
+        .. code-block:: python
+
+            Config(
+                **Config.get.scaled_size(0.5)
+            )
+        '''
+        return {
+            **self.scaled_width(scale),
+            **self.scaled_height(scale)
+        }
+
+    def swapped_size(self) -> dict[str, int]:
+        '''
+        获取交换宽高后的 **画面尺寸和像素尺寸**
+
+        使用示例（将横屏配置转为竖屏）：
+
+        .. code-block:: python
+
+            Config(
+                **Config.get.swapped_size()
+            )
+        '''
+        return {
+            'pixel_width': self.pixel_height,
+            'pixel_height': self.pixel_width,
+            'frame_width': self.frame_height,
+            'frame_height': self.frame_width
         }
 
 
