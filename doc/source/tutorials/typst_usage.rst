@@ -126,6 +126,29 @@ Typst 子物件索引
         t['formula']
         t['$x$']
 
+获取 ``label`` 标记的内容
+--------------------------
+
+Typst 中带有 ``label`` 的 ``box`` 可以通过 :meth:`~.SVGItem.get_label` 方法索引：
+
+.. janim-example:: LabelQuery
+    :media: _static/tutorial/LabelQuery.png
+    :hide_name:
+
+    typ = TypstText(
+        R'''
+        #box[
+            For example, content inside this box can be queried from JAnim
+        ] <label1>
+
+        #let l2(body) = [#box(body)<label2>]
+
+        For example, we can s#l2[ele]ct #l2[multiple] part#l2[s] in this sentence.
+        '''
+    ).show()
+    typ.get_label('label1').set(color=RED)
+    typ.get_label('label2').set(color=GREEN)
+
 内置包
 -----------------
 
