@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: JAnim\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-22 21:20+0800\n"
-"PO-Revision-Date: 2025-11-22 22:03+0800\n"
+"POT-Creation-Date: 2025-11-27 17:04+0800\n"
+"PO-Revision-Date: 2025-11-27 17:05+0800\n"
 "Last-Translator: \n"
 "Language-Team: en <LL@li.org>\n"
 "Language: en\n"
@@ -262,11 +262,10 @@ msgid "``duration`` 表示持续时间"
 msgstr "``duration`` represents the duration"
 
 #: janim.anims.timeline.Timeline.subtitle:6 of
-msgid ""
-"``scale`` 表示对文字的缩放，默认为 ``0.8``，可以传入列表表示对各个文字的缩放"
+msgid "``scale`` 表示对文字的缩放，可以传入列表表示对各个文字的缩放"
 msgstr ""
-"``scale`` represents the scaling of text, default is ``0.8``. You can pass a "
-"list to specify scaling for each text"
+"``scale`` represents the scaling of text. You can pass a list to specify scaling "
+"for each text"
 
 #: janim.anims.timeline.Timeline.subtitle:7 of
 msgid ""
@@ -276,7 +275,27 @@ msgstr ""
 "``use_typst_text`` indicates whether to use :class:`TypstText`. You can pass a "
 "list to specify whether each text uses it"
 
-#: janim.anims.timeline.Timeline.subtitle:9 of
+#: janim.anims.timeline.Timeline.subtitle:8 of
+msgid "将 ``surrounding_alpha`` 设置为 ``0`` 可以禁用附带的底框"
+msgstr "Set ``surrounding_alpha`` to ``0`` to disable the background box"
+
+#: janim.anims.timeline.Timeline.subtitle:10 of
+msgid ":class:`~.Config` 中也提供了一些可以配置的参数："
+msgstr ":class:`~.Config` also provides some configurable parameters:"
+
+#: janim.anims.timeline.Timeline.subtitle:12 of
+msgid "``subtitle_font`` 可全局配置字幕所使用的字体"
+msgstr "``subtitle_font`` globally configures the font used for subtitles"
+
+#: janim.anims.timeline.Timeline.subtitle:13 of
+msgid ""
+"``subtitle_to_edge_buff`` 可配置字幕离底边的距离，默认是 "
+"``DEFAULT_ITEM_TO_EDGE_BUFF``"
+msgstr ""
+"``subtitle_to_edge_buff`` configures the distance from the subtitle to the "
+"bottom edge; defaults to ``DEFAULT_ITEM_TO_EDGE_BUFF``"
+
+#: janim.anims.timeline.Timeline.subtitle:15 of
 msgid "返回值表示显示的时间段"
 msgstr "Return value represents the display time range"
 

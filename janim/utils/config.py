@@ -11,7 +11,7 @@ import attrs
 import psutil
 from colour import Color
 
-from janim.constants import DOWN, LEFT, RIGHT, UP
+from janim.constants import DEFAULT_ITEM_TO_EDGE_BUFF, DOWN, LEFT, RIGHT, UP
 from janim.locale.i18n import get_local_strings
 from janim.typing import Vect
 from janim.utils.file_ops import guarantee_existence
@@ -123,6 +123,7 @@ class Config(metaclass=_ConfigMeta):
     background_color: Color = _field(validator=optional_type_validator(Color, 'Color'))
     font: str | Iterable[str] = None
     subtitle_font: str | Iterable[str] = None
+    subtitle_to_edge_buff: float = None
 
     audio_framerate: int = _field(validator=_opt_int_validator)
     audio_channels: int = _field(validator=_opt_int_validator)
@@ -170,6 +171,7 @@ default_config = Config(
     background_color=Color('#000000'),
     font='Consolas',
     subtitle_font='',
+    subtitle_to_edge_buff=DEFAULT_ITEM_TO_EDGE_BUFF,
 
     audio_framerate=44100,
     audio_channels=2,

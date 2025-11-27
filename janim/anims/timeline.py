@@ -27,8 +27,7 @@ from janim.anims.composition import AnimGroup
 from janim.anims.updater import updater_params_ctx
 from janim.camera.camera import Camera
 from janim.camera.camera_info import CameraInfo
-from janim.constants import (BLACK, DEFAULT_DURATION,
-                             DEFAULT_ITEM_TO_EDGE_BUFF, DOWN, FOREVER,
+from janim.constants import (BLACK, DEFAULT_DURATION, DOWN, FOREVER,
                              SMALL_BUFF, UP)
 from janim.exception import TimelineLookupError
 from janim.items.audio import Audio
@@ -466,11 +465,14 @@ class Timeline(metaclass=ABCMeta):
         self,
         text: str | Iterable[str],
         duration: float = 1,
+        *,
         delay: float = 0,
         scale: float | Iterable[float] = 0.8,
         use_typst_text: bool | Iterable[bool] = False,
+
         surrounding_color: JAnimColor = BLACK,
         surrounding_alpha: float = 0.5,
+
         font: str | Iterable[str] = [],
         depth: float = -1e5,
         **kwargs
@@ -483,13 +485,17 @@ class Timeline(metaclass=ABCMeta):
         self,
         text: str | Iterable[str],
         duration: float = 1,
+        *,
         delay: float = 0,
         scale: float | Iterable[float] = 1,
         base_scale: float = 0.8,
         use_typst_text: bool | Iterable[bool] = False,
+
         surrounding_color: JAnimColor = BLACK,
         surrounding_alpha: float = 0.5,
+
         font: str | Iterable[str] = [],
+
         depth: float = -1e5,
         **kwargs
     ) -> TimeRange:
@@ -499,8 +505,14 @@ class Timeline(metaclass=ABCMeta):
         - 文字可以传入一个列表，纵向排列显示
         - 可以指定在当前位置往后 ``delay`` 秒才显示
         - ``duration`` 表示持续时间
-        - ``scale`` 表示对文字的缩放，默认为 ``0.8``，可以传入列表表示对各个文字的缩放
+        - ``scale`` 表示对文字的缩放，可以传入列表表示对各个文字的缩放
         - ``use_typst_text`` 表示是否使用 :class:`TypstText`，可以传入列表表示各个文字是否使用
+        - 将 ``surrounding_alpha`` 设置为 ``0`` 可以禁用附带的底框
+
+        :class:`~.Config` 中也提供了一些可以配置的参数：
+
+        - ``subtitle_font`` 可全局配置字幕所使用的字体
+        - ``subtitle_to_edge_buff`` 可配置字幕离底边的距离，默认是 ``DEFAULT_ITEM_TO_EDGE_BUFF``
 
         返回值表示显示的时间段
         '''
@@ -540,18 +552,21 @@ class Timeline(metaclass=ABCMeta):
             self.place_subtitle(subtitle, range)
             self.subtitle_infos.append(Timeline.SubtitleInfo(text, range, kwargs, subtitle))
 
-            subtitle_group = Group(
-                SurroundingRect(subtitle,
-                                color=surrounding_color,
-                                stroke_alpha=0,
-                                fill_alpha=surrounding_alpha),
-                subtitle
-            ).fix_in_frame()
-            subtitle_group.depth.set(depth)
+            if surrounding_alpha == 0:
+                subtitle_display = subtitle
+            else:
+                subtitle_display = Group(
+                    SurroundingRect(subtitle,
+                                    color=surrounding_color,
+                                    stroke_alpha=0,
+                                    fill_alpha=surrounding_alpha),
+                    subtitle
+                )
+            subtitle_display.fix_in_frame().depth.set(depth)
 
             if not self.hide_subtitles:
-                self.schedule(range.at, subtitle_group.show)
-                self.schedule(range.end, subtitle_group.hide)
+                self.schedule(range.at, subtitle_display.show)
+                self.schedule(range.end, subtitle_display.hide)
 
         return range.copy()
 
@@ -571,12 +586,15 @@ class Timeline(metaclass=ABCMeta):
                 subtitle.points.next_to(other.subtitle, UP, buff=2 * SMALL_BUFF)
                 return
 
+        buff_to_edge = Config.get.subtitle_to_edge_buff
+
         if isinstance(subtitle, Text):
             # 相对于 mark_orig 对齐到屏幕底端，这样不同字幕的位置不会上下浮动
-            target_y = -Config.get.frame_y_radius + DEFAULT_ITEM_TO_EDGE_BUFF
-            subtitle.points.set_x(0).shift(UP * (target_y - subtitle[-1].get_mark_orig()[1]))
+            target_y = -Config.get.frame_y_radius + buff_to_edge
+            mark_y = subtitle[-1].get_mark_orig()[1]
+            subtitle.points.set_x(0).shift(UP * (target_y - mark_y))
         else:
-            subtitle.points.to_border(DOWN)
+            subtitle.points.to_border(DOWN, buff=buff_to_edge)
 
     def has_subtitle(self) -> bool:
         return len(self.subtitle_infos) != 0
