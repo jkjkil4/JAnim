@@ -474,6 +474,7 @@ class Timeline(metaclass=ABCMeta):
         surrounding_alpha: float = 0.5,
 
         font: str | Iterable[str] = [],
+
         depth: float = -1e5,
         **kwargs
     ) -> TimeRange: ...
