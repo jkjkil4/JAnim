@@ -124,7 +124,14 @@ You may install JAnim directly via
 ```sh
 pip install janim
 ```
-to install the latest version distributed on pypi. Or, to catch up with the latest development and edit the source code, you may clone this repository via
+to install the latest version distributed on PyPI.
+
+To install the latest development version directly from the `main` branch without cloning the repository, you can run:
+```sh
+pip install git+https://github.com/jkjkil4/JAnim.git@main
+```
+
+Or, to catch up with the latest development and edit the source code, you may clone this repository and install it in editable mode:
 ```sh
 git clone https://github.com/jkjkil4/JAnim.git
 cd JAnim

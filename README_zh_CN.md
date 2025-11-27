@@ -120,11 +120,17 @@ class BubbleSort(Timeline):
 
 JAnim 运行在 Python 3.12 及更高版本
 
-你可以通过以下命令直接安装 JAnim
+你可以直接安装 PyPI 上发布的最新版本：
 ```sh
 pip install janim
 ```
-来安装在 pypi 上发布的最新版本。或者，为了跟上最新的开发进度并编辑源代码，你可以通过以下命令克隆此仓库
+
+如果你想直接安装 `main` 分支上的最新开发版本（而无需克隆仓库），请运行：
+```sh
+pip install git+https://github.com/jkjkil4/JAnim.git@main
+```
+
+或者，为了跟上最新的开发进度并编辑源代码，你可以克隆本仓库并以可编辑模式安装：
 ```sh
 git clone https://github.com/jkjkil4/JAnim.git
 cd JAnim
