@@ -331,10 +331,10 @@ msgid "``mismatch`` 表示对于不匹配的形状的处理"
 msgstr "``mismatch`` indicates how to handle shapes that do not match"
 
 #: janim.anims.transform.TransformMatchingShapes:4 of
-msgid "注：所有传入该动画类的额外参数都会被传入 ``mismatch`` 的方法中"
+msgid "注：所有传入该动画类的额外参数都会被传入 ``match`` 和 ``mismatch`` 的方法中"
 msgstr ""
 "Note: All additional parameters passed to this animation class will be passed "
-"to the methods in ``mismatch``"
+"to the methods in ``match`` and ``mismatch``"
 
 #: ../../source/janim/anims/transform.rst:20
 msgid ""

@@ -402,7 +402,7 @@ class TransformMatchingShapes(AnimGroup):
     匹配形状进行变换
 
     - ``mismatch`` 表示对于不匹配的形状的处理
-    - 注：所有传入该动画类的额外参数都会被传入 ``mismatch`` 的方法中
+    - 注：所有传入该动画类的额外参数都会被传入 ``match`` 和 ``mismatch`` 的方法中
     '''
 
     label_color = C_LABEL_ANIM_STAY
@@ -420,6 +420,7 @@ class TransformMatchingShapes(AnimGroup):
         **kwargs
     ):
         src_mismatch_method, target_mismatch_method = mismatch
+        kwargs['root_only'] = True  # 内层动画一定 root_only，否则处理带有子物件的非空图形会导致重复变换
 
         def self_and_descendant_with_points(item: Item) -> list[VItem]:
             return [
