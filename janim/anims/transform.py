@@ -412,6 +412,7 @@ class TransformMatchingShapes(AnimGroup):
         src: Item,
         target: Item,
         *,
+        match: Callable = Transform,
         mismatch: tuple[Callable, Callable] = (FadeOutToPoint, FadeInFromPoint),
         duration: float = 2,
         lag_ratio: float = 0,
@@ -457,7 +458,7 @@ class TransformMatchingShapes(AnimGroup):
 
         super().__init__(
             *[
-                Transform(piece1, piece2, **kwargs)
+                match(piece1, piece2, **kwargs)
                 for piece1, piece2 in zip(src_matched, target_matched)
             ],
             *[
