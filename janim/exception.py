@@ -1,10 +1,33 @@
 import sys
 from dataclasses import dataclass
 
+_listen_exception_callbacks = []
 _sys_excepthook = sys.excepthook
 
 
+def listen_exception(callback):
+    '''
+    添加 ``Exception`` 监听，对于未捕获的异常会调用 ``callback``，如果 ``callback`` 返回 ``True`` 则忽略异常
+    '''
+    _listen_exception_callbacks.append(callback)
+
+
+def cancel_listen_exception(callback):
+    '''
+    移除 ``Exception`` 监听
+    '''
+    _listen_exception_callbacks.remove(callback)
+
+
 def custom_excepthook(exc_type, exc_value, exc_traceback):
+    ignored = False
+    for callback in _listen_exception_callbacks:
+        if callback(exc_type, exc_value, exc_traceback):
+            ignored = True
+
+    if ignored:
+        return
+
     if issubclass(exc_type, ExitException):
         sys.exit(exc_value.exit_code)
     _sys_excepthook(exc_type, exc_value, exc_traceback)

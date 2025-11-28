@@ -6,22 +6,35 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: JAnim \n"
+"Project-Id-Version: JAnim\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-22 20:19+0800\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language: en\n"
+"POT-Creation-Date: 2025-11-28 08:30+0800\n"
+"PO-Revision-Date: 2025-11-28 08:32+0800\n"
+"Last-Translator: \n"
 "Language-Team: en <LL@li.org>\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Language: en\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "Generated-By: Babel 2.17.0\n"
+"X-Generator: Poedit 3.8\n"
 
 #: ../../source/janim/exception.rst:2
 msgid "exception"
 msgstr "exception"
+
+#: janim.exception.listen_exception:1 of
+msgid ""
+"添加 ``Exception`` 监听，对于未捕获的异常会调用 ``callback``，如果 ``callback`` "
+"返回 ``True`` 则忽略异常"
+msgstr ""
+"Add an exception listener. The ``callback`` will be invoked for unhandled "
+"exceptions. If the ``callback`` returns ``True``, the exception is suppressed."
+
+#: janim.exception.cancel_listen_exception:1 of
+msgid "移除 ``Exception`` 监听"
+msgstr "Remove the exception listener."
 
 #: ../../docstring janim.exception.EXITCODE_PYSIDE6_NOT_FOUND:1 of
 msgid "``PySide6`` 未安装时的退出码"
@@ -65,7 +78,9 @@ msgid "基类：:py:class:`~janim.exception.JAnimException`"
 msgstr "基类：:py:class:`~janim.exception.JAnimException`"
 
 #: janim.exception.ExitException:1 of
-msgid "当 :class:`ExitException` 未被捕获时， 会直接以 ``exit_code`` 退出，不输出 ``traceback`` 信息"
+msgid ""
+"当 :class:`ExitException` 未被捕获时， 会直接以 ``exit_code`` 退出，不输出 "
+"``traceback`` 信息"
 msgstr ""
 "When :class:`ExitException` is not caught, it will exit directly with "
 "``exit_code`` without outputting ``traceback`` information"
@@ -75,13 +90,11 @@ msgstr ""
 msgid "基类：:py:class:`~janim.exception.TimelineError`"
 msgstr "基类：:py:class:`~janim.exception.TimelineError`"
 
-#: janim.exception.AnimGroupError:1 janim.exception.ApplyAlignerBrokenError:1
-#: of
+#: janim.exception.AnimGroupError:1 janim.exception.ApplyAlignerBrokenError:1 of
 msgid "基类：:py:class:`~janim.exception.AnimationError`"
 msgstr "基类：:py:class:`~janim.exception.AnimationError`"
 
-#: janim.exception.InvalidOrdinalError:1 janim.exception.PatternMismatchError:1
-#: of
+#: janim.exception.InvalidOrdinalError:1 janim.exception.PatternMismatchError:1 of
 msgid "基类：:py:class:`~janim.exception.GetItemError`"
 msgstr "基类：:py:class:`~janim.exception.GetItemError`"
 
@@ -89,22 +102,9 @@ msgstr "基类：:py:class:`~janim.exception.GetItemError`"
 msgid "基类：:py:class:`~janim.exception.PointError`"
 msgstr "基类：:py:class:`~janim.exception.PointError`"
 
-#~ msgid "``Typst`` 未安装时的退出码"
+#~ msgid ""
+#~ "``PyOpenGL`` 未安装时的退出码（仅在设备不支持 OpenGL4.3 的情况下需要安装 "
+#~ "PyOpenGL）"
 #~ msgstr ""
-
-#~ msgid "``Typst`` 编译失败时的退出码"
-#~ msgstr ""
-
-#~ msgid "``ffmpeg`` 未安装时的退出码"
-#~ msgstr ""
-
-#~ msgid "``ffprobe`` 执行失败时的退出码"
-#~ msgstr ""
-
-#~ msgid "``PyOpenGL`` 未安装时的退出码（仅在设备不支持 OpenGL4.3 的情况下需要安装 PyOpenGL）"
-#~ msgstr ""
-#~ "Exit code when ``PyOpenGL`` is not "
-#~ "installed (PyOpenGL is only needed when"
-#~ " the device does not support OpenGL"
-#~ " 4.3)"
-
+#~ "Exit code when ``PyOpenGL`` is not installed (PyOpenGL is only needed when "
+#~ "the device does not support OpenGL 4.3)"
