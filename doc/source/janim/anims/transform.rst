@@ -168,3 +168,74 @@ transform
             self.forward()
             self.play(TransformMatchingShapes(b, a, path_arc=PI/2))
             self.forward()
+
+.. autoclass:: janim.anims.transform.TransformMatchingDiff
+    :show-inheritance:
+
+.. janim-example:: TransformMatchingDiffExample
+    :media: _static/videos/TransformMatchingDiffExample.mp4
+
+    typ1_src = R"""
+    ```python
+    subtitle_group = Group(
+        SurroundingRect(subtitle,
+                        color=surrounding_color,
+                        stroke_alpha=0,
+                        fill_alpha=surrounding_alpha),
+        subtitle
+    ).fix_in_frame()
+    subtitle_group.depth.set(depth)
+
+    if not self.hide_subtitles:
+        self.schedule(range.at, subtitle_group.show)
+        self.schedule(range.end, subtitle_group.hide)
+    ```
+    """
+
+    typ2_src = R"""
+    ```python
+    if surrounding_alpha == 0:
+        subtitle_display = subtitle
+    else:
+        subtitle_display = Group(
+            SurroundingRect(subtitle,
+                            color=surrounding_color,
+                            stroke_alpha=0,
+                            fill_alpha=surrounding_alpha),
+            subtitle
+        )
+    subtitle_display.fix_in_frame().depth.set(depth)
+
+    if not self.hide_subtitles:
+        self.schedule(range.at, subtitle_display.show)
+        self.schedule(range.end, subtitle_display.hide)
+    ```
+    """
+
+    class TransformMatchingDiffExample(Timeline):
+        CONFIG = Config(
+            typst_shared_preamble=t_(
+                R'''
+                #set text(black)
+                #show: box.with(inset: 8pt, fill: white, stroke: gray + 2pt, radius: 4pt)
+                '''
+            )
+        )
+
+        def construct(self):
+            typ1 = TypstDoc(typ1_src).show()
+            typ2 = TypstDoc(typ2_src)
+
+            # 设置背景框的深度
+            for typ in [typ1, typ2]:
+                typ[:2].set(depth=1)
+
+            self.forward()
+            self.play(
+                Transform(typ1[:2], typ2[:2], duration=2),
+                TransformMatchingDiff(typ1[2:], typ2[2:])
+            )
+            self.forward()
+
+            typ1 = TypstDoc(typ1_src).show()
+            typ2 = TypstDoc(typ2_src)

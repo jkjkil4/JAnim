@@ -420,7 +420,7 @@ class TransformMatchingShapes(AnimGroup):
 
     - ``match`` 表示对于匹配的形状的处理
     - ``mismatch`` 表示对于不匹配的形状的处理
-    - 注：所有传入该动画类的额外参数都会被传入 ``match`` 和 ``mismatch`` 的方法中
+    - 注：所有传入该动画类的额外参数（``**kwargs``）都会被传入 ``match`` 和 ``mismatch`` 的方法中
     '''
 
     label_color = C_LABEL_ANIM_STAY
