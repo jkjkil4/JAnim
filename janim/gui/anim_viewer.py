@@ -916,7 +916,7 @@ class AnimViewer(QMainWindow):
 
                     # 重新构建
                     case 'file_saved':
-                        if self.watcher is not None:    # 如果已经用 watcher 来监视文件变化，则跳过，避免功能重复
+                        if self.watcher is None:    # 如果已经用 watcher 来监视文件变化，则跳过，避免功能重复
                             if os.path.samefile(janim['file_path'], inspect.getmodule(self.built.timeline).__file__):
                                 self.on_rebuild_triggered()
 
