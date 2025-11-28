@@ -471,7 +471,7 @@ class Text(VItem, Group[TextLine]):
             idx -= len(line)
         return len(self) - 1, idx
 
-    def select_parts(self, pattern, group: int = 0):
+    def select_parts(self, pattern: str | re.Pattern, group: int = 0):
         '''
         根据 ``pattern`` **正则表达式** 获得文字中的部分
 

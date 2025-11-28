@@ -1,7 +1,10 @@
+from __future__ import annotations
 
+import difflib
 import itertools as it
 import types
 from collections import defaultdict
+from dataclasses import dataclass
 from enum import Enum
 from functools import partial
 from typing import Callable, Generator, Iterable
@@ -12,6 +15,7 @@ from janim.anims.fading import FadeInFromPoint, FadeOutToPoint
 from janim.constants import C_LABEL_ANIM_STAY, OUT
 from janim.items.item import Item
 from janim.items.points import Points
+from janim.items.text import Text, TextChar, TextLine
 from janim.items.vitem import VItem
 from janim.locale.i18n import get_local_strings
 from janim.logger import log
@@ -474,3 +478,138 @@ class TransformMatchingShapes(AnimGroup):
             lag_ratio=lag_ratio,
             collapse=collapse
         )
+
+
+class TransformMatchingDiff(AnimGroup):
+    '''
+    匹配 diff 进行变换
+
+    对于一般物件，使用形状匹配 diff；对于 :class:`~.Text` 使用 :class:`~.TextChar` 的字符匹配 diff
+
+    - 注：所有传入该动画类的额外参数都会被传入 ``match`` 和 ``mismatch`` 的方法中
+    '''
+
+    label_color = C_LABEL_ANIM_STAY
+
+    def __init__(
+        self,
+        src: Item,
+        target: Item,
+        *,
+        match: Callable = Transform,
+        mismatch: tuple[Callable, Callable] = (FadeOutToPoint, FadeInFromPoint),
+        duration: float = 2,
+        lag_ratio: float = 0,
+        collapse: bool = True,
+        **kwargs
+    ):
+        src_mismatch_method, target_mismatch_method = mismatch
+        kwargs['root_only'] = True  # 内层动画一定 root_only，否则处理带有子物件的非空图形会导致重复变换
+
+        src_center = src(Points).points.box.center
+        target_center = target(Points).points.box.center
+
+        a, b = self.get_match_sequences(src, target)
+        matcher = difflib.SequenceMatcher(None, a, b)
+
+        animations: list[ItemAnimation] = []
+
+        for tag, i1, i2, j1, j2 in matcher.get_opcodes():
+            match tag:
+                case 'equal':
+                    assert j2 - j1 == i2 - i1
+                    animations += [
+                        match(wrapper1.item, wrapper2.item, **kwargs)
+                        for wrapper1, wrapper2 in zip(a[i1:i2], b[j1:j2])
+                    ]
+
+                case 'delete':
+                    animations += [
+                        src_mismatch_method(wrapper.item, target_center, **kwargs)
+                        for wrapper in a[i1:i2]
+                    ]
+
+                case 'insert':
+                    animations += [
+                        target_mismatch_method(wrapper.item, src_center, **kwargs)
+                        for wrapper in b[j1:j2]
+                    ]
+
+                case 'replace':
+                    animations += [
+                        src_mismatch_method(wrapper.item, target_center, **kwargs)
+                        for wrapper in a[i1:i2]
+                    ]
+                    animations += [
+                        target_mismatch_method(wrapper.item, src_center, **kwargs)
+                        for wrapper in b[j1:j2]
+                    ]
+
+        super().__init__(
+            *animations,
+            duration=duration,
+            lag_ratio=lag_ratio,
+            collapse=collapse
+        )
+
+    @classmethod
+    def get_match_sequences(
+        cls,
+        src: Item,
+        target: Item
+    ) -> tuple[list[MatchWrapper], list[MatchWrapper]]:
+
+        def self_and_descendant_with_points(item: Item) -> list[VItem]:
+            return [
+                item
+                for item in item.walk_self_and_descendants()
+                if isinstance(item, VItem) and item.points.has()
+            ]
+
+        src_pieces = self_and_descendant_with_points(src)
+        target_pieces = self_and_descendant_with_points(target)
+
+        if cls.can_use_char_wrapper(src, target, src_pieces, target_pieces):
+            wrapper_cls = cls.CharMatchWrapper
+        else:
+            wrapper_cls = cls.MatchWrapper
+
+        return wrapper_cls.from_iterable(src_pieces), wrapper_cls.from_iterable(target_pieces)
+
+    @staticmethod
+    def can_use_char_wrapper(src: Item, target: Item, src_pieces: list[VItem], target_pieces: list[VItem]) -> bool:
+        if not isinstance(src, (Text, TextLine, TextChar)):
+            return False
+        if not isinstance(target, (Text, TextLine, TextChar)):
+            return False
+
+        if not all(isinstance(piece, TextChar) for piece in src_pieces):
+            return False
+        if not all(isinstance(piece, TextChar) for piece in target_pieces):
+            return False
+
+        return True
+
+    @dataclass
+    class MatchWrapper:
+        item: VItem
+
+        def __eq__(self, other: TransformMatchingDiff.MatchWrapper):
+            return self.item.points.same_shape(other.item)
+
+        def __hash__(self):
+            return self.item.points.identity[0]
+
+        @classmethod
+        def from_iterable(cls, iterable: Iterable):
+            return [cls(x) for x in iterable]
+
+    @dataclass
+    class CharMatchWrapper(MatchWrapper):
+        item: TextChar
+
+        def __eq__(self, other: TransformMatchingDiff.CharMatchWrapper):
+            return self.item.char == other.item.char
+
+        def __hash__(self):
+            return hash(self.item.char)
