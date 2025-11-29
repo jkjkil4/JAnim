@@ -193,7 +193,8 @@ class MoveToTarget(Transform):
         super()._time_fixed()
 
         def at_end():
-            self.src_item.become(self.src_item.target, auto_visible=False)    # 因为下一句就是 show，所以传入了 auto_visible=False
+            self.src_item.become(self.src_item.target, auto_visible=False)    # 因为马上就是 show，所以传入了 auto_visible=False
+            self.timeline.detect_changes(self.src_item.walk_self_and_descendants())
             self.src_item.show()
 
         self.timeline.schedule(self.t_range.end, at_end)
