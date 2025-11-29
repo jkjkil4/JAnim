@@ -123,7 +123,7 @@ class Config(metaclass=_ConfigMeta):
     background_color: Color = _field(validator=optional_type_validator(Color, 'Color'))
     font: str | Iterable[str] = None
     subtitle_font: str | Iterable[str] = None
-    subtitle_to_edge_buff: float = None
+    subtitle_to_edge_buff: float = _field(validator=_opt_float_validator)
 
     audio_framerate: int = _field(validator=_opt_int_validator)
     audio_channels: int = _field(validator=_opt_int_validator)
