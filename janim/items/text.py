@@ -465,11 +465,12 @@ class Text(VItem, Group[TextLine]):
         '''
         由字符索引得到 行数、列数 索引
         '''
+        idx = max(0, idx)
         for i, line in enumerate(self):
             if idx < len(line):
                 return i, idx
             idx -= len(line)
-        return len(self) - 1, idx
+        return len(self) - 1, len(line)
 
     def select_parts(self, pattern: str | re.Pattern, group: int = 0):
         '''
