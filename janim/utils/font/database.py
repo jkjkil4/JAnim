@@ -71,7 +71,10 @@ class FontInfo:
         self.index = index
 
         self.name: table__n_a_m_e = font['name']
-        self.os2: table_O_S_2f_2 = font.get('OS/2', None)
+        try:
+            self.os2: table_O_S_2f_2 | None = font.get('OS/2', None)
+        except Exception:   # 有些字体的 OS/2 表损坏会导致 struct.error
+            self.os2 = None
 
         self.exception = EXCEPTION_MAP.get(self.postscript_name, None)
 
