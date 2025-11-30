@@ -943,6 +943,9 @@ class AnimViewer(QMainWindow):
         self.watcher = QFileSystemWatcher([code_file_path], self)
         self.watcher.fileChanged.connect(self.watcher_timer.start)
         self.watcher_retries = 0
+
+        self.watch_mtime = 0    # 因为有些情况下保存可能会导致多次触发 watcher，所以记录文件最后修改时间来过滤，避免重复响应
+
         log.info(_('Directly watching changes to "{file}"').format(file=code_file_path))
 
     def on_watcher_timer_timeout(self) -> None:
@@ -960,7 +963,11 @@ class AnimViewer(QMainWindow):
 
         self.watcher_retries = 0
         self.watcher_timer.stop()
-        self.on_rebuild_triggered()
+
+        mtime = os.path.getmtime(self.code_file_path)
+        if mtime != self.watch_mtime:   # 使用文件最后修改时间过滤重复的触发
+            self.watch_mtime = mtime
+            self.on_rebuild_triggered()
 
     def on_exception(self, exc_type, exc_value, exc_traceback):
         if exc_type is KeyboardInterrupt:
