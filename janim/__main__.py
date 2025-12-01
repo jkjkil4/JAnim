@@ -89,11 +89,6 @@ def render_args(
         action='store_true',
         help=_('Hide subtitles')
     )
-    parser.add_argument(
-        '--external_typst',
-        action='store_true',
-        help=_('Use external Typst executable for compiling Typst documents')
-    )
 
 
 def run_parser(parser: ArgumentParser) -> None:
@@ -105,12 +100,12 @@ def run_parser(parser: ArgumentParser) -> None:
     parser.add_argument(
         '-i', '--interact',
         action='store_true',
-        help=_('Enable the network socket for interacting with VS Code')
+        help=_('Enable the network socket for interacting with vscode')
     )
     parser.add_argument(
-        '-w', '--watch',
+        '--stdio',
         action='store_true',
-        help=_('Watches the file and rebuild on changes')
+        help=_('Enable stdio mode for Electron IPC')
     )
     parser.set_defaults(func=run)
 
@@ -207,9 +202,7 @@ def examples_parser(parser: ArgumentParser) -> None:
     parser.set_defaults(config=None)
     parser.set_defaults(func=run)
     parser.set_defaults(hide_subtitles=False)
-    parser.set_defaults(external_typst=False)
     parser.set_defaults(interact=False)
-    parser.set_defaults(watch=False)
 
 
 def tool_parser(parser: ArgumentParser) -> None:

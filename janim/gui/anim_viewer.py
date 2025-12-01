@@ -20,18 +20,24 @@ import time
 import traceback
 from bisect import bisect_right
 from contextlib import contextmanager, nullcontext
+from typing import Any  # 新增
 
-from PySide6.QtCore import (QByteArray, QEvent, QFileSystemWatcher, QPoint,
-                            QSettings, Qt, QTimer, Signal)
+from PySide6.QtCore import (QByteArray, QEvent, QPoint, QSettings, Qt, QTimer,
+                            Signal, Slot) # 确保引入 Slot
 from PySide6.QtGui import (QAction, QCloseEvent, QGuiApplication, QHideEvent,
                            QIcon, QShowEvent)
 from PySide6.QtWidgets import (QApplication, QCompleter, QLabel, QLineEdit,
                                QMainWindow, QMessageBox, QPushButton,
                                QSizePolicy, QSplitter, QStackedLayout, QWidget)
 
+# --- 移除/清理了原有的 PySide6.QtNetwork 引用 ---
+# --- 新增 IPC 引用 ---
+from janim.gui.ipc import IPCConnection, StdioConnection, UdpConnection
+# ---------------------
+
+
 from janim.anims.timeline import BuiltTimeline, Timeline
-from janim.exception import (ExitException, cancel_listen_exception,
-                             listen_exception)
+from janim.exception import ExitException
 from janim.gui.application import Application
 from janim.gui.audio_player import AudioPlayer
 from janim.gui.fixed_ratio_widget import FixedRatioWidget
@@ -71,31 +77,42 @@ class AnimViewer(QMainWindow):
         *,
         auto_play: bool = True,
         interact: bool = False,
-        watch: bool = False,
+        stdio: bool = False,   # <--- 新增参数
         available_timeline_names: list[str] | None = None,
         parent: QWidget | None = None
     ):
         super().__init__(parent)
         self.code_file_path = getfile_or_empty(built.timeline.__class__)
+        # 获取绝对路径供 UDP find 使用
+        self.timeline_file_path = os.path.abspath(inspect.getfile(built.timeline.__class__))
 
         self.setup_ui()
         self.setup_play_timer()
 
-        if interact:
-            self.setup_socket(built.cfg.client_search_port)
-        else:
-            self.socket = None
+        # ---------------------------------------------------------------------
+        # 2. 初始化通信模块 (替代原本的 setup_socket)
+        # ---------------------------------------------------------------------
+        self.conn: IPCConnection | None = None
+        self.lineno = -1
 
-        if watch and self.code_file_path:
-            self.setup_watcher(self.code_file_path)
-        else:
-            self.watcher = None
+        if stdio:
+            self.conn = StdioConnection(parent=self)
+            self.conn.message_received.connect(self.on_ipc_message)
+        elif interact:
+            # 定义回调函数来更新窗口标题
+            def update_title(suffix: str) -> None:
+                self.setWindowTitle(f'{self.windowTitle()}{suffix}')
 
-        if self.watcher is not None and self.socket is not None:
-            log.info(_('Changes messages from the VS Code extension will be ignored in direct watch mode'))
+            self.conn = UdpConnection(
+                search_port=built.cfg.client_search_port,
+                file_path=self.timeline_file_path,
+                window_title_callback=update_title,
+                parent=self
+            )
+            self.conn.message_received.connect(self.on_ipc_message)
+        # ---------------------------------------------------------------------
 
         self.audio_player = None
-
         self.setup_slots()
 
         self.set_built(built)
@@ -109,8 +126,6 @@ class AnimViewer(QMainWindow):
 
         if available_timeline_names is not None:
             self.update_completer(available_timeline_names)
-
-        listen_exception(self.on_exception)
 
     @classmethod
     def views(cls, anim: BuiltTimeline, **kwargs) -> None:
@@ -224,10 +239,6 @@ class AnimViewer(QMainWindow):
 
         self.action_reset_inout_point = menu_file.addAction(_('Reset In/Out Point(&R)'))
         self.action_reset_inout_point.setAutoRepeat(False)
-
-        menu_file.addSeparator()
-
-        self.action_clear_font_cache = menu_file.addAction(_('Clear Font Cache(&C)'))
 
         menu_view = menu_bar.addMenu(_('View(&V)'))
 
@@ -439,7 +450,6 @@ class AnimViewer(QMainWindow):
         self.action_set_in_point.triggered.connect(self.timeline_view.set_in_point)
         self.action_set_out_point.triggered.connect(self.timeline_view.set_out_point)
         self.action_reset_inout_point.triggered.connect(self.timeline_view.reset_inout_point)
-        self.action_clear_font_cache.triggered.connect(self.on_clear_font_cache_triggered)
         self.action_stay_on_top.toggled.connect(self.on_stay_on_top_toggled)
         self.action_frame_skip.toggled.connect(self.on_frame_skip_toggled)
         self.action_select.triggered.connect(self.on_select_triggered)
@@ -552,20 +562,13 @@ class AnimViewer(QMainWindow):
         self.update_completer([timeline.__name__ for timeline in get_all_timelines_from_module(module)])
 
         # 向 vscode 客户端发送重新构建了的信息
-        if self.socket is not None:
-            msg = json.dumps(dict(
-                janim=dict(
-                    type='rebuilt'
-                )
-            ))
-            for client in self.clients:
-                self.socket.writeDatagram(
-                    QByteArray.fromStdString(msg),
-                    *client
-                )
+        if self.conn:
+            self.send_janim_cmd('rebuilt')
 
-            time = self.timeline_view.progress_to_time(self.timeline_view.progress())
-            self.send_lineno(self.built.timeline.get_lineno_at_time(time))
+            # 重新计算并同步当前时间点的行号
+            current_time = self.timeline_view.progress_to_time(self.timeline_view.progress())
+            new_line = self.built.timeline.get_lineno_at_time(current_time)
+            self.send_janim_cmd('lineno', new_line)
 
         self.glw.update()
 
@@ -631,18 +634,16 @@ class AnimViewer(QMainWindow):
     # region slots-anim
 
     def on_value_changed(self, value: int) -> None:
-        time = self.timeline_view.progress_to_time(value)
+        time_sec = self.timeline_view.progress_to_time(value)
 
-        if self.socket is not None:
-            line = self.built.timeline.get_lineno_at_time(time)
-
+        if self.conn:
+            line = self.built.timeline.get_lineno_at_time(time_sec)
             if line != self.lineno:
                 self.lineno = line
+                self.send_janim_cmd('lineno', line)
 
-                self.send_lineno(line)
-
-        self.glw.set_time(time)
-        self.time_label.setText(f'{time:.1f}/{self.built.duration:.1f} s')
+        self.glw.set_time(time_sec)
+        self.time_label.setText(f'{time_sec:.1f}/{self.built.duration:.1f} s')
 
     def on_glw_rendered(self) -> None:
         cur = time.time()
@@ -809,189 +810,51 @@ class AnimViewer(QMainWindow):
         finally:
             cli_config.pixel_width, cli_config.pixel_height = old_size
 
-    def on_clear_font_cache_triggered(self) -> None:
-        import janim.utils.font.database as fontdb
-        import janim.utils.typst_compile as typcompile
-        fontdb._database = None
-        typcompile._typst_fonts = None
-        QMessageBox.information(
-            self,
-            'JAnim',
-            _('Font cache cleared.\n'
-              'Tip: Use this to load newly installed fonts without restarting JAnim.')
-        )
-
     # endregion (slots-anim)
 
     # endregion (slots)
 
-    # region network
+    @Slot(dict)
+    def on_ipc_message(self, tree: dict) -> None:
+        """统一处理来自 Stdio 或 UDP 的消息"""
+        janim_data = tree.get('janim', {})
+        cmd_type = janim_data.get('type')
 
-    def setup_socket(self, client_search_port: int) -> None:
-        from PySide6.QtNetwork import QHostAddress, QUdpSocket
+        if cmd_type == 'register_client':
+            # 客户端连接（或 UDP 注册）后，立即同步当前行号
+            self.send_janim_cmd('lineno', self.lineno)
 
-        ret = False
-        self.shared_socket = QUdpSocket()
-        if 1024 <= client_search_port <= 65535:
-            ret = self.shared_socket.bind(QHostAddress.SpecialAddress.LocalHost,
-                                          client_search_port,
-                                          QUdpSocket.BindFlag.ShareAddress | QUdpSocket.BindFlag.ReuseAddressHint)
-            if ret:
-                self.shared_socket.readyRead.connect(self.on_shared_ready_read)
-                log.info(
-                    _('Searching port has been opened at {port}')
-                    .format(port=client_search_port)
-                )
-            else:
-                log.warning(
-                    _('Failed to open searching port at {port}')
-                    .format(port=client_search_port)
-                )
-        else:
-            log.warning(
-                _('Searching port {port} is invalid, '
-                  'please use a number between 1024 and 65535 instead')
-                .format(port=client_search_port)
-            )
+        elif cmd_type == 'file_saved':
+            # 检查文件路径是否匹配，匹配则重构
+            file_path = janim_data.get('file_path')
+            current_module = inspect.getmodule(self.built.timeline)
 
-        if not ret:
-            log.warning(_('Interactive development is disabled '
-                          'because the searching port is not established.'))
-            self.socket = None
-            return
+            # 确保路径比较的鲁棒性
+            if current_module and file_path:
+                try:
+                    if os.path.samefile(file_path, current_module.__file__):
+                        self.on_rebuild_triggered()
+                except OSError:
+                    pass
 
-        self.socket = QUdpSocket()
-        self.socket.bind()
-
-        self.socket.readyRead.connect(self.on_ready_read)
-
-        self.clients: set[tuple[QHostAddress, int]] = set()
-        self.lineno = -1
-
-        log.info(_('Interactive port has been opened at {port}').format(port=self.socket.localPort()))
-        self.setWindowTitle(f'{self.windowTitle()} [{self.socket.localPort()}]')
-
-    def on_shared_ready_read(self) -> None:
-        while self.shared_socket.hasPendingDatagrams():
-            datagram = self.shared_socket.receiveDatagram()
-            try:
-                tree = json.loads(datagram.data().toStdString())
-                assert 'janim' in tree
-
-                janim = tree['janim']
-                cmdtype = janim['type']
-
-                if cmdtype == 'find':
-                    msg = json.dumps(dict(
-                        janim=dict(
-                            type='find_re',
-                            data=dict(
-                                port=self.socket.localPort(),
-                                file_path=os.path.abspath(inspect.getfile(self.built.timeline.__class__))
-                            )
-                        )
-                    ))
-                    self.socket.writeDatagram(
-                        QByteArray.fromStdString(msg),
-                        datagram.senderAddress(),
-                        datagram.senderPort()
-                    )
-
-            except Exception:
-                traceback.print_exc()
-
-    def on_ready_read(self) -> None:
-        while self.socket.hasPendingDatagrams():
-            datagram = self.socket.receiveDatagram()
-            try:
-                tree = json.loads(datagram.data().toStdString())
-                assert 'janim' in tree
-
-                janim = tree['janim']
-
-                match janim['type']:
-                    case 'register_client':
-                        self.clients.add((datagram.senderAddress(), datagram.senderPort()))
-                        self.send_lineno(self.lineno)
-
-                    # 重新构建
-                    case 'file_saved':
-                        if self.watcher is None:    # 如果已经用 watcher 来监视文件变化，则跳过，避免功能重复
-                            if os.path.samefile(janim['file_path'], inspect.getmodule(self.built.timeline).__file__):
-                                self.on_rebuild_triggered()
-
-            except Exception:
-                traceback.print_exc()
-
-    def send_lineno(self, line: int) -> None:
-        msg = json.dumps(dict(
-            janim=dict(
-                type='lineno',
-                data=line
-            )
-        ))
-        for client in self.clients:
-            self.socket.writeDatagram(
-                QByteArray.fromStdString(msg),
-                *client
-            )
-
-    def setup_watcher(self, code_file_path: str) -> None:
-        self.watcher_timer = QTimer(self, interval=1)
-        self.watcher_timer.timeout.connect(self.on_watcher_timer_timeout)
-
-        self.watcher = QFileSystemWatcher([code_file_path], self)
-        self.watcher.fileChanged.connect(self.watcher_timer.start)
-        self.watcher_retries = 0
-
-        self.watch_mtime = 0    # 因为有些情况下保存可能会导致多次触发 watcher，所以记录文件最后修改时间来过滤，避免重复响应
-
-        log.info(_('Directly watching changes to "{file}"').format(file=code_file_path))
-
-    def on_watcher_timer_timeout(self) -> None:
-        # 有些编辑器，比如 vim，并不是真正“写入文件”，而是“把原来的移动走”再“把新的写入原来位置”
-        # 这种情况下会导致 watch 追踪丢失，并且文件在某一段时间处于“不存在”的状态
-        # 所以我们尝试将文件重新 watch，如果 watch 成功说明文件开始存在了，这样我们就可以安心地读取新的代码内容了
-        if not self.watcher.files():
-            self.watcher.addPath(self.code_file_path)
-            # 如果文件真的被删除了会一直触发，所以最多重试 20 次
-            self.watcher_retries += 1
-            if self.watcher_retries >= 20:
-                self.watcher_retries = 0
-                self.watcher_timer.stop()
-            return
-
-        self.watcher_retries = 0
-        self.watcher_timer.stop()
-
-        mtime = os.path.getmtime(self.code_file_path)
-        if mtime != self.watch_mtime:   # 使用文件最后修改时间过滤重复的触发
-            self.watch_mtime = mtime
-            self.on_rebuild_triggered()
-
-    def on_exception(self, exc_type, exc_value, exc_traceback):
-        if exc_type is KeyboardInterrupt:
+        elif cmd_type == 'close_event':
             self.close()
-            return True
+
+    def send_janim_cmd(self, cmd_type: str, data: Any = None) -> None:
+        """构造并发送标准格式命令"""
+        if self.conn:
+            payload = {'type': cmd_type}
+            if data is not None:
+                payload['data'] = data
+            self.conn.send({'janim': payload})
 
     def closeEvent(self, event: QCloseEvent) -> None:
         super().closeEvent(event)
 
-        # 使用 singleShot 使得在 Qt 下次事件循环中触发，而不是立刻执行
-        # 这是为了避免 excepthook 在遍历 callback 的过程中就对列表进行修改，而导致的不完全遍历
-        QTimer.singleShot(0, lambda: cancel_listen_exception(self.on_exception))
-
-        if self.socket is not None:
-            msg = json.dumps(dict(
-                janim=dict(
-                    type='close_event'
-                )
-            ))
-            for client in self.clients:
-                self.socket.writeDatagram(
-                    QByteArray.fromStdString(msg),
-                    *client
-                )
+        if self.conn:
+            # 通知客户端窗口即将关闭
+            self.send_janim_cmd('close_event')
+            self.conn.cleanup()
 
         self.save_options()
 

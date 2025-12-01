@@ -21,7 +21,6 @@ def run(args: Namespace) -> None:
     module = get_module(args.filepath)
     if module is None:
         return
-    modify_typst_compile_flag(args)
     modify_cli_config(args)
 
     timelines = extract_timelines_from_module(args, module)
@@ -55,7 +54,7 @@ def run(args: Namespace) -> None:
         viewer = AnimViewer(built,
                             auto_play=auto_play,
                             interact=args.interact,
-                            watch=args.watch,
+                            stdio=args.stdio,
                             available_timeline_names=available_timeline_names)
         widgets.append(viewer)
         viewer.show()
@@ -74,7 +73,6 @@ def write(args: Namespace) -> None:
     module = get_module(args.filepath)
     if module is None:
         return
-    modify_typst_compile_flag(args)
     modify_cli_config(args)
 
     timelines = extract_timelines_from_module(args, module)
@@ -235,14 +233,6 @@ def tool(args: Namespace) -> None:
     log.info('======')
 
     app.exec()
-
-
-def modify_typst_compile_flag(args: Namespace) -> None:
-    '''
-    用于 CLI 的 ``--external-typst`` 参数
-    '''
-    from janim.utils.typst_compile import set_use_external_typst
-    set_use_external_typst(args.external_typst)
 
 
 def modify_cli_config(args: Namespace) -> None:
