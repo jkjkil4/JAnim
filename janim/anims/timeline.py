@@ -38,7 +38,7 @@ from janim.items.svg.typst import TypstText
 from janim.items.text import Text
 from janim.locale.i18n import get_local_strings
 from janim.logger import log
-from janim.render.base import RenderData, Renderer, create_context
+from janim.render.base import RenderData, Renderer, create_context_430_or_330
 from janim.render.framebuffer import (FRAME_BUFFER_BINDING, blend_context,
                                       create_framebuffer, framebuffer_context,
                                       uniforms)
@@ -1048,10 +1048,7 @@ class BuiltTimeline:
 
     def capture(self, global_t: float, *, transparent: bool = True) -> Image.Image:
         if self.capture_ctx is None:
-            try:
-                self.capture_ctx = create_context(standalone=True, require=430)
-            except ValueError:
-                self.capture_ctx = create_context(standalone=True, require=330)
+            self.capture_ctx = create_context_430_or_330(standalone=True)
 
             pw, ph = self.cfg.pixel_width, self.cfg.pixel_height
             self.capture_fbo = create_framebuffer(self.capture_ctx, pw, ph)

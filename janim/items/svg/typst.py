@@ -243,8 +243,6 @@ class TypstDoc(SVGItem):
             case TypstDoc() | str() as pattern, ordinal if isinstance(ordinal, (Iterable, types.EllipsisType)):
                 return Group(*self.get(self.slice(pattern, ordinal)))
 
-            # TODO: multi_slice
-
             case _:
                 return super().__getitem__(key)
 

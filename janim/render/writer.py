@@ -13,7 +13,7 @@ from janim.anims.timeline import BuiltTimeline, Timeline, TimeRange
 from janim.exception import EXITCODE_FFMPEG_NOT_FOUND, ExitException
 from janim.locale.i18n import get_local_strings
 from janim.logger import log
-from janim.render.base import create_context
+from janim.render.base import create_context_430_or_330
 from janim.render.framebuffer import create_framebuffer, framebuffer_context
 from janim.utils.simple_functions import clip
 
@@ -39,10 +39,7 @@ class VideoWriter:
         self.built = built
 
         log.debug('Initializing OpenGL context for VideoWriter ..')
-        try:
-            self.ctx = create_context(standalone=True, require=430)
-        except ValueError:
-            self.ctx = create_context(standalone=True, require=330)
+        self.ctx = create_context_430_or_330(standalone=True)
         log.debug('Created OpenGL context for VideoWriter')
 
         pw, ph = built.cfg.pixel_width, built.cfg.pixel_height

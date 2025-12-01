@@ -44,7 +44,6 @@ class GLWidget(QOpenGLWidget):
 
     def initializeGL(self) -> None:
         log.debug('Initializing OpenGL context for GLWidget ..')
-
         self.ctx = create_context()
         log.debug('Obtained OpenGL context of GLWidget')
 

@@ -121,3 +121,12 @@ def create_context(**kwargs) -> mgl.Context:
     )
     ctx.blend_equation = mgl.FUNC_ADD, mgl.MAX
     return ctx
+
+
+def create_context_430_or_330(**kwargs) -> mgl.Context:
+    try:
+        # 在不支持 OpenGL4.3 的时候会抛出异常
+        # 已知：macOS 系统、Mesa3D CPU 渲染器
+        return create_context(require=430, **kwargs)
+    except Exception:
+        return create_context(require=330, **kwargs)
