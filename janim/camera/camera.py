@@ -11,7 +11,7 @@ from janim.components.component import CmptInfo
 from janim.components.points import Cmpt_Points
 from janim.constants import ORIGIN, OUT
 from janim.items.points import Points
-from janim.typing import Vect
+from janim.typing import Vect, VectArray
 from janim.utils.bezier import interpolate
 from janim.utils.config import Config
 from janim.utils.paths import PathFunc, straight_path
@@ -22,6 +22,47 @@ class Cmpt_CameraPoints[ItemT](Cmpt_Points[ItemT]):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.reset()
+
+    def set(
+        self,
+        points: VectArray | None = None,
+        *,
+        size: Vect | None = None,
+        fov: float | None = None,
+        orientation: Quaternion | None = None
+    ) -> Self:
+        '''
+        设置摄像机位置以及有关属性
+
+        -   ``points``: 点集，必须只有一个点，表示摄像机中心位置
+
+            另见 :meth:`~.Cmpt_Points.shift` :meth:`~.Cmpt_Points.move_to`
+
+        -   ``size``: 摄像机视窗大小，格式为 ``[width, height]``
+
+            另见 :meth:`~.Cmpt_CameraPoints.scale`
+
+        -   ``fov``: 摄像机视野角度，单位为度
+
+        -   ``orientation``: 摄像机朝向，四元数表示
+
+            另见 :meth:`~.Cmpt_CameraPoints.rotate`
+        '''
+        if points is not None:
+            points = np.asarray(points)
+            assert points.ndim == 2
+            assert points.shape[0] == 1
+
+            super().set(points)
+
+        if size is not None:
+            self.size = size
+        if fov is not None:
+            self.fov = fov
+        if orientation is not None:
+            self.orientation = orientation
+
+        return self
 
     def reset(self) -> Self:
         '''
@@ -39,7 +80,7 @@ class Cmpt_CameraPoints[ItemT](Cmpt_Points[ItemT]):
     def copy(self) -> Self:
         cmpt_copy = super().copy()
         cmpt_copy._size = self._size.copy()
-        cmpt_copy.orientation = Quaternion(self.orientation.elements)
+        cmpt_copy._orientation = Quaternion(self.orientation.elements)
         return cmpt_copy
 
     def become(self, other: Cmpt_CameraPoints) -> Self:
@@ -92,6 +133,15 @@ class Cmpt_CameraPoints[ItemT](Cmpt_Points[ItemT]):
     @fov.setter
     def fov(self, val: float) -> None:
         self._fov = val
+        self.mark_refresh(Cmpt_CameraPoints.info.fget)
+
+    @property
+    def orientation(self) -> Quaternion:
+        return self._orientation
+
+    @orientation.setter
+    def orientation(self, val: Quaternion) -> None:
+        self._orientation = val
         self.mark_refresh(Cmpt_CameraPoints.info.fget)
 
     def scale(
