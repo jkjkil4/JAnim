@@ -91,6 +91,7 @@ class AnimViewer(QMainWindow):
             self.setup_socket(built.cfg.client_search_port)
         else:
             self.socket = None
+        self.sent_lineno = -1
 
         if watch and self.code_file_path != STDIN_FILENAME:
             self.setup_watcher(self.code_file_path)
@@ -636,8 +637,8 @@ class AnimViewer(QMainWindow):
         if self.has_connection():
             line = self.built.timeline.get_lineno_at_time(time)
 
-            if line != self.lineno:
-                self.lineno = line
+            if line != self.sent_lineno:
+                self.sent_lineno = line
 
                 self.send_janim_cmd(Cmd.Lineno, line)
 
@@ -866,7 +867,6 @@ class AnimViewer(QMainWindow):
         self.socket.readyRead.connect(self.on_ready_read)
 
         self.clients: set[tuple[QHostAddress, int]] = set()
-        self.lineno = -1
 
         log.info(_('Interactive port has been opened at {port}').format(port=self.socket.localPort()))
         self.setWindowTitle(f'{self.windowTitle()} [{self.socket.localPort()}]')
@@ -915,7 +915,7 @@ class AnimViewer(QMainWindow):
                 match janim['type']:
                     case 'register_client':
                         self.clients.add((datagram.senderAddress(), datagram.senderPort()))
-                        self.send_janim_cmd(Cmd.Lineno, self.lineno)
+                        self.send_janim_cmd(Cmd.Lineno, self.sent_lineno)
 
                     # 重新构建
                     case 'file_saved':
