@@ -64,8 +64,8 @@ def render_args(
     all_help: str
 ) -> None:
     parser.add_argument(
-        'filepath',
-        help=_('Path to file holding the Python code')
+        'input',
+        help=_('Path to file holding the Python code. Use `-` to read input from stdin')
     )
     parser.add_argument(
         'timeline_names',
@@ -197,7 +197,7 @@ def write_parser(parser: ArgumentParser) -> None:
 
 
 def examples_parser(parser: ArgumentParser) -> None:
-    parser.set_defaults(filepath=os.path.join(get_janim_dir(), 'examples.py'))
+    parser.set_defaults(input=os.path.join(get_janim_dir(), 'examples.py'))
     parser.add_argument(
         'timeline_names',
         nargs='*',

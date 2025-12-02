@@ -3,6 +3,7 @@ import inspect
 import os
 import sys
 import time
+import types
 from argparse import Namespace
 from functools import lru_cache
 
@@ -10,6 +11,7 @@ from janim.anims.timeline import BuiltTimeline, Timeline
 from janim.exception import (EXITCODE_MODULE_NOT_FOUND, EXITCODE_NOT_FILE,
                              ExitException)
 from janim.locale.i18n import get_local_strings
+from janim.utils.file_ops import STDIN_FILENAME
 from janim.logger import log, plog
 from janim.utils.config import cli_config, default_config
 from janim.utils.file_ops import open_file
@@ -18,7 +20,7 @@ _ = get_local_strings('cli')
 
 
 def run(args: Namespace) -> None:
-    module = get_module(args.filepath)
+    module = get_module(args.input)
     if module is None:
         return
     modify_typst_compile_flag(args)
@@ -71,7 +73,7 @@ def run(args: Namespace) -> None:
 
 
 def write(args: Namespace) -> None:
-    module = get_module(args.filepath)
+    module = get_module(args.input)
     if module is None:
         return
     modify_typst_compile_flag(args)
@@ -255,9 +257,43 @@ def modify_cli_config(args: Namespace) -> None:
             setattr(cli_config, key, dtype(value))
 
 
-def get_module(file_name: str):
+def get_module(input: str):
     '''
-    根据给定的文件名 ``file_name`` 产生 ``module``
+    根据给定的输入 ``input`` 产生 ``module``
+
+    - 当 ``input`` 为文件路径时，将文件读取为 module
+    - 当 ``input`` 为 ``'-'`` 时，从 ``stdin`` 读取源码编译 module
+    '''
+    if input == '-':
+        return get_module_from_stdin()
+    else:
+        return get_module_from_file(input)
+
+
+def get_module_from_stdin():
+    '''
+    从 ``stdin`` 读取源码并编译为 module
+    '''
+    source = sys.stdin.read()
+
+    # 兼容相对于当前工作目录的导入
+    sys.path.insert(0, os.getcwd())
+
+    module_name = '__janim_main__'
+    module = types.ModuleType(module_name)
+    module.__file__ = STDIN_FILENAME
+
+    sys.modules['__janim_main__'] = module
+
+    code = compile(source, STDIN_FILENAME, 'exec')
+    exec(code, module.__dict__)
+
+    return module
+
+
+def get_module_from_file(file_name: str):
+    '''
+    将给定的 ``file_name`` 读取为 module
     '''
     if not os.path.exists(file_name):
         log.error(_('"{file_name}" doesn\'t exist').format(file_name=file_name))
@@ -267,6 +303,7 @@ def get_module(file_name: str):
         log.error(_('"{file_name}" isn\'t a file').format(file_name=file_name))
         raise ExitException(EXITCODE_NOT_FILE)
 
+    # 兼容相对于源代码文件的导入
     sys.path.insert(0, os.path.abspath(os.path.dirname(file_name)))
 
     module_name = file_name.replace(os.sep, ".").replace(".py", "")
@@ -296,6 +333,11 @@ def extract_timelines_from_module(args: Namespace, module) -> list[type[Timeline
         classes = get_all_timelines_from_module(module)
         if len(classes) <= 1 or args.all:
             return classes
+
+        if module.__file__ == STDIN_FILENAME:
+            log.error(_('Multiple timelines found in stdin input. '
+                        'Please specify timeline names with command line arguments.'))
+            return []
 
         max_digits = len(str(len(classes)))
 

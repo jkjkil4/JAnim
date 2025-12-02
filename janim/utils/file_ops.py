@@ -6,6 +6,8 @@ import subprocess as sp
 from functools import lru_cache
 from pathlib import Path
 
+STDIN_FILENAME = '<stdin>'
+
 
 def guarantee_existence(path: str | Path) -> str:
     if not os.path.exists(path):

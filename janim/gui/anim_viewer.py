@@ -50,7 +50,8 @@ from janim.locale.i18n import get_local_strings
 from janim.logger import log
 from janim.render.writer import AudioWriter, VideoWriter, merge_video_and_audio
 from janim.utils.config import Config, cli_config
-from janim.utils.file_ops import get_janim_dir, getfile_or_empty, open_file
+from janim.utils.file_ops import (STDIN_FILENAME, get_janim_dir,
+                                  getfile_or_empty, open_file)
 from janim.utils.reload import reset_reloads_state
 
 _ = get_local_strings('anim_viewer')
@@ -148,6 +149,10 @@ class AnimViewer(QMainWindow):
         self.pause_progresses.sort()
 
         # menu bar
+        module = inspect.getmodule(self.built.timeline)
+        is_stdin = module.__file__ == STDIN_FILENAME
+        self.action_rebuild.setEnabled(not is_stdin)    # 对于从 stdin 构建的，禁用重新构建功能
+
         if self.selector is not None:
             self.selector.deleteLater()
 

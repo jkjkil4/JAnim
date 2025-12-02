@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-26 14:14+0800\n"
-"PO-Revision-Date: 2025-11-26 14:15+0800\n"
+"POT-Creation-Date: 2025-12-02 14:43+0800\n"
+"PO-Revision-Date: 2025-12-02 15:08+0800\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
 "Language: zh_CN\n"
@@ -46,8 +46,8 @@ msgid "Run useful tools"
 msgstr "运行实用工具"
 
 #: janim\__main__.py:68
-msgid "Path to file holding the Python code"
-msgstr "含有 Python 代码的文件路径"
+msgid "Path to file holding the Python code. Use `-` to read input from stdin"
+msgstr "含有 Python 代码的文件路径，使用 `-` 从 stdin 中读取输入"
 
 #: janim\__main__.py:85
 msgid "Override config"
@@ -169,7 +169,7 @@ msgstr "在输出视频时使用硬件加速"
 msgid "Name of the example you want to see"
 msgstr "要查看的示例的名称"
 
-#: janim\__main__.py:219
+#: janim\__main__.py:220
 msgid "Tool(s) that you want to use"
 msgstr "你想要使用的工具"
 

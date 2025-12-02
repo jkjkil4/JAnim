@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-26 14:14+0800\n"
+"POT-Creation-Date: 2025-12-02 14:43+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -46,7 +46,7 @@ msgid "Run useful tools"
 msgstr ""
 
 #: janim\__main__.py:68
-msgid "Path to file holding the Python code"
+msgid "Path to file holding the Python code. Use `-` to read input from stdin"
 msgstr ""
 
 #: janim\__main__.py:85
@@ -167,6 +167,6 @@ msgstr ""
 msgid "Name of the example you want to see"
 msgstr ""
 
-#: janim\__main__.py:219
+#: janim\__main__.py:220
 msgid "Tool(s) that you want to use"
 msgstr ""
