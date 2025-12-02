@@ -51,7 +51,7 @@ from janim.logger import log
 from janim.render.writer import AudioWriter, VideoWriter, merge_video_and_audio
 from janim.utils.config import Config, cli_config
 from janim.utils.file_ops import (STDIN_FILENAME, get_janim_dir,
-                                  getfile_or_empty, open_file)
+                                  getfile_or_stdin, open_file)
 from janim.utils.reload import reset_reloads_state
 
 _ = get_local_strings('anim_viewer')
@@ -78,7 +78,7 @@ class AnimViewer(QMainWindow):
         parent: QWidget | None = None
     ):
         super().__init__(parent)
-        self.code_file_path = getfile_or_empty(built.timeline.__class__)
+        self.code_file_path = getfile_or_stdin(built.timeline.__class__)
 
         self.setup_ui()
         self.setup_play_timer()
@@ -88,13 +88,13 @@ class AnimViewer(QMainWindow):
         else:
             self.socket = None
 
-        if watch and self.code_file_path:
+        if watch and self.code_file_path != STDIN_FILENAME:
             self.setup_watcher(self.code_file_path)
         else:
             self.watcher = None
 
-        if self.watcher is not None and self.socket is not None:
-            log.info(_('Changes messages from the VS Code extension will be ignored in direct watch mode'))
+        if watch and self.code_file_path == STDIN_FILENAME:
+            log.warning(_('Cannot watch stdin for changes'))
 
         self.audio_player = None
 
@@ -149,8 +149,7 @@ class AnimViewer(QMainWindow):
         self.pause_progresses.sort()
 
         # menu bar
-        module = inspect.getmodule(self.built.timeline)
-        is_stdin = module.__file__ == STDIN_FILENAME
+        is_stdin = self.code_file_path == STDIN_FILENAME
         self.action_rebuild.setEnabled(not is_stdin)    # 对于从 stdin 构建的，禁用重新构建功能
 
         if self.selector is not None:

@@ -10,7 +10,7 @@ from janim.anims.timeline import BuiltTimeline
 from janim.gui.functions.ui_ExportDialog import QComboBox, Ui_ExportDialog
 from janim.locale.i18n import get_local_strings
 from janim.utils.config import Config
-from janim.utils.file_ops import getfile_or_empty
+from janim.utils.file_ops import getfile_or_stdin
 
 _ = get_local_strings('export_dialog')
 
@@ -20,7 +20,7 @@ class ExportDialog(QDialog):
         super().__init__(parent)
         self.built = built
         self.is_inout_point_set = is_inout_point_set
-        self.code_file_path = getfile_or_empty(self.built.timeline.__class__)
+        self.code_file_path = getfile_or_stdin(self.built.timeline.__class__)
 
         self.setup_ui()
         self.setup_contents()

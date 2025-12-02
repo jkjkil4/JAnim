@@ -10,7 +10,7 @@ from janim.gui.functions.export_dialog import ExportDialog
 from janim.gui.functions.ui_CaptureDialog import Ui_CaptureDialog
 from janim.locale.i18n import get_local_strings
 from janim.utils.config import Config
-from janim.utils.file_ops import getfile_or_empty
+from janim.utils.file_ops import getfile_or_stdin
 
 _ = get_local_strings('capture_dialog')
 
@@ -19,7 +19,7 @@ class CaptureDialog(QDialog):
     def __init__(self, built: BuiltTimeline, parent: QWidget | None = None):
         super().__init__(parent)
         self.built = built
-        self.code_file_path = getfile_or_empty(self.built.timeline.__class__)
+        self.code_file_path = getfile_or_stdin(self.built.timeline.__class__)
 
         self.setup_ui()
         self.setup_contents()
