@@ -177,7 +177,7 @@ class VideoWriter:
                     self.fbo.clear(*rgb, not transparent)
                     # 在输出 mov 时，framebuffer 是透明的
                     # 为了颜色能被正确渲染到透明 framebuffer 上
-                    # 这里需要禁用自带 blending 的并使用 shader 里自定义的 blending（参考 program.py 的 injection_ja_finish_up）
+                    # 这里需要禁用自带 blending 的并使用 shader 里自定义的 blending（参考 shader.py 的 _injection_ja_finish_up）
                     # 但是 shader 里的 blending 依赖 framebuffer 信息
                     # 所以这里需要使用 glFlush 更新 framebuffer 信息使得正确渲染
                     if transparent:

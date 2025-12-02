@@ -10,7 +10,7 @@ from janim.anims.timeline import BuiltTimeline, Timeline
 from janim.exception import (EXITCODE_MODULE_NOT_FOUND, EXITCODE_NOT_FILE,
                              ExitException)
 from janim.locale.i18n import get_local_strings
-from janim.logger import log
+from janim.logger import log, plog
 from janim.utils.config import cli_config, default_config
 from janim.utils.file_ops import open_file
 
@@ -302,15 +302,18 @@ def extract_timelines_from_module(args: Namespace, module) -> list[type[Timeline
         name_to_class = {}
         for idx, timeline_class in enumerate(classes, start=1):
             name = timeline_class.__name__
-            print(f"{str(idx).zfill(max_digits)}: {name}")
+            plog.info(f"{str(idx).zfill(max_digits)}: {name}")
             name_to_class[name] = timeline_class
 
         try:
-            user_input = input(
+            prompt_text = (
                 '\n' + _('That module has multiple timelines, '
                          'which ones would you like to render?'
                          '\nTimeline Name or Number: ')
             )
+            sys.stderr.write(prompt_text)   # input 只能输出到 stdout，所以这里手动输出到 stderr
+            sys.stderr.flush()
+            user_input = input()
         except KeyboardInterrupt:
             user_input = ''
 
