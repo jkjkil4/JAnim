@@ -185,10 +185,8 @@ class Axes(CoordinateSystem, MarkedItem, Group, metaclass=_ItemMeta_ABCMeta):
             )
             x_length = width
 
-        self.x_range = x_range
-        self.y_range = y_range
-
         axis_config = dict(**axis_config, unit_size=unit_size)
+
         self.x_axis = CoordinateSystem.create_axis(
             x_range,
             axis_config=merge_dicts_recursively(
@@ -199,6 +197,8 @@ class Axes(CoordinateSystem, MarkedItem, Group, metaclass=_ItemMeta_ABCMeta):
             ),
             length=x_length
         )
+        self.x_range = self.x_axis.x_range
+
         self.y_axis = CoordinateSystem.create_axis(
             y_range,
             axis_config=merge_dicts_recursively(
@@ -210,6 +210,7 @@ class Axes(CoordinateSystem, MarkedItem, Group, metaclass=_ItemMeta_ABCMeta):
             length=y_length
         )
         self.y_axis.points.rotate(90 * DEGREES, about_point=ORIGIN)
+        self.y_range = self.y_axis.x_range
 
         super().__init__(
             self.x_axis,
@@ -226,6 +227,7 @@ class Axes(CoordinateSystem, MarkedItem, Group, metaclass=_ItemMeta_ABCMeta):
         self,
         function: Callable[[float], float],
         x_range: RangeSpecifier | None = None,
+        *,
         bind: bool = True,
         **kwargs
     ) -> ParametricCurve:
@@ -244,12 +246,14 @@ class Axes(CoordinateSystem, MarkedItem, Group, metaclass=_ItemMeta_ABCMeta):
 
             如果你有放在同一个 :class:`~.Group` 里的需求，请传入 ``bind=False`` 以避免该情况
         '''
-        x_range = x_range or self.x_range
-        t_range = np.ones(3)
-        t_range[:len(x_range)] = x_range
-        # 对于坐标轴，x_range 的第三个元素是刻度步长
-        # 所以对于函数，需要除以 num_sampled_graph_points_per_tick
-        t_range[2] /= self.num_sampled_graph_points_per_tick
+        t_range = self.x_range.copy()
+        if x_range is not None:
+            t_range[:len(x_range)] = x_range
+
+        if x_range is None or len(x_range) < 3:
+            # 当用户没有指定采样步长（没有指定 x_range 或者 x_range 不包含 step 的部分）时
+            # 将 t_range[2] 除以 num_sampled_graph_points_per_tick，从刻度步长转换为采样步长
+            t_range[2] /= self.num_sampled_graph_points_per_tick
 
         graph = ParametricCurve(
             lambda t: self.c2p(t, function(t)),
@@ -270,6 +274,8 @@ class Axes(CoordinateSystem, MarkedItem, Group, metaclass=_ItemMeta_ABCMeta):
     def get_parametric_curve(
         self,
         function: Callable[[float], Vect],
+        t_range: tuple[float, float, float] = (0, 1, 0.1),
+        *,
         bind: bool = True,
         **kwargs
     ):
@@ -289,6 +295,7 @@ class Axes(CoordinateSystem, MarkedItem, Group, metaclass=_ItemMeta_ABCMeta):
         '''
         graph = ParametricCurve(
             lambda t: self.coords_to_point(*function(t)),
+            t_range,
             **kwargs
         )
 
@@ -413,7 +420,6 @@ class ThreeDAxes(Axes):
     ):
         super().__init__(x_range, y_range, axis_config=axis_config, **kwargs)
 
-        self.z_range = z_range
         self.z_axis = CoordinateSystem.create_axis(
             z_range,
             axis_config=merge_dicts_recursively(
@@ -428,6 +434,7 @@ class ThreeDAxes(Axes):
             .rotate(-PI / 2, axis=UP, about_point=ORIGIN) \
             .rotate(angle_of_vector(z_normal), axis=OUT, about_point=ORIGIN) \
             .shift(self.x_axis.mark.get())
+        self.z_range = self.z_axis.x_range
 
         self.add(self.z_axis)
 
