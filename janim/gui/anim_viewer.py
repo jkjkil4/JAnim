@@ -24,6 +24,7 @@ import traceback
 from bisect import bisect_right
 from contextlib import contextmanager, nullcontext
 from enum import StrEnum
+from types import ModuleType
 from typing import Any
 
 from PySide6.QtCore import (QByteArray, QEvent, QFileSystemWatcher, QPoint,
@@ -485,11 +486,7 @@ class AnimViewer(QMainWindow):
 
     def on_rebuild_triggered(self) -> None:
         module = inspect.getmodule(self.built.timeline)
-        progress = self.timeline_view.progress()
-        preview_fps = self.built.cfg.preview_fps
-
-        name = self.name_edit.text().strip()
-        stay_same = self.built.timeline.__class__.__name__ == name
+        new_timeline_name = self.name_edit.text().strip()
 
         module_name = module.__name__
         # If the AnimViewer is run by executing
@@ -507,11 +504,11 @@ class AnimViewer(QMainWindow):
         reset_reloads_state()
         loader = importlib.machinery.SourceFileLoader(module_name, module.__file__)
         module = loader.load_module()
-        timeline_class = getattr(module, name, None)
+        timeline_class = getattr(module, new_timeline_name, None)
         if not isinstance(timeline_class, type) or not issubclass(timeline_class, Timeline):
             log.error(
                 _('No timeline named "{name}" in "{file}"')
-                .format(name=name, file=module.__file__)
+                .format(name=new_timeline_name, file=module.__file__)
             )
             return
 
@@ -526,6 +523,12 @@ class AnimViewer(QMainWindow):
             log.error(_('Failed to rebuild'))
             return
 
+        self.set_built_and_handle_states(module, built, new_timeline_name)
+
+    def set_built_and_handle_states(self, module: ModuleType, built: BuiltTimeline, name: str) -> None:
+        stay_same = self.built.timeline.__class__.__name__ == name
+        progress = self.timeline_view.progress()
+        preview_fps = self.built.cfg.preview_fps
         range = self.timeline_view.range
         inout_point = self.timeline_view.inout_point
 
