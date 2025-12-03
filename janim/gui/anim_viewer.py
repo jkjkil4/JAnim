@@ -84,6 +84,7 @@ class AnimViewer(QMainWindow):
     ):
         super().__init__(parent)
         self.code_file_path = getfile_or_stdin(built.timeline.__class__)
+        self.is_stdin = self.code_file_path == STDIN_FILENAME
 
         self.setup_ui()
         self.setup_play_timer()
@@ -94,12 +95,12 @@ class AnimViewer(QMainWindow):
             self.socket = None
         self.sent_lineno = -1
 
-        if watch and self.code_file_path != STDIN_FILENAME:
+        if watch and not self.is_stdin:
             self.setup_watcher(self.code_file_path)
         else:
             self.watcher = None
 
-        if watch and self.code_file_path == STDIN_FILENAME:
+        if watch and self.is_stdin:
             log.warning(_('Cannot watch stdin for changes'))
 
         self.audio_player = None
@@ -155,8 +156,7 @@ class AnimViewer(QMainWindow):
         self.pause_progresses.sort()
 
         # menu bar
-        is_stdin = self.code_file_path == STDIN_FILENAME
-        self.action_rebuild.setEnabled(not is_stdin)    # 对于从 stdin 构建的，禁用重新构建功能
+        self.action_rebuild.setEnabled(not self.is_stdin)    # 对于从 stdin 构建的，禁用重新构建功能
 
         if self.selector is not None:
             self.selector.deleteLater()
@@ -705,10 +705,43 @@ class AnimViewer(QMainWindow):
             self.play_timer.stop()
 
     def on_name_edit_finished(self) -> None:
-        if self.name_edit.text().strip() != self.built.timeline.__class__.__name__:
-            self.play_timer.stop()
+        new_timeline_name = self.name_edit.text().strip()
+        if new_timeline_name == self.built.timeline.__class__.__name__:
+            return
+
+        self.play_timer.stop()
+
+        # 如果是 stdin，则直接从 module 现有的选择
+        # 如果是文件，则重新构建（先加载新的文件代码）
+        if self.is_stdin:
+            self.build_existing_timeline(new_timeline_name)
+        else:
             self.on_rebuild_triggered()
-            self.timeline_view.setFocus()
+
+        self.timeline_view.setFocus()
+
+    def build_existing_timeline(self, timeline_name: str) -> None:
+        module = inspect.getmodule(self.built.timeline)
+        timeline_class = getattr(module, timeline_name, None)
+        if not isinstance(timeline_class, type) or not issubclass(timeline_class, Timeline):
+            log.error(
+                _('No timeline named "{name}" in "{file}"')     # 这里的 file 一定会是 "<stdin>"
+                .format(name=timeline_name, file=module.__file__)
+            )
+            return
+
+        try:
+            built: BuiltTimeline = timeline_class().build(
+                hide_subtitles=self.built.timeline.hide_subtitles,
+                show_debug_notice=True
+            )
+        except Exception as e:
+            if not isinstance(e, ExitException):
+                traceback.print_exc()
+            log.error(_('Failed to build'))
+            return
+
+        self.set_built_and_handle_states(module, built, timeline_name)
 
     def on_capture_clicked(self) -> None:
         self.play_timer.stop()
