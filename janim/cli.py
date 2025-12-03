@@ -283,7 +283,7 @@ def get_module_from_stdin():
     module = types.ModuleType(module_name)
     module.__file__ = STDIN_FILENAME
 
-    sys.modules['__janim_main__'] = module
+    sys.modules[module_name] = module
 
     code = compile(source, STDIN_FILENAME, 'exec')
     exec(code, module.__dict__)
