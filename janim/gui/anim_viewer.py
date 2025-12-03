@@ -31,8 +31,7 @@ from PySide6.QtWidgets import (QApplication, QCompleter, QLabel, QLineEdit,
                                QSizePolicy, QSplitter, QStackedLayout, QWidget)
 
 from janim.anims.timeline import BuiltTimeline, Timeline
-from janim.exception import (ExitException, cancel_listen_exception,
-                             listen_exception)
+from janim.exception import ExitException
 from janim.gui.application import Application
 from janim.gui.audio_player import AudioPlayer
 from janim.gui.fixed_ratio_widget import FixedRatioWidget
@@ -111,8 +110,6 @@ class AnimViewer(QMainWindow):
 
         if available_timeline_names is not None:
             self.update_completer(available_timeline_names)
-
-        listen_exception(self.on_exception)
 
     @classmethod
     def views(cls, anim: BuiltTimeline, **kwargs) -> None:
@@ -974,17 +971,8 @@ class AnimViewer(QMainWindow):
             self.watch_mtime = mtime
             self.on_rebuild_triggered()
 
-    def on_exception(self, exc_type, exc_value, exc_traceback):
-        if exc_type is KeyboardInterrupt:
-            self.close()
-            return True
-
     def closeEvent(self, event: QCloseEvent) -> None:
         super().closeEvent(event)
-
-        # 使用 singleShot 使得在 Qt 下次事件循环中触发，而不是立刻执行
-        # 这是为了避免 excepthook 在遍历 callback 的过程中就对列表进行修改，而导致的不完全遍历
-        QTimer.singleShot(0, lambda: cancel_listen_exception(self.on_exception))
 
         if self.socket is not None:
             msg = json.dumps(dict(
