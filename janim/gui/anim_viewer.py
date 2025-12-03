@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 try:
     import PySide6  # noqa: F401
 except ImportError:
@@ -21,6 +23,9 @@ import time
 import traceback
 from bisect import bisect_right
 from contextlib import contextmanager, nullcontext
+from enum import StrEnum
+from types import ModuleType
+from typing import Any
 
 from PySide6.QtCore import (QByteArray, QEvent, QFileSystemWatcher, QPoint,
                             QSettings, Qt, QTimer, Signal)
@@ -78,6 +83,7 @@ class AnimViewer(QMainWindow):
     ):
         super().__init__(parent)
         self.code_file_path = getfile_or_stdin(built.timeline.__class__)
+        self.is_stdin = self.code_file_path == STDIN_FILENAME
 
         self.setup_ui()
         self.setup_play_timer()
@@ -86,13 +92,14 @@ class AnimViewer(QMainWindow):
             self.setup_socket(built.cfg.client_search_port)
         else:
             self.socket = None
+        self.sent_lineno = -1
 
-        if watch and self.code_file_path != STDIN_FILENAME:
+        if watch and not self.is_stdin:
             self.setup_watcher(self.code_file_path)
         else:
             self.watcher = None
 
-        if watch and self.code_file_path == STDIN_FILENAME:
+        if watch and self.is_stdin:
             log.warning(_('Cannot watch stdin for changes'))
 
         self.audio_player = None
@@ -146,8 +153,7 @@ class AnimViewer(QMainWindow):
         self.pause_progresses.sort()
 
         # menu bar
-        is_stdin = self.code_file_path == STDIN_FILENAME
-        self.action_rebuild.setEnabled(not is_stdin)    # 对于从 stdin 构建的，禁用重新构建功能
+        self.action_rebuild.setEnabled(not self.is_stdin)    # 对于从 stdin 构建的，禁用重新构建功能
 
         if self.selector is not None:
             self.selector.deleteLater()
@@ -477,11 +483,7 @@ class AnimViewer(QMainWindow):
 
     def on_rebuild_triggered(self) -> None:
         module = inspect.getmodule(self.built.timeline)
-        progress = self.timeline_view.progress()
-        preview_fps = self.built.cfg.preview_fps
-
-        name = self.name_edit.text().strip()
-        stay_same = self.built.timeline.__class__.__name__ == name
+        new_timeline_name = self.name_edit.text().strip()
 
         module_name = module.__name__
         # If the AnimViewer is run by executing
@@ -499,11 +501,11 @@ class AnimViewer(QMainWindow):
         reset_reloads_state()
         loader = importlib.machinery.SourceFileLoader(module_name, module.__file__)
         module = loader.load_module()
-        timeline_class = getattr(module, name, None)
+        timeline_class = getattr(module, new_timeline_name, None)
         if not isinstance(timeline_class, type) or not issubclass(timeline_class, Timeline):
             log.error(
                 _('No timeline named "{name}" in "{file}"')
-                .format(name=name, file=module.__file__)
+                .format(name=new_timeline_name, file=module.__file__)
             )
             return
 
@@ -518,6 +520,12 @@ class AnimViewer(QMainWindow):
             log.error(_('Failed to rebuild'))
             return
 
+        self.set_built_and_handle_states(module, built, new_timeline_name)
+
+    def set_built_and_handle_states(self, module: ModuleType, built: BuiltTimeline, name: str) -> None:
+        stay_same = self.built.timeline.__class__.__name__ == name
+        progress = self.timeline_view.progress()
+        preview_fps = self.built.cfg.preview_fps
         range = self.timeline_view.range
         inout_point = self.timeline_view.inout_point
 
@@ -553,21 +561,12 @@ class AnimViewer(QMainWindow):
         get_all_timelines_from_module.cache_clear()
         self.update_completer([timeline.__name__ for timeline in get_all_timelines_from_module(module)])
 
-        # 向 vscode 客户端发送重新构建了的信息
-        if self.socket is not None:
-            msg = json.dumps(dict(
-                janim=dict(
-                    type='rebuilt'
-                )
-            ))
-            for client in self.clients:
-                self.socket.writeDatagram(
-                    QByteArray.fromStdString(msg),
-                    *client
-                )
+        if self.has_connection():
+            # 发送重新构建了的信息
+            self.send_janim_cmd(Cmd.Rebuilt)
 
             time = self.timeline_view.progress_to_time(self.timeline_view.progress())
-            self.send_lineno(self.built.timeline.get_lineno_at_time(time))
+            self.send_janim_cmd(Cmd.Lineno, self.built.timeline.get_lineno_at_time(time))
 
         self.glw.update()
 
@@ -635,13 +634,13 @@ class AnimViewer(QMainWindow):
     def on_value_changed(self, value: int) -> None:
         time = self.timeline_view.progress_to_time(value)
 
-        if self.socket is not None:
+        if self.has_connection():
             line = self.built.timeline.get_lineno_at_time(time)
 
-            if line != self.lineno:
-                self.lineno = line
+            if line != self.sent_lineno:
+                self.sent_lineno = line
 
-                self.send_lineno(line)
+                self.send_janim_cmd(Cmd.Lineno, line)
 
         self.glw.set_time(time)
         self.time_label.setText(f'{time:.1f}/{self.built.duration:.1f} s')
@@ -703,10 +702,43 @@ class AnimViewer(QMainWindow):
             self.play_timer.stop()
 
     def on_name_edit_finished(self) -> None:
-        if self.name_edit.text().strip() != self.built.timeline.__class__.__name__:
-            self.play_timer.stop()
+        new_timeline_name = self.name_edit.text().strip()
+        if new_timeline_name == self.built.timeline.__class__.__name__:
+            return
+
+        self.play_timer.stop()
+
+        # 如果是 stdin，则直接从 module 现有的选择
+        # 如果是文件，则重新构建（先加载新的文件代码）
+        if self.is_stdin:
+            self.build_existing_timeline(new_timeline_name)
+        else:
             self.on_rebuild_triggered()
-            self.timeline_view.setFocus()
+
+        self.timeline_view.setFocus()
+
+    def build_existing_timeline(self, timeline_name: str) -> None:
+        module = inspect.getmodule(self.built.timeline)
+        timeline_class = getattr(module, timeline_name, None)
+        if not isinstance(timeline_class, type) or not issubclass(timeline_class, Timeline):
+            log.error(
+                _('No timeline named "{name}" in "{file}"')     # 这里的 file 一定会是 "<stdin>"
+                .format(name=timeline_name, file=module.__file__)
+            )
+            return
+
+        try:
+            built: BuiltTimeline = timeline_class().build(
+                hide_subtitles=self.built.timeline.hide_subtitles,
+                show_debug_notice=True
+            )
+        except Exception as e:
+            if not isinstance(e, ExitException):
+                traceback.print_exc()
+            log.error(_('Failed to build'))
+            return
+
+        self.set_built_and_handle_states(module, built, timeline_name)
 
     def on_capture_clicked(self) -> None:
         self.play_timer.stop()
@@ -868,10 +900,12 @@ class AnimViewer(QMainWindow):
         self.socket.readyRead.connect(self.on_ready_read)
 
         self.clients: set[tuple[QHostAddress, int]] = set()
-        self.lineno = -1
 
         log.info(_('Interactive port has been opened at {port}').format(port=self.socket.localPort()))
         self.setWindowTitle(f'{self.windowTitle()} [{self.socket.localPort()}]')
+
+    def has_connection(self) -> bool:
+        return self.socket is not None
 
     def on_shared_ready_read(self) -> None:
         while self.shared_socket.hasPendingDatagrams():
@@ -884,15 +918,15 @@ class AnimViewer(QMainWindow):
                 cmdtype = janim['type']
 
                 if cmdtype == 'find':
-                    msg = json.dumps(dict(
-                        janim=dict(
-                            type='find_re',
-                            data=dict(
-                                port=self.socket.localPort(),
-                                file_path=os.path.abspath(inspect.getfile(self.built.timeline.__class__))
-                            )
-                        )
-                    ))
+                    msg = json.dumps({
+                        'janim': {
+                            'type': 'find_re',
+                            'data': {
+                                'port': self.socket.localPort(),
+                                'file_path': os.path.abspath(inspect.getfile(self.built.timeline.__class__))
+                            }
+                        }
+                    })
                     self.socket.writeDatagram(
                         QByteArray.fromStdString(msg),
                         datagram.senderAddress(),
@@ -914,7 +948,7 @@ class AnimViewer(QMainWindow):
                 match janim['type']:
                     case 'register_client':
                         self.clients.add((datagram.senderAddress(), datagram.senderPort()))
-                        self.send_lineno(self.lineno)
+                        self.send_janim_cmd(Cmd.Lineno, self.sent_lineno)
 
                     # 重新构建
                     case 'file_saved':
@@ -925,18 +959,21 @@ class AnimViewer(QMainWindow):
             except Exception:
                 traceback.print_exc()
 
-    def send_lineno(self, line: int) -> None:
-        msg = json.dumps(dict(
-            janim=dict(
-                type='lineno',
-                data=line
-            )
-        ))
+    def send_janim_cmd(self, cmd: Cmd, data: Any = None) -> None:
+        msg = {
+            'janim': {
+                'type': str(cmd)
+            }
+        }
+        if data is not None:
+            msg['janim']['data'] = data
+
+        self.send_json(msg)
+
+    def send_json(self, msg: dict) -> None:
+        bytearr = QByteArray.fromStdString(json.dumps(msg))
         for client in self.clients:
-            self.socket.writeDatagram(
-                QByteArray.fromStdString(msg),
-                *client
-            )
+            self.socket.writeDatagram(bytearr, *client)
 
     def setup_watcher(self, code_file_path: str) -> None:
         self.watcher_timer = QTimer(self, interval=1)
@@ -974,17 +1011,8 @@ class AnimViewer(QMainWindow):
     def closeEvent(self, event: QCloseEvent) -> None:
         super().closeEvent(event)
 
-        if self.socket is not None:
-            msg = json.dumps(dict(
-                janim=dict(
-                    type='close_event'
-                )
-            ))
-            for client in self.clients:
-                self.socket.writeDatagram(
-                    QByteArray.fromStdString(msg),
-                    *client
-                )
+        if self.has_connection():
+            self.send_janim_cmd(Cmd.CloseEvent)
 
         self.save_options()
 
@@ -998,3 +1026,9 @@ class AnimViewer(QMainWindow):
             return super().eventFilter(watched, event)
 
     # endregion
+
+
+class Cmd(StrEnum):
+    Rebuilt = 'rebuilt'
+    Lineno = 'lineno'
+    CloseEvent = 'close_event'
