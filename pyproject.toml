@@ -61,6 +61,7 @@ exclude = [
     "uv.lock",
     "asv.conf.json",
     "janim/gui/*.ui",
+    "janim/gui/functions/*.ui",
     "janim/locale/source",
     "janim/locale/compile.py",
     "janim/locale/gettext.py",
