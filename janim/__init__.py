@@ -1,3 +1,3 @@
 '''A library for creating smooth animations'''
 
-__version__ = '4.0.0-alpha4'
+__version__ = '4.0.0-alpha5'
