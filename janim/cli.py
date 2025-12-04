@@ -12,7 +12,7 @@ from janim.exception import (EXITCODE_MODULE_NOT_FOUND, EXITCODE_NOT_FILE,
                              ExitException)
 from janim.locale.i18n import get_local_strings
 from janim.utils.file_ops import STDIN_FILENAME
-from janim.logger import log, plog
+from janim.logger import log
 from janim.utils.config import cli_config, default_config
 from janim.utils.file_ops import open_file
 
@@ -344,7 +344,7 @@ def extract_timelines_from_module(args: Namespace, module) -> list[type[Timeline
         name_to_class = {}
         for idx, timeline_class in enumerate(classes, start=1):
             name = timeline_class.__name__
-            plog.info(f"{str(idx).zfill(max_digits)}: {name}")
+            print(f"{str(idx).zfill(max_digits)}: {name}", file=sys.stderr)
             name_to_class[name] = timeline_class
 
         try:
