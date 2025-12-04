@@ -6,26 +6,29 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version:  JAnim\n"
+"Project-Id-Version: JAnim\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-08-11 22:08+0800\n"
-"PO-Revision-Date: 2024-06-03 10:20+0800\n"
+"POT-Creation-Date: 2025-12-04 16:36+0800\n"
+"PO-Revision-Date: 2025-12-04 16:56+0800\n"
 "Last-Translator: \n"
-"Language: en\n"
 "Language-Team: en <LL@li.org>\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Language: en\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "Generated-By: Babel 2.17.0\n"
+"X-Generator: Poedit 3.8\n"
 
 #: ../../source/janim/utils/file_ops.rst:2
 msgid "file_ops"
 msgstr "file_ops"
 
-#: janim.utils.file_ops.getfile_or_empty:1 of
-msgid "获取类的文件路径，如果类没有文件路径，则返回空字符串"
-msgstr "Get the file path of a class, returns an empty string if the class has no file path"
+#: janim.utils.file_ops.getfile_or_stdin:1 of
+msgid "获取类的文件路径，如果类没有文件路径，则认为来自 stdin"
+msgstr ""
+"Get the file path of the class. If the class has no file path, assume "
+"it is from stdin"
 
 #: janim.utils.file_ops.get_janim_dir:1 of
 msgid "得到 janim 的路径"
@@ -38,4 +41,3 @@ msgstr "Read all characters from the file."
 #: janim.utils.file_ops.open_file:1 of
 msgid "打开指定的文件"
 msgstr "Open the specified file"
-

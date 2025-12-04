@@ -152,19 +152,33 @@ class Axes(CoordinateSystem, MarkedItem, Group, metaclass=_ItemMeta_ABCMeta):
     '''
     二维坐标轴
 
-    - ``num_sampled_graph_points_per_tick`` 表示 :meth:`get_graph` 方法在采样步长缺省时，在每段刻度中采样点的数量
+    -   ``num_sampled_graph_points_per_tick``:
 
-    - ``axis_config``: 横坐标轴和纵坐标轴共用的配置项，可用参数请参考 :class:`~.NumberLine`
+        表示 :meth:`get_graph` 方法在采样步长缺省时，在每段刻度中采样点的数量
 
-    - ``x_axis_config``: 横坐标轴的配置项，可用参数请参考 :class:`~.NumberLine`
+    -   ``axis_config``:
 
-    - ``y_axis_config``: 纵坐标轴的配置项，可用参数请参考 :class:`~.NumberLine`
+        横坐标轴和纵坐标轴共用的配置项，可用参数请参考 :class:`~.NumberLine`
 
-    - ``x_length``: 当该值指定时，会将横坐标轴的长度拉伸以匹配该值
+    -   ``x_axis_config``:
 
-    - ``y_length``: 当该值指定时，会将纵坐标轴的长度拉伸以匹配该值
+        横坐标轴的配置项，可用参数请参考 :class:`~.NumberLine`
 
-    - ``unit_size``: 指定横坐标与纵坐标的单位长度，如果指定了对应的 ``*_length`` 则会被忽略
+    -   ``y_axis_config``:
+
+        纵坐标轴的配置项，可用参数请参考 :class:`~.NumberLine`
+
+    -   ``x_length``:
+
+        当该值指定时，会将横坐标轴的长度拉伸以匹配该值
+
+    -   ``y_length``:
+
+        当该值指定时，会将纵坐标轴的长度拉伸以匹配该值
+
+    -   ``unit_size``:
+
+        指定横坐标与纵坐标的单位长度，如果指定了对应的 ``*_length`` 则会被忽略
 
         注：如果需要给某个坐标轴单独指定 ``unit_size``，请传入对应的 ``*_axis_config``
     '''
@@ -499,7 +513,7 @@ class CmptVPoints_NumberPlaneImpl(Cmpt_VPoints, impl=True):
 
 class NumberPlane(Axes):
     '''
-    坐标平面
+    坐标网格
 
     一般来说包含：
 
