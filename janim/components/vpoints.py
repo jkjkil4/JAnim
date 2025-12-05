@@ -21,7 +21,6 @@ from janim.utils.bezier import (PathBuilder,
                                 partial_quadratic_bezier_points,
                                 smooth_quadratic_path)
 from janim.utils.data import AlignedData
-from janim.utils.paths import PathFunc, straight_path
 from janim.utils.space_ops import (get_norm, get_unit_normal, normalize,
                                    rotation_between_vectors)
 
@@ -214,20 +213,6 @@ class Cmpt_VPoints[ItemT](Cmpt_Points[ItemT], impl=True):
                 cmpt1_copy, cmpt2_copy = cmpt2_copy, cmpt1_copy
 
         return AlignedData(cmpt1_copy, cmpt2_copy, cmpt1_copy.copy())
-
-    def interpolate(
-        self,
-        cmpt1: Self,
-        cmpt2: Self,
-        alpha: float,
-        *,
-        path_func: PathFunc = straight_path
-    ) -> None:
-        super().interpolate(cmpt1, cmpt2, alpha, path_func=path_func)
-        if np.all(cmpt1.get_closepath_flags() == cmpt2.get_closepath_flags()):
-            data = self.refresh_data[self.get_closepath_flags.__name__]
-            data.is_required = False
-            data.stored = cmpt1.get_closepath_flags()
 
     @staticmethod
     def align_path(path1: np.ndarray, path2: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
