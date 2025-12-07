@@ -415,32 +415,12 @@ def get_lineno_key_function(module) -> Callable[[type], tuple[int, int]] | None:
     - 如果能找到 class 在 module 中所定义的行数，则返回 ``(0, 行数)``
     - 如果找不到，则返回 ``(1, 0)``
 
-    **具体说明：**
+    **特殊情况说明：**
 
     对于重新载入的 module，如果代码里删除了某个类的代码，这个类仍然会出现在 module 中，
     但此时无法在 module 源代码中找到这个类的定义，所以把找不到的类返回 ``(1, 0)``，这样依据这个进行排序就会将其排序到最后
 
-    **技术细节：**
-
-    在 JAnim 更早的版本中，使用的代码是
-
-    .. code-block:: python
-
-        def key(cls):
-            try:
-                return (0, inspect.getsourcelines(cls)[1])
-            except OSError:
-                return (1, 0)
-
-    ``inspect.getsourcelines`` 它也是使用 AST 解析源代码查找类的定义，但是它的缺点在于：
-
-    - 如果一个文件中定义了重名的类定义，它会将找到的第一个作为类所定义的行数；
-      但是从语义上来说，后面的类定义已经把前面的覆盖了，所以更合理的效果是返回最后一次定义的行数
-
-    - 每次查找都要重新解析一遍源代码的 AST，复杂度是指数级上升的
-      （文件中的 ``Timeline`` 越多，调用 ``getsourcelines`` 的次数也越多；同时源代码更长，AST 也更复杂）
-
-    所以对于现在实现的这个函数，对于重复出现的类定义，后出现的行数会覆盖之前记录的行数，并且全程只会解析一次 AST
+    更多技术细节请参阅 https://github.com/jkjkil4/JAnim/pull/36
     '''
     file = inspect.getfile(module)
     if not file:
