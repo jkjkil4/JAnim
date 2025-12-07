@@ -1,20 +1,22 @@
+import ast
 import importlib.machinery
 import inspect
+import linecache
 import os
 import sys
 import time
 import types
 from argparse import Namespace
 from functools import lru_cache
+from typing import Callable
 
 from janim.anims.timeline import BuiltTimeline, Timeline
 from janim.exception import (EXITCODE_MODULE_NOT_FOUND, EXITCODE_NOT_FILE,
                              ExitException)
 from janim.locale.i18n import get_local_strings
-from janim.utils.file_ops import STDIN_FILENAME
 from janim.logger import log
 from janim.utils.config import cli_config, default_config
-from janim.utils.file_ops import open_file
+from janim.utils.file_ops import STDIN_FILENAME, open_file
 
 _ = get_local_strings('cli')
 
@@ -398,15 +400,59 @@ def get_all_timelines_from_module(module) -> list[type[Timeline]]:
     if len(classes) <= 1:
         return classes
 
-    def key(cls):
-        try:
-            return (0, inspect.getsourcelines(cls)[1])
-        except OSError:
-            # 对于重新载入的 module，如果代码里删除了某个类的代码，这个类仍然会出现在 module 中
-            # 但是此时这个类无法获得到行数，所以会产生 OSError
-            # 这里把已删除的类排序到最后
-            return (1, 0)
+    lineno_key = get_lineno_key_function(module)
 
-    classes.sort(key=key)
+    if lineno_key is not None:
+        classes.sort(key=lineno_key)
 
     return classes
+
+
+def get_lineno_key_function(module) -> Callable[[type], tuple[int, int]] | None:
+    '''
+    返回一个函数，其对于列表中的每个类：
+
+    - 如果能找到 class 在 module 中所定义的行数，则返回 ``(0, 行数)``
+    - 如果找不到，则返回 ``(1, 0)``
+
+    **特殊情况说明：**
+
+    对于重新载入的 module，如果代码里删除了某个类的代码，这个类仍然会出现在 module 中，
+    但此时无法在 module 源代码中找到这个类的定义，所以把找不到的类返回 ``(1, 0)``，这样依据这个进行排序就会将其排序到最后
+
+    更多技术细节请参阅 https://github.com/jkjkil4/JAnim/pull/36
+    '''
+    file = inspect.getfile(module)
+    if not file:
+        return None
+
+    # 模仿 inspect.findsource 的做法
+    lines = linecache.getlines(file, module.__dict__)
+    if not lines:
+        return None
+
+    source = ''.join(lines)
+    tree = ast.parse(source)
+
+    collector = _ClassDefCollector()
+    collector.visit(tree)
+
+    defs = collector.defs
+
+    def lineno_key(cls: type) -> tuple[int, int]:
+        lineno = defs.get(cls.__name__, None)
+        if lineno is None:
+            return (1, 0)
+        return (0, lineno)
+
+    return lineno_key
+
+
+class _ClassDefCollector(ast.NodeVisitor):
+    def __init__(self):
+        self.defs: dict[str, int] = {}
+
+    def visit_ClassDef(self, node: ast.ClassDef):
+        # 因为我们只关心最后一次定义的位置，所以直接赋值就行
+        self.defs[node.name] = node.lineno
+        # 由于只关心最顶层的 classdef，所以不需要 generic_visit
