@@ -213,3 +213,13 @@ class Cmpt_CameraPoints[ItemT](Cmpt_Points[ItemT]):
 
 class Camera(Points):
     points = CmptInfo(Cmpt_CameraPoints[Self])
+
+    def apply_style(
+        self,
+        size: Vect | None = None,
+        fov: float | None = None,
+        orientation: Quaternion | None = None,
+        **kwargs
+    ) -> Self:
+        self.points.set(size=size, fov=fov, orientation=orientation)
+        return super().apply_style(**kwargs)
