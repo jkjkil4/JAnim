@@ -7,7 +7,7 @@ import numpy as np
 from janim.components.component import CmptInfo
 from janim.components.points import Cmpt_Points
 from janim.components.vpoints import Cmpt_VPoints
-from janim.constants import (BLUE, BLUE_D, DEGREES, DL, DOWN, ORIGIN, OUT, PI,
+from janim.constants import (BLUE, BLUE_D, DEGREES, DL, ORIGIN, OUT, PI, RIGHT,
                              SMALL_BUFF, UP, WHITE)
 from janim.items.coordinate.functions import ParametricCurve
 from janim.items.coordinate.number_line import NumberLine
@@ -474,6 +474,7 @@ class ThreeDAxes(Axes):
         **kwargs
     ):
         super().__init__(x_range, y_range, axis_config=axis_config, **kwargs)
+        self.z_normal_angle = angle_of_vector(z_normal)
 
         self.z_axis = CoordinateSystem.create_axis(
             z_range,
@@ -487,7 +488,7 @@ class ThreeDAxes(Axes):
         )
         self.z_axis.points \
             .rotate(-PI / 2, axis=UP, about_point=ORIGIN) \
-            .rotate(angle_of_vector(z_normal) - PI, axis=OUT, about_point=ORIGIN) \
+            .rotate(self.z_normal_angle - PI, axis=OUT, about_point=ORIGIN) \
             .shift(self.x_axis.mark.get())
         self.z_range = self.z_axis.x_range
 
@@ -495,6 +496,54 @@ class ThreeDAxes(Axes):
 
     def get_axes(self) -> list[NumberLine]:
         return [*super().get_axes(), self.z_axis]
+
+    def get_axis_labels(
+        self,
+        x_label: str | Points = 'x',
+        y_label: str | Points = 'y',
+        z_label: str | Points = 'z',
+        x_kwargs: dict = {},
+        y_kwargs: dict = {},
+        z_kwargs: dict = {},
+        rotate_xy: bool = True,
+        z_point_up: bool = True,
+        **kwargs,
+    ) -> Group[TypstMath | Points]:
+        '''
+        详见 :meth:`~.NumberLine.get_axis_label`
+
+        另外，在默认情况下 ``rotate_xy=True`` 会将 x、y 轴的标签原地旋转半圈，以匹配从 x、y、z 三个轴的正方向看向原点的视角
+
+        以及，直接生成的 z 坐标轴标签会和 2D 平面平行，默认情况下 ``point_up=True`` 会将其立起来和 z 轴方向一致，传入 ``point_up=False`` 可禁用该行为
+        '''
+        x_axis_label = self.get_x_axis_label(x_label, **x_kwargs, **kwargs)
+        y_axis_label = self.get_y_axis_label(y_label, **y_kwargs, **kwargs)
+        z_axis_label = self.get_z_axis_label(z_label, z_point_up, **z_kwargs, **kwargs)
+
+        if rotate_xy:
+            for label in (x_axis_label, y_axis_label):
+                label.points.rotate(PI)
+
+        return Group(x_axis_label, y_axis_label, z_axis_label)
+
+    def get_z_axis_label(
+        self,
+        label: str | Points = 'z',
+        point_up: bool = True,
+        **kwargs
+    ) -> TypstMath | Points:
+        '''
+        详见 :meth:`~.NumberLine.get_axis_label`
+
+        另外，直接生成的坐标轴标签会和 2D 平面平行，默认情况下 ``point_up=True`` 会将其立起来和 z 轴方向一致，传入 ``point_up=False`` 可禁用该行为
+        '''
+        label = self.z_axis.get_axis_label(label, **kwargs)
+        if point_up:
+            axis_end = self.z_axis.points.get_end()
+            label.points \
+                .rotate(PI / 2, axis=RIGHT, about_point=axis_end) \
+                .rotate(self.z_normal_angle + PI / 2, about_point=axis_end)
+        return label
 
 
 class CmptVPoints_NumberPlaneImpl(Cmpt_VPoints, impl=True):
