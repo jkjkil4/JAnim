@@ -142,8 +142,8 @@ class NumberLine(MarkedItem, Line):
 
         if len(x_range) == 2:
             x_range = [*x_range, 1]
+        self.x_min, self.x_max, self.x_step = x_range
         self.x_range = np.array(x_range, dtype=float)
-        self.x_min, self.x_max, self.x_step = self.x_range
 
         self.unit_size = unit_size
 
