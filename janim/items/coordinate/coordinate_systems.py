@@ -455,7 +455,7 @@ class ThreeDAxes(Axes):
     '''
     三维坐标轴
 
-    - ``z_normal`` 表示 z 坐标轴上刻度和箭头标记的面向，默认面向 ``DOWN`` 方向
+    - ``z_normal`` 表示 z 坐标轴上刻度和箭头标记的面向，默认面向 ``UP`` 方向
 
     其它可用参数请参考并类比 :class:`Axes` 的使用
     '''
@@ -470,7 +470,7 @@ class ThreeDAxes(Axes):
         axis_config: dict = {},
         z_length: float | None = None,
         z_axis_config: dict = {},
-        z_normal: Vect = DOWN,
+        z_normal: Vect = UP,
         **kwargs
     ):
         super().__init__(x_range, y_range, axis_config=axis_config, **kwargs)
@@ -487,7 +487,7 @@ class ThreeDAxes(Axes):
         )
         self.z_axis.points \
             .rotate(-PI / 2, axis=UP, about_point=ORIGIN) \
-            .rotate(angle_of_vector(z_normal), axis=OUT, about_point=ORIGIN) \
+            .rotate(angle_of_vector(z_normal) - PI, axis=OUT, about_point=ORIGIN) \
             .shift(self.x_axis.mark.get())
         self.z_range = self.z_axis.x_range
 
