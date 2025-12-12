@@ -25,3 +25,9 @@
         :author: <a href="https://aka.lovemilk.top/github">lovemilk</a>
 
         画面以及音频可视化
+
+.. random-option::
+
+    .. bili-example:: aid=115704456085791&bvid=BV1SJm7BJEqn&cid=34683029611&p=1
+        :title: 「不想死于像这样活着」 | 【伪·Rizline自制谱】人造卫星
+        :author: 破壁人五号
