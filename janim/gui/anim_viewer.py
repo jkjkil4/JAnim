@@ -31,7 +31,9 @@ from typing import Any
 from PySide6.QtCore import (QByteArray, QEvent, QFileSystemWatcher, QPoint,
                             QSettings, Qt, QTimer, Signal)
 from PySide6.QtGui import (QAction, QCloseEvent, QGuiApplication, QHideEvent,
-                           QIcon, QShowEvent)
+                           QIcon, QShowEvent, QImage, QPixmap, QKeyEvent,
+                           QShortcut, QKeySequence)
+from PIL import Image
 from PySide6.QtWidgets import (QApplication, QCompleter, QLabel, QLineEdit,
                                QMainWindow, QMessageBox, QPushButton,
                                QSizePolicy, QSplitter, QStackedLayout, QWidget)
@@ -284,6 +286,11 @@ class AnimViewer(QMainWindow):
         self.time_label = QPushButton()
         self.name_edit = QLineEdit()
 
+        self.btn_copy = QPushButton("Copy")
+        self.btn_copy.setToolTip("Copy current frame (Ctrl+C)")
+        self.btn_copy.setFocusPolicy(Qt.FocusPolicy.NoFocus)
+        self.btn_copy.clicked.connect(self.copy_current_frame)
+
         self.btn_capture = QPushButton()
         self.btn_capture.setIcon(QIcon(os.path.join(get_janim_dir(), 'gui', 'capture.png')))
         self.btn_capture.setFocusPolicy(Qt.FocusPolicy.NoFocus)
@@ -298,6 +305,7 @@ class AnimViewer(QMainWindow):
         stb.addWidget(self.fps_label)
         stb.addPermanentWidget(self.name_edit)
         stb.addPermanentWidget(self.time_label)
+        stb.addPermanentWidget(self.btn_copy)
         stb.addPermanentWidget(self.btn_capture)
         stb.addPermanentWidget(self.btn_export)
 
@@ -458,6 +466,9 @@ class AnimViewer(QMainWindow):
         self.connect_action_widget(self.action_color_widget, ColorWidget)
         self.action_copy_time.triggered.connect(self.on_copy_time_triggered)
 
+        self.shortcut_copy = QShortcut(QKeySequence('Ctrl+C'), self)
+        self.shortcut_copy.activated.connect(self.copy_current_frame)
+
         self.timeline_view.value_changed.connect(self.on_value_changed)
         self.timeline_view.dragged.connect(lambda: self.set_play_state(False))
         self.timeline_view.space_pressed.connect(lambda: self.switch_play_state())
@@ -602,12 +613,13 @@ class AnimViewer(QMainWindow):
 
         action.triggered.connect(triggered)
 
-    def on_copy_time_triggered(self) -> None:
-        view = self.timeline_view
-        clipboard = QGuiApplication.clipboard()
-        clipboard.setText(f'{view.progress_to_time(view.progress()):.2f}')
+    def show_toast(self, text: str, target_widget: QWidget) -> None:
+        """显示一个临时的提示标签 (Toast)"""
+        # 如果已存在 label，先隐藏或重用（这里简化为新建，防止残留）
+        if hasattr(self, 'copied_label') and self.copied_label:
+            self.copied_label.close()
 
-        self.copied_label = QLabel(_('Copied!'))
+        self.copied_label = QLabel(text, self)
         self.copied_label.setStyleSheet(
             '''
             background-color: #232629;
@@ -615,19 +627,55 @@ class AnimViewer(QMainWindow):
             padding: 2px 4px;
             border-radius: 6px;
             font-size: 12px;
+            color: white;
             '''
         )
         self.copied_label.setWindowFlag(Qt.WindowType.ToolTip)
         self.copied_label.adjustSize()
 
-        pos = QPoint(self.time_label.width() // 2, self.time_label.height() // 2)
-        pos = self.time_label.mapToGlobal(pos)
+        # 计算位置：目标控件的中心
+        pos = target_widget.mapToGlobal(target_widget.rect().center())
         pos -= QPoint(self.copied_label.width() // 2, self.copied_label.height() // 2)
 
         self.copied_label.move(pos)
         self.copied_label.show()
-        QTimer.singleShot(500, self.copied_label.hide)
+        QTimer.singleShot(800, self.copied_label.hide)
 
+    def on_copy_time_triggered(self) -> None:
+        view = self.timeline_view
+        clipboard = QGuiApplication.clipboard()
+        text = f'{view.progress_to_time(view.progress()):.2f}'
+        clipboard.setText(text)
+
+        self.show_toast(_('Copied!'), self.time_label)
+
+    def copy_current_frame(self) -> None:
+        """
+     直接抓取当前 OpenGL 窗口的显存内容。
+        """
+            # 暂停播放，保证画面静止
+        if self.play_timer.isActive():
+            self.switch_play_state()
+            # 强制处理完挂起的事件，确保画面停稳
+            QApplication.processEvents()
+
+        try:
+            #确保当前 GL 上下文是激活的
+            self.glw.makeCurrent()
+            image = self.glw.grabFramebuffer()
+
+            # 某些情况下 grabFramebuffer 返回的 Alpha 通道可能导致粘贴到某些软件（如微信/Word）时显示异常
+            image = image.convertToFormat(QImage.Format.Format_RGB888)
+
+
+            clipboard = QGuiApplication.clipboard()
+            clipboard.setImage(image)
+            self.show_toast(_("Frame Copied!"), self.btn_copy)
+
+        except Exception as e:
+            traceback.print_exc()
+            log.error(f"Qt grab failed: {e}")
+            self.show_toast(_("Error!"), self.btn_copy)
     # endregion (slots-menu)
 
     # region slots-anim
@@ -1008,6 +1056,14 @@ class AnimViewer(QMainWindow):
         if mtime != self.watch_mtime:   # 使用文件最后修改时间过滤重复的触发
             self.watch_mtime = mtime
             self.on_rebuild_triggered()
+
+    def keyPressEvent(self, event: QKeyEvent) -> None:
+        key = event.key()
+
+        if key == Qt.Key.Key_Space:
+             self.switch_play_state()
+
+        super().keyPressEvent(event)
 
     def closeEvent(self, event: QCloseEvent) -> None:
         super().closeEvent(event)
