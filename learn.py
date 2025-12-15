@@ -1,15 +1,29 @@
 from janim.imports import *
 
-class HelloJAnimExample(Timeline):
-    def construct(self):
-        # 定义物件
-        circle = Circle(color=BLUE)
-        square = Square(color=GREEN, fill_alpha=0.5)
 
-        # 进行动画
+class HelloJAnimExample(Timeline):
+    def construct(self) -> None:
+        group = Group(
+            Circle(fill_alpha=0.5),
+            Square(fill_alpha=0.5),
+            Text("Text", font_size=48),
+            color=BLUE,
+        )
+        group.points.arrange(buff=LARGE_BUFF)
+
         self.forward()
-        self.play(Create(circle))
-        self.play(Transform(circle, square))
-        self.play(Uncreate(square))
+        self.play(
+            FadeIn(group[0]), AnimGroup(FadeIn(group[1]), FadeIn(group[2]), duration=2)
+        )
+
         self.forward()
+
+        self.hide(group)
+        self.play(
+            FadeIn(group[0], duration=2),
+            AnimGroup(FadeIn(group[1]), FadeIn(group[2]), at=1, duration=2),
+        )
+        self.forward()
+
+
 #  janim run learn.py HelloJAnimExample

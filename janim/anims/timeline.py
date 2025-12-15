@@ -42,6 +42,7 @@ from janim.render.base import RenderData, Renderer, create_context_430_or_330
 from janim.render.framebuffer import (FRAME_BUFFER_BINDING, blend_context,
                                       create_framebuffer, framebuffer_context,
                                       uniforms)
+from janim.render.profiler import RenderProfiler
 from janim.render.uniform import get_uniforms_context_var
 from janim.typing import JAnimColor, SupportsAnim
 from janim.utils.config import Config, ConfigGetter, config_ctx_var
@@ -882,6 +883,7 @@ class BuiltTimeline:
     '''
     def __init__(self, timeline: Timeline):
         self.timeline = timeline
+        self.profiler = RenderProfiler()
         self.duration = timeline.time_aligner.align_t(timeline.current_time)
 
         self.visible_item_segments = TimeSegments(
@@ -1034,12 +1036,20 @@ class BuiltTimeline:
                     render_datas_final.sort(key=lambda x: x[0].depth, reverse=True)
                     # 渲染
                     blending = get_uniforms_context_var(ctx).get().get('JA_BLENDING')
+
+                    self.profiler.start_frame()
                     for data, render in render_datas_final:
+                        t0 = time.perf_counter()
                         render(data)
+                        dt = time.perf_counter() - t0
+                        item_type = data.__class__.__name__
+                        self.profiler.record_item(item_type, dt)
+
                         # 如果没有 blending，我们认为当前是在向透明 framebuffer 绘制
                         # 所以每次都需要使用 glFlush 更新 framebuffer 信息使得正确渲染
                         if not blending:
                             gl.glFlush()
+                    self.profiler.end_frame()
 
         except Exception:
             traceback.print_exc()
