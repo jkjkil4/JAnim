@@ -46,6 +46,7 @@ from janim.gui.functions.color_widget import ColorWidget
 from janim.gui.functions.export_dialog import ExportDialog
 from janim.gui.functions.font_table import FontTable
 from janim.gui.functions.painter import Painter
+from janim.gui.functions.profiler_widget import ProfilerWidget
 from janim.gui.functions.richtext_editor import RichTextEditor
 from janim.gui.functions.selector import Selector
 from janim.gui.glwidget import GLWidget
@@ -252,6 +253,8 @@ class AnimViewer(QMainWindow):
 
         menu_tools = menu_bar.addMenu(_('Tools(&T)'))
 
+        self.action_profiler = menu_tools.addAction(_('Profiler(&P)'))
+
         self.action_select = menu_tools.addAction(_('Subitem selector(&I)'))
         self.action_select.setShortcut('Ctrl+I')
         self.action_select.setAutoRepeat(False)
@@ -452,6 +455,7 @@ class AnimViewer(QMainWindow):
         self.action_stay_on_top.toggled.connect(self.on_stay_on_top_toggled)
         self.action_frame_skip.toggled.connect(self.on_frame_skip_toggled)
         self.action_select.triggered.connect(self.on_select_triggered)
+        self.connect_action_widget(self.action_profiler, ProfilerWidget)
         self.connect_action_widget(self.action_painter, Painter)
         self.connect_action_widget(self.action_richtext_edit, RichTextEditor)
         self.connect_action_widget(self.action_font_table, FontTable)
@@ -588,7 +592,7 @@ class AnimViewer(QMainWindow):
             nonlocal widget
             if widget is None:
                 widget = widget_cls(self)
-                widget.setWindowFlag(Qt.WindowType.Tool)
+                widget.setWindowFlag(Qt.WindowType.Tool, True)
                 widget.setAttribute(Qt.WidgetAttribute.WA_DeleteOnClose)
                 widget.setAttribute(Qt.WidgetAttribute.WA_MacAlwaysShowToolWindow)
                 widget.destroyed.connect(destroyed)
