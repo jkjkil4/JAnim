@@ -168,9 +168,11 @@ class Timeline(metaclass=ABCMeta):
         self.time_aligner: TimeAligner = TimeAligner()
         self.item_appearances = Timeline.ItemAppearancesDict(self.time_aligner)
 
-        self.debug_list: list[Item] = []
-
         self.subtimeline_items: list[TimelineItem] = []
+
+        self.gui_commands: list[Timeline.GuiCommand] = []
+
+        self.debug_list: list[Item] = []
 
     @abstractmethod
     def construct(self) -> None:
@@ -772,6 +774,8 @@ class Timeline(metaclass=ABCMeta):
 
     # endregion
 
+    # endregion
+
     # region lineno
 
     def get_construct_lineno(self) -> int | None:
@@ -800,6 +804,21 @@ class Timeline(metaclass=ABCMeta):
         idx = bisect(toc, time, key=lambda x: x.time)
         idx = clip(idx, 0, len(toc) - 1)
         return toc[idx].line
+
+    # endregion
+
+    # region GUI command
+
+    class GuiCommand:
+        def __init__(self, command: str, frame: types.FrameType):
+            idx = command.index(':')
+            self.name = command[:idx].strip()
+            self.body = command[idx:].strip()
+            self.filename = frame.f_code.co_filename
+            self.lineno = frame.f_lineno
+
+    def __call__(self, command: str) -> None:
+        self.gui_commands.append(Timeline.GuiCommand(command, inspect.currentframe().f_back))
 
     # endregion
 
