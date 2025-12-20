@@ -6,6 +6,7 @@ from contextlib import contextmanager
 from functools import partial
 from typing import Generator
 
+import moderngl as mgl
 import OpenGL.GL as gl
 from tqdm import tqdm as ProgressDisplay
 
@@ -13,7 +14,7 @@ from janim.anims.timeline import BuiltTimeline, Timeline, TimeRange
 from janim.exception import EXITCODE_FFMPEG_NOT_FOUND, ExitException
 from janim.locale.i18n import get_local_strings
 from janim.logger import log
-from janim.render.base import create_context_430_or_330
+from janim.render.base import apply_blend_flags, create_context_430_or_330
 from janim.render.framebuffer import create_framebuffer, framebuffer_context
 from janim.utils.simple_functions import clip
 
@@ -35,12 +36,17 @@ class VideoWriter:
     - 最后结束 ffmpeg 的调用，完成 ``_temp`` 文件的输出
     - 将 ``_temp`` 文件改名，删去 ``_temp`` 后缀，完成视频输出
     '''
-    def __init__(self, built: BuiltTimeline):
+    def __init__(self, built: BuiltTimeline, *, ctx: mgl.Context | None = None):
         self.built = built
 
-        log.debug('Initializing OpenGL context for VideoWriter ..')
-        self.ctx = create_context_430_or_330(standalone=True)
-        log.debug('Created OpenGL context for VideoWriter')
+        if ctx:
+            log.debug(f'Reusing context {ctx} for VideoWriter')
+            self.ctx = ctx
+            apply_blend_flags(self.ctx)
+        else:
+            log.debug('Initializing OpenGL context for VideoWriter ..')
+            self.ctx = create_context_430_or_330(standalone=True)
+            log.debug('Created OpenGL context for VideoWriter')
 
         pw, ph = built.cfg.pixel_width, built.cfg.pixel_height
         self.frame_count = round(built.duration * built.cfg.fps) + 1

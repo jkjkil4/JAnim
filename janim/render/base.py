@@ -112,14 +112,18 @@ class RenderData:
     anti_alias_radius: float
 
 
-def create_context(**kwargs) -> mgl.Context:
-    ctx = mgl.create_context(**kwargs)
-    # 默认是 blend-off 的
+def apply_blend_flags(ctx: mgl.Context) -> None:
+    # 默认是 blend-off 的，在 render_all 中通过 blend_context 开启，所以这里没有设置 ctx.enable(mgl.BLEND)
     ctx.blend_func = (
         mgl.SRC_ALPHA, mgl.ONE_MINUS_SRC_ALPHA,
         mgl.ONE, mgl.ONE
     )
     ctx.blend_equation = mgl.FUNC_ADD, mgl.MAX
+
+
+def create_context(**kwargs) -> mgl.Context:
+    ctx = mgl.create_context(**kwargs)
+    apply_blend_flags(ctx)
     return ctx
 
 

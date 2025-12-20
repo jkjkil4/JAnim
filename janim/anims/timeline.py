@@ -38,7 +38,8 @@ from janim.items.svg.typst import TypstText
 from janim.items.text import Text
 from janim.locale.i18n import get_local_strings
 from janim.logger import log
-from janim.render.base import RenderData, Renderer, create_context_430_or_330
+from janim.render.base import (RenderData, Renderer, apply_blend_flags,
+                               create_context_430_or_330)
 from janim.render.framebuffer import (FRAME_BUFFER_BINDING, blend_context,
                                       create_framebuffer, framebuffer_context,
                                       uniforms)
@@ -904,6 +905,7 @@ class BuiltTimeline:
         self._time: float = 0
 
         self.capture_ctx: mgl.Context | None = None
+        self.capture_fbo: mgl.Framebuffer | None = None
 
     @property
     def cfg(self) -> Config | ConfigGetter:
@@ -1047,19 +1049,34 @@ class BuiltTimeline:
 
         return True
 
-    def capture(self, global_t: float, *, transparent: bool = True) -> Image.Image:
-        if self.capture_ctx is None:
-            self.capture_ctx = create_context_430_or_330(standalone=True)
+    def capture(self, global_t: float, *, transparent: bool = True, ctx: mgl.Context | None = None) -> Image.Image:
+        if ctx:
+            log.debug(f'Reusing context {ctx} for `capture`')
+            apply_blend_flags(ctx)
+        else:
+            if self.capture_ctx is None:
+                log.debug('Initializing OpenGL context for `capture` ..')
+                self.capture_ctx = create_context_430_or_330(standalone=True)
+                log.debug('Created OpenGL context for `capture`')
+            ctx = self.capture_ctx
 
+        # 虽然说当前设计的情况中不会出现
+        # 但是出于稳健性的考虑，这里还是判断，如果这次使用的 ctx 与上次的不同，则销毁原有的 framebuffer
+        if self.capture_fbo is not None and self.capture_fbo.ctx is not ctx:
+            self.capture_fbo.release()
+            self.capture_fbo = None
+
+        # 在没有创建 framebuffer 的时候创建一份用于渲染
+        if self.capture_fbo is None:
             pw, ph = self.cfg.pixel_width, self.cfg.pixel_height
-            self.capture_fbo = create_framebuffer(self.capture_ctx, pw, ph)
+            self.capture_fbo = create_framebuffer(ctx, pw, ph)
 
         fbo = self.capture_fbo
         with framebuffer_context(self.capture_fbo):
             fbo.clear(*self.cfg.background_color.rgb, not transparent)
             if transparent:
                 gl.glFlush()
-            self.render_all(self.capture_ctx, global_t, blend_on=not transparent)
+            self.render_all(ctx, global_t, blend_on=not transparent)
 
         return Image.frombytes(
             "RGBA", fbo.size, fbo.read(components=4),

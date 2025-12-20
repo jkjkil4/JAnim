@@ -80,7 +80,9 @@ def framebuffer_context(fbo: mgl.Framebuffer):
             ratio = _qt_glwidget.devicePixelRatio()
             _qt_glwidget.qfuncs.glViewport(0, 0, int(_qt_glwidget.width() * ratio), int(_qt_glwidget.height() * ratio))
             _qt_glwidget.update_clear_color()
-        elif prev_fbo is not None:
+
+        # 当在 GUI 界面进行导出的时候，这里的 color_attachments 会是 None
+        elif prev_fbo is not None and prev_fbo.color_attachments is not None:
             prev_fbo.color_attachments[0].use(FRAME_BUFFER_BINDING)
 
 
