@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import itertools as it
 import math
 from bisect import bisect, bisect_left
@@ -517,7 +519,7 @@ class TimelineView(QWidget):
         self.place_tooltip(self.tooltip, pos)
         self.tooltip.show()
 
-    def create_audio_chart(self, info: Timeline.PlayAudioInfo, near: float | None = None) -> 'QChartView':
+    def create_audio_chart(self, info: Timeline.PlayAudioInfo, near: float | None = None) -> QChartView:
         from PySide6.QtCharts import (QChart, QChartView, QLineSeries,
                                       QValueAxis)
 
@@ -614,7 +616,7 @@ class TimelineView(QWidget):
         return chart_view
 
     @staticmethod
-    def create_axvspan(x1: float, x2: float, c1: QColor, c2: QColor) -> 'QAreaSeries':
+    def create_axvspan(x1: float, x2: float, c1: QColor, c2: QColor) -> QAreaSeries:
         from PySide6.QtCharts import QAreaSeries, QLineSeries
         from PySide6.QtGui import QGradient, QLinearGradient
 
@@ -682,7 +684,7 @@ class TimelineView(QWidget):
         self.place_tooltip(self.tooltip, pos)
         self.tooltip.show()
 
-    def create_anim_chart(self, anim: Animation) -> 'QChartView':
+    def create_anim_chart(self, anim: Animation) -> QChartView:
         from PySide6.QtCharts import QChart, QChartView, QScatterSeries
 
         count = min(500, int(anim.t_range.duration * self.built.cfg.fps))

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import types
 from typing import TYPE_CHECKING, Iterable, Protocol, runtime_checkable
 
@@ -32,7 +34,7 @@ class SupportsAnim(Protocol):
     有些直接是 :class:`~.Animation`，而有些不是，但可以转化为 :class:`~.Animation，
     因此用 :class:`SupportsAnim` 作为它们的统称，并会被 `AnimGroup._get_animation_objects` 统一转化
     '''
-    def __anim__(self) -> 'Animation': ...
+    def __anim__(self) -> Animation: ...
 
 
 def t_(*x):
