@@ -192,21 +192,21 @@ default_config = Config(
 
     client_search_port=40565
 )
-'''
+"""
 默认配置
 
 其中：
 
 - ``preview_fps`` 在接入电源时是 60，未接入时是 30
 - ``temp_dir`` 由操作系统决定
-'''
+"""
 
 cli_config = Config()
-'''
+"""
 命令行配置
 
 会被命令行 ``--config`` 参数自动修改
-'''
+"""
 
 config_ctx_var.set([default_config])
 

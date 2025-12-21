@@ -225,10 +225,10 @@ class TimeRange:
     """
 
     at: float
-    '''时间区段的开始时刻'''
+    """时间区段的开始时刻"""
 
     end: float | ForeverType
-    '''时间区段的结束时刻'''
+    """时间区段的结束时刻"""
 
     @property
     def duration(self) -> float:

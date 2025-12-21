@@ -184,9 +184,9 @@ class TypstMatrix(TypstText):
                 ),
                 key=lambda matrix_coord: order[matrix_coord]
             )
-            '''
+            """
             按照子物件顺序排列的矩阵元素标签
-            '''
+            """
 
     def get_inserted(self, index: int) -> Points:
         """

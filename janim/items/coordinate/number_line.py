@@ -74,16 +74,16 @@ class NumberLine(MarkedItem, Line):
         back_width=0.25,
         body_length=0.25
     )
-    '''
+    """
     箭头的默认属性
-    '''
+    """
 
     number_config_d = dict(
         font_size=16
     )
-    '''
+    """
     数字的默认属性
-    '''
+    """
 
     def __init__(
         self,

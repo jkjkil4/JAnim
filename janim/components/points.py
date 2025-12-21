@@ -41,7 +41,7 @@ DEFAULT_POINTS_ARRAY.data = np.zeros((0, 3))
 
 class Cmpt_Points[ItemT](Component[ItemT]):
     resize_func = staticmethod(resize_and_repeatedly_extend)
-    ''''''
+    """"""
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
