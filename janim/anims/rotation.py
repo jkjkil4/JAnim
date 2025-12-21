@@ -10,12 +10,12 @@ from janim.utils.rate_functions import linear
 
 
 class Rotate(DataUpdater):
-    '''
+    """
     旋转，默认对角度进行平滑插值
 
     - 参数和 :meth:`~.Cmpt_Points.rotate` 基本一致
     - ``absolute`` 参数是为了兼容摄像机物件，对于非摄像机物件该参数无效
-    '''
+    """
     label_color = C_LABEL_ANIM_STAY
 
     def __init__(
@@ -52,8 +52,8 @@ class Rotate(DataUpdater):
 
 
 class Rotating(Rotate):
-    '''
+    """
     旋转，默认对角度进行线性插值
-    '''
+    """
     def __init__(self, item: Points, angle: float, *, rate_func=linear, **kwargs):
         super().__init__(item, angle, rate_func=rate_func, **kwargs)

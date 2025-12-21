@@ -13,9 +13,9 @@ from janim.utils.rate_functions import rush_into
 
 
 class GrowFromPoint(DataUpdater[Points]):
-    '''
+    """
     从指定的位置放大显现
-    '''
+    """
 
     label_color = C_LABEL_ANIM_IN
 
@@ -37,25 +37,23 @@ class GrowFromPoint(DataUpdater[Points]):
 
 
 class GrowFromCenter(GrowFromPoint):
-    '''从物件的中心放大显现'''
-
+    """从物件的中心放大显现"""
     def __init__(self, item: Points, **kwargs):
         point = item.points.box.center
         super().__init__(item, point, **kwargs)
 
 
 class GrowFromEdge(GrowFromPoint):
-    '''从物件的指定边角放大显现'''
-
+    """从物件的指定边角放大显现"""
     def __init__(self, item: Points, edge: np.ndarray, **kwargs):
         point = item.points.box.get(edge)
         super().__init__(item, point, **kwargs)
 
 
 class ShrinkToPoint(DataUpdater[Points]):
-    '''
+    """
     缩小到指定的位置消失
-    '''
+    """
 
     label_color = C_LABEL_ANIM_OUT
 
@@ -80,24 +78,21 @@ class ShrinkToPoint(DataUpdater[Points]):
 
 
 class ShrinkToCenter(ShrinkToPoint):
-    '''缩小到物件的中心消失'''
-
+    """缩小到物件的中心消失"""
     def __init__(self, item: Points, **kwargs):
         point = item.points.box.center
         super().__init__(item, point, **kwargs)
 
 
 class ShrinkToEdge(ShrinkToPoint):
-    '''缩小到物件的指定边角消失'''
-
+    """缩小到物件的指定边角消失"""
     def __init__(self, item: Points, edge: np.ndarray, **kwargs):
         point = item.points.box.get(edge)
         super().__init__(item, point, **kwargs)
 
 
 class SpinInFromNothing(GrowFromCenter):
-    '''从物件的中心旋转半圈放大显现'''
-
+    """从物件的中心旋转半圈放大显现"""
     def __init__(self, item: Points, *, path_arc=PI / 2, **kwargs):
         super().__init__(item, **kwargs)
         self.add_post_updater(
@@ -108,8 +103,7 @@ class SpinInFromNothing(GrowFromCenter):
 
 
 class SpinOutToNothing(ShrinkToCenter):
-    '''向物件的中心旋转半圈缩小消失'''
-
+    """向物件的中心旋转半圈缩小消失"""
     def __init__(self, item: Points, *, path_arc=PI / 2, rate_func=rush_into, **kwargs):
         super().__init__(item, rate_func=rate_func, **kwargs)
         self.add_post_updater(
@@ -120,8 +114,7 @@ class SpinOutToNothing(ShrinkToCenter):
 
 
 class GrowArrowByBoundFunc(GroupUpdater):
-    ''':class:`GrowArrow` 和 :class:`GrowDoubleArrow` 的基类'''
-
+    """:class:`GrowArrow` 和 :class:`GrowDoubleArrow` 的基类"""
     label_color = C_LABEL_ANIM_ABSTRACT
 
     def __init__(
@@ -137,8 +130,7 @@ class GrowArrowByBoundFunc(GroupUpdater):
 
 
 class GrowArrow(GrowArrowByBoundFunc):
-    '''显示箭头的显现过程，从开头到结尾画出，并自动调整箭头标志位置'''
-
+    """显示箭头的显现过程，从开头到结尾画出，并自动调整箭头标志位置"""
     label_color = C_LABEL_ANIM_IN
 
     def __init__(self, arrow: Arrow, **kwargs):
@@ -146,11 +138,11 @@ class GrowArrow(GrowArrowByBoundFunc):
 
 
 class GrowDoubleArrow(GrowArrowByBoundFunc):
-    '''
+    """
     显示箭头的显现过程，默认从中间向两边显现，并自动调整箭头标志位置
 
     - 传入 ``start_ratio`` （默认 ``0.5``） 可以调整开始的位置
-    '''
+    """
 
     label_color = C_LABEL_ANIM_IN
 

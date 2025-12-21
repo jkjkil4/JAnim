@@ -26,9 +26,9 @@ type TypstVar = Points | dict[str, TypstVar] | Iterable[TypstVar]
 
 
 class TypstDoc(SVGItem):
-    '''
+    """
     Typst 文档
-    '''
+    """
 
     group_key = 'data-typst-label'
 
@@ -97,9 +97,9 @@ class TypstDoc(SVGItem):
 
     @classmethod
     def typstify(cls, obj: TypstPattern) -> TypstDoc:
-        '''
+        """
         将字符串变为 Typst 对象，而本身已经是的则直接返回
-        '''
+        """
         return obj if isinstance(obj, TypstDoc) else cls(obj)
 
     # region vars
@@ -162,7 +162,7 @@ class TypstDoc(SVGItem):
         ordinal: int = 0,
         target_ordinal: int | None = None
     ) -> Self:
-        '''
+        """
         配对并通过变换使得配对的部分重合
 
         例如
@@ -174,7 +174,7 @@ class TypstDoc(SVGItem):
             t2.points.match_pattern(t1, '+')
 
         则会将 ``t2`` 进行变换使得二者的加号重合
-        '''
+        """
         if target_ordinal is None:
             target_ordinal = ordinal
         assert isinstance(ordinal, int)
@@ -222,9 +222,9 @@ class TypstDoc(SVGItem):
     def __getitem__(self, key: Iterable[bool]) -> Group[VItem | BasepointVItem]: ...
 
     def __getitem__(self, key: int | slice):
-        '''
+        """
         重载了一些字符索引的用法，即 :meth:`get` 和 :meth:`slice` 的组合
-        '''
+        """
         if isinstance(key, Iterable) and not isinstance(key, (str, list)):
             key = list(key)
 
@@ -247,7 +247,7 @@ class TypstDoc(SVGItem):
                 return super().__getitem__(key)
 
     def get(self, slices, gapless: bool = False):
-        '''
+        """
         根据切片得到切分的子物件
 
         在默认情况下，``gapless=False``：
@@ -275,7 +275,7 @@ class TypstDoc(SVGItem):
           ``item.get([slice(1, 3), slice(5, 7)]) == [item[:1], item[1:3], item[3:5], item[5:7], item[7:]]``
 
         - 注：在这种情况下，所有嵌套结构都会先被展平后处理
-        '''
+        """
         if not gapless:
             if isinstance(slices, slice):
                 return self[slices]
@@ -297,14 +297,14 @@ class TypstDoc(SVGItem):
     def slice(self, pattern: TypstPattern, ordinal: Iterable[int] | types.EllipsisType) -> list[slice]: ...
 
     def slice(self, pattern, ordinal=0):
-        '''
+        """
         得到指定 ``pattern`` 在该物件中形状配对的切片
 
         - 默认返回首个匹配的（即 ``ordinal=0``）
         - ``ordinal`` 传入其它索引可得到随后匹配的特定部分
         - ``ordinal`` 传入索引列表可得到多个匹配的特定部分
         - ``ordinal`` 传入省略号 ``...`` 可以得到所有匹配的部分
-        '''
+        """
         pattern = self.typstify(pattern)
         indices = self.indices(pattern)
 
@@ -336,11 +336,11 @@ class TypstDoc(SVGItem):
         raise InvalidOrdinalError(_('ordinal {} is invalid').format(ordinal))
 
     def indices(self, pattern: TypstPattern) -> list[int]:
-        '''
+        """
         找出该公式中所有出现了 ``pattern`` 的位置
 
         - ``pattern`` 支持使用字符串或者 Typst 对象
-        '''
+        """
         pattern = self.typstify(pattern)
 
         lps = pattern.lps
@@ -361,9 +361,9 @@ class TypstDoc(SVGItem):
 
     @property
     def lps(self) -> list[int]:
-        '''
+        """
         KMP 算法涉及的部分匹配表
-        '''
+        """
         # 获取缓存
         lps = TypstDoc.lps_map.get(self.text, None)
         if lps is not None:
@@ -388,9 +388,9 @@ class TypstDoc(SVGItem):
 
 
 class TypstText(TypstDoc):
-    '''
+    """
     Typst 文本
-    '''
+    """
     def __init__(
         self,
         text: str,
@@ -417,11 +417,11 @@ class TypstText(TypstDoc):
 
 
 class TypstMath(TypstText):
-    '''
+    """
     Typst 公式
 
     相当于 :class:`TypstText` 传入 ``use_math_environment=True``
-    '''
+    """
     def __init__(
         self,
         text: str,

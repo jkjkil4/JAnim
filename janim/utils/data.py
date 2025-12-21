@@ -26,11 +26,11 @@ class ContextSetter[T]:
 
 
 class Array:
-    '''
+    """
     使得在使用 ``.data = xxx`` 修改（赋值）后必定是不同的 id
 
     并且通过 ``.data`` 得到的 numpy 数组必定是只读的
-    '''
+    """
     def __init__(self, *, dtype=np.float32):
         self._data = np.empty(0, dtype=dtype)
 
@@ -63,20 +63,20 @@ class Array:
 
 @dataclass
 class AlignedData[T]:
-    '''
+    """
     数据对齐后的结构，用于 :meth:`~.Item.align_for_interpolate`
-    '''
+    """
     data1: T
     data2: T
     union: T
 
 
 class Margins:
-    '''
+    """
     定义了一组四个边距：左、上、右、下，用于描述矩形周围边框的大小。
 
     如果直接传入单个数值，则表示为四个方向皆为该值
-    '''
+    """
     @overload
     def __init__(self, buff: float | tuple[float], /): ...
     @overload

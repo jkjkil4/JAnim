@@ -19,9 +19,9 @@ _ = get_local_strings('selector')
 
 
 class Selector(QObject):
-    '''
+    """
     子物件选择工具
-    '''
+    """
     @dataclass
     class SelectedItem:
         item: Item
@@ -178,9 +178,9 @@ class Selector(QObject):
             self.selected_children.remove(child)
 
     def compute_cursor_flag(self) -> bool:
-        '''
+        """
         ``True`` 表示鼠标在画面上半部，反之在下半部
-        '''
+        """
         glw = self.viewer.glw
         cursor_pos = glw.mapFromGlobal(glw.cursor().pos())
         return cursor_pos.y() < glw.height() / 2

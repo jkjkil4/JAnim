@@ -1,6 +1,6 @@
-'''
+"""
 使用 ``from janim.imports import *`` 即可导入 ``janim`` 主要的功能
-'''
+"""
 
 # flake8: noqa
 from colour import Color

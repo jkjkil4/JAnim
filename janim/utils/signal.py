@@ -118,9 +118,9 @@ class Signal[T, **P, R]:
     # region slots
 
     def self_slot(self, func=None, /, *, key: str = ''):
-        '''
+        """
         被修饰的方法会在 ``Signal`` 触发时被调用
-        '''
+        """
         full_qualname = self._get_cls_full_qualname_from_fback()
 
         if func is None:
@@ -135,9 +135,9 @@ class Signal[T, **P, R]:
         return func
 
     def self_refresh(self, func=None, *, key: str = ''):
-        '''
+        """
         被修饰的方法会在 ``Signal`` 触发时，标记需要重新计算
-        '''
+        """
         full_qualname = self._get_cls_full_qualname_from_fback()
 
         if func is None:
@@ -152,11 +152,11 @@ class Signal[T, **P, R]:
         return func
 
     def self_refresh_with_recurse(self, *, recurse_up: bool = False, recurse_down: bool = False, key: str = ''):
-        '''
+        """
         被修饰的方法会在 :class:`~.Signal` 触发时，标记需要重新计算
 
         并且会根据 ``recurse_up`` 和 ``recurse_down`` 进行递归传递
-        '''
+        """
         def decorator(func):
             full_qualname = self._get_cls_full_qualname_from_fback()
             slot = _SelfSlotWithRecurse(func, recurse_up, recurse_down)
@@ -166,16 +166,16 @@ class Signal[T, **P, R]:
         return decorator
 
     def connect(self, sender: object, func: Callable, *, key: str = '') -> None:
-        '''
+        """
         使 ``func`` 会在 ``Signal`` 触发时被调用
-        '''
+        """
         obj_slots = self._get_obj_slots_with_default(sender)
         obj_slots[(self, key)].normal_slots.append(func)
 
     def connect_refresh(self, sender: object, obj: object, func: Callable | str, *, key: str = '') -> None:
-        '''
+        """
         使 ``func`` 会在 ``Signal`` 触发时被标记为需要重新计算
-        '''
+        """
         obj_slots = self._get_obj_slots_with_default(sender)
         slot = _RefreshSlot(weakref.ref(obj), func)
         obj_slots[(self, key)].refresh_slots.append(slot)

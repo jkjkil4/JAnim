@@ -8,7 +8,7 @@ from janim.utils.signal import Signal
 
 
 class Relation[GRelT: 'Relation'](refresh.Refreshable):
-    '''
+    """
     定义了有向无环图的包含关系以及一些实用操作
 
     也就是，对于每个对象：
@@ -22,7 +22,7 @@ class Relation[GRelT: 'Relation'](refresh.Refreshable):
     - 对于 :meth:`ancestors()` 以及 :meth:`descendants()`：
         - 不包含调用者自身并且返回的列表中没有重复元素
         - 物件顺序是 DFS 顺序
-    '''
+    """
     def __init__(self):
         super().__init__()
 
@@ -61,24 +61,24 @@ class Relation[GRelT: 'Relation'](refresh.Refreshable):
 
     @Signal
     def parents_changed(self) -> None:
-        '''
+        """
         信号，在 ``self.parents`` 改变时触发
-        '''
+        """
         Relation.parents_changed.emit(self)
 
     @Signal
     def children_changed(self) -> None:
-        '''
+        """
         信号，在 ``self.children`` 改变时触发
-        '''
+        """
         Relation.children_changed.emit(self)
 
     def add(self, *objs: GRelT, insert=False) -> Self:
-        '''
+        """
         向该对象添加子对象
 
         如果 ``insert=True`` （默认为 ``False``），那么插入到子物件列表的开头
-        '''
+        """
         for obj in (reversed(objs) if insert else objs):
             # 理论上这里判断 item not in self.children 就够了，但是防止
             # 有被私自修改 self.parents 以及 self.children 的可能，所以这里都判断了
@@ -97,9 +97,9 @@ class Relation[GRelT: 'Relation'](refresh.Refreshable):
         return self
 
     def remove(self, *objs: GRelT) -> Self:
-        '''
+        """
         从该对象移除子对象
-        '''
+        """
         for obj in objs:
             # 理论上这里判断 `item in self.children` 就够了，原因同 `add`
             # Theoretically, checking `item in self.children` is enough here, for the same reason as `add`.
@@ -145,17 +145,17 @@ class Relation[GRelT: 'Relation'](refresh.Refreshable):
     @parents_changed.self_refresh_with_recurse(recurse_down=True)
     @refresh.register
     def ancestors(self) -> list[GRelT]:
-        '''
+        """
         获得祖先对象列表
-        '''
+        """
         return self._family(up=True)
 
     @children_changed.self_refresh_with_recurse(recurse_up=True)
     @refresh.register
     def descendants(self) -> list[GRelT]:
-        '''
+        """
         获得后代对象列表
-        '''
+        """
         return self._family(up=False)
 
     @staticmethod
@@ -189,41 +189,41 @@ class Relation[GRelT: 'Relation'](refresh.Refreshable):
                 yield obj
 
     def walk_ancestors[RelT](self, base_cls: type[RelT] = None) -> Generator[RelT, None, None]:
-        '''
+        """
         遍历祖先节点中以 ``base_cls`` （缺省则遍历全部）为基类的对象
-        '''
+        """
         yield from self._walk_lst(base_cls, self.ancestors())
 
     def walk_descendants[RelT](self, base_cls: type[RelT] = None) -> Generator[RelT, None, None]:
-        '''
+        """
         遍历后代节点中以 ``base_cls`` （缺省则遍历全部）为基类的对象
-        '''
+        """
         yield from self._walk_lst(base_cls, self.descendants())
 
     def walk_self_and_ancestors(self, root_only=False) -> Generator[GRelT, None, None]:
-        '''
+        """
         遍历自己以及祖先节点
-        '''
+        """
         yield self
         if not root_only:
             yield from self.ancestors()
 
     def walk_self_and_descendants(self, root_only=False) -> Generator[GRelT, None, None]:
-        '''
+        """
         遍历自己以及后代节点
-        '''
+        """
         yield self
         if not root_only:
             yield from self.descendants()
 
     def walk_nearest_ancestors[RelT](self, base_cls: type[RelT]) -> Generator[RelT, None, None]:
-        '''
+        """
         遍历祖先节点中以 ``base_cls`` 为基类的对象，但是排除已经满足条件的对象的祖先对象
-        '''
+        """
         yield from self._walk_nearest_family(base_cls, lambda rel: rel.ancestors())
 
     def walk_nearest_descendants[RelT](self, base_cls: type[RelT]) -> Generator[RelT, None, None]:
-        '''
+        """
         遍历后代节点中以 ``base_cls`` 为基类的对象，但是排除已经满足条件的对象的后代对象
-        '''
+        """
         yield from self._walk_nearest_family(base_cls, lambda rel: rel.descendants())

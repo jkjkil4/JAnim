@@ -35,14 +35,14 @@ SUBTIMELINE_CLASS_NAME = '__subtimeline_class'
 
 
 class TimelineView(QWidget):
-    '''
+    """
     窗口下方的进度条和动画区段指示器
 
     - **w** 键放大区段（使视野精确到一小段中）
     - **s** 键缩小区段（使视野扩展到一大段中）
     - **a** 和 **d** 左右移动区段
     - 使用鼠标滚轮纵向平移
-    '''
+    """
 
     @dataclass
     class PixelRange:
@@ -55,9 +55,9 @@ class TimelineView(QWidget):
 
     @dataclass
     class Pressing:
-        '''
+        """
         记录按键状态
-        '''
+        """
         w: bool = False
         a: bool = False
         s: bool = False
@@ -173,9 +173,9 @@ class TimelineView(QWidget):
                 sub_info.restore(label)
 
     def init_label_group(self) -> None:
-        '''
+        """
         构建动画区段信息，以便操作与绘制
-        '''
+        """
         self.debug_label_group = self.make_debug_label_group(self.built)
         self.audio_label_group = self.make_audio_label_group(self.built)
         self.anim_label_group = self.make_anim_label_group(self.built)

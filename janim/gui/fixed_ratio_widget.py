@@ -5,9 +5,9 @@ from PySide6.QtWidgets import QWidget
 
 
 class FixedRatioWidget(QWidget):
-    '''
+    """
     使得传入的 ``inside`` 控件可以以固定比例塞在该控件中
-    '''
+    """
     def __init__(self, inside: QWidget, parent: QWidget | None = None) -> None:
         super().__init__(parent)
         self.inside = inside
@@ -33,10 +33,10 @@ class FixedRatioWidget(QWidget):
 
 
 def get_proportional_scale_size(src_width, src_height, tg_width, tg_height):
-    '''
+    """
     根据 ``(tg_width, tg_height)`` 的目标大小信息，
     得到 ``(src_width, src_height)`` 在进行等比缩放后能塞进目标区域的最大大小
-    '''
+    """
     factor1 = tg_width / src_width
     factor2 = tg_height / src_height
     factor = min(factor1, factor2)

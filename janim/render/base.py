@@ -37,10 +37,10 @@ def get_programs(ctx: mgl.Context):
 
 
 class Renderer:
-    '''渲染器的基类
+    """渲染器的基类
 
     重写 :meth:`render` 以实现具体功能
-    '''
+    """
     data_ctx: ContextVar[RenderData] = ContextVar('Renderer.data_ctx')
 
     def render(self, item) -> None: ...
@@ -103,10 +103,10 @@ class Renderer:
 
 @dataclass(kw_only=True)
 class RenderData:
-    '''在渲染过程中需要配置的属性
+    """在渲染过程中需要配置的属性
 
     通过 :py:obj:`Renderer.data_ctx` 进行设置和获取
-    '''
+    """
     ctx: mgl.Context
     camera_info: CameraInfo
     anti_alias_radius: float

@@ -29,9 +29,9 @@ DEFAULT_STROKE_RADIUS = 0.02
 
 
 class VItem(Points):
-    '''
+    """
     贝塞尔曲线拼接物件，具体说明请参考 :class:`~.Cmpt_VPoints` 的文档
-    '''
+    """
     points = CmptInfo(Cmpt_VPoints[Self])
     radius = CmptInfo(Cmpt_Radius[Self], DEFAULT_STROKE_RADIUS)
 
@@ -93,11 +93,11 @@ class VItem(Points):
 
     @mockable
     def set_stroke_background(self: Item, flag: bool = True, *, root_only: bool = False) -> Self:
-        '''
+        """
         调整描边与填充的绘制顺序
 
         ``flag=True`` 会使得描边被填充遮盖，``flag=False`` 则会使得填充被描边遮盖
-        '''
+        """
         for item in self.walk_self_and_descendants(root_only):
             if isinstance(item, VItem):
                 item.stroke_background = flag
@@ -115,13 +115,13 @@ class VItem(Points):
         d_alpha: float = 1e-6,
         **tip_kwargs
     ):
-        '''
+        """
         在 ``alpha`` 处创建一个箭头
 
         - 默认情况下，箭头与路径方向同向；若传入 ``reverse=True`` 则反向
         - 若传入 ``colorize=True`` （默认），则会使箭头的颜色与路径的颜色相同
         - 其余参数请参考 :class:`~.ArrowTip`
-        '''
+        """
         if alpha >= 1.0:
             pos = self.points.get_end()
             angle_vert = self.points.end_direction
@@ -203,7 +203,7 @@ class VItem(Points):
 
 
 class DashedVItem(VItem, Group[VItem]):
-    '''
+    """
     创建传入的 ``vitem`` 的虚线化版本
 
     - ``num_dashes``: 虚线段的数量
@@ -213,7 +213,7 @@ class DashedVItem(VItem, Group[VItem]):
         - ``'equal'``: 虚线段长度几乎相等
         - ``'approx'``: 虚线段长度近似相等
         - ``'none'``: 虚线段将按照曲线的参数 t 均匀分布，一般来说长度不相等
-    '''
+    """
     def __init__(
         self,
         vitem: VItem,
@@ -264,7 +264,7 @@ class DashedVItem(VItem, Group[VItem]):
         dash_offset: float = 0,
         equal_lengths: bool = True,
     ) -> list[VItem]:
-        '''将 ``points`` 所表示的路径分割，返回一个包含各虚线段的列表'''
+        """将 ``points`` 所表示的路径分割，返回一个包含各虚线段的列表"""
         if num_dashes <= 0 or len(points) < 3:
             return []
         r = dashed_ratio
