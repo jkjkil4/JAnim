@@ -171,7 +171,7 @@ class Timeline(metaclass=ABCMeta):
 
         self.subtimeline_items: list[TimelineItem] = []
 
-        self.gui_commands: list[Timeline.GuiCommand] = []
+        self.gui_command: Timeline.GuiCommand | None = None
 
         self.debug_list: list[Item] = []
 
@@ -823,9 +823,12 @@ class Timeline(metaclass=ABCMeta):
             self.body = text[idx:].strip()
             self.filename = frame.f_code.co_filename
             self.lineno = frame.f_lineno
+            self.locals = frame.f_locals
 
     def __call__(self, command_text: str) -> None:
-        self.gui_commands.append(Timeline.GuiCommand(self.current_time, command_text, inspect.currentframe().f_back))
+        if self.gui_command is not None:
+            return
+        self.gui_command = Timeline.GuiCommand(self.current_time, command_text, inspect.currentframe().f_back)
 
     # endregion
 

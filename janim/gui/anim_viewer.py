@@ -157,9 +157,9 @@ class AnimViewer(QMainWindow):
                                             self.built.cfg.audio_channels,
                                             self.built.cfg.preview_fps)
 
-        commands = self.built.timeline.gui_commands
-        if commands:
-            handle_command(self, commands[0])
+        command = self.built.timeline.gui_command
+        if command is not None:
+            QTimer.singleShot(0, lambda: handle_command(self, command))
 
     # region setup_ui
 

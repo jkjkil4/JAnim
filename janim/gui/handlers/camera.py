@@ -8,5 +8,5 @@ if TYPE_CHECKING:
     from janim.gui.anim_viewer import AnimViewer
 
 
-def handler(anim_viewer: AnimViewer, command: Timeline.GuiCommand) -> None:
+def handler(viewer: AnimViewer, command: Timeline.GuiCommand) -> None:
     pass

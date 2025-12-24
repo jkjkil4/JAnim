@@ -1,12 +1,11 @@
 from __future__ import annotations
 
-from typing import Callable, TYPE_CHECKING
+from typing import TYPE_CHECKING, Callable
 
-import janim.gui.handlers.select_handler as select
-import janim.gui.handlers.move_handler as move
-import janim.gui.handlers.camera_handler as camera
-
-from janim.gui.handlers.unknwon_handler import handler as unknown_handler   # noqa: F401
+import janim.gui.handlers.camera as camera
+import janim.gui.handlers.move as move
+import janim.gui.handlers.select as select
+from janim.gui.handlers.unknown import handler as unknown_handler  # noqa: F401
 
 if TYPE_CHECKING:
     from janim.anims.timeline import Timeline
