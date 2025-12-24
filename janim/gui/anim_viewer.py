@@ -49,7 +49,7 @@ from janim.gui.functions.painter import Painter
 from janim.gui.functions.richtext_editor import RichTextEditor
 from janim.gui.functions.selector import Selector
 from janim.gui.glwidget import GLWidget
-from janim.gui.precise_timer import PreciseTimer
+from janim.gui.precise_timer import PreciseTimerWithFPS
 from janim.gui.timeline_view import TimelineView
 from janim.locale.i18n import get_local_strings
 from janim.logger import log
@@ -413,11 +413,9 @@ class AnimViewer(QMainWindow):
     # region play_timer
 
     def setup_play_timer(self) -> None:
-        self.play_timer = PreciseTimer(parent=self)
-
-        self.fps_counter = 0
-        self.fps_prev = 0
-        self.fps_record_start = time.time()
+        self.play_timer = PreciseTimerWithFPS(parent=self)
+        self.play_timer.fps_updated.connect(self.update_fps_label)
+        self.displaying_fps: float | None = None
 
     def set_play_state(self, playing: bool) -> None:
         if playing != self.play_timer.isActive():
@@ -427,10 +425,9 @@ class AnimViewer(QMainWindow):
         if self.play_timer.isActive():
             self.play_timer.stop()
         else:
+            # 播放到结尾后继续播放，则从头开始
             if self.timeline_view.at_end():
                 self.timeline_view.set_progress(0)
-            self.fps_record_start = time.time()
-            self.fps_counter = 0
             self.play_timer.start_precise_timer()
 
     def hideEvent(self, event: QHideEvent) -> None:
@@ -480,7 +477,7 @@ class AnimViewer(QMainWindow):
 
     def on_frame_skip_toggled(self, flag: bool) -> None:
         self.play_timer.set_skip_enabled(flag)
-        self.update_fps_label()
+        self.update_fps_label('-')
 
     def on_rebuild_triggered(self) -> None:
         module = inspect.getmodule(self.built.timeline)
@@ -648,12 +645,8 @@ class AnimViewer(QMainWindow):
 
     def on_glw_rendered(self) -> None:
         cur = time.time()
-        self.fps_counter += 1
-        if cur - self.fps_record_start >= 1:
-            self.fps_prev = self.fps_counter
-            self.update_fps_label()
-            self.fps_counter = 0
-            self.fps_record_start = cur
+        if cur - self.play_timer.latest >= 1:
+            self.update_fps_label('-')
 
     def on_error_occurred(self) -> None:
         if not self.playback_stopped and self.play_timer.isActive():
@@ -667,11 +660,16 @@ class AnimViewer(QMainWindow):
         # 没把这个放在 if 分支里，是为了在 inactive 的时候也设置为 True
         self.playback_stopped = True
 
-    def update_fps_label(self) -> None:
+    def update_fps_label(self, fps: float | None) -> None:
+        if fps == self.displaying_fps:
+            return
+
+        fps_text = '-' if fps is None else fps
+
         if self.action_frame_skip.isChecked():
-            self.fps_label.setText(f'Preview FPS: {self.fps_prev} ({self.built.cfg.preview_fps})')
+            self.fps_label.setText(f'Preview FPS: {fps_text} ({self.built.cfg.preview_fps})')
         else:
-            self.fps_label.setText(f'Preview FPS: {self.fps_prev}/{self.built.cfg.preview_fps}')
+            self.fps_label.setText(f'Preview FPS: {fps_text}/{self.built.cfg.preview_fps}')
 
     def on_play_timer_timeout(self) -> None:
         played_count = 1 + self.play_timer.take_skip_count()

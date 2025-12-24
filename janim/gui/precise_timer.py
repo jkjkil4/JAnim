@@ -1,7 +1,7 @@
 
 import time
 
-from PySide6.QtCore import QTimer, QObject, Qt
+from PySide6.QtCore import QTimer, QObject, Qt, Signal
 
 
 class PreciseTimer(QTimer):
@@ -55,3 +55,44 @@ class PreciseTimer(QTimer):
                 return
 
         self.start(max(0, int(seconds * 1000)))
+
+
+class PreciseTimerWithFPS(PreciseTimer):
+    fps_updated = Signal(int)
+
+    def __init__(self, duration: float | None = None, parent: QObject | None = None):
+        super().__init__(duration, parent)
+
+        self.reset_fps_counter()
+        self._fps = 0
+
+    @property
+    def fps(self) -> int:
+        return self._fps
+
+    @property
+    def latest(self) -> float:
+        return self._latest
+
+    def reset_fps_counter(self) -> None:
+        self._start = time.time()
+        self._counter = 0
+        self._latest = self._start
+
+    def start_precise_timer(self) -> None:
+        super().start_precise_timer()
+        self.reset_fps_counter()
+
+    def set_skip_enabled(self, enabled: bool) -> None:
+        super().set_skip_enabled(enabled)
+        self.reset_fps_counter()
+
+    def on_timeout(self) -> None:
+        super().on_timeout()
+        self._counter += 1
+        self._latest = time.time()
+        if self._latest - self._start >= 1:
+            self._fps = self._counter
+            self.fps_updated.emit(self._fps)
+            self._counter = 0
+            self._start = self._latest
