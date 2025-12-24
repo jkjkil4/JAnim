@@ -20,14 +20,14 @@ from janim.items.item import Item
 from janim.items.points import Points
 from janim.items.text import Text, TextChar, TextLine
 from janim.items.vitem import VItem
-from janim.locale.i18n import get_local_strings
+from janim.locale.i18n import get_translator
 from janim.logger import log
 from janim.typing import Vect
 from janim.utils.data import AlignedData
 from janim.utils.iterables import resize_preserving_order
 from janim.utils.paths import PathFunc, get_path_func
 
-_ = get_local_strings('transform')
+_ = get_translator('janim.anims.transform')
 
 
 class Transform(Animation):

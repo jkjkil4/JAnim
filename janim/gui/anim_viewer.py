@@ -3,8 +3,8 @@ from __future__ import annotations
 try:
     import PySide6  # noqa: F401
 except ImportError:
-    from janim.locale.i18n import get_local_strings
-    _ = get_local_strings('anim_viewer')
+    from janim.locale.i18n import get_translator
+    _ = get_translator('janim.gui.anim_viewer')
 
     print(_('Additional modules need to be installed when using the GUI interface, but they are not installed'),
           file=sys.stderr)
@@ -51,7 +51,7 @@ from janim.gui.functions.selector import Selector
 from janim.gui.glwidget import GLWidget
 from janim.gui.precise_timer import PreciseTimerWithFPS
 from janim.gui.timeline_view import TimelineView
-from janim.locale.i18n import get_local_strings
+from janim.locale.i18n import get_translator
 from janim.logger import log
 from janim.render.writer import AudioWriter, VideoWriter, merge_video_and_audio
 from janim.utils.config import Config, cli_config
@@ -59,7 +59,7 @@ from janim.utils.file_ops import (STDIN_FILENAME, get_janim_dir,
                                   getfile_or_stdin, open_file)
 from janim.utils.reload import reset_reloads_state
 
-_ = get_local_strings('anim_viewer')
+_ = get_translator('janim.gui.anim_viewer')
 
 ACTION_WIDGET_FLAG_KEY = '__action_widget'
 

@@ -10,13 +10,13 @@ import moderngl as mgl
 import numpy as np
 
 from janim.camera.camera_info import CameraInfo
-from janim.locale.i18n import get_local_strings
+from janim.locale.i18n import get_translator
 from janim.utils.iterables import resize_with_interpolation
 
 if TYPE_CHECKING:
     from janim.items.item import Item
 
-_ = get_local_strings('base')
+_ = get_translator('janim.render.base')
 
 FIX_IN_FRAME_KEY = 'JA_FIX_IN_FRAME'
 

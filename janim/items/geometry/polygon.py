@@ -8,14 +8,14 @@ from janim.constants import DL, DR, ORIGIN, PI, RIGHT, TAU, UL, UR
 from janim.items.geometry.arc import ArcBetweenPoints
 from janim.items.points import MarkedItem
 from janim.items.vitem import VItem
-from janim.locale.i18n import get_local_strings
+from janim.locale.i18n import get_translator
 from janim.typing import Vect, VectArray
 from janim.utils.bezier import PathBuilder
 from janim.utils.iterables import adjacent_n_tuples
 from janim.utils.space_ops import (angle_between_vectors, compass_directions,
                                    cross2d, get_norm, normalize, rotate_vector)
 
-_ = get_local_strings('polygon')
+_ = get_translator('janim.items.geometry.polygon')
 
 
 class Polygon(VItem):

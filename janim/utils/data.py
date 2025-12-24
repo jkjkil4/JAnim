@@ -8,9 +8,9 @@ from typing import Iterable, Self, overload
 import numpy as np
 import numpy.typing as npt
 
-from janim.locale.i18n import get_local_strings
+from janim.locale.i18n import get_translator
 
-_ = get_local_strings('data')
+_ = get_translator('janim.utils.data')
 
 
 class ContextSetter[T]:

@@ -13,14 +13,14 @@ from PySide6.QtWidgets import (QGroupBox, QHBoxLayout, QLabel, QRadioButton,
 from janim.camera.camera_info import CameraInfo
 from janim.constants import DOWN, LEFT, RIGHT, UP
 from janim.gui.functions.text_edit import TextEdit
-from janim.locale.i18n import get_local_strings
+from janim.locale.i18n import get_translator
 from janim.utils.bezier import approx_smooth_quadratic_bezier_handles
 from janim.utils.iterables import resize_preserving_head_and_tail
 
 if TYPE_CHECKING:
     from janim.gui.anim_viewer import AnimViewer
 
-_ = get_local_strings('painter')
+_ = get_translator('janim.gui.functions.painter')
 
 POS_PER_LINE = 5
 

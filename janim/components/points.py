@@ -14,7 +14,7 @@ from janim.constants import (DEFAULT_ITEM_TO_EDGE_BUFF,
                              MED_SMALL_BUFF, ORIGIN, OUT, PI, RIGHT, UP)
 from janim.exception import InvaildMatrixError, PointError
 from janim.items.item import Item
-from janim.locale.i18n import get_local_strings
+from janim.locale.i18n import get_translator
 from janim.typing import Vect, VectArray
 from janim.utils.bezier import integer_interpolate, interpolate
 from janim.utils.config import Config
@@ -29,7 +29,7 @@ from janim.utils.space_ops import (angle_of_vector, get_norm, normalize,
 if TYPE_CHECKING:
     from janim.camera.camera import Camera
 
-_ = get_local_strings('points')
+_ = get_translator('janim.components.points')
 
 type PointsFn = Callable[[np.ndarray], VectArray]
 type PointFn = Callable[[np.ndarray], Vect]

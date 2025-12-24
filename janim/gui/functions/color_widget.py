@@ -8,10 +8,10 @@ from PySide6.QtWidgets import (QColorDialog, QHBoxLayout, QLineEdit,
 
 import janim.constants.colors as colors
 from janim.gui.functions.ui_ColorWidget import Ui_ColorWidget
-from janim.locale.i18n import get_local_strings
+from janim.locale.i18n import get_translator
 from janim.utils.simple_functions import clip
 
-_ = get_local_strings('color_widget')
+_ = get_translator('janim.gui.functions.color_widget')
 
 builtins_area_qss = '''
 QPushButton {

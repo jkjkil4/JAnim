@@ -10,7 +10,7 @@ from fontTools.ttLib import TTCollection, TTFont, TTLibError
 
 from janim.constants import FRAME_PPI
 from janim.exception import FontNotFoundError
-from janim.locale.i18n import get_local_strings
+from janim.locale.i18n import get_translator
 from janim.logger import log
 from janim.utils.bezier import PathBuilder
 from janim.utils.font.exception import EXCEPTION_MAP
@@ -21,7 +21,7 @@ if TYPE_CHECKING:
     from fontTools.ttLib.tables._n_a_m_e import table__n_a_m_e
     from fontTools.ttLib.tables.O_S_2f_2 import table_O_S_2f_2
 
-_ = get_local_strings('database')
+_ = get_translator('janim.utils.font.database')
 
 
 @dataclass

@@ -9,14 +9,14 @@ from fontTools.cu2qu.cu2qu import curve_to_quadratic
 
 from janim.constants import DEGREES, NAN_POINT, TAU
 from janim.exception import PointError
-from janim.locale.i18n import get_local_strings
+from janim.locale.i18n import get_translator
 from janim.typing import Vect, VectArray
 from janim.utils.simple_functions import choose
 from janim.utils.space_ops import (angle_between_vectors, cross, cross2d,
                                    find_intersection, get_norm, midpoint,
                                    rotation_between_vectors, z_to_vector)
 
-_ = get_local_strings('bezier')
+_ = get_translator('janim.utils.bezier')
 
 CLOSED_THRESHOLD = 0.001
 T = TypeVar("T")

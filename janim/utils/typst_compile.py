@@ -7,13 +7,13 @@ import typst
 
 from janim.exception import (EXITCODE_TYPST_COMPILE_ERROR,
                              EXITCODE_TYPST_NOT_FOUND, ExitException)
-from janim.locale.i18n import get_local_strings
+from janim.locale.i18n import get_translator
 from janim.logger import log
 from janim.utils.config import Config
 from janim.utils.file_ops import (get_janim_dir, get_typst_packages_dir,
                                   get_typst_temp_dir)
 
-_ = get_local_strings('typst_compile')
+_ = get_translator('janim.utils.typst_compile')
 
 _flag_use_external_typst = False
 

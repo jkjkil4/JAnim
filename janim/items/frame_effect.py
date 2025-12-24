@@ -12,7 +12,7 @@ from janim.components.component import CmptInfo, Component
 from janim.components.simple import Cmpt_Dict, Cmpt_Float, Cmpt_List
 from janim.items.geometry.polygon import Rect
 from janim.items.item import Item
-from janim.locale.i18n import get_local_strings
+from janim.locale.i18n import get_translator
 from janim.logger import log
 from janim.render.renderer_frameeffect import FrameEffectRenderer
 from janim.render.shader import ShaderInjection, shader_injections_ctx
@@ -20,7 +20,7 @@ from janim.utils.bezier import interpolate
 from janim.utils.config import Config
 from janim.utils.data import AlignedData
 
-_ = get_local_strings('frame_effect')
+_ = get_translator('janim.items.frame_effect')
 
 
 class FrameEffect(Item):

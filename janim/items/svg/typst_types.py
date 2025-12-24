@@ -4,13 +4,13 @@ from janim.exception import InvalidOrdinalError
 from janim.items.points import Group, Points
 from janim.items.svg.svg_item import SVGElemItem
 from janim.items.svg.typst import TypstText
-from janim.locale.i18n import get_local_strings
+from janim.locale.i18n import get_translator
 
 type TypMatDelim = Literal['(', ')', '[', ']', '{', '}', '|', 'none']
 type TypAlignment = Literal['start', 'end', 'left', 'center', 'right', 'top', 'horizon', 'bottom']
 type TypMatAlignment = Literal['start', 'left', 'center', 'right', 'end']   # 矩阵不支持 'top', 'horizon', 'bottom'
 
-_ = get_local_strings('typst_types')
+_ = get_translator('janim.items.svg.typst_types')
 
 typst_matrix_template = '''
 #set math.mat(

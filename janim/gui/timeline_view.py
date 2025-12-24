@@ -18,7 +18,7 @@ from janim.anims.timeline import BuiltTimeline, Timeline, TimelineItem
 from janim.gui.label import (LABEL_DEFAULT_HEIGHT, LABEL_PIXEL_HEIGHT_PER_UNIT,
                              Label, LabelGroup, LazyLabelGroup, PixelRange)
 from janim.items.item import Item
-from janim.locale.i18n import get_local_strings
+from janim.locale.i18n import get_translator
 from janim.utils.bezier import interpolate
 from janim.utils.rate_functions import linear
 from janim.utils.simple_functions import clip
@@ -26,7 +26,7 @@ from janim.utils.simple_functions import clip
 if TYPE_CHECKING:
     from PySide6.QtCharts import QAreaSeries, QChartView
 
-_ = get_local_strings('timeline_view')
+_ = get_translator('janim.gui.timeline_view')
 
 TIMELINE_VIEW_MIN_DURATION = 0.5
 LABEL_OBJ_NAME = '__obj'

@@ -13,7 +13,7 @@ from janim.components.component import CmptInfo, Component, _CmptGroup
 from janim.components.depth import Cmpt_Depth
 from janim.exception import AsTypeError, GetItemError
 from janim.items.relation import Relation
-from janim.locale.i18n import get_local_strings
+from janim.locale.i18n import get_translator
 from janim.logger import log
 from janim.render.base import Renderer
 from janim.typing import SupportsApartAlpha
@@ -25,7 +25,7 @@ from janim.utils.signal import SIGNAL_OBJ_SLOTS_NAME
 if TYPE_CHECKING:
     from janim.items.points import Group
 
-_ = get_local_strings('item')
+_ = get_translator('janim.items.item')
 
 CLS_CMPTINFO_NAME = '__cls_cmptinfo'
 CLS_STYLES_NAME = '__cls_styles'

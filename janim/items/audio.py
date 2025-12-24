@@ -17,9 +17,9 @@ from janim.utils.data import Array
 from janim.utils.file_ops import find_file
 from janim.utils.iterables import resize_with_interpolation
 from janim.utils.simple_functions import clip
-from janim.locale.i18n import get_local_strings
+from janim.locale.i18n import get_translator
 
-_ = get_local_strings('audio')
+_ = get_translator('janim.items.audio')
 
 
 class Audio:

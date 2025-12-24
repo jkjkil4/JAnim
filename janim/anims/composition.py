@@ -2,11 +2,11 @@ from typing import Iterable, Self
 
 from janim.anims.animation import Animation, TimeAligner
 from janim.exception import AnimGroupError, NotAnimationError
-from janim.locale.i18n import get_local_strings
+from janim.locale.i18n import get_translator
 from janim.typing import SupportsAnim
 from janim.utils.rate_functions import RateFunc, linear
 
-_ = get_local_strings('composition')
+_ = get_translator('janim.anims.composition')
 
 
 class AnimGroup(Animation):

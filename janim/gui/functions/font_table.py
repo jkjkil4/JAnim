@@ -8,14 +8,14 @@ from PySide6.QtWidgets import (QHBoxLayout, QHeaderView, QLabel, QLineEdit,
                                QTableWidget, QTableWidgetItem, QVBoxLayout,
                                QWidget)
 
-from janim.locale.i18n import get_local_strings
+from janim.locale.i18n import get_translator
 from janim.utils.file_ops import get_janim_dir
 from janim.utils.font.database import get_database
 
 if TYPE_CHECKING:
     from fontTools.ttLib.tables._n_a_m_e import NameRecord
 
-_ = get_local_strings('font_table')
+_ = get_translator('janim.gui.functions.font_table')
 
 
 class FontTable(QWidget):
