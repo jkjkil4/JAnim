@@ -181,7 +181,7 @@ def quadratic_bezier_points_for_arc(
     start_angle: float = 0,
     n_components: int = 8
 ) -> np.ndarray:
-    '''得到使用二次贝塞尔曲线模拟的圆弧'''
+    """得到使用二次贝塞尔曲线模拟的圆弧"""
     n_points = 2 * n_components + 1
     angles = np.linspace(start_angle, start_angle + angle, n_points)
     points = np.array([np.cos(angles), np.sin(angles), np.zeros(n_points)]).T
@@ -335,7 +335,7 @@ def match_interpolate(
 def approx_smooth_quadratic_bezier_handles(
     points: Sequence[np.ndarray]
 ) -> np.ndarray | list[np.ndarray]:
-    '''
+    """
     Figuring out which bezier curves most smoothly connect a sequence of points.
 
     Given three successive points, P0, P1 and P2, you can compute that by defining
@@ -348,7 +348,7 @@ def approx_smooth_quadratic_bezier_handles(
     for h that would produce a parbola passing through P3, call it smooth_to_right, and
     another that would produce a parabola passing through P0, call it smooth_to_left,
     and use the midpoint between the two.
-    '''
+    """
     if len(points) == 2:
         return midpoint(*points)
     smooth_to_right, smooth_to_left = [
@@ -367,10 +367,10 @@ def approx_smooth_quadratic_bezier_handles(
 
 
 def smooth_quadratic_path(anchors: VectArray) -> np.ndarray:
-    '''
+    """
     Returns a path defining a smooth quadratic bezier spline
     through anchors.
-    '''
+    """
     if len(anchors) < 2:
         return anchors
     elif len(anchors) == 2:
@@ -408,9 +408,9 @@ def smooth_quadratic_path(anchors: VectArray) -> np.ndarray:
 def get_smooth_cubic_bezier_handle_points(
     anchors: VectArray,
 ) -> tuple[np.ndarray, np.ndarray]:
-    '''
+    """
     See https://docs.manim.community/en/stable/reference/manim.utils.bezier.html#manim.utils.bezier.get_smooth_cubic_bezier_handle_points
-    '''
+    """
     anchors = np.asarray(anchors)
     n_anchors = anchors.shape[0]
 
@@ -444,9 +444,9 @@ UP_CLOSED_MEMO = np.array([1 / 3])
 def get_smooth_closed_cubic_bezier_handle_points(
     anchors: VectArray,
 ) -> tuple[np.ndarray, np.ndarray]:
-    '''
+    """
     See https://docs.manim.community/en/stable/reference/manim.utils.bezier.html#manim.utils.bezier.get_smooth_closed_cubic_bezier_handle_points
-    '''
+    """
     global CP_CLOSED_MEMO
     global UP_CLOSED_MEMO
 
@@ -519,9 +519,9 @@ CP_OPEN_MEMO = np.array([0.5])
 def get_smooth_open_cubic_bezier_handle_points(
     anchors: VectArray,
 ) -> tuple[np.ndarray, np.ndarray]:
-    '''
+    """
     See https://docs.manim.community/en/stable/reference/manim.utils.bezier.html#manim.utils.bezier.get_smooth_open_cubic_bezier_handle_points
-    '''
+    """
     global CP_OPEN_MEMO
 
     A = np.asarray(anchors)
@@ -567,11 +567,11 @@ def diag_to_matrix(
     l_and_u: tuple[int, int],
     diag: np.ndarray
 ) -> np.ndarray:
-    '''
+    """
     Converts array whose rows represent diagonal
     entries of a matrix into the matrix itself.
     See scipy.linalg.solve_banded
-    '''
+    """
     l, u = l_and_u
     dim = diag.shape[1]
     matrix = np.zeros((dim, dim))

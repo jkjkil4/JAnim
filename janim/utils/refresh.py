@@ -4,7 +4,7 @@ from typing import Any, Callable, Self
 
 
 def register[T](func: T) -> T:
-    '''
+    """
     用于在需要时才进行值的重新计算，提升性能
 
     当一个方法 self.func 被修饰后，会记忆 self.func 被调用后的返回值，
@@ -18,7 +18,7 @@ def register[T](func: T) -> T:
     另见：
 
     - ``test.utils.test_refresh.RefreshTest``.
-    '''
+    """
     name = func.__name__
 
     @wraps(func)
@@ -41,9 +41,9 @@ class Refreshable:
         self.refresh_data: defaultdict[str, RefreshData] = defaultdict(RefreshData)
 
     def mark_refresh(self, func: Callable | str) -> Self:
-        '''
+        """
         标记指定的 ``func`` 需要进行更新
-        '''
+        """
         name = func.__name__ if callable(func) else func
         data: RefreshData = self.refresh_data[name]
         data.is_required = True

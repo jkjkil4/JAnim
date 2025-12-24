@@ -21,9 +21,9 @@ def _get_array(radius: float) -> Array:
 
 
 class Cmpt_Radius[ItemT](Component[ItemT]):
-    '''
+    """
     半径组件，被用于 :class:`DotCloud` 的点半径，以及 :class:`VItem` 的轮廓线粗细
-    '''
+    """
     def __init__(self, default_radius: float, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.default_radius = default_radius
@@ -67,9 +67,9 @@ class Cmpt_Radius[ItemT](Component[ItemT]):
     # region 半径数据 | Radii
 
     def get(self) -> np.ndarray:
-        '''
+        """
         得到半径数据
-        '''
+        """
         return self._radii.data
 
     def _set_updater(self, p, radius, *, root_only=False):
@@ -94,9 +94,9 @@ class Cmpt_Radius[ItemT](Component[ItemT]):
         *,
         root_only: bool = False,
     ) -> Self:
-        '''
+        """
         设置半径数据
-        '''
+        """
         if isinstance(radius, numbers.Real):
             radius = [radius]
         self._radii.data = radius
@@ -108,9 +108,9 @@ class Cmpt_Radius[ItemT](Component[ItemT]):
         return self
 
     def clear(self) -> Self:
-        '''
+        """
         将半径数据重置为默认值
-        '''
+        """
         self.set(np.full(1, self.default_radius))
 
     def reverse(self) -> Self:
@@ -125,9 +125,9 @@ class Cmpt_Radius[ItemT](Component[ItemT]):
         return len(self.get())
 
     def scale(self, factor: float, *, root_only: bool = False) -> Self:
-        '''
+        """
         缩放半径数据
-        '''
+        """
         self._radii.data = self._radii.data * factor
 
         if not root_only:

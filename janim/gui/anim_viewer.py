@@ -65,11 +65,11 @@ ACTION_WIDGET_FLAG_KEY = '__action_widget'
 
 
 class AnimViewer(QMainWindow):
-    '''
+    """
     用于显示构建完成的时间轴动画
 
     可以使用 ``AnimViewer.views(MyTimeline().build())`` 进行直接显示
-    '''
+    """
     play_finished = Signal()
 
     def __init__(
@@ -121,9 +121,9 @@ class AnimViewer(QMainWindow):
 
     @classmethod
     def views(cls, anim: BuiltTimeline, **kwargs) -> None:
-        '''
+        """
         直接显示一个浏览构建完成的时间轴动画的窗口
-        '''
+        """
         app = Application.instance()
         if app is None:
             app = Application()

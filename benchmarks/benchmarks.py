@@ -5,9 +5,9 @@ from janim.imports import Config, Timeline
 
 
 def get_all_timelines_from_module(module) -> list[type[Timeline]]:
-    '''
+    """
     从指定的 ``module`` 中得到所有可用的 :class:`~.Timeline`
-    '''
+    """
     classes = [
         value
         for value in module.__dict__.values()

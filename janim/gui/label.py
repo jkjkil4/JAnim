@@ -272,9 +272,9 @@ class LabelGroup(Label):
         self.labels = labels
 
     def is_exclusive(self) -> bool:
-        '''
+        """
         若 ``labels`` 没有重叠部分则返回 ``True``
-        '''
+        """
         if self.ordered_divisions is not None:
             return len(self.ordered_divisions) <= 1
         return all(

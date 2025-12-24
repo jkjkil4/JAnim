@@ -21,9 +21,9 @@ DEFAULT_DRAWBORDER_THENFILL_STROKE_RADIUS = 0.01
 
 
 class ShowPartial(DataUpdater):
-    '''
+    """
     显示物件一部分的动画，显示的部分由 ``bound_func`` 决定
-    '''
+    """
     label_color = C_LABEL_ANIM_ABSTRACT
 
     def __init__(
@@ -89,9 +89,9 @@ class ShowPartial(DataUpdater):
 
 
 class Create(ShowPartial):
-    '''
+    """
     显示物件的创建过程
-    '''
+    """
     label_color = C_LABEL_ANIM_IN
 
     def __init__(self, item: Item, auto_close_path: bool = True, **kwargs):
@@ -99,9 +99,9 @@ class Create(ShowPartial):
 
 
 class Uncreate(ShowPartial):
-    '''
+    """
     显示物件的销毁过程（:class:`Create` 的倒放）
-    '''
+    """
     label_color = C_LABEL_ANIM_OUT
 
     def __init__(
@@ -122,11 +122,11 @@ class Uncreate(ShowPartial):
 
 
 class Destruction(ShowPartial):
-    '''
+    """
     显示物件的销毁过程
 
     - 与 :class:`Uncreate` 方向相反
-    '''
+    """
     def __init__(
         self,
         item: Item,
@@ -145,13 +145,13 @@ class Destruction(ShowPartial):
 
 
 class DrawBorderThenFill(DataUpdater):
-    '''
+    """
     画出边缘，然后填充颜色
 
     -   可以使用 ``stroke_radius`` 参数调整“画出边缘”时的描边粗细，在默认画面下的值是 0.01
 
         如果设置了 ``scale_with_camera`` 参数，描边粗细会随着 ``camera`` 大小的变化而调整，画面尺寸越小，描边越细
-    '''
+    """
     label_color = C_LABEL_ANIM_IN
 
     def __init__(
@@ -229,9 +229,9 @@ class DrawBorderThenFill(DataUpdater):
 
 
 class Write(DrawBorderThenFill):
-    '''
+    """
     显示书写过程（对每个子物件应用 :class:`DrawBorderThenFill`）
-    '''
+    """
     def __init__(
         self,
         item: Item,

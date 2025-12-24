@@ -30,15 +30,15 @@ class SupportsApartAlpha(Protocol):
 
 
 class SupportsAnim(Protocol):
-    '''
+    """
     有些直接是 :class:`~.Animation`，而有些不是，但可以转化为 :class:`~.Animation，
     因此用 :class:`SupportsAnim` 作为它们的统称，并会被 `AnimGroup._get_animation_objects` 统一转化
-    '''
+    """
     def __anim__(self) -> Animation: ...
 
 
 def t_(*x):
-    '''
+    """
     提供给 janim-toolbox VS Code 插件，用于标注其中包含的字符串需要 Typst 高亮
-    '''
+    """
     return x[0] if len(x) == 1 else x

@@ -31,14 +31,14 @@ _ = get_local_strings('transform')
 
 
 class Transform(Animation):
-    '''
+    """
     创建从 ``src_item`` 至 ``target_item`` 的插值动画
 
     - ``path_arc`` 和 ``path_arc_axis`` 可以指定插值的圆弧路径的角度，若不传入则是直线
     - 也可以直接传入 ``path_func`` 来指定路径方法
     - 在默认情况（``flatten=False``）下需要保证两个物件的子物件结构能够对齐，否则会报错；可以传入 ``flatten=True`` 来忽略子物件结构
     - ``root_only`` 可以指定只对两个物件的根物件进行插值，而不对子物件进行插值
-    '''
+    """
     label_color = C_LABEL_ANIM_STAY
 
     def __init__(
@@ -175,9 +175,9 @@ class Transform(Animation):
 
 
 class MoveToTarget(Transform):
-    '''
+    """
     详见 :meth:`~.Item.generate_target`
-    '''
+    """
 
     def __init__(self, item: Item, **kwargs):
         super().__init__(
@@ -201,9 +201,9 @@ class MoveToTarget(Transform):
 
 
 class TransformInSegments(AnimGroup):
-    '''
+    """
     依照切片列表进行 ``src`` 与 ``target`` 之间的变换
-    '''
+    """
 
     label_color = C_LABEL_ANIM_STAY
 
@@ -235,9 +235,9 @@ class TransformInSegments(AnimGroup):
 
     @staticmethod
     def parse_segment(segs: Iterable[Iterable[int]] | Iterable[int]) -> Generator[tuple[int, int], None, None]:
-        '''
+        """
         ``[[a, b, c], [d, e]]`` -> ``[[a, b], [b, c], [d, e]]``
-        '''
+        """
         assert len(segs) > 0
         if not isinstance(segs[0], Iterable):
             segs = [segs]
@@ -248,11 +248,11 @@ class TransformInSegments(AnimGroup):
 
 
 class MethodTransform(Transform):
-    '''
+    """
     依据物件的变换而创建的补间过程
 
     具体参考 :meth:`~.Item.anim`
-    '''
+    """
     label_color = (255, 189, 129)    # C_LABEL_ANIM_STAY 的变体
 
     class ActionType(Enum):
@@ -311,9 +311,9 @@ class MethodTransform(Transform):
 
 
 class MethodTransformArgsBuilder:
-    '''
+    """
     使得 ``.anim`` 和 ``.anim(...)`` 后可以进行同样的操作
-    '''
+    """
     def __init__(self, item: Item):
         self.item = item
         self.obj = item._astype_wrapper or item
@@ -416,13 +416,13 @@ type MismatchHandler = Callable[[VItem, MatchingParams, ], ItemAnimation]
 
 
 class TransformMatchingShapes(AnimGroup):
-    '''
+    """
     匹配形状进行变换
 
     - ``match`` 表示对于匹配的形状的处理
     - ``mismatch`` 表示对于不匹配的形状的处理
     - 注：所有传入该动画类的额外参数（``**kwargs``）都会被传入 ``match`` 和 ``mismatch`` 的方法中
-    '''
+    """
 
     label_color = C_LABEL_ANIM_STAY
 
@@ -500,7 +500,7 @@ class TransformMatchingShapes(AnimGroup):
 
 
 class TransformMatchingDiff(AnimGroup):
-    '''
+    """
     匹配 diff 进行变换
 
     对于一般物件，使用形状匹配 diff；对于 :class:`~.Text` 使用 :class:`~.TextChar` 的字符匹配 diff
@@ -508,7 +508,7 @@ class TransformMatchingDiff(AnimGroup):
     - ``match`` 表示对于匹配的形状的处理
     - ``mismatch`` 表示对于不匹配的形状的处理
     - 注：所有传入该动画类的额外参数（``**kwargs``）都会被传入 ``match`` 和 ``mismatch`` 的方法中
-    '''
+    """
 
     label_color = C_LABEL_ANIM_STAY
 

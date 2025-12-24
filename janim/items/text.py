@@ -34,11 +34,11 @@ ORIG_FONT_SIZE = 48
 
 
 def _get_color_value(key: str) -> JAnimColor:
-    '''
+    """
     根据 ``key`` 从 ``janim.constants.colors`` 得到颜色
 
     如果 ``key`` 以 ``#`` 开头，则直接返回原值
-    '''
+    """
     if key.startswith('#'):
         return key
 
@@ -64,9 +64,9 @@ available_act_map: dict[ActName, list[Act]] = defaultdict(list)
 
 
 def _register_acts(names: list[ActName], *acts: Act) -> None:
-    '''
+    """
     用于声明可用的富文本格式
-    '''
+    """
     for name in names:
         available_act_map[name].extend(acts)
 
@@ -160,11 +160,11 @@ class BasepointVItem(MarkedItem, VItem):
         other: BasepointVItem,
         proj: ProjType | Literal['horizontal', 'vertical', 'h', 'v'] | Vect | None = None
     ) -> np.ndarray:
-        '''
+        """
         计算从 ``self`` 到 ``other`` 的偏移量，如果指定了 ``proj`` 则只计算在该方向上的投影量
 
         例如当我们想要让一段文字和另一段文字的基线对齐，可以使用 ``.offset_to(other, 'v')`` 计算基线垂直方向的偏移量，从而根据该量移动来对齐基线。
-        '''
+        """
         # 假定 [0] 是 basepoint，[1] 是 right，[2] 是 up
         offset = other.mark.get(0) - self.mark.get(0)
         if proj is None:
@@ -183,9 +183,9 @@ class BasepointVItem(MarkedItem, VItem):
 
 
 class TextChar(BasepointVItem):
-    '''
+    """
     字符物件，作为 :class:`TextLine` 的子物件，在创建 :class:`TextLine` 时产生
-    '''
+    """
 
     mark = CmptInfo(Cmpt_Mark_TextCharImpl[Self])
 
@@ -227,9 +227,9 @@ class TextChar(BasepointVItem):
 
     @staticmethod
     def get_font_for_render(unicode: str, fonts: list[Font]) -> Font:
-        '''
+        """
         从字体列表中找到支持显示 ``unicode`` 的字体，如果找不到只好选用第一个
-        '''
+        """
         font_render = fonts[0]
         for font in fonts:
             idx = font.face.get_char_index(unicode)
@@ -254,9 +254,9 @@ class TextChar(BasepointVItem):
         return get_norm(self.get_mark_advance() - self.get_mark_orig())
 
     def apply_act_list(self, act_params_map: dict[str, ActParamsStack]) -> None:
-        '''
+        """
         应用富文本样式，由 :meth:`Text.apply_rich_text` 调用
-        '''
+        """
         for name, params_stack in act_params_map.items():
             params = params_stack[-1]
             if name not in available_act_map:
@@ -295,9 +295,9 @@ class TextChar(BasepointVItem):
 
 
 class TextLine(BasepointVItem, Group[TextChar]):
-    '''
+    """
     单行文字物件，作为 :class:`Text` 的子物件，在创建 :class:`Text` 时产生
-    '''
+    """
 
     mark = CmptInfo(Cmpt_Mark_TextLineImpl[Self])
 
@@ -335,9 +335,9 @@ class TextLine(BasepointVItem, Group[TextChar]):
         return self.mark.get(2)
 
     def arrange_in_line(self, buff: float = 0) -> Self:
-        '''
+        """
         根据 ``advance`` 的标记信息排列该行
-        '''
+        """
         if len(self.children) == 0:
             return
 
@@ -355,7 +355,7 @@ class TextLine(BasepointVItem, Group[TextChar]):
 
 
 class Text(VItem, Group[TextLine]):
-    '''
+    """
     文字物件，支持富文本等功能
 
     如果对换行排版等有较高的需求可以考虑使用 :class:`~.TypstDoc` 以及 :class:`~.TypstText`
@@ -369,7 +369,7 @@ class Text(VItem, Group[TextLine]):
     .. code-block:: python
 
         Text('Hello <c RED>World</c>!', format='rich')
-    '''
+    """
     class Format(StrEnum):
         PlainText = 'plain'
         RichText = 'rich'
@@ -462,9 +462,9 @@ class Text(VItem, Group[TextLine]):
         return True
 
     def idx_to_row_col(self, idx: int) -> tuple[int, int]:
-        '''
+        """
         由字符索引得到 行数、列数 索引
-        '''
+        """
         idx = max(0, idx)
         for i, line in enumerate(self):
             if idx < len(line):
@@ -473,7 +473,7 @@ class Text(VItem, Group[TextLine]):
         return len(self) - 1, len(line)
 
     def select_parts(self, pattern: str | re.Pattern, group: int = 0):
-        '''
+        """
         根据 ``pattern`` **正则表达式** 获得文字中的部分
 
         - ``pattern``: 用于匹配的正则表达式
@@ -497,7 +497,7 @@ class Text(VItem, Group[TextLine]):
             txt.select_parts(r'[^f](or)', 1).set(color=BLUE)
 
         上面这个示例会选取出其中的 ``or`` 部分，并且避免选取 ``for`` 中的 ``or``
-        '''
+        """
         total_text: str = ''.join([line.text for line in self])
         parts = []
         for mch in re.finditer(pattern, total_text):
@@ -516,10 +516,10 @@ class Text(VItem, Group[TextLine]):
         return Group(*parts)
 
     def arrange_in_lines(self, buff: float = 0, base_buff: float = 0.85) -> Self:
-        '''
+        """
         - ``buff``: 每行之间的额外间距
         - ``base_buff``: 每行之间的基本间距，默认值 ``0.85`` 用于将两行上下排列，如果是 ``0`` 则会让两行完全重合，大部分时候不需要传入该值
-        '''
+        """
         if len(self.children) == 0:
             return
 
@@ -535,9 +535,9 @@ class Text(VItem, Group[TextLine]):
         return self
 
     def apply_rich_text(self) -> None:
-        '''
+        """
         应用富文本效果
-        '''
+        """
         text_at = 0
         act_idx = 0
         act_params_map: defaultdict[str, ActParamsStack] = defaultdict(list)
@@ -572,13 +572,13 @@ class Text(VItem, Group[TextLine]):
 
 
 class Title(Group):
-    '''
+    """
     标题
 
     - ``include_underline=True`` 会添加下划线（默认添加）
     - ``underline_width`` 下划线的长度（默认屏幕宽 - 2 个单位）
     - ``match_underline_width_to_text=True`` 时将下划线的长度和文字匹配（默认为 ``False``）
-    '''
+    """
     def __init__(
         self,
         text: str,
@@ -616,9 +616,9 @@ class Title(Group):
 
 
 class SourceDisplayer(Text):
-    '''
+    """
     显示 ``obj`` 的源代码
-    '''
+    """
     def __init__(
         self,
         obj,

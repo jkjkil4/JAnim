@@ -40,7 +40,7 @@ class _CmptMeta(type):
 class Component[ItemT](refresh.Refreshable, metaclass=_CmptMeta):
     @dataclass
     class BindInfo:
-        '''
+        """
         对组件定义信息的封装
 
         - ``decl_cls``: 以 ``xxx = CmptInfo(...)`` 的形式被声明在哪个类中；
@@ -70,7 +70,7 @@ class Component[ItemT](refresh.Refreshable, metaclass=_CmptMeta):
 
             # item2.cmpt1.bind_info 与 BindInfo(MyItem, item2, 'cmpt1') 一致
             # item2.cmpt3.bind_info 与 BindInfo(MyItem2, item2, 'cmpt3') 一致
-        '''
+        """
         decl_cls: type[Item]
         at_item: Item
         key: str
@@ -80,17 +80,17 @@ class Component[ItemT](refresh.Refreshable, metaclass=_CmptMeta):
         self.bind: Component.BindInfo | None = None
 
     def init_bind(self, bind: BindInfo) -> None:
-        '''
+        """
         用于 ``Item._init_components``
 
         子类可以继承该函数，进行与所在物件相关的处理
-        '''
+        """
         self.bind = bind
 
     def mark_refresh(self, func: Callable | str, *, recurse_up=False, recurse_down=False) -> Self:
-        '''
+        """
         详见： :meth:`~.Item.broadcast_refresh_of_component`
-        '''
+        """
         # 与 super().mark_refresh(func) 等价，这样写是为了尽可能优化性能
         refresh.Refreshable.mark_refresh(self, func)
 
@@ -141,9 +141,9 @@ class Component[ItemT](refresh.Refreshable, metaclass=_CmptMeta):
 
     @property
     def r(self) -> ItemT:
-        '''
+        """
         所位于的物件，便于链式调用同物件下其它的组件
-        '''
+        """
         return self.bind.at_item
 
     @classmethod
@@ -154,7 +154,7 @@ class Component[ItemT](refresh.Refreshable, metaclass=_CmptMeta):
 
 
 class CmptInfo[T]:
-    '''
+    """
     在类中定义组件需要使用该类
 
     例：
@@ -173,7 +173,7 @@ class CmptInfo[T]:
 
             # 正确
             cmpt2 = CmptInfo(MyCmptWithArgs[Self], 1)
-    '''
+    """
     def __init__(self, cls: type[T], *args, **kwargs):
         self.__doc__ = ""
         self.cls = getattr(cls, '__origin__', cls)
@@ -290,7 +290,7 @@ class _CmptGroup(Component):
 
 
 def CmptGroup[T](*cmpt_info_list: CmptInfo[T]) -> CmptInfo[T]:
-    '''
+    """
     用于将多个组件打包，使得可以同时调用
 
     例：
@@ -305,5 +305,5 @@ def CmptGroup[T](*cmpt_info_list: CmptInfo[T]) -> CmptInfo[T]:
         item = MyItem()
         item.stroke.set(...)    # 只有 stroke 的被调用
         item.color.set(...)     # stroke 和 fill 的都被调用了
-    '''
+    """
     return CmptInfo(_CmptGroup, cmpt_info_list)

@@ -35,11 +35,11 @@ _ = get_local_strings('image_item')
 
 
 class ImageItem(Points):
-    '''
+    """
     图像物件
 
     会读取给定的文件路径的图像
-    '''
+    """
 
     renderer_cls = ImageItemRenderer
 
@@ -94,39 +94,39 @@ class ImageItem(Points):
         return super().apply_style(**kwargs)
 
     def get_orig(self) -> np.ndarray:
-        '''图像的左上角'''
+        """图像的左上角"""
         return self.points.get()[0]
 
     def get_horizontal_vect(self) -> np.ndarray:
-        '''
+        """
         从图像的左上角指向右上角的向量
-        '''
+        """
         points = self.points.get()
         return points[2] - points[0]
 
     def get_horizontal_dist(self) -> float:
-        '''
+        """
         :meth:`get_horizontal_vect` 的长度
-        '''
+        """
         return get_norm(self.get_horizontal_vect())
 
     def get_vertical_vect(self) -> np.ndarray:
-        '''
+        """
         从图像的左上角指向左下角的向量
-        '''
+        """
         points = self.points.get()
         return points[1] - points[0]
 
     def get_vertical_dist(self) -> float:
-        '''
+        """
         :meth:`get_vertical_vect` 的长度
-        '''
+        """
         return get_norm(self.get_vertical_vect())
 
     def pixel_to_rgba(self, x: int, y: int) -> np.ndarray:
-        '''
+        """
         根据像素坐标得到颜色
-        '''
+        """
         img = self.image.get()
         width, height = img.size
         return np.array(
@@ -137,9 +137,9 @@ class ImageItem(Points):
         ) / 255
 
     def point_to_rgba(self, point: np.ndarray, clamp_to_edge: bool = False) -> np.ndarray:
-        '''
+        """
         通过空间坐标获得对应的像素颜色
-        '''
+        """
         width, height = self.image.get().size
         x, y = self.point_to_pixel(point)
 
@@ -150,13 +150,13 @@ class ImageItem(Points):
         return self.pixel_to_rgba(x, y)
 
     def pixel_to_point(self, x: float, y: float) -> np.ndarray:
-        '''
+        """
         通过像素坐标获得对应的空间坐标，可以传入浮点值
 
         - 例如 ``.pixel_to_point(0, 0)`` 会返回原点位置（图片的左上角）
         - 例如 ``.pixel_to_point(6, 11)`` 会返回 ``(6, 11)`` 像素的左上角
         - 例如 ``.pixel_to_point(6.5, 11.5)`` 会返回 ``(6, 11)`` 像素的中心
-        '''
+        """
         hor = self.get_horizontal_vect()
         ver = self.get_vertical_vect()
         orig = self.get_orig()
@@ -165,9 +165,9 @@ class ImageItem(Points):
         return orig + hor * x / width + ver * y / height
 
     def point_to_pixel(self, point: np.ndarray) -> tuple[int, int]:
-        '''
+        """
         根据空间坐标得到像素坐标（向图像原点取整）
-        '''
+        """
         hor = self.get_horizontal_vect()
         ver = self.get_vertical_vect()
         vert = point - self.get_orig()
@@ -199,11 +199,11 @@ class ImageItem(Points):
 
 
 class PixelImageItem(ImageItem):
-    '''
+    """
     图像物件
 
     与 :class:`ImageItem` 基本一致，只是在图像被放大显示时不进行平滑插值处理，使得像素清晰
-    '''
+    """
     def __init__(
         self,
         file_path: str,
@@ -217,7 +217,7 @@ class PixelImageItem(ImageItem):
 
 
 class VideoFrame(ImageItem):
-    '''
+    """
     视频帧，用于提取视频在指定时间处的一帧图像
 
     - ``file_path``: 文件路径
@@ -226,7 +226,7 @@ class VideoFrame(ImageItem):
     不建议使用该类将视频提取为多帧以达到“读取视频”的目的，因为这会导致巨大的性能浪费以及内存占用
 
     播放视频请使用 :class:`Video`
-    '''
+    """
     def __init__(
         self,
         file_path: str,
@@ -278,7 +278,7 @@ class VideoFrame(ImageItem):
 
 
 class Video(PlaybackControl, Points):
-    '''
+    """
     视频物件，和图像物件类似，其实本质上是一个内容实时变化的图像
 
     控制视频播放的方法：
@@ -318,7 +318,7 @@ class Video(PlaybackControl, Points):
         video.stop()
 
     表示：先播放 1s，然后以 0.5 倍速播放 1s，然后画面静止
-    '''
+    """
 
     color = CmptInfo(Cmpt_Rgbas[Self])
 
@@ -372,43 +372,43 @@ class Video(PlaybackControl, Points):
         return super().apply_style(**kwargs)
 
     def get_orig(self) -> np.ndarray:
-        '''视频的左上角'''
+        """视频的左上角"""
         return self.points.get()[0]
 
     def get_horizontal_vect(self) -> np.ndarray:
-        '''
+        """
         从视频的左上角指向右上角的向量
-        '''
+        """
         points = self.points.get()
         return points[2] - points[0]
 
     def get_horizontal_dist(self) -> float:
-        '''
+        """
         :meth:`get_horizontal_vect` 的长度
-        '''
+        """
         return get_norm(self.get_horizontal_vect())
 
     def get_vertical_vect(self) -> np.ndarray:
-        '''
+        """
         从视频的左上角指向左下角的向量
-        '''
+        """
         points = self.points.get()
         return points[1] - points[0]
 
     def get_vertical_dist(self) -> float:
-        '''
+        """
         :meth:`get_vertical_vect` 的长度
-        '''
+        """
         return get_norm(self.get_vertical_vect())
 
     def pixel_to_point(self, x: float, y: float) -> np.ndarray:
-        '''
+        """
         通过像素坐标获得对应的空间坐标，可以传入浮点值
 
         - 例如 ``.pixel_to_point(0, 0)`` 会返回原点位置（图片的左上角）
         - 例如 ``.pixel_to_point(6, 11)`` 会返回 ``(6, 11)`` 像素的左上角
         - 例如 ``.pixel_to_point(6.5, 11.5)`` 会返回 ``(6, 11)`` 像素的中心
-        '''
+        """
         hor = self.get_horizontal_vect()
         ver = self.get_vertical_vect()
         orig = self.get_orig()
@@ -471,11 +471,11 @@ class VideoInfo:
 
 
 class PixelVideo(Video):
-    '''
+    """
     视频物件
 
     与 :class:`Video` 基本一致，只是在被放大显示时不进行平滑插值处理，使得像素清晰
-    '''
+    """
     def __init__(
         self,
         file_path: str,
