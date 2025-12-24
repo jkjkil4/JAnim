@@ -23,7 +23,7 @@ ALIGN_EPSILON = 1e-6
 
 
 class Animation:
-    '''
+    """
     动画基类
 
     - 创建一个从 ``at`` 持续至 ``at + duration`` 的动画
@@ -62,7 +62,7 @@ class Animation:
                     self.play(Transform(a, b))
                     self.play(Transform(b, a))
                     self.play(Transform(a, b))
-    '''
+    """
     label_color: tuple[float, float, float] = C_LABEL_ANIM_DEFAULT
 
     def __init__(
@@ -100,15 +100,15 @@ class Animation:
         return self
 
     def shift_range(self, delta: float) -> Self:
-        '''
+        """
         以 ``delta`` 的变化量移动时间区段
-        '''
+        """
         self.t_range.shift(delta)
 
     def scale_range(self, k: float) -> Self:
-        '''
+        """
         以 ``k`` 的倍率缩放时间区段（相对于 ``t=0`` 进行缩放）
-        '''
+        """
         self.t_range.scale(k)
 
     def _attach_rate_func(self, rate_func: RateFunc) -> None:
@@ -124,9 +124,9 @@ class Animation:
             raise AnimationError(_('Animation start time cannot be negative'))
 
     def _time_fixed(self) -> None:
-        '''
+        """
         由子类实现，用于确定该动画的行为，并可用于该对象内容的初始化
-        '''
+        """
         pass
 
     def get_alpha_on_global_t(self, global_t: float) -> float:
@@ -196,14 +196,14 @@ class ItemAnimation(Animation):
     def apply(self, data: None, p: ApplyParams) -> Item: ...
 
     def apply(self, data, params):
-        '''
+        """
         将 ``global_t`` 时的动画效果作用到 ``data`` 上
 
         其中
 
         - 对于 :class:`~.Display` 而言，``data`` 是 ``None``，返回值是 :class:`~.Item` 对象
         - 而对于其它大多数的而言，``data`` 是前一个动画作用的结果，返回值是 ``None``
-        '''
+        """
         pass
 
 
@@ -218,69 +218,69 @@ class ApplyAligner(ItemAnimation):
 
 @dataclass
 class TimeRange:
-    '''
+    """
     标识了从 ``at`` 开始，到 ``end`` 结束的时间区段
 
     ``end`` 也可以是 ``FOREVER``
-    '''
+    """
 
     at: float
-    '''时间区段的开始时刻'''
+    """时间区段的开始时刻"""
 
     end: float | ForeverType
-    '''时间区段的结束时刻'''
+    """时间区段的结束时刻"""
 
     @property
     def duration(self) -> float:
-        '''
+        """
         时间区段的时长，即 ``end - at``，如果 ``end=FOREVER`` 则抛出 ``AssertionError``
 
         另见 :meth:`num_duration`
-        '''
+        """
         assert self.end is not FOREVER
         return self.end - self.at
 
     @property
     def num_duration(self) -> float:
-        '''
+        """
         - 当 ``end`` 不是 ``FOREVER`` 时，与 :meth:`duration` 一致
 
         - 当 ``end`` 是 ``FOREVER`` 时，此时返回 ``0``
 
         （这用于 :class:`~.AnimGroup` 对 ``end=FOREVER`` 的子动画的处理，也就是把这种子动画当成 ``end=at`` 来计算时间）
-        '''
+        """
         return 0 if self.end is FOREVER else self.duration
 
     @property
     def num_end(self) -> float:
-        '''
+        """
         - 当 ``end`` 不是 ``FOREVER`` 时，此时返回 ``end``
 
         - 当 ``end`` 是 ``FOREVER`` 时，此时返回 ``at``
 
         （这用于 :class:`~.AnimGroup` 对 ``end=FOREVER`` 的子动画的处理，也就是把这种子动画当成 ``end=at`` 来计算时间）
-        '''
+        """
         return self.at if self.end is FOREVER else self.end
 
     def set(self, at: float, end: float | ForeverType) -> None:
-        '''
+        """
         设置该时间区段的范围
-        '''
+        """
         self.at = at
         self.end = end
 
     def shift(self, delta: float) -> None:
-        '''
+        """
         以 ``delta`` 的变化量移动时间区段
-        '''
+        """
         self.at += delta
         if self.end is not FOREVER:
             self.end += delta
 
     def scale(self, k: float) -> None:
-        '''
+        """
         以 ``k`` 的倍率缩放时间区段（相对于 ``t=0`` 进行缩放）
-        '''
+        """
         self.at *= k
         if self.end is not FOREVER:
             self.end *= k
@@ -293,28 +293,28 @@ class TimeRange:
 
 
 class TimeAligner:
-    '''
+    """
     由于浮点数精度的问题，有可能出现比如原本设计上首尾相连的两个动画，却出现判定的错位
 
     该类用于将相近的浮点数归化到同一个值，使得 :class:`TimeRange` 区间严丝合缝
-    '''
+    """
     def __init__(self):
         self.recorded_times = []
 
     def align(self, anim: Animation) -> None:
-        '''
+        """
         归化 ``anim`` 的时间区段，
         即分别对 ``.t_range.at`` 和 ``.t_range.end`` 进行 :meth:`align_t` 的操作
-        '''
+        """
         rg = anim.t_range
         rg.at = self.align_t(rg.at)
         if rg.end is not FOREVER:
             rg.end = self.align_t(rg.end)
 
     def align_t(self, t: float) -> float:
-        '''
+        """
         对齐时间 ``t``，确保相近的时间点归化到相同的值，返回归化后的时间值
-        '''
+        """
         t = float(t)    # 避免 numpy 类型浮点数可能导致的问题（例如影响到 GUI 绘制时传给 Qt 的类型）
         # 因为在大多数情况下，最新传入的 t 总是出现在列表的最后，所以倒序查找
         for i, recorded_t in enumerate(reversed(self.recorded_times)):
@@ -333,12 +333,12 @@ class TimeAligner:
         return t
 
     def align_t_for_render(self, t: float) -> float:
-        '''
+        """
         与 :meth:`align_t` 类似，但区别在于
 
         - 该方法使用二分查找而不是倒序查找
         - 该方法在查找后不记录 ``t`` 的值
-        '''
+        """
         idx = bisect_left(self.recorded_times, t)
         if idx != len(self.recorded_times):
             recorded_t = self.recorded_times[idx]

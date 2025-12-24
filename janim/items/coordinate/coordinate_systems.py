@@ -30,11 +30,11 @@ class _ItemMeta_ABCMeta(_ItemMeta, ABCMeta):
 
 
 class CoordinateSystem(metaclass=ABCMeta):
-    '''
+    """
     坐标系统抽象类
 
     具体实现请参考 :class:`Axes` :class:`ThreeDAxes` 以及 :class:`NumberPlane`
-    '''
+    """
 
     def __init__(
         self,
@@ -56,9 +56,9 @@ class CoordinateSystem(metaclass=ABCMeta):
 
     @abstractmethod
     def get_axes(self) -> list[NumberLine]:
-        '''
+        """
         得到由各方向 :class:`~.NumberLine` 所组成的列表
-        '''
+        """
         pass
 
     def get_origin(self) -> np.ndarray:
@@ -66,11 +66,11 @@ class CoordinateSystem(metaclass=ABCMeta):
         return axes[0].mark.get()
 
     def coords_to_point(self, *coords: float) -> np.ndarray:
-        '''
+        """
         传入坐标得到对应的位置
 
         例如 ``c2p(1, 3)`` 得到 (1,3) 的位置
-        '''
+        """
         axes = self.get_axes()
         origin = self.get_origin()
         return origin + sum(
@@ -79,11 +79,11 @@ class CoordinateSystem(metaclass=ABCMeta):
         )
 
     def coords_array_to_points(self, coords_array: VectArray) -> np.ndarray:
-        '''
+        """
         传入一组坐标得到对应的一组位置
 
         例如 ``c2p([[1, 3], [2, 1], [-1, -1]])`` 得到对应的三个位置
-        '''
+        """
         axes = self.get_axes()
         origin = self.get_origin()
         coords_array = np.asarray(coords_array)
@@ -93,15 +93,15 @@ class CoordinateSystem(metaclass=ABCMeta):
         )
 
     def c2p(self, *coords: float) -> np.ndarray:
-        ''':meth:`coords_to_point` 的缩写'''
+        """:meth:`coords_to_point` 的缩写"""
         return self.coords_to_point(*coords)
 
     def point_to_coords3d(self, point: Vect | Iterable[Vect]) -> np.ndarray:
-        '''
+        """
         传入位置得到对应的坐标（但是会扩张为三维坐标；对于二维坐标系来说，第三个分量则表示距离二维平面的距离）
 
         也可以传入一组位置得到一组对应的坐标
-        '''
+        """
         axes = self.get_axes()
         origin = self.get_origin()
         vectors = [axe.number_to_point(1) - origin for axe in axes]
@@ -113,43 +113,43 @@ class CoordinateSystem(metaclass=ABCMeta):
         return (point - origin) @ mat.T
 
     def p2c3d(self, point: Vect | Iterable[Vect]) -> np.ndarray:
-        ''':meth:`point_to_coords3d` 的简写'''
+        """:meth:`point_to_coords3d` 的简写"""
         return self.point_to_coords3d(point)
 
     def point_to_coords(self, point: Vect | Iterable[Vect]) -> np.ndarray:
-        '''
+        """
         传入位置得到对应坐标
 
         也可以传入一组位置得到一组对应的坐标
-        '''
+        """
         axes = self.get_axes()
         return self.point_to_coords3d(point)[:len(axes)]
 
     def p2c(self, point: Vect | Iterable[Vect]) -> np.ndarray:
-        ''':meth:`point_to_coords` 的缩写'''
+        """:meth:`point_to_coords` 的缩写"""
         return self.point_to_coords(point)
 
     def number_to_point(self, number: complex | float) -> np.ndarray:
-        '''传入复数得到对应位置'''
+        """传入复数得到对应位置"""
         number = complex(number)
         return self.coords_to_point(number.real, number.imag)
 
     def n2p(self, number: complex | float) -> np.ndarray:
-        ''':meth:`number_to_point` 的缩写'''
+        """:meth:`number_to_point` 的缩写"""
         return self.number_to_point(number)
 
     def point_to_number(self, point: Vect) -> complex:
-        '''传入位置得到对应复数'''
+        """传入位置得到对应复数"""
         x, y = self.point_to_coords3d(point)[:2]
         return complex(x, y)
 
     def p2n(self, point: Vect) -> complex:
-        ''':meth:`point_to_number` 的缩写'''
+        """:meth:`point_to_number` 的缩写"""
         return self.point_to_number(point)
 
 
 class Axes(CoordinateSystem, MarkedItem, Group, metaclass=_ItemMeta_ABCMeta):
-    '''
+    """
     二维坐标轴
 
     -   ``num_sampled_graph_points_per_tick``:
@@ -181,7 +181,7 @@ class Axes(CoordinateSystem, MarkedItem, Group, metaclass=_ItemMeta_ABCMeta):
         指定横坐标与纵坐标的单位长度，如果指定了对应的 ``*_length`` 则会被忽略
 
         注：如果需要给某个坐标轴单独指定 ``unit_size``，请传入对应的 ``*_axis_config``
-    '''
+    """
 
     axis_config_d = dict(
         numbers_to_exclude=[0]
@@ -271,7 +271,7 @@ class Axes(CoordinateSystem, MarkedItem, Group, metaclass=_ItemMeta_ABCMeta):
         bind: bool = True,
         **kwargs
     ) -> ParametricCurve:
-        '''
+        """
         基于坐标轴的坐标构造函数曲线，使用 :class:`~.ParametricCurve`
 
         -   ``function``: 用于构造曲线的函数
@@ -293,7 +293,7 @@ class Axes(CoordinateSystem, MarkedItem, Group, metaclass=_ItemMeta_ABCMeta):
             因为会导致变换效果被重复作用，（一次由 :class:`~.Group` 导致的作用，另一次由 ``bind=True`` 导致的作用）
 
             如果你有放在同一个 :class:`~.Group` 里的需求，请传入 ``bind=False`` 以避免该情况
-        '''
+        """
         t_range = self.x_range.copy()
         if x_range is not None:
             t_range[:len(x_range)] = x_range
@@ -327,7 +327,7 @@ class Axes(CoordinateSystem, MarkedItem, Group, metaclass=_ItemMeta_ABCMeta):
         bind: bool = True,
         **kwargs
     ):
-        '''
+        """
         基于坐标轴的坐标构造参数曲线，即 :class:`~.ParametricCurve`
 
         - ``function``: 将值映射为坐标系上的一个点的参数函数
@@ -340,7 +340,7 @@ class Axes(CoordinateSystem, MarkedItem, Group, metaclass=_ItemMeta_ABCMeta):
             因为会导致变换效果被重复作用，（一次由 :class:`~.Group` 导致的作用，另一次由 ``bind=True`` 导致的作用）
 
             如果你有放在同一个 :class:`~.Group` 里的需求，请传入 ``bind=False`` 以避免该情况
-        '''
+        """
         graph = ParametricCurve(
             lambda t: self.coords_to_point(*function(t)),
             t_range,
@@ -368,13 +368,13 @@ class Axes(CoordinateSystem, MarkedItem, Group, metaclass=_ItemMeta_ABCMeta):
         bounded_graph: ParametricCurve = None,
         **kwargs
     ) -> Polygon:
-        '''
+        """
         构造 ``x_range`` 区间内，``graph`` 与坐标轴所围成的区域，使用 :class:`~.Polygon` 表示
 
         - ``graph``: 函数曲线，另见 :meth:`get_graph`
         - ``x_range``: ``x`` 区间的最小值与最大值，``x_range = [x_min, x_max]``
         - ``bounded_graph``: 如果指定该参数，那么将会构造 ``graph`` 与 ``bounded_graph`` 所围成的区域，而非与坐标轴
-        '''
+        """
         if x_range is None:
             a, b, _ = graph.t_range
         else:
@@ -416,11 +416,11 @@ class Axes(CoordinateSystem, MarkedItem, Group, metaclass=_ItemMeta_ABCMeta):
         y_kwargs: dict = {},
         **kwargs,
     ) -> Group[TypstMath | Points]:
-        '''
+        """
         详见 :meth:`~.NumberLine.get_axis_label`
 
         如果设置 ``ensure_on_screen=True``，坐标轴标签会自动调整位置移动到默认屏幕区域内
-        '''
+        """
         return Group(
             self.get_x_axis_label(x_label, **x_kwargs, **kwargs),
             self.get_y_axis_label(y_label, **y_kwargs, **kwargs),
@@ -431,11 +431,11 @@ class Axes(CoordinateSystem, MarkedItem, Group, metaclass=_ItemMeta_ABCMeta):
         label: str | Points = 'x',
         **kwargs
     ) -> TypstMath | Points:
-        '''
+        """
         详见 :meth:`~.NumberLine.get_axis_label`
 
         如果设置 ``ensure_on_screen=True``，坐标轴标签会自动调整位置移动到默认屏幕区域内
-        '''
+        """
         return self.x_axis.get_axis_label(label, **kwargs)
 
     def get_y_axis_label(
@@ -443,22 +443,22 @@ class Axes(CoordinateSystem, MarkedItem, Group, metaclass=_ItemMeta_ABCMeta):
         label: str | Points = 'y',
         **kwargs
     ) -> TypstMath | Points:
-        '''
+        """
         详见 :meth:`~.NumberLine.get_axis_label`
 
         如果设置 ``ensure_on_screen=True``，坐标轴标签会自动调整位置移动到默认屏幕区域内
-        '''
+        """
         return self.y_axis.get_axis_label(label, **kwargs)
 
 
 class ThreeDAxes(Axes):
-    '''
+    """
     三维坐标轴
 
     - ``z_normal`` 表示 z 坐标轴上刻度和箭头标记的面向，默认面向 ``UP`` 方向
 
     其它可用参数请参考并类比 :class:`Axes` 的使用
-    '''
+    """
     z_axis_config_d = {}
 
     def __init__(
@@ -509,13 +509,13 @@ class ThreeDAxes(Axes):
         z_point_up: bool = True,
         **kwargs,
     ) -> Group[TypstMath | Points]:
-        '''
+        """
         详见 :meth:`~.NumberLine.get_axis_label`
 
         另外，在默认情况下 ``rotate_xy=True`` 会将 x、y 轴的标签原地旋转半圈，以匹配从 x、y、z 三个轴的正方向看向原点的视角
 
         以及，直接生成的 z 坐标轴标签会和 2D 平面平行，默认情况下 ``point_up=True`` 会将其立起来和 z 轴方向一致，传入 ``point_up=False`` 可禁用该行为
-        '''
+        """
         x_axis_label = self.get_x_axis_label(x_label, **x_kwargs, **kwargs)
         y_axis_label = self.get_y_axis_label(y_label, **y_kwargs, **kwargs)
         z_axis_label = self.get_z_axis_label(z_label, z_point_up, **z_kwargs, **kwargs)
@@ -532,11 +532,11 @@ class ThreeDAxes(Axes):
         point_up: bool = True,
         **kwargs
     ) -> TypstMath | Points:
-        '''
+        """
         详见 :meth:`~.NumberLine.get_axis_label`
 
         另外，直接生成的坐标轴标签会和 2D 平面平行，默认情况下 ``point_up=True`` 会将其立起来和 z 轴方向一致，传入 ``point_up=False`` 可禁用该行为
-        '''
+        """
         label = self.z_axis.get_axis_label(label, **kwargs)
         if point_up:
             axis_end = self.z_axis.points.get_end()
@@ -561,7 +561,7 @@ class CmptVPoints_NumberPlaneImpl(Cmpt_VPoints, impl=True):
 
 
 class NumberPlane(Axes):
-    '''
+    """
     坐标网格
 
     一般来说包含：
@@ -587,7 +587,7 @@ class NumberPlane(Axes):
             可调整成 ``1``，减少次要网格线的密集程度，或是直接设置成 ``0`` 来禁用次要网格线
 
     更多参数与方法另请参考 :class:`Axes`
-    '''
+    """
 
     points = CmptInfo(CmptVPoints_NumberPlaneImpl)
 

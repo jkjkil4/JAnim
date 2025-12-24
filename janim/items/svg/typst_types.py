@@ -24,7 +24,7 @@ $ mat(
 
 
 class TypstMatrix(TypstText):
-    '''
+    """
     使用 Typst 进行矩阵布局
 
     - 使用 :meth:`get_inserted` 得到插入的 JAnim 物件
@@ -80,7 +80,7 @@ class TypstMatrix(TypstText):
             column_gap='0.7em',
             preamble='#set text(size: 3em)'
         ).show()
-    '''
+    """
 
     def __init__(
         self,
@@ -184,16 +184,16 @@ class TypstMatrix(TypstText):
                 ),
                 key=lambda matrix_coord: order[matrix_coord]
             )
-            '''
+            """
             按照子物件顺序排列的矩阵元素标签
-            '''
+            """
 
     def get_inserted(self, index: int) -> Points:
-        '''
+        """
         获取插入的第 ``index`` 个 JAnim 物件
 
         ``index`` 从 0 开始计数
-        '''
+        """
         if not 0 <= index < self.registered_count:
             raise InvalidOrdinalError(
                 _('Index out of range, only {count} inserted items available')
@@ -213,11 +213,11 @@ class TypstMatrix(TypstText):
         return None
 
     def get_element(self, row: int, col: int) -> Group[SVGElemItem] | Points:
-        '''
+        """
         根据行列索引元素
 
         需要在构造 :class:`TypstMatrix` 时传入 ``label=True`` 启用
-        '''
+        """
         self._raise_if_not_labelled()
 
         element = self._get_element(f'__ja__mat_{row}_{col}')
@@ -230,11 +230,11 @@ class TypstMatrix(TypstText):
         return element
 
     def get_elements(self) -> list[Group[SVGElemItem] | Points]:
-        '''
+        """
         获取矩阵中所有元素
 
         需要在构造 :class:`TypstMatrix` 时传入 ``label=True`` 启用
-        '''
+        """
         self._raise_if_not_labelled()
 
         return [
@@ -243,11 +243,11 @@ class TypstMatrix(TypstText):
         ]
 
     def get_left_brace(self) -> Group[SVGElemItem]:
-        '''
+        """
         获取左大括号元素
 
         需要在构造 :class:`TypstMatrix` 时传入 ``label=True`` 启用
-        '''
+        """
         self._raise_if_not_labelled()
 
         # 如果矩阵内是空的，那么可以直接对半得到左括号
@@ -260,11 +260,11 @@ class TypstMatrix(TypstText):
         return self[:index]
 
     def get_right_brace(self) -> Group[SVGElemItem]:
-        '''
+        """
         获取右大括号元素
 
         需要在构造 :class:`TypstMatrix` 时传入 ``label=True`` 启用
-        '''
+        """
         self._raise_if_not_labelled()
 
         # 如果矩阵内是空的，那么可以直接对半得到右括号

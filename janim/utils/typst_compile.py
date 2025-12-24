@@ -19,9 +19,9 @@ _flag_use_external_typst = False
 
 
 def set_use_external_typst(flag: bool) -> None:
-    '''
+    """
     设置是否使用外部 Typst 可执行程序进行编译
-    '''
+    """
     global _flag_use_external_typst
     _flag_use_external_typst = flag
 
@@ -33,9 +33,9 @@ def compile_typst(
     vars: str,
     sys_inputs: dict[str, str]
 ) -> str:
-    '''
+    """
     编译 Typst 文档
-    '''
+    """
     sys_inputs_pairs = get_sys_inputs_pairs(sys_inputs)
 
     typst_temp_dir = get_typst_temp_dir()
@@ -82,9 +82,9 @@ def _compile_typst_by_internal_package(
     svg_file_path: str,
     sys_inputs: dict[str, str]
 ) -> str:
-    '''
+    """
     通过 typst-py 包编译 Typst 文档
-    '''
+    """
     global _typst_fonts
     if _typst_fonts is None:
         _typst_fonts = typst.Fonts()
@@ -108,9 +108,9 @@ def _compile_typst_by_external_executable(
     svg_file_path: str,
     sys_inputs_pairs: list[str]
 ) -> str:
-    '''
+    """
     通过外部可执行程序编译 Typst 文档
-    '''
+    """
     commands = [
         Config.get.typst_bin,
         'compile',
@@ -143,9 +143,9 @@ def _compile_typst_by_external_executable(
 
 
 def get_sys_inputs_pairs(sys_inputs: dict[str, str]) -> list[str]:
-    '''
+    """
     将 ``sys_inputs`` 字典转换为键值对字符串列表
-    '''
+    """
     return [f'{key}={value}' for key, value in sys_inputs.items()]
 
 
@@ -156,9 +156,9 @@ def compute_hash_hex(
     vars: str,
     sys_inputs_pairs: list[str]
 ) -> str:
-    '''
+    """
     计算 Typst 文档的哈希值，用于缓存
-    '''
+    """
     md5 = hashlib.md5(text.encode())
     md5.update(shared_preamble.encode())
     md5.update(additional_preamble.encode())

@@ -10,9 +10,9 @@ from janim.render.framebuffer import FRAME_BUFFER_BINDING, register_qt_glwidget
 
 
 class GLWidget(QOpenGLWidget):
-    '''
+    """
     窗口中央的渲染界面
-    '''
+    """
     rendered = Signal()
     error_occurred = Signal()
 

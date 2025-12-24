@@ -8,9 +8,9 @@ from janim.components.component import Component
 
 
 class Cmpt_Image[ItemT](Component[ItemT]):
-    '''
+    """
     图像组件，包含一个 PIL 图像以及 ``min_mag_filter``
-    '''
+    """
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.img = None
@@ -29,9 +29,9 @@ class Cmpt_Image[ItemT](Component[ItemT]):
         return id(self.img) == id(other.img) and self.min_mag_filter == other.min_mag_filter
 
     def set(self, img: Image.Image | None = None, min_mag_filter: int | None = None) -> Self:
-        '''
+        """
         设置 PIL 图像
-        '''
+        """
         if img is not None:
             self.img = img
         if min_mag_filter is not None:

@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-02 14:43+0800\n"
-"PO-Revision-Date: 2025-12-02 15:08+0800\n"
+"POT-Creation-Date: 2025-12-20 18:55+0800\n"
+"PO-Revision-Date: 2025-12-20 18:58+0800\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
 "Language: zh_CN\n"
@@ -17,175 +17,180 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Poedit 3.8\n"
 
-#: janim\__main__.py:21
-msgid "A library for creating smooth animations"
-msgstr "Ò»¸öÓÃÓÚ´´½¨Á÷³©¶¯»­µÄ¿â"
+#: janim\__main__.py:22
+msgid ""
+"Programmatic animation engine for creating precise and smooth animations "
+"with real-time feedback"
+msgstr "Ö§ï¿½ï¿½ÊµÊ±ï¿½ï¿½ï¿½ï¿½ï¿½Ä³ï¿½ï¿½ò»¯¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½æ£¬ï¿½ï¿½ï¿½Ú´ï¿½ï¿½ï¿½ï¿½ï¿½È·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¶ï¿½ï¿½ï¿½"
 
-#: janim\__main__.py:26
+#: janim\__main__.py:29
 msgid "Language code, e.g., en, zh_CN"
-msgstr "ÓïÑÔ´úÂë£¬ÀıÈç en¡¢zh_CN"
+msgstr "ï¿½ï¿½ï¿½Ô´ï¿½ï¿½ë£¬ï¿½ï¿½ï¿½ï¿½ enï¿½ï¿½zh_CN"
 
-#: janim\__main__.py:35
+#: janim\__main__.py:38
 msgid "Set the logging level (default: INFO)"
-msgstr "ÉèÖÃÈÕÖ¾µÈ¼¶£¨Ä¬ÈÏ£ºINFO£©"
-
-#: janim\__main__.py:39
-msgid "Run timeline(s) from specific file"
-msgstr "Ô¤ÀÀÌØ¶¨ÎÄ¼şÖĞµÄ Timeline"
-
-#: janim\__main__.py:40
-msgid "Generate media file(s) of timeline(s) from specific file"
-msgstr "½«ÌØ¶¨ÎÄ¼şÖĞµÄ Timeline Êä³öÎªÃ½ÌåÎÄ¼ş"
-
-#: janim\__main__.py:41
-msgid "Show examples of JAnim"
-msgstr "ÏÔÊ¾ JAnim µÄÀı×Ó"
+msgstr "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö¾ï¿½È¼ï¿½ï¿½ï¿½Ä¬ï¿½Ï£ï¿½INFOï¿½ï¿½"
 
 #: janim\__main__.py:42
+msgid "Run timeline(s) from specific file"
+msgstr "Ô¤ï¿½ï¿½ï¿½Ø¶ï¿½ï¿½Ä¼ï¿½ï¿½Ğµï¿½ Timeline"
+
+#: janim\__main__.py:43
+msgid "Generate media file(s) of timeline(s) from specific file"
+msgstr "ï¿½ï¿½ï¿½Ø¶ï¿½ï¿½Ä¼ï¿½ï¿½Ğµï¿½ Timeline ï¿½ï¿½ï¿½ÎªÃ½ï¿½ï¿½ï¿½Ä¼ï¿½"
+
+#: janim\__main__.py:44
+msgid "Show examples of JAnim"
+msgstr "ï¿½ï¿½Ê¾ JAnim ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½"
+
+#: janim\__main__.py:45
 msgid "Run useful tools"
-msgstr "ÔËĞĞÊµÓÃ¹¤¾ß"
+msgstr "ï¿½ï¿½ï¿½ï¿½Êµï¿½Ã¹ï¿½ï¿½ï¿½"
 
-#: janim\__main__.py:68
+#: janim\__main__.py:71
 msgid "Path to file holding the Python code. Use `-` to read input from stdin"
-msgstr "º¬ÓĞ Python ´úÂëµÄÎÄ¼şÂ·¾¶£¬Ê¹ÓÃ `-` ´Ó stdin ÖĞ¶ÁÈ¡ÊäÈë"
+msgstr "ï¿½ï¿½ï¿½ï¿½ Python ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¼ï¿½Â·ï¿½ï¿½ï¿½ï¿½Ê¹ï¿½ï¿½ `-` ï¿½ï¿½ stdin ï¿½Ğ¶ï¿½È¡ï¿½ï¿½ï¿½ï¿½"
 
-#: janim\__main__.py:85
+#: janim\__main__.py:88
 msgid "Override config"
-msgstr "¸²¸ÇÉèÖÃ"
+msgstr "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½"
 
-#: janim\__main__.py:90
+#: janim\__main__.py:93
 msgid "Hide subtitles"
-msgstr "Òş²Ø×ÖÄ»"
+msgstr "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä»"
 
-#: janim\__main__.py:95
+#: janim\__main__.py:98
 msgid "Use external Typst executable for compiling Typst documents"
-msgstr "Ê¹ÓÃÍâ²¿ Typst ¿ÉÖ´ĞĞÎÄ¼şÀ´±àÒë Typst ÎÄµµ"
+msgstr "Ê¹ï¿½ï¿½ï¿½â²¿ Typst ï¿½ï¿½Ö´ï¿½ï¿½ï¿½Ä¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Typst ï¿½Äµï¿½"
 
-#: janim\__main__.py:102
+#: janim\__main__.py:105
 msgid "Name of the Timeline class you want to preview"
-msgstr "ÒªÔ¤ÀÀµÄ Timeline µÄÃû³Æ"
+msgstr "ÒªÔ¤ï¿½ï¿½ï¿½ï¿½ Timeline ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½"
 
-#: janim\__main__.py:103
+#: janim\__main__.py:106
 msgid "Preview all timelines from a file"
-msgstr "Ô¤ÀÀÎÄ¼şÖĞµÄËùÓĞ Timeline"
+msgstr "Ô¤ï¿½ï¿½ï¿½Ä¼ï¿½ï¿½Ğµï¿½ï¿½ï¿½ï¿½ï¿½ Timeline"
 
-#: janim\__main__.py:108
+#: janim\__main__.py:111
 msgid "Enable the network socket for interacting with VS Code"
-msgstr "ÆôÓÃÓë VS Code ½»»¥µÄÍøÂç¶Ë¿Ú"
+msgstr "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ VS Code ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ë¿ï¿½"
 
-#: janim\__main__.py:113
+#: janim\__main__.py:116
 msgid "Watches the file and rebuild on changes"
-msgstr "¼àÌıÎÄ¼ş²¢ÔÚ±ä»¯Ê±ÖØĞÂ¹¹½¨"
+msgstr "ï¿½ï¿½ï¿½ï¿½ï¿½Ä¼ï¿½ï¿½ï¿½ï¿½Ú±ä»¯Ê±ï¿½ï¿½ï¿½Â¹ï¿½ï¿½ï¿½"
 
-#: janim\__main__.py:121
+#: janim\__main__.py:124
 msgid "Name of the Timeline class you want to write"
-msgstr "ÒªÊä³öµÄ Timeline µÄÃû³Æ"
+msgstr "Òªï¿½ï¿½ï¿½ï¿½ï¿½ Timeline ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½"
 
-#: janim\__main__.py:122
+#: janim\__main__.py:125
 msgid "Write all timelines from a file"
-msgstr "Êä³öÎÄ¼şÖĞµÄËùÓĞ Timeline"
-
-#: janim\__main__.py:127
-msgid "Open the video after writing"
-msgstr "ÔÚÊä³öºó´ò¿ªÊÓÆµÎÄ¼ş"
+msgstr "ï¿½ï¿½ï¿½ï¿½Ä¼ï¿½ï¿½Ğµï¿½ï¿½ï¿½ï¿½ï¿½ Timeline"
 
 #: janim\__main__.py:130
+msgid "Open the video after writing"
+msgstr "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æµï¿½Ä¼ï¿½"
+
+#: janim\__main__.py:133
 msgid "Format Options"
-msgstr "¸ñÊ½Ñ¡Ïî"
+msgstr "ï¿½ï¿½Ê½Ñ¡ï¿½ï¿½"
 
-#: janim\__main__.py:131
+#: janim\__main__.py:134
 msgid "Options for specifying the format of the output files"
-msgstr "Ö¸¶¨Êä³öÎÄ¼ş¸ñÊ½µÄÑ¡Ïî"
+msgstr "Ö¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¼ï¿½ï¿½ï¿½Ê½ï¿½ï¿½Ñ¡ï¿½ï¿½"
 
-#: janim\__main__.py:136
+#: janim\__main__.py:139
 msgid "Output video format (mp4 by default, mov for transparent background)"
-msgstr "Êä³öÊÓÆµµÄ¸ñÊ½£¨Ä¬ÈÏ mp4£»Í¸Ã÷±³¾°ĞèÊ¹ÓÃ mov£©"
-
-#: janim\__main__.py:141
-msgid "Output audio format (valid only when outputting audio separately)"
-msgstr "Êä³öÒôÆµµÄ¸ñÊ½£¨½öÔÚµ¥¶ÀÊä³öÒôÆµÊ±ÓĞĞ§£©"
+msgstr "ï¿½ï¿½ï¿½ï¿½ï¿½Æµï¿½Ä¸ï¿½Ê½ï¿½ï¿½Ä¬ï¿½ï¿½ mp4ï¿½ï¿½Í¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê¹ï¿½ï¿½ movï¿½ï¿½"
 
 #: janim\__main__.py:144
+msgid "Output audio format (valid only when outputting audio separately)"
+msgstr "ï¿½ï¿½ï¿½ï¿½ï¿½Æµï¿½Ä¸ï¿½Ê½ï¿½ï¿½ï¿½ï¿½ï¿½Úµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÆµÊ±ï¿½ï¿½Ğ§ï¿½ï¿½"
+
+#: janim\__main__.py:147
 msgid "Output Options"
-msgstr "Êä³öÑ¡Ïî"
+msgstr "ï¿½ï¿½ï¿½Ñ¡ï¿½ï¿½"
 
-#: janim\__main__.py:145
+#: janim\__main__.py:148
 msgid "Options for specifying the parts to be written"
-msgstr "Ö¸¶¨Êä³öÄÄĞ©²¿·ÖµÄÑ¡Ïî"
+msgstr "Ö¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ğ©ï¿½ï¿½ï¿½Öµï¿½Ñ¡ï¿½ï¿½"
 
-#: janim\__main__.py:149
+#: janim\__main__.py:152
 msgid ""
 "Video with audio (default; will be replaced by --video if there is no audio, "
 "and by both --video and --audio if the format is GIF)"
 msgstr ""
-"´øÓĞÒôÆµµÄÊÓÆµ£¨Ä¬ÈÏ£¬µ±Ã»ÓĞÒôÆµÊ±»á±» --video Ìæ´ú£¬µ±¸ñÊ½Îª GIF Ê±»á±» --"
-"video ºÍ --audio Ìæ´ú£©"
+"ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æµï¿½ï¿½ï¿½ï¿½Æµï¿½ï¿½Ä¬ï¿½Ï£ï¿½ï¿½ï¿½Ã»ï¿½ï¿½ï¿½ï¿½ÆµÊ±ï¿½á±» --video ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê½Îª GIF Ê±ï¿½á±» --"
+"video ï¿½ï¿½ --audio ï¿½ï¿½ï¿½ï¿½ï¿½"
 
-#: janim\__main__.py:155
+#: janim\__main__.py:158
 msgid "Video only"
-msgstr "½öÊÓÆµ"
+msgstr "ï¿½ï¿½ï¿½ï¿½Æµ"
 
-#: janim\__main__.py:160
+#: janim\__main__.py:163
 msgid "Audio only"
-msgstr "½öÒôÆµ"
-
-#: janim\__main__.py:165
-msgid "Generate SRT file"
-msgstr "Éú³É SRT ÎÄ¼ş"
+msgstr "ï¿½ï¿½ï¿½ï¿½Æµ"
 
 #: janim\__main__.py:168
+msgid "Generate SRT file"
+msgstr "ï¿½ï¿½ï¿½ï¿½ SRT ï¿½Ä¼ï¿½"
+
+#: janim\__main__.py:171
 msgid "Range Options"
-msgstr "Çø¶ÎÑ¡Ïî"
+msgstr "ï¿½ï¿½ï¿½ï¿½Ñ¡ï¿½ï¿½"
 
-#: janim\__main__.py:169
+#: janim\__main__.py:172
 msgid "Options for specifying in/out point"
-msgstr "ÓÃÓÚÖ¸¶¨Èëµã/³öµãµÄÑ¡Ïî"
+msgstr "ï¿½ï¿½ï¿½ï¿½Ö¸ï¿½ï¿½ï¿½ï¿½ï¿½/ï¿½ï¿½ï¿½ï¿½ï¿½Ñ¡ï¿½ï¿½"
 
-#: janim\__main__.py:174
+#: janim\__main__.py:177
 msgid "Set In Point; use negative value to indicate time relative to the end"
-msgstr "ÉèÖÃÈëµã; Ê¹ÓÃ¸ºÖµ±íÊ¾Ïà¶Ô½áÎ²µÄÊ±¼äµã"
-
-#: janim\__main__.py:180
-msgid "Set Out Point; use negative value to indicate time relative to the end"
-msgstr "ÉèÖÃ³öµã; Ê¹ÓÃ¸ºÖµ±íÊ¾Ïà¶Ô½áÎ²µÄÊ±¼äµã"
+msgstr "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½; Ê¹ï¿½Ã¸ï¿½Öµï¿½ï¿½Ê¾ï¿½ï¿½Ô½ï¿½Î²ï¿½ï¿½Ê±ï¿½ï¿½ï¿½"
 
 #: janim\__main__.py:183
+msgid "Set Out Point; use negative value to indicate time relative to the end"
+msgstr "ï¿½ï¿½ï¿½Ã³ï¿½ï¿½ï¿½; Ê¹ï¿½Ã¸ï¿½Öµï¿½ï¿½Ê¾ï¿½ï¿½Ô½ï¿½Î²ï¿½ï¿½Ê±ï¿½ï¿½ï¿½"
+
+#: janim\__main__.py:186
 msgid "Other Options"
-msgstr "ÆäËüÑ¡Ïî"
+msgstr "ï¿½ï¿½ï¿½ï¿½Ñ¡ï¿½ï¿½"
 
-#: janim\__main__.py:184
+#: janim\__main__.py:187
 msgid "Other options for writing the output files"
-msgstr "Êä³öÎÄ¼şµÄÆäËûÑ¡Ïî"
+msgstr "ï¿½ï¿½ï¿½ï¿½Ä¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ñ¡ï¿½ï¿½"
 
-#: janim\__main__.py:188
+#: janim\__main__.py:191
 msgid "Disable PBO (Pixel Buffer Object) for writing video"
-msgstr "ÔÚÊä³öÊÓÆµÊ±½ûÓÃ PBO£¨ÏñËØ»º³å¶ÔÏó£©"
+msgstr "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÆµÊ±ï¿½ï¿½ï¿½ï¿½ PBOï¿½ï¿½ï¿½ï¿½ï¿½Ø»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½"
 
-#: janim\__main__.py:193
+#: janim\__main__.py:196
 msgid "Use hardware acceleration for writing video"
-msgstr "ÔÚÊä³öÊÓÆµÊ±Ê¹ÓÃÓ²¼ş¼ÓËÙ"
+msgstr "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÆµÊ±Ê¹ï¿½ï¿½Ó²ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½"
 
-#: janim\__main__.py:204
+#: janim\__main__.py:207
 msgid "Name of the example you want to see"
-msgstr "Òª²é¿´µÄÊ¾ÀıµÄÃû³Æ"
+msgstr "Òªï¿½é¿´ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½"
 
-#: janim\__main__.py:220
+#: janim\__main__.py:223
 msgid "Tool(s) that you want to use"
-msgstr "ÄãÏëÒªÊ¹ÓÃµÄ¹¤¾ß"
+msgstr "ï¿½ï¿½ï¿½ï¿½ÒªÊ¹ï¿½ÃµÄ¹ï¿½ï¿½ï¿½"
+
+#~ msgid "A library for creating smooth animations"
+#~ msgstr "Ò»ï¿½ï¿½ï¿½ï¿½ï¿½Ú´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¿ï¿½"
 
 #~ msgid "Set In Point"
-#~ msgstr "ÉèÖÃÈëµã"
+#~ msgstr "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½"
 
 #~ msgid "Set Out Point"
-#~ msgstr "ÉèÖÃ³öµã"
+#~ msgstr "ï¿½ï¿½ï¿½Ã³ï¿½ï¿½ï¿½"
 
 #~ msgid "Format of the output video"
-#~ msgstr "Êä³öÊÓÆµµÄ¸ñÊ½"
+#~ msgstr "ï¿½ï¿½ï¿½ï¿½ï¿½Æµï¿½Ä¸ï¿½Ê½"
 
 #~ msgid "Video with audio (by default)"
 #~ msgstr ""
-#~ "´øÓĞÒôÆµµÄÊÓÆµ£¨Ä¬ÈÏ£¬µ±±¾ÉíÃ»ÓĞÒôÆµÊ±»á±» --video Ìæ´ú£¬µ±¸ñÊ½Îª gif Ê±»á"
-#~ "±» --video ºÍ --audio Ìæ´ú£©"
+#~ "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æµï¿½ï¿½ï¿½ï¿½Æµï¿½ï¿½Ä¬ï¿½Ï£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã»ï¿½ï¿½ï¿½ï¿½ÆµÊ±ï¿½á±» --video ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê½Îª gif Ê±ï¿½ï¿½"
+#~ "ï¿½ï¿½ --video ï¿½ï¿½ --audio ï¿½ï¿½ï¿½ï¿½ï¿½"
 
 #~ msgid "Format of the output audio"
-#~ msgstr "Êä³öÒôÆµµÄ¸ñÊ½"
+#~ msgstr "ï¿½ï¿½ï¿½ï¿½ï¿½Æµï¿½Ä¸ï¿½Ê½"

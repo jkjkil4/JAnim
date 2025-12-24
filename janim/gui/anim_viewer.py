@@ -65,11 +65,11 @@ ACTION_WIDGET_FLAG_KEY = '__action_widget'
 
 
 class AnimViewer(QMainWindow):
-    '''
+    """
     用于显示构建完成的时间轴动画
 
     可以使用 ``AnimViewer.views(MyTimeline().build())`` 进行直接显示
-    '''
+    """
     play_finished = Signal()
 
     def __init__(
@@ -121,9 +121,9 @@ class AnimViewer(QMainWindow):
 
     @classmethod
     def views(cls, anim: BuiltTimeline, **kwargs) -> None:
-        '''
+        """
         直接显示一个浏览构建完成的时间轴动画的窗口
-        '''
+        """
         app = Application.instance()
         if app is None:
             app = Application()
@@ -758,7 +758,7 @@ class AnimViewer(QMainWindow):
             with self.change_export_size(dialog.pixel_size()) if dialog.has_size_set() else nullcontext():
                 # 这里每次截图都重新构建一下，因为如果复用原来的对象会使得和 GUI 的上下文冲突
                 built = self.built.timeline.__class__().build()
-                built.capture(t, transparent=transparent).save(file_path)
+                built.capture(t, transparent=transparent, ctx=self.glw.ctx).save(file_path)
 
         except Exception as e:
             if not isinstance(e, ExitException):
@@ -803,7 +803,7 @@ class AnimViewer(QMainWindow):
                     args += self.timeline_view.inout_point
 
                 if video_with_audio:
-                    video_writer = VideoWriter(built)
+                    video_writer = VideoWriter(built, ctx=self.glw.ctx)
                     video_writer.write_all(*args, hwaccel=hwaccel, _keep_temp=True)
 
                     audio_file_path = os.path.splitext(file_path)[0] + '.mp3'
@@ -816,7 +816,7 @@ class AnimViewer(QMainWindow):
                                           audio_writer.temp_file_path,
                                           video_writer.final_file_path)
                 else:
-                    video_writer = VideoWriter(built)
+                    video_writer = VideoWriter(built, ctx=self.glw.ctx)
                     video_writer.write_all(*args, hwaccel=hwaccel)
 
         except Exception as e:

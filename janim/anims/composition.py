@@ -10,7 +10,7 @@ _ = get_local_strings('composition')
 
 
 class AnimGroup(Animation):
-    '''
+    """
     动画集合（并列执行）
 
     - 若不传入 ``duration``，则将终止时间（子动画结束时间的最大值）作为该动画集合的 ``duration``
@@ -45,7 +45,7 @@ class AnimGroup(Animation):
         )
 
     另外，``collapse`` 表示在预览界面中是否折叠该动画组（默认不折叠，而例如 :class:`~.TransformMatchingShapes` 默认是折叠的）
-    '''
+    """
     def __init__(
         self,
         *anims: SupportsAnim,
@@ -113,12 +113,12 @@ class AnimGroup(Animation):
         super().__init__(at=at, duration=duration, rate_func=rate_func, name=name)
 
     def _adjust_t_range(self, lag_ratio: float, offset: float) -> None:
-        '''
+        """
         对于 :class:`AnimGroup` 和 :class:`Succession` 而言
         是应用 ``lag_ratio`` 和 ``offset`` 的效果
 
         而对于 :class:`Aligned` 而言会被重载
-        '''
+        """
         if lag_ratio != 0 or offset != 0:
             start = 0
             global_offset = 0
@@ -138,10 +138,10 @@ class AnimGroup(Animation):
 
     @staticmethod
     def _get_anim_objects(anims: Iterable[SupportsAnim]) -> list[Animation]:
-        '''
+        """
         将 anims 中的内容都转化为 :class:`~.Animation`
         具体可参考 :class:`SupportsAnim` 的文档
-        '''
+        """
         return [
             AnimGroup._get_anim_object(anim)
             for anim in anims
@@ -183,7 +183,7 @@ class AnimGroup(Animation):
 
 
 class Succession(AnimGroup):
-    '''
+    """
     动画集合（顺序执行）
 
     - 会将传入的动画依次执行
@@ -210,7 +210,7 @@ class Succession(AnimGroup):
             Anim3(duration=2),  # 5~7s
             offset=0.5
         )
-    '''
+    """
     def __init__(
         self,
         *anims: Animation,
@@ -222,7 +222,7 @@ class Succession(AnimGroup):
 
 
 class Aligned(AnimGroup):
-    '''
+    """
     动画集合（并列对齐执行）
 
     也就是忽略了子动画的 ``at`` 和 ``duration``，使所有子动画都一起开始和结束
@@ -243,7 +243,7 @@ class Aligned(AnimGroup):
             duration=4
         )
         # Anim1 & Anim2: 0~4s
-    '''
+    """
     def __init__(
         self,
         *anims: SupportsAnim,
@@ -263,19 +263,19 @@ class Aligned(AnimGroup):
 
 
 class Wait(Animation):
-    '''
+    """
     等待特定时间，在 :meth:`~.Succession` 中比较有用
 
     （其实就是一个空动画）
-    '''
+    """
     def __init__(self, duration: float = 1, **kwargs):
         super().__init__(duration=duration, **kwargs)
 
 
 class Do(Animation):
-    '''
+    """
     在动画过程的特定时间执行指定操作
-    '''
+    """
     def __init__(self, func, *args, at: float = 0, detect_changes: bool = True, **kwargs):
         super().__init__(at=at, duration=0)
         self.func = func

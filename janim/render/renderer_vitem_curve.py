@@ -17,9 +17,9 @@ if TYPE_CHECKING:
 
 
 class VItemCurveRenderer(Renderer):
-    '''
+    """
     对于纯曲线边界 :class:`~.VItem` 所使用的渲染器
-    '''
+    """
 
     shader_path_compatibility = 'render/shaders/vitem/vitem_curve_compatibility'
     shader_path_normal = 'render/shaders/vitem/vitem_curve'

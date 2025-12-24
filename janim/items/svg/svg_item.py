@@ -48,9 +48,9 @@ def _parse_color(hex, opacity) -> tuple[str, float]:
 
 
 class SVGItem(Group[SVGElemItem]):
-    '''
+    """
     传入 SVG 文件路径，解析为物件
-    '''
+    """
     vitem_builders_map: dict[tuple, tuple[list[ItemBuilder], GroupIndexer]] = {}
     group_key: str | None = None
 
@@ -127,7 +127,7 @@ class SVGItem(Group[SVGElemItem]):
         return copy_item
 
     def scale_descendants_stroke_radius(self, factor: float) -> Self:
-        '''将所有后代物件的 ``stroke_radius`` 都乘上一个值'''
+        """将所有后代物件的 ``stroke_radius`` 都乘上一个值"""
         for item in self.walk_descendants(VItem):
             item.radius.set(item.radius.get() * factor)
 
@@ -137,9 +137,9 @@ class SVGItem(Group[SVGElemItem]):
         file_path: str,
         mark_basepoint: bool = False
     ) -> tuple[list[SVGElemItem], dict[str, list[SVGElemItem]]]:
-        '''
+        """
         解析文件并得到物件列表
-        '''
+        """
         file_path = find_file(file_path)
         mtime = os.path.getmtime(file_path)
         name = os.path.splitext(os.path.basename(file_path))[0]

@@ -47,7 +47,7 @@ class _ConfigMeta(type):
 
 @attrs.define(kw_only=True, slots=False)
 class Config(metaclass=_ConfigMeta):
-    '''配置
+    """配置
 
     大部分的参数不作说明，稍微说明一下这些参数：
 
@@ -110,7 +110,7 @@ class Config(metaclass=_ConfigMeta):
                 print(Config.get.fps)
 
     更多内容可以参考文档教程的 :doc:`配置系统 <../../tutorials/config_system>` 页面
-    '''
+    """
     fps: int = _field(validator=_opt_int_validator)
     preview_fps: int = _field(validator=_opt_int_validator)
     anti_alias_width: float = _field(validator=_opt_float_validator)
@@ -192,31 +192,31 @@ default_config = Config(
 
     client_search_port=40565
 )
-'''
+"""
 默认配置
 
 其中：
 
 - ``preview_fps`` 在接入电源时是 60，未接入时是 30
 - ``temp_dir`` 由操作系统决定
-'''
+"""
 
 cli_config = Config()
-'''
+"""
 命令行配置
 
 会被命令行 ``--config`` 参数自动修改
-'''
+"""
 
 config_ctx_var.set([default_config])
 
 
 class ConfigGetter:
-    '''
+    """
     与配置数据相关联的数据的获取
 
     请仍然使用 ``Config.get.xxx`` 来获取定义在该类中的内容
-    '''
+    """
     def __init__(self, config_ctx: list[Config] | None = None):
         self.config_ctx = config_ctx
 
@@ -269,9 +269,9 @@ class ConfigGetter:
         return UP * self.frame_y_radius
 
     def formated_output_dir(self, relative_path: str) -> str:
-        '''
+        """
         将 ``:/path/to/file`` 转换为相对于 ``relative_path`` 的路径
-        '''
+        """
         output_dir = self.output_dir
 
         if output_dir.startswith((':/', ':\\')):
@@ -280,7 +280,7 @@ class ConfigGetter:
         return output_dir
 
     def scaled_pixel_size(self, scale: float) -> dict[str, int]:
-        '''
+        """
         根据缩放比例计算缩放后的 **像素尺寸**
 
         使用示例：
@@ -290,14 +290,14 @@ class ConfigGetter:
             Config(
                 **Config.get.scaled_pixel_size(0.5)
             )
-        '''
+        """
         return {
             'pixel_width': int(self.pixel_width * scale),
             'pixel_height': int(self.pixel_height * scale)
         }
 
     def scaled_frame_size(self, scale: float) -> dict[str, float]:
-        '''
+        """
         根据缩放比例计算缩放后的 **画面尺寸**
 
         使用示例：
@@ -307,14 +307,14 @@ class ConfigGetter:
             Config(
                 **Config.get.scaled_frame_size(0.5)
             )
-        '''
+        """
         return {
             'frame_width': self.frame_width * scale,
             'frame_height': self.frame_height * scale
         }
 
     def scaled_width(self, scale: float) -> dict[str, float]:
-        '''
+        """
         根据缩放比例计算缩放后的 **画面宽度和像素宽度**
 
         使用示例：
@@ -324,14 +324,14 @@ class ConfigGetter:
             Config(
                 **Config.get.scaled_width(0.5)
             )
-        '''
+        """
         return {
             'pixel_width': int(self.pixel_width * scale),
             'frame_width': self.frame_width * scale
         }
 
     def scaled_height(self, scale: float) -> dict[str, float]:
-        '''
+        """
         根据缩放比例计算缩放后的 **画面高度和像素高度**
 
         使用示例：
@@ -341,14 +341,14 @@ class ConfigGetter:
             Config(
                 **Config.get.scaled_height(0.5)
             )
-        '''
+        """
         return {
             'pixel_height': int(self.pixel_height * scale),
             'frame_height': self.frame_height * scale
         }
 
     def scaled_size(self, scale: float) -> dict[str, float]:
-        '''
+        """
         根据缩放比例计算缩放后的 **画面尺寸和像素尺寸**
 
         使用示例：
@@ -358,14 +358,14 @@ class ConfigGetter:
             Config(
                 **Config.get.scaled_size(0.5)
             )
-        '''
+        """
         return {
             **self.scaled_width(scale),
             **self.scaled_height(scale)
         }
 
     def swapped_size(self) -> dict[str, int]:
-        '''
+        """
         获取交换宽高后的 **画面尺寸和像素尺寸**
 
         使用示例（将横屏配置转为竖屏）：
@@ -375,7 +375,7 @@ class ConfigGetter:
             Config(
                 **Config.get.swapped_size()
             )
-        '''
+        """
         return {
             'pixel_width': self.pixel_height,
             'pixel_height': self.pixel_width,

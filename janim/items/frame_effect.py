@@ -24,7 +24,7 @@ _ = get_local_strings('frame_effect')
 
 
 class FrameEffect(Item):
-    '''
+    """
     将传入的着色器 ``fragment_shader`` 应用到 ``items`` 上
 
     着色器基本格式：
@@ -56,7 +56,7 @@ class FrameEffect(Item):
     如果懒得抄，可以用 :class:`SimpleFrameEffect`，这个类只要写“进行处理”这部分就好了，因为它把其余代码都封装了
 
     完整示例请参考 :ref:`基础样例 <basic_examples>` 中的对应代码
-    '''
+    """
     renderer_cls = FrameEffectRenderer
 
     apprs = CmptInfo(Cmpt_List[Self, Timeline.ItemAppearance])
@@ -89,13 +89,13 @@ class FrameEffect(Item):
         return {}
 
     def add(self, *objs, insert=False) -> Self:
-        '''
+        """
         .. warning::
 
             调用 :meth:`add` 很可能不会按预期工作
 
             如果你想应用额外的物件，需要使用 :meth:`apply`
-        '''
+        """
         if objs:
             log.warning(
                 _('Calling {cls}.add is unusual and may not work as expected. '
@@ -106,13 +106,13 @@ class FrameEffect(Item):
         return self
 
     def remove(self, *objs) -> Self:
-        '''
+        """
         .. warning::
 
             调用 :meth:`remove` 很可能不会按预期工作
 
             如果你想应用额外的物件，需要使用 :meth:`discard`
-        '''
+        """
         if objs:
             log.warning(
                 _('Calling {cls}.remove is unusual and may not work as expected. '
@@ -122,9 +122,9 @@ class FrameEffect(Item):
         return super().remove(*objs)
 
     def apply(self, *items: Item, root_only: bool = False) -> Self:
-        '''
+        """
         对更多物件应用效果
-        '''
+        """
         self.apprs.extend(
             self.timeline.item_appearances[sub]
             for item in items
@@ -132,9 +132,9 @@ class FrameEffect(Item):
         )
 
     def discard(self, *items: Item, root_only: bool = False) -> Self:
-        '''
+        """
         对指定物件的取消应用效果
-        '''
+        """
         for item in items:
             for sub in item.walk_self_and_descendants(root_only):
                 try:
@@ -170,13 +170,13 @@ void main()
 
 
 class SimpleFrameEffect(FrameEffect):
-    '''
+    """
     :class:`FrameEffect` 的简化封装，具体请参考 :class:`FrameEffect` 中的说明
 
     .. note::
 
         如果该着色器代码中出现报错，会显示为 ``JA_SIMPLE_FRAMEEFFECT_SHADER`` 中出现的
-    '''
+    """
     def __init__(
         self,
         *items: Item,
@@ -290,12 +290,12 @@ class Cmpt_FrameClip[ItemT](Component[ItemT]):
 
 
 class FrameClip(FrameEffect):
-    '''
+    """
     一个用于创建简单矩形裁剪效果的类
 
     - ``clip`` 参数表示裁剪区域的四个边界，分别是左、上、右、下，范围是 0~1 表示百分比
     - ``debug`` 参数表示是否开启调试模式，开启后裁剪区域外的部分会显示为半透明红色
-    '''
+    """
 
     clip = CmptInfo(Cmpt_FrameClip[Self])
 
@@ -322,9 +322,9 @@ class FrameClip(FrameEffect):
         return dict(u_clip=self.clip._attrs)
 
     def create_border_rect(self, **kwargs) -> Rect:
-        '''
+        """
         得到裁剪后的显示区域的包围矩形
-        '''
+        """
         dl = Config.get.left_side + Config.get.bottom
         width, height = Config.get.frame_width, Config.get.frame_height
         left, top, right, bottom = self.clip._attrs
@@ -468,7 +468,7 @@ class Cmpt_TransformableFrameClip[ItemT](Component[ItemT]):
 
 
 class TransformableFrameClip(FrameEffect):
-    '''
+    """
     与 :class:`FrameClip` 类似，但支持更多的变换操作（偏移、缩放、旋转）
 
     - ``clip`` 参数表示裁剪区域的四个边界，分别是左、上、右、下，范围是 0~1 表示百分比
@@ -476,7 +476,7 @@ class TransformableFrameClip(FrameEffect):
     - ``scale`` 参数表示裁剪区域 x 与 y 方向的缩放量，单位是百分比
     - ``rotate`` 参数表示裁剪区域的旋转角度
     - ``debug`` 参数表示是否开启调试模式，开启后裁剪区域外的部分会显示为半透明红色
-    '''
+    """
 
     clip = CmptInfo(Cmpt_TransformableFrameClip[Self])
 
@@ -514,9 +514,9 @@ class TransformableFrameClip(FrameEffect):
         )
 
     def create_border_rect(self, **kwargs) -> Rect:
-        '''
+        """
         得到裁剪后的显示区域的包围矩形
-        '''
+        """
         left, top, right, bottom, x_offset, y_offset, x_scale, y_scale, rotate = self.clip._attrs
 
         dl = Config.get.left_side + Config.get.bottom
@@ -554,7 +554,7 @@ void main()
 
 
 class Shadertoy(FrameEffect):
-    '''
+    """
     一个用于创建类似 Shadertoy 着色器效果的类
 
     例:
@@ -574,7 +574,7 @@ class Shadertoy(FrameEffect):
     .. note::
 
         如果该着色器代码中出现报错，会显示为 ``JA_SHADERTOY`` 中出现的
-    '''
+    """
     def __init__(
         self,
         shader: str,

@@ -15,9 +15,9 @@ from janim.utils.paths import PathFunc, get_path_func
 
 
 class Fade(DataUpdater[Item], metaclass=ABCMeta):
-    '''
+    """
     :class:`FadeIn` 和 :class:`FadeOut` 的基类
-    '''
+    """
     label_color = C_LABEL_ANIM_ABSTRACT
 
     def __init__(
@@ -60,12 +60,12 @@ class Fade(DataUpdater[Item], metaclass=ABCMeta):
 
 
 class FadeIn(Fade):
-    '''
+    """
     淡入
 
     - 可以使用 ``shift`` 指定淡入位移
     - 可以使用 ``scale`` 指定淡入缩放
-    '''
+    """
     label_color = C_LABEL_ANIM_IN
 
     def updater(self, data: Item, p: UpdaterParams) -> None:
@@ -90,12 +90,12 @@ class FadeIn(Fade):
 
 
 class FadeOut(Fade):
-    '''
+    """
     淡出
 
     - 可以使用 ``shift`` 指定淡出位移
     - 可以使用 ``scale`` 指定淡出缩放
-    '''
+    """
     label_color = C_LABEL_ANIM_OUT
 
     def __init__(

@@ -20,9 +20,9 @@ from janim.utils.space_ops import normalize, rotation_about_z
 
 
 class Cmpt_VPoints_BraceImpl[ItemT](Cmpt_VPoints[ItemT], impl=True):
-    '''
+    """
     在 :class:`Brace` 中对 :class:`Cmpt_VPoints` 的进一步实现
-    '''
+    """
     # 复制时，``brace_length`` 随 ``copy.copy(self)`` 而复制，因此不用重写 ``copy`` 方法
     def match(
         self,
@@ -31,9 +31,9 @@ class Cmpt_VPoints_BraceImpl[ItemT](Cmpt_VPoints[ItemT], impl=True):
         buff: float = SMALL_BUFF,
         root_only: bool = False
     ) -> Self:
-        '''
+        """
         将花括号进行伸缩，使得与 ``item`` 在 ``direction`` 方向的宽度匹配
-        '''
+        """
         if direction is None:
             direction = self.direction if self.has() else DOWN
 
@@ -79,22 +79,22 @@ class Cmpt_VPoints_BraceImpl[ItemT](Cmpt_VPoints[ItemT], impl=True):
 
     @property
     def tip_point(self) -> np.ndarray:
-        '''得到花括号中间凸出处的坐标'''
+        """得到花括号中间凸出处的坐标"""
         return self._points.data[get_brace_tip_point_index()]
 
     @property
     def brace_left(self) -> np.ndarray:
-        '''得到括号指向方向左边的尖端处的坐标'''
+        """得到括号指向方向左边的尖端处的坐标"""
         return self._points.data[get_brace_left_index()]
 
     @property
     def brace_right(self) -> np.ndarray:
-        '''得到括号指向方向右边的尖端处的坐标'''
+        """得到括号指向方向右边的尖端处的坐标"""
         return self._points.data[get_brace_right_index()]
 
     @property
     def direction(self) -> np.ndarray:
-        '''得到括号指向的方向'''
+        """得到括号指向的方向"""
         return normalize(self.tip_point - (self.brace_left + self.brace_right) / 2)
 
     def put_at_tip(
@@ -104,9 +104,9 @@ class Cmpt_VPoints_BraceImpl[ItemT](Cmpt_VPoints[ItemT], impl=True):
         buff: float = DEFAULT_ITEM_TO_ITEM_BUFF,
         **kwargs
     ) -> Self:
-        '''
+        """
         将物件放置在花括号中间的凸出处
-        '''
+        """
         cmpt = item.points
 
         if use_next_to:
@@ -122,24 +122,24 @@ class Cmpt_VPoints_BraceImpl[ItemT](Cmpt_VPoints[ItemT], impl=True):
             cmpt.shift(self.direction * shift_distance)
 
     def create_text(self, text: str, buff: float = SMALL_BUFF, use_next_to: bool = True, **kwargs) -> Text:
-        '''创建一个位于花括号中间凸出处的文字'''
+        """创建一个位于花括号中间凸出处的文字"""
         txt = Text(text, **kwargs)
         self.put_at_tip(txt, use_next_to=use_next_to, buff=buff)
         return txt
 
     def create_typst(self, typst: str, buff: float = SMALL_BUFF, use_next_to: bool = True, **kwargs) -> TypstMath:
-        '''创建一个位于花括号中间凸出处的 Typst 公式'''
+        """创建一个位于花括号中间凸出处的 Typst 公式"""
         typ = TypstMath(typst, **kwargs)
         self.put_at_tip(typ, use_next_to=use_next_to, buff=buff)
         return typ
 
 
 class Brace(VItem):
-    '''
+    """
     花括号物件
 
     会匹配物件在 ``direction`` 方向的宽度
-    '''
+    """
     points = CmptInfo(Cmpt_VPoints_BraceImpl[Self])
 
     def __init__(

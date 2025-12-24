@@ -62,7 +62,7 @@ def _convert_skia_path_to_vitem(
 
 
 class Union(VItem):
-    '''
+    """
     并集
 
     常见情况下，传入两个及以上 :class:`~.VItem`，返回它们区域的并集的外轮廓
@@ -70,7 +70,7 @@ class Union(VItem):
     另外，如果只传入单个物件，则拷贝原路径
 
     该方法只有根物件参与计算，如果需要考虑所有子物件的并集，例如对 :class:`~.Text` 所有后代物件的并集，请参考 :meth:`from_group`
-    '''
+    """
     def __init__(self, *vitems: VItem, **kwargs):
         if not vitems:
             raise BooleanOpsError(_('At least 1 item needed for Union.'))
@@ -92,9 +92,9 @@ class Union(VItem):
 
     @staticmethod
     def from_group(item: Item, **kwargs) -> Union:
-        '''
+        """
         传入一个物件，将其所有后代物件作并集
-        '''
+        """
         lst = [
             sub
             for sub in item.walk_self_and_descendants()
@@ -104,11 +104,11 @@ class Union(VItem):
 
 
 class Difference(VItem):
-    '''
+    """
     差集
 
     传入 ``subitem`` 和 ``clip``，返回 ``subitem`` 裁去 ``clip`` 区域的轮廓线
-    '''
+    """
     def __init__(self, subitem: VItem, clip: VItem, **kwargs):
         super().__init__(**kwargs)
         outpen = pathops.Path()
@@ -121,7 +121,7 @@ class Difference(VItem):
 
 
 class Intersection(VItem):
-    '''
+    """
     交集
 
     常见情况下，传入两个及以上 :class:`~.VItem`，返回它们区域交集的外轮廓
@@ -129,7 +129,7 @@ class Intersection(VItem):
     另外，如果只传入单个物件，则拷贝原路径
 
     该方法只有根物件参与计算，如果需要考虑所有后代物件的交集，请参考 :meth:`from_group`
-    '''
+    """
     def __init__(self, *vitems: VItem, **kwargs):
         if not vitems:
             raise BooleanOpsError(_('At least 1 item needed for Intersection.'))
@@ -158,9 +158,9 @@ class Intersection(VItem):
 
     @staticmethod
     def from_group(item: Item, **kwargs) -> Union:
-        '''
+        """
         传入一个物件，将其所有后代物件作交集
-        '''
+        """
         lst = [
             sub
             for sub in item.walk_self_and_descendants()
@@ -170,7 +170,7 @@ class Intersection(VItem):
 
 
 class Exclusion(VItem):
-    '''
+    """
     对称差集
 
     传入两个及以上 :class:`~.VItem`，返回它们的区域经过 XOR 运算后的外轮廓
@@ -178,7 +178,7 @@ class Exclusion(VItem):
     另外，如果只传入单个物件，则拷贝原路径
 
     该方法只有根物件参与计算，如果需要考虑所有后代物件的对称差集，请参考 :meth:`Exclusion.from_group`
-    '''
+    """
     def __init__(self, *vitems: VItem, **kwargs):
         if not vitems:
             raise BooleanOpsError(_('At least 1 item needed for Exclusion.'))
@@ -207,9 +207,9 @@ class Exclusion(VItem):
 
     @staticmethod
     def from_group(item: Item, **kwargs):
-        '''
+        """
         传入一个物件，将其所有子物件依次作对称差集
-        '''
+        """
         lst = [
             sub
             for sub in item.walk_self_and_descendants()

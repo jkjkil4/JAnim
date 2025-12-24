@@ -242,17 +242,17 @@ def tool(args: Namespace) -> None:
 
 
 def modify_typst_compile_flag(args: Namespace) -> None:
-    '''
+    """
     用于 CLI 的 ``--external-typst`` 参数
-    '''
+    """
     from janim.utils.typst_compile import set_use_external_typst
     set_use_external_typst(args.external_typst)
 
 
 def modify_cli_config(args: Namespace) -> None:
-    '''
+    """
     用于 CLI 的 ``-c`` 参数
-    '''
+    """
     if args.config:
         for key, value in args.config:
             dtype = type(getattr(default_config, key))
@@ -260,12 +260,12 @@ def modify_cli_config(args: Namespace) -> None:
 
 
 def get_module(input: str):
-    '''
+    """
     根据给定的输入 ``input`` 产生 ``module``
 
     - 当 ``input`` 为文件路径时，将文件读取为 module
     - 当 ``input`` 为 ``'-'`` 时，从 ``stdin`` 读取源码编译 module
-    '''
+    """
     if input == '-':
         return get_module_from_stdin()
     else:
@@ -273,9 +273,9 @@ def get_module(input: str):
 
 
 def get_module_from_stdin():
-    '''
+    """
     从 ``stdin`` 读取源码并编译为 module
-    '''
+    """
     source = sys.stdin.read()
 
     # 兼容相对于当前工作目录的导入
@@ -294,9 +294,9 @@ def get_module_from_stdin():
 
 
 def get_module_from_file(file_name: str):
-    '''
+    """
     将给定的 ``file_name`` 读取为 module
-    '''
+    """
     if not os.path.exists(file_name):
         log.error(_('"{file_name}" doesn\'t exist').format(file_name=file_name))
         raise ExitException(EXITCODE_MODULE_NOT_FOUND)
@@ -315,9 +315,9 @@ def get_module_from_file(file_name: str):
 
 
 def extract_timelines_from_module(args: Namespace, module) -> list[type[Timeline]]:
-    '''
+    """
     根据指定的 ``module`` 向用户询问使用哪些 :class:`~.Timeline`
-    '''
+    """
     timelines = []
     err = False
 
@@ -383,11 +383,11 @@ def extract_timelines_from_module(args: Namespace, module) -> list[type[Timeline
 
 @lru_cache(maxsize=1)
 def get_all_timelines_from_module(module) -> list[type[Timeline]]:
-    '''
+    """
     从指定的 ``module`` 中得到所有可用的 :class:`~.Timeline`
 
     会缓存结果，如果 ``module`` 的内容有更新可能需要使用 ``get_all_timelines_from_module.cache_clear()`` 来清空缓存
-    '''
+    """
     classes = [
         value
         for value in module.__dict__.values()
@@ -409,7 +409,7 @@ def get_all_timelines_from_module(module) -> list[type[Timeline]]:
 
 
 def get_lineno_key_function(module) -> Callable[[type], tuple[int, int]] | None:
-    '''
+    """
     返回一个函数，其对于列表中的每个类：
 
     - 如果能找到 class 在 module 中所定义的行数，则返回 ``(0, 行数)``
@@ -421,7 +421,7 @@ def get_lineno_key_function(module) -> Callable[[type], tuple[int, int]] | None:
     但此时无法在 module 源代码中找到这个类的定义，所以把找不到的类返回 ``(1, 0)``，这样依据这个进行排序就会将其排序到最后
 
     更多技术细节请参阅 https://github.com/jkjkil4/JAnim/pull/36
-    '''
+    """
     file = inspect.getfile(module)
     if not file:
         return None

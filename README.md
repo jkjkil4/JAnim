@@ -11,7 +11,7 @@
 </div>
 
 ## Introduction
-JAnim is a library for creating smooth animations, built around the core concept of programmatic animation. It supports real-time editing, live preview, and a wide range of additional powerful features.
+JAnim is built around the core concept of programmatic animation to create precise and smooth animations. It supports real-time editing, live preview, and a wide range of other rich features.
 
 Inspired by [manim](https://github.com/3b1b/manim).
 

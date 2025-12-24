@@ -17,9 +17,9 @@ _ = get_local_strings('anim_stack')
 
 
 class AnimStack:
-    '''
+    """
     用于在 :class:`~.Timeline` 中记录作用于 :class:`~.Item` 上的 :class:`~.Animation`
-    '''
+    """
     def __init__(self, item: Item, time_aligner: TimeAligner):
         self.item = item
         self.time_aligner = time_aligner
@@ -37,11 +37,11 @@ class AnimStack:
         self.clear_cache()
 
     def detect_change(self, item: Item, at: float, *, force: bool = False) -> None:
-        '''
+        """
         检查物件相比 ``self.prev_display`` 所记录的物件而言是否发生变化
 
         若有变化则记录为 :class:`Display` 对象
-        '''
+        """
         if self.prev_display is None:
             at = 0
         if self.prev_display is None or force or not self.prev_display.data_orig.not_changed(item):
@@ -58,9 +58,9 @@ class AnimStack:
             self.detect_change(item, 0)
 
     def append(self, anim: ItemAnimation) -> None:
-        '''
+        """
         向 :class:`AnimStack` 添加 :class:`~.Animation` 对象
-        '''
+        """
 
         # 下面这些代码主要是为了对区段进行优化处理，提前计算出特定区段中存在哪些动画对象
         # 这样可以避免在 compute 以及渲染时重复判断哪些动画对象是否作用，提高效率
@@ -129,7 +129,7 @@ class AnimStack:
         return self.stacks[idx]
 
     def compute(self, as_time: float, readonly: bool, *, get_at_left: bool = False) -> Item:
-        '''
+        """
         得到指定时间 ``as_time`` 的物件，考虑了动画的作用
 
         ``readonly`` 用来表示调用方是否会对返回值进行修改
@@ -145,7 +145,7 @@ class AnimStack:
           因为 :meth:`~.Timeline.item_current` 的返回值最终会被用户使用，我们不能保证用户是否会修改，所以我们干脆假定用户会修改
 
         - 例如用于绘制时的调用时 ``readonly=True``，因为绘制时不会对物件数据产生影响
-        '''
+        """
         if as_time != self.cache_time:
             anims = (self.get_at_left if get_at_left else self.get)(as_time)
             generator = self.compute_anims(as_time, anims)

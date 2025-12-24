@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import itertools as it
 import math
 from bisect import bisect, bisect_left
@@ -33,14 +35,14 @@ SUBTIMELINE_CLASS_NAME = '__subtimeline_class'
 
 
 class TimelineView(QWidget):
-    '''
+    """
     窗口下方的进度条和动画区段指示器
 
     - **w** 键放大区段（使视野精确到一小段中）
     - **s** 键缩小区段（使视野扩展到一大段中）
     - **a** 和 **d** 左右移动区段
     - 使用鼠标滚轮纵向平移
-    '''
+    """
 
     @dataclass
     class PixelRange:
@@ -53,9 +55,9 @@ class TimelineView(QWidget):
 
     @dataclass
     class Pressing:
-        '''
+        """
         记录按键状态
-        '''
+        """
         w: bool = False
         a: bool = False
         s: bool = False
@@ -171,9 +173,9 @@ class TimelineView(QWidget):
                 sub_info.restore(label)
 
     def init_label_group(self) -> None:
-        '''
+        """
         构建动画区段信息，以便操作与绘制
-        '''
+        """
         self.debug_label_group = self.make_debug_label_group(self.built)
         self.audio_label_group = self.make_audio_label_group(self.built)
         self.anim_label_group = self.make_anim_label_group(self.built)
@@ -517,7 +519,7 @@ class TimelineView(QWidget):
         self.place_tooltip(self.tooltip, pos)
         self.tooltip.show()
 
-    def create_audio_chart(self, info: Timeline.PlayAudioInfo, near: float | None = None) -> 'QChartView':
+    def create_audio_chart(self, info: Timeline.PlayAudioInfo, near: float | None = None) -> QChartView:
         from PySide6.QtCharts import (QChart, QChartView, QLineSeries,
                                       QValueAxis)
 
@@ -614,7 +616,7 @@ class TimelineView(QWidget):
         return chart_view
 
     @staticmethod
-    def create_axvspan(x1: float, x2: float, c1: QColor, c2: QColor) -> 'QAreaSeries':
+    def create_axvspan(x1: float, x2: float, c1: QColor, c2: QColor) -> QAreaSeries:
         from PySide6.QtCharts import QAreaSeries, QLineSeries
         from PySide6.QtGui import QGradient, QLinearGradient
 
@@ -682,7 +684,7 @@ class TimelineView(QWidget):
         self.place_tooltip(self.tooltip, pos)
         self.tooltip.show()
 
-    def create_anim_chart(self, anim: Animation) -> 'QChartView':
+    def create_anim_chart(self, anim: Animation) -> QChartView:
         from PySide6.QtCharts import QChart, QChartView, QScatterSeries
 
         count = min(500, int(anim.t_range.duration * self.built.cfg.fps))

@@ -18,7 +18,7 @@ from janim.utils.simple_functions import fdiv
 
 
 class NumberLine(MarkedItem, Line):
-    '''
+    """
     数轴
 
     参数：
@@ -68,22 +68,22 @@ class NumberLine(MarkedItem, Line):
         注：对于 ``x_range`` 的 ``步长``，根据其自动确定小数位数时，``1`` 和 ``1.0`` 是不同的，前者会使刻度保留整数，而后者会使刻度保留一位小数
 
     -   ``number_config``: 提供给数字的额外参数，另见 :class:`~.Text`
-    '''
+    """
 
     tip_config_d = dict(
         back_width=0.25,
         body_length=0.25
     )
-    '''
+    """
     箭头的默认属性
-    '''
+    """
 
     number_config_d = dict(
         font_size=16
     )
-    '''
+    """
     数字的默认属性
-    '''
+    """
 
     def __init__(
         self,
@@ -342,7 +342,7 @@ class NumberLine(MarkedItem, Line):
         ensure_on_screen: bool = False,
         **kwargs
     ) -> TypstMath | Points:
-        '''
+        """
         得到坐标轴标签文字
 
         如果 ``label`` 是字符串，则会将其作为 Typst 公式解析成为 :class:`~.TypstMath` 物件
@@ -357,7 +357,7 @@ class NumberLine(MarkedItem, Line):
 
         如果坐标轴比较长，坐标轴标签有可能会超出屏幕，
         此时如果设置 ``ensure_on_screen=True``，坐标轴标签会自动调整位置移动到默认屏幕区域内
-        '''
+        """
         if isinstance(label, str):
             label = TypstMath(label, **kwargs)
             label.points.scale(1.4)
@@ -367,7 +367,7 @@ class NumberLine(MarkedItem, Line):
         return label
 
     def number_to_point(self, number: float | Iterable[float] | np.ndarray) -> np.ndarray:
-        '''
+        """
         传入数值得到在坐标轴上对应的位置
 
         传入的可以是：
@@ -377,16 +377,16 @@ class NumberLine(MarkedItem, Line):
 
         - 多个数，得到一组坐标，分别表示这些数在坐标轴上的位置；
           例如 ``n2p([0, 2, 4])`` 分别得到 0、2、4 在坐标轴上的位置
-        '''
+        """
         if not isinstance(number, numbers.Real):
             number = np.asarray(number)
         alpha = (number - self.x_min) / (self.x_max - self.x_min)
         return outer_interpolate(self.points.get_start(), self.points.get_end(), alpha)
 
     def point_to_number(self, point: np.ndarray) -> float:
-        '''
+        """
         传入坐标将其映射到坐标轴上，返回在坐标轴上的数值
-        '''
+        """
         start = self.points.get_start()
         end = self.points.get_end()
         vect = end - start
@@ -397,18 +397,18 @@ class NumberLine(MarkedItem, Line):
         return interpolate(self.x_min, self.x_max, proportion)
 
     def n2p(self, number: float) -> np.ndarray:
-        '''``number_to_point`` 的缩写'''
+        """``number_to_point`` 的缩写"""
         return self.number_to_point(number)
 
     def p2n(self, point: np.ndarray) -> float:
-        '''``point_to_number`` 的缩写'''
+        """``point_to_number`` 的缩写"""
         return self.point_to_number(point)
 
 
 class UnitInterval(NumberLine):
-    '''
+    """
     单位长度数轴（只有 0~1 的区段，其中细分 10 段）
-    '''
+    """
 
     def __init__(
         self,

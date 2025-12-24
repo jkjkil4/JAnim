@@ -37,10 +37,10 @@ def get_programs(ctx: mgl.Context):
 
 
 class Renderer:
-    '''渲染器的基类
+    """渲染器的基类
 
     重写 :meth:`render` 以实现具体功能
-    '''
+    """
     data_ctx: ContextVar[RenderData] = ContextVar('Renderer.data_ctx')
 
     def render(self, item) -> None: ...
@@ -103,23 +103,27 @@ class Renderer:
 
 @dataclass(kw_only=True)
 class RenderData:
-    '''在渲染过程中需要配置的属性
+    """在渲染过程中需要配置的属性
 
     通过 :py:obj:`Renderer.data_ctx` 进行设置和获取
-    '''
+    """
     ctx: mgl.Context
     camera_info: CameraInfo
     anti_alias_radius: float
 
 
-def create_context(**kwargs) -> mgl.Context:
-    ctx = mgl.create_context(**kwargs)
-    # 默认是 blend-off 的
+def apply_blend_flags(ctx: mgl.Context) -> None:
+    # 默认是 blend-off 的，在 render_all 中通过 blend_context 开启，所以这里没有设置 ctx.enable(mgl.BLEND)
     ctx.blend_func = (
         mgl.SRC_ALPHA, mgl.ONE_MINUS_SRC_ALPHA,
         mgl.ONE, mgl.ONE
     )
     ctx.blend_equation = mgl.FUNC_ADD, mgl.MAX
+
+
+def create_context(**kwargs) -> mgl.Context:
+    ctx = mgl.create_context(**kwargs)
+    apply_blend_flags(ctx)
     return ctx
 
 

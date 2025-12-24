@@ -164,9 +164,9 @@ def resize_and_repeatedly_extend(
     length: int,
     fall_back: Callable[[int], np.ndarray] = lambda length: np.zeros((length, 3))
 ) -> np.ndarray:
-    '''
+    """
     注意：这个函数在 length <= len(array) 时，不会产生 array 的拷贝
-    '''
+    """
     if length == len(array):
         return array
 

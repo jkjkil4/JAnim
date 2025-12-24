@@ -72,9 +72,9 @@ def idx_to_name(idx: int) -> str | None:
 
 
 def convert_error_nameidx_to_name(error: mgl.Error) -> None:
-    '''
+    """
     将 ModernGL 报错信息中的 nameidx 转换为 name
-    '''
+    """
     if len(error.args) != 1:
         return
 

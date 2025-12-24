@@ -34,9 +34,9 @@ MOCKABLE_NAME = '__mockable'
 
 
 class _ItemMeta(type):
-    '''
+    """
     作为 metaclass 记录定义在类中的所有 CmptInfo
-    '''
+    """
     def __new__(cls: type, name: str, bases: tuple[type, ...], attrdict: dict):
         # 记录所有定义在类中的 CmptInfo
         cls_components: dict[str, Component] = {
@@ -89,15 +89,15 @@ class _ItemMeta(type):
 
 
 def mockable(func):
-    '''
+    """
     使得 ``.astype`` 后可以调用被 ``@mockable`` 修饰的方法
-    '''
+    """
     setattr(func, MOCKABLE_NAME, True)
     return func
 
 
 class Item(Relation['Item'], metaclass=_ItemMeta):
-    '''
+    """
     :class:`~.Item` 是物件的基类
 
     除了使用 ``item[0]`` ``item[1]`` 进行下标索引外，还可以使用列表索引和布尔索引
@@ -107,7 +107,7 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
     - 布尔索引，例如 ``item[False, True, False, True, True]`` 表示取出 ``Group(item[1], item[3], item[4])``，
 
       也就是将那些为 True 的位置取出组成一个 :class:`~.Group`
-    '''
+    """
 
     renderer_cls = Renderer
 
@@ -148,13 +148,13 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         pass
 
     def _init_components(self) -> None:
-        '''
+        """
         创建出 CmptInfo 对应的 Component，
         并以同名存于对象中，起到在名称上覆盖类中的 CmptInfo 的效果
 
         因为 CmptInfo 的 __get__ 标注的返回类型是对应的 Component，
         所以以上做法没有影响基于类型标注的代码补全
-        '''
+        """
         datas = self.__class__._cmpt_init_datas
 
         self.components: dict[str, Component] = {}
@@ -176,10 +176,10 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         recurse_up=False,
         recurse_down=False,
     ) -> Self:
-        '''
+        """
         为 :meth:`~.Component.mark_refresh()`
         进行 ``recurse_up/down`` 的处理
-        '''
+        """
         if not recurse_up and not recurse_down:
             return
 
@@ -203,9 +203,9 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
             mark(self.descendants())
 
     def set(self, **styles) -> Self:
-        '''
+        """
         设置物件以及子物件的样式，与 :meth:`apply_styles` 只影响自身不同的是，该方法也会影响所有子物件
-        '''
+        """
         flags = dict.fromkeys(styles.keys(), False)
         renderable_count = 0
         for item in self.walk_self_and_descendants():
@@ -244,19 +244,19 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         depth: float | None = None,
         **kwargs
     ) -> Self:
-        '''
+        """
         设置物件自身的样式，不影响子物件
 
         另见：:meth:`set`
-        '''
+        """
         if depth is not None:
             self.depth.set(depth, root_only=True)
         return self
 
     def do(self, func: Callable[[Self], Any]) -> Self:
-        '''
+        """
         使用 ``func`` 对物件进行操作，并返回 ``self`` 以方便链式调用
-        '''
+        """
         func(self)
         return self
 
@@ -265,7 +265,7 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
 
     @property
     def anim(self) -> Self:
-        '''
+        """
         例如：
 
         .. code-block:: python
@@ -286,13 +286,13 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
             )
 
         ``.r`` 表示从组件回到物件，这样就可以调用其它组件的功能
-        '''
+        """
         from janim.anims.transform import MethodTransformArgsBuilder
         return MethodTransformArgsBuilder(self)
 
     @property
     def update(self) -> Self:
-        '''
+        """
         例如：
 
         .. code-block:: python
@@ -303,7 +303,7 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
             )
 
         该例子会创建将 ``item`` 向右移动两个单位并且设置为绿色的 updater，并且二者的 ``rate_func`` 不同
-        '''
+        """
         from janim.anims.updater import MethodUpdaterArgsBuilder
         return MethodUpdaterArgsBuilder(self)
 
@@ -354,11 +354,11 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         return self.replicate(other)
 
     def replicate(self, n: int) -> Group[Self]:
-        '''
+        """
         复制 n 个自身，并作为一个 :class:`~.Group` 返回
 
         可以将 ``item * n`` 作为该方法的简写
-        '''
+        """
         from janim.items.points import Group
         return Group(
             *(self.copy() for i in range(n))
@@ -554,7 +554,7 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
             return None
 
     def astype[T](self, cls: type[T]) -> T:
-        '''
+        """
         使得可以调用当前物件中没有的组件
 
         例：
@@ -574,7 +574,7 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         .. code-block:: python
 
             group(VItem).color.set(BLUE)
-        '''
+        """
         if not isinstance(cls, type) or not issubclass(cls, Item):
             raise AsTypeError(
                 _('{name} is not based on Item class and cannot be used as an argument for astype')
@@ -587,9 +587,9 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
     def __call__[T](self, cls: type[T]) -> T: ...
 
     def __call__[T](self, cls: type[T]) -> T:
-        '''
+        """
         等效于调用 ``astype``
-        '''
+        """
         return self.astype(cls)
 
     def __getattr__(self, name: str):
@@ -622,9 +622,9 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         return True
 
     def current(self, *, as_time: float | None = None, root_only=False) -> Self:
-        '''
+        """
         由当前时间点获得当前物件（考虑动画作用后的结果）
-        '''
+        """
         return self.timeline.item_current(self, as_time=as_time, root_only=root_only)
 
     @staticmethod
@@ -650,9 +650,9 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         copy_item._astype_mock_cmpt = {}
 
     def copy(self, *, root_only: bool = False):
-        '''
+        """
         复制物件
-        '''
+        """
         copy_item = copy.copy(self)
         copy_item.reset_refresh()
         setattr(copy_item, SIGNAL_OBJ_SLOTS_NAME, None)
@@ -672,9 +672,9 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         return copy_item
 
     def become(self, other: Item, *, auto_visible: bool = True) -> Self:
-        '''
+        """
         将该物件的数据设置为与传入的物件相同（以复制的方式，不是引用）
-        '''
+        """
         # self.parents 不变
 
         children = self.children.copy()
@@ -724,7 +724,7 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         return self
 
     def become_current(self) -> Self:
-        '''
+        """
         使用该方法可以中断动画过程，使物件立刻成为当前动画作用下的结果
 
         .. tip::
@@ -732,7 +732,7 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
             物件本身是不会一直随着动画改变数据的
 
         在需要使用动画后的状态进行 ``.anim`` 等操作时较为实用
-        '''
+        """
         self.become(self.current(as_time=self.timeline.current_time))
         return self
 
@@ -742,9 +742,9 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         item1: Item,
         item2: Item
     ) -> AlignedData[Self]:
-        '''
+        """
         进行数据对齐，以便插值
-        '''
+        """
         aligned = AlignedData(item1.store(),
                               item2.store(),
                               item1.store())
@@ -780,9 +780,9 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         *,
         path_func: PathFunc = straight_path,
     ) -> None:
-        '''
+        """
         进行插值（仅对该物件进行，不包含后代物件）
-        '''
+        """
         for key, cmpt in self.components.items():
             try:
                 cmpt1 = item1.components[key]
@@ -797,9 +797,9 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
                 cmpt.apart_alpha(n)
 
     def fix_in_frame(self, on: bool = True, *, root_only: bool = False) -> Self:
-        '''
+        """
         固定在屏幕上，也就是即使摄像头移动位置也不会改变在屏幕上的位置
-        '''
+        """
         for item in self.walk_self_and_descendants(root_only):
             item._fix_in_frame = on
         return self
@@ -825,7 +825,7 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         root_only: bool
 
     def save_state(self, key: str = '', root_only: bool = False) -> Self:
-        '''
+        """
         保存物件状态，后续可使用 :meth:`load_state` 恢复，例如：
 
         .. code-block:: python
@@ -860,14 +860,14 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
             self.play(
                 self.camera.anim.load_state()
             )
-        '''
+        """
         self._saved_states[key] = self.SavedState(self.store() if root_only else self.copy(), root_only)
         return self
 
     def load_state(self, key: str = '') -> Self:
-        '''
+        """
         恢复物件状态，详见 :meth:`save_state`
-        '''
+        """
         saved_state = self._saved_states[key]
         if saved_state.root_only:
             self.restore(saved_state.state)
@@ -876,7 +876,7 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         return self
 
     def generate_target(self) -> Self:
-        '''
+        """
         拷贝生成一个 ``.target`` 物件，用于设置目标状态，最后使用 :class:`~.MoveToTarget` 创建过渡动画
 
         例如：
@@ -899,7 +899,7 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
                 FadeIn(mat, UP)
             )
             self.forward()
-        '''
+        """
         self.target = self.copy()
         return self.target
 
@@ -911,11 +911,11 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         return self.renderer_cls()
 
     def _mark_render_disabled(self) -> None:
-        '''
+        """
         由子类继承，用于标记 _render_disabled
 
         详见 :meth:`~.Timeline.render_all` 中的注释
-        '''
+        """
         pass
 
     # endregion
@@ -923,16 +923,16 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
     # region timeline
 
     def show(self, root_only=False) -> Self:
-        '''
+        """
         显示物件
-        '''
+        """
         self.timeline.show(self, root_only=root_only)
         return self
 
     def hide(self, root_only=False) -> Self:
-        '''
+        """
         隐藏物件
-        '''
+        """
         self.timeline.hide(self, root_only=root_only)
         return self
 

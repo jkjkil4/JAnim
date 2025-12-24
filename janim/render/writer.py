@@ -6,6 +6,7 @@ from contextlib import contextmanager
 from functools import partial
 from typing import Generator
 
+import moderngl as mgl
 import OpenGL.GL as gl
 from tqdm import tqdm as ProgressDisplay
 
@@ -13,7 +14,7 @@ from janim.anims.timeline import BuiltTimeline, Timeline, TimeRange
 from janim.exception import EXITCODE_FFMPEG_NOT_FOUND, ExitException
 from janim.locale.i18n import get_local_strings
 from janim.logger import log
-from janim.render.base import create_context_430_or_330
+from janim.render.base import apply_blend_flags, create_context_430_or_330
 from janim.render.framebuffer import create_framebuffer, framebuffer_context
 from janim.utils.simple_functions import clip
 
@@ -23,7 +24,7 @@ PBO_COUNT = 3
 
 
 class VideoWriter:
-    '''
+    """
     将时间轴动画生成视频输出到文件中
 
     可以直接调用 ``VideoWriter.writes(MyTimeline().build())`` 进行输出
@@ -34,13 +35,18 @@ class VideoWriter:
     - 然后遍历动画的每一帧，进行渲染，并将像素数据传递给 ffmpeg
     - 最后结束 ffmpeg 的调用，完成 ``_temp`` 文件的输出
     - 将 ``_temp`` 文件改名，删去 ``_temp`` 后缀，完成视频输出
-    '''
-    def __init__(self, built: BuiltTimeline):
+    """
+    def __init__(self, built: BuiltTimeline, *, ctx: mgl.Context | None = None):
         self.built = built
 
-        log.debug('Initializing OpenGL context for VideoWriter ..')
-        self.ctx = create_context_430_or_330(standalone=True)
-        log.debug('Created OpenGL context for VideoWriter')
+        if ctx:
+            log.debug(f'Reusing context {ctx} for VideoWriter')
+            self.ctx = ctx
+            apply_blend_flags(self.ctx)
+        else:
+            log.debug('Initializing OpenGL context for VideoWriter ..')
+            self.ctx = create_context_430_or_330(standalone=True)
+            log.debug('Created OpenGL context for VideoWriter')
 
         pw, ph = built.cfg.pixel_width, built.cfg.pixel_height
         self.frame_count = round(built.duration * built.cfg.fps) + 1
@@ -50,7 +56,7 @@ class VideoWriter:
         self.byte_size = pw * ph * 4  # 每帧的字节大小 (RGBA)
 
     def _init_pbos(self) -> None:
-        '''初始化PBO缓冲区'''
+        """初始化PBO缓冲区"""
         self.pbos = gl.glGenBuffers(PBO_COUNT)
 
         for pbo in self.pbos:
@@ -86,10 +92,10 @@ class VideoWriter:
         hwaccel=False,
         _keep_temp=False
     ) -> None:
-        '''将时间轴动画输出到文件中
+        """将时间轴动画输出到文件中
 
         - 指定 ``quiet=True``，则不会输出前后的提示信息，但仍有进度条
-        '''
+        """
         name = self.built.timeline.__class__.__name__
         if not quiet:
             log.info(_('Writing video "{name}"').format(name=name))
@@ -245,7 +251,7 @@ class VideoWriter:
 
     @staticmethod
     def find_encoder(ffmpeg_bin: str, hwaccel: bool) -> str:
-        '''查找编码器，若 ``hwaccel=True`` 则优先使用硬件编码器'''
+        """查找编码器，若 ``hwaccel=True`` 则优先使用硬件编码器"""
         if not hwaccel:
             encoder = 'libx264'
         else:
@@ -434,9 +440,9 @@ class SRTWriter:
 
     @staticmethod
     def t_to_srt_time(t: float):
-        '''
+        """
         将秒数转换为 SRT 时间格式：HH:MM:SS,mmm
-        '''
+        """
         t = round(t, 3)
         hours = int(t // 3600)
         minutes = int((t % 3600) // 60)
