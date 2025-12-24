@@ -12,7 +12,7 @@ from janim.locale.i18n import get_translator
 from janim.utils.config import Config
 from janim.utils.file_ops import getfile_or_stdin
 
-_ = get_translator('janim.gui.functions.export_dialog')
+_ = get_translator('janim.gui.output.export_dialog')
 
 
 class ExportDialog(QDialog):

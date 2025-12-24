@@ -2,7 +2,7 @@ import os
 import sys
 from janim.utils.file_ops import get_janim_dir
 
-includes = sys.argv[1:]
+includes = [partial_path.replace('\\', '/') for partial_path in sys.argv[1:]]
 
 
 def is_included(file: str) -> bool:

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-24 14:30+0800\n"
+"POT-Creation-Date: 2025-12-24 19:54+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,69 +17,69 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: janim/gui/functions/export_dialog.py:33
+#: janim/gui/output/export_dialog.py:33
 msgid "Export"
 msgstr ""
 
-#: janim/gui/functions/export_dialog.py:34
+#: janim/gui/output/export_dialog.py:34
 msgid "Export Path:"
 msgstr ""
 
-#: janim/gui/functions/export_dialog.py:35
+#: janim/gui/output/export_dialog.py:35
 msgid "FPS:"
 msgstr ""
 
-#: janim/gui/functions/export_dialog.py:36
+#: janim/gui/output/export_dialog.py:36
 msgid "Size:"
 msgstr ""
 
-#: janim/gui/functions/export_dialog.py:38
+#: janim/gui/output/export_dialog.py:38
 msgid "Range:"
 msgstr ""
 
-#: janim/gui/functions/export_dialog.py:39
+#: janim/gui/output/export_dialog.py:39
 msgid "Full"
 msgstr ""
 
-#: janim/gui/functions/export_dialog.py:41
+#: janim/gui/output/export_dialog.py:41
 msgid "In/Out Point"
 msgstr ""
 
-#: janim/gui/functions/export_dialog.py:43
+#: janim/gui/output/export_dialog.py:43
 msgid "In/Out Point (Not Set)"
 msgstr ""
 
-#: janim/gui/functions/export_dialog.py:46
+#: janim/gui/output/export_dialog.py:46
 msgid "Hardware Acceleration"
 msgstr ""
 
-#: janim/gui/functions/export_dialog.py:47
+#: janim/gui/output/export_dialog.py:47
 msgid "Open the video after exporting"
 msgstr ""
 
-#: janim/gui/functions/export_dialog.py:50
+#: janim/gui/output/export_dialog.py:50
 msgid "OK"
 msgstr ""
 
-#: janim/gui/functions/export_dialog.py:53
+#: janim/gui/output/export_dialog.py:53
 msgid "Cancel"
 msgstr ""
 
-#: janim/gui/functions/export_dialog.py:184
+#: janim/gui/output/export_dialog.py:184
 msgid "Confirm Export"
 msgstr ""
 
-#: janim/gui/functions/export_dialog.py:185
+#: janim/gui/output/export_dialog.py:185
 #, python-brace-format
 msgid ""
 "{filename} already exists.\n"
 "Do you want to replace it?"
 msgstr ""
 
-#: janim/gui/functions/export_dialog.py:191
+#: janim/gui/output/export_dialog.py:191
 msgid "Yes(&Y)"
 msgstr ""
 
-#: janim/gui/functions/export_dialog.py:192
+#: janim/gui/output/export_dialog.py:192
 msgid "No(&N)"
 msgstr ""

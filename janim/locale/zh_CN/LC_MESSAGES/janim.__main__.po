@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-12-24 14:30+0800\n"
-"PO-Revision-Date: 2025-12-24 15:52+0800\n"
+"PO-Revision-Date: 2025-12-24 19:57+0800\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
 "Language: zh_CN\n"
@@ -45,7 +45,7 @@ msgid "Show examples of JAnim"
 msgstr "显示 JAnim 的例子"
 
 #: janim/__main__.py:45
-msgid "Run useful tool"
+msgid "Run useful tools"
 msgstr "运行实用工具"
 
 #: janim/__main__.py:71
