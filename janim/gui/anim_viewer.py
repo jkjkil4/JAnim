@@ -39,15 +39,15 @@ from PySide6.QtWidgets import (QApplication, QCompleter, QLabel, QLineEdit,
 from janim.anims.timeline import BuiltTimeline, Timeline
 from janim.exception import ExitException
 from janim.gui.application import Application
-from janim.gui.audio_player import AudioPlayer
 from janim.gui.fixed_ratio_widget import FixedRatioWidget
 from janim.gui.functions.capture_dialog import CaptureDialog
 from janim.gui.functions.export_dialog import ExportDialog
 from janim.gui.functions.selector import Selector
 from janim.gui.glwidget import GLWidget
 from janim.gui.popup import setup_popup_actions
-from janim.gui.precise_timer import PreciseTimerWithFPS
 from janim.gui.timeline_view import TimelineView
+from janim.gui.utils.audio_player import AudioPlayer
+from janim.gui.utils.precise_timer import PreciseTimerWithFPS
 from janim.locale.i18n import get_translator
 from janim.logger import log
 from janim.render.writer import AudioWriter, VideoWriter, merge_video_and_audio
