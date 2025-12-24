@@ -17,11 +17,11 @@ from janim.utils.iterables import (resize_preserving_order,
 
 
 class Points(Item):
-    '''
+    """
     点集
 
     纯数据物件，不参与渲染
-    '''
+    """
     points = CmptInfo(Cmpt_Points[Self])
 
     def __init__(self, *points: Vect, **kwargs):
@@ -35,7 +35,7 @@ class Points(Item):
 
 
 class MarkedItem(Points):
-    '''
+    """
     带有标记点的物件
 
     例如 :class:`~.TextChar`、 :class:`~.TextLine`、 :class:`~.Arc` 和 :class:`~.RegularPolygon` 都以该类作为基类，
@@ -55,7 +55,7 @@ class MarkedItem(Points):
 
     这段代码的 ``self.mark.set_points([RIGHT * side_length / 4])`` 设置了在 x 轴方向上 75% 处的一个标记点，
     这个标记点会自动跟踪物件的坐标变换，具体参考 :ref:`基本样例 <basic_examples>` 中的对应代码
-    '''
+    """
 
     mark = CmptInfo(Cmpt_Mark[Self])
 
@@ -87,9 +87,9 @@ else:
 
 
 class Group(Points, Generic[T]):
-    '''
+    """
     将物件组成一组
-    '''
+    """
     def __init__(self, *objs: T, **kwargs):
         super().__init__(children=objs, **kwargs)
 

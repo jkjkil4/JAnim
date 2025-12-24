@@ -8,7 +8,7 @@ _builtin_import = builtins.__import__
 
 @contextmanager
 def reloads():
-    '''
+    """
     在一般情况下，使用 import 导入时，已经加载过的模块不会重新加载，导致 :ref:`重新构建 <realtime_preview>` 时无法响应外部文件的变化。
 
     例如在以下代码中，重新构建时无法响应 ``your_custom_module`` 中产生的更改
@@ -28,7 +28,7 @@ def reloads():
 
         with reloads():
             from your_custom_module import *
-    '''
+    """
     builtins.__import__ = _reload_import_hook
     try:
         yield

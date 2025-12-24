@@ -13,9 +13,9 @@ from janim.utils.dict_ops import merge_dicts_recursively
 
 
 class SurroundingRect(Rect):
-    '''
+    """
     包围矩形框
-    '''
+    """
     def __init__(
         self,
         item: Points,
@@ -54,12 +54,12 @@ class SurroundingRect(Rect):
 
 
 class FrameRect(Rect):
-    '''
+    """
     覆盖整个画面的矩形
 
     - 可以传入 ``camera`` 指定以其画面区域为准
     - 若不传入则产生默认宽高 ``frame_width`` 和 ``frame_height`` 的矩形
-    '''
+    """
     def __init__(self, camera: Camera | None = None, **kwargs):
         if camera is None:
             super().__init__(Config.get.frame_width, Config.get.frame_height, **kwargs)
@@ -79,9 +79,9 @@ class FrameRect(Rect):
 
 
 class HighlightRect(boolean_ops.Difference):
-    '''
+    """
     高亮区域，即 :class:`FrameRect` 挖去 :class:`SurroundingRect`
-    '''
+    """
 
     difference_config_d = dict(
         color=BLACK,

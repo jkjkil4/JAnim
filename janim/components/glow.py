@@ -16,9 +16,9 @@ DEFAULT_GLOW_ARRAY.data = [1, 1, 0, 0]
 
 
 class Cmpt_Glow[ItemT](Component[ItemT]):
-    '''
+    """
     泛光组件
-    '''
+    """
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._rgba = DEFAULT_GLOW_ARRAY.copy()
@@ -98,7 +98,7 @@ class Cmpt_Glow[ItemT](Component[ItemT]):
         *,
         root_only: bool = False,
     ) -> Self:
-        '''
+        """
         - ``color`` 表示传入的 ``RGB`` 颜色数据，单个颜色
           （支持 ``'#FF0000'`` ``'red'`` ``[1, 0, 0.5]`` 的表示）
         - ``alpha`` 表示传入的透明度数据
@@ -110,7 +110,7 @@ class Cmpt_Glow[ItemT](Component[ItemT]):
 
         - 当 ``color`` 为四分量 ``RGBA`` 颜色数据时，
           则同时表示了 ``color`` 和 ``alpha`` 二者，因此不能再传入 ``alpha`` 参数
-        '''
+        """
         if color is not None or alpha is not None:
             if alpha is None and not isinstance(color, str) and len(color) == 4:
                 rgba = self.format_rgba(color)

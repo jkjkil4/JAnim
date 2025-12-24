@@ -8,9 +8,9 @@ from janim.utils.data import AlignedData
 
 
 class Cmpt_Float[ItemT](Component[ItemT]):
-    '''
+    """
     对 float 的 Component 封装
-    '''
+    """
     def __init__(self, default_value, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._value = default_value

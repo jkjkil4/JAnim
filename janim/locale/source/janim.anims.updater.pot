@@ -1,0 +1,35 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-12-24 14:30+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: janim/anims/updater.py:364
+#, python-brace-format
+msgid "There is no updatable method named {name} in {cmpt}"
+msgstr ""
+
+#: janim/anims/updater.py:387
+#, python-brace-format
+msgid "{item} has no component or updatable method named {name}"
+msgstr ""
+
+#: janim/anims/updater.py:526
+#, python-brace-format
+msgid ""
+"The function passed to ItemUpdater must return an item, but got {ret} "
+"instead, defined in {file}:{lineno}"
+msgstr ""

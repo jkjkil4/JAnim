@@ -9,19 +9,19 @@ from PySide6.QtGui import QColor, QMouseEvent, QPainter, QPaintEvent
 
 from janim.items.item import Item
 from janim.items.points import Points
-from janim.locale.i18n import get_local_strings
+from janim.locale.i18n import get_translator
 
 if TYPE_CHECKING:
     from janim.camera.camera_info import CameraInfo
     from janim.gui.anim_viewer import AnimViewer
 
-_ = get_local_strings('selector')
+_ = get_translator('janim.gui.functions.selector')
 
 
 class Selector(QObject):
-    '''
+    """
     子物件选择工具
-    '''
+    """
     @dataclass
     class SelectedItem:
         item: Item
@@ -178,9 +178,9 @@ class Selector(QObject):
             self.selected_children.remove(child)
 
     def compute_cursor_flag(self) -> bool:
-        '''
+        """
         ``True`` 表示鼠标在画面上半部，反之在下半部
-        '''
+        """
         glw = self.viewer.glw
         cursor_pos = glw.mapFromGlobal(glw.cursor().pos())
         return cursor_pos.y() < glw.height() / 2

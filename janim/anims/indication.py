@@ -27,7 +27,8 @@ from janim.utils.rate_functions import RateFunc, smooth, there_and_back, wiggle
 
 
 class FocusOn(DataUpdater[Dot]):
-    '''展现一个逐渐聚焦到指定物件的圆形缩小动画'''
+    """展现一个逐渐聚焦到指定物件的圆形缩小动画"""
+
     label_color = C_LABEL_ANIM_INDICATION
 
     def __init__(
@@ -68,7 +69,8 @@ class FocusOn(DataUpdater[Dot]):
 
 
 class Indicate(DataUpdater):
-    '''展现指定物件以放大为黄色后回到原状的动画'''
+    """展现指定物件以放大为黄色后回到原状的动画"""
+
     label_color = C_LABEL_ANIM_INDICATION
 
     def __init__(
@@ -114,12 +116,13 @@ class Indicate(DataUpdater):
 
 
 class CircleIndicate(DataUpdater[Circle]):
-    '''
+    """
     展现以圆圈在指定物件周围淡入淡出进行强调的动画
 
     - 可以使用 ``rate_func=there_and_back_with_pause`` 使得动画中间停留一段时间
     - 可以传入 ``scale`` 指定缩放，例如 ``scale=1.2`` 即缩小的同时淡入，并且放大的同时淡出
-    '''
+    """
+
     label_color = C_LABEL_ANIM_INDICATION
 
     def __init__(
@@ -156,9 +159,10 @@ class CircleIndicate(DataUpdater[Circle]):
 
 
 class ShowPassingFlash(ShowPartial):
-    '''
+    """
     基于 ``time_width`` 显示物件的一小段
-    '''
+    """
+
     label_color = C_LABEL_ANIM_ABSTRACT
 
     def __init__(
@@ -187,7 +191,8 @@ class ShowPassingFlash(ShowPartial):
 
 
 class ShowCreationThenDestruction(ShowPassingFlash):
-    '''展现创建动画后展现销毁动画'''
+    """展现创建动画后展现销毁动画"""
+
     label_color = C_LABEL_ANIM_ABSTRACT
 
     def __init__(
@@ -202,7 +207,8 @@ class ShowCreationThenDestruction(ShowPassingFlash):
 
 
 class ShowCreationThenFadeOut(Succession):
-    '''展现创建动画后展现淡出动画'''
+    """展现创建动画后展现淡出动画"""
+
     label_color = C_LABEL_ANIM_ABSTRACT
 
     def __init__(
@@ -222,10 +228,11 @@ class ShowCreationThenFadeOut(Succession):
 
 
 class AnimationOnSurroundingRect(AnimGroup):
-    '''
+    """
     :class:`ShowPassingFlash`、:class:`ShowCreationThenDestructionAround`、
     :class:`ShowCreationThenFadeAround` 的基类
-    '''
+    """
+
     label_color = C_LABEL_ANIM_ABSTRACT
 
     def __init__(
@@ -269,7 +276,8 @@ class AnimationOnSurroundingRect(AnimGroup):
 
 
 class ShowPassingFlashAround(AnimationOnSurroundingRect):
-    '''不完整线条在指定物件周围环绕一圈的动画'''
+    """不完整线条在指定物件周围环绕一圈的动画"""
+
     label_color = C_LABEL_ANIM_INDICATION
 
     def __init__(self, item: Points, **kwargs) -> None:
@@ -277,7 +285,8 @@ class ShowPassingFlashAround(AnimationOnSurroundingRect):
 
 
 class ShowCreationThenDestructionAround(AnimationOnSurroundingRect):
-    '''在指定物件周围先创建出完整线条再销毁线条的动画'''
+    """在指定物件周围先创建出完整线条再销毁线条的动画"""
+
     label_color = C_LABEL_ANIM_INDICATION
 
     def __init__(self, item: Points, **kwargs) -> None:
@@ -285,7 +294,8 @@ class ShowCreationThenDestructionAround(AnimationOnSurroundingRect):
 
 
 class ShowCreationThenFadeAround(AnimationOnSurroundingRect):
-    '''在指定物件周围先创建出完整线条再淡出线条的动画'''
+    """在指定物件周围先创建出完整线条再淡出线条的动画"""
+
     label_color = C_LABEL_ANIM_INDICATION
 
     def __init__(self, item: Points, **kwargs) -> None:
@@ -300,7 +310,8 @@ def flash_rate_function(t: float, smooth_ratio=0.6) -> float:
 
 
 class Flash(ShowCreationThenDestruction):
-    '''展现以放射状线条进行强调的动画'''
+    """展现以放射状线条进行强调的动画"""
+
     label_color = C_LABEL_ANIM_INDICATION
 
     def __init__(

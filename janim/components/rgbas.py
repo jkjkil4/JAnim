@@ -18,9 +18,9 @@ DEFAULT_RGBAS_ARRAY.data = np.full((1, 4), 1)
 
 
 class Cmpt_Rgbas[ItemT](Component[ItemT]):
-    '''
+    """
     颜色组件
-    '''
+    """
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -70,9 +70,9 @@ class Cmpt_Rgbas[ItemT](Component[ItemT]):
 
     @staticmethod
     def format_rgbas(rgbas: RgbaArray) -> np.ndarray:
-        '''
+        """
         将传入值转换为数值数组
-        '''
+        """
         if not isinstance(rgbas, np.ndarray):
             rgbas = np.array(rgbas)
 
@@ -82,10 +82,10 @@ class Cmpt_Rgbas[ItemT](Component[ItemT]):
 
     @staticmethod
     def format_colors(colors: ColorArray) -> np.ndarray:
-        '''
+        """
         将 ``ColorArray`` （每个元素有可能是 字符串、``[r, g, b]`` ）
         格式化为元素仅有 ``[r, g, b]`` 的数值数组的格式
-        '''
+        """
         if not isinstance(colors, np.ndarray):
             colors = np.array([
                 color
@@ -101,9 +101,9 @@ class Cmpt_Rgbas[ItemT](Component[ItemT]):
 
     @staticmethod
     def format_color(color: JAnimColor) -> np.ndarray:
-        '''
+        """
         将 字符串、``[r, g, b]`` 等统一为 ``[r, g, b]`` 数值数组的格式
-        '''
+        """
         rgb = np.array(
             color
             if isinstance(color, Iterable) and not isinstance(color, str)
@@ -116,9 +116,9 @@ class Cmpt_Rgbas[ItemT](Component[ItemT]):
 
     @staticmethod
     def format_alphas(alphas: AlphaArray) -> np.ndarray:
-        '''
+        """
         将传入值转为数值数组
-        '''
+        """
         if not isinstance(alphas, np.ndarray):
             alphas = np.array(alphas)
 
@@ -126,9 +126,9 @@ class Cmpt_Rgbas[ItemT](Component[ItemT]):
         return alphas
 
     def set_rgbas(self, rgbas: RgbaArray) -> Self:
-        '''
+        """
         直接设置 rgba 数据
-        '''
+        """
         self._rgbas.data = rgbas
         return self
 
@@ -146,7 +146,7 @@ class Cmpt_Rgbas[ItemT](Component[ItemT]):
         *,
         root_only: bool = False,
     ) -> Self:
-        '''
+        """
         - ``colors`` 表示传入的 ``RGB`` 颜色数据，可以是单个颜色也可以颜色数组
           （对于单个数据，支持 ``'#FF0000'`` ``'red'`` ``[1, 0, 0.5]`` 的表示）
         - ``alphas`` 表示传入的透明度数据，可以是单个数也可以是一个数组
@@ -157,7 +157,7 @@ class Cmpt_Rgbas[ItemT](Component[ItemT]):
 
         - 当 ``colors`` 为四分量 ``RGBA`` 颜色数据时，
           则同时表示了 ``colors`` 和 ``alphas`` 二者，因此不能再传入 ``alphas`` 参数
-        '''
+        """
         if color is None and alpha is None:
             return self
 
@@ -201,9 +201,9 @@ class Cmpt_Rgbas[ItemT](Component[ItemT]):
         return self
 
     def clear(self) -> Self:
-        '''
+        """
         将颜色数据重置为默认值
-        '''
+        """
         self.set(DEFAULT_RGBAS_ARRAY.data)
         return self
 
@@ -219,9 +219,9 @@ class Cmpt_Rgbas[ItemT](Component[ItemT]):
         return len(self.get())
 
     def apart_alpha(self, n: int) -> Self:
-        '''
+        """
         对每一个颜色数据应用 :func:`~.apart_alpha`
-        '''
+        """
         rgbas = self.get().copy()
         for i in range(len(rgbas)):
             rgbas[i, 3] = apart_alpha(rgbas[i, 3], n)
@@ -233,9 +233,9 @@ class Cmpt_Rgbas[ItemT](Component[ItemT]):
             self.fade(factor * p.alpha, root_only=root_only)
     )
     def fade(self, factor: float, *, root_only: bool = False) -> Self:
-        '''
+        """
         淡化颜色，``factor`` 是 0~1 的值，例如 0 没有效果，0.5 淡化一半，1 完全淡化（变得不可见）
-        '''
+        """
         for cmpt in self.walk_same_cmpt_of_self_and_descendants_without_mock(root_only):
             rgbas = cmpt.get().copy()
             rgbas[:, 3] *= 1 - factor
@@ -254,9 +254,9 @@ class Cmpt_Rgbas[ItemT](Component[ItemT]):
         *,
         root_only: bool = False
     ) -> Self:
-        '''
+        """
         混合颜色，默认得到与 ``color`` 混合的中间色
-        '''
+        """
         for cmpt in self.walk_same_cmpt_of_self_and_descendants_without_mock(root_only):
             rgbas = cmpt.get().copy()
             rgbas[:, :3] *= 1 - factor
@@ -276,9 +276,9 @@ class Cmpt_Rgbas[ItemT](Component[ItemT]):
         *,
         root_only: bool = False
     ) -> Self:
-        '''
+        """
         混合透明度，默认得到与 ``alpha`` 混合的中间色
-        '''
+        """
         for cmpt in self.walk_same_cmpt_of_self_and_descendants_without_mock(root_only):
             rgbas = cmpt.get().copy()
             rgbas[:, 3] *= 1 - factor
@@ -291,9 +291,9 @@ class Cmpt_Rgbas[ItemT](Component[ItemT]):
 
 
 def merge_alpha(alpha: float, n: int) -> float:
-    '''
+    """
     计算透明度 ``alpha`` 在重叠 ``n`` 次混合后的透明度
-    '''
+    """
     result = alpha
     for _ in range(n - 1):
         result = 1 - (1 - result) * (1 - alpha)
@@ -302,11 +302,11 @@ def merge_alpha(alpha: float, n: int) -> float:
 
 
 def apart_alpha(alpha: float, n: int, *, eps: float = 1e-3) -> float:
-    '''
+    """
     将透明度分离为 ``n`` 份，使得这 ``n`` 份混合后仍然表现为原来的透明度
 
     使得在对齐时产生的重复部分能够更好地渲染
-    '''
+    """
     if alpha >= 1:
         return 1
     if alpha <= 0:

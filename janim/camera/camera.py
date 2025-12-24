@@ -31,7 +31,7 @@ class Cmpt_CameraPoints[ItemT](Cmpt_Points[ItemT]):
         fov: float | None = None,
         orientation: Quaternion | None = None
     ) -> Self:
-        '''
+        """
         设置摄像机位置以及有关属性
 
         -   ``points``: 点集，必须只有一个点，表示摄像机中心位置
@@ -47,7 +47,7 @@ class Cmpt_CameraPoints[ItemT](Cmpt_Points[ItemT]):
         -   ``orientation``: 摄像机朝向，四元数表示
 
             另见 :meth:`~.Cmpt_CameraPoints.rotate`
-        '''
+        """
         if points is not None:
             points = np.asarray(points)
             assert points.ndim == 2
@@ -65,9 +65,9 @@ class Cmpt_CameraPoints[ItemT](Cmpt_Points[ItemT]):
         return self
 
     def reset(self) -> Self:
-        '''
+        """
         将摄像机几何属性设置为初始状态
-        '''
+        """
         self.orig_height = Config.get.frame_height
 
         self.set([ORIGIN])
@@ -152,9 +152,9 @@ class Cmpt_CameraPoints[ItemT](Cmpt_Points[ItemT]):
         about_edge: Vect = ORIGIN,
         **kwargs
     ) -> Self:
-        '''
+        """
         将摄像机缩放指定倍数
-        '''
+        """
         if about_point is not None or about_edge is not ORIGIN:
             if about_point is None:
                 rot_mat_T = self.orientation.rotation_matrix.T
@@ -178,12 +178,12 @@ class Cmpt_CameraPoints[ItemT](Cmpt_Points[ItemT]):
         absolute: bool = True,
         **kwargs
     ) -> Self:
-        '''
+        """
         将摄像机绕 ``axis`` 轴进行旋转
 
         - 默认 ``absolute=True`` 表示绕全局坐标系旋转
         - ``absolute=False`` 表示绕相机自身坐标系旋转，并且此时 ``about_point`` 参数无效
-        '''
+        """
         q_rot = Quaternion(axis=axis, angle=angle)
         if absolute:
             super().rotate(angle, axis=axis, **kwargs)
@@ -197,9 +197,9 @@ class Cmpt_CameraPoints[ItemT](Cmpt_Points[ItemT]):
     @Cmpt_Points.set.self_refresh
     @refresh.register
     def info(self) -> CameraInfo:
-        '''
+        """
         摄像机的几何属性
-        '''
+        """
         rot_mat_T = self.orientation.rotation_matrix.T
         width, height = self.size
         return CameraInfo(

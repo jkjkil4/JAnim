@@ -8,7 +8,7 @@ import numpy as np
 
 from janim.anims.animation import Animation
 from janim.exception import EXITCODE_FFMPEG_NOT_FOUND, ExitException
-from janim.locale.i18n import get_local_strings
+from janim.locale.i18n import get_translator
 from janim.logger import log
 from janim.render.base import Renderer
 from janim.render.program import get_program_from_file_prefix
@@ -17,7 +17,7 @@ from janim.utils.config import Config
 if TYPE_CHECKING:
     from janim.items.image_item import Video, VideoInfo
 
-_ = get_local_strings('renderer_video')
+_ = get_translator('janim.render.renderer_video')
 
 
 class VideoRenderer(Renderer):

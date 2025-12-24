@@ -23,9 +23,9 @@ DEFAULT_DASH_LENGTH = 0.1
 
 
 class Cmpt_VPoints_LineImpl[ItemT](Cmpt_VPoints[ItemT]):
-    '''
+    """
     在线段中，对 :class:`~.Cmpt_VPoints` 的进一步实现
-    '''
+    """
     def copy(self) -> Self:
         copy_cmpt = super().copy()
         copy_cmpt.start = self.start.copy()
@@ -217,14 +217,14 @@ class Cmpt_VPoints_LineImpl[ItemT](Cmpt_VPoints[ItemT]):
 
 
 class Line(VItem):
-    '''
+    """
     线段
 
     传入 ``start``, ``end`` 为线段起点终点
 
     - ``buff``: 线段两端的空余量，默认为 ``0``
     - ``path_arc``: 表示线段的弯曲角度
-    '''
+    """
     points = CmptInfo(Cmpt_VPoints_LineImpl[Self])
 
     def __init__(
@@ -243,9 +243,9 @@ class Line(VItem):
 
 
 class Cmpt_VPoints_DashedLineImpl[ItemT](Cmpt_VPoints_LineImpl[ItemT], impl=True):
-    '''
+    """
     在虚线中，对 :class:`~.Cmpt_VPoints` 的进一步实现
-    '''
+    """
     def get_start(self) -> np.ndarray:
         assert self.bind is not None
         sub = self.bind.at_item.children[0]
@@ -260,12 +260,12 @@ class Cmpt_VPoints_DashedLineImpl[ItemT](Cmpt_VPoints_LineImpl[ItemT], impl=True
 
 
 class DashedLine(Line, Group[VItem]):
-    '''
+    """
     虚线
 
     - ``dash_length``: 每段虚线的长度
     - ``dashed_ratio``: 虚线段的占比，默认为 ``0.5``，即虚线段与空白段长度相等，但可能因为虚线段描边存在粗细而导致视觉上空白长度略小
-    '''
+    """
     def __init__(
         self,
         start: Vect | Points = LEFT,
@@ -287,9 +287,9 @@ class DashedLine(Line, Group[VItem]):
         self.add(*dashes)
 
     def _calculate_num_dashes(self) -> int:
-        '''
+        """
         基于线段长度计算所需虚线段的数量
-        '''
+        """
         return max(
             2,
             int(np.ceil((self.points.length / self.dash_length) * self.dashed_ratio)),
@@ -297,13 +297,13 @@ class DashedLine(Line, Group[VItem]):
 
 
 class TangentLine(Line):
-    '''
+    """
     切线
 
     - 传入 ``vitem`` 表示需要做切线的物件，``alpha`` 表示切点在 ``vitem`` 上的比例
     - ``length``: 切线长度
     - ``d_alpha``: 精细程度，越小越精细（默认 ``1e-6``）
-    '''
+    """
     def __init__(
         self,
         vitem: VItem,
@@ -320,12 +320,12 @@ class TangentLine(Line):
 
 
 class Elbow(MarkedItem, VItem):
-    '''
+    """
     折线（一般用作直角符号）
 
     - ``width`` 表示宽度
     - ``angle`` 表示角度
-    '''
+    """
     def __init__(
         self,
         width: float = 0.2,
@@ -341,7 +341,7 @@ class Elbow(MarkedItem, VItem):
 
 # borrowed from https://github.com/ManimCommunity/manim/blob/main/manim/mobject/geometry/line.py
 class Angle(MarkedItem, VItem):
-    '''
+    """
     一个圆弧或直角标记对象，用于表示两条线之间的夹角
 
     - ``radius``: 圆弧的半径
@@ -364,7 +364,7 @@ class Angle(MarkedItem, VItem):
     - ``dot_color``: 点的颜色
 
     - ``elbow``: 是否使用直角标记的形式，参考 :class:`RightAngle` 类
-    '''
+    """
     def __init__(
         self,
         line1: Line,
@@ -463,35 +463,35 @@ class Angle(MarkedItem, VItem):
         self.mark.set_points([inter])
 
     def get_lines(self) -> Group:
-        '''
+        """
         返回一个包含构成该角的两个 :class:`~.Line` 的 :class:`~.Group` 对象
-        '''
+        """
         return Group(*self.lines)
 
     def get_value(self, degrees: bool = False) -> float:
-        '''
+        """
         获取该角的数值
 
         - ``degrees``: 是否以角度的形式返回，默认为 ``False``，即弧度制
-        '''
+        """
         return self.angle_value / DEGREES if degrees else self.angle_value
 
     @staticmethod
     def from_three_points(
         A: Vect, B: Vect, C: Vect, **kwargs
     ) -> Angle:
-        '''
+        """
         由三点构造一个角，表示 ∠ABC，点 ``B`` 为角的顶点
-        '''
+        """
         return Angle(Line(B, A), Line(B, C), **kwargs)
 
 
 class RightAngle(Angle):
-    '''
+    """
     一个用于表示直角的 :class:`Elbow` 样式的对象（L 形折角）
 
     - ``length``: 直角标记的边长
-    '''
+    """
     def __init__(
         self,
         line1: Line,

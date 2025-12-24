@@ -5,11 +5,11 @@ from pathlib import Path
 import moderngl as mgl
 
 from janim.exception import ShaderInjectionNotFoundError
-from janim.locale.i18n import get_local_strings
+from janim.locale.i18n import get_translator
 from janim.utils.file_ops import (find_file, find_file_in_path, get_janim_dir,
                                   readall)
 
-_ = get_local_strings('shader')
+_ = get_translator('janim.render.shader')
 
 
 def read_shader(file_path: str) -> str:
@@ -72,9 +72,9 @@ def idx_to_name(idx: int) -> str | None:
 
 
 def convert_error_nameidx_to_name(error: mgl.Error) -> None:
-    '''
+    """
     将 ModernGL 报错信息中的 nameidx 转换为 name
-    '''
+    """
     if len(error.args) != 1:
         return
 

@@ -1,8 +1,8 @@
 from janim import __version__
 from janim.logger import log
-from janim.locale.i18n import get_local_strings
+from janim.locale.i18n import get_translator
 
-_ = get_local_strings('deprecation')
+_ = get_translator('janim.utils.deprecation')
 
 type VersionTuple = tuple[int, int]
 

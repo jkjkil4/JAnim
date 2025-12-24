@@ -1,0 +1,54 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-12-24 19:40+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: janim/gui/output/__init__.py:27
+msgid "Export(&E)"
+msgstr ""
+
+#: janim/gui/output/__init__.py:31
+msgid "Capture(&C)"
+msgstr ""
+
+#: janim/gui/output/__init__.py:69
+#, python-brace-format
+msgid "Frame t={t:.2f} saved to \"{file_path}\""
+msgstr ""
+
+#: janim/gui/output/__init__.py:71 janim/gui/output/__init__.py:92
+#: janim/gui/output/__init__.py:133
+msgid "Note"
+msgstr ""
+
+#: janim/gui/output/__init__.py:72
+#, python-brace-format
+msgid "Captured to {file_path}"
+msgstr ""
+
+#: janim/gui/output/__init__.py:93
+msgid "Output will start shortly. Please check the console for information."
+msgstr ""
+
+#: janim/gui/output/__init__.py:126
+msgid "Exporting was cancelled"
+msgstr ""
+
+#: janim/gui/output/__init__.py:134
+#, python-brace-format
+msgid "Output to {file_path} has been completed."
+msgstr ""
