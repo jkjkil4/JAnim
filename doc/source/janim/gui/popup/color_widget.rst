@@ -1,7 +1,7 @@
-audio_player
+color_widget
 ============
 
-.. automodule:: janim.gui.audio_player
+.. automodule:: janim.gui.popup.color_widget
    :members:
    :undoc-members:
    :show-inheritance:
