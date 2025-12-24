@@ -23,7 +23,6 @@ import sys
 import time
 import traceback
 from bisect import bisect_right
-from contextlib import contextmanager, nullcontext
 from enum import StrEnum
 from types import ModuleType
 from typing import Any
@@ -40,20 +39,18 @@ from janim.anims.timeline import BuiltTimeline, Timeline
 from janim.exception import ExitException
 from janim.gui.application import Application
 from janim.gui.fixed_ratio_widget import FixedRatioWidget
-from janim.gui.functions.capture_dialog import CaptureDialog
-from janim.gui.functions.export_dialog import ExportDialog
 from janim.gui.functions.selector import Selector
 from janim.gui.glwidget import GLWidget
+from janim.gui.output import connect_to_output_slots, setup_output_actions
 from janim.gui.popup import setup_popup_actions
 from janim.gui.timeline_view import TimelineView
 from janim.gui.utils.audio_player import AudioPlayer
 from janim.gui.utils.precise_timer import PreciseTimerWithFPS
 from janim.locale.i18n import get_translator
 from janim.logger import log
-from janim.render.writer import AudioWriter, VideoWriter, merge_video_and_audio
-from janim.utils.config import Config, cli_config
+from janim.utils.config import Config
 from janim.utils.file_ops import (STDIN_FILENAME, get_janim_dir,
-                                  getfile_or_stdin, open_file)
+                                  getfile_or_stdin)
 from janim.utils.reload import reset_reloads_state
 
 _ = get_translator('janim.gui.anim_viewer')
@@ -208,13 +205,7 @@ class AnimViewer(QMainWindow):
 
         menu_file.addSeparator()
 
-        self.action_export = menu_file.addAction(_('Export(&E)'))
-        self.action_export.setShortcut('Ctrl+S')
-        self.action_export.setAutoRepeat(False)
-
-        self.action_capture = menu_file.addAction(_('Capture(&C)'))
-        self.action_capture.setShortcut('Ctrl+Alt+S')
-        self.action_capture.setAutoRepeat(False)
+        setup_output_actions(self, menu_file)
 
         menu_file.addSeparator()
 
@@ -421,8 +412,6 @@ class AnimViewer(QMainWindow):
 
     def setup_slots(self) -> None:
         self.action_rebuild.triggered.connect(self.on_rebuild_triggered)
-        self.action_export.triggered.connect(self.on_export_clicked)
-        self.action_capture.triggered.connect(self.on_capture_clicked)
         self.action_set_in_point.triggered.connect(self.timeline_view.set_in_point)
         self.action_set_out_point.triggered.connect(self.timeline_view.set_out_point)
         self.action_reset_inout_point.triggered.connect(self.timeline_view.reset_inout_point)
@@ -441,8 +430,7 @@ class AnimViewer(QMainWindow):
         self.glw.error_occurred.connect(self.on_error_occurred)
         self.name_edit.editingFinished.connect(self.on_name_edit_finished)
         self.time_label.clicked.connect(self.on_copy_time_triggered)
-        self.btn_capture.clicked.connect(self.on_capture_clicked)
-        self.btn_export.clicked.connect(self.on_export_clicked)
+        connect_to_output_slots(self, self.btn_capture.clicked, self.btn_export.clicked)
 
     # region slots-menu
 
@@ -694,109 +682,6 @@ class AnimViewer(QMainWindow):
             return
 
         self.set_built_and_handle_states(module, built, timeline_name)
-
-    def on_capture_clicked(self) -> None:
-        self.play_timer.stop()
-
-        dialog = CaptureDialog(self.built, self)
-        ret = dialog.exec()
-        if not ret:
-            return
-
-        file_path = dialog.file_path()
-        transparent = dialog.transparent()
-
-        ret = False
-        t = self.timeline_view.progress_to_time(self.timeline_view.progress())
-        try:
-            with self.change_export_size(dialog.pixel_size()) if dialog.has_size_set() else nullcontext():
-                # 这里每次截图都重新构建一下，因为如果复用原来的对象会使得和 GUI 的上下文冲突
-                built = self.built.timeline.__class__().build()
-                built.capture(t, transparent=transparent, ctx=self.glw.ctx).save(file_path)
-
-        except Exception as e:
-            if not isinstance(e, ExitException):
-                traceback.print_exc()
-        else:
-            ret = True
-
-        if ret:
-            log.info(_('Frame t={t:.2f} saved to "{file_path}"').format(t=t, file_path=file_path))
-            QMessageBox.information(self,
-                                    _('Note'),
-                                    _('Captured to {file_path}').format(file_path=file_path))
-            if dialog.open():
-                open_file(file_path)
-
-    def on_export_clicked(self) -> None:
-        self.play_timer.stop()
-
-        dialog = ExportDialog(self.built, self.timeline_view.inout_point is not None, self)
-        ret = dialog.exec()
-        if not ret:
-            return
-
-        file_path = dialog.file_path()
-        cli_config.fps = dialog.fps()
-        using_inout_point = dialog.using_inout_point()
-        hwaccel = dialog.hwaccel()
-        video_with_audio = (self.built.timeline.has_audio_for_all() and not file_path.endswith('gif'))
-
-        QMessageBox.information(self,
-                                _('Note'),
-                                _('Output will start shortly. Please check the console for information.'))
-        self.hide()
-        QApplication.processEvents()
-        ret = False
-        try:
-            with self.change_export_size(dialog.pixel_size()) if dialog.has_size_set() else nullcontext():
-                built = self.built.timeline.__class__().build()
-
-                args = [file_path]
-                if using_inout_point:
-                    args += self.timeline_view.inout_point
-
-                if video_with_audio:
-                    video_writer = VideoWriter(built, ctx=self.glw.ctx)
-                    video_writer.write_all(*args, hwaccel=hwaccel, _keep_temp=True)
-
-                    audio_file_path = os.path.splitext(file_path)[0] + '.mp3'
-
-                    audio_writer = AudioWriter(built)
-                    audio_writer.write_all(audio_file_path, _keep_temp=True)
-
-                    merge_video_and_audio(built.cfg.ffmpeg_bin,
-                                          video_writer.temp_file_path,
-                                          audio_writer.temp_file_path,
-                                          video_writer.final_file_path)
-                else:
-                    video_writer = VideoWriter(built, ctx=self.glw.ctx)
-                    video_writer.write_all(*args, hwaccel=hwaccel)
-
-        except Exception as e:
-            if not isinstance(e, ExitException):
-                traceback.print_exc()
-        except KeyboardInterrupt:
-            log.warning(_('Exporting was cancelled'))
-        else:
-            ret = True
-
-        self.show()
-        if ret:
-            QMessageBox.information(self,
-                                    _('Note'),
-                                    _('Output to {file_path} has been completed.').format(file_path=file_path))
-            if dialog.open():
-                open_file(file_path)
-
-    @contextmanager
-    def change_export_size(self, size: tuple[int, int]):
-        old_size = cli_config.pixel_width, cli_config.pixel_height
-        cli_config.pixel_width, cli_config.pixel_height = size
-        try:
-            yield
-        finally:
-            cli_config.pixel_width, cli_config.pixel_height = old_size
 
     def on_clear_font_cache_triggered(self) -> None:
         import janim.utils.font.database as fontdb
