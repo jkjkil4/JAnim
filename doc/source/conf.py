@@ -53,6 +53,9 @@ html_css_files = [
     'janim_box.css',
     'random_choice.css'
 ]
+html_js_files = [
+    'auto-scroll-current.js'
+]
 html_favicon = '_static/favicon.ico'
 
 sys.path.insert(0, os.path.abspath('../..'))
