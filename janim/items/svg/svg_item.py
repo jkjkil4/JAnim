@@ -16,14 +16,14 @@ from janim.items.item import Item
 from janim.items.points import Group
 from janim.items.text import BasepointVItem, Text, TextLine
 from janim.items.vitem import VItem
-from janim.locale.i18n import get_local_strings
+from janim.locale.i18n import get_translator
 from janim.logger import log
 from janim.utils.bezier import PathBuilder, quadratic_bezier_points_for_arc
 from janim.utils.config import Config
 from janim.utils.file_ops import find_file
 from janim.utils.space_ops import rotation_about_z
 
-_ = get_local_strings('svg_item')
+_ = get_translator('janim.items.svg.svg_item')
 
 
 type SVGElemItem = VItem | BasepointVItem | TextLine

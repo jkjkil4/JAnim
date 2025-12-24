@@ -20,7 +20,7 @@ def get_lang() -> str:
     return locale.getdefaultlocale()[0] or ''
 
 
-def get_local_strings(domain: str):
+def get_translator(domain: str):
     lang_code = get_lang()
     t = gettext.translation(domain,
                             os.path.join(get_janim_dir(), 'locale'),

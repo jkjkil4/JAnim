@@ -14,7 +14,7 @@ from janim.components.vpoints import Cmpt_VPoints
 from janim.constants import PI
 from janim.items.item import Item, mockable
 from janim.items.points import Group, Points
-from janim.locale.i18n import get_local_strings
+from janim.locale.i18n import get_translator
 from janim.render.renderer_vitem import VItemRenderer
 from janim.typing import Alpha, AlphaArray, ColorArray, JAnimColor, Vect
 from janim.utils.bezier import (bezier, inverse_interpolate,
@@ -23,7 +23,7 @@ from janim.utils.data import AlignedData
 from janim.utils.simple_functions import clip
 from janim.utils.space_ops import get_norm
 
-_ = get_local_strings('vitem')
+_ = get_translator('janim.items.vitem')
 
 DEFAULT_STROKE_RADIUS = 0.02
 

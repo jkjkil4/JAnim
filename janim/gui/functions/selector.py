@@ -9,13 +9,13 @@ from PySide6.QtGui import QColor, QMouseEvent, QPainter, QPaintEvent
 
 from janim.items.item import Item
 from janim.items.points import Points
-from janim.locale.i18n import get_local_strings
+from janim.locale.i18n import get_translator
 
 if TYPE_CHECKING:
     from janim.camera.camera_info import CameraInfo
     from janim.gui.anim_viewer import AnimViewer
 
-_ = get_local_strings('selector')
+_ = get_translator('janim.gui.functions.selector')
 
 
 class Selector(QObject):

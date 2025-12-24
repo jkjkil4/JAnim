@@ -19,7 +19,7 @@ from janim.constants import DL, DR, OUT, UL, UR
 from janim.exception import (EXITCODE_FFMPEG_NOT_FOUND, EXITCODE_FFPROBE_ERROR,
                              ExitException)
 from janim.items.points import Points
-from janim.locale.i18n import get_local_strings
+from janim.locale.i18n import get_translator
 from janim.logger import log
 from janim.render.renderer_imageitem import ImageItemRenderer
 from janim.render.renderer_video import VideoRenderer
@@ -31,7 +31,7 @@ from janim.utils.file_ops import find_file
 from janim.utils.simple_functions import clip
 from janim.utils.space_ops import cross, det, get_norm, z_to_vector
 
-_ = get_local_strings('image_item')
+_ = get_translator('janim.items.image_item')
 
 
 class ImageItem(Points):

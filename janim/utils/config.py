@@ -12,11 +12,11 @@ import psutil
 from colour import Color
 
 from janim.constants import DEFAULT_ITEM_TO_EDGE_BUFF, DOWN, LEFT, RIGHT, UP
-from janim.locale.i18n import get_local_strings
+from janim.locale.i18n import get_translator
 from janim.typing import Vect
 from janim.utils.file_ops import guarantee_existence
 
-_ = get_local_strings('config')
+_ = get_translator('janim.utils.config')
 
 config_ctx_var: ContextVar[list[Config]] = ContextVar('config_ctx_var')
 

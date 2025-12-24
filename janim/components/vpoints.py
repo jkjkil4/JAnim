@@ -12,7 +12,7 @@ from janim.components.points import Cmpt_Points, PointsFn
 from janim.constants import DEGREES, NAN_POINT, ORIGIN, OUT, RIGHT, UP
 from janim.exception import PointError
 from janim.items.item import Item, mockable
-from janim.locale.i18n import get_local_strings
+from janim.locale.i18n import get_translator
 from janim.logger import log
 from janim.typing import Vect, VectArray
 from janim.utils.bezier import (PathBuilder,
@@ -24,7 +24,7 @@ from janim.utils.data import AlignedData
 from janim.utils.space_ops import (get_norm, get_unit_normal, normalize,
                                    rotation_between_vectors)
 
-_ = get_local_strings('vpoints')
+_ = get_translator('janim.components.vpoints')
 
 
 class Cmpt_VPoints[ItemT](Cmpt_Points[ItemT], impl=True):

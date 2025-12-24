@@ -9,7 +9,7 @@ from typing import TYPE_CHECKING, Callable, Iterable, Self, overload
 from janim.constants import C_LABEL_ANIM_DEFAULT, DEFAULT_DURATION, FOREVER
 from janim.exception import AnimationError
 from janim.items.item import Item
-from janim.locale.i18n import get_local_strings
+from janim.locale.i18n import get_translator
 from janim.typing import ForeverType
 from janim.utils.rate_functions import RateFunc, linear, smooth
 
@@ -17,7 +17,7 @@ if TYPE_CHECKING:
     from janim.anims.anim_stack import AnimStack
     from janim.anims.composition import AnimGroup
 
-_ = get_local_strings('animation')
+_ = get_translator('janim.anims.animation')
 
 ALIGN_EPSILON = 1e-6
 

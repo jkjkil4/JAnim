@@ -36,7 +36,7 @@ from janim.items.points import Group
 from janim.items.shape_matchers import SurroundingRect
 from janim.items.svg.typst import TypstText
 from janim.items.text import Text
-from janim.locale.i18n import get_local_strings
+from janim.locale.i18n import get_translator
 from janim.logger import log
 from janim.render.base import (RenderData, Renderer, apply_blend_flags,
                                create_context_430_or_330)
@@ -51,7 +51,7 @@ from janim.utils.iterables import resize_preserving_order
 from janim.utils.simple_functions import clip
 from janim.utils.space_ops import normalize
 
-_ = get_local_strings('timeline')
+_ = get_translator('janim.anims.timeline')
 
 type RenderCallsFn = Callable[[], list[tuple[Item, Callable[[Item], None]]]]
 

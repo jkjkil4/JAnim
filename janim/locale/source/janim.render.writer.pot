@@ -1,0 +1,80 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-12-24 14:30+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: janim/render/writer.py:101
+#, python-brace-format
+msgid "Writing video \"{name}\""
+msgstr ""
+
+#: janim/render/writer.py:202
+#, python-brace-format
+msgid "Finished writing video \"{name}\" in {elapsed:.2f} s"
+msgstr ""
+
+#: janim/render/writer.py:208
+#, python-brace-format
+msgid "File saved to \"{file_path}\" (video only)"
+msgstr ""
+
+#: janim/render/writer.py:276
+msgid "No hardware encoder found"
+msgstr ""
+
+#: janim/render/writer.py:279
+#, python-brace-format
+msgid "Using {encoder} for encoding"
+msgstr ""
+
+#: janim/render/writer.py:295
+msgid ""
+"Unable to output video. Please install ffmpeg and add it to the environment "
+"variables."
+msgstr ""
+
+#: janim/render/writer.py:311
+#, python-brace-format
+msgid "Writing audio of \"{name}\""
+msgstr ""
+
+#: janim/render/writer.py:341
+#, python-brace-format
+msgid "Finished writing audio of \"{name}\" in {elapsed:.2f} s"
+msgstr ""
+
+#: janim/render/writer.py:347
+#, python-brace-format
+msgid "File saved to \"{file_path}\""
+msgstr ""
+
+#: janim/render/writer.py:370
+msgid ""
+"Unable to output audio. Please install ffmpeg and add it to the environment "
+"variables."
+msgstr ""
+
+#: janim/render/writer.py:406
+msgid ""
+"Unable to merge video. Please install ffmpeg and add it to the environment "
+"variables."
+msgstr ""
+
+#: janim/render/writer.py:419
+#, python-brace-format
+msgid "File saved to \"{file_path}\" (merged)"
+msgstr ""

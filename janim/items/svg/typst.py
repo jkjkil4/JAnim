@@ -13,13 +13,13 @@ from janim.exception import (InvalidOrdinalError, InvalidTypstVarError,
 from janim.items.points import Group, Points
 from janim.items.svg.svg_item import BasepointVItem, SVGElemItem, SVGItem
 from janim.items.vitem import VItem
-from janim.locale.i18n import get_local_strings
+from janim.locale.i18n import get_translator
 from janim.utils.config import Config
 from janim.utils.iterables import flatten
 from janim.utils.space_ops import rotation_between_vectors
 from janim.utils.typst_compile import compile_typst
 
-_ = get_local_strings('typst')
+_ = get_translator('janim.items.svg.typst')
 
 type TypstPattern = TypstDoc | str
 type TypstVar = Points | dict[str, TypstVar] | Iterable[TypstVar]

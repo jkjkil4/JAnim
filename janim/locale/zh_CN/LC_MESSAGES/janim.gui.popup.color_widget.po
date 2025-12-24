@@ -1,0 +1,38 @@
+# Chinese translations for PACKAGE package.
+# Copyright (C) 2024 THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# Automatically generated, 2024.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-12-24 15:28+0800\n"
+"PO-Revision-Date: 2025-12-24 16:00+0800\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: none\n"
+"Language: zh_CN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 3.8\n"
+
+#: janim/gui/popup/color_widget.py:62
+msgid "Color"
+msgstr "颜色"
+
+#: janim/gui/popup/color_widget.py:63
+msgid "normalized form"
+msgstr "归一化形式"
+
+#: janim/gui/popup/color_widget.py:64
+msgid "Color picker"
+msgstr "拾色器"
+
+#: janim/gui/popup/color_widget.py:65
+msgid "Open"
+msgstr "打开"
+
+#: janim/gui/popup/color_widget.py:66
+msgid "Builtins"
+msgstr "内置"

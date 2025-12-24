@@ -1,0 +1,32 @@
+# Chinese translations for PACKAGE package.
+# Copyright (C) 2024 THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# Automatically generated, 2024.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-12-24 14:30+0800\n"
+"PO-Revision-Date: 2025-12-24 16:06+0800\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: none\n"
+"Language: zh_CN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 3.8\n"
+
+#: janim/utils/bezier.py:34
+msgid "Cannot set both start_point and points at the same time"
+msgstr "不能同时设置 start_point 和 points"
+
+#: janim/utils/bezier.py:173
+#, python-brace-format
+msgid ""
+"PathBuilder must be initialized with start_point or points during "
+"construction, or have move_to as the first call, otherwise {name} cannot be "
+"invoked"
+msgstr ""
+"PathBuilder 必须在构造时传入 start_point 或 points，或者以 move_to 为首次调"
+"用，否则不能调用 {name}"

@@ -1,0 +1,49 @@
+# Chinese translations for PACKAGE package
+# PACKAGE 软件包的简体中文翻译.
+# Copyright (C) 2025 THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# Automatically generated, 2025.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-12-24 14:30+0800\n"
+"PO-Revision-Date: 2025-03-21 08:32+0800\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: none\n"
+"Language: zh_CN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 3.5\n"
+
+#: janim/items/frame_effect.py:101
+#, python-brace-format
+msgid ""
+"Calling {cls}.add is unusual and may not work as expected. If you want to "
+"apply additional items, use `apply` instead."
+msgstr ""
+"调用 {cls}.add 是不寻常的，可能不会按预期工作。如果你想应用额外的物件，请使"
+"用 `apply` 代替"
+
+#: janim/items/frame_effect.py:118
+#, python-brace-format
+msgid ""
+"Calling {cls}.remove is unusual and may not work as expected. If you want to "
+"discard applied items, use `discard` instead."
+msgstr ""
+"调用 {cls}.remove 是不寻常的，可能不会按预期工作。如果你想撤销已应用的项，请"
+"使用 `discard` 代替"
+
+#~ msgid ""
+#~ "An additional module is required to use `FrameEffect`, but it is not "
+#~ "installed"
+#~ msgstr "需要额外的模块才能使用 `FrameEffect`，但是未安装"
+
+#~ msgid ""
+#~ "You can install it using \"pip install PyOpenGL\" and make sure you "
+#~ "install it in the correct Python version"
+#~ msgstr ""
+#~ "你可以使用 “pip install PyOpenGL” 进行安装，并确保你安装在了正确的 Python "
+#~ "版本中"

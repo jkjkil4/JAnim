@@ -18,7 +18,7 @@ from janim.exception import ColorNotFoundError
 from janim.items.geometry.line import Line
 from janim.items.points import Group, MarkedItem
 from janim.items.vitem import VItem
-from janim.locale.i18n import get_local_strings
+from janim.locale.i18n import get_translator
 from janim.logger import log
 from janim.typing import JAnimColor, Vect
 from janim.utils.config import Config
@@ -27,7 +27,7 @@ from janim.utils.font.variant import Style, StyleName, Weight, WeightName
 from janim.utils.simple_functions import decode_utf8
 from janim.utils.space_ops import get_norm, normalize
 
-_ = get_local_strings('text')
+_ = get_translator('janim.items.text')
 
 DEFAULT_FONT_SIZE = 24
 ORIG_FONT_SIZE = 48

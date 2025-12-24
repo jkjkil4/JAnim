@@ -1,0 +1,43 @@
+# Chinese translations for PACKAGE package.
+# Copyright (C) 2024 THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# Automatically generated, 2024.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-12-24 14:30+0800\n"
+"PO-Revision-Date: 2025-12-24 16:03+0800\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: none\n"
+"Language: zh_CN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 3.8\n"
+
+#: janim/items/text.py:47
+#, python-brace-format
+msgid "No built-in color named {key}"
+msgstr "内置颜色中没有叫作 {key} 的"
+
+#: janim/items/text.py:264
+#, python-brace-format
+msgid "\"{name}\" is not a valid rich text tag. (\"<{name} {params}>\")"
+msgstr "\"{name}\" 不是一个有效的富文本标签 (\"<{name} {params}>\")"
+
+#: janim/items/text.py:280
+#, python-brace-format
+msgid "While applying {name}, {params} did not match with {cvt_names}."
+msgstr "应用 {name} 时，{params} 与 {cvt_names} 不匹配"
+
+#: janim/items/text.py:292
+#, python-brace-format
+msgid "While applying \"{name}\", {params} did not match any entry in {txt}."
+msgstr "应用 \"{name}\" 时，{params} 与 {txt} 没有匹配项"
+
+#: janim/items/text.py:557
+#, python-brace-format
+msgid "Unmatched end tag \"</{name}>\", ignored."
+msgstr "未匹配的结束标签 \"</{name}>\"，已忽略"

@@ -1,0 +1,25 @@
+# Chinese translations for PACKAGE package.
+# Copyright (C) 2024 THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# Automatically generated, 2024.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-12-24 14:30+0800\n"
+"PO-Revision-Date: 2025-12-24 16:06+0800\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: none\n"
+"Language: zh_CN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 3.8\n"
+
+#: janim/utils/config.py:30
+msgid "{attrname}={value!r} is incompatible with type {typename}"
+msgstr "{attrname}={value!r} 与类型 {typename} 不兼容"
+
+#~ msgid "'{attrname}' must be of type {typename} or None, {value!r} is invalid"
+#~ msgstr "'{attrname}' 必须是 {typename} 类型或 None，{value!r} 是无效的"

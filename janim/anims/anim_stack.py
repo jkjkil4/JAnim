@@ -9,11 +9,11 @@ from janim.anims.display import Display
 from janim.constants import FOREVER
 from janim.exception import ApplyAlignerBrokenError
 from janim.items.item import Item
-from janim.locale.i18n import get_local_strings
+from janim.locale.i18n import get_translator
 
 type ComputeAnimsGenerator = Generator[ApplyAligner, None, Item]
 
-_ = get_local_strings('anim_stack')
+_ = get_translator('janim.anims.anim_stack')
 
 
 class AnimStack:
