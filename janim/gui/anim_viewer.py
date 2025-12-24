@@ -49,7 +49,7 @@ from janim.gui.utils.precise_timer import PreciseTimerWithFPS
 from janim.locale.i18n import get_translator
 from janim.logger import log
 from janim.utils.config import Config
-from janim.utils.file_ops import (STDIN_FILENAME, get_janim_dir,
+from janim.utils.file_ops import (STDIN_FILENAME, get_gui_asset,
                                   getfile_or_stdin)
 from janim.utils.reload import reset_reloads_state
 
@@ -183,7 +183,7 @@ class AnimViewer(QMainWindow):
         self.setMinimumSize(200, 160)
         self.resize(800, 608)
         self.setWindowTitle('JAnim Graphics')
-        self.setWindowIcon(QIcon(os.path.join(get_janim_dir(), 'gui', 'favicon.ico')))
+        self.setWindowIcon(QIcon(get_gui_asset('favicon.ico')))
         self.setWindowFlags(Qt.WindowType.Window)
         self.timeline_view.setFocus()
 
@@ -257,11 +257,11 @@ class AnimViewer(QMainWindow):
         self.name_edit = QLineEdit()
 
         self.btn_capture = QPushButton()
-        self.btn_capture.setIcon(QIcon(os.path.join(get_janim_dir(), 'gui', 'capture.png')))
+        self.btn_capture.setIcon(QIcon(get_gui_asset('capture.png')))
         self.btn_capture.setFocusPolicy(Qt.FocusPolicy.NoFocus)
 
         self.btn_export = QPushButton()
-        self.btn_export.setIcon(QIcon(os.path.join(get_janim_dir(), 'gui', 'export.png')))
+        self.btn_export.setIcon(QIcon(get_gui_asset('export.png')))
         self.btn_export.setFocusPolicy(Qt.FocusPolicy.NoFocus)
 
         stb = self.statusBar()

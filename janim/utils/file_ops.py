@@ -35,6 +35,21 @@ def get_janim_dir() -> str:
     return os.path.dirname(importlib.util.find_spec('janim').origin)
 
 
+@lru_cache(maxsize=1)
+def get_gui_assets_dir() -> str:
+    """
+    得到 janim GUI 界面资源文件路径
+    """
+    return os.path.join(get_janim_dir(), 'gui', 'assets')
+
+
+def get_gui_asset(file: str) -> str:
+    """
+    得到指定的 janim GUI 界面资源文件
+    """
+    return os.path.join(get_janim_dir(), 'gui', 'assets', file)
+
+
 def get_typst_temp_dir() -> str:
     from janim.utils.config import Config
     return guarantee_existence(os.path.join(Config.get.temp_dir, 'Typst'))

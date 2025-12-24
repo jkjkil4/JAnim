@@ -1,5 +1,4 @@
 import locale
-import os
 from typing import TYPE_CHECKING
 
 from PySide6.QtCore import Qt
@@ -9,7 +8,7 @@ from PySide6.QtWidgets import (QHBoxLayout, QHeaderView, QLabel, QLineEdit,
                                QWidget)
 
 from janim.locale.i18n import get_translator
-from janim.utils.file_ops import get_janim_dir
+from janim.utils.file_ops import get_gui_asset
 from janim.utils.font.database import get_database
 
 if TYPE_CHECKING:
@@ -28,7 +27,7 @@ class FontTable(QWidget):
     def setup_ui(self) -> None:
         self.label = QLabel()
         self.label.setScaledContents(True)
-        self.label.setPixmap(QPixmap(os.path.join(get_janim_dir(), 'gui', 'popup/search.png')))
+        self.label.setPixmap(QPixmap(get_gui_asset('search.png')))
 
         self.searcher = QLineEdit()
         self.searcher.setMinimumWidth(260)
