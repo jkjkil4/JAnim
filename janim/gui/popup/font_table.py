@@ -15,7 +15,7 @@ from janim.utils.font.database import get_database
 if TYPE_CHECKING:
     from fontTools.ttLib.tables._n_a_m_e import NameRecord
 
-_ = get_translator('janim.gui.functions.font_table')
+_ = get_translator('janim.gui.popup.font_table')
 
 
 class FontTable(QWidget):

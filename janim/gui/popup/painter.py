@@ -20,7 +20,7 @@ from janim.utils.iterables import resize_preserving_head_and_tail
 if TYPE_CHECKING:
     from janim.gui.anim_viewer import AnimViewer
 
-_ = get_translator('janim.gui.functions.painter')
+_ = get_translator('janim.gui.popup.painter')
 
 POS_PER_LINE = 5
 

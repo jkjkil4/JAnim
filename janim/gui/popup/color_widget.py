@@ -11,7 +11,7 @@ from janim.gui.popup.ui_ColorWidget import Ui_ColorWidget
 from janim.locale.i18n import get_translator
 from janim.utils.simple_functions import clip
 
-_ = get_translator('janim.gui.functions.color_widget')
+_ = get_translator('janim.gui.popup.color_widget')
 
 builtins_area_qss = '''
 QPushButton {

@@ -9,7 +9,7 @@ from PySide6.QtWidgets import QCheckBox, QHBoxLayout, QVBoxLayout, QWidget
 from janim.gui.utils.text_edit import TextEdit
 from janim.locale.i18n import get_translator
 
-_ = get_translator('janim.gui.functions.richtext_editor')
+_ = get_translator('janim.gui.popup.richtext_editor')
 
 
 class RichTextEditor(QWidget):
