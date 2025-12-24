@@ -16,8 +16,9 @@ def main() -> None:
                 continue
             if includes and not is_included(file):
                 continue
-            dist = os.path.join(get_janim_dir(), 'locale', 'source', file[:-3] + '.pot')
             source = os.path.relpath(os.path.join(root, file), os.path.join(get_janim_dir(), '..'))
+            module_name = source.removesuffix('.py').replace('/', '.').replace('\\', '.')
+            dist = os.path.join(get_janim_dir(), 'locale', 'source', module_name + '.pot')
             cmd = f'xgettext -o "{dist}" "{source}"'
             print(cmd)
             os.system(cmd)
