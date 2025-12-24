@@ -30,8 +30,8 @@ from typing import Any
 
 from PySide6.QtCore import (QByteArray, QEvent, QFileSystemWatcher, QPoint,
                             QSettings, Qt, QTimer, Signal)
-from PySide6.QtGui import (QAction, QCloseEvent, QGuiApplication, QHideEvent,
-                           QIcon, QShowEvent)
+from PySide6.QtGui import (QCloseEvent, QGuiApplication, QHideEvent, QIcon,
+                           QShowEvent)
 from PySide6.QtWidgets import (QApplication, QCompleter, QLabel, QLineEdit,
                                QMainWindow, QMessageBox, QPushButton,
                                QSizePolicy, QSplitter, QStackedLayout, QWidget)
@@ -42,13 +42,10 @@ from janim.gui.application import Application
 from janim.gui.audio_player import AudioPlayer
 from janim.gui.fixed_ratio_widget import FixedRatioWidget
 from janim.gui.functions.capture_dialog import CaptureDialog
-from janim.gui.functions.color_widget import ColorWidget
 from janim.gui.functions.export_dialog import ExportDialog
-from janim.gui.functions.font_table import FontTable
-from janim.gui.functions.painter import Painter
-from janim.gui.functions.richtext_editor import RichTextEditor
 from janim.gui.functions.selector import Selector
 from janim.gui.glwidget import GLWidget
+from janim.gui.popup import setup_popup_actions
 from janim.gui.precise_timer import PreciseTimerWithFPS
 from janim.gui.timeline_view import TimelineView
 from janim.locale.i18n import get_translator
@@ -60,8 +57,6 @@ from janim.utils.file_ops import (STDIN_FILENAME, get_janim_dir,
 from janim.utils.reload import reset_reloads_state
 
 _ = get_translator('janim.gui.anim_viewer')
-
-ACTION_WIDGET_FLAG_KEY = '__action_widget'
 
 
 class AnimViewer(QMainWindow):
@@ -257,21 +252,7 @@ class AnimViewer(QMainWindow):
         self.action_select.setAutoRepeat(False)
         self.selector: Selector | None = None
 
-        self.action_painter = menu_tools.addAction(_('Draw(&D)'))
-        self.action_painter.setShortcut('Ctrl+D')
-        self.action_painter.setAutoRepeat(False)
-
-        self.action_richtext_edit = menu_tools.addAction(_('Rich text editor(&R)'))
-        self.action_richtext_edit.setShortcut('Ctrl+R')
-        self.action_richtext_edit.setAutoRepeat(False)
-
-        self.action_font_table = menu_tools.addAction(_('Font list(&F)'))
-        self.action_font_table.setShortcut('Ctrl+F')
-        self.action_font_table.setAutoRepeat(False)
-
-        self.action_color_widget = menu_tools.addAction(_('Color(&O)'))
-        self.action_color_widget.setShortcut('Ctrl+O')
-        self.action_color_widget.setAutoRepeat(False)
+        setup_popup_actions(self, menu_tools)
 
         menu_tools.addSeparator()
 
@@ -449,10 +430,6 @@ class AnimViewer(QMainWindow):
         self.action_stay_on_top.toggled.connect(self.on_stay_on_top_toggled)
         self.action_frame_skip.toggled.connect(self.on_frame_skip_toggled)
         self.action_select.triggered.connect(self.on_select_triggered)
-        self.connect_action_widget(self.action_painter, Painter)
-        self.connect_action_widget(self.action_richtext_edit, RichTextEditor)
-        self.connect_action_widget(self.action_font_table, FontTable)
-        self.connect_action_widget(self.action_color_widget, ColorWidget)
         self.action_copy_time.triggered.connect(self.on_copy_time_triggered)
 
         self.timeline_view.value_changed.connect(self.on_value_changed)
@@ -577,27 +554,6 @@ class AnimViewer(QMainWindow):
 
     def on_selector_destroyed(self) -> None:
         self.selector = None
-
-    def connect_action_widget(self, action: QAction, widget_cls: type[QWidget]) -> None:
-        widget = None
-
-        def triggered() -> None:
-            nonlocal widget
-            if widget is None:
-                widget = widget_cls(self)
-                widget.setWindowFlag(Qt.WindowType.Tool)
-                widget.setAttribute(Qt.WidgetAttribute.WA_DeleteOnClose)
-                widget.setAttribute(Qt.WidgetAttribute.WA_MacAlwaysShowToolWindow)
-                widget.destroyed.connect(destroyed)
-                if sys.platform == "darwin":
-                    setattr(widget, ACTION_WIDGET_FLAG_KEY, True)
-            widget.show()
-
-        def destroyed() -> None:
-            nonlocal widget
-            widget = None
-
-        action.triggered.connect(triggered)
 
     def on_copy_time_triggered(self) -> None:
         view = self.timeline_view
