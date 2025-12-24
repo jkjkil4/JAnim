@@ -811,15 +811,21 @@ class Timeline(metaclass=ABCMeta):
     # region GUI command
 
     class GuiCommand:
-        def __init__(self, command: str, frame: types.FrameType):
-            idx = command.index(':')
-            self.name = command[:idx].strip()
-            self.body = command[idx:].strip()
+        def __init__(self, global_t: float, text: str, frame: types.FrameType):
+            try:
+                idx = text.index(':')
+            except ValueError:
+                idx = len(text)
+
+            self.global_t = global_t
+            self.text = text
+            self.name = text[:idx].strip()
+            self.body = text[idx:].strip()
             self.filename = frame.f_code.co_filename
             self.lineno = frame.f_lineno
 
-    def __call__(self, command: str) -> None:
-        self.gui_commands.append(Timeline.GuiCommand(command, inspect.currentframe().f_back))
+    def __call__(self, command_text: str) -> None:
+        self.gui_commands.append(Timeline.GuiCommand(self.current_time, command_text, inspect.currentframe().f_back))
 
     # endregion
 

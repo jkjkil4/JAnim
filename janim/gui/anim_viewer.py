@@ -49,6 +49,7 @@ from janim.gui.functions.painter import Painter
 from janim.gui.functions.richtext_editor import RichTextEditor
 from janim.gui.functions.selector import Selector
 from janim.gui.glwidget import GLWidget
+from janim.gui.handlers import handle_command
 from janim.gui.precise_timer import PreciseTimer
 from janim.gui.timeline_view import TimelineView
 from janim.locale.i18n import get_local_strings
@@ -178,6 +179,10 @@ class AnimViewer(QMainWindow):
             self.audio_player = AudioPlayer(self.built.cfg.audio_framerate,
                                             self.built.cfg.audio_channels,
                                             self.built.cfg.preview_fps)
+
+        commands = self.built.timeline.gui_commands
+        if commands:
+            handle_command(self, commands[0])
 
     # region setup_ui
 
