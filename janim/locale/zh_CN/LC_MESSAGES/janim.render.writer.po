@@ -7,77 +7,77 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-15 10:06+0800\n"
-"PO-Revision-Date: 2025-04-06 14:20+0800\n"
+"POT-Creation-Date: 2025-12-24 14:30+0800\n"
+"PO-Revision-Date: 2025-12-24 16:05+0800\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
 "Language: zh_CN\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=GBK\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 3.5\n"
+"X-Generator: Poedit 3.8\n"
 
-#: janim\render\writer.py:98
+#: janim/render/writer.py:101
 #, python-brace-format
 msgid "Writing video \"{name}\""
-msgstr "Êä³öÊÓÆµ \"{name}\" ÖĞ"
+msgstr "è¾“å‡ºè§†é¢‘ \"{name}\" ä¸­"
 
-#: janim\render\writer.py:199
+#: janim/render/writer.py:202
 #, python-brace-format
 msgid "Finished writing video \"{name}\" in {elapsed:.2f} s"
-msgstr "Êä³öÊÓÆµ \"{name}\" Íê³É£¬ºÄÊ± {elapsed:.2f} s"
+msgstr "è¾“å‡ºè§†é¢‘ \"{name}\" å®Œæˆï¼Œè€—æ—¶ {elapsed:.2f} s"
 
-#: janim\render\writer.py:205
+#: janim/render/writer.py:208
 #, python-brace-format
 msgid "File saved to \"{file_path}\" (video only)"
-msgstr "ÎÄ¼şÒÑ±£´æµ½ \"{file_path}\"£¨½öÊÓÆµ£©"
+msgstr "æ–‡ä»¶å·²ä¿å­˜åˆ° \"{file_path}\"ï¼ˆä»…è§†é¢‘ï¼‰"
 
-#: janim\render\writer.py:273
+#: janim/render/writer.py:276
 msgid "No hardware encoder found"
-msgstr "Î´ÕÒµ½Ó²¼ş±àÂëÆ÷"
+msgstr "æœªæ‰¾åˆ°ç¡¬ä»¶ç¼–ç å™¨"
 
-#: janim\render\writer.py:276
+#: janim/render/writer.py:279
 #, python-brace-format
 msgid "Using {encoder} for encoding"
-msgstr "Ê¹ÓÃ {encoder} ½øĞĞ±àÂë"
+msgstr "ä½¿ç”¨ {encoder} è¿›è¡Œç¼–ç "
 
-#: janim\render\writer.py:292
+#: janim/render/writer.py:295
 msgid ""
 "Unable to output video. Please install ffmpeg and add it to the environment "
 "variables."
-msgstr "ÎŞ·¨Êä³öÊÓÆµ£¬ĞèÒª°²×° ffmpeg ²¢½«ÆäÌí¼Óµ½»·¾³±äÁ¿ÖĞ"
+msgstr "æ— æ³•è¾“å‡ºè§†é¢‘ï¼Œéœ€è¦å®‰è£… ffmpeg å¹¶å°†å…¶æ·»åŠ åˆ°ç¯å¢ƒå˜é‡ä¸­"
 
-#: janim\render\writer.py:308
+#: janim/render/writer.py:311
 #, python-brace-format
 msgid "Writing audio of \"{name}\""
-msgstr "Êä³öÒôÆµ \"{name}\" ÖĞ"
+msgstr "è¾“å‡ºéŸ³é¢‘ \"{name}\" ä¸­"
 
-#: janim\render\writer.py:338
+#: janim/render/writer.py:341
 #, python-brace-format
 msgid "Finished writing audio of \"{name}\" in {elapsed:.2f} s"
-msgstr "Êä³öÒôÆµ \"{name}\" Íê³É£¬ºÄÊ± {elapsed:.2f} s"
+msgstr "è¾“å‡ºéŸ³é¢‘ \"{name}\" å®Œæˆï¼Œè€—æ—¶ {elapsed:.2f} s"
 
-#: janim\render\writer.py:344
+#: janim/render/writer.py:347
 #, python-brace-format
 msgid "File saved to \"{file_path}\""
-msgstr "ÎÄ¼şÒÑ±£´æµ½ \"{file_path}\""
+msgstr "æ–‡ä»¶å·²ä¿å­˜åˆ° \"{file_path}\""
 
-#: janim\render\writer.py:367
+#: janim/render/writer.py:370
 msgid ""
 "Unable to output audio. Please install ffmpeg and add it to the environment "
 "variables."
-msgstr "ÎŞ·¨Êä³öÒôÆµ£¬ĞèÒª°²×° ffmpeg ²¢½«ÆäÌí¼Óµ½»·¾³±äÁ¿ÖĞ"
+msgstr "æ— æ³•è¾“å‡ºéŸ³é¢‘ï¼Œéœ€è¦å®‰è£… ffmpeg å¹¶å°†å…¶æ·»åŠ åˆ°ç¯å¢ƒå˜é‡ä¸­"
 
-#: janim\render\writer.py:403
+#: janim/render/writer.py:406
 msgid ""
 "Unable to merge video. Please install ffmpeg and add it to the environment "
 "variables."
-msgstr "ÎŞ·¨Êä³öÊÓÆµ£¬ĞèÒª°²×° ffmpeg ²¢½«ÆäÌí¼Óµ½»·¾³±äÁ¿ÖĞ"
+msgstr "æ— æ³•è¾“å‡ºè§†é¢‘ï¼Œéœ€è¦å®‰è£… ffmpeg å¹¶å°†å…¶æ·»åŠ åˆ°ç¯å¢ƒå˜é‡ä¸­"
 
-#: janim\render\writer.py:416
+#: janim/render/writer.py:419
 #, python-brace-format
 msgid "File saved to \"{file_path}\" (merged)"
-msgstr "ÎÄ¼şÒÑ±£´æµ½ \"{file_path}\"£¨ÒÑºÏ²¢£©"
+msgstr "æ–‡ä»¶å·²ä¿å­˜åˆ° \"{file_path}\"ï¼ˆå·²åˆå¹¶ï¼‰"
 
 #~ msgid "Using h264_amf for encoding"
-#~ msgstr "Ê¹ÓÃ h264_amf ½øĞĞ±àÂë"
+#~ msgstr "ä½¿ç”¨ h264_amf è¿›è¡Œç¼–ç "

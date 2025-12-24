@@ -7,81 +7,81 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-15 10:06+0800\n"
-"PO-Revision-Date: 2025-08-31 23:27+0800\n"
+"POT-Creation-Date: 2025-12-24 14:30+0800\n"
+"PO-Revision-Date: 2025-12-24 16:00+0800\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
 "Language: zh_CN\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=GBK\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 3.6\n"
+"X-Generator: Poedit 3.8\n"
 
-#: janim\gui\functions\export_dialog.py:33
+#: janim/gui/functions/export_dialog.py:33
 msgid "Export"
-msgstr "µ¼³ö"
+msgstr "å¯¼å‡º"
 
-#: janim\gui\functions\export_dialog.py:34
+#: janim/gui/functions/export_dialog.py:34
 msgid "Export Path:"
-msgstr "µ¼³öÂ·¾¶£º"
+msgstr "å¯¼å‡ºè·¯å¾„ï¼š"
 
-#: janim\gui\functions\export_dialog.py:35
+#: janim/gui/functions/export_dialog.py:35
 msgid "FPS:"
-msgstr "FPS£º"
+msgstr "FPSï¼š"
 
-#: janim\gui\functions\export_dialog.py:36
+#: janim/gui/functions/export_dialog.py:36
 msgid "Size:"
-msgstr "³ß´ç£º"
+msgstr "å°ºå¯¸ï¼š"
 
-#: janim\gui\functions\export_dialog.py:38
+#: janim/gui/functions/export_dialog.py:38
 msgid "Range:"
-msgstr "Çø¶Î£º"
+msgstr "åŒºæ®µï¼š"
 
-#: janim\gui\functions\export_dialog.py:39
+#: janim/gui/functions/export_dialog.py:39
 msgid "Full"
-msgstr "È«³¤"
+msgstr "å…¨é•¿"
 
-#: janim\gui\functions\export_dialog.py:41
+#: janim/gui/functions/export_dialog.py:41
 msgid "In/Out Point"
-msgstr "Èëµã/³öµã"
+msgstr "å…¥ç‚¹/å‡ºç‚¹"
 
-#: janim\gui\functions\export_dialog.py:43
+#: janim/gui/functions/export_dialog.py:43
 msgid "In/Out Point (Not Set)"
-msgstr "Èëµã/³öµã£¨Î´ÉèÖÃ£©"
+msgstr "å…¥ç‚¹/å‡ºç‚¹ï¼ˆæœªè®¾ç½®ï¼‰"
 
-#: janim\gui\functions\export_dialog.py:46
+#: janim/gui/functions/export_dialog.py:46
 msgid "Hardware Acceleration"
-msgstr "Ó²¼ş¼ÓËÙ"
+msgstr "ç¡¬ä»¶åŠ é€Ÿ"
 
-#: janim\gui\functions\export_dialog.py:47
+#: janim/gui/functions/export_dialog.py:47
 msgid "Open the video after exporting"
-msgstr "µ¼³öºó´ò¿ªÊÓÆµ"
+msgstr "å¯¼å‡ºåæ‰“å¼€è§†é¢‘"
 
-#: janim\gui\functions\export_dialog.py:50
+#: janim/gui/functions/export_dialog.py:50
 msgid "OK"
-msgstr "È·¶¨"
+msgstr "ç¡®å®š"
 
-#: janim\gui\functions\export_dialog.py:53
+#: janim/gui/functions/export_dialog.py:53
 msgid "Cancel"
-msgstr "È¡Ïû"
+msgstr "å–æ¶ˆ"
 
-#: janim\gui\functions\export_dialog.py:184
+#: janim/gui/functions/export_dialog.py:184
 msgid "Confirm Export"
-msgstr "È·ÈÏµ¼³ö"
+msgstr "ç¡®è®¤å¯¼å‡º"
 
-#: janim\gui\functions\export_dialog.py:185
+#: janim/gui/functions/export_dialog.py:185
 #, python-brace-format
 msgid ""
 "{filename} already exists.\n"
 "Do you want to replace it?"
 msgstr ""
-"{filename} ÒÑ´æÔÚ¡£\n"
-"ÒªÌæ»»ËüÂğ£¿"
+"{filename} å·²å­˜åœ¨ã€‚\n"
+"è¦æ›¿æ¢å®ƒå—ï¼Ÿ"
 
-#: janim\gui\functions\export_dialog.py:191
+#: janim/gui/functions/export_dialog.py:191
 msgid "Yes(&Y)"
-msgstr "ÊÇ(&Y)"
+msgstr "æ˜¯(&Y)"
 
-#: janim\gui\functions\export_dialog.py:192
+#: janim/gui/functions/export_dialog.py:192
 msgid "No(&N)"
-msgstr "·ñ(&N)"
+msgstr "å¦(&N)"

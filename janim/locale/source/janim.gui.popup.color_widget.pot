@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-19 09:44+0800\n"
+"POT-Creation-Date: 2025-12-24 15:28+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,22 +17,22 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: janim\gui\functions\color_widget.py:62
+#: janim/gui/popup/color_widget.py:62
 msgid "Color"
 msgstr ""
 
-#: janim\gui\functions\color_widget.py:63
+#: janim/gui/popup/color_widget.py:63
 msgid "normalized form"
 msgstr ""
 
-#: janim\gui\functions\color_widget.py:64
+#: janim/gui/popup/color_widget.py:64
 msgid "Color picker"
 msgstr ""
 
-#: janim\gui\functions\color_widget.py:65
+#: janim/gui/popup/color_widget.py:65
 msgid "Open"
 msgstr ""
 
-#: janim\gui\functions\color_widget.py:66
+#: janim/gui/popup/color_widget.py:66
 msgid "Builtins"
 msgstr ""

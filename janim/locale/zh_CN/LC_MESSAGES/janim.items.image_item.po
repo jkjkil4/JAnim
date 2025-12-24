@@ -7,28 +7,28 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-22 19:59+0800\n"
-"PO-Revision-Date: 2024-08-03 14:41+0800\n"
+"POT-Creation-Date: 2025-12-24 14:30+0800\n"
+"PO-Revision-Date: 2025-12-24 16:02+0800\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
 "Language: zh_CN\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=GBK\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 3.4.2\n"
+"X-Generator: Poedit 3.8\n"
 
-#: janim\items\image_item.py:273
+#: janim/items/image_item.py:273
 msgid ""
 "Unable to read video frame, please install ffmpeg and add it to the "
 "environment variables"
-msgstr "ÎŞ·¨¶ÁÈ¡ÊÓÆµÖ¡£¬Çë°²×° ffmpeg ²¢½«ÆäÌí¼Óµ½»·¾³±äÁ¿ÖĞ"
+msgstr "æ— æ³•è¯»å–è§†é¢‘å¸§ï¼Œè¯·å®‰è£… ffmpeg å¹¶å°†å…¶æ·»åŠ åˆ°ç¯å¢ƒå˜é‡ä¸­"
 
-#: janim\items\image_item.py:452
+#: janim/items/image_item.py:452
 msgid ""
 "Unable to read video information, please install ffmpegand add it (including "
 "ffprobe) to the environment variables."
-msgstr "ÎŞ·¨¶ÁÈ¡ÊÓÆµĞÅÏ¢£¬Çë°²×° ffmpeg ²¢½«Æä£¨°üÀ¨ ffprobe£©Ìí¼Óµ½»·¾³±äÁ¿ÖĞ"
+msgstr "æ— æ³•è¯»å–è§†é¢‘ä¿¡æ¯ï¼Œè¯·å®‰è£… ffmpeg å¹¶å°†å…¶ï¼ˆåŒ…æ‹¬ ffprobeï¼‰æ·»åŠ åˆ°ç¯å¢ƒå˜é‡ä¸­"
 
-#: janim\items\image_item.py:457
+#: janim/items/image_item.py:457
 msgid "ffprobe error. Please check the output for more information."
-msgstr "ffprobe ´íÎó£¬Çë¼ì²éÊä³öĞÅÏ¢"
+msgstr "ffprobe é”™è¯¯ï¼Œè¯·æ£€æŸ¥è¾“å‡ºä¿¡æ¯"

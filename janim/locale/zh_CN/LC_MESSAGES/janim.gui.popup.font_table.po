@@ -7,31 +7,31 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-20 12:05+0800\n"
-"PO-Revision-Date: 2025-03-20 12:00+0800\n"
+"POT-Creation-Date: 2025-12-24 15:29+0800\n"
+"PO-Revision-Date: 2025-12-24 16:01+0800\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
 "Language: zh_CN\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=GBK\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 3.5\n"
+"X-Generator: Poedit 3.8\n"
 
-#: janim\gui\functions\font_table.py:25
+#: janim/gui/popup/font_table.py:25
 msgid "Font List"
-msgstr "字体列表"
+msgstr "瀛椾綋鍒楄〃"
 
-#: janim\gui\functions\font_table.py:61
+#: janim/gui/popup/font_table.py:61
 msgid "Family Name"
-msgstr "字体族名(Family Name)"
+msgstr "瀛椾綋鏃忓悕(Family Name)"
 
-#: janim\gui\functions\font_table.py:62
+#: janim/gui/popup/font_table.py:62
 msgid "Full Name"
-msgstr "全名(Full Name)"
+msgstr "鍏ㄥ悕(Full Name)"
 
-#: janim\gui\functions\font_table.py:63
+#: janim/gui/popup/font_table.py:63
 msgid "Display Name (includes multiple languages, make good use of search)"
-msgstr "显示名（包含多种语言，善用搜索）"
+msgstr "鏄剧ず鍚嶏紙鍖呭惈澶氱璇█锛屽杽鐢ㄦ悳绱級"
 
 #~ msgid "Invocation Name"
-#~ msgstr "调用名称"
+#~ msgstr "璋冪敤鍚嶇О"

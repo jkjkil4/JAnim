@@ -7,32 +7,32 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-02-17 02:14+0800\n"
-"PO-Revision-Date: 2024-07-30 16:23+0800\n"
+"POT-Creation-Date: 2025-12-24 15:28+0800\n"
+"PO-Revision-Date: 2025-12-24 16:00+0800\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
 "Language: zh_CN\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=GBK\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 3.4.2\n"
+"X-Generator: Poedit 3.8\n"
 
-#: janim\gui\functions\color_widget.py:62
+#: janim/gui/popup/color_widget.py:62
 msgid "Color"
-msgstr "ÑÕÉ«"
+msgstr "é¢œè‰²"
 
-#: janim\gui\functions\color_widget.py:63
+#: janim/gui/popup/color_widget.py:63
 msgid "normalized form"
-msgstr "¹éÒ»»¯ĞÎÊ½"
+msgstr "å½’ä¸€åŒ–å½¢å¼"
 
-#: janim\gui\functions\color_widget.py:64
+#: janim/gui/popup/color_widget.py:64
 msgid "Color picker"
-msgstr "Ê°É«Æ÷"
+msgstr "æ‹¾è‰²å™¨"
 
-#: janim\gui\functions\color_widget.py:65
+#: janim/gui/popup/color_widget.py:65
 msgid "Open"
-msgstr "´ò¿ª"
+msgstr "æ‰“å¼€"
 
-#: janim\gui\functions\color_widget.py:66
+#: janim/gui/popup/color_widget.py:66
 msgid "Builtins"
-msgstr "ÄÚÖÃ"
+msgstr "å†…ç½®"

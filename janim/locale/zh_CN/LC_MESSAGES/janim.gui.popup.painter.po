@@ -7,40 +7,40 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-18 09:23+0800\n"
-"PO-Revision-Date: 2024-08-18 20:45+0800\n"
+"POT-Creation-Date: 2025-12-24 15:29+0800\n"
+"PO-Revision-Date: 2025-12-24 16:01+0800\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
 "Language: zh_CN\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=GBK\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 3.4.2\n"
+"X-Generator: Poedit 3.8\n"
 
-#: janim\gui\functions\painter.py:45
+#: janim/gui/popup/painter.py:45
 msgid ""
 "Note: This is used to determine the position on the screen. To actually add "
 "the drawn content, you need to manually add the corresponding code."
 msgstr ""
-"ÌáÊ¾£ºÕâÊÇÔÚÆÁÄ»ÉÏÈ·¶¨Î»ÖÃÓÃµÄ£¬ÎªÁË½«»æÖÆ³öµÄ¶«Î÷ÕæÕıµØ¼Ó½øÈ¥£¬ÄãĞèÒªÊÖ¶¯Ìí"
-"¼Ó¶ÔÓ¦µÄ´úÂë"
+"æç¤ºï¼šè¿™æ˜¯åœ¨å±å¹•ä¸Šç¡®å®šä½ç½®ç”¨çš„ï¼Œä¸ºäº†å°†ç»˜åˆ¶å‡ºçš„ä¸œè¥¿çœŸæ­£åœ°åŠ è¿›å»ï¼Œä½ éœ€è¦æ‰‹åŠ¨æ·»"
+"åŠ å¯¹åº”çš„ä»£ç "
 
-#: janim\gui\functions\painter.py:59
+#: janim/gui/popup/painter.py:59
 msgid "Draw"
-msgstr "»æÖÆ"
+msgstr "ç»˜åˆ¶"
 
-#: janim\gui\functions\painter.py:66
+#: janim/gui/popup/painter.py:66
 msgid "None"
-msgstr "ÎŞ"
+msgstr "æ— "
 
-#: janim\gui\functions\painter.py:71
+#: janim/gui/popup/painter.py:71
 msgid "(freehand-path)"
-msgstr "£¨Í½ÊÖ»­Â·¾¶£©"
+msgstr "ï¼ˆå¾’æ‰‹ç”»è·¯å¾„ï¼‰"
 
-#: janim\gui\functions\painter.py:77
+#: janim/gui/popup/painter.py:77
 msgid "Type"
-msgstr "ÀàĞÍ"
+msgstr "ç±»å‹"
 
-#: janim\gui\functions\painter.py:338
+#: janim/gui/popup/painter.py:338
 msgid "Count"
-msgstr "ÊıÁ¿"
+msgstr "æ•°é‡"

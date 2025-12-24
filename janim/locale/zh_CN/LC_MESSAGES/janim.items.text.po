@@ -7,37 +7,37 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-23 17:18+0800\n"
-"PO-Revision-Date: 2025-11-20 10:50+0800\n"
+"POT-Creation-Date: 2025-12-24 14:30+0800\n"
+"PO-Revision-Date: 2025-12-24 16:03+0800\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
 "Language: zh_CN\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=GBK\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Poedit 3.8\n"
 
-#: janim\items\text.py:47
+#: janim/items/text.py:47
 #, python-brace-format
 msgid "No built-in color named {key}"
-msgstr "ÄÚÖÃÑÕÉ«ÖĞÃ»ÓĞ½Ğ×÷ {key} µÄ"
+msgstr "å†…ç½®é¢œè‰²ä¸­æ²¡æœ‰å«ä½œ {key} çš„"
 
-#: janim\items\text.py:264
+#: janim/items/text.py:264
 #, python-brace-format
 msgid "\"{name}\" is not a valid rich text tag. (\"<{name} {params}>\")"
-msgstr "\"{name}\" ²»ÊÇÒ»¸öÓĞĞ§µÄ¸»ÎÄ±¾±êÇ© (\"<{name} {params}>\")"
+msgstr "\"{name}\" ä¸æ˜¯ä¸€ä¸ªæœ‰æ•ˆçš„å¯Œæ–‡æœ¬æ ‡ç­¾ (\"<{name} {params}>\")"
 
-#: janim\items\text.py:280
+#: janim/items/text.py:280
 #, python-brace-format
 msgid "While applying {name}, {params} did not match with {cvt_names}."
-msgstr "Ó¦ÓÃ {name} Ê±£¬{params} Óë {cvt_names} ²»Æ¥Åä"
+msgstr "åº”ç”¨ {name} æ—¶ï¼Œ{params} ä¸ {cvt_names} ä¸åŒ¹é…"
 
-#: janim\items\text.py:292
+#: janim/items/text.py:292
 #, python-brace-format
 msgid "While applying \"{name}\", {params} did not match any entry in {txt}."
-msgstr "Ó¦ÓÃ \"{name}\" Ê±£¬{params} Óë {txt} Ã»ÓĞÆ¥ÅäÏî"
+msgstr "åº”ç”¨ \"{name}\" æ—¶ï¼Œ{params} ä¸ {txt} æ²¡æœ‰åŒ¹é…é¡¹"
 
-#: janim\items\text.py:556
+#: janim/items/text.py:557
 #, python-brace-format
 msgid "Unmatched end tag \"</{name}>\", ignored."
-msgstr "Î´Æ¥ÅäµÄ½áÊø±êÇ© \"</{name}>\"£¬ÒÑºöÂÔ"
+msgstr "æœªåŒ¹é…çš„ç»“æŸæ ‡ç­¾ \"</{name}>\"ï¼Œå·²å¿½ç•¥"

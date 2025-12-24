@@ -7,22 +7,22 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-17 19:42+0800\n"
-"PO-Revision-Date: 2025-11-17 19:44+0800\n"
+"POT-Creation-Date: 2025-12-24 14:30+0800\n"
+"PO-Revision-Date: 2025-12-24 16:06+0800\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
-"Language: en_US\n"
+"Language: zh_CN\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
 "X-Generator: Poedit 3.8\n"
 
-#: janim\utils\typst_compile.py:102 janim\utils\typst_compile.py:139
+#: janim/utils/typst_compile.py:102 janim/utils/typst_compile.py:139
 msgid "Typst compilation error. Please check the output for more information."
 msgstr "Typst 编译错误，请检查输出信息"
 
-#: janim\utils\typst_compile.py:131
+#: janim/utils/typst_compile.py:131
 msgid ""
 "Could not compile Typst document by external executable. Please install "
 "Typst and add it to the environment variables, or use internal Typst instead."

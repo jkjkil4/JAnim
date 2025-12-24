@@ -8,30 +8,26 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-17 16:22+0800\n"
-"PO-Revision-Date: 2025-03-20 11:58+0800\n"
+"POT-Creation-Date: 2025-12-24 14:30+0800\n"
+"PO-Revision-Date: 2025-12-24 16:06+0800\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
 "Language: zh_CN\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 3.5\n"
+"X-Generator: Poedit 3.8\n"
 
-#: janim\utils\font\database.py:134
+#: janim/utils/font/database.py:137
 #, python-brace-format
 msgid "Skipped font \"{filepath}\""
 msgstr "跳过字体 \"{filepath}\""
 
-#: janim\utils\font\database.py:166
+#: janim/utils/font/database.py:169
 #, python-brace-format
 msgid "No font named \"{font_name}\""
 msgstr "没有叫作 \"{font_name}\" 的字体"
 
 #, python-brace-format
-#~ msgid ""
-#~ "font=\"{deprecated}\" is deprecated and will no longer be available in "
-#~ "JAnim 3.3, use font=\"{full_name}\" instead"
-#~ msgstr ""
-#~ "font=\"{deprecated}\" 已弃用，并将在 JAnim 3.3 中移除，请使用 "
-#~ "font=\"{full_name}\" 代替"
+#~ msgid "font=\"{deprecated}\" is deprecated and will no longer be available in JAnim 3.3, use font=\"{full_name}\" instead"
+#~ msgstr "font=\"{deprecated}\" 已弃用，并将在 JAnim 3.3 中移除，请使用 font=\"{full_name}\" 代替"

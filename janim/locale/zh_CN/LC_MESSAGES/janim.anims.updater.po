@@ -7,31 +7,31 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-22 19:59+0800\n"
-"PO-Revision-Date: 2025-03-06 10:43+0800\n"
+"POT-Creation-Date: 2025-12-24 14:30+0800\n"
+"PO-Revision-Date: 2025-12-24 15:59+0800\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
 "Language: zh_CN\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=GBK\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 3.5\n"
+"X-Generator: Poedit 3.8\n"
 
-#: janim\anims\updater.py:363
+#: janim/anims/updater.py:364
 #, python-brace-format
 msgid "There is no updatable method named {name} in {cmpt}"
-msgstr "ÔÚ {cmpt} ÖĞÃ»ÓĞÃûÎª {name} µÄ¿É¸üĞÂ·½·¨"
+msgstr "åœ¨ {cmpt} ä¸­æ²¡æœ‰åä¸º {name} çš„å¯æ›´æ–°æ–¹æ³•"
 
-#: janim\anims\updater.py:386
+#: janim/anims/updater.py:387
 #, python-brace-format
 msgid "{item} has no component or updatable method named {name}"
-msgstr "{item} Ã»ÓĞÃûÎª {name} µÄ×é¼ş»ò¿É¸üĞÂ·½·¨"
+msgstr "{item} æ²¡æœ‰åä¸º {name} çš„ç»„ä»¶æˆ–å¯æ›´æ–°æ–¹æ³•"
 
-#: janim\anims\updater.py:524
+#: janim/anims/updater.py:526
 #, python-brace-format
 msgid ""
 "The function passed to ItemUpdater must return an item, but got {ret} "
 "instead, defined in {file}:{lineno}"
 msgstr ""
-"´«Èë ItemUpdater µÄº¯Êı±ØĞëÒÔÒ»¸öÎï¼ş×÷Îª·µ»ØÖµ£¬¶ø·µ»ØµÄÊÇ {ret}£¬º¯Êı¶¨Òå"
-"ÓÚ {file}:{lineno}"
+"ä¼ å…¥ ItemUpdater çš„å‡½æ•°å¿…é¡»ä»¥ä¸€ä¸ªç‰©ä»¶ä½œä¸ºè¿”å›å€¼ï¼Œè€Œè¿”å›çš„æ˜¯ {ret}ï¼Œå‡½"
+"æ•°å®šä¹‰äº {file}:{lineno}"

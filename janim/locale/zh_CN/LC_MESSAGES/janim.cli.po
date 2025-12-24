@@ -7,90 +7,90 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-02 14:59+0800\n"
-"PO-Revision-Date: 2025-12-02 15:08+0800\n"
+"POT-Creation-Date: 2025-12-24 14:30+0800\n"
+"PO-Revision-Date: 2025-12-24 15:59+0800\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
 "Language: zh_CN\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=GBK\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Poedit 3.8\n"
 
-#: janim\cli.py:51 janim\cli.py:215
+#: janim/cli.py:53 janim/cli.py:217
 msgid "Constructing window"
-msgstr "¹¹½¨´°¿ÚÖĞ"
+msgstr "æ„å»ºçª—å£ä¸­"
 
-#: janim\cli.py:69 janim\cli.py:236
+#: janim/cli.py:71 janim/cli.py:238
 #, python-brace-format
 msgid "Finished constructing in {time:.2f} s"
-msgstr "¹¹½¨Íê³É£¬ºÄÊ± {time:.2f} s"
+msgstr "æ„å»ºå®Œæˆï¼Œè€—æ—¶ {time:.2f} s"
 
-#: janim\cli.py:96
+#: janim/cli.py:98
 msgid "'--video' is ignored because '--video_with_audio' is set"
-msgstr "'--video' ±»ºöÂÔ£¬ÒòÎªÒÑÉèÖÃ '--video_with_audio'"
+msgstr "'--video' è¢«å¿½ç•¥ï¼Œå› ä¸ºå·²è®¾ç½® '--video_with_audio'"
 
-#: janim\cli.py:99
+#: janim/cli.py:101
 msgid "'--audio' is ignored because '--video_with_audio' is set"
-msgstr "'--audio' ±»ºöÂÔ£¬ÒòÎªÒÑÉèÖÃ '--video_with_audio'"
+msgstr "'--audio' è¢«å¿½ç•¥ï¼Œå› ä¸ºå·²è®¾ç½® '--video_with_audio'"
 
-#: janim\cli.py:147
+#: janim/cli.py:149
 #, python-brace-format
 msgid "Skipping \"{name}\": no part to output"
-msgstr "Ìø¹ı \"{name}\": Ã»ÓĞĞèÒªÊä³öµÄ²¿·Ö"
+msgstr "è·³è¿‡ \"{name}\": æ²¡æœ‰éœ€è¦è¾“å‡ºçš„éƒ¨åˆ†"
 
-#: janim\cli.py:198
+#: janim/cli.py:200
 #, python-brace-format
 msgid "Generated SRT file \"{file_path}\""
-msgstr "ÒÑÉú³É SRT ÎÄ¼ş \"{file_path}\""
+msgstr "å·²ç”Ÿæˆ SRT æ–‡ä»¶ \"{file_path}\""
 
-#: janim\cli.py:207
+#: janim/cli.py:209
 msgid "No tool specified for use"
-msgstr "Î´Ö¸¶¨ËùÊ¹ÓÃµÄ¹¤¾ß"
+msgstr "æœªæŒ‡å®šæ‰€ä½¿ç”¨çš„å·¥å…·"
 
-#: janim\cli.py:299
+#: janim/cli.py:301
 #, python-brace-format
 msgid "\"{file_name}\" doesn't exist"
-msgstr "\"{file_name}\" ²»´æÔÚ"
+msgstr "\"{file_name}\" ä¸å­˜åœ¨"
 
-#: janim\cli.py:303
+#: janim/cli.py:305
 #, python-brace-format
 msgid "\"{file_name}\" isn't a file"
-msgstr "\"{file_name}\" ²»ÊÇÒ»¸öÎÄ¼ş"
+msgstr "\"{file_name}\" ä¸æ˜¯ä¸€ä¸ªæ–‡ä»¶"
 
-#: janim\cli.py:330
+#: janim/cli.py:332
 #, python-brace-format
 msgid "No timeline named \"{name}\""
-msgstr "Ã»ÓĞ½Ğ×÷ \"{name}\" µÄ Timeline"
+msgstr "æ²¡æœ‰å«ä½œ \"{name}\" çš„ Timeline"
 
-#: janim\cli.py:338
+#: janim/cli.py:340
 msgid ""
 "Multiple timelines found in stdin input. Please specify timeline names with "
 "command line arguments."
-msgstr "stdin ÊäÈëÖĞÓĞ¶à¸ö Timeline£¬ÇëÍ¨¹ıÃüÁîĞĞ²ÎÊı¾ßÌåÖ¸¶¨"
+msgstr "stdin è¾“å…¥ä¸­æœ‰å¤šä¸ª Timelineï¼Œè¯·é€šè¿‡å‘½ä»¤è¡Œå‚æ•°å…·ä½“æŒ‡å®š"
 
-#: janim\cli.py:352
+#: janim/cli.py:354
 msgid ""
 "That module has multiple timelines, which ones would you like to render?\n"
 "Timeline Name or Number: "
 msgstr ""
-"Õâ¸ö module ÖĞÓĞ¶à¸ö Timeline£¬ÄãÏëÒªäÖÈ¾ÄÄĞ©£¿\n"
-"Ê±¼äÖáÃû³Æ»òĞòºÅ£º"
+"è¿™ä¸ª module ä¸­æœ‰å¤šä¸ª Timelineï¼Œä½ æƒ³è¦æ¸²æŸ“å“ªäº›ï¼Ÿ\n"
+"æ—¶é—´è½´åç§°æˆ–åºå·ï¼š"
 
-#: janim\cli.py:370
+#: janim/cli.py:372
 #, python-brace-format
 msgid "Invaild number {num}"
-msgstr "ĞòºÅ {num} ÎŞĞ§"
+msgstr "åºå· {num} æ— æ•ˆ"
 
-#: janim\cli.py:376
+#: janim/cli.py:378
 #, python-brace-format
 msgid "No timeline named {split_str}"
-msgstr "Ã»ÓĞ½Ğ×÷ \"{split_str}\" µÄ Timeline"
+msgstr "æ²¡æœ‰å«ä½œ \"{split_str}\" çš„ Timeline"
 
 #~ msgid ""
 #~ "Unable to merge video. Please install ffmpeg and add it to the "
 #~ "environment variables."
-#~ msgstr "ÎŞ·¨ºÏ²¢ÊÓÆµ£¬ĞèÒª°²×° ffmpeg ²¢½«ÆäÌí¼Óµ½»·¾³±äÁ¿ÖĞ"
+#~ msgstr "æ— æ³•åˆå¹¶è§†é¢‘ï¼Œéœ€è¦å®‰è£… ffmpeg å¹¶å°†å…¶æ·»åŠ åˆ°ç¯å¢ƒå˜é‡ä¸­"
 
 #~ msgid "File saved to \"{file_path}\" (merged)"
-#~ msgstr "ÎÄ¼şÒÑ±£´æµ½ \"{file_path}\"£¨ÒÑºÏ²¢£©"
+#~ msgstr "æ–‡ä»¶å·²ä¿å­˜åˆ° \"{file_path}\"ï¼ˆå·²åˆå¹¶ï¼‰"

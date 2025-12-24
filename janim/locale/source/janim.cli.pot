@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-24 10:44+0800\n"
+"POT-Creation-Date: 2025-12-24 14:30+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,70 +17,70 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: janim\cli.py:53 janim\cli.py:217
+#: janim/cli.py:53 janim/cli.py:217
 msgid "Constructing window"
 msgstr ""
 
-#: janim\cli.py:71 janim\cli.py:238
+#: janim/cli.py:71 janim/cli.py:238
 #, python-brace-format
 msgid "Finished constructing in {time:.2f} s"
 msgstr ""
 
-#: janim\cli.py:98
+#: janim/cli.py:98
 msgid "'--video' is ignored because '--video_with_audio' is set"
 msgstr ""
 
-#: janim\cli.py:101
+#: janim/cli.py:101
 msgid "'--audio' is ignored because '--video_with_audio' is set"
 msgstr ""
 
-#: janim\cli.py:149
+#: janim/cli.py:149
 #, python-brace-format
 msgid "Skipping \"{name}\": no part to output"
 msgstr ""
 
-#: janim\cli.py:200
+#: janim/cli.py:200
 #, python-brace-format
 msgid "Generated SRT file \"{file_path}\""
 msgstr ""
 
-#: janim\cli.py:209
+#: janim/cli.py:209
 msgid "No tool specified for use"
 msgstr ""
 
-#: janim\cli.py:301
+#: janim/cli.py:301
 #, python-brace-format
 msgid "\"{file_name}\" doesn't exist"
 msgstr ""
 
-#: janim\cli.py:305
+#: janim/cli.py:305
 #, python-brace-format
 msgid "\"{file_name}\" isn't a file"
 msgstr ""
 
-#: janim\cli.py:332
+#: janim/cli.py:332
 #, python-brace-format
 msgid "No timeline named \"{name}\""
 msgstr ""
 
-#: janim\cli.py:340
+#: janim/cli.py:340
 msgid ""
 "Multiple timelines found in stdin input. Please specify timeline names with "
 "command line arguments."
 msgstr ""
 
-#: janim\cli.py:354
+#: janim/cli.py:354
 msgid ""
 "That module has multiple timelines, which ones would you like to render?\n"
 "Timeline Name or Number: "
 msgstr ""
 
-#: janim\cli.py:372
+#: janim/cli.py:372
 #, python-brace-format
 msgid "Invaild number {num}"
 msgstr ""
 
-#: janim\cli.py:378
+#: janim/cli.py:378
 #, python-brace-format
 msgid "No timeline named {split_str}"
 msgstr ""

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-24 10:44+0800\n"
+"POT-Creation-Date: 2025-12-24 14:30+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,27 +17,27 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: janim\items\text.py:47
+#: janim/items/text.py:47
 #, python-brace-format
 msgid "No built-in color named {key}"
 msgstr ""
 
-#: janim\items\text.py:264
+#: janim/items/text.py:264
 #, python-brace-format
 msgid "\"{name}\" is not a valid rich text tag. (\"<{name} {params}>\")"
 msgstr ""
 
-#: janim\items\text.py:280
+#: janim/items/text.py:280
 #, python-brace-format
 msgid "While applying {name}, {params} did not match with {cvt_names}."
 msgstr ""
 
-#: janim\items\text.py:292
+#: janim/items/text.py:292
 #, python-brace-format
 msgid "While applying \"{name}\", {params} did not match any entry in {txt}."
 msgstr ""
 
-#: janim\items\text.py:557
+#: janim/items/text.py:557
 #, python-brace-format
 msgid "Unmatched end tag \"</{name}>\", ignored."
 msgstr ""

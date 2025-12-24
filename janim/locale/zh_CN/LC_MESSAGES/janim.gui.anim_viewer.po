@@ -7,213 +7,209 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-03 08:35+0800\n"
-"PO-Revision-Date: 2025-12-03 08:37+0800\n"
+"POT-Creation-Date: 2025-12-24 14:50+0800\n"
+"PO-Revision-Date: 2025-12-24 15:54+0800\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
 "Language: zh_CN\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=GBK\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Poedit 3.8\n"
 
-#: janim\gui\anim_viewer.py:10
+#: janim/gui/anim_viewer.py:9
 msgid ""
 "Additional modules need to be installed when using the GUI interface, but "
 "they are not installed"
-msgstr "Ê¹ÓÃ GUI ½çÃæÊ±ĞèÒª°²×°¶îÍâÄ£¿é£¬µ«ÊÇÎ´°²×°"
+msgstr "ä½¿ç”¨ GUI ç•Œé¢æ—¶éœ€è¦å®‰è£…é¢å¤–æ¨¡å—ï¼Œä½†æ˜¯æœªå®‰è£…"
 
-#: janim\gui\anim_viewer.py:11
+#: janim/gui/anim_viewer.py:11
 msgid ""
 "You can install them using pip install \"janim[gui]\" and make sure you "
 "install them in the correct Python version"
 msgstr ""
-"Äã¿ÉÒÔÊ¹ÓÃ pip install \"janim[gui]\" ½øĞĞ°²×°£¬²¢È·±£Äã°²×°ÔÚÁËÕıÈ·µÄ "
-"Python °æ±¾ÖĞ"
+"ä½ å¯ä»¥ä½¿ç”¨ pip install \"janim[gui]\" è¿›è¡Œå®‰è£…ï¼Œå¹¶ç¡®ä¿ä½ å®‰è£…åœ¨äº†æ­£ç¡®çš„ "
+"Python ç‰ˆæœ¬ä¸­"
 
-#: janim\gui\anim_viewer.py:104
+#: janim/gui/anim_viewer.py:99
 msgid "Cannot watch stdin for changes"
-msgstr "ÎŞ·¨´Ó stdin ¼à²â±ä¸ü"
+msgstr "æ— æ³•ä» stdin ç›‘æµ‹å˜æ›´"
 
-#: janim\gui\anim_viewer.py:210
+#: janim/gui/anim_viewer.py:203
 msgid "File(&F)"
-msgstr "ÎÄ¼ş(&F)"
+msgstr "æ–‡ä»¶(&F)"
 
-#: janim\gui\anim_viewer.py:212
+#: janim/gui/anim_viewer.py:205
 msgid "Rebuild(&L)"
-msgstr "ÖØĞÂ¹¹½¨(&L)"
+msgstr "é‡æ–°æ„å»º(&L)"
 
-#: janim\gui\anim_viewer.py:218
+#: janim/gui/anim_viewer.py:211
 msgid "Export(&E)"
-msgstr "µ¼³ö(&E)"
+msgstr "å¯¼å‡º(&E)"
 
-#: janim\gui\anim_viewer.py:222
+#: janim/gui/anim_viewer.py:215
 msgid "Capture(&C)"
-msgstr "½ØÈ¡(&C)"
+msgstr "æˆªå–(&C)"
 
-#: janim\gui\anim_viewer.py:228
+#: janim/gui/anim_viewer.py:221
 msgid "Set In Point(&I)"
-msgstr "ÉèÖÃÈëµã(&I)"
+msgstr "è®¾ç½®å…¥ç‚¹(&I)"
 
-#: janim\gui\anim_viewer.py:232
+#: janim/gui/anim_viewer.py:225
 msgid "Set Out Point(&O)"
-msgstr "ÉèÖÃ³öµã(&O)"
+msgstr "è®¾ç½®å‡ºç‚¹(&O)"
 
-#: janim\gui\anim_viewer.py:236
+#: janim/gui/anim_viewer.py:229
 msgid "Reset In/Out Point(&R)"
-msgstr "ÖØÖÃÈëµã/³öµã(&R)"
+msgstr "é‡ç½®å…¥ç‚¹/å‡ºç‚¹(&R)"
 
-#: janim\gui\anim_viewer.py:241
+#: janim/gui/anim_viewer.py:234
 msgid "Clear Font Cache(&C)"
-msgstr "Çå¿Õ×ÖÌå»º´æ(&C)"
+msgstr "æ¸…ç©ºå­—ä½“ç¼“å­˜(&C)"
 
-#: janim\gui\anim_viewer.py:243
+#: janim/gui/anim_viewer.py:236
 msgid "View(&V)"
-msgstr "ÊÓÍ¼(&V)"
+msgstr "è§†å›¾(&V)"
 
-#: janim\gui\anim_viewer.py:245
+#: janim/gui/anim_viewer.py:238
 msgid "Stay on top(&T)"
-msgstr "´°¿ÚÖÃÇ°(&T)"
+msgstr "çª—å£ç½®å‰(&T)"
 
-#: janim\gui\anim_viewer.py:250
+#: janim/gui/anim_viewer.py:243
 msgid "Frame skip(&P)"
-msgstr "ÌøÖ¡(&P)"
+msgstr "è·³å¸§(&P)"
 
-#: janim\gui\anim_viewer.py:255
+#: janim/gui/anim_viewer.py:248
 msgid "Tools(&T)"
-msgstr "¹¤¾ß(&T)"
+msgstr "å·¥å…·(&T)"
 
-#: janim\gui\anim_viewer.py:257
+#: janim/gui/anim_viewer.py:250
 msgid "Subitem selector(&I)"
-msgstr "×ÓÎï¼şÑ¡ÔñÆ÷(&I)"
+msgstr "å­ç‰©ä»¶é€‰æ‹©å™¨(&I)"
 
-#: janim\gui\anim_viewer.py:262
-msgid "Draw(&D)"
-msgstr "»æÖÆ(&D)"
-
-#: janim\gui\anim_viewer.py:266
-msgid "Rich text editor(&R)"
-msgstr "¸»ÎÄ±¾±à¼­Æ÷(&R)"
-
-#: janim\gui\anim_viewer.py:270
-msgid "Font list(&F)"
-msgstr "×ÖÌåÁĞ±í(&F)"
-
-#: janim\gui\anim_viewer.py:274
-msgid "Color(&O)"
-msgstr "ÑÕÉ«(&O)"
-
-#: janim\gui\anim_viewer.py:280
+#: janim/gui/anim_viewer.py:259
 msgid "Copy time point(&T)"
-msgstr "¸´ÖÆÊ±¼äµã(&T)"
+msgstr "å¤åˆ¶æ—¶é—´ç‚¹(&T)"
 
-#: janim\gui\anim_viewer.py:341
+#: janim/gui/anim_viewer.py:320
 #, python-brace-format
 msgid "wnd_pos has wrong argument {wnd_pos}."
-msgstr "wnd_pos µÃµ½ÁË´íÎóµÄ²ÎÊı {wnd_pos}"
+msgstr "wnd_pos å¾—åˆ°äº†é”™è¯¯çš„å‚æ•° {wnd_pos}"
 
-#: janim\gui\anim_viewer.py:352
+#: janim/gui/anim_viewer.py:331
 #, python-brace-format
 msgid "wnd_monitor has invalid value {wnd_monitor}, use {range} instead."
-msgstr "wnd_monitor µÃµ½ÁËÎŞĞ§µÄÖµ {wnd_monitor}, ÇëÊ¹ÓÃ {range} ´úÌæ"
+msgstr "wnd_monitor å¾—åˆ°äº†æ— æ•ˆçš„å€¼ {wnd_monitor}, è¯·ä½¿ç”¨ {range} ä»£æ›¿"
 
-#: janim\gui\anim_viewer.py:510 janim\gui\anim_viewer.py:728
+#: janim/gui/anim_viewer.py:482 janim/gui/anim_viewer.py:680
 #, python-brace-format
 msgid "No timeline named \"{name}\" in \"{file}\""
-msgstr "Ã»ÓĞ½Ğ×÷ \"{name}\" µÄÊ±¼äÖá£¬¶ÔÓÚÎÄ¼ş \"{file}\" À´Ëµ"
+msgstr "æ²¡æœ‰å«ä½œ \"{name}\" çš„æ—¶é—´è½´ï¼Œå¯¹äºæ–‡ä»¶ \"{file}\" æ¥è¯´"
 
-#: janim\gui\anim_viewer.py:523
+#: janim/gui/anim_viewer.py:495
 msgid "Failed to rebuild"
-msgstr "ÖØĞÂ¹¹½¨Ê§°Ü"
+msgstr "é‡æ–°æ„å»ºå¤±è´¥"
 
-#: janim\gui\anim_viewer.py:612
+#: janim/gui/anim_viewer.py:563
 msgid "Copied!"
-msgstr "ÒÑ¸´ÖÆ!"
+msgstr "å·²å¤åˆ¶!"
 
-#: janim\gui\anim_viewer.py:666
+#: janim/gui/anim_viewer.py:613
 msgid "An error occurred during rendering, playback stopped"
-msgstr "äÖÈ¾¹ı³ÌÖĞ³öÏÖ´íÎó£¬²¥·ÅÍ£Ö¹"
+msgstr "æ¸²æŸ“è¿‡ç¨‹ä¸­å‡ºç°é”™è¯¯ï¼Œæ’­æ”¾åœæ­¢"
 
-#: janim\gui\anim_viewer.py:741
+#: janim/gui/anim_viewer.py:693
 msgid "Failed to build"
-msgstr "¹¹½¨Ê§°Ü"
+msgstr "æ„å»ºå¤±è´¥"
 
-#: janim\gui\anim_viewer.py:772
+#: janim/gui/anim_viewer.py:724
 #, python-brace-format
 msgid "Frame t={t:.2f} saved to \"{file_path}\""
-msgstr "Ö¡ t={t:.2f} ÒÑ±£´æµ½ \"{file_path}\""
+msgstr "å¸§ t={t:.2f} å·²ä¿å­˜åˆ° \"{file_path}\""
 
-#: janim\gui\anim_viewer.py:774 janim\gui\anim_viewer.py:794
-#: janim\gui\anim_viewer.py:835
+#: janim/gui/anim_viewer.py:726 janim/gui/anim_viewer.py:746
+#: janim/gui/anim_viewer.py:787
 msgid "Note"
-msgstr "ÌáÊ¾"
+msgstr "æç¤º"
 
-#: janim\gui\anim_viewer.py:775
+#: janim/gui/anim_viewer.py:727
 #, python-brace-format
 msgid "Captured to {file_path}"
-msgstr "ÒÑ½ØÈ¡ÖÁ {file_path}"
+msgstr "å·²æˆªå–è‡³ {file_path}"
 
-#: janim\gui\anim_viewer.py:795
+#: janim/gui/anim_viewer.py:747
 msgid "Output will start shortly. Please check the console for information."
-msgstr "¼´½«½øĞĞÊä³ö£¬ÇëÁôÒâ¿ØÖÆÌ¨ĞÅÏ¢"
+msgstr "å³å°†è¿›è¡Œè¾“å‡ºï¼Œè¯·ç•™æ„æ§åˆ¶å°ä¿¡æ¯"
 
-#: janim\gui\anim_viewer.py:828
+#: janim/gui/anim_viewer.py:780
 msgid "Exporting was cancelled"
-msgstr "µ¼³öÒÑÈ¡Ïû"
+msgstr "å¯¼å‡ºå·²å–æ¶ˆ"
 
-#: janim\gui\anim_viewer.py:836
+#: janim/gui/anim_viewer.py:788
 #, python-brace-format
 msgid "Output to {file_path} has been completed."
-msgstr "ÒÑÍê³ÉÊä³öÖÁ {file_path}"
+msgstr "å·²å®Œæˆè¾“å‡ºè‡³ {file_path}"
 
-#: janim\gui\anim_viewer.py:857
+#: janim/gui/anim_viewer.py:809
 msgid ""
 "Font cache cleared.\n"
 "Tip: Use this to load newly installed fonts without restarting JAnim."
 msgstr ""
-"×ÖÌå»º´æÒÑÇå¿Õ\n"
-"ÌáÊ¾£ºÓÃÓÚ¼ÓÔØĞÂ°²×°µÄ×ÖÌå£¬¶øÎŞĞèÖØÆô JAnim"
+"å­—ä½“ç¼“å­˜å·²æ¸…ç©º\n"
+"æç¤ºï¼šç”¨äºåŠ è½½æ–°å®‰è£…çš„å­—ä½“ï¼Œè€Œæ— éœ€é‡å¯ JAnim"
 
-#: janim\gui\anim_viewer.py:879
+#: janim/gui/anim_viewer.py:831
 #, python-brace-format
 msgid "Searching port has been opened at {port}"
-msgstr "ËÑË÷¶Ë¿ÚÒÑÔÚ {port} ¿ªÆô"
+msgstr "æœç´¢ç«¯å£å·²åœ¨ {port} å¼€å¯"
 
-#: janim\gui\anim_viewer.py:884
+#: janim/gui/anim_viewer.py:836
 #, python-brace-format
 msgid "Failed to open searching port at {port}"
-msgstr "ÎŞ·¨ÔÚ {port} ¿ªÆôËÑË÷¶Ë¿Ú"
+msgstr "æ— æ³•åœ¨ {port} å¼€å¯æœç´¢ç«¯å£"
 
-#: janim\gui\anim_viewer.py:889
+#: janim/gui/anim_viewer.py:841
 #, python-brace-format
 msgid ""
 "Searching port {port} is invalid, please use a number between 1024 and 65535 "
 "instead"
-msgstr "ËÑË÷¶Ë¿Ú {port} ÎŞĞ§£¬ÇëÊ¹ÓÃ 1024 ÖÁ 65535 Ö®¼äµÄÊı×Ö"
+msgstr "æœç´¢ç«¯å£ {port} æ— æ•ˆï¼Œè¯·ä½¿ç”¨ 1024 è‡³ 65535 ä¹‹é—´çš„æ•°å­—"
 
-#: janim\gui\anim_viewer.py:895
+#: janim/gui/anim_viewer.py:847
 msgid ""
 "Interactive development is disabled because the searching port is not "
 "established."
-msgstr "ÓÉÓÚËÑË÷¶Ë¿ÚÎ´½¨Á¢£¬½»»¥Ê½¿ª·¢²»¿ÉÓÃ"
+msgstr "ç”±äºæœç´¢ç«¯å£æœªå»ºç«‹ï¼Œäº¤äº’å¼å¼€å‘ä¸å¯ç”¨"
 
-#: janim\gui\anim_viewer.py:907
+#: janim/gui/anim_viewer.py:859
 #, python-brace-format
 msgid "Interactive port has been opened at {port}"
-msgstr "½»»¥¶Ë¿ÚÒÑÔÚ {port} ¿ªÆô"
+msgstr "äº¤äº’ç«¯å£å·²åœ¨ {port} å¼€å¯"
 
-#: janim\gui\anim_viewer.py:991
+#: janim/gui/anim_viewer.py:943
 #, python-brace-format
 msgid "Directly watching changes to \"{file}\""
-msgstr "Ö±½Ó¼à²â \"{file}\" µÄ±ä¶¯ÖĞ"
+msgstr "ç›´æ¥ç›‘æµ‹ \"{file}\" çš„å˜åŠ¨ä¸­"
+
+#~ msgid "Draw(&D)"
+#~ msgstr "ç»˜åˆ¶(&D)"
+
+#~ msgid "Rich text editor(&R)"
+#~ msgstr "å¯Œæ–‡æœ¬ç¼–è¾‘å™¨(&R)"
+
+#~ msgid "Font list(&F)"
+#~ msgstr "å­—ä½“åˆ—è¡¨(&F)"
+
+#~ msgid "Color(&O)"
+#~ msgstr "é¢œè‰²(&O)"
 
 #~ msgid ""
 #~ "Changes messages from the VS Code extension will be ignored in direct "
 #~ "watch mode"
-#~ msgstr "Ö±½Ó¼à²âÊ±£¬½«ºöÂÔ VS Code ²å¼ş´«µİµÄ±ä¸üÏûÏ¢"
+#~ msgstr "ç›´æ¥ç›‘æµ‹æ—¶ï¼Œå°†å¿½ç•¥ VS Code æ’ä»¶ä¼ é€’çš„å˜æ›´æ¶ˆæ¯"
 
 #~ msgid "Functions(&F)"
-#~ msgstr "¹¦ÄÜ(&F)"
+#~ msgstr "åŠŸèƒ½(&F)"
 
 #~ msgid "Paint(&P)"
-#~ msgstr "»æÖÆ(&P)"
+#~ msgstr "ç»˜åˆ¶(&P)"

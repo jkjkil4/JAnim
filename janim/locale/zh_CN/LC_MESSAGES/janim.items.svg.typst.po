@@ -7,45 +7,42 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-17 18:12+0800\n"
-"PO-Revision-Date: 2025-05-08 12:44+0800\n"
+"POT-Creation-Date: 2025-12-24 14:30+0800\n"
+"PO-Revision-Date: 2025-12-24 16:02+0800\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
 "Language: zh_CN\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=GBK\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 3.6\n"
+"X-Generator: Poedit 3.8\n"
 
-#: janim\items\svg\typst.py:138
+#: janim/items/svg/typst.py:138
 #, python-brace-format
 msgid "{var} is not a valid value for embedding in Typst"
-msgstr "{var} ²»ÊÇÒ»¸ö¿É±»Ç¶Èë Typst µÄÓĞĞ§Öµ"
+msgstr "{var} ä¸æ˜¯ä¸€ä¸ªå¯è¢«åµŒå…¥ Typst çš„æœ‰æ•ˆå€¼"
 
-#: janim\items\svg\typst.py:315
+#: janim/items/svg/typst.py:313
 #, python-brace-format
 msgid "No matches found for {pattern}"
-msgstr "Î´ÕÒµ½Óë {pattern} Æ¥ÅäµÄ½á¹û"
+msgstr "æœªæ‰¾åˆ°ä¸ {pattern} åŒ¹é…çš„ç»“æœ"
 
-#: janim\items\svg\typst.py:322
+#: janim/items/svg/typst.py:320
 #, python-brace-format
 msgid "{ordinal} is out of range for {count} matches"
-msgstr "{ordinal} ³¬³ö·¶Î§£¬Ö»ÓĞ {count} ¸öÆ¥ÅäÏî"
+msgstr "{ordinal} è¶…å‡ºèŒƒå›´ï¼Œåªæœ‰ {count} ä¸ªåŒ¹é…é¡¹"
 
-#: janim\items\svg\typst.py:338
+#: janim/items/svg/typst.py:336
 #, python-brace-format
 msgid "ordinal {} is invalid"
-msgstr "ĞòÊıË÷Òı {} ÎŞĞ§"
+msgstr "åºæ•°ç´¢å¼• {} æ— æ•ˆ"
 
-#~ msgid ""
-#~ "Could not compile Typst file. Please install Typst and add it to the "
-#~ "environment variables."
-#~ msgstr "ÎŞ·¨±àÒë Typst ÎÄ¼ş£¬ĞèÒª°²×° Typst ²¢½«ÆäÌí¼Óµ½»·¾³±äÁ¿ÖĞ"
+#~ msgid "Could not compile Typst file. Please install Typst and add it to the environment variables."
+#~ msgstr "æ— æ³•ç¼–è¯‘ Typst æ–‡ä»¶ï¼Œéœ€è¦å®‰è£… Typst å¹¶å°†å…¶æ·»åŠ åˆ°ç¯å¢ƒå˜é‡ä¸­"
 
-#~ msgid ""
-#~ "Typst compilation error. Please check the output for more information."
-#~ msgstr "Typst ±àÒë´íÎó£¬Çë¼ì²éÊä³öĞÅÏ¢"
+#~ msgid "Typst compilation error. Please check the output for more information."
+#~ msgstr "Typst ç¼–è¯‘é”™è¯¯ï¼Œè¯·æ£€æŸ¥è¾“å‡ºä¿¡æ¯"
 
 #, python-brace-format
 #~ msgid "Invalid var: {var}"
-#~ msgstr "ÎŞĞ§µÄ var: {var}"
+#~ msgstr "æ— æ•ˆçš„ var: {var}"

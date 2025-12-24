@@ -7,46 +7,46 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-17 15:33+0800\n"
-"PO-Revision-Date: 2025-03-04 10:01+0800\n"
+"POT-Creation-Date: 2025-12-24 14:30+0800\n"
+"PO-Revision-Date: 2025-12-24 15:58+0800\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
 "Language: zh_CN\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=GBK\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 3.5\n"
+"X-Generator: Poedit 3.8\n"
 
-#: janim\anims\timeline.py:98
+#: janim/anims/timeline.py:98
 #, python-brace-format
 msgid "{name} cannot be used outside of Timeline.construct"
-msgstr "{name} ÎŞ·¨ÔÚ Timeline.construct Ö®ÍâÊ¹ÓÃ"
+msgstr "{name} æ— æ³•åœ¨ Timeline.construct ä¹‹å¤–ä½¿ç”¨"
 
-#: janim\anims\timeline.py:200
+#: janim/anims/timeline.py:200
 #, python-brace-format
 msgid "Building \"{name}\""
-msgstr "¹¹½¨ \"{name}\" ÖĞ"
+msgstr "æ„å»º \"{name}\" ä¸­"
 
-#: janim\anims\timeline.py:215
+#: janim/anims/timeline.py:215
 #, python-brace-format
 msgid ""
 "\"{name}\" did not produce a duration after construction, automatically "
 "generated a duration of {duration}s"
-msgstr "\"{name}\" ¹¹½¨ºóÃ»ÓĞ²úÉúÊ±³¤£¬×Ô¶¯²úÉúÁË {duration}s µÄÊ±³¤"
+msgstr "\"{name}\" æ„å»ºåæ²¡æœ‰äº§ç”Ÿæ—¶é•¿ï¼Œè‡ªåŠ¨äº§ç”Ÿäº† {duration}s çš„æ—¶é•¿"
 
-#: janim\anims\timeline.py:231
+#: janim/anims/timeline.py:231
 #, python-brace-format
 msgid "Finished building \"{name}\" in {elapsed:.2f} s"
-msgstr "¹¹½¨ \"{name}\" Íê³É£¬ºÄÊ± {elapsed:.2f} s"
+msgstr "æ„å»º \"{name}\" å®Œæˆï¼Œè€—æ—¶ {elapsed:.2f} s"
 
-#: janim\anims\timeline.py:306
+#: janim/anims/timeline.py:306
 msgid "dt can't be negative"
-msgstr "dt ²»ÄÜÎª¸º"
+msgstr "dt ä¸èƒ½ä¸ºè´Ÿ"
 
-#: janim\anims\timeline.py:804
+#: janim/anims/timeline.py:824
 #, python-brace-format
 msgid "Called self.debug({repr}) at {loc}"
-msgstr "µ÷ÓÃÁË self.debug({repr}) ÔÚ {loc}"
+msgstr "è°ƒç”¨äº† self.debug({repr}) åœ¨ {loc}"
 
 #~ msgid "dt must be greater than 0"
-#~ msgstr "dt ±ØĞë´óÓÚ 0"
+#~ msgstr "dt å¿…é¡»å¤§äº 0"
