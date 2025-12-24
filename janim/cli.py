@@ -36,7 +36,7 @@ def run(args: Namespace) -> None:
     available_timeline_names = [timeline.__name__ for timeline in get_all_timelines_from_module(module)]
 
     # isort: off
-    from janim.gui.anim_viewer import AnimViewer    # 把这个放在第一个导入，确保进行其中对 pyside6 的检测
+    from janim.gui.anim_viewer import AnimViewer    # 把 gui 组件放在前面导入，确保对 pyside6 的检测
     from PySide6.QtCore import QPoint, QTimer
     from janim.gui.application import Application
 
@@ -209,9 +209,7 @@ def tool(args: Namespace) -> None:
         log.error(_('No tool specified for use'))
         return
 
-    # 不直接从对应的 module 导入，是为了经过 anim_viewer 中对 pyside6 安装的检查
-    from janim.gui.anim_viewer import (ColorWidget, FontTable, QWidget,
-                                       RichTextEditor)
+    from janim.gui.popup import ColorWidget, FontTable, RichTextEditor, QWidget
 
     log.info('======')
     log.info(_('Constructing window'))
