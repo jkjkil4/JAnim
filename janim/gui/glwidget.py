@@ -36,6 +36,12 @@ class GLWidget(QOpenGLWidget):
         gly = y / h * -2 + 1
         return glx, gly
 
+    def map_from_gl2d(self, glx: float, gly: float) -> QPointF:
+        return QPointF(
+            (glx + 1) / 2 * self.width(),
+            (-gly + 1) / 2 * self.height()
+        )
+
     def map_to_widget(self, x: float, y: float) -> QPointF:
         w, h = self.size().toTuple()
         xx = (x + 1) / 2 * w

@@ -48,6 +48,9 @@ class SelectPanel(HandlerPanel):
 
 
 class ItemBox:
+    """
+    物件及其可选中范围
+    """
     def __init__(self, item: Item, as_time: float, camera_info: CameraInfo, tolerance: np.ndarray):
         self.item = item
 
@@ -72,6 +75,11 @@ def select_next_item_at_position(
     position: QPointF,
     current: ItemBox | None
 ) -> ItemBox | None:
+    """
+    选取指定位置的下一个物件
+
+    所谓“下一个物件”，即对于每次发现可选取物件的列表，如果原先的物件 ``current`` 在列表中，则选取列表中的后一项
+    """
     glx, gly = viewer.glw.map_to_gl2d(position)
 
     global_t = viewer.built._time
@@ -99,20 +107,25 @@ def select_next_item_at_position(
 
 
 def compute_boxes_of_children(viewer: AnimViewer, item: Item) -> list[ItemBox]:
+    """
+    遍历 ``item`` 的子物件，计算每个子物件的 :class:`ItemBox`
+    """
     global_t = viewer.built._time
     camera_info = viewer.built.current_camera_info()
     tolerance = get_tolerance(viewer)
 
-    result: list[ItemBox] = []
-
-    for sub in item.get_children():
-        item_box = ItemBox(sub, global_t, camera_info, tolerance)
-        result.append(item_box)
-
-    return result
+    return [
+        ItemBox(sub, global_t, camera_info, tolerance)
+        for sub in item.get_children()
+    ]
 
 
 def get_tolerance(viewer: AnimViewer) -> np.ndarray:
+    """
+    得到选取框往四周预留的余量
+
+    有余量方便选中极细以及极小的物件
+    """
     return np.array([6 / viewer.glw.width(), 6 / viewer.glw.height()])
 
 

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from PySide6.QtCore import QEvent, QObject, QPointF, QRectF, Qt
+from PySide6.QtCore import QEvent, QObject, QRectF, Qt
 from PySide6.QtGui import QColor, QMouseEvent, QPainter, QPaintEvent
 
 from janim.gui.handlers.select import (ItemBox, compute_boxes_of_children,
@@ -47,12 +47,6 @@ class Selector(QObject):
 
         self.fixed_camera_info = info
         return info
-
-    def glx_to_overlay_x(self, glx: float) -> float:
-        return (glx + 1) / 2 * self.viewer.overlay.width()
-
-    def gly_to_overlay_y(self, gly: float) -> float:
-        return (-gly + 1) / 2 * self.viewer.overlay.height()
 
     def eventFilter(self, watched: QObject, event: QEvent) -> bool:
         if watched is self.viewer.glw:
@@ -177,13 +171,15 @@ class Selector(QObject):
             )
         ]
 
+        glw = self.viewer.glw
+
         if self.current is not None:
             p.setBrush(QColor(195, 131, 19, 32))
             p.setPen(QColor(195, 131, 19))
             p.drawRect(
                 QRectF(
-                    QPointF(self.glx_to_overlay_x(self.current.min_glx), self.gly_to_overlay_y(self.current.min_gly)),
-                    QPointF(self.glx_to_overlay_x(self.current.max_glx), self.gly_to_overlay_y(self.current.max_gly))
+                    glw.map_from_gl2d(self.current.min_glx, self.current.min_gly),
+                    glw.map_from_gl2d(self.current.max_glx, self.current.max_gly)
                 )
             )
 
@@ -192,8 +188,8 @@ class Selector(QObject):
             for child in self.selected_children:
                 p.drawRect(
                     QRectF(
-                        QPointF(self.glx_to_overlay_x(child.min_glx), self.gly_to_overlay_y(child.min_gly)),
-                        QPointF(self.glx_to_overlay_x(child.max_glx), self.gly_to_overlay_y(child.max_gly))
+                        glw.map_from_gl2d(child.min_glx, child.min_gly),
+                        glw.map_from_gl2d(child.max_glx, child.max_gly)
                     )
                 )
 
