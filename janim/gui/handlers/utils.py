@@ -170,7 +170,8 @@ class SourceDiff(QWidget):
                 match = re.fullmatch(regex, line)
                 if match is None:
                     raise GuiCommandError(
-                        _('无法找到 "{text}" 命令的调用处，请将命令单行书写并保持字符串完整')
+                        _('Could not find the call site of "{text}". '
+                          'Please put the command on a single line and keep the string intact')
                         .format(text=command.text)
                     )
                 # group(1): self(...) 之前的内容

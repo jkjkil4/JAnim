@@ -163,7 +163,10 @@ class AnimViewer(QMainWindow):
 
         command = self.built.timeline.gui_command
         if command is not None:
-            QTimer.singleShot(0, lambda: handle_command(self, command))
+            if self.is_stdin:
+                log.warning(_('Cannot process the GUI command from stdin input'))
+            else:
+                QTimer.singleShot(0, lambda: handle_command(self, command))
 
     # region setup_ui
 
