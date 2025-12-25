@@ -1,13 +1,18 @@
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
+from functools import lru_cache
 
-from PySide6.QtCore import Qt
+import numpy as np
+from PySide6.QtCore import QPointF, Qt
 from PySide6.QtWidgets import QVBoxLayout
 
+from janim.camera.camera_info import CameraInfo
 from janim.anims.timeline import Timeline
 from janim.gui.handlers.utils import (HandlerPanel, SourceDiff,
                                       get_confirm_buttons, jump)
+from janim.items.item import Item
+from janim.items.points import Points
 
 if TYPE_CHECKING:
     from janim.gui.anim_viewer import AnimViewer
@@ -40,3 +45,81 @@ class SelectPanel(HandlerPanel):
         btn_ok.clicked.connect(diff.submit)
         btn_cancel.clicked.connect(self.close)
         diff.submitted.connect(self.close_and_rebuild_timeline)
+
+
+class ItemBox:
+    def __init__(self, item: Item, as_time: float, camera_info: CameraInfo, tolerance: np.ndarray):
+        self.item = item
+
+        box = item.current(as_time=as_time)(Points).points.box
+        if item.is_fix_in_frame():
+            mapped = get_fixed_camera_info().map_points(box.get_corners())
+        else:
+            mapped = camera_info.map_points(box.get_corners())
+
+        self.min_glx, self.min_gly = mapped.min(axis=0) - tolerance
+        self.max_glx, self.max_gly = mapped.max(axis=0) + tolerance
+
+    def contains(self, glx: float, gly: float) -> bool:
+        return self.min_glx <= glx <= self.max_glx and self.min_gly <= gly <= self.max_gly
+
+    def __eq__(self, other: ItemBox) -> bool:
+        return self.item is other.item
+
+
+def select_next_item_at_position(
+    viewer: AnimViewer,
+    position: QPointF,
+    current: ItemBox | None
+) -> ItemBox | None:
+    glx, gly = viewer.glw.map_to_gl2d(position)
+
+    global_t = viewer.built._time
+    camera_info = viewer.built.current_camera_info()
+    tolerance = get_tolerance(viewer)
+
+    found: list[ItemBox] = []
+
+    for item, appr in viewer.built.visible_item_segments.get(global_t):
+        if not appr.is_visible_at(global_t):
+            continue
+        item_box = ItemBox(item, global_t, camera_info, tolerance)
+        if not item_box.contains(glx, gly):
+            continue
+        found.append(item_box)
+
+    if not found:
+        return None
+
+    if current is None or current not in found:
+        return found[0]
+
+    idx = found.index(current)
+    return found[(idx + 1) % len(found)]
+
+
+def compute_boxes_of_children(viewer: AnimViewer, item: Item) -> list[ItemBox]:
+    global_t = viewer.built._time
+    camera_info = viewer.built.current_camera_info()
+    tolerance = get_tolerance(viewer)
+
+    result: list[ItemBox] = []
+
+    for sub in item.get_children():
+        item_box = ItemBox(sub, global_t, camera_info, tolerance)
+        result.append(item_box)
+
+    return result
+
+
+def get_tolerance(viewer: AnimViewer) -> np.ndarray:
+    return np.array([6 / viewer.glw.width(), 6 / viewer.glw.height()])
+
+
+@lru_cache
+def get_fixed_camera_info() -> CameraInfo:
+    """
+    用于辅助计算 fixed-in-frame 物件的 bounding
+    """
+    from janim.camera.camera import Camera
+    return Camera().points.info
