@@ -7,7 +7,7 @@ from functools import wraps
 from typing import TYPE_CHECKING
 
 from PySide6.QtCore import QSettings, QTimer, Signal
-from PySide6.QtWidgets import (QApplication, QDialogButtonBox, QLabel,
+from PySide6.QtWidgets import (QApplication, QDialogButtonBox, QFrame, QLabel,
                                QMessageBox, QPushButton, QVBoxLayout, QWidget)
 
 from janim.anims.timeline import Timeline
@@ -123,7 +123,7 @@ class HandlerPanel(QWidget):
         return None if text is None else int(text)
 
 
-class SourceDiff(QWidget):
+class SourceDiff(QFrame):
     """
     显示 ``lineno`` 前后两行的代码，并将修改的代码并列对比
     """
@@ -134,6 +134,10 @@ class SourceDiff(QWidget):
         super().__init__(parent)
         self.setStyleSheet(
             '''
+            SourceDiff {
+                border: 1px solid #555555;
+                border-radius: 4px;
+            }
             QLabel {
                 font-family: Consolas;
                 font-size: 10pt;

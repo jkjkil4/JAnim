@@ -1,40 +1,61 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+import traceback
 from functools import lru_cache
+from typing import TYPE_CHECKING
 
 import numpy as np
-from PySide6.QtCore import QPointF, Qt
-from PySide6.QtWidgets import QVBoxLayout
+from PySide6.QtCore import QEvent, QObject, QPointF, QRectF, Qt, QTimer
+from PySide6.QtGui import QColor, QMouseEvent, QPainter, QPaintEvent
+from PySide6.QtWidgets import QLabel, QVBoxLayout
 
-from janim.camera.camera_info import CameraInfo
 from janim.anims.timeline import Timeline
+from janim.camera.camera_info import CameraInfo
 from janim.gui.handlers.utils import (HandlerPanel, SourceDiff,
                                       get_confirm_buttons, jump)
 from janim.items.item import Item
 from janim.items.points import Points
+from janim.locale.i18n import get_translator
+from janim.logger import log
 
 if TYPE_CHECKING:
     from janim.gui.anim_viewer import AnimViewer
 
+_ = get_translator('janim.gui.handlers.select')
+
 
 def handler(viewer: AnimViewer, command: Timeline.GuiCommand) -> None:
+    try:
+        item = eval(command.body, {}, command.locals)
+    except Exception:
+        traceback.print_exc()
+        log.error(_('Failed to parse parent item {body}').format(body=command.body))
+        return
+
     jump(viewer, command)
-    widget = SelectPanel(viewer, command)
+    widget = SelectPanel(viewer, command, item)
     widget.show()
 
 
 class SelectPanel(HandlerPanel):
-    def __init__(self, viewer: AnimViewer, command: Timeline.GuiCommand):
+    def __init__(self, viewer: AnimViewer, command: Timeline.GuiCommand, item: Item):
         super().__init__(viewer, command)
+        self.item = item
 
         # setup ui
 
-        diff = SourceDiff(command, self)
+        label_tips = QLabel(
+            _('Left Click: Select Child Item\n'
+              'Right Click: Deselect Child Item'),
+            self
+        )
+
+        self.diff = SourceDiff(command, self)
         btn_box, btn_ok, btn_cancel = get_confirm_buttons(self)
 
         vlayout = QVBoxLayout(self)
-        vlayout.addWidget(diff)
+        vlayout.addWidget(label_tips)
+        vlayout.addWidget(self.diff)
         vlayout.addStretch()
         vlayout.addWidget(btn_box, 0, Qt.AlignmentFlag.AlignRight)
 
@@ -42,9 +63,148 @@ class SelectPanel(HandlerPanel):
 
         # setup slots
 
-        btn_ok.clicked.connect(diff.submit)
+        btn_ok.clicked.connect(self.diff.submit)
         btn_cancel.clicked.connect(self.close)
-        diff.submitted.connect(self.close_and_rebuild_timeline)
+        self.diff.submitted.connect(self.close_and_rebuild_timeline)
+
+        # update
+
+        self.debounce_timer = QTimer(self)
+        self.debounce_timer.setInterval(500)
+        self.debounce_timer.setSingleShot(True)
+        self.debounce_timer.timeout.connect(self.compute_boxes)
+        self.viewer.timeline_view.value_changed.connect(self.debounce_timer.start)
+
+        self.selected_indices: list[int] = []
+        self.compute_boxes()
+        self.update_replacement()
+
+        # event filter
+
+        self.viewer.glw.installEventFilter(self)
+        self.viewer.overlay.installEventFilter(self)
+
+    def compute_boxes(self) -> None:
+        self.item_box = compute_box_of_item(self.viewer, self.item)
+        self.children_boxes = compute_boxes_of_children(self.viewer, self.item)
+
+    def update_replacement(self) -> None:
+        ranges: list[tuple[float, float]] = []
+        range_start = None
+        range_end = None
+
+        for i in range(len(self.children_boxes)):
+            if i in self.selected_indices:
+                if range_start is None:
+                    range_start = i
+                    range_end = i + 1
+                    continue
+
+                if i == range_end:
+                    range_end += 1
+                else:
+                    ranges.append((range_start, range_end))
+                    range_start = i
+                    range_end = i + 1
+        if range_start is not None:
+            ranges.append((range_start, range_end))
+
+        if not ranges:
+            self.diff.set_replacement('Group()')
+            return
+
+        replacements = [self.get_range_replacement(range) for range in ranges]
+        if len(replacements) == 1:
+            self.diff.set_replacement(replacements[0])
+            return
+
+        inner_parts = ', '.join(replacements)
+        self.diff.set_replacement(f'Group({inner_parts})')
+
+    def get_range_replacement(self, range: tuple[float, float]) -> str:
+        start, end = range
+        if start == end - 1:
+            return f'{self.command.body}[{start}]'
+        return f'{self.command.body}[{start}:{end}]'
+
+    def eventFilter(self, watched: QObject, event: QEvent) -> bool:
+        if watched is self.viewer.glw:
+            if event.type() in (QEvent.Type.MouseButtonPress, QEvent.Type.MouseButtonDblClick):
+                self.on_glw_mouse_press(event)
+            if event.type() == QEvent.Type.MouseMove:
+                self.on_glw_mouse_move(event)
+
+        if watched is self.viewer.overlay:
+            if event.type() == QEvent.Type.Paint:
+                self.on_overlay_paint(event)
+
+        return super().eventFilter(watched, event)
+
+    def on_glw_mouse_press(self, event: QMouseEvent) -> None:
+        match event.button():
+            case Qt.MouseButton.LeftButton:
+                self.select_child_item(event)
+            case Qt.MouseButton.RightButton:
+                self.remove_child_item(event)
+
+    def on_glw_mouse_move(self, event: QMouseEvent) -> None:
+        match event.buttons():
+            case Qt.MouseButton.LeftButton:
+                self.select_child_item(event)
+            case Qt.MouseButton.RightButton:
+                self.remove_child_item(event)
+
+    def select_child_item(self, event: QMouseEvent) -> None:
+        glx, gly = self.viewer.glw.map_to_gl2d(event.position())
+
+        for i, box in enumerate(self.children_boxes):
+            if i in self.selected_indices:
+                continue
+            if not box.contains(glx, gly):
+                continue
+            self.selected_indices.append(i)
+
+        self.update_replacement()
+        self.viewer.overlay.update()
+
+    def remove_child_item(self, event: QMouseEvent) -> None:
+        glx, gly = self.viewer.glw.map_to_gl2d(event.position())
+
+        for i in self.selected_indices:
+            box = self.children_boxes[i]
+            if not box.contains(glx, gly):
+                continue
+            self.selected_indices.remove(i)
+
+        self.update_replacement()
+        self.viewer.overlay.update()
+
+    def on_overlay_paint(self, event: QPaintEvent) -> None:
+        glw = self.viewer.glw
+
+        p = QPainter(self.viewer.overlay)
+
+        # 绘制父物件
+        p.setBrush(QColor(195, 131, 19, 32))
+        p.setPen(QColor(195, 131, 19))
+        p.drawRect(
+            QRectF(
+                glw.map_from_gl2d(self.item_box.min_glx, self.item_box.min_gly),
+                glw.map_from_gl2d(self.item_box.max_glx, self.item_box.max_gly)
+            )
+        )
+
+        # 绘制选中的子物件
+        p.setBrush(QColor(194, 102, 219, 64))
+        p.setPen(QColor(194, 102, 219))
+        for i in self.selected_indices:
+            box = self.children_boxes[i]
+            p.drawRect(
+                QRectF(
+                    glw.map_from_gl2d(box.min_glx, box.min_gly),
+                    glw.map_from_gl2d(box.max_glx, box.max_gly)
+                )
+            )
 
 
 class ItemBox:
@@ -106,6 +266,17 @@ def select_next_item_at_position(
     return found[(idx + 1) % len(found)]
 
 
+def compute_box_of_item(viewer: AnimViewer, item: Item) -> ItemBox:
+    """
+    计算 ``item`` 的 :class:`ItemBox`
+    """
+    global_t = viewer.built._time
+    camera_info = viewer.built.current_camera_info()
+    tolerance = get_tolerance(viewer)
+
+    return ItemBox(item, global_t, camera_info, tolerance)
+
+
 def compute_boxes_of_children(viewer: AnimViewer, item: Item) -> list[ItemBox]:
     """
     遍历 ``item`` 的子物件，计算每个子物件的 :class:`ItemBox`
@@ -126,7 +297,7 @@ def get_tolerance(viewer: AnimViewer) -> np.ndarray:
 
     有余量方便选中极细以及极小的物件
     """
-    return np.array([6 / viewer.glw.width(), 6 / viewer.glw.height()])
+    return np.array([4 / viewer.glw.width(), 4 / viewer.glw.height()])
 
 
 @lru_cache
