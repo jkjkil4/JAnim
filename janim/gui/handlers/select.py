@@ -126,7 +126,10 @@ class SelectPanel(HandlerPanel):
         start, end = range
         if start == end - 1:
             return f'{self.command.body}[{start}]'
-        return f'{self.command.body}[{start}:{end}]'
+
+        start_or_none = '' if start == 0 else start
+        end_or_none = '' if end == len(self.children_boxes) else end
+        return f'{self.command.body}[{start_or_none}:{end_or_none}]'
 
     def eventFilter(self, watched: QObject, event: QEvent) -> bool:
         if watched is self.viewer.glw:

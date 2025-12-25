@@ -208,6 +208,15 @@ class Timeline(metaclass=ABCMeta):
                 self.construct()
             except Timeline.GuiCommandInterrupt as e:
                 self.gui_command = e.command
+                self.forward(DEFAULT_DURATION, _record_lineno=False)    # 使用 GUI 命令的时候，额外产生一点时间，避免最后一帧的效果不可预览的问题
+                if not quiet:   # pragma: no cover
+                    log.info(
+                        indent_str + (
+                            _('Due to the use of a GUI command, '
+                              '"{name}" automatically generated an additional duration of {duration}s')
+                            .format(name=self.__class__.__name__, duration=DEFAULT_DURATION)
+                        )
+                    )
             finally:
                 self._build_frame = None
 
