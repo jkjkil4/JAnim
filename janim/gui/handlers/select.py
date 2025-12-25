@@ -70,7 +70,7 @@ class SelectPanel(HandlerPanel):
         # update
 
         self.debounce_timer = QTimer(self)
-        self.debounce_timer.setInterval(500)
+        self.debounce_timer.setInterval(200)
         self.debounce_timer.setSingleShot(True)
         self.debounce_timer.timeout.connect(self.compute_boxes)
         self.viewer.timeline_view.value_changed.connect(self.debounce_timer.start)
@@ -87,6 +87,7 @@ class SelectPanel(HandlerPanel):
     def compute_boxes(self) -> None:
         self.item_box = compute_box_of_item(self.viewer, self.item)
         self.children_boxes = compute_boxes_of_children(self.viewer, self.item)
+        self.viewer.overlay.update()
 
     def update_replacement(self) -> None:
         ranges: list[tuple[float, float]] = []
@@ -242,9 +243,7 @@ def select_next_item_at_position(
     """
     glx, gly = viewer.glw.map_to_gl2d(position)
 
-    global_t = viewer.built._time
-    camera_info = viewer.built.current_camera_info()
-    tolerance = get_tolerance(viewer)
+    global_t, camera_info, tolerance = get_compute_basic_attrs(viewer)
 
     found: list[ItemBox] = []
 
@@ -270,34 +269,28 @@ def compute_box_of_item(viewer: AnimViewer, item: Item) -> ItemBox:
     """
     计算 ``item`` 的 :class:`ItemBox`
     """
-    global_t = viewer.built._time
-    camera_info = viewer.built.current_camera_info()
-    tolerance = get_tolerance(viewer)
-
-    return ItemBox(item, global_t, camera_info, tolerance)
+    return ItemBox(item, *get_compute_basic_attrs(viewer))
 
 
 def compute_boxes_of_children(viewer: AnimViewer, item: Item) -> list[ItemBox]:
     """
     遍历 ``item`` 的子物件，计算每个子物件的 :class:`ItemBox`
     """
-    global_t = viewer.built._time
-    camera_info = viewer.built.current_camera_info()
-    tolerance = get_tolerance(viewer)
-
+    global_t, camera_info, tolerance = get_compute_basic_attrs(viewer)
     return [
         ItemBox(sub, global_t, camera_info, tolerance)
         for sub in item.get_children()
     ]
 
 
-def get_tolerance(viewer: AnimViewer) -> np.ndarray:
-    """
-    得到选取框往四周预留的余量
-
-    有余量方便选中极细以及极小的物件
-    """
-    return np.array([4 / viewer.glw.width(), 4 / viewer.glw.height()])
+def get_compute_basic_attrs(viewer: AnimViewer) -> tuple[float, CameraInfo, np.ndarray]:
+    tlview = viewer.timeline_view
+    return (
+        tlview.progress_to_time(tlview.progress()),
+        viewer.built.current_camera_info(),
+        # 选取框往四周预留的余量，有余量方便选中极细或极小的物件
+        np.array([4 / viewer.glw.width(), 4 / viewer.glw.height()])
+    )
 
 
 @lru_cache
