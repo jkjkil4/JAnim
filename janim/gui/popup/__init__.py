@@ -1,9 +1,7 @@
 from __future__ import annotations
 
-import sys
 from typing import TYPE_CHECKING
 
-from PySide6.QtCore import Qt
 from PySide6.QtGui import QAction
 from PySide6.QtWidgets import QMenu, QWidget
 
@@ -11,6 +9,7 @@ from janim.gui.popup.color_widget import ColorWidget
 from janim.gui.popup.font_table import FontTable
 from janim.gui.popup.painter import Painter
 from janim.gui.popup.richtext_editor import RichTextEditor
+from janim.gui.utils import apply_popup_flags
 from janim.locale.i18n import get_translator
 
 if TYPE_CHECKING:
@@ -42,9 +41,6 @@ def setup_popup_actions(viewer: AnimViewer, menu: QMenu) -> None:
     connect_action_widget(viewer, action_color_widget, ColorWidget)
 
 
-ACTION_WIDGET_FLAG_KEY = '__action_widget'
-
-
 def connect_action_widget(viewer: AnimViewer, action: QAction, widget_cls: type[QWidget]) -> None:
     widget = None
 
@@ -52,12 +48,8 @@ def connect_action_widget(viewer: AnimViewer, action: QAction, widget_cls: type[
         nonlocal widget
         if widget is None:
             widget = widget_cls(viewer)
-            widget.setWindowFlag(Qt.WindowType.Tool)
-            widget.setAttribute(Qt.WidgetAttribute.WA_DeleteOnClose)
-            widget.setAttribute(Qt.WidgetAttribute.WA_MacAlwaysShowToolWindow)
+            apply_popup_flags(widget)
             widget.destroyed.connect(destroyed)
-            if sys.platform == "darwin":
-                setattr(widget, ACTION_WIDGET_FLAG_KEY, True)
         widget.show()
 
     def destroyed() -> None:

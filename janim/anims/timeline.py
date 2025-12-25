@@ -206,6 +206,8 @@ class Timeline(metaclass=ABCMeta):
 
             try:
                 self.construct()
+            except Timeline.GuiCommandInterrupt as e:
+                self.gui_command = e.command
             finally:
                 self._build_frame = None
 
@@ -821,14 +823,18 @@ class Timeline(metaclass=ABCMeta):
             self.text = text
             self.name = text[:idx].strip()
             self.body = text[idx:].strip()
-            self.filename = frame.f_code.co_filename
+            self.filepath = frame.f_code.co_filename
             self.lineno = frame.f_lineno
             self.locals = frame.f_locals
 
+    class GuiCommandInterrupt(Exception):
+        def __init__(self, command: Timeline.GuiCommand):
+            super().__init__()
+            self.command = command
+
     def __call__(self, command_text: str) -> None:
-        if self.gui_command is not None:
-            return
-        self.gui_command = Timeline.GuiCommand(self.current_time, command_text, inspect.currentframe().f_back)
+        command = Timeline.GuiCommand(self.current_time, command_text, inspect.currentframe().f_back)
+        raise Timeline.GuiCommandInterrupt(command)
 
     # endregion
 
