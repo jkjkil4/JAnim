@@ -10,6 +10,7 @@ from PySide6.QtWidgets import QHBoxLayout, QLabel, QPushButton, QVBoxLayout
 
 from janim.anims.timeline import Timeline
 from janim.camera.camera_info import CameraInfo
+from janim.gui.handlers.select import BasicAttrs as SelectBasicAttrs
 from janim.gui.handlers.select import get_fixed_camera_info
 from janim.gui.handlers.utils import (HandlerPanel, SourceDiff,
                                       get_confirm_buttons, jump, parse_item)
@@ -44,9 +45,11 @@ class MovePanel(HandlerPanel):
         self.scripts = scripts
         self.items = items
 
-        global_t, self.camera_info, tolerance = get_compute_basic_attrs(viewer)
+        attrs = BasicAttrs(viewer)
+        self.camera_info = attrs.camera_info
         self.check_camera(self.camera_info)
-        self.boxes = [ItemBox(item, global_t, self.camera_info, tolerance) for item in items]
+
+        self.boxes = [ItemBox(item, attrs) for item in items]
         self.history = History(self.boxes)
 
         # setup ui
@@ -275,21 +278,26 @@ class ItemBox:
     """
     物件及其在视野坐标下的可选中范围
     """
-    def __init__(self, item: Item, as_time: float, camera_info: CameraInfo, tolerance: np.ndarray):
+    def __init__(self, item: Item, attrs: BasicAttrs):
         self.cls_name = item.__class__.__name__
 
-        box = item.current(as_time=as_time)(Points).points.box
-        if item.is_fix_in_frame():
-            mapped = get_fixed_camera_info().map_points(box.get_corners())
+        cmpt = item.current(as_time=attrs.global_t)(Points).points
+        if attrs.is_camera_axis_simple or item.is_fix_in_frame():
+            points = cmpt.box.get_corners()
         else:
-            mapped = camera_info.map_points(box.get_corners())
+            points = cmpt.get_all()
 
-        self.min_x, self.min_y = mapped.min(axis=0) * camera_info.frame_radius
-        self.max_x, self.max_y = mapped.max(axis=0) * camera_info.frame_radius
+        if item.is_fix_in_frame():
+            mapped = get_fixed_camera_info().map_points(points)
+        else:
+            mapped = attrs.camera_info.map_points(points)
+
+        self.min_x, self.min_y = np.nanmin(mapped, axis=0) * attrs.camera_info.frame_radius
+        self.max_x, self.max_y = np.nanmax(mapped, axis=0) * attrs.camera_info.frame_radius
 
         # s - select
-        self.min_sx, self.min_sy = (self.min_x, self.min_y) - tolerance
-        self.max_sx, self.max_sy = (self.max_x, self.max_y) + tolerance
+        self.min_sx, self.min_sy = (self.min_x, self.min_y) - attrs.tolerance
+        self.max_sx, self.max_sy = (self.max_x, self.max_y) + attrs.tolerance
 
         self.offset = np.array([0, 0])
 
@@ -298,12 +306,8 @@ class ItemBox:
         return self.min_sx <= x - offx <= self.max_sx and self.min_sy <= y - offy <= self.max_sy
 
 
-def get_compute_basic_attrs(viewer: AnimViewer) -> tuple[float, CameraInfo, np.ndarray]:
-    tlview = viewer.timeline_view
-    camera_info = viewer.built.current_camera_info()
-    return (
-        tlview.progress_to_time(tlview.progress()),
-        camera_info,
-        # 选取框往四周预留的余量，有余量方便选中极细或极小的物件，基于视野坐标
-        np.array([4 / viewer.glw.width(), 4 / viewer.glw.height()]) * camera_info.frame_size
-    )
+class BasicAttrs(SelectBasicAttrs):
+    def __init__(self, viewer: AnimViewer):
+        super().__init__(viewer)
+        # 让 tolerance 基于视野坐标
+        self.tolerance *= self.camera_info.frame_size

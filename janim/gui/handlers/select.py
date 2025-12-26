@@ -10,11 +10,13 @@ from PySide6.QtWidgets import QLabel, QVBoxLayout
 
 from janim.anims.timeline import Timeline
 from janim.camera.camera_info import CameraInfo
+from janim.constants import OUT
 from janim.gui.handlers.utils import (HandlerPanel, SourceDiff,
                                       get_confirm_buttons, jump, parse_item)
 from janim.items.item import Item
 from janim.items.points import Points
 from janim.locale.i18n import get_translator
+from janim.utils.space_ops import normalize
 
 if TYPE_CHECKING:
     from janim.gui.anim_viewer import AnimViewer
@@ -208,17 +210,22 @@ class ItemBox:
     """
     物件及其在 GL 坐标下的可选中范围，四周留有余量
     """
-    def __init__(self, item: Item, as_time: float, camera_info: CameraInfo, tolerance: np.ndarray):
+    def __init__(self, item: Item, attrs: BasicAttrs):
         self.item = item
 
-        box = item.current(as_time=as_time)(Points).points.box
-        if item.is_fix_in_frame():
-            mapped = get_fixed_camera_info().map_points(box.get_corners())
+        cmpt = item.current(as_time=attrs.global_t)(Points).points
+        if attrs.is_camera_axis_simple or item.is_fix_in_frame():
+            points = cmpt.box.get_corners()
         else:
-            mapped = camera_info.map_points(box.get_corners())
+            points = cmpt.get_all()
 
-        self.min_glx, self.min_gly = mapped.min(axis=0) - tolerance
-        self.max_glx, self.max_gly = mapped.max(axis=0) + tolerance
+        if item.is_fix_in_frame():
+            mapped = get_fixed_camera_info().map_points(points)
+        else:
+            mapped = attrs.camera_info.map_points(points)
+
+        self.min_glx, self.min_gly = np.nanmin(mapped, axis=0) - attrs.tolerance
+        self.max_glx, self.max_gly = np.nanmax(mapped, axis=0) + attrs.tolerance
 
     def contains(self, glx: float, gly: float) -> bool:
         return self.min_glx <= glx <= self.max_glx and self.min_gly <= gly <= self.max_gly
@@ -239,14 +246,14 @@ def select_next_item_at_position(
     """
     glx, gly = viewer.glw.map_to_gl2d(position)
 
-    global_t, camera_info, tolerance = get_compute_basic_attrs(viewer)
+    attrs = BasicAttrs(viewer)
 
     found: list[ItemBox] = []
 
-    for item, appr in viewer.built.visible_item_segments.get(global_t):
-        if not appr.is_visible_at(global_t):
+    for item, appr in viewer.built.visible_item_segments.get(attrs.global_t):
+        if not appr.is_visible_at(attrs.global_t):
             continue
-        item_box = ItemBox(item, global_t, camera_info, tolerance)
+        item_box = ItemBox(item, attrs)
         if not item_box.contains(glx, gly):
             continue
         found.append(item_box)
@@ -265,28 +272,31 @@ def compute_box_of_item(viewer: AnimViewer, item: Item) -> ItemBox:
     """
     计算 ``item`` 的 :class:`ItemBox`
     """
-    return ItemBox(item, *get_compute_basic_attrs(viewer))
+    return ItemBox(item, BasicAttrs(viewer))
 
 
 def compute_boxes_of_children(viewer: AnimViewer, item: Item) -> list[ItemBox]:
     """
     遍历 ``item`` 的子物件，计算每个子物件的 :class:`ItemBox`
     """
-    global_t, camera_info, tolerance = get_compute_basic_attrs(viewer)
     return [
-        ItemBox(sub, global_t, camera_info, tolerance)
+        ItemBox(sub, BasicAttrs(viewer))
         for sub in item.get_children()
     ]
 
 
-def get_compute_basic_attrs(viewer: AnimViewer) -> tuple[float, CameraInfo, np.ndarray]:
-    tlview = viewer.timeline_view
-    return (
-        tlview.progress_to_time(tlview.progress()),
-        viewer.built.current_camera_info(),
+class BasicAttrs:
+    def __init__(self, viewer: AnimViewer):
+        tlview = viewer.timeline_view
+
+        self.global_t = tlview.progress_to_time(tlview.progress())
+        self.camera_info = viewer.built.current_camera_info()
         # 选取框往四周预留的余量，有余量方便选中极细或极小的物件，基于 GL 坐标
-        np.array([4 / viewer.glw.width(), 4 / viewer.glw.height()])
-    )
+        self.tolerance = np.array([4 / viewer.glw.width(), 4 / viewer.glw.height()])
+
+        # 检查 camera_axis 是否只有单个分量
+        vec = np.sort(np.abs(normalize(self.camera_info.camera_axis)))  # 这一串只为了：归一化、绝对值、尽可能单个分量挪到最后
+        self.is_camera_axis_simple = np.isclose(vec, OUT).all()
 
 
 @lru_cache
