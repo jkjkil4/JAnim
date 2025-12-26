@@ -9,7 +9,6 @@ from PySide6.QtGui import (QColor, QIcon, QKeySequence, QLinearGradient,
 from PySide6.QtWidgets import QHBoxLayout, QLabel, QPushButton, QVBoxLayout
 
 from janim.anims.timeline import Timeline
-from janim.camera.camera_info import CameraInfo
 from janim.gui.handlers.select import BasicAttrs as SelectBasicAttrs
 from janim.gui.handlers.select import get_fixed_camera_info
 from janim.gui.handlers.utils import (HandlerPanel, SourceDiff,
@@ -17,7 +16,6 @@ from janim.gui.handlers.utils import (HandlerPanel, SourceDiff,
 from janim.items.item import Item
 from janim.items.points import Points
 from janim.locale.i18n import get_translator
-from janim.logger import log
 from janim.utils.file_ops import get_gui_asset
 from janim.utils.space_ops import normalize
 
@@ -47,7 +45,6 @@ class MovePanel(HandlerPanel):
 
         attrs = BasicAttrs(viewer)
         self.camera_info = attrs.camera_info
-        self.check_camera(self.camera_info)
 
         self.boxes = [ItemBox(item, attrs) for item in items]
         self.history = History(self.boxes)
@@ -108,18 +105,6 @@ class MovePanel(HandlerPanel):
         self.viewer.glw.installEventFilter(self)
         self.viewer.overlay.installEventFilter(self)
 
-    def check_camera(self, camera_info: CameraInfo) -> None:
-        camera_vec = normalize(camera_info.camera_axis)
-
-        for script, item in zip(self.scripts, self.items):
-            item_vec = item(Points).points.unit_normal
-            if not np.isclose(abs(np.dot(camera_vec, item_vec)), 1.0):
-                log.warning(
-                    _('In "move" GUI command, the item from "{script}" is not '
-                      'parallel to the view plane, behavior may be incorrect')
-                    .format(script=script)
-                )
-
     def on_btn_undo_clicked(self) -> None:
         self.history.undo()
         self.update_btn_state()
@@ -137,9 +122,18 @@ class MovePanel(HandlerPanel):
         self.btn_redo.setEnabled(self.history.redoable())
 
     def update_replacement(self) -> None:
+        def get_line(script: str, item: Item, box: ItemBox) -> str:
+            offx, offy = box.offset
+            if item.is_fix_in_frame():
+                return f'{script}.points.shift([{round(offx, 2)}, {round(offy, 2)}, 0])'
+            hor = normalize(self.camera_info.horizontal_vect)
+            ver = normalize(self.camera_info.vertical_vect)
+            offset = np.round(hor * offx + ver * offy, 2)
+            return f'{script}.points.shift([{offset[0]}, {offset[1]}, {offset[2]}])'
+
         lines = [
-            f'{script}.points.shift([{box.offset[0]:.2f}, {box.offset[1]:.2f}, 0])'
-            for script, box in zip(self.scripts, self.boxes)
+            get_line(script, item, box)
+            for script, item, box in zip(self.scripts, self.items, self.boxes)
             if np.any(box.offset != 0)
         ]
         self.diff.set_replacement('\n'.join(lines))
