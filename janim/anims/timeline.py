@@ -1072,7 +1072,7 @@ class BuiltTimeline:
             self.capture_fbo = create_framebuffer(ctx, pw, ph)
 
         fbo = self.capture_fbo
-        with framebuffer_context(self.capture_fbo):
+        with framebuffer_context(fbo):
             fbo.clear(*self.cfg.background_color.rgb, not transparent)
             if transparent:
                 gl.glFlush()
