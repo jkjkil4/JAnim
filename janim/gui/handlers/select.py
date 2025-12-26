@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import traceback
 from functools import lru_cache
 from typing import TYPE_CHECKING
 
@@ -12,11 +11,10 @@ from PySide6.QtWidgets import QLabel, QVBoxLayout
 from janim.anims.timeline import Timeline
 from janim.camera.camera_info import CameraInfo
 from janim.gui.handlers.utils import (HandlerPanel, SourceDiff,
-                                      get_confirm_buttons, jump)
+                                      get_confirm_buttons, jump, parse_item)
 from janim.items.item import Item
 from janim.items.points import Points
 from janim.locale.i18n import get_translator
-from janim.logger import log
 
 if TYPE_CHECKING:
     from janim.gui.anim_viewer import AnimViewer
@@ -25,12 +23,7 @@ _ = get_translator('janim.gui.handlers.select')
 
 
 def handler(viewer: AnimViewer, command: Timeline.GuiCommand) -> None:
-    try:
-        item = eval(command.body, {}, command.locals)
-    except Exception:
-        traceback.print_exc()
-        log.error(_('Failed to parse parent item {body}').format(body=command.body))
-        return
+    item = parse_item(command.body, command.locals)
 
     jump(viewer, command)
     widget = SelectPanel(viewer, command, item)
@@ -87,7 +80,7 @@ class SelectPanel(HandlerPanel):
     def compute_boxes(self) -> None:
         self.item_box = compute_box_of_item(self.viewer, self.item)
         self.children_boxes = compute_boxes_of_children(self.viewer, self.item)
-        self.viewer.overlay.update()
+        self.update_overlay()
 
     def update_replacement(self) -> None:
         ranges: list[tuple[float, float]] = []
@@ -169,7 +162,7 @@ class SelectPanel(HandlerPanel):
             self.selected_indices.append(i)
 
         self.update_replacement()
-        self.viewer.overlay.update()
+        self.update_overlay()
 
     def remove_child_item(self, event: QMouseEvent) -> None:
         glx, gly = self.viewer.glw.map_to_gl2d(event.position())
@@ -181,7 +174,7 @@ class SelectPanel(HandlerPanel):
             self.selected_indices.remove(i)
 
         self.update_replacement()
-        self.viewer.overlay.update()
+        self.update_overlay()
 
     def on_overlay_paint(self, event: QPaintEvent) -> None:
         glw = self.viewer.glw
@@ -213,7 +206,7 @@ class SelectPanel(HandlerPanel):
 
 class ItemBox:
     """
-    物件及其可选中范围
+    物件及其在 GL 坐标下的可选中范围，四周留有余量
     """
     def __init__(self, item: Item, as_time: float, camera_info: CameraInfo, tolerance: np.ndarray):
         self.item = item
@@ -291,7 +284,7 @@ def get_compute_basic_attrs(viewer: AnimViewer) -> tuple[float, CameraInfo, np.n
     return (
         tlview.progress_to_time(tlview.progress()),
         viewer.built.current_camera_info(),
-        # 选取框往四周预留的余量，有余量方便选中极细或极小的物件
+        # 选取框往四周预留的余量，有余量方便选中极细或极小的物件，基于 GL 坐标
         np.array([4 / viewer.glw.width(), 4 / viewer.glw.height()])
     )
 

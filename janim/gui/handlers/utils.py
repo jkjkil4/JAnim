@@ -13,7 +13,9 @@ from PySide6.QtWidgets import (QApplication, QDialogButtonBox, QFrame, QLabel,
 from janim.anims.timeline import Timeline
 from janim.exception import GuiCommandError
 from janim.gui.utils import apply_popup_flags
+from janim.items.item import Item
 from janim.locale.i18n import get_translator
+from janim.logger import log
 from janim.utils.config import Config
 
 if TYPE_CHECKING:
@@ -29,6 +31,25 @@ def jump(viewer: AnimViewer, command: Timeline.GuiCommand) -> None:
     tlview = viewer.timeline_view
     tlview.set_progress(tlview.time_to_progress(command.global_t))
     viewer.set_play_state(False)
+
+
+def parse_item(script: str, locals: dict) -> Item:
+    try:
+        item = eval(script, {}, locals)
+    except Exception:
+        QTimer.singleShot(
+            0,
+            lambda: log.error(_('Failed to parse item "{script}"').format(script=script))
+        )
+        raise
+
+    if not isinstance(item, Item):
+        raise GuiCommandError(
+            _('The object from "{script}" is not a item, found {type}')
+            .format(script=script, type=item.__class__.__name__)
+        )
+
+    return item
 
 
 def get_confirm_buttons(parent: QWidget) -> tuple[QDialogButtonBox, QPushButton, QPushButton]:
@@ -74,6 +95,9 @@ class HandlerPanel(QWidget):
         apply_popup_flags(self)
 
         self.loaded = False
+
+    def update_overlay(self) -> None:
+        self.viewer.overlay.update()
 
     def close_and_rebuild_timeline(self) -> None:
         self.close()
@@ -184,6 +208,8 @@ class SourceDiff(QFrame):
                 self.match_left = match.group(1)
                 self.match_right = match.group(3)
 
+                self.left_spaces = ' ' * len(self.match_left)   # 用于填充多行 replacement 的左侧字符
+
         vlayout = QVBoxLayout(self)
         vlayout.setContentsMargins(0, 0, 0, 0)
         vlayout.setSpacing(0)
@@ -195,7 +221,13 @@ class SourceDiff(QFrame):
         self.set_replacement('')
 
     def set_replacement(self, replacement: str) -> None:
-        self.replace_label.setText(f'{self.match_left}{replacement}{self.match_right}')
+        lines = [
+            f'{self.match_left if i == 0 else self.left_spaces}'
+            f'{line}'
+            f'{"" if i == 0 else self.match_right}'
+            for i, line in enumerate(replacement.split('\n'))
+        ]
+        self.replace_label.setText('\n'.join(lines))
 
     @slient_runtime_error
     def submit(self) -> None:
