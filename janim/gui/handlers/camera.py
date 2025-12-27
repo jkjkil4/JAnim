@@ -32,7 +32,7 @@ def handler(viewer: AnimViewer, command: Timeline.GuiCommand) -> None:
         camera = parse_item(command.body, command.locals)
         if not isinstance(camera, Camera):
             raise GuiCommandError(
-                _('The item from "{script}" is not a Camera, found {type}')
+                _('The {type} item from "{script}" is not a Camera')
                 .format(script=command.body, type=camera.__class__.__name__)
             )
     else:

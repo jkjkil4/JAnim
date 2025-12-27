@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-25 14:00+0800\n"
+"POT-Creation-Date: 2025-12-28 00:29+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,36 +17,46 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: janim/gui/handlers/utils.py:42
+#: janim/gui/handlers/utils.py:44
+#, python-brace-format
+msgid "Failed to parse item from \"{script}\""
+msgstr ""
+
+#: janim/gui/handlers/utils.py:50
+#, python-brace-format
+msgid "The {type} object from \"{script}\" is not a item"
+msgstr ""
+
+#: janim/gui/handlers/utils.py:65
 msgid "OK"
 msgstr ""
 
-#: janim/gui/handlers/utils.py:45
+#: janim/gui/handlers/utils.py:68
 msgid "Cancel"
 msgstr ""
 
-#: janim/gui/handlers/utils.py:173
+#: janim/gui/handlers/utils.py:233
 #, python-brace-format
 msgid ""
 "Could not find the call site of \"{text}\". Please put the command on a "
 "single line and keep the string intact"
 msgstr ""
 
-#: janim/gui/handlers/utils.py:204
+#: janim/gui/handlers/utils.py:272
 msgid "Confirm Replacement"
 msgstr ""
 
-#: janim/gui/handlers/utils.py:205
+#: janim/gui/handlers/utils.py:273
 #, python-brace-format
 msgid ""
 "{filename} has been modified.\n"
 "Do you want to overwrite it?"
 msgstr ""
 
-#: janim/gui/handlers/utils.py:211
+#: janim/gui/handlers/utils.py:279
 msgid "Yes(&Y)"
 msgstr ""
 
-#: janim/gui/handlers/utils.py:212
+#: janim/gui/handlers/utils.py:280
 msgid "No(&N)"
 msgstr ""

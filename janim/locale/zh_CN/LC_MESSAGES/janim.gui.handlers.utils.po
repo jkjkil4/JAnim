@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-25 14:00+0800\n"
-"PO-Revision-Date: 2025-12-25 14:08+0800\n"
+"POT-Creation-Date: 2025-12-28 00:29+0800\n"
+"PO-Revision-Date: 2025-12-28 02:02+0800\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
 "Language: zh_CN\n"
@@ -18,15 +18,25 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 "X-Generator: Poedit 3.8\n"
 
-#: janim/gui/handlers/utils.py:42
+#: janim/gui/handlers/utils.py:44
+#, python-brace-format
+msgid "Failed to parse item from \"{script}\""
+msgstr "从 \"{script}\" 解析物件失败"
+
+#: janim/gui/handlers/utils.py:50
+#, python-brace-format
+msgid "The {type} object from \"{script}\" is not a item"
+msgstr "由 \"{script}\" 得到的 {type} 对象不是一个物件"
+
+#: janim/gui/handlers/utils.py:65
 msgid "OK"
 msgstr "确定"
 
-#: janim/gui/handlers/utils.py:45
+#: janim/gui/handlers/utils.py:68
 msgid "Cancel"
 msgstr "取消"
 
-#: janim/gui/handlers/utils.py:173
+#: janim/gui/handlers/utils.py:233
 #, python-brace-format
 msgid ""
 "Could not find the call site of \"{text}\". Please put the command on a "
@@ -34,11 +44,11 @@ msgid ""
 msgstr ""
 "无法找到 \"{text}\" 命令的调用处，请将命令单行书写并保持字符串完整"
 
-#: janim/gui/handlers/utils.py:204
+#: janim/gui/handlers/utils.py:272
 msgid "Confirm Replacement"
 msgstr "确认替换"
 
-#: janim/gui/handlers/utils.py:205
+#: janim/gui/handlers/utils.py:273
 #, python-brace-format
 msgid ""
 "{filename} has been modified.\n"
@@ -47,10 +57,10 @@ msgstr ""
 "{filename} 已被修改。\n"
 "要覆盖它吗？"
 
-#: janim/gui/handlers/utils.py:211
+#: janim/gui/handlers/utils.py:279
 msgid "Yes(&Y)"
 msgstr "是(&Y)"
 
-#: janim/gui/handlers/utils.py:212
+#: janim/gui/handlers/utils.py:280
 msgid "No(&N)"
 msgstr "否(&N)"

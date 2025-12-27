@@ -41,13 +41,13 @@ def parse_item(script: str, locals: dict) -> Item:
     except Exception:
         QTimer.singleShot(
             0,
-            lambda: log.error(_('Failed to parse item "{script}"').format(script=script))
+            lambda: log.error(_('Failed to parse item from "{script}"').format(script=script))
         )
         raise
 
     if not isinstance(item, Item):
         raise GuiCommandError(
-            _('The object from "{script}" is not a item, found {type}')
+            _('The {type} object from "{script}" is not a item')
             .format(script=script, type=item.__class__.__name__)
         )
 
