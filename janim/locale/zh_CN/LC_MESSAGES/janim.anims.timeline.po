@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-24 14:30+0800\n"
-"PO-Revision-Date: 2025-12-24 15:58+0800\n"
+"POT-Creation-Date: 2025-12-25 22:50+0800\n"
+"PO-Revision-Date: 2025-12-25 22:53+0800\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
 "Language: zh_CN\n"
@@ -22,7 +22,7 @@ msgstr ""
 msgid "{name} cannot be used outside of Timeline.construct"
 msgstr "{name} 无法在 Timeline.construct 之外使用"
 
-#: janim/anims/timeline.py:200
+#: janim/anims/timeline.py:202
 #, python-brace-format
 msgid "Building \"{name}\""
 msgstr "构建 \"{name}\" 中"
@@ -30,20 +30,27 @@ msgstr "构建 \"{name}\" 中"
 #: janim/anims/timeline.py:215
 #, python-brace-format
 msgid ""
+"Due to the use of a GUI command, \"{name}\" automatically generated an "
+"additional duration of {duration}s"
+msgstr "由于使用了 GUI 命令，\"{name}\" 自动产生了 {duration}s 的额外时长"
+
+#: janim/anims/timeline.py:228
+#, python-brace-format
+msgid ""
 "\"{name}\" did not produce a duration after construction, automatically "
 "generated a duration of {duration}s"
 msgstr "\"{name}\" 构建后没有产生时长，自动产生了 {duration}s 的时长"
 
-#: janim/anims/timeline.py:231
+#: janim/anims/timeline.py:244
 #, python-brace-format
 msgid "Finished building \"{name}\" in {elapsed:.2f} s"
 msgstr "构建 \"{name}\" 完成，耗时 {elapsed:.2f} s"
 
-#: janim/anims/timeline.py:306
+#: janim/anims/timeline.py:319
 msgid "dt can't be negative"
 msgstr "dt 不能为负"
 
-#: janim/anims/timeline.py:824
+#: janim/anims/timeline.py:867
 #, python-brace-format
 msgid "Called self.debug({repr}) at {loc}"
 msgstr "调用了 self.debug({repr}) 在 {loc}"

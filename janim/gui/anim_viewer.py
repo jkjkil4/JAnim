@@ -25,9 +25,11 @@ from janim.exception import ExitException
 from janim.gui.application import Application
 from janim.gui.functions.selector import Selector
 from janim.gui.glwidget import GLWidget
+from janim.gui.handlers import handle_command
 from janim.gui.output import connect_to_output_slots, setup_output_actions
 from janim.gui.popup import setup_popup_actions
 from janim.gui.timeline_view import TimelineView
+from janim.gui.utils import ACTION_WIDGET_FLAG_KEY
 from janim.gui.utils.audio_player import AudioPlayer
 from janim.gui.utils.fixed_ratio_widget import FixedRatioWidget
 from janim.gui.utils.precise_timer import PreciseTimerWithFPS
@@ -47,6 +49,7 @@ class AnimViewer(QMainWindow):
 
     可以使用 ``AnimViewer.views(MyTimeline().build())`` 进行直接显示
     """
+    before_set_built = Signal()
     play_finished = Signal()
 
     def __init__(
@@ -111,6 +114,8 @@ class AnimViewer(QMainWindow):
         app.exec()
 
     def set_built(self, built: BuiltTimeline) -> None:
+        self.before_set_built.emit()
+
         self.built = built
 
         # data
@@ -155,6 +160,13 @@ class AnimViewer(QMainWindow):
             self.audio_player = AudioPlayer(self.built.cfg.audio_framerate,
                                             self.built.cfg.audio_channels,
                                             self.built.cfg.preview_fps)
+
+        command = self.built.timeline.gui_command
+        if command is not None:
+            if self.is_stdin:
+                log.warning(_('Cannot process the GUI command from stdin input'))
+            else:
+                QTimer.singleShot(0, lambda: handle_command(self, command))
 
     # region setup_ui
 

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-24 22:39+0800\n"
+"POT-Creation-Date: 2025-12-26 15:16+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,18 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: janim/gui/popup/font_table.py:24
-msgid "Font List"
-msgstr ""
-
-#: janim/gui/popup/font_table.py:60
-msgid "Family Name"
-msgstr ""
-
-#: janim/gui/popup/font_table.py:61
-msgid "Full Name"
-msgstr ""
-
-#: janim/gui/popup/font_table.py:62
-msgid "Display Name (includes multiple languages, make good use of search)"
+#: janim/gui/handlers/unknown.py:17
+#, python-brace-format
+msgid "Unknown GUI command \"{name}\""
 msgstr ""

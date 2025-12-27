@@ -169,9 +169,11 @@ class Timeline(metaclass=ABCMeta):
         self.time_aligner: TimeAligner = TimeAligner()
         self.item_appearances = Timeline.ItemAppearancesDict(self.time_aligner)
 
-        self.debug_list: list[Item] = []
-
         self.subtimeline_items: list[TimelineItem] = []
+
+        self.gui_command: Timeline.GuiCommand | None = None
+
+        self.debug_list: list[Item] = []
 
     @abstractmethod
     def construct(self) -> None:
@@ -204,6 +206,17 @@ class Timeline(metaclass=ABCMeta):
 
             try:
                 self.construct()
+            except Timeline.GuiCommandInterrupt as e:
+                self.gui_command = e.command
+                self.forward(DEFAULT_DURATION, _record_lineno=False)    # 使用 GUI 命令的时候，额外产生一点时间，避免最后一帧的效果不可预览的问题
+                if not quiet:   # pragma: no cover
+                    log.info(
+                        indent_str + (
+                            _('Due to the use of a GUI command, '
+                              '"{name}" automatically generated an additional duration of {duration}s')
+                            .format(name=self.__class__.__name__, duration=DEFAULT_DURATION)
+                        )
+                    )
             finally:
                 self._build_frame = None
 
@@ -773,6 +786,8 @@ class Timeline(metaclass=ABCMeta):
 
     # endregion
 
+    # endregion
+
     # region lineno
 
     def get_construct_lineno(self) -> int | None:
@@ -801,6 +816,34 @@ class Timeline(metaclass=ABCMeta):
         idx = bisect(toc, time, key=lambda x: x.time)
         idx = clip(idx, 0, len(toc) - 1)
         return toc[idx].line
+
+    # endregion
+
+    # region GUI command
+
+    class GuiCommand:
+        def __init__(self, global_t: float, text: str, frame: types.FrameType):
+            try:
+                idx = text.index(':')
+            except ValueError:
+                idx = len(text)
+
+            self.global_t = global_t
+            self.text = text
+            self.name = text[:idx].strip()
+            self.body = text[idx + 1:].strip()
+            self.filepath = frame.f_code.co_filename
+            self.lineno = frame.f_lineno
+            self.locals = frame.f_locals
+
+    class GuiCommandInterrupt(Exception):
+        def __init__(self, command: Timeline.GuiCommand):
+            super().__init__()
+            self.command = command
+
+    def __call__(self, command_text: str) -> None:
+        command = Timeline.GuiCommand(self.current_time, command_text, inspect.currentframe().f_back)
+        raise Timeline.GuiCommandInterrupt(command)
 
     # endregion
 
@@ -970,7 +1013,14 @@ class BuiltTimeline:
     def current_camera_info(self) -> CameraInfo:
         return self.timeline.compute_item(self.timeline.camera, self._time, True).points.info
 
-    def render_all(self, ctx: mgl.Context, global_t: float, *, blend_on: bool = True) -> bool:
+    def render_all(
+        self,
+        ctx: mgl.Context,
+        global_t: float,
+        *,
+        blend_on: bool = True,
+        camera: Camera | None = None
+    ) -> bool:
         """
         渲染所有可见物件
         """
@@ -984,7 +1034,8 @@ class BuiltTimeline:
             with ContextSetter(Animation.global_t_ctx, global_t),   \
                  ContextSetter(Timeline.ctx_var, self.timeline),    \
                  self.timeline.with_config():
-                camera = timeline.compute_item(timeline.camera, global_t, True)
+                if camera is None:
+                    camera = timeline.compute_item(timeline.camera, global_t, True)
                 camera_info = camera.points.info
                 anti_alias_radius = self.cfg.anti_alias_width / 2 * camera_info.scaled_factor
 

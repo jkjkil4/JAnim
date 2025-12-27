@@ -897,7 +897,7 @@ class Cmpt_Points[ItemT](Component[ItemT]):
             normal_vector = -normal_vector
 
         info = camera.points.info
-        camera_axis = info.camera_location - info.center
+        camera_axis = info.camera_axis
         camera_transform = rotation_between_vectors(normal_vector, camera_axis)
 
         up = np.cross(normal_vector, RIGHT)

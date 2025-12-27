@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-24 14:30+0800\n"
+"POT-Creation-Date: 2025-12-24 22:39+0800\n"
 "PO-Revision-Date: 2025-12-24 15:59+0800\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -17,11 +17,11 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Poedit 3.8\n"
 
-#: janim/cli.py:53 janim/cli.py:217
+#: janim/cli.py:53 janim/cli.py:215
 msgid "Constructing window"
 msgstr "构建窗口中"
 
-#: janim/cli.py:71 janim/cli.py:238
+#: janim/cli.py:71 janim/cli.py:236
 #, python-brace-format
 msgid "Finished constructing in {time:.2f} s"
 msgstr "构建完成，耗时 {time:.2f} s"
@@ -48,28 +48,28 @@ msgstr "已生成 SRT 文件 \"{file_path}\""
 msgid "No tool specified for use"
 msgstr "未指定所使用的工具"
 
-#: janim/cli.py:301
+#: janim/cli.py:299
 #, python-brace-format
 msgid "\"{file_name}\" doesn't exist"
 msgstr "\"{file_name}\" 不存在"
 
-#: janim/cli.py:305
+#: janim/cli.py:303
 #, python-brace-format
 msgid "\"{file_name}\" isn't a file"
 msgstr "\"{file_name}\" 不是一个文件"
 
-#: janim/cli.py:332
+#: janim/cli.py:330
 #, python-brace-format
 msgid "No timeline named \"{name}\""
 msgstr "没有叫作 \"{name}\" 的 Timeline"
 
-#: janim/cli.py:340
+#: janim/cli.py:338
 msgid ""
 "Multiple timelines found in stdin input. Please specify timeline names with "
 "command line arguments."
 msgstr "stdin 输入中有多个 Timeline，请通过命令行参数具体指定"
 
-#: janim/cli.py:354
+#: janim/cli.py:352
 msgid ""
 "That module has multiple timelines, which ones would you like to render?\n"
 "Timeline Name or Number: "
@@ -77,12 +77,12 @@ msgstr ""
 "这个 module 中有多个 Timeline，你想要渲染哪些？\n"
 "时间轴名称或序号："
 
-#: janim/cli.py:372
+#: janim/cli.py:370
 #, python-brace-format
 msgid "Invaild number {num}"
 msgstr "序号 {num} 无效"
 
-#: janim/cli.py:378
+#: janim/cli.py:376
 #, python-brace-format
 msgid "No timeline named {split_str}"
 msgstr "没有叫作 \"{split_str}\" 的 Timeline"

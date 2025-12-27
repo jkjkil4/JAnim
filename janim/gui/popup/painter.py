@@ -243,7 +243,7 @@ class Painter(QWidget):
             else:
                 p.setBrush(QColor(255, 255, 255, 128))
 
-            p.drawEllipse(self.viewer.glw.map_to_widget(*info.map_points([self.glpos])[0]),
+            p.drawEllipse(self.viewer.glw.map_from_gl2d(*info.map_points([self.glpos])[0]),
                           3, 3)
 
     # TODO: 3d
@@ -299,7 +299,7 @@ class Painter(QWidget):
                 for x in (LEFT, RIGHT)
                 for y in (DOWN, UP)
             ]
-            points = [self.viewer.glw.map_to_widget(x, y) for x, y in info.map_points(points)]
+            points = [self.viewer.glw.map_from_gl2d(x, y) for x, y in info.map_points(points)]
 
             path = QPainterPath()
             path.moveTo(points[0])
@@ -414,7 +414,7 @@ class Painter(QWidget):
             else:
                 p.setPen(QPen(QColor(255, 255, 255, 128), 3))
 
-            mapped = [self.viewer.glw.map_to_widget(x, y) for x, y in info.map_points(self.array)]
+            mapped = [self.viewer.glw.map_from_gl2d(x, y) for x, y in info.map_points(self.array)]
 
             path = QPainterPath(mapped[0])
             for i in range(len(mapped) // 2):

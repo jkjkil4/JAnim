@@ -17,18 +17,14 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: janim/gui/popup/font_table.py:24
-msgid "Font List"
+#: janim/gui/__init__.py:9
+msgid ""
+"Additional modules need to be installed when using the GUI interface, but "
+"they are not installed"
 msgstr ""
 
-#: janim/gui/popup/font_table.py:60
-msgid "Family Name"
-msgstr ""
-
-#: janim/gui/popup/font_table.py:61
-msgid "Full Name"
-msgstr ""
-
-#: janim/gui/popup/font_table.py:62
-msgid "Display Name (includes multiple languages, make good use of search)"
+#: janim/gui/__init__.py:11
+msgid ""
+"You can install them using pip install \"janim[gui]\" and make sure you "
+"install them in the correct Python version"
 msgstr ""

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-24 19:49+0800\n"
+"POT-Creation-Date: 2025-12-25 13:58+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,136 +17,128 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: janim/gui/anim_viewer.py:9
-msgid ""
-"Additional modules need to be installed when using the GUI interface, but "
-"they are not installed"
-msgstr ""
-
-#: janim/gui/anim_viewer.py:11
-msgid ""
-"You can install them using pip install \"janim[gui]\" and make sure you "
-"install them in the correct Python version"
-msgstr ""
-
-#: janim/gui/anim_viewer.py:96
+#: janim/gui/anim_viewer.py:84
 msgid "Cannot watch stdin for changes"
 msgstr ""
 
-#: janim/gui/anim_viewer.py:200
+#: janim/gui/anim_viewer.py:167
+msgid "Cannot process the GUI command from stdin input"
+msgstr ""
+
+#: janim/gui/anim_viewer.py:197
 msgid "File(&F)"
 msgstr ""
 
-#: janim/gui/anim_viewer.py:202
+#: janim/gui/anim_viewer.py:199
 msgid "Rebuild(&L)"
 msgstr ""
 
-#: janim/gui/anim_viewer.py:212
+#: janim/gui/anim_viewer.py:209
 msgid "Set In Point(&I)"
 msgstr ""
 
-#: janim/gui/anim_viewer.py:216
+#: janim/gui/anim_viewer.py:213
 msgid "Set Out Point(&O)"
 msgstr ""
 
-#: janim/gui/anim_viewer.py:220
+#: janim/gui/anim_viewer.py:217
 msgid "Reset In/Out Point(&R)"
 msgstr ""
 
-#: janim/gui/anim_viewer.py:225
+#: janim/gui/anim_viewer.py:222
 msgid "Clear Font Cache(&C)"
 msgstr ""
 
-#: janim/gui/anim_viewer.py:227
+#: janim/gui/anim_viewer.py:224
 msgid "View(&V)"
 msgstr ""
 
-#: janim/gui/anim_viewer.py:229
+#: janim/gui/anim_viewer.py:226
 msgid "Stay on top(&T)"
 msgstr ""
 
-#: janim/gui/anim_viewer.py:234
+#: janim/gui/anim_viewer.py:231
 msgid "Frame skip(&P)"
 msgstr ""
 
-#: janim/gui/anim_viewer.py:239
+#: janim/gui/anim_viewer.py:236
 msgid "Tools(&T)"
 msgstr ""
 
-#: janim/gui/anim_viewer.py:241
+#: janim/gui/anim_viewer.py:238
 msgid "Subitem selector(&I)"
 msgstr ""
 
-#: janim/gui/anim_viewer.py:250
+#: janim/gui/anim_viewer.py:247
 msgid "Copy time point(&T)"
 msgstr ""
 
-#: janim/gui/anim_viewer.py:311
+#: janim/gui/anim_viewer.py:308
 #, python-brace-format
 msgid "wnd_pos has wrong argument {wnd_pos}."
 msgstr ""
 
-#: janim/gui/anim_viewer.py:322
+#: janim/gui/anim_viewer.py:319
 #, python-brace-format
 msgid "wnd_monitor has invalid value {wnd_monitor}, use {range} instead."
 msgstr ""
 
-#: janim/gui/anim_viewer.py:470 janim/gui/anim_viewer.py:668
+#: janim/gui/anim_viewer.py:467 janim/gui/anim_viewer.py:665
 #, python-brace-format
 msgid "No timeline named \"{name}\" in \"{file}\""
 msgstr ""
 
-#: janim/gui/anim_viewer.py:483
+#: janim/gui/anim_viewer.py:480
 msgid "Failed to rebuild"
 msgstr ""
 
-#: janim/gui/anim_viewer.py:551
+#: janim/gui/anim_viewer.py:548
 msgid "Copied!"
 msgstr ""
 
-#: janim/gui/anim_viewer.py:601
+#: janim/gui/anim_viewer.py:598
 msgid "An error occurred during rendering, playback stopped"
 msgstr ""
 
-#: janim/gui/anim_viewer.py:681
+#: janim/gui/anim_viewer.py:678
 msgid "Failed to build"
 msgstr ""
 
-#: janim/gui/anim_viewer.py:694
+#: janim/gui/anim_viewer.py:691
 msgid ""
 "Font cache cleared.\n"
 "Tip: Use this to load newly installed fonts without restarting JAnim."
 msgstr ""
 
-#: janim/gui/anim_viewer.py:716
+#: janim/gui/anim_viewer.py:713
 #, python-brace-format
 msgid "Searching port has been opened at {port}"
 msgstr ""
 
-#: janim/gui/anim_viewer.py:721
+#: janim/gui/anim_viewer.py:718
 #, python-brace-format
 msgid "Failed to open searching port at {port}"
 msgstr ""
 
-#: janim/gui/anim_viewer.py:726
+#: janim/gui/anim_viewer.py:723
 #, python-brace-format
 msgid ""
 "Searching port {port} is invalid, please use a number between 1024 and 65535 "
 "instead"
 msgstr ""
 
-#: janim/gui/anim_viewer.py:732
+#: janim/gui/anim_viewer.py:729
 msgid ""
 "Interactive development is disabled because the searching port is not "
 "established."
 msgstr ""
 
-#: janim/gui/anim_viewer.py:744
+#: janim/gui/anim_viewer.py:741
 #, python-brace-format
 msgid "Interactive port has been opened at {port}"
 msgstr ""
 
-#: janim/gui/anim_viewer.py:828
+#: janim/gui/anim_viewer.py:825
 #, python-brace-format
 msgid "Directly watching changes to \"{file}\""
 msgstr ""

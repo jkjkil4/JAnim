@@ -327,7 +327,7 @@ requires-dist = [
     { name = "qdarkstyle", marker = "extra == 'gui'" },
     { name = "rich" },
     { name = "skia-pathops" },
-    { name = "sphinx", marker = "extra == 'doc'" },
+    { name = "sphinx", marker = "extra == 'doc'", specifier = "<9.0.0" },
     { name = "sphinx-copybutton", marker = "extra == 'doc'" },
     { name = "sphinx-tabs", marker = "extra == 'doc'" },
     { name = "svgelements" },

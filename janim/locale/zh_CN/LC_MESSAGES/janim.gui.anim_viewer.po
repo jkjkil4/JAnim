@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-24 19:49+0800\n"
-"PO-Revision-Date: 2025-12-24 15:54+0800\n"
+"POT-Creation-Date: 2025-12-25 13:58+0800\n"
+"PO-Revision-Date: 2025-12-25 14:04+0800\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
 "Language: zh_CN\n"
@@ -17,104 +17,94 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Poedit 3.8\n"
 
-#: janim/gui/anim_viewer.py:9
-msgid ""
-"Additional modules need to be installed when using the GUI interface, but "
-"they are not installed"
-msgstr "使用 GUI 界面时需要安装额外模块，但是未安装"
-
-#: janim/gui/anim_viewer.py:11
-msgid ""
-"You can install them using pip install \"janim[gui]\" and make sure you "
-"install them in the correct Python version"
-msgstr ""
-"你可以使用 pip install \"janim[gui]\" 进行安装，并确保你安装在了正确的 "
-"Python 版本中"
-
-#: janim/gui/anim_viewer.py:96
+#: janim/gui/anim_viewer.py:84
 msgid "Cannot watch stdin for changes"
 msgstr "无法从 stdin 监测变更"
 
-#: janim/gui/anim_viewer.py:200
+#: janim/gui/anim_viewer.py:167
+msgid "Cannot process the GUI command from stdin input"
+msgstr "无法对来自 stdin 的输入处理 GUI 命令"
+
+#: janim/gui/anim_viewer.py:197
 msgid "File(&F)"
 msgstr "文件(&F)"
 
-#: janim/gui/anim_viewer.py:202
+#: janim/gui/anim_viewer.py:199
 msgid "Rebuild(&L)"
 msgstr "重新构建(&L)"
 
-#: janim/gui/anim_viewer.py:212
+#: janim/gui/anim_viewer.py:209
 msgid "Set In Point(&I)"
 msgstr "设置入点(&I)"
 
-#: janim/gui/anim_viewer.py:216
+#: janim/gui/anim_viewer.py:213
 msgid "Set Out Point(&O)"
 msgstr "设置出点(&O)"
 
-#: janim/gui/anim_viewer.py:220
+#: janim/gui/anim_viewer.py:217
 msgid "Reset In/Out Point(&R)"
 msgstr "重置入点/出点(&R)"
 
-#: janim/gui/anim_viewer.py:225
+#: janim/gui/anim_viewer.py:222
 msgid "Clear Font Cache(&C)"
 msgstr "清空字体缓存(&C)"
 
-#: janim/gui/anim_viewer.py:227
+#: janim/gui/anim_viewer.py:224
 msgid "View(&V)"
 msgstr "视图(&V)"
 
-#: janim/gui/anim_viewer.py:229
+#: janim/gui/anim_viewer.py:226
 msgid "Stay on top(&T)"
 msgstr "窗口置前(&T)"
 
-#: janim/gui/anim_viewer.py:234
+#: janim/gui/anim_viewer.py:231
 msgid "Frame skip(&P)"
 msgstr "跳帧(&P)"
 
-#: janim/gui/anim_viewer.py:239
+#: janim/gui/anim_viewer.py:236
 msgid "Tools(&T)"
 msgstr "工具(&T)"
 
-#: janim/gui/anim_viewer.py:241
+#: janim/gui/anim_viewer.py:238
 msgid "Subitem selector(&I)"
 msgstr "子物件选择器(&I)"
 
-#: janim/gui/anim_viewer.py:250
+#: janim/gui/anim_viewer.py:247
 msgid "Copy time point(&T)"
 msgstr "复制时间点(&T)"
 
-#: janim/gui/anim_viewer.py:311
+#: janim/gui/anim_viewer.py:308
 #, python-brace-format
 msgid "wnd_pos has wrong argument {wnd_pos}."
 msgstr "wnd_pos 得到了错误的参数 {wnd_pos}"
 
-#: janim/gui/anim_viewer.py:322
+#: janim/gui/anim_viewer.py:319
 #, python-brace-format
 msgid "wnd_monitor has invalid value {wnd_monitor}, use {range} instead."
 msgstr "wnd_monitor 得到了无效的值 {wnd_monitor}, 请使用 {range} 代替"
 
-#: janim/gui/anim_viewer.py:470 janim/gui/anim_viewer.py:668
+#: janim/gui/anim_viewer.py:467 janim/gui/anim_viewer.py:665
 #, python-brace-format
 msgid "No timeline named \"{name}\" in \"{file}\""
 msgstr "没有叫作 \"{name}\" 的时间轴，对于文件 \"{file}\" 来说"
 
-#: janim/gui/anim_viewer.py:483
+#: janim/gui/anim_viewer.py:480
 msgid "Failed to rebuild"
 msgstr "重新构建失败"
 
-#: janim/gui/anim_viewer.py:551
+#: janim/gui/anim_viewer.py:548
 msgid "Copied!"
 msgstr "已复制!"
 
-#: janim/gui/anim_viewer.py:601
+#: janim/gui/anim_viewer.py:598
 msgid "An error occurred during rendering, playback stopped"
 msgstr "渲染过程中出现错误，播放停止"
 
-#: janim/gui/anim_viewer.py:681
+#: janim/gui/anim_viewer.py:678
 msgid "Failed to build"
 msgstr "构建失败"
 
-#: janim/gui/anim_viewer.py:694
+#: janim/gui/anim_viewer.py:691
 msgid ""
 "Font cache cleared.\n"
 "Tip: Use this to load newly installed fonts without restarting JAnim."
@@ -122,38 +112,50 @@ msgstr ""
 "字体缓存已清空\n"
 "提示：用于加载新安装的字体，而无需重启 JAnim"
 
-#: janim/gui/anim_viewer.py:716
+#: janim/gui/anim_viewer.py:713
 #, python-brace-format
 msgid "Searching port has been opened at {port}"
 msgstr "搜索端口已在 {port} 开启"
 
-#: janim/gui/anim_viewer.py:721
+#: janim/gui/anim_viewer.py:718
 #, python-brace-format
 msgid "Failed to open searching port at {port}"
 msgstr "无法在 {port} 开启搜索端口"
 
-#: janim/gui/anim_viewer.py:726
+#: janim/gui/anim_viewer.py:723
 #, python-brace-format
 msgid ""
 "Searching port {port} is invalid, please use a number between 1024 and 65535 "
 "instead"
 msgstr "搜索端口 {port} 无效，请使用 1024 至 65535 之间的数字"
 
-#: janim/gui/anim_viewer.py:732
+#: janim/gui/anim_viewer.py:729
 msgid ""
 "Interactive development is disabled because the searching port is not "
 "established."
 msgstr "由于搜索端口未建立，交互式开发不可用"
 
-#: janim/gui/anim_viewer.py:744
+#: janim/gui/anim_viewer.py:741
 #, python-brace-format
 msgid "Interactive port has been opened at {port}"
 msgstr "交互端口已在 {port} 开启"
 
-#: janim/gui/anim_viewer.py:828
+#: janim/gui/anim_viewer.py:825
 #, python-brace-format
 msgid "Directly watching changes to \"{file}\""
 msgstr "直接监测 \"{file}\" 的变动中"
+
+#~ msgid ""
+#~ "Additional modules need to be installed when using the GUI interface, but "
+#~ "they are not installed"
+#~ msgstr "使用 GUI 界面时需要安装额外模块，但是未安装"
+
+#~ msgid ""
+#~ "You can install them using pip install \"janim[gui]\" and make sure you "
+#~ "install them in the correct Python version"
+#~ msgstr ""
+#~ "你可以使用 pip install \"janim[gui]\" 进行安装，并确保你安装在了正确的 "
+#~ "Python 版本中"
 
 #~ msgid ""
 #~ "Changes messages from the VS Code extension will be ignored in direct "

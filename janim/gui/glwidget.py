@@ -5,6 +5,7 @@ from PySide6.QtWidgets import QWidget
 
 from janim.anims.timeline import BuiltTimeline
 from janim.logger import log
+from janim.camera.camera import Camera
 from janim.render.base import create_context
 from janim.render.framebuffer import FRAME_BUFFER_BINDING, register_qt_glwidget
 
@@ -19,6 +20,7 @@ class GLWidget(QOpenGLWidget):
     def __init__(self, parent: QWidget | None = None) -> None:
         super().__init__(parent)
         self.needs_update_clear_color = False
+        self.inject_camera: Camera | None = None
 
     def set_built(self, built: BuiltTimeline) -> None:
         self.built = built
@@ -36,7 +38,7 @@ class GLWidget(QOpenGLWidget):
         gly = y / h * -2 + 1
         return glx, gly
 
-    def map_to_widget(self, x: float, y: float) -> QPointF:
+    def map_from_gl2d(self, x: float, y: float) -> QPointF:
         w, h = self.size().toTuple()
         xx = (x + 1) / 2 * w
         yy = (-y + 1) / 2 * h
@@ -64,7 +66,7 @@ class GLWidget(QOpenGLWidget):
             self.needs_update_clear_color = False
         self.qfuncs.glClear(0x00004000 | 0x00000100)    # GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT
         self.null_texture.use(FRAME_BUFFER_BINDING)
-        ret = self.built.render_all(self.ctx, self.global_t)
+        ret = self.built.render_all(self.ctx, self.global_t, camera=self.inject_camera)
         self.rendered.emit()
         if not ret:
             self.error_occurred.emit()

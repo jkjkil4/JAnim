@@ -1,14 +1,12 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
-import numpy as np
-from PySide6.QtCore import QEvent, QObject, QPointF, QRectF, Qt
+from PySide6.QtCore import QEvent, QObject, QRectF, Qt
 from PySide6.QtGui import QColor, QMouseEvent, QPainter, QPaintEvent
 
-from janim.items.item import Item
-from janim.items.points import Points
+from janim.gui.handlers.select import (ItemBox, compute_boxes_of_children,
+                                       select_next_item_at_position)
 from janim.locale.i18n import get_translator
 
 if TYPE_CHECKING:
@@ -22,13 +20,6 @@ class Selector(QObject):
     """
     子物件选择工具
     """
-    @dataclass
-    class SelectedItem:
-        item: Item
-        min_glx: float
-        min_gly: float
-        max_glx: float
-        max_gly: float
 
     def __init__(self, parent: AnimViewer) -> None:
         super().__init__(parent)
@@ -42,9 +33,9 @@ class Selector(QObject):
         self.fixed_camera_info: CameraInfo | None = None
 
     def clear(self) -> None:
-        self.current: Selector.SelectedItem | None = None
-        self.children: list[Selector.SelectedItem] = []
-        self.selected_children: list[Selector.SelectedItem] = []
+        self.current: ItemBox | None = None
+        self.children: list[ItemBox] = []
+        self.selected_children: list[ItemBox] = []
         self.viewer.overlay.update()
 
     def get_fixed_camera_info(self) -> CameraInfo:
@@ -56,12 +47,6 @@ class Selector(QObject):
 
         self.fixed_camera_info = info
         return info
-
-    def glx_to_overlay_x(self, glx: float) -> float:
-        return (glx + 1) / 2 * self.viewer.overlay.width()
-
-    def gly_to_overlay_y(self, gly: float) -> float:
-        return (-gly + 1) / 2 * self.viewer.overlay.height()
 
     def eventFilter(self, watched: QObject, event: QEvent) -> bool:
         if watched is self.viewer.glw:
@@ -110,54 +95,9 @@ class Selector(QObject):
         self.children.clear()
         self.selected_children.clear()
 
-        glx, gly = self.viewer.glw.map_to_gl2d(event.position())
-
-        built = self.viewer.built
-        global_t = built._time
-        camera_info = built.current_camera_info()
-
-        found: list[Selector.SelectedItem] = []
-
-        tolerance = np.array([6 / self.viewer.glw.width(), 6 / self.viewer.glw.height()])
-
-        for item, appr in built.visible_item_segments.get(global_t):
-            if not appr.is_visible_at(global_t):
-                continue
-            box = item.current(as_time=global_t)(Points).points.box
-
-            if item.is_fix_in_frame():
-                mapped = self.get_fixed_camera_info().map_points(box.get_corners())
-            else:
-                mapped = camera_info.map_points(box.get_corners())
-            min_glx, min_gly = mapped.min(axis=0) - tolerance
-            max_glx, max_gly = mapped.max(axis=0) + tolerance
-            if not min_glx <= glx <= max_glx or not min_gly <= gly <= max_gly:
-                continue
-
-            found.append(Selector.SelectedItem(item, min_glx, min_gly, max_glx, max_gly))
-
-        if not found:
-            self.current = None
-        else:
-            if self.current is None or self.current not in found:
-                self.current = found[0]
-            else:
-                idx = found.index(self.current)
-                self.current = found[(idx + 1) % len(found)]
-
-            for item in self.current.item.get_children():
-                box = item.current(as_time=global_t)(Points).points.box
-                if item.is_fix_in_frame():
-                    mapped = self.get_fixed_camera_info().map_points(box.get_corners())
-                else:
-                    mapped = camera_info.map_points(box.get_corners())
-                self.children.append(
-                    Selector.SelectedItem(
-                        item,
-                        *(mapped.min(axis=0) - tolerance),
-                        *(mapped.max(axis=0) + tolerance)
-                    )
-                )
+        self.current = select_next_item_at_position(self.viewer, event.position(), self.current)
+        if self.current is not None:
+            self.children = compute_boxes_of_children(self.viewer, self.current.item)
 
     def select_child_item(self, event: QMouseEvent) -> None:
         glx, gly = self.viewer.glw.map_to_gl2d(event.position())
@@ -165,7 +105,7 @@ class Selector(QObject):
         for child in self.children:
             if child in self.selected_children:
                 continue
-            if not child.min_glx <= glx <= child.max_glx or not child.min_gly <= gly <= child.max_gly:
+            if not child.contains(glx, gly):
                 continue
             self.selected_children.append(child)
 
@@ -173,7 +113,7 @@ class Selector(QObject):
         glx, gly = self.viewer.glw.map_to_gl2d(event.position())
 
         for child in self.selected_children:
-            if not child.min_glx <= glx <= child.max_glx or not child.min_gly <= gly <= child.max_gly:
+            if not child.contains(glx, gly):
                 continue
             self.selected_children.remove(child)
 
@@ -231,13 +171,15 @@ class Selector(QObject):
             )
         ]
 
+        glw = self.viewer.glw
+
         if self.current is not None:
             p.setBrush(QColor(195, 131, 19, 32))
             p.setPen(QColor(195, 131, 19))
             p.drawRect(
                 QRectF(
-                    QPointF(self.glx_to_overlay_x(self.current.min_glx), self.gly_to_overlay_y(self.current.min_gly)),
-                    QPointF(self.glx_to_overlay_x(self.current.max_glx), self.gly_to_overlay_y(self.current.max_gly))
+                    glw.map_from_gl2d(self.current.min_glx, self.current.min_gly),
+                    glw.map_from_gl2d(self.current.max_glx, self.current.max_gly)
                 )
             )
 
@@ -246,8 +188,8 @@ class Selector(QObject):
             for child in self.selected_children:
                 p.drawRect(
                     QRectF(
-                        QPointF(self.glx_to_overlay_x(child.min_glx), self.gly_to_overlay_y(child.min_gly)),
-                        QPointF(self.glx_to_overlay_x(child.max_glx), self.gly_to_overlay_y(child.max_gly))
+                        glw.map_from_gl2d(child.min_glx, child.min_gly),
+                        glw.map_from_gl2d(child.max_glx, child.max_gly)
                     )
                 )
 
