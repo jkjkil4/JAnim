@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 from PySide6.QtCore import QEvent, QObject, QPointF, Qt, QTimer
-from PySide6.QtGui import QMouseEvent
+from PySide6.QtGui import QMouseEvent, QWheelEvent
 from PySide6.QtWidgets import QHBoxLayout, QLabel, QVBoxLayout
 
 from janim.anims.timeline import Timeline
@@ -45,6 +45,9 @@ def handler(viewer: AnimViewer, command: Timeline.GuiCommand) -> None:
 class CameraPanel(HandlerPanel):
     def __init__(self, viewer: AnimViewer, command: Timeline.GuiCommand, camera: Camera):
         super().__init__(viewer, command)
+        self.orig_elements = camera.points.orientation.elements
+        self.orig_width = camera.points.size[0]
+
         self.camera = camera.store()
         self.active_camera = self.camera.store()
         self.history = History(self.camera)
@@ -91,6 +94,10 @@ class CameraPanel(HandlerPanel):
         self.throttle_timer = QTimer(self, singleShot=True, interval=1000 // viewer.built.cfg.preview_fps)
         self.throttle_timer.timeout.connect(self.update_glw)
 
+        # update
+
+        self.update_replacement()
+
         # event filter
 
         self.viewer.glw.installEventFilter(self)
@@ -115,12 +122,21 @@ class CameraPanel(HandlerPanel):
         self.btn_redo.setEnabled(self.history.redoable())
 
     def update_replacement(self) -> None:
+        lines: list[str] = []
+
         target = self.command.body or 'self.camera'
+        points = self.active_camera.points
 
-        elements = self.active_camera.points.orientation.elements
-        params = ', '.join(map(str, np.round(elements, 2)))
+        elements = points.orientation.elements
+        if np.any(elements != self.orig_elements):
+            params = ', '.join(map(str, np.round(elements, 2)))
+            lines.append(f'{target}.points.set(orientation=Quaternion({params}))')
 
-        self.diff.set_replacement(f'{target}.points.set(orientation=Quaternion({params}))')
+        width = points.size[0]
+        if not np.isclose(width, self.orig_width):
+            lines.append(f'{target}.points.scale({width / self.orig_width:.2f})')
+
+        self.diff.set_replacement('\n'.join(lines))
 
     def throttle_update_glw(self) -> None:
         if not self.throttle_timer.isActive():
@@ -140,6 +156,8 @@ class CameraPanel(HandlerPanel):
                     self.on_glw_mouse_move(event)
                 case QEvent.Type.MouseButtonRelease:
                     self.on_glw_mouse_release(event)
+                case QEvent.Type.Wheel:
+                    self.on_glw_wheel(event)
 
         return super().eventFilter(watched, event)
 
@@ -169,6 +187,15 @@ class CameraPanel(HandlerPanel):
         self.history.save(self.camera.store())
         self.handle_history_change()
 
+    def on_glw_wheel(self, event: QWheelEvent) -> None:
+        factor = 1.05
+        if event.angleDelta().y() > 0:
+            factor = 1 / factor
+        self.camera.points.scale(factor)
+        self.active_camera.restore(self.camera)
+        self.history.save(self.camera.copy(), is_zoom=True)
+        self.handle_history_change()
+
     def get_angle_on_position(self, position: QPointF) -> float:
         center = self.viewer.glw.rect().center()
         return math.atan2(position.y() - center.y(), position.x() - center.x())
@@ -188,13 +215,18 @@ class History:
 
         self.records: list[Camera] = [camera.store()]
         self.ptr = 1
+        self.last_is_zoom = False   # 用于合并多个滚轮导致的变动
 
-    def save(self, state: Camera) -> None:
+    def save(self, state: Camera, *, is_zoom: bool = False) -> None:
+        if is_zoom and self.last_is_zoom:
+            self.ptr -= 1
+
         if self.ptr == len(self.records):
             self.records.append(state)
         else:
             self.records[self.ptr] = state
         self.ptr += 1
+        self.last_is_zoom = is_zoom
 
     def undoable(self) -> bool:
         return self.ptr > 1
@@ -202,6 +234,7 @@ class History:
     def undo(self) -> None:
         if self.ptr > 1:
             self.ptr -= 1
+            self.last_is_zoom = False
             state = self.records[self.ptr - 1]
             self.camera.restore(state)
 
