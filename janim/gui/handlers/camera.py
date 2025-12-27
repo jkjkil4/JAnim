@@ -1,17 +1,16 @@
 from __future__ import annotations
 
-import itertools as it
 import math
-from dataclasses import dataclass
-from typing import TYPE_CHECKING, Literal
+from typing import TYPE_CHECKING
 
+import numpy as np
 from PySide6.QtCore import QEvent, QObject, QPointF, Qt, QTimer
 from PySide6.QtGui import QMouseEvent
 from PySide6.QtWidgets import QHBoxLayout, QLabel, QVBoxLayout
 
 from janim.anims.timeline import Timeline
 from janim.camera.camera import Camera
-from janim.constants import DEGREES, PI, RIGHT, TAU, UP
+from janim.constants import DEGREES, PI, RIGHT, TAU
 from janim.exception import GuiCommandError
 from janim.gui.handlers.utils import (HandlerPanel, SourceDiff,
                                       get_confirm_buttons,
@@ -118,11 +117,10 @@ class CameraPanel(HandlerPanel):
     def update_replacement(self) -> None:
         target = self.command.body or 'self.camera'
 
-        lines = it.chain.from_iterable(
-            action.stringify(target)
-            for _, action in self.history.records[1:self.history.ptr]
-        )
-        self.diff.set_replacement('\n'.join(lines))
+        elements = self.active_camera.points.orientation.elements
+        params = ', '.join(map(str, np.round(elements, 2)))
+
+        self.diff.set_replacement(f'{target}.points.set(orientation=Quaternion({params}))')
 
     def throttle_update_glw(self) -> None:
         if not self.throttle_timer.isActive():
@@ -168,7 +166,7 @@ class CameraPanel(HandlerPanel):
             return
 
         self.apply_change_on_camera(self.camera, event)
-        self.history.save(self.camera.store(), self.get_change_action(event))
+        self.history.save(self.camera.store())
         self.handle_history_change()
 
     def get_angle_on_position(self, position: QPointF) -> float:
@@ -183,29 +181,19 @@ class CameraPanel(HandlerPanel):
         else:
             rotate_camera_by_shift(camera, event.position() - self.drag_start_pos)
 
-    def get_change_action(self, event: QMouseEvent) -> Action:
-        if event.modifiers() & Qt.KeyboardModifier.ControlModifier:
-            angle = self.get_angle_on_position(event.position())
-            delta = simplify_angle_delta(angle, self.drag_start_angle)
-            return Action('in_place', delta)
-
-        xyradian = get_radian_by_shift(event.position() - self.drag_start_pos)
-        return Action('by_shift', xyradian)
-
 
 class History:
     def __init__(self, camera: Camera):
         self.camera = camera
 
-        self.records: list[tuple[Camera, Action | None]] = [(camera.store(), None)]
+        self.records: list[Camera] = [camera.store()]
         self.ptr = 1
 
-    def save(self, state: Camera, action: Action) -> None:
-        record = (state, action)
+    def save(self, state: Camera) -> None:
         if self.ptr == len(self.records):
-            self.records.append(record)
+            self.records.append(state)
         else:
-            self.records[self.ptr] = record
+            self.records[self.ptr] = state
         self.ptr += 1
 
     def undoable(self) -> bool:
@@ -214,7 +202,7 @@ class History:
     def undo(self) -> None:
         if self.ptr > 1:
             self.ptr -= 1
-            state, _ = self.records[self.ptr - 1]
+            state = self.records[self.ptr - 1]
             self.camera.restore(state)
 
     def redoable(self) -> bool:
@@ -222,31 +210,15 @@ class History:
 
     def redo(self) -> None:
         if self.ptr < len(self.records):
-            state, _ = self.records[self.ptr]
+            state = self.records[self.ptr]
             self.camera.restore(state)
             self.ptr += 1
 
 
-@dataclass
-class Action:
-    type: Literal['by_shift', 'in_place']
-    value: tuple[float, float] | float
-
-    def stringify(self, target: str) -> list[str]:
-        if self.type == 'in_place':
-            return [f'{target}.rotate({-self.value}, absolute=False)']
-
-        x, y = self.value
-        return [
-            f'{target}.points.rotate({-x}, axis=UP, absolute=False)',
-            f'{target}.points.rotate({-y}, axis=RIGHT, absolute=False)'
-        ]
-
-
 def rotate_camera_by_shift(camera: Camera, shift: QPointF) -> None:
     x, y = get_radian_by_shift(shift)
-    camera.points.rotate(-x, axis=UP, absolute=False)
     camera.points.rotate(-y, axis=RIGHT, absolute=False)
+    camera.points.rotate(-x)
 
 
 def get_radian_by_shift(delta: QPointF) -> tuple[float, float]:
