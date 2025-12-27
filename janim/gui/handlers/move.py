@@ -113,7 +113,7 @@ class MovePanel(HandlerPanel):
                 return f'{script}.points.shift([{round(offx, 2)}, {round(offy, 2)}, 0])'
             hor = normalize(self.camera_info.horizontal_vect)
             ver = normalize(self.camera_info.vertical_vect)
-            offset = np.round(hor * offx + ver * offy, 2)
+            offset = np.round((hor * offx + ver * offy).astype(np.float64), 2)
             return f'{script}.points.shift([{offset[0]}, {offset[1]}, {offset[2]}])'
 
         lines = [

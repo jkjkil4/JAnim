@@ -16,6 +16,7 @@ from janim.gui.handlers.utils import (HandlerPanel, SourceDiff,
                                       get_confirm_buttons,
                                       get_undo_redo_buttons, jump, parse_item)
 from janim.locale.i18n import get_translator
+from janim.utils.space_ops import normalize
 
 if TYPE_CHECKING:
     from janim.gui.anim_viewer import AnimViewer
@@ -47,6 +48,7 @@ class CameraPanel(HandlerPanel):
         super().__init__(viewer, command)
         self.orig_elements = camera.points.orientation.elements
         self.orig_width = camera.points.size[0]
+        self.orig_location: np.ndarray = camera.points.get()[0]
 
         self.camera = camera.store()
         self.active_camera = self.camera.store()
@@ -56,11 +58,26 @@ class CameraPanel(HandlerPanel):
 
         # setup ui
 
+        tips_text = _('Drag:& Rotate camera\n'
+                      'Ctrl + Drag:& Rotate camera in place\n'
+                      'Shift + Drag:& Pan camera\n'
+                      'Wheel:& Zoom')
+
+        # 将文本按 & 分割并使用 HTML 表格对齐
+        lines = tips_text.split('\n')
+        html_rows = []
+        for line in lines:
+            if '&' in line:
+                left, right = line.split('&', 1)
+                html_rows.append(f'<tr><td align="right">{left.strip()}</td><td>{right.strip()}</td></tr>')
+            else:
+                html_rows.append(f'<tr><td colspan="2">{line}</td></tr>')
+
         label_tips = QLabel(
-            _('Drag the mouse in the viewport to adjust the camera angle\n'
-              'Hold Ctrl: Rotate in place'),
+            f'<table cellspacing="0" cellpadding="4">{"".join(html_rows)}</table>',
             self
         )
+        label_tips.setTextFormat(Qt.TextFormat.RichText)
 
         self.diff = SourceDiff(command, self)
 
@@ -128,13 +145,18 @@ class CameraPanel(HandlerPanel):
         points = self.active_camera.points
 
         elements = points.orientation.elements
-        if np.any(elements != self.orig_elements):
-            params = ', '.join(map(str, np.round(elements, 2)))
+        if not np.isclose(elements, self.orig_elements).all():
+            params = ', '.join(map(str, np.round(elements.astype(np.float64), 2)))
             lines.append(f'{target}.points.set(orientation=Quaternion({params}))')
 
         width = points.size[0]
         if not np.isclose(width, self.orig_width):
             lines.append(f'{target}.points.scale({width / self.orig_width:.2f})')
+
+        location = points.get()[0]
+        if not np.isclose(location, self.orig_location).all():
+            shift = np.round((location - self.orig_location).astype(np.float64), 2)
+            lines.append(f'{target}.points.shift([{shift[0]}, {shift[1]}, {shift[2]}])')
 
         self.diff.set_replacement('\n'.join(lines))
 
@@ -164,6 +186,8 @@ class CameraPanel(HandlerPanel):
     def on_glw_mouse_press(self, event: QMouseEvent) -> None:
         if event.button() != Qt.MouseButton.LeftButton:
             return
+
+        self.panning = event.modifiers() & Qt.KeyboardModifier.ShiftModifier
 
         self.drag_start_pos = event.position()
         self.drag_start_angle = self.get_angle_on_position(event.position())
@@ -201,6 +225,10 @@ class CameraPanel(HandlerPanel):
         return math.atan2(position.y() - center.y(), position.x() - center.x())
 
     def apply_change_on_camera(self, camera: Camera, event: QMouseEvent) -> None:
+        if self.panning:
+            pan_camera_by_start_and_end(self.viewer, camera, self.drag_start_pos, event.position())
+            return
+
         if event.modifiers() & Qt.KeyboardModifier.ControlModifier:
             angle = self.get_angle_on_position(event.position())
             delta = simplify_angle_delta(angle, self.drag_start_angle)
@@ -272,3 +300,14 @@ def simplify_angle_delta(angle1: float, angle2: float) -> float:
     elif angle2 < angle1 - PI:
         angle2 += TAU
     return round(angle2 - angle1, 2)
+
+
+def pan_camera_by_start_and_end(viewer: AnimViewer, camera: Camera, start: QPointF, end: QPointF) -> None:
+    glw = viewer.glw
+    info = camera.points.info
+
+    view_shift = (np.array(glw.map_to_gl2d(end)) - glw.map_to_gl2d(start)) * info.frame_radius
+    hor = view_shift[0] * normalize(info.horizontal_vect)
+    ver = view_shift[1] * normalize(info.vertical_vect)
+
+    camera.points.shift(-(hor + ver))
