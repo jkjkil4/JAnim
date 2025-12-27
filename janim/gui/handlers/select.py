@@ -64,11 +64,9 @@ class SelectPanel(HandlerPanel):
 
         # update
 
-        self.debounce_timer = QTimer(self)
-        self.debounce_timer.setInterval(200)
-        self.debounce_timer.setSingleShot(True)
-        self.debounce_timer.timeout.connect(self.compute_boxes)
-        self.viewer.timeline_view.value_changed.connect(self.debounce_timer.start)
+        debounce_timer = QTimer(self, singleShot=True, interval=200)
+        debounce_timer.timeout.connect(self.compute_boxes)
+        self.viewer.timeline_view.value_changed.connect(debounce_timer.start)
 
         self.selected_indices: list[int] = []
         self.compute_boxes()

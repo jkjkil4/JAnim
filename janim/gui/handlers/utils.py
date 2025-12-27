@@ -4,9 +4,10 @@ import linecache
 import os
 import re
 from functools import wraps
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Callable
 
-from PySide6.QtCore import QSettings, QTimer, Signal
+from PySide6.QtCore import QSettings, Qt, QTimer, Signal
+from PySide6.QtGui import QIcon, QKeySequence, QShortcut
 from PySide6.QtWidgets import (QApplication, QDialogButtonBox, QFrame, QLabel,
                                QMessageBox, QPushButton, QVBoxLayout, QWidget)
 
@@ -17,6 +18,7 @@ from janim.items.item import Item
 from janim.locale.i18n import get_translator
 from janim.logger import log
 from janim.utils.config import Config
+from janim.utils.file_ops import get_gui_asset
 
 if TYPE_CHECKING:
     from janim.gui.anim_viewer import AnimViewer
@@ -68,6 +70,33 @@ def get_confirm_buttons(parent: QWidget) -> tuple[QDialogButtonBox, QPushButton,
     return (btn_box, btn_ok, btn_cancel)
 
 
+def get_undo_redo_buttons(
+    parent: QWidget,
+    on_undo: Callable[[]],
+    on_redo: Callable[[]]
+) -> tuple[QPushButton, QPushButton]:
+
+    btn_undo = QPushButton(parent)
+    btn_undo.setIcon(QIcon(get_gui_asset('undo.png')))
+    btn_undo.setFocusPolicy(Qt.FocusPolicy.NoFocus)
+    btn_redo = QPushButton(parent)
+    btn_redo.setIcon(QIcon(get_gui_asset('redo.png')))
+    btn_redo.setFocusPolicy(Qt.FocusPolicy.NoFocus)
+
+    sc_undo = QShortcut(QKeySequence('Ctrl+Z'), parent)
+    sc_undo.setContext(Qt.ShortcutContext.ApplicationShortcut)
+
+    sc_redo = QShortcut(QKeySequence('Ctrl+Shift+Z'), parent)
+    sc_redo.setContext(Qt.ShortcutContext.ApplicationShortcut)
+
+    btn_undo.clicked.connect(on_undo)
+    btn_redo.clicked.connect(on_redo)
+    sc_undo.activated.connect(on_undo)
+    sc_redo.activated.connect(on_redo)
+
+    return (btn_undo, btn_redo)
+
+
 def slient_runtime_error(func):
     """
     在弹出阻塞框的时候关闭父控件，会输出 RuntimeError traceback
@@ -95,6 +124,9 @@ class HandlerPanel(QWidget):
         apply_popup_flags(self)
 
         self.loaded = False
+
+    def update_glw(self) -> None:
+        self.viewer.glw.update()
 
     def update_overlay(self) -> None:
         self.viewer.overlay.update()

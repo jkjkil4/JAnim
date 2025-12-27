@@ -1013,7 +1013,14 @@ class BuiltTimeline:
     def current_camera_info(self) -> CameraInfo:
         return self.timeline.compute_item(self.timeline.camera, self._time, True).points.info
 
-    def render_all(self, ctx: mgl.Context, global_t: float, *, blend_on: bool = True) -> bool:
+    def render_all(
+        self,
+        ctx: mgl.Context,
+        global_t: float,
+        *,
+        blend_on: bool = True,
+        camera: Camera | None = None
+    ) -> bool:
         """
         渲染所有可见物件
         """
@@ -1027,7 +1034,8 @@ class BuiltTimeline:
             with ContextSetter(Animation.global_t_ctx, global_t),   \
                  ContextSetter(Timeline.ctx_var, self.timeline),    \
                  self.timeline.with_config():
-                camera = timeline.compute_item(timeline.camera, global_t, True)
+                if camera is None:
+                    camera = timeline.compute_item(timeline.camera, global_t, True)
                 camera_info = camera.points.info
                 anti_alias_radius = self.cfg.anti_alias_width / 2 * camera_info.scaled_factor
 

@@ -4,19 +4,19 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 from PySide6.QtCore import QEvent, QObject, QPointF, QRectF, Qt
-from PySide6.QtGui import (QColor, QIcon, QKeySequence, QLinearGradient,
-                           QMouseEvent, QPainter, QPaintEvent, QPen, QShortcut)
-from PySide6.QtWidgets import QHBoxLayout, QLabel, QPushButton, QVBoxLayout
+from PySide6.QtGui import (QColor, QLinearGradient, QMouseEvent, QPainter,
+                           QPaintEvent, QPen)
+from PySide6.QtWidgets import QHBoxLayout, QLabel, QVBoxLayout
 
 from janim.anims.timeline import Timeline
 from janim.gui.handlers.select import BasicAttrs as SelectBasicAttrs
 from janim.gui.handlers.select import get_fixed_camera_info
 from janim.gui.handlers.utils import (HandlerPanel, SourceDiff,
-                                      get_confirm_buttons, jump, parse_item)
+                                      get_confirm_buttons,
+                                      get_undo_redo_buttons, jump, parse_item)
 from janim.items.item import Item
 from janim.items.points import Points
 from janim.locale.i18n import get_translator
-from janim.utils.file_ops import get_gui_asset
 from janim.utils.space_ops import normalize
 
 if TYPE_CHECKING:
@@ -60,19 +60,8 @@ class MovePanel(HandlerPanel):
 
         self.diff = SourceDiff(command, self)
 
-        self.btn_undo = QPushButton(self)
-        self.btn_undo.setIcon(QIcon(get_gui_asset('undo.png')))
-        self.btn_undo.setFocusPolicy(Qt.FocusPolicy.NoFocus)
-        self.btn_redo = QPushButton(self)
-        self.btn_redo.setIcon(QIcon(get_gui_asset('redo.png')))
-        self.btn_redo.setFocusPolicy(Qt.FocusPolicy.NoFocus)
+        self.btn_undo, self.btn_redo = get_undo_redo_buttons(self, self.on_undo, self.on_redo)
         self.update_btn_state()
-
-        sc_undo = QShortcut(QKeySequence('Ctrl+Z'), self)
-        sc_undo.setContext(Qt.ShortcutContext.ApplicationShortcut)
-
-        sc_redo = QShortcut(QKeySequence('Ctrl+Shift+Z'), self)
-        sc_redo.setContext(Qt.ShortcutContext.ApplicationShortcut)
 
         btn_box, btn_ok, btn_cancel = get_confirm_buttons(self)
 
@@ -90,11 +79,6 @@ class MovePanel(HandlerPanel):
 
         # setup slots
 
-        self.btn_undo.clicked.connect(self.on_btn_undo_clicked)
-        self.btn_redo.clicked.connect(self.on_btn_redo_clicked)
-        sc_undo.activated.connect(self.on_btn_undo_clicked)
-        sc_redo.activated.connect(self.on_btn_redo_clicked)
-
         btn_ok.clicked.connect(self.diff.submit)
         btn_cancel.clicked.connect(self.close)
         self.diff.submitted.connect(self.close_and_rebuild_timeline)
@@ -105,14 +89,15 @@ class MovePanel(HandlerPanel):
         self.viewer.glw.installEventFilter(self)
         self.viewer.overlay.installEventFilter(self)
 
-    def on_btn_undo_clicked(self) -> None:
+    def on_undo(self) -> None:
         self.history.undo()
-        self.update_btn_state()
-        self.update_replacement()
-        self.update_overlay()
+        self.handle_history_change()
 
-    def on_btn_redo_clicked(self) -> None:
+    def on_redo(self) -> None:
         self.history.redo()
+        self.handle_history_change()
+
+    def handle_history_change(self) -> None:
         self.update_btn_state()
         self.update_replacement()
         self.update_overlay()
@@ -177,7 +162,7 @@ class MovePanel(HandlerPanel):
         self.dragging_box.offset = self.offset_start + shift
         self.dragged = True
 
-        self.viewer.overlay.update()
+        self.update_overlay()
 
     def on_glw_mouse_release(self, event: QMouseEvent) -> None:
         if event.button() != Qt.MouseButton.LeftButton:
@@ -187,8 +172,7 @@ class MovePanel(HandlerPanel):
 
         if self.dragged:
             self.history.save(self.boxes.index(self.dragging_box), self.offset_start, self.dragging_box.offset.copy())
-            self.update_btn_state()
-            self.update_replacement()
+            self.handle_history_change()
         self.dragging_box = None
 
     def select_box_at_position(self, position: QPointF) -> ItemBox | None:
