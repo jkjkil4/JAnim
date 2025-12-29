@@ -71,13 +71,13 @@
         :author: _F_X_P
         :source-link: https://github.com/vanleefxp/fxp_janim-projects/blob/master/OnePlusOne/main.janim.py
 
-.. random-option::
+.. .. random-option
 
-    .. bili-example:: aid=114784192234978&bvid=BV11p38zuE5R&p=1
-        :title: 省流：这个视频文案的信息量还不到半 KB
-        :author: 破壁人五号
+..     .. bili-example:: aid=114784192234978&bvid=BV11p38zuE5R&p=1
+..         :title: 省流：这个视频文案的信息量还不到半 KB
+..         :author: 破壁人五号
 
-        动画效果使用 JAnim 制作，“信息量”可视化结果是插入的现成图片
+..         动画效果使用 JAnim 制作，“信息量”可视化结果是插入的现成图片
 
 .. random-option::
 
