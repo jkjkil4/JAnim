@@ -4,8 +4,7 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 from PySide6.QtCore import QEvent, QObject, QPointF, QRectF, Qt
-from PySide6.QtGui import (QColor, QLinearGradient, QMouseEvent, QPainter,
-                           QPaintEvent, QPen)
+from PySide6.QtGui import QColor, QMouseEvent, QPainter, QPaintEvent, QPen
 from PySide6.QtWidgets import QHBoxLayout, QLabel, QVBoxLayout
 
 from janim.anims.timeline import Timeline
@@ -48,6 +47,12 @@ class MovePanel(HandlerPanel):
 
         self.boxes = [ItemBox(item, attrs) for item in items]
         self.history = History(self.boxes)
+
+        rgb_avg = np.average(viewer.built.cfg.background_color.get_rgb())
+        is_background_dark = rgb_avg < 0.5
+        self.rect_brush_rgb = (255, 255, 255) if is_background_dark else (0, 0, 0)
+        self.rect_inner_color = Qt.GlobalColor.black if is_background_dark else Qt.GlobalColor.white
+        self.text_color = Qt.GlobalColor.black if is_background_dark else Qt.GlobalColor.white
 
         # setup ui
 
@@ -198,7 +203,6 @@ class MovePanel(HandlerPanel):
             # ### 这部分是绘制当前正在拖动的框的原位置，用于参考
 
             if box is self.dragging_box:
-                # 转换坐标
                 rect = self.get_screen_rect_of_box(box, offset=self.offset_start)
 
                 # 绘制虚线边框
@@ -210,27 +214,34 @@ class MovePanel(HandlerPanel):
 
             # ### 这部分是绘制各个框
 
-            # 转换坐标
             rect = self.get_screen_rect_of_box(box)
 
-            # 填充渐变
-            fill_gradient = QLinearGradient(rect.topLeft(), rect.bottomRight())
-            fill_gradient.setColorAt(0, QColor(255, 255, 255, 140))
-            fill_gradient.setColorAt(1, QColor(0, 0, 0, 140))
-
-            # 描边渐变
-            border_gradient = QLinearGradient(rect.topLeft(), rect.bottomRight())
-            border_gradient.setColorAt(0, QColor(80, 80, 80, 255))
-            border_gradient.setColorAt(1, QColor(175, 175, 175, 255))
-
             # 绘制矩形
-            p.setBrush(fill_gradient)
-            p.setPen(QPen(border_gradient, 2))
+            p.setBrush(QColor(*self.rect_brush_rgb, 90))
+            p.setPen(QPen(QColor(*self.rect_brush_rgb), 2))
             p.drawRect(rect)
 
+            rect.adjust(1, 1, -1, -1)
+
+            # 绘制内边框
+            p.setBrush(Qt.BrushStyle.NoBrush)
+            p.setPen(self.rect_inner_color)
+            p.drawRect(rect)
+
+            rect.adjust(1, 1, -1, -1)
+
+            # 计算文字的大小并绘制文字背景矩形
+            text_bg_rect = p.fontMetrics().boundingRect(box.cls_name)
+            text_bg_rect.moveTo(int(rect.left()), int(rect.top()))
+            text_bg_rect.adjust(-2, -2, 4, 2)
+
+            p.setBrush(QColor(*self.rect_brush_rgb))
+            p.setPen(Qt.PenStyle.NoPen)
+            p.drawRect(text_bg_rect)
+
             # 绘制文字
-            p.setPen(QColor(255, 255, 255, 255))
-            p.drawText(rect, Qt.AlignmentFlag.AlignCenter, box.cls_name)
+            p.setPen(self.text_color)
+            p.drawText(rect, Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignTop, box.cls_name)
 
     def get_screen_rect_of_box(self, box: ItemBox, offset: np.ndarray | None = None) -> QRectF:
         if offset is None:
