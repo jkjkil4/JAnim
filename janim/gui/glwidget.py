@@ -44,6 +44,18 @@ class GLWidget(QOpenGLWidget):
         yy = (-y + 1) / 2 * h
         return QPointF(xx, yy)
 
+    def map_to_glx(self, point: QPointF) -> float:
+        return point.x() / self.width() * 2 - 1
+
+    def map_to_gly(self, point: QPointF) -> float:
+        return point.y() / self.height() * -2 + 1
+
+    def map_from_glx(self, x: float) -> float:
+        return (x + 1) / 2 * self.width()
+
+    def map_from_gly(self, y: float) -> float:
+        return (-y + 1) / 2 * self.height()
+
     def initializeGL(self) -> None:
         log.debug('Initializing OpenGL context for GLWidget ..')
         self.ctx = create_context()
