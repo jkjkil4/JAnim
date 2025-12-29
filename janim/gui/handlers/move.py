@@ -53,7 +53,7 @@ class MovePanel(HandlerPanel):
 
         label_tips = QLabel(
             _('Use mouse to drag items\n'
-              '(Not implemented) Hold Shift: Lock horizontal/vertical/diagonal directions\n'
+              'Hold Shift: Lock horizontal/vertical/diagonal directions\n'
               'Hold Ctrl: Disable (Not implemented) auto-snapping'),
             self
         )
@@ -84,6 +84,8 @@ class MovePanel(HandlerPanel):
         self.diff.submitted.connect(self.close_and_rebuild_timeline)
 
         # event filter
+
+        self.dragging_box: ItemBox | None = None
 
         self.viewer.installEventFilter(self)
         self.viewer.glw.installEventFilter(self)
@@ -159,6 +161,11 @@ class MovePanel(HandlerPanel):
 
         glpos = np.array(glw.map_to_gl2d(event.position())) - glw.map_to_gl2d(self.drag_start)
         shift = glpos * self.camera_info.frame_radius
+
+        # 当按住 Shift 键时，锁定水平/垂直/对角线方向
+        if event.modifiers() & Qt.KeyboardModifier.ShiftModifier:
+            shift = compute_lock_directions_shift(shift)
+
         self.dragging_box.offset = self.offset_start + shift
         self.dragged = True
 
@@ -185,18 +192,26 @@ class MovePanel(HandlerPanel):
         return None
 
     def on_overlay_paint(self, event: QPaintEvent) -> None:
-        glw = self.viewer.glw
-
         p = QPainter(self.viewer.overlay)
 
         for box in self.boxes:
-            # 转换坐标
-            min_glpos = np.array([box.min_x + box.offset[0], box.min_y + box.offset[1]]) / self.camera_info.frame_radius
-            max_glpos = np.array([box.max_x + box.offset[0], box.max_y + box.offset[1]]) / self.camera_info.frame_radius
+            # ### 这部分是绘制当前正在拖动的框的原位置，用于参考
 
-            min_screen = glw.map_from_gl2d(*min_glpos)
-            max_screen = glw.map_from_gl2d(*max_glpos)
-            rect = QRectF(min_screen, max_screen).normalized()
+            if box is self.dragging_box:
+                # 转换坐标
+                rect = self.get_screen_rect_of_box(box, offset=self.offset_start)
+
+                # 绘制虚线边框
+                dash_pen = QPen(QColor(150, 150, 150, 200), 2)
+                dash_pen.setStyle(Qt.PenStyle.DashLine)
+                p.setPen(dash_pen)
+                p.setBrush(Qt.BrushStyle.NoBrush)
+                p.drawRect(rect)
+
+            # ### 这部分是绘制各个框
+
+            # 转换坐标
+            rect = self.get_screen_rect_of_box(box)
 
             # 填充渐变
             fill_gradient = QLinearGradient(rect.topLeft(), rect.bottomRight())
@@ -216,6 +231,18 @@ class MovePanel(HandlerPanel):
             # 绘制文字
             p.setPen(QColor(255, 255, 255, 255))
             p.drawText(rect, Qt.AlignmentFlag.AlignCenter, box.cls_name)
+
+    def get_screen_rect_of_box(self, box: ItemBox, offset: np.ndarray | None = None) -> QRectF:
+        if offset is None:
+            offset = box.offset
+
+        min_glpos = np.array([box.min_x + offset[0], box.min_y + offset[1]]) / self.camera_info.frame_radius
+        max_glpos = np.array([box.max_x + offset[0], box.max_y + offset[1]]) / self.camera_info.frame_radius
+
+        glw = self.viewer.glw
+        min_screen = glw.map_from_gl2d(*min_glpos)
+        max_screen = glw.map_from_gl2d(*max_glpos)
+        return QRectF(min_screen, max_screen).normalized()
 
 
 class History:
@@ -289,3 +316,24 @@ class BasicAttrs(SelectBasicAttrs):
         super().__init__(viewer)
         # 让 tolerance 基于视野坐标
         self.tolerance *= self.camera_info.frame_size
+
+
+def compute_lock_directions_shift(shift: np.ndarray) -> np.ndarray:
+    """
+    计算锁定水平/垂直/对角线情况下的 ``shift``
+    """
+    x, y = shift
+    # 以度为单位的角度
+    angle = np.degrees(np.arctan2(abs(y), abs(x)))
+
+    # 根据角度判断锁定方向
+    # 0-22.5°: 水平, 22.5-67.5°: 对角线, 67.5-90°: 垂直
+    if angle < 22.5:
+        shift = np.array([x, 0.0])
+    elif angle < 67.5:
+        avg = (abs(x) + abs(y)) / 2
+        shift = np.array([np.sign(x) * avg, np.sign(y) * avg])
+    else:
+        shift = np.array([0.0, y])
+
+    return shift
