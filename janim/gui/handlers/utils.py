@@ -75,7 +75,9 @@ def get_undo_redo_buttons(
     on_undo: Callable[[]],
     on_redo: Callable[[]]
 ) -> tuple[QPushButton, QPushButton]:
-
+    """
+    得到通用的撤销/重做按钮控件
+    """
     btn_undo = QPushButton(parent)
     btn_undo.setIcon(QIcon(get_gui_asset('undo.png')))
     btn_undo.setFocusPolicy(Qt.FocusPolicy.NoFocus)
@@ -99,9 +101,9 @@ def get_undo_redo_buttons(
 
 def slient_runtime_error(func):
     """
-    在弹出阻塞框的时候关闭父控件，会输出 RuntimeError traceback
+    在弹出阻塞框的时候关闭父控件，会输出 ``RuntimeError`` traceback
 
-    使用该装饰器可以忽略抛出的 RuntimeError 信息
+    使用该装饰器可以忽略抛出的 ``RuntimeError`` 信息
     """
     @wraps(func)
     def wrapper(*args, **kwargs):

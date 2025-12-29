@@ -7,6 +7,7 @@ gui
    :maxdepth: 1
 
    functions/modules.rst
+   handlers/modules.rst
    output/modules.rst
    popup/modules.rst
    utils/modules.rst
