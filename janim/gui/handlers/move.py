@@ -269,7 +269,7 @@ class MovePanel(HandlerPanel):
     def on_overlay_paint(self, event: QPaintEvent) -> None:
         p = QPainter(self.viewer.overlay)
 
-        for box in self.boxes:
+        for script, box in zip(self.scripts, self.boxes):
             # ### 这部分是绘制当前正在拖动的框的原位置，用于参考
 
             if box is self.dragging_box:
@@ -299,9 +299,9 @@ class MovePanel(HandlerPanel):
             rect.adjust(1, 1, -1, -1)
 
             # 计算文字的大小并绘制文字背景矩形
-            text_bg_rect = p.fontMetrics().boundingRect(box.cls_name)
+            text_bg_rect = p.fontMetrics().boundingRect(script)
             text_bg_rect.moveTo(int(rect.left()), int(rect.top()))
-            text_bg_rect.adjust(-2, -2, 4, 2)
+            text_bg_rect.adjust(-2, -2, 5, 3)
 
             p.setBrush(QColor(*self.rect_brush_rgb))
             p.setPen(Qt.PenStyle.NoPen)
@@ -309,7 +309,7 @@ class MovePanel(HandlerPanel):
 
             # 绘制文字
             p.setPen(self.text_color)
-            p.drawText(rect, Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignTop, box.cls_name)
+            p.drawText(rect, Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignTop, script)
 
         # 绘制 snap 标识线
         glw = self.viewer.glw
@@ -349,7 +349,8 @@ class MovePanel(HandlerPanel):
     @staticmethod
     def set_dashed_pen(p: QPainter, color: QColor, pen_width: int = 2) -> None:
         pen = QPen(color, pen_width)
-        pen.setStyle(Qt.PenStyle.DashLine)
+        pen.setStyle(Qt.PenStyle.CustomDashLine)
+        pen.setDashPattern([2, 3])  # 6个单位实线，2个单位空白，增加占空比
         p.setPen(pen)
 
 
@@ -395,7 +396,7 @@ class ItemBox:
         info = attrs.camera_info
         self.frame_radius = info.frame_radius
 
-        self.cls_name = item.__class__.__name__
+        # self.cls_name = item.__class__.__name__
 
         cmpt = item.current(as_time=attrs.global_t)(Points).points
         if attrs.is_camera_axis_simple or item.is_fix_in_frame():
@@ -456,7 +457,7 @@ class ItemBox:
         return (min_glpos, max_glpos)
 
     def snap_x_to(self, other: ItemBox) -> SnapMatch:
-        if (match := self._snap_border(self.real_min_x, self.real_max_x, other.real_min_x, other.real_max_x)):
+        if (match := self._snap_min_mid_max(self.real_min_x, self.real_max_x, other.real_min_x, other.real_max_x)):
             return match
         if (match := self._snap_buff(self.real_min_x, other.real_max_x, 1)):
             return match
@@ -464,7 +465,7 @@ class ItemBox:
             return match
 
     def snap_y_to(self, other: ItemBox) -> SnapMatch:
-        if (match := self._snap_border(self.real_min_y, self.real_max_y, other.real_min_y, other.real_max_y)):
+        if (match := self._snap_min_mid_max(self.real_min_y, self.real_max_y, other.real_min_y, other.real_max_y)):
             return match
         if (match := self._snap_buff(self.real_min_y, other.real_max_y, 1)):
             return match
@@ -472,7 +473,11 @@ class ItemBox:
             return match
 
     @staticmethod
-    def _snap_border(self_min: float, self_max: float, other_min: float, other_max: float) -> SnapMatch | None:
+    def _snap_min_mid_max(self_min: float, self_max: float, other_min: float, other_max: float) -> SnapMatch | None:
+        self_mid = (self_min + self_max) / 2
+        other_mid = (other_min + other_max) / 2
+        if abs(other_mid - self_mid) <= SNAP_TOLERANCE:
+            return SnapMatch(self_mid, other_mid, other_mid)
         if abs(other_min - self_min) <= SNAP_TOLERANCE:
             return SnapMatch(self_min, other_min, other_min)
         if abs(other_max - self_max) <= SNAP_TOLERANCE:
