@@ -253,12 +253,16 @@ class SourceDiff(QFrame):
         self.set_replacement('')
 
     def set_replacement(self, replacement: str) -> None:
+        raw_lines = replacement.split('\n')
+        multi_line = len(raw_lines) >= 2
+
         lines = [
             f'{self.match_left if i == 0 else self.left_spaces}'
             f'{line}'
-            f'{"" if i == 0 else self.match_right}'
-            for i, line in enumerate(replacement.split('\n'))
+            f'{"" if multi_line and i == 0 else self.match_right}'
+            for i, line in enumerate(raw_lines)
         ]
+
         self.replace_label.setText('\n'.join(lines))
 
     @slient_runtime_error
