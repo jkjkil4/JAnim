@@ -247,8 +247,7 @@ class MovePanel(HandlerPanel):
         if offset is None:
             offset = box.offset
 
-        min_glpos = np.array([box.min_x + offset[0], box.min_y + offset[1]]) / self.camera_info.frame_radius
-        max_glpos = np.array([box.max_x + offset[0], box.max_y + offset[1]]) / self.camera_info.frame_radius
+        min_glpos, max_glpos = box.min_max_glpos(offset)
 
         glw = self.viewer.glw
         min_screen = glw.map_from_gl2d(*min_glpos)
@@ -295,6 +294,8 @@ class ItemBox:
     物件及其在视野坐标下的可选中范围
     """
     def __init__(self, item: Item, attrs: BasicAttrs):
+        self.frame_radius = attrs.camera_info.frame_radius
+
         self.cls_name = item.__class__.__name__
 
         cmpt = item.current(as_time=attrs.global_t)(Points).points
@@ -320,6 +321,19 @@ class ItemBox:
     def contains(self, x: float, y: float) -> bool:
         offx, offy = self.offset
         return self.min_sx <= x - offx <= self.max_sx and self.min_sy <= y - offy <= self.max_sy
+
+    def min_max_framepos(self, offset: np.ndarray | None) -> tuple[np.ndarray, np.ndarray]:
+        if offset is None:
+            offset = self.offset
+        min_framepos = np.array([self.min_x + offset[0], self.min_y + offset[1]])
+        max_framepos = np.array([self.max_x + offset[0], self.max_y + offset[1]])
+        return (min_framepos, max_framepos)
+
+    def min_max_glpos(self, offset: np.ndarray | None) -> tuple[np.ndarray, np.ndarray]:
+        min_framepos, max_framepos = self.min_max_framepos(offset)
+        min_glpos = min_framepos / self.frame_radius
+        max_glpos = max_framepos / self.frame_radius
+        return (min_glpos, max_glpos)
 
 
 class BasicAttrs(SelectBasicAttrs):
