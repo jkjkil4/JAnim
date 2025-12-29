@@ -128,7 +128,8 @@ class MovePanel(HandlerPanel):
                 return f'{script}.points.shift([{round(offx, 2)}, {round(offy, 2)}, 0])'
             hor = normalize(self.camera_info.horizontal_vect)
             ver = normalize(self.camera_info.vertical_vect)
-            offset = np.round((hor * offx + ver * offy).astype(np.float64), 2)
+            offset = (hor * offx + ver * offy) * box.distance_scale
+            offset = np.round(offset.astype(np.float64), 2)
             return f'{script}.points.shift([{offset[0]}, {offset[1]}, {offset[2]}])'
 
         lines = [
@@ -391,7 +392,8 @@ class ItemBox:
     物件及其在视野坐标下的可选中范围
     """
     def __init__(self, item: Item, attrs: BasicAttrs):
-        self.frame_radius = attrs.camera_info.frame_radius
+        info = attrs.camera_info
+        self.frame_radius = info.frame_radius
 
         self.cls_name = item.__class__.__name__
 
@@ -404,16 +406,21 @@ class ItemBox:
         if item.is_fix_in_frame():
             mapped = get_fixed_camera_info().map_points(points)
         else:
-            mapped = attrs.camera_info.map_points(points)
+            mapped = info.map_points(points)
 
-        self.min_x, self.min_y = np.nanmin(mapped, axis=0) * attrs.camera_info.frame_radius
-        self.max_x, self.max_y = np.nanmax(mapped, axis=0) * attrs.camera_info.frame_radius
+        self.min_x, self.min_y = np.nanmin(mapped, axis=0) * info.frame_radius
+        self.max_x, self.max_y = np.nanmax(mapped, axis=0) * info.frame_radius
 
         # s - select
         self.min_sx, self.min_sy = (self.min_x, self.min_y) - attrs.tolerance
         self.max_sx, self.max_sy = (self.max_x, self.max_y) + attrs.tolerance
 
+        # 由鼠标拖动导致的偏移量
         self.offset = np.array([0, 0])
+
+        # 最终应用的时候需要考虑的向量缩放
+        camera_direction = -normalize(info.camera_axis)
+        self.distance_scale = np.dot(points[0] - info.camera_location, camera_direction) / info.distance_from_plane
 
     def contains(self, x: float, y: float) -> bool:
         offx, offy = self.offset
