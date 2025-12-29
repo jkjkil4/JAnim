@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: JAnim\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-04 16:36+0800\n"
-"PO-Revision-Date: 2025-12-04 16:42+0800\n"
+"POT-Creation-Date: 2025-12-29 15:25+0800\n"
+"PO-Revision-Date: 2025-12-29 15:39+0800\n"
 "Last-Translator: \n"
 "Language-Team: en <LL@li.org>\n"
 "Language: en\n"
@@ -25,7 +25,8 @@ msgstr "camera"
 
 #: janim.camera.camera.Cmpt_CameraPoints:1 of
 msgid ""
-"基类：:py:class:`~janim.components.points.Cmpt_Points`, :py:class:`~typing.Generic`"
+"基"
+"类：:py:class:`~janim.components.points.Cmpt_Points`, :py:class:`~typing.Generic`"
 msgstr ""
 "Base "
 "class: :py:class:`~janim.components.points.Cmpt_Points`, :py:class:`~typing.Generic`"
@@ -37,8 +38,8 @@ msgstr "Set the camera position and related attributes"
 #: janim.camera.camera.Cmpt_CameraPoints.set:3 of
 msgid "``points``: 点集，必须只有一个点，表示摄像机中心位置"
 msgstr ""
-"``points``: Point set. Must contain exactly one point, representing the center "
-"position of the camera"
+"``points``: Point set. Must contain exactly one point, representing the "
+"center position of the camera"
 
 #: janim.camera.camera.Cmpt_CameraPoints.set:5 of
 msgid "另见 :meth:`~.Cmpt_Points.shift` :meth:`~.Cmpt_Points.move_to`"
@@ -78,13 +79,17 @@ msgstr "Rotate the camera around the ``axis``"
 
 #: janim.camera.camera.Cmpt_CameraPoints.rotate:3 of
 msgid "默认 ``absolute=True`` 表示绕全局坐标系旋转"
-msgstr "Default ``absolute=True`` means rotating around the global coordinate system"
+msgstr ""
+"Default ``absolute=True`` means rotating around the global coordinate "
+"system"
 
 #: janim.camera.camera.Cmpt_CameraPoints.rotate:4 of
-msgid "``absolute=False`` 表示绕相机自身坐标系旋转，并且此时 ``about_point`` 参数无效"
+msgid ""
+"``absolute=False`` 表示绕相机自身坐标系旋转，并且此时 ``about_point`` 参"
+"数无效"
 msgstr ""
-"``absolute=False`` means rotating around the camera's own coordinate system, and "
-"the ``about_point`` parameter is invalid in this case"
+"``absolute=False`` means rotating around the camera's own coordinate "
+"system, and the ``about_point`` parameter is invalid in this case"
 
 #: janim.camera.camera.Cmpt_CameraPoints.info:1 of
 msgid "摄像机的几何属性"
@@ -93,3 +98,11 @@ msgstr "Geometric properties of the camera"
 #: janim.camera.camera.Camera:1 of
 msgid "基类：:py:class:`~janim.items.points.Points`"
 msgstr "基类：:py:class:`~janim.items.points.Points`"
+
+#: janim.camera.camera.Camera.apply_style:1 of
+msgid "设置物件自身的样式，不影响子物件"
+msgstr "Sets the style of the item itself, does not affect child items"
+
+#: janim.camera.camera.Camera.apply_style:3 of
+msgid "另见：:meth:`set`"
+msgstr "See also :meth:`set`"

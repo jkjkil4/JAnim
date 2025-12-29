@@ -183,7 +183,7 @@ class HandlerPanel(QWidget):
 
 class SourceDiff(QFrame):
     """
-    显示 ``lineno`` 前后两行的代码，并将修改的代码并列对比
+    显示 ``lineno`` 前后两行的代码，并将修改的代码并排对比
     """
 
     submitted = Signal()

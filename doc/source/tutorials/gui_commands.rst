@@ -38,7 +38,7 @@ GUI 命令的基本用法是：
 
 .. code-block:: python
 
-    txt = Text('This is the first line.\nThis is the second line.')
+    txt = Text('This is the first line.\nThis is the second line.').show()
 
     self('select: txt[0]').set(color=RED)
     self('select: txt[1]').set(color=GREEN)

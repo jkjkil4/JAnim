@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: JAnim\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-27 17:04+0800\n"
-"PO-Revision-Date: 2025-11-27 17:05+0800\n"
+"POT-Creation-Date: 2025-12-29 15:25+0800\n"
+"PO-Revision-Date: 2025-12-29 15:38+0800\n"
 "Last-Translator: \n"
 "Language-Team: en <LL@li.org>\n"
 "Language: en\n"
@@ -26,6 +26,7 @@ msgstr "timeline"
 #: janim.anims.timeline.BuiltTimeline:1 janim.anims.timeline.PlaybackControl:1
 #: janim.anims.timeline.Timeline:1
 #: janim.anims.timeline.Timeline.AdditionalRenderCallsCallback:1
+#: janim.anims.timeline.Timeline.GuiCommand:1
 #: janim.anims.timeline.Timeline.ItemAppearance:1
 #: janim.anims.timeline.Timeline.PausePoint:1
 #: janim.anims.timeline.Timeline.PlayAudioInfo:1
@@ -418,6 +419,10 @@ msgstr "Get the current line number being executed in :meth:`construct`"
 #: janim.anims.timeline.Timeline.get_lineno_at_time:1 of
 msgid "根据 ``time`` 得到对应执行到的行数"
 msgstr "Get the corresponding line number based on ``time``."
+
+#: janim.anims.timeline.Timeline.GuiCommandInterrupt:1 of
+msgid "基类：:py:class:`Exception`"
+msgstr "基类：:py:class:`Exception`"
 
 #: janim.anims.timeline.Timeline.debug:1 of
 msgid "将物件的动画栈显示在时间轴中"

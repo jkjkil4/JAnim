@@ -300,7 +300,7 @@ class BasicAttrs:
 @lru_cache
 def get_fixed_camera_info() -> CameraInfo:
     """
-    用于辅助计算 fixed-in-frame 物件的 bounding
+    返回值用于辅助计算 fixed-in-frame 物件的 bounding
     """
     from janim.camera.camera import Camera
     return Camera().points.info

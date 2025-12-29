@@ -12,7 +12,7 @@ class CameraInfo:
     """
     摄像机属性
 
-    可以通过 :meth:`~.Camera.info` 得到
+    可以通过 :attr:`~.Cmpt_CameraPoints.info` 得到
     """
 
     scaled_factor: float
