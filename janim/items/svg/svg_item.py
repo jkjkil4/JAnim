@@ -160,7 +160,9 @@ class SVGItem(Group[SVGElemItem]):
             if isinstance(shape, se.Use):
                 continue
 
-            elif isinstance(shape, se.Group):
+            if isinstance(shape, se.Group):
+                # 对 Group 而言的 group_key 识别
+                # 如果带有 group_key 属性，会将所有子物件记录到 name 中
                 if cls.group_key is None:
                     continue
                 name = shape.values.get(cls.group_key, None)
@@ -172,7 +174,7 @@ class SVGItem(Group[SVGElemItem]):
                     group_finder[id(elem)].append(name)
                 continue
 
-            elif isinstance(shape, se.Path):
+            if isinstance(shape, se.Path):
                 builder = SVGItem.convert_path(shape, offset, mark_basepoint)
             elif isinstance(shape, se.SimpleLine):
                 builder = SVGItem.convert_line(shape, offset)
@@ -197,6 +199,14 @@ class SVGItem(Group[SVGElemItem]):
                 log.warning(_('Unsupported element type: {type}').format(type=type(shape)))
                 continue
 
+            # 对普通元素而言的 group_key 识别
+            # 如果带有 group_key 属性，将其自己记录到 name 中
+            if cls.group_key is not None:
+                name = shape.values.get(cls.group_key, None)
+                if name is not None:
+                    group_finder[id(shape)].append(name)
+
+            # 其他处理
             builders.append(builder)
 
             if not group_finder:
