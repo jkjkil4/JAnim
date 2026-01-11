@@ -184,6 +184,8 @@ class MovePanel(HandlerPanel):
         self.dragging_box.offset = self.offset_start + shift
 
         # 自动吸附
+        self.x_snap = None
+        self.y_snap = None
         if not (event.modifiers() & Qt.KeyboardModifier.ControlModifier):
             shift = self.auto_snapping(shift, lock_direction)
 
@@ -214,9 +216,6 @@ class MovePanel(HandlerPanel):
         return None
 
     def auto_snapping(self, shift: np.ndarray, lock_direction: bool) -> None:
-        self.x_snap = None
-        self.y_snap = None
-
         # 在 lock_direction 的时候，只允许 x,y 方向上同倍率拉伸，即可保持 lock_direction 效果
         if lock_direction:
             for box in self.boxes:
