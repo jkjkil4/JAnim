@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-25 22:50+0800\n"
+"POT-Creation-Date: 2026-01-11 21:44+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -53,4 +53,11 @@ msgstr ""
 #: janim/anims/timeline.py:867
 #, python-brace-format
 msgid "Called self.debug({repr}) at {loc}"
+msgstr ""
+
+#: janim/anims/timeline.py:1228
+#, python-brace-format
+msgid ""
+"GUI command in a sub-Timeline is ignored; defined in \"{file}\" at line "
+"{lineno}"
 msgstr ""

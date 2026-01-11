@@ -1176,6 +1176,7 @@ class BuiltTimeline:
         - ``first_frame_duration``: 第一帧持续多少秒
         - ``keep_last_frame``: 是否在 Timeline 结束后仍然保留最后一帧的显示
         """
+        self._warning_if_has_gui_command()
         return TimelineItem(self, **kwargs)
 
     def to_playback_control_item(self, **kwargs) -> TimelinePlaybackControlItem:
@@ -1217,7 +1218,17 @@ class BuiltTimeline:
 
         - ``keep_last_frame``: 是否在 Timeline 结束后仍然保留最后一帧的显示
         """
+        self._warning_if_has_gui_command()
         return TimelinePlaybackControlItem(self, **kwargs)
+
+    def _warning_if_has_gui_command(self) -> None:
+        command = self.timeline.gui_command
+        if command is not None:
+            log.warning(
+                _('GUI command in a sub-Timeline is ignored; '
+                  'defined in "{file}" at line {lineno}')
+                .format(file=os.path.basename(command.filepath), lineno=command.lineno)
+            )
 
 
 class TimelineItem(Item):
