@@ -849,6 +849,27 @@ class Cmpt_Points[ItemT](Component[ItemT]):
         normal = eigvecs[:, np.argmin(eigvals)]
         return normalize(normal)
 
+    def face_to_vector(
+        self,
+        vector: Vect,
+        *,
+        about_point: Vect | None = None,
+        about_edge: Vect | None = ORIGIN,
+        root_only: bool = False,
+    ) -> Self:
+        """
+        旋转物件使其法方向与 ``vector`` 同向
+
+        - 视 ``about_point`` 为参考点，若其为 ``None``，则将物件在 ``about_edge`` 方向上的边界作为 ``about_point``
+        """
+        self.apply_matrix(
+            rotation_between_vectors(self.unit_normal, vector),
+            about_point=about_point,
+            about_edge=about_edge,
+            root_only=root_only
+        )
+        return self
+
     def face_to_camera(
         self,
         camera: Camera | types.EllipsisType = ...,
