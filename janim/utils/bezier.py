@@ -387,10 +387,14 @@ def smooth_quadratic_path(anchors: VectArray) -> np.ndarray:
     quads = [anchors[0, :2]]
     for cub_bs in zip(anchors[:-1], h1s, h2s, anchors[1:]):
         # Try to use fontTools curve_to_quadratic
-        new_quads = curve_to_quadratic(
-            [b[:2] for b in cub_bs],
-            max_err=0.1 * get_norm(cub_bs[3] - cub_bs[0])
-        )
+        try:
+            new_quads = curve_to_quadratic(
+                [b[:2] for b in cub_bs],
+                max_err=0.1 * get_norm(cub_bs[3] - cub_bs[0])
+            )
+        except Exception:
+            print('aaa')
+            new_quads = None
         # Otherwise fall back on home baked solution
         if new_quads is None or len(new_quads) % 2 == 0:
             new_quads = get_quadratic_approximation_of_cubic(*cub_bs)[:, :2]

@@ -1,13 +1,16 @@
 
+import numpy as np
 from PySide6.QtCore import QPointF, Signal
 from PySide6.QtOpenGLWidgets import QOpenGLWidget
 from PySide6.QtWidgets import QWidget
 
 from janim.anims.timeline import BuiltTimeline
-from janim.logger import log
 from janim.camera.camera import Camera
+from janim.camera.camera_info import CameraInfo
+from janim.logger import log
 from janim.render.base import create_context
 from janim.render.framebuffer import FRAME_BUFFER_BINDING, register_qt_glwidget
+from janim.typing import VectArray
 
 
 class GLWidget(QOpenGLWidget):
@@ -55,6 +58,35 @@ class GLWidget(QOpenGLWidget):
 
     def map_from_gly(self, y: float) -> float:
         return (-y + 1) / 2 * self.height()
+
+    def map_to_point(self, position: QPointF, info: CameraInfo | None = None) -> np.ndarray:
+        """
+        将窗口坐标转换为三维空间中的坐标
+        """
+        if info is None:
+            info = self.built.current_camera_info()
+
+        glx, gly = self.map_to_gl2d(position)
+
+        center = info.center
+        hvec_half = info.horizontal_vect / 2
+        vvec_half = info.vertical_vect / 2
+
+        pos = center + hvec_half * glx + vvec_half * gly
+        return pos
+
+    def map_from_points(self, points: VectArray, info: CameraInfo | None = None) -> list[QPointF]:
+        """
+        将三维空间中的一列坐标转换为窗口中的一列坐标
+        """
+        if info is None:
+            info = self.built.current_camera_info()
+
+        result = [
+            self.map_from_gl2d(x, y)
+            for x, y in info.map_points(points)
+        ]
+        return result
 
     def initializeGL(self) -> None:
         log.debug('Initializing OpenGL context for GLWidget ..')

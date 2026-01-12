@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-24 15:29+0800\n"
+"POT-Creation-Date: 2026-01-12 23:11+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,28 +17,10 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: janim/gui/popup/painter.py:45
-msgid ""
-"Note: This is used to determine the position on the screen. To actually add "
-"the drawn content, you need to manually add the corresponding code."
-msgstr ""
-
-#: janim/gui/popup/painter.py:59
-msgid "Draw"
-msgstr ""
-
-#: janim/gui/popup/painter.py:66
-msgid "None"
-msgstr ""
-
-#: janim/gui/popup/painter.py:71
+#: janim/gui/draw/vitem.py:25
 msgid "(freehand-path)"
 msgstr ""
 
-#: janim/gui/popup/painter.py:77
-msgid "Type"
-msgstr ""
-
-#: janim/gui/popup/painter.py:338
+#: janim/gui/draw/vitem.py:60
 msgid "Count"
 msgstr ""

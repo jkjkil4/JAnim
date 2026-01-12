@@ -28,6 +28,7 @@ class RichTextEditor(QWidget):
                                                       if state
                                                       else RichTextEdit.LineWrapMode.NoWrap)
         )
+        self.check_box_wordwrap.setChecked(False)
 
         self.check_box_html = QCheckBox(_('Recognize rich text format on paste'))
         self.check_box_html.stateChanged.connect(self.check_box_html_state_changed)
