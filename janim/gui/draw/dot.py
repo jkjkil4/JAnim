@@ -27,7 +27,7 @@ class DrawDot(Draw):
         self.mainlayout.addWidget(self.cbb_coord_only, 0, Qt.AlignmentFlag.AlignRight)
 
         self.global_coord_only = get_coord_only_instance()
-        self.global_coord_only.changed.connect(self.cbb_coord_only.setChecked)
+        self.global_coord_only.changed.connect(self.on_global_coord_only_changed)
 
         self.cbb_coord_only.setChecked(self.global_coord_only.get())
         self.cbb_coord_only.stateChanged.connect(self.on_local_coord_only_changed)
@@ -40,6 +40,11 @@ class DrawDot(Draw):
 
     def released(self, _) -> None:
         self._update_code()
+
+    def on_global_coord_only_changed(self, state: bool) -> None:
+        self.cbb_coord_only.blockSignals(True)
+        self.cbb_coord_only.setChecked(state)
+        self.cbb_coord_only.blockSignals(False)
 
     def on_local_coord_only_changed(self, state: bool) -> None:
         self.global_coord_only.set(state)
