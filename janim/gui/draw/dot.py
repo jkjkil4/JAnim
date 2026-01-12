@@ -45,6 +45,7 @@ class DrawDot(Draw):
         self.cbb_coord_only.blockSignals(True)
         self.cbb_coord_only.setChecked(state)
         self.cbb_coord_only.blockSignals(False)
+        self._update_code()
 
     def on_local_coord_only_changed(self, state: bool) -> None:
         self.global_coord_only.set(state)
