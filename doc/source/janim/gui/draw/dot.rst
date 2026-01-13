@@ -1,7 +1,7 @@
-painter
-=======
+dot
+===
 
-.. automodule:: janim.gui.popup.painter
+.. automodule:: janim.gui.draw.dot
    :members:
    :undoc-members:
    :show-inheritance:
