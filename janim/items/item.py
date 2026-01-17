@@ -121,9 +121,9 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
     ):
         super().__init__(*args)
 
-        self.stored: bool = False
-        self.stored_parents: list[Item] | None = None
-        self.stored_children: list[Item] | None = None
+        self._stored: bool = False
+        self._stored_parents: list[Item] | None = None
+        self._stored_children: list[Item] | None = None
 
         from janim.anims.timeline import Timeline
         self.timeline = Timeline.get_context(raise_exc=False)
@@ -326,28 +326,22 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
 
         # example: item[0]
         if isinstance(key, SupportsIndex):
-            return self.children[key]
+            return self._children[key]
 
         from janim.items.points import Group
 
         match key:
             # example: item[0:2]
             case slice():
-                return Group(*self.children[key])
+                return Group(*self._children[key])
             # example: item[False, True, True]
             case list() if all(isinstance(x, bool) for x in key):
                 return Group(*[sub for sub, flag in zip(self, key) if flag])
             # example: item[0, 3, 4]
             case list() if all(isinstance(x, SupportsIndex) for x in key):
-                return Group(*[self.children[x] for x in key])
+                return Group(*[self._children[x] for x in key])
 
         raise GetItemError(_('Unsupported key: {}').format(key))
-
-    def __iter__(self):
-        return iter(self.children)
-
-    def __len__(self) -> int:
-        return len(self.children)
 
     def __mul__(self, other: int) -> Group[Self]:
         assert isinstance(other, int)
@@ -608,10 +602,10 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
     # region data
 
     def get_parents(self):
-        return self.stored_parents if self.stored else self.parents
+        return self._stored_parents if self._stored else self._parents
 
     def get_children(self):
-        return self.stored_children if self.stored else self.children
+        return self._stored_children if self._stored else self._children
 
     def not_changed(self, other: Self) -> bool:
         if self.get_children() != other.get_children():
@@ -657,15 +651,15 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         copy_item.reset_refresh()
         setattr(copy_item, SIGNAL_OBJ_SLOTS_NAME, None)
 
-        copy_item.parents = []
-        copy_item.children = []
+        copy_item._parents = []
+        copy_item._children = []
 
         if root_only:
-            copy_item.children_changed()
+            copy_item._children_changed()
         else:
             # .add 里已经调用了 .children_changed
             copy_item.add(*[item.copy() for item in self])
-        copy_item.parents_changed()
+        copy_item._parents_changed()
 
         self._copy_cmpts(self, copy_item)
         copy_item.init_connect()
@@ -677,9 +671,9 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         """
         # self.parents 不变
 
-        children = self.children.copy()
+        children = self._children.copy()
         self.clear_children()
-        for old, new in it.zip_longest(children, other.children):
+        for old, new in it.zip_longest(children, other._children):
             if new is None:
                 break
             if old is None or type(old) is not type(new):
@@ -702,21 +696,21 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         copy_item.reset_refresh()
         setattr(copy_item, SIGNAL_OBJ_SLOTS_NAME, None)
 
-        copy_item.parents = []
-        copy_item.children = []
+        copy_item._parents = []
+        copy_item._children = []
 
-        copy_item.stored = True
-        copy_item.stored_parents = self.get_parents().copy()
-        copy_item.stored_children = self.get_children().copy()
+        copy_item._stored = True
+        copy_item._stored_parents = self.get_parents().copy()
+        copy_item._stored_children = self.get_children().copy()
 
         self._copy_cmpts(self, copy_item)
         copy_item.init_connect()
         return copy_item
 
     def restore(self, other: Item) -> Self:
-        if self.stored:
-            self.stored_parents = other.get_parents().copy()
-            self.stored_children = other.get_children().copy()
+        if self._stored:
+            self._stored_parents = other.get_parents().copy()
+            self._stored_children = other.get_children().copy()
 
         for key in self.components.keys() & other.components.keys():
             self.components[key].become(other.components[key])
@@ -767,8 +761,8 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
 
         # align children
         max_len = max(len(item1.get_children()), len(item2.get_children()))
-        aligned.data1.stored_children = resize_preserving_order(item1.get_children(), max_len)
-        aligned.data2.stored_children = resize_preserving_order(item2.get_children(), max_len)
+        aligned.data1._stored_children = resize_preserving_order(item1.get_children(), max_len)
+        aligned.data2._stored_children = resize_preserving_order(item2.get_children(), max_len)
 
         return aligned
 

@@ -131,7 +131,7 @@ class Transform(Animation):
                                 len2=len(data2.get_children()))
                     )
                 else:
-                    for child1, child2 in zip(aligned.data1.stored_children, aligned.data2.stored_children):
+                    for child1, child2 in zip(aligned.data1._stored_children, aligned.data2._stored_children):
                         align(child1, child2, True)
 
         if not self.flatten:

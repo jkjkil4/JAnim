@@ -650,7 +650,7 @@ class NumberPlane(Axes):
         self.add(
             self.faded_lines,
             self.background_lines,
-            insert=True
+            prepend=True
         )
         self.depth.arrange()
 

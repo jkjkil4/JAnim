@@ -256,7 +256,7 @@ class TypstMatrix(TypstText):
 
         # 如果矩阵内有东西，先得到第一个元素的下标，那么这个下标往前就是左括号
         elem = self._get_element(self.matrix_labels[0])[0]
-        index = self.children.index(elem)
+        index = self._children.index(elem)
         return self[:index]
 
     def get_right_brace(self) -> Group[SVGElemItem]:
@@ -273,7 +273,7 @@ class TypstMatrix(TypstText):
 
         # 如果矩阵内有东西，先得到最后一个元素的下标，那么这个下标往后就是右括号
         elem = self._get_element(self.matrix_labels[-1])[-1]
-        index = self.children.index(elem)
+        index = self._children.index(elem)
         return self[index + 1:]
 
     def _raise_if_not_labelled(self) -> None | NoReturn:

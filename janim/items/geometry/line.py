@@ -248,13 +248,13 @@ class Cmpt_VPoints_DashedLineImpl[ItemT](Cmpt_VPoints_LineImpl[ItemT], impl=True
     """
     def get_start(self) -> np.ndarray:
         assert self.bind is not None
-        sub = self.bind.at_item.children[0]
+        sub = self.bind.at_item._children[0]
         assert isinstance(sub, VItem)
         return sub.points.get_start()
 
     def get_end(self) -> np.ndarray:
         assert self.bind is not None
-        sub = self.bind.at_item.children[-1]
+        sub = self.bind.at_item._children[-1]
         assert isinstance(sub, VItem)
         return sub.points.get_end()
 

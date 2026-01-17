@@ -111,7 +111,7 @@ class SVGItem(Group[SVGElemItem]):
         if not root_only:
             def get_idx(item: Item) -> int | None:
                 try:
-                    return self.children.index(item)
+                    return self._children.index(item)
                 except ValueError:
                     return None
 

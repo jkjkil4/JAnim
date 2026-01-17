@@ -93,7 +93,7 @@ class Group(Points, Generic[T]):
     def __init__(self, *objs: T, **kwargs):
         super().__init__(children=objs, **kwargs)
 
-        self.children: list[T]
+        self._children: list[T]
 
     @staticmethod
     def from_iterable[T](objs: Iterable[T], **kwargs) -> Group[T]:
@@ -112,7 +112,7 @@ class Group(Points, Generic[T]):
         return super().__getitem__(value)
 
     def __iter__(self):
-        return iter(self.children)
+        return iter(self._children)
 
 
 class DotCloud(Points):

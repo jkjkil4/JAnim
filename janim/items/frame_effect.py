@@ -88,7 +88,7 @@ class FrameEffect(Item):
     def dynamic_uniforms(self) -> dict:
         return {}
 
-    def add(self, *objs, insert=False) -> Self:
+    def add(self, *objs, prepend=False, insert=None) -> Self:
         """
         .. warning::
 
@@ -102,7 +102,7 @@ class FrameEffect(Item):
                   'If you want to apply additional items, use `apply` instead.')
                 .format(cls=self.__class__.__name__)
             )
-        super().add(*objs, insert=insert)
+        super().add(*objs, prepend=prepend, insert=insert)
         return self
 
     def remove(self, *objs) -> Self:

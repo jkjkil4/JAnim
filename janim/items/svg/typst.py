@@ -69,7 +69,7 @@ class TypstDoc(SVGItem):
 
         # 把占位元素替换为实际物件
         if vars is not None:
-            new_children = self.children.copy()
+            new_children = self._children.copy()
             for label, item in vars_mapping.items():
                 placeholders = self.get_label(label)
 

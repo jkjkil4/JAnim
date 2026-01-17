@@ -53,7 +53,7 @@ class Cmpt_Points[ItemT](Component[ItemT]):
 
         item = bind.at_item
 
-        item.__class__.children_changed.connect_refresh(item, self, Cmpt_Points.box.fget)
+        item.__class__._children_changed.connect_refresh(item, self, Cmpt_Points.box.fget)
 
     def copy(self) -> Self:
         cmpt_copy = super().copy()
@@ -1069,7 +1069,7 @@ class Cmpt_Points[ItemT](Component[ItemT]):
 
         cmpts = [
             self.get_same_cmpt(item)
-            for item in self.bind.at_item.children
+            for item in self.bind.at_item._children
         ]
 
         for cmpt1, cmpt2 in zip(cmpts, cmpts[1:]):
@@ -1139,7 +1139,7 @@ class Cmpt_Points[ItemT](Component[ItemT]):
 
         cmpts = [
             self.get_same_cmpt(item)
-            for item in self.bind.at_item.children
+            for item in self.bind.at_item._children
         ]
 
         n_rows, n_cols = self._format_rows_cols(len(cmpts), n_rows, n_cols)
@@ -1168,12 +1168,12 @@ class Cmpt_Points[ItemT](Component[ItemT]):
         aligned_edge: Vect = ORIGIN,
         center: bool = True
     ) -> Self:
-        if self.bind is None or not self.bind.at_item.children:
+        if self.bind is None or not self.bind.at_item._children:
             return self
 
         cmpts = [
             self.get_same_cmpt(item)
-            for item in self.bind.at_item.children
+            for item in self.bind.at_item._children
         ]
         offset = np.array(offset)
 
