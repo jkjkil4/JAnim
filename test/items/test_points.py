@@ -5,7 +5,7 @@ import numpy as np
 
 from janim.constants import (DEGREES, DL, DOWN, DR, LEFT, ORIGIN, OUT, RIGHT,
                              TAU, UL, UP, UR)
-from janim.exception import InvaildMatrixError, PointError
+from janim.exception import GetItemError, InvaildMatrixError, PointError
 from janim.items.item import Item
 from janim.items.points import Group, NamedGroup, Points
 
@@ -447,3 +447,7 @@ class NamedGroupTest(unittest.TestCase):
         group2.shuffle()
         curr_mapping = group2.resolve()
         self.assertEqual(prev_mapping, curr_mapping)
+
+        group2.remove('a')
+        with self.assertRaises(GetItemError):
+            group2['a']

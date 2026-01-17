@@ -233,8 +233,12 @@ class NamedGroup[T](Group[T]):
 
         return self
 
-    def remove(self, *items: T) -> Self:
+    def remove(self, *items_or_names: T | str) -> Self:
         # 仿照删除物件的过程，更新 _named_indices
+        items = [
+            self.by_name(item_or_name) if isinstance(item_or_name, str) else item_or_name
+            for item_or_name in items_or_names
+        ]
         for obj in items:
             # 被删除的一个物件的下标
             try:
