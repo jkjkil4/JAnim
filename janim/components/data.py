@@ -14,6 +14,7 @@ class Cmpt_Data[ItemT, T](Component[ItemT]):
     """
     详见 :class:`~.ValueTracker`
     """
+
     def __init__(self):
         self.copy_func: CopyFn[T] = None
         self.not_changed_func: NotChangedFn[T] = None
@@ -36,14 +37,20 @@ class Cmpt_Data[ItemT, T](Component[ItemT]):
         return self.not_changed_func(self.value, other.value)
 
     @classmethod
-    def align_for_interpolate(cls, cmpt1: Cmpt_Data, cmpt2: Cmpt_Data) -> AlignedData[Self]:
+    def align_for_interpolate(
+        cls, cmpt1: Cmpt_Data, cmpt2: Cmpt_Data
+    ) -> AlignedData[Self]:
         cmpt1_copy = cmpt1.copy()
         cmpt2_copy = cmpt2.copy()
         return AlignedData(cmpt1_copy, cmpt2_copy, cmpt1_copy.copy())
 
-    def interpolate(self, cmpt1: Cmpt_Data, cmpt2: Cmpt_Data, alpha: float, *, path_func=None) -> None:
-        if not self.not_changed_func(cmpt1, cmpt2) or not self.not_changed_func(cmpt1, self):
-            if self.not_changed_func(cmpt1, cmpt2):
+    def interpolate(
+        self, cmpt1: Cmpt_Data, cmpt2: Cmpt_Data, alpha: float, *, path_func=None
+    ) -> None:
+        if not self.not_changed_func(
+            cmpt1.value, cmpt2.value
+        ) or not self.not_changed_func(cmpt1.value, self.value):
+            if self.not_changed_func(cmpt1.value, cmpt2.value):
                 self.set(cmpt1.copy_func(cmpt1.value))
             else:
                 self.set(self.interpolate_func(cmpt1.value, cmpt2.value, alpha))
@@ -66,7 +73,7 @@ class Cmpt_Data[ItemT, T](Component[ItemT]):
         self,
         copy_func: CopyFn[T] | None = None,
         not_changed_func: NotChangedFn[T] | None = None,
-        interpolate_func: InterpolateFn[T] | None = None
+        interpolate_func: InterpolateFn[T] | None = None,
     ) -> Self:
         if copy_func is not None:
             self.copy_func = copy_func
