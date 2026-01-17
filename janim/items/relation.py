@@ -8,6 +8,8 @@ from janim.utils.signal import Signal
 from janim.utils.deprecation import deprecated
 
 
+# 因为该类其实只用于 Item，所以类方法中的描述都直接使用“物件”了
+
 class Relation[GRelT: 'Relation'](refresh.Refreshable):
     """
     定义了有向无环图的包含关系以及一些实用操作
@@ -23,7 +25,7 @@ class Relation[GRelT: 'Relation'](refresh.Refreshable):
     - :meth:`descendants()` 表示与其直接关联的后代对象（包括子对象、以及子对象的子对象，......）
     - 对于 :meth:`ancestors()` 以及 :meth:`descendants()`：
         - 不包含调用者自身并且返回的列表中没有重复元素
-        - 物件顺序是 DFS 顺序
+        - 对象顺序是 DFS 顺序
     """
     def __init__(self):
         super().__init__()
@@ -34,16 +36,16 @@ class Relation[GRelT: 'Relation'](refresh.Refreshable):
     @property
     def parents(self):
         """
-        父对象列表的迭代器
+        父物件列表的一份拷贝
         """
-        return iter(self._parents)
+        return self._parents.copy()
 
     @property
     def children(self):
         """
-        子对象列表的迭代器
+        子物件列表的一份拷贝
         """
-        return iter(self._children)
+        return self._children.copy()
 
     def __iter__(self):
         return iter(self._children)
@@ -56,11 +58,11 @@ class Relation[GRelT: 'Relation'](refresh.Refreshable):
 
     def index(self, obj: GRelT) -> int:
         """
-        获取子对象在列表中的索引位置
+        获取子物件在列表中的索引位置
 
-        :param obj: 要查找的子对象
-        :return: 子对象的索引位置
-        :raises ValueError: 子对象不在列表中
+        :param obj: 要查找的子物件
+        :return: 子物件的索引位置
+        :raises ValueError: 子物件不在列表中
         """
         return self._children.index(obj)
 
@@ -100,9 +102,9 @@ class Relation[GRelT: 'Relation'](refresh.Refreshable):
         insert=None    # deprecated
     ) -> Self:
         """
-        向该对象添加子对象
+        向该物件添加子物件
 
-        :param objs: 要添加的子对象
+        :param objs: 要添加的子物件
         :param prepend: 默认为 ``False``，如果为 ``True``，那么插入到子物件列表的开头
         """
         if insert is not None:
@@ -128,10 +130,10 @@ class Relation[GRelT: 'Relation'](refresh.Refreshable):
 
     def insert(self, index: int, *objs: GRelT) -> Self:
         """
-        在指定索引位置插入子对象
+        在指定索引位置插入子物件
 
         :param index: 插入位置的索引
-        :param objs: 要插入的子对象
+        :param objs: 要插入的子物件
         """
         for i, obj in enumerate(objs):
             if obj not in self._children:
@@ -146,9 +148,9 @@ class Relation[GRelT: 'Relation'](refresh.Refreshable):
 
     def remove(self, *objs: GRelT) -> Self:
         """
-        从该对象移除子对象
+        从该物件移除子物件
 
-        :param objs: 要移除的子对象
+        :param objs: 要移除的子物件
         """
         for obj in objs:
             try:
@@ -164,7 +166,7 @@ class Relation[GRelT: 'Relation'](refresh.Refreshable):
 
     def shuffle(self) -> Self:
         """
-        随机打乱子对象的顺序
+        随机打乱子物件的顺序
 
         .. note::
 
@@ -178,7 +180,7 @@ class Relation[GRelT: 'Relation'](refresh.Refreshable):
 
     def clear_parents(self) -> Self:
         """
-        清空父对象
+        清空父物件
         """
         for parent in self._parents:
             parent.remove(self)
@@ -186,7 +188,7 @@ class Relation[GRelT: 'Relation'](refresh.Refreshable):
 
     def clear_children(self) -> Self:
         """
-        清空子对象
+        清空子物件
         """
         self.remove(*self._children)
         return self
@@ -214,7 +216,7 @@ class Relation[GRelT: 'Relation'](refresh.Refreshable):
     @refresh.register
     def ancestors(self) -> list[GRelT]:
         """
-        获得祖先对象列表
+        获得祖先物件列表
         """
         return self._family(up=True)
 
@@ -222,7 +224,7 @@ class Relation[GRelT: 'Relation'](refresh.Refreshable):
     @refresh.register
     def descendants(self) -> list[GRelT]:
         """
-        获得后代对象列表
+        获得后代物件列表
         """
         return self._family(up=False)
 
@@ -258,13 +260,13 @@ class Relation[GRelT: 'Relation'](refresh.Refreshable):
 
     def walk_ancestors[RelT](self, base_cls: type[RelT] = None) -> Generator[RelT, None, None]:
         """
-        遍历祖先节点中以 ``base_cls`` （缺省则遍历全部）为基类的对象
+        遍历祖先节点中以 ``base_cls`` （缺省则遍历全部）为基类的物件
         """
         yield from self._walk_lst(base_cls, self.ancestors())
 
     def walk_descendants[RelT](self, base_cls: type[RelT] = None) -> Generator[RelT, None, None]:
         """
-        遍历后代节点中以 ``base_cls`` （缺省则遍历全部）为基类的对象
+        遍历后代节点中以 ``base_cls`` （缺省则遍历全部）为基类的物件
         """
         yield from self._walk_lst(base_cls, self.descendants())
 
@@ -286,12 +288,12 @@ class Relation[GRelT: 'Relation'](refresh.Refreshable):
 
     def walk_nearest_ancestors[RelT](self, base_cls: type[RelT]) -> Generator[RelT, None, None]:
         """
-        遍历祖先节点中以 ``base_cls`` 为基类的对象，但是排除已经满足条件的对象的祖先对象
+        遍历祖先节点中以 ``base_cls`` 为基类的物件，但是排除已经满足条件的物件的祖先物件
         """
         yield from self._walk_nearest_family(base_cls, lambda rel: rel.ancestors())
 
     def walk_nearest_descendants[RelT](self, base_cls: type[RelT]) -> Generator[RelT, None, None]:
         """
-        遍历后代节点中以 ``base_cls`` 为基类的对象，但是排除已经满足条件的对象的后代对象
+        遍历后代节点中以 ``base_cls`` 为基类的物件，但是排除已经满足条件的物件的后代物件
         """
         yield from self._walk_nearest_family(base_cls, lambda rel: rel.descendants())

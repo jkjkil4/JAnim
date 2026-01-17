@@ -8,12 +8,16 @@ from janim.components.mark import Cmpt_Mark
 from janim.components.points import Cmpt_Points
 from janim.components.radius import Cmpt_Radius
 from janim.components.rgbas import Cmpt_Rgbas, apart_alpha
+from janim.exception import GetItemError
 from janim.items.item import Item
+from janim.locale.i18n import get_translator
 from janim.render.renderer_dotcloud import DotCloudRenderer
 from janim.typing import Alpha, ColorArray, JAnimColor, Vect
 from janim.utils.data import AlignedData
 from janim.utils.iterables import (resize_preserving_order,
                                    resize_preserving_order_indice_groups)
+
+_ = get_translator('janim.items.points')
 
 
 class Points(Item):
@@ -88,31 +92,239 @@ else:
 
 class Group(Points, Generic[T]):
     """
+    物件组
+
     将物件组成一组
     """
-    def __init__(self, *objs: T, **kwargs):
-        super().__init__(children=objs, **kwargs)
+    def __init__(self, *items: T, **kwargs):
+        super().__init__(children=items, **kwargs)
 
         self._children: list[T]
 
     @staticmethod
-    def from_iterable[T](objs: Iterable[T], **kwargs) -> Group[T]:
-        return Group(*objs, **kwargs)
+    def from_iterable[T](items: Iterable[T], **kwargs) -> Group[T]:
+        return Group(*items, **kwargs)
 
     @overload
-    def __getitem__(self, value: int) -> T: ...
+    def __getitem__(self, key: int) -> T: ...
     @overload
-    def __getitem__(self, value: slice) -> Group[T]: ...
-    @overload
-    def __getitem__(self, key: Iterable[int]) -> Group[T]: ...
-    @overload
-    def __getitem__(self, key: Iterable[bool]) -> Group[T]: ...
+    def __getitem__(self, key: slice | Iterable[int] | Iterable[bool]) -> Group[T]: ...
 
     def __getitem__(self, value):   # pragma: no cover
         return super().__getitem__(value)
 
     def __iter__(self):
         return iter(self._children)
+
+
+class NamedGroup[T](Group[T]):
+    """
+    具名物件组，可以使用类似 ``group['name']`` 的形式来获取其中的具名物件
+
+    :param items: 初始具名物件
+
+    也可以使用 :meth:`add` 或 :meth:`insert` 方法，传入具名参数来新增具名子物件
+
+    示例：
+
+    .. code-block:: python
+
+        group = NamedGroup(
+            text=Text('lorem'),
+            shape=Circle()
+        )
+        group.points.arrange(DOWN, aligned_edge=LEFT)
+
+        self.play(
+            group['text'].anim.color.set(GREEN),
+            group['shape'].anim.color.set(YELLOW),
+            lag_ratio=0.5
+        )
+
+        def updater(group: NamedGroup, p: UpdaterParams) -> None:
+            group.points.rotate(TAU * p.alpha)
+            group['text'].color.mix(BLUE, p.alpha)
+
+        self.play(
+            GroupUpdater(group, updater)
+        )
+
+    .. note::
+
+        无法像 :class:`Group` 那样使用初始化参数
+
+        .. code-block:: python
+
+            group = Group(..., color=RED)
+
+        为了解决这一问题，你可以写为
+
+        .. code-block:: python
+
+            group = NamedGroup(...)
+            group.set(color=RED)
+    """
+    def __init__(self, *items: T, **named_items: T):
+        super().__init__()
+        self._named_indices: dict[str, int] = {}
+        self.add(*items, **named_items)
+
+    def add(self, *items: T, prepend=False, **named_items: T) -> Self:
+        """
+        向该物件添加子物件，并且可以通过具名参数设定具名子物件
+
+        :param objs: 要添加的子物件
+        :param prepend: 默认为 ``False``，如果为 ``True``，那么插入到子物件列表的开头
+        """
+        all_items = items + tuple(named_items.values())
+
+        # 添加物件
+        super().add(*all_items, prepend=prepend)
+
+        # 更新已有的索引
+        if prepend:
+            self._named_indices = {
+                key: idx + len(all_items)
+                for key, idx in self._named_indices.items()
+            }
+
+        # 建立新物件的索引
+        if prepend:
+            index_start = len(items)
+        else:
+            index_start = len(self._children) - len(named_items)
+
+        # 新物件的索引为 [ index_start, index_start + len(named_items) )
+        for i, name in enumerate(named_items.keys()):
+            self._named_indices[name] = index_start + i
+
+        return self
+
+    def insert(self, index: int, *items: T, **named_items: T) -> Self:
+        """
+        在指定索引位置插入子物件，并且可以通过具名参数设定具名子物件
+
+        :param index: 插入位置的索引
+        :param objs: 要插入的子物件
+        """
+        # 将可能的负下标转换为正下标，使得能正确更新 _named_indices
+        # 例如 [a,b,c,d] 中 -1 应指向 len - 1 的 d，所以即为 len + index
+        actual_index = index if index >= 0 else len(self._children) + index
+        # 限制在 0 ~ len-1 之间，避免新索引计算错误
+        actual_index = max(0, min(actual_index, len(self._children) - 1))
+
+        all_items = items + tuple(named_items.values())
+
+        # 插入物件
+        super().insert(actual_index, *all_items)
+
+        # 更新已有的索引
+        self._named_indices = {
+            key: idx + len(all_items) if idx >= actual_index else idx
+            for key, idx in self._named_indices.items()
+        }
+
+        # 建立新物件的索引
+        index_start = actual_index + len(items)
+
+        # 新物件的索引为 [ index_start, index_start + len(named_items) )
+        for i, name in enumerate(named_items.keys()):
+            self._named_indices[name] = index_start + i
+
+        return self
+
+    def remove(self, *items: T) -> Self:
+        # 仿照删除物件的过程，更新 _named_indices
+        for obj in items:
+            # 被删除的一个物件的下标
+            try:
+                index = self.index(obj)
+            except ValueError:
+                continue
+
+            # 更新 _named_indices：
+            # 遍历，如果 index 命中，则删除这一项；如果是在 index 之后的，则减一
+            remove: str | None = None
+            for key, value in self._named_indices.items():
+                if index == value:
+                    assert remove is None
+                    remove = key
+                if index < value:
+                    self._named_indices[key] = value - 1
+
+            if remove is not None:
+                del self._named_indices[remove]
+
+        return super().remove(*items)
+
+    def shuffle(self) -> Self:
+        # 根据 key-下标 对应关系，得到打乱之前的 key-对象 对应关系
+        named_objs = {
+            key: self._children[index]
+            for key, index in self._named_indices.items()
+        }
+
+        super().shuffle()
+
+        # 计算新的 key-下标对应关
+        self._named_indices = {
+            key: self.index(obj)
+            for key, obj in named_objs.items()
+        }
+        return self
+
+    @overload
+    def __getitem__(self, key: str) -> T: ...
+    @overload
+    def __getitem__(self, key: int) -> T: ...
+    @overload
+    def __getitem__(self, key: slice | Iterable[int] | Iterable[bool]) -> Group[T]: ...
+
+    def __getitem__(self, key):
+        if isinstance(key, str):
+            return self.by_name(key)
+
+        return super().__getitem__(key)
+
+    def by_name(self, key: str) -> T:
+        """
+        根据名称获取子物件
+        """
+        index = self._named_indices.get(key, None)
+        if index is None:
+            raise GetItemError(_('Cannot find item with named key {key}'))
+
+        return self[index]
+
+    def resolve(self) -> dict[str, T]:
+        """
+        将具名子物件的内部索引关系整体解析为到物件的映射
+
+        :return: 名称到子物件的映射字典
+        """
+        return {
+            key: self[value]
+            for key, value in self._named_indices.items()
+        }
+
+    # region 对 stored 的相关处理，不是什么很重要的细节
+
+    def store(self):
+        copy_item = super().store()
+        copy_item._named_indices = {}
+        copy_item._stored_named_indices = self.get_named_indices().copy()
+        return copy_item
+
+    def restore(self, other: NamedGroup) -> Self:
+        assert isinstance(other, NamedGroup)
+        if self._stored:
+            self._stored_named_indices = other.get_named_indices().copy()
+        return super().restore(other)
+
+    def get_named_indices(self) -> dict[str, int]:
+        return self._stored_named_indices if self._stored else self._named_indices
+
+    # endregion
 
 
 class DotCloud(Points):

@@ -7,7 +7,7 @@ from janim.constants import (DEGREES, DL, DOWN, DR, LEFT, ORIGIN, OUT, RIGHT,
                              TAU, UL, UP, UR)
 from janim.exception import InvaildMatrixError, PointError
 from janim.items.item import Item
-from janim.items.points import Group, Points
+from janim.items.points import Group, NamedGroup, Points
 
 
 class PointsTest(unittest.TestCase):
@@ -396,3 +396,54 @@ class PointsTest(unittest.TestCase):
             pp1.points.get(),
             [UP, DOWN]
         )
+
+
+class NamedGroupTest(unittest.TestCase):
+    def test_named_group(self) -> None:
+        group = NamedGroup(
+            a=NamedGroup(
+                b=Item(),
+                c=Item()
+            ),
+            d=Item()
+        )
+        self.assertIs(group['a'], group[0])
+        self.assertIs(group['a']['b'], group[0][0])
+        self.assertIs(group['a']['c'], group[0][1])
+        self.assertIs(group['d'], group[1])
+
+        group2 = group.copy()
+        self.assertIs(group2['a'], group2[0])
+        self.assertIs(group2['a']['b'], group2[0][0])
+        self.assertIs(group2['a']['c'], group2[0][1])
+        self.assertIs(group2['d'], group2[1])
+
+        # group2: [a, d]
+
+        group2.add(e=Item())
+        self.assertIs(group2['e'], group2[-1])
+
+        group2.add(f=Item(), prepend=True)
+        self.assertIs(group2['f'], group2[0])
+
+        # group2: [f a d e]
+
+        group2.insert(1, g=Item())
+        self.assertIs(group2['g'], group2[1])
+
+        # group2: [f g a d e]
+
+        self.assertIs(group2['g'], group2[1])
+        self.assertIs(group2['e'], group2[4])
+        group2.remove(group2['f'])
+        self.assertIs(group2['g'], group2[0])
+        self.assertIs(group2['a'], group2[1])
+        self.assertIs(group2['d'], group2[2])
+        self.assertIs(group2['e'], group2[3])
+
+        # group2: [g a d e]
+
+        prev_mapping = group2.resolve()
+        group2.shuffle()
+        curr_mapping = group2.resolve()
+        self.assertEqual(prev_mapping, curr_mapping)
