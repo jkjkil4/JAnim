@@ -84,6 +84,77 @@ class MarkedItem(Points):
         self._blocking_signals = False
 
 
+class DotCloud(Points):
+    color = CmptInfo(Cmpt_Rgbas[Self])
+    radius = CmptInfo(Cmpt_Radius[Self], 0.05)
+
+    glow = CmptInfo(Cmpt_Glow[Self])
+
+    renderer_cls = DotCloudRenderer
+
+    def __init__(
+        self,
+        *args,
+        **kwargs
+    ):
+        super().__init__(*args, **kwargs)
+
+        self.points.resize_func = resize_preserving_order
+
+    def init_connect(self) -> None:
+        super().init_connect()
+        Cmpt_Points.reverse.connect(self.points, lambda: self.radius.reverse())
+
+    def apply_style(
+        self,
+        color: JAnimColor | ColorArray | None = None,
+        alpha: float | Iterable[float] | None = None,
+        radius: float | Iterable[float] | None = None,
+        glow_color: JAnimColor | None = None,
+        glow_alpha: Alpha | None = None,
+        glow_size: float | None = None,
+        **kwargs
+    ) -> Self:
+        self.color.set(color, alpha, root_only=True)
+        if radius is not None:
+            self.radius.set(radius, root_only=True)
+        self.glow.set(glow_color, glow_alpha, glow_size, root_only=True)
+
+        return super().apply_style(**kwargs)
+
+    @classmethod
+    def align_for_interpolate(
+        cls,
+        item1: DotCloud,
+        item2: DotCloud,
+    ) -> AlignedData[DotCloud]:
+        len1 = len(item1.points.get())
+        len2 = len(item2.points.get())
+
+        aligned = super().align_for_interpolate(item1, item2)
+
+        for data in (aligned.data1, aligned.data2):
+            points_count = data.points.count()
+            data.color.resize(points_count)
+            data.radius.resize(points_count)
+
+        if len1 != len2:
+            indice_groups = resize_preserving_order_indice_groups(min(len1, len2), max(len1, len2))
+
+            cmpt_to_fade = aligned.data1.color if len1 < len2 else aligned.data2.color
+            rgbas = cmpt_to_fade.get().copy()
+            for group in indice_groups:
+                rgbas[group, 3] = apart_alpha(rgbas[group[0], 3], len(group))
+            cmpt_to_fade.set_rgbas(rgbas)
+
+        return aligned
+
+
+class GlowDot(DotCloud):
+    def __init__(self, *args, glow_alpha=0.5, **kwargs):
+        super().__init__(*args, glow_alpha=glow_alpha, **kwargs)
+
+
 if TYPE_CHECKING:
     T = TypeVar('T', default=Item)
 else:
@@ -271,7 +342,7 @@ class NamedGroup[T](Group[T]):
 
         super().shuffle()
 
-        # 计算新的 key-下标对应关
+        # 计算新的 key-下标对应关系
         self._named_indices = {
             key: self.index(obj)
             for key, obj in named_objs.items()
@@ -330,74 +401,3 @@ class NamedGroup[T](Group[T]):
         return self._stored_named_indices if self._stored else self._named_indices
 
     # endregion
-
-
-class DotCloud(Points):
-    color = CmptInfo(Cmpt_Rgbas[Self])
-    radius = CmptInfo(Cmpt_Radius[Self], 0.05)
-
-    glow = CmptInfo(Cmpt_Glow[Self])
-
-    renderer_cls = DotCloudRenderer
-
-    def __init__(
-        self,
-        *args,
-        **kwargs
-    ):
-        super().__init__(*args, **kwargs)
-
-        self.points.resize_func = resize_preserving_order
-
-    def init_connect(self) -> None:
-        super().init_connect()
-        Cmpt_Points.reverse.connect(self.points, lambda: self.radius.reverse())
-
-    def apply_style(
-        self,
-        color: JAnimColor | ColorArray | None = None,
-        alpha: float | Iterable[float] | None = None,
-        radius: float | Iterable[float] | None = None,
-        glow_color: JAnimColor | None = None,
-        glow_alpha: Alpha | None = None,
-        glow_size: float | None = None,
-        **kwargs
-    ) -> Self:
-        self.color.set(color, alpha, root_only=True)
-        if radius is not None:
-            self.radius.set(radius, root_only=True)
-        self.glow.set(glow_color, glow_alpha, glow_size, root_only=True)
-
-        return super().apply_style(**kwargs)
-
-    @classmethod
-    def align_for_interpolate(
-        cls,
-        item1: DotCloud,
-        item2: DotCloud,
-    ) -> AlignedData[DotCloud]:
-        len1 = len(item1.points.get())
-        len2 = len(item2.points.get())
-
-        aligned = super().align_for_interpolate(item1, item2)
-
-        for data in (aligned.data1, aligned.data2):
-            points_count = data.points.count()
-            data.color.resize(points_count)
-            data.radius.resize(points_count)
-
-        if len1 != len2:
-            indice_groups = resize_preserving_order_indice_groups(min(len1, len2), max(len1, len2))
-
-            cmpt_to_fade = aligned.data1.color if len1 < len2 else aligned.data2.color
-            rgbas = cmpt_to_fade.get().copy()
-            for group in indice_groups:
-                rgbas[group, 3] = apart_alpha(rgbas[group[0], 3], len(group))
-            cmpt_to_fade.set_rgbas(rgbas)
-
-        return aligned
-
-
-class GlowDot(DotCloud):
-    def __init__(self, *args, glow_alpha=0.5, **kwargs):
-        super().__init__(*args, glow_alpha=glow_alpha, **kwargs)
