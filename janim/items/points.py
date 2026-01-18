@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Generic, Iterable, Self, TypeVar, overload
 
+import numpy as np
+
 from janim.components.component import CmptInfo
 from janim.components.glow import Cmpt_Glow
 from janim.components.mark import Cmpt_Mark
@@ -36,6 +38,22 @@ class Points(Item):
 
     def is_null(self) -> bool:
         return not self.points.has()
+
+
+class Point(Points):
+    """
+    一个点
+
+    可以使用 :meth:`location` 得到当前位置
+
+    纯数据物件，不参与渲染；若想在画面中渲染点，可参考 :class:`~.Dot`
+    """
+    def __init__(self, location: Vect, **kwargs):
+        super().__init__(location, **kwargs)
+
+    @property
+    def location(self) -> np.ndarray:
+        return self.points.get_start()
 
 
 class MarkedItem(Points):

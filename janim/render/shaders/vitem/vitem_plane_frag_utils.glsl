@@ -87,8 +87,7 @@ uniform vec3 JA_CAMERA_UP;
 uniform mat4 JA_VIEW_MATRIX;
 uniform mat4 JA_PROJ_MATRIX;
 
-uniform vec3 unit_normal;
-uniform vec3 start_point;
+#include "vitem_plane_unit_normal_uniforms.glsl"
 uniform bool DEPTH_TEST;
 
 void compute_depth_if_needed()

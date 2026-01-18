@@ -45,6 +45,7 @@ class VItem(Points):
 
     def __init__(self, *points: Vect, fill_alpha=0, **kwargs):
         self.stroke_background = False
+        self._shade_in_3d = False
         super().__init__(*points, fill_alpha=fill_alpha, **kwargs)
 
     def init_connect(self) -> None:
@@ -69,6 +70,7 @@ class VItem(Points):
         glow_color: JAnimColor | None = None,
         glow_alpha: Alpha | None = None,
         glow_size: float | None = None,
+        shade_in_3d: bool | None = None,
         **kwargs
     ) -> Self:
         if stroke_color is None:
@@ -89,6 +91,9 @@ class VItem(Points):
         self.fill.set(fill_color, fill_alpha, root_only=True)
         self.glow.set(glow_color, glow_alpha, glow_size, root_only=True)
 
+        if shade_in_3d is not None:
+            self._shade_in_3d = shade_in_3d
+
         return super().apply_style(**kwargs)
 
     @mockable
@@ -101,6 +106,18 @@ class VItem(Points):
         for item in self.walk_self_and_descendants(root_only):
             if isinstance(item, VItem):
                 item.stroke_background = flag
+        return self
+
+    @mockable
+    def shade_in_3d(self: Item, flag: bool = True, *, root_only: bool = False) -> Self:
+        """
+        调整是否启用三维明暗
+
+        启用后，会根据相对光源（时间轴的 ``self.light_source``）的位置调整颜色深浅
+        """
+        for item in self.walk_self_and_descendants(root_only):
+            if isinstance(item, VItem):
+                item._shade_in_3d = flag
         return self
 
     def add_tip(

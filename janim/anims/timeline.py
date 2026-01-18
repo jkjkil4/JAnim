@@ -32,7 +32,7 @@ from janim.constants import (BLACK, DEFAULT_DURATION, DOWN, FOREVER,
 from janim.exception import TimelineLookupError
 from janim.items.audio import Audio
 from janim.items.item import Item
-from janim.items.points import Group
+from janim.items.points import Group, Point
 from janim.items.shape_matchers import SurroundingRect
 from janim.items.svg.typst import TypstText
 from janim.items.text import Text
@@ -193,8 +193,13 @@ class Timeline(metaclass=ABCMeta):
         with self.with_config(), ContextSetter(self.ctx_var, self), ContextSetter(self.build_indent_ctx, indent):
 
             self.config_getter = ConfigGetter(config_ctx_var.get())
+
             self.camera = Camera()
             self.track(self.camera)
+
+            self.light_source = Point([-9, -7, 10])
+            self.track(self.light_source)
+
             self.hide_subtitles = hide_subtitles
             self.show_debug_notice = show_debug_notice
 
@@ -1037,6 +1042,7 @@ class BuiltTimeline:
                 if camera is None:
                     camera = timeline.compute_item(timeline.camera, global_t, True)
                 camera_info = camera.points.info
+                light_source = timeline.compute_item(timeline.light_source, global_t, True)
                 anti_alias_radius = self.cfg.anti_alias_width / 2 * camera_info.scaled_factor
 
                 with blend_context(ctx, True) if blend_on else nullcontext(), \
@@ -1051,7 +1057,8 @@ class BuiltTimeline:
                               JA_FIXED_DIST_FROM_PLANE=camera_info.fixed_distance_from_plane,
                               JA_PROJ_MATRIX=camera_info.proj_matrix.T.flatten(),
                               JA_FRAME_RADIUS=camera_info.frame_radius,
-                              JA_ANTI_ALIAS_RADIUS=anti_alias_radius), \
+                              JA_ANTI_ALIAS_RADIUS=anti_alias_radius,
+                              JA_LIGHT_SOURCE=light_source.location), \
                      ContextSetter(Renderer.data_ctx, RenderData(ctx=ctx,
                                                                  camera_info=camera_info,
                                                                  anti_alias_radius=anti_alias_radius)):
