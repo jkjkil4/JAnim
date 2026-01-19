@@ -318,6 +318,10 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         from janim.anims.updater import MethodUpdaterArgsBuilder
         return MethodUpdaterArgsBuilder(self)
 
+    # 仅用于在创建动画时忘记使用 .anim 或 .update 时抛出错误，另见 AnimGroup 的 _get_anim_object
+    def __anim__(self):
+        raise NotImplementedError()
+
     # 使得 .anim() .update() 后仍有代码提示
     @overload
     def __call__(self, **kwargs) -> Self: ...

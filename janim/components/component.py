@@ -152,6 +152,10 @@ class Component[ItemT](refresh.Refreshable, metaclass=_CmptMeta):
 
     def interpolate(self, cmpt1, cmpt2, alpha: float, *, path_func=None) -> None: ...
 
+    # 仅用于在创建动画时忘记使用 .anim 或 .update 时抛出错误，另见 AnimGroup 的 _get_anim_object
+    def __anim__(self):
+        raise NotImplementedError()
+
 
 class CmptInfo[T]:
     """

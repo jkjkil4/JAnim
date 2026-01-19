@@ -149,11 +149,23 @@ class AnimGroup(Animation):
 
     @staticmethod
     def _get_anim_object(anim: SupportsAnim) -> Animation:
-        attr = getattr(anim, '__anim__', None)
+        attr: Animation | None = None
+
+        func = getattr(anim, '__anim__', None)
+        if func is not None:
+            # 如果是物件或者组件，会抛出 NotimplementedError
+            #
+            # 更早的实现是，物件或组件根本没有 __anim__ 方法
+            # 但是为了兼容 typing，所以给它们加上了 __anim__，通过抛出 NotImplementedError 来体现问题
+            try:
+                attr = func()
+            except NotImplementedError:
+                pass
+
         if attr is None:
             raise NotAnimationError(_('A non-animation object was passed in, '
                                       'you might have forgotten to use .anim'))
-        return attr()
+        return attr
 
     def shift_range(self, delta: float) -> Self:
         super().shift_range(delta)
