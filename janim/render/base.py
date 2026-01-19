@@ -109,6 +109,7 @@ class RenderData:
     """
     ctx: mgl.Context
     camera_info: CameraInfo
+    light_source_location: np.ndarray
     anti_alias_radius: float
 
 
