@@ -9,6 +9,8 @@ from dataclasses import dataclass
 from typing import (TYPE_CHECKING, Any, Callable, Iterable, Self,
                     SupportsIndex, overload)
 
+import numpy as np
+
 from janim.components.component import CmptInfo, Component, _CmptGroup
 from janim.components.depth import Cmpt_Depth
 from janim.exception import AsTypeError, GetItemError
@@ -113,6 +115,14 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
 
     depth = CmptInfo(Cmpt_Depth[Self], 0)
 
+    # 在默认情况下为 None，会由子类（例如 `VItem`）使用
+    #
+    # @property
+    # def distance_sort_refernece_point(self) -> np.ndarray | None: ...
+    #
+    # 来明确具体实现
+    distance_sort_reference_point: np.ndarray | None = None
+
     def __init__(
         self,
         *args,
@@ -133,6 +143,7 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
 
         self._fix_in_frame = False
         self._depth_test = False
+        self._distance_sort = False
 
         self._saved_states: dict[str, Item.SavedState[Self]] = {}
 
@@ -804,6 +815,14 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
 
     def is_applied_depth_test(self) -> bool:
         return self._depth_test
+
+    def apply_distance_sort(self, on: bool = True, *, root_only: bool = False) -> Self:
+        for item in self.walk_self_and_descendants(root_only):
+            item._distance_sort = on
+        return self
+
+    def is_applied_distance_sort(self) -> bool:
+        return self._distance_sort
 
     # endregion
 

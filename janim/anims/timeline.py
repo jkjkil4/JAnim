@@ -1068,10 +1068,11 @@ class BuiltTimeline:
                     items_render = self._get_items_render(global_t)
 
                     # 按照特定的方法排序这些物件
-                    self._sort_items_render(items_render)
+                    self._sort_items_render(items_render, camera_info)
 
                     # 渲染这些物件
-                    self._render_items(ctx, items_render)
+                    blending = get_uniforms_context_var(ctx).get().get('JA_BLENDING')
+                    self._render_items(items_render, blending)
 
         except Exception:
             traceback.print_exc()
@@ -1137,11 +1138,21 @@ class BuiltTimeline:
 
         return items_render
 
-    def _sort_items_render(self, items_render: list[_ItemWithRenderFunc]) -> None:
-        items_render.sort(key=lambda x: x[0].depth, reverse=True)
+    def _sort_items_render(self, items_render: list[_ItemWithRenderFunc], info: CameraInfo) -> None:
+        camera_vec = normalize(-info.camera_axis)
+        camera_loc = info.camera_location
 
-    def _render_items(self, ctx: mgl.Context, items_render: list[_ItemWithRenderFunc]) -> None:
-        blending = get_uniforms_context_var(ctx).get().get('JA_BLENDING')
+        def key(x: BuiltTimeline._ItemWithRenderFunc):
+            ref = x[0].distance_sort_reference_point
+            if ref is None:
+                distance = np.inf
+            else:
+                distance = np.dot(camera_vec, ref - camera_loc)
+            return (distance, x[0].depth)
+
+        items_render.sort(key=key, reverse=True)
+
+    def _render_items(self, items_render: list[_ItemWithRenderFunc], blending: bool) -> None:
         for data, render in items_render:
             render(data)
             # 如果没有 blending，我们认为当前是在向透明 framebuffer 绘制
