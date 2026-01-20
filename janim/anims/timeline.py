@@ -711,7 +711,7 @@ class Timeline(metaclass=ABCMeta):
             as_time = Animation.global_t_ctx.get(None)
 
         if as_time is None:
-            return item.copy(root_only=root_only)
+            as_time = self.current_time
 
         root = self.compute_item(item, as_time, False)
         if not root_only:
