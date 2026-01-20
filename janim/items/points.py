@@ -212,57 +212,16 @@ class Group(Points, Generic[T]):
         return iter(self._children)
 
 
-class NamedGroup[T](Group[T]):
+class NamedGroupMixin[T](Group[T]):
     """
-    具名物件组，可以使用类似 ``group['name']`` 的形式来获取其中的具名物件
+    方便用于例如 :class:`~.Axes` 继承的基础类
 
-    :param items: 初始具名物件
-
-    也可以使用 :meth:`add` 或 :meth:`insert` 方法，传入具名参数来新增具名子物件
-
-    示例：
-
-    .. code-block:: python
-
-        group = NamedGroup(
-            text=Text('lorem'),
-            shape=Circle()
-        )
-        group.points.arrange(DOWN, aligned_edge=LEFT)
-
-        self.play(
-            group['text'].anim.color.set(GREEN),
-            group['shape'].anim.color.set(YELLOW),
-            lag_ratio=0.5
-        )
-
-        def updater(group: NamedGroup, p: UpdaterParams) -> None:
-            group.points.rotate(TAU * p.alpha)
-            group['text'].color.mix(BLUE, p.alpha)
-
-        self.play(
-            GroupUpdater(group, updater)
-        )
-
-    .. note::
-
-        无法像 :class:`Group` 那样使用初始化参数
-
-        .. code-block:: python
-
-            group = Group(..., color=RED)
-
-        为了解决这一问题，你可以写为
-
-        .. code-block:: python
-
-            group = NamedGroup(...)
-            group.set(color=RED)
+    另见 :class:`NamedGroup`
     """
-    def __init__(self, *items: T, **named_items: T):
-        super().__init__()
+    def __init__(self, *items: T, named: dict[str, T], **kwargs):
+        super().__init__(**kwargs)
         self._named_indices: dict[str, int] = {}
-        self.add(*items, **named_items)
+        self.add(*items, **named)
 
     def add(self, *items: T, prepend=False, **named_items: T) -> Self:
         """
@@ -392,7 +351,7 @@ class NamedGroup[T](Group[T]):
         """
         index = self._named_indices.get(key, None)
         if index is None:
-            raise GetItemError(_('Cannot find item with named key {key}'))
+            raise GetItemError(_('Cannot find item with named key "{key}"').format(key=key))
 
         return self[index]
 
@@ -415,13 +374,74 @@ class NamedGroup[T](Group[T]):
         copy_item._stored_named_indices = self.get_named_indices().copy()
         return copy_item
 
-    def restore(self, other: NamedGroup) -> Self:
-        assert isinstance(other, NamedGroup)
+    def restore(self, other: NamedGroupMixin) -> Self:
+        assert isinstance(other, NamedGroupMixin)
         if self._stored:
             self._stored_named_indices = other.get_named_indices().copy()
         return super().restore(other)
+
+    def _unstore(self, child_restorer) -> None:
+        super()._unstore(child_restorer)
+        self._named_indices = self._stored_named_indices.copy()
 
     def get_named_indices(self) -> dict[str, int]:
         return self._stored_named_indices if self._stored else self._named_indices
 
     # endregion
+
+
+class NamedGroup[T](NamedGroupMixin[T]):
+    """
+    具名物件组，可以使用类似 ``group['name']`` 的形式来获取其中的具名物件
+
+    :param items: 初始具名物件
+
+    也可以使用 :meth:`add` 或 :meth:`insert` 方法，传入具名参数来新增具名子物件
+
+    示例：
+
+    .. code-block:: python
+
+        group = NamedGroup(
+            text=Text('lorem'),
+            shape=Circle()
+        )
+        group.points.arrange(DOWN, aligned_edge=LEFT)
+
+        self.play(
+            group['text'].anim.color.set(GREEN),
+            group['shape'].anim.color.set(YELLOW),
+            lag_ratio=0.5
+        )
+
+        def updater(group: NamedGroup, p: UpdaterParams) -> None:
+            group.points.rotate(TAU * p.alpha)
+            group['text'].color.mix(BLUE, p.alpha)
+
+        self.play(
+            GroupUpdater(group, updater)
+        )
+
+    .. note::
+
+        无法像 :class:`Group` 那样使用初始化参数
+
+        .. code-block:: python
+
+            group = Group(..., color=RED)
+
+        为了解决这一问题，你可以写为
+
+        .. code-block:: python
+
+            group = NamedGroup(...)
+            group.set(color=RED)
+
+    .. note::
+
+        如果你想要将 :class:`NamedGroup` 作为父类并继承，使用 :class:`NamedGroupMixin` 会是更好的选择
+
+        因为它不会将所有 **kwargs 都吃掉，而是使用显式的 ``named`` 参数来指定具名子物件字典
+    """
+    def __init__(self, *items: T, **named_items: T):
+        super().__init__(*items, named=named_items)

@@ -741,6 +741,12 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         self.become(self.current(as_time=self.timeline.current_time))
         return self
 
+    def _unstore(self, child_restorer: Callable[[Item], Item]) -> None:
+        assert not self._children and self._stored_children is not None
+        self._stored = False
+        self.add(*[child_restorer(sub) for sub in self._stored_children])
+        self.reset_refresh()
+
     @classmethod
     def align_for_interpolate(
         cls,

@@ -13,6 +13,7 @@ from collections import defaultdict
 from contextlib import contextmanager, nullcontext
 from contextvars import ContextVar
 from dataclasses import dataclass
+from functools import partial
 from typing import Callable, Iterable, Self, overload
 
 import moderngl as mgl
@@ -716,9 +717,8 @@ class Timeline(metaclass=ABCMeta):
         root = self.compute_item(item, as_time, False)
         if not root_only:
             assert not root._children and root._stored_children is not None
-            root._stored = False
-            root.add(*[self.item_current(sub, as_time=as_time) for sub in root._stored_children])
-            root.reset_refresh()
+            child_restorer = partial(self.item_current, as_time=as_time)
+            root._unstore(child_restorer)
         return root
 
     # endregion

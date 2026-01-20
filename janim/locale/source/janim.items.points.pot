@@ -19,5 +19,5 @@ msgstr ""
 
 #: janim/items/points.py:282
 #, python-brace-format
-msgid "Cannot find item with named key {key}"
+msgid "Cannot find item with named key \"{key}\""
 msgstr ""
