@@ -14,7 +14,7 @@ from janim.items.coordinate.number_line import NumberLine
 from janim.items.geometry.line import Line
 from janim.items.geometry.polygon import Polygon
 from janim.items.item import _ItemMeta
-from janim.items.points import Group, MarkedItem, Points
+from janim.items.points import Group, MarkedItem, NamedGroupMixin, Points
 from janim.items.svg.typst import TypstMath
 from janim.items.vitem import DEFAULT_STROKE_RADIUS
 from janim.typing import JAnimColor, RangeSpecifier, Vect, VectArray
@@ -148,7 +148,7 @@ class CoordinateSystem(metaclass=ABCMeta):
         return self.point_to_number(point)
 
 
-class Axes(CoordinateSystem, MarkedItem, Group, metaclass=_ItemMeta_ABCMeta):
+class Axes(CoordinateSystem, MarkedItem, NamedGroupMixin, metaclass=_ItemMeta_ABCMeta):
     """
     二维坐标轴
 
@@ -227,7 +227,7 @@ class Axes(CoordinateSystem, MarkedItem, Group, metaclass=_ItemMeta_ABCMeta):
 
         axis_config = dict(**axis_config, unit_size=unit_size)
 
-        self.x_axis = CoordinateSystem.create_axis(
+        x_axis = CoordinateSystem.create_axis(
             x_range,
             axis_config=merge_dicts_recursively(
                 self.axis_config_d,
@@ -237,9 +237,9 @@ class Axes(CoordinateSystem, MarkedItem, Group, metaclass=_ItemMeta_ABCMeta):
             ),
             length=x_length
         )
-        self.x_range = self.x_axis.x_range
+        self.x_range = x_axis.x_range
 
-        self.y_axis = CoordinateSystem.create_axis(
+        y_axis = CoordinateSystem.create_axis(
             y_range,
             axis_config=merge_dicts_recursively(
                 self.axis_config_d,
@@ -249,16 +249,26 @@ class Axes(CoordinateSystem, MarkedItem, Group, metaclass=_ItemMeta_ABCMeta):
             ),
             length=y_length
         )
-        self.y_axis.points.rotate(90 * DEGREES, about_point=ORIGIN)
-        self.y_range = self.y_axis.x_range
+        y_axis.points.rotate(90 * DEGREES, about_point=ORIGIN)
+        self.y_range = y_axis.x_range
 
         super().__init__(
-            self.x_axis,
-            self.y_axis,
+            named=dict(
+                x_axis=x_axis,
+                y_axis=y_axis,
+            ),
             num_sampled_graph_points_per_tick=num_sampled_graph_points_per_tick,
             **kwargs
         )
         self.mark.set_points([ORIGIN])
+
+    @property
+    def x_axis(self) -> NumberLine:
+        return self['x_axis']
+
+    @property
+    def y_axis(self) -> NumberLine:
+        return self['y_axis']
 
     def get_axes(self) -> list[NumberLine]:
         return [self.x_axis, self.y_axis]
@@ -476,7 +486,7 @@ class ThreeDAxes(Axes):
         super().__init__(x_range, y_range, axis_config=axis_config, **kwargs)
         self.z_normal_angle = angle_of_vector(z_normal)
 
-        self.z_axis = CoordinateSystem.create_axis(
+        z_axis = CoordinateSystem.create_axis(
             z_range,
             axis_config=merge_dicts_recursively(
                 self.axis_config_d,
@@ -486,13 +496,17 @@ class ThreeDAxes(Axes):
             ),
             length=z_length
         )
-        self.z_axis.points \
+        z_axis.points \
             .rotate(-PI / 2, axis=UP, about_point=ORIGIN) \
             .rotate(self.z_normal_angle - PI, axis=OUT, about_point=ORIGIN) \
             .shift(self.x_axis.mark.get())
-        self.z_range = self.z_axis.x_range
+        self.z_range = z_axis.x_range
 
-        self.add(self.z_axis)
+        self.add(z_axis=z_axis)
+
+    @property
+    def z_axis(self) -> NumberLine:
+        return self['z_axis']
 
     def get_axes(self) -> list[NumberLine]:
         return [*super().get_axes(), self.z_axis]
