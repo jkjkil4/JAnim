@@ -716,7 +716,6 @@ class Timeline(metaclass=ABCMeta):
 
         root = self.compute_item(item, as_time, False)
         if not root_only:
-            assert not root._children and root._stored_children is not None
             child_restorer = partial(self.item_current, as_time=as_time)
             root._unstore(child_restorer)
         return root
