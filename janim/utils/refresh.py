@@ -1,9 +1,9 @@
 from collections import defaultdict
 from functools import wraps
-from typing import Any, Callable, Self
+from typing import Any, Callable
 
 
-def register[T](func: T) -> T:
+def register[T: Callable](func: T) -> T:
     """
     用于在需要时才进行值的重新计算，提升性能
 
@@ -31,7 +31,7 @@ def register[T](func: T) -> T:
 
         return data.stored
 
-    return wrapper
+    return wrapper  # type: ignore
 
 
 class Refreshable:
@@ -40,7 +40,7 @@ class Refreshable:
 
         self.refresh_data: defaultdict[str, RefreshData] = defaultdict(RefreshData)
 
-    def mark_refresh(self, func: Callable | str) -> Self:
+    def mark_refresh(self, func: Callable | str) -> None:
         """
         标记指定的 ``func`` 需要进行更新
         """
@@ -48,9 +48,7 @@ class Refreshable:
         data: RefreshData = self.refresh_data[name]
         data.is_required = True
 
-        return self
-
-    def reset_refresh(self) -> Self:
+    def reset_refresh(self) -> None:
         self.refresh_data = defaultdict(RefreshData)
 
 
