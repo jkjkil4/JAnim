@@ -111,7 +111,7 @@ class Relation[GRelT: 'Relation'](refresh.Refreshable):
             deprecated(
                 'insert',
                 'prepend',
-                (4, 3)
+                remove=(4, 3)
             )
 
         for obj in (reversed(objs) if prepend else objs):
