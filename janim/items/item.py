@@ -703,7 +703,10 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
             # 从而正确停用作用在根物件上的 GroupUpdater
             force_detect_items.union(self.walk_self_and_descendants())
             for item in force_detect_items:
-                self.timeline.item_appearances[item].stack.detect_change(item, self.timeline.current_time, force=True)
+                appr = self.timeline.item_appearances.get(item, None)
+                if appr is None:
+                    continue
+                appr.stack.detect_change(item, self.timeline.current_time, force=True)
 
             # 如果设置了 auto_visible 且根物件是可见的
             # 那么 become 的最后会把所有子物件设为可见
