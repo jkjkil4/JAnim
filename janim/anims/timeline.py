@@ -321,6 +321,7 @@ class Timeline(metaclass=ABCMeta):
         """
         向前推进 ``dt`` 秒
         """
+        dt = float(dt)  # 避免 numpy 类型浮点数可能导致的问题
         if dt < 0:
             raise ValueError(_('dt can\'t be negative'))
 
