@@ -680,6 +680,9 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         """
         将该物件的数据设置为与传入的物件相同（以复制的方式，不是引用）
         """
+        if self.timeline is not None:
+            force_detect_items = set(self.walk_self_and_descendants())
+
         # self.parents 不变
 
         children = self._children.copy()
@@ -695,10 +698,17 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         for key in self.components.keys() | other.components.keys():
             self.components[key].become(other.components[key])
 
-        # 如果设置了 auto_visible 且根物件是可见的
-        # 那么 become 的最后会把所有子物件设为可见
-        if auto_visible and self.timeline is not None and self.timeline.is_visible(self):
-            self.timeline.show(self)
+        if self.timeline is not None:
+            # 强制将物件以及所有后代物件都产生 detect_change 记录
+            # 从而正确停用作用在根物件上的 GroupUpdater
+            force_detect_items.union(self.walk_self_and_descendants())
+            for item in force_detect_items:
+                self.timeline.item_appearances[item].stack.detect_change(item, self.timeline.current_time, force=True)
+
+            # 如果设置了 auto_visible 且根物件是可见的
+            # 那么 become 的最后会把所有子物件设为可见
+            if auto_visible and self.timeline.is_visible(self):
+                self.timeline.show(self)
 
         return self
 
