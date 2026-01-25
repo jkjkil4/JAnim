@@ -1,15 +1,14 @@
 from __future__ import annotations
 
 import random
-from typing import Callable, Generator, Self, overload, cast
+from typing import Callable, Generator, Self, overload
 
 import janim.utils.refresh as refresh
-from janim.utils.signal import Signal
 from janim.utils.deprecation import deprecated
+from janim.utils.signal import Signal
 
 
 # 因为该类其实只用于 Item，所以类方法中的描述都直接使用“物件”了
-
 class Relation[GRelT: 'Relation'](refresh.Refreshable):
     """
     定义了有向无环图的包含关系以及一些实用操作
@@ -80,6 +79,8 @@ class Relation[GRelT: 'Relation'](refresh.Refreshable):
             for obj in self.descendants():
                 if hasattr(obj, name):
                     obj.mark_refresh(name)
+
+        return self
 
     @Signal
     def _parents_changed(self) -> None:
@@ -230,14 +231,13 @@ class Relation[GRelT: 'Relation'](refresh.Refreshable):
 
     @overload
     @staticmethod
-    def _walk_lst(base_cls: None, lst: list[GRelT]) -> Generator[GRelT, None, None]: ...
-
+    def _walk_lst[ListT](base_cls: None, lst: list[ListT]) -> Generator[ListT, None, None]: ...
     @overload
     @staticmethod
-    def _walk_lst[RelT](base_cls: type[RelT], lst: list[GRelT]) -> Generator[RelT, None, None]: ...
+    def _walk_lst[ListT, RelT](base_cls: type[RelT], lst: list[ListT]) -> Generator[RelT, None, None]: ...
 
     @staticmethod
-    def _walk_lst[RelT](base_cls: type[RelT] | None, lst: list[GRelT]) -> Generator[RelT | GRelT, None, None]:
+    def _walk_lst[ListT, RelT](base_cls: type[RelT] | None, lst: list[ListT]) -> Generator[ListT | RelT, None, None]:
         if base_cls is None:
             yield from lst
             return
@@ -268,11 +268,10 @@ class Relation[GRelT: 'Relation'](refresh.Refreshable):
 
     @overload
     def walk_ancestors(self, base_cls: None = None) -> Generator[GRelT, None, None]: ...
-
     @overload
     def walk_ancestors[RelT](self, base_cls: type[RelT]) -> Generator[RelT, None, None]: ...
 
-    def walk_ancestors[RelT](self, base_cls: type[RelT] | None = None) -> Generator[RelT | GRelT, None, None]:
+    def walk_ancestors[RelT](self, base_cls: type[RelT] | None = None) -> Generator[GRelT | RelT, None, None]:
         """
         遍历祖先节点中以 ``base_cls`` （缺省则遍历全部）为基类的物件
         """
@@ -280,29 +279,28 @@ class Relation[GRelT: 'Relation'](refresh.Refreshable):
 
     @overload
     def walk_descendants(self, base_cls: None = None) -> Generator[GRelT, None, None]: ...
-
     @overload
     def walk_descendants[RelT](self, base_cls: type[RelT]) -> Generator[RelT, None, None]: ...
 
-    def walk_descendants[RelT](self, base_cls: type[RelT] | None = None) -> Generator[RelT | GRelT, None, None]:
+    def walk_descendants[RelT](self, base_cls: type[RelT] | None = None) -> Generator[GRelT | RelT, None, None]:
         """
         遍历后代节点中以 ``base_cls`` （缺省则遍历全部）为基类的物件
         """
         yield from self._walk_lst(base_cls, self.descendants())
 
-    def walk_self_and_ancestors(self, root_only=False) -> Generator[GRelT, None, None]:
+    def walk_self_and_ancestors(self, root_only=False) -> Generator[Self | GRelT, None, None]:
         """
         遍历自己以及祖先节点
         """
-        yield cast(GRelT, self)
+        yield self
         if not root_only:
             yield from self.ancestors()
 
-    def walk_self_and_descendants(self, root_only=False) -> Generator[GRelT, None, None]:
+    def walk_self_and_descendants(self, root_only=False) -> Generator[Self | GRelT, None, None]:
         """
         遍历自己以及后代节点
         """
-        yield cast(GRelT, self)
+        yield self
         if not root_only:
             yield from self.descendants()
 
