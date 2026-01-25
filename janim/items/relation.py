@@ -183,7 +183,7 @@ class Relation[GRelT: 'Relation'](refresh.Refreshable):
         """
         清空父物件
         """
-        for parent in self._parents:
+        for parent in self._parents.copy():
             parent.remove(self)
         return self
 
