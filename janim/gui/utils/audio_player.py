@@ -36,7 +36,7 @@ class AudioPlayer:
             stream.start()
 
             try:
-                while True:
+                while not self.quit_event.is_set():
                     try:
                         data = self.queue.get(timeout=1)
                     except Empty:
