@@ -8,6 +8,7 @@ from typing import Callable, Self
 import numpy as np
 
 from janim.components.component import Component
+from janim.exception import JAnimException
 from janim.locale.i18n import get_translator
 from janim.logger import log
 from janim.typing import SupportsTracking
@@ -248,33 +249,81 @@ class Cmpt_Data[ItemT, T](Component[ItemT]):
 
 # region register
 
+def _format_keys(keys: set) -> str:
+    return '[' + ', '.join(sorted((f'"{k}"' for k in keys))) + ']'
+
+
+class ValueTrackerShapeError(JAnimException):
+    def __init__(self, message: str, *, missing: set | None = None, extra: set | None = None):
+        parts: list[str] = [message]
+        if missing:
+            parts.append(f'missing keys: {_format_keys(missing)}')
+        if extra:
+            parts.append(f'extra keys: {_format_keys(extra)}')
+        super().__init__('; '.join(parts))
+        self.missing = missing or set()
+        self.extra = extra or set()
+
+
+def _assert_seq_len_match[T: Callable](fn: T) -> T:
+    def wrapper(a, b, *args):
+        len_a = len(a)
+        len_b = len(b)
+        if len_a != len_b:
+            raise ValueTrackerShapeError(
+                _('Existing sequence and new value must have the same length for ValueTracker; '
+                  'current length {len_a}, new length {len_b}')
+                .format(len_a=len_a, len_b=len_b)
+            )
+        return fn(a, b, *args)
+    return wrapper
+
+
+def _assert_dict_keys_match[T: Callable](fn: T) -> T:
+    def wrapper(a: dict, b: dict, *args):
+        a_keys = set(a.keys())
+        b_keys = set(b.keys())
+        missing = a_keys - b_keys
+        extra = b_keys - a_keys
+        if missing or extra:
+            raise ValueTrackerShapeError(
+                _('Existing mapping and new value must share the same keys for ValueTracker'),
+                missing=missing,
+                extra=extra
+            )
+        return fn(a, b, *args)
+    return wrapper
+
+
 Cmpt_Data.register_funcs(
     tuple,
     lambda a: tuple(Cmpt_Data.copy_for_value(x) for x in a),
-    lambda a, b: all(
-        Cmpt_Data.check_not_changed_for_value(x, y) for x, y in zip(a, b, strict=True)
+    _assert_seq_len_match(
+        lambda a, b: all(
+            Cmpt_Data.check_not_changed_for_value(x, y) for x, y in zip(a, b, strict=True)
+        )
     ),
-    lambda a, b, alpha: tuple(
-        Cmpt_Data.interpolate_for_value(x, y, alpha) for x, y in zip(a, b, strict=True)
+    _assert_seq_len_match(
+        lambda a, b, alpha: tuple(
+            Cmpt_Data.interpolate_for_value(x, y, alpha) for x, y in zip(a, b, strict=True)
+        )
     )
 )
 
 Cmpt_Data.register_funcs(
     list,
     lambda a: [Cmpt_Data.copy_for_value(x) for x in a],
-    lambda a, b: all(
-        Cmpt_Data.check_not_changed_for_value(x, y) for x, y in zip(a, b, strict=True)
+    _assert_seq_len_match(
+        lambda a, b: all(
+            Cmpt_Data.check_not_changed_for_value(x, y) for x, y in zip(a, b, strict=True)
+        )
     ),
-    lambda a, b, alpha: [
-        Cmpt_Data.interpolate_for_value(x, y, alpha) for x, y in zip(a, b, strict=True)
-    ]
+    _assert_seq_len_match(
+        lambda a, b, alpha: [
+            Cmpt_Data.interpolate_for_value(x, y, alpha) for x, y in zip(a, b, strict=True)
+        ]
+    )
 )
-
-def _assert_dict_keys_match[T](fn: T) -> T:     # noqa: E302
-    def wrapper(a: dict, b: dict, *args):
-        assert a.keys() == b.keys(), 'Dict keys must match for ValueTracker'
-        return fn(a, b, *args)
-    return wrapper
 
 Cmpt_Data.register_funcs(   # noqa: E305
     dict,
@@ -292,6 +341,12 @@ Cmpt_Data.register_funcs(   # noqa: E305
 )
 
 def _dict_update_func(state: dict, patch: dict) -> dict:    # noqa: E302
+    extra = set(patch.keys()) - set(state.keys())
+    if extra:
+        raise ValueTrackerShapeError(
+            _('Update contains keys not present in current value'),
+            extra=extra
+        )
     now = state.copy()
     for key, value in patch.items():
         now[key] = Cmpt_Data.update_for_value(state[key], value)
