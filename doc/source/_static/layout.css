@@ -24,3 +24,7 @@ details summary p {
     margin: 0;       /* 消除段落自带的上下边距 */
     padding: 0;
 }
+
+.announcement {
+    min-height: 90px;
+}
