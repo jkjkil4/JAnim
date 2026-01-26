@@ -623,7 +623,7 @@ class AnimViewer(QMainWindow):
                                                             self.built.cfg.audio_framerate,
                                                             prev_progress,
                                                             count=played_count)
-            self.audio_player.write(samples.tobytes())
+            self.audio_player.play(samples)
 
         # 查找 (prev_progress, curr_progress] 的区段的第一个 pause_point，如果有则暂停到特定位置
         if self.pause_progresses:
@@ -847,6 +847,9 @@ class AnimViewer(QMainWindow):
 
     def closeEvent(self, event: QCloseEvent) -> None:
         super().closeEvent(event)
+
+        if self.audio_player is not None:
+            self.audio_player.close()
 
         if self.has_connection():
             self.send_janim_cmd(Cmd.CloseEvent)
