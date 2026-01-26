@@ -16,9 +16,10 @@ class AudioPlayer:
         self._blocksize = self._framerate // self._fps
 
         self._dropsize = self._blocksize * 2
-        self._buffersize = self._blocksize * 3
+        self._buffersize = self._blocksize * 8
         self._buffer = np.empty((self._buffersize, self._channels), dtype=np.int16)
         self._pending_frames: int = 0
+        self._burst_cooldown: int = 0
         self._lock = threading.Lock()
 
         self._closed = False
@@ -65,6 +66,14 @@ class AudioPlayer:
             self._stream.close()
             self._start_stream()
 
+        # 在非跳帧的情况下，array 长度总是和 blocksize 不相上下，而在负载情况下并处于跳帧时，会一次性收到成倍的数据
+        # 因此判断大于 1.5 倍的 blocksize 即为突发输入
+        is_burst_input = len(array) > (self._blocksize * 1.5)
+        if is_burst_input:
+            self._burst_cooldown = 3    # 用于过滤，如果连续三帧不突发，才重新缩紧 limitsize
+        elif self._burst_cooldown > 0:
+            self._burst_cooldown -= 1
+
         with self._lock:
             # 策略：
             #
@@ -80,25 +89,26 @@ class AudioPlayer:
             #
             # 注：因为我们可以保证 array 长度总是和 blocksize 不相上下，从而 buffer 的内存平移总是很小，所以可以不用环形缓冲
 
-            part1 = '#' * int(self._pending_frames / self._buffersize * 60)
-            part2 = ' ' * (60 - len(part1))
-            print(f'[{part1}{part2}]')
-
-            if self._pending_frames < self._dropsize:
+            if self._pending_frames < self._dropsize or self._burst_cooldown > 0:   # 对于突发情况，放宽 limitsize
                 # (1)
                 limitsize = self._buffersize
-                # print('play (1)')
             else:
                 # (2)
                 limitsize = self._blocksize
-                # print('play (2)')
+
+            # part1 = '#' * int(self._pending_frames / self._buffersize * 60)
+            # part2 = ' ' * (60 - len(part1))
+            # print(
+            #     int(is_burst_input),
+            #     self._burst_cooldown,
+            #     f'{self._pending_frames:>4}/{limitsize:>4}', f'[{part1}{part2}]'
+            # )
 
             totalsize = self._pending_frames + len(array)
             if totalsize <= limitsize:
                 # (3)
                 self._buffer[self._pending_frames:totalsize] = array
                 self._pending_frames = totalsize
-                # print('play (3)')
             else:
                 # (4)
                 offset = totalsize - limitsize
@@ -110,7 +120,6 @@ class AudioPlayer:
                     truncate_size = offset - self._pending_frames   # array 需要截断的长度
                     self._buffer[:limitsize] = array[truncate_size:]
                 self._pending_frames = limitsize
-                # print('play (4)')
 
     def close(self) -> None:
         self._closed = True
