@@ -18,11 +18,11 @@ from janim.utils.data import AlignedData
 _ = get_translator('janim.components.data')
 
 type ClassInfo = type | types.UnionType | tuple[ClassInfo, ...]
-type CopyFn[T] = Callable[[T], T]
-type NotChangedFn[T] = Callable[[T, T], bool]
-type InterpolateFn[T] = Callable[[T, T, float], T]
+type CopyFn[T] = Callable[[T], T]                   # (a) -> copied
+type NotChangedFn[T] = Callable[[T, T], bool]       # (a, b) -> is_not_changed
+type InterpolateFn[T] = Callable[[T, T, float], T]  # (a, b, alpha) -> interpolated
 
-type UpdateFn[T] = Callable[[T, T], T]   # (state, patch) -> now
+type UpdateFn[T] = Callable[[T, T], T]              # (state, patch) -> now
 
 type _Funcs[T] = tuple[CopyFn[T], NotChangedFn[T], InterpolateFn[T]]
 
@@ -357,7 +357,7 @@ Cmpt_Data.register_update_func(     # noqa: E305
     _dict_update_func
 )
 
-Cmpt_Data.register_funcs(
+Cmpt_Data.register_funcs(   # 只是对于短 numpy 数组的简单实现，对于大规模数组，应考虑 Cmpt_Points
     np.ndarray,
     np.ndarray.copy,
     lambda a, b: np.all(a == b),
