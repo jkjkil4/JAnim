@@ -215,7 +215,6 @@ class Cmpt_Data[ItemT, T](Component[ItemT]):
             Cmpt_Data._funcs_resolver.update_cache(value, funcs)
             return funcs
 
-        # "类型 {type} 没有注册以供 tracking 的函数，将使用默认的函数来处理\n详见文档页面 xxx"
         log.warning(
             _('Type "{type}" has no registered function for tracking, '
               'the default function will be used\n'
@@ -257,9 +256,9 @@ class ValueTrackerShapeError(JAnimException):
     def __init__(self, message: str, *, missing: set | None = None, extra: set | None = None):
         parts: list[str] = [message]
         if missing:
-            parts.append(f'missing keys: {_format_keys(missing)}')
+            parts.append(_('missing keys: {keys}').format(keys=_format_keys(missing)))
         if extra:
-            parts.append(f'extra keys: {_format_keys(extra)}')
+            parts.append(_('extra keys: {keys}').format(keys=_format_keys(extra)))
         super().__init__('; '.join(parts))
         self.missing = missing or set()
         self.extra = extra or set()
@@ -272,7 +271,7 @@ def _assert_seq_len_match[T: Callable](fn: T) -> T:
         if len_a != len_b:
             raise ValueTrackerShapeError(
                 _('Existing sequence and new value must have the same length for ValueTracker; '
-                  'current length {len_a}, new length {len_b}')
+                  'existing length {len_a}, new length {len_b}')
                 .format(len_a=len_a, len_b=len_b)
             )
         return fn(a, b, *args)
@@ -287,7 +286,7 @@ def _assert_dict_keys_match[T: Callable](fn: T) -> T:
         extra = b_keys - a_keys
         if missing or extra:
             raise ValueTrackerShapeError(
-                _('Existing mapping and new value must share the same keys for ValueTracker'),
+                _('Existing dictionary and new value must share the same keys for ValueTracker'),
                 missing=missing,
                 extra=extra
             )

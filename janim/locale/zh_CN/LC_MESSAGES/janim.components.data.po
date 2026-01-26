@@ -1,0 +1,70 @@
+# English translations for PACKAGE package.
+# Copyright (C) 2026 THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# Automatically generated, 2026.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-01-26 11:08+0800\n"
+"PO-Revision-Date: 2026-01-26 11:10+0800\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: none\n"
+"Language: zh_CN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Poedit 3.8\n"
+
+#: janim/components/data.py:121
+#, python-brace-format
+msgid ""
+"ValueTracker was refactored in 4.0 and no longer directly accepts copy_func, "
+"not_changed_func, or interpolate_func.\n"
+"Use ValueTracker.register_funcs to register handlers for your types, See "
+"documentation page {url} for details.\n"
+"Compatibility with the previous approach ends in JAnim 4.3"
+msgstr ""
+"ValueTracker在4.0版本中进行了重构，不再直接接受copy_func、not_changed_func或"
+"interpolate_func函数。请使用ValueTracker.register_funcs为您的类型注册处理函"
+"数，详情请参阅文档页面{url}。与旧方法的兼容性将在JAnim 4.3版本终止。"
+
+#: janim/components/data.py:219
+#, python-brace-format
+msgid ""
+"Type \"{type}\" has no registered function for tracking, the default "
+"function will be used\n"
+"See documentation page {url} for details"
+msgstr ""
+"类型 \"{type}\" 没有注册以供跟踪的函数，将使用默认函数\n"
+"详见文档页面 {url}"
+
+#: janim/components/data.py:259
+#, python-brace-format
+msgid "missing keys: {keys}"
+msgstr "缺失键: {keys}"
+
+#: janim/components/data.py:261
+#, python-brace-format
+msgid "extra keys: {keys}"
+msgstr "多出键: {keys}"
+
+#: janim/components/data.py:273
+#, python-brace-format
+msgid ""
+"Existing sequence and new value must have the same length for ValueTracker; "
+"existing length {len_a}, new length {len_b}"
+msgstr ""
+"现有序列和新值必须在 ValueTracker 中有相同的长度；现有长度 {len_a}，新长度 "
+"{len_b}"
+
+#: janim/components/data.py:289
+msgid ""
+"Existing dictionary and new value must share the same keys for ValueTracker"
+msgstr "现有字典和新值必须在 ValueTracker 中共有相同的键"
+
+#: janim/components/data.py:346
+msgid "Update contains keys not present in current value"
+msgstr "更新值包含当前值中不存在的键"
