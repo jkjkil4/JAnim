@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-01-26 11:08+0800\n"
-"PO-Revision-Date: 2026-01-26 11:10+0800\n"
+"POT-Creation-Date: 2026-01-27 10:49+0800\n"
+"PO-Revision-Date: 2026-01-27 10:54+0800\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
 "Language: zh_CN\n"
@@ -19,39 +19,43 @@ msgstr ""
 "X-Generator: Poedit 3.8\n"
 
 #: janim/components/data.py:121
-#, python-brace-format
 msgid ""
 "ValueTracker was refactored in 4.0 and no longer directly accepts copy_func, "
 "not_changed_func, or interpolate_func.\n"
-"Use ValueTracker.register_funcs to register handlers for your types, See "
-"documentation page {url} for details.\n"
+"Use Cmpt_Data.register_funcs to register handlers for your types, See "
+"documentation page https://janim.readthedocs.io/en/latest/tutorials/"
+"value_tracker.html for details.\n"
 "Compatibility with the previous approach ends in JAnim 4.3"
 msgstr ""
-"ValueTracker在4.0版本中进行了重构，不再直接接受copy_func、not_changed_func或"
-"interpolate_func函数。请使用ValueTracker.register_funcs为您的类型注册处理函"
-"数，详情请参阅文档页面{url}。与旧方法的兼容性将在JAnim 4.3版本终止。"
+"ValueTracker 在 4.0 版本中进行了重构，不再直接接受 copy_func、"
+"not_changed_func 或 interpolate_func 函数。请使用 Cmpt_Data.register_funcs 为"
+"你的类型注册处理函数，详情请参阅文档页面 https://janim.readthedocs.io/zh_CN/"
+"latest/tutorials/value_tracker.html。与旧方法的兼容性将在 JAnim 4.3 版本终"
+"止。"
 
-#: janim/components/data.py:219
+#: janim/components/data.py:220
 #, python-brace-format
 msgid ""
 "Type \"{type}\" has no registered function for tracking, the default "
 "function will be used\n"
-"See documentation page {url} for details"
+"See documentation page https://janim.readthedocs.io/en/latest/tutorials/"
+"value_tracker.html for details"
 msgstr ""
 "类型 \"{type}\" 没有注册以供跟踪的函数，将使用默认函数\n"
-"详见文档页面 {url}"
+"详见文档页面 https://janim.readthedocs.io/zh_CN/latest/tutorials/"
+"value_tracker.html"
 
-#: janim/components/data.py:259
+#: janim/components/data.py:262
 #, python-brace-format
 msgid "missing keys: {keys}"
 msgstr "缺失键: {keys}"
 
-#: janim/components/data.py:261
+#: janim/components/data.py:264
 #, python-brace-format
 msgid "extra keys: {keys}"
 msgstr "多出键: {keys}"
 
-#: janim/components/data.py:273
+#: janim/components/data.py:276
 #, python-brace-format
 msgid ""
 "Existing sequence and new value must have the same length for ValueTracker; "
@@ -60,11 +64,11 @@ msgstr ""
 "现有序列和新值必须在 ValueTracker 中有相同的长度；现有长度 {len_a}，新长度 "
 "{len_b}"
 
-#: janim/components/data.py:289
+#: janim/components/data.py:292
 msgid ""
 "Existing dictionary and new value must share the same keys for ValueTracker"
 msgstr "现有字典和新值必须在 ValueTracker 中共有相同的键"
 
-#: janim/components/data.py:346
+#: janim/components/data.py:349
 msgid "Update contains keys not present in current value"
 msgstr "更新值包含当前值中不存在的键"

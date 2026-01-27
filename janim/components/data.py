@@ -120,10 +120,11 @@ class Cmpt_Data[ItemT, T](Component[ItemT]):
                 log.warning(
                     _('ValueTracker was refactored in 4.0 and no longer directly accepts '
                       'copy_func, not_changed_func, or interpolate_func.\n'
-                      'Use ValueTracker.register_funcs to register handlers for your types, '
-                      'See documentation page {url} for details.\n'
+                      'Use Cmpt_Data.register_funcs to register handlers for your types, '
+                      'See documentation page '
+                      'https://janim.readthedocs.io/en/latest/tutorials/value_tracker.html '
+                      'for details.\n'
                       'Compatibility with the previous approach ends in JAnim 4.3')
-                    .format(url='xxx')  # TODO
                 )
 
         if copy_func is not None:
@@ -218,8 +219,10 @@ class Cmpt_Data[ItemT, T](Component[ItemT]):
         log.warning(
             _('Type "{type}" has no registered function for tracking, '
               'the default function will be used\n'
-              'See documentation page {url} for details')
-            .format(type=value.__class__.__name__, url='xxx')   # TODO
+              'See documentation page '
+              'https://janim.readthedocs.io/en/latest/tutorials/value_tracker.html '
+              'for details')
+            .format(type=value.__class__.__name__)
         )
         Cmpt_Data._funcs_resolver.update_cache(value, _default_funcs)
         return _default_funcs
