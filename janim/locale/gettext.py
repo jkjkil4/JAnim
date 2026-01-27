@@ -24,7 +24,12 @@ def main() -> None:
             cmd = f'xgettext -o "{dist}" "{source}"'
             print(cmd)
             # Sometimes, URL is language-specific and intentionally part of the message
-            # we need to ignore "Message contains an embedded URL" warnings
+            # we need to ignore "Message contains an embedded URL" warnings, looks like:
+            #
+            # warning: Message contains an embedded URL.
+            # Better move it out of the translatable string,
+            # see https://www.gnu.org/software/gettext/manual/html_node/No-embedded-URLs.html
+            #
             result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
             for line in result.stderr.splitlines():
                 if 'Message contains an embedded URL' not in line:
