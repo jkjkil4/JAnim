@@ -44,11 +44,14 @@ class AnimStack:
         """
         if self.prev_display is None:
             at = 0
-        if self.prev_display is None or force or not self.prev_display.data_orig.not_changed(item):
+        if force or self.is_changed(item):
             anim = Display(item, item.store(), at=at, duration=FOREVER, show_at_begin=False)
             # finalize 会产生对 self.append 的调用，因此不用再另外 self.append
             anim.finalize()
             self.prev_display = anim
+
+    def is_changed(self, item: Item) -> bool:
+        return self.prev_display is None or not self.prev_display.data_orig.not_changed(item)
 
     def has_detected_change(self) -> bool:
         return self.prev_display is not None
