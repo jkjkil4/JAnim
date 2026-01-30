@@ -15,7 +15,7 @@ def main() -> None:
         dist = os.path.join(get_janim_dir(), 'locale', lang, 'LC_MESSAGES', file[:-4] + '.po')
         src = os.path.join(src_dir, file)
         if not os.path.exists(dist):
-            cmd = f'msginit -i "{src}" -o "{dist}" --no-translator'
+            cmd = f'msginit -i "{src}" -o "{dist}" -l {lang} --no-translator'
         else:
             cmd = f'msgmerge -U "{dist}" "{src}" --backup=off'
         print(cmd)
