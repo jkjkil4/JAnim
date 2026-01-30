@@ -46,6 +46,7 @@ doc = [
     "furo",
     "jinja2",
     "docutils",
+    "sphinx-intl",
 ]
 test = [
     "opencv-python",
