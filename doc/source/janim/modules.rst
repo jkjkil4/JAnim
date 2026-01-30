@@ -16,6 +16,7 @@ janim
    constants
    exception
    imports
+   typing
 
 .. automodule:: janim.__init__
    :members:

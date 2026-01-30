@@ -77,9 +77,9 @@ JAnim 是一个用于创建流畅动画的库，以程序化动画为核心理�
    tutorials/group_advanced_usage
    tutorials/typst_usage
    tutorials/audio_and_subtitle
+   tutorials/value_tracker
    tutorials/sub_timeline
    tutorials/depth_detail
-   tutorials/custom_data
    tutorials/camera_usage
    tutorials/3d_coordinates
    tutorials/essence_of_points

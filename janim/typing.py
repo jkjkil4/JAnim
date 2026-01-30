@@ -41,7 +41,7 @@ class SupportsAnim(Protocol):
     - 具有 ``__anim__`` 方法，这个方法在调用后返回一个 :class:`~.Animation` 对象
 
     由于 :class:`~.Animation` 对象本身就实现了 ``__anim__`` 方法返回自己，
-    所以用 :class:`SupportsAnim` 作为它们的统称，并会被 `AnimGroup._get_animation_objects` 统一转化
+    所以用 :class:`SupportsAnim` 作为它们的统称，并会被 ``AnimGroup._get_animation_objects`` 统一转化
     """
     def __anim__(self) -> Animation: ...
 
