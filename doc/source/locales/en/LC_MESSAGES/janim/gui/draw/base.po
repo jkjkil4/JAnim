@@ -1,0 +1,37 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2023, jkjkil4
+# This file is distributed under the same license as the JAnim package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: JAnim \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-01-30 21:12+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: en\n"
+"Language-Team: en <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.17.0\n"
+
+#: ../../source/janim/gui/draw/base.rst:2
+msgid "base"
+msgstr "base"
+
+#: janim.gui.draw.base.Draw:1 of
+msgid "基类：:py:class:`~PySide6.QtWidgets.QScrollArea`"
+msgstr "基类：:py:class:`~PySide6.QtWidgets.QScrollArea`"
+
+#: janim.gui.draw.base.DrawOnce:1 of
+msgid "基类：:py:class:`~janim.gui.draw.base.Draw`"
+msgstr "基类：:py:class:`~janim.gui.draw.base.Draw`"
+
+#: janim.gui.draw.base.DrawOnce.ShiftInfo:1 of
+msgid "基类：:py:class:`object`"
+msgstr "基类：:py:class:`object`"
+

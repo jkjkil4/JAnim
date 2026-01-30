@@ -6,28 +6,63 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: JAnim\n"
+"Project-Id-Version:  JAnim\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-03-14 14:52+0800\n"
+"POT-Creation-Date: 2026-01-30 21:12+0800\n"
 "PO-Revision-Date: 2025-11-21 17:35+0800\n"
 "Last-Translator: \n"
-"Language-Team: en <LL@li.org>\n"
 "Language: en\n"
+"Language-Team: en <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"Generated-By: Babel 2.14.0\n"
-"X-Generator: Poedit 3.8\n"
+"Generated-By: Babel 2.17.0\n"
 
 #: ../../source/janim/typing.rst:2
 msgid "typing"
 msgstr "typing"
 
-#: janim.typing.SupportsInterpolate:1 of
-msgid "基类：:py:class:`~typing.Protocol`, :py:class:`~typing.Generic`"
-msgstr "基类：:py:class:`~typing.Protocol`, :py:class:`~typing.Generic`"
-
-#: janim.typing.SupportsApartAlpha:1 of
+#: janim.typing.SupportsAnim:1 janim.typing.SupportsApartAlpha:1
+#: janim.typing.SupportsTracking:1 of
 msgid "基类：:py:class:`~typing.Protocol`"
 msgstr "基类：:py:class:`~typing.Protocol`"
+
+#: janim.typing.SupportsAnim:1 of
+msgid "可传入 :class:`~.AnimGroup` 的对象，需要具有 ``__anim__`` 方法"
+msgstr "Objects that can be passed to :class:`~.AnimGroup` must implement ``__anim__``"
+
+#: janim.typing.SupportsAnim:3 of
+msgid "因为可传入 :class:`~.AnimGroup` 的对象分为两种："
+msgstr "Because objects passed to :class:`~.AnimGroup` fall into two types:"
+
+#: janim.typing.SupportsAnim:5 of
+msgid "本身就是 :class:`~.Animation` 对象"
+msgstr "Itself is an :class:`~.Animation` object"
+
+#: janim.typing.SupportsAnim:7 of
+msgid "具有 ``__anim__`` 方法，这个方法在调用后返回一个 :class:`~.Animation` 对象"
+msgstr "Has a ``__anim__`` method that returns an :class:`~.Animation` object when called"
+
+#: janim.typing.SupportsAnim:9 of
+msgid ""
+"由于 :class:`~.Animation` 对象本身就实现了 ``__anim__`` 方法返回自己， 所以用 "
+":class:`SupportsAnim` 作为它们的统称，并会被 ``AnimGroup._get_animation_objects`` "
+"统一转化"
+msgstr "Since :class:`~.Animation` implements ``__anim__`` returning itself, :class:`SupportsAnim` is used as a collective name and is normalized by ``AnimGroup._get_animation_objects``"
+
+#: janim.typing.SupportsTracking:1 of
+msgid "定义了可直接被 :class:`~.Cmpt_Data` 所跟踪的对象类型"
+msgstr "Defines object types that can be directly tracked by :class:`~.Cmpt_Data`"
+
+#: janim.typing.SupportsTracking:3 of
+msgid "对于没有实现这些方法的对象，使用 :meth:`~.Cmpt_Data.register_funcs` 另行定义类型的这三个方法"
+msgstr "For objects that do not implement these methods, use :meth:`~.Cmpt_Data.register_funcs` to define the three methods for that type"
+
+#: janim.typing.t_:1 of
+msgid "提供给 janim-toolbox VS Code 插件，用于标注其中包含的字符串需要 Typst 高亮"
+msgstr "Provided for the janim-toolbox VS Code extension to mark strings that need Typst highlighting"
+
+#~ msgid "基类：:py:class:`~typing.Protocol`, :py:class:`~typing.Generic`"
+#~ msgstr "基类：:py:class:`~typing.Protocol`, :py:class:`~typing.Generic`"
+

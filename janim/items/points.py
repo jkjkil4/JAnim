@@ -50,7 +50,7 @@ class Point(Points):
     """
     一个点
 
-    可以使用 :meth:`location` 得到当前位置
+    可以使用 ``.location`` 得到当前位置
 
     纯数据物件，不参与渲染；若想在画面中渲染点，可参考 :class:`~.Dot`
     """
@@ -227,7 +227,8 @@ class NamedGroupMixin[T](Group[T]):
         """
         向该物件添加子物件，并且可以通过具名参数设定具名子物件
 
-        :param objs: 要添加的子物件
+        :param items: 要添加的子物件
+        :param named_items: 要添加的具名子物件
         :param prepend: 默认为 ``False``，如果为 ``True``，那么插入到子物件列表的开头
         """
         all_items = items + tuple(named_items.values())
@@ -259,7 +260,8 @@ class NamedGroupMixin[T](Group[T]):
         在指定索引位置插入子物件，并且可以通过具名参数设定具名子物件
 
         :param index: 插入位置的索引
-        :param objs: 要插入的子物件
+        :param items: 要插入的子物件
+        :param named_items: 要插入的具名子物件
         """
         # 将可能的负下标转换为正下标，使得能正确更新 _named_indices
         # 例如 [a,b,c,d] 中 -1 应指向 len - 1 的 d，所以即为 len + index
@@ -288,6 +290,11 @@ class NamedGroupMixin[T](Group[T]):
         return self
 
     def remove(self, *items_or_names: T | str) -> Self:
+        """
+        从该物件移除子物件
+
+        :param items_or_names: 要移除的子物件或具名子物件的名称
+        """
         items = [
             self.by_name(item_or_name) if isinstance(item_or_name, str) else item_or_name
             for item_or_name in items_or_names
@@ -394,9 +401,10 @@ class NamedGroup[T](NamedGroupMixin[T]):
     """
     具名物件组，可以使用类似 ``group['name']`` 的形式来获取其中的具名物件
 
-    :param items: 初始具名物件
+    :param items: 初始物件
+    :param named_items: 初始具名物件
 
-    也可以使用 :meth:`add` 或 :meth:`insert` 方法，传入具名参数来新增具名子物件
+    也可以使用 :meth:`~.NamedGroupMixin.add` 或 :meth:`~.NamedGroupMixin.insert` 方法，传入具名参数来新增具名子物件
 
     示例：
 

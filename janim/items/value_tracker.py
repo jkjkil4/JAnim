@@ -21,7 +21,7 @@ class ValueTracker[T](Item):
             DataUpdater(...)
         )
 
-    详情另见文档 https://janim.readthedocs.io/zh-cn/latest/tutorials/value_tracker.html
+    详情另见文档 :ref:`基础用法 <value_tracker_basic>` 中对 :class:`ValueTracker` 用法的介绍
     """
 
     _data = CmptInfo(Cmpt_Data[Self, T])

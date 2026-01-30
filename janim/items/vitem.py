@@ -113,7 +113,7 @@ class VItem(Points):
         """
         调整是否启用三维明暗
 
-        启用后，会根据相对光源（时间轴的 ``self.light_source``）的位置调整颜色深浅
+        启用后，会根据相对于光源（时间轴的 ``self.light_source``）的位置调整颜色深浅
         """
         for item in self.walk_self_and_descendants(root_only):
             if isinstance(item, VItem):

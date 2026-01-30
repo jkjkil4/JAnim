@@ -6,19 +6,18 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: JAnim\n"
+"Project-Id-Version:  JAnim\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-22 21:20+0800\n"
+"POT-Creation-Date: 2026-01-30 21:17+0800\n"
 "PO-Revision-Date: 2025-11-22 21:39+0800\n"
 "Last-Translator: \n"
-"Language-Team: en <LL@li.org>\n"
 "Language: en\n"
+"Language-Team: en <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "Generated-By: Babel 2.17.0\n"
-"X-Generator: Poedit 3.8\n"
 
 #: ../../source/development/contribute-to-doc-i18n.rst:2
 msgid "为文档国际化作出贡献"
@@ -42,14 +41,13 @@ msgstr "Generate Translation Files"
 
 #: ../../source/development/contribute-to-doc-i18n.rst:18
 msgid ""
-"大多数情况下，翻译文件（后缀 ``.po``）已经生成到了项目中， 如果你只是想编辑已有"
-"的翻译文件，可以跳过 :ref:`generate-po` 这段，直接到 :ref:`do-translate` 便可以"
-"开始翻译"
+"大多数情况下，翻译文件（后缀 ``.po``）已经生成到了项目中， 如果你只是想编辑已有的翻译文件，可以跳过 :ref:`generate-po`"
+" 这段，直接到 :ref:`do-translate` 便可以开始翻译"
 msgstr ""
-"In most cases, translation files (with the extension ``.po``) have already been "
-"generated in the project.\n"
-"If you just want to edit existing translation files, you can skip "
-"the :ref:`generate-po` section and proceed directly to :ref:`do-translate`."
+"In most cases, translation files (with the extension ``.po``) have "
+"already been generated in the project.\n"
+"If you just want to edit existing translation files, you can skip the "
+":ref:`generate-po` section and proceed directly to :ref:`do-translate`."
 
 #: ../../source/development/contribute-to-doc-i18n.rst:23
 msgid "我只知道在 Windows 和 macOS 中，以下步骤有效"
@@ -62,12 +60,10 @@ msgstr ""
 "corresponding methods."
 
 #: ../../source/development/contribute-to-doc-i18n.rst:29
-msgid ""
-"翻译流程可参考 `<https://www.sphinx-doc.org/en/master/usage/advanced/"
-"intl.html>`_"
+msgid "翻译流程可参考 `<https://www.sphinx-doc.org/en/master/usage/advanced/intl.html>`_"
 msgstr ""
-"Translation process can be referred from `<https://www.sphinx-doc.org/en/master/"
-"usage/advanced/intl.html>`_"
+"Translation process can be referred from `<https://www.sphinx-"
+"doc.org/en/master/usage/advanced/intl.html>`_"
 
 #: ../../source/development/contribute-to-doc-i18n.rst:31
 msgid "安装必要环境"
@@ -86,219 +82,215 @@ msgid "接着，使用以下命令安装必要的环境："
 msgstr "Then, install the necessary environment using the following command:"
 
 #: ../../source/development/contribute-to-doc-i18n.rst:39
-msgid ""
-"pip install -e .[gui,doc]\n"
-"pip install sphinx-intl"
-msgstr ""
-"pip install -e .[gui,doc]\n"
-"pip install sphinx-intl"
+#: ../../source/development/contribute-to-doc-i18n.rst:124
+msgid "pip install -e .[gui,doc]"
+msgstr "pip install -e .[gui,doc]"
 
-#: ../../source/development/contribute-to-doc-i18n.rst:44
+#: ../../source/development/contribute-to-doc-i18n.rst:43
 msgid "提取翻译文本"
 msgstr "Extract Translatable Text"
 
-#: ../../source/development/contribute-to-doc-i18n.rst:46
-#: ../../source/development/contribute-to-doc-i18n.rst:135
-#: ../../source/development/contribute-to-doc-i18n.rst:153
-#: ../../source/development/contribute-to-doc-i18n.rst:175
+#: ../../source/development/contribute-to-doc-i18n.rst:45
+#: ../../source/development/contribute-to-doc-i18n.rst:134
+#: ../../source/development/contribute-to-doc-i18n.rst:152
+#: ../../source/development/contribute-to-doc-i18n.rst:174
 msgid "cd doc"
 msgstr "cd doc"
 
-#: ../../source/development/contribute-to-doc-i18n.rst:50
+#: ../../source/development/contribute-to-doc-i18n.rst:49
 msgid "进入 ``doc/`` 文件夹，并使用"
 msgstr "navigate to ``doc/`` folder, and run the following command:"
 
-#: ../../source/development/contribute-to-doc-i18n.rst:52
+#: ../../source/development/contribute-to-doc-i18n.rst:51
 msgid "./make gettext"
 msgstr "./make gettext"
 
-#: ../../source/development/contribute-to-doc-i18n.rst:56
+#: ../../source/development/contribute-to-doc-i18n.rst:55
 msgid "或（在 macOS 中）"
 msgstr "or (on macOS)"
 
-#: ../../source/development/contribute-to-doc-i18n.rst:58
+#: ../../source/development/contribute-to-doc-i18n.rst:57
 msgid "make gettext"
 msgstr "make gettext"
 
-#: ../../source/development/contribute-to-doc-i18n.rst:62
+#: ../../source/development/contribute-to-doc-i18n.rst:61
 msgid "提取可翻译的文本，产生的 pot 文件会输出到 ``doc/build/gettext/`` 中"
 msgstr ""
-"This will extract translatable text, and the generated pot file will be located "
-"at ``doc/build/gettext/``"
+"This will extract translatable text, and the generated pot file will be "
+"located at ``doc/build/gettext/``"
 
-#: ../../source/development/contribute-to-doc-i18n.rst:64
+#: ../../source/development/contribute-to-doc-i18n.rst:63
 msgid "产生 po 文件"
 msgstr "Generate po Files"
 
-#: ../../source/development/contribute-to-doc-i18n.rst:66
-msgid ""
-"pot 文件是提取出来的可供翻译的源语言文字，你还需要使用这些文件来产生对应语言的 "
-"po 文件"
+#: ../../source/development/contribute-to-doc-i18n.rst:65
+msgid "pot 文件是提取出来的可供翻译的源语言文字，你还需要使用这些文件来产生对应语言的 po 文件"
 msgstr ""
-"Pot file contains extracted translatable source language text. You need to use "
-"these files to generate po files for corresponding languages."
+"Pot file contains extracted translatable source language text. You need "
+"to use these files to generate po files for corresponding languages."
 
-#: ../../source/development/contribute-to-doc-i18n.rst:68
+#: ../../source/development/contribute-to-doc-i18n.rst:67
 msgid "sphinx-intl update -p build/gettext -l de -l ja"
 msgstr "sphinx-intl update -p build/gettext -l de -l ja"
 
-#: ../../source/development/contribute-to-doc-i18n.rst:72
+#: ../../source/development/contribute-to-doc-i18n.rst:71
 msgid "执行后，产生的 po 文件会输出到以下文件夹中"
 msgstr ""
 "After execution, the generated po files will be located in the following "
 "folders:"
 
-#: ../../source/development/contribute-to-doc-i18n.rst:74
+#: ../../source/development/contribute-to-doc-i18n.rst:73
 msgid "``doc/source/locales/de/LC_MESSAGES/``"
 msgstr "``doc/source/locales/de/LC_MESSAGES/``"
 
-#: ../../source/development/contribute-to-doc-i18n.rst:75
+#: ../../source/development/contribute-to-doc-i18n.rst:74
 msgid "``doc/source/locales/ja/LC_MESSAGES/``"
 msgstr "``doc/source/locales/ja/LC_MESSAGES/``"
 
-#: ../../source/development/contribute-to-doc-i18n.rst:77
+#: ../../source/development/contribute-to-doc-i18n.rst:76
 msgid "其中 ``de`` 和 ``ja`` 分别对应上面命令中所提供的参数"
 msgstr ""
-"where ``de`` and ``ja`` correspond to the parameters provided in the above "
-"command."
+"where ``de`` and ``ja`` correspond to the parameters provided in the "
+"above command."
 
-#: ../../source/development/contribute-to-doc-i18n.rst:81
-msgid ""
-"这里的 ``de`` 表示德语， ``ja`` 表示日语，表明你想要进行对这些语言的翻译工作"
+#: ../../source/development/contribute-to-doc-i18n.rst:80
+msgid "这里的 ``de`` 表示德语， ``ja`` 表示日语，表明你想要进行对这些语言的翻译工作"
 msgstr ""
-"Here, ``de`` indicates German, and ``ja`` indicates Japanese, indicating that "
-"you want to work on translating to these languages."
+"Here, ``de`` indicates German, and ``ja`` indicates Japanese, indicating "
+"that you want to work on translating to these languages."
 
-#: ../../source/development/contribute-to-doc-i18n.rst:83
+#: ../../source/development/contribute-to-doc-i18n.rst:82
 msgid "比如，如果你想要进行翻译到英文的工作，那么执行"
 msgstr "For example, if you want to work on translating to English, then execute"
 
-#: ../../source/development/contribute-to-doc-i18n.rst:85
+#: ../../source/development/contribute-to-doc-i18n.rst:84
 msgid "sphinx-intl update -p build/gettext -l en"
 msgstr "sphinx-intl update -p build/gettext -l en"
 
-#: ../../source/development/contribute-to-doc-i18n.rst:89
+#: ../../source/development/contribute-to-doc-i18n.rst:88
 msgid "则会在 ``doc/source/locales/en/LC_MESSAGES/`` 中产生可翻译的文件"
 msgstr ""
-"which will generate translatable files in ``doc/source/locales/en/LC_MESSAGES``"
+"which will generate translatable files in "
+"``doc/source/locales/en/LC_MESSAGES``"
 
-#: ../../source/development/contribute-to-doc-i18n.rst:94
+#: ../../source/development/contribute-to-doc-i18n.rst:93
 msgid "进行文档翻译"
 msgstr "Translate the Documentation"
 
-#: ../../source/development/contribute-to-doc-i18n.rst:96
+#: ../../source/development/contribute-to-doc-i18n.rst:95
 msgid "假设你要进行翻译到英文的工作"
 msgstr "Assuming you want to translate to English"
 
-#: ../../source/development/contribute-to-doc-i18n.rst:98
-msgid ""
-"现在 ``doc/source/locales/en/LC_MESSAGES/`` 中已经存放了翻译文件（后缀 ``.po``）"
+#: ../../source/development/contribute-to-doc-i18n.rst:97
+msgid "现在 ``doc/source/locales/en/LC_MESSAGES/`` 中已经存放了翻译文件（后缀 ``.po``）"
 msgstr ""
-"Now the po files (with the extension ``.po``) are already stored in ``doc/"
-"source/locales/en/LC_MESSAGES``"
+"Now the po files (with the extension ``.po``) are already stored in "
+"``doc/source/locales/en/LC_MESSAGES``"
 
-#: ../../source/development/contribute-to-doc-i18n.rst:100
+#: ../../source/development/contribute-to-doc-i18n.rst:99
 msgid "这里推荐使用 Poedit 软件，打开目录内的 po 文件，进行翻译"
 msgstr ""
-"It is recommended to use Poedit software to open the po file in the directory "
-"and start translating."
+"It is recommended to use Poedit software to open the po file in the "
+"directory and start translating."
 
-#: ../../source/development/contribute-to-doc-i18n.rst:104
+#: ../../source/development/contribute-to-doc-i18n.rst:103
 msgid "如果你有能力检查的话，使用 GPT 翻译也无妨（但是记得校对哦）"
 msgstr ""
-"If you have the ability to check the translation, using GPT for translation is "
-"fine (but remember to proofread it)."
+"If you have the ability to check the translation, using GPT for "
+"translation is fine (but remember to proofread it)."
 
-#: ../../source/development/contribute-to-doc-i18n.rst:108
+#: ../../source/development/contribute-to-doc-i18n.rst:107
 msgid "基类：:py:class:`......`"
 msgstr "基类：:py:class:`......`"
 
-#: ../../source/development/contribute-to-doc-i18n.rst:112
+#: ../../source/development/contribute-to-doc-i18n.rst:111
 msgid "对于类似这样的翻译文本，可以直接忽略，或者将其完全复制到结果中"
 msgstr ""
-"For texts like this that require translation, you can either ignore them or "
-"copy them completely into the result."
+"For texts like this that require translation, you can either ignore them "
+"or copy them completely into the result."
 
-#: ../../source/development/contribute-to-doc-i18n.rst:114
+#: ../../source/development/contribute-to-doc-i18n.rst:113
 msgid "因为这个其实是不需要手动翻译的"
 msgstr "Because this actually doesn't need manual translation."
 
-#: ../../source/development/contribute-to-doc-i18n.rst:116
+#: ../../source/development/contribute-to-doc-i18n.rst:115
 msgid "翻译后，提交你的更改，创建合并到 ``main`` 分支的 Pull Request"
 msgstr ""
-"After translating, submit your changes and create a Pull Request to merge into "
-"the ``main`` branch."
+"After translating, submit your changes and create a Pull Request to merge"
+" into the ``main`` branch."
 
-#: ../../source/development/contribute-to-doc-i18n.rst:119
+#: ../../source/development/contribute-to-doc-i18n.rst:118
 msgid "在本地构建文档"
 msgstr "Build the Documentation Locally"
 
-#: ../../source/development/contribute-to-doc-i18n.rst:123
+#: ../../source/development/contribute-to-doc-i18n.rst:122
 msgid "别忘了安装必要的环境"
 msgstr "Don't forget to install the necessary environment"
 
-#: ../../source/development/contribute-to-doc-i18n.rst:125
-msgid "pip install -e .[gui,doc]"
-msgstr "pip install -e .[gui,doc]"
-
-#: ../../source/development/contribute-to-doc-i18n.rst:131
+#: ../../source/development/contribute-to-doc-i18n.rst:130
 msgid "Windows"
 msgstr "Windows"
 
-#: ../../source/development/contribute-to-doc-i18n.rst:133
-#: ../../source/development/contribute-to-doc-i18n.rst:151
-#: ../../source/development/contribute-to-doc-i18n.rst:173
+#: ../../source/development/contribute-to-doc-i18n.rst:132
+#: ../../source/development/contribute-to-doc-i18n.rst:150
+#: ../../source/development/contribute-to-doc-i18n.rst:172
 msgid "首先确保你在 ``doc/`` 目录下："
 msgstr "Make sure you are in the ``doc/`` directory first:"
 
-#: ../../source/development/contribute-to-doc-i18n.rst:139
-#: ../../source/development/contribute-to-doc-i18n.rst:157
-#: ../../source/development/contribute-to-doc-i18n.rst:179
+#: ../../source/development/contribute-to-doc-i18n.rst:138
+#: ../../source/development/contribute-to-doc-i18n.rst:156
+#: ../../source/development/contribute-to-doc-i18n.rst:178
 msgid "举个例子，如果你想要在本地构建 zh_CN（简体中文）的文档，可以执行："
 msgstr ""
-"For example, if you want to build the documentation for zh_CN (Simplified "
-"Chinese) locally, you can execute:"
+"For example, if you want to build the documentation for zh_CN (Simplified"
+" Chinese) locally, you can execute:"
 
-#: ../../source/development/contribute-to-doc-i18n.rst:141
+#: ../../source/development/contribute-to-doc-i18n.rst:140
 msgid ".\\make_i18n zh_CN"
 msgstr ".\\make_i18n zh_CN"
 
-#: ../../source/development/contribute-to-doc-i18n.rst:145
-#: ../../source/development/contribute-to-doc-i18n.rst:163
-#: ../../source/development/contribute-to-doc-i18n.rst:185
-msgid ""
-"这样就会在 ``build/html_i18n/zh_CN`` 下生成网页文件，点击其中的 ``index.html`` "
-"即可打开"
+#: ../../source/development/contribute-to-doc-i18n.rst:144
+#: ../../source/development/contribute-to-doc-i18n.rst:162
+#: ../../source/development/contribute-to-doc-i18n.rst:184
+msgid "这样就会在 ``build/html_i18n/zh_CN`` 下生成网页文件，点击其中的 ``index.html`` 即可打开"
 msgstr ""
-"This will generate web files under ``build/html_i18n/zh_CN``, and you can open "
-"``index.html`` in it."
+"This will generate web files under ``build/html_i18n/zh_CN``, and you can"
+" open ``index.html`` in it."
 
-#: ../../source/development/contribute-to-doc-i18n.rst:147
-#: ../../source/development/contribute-to-doc-i18n.rst:165
-#: ../../source/development/contribute-to-doc-i18n.rst:187
+#: ../../source/development/contribute-to-doc-i18n.rst:146
+#: ../../source/development/contribute-to-doc-i18n.rst:164
+#: ../../source/development/contribute-to-doc-i18n.rst:186
 msgid "其它的语言同理，把 ``zh_CN`` 改成对应的语言代码就好了"
 msgstr ""
-"For other languages, simply replace ``zh_CN`` with the corresponding language "
-"code."
+"For other languages, simply replace ``zh_CN`` with the corresponding "
+"language code."
 
-#: ../../source/development/contribute-to-doc-i18n.rst:149
+#: ../../source/development/contribute-to-doc-i18n.rst:148
 msgid "macOS"
 msgstr "macOS"
 
-#: ../../source/development/contribute-to-doc-i18n.rst:159
-#: ../../source/development/contribute-to-doc-i18n.rst:181
+#: ../../source/development/contribute-to-doc-i18n.rst:158
+#: ../../source/development/contribute-to-doc-i18n.rst:180
 msgid "./make_i18n.sh zh_CN"
 msgstr "./make_i18n.sh zh_CN"
 
-#: ../../source/development/contribute-to-doc-i18n.rst:167
+#: ../../source/development/contribute-to-doc-i18n.rst:166
 msgid "Linux"
 msgstr "Linux"
 
-#: ../../source/development/contribute-to-doc-i18n.rst:171
+#: ../../source/development/contribute-to-doc-i18n.rst:170
 msgid "以下方法未在 Linux 上测试，欢迎测试在 Linux 中的有效性或补充对应的方法"
 msgstr ""
-"The following steps have not been tested on Linux. You're welcome to test their "
-"effectiveness on Linux or provide alternative approaches."
+"The following steps have not been tested on Linux. You're welcome to test"
+" their effectiveness on Linux or provide alternative approaches."
 
 #~ msgid "TODO"
 #~ msgstr "TODO"
+
+#~ msgid ""
+#~ "pip install -e .[gui,doc]\n"
+#~ "pip install sphinx-intl"
+#~ msgstr ""
+#~ "pip install -e .[gui,doc]\n"
+#~ "pip install sphinx-intl"
+

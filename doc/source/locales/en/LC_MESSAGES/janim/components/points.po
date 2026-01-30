@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: JAnim\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-23 12:16+0800\n"
-"PO-Revision-Date: 2025-11-23 12:16+0800\n"
+"POT-Creation-Date: 2026-01-30 21:12+0800\n"
+"PO-Revision-Date: 2026-01-30 22:49+0800\n"
 "Last-Translator: \n"
 "Language-Team: en <LL@li.org>\n"
 "Language: en\n"
@@ -279,6 +279,19 @@ msgstr ""
 msgid "计算三维点集的拟合平面的单位法向量"
 msgstr "Calculate the unit normal vector of the fitted plane for a 3D point set"
 
+#: janim.components.points.Cmpt_Points.face_to_vector:1 of
+msgid "旋转物件使其法方向与 ``vector`` 同向"
+msgstr "Rotate the item to align its normal direction with ``vector``"
+
+#: janim.components.points.Cmpt_Points.face_to_camera:9
+#: janim.components.points.Cmpt_Points.face_to_vector:3 of
+msgid ""
+"视 ``about_point`` 为参考点，若其为 ``None``，则将物件在 ``about_edge`` 方向上的"
+"边界作为 ``about_point``"
+msgstr ""
+"Considers ``about_point`` as the origin. If it's ``None``, then the edge in the "
+"``about_edge`` direction is considered as ``about_point``"
+
 #: janim.components.points.Cmpt_Points.face_to_camera:1 of
 msgid "使物件面向摄像机"
 msgstr "Make the item face the camera"
@@ -296,14 +309,6 @@ msgstr ""
 #: janim.components.points.Cmpt_Points.face_to_camera:7 of
 msgid "``inverse``：是否让物件背向摄像机"
 msgstr "``inverse``: Whether to make the item face away from the camera"
-
-#: janim.components.points.Cmpt_Points.face_to_camera:9 of
-msgid ""
-"视 ``about_point`` 为参考点，若其为 ``None``，则将物件在 ``about_edge`` 方向上的"
-"边界作为 ``about_point``"
-msgstr ""
-"Considers ``about_point`` as the origin. If it's ``None``, then the edge in the "
-"``about_edge`` direction is considered as ``about_point``"
 
 #: janim.components.points.Cmpt_Points.face_to_camera:11 of
 msgid "可手动指定 ``camera`` 和法向量 ``normal_vector``，若无则会自动获取："

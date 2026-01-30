@@ -5,19 +5,18 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: JAnim\n"
+"Project-Id-Version:  JAnim\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-22 21:20+0800\n"
+"POT-Creation-Date: 2026-01-30 22:17+0800\n"
 "PO-Revision-Date: 2025-11-22 22:12+0800\n"
 "Last-Translator: \n"
-"Language-Team: en <LL@li.org>\n"
 "Language: en\n"
+"Language-Team: en <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "Generated-By: Babel 2.17.0\n"
-"X-Generator: Poedit 3.8\n"
 
 #: ../../source/janim/items/points.rst:2
 msgid "points"
@@ -35,9 +34,24 @@ msgstr "Point set"
 msgid "纯数据物件，不参与渲染"
 msgstr "A data item that does not participate in rendering"
 
-#: janim.items.points.DotCloud:1 janim.items.points.MarkedItem:1 of
+#: janim.items.points.DotCloud:1 janim.items.points.MarkedItem:1
+#: janim.items.points.Point:1 of
 msgid "基类：:py:class:`~janim.items.points.Points`"
 msgstr "基类：:py:class:`~janim.items.points.Points`"
+
+#: janim.items.points.Point:1 of
+msgid "一个点"
+msgstr "A point"
+
+#: janim.items.points.Point:3 of
+msgid "可以使用 ``.location`` 得到当前位置"
+msgstr "You can use ``.location`` to get the current position"
+
+#: janim.items.points.Point:5 of
+msgid "纯数据物件，不参与渲染；若想在画面中渲染点，可参考 :class:`~.Dot`"
+msgstr ""
+"A pure data item that does not participate in rendering; to render a "
+"point in the scene, see :class:`~.Dot`"
 
 #: janim.items.points.MarkedItem:1 of
 msgid "带有标记点的物件"
@@ -45,17 +59,15 @@ msgstr "Item with marked points"
 
 #: janim.items.points.MarkedItem:3 of
 msgid ""
-"例如 :class:`~.TextChar`、 :class:`~.TextLine`、 :class:`~.Arc` "
-"和 :class:`~.RegularPolygon` 都以该类作为基类， 使得可以"
+"例如 :class:`~.TextChar`、 :class:`~.TextLine`、 :class:`~.Arc` 和 "
+":class:`~.RegularPolygon` 都以该类作为基类， 使得可以"
 msgstr ""
 "For example, :class:`~.TextChar`, :class:`~.TextLine`, :class:`~.Arc`, "
 "and :class:`~.RegularPolygon` all use this class as their base class, "
 "enabling"
 
 #: janim.items.points.MarkedItem:6 of
-msgid ""
-"通过 ``.mark.get(...)`` 的方式得到标记点位置，并会因为 ``points`` 的变化而同"
-"步更新"
+msgid "通过 ``.mark.get(...)`` 的方式得到标记点位置，并会因为 ``points`` 的变化而同步更新"
 msgstr ""
 "Get marked point positions via ``.mark.get(...)``, which will be "
 "synchronously updated when ``points`` changes"
@@ -84,27 +96,13 @@ msgstr ""
 
 #: janim.items.points.MarkedItem:18 of
 msgid ""
-"这段代码的 ``self.mark.set_points([RIGHT * side_length / 4])`` 设置了在 x 轴"
-"方向上 75% 处的一个标记点， 这个标记点会自动跟踪物件的坐标变换，具体参"
-"考 :ref:`基本样例 <basic_examples>` 中的对应代码"
+"这段代码的 ``self.mark.set_points([RIGHT * side_length / 4])`` 设置了在 x 轴方向上 75%"
+" 处的一个标记点， 这个标记点会自动跟踪物件的坐标变换，具体参考 :ref:`基本样例 <basic_examples>` 中的对应代码"
 msgstr ""
 "In this code, ``self.mark.set_points([RIGHT * side_length / 4])`` sets a "
-"marked point at 75% along the x-axis. This marked point will automatically "
-"track the item's coordinate transformations. For details, refer to the "
-"corresponding code in :ref:`Basic Examples <basic_examples>`"
-
-#: janim.items.points.Group:1 of
-msgid ""
-"基类：:py:class:`~janim.items.points.Points`, :py:class:`~typing.Generic`\\ "
-"[:py:obj:`~janim.items.points.T`]"
-msgstr ""
-"Base "
-"class: :py:class:`~janim.items.points.Points`, :py:class:`~typing.Generic`\\ "
-"[:py:obj:`~janim.items.points.T`]"
-
-#: janim.items.points.Group:1 of
-msgid "将物件组成一组"
-msgstr "Group items together"
+"marked point at 75% along the x-axis. This marked point will "
+"automatically track the item's coordinate transformations. For details, "
+"refer to the corresponding code in :ref:`Basic Examples <basic_examples>`"
 
 #: janim.items.points.DotCloud.apply_style:1 of
 msgid "设置物件自身的样式，不影响子物件"
@@ -122,6 +120,225 @@ msgstr "Perform data alignment for interpolation"
 msgid "基类：:py:class:`~janim.items.points.DotCloud`"
 msgstr "基类：:py:class:`~janim.items.points.DotCloud`"
 
-#~ msgid ""
-#~ "基类：:py:class:`~janim.items.item.Item.Data`\\ [:py:class:`DotCloud`]"
+#: janim.items.points.Group:1 of
+msgid ""
+"基类：:py:class:`~janim.items.points.Points`, :py:class:`~typing.Generic`\\ "
+"[:py:obj:`~janim.items.points.T`]"
+msgstr ""
+"Base class: :py:class:`~janim.items.points.Points`, "
+":py:class:`~typing.Generic`\\ [:py:obj:`~janim.items.points.T`]"
+
+#: janim.items.points.Group:1 of
+msgid "物件组"
+msgstr "Item group"
+
+#: janim.items.points.Group:3 of
+msgid "将物件组成一组"
+msgstr "Group items together"
+
+#: janim.items.points.NamedGroupMixin:1 of
+msgid "基类：:py:class:`~janim.items.points.Group`, :py:class:`~typing.Generic`"
+msgstr "基类：:py:class:`~janim.items.points.Group`, :py:class:`~typing.Generic`"
+
+#: janim.items.points.NamedGroupMixin:1 of
+msgid "方便用于例如 :class:`~.Axes` 继承的基础类"
+msgstr "A convenient base class for inheritance by, for example, :class:`~.Axes`"
+
+#: janim.items.points.NamedGroupMixin:3 of
+msgid "另见 :class:`NamedGroup`"
+msgstr "See also: :class:`NamedGroup`"
+
+#: janim.items.points.NamedGroupMixin.add:1 of
+msgid "向该物件添加子物件，并且可以通过具名参数设定具名子物件"
+msgstr ""
+"Add child items to this item, and set named child items via keyword "
+"arguments"
+
+#: ../../source/janim/items/points.rst
+msgid "参数"
+msgstr "Parameters"
+
+#: janim.items.points.NamedGroupMixin.add:3 of
+msgid "要添加的子物件"
+msgstr "Child items to add"
+
+#: janim.items.points.NamedGroupMixin.add:4 of
+msgid "要添加的具名子物件"
+msgstr "Named child items to add"
+
+#: janim.items.points.NamedGroupMixin.add:5 of
+msgid "默认为 ``False``，如果为 ``True``，那么插入到子物件列表的开头"
+msgstr ""
+"Default is ``False``; if ``True``, insert at the beginning of the child-"
+"item list"
+
+#: janim.items.points.NamedGroupMixin.insert:1 of
+msgid "在指定索引位置插入子物件，并且可以通过具名参数设定具名子物件"
+msgstr ""
+"Insert child items at the specified index, and set named child items via "
+"keyword arguments"
+
+#: janim.items.points.NamedGroupMixin.insert:3 of
+msgid "插入位置的索引"
+msgstr "Index at which to insert"
+
+#: janim.items.points.NamedGroupMixin.insert:4 of
+msgid "要插入的子物件"
+msgstr "Child items to insert"
+
+#: janim.items.points.NamedGroupMixin.insert:5 of
+msgid "要插入的具名子物件"
+msgstr "Named child items to insert"
+
+#: janim.items.points.NamedGroupMixin.remove:1 of
+msgid "从该物件移除子物件"
+msgstr "Remove child items from this item"
+
+#: janim.items.points.NamedGroupMixin.remove:3 of
+msgid "要移除的子物件或具名子物件的名称"
+msgstr "Child items or names of named child items to remove"
+
+#: janim.items.points.NamedGroupMixin.shuffle:1 of
+msgid "随机打乱子物件的顺序"
+msgstr "Randomly shuffle the order of child items"
+
+#: janim.items.points.NamedGroupMixin.shuffle:5 of
+msgid "该方法使用 :func:`random.shuffle` 进行随机打乱"
+msgstr "This method uses :func:`random.shuffle` to shuffle"
+
+#: janim.items.points.NamedGroupMixin.shuffle:7 of
+msgid "如果需要可重复的随机结果，请在调用此方法前使用 :func:`random.seed` 设置随机数种子"
+msgstr ""
+"For reproducible randomness, set the seed with :func:`random.seed` before"
+" calling this method"
+
+#: janim.items.points.NamedGroupMixin.by_name:1 of
+msgid "根据名称获取子物件"
+msgstr "Get a child item by name"
+
+#: janim.items.points.NamedGroupMixin.resolve:1 of
+msgid "将具名子物件的内部索引关系整体解析为到物件的映射"
+msgstr ""
+"Resolve the internal index mapping of named child items into a name-to-"
+"item map"
+
+#: ../../source/janim/items/points.rst
+msgid "返回"
+msgstr "Returns"
+
+#: janim.items.points.NamedGroupMixin.resolve:3 of
+msgid "名称到子物件的映射字典"
+msgstr "A mapping dictionary from names to child items"
+
+#: janim.items.points.NamedGroup:1 of
+msgid ""
+"基类：:py:class:`~janim.items.points.NamedGroupMixin`, "
+":py:class:`~typing.Generic`"
+msgstr ""
+"基类：:py:class:`~janim.items.points.NamedGroupMixin`, "
+":py:class:`~typing.Generic`"
+
+#: janim.items.points.NamedGroup:1 of
+msgid "具名物件组，可以使用类似 ``group['name']`` 的形式来获取其中的具名物件"
+msgstr ""
+"Named item group; you can access named items with syntax like "
+"``group['name']``"
+
+#: janim.items.points.NamedGroup:3 of
+msgid "初始物件"
+msgstr "Initial items"
+
+#: janim.items.points.NamedGroup:4 of
+msgid "初始具名物件"
+msgstr "Initial named items"
+
+#: janim.items.points.NamedGroup:6 of
+msgid ""
+"也可以使用 :meth:`~.NamedGroupMixin.add` 或 :meth:`~.NamedGroupMixin.insert` "
+"方法，传入具名参数来新增具名子物件"
+msgstr ""
+"You can also use :meth:`~.NamedGroupMixin.add` or "
+":meth:`~.NamedGroupMixin.insert` and pass keyword arguments to add named "
+"child items"
+
+#: janim.items.points.NamedGroup:8 of
+msgid "示例："
+msgstr "Example:"
+
+#: janim.items.points.NamedGroup:10 of
+msgid ""
+"group = NamedGroup(\n"
+"    text=Text('lorem'),\n"
+"    shape=Circle()\n"
+")\n"
+"group.points.arrange(DOWN, aligned_edge=LEFT)\n"
+"\n"
+"self.play(\n"
+"    group['text'].anim.color.set(GREEN),\n"
+"    group['shape'].anim.color.set(YELLOW),\n"
+"    lag_ratio=0.5\n"
+")\n"
+"\n"
+"def updater(group: NamedGroup, p: UpdaterParams) -> None:\n"
+"    group.points.rotate(TAU * p.alpha)\n"
+"    group['text'].color.mix(BLUE, p.alpha)\n"
+"\n"
+"self.play(\n"
+"    GroupUpdater(group, updater)\n"
+")"
+msgstr ""
+"group = NamedGroup(\n"
+"    text=Text('lorem'),\n"
+"    shape=Circle()\n"
+")\n"
+"group.points.arrange(DOWN, aligned_edge=LEFT)\n"
+"\n"
+"self.play(\n"
+"    group['text'].anim.color.set(GREEN),\n"
+"    group['shape'].anim.color.set(YELLOW),\n"
+"    lag_ratio=0.5\n"
+")\n"
+"\n"
+"def updater(group: NamedGroup, p: UpdaterParams) -> None:\n"
+"    group.points.rotate(TAU * p.alpha)\n"
+"    group['text'].color.mix(BLUE, p.alpha)\n"
+"\n"
+"self.play(\n"
+"    GroupUpdater(group, updater)\n"
+")"
+
+#: janim.items.points.NamedGroup:34 of
+msgid "无法像 :class:`Group` 那样使用初始化参数"
+msgstr "Cannot use initialization parameters like :class:`Group`"
+
+#: janim.items.points.NamedGroup:36 of
+msgid "group = Group(..., color=RED)"
+msgstr "group = Group(..., color=RED)"
+
+#: janim.items.points.NamedGroup:40 of
+msgid "为了解决这一问题，你可以写为"
+msgstr "To resolve this, you can write:"
+
+#: janim.items.points.NamedGroup:42 of
+msgid ""
+"group = NamedGroup(...)\n"
+"group.set(color=RED)"
+msgstr ""
+"group = NamedGroup(...)\n"
+"group.set(color=RED)"
+
+#: janim.items.points.NamedGroup:49 of
+msgid "如果你想要将 :class:`NamedGroup` 作为父类并继承，使用 :class:`NamedGroupMixin` 会是更好的选择"
+msgstr ""
+"If you want to subclass :class:`NamedGroup`, using "
+":class:`NamedGroupMixin` is a better choice"
+
+#: janim.items.points.NamedGroup:51 of
+msgid "因为它不会将所有 ``**kwargs`` 都吃掉，而是使用显式的 ``named`` 参数来指定具名子物件字典"
+msgstr ""
+"Because it does not consume all ``**kwargs``; instead it uses an explicit"
+" ``named`` parameter to specify the named child-item dictionary"
+
+#~ msgid "基类：:py:class:`~janim.items.item.Item.Data`\\ [:py:class:`DotCloud`]"
 #~ msgstr "基类：:py:class:`~janim.items.item.Item`"
+
