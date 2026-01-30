@@ -3,6 +3,8 @@ from __future__ import annotations
 import copy
 import numbers
 import types
+from contextlib import contextmanager
+from contextvars import ContextVar
 from typing import Callable, Self
 
 import numpy as np
@@ -41,22 +43,26 @@ class Cmpt_Data[ItemT, T](Component[ItemT]):
     def copy(self) -> Self:
         cmpt_copy = super().copy()
 
-        # compatibility
-        fn = self.copy_func or Cmpt_Data.copy_for_value
-        cmpt_copy.set(fn(self.value))
+        with self._cls_name():
+            # compatibility
+            fn = self.copy_func or Cmpt_Data.copy_for_value
+            cmpt_copy.set(fn(self.value))
 
         return cmpt_copy
 
     def become(self, other: Cmpt_Data) -> Self:
-        # compatibility
-        fn = other.copy_func or Cmpt_Data.copy_for_value
-        self.set(fn(other.value))
+        with self._cls_name():
+            # compatibility
+            fn = other.copy_func or Cmpt_Data.copy_for_value
+            self.set(fn(other.value))
+
         return self
 
     def not_changed(self, other: Cmpt_Data) -> bool:
-        # compatibility
-        fn = self.not_changed_func or Cmpt_Data.check_not_changed_for_value
-        return fn(self.value, other.value)
+        with self._cls_name():
+            # compatibility
+            fn = self.not_changed_func or Cmpt_Data.check_not_changed_for_value
+            return fn(self.value, other.value)
 
     @classmethod
     def align_for_interpolate(
@@ -69,21 +75,22 @@ class Cmpt_Data[ItemT, T](Component[ItemT]):
     def interpolate(
         self, cmpt1: Cmpt_Data, cmpt2: Cmpt_Data, alpha: float, *, path_func=None
     ) -> None:
-        # compatibility
-        nc_fn = self.not_changed_func or Cmpt_Data.check_not_changed_for_value
+        with self._cls_name():
+            # compatibility
+            nc_fn = self.not_changed_func or Cmpt_Data.check_not_changed_for_value
 
-        nc_cmpt1_cmpt2 = nc_fn(cmpt1.value, cmpt2.value)
-        nc_cmpt1_self = nc_fn(cmpt1.value, self.value)
+            nc_cmpt1_cmpt2 = nc_fn(cmpt1.value, cmpt2.value)
+            nc_cmpt1_self = nc_fn(cmpt1.value, self.value)
 
-        if not nc_cmpt1_cmpt2 or not nc_cmpt1_self:
-            if nc_cmpt1_cmpt2:
-                # compatibility
-                fn = cmpt1.copy_func or Cmpt_Data.copy_for_value
-                self.set(fn(cmpt1.value))
-            else:
-                # compatibility
-                fn = cmpt1.interpolate_func or Cmpt_Data.interpolate_for_value
-                self.set(fn(cmpt1.value, cmpt2.value, alpha))
+            if not nc_cmpt1_cmpt2 or not nc_cmpt1_self:
+                if nc_cmpt1_cmpt2:
+                    # compatibility
+                    fn = cmpt1.copy_func or Cmpt_Data.copy_for_value
+                    self.set(fn(cmpt1.value))
+                else:
+                    # compatibility
+                    fn = cmpt1.interpolate_func or Cmpt_Data.interpolate_for_value
+                    self.set(fn(cmpt1.value, cmpt2.value, alpha))
 
     def set(self, value: T) -> Self:
         """设置当前值"""
@@ -101,7 +108,8 @@ class Cmpt_Data[ItemT, T](Component[ItemT]):
 
     def update(self, patch: T) -> Self:
         """基于字典的部分项更新原有字典"""
-        self.value = Cmpt_Data.update_for_value(self.value, patch)
+        with self._cls_name():
+            self.value = Cmpt_Data.update_for_value(self.value, patch)
         return self
 
     def set_func(
@@ -165,6 +173,18 @@ class Cmpt_Data[ItemT, T](Component[ItemT]):
 
     _funcs_resolver = IsinstanceResolver[_Funcs]()
     _update_func_resolver = IsinstanceResolver[UpdateFn | None]()
+
+    @contextmanager
+    def _cls_name(self):
+        if self.bind is None:
+            yield
+            return
+
+        token = TrackerShapeError.source_cls_name_ctx.set(self.bind.at_item.__class__.__name__)
+        try:
+            yield
+        finally:
+            TrackerShapeError.source_cls_name_ctx.reset(token)
 
     # endregion
 
@@ -255,7 +275,7 @@ def _format_keys(keys: set) -> str:
     return '[' + ', '.join(sorted((f'"{k}"' for k in keys))) + ']'
 
 
-class ValueTrackerShapeError(JAnimException):
+class TrackerShapeError(JAnimException):
     def __init__(self, message: str, *, missing: set | None = None, extra: set | None = None):
         parts: list[str] = [message]
         if missing:
@@ -266,16 +286,23 @@ class ValueTrackerShapeError(JAnimException):
         self.missing = missing or set()
         self.extra = extra or set()
 
+    source_cls_name_ctx: ContextVar[str] = ContextVar('config_ctx_var')     # 透传来源类名，用于报错时的类名显示
+
+    @staticmethod
+    def get_source_cls_name() -> str:
+        return TrackerShapeError.source_cls_name_ctx.get('ValueTracker?')
+
 
 def _assert_seq_len_match[T: Callable](fn: T) -> T:
     def wrapper(a, b, *args):
         len_a = len(a)
         len_b = len(b)
         if len_a != len_b:
-            raise ValueTrackerShapeError(
-                _('Existing sequence and new value must have the same length for ValueTracker; '
+            cls_name = TrackerShapeError.get_source_cls_name()
+            raise TrackerShapeError(
+                _('Existing sequence and new value must have the same length for {cls_name}; '
                   'existing length {len_a}, new length {len_b}')
-                .format(len_a=len_a, len_b=len_b)
+                .format(cls_name=cls_name, len_a=len_a, len_b=len_b)
             )
         return fn(a, b, *args)
     return wrapper
@@ -288,8 +315,11 @@ def _assert_dict_keys_match[T: Callable](fn: T) -> T:
         missing = a_keys - b_keys
         extra = b_keys - a_keys
         if missing or extra:
-            raise ValueTrackerShapeError(
-                _('Existing dictionary and new value must share the same keys for ValueTracker'),
+            cls_name = TrackerShapeError.get_source_cls_name()
+            raise TrackerShapeError(
+                _('Existing dictionary and new value must share the same keys for {cls_name}')
+                .format(cls_name=cls_name),
+
                 missing=missing,
                 extra=extra
             )
@@ -345,7 +375,7 @@ Cmpt_Data.register_funcs(   # noqa: E305
 def _dict_update_func(state: dict, patch: dict) -> dict:    # noqa: E302
     extra = set(patch.keys()) - set(state.keys())
     if extra:
-        raise ValueTrackerShapeError(
+        raise TrackerShapeError(
             _('Update contains keys not present in current value'),
             extra=extra
         )

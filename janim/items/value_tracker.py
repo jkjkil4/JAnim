@@ -21,7 +21,7 @@ class ValueTracker[T](Item):
             DataUpdater(...)
         )
 
-    详情另见参考文档 xxx    # TODO
+    详情另见文档 https://janim.readthedocs.io/zh-cn/latest/tutorials/value_tracker.html
     """
 
     _data = CmptInfo(Cmpt_Data[Self, T])
