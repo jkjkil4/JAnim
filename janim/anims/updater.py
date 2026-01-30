@@ -55,6 +55,7 @@ class StepUpdaterParams:
     :class:`StepUpdater` 调用时会传递的参数，用于标注时间信息以及动画进度
     """
     global_t: float
+    dt: float
     range: TimeRange
     n: int
 
@@ -73,7 +74,7 @@ updater_params_ctx: ContextVar[UpdaterParams] = ContextVar('updater_params_ctx')
 type DataUpdaterFn[T] = Callable[[T, UpdaterParams], Any]
 type GroupUpdaterFn[T] = Callable[[T, UpdaterParams], Any]
 type ItemUpdaterFn = Callable[[UpdaterParams], Item]
-type StepUpdaterFn[T] = Callable[[T, UpdaterParams], Any]
+type StepUpdaterFn[T] = Callable[[T, StepUpdaterParams], Any]
 
 
 def _call_two_func(func1: Callable, func2: Callable, *args, **kwargs) -> None:
@@ -710,6 +711,7 @@ class _StepUpdater(ItemAnimation):
 
         for computing_n in rg:
             with StepUpdaterParams(self.n_to_global_t(computing_n),
+                                   self.step,
                                    self.t_range,
                                    computing_n,
                                    self) as params:

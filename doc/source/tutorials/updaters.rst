@@ -114,6 +114,8 @@ Updater 的使用
     在能得到相同效果（如平移而非旋转）时，
     :class:`~.DataUpdater` 的性能会优于 :class:`~.GroupUpdater`。
 
+.. _current_usage:
+
 ``current()`` 的使用
 -----------------------------------
 
@@ -247,6 +249,8 @@ JAnim 的各个 ``Updater`` 并非孤立，不仅可以使用 ``.current()`` 获
         )
     )
 
+.. _item_updater_usage:
+
 ``ItemUpdater`` 的使用
 ------------------------------------------
 
@@ -259,19 +263,19 @@ JAnim 的各个 ``Updater`` 并非孤立，不仅可以使用 ``.current()`` 获
     :media: _static/tutorial/DynamicNumber.mp4
     :hide_name:
 
-    v = ValueTracker(0)
+    tr = ValueTracker(0)
     txt = Text('0.00', font_size=40).show()
 
     self.forward()
     self.play(
         Succession(
-            v.anim.data.set(4),
-            v.anim.data.set(2.5),
-            v.anim.data.set(10)
+            tr.anim.set_value(4),
+            tr.anim.set_value(2.5),
+            tr.anim.set_value(10)
         ),
         ItemUpdater(
             txt,
-            lambda p: Text(f'{v.current().data.get():.2f}', font_size=40),
+            lambda p: Text(f'{tr.current().get_value():.2f}', font_size=40),
             duration=3
         )
     )
