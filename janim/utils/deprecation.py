@@ -24,7 +24,7 @@ _DEPRECATED_MSG_I = _('{name!r} is deprecated and will be removed in JAnim {remo
 
 def deprecated(name, instead=None, *, remove: tuple[int, int]):
     remove_formatted = f"{remove[0]}.{remove[1]}"
-    if (_version_tuple[0] > remove[0]) or (_version_tuple[0] == remove[0] and _version_tuple[1] >= remove[1]):
+    if is_removed(remove):
         msg = f'{name!r} has been deprecated and removed since JAnim {remove_formatted}'
         raise RuntimeError(msg)
     else:
@@ -33,3 +33,7 @@ def deprecated(name, instead=None, *, remove: tuple[int, int]):
         else:
             msg = _DEPRECATED_MSG_I.format(name=name, remove=remove_formatted, instead=instead)
         log.warning(msg, stacklevel=3)
+
+
+def is_removed(remove: tuple[int, int]):
+    return (_version_tuple[0] > remove[0]) or (_version_tuple[0] == remove[0] and _version_tuple[1] >= remove[1])

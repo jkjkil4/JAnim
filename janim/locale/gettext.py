@@ -1,4 +1,5 @@
 import os
+import subprocess
 import sys
 from janim.utils.file_ops import get_janim_dir
 
@@ -22,7 +23,17 @@ def main() -> None:
             dist = os.path.join(get_janim_dir(), 'locale', 'source', module_name + '.pot')
             cmd = f'xgettext -o "{dist}" "{source}"'
             print(cmd)
-            os.system(cmd)
+            # Sometimes, URL is language-specific and intentionally part of the message
+            # we need to ignore "Message contains an embedded URL" warnings, looks like:
+            #
+            # warning: Message contains an embedded URL.
+            # Better move it out of the translatable string,
+            # see https://www.gnu.org/software/gettext/manual/html_node/No-embedded-URLs.html
+            #
+            result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
+            for line in result.stderr.splitlines():
+                if 'Message contains an embedded URL' not in line:
+                    print(line, file=sys.stderr)
 
 
 if __name__ == '__main__':
