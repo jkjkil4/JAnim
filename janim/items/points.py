@@ -441,7 +441,7 @@ class NamedGroup[T](NamedGroupMixin[T]):
 
         如果你想要将 :class:`NamedGroup` 作为父类并继承，使用 :class:`NamedGroupMixin` 会是更好的选择
 
-        因为它不会将所有 **kwargs 都吃掉，而是使用显式的 ``named`` 参数来指定具名子物件字典
+        因为它不会将所有 ``**kwargs`` 都吃掉，而是使用显式的 ``named`` 参数来指定具名子物件字典
     """
     def __init__(self, *items: T, **named_items: T):
         super().__init__(*items, named=named_items)

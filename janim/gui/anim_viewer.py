@@ -851,6 +851,9 @@ class AnimViewer(QMainWindow):
     def closeEvent(self, event: QCloseEvent) -> None:
         super().closeEvent(event)
 
+        if self.audio_player is not None:
+            self.audio_player.close()
+
         if self.has_connection():
             self.send_janim_cmd(Cmd.CloseEvent)
 

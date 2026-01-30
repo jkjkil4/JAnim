@@ -11,8 +11,8 @@ constants
     MED_LARGE_BUFF = 0.5
     LARGE_BUFF = 1
 
-    DEFAULT_ITEM_TO_EDGE_BUFF = MED_LARGE_BUFF  # Distance between object and edge
-    DEFAULT_ITEM_TO_ITEM_BUFF = MED_SMALL_BUFF  # Distance between objects
+    DEFAULT_ITEM_TO_EDGE_BUFF = MED_LARGE_BUFF  # Distance between item and edge
+    DEFAULT_ITEM_TO_ITEM_BUFF = MED_SMALL_BUFF  # Distance between items
 
 坐标
 -----------

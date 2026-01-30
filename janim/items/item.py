@@ -699,14 +699,15 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
             self.components[key].become(other.components[key])
 
         if self.timeline is not None:
-            # 强制将物件以及所有后代物件都产生 detect_change 记录
+            # 强制将没有变化的物件以及所有后代物件也产生 detect_change 记录
             # 从而正确停用作用在根物件上的 GroupUpdater
             force_detect_items.union(self.walk_self_and_descendants())
             for item in force_detect_items:
                 appr = self.timeline.item_appearances.get(item, None)
                 if appr is None:
                     continue
-                appr.stack.detect_change(item, self.timeline.current_time, force=True)
+                if not appr.stack.is_changed(item):
+                    appr.stack.detect_change(item, self.timeline.current_time, force=True)
 
             # 如果设置了 auto_visible 且根物件是可见的
             # 那么 become 的最后会把所有子物件设为可见
