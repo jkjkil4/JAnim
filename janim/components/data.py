@@ -9,7 +9,7 @@ from typing import Callable, Self
 
 import numpy as np
 
-from janim.components.component import Component
+from janim.components.component import CmptInfo, Component
 from janim.exception import JAnimException
 from janim.locale.i18n import get_translator
 from janim.logger import log
@@ -267,6 +267,40 @@ class Cmpt_Data[ItemT, T](Component[ItemT]):
         return func(state, patch)
 
     # endregion
+
+
+class CustomData[ItemT, T](CmptInfo[Cmpt_Data[ItemT, T]]):
+    """
+    用于例如
+
+    .. code-block:: python
+
+        class PhysicalBlock(Square):
+            physic = CustomData()
+
+            def __init__(self, *args, **kwargs):
+                super().__init__(*args, **kwargs)
+
+                self.physic.set({
+                    'speed': ORIGIN,    # 默认静止
+                    'accel': ORIGIN,    # 并且没有加速度
+                })
+
+    可以完善类型注解
+
+    .. code-block:: python
+
+        class PhysicData(TypedDict):
+            speed: np.ndarray
+            accel: np.ndarray
+
+        class PhysicalBlock(Square):
+            physic = CustomData[Self, PhysicData]()
+
+            ...
+    """
+    def __init__(self):
+        super().__init__(Cmpt_Data)
 
 
 # region register
