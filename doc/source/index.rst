@@ -118,7 +118,7 @@ JAnim 是一个用于创建流畅动画的库，以程序化动画为核心理�
 
 .. toctree::
    :caption: 开发相关
-   :maxdepth: 2
+   :maxdepth: 1
 
    development/about
    development/contributing

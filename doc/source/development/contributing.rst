@@ -17,16 +17,10 @@
 
 目前 JAnim 有两大可以考虑国际化的方面：
 
-.. toctree::
-   :maxdepth: 1
-
-   contribute-to-prog-i18n
+- :doc:`contribute-to-prog-i18n`
 
 程序的国际化，也就是对执行过程中命令行提示信息，以及对 GUI 界面上的文字的翻译
 
-.. toctree::
-   :maxdepth: 1
-
-   contribute-to-doc-i18n
+- :doc:`contribute-to-doc-i18n`
 
 文档的国际化，也就是对帮助文档（包括你正在看的这个页面）中的文字提供翻译
