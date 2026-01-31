@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: JAnim\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-06-09 00:13+0800\n"
-"PO-Revision-Date: 2024-06-09 00:13+0800\n"
+"POT-Creation-Date: 2026-01-31 10:42+0800\n"
+"PO-Revision-Date: 2026-01-31 10:44+0800\n"
 "Last-Translator: \n"
 "Language-Team: en <LL@li.org>\n"
 "Language: en\n"
@@ -17,8 +17,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"Generated-By: Babel 2.14.0\n"
-"X-Generator: Poedit 3.4.2\n"
+"Generated-By: Babel 2.17.0\n"
+"X-Generator: Poedit 3.8\n"
 
 #: ../../source/development/contributing.rst:2
 msgid "贡献"
@@ -69,7 +69,11 @@ msgstr ""
 "Currently, JAnim offers two major areas for internationalization "
 "consideration:"
 
-#: ../../source/development/contributing.rst:25
+#: ../../source/development/contributing.rst:20
+msgid ":doc:`contribute-to-prog-i18n`"
+msgstr ":doc:`contribute-to-prog-i18n`"
+
+#: ../../source/development/contributing.rst:22
 msgid ""
 "程序的国际化，也就是对执行过程中命令行提示信息，以及对 GUI 界面上的文字"
 "的翻译"
@@ -77,7 +81,11 @@ msgstr ""
 "Program internationalization involves translating command-line prompts "
 "during execution and text on the GUI."
 
-#: ../../source/development/contributing.rst:32
+#: ../../source/development/contributing.rst:24
+msgid ":doc:`contribute-to-doc-i18n`"
+msgstr ":doc:`contribute-to-doc-i18n`"
+
+#: ../../source/development/contributing.rst:26
 msgid ""
 "文档的国际化，也就是对帮助文档（包括你正在看的这个页面）中的文字提供翻译"
 msgstr ""
