@@ -290,6 +290,8 @@ class CustomData[ItemT, T](CmptInfo[Cmpt_Data[ItemT, T]]):
 
     .. code-block:: python
 
+        from typing import TypedDict
+
         class PhysicData(TypedDict):
             speed: np.ndarray
             accel: np.ndarray

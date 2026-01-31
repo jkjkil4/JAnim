@@ -229,6 +229,8 @@ ValueTracker 与自定义数据
 
 .. code-block:: python
 
+    from typing import TypedDict
+
     class PhysicData(TypedDict):
         speed: np.ndarray
         accel: np.ndarray
