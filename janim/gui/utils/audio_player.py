@@ -1,7 +1,10 @@
 import threading
 from queue import Empty, Full, Queue
 
-import sounddevice as sd
+from janim.locale.i18n import get_translator
+from janim.logger import log
+
+_ = get_translator('janim.gui.utils.audio_player')
 
 
 class AudioPlayer:
@@ -13,6 +16,17 @@ class AudioPlayer:
 
         self.queue: Queue[bytes] = Queue(maxsize=2)
         self.quit_event = threading.Event()
+
+        try:
+            import sounddevice  # noqa: F401
+        except ImportError:
+            log.warning(
+                _('sounddevice is not installed, unable to play audio in the preview window.\n'
+                  'You can install it with `pip install sounddevice`. If you encounter issues, '
+                  'please refer to the documentation: '
+                  'https://janim.readthedocs.io/en/latest/installation.html#install-dep')
+            )
+            return
 
         self.thread = threading.Thread(target=self._run, daemon=True)
         self.thread.start()
@@ -27,6 +41,8 @@ class AudioPlayer:
         self.quit_event.set()
 
     def _run(self):
+        import sounddevice as sd
+
         while not self.quit_event.is_set():
             stream = sd.RawOutputStream(
                 samplerate=self._framerate,

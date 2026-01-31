@@ -128,6 +128,8 @@
     Typst 已经集成到 JAnim 的安装中了（基于 `typst-py <https://github.com/messense/typst-py>`_ 包），因此不需要另外安装。
     但是，如果你有使用外部 Typst 可执行文件的需求，这里也提供了外部 Typst 的安装方法。
 
+-   对于 Linux，可能还需要另外安装 ``portaudio19-dev``，详见下方 Linux 标签页中的介绍。
+
 .. tabs::
 
     .. translatable-tab:: Windows + 使用包管理器（推荐）
@@ -202,6 +204,13 @@
             sudo tar xf typst.tar.xz --strip-components=1 -C /usr/local/bin typst-x86_64-unknown-linux-musl/typst
             typst --version     # 输出版本号则安装成功
             rm -rf typst.tar.xz
+
+        另外，在 Linux 上使用 JAnim 窗口预览音频可能还需要安装 portaudio：
+
+        .. code-block:: bash
+
+            # portaudio
+            sudo apt install portaudio19-dev
 
         笔者仅在一台虚拟机上尝试过以上安装，不保证真实环境也能做到。网络波动、本地命令不存在、文件重名等等原因都可能导致安装失败。有安装问题请在 GitHub 或群聊中及时提出并附带错误信息和/或截图。
 

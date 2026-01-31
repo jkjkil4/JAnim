@@ -37,7 +37,7 @@ gui = [
     "pyside6",
     "qdarkstyle",
     "beautifulsoup4",
-    "sounddevice>=0.5.5",
+    "sounddevice>=0.5.5; sys_platform == 'win32' or sys_platform == 'darwin'",
 ]
 doc = [
     "sphinx<9.0.0",
