@@ -225,7 +225,7 @@ class Succession(AnimGroup):
     """
     def __init__(
         self,
-        *anims: Animation,
+        *anims: SupportsAnim,
         lag_ratio: float = 1,
         offset: float = 0,
         **kwargs
