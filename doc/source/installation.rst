@@ -128,8 +128,6 @@
     Typst 已经集成到 JAnim 的安装中了（基于 `typst-py <https://github.com/messense/typst-py>`_ 包），因此不需要另外安装。
     但是，如果你有使用外部 Typst 可执行文件的需求，这里也提供了外部 Typst 的安装方法。
 
-- 对于 Linux 和 macOS，需要安装 portaudio 以便成功安装 pyaudio，从而在预览界面播放音频，在具体操作系统的分页中有详细介绍。
-
 .. tabs::
 
     .. translatable-tab:: Windows + 使用包管理器（推荐）
@@ -182,22 +180,6 @@
             brew install typst
             typst --version     # 输出版本号则安装成功
 
-        另外，在 macOS 上使用 JAnim 窗口预览音频还需要安装 portaudio：
-
-        .. code-block:: bash
-
-            brew install portaudio
-            brew link portaudio     # 可能需要执行这条命令，通常情况下是已经链接好的，只是以防万一
-
-        使用 ``brew --prefix portaudio`` 命令查看 portaudio 的安装路径，记下这个路径，后面会用到。（例：在笔者设备上查看的结果是 ``/opt/homebrew/opt/portaudio``）
-
-        在用户主目录（``/Users/你的用户名/`` 或者等价的 ``~``）下创建 ``.pydistutils.cfg`` 配置文件，根据我们刚刚记下的路径，添加 include 路径和 lib 路径并保存，例如在笔者设备上创建的文件内容如下图红框所示：
-
-        .. image:: /_static/images/portaudio_pydist.png
-            :align: center
-
-        接着就可以使用 ``uv`` 或者 ``pip`` 安装 ``pyaudio`` 了。
-
     .. translatable-tab:: Linux
 
         考虑到使用 `类 UNIX <https://zh.wikipedia.org/wiki/%E7%B1%BBUnix%E7%B3%BB%E7%BB%9F>`_ 的用户一般对命令行更有了解，而且相应的发行版多，包管理没有通用的命令。这里仅给出 Ubuntu 的安装方法。
@@ -220,15 +202,6 @@
             sudo tar xf typst.tar.xz --strip-components=1 -C /usr/local/bin typst-x86_64-unknown-linux-musl/typst
             typst --version     # 输出版本号则安装成功
             rm -rf typst.tar.xz
-
-        另外，在 Linux 上使用 JAnim 窗口预览音频还需要安装 portaudio：
-
-        .. code-block:: bash
-
-            # portaudio
-            sudo apt install portaudio19-dev
-
-        接着就可以使用 ``uv`` 或者 ``pip`` 安装 ``pyaudio`` 了。
 
         笔者仅在一台虚拟机上尝试过以上安装，不保证真实环境也能做到。网络波动、本地命令不存在、文件重名等等原因都可能导致安装失败。有安装问题请在 GitHub 或群聊中及时提出并附带错误信息和/或截图。
 
@@ -260,21 +233,6 @@
 安装完成后再次尝试安装 ``JAnim`` 即可。
 
 如果仍然失败，可以尝试重启终端、编辑器，或者重启电脑后再次尝试。
-
-.. raw:: html
-
-    </details>
-
-.. raw:: html
-
-    <details>
-    <summary>'portaudio.h': No such file or directory</summary>
-
-两种可能：
-
-1. 在 macOS 或 Linux 下，未按照上一节的内容安装 PortAudio 依赖
-
-2. 截至 2025/11/16，PyAudio 暂未兼容 Python 3.14+ 版本
 
 .. raw:: html
 
