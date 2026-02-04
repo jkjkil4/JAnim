@@ -1,7 +1,8 @@
 from __future__ import annotations
 
 import types
-from typing import TYPE_CHECKING, Iterable, Protocol, Self, runtime_checkable
+from typing import (TYPE_CHECKING, Any, Iterable, Protocol, Self,
+                    runtime_checkable)
 
 if TYPE_CHECKING:
     import numpy as np
@@ -60,7 +61,7 @@ class SupportsTracking(Protocol):
     def interpolate(self, other: Self, alpha: float) -> Self: ...
 
 
-def t_(*x):
+def t_(*x: str) -> Any:
     """
     提供给 janim-toolbox VS Code 插件，用于标注其中包含的字符串需要 Typst 高亮
     """
