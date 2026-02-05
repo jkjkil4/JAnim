@@ -684,16 +684,7 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
             force_detect_items = set(self.walk_self_and_descendants())
 
         # self.parents 不变
-
-        children = self._children.copy()
-        self.clear_children()
-        for old, new in it.zip_longest(children, other._children):
-            if new is None:
-                break
-            if old is None or type(old) is not type(new):
-                self.add(new.copy())
-            else:
-                self.add(old.become(new, auto_visible=auto_visible))
+        self._children_become(other, auto_visible)
 
         for key in self.components.keys() | other.components.keys():
             self.components[key].become(other.components[key])
@@ -715,6 +706,17 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
                 self.timeline.show(self)
 
         return self
+
+    def _children_become(self, other: Item, auto_visible: bool) -> None:
+        children = self._children.copy()
+        self.clear_children()
+        for old, new in it.zip_longest(children, other._children):
+            if new is None:
+                break
+            if old is None or type(old) is not type(new):
+                self.add(new.copy())
+            else:
+                self.add(old.become(new, auto_visible=auto_visible))
 
     def store(self):
         copy_item = copy.copy(self)

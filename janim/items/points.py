@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import itertools as it
 from typing import TYPE_CHECKING, Generic, Iterable, Self, TypeVar, overload
 
 import numpy as np
@@ -393,6 +394,60 @@ class NamedGroupMixin[T](Group[T]):
 
     def get_named_indices(self) -> dict[str, int]:
         return self._stored_named_indices if self._stored else self._named_indices
+
+    # endregion
+
+    # region 对子物件 become 的处理
+
+    def _children_become(self, other: Item, auto_visible: bool) -> None:
+        # 如果 other 不是具名物件组则按普通方式处理
+        if not isinstance(other, NamedGroupMixin):
+            super()._children_become(other, auto_visible)
+            return
+
+        # 做好标记，先提取配对的 names
+        children: list[Item | None] = self._children.copy()
+        other_children: list[Item | None] = other._children.copy()
+
+        def take_named_pair(name: str) -> tuple[Item | None, Item]:
+            idx1 = self._named_indices.get(name, None)
+            idx2 = other._named_indices[name]
+            if idx1 is None:
+                pair = (None, other_children[idx2])
+            else:
+                pair = (children[idx1], other_children[idx2])
+                children[idx1] = None
+            other_children[idx2] = None
+            return pair
+
+        named_pairs = {     # 新 names 对应的前/后物件
+            name: take_named_pair(name)
+            for name in other._named_indices.keys()
+        }
+        unnamed_children = [c for c in children if c is not None]
+        other_unnamed_children = [c for c in other_children if c is not None]
+
+        # 清空自身原有的 children
+        self.clear_children()
+
+        # 类似普通方式先处理 unnamed 的子物件
+        for old, new in it.zip_longest(unnamed_children, other_unnamed_children):
+            if new is None:
+                break
+            if old is None or type(old) is not type(new):
+                self.add(new.copy())
+            else:
+                self.add(old.become(new, auto_visible=auto_visible))
+
+        # 补充 named 子物件
+        self.add(**{
+            name: (
+                new.copy()
+                if old is None or type(old) is not type(new)
+                else old.become(new, auto_visible=auto_visible)
+            )
+            for name, (old, new) in named_pairs.items()
+        })
 
     # endregion
 
