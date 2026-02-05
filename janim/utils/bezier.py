@@ -594,10 +594,10 @@ def is_closed(points: Sequence[np.ndarray]) -> bool:
 # Given 4 control points for a cubic bezier curve (or arrays of such)
 # return control points for 2 quadratics (or 2n quadratics) approximating them.
 def get_quadratic_approximation_of_cubic(
-    a0: Vect,
-    h0: Vect,
-    h1: Vect,
-    a1: Vect
+    a0: Vect | VectArray,
+    h0: Vect | VectArray,
+    h1: Vect | VectArray,
+    a1: Vect | VectArray
 ) -> np.ndarray:
     a0 = np.array(a0, ndmin=2)
     h0 = np.array(h0, ndmin=2)
@@ -621,7 +621,7 @@ def get_quadratic_approximation_of_cubic(
     c = cross2d(p, q)
 
     disc = b * b - 4 * a * c
-    has_infl &= (disc > 0)
+    has_infl &= (disc > 1e-4)   # > 1e-4 而不是 > 0，因为当 disc 过于接近 0 时如果当成拐点，会造成 t_mid 贴在端点附近
     sqrt_disc = np.sqrt(np.abs(disc))
     settings = np.seterr(all='ignore')
     ti_bounds = []
