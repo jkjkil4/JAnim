@@ -283,6 +283,14 @@ def get_module_from_stdin():
     module = types.ModuleType(module_name)
     module.__file__ = STDIN_FILENAME
 
+    # 让 inspect.getsourcelines 能从 linecache 读取 stdin 源码
+    linecache.cache[STDIN_FILENAME] = (
+        len(source),
+        None,
+        [line + '\n' for line in source.splitlines()],
+        STDIN_FILENAME
+    )
+
     sys.modules[module_name] = module
 
     code = compile(source, STDIN_FILENAME, 'exec')
