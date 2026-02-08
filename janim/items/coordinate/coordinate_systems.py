@@ -642,6 +642,14 @@ class NumberPlane(Axes):
         self.faded_line_ratio = faded_line_ratio
         self._init_background_lines()
 
+    @property
+    def background_lines(self) -> Group[Line]:
+        return self['background_lines']
+
+    @property
+    def faded_lines(self) -> Group[Line]:
+        return self['faded_lines']
+
     def _init_background_lines(self) -> None:
         if not self.faded_line_style:
             style = dict(self.background_line_style)
@@ -655,15 +663,15 @@ class NumberPlane(Axes):
 
         x_lines1, x_lines2 = self.get_lines_parallel_to_axis(self.x_axis, self.y_axis)
         y_lines1, y_lines2 = self.get_lines_parallel_to_axis(self.y_axis, self.x_axis)
-        self.background_lines = Group(*x_lines1, *y_lines1)
-        self.faded_lines = Group(*x_lines2, *y_lines2)
+        background_lines = Group(*x_lines1, *y_lines1)
+        faded_lines = Group(*x_lines2, *y_lines2)
 
-        self.background_lines.set(**self.background_line_style)
-        self.faded_lines.set(**self.faded_line_style)
+        background_lines.set(**self.background_line_style)
+        faded_lines.set(**self.faded_line_style)
 
         self.add(
-            self.faded_lines,
-            self.background_lines,
+            faded_lines=faded_lines,
+            background_lines=background_lines,
             prepend=True
         )
         self.depth.arrange()
@@ -672,7 +680,7 @@ class NumberPlane(Axes):
         self,
         axis1: NumberLine,
         axis2: NumberLine
-    ) -> tuple[Group, Group]:
+    ) -> tuple[Group[Line], Group[Line]]:
         freq = axis2.x_step
         ratio = self.faded_line_ratio
         line = Line(axis1.points.get_start(), axis1.points.get_end())
