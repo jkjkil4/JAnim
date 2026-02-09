@@ -145,8 +145,7 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         self._depth_test = False
         self._distance_sort = False
 
-        self._saved_states: dict[str, Item.SavedState[Self]] = {}
-        self.target: Self | None = None
+        self.reset_additional_states()
 
         self._init_components()
 
@@ -158,6 +157,10 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
 
     def init_connect(self) -> None:
         pass
+
+    def reset_additional_states(self) -> None:
+        self._saved_states: dict[str, Item.SavedState[Self]] = {}
+        self.target: Self | None = None
 
     def _init_components(self) -> None:
         """
@@ -665,6 +668,7 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
 
         copy_item._parents = []
         copy_item._children = []
+        copy_item.reset_additional_states()
 
         if root_only:
             copy_item._children_changed()
@@ -726,6 +730,7 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
 
         copy_item._parents = []
         copy_item._children = []
+        copy_item.reset_additional_states()
 
         copy_item._stored = True
         copy_item._stored_parents = self.get_parents().copy()
