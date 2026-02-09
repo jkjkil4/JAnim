@@ -413,6 +413,7 @@ class NamedGroupTest(unittest.TestCase):
         self.assertIs(group['d'], group[1])
 
         group2 = group.copy()
+        group3 = group.copy()
         self.assertIs(group2['a'], group2[0])
         self.assertIs(group2['a']['b'], group2[0][0])
         self.assertIs(group2['a']['c'], group2[0][1])
@@ -451,3 +452,12 @@ class NamedGroupTest(unittest.TestCase):
         group2.remove('a')
         with self.assertRaises(GetItemError):
             group2['a']
+
+        # 检查 group3 在 group become 之后不变
+
+        group.become(group2)
+
+        self.assertIs(group3['a'], group3[0])
+        self.assertIs(group3['a']['b'], group3[0][0])
+        self.assertIs(group3['a']['c'], group3[0][1])
+        self.assertIs(group3['d'], group3[1])
