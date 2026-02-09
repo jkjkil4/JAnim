@@ -301,7 +301,9 @@ class NamedGroupMixin[T](Group[T]):
             for item_or_name in items_or_names
         ]
 
-        # 仿照删除物件的过程，更新 _named_indices
+        # 仿照删除物件的过程，更新 new_named_indices
+        new_named_indices = self._named_indices.copy()
+
         for obj in items:
             # 被删除的一个物件的下标
             try:
@@ -309,7 +311,7 @@ class NamedGroupMixin[T](Group[T]):
             except ValueError:
                 continue
 
-            # 更新 _named_indices：
+            # 更新 new_named_indices：
             # 遍历，如果 index 命中，则删除这一项；如果是在 index 之后的，则减一
             remove: str | None = None
             for key, value in self._named_indices.items():
@@ -317,11 +319,13 @@ class NamedGroupMixin[T](Group[T]):
                     assert remove is None
                     remove = key
                 if index < value:
-                    self._named_indices[key] = value - 1
+                    new_named_indices[key] -= 1
 
             if remove is not None:
                 del self._named_indices[remove]
+                del new_named_indices[remove]
 
+        self._named_indices = new_named_indices
         return super().remove(*items)
 
     def shuffle(self) -> Self:
