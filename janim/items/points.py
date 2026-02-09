@@ -374,6 +374,25 @@ class NamedGroupMixin[T](Group[T]):
             for key, value in self._named_indices.items()
         }
 
+    def _index_names(self) -> dict[int, str]:
+        """
+        具名子物件的下标到名称的对应关系，即 ``_named_indices`` 的反向字典
+        """
+        return {
+            index: name
+            for name, index in self._named_indices.items()
+        }
+
+    def children_with_name(self) -> list[tuple[T, str | None]]:
+        """
+        返回的列表中与子物件列表相似，但是每个元素是一个包含 ``(单个子物件, 其对应的名称)`` 的元组，如果不是具名子物件则名称为 ``None``
+        """
+        index_names = self._index_names()
+        return [
+            (item, index_names.get(i, None))
+            for i, item in enumerate(self._children)
+        ]
+
     # region 对 stored 的相关处理，不是什么很重要的细节
 
     def store(self):
@@ -401,7 +420,10 @@ class NamedGroupMixin[T](Group[T]):
 
     def copy(self, *, root_only: bool = False):
         copy_item = super().copy(root_only=root_only)
-        copy_item._named_indices = self._named_indices.copy()
+        if root_only:
+            copy_item._named_indices = {}
+        else:
+            copy_item._named_indices = self._named_indices.copy()
         return copy_item
 
     def _children_become(self, other: Item, auto_visible: bool) -> None:
@@ -410,49 +432,66 @@ class NamedGroupMixin[T](Group[T]):
             super()._children_become(other, auto_visible)
             return
 
-        # 做好标记，先提取配对的 names
-        children: list[Item | None] = self._children.copy()
-        other_children: list[Item | None] = other._children.copy()
+        self_children = self.children_with_name()
+        target_children = other.children_with_name()
+        common_names = self._named_indices.keys() & other._named_indices.keys()
 
-        def take_named_pair(name: str) -> tuple[Item | None, Item]:
-            idx1 = self._named_indices.get(name, None)
-            idx2 = other._named_indices[name]
-            if idx1 is None:
-                pair = (None, other_children[idx2])
-            else:
-                pair = (children[idx1], other_children[idx2])
-                children[idx1] = None
-            other_children[idx2] = None
-            return pair
-
-        named_pairs = {     # 新 names 对应的前/后物件
-            name: take_named_pair(name)
-            for name in other._named_indices.keys()
-        }
-        unnamed_children = [c for c in children if c is not None]
-        other_unnamed_children = [c for c in other_children if c is not None]
+        def is_common(name: str | None) -> bool:
+            return name is not None and name in common_names
 
         # 清空自身原有的 children
         self.clear_children()
 
-        # 类似普通方式先处理 unnamed 的子物件
-        for old, new in it.zip_longest(unnamed_children, other_unnamed_children):
-            if new is None:
+        # 遍历 other 的子物件，依次在 self_children 中寻找来源物件
+        # 对于 other 的每个子物件：
+        # (1) 如果是共有的具名子物件，则在 self 中找到对应的具名子物件
+        # (2) 如果不是共有的具名子物件，则寻找 self 中的第一个不是共有的具名子物件
+        src_children: list[Item | None] = []
+        for _, target_name in target_children:
+            # 如果 other_children 空了则直接停止寻找来源物件
+            if not self_children:
                 break
-            if old is None or type(old) is not type(new):
-                self.add(new.copy())
-            else:
-                self.add(old.become(new, auto_visible=auto_visible))
 
-        # 补充 named 子物件
-        self.add(**{
-            name: (
-                new.copy()
-                if old is None or type(old) is not type(new)
-                else old.become(new, auto_visible=auto_visible)
-            )
-            for name, (old, new) in named_pairs.items()
-        })
+            # 寻找来源物件
+            is_target_name_common = is_common(target_name)
+            src_idx = None
+            for i, (_, self_name) in enumerate(self_children):
+                if is_target_name_common:
+                    # (1)
+                    if self_name == target_name:
+                        src_idx = i
+                        break
+                else:
+                    # (2)
+                    if not is_common(self_name):
+                        src_idx = i
+                        break
+
+            # 如果 source_idx 非 None，则从 self_children 中 pop
+            if src_idx is not None:
+                src_item = self_children.pop(src_idx)[0]
+            else:
+                src_item = None
+
+            src_children.append(src_item)
+
+        # 辅助函数
+        def add(item: Item, name: str | None) -> None:
+            if name is None:
+                self.add(item)
+            else:
+                self.add(**{name: item})
+
+        # 根据配对结果处理子物件
+        # 处理逻辑和普通方式会有点像
+        for src, target in it.zip_longest(src_children, target_children):
+            assert target is not None
+            target_item, target_name = target
+
+            if src is None or type(src) is not type(target_item):
+                add(target_item, target_name)
+            else:
+                add(src.become(target_item), target_name)
 
     # endregion
 
