@@ -397,7 +397,12 @@ class NamedGroupMixin[T](Group[T]):
 
     # endregion
 
-    # region 对子物件 become 的处理
+    # region 对子物件 copy 和 become 的处理
+
+    def copy(self, *, root_only: bool = False):
+        copy_item = super().copy(root_only=root_only)
+        copy_item._named_indices = self._named_indices.copy()
+        return copy_item
 
     def _children_become(self, other: Item, auto_visible: bool) -> None:
         # 如果 other 不是具名物件组则按普通方式处理
