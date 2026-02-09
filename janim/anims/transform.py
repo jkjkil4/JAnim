@@ -16,6 +16,7 @@ from janim.anims.composition import AnimGroup
 from janim.anims.fading import FadeIn, FadeInFromPoint, FadeOut, FadeOutToPoint
 from janim.components.points import Cmpt_Points
 from janim.constants import C_LABEL_ANIM_STAY, OUT
+from janim.exception import TargetNotFoundError
 from janim.items.item import Item
 from janim.items.points import Points
 from janim.items.text import Text, TextChar, TextLine
@@ -180,6 +181,11 @@ class MoveToTarget(Transform):
     """
 
     def __init__(self, item: Item, **kwargs):
+        if item.target is None:
+            raise TargetNotFoundError(
+                _('You must use `.generate_target` to generate the target item '
+                  'before using `MoveToTarget` to create animation')
+            )
         super().__init__(
             item,
             item.target,

@@ -146,6 +146,7 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         self._distance_sort = False
 
         self._saved_states: dict[str, Item.SavedState[Self]] = {}
+        self.target: Self | None = None
 
         self._init_components()
 
