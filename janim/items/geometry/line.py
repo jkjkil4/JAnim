@@ -292,7 +292,7 @@ class DashedLine(Line, Group[VItem]):
         """
         return max(
             2,
-            int(np.ceil((self.points.length / self.dash_length) * self.dashed_ratio)),
+            int(np.ceil((self.points.arc_length / self.dash_length) * self.dashed_ratio)),
         )
 
 
