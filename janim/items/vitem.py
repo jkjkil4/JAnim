@@ -261,12 +261,12 @@ class DashedVItem(VItem, Group[VItem]):
 
         super().__init__(
             *self.groups,
-            **self.extract_attrs(vitem, stroke_color, stroke_alpha, stroke_radius),
+            **self._extract_attrs(vitem, stroke_color, stroke_alpha, stroke_radius),
             **kwargs
         )
 
     @staticmethod
-    def extract_attrs(vitem: VItem, stroke_color, stroke_alpha, stroke_radius) -> dict:
+    def _extract_attrs(vitem: VItem, stroke_color, stroke_alpha, stroke_radius) -> dict:
         return {
             'stroke_color': vitem.stroke.get()[0, :3] if stroke_color is None else stroke_color,
             'stroke_alpha': vitem.stroke.get()[0, 3] if stroke_alpha is None else stroke_alpha,
@@ -468,7 +468,7 @@ class DashedVItemByRatio(VItem, Group[VItem]):
 
         super().__init__(
             *self.groups,
-            **DashedVItem.extract_attrs(vitem, stroke_color, stroke_alpha, stroke_radius),
+            **DashedVItem._extract_attrs(vitem, stroke_color, stroke_alpha, stroke_radius),
             **kwargs
         )
 
