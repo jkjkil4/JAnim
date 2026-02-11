@@ -220,9 +220,16 @@ class NamedGroupMixin[T](Group[T]):
     另见 :class:`NamedGroup`
     """
     def __init__(self, *items: T, named: dict[str, T], **kwargs):
-        super().__init__(**kwargs)
-        self._named_indices: dict[str, int] = {}
-        self.add(*items, **named)
+        super().__init__(*items, *named.values(), **kwargs)
+        self._named_indices: dict[str, int] = {
+            name: len(items) + i
+            for i, name in enumerate(named)
+        }
+        # 相当于
+        # super().__init__(**kwargs)
+        # self._named_indices: dict[str, int] = {}
+        # self.add(*items, **named)
+        # 但是因为这样写是先传递 **kwargs 再 self.add，会导致 Item.set 因为没有子物件而忽略 kwargs 检查
 
     def add(self, *items: T, prepend=False, **named_items: T) -> Self:
         """
