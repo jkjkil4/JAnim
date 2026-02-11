@@ -9,7 +9,7 @@ from janim.components.vpoints import Cmpt_VPoints
 from janim.constants import DEGREES, LEFT, ORIGIN, RIGHT, UP, WHITE
 from janim.items.geometry.arc import Arc, Dot
 from janim.items.points import Group, MarkedItem, Points
-from janim.items.vitem import DashedVItem, VItem
+from janim.items.vitem import DashedVItem, DashedVItemByRatio, VItem
 from janim.typing import JAnimColor, Vect
 from janim.utils.bezier import PathBuilder
 from janim.utils.simple_functions import clip
@@ -220,10 +220,12 @@ class Line(VItem):
     """
     线段
 
-    传入 ``start``, ``end`` 为线段起点终点
+    :param start: 线段起点
+    :param end: 线段终点
 
-    - ``buff``: 线段两端的空余量，默认为 ``0``
-    - ``path_arc``: 表示线段的弯曲角度
+    :param buff: 线段两端的空余量，默认为 ``0``
+    :param path_arc: 表示线段的弯曲角度
+    :param **kwargs: 其它参数
     """
     points = CmptInfo(Cmpt_VPoints_LineImpl[Self])
 
@@ -263,8 +265,16 @@ class DashedLine(Line, Group[VItem]):
     """
     虚线
 
-    - ``dash_length``: 每段虚线的长度
-    - ``dashed_ratio``: 虚线段的占比，默认为 ``0.5``，即虚线段与空白段长度相等，但可能因为虚线段描边存在粗细而导致视觉上空白长度略小
+    :param dash_length: 每段虚线的长度
+    :param dashed_ratio: 虚线段的占比，默认为 ``0.5``，即虚线段与空白段长度相等，但可能因为虚线段描边存在粗细而导致视觉上空白长度略小
+    :param strict_by_length:  虚线段长度是否严格遵从 ``dash_length``，默认为 ``False``
+
+        - 当为 ``False`` 时，可能会微调以确保首尾都是完整的虚线段
+        - 当为 ``True`` 时，不再微调，但是尾部虚线段可能不完整
+
+        在静态使用的情境下，使用 ``False`` 会更美观；在动态创建的情境下，使用 ``True`` 可以避免频繁抖动
+
+    :param **kwargs: 其它参数，另见 :class:`Line`
     """
     def __init__(
         self,
@@ -273,16 +283,24 @@ class DashedLine(Line, Group[VItem]):
         *,
         dash_length: float = DEFAULT_DASH_LENGTH,
         dashed_ratio: float = 0.5,
+        strict_by_length: bool = False,
         **kwargs
     ) -> None:
         self.dash_length = dash_length
         self.dashed_ratio = dashed_ratio
         super().__init__(start, end, **kwargs)
-        dashes = DashedVItem(
-            self,
-            num_dashes=self._calculate_num_dashes(),
-            dashed_ratio=dashed_ratio,
-        )
+        if not strict_by_length:
+            dashes = DashedVItem(
+                self,
+                num_dashes=self._calculate_num_dashes(),
+                dashed_ratio=dashed_ratio,
+            )
+        else:
+            dashes = DashedVItemByRatio(
+                self,
+                dash_ratio=self._calculate_dash_ratio(),
+                dashed_ratio=dashed_ratio
+            )
         self.points.clear()
         self.add(*dashes)
 
@@ -294,6 +312,13 @@ class DashedLine(Line, Group[VItem]):
             2,
             int(np.ceil((self.points.arc_length / self.dash_length) * self.dashed_ratio)),
         )
+
+    def _calculate_dash_ratio(self) -> float:
+        """
+        基于线段长度计算每段虚线段占总长的比率
+        """
+        # max 1e-5 避免除零
+        return self.dash_length / max(1e-5, self.points.arc_length)
 
 
 class TangentLine(Line):
