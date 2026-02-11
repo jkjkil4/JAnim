@@ -461,3 +461,8 @@ class NamedGroupTest(unittest.TestCase):
         self.assertIs(group3['a']['b'], group3[0][0])
         self.assertIs(group3['a']['c'], group3[0][1])
         self.assertIs(group3['d'], group3[1])
+
+        group3.set_name(group3[1], 'newname')
+        with self.assertRaises(GetItemError):
+            group3['d']
+        self.assertIs(group3['newname'], group3[1])

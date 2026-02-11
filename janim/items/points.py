@@ -351,6 +351,21 @@ class NamedGroupMixin[T](Group[T]):
         }
         return self
 
+    def set_name(self, item: Item, name: str) -> Self:
+        """
+        设置一个已有的子物件的对应名称
+
+        :param item: 一个已有的子物件
+        :param name: 要设置的名称
+        """
+        index = self.index(item)
+        # 删除 _named_indices 中原先记录的 ? -> index
+        for key, value in self._named_indices.items():
+            if value == index:
+                del self._named_indices[key]
+                break   # 可以假设只存在一个，所以 break
+        self._named_indices[name] = index
+
     @overload
     def __getitem__(self, key: str) -> T: ...
     @overload
