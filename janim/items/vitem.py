@@ -221,14 +221,15 @@ class VItem(Points):
 
 class DashedVItem(VItem, Group[VItem]):
     """
-    创建传入的 ``vitem`` 的虚线化版本
+    创建传入的 ``vitem`` 的虚线化版本，通过虚线端的数量来指定
 
-    - ``num_dashes``: 虚线段的数量
-    - ``dashed_ratio``: 虚线段的占比，剩下的占比即为空白段
-    - ``dash_offset``: 将虚线段的起始点沿着路径偏移的比率，例如 ``1`` 表示偏移一个虚线段的长度
-    - ``equal_lengths``: 虚线段的长度是否相等，取值为 ``'equal'``、``'approx'`` 或 ``'none'``
+    :param num_dashes: 虚线段的数量
+    :param dashed_ratio: 虚线段的占比，剩下的占比即为空白段
+    :param dash_offset: 将虚线段的起始点沿着路径偏移的比率，例如 ``1`` 表示偏移一个虚线段的长度
+    :param equal_lengths: 虚线段的长度是否相等，取值为 ``'equal'``、``'approx'`` 或 ``'none'``
+
         - ``'equal'``: 虚线段长度几乎相等
-        - ``'approx'``: 虚线段长度近似相等
+        - ``'approx'``: 默认，虚线段长度近似相等
         - ``'none'``: 虚线段将按照曲线的参数 t 均匀分布，一般来说长度不相等
     """
     def __init__(
@@ -238,14 +239,14 @@ class DashedVItem(VItem, Group[VItem]):
         *,
         dashed_ratio: float = 0.5,
         dash_offset: float = 0,
+        equal_lengths: Literal['equal', 'approx', 'none'] = 'approx',
         stroke_color: JAnimColor | ColorArray | None = None,
         stroke_alpha: Alpha | AlphaArray | None = None,
         stroke_radius: float | Iterable[float] | None = None,
-        equal_lengths: Literal['equal', 'approx', 'none'] = 'approx',
-        **kwargs,
+        **kwargs
     ):
-        self.dashed_ratio = dashed_ratio
         self.num_dashes = num_dashes
+        self.dashed_ratio = dashed_ratio
 
         self.groups = [
             Group.from_iterable(self.get_dashed_list(
@@ -258,20 +259,19 @@ class DashedVItem(VItem, Group[VItem]):
             for subpath in vitem.points.get_subpaths()
         ]
 
-        if stroke_color is None:
-            stroke_color = vitem.stroke.get()[0, :3]
-        if stroke_alpha is None:
-            stroke_alpha = vitem.stroke.get()[0, 3]
-        if stroke_radius is None:
-            stroke_radius = vitem.radius.get()[0]
-
         super().__init__(
             *self.groups,
-            stroke_color=stroke_color,
-            stroke_alpha=stroke_alpha,
-            stroke_radius=stroke_radius,
+            **self.extract_attrs(vitem, stroke_color, stroke_alpha, stroke_radius),
             **kwargs
         )
+
+    @staticmethod
+    def extract_attrs(vitem: VItem, stroke_color, stroke_alpha, stroke_radius) -> dict:
+        return {
+            'stroke_color': vitem.stroke.get()[0, :3] if stroke_color is None else stroke_color,
+            'stroke_alpha': vitem.stroke.get()[0, 3] if stroke_alpha is None else stroke_alpha,
+            'stroke_radius': vitem.radius.get()[0] if stroke_radius is None else stroke_radius
+        }
 
     @staticmethod
     def get_dashed_list(
@@ -279,7 +279,7 @@ class DashedVItem(VItem, Group[VItem]):
         num_dashes: int = 15,
         dashed_ratio: float = 0.5,
         dash_offset: float = 0,
-        equal_lengths: bool = True,
+        equal_lengths: Literal['equal', 'approx', 'none'] = 'approx',
     ) -> list[VItem]:
         """将 ``points`` 所表示的路径分割，返回一个包含各虚线段的列表"""
         if num_dashes <= 0 or len(points) < 3:
@@ -331,6 +331,15 @@ class DashedVItem(VItem, Group[VItem]):
             elif dash_starts[-1] > (1 - dash_len):
                 dash_ends[-1] = 1
 
+        return DashedVItem.get_dashed_list_by_starts_and_ends(points, dash_starts, dash_ends, equal_lengths)
+
+    @staticmethod
+    def get_dashed_list_by_starts_and_ends(
+        points: np.ndarray,
+        dash_starts: list[float],
+        dash_ends: list[float],
+        equal_lengths: Literal['equal', 'approx', 'none'] = 'approx'
+    ) -> list[VItem]:
         if equal_lengths == 'approx':
             # 参考 Cmpt_VPoints.curve_and_prop_of_partial_point
             partials: list[float] = [0]
@@ -418,3 +427,67 @@ class DashedVItem(VItem, Group[VItem]):
                 _('Invalid value for equal_lengths: {equal_lengths}')
                 .format(equal_lengths=equal_lengths)
             )
+
+
+class DashedVItemByRatio(VItem, Group[VItem]):
+    """
+    创建传入的 ``vitem`` 的虚线化版本，通过虚线段的长度比率来指定
+
+    :param dash_ratio: 每段虚线段占路径总长的比率，例如 ``1/30`` 表示每段虚线占路径的 1/30
+    :param dashed_ratio: 虚线段的占比，剩下的占比即为空白段
+    :param equal_lengths: 虚线段的长度是否相等，取值为 ``'equal'``、``'approx'`` 或 ``'none'``
+
+        - ``'equal'``: 虚线段长度几乎相等
+        - ``'approx'``: 默认，虚线段长度近似相等
+        - ``'none'``: 虚线段将按照曲线的参数 t 均匀分布，一般来说长度不相等
+    """
+    def __init__(
+        self,
+        vitem: VItem,
+        dash_ratio: float = 1 / 30,     # 默认和 DashedVItem 一样是 15 段
+        *,
+        dashed_ratio: float = 0.5,
+        equal_lengths: Literal['equal', 'approx', 'none'] = 'approx',
+        stroke_color: JAnimColor | ColorArray | None = None,
+        stroke_alpha: Alpha | AlphaArray | None = None,
+        stroke_radius: float | Iterable[float] | None = None,
+        **kwargs
+    ):
+        self.dash_alpha = dash_ratio
+        self.dashed_ratio = dashed_ratio
+
+        self.groups = [
+            Group.from_iterable(self.get_dashed_list(
+                subpath,
+                dash_ratio,
+                dashed_ratio,
+                equal_lengths,
+            ))
+            for subpath in vitem.points.get_subpaths()
+        ]
+
+        super().__init__(
+            *self.groups,
+            **DashedVItem.extract_attrs(vitem, stroke_color, stroke_alpha, stroke_radius),
+            **kwargs
+        )
+
+    @staticmethod
+    def get_dashed_list(
+        points: np.ndarray,
+        dash_ratio: float = 1 / 30,
+        dashed_ratio: float = 0.5,
+        equal_lengths: Literal['equal', 'approx', 'none'] = 'approx',
+    ) -> list[VItem]:
+        step = dash_ratio / dashed_ratio
+
+        dash_starts = []
+        dash_ends = []
+
+        dash_start = 0
+        while dash_start < 1 - 1e-5:    # - 1e-5 避免因浮点误差在末尾产生极小片段
+            dash_starts.append(dash_start)
+            dash_ends.append(min(1, dash_start + dash_ratio))
+            dash_start += step
+
+        return DashedVItem.get_dashed_list_by_starts_and_ends(points, dash_starts, dash_ends, equal_lengths)
