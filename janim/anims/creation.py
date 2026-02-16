@@ -127,6 +127,8 @@ class Destruction(ShowPartial):
 
     - 与 :class:`Uncreate` 方向相反
     """
+    label_color = C_LABEL_ANIM_OUT
+
     def __init__(
         self,
         item: Item,
