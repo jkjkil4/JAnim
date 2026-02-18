@@ -296,7 +296,7 @@ class Timeline(metaclass=ABCMeta):
         def wrapper(*args, **kwargs) -> None:
             func(*args, **kwargs)
             self.detect_changes_of_all()
-        self.schedule(at, wrapper, *args, *kwargs)
+        self.schedule(at, wrapper, *args, **kwargs)
 
     def timeout(self, delay: float, func: Callable, *args, **kwargs) -> None:
         """
@@ -311,7 +311,7 @@ class Timeline(metaclass=ABCMeta):
         def wrapper(*args, **kwargs) -> None:
             func(*args, **kwargs)
             self.detect_changes_of_all()
-        self.timeout(delay, wrapper, *args, *kwargs)
+        self.timeout(delay, wrapper, *args, **kwargs)
 
     # endregion
 
