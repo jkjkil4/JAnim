@@ -133,12 +133,18 @@ class CircleIndicate(DataUpdater[Circle]):
         rate_func: RateFunc = there_and_back,
         scale: float = 1,
         buff: float = MED_SMALL_BUFF,
+        circle_kwargs: dict = {},
         **kwargs
     ):
-        start = Circle(color=color, alpha=0)
+        start_kwargs = circle_kwargs
+        if 'alpha' in start_kwargs:
+            start_kwargs = start_kwargs.copy()
+            start_kwargs.pop('alpha')
+
+        start = Circle(color=color, alpha=0, **start_kwargs)
         if item.is_fix_in_frame():
             start.fix_in_frame()
-        target = Circle(color=color)
+        target = Circle(color=color, **circle_kwargs)
 
         def updater(c: Circle, p: UpdaterParams):
             c.interpolate(start, target, p.alpha)
