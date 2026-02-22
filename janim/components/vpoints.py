@@ -769,9 +769,11 @@ class Cmpt_VPoints[ItemT](Cmpt_Points[ItemT], impl=True):
         points @= rot   # points @ (UP->vect) == ((vect->UP) @ points.T).T
         points /= width
 
-        # 把小数部分的最大 gap 偏移到 round 边界，避免 round 跳跃导致哈希不同
-        points[:, 0] += (0.5 - self._get_max_gap_center(points[:, 0] * 10)) / 10
-        points[:, 1] += (0.5 - self._get_max_gap_center(points[:, 1] * 10)) / 10
+        # 把处于 round 分界部分的坐标稍微加一点
+        # 例如，两个相同的形状在归一化后可能同一个坐标被变换到 “比 0.45 稍微小一点的” 以及 “比 0.45 稍微大一点的”
+        # 它们分别会被 round 到 0.4 和 0.5，这是不符合预期的
+        # 所以这里加上 0.02 使得它们都会被 round 到 0.5，使得 hash 一致
+        points[np.abs(points % 0.1 - 0.05) < 0.01] += 0.02
 
         np.round(points, 1, out=points)    # 原位 round
         points[points == -0.0] = 0.0
@@ -783,23 +785,6 @@ class Cmpt_VPoints[ItemT](Cmpt_Points[ItemT], impl=True):
     def width_along_direction(self, direction: Vect) -> float:
         projections = np.dot(np.vstack(self.get_subpaths()), direction)
         return np.max(projections) - np.min(projections)
-
-    @staticmethod
-    def _get_max_gap_center(values) -> float:
-        # 10 buckets
-        buckets = np.linspace(0.05, 0.95, 10)[:, None].repeat(2, axis=1)    # 每个 bucket 使用中点初始化，在 identity 的使用情境下够用
-        fracs = values % 1
-        fracs = fracs[~np.isnan(fracs)]
-        indices = np.clip((fracs * 10).astype(int), max=9)  # 0~9
-
-        np.minimum.at(buckets[:, 0], indices, fracs)
-        np.maximum.at(buckets[:, 1], indices, fracs)
-
-        gaps = buckets[1:, 0] - buckets[:-1, 1]
-        max_gap_idx = np.argmax(gaps)
-        max_gap_center = 0.5 * (buckets[max_gap_idx, 1] + buckets[max_gap_idx + 1, 0])
-
-        return max_gap_center
 
     def same_shape(self, other: Cmpt_VPoints | Item) -> bool:
         """
