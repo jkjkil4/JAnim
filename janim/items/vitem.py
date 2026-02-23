@@ -165,9 +165,19 @@ class VItem(Points):
                 fill_color = self.fill.get()[0, :3]
             if stroke_color is None:
                 stroke_color = self.stroke.get()[0, :3]
+            color_alpha = self.stroke.get()[0, 3]
+        else:
+            color_alpha = 1.0
 
         from janim.items.geometry.arrow import ArrowTip
-        tip = ArrowTip(angle=angle, fill_color=fill_color, stroke_color=stroke_color, **tip_kwargs)
+        tip = ArrowTip(
+            angle=angle,
+            fill_color=fill_color,
+            fill_alpha=color_alpha,
+            stroke_color=stroke_color,
+            stroke_alpha=color_alpha,
+            **tip_kwargs
+        )
         tip.move_anchor_to(pos)
         self.add(tip)
 
