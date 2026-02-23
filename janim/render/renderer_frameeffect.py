@@ -93,7 +93,7 @@ class FrameEffectRenderer(Renderer):
                     for appr in item._apprs
                     if appr.is_visible_at(t)
                 ]
-                items_render.extend(it.chain(*item.additional_lists))
+                items_render.extend(it.chain(*item._additional_lists))
 
                 items_render.sort(key=lambda x: x[0].depth, reverse=True)
 

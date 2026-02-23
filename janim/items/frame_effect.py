@@ -154,13 +154,12 @@ class FrameEffect(Item):
         for appr in self._apprs:
             appr.render_disabled = True
 
-        self.additional_lists = []
+        self._additional_lists = []     # 使得 Transform 以及类似动画能够正确应用 FrameEffect
 
-        # 使得 Transform 以及类似动画能够正确应用 FrameEffect
         for rcc in additionals:
             if all((item in self._items) for item in rcc.related_items):
                 rcc.render_disabled = True
-                self.additional_lists.append(rcc.func())
+                self._additional_lists.append(rcc.func())
 
 
 simple_frameeffect_shader = '''

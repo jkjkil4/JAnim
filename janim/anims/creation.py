@@ -267,6 +267,12 @@ class Write(DrawBorderThenFill):
 
 
 class ShowIncreasingSubsets(Animation):
+    """
+    逐个显现子物件
+
+    注：该动画目前在 :class:`~.FrameEffect` 中无效
+    """
+
     label_color = C_LABEL_ANIM_IN
 
     def __init__(
