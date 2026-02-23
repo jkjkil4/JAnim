@@ -122,7 +122,7 @@ class VItem(Points):
 
     def add_tip(
         self,
-        alpha: float = 1.0,
+        at_alpha: float = 1.0,
         reverse: bool = False,
         angle: float | None = None,
         colorize: bool = True,
@@ -133,21 +133,22 @@ class VItem(Points):
         **tip_kwargs
     ):
         """
-        在 ``alpha`` 处创建一个箭头
+        在 ``at_alpha`` 处创建一个箭头
 
         - 默认情况下，箭头与路径方向同向；若传入 ``reverse=True`` 则反向
         - 若传入 ``colorize=True`` （默认），则会使箭头的颜色与路径的颜色相同
         - 其余参数请参考 :class:`~.ArrowTip`
         """
-        if alpha >= 1.0:
+        if at_alpha >= 1.0:
             pos = self.points.get_end()
             angle_vert = self.points.end_direction
-        elif alpha <= 0.0:
+        elif at_alpha <= 0.0:
             pos = self.points.get_start()
             angle_vert = self.points.start_direction
         else:
-            pos = self.points.pfp(alpha)
-            angle_vert = self.points.pfp(clip(alpha + d_alpha, 0, 1)) - self.points.pfp(clip(alpha - d_alpha, 0, 1))
+            pos = self.points.pfp(at_alpha)
+            angle_vert = \
+                self.points.pfp(clip(at_alpha + d_alpha, 0, 1)) - self.points.pfp(clip(at_alpha - d_alpha, 0, 1))
 
         if angle is None:
             angle = math.atan2(angle_vert[1], angle_vert[0])
