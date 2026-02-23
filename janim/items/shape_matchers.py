@@ -27,30 +27,32 @@ class SurroundingRect(Rect):
         align: Align = Align.Center,
         **kwargs
     ):
+        box = item.points.box
+
         if not isinstance(buff, Margins):
             buff = Margins(buff)
         if width is None:
-            width = item.points.box.width + buff.left + buff.right
+            width = box.width + buff.left + buff.right
         if height is None:
-            height = item.points.box.height + buff.top + buff.bottom
+            height = box.height + buff.top + buff.bottom
 
         super().__init__(width, height, color=color, **kwargs)
 
         if align & Align.Left:
-            x = item.points.box.get_x(LEFT) - buff.left + width / 2
+            x = box.get_x(LEFT) - buff.left + width / 2
         elif align & Align.Right:
-            x = item.points.box.get_x(RIGHT) + buff.right - width / 2
+            x = box.get_x(RIGHT) + buff.right - width / 2
         else:
-            x = item.points.box.get_x() + (buff.right - buff.left) / 2
+            x = box.get_x() + (buff.right - buff.left) / 2
 
         if align & Align.Bottom:
-            y = item.points.box.get_y(DOWN) - buff.bottom + height / 2
+            y = box.get_y(DOWN) - buff.bottom + height / 2
         elif align & Align.Top:
-            y = item.points.box.get_y(UP) + buff.top - height / 2
+            y = box.get_y(UP) + buff.top - height / 2
         else:
-            y = item.points.box.get_y() + (buff.top - buff.bottom) / 2
+            y = box.get_y() + (buff.top - buff.bottom) / 2
 
-        self.points.move_to([x, y, 0])
+        self.points.move_to([x, y, box.get_z()])
 
 
 class FrameRect(Rect):
