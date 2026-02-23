@@ -225,7 +225,7 @@ class Line(VItem):
 
     :param buff: 线段两端的空余量，默认为 ``0``
     :param path_arc: 表示线段的弯曲角度
-    :param **kwargs: 其它参数
+    :param \\*\\*kwargs: 其它参数
     """
     points = CmptInfo(Cmpt_VPoints_LineImpl[Self])
 
@@ -267,14 +267,14 @@ class DashedLine(Line, Group[VItem]):
 
     :param dash_length: 每段虚线的长度
     :param dashed_ratio: 虚线段的占比，默认为 ``0.5``，即虚线段与空白段长度相等，但可能因为虚线段描边存在粗细而导致视觉上空白长度略小
-    :param strict_by_length:  虚线段长度是否严格遵从 ``dash_length``，默认为 ``False``
+    :param strict_by_length: 虚线段长度是否严格遵从 ``dash_length``，默认为 ``False``
 
         - 当为 ``False`` 时，可能会微调以确保首尾都是完整的虚线段
         - 当为 ``True`` 时，不再微调，但是尾部虚线段可能不完整
 
         在静态使用的情境下，使用 ``False`` 会更美观；在动态创建的情境下，使用 ``True`` 可以避免频繁抖动
 
-    :param **kwargs: 其它参数，另见 :class:`Line`
+    :param \\*\\*kwargs: 其它参数，另见 :class:`Line`
     """
     def __init__(
         self,

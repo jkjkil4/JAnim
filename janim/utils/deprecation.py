@@ -1,3 +1,5 @@
+import os
+
 from janim import __version__
 from janim.logger import log
 from janim.locale.i18n import get_translator
@@ -69,7 +71,8 @@ def deprecated_classvar(value, name, instead=None, *, remove: tuple[int, int]):
 
     class _DeprecatedClassVar:
         def __get__(self, instance, owner=None):
-            deprecated(name, instead, remove=remove)
+            if os.getenv('JANIM_SPHINX_BUILD') != '1':  # 在构建文档时静默
+                deprecated(name, instead, remove=remove)
             return value
 
     return _DeprecatedClassVar()

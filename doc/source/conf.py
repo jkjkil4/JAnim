@@ -8,6 +8,8 @@ import sys
 
 from janim import __version__
 
+os.environ['JANIM_SPHINX_BUILD'] = '1'
+
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
