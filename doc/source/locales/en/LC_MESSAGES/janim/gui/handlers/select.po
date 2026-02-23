@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: JAnim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-02-24 00:11+0800\n"
+"POT-Creation-Date: 2025-12-29 15:25+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -23,41 +23,36 @@ msgstr ""
 msgid "select"
 msgstr "select"
 
-#~ msgid "基类：:py:class:`~janim.gui.handlers.utils.HandlerPanel`"
-#~ msgstr "基类：:py:class:`~janim.gui.handlers.utils.HandlerPanel`"
+#: janim.gui.handlers.select.SelectPanel:1 of
+msgid "基类：:py:class:`~janim.gui.handlers.utils.HandlerPanel`"
+msgstr "基类：:py:class:`~janim.gui.handlers.utils.HandlerPanel`"
 
-#~ msgid "基类：:py:class:`object`"
-#~ msgstr "基类：:py:class:`object`"
+#: janim.gui.handlers.select.BasicAttrs:1 janim.gui.handlers.select.ItemBox:1
+#: of
+msgid "基类：:py:class:`object`"
+msgstr "基类：:py:class:`object`"
 
-#~ msgid "物件及其在 GL 坐标下的可选中范围，四周留有余量"
-#~ msgstr ""
-#~ "Item and its selectable range in "
-#~ "GL coordinates, with margins around the"
-#~ " edges"
+#: janim.gui.handlers.select.ItemBox:1 of
+msgid "物件及其在 GL 坐标下的可选中范围，四周留有余量"
+msgstr "Item and its selectable range in GL coordinates, with margins around the edges"
 
-#~ msgid "选取指定位置的下一个物件"
-#~ msgstr "Select the next item at the specified position"
+#: janim.gui.handlers.select.select_next_item_at_position:1 of
+msgid "选取指定位置的下一个物件"
+msgstr "Select the next item at the specified position"
 
-#~ msgid "所谓“下一个物件”，即对于每次发现可选取物件的列表，如果原先的物件 ``current`` 在列表中，则选取列表中的后一项"
-#~ msgstr ""
-#~ "\"Next item\" means that for each "
-#~ "list of selectable items found, if "
-#~ "the original item ``current`` is in "
-#~ "the list, select the next item in"
-#~ " the list"
+#: janim.gui.handlers.select.select_next_item_at_position:3 of
+msgid "所谓“下一个物件”，即对于每次发现可选取物件的列表，如果原先的物件 ``current`` 在列表中，则选取列表中的后一项"
+msgstr "\"Next item\" means that for each list of selectable items found, if the original item ``current`` is in the list, select the next item in the list"
 
-#~ msgid "计算 ``item`` 的 :class:`ItemBox`"
-#~ msgstr "Compute the :class:`ItemBox` of ``item``"
+#: janim.gui.handlers.select.compute_box_of_item:1 of
+msgid "计算 ``item`` 的 :class:`ItemBox`"
+msgstr "Compute the :class:`ItemBox` of ``item``"
 
-#~ msgid "遍历 ``item`` 的子物件，计算每个子物件的 :class:`ItemBox`"
-#~ msgstr ""
-#~ "Iterate through the children of ``item``"
-#~ " and compute the :class:`ItemBox` for "
-#~ "each child"
+#: janim.gui.handlers.select.compute_boxes_of_children:1 of
+msgid "遍历 ``item`` 的子物件，计算每个子物件的 :class:`ItemBox`"
+msgstr "Iterate through the children of ``item`` and compute the :class:`ItemBox` for each child"
 
-#~ msgid "返回值用于辅助计算 fixed-in-frame 物件的 bounding"
-#~ msgstr ""
-#~ "The return value is used to help"
-#~ " compute the bounding box of "
-#~ "fixed-in-frame items"
+#: janim.gui.handlers.select.get_fixed_camera_info:1 of
+msgid "返回值用于辅助计算 fixed-in-frame 物件的 bounding"
+msgstr "The return value is used to help compute the bounding box of fixed-in-frame items"
 

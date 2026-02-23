@@ -1,3 +1,4 @@
+﻿# SOME DESCRIPTIVE TITLE.
 # Copyright (C) 2023, jkjkil4
 # This file is distributed under the same license as the JAnim package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2024.
@@ -7,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: JAnim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-02-24 00:11+0800\n"
+"POT-Creation-Date: 2025-03-04 09:09+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -22,45 +23,48 @@ msgstr ""
 msgid "timeline_view"
 msgstr "timeline_view"
 
+#: janim.gui.timeline_view.TimelineView:1 of
+msgid "基类：:py:class:`~PySide6.QtWidgets.QWidget`"
+msgstr "基类：:py:class:`~PySide6.QtWidgets.QWidget`"
+
+#: janim.gui.timeline_view.TimelineView:1 of
+msgid "窗口下方的进度条和动画区段指示器"
+msgstr "Progress bar and animation segment indicator at the bottom of the window"
+
+#: janim.gui.timeline_view.TimelineView:3 of
+msgid "**w** 键放大区段（使视野精确到一小段中）"
+msgstr "**w** key zooms in on the visible range (narrows the view to a smaller segment)"
+
+#: janim.gui.timeline_view.TimelineView:4 of
+msgid "**s** 键缩小区段（使视野扩展到一大段中）"
+msgstr "**s** key zooms out the visible range (expands the view to a larger segment)"
+
+#: janim.gui.timeline_view.TimelineView:5 of
+msgid "**a** 和 **d** 左右移动区段"
+msgstr "**a** and **d** keys move the visible range left and right"
+
+#: janim.gui.timeline_view.TimelineView:6 of
+msgid "使用鼠标滚轮纵向平移"
+msgstr "Use mouse wheel for vertical panning"
+
+#: janim.gui.timeline_view.TimelineView.PixelRange:1
+#: janim.gui.timeline_view.TimelineView.Pressing:1 of
+msgid "基类：:py:class:`object`"
+msgstr "基类：:py:class:`object`"
+
+#: janim.gui.timeline_view.TimelineView.Pressing:1 of
+msgid "记录按键状态"
+msgstr "Records key press state"
+
+#: janim.gui.timeline_view.TimelineView.init_label_group:1 of
+msgid "构建动画区段信息，以便操作与绘制"
+msgstr "Build animation segment information for manipulation and rendering"
+
 #~ msgid "动画区段被渲染到第几行的标记"
 #~ msgstr ""
 
 #~ msgid "计算各个动画区段应当被渲染到第几行，以叠放式进行显示"
 #~ msgstr ""
 
-#~ msgid "基类：:py:class:`~PySide6.QtWidgets.QWidget`"
-#~ msgstr "基类：:py:class:`~PySide6.QtWidgets.QWidget`"
 
-#~ msgid "窗口下方的进度条和动画区段指示器"
-#~ msgstr ""
-#~ "Progress bar and animation segment "
-#~ "indicator at the bottom of the "
-#~ "window"
-
-#~ msgid "**w** 键放大区段（使视野精确到一小段中）"
-#~ msgstr ""
-#~ "**w** key zooms in on the visible"
-#~ " range (narrows the view to a "
-#~ "smaller segment)"
-
-#~ msgid "**s** 键缩小区段（使视野扩展到一大段中）"
-#~ msgstr ""
-#~ "**s** key zooms out the visible "
-#~ "range (expands the view to a "
-#~ "larger segment)"
-
-#~ msgid "**a** 和 **d** 左右移动区段"
-#~ msgstr "**a** and **d** keys move the visible range left and right"
-
-#~ msgid "使用鼠标滚轮纵向平移"
-#~ msgstr "Use mouse wheel for vertical panning"
-
-#~ msgid "基类：:py:class:`object`"
-#~ msgstr "基类：:py:class:`object`"
-
-#~ msgid "记录按键状态"
-#~ msgstr "Records key press state"
-
-#~ msgid "构建动画区段信息，以便操作与绘制"
-#~ msgstr "Build animation segment information for manipulation and rendering"
 
