@@ -30,6 +30,7 @@ extensions = [
     'extensions.code_desc_ext',
     'extensions.translatable_tab_ext',
     'extensions.random_choice',
+    'extensions.gettext_filters',
 ]
 autodoc_member_order = 'bysource'
 # autodoc_default_flags = ['members', 'show-inheritance']
