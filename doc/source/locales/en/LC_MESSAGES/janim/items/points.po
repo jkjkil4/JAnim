@@ -34,10 +34,6 @@ msgstr "Point set"
 msgid "纯数据物件，不参与渲染"
 msgstr "A data item that does not participate in rendering"
 
-#: janim.items.points.Points.distance_sort_reference_point:1 of
-msgid "The type of the None singleton."
-msgstr "The type of the None singleton."
-
 #: janim.items.points.DotCloud:1 janim.items.points.MarkedItem:1
 #: janim.items.points.Point:1 of
 msgid "基类：:py:class:`~janim.items.points.Points`"
