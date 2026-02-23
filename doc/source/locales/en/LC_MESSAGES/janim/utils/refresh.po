@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  JAnim\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-04 09:09+0800\n"
+"POT-Creation-Date: 2026-02-24 01:11+0800\n"
 "PO-Revision-Date: 2024-06-03 10:26+0800\n"
 "Last-Translator: \n"
 "Language: en\n"
@@ -26,9 +26,8 @@ msgstr "refresh"
 #: ../../source/rst_utils/tip_of_complex.rst:3
 msgid "这部分内容涉及 JAnim 实现原理，可能较为复杂，若没有研究源码的需求，你应酌情阅读"
 msgstr ""
-"This section covers the implementations of JAnim, which may be "
-"quite complex. If you do not have the need to delve into the source code,"
-" you may choose to read it at your discretion."
+"This section covers the implementations of JAnim, which may be quite complex. If you do not have the need to delve into "
+"the source code, you may choose to read it at your discretion."
 
 #: janim.utils.refresh.register:1 of
 msgid "用于在需要时才进行值的重新计算，提升性能"
@@ -36,25 +35,21 @@ msgstr "Used to recalculate values only when needed, improving performance"
 
 #: janim.utils.refresh.register:3 of
 msgid ""
-"当一个方法 self.func 被修饰后，会记忆 self.func 被调用后的返回值， 并在之后的调用中直接返回该值，而不对 self.func"
-" 进行真正的调用； 需要 ``self.mark_refresh_required(self.func)`` 才会对 self.func "
-"重新调用以更新返回值"
+"当一个方法 self.func 被修饰后，会记忆 self.func 被调用后的返回值， 并在之后的调用中直接返回该值，而不对 self.func 进行真正"
+"的调用； 需要 ``self.mark_refresh_required(self.func)`` 才会对 self.func 重新调用以更新返回值"
 msgstr ""
-"When a method self.func is decorated, it remembers the return value of "
-"self.func when called, and in subsequent calls, it directly returns that "
-"value without actually calling self.func; "
-"``self.mark_refresh_required(self.func)`` is needed to re-call self.func "
-"to update the return value"
+"When a method self.func is decorated, it remembers the return value of self.func when called, and in subsequent calls, it "
+"directly returns that value without actually calling self.func; ``self.mark_refresh_required(self.func)`` is needed to re-"
+"call self.func to update the return value"
 
 #: janim.utils.refresh.register:7 of
 msgid ""
-"例如，``Item`` 的 ``get_family`` 方法不会每次都进行计算 只有在 ``add`` 或 ``remove`` 执行后，才会将"
-" ``get_family`` 标记为需要更新 使得在下次调用 ``get_family`` 才重新计算结果并返回"
+"例如，``Item`` 的 ``get_family`` 方法不会每次都进行计算 只有在 ``add`` 或 ``remove`` 执行后，才会将 ``get_family`` 标记为"
+"需要更新 使得在下次调用 ``get_family`` 才重新计算结果并返回"
 msgstr ""
-"For example, the ``get_family`` method of ``Item`` will not be calculated"
-" every time. It will only be marked as needing an update after the "
-"execution of ``add`` or ``remove``, making it recalculated and returning "
-"the result the next time ``get_family`` is called"
+"For example, the ``get_family`` method of ``Item`` will not be calculated every time. It will only be marked as needing "
+"an update after the execution of ``add`` or ``remove``, making it recalculated and returning the result the next time "
+"``get_family`` is called"
 
 #: janim.utils.refresh.register:11 of
 msgid "另见："
@@ -64,24 +59,12 @@ msgstr "See also:"
 msgid "``test.utils.test_refresh.RefreshTest``."
 msgstr "``test.utils.test_refresh.RefreshTest``."
 
-#: janim.utils.refresh.RefreshData:1 janim.utils.refresh.Refreshable:1 of
-msgid "基类：:py:class:`object`"
-msgstr "基类：:py:class:`object`"
-
 #: janim.utils.refresh.Refreshable.mark_refresh:1 of
 msgid "标记指定的 ``func`` 需要进行更新"
 msgstr "Marks the specified ``func`` for an update"
 
 #~ msgid ""
-#~ "如果指定了 ``fallback_check`` 函数，则每次都会调用该函数， 如果返回值为 "
-#~ "True，则忽略缓存，并且得到的结果不记录到缓存中"
+#~ "如果指定了 ``fallback_check`` 函数，则每次都会调用该函数， 如果返回值为 True，则忽略缓存，并且得到的结果不记录到缓存中"
 #~ msgstr ""
-#~ "If a ``fallback_check`` function is "
-#~ "specified, it will be called every "
-#~ "time. If the return value is True,"
-#~ " the cache will be ignored, and "
-#~ "the result will not be recorded in"
-#~ " the cache."
-
-
-
+#~ "If a ``fallback_check`` function is specified, it will be called every time. If the return value is True, the cache "
+#~ "will be ignored, and the result will not be recorded in the cache."

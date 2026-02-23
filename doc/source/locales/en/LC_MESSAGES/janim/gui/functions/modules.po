@@ -22,4 +22,3 @@ msgstr ""
 #: ../../source/janim/gui/functions/modules.rst:2
 msgid "functions"
 msgstr "functions"
-

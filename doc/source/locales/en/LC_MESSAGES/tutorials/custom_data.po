@@ -26,4 +26,3 @@ msgstr "Custom Data (TODO)"
 #: ../../source/tutorials/custom_data.rst:6
 msgid "文档有待完善"
 msgstr "Documentation needs to be improved"
-

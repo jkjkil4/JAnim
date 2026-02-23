@@ -21,13 +21,3 @@ msgstr ""
 #: ../../source/janim/gui/popup/richtext_editor.rst:2
 msgid "richtext_editor"
 msgstr "richtext_editor"
-
-#~ msgid "基类：:py:class:`~PySide6.QtWidgets.QWidget`"
-#~ msgstr "基类：:py:class:`~PySide6.QtWidgets.QWidget`"
-
-#~ msgid "基类：:py:class:`~janim.gui.utils.text_edit.TextEdit`"
-#~ msgstr "基类：:py:class:`~janim.gui.utils.text_edit.TextEdit`"
-
-#~ msgid "基类：:py:class:`~PySide6.QtGui.QSyntaxHighlighter`"
-#~ msgstr "基类：:py:class:`~PySide6.QtGui.QSyntaxHighlighter`"
-

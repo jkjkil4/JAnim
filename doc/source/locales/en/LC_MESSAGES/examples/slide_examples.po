@@ -41,8 +41,5 @@ msgstr "Well, this itself is made with JAnim"
 
 #~ msgid "动画效果使用 JAnim 制作，“信息量”可视化结果是插入的现成图片"
 #~ msgstr ""
-#~ "Animation effects are made with JAnim,"
-#~ " the \"information quantity\" visualization "
-#~ "result is an inserted ready-made "
+#~ "Animation effects are made with JAnim, the \"information quantity\" visualization result is an inserted ready-made "
 #~ "image"
-

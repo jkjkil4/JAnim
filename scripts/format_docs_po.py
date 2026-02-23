@@ -61,7 +61,7 @@ def main(lang: str) -> int:
         )
 
     console.print(
-        f"[bold green]Formatted {len(po_files)} .po file(s).[/bold green]"
+        f"[bold green]Formatted {len(po_files) - len(failed_list)} .po file(s).[/bold green]"
     )
 
     if failed_list:

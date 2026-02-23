@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: JAnim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-02-23 22:08+0800\n"
+"POT-Creation-Date: 2026-02-24 01:11+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -23,14 +23,8 @@ msgid "vitem"
 msgstr "vitem"
 
 #: janim.items.vitem.VItem:1 of
-msgid "基类：:py:class:`~janim.items.points.Points`"
-msgstr "基类：:py:class:`~janim.items.points.Points`"
-
-#: janim.items.vitem.VItem:1 of
 msgid "贝塞尔曲线拼接物件，具体说明请参考 :class:`~.Cmpt_VPoints` 的文档"
-msgstr ""
-"Bezier curve spliced item, for details refer to the documentation of "
-":class:`~.Cmpt_VPoints`"
+msgstr "Bezier curve spliced item, for details refer to the documentation of :class:`~.Cmpt_VPoints`"
 
 #: janim.items.vitem.VItem.apply_style:1 of
 msgid "设置物件自身的样式，不影响子物件"
@@ -46,9 +40,7 @@ msgstr "Adjusts the drawing order of stroke and fill"
 
 #: janim.items.vitem.VItem.set_stroke_background:3 of
 msgid "``flag=True`` 会使得描边被填充遮盖，``flag=False`` 则会使得填充被描边遮盖"
-msgstr ""
-"``flag=True`` makes the stroke covered by fill, ``flag=False`` makes the "
-"fill covered by stroke"
+msgstr "``flag=True`` makes the stroke covered by fill, ``flag=False`` makes the fill covered by stroke"
 
 #: janim.items.vitem.VItem.shade_in_3d:1 of
 msgid "调整是否启用三维明暗"
@@ -57,8 +49,8 @@ msgstr "Toggle 3D shading"
 #: janim.items.vitem.VItem.shade_in_3d:3 of
 msgid "启用后，会根据相对于光源（时间轴的 ``self.light_source``）的位置调整颜色深浅"
 msgstr ""
-"When enabled, the color intensity is adjusted based on the position "
-"relative to the light source (timeline's ``self.light_source``)"
+"When enabled, the color intensity is adjusted based on the position relative to the light source (timeline's "
+"``self.light_source``)"
 
 #: janim.items.vitem.VItem.add_tip:1 of
 msgid "在 ``at_alpha`` 处创建一个箭头"
@@ -67,14 +59,12 @@ msgstr "Create an arrow at ``at_alpha``"
 #: janim.items.vitem.VItem.add_tip:3 of
 msgid "默认情况下，箭头与路径方向同向；若传入 ``reverse=True`` 则反向"
 msgstr ""
-"By default, the arrow points in the same direction as the path; if "
-"``reverse=True`` is passed, it points in the opposite direction"
+"By default, the arrow points in the same direction as the path; if ``reverse=True`` is passed, it points in the opposite "
+"direction"
 
 #: janim.items.vitem.VItem.add_tip:4 of
 msgid "若传入 ``colorize=True`` （默认），则会使箭头的颜色与路径的颜色相同"
-msgstr ""
-"If ``colorize=True`` is passed (default), the arrow's color will match "
-"the path's color"
+msgstr "If ``colorize=True`` is passed (default), the arrow's color will match the path's color"
 
 #: janim.items.vitem.VItem.add_tip:5 of
 msgid "其余参数请参考 :class:`~.ArrowTip`"
@@ -83,16 +73,6 @@ msgstr "For other parameters, refer to :class:`~.ArrowTip`"
 #: janim.items.vitem.VItem.align_for_interpolate:1 of
 msgid "进行数据对齐，以便插值"
 msgstr "Performs data alignment for interpolation"
-
-#: janim.items.vitem.DashedVItem:1 janim.items.vitem.DashedVItemByRatio:1 of
-msgid ""
-"基类：:py:class:`~janim.items.vitem.VItem`, "
-":py:class:`~janim.items.points.Group`\\ "
-"[:py:class:`~janim.items.vitem.VItem`]"
-msgstr ""
-"Base class: :py:class:`~janim.items.vitem.VItem`, "
-":py:class:`~janim.items.points.Group`\\ "
-"[:py:class:`~janim.items.vitem.VItem`]"
 
 #: janim.items.vitem.DashedVItem:1 of
 msgid "创建传入的 ``vitem`` 的虚线化版本，通过虚线端的数量来指定"
@@ -112,17 +92,17 @@ msgstr "Ratio of dash segments; the remaining ratio is the gap segments"
 
 #: janim.items.vitem.DashedVItem:5 of
 msgid "将虚线段的起始点沿着路径偏移的比率，例如 ``1`` 表示偏移一个虚线段的长度"
-msgstr "Ratio to offset the starting point of dash segments along the path, e.g., ``1`` means offset by one dash segment length"
+msgstr ""
+"Ratio to offset the starting point of dash segments along the path, e.g., ``1`` means offset by one dash segment length"
 
 #: janim.items.vitem.DashedVItem:6 janim.items.vitem.DashedVItemByRatio:5 of
 msgid ""
-"虚线段的长度是否相等，取值为 ``'equal'``、``'approx'`` 或 ``'none'``  - ``'equal'``: "
-"虚线段长度几乎相等 - ``'approx'``: 默认，虚线段长度近似相等 - ``'none'``: 虚线段将按照曲线的参数 t "
-"均匀分布，一般来说长度不相等"
+"虚线段的长度是否相等，取值为 ``'equal'``、``'approx'`` 或 ``'none'``  - ``'equal'``: 虚线段长度几乎相等 - ``'approx'``: 默"
+"认，虚线段长度近似相等 - ``'none'``: 虚线段将按照曲线的参数 t 均匀分布，一般来说长度不相等"
 msgstr ""
-"Whether dash segment lengths are equal, values are ``'equal'``, ``'approx'``, or ``'none'``  - ``'equal'``: "
-"Dash segment lengths are almost equal - ``'approx'``: Default, dash segment lengths are approximately equal - ``'none'``: Dash segments will be evenly distributed according to the "
-"curve parameter t, generally lengths are not equal"
+"Whether dash segment lengths are equal, values are ``'equal'``, ``'approx'``, or ``'none'``  - ``'equal'``: Dash segment "
+"lengths are almost equal - ``'approx'``: Default, dash segment lengths are approximately equal - ``'none'``: Dash "
+"segments will be evenly distributed according to the curve parameter t, generally lengths are not equal"
 
 #: janim.items.vitem.DashedVItem:6 janim.items.vitem.DashedVItemByRatio:5 of
 msgid "虚线段的长度是否相等，取值为 ``'equal'``、``'approx'`` 或 ``'none'``"
@@ -139,14 +119,11 @@ msgstr "``'approx'``: Default, dash segment lengths are approximately equal"
 #: janim.items.vitem.DashedVItem:10 janim.items.vitem.DashedVItemByRatio:9 of
 msgid "``'none'``: 虚线段将按照曲线的参数 t 均匀分布，一般来说长度不相等"
 msgstr ""
-"``'none'``: Dash segments will be evenly distributed according to the "
-"curve parameter t, generally lengths are not equal"
+"``'none'``: Dash segments will be evenly distributed according to the curve parameter t, generally lengths are not equal"
 
 #: janim.items.vitem.DashedVItem.get_dashed_list:1 of
 msgid "将 ``points`` 所表示的路径分割，返回一个包含各虚线段的列表"
-msgstr ""
-"Splits the path represented by ``points``, returns a list containing each"
-" dash segment"
+msgstr "Splits the path represented by ``points``, returns a list containing each dash segment"
 
 #: janim.items.vitem.DashedVItemByRatio:1 of
 msgid "创建传入的 ``vitem`` 的虚线化版本，通过虚线段的长度比率来指定"
@@ -156,9 +133,12 @@ msgstr "Create a dashed version of the passed ``vitem``, specified by the length
 msgid "每段虚线段占路径总长的比率，例如 ``1/30`` 表示每段虚线占路径的 1/30"
 msgstr "Ratio of each dash segment to the total path length, e.g., ``1/30`` means each dash occupies 1/30 of the path"
 
-#~ msgid "基类：:py:class:`~janim.items.item.Item.Data`\\ [:py:class:`VItem`]"
-#~ msgstr ""
-
 #~ msgid "``num_dashes``: 虚线段的数量"
 #~ msgstr "``num_dashes``: Number of dash segments"
 
+#~ msgid ""
+#~ "基类：:py:class:`~janim.items.vitem.VItem`, :py:class:`~janim.items.points.Group`\\ "
+#~ "[:py:class:`~janim.items.vitem.VItem`]"
+#~ msgstr ""
+#~ "Base class: :py:class:`~janim.items.vitem.VItem`, :py:class:`~janim.items.points.Group`\\ "
+#~ "[:py:class:`~janim.items.vitem.VItem`]"

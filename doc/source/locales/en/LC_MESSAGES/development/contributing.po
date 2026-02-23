@@ -29,29 +29,20 @@ msgid "为源代码作出贡献"
 msgstr "Contribute to the Source Code"
 
 #: ../../source/development/contributing.rst:7
-msgid ""
-"你可以在 `github.com/jkjkil4/JAnim <https://github.com/jkjkil4/JAnim>`_ "
-"提 issue 和 PR"
-msgstr ""
-"You can raise issues and PRs at `github.com/jkjkil4/JAnim <https://"
-"github.com/jkjkil4/JAnim>`_."
+msgid "你可以在 `github.com/jkjkil4/JAnim <https://github.com/jkjkil4/JAnim>`_ 提 issue 和 PR"
+msgstr "You can raise issues and PRs at `github.com/jkjkil4/JAnim <https://github.com/jkjkil4/JAnim>`_."
 
 #: ../../source/development/contributing.rst:9
-msgid ""
-"如果你对现有的 issue 和 PR 模板感到困惑，也完全可以不使用模板，用空 "
-"issue 或 PR 开始书写"
-msgstr ""
-"If you find the existing issue and PR templates confusing, feel free to "
-"start with a blank issue or PR."
+msgid "如果你对现有的 issue 和 PR 模板感到困惑，也完全可以不使用模板，用空 issue 或 PR 开始书写"
+msgstr "If you find the existing issue and PR templates confusing, feel free to start with a blank issue or PR."
 
 #: ../../source/development/contributing.rst:11
 msgid ""
-"另外，你也可以在 `gitee.com/jkjkil4/JAnim <https://gitee.com/jkjkil4/"
-"JAnim>`_ 提 issue 和 PR，但是我在这个链接中回复可能会慢一些"
+"另外，你也可以在 `gitee.com/jkjkil4/JAnim <https://gitee.com/jkjkil4/JAnim>`_ 提 issue 和 PR，但是我在这个链接中回复可能会"
+"慢一些"
 msgstr ""
-"Additionally, you can also raise issues and PRs at `gitee.com/jkjkil4/"
-"JAnim <https://gitee.com/jkjkil4/JAnim>`_, but my response may be "
-"slower on this platform."
+"Additionally, you can also raise issues and PRs at `gitee.com/jkjkil4/JAnim <https://gitee.com/jkjkil4/JAnim>`_, but my "
+"response may be slower on this platform."
 
 #: ../../source/development/contributing.rst:14
 msgid "为国际化作出贡献"
@@ -59,35 +50,26 @@ msgstr "Contribute to Internationalization"
 
 #: ../../source/development/contributing.rst:16
 msgid "国际化，简单来说就是提供到特定语言的翻译"
-msgstr ""
-"Internationalization, in simple terms, involves providing translations "
-"into specific languages."
+msgstr "Internationalization, in simple terms, involves providing translations into specific languages."
 
 #: ../../source/development/contributing.rst:18
 msgid "目前 JAnim 有两大可以考虑国际化的方面："
-msgstr ""
-"Currently, JAnim offers two major areas for internationalization "
-"consideration:"
+msgstr "Currently, JAnim offers two major areas for internationalization consideration:"
 
 #: ../../source/development/contributing.rst:20
 msgid ":doc:`contribute-to-prog-i18n`"
 msgstr ":doc:`contribute-to-prog-i18n`"
 
 #: ../../source/development/contributing.rst:22
-msgid ""
-"程序的国际化，也就是对执行过程中命令行提示信息，以及对 GUI 界面上的文字"
-"的翻译"
-msgstr ""
-"Program internationalization involves translating command-line prompts "
-"during execution and text on the GUI."
+msgid "程序的国际化，也就是对执行过程中命令行提示信息，以及对 GUI 界面上的文字的翻译"
+msgstr "Program internationalization involves translating command-line prompts during execution and text on the GUI."
 
 #: ../../source/development/contributing.rst:24
 msgid ":doc:`contribute-to-doc-i18n`"
 msgstr ":doc:`contribute-to-doc-i18n`"
 
 #: ../../source/development/contributing.rst:26
-msgid ""
-"文档的国际化，也就是对帮助文档（包括你正在看的这个页面）中的文字提供翻译"
+msgid "文档的国际化，也就是对帮助文档（包括你正在看的这个页面）中的文字提供翻译"
 msgstr ""
-"Document internationalization involves providing translations for help "
-"documents (including the one you are currently reading)."
+"Document internationalization involves providing translations for help documents (including the one you are currently "
+"reading)."

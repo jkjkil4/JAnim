@@ -25,9 +25,5 @@ msgid "janim"
 msgstr "janim"
 
 #: janim.__init__:1 of
-msgid ""
-"Programmatic animation engine for creating precise and smooth animations "
-"with real-time feedback"
-msgstr ""
-"Programmatic animation engine for creating precise and smooth animations "
-"with real-time feedback"
+msgid "Programmatic animation engine for creating precise and smooth animations with real-time feedback"
+msgstr "Programmatic animation engine for creating precise and smooth animations with real-time feedback"

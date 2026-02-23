@@ -22,7 +22,3 @@ msgstr ""
 #: ../../source/janim/gui/draw/vitem.rst:2
 msgid "vitem"
 msgstr "vitem"
-
-#~ msgid "基类：:py:class:`~janim.gui.draw.base.DrawOnce`"
-#~ msgstr "基类：:py:class:`~janim.gui.draw.base.DrawOnce`"
-

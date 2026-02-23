@@ -25,9 +25,7 @@ msgstr "file_ops"
 
 #: janim.utils.file_ops.getfile_or_stdin:1 of
 msgid "获取类的文件路径，如果类没有文件路径，则认为来自 stdin"
-msgstr ""
-"Get the file path of the class. If the class has no file path, assume it "
-"is from stdin"
+msgstr "Get the file path of the class. If the class has no file path, assume it is from stdin"
 
 #: janim.utils.file_ops.get_janim_dir:1 of
 msgid "得到 janim 的路径"
@@ -48,4 +46,3 @@ msgstr "Read all characters from the file."
 #: janim.utils.file_ops.open_file:1 of
 msgid "打开指定的文件"
 msgstr "Open the specified file"
-

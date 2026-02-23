@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: JAnim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-20 08:21+0800\n"
+"POT-Creation-Date: 2026-02-24 01:11+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -23,11 +23,6 @@ msgstr ""
 msgid "boolean_ops"
 msgstr "boolean_ops"
 
-#: janim.items.boolean_ops.Difference:1 janim.items.boolean_ops.Exclusion:1
-#: janim.items.boolean_ops.Intersection:1 janim.items.boolean_ops.Union:1 of
-msgid "基类：:py:class:`~janim.items.vitem.VItem`"
-msgstr "基类：:py:class:`~janim.items.vitem.VItem`"
-
 #: janim.items.boolean_ops.Union:1 of
 msgid "并集"
 msgstr "Union"
@@ -36,19 +31,17 @@ msgstr "Union"
 msgid "常见情况下，传入两个及以上 :class:`~.VItem`，返回它们区域的并集的外轮廓"
 msgstr "In common cases, pass two or more :class:`~.VItem`, returns the outer contour of the union of their regions"
 
-#: janim.items.boolean_ops.Exclusion:5 janim.items.boolean_ops.Intersection:5
-#: janim.items.boolean_ops.Union:5 of
+#: janim.items.boolean_ops.Exclusion:5 janim.items.boolean_ops.Intersection:5 janim.items.boolean_ops.Union:5 of
 msgid "另外，如果只传入单个物件，则拷贝原路径"
 msgstr "Additionally, if only a single item is passed, the original path is copied"
 
 #: janim.items.boolean_ops.Union:7 of
 msgid ""
-"该方法只有根物件参与计算，如果需要考虑所有子物件的并集，例如对 :class:`~.Text` 所有后代物件的并集，请参考 "
-":meth:`from_group`"
+"该方法只有根物件参与计算，如果需要考虑所有子物件的并集，例如对 :class:`~.Text` 所有后代物件的并集，请参"
+"考 :meth:`from_group`"
 msgstr ""
-"This method only involves the root item in calculation. If you need to consider "
-"the union of all child items, e.g., the union of all descendant items of "
-":class:`~.Text`, refer to :meth:`from_group`"
+"This method only involves the root item in calculation. If you need to consider the union of all child items, e.g., the "
+"union of all descendant items of :class:`~.Text`, refer to :meth:`from_group`"
 
 #: janim.items.boolean_ops.Union.from_group:1 of
 msgid "传入一个物件，将其所有后代物件作并集"
@@ -72,7 +65,9 @@ msgstr "In common cases, pass two or more :class:`~.VItem`, returns the outer co
 
 #: janim.items.boolean_ops.Intersection:7 of
 msgid "该方法只有根物件参与计算，如果需要考虑所有后代物件的交集，请参考 :meth:`from_group`"
-msgstr "This method only involves the root item in calculation. If you need to consider the intersection of all descendant items, refer to :meth:`from_group`"
+msgstr ""
+"This method only involves the root item in calculation. If you need to consider the intersection of all descendant items, "
+"refer to :meth:`from_group`"
 
 #: janim.items.boolean_ops.Intersection.from_group:1 of
 msgid "传入一个物件，将其所有后代物件作交集"
@@ -88,29 +83,10 @@ msgstr "Pass two or more :class:`~.VItem`, returns the outer contour of their re
 
 #: janim.items.boolean_ops.Exclusion:7 of
 msgid "该方法只有根物件参与计算，如果需要考虑所有后代物件的对称差集，请参考 :meth:`Exclusion.from_group`"
-msgstr "This method only involves the root item in calculation. If you need to consider the symmetric difference of all descendant items, refer to :meth:`Exclusion.from_group`"
+msgstr ""
+"This method only involves the root item in calculation. If you need to consider the symmetric difference of all "
+"descendant items, refer to :meth:`Exclusion.from_group`"
 
 #: janim.items.boolean_ops.Exclusion.from_group:1 of
 msgid "传入一个物件，将其所有子物件依次作对称差集"
 msgstr "Pass an item and perform symmetric difference on all its child items sequentially"
-
-#~ msgid "传入两个及以上 :class:`~.VItem`，返回他它们区域的并集的外轮廓"
-#~ msgstr ""
-
-#~ msgid "传入一个物件，将其所有子物件作并集"
-#~ msgstr ""
-
-#~ msgid "传入两个及以上 :class:`~.VItem`，返回它们区域交集的外轮廓"
-#~ msgstr ""
-
-#~ msgid "传入一个物件，将其所有子物件作交集"
-#~ msgstr ""
-
-#~ msgid "补集"
-#~ msgstr ""
-
-#~ msgid "传入一个物件，将其所有子物件依次作补集（XOR）"
-#~ msgstr ""
-
-
-

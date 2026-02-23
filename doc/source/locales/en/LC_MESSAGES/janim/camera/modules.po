@@ -22,4 +22,3 @@ msgstr ""
 #: ../../source/janim/camera/modules.rst:2
 msgid "camera"
 msgstr "camera"
-

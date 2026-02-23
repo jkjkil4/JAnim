@@ -22,13 +22,3 @@ msgstr ""
 #: ../../source/janim/gui/draw/base.rst:2
 msgid "base"
 msgstr "base"
-
-#~ msgid "基类：:py:class:`~PySide6.QtWidgets.QScrollArea`"
-#~ msgstr "基类：:py:class:`~PySide6.QtWidgets.QScrollArea`"
-
-#~ msgid "基类：:py:class:`~janim.gui.draw.base.Draw`"
-#~ msgstr "基类：:py:class:`~janim.gui.draw.base.Draw`"
-
-#~ msgid "基类：:py:class:`object`"
-#~ msgstr "基类：:py:class:`object`"
-

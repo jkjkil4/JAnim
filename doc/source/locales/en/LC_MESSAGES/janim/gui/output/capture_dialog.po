@@ -21,7 +21,3 @@ msgstr ""
 #: ../../source/janim/gui/output/capture_dialog.rst:2
 msgid "capture_dialog"
 msgstr "capture_dialog"
-
-#~ msgid "基类：:py:class:`~PySide6.QtWidgets.QDialog`"
-#~ msgstr "基类：:py:class:`~PySide6.QtWidgets.QDialog`"
-

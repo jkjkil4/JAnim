@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  JAnim\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-02-23 22:08+0800\n"
+"POT-Creation-Date: 2026-02-24 01:11+0800\n"
 "PO-Revision-Date: 2025-11-22 22:12+0800\n"
 "Last-Translator: \n"
 "Language: en\n"
@@ -23,18 +23,12 @@ msgid "typst"
 msgstr "typst"
 
 #: janim.items.svg.typst.TypstDoc:1 of
-msgid "基类：:py:class:`~janim.items.svg.svg_item.SVGItem`"
-msgstr "Base class: :py:class:`~janim.items.svg.svg_item.SVGItem`"
-
-#: janim.items.svg.typst.TypstDoc:1 of
 msgid "Typst 文档"
 msgstr "Typst document"
 
 #: janim.items.svg.typst.TypstDoc.typstify:1 of
 msgid "将字符串变为 Typst 对象，而本身已经是的则直接返回"
-msgstr ""
-"Convert a string to a Typst object, if it already is one, return it "
-"directly"
+msgstr "Convert a string to a Typst object, if it already is one, return it directly"
 
 #: janim.items.svg.typst.TypstDoc.match_pattern:1 of
 msgid "配对并通过变换使得配对的部分重合"
@@ -92,17 +86,11 @@ msgstr "``item.get([slice(1, 3), slice(4, 7)]) == [item[1:3], item[4:7]]``"
 
 #: janim.items.svg.typst.TypstDoc.get:13 of
 msgid "列表支持嵌套，并且结果保持原嵌套结构，例如"
-msgstr ""
-"Lists support nesting, and results maintain the original nested "
-"structure, for example"
+msgstr "Lists support nesting, and results maintain the original nested structure, for example"
 
 #: janim.items.svg.typst.TypstDoc.get:15 of
-msgid ""
-"``item.get([slice(1, 3), [slice(4, 6), slice(10, 12)]]) == [item[1:3], "
-"[item[4:6], item[10:12]]]``"
-msgstr ""
-"``item.get([slice(1, 3), [slice(4, 6), slice(10, 12)]]) == [item[1:3], "
-"[item[4:6], item[10:12]]]``"
+msgid "``item.get([slice(1, 3), [slice(4, 6), slice(10, 12)]]) == [item[1:3], [item[4:6], item[10:12]]]``"
+msgstr "``item.get([slice(1, 3), [slice(4, 6), slice(10, 12)]]) == [item[1:3], [item[4:6], item[10:12]]]``"
 
 #: janim.items.svg.typst.TypstDoc.get:17 of
 msgid "若 ``gapless=True``："
@@ -111,8 +99,8 @@ msgstr "If ``gapless=True``:"
 #: janim.items.svg.typst.TypstDoc.get:19 of
 msgid "表示通过给定 ``slices`` 的所有起止位置将所有子物件切分并一起返回，例如"
 msgstr ""
-"Means splitting all sub-items at all start and end positions of the given"
-" ``slices`` and returning them together, for example"
+"Means splitting all sub-items at all start and end positions of the given ``slices`` and returning them together, for "
+"example"
 
 #: janim.items.svg.typst.TypstDoc.get:21 of
 msgid "``item.get(slice(1, 3), gapless=True) == [item[:1], item[1:3], item[3:]]``"
@@ -123,24 +111,16 @@ msgid "也支持列表以及嵌套的列表，例如"
 msgstr "Also supports lists and nested lists, for example"
 
 #: janim.items.svg.typst.TypstDoc.get:25 of
-msgid ""
-"``item.get([slice(1, 3), slice(5, 7)], gapless=True) == [item[:1], "
-"item[1:3], item[3:5], item[5:7], item[7:]]``"
-msgstr ""
-"``item.get([slice(1, 3), slice(5, 7)], gapless=True) == [item[:1], "
-"item[1:3], item[3:5], item[5:7], item[7:]]``"
+msgid "``item.get([slice(1, 3), slice(5, 7)], gapless=True) == [item[:1], item[1:3], item[3:5], item[5:7], item[7:]]``"
+msgstr "``item.get([slice(1, 3), slice(5, 7)], gapless=True) == [item[:1], item[1:3], item[3:5], item[5:7], item[7:]]``"
 
 #: janim.items.svg.typst.TypstDoc.get:27 of
 msgid "注：在这种情况下，所有嵌套结构都会先被展平后处理"
-msgstr ""
-"Note: In this case, all nested structures will be flattened first before "
-"processing"
+msgstr "Note: In this case, all nested structures will be flattened first before processing"
 
 #: janim.items.svg.typst.TypstDoc.slice:1 of
 msgid "得到指定 ``pattern`` 在该物件中形状配对的切片"
-msgstr ""
-"Get the slice where the specified ``pattern`` matches in shape in this "
-"item"
+msgstr "Get the slice where the specified ``pattern`` matches in shape in this item"
 
 #: janim.items.svg.typst.TypstDoc.slice:3 of
 msgid "默认返回首个匹配的（即 ``ordinal=0``）"
@@ -148,15 +128,11 @@ msgstr "By default returns the first match (i.e., ``ordinal=0``)"
 
 #: janim.items.svg.typst.TypstDoc.slice:4 of
 msgid "``ordinal`` 传入其它索引可得到随后匹配的特定部分"
-msgstr ""
-"Passing other indices to ``ordinal`` can get specific parts of subsequent"
-" matches"
+msgstr "Passing other indices to ``ordinal`` can get specific parts of subsequent matches"
 
 #: janim.items.svg.typst.TypstDoc.slice:5 of
 msgid "``ordinal`` 传入索引列表可得到多个匹配的特定部分"
-msgstr ""
-"Passing an index list to ``ordinal`` can get multiple specific parts of "
-"matches"
+msgstr "Passing an index list to ``ordinal`` can get multiple specific parts of matches"
 
 #: janim.items.svg.typst.TypstDoc.slice:6 of
 msgid "``ordinal`` 传入省略号 ``...`` 可以得到所有匹配的部分"
@@ -175,16 +151,8 @@ msgid "KMP 算法涉及的部分匹配表"
 msgstr "Partial match table used in the KMP algorithm"
 
 #: janim.items.svg.typst.TypstText:1 of
-msgid "基类：:py:class:`~janim.items.svg.typst.TypstDoc`"
-msgstr "Base class: :py:class:`~janim.items.svg.typst.TypstDoc`"
-
-#: janim.items.svg.typst.TypstText:1 of
 msgid "Typst 文本"
 msgstr "Typst text"
-
-#: janim.items.svg.typst.TypstMath:1 of
-msgid "基类：:py:class:`~janim.items.svg.typst.TypstText`"
-msgstr "Base class: :py:class:`~janim.items.svg.typst.TypstText`"
 
 #: janim.items.svg.typst.TypstMath:1 of
 msgid "Typst 公式"
@@ -193,4 +161,3 @@ msgstr "Typst math"
 #: janim.items.svg.typst.TypstMath:3 of
 msgid "相当于 :class:`TypstText` 传入 ``use_math_environment=True``"
 msgstr "Equivalent to :class:`TypstText` with ``use_math_environment=True``"
-

@@ -6,39 +6,26 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: JAnim\n"
+"Project-Id-Version:  JAnim\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-22 21:20+0800\n"
+"POT-Creation-Date: 2026-02-24 01:11+0800\n"
 "PO-Revision-Date: 2025-11-22 22:00+0800\n"
 "Last-Translator: \n"
-"Language-Team: en <LL@li.org>\n"
 "Language: en\n"
+"Language-Team: en <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "Generated-By: Babel 2.17.0\n"
-"X-Generator: Poedit 3.8\n"
 
 #: ../../source/janim/anims/fading.rst:2
 msgid "fading"
 msgstr "fading"
 
 #: janim.anims.fading.Fade:1 of
-msgid ""
-"基类：:py:class:`~janim.anims.updater.DataUpdater`\\ "
-"[:py:class:`~janim.items.item.Item`]"
-msgstr ""
-"基类：:py:class:`~janim.anims.updater.DataUpdater`\\ "
-"[:py:class:`~janim.items.item.Item`]"
-
-#: janim.anims.fading.Fade:1 of
 msgid ":class:`FadeIn` 和 :class:`FadeOut` 的基类"
 msgstr "Base class for :class:`FadeIn` and :class:`FadeOut`."
-
-#: janim.anims.fading.FadeIn:1 janim.anims.fading.FadeOut:1 of
-msgid "基类：:py:class:`~janim.anims.fading.Fade`"
-msgstr "基类：:py:class:`~janim.anims.fading.Fade`"
 
 #: janim.anims.fading.FadeIn:1 of
 msgid "淡入"
@@ -136,10 +123,6 @@ msgstr ""
 "            duration=2\n"
 "        )"
 
-#: janim.anims.fading.FadeInFromPoint:1 of
-msgid "基类：:py:class:`~janim.anims.fading.FadeIn`"
-msgstr "基类：:py:class:`~janim.anims.fading.FadeIn`"
-
 #: ../../source/janim/anims/fading.rst:20
 msgid ""
 "from janim.imports import *\n"
@@ -156,8 +139,7 @@ msgid ""
 "\n"
 "        self.forward()\n"
 "        self.play(\n"
-"            *[FadeInFromPoint(item, UP*3) for item in "
-"items]\n"
+"            *[FadeInFromPoint(item, UP*3) for item in items]\n"
 "        )\n"
 "        self.forward()"
 msgstr ""
@@ -175,14 +157,9 @@ msgstr ""
 "\n"
 "        self.forward()\n"
 "        self.play(\n"
-"            *[FadeInFromPoint(item, UP*3) for item in "
-"items]\n"
+"            *[FadeInFromPoint(item, UP*3) for item in items]\n"
 "        )\n"
 "        self.forward()"
-
-#: janim.anims.fading.FadeOutToPoint:1 of
-msgid "基类：:py:class:`~janim.anims.fading.FadeOut`"
-msgstr "基类：:py:class:`~janim.anims.fading.FadeOut`"
 
 #: ../../source/janim/anims/fading.rst:20
 msgid ""
@@ -200,8 +177,7 @@ msgid ""
 "\n"
 "        self.forward()\n"
 "        self.play(\n"
-"            *[FadeOutToPoint(item, DOWN*3) for item in "
-"items]\n"
+"            *[FadeOutToPoint(item, DOWN*3) for item in items]\n"
 "        )\n"
 "        self.forward()"
 msgstr ""
@@ -219,7 +195,6 @@ msgstr ""
 "\n"
 "        self.forward()\n"
 "        self.play(\n"
-"            *[FadeOutToPoint(item, DOWN*3) for item in "
-"items]\n"
+"            *[FadeOutToPoint(item, DOWN*3) for item in items]\n"
 "        )\n"
 "        self.forward()"

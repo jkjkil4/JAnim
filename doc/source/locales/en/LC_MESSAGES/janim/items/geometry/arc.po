@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: JAnim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-01 09:30+0800\n"
+"POT-Creation-Date: 2026-02-24 01:11+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -24,18 +24,8 @@ msgid "arc"
 msgstr "arc"
 
 #: janim.items.geometry.arc.ArcCenter:1 of
-msgid ""
-"基类：:py:class:`~janim.items.points.MarkedItem`, "
-":py:class:`~janim.items.vitem.VItem`"
-msgstr ""
-"Base class: :py:class:`~janim.items.points.MarkedItem`, "
-":py:class:`~janim.items.vitem.VItem`"
-
-#: janim.items.geometry.arc.ArcCenter:1 of
 msgid "与圆弧有关的类的基类，被 :class:`Arc` 和 :class:`AnnularSector` 所继承"
-msgstr ""
-"Base class for arc-related classes, inherited by :class:`Arc` and "
-":class:`AnnularSector`"
+msgstr "Base class for arc-related classes, inherited by :class:`Arc` and :class:`AnnularSector`"
 
 #: janim.items.geometry.arc.ArcCenter.get_arc_center:1 of
 msgid "得到圆弧所对应的圆心"
@@ -45,10 +35,6 @@ msgstr "Get the center point corresponding to the arc"
 msgid "将圆弧圆心移动到指定的位置"
 msgstr "Move the arc center to the specified position"
 
-#: janim.items.geometry.arc.AnnularSector:1 janim.items.geometry.arc.Arc:1 of
-msgid "基类：:py:class:`~janim.items.geometry.arc.ArcCenter`"
-msgstr "基类：:py:class:`~janim.items.geometry.arc.ArcCenter`"
-
 #: janim.items.geometry.arc.Arc:1 of
 msgid "圆弧"
 msgstr "Arc"
@@ -57,8 +43,7 @@ msgstr "Arc"
 msgid "``start_angle`` 表示起始的角度"
 msgstr "``start_angle`` represents the starting angle"
 
-#: janim.items.geometry.arc.Arc:4 janim.items.geometry.arc.ArcBetweenPoints:4
-#: of
+#: janim.items.geometry.arc.Arc:4 janim.items.geometry.arc.ArcBetweenPoints:4 of
 msgid "``angle`` 表示圆心角"
 msgstr "``angle`` represents the central angle"
 
@@ -66,19 +51,13 @@ msgstr "``angle`` represents the central angle"
 msgid "获取圆弧长度"
 msgstr "Get the arc length"
 
-#: janim.items.geometry.arc.Arc.get_start_angle:1
-#: janim.items.geometry.arc.Cmpt_VPoints_CircleImpl.start_angle:1 of
+#: janim.items.geometry.arc.Arc.get_start_angle:1 janim.items.geometry.arc.Cmpt_VPoints_CircleImpl.start_angle:1 of
 msgid "获取起始角度"
 msgstr "Get the starting angle"
 
 #: janim.items.geometry.arc.Arc.get_stop_angle:1 of
 msgid "获取终止角度"
 msgstr "Get the ending angle"
-
-#: janim.items.geometry.arc.ArcBetweenPoints:1
-#: janim.items.geometry.arc.Sector:1 of
-msgid "基类：:py:class:`~janim.items.geometry.arc.Arc`"
-msgstr "基类：:py:class:`~janim.items.geometry.arc.Arc`"
 
 #: janim.items.geometry.arc.ArcBetweenPoints:1 of
 msgid "两点之间的圆弧"
@@ -93,35 +72,20 @@ msgid "其余参数同 :class:`Arc`"
 msgstr "Other parameters are the same as :class:`Arc`"
 
 #: janim.items.geometry.arc.Cmpt_VPoints_CircleImpl:1 of
-msgid ""
-"基类：:py:class:`~janim.components.vpoints.Cmpt_VPoints`, "
-":py:class:`~typing.Generic`"
-msgstr ""
-"Base class: :py:class:`~janim.components.vpoints.Cmpt_VPoints`, "
-":py:class:`~typing.Generic`"
-
-#: janim.items.geometry.arc.Cmpt_VPoints_CircleImpl:1 of
 msgid "在圆中，对 :class:`~.Cmpt_VPoints` 的进一步实现"
 msgstr "Further implementation of :class:`~.Cmpt_VPoints` in circles"
 
 #: janim.items.geometry.arc.Cmpt_VPoints_CircleImpl.surround:1 of
 msgid "与 ``replace`` 类似，但是会向外留出 ``buff`` 间距"
-msgstr ""
-"Similar to ``replace``, but leaves ``buff`` spacing outward"
+msgstr "Similar to ``replace``, but leaves ``buff`` spacing outward"
 
 #: janim.items.geometry.arc.Cmpt_VPoints_CircleImpl.at_angle:1 of
 msgid "得到在指定角度处的点，例如 ``angle=0`` 得到右侧的点，``angle=PI / 2`` 得到顶部的点"
-msgstr ""
-"Get the point at the specified angle, e.g., ``angle=0`` gets the right point, "
-"``angle=PI / 2`` gets the top point"
+msgstr "Get the point at the specified angle, e.g., ``angle=0`` gets the right point, ``angle=PI / 2`` gets the top point"
 
 #: janim.items.geometry.arc.Cmpt_VPoints_CircleImpl.radius:1 of
 msgid "得到半径"
 msgstr "Get the radius"
-
-#: janim.items.geometry.arc.Annulus:1 janim.items.geometry.arc.Circle:1 of
-msgid "基类：:py:class:`~janim.items.vitem.VItem`"
-msgstr "基类：:py:class:`~janim.items.vitem.VItem`"
 
 #: janim.items.geometry.arc.Circle:1 of
 msgid "圆"
@@ -135,17 +99,9 @@ msgstr "Parameters are the same as :class:`Arc`"
 msgid "半径传入 ``radius`` 指定"
 msgstr "Radius is specified by passing ``radius``"
 
-#: janim.items.geometry.arc.Dot:1 janim.items.geometry.arc.Ellipse:1 of
-msgid "基类：:py:class:`~janim.items.geometry.arc.Circle`"
-msgstr "基类：:py:class:`~janim.items.geometry.arc.Circle`"
-
 #: janim.items.geometry.arc.Dot:1 of
 msgid "点，半径默认为 ``0.08``"
 msgstr "Dot, default radius is ``0.08``"
-
-#: janim.items.geometry.arc.SmallDot:1 of
-msgid "基类：:py:class:`~janim.items.geometry.arc.Dot`"
-msgstr "基类：:py:class:`~janim.items.geometry.arc.Dot`"
 
 #: janim.items.geometry.arc.SmallDot:1 of
 msgid "小点，半径默认为 ``0.04``"
@@ -159,13 +115,11 @@ msgstr "Ellipse"
 msgid "扇环"
 msgstr "Annular sector"
 
-#: janim.items.geometry.arc.AnnularSector:3 janim.items.geometry.arc.Annulus:3
-#: of
+#: janim.items.geometry.arc.AnnularSector:3 janim.items.geometry.arc.Annulus:3 of
 msgid "``inner_radius``: 内圆半径"
 msgstr "``inner_radius``: Inner circle radius"
 
-#: janim.items.geometry.arc.AnnularSector:4 janim.items.geometry.arc.Annulus:4
-#: of
+#: janim.items.geometry.arc.AnnularSector:4 janim.items.geometry.arc.Annulus:4 of
 msgid "``outer_radius``: 外圆半径"
 msgstr "``outer_radius``: Outer circle radius"
 
@@ -177,8 +131,7 @@ msgstr "``start_angle``: Starting angle"
 msgid "``angle``: 圆心角"
 msgstr "``angle``: Central angle"
 
-#: janim.items.geometry.arc.AnnularSector:7 janim.items.geometry.arc.Annulus:5
-#: of
+#: janim.items.geometry.arc.AnnularSector:7 janim.items.geometry.arc.Annulus:5 of
 msgid "``arc_center``: 圆弧的中心"
 msgstr "``arc_center``: Center of the arc"
 
@@ -193,6 +146,3 @@ msgstr "For parameters, refer to :class:`Arc`"
 #: janim.items.geometry.arc.Annulus:1 of
 msgid "圆环"
 msgstr "Annulus"
-
-
-

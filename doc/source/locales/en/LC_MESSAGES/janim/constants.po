@@ -143,33 +143,24 @@ msgid "颜色相关工具和预览可以使用："
 msgstr "Color-related tools and previews can be used:"
 
 #: ../../source/janim/constants.rst:75
-msgid ""
-"JAnim 自带工具：在命令行中输入 ``janim tool color`` 或者在 GUI 界面左上角的“工"
-"具”中点击“颜色”"
+msgid "JAnim 自带工具：在命令行中输入 ``janim tool color`` 或者在 GUI 界面左上角的“工具”中点击“颜色”"
 msgstr ""
-"JAnim built-in tool: Enter ``janim tool color`` in the command line or click "
-"“Color” in the “Tools” menu at the top left of the GUI"
+"JAnim built-in tool: Enter ``janim tool color`` in the command line or click “Color” in the “Tools” menu at the top left "
+"of the GUI"
 
 #: ../../source/janim/constants.rst:76
 msgid "在线工具：`颜色工具 - MK官网 <https://manim.org.cn/tool/color>`_"
-msgstr ""
-"Online tool: `Color Tool - MK official website <https://manim.org.cn/tool/"
-"color>`_"
+msgstr "Online tool: `Color Tool - MK official website <https://manim.org.cn/tool/color>`_"
 
 #: ../../source/janim/constants.rst:78
 msgid ""
-"这里是 JAnim 中定义的颜色的预览：(修改自 `docs.manim.org.cn <https://"
-"docs.manim.org.cn/documentation/constants.html>`_ (备份页面 `manimgl-"
-"zh.readthedocs.io <https://manimgl-zh.readthedocs.io/zh-cn/latest/"
-"documentation/constants.html>`_))"
+"这里是 JAnim 中定义的颜色的预览：(修改自 `docs.manim.org.cn <https://docs.manim.org.cn/documentation/constants.html>`_ (备"
+"份页面 `manimgl-zh.readthedocs.io <https://manimgl-zh.readthedocs.io/zh-cn/latest/documentation/constants.html>`_))"
 msgstr ""
-"Here is a preview of the colors defined in JAnim: (modified from "
-"`docs.manim.org.cn <https://docs.manim.org.cn/documentation/constants.html>`_ "
-"(backup page `manimgl-zh.readthedocs.io <https://manimgl-zh.readthedocs.io/zh-"
-"cn/latest/documentation/constants.html>`_))"
+"Here is a preview of the colors defined in JAnim: (modified from `docs.manim.org.cn <https://docs.manim.org.cn/"
+"documentation/constants.html>`_ (backup page `manimgl-zh.readthedocs.io <https://manimgl-zh.readthedocs.io/zh-cn/latest/"
+"documentation/constants.html>`_))"
 
 #: ../../source/janim/constants.rst:178
 msgid "由于历史遗留因素，这里的 ``YELLOW_C`` 与 ``YELLOW_`` 系的颜色并不一致"
-msgstr ""
-"Due to historical reasons, ``YELLOW_C`` here is inconsistent with the "
-"``YELLOW_`` series of colors"
+msgstr "Due to historical reasons, ``YELLOW_C`` here is inconsistent with the ``YELLOW_`` series of colors"

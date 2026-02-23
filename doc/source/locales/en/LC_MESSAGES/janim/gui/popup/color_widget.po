@@ -21,10 +21,3 @@ msgstr ""
 #: ../../source/janim/gui/popup/color_widget.rst:2
 msgid "color_widget"
 msgstr "color_widget"
-
-#~ msgid "基类：:py:class:`~PySide6.QtWidgets.QWidget`"
-#~ msgstr "基类：:py:class:`~PySide6.QtWidgets.QWidget`"
-
-#~ msgid "基类：:py:class:`~enum.Enum`"
-#~ msgstr "基类：:py:class:`~enum.Enum`"
-

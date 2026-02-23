@@ -22,7 +22,3 @@ msgstr ""
 #: ../../source/janim/gui/popup/draw_panel.rst:2
 msgid "draw_panel"
 msgstr "draw_panel"
-
-#~ msgid "基类：:py:class:`~PySide6.QtWidgets.QWidget`"
-#~ msgstr "基类：:py:class:`~PySide6.QtWidgets.QWidget`"
-

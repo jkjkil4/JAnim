@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  JAnim\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-04 09:09+0800\n"
+"POT-Creation-Date: 2026-02-24 01:11+0800\n"
 "PO-Revision-Date: 2024-06-03 10:16+0800\n"
 "Last-Translator: \n"
 "Language: en\n"
@@ -23,19 +23,9 @@ msgstr ""
 msgid "data"
 msgstr "data"
 
-#: janim.utils.data.AlignedData:1 janim.utils.data.ContextSetter:1 of
-msgid "基类：:py:class:`~typing.Generic`"
-msgstr "基类：:py:class:`~typing.Generic`"
-
-#: janim.utils.data.Array:1 janim.utils.data.Margins:1 of
-msgid "基类：:py:class:`object`"
-msgstr "基类：:py:class:`object`"
-
 #: janim.utils.data.Array:1 of
 msgid "使得在使用 ``.data = xxx`` 修改（赋值）后必定是不同的 id"
-msgstr ""
-"Ensures that the id is different after modifying (assigning) with ``.data"
-" = xxx``."
+msgstr "Ensures that the id is different after modifying (assigning) with ``.data = xxx``."
 
 #: janim.utils.data.Array:3 of
 msgid "并且通过 ``.data`` 得到的 numpy 数组必定是只读的"
@@ -43,25 +33,16 @@ msgstr "And the numpy array obtained through ``.data`` is always read-only."
 
 #: janim.utils.data.AlignedData:1 of
 msgid "数据对齐后的结构，用于 :meth:`~.Item.align_for_interpolate`"
-msgstr ""
-"Structure after data alignment, used for "
-":meth:`~.Item.align_for_interpolate`"
+msgstr "Structure after data alignment, used for :meth:`~.Item.align_for_interpolate`"
 
 #: janim.utils.data.Margins:1 of
 msgid "定义了一组四个边距：左、上、右、下，用于描述矩形周围边框的大小。"
 msgstr ""
-"Defines a set of four margins: left, top, right, bottom, used to describe"
-" the size of the border around a rectangle."
+"Defines a set of four margins: left, top, right, bottom, used to describe the size of the border around a rectangle."
 
 #: janim.utils.data.Margins:3 of
 msgid "如果直接传入单个数值，则表示为四个方向皆为该值"
-msgstr ""
-"If a single value is passed directly, it represents the value for all "
-"four directions."
-
-#: janim.utils.data.Align:1 of
-msgid "基类：:py:class:`~enum.IntFlag`"
-msgstr "基类：:py:class:`~enum.IntFlag`"
+msgstr "If a single value is passed directly, it represents the value for all four directions."
 
 #~ msgid "标记在 ``t`` 时刻后，数据为 ``data``"
 #~ msgstr "Marks the data as ``data`` at time ``t``"
@@ -76,10 +57,7 @@ msgstr "基类：:py:class:`~enum.IntFlag`"
 #~ msgstr "Retrieves data at the specified time."
 
 #~ msgid "在两份数据的分界处请使用 :meth:`get_at_right` 和 :meth:`get_at_left` 来明确"
-#~ msgstr ""
-#~ "Use :meth:`get_at_right` and :meth:`get_at_left` "
-#~ "at the boundary between two data "
-#~ "sets for clarity."
+#~ msgstr "Use :meth:`get_at_right` and :meth:`get_at_left` at the boundary between two data sets for clarity."
 
 #~ msgid "得到在指定时间之后的瞬间的数据"
 #~ msgstr "Retrieves data at the moment after the specified time."
@@ -89,6 +67,3 @@ msgstr "基类：:py:class:`~enum.IntFlag`"
 
 #~ msgid ":meth:`get_at_right` 的简写"
 #~ msgstr "Abbreviation for :meth:`get_at_right`."
-
-
-

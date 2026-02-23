@@ -21,7 +21,3 @@ msgstr ""
 #: ../../source/janim/gui/popup/font_table.rst:2
 msgid "font_table"
 msgstr "font_table"
-
-#~ msgid "基类：:py:class:`~PySide6.QtWidgets.QWidget`"
-#~ msgstr "基类：:py:class:`~PySide6.QtWidgets.QWidget`"
-

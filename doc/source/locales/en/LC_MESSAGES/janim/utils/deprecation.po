@@ -23,8 +23,7 @@ msgstr ""
 msgid "deprecation"
 msgstr "deprecation"
 
-#: janim.utils.deprecation.deprecated:1
-#: janim.utils.deprecation.deprecated_classvar:1 of
+#: janim.utils.deprecation.deprecated:1 janim.utils.deprecation.deprecated_classvar:1 of
 msgid "例："
 msgstr "Example:"
 
@@ -61,4 +60,3 @@ msgstr ""
 "        'Rect.preset_shadow',\n"
 "        remove=(4, 3)\n"
 "    )"
-

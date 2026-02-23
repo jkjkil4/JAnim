@@ -22,4 +22,3 @@ msgstr ""
 #: ../../source/janim/gui/handlers/modules.rst:2
 msgid "handlers"
 msgstr "handlers"
-

@@ -25,12 +25,10 @@ msgid "exception"
 msgstr "exception"
 
 #: janim.exception.listen_exception:1 of
-msgid ""
-"添加 ``Exception`` 监听，对于未捕获的异常会调用 ``callback``，如果 ``callback`` "
-"返回 ``True`` 则忽略异常"
+msgid "添加 ``Exception`` 监听，对于未捕获的异常会调用 ``callback``，如果 ``callback`` 返回 ``True`` 则忽略异常"
 msgstr ""
-"Add an exception listener. The ``callback`` will be invoked for unhandled "
-"exceptions. If the ``callback`` returns ``True``, the exception is suppressed."
+"Add an exception listener. The ``callback`` will be invoked for unhandled exceptions. If the ``callback`` returns "
+"``True``, the exception is suppressed."
 
 #: janim.exception.cancel_listen_exception:1 of
 msgid "移除 ``Exception`` 监听"
@@ -68,25 +66,20 @@ msgstr "Exit code when ffprobe execution fails"
 msgid "基类：:py:class:`Exception`"
 msgstr "基类：:py:class:`Exception`"
 
-#: janim.exception.AsTypeError:1 janim.exception.BooleanOpsError:1
-#: janim.exception.CmptGroupLookupError:1 janim.exception.ColorNotFoundError:1
-#: janim.exception.ExitException:1 janim.exception.FontNotFoundError:1
-#: janim.exception.GetItemError:1 janim.exception.InvalidTypstVarError:1
-#: janim.exception.PointError:1 janim.exception.ShaderInjectionNotFoundError:1
-#: janim.exception.TimelineError:1 janim.exception.UpdaterError:1 of
+#: janim.exception.AsTypeError:1 janim.exception.BooleanOpsError:1 janim.exception.CmptGroupLookupError:1
+#: janim.exception.ColorNotFoundError:1 janim.exception.ExitException:1 janim.exception.FontNotFoundError:1
+#: janim.exception.GetItemError:1 janim.exception.InvalidTypstVarError:1 janim.exception.PointError:1
+#: janim.exception.ShaderInjectionNotFoundError:1 janim.exception.TimelineError:1 janim.exception.UpdaterError:1 of
 msgid "基类：:py:class:`~janim.exception.JAnimException`"
 msgstr "基类：:py:class:`~janim.exception.JAnimException`"
 
 #: janim.exception.ExitException:1 of
-msgid ""
-"当 :class:`ExitException` 未被捕获时， 会直接以 ``exit_code`` 退出，不输出 "
-"``traceback`` 信息"
+msgid "当 :class:`ExitException` 未被捕获时， 会直接以 ``exit_code`` 退出，不输出 ``traceback`` 信息"
 msgstr ""
-"When :class:`ExitException` is not caught, it will exit directly with "
-"``exit_code`` without outputting ``traceback`` information"
+"When :class:`ExitException` is not caught, it will exit directly with ``exit_code`` without outputting ``traceback`` "
+"information"
 
-#: janim.exception.AnimationError:1 janim.exception.NotAnimationError:1
-#: janim.exception.TimelineLookupError:1 of
+#: janim.exception.AnimationError:1 janim.exception.NotAnimationError:1 janim.exception.TimelineLookupError:1 of
 msgid "基类：:py:class:`~janim.exception.TimelineError`"
 msgstr "基类：:py:class:`~janim.exception.TimelineError`"
 
@@ -102,9 +95,6 @@ msgstr "基类：:py:class:`~janim.exception.GetItemError`"
 msgid "基类：:py:class:`~janim.exception.PointError`"
 msgstr "基类：:py:class:`~janim.exception.PointError`"
 
-#~ msgid ""
-#~ "``PyOpenGL`` 未安装时的退出码（仅在设备不支持 OpenGL4.3 的情况下需要安装 "
-#~ "PyOpenGL）"
+#~ msgid "``PyOpenGL`` 未安装时的退出码（仅在设备不支持 OpenGL4.3 的情况下需要安装 PyOpenGL）"
 #~ msgstr ""
-#~ "Exit code when ``PyOpenGL`` is not installed (PyOpenGL is only needed when "
-#~ "the device does not support OpenGL 4.3)"
+#~ "Exit code when ``PyOpenGL`` is not installed (PyOpenGL is only needed when the device does not support OpenGL 4.3)"
