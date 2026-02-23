@@ -89,7 +89,8 @@ class Transform(Animation):
         ]
         self.timeline.add_additional_render_calls_callback(
             self.t_range,
-            lambda: self.additional_calls
+            lambda: self.additional_calls,
+            [self.src_item, self.target_item]
         )
 
         # 在动画开始时自动隐藏源对象，在动画结束时自动显示目标对象

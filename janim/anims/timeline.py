@@ -149,6 +149,9 @@ class Timeline(metaclass=ABCMeta):
     class AdditionalRenderCallsCallback:
         t_range: TimeRange
         func: RenderCallsFn
+        related_items: list[Item] | None
+
+        render_disabled: bool = False
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -785,9 +788,12 @@ class Timeline(metaclass=ABCMeta):
     def add_additional_render_calls_callback(
         self,
         t_range: TimeRange,
-        func: RenderCallsFn
+        func: RenderCallsFn,
+        related_items: list[Item] | None
     ) -> None:
-        self.additional_render_calls_callbacks.append(Timeline.AdditionalRenderCallsCallback(t_range, func))
+        self.additional_render_calls_callbacks.append(
+            Timeline.AdditionalRenderCallsCallback(t_range, func, related_items)
+        )
 
     # endregion
 
@@ -1102,20 +1108,9 @@ class BuiltTimeline:
     type _ItemWithRenderFunc = tuple[Item, _RenderFunc]
 
     def _get_items_render(self, global_t: float) -> list[_ItemWithRenderFunc]:
-        render_apprs: list[tuple[Timeline.ItemAppearance, Item]] = []
-
-        # 反向遍历一遍所有物件，这是为了让一些效果标记原有的物件不进行渲染
-        # （会把所应用的物件的 render_disabled 置为 True，所以在下面可以判断这个变量过滤掉它们）
-        for _, appr in reversed(self.visible_item_segments.get(global_t)):
-            if not appr.is_visible_at(global_t):
-                continue
-            data = appr.stack.compute(global_t, True)
-            data._mark_render_disabled()
-            render_apprs.append((appr, data))
-
-        # 收集额外的渲染调用，例如 Transform 产生的
-        # 这里也有可能产生 render_disabled 标记
-        additional: list[list[BuiltTimeline._ItemWithRenderFunc]] = []
+        # 先提取当前时刻会运作的额外的渲染调用，例如 Transform 产生的
+        # 用以传递给 _mark_render_disabled 以便根据 related_items 标记 render_disabled
+        additionals: list[Timeline.AdditionalRenderCallsCallback] = []
         for rcc in self.visible_additional_callbacks_segments.get(global_t):
             if rcc.t_range.end is FOREVER:
                 if not rcc.t_range.at <= global_t:
@@ -1123,7 +1118,25 @@ class BuiltTimeline:
             else:
                 if not rcc.t_range.at <= global_t < rcc.t_range.end:
                     continue
-            additional.append(rcc.func())
+            additionals.append(rcc)
+
+        # 反向遍历一遍所有物件，这是为了让一些效果标记原有的物件不进行渲染
+        # （比如 FrameEffect 会把所应用的物件的 render_disabled 置为 True，所以在下面可以判断这个变量过滤掉它们）
+        render_apprs: list[tuple[Timeline.ItemAppearance, Item]] = []
+        for _, appr in reversed(self.visible_item_segments.get(global_t)):
+            if not appr.is_visible_at(global_t):
+                continue
+            data = appr.stack.compute(global_t, True)
+            data._mark_render_disabled(additionals)
+            render_apprs.append((appr, data))
+
+        # 得到额外的渲染调用的方法列表
+        # 这里也有可能产生 render_disabled 标记
+        additional_lists: list[list[BuiltTimeline._ItemWithRenderFunc]] = []
+        for rcc in additionals:
+            if rcc.render_disabled:
+                continue
+            additional_lists.append(rcc.func())
 
         # 剔除被标记 render_disabled 的物件，得到 items_render
         items_render: list[BuiltTimeline._ItemWithRenderFunc] = []
@@ -1134,7 +1147,7 @@ class BuiltTimeline:
             items_render.append((data, appr.render))
 
         # 将 additional 的内容也添加到 items_render 中
-        items_render.extend(it.chain(*additional))
+        items_render.extend(it.chain(*additional_lists))
 
         return items_render
 

@@ -490,7 +490,11 @@ class ItemUpdater(Animation):
         self.renderers: dict[type, Renderer] = {}
 
     def _time_fixed(self) -> None:
-        self.timeline.add_additional_render_calls_callback(self.t_range, self.render_calls_callback)
+        self.timeline.add_additional_render_calls_callback(
+            self.t_range,
+            self.render_calls_callback,
+            None if self.item is None else [self.item]
+        )
 
         if self.item is None:
             return

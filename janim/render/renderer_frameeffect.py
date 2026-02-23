@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import itertools as it
 from typing import TYPE_CHECKING
 
 import moderngl as mgl
@@ -86,14 +87,18 @@ class FrameEffectRenderer(Renderer):
                 # 但是 shader 里的 blending 依赖 framebuffer 信息
                 # 所以这里需要使用 glFlush 更新 framebuffer 信息使得正确渲染
                 gl.glFlush()
-                render_datas = [
-                    (appr, appr.stack.compute(t, True))
-                    for appr in item.apprs
+
+                items_render = [
+                    (appr.stack.compute(t, True), appr.render)
+                    for appr in item._apprs
                     if appr.is_visible_at(t)
                 ]
-                render_datas.sort(key=lambda x: x[1].depth, reverse=True)
-                for appr, data in render_datas:
-                    appr.render(data)
+                items_render.extend(it.chain(*item.additional_lists))
+
+                items_render.sort(key=lambda x: x[0].depth, reverse=True)
+
+                for data, render in items_render:
+                    render(data)
                     # 向透明 framebuffer 绘制时，每次都需要使用 glFlush 更新 framebuffer 信息使得正确渲染
                     gl.glFlush()
 

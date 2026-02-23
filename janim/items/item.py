@@ -25,6 +25,7 @@ from janim.utils.paths import PathFunc, straight_path
 from janim.utils.signal import SIGNAL_OBJ_SLOTS_NAME
 
 if TYPE_CHECKING:
+    from janim.anims.timeline import Timeline
     from janim.items.points import Group
 
 _ = get_translator('janim.items.item')
@@ -951,9 +952,9 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
     def create_renderer(self) -> Renderer:
         return self.renderer_cls()
 
-    def _mark_render_disabled(self) -> None:
+    def _mark_render_disabled(self, additionals: list[Timeline.AdditionalRenderCallsCallback]) -> None:
         """
-        由子类继承，用于标记 _render_disabled
+        由子类继承，用于给所影响到的对象标记 ``_render_disabled``
 
         详见 :meth:`~.Timeline.render_all` 中的注释
         """

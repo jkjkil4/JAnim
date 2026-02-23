@@ -59,7 +59,8 @@ class FrameEffect(Item):
     """
     renderer_cls = FrameEffectRenderer
 
-    apprs = CmptInfo(Cmpt_List[Self, Timeline.ItemAppearance])
+    _items = CmptInfo(Cmpt_List[Self, Item])
+    _apprs = CmptInfo(Cmpt_List[Self, Timeline.ItemAppearance])
 
     _uniforms = CmptInfo(Cmpt_Dict[Self, str, Any])
     _optional_uniforms = CmptInfo(Cmpt_Dict[Self, str, Any])
@@ -125,10 +126,16 @@ class FrameEffect(Item):
         """
         对更多物件应用效果
         """
-        self.apprs.extend(
-            self.timeline.item_appearances[sub]
+        apply_items = [
+            sub
             for item in items
             for sub in item.walk_self_and_descendants(root_only)
+            if sub not in self._items
+        ]
+        self._items.extend(apply_items)
+        self._apprs.extend(
+            self.timeline.item_appearances[item]
+            for item in apply_items
         )
 
     def discard(self, *items: Item, root_only: bool = False) -> Self:
@@ -138,13 +145,22 @@ class FrameEffect(Item):
         for item in items:
             for sub in item.walk_self_and_descendants(root_only):
                 try:
-                    self.apprs.remove(self.timeline.item_appearances[sub])
+                    self._items.remove(sub)
+                    self._apprs.remove(self.timeline.item_appearances[sub])
                 except ValueError:
                     pass
 
-    def _mark_render_disabled(self):
-        for appr in self.apprs:
+    def _mark_render_disabled(self, additionals: list[Timeline.AdditionalRenderCallsCallback]):
+        for appr in self._apprs:
             appr.render_disabled = True
+
+        self.additional_lists = []
+
+        # 使得 Transform 以及类似动画能够正确应用 FrameEffect
+        for rcc in additionals:
+            if all((item in self._items) for item in rcc.related_items):
+                rcc.render_disabled = True
+                self.additional_lists.append(rcc.func())
 
 
 simple_frameeffect_shader = '''
