@@ -635,19 +635,46 @@ class TransformMatchingDiff(AnimGroup):
 
         return True
 
+    _map_to_hash_id: dict[int, int] = {}
+    _next_hash_id = 0
+
     @dataclass
     class MatchWrapper:
         item: VItem
+        hash_id: int
 
         def __eq__(self, other: TransformMatchingDiff.MatchWrapper):
-            return self.item.points.same_shape(other.item)
+            return self.hash_id == other.hash_id
 
         def __hash__(self):
-            return self.item.points.identity[0]
+            return self.hash_id
 
         @classmethod
         def from_iterable(cls, iterable: Iterable):
-            return [cls(x) for x in iterable]
+            return [cls(x, cls.get_hash_id(x)) for x in iterable]
+
+        @staticmethod
+        def get_hash_id(x: VItem) -> int:
+            """
+            将 identity 的一组 hash 化归为单一 hash_id
+            """
+            map = TransformMatchingDiff._map_to_hash_id
+            hashes = x.points.identity[0][:1]
+
+            hash_id: int | None = None
+            for h in hashes:
+                recorded = map.get(h, None)
+                if recorded is not None:
+                    hash_id = recorded
+                    break
+
+            if hash_id is None:
+                hash_id = TransformMatchingDiff._next_hash_id
+                TransformMatchingDiff._next_hash_id += 1
+
+            for h in hashes:
+                map[h] = hash_id
+            return hash_id
 
     @dataclass
     class CharMatchWrapper(MatchWrapper):

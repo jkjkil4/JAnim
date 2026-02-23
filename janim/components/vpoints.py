@@ -751,10 +751,12 @@ class Cmpt_VPoints[ItemT](Cmpt_Points[ItemT], impl=True):
 
     # region identity
 
+    _identity_offsets = [0, -0.02, 0.02]
+
     @property
     @Cmpt_Points.set.self_refresh
     @refresh.register
-    def identity(self) -> tuple[int, np.ndarray]:
+    def identity(self) -> tuple[tuple[int, ...], np.ndarray]:
         points = self.get()[:-1]
         if len(points) < 2:
             return RIGHT, 0
@@ -769,18 +771,18 @@ class Cmpt_VPoints[ItemT](Cmpt_Points[ItemT], impl=True):
         points @= rot   # points @ (UP->vect) == ((vect->UP) @ points.T).T
         points /= width
 
-        # 把处于 round 分界部分的坐标稍微加一点
-        # 例如，两个相同的形状在归一化后可能同一个坐标被变换到 “比 0.45 稍微小一点的” 以及 “比 0.45 稍微大一点的”
-        # 它们分别会被 round 到 0.4 和 0.5，这是不符合预期的
-        # 所以这里加上 0.02 使得它们都会被 round 到 0.5，使得 hash 一致
-        points[np.abs(points % 0.1 - 0.05) < 0.01] += 0.02
+        # 分别计算 offset 偏移后的若干个 hash，只要有一个匹配上则认为匹配成功
+        # 这是为了缓解由于浮点误差刚好在 round 边界时跳跃的问题
+        hashes = []
+        for offset in self._identity_offsets:
+            offseted = points + offset
+            np.round(offseted, 1, out=offseted)    # 原位 round
+            offseted[offseted == -0.0] = 0.0
+            hashes.append(hash(offseted.tobytes()))
 
-        np.round(points, 1, out=points)    # 原位 round
-        points[points == -0.0] = 0.0
-
-        # 计算结果：哈希值 以及 单位方向向量
+        # 计算结果：若干哈希值 以及 单位方向向量
         vect.setflags(write=False)
-        return hash(points.tobytes()), vect
+        return tuple(hashes), vect
 
     def width_along_direction(self, direction: Vect) -> float:
         projections = np.dot(np.vstack(self.get_subpaths()), direction)
@@ -797,7 +799,7 @@ class Cmpt_VPoints[ItemT](Cmpt_Points[ItemT], impl=True):
         else:
             cmpt = other
 
-        return self.identity[0] == cmpt.identity[0]
+        return any(h1 == h2 for h1, h2 in zip(self.identity[0], cmpt.identity[0]))
 
     def same_direction(self, other: Cmpt_VPoints | Item) -> bool:
         """
