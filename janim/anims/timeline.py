@@ -1135,6 +1135,7 @@ class BuiltTimeline:
         additional_lists: list[list[BuiltTimeline._ItemWithRenderFunc]] = []
         for rcc in additionals:
             if rcc.render_disabled:
+                rcc.render_disabled = False     # 重置，因为每次都要重新标记
                 continue
             additional_lists.append(rcc.func())
 
