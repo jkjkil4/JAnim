@@ -2,13 +2,14 @@ from __future__ import annotations
 
 import janim.items.boolean_ops as boolean_ops
 from janim.camera.camera import Camera
-from janim.constants import BLACK, DOWN, LEFT, RIGHT, SMALL_BUFF, UP, YELLOW
+from janim.constants import DOWN, LEFT, RIGHT, SMALL_BUFF, UP, YELLOW
 from janim.items.geometry.line import Line
 from janim.items.geometry.polygon import Rect
 from janim.items.points import Points
 from janim.typing import JAnimColor
 from janim.utils.config import Config
 from janim.utils.data import Align, Margins, MarginsType
+from janim.utils.deprecation import deprecated_classvar
 from janim.utils.dict_ops import merge_dicts_recursively
 
 
@@ -85,10 +86,11 @@ class HighlightRect(boolean_ops.Difference):
     高亮区域，即 :class:`FrameRect` 挖去 :class:`SurroundingRect`
     """
 
-    difference_config_d = dict(
-        color=BLACK,
-        fill_alpha=0.5,
-        stroke_alpha=0
+    difference_config_d = deprecated_classvar(
+        Rect.preset_shadow,
+        'HighlightRect.difference_config_d',
+        'Rect.preset_shadow',
+        remove=(4, 3)
     )
 
     def __init__(
@@ -108,7 +110,7 @@ class HighlightRect(boolean_ops.Difference):
         # Difference
         **kwargs
     ):
-        kwargs = merge_dicts_recursively(self.difference_config_d, kwargs)
+        kwargs = merge_dicts_recursively(Rect.preset_shadow, kwargs)
         super().__init__(
             FrameRect(camera),
             SurroundingRect(item, buff=buff, width=width, height=height, align=align),

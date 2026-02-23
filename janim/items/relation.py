@@ -4,7 +4,6 @@ import random
 from typing import Callable, Generator, Self, overload
 
 import janim.utils.refresh as refresh
-from janim.utils.deprecation import deprecated
 from janim.utils.signal import Signal
 
 
@@ -109,6 +108,7 @@ class Relation[GRelT: 'Relation'](refresh.Refreshable):
         :param prepend: 默认为 ``False``，如果为 ``True``，那么插入到子物件列表的开头
         """
         if insert is not None:
+            from janim.utils.deprecation import deprecated
             deprecated(
                 'insert',
                 'prepend',

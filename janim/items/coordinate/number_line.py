@@ -1,7 +1,8 @@
 
 import numbers
-from typing import Iterable
 from decimal import Decimal
+from typing import Iterable
+
 import numpy as np
 
 from janim.constants import (DOWN, GREY_B, LEFT, MED_SMALL_BUFF, ORIGIN, RIGHT,
@@ -13,6 +14,7 @@ from janim.items.svg.typst import TypstMath
 from janim.items.text import Text
 from janim.typing import JAnimColor, RangeSpecifier, Vect
 from janim.utils.bezier import interpolate, outer_interpolate
+from janim.utils.deprecation import deprecated_classvar
 from janim.utils.dict_ops import merge_dicts_recursively
 from janim.utils.simple_functions import fdiv
 
@@ -70,7 +72,7 @@ class NumberLine(MarkedItem, Line):
     -   ``number_config``: 提供给数字的额外参数，另见 :class:`~.Text`
     """
 
-    tip_config_d = dict(
+    default_tip_config = dict(
         back_width=0.25,
         body_length=0.25
     )
@@ -78,12 +80,25 @@ class NumberLine(MarkedItem, Line):
     箭头的默认属性
     """
 
-    number_config_d = dict(
+    default_number_config = dict(
         font_size=16
     )
     """
     数字的默认属性
     """
+
+    tip_config_d = deprecated_classvar(
+        default_tip_config,
+        'NumberLine.tip_config_d',
+        'NumberLine.default_tip_config',
+        remove=(4, 3)
+    )
+    number_config_d = deprecated_classvar(
+        default_number_config,
+        'NumberLine.number_config_d',
+        'NumberLine.default_number_config',
+        remove=(4, 3)
+    )
 
     def __init__(
         self,
@@ -148,7 +163,7 @@ class NumberLine(MarkedItem, Line):
         self.unit_size = unit_size
 
         self.tip_config = merge_dicts_recursively(
-            self.tip_config_d,
+            self.default_tip_config,
             tip_config
         )
 
@@ -168,7 +183,7 @@ class NumberLine(MarkedItem, Line):
             exponent = Decimal(str(self.x_step)).as_tuple().exponent
             self.number_places = max(0, -exponent)
         self.number_config = merge_dicts_recursively(
-            self.number_config_d,
+            self.default_number_config,
             number_config
         )
 

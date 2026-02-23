@@ -23,6 +23,19 @@ _DEPRECATED_MSG_I = _('{name!r} is deprecated and will be removed in JAnim {remo
 
 
 def deprecated(name, instead=None, *, remove: tuple[int, int]):
+    """
+    例：
+
+    .. code-block:: python
+
+        from janim.utils.deprecation import deprecated
+        deprecated(
+            'update_points_by_attrs',
+            'update_by_attrs',
+            remove=(4, 3)
+        )
+    """
+
     remove_formatted = f"{remove[0]}.{remove[1]}"
     if is_removed(remove):
         msg = f'{name!r} has been deprecated and removed since JAnim {remove_formatted}'
@@ -37,3 +50,26 @@ def deprecated(name, instead=None, *, remove: tuple[int, int]):
 
 def is_removed(remove: tuple[int, int]):
     return (_version_tuple[0] > remove[0]) or (_version_tuple[0] == remove[0] and _version_tuple[1] >= remove[1])
+
+
+def deprecated_classvar(value, name, instead=None, *, remove: tuple[int, int]):
+    """
+    例：
+
+    .. code-block:: python
+
+        class HighlightRect(boolean_ops.Difference):
+            difference_config_d = deprecated_classvar(
+                Rect.preset_shadow,
+                'HighlightRect.difference_config_d',
+                'Rect.preset_shadow',
+                remove=(4, 3)
+            )
+    """
+
+    class _DeprecatedClassVar:
+        def __get__(self, instance, owner=None):
+            deprecated(name, instead, remove=remove)
+            return value
+
+    return _DeprecatedClassVar()
