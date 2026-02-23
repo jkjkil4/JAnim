@@ -4,7 +4,8 @@ from typing import Iterable, Self, overload
 
 import numpy as np
 
-from janim.constants import DL, DR, ORIGIN, PI, RIGHT, TAU, UL, UR
+from janim.constants import (BLACK, DL, DR, ORIGIN, PI, RIGHT, TAU, UL, UR,
+                             YELLOW)
 from janim.items.geometry.arc import ArcBetweenPoints
 from janim.items.points import MarkedItem
 from janim.items.vitem import VItem
@@ -148,6 +149,49 @@ class Rect(Polygon):
         else:
             super().__init__(UR, UL, DL, DR, **kwargs)
             self.points.set_size(v1, v2)
+
+    # region presets
+
+    preset_highlight_stroke = dict(
+        color=YELLOW,
+        stroke_alpha=1,
+        fill_alpha=0,
+    )
+    """
+    高亮描边预设（黄色描边），例：
+
+    .. code-block:: python
+
+        Rect(p1, p2, **Rect.preset_highlight_stroke)
+    """
+
+    preset_highlight_fill = dict(
+        color=YELLOW,
+        stroke_alpha=0,
+        fill_alpha=0.5,
+    )
+    """
+    高亮填充预设（半透明黄色填充），例：
+
+    .. code-block:: python
+
+        SurroundingRect(item, depth=1, **Rect.preset_highlight_fill)
+    """
+
+    preset_shadow = dict(
+        color=BLACK,
+        fill_alpha=0.5,
+        stroke_alpha=0,
+    )
+    """
+    阴影预设（半透明黑色填充），例：
+
+    .. code-block:: python
+
+        SurroundingRect(item, depth=1, **Rect.preset_shadow)
+    """
+
+    # endregion
 
 
 class Square(Rect):
