@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: JAnim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-29 15:25+0800\n"
+"POT-Creation-Date: 2026-02-24 00:11+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -23,35 +23,34 @@ msgstr ""
 msgid "utils"
 msgstr "utils"
 
-#: janim.gui.handlers.utils.jump:1 of
-msgid "跳转到该命令执行的 ``global_t``"
-msgstr "Jump to the ``global_t`` at which this command is executed"
+#~ msgid "跳转到该命令执行的 ``global_t``"
+#~ msgstr "Jump to the ``global_t`` at which this command is executed"
 
-#: janim.gui.handlers.utils.get_confirm_buttons:1 of
-msgid "得到通用的确认/取消按钮控件"
-msgstr "Get common confirm/cancel button widgets"
+#~ msgid "得到通用的确认/取消按钮控件"
+#~ msgstr "Get common confirm/cancel button widgets"
 
-#: janim.gui.handlers.utils.get_undo_redo_buttons:1 of
-msgid "得到通用的撤销/重做按钮控件"
-msgstr "Get common undo/redo button widgets"
+#~ msgid "得到通用的撤销/重做按钮控件"
+#~ msgstr "Get common undo/redo button widgets"
 
-#: janim.gui.handlers.utils.slient_runtime_error:1 of
-msgid "在弹出阻塞框的时候关闭父控件，会输出 ``RuntimeError`` traceback"
-msgstr "When closing the parent widget while a blocking dialog is open, a ``RuntimeError`` traceback will be output"
+#~ msgid "在弹出阻塞框的时候关闭父控件，会输出 ``RuntimeError`` traceback"
+#~ msgstr ""
+#~ "When closing the parent widget while "
+#~ "a blocking dialog is open, a "
+#~ "``RuntimeError`` traceback will be output"
 
-#: janim.gui.handlers.utils.slient_runtime_error:3 of
-msgid "使用该装饰器可以忽略抛出的 ``RuntimeError`` 信息"
-msgstr "Using this decorator can suppress the thrown ``RuntimeError`` message"
+#~ msgid "使用该装饰器可以忽略抛出的 ``RuntimeError`` 信息"
+#~ msgstr "Using this decorator can suppress the thrown ``RuntimeError`` message"
 
-#: janim.gui.handlers.utils.HandlerPanel:1 of
-msgid "基类：:py:class:`~PySide6.QtWidgets.QWidget`"
-msgstr "基类：:py:class:`~PySide6.QtWidgets.QWidget`"
+#~ msgid "基类：:py:class:`~PySide6.QtWidgets.QWidget`"
+#~ msgstr "基类：:py:class:`~PySide6.QtWidgets.QWidget`"
 
-#: janim.gui.handlers.utils.SourceDiff:1 of
-msgid "基类：:py:class:`~PySide6.QtWidgets.QFrame`"
-msgstr "基类：:py:class:`~PySide6.QtWidgets.QFrame`"
+#~ msgid "基类：:py:class:`~PySide6.QtWidgets.QFrame`"
+#~ msgstr "基类：:py:class:`~PySide6.QtWidgets.QFrame`"
 
-#: janim.gui.handlers.utils.SourceDiff:1 of
-msgid "显示 ``lineno`` 前后两行的代码，并将修改的代码并排对比"
-msgstr "Display two lines of code before and after ``lineno``, with modified code shown in a before-and-after comparison"
+#~ msgid "显示 ``lineno`` 前后两行的代码，并将修改的代码并排对比"
+#~ msgstr ""
+#~ "Display two lines of code before "
+#~ "and after ``lineno``, with modified code"
+#~ " shown in a before-and-after "
+#~ "comparison"
 

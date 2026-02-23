@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: JAnim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-29 15:25+0800\n"
+"POT-Creation-Date: 2026-02-24 00:11+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -23,24 +23,20 @@ msgstr ""
 msgid "move"
 msgstr "move"
 
-#: janim.gui.handlers.move.MovePanel:1 of
-msgid "基类：:py:class:`~janim.gui.handlers.utils.HandlerPanel`"
-msgstr "基类：:py:class:`~janim.gui.handlers.utils.HandlerPanel`"
+#~ msgid "基类：:py:class:`~janim.gui.handlers.utils.HandlerPanel`"
+#~ msgstr "基类：:py:class:`~janim.gui.handlers.utils.HandlerPanel`"
 
-#: janim.gui.handlers.move.History:1 janim.gui.handlers.move.ItemBox:1
-#: janim.gui.handlers.move.SnapMatch:1 of
-msgid "基类：:py:class:`object`"
-msgstr "基类：:py:class:`object`"
+#~ msgid "基类：:py:class:`object`"
+#~ msgstr "基类：:py:class:`object`"
 
-#: janim.gui.handlers.move.ItemBox:1 of
-msgid "物件及其在视野坐标下的可选中范围"
-msgstr "Item and its selectable range in viewport coordinates"
+#~ msgid "物件及其在视野坐标下的可选中范围"
+#~ msgstr "Item and its selectable range in viewport coordinates"
 
-#: janim.gui.handlers.move.BasicAttrs:1 of
-msgid "基类：:py:class:`~janim.gui.handlers.select.BasicAttrs`"
-msgstr "基类：:py:class:`~janim.gui.handlers.select.BasicAttrs`"
+#~ msgid "基类：:py:class:`~janim.gui.handlers.select.BasicAttrs`"
+#~ msgstr "基类：:py:class:`~janim.gui.handlers.select.BasicAttrs`"
 
-#: janim.gui.handlers.move.compute_lock_directions_shift:1 of
-msgid "计算锁定水平/垂直/对角线情况下的 ``shift``"
-msgstr "Calculate ``shift`` when locking to horizontal/vertical/diagonal directions"
+#~ msgid "计算锁定水平/垂直/对角线情况下的 ``shift``"
+#~ msgstr ""
+#~ "Calculate ``shift`` when locking to "
+#~ "horizontal/vertical/diagonal directions"
 

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: JAnim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-01-30 21:12+0800\n"
+"POT-Creation-Date: 2026-02-24 00:11+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -22,19 +22,18 @@ msgstr ""
 msgid "glwidget"
 msgstr "glwidget"
 
-#: janim.gui.glwidget.GLWidget:1 of
-msgid "基类：:py:class:`~PySide6.QtOpenGLWidgets.QOpenGLWidget`"
-msgstr "基类：:py:class:`~PySide6.QtOpenGLWidgets.QOpenGLWidget`"
+#~ msgid "基类：:py:class:`~PySide6.QtOpenGLWidgets.QOpenGLWidget`"
+#~ msgstr "基类：:py:class:`~PySide6.QtOpenGLWidgets.QOpenGLWidget`"
 
-#: janim.gui.glwidget.GLWidget:1 of
-msgid "窗口中央的渲染界面"
-msgstr "Rendering interface in the center of the window"
+#~ msgid "窗口中央的渲染界面"
+#~ msgstr "Rendering interface in the center of the window"
 
-#: janim.gui.glwidget.GLWidget.map_to_point:1 of
-msgid "将窗口坐标转换为三维空间中的坐标"
-msgstr "Convert window coordinates to coordinates in 3D space"
+#~ msgid "将窗口坐标转换为三维空间中的坐标"
+#~ msgstr "Convert window coordinates to coordinates in 3D space"
 
-#: janim.gui.glwidget.GLWidget.map_from_points:1 of
-msgid "将三维空间中的一列坐标转换为窗口中的一列坐标"
-msgstr "Convert a series of coordinates in 3D space to a series of coordinates in the window"
+#~ msgid "将三维空间中的一列坐标转换为窗口中的一列坐标"
+#~ msgstr ""
+#~ "Convert a series of coordinates in "
+#~ "3D space to a series of "
+#~ "coordinates in the window"
 

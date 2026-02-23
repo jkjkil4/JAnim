@@ -498,7 +498,6 @@ msgid "可以像这样完善其类型注解："
 msgstr "You can refine its type annotations like this:"
 
 #: ../../source/tutorials/value_tracker.rst:230
-#, fuzzy
 msgid ""
 "from typing import TypedDict\n"
 "\n"
@@ -511,6 +510,8 @@ msgid ""
 "\n"
 "    ..."
 msgstr ""
+"from typing import TypedDict\n"
+"\n"
 "class PhysicData(TypedDict):\n"
 "    speed: np.ndarray\n"
 "    accel: np.ndarray\n"

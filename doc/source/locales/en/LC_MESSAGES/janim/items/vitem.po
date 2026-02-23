@@ -61,9 +61,8 @@ msgstr ""
 "relative to the light source (timeline's ``self.light_source``)"
 
 #: janim.items.vitem.VItem.add_tip:1 of
-#, fuzzy
 msgid "在 ``at_alpha`` 处创建一个箭头"
-msgstr "Creates an arrow at ``alpha``"
+msgstr "Create an arrow at ``at_alpha``"
 
 #: janim.items.vitem.VItem.add_tip:3 of
 msgid "默认情况下，箭头与路径方向同向；若传入 ``reverse=True`` 则反向"
@@ -96,31 +95,24 @@ msgstr ""
 "[:py:class:`~janim.items.vitem.VItem`]"
 
 #: janim.items.vitem.DashedVItem:1 of
-#, fuzzy
 msgid "创建传入的 ``vitem`` 的虚线化版本，通过虚线端的数量来指定"
-msgstr "Creates a dashed version of the passed ``vitem``"
+msgstr "Create a dashed version of the passed ``vitem``, specified by the number of dash segments"
 
 #: ../../source/janim/items/vitem.rst
 msgid "参数"
-msgstr ""
+msgstr "Parameters"
 
 #: janim.items.vitem.DashedVItem:3 of
 msgid "虚线段的数量"
-msgstr ""
+msgstr "Number of dash segments"
 
 #: janim.items.vitem.DashedVItem:4 janim.items.vitem.DashedVItemByRatio:4 of
-#, fuzzy
 msgid "虚线段的占比，剩下的占比即为空白段"
-msgstr ""
-"``dashed_ratio``: Ratio of dash segments, the remaining ratio is the gap "
-"segments"
+msgstr "Ratio of dash segments; the remaining ratio is the gap segments"
 
 #: janim.items.vitem.DashedVItem:5 of
-#, fuzzy
 msgid "将虚线段的起始点沿着路径偏移的比率，例如 ``1`` 表示偏移一个虚线段的长度"
-msgstr ""
-"``dash_offset``: Ratio to offset the starting point of dash segments "
-"along the path, e.g., ``1`` means offset by one dash segment length"
+msgstr "Ratio to offset the starting point of dash segments along the path, e.g., ``1`` means offset by one dash segment length"
 
 #: janim.items.vitem.DashedVItem:6 janim.items.vitem.DashedVItemByRatio:5 of
 msgid ""
@@ -128,22 +120,21 @@ msgid ""
 "虚线段长度几乎相等 - ``'approx'``: 默认，虚线段长度近似相等 - ``'none'``: 虚线段将按照曲线的参数 t "
 "均匀分布，一般来说长度不相等"
 msgstr ""
+"Whether dash segment lengths are equal, values are ``'equal'``, ``'approx'``, or ``'none'``  - ``'equal'``: "
+"Dash segment lengths are almost equal - ``'approx'``: Default, dash segment lengths are approximately equal - ``'none'``: Dash segments will be evenly distributed according to the "
+"curve parameter t, generally lengths are not equal"
 
 #: janim.items.vitem.DashedVItem:6 janim.items.vitem.DashedVItemByRatio:5 of
-#, fuzzy
 msgid "虚线段的长度是否相等，取值为 ``'equal'``、``'approx'`` 或 ``'none'``"
-msgstr ""
-"``equal_lengths``: Whether dash segment lengths are equal, values are "
-"``'equal'``, ``'approx'``, or ``'none'``"
+msgstr "Whether dash segment lengths are equal, values are ``'equal'``, ``'approx'``, or ``'none'``"
 
 #: janim.items.vitem.DashedVItem:8 janim.items.vitem.DashedVItemByRatio:7 of
 msgid "``'equal'``: 虚线段长度几乎相等"
 msgstr "``'equal'``: Dash segment lengths are almost equal"
 
 #: janim.items.vitem.DashedVItem:9 janim.items.vitem.DashedVItemByRatio:8 of
-#, fuzzy
 msgid "``'approx'``: 默认，虚线段长度近似相等"
-msgstr "``'approx'``: Dash segment lengths are approximately equal"
+msgstr "``'approx'``: Default, dash segment lengths are approximately equal"
 
 #: janim.items.vitem.DashedVItem:10 janim.items.vitem.DashedVItemByRatio:9 of
 msgid "``'none'``: 虚线段将按照曲线的参数 t 均匀分布，一般来说长度不相等"
@@ -158,13 +149,12 @@ msgstr ""
 " dash segment"
 
 #: janim.items.vitem.DashedVItemByRatio:1 of
-#, fuzzy
 msgid "创建传入的 ``vitem`` 的虚线化版本，通过虚线段的长度比率来指定"
-msgstr "Creates a dashed version of the passed ``vitem``"
+msgstr "Create a dashed version of the passed ``vitem``, specified by the length ratio of dash segments"
 
 #: janim.items.vitem.DashedVItemByRatio:3 of
 msgid "每段虚线段占路径总长的比率，例如 ``1/30`` 表示每段虚线占路径的 1/30"
-msgstr ""
+msgstr "Ratio of each dash segment to the total path length, e.g., ``1/30`` means each dash occupies 1/30 of the path"
 
 #~ msgid "基类：:py:class:`~janim.items.item.Item.Data`\\ [:py:class:`VItem`]"
 #~ msgstr ""

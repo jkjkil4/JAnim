@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: JAnim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-01-30 21:12+0800\n"
+"POT-Creation-Date: 2026-02-24 00:11+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -23,7 +23,6 @@ msgstr ""
 msgid "draw_panel"
 msgstr "draw_panel"
 
-#: janim.gui.popup.draw_panel.DrawPanel:1 of
-msgid "基类：:py:class:`~PySide6.QtWidgets.QWidget`"
-msgstr "基类：:py:class:`~PySide6.QtWidgets.QWidget`"
+#~ msgid "基类：:py:class:`~PySide6.QtWidgets.QWidget`"
+#~ msgstr "基类：:py:class:`~PySide6.QtWidgets.QWidget`"
 

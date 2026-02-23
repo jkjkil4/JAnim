@@ -334,11 +334,11 @@ msgstr "基类：:py:class:`~janim.anims.animation.Animation`"
 
 #: janim.anims.creation.ShowIncreasingSubsets:1 of
 msgid "逐个显现子物件"
-msgstr ""
+msgstr "Reveal child items one by one"
 
 #: janim.anims.creation.ShowIncreasingSubsets:3 of
 msgid "注：该动画目前在 :class:`~.FrameEffect` 中无效"
-msgstr ""
+msgstr "Note: This animation currently does not work within :class:`~.FrameEffect`"
 
 #: ../../source/janim/anims/creation.rst:20
 msgid ""

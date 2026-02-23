@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: JAnim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-01-30 21:12+0800\n"
+"POT-Creation-Date: 2026-02-24 00:11+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -23,15 +23,12 @@ msgstr ""
 msgid "base"
 msgstr "base"
 
-#: janim.gui.draw.base.Draw:1 of
-msgid "基类：:py:class:`~PySide6.QtWidgets.QScrollArea`"
-msgstr "基类：:py:class:`~PySide6.QtWidgets.QScrollArea`"
+#~ msgid "基类：:py:class:`~PySide6.QtWidgets.QScrollArea`"
+#~ msgstr "基类：:py:class:`~PySide6.QtWidgets.QScrollArea`"
 
-#: janim.gui.draw.base.DrawOnce:1 of
-msgid "基类：:py:class:`~janim.gui.draw.base.Draw`"
-msgstr "基类：:py:class:`~janim.gui.draw.base.Draw`"
+#~ msgid "基类：:py:class:`~janim.gui.draw.base.Draw`"
+#~ msgstr "基类：:py:class:`~janim.gui.draw.base.Draw`"
 
-#: janim.gui.draw.base.DrawOnce.ShiftInfo:1 of
-msgid "基类：:py:class:`object`"
-msgstr "基类：:py:class:`object`"
+#~ msgid "基类：:py:class:`object`"
+#~ msgstr "基类：:py:class:`object`"
 

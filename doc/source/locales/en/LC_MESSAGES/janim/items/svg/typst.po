@@ -24,7 +24,7 @@ msgstr "typst"
 
 #: janim.items.svg.typst.TypstDoc:1 of
 msgid "基类：:py:class:`~janim.items.svg.svg_item.SVGItem`"
-msgstr "基类：:py:class:`~janim.items.svg.svg_item.SVGItem`"
+msgstr "Base class: :py:class:`~janim.items.svg.svg_item.SVGItem`"
 
 #: janim.items.svg.typst.TypstDoc:1 of
 msgid "Typst 文档"
@@ -60,11 +60,11 @@ msgstr "Will transform ``t2`` so that the plus signs of both coincide"
 
 #: janim.items.svg.typst.TypstDoc.patterns:1 of
 msgid "一次性获取多个 pattern 匹配的结果，返回一个 :class:`~.Group`"
-msgstr ""
+msgstr "Get multiple pattern match results at once, returning a :class:`~.Group`"
 
 #: janim.items.svg.typst.TypstDoc.patterns:3 of
 msgid "例如 ``typ.patterns(A, B, ...)`` 相当于 ``Group(typ[A], typ[B], ...)``"
-msgstr ""
+msgstr "e.g. ``typ.patterns(A, B, ...)`` is equivalent to ``Group(typ[A], typ[B], ...)``"
 
 #: janim.items.svg.typst.TypstDoc.get:1 of
 msgid "根据切片得到切分的子物件"
@@ -123,13 +123,12 @@ msgid "也支持列表以及嵌套的列表，例如"
 msgstr "Also supports lists and nested lists, for example"
 
 #: janim.items.svg.typst.TypstDoc.get:25 of
-#, fuzzy
 msgid ""
 "``item.get([slice(1, 3), slice(5, 7)], gapless=True) == [item[:1], "
 "item[1:3], item[3:5], item[5:7], item[7:]]``"
 msgstr ""
-"``item.get([slice(1, 3), slice(5, 7)]) == [item[:1], item[1:3], "
-"item[3:5], item[5:7], item[7:]]``"
+"``item.get([slice(1, 3), slice(5, 7)], gapless=True) == [item[:1], "
+"item[1:3], item[3:5], item[5:7], item[7:]]``"
 
 #: janim.items.svg.typst.TypstDoc.get:27 of
 msgid "注：在这种情况下，所有嵌套结构都会先被展平后处理"
@@ -177,7 +176,7 @@ msgstr "Partial match table used in the KMP algorithm"
 
 #: janim.items.svg.typst.TypstText:1 of
 msgid "基类：:py:class:`~janim.items.svg.typst.TypstDoc`"
-msgstr "基类：:py:class:`~janim.items.svg.typst.TypstDoc`"
+msgstr "Base class: :py:class:`~janim.items.svg.typst.TypstDoc`"
 
 #: janim.items.svg.typst.TypstText:1 of
 msgid "Typst 文本"
@@ -185,7 +184,7 @@ msgstr "Typst text"
 
 #: janim.items.svg.typst.TypstMath:1 of
 msgid "基类：:py:class:`~janim.items.svg.typst.TypstText`"
-msgstr "基类：:py:class:`~janim.items.svg.typst.TypstText`"
+msgstr "Base class: :py:class:`~janim.items.svg.typst.TypstText`"
 
 #: janim.items.svg.typst.TypstMath:1 of
 msgid "Typst 公式"

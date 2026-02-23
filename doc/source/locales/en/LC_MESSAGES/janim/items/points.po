@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  JAnim\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-02-23 22:08+0800\n"
+"POT-Creation-Date: 2026-02-24 00:11+0800\n"
 "PO-Revision-Date: 2025-11-22 22:12+0800\n"
 "Last-Translator: \n"
 "Language: en\n"
@@ -33,6 +33,10 @@ msgstr "Point set"
 #: janim.items.points.Points:3 of
 msgid "纯数据物件，不参与渲染"
 msgstr "A data item that does not participate in rendering"
+
+#: janim.items.points.Points.distance_sort_reference_point:1 of
+msgid "The type of the None singleton."
+msgstr "The type of the None singleton."
 
 #: janim.items.points.DotCloud:1 janim.items.points.MarkedItem:1
 #: janim.items.points.Point:1 of
@@ -214,15 +218,15 @@ msgstr ""
 
 #: janim.items.points.NamedGroupMixin.set_name:1 of
 msgid "设置一个已有的子物件的对应名称"
-msgstr ""
+msgstr "Set the name for an existing child item"
 
 #: janim.items.points.NamedGroupMixin.set_name:3 of
 msgid "一个已有的子物件"
-msgstr ""
+msgstr "An existing child item"
 
 #: janim.items.points.NamedGroupMixin.set_name:4 of
 msgid "要设置的名称"
-msgstr ""
+msgstr "The name to set"
 
 #: janim.items.points.NamedGroupMixin.by_name:1 of
 msgid "根据名称获取子物件"
@@ -244,11 +248,11 @@ msgstr "A mapping dictionary from names to child items"
 
 #: janim.items.points.NamedGroupMixin.children_with_name:1 of
 msgid "返回的列表中与子物件列表相似，但是每个元素是一个包含 ``(单个子物件, 其对应的名称)`` 的元组，如果不是具名子物件则名称为 ``None``"
-msgstr ""
+msgstr "Returns a list similar to the children list, but each element is a tuple of ``(child item, its name)``. If the child item is not named, the name is ``None``"
 
 #: janim.items.points.NamedGroupMixin.copy:1 of
 msgid "复制物件"
-msgstr ""
+msgstr "Copy the item"
 
 #: janim.items.points.NamedGroup:1 of
 msgid ""

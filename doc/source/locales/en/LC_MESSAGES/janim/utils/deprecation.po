@@ -26,7 +26,7 @@ msgstr "deprecation"
 #: janim.utils.deprecation.deprecated:1
 #: janim.utils.deprecation.deprecated_classvar:1 of
 msgid "例："
-msgstr ""
+msgstr "Example:"
 
 #: janim.utils.deprecation.deprecated:3 of
 msgid ""
@@ -37,6 +37,12 @@ msgid ""
 "    remove=(4, 3)\n"
 ")"
 msgstr ""
+"from janim.utils.deprecation import deprecated\n"
+"deprecated(\n"
+"    'update_points_by_attrs',\n"
+"    'update_by_attrs',\n"
+"    remove=(4, 3)\n"
+")"
 
 #: janim.utils.deprecation.deprecated_classvar:3 of
 msgid ""
@@ -48,4 +54,11 @@ msgid ""
 "        remove=(4, 3)\n"
 "    )"
 msgstr ""
+"class HighlightRect(boolean_ops.Difference):\n"
+"    difference_config_d = deprecated_classvar(\n"
+"        Rect.preset_shadow,\n"
+"        'HighlightRect.difference_config_d',\n"
+"        'Rect.preset_shadow',\n"
+"        remove=(4, 3)\n"
+"    )"
 

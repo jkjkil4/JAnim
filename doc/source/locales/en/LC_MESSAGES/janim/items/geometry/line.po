@@ -54,7 +54,7 @@ msgstr "Return projection of a point onto the line"
 
 #: janim.items.geometry.line.Line:1 of
 msgid "基类：:py:class:`~janim.items.vitem.VItem`"
-msgstr "基类：:py:class:`~janim.items.vitem.VItem`"
+msgstr "Base class: :py:class:`~janim.items.vitem.VItem`"
 
 #: janim.items.geometry.line.Line:1 of
 msgid "线段"
@@ -62,30 +62,27 @@ msgstr "Line segment"
 
 #: ../../source/janim/items/geometry/line.rst
 msgid "参数"
-msgstr ""
+msgstr "Parameters"
 
 #: janim.items.geometry.line.Line:3 of
-#, fuzzy
 msgid "线段起点"
-msgstr "Line segment"
+msgstr "Start point of the line segment"
 
 #: janim.items.geometry.line.Line:4 of
-#, fuzzy
 msgid "线段终点"
-msgstr "Line segment"
+msgstr "End point of the line segment"
 
 #: janim.items.geometry.line.Line:6 of
-#, fuzzy
 msgid "线段两端的空余量，默认为 ``0``"
-msgstr "``buff``: Buffer space at both ends of the line segment, default is ``0``"
+msgstr "Buffer space at both ends of the line segment, default is ``0``"
 
 #: janim.items.geometry.line.Line:7 of
 msgid "表示线段的弯曲角度"
-msgstr ""
+msgstr "Bending angle of the line segment"
 
 #: janim.items.geometry.line.Line:8 of
 msgid "其它参数"
-msgstr ""
+msgstr "Other parameters"
 
 #: janim.items.geometry.line.Cmpt_VPoints_DashedLineImpl:1 of
 msgid ""
@@ -123,15 +120,14 @@ msgstr "Dashed line"
 
 #: janim.items.geometry.line.DashedLine:3 of
 msgid "每段虚线的长度"
-msgstr ""
+msgstr "Length of each dash segment"
 
 #: janim.items.geometry.line.DashedLine:4 of
-#, fuzzy
 msgid "虚线段的占比，默认为 ``0.5``，即虚线段与空白段长度相等，但可能因为虚线段描边存在粗细而导致视觉上空白长度略小"
 msgstr ""
-"``dashed_ratio``: Ratio of dash segments, default is ``0.5``, meaning "
-"dash segments and gaps have equal length, but the visual gap length may "
-"appear slightly smaller due to stroke width"
+"Ratio of dash segments, default is ``0.5``, meaning dash segments and "
+"gaps have equal length, but the visual gap length may appear slightly "
+"smaller due to stroke width"
 
 #: janim.items.geometry.line.DashedLine:5 of
 msgid ""
@@ -139,30 +135,35 @@ msgid ""
 "时，可能会微调以确保首尾都是完整的虚线段 - 当为 ``True`` 时，不再微调，但是尾部虚线段可能不完整  在静态使用的情境下，使用 "
 "``False`` 会更美观；在动态创建的情境下，使用 ``True`` 可以避免频繁抖动"
 msgstr ""
+"Whether the dash segment length strictly follows ``dash_length``, default"
+" is ``False`` - When ``False``, may fine-tune to ensure both ends have "
+"complete dash segments - When ``True``, no fine-tuning, but the trailing "
+"dash segment may be incomplete. For static use, ``False`` looks better; "
+"for dynamic creation, ``True`` avoids frequent jittering"
 
 #: janim.items.geometry.line.DashedLine:5 of
 msgid "虚线段长度是否严格遵从 ``dash_length``，默认为 ``False``"
-msgstr ""
+msgstr "Whether the dash segment length strictly follows ``dash_length``, default is ``False``"
 
 #: janim.items.geometry.line.DashedLine:7 of
 msgid "当为 ``False`` 时，可能会微调以确保首尾都是完整的虚线段"
-msgstr ""
+msgstr "When ``False``, may fine-tune to ensure both ends have complete dash segments"
 
 #: janim.items.geometry.line.DashedLine:8 of
 msgid "当为 ``True`` 时，不再微调，但是尾部虚线段可能不完整"
-msgstr ""
+msgstr "When ``True``, no fine-tuning, but the trailing dash segment may be incomplete"
 
 #: janim.items.geometry.line.DashedLine:10 of
 msgid "在静态使用的情境下，使用 ``False`` 会更美观；在动态创建的情境下，使用 ``True`` 可以避免频繁抖动"
-msgstr ""
+msgstr "For static use, ``False`` looks better; for dynamic creation, ``True`` avoids frequent jittering"
 
 #: janim.items.geometry.line.DashedLine:12 of
 msgid "其它参数，另见 :class:`Line`"
-msgstr ""
+msgstr "Other parameters, see also :class:`Line`"
 
 #: janim.items.geometry.line.TangentLine:1 of
 msgid "基类：:py:class:`~janim.items.geometry.line.Line`"
-msgstr "基类：:py:class:`~janim.items.geometry.line.Line`"
+msgstr "Base class: :py:class:`~janim.items.geometry.line.Line`"
 
 #: janim.items.geometry.line.TangentLine:1 of
 msgid "切线"
@@ -195,14 +196,16 @@ msgstr ""
 #: janim.items.geometry.line.Elbow:1 of
 msgid "折线（一般用作直角符号），关于直接基于两条线创建的直角符号，另请参见 :class:`~.RightAngle`"
 msgstr ""
+"Elbow (generally used as a right angle symbol). For right angle symbols "
+"created directly from two lines, see also :class:`~.RightAngle`"
 
 #: janim.items.geometry.line.Elbow:3 of
 msgid "直角标记的边长"
-msgstr ""
+msgstr "Side length of the right angle marker"
 
 #: janim.items.geometry.line.Elbow:4 of
 msgid "起始角度"
-msgstr ""
+msgstr "Starting angle"
 
 #: janim.items.geometry.line.Angle:1 of
 msgid "一个圆弧或直角标记对象，用于表示两条线之间的夹角"
@@ -301,7 +304,7 @@ msgstr ""
 
 #: janim.items.geometry.line.RightAngle:1 of
 msgid "基类：:py:class:`~janim.items.geometry.line.Angle`"
-msgstr "基类：:py:class:`~janim.items.geometry.line.Angle`"
+msgstr "Base class: :py:class:`~janim.items.geometry.line.Angle`"
 
 #: janim.items.geometry.line.RightAngle:1 of
 msgid "一个用于表示直角的 :class:`Elbow` 样式的对象（L 形折角）"
