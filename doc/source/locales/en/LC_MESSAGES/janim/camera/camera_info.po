@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: JAnim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-29 15:25+0800\n"
+"POT-Creation-Date: 2026-02-24 01:11+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -23,10 +23,6 @@ msgid "camera_info"
 msgstr "camera_info"
 
 #: janim.camera.camera_info.CameraInfo:1 of
-msgid "基类：:py:class:`object`"
-msgstr "基类：:py:class:`object`"
-
-#: janim.camera.camera_info.CameraInfo:1 of
 msgid "摄像机属性"
 msgstr "Camera properties"
 
@@ -36,7 +32,9 @@ msgstr "Can be obtained via :attr:`~.Cmpt_CameraPoints.info`"
 
 #: ../../docstring janim.camera.camera_info.CameraInfo.scaled_factor:1 of
 msgid "摄像机相比默认尺寸的缩放比率，视野越大，该值越大，反之同理"
-msgstr "The scaling ratio of the camera compared to the default size; the larger the viewport, the larger this value, and vice versa"
+msgstr ""
+"The scaling ratio of the camera compared to the default size; the larger the viewport, the larger this value, and vice "
+"versa"
 
 #: ../../docstring janim.camera.camera_info.CameraInfo.fov:1 of
 msgid "摄像机在竖直方向的视场角"
@@ -66,8 +64,7 @@ msgstr "The width of the camera frame in the vertical direction"
 msgid "摄像机观察点距离取景框的距离"
 msgstr "The distance from the camera observation point to the frame"
 
-#: ../../docstring
-#: janim.camera.camera_info.CameraInfo.fixed_distance_from_plane:1 of
+#: ../../docstring janim.camera.camera_info.CameraInfo.fixed_distance_from_plane:1 of
 msgid "摄像机在默认尺寸下观察点距离取景框的距离"
 msgstr "The distance from the camera observation point to the frame at default size"
 
@@ -97,15 +94,15 @@ msgstr "The width of the camera frame in both horizontal and vertical directions
 
 #: janim.camera.camera_info.CameraInfo.camera_axis:1 of
 msgid "摄像机中心轴，即摄像机朝向的反方向，从取景框中心指向观察点的向量"
-msgstr "The central axis of the camera, i.e., the opposite direction of the camera orientation, a vector pointing from the center of the frame to the observation point"
+msgstr ""
+"The central axis of the camera, i.e., the opposite direction of the camera orientation, a vector pointing from the center "
+"of the frame to the observation point"
 
-#: janim.camera.camera_info.CameraInfo.map_points:1
-#: janim.camera.camera_info.CameraInfo.map_points_with_depth:1 of
+#: janim.camera.camera_info.CameraInfo.map_points:1 janim.camera.camera_info.CameraInfo.map_points_with_depth:1 of
 msgid "将空间中的点映射到摄像机取景框的 GL 坐标（``-1`` ~ ``1``）中"
 msgstr "Map points in space to GL coordinates (``-1`` ~ ``1``) of the camera frame"
 
-#: janim.camera.camera_info.CameraInfo.map_fixed_in_frame_points:3
-#: janim.camera.camera_info.CameraInfo.map_points:3 of
+#: janim.camera.camera_info.CameraInfo.map_fixed_in_frame_points:3 janim.camera.camera_info.CameraInfo.map_points:3 of
 msgid "返回二维坐标序列"
 msgstr "Returns a sequence of 2D coordinates"
 
@@ -114,13 +111,12 @@ msgid "返回三维坐标序列，与 :meth:`map_points` 相比，最后一个�
 msgstr "Returns a sequence of 3D coordinates. Compared to :meth:`map_points`, the last component contains depth information"
 
 #: janim.camera.camera_info.CameraInfo.map_fixed_in_frame_points:1
-#: janim.camera.camera_info.CameraInfo.map_fixed_in_frame_points_with_depth:1
-#: of
+#: janim.camera.camera_info.CameraInfo.map_fixed_in_frame_points_with_depth:1 of
 msgid "将空间中的点映射到默认摄像机取景框的 GL 坐标（``-1`` ~ ``1``）中"
 msgstr "Map points in space to GL coordinates (``-1`` ~ ``1``) of the default camera frame"
 
-#: janim.camera.camera_info.CameraInfo.map_fixed_in_frame_points_with_depth:3
-#: of
+#: janim.camera.camera_info.CameraInfo.map_fixed_in_frame_points_with_depth:3 of
 msgid "返回三维坐标序列，与 :meth:`map_fixed_in_frame_points` 相比，最后一个分量带有深度信息"
-msgstr "Returns a sequence of 3D coordinates. Compared to :meth:`map_fixed_in_frame_points`, the last component contains depth information"
-
+msgstr ""
+"Returns a sequence of 3D coordinates. Compared to :meth:`map_fixed_in_frame_points`, the last component contains depth "
+"information"

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  JAnim\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-01-30 21:12+0800\n"
+"POT-Creation-Date: 2026-02-24 01:11+0800\n"
 "PO-Revision-Date: 2024-07-03 19:02+0800\n"
 "Last-Translator: \n"
 "Language: en\n"
@@ -24,18 +24,8 @@ msgid "relation"
 msgstr "relation"
 
 #: janim.items.relation.Relation:1 of
-msgid ""
-"基类：:py:class:`~janim.utils.refresh.Refreshable`, "
-":py:class:`~typing.Generic`"
-msgstr ""
-"基类：:py:class:`~janim.utils.refresh.Refreshable`, "
-":py:class:`~typing.Generic`"
-
-#: janim.items.relation.Relation:1 of
 msgid "定义了有向无环图的包含关系以及一些实用操作"
-msgstr ""
-"Defines the containment relationship of a directed acyclic graph and some"
-" practical operations"
+msgstr "Defines the containment relationship of a directed acyclic graph and some practical operations"
 
 #: janim.items.relation.Relation:3 of
 msgid "也就是，对于每个对象："
@@ -64,16 +54,14 @@ msgstr "Use :meth:`get_parents()` and :meth:`get_children()` to get copies of th
 #: janim.items.relation.Relation:10 of
 msgid ":meth:`ancestors()` 表示与其直接关联的祖先对象（包括父对象，以及父对象的父对象，......）"
 msgstr ""
-":meth:`ancestors()` represents the ancestor objects directly associated "
-"with it (including parent objects and parent objects' parent objects, "
-"...)"
+":meth:`ancestors()` represents the ancestor objects directly associated with it (including parent objects and parent "
+"objects' parent objects, ...)"
 
 #: janim.items.relation.Relation:11 of
 msgid ":meth:`descendants()` 表示与其直接关联的后代对象（包括子对象、以及子对象的子对象，......）"
 msgstr ""
-":meth:`descendants()` represents the descendant objects directly "
-"associated with it (including child objects, and child objects' child "
-"objects, ...)"
+":meth:`descendants()` represents the descendant objects directly associated with it (including child objects, and child "
+"objects' child objects, ...)"
 
 #: janim.items.relation.Relation:12 of
 msgid "对于 :meth:`ancestors()` 以及 :meth:`descendants()`："
@@ -81,9 +69,7 @@ msgstr "For :meth:`ancestors()` and :meth:`descendants()` :"
 
 #: janim.items.relation.Relation:13 of
 msgid "不包含调用者自身并且返回的列表中没有重复元素"
-msgstr ""
-"Does not include the caller itself, and the returned list has no "
-"duplicate elements"
+msgstr "Does not include the caller itself, and the returned list has no duplicate elements"
 
 #: janim.items.relation.Relation:14 of
 msgid "对象顺序是 DFS 顺序"
@@ -139,9 +125,7 @@ msgstr "Child items to add"
 
 #: janim.items.relation.Relation.add:4 of
 msgid "默认为 ``False``，如果为 ``True``，那么插入到子物件列表的开头"
-msgstr ""
-"If `insert=True` (default is `False`), then insert at the beginning of "
-"the list of child items."
+msgstr "If `insert=True` (default is `False`), then insert at the beginning of the list of child items."
 
 #: janim.items.relation.Relation.insert:1 of
 msgid "在指定索引位置插入子物件"
@@ -193,15 +177,11 @@ msgstr "Get a list of descendant items"
 
 #: janim.items.relation.Relation.walk_ancestors:1 of
 msgid "遍历祖先节点中以 ``base_cls`` （缺省则遍历全部）为基类的物件"
-msgstr ""
-"Traverse ancestor nodes with ``base_cls`` (default to traverse all) as the "
-"base class"
+msgstr "Traverse ancestor nodes with ``base_cls`` (default to traverse all) as the base class"
 
 #: janim.items.relation.Relation.walk_descendants:1 of
 msgid "遍历后代节点中以 ``base_cls`` （缺省则遍历全部）为基类的物件"
-msgstr ""
-"Traverse descendant nodes with ``base_cls`` (default to traverse all) as the "
-"base class"
+msgstr "Traverse descendant nodes with ``base_cls`` (default to traverse all) as the base class"
 
 #: janim.items.relation.Relation.walk_self_and_ancestors:1 of
 msgid "遍历自己以及祖先节点"
@@ -214,26 +194,20 @@ msgstr "Traverse self and descendant nodes"
 #: janim.items.relation.Relation.walk_nearest_ancestors:1 of
 msgid "遍历祖先节点中以 ``base_cls`` 为基类的物件，但是排除已经满足条件的物件的祖先物件"
 msgstr ""
-"Traverse ancestor nodes with ``base_cls`` as the base class, but exclude "
-"the ancestors of items that already meet the conditions"
+"Traverse ancestor nodes with ``base_cls`` as the base class, but exclude the ancestors of items that already meet the "
+"conditions"
 
 #: janim.items.relation.Relation.walk_nearest_descendants:1 of
 msgid "遍历后代节点中以 ``base_cls`` 为基类的物件，但是排除已经满足条件的物件的后代物件"
 msgstr ""
-"Traverse descendant nodes with ``base_cls`` as the base class, but "
-"exclude the descendants of items that already meet the conditions"
+"Traverse descendant nodes with ``base_cls`` as the base class, but exclude the descendants of items that already meet the "
+"conditions"
 
 #~ msgid "不要直接对该变量作出修改，请使用 :meth:`add` 和 :meth:`remove` 等方法"
-#~ msgstr ""
-#~ "Do not directly modify this variable;"
-#~ " please use methods like :meth:`add` "
-#~ "and :meth:`remove`"
+#~ msgstr "Do not directly modify this variable; please use methods like :meth:`add` and :meth:`remove`"
 
 #~ msgid "对该变量的直接访问仅是为了方便遍历等操作"
-#~ msgstr ""
-#~ "Direct access to this variable is "
-#~ "only for convenience in operations such"
-#~ " as iteration"
+#~ msgstr "Direct access to this variable is only for convenience in operations such as iteration"
 
 #~ msgid "信号，在 ``self.parents`` 改变时触发"
 #~ msgstr "Signal triggered when ``self.parents`` changes"
@@ -246,4 +220,3 @@ msgstr ""
 
 #~ msgid "从该对象移除子对象"
 #~ msgstr "Remove objects from this object"
-

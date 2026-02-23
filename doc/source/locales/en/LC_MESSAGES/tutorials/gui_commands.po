@@ -24,12 +24,10 @@ msgid "GUI 命令"
 msgstr "GUI Commands"
 
 #: ../../source/tutorials/gui_commands.rst:4
-msgid ""
-"GUI 命令允许在 :meth:`~.Timeline.construct` 方法中使用 ``self('命令内容')`` 的形式在 GUI "
-"中打开功能交互面板。"
+msgid "GUI 命令允许在 :meth:`~.Timeline.construct` 方法中使用 ``self('命令内容')`` 的形式在 GUI 中打开功能交互面板。"
 msgstr ""
-"GUI commands allow using ``self('command content')`` within the :meth:`~.Timeline.construct` "
-"method to open interactive feature panels in the GUI."
+"GUI commands allow using ``self('command content')`` within the :meth:`~.Timeline.construct` method to open interactive "
+"feature panels in the GUI."
 
 #: ../../source/tutorials/gui_commands.rst:6
 msgid "更为重要的是，面板的交互结果在提交后，可以 **应用到源代码上**。"
@@ -45,11 +43,13 @@ msgstr "self('command_name: command_parameters')"
 
 #: ../../source/tutorials/gui_commands.rst:16
 msgid "命令必须使用完整的字符串字面量，不能使用变量或表达式传递命令名称和参数。"
-msgstr "Commands must use complete string literals. Variables or expressions cannot be used to pass command names and parameters."
+msgstr ""
+"Commands must use complete string literals. Variables or expressions cannot be used to pass command names and parameters."
 
 #: ../../source/tutorials/gui_commands.rst:18
 msgid "正是有了这样的限制，JAnim 才能将 GUI 中的操作正确地修改到源代码中。"
-msgstr "It is precisely because of this restriction that JAnim can correctly modify the source code based on GUI operations."
+msgstr ""
+"It is precisely because of this restriction that JAnim can correctly modify the source code based on GUI operations."
 
 #: ../../source/tutorials/gui_commands.rst:22
 msgid "文档有待完善，目前这里的内容较为简略"
@@ -63,8 +63,7 @@ msgstr "``select`` Command"
 msgid "选择指定物件的子物件"
 msgstr "Select subitems of the specified item"
 
-#: ../../source/tutorials/gui_commands.rst:29
-#: ../../source/tutorials/gui_commands.rst:51
+#: ../../source/tutorials/gui_commands.rst:29 ../../source/tutorials/gui_commands.rst:51
 #: ../../source/tutorials/gui_commands.rst:87
 msgid "尝试："
 msgstr "Try:"
@@ -179,4 +178,3 @@ msgstr ""
 "rect = Rect(6, 0.5).show()\n"
 "\n"
 "self('move: circle, square, rect')"
-

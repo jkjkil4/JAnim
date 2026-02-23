@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  JAnim\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-02-23 22:08+0800\n"
+"POT-Creation-Date: 2026-02-24 01:11+0800\n"
 "PO-Revision-Date: 2025-12-24 15:57+0800\n"
 "Last-Translator: \n"
 "Language: zh_CN\n"
@@ -22,11 +22,6 @@ msgstr ""
 #: ../../source/janim/anims/creation.rst:2
 msgid "creation"
 msgstr "creation"
-
-#: janim.anims.creation.DrawBorderThenFill:1 janim.anims.creation.ShowPartial:1
-#: of
-msgid "基类：:py:class:`~janim.anims.updater.DataUpdater`"
-msgstr "基类：:py:class:`~janim.anims.updater.DataUpdater`"
 
 #: janim.anims.creation.ShowPartial:1 of
 msgid "显示物件一部分的动画，显示的部分由 ``bound_func`` 决定"
@@ -80,11 +75,6 @@ msgstr ""
 "            duration=3\n"
 "        )"
 
-#: janim.anims.creation.Create:1 janim.anims.creation.Destruction:1
-#: janim.anims.creation.Uncreate:1 of
-msgid "基类：:py:class:`~janim.anims.creation.ShowPartial`"
-msgstr "基类：:py:class:`~janim.anims.creation.ShowPartial`"
-
 #: janim.anims.creation.Create:1 of
 msgid "显示物件的创建过程"
 msgstr "Show the creation process of an item"
@@ -131,9 +121,7 @@ msgstr ""
 
 #: janim.anims.creation.Uncreate:1 of
 msgid "显示物件的销毁过程（:class:`Create` 的倒放）"
-msgstr ""
-"Animation to show the destruction process of an item (reversed "
-":class:`Create`)."
+msgstr "Animation to show the destruction process of an item (reversed :class:`Create`)."
 
 #: ../../source/janim/anims/creation.rst:20
 msgid ""
@@ -226,15 +214,14 @@ msgstr "Draws the outline and then fills."
 #: janim.anims.creation.DrawBorderThenFill:3 of
 msgid "可以使用 ``stroke_radius`` 参数调整“画出边缘”时的描边粗细，在默认画面下的值是 0.01"
 msgstr ""
-"You can use the ``stroke_radius`` parameter to adjust the stroke width "
-"when “drawing the outline”, the default value is 0.01"
+"You can use the ``stroke_radius`` parameter to adjust the stroke width when “drawing the outline”, the default value is "
+"0.01"
 
 #: janim.anims.creation.DrawBorderThenFill:5 of
 msgid "如果设置了 ``scale_with_camera`` 参数，描边粗细会随着 ``camera`` 大小的变化而调整，画面尺寸越小，描边越细"
 msgstr ""
-"If the ``scale_with_camera`` parameter is set, the stroke width will "
-"adjust with changes in ``camera`` size; the smaller the frame size, the "
-"thinner the stroke"
+"If the ``scale_with_camera`` parameter is set, the stroke width will adjust with changes in ``camera`` size; the smaller "
+"the frame size, the thinner the stroke"
 
 #: ../../source/janim/anims/creation.rst:20
 msgid ""
@@ -285,16 +272,10 @@ msgstr ""
 "            duration=3\n"
 "        )\n"
 "        self.forward()"
-
-#: janim.anims.creation.Write:1 of
-msgid "基类：:py:class:`~janim.anims.creation.DrawBorderThenFill`"
-msgstr "基类：:py:class:`~janim.anims.creation.DrawBorderThenFill`"
 
 #: janim.anims.creation.Write:1 of
 msgid "显示书写过程（对每个子物件应用 :class:`DrawBorderThenFill`）"
-msgstr ""
-"Show the writing process (apply :class:`DrawBorderThenFill` to each sub-"
-"object)."
+msgstr "Show the writing process (apply :class:`DrawBorderThenFill` to each sub-object)."
 
 #: ../../source/janim/anims/creation.rst:20
 msgid ""
@@ -327,18 +308,14 @@ msgstr ""
 "            Write(dots, duration=2),\n"
 "            Write(txt, duration=2),\n"
 "        )"
-
-#: janim.anims.creation.ShowIncreasingSubsets:1 of
-msgid "基类：:py:class:`~janim.anims.animation.Animation`"
-msgstr "基类：:py:class:`~janim.anims.animation.Animation`"
 
 #: janim.anims.creation.ShowIncreasingSubsets:1 of
 msgid "逐个显现子物件"
-msgstr ""
+msgstr "Reveal child items one by one"
 
 #: janim.anims.creation.ShowIncreasingSubsets:3 of
 msgid "注：该动画目前在 :class:`~.FrameEffect` 中无效"
-msgstr ""
+msgstr "Note: This animation currently does not work within :class:`~.FrameEffect`"
 
 #: ../../source/janim/anims/creation.rst:20
 msgid ""
@@ -362,10 +339,6 @@ msgstr ""
 "        self.play(ShowIncreasingSubsets(text[0], duration=3))\n"
 "        self.forward(0.5)"
 
-#: janim.anims.creation.ShowSubitemsOneByOne:1 of
-msgid "基类：:py:class:`~janim.anims.creation.ShowIncreasingSubsets`"
-msgstr "基类：:py:class:`~janim.anims.creation.ShowIncreasingSubsets`"
-
 #: ../../source/janim/anims/creation.rst:20
 msgid ""
 "from janim.imports import *\n"
@@ -387,4 +360,3 @@ msgstr ""
 "        self.forward(0.5)\n"
 "        self.play(ShowSubitemsOneByOne(text[0], duration=3))\n"
 "        self.forward(0.5)"
-

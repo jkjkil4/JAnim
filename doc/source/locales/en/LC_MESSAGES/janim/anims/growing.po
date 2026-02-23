@@ -5,31 +5,22 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: JAnim\n"
+"Project-Id-Version:  JAnim\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-22 21:20+0800\n"
+"POT-Creation-Date: 2026-02-24 01:11+0800\n"
 "PO-Revision-Date: 2025-11-22 22:01+0800\n"
 "Last-Translator: \n"
-"Language-Team: en <LL@li.org>\n"
 "Language: en\n"
+"Language-Team: en <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "Generated-By: Babel 2.17.0\n"
-"X-Generator: Poedit 3.8\n"
 
 #: ../../source/janim/anims/growing.rst:2
 msgid "growing"
 msgstr "growing"
-
-#: janim.anims.growing.GrowFromPoint:1 janim.anims.growing.ShrinkToPoint:1 of
-msgid ""
-"基类：:py:class:`~janim.anims.updater.DataUpdater`\\ "
-"[:py:class:`~janim.items.points.Points`]"
-msgstr ""
-"Base class: :py:class:`~janim.anims.updater.DataUpdater`\\ "
-"[:py:class:`~janim.items.points.Points`]"
 
 #: janim.anims.growing.GrowFromPoint:1 of
 msgid "从指定的位置放大显现"
@@ -84,10 +75,6 @@ msgstr ""
 "            )\n"
 "\n"
 "        self.forward()"
-
-#: janim.anims.growing.GrowFromCenter:1 janim.anims.growing.GrowFromEdge:1 of
-msgid "基类：:py:class:`~janim.anims.growing.GrowFromPoint`"
-msgstr "基类：:py:class:`~janim.anims.growing.GrowFromPoint`"
 
 #: janim.anims.growing.GrowFromCenter:1 of
 msgid "从物件的中心放大显现"
@@ -235,10 +222,6 @@ msgstr ""
 "\n"
 "        self.forward()"
 
-#: janim.anims.growing.ShrinkToCenter:1 janim.anims.growing.ShrinkToEdge:1 of
-msgid "基类：:py:class:`~janim.anims.growing.ShrinkToPoint`"
-msgstr "基类：:py:class:`~janim.anims.growing.ShrinkToPoint`"
-
 #: janim.anims.growing.ShrinkToCenter:1 of
 msgid "缩小到物件的中心消失"
 msgstr "Shrink and disappear to the center of the item"
@@ -332,10 +315,6 @@ msgstr ""
 "        self.forward()"
 
 #: janim.anims.growing.SpinInFromNothing:1 of
-msgid "基类：:py:class:`~janim.anims.growing.GrowFromCenter`"
-msgstr "基类：:py:class:`~janim.anims.growing.GrowFromCenter`"
-
-#: janim.anims.growing.SpinInFromNothing:1 of
 msgid "从物件的中心旋转半圈放大显现"
 msgstr "Rotate half a turn from the center of the item and grow to appear"
 
@@ -376,10 +355,6 @@ msgstr ""
 "            duration=2\n"
 "        )\n"
 "        self.forward()"
-
-#: janim.anims.growing.SpinOutToNothing:1 of
-msgid "基类：:py:class:`~janim.anims.growing.ShrinkToCenter`"
-msgstr "基类：:py:class:`~janim.anims.growing.ShrinkToCenter`"
 
 #: janim.anims.growing.SpinOutToNothing:1 of
 msgid "向物件的中心旋转半圈缩小消失"
@@ -424,22 +399,13 @@ msgstr ""
 "        self.forward()"
 
 #: janim.anims.growing.GrowArrowByBoundFunc:1 of
-msgid "基类：:py:class:`~janim.anims.updater.GroupUpdater`"
-msgstr "基类：:py:class:`~janim.anims.updater.GroupUpdater`"
-
-#: janim.anims.growing.GrowArrowByBoundFunc:1 of
 msgid ":class:`GrowArrow` 和 :class:`GrowDoubleArrow` 的基类"
 msgstr "Base class for :class:`GrowArrow` and :class:`GrowDoubleArrow`"
-
-#: janim.anims.growing.GrowArrow:1 janim.anims.growing.GrowDoubleArrow:1 of
-msgid "基类：:py:class:`~janim.anims.growing.GrowArrowByBoundFunc`"
-msgstr "基类：:py:class:`~janim.anims.growing.GrowArrowByBoundFunc`"
 
 #: janim.anims.growing.GrowArrow:1 of
 msgid "显示箭头的显现过程，从开头到结尾画出，并自动调整箭头标志位置"
 msgstr ""
-"Show the appearance process of the arrow, drawing from start to end, and "
-"automatically adjust the arrowhead position"
+"Show the appearance process of the arrow, drawing from start to end, and automatically adjust the arrowhead position"
 
 #: ../../source/janim/anims/growing.rst:20
 msgid ""
@@ -480,8 +446,8 @@ msgstr ""
 #: janim.anims.growing.GrowDoubleArrow:1 of
 msgid "显示箭头的显现过程，默认从中间向两边显现，并自动调整箭头标志位置"
 msgstr ""
-"Show the appearance process of the arrow, by default appearing from the middle "
-"to both sides, and automatically adjust the arrowhead positions"
+"Show the appearance process of the arrow, by default appearing from the middle to both sides, and automatically adjust "
+"the arrowhead positions"
 
 #: janim.anims.growing.GrowDoubleArrow:3 of
 msgid "传入 ``start_ratio`` （默认 ``0.5``） 可以调整开始的位置"

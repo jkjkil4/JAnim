@@ -22,4 +22,3 @@ msgstr ""
 #: ../../source/janim/gui/draw/modules.rst:2
 msgid "draw"
 msgstr "draw"
-

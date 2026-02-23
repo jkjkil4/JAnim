@@ -31,8 +31,7 @@ msgstr "基类：:py:class:`~PySide6.QtWidgets.QWidget`"
 msgid "基类：:py:class:`~PySide6.QtWidgets.QScrollArea`"
 msgstr "基类：:py:class:`~PySide6.QtWidgets.QScrollArea`"
 
-#: janim.gui.popup.painter.Painter.PDot:1
-#: janim.gui.popup.painter.Painter.PRect:1
-#: janim.gui.popup.painter.Painter.PVItem:1 of
+#: janim.gui.popup.painter.Painter.PDot:1 janim.gui.popup.painter.Painter.PRect:1 janim.gui.popup.painter.Painter.PVItem:1
+#: of
 msgid "基类：:py:class:`~janim.gui.popup.painter.Painter.Widget`"
 msgstr "基类：:py:class:`~janim.gui.popup.painter.Painter.Widget`"

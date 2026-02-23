@@ -29,15 +29,11 @@ msgstr "Basic Usage"
 
 #: ../../source/tutorials/value_tracker.rst:9
 msgid "在 JAnim 中，可以使用 :class:`~.ValueTracker` 来变化和跟踪自定义数据的值。"
-msgstr ""
-"In JAnim, you can use :class:`~.ValueTracker` to change and track custom "
-"data values."
+msgstr "In JAnim, you can use :class:`~.ValueTracker` to change and track custom data values."
 
 #: ../../source/tutorials/value_tracker.rst:11
 msgid "例如，下面这个例子我们已经在 :ref:`item_updater_usage` 中提到过："
-msgstr ""
-"For example, the following example was already mentioned in "
-":ref:`item_updater_usage`:"
+msgstr "For example, the following example was already mentioned in :ref:`item_updater_usage`:"
 
 #: ../../source/tutorials/value_tracker.rst:13
 #, python-brace-format
@@ -83,24 +79,18 @@ msgid "在这个例子中，我们可以注意到 :class:`~.ValueTracker` 的两
 msgstr "In this example, we can note two main features of :class:`~.ValueTracker`:"
 
 #: ../../source/tutorials/value_tracker.rst:37
-msgid ""
-"通过 :meth:`~.ValueTracker.set_value` 方法，可以设置数据的新值，并且这个变化可以通过 ``.anim`` "
-"创建为动画"
-msgstr ""
-"Using :meth:`~.ValueTracker.set_value`, you can set a new value, and the "
-"change can be animated with ``.anim``"
+msgid "通过 :meth:`~.ValueTracker.set_value` 方法，可以设置数据的新值，并且这个变化可以通过 ``.anim`` 创建为动画"
+msgstr "Using :meth:`~.ValueTracker.set_value`, you can set a new value, and the change can be animated with ``.anim``"
 
 #: ../../source/tutorials/value_tracker.rst:39
 msgid "通过 :meth:`~.ValueTracker.get_value` 方法，可以获取数据的值"
 msgstr "Using :meth:`~.ValueTracker.get_value`, you can retrieve the value"
 
 #: ../../source/tutorials/value_tracker.rst:43
-msgid ""
-"在 Updater 中，需要使用 :meth:`~.Item.current` 方法来获取当前的动画状态中的 "
-":class:`~.ValueTracker` 实例，即通过"
+msgid "在 Updater 中，需要使用 :meth:`~.Item.current` 方法来获取当前的动画状态中的 :class:`~.ValueTracker` 实例，即通过"
 msgstr ""
-"In an Updater, you need to use :meth:`~.Item.current` to get the "
-":class:`~.ValueTracker` instance in the current animation state, i.e. via"
+"In an Updater, you need to use :meth:`~.Item.current` to get the :class:`~.ValueTracker` instance in the current "
+"animation state, i.e. via"
 
 #: ../../source/tutorials/value_tracker.rst:45
 msgid "tr.current().get_value()"
@@ -117,9 +107,8 @@ msgstr "For :meth:`~.Item.current`, see :ref:`current_usage`."
 #: ../../source/tutorials/value_tracker.rst:53
 msgid ":class:`~.ValueTracker` 不仅支持这种简单数值的变化与跟踪，还支持各种复杂结构，例如列表，字典，``numpy`` 数组等："
 msgstr ""
-":class:`~.ValueTracker` not only supports simple numeric changes and "
-"tracking, but also complex structures such as lists, dicts, and ``numpy``"
-" arrays:"
+":class:`~.ValueTracker` not only supports simple numeric changes and tracking, but also complex structures such as lists, "
+"dicts, and ``numpy`` arrays:"
 
 #: ../../source/tutorials/value_tracker.rst:13
 #, python-brace-format
@@ -230,21 +219,19 @@ msgstr ""
 
 #: ../../source/tutorials/value_tracker.rst:111
 msgid ""
-"在这个例子中，我们使用了一个包含多个字段的字典作为 :class:`~.ValueTracker` 的值，并在 Updater "
-"中根据这些字段来更新点云的位置，旋转，颜色和半径。"
+"在这个例子中，我们使用了一个包含多个字段的字典作为 :class:`~.ValueTracker` 的值，并在 Updater 中根据这些字段来更新点云的位"
+"置，旋转，颜色和半径。"
 msgstr ""
-"In this example, we use a dictionary with multiple fields as the "
-":class:`~.ValueTracker` value, and in the Updater we update the point "
-"cloud's position, rotation, color, and radius based on these fields."
+"In this example, we use a dictionary with multiple fields as the :class:`~.ValueTracker` value, and in the Updater we "
+"update the point cloud's position, rotation, color, and radius based on these fields."
 
 #: ../../source/tutorials/value_tracker.rst:113
 msgid ""
-"相比于 :meth:`~.ValueTracker.set_value` 需要提供完整字段，我们也可以用 "
-":meth:`~.ValueTracker.update_value` 方法来只更新部分字段的值，而不影响其他字段。"
+"相比于 :meth:`~.ValueTracker.set_value` 需要提供完整字段，我们也可以用 :meth:`~.ValueTracker.update_value` 方法来只更新部"
+"分字段的值，而不影响其他字段。"
 msgstr ""
-"Compared to :meth:`~.ValueTracker.set_value` which requires full fields, "
-"you can use :meth:`~.ValueTracker.update_value` to update only some "
-"fields without affecting the others."
+"Compared to :meth:`~.ValueTracker.set_value` which requires full fields, you can use :meth:`~.ValueTracker.update_value` "
+"to update only some fields without affecting the others."
 
 #: ../../source/tutorials/value_tracker.rst:116
 msgid "高级用法"
@@ -253,35 +240,30 @@ msgstr "Advanced Usage"
 #: ../../source/tutorials/value_tracker.rst:118
 msgid "除了基本的数值和结构， :class:`~.ValueTracker` 还支持沿用组件类型，以及注册自定义类型的处理。"
 msgstr ""
-"Besides basic values and structures, :class:`~.ValueTracker` also "
-"supports reusing component types and registering custom types."
+"Besides basic values and structures, :class:`~.ValueTracker` also supports reusing component types and registering custom "
+"types."
 
 #: ../../source/tutorials/value_tracker.rst:122
-msgid "说实话，高级用法的应用场景非常罕见，除非你在开发新的组件或者需要跟踪非常复杂的数据，否则大多数情况下使用基础用法就足够了。"
+msgid ""
+"说实话，高级用法的应用场景非常罕见，除非你在开发新的组件或者需要跟踪非常复杂的数据，否则大多数情况下使用基础用法就足够了。"
 msgstr ""
-"To be honest, advanced usage is rare; unless you are developing new "
-"components or tracking very complex data, basic usage is sufficient in "
-"most cases."
+"To be honest, advanced usage is rare; unless you are developing new components or tracking very complex data, basic usage "
+"is sufficient in most cases."
 
 #: ../../source/tutorials/value_tracker.rst:124
-msgid ""
-"因此以下两个小标题 :ref:`use_component_types` 和 :ref:`register_custom_types` "
-"的内容仅作简单介绍。"
+msgid "因此以下两个小标题 :ref:`use_component_types` 和 :ref:`register_custom_types` 的内容仅作简单介绍。"
 msgstr ""
-"Therefore the following sections :ref:`use_component_types` and "
-":ref:`register_custom_types` are only briefly introduced."
+"Therefore the following sections :ref:`use_component_types` and :ref:`register_custom_types` are only briefly introduced."
 
 #: ../../source/tutorials/value_tracker.rst:129
 msgid "沿用组件类型"
 msgstr "Reusing Component Types"
 
 #: ../../source/tutorials/value_tracker.rst:131
-msgid ""
-"首先我们需要知道，所有 :class:`~.Component` 的子类都可以直接作为 :class:`~.ValueTracker` "
-"的值类型，例如："
+msgid "首先我们需要知道，所有 :class:`~.Component` 的子类都可以直接作为 :class:`~.ValueTracker` 的值类型，例如："
 msgstr ""
-"First, note that all subclasses of :class:`~.Component` can be used "
-"directly as value types for :class:`~.ValueTracker`, for example:"
+"First, note that all subclasses of :class:`~.Component` can be used directly as value types for :class:`~.ValueTracker`, "
+"for example:"
 
 #: ../../source/tutorials/value_tracker.rst:133
 msgid ":class:`~.Cmpt_Points`"
@@ -301,13 +283,11 @@ msgstr "..."
 
 #: ../../source/tutorials/value_tracker.rst:141
 msgid ""
-"虽然说我们可以将组件类型 :class:`~.Cmpt_Points` 作为值类型直接使用，但是对于实际来讲，还是直接操作 "
-":class:`~.Points` 物件或者含义更具体的物件，并在需要时 :meth:`~.Item.current` 会更方便。"
+"虽然说我们可以将组件类型 :class:`~.Cmpt_Points` 作为值类型直接使用，但是对于实际来讲，还是直接操作 :class:`~.Points` 物件"
+"或者含义更具体的物件，并在需要时 :meth:`~.Item.current` 会更方便。"
 msgstr ""
-"Although you can use a component type like :class:`~.Cmpt_Points` as the "
-"value type directly, in practice it is more convenient to operate on "
-":class:`~.Points` items or more specific items, and use "
-":meth:`~.Item.current` when needed."
+"Although you can use a component type like :class:`~.Cmpt_Points` as the value type directly, in practice it is more "
+"convenient to operate on :class:`~.Points` items or more specific items, and use :meth:`~.Item.current` when needed."
 
 #: ../../source/tutorials/value_tracker.rst:146
 msgid "注册自定义类型"
@@ -315,26 +295,23 @@ msgstr "Register Custom Types"
 
 #: ../../source/tutorials/value_tracker.rst:148
 msgid ""
-"如果有一个类没有定义 :class:`~.SupportsTracking` 所需求的三大件 :meth:`~.Component.copy` 、"
-" :meth:`~.Component.not_changed` 以及 :meth:`~.Component.interpolate` ， "
-"那么我们可以通过 :meth:`~.Cmpt_Data.register_funcs` 来注册这些方法，从而让这个类可以作为 "
-":class:`~.ValueTracker` 的值类型。具体使用方法可参考内置类型的注册。"
+"如果有一个类没有定义 :class:`~.SupportsTracking` 所需求的三大"
+"件 :meth:`~.Component.copy` 、 :meth:`~.Component.not_changed` 以及 :meth:`~.Component.interpolate` ， 那么我们可以通"
+"过 :meth:`~.Cmpt_Data.register_funcs` 来注册这些方法，从而让这个类可以作为 :class:`~.ValueTracker` 的值类型。具体使用方法"
+"可参考内置类型的注册。"
 msgstr ""
-"If a class does not define the three methods required by "
-":class:`~.SupportsTracking` (:meth:`~.Component.copy`, "
-":meth:`~.Component.not_changed`, and :meth:`~.Component.interpolate`), "
-"you can register them with :meth:`~.Cmpt_Data.register_funcs` so the "
-"class can be used as a value type for :class:`~.ValueTracker`. See the "
+"If a class does not define the three methods required by :class:`~.SupportsTracking` "
+"(:meth:`~.Component.copy`, :meth:`~.Component.not_changed`, and :meth:`~.Component.interpolate`), you can register them "
+"with :meth:`~.Cmpt_Data.register_funcs` so the class can be used as a value type for :class:`~.ValueTracker`. See the "
 "registration of built-in types for usage."
 
 #: ../../source/tutorials/value_tracker.rst:151
 msgid ""
-"另外，我们可以通过 :meth:`~.Cmpt_Data.register_update_func` 来注册供 "
-":meth:`~.ValueTracker.update_value` 使用的更新方法。具体使用方法可参考内置的 ``dict`` 类型的注册。"
+"另外，我们可以通过 :meth:`~.Cmpt_Data.register_update_func` 来注册供 :meth:`~.ValueTracker.update_value` 使用的更新方法。"
+"具体使用方法可参考内置的 ``dict`` 类型的注册。"
 msgstr ""
-"Additionally, you can use :meth:`~.Cmpt_Data.register_update_func` to "
-"register an update method for :meth:`~.ValueTracker.update_value`. See "
-"the built-in ``dict`` registration for usage."
+"Additionally, you can use :meth:`~.Cmpt_Data.register_update_func` to register an update method "
+"for :meth:`~.ValueTracker.update_value`. See the built-in ``dict`` registration for usage."
 
 #: ../../source/tutorials/value_tracker.rst:154
 msgid "添加自定义的物件数据"
@@ -342,13 +319,11 @@ msgstr "Add Custom Item Data"
 
 #: ../../source/tutorials/value_tracker.rst:156
 msgid ""
-":class:`~.ValueTracker` 的特性完全基于 :class:`~.Cmpt_Data` 组件实现， "
-"你完全可以将其组件添加到任意物件中，从而让你的自定义物件能够灵活地跟踪额外的数据变化，并依据你地需求灵活使用"
+":class:`~.ValueTracker` 的特性完全基于 :class:`~.Cmpt_Data` 组件实现， 你完全可以将其组件添加到任意物件中，从而让你的自定"
+"义物件能够灵活地跟踪额外的数据变化，并依据你地需求灵活使用"
 msgstr ""
-"The features of :class:`~.ValueTracker` are entirely based on the "
-":class:`~.Cmpt_Data` component. You can add this component to any item, "
-"allowing your custom item to flexibly track extra data changes and use "
-"them as needed."
+"The features of :class:`~.ValueTracker` are entirely based on the :class:`~.Cmpt_Data` component. You can add this "
+"component to any item, allowing your custom item to flexibly track extra data changes and use them as needed."
 
 #: ../../source/tutorials/value_tracker.rst:159
 msgid "为了添加这种组件，使用 :class:`~.CustomData` 即可，就像这样："
@@ -375,8 +350,7 @@ msgid ""
 "        avg_speed = value['speed'] + 0.5 * value['accel'] * dt\n"
 "        shift = avg_speed * dt\n"
 "\n"
-"        self.physic.update({ 'speed': value['speed'] + value['accel'] * "
-"dt })\n"
+"        self.physic.update({ 'speed': value['speed'] + value['accel'] * dt })\n"
 "        self.points.shift(shift)\n"
 "\n"
 "        return self\n"
@@ -404,13 +378,11 @@ msgid ""
 "\n"
 "            return Group(vec_speed, vec_accel)\n"
 "\n"
-"        self.prepare(ItemUpdater(None, vectors_updater, "
-"duration=FOREVER))\n"
+"        self.prepare(ItemUpdater(None, vectors_updater, duration=FOREVER))\n"
 "\n"
 "        # 物块运动以及参数变更\n"
 "        self.play(block.do_physic_updater())\n"
-"        block.physic.set({ 'speed': np.array([4, 6, 0]), 'accel': DOWN * "
-"4 })\n"
+"        block.physic.set({ 'speed': np.array([4, 6, 0]), 'accel': DOWN * 4 })\n"
 "        self.play(block.do_physic_updater(), duration=2)\n"
 "        block.physic.update({ 'accel': LEFT * 6 })\n"
 "        self.play(block.do_physic_updater(), duration=2)"
@@ -433,8 +405,7 @@ msgstr ""
 "        avg_speed = value['speed'] + 0.5 * value['accel'] * dt\n"
 "        shift = avg_speed * dt\n"
 "\n"
-"        self.physic.update({ 'speed': value['speed'] + value['accel'] * "
-"dt })\n"
+"        self.physic.update({ 'speed': value['speed'] + value['accel'] * dt })\n"
 "        self.points.shift(shift)\n"
 "\n"
 "        return self\n"
@@ -462,24 +433,20 @@ msgstr ""
 "\n"
 "            return Group(vec_speed, vec_accel)\n"
 "\n"
-"        self.prepare(ItemUpdater(None, vectors_updater, "
-"duration=FOREVER))\n"
+"        self.prepare(ItemUpdater(None, vectors_updater, duration=FOREVER))\n"
 "\n"
 "        # Block motion and parameter changes\n"
 "        self.play(block.do_physic_updater())\n"
-"        block.physic.set({ 'speed': np.array([4, 6, 0]), 'accel': DOWN * "
-"4 })\n"
+"        block.physic.set({ 'speed': np.array([4, 6, 0]), 'accel': DOWN * 4 })\n"
 "        self.play(block.do_physic_updater(), duration=2)\n"
 "        block.physic.update({ 'accel': LEFT * 6 })\n"
 "        self.play(block.do_physic_updater(), duration=2)"
 
 #: ../../source/tutorials/value_tracker.rst:220
-msgid ""
-"其中的 ``physic = CustomData()`` 就是我们添加的自定义数据组件，它的用法和 "
-":class:`~.ValueTracker` 十分相似："
+msgid "其中的 ``physic = CustomData()`` 就是我们添加的自定义数据组件，它的用法和 :class:`~.ValueTracker` 十分相似："
 msgstr ""
-"The ``physic = CustomData()`` here is the custom data component we added,"
-" and its usage is very similar to :class:`~.ValueTracker`:"
+"The ``physic = CustomData()`` here is the custom data component we added, and its usage is very similar "
+"to :class:`~.ValueTracker`:"
 
 #: ../../source/tutorials/value_tracker.rst:222
 msgid "通过 :meth:`~.Cmpt_Data.set` 方法设置数据的值"
@@ -498,7 +465,6 @@ msgid "可以像这样完善其类型注解："
 msgstr "You can refine its type annotations like this:"
 
 #: ../../source/tutorials/value_tracker.rst:230
-#, fuzzy
 msgid ""
 "from typing import TypedDict\n"
 "\n"
@@ -511,6 +477,8 @@ msgid ""
 "\n"
 "    ..."
 msgstr ""
+"from typing import TypedDict\n"
+"\n"
 "class PhysicData(TypedDict):\n"
 "    speed: np.ndarray\n"
 "    accel: np.ndarray\n"
@@ -522,7 +490,4 @@ msgstr ""
 
 #: ../../source/tutorials/value_tracker.rst:245
 msgid "类型注解中的 ``Self`` 是为了让组件的 ``.r`` 正常运作"
-msgstr ""
-"The ``Self`` in the type annotation is to make the component's ``.r`` "
-"work properly"
-
+msgstr "The ``Self`` in the type annotation is to make the component's ``.r`` work properly"

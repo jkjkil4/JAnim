@@ -5,37 +5,30 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: JAnim\n"
+"Project-Id-Version:  JAnim\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-03-14 14:52+0800\n"
+"POT-Creation-Date: 2026-02-24 01:11+0800\n"
 "PO-Revision-Date: 2025-12-29 15:58+0800\n"
 "Last-Translator: \n"
-"Language-Team: en <LL@li.org>\n"
 "Language: en\n"
+"Language-Team: en <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"Generated-By: Babel 2.14.0\n"
-"X-Generator: Poedit 3.8\n"
+"Generated-By: Babel 2.17.0\n"
 
-#: ../../source/janim/gui/fixed_ratio_widget.rst:2
+#: ../../source/janim/gui/utils/fixed_ratio_widget.rst:2
 msgid "fixed_ratio_widget"
 msgstr "fixed_ratio_widget"
 
-#: janim.gui.fixed_ratio_widget.FixedRatioWidget:1 of
-msgid "基类：:py:class:`~PySide6.QtWidgets.QWidget`"
-msgstr "基类：:py:class:`~PySide6.QtWidgets.QWidget`"
-
-#: janim.gui.fixed_ratio_widget.FixedRatioWidget:1 of
+#: janim.gui.utils.fixed_ratio_widget.FixedRatioWidget:1 of
 msgid "使得传入的 ``inside`` 控件可以以固定比例塞在该控件中"
 msgstr "Allows the passed ``inside`` widget to fit within this widget at a fixed ratio"
 
-#: janim.gui.fixed_ratio_widget.get_proportional_scale_size:1 of
+#: janim.gui.utils.fixed_ratio_widget.get_proportional_scale_size:1 of
 msgid ""
-"根据 ``(tg_width, tg_height)`` 的目标大小信息， 得到 ``(src_width, src_height)`` 在进"
-"行等比缩放后能塞进目标区域的最大大小"
+"根据 ``(tg_width, tg_height)`` 的目标大小信息， 得到 ``(src_width, src_height)`` 在进行等比缩放后能塞进目标区域的最大大小"
 msgstr ""
-"Based on the target size information ``(tg_width, tg_height)``, get the maximum size "
-"that ``(src_width, src_height)`` can fit into the target area after proportional "
-"scaling"
+"Based on the target size information ``(tg_width, tg_height)``, get the maximum size that ``(src_width, src_height)`` can "
+"fit into the target area after proportional scaling"

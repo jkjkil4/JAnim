@@ -1,4 +1,4 @@
-﻿# SOME DESCRIPTIVE TITLE.
+# SOME DESCRIPTIVE TITLE.
 # Copyright (C) 2023, jkjkil4
 # This file is distributed under the same license as the JAnim package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2024.
@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: JAnim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-04 09:09+0800\n"
+"POT-Creation-Date: 2026-02-24 01:11+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -22,10 +22,6 @@ msgstr ""
 #: ../../source/janim/items/audio.rst:2
 msgid "audio"
 msgstr "audio"
-
-#: janim.items.audio.Audio:1 of
-msgid "基类：:py:class:`object`"
-msgstr "基类：:py:class:`object`"
 
 #: janim.items.audio.Audio:1 of
 msgid "音频"
@@ -88,12 +84,10 @@ msgid "``audio.mul([1, 0])`` 可以使开始时最强，结束时最弱"
 msgstr "``audio.mul([1, 0])`` can make it strongest at the start and weakest at the end"
 
 #: janim.items.audio.Audio.mul:7 of
-msgid ""
-"``audio.mul(np.sin(np.linspace(0, 2 * np.pi, audio.sample_count())))`` "
-"可以使音高随时间乘以 sin 函数的一个周期"
+msgid "``audio.mul(np.sin(np.linspace(0, 2 * np.pi, audio.sample_count())))`` 可以使音高随时间乘以 sin 函数的一个周期"
 msgstr ""
-"``audio.mul(np.sin(np.linspace(0, 2 * np.pi, audio.sample_count())))`` "
-"can multiply the pitch by one cycle of the sin function over time"
+"``audio.mul(np.sin(np.linspace(0, 2 * np.pi, audio.sample_count())))`` can multiply the pitch by one cycle of the sin "
+"function over time"
 
 #: janim.items.audio.Audio.fade_in:1 of
 msgid "应用 ``duration`` 秒的淡入"
@@ -105,42 +99,35 @@ msgstr "Apply ``duration`` seconds of fade-out"
 
 #: janim.items.audio.Audio.recommended_ranges:1 of
 msgid "得到若干个可用区段 ``(start, end)``，一般用于配音音频，也就是会忽略没声音的部分，得到有声音的区段的起止时间"
-msgstr "Get several usable ranges ``(start, end)``, generally used for voice-over audio, i.e., ignores silent parts and gets the start and end times of segments with sound"
+msgstr ""
+"Get several usable ranges ``(start, end)``, generally used for voice-over audio, i.e., ignores silent parts and gets the "
+"start and end times of segments with sound"
 
 #: janim.items.audio.Audio.recommended_ranges:3 of
 msgid ""
-"与 :meth:`recommended_range` 的区别是，该方法得到的是若干个区段， "
-"举个例子，如果在讲了一句话后停了一会，再接着讲，那么前后就会被分成两段"
+"与 :meth:`recommended_range` 的区别是，该方法得到的是若干个区段， 举个例子，如果在讲了一句话后停了一会，再接着讲，那么前后"
+"就会被分成两段"
 msgstr ""
-"The difference from :meth:`recommended_range` is that this method returns "
-"several segments. For example, if there's a pause after speaking a sentence "
-"and then speaking again, it will be divided into two segments"
+"The difference from :meth:`recommended_range` is that this method returns several segments. For example, if there's a "
+"pause after speaking a sentence and then speaking again, it will be divided into two segments"
 
-#: janim.items.audio.Audio.recommended_range:5
-#: janim.items.audio.Audio.recommended_ranges:6 of
+#: janim.items.audio.Audio.recommended_range:5 janim.items.audio.Audio.recommended_ranges:6 of
 msgid "``amplitude_threshould_ratio``: 振幅低于该比率的就认为是没声音的"
 msgstr "``amplitude_threshould_ratio``: Amplitudes below this ratio are considered silent"
 
 #: janim.items.audio.Audio.recommended_ranges:7 of
 msgid "``gap_duration``: 如果没声音的时长大于该时间，则将前后分段"
-msgstr "``gap_duration``: If the duration of silence is greater than this time, the segments before and after will be separated"
+msgstr ""
+"``gap_duration``: If the duration of silence is greater than this time, the segments before and after will be separated"
 
 #: janim.items.audio.Audio.recommended_range:1 of
 msgid "得到可用区段 ``(start, end)``，一般用于配音音频，也就是会忽略没声音的部分，得到有声音的区段的起止时间"
-msgstr "Get a usable range ``(start, end)``, generally used for voice-over audio, i.e., ignores silent parts and gets the start and end times of segments with sound"
+msgstr ""
+"Get a usable range ``(start, end)``, generally used for voice-over audio, i.e., ignores silent parts and gets the start "
+"and end times of segments with sound"
 
 #: janim.items.audio.Audio.recommended_range:3 of
 msgid "与 :meth:`recommended_ranges` 的区别是，该方法得到的是最开始到最末尾的整个区段"
-msgstr "The difference from :meth:`recommended_ranges` is that this method returns the entire segment from the beginning to the end"
-
-#~ msgid "不建议使用该类处理多声道音频，因为该类读取时仅保留单声道"
-#~ msgstr ""
-
-#~ msgid "在默认情况下该类读取时仅保留单声道"
-#~ msgstr ""
-
-#~ msgid "若需要双声道需要配置 ``audio_channels`` 选项"
-#~ msgstr ""
-
-
-
+msgstr ""
+"The difference from :meth:`recommended_ranges` is that this method returns the entire segment from the beginning to the "
+"end"

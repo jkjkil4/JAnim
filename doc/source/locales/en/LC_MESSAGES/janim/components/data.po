@@ -77,7 +77,6 @@ msgid "可以完善类型注解"
 msgstr "You can refine the type annotations"
 
 #: janim.components.data.CustomData:18 of
-#, fuzzy
 msgid ""
 "from typing import TypedDict\n"
 "\n"
@@ -90,6 +89,8 @@ msgid ""
 "\n"
 "    ..."
 msgstr ""
+"from typing import TypedDict\n"
+"\n"
 "class PhysicData(TypedDict):\n"
 "    speed: np.ndarray\n"
 "    accel: np.ndarray\n"
@@ -98,4 +99,3 @@ msgstr ""
 "    physic = CustomData[Self, PhysicData]()\n"
 "\n"
 "    ..."
-

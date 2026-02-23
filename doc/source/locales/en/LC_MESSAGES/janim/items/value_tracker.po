@@ -25,9 +25,7 @@ msgstr "value_tracker"
 
 #: janim.items.value_tracker.ValueTracker:1 of
 msgid "记录一个数值数据（传入的数据作为初始值），可以进行动画插值"
-msgstr ""
-"Records a numerical value (the passed data as the initial value), can "
-"perform animation interpolation"
+msgstr "Records a numerical value (the passed data as the initial value), can perform animation interpolation"
 
 #: janim.items.value_tracker.ValueTracker:3 of
 msgid "例如："
@@ -51,9 +49,7 @@ msgstr ""
 
 #: janim.items.value_tracker.ValueTracker:14 of
 msgid "详情另见文档 :ref:`基础用法 <value_tracker_basic>` 中对 :class:`ValueTracker` 用法的介绍"
-msgstr ""
-"For more details, see the introduction to :class:`ValueTracker` in "
-":ref:`Basic Usage <value_tracker_basic>`"
+msgstr "For more details, see the introduction to :class:`ValueTracker` in :ref:`Basic Usage <value_tracker_basic>`"
 
 #: janim.items.value_tracker.ValueTracker.set_value:1 of
 msgid "设置当前值"
@@ -72,15 +68,7 @@ msgid "基于字典的部分项更新原有字典"
 msgstr "Partially update the original dictionary based on the given dictionary"
 
 #~ msgid "可以使用 :meth:`~.Cmpt_Data.set_func` 自定义插值以及其它的行为"
-#~ msgstr ""
-#~ "You can use :meth:`~.Cmpt_Data.set_func` to"
-#~ " customize interpolation and other "
-#~ "behaviors"
+#~ msgstr "You can use :meth:`~.Cmpt_Data.set_func` to customize interpolation and other behaviors"
 
-#~ msgid ""
-#~ "详情另见文档 https://janim.readthedocs.io/zh-"
-#~ "cn/latest/tutorials/value_tracker.html"
-#~ msgstr ""
-#~ "For details, see "
-#~ "https://janim.readthedocs.io/en/latest/tutorials/value_tracker.html"
-
+#~ msgid "详情另见文档 https://janim.readthedocs.io/zh-cn/latest/tutorials/value_tracker.html"
+#~ msgstr "For details, see https://janim.readthedocs.io/en/latest/tutorials/value_tracker.html"

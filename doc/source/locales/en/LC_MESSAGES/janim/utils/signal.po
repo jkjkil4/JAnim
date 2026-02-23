@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  JAnim\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-09 11:18+0800\n"
+"POT-Creation-Date: 2026-02-24 01:11+0800\n"
 "PO-Revision-Date: 2024-06-03 10:26+0800\n"
 "Last-Translator: \n"
 "Language: en\n"
@@ -26,17 +26,8 @@ msgstr "signal"
 #: ../../source/rst_utils/tip_of_complex.rst:3
 msgid "这部分内容涉及 JAnim 实现原理，可能较为复杂，若没有研究源码的需求，你应酌情阅读"
 msgstr ""
-"This section covers the implementations of JAnim, which may be "
-"quite complex. If you do not have the need to delve into the source code,"
-" you may choose to read it at your discretion."
-
-#: janim.utils.signal.Signal:1 of
-msgid ""
-"基类：:py:class:`~typing.Generic`\\ [:py:obj:`~typing.T`, "
-":py:obj:`~typing.P`, :py:obj:`~typing.R`]"
-msgstr ""
-"Base class: :py:class:`~typing.Generic`\\ [:py:obj:`~typing.T`, "
-":py:obj:`~typing.P`, :py:obj:`~typing.R`]"
+"This section covers the implementations of JAnim, which may be quite complex. If you do not have the need to delve into "
+"the source code, you may choose to read it at your discretion."
 
 #: janim.utils.signal.Signal.self_slot:1 of
 msgid "被修饰的方法会在 ``Signal`` 触发时被调用"
@@ -44,21 +35,15 @@ msgstr "The decorated method will be called when the ``Signal`` is triggered"
 
 #: janim.utils.signal.Signal.self_refresh:1 of
 msgid "被修饰的方法会在 ``Signal`` 触发时，标记需要重新计算"
-msgstr ""
-"The decorated method will be marked as needing to be recalculated when "
-"the ``Signal`` is triggered"
+msgstr "The decorated method will be marked as needing to be recalculated when the ``Signal`` is triggered"
 
 #: janim.utils.signal.Signal.self_refresh_with_recurse:1 of
 msgid "被修饰的方法会在 :class:`~.Signal` 触发时，标记需要重新计算"
-msgstr ""
-"The decorated method will be marked as needing to be recalculated when "
-"the :class:`~.Signal` is triggered"
+msgstr "The decorated method will be marked as needing to be recalculated when the :class:`~.Signal` is triggered"
 
 #: janim.utils.signal.Signal.self_refresh_with_recurse:3 of
 msgid "并且会根据 ``recurse_up`` 和 ``recurse_down`` 进行递归传递"
-msgstr ""
-"And will recursively propagate according to ``recurse_up`` and "
-"``recurse_down``"
+msgstr "And will recursively propagate according to ``recurse_up`` and ``recurse_down``"
 
 #: janim.utils.signal.Signal.connect:1 of
 msgid "使 ``func`` 会在 ``Signal`` 触发时被调用"
@@ -66,20 +51,13 @@ msgstr "Makes ``func`` called when the ``Signal`` is triggered"
 
 #: janim.utils.signal.Signal.connect_refresh:1 of
 msgid "使 ``func`` 会在 ``Signal`` 触发时被标记为需要重新计算"
-msgstr ""
-"Makes ``func`` marked as needing to be recalculated when the ``Signal`` "
-"is triggered"
+msgstr "Makes ``func`` marked as needing to be recalculated when the ``Signal`` is triggered"
 
 #~ msgid "一般用于在 ``func`` 造成影响后，需要对其它数据进行更新时进行作用"
-#~ msgstr ""
-#~ "Generally used to make updates in "
-#~ "other data after an impact caused "
-#~ "by ``func``"
+#~ msgstr "Generally used to make updates in other data after an impact caused by ``func``"
 
 #~ msgid "当 ``func`` 被该类修饰，使用 ``Class.func.emit(self)`` 后，"
-#~ msgstr ""
-#~ "When ``func`` is decorated with this "
-#~ "class, after using ``Class.func.emit(self)``,"
+#~ msgstr "When ``func`` is decorated with this class, after using ``Class.func.emit(self)``,"
 
 #~ msgid "对于 ``self_`` 型（修饰）："
 #~ msgstr "For ``self_`` type (decorator):"
@@ -88,18 +66,12 @@ msgstr ""
 #~ msgstr "It will call all methods decorated with ``func.self_slot()``"
 
 #~ msgid "会将所有被 ``func.self_refresh()`` 修饰的方法标记需要重新计算"
-#~ msgstr ""
-#~ "It will mark all methods decorated "
-#~ "with ``func.self_refresh()`` as needing to "
-#~ "be recalculated"
+#~ msgstr "It will mark all methods decorated with ``func.self_refresh()`` as needing to be recalculated"
 
-#~ msgid ""
-#~ "``func.self_refresh_with_recurse()`` 与 "
-#~ "``func.self_refresh()`` 相比，还可以传入 ``recurse_up/down``"
+#~ msgid "``func.self_refresh_with_recurse()`` 与 ``func.self_refresh()`` 相比，还可以传入 ``recurse_up/down``"
 #~ msgstr ""
-#~ "Compared to ``func.self_refresh()``, "
-#~ "``func.self_refresh_with_recurse()`` can also take"
-#~ " ``recurse_up/down`` as arguments"
+#~ "Compared to ``func.self_refresh()``, ``func.self_refresh_with_recurse()`` can also take ``recurse_up/down`` as "
+#~ "arguments"
 
 #~ msgid "对于 普通型（绑定）："
 #~ msgstr "For the normal type (connecting):"
@@ -108,44 +80,28 @@ msgstr ""
 #~ msgstr "It will call all methods recorded through ``func.connect(...)``"
 
 #~ msgid "会将所有被 ``func.connect_refresh(...)`` 记录的方法标记需要重新计算"
-#~ msgstr ""
-#~ "It will mark all methods recorded "
-#~ "through ``func.connect_refresh(...)`` as needing "
-#~ "to be recalculated"
+#~ msgstr "It will mark all methods recorded through ``func.connect_refresh(...)`` as needing to be recalculated"
 
 #~ msgid "提醒："
 #~ msgstr "Tips:"
 
 #~ msgid "可以在上述方法中传入 ``key`` 参数以区分调用"
-#~ msgstr ""
-#~ "``key`` parameter can be passed to "
-#~ "distinguish the call in the above "
-#~ "methods"
+#~ msgstr "``key`` parameter can be passed to distinguish the call in the above methods"
 
 #~ msgid "``emit`` 方法可以传入额外的参数给被调用的 ``slots``"
-#~ msgstr ""
-#~ "Extra arguments can be passed to "
-#~ "the called ``slots`` in the ``emit`` "
-#~ "method"
+#~ msgstr "Extra arguments can be passed to the called ``slots`` in the ``emit`` method"
 
 #~ msgid "注意："
 #~ msgstr "Note:"
 
 #~ msgid "以 ``self_`` 开头的修饰器所修饰的方法需要与 ``func`` 在同一个类或者其子类中"
 #~ msgstr ""
-#~ "Methods decorated with modifiers starting "
-#~ "with ``self_`` need to be in the"
-#~ " same class or its subclass as "
-#~ "``func``"
+#~ "Methods decorated with modifiers starting with ``self_`` need to be in the same class or its subclass as ``func``"
 
-#~ msgid ""
-#~ "``Signal`` 的绑定与触发相关的调用需要从类名 ``Cls.func.xxx`` 访问，因为"
-#~ " ``obj.func.xxx`` 得到的是原方法"
+#~ msgid "``Signal`` 的绑定与触发相关的调用需要从类名 ``Cls.func.xxx`` 访问，因为 ``obj.func.xxx`` 得到的是原方法"
 #~ msgstr ""
-#~ "Binding and triggering related calls of"
-#~ " ``Signal`` need to be accessed from"
-#~ " the class name ``Cls.func.xxx`` because"
-#~ " ``obj.func.xxx`` gets the original method"
+#~ "Binding and triggering related calls of ``Signal`` need to be accessed from the class name ``Cls.func.xxx`` because "
+#~ "``obj.func.xxx`` gets the original method"
 
 #~ msgid "例:"
 #~ msgstr "Example:"
@@ -161,4 +117,3 @@ msgstr ""
 
 #~ msgid "触发 ``Signal``"
 #~ msgstr "Triggers the ``Signal``"
-
