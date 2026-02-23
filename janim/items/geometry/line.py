@@ -346,10 +346,10 @@ class TangentLine(Line):
 
 class Elbow(MarkedItem, VItem):
     """
-    折线（一般用作直角符号）
+    折线（一般用作直角符号），关于直接基于两条线创建的直角符号，另请参见 :class:`~.RightAngle`
 
-    - ``width`` 表示宽度
-    - ``angle`` 表示角度
+    :param width: 直角标记的边长
+    :param angle: 起始角度
     """
     def __init__(
         self,
