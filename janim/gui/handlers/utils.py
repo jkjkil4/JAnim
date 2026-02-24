@@ -15,7 +15,7 @@ from janim.anims.timeline import Timeline
 from janim.exception import GuiCommandError
 from janim.gui.utils import apply_popup_flags
 from janim.items.item import Item
-from janim.locale.i18n import get_translator
+from janim.locale import get_translator
 from janim.logger import log
 from janim.utils.config import Config
 from janim.utils.file_ops import get_gui_asset

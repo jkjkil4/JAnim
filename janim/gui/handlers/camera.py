@@ -15,7 +15,7 @@ from janim.exception import GuiCommandError
 from janim.gui.handlers.utils import (HandlerPanel, SourceDiff,
                                       get_confirm_buttons,
                                       get_undo_redo_buttons, jump, parse_item)
-from janim.locale.i18n import get_translator
+from janim.locale import get_translator
 from janim.utils.space_ops import normalize
 
 if TYPE_CHECKING:

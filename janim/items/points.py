@@ -13,7 +13,7 @@ from janim.components.radius import Cmpt_Radius
 from janim.components.rgbas import Cmpt_Rgbas, apart_alpha
 from janim.exception import GetItemError
 from janim.items.item import Item
-from janim.locale.i18n import get_translator
+from janim.locale import get_translator
 from janim.render.renderer_dotcloud import DotCloudRenderer
 from janim.typing import Alpha, ColorArray, JAnimColor, Vect
 from janim.utils.data import AlignedData

@@ -9,7 +9,7 @@ from janim.anims.display import Display
 from janim.constants import FOREVER
 from janim.exception import ApplyAlignerBrokenError
 from janim.items.item import Item
-from janim.locale.i18n import get_translator
+from janim.locale import get_translator
 
 type ComputeAnimsGenerator = Generator[ApplyAligner, None, Item]
 

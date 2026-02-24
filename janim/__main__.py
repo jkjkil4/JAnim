@@ -1,7 +1,7 @@
 import os
 from argparse import ArgumentParser, Namespace
 
-from janim.locale.i18n import get_translator, set_lang
+from janim.locale import get_translator, set_lang
 from janim.utils.file_ops import get_janim_dir
 
 _ = get_translator('janim.__main__')

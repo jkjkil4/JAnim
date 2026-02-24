@@ -18,7 +18,7 @@ from janim.anims.timeline import BuiltTimeline, Timeline, TimelineItem
 from janim.gui.label import (LABEL_DEFAULT_HEIGHT, LABEL_PIXEL_HEIGHT_PER_UNIT,
                              Label, LabelGroup, LazyLabelGroup, PixelRange)
 from janim.items.item import Item
-from janim.locale.i18n import get_translator
+from janim.locale import get_translator
 from janim.utils.bezier import interpolate
 from janim.utils.rate_functions import linear
 from janim.utils.simple_functions import clip

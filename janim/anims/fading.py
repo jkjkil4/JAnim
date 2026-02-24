@@ -13,7 +13,7 @@ from janim.items.item import Item
 from janim.items.points import Points
 from janim.typing import Vect
 from janim.utils.paths import PathFunc, get_path_func
-from janim.locale.i18n import get_translator
+from janim.locale import get_translator
 
 _ = get_translator('janim.anims.fading')
 

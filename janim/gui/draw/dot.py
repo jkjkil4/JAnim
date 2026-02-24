@@ -6,7 +6,7 @@ from PySide6.QtWidgets import QCheckBox
 from janim.gui.draw.base import (ACTIVE_COLOR, INACTIVE_COLOR, Draw,
                                  point_to_str)
 from janim.gui.utils.text_edit import TextEdit
-from janim.locale.i18n import get_translator
+from janim.locale import get_translator
 
 _ = get_translator('janim.gui.draw.dot')
 

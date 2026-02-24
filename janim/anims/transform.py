@@ -21,7 +21,7 @@ from janim.items.item import Item
 from janim.items.points import Points
 from janim.items.text import Text, TextChar, TextLine
 from janim.items.vitem import VItem
-from janim.locale.i18n import get_translator
+from janim.locale import get_translator
 from janim.logger import log
 from janim.typing import Vect
 from janim.utils.data import AlignedData

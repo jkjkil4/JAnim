@@ -10,7 +10,7 @@ from janim.gui.popup.draw_panel import DrawPanel
 from janim.gui.popup.font_table import FontTable
 from janim.gui.popup.richtext_editor import RichTextEditor
 from janim.gui.utils import apply_popup_flags
-from janim.locale.i18n import get_translator
+from janim.locale import get_translator
 
 if TYPE_CHECKING:
     from janim.gui.anim_viewer import AnimViewer

@@ -1,7 +1,7 @@
 import threading
 from queue import Empty, Full, Queue
 
-from janim.locale.i18n import get_translator
+from janim.locale import get_translator
 from janim.logger import log
 
 _ = get_translator('janim.gui.utils.audio_player')

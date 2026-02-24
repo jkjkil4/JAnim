@@ -10,7 +10,7 @@ import moderngl as mgl
 import numpy as np
 
 from janim.camera.camera_info import CameraInfo
-from janim.locale.i18n import get_translator
+from janim.locale import get_translator
 from janim.utils.iterables import resize_with_interpolation
 
 if TYPE_CHECKING:

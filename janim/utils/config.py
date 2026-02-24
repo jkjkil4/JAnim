@@ -12,7 +12,7 @@ import psutil
 from colour import Color
 
 from janim.constants import DEFAULT_ITEM_TO_EDGE_BUFF, DOWN, LEFT, RIGHT, UP
-from janim.locale.i18n import get_translator
+from janim.locale import get_translator
 from janim.typing import Vect
 from janim.utils.file_ops import guarantee_existence
 

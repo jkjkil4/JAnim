@@ -9,7 +9,7 @@ from janim.constants import (BLACK, DL, DR, ORIGIN, PI, RIGHT, TAU, UL, UR,
 from janim.items.geometry.arc import ArcBetweenPoints
 from janim.items.points import MarkedItem
 from janim.items.vitem import VItem
-from janim.locale.i18n import get_translator
+from janim.locale import get_translator
 from janim.typing import Vect, VectArray
 from janim.utils.bezier import PathBuilder
 from janim.utils.iterables import adjacent_n_tuples

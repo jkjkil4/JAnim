@@ -19,7 +19,7 @@ from janim.constants import DL, DR, OUT, UL, UR
 from janim.exception import (EXITCODE_FFMPEG_NOT_FOUND, EXITCODE_FFPROBE_ERROR,
                              ExitException)
 from janim.items.points import Points
-from janim.locale.i18n import get_translator
+from janim.locale import get_translator
 from janim.logger import log
 from janim.render.renderer_imageitem import ImageItemRenderer
 from janim.render.renderer_video import VideoRenderer

@@ -11,7 +11,7 @@ import numpy as np
 
 from janim.components.component import CmptInfo, Component
 from janim.exception import JAnimException
-from janim.locale.i18n import get_translator
+from janim.locale import get_translator
 from janim.logger import log
 from janim.typing import SupportsTracking
 from janim.utils.bezier import interpolate

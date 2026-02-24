@@ -7,7 +7,7 @@ from PySide6.QtGui import QColor, QMouseEvent, QPainter, QPaintEvent
 
 from janim.gui.handlers.select import (ItemBox, compute_boxes_of_children,
                                        select_next_item_at_position)
-from janim.locale.i18n import get_translator
+from janim.locale import get_translator
 
 if TYPE_CHECKING:
     from janim.camera.camera_info import CameraInfo

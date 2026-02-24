@@ -10,7 +10,7 @@ from janim.gui.draw.base import (ACTIVE_COLOR, INACTIVE_COLOR, DrawOnce,
                                  point_to_str)
 from janim.gui.draw.filter import OneEuroVec2
 from janim.gui.utils.text_edit import TextEdit
-from janim.locale.i18n import get_translator
+from janim.locale import get_translator
 from janim.utils.bezier import smooth_quadratic_path
 from janim.utils.iterables import (resize_preserving_head_and_tail,
                                    resize_with_interpolation)

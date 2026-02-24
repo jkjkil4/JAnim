@@ -8,7 +8,7 @@ from typing import Iterable, Self, overload
 import numpy as np
 import numpy.typing as npt
 
-from janim.locale.i18n import get_translator
+from janim.locale import get_translator
 
 _ = get_translator('janim.utils.data')
 

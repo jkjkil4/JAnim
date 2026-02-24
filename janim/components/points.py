@@ -14,7 +14,7 @@ from janim.constants import (DEFAULT_ITEM_TO_EDGE_BUFF,
                              MED_SMALL_BUFF, ORIGIN, OUT, PI, RIGHT, UP)
 from janim.exception import InvaildMatrixError, PointError
 from janim.items.item import Item
-from janim.locale.i18n import get_translator
+from janim.locale import get_translator
 from janim.typing import Vect, VectArray
 from janim.utils.bezier import integer_interpolate, interpolate
 from janim.utils.config import Config

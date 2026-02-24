@@ -13,7 +13,7 @@ from typing import Callable
 from janim.anims.timeline import BuiltTimeline, Timeline
 from janim.exception import (EXITCODE_MODULE_NOT_FOUND, EXITCODE_NOT_FILE,
                              ExitException)
-from janim.locale.i18n import get_translator
+from janim.locale import get_translator
 from janim.logger import log
 from janim.utils.config import cli_config, default_config
 from janim.utils.file_ops import STDIN_FILENAME, open_file

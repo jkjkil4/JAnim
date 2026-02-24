@@ -5,7 +5,7 @@ from pathlib import Path
 import moderngl as mgl
 
 from janim.exception import ShaderInjectionNotFoundError
-from janim.locale.i18n import get_translator
+from janim.locale import get_translator
 from janim.utils.file_ops import (find_file, find_file_in_path, get_janim_dir,
                                   readall)
 

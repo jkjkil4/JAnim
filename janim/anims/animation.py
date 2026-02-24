@@ -9,7 +9,7 @@ from typing import TYPE_CHECKING, Callable, Iterable, Self, overload
 from janim.constants import C_LABEL_ANIM_DEFAULT, DEFAULT_DURATION, FOREVER
 from janim.exception import AnimationError
 from janim.items.item import Item
-from janim.locale.i18n import get_translator
+from janim.locale import get_translator
 from janim.typing import ForeverType
 from janim.utils.rate_functions import RateFunc, linear, smooth
 

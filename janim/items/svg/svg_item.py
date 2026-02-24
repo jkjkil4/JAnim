@@ -16,7 +16,7 @@ from janim.items.item import Item
 from janim.items.points import Group
 from janim.items.text import BasepointVItem, Text, TextLine
 from janim.items.vitem import VItem
-from janim.locale.i18n import get_translator
+from janim.locale import get_translator
 from janim.logger import log
 from janim.utils.bezier import PathBuilder, quadratic_bezier_points_for_arc
 from janim.utils.config import Config

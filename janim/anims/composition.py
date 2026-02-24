@@ -2,7 +2,7 @@ from typing import Iterable, Self
 
 from janim.anims.animation import Animation, TimeAligner
 from janim.exception import AnimGroupError, NotAnimationError
-from janim.locale.i18n import get_translator
+from janim.locale import get_translator
 from janim.typing import SupportsAnim
 from janim.utils.rate_functions import RateFunc, linear
 

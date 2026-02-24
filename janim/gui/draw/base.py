@@ -8,7 +8,7 @@ from PySide6.QtGui import QColor, QPainter
 from PySide6.QtWidgets import (QLabel, QLayout, QScrollArea, QVBoxLayout,
                                QWidget)
 
-from janim.locale.i18n import get_translator
+from janim.locale import get_translator
 
 if TYPE_CHECKING:
     from janim.gui.anim_viewer import AnimViewer

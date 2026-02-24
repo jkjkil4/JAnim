@@ -15,7 +15,7 @@ from janim.components.component import CmptInfo, Component, _CmptGroup
 from janim.components.depth import Cmpt_Depth
 from janim.exception import AsTypeError, GetItemError
 from janim.items.relation import Relation
-from janim.locale.i18n import get_translator
+from janim.locale import get_translator
 from janim.logger import log
 from janim.render.base import Renderer
 from janim.typing import SupportsApartAlpha

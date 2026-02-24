@@ -7,7 +7,7 @@ from PySide6.QtWidgets import (QHBoxLayout, QHeaderView, QLabel, QLineEdit,
                                QTableWidget, QTableWidgetItem, QVBoxLayout,
                                QWidget)
 
-from janim.locale.i18n import get_translator
+from janim.locale import get_translator
 from janim.utils.file_ops import get_gui_asset
 from janim.utils.font.database import get_database
 

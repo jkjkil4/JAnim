@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING, Callable, Generator, Self, overload
 import janim.utils.refresh as refresh
 from janim.anims.method_updater_meta import METHOD_UPDATER_KEY
 from janim.exception import CmptGroupLookupError
-from janim.locale.i18n import get_translator
+from janim.locale import get_translator
 from janim.utils.data import AlignedData
 from janim.utils.signal import SIGNAL_OBJ_SLOTS_NAME
 

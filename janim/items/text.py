@@ -18,7 +18,7 @@ from janim.exception import ColorNotFoundError
 from janim.items.geometry.line import Line
 from janim.items.points import Group, MarkedItem
 from janim.items.vitem import VItem
-from janim.locale.i18n import get_translator
+from janim.locale import get_translator
 from janim.logger import log
 from janim.typing import JAnimColor, Vect
 from janim.utils.config import Config

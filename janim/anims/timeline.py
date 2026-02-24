@@ -37,7 +37,7 @@ from janim.items.points import Group, Point
 from janim.items.shape_matchers import SurroundingRect
 from janim.items.svg.typst import TypstText
 from janim.items.text import Text
-from janim.locale.i18n import get_translator
+from janim.locale import get_translator
 from janim.logger import log
 from janim.render.base import (RenderData, Renderer, apply_blend_flags,
                                create_context_430_or_330)

@@ -34,7 +34,7 @@ from janim.gui.utils import ACTION_WIDGET_FLAG_KEY
 from janim.gui.utils.audio_player import AudioPlayer
 from janim.gui.utils.fixed_ratio_widget import FixedRatioWidget
 from janim.gui.utils.precise_timer import PreciseTimerWithFPS
-from janim.locale.i18n import get_translator
+from janim.locale import get_translator
 from janim.logger import log
 from janim.utils.config import Config
 from janim.utils.file_ops import (STDIN_FILENAME, get_gui_asset,

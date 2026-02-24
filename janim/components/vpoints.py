@@ -12,7 +12,7 @@ from janim.components.points import Cmpt_Points, PointsFn
 from janim.constants import DEGREES, NAN_POINT, ORIGIN, OUT, RIGHT, UP
 from janim.exception import PointError
 from janim.items.item import Item, mockable
-from janim.locale.i18n import get_translator
+from janim.locale import get_translator
 from janim.logger import log
 from janim.typing import Vect, VectArray
 from janim.utils.bezier import (PathBuilder,

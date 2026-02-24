@@ -18,7 +18,7 @@ from janim.gui.handlers.utils import (HandlerPanel, SourceDiff,
                                       get_undo_redo_buttons, jump, parse_item)
 from janim.items.item import Item
 from janim.items.points import Points
-from janim.locale.i18n import get_translator
+from janim.locale import get_translator
 from janim.utils.space_ops import normalize
 
 if TYPE_CHECKING:

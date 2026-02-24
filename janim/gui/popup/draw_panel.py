@@ -8,7 +8,7 @@ from PySide6.QtWidgets import (QHBoxLayout, QLabel, QRadioButton, QTabWidget,
                                QVBoxLayout, QWidget)
 
 from janim.gui.draw import Draw, draw_handlers
-from janim.locale.i18n import get_translator
+from janim.locale import get_translator
 from janim.utils.file_ops import get_gui_asset
 
 if TYPE_CHECKING:

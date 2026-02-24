@@ -4,7 +4,7 @@ from janim.exception import InvalidOrdinalError
 from janim.items.points import Group, Points
 from janim.items.svg.svg_item import SVGElemItem
 from janim.items.svg.typst import TypstText
-from janim.locale.i18n import get_translator
+from janim.locale import get_translator
 
 type TypMatDelim = Literal['(', ')', '[', ']', '{', '}', '|', 'none']
 type TypAlignment = Literal['start', 'end', 'left', 'center', 'right', 'top', 'horizon', 'bottom']
