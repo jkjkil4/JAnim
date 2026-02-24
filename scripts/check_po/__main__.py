@@ -1,5 +1,5 @@
 """
-Check .po files for untranslated (or fuzzy) entries using msgfmt --statistics.
+Check .po files for untranslated or fuzzy entries using msgfmt --statistics.
 """
 
 from __future__ import annotations
@@ -99,10 +99,10 @@ def main(target: str, lang: str) -> int:
     exit_code = 0
     if missing_entries:
         total_missing = sum(count for _, count in missing_entries)
-        console.print('\nFiles with untranslated entries:', style='bold yellow')
+        console.print('\nFiles with untranslated or fuzzy entries:', style='bold yellow')
         for rel_path, missing in missing_entries:
             console.print(f'  • {rel_path} ({missing})', style='yellow')
-        console.print(f'\nTotal untranslated entries: {total_missing}.', style='bold yellow')
+        console.print(f'\nTotal untranslated or fuzzy entries: {total_missing}.', style='bold yellow')
         exit_code = 2
 
     if skipped_files:
@@ -117,7 +117,7 @@ def main(target: str, lang: str) -> int:
 
 if __name__ == '__main__':
     parser = ArgumentParser(
-        description='Check .po files for untranslated (or fuzzy) entries.',
+        description='Check .po files for untranslated or fuzzy entries.',
         epilog='Examples:\n'
                '  python scripts check-po docs en\n'
                '  python scripts check-po code zh_CN',
