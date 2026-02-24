@@ -3,117 +3,251 @@
 # This file is distributed under the same license as the JAnim package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2024.
 #
-#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: JAnim\n"
+"Project-Id-Version:  JAnim\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-22 21:20+0800\n"
+"POT-Creation-Date: 2026-02-25 00:59+0800\n"
 "PO-Revision-Date: 2025-11-22 21:39+0800\n"
 "Last-Translator: \n"
-"Language-Team: en <LL@li.org>\n"
 "Language: en\n"
+"Language-Team: en <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "Generated-By: Babel 2.17.0\n"
-"X-Generator: Poedit 3.8\n"
 
-#: ../../source/development/contribute-to-prog-i18n.rst:2
-msgid "为程序国际化作出贡献"
-msgstr "Contribute to Internationalization of the Program"
+#: ../../source/development/contribute-to-prog-i18n.rst:4
+msgid "贡献程序国际化"
+msgstr "Contribute to Program Internationalization"
 
 #: ../../source/development/contribute-to-prog-i18n.rst:6
+msgid "在 JAnim 中的程序国际化，包括翻译程序运行时的提示信息、错误信息、CLI 文本、GUI 界面文本等。"
+msgstr "Program internationalization in JAnim includes translating runtime prompts, error messages, CLI text, GUI text, and more."
+
+#: ../../source/development/contribute-to-prog-i18n.rst:10
 msgid ""
-"对于程序国际化而言，英文（en）和中文（zh_CN）是良好维护的， 如果你有需要给程序提供到其它语言的翻译，可以考虑进一步阅读这一"
-"部分"
+"对于程序国际化而言，英文（en）和中文（zh_CN）是良好维护的。 如果你有需要为程序提供其它语言的翻译，可以继续阅读本文档。"
 msgstr ""
 "For program internationalization, English (en) and Chinese (zh_CN) are well maintained. \n"
-"If you need to provide translations for the program in other languages, consider reading this section further."
-
-#: ../../source/development/contribute-to-prog-i18n.rst:9
-msgid "否则，你可以略过程序国际化的这部分"
-msgstr "Otherwise, you can skip this part on program internationalization."
-
-#: ../../source/development/contribute-to-prog-i18n.rst:12
-msgid "生成翻译文件"
-msgstr "Generating Translation Files"
+"If you need to provide translations for the program in other languages, continue reading this document."
 
 #: ../../source/development/contribute-to-prog-i18n.rst:14
-msgid "请确保安装了 `GNU gettext <https://www.gnu.org/software/gettext/>`_"
-msgstr "Please ensure you have `GNU gettext <https://www.gnu.org/software/gettext/>`_ installed."
+msgid "准备环境"
+msgstr "Prepare the Environment"
+
+#: ../../source/development/contribute-to-prog-i18n.rst:16
+msgid "假设你已经 fork 仓库并 clone 到了本地。"
+msgstr "Assume you have already forked the repository and cloned it locally."
 
 #: ../../source/development/contribute-to-prog-i18n.rst:18
-msgid "翻译流程可参考 `<https://www.sphinx-doc.org/en/master/usage/advanced/intl.html>`_"
-msgstr "The translation process can be found at `<https://www.sphinx-doc.org/en/master/usage/advanced/intl.html>`_"
+msgid "使用 ``cd JAnim`` 进入项目文件夹，然后安装必要的环境："
+msgstr "Use ``cd JAnim`` to enter the project folder, then install the required environment:"
 
 #: ../../source/development/contribute-to-prog-i18n.rst:20
-msgid "提取可翻译的文本"
-msgstr "Extract Translatable Text"
-
-#: ../../source/development/contribute-to-prog-i18n.rst:22
-msgid "在项目的根目录执行："
-msgstr "In the root directory of your project, execute:"
+msgid "pip install -e ."
+msgstr "pip install -e ."
 
 #: ../../source/development/contribute-to-prog-i18n.rst:24
-msgid "python janim/locale/gettext.py"
-msgstr "python janim/locale/gettext.py"
+msgid "另外，需要确保已安装 `GNU gettext <https://www.gnu.org/software/gettext/>`_"
+msgstr "Additionally, make sure `GNU gettext <https://www.gnu.org/software/gettext/>`_ is installed."
 
-#: ../../source/development/contribute-to-prog-i18n.rst:28
-msgid ""
-"这个命令会对项目内的所有 .py 文件执行 xgettext，如果有可翻译的文本，则会提取到 ``janim/locale/source`` 文件夹内，产生（或"
-"更新）.pot 文件"
-msgstr ""
-"This command will run xgettext on all .py files in the project. If there are translatable texts, they will be extracted "
-"into the ``janim/locale/source folder``, generating (or updating) .pot files."
+#: ../../source/development/contribute-to-prog-i18n.rst:27
+msgid "工作流程"
+msgstr "Workflow"
 
-#: ../../source/development/contribute-to-prog-i18n.rst:30
-msgid "产生 .po 文件"
-msgstr "Generate .po Files"
+#: ../../source/development/contribute-to-prog-i18n.rst:29
+msgid "程序国际化的工作流程分为以下步骤："
+msgstr "The workflow for program internationalization consists of the following steps:"
+
+#: ../../source/development/contribute-to-prog-i18n.rst:31
+msgid "**更新翻译文件**：提取最新的可翻译文本并生成/更新 .po 文件"
+msgstr "**Update translation files**: extract the latest translatable text and generate/update .po files"
 
 #: ../../source/development/contribute-to-prog-i18n.rst:32
-msgid "pot 文件是提取出来的可供翻译的源语言文字，你还需要使用这些文件来产生对应语言的 po 文件"
-msgstr ""
-"POT files are the extracted source language texts available for translation. You need to use these files to generate "
-"corresponding language PO files."
+msgid "**进行翻译**：编辑 .po 文件进行翻译"
+msgstr "**Translate**: edit .po files for translation"
 
-#: ../../source/development/contribute-to-prog-i18n.rst:34
-msgid "举个例子"
-msgstr "For example:"
+#: ../../source/development/contribute-to-prog-i18n.rst:33
+msgid "**编译翻译文件**：将 .po 文件编译为 .mo 文件（仅在必要时）"
+msgstr "**Compile translation files**: compile .po files into .mo files (only when necessary)"
 
-#: ../../source/development/contribute-to-prog-i18n.rst:36
-msgid "python janim/locale/intl.py ja"
-msgstr "python janim/locale/intl.py ja"
+#: ../../source/development/contribute-to-prog-i18n.rst:38
+msgid "更新翻译文件"
+msgstr "Update Translation Files"
 
 #: ../../source/development/contribute-to-prog-i18n.rst:40
-msgid "执行后，产生的 po 文件会输出到以下文件夹中"
-msgstr "After execution, the generated PO files will be output to the following folder:"
+msgid "要创建新语言的翻译或更新现有翻译文件，使用以下命令："
+msgstr "To create translations for a new language or update existing translation files, use the following command:"
 
 #: ../../source/development/contribute-to-prog-i18n.rst:42
-msgid "``janim/locale/ja/LC_MESSAGES/``"
-msgstr "``janim/locale/ja/LC_MESSAGES/``"
+msgid "python scripts update-po code <language>"
+msgstr "python scripts update-po code <language>"
 
-#: ../../source/development/contribute-to-prog-i18n.rst:44
-msgid "其中 ``ja`` 对应上面命令中所提供的参数，表示日语"
-msgstr "Here, ``ja`` corresponds to the parameter provided in the above command, representing Japanese."
+#: ../../source/development/contribute-to-prog-i18n.rst:46
+msgid "其中 ``<language>`` 是你要翻译的语言代码（例如 ``ja`` 表示日语， ``de`` 表示德语等）。"
+msgstr "Here ``<language>`` is the language code you want to translate to (for example, ``ja`` for Japanese, ``de`` for German, etc.)."
 
-#: ../../source/development/contribute-to-prog-i18n.rst:47
+#: ../../source/development/contribute-to-prog-i18n.rst:50
+msgid "``en`` 是程序文本的源语言，因此不需要为其创建翻译文件。"
+msgstr "``en`` is the source language of program text, so translation files do not need to be created for it."
+
+#: ../../source/development/contribute-to-prog-i18n.rst:58
+msgid "完成后，你可以在相应的 ``janim/locale/<language>/LC_MESSAGES/`` 目录中找到所有的 ``.po`` 文件。"
+msgstr "After completion, you can find all ``.po`` files in the corresponding ``janim/locale/<language>/LC_MESSAGES/`` directory."
+
+#: ../../source/development/contribute-to-prog-i18n.rst:61
+msgid "检查翻译完成情况"
+msgstr "Check Translation Progress"
+
+#: ../../source/development/contribute-to-prog-i18n.rst:63
+msgid "在开始翻译或翻译过程中，你可以检查翻译的完成情况："
+msgstr "Before starting translation or during the process, you can check translation progress:"
+
+#: ../../source/development/contribute-to-prog-i18n.rst:65
+msgid "python scripts check-po code <language>"
+msgstr "python scripts check-po code <language>"
+
+#: ../../source/development/contribute-to-prog-i18n.rst:69
+msgid ""
+"该命令会扫描所有 ``.po`` 文件，并列出仍有未翻译（untranslated）或模糊（fuzzy）条目的文件。 这有助于你了解还需要进行哪些翻"
+"译工作。"
+msgstr ""
+"This command scans all ``.po`` files and lists files that still contain untranslated or fuzzy entries. "
+"This helps you understand what translation work remains to be done."
+
+#: ../../source/development/contribute-to-prog-i18n.rst:72
+msgid "并且一些软件，比如 Poedit 的编目管理器也可以列出文件夹中的 ``.po`` 文件的翻译完成情况。"
+msgstr "Some tools, such as Poedit's Catalog Manager, can also list translation progress for ``.po`` files in a folder."
+
+#: ../../source/development/contribute-to-prog-i18n.rst:75
 msgid "进行程序翻译"
 msgstr "Translating the Program"
 
-#: ../../source/development/contribute-to-prog-i18n.rst:49
-msgid "假设你要进行翻译到日语的工作"
-msgstr "Assume you want to translate to Japanese."
+#: ../../source/development/contribute-to-prog-i18n.rst:77
+msgid "现在 ``janim/locale/<language>/LC_MESSAGES/`` 中已经存放了翻译文件（后缀 ``.po``）。"
+msgstr "Translation files (with the ``.po`` extension) are now stored in ``janim/locale/<language>/LC_MESSAGES/``."
 
-#: ../../source/development/contribute-to-prog-i18n.rst:51
-msgid "现在 ``janim/locale/ja/LC_MESSAGES/`` 中已经存放了翻译文件（后缀 ``.po``）"
-msgstr "Now, the translation files (with the .po suffix) are already stored in ``janim/locale/ja/LC_MESSAGES/``."
+#: ../../source/development/contribute-to-prog-i18n.rst:79
+msgid "可以使用 Poedit 软件来编辑 ``.po`` 文件，或者用任何文本编辑器直接编辑。"
+msgstr "You can use Poedit to edit ``.po`` files, or edit them directly with any text editor."
 
-#: ../../source/development/contribute-to-prog-i18n.rst:53
-msgid "这里推荐使用 Poedit 软件，打开目录内的 po 文件，进行翻译"
-msgstr "It is recommended to use Poedit software to open the PO files in the directory and proceed with the translation."
-
-#: ../../source/development/contribute-to-prog-i18n.rst:55
-msgid "翻译后，提交你的更改，创建合并到 ``main`` 分支的 Pull Request"
+#: ../../source/development/contribute-to-prog-i18n.rst:81
+msgid "完成翻译后，提交你的更改，创建合并到 ``main`` 分支的 Pull Request。"
 msgstr "After translating, submit your changes and create a Pull Request to merge into the ``main`` branch."
+
+#: ../../source/development/contribute-to-prog-i18n.rst:84
+msgid "编译翻译文件（仅在必要时）"
+msgstr "Compile Translation Files (Only When Necessary)"
+
+#: ../../source/development/contribute-to-prog-i18n.rst:86
+msgid ""
+"如果你是使用 Poedit 等软件编辑，多半会在编辑后自动编译产生 ``.mo`` 文件。 但如果你是直接使用文本编辑器编辑的 ``.po`` 文"
+"件，需要手动编译 ``.po`` 文件为 ``.mo`` 文件，可以使用："
+msgstr ""
+"If you edit with tools such as Poedit, ``.mo`` files are usually compiled automatically after editing. "
+"But if you edit ``.po`` files directly with a text editor, you need to compile ``.po`` files into ``.mo`` files "
+"manually. You can use:"
+
+#: ../../source/development/contribute-to-prog-i18n.rst:89
+msgid "python scripts compile-po code <language>"
+msgstr "python scripts compile-po code <language>"
+
+#: ../../source/development/contribute-to-prog-i18n.rst:94
+msgid "完整操作示例"
+msgstr "Complete Example"
+
+#: ../../source/development/contribute-to-prog-i18n.rst:96
+msgid "假设你要为程序提供日语翻译，完整流程如下："
+msgstr "Suppose you want to provide a Japanese translation for the program. The complete workflow is as follows:"
+
+#: ../../source/development/contribute-to-prog-i18n.rst:98
+msgid "更新翻译文件："
+msgstr "Update translation files:"
+
+#: ../../source/development/contribute-to-prog-i18n.rst:100
+msgid "python scripts update-po code ja"
+msgstr "python scripts update-po code ja"
+
+#: ../../source/development/contribute-to-prog-i18n.rst:104
+msgid "编辑 ``janim/locale/ja/LC_MESSAGES/`` 中的 ``.po`` 文件"
+msgstr "Edit ``.po`` files under ``janim/locale/ja/LC_MESSAGES/``"
+
+#: ../../source/development/contribute-to-prog-i18n.rst:106
+msgid "检查翻译完成情况（可选）："
+msgstr "Check translation progress (optional):"
+
+#: ../../source/development/contribute-to-prog-i18n.rst:108
+msgid "python scripts check-po code ja"
+msgstr "python scripts check-po code ja"
+
+#: ../../source/development/contribute-to-prog-i18n.rst:112
+msgid "编译翻译文件（仅在必要时）："
+msgstr "Compile translation files (only when necessary):"
+
+#: ../../source/development/contribute-to-prog-i18n.rst:114
+msgid "python scripts compile-po code ja"
+msgstr "python scripts compile-po code ja"
+
+#: ../../source/development/contribute-to-prog-i18n.rst:118
+msgid "在本地测试翻译效果（运行程序）"
+msgstr "Test the translation locally (run the program)"
+
+#: ../../source/development/contribute-to-prog-i18n.rst:120
+msgid "提交更改并创建 Pull Request"
+msgstr "Submit your changes and open a Pull Request"
+
+#~ msgid "为程序国际化作出贡献"
+#~ msgstr "Contribute to Internationalization of the Program"
+
+#~ msgid "否则，你可以略过程序国际化的这部分"
+#~ msgstr "Otherwise, you can skip this part on program internationalization."
+
+#~ msgid "翻译流程可参考 `<https://www.sphinx-doc.org/en/master/usage/advanced/intl.html>`_"
+#~ msgstr "The translation process can be found at `<https://www.sphinx-doc.org/en/master/usage/advanced/intl.html>`_"
+
+#~ msgid "提取可翻译的文本"
+#~ msgstr "Extract Translatable Text"
+
+#~ msgid "在项目的根目录执行："
+#~ msgstr "In the root directory of your project, execute:"
+
+#~ msgid "python janim/locale/gettext.py"
+#~ msgstr "python janim/locale/gettext.py"
+
+#~ msgid ""
+#~ "这个命令会对项目内的所有 .py 文件执行 xgettext，如果有可翻译的文本，则会提取到 ``janim/locale/source`` 文件夹内，产生"
+#~ "（或更新）.pot 文件"
+#~ msgstr ""
+#~ "This command will run xgettext on all .py files in the project. If there are translatable texts, they will be "
+#~ "extracted into the ``janim/locale/source folder``, generating (or updating) .pot files."
+
+#~ msgid "产生 .po 文件"
+#~ msgstr "Generate .po Files"
+
+#~ msgid "pot 文件是提取出来的可供翻译的源语言文字，你还需要使用这些文件来产生对应语言的 po 文件"
+#~ msgstr ""
+#~ "POT files are the extracted source language texts available for translation. You need to use these files to generate "
+#~ "corresponding language PO files."
+
+#~ msgid "举个例子"
+#~ msgstr "For example:"
+
+#~ msgid "python janim/locale/intl.py ja"
+#~ msgstr "python janim/locale/intl.py ja"
+
+#~ msgid "执行后，产生的 po 文件会输出到以下文件夹中"
+#~ msgstr "After execution, the generated PO files will be output to the following folder:"
+
+#~ msgid "``janim/locale/ja/LC_MESSAGES/``"
+#~ msgstr "``janim/locale/ja/LC_MESSAGES/``"
+
+#~ msgid "其中 ``ja`` 对应上面命令中所提供的参数，表示日语"
+#~ msgstr "Here, ``ja`` corresponds to the parameter provided in the above command, representing Japanese."
+
+#~ msgid "假设你要进行翻译到日语的工作"
+#~ msgstr "Assume you want to translate to Japanese."
+
+#~ msgid "这里推荐使用 Poedit 软件，打开目录内的 po 文件，进行翻译"
+#~ msgstr "It is recommended to use Poedit software to open the PO files in the directory and proceed with the translation."

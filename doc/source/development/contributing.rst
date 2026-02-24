@@ -1,7 +1,7 @@
 贡献
 ============
 
-为源代码作出贡献
+贡献源代码
 --------------------------
 
 你可以在 `github.com/jkjkil4/JAnim <https://github.com/jkjkil4/JAnim>`_ 提 issue 和 PR
@@ -10,7 +10,7 @@
 
 另外，你也可以在 `gitee.com/jkjkil4/JAnim <https://gitee.com/jkjkil4/JAnim>`_ 提 issue 和 PR，但是我在这个链接中回复可能会慢一些
 
-为国际化作出贡献
+贡献国际化
 -------------------------
 
 国际化，简单来说就是提供到特定语言的翻译
