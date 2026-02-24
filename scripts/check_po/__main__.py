@@ -8,7 +8,7 @@ import os
 import re
 import shutil
 import subprocess
-from argparse import ArgumentParser
+from argparse import ArgumentParser, RawDescriptionHelpFormatter
 from pathlib import Path
 
 from rich.console import Console
@@ -116,7 +116,13 @@ def main(target: str, lang: str) -> int:
 
 
 if __name__ == '__main__':
-    parser = ArgumentParser(description='Check .po files for untranslated (or fuzzy) entries.')
+    parser = ArgumentParser(
+        description='Check .po files for untranslated (or fuzzy) entries.',
+        epilog='Examples:\n'
+               '  python scripts check-po docs en\n'
+               '  python scripts check-po code zh_CN',
+        formatter_class=RawDescriptionHelpFormatter
+    )
     parser.add_argument('target', choices=['docs', 'code'], help='Check target: docs or code')
     parser.add_argument('lang', help='Language code (e.g., en)')
     args = parser.parse_args()

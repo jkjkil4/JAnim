@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import os
 import subprocess
-from argparse import ArgumentParser
+from argparse import ArgumentParser, RawDescriptionHelpFormatter
 from pathlib import Path
 
 from scripts import console, prompt_todos, step
@@ -121,7 +121,14 @@ def main(target: str, lang: str, endswith: list[str] | None) -> int:
 
 
 if __name__ == '__main__':
-    parser = ArgumentParser(description='Generate or update .po files for translating.')
+    parser = ArgumentParser(
+        description='Generate or update .po files for translating.',
+        epilog='Examples:\n'
+               '  python scripts update-po docs en\n'
+               '  python scripts update-po code zh_CN\n'
+               '  python scripts update-po code zh_CN --endswith value_tracker.py',
+        formatter_class=RawDescriptionHelpFormatter
+    )
     parser.add_argument(
         'target',
         choices=['docs', 'code'],

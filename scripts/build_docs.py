@@ -5,7 +5,6 @@ import tarfile
 from argparse import ArgumentParser
 from pathlib import Path
 
-from janim import __version__
 from scripts import console, prompt_todos, step
 
 
@@ -89,6 +88,7 @@ def build_i18n_docs(
     if pack:
         console.print()
 
+        from janim import __version__
         tar_filename = f'JAnim Documentation {lang} {__version__}.tar'
         tar_path = doc_dir / 'build' / tar_filename
 

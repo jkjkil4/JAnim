@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from argparse import ArgumentParser
+from argparse import ArgumentParser, RawDescriptionHelpFormatter
 
 from scripts import console, prompt_todos
 from scripts.compile_po.code import code_compile
@@ -35,7 +35,12 @@ def main(target: str, lang: str) -> int:
 
 
 if __name__ == '__main__':
-    parser = ArgumentParser(description='Compile .po files to .mo files.')
+    parser = ArgumentParser(
+        description='Compile .po files to .mo files.',
+        epilog='Example:\n'
+               '  python scripts compile-po code zh_CN',
+        formatter_class=RawDescriptionHelpFormatter
+    )
     parser.add_argument(
         'target',
         choices=['docs', 'code'],
