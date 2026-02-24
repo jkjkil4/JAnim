@@ -10,6 +10,8 @@ import svgelements as se
 from janim.items.svg.svg_item import SVGItem
 from janim.utils.bezier import PathBuilder
 
+dir = os.path.dirname(__file__)
+
 # %% Generate brace SVG using Typst
 typst_src = '''
 #set page(width: auto, height: auto, margin: 0pt, fill: none)
@@ -47,11 +49,11 @@ simplified_svg.extend(paths[::2])
 # %% Write modified SVG into brace_parts.svg
 xml = simplified_svg.string_xml()
 
-with open('scripts/brace_parts.svg', 'w') as f:
+with open(f'{dir}/brace_parts.svg', 'w') as f:
     f.write(xml)
 
 # %% Load SVG by SVGItem, break 3 pieces (closed path) into 4 open paths
-item = SVGItem('scripts/brace_parts.svg', scale=24/11)
+item = SVGItem(f'{dir}/brace_parts.svg', scale=24/11)
 item.points.to_center()
 
 points = item.points.get_all()
@@ -106,13 +108,13 @@ for path in (path2, path3, path4):
 builder.close_path()
 
 points = builder.get().astype(np.float32)
-np.save('scripts/brace_unique.npy', points)
+np.save(f'{dir}/brace_unique.npy', points)
 
 # %% Brace paths
-np.save('scripts/brace_path1.npy', path1.astype(np.float32))
-np.save('scripts/brace_path2.npy', path2.astype(np.float32))
-np.save('scripts/brace_path3.npy', path3.astype(np.float32))
-np.save('scripts/brace_path4.npy', path4.astype(np.float32))
+np.save(f'{dir}/brace_path1.npy', path1.astype(np.float32))
+np.save(f'{dir}/brace_path2.npy', path2.astype(np.float32))
+np.save(f'{dir}/brace_path3.npy', path3.astype(np.float32))
+np.save(f'{dir}/brace_path4.npy', path4.astype(np.float32))
 
 # %% Cleanup
-os.remove('scripts/brace_parts.svg')
+os.remove(f'{dir}/brace_parts.svg')

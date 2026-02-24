@@ -1,5 +1,5 @@
 # Chinese translations for PACKAGE package
-# PACKAGE Èí¼ş°üµÄ¼òÌåÖĞÎÄ·­Òë.
+# PACKAGE è½¯ä»¶åŒ…çš„ç®€ä½“ä¸­æ–‡ç¿»è¯‘.
 # Copyright (C) 2026 THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 # Automatically generated, 2026.
@@ -9,12 +9,12 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-02-21 14:37+0800\n"
-"PO-Revision-Date: 2026-02-21 14:41+0800\n"
+"PO-Revision-Date: 2026-02-24 09:43+0800\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
 "Language: zh_CN\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=GBK\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 "X-Generator: Poedit 3.8\n"
@@ -25,5 +25,5 @@ msgid ""
 "When using `{class_name}`, if you need to pass multiple items, wrap them in "
 "`Group` instead of passing them one by one"
 msgstr ""
-"Ê¹ÓÃ `{class_name}` µÄÊ±ºòÈôĞèÒª´«Èë¶à¸öÎï¼ş£¬ÇëÊ¹ÓÃ `Group` °ü¹ü£¬¶ø·ÇÖğ¸ö"
-"´«µİ"
+"ä½¿ç”¨ `{class_name}` çš„æ—¶å€™è‹¥éœ€è¦ä¼ å…¥å¤šä¸ªç‰©ä»¶ï¼Œè¯·ä½¿ç”¨ `Group` åŒ…è£¹ï¼Œè€Œéé€ä¸ª"
+"ä¼ é€’"
