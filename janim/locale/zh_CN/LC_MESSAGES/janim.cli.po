@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-24 22:39+0800\n"
+"POT-Creation-Date: 2026-02-09 22:27+0800\n"
 "PO-Revision-Date: 2025-12-24 15:59+0800\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -48,28 +48,28 @@ msgstr "已生成 SRT 文件 \"{file_path}\""
 msgid "No tool specified for use"
 msgstr "未指定所使用的工具"
 
-#: janim/cli.py:299
+#: janim/cli.py:307
 #, python-brace-format
 msgid "\"{file_name}\" doesn't exist"
 msgstr "\"{file_name}\" 不存在"
 
-#: janim/cli.py:303
+#: janim/cli.py:311
 #, python-brace-format
 msgid "\"{file_name}\" isn't a file"
 msgstr "\"{file_name}\" 不是一个文件"
 
-#: janim/cli.py:330
+#: janim/cli.py:338
 #, python-brace-format
 msgid "No timeline named \"{name}\""
 msgstr "没有叫作 \"{name}\" 的 Timeline"
 
-#: janim/cli.py:338
+#: janim/cli.py:346
 msgid ""
 "Multiple timelines found in stdin input. Please specify timeline names with "
 "command line arguments."
 msgstr "stdin 输入中有多个 Timeline，请通过命令行参数具体指定"
 
-#: janim/cli.py:352
+#: janim/cli.py:360
 msgid ""
 "That module has multiple timelines, which ones would you like to render?\n"
 "Timeline Name or Number: "
@@ -77,12 +77,12 @@ msgstr ""
 "这个 module 中有多个 Timeline，你想要渲染哪些？\n"
 "时间轴名称或序号："
 
-#: janim/cli.py:370
+#: janim/cli.py:378
 #, python-brace-format
 msgid "Invaild number {num}"
 msgstr "序号 {num} 无效"
 
-#: janim/cli.py:376
+#: janim/cli.py:384
 #, python-brace-format
 msgid "No timeline named {split_str}"
 msgstr "没有叫作 \"{split_str}\" 的 Timeline"

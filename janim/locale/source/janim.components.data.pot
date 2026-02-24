@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-01-30 11:54+0800\n"
+"POT-Creation-Date: 2026-02-24 13:47+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -36,29 +36,29 @@ msgid ""
 "value_tracker.html for details"
 msgstr ""
 
-#: janim/components/data.py:282
+#: janim/components/data.py:318
 #, python-brace-format
 msgid "missing keys: {keys}"
 msgstr ""
 
-#: janim/components/data.py:284
+#: janim/components/data.py:320
 #, python-brace-format
 msgid "extra keys: {keys}"
 msgstr ""
 
-#: janim/components/data.py:303
+#: janim/components/data.py:339
 #, python-brace-format
 msgid ""
 "Existing sequence and new value must have the same length for {cls_name}; "
 "existing length {len_a}, new length {len_b}"
 msgstr ""
 
-#: janim/components/data.py:320
+#: janim/components/data.py:356
 #, python-brace-format
 msgid ""
 "Existing dictionary and new value must share the same keys for {cls_name}"
 msgstr ""
 
-#: janim/components/data.py:379
+#: janim/components/data.py:415
 msgid "Update contains keys not present in current value"
 msgstr ""

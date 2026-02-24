@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-24 14:30+0800\n"
+"POT-Creation-Date: 2026-02-23 18:15+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,17 +17,17 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: janim/anims/updater.py:364
+#: janim/anims/updater.py:365
 #, python-brace-format
 msgid "There is no updatable method named {name} in {cmpt}"
 msgstr ""
 
-#: janim/anims/updater.py:387
+#: janim/anims/updater.py:388
 #, python-brace-format
 msgid "{item} has no component or updatable method named {name}"
 msgstr ""
 
-#: janim/anims/updater.py:526
+#: janim/anims/updater.py:531
 #, python-brace-format
 msgid ""
 "The function passed to ItemUpdater must return an item, but got {ret} "

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-24 14:30+0800\n"
+"POT-Creation-Date: 2026-02-24 09:53+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,10 +17,16 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: janim/anims/transform.py:125
+#: janim/anims/transform.py:127
 #, python-brace-format
 msgid ""
 "The child items of {spec1} and {spec2} cannot be aligned because their child "
 "items must either both be empty or both exist. However, their child item "
 "counts are {len1} and {len2}, respectively."
+msgstr ""
+
+#: janim/anims/transform.py:187
+msgid ""
+"You must use `.generate_target` to generate the target item before using "
+"`MoveToTarget` to create animation"
 msgstr ""

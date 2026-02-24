@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-24 14:30+0800\n"
+"POT-Creation-Date: 2026-02-23 18:15+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,19 +17,19 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: janim/items/item.py:232
+#: janim/items/item.py:248
 #, python-brace-format
 msgid ""
 "The passed parameter \"{key}\" did not match any style settings and was not "
 "used anywhere."
 msgstr ""
 
-#: janim/items/item.py:344
+#: janim/items/item.py:360
 #, python-brace-format
 msgid "Unsupported key: {}"
 msgstr ""
 
-#: janim/items/item.py:580
+#: janim/items/item.py:590
 #, python-brace-format
 msgid ""
 "{name} is not based on Item class and cannot be used as an argument for "

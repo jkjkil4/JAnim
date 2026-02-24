@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-01-30 11:54+0800\n"
+"POT-Creation-Date: 2026-02-24 13:47+0800\n"
 "PO-Revision-Date: 2026-01-30 11:55+0800\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -45,17 +45,17 @@ msgstr ""
 "详见文档页面 https://janim.readthedocs.io/zh_CN/latest/tutorials/"
 "value_tracker.html"
 
-#: janim/components/data.py:282
+#: janim/components/data.py:318
 #, python-brace-format
 msgid "missing keys: {keys}"
 msgstr "缺失键: {keys}"
 
-#: janim/components/data.py:284
+#: janim/components/data.py:320
 #, python-brace-format
 msgid "extra keys: {keys}"
 msgstr "多出键: {keys}"
 
-#: janim/components/data.py:303
+#: janim/components/data.py:339
 #, python-brace-format
 msgid ""
 "Existing sequence and new value must have the same length for {cls_name}; "
@@ -64,12 +64,12 @@ msgstr ""
 "现有序列和新值必须在 {cls_name} 中有相同的长度；现有长度 {len_a}，新长度 "
 "{len_b}"
 
-#: janim/components/data.py:320
+#: janim/components/data.py:356
 #, python-brace-format
 msgid ""
 "Existing dictionary and new value must share the same keys for {cls_name}"
 msgstr "现有字典和新值必须在 {cls_name} 中共有相同的键"
 
-#: janim/components/data.py:379
+#: janim/components/data.py:415
 msgid "Update contains keys not present in current value"
 msgstr "更新值包含当前值中不存在的键"

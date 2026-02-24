@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-24 14:30+0800\n"
+"POT-Creation-Date: 2026-02-05 11:52+0800\n"
 "PO-Revision-Date: 2025-12-24 15:59+0800\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -25,12 +25,12 @@ msgid ""
 msgstr ""
 "Component 的每一个子类都必须继承并实现 \"{key}\" 方法，而 \"{name}\" 没有"
 
-#: janim/components/component.py:245
+#: janim/components/component.py:249
 msgid ""
 "CmptGroup must be defined within the same class as the content passed in"
 msgstr "CmptGroup 必须要与传入的内容在同一个类的定义中"
 
-#: janim/components/component.py:273
+#: janim/components/component.py:277
 #, python-brace-format
 msgid "None of the components ({cmpt_str}) have a method named {name}"
 msgstr "({cmpt_str}) 中没有组件有叫作 {name} 的方法"

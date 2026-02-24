@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-24 14:30+0800\n"
+"POT-Creation-Date: 2026-02-23 22:18+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,11 +17,11 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: janim/utils/deprecation.py:21
+#: janim/utils/deprecation.py:23
 msgid "{name!r} is deprecated and will be removed in JAnim {remove}"
 msgstr ""
 
-#: janim/utils/deprecation.py:22
+#: janim/utils/deprecation.py:24
 msgid ""
 "{name!r} is deprecated and will be removed in JAnim {remove}, use {instead!"
 "r} instead"

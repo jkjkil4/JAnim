@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-24 14:30+0800\n"
+"POT-Creation-Date: 2026-02-23 21:09+0800\n"
 "PO-Revision-Date: 2025-12-24 16:05+0800\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 "X-Generator: Poedit 3.8\n"
 
-#: janim/items/vitem.py:401
+#: janim/items/vitem.py:438
 #, python-brace-format
 msgid "Invalid value for equal_lengths: {equal_lengths}"
 msgstr "equal_lengths 的取值无效：{equal_lengths}"

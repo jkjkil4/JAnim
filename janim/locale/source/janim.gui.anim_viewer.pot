@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-25 13:58+0800\n"
+"POT-Creation-Date: 2026-02-16 10:22+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,128 +17,128 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: janim/gui/anim_viewer.py:84
+#: janim/gui/anim_viewer.py:85
 msgid "Cannot watch stdin for changes"
 msgstr ""
 
-#: janim/gui/anim_viewer.py:167
+#: janim/gui/anim_viewer.py:168
 msgid "Cannot process the GUI command from stdin input"
 msgstr ""
 
-#: janim/gui/anim_viewer.py:197
+#: janim/gui/anim_viewer.py:198
 msgid "File(&F)"
 msgstr ""
 
-#: janim/gui/anim_viewer.py:199
+#: janim/gui/anim_viewer.py:200
 msgid "Rebuild(&L)"
 msgstr ""
 
-#: janim/gui/anim_viewer.py:209
+#: janim/gui/anim_viewer.py:210
 msgid "Set In Point(&I)"
 msgstr ""
 
-#: janim/gui/anim_viewer.py:213
+#: janim/gui/anim_viewer.py:214
 msgid "Set Out Point(&O)"
 msgstr ""
 
-#: janim/gui/anim_viewer.py:217
+#: janim/gui/anim_viewer.py:218
 msgid "Reset In/Out Point(&R)"
 msgstr ""
 
-#: janim/gui/anim_viewer.py:222
+#: janim/gui/anim_viewer.py:223
 msgid "Clear Font Cache(&C)"
 msgstr ""
 
-#: janim/gui/anim_viewer.py:224
+#: janim/gui/anim_viewer.py:225
 msgid "View(&V)"
 msgstr ""
 
-#: janim/gui/anim_viewer.py:226
+#: janim/gui/anim_viewer.py:227
 msgid "Stay on top(&T)"
 msgstr ""
 
-#: janim/gui/anim_viewer.py:231
+#: janim/gui/anim_viewer.py:232
 msgid "Frame skip(&P)"
 msgstr ""
 
-#: janim/gui/anim_viewer.py:236
+#: janim/gui/anim_viewer.py:237
 msgid "Tools(&T)"
 msgstr ""
 
-#: janim/gui/anim_viewer.py:238
+#: janim/gui/anim_viewer.py:239
 msgid "Subitem selector(&I)"
 msgstr ""
 
-#: janim/gui/anim_viewer.py:247
+#: janim/gui/anim_viewer.py:248
 msgid "Copy time point(&T)"
 msgstr ""
 
-#: janim/gui/anim_viewer.py:308
+#: janim/gui/anim_viewer.py:309
 #, python-brace-format
 msgid "wnd_pos has wrong argument {wnd_pos}."
 msgstr ""
 
-#: janim/gui/anim_viewer.py:319
+#: janim/gui/anim_viewer.py:320
 #, python-brace-format
 msgid "wnd_monitor has invalid value {wnd_monitor}, use {range} instead."
 msgstr ""
 
-#: janim/gui/anim_viewer.py:467 janim/gui/anim_viewer.py:665
+#: janim/gui/anim_viewer.py:470 janim/gui/anim_viewer.py:668
 #, python-brace-format
 msgid "No timeline named \"{name}\" in \"{file}\""
 msgstr ""
 
-#: janim/gui/anim_viewer.py:480
+#: janim/gui/anim_viewer.py:483
 msgid "Failed to rebuild"
 msgstr ""
 
-#: janim/gui/anim_viewer.py:548
+#: janim/gui/anim_viewer.py:551
 msgid "Copied!"
 msgstr ""
 
-#: janim/gui/anim_viewer.py:598
+#: janim/gui/anim_viewer.py:601
 msgid "An error occurred during rendering, playback stopped"
 msgstr ""
 
-#: janim/gui/anim_viewer.py:678
+#: janim/gui/anim_viewer.py:681
 msgid "Failed to build"
 msgstr ""
 
-#: janim/gui/anim_viewer.py:691
+#: janim/gui/anim_viewer.py:694
 msgid ""
 "Font cache cleared.\n"
 "Tip: Use this to load newly installed fonts without restarting JAnim."
 msgstr ""
 
-#: janim/gui/anim_viewer.py:713
+#: janim/gui/anim_viewer.py:716
 #, python-brace-format
 msgid "Searching port has been opened at {port}"
 msgstr ""
 
-#: janim/gui/anim_viewer.py:718
+#: janim/gui/anim_viewer.py:721
 #, python-brace-format
 msgid "Failed to open searching port at {port}"
 msgstr ""
 
-#: janim/gui/anim_viewer.py:723
+#: janim/gui/anim_viewer.py:726
 #, python-brace-format
 msgid ""
 "Searching port {port} is invalid, please use a number between 1024 and 65535 "
 "instead"
 msgstr ""
 
-#: janim/gui/anim_viewer.py:729
+#: janim/gui/anim_viewer.py:732
 msgid ""
 "Interactive development is disabled because the searching port is not "
 "established."
 msgstr ""
 
-#: janim/gui/anim_viewer.py:741
+#: janim/gui/anim_viewer.py:744
 #, python-brace-format
 msgid "Interactive port has been opened at {port}"
 msgstr ""
 
-#: janim/gui/anim_viewer.py:825
+#: janim/gui/anim_viewer.py:828
 #, python-brace-format
 msgid "Directly watching changes to \"{file}\""
 msgstr ""

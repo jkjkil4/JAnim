@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-01-11 21:44+0800\n"
+"POT-Creation-Date: 2026-02-23 18:19+0800\n"
 "PO-Revision-Date: 2026-01-11 21:46+0800\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -17,52 +17,51 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Poedit 3.8\n"
 
-#: janim/anims/timeline.py:98
+#: janim/anims/timeline.py:99
 #, python-brace-format
 msgid "{name} cannot be used outside of Timeline.construct"
 msgstr "{name} 无法在 Timeline.construct 之外使用"
 
-#: janim/anims/timeline.py:202
+#: janim/anims/timeline.py:211
 #, python-brace-format
 msgid "Building \"{name}\""
 msgstr "构建 \"{name}\" 中"
 
-#: janim/anims/timeline.py:215
+#: janim/anims/timeline.py:224
 #, python-brace-format
 msgid ""
 "Due to the use of a GUI command, \"{name}\" automatically generated an "
 "additional duration of {duration}s"
 msgstr "由于使用了 GUI 命令，\"{name}\" 自动产生了 {duration}s 的额外时长"
 
-#: janim/anims/timeline.py:228
+#: janim/anims/timeline.py:237
 #, python-brace-format
 msgid ""
 "\"{name}\" did not produce a duration after construction, automatically "
 "generated a duration of {duration}s"
 msgstr "\"{name}\" 构建后没有产生时长，自动产生了 {duration}s 的时长"
 
-#: janim/anims/timeline.py:244
+#: janim/anims/timeline.py:253
 #, python-brace-format
 msgid "Finished building \"{name}\" in {elapsed:.2f} s"
 msgstr "构建 \"{name}\" 完成，耗时 {elapsed:.2f} s"
 
-#: janim/anims/timeline.py:319
+#: janim/anims/timeline.py:329
 msgid "dt can't be negative"
 msgstr "dt 不能为负"
 
-#: janim/anims/timeline.py:867
+#: janim/anims/timeline.py:878
 #, python-brace-format
 msgid "Called self.debug({repr}) at {loc}"
 msgstr "调用了 self.debug({repr}) 在 {loc}"
 
-#: janim/anims/timeline.py:1228
+#: janim/anims/timeline.py:1302
 #, python-brace-format
 msgid ""
 "GUI command in a sub-Timeline is ignored; defined in \"{file}\" at line "
 "{lineno}"
 msgstr ""
-"在子 Timeline 中的 GUI 命令被忽略，其定义于 \"{file}\" 文件的第 "
-"{lineno} 行"
+"在子 Timeline 中的 GUI 命令被忽略，其定义于 \"{file}\" 文件的第 {lineno} 行"
 
 #~ msgid "dt must be greater than 0"
 #~ msgstr "dt 必须大于 0"

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-24 14:30+0800\n"
+"POT-Creation-Date: 2026-02-23 18:15+0800\n"
 "PO-Revision-Date: 2025-12-24 15:59+0800\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -17,21 +17,21 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Poedit 3.8\n"
 
-#: janim/anims/updater.py:364
+#: janim/anims/updater.py:365
 #, python-brace-format
 msgid "There is no updatable method named {name} in {cmpt}"
 msgstr "在 {cmpt} 中没有名为 {name} 的可更新方法"
 
-#: janim/anims/updater.py:387
+#: janim/anims/updater.py:388
 #, python-brace-format
 msgid "{item} has no component or updatable method named {name}"
 msgstr "{item} 没有名为 {name} 的组件或可更新方法"
 
-#: janim/anims/updater.py:526
+#: janim/anims/updater.py:531
 #, python-brace-format
 msgid ""
 "The function passed to ItemUpdater must return an item, but got {ret} "
 "instead, defined in {file}:{lineno}"
 msgstr ""
-"传入 ItemUpdater 的函数必须以一个物件作为返回值，而返回的是 {ret}，函"
-"数定义于 {file}:{lineno}"
+"传入 ItemUpdater 的函数必须以一个物件作为返回值，而返回的是 {ret}，函数定义"
+"于 {file}:{lineno}"
