@@ -31,6 +31,8 @@ def docs_main(lang: str) -> int:
     if not ret:
         return 0
 
+    console.print()
+
     if os.name == 'nt':
         gettext_cmd = [doc_dir / 'make.bat', 'gettext']
     else:
@@ -82,6 +84,8 @@ def code_main(lang: str, endswith: list[str] | None) -> int:
     )
     if not ret:
         return 0
+
+    console.print()
 
     with step('Running xgettext', 'xgettext') as result:
         code_gettext(endswith)

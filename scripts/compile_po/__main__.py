@@ -22,6 +22,8 @@ def code_main(lang: str) -> int:
     if not ret:
         return 0
 
+    console.print()
+
     return code_compile(lang)
 
 
