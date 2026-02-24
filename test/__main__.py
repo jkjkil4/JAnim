@@ -20,7 +20,7 @@ def main() -> None:
         test_examples.disabled = True
 
     if not args.skip_examples:
-        shutil.rmtree('test/__test_errors__')
+        shutil.rmtree('test/__test_errors__', ignore_errors=True)
 
     test_loader = unittest.TestLoader()
     test_suite = test_loader.discover('test', pattern='test_*.py')
