@@ -34,6 +34,7 @@ from janim.items.geometry.line import *
 from janim.items.geometry.polygon import *
 from janim.items.image_item import *
 from janim.items.item import *
+from janim.items.mask import *
 from janim.items.points import *
 from janim.items.shape_matchers import *
 from janim.items.svg.brace import *
