@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import shutil
 import subprocess
+from argparse import ArgumentParser, RawDescriptionHelpFormatter
 from pathlib import Path
 
 from rich.progress import Progress
@@ -60,6 +61,14 @@ def format_po_recursively(dirpath: str) -> int:
     return 0
 
 
+def main(target: str, lang: str) -> int:
+    if target == 'docs':
+        root = Path('doc/source/locales') / lang / 'LC_MESSAGES'
+    else:
+        root = Path('janim/locale') / lang / 'LC_MESSAGES'
+    return format_po_recursively(str(root))
+
+
 def detect_newline(path: Path) -> bytes:
     content = path.read_bytes()
     if b'\r\n' in content:
@@ -72,3 +81,18 @@ def normalize_newline(content: bytes, newline: bytes) -> bytes:
     if newline == b'\r\n':
         return normalized.replace(b'\n', b'\r\n')
     return normalized
+
+
+if __name__ == '__main__':
+    parser = ArgumentParser(
+        description='Format .po files to use consistent line wrapping strategy.',
+        epilog='Examples:\n'
+               '  python scripts format-po docs en\n'
+               '  python scripts format-po code zh_CN',
+        formatter_class=RawDescriptionHelpFormatter
+    )
+    parser.add_argument('target', choices=['docs', 'code'], help='Format target: docs or code')
+    parser.add_argument('lang', help='Language code (e.g., en, zh_CN)')
+    args = parser.parse_args()
+
+    raise SystemExit(main(args.target, args.lang))

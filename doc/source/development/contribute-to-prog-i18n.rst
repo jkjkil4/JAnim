@@ -17,7 +17,7 @@
 
 使用 ``cd JAnim`` 进入项目文件夹，然后安装必要的环境：
 
-.. code-block:: sh
+.. code-block:: bash
 
     pip install -e .
 
@@ -39,7 +39,7 @@
 
 要创建新语言的翻译或更新现有翻译文件，使用以下命令：
 
-.. code-block:: sh
+.. code-block:: bash
 
     python scripts update-po code <language>
 
@@ -62,7 +62,7 @@
 
 在开始翻译或翻译过程中，你可以检查翻译的完成情况：
 
-.. code-block:: sh
+.. code-block:: bash
 
     python scripts check-po code <language>
 
@@ -86,7 +86,7 @@
 如果你是使用 Poedit 等软件编辑，多半会在编辑后自动编译产生 ``.mo`` 文件。
 但如果你是直接使用文本编辑器编辑的 ``.po`` 文件，需要手动编译 ``.po`` 文件为 ``.mo`` 文件，可以使用：
 
-.. code-block:: sh
+.. code-block:: bash
 
     python scripts compile-po code <language>
 
@@ -97,7 +97,7 @@
 
 1. 更新翻译文件：
 
-   .. code-block:: sh
+   .. code-block:: bash
 
        python scripts update-po code ja
 
@@ -105,13 +105,13 @@
 
 3. 检查翻译完成情况（可选）：
 
-   .. code-block:: sh
+   .. code-block:: bash
 
        python scripts check-po code ja
 
 4. 编译翻译文件（仅在必要时）：
 
-   .. code-block:: sh
+   .. code-block:: bash
 
        python scripts compile-po code ja
 

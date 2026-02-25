@@ -105,7 +105,7 @@
 
 也可以同时修改多个配置项，例如：
 
-.. code-block:: shell
+.. code-block:: bash
 
     janim write your_file.py YourTimeline -c fps 120 -c output_dir custom_dir
 

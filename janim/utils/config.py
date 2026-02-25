@@ -78,7 +78,7 @@ class Config(metaclass=_ConfigMeta):
 
     2.  使用命令行参数修改全局配置
 
-        .. code-block:: sh
+        .. code-block:: bash
 
             janim write your_file.py YourTimeline -c fps 120 -c output_dir custom_dir
 

@@ -49,7 +49,7 @@
 
 你可以修改全局配置，在命令行参数中加上 ``-c wnd_pos UR``，比如：
 
-.. code-block:: sh
+.. code-block:: bash
 
     janim run your_file.py YourTimeline -c wnd_pos UR
 

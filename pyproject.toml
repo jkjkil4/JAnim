@@ -50,6 +50,7 @@ doc = [
 ]
 test = [
     "opencv-python",
+    "coverage"
 ]
 
 [tool.flit.sdist]

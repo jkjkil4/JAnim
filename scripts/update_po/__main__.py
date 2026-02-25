@@ -7,7 +7,7 @@ from pathlib import Path
 
 from scripts import console, prompt_todos, step
 from scripts.update_po.code import code_gettext, code_intl
-from scripts.update_po.format_po import format_po_recursively
+from scripts.format_po import format_po_recursively
 from scripts.update_po.tidy_sphinx_intl import tidy_sphinx_intl
 
 
