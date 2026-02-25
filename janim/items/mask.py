@@ -22,20 +22,17 @@ class Mask(Points):
     """
     蒙版物件，用于遮罩受影响的物件
 
-    通过传入一个 :class:`~.VItem` 作为形状，将受影响物件中位于形状外部的部分隐藏
+    通过传入一个 :class:`~.VItem` 作为形状（``shape``），将受影响物件中位于形状外部的部分隐藏
 
-    支持透明度 (`mask_alpha`)、羽化 (`feather`)、反转 (`invert`)
+    - ``mask_alpha``: 蒙版整体透明度，范围 ``0.0`` ~ ``1.0``
+    - ``feather``: 羽化程度，值越大边缘越模糊
+    - ``invert``: 反转蒙版，``0.0`` 为正常，``1.0`` 为完全反转
 
-    例：
+    使用 :meth:`affect` / :meth:`disaffect` 动态添加或移除受影响的物件
 
     .. code-block:: python
 
-        circle = Circle(fill_alpha=1.0, color=BLUE)
-        text = Text("Hello", color=GREEN)
-
-        circle.show()
-        text.show()
-
+        text = Text("Hello")
         mask = Mask(Circle(radius=2), affected=[text], feather=0.2)
         mask.show()
     """

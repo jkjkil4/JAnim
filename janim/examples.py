@@ -377,3 +377,91 @@ class FrameEffectExample(Timeline):
                 duration=4
             )
         )
+
+
+class MaskExample(Timeline):
+    def construct(self):
+        text = Text("Mask Example!")
+        text.points.scale(2).move_to(DOWN * 0.5)
+
+        # 创建一个位于文本上方的矩形遮罩
+        mask_1_shape = Rect(text.points.box.width, text.points.box.height)
+        mask_1_shape.points.next_to(text, UP, buff=0.5)
+        mask_1 = Mask(
+            shape=mask_1_shape,
+            affected=[text],
+        ).show()
+
+        # 文本逐个上浮
+        self.play(
+            *[
+                t.anim.points.shift(UP * (0.5 + text.points.box.height))
+                for t in text[0]
+            ],
+            lag_ratio=0.1,
+        )
+        self.forward(1)
+
+        # 将遮罩变为圆形
+        mask_2 = Mask(
+            shape=Circle(),
+            affected=[text],
+        )
+        self.play(Transform(mask_1, mask_2))
+        self.forward(1)
+
+        # 遮罩的羽化
+        rect = Rect(3, 3, color=LIGHT_BROWN, depth=10)
+        rect.fill.set(alpha=1)
+        self.play(FadeIn(rect))
+        self.play(
+            mask_2.anim.points.shift(UP * 0.5),
+            DataUpdater(
+                mask_2,
+                lambda item, p: item.feather.set(p.alpha * 20),
+            )
+        )
+        self.play(
+            Succession(
+                text.anim.points.shift(LEFT * 1),
+                text.anim.points.shift(RIGHT * 1),
+            )
+        )
+        self.forward(1)
+
+        # 持有物件的变换
+        text_2 = Text("The mask should be hold")
+        text_2.points.scale(2)
+        mask_2.affect(text_2)
+        self.play(TransformMatchingDiff(text, text_2))
+        self.forward(1)
+
+        # 遮罩本体的淡出
+        self.play(
+            FadeOut(rect),
+            FadeOut(mask_2),
+        )
+        self.forward(1)
+        self.play(FadeOut(text_2))
+
+        # 自定义形状遮罩
+        text_fashion = Text("Fashion")
+        text_fashion.points.scale(10)
+        cir = Circle(radius=0.1, color=RED).fill.set(alpha=1).r
+        circles = Group.from_iterable(cir.copy() for _ in range(800))
+        circles.points.arrange_in_grid(n_cols=30).shift(DOWN * 2)
+        mask_3 = Mask(shape=text_fashion, affected=[circles]).show()
+
+        self.prepare(
+            circles.anim.points.shift(UP * 3),
+            duration=5.0,
+        )
+        self.play(FadeIn(circles))
+        self.forward(1)
+        self.play(
+            DataUpdater(
+                mask_3,
+                lambda item, p: item.invert.set(1.0)
+            )
+        )
+        self.forward(2)
