@@ -1137,7 +1137,10 @@ class BuiltTimeline:
             if rcc.render_disabled:
                 rcc.render_disabled = False     # 重置，因为每次都要重新标记
                 continue
-            additional_lists.append(rcc.func())
+            rcc_items = rcc.func()
+            for data, _ in rcc_items:
+                data._mark_render_disabled(additionals)
+            additional_lists.append(rcc_items)
 
         # 剔除被标记 render_disabled 的物件，得到 items_render
         items_render: list[BuiltTimeline._ItemWithRenderFunc] = []
