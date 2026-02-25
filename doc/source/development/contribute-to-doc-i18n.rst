@@ -181,7 +181,7 @@
 
        python scripts build-docs en -o
 
-5. （可选）提交前统一 ``.po`` 文件格式：
+5. 提交前统一 ``.po`` 文件格式（可选）：
 
    .. code-block:: bash
 

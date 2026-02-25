@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  JAnim\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-02-25 00:59+0800\n"
+"POT-Creation-Date: 2026-02-25 11:45+0800\n"
 "PO-Revision-Date: 2025-11-22 21:39+0800\n"
 "Last-Translator: \n"
 "Language: en\n"
@@ -18,222 +18,252 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.17.0\n"
 
-#: ../../source/development/contribute-to-doc-i18n.rst:30
+#: ../../source/development/contribute-to-doc-i18n.rst:33
 msgid "贡献文档国际化"
 msgstr "Contribute to Documentation Internationalization"
 
-#: ../../source/development/contribute-to-doc-i18n.rst:34
+#: ../../source/development/contribute-to-doc-i18n.rst:37
 msgid "已有的文档"
 msgstr "Existing Documentation"
 
-#: ../../source/development/contribute-to-doc-i18n.rst:36
+#: ../../source/development/contribute-to-doc-i18n.rst:39
 msgid "zh_CN: https://janim.readthedocs.io/zh-cn/latest/"
 msgstr "zh_CN: https://janim.readthedocs.io/zh-cn/latest/"
 
-#: ../../source/development/contribute-to-doc-i18n.rst:37
+#: ../../source/development/contribute-to-doc-i18n.rst:40
 msgid "en: https://janim.readthedocs.io/en/latest/"
 msgstr "en: https://janim.readthedocs.io/en/latest/"
 
-#: ../../source/development/contribute-to-doc-i18n.rst:40
+#: ../../source/development/contribute-to-doc-i18n.rst:43
 msgid "准备环境"
 msgstr "Prepare the Environment"
 
-#: ../../source/development/contribute-to-doc-i18n.rst:42
+#: ../../source/development/contribute-to-doc-i18n.rst:45
 msgid "假设你已经 fork 仓库并 clone 到了本地。"
 msgstr "Assuming you have forked the repository and cloned it locally."
 
-#: ../../source/development/contribute-to-doc-i18n.rst:44
+#: ../../source/development/contribute-to-doc-i18n.rst:47
 msgid "使用 ``cd JAnim`` 进入项目文件夹，然后安装必要的环境："
 msgstr "Use ``cd JAnim`` to enter the project folder, then install the required environment:"
 
-#: ../../source/development/contribute-to-doc-i18n.rst:46
+#: ../../source/development/contribute-to-doc-i18n.rst:49
 msgid "pip install -e .[gui,doc]"
 msgstr "pip install -e .[gui,doc]"
 
-#: ../../source/development/contribute-to-doc-i18n.rst:50
+#: ../../source/development/contribute-to-doc-i18n.rst:53
 msgid "另外，需要确保已安装 `GNU gettext <https://www.gnu.org/software/gettext/>`_"
 msgstr "Additionally, make sure `GNU gettext <https://www.gnu.org/software/gettext/>`_ is installed."
 
-#: ../../source/development/contribute-to-doc-i18n.rst:53
+#: ../../source/development/contribute-to-doc-i18n.rst:56
 msgid "工作流程"
 msgstr "Workflow"
 
-#: ../../source/development/contribute-to-doc-i18n.rst:55
+#: ../../source/development/contribute-to-doc-i18n.rst:58
 msgid "文档国际化的工作流程分为以下步骤："
 msgstr "The workflow for documentation internationalization consists of the following steps:"
 
-#: ../../source/development/contribute-to-doc-i18n.rst:57
+#: ../../source/development/contribute-to-doc-i18n.rst:60
 msgid "**更新翻译文件**：提取最新的可翻译文本并生成/更新 .po 文件"
 msgstr "**Update translation files**: extract the latest translatable text and generate/update .po files"
 
-#: ../../source/development/contribute-to-doc-i18n.rst:58
-msgid "**进行翻译**：编辑 .po 文件进行翻译"
-msgstr "**Translate**: edit .po files for translation"
+#: ../../source/development/contribute-to-doc-i18n.rst:61
+msgid "**进行翻译**：编辑 .po 文件进行翻译（必要时可用 ``format-po`` 统一格式）"
+msgstr "**Translate**: edit .po files to perform translation (use ``format-po`` to normalize formatting when needed)"
 
-#: ../../source/development/contribute-to-doc-i18n.rst:59
+#: ../../source/development/contribute-to-doc-i18n.rst:62
 msgid "**本地验证**：在本地构建文档预览翻译效果"
 msgstr "**Local verification**: build the docs locally to preview translation results"
 
-#: ../../source/development/contribute-to-doc-i18n.rst:64
+#: ../../source/development/contribute-to-doc-i18n.rst:67
 msgid "更新翻译文件"
 msgstr "Update Translation Files"
 
-#: ../../source/development/contribute-to-doc-i18n.rst:66
+#: ../../source/development/contribute-to-doc-i18n.rst:69
 msgid ""
 "大多数情况下，比如英文文档，翻译文件（后缀 ``.po``）已经生成到了项目中。 如果你只是想编辑已有的翻译文件，可以跳过此段，直"
 "接到 :ref:`translate-docs` 便可以开始翻译。"
 msgstr ""
 "In most cases, translation files (with the extension ``.po``) have already been generated in the project.\n"
-"If you only want to edit existing translation files, you can skip this section and go directly to :ref:`translate-docs` to start translating."
+"If you only want to edit existing translation files, you can skip this section and go directly to :ref:`translate-docs` "
+"to start translating."
 
-#: ../../source/development/contribute-to-doc-i18n.rst:69
+#: ../../source/development/contribute-to-doc-i18n.rst:72
 msgid "要创建新语言的翻译或更新现有翻译文件，使用以下命令："
 msgstr "To create translations for a new language or update existing translation files, use the following command:"
 
-#: ../../source/development/contribute-to-doc-i18n.rst:71
+#: ../../source/development/contribute-to-doc-i18n.rst:74
 msgid "python scripts update-po docs <language>"
 msgstr "python scripts update-po docs <language>"
 
-#: ../../source/development/contribute-to-doc-i18n.rst:75
+#: ../../source/development/contribute-to-doc-i18n.rst:78
 msgid "其中 ``<language>`` 是你要翻译的语言代码（例如 ``en`` 表示英文，``ja`` 表示日语等）。"
-msgstr "Here ``<language>`` is the language code you want to translate to (for example, ``en`` for English, ``ja`` for Japanese, etc.)."
+msgstr ""
+"Here ``<language>`` is the language code you want to translate to (for example, ``en`` for English, ``ja`` for Japanese, "
+"etc.)."
 
-#: ../../source/development/contribute-to-doc-i18n.rst:79
+#: ../../source/development/contribute-to-doc-i18n.rst:82
 msgid "``zh_CN`` 是文档的源语言，因此不需要为其创建翻译文件。"
 msgstr "``zh_CN`` is the source language of the documentation, so translation files do not need to be created for it."
 
-#: ../../source/development/contribute-to-doc-i18n.rst:87
-msgid "完成后，你可以在相应的 ``doc/source/locales/<language>/LC_MESSAGES/`` 目录中找到所有的 ``.po`` 文件。"
-msgstr "After completion, you can find all ``.po`` files in the corresponding ``doc/source/locales/<language>/LC_MESSAGES/`` directory."
-
 #: ../../source/development/contribute-to-doc-i18n.rst:90
+msgid "完成后，你可以在相应的 ``doc/source/locales/<language>/LC_MESSAGES/`` 目录中找到所有的 ``.po`` 文件。"
+msgstr ""
+"After completion, you can find all ``.po`` files in the corresponding ``doc/source/locales/<language>/LC_MESSAGES/`` "
+"directory."
+
+#: ../../source/development/contribute-to-doc-i18n.rst:93
 msgid "检查翻译完成情况"
 msgstr "Check Translation Progress"
 
-#: ../../source/development/contribute-to-doc-i18n.rst:92
+#: ../../source/development/contribute-to-doc-i18n.rst:95
 msgid "在开始翻译或翻译过程中，你可以检查翻译的完成情况："
 msgstr "Before starting translation or during the process, you can check translation progress:"
 
-#: ../../source/development/contribute-to-doc-i18n.rst:94
+#: ../../source/development/contribute-to-doc-i18n.rst:97
 msgid "python scripts check-po docs <language>"
 msgstr "python scripts check-po docs <language>"
 
-#: ../../source/development/contribute-to-doc-i18n.rst:98
+#: ../../source/development/contribute-to-doc-i18n.rst:101
 msgid ""
 "该命令会扫描所有 ``.po`` 文件，并列出仍有未翻译（untranslated）或模糊（fuzzy）条目的文件。 这有助于你了解还需要进行哪些翻"
 "译工作。"
 msgstr ""
-"This command scans all ``.po`` files and lists files that still contain untranslated or fuzzy entries. "
-"This helps you understand what translation work remains to be done."
+"This command scans all ``.po`` files and lists files that still contain untranslated or fuzzy entries. This helps you "
+"understand what translation work remains to be done."
 
-#: ../../source/development/contribute-to-doc-i18n.rst:101
+#: ../../source/development/contribute-to-doc-i18n.rst:104
 msgid "并且一些软件，比如 Poedit 的编目管理器也可以列出文件夹中的 ``.po`` 文件的翻译完成情况。"
 msgstr "Some tools, such as Poedit's Catalog Manager, can also list translation progress for ``.po`` files in a folder."
 
-#: ../../source/development/contribute-to-doc-i18n.rst:106
+#: ../../source/development/contribute-to-doc-i18n.rst:109
 msgid "进行文档翻译"
 msgstr "Translate the Documentation"
 
-#: ../../source/development/contribute-to-doc-i18n.rst:108
+#: ../../source/development/contribute-to-doc-i18n.rst:111
 msgid "现在 ``doc/source/locales/<language>/LC_MESSAGES/`` 中已经存放了翻译文件（后缀 ``.po``）。"
 msgstr "Translation files (with the ``.po`` extension) are now stored in ``doc/source/locales/<language>/LC_MESSAGES/``."
 
-#: ../../source/development/contribute-to-doc-i18n.rst:110
+#: ../../source/development/contribute-to-doc-i18n.rst:113
 msgid "可以使用 Poedit 软件来编辑 ``.po`` 文件，或者用任何文本编辑器直接编辑。"
 msgstr "You can use Poedit to edit ``.po`` files, or edit them directly with any text editor."
 
-#: ../../source/development/contribute-to-doc-i18n.rst:114
+#: ../../source/development/contribute-to-doc-i18n.rst:117
 msgid "如果你有能力检查的话，使用 LLM Agent 翻译也无妨（但是记得校对哦）"
 msgstr "If you are able to review the results, using an LLM Agent for translation is also fine (but remember to proofread)."
 
-#: ../../source/development/contribute-to-doc-i18n.rst:116
+#: ../../source/development/contribute-to-doc-i18n.rst:119
 msgid "示例提示词："
 msgstr "Example prompt:"
 
-#: ../../source/development/contribute-to-doc-i18n.rst:118
+#: ../../source/development/contribute-to-doc-i18n.rst:121
 msgid ""
-"请完成 `doc/source/locales/<language>/LC_MESSAGES/` 目录下的 `.po` 文件中的 `msgstr` 翻译工作\n"
+"请完成 `<language>` 文档的翻译工作\n"
 "工作规范以及工作流程请严格参考 `doc/source/development/contribute-to-doc-i18n.rst` 中的介绍"
 msgstr ""
-"Please complete the `msgstr` translation work for `.po` files under "
-"`doc/source/locales/<language>/LC_MESSAGES/`.\n"
-"Please strictly follow the guidelines and workflow described in "
-"`doc/source/development/contribute-to-doc-i18n.rst`."
+"Please complete the translation work for the `<language>` documentation.\n"
+"Please strictly follow the guidelines and workflow described in `doc/source/development/contribute-to-doc-i18n.rst`."
 
-#: ../../source/development/contribute-to-doc-i18n.rst:123
+#: ../../source/development/contribute-to-doc-i18n.rst:126
+msgid "如果你是手动编辑了较多 ``.po`` 文件，建议在提交前执行一次："
+msgstr "If you manually edited many ``.po`` files, it is recommended to run this once before submitting:"
+
+#: ../../source/development/contribute-to-doc-i18n.rst:128
+msgid "python scripts format-po docs <language>"
+msgstr "python scripts format-po docs <language>"
+
+#: ../../source/development/contribute-to-doc-i18n.rst:132
+msgid "这个命令会统一 ``.po`` 的换行与排版策略，减少因为格式差异导致的无关 diff。"
+msgstr ""
+"This command standardizes line wrapping and formatting in ``.po`` files, reducing unrelated diffs caused by formatting "
+"differences."
+
+#: ../../source/development/contribute-to-doc-i18n.rst:134
 msgid "完成翻译后，提交你的更改，创建合并到 ``main`` 分支的 Pull Request。"
 msgstr "After translating, submit your changes and create a Pull Request to merge into the ``main`` branch."
 
-#: ../../source/development/contribute-to-doc-i18n.rst:126
+#: ../../source/development/contribute-to-doc-i18n.rst:137
 msgid "在本地构建文档"
 msgstr "Build the Documentation Locally"
 
-#: ../../source/development/contribute-to-doc-i18n.rst:128
+#: ../../source/development/contribute-to-doc-i18n.rst:139
 msgid "要在本地预览你的翻译效果，可以构建文档："
 msgstr "To preview your translation results locally, you can build the documentation:"
 
-#: ../../source/development/contribute-to-doc-i18n.rst:130
+#: ../../source/development/contribute-to-doc-i18n.rst:141
 msgid "python scripts build-docs <language>"
 msgstr "python scripts build-docs <language>"
 
-#: ../../source/development/contribute-to-doc-i18n.rst:134
+#: ../../source/development/contribute-to-doc-i18n.rst:145
 msgid "其中 ``<language>`` 是你要构建的语言代码（例如 ``en`` 表示英文）。"
 msgstr "Here ``<language>`` is the language code to build (for example, ``en`` for English)."
 
-#: ../../source/development/contribute-to-doc-i18n.rst:136
+#: ../../source/development/contribute-to-doc-i18n.rst:147
 msgid ""
 "该命令会在 ``doc/build/html_i18n/<language>/`` 下生成网页文件，点击其中的 ``index.html`` 即可在浏览器中打开并查看文档。"
-msgstr "This command generates web files under ``doc/build/html_i18n/<language>/``. Open ``index.html`` there in your browser to view the documentation."
+msgstr ""
+"This command generates web files under ``doc/build/html_i18n/<language>/``. Open ``index.html`` there in your browser to "
+"view the documentation."
 
-#: ../../source/development/contribute-to-doc-i18n.rst:138
+#: ../../source/development/contribute-to-doc-i18n.rst:149
 msgid "或者在使用前述命令时加上 ``-o`` 参数，即可直接在构建完成后自动打开浏览器预览："
-msgstr "Or add the ``-o`` option to the previous command to automatically open the browser for preview after the build finishes:"
+msgstr ""
+"Or add the ``-o`` option to the previous command to automatically open the browser for preview after the build finishes:"
 
-#: ../../source/development/contribute-to-doc-i18n.rst:140
+#: ../../source/development/contribute-to-doc-i18n.rst:151
 msgid "python scripts build-docs <language> -o"
 msgstr "python scripts build-docs <language> -o"
 
-#: ../../source/development/contribute-to-doc-i18n.rst:146
+#: ../../source/development/contribute-to-doc-i18n.rst:157
 msgid "构建文档时，会自动从 ``.po`` 文件编译产生 ``.mo`` 文件，无需提前手动生成。"
-msgstr "When building documentation, ``.mo`` files are automatically compiled from ``.po`` files, so you do not need to generate them manually in advance."
+msgstr ""
+"When building documentation, ``.mo`` files are automatically compiled from ``.po`` files, so you do not need to generate "
+"them manually in advance."
 
-#: ../../source/development/contribute-to-doc-i18n.rst:149
+#: ../../source/development/contribute-to-doc-i18n.rst:160
 msgid "完整操作示例"
 msgstr "Complete Example"
 
-#: ../../source/development/contribute-to-doc-i18n.rst:151
+#: ../../source/development/contribute-to-doc-i18n.rst:162
 msgid "假设你要为文档提供英文翻译，完整流程如下："
 msgstr "Suppose you want to provide an English translation for the documentation. The complete workflow is as follows:"
 
-#: ../../source/development/contribute-to-doc-i18n.rst:153
+#: ../../source/development/contribute-to-doc-i18n.rst:164
 msgid "更新翻译文件："
 msgstr "Update translation files:"
 
-#: ../../source/development/contribute-to-doc-i18n.rst:155
+#: ../../source/development/contribute-to-doc-i18n.rst:166
 msgid "python scripts update-po docs en"
 msgstr "python scripts update-po docs en"
 
-#: ../../source/development/contribute-to-doc-i18n.rst:159
+#: ../../source/development/contribute-to-doc-i18n.rst:170
 msgid "编辑 ``doc/source/locales/en/LC_MESSAGES/`` 中的 ``.po`` 文件进行翻译"
 msgstr "Edit ``.po`` files under ``doc/source/locales/en/LC_MESSAGES/`` for translation"
 
-#: ../../source/development/contribute-to-doc-i18n.rst:161
+#: ../../source/development/contribute-to-doc-i18n.rst:172
 msgid "检查翻译完成情况（可选）："
 msgstr "Check translation progress (optional):"
 
-#: ../../source/development/contribute-to-doc-i18n.rst:163
+#: ../../source/development/contribute-to-doc-i18n.rst:174
 msgid "python scripts check-po docs en"
 msgstr "python scripts check-po docs en"
 
-#: ../../source/development/contribute-to-doc-i18n.rst:167
+#: ../../source/development/contribute-to-doc-i18n.rst:178
 msgid "在本地构建并打开文档预览："
 msgstr "Build and open the local documentation preview:"
 
-#: ../../source/development/contribute-to-doc-i18n.rst:169
+#: ../../source/development/contribute-to-doc-i18n.rst:180
 msgid "python scripts build-docs en -o"
 msgstr "python scripts build-docs en -o"
 
-#: ../../source/development/contribute-to-doc-i18n.rst:173
+#: ../../source/development/contribute-to-doc-i18n.rst:184
+msgid "提交前统一 ``.po`` 文件格式（可选）："
+msgstr "(Optional) Normalize ``.po`` file formatting before submitting:"
+
+#: ../../source/development/contribute-to-doc-i18n.rst:186
+msgid "python scripts format-po docs en"
+msgstr "python scripts format-po docs en"
+
+#: ../../source/development/contribute-to-doc-i18n.rst:190
 msgid "提交更改并创建 Pull Request"
 msgstr "Submit your changes and open a Pull Request"
 

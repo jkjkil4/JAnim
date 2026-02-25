@@ -64,9 +64,6 @@ exclude = [
     "asv.conf.json",
     "**/*.ui",
     "janim/locale/source",
-    "janim/locale/compile.py",
-    "janim/locale/gettext.py",
-    "janim/locale/intl.py",
     "janim/locale/*/LC_MESSAGES/*.po"
 ]
 
