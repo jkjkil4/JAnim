@@ -28,3 +28,7 @@ details summary p {
 .announcement {
     min-height: 90px;
 }
+
+.sidebar-tree {
+    margin-bottom: 140px;
+}
