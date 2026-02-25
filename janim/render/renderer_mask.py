@@ -82,7 +82,7 @@ class MaskRenderer(Renderer):
         vitem = self._mask_vitem
         # 同步点数据
         vitem.points.become(item.points)
-        # 设置为白色填充，无描边
+        # 蒙版形状始终以白色不透明渲染，透明度通过 u_mask_alpha 控制
         vitem.fill.set([1.0, 1.0, 1.0], 1.0, root_only=True)
         vitem.stroke.set(alpha=0.0, root_only=True)
         vitem._fix_in_frame = item._fix_in_frame
@@ -128,7 +128,9 @@ class MaskRenderer(Renderer):
         pw, ph = Config.get.pixel_width, Config.get.pixel_height
 
         if "u_mask_alpha" in self.prog._members:
-            self.prog["u_mask_alpha"] = item.mask_alpha._value
+            # fill.alpha 为遮罩强度乘子
+            fill_alpha = float(item.fill.get()[0, 3])
+            self.prog["u_mask_alpha"] = item.mask_alpha._value * fill_alpha
         if "u_feather" in self.prog._members:
             self.prog["u_feather"] = item.feather._value
         if "u_invert" in self.prog._members:

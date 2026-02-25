@@ -5,9 +5,11 @@ from typing import TYPE_CHECKING, Self
 
 from janim.anims.timeline import Timeline
 from janim.components.component import CmptInfo
+from janim.components.rgbas import Cmpt_Rgbas
 from janim.components.simple import Cmpt_Float, Cmpt_List
 from janim.components.vpoints import Cmpt_VPoints
 from janim.items.item import Item
+from janim.items.points import Points
 from janim.render.renderer_mask import MaskRenderer
 from janim.utils.data import AlignedData
 
@@ -16,7 +18,7 @@ if TYPE_CHECKING:
     from janim.items.vitem import VItem
 
 
-class Mask(Item):
+class Mask(Points):
     """
     蒙版物件，用于遮罩受影响的物件
 
@@ -40,6 +42,7 @@ class Mask(Item):
     renderer_cls = MaskRenderer
 
     points = CmptInfo(Cmpt_VPoints[Self])
+    fill = CmptInfo(Cmpt_Rgbas[Self])
     mask_alpha = CmptInfo(Cmpt_Float[Self], 1.0)
     feather = CmptInfo(Cmpt_Float[Self], 0.0)
     invert = CmptInfo(Cmpt_Float[Self], 0.0)
@@ -60,6 +63,7 @@ class Mask(Item):
     ):
         super().__init__(**kwargs)
         self.points.become(shape.points)
+        self.fill.set([1.0, 1.0, 1.0], 1.0, root_only=True)
         self.mask_alpha.set(alpha)
         self.feather.set(feather)
         self.invert.set(1.0 if invert else 0.0)
