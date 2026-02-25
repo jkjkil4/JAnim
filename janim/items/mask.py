@@ -62,7 +62,15 @@ class Mask(Points):
         **kwargs
     ):
         super().__init__(**kwargs)
-        self.points.become(shape.points)
+
+        subpaths = []
+        for item in shape.walk_self_and_descendants():
+            if hasattr(item, 'points') and hasattr(item.points, 'get_subpaths') and item.points.has():
+                subpaths.extend(item.points.get_subpaths())
+
+        for subpath in subpaths:
+            self.points.add_subpath(subpath)
+
         self.fill.set([1.0, 1.0, 1.0], 1.0, root_only=True)
         self.mask_alpha.set(alpha)
         self.feather.set(feather)
