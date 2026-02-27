@@ -176,7 +176,7 @@ def make_animated_move_scene(n: int):
 # ---------------------------------------------------------------------------
 
 N_FRAMES = 30
-BASE_CFG = dict(pixel_width=384, pixel_height=216)
+BASE_CFG = dict(pixel_width=1920, pixel_height=1080)
 
 
 def bench_one(cls, n_frames=N_FRAMES):
@@ -247,37 +247,25 @@ def main():
 
     all_results = {}
 
-    # --- 1. Static circles: scaling with item count ---
-    counts_static = [10, 50, 100, 200, 500, 1000, 2000]
+    counts = [10, 50, 100, 200, 500, 1000, 2000, 5000]
+
     all_results["circles"] = run_scaling_test(
-        "Static Circles (stroke only)", make_circle_scene, counts_static
+        "Static Circles (stroke only)", make_circle_scene, counts
     )
-
-    # --- 2. Filled rects: scaling with item count ---
     all_results["filled_rects"] = run_scaling_test(
-        "Static Filled Rects (stroke + fill)", make_rect_filled_scene, counts_static
+        "Static Filled Rects (stroke + fill)", make_rect_filled_scene, counts
     )
-
-    # --- 3. Dots (simplest VItem): scaling ---
-    counts_dots = [10, 50, 100, 500, 1000, 2000, 5000]
     all_results["dots"] = run_scaling_test(
-        "Static Dots (simplest VItem)", make_dot_scene, counts_dots
+        "Static Dots (simplest VItem)", make_dot_scene, counts
     )
-
-    # --- 4. Mixed shapes ---
     all_results["mixed"] = run_scaling_test(
-        "Static Mixed (circle/rect/hexagon)", make_mixed_scene, counts_static
+        "Static Mixed (circle/rect/hexagon)", make_mixed_scene, counts
     )
-
-    # --- 5. Animated color ---
-    counts_anim = [10, 50, 100, 200, 500]
     all_results["anim_color"] = run_scaling_test(
-        "Animated Color Change", make_animated_color_scene, counts_anim
+        "Animated Color Change", make_animated_color_scene, counts
     )
-
-    # --- 6. Animated movement ---
     all_results["anim_move"] = run_scaling_test(
-        "Animated Position Shift", make_animated_move_scene, counts_anim
+        "Animated Position Shift", make_animated_move_scene, counts
     )
 
     # --- Summary ---
