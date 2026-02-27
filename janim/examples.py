@@ -444,6 +444,21 @@ class MaskExample(Timeline):
         self.forward(1)
         self.play(FadeOut(text_2))
 
+        # 使用 boolean_ops 创建遮罩的交并集
+        self.forward(1)
+        dot1 = Dot(LEFT, 1.5, color=YELLOW, fill_alpha=0.25).show()
+        dot2 = Dot(RIGHT, 1.5, color=YELLOW, fill_alpha=0.25).show()
+        text_3 = Text('ABCDEFGHIJKLMN', font_size=40).show()
+        shape_union = boolean_ops.Union(dot1, dot2)
+        shape_intersection = boolean_ops.Intersection(dot1, dot2)
+        mask_union = Mask(shape_union, affected=[text_3])
+        mask_intersection = Mask(shape_intersection, affected=[text_3])
+        self.play(Transform(mask_union, mask_intersection), duration=0.5)
+        self.forward(1)
+        self.play(Transform(mask_intersection, mask_union), duration=0.5)
+        self.play(FadeOut(Group(dot1, dot2, text_3)))
+        self.forward(1)
+
         # 自定义形状遮罩
         text_fashion = Text("Fashion")
         text_fashion.points.scale(10)
