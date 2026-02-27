@@ -1268,9 +1268,7 @@ class BuiltTimeline:
         self, items_render: list[_ItemWithRenderFunc], blending: bool
     ) -> None:
         render_data = Renderer.data_ctx.get()
-        use_merged = (
-            self.cfg.gpu_driven_rendering and render_data.ctx.version_code >= 430
-        )
+        use_merged = self.cfg.gpu_driven_rendering
 
         if use_merged:
             self._render_items_merged(items_render, blending, render_data)
@@ -1301,9 +1299,16 @@ class BuiltTimeline:
         from janim.items.vitem import VItem
 
         if self._merged_renderer is None:
-            from janim.render.renderer_merged_vitem import MergedVItemRenderer
+            if render_data.ctx.version_code >= 430:
+                from janim.render.renderer_merged_vitem import MergedVItemRenderer
 
-            self._merged_renderer = MergedVItemRenderer()
+                self._merged_renderer = MergedVItemRenderer()
+            else:
+                from janim.render.renderer_merged_vitem_compat import (
+                    MergedVItemRendererCompat,
+                )
+
+                self._merged_renderer = MergedVItemRendererCompat()
 
         # Separate eligible VItems from others
         merged_vitems: list[BuiltTimeline._ItemWithRenderFunc] = []
