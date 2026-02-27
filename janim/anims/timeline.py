@@ -1268,7 +1268,7 @@ class BuiltTimeline:
         self, items_render: list[_ItemWithRenderFunc], blending: bool
     ) -> None:
         render_data = Renderer.data_ctx.get()
-        use_merged = self.cfg.gpu_driven_rendering
+        use_merged = Config.get.gpu_driven_rendering
 
         if use_merged:
             self._render_items_merged(items_render, blending, render_data)

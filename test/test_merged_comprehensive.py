@@ -52,16 +52,17 @@ class TestManyItems(Timeline):
 
 def compare(name, timeline_cls):
     print(f"\n--- {name} ---")
-    with Config(pixel_width=384, pixel_height=216, fps=5):
-        built = timeline_cls().build(quiet=True)
-
+    base_cfg = dict(pixel_width=384, pixel_height=216, fps=5)
     t = 0.5
 
-    with Config(gpu_driven_rendering=False):
-        img_legacy = np.array(built.capture(t))
+    # Build separately so gpu_driven_rendering is frozen into each build
+    with Config(**base_cfg, gpu_driven_rendering=False):
+        built_legacy = timeline_cls().build(quiet=True)
+    img_legacy = np.array(built_legacy.capture(t))
 
-    with Config(gpu_driven_rendering=True):
-        img_merged = np.array(built.capture(t))
+    with Config(**base_cfg, gpu_driven_rendering=True):
+        built_merged = timeline_cls().build(quiet=True)
+    img_merged = np.array(built_merged.capture(t))
 
     diff = np.abs(img_legacy.astype(float) - img_merged.astype(float))
     max_diff = diff.max()

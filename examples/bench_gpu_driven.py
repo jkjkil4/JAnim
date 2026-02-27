@@ -190,24 +190,20 @@ def main():
     print("-" * 65)
 
     for name, cls in ALL_BENCHMARKS:
-        with Config(pixel_width=384, pixel_height=216, fps=cls.CONFIG.fps or 5):
-            built = cls().build(quiet=True)
-
         n_frames = 30
+        base_cfg = dict(pixel_width=384, pixel_height=216, fps=cls.CONFIG.fps or 5)
 
-        # Warmup
-        with Config(gpu_driven_rendering=False):
-            built.capture(0.0)
-        with Config(gpu_driven_rendering=True):
-            built.capture(0.0)
+        # Build & bench legacy
+        with Config(**base_cfg, gpu_driven_rendering=False):
+            built_legacy = cls().build(quiet=True)
+        built_legacy.capture(0.0)  # warmup
+        t_legacy = bench_capture(built_legacy, n_frames)
 
-        # Legacy
-        with Config(gpu_driven_rendering=False):
-            t_legacy = bench_capture(built, n_frames)
-
-        # Merged
-        with Config(gpu_driven_rendering=True):
-            t_merged = bench_capture(built, n_frames)
+        # Build & bench merged
+        with Config(**base_cfg, gpu_driven_rendering=True):
+            built_merged = cls().build(quiet=True)
+        built_merged.capture(0.0)  # warmup
+        t_merged = bench_capture(built_merged, n_frames)
 
         speedup = t_legacy / t_merged if t_merged > 0 else float("inf")
         print(f"{name:<28} {t_legacy:>8.3f}s {t_merged:>8.3f}s {speedup:>9.2f}x")

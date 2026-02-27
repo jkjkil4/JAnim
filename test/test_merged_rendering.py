@@ -41,19 +41,19 @@ class TestMergedRendering(Timeline):
 
 
 def main():
-    print("Building scene...")
-    with Config(pixel_width=384, pixel_height=216, fps=5):
-        built = TestMergedRendering().build(quiet=True)
+    base_cfg = dict(pixel_width=384, pixel_height=216, fps=5)
 
-    # Capture with legacy rendering
-    print("Capturing with legacy rendering...")
-    with Config(gpu_driven_rendering=False):
-        img_legacy = np.array(built.capture(0.5))
+    # Build & capture with legacy rendering
+    print("Building + capturing with legacy rendering...")
+    with Config(**base_cfg, gpu_driven_rendering=False):
+        built_legacy = TestMergedRendering().build(quiet=True)
+    img_legacy = np.array(built_legacy.capture(0.5))
 
-    # Capture with merged rendering
-    print("Capturing with GPU-driven rendering...")
-    with Config(gpu_driven_rendering=True):
-        img_merged = np.array(built.capture(0.5))
+    # Build & capture with merged rendering
+    print("Building + capturing with GPU-driven rendering...")
+    with Config(**base_cfg, gpu_driven_rendering=True):
+        built_merged = TestMergedRendering().build(quiet=True)
+    img_merged = np.array(built_merged.capture(0.5))
 
     # Compare
     diff = np.abs(img_legacy.astype(float) - img_merged.astype(float))

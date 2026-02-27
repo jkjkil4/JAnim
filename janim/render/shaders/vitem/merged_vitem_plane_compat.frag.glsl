@@ -106,7 +106,7 @@ void main()
     float sp_fill_d;
     float sp_fill_sgn;
 
-    const int lim = (point_count - 1) / 2 * 2;
+    int lim = (point_count - 1) / 2 * 2;
 
     while (true) {
         get_subpath_attr(start_idx, lim, start_idx, idx, sp_stroke_d, sp_fill_d, sp_fill_sgn);
