@@ -17,6 +17,8 @@ if TYPE_CHECKING:   # pragma: no cover
 _ = get_translator('janim.components.component')
 
 
+#? Component 使用的元类
+#? 通过这个元类来确保所有继承自 Component 的类都实现了 copy, become, not_changed 方法
 class _CmptMeta(type):
     def __new__(
         cls: type,

@@ -13,3 +13,4 @@ __pycache__
 /result*.json
 /test/__test_tempdir__
 /test/__test_errors__
+.direnv

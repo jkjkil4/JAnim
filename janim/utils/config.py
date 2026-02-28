@@ -16,9 +16,9 @@ from janim.locale import get_translator
 from janim.typing import Vect
 from janim.utils.file_ops import guarantee_existence
 
-_ = get_translator('janim.utils.config')
+_ = get_translator("janim.utils.config")
 
-config_ctx_var: ContextVar[list[Config]] = ContextVar('config_ctx_var')
+config_ctx_var: ContextVar[list[Config]] = ContextVar("config_ctx_var")
 
 
 def optional_type_validator(type, typename: str):
@@ -27,16 +27,17 @@ def optional_type_validator(type, typename: str):
             return
         if not isinstance(value, type):
             raise TypeError(
-                _("{attrname}={value!r} is incompatible with type {typename}")
-                .format(attrname=attr.name, typename=typename, value=value)
+                _("{attrname}={value!r} is incompatible with type {typename}").format(
+                    attrname=attr.name, typename=typename, value=value
+                )
             )
 
     return validator
 
 
 _field = partial(attrs.field, default=None)
-_opt_int_validator = optional_type_validator(int, 'int')
-_opt_float_validator = optional_type_validator((int, float), 'float')
+_opt_int_validator = optional_type_validator(int, "int")
+_opt_float_validator = optional_type_validator((int, float), "float")
 
 
 class _ConfigMeta(type):
@@ -111,6 +112,7 @@ class Config(metaclass=_ConfigMeta):
 
     更多内容可以参考文档教程的 :doc:`配置系统 <../../tutorials/config_system>` 页面
     """
+
     fps: int = _field(validator=_opt_int_validator)
     preview_fps: int = _field(validator=_opt_int_validator)
     anti_alias_width: float = _field(validator=_opt_float_validator)
@@ -120,7 +122,7 @@ class Config(metaclass=_ConfigMeta):
 
     pixel_height: int = _field(validator=_opt_int_validator)
     pixel_width: int = _field(validator=_opt_int_validator)
-    background_color: Color = _field(validator=optional_type_validator(Color, 'Color'))
+    background_color: Color = _field(validator=optional_type_validator(Color, "Color"))
     font: str | Iterable[str] = None
     subtitle_font: str | Iterable[str] = None
     subtitle_to_edge_buff: float = _field(validator=_opt_float_validator)
@@ -144,6 +146,10 @@ class Config(metaclass=_ConfigMeta):
 
     client_search_port: int = _field(validator=_opt_int_validator)
 
+    gpu_driven_rendering: bool = None
+    """启用 GPU-driven 合并渲染（实验性），将所有 VItem 合并为单次 instanced draw call。
+    需要 OpenGL 4.3+。设为 True 启用，None/False 使用传统逐物件渲染。"""
+
     def __enter__(self) -> Self:
         lst = config_ctx_var.get()
         self.token = config_ctx_var.set([*lst, self])
@@ -162,35 +168,29 @@ default_config = Config(
     fps=60,
     preview_fps=60 if is_power_plugged() else 30,
     anti_alias_width=0.015,
-
     frame_height=8.0,
-    frame_width=16.0 / 9.0 * 8.0,   # aspect_ratio(16/9) * frame_height
-
+    frame_width=16.0 / 9.0 * 8.0,  # aspect_ratio(16/9) * frame_height
     pixel_height=1080,
     pixel_width=1920,
-    background_color=Color('#000000'),
-    font='Consolas',
-    subtitle_font='',
+    background_color=Color("#000000"),
+    font="Consolas",
+    subtitle_font="",
     subtitle_to_edge_buff=DEFAULT_ITEM_TO_EDGE_BUFF,
-
     audio_framerate=44100,
     audio_channels=2,
-
-    wnd_pos='OR',
+    wnd_pos="OR",
     wnd_monitor=0,
-
-    typst_bin='typst',
-    typst_shared_preamble='',
-    typst_text_preamble='',
-    typst_math_preamble='',
-
-    ffmpeg_bin='ffmpeg',
-    ffprobe_bin='ffprobe',
-    output_dir='videos',
-    temp_dir=guarantee_existence(os.path.join(tempfile.gettempdir(), 'janim')),
-    asset_dir='',
-
-    client_search_port=40565
+    typst_bin="typst",
+    typst_shared_preamble="",
+    typst_text_preamble="",
+    typst_math_preamble="",
+    ffmpeg_bin="ffmpeg",
+    ffprobe_bin="ffprobe",
+    output_dir="videos",
+    temp_dir=guarantee_existence(os.path.join(tempfile.gettempdir(), "janim")),
+    asset_dir="",
+    client_search_port=40565,
+    gpu_driven_rendering=False,
 )
 """
 默认配置
@@ -217,6 +217,7 @@ class ConfigGetter:
 
     请仍然使用 ``Config.get.xxx`` 来获取定义在该类中的内容
     """
+
     def __init__(self, config_ctx: list[Config] | None = None):
         self.config_ctx = config_ctx
 
@@ -274,7 +275,7 @@ class ConfigGetter:
         """
         output_dir = self.output_dir
 
-        if output_dir.startswith((':/', ':\\')):
+        if output_dir.startswith((":/", ":\\")):
             return os.path.join(relative_path, output_dir[2:])
 
         return output_dir
@@ -292,8 +293,8 @@ class ConfigGetter:
             )
         """
         return {
-            'pixel_width': int(self.pixel_width * scale),
-            'pixel_height': int(self.pixel_height * scale)
+            "pixel_width": int(self.pixel_width * scale),
+            "pixel_height": int(self.pixel_height * scale),
         }
 
     def scaled_frame_size(self, scale: float) -> dict[str, float]:
@@ -309,8 +310,8 @@ class ConfigGetter:
             )
         """
         return {
-            'frame_width': self.frame_width * scale,
-            'frame_height': self.frame_height * scale
+            "frame_width": self.frame_width * scale,
+            "frame_height": self.frame_height * scale,
         }
 
     def scaled_width(self, scale: float) -> dict[str, float]:
@@ -326,8 +327,8 @@ class ConfigGetter:
             )
         """
         return {
-            'pixel_width': int(self.pixel_width * scale),
-            'frame_width': self.frame_width * scale
+            "pixel_width": int(self.pixel_width * scale),
+            "frame_width": self.frame_width * scale,
         }
 
     def scaled_height(self, scale: float) -> dict[str, float]:
@@ -343,8 +344,8 @@ class ConfigGetter:
             )
         """
         return {
-            'pixel_height': int(self.pixel_height * scale),
-            'frame_height': self.frame_height * scale
+            "pixel_height": int(self.pixel_height * scale),
+            "frame_height": self.frame_height * scale,
         }
 
     def scaled_size(self, scale: float) -> dict[str, float]:
@@ -359,10 +360,7 @@ class ConfigGetter:
                 **Config.get.scaled_size(0.5)
             )
         """
-        return {
-            **self.scaled_width(scale),
-            **self.scaled_height(scale)
-        }
+        return {**self.scaled_width(scale), **self.scaled_height(scale)}
 
     def swapped_size(self) -> dict[str, int]:
         """
@@ -377,10 +375,10 @@ class ConfigGetter:
             )
         """
         return {
-            'pixel_width': self.pixel_height,
-            'pixel_height': self.pixel_width,
-            'frame_width': self.frame_height,
-            'frame_height': self.frame_width
+            "pixel_width": self.pixel_height,
+            "pixel_height": self.pixel_width,
+            "frame_width": self.frame_height,
+            "frame_height": self.frame_width,
         }
 
 
