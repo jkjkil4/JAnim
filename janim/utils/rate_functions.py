@@ -1,9 +1,8 @@
-import math
-from typing import Callable, Literal
-
-import numpy as np
-
 from janim.utils.bezier import bezier
+
+from typing import Callable, Literal
+import math
+import numpy as np
 
 type RateFunc = Callable[[float], float]
 
