@@ -132,7 +132,8 @@ class MaskRenderer(Renderer):
             fill_alpha = float(item.fill.get()[0, 3])
             self.prog["u_mask_alpha"] = item.mask_alpha._value * fill_alpha
         if "u_feather" in self.prog._members:
-            self.prog["u_feather"] = item.feather._value
+            fw = Config.get.frame_width
+            self.prog["u_feather"] = item.feather._value * (pw / fw)
         if "u_invert" in self.prog._members:
             self.prog["u_invert"] = item.invert._value
         if "u_tex_size" in self.prog._members:
