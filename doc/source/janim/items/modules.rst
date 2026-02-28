@@ -14,6 +14,7 @@ items
    frame_effect
    image_item
    item
+   mask
    points
    relation
    shape_matchers
