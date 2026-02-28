@@ -150,7 +150,7 @@ class FrameEffect(Item):
                 except ValueError:
                     pass
 
-    def _mark_render_disabled(self, additionals: list[Timeline.AdditionalRenderCallsCallback]):
+    def _mark_render_disabled(self, self_appr, additionals: list[Timeline.AdditionalRenderCallsCallback]):
         for appr in self._apprs:
             appr.render_disabled = True
 
