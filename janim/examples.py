@@ -418,7 +418,7 @@ class MaskExample(Timeline):
             mask_2.anim.points.shift(UP * 0.5),
             DataUpdater(
                 mask_2,
-                lambda item, p: item.feather.set(p.alpha * 20),
+                lambda item, p: item.feather.set(p.alpha * 0.1),
             )
         )
         self.play(
