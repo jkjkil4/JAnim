@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: JAnim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-02-25 11:14+0800\n"
+"POT-Creation-Date: 2026-02-28 17:15+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -57,21 +57,29 @@ msgstr ""
 "This command runs the test suite with ``coverage`` and analyzes code coverage. The analysis result is saved to the "
 "``.coverage`` file in the project root directory."
 
-#: ../../source/development/unittest.rst:27
+#: ../../source/development/unittest.rst:28
+msgid "如果只是想简单运行测试，不测试覆盖率，可以直接使用"
+msgstr "If you only want to run tests without checking coverage, you can use:"
+
+#: ../../source/development/unittest.rst:30
+msgid "python test"
+msgstr "python test"
+
+#: ../../source/development/unittest.rst:35
 msgid "生成覆盖率报告"
 msgstr "Generate a Coverage Report"
 
-#: ../../source/development/unittest.rst:29
+#: ../../source/development/unittest.rst:37
 msgid "你可以使用 ``--html`` 选项生成一个详细的 HTML 覆盖率报告，并自动在默认浏览器中打开："
 msgstr ""
 "You can use the ``--html`` option to generate a detailed HTML coverage report and automatically open it in the default "
 "browser:"
 
-#: ../../source/development/unittest.rst:31
+#: ../../source/development/unittest.rst:39
 msgid "python scripts test-cov --html"
 msgstr "python scripts test-cov --html"
 
-#: ../../source/development/unittest.rst:37
+#: ../../source/development/unittest.rst:45
 msgid "目前 JAnim 的代码覆盖率还很低。如果你有兴趣提高代码的测试覆盖率，欢迎贡献更多的测试用例"
 msgstr ""
 "JAnim's code coverage is currently still low. If you are interested in improving test coverage, contributions of more "
