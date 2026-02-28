@@ -1,5 +1,5 @@
 import math
-from typing import Callable
+from typing import Callable, Literal
 
 import numpy as np
 
@@ -52,9 +52,15 @@ def there_and_back_with_pause(t: float, pause_ratio: float = 1. / 3) -> float:
     else:
         return smooth(a - a * t)
 
+def make_there_and_back_with_pause(pause_ratio: float = 1. / 3) -> RateFunc:
+    return lambda t: there_and_back_with_pause(t, pause_ratio)
+
 
 def running_start(t: float, pull_factor: float = -0.5) -> float:
     return bezier([0, 0, pull_factor, pull_factor, 1, 1, 1])(t)
+
+def make_running_start(pull_factor: float = -0.5) -> RateFunc:
+    return lambda t: running_start(t, pull_factor)
 
 
 def not_quite_there(
@@ -68,6 +74,9 @@ def not_quite_there(
 
 def wiggle(t: float, wiggles: float = 2) -> float:
     return there_and_back(t) * np.sin(wiggles * np.pi * t)
+
+def make_wiggle(wiggles: float = 2) -> RateFunc:
+    return lambda t: wiggle(t, wiggles)
 
 
 def squish_rate_func(
@@ -110,6 +119,9 @@ def exponential_decay(t: float, half_life: float = 0.1) -> float:
     # The half-life should be rather small to minimize
     # the cut-off error at the end
     return 1 - np.exp(-t / half_life)
+
+def make_exponential_decay(half_life: float = 0.1) -> RateFunc:
+    return lambda t: exponential_decay(t, half_life)
 
 
 ELASTIC_CONST = 2 * math.pi / .3
@@ -320,3 +332,41 @@ def ease_inout_bounce(t: float) -> float:
         if t < .5
         else ease_out_bounce((t - .5) * 2) * .5 + .5
     )
+
+
+def spring(t: float, damping: float = 0.4, oscillations: float = 3.0) -> float:
+    if t == 0.0 or t == 1.0:
+        return t
+
+    freq = oscillations * 2 * math.pi
+    decay = np.exp(-t * 10 * damping)
+    return 1 - decay * np.cos(t * freq)
+
+def make_spring(damping: float = 0.4, oscillations: float = 3.0) -> RateFunc:
+    def result(t: float) -> float:
+        return spring(t, damping, oscillations)
+    return result
+
+
+def steps(t: float, step_count: int = 5, step_position: Literal["start", "end"] = "end") -> float:
+    if step_position == "start":
+        return math.ceil(t * step_count) / step_count
+    else:
+        if t == 1.0: return 1.0
+        return math.floor(t * step_count) / step_count
+
+def make_steps(step_count: int = 5, step_position: Literal["start", "end"] = "end") -> RateFunc:
+    return lambda t: steps(t, step_count, step_position)
+
+
+def pulse(t: float, pulses: int = 2) -> float:
+    return math.sin(t * pulses * math.pi) ** 2
+
+def make_pulse(pulses: int = 2) -> RateFunc:
+    return lambda t: pulse(t, pulses)
+
+
+def slow_mid(t: float) -> float:
+    if t == 0.5:
+        return 0.5
+    return 4 * (t - 0.5)**3 + 0.5
