@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import inspect
 from typing import (Callable, Iterable, NoReturn, Self, Sequence, TypeVar,
-                    overload)
+                    Collection, overload)
 
 import numpy as np
 from fontTools.cu2qu.cu2qu import curve_to_quadratic
@@ -190,9 +190,14 @@ def quadratic_bezier_points_for_arc(
     points[1::2] /= np.cos(theta / 2)
     return points
 
+@overload
+def bezier(points: Collection[float]) -> Callable[[float], float]: ...
+
+@overload
+def bezier(points: Collection[np.ndarray]) -> Callable[[float], np.ndarray]: ...
 
 def bezier(
-    points: Iterable[float | np.ndarray]
+    points: Collection[float | np.ndarray]
 ) -> Callable[[float], float | np.ndarray]:
     n = len(points) - 1
 
