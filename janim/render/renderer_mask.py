@@ -15,7 +15,7 @@ from janim.render.program import get_program_from_file_prefix
 from janim.utils.config import Config
 
 if TYPE_CHECKING:
-    from janim.items.mask import Mask
+    from janim.items.mask import ShapeMask
 
 
 class MaskRenderer(Renderer):
@@ -31,7 +31,7 @@ class MaskRenderer(Renderer):
         self._mask_vitem = None
         self._mask_vitem_renderer = None
 
-    def init(self, item: Mask) -> None:
+    def init(self, item: ShapeMask) -> None:
         self.ctx = Renderer.data_ctx.get().ctx
         pw, ph = Config.get.pixel_width, Config.get.pixel_height
 
@@ -65,7 +65,7 @@ class MaskRenderer(Renderer):
             [(self.vbo, "2f 2f", "in_pos", "in_texcoord")]
         )
 
-    def _ensure_mask_vitem(self, item: Mask):
+    def _ensure_mask_vitem(self, item: ShapeMask):
         """延迟创建用于渲染蒙版形状的辅助 VItem"""
         if self._mask_vitem is None:
             from janim.items.vitem import VItem
@@ -75,7 +75,7 @@ class MaskRenderer(Renderer):
             self._mask_vitem._fix_in_frame = item._fix_in_frame
             self._mask_vitem_renderer = VItemRenderer()
 
-    def _render_mask_shape(self, item: Mask) -> None:
+    def _render_mask_shape(self, item: ShapeMask) -> None:
         """将蒙版形状渲染为白色填充到 fbo_mask"""
         self._ensure_mask_vitem(item)
 
@@ -89,7 +89,7 @@ class MaskRenderer(Renderer):
 
         self._mask_vitem_renderer.render(vitem)
 
-    def render(self, item: Mask) -> None:
+    def render(self, item: ShapeMask) -> None:
         if not self.initialized:
             self.init(item)
             self.initialized = True

@@ -18,7 +18,7 @@ if TYPE_CHECKING:
     from janim.items.vitem import VItem
 
 
-class Mask(Points):
+class ShapeMask(Points):
     """
     蒙版物件，用于遮罩受影响的物件
 
@@ -119,7 +119,7 @@ class Mask(Points):
                 self._additional_lists.append(rcc.func())
 
     @classmethod
-    def align_for_interpolate(cls, item1: Mask, item2: Mask) -> AlignedData[Self]:
+    def align_for_interpolate(cls, item1: ShapeMask, item2: ShapeMask) -> AlignedData[Self]:
         aligned = super().align_for_interpolate(item1, item2)
 
         # 合并两个 Mask 的受影响物件列表
