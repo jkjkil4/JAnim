@@ -5,7 +5,7 @@ import tempfile
 from contextvars import ContextVar
 from functools import partial
 from pathlib import Path
-from typing import Generator, Iterable, Self
+from typing import Any, Generator, Iterable, Self
 
 import attrs
 import psutil
@@ -224,7 +224,7 @@ class ConfigGetter:
         yield cli_config
         yield from reversed(self.config_ctx or config_ctx_var.get())
 
-    def __getattr__(self, name: str) -> None:
+    def __getattr__(self, name: str) -> Any:
         for config in self.walk():
             value = getattr(config, name)
             if value is not None:
