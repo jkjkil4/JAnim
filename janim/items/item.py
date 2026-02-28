@@ -952,7 +952,7 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
     def create_renderer(self) -> Renderer:
         return self.renderer_cls()
 
-    def _mark_render_disabled(self, additionals: list[Timeline.AdditionalRenderCallsCallback]) -> None:
+    def _mark_render_disabled(self, self_appr, additionals: list[Timeline.AdditionalRenderCallsCallback]) -> None:
         """
         由子类继承，用于给所影响到的对象标记 ``_render_disabled``
 

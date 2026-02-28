@@ -97,15 +97,21 @@ class MaskRenderer(Renderer):
         t = Animation.global_t_ctx.get()
 
         # 渲染受影响物件到 fbo_content
+        # 优先使用 _render_targets（支持嵌套 mask），fallback 到 _affected_apprs
+        render_targets = getattr(item, '_render_targets', None) or item._affected_apprs
+
         with blend_context(self.ctx, False), framebuffer_context(self.fbo_content):
             self.fbo_content.clear()
             gl.glFlush()
 
-            items_render = [
-                (appr.stack.compute(t, True), appr.render)
-                for appr in item._affected_apprs
-                if appr.is_visible_at(t)
-            ]
+            items_render = []
+            for appr in render_targets:
+                if not appr.is_visible_at(t):
+                    continue
+                # 优先使用已计算的 current_data，避免重复计算
+                data = getattr(appr, 'current_data', None) or appr.stack.compute(t, True)
+                items_render.append((data, appr.render))
+
             items_render.extend(it.chain(*item._additional_lists))
 
             items_render.sort(key=lambda x: x[0].depth, reverse=True)

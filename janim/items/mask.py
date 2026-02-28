@@ -107,9 +107,30 @@ class ShapeMask(Points):
                     pass
         return self
 
-    def _mark_render_disabled(self, additionals: list[Timeline.AdditionalRenderCallsCallback]):
+    def _mark_render_disabled(self, self_appr, additionals: list[Timeline.AdditionalRenderCallsCallback]):
+        # 初始化当前帧的动态渲染目标列表
+        self._render_targets = []
+
         for appr in self._affected_apprs:
+            if appr.render_parent is not None and self_appr is not None:
+                # 该 item 已被外层 mask/effect 接管
+                # 将当前 mask 插入到外层的渲染目标中，替代该 item
+                parent_appr = appr.render_parent
+                if hasattr(parent_appr, 'current_data') and hasattr(parent_appr.current_data, '_render_targets'):
+                    try:
+                        idx = parent_appr.current_data._render_targets.index(appr)
+                        parent_appr.current_data._render_targets[idx] = self_appr
+                    except ValueError:
+                        pass
+                # 当前 mask 需要被标记为 disabled（它现在是外层 mask 的子节点）
+                self_appr.render_disabled = True
+                self_appr.render_parent = parent_appr
+
+            # 设置 render_parent 为当前 mask
+            if self_appr is not None:
+                appr.render_parent = self_appr
             appr.render_disabled = True
+            self._render_targets.append(appr)
 
         self._additional_lists = []
 
