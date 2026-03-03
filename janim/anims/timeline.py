@@ -1293,8 +1293,9 @@ class BuiltTimeline:
     ) -> None:
         """GPU-driven merged rendering path.
 
-        Collects all eligible VItems and renders them in a single instanced
-        draw call. Non-VItems and depth-tested VItems fall back to per-item rendering.
+        Renders VItems using the merged rendering infrastructure, but one at a time
+        to preserve correct blend ordering. Non-VItems and depth-tested VItems
+        fall back to per-item rendering.
         """
         from janim.items.vitem import VItem
 
@@ -1310,30 +1311,23 @@ class BuiltTimeline:
 
                 self._merged_renderer = MergedVItemRendererCompat()
 
-        # Separate eligible VItems from others
-        merged_vitems: list[BuiltTimeline._ItemWithRenderFunc] = []
-        other_items: list[BuiltTimeline._ItemWithRenderFunc] = []
-
-        for data, render in items_render:
-            if (
+        def is_merged_vitem(data: Item) -> bool:
+            return (
                 isinstance(data, VItem)
                 and not data._depth_test
                 and data.points._points._data is not None
                 and len(data.points._points._data) >= 3
-            ):
-                merged_vitems.append((data, render))
+            )
+
+        # Render items in order, one merged VItem at a time to preserve blend order
+        for data, render in items_render:
+            if is_merged_vitem(data):
+                # Render single VItem using merged infrastructure
+                self._merged_renderer.render_merged(render_data, [(data, render)])
             else:
-                other_items.append((data, render))
+                # Render non-merged item using its original renderer
+                render(data)
 
-        # Render merged VItems in one draw call
-        if merged_vitems:
-            self._merged_renderer.render_merged(render_data, merged_vitems)
-            if not blending:
-                gl.glFlush()
-
-        # Render remaining items individually
-        for data, render in other_items:
-            render(data)
             if not blending:
                 gl.glFlush()
 
