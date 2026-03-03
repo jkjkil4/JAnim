@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import copy
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Callable, Generator, Self, overload
 
@@ -97,8 +96,21 @@ class Component[ItemT](refresh.Refreshable, metaclass=_CmptMeta):
         if self.bind is not None:
             self.bind.at_item.broadcast_refresh_of_component(self, func, recurse_up, recurse_down)
 
+    def __copy__(self) -> Self:
+        """
+        手动实现 ``__copy__``，这样性能比 copy.copy 高
+
+        特别是 Component 作为频繁使用的对象这很重要
+        """
+        cls = self.__class__
+        new = cls.__new__(cls)
+
+        new.__dict__ = self.__dict__.copy()
+
+        return new
+
     def copy(self) -> Self:
-        cmpt_copy = copy.copy(self)
+        cmpt_copy = self.__copy__()
         # cmpt_copy.bind = None
         cmpt_copy.reset_refresh()
         setattr(cmpt_copy, SIGNAL_OBJ_SLOTS_NAME, None)

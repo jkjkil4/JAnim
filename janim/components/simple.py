@@ -43,6 +43,11 @@ class Cmpt_Float[ItemT](Component[ItemT]):
 
 
 class Cmpt_List[ItemT, T](list[T], Component[ItemT]):
+    def __copy__(self) -> Self:
+        new: Self = Component.__copy__(self)
+        new.extend(self)
+        return new
+
     def copy(self) -> Self:
         return Component.copy(self)
 
@@ -56,6 +61,11 @@ class Cmpt_List[ItemT, T](list[T], Component[ItemT]):
 
 
 class Cmpt_Dict[ItemT, K, V](dict[K, V], Component[ItemT]):
+    def __copy__(self) -> Self:
+        new: Self = Component.__copy__(self)
+        new.update(self)
+        return new
+
     def copy(self) -> Self:
         return Component.copy(self)
 
