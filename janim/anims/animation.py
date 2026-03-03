@@ -322,13 +322,13 @@ class TimeAligner:
         # 尝试归化到右侧已有值
         if idx != len(self.recorded_times):
             recorded_t = self.recorded_times[idx]
-            if abs(t - recorded_t) < ALIGN_EPSILON:
+            if recorded_t - t < ALIGN_EPSILON:
                 return recorded_t
 
         # 尝试归化到左侧已有值
         if idx != 0:
             recorded_t = self.recorded_times[idx - 1]
-            if abs(t - recorded_t) < ALIGN_EPSILON:
+            if t - recorded_t < ALIGN_EPSILON:
                 return recorded_t
 
         # 没有可归化的值时则插入到列表中
@@ -344,11 +344,11 @@ class TimeAligner:
         idx = bisect_left(self.recorded_times, t)
         if idx != len(self.recorded_times):
             recorded_t = self.recorded_times[idx]
-            if abs(t - recorded_t) < ALIGN_EPSILON:
+            if recorded_t - t < ALIGN_EPSILON:
                 return recorded_t
         if idx != 0:
             recorded_t = self.recorded_times[idx - 1]
-            if abs(t - recorded_t) < ALIGN_EPSILON:
+            if t - recorded_t < ALIGN_EPSILON:
                 return recorded_t
         return t
 
