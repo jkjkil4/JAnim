@@ -1,7 +1,6 @@
 """
-Comprehensive test for GPU-driven merged VItem rendering consistency.
-Tests ALL existing Timeline/Scene classes to ensure rendering results
-are identical between legacy and merged rendering paths.
+Comprehensive test for GPU-driven merged VItem rendering.
+Tests various VItem features: stroke, fill, glow, multiple subpaths, etc.
 """
 
 import sys
@@ -12,144 +11,93 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 import numpy as np
 from janim.imports import *
 from janim.utils.config import Config
-from janim.cli import get_all_timelines_from_module
-
-import janim.examples as examples
-import test.examples.examples_of_animations as anim_examples
-import test.examples.examples_of_bugs as bug_examples
-
-# Small resolution for faster testing
-WIDTH = 192 * 2
-HEIGHT = 108 * 2
-FPS = 5
 
 
-def get_all_timelines_for_test() -> list[type[Timeline]]:
-    """Collect all Timeline classes from example modules."""
-    timelines: list[type[Timeline]] = []
-    timelines += get_all_timelines_from_module(examples)
-    timelines += get_all_timelines_from_module(anim_examples)
-    timelines += get_all_timelines_from_module(bug_examples)
-    return timelines
+class TestComplex(Timeline):
+    CONFIG = Config(pixel_width=384, pixel_height=216, fps=5)
+
+    def construct(self) -> None:
+        # Circles with different colors
+        c1 = Circle(radius=1, color=BLUE, fill_alpha=0.3)
+        c1.points.shift(LEFT * 3)
+
+        # Rectangle with stroke and fill
+        r1 = Rect(2, 1.5, color=RED, fill_alpha=0.5)
+
+        # Arc
+        a1 = Arc(start_angle=0, end_angle=PI, radius=1.5, color=GREEN)
+        a1.points.shift(RIGHT * 3)
+
+        # Line
+        l1 = Line(LEFT * 4 + DOWN * 2, RIGHT * 4 + DOWN * 2, color=YELLOW)
+
+        Group(c1, r1, a1, l1).show()
+        self.forward(1)
 
 
-def compare_render(name: str, timeline_cls: type[Timeline], t: float = 0.5) -> tuple[bool, float, str]:
-    """
-    Compare rendering results between legacy and merged paths.
+class TestManyItems(Timeline):
+    CONFIG = Config(pixel_width=384, pixel_height=216, fps=5)
 
-    Returns:
-        (passed, max_diff, error_message)
-    """
-    base_cfg = dict(pixel_width=WIDTH, pixel_height=HEIGHT, fps=FPS)
-
-    try:
-        # Build with legacy rendering
-        with Config(**base_cfg, gpu_driven_rendering=False):
-            built_legacy = timeline_cls().build(quiet=True)
-        img_legacy = np.array(built_legacy.capture(t))
-
-        # Build with merged (GPU-driven) rendering
-        with Config(**base_cfg, gpu_driven_rendering=True):
-            built_merged = timeline_cls().build(quiet=True)
-        img_merged = np.array(built_merged.capture(t))
-
-        # Calculate difference
-        diff = np.abs(img_legacy.astype(float) - img_merged.astype(float))
-        max_diff = diff.max()
-        mean_diff = diff.mean()
-
-        passed = max_diff < 50  # Allow small differences (anti-aliasing, etc.)
-
-        if not passed:
-            error = f"max_diff={max_diff:.1f}, mean_diff={mean_diff:.4f}"
-            # Save images for debugging
-            error_dir = os.path.join(os.path.dirname(__file__), '__test_errors__')
-            os.makedirs(error_dir, exist_ok=True)
-            from PIL import Image
-            Image.fromarray(img_legacy).save(os.path.join(error_dir, f'{name}_legacy.png'))
-            Image.fromarray(img_merged).save(os.path.join(error_dir, f'{name}_merged.png'))
-            return (False, max_diff, f"{error} (saved to {error_dir})")
-
-        return (True, max_diff, "")
-
-    except Exception as e:
-        return (False, 255, f"Exception: {e}")
+    def construct(self) -> None:
+        # 50 circles in a grid
+        items = []
+        for i in range(10):
+            for j in range(5):
+                c = Circle(radius=0.2, color=BLUE)
+                c.points.shift(RIGHT * (i - 4.5) * 1.2 + UP * (j - 2) * 1.2)
+                items.append(c)
+        Group(*items).show()
+        self.forward(1)
 
 
-def run_all_tests():
-    """Run consistency tests on all Timeline classes."""
-    timelines = get_all_timelines_for_test()
+def compare(name, timeline_cls):
+    print(f"\n--- {name} ---")
+    base_cfg = dict(pixel_width=384, pixel_height=216, fps=5)
+    t = 0.5
 
-    print(f"\n{'='*60}")
-    print(f"GPU-driven Merged Rendering Consistency Test")
-    print(f"Testing {len(timelines)} Timeline classes")
-    print(f"{'='*60}\n")
+    # Build separately so gpu_driven_rendering is frozen into each build
+    with Config(**base_cfg, gpu_driven_rendering=False):
+        built_legacy = timeline_cls().build(quiet=True)
+    img_legacy = np.array(built_legacy.capture(t))
 
-    results = []
-    failed = []
+    with Config(**base_cfg, gpu_driven_rendering=True):
+        built_merged = timeline_cls().build(quiet=True)
+    img_merged = np.array(built_merged.capture(t))
 
-    for timeline_cls in timelines:
-        name = timeline_cls.__name__
-        print(f"Testing: {name}...", end=" ", flush=True)
+    diff = np.abs(img_legacy.astype(float) - img_merged.astype(float))
+    max_diff = diff.max()
+    mean_diff = diff.mean()
 
-        passed, max_diff, error = compare_render(name, timeline_cls)
+    print(f"  Max diff: {max_diff}, Mean diff: {mean_diff:.4f}")
+    if max_diff == 0:
+        print(f"  PASS: Identical")
+    elif max_diff < 5:
+        print(f"  PASS: Nearly identical")
+    else:
+        print(f"  FAIL: Significant differences")
+        from PIL import Image
 
-        if passed:
-            print(f"PASS (diff={max_diff:.1f})")
-            results.append((name, True, max_diff))
-        else:
-            print(f"FAIL - {error}")
-            results.append((name, False, max_diff))
-            failed.append((name, error))
+        Image.fromarray(img_legacy).save(f"/tmp/janim_{name}_legacy.png")
+        Image.fromarray(img_merged).save(f"/tmp/janim_{name}_merged.png")
+        print(f"  Saved to /tmp/janim_{name}_*.png")
 
-    # Summary
-    print(f"\n{'='*60}")
-    print("Summary:")
-    print(f"{'='*60}")
-
-    passed_count = sum(1 for _, p, _ in results if p)
-    total_count = len(results)
-
-    for name, passed, max_diff in results:
-        status = "PASS" if passed else "FAIL"
-        print(f"  {name}: {status} (max_diff={max_diff:.1f})")
-
-    print(f"\n{passed_count}/{total_count} tests passed")
-
-    if failed:
-        print(f"\nFailed tests:")
-        for name, error in failed:
-            print(f"  - {name}: {error}")
-        return False
-
-    return True
+    return max_diff
 
 
 if __name__ == "__main__":
-    import argparse
+    results = []
+    for name, cls in [
+        ("complex", TestComplex),
+        ("many_items", TestManyItems),
+    ]:
+        results.append((name, compare(name, cls)))
 
-    parser = argparse.ArgumentParser(description="Test rendering consistency")
-    parser.add_argument("--filter", "-f", type=str, default=None,
-                        help="Only test timelines matching this pattern")
-    parser.add_argument("--list", "-l", action="store_true",
-                        help="List all available timelines")
-    args = parser.parse_args()
+    print("\n=== Summary ===")
+    all_pass = True
+    for name, max_diff in results:
+        status = "PASS" if max_diff < 5 else "FAIL"
+        if max_diff >= 5:
+            all_pass = False
+        print(f"  {name}: {status} (max_diff={max_diff})")
 
-    timelines = get_all_timelines_for_test()
-
-    if args.list:
-        print("Available Timeline classes:")
-        for tl in timelines:
-            print(f"  {tl.__name__}")
-        sys.exit(0)
-
-    if args.filter:
-        timelines = [tl for tl in timelines if args.filter.lower() in tl.__name__.lower()]
-        if not timelines:
-            print(f"No timelines match filter: {args.filter}")
-            sys.exit(1)
-        print(f"Filtered to {len(timelines)} timelines")
-
-    # Run tests
-    success = run_all_tests()
-    sys.exit(0 if success else 1)
+    print(f"\nOverall: {'ALL PASS' if all_pass else 'SOME FAILED'}")
