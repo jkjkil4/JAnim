@@ -35,8 +35,7 @@ type PointsFn = Callable[[np.ndarray], VectArray]
 type PointFn = Callable[[np.ndarray], Vect]
 type ComplexFn = Callable[[complex], complex]
 
-DEFAULT_POINTS_ARRAY = Array()
-DEFAULT_POINTS_ARRAY.data = np.zeros((0, 3))
+DEFAULT_POINTS_ARRAY = Array.create(np.zeros((0, 3)))
 
 
 class Cmpt_Points[ItemT](Component[ItemT]):

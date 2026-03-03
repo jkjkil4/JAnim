@@ -30,9 +30,17 @@ class Array:
     使得在使用 ``.data = xxx`` 修改（赋值）后必定是不同的 id
 
     并且通过 ``.data`` 得到的 numpy 数组必定是只读的
+
+    一般来说，不使用 ``__init__`` 构造，而是使用 :meth:`create`
     """
-    def __init__(self, *, dtype=np.float32):
-        self._data = np.empty(0, dtype=dtype)
+    def __init__(self, *, _data):
+        self._data = _data
+
+    @staticmethod
+    def create(x, dtype=np.float32) -> Array:
+        data = np.array(x, dtype=dtype)
+        data.setflags(write=False)
+        return Array(_data=data)
 
     def len(self) -> int:
         return len(self._data)
@@ -53,12 +61,10 @@ class Array:
         self._data.setflags(write=False)
 
     def copy(self) -> Array:
-        ret = Array(dtype=self._data.dtype)
-        ret.data = self
-        return ret
+        return Array(_data=self._data)
 
     def is_share(self, other: Array) -> bool:
-        return self.data is other.data
+        return self._data is other._data
 
 
 @dataclass

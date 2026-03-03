@@ -11,8 +11,7 @@ from janim.typing import Alpha, JAnimColor, Rgba
 from janim.utils.bezier import interpolate
 from janim.utils.data import AlignedData, Array
 
-DEFAULT_GLOW_ARRAY = Array()
-DEFAULT_GLOW_ARRAY.data = [1, 1, 0, 0]
+DEFAULT_GLOW_ARRAY = Array.create([1, 1, 0, 0])
 
 
 class Cmpt_Glow[ItemT](Component[ItemT]):
