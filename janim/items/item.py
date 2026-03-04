@@ -72,7 +72,7 @@ class _ItemMeta(type):
 
         return super().__new__(cls, name, bases, attrdict)
 
-    @dataclass
+    @dataclass(slots=True)
     class _CmptInitData:
         info: CmptInfo[CmptInfo]
         decl_cls: type[Item]

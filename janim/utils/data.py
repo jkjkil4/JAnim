@@ -67,7 +67,7 @@ class Array:
         return self._data is other._data
 
 
-@dataclass
+@dataclass(slots=True)
 class AlignedData[T]:
     """
     数据对齐后的结构，用于 :meth:`~.Item.align_for_interpolate`

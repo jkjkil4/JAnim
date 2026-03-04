@@ -184,7 +184,7 @@ class ItemAnimation(Animation):
         self.stack.append(self)
         self.schedule_show_and_hide(self.item, self.show_at_begin, self.hide_at_end)
 
-    @dataclass
+    @dataclass(slots=True)
     class ApplyParams:
         global_t: float
         anims: list[ItemAnimation]
@@ -216,7 +216,7 @@ class ApplyAligner(ItemAnimation):
         pass
 
 
-@dataclass
+@dataclass(slots=True)
 class TimeRange:
     """
     标识了从 ``at`` 开始，到 ``end`` 结束的时间区段

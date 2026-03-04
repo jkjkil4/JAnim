@@ -103,7 +103,7 @@ class Timeline(metaclass=ABCMeta):
 
     # endregion
 
-    @dataclass
+    @dataclass(slots=True)
     class ScheduledTask:
         """
         另见 :meth:`~.Timeline.schedule`

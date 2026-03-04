@@ -53,6 +53,8 @@ class Refreshable:
 
 
 class RefreshData:
+    slots = ('is_required', 'stored')
+
     def __init__(self):
         self.is_required = True
         self.stored: Any = None

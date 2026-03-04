@@ -36,7 +36,7 @@ class _SelfSlotWithRecurse:
     recurse_down: bool
 
 
-@dataclass
+@dataclass(slots=True)
 class _RefreshSlot:
     obj: weakref.ReferenceType[refresh.Refreshable]
     func: Callable | str
