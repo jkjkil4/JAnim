@@ -181,10 +181,6 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
 
             self.__dict__[key] = self.components[key] = obj
 
-    def set_component(self, key: str, cmpt: Component) -> None:
-        setattr(self, key, cmpt)
-        self.components[key] = cmpt
-
     def broadcast_refresh_of_component(
         self,
         cmpt: Component,
@@ -724,7 +720,7 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
             else:
                 self.add(old.become(new, auto_visible=auto_visible))
 
-    def store(self):
+    def store(self, *, _cmpts: dict[str, Component] | None = None):
         copy_item = copy.copy(self)
         copy_item.reset_refresh()
         setattr(copy_item, SIGNAL_OBJ_SLOTS_NAME, None)
@@ -737,7 +733,15 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         copy_item._stored_parents = self.get_parents().copy()
         copy_item._stored_children = self.get_children().copy()
 
-        self._copy_cmpts(self, copy_item)
+        # align_for_interpolate 中会传入 _cmpts 以使用 align 的 cmpts，而不直接从原物件复制
+        if _cmpts is None:
+            self._copy_cmpts(self, copy_item)
+        else:
+            for key, cmpt in _cmpts.items():
+                setattr(copy_item, key, cmpt)
+            copy_item.components = _cmpts
+            copy_item._astype_mock_cmpt = {}
+
         copy_item.init_connect()
         return copy_item
 
@@ -779,25 +783,30 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         """
         进行数据对齐，以便插值
         """
-        aligned = AlignedData(item1.store(),
-                              item2.store(),
-                              item1.store())
+        data1_cmpts: dict[str, Component] = {}
+        data2_cmpts: dict[str, Component] = {}
+        union_cmpts: dict[str, Component] = {}
 
         # align components
         for key, cmpt1 in item1.components.items():
             cmpt2 = item2.components.get(key, None)
 
             if isinstance(cmpt1, _CmptGroup) and isinstance(cmpt2, _CmptGroup):
-                cmpt_aligned = cmpt1.align(cmpt1, cmpt2, aligned)
+                aligned_cmpt = cmpt1.align(cmpt1, cmpt2, data1_cmpts, data2_cmpts, union_cmpts)
 
             elif cmpt2 is None:
-                cmpt_aligned = AlignedData(cmpt1, cmpt1, cmpt1)
+                aligned_cmpt = AlignedData(cmpt1, cmpt1, cmpt1)
             else:
-                cmpt_aligned = cmpt1.align_for_interpolate(cmpt1, cmpt2)
+                aligned_cmpt = cmpt1.align_for_interpolate(cmpt1, cmpt2)
 
-            aligned.data1.set_component(key, cmpt_aligned.data1)
-            aligned.data2.set_component(key, cmpt_aligned.data2)
-            aligned.union.set_component(key, cmpt_aligned.union)
+            data1_cmpts[key] = aligned_cmpt.data1
+            data2_cmpts[key] = aligned_cmpt.data2
+            union_cmpts[key] = aligned_cmpt.union
+
+        # make aligned item
+        aligned = AlignedData(item1.store(_cmpts=data1_cmpts),
+                              item2.store(_cmpts=data2_cmpts),
+                              item1.store(_cmpts=union_cmpts))
 
         # align children
         max_len = max(len(item1.get_children()), len(item2.get_children()))

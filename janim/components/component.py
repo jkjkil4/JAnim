@@ -238,10 +238,17 @@ class _CmptGroup(Component):
         return True
 
     @classmethod
-    def align(cls, cmpt1: _CmptGroup, cmpt2: _CmptGroup, aligned: AlignedData[Item]):
-        cmpt1_copy = cmpt1.copy(new_cmpts=aligned.data1.components)
-        cmpt2_copy = cmpt2.copy(new_cmpts=aligned.data2.components)
-        cmpt_union = cmpt1.copy(new_cmpts=aligned.union.components)
+    def align(
+        cls,
+        cmpt1: _CmptGroup,
+        cmpt2: _CmptGroup,
+        data1_cmpts: dict[str, Component],
+        data2_cmpts: dict[str, Component],
+        union_cmpts: dict[str, Component],
+    ):
+        cmpt1_copy = cmpt1.copy(new_cmpts=data1_cmpts)
+        cmpt2_copy = cmpt2.copy(new_cmpts=data2_cmpts)
+        cmpt_union = cmpt1.copy(new_cmpts=union_cmpts)
         return AlignedData(cmpt1_copy, cmpt2_copy, cmpt_union)
 
     def _find_objects(self) -> None:
