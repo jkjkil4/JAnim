@@ -66,6 +66,11 @@ def main(untested_tags: bool, tags: list[str], hashes: list[str], open_preview: 
 if __name__ == '__main__':
     parser = ArgumentParser(
         description='Run benchmarks',
+        epilog='Examples:\n'
+               '  python scripts bench --untested_tags\n'
+               '  python scripts bench --tags v2.1.0 v2.2.0\n'
+               '  python scripts bench --hashes 78b7c20 2c1fcfd\n'
+               '  python scripts bench --untested_tags -o',
         formatter_class=RawDescriptionHelpFormatter,
     )
     parser.add_argument(
