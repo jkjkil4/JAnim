@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  JAnim\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-02-24 01:11+0800\n"
+"POT-Creation-Date: 2026-03-04 23:01+0800\n"
 "PO-Revision-Date: 2024-07-03 19:02+0800\n"
 "Last-Translator: \n"
 "Language: en\n"
@@ -112,8 +112,8 @@ msgid "子物件不在列表中"
 msgstr "Child item not in the list"
 
 #: janim.items.relation.Relation.mark_refresh:1 of
-msgid "标记指定的 ``func`` 需要进行更新"
-msgstr "Marks the specified ``func`` for an update"
+msgid "标记指定的 ``name`` 需要进行更新"
+msgstr "Marks the specified ``name`` as needing an update"
 
 #: janim.items.relation.Relation.add:1 of
 msgid "向该物件添加子物件"
