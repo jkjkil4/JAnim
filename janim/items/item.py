@@ -188,10 +188,10 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
     def broadcast_refresh_of_component(
         self,
         cmpt: Component,
-        func: Callable | str,
+        name: str,
         recurse_up=False,
         recurse_down=False,
-    ) -> Self:
+    ) -> None:
         """
         为 :meth:`~.Component.mark_refresh()`
         进行 ``recurse_up/down`` 的处理
@@ -204,13 +204,13 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
                 if isinstance(item, cmpt.bind.decl_cls):
                     # 一般情况
                     item_cmpt: Component = getattr(item, cmpt.bind.key)
-                    item_cmpt.mark_refresh(func)
+                    item_cmpt.mark_refresh(name)
 
                 else:
                     # astype 情况
                     mock_cmpt = item._astype_mock_cmpt.get(cmpt.bind.key, None)
                     if mock_cmpt is not None:
-                        mock_cmpt.mark_refresh(func)
+                        mock_cmpt.mark_refresh(name)
 
         if recurse_up:
             mark(self.ancestors())

@@ -64,10 +64,8 @@ class Relation[GRelT: 'Relation'](refresh.Refreshable):
         """
         return self._children.index(obj)
 
-    def mark_refresh(self, func: Callable | str, *, recurse_up=False, recurse_down=False) -> Self:
-        super().mark_refresh(func)
-
-        name = func.__name__ if callable(func) else func
+    def mark_refresh(self, name: str, *, recurse_up=False, recurse_down=False) -> Self:
+        super().mark_refresh(name)
 
         if recurse_up:
             for obj in self.ancestors():

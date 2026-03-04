@@ -19,7 +19,7 @@ SIGNAL_OBJ_SLOTS_NAME = '__signal_obj_slots'
 class _SelfSlots:
     def __init__(self):
         self.normal_slots: list[Callable] = []
-        self.refresh_slots: list[Callable] = []
+        self.refresh_slots: list[str] = []
         self.refresh_slots_with_recurse: list[_SelfSlotWithRecurse] = []
 
 
@@ -31,7 +31,7 @@ class _ObjSlots:
 
 @dataclass
 class _SelfSlotWithRecurse:
-    func: Callable
+    name: str
     recurse_up: bool
     recurse_down: bool
 
@@ -39,12 +39,12 @@ class _SelfSlotWithRecurse:
 @dataclass(slots=True)
 class _RefreshSlot:
     obj: weakref.ReferenceType[refresh.Refreshable]
-    func: Callable | str
+    name: str
 
 
 class Signal[T, **P, R]:
     # for gc
-    objects_with_slots: weakref.WeakSet[defaultdict[tuple[Signal, Key], _ObjSlots]] = weakref.WeakSet()
+    objects_with_slots: weakref.WeakSet[object] = weakref.WeakSet()
 
     def __init__(self, func: Callable[Concatenate[T, P], R]):
         self.func = func
@@ -58,7 +58,7 @@ class Signal[T, **P, R]:
     @overload
     def __get__(self, instance: None, owner) -> Self: ...
     @overload
-    def __get__(self, instnace: object, owner) -> Callable[P, R]: ...
+    def __get__(self, instance: object, owner) -> Callable[P, R]: ...
 
     def __get__(self, instance, owner):
         return self if instance is None else self.func.__get__(instance, owner)
@@ -72,7 +72,7 @@ class Signal[T, **P, R]:
 
     @staticmethod
     def _get_cls_full_qualname_from_fback() -> str:
-        cls_locals = inspect.currentframe().f_back.f_back.f_locals
+        cls_locals = inspect.currentframe().f_back.f_back.f_locals  # type: ignore
         module = cls_locals['__module__']
         qualname = cls_locals['__qualname__']
         return f'{module}.{qualname}'
@@ -130,7 +130,7 @@ class Signal[T, **P, R]:
         # Called with @self_slot
         return self._self_slot(full_qualname, func)
 
-    def _self_slot[T](self, full_qualname: str, func: T, key: str = '') -> T:
+    def _self_slot[Fn: Callable](self, full_qualname: str, func: Fn, key: str = '') -> Fn:
         self.all_slots[full_qualname][key].normal_slots.append(func)
         return func
 
@@ -147,8 +147,8 @@ class Signal[T, **P, R]:
         # Called with @self_slot
         return self._self_refresh(full_qualname, func)
 
-    def _self_refresh[T](self, full_qualname: str, func: T, key: str = '') -> T:
-        self.all_slots[full_qualname][key].refresh_slots.append(func)
+    def _self_refresh[Fn: Callable](self, full_qualname: str, func: Fn, key: str = '') -> Fn:
+        self.all_slots[full_qualname][key].refresh_slots.append(func.__name__)
         return func
 
     def self_refresh_with_recurse(self, *, recurse_up: bool = False, recurse_down: bool = False, key: str = ''):
@@ -157,9 +157,9 @@ class Signal[T, **P, R]:
 
         并且会根据 ``recurse_up`` 和 ``recurse_down`` 进行递归传递
         """
-        def decorator(func):
+        def decorator(func: Callable):
             full_qualname = self._get_cls_full_qualname_from_fback()
-            slot = _SelfSlotWithRecurse(func, recurse_up, recurse_down)
+            slot = _SelfSlotWithRecurse(func.__name__, recurse_up, recurse_down)
             self.all_slots[full_qualname][key].refresh_slots_with_recurse.append(slot)
             return func
 
@@ -172,15 +172,15 @@ class Signal[T, **P, R]:
         obj_slots = self._get_obj_slots_with_default(sender)
         obj_slots[(self, key)].normal_slots.append(func)
 
-    def connect_refresh(self, sender: object, obj: object, func: Callable | str, *, key: str = '') -> None:
+    def connect_refresh(self, sender: object, obj: refresh.Refreshable, func: Callable | str, *, key: str = '') -> None:
         """
         使 ``func`` 会在 ``Signal`` 触发时被标记为需要重新计算
         """
         obj_slots = self._get_obj_slots_with_default(sender)
-        slot = _RefreshSlot(weakref.ref(obj), func)
+        slot = _RefreshSlot(weakref.ref(obj), refresh.Refreshable.get_name(func))
         obj_slots[(self, key)].refresh_slots.append(slot)
 
-    def emit(self, sender: object, *args, key: str = '', **kwargs):
+    def emit(self, sender: refresh.Refreshable, *args, key: str = '', **kwargs):
         cls_slots = self._get_cls_slots(sender.__class__)
         slots = cls_slots[key]
 
@@ -189,12 +189,12 @@ class Signal[T, **P, R]:
             func(sender, *args, **kwargs)
 
         # @self_refresh
-        for func in slots.refresh_slots:
-            sender.mark_refresh(func)
+        for name in slots.refresh_slots:
+            sender.mark_refresh(name)
 
         # @self_refresh_with_recurse
         for slot in slots.refresh_slots_with_recurse:
-            sender.mark_refresh(slot.func, recurse_up=slot.recurse_up, recurse_down=slot.recurse_down)
+            sender.mark_refresh(slot.name, recurse_up=slot.recurse_up, recurse_down=slot.recurse_down)  # type: ignore
 
         ####
 
@@ -214,7 +214,7 @@ class Signal[T, **P, R]:
             obj = slot.obj()
             if obj is None:
                 continue    # pragma: no cover
-            obj.mark_refresh(slot.func)
+            obj.mark_refresh(slot.name)
 
 
 def _signal_gc_callback(phase: str, info: dict) -> None:

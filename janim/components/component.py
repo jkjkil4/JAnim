@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Callable, Generator, Self, overload
+from typing import TYPE_CHECKING, Generator, Self, overload
 
 import janim.utils.refresh as refresh
 from janim.anims.method_updater_meta import METHOD_UPDATER_KEY
@@ -86,15 +86,15 @@ class Component[ItemT](refresh.Refreshable, metaclass=_CmptMeta):
         """
         self.bind = bind
 
-    def mark_refresh(self, func: Callable | str, *, recurse_up=False, recurse_down=False) -> Self:
+    def mark_refresh(self, name: str, *, recurse_up=False, recurse_down=False) -> None:
         """
         详见： :meth:`~.Item.broadcast_refresh_of_component`
         """
         # 与 super().mark_refresh(func) 等价，这样写是为了尽可能优化性能
-        refresh.Refreshable.mark_refresh(self, func)
+        refresh.Refreshable.mark_refresh(self, name)
 
         if self.bind is not None:
-            self.bind.at_item.broadcast_refresh_of_component(self, func, recurse_up, recurse_down)
+            self.bind.at_item.broadcast_refresh_of_component(self, name, recurse_up, recurse_down)
 
     def __copy__(self) -> Self:
         """
