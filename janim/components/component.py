@@ -37,7 +37,7 @@ class _CmptMeta(type):
 
 
 class Component[ItemT](refresh.Refreshable, metaclass=_CmptMeta):
-    @dataclass
+    @dataclass(slots=True)
     class BindInfo:
         """
         对组件定义信息的封装

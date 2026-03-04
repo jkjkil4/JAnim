@@ -185,7 +185,7 @@ class DrawBorderThenFill(DataUpdater):
         self.stroke_radius = stroke_radius
         self.stroke_color = stroke_color
 
-    @dataclass
+    @dataclass(slots=True)
     class ExtraData:
         outline: VItem
         zero_data: VItem | None
