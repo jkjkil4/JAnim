@@ -70,7 +70,7 @@ class Array:
 
 class SortedKeyQueue[K, T]:
     """
-    按 key 排序的队列（基于两个列表）；
+    按 ``key`` 排序的队列（基于两个列表）；
     使用生成器方式弹出 ``key <= max_key`` 的元素
 
     这是对 ``insort + key`` 的优化方案，因为 ``insort`` 会频繁调用 ``key`` 回调，在高频使用的场景下导致性能损失
