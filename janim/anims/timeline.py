@@ -8,7 +8,7 @@ import time
 import traceback
 import types
 from abc import ABCMeta, abstractmethod
-from bisect import bisect, insort
+from bisect import bisect
 from collections import defaultdict
 from contextlib import contextmanager, nullcontext
 from contextvars import ContextVar
@@ -47,7 +47,7 @@ from janim.render.framebuffer import (FRAME_BUFFER_BINDING, blend_context,
 from janim.render.uniform import get_uniforms_context_var
 from janim.typing import JAnimColor, SupportsAnim
 from janim.utils.config import Config, ConfigGetter, config_ctx_var
-from janim.utils.data import ContextSetter
+from janim.utils.data import ContextSetter, SortedKeyQueue
 from janim.utils.iterables import resize_preserving_order
 from janim.utils.simple_functions import clip
 from janim.utils.space_ops import normalize
@@ -161,7 +161,7 @@ class Timeline(metaclass=ABCMeta):
 
         self._frozen_config: list[Config] | None = None
 
-        self.scheduled_tasks: list[Timeline.ScheduledTask] = []
+        self.scheduled_tasks = SortedKeyQueue[float, Timeline.ScheduledTask]()
         self.audio_infos: list[Timeline.PlayAudioInfo] = []
         self.subtitle_infos: list[Timeline.SubtitleInfo] = []   # helpful for extracting subtitles
 
@@ -289,8 +289,9 @@ class Timeline(metaclass=ABCMeta):
         会在进度达到 ``at`` 时，对 ``func`` 进行调用，
         可传入 ``*args`` 和 ``**kwargs``
         """
-        task = Timeline.ScheduledTask(self.time_aligner.align_t(at), func, args, kwargs)
-        insort(self.scheduled_tasks, task, key=lambda x: x.at)
+        at = self.time_aligner.align_t(at)
+        task = Timeline.ScheduledTask(at, func, args, kwargs)
+        self.scheduled_tasks.insert(at, task)
 
     def schedule_and_detect_changes(self, at: float, func: Callable, *args, **kwargs) -> None:
         """
@@ -333,8 +334,7 @@ class Timeline(metaclass=ABCMeta):
 
         to_time = self.current_time + dt
 
-        while self.scheduled_tasks and self.scheduled_tasks[0].at <= to_time:
-            task = self.scheduled_tasks.pop(0)
+        for task in self.scheduled_tasks.pop_up_to(to_time):
             self.current_time = task.at
             task.func(*task.args, **task.kwargs)
 
