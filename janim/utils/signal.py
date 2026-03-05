@@ -157,7 +157,7 @@ class Signal[T, **P, R]:
 
         并且会根据 ``recurse_up`` 和 ``recurse_down`` 进行递归传递
         """
-        def decorator(func: Callable):
+        def decorator[Fn: Callable](func: Fn) -> Fn:
             full_qualname = self._get_cls_full_qualname_from_fback()
             slot = _SelfSlotWithRecurse(func.__name__, recurse_up, recurse_down)
             self.all_slots[full_qualname][key].refresh_slots_with_recurse.append(slot)
