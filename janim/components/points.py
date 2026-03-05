@@ -361,6 +361,11 @@ class Cmpt_Points[ItemT](Component[ItemT]):
         def depth(self) -> float:
             return self.length_over_dim(2)
 
+        @property
+        def size(self) -> tuple[float, float]:
+            """即 `(width, height)`"""
+            return (self.width, self.height)
+
         def coord(self, dim: int, direction=ORIGIN) -> float:
             return self.get(direction)[dim]
 
