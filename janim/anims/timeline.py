@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import gc
 import inspect
 import itertools as it
 import math
@@ -212,6 +213,8 @@ class Timeline(metaclass=ABCMeta):
                 start_time = time.time()
 
             self._build_frame = inspect.currentframe()
+            gc_enabled = gc.isenabled()
+            gc.disable()    # 在 build 期间关闭 gc，这样只有重新 enable 之后的一次大 gc，这样可以提升效率
 
             try:
                 self.construct()
@@ -228,6 +231,8 @@ class Timeline(metaclass=ABCMeta):
                     )
             finally:
                 self._build_frame = None
+                if gc_enabled:
+                    gc.enable()
 
             if self.current_time == 0:
                 self.forward(DEFAULT_DURATION, _record_lineno=False)    # 使得没有任何前进时，产生一点时间，避免除零以及其它问题
