@@ -646,6 +646,7 @@ class Timeline(metaclass=ABCMeta):
             self.visibility: list[float] = []
             self.renderer: Renderer | None = None
             self.render_disabled: bool = False
+            self.render_parent: Timeline.ItemAppearance | None = None
 
         def is_visible_at(self, t: float) -> bool:
             """
@@ -1127,7 +1128,8 @@ class BuiltTimeline:
             if not appr.is_visible_at(global_t):
                 continue
             data = appr.stack.compute(global_t, True)
-            data._mark_render_disabled(additionals)
+            appr.current_data = data
+            data._mark_render_disabled(appr, additionals)
             render_apprs.append((appr, data))
 
         # 得到额外的渲染调用的方法列表
@@ -1137,13 +1139,17 @@ class BuiltTimeline:
             if rcc.render_disabled:
                 rcc.render_disabled = False     # 重置，因为每次都要重新标记
                 continue
-            additional_lists.append(rcc.func())
+            rcc_items = rcc.func()
+            for data, _ in rcc_items:
+                data._mark_render_disabled(None, additionals)
+            additional_lists.append(rcc_items)
 
         # 剔除被标记 render_disabled 的物件，得到 items_render
         items_render: list[BuiltTimeline._ItemWithRenderFunc] = []
         for appr, data in render_apprs:
             if appr.render_disabled:
                 appr.render_disabled = False    # 重置，因为每次都要重新标记
+                appr.render_parent = None
                 continue
             items_render.append((data, appr.render))
 
