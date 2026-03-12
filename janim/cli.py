@@ -433,6 +433,7 @@ def get_lineno_key_function(module) -> Callable[[type], tuple[int, int]] | None:
         return None
 
     # 模仿 inspect.findsource 的做法
+    linecache.checkcache(file)
     lines = linecache.getlines(file, module.__dict__)
     if not lines:
         return None
