@@ -1,7 +1,9 @@
 from contextlib import contextmanager
 from dataclasses import dataclass
 
+from rich.columns import Columns
 from rich.console import Console
+from rich.panel import Panel
 
 console = Console()
 
@@ -72,6 +74,25 @@ def prompt_todos(*todos: str) -> bool:
     console.print('\nTodos:', style='bold cyan')
     for i, text in enumerate(todos, 1):
         console.print(f'  {i}. {text}', style='cyan')
+    console.print()
+
+    response = console.input('[cyan]Continue? (y/N):[/cyan] ').strip().lower()
+    return response in ('y', 'yes')
+
+
+def prompt_columns(*items: str) -> bool:
+    """
+    Display items using rich Columns (multiple items per row) and prompt
+    the user for confirmation.
+
+    Returns True if user confirms (y), False otherwise.
+    """
+    assert items
+
+    console.print('\nTodos:', style='bold cyan')
+    panels = [Panel(t, style='cyan', expand=False) for t in items]
+    cols = Columns(panels, expand=True)
+    console.print(cols)
     console.print()
 
     response = console.input('[cyan]Continue? (y/N):[/cyan] ').strip().lower()

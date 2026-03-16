@@ -52,6 +52,9 @@ test = [
     "opencv-python",
     "coverage"
 ]
+bench = [
+    "asv"
+]
 
 [tool.flit.sdist]
 exclude = [

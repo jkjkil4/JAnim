@@ -1,14 +1,16 @@
 from __future__ import annotations
 
+import gc
 import inspect
 import itertools as it
 import math
 import os
+import sys
 import time
 import traceback
 import types
 from abc import ABCMeta, abstractmethod
-from bisect import bisect, insort
+from bisect import bisect
 from collections import defaultdict
 from contextlib import contextmanager, nullcontext
 from contextvars import ContextVar
@@ -47,7 +49,7 @@ from janim.render.framebuffer import (FRAME_BUFFER_BINDING, blend_context,
 from janim.render.uniform import get_uniforms_context_var
 from janim.typing import JAnimColor, SupportsAnim
 from janim.utils.config import Config, ConfigGetter, config_ctx_var
-from janim.utils.data import ContextSetter
+from janim.utils.data import ContextSetter, SortedKeyQueue
 from janim.utils.iterables import resize_preserving_order
 from janim.utils.simple_functions import clip
 from janim.utils.space_ops import normalize
@@ -103,7 +105,7 @@ class Timeline(metaclass=ABCMeta):
 
     # endregion
 
-    @dataclass
+    @dataclass(slots=True)
     class ScheduledTask:
         """
         另见 :meth:`~.Timeline.schedule`
@@ -161,7 +163,7 @@ class Timeline(metaclass=ABCMeta):
 
         self._frozen_config: list[Config] | None = None
 
-        self.scheduled_tasks: list[Timeline.ScheduledTask] = []
+        self.scheduled_tasks = SortedKeyQueue[float, Timeline.ScheduledTask]()
         self.audio_infos: list[Timeline.PlayAudioInfo] = []
         self.subtitle_infos: list[Timeline.SubtitleInfo] = []   # helpful for extracting subtitles
 
@@ -212,6 +214,8 @@ class Timeline(metaclass=ABCMeta):
                 start_time = time.time()
 
             self._build_frame = inspect.currentframe()
+            gc_enabled = gc.isenabled()
+            gc.disable()    # 在 build 期间关闭 gc，这样只有重新 enable 之后的一次大 gc，这样可以提升效率
 
             try:
                 self.construct()
@@ -228,6 +232,8 @@ class Timeline(metaclass=ABCMeta):
                     )
             finally:
                 self._build_frame = None
+                if gc_enabled:
+                    gc.enable()
 
             if self.current_time == 0:
                 self.forward(DEFAULT_DURATION, _record_lineno=False)    # 使得没有任何前进时，产生一点时间，避免除零以及其它问题
@@ -289,8 +295,9 @@ class Timeline(metaclass=ABCMeta):
         会在进度达到 ``at`` 时，对 ``func`` 进行调用，
         可传入 ``*args`` 和 ``**kwargs``
         """
-        task = Timeline.ScheduledTask(self.time_aligner.align_t(at), func, args, kwargs)
-        insort(self.scheduled_tasks, task, key=lambda x: x.at)
+        at = self.time_aligner.align_t(at)
+        task = Timeline.ScheduledTask(at, func, args, kwargs)
+        self.scheduled_tasks.insert(at, task)
 
     def schedule_and_detect_changes(self, at: float, func: Callable, *args, **kwargs) -> None:
         """
@@ -333,8 +340,7 @@ class Timeline(metaclass=ABCMeta):
 
         to_time = self.current_time + dt
 
-        while self.scheduled_tasks and self.scheduled_tasks[0].at <= to_time:
-            task = self.scheduled_tasks.pop(0)
+        for task in self.scheduled_tasks.pop_up_to(to_time):
             self.current_time = task.at
             task.func(*task.args, **task.kwargs)
 
@@ -930,6 +936,92 @@ class SourceTimeline(Timeline):
             self.source_displayer = SourceDisplayer(self.source_object(), depth=10000)
             self.source_displayer.fix_in_frame().show()
         return super().build(quiet=quiet, hide_subtitles=hide_subtitles, show_debug_notice=show_debug_notice)
+
+
+class ListedTimelines(Timeline):
+    """
+    指定一组 :class:`Timeline` 实现，将他们依次播放
+
+    示例：
+
+    .. code-block:: python
+
+        class Section0(Timeline):
+            def construct(self):
+                ...
+
+        class Section1(Timeline):
+            def construct(self):
+                ...
+
+        class Section2(Timeline):
+            def construct(self):
+                ...
+
+        class Sections(ListedTimelines):
+            includes = [Section1, Section2]
+    """
+    includes: list[type[Timeline]] = []
+
+    def construct(self):
+        for cls in self.includes:
+            tl = cls().build().to_item().show()
+            self.forward(tl.duration)
+
+
+class AboveTimelines(ListedTimelines):
+    """
+    依次播放在同文件中先前定义过的所有 :class:`Timeline` 实现
+
+    示例：
+
+    .. code-block:: python
+
+        class Section0(Timeline):
+            def construct(self):
+                ...
+
+        class Section1(Timeline):
+            def construct(self):
+                ...
+
+        class Section2(Timeline):
+            def construct(self):
+                ...
+
+        class Sections(AboveTimelines):
+            pass
+
+    可另外使用 ``excludes`` 指定排除项
+
+    示例：
+
+    .. code-block:: python
+
+        ...
+
+        class Sections(AboveTimelines):
+            excludes = [Section0]
+    """
+    excludes: list[type[Timeline]] = []
+
+    def construct(self):
+        from janim.cli import get_all_timelines_from_module
+
+        module = sys.modules[self.__class__.__module__]
+        timelines = get_all_timelines_from_module(module)
+
+        includes = []
+
+        for cls in timelines:
+            if cls is self.__class__:
+                break
+            if cls in self.excludes:
+                continue
+            includes.append(cls)
+
+        self.includes = includes
+        super().construct()
 
 
 class BuiltTimeline:

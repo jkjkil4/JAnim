@@ -13,7 +13,7 @@ from sphinx import addnodes
 from sphinx.application import Sphinx
 
 
-_BASES_PREFIX_RE = re.compile(r"^\s*基类：\s*")
+_BASES_PREFIX_RE = re.compile(r"^\s*基类：")
 
 
 def _iter_class_desc_contents(doctree: nodes.document) -> Iterable[addnodes.desc_content]:

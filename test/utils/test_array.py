@@ -6,7 +6,7 @@ from janim.utils.data import Array
 
 class TestArray(unittest.TestCase):
     def test(self):
-        arr = Array()
+        arr = Array.create([])
 
         arr1 = []
         arr2 = np.array([[1, 2], [5, 1]])

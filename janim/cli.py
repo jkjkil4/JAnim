@@ -7,7 +7,6 @@ import sys
 import time
 import types
 from argparse import Namespace
-from functools import lru_cache
 from typing import Callable
 
 from janim.anims.timeline import BuiltTimeline, Timeline
@@ -387,7 +386,6 @@ def extract_timelines_from_module(args: Namespace, module) -> list[type[Timeline
     return [] if err else timelines
 
 
-@lru_cache(maxsize=1)
 def get_all_timelines_from_module(module) -> list[type[Timeline]]:
     """
     从指定的 ``module`` 中得到所有可用的 :class:`~.Timeline`
@@ -433,6 +431,7 @@ def get_lineno_key_function(module) -> Callable[[type], tuple[int, int]] | None:
         return None
 
     # 模仿 inspect.findsource 的做法
+    linecache.checkcache(file)
     lines = linecache.getlines(file, module.__dict__)
     if not lines:
         return None

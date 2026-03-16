@@ -521,7 +521,6 @@ class AnimViewer(QMainWindow):
         from janim.cli import get_all_timelines_from_module
 
         gc.collect()
-        get_all_timelines_from_module.cache_clear()
         self.update_completer([timeline.__name__ for timeline in get_all_timelines_from_module(module)])
 
         if self.has_connection():

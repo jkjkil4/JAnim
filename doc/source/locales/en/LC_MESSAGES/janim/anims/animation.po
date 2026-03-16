@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  JAnim\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-02-24 01:11+0800\n"
+"POT-Creation-Date: 2026-03-04 23:01+0800\n"
 "PO-Revision-Date: 2025-11-23 11:27+0800\n"
 "Last-Translator: \n"
 "Language: en\n"
@@ -200,10 +200,6 @@ msgid "与 :meth:`align_t` 类似，但区别在于"
 msgstr "Similar to :meth:`align_t`, but differs in that"
 
 #: janim.anims.animation.TimeAligner.align_t_for_render:3 of
-msgid "该方法使用二分查找而不是倒序查找"
-msgstr "This method uses binary search instead of reverse search"
-
-#: janim.anims.animation.TimeAligner.align_t_for_render:4 of
 msgid "该方法在查找后不记录 ``t`` 的值"
 msgstr "This method does not record the value of ``t`` after searching"
 
@@ -276,3 +272,6 @@ msgstr "This method does not record the value of ``t`` after searching"
 #~ msgstr ""
 #~ "This section covers the implementations of JAnim, which may be quite complex. If you do not have the need to delve "
 #~ "into the source code, you may choose to read it at your discretion."
+
+#~ msgid "该方法使用二分查找而不是倒序查找"
+#~ msgstr "This method uses binary search instead of reverse search"

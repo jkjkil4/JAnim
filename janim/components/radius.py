@@ -15,9 +15,7 @@ from janim.utils.iterables import resize_with_interpolation
 
 @lru_cache()
 def _get_array(radius: float) -> Array:
-    array = Array()
-    array.data = np.full(1, radius)
-    return array
+    return Array.create(np.full(1, radius))
 
 
 class Cmpt_Radius[ItemT](Component[ItemT]):

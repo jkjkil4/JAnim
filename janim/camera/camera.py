@@ -124,7 +124,7 @@ class Cmpt_CameraPoints[ItemT](Cmpt_Points[ItemT]):
     @size.setter
     def size(self, value: Vect) -> None:
         self._size = np.array(value, dtype=np.float64)
-        self.mark_refresh(Cmpt_CameraPoints.info.fget)
+        self.mark_refresh(Cmpt_CameraPoints.info.fget.__name__)
 
     @property
     def fov(self) -> float:
@@ -133,7 +133,7 @@ class Cmpt_CameraPoints[ItemT](Cmpt_Points[ItemT]):
     @fov.setter
     def fov(self, val: float) -> None:
         self._fov = val
-        self.mark_refresh(Cmpt_CameraPoints.info.fget)
+        self.mark_refresh(Cmpt_CameraPoints.info.fget.__name__)
 
     @property
     def orientation(self) -> Quaternion:
@@ -142,7 +142,7 @@ class Cmpt_CameraPoints[ItemT](Cmpt_Points[ItemT]):
     @orientation.setter
     def orientation(self, val: Quaternion) -> None:
         self._orientation = val
-        self.mark_refresh(Cmpt_CameraPoints.info.fget)
+        self.mark_refresh(Cmpt_CameraPoints.info.fget.__name__)
 
     def scale(
         self,

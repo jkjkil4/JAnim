@@ -13,8 +13,7 @@ from janim.utils.bezier import interpolate
 from janim.utils.data import AlignedData, Array
 from janim.utils.iterables import resize_with_interpolation
 
-DEFAULT_RGBAS_ARRAY = Array()
-DEFAULT_RGBAS_ARRAY.data = np.full((1, 4), 1)
+DEFAULT_RGBAS_ARRAY = Array.create(np.full((1, 4), 1))
 
 
 class Cmpt_Rgbas[ItemT](Component[ItemT]):

@@ -303,7 +303,7 @@ class _GroupUpdater(ApplyAligner):
         **kwargs
     ):
         super().__init__(item, stacks, **kwargs)
-        self._generate_by = generate_by
+        self._generate_by: GroupUpdater = generate_by
         self.data = data
 
     def pre_apply(self, data: Item, p: ItemAnimation.ApplyParams) -> None:

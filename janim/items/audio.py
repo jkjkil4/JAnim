@@ -35,7 +35,7 @@ class Audio:
 
     def __init__(self, file_path: str = '', begin: float = -1, end: float = -1, **kwargs):
         super().__init__(**kwargs)
-        self._samples = Array(dtype=np.int16)
+        self._samples = Array.create([], np.int16)
         self.framerate = 0
         self.file_path = ''
         self.filename = ''

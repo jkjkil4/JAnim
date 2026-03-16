@@ -123,6 +123,7 @@ JAnim 是一个用于创建流畅动画的库，以程序化动画为核心理�
    development/about
    development/contributing
    development/unittest
+   development/bench
 
 目录与表格
 ------------

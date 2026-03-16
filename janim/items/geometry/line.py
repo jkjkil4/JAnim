@@ -18,6 +18,7 @@ from janim.utils.space_ops import (angle_of_vector, get_arc_length, get_norm,
 
 type SupportsPointify = Vect | Points
 type AngleQuadrant = tuple[Literal[-1, 1], Literal[-1, 1]]
+type LineBuff = float | tuple[float, float]
 
 DEFAULT_DASH_LENGTH = 0.1
 
@@ -58,7 +59,7 @@ class Cmpt_VPoints_LineImpl[ItemT](Cmpt_VPoints[ItemT]):
         self,
         start: np.ndarray | None = None,
         end: np.ndarray | None = None,
-        buff: float | None = None,
+        buff: LineBuff | None = None,
         path_arc: float | None = None
     ) -> Self:
         if start is None:
@@ -85,27 +86,47 @@ class Cmpt_VPoints_LineImpl[ItemT](Cmpt_VPoints[ItemT]):
         else:
             self.path_arc = path_arc
 
+        if isinstance(buff, tuple):
+            start_buff, end_buff = buff
+        else:
+            start_buff, end_buff = buff, buff
+
         builder = PathBuilder(start_point=start)
         builder.arc_to(end, path_arc)
         points = builder.get()
 
-        # Apply buffer
-        if buff > 0:
+        # 处理正 buffer
+        # 并且如果其中一个是负 buffer 的话，会因为 max(buff, 0) 而被保留在原始位置
+        # 不被 partial_points 截断，到后面再继续处理负 buffer 逻辑
+        if start_buff > 0 or end_buff > 0:
             arc_len = get_arc_length(get_norm(points[-1] - points[0]), path_arc)
-            alpha = min(buff / arc_len, 0.5)
-            points = self.partial_points(points, alpha, 1 - alpha)
-        elif buff < 0:
+            if arc_len > 0:
+                alpha_start = min(max(start_buff, 0) / arc_len, 0.5)
+                alpha_end = min(max(end_buff, 0) / arc_len, 0.5)
+                points = self.partial_points(points, alpha_start, 1 - alpha_end)
+        # 处理负 buffer，即反向延伸
+        # 得到 start_dir 和 end_dir 并根据这两个方向向外延伸
+        if start_buff < 0 or end_buff < 0:
             start_dir = normalize(self.start_direction_from_points(points))
             end_dir = normalize(self.end_direction_from_points(points))
             if path_arc == 0:
-                points[0] += start_dir * buff
-                points[-1] -= end_dir * buff
+                if start_buff < 0:
+                    points[0] += start_dir * start_buff
+                if end_buff < 0:
+                    points[-1] -= end_dir * end_buff
             else:
-                points = np.vstack([
-                    [points[0] + start_dir * buff, points[0] + start_dir * (0.5 * buff)],
-                    points,
-                    [points[-1] - end_dir * (0.5 * buff), points[-1] - end_dir * buff]
-                ])
+                extra_points = [points]
+                if start_buff < 0:
+                    extra_points.insert(0, np.array([
+                        points[0] + start_dir * start_buff,
+                        points[0] + start_dir * (0.5 * start_buff)
+                    ]))
+                if end_buff < 0:
+                    extra_points.append(np.array([
+                        points[-1] - end_dir * (0.5 * end_buff),
+                        points[-1] - end_dir * end_buff
+                    ]))
+                points = np.vstack(extra_points)
 
         self.set(points)
         return self
@@ -119,7 +140,7 @@ class Cmpt_VPoints_LineImpl[ItemT](Cmpt_VPoints[ItemT]):
         )
         return self.update_by_attrs(*args, **kwargs)
 
-    def set_buff(self, buff: float) -> Self:
+    def set_buff(self, buff: LineBuff) -> Self:
         self.update_by_attrs(buff=buff)
         return self
 
@@ -234,7 +255,7 @@ class Line(VItem):
         start: Vect | Points = LEFT,
         end: Vect | Points = RIGHT,
         *,
-        buff: float = 0,
+        buff: LineBuff = 0,
         path_arc: float = 0,
         **kwargs
     ) -> None:

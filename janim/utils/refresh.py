@@ -40,19 +40,24 @@ class Refreshable:
 
         self.refresh_data: defaultdict[str, RefreshData] = defaultdict(RefreshData)
 
-    def mark_refresh(self, func: Callable | str) -> None:
+    def mark_refresh(self, name: str) -> None:
         """
-        标记指定的 ``func`` 需要进行更新
+        标记指定的 ``name`` 需要进行更新
         """
-        name = func.__name__ if callable(func) else func
         data: RefreshData = self.refresh_data[name]
         data.is_required = True
+
+    @staticmethod
+    def get_name(func_or_name: Callable | str) -> str:
+        return func_or_name.__name__ if callable(func_or_name) else func_or_name
 
     def reset_refresh(self) -> None:
         self.refresh_data = defaultdict(RefreshData)
 
 
 class RefreshData:
+    slots = ('is_required', 'stored')
+
     def __init__(self):
         self.is_required = True
         self.stored: Any = None
