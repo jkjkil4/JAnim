@@ -308,14 +308,14 @@ class Cmpt_Points[ItemT](Component[ItemT]):
 
             # 不直接使用 `self.get` 是因为它太慢了
             return np.array([
-                [x1, y1, z1],
-                [x1, y1, z2],
-                [x1, y2, z1],
-                [x1, y2, z2],
-                [x2, y1, z1],
-                [x2, y1, z2],
-                [x2, y2, z1],
-                [x2, y2, z2],
+                [x1, y1, z1],   # 左下角
+                [x1, y1, z2],   # 左下角
+                [x1, y2, z1],   # 左上角
+                [x1, y2, z2],   # 左上角
+                [x2, y1, z1],   # 右下角
+                [x2, y1, z2],   # 右下角
+                [x2, y2, z1],   # 右上角
+                [x2, y2, z2],   # 右上角
             ])
 
         @property
