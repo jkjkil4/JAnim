@@ -112,17 +112,25 @@ class ShapeMask(Points):
         self._render_targets = []
 
         for appr in self._affected_apprs:
-            if appr.render_parent is not None and self_appr is not None:
-                # 该 item 已被外层 mask/effect 接管
-                # 将当前 mask 插入到外层的渲染目标中，替代该 item
-                parent_appr = appr.render_parent
-                if hasattr(parent_appr, 'current_data') and hasattr(parent_appr.current_data, '_render_targets'):
+            parent_appr = appr.render_parent
+            replaced_in_parent = False
+
+            if parent_appr is not None and self_appr is not None:
+                # 仅当父遮罩当前渲染目标中确实包含该共享 appearance 时
+                # 才建立嵌套替换关系
+                parent_data = getattr(parent_appr, 'current_data', None)
+                parent_targets = getattr(parent_data, '_render_targets', None)
+                if parent_targets is not None:
                     try:
-                        idx = parent_appr.current_data._render_targets.index(appr)
-                        parent_appr.current_data._render_targets[idx] = self_appr
+                        idx = parent_targets.index(appr)
                     except ValueError:
                         pass
-                # 当前 mask 需要被标记为 disabled（它现在是外层 mask 的子节点）
+                    else:
+                        parent_targets[idx] = self_appr
+                        replaced_in_parent = True
+
+            if replaced_in_parent:
+                # 当前 mask 成为父遮罩的一个渲染目标，故自身不再独立渲染
                 self_appr.render_disabled = True
                 self_appr.render_parent = parent_appr
 
