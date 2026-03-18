@@ -5,6 +5,7 @@ import inspect
 import itertools as it
 import math
 import os
+import sys
 import time
 import traceback
 import types
@@ -651,6 +652,7 @@ class Timeline(metaclass=ABCMeta):
             self.visibility: list[float] = []
             self.renderer: Renderer | None = None
             self.render_disabled: bool = False
+            self.render_parent: Timeline.ItemAppearance | None = None
 
         def is_visible_at(self, t: float) -> bool:
             """
@@ -936,6 +938,92 @@ class SourceTimeline(Timeline):
         return super().build(quiet=quiet, hide_subtitles=hide_subtitles, show_debug_notice=show_debug_notice)
 
 
+class ListedTimelines(Timeline):
+    """
+    指定一组 :class:`Timeline` 实现，将他们依次播放
+
+    示例：
+
+    .. code-block:: python
+
+        class Section0(Timeline):
+            def construct(self):
+                ...
+
+        class Section1(Timeline):
+            def construct(self):
+                ...
+
+        class Section2(Timeline):
+            def construct(self):
+                ...
+
+        class Sections(ListedTimelines):
+            includes = [Section1, Section2]
+    """
+    includes: list[type[Timeline]] = []
+
+    def construct(self):
+        for cls in self.includes:
+            tl = cls().build().to_item().show()
+            self.forward(tl.duration)
+
+
+class AboveTimelines(ListedTimelines):
+    """
+    依次播放在同文件中先前定义过的所有 :class:`Timeline` 实现
+
+    示例：
+
+    .. code-block:: python
+
+        class Section0(Timeline):
+            def construct(self):
+                ...
+
+        class Section1(Timeline):
+            def construct(self):
+                ...
+
+        class Section2(Timeline):
+            def construct(self):
+                ...
+
+        class Sections(AboveTimelines):
+            pass
+
+    可另外使用 ``excludes`` 指定排除项
+
+    示例：
+
+    .. code-block:: python
+
+        ...
+
+        class Sections(AboveTimelines):
+            excludes = [Section0]
+    """
+    excludes: list[type[Timeline]] = []
+
+    def construct(self):
+        from janim.cli import get_all_timelines_from_module
+
+        module = sys.modules[self.__class__.__module__]
+        timelines = get_all_timelines_from_module(module)
+
+        includes = []
+
+        for cls in timelines:
+            if cls is self.__class__:
+                break
+            if cls in self.excludes:
+                continue
+            includes.append(cls)
+
+        self.includes = includes
+        super().construct()
+
+
 class BuiltTimeline:
     """
     运行 :meth:`Timeline.build` 后返回的实例
@@ -1132,7 +1220,8 @@ class BuiltTimeline:
             if not appr.is_visible_at(global_t):
                 continue
             data = appr.stack.compute(global_t, True)
-            data._mark_render_disabled(additionals)
+            appr.current_data = data
+            data._mark_render_disabled(appr, additionals)
             render_apprs.append((appr, data))
 
         # 得到额外的渲染调用的方法列表
@@ -1142,13 +1231,17 @@ class BuiltTimeline:
             if rcc.render_disabled:
                 rcc.render_disabled = False     # 重置，因为每次都要重新标记
                 continue
-            additional_lists.append(rcc.func())
+            rcc_items = rcc.func()
+            for data, _ in rcc_items:
+                data._mark_render_disabled(None, additionals)
+            additional_lists.append(rcc_items)
 
         # 剔除被标记 render_disabled 的物件，得到 items_render
         items_render: list[BuiltTimeline._ItemWithRenderFunc] = []
         for appr, data in render_apprs:
             if appr.render_disabled:
                 appr.render_disabled = False    # 重置，因为每次都要重新标记
+                appr.render_parent = None
                 continue
             items_render.append((data, appr.render))
 
