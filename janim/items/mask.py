@@ -20,15 +20,15 @@ if TYPE_CHECKING:
 
 class ShapeMask(Points):
     """
-    蒙版物件，用于遮罩受影响的物件
+    用 ``shape`` 的轮廓做一个蒙版。
 
-    通过传入一个 :class:`~.VItem` 作为形状（``shape``），将受影响物件中位于形状外部的部分隐藏
+    被加入到 ``affected`` 里的物件，只会显示形状内部的部分。
 
     - ``mask_alpha``: 蒙版整体透明度，范围 ``0.0`` ~ ``1.0``
-    - ``feather``: 羽化程度，值越大边缘越模糊
+    - ``feather``: 边缘羽化，值越大越模糊
     - ``invert``: 反转蒙版，``0.0`` 为正常，``1.0`` 为完全反转
 
-    使用 :meth:`affect` / :meth:`disaffect` 动态添加或移除受影响的物件
+    创建后也可以用 :meth:`affect` / :meth:`disaffect` 增删受影响的物件
 
     .. code-block:: python
 
@@ -78,7 +78,7 @@ class ShapeMask(Points):
 
     def affect(self, *items: Item, root_only: bool = False) -> Self:
         """
-        添加受蒙版影响的物件
+        把物件加入这个蒙版的影响范围
         """
         apply_items = [
             sub
@@ -95,7 +95,7 @@ class ShapeMask(Points):
 
     def disaffect(self, *items: Item, root_only: bool = False) -> Self:
         """
-        移除受蒙版影响的物件
+        把物件从这个蒙版的影响范围里移除
         """
         for item in items:
             for sub in item.walk_self_and_descendants(root_only):
@@ -116,11 +116,10 @@ class ShapeMask(Points):
 
     class _NestedRenderAppr:
         """
-        把当前遮罩接回已有遮罩链时用的代理 appearance。
+        给已经挂在别的遮罩下面的目标补一层中转节点。
 
-        有些 affected 对象已经挂在上层遮罩链里，这时不能直接改成由当前遮罩渲染，
-        否则会打乱原来的嵌套顺序。这里创建一个代理节点，复用当前遮罩的渲染逻辑，
-        但继续挂在原来的父链上。
+        这些目标这一帧仍然要走当前遮罩的渲染逻辑，但不能直接改
+        ``render_parent``，不然原来的嵌套顺序会乱。
         """
         def __init__(self, data: ShapeMask, render_func):
             self.current_data = data
@@ -150,9 +149,9 @@ class ShapeMask(Points):
             if nested_host is not None:
                 return nested_host
 
-        # 不能只看 render_parent，因为这一帧里 _render_targets 可能还没准备好，
-        # 或者已经被别的逻辑改写。这里再查一次 _affected_apprs，确认目标现在
-        # 是否仍由这个父遮罩负责。
+        # 不能只看 render_parent。这个字段这一帧里可能还没更新，
+        # 也可能已经被别处改过。这里再查一遍 _affected_apprs，
+        # 确认目标现在是不是还归这个父遮罩管。
         affected_apprs = getattr(parent_data, '_affected_apprs', None)
         if affected_apprs is not None and target_appr in affected_apprs:
             return parent_appr
@@ -161,8 +160,8 @@ class ShapeMask(Points):
 
     @classmethod
     def _find_existing_chain_parent(cls, appr):
-        # 这里只认祖先链里现在还能找到 appr 的父节点，
-        # 避免复用过期的 render_parent，把共享对象挂回已经不负责它的旧遮罩。
+        # 只复用现在还能确认有效的父节点。
+        # 这样共享目标不会挂回已经失效的旧遮罩。
         parent_appr = appr.render_parent
         while parent_appr is not None:
             nested_host = cls._find_nested_host(parent_appr, appr)
@@ -173,7 +172,7 @@ class ShapeMask(Points):
         return None
 
     def _mark_render_disabled(self, self_appr, additionals: list[Timeline.AdditionalRenderCallsCallback]):
-        # 当前帧需要由这个遮罩直接渲染的目标。
+        # 这一帧由当前遮罩直接渲染的目标。
         self._render_targets = []
 
         nested_by_affected = {}
@@ -182,8 +181,8 @@ class ShapeMask(Points):
         if self_appr is not None:
             shared_by_parent = {}
 
-            # 共享目标如果已经在别的遮罩链里，就继续留在原链上。
-            # 否则当前遮罩一出现，就会把它们改挂到自己下面，打乱原来的嵌套顺序。
+            # 共享目标如果已经在别的遮罩链里，就继续放在原链上。
+            # 否则当前遮罩一接手，就会把嵌套顺序弄乱。
             for item, appr in affected_pairs:
                 parent_appr = self._find_existing_chain_parent(appr)
                 if parent_appr is None:
@@ -195,8 +194,8 @@ class ShapeMask(Points):
                 shared_items = [item for item, _ in shared_pairs]
                 shared_apprs = [appr for _, appr in shared_pairs]
 
-                # 给每个父遮罩补一个代理节点，只处理这组共享目标。
-                # 这样能复用当前遮罩的渲染逻辑，同时不改动它们原来的父链归属。
+                # 给每个父遮罩补一层中转节点，只处理这组共享目标。
+                # 这样能继续复用当前遮罩的渲染逻辑，又不改它们原来的父链。
                 nested_data = self.copy(root_only=True)
                 nested_data._render_targets = shared_apprs.copy()
                 nested_data._affected_items.clear()
@@ -219,9 +218,8 @@ class ShapeMask(Points):
                 for target in parent_targets:
                     if target in shared_set:
                         if not inserted:
-                            # 尽量把代理插回共享目标原来的位置，保持父列表里的渲染顺序。
-                            # 如果这一帧还没在 _render_targets 里收集到这些目标，就走下面的追加分支，
-                            # 至少先把这层代理接回链上。
+                            # 尽量插回原来的位置，别改父遮罩里现有的渲染顺序。
+                            # 如果这一帧还没收集到这些目标，就走下面的追加分支。
                             new_parent_targets.append(nested_appr)
                             inserted = True
                     else:
@@ -241,8 +239,9 @@ class ShapeMask(Points):
             appr.render_disabled = True
 
         if self_appr is not None and not self._render_targets and nested_by_affected:
-            # 如果当前遮罩已经没有自己直接渲染的目标，就不要再单独渲染它。
-            # 当这些代理都挂在同一个父节点下时，把当前遮罩也接回这个父节点，保持外层链不断。
+            # 当前遮罩已经没有自己要画的目标时，就不要再单独渲染它。
+            # 如果这些中转节点都挂在同一个父节点下，再把当前遮罩接回去，
+            # 免得外层链断掉。
             parent_candidates = {nested_appr.render_parent for nested_appr in nested_by_affected.values()}
             self_appr.render_disabled = True
             if len(parent_candidates) == 1:
@@ -259,8 +258,8 @@ class ShapeMask(Points):
     def align_for_interpolate(cls, item1: ShapeMask, item2: ShapeMask) -> AlignedData[Self]:
         aligned = super().align_for_interpolate(item1, item2)
 
-        # 这里按对象身份合并 affected 项，确保同一个共享对象在插值前后
-        # 仍然对应同一个 appearance。后面判断它该挂在哪条遮罩链上时，才能继续复用原来的父节点。
+        # 按对象身份合并 affected，保证同一个共享对象前后都还对应同一个 appearance。
+        # 否则插值后会把它当成新目标，原来的父遮罩链就接不上了。
         merged_items = list(dict.fromkeys(
             it.chain(item1._affected_items, item2._affected_items)
         ))
