@@ -107,38 +107,146 @@ class ShapeMask(Points):
                     pass
         return self
 
+    class _StaticStack:
+        def __init__(self, data: ShapeMask):
+            self._data = data
+
+        def compute(self, t: float, readonly: bool) -> ShapeMask:
+            return self._data
+
+    class _NestedRenderAppr:
+        """
+        把当前遮罩接回已有遮罩链时用的代理 appearance。
+
+        有些 affected 对象已经挂在上层遮罩链里，这时不能直接改成由当前遮罩渲染，
+        否则会打乱原来的嵌套顺序。这里创建一个代理节点，复用当前遮罩的渲染逻辑，
+        但继续挂在原来的父链上。
+        """
+        def __init__(self, data: ShapeMask, render_func):
+            self.current_data = data
+            self.stack = ShapeMask._StaticStack(data)
+            self._render_func = render_func
+            self.render_disabled = False
+            self.render_parent = None
+
+        def is_visible_at(self, t: float) -> bool:
+            return True
+
+        def render(self, data: ShapeMask) -> None:
+            self._render_func(data)
+
+    @classmethod
+    def _find_nested_host(cls, parent_appr, target_appr):
+        parent_data = getattr(parent_appr, 'current_data', None)
+        if parent_data is None:
+            return None
+
+        parent_targets = getattr(parent_data, '_render_targets', ())
+        for child_appr in parent_targets:
+            if child_appr is target_appr:
+                return parent_appr
+
+            nested_host = cls._find_nested_host(child_appr, target_appr)
+            if nested_host is not None:
+                return nested_host
+
+        # 不能只看 render_parent，因为这一帧里 _render_targets 可能还没准备好，
+        # 或者已经被别的逻辑改写。这里再查一次 _affected_apprs，确认目标现在
+        # 是否仍由这个父遮罩负责。
+        affected_apprs = getattr(parent_data, '_affected_apprs', None)
+        if affected_apprs is not None and target_appr in affected_apprs:
+            return parent_appr
+
+        return None
+
+    @classmethod
+    def _find_existing_chain_parent(cls, appr):
+        # 这里只认祖先链里现在还能找到 appr 的父节点，
+        # 避免复用过期的 render_parent，把共享对象挂回已经不负责它的旧遮罩。
+        parent_appr = appr.render_parent
+        while parent_appr is not None:
+            nested_host = cls._find_nested_host(parent_appr, appr)
+            if nested_host is not None:
+                return nested_host
+            parent_appr = getattr(parent_appr, 'render_parent', None)
+
+        return None
+
     def _mark_render_disabled(self, self_appr, additionals: list[Timeline.AdditionalRenderCallsCallback]):
-        # 初始化当前帧的动态渲染目标列表
+        # 当前帧需要由这个遮罩直接渲染的目标。
         self._render_targets = []
 
-        for appr in self._affected_apprs:
-            parent_appr = appr.render_parent
-            replaced_in_parent = False
+        nested_by_affected = {}
+        affected_pairs = list(zip(self._affected_items, self._affected_apprs))
 
-            if parent_appr is not None and self_appr is not None:
-                # 仅当父遮罩当前渲染目标中确实包含该共享 appearance 时
-                # 才建立嵌套替换关系
-                parent_data = getattr(parent_appr, 'current_data', None)
-                parent_targets = getattr(parent_data, '_render_targets', None)
-                if parent_targets is not None:
-                    try:
-                        idx = parent_targets.index(appr)
-                    except ValueError:
-                        pass
+        if self_appr is not None:
+            shared_by_parent = {}
+
+            # 共享目标如果已经在别的遮罩链里，就继续留在原链上。
+            # 否则当前遮罩一出现，就会把它们改挂到自己下面，打乱原来的嵌套顺序。
+            for item, appr in affected_pairs:
+                parent_appr = self._find_existing_chain_parent(appr)
+                if parent_appr is None:
+                    continue
+
+                shared_by_parent.setdefault(parent_appr, []).append((item, appr))
+
+            for parent_appr, shared_pairs in shared_by_parent.items():
+                shared_items = [item for item, _ in shared_pairs]
+                shared_apprs = [appr for _, appr in shared_pairs]
+
+                # 给每个父遮罩补一个代理节点，只处理这组共享目标。
+                # 这样能复用当前遮罩的渲染逻辑，同时不改动它们原来的父链归属。
+                nested_data = self.copy(root_only=True)
+                nested_data._render_targets = shared_apprs.copy()
+                nested_data._affected_items.clear()
+                nested_data._affected_items.extend(shared_items)
+                nested_data._affected_apprs.clear()
+                nested_data._affected_apprs.extend(shared_apprs)
+                nested_data._additional_lists = []
+
+                nested_appr = self._NestedRenderAppr(nested_data, self_appr.render)
+                nested_appr.render_parent = parent_appr
+
+                for appr in shared_apprs:
+                    nested_by_affected[appr] = nested_appr
+
+                parent_data = parent_appr.current_data
+                parent_targets = list(getattr(parent_data, '_render_targets', ()))
+                shared_set = set(shared_apprs)
+                new_parent_targets = []
+                inserted = False
+                for target in parent_targets:
+                    if target in shared_set:
+                        if not inserted:
+                            # 尽量把代理插回共享目标原来的位置，保持父列表里的渲染顺序。
+                            # 如果这一帧还没在 _render_targets 里收集到这些目标，就走下面的追加分支，
+                            # 至少先把这层代理接回链上。
+                            new_parent_targets.append(nested_appr)
+                            inserted = True
                     else:
-                        parent_targets[idx] = self_appr
-                        replaced_in_parent = True
+                        new_parent_targets.append(target)
+                if not inserted:
+                    new_parent_targets.append(nested_appr)
+                parent_data._render_targets = new_parent_targets
 
-            if replaced_in_parent:
-                # 当前 mask 成为父遮罩的一个渲染目标，故自身不再独立渲染
-                self_appr.render_disabled = True
-                self_appr.render_parent = parent_appr
-
-            # 设置 render_parent 为当前 mask
-            if self_appr is not None:
-                appr.render_parent = self_appr
+        for _, appr in affected_pairs:
+            nested_appr = nested_by_affected.get(appr)
+            if nested_appr is not None:
+                appr.render_parent = nested_appr
+            else:
+                if self_appr is not None:
+                    appr.render_parent = self_appr
+                self._render_targets.append(appr)
             appr.render_disabled = True
-            self._render_targets.append(appr)
+
+        if self_appr is not None and not self._render_targets and nested_by_affected:
+            # 如果当前遮罩已经没有自己直接渲染的目标，就不要再单独渲染它。
+            # 当这些代理都挂在同一个父节点下时，把当前遮罩也接回这个父节点，保持外层链不断。
+            parent_candidates = {nested_appr.render_parent for nested_appr in nested_by_affected.values()}
+            self_appr.render_disabled = True
+            if len(parent_candidates) == 1:
+                self_appr.render_parent = next(iter(parent_candidates))
 
         self._additional_lists = []
 
@@ -151,7 +259,8 @@ class ShapeMask(Points):
     def align_for_interpolate(cls, item1: ShapeMask, item2: ShapeMask) -> AlignedData[Self]:
         aligned = super().align_for_interpolate(item1, item2)
 
-        # 合并两个 Mask 的受影响物件列表
+        # 这里按对象身份合并 affected 项，确保同一个共享对象在插值前后
+        # 仍然对应同一个 appearance。后面判断它该挂在哪条遮罩链上时，才能继续复用原来的父节点。
         merged_items = list(dict.fromkeys(
             it.chain(item1._affected_items, item2._affected_items)
         ))
