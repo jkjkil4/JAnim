@@ -236,9 +236,13 @@ class MovePanel(HandlerPanel):
                         match_y = None
 
                 if match_x:
+                    if factor_x is None:
+                        continue
                     self.x_snap = match_x
                     factor = factor_x
                 else:
+                    if factor_y is None:
+                        continue
                     self.y_snap = match_y
                     factor = factor_y
 

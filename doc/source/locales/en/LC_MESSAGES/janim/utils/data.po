@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  JAnim\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-02-24 01:11+0800\n"
+"POT-Creation-Date: 2026-03-04 23:01+0800\n"
 "PO-Revision-Date: 2024-06-03 10:16+0800\n"
 "Last-Translator: \n"
 "Language: en\n"
@@ -30,6 +30,28 @@ msgstr "Ensures that the id is different after modifying (assigning) with ``.dat
 #: janim.utils.data.Array:3 of
 msgid "并且通过 ``.data`` 得到的 numpy 数组必定是只读的"
 msgstr "And the numpy array obtained through ``.data`` is always read-only."
+
+#: janim.utils.data.Array:5 of
+msgid "一般来说，不使用 ``__init__`` 构造，而是使用 :meth:`create`"
+msgstr "In general, do not construct it via ``__init__``; use :meth:`create` instead."
+
+#: janim.utils.data.SortedKeyQueue:1 of
+msgid "按 ``key`` 排序的队列（基于两个列表）； 使用生成器方式弹出 ``key <= max_key`` 的元素"
+msgstr "A queue sorted by ``key`` (based on two lists); pops elements with ``key <= max_key`` using a generator."
+
+#: janim.utils.data.SortedKeyQueue:4 of
+msgid "这是对 ``insort + key`` 的优化方案，因为 ``insort`` 会频繁调用 ``key`` 回调，在高频使用的场景下导致性能损失"
+msgstr ""
+"This is an optimized alternative to ``insort + key`` because ``insort`` calls the ``key`` callback frequently, which "
+"causes performance loss in high-frequency scenarios."
+
+#: janim.utils.data.SortedKeyQueue.insert:1 of
+msgid "插入 ``value``，保持按 ``key`` 排序"
+msgstr "Insert ``value`` while keeping the queue sorted by ``key``"
+
+#: janim.utils.data.SortedKeyQueue.pop_up_to:1 of
+msgid "弹出所有 ``key <= max_key`` 的元素"
+msgstr "Pop all elements with ``key <= max_key``"
 
 #: janim.utils.data.AlignedData:1 of
 msgid "数据对齐后的结构，用于 :meth:`~.Item.align_for_interpolate`"

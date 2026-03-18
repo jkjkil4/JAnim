@@ -1,0 +1,131 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2023, jkjkil4
+# This file is distributed under the same license as the JAnim package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: JAnim \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-03-04 23:01+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: en\n"
+"Language-Team: en <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.17.0\n"
+
+#: ../../source/development/bench.rst:2
+msgid "基准测试"
+msgstr "Benchmarking"
+
+#: ../../source/development/bench.rst:5
+msgid "准备环境"
+msgstr "Prepare the Environment"
+
+#: ../../source/development/bench.rst:7
+msgid "假设你已经 fork 仓库并 clone 到了本地。"
+msgstr "Assuming you have forked the repository and cloned it locally."
+
+#: ../../source/development/bench.rst:9
+msgid "使用 ``cd JAnim`` 进入项目文件夹，然后安装包含基准测试所需依赖的环境："
+msgstr ""
+"Use ``cd JAnim`` to enter the project folder, then install the environment with dependencies required for benchmarking:"
+
+#: ../../source/development/bench.rst:11
+msgid "pip install -e .[bench]"
+msgstr "pip install -e .[bench]"
+
+#: ../../source/development/bench.rst:16
+msgid "运行基准测试"
+msgstr "Run Benchmarks"
+
+#: ../../source/development/bench.rst:18
+msgid "项目提供了一个方便的脚本入口来运行基准测试。命令格式为："
+msgstr "The project provides a convenient script entry point to run benchmarks. The command format is:"
+
+#: ../../source/development/bench.rst:20
+msgid "python scripts bench [options]"
+msgstr "python scripts bench [options]"
+
+#: ../../source/development/bench.rst:24
+msgid "可用选项示例："
+msgstr "Examples of available options:"
+
+#: ../../source/development/bench.rst:26
+msgid "``--untested_tags``：测试自 v2.1.0 之后所有尚未测试的 tag。"
+msgstr "``--untested_tags``: test all untested tags since v2.1.0."
+
+#: ../../source/development/bench.rst:27
+msgid "``--tags <tag> [<tag> ...]``：按一或多个标签运行测试，例如 ``--tags v2.1.0 v2.2.0``。"
+msgstr "``--tags <tag> [<tag> ...]``: run tests for one or more tags, for example ``--tags v2.1.0 v2.2.0``."
+
+#: ../../source/development/bench.rst:28
+msgid "``--hashes <hash> [<hash> ...]``：按提交哈希运行测试（可传入多个）。"
+msgstr "``--hashes <hash> [<hash> ...]``: run tests by commit hash (multiple values allowed)."
+
+#: ../../source/development/bench.rst:29
+msgid "``-o`` / ``--open``：自动在浏览器中打开预览。"
+msgstr "``-o`` / ``--open``: automatically open the preview in the browser."
+
+#: ../../source/development/bench.rst:32
+msgid "运行示例"
+msgstr "Usage Examples"
+
+#: ../../source/development/bench.rst:34
+msgid "测试所有未测试的 tag（在 v2.1.0 之后）："
+msgstr "Test all untested tags (after v2.1.0):"
+
+#: ../../source/development/bench.rst:36
+msgid "python scripts bench --untested_tags"
+msgstr "python scripts bench --untested_tags"
+
+#: ../../source/development/bench.rst:40
+msgid "测试指定标签："
+msgstr "Test specified tags:"
+
+#: ../../source/development/bench.rst:42
+msgid "python scripts bench --tags v2.1.0 v2.2.0"
+msgstr "python scripts bench --tags v2.1.0 v2.2.0"
+
+#: ../../source/development/bench.rst:46
+msgid "使用指定哈希测试并自动打开预览："
+msgstr "Test with specified hashes and automatically open the preview:"
+
+#: ../../source/development/bench.rst:48
+msgid "python scripts bench --hashes 78b7c20 2c1fcfd -o"
+msgstr "python scripts bench --hashes 78b7c20 2c1fcfd -o"
+
+#: ../../source/development/bench.rst:52
+msgid "你也可以直接使用 ``asv preview -b`` 在本地预览已经发布的结果。"
+msgstr "You can also directly use ``asv preview -b`` to preview published results locally."
+
+#: ../../source/development/bench.rst:55
+msgid "脚本行为说明"
+msgstr "Script Behavior"
+
+#: ../../source/development/bench.rst:57
+msgid ""
+"当使用 ``--untested_tags`` 时，脚本会查询仓库中自 v2.1.0 之后的 tag 的对应哈希（项目内部实现位于 ``scripts/bench/"
+"hashes.py``），并与已测试的哈希进行比对，只对尚未测试的提交运行基准。"
+msgstr ""
+"When ``--untested_tags`` is used, the script queries hashes for tags since v2.1.0 in the repository (the internal "
+"implementation is in ``scripts/bench/hashes.py``), compares them against already tested hashes, and runs benchmarks only "
+"for untested commits."
+
+#: ../../source/development/bench.rst:58
+msgid "如果同时传入 ``--tags`` 或 ``--hashes``，也会将它们加入待测哈希列表。"
+msgstr "If ``--tags`` or ``--hashes`` are also provided, they will be added to the hash list to be tested as well."
+
+#: ../../source/development/bench.rst:59
+msgid ""
+"在开始运行前，脚本会把要测试的哈希列表写入 ``.asv/_tag_hashes.txt``，并调用 ``asv run HASHFILE:.asv/_tag_hashes.txt`` 运行"
+"基准用例，随后使用 ``asv publish`` 将结果发布到本地，最后（可选）调用 ``asv preview -b`` 打开浏览器预览。"
+msgstr ""
+"Before execution starts, the script writes the hash list to be tested into ``.asv/_tag_hashes.txt``, runs benchmark cases "
+"via ``asv run HASHFILE:.asv/_tag_hashes.txt``, then publishes results locally with ``asv publish``, and finally "
+"(optionally) opens a browser preview with ``asv preview -b``."

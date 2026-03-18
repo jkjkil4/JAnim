@@ -35,8 +35,7 @@ type PointsFn = Callable[[np.ndarray], VectArray]
 type PointFn = Callable[[np.ndarray], Vect]
 type ComplexFn = Callable[[complex], complex]
 
-DEFAULT_POINTS_ARRAY = Array()
-DEFAULT_POINTS_ARRAY.data = np.zeros((0, 3))
+DEFAULT_POINTS_ARRAY = Array.create(np.zeros((0, 3)))
 
 
 class Cmpt_Points[ItemT](Component[ItemT]):
@@ -361,6 +360,11 @@ class Cmpt_Points[ItemT](Component[ItemT]):
         @property
         def depth(self) -> float:
             return self.length_over_dim(2)
+
+        @property
+        def size(self) -> tuple[float, float]:
+            """即 `(width, height)`"""
+            return (self.width, self.height)
 
         def coord(self, dim: int, direction=ORIGIN) -> float:
             return self.get(direction)[dim]
@@ -810,22 +814,41 @@ class Cmpt_Points[ItemT](Component[ItemT]):
         start, end = np.asarray(start), np.asarray(end)
 
         curr_start, curr_end = self.get_start(), self.get_end()
-        curr_vect = curr_end - curr_start
-        if np.all(curr_vect == 0):
+        curr_vec = curr_end - curr_start
+        if np.all(curr_vec == 0):
             raise PointError(_('Cannot position endpoints of closed loop'))
-        target_vect = end - start
-        self.scale(
-            get_norm(target_vect) / get_norm(curr_vect),
-            about_point=curr_start,
+
+        target_vec = end - start
+
+        # 对齐长度
+        mat1 = np.identity(3) * (get_norm(target_vec) / get_norm(curr_vec))
+        # 对齐偏航角
+        mat2 = rotation_matrix(
+            angle_of_vector(target_vec) - angle_of_vector(curr_vec),
+            OUT
         )
-        self.rotate(
-            angle_of_vector(target_vect) - angle_of_vector(curr_vect),
-        )
-        self.rotate(
-            np.arctan2(curr_vect[2], get_norm(curr_vect[:2])) - np.arctan2(target_vect[2], get_norm(target_vect[:2])),
-            axis=np.array([-target_vect[1], target_vect[0], 0]),
-        )
-        self.shift(start - self.get_start())
+        # 对齐俯仰角
+        angle = np.arctan2(curr_vec[2], get_norm(curr_vec[:2])) - np.arctan2(target_vec[2], get_norm(target_vec[:2]))
+        if np.isclose(angle, 0):
+            mat3 = np.identity(3)
+        else:
+            mat3 = rotation_matrix(angle, np.array([-target_vec[1], target_vec[0], 0]))
+
+        # 叠加以上矩阵
+        mat = mat3 @ mat2 @ mat1
+
+        def func(points: np.ndarray) -> np.ndarray:
+            # 整体移动，使得从 curr_start 移动到原点
+            points = points - curr_start
+
+            # 作用矩阵效果
+            points @= mat.T
+
+            # 从原点移动到 start
+            points += start
+            return points
+
+        self.apply_points_fn(func, about_edge=None)
         return self
 
     @property

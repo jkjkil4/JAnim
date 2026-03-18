@@ -99,7 +99,7 @@ def get_undo_redo_buttons(
     return (btn_undo, btn_redo)
 
 
-def slient_runtime_error(func):
+def silent_runtime_error(func):
     """
     在弹出阻塞框的时候关闭父控件，会输出 ``RuntimeError`` traceback
 
@@ -270,7 +270,7 @@ class SourceDiff(QFrame):
 
         self.replace_label.setText('\n'.join(lines))
 
-    @slient_runtime_error
+    @silent_runtime_error
     def submit(self) -> None:
         filepath = self.command.filepath
         lineno = self.command.lineno

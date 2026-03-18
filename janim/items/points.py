@@ -421,8 +421,8 @@ class NamedGroupMixin[T](Group[T]):
 
     # region 对 stored 的相关处理，不是什么很重要的细节
 
-    def store(self):
-        copy_item = super().store()
+    def store(self, **kwargs):
+        copy_item = super().store(**kwargs)
         copy_item._named_indices = {}
         copy_item._stored_named_indices = self.get_named_indices().copy()
         return copy_item

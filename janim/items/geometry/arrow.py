@@ -8,7 +8,7 @@ import numpy as np
 from janim.components.component import CmptInfo
 from janim.constants import (DEFAULT_ITEM_TO_ITEM_BUFF, DOWN, LEFT, ORIGIN, PI,
                              RIGHT, UP)
-from janim.items.geometry.line import Cmpt_VPoints_LineImpl, Line
+from janim.items.geometry.line import Cmpt_VPoints_LineImpl, Line, LineBuff
 from janim.items.points import Points
 from janim.items.svg.typst import TypstText
 from janim.items.text import Text
@@ -150,7 +150,7 @@ class Arrow(Line):
         start: Vect | Points = LEFT,
         end: Vect | Points = RIGHT,
         *,
-        buff: float = 0.25,
+        buff: LineBuff = 0.25,
         max_length_to_tip_length_ratio: float | None = 0.3,
         tip_kwargs: dict = {},
         depth: float | None = None,
@@ -189,10 +189,14 @@ class Arrow(Line):
         points = self.points.get()
         if len(points) < 3:
             return -1.0
+
         if right_side:
             el = get_norm(points[-1] - points[-3])
         else:
             el = get_norm(points[0] - points[2])
+
+        if el == 0:
+            return -1.0
         return Arrow._get_shrink_length(tip) / el
 
     @staticmethod

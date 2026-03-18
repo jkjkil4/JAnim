@@ -107,13 +107,20 @@ class SelectPanel(HandlerPanel):
             self.diff.set_replacement('Group()')
             return
 
-        replacements = [self.get_range_replacement(range) for range in ranges]
-        if len(replacements) == 1:
-            self.diff.set_replacement(replacements[0])
-            return
-
-        inner_parts = ', '.join(replacements)
-        self.diff.set_replacement(f'Group({inner_parts})')
+        if all(start == end - 1 for start, end in ranges):
+            # item[a1, a2, a3, ...]
+            indices = ', '.join(str(start) for start, _ in ranges)
+            self.diff.set_replacement(f'{self.command.body}[{indices}]')
+        else:
+            replacements = [self.get_range_replacement(range) for range in ranges]
+            if len(replacements) == 1:
+                # item[a]
+                # item[a:b]
+                self.diff.set_replacement(replacements[0])
+            else:
+                # Group(item[a1], item[a2:b2], ...)
+                inner_parts = ', '.join(replacements)
+                self.diff.set_replacement(f'Group({inner_parts})')
 
     def get_range_replacement(self, range: tuple[float, float]) -> str:
         start, end = range

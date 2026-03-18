@@ -184,7 +184,7 @@ class ItemAnimation(Animation):
         self.stack.append(self)
         self.schedule_show_and_hide(self.item, self.show_at_begin, self.hide_at_end)
 
-    @dataclass
+    @dataclass(slots=True)
     class ApplyParams:
         global_t: float
         anims: list[ItemAnimation]
@@ -216,7 +216,7 @@ class ApplyAligner(ItemAnimation):
         pass
 
 
-@dataclass
+@dataclass(slots=True)
 class TimeRange:
     """
     标识了从 ``at`` 开始，到 ``end`` 结束的时间区段
@@ -316,37 +316,39 @@ class TimeAligner:
         对齐时间 ``t``，确保相近的时间点归化到相同的值，返回归化后的时间值
         """
         t = float(t)    # 避免 numpy 类型浮点数可能导致的问题（例如影响到 GUI 绘制时传给 Qt 的类型）
-        # 因为在大多数情况下，最新传入的 t 总是出现在列表的最后，所以倒序查找
-        for i, recorded_t in enumerate(reversed(self.recorded_times)):
-            # 尝试归化到已有的值
-            if abs(t - recorded_t) < ALIGN_EPSILON:
-                return recorded_t
-            # 尝试插入到中间位置
-            if t > recorded_t:
-                # len - 1 - i 是 recorded_t 的位置，所以这里用 len - i 表示插入到其后面
-                idx = len(self.recorded_times) - i
-                self.recorded_times.insert(idx, t)
-                return t
 
-        # 循环结束表明所有已记录的都比 t 大，所以将 t 插入到列表开头
-        self.recorded_times.insert(0, t)
+        idx = bisect_left(self.recorded_times, t)
+
+        # 尝试归化到右侧已有值
+        if idx != len(self.recorded_times):
+            recorded_t = self.recorded_times[idx]
+            if recorded_t - t < ALIGN_EPSILON:
+                return recorded_t
+
+        # 尝试归化到左侧已有值
+        if idx != 0:
+            recorded_t = self.recorded_times[idx - 1]
+            if t - recorded_t < ALIGN_EPSILON:
+                return recorded_t
+
+        # 没有可归化的值时则插入到列表中
+        self.recorded_times.insert(idx, t)
         return t
 
     def align_t_for_render(self, t: float) -> float:
         """
         与 :meth:`align_t` 类似，但区别在于
 
-        - 该方法使用二分查找而不是倒序查找
         - 该方法在查找后不记录 ``t`` 的值
         """
         idx = bisect_left(self.recorded_times, t)
         if idx != len(self.recorded_times):
             recorded_t = self.recorded_times[idx]
-            if abs(t - recorded_t) < ALIGN_EPSILON:
+            if recorded_t - t < ALIGN_EPSILON:
                 return recorded_t
         if idx != 0:
             recorded_t = self.recorded_times[idx - 1]
-            if abs(t - recorded_t) < ALIGN_EPSILON:
+            if t - recorded_t < ALIGN_EPSILON:
                 return recorded_t
         return t
 
