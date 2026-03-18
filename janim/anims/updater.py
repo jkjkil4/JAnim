@@ -664,6 +664,9 @@ class _StepUpdater(ItemAnimation):
         if self.become_at_end and self.t_range.end is not FOREVER:
             self.compute(self.item, self.t_range.end)
 
+            apprs = self.timeline.item_appearances
+            apprs[self.item].stack.detect_change(self.item, self.t_range.end)
+
     def apply(self, data: None, p: ItemAnimation.ApplyParams) -> Item:
         self.compute(self.data, p.global_t, generate_temporary_cache=True)
         return self.data
