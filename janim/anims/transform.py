@@ -11,7 +11,7 @@ from typing import Callable, Generator, Iterable
 
 import numpy as np
 
-from janim.anims.animation import Animation, ItemAnimation
+from janim.anims.animation import Animation, ItemAnimation, TimeRange
 from janim.anims.composition import AnimGroup
 from janim.anims.fading import FadeIn, FadeInFromPoint, FadeOut, FadeOutToPoint
 from janim.components.points import Cmpt_Points
@@ -35,10 +35,19 @@ class Transform(Animation):
     """
     创建从 ``src_item`` 至 ``target_item`` 的插值动画
 
-    - ``path_arc`` 和 ``path_arc_axis`` 可以指定插值的圆弧路径的角度，若不传入则是直线
-    - 也可以直接传入 ``path_func`` 来指定路径方法
-    - 在默认情况（``flatten=False``）下需要保证两个物件的子物件结构能够对齐，否则会报错；可以传入 ``flatten=True`` 来忽略子物件结构
-    - ``root_only`` 可以指定只对两个物件的根物件进行插值，而不对子物件进行插值
+    -   ``path_arc`` 和 ``path_arc_axis`` 可以指定插值的圆弧路径的角度，若不传入则是直线
+
+        也可以直接传入 ``path_func`` 来指定路径方法
+
+    -   在默认情况（``flatten=False``）下需要保证两个物件的子物件结构能够对齐，否则会报错；可以传入 ``flatten=True`` 来忽略子物件结构
+
+    -   当 ``hide_src`` 是 ``False`` 时，可以传入 ``src_fade`` 表示占总时间的一个比率，指定原物件在开头的一段时间中淡入重新显现
+
+        当 ``show_target`` 是 ``True`` 时，可以传入 ``target_fade`` 表示占总时间的一个比率，指定原物件在末尾的一段时间中淡出
+
+        这两个参数在变换一些半透明物件的时候比较有用，避免在变换开始/结束时由于半透明物件重叠而导致的透明度突变
+
+    -   ``root_only`` 可以指定只对两个物件的根物件进行插值，而不对子物件进行插值
     """
     label_color = C_LABEL_ANIM_STAY
 
@@ -54,6 +63,9 @@ class Transform(Animation):
         hide_src: bool = True,
         show_target: bool = True,
 
+        src_fade: float = 0,
+        target_fade: float = 0,
+
         flatten: bool = False,
         root_only: bool = False,
         **kwargs
@@ -68,6 +80,9 @@ class Transform(Animation):
 
         self.hide_src = hide_src
         self.show_target = show_target
+
+        self.src_fade = src_fade
+        self.target_fade = target_fade
 
         self.flatten = flatten
         self.root_only = root_only
@@ -97,8 +112,24 @@ class Transform(Animation):
         # 可以将 ``hide_src`` 和 ``show_target`` 置为 ``False`` 以禁用
         if self.hide_src:
             self.timeline.schedule(self.t_range.at, self.src_item.hide, root_only=self.root_only)
+
         if self.show_target:
             self.timeline.schedule(self.t_range.end, self.target_item.show, root_only=self.root_only)
+
+        # 对 src_fade 和 target_fade 的处理
+        if not self.hide_src and self.src_fade != 0:
+            fade_duration = self.t_range.duration * self.src_fade
+            anim = FadeIn(self.src_item)
+            anim.transfer_params(self)
+            anim.t_range = TimeRange(self.t_range.at, self.t_range.at + fade_duration)
+            anim.finalize()
+
+        if self.show_target and self.target_fade != 0:
+            fade_start = self.t_range.duration * (1 - self.target_fade)
+            anim = FadeOut(self.target_item, hide_at_end=False)
+            anim.transfer_params(self)
+            anim.t_range = TimeRange(self.t_range.at + fade_start, self.t_range.end)
+            anim.finalize()
 
     def align_data(self) -> None:
         apprs = self.timeline.item_appearances
