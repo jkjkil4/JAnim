@@ -8,6 +8,8 @@ transform
 .. autoclass:: janim.anims.transform.Transform
     :show-inheritance:
 
+基本示例：
+
 .. janim-example:: TransformExample
     :media: _static/videos/TransformExample.mp4
 
@@ -24,6 +26,69 @@ transform
             self.play(Transform(A, B))
             self.forward()
             self.play(Transform(B, C))
+            self.forward()
+
+对 ``hide_src`` 和 ``show_target`` 参数的演示：
+
+.. janim-example:: TransformHideShowExample
+    :media: _static/videos/TransformHideShowExample.mp4
+
+    from janim.imports import *
+
+    class TransformHideShowExample(Timeline):
+        def construct(self):
+            squares = Square(color=GREEN) * 3
+            squares.points.arrange(DOWN).shift(LEFT * 3)
+
+            circles = Circle(color=BLUE) * 3
+            circles.points.arrange(DOWN).shift(RIGHT * 3)
+
+            txts = Text('default\nhide_src=False\nshow_target=False')
+            txts.points.arrange(DOWN, buff=2)
+
+            self.show(txts, squares)
+            self.forward()
+            self.play(
+                Transform(squares[0], circles[0]),
+                Transform(squares[1], circles[1], hide_src=False),
+                Transform(squares[2], circles[2], show_target=False),
+                duration=3
+            )
+            self.forward()
+
+对 ``src_fade`` 和 ``target_fade`` 参数的演示：
+
+.. janim-example:: TransformFadeExample
+    :media: _static/videos/TransformFadeExample.mp4
+
+    from janim.imports import *
+
+    class TransformFadeExample(Timeline):
+        def construct(self):
+            squares = Square(color=GREEN, fill_alpha=0.4) * 3
+            squares.points.arrange(DOWN).shift(LEFT * 3)
+
+            circles = Circle(color=BLUE, fill_alpha=0.4) * 3
+            circles.points.arrange(DOWN).shift(RIGHT * 3)
+
+            txts = Text('fade=0\nfade=0.2\nfade=0.4')
+            txts.points.arrange(DOWN, buff=2)
+
+            self.show(txts, squares)
+            self.forward()
+            self.play(
+                Transform(squares[0], circles[0], hide_src=False),
+                Transform(squares[1], circles[1], hide_src=False, src_fade=0.2),
+                Transform(squares[2], circles[2], hide_src=False, src_fade=0.4),
+                duration=3
+            )
+            self.forward()
+            self.play(
+                Transform(squares[0], circles[0]),
+                Transform(squares[1], circles[1], target_fade=0.2),
+                Transform(squares[2], circles[2], target_fade=0.4),
+                duration=3
+            )
             self.forward()
 
 .. autoclass:: janim.anims.transform.MoveToTarget

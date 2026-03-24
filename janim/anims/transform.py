@@ -33,21 +33,32 @@ _ = get_translator('janim.anims.transform')
 
 class Transform(Animation):
     """
-    创建从 ``src_item`` 至 ``target_item`` 的插值动画
+    创建从 ``src_item`` 到 ``target_item`` 的插值动画
 
-    -   ``path_arc`` 和 ``path_arc_axis`` 可以指定插值的圆弧路径的角度，若不传入则是直线
+    作用机制：在开始时隐藏源物件，在动画过程中播放“插值效果”，在结束后显示目标物件
 
-        也可以直接传入 ``path_func`` 来指定路径方法
+    :param src_item: 变换的起始物件
+    :param target_item: 变换的目标物件
 
-    -   在默认情况（``flatten=False``）下需要保证两个物件的子物件结构能够对齐，否则会报错；可以传入 ``flatten=True`` 来忽略子物件结构
+    **路径与插值**
 
-    -   当 ``hide_src`` 是 ``False`` 时，可以传入 ``src_fade`` 表示占总时间的一个比率，指定原物件在开头的一段时间中淡入重新显现
+    :param path_arc: 插值路径的圆弧角度；为 ``0`` 时按直线插值
+    :param path_arc_axis: 当使用圆弧路径时的旋转轴。
+    :param path_func: 自定义路径函数；传入后会覆盖 ``path_arc`` 与 ``path_arc_axis`` 的默认路径行为
 
-        当 ``show_target`` 是 ``True`` 时，可以传入 ``target_fade`` 表示占总时间的一个比率，指定原物件在末尾的一段时间中淡出
+    **对齐策略**
 
-        这两个参数在变换一些半透明物件的时候比较有用，避免在变换开始/结束时由于半透明物件重叠而导致的透明度突变
+    :param flatten: 是否忽略子物件层级并直接按顺序展平对齐；默认 ``False``，要求源与目标子结构可对齐
+    :param root_only: 是否仅对根物件进行插值而不递归子物件
 
-    -   ``root_only`` 可以指定只对两个物件的根物件进行插值，而不对子物件进行插值
+    **显隐与淡入淡出**
+
+    :param hide_src: 动画开始时是否自动隐藏源物件
+    :param show_target: 动画结束时是否自动显示目标物件
+    :param src_fade: 仅当 ``hide_src=False`` 时生效；表示源物件在动画开头淡入的时长比例
+    :param target_fade: 仅当 ``show_target=True`` 时生效；表示目标物件在动画末尾淡出的时长比例
+
+    ``src_fade`` 与 ``target_fade`` 对半透明物件较为实用，可规避开始/结束时重叠导致的透明度突变
     """
     label_color = C_LABEL_ANIM_STAY
 
@@ -60,14 +71,14 @@ class Transform(Animation):
         path_arc_axis: Vect = OUT,
         path_func: PathFunc | None = None,
 
+        flatten: bool = False,
+        root_only: bool = False,
+
         hide_src: bool = True,
         show_target: bool = True,
 
         src_fade: float = 0,
         target_fade: float = 0,
-
-        flatten: bool = False,
-        root_only: bool = False,
         **kwargs
     ):
         super().__init__(**kwargs)
