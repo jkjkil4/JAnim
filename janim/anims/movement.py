@@ -14,9 +14,9 @@ from janim.typing import Vect
 
 class Homotopy(DataUpdater):
     """
-    一个从 (x, y, z, t) 到 (x', y', z') 的函数
+    一个从 ``(x, y, z, t)`` 到 ``(x', y', z')`` 的函数
 
-    t 的取值范围是 [0, 1]，表示动画进度
+    ``t`` 的取值范围是 ``[0, 1]``，表示动画进度
     """
     def __init__(
         self,
@@ -49,7 +49,7 @@ class Homotopy(DataUpdater):
 
 class ComplexHomotopy(Homotopy):
     """
-    与 Homotopy 类似，区别是用复数描述坐标
+    与 :class:`Homotopy` 类似，区别是用复数描述坐标
     """
     def __init__(
         self,

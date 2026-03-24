@@ -8,88 +8,90 @@ transform
 .. autoclass:: janim.anims.transform.Transform
     :show-inheritance:
 
-基本示例：
+    ----
 
-.. janim-example:: TransformExample
-    :media: _static/videos/TransformExample.mp4
+    基本示例：
 
-    from janim.imports import *
+    .. janim-example:: TransformExample
+        :media: _static/videos/TransformExample.mp4
 
-    class TransformExample(Timeline):
-        def construct(self):
-            A = Text('Text-A', font_size=72)
-            B = Text('Text-B', font_size=72)
-            C = Text('C-Text', font_size=72)
+        from janim.imports import *
 
-            A.show()
-            self.forward()
-            self.play(Transform(A, B))
-            self.forward()
-            self.play(Transform(B, C))
-            self.forward()
+        class TransformExample(Timeline):
+            def construct(self):
+                A = Text('Text-A', font_size=72)
+                B = Text('Text-B', font_size=72)
+                C = Text('C-Text', font_size=72)
 
-对 ``hide_src`` 和 ``show_target`` 参数的演示：
+                A.show()
+                self.forward()
+                self.play(Transform(A, B))
+                self.forward()
+                self.play(Transform(B, C))
+                self.forward()
 
-.. janim-example:: TransformHideShowExample
-    :media: _static/videos/TransformHideShowExample.mp4
+    对 ``hide_src`` 和 ``show_target`` 参数的演示：
 
-    from janim.imports import *
+    .. janim-example:: TransformHideShowExample
+        :media: _static/videos/TransformHideShowExample.mp4
 
-    class TransformHideShowExample(Timeline):
-        def construct(self):
-            squares = Square(color=GREEN) * 3
-            squares.points.arrange(DOWN).shift(LEFT * 3)
+        from janim.imports import *
 
-            circles = Circle(color=BLUE) * 3
-            circles.points.arrange(DOWN).shift(RIGHT * 3)
+        class TransformHideShowExample(Timeline):
+            def construct(self):
+                squares = Square(color=GREEN) * 3
+                squares.points.arrange(DOWN).shift(LEFT * 3)
 
-            txts = Text('default\nhide_src=False\nshow_target=False')
-            txts.points.arrange(DOWN, buff=2)
+                circles = Circle(color=BLUE) * 3
+                circles.points.arrange(DOWN).shift(RIGHT * 3)
 
-            self.show(txts, squares)
-            self.forward()
-            self.play(
-                Transform(squares[0], circles[0]),
-                Transform(squares[1], circles[1], hide_src=False),
-                Transform(squares[2], circles[2], show_target=False),
-                duration=3
-            )
-            self.forward()
+                txts = Text('default\nhide_src=False\nshow_target=False')
+                txts.points.arrange(DOWN, buff=2)
 
-对 ``src_fade`` 和 ``target_fade`` 参数的演示：
+                self.show(txts, squares)
+                self.forward()
+                self.play(
+                    Transform(squares[0], circles[0]),
+                    Transform(squares[1], circles[1], hide_src=False),
+                    Transform(squares[2], circles[2], show_target=False),
+                    duration=3
+                )
+                self.forward()
 
-.. janim-example:: TransformFadeExample
-    :media: _static/videos/TransformFadeExample.mp4
+    对 ``src_fade`` 和 ``target_fade`` 参数的演示：
 
-    from janim.imports import *
+    .. janim-example:: TransformFadeExample
+        :media: _static/videos/TransformFadeExample.mp4
 
-    class TransformFadeExample(Timeline):
-        def construct(self):
-            squares = Square(color=GREEN, fill_alpha=0.4) * 3
-            squares.points.arrange(DOWN).shift(LEFT * 3)
+        from janim.imports import *
 
-            circles = Circle(color=BLUE, fill_alpha=0.4) * 3
-            circles.points.arrange(DOWN).shift(RIGHT * 3)
+        class TransformFadeExample(Timeline):
+            def construct(self):
+                squares = Square(color=GREEN, fill_alpha=0.4) * 3
+                squares.points.arrange(DOWN).shift(LEFT * 3)
 
-            txts = Text('fade=0\nfade=0.2\nfade=0.4')
-            txts.points.arrange(DOWN, buff=2)
+                circles = Circle(color=BLUE, fill_alpha=0.4) * 3
+                circles.points.arrange(DOWN).shift(RIGHT * 3)
 
-            self.show(txts, squares)
-            self.forward()
-            self.play(
-                Transform(squares[0], circles[0], hide_src=False),
-                Transform(squares[1], circles[1], hide_src=False, src_fade=0.2),
-                Transform(squares[2], circles[2], hide_src=False, src_fade=0.4),
-                duration=3
-            )
-            self.forward()
-            self.play(
-                Transform(squares[0], circles[0]),
-                Transform(squares[1], circles[1], target_fade=0.2),
-                Transform(squares[2], circles[2], target_fade=0.4),
-                duration=3
-            )
-            self.forward()
+                txts = Text('fade=0\nfade=0.2\nfade=0.4')
+                txts.points.arrange(DOWN, buff=2)
+
+                self.show(txts, squares)
+                self.forward()
+                self.play(
+                    Transform(squares[0], circles[0], hide_src=False),
+                    Transform(squares[1], circles[1], hide_src=False, src_fade=0.2),
+                    Transform(squares[2], circles[2], hide_src=False, src_fade=0.4),
+                    duration=3
+                )
+                self.forward()
+                self.play(
+                    Transform(squares[0], circles[0]),
+                    Transform(squares[1], circles[1], target_fade=0.2),
+                    Transform(squares[2], circles[2], target_fade=0.4),
+                    duration=3
+                )
+                self.forward()
 
 .. autoclass:: janim.anims.transform.MoveToTarget
     :show-inheritance:
@@ -97,102 +99,104 @@ transform
 .. autoclass:: janim.anims.transform.TransformInSegments
     :show-inheritance:
 
-**基本用法**
+    ----
 
-.. code-block:: python
+    **基本用法**
 
-    TransformInSegments(a, [[0,3], [5,7]],
-                        b, [[1,3], [5,7]])
+    .. code-block:: python
 
-相当于
+        TransformInSegments(a, [[0,3], [5,7]],
+                            b, [[1,3], [5,7]])
 
-.. code-block:: python
+    相当于
 
-    AnimGroup(Transform(a[0:3], b[1:3]),
-              Transform(a[5:7], b[5:7]))
+    .. code-block:: python
 
-**省略变换目标的切片**
+        AnimGroup(Transform(a[0:3], b[1:3]),
+                Transform(a[5:7], b[5:7]))
 
-使用 ``...`` 表示与变换来源的切片相同
+    **省略变换目标的切片**
 
-.. code-block:: python
+    使用 ``...`` 表示与变换来源的切片相同
 
-    TransformInSegments(a, [[0,3], [5,7]],
-                        b, ...)
+    .. code-block:: python
 
-相当于
+        TransformInSegments(a, [[0,3], [5,7]],
+                            b, ...)
 
-.. code-block:: python
+    相当于
 
-    TransformInSegments(a, [[0,3], [5,7]],
-                        b, [[0,3], [5,7]])
+    .. code-block:: python
 
-**连续切片**
+        TransformInSegments(a, [[0,3], [5,7]],
+                            b, [[0,3], [5,7]])
 
-.. code-block:: python
+    **连续切片**
 
-    TransformInSegments(a, [[0,3], [5,7,9]],
-                        b, [[1,3], [4,7], [10,14]])
+    .. code-block:: python
 
-相当于
+        TransformInSegments(a, [[0,3], [5,7,9]],
+                            b, [[1,3], [4,7], [10,14]])
 
-.. code-block:: python
+    相当于
 
-    TransformInSegments(a, [[0,3], [5,7], [7,9]],
-                        b, [[1,3], [4,7], [10,14]])
+    .. code-block:: python
 
-**切片简写**
+        TransformInSegments(a, [[0,3], [5,7], [7,9]],
+                            b, [[1,3], [4,7], [10,14]])
 
-如果总共只有一个切片，可以省略一层嵌套
+    **切片简写**
 
-.. code-block:: python
+    如果总共只有一个切片，可以省略一层嵌套
 
-    TransformInSegments(a, [0, 4, 6, 8],
-                        b, ...)
+    .. code-block:: python
 
-相当于
+        TransformInSegments(a, [0, 4, 6, 8],
+                            b, ...)
 
-.. code-block:: python
+    相当于
 
-    TransformInSegments(a, [[0, 4, 6, 8]],
-                        b, ...)
+    .. code-block:: python
 
-**连续切片倒序**
+        TransformInSegments(a, [[0, 4, 6, 8]],
+                            b, ...)
 
-倒过来写即可使切片倒序
+    **连续切片倒序**
 
-.. code-block:: python
+    倒过来写即可使切片倒序
 
-    TransformInSegments(a, [8, 6, 4, 0],
-                        b, ...)
+    .. code-block:: python
 
-相当于
+        TransformInSegments(a, [8, 6, 4, 0],
+                            b, ...)
 
-.. code-block:: python
+    相当于
 
-    TransformInSegments(a, [[6,8], [4,6], [0,4]],
-                        b, ...)
+    .. code-block:: python
 
-请留意 Python 切片中左闭右开的原则，对于倒序序列 ``[8, 6, 4, 0]`` 来说则是左开右闭
+        TransformInSegments(a, [[6,8], [4,6], [0,4]],
+                            b, ...)
 
-.. janim-example:: TransformInSegmentsExample
-    :media: _static/videos/TransformInSegmentsExample.mp4
+    请留意 Python 切片中左闭右开的原则，对于倒序序列 ``[8, 6, 4, 0]`` 来说则是左开右闭
 
-    from janim.imports import *
+    .. janim-example:: TransformInSegmentsExample
+        :media: _static/videos/TransformInSegmentsExample.mp4
 
-    class TransformInSegmentsExample(Timeline):
-        def construct(self):
-            typ1 = TypstMath('sin x + cos x')
-            typ2 = TypstMath('cos y + sin y')
-            typ2.match_pattern(typ1, '+')
-            Group(typ1, typ2).points.scale(3)
+        from janim.imports import *
 
-            self.show(typ1)
-            self.forward(0.5)
-            self.play(TransformInSegments(typ1, [[0,3,4], [5,8,9]],
-                                          typ2, ...,
-                                          lag_ratio=0.5))
-            self.forward(0.5)
+        class TransformInSegmentsExample(Timeline):
+            def construct(self):
+                typ1 = TypstMath('sin x + cos x')
+                typ2 = TypstMath('cos y + sin y')
+                typ2.match_pattern(typ1, '+')
+                Group(typ1, typ2).points.scale(3)
+
+                self.show(typ1)
+                self.forward(0.5)
+                self.play(TransformInSegments(typ1, [[0,3,4], [5,8,9]],
+                                            typ2, ...,
+                                            lag_ratio=0.5))
+                self.forward(0.5)
 
 .. autoclass:: janim.anims.transform.MethodTransform
     :show-inheritance:
