@@ -59,6 +59,29 @@ class Transform(Animation):
     :param target_fade: 仅当 ``show_target=True`` 时生效；表示目标物件在动画末尾淡出的时长比例
 
     ``src_fade`` 与 ``target_fade`` 对半透明物件较为实用，可规避开始/结束时重叠导致的透明度突变
+
+    ----
+
+    基本示例：
+
+    .. janim-example:: TransformExample
+        :extract-from-test:
+        :media: _static/videos/TransformExample.mp4
+        :url: https://janim.readthedocs.io/zh-cn/latest/janim/anims/transform.html#transformexample
+
+    对 ``hide_src`` 和 ``show_target`` 参数的演示：
+
+    .. janim-example:: TransformHideShowExample
+        :extract-from-test:
+        :media: _static/videos/TransformHideShowExample.mp4
+        :url: https://janim.readthedocs.io/zh-cn/latest/janim/anims/transform.html#transformhideshowexample
+
+    对 ``src_fade`` 和 ``target_fade`` 参数的演示：
+
+    .. janim-example:: TransformFadeExample
+        :extract-from-test:
+        :media: _static/videos/TransformFadeExample.mp4
+        :url: https://janim.readthedocs.io/zh-cn/latest/janim/anims/transform.html#transformfadeexample
     """
     label_color = C_LABEL_ANIM_STAY
 
@@ -221,6 +244,11 @@ class Transform(Animation):
 class MoveToTarget(Transform):
     """
     详见 :meth:`~.Item.generate_target`
+
+    .. janim-example:: MoveToTargetExample
+        :extract-from-test:
+        :media: _static/videos/MoveToTargetExample.mp4
+        :url: https://janim.readthedocs.io/zh-cn/latest/janim/anims/transform.html#movetotargetexample
     """
 
     def __init__(self, item: Item, **kwargs):
@@ -252,6 +280,91 @@ class MoveToTarget(Transform):
 class TransformInSegments(AnimGroup):
     """
     依照切片列表进行 ``src`` 与 ``target`` 之间的变换
+
+    ----
+
+    **基本用法**
+
+    .. code-block:: python
+
+        TransformInSegments(a, [[0,3], [5,7]],
+                            b, [[1,3], [5,7]])
+
+    相当于
+
+    .. code-block:: python
+
+        AnimGroup(Transform(a[0:3], b[1:3]),
+                  Transform(a[5:7], b[5:7]))
+
+    **省略变换目标的切片**
+
+    使用 ``...`` 表示与变换来源的切片相同
+
+    .. code-block:: python
+
+        TransformInSegments(a, [[0,3], [5,7]],
+                            b, ...)
+
+    相当于
+
+    .. code-block:: python
+
+        TransformInSegments(a, [[0,3], [5,7]],
+                            b, [[0,3], [5,7]])
+
+    **连续切片**
+
+    .. code-block:: python
+
+        TransformInSegments(a, [[0,3], [5,7,9]],
+                            b, [[1,3], [4,7], [10,14]])
+
+    相当于
+
+    .. code-block:: python
+
+        TransformInSegments(a, [[0,3], [5,7], [7,9]],
+                            b, [[1,3], [4,7], [10,14]])
+
+    **切片简写**
+
+    如果总共只有一个切片，可以省略一层嵌套
+
+    .. code-block:: python
+
+        TransformInSegments(a, [0, 4, 6, 8],
+                            b, ...)
+
+    相当于
+
+    .. code-block:: python
+
+        TransformInSegments(a, [[0, 4, 6, 8]],
+                            b, ...)
+
+    **连续切片倒序**
+
+    倒过来写即可使切片倒序
+
+    .. code-block:: python
+
+        TransformInSegments(a, [8, 6, 4, 0],
+                            b, ...)
+
+    相当于
+
+    .. code-block:: python
+
+        TransformInSegments(a, [[6,8], [4,6], [0,4]],
+                            b, ...)
+
+    请留意 Python 切片中左闭右开的原则，对于倒序序列 ``[8, 6, 4, 0]`` 来说则是左开右闭
+
+    .. janim-example:: TransformInSegmentsExample
+        :extract-from-test:
+        :media: _static/videos/TransformInSegmentsExample.mp4
+        :url: https://janim.readthedocs.io/zh-cn/latest/janim/anims/transform.html#transforminsegmentsexample
     """
 
     label_color = C_LABEL_ANIM_STAY
@@ -284,9 +397,7 @@ class TransformInSegments(AnimGroup):
 
     @staticmethod
     def parse_segment(segs: Iterable[Iterable[int]] | Iterable[int]) -> Generator[tuple[int, int], None, None]:
-        """
-        ``[[a, b, c], [d, e]]`` -> ``[[a, b], [b, c], [d, e]]``
-        """
+        # ``[[a, b, c], [d, e]]`` -> ``[[a, b], [b, c], [d, e]]``
         assert len(segs) > 0
         if not isinstance(segs[0], Iterable):
             segs = [segs]
@@ -301,10 +412,15 @@ class MethodTransform(Transform):
     依据物件的变换而创建的补间过程
 
     具体参考 :meth:`~.Item.anim`
+
+    .. janim-example:: MethodTransformExample
+        :extract-from-test:
+        :media: _static/videos/MethodTransformExample.mp4
+        :url: https://janim.readthedocs.io/zh-cn/latest/janim/anims/transform.html#methodtransformexample
     """
     label_color = (255, 189, 129)    # C_LABEL_ANIM_STAY 的变体
 
-    class ActionType(Enum):
+    class _ActionType(Enum):
         GetAttr = 0
         Call = 1
 
@@ -320,20 +436,20 @@ class MethodTransform(Transform):
         self.obj = obj
         self.show_at_begin = show_at_begin
         self.hide_at_end = hide_at_end
-        self.delayed_actions: list[tuple[MethodTransform.ActionType, str | tuple[tuple, dict]]] = []
+        self.delayed_actions: list[tuple[MethodTransform._ActionType, str | tuple[tuple, dict]]] = []
 
     def __getattr__(self, name: str):
-        self.delayed_actions.append((MethodTransform.ActionType.GetAttr, name))
+        self.delayed_actions.append((MethodTransform._ActionType.GetAttr, name))
         return self
 
     def __call__(self, *args, **kwargs):
-        self.delayed_actions.append((MethodTransform.ActionType.Call, (args, kwargs)))
+        self.delayed_actions.append((MethodTransform._ActionType.Call, (args, kwargs)))
         return self
 
     def _time_fixed(self) -> None:
         obj = self.obj
         for type, value in self.delayed_actions:
-            if type is MethodTransform.ActionType.GetAttr:
+            if type is MethodTransform._ActionType.GetAttr:
                 obj = getattr(obj, value)
             else:   # Call
                 args, kwargs = value
@@ -400,6 +516,7 @@ class _MethodTransform(ItemAnimation):
 
 
 class FadeTransform(AnimGroup):
+    # TODO: docs
     label_color = C_LABEL_ANIM_STAY
 
     def __init__(
@@ -471,6 +588,11 @@ class TransformMatchingShapes(AnimGroup):
     - ``match`` 表示对于匹配的形状的处理
     - ``mismatch`` 表示对于不匹配的形状的处理
     - 注：所有传入该动画类的额外参数（``**kwargs``）都会被传入 ``match`` 和 ``mismatch`` 的方法中
+
+    .. janim-example:: TransformMatchingShapesExample
+        :extract-from-test:
+        :media: _static/videos/TransformMatchingShapesExample.mp4
+        :url: https://janim.readthedocs.io/zh-cn/latest/janim/anims/transform.html#transformmatchingshapesexample
     """
 
     label_color = C_LABEL_ANIM_STAY
@@ -557,6 +679,11 @@ class TransformMatchingDiff(AnimGroup):
     - ``match`` 表示对于匹配的形状的处理
     - ``mismatch`` 表示对于不匹配的形状的处理
     - 注：所有传入该动画类的额外参数（``**kwargs``）都会被传入 ``match`` 和 ``mismatch`` 的方法中
+
+    .. janim-example:: TransformMatchingDiffExample
+        :extract-from-test-mark:
+        :media: _static/videos/TransformMatchingDiffExample.mp4
+        :url: https://janim.readthedocs.io/zh-cn/latest/janim/anims/transform.html#transformmatchingdiffexample
     """
 
     label_color = C_LABEL_ANIM_STAY
@@ -645,7 +772,7 @@ class TransformMatchingDiff(AnimGroup):
         cls,
         src: Item,
         target: Item
-    ) -> tuple[list[MatchWrapper], list[MatchWrapper]]:
+    ) -> tuple[list[_MatchWrapper], list[_MatchWrapper]]:
 
         def self_and_descendant_with_points(item: Item) -> list[VItem]:
             return [
@@ -658,9 +785,9 @@ class TransformMatchingDiff(AnimGroup):
         target_pieces = self_and_descendant_with_points(target)
 
         if cls.can_use_char_wrapper(src, target, src_pieces, target_pieces):
-            wrapper_cls = cls.CharMatchWrapper
+            wrapper_cls = cls._CharMatchWrapper
         else:
-            wrapper_cls = cls.MatchWrapper
+            wrapper_cls = cls._MatchWrapper
 
         return wrapper_cls.from_iterable(src_pieces), wrapper_cls.from_iterable(target_pieces)
 
@@ -682,11 +809,11 @@ class TransformMatchingDiff(AnimGroup):
     _next_hash_id = 0
 
     @dataclass
-    class MatchWrapper:
+    class _MatchWrapper:
         item: VItem
         hash_id: int
 
-        def __eq__(self, other: TransformMatchingDiff.MatchWrapper):
+        def __eq__(self, other: TransformMatchingDiff._MatchWrapper):
             return self.hash_id == other.hash_id
 
         def __hash__(self):
@@ -720,10 +847,10 @@ class TransformMatchingDiff(AnimGroup):
             return hash_id
 
     @dataclass
-    class CharMatchWrapper(MatchWrapper):
+    class _CharMatchWrapper(_MatchWrapper):
         item: TextChar
 
-        def __eq__(self, other: TransformMatchingDiff.CharMatchWrapper):
+        def __eq__(self, other: TransformMatchingDiff._CharMatchWrapper):
             return self.item.char == other.item.char
 
         def __hash__(self):

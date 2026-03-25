@@ -15,6 +15,11 @@ class Rotate(DataUpdater):
 
     - 参数和 :meth:`~.Cmpt_Points.rotate` 基本一致
     - ``absolute`` 参数是为了兼容摄像机物件，对于非摄像机物件该参数无效
+
+    .. janim-example:: RotateExample
+        :extract-from-test:
+        :media: _static/videos/RotateExample.mp4
+        :url: https://janim.readthedocs.io/zh-cn/latest/janim/anims/rotation.html#rotateexample
     """
     label_color = C_LABEL_ANIM_STAY
 
@@ -54,6 +59,11 @@ class Rotate(DataUpdater):
 class Rotating(Rotate):
     """
     旋转，默认对角度进行线性插值
+
+    .. janim-example:: RotatingExample
+        :extract-from-test:
+        :media: _static/videos/RotatingExample.mp4
+        :url: https://janim.readthedocs.io/zh-cn/latest/janim/anims/rotation.html#rotatingexample
     """
     def __init__(self, item: Points, angle: float, *, rate_func=linear, **kwargs):
         super().__init__(item, angle, rate_func=rate_func, **kwargs)

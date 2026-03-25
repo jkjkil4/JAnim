@@ -298,6 +298,8 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
             )
 
         ``.r`` 表示从组件回到物件，这样就可以调用其它组件的功能
+
+        另见：:class:`~.MethodTransform`
         """
         from janim.anims.transform import MethodTransformArgsBuilder
         return MethodTransformArgsBuilder(self)
@@ -950,6 +952,8 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
                 FadeIn(mat, UP)
             )
             self.forward()
+
+        另见：:class:`~.MoveToTarget`
         """
         self.target = self.copy()
         return self.target
