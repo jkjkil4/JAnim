@@ -56,7 +56,7 @@ class Transform(Animation):
     :param hide_src: 动画开始时是否自动隐藏源物件
     :param show_target: 动画结束时是否自动显示目标物件
     :param src_fade: 仅当 ``hide_src=False`` 时生效；表示源物件在动画开头淡入的时长比例
-    :param target_fade: 仅当 ``show_target=True`` 时生效；表示目标物件在动画末尾淡出的时长比例
+    :param target_fade: 表示目标物件在动画末尾淡出的时长比例
 
     ``src_fade`` 与 ``target_fade`` 对半透明物件较为实用，可规避开始/结束时重叠导致的透明度突变
 
@@ -158,7 +158,7 @@ class Transform(Animation):
             anim.t_range = TimeRange(self.t_range.at, self.t_range.at + fade_duration)
             anim.finalize()
 
-        if self.show_target and self.target_fade != 0:
+        if self.target_fade != 0:
             fade_start = self.t_range.duration * (1 - self.target_fade)
             anim = FadeOut(self.target_item, hide_at_end=False)
             anim.transfer_params(self)
