@@ -464,9 +464,9 @@ class TimelineView(QWidget):
         if isinstance(obj, Animation):
             self.hover_at_anim(pos, obj)
         else:
-            self.hover_at_audio(pos, obj)
+            self.hover_at_audio(pos, label, obj)
 
-    def hover_at_audio(self, pos: QPoint, info: Timeline.PlayAudioInfo) -> None:
+    def hover_at_audio(self, pos: QPoint, label: Label, info: Timeline.PlayAudioInfo) -> None:
         msg_lst = [
             f'{round(info.range.at, 2)}s ~ {round(info.range.end, 2)}s',
             info.audio.file_path
@@ -504,11 +504,14 @@ class TimelineView(QWidget):
                 msg_lst.append(_('Recommended clip') + f': {clips[:40]} ... {clips[-40:]}')
                 msg_lst.append('    ' + _('(Too many! Unable to display all ranges.)'))
 
-        label = QLabel('\n'.join(msg_lst))
-        chart_view = self.create_audio_chart(info, near=round(self.pixel_to_time(pos.x())))
+        msglabel = QLabel('\n'.join(msg_lst))
+
+        absolute_near = round(self.pixel_to_time(pos.x()))
+        relative_near = absolute_near - label.t_range.at
+        chart_view = self.create_audio_chart(info, near=relative_near)
 
         layout = QVBoxLayout()
-        layout.addWidget(label)
+        layout.addWidget(msglabel)
         layout.addWidget(chart_view)
 
         self.tooltip = QWidget()
@@ -528,8 +531,8 @@ class TimelineView(QWidget):
         clip_begin = info.clip_range.at
         clip_end = info.clip_range.end
         if near is not None:
-            clip_begin = max(clip_begin, near - info.range.at + info.clip_range.at - 4)
-            clip_end = min(clip_end, near - info.range.at + info.clip_range.at + 4)
+            clip_begin = max(clip_begin, near + info.clip_range.at - 4)
+            clip_end = min(clip_end, near + info.clip_range.at + 4)
 
         range_begin = info.range.at + (clip_begin - info.clip_range.at)
         range_end = range_begin + (clip_end - clip_begin)
