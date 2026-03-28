@@ -1115,8 +1115,15 @@ class BuiltTimeline:
 
         return result
 
-    def current_camera_info(self) -> CameraInfo:
-        return self.timeline.compute_item(self.timeline.camera, self._time, True).points.info
+    def current_camera_info(self, *, as_time: float | None = None) -> CameraInfo:
+        """
+        得到当前的 :class:`~.CameraInfo` 信息
+
+        这里“当前”的含义是，上次调用 :meth:`render_all` 的 ``global_t`` 时刻；或者也可以传入 ``as_time`` 指定
+        """
+        if as_time is None:
+            as_time = self._time
+        return self.timeline.compute_item(self.timeline.camera, as_time, True).points.info
 
     def render_all(
         self,

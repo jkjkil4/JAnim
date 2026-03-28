@@ -295,7 +295,7 @@ class BasicAttrs:
         tlview = viewer.timeline_view
 
         self.global_t = tlview.progress_to_time(tlview.progress())
-        self.camera_info = viewer.built.current_camera_info()
+        self.camera_info = viewer.built.current_camera_info(as_time=self.global_t)
         # 选取框往四周预留的余量，有余量方便选中极细或极小的物件，基于 GL 坐标
         self.tolerance = np.array([4 / viewer.glw.width(), 4 / viewer.glw.height()])
 
