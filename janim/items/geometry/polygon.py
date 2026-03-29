@@ -1,4 +1,5 @@
 
+import types
 import itertools as it
 from typing import Iterable, Self, overload
 
@@ -6,9 +7,9 @@ import numpy as np
 
 from janim.constants import (BLACK, DL, DR, ORIGIN, PI, RIGHT, TAU, UL, UR,
                              YELLOW)
+from janim.items.geometry import GeometryShape
 from janim.items.geometry.arc import ArcBetweenPoints
 from janim.items.points import MarkedItem
-from janim.items.vitem import VItem
 from janim.locale import get_translator
 from janim.typing import Vect, VectArray
 from janim.utils.bezier import PathBuilder
@@ -19,7 +20,7 @@ from janim.utils.space_ops import (angle_between_vectors, compass_directions,
 _ = get_translator('janim.items.geometry.polygon')
 
 
-class Polygon(VItem):
+class Polygon(GeometryShape):
     """
     多边形
 
@@ -33,11 +34,22 @@ class Polygon(VItem):
     ):
         self.vertices = verts
         super().__init__(**kwargs)
+        self._reshape(verts, close_path)
+
+    # region reshape
+
+    def _reshape(self, verts: VectArray | None = None, close_path: bool | None = None) -> None:
+        verts, close_path = self._reshape_memorize(verts=verts, close_path=close_path)
         self.points.set_as_corners(
             [*verts, verts[0]]
             if close_path
             else verts
         )
+
+    def reshape(self, verts: VectArray | None = None, *, close_path: bool | None = None) -> None:
+        return self._reshape(verts, close_path)
+
+    # endregion
 
     def get_vertices(self) -> list[np.ndarray]:
         return self.points.get()[:-1:2]
@@ -112,11 +124,29 @@ class RegularPolygon(MarkedItem, Polygon):
     ):
         if start_angle is None:
             start_angle = (n % 2) * PI / 2
-        start_vect = rotate_vector(RIGHT * radius, start_angle)
-        vertices = compass_directions(n, start_vect)
-        super().__init__(*vertices, **kwargs)
+        verts = self._degrade_regular_polygon_params(n, radius, start_angle)
+        super().__init__(*verts, **kwargs)
 
         self.mark.set_points([ORIGIN])
+
+    # region reshape
+
+    def reshape(self, n: int | None = None, *, radius: float | None = None, start_angle: float | None = None) -> Self:
+        verts = self._degrade_regular_polygon_params(n, radius, start_angle)
+        verts += self.mark.get()
+        super().reshape(verts)
+        return self
+
+    def _degrade_regular_polygon_params(self, n: int | None, radius: float | None, start_angle: float | None):
+        """
+        根据 :class:`RegularPolygon` 的参数生成 :class:`Polygon` 的参数
+        """
+        n, radius, start_angle = self._reshape_memorize(n=n, radius=radius, start_angle=start_angle)
+        start_vect = rotate_vector(RIGHT * radius, start_angle)
+        verts = compass_directions(n, start_vect)
+        return verts
+
+    # endregion
 
 
 class Triangle(RegularPolygon):
@@ -133,22 +163,51 @@ class Rect(Polygon):
     - 可以使用 ``Rect(4, 2)`` 的传入宽高的方式进行构建
     - 也可以使用 ``Rect(p1, p2)`` 的传入对角顶点的方式进行构建
     """
+    _init_verts = (UR, UL, DL, DR)
+
     @overload
     def __init__(self, width: float = 4.0, height: float = 2.0, /, **kwargs) -> None: ...
     @overload
     def __init__(self, corner1: Vect, corner2: Vect, /, **kwargs) -> None: ...
 
     def __init__(self, v1=4.0, v2=2.0, /, **kwargs) -> None:
-        if isinstance(v1, Iterable) and isinstance(v2, Iterable):
+        super().__init__(*self._init_verts, **kwargs)
+        self._modify_shape(v1, v2)
+
+    # region reshape
+
+    @overload
+    def reshape(self, width: float | None = None, height: float | None = None, /) -> Self: ...
+    @overload
+    def reshape(self, corner1: Vect | None = None, corner2: Vect | None = None, /) -> Self: ...
+
+    def reshape(self, v1=None, v2=None, /) -> Self:
+        if v1 is None and v2 is None:
+            return self
+
+        center = self.points.box.center
+        super().reshape(self._init_verts)
+        self._modify_shape(v1, v2)
+        if not self._is_corners(v1, v2):
+            self.points.shift(center)
+
+        return self
+
+    def _is_corners(self, v1, v2) -> bool:
+        return isinstance(v1, (Iterable, types.NoneType)) and isinstance(v2, (Iterable, types.NoneType))
+
+    def _modify_shape(self, v1, v2):
+        if self._is_corners(v1, v2):
+            v1, v2 = self._reshape_memorize(width=v1, height=v2)
             ul = np.array([min(v1, v2) for v1, v2 in zip(v1, v2)])
             dr = np.array([max(v1, v2) for v1, v2 in zip(v1, v2)])
-            super().__init__(UR, UL, DL, DR, **kwargs)
             self.points.set_size(*(dr - ul)[:2])
             self.points.move_to((dr + ul) / 2)
-
         else:
-            super().__init__(UR, UL, DL, DR, **kwargs)
+            v1, v2 = self._reshape_memorize(corner1=v1, corner2=v2)
             self.points.set_size(v1, v2)
+
+    # endregion
 
     # region presets
 
@@ -203,6 +262,10 @@ class Square(Rect):
         self.side_length = side_length
         super().__init__(side_length, side_length, **kwargs)
 
+    def reshape(self, side_length: float) -> Self:
+        super().reshape(side_length, side_length)
+        return self
+
 
 class RoundedRect(Rect):
     """圆角矩形"""
@@ -214,6 +277,27 @@ class RoundedRect(Rect):
     def __init__(self, v1=4.0, v2=2.0, /, corner_radius: float = 0.5, **kwargs) -> None:
         super().__init__(v1, v2, **kwargs)
         self.round_corners(corner_radius)
+        self._reshape_memorize(corner_radius=corner_radius)
+
+    # region reshape
+
+    @overload
+    def reshape(self, width: float | None = None, height: float | None = None, /,
+                corner_radius: float | None = None) -> Self: ...
+
+    @overload
+    def reshape(self, corner1: Vect | None = None, corner2: Vect | None = None, /,
+                corner_radius: float | None = None) -> Self: ...
+
+    def reshape(self, v1=None, v2=None, /, corner_radius: float | None = None):
+        if v1 is None and v2 is None:
+            box = self.points.box
+            v1, v2 = box.width, box.height
+        corner_radius, = self._reshape_memorize(corner_radius=corner_radius)
+        super().reshape(v1, v2)
+        self.round_corners(corner_radius)
+
+    # endregion
 
 
 class Star(MarkedItem, Polygon):
@@ -232,29 +316,70 @@ class Star(MarkedItem, Polygon):
         *,
         outer_radius: float = 1,
         inner_radius: float | None = None,
-        density: int = 2,
-        start_angle: float | None = TAU / 4,
+        density: float = 2,
+        start_angle: float = TAU / 4,
         **kwargs
     ):
+        super().__init__(
+            *self._degrade_star_params(n, outer_radius, inner_radius, density, start_angle),
+            **kwargs
+        )
+        self.mark.set_points([ORIGIN])
+
+    @property
+    def start_angle(self) -> float:
+        from janim.utils.deprecation import deprecated
+        deprecated(
+            'start_angle',
+            'reshape_params[\'start_angle\']',
+            remove=(4, 4)
+        )
+        return self.reshape_params['start_angle']
+
+    # region reshape
+
+    def reshape(
+        self,
+        n: int | None = None,
+        *,
+        outer_radius: float | None = None,
+        inner_radius: float | None = None,
+        density: float | None = None,
+        start_angle: float | None = None
+    ) -> Self:
+        verts = self._degrade_star_params(n, outer_radius, inner_radius, density, start_angle)
+        verts = np.array(list(verts), dtype=np.float32)
+        verts += self.mark.get()
+        super().reshape(verts)
+        return self
+
+    def _degrade_star_params(
+        self,
+        n: int | None,
+        outer_radius: float | None,
+        inner_radius: float | None,
+        density: float | None,
+        start_angle: float | None
+    ):
+        """
+        根据 :class:`Star` 的参数生成 :class:`Polygon` 的参数
+        """
+        # 参数记忆逻辑
+        if inner_radius is None and density is None:
+            inner_radius_and_density = None
+        else:
+            inner_radius_and_density = (inner_radius, density)
+        args = self._reshape_memorize(n=n,
+                                      outer_radius=outer_radius,
+                                      inner_radius_and_density=inner_radius_and_density,
+                                      start_angle=start_angle)
+        n, outer_radius, (inner_radius, density), start_angle = args
+
+        # 真正处理
         inner_angle = TAU / (2 * n)
 
         if inner_radius is None:
-            # See https://math.stackexchange.com/a/2136292 for an
-            # overview of how to calculate the inner radius of a
-            # perfect star.
-
-            if density <= 0 or density >= n / 2:
-                raise ValueError(
-                    _('Incompatible density {density} for number of points {n}')
-                    .format(density=density, n=n),
-                )
-
-            outer_angle = TAU * density / n
-            inverse_x = 1 - np.tan(inner_angle) * (
-                (np.cos(outer_angle) - 1) / np.sin(outer_angle)
-            )
-
-            inner_radius = outer_radius / (np.cos(inner_angle) * inverse_x)
+            inner_radius = self.inner_radius_of_density(density, outer_radius, n)
 
         start_vect = rotate_vector(RIGHT * outer_radius, start_angle)
         outer_vertices = compass_directions(n, start_vect)
@@ -262,7 +387,29 @@ class Star(MarkedItem, Polygon):
         start_vect = rotate_vector(RIGHT * inner_radius, start_angle + inner_angle)
         inner_vertices = compass_directions(n, start_vect)
 
-        super().__init__(*it.chain.from_iterable(zip(outer_vertices, inner_vertices)), **kwargs)
-        self.start_angle = start_angle
+        return it.chain.from_iterable(zip(outer_vertices, inner_vertices))
 
-        self.mark.set_points([ORIGIN])
+    # endregion
+
+    @staticmethod
+    def inner_radius_of_density(density: float, outer_radius: float = 1, n: int = 5) -> None:
+        """
+        计算指定 ``density`` 下，``outer_radius`` 所对应的 ``inner_radius``
+        """
+        inner_angle = TAU / (2 * n)
+
+        # See https://math.stackexchange.com/a/2136292 for an
+        # overview of how to calculate the inner radius of a
+        # perfect star.
+        if density <= 0 or density >= n / 2:
+            raise ValueError(
+                _('Incompatible density {density} for number of points {n}')
+                .format(density=density, n=n),
+            )
+
+        outer_angle = TAU * density / n
+        inverse_x = 1 - np.tan(inner_angle) * (
+            (np.cos(outer_angle) - 1) / np.sin(outer_angle)
+        )
+
+        return outer_radius / (np.cos(inner_angle) * inverse_x)
