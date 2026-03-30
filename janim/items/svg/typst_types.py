@@ -1,7 +1,8 @@
 from typing import Any, Iterable, Literal, NoReturn
 
 from janim.exception import InvalidOrdinalError
-from janim.items.points import Group, Points
+from janim.items.group import Group
+from janim.items.points import Points
 from janim.items.svg.svg_item import SVGElemItem
 from janim.items.svg.typst import TypstText
 from janim.locale import get_translator

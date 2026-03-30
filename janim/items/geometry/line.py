@@ -8,7 +8,8 @@ from janim.components.component import CmptInfo
 from janim.components.vpoints import Cmpt_VPoints
 from janim.constants import DEGREES, LEFT, ORIGIN, RIGHT, UP, WHITE
 from janim.items.geometry.arc import Arc, Dot
-from janim.items.points import Group, MarkedItem, Points
+from janim.items.group import Group
+from janim.items.points import MarkedItem, Points
 from janim.items.vitem import DashedVItem, DashedVItemByRatio, VItem
 from janim.typing import JAnimColor, Vect
 from janim.utils.bezier import PathBuilder

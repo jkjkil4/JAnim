@@ -16,7 +16,8 @@ from janim.constants import (DOWN, GREY, LEFT, MED_SMALL_BUFF, ORIGIN, RIGHT,
                              UL, UP)
 from janim.exception import ColorNotFoundError
 from janim.items.geometry.line import Line
-from janim.items.points import Group, MarkedItem
+from janim.items.group import Group
+from janim.items.points import MarkedItem
 from janim.items.vitem import VItem
 from janim.locale import get_translator
 from janim.logger import log

@@ -10,7 +10,8 @@ import numpy as np
 from janim.constants import FRAME_PPI, ORIGIN, UP
 from janim.exception import (InvalidOrdinalError, InvalidTypstVarError,
                              PatternMismatchError)
-from janim.items.points import Group, Points
+from janim.items.group import Group
+from janim.items.points import Points
 from janim.items.svg.svg_item import BasepointVItem, SVGElemItem, SVGItem
 from janim.items.vitem import VItem
 from janim.locale import get_translator

@@ -13,7 +13,7 @@ from janim.items.geometry.arc import Circle
 from janim.items.geometry.line import Line
 from janim.items.geometry.polygon import Polygon, Polyline, Rect, RoundedRect
 from janim.items.item import Item
-from janim.items.points import Group
+from janim.items.group import Group
 from janim.items.text import BasepointVItem, Text, TextLine
 from janim.items.vitem import VItem
 from janim.locale import get_translator

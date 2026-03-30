@@ -35,7 +35,8 @@ from janim.constants import (BLACK, DEFAULT_DURATION, DOWN, FOREVER,
 from janim.exception import TimelineLookupError
 from janim.items.audio import Audio
 from janim.items.item import Item
-from janim.items.points import Group, Point
+from janim.items.group import Group
+from janim.items.points import Point
 from janim.items.shape_matchers import SurroundingRect
 from janim.items.svg.typst import TypstText
 from janim.items.text import Text

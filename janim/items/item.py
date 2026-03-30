@@ -26,7 +26,7 @@ from janim.utils.signal import SIGNAL_OBJ_SLOTS_NAME
 
 if TYPE_CHECKING:
     from janim.anims.timeline import Timeline
-    from janim.items.points import Group
+    from janim.items.group import Group
 
 _ = get_translator('janim.items.item')
 
@@ -342,7 +342,7 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         if isinstance(key, SupportsIndex):
             return self._children[key]
 
-        from janim.items.points import Group
+        from janim.items.group import Group
 
         match key:
             # example: item[0:2]
@@ -367,13 +367,13 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
 
         可以将 ``item * n`` 作为该方法的简写
         """
-        from janim.items.points import Group
+        from janim.items.group import Group
         return Group(
             *(self.copy() for i in range(n))
         )
 
     def join[T](self, lst: Iterable[T]) -> Group[Self | T]:
-        from janim.items.points import Group
+        from janim.items.group import Group
         it = iter(lst)
         items = []
         try:
