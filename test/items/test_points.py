@@ -7,7 +7,8 @@ from janim.constants import (DEGREES, DL, DOWN, DR, LEFT, ORIGIN, OUT, RIGHT,
                              TAU, UL, UP, UR)
 from janim.exception import GetItemError, InvaildMatrixError, PointError
 from janim.items.item import Item
-from janim.items.points import Group, NamedGroup, Points
+from janim.items.group import Group, NamedGroup
+from janim.items.points import Points
 
 
 class PointsTest(unittest.TestCase):

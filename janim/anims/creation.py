@@ -11,7 +11,7 @@ from janim.constants import (C_LABEL_ANIM_ABSTRACT, C_LABEL_ANIM_IN,
                              C_LABEL_ANIM_INDICATION, C_LABEL_ANIM_OUT,
                              NAN_POINT)
 from janim.items.item import Item
-from janim.items.points import Group
+from janim.items.group import Group
 from janim.items.vitem import VItem
 from janim.typing import JAnimColor
 from janim.utils.bezier import integer_interpolate

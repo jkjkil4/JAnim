@@ -17,7 +17,8 @@ from janim.constants import (C_LABEL_ANIM_ABSTRACT, C_LABEL_ANIM_INDICATION,
 from janim.items.geometry.arc import Circle, Dot
 from janim.items.geometry.line import Line
 from janim.items.item import Item
-from janim.items.points import Group, Points
+from janim.items.group import Group
+from janim.items.points import Points
 from janim.items.shape_matchers import SurroundingRect
 from janim.items.vitem import VItem
 from janim.typing import JAnimColor, Vect
