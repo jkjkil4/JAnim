@@ -194,7 +194,7 @@ def __getattr__(name: str):
         deprecated(
             f'janim.items.points.{name}',
             f'janim.items.group.{name}',
-            remove=(4, 3)
+            remove=(4, 4)
         )
         return mapping[name]
     raise AttributeError(f'module {__name__!r} has no attribute {name!r}')
