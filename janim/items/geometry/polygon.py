@@ -46,8 +46,9 @@ class Polygon(GeometryShape):
             else verts
         )
 
-    def reshape(self, verts: VectArray | None = None, *, close_path: bool | None = None) -> None:
-        return self._reshape(verts, close_path)
+    def reshape(self, verts: VectArray | None = None, *, close_path: bool | None = None) -> Self:
+        self._reshape(verts, close_path)
+        return self
 
     # endregion
 
@@ -276,8 +277,7 @@ class RoundedRect(Rect):
 
     def __init__(self, v1=4.0, v2=2.0, /, corner_radius: float = 0.5, **kwargs) -> None:
         super().__init__(v1, v2, **kwargs)
-        self.round_corners(corner_radius)
-        self._reshape_memorize(corner_radius=corner_radius)
+        self._reshape_round_corners(corner_radius)
 
     # region reshape
 
@@ -289,12 +289,16 @@ class RoundedRect(Rect):
     def reshape(self, corner1: Vect | None = None, corner2: Vect | None = None, /,
                 corner_radius: float | None = None) -> Self: ...
 
-    def reshape(self, v1=None, v2=None, /, corner_radius: float | None = None):
+    def reshape(self, v1=None, v2=None, /, corner_radius: float | None = None) -> Self:
         if v1 is None and v2 is None:
             box = self.points.box
             v1, v2 = box.width, box.height
-        corner_radius, = self._reshape_memorize(corner_radius=corner_radius)
         super().reshape(v1, v2)
+        self._reshape_round_corners(corner_radius)
+        return self
+
+    def _reshape_round_corners(self, corner_radius: float | None = None) -> None:
+        corner_radius, = self._reshape_memorize(corner_radius=corner_radius)
         self.round_corners(corner_radius)
 
     # endregion
