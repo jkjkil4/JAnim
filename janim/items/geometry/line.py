@@ -385,6 +385,13 @@ class DashedLine(Line, Group[VItem]):
         在静态使用的情境下，使用 ``False`` 会更美观；在动态创建的情境下，使用 ``True`` 可以避免频繁抖动
 
     :param \\*\\*kwargs: 其它参数，另见 :class:`Line`
+
+    .. warning::
+
+        由于一些因素，:class:`~.DashedLine` 并不完全具有 :class:`~.Line` 的功能
+
+        这是由于 :class:`~.DashedLine` 实际上将每段虚线作为子物件来实现，而去除了自己本身的 ``points`` 数据，
+        这会导致包括 ``.reshape`` 以及 ``.points.vector`` 等一些方法不可用
     """
     def __init__(
         self,

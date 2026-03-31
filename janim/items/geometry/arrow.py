@@ -179,6 +179,18 @@ class Arrow(Line):
             copy_item.tip = copy_item[0]
         return copy_item
 
+    def reshape(
+        self,
+        start: Points | Vect | None = None,
+        end: Points | Vect | None = None,
+        *,
+        buff: LineBuff | None = None,
+        path_arc: float | None = None
+    ) -> Self:
+        super().reshape(start, end, buff=buff, path_arc=path_arc)
+        self.place_tip()
+        return self
+
     def _get_shrink_values(self) -> tuple[float, float]:
         """
         返回用于着色器的 (shrink_left_ratio, shrink_right_ratio)
