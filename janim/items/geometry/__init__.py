@@ -84,7 +84,7 @@ class GeometryShape(VItem, metaclass=_PreInitReshapeDict):
         copy_item.reshape_params = self.reshape_params.copy()
         return copy_item
 
-    def become(self, other: GeometryShape) -> Self:
-        super().become(self, other)
+    def become(self, other: GeometryShape, *, auto_visible: bool = True) -> Self:
+        super().become(other, auto_visible=auto_visible)
         self.reshape_params = other.reshape_params.copy()
         return self
