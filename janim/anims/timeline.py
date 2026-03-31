@@ -580,6 +580,10 @@ class Timeline(metaclass=ABCMeta):
                 subtitle = TypstText(text, **kwargs)
             else:
                 subtitle = Text(text, font=font, **kwargs)
+            is_null = all(item.is_null() for item in subtitle.walk_self_and_descendants())
+            if is_null:
+                continue
+
             subtitle.points.scale(scale * base_scale)
             self.place_subtitle(subtitle, range)
             self.subtitle_infos.append(Timeline.SubtitleInfo(text, range, kwargs, subtitle))
