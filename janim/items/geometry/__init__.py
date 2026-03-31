@@ -79,8 +79,8 @@ class GeometryShape(VItem, metaclass=_PreInitReshapeDict):
 
         return resolved
 
-    def copy(self) -> Self:
-        copy_item = super().copy()
+    def copy(self, *, root_only: bool = False) -> Self:
+        copy_item = super().copy(root_only=root_only)
         copy_item.reshape_params = self.reshape_params.copy()
         return copy_item
 
