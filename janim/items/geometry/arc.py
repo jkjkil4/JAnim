@@ -6,6 +6,7 @@ import numpy as np
 from janim.components.component import CmptInfo
 from janim.components.vpoints import Cmpt_VPoints
 from janim.constants import LEFT, MED_SMALL_BUFF, NAN_POINT, ORIGIN, RIGHT, TAU
+from janim.items.geometry import GeometryShape
 from janim.items.item import Item
 from janim.items.points import MarkedItem
 from janim.items.vitem import VItem
@@ -37,7 +38,7 @@ class ArcCenter(MarkedItem, VItem):
         return self
 
 
-class Arc(ArcCenter):
+class Arc(GeometryShape, ArcCenter):
     """
     圆弧
 
@@ -55,6 +56,23 @@ class Arc(ArcCenter):
         **kwargs
     ) -> None:
         super().__init__(arc_center=arc_center, **kwargs)
+        self._reshape(start_angle, angle, radius, n_components, arc_center)
+
+    # region reshape
+
+    def _reshape(
+        self,
+        start_angle: float | None = None,
+        angle: float | None = None,
+        radius: float | None = None,
+        n_components: int | None = None,
+        arc_center: Vect | None = None
+    ) -> None:
+        start_angle, angle, radius, n_components = \
+            self._reshape_memorize(start_angle=start_angle, angle=angle, radius=radius, n_components=n_components)
+
+        if arc_center is None:
+            arc_center = self.mark.get()
 
         self.points.set(
             quadratic_bezier_points_for_arc(
@@ -63,6 +81,22 @@ class Arc(ArcCenter):
                 n_components=n_components
             ) * radius + arc_center
         )
+
+    def reshape(
+        self,
+        start_angle: float | None = None,
+        angle: float | None = None,
+        radius: float | None = None,
+        *,
+        n_components: int | None = None,
+        arc_center: Vect | None = None
+    ) -> Self:
+        self._reshape(start_angle, angle, radius, n_components, arc_center)
+        if arc_center is not None:
+            self.mark.set_points([arc_center])
+        return self
+
+    # endregion
 
     def get_arc_length(self) -> float:
         """获取圆弧长度"""
@@ -101,9 +135,29 @@ class ArcBetweenPoints(Arc):
         **kwargs
     ) -> None:
         super().__init__(angle=angle, **kwargs)
+        self._reshape_start_and_end(start, end)
+
+    # region reshape
+
+    def reshape(
+        self,
+        start: Vect | None = None,
+        end: Vect | None = None,
+        *,
+        angle: float | None = None
+    ) -> Self:
+        super().reshape(angle=angle)
+        self._reshape_start_and_end(start, end)
+        return self
+
+    def _reshape_start_and_end(self, start: Vect | None = None, end: Vect | None = None) -> None:
+        start, end = self._reshape_memorize(start=start, end=end)
+        angle = self.reshape_params['angle']
         if angle == 0:
             self.points.set_as_corners([LEFT, RIGHT])
         self.points.put_start_and_end_on(start, end)
+
+    # endregion
 
 
 class Cmpt_VPoints_CircleImpl[ItemT](Cmpt_VPoints[ItemT], impl=True):
@@ -146,7 +200,7 @@ class Cmpt_VPoints_CircleImpl[ItemT](Cmpt_VPoints[ItemT], impl=True):
         return get_norm(self.get_start() - self.box.center)
 
 
-class Circle(VItem):
+class Circle(GeometryShape):
     """
     圆
 
@@ -163,6 +217,12 @@ class Circle(VItem):
         **kwargs
     ):
         super().__init__(**kwargs)
+        self._reshape(radius=radius, n_components=n_components)
+
+    # region reshape
+
+    def _reshape(self, radius: float | None = None, n_components: int | None = None) -> None:
+        radius, n_components = self._reshape_memorize(radius=radius, n_components=n_components)
 
         self.points.set(
             quadratic_bezier_points_for_arc(
@@ -171,6 +231,14 @@ class Circle(VItem):
                 n_components=n_components
             ) * radius
         )
+
+    def reshape(self, radius: float | None = None, *, n_components: int | None = None) -> Self:
+        center = self.points.box.center
+        self._reshape(radius=radius, n_components=n_components)
+        self.points.shift(center)
+        return self
+
+    # endregion
 
 
 class Dot(Circle):
@@ -192,7 +260,20 @@ class Dot(Circle):
             fill_alpha=fill_alpha,
             **kwargs
         )
+        self._reshape_position(point)
+
+    # region reshape
+
+    def reshape(self, point: Vect | None = None, *, radius: float | None = None) -> Self:
+        super().reshape(radius=radius)
+        self._reshape_position(point)
+        return self
+
+    def _reshape_position(self, point: Vect | None = None) -> None:
+        point, = self._reshape_memorize(point=point)
         self.points.move_to(point)
+
+    # endregion
 
 
 class SmallDot(Dot):
@@ -214,10 +295,22 @@ class Ellipse(Circle):
         **kwargs
     ) -> None:
         super().__init__(**kwargs)
+        self._reshape_size(width, height)
+
+    # region reshape
+
+    def reshape(self, width: float | None = None, height: float | None = None) -> Self:
+        self._reshape_size(width, height)
+        return self
+
+    def _reshape_size(self, width: float | None = None, height: float | None = None) -> Self:
+        width, height = self._reshape_memorize(width=width, height=height)
         self.points.set_size(width, height)
 
+    # endregion
 
-class AnnularSector(ArcCenter):
+
+class AnnularSector(GeometryShape, ArcCenter):
     """
     扇环
 
@@ -239,7 +332,32 @@ class AnnularSector(ArcCenter):
         **kwargs
     ) -> None:
         super().__init__(arc_center=arc_center, **kwargs)
+        self._reshape(inner_radius, outer_radius, start_angle, angle, n_components, arc_center)
 
+    # region reshape
+
+    def _reshape(
+        self,
+        inner_radius: float | None = None,
+        outer_radius: float | None = None,
+        start_angle: float | None = None,
+        angle: float | None = None,
+        n_components: int | None = None,
+        arc_center: Vect | None = None,
+    ) -> None:
+        # 参数记忆逻辑
+        inner_radius, outer_radius, start_angle, angle, n_components = self._reshape_memorize(
+            inner_radius=inner_radius,
+            outer_radius=outer_radius,
+            start_angle=start_angle,
+            angle=angle,
+            n_components=n_components,
+        )
+
+        if arc_center is None:
+            arc_center = self.mark.get()
+
+        # 真正处理
         unit = quadratic_bezier_points_for_arc(
             angle=angle,
             start_angle=start_angle,
@@ -247,7 +365,7 @@ class AnnularSector(ArcCenter):
         )
 
         inner_arc, outer_arc = (
-            unit * radius + arc_center
+            unit * radius
             for radius in (inner_radius, outer_radius)
         )
         inner_arc = inner_arc[::-1]
@@ -256,6 +374,23 @@ class AnnularSector(ArcCenter):
         builder.append(inner_arc, line_to_start_point=True).close_path()
 
         self.points.set(builder.get() + arc_center)
+
+    def reshape(
+        self,
+        inner_radius: float | None = None,
+        outer_radius: float | None = None,
+        start_angle: float | None = None,
+        angle: float | None = None,
+        *,
+        arc_center: Vect | None = None,
+        n_components: int | None = None,
+    ) -> Self:
+        self._reshape(inner_radius, outer_radius, start_angle, angle, n_components, arc_center)
+        if arc_center is not None:
+            self.mark.set_points([arc_center])
+        return self
+
+    # endregion
 
 
 class Sector(Arc):
@@ -266,11 +401,30 @@ class Sector(Arc):
     """
     def __init__(self, *, arc_center: np.ndarray = ORIGIN, **kwargs) -> None:
         super().__init__(arc_center=arc_center, **kwargs)
+        self._reshape_additional_corners()
 
-        self.points.add_as_corners([arc_center, self.points.get_start()])
+    # region reshape
+
+    def reshape(
+        self,
+        start_angle: float | None = None,
+        angle: float | None = None,
+        radius: float | None = None,
+        *,
+        n_components: int | None = None,
+        arc_center: Vect | None = None
+    ) -> Self:
+        super().reshape(start_angle, angle, radius, n_components=n_components, arc_center=arc_center)
+        self._reshape_additional_corners()
+        return self
+
+    def _reshape_additional_corners(self) -> None:
+        self.points.add_as_corners([self.get_arc_center(), self.points.get_start()])
+
+    # endregion
 
 
-class Annulus(VItem):
+class Annulus(GeometryShape):
     """
     圆环
 
@@ -289,6 +443,23 @@ class Annulus(VItem):
         **kwargs
     ) -> None:
         super().__init__(fill_alpha=fill_alpha, **kwargs)
+        self._reshape(arc_center, outer_radius, inner_radius, n_components)
+
+    # region reshape
+
+    def _reshape(
+        self,
+        arc_center: Vect,
+        outer_radius: float | None = None,
+        inner_radius: float | None = None,
+        n_components: int | None = None,
+    ) -> None:
+        outer_radius, inner_radius, n_components = self._reshape_memorize(
+            outer_radius=outer_radius,
+            inner_radius=inner_radius,
+            n_components=n_components
+        )
+        arc_center = np.array(arc_center)
 
         unit = quadratic_bezier_points_for_arc(
             TAU, 0,
@@ -302,3 +473,18 @@ class Annulus(VItem):
         outer = outer[::-1]
 
         self.points.set(np.vstack([outer, NAN_POINT, inner]))
+
+    def reshape(
+        self,
+        outer_radius: float | None = None,
+        inner_radius: float | None = None,
+        *,
+        arc_center: Vect | None = None,
+        n_components: int | None = None,
+    ) -> Self:
+        if arc_center is None:
+            arc_center = self.points.box.center
+        self._reshape(arc_center, outer_radius, inner_radius, n_components)
+        return self
+
+    # endregion
