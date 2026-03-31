@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-02-16 10:22+0800\n"
+"POT-Creation-Date: 2026-03-28 14:13+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -83,7 +83,7 @@ msgstr ""
 msgid "wnd_monitor has invalid value {wnd_monitor}, use {range} instead."
 msgstr ""
 
-#: janim/gui/anim_viewer.py:470 janim/gui/anim_viewer.py:668
+#: janim/gui/anim_viewer.py:470 janim/gui/anim_viewer.py:667
 #, python-brace-format
 msgid "No timeline named \"{name}\" in \"{file}\""
 msgstr ""
@@ -92,53 +92,53 @@ msgstr ""
 msgid "Failed to rebuild"
 msgstr ""
 
-#: janim/gui/anim_viewer.py:551
+#: janim/gui/anim_viewer.py:550
 msgid "Copied!"
 msgstr ""
 
-#: janim/gui/anim_viewer.py:601
+#: janim/gui/anim_viewer.py:600
 msgid "An error occurred during rendering, playback stopped"
 msgstr ""
 
-#: janim/gui/anim_viewer.py:681
+#: janim/gui/anim_viewer.py:680
 msgid "Failed to build"
 msgstr ""
 
-#: janim/gui/anim_viewer.py:694
+#: janim/gui/anim_viewer.py:693
 msgid ""
 "Font cache cleared.\n"
 "Tip: Use this to load newly installed fonts without restarting JAnim."
 msgstr ""
 
-#: janim/gui/anim_viewer.py:716
+#: janim/gui/anim_viewer.py:715
 #, python-brace-format
 msgid "Searching port has been opened at {port}"
 msgstr ""
 
-#: janim/gui/anim_viewer.py:721
+#: janim/gui/anim_viewer.py:720
 #, python-brace-format
 msgid "Failed to open searching port at {port}"
 msgstr ""
 
-#: janim/gui/anim_viewer.py:726
+#: janim/gui/anim_viewer.py:725
 #, python-brace-format
 msgid ""
 "Searching port {port} is invalid, please use a number between 1024 and 65535 "
 "instead"
 msgstr ""
 
-#: janim/gui/anim_viewer.py:732
+#: janim/gui/anim_viewer.py:731
 msgid ""
 "Interactive development is disabled because the searching port is not "
 "established."
 msgstr ""
 
-#: janim/gui/anim_viewer.py:744
+#: janim/gui/anim_viewer.py:743
 #, python-brace-format
 msgid "Interactive port has been opened at {port}"
 msgstr ""
 
-#: janim/gui/anim_viewer.py:828
+#: janim/gui/anim_viewer.py:827
 #, python-brace-format
 msgid "Directly watching changes to \"{file}\""
 msgstr ""

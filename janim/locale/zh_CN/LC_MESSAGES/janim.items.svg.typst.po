@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-02-21 13:28+0800\n"
+"POT-Creation-Date: 2026-03-30 15:33+0800\n"
 "PO-Revision-Date: 2025-12-24 16:02+0800\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -17,22 +17,22 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Poedit 3.8\n"
 
-#: janim/items/svg/typst.py:138
+#: janim/items/svg/typst.py:139
 #, python-brace-format
 msgid "{var} is not a valid value for embedding in Typst"
 msgstr "{var} 不是一个可被嵌入 Typst 的有效值"
 
-#: janim/items/svg/typst.py:329
+#: janim/items/svg/typst.py:330
 #, python-brace-format
 msgid "No matches found for {pattern}"
 msgstr "未找到与 {pattern} 匹配的结果"
 
-#: janim/items/svg/typst.py:336
+#: janim/items/svg/typst.py:337
 #, python-brace-format
 msgid "{ordinal} is out of range for {count} matches"
 msgstr "{ordinal} 超出范围，只有 {count} 个匹配项"
 
-#: janim/items/svg/typst.py:352
+#: janim/items/svg/typst.py:353
 #, python-brace-format
 msgid "ordinal {} is invalid"
 msgstr "序数索引 {} 无效"

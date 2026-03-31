@@ -1,14 +1,15 @@
-# English translations for PACKAGE package.
-# Copyright (C) 2025 THE PACKAGE'S COPYRIGHT HOLDER
+# Chinese translations for PACKAGE package
+# PACKAGE 软件包的简体中文翻译.
+# Copyright (C) 2026 THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-# Automatically generated, 2025.
+# Automatically generated, 2026.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-03-30 15:33+0800\n"
-"PO-Revision-Date: 2025-12-24 16:05+0800\n"
+"PO-Revision-Date: 2026-03-31 22:01+0800\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
 "Language: zh_CN\n"
@@ -18,7 +19,7 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 "X-Generator: Poedit 3.8\n"
 
-#: janim/items/vitem.py:439
+#: janim/items/group.py:218
 #, python-brace-format
-msgid "Invalid value for equal_lengths: {equal_lengths}"
-msgstr "equal_lengths 的取值无效：{equal_lengths}"
+msgid "Cannot find item with named key \"{key}\""
+msgstr "找不到名为 \"{key}\" 的键对应的物件"
