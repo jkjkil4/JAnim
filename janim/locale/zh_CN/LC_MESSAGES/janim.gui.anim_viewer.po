@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-03-28 14:13+0800\n"
+"POT-Creation-Date: 2026-04-01 06:01+0800\n"
 "PO-Revision-Date: 2025-12-25 14:04+0800\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -83,7 +83,7 @@ msgstr "wnd_pos 得到了错误的参数 {wnd_pos}"
 msgid "wnd_monitor has invalid value {wnd_monitor}, use {range} instead."
 msgstr "wnd_monitor 得到了无效的值 {wnd_monitor}, 请使用 {range} 代替"
 
-#: janim/gui/anim_viewer.py:470 janim/gui/anim_viewer.py:667
+#: janim/gui/anim_viewer.py:470 janim/gui/anim_viewer.py:672
 #, python-brace-format
 msgid "No timeline named \"{name}\" in \"{file}\""
 msgstr "没有叫作 \"{name}\" 的时间轴，对于文件 \"{file}\" 来说"
@@ -92,19 +92,24 @@ msgstr "没有叫作 \"{name}\" 的时间轴，对于文件 \"{file}\" 来说"
 msgid "Failed to rebuild"
 msgstr "重新构建失败"
 
-#: janim/gui/anim_viewer.py:550
+#: janim/gui/anim_viewer.py:527
+#, python-brace-format
+msgid "GC took {elapsed} s"
+msgstr "GC 耗时 {elapsed} s"
+
+#: janim/gui/anim_viewer.py:555
 msgid "Copied!"
 msgstr "已复制!"
 
-#: janim/gui/anim_viewer.py:600
+#: janim/gui/anim_viewer.py:605
 msgid "An error occurred during rendering, playback stopped"
 msgstr "渲染过程中出现错误，播放停止"
 
-#: janim/gui/anim_viewer.py:680
+#: janim/gui/anim_viewer.py:685
 msgid "Failed to build"
 msgstr "构建失败"
 
-#: janim/gui/anim_viewer.py:693
+#: janim/gui/anim_viewer.py:698
 msgid ""
 "Font cache cleared.\n"
 "Tip: Use this to load newly installed fonts without restarting JAnim."
@@ -112,35 +117,35 @@ msgstr ""
 "字体缓存已清空\n"
 "提示：用于加载新安装的字体，而无需重启 JAnim"
 
-#: janim/gui/anim_viewer.py:715
+#: janim/gui/anim_viewer.py:720
 #, python-brace-format
 msgid "Searching port has been opened at {port}"
 msgstr "搜索端口已在 {port} 开启"
 
-#: janim/gui/anim_viewer.py:720
+#: janim/gui/anim_viewer.py:725
 #, python-brace-format
 msgid "Failed to open searching port at {port}"
 msgstr "无法在 {port} 开启搜索端口"
 
-#: janim/gui/anim_viewer.py:725
+#: janim/gui/anim_viewer.py:730
 #, python-brace-format
 msgid ""
 "Searching port {port} is invalid, please use a number between 1024 and 65535 "
 "instead"
 msgstr "搜索端口 {port} 无效，请使用 1024 至 65535 之间的数字"
 
-#: janim/gui/anim_viewer.py:731
+#: janim/gui/anim_viewer.py:736
 msgid ""
 "Interactive development is disabled because the searching port is not "
 "established."
 msgstr "由于搜索端口未建立，交互式开发不可用"
 
-#: janim/gui/anim_viewer.py:743
+#: janim/gui/anim_viewer.py:748
 #, python-brace-format
 msgid "Interactive port has been opened at {port}"
 msgstr "交互端口已在 {port} 开启"
 
-#: janim/gui/anim_viewer.py:827
+#: janim/gui/anim_viewer.py:832
 #, python-brace-format
 msgid "Directly watching changes to \"{file}\""
 msgstr "直接监测 \"{file}\" 的变动中"

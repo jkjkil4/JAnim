@@ -524,7 +524,7 @@ class AnimViewer(QMainWindow):
         gc.collect()
         elapsed = time.time() - start_time
         if elapsed >= 0.2:  # 只在超过 0.2s 的时候才提示，如果时间较短则不提示
-            log.info('GC took {elapsed:.2f} s')
+            log.info(_('GC took {elapsed} s').format(elapsed=f'{elapsed:.2f}'))
 
         self.update_completer([timeline.__name__ for timeline in get_all_timelines_from_module(module)])
 
