@@ -24,7 +24,8 @@ class Polygon(GeometryShape):
     """
     多边形
 
-    传入顶点列表 ``verts`` 进行表示
+    :param verts: 顶点序列，按顺序连接构成多边形
+    :param close_path: 是否将最后一个顶点与第一个顶点闭合连接，默认为 ``True`` 闭合
     """
     def __init__(
         self,
@@ -95,9 +96,11 @@ class Polygon(GeometryShape):
 
 
 class Polyline(Polygon):
-    """多边形折线
+    """
+    多边形折线
 
-    与 :class:`Polygon` 的区别是，不会自动将最后一个点与第一个点连接
+    :param verts: 折线顶点序列，按顺序连接
+    :param close_path: 是否闭合路径，默认不闭合
     """
     def __init__(
         self,
@@ -109,11 +112,14 @@ class Polyline(Polygon):
 
 
 class RegularPolygon(MarkedItem, Polygon):
-    """正多边形
+    """
+    正多边形
 
-    传入数字 ``n`` 表示边数
+    :param n: 边数
+    :param radius: 外接圆半径
+    :param start_angle: 起始角度；为 ``None`` 时根据边数自动设置
 
-    可通过 ``.mark.get()`` 得到多边形的中心
+    可通过 ``.mark.get()`` 得到多边形中心
     """
     def __init__(
         self,
@@ -153,16 +159,21 @@ class RegularPolygon(MarkedItem, Polygon):
 class Triangle(RegularPolygon):
     """
     正三角形
+
+    :param \\*\\*kwargs: 其它参数，另见 :class:`RegularPolygon`
     """
     def __init__(self, **kwargs):
         super().__init__(n=3, **kwargs)
 
 
 class Rect(Polygon):
-    """矩形
+    """
+    矩形
 
-    - 可以使用 ``Rect(4, 2)`` 的传入宽高的方式进行构建
-    - 也可以使用 ``Rect(p1, p2)`` 的传入对角顶点的方式进行构建
+    :param 前两个参数: 可传入宽高 ``(width, height)``，或传入一对对角顶点 ``(corner1, corner2)``
+    :param kwargs: 传递给父类的其它参数
+
+    支持两种构建方式：``Rect(width, height)`` 或 ``Rect(corner1, corner2)``
     """
     _init_verts = (UR, UL, DL, DR)
 
@@ -255,9 +266,10 @@ class Rect(Polygon):
 
 
 class Square(Rect):
-    """正方形
+    """
+    正方形
 
-    ``side_length`` 表示正方形边长
+    :param side_length: 正方形边长
     """
     def __init__(self, side_length: float = 2.0, **kwargs) -> None:
         self.side_length = side_length
@@ -269,7 +281,13 @@ class Square(Rect):
 
 
 class RoundedRect(Rect):
-    """圆角矩形"""
+    """
+    圆角矩形
+
+    :param 前两个参数: 可传入宽高 ``(width, height)``，或传入一对对角顶点 ``(corner1, corner2)``
+    :param corner_radius: 圆角半径
+    :param kwargs: 传递给父类的其它参数
+    """
     @overload
     def __init__(self, width: float = 4.0, height: float = 2.0, /, corner_radius: float = 0.5, **kwargs) -> None: ...
     @overload
@@ -308,11 +326,11 @@ class Star(MarkedItem, Polygon):
     """
     星形
 
-    - ``n`` 表示顶点数，默认为 5
-    - ``outer_radius`` 表示外半径
-    - ``inner_radius`` 表示内半径，默认为 ``None``，由 ``density`` 决定
-    - ``density`` 表示密度，数值越高，内半径越小，取值范围 ``[1, n/2]``
-    - ``start_angle`` 表示起始角度，即星形的旋转角度
+    :param n: 顶点数，默认为 5
+    :param outer_radius: 外半径
+    :param inner_radius: 内半径；为 ``None`` 时由 ``density`` 计算
+    :param density: 密度，数值越高内半径越小，取值范围 ``[1, n/2]``；含义可理解为一笔画时的“每个连线之间跳过多少个顶点”，默认每次跳过一个顶点即连成星形
+    :param start_angle: 起始角度
     """
     def __init__(
         self,
