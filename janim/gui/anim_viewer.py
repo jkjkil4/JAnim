@@ -520,15 +520,20 @@ class AnimViewer(QMainWindow):
 
         from janim.cli import get_all_timelines_from_module
 
+        start_time = time.time()
         gc.collect()
+        elapsed = time.time() - start_time
+        if elapsed >= 0.2:  # 只在超过 0.2s 的时候才提示，如果时间较短则不提示
+            log.info('GC took {elapsed:.2f} s')
+
         self.update_completer([timeline.__name__ for timeline in get_all_timelines_from_module(module)])
 
         if self.has_connection():
             # 发送重新构建了的信息
             self.send_janim_cmd(Cmd.Rebuilt)
 
-            time = self.timeline_view.progress_to_time(self.timeline_view.progress())
-            self.send_janim_cmd(Cmd.Lineno, self.built.timeline.get_lineno_at_time(time))
+            t = self.timeline_view.progress_to_time(self.timeline_view.progress())
+            self.send_janim_cmd(Cmd.Lineno, self.built.timeline.get_lineno_at_time(t))
 
         self.glw.update()
 
