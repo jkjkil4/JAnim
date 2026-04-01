@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-03-18 21:49+0800\n"
+"POT-Creation-Date: 2026-04-01 12:33+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -21,45 +21,65 @@ msgstr ""
 msgid "Capture"
 msgstr ""
 
-#: janim/gui/output/capture_dialog.py:33
-msgid "Save Path:"
-msgstr ""
-
 #: janim/gui/output/capture_dialog.py:34
-msgid "Size:"
+msgid "Options"
 msgstr ""
 
 #: janim/gui/output/capture_dialog.py:35
-msgid "Transparent Background"
+msgid "Capture Raw Frame"
 msgstr ""
 
 #: janim/gui/output/capture_dialog.py:36
-msgid "Open the image after capturing"
+msgid "Capture Screen View"
 msgstr ""
 
-#: janim/gui/output/capture_dialog.py:39
-msgid "OK"
+#: janim/gui/output/capture_dialog.py:37
+msgid "Save to File"
+msgstr ""
+
+#: janim/gui/output/capture_dialog.py:38
+msgid "Copy to Clipboard"
+msgstr ""
+
+#: janim/gui/output/capture_dialog.py:40
+msgid "Save Path:"
+msgstr ""
+
+#: janim/gui/output/capture_dialog.py:41
+msgid "Size:"
 msgstr ""
 
 #: janim/gui/output/capture_dialog.py:42
+msgid "Transparent Background"
+msgstr ""
+
+#: janim/gui/output/capture_dialog.py:43
+msgid "Open the image after capturing"
+msgstr ""
+
+#: janim/gui/output/capture_dialog.py:46
+msgid "OK"
+msgstr ""
+
+#: janim/gui/output/capture_dialog.py:49
 msgid "Cancel"
 msgstr ""
 
-#: janim/gui/output/capture_dialog.py:128
+#: janim/gui/output/capture_dialog.py:176
 msgid "Confirm Export"
 msgstr ""
 
-#: janim/gui/output/capture_dialog.py:129
+#: janim/gui/output/capture_dialog.py:177
 #, python-brace-format
 msgid ""
 "{filename} already exists.\n"
 "Do you want to replace it?"
 msgstr ""
 
-#: janim/gui/output/capture_dialog.py:135
+#: janim/gui/output/capture_dialog.py:183
 msgid "Yes(&Y)"
 msgstr ""
 
-#: janim/gui/output/capture_dialog.py:136
+#: janim/gui/output/capture_dialog.py:184
 msgid "No(&N)"
 msgstr ""
