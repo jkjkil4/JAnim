@@ -66,8 +66,10 @@ def on_capture_clicked(self: AnimViewer) -> None:
                 traceback.print_exc()
             return  # 出错结束
     else:
-        QMessageBox.information(self, '提示', '暂未实现')
-        return
+        QApplication.processEvents()    # 强制处理完挂起的事件，确保画面停稳
+        self.glw.makeCurrent()          # 确保当前 GL 上下文是激活的
+        img = self.glw.grabFramebuffer()
+        img.convertToFormat(QImage.Format.Format_RGB888)
 
     # 输出，保存到文件 / 复制到剪贴板
     if isfile:
@@ -86,10 +88,6 @@ def on_capture_clicked(self: AnimViewer) -> None:
     else:
         if isinstance(img, Image.Image):
             img = pil_image_to_qimage(img)
-        elif isinstance(img, QImage):
-            img = img.convertToFormat(QImage.Format.Format_RGB888)
-        else:
-            assert False
 
         clipboard = QApplication.clipboard()
         clipboard.setImage(img)
