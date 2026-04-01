@@ -4,7 +4,7 @@ from typing import Callable
 METHOD_UPDATER_KEY = '__methodupdater_meta'
 
 
-@dataclass
+@dataclass(slots=True)
 class MethodUpdaterInfo:
     updater: Callable
     grouply: bool

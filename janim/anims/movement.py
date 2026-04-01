@@ -13,11 +13,16 @@ from janim.typing import Vect
 
 
 class Homotopy(DataUpdater):
-    '''
-    一个从 (x, y, z, t) 到 (x', y', z') 的函数
+    """
+    一个从 ``(x, y, z, t)`` 到 ``(x', y', z')`` 的函数
 
-    t 的取值范围是 [0, 1]，表示动画进度
-    '''
+    ``t`` 的取值范围是 ``[0, 1]``，表示动画进度
+
+    .. janim-example:: HomotopyExample
+        :extract-from-test:
+        :media: _static/videos/HomotopyExample.mp4
+        :url: https://janim.readthedocs.io/zh-cn/latest/janim/anims/movement.html#homotopyexample
+    """
     def __init__(
         self,
         item: Item,
@@ -48,9 +53,14 @@ class Homotopy(DataUpdater):
 
 
 class ComplexHomotopy(Homotopy):
-    '''
-    与 Homotopy 类似，区别是用复数描述坐标
-    '''
+    """
+    与 :class:`Homotopy` 类似，区别是用复数描述坐标
+
+    .. janim-example:: ComplexHomotopyExample
+        :extract-from-test:
+        :media: _static/videos/ComplexHomotopyExample.mp4
+        :url: https://janim.readthedocs.io/zh-cn/latest/janim/anims/movement.html#complexhomotopyexample
+    """
     def __init__(
         self,
         item: Item,
@@ -65,6 +75,12 @@ class ComplexHomotopy(Homotopy):
 
 
 class MoveAlongPath(DataUpdater):
+    """
+    .. janim-example:: MoveAlongPathExample
+        :extract-from-test:
+        :media: _static/videos/MoveAlongPathExample.mp4
+        :url: https://janim.readthedocs.io/zh-cn/latest/janim/anims/movement.html#movealongpathexample
+    """
     label_color = C_LABEL_ANIM_STAY
 
     def __init__(
@@ -95,6 +111,12 @@ class MoveAlongPath(DataUpdater):
 
 
 class Follow(GroupUpdater[Points]):
+    """
+    .. janim-example:: FollowExample
+        :extract-from-test:
+        :media: _static/videos/FollowExample.mp4
+        :url: https://janim.readthedocs.io/zh-cn/latest/janim/anims/movement.html#followexample
+    """
     def __init__(
         self,
         item: Points,

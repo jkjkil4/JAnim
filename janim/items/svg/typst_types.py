@@ -1,16 +1,17 @@
 from typing import Any, Iterable, Literal, NoReturn
 
 from janim.exception import InvalidOrdinalError
-from janim.items.points import Group, Points
+from janim.items.group import Group
+from janim.items.points import Points
 from janim.items.svg.svg_item import SVGElemItem
 from janim.items.svg.typst import TypstText
-from janim.locale.i18n import get_local_strings
+from janim.locale import get_translator
 
 type TypMatDelim = Literal['(', ')', '[', ']', '{', '}', '|', 'none']
 type TypAlignment = Literal['start', 'end', 'left', 'center', 'right', 'top', 'horizon', 'bottom']
 type TypMatAlignment = Literal['start', 'left', 'center', 'right', 'end']   # 矩阵不支持 'top', 'horizon', 'bottom'
 
-_ = get_local_strings('typst_types')
+_ = get_translator('janim.items.svg.typst_types')
 
 typst_matrix_template = '''
 #set math.mat(
@@ -24,7 +25,7 @@ $ mat(
 
 
 class TypstMatrix(TypstText):
-    '''
+    """
     使用 Typst 进行矩阵布局
 
     - 使用 :meth:`get_inserted` 得到插入的 JAnim 物件
@@ -80,7 +81,7 @@ class TypstMatrix(TypstText):
             column_gap='0.7em',
             preamble='#set text(size: 3em)'
         ).show()
-    '''
+    """
 
     def __init__(
         self,
@@ -184,16 +185,16 @@ class TypstMatrix(TypstText):
                 ),
                 key=lambda matrix_coord: order[matrix_coord]
             )
-            '''
+            """
             按照子物件顺序排列的矩阵元素标签
-            '''
+            """
 
     def get_inserted(self, index: int) -> Points:
-        '''
+        """
         获取插入的第 ``index`` 个 JAnim 物件
 
         ``index`` 从 0 开始计数
-        '''
+        """
         if not 0 <= index < self.registered_count:
             raise InvalidOrdinalError(
                 _('Index out of range, only {count} inserted items available')
@@ -213,11 +214,11 @@ class TypstMatrix(TypstText):
         return None
 
     def get_element(self, row: int, col: int) -> Group[SVGElemItem] | Points:
-        '''
+        """
         根据行列索引元素
 
         需要在构造 :class:`TypstMatrix` 时传入 ``label=True`` 启用
-        '''
+        """
         self._raise_if_not_labelled()
 
         element = self._get_element(f'__ja__mat_{row}_{col}')
@@ -230,11 +231,11 @@ class TypstMatrix(TypstText):
         return element
 
     def get_elements(self) -> list[Group[SVGElemItem] | Points]:
-        '''
+        """
         获取矩阵中所有元素
 
         需要在构造 :class:`TypstMatrix` 时传入 ``label=True`` 启用
-        '''
+        """
         self._raise_if_not_labelled()
 
         return [
@@ -243,11 +244,11 @@ class TypstMatrix(TypstText):
         ]
 
     def get_left_brace(self) -> Group[SVGElemItem]:
-        '''
+        """
         获取左大括号元素
 
         需要在构造 :class:`TypstMatrix` 时传入 ``label=True`` 启用
-        '''
+        """
         self._raise_if_not_labelled()
 
         # 如果矩阵内是空的，那么可以直接对半得到左括号
@@ -256,15 +257,15 @@ class TypstMatrix(TypstText):
 
         # 如果矩阵内有东西，先得到第一个元素的下标，那么这个下标往前就是左括号
         elem = self._get_element(self.matrix_labels[0])[0]
-        index = self.children.index(elem)
+        index = self._children.index(elem)
         return self[:index]
 
     def get_right_brace(self) -> Group[SVGElemItem]:
-        '''
+        """
         获取右大括号元素
 
         需要在构造 :class:`TypstMatrix` 时传入 ``label=True`` 启用
-        '''
+        """
         self._raise_if_not_labelled()
 
         # 如果矩阵内是空的，那么可以直接对半得到右括号
@@ -273,7 +274,7 @@ class TypstMatrix(TypstText):
 
         # 如果矩阵内有东西，先得到最后一个元素的下标，那么这个下标往后就是右括号
         elem = self._get_element(self.matrix_labels[-1])[-1]
-        index = self.children.index(elem)
+        index = self._children.index(elem)
         return self[index + 1:]
 
     def _raise_if_not_labelled(self) -> None | NoReturn:

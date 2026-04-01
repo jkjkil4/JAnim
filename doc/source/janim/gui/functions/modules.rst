@@ -6,11 +6,4 @@ functions
 .. toctree::
    :maxdepth: 1
 
-   capture_dialog
-   color_widget
-   export_dialog
-   font_table
-   painter
-   richtext_editor
    selector
-   text_edit

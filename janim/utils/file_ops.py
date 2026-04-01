@@ -16,9 +16,9 @@ def guarantee_existence(path: str | Path) -> str:
 
 
 def getfile_or_stdin(cls: type) -> str:
-    '''
+    """
     获取类的文件路径，如果类没有文件路径，则认为来自 stdin
-    '''
+    """
     try:
         # 如果类是从 Python 交互式解释器中定义的，则 inspect.getfile 会抛出 OSError，返回 <stdin>
         # 如果是在 JAnim stdin 中定义的，__file__ 本身已经被设置成 <stdin> 了，所以也会返回这个
@@ -29,10 +29,25 @@ def getfile_or_stdin(cls: type) -> str:
 
 @lru_cache(maxsize=1)
 def get_janim_dir() -> str:
-    '''
+    """
     得到 janim 的路径
-    '''
+    """
     return os.path.dirname(importlib.util.find_spec('janim').origin)
+
+
+@lru_cache(maxsize=1)
+def get_gui_assets_dir() -> str:
+    """
+    得到 janim GUI 界面资源文件路径
+    """
+    return os.path.join(get_janim_dir(), 'gui', 'assets')
+
+
+def get_gui_asset(file: str) -> str:
+    """
+    得到指定的 janim GUI 界面资源文件
+    """
+    return os.path.join(get_janim_dir(), 'gui', 'assets', file)
 
 
 def get_typst_temp_dir() -> str:
@@ -46,9 +61,9 @@ def get_typst_packages_dir() -> str:
 
 
 def readall(filepath: str | Path) -> str:
-    '''
+    """
     从文件中读取所有字符
-    '''
+    """
     with open(filepath, 'rt', encoding='utf-8') as f:
         return f.read()
 
@@ -116,9 +131,9 @@ def find_file_or_none(file_path: str | Path) -> str | None:
 
 
 def open_file(file_path: str | Path) -> None:
-    '''
+    """
     打开指定的文件
-    '''
+    """
     current_os = platform.system()
     if current_os == "Windows":
         os.startfile(file_path)

@@ -37,18 +37,23 @@ gui = [
     "pyside6",
     "qdarkstyle",
     "beautifulsoup4",
-    "pyaudio; sys_platform == 'win32'",
+    "sounddevice>=0.5.5; sys_platform == 'win32' or sys_platform == 'darwin'",
 ]
 doc = [
-    "sphinx",
+    "sphinx<9.0.0",
     "sphinx-copybutton",
     "sphinx-tabs",
     "furo",
     "jinja2",
     "docutils",
+    "sphinx-intl",
 ]
 test = [
     "opencv-python",
+    "coverage"
+]
+bench = [
+    "asv"
 ]
 
 [tool.flit.sdist]
@@ -60,12 +65,8 @@ exclude = [
     ".gitignore",
     "uv.lock",
     "asv.conf.json",
-    "janim/gui/*.ui",
-    "janim/gui/functions/*.ui",
+    "**/*.ui",
     "janim/locale/source",
-    "janim/locale/compile.py",
-    "janim/locale/gettext.py",
-    "janim/locale/intl.py",
     "janim/locale/*/LC_MESSAGES/*.po"
 ]
 

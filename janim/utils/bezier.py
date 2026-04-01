@@ -9,14 +9,14 @@ from fontTools.cu2qu.cu2qu import curve_to_quadratic
 
 from janim.constants import DEGREES, NAN_POINT, TAU
 from janim.exception import PointError
-from janim.locale.i18n import get_local_strings
+from janim.locale import get_translator
 from janim.typing import Vect, VectArray
 from janim.utils.simple_functions import choose
 from janim.utils.space_ops import (angle_between_vectors, cross, cross2d,
                                    find_intersection, get_norm, midpoint,
                                    rotation_between_vectors, z_to_vector)
 
-_ = get_local_strings('bezier')
+_ = get_translator('janim.utils.bezier')
 
 CLOSED_THRESHOLD = 0.001
 T = TypeVar("T")
@@ -181,7 +181,7 @@ def quadratic_bezier_points_for_arc(
     start_angle: float = 0,
     n_components: int = 8
 ) -> np.ndarray:
-    '''得到使用二次贝塞尔曲线模拟的圆弧'''
+    """得到使用二次贝塞尔曲线模拟的圆弧"""
     n_points = 2 * n_components + 1
     angles = np.linspace(start_angle, start_angle + angle, n_points)
     points = np.array([np.cos(angles), np.sin(angles), np.zeros(n_points)]).T
@@ -335,7 +335,7 @@ def match_interpolate(
 def approx_smooth_quadratic_bezier_handles(
     points: Sequence[np.ndarray]
 ) -> np.ndarray | list[np.ndarray]:
-    '''
+    """
     Figuring out which bezier curves most smoothly connect a sequence of points.
 
     Given three successive points, P0, P1 and P2, you can compute that by defining
@@ -348,7 +348,7 @@ def approx_smooth_quadratic_bezier_handles(
     for h that would produce a parbola passing through P3, call it smooth_to_right, and
     another that would produce a parabola passing through P0, call it smooth_to_left,
     and use the midpoint between the two.
-    '''
+    """
     if len(points) == 2:
         return midpoint(*points)
     smooth_to_right, smooth_to_left = [
@@ -367,10 +367,10 @@ def approx_smooth_quadratic_bezier_handles(
 
 
 def smooth_quadratic_path(anchors: VectArray) -> np.ndarray:
-    '''
+    """
     Returns a path defining a smooth quadratic bezier spline
     through anchors.
-    '''
+    """
     if len(anchors) < 2:
         return anchors
     elif len(anchors) == 2:
@@ -387,10 +387,14 @@ def smooth_quadratic_path(anchors: VectArray) -> np.ndarray:
     quads = [anchors[0, :2]]
     for cub_bs in zip(anchors[:-1], h1s, h2s, anchors[1:]):
         # Try to use fontTools curve_to_quadratic
-        new_quads = curve_to_quadratic(
-            [b[:2] for b in cub_bs],
-            max_err=0.1 * get_norm(cub_bs[3] - cub_bs[0])
-        )
+        try:
+            new_quads = curve_to_quadratic(
+                [b[:2] for b in cub_bs],
+                max_err=0.1 * get_norm(cub_bs[3] - cub_bs[0])
+            )
+        except Exception:
+            print('aaa')
+            new_quads = None
         # Otherwise fall back on home baked solution
         if new_quads is None or len(new_quads) % 2 == 0:
             new_quads = get_quadratic_approximation_of_cubic(*cub_bs)[:, :2]
@@ -408,9 +412,9 @@ def smooth_quadratic_path(anchors: VectArray) -> np.ndarray:
 def get_smooth_cubic_bezier_handle_points(
     anchors: VectArray,
 ) -> tuple[np.ndarray, np.ndarray]:
-    '''
+    """
     See https://docs.manim.community/en/stable/reference/manim.utils.bezier.html#manim.utils.bezier.get_smooth_cubic_bezier_handle_points
-    '''
+    """
     anchors = np.asarray(anchors)
     n_anchors = anchors.shape[0]
 
@@ -444,9 +448,9 @@ UP_CLOSED_MEMO = np.array([1 / 3])
 def get_smooth_closed_cubic_bezier_handle_points(
     anchors: VectArray,
 ) -> tuple[np.ndarray, np.ndarray]:
-    '''
+    """
     See https://docs.manim.community/en/stable/reference/manim.utils.bezier.html#manim.utils.bezier.get_smooth_closed_cubic_bezier_handle_points
-    '''
+    """
     global CP_CLOSED_MEMO
     global UP_CLOSED_MEMO
 
@@ -519,9 +523,9 @@ CP_OPEN_MEMO = np.array([0.5])
 def get_smooth_open_cubic_bezier_handle_points(
     anchors: VectArray,
 ) -> tuple[np.ndarray, np.ndarray]:
-    '''
+    """
     See https://docs.manim.community/en/stable/reference/manim.utils.bezier.html#manim.utils.bezier.get_smooth_open_cubic_bezier_handle_points
-    '''
+    """
     global CP_OPEN_MEMO
 
     A = np.asarray(anchors)
@@ -567,11 +571,11 @@ def diag_to_matrix(
     l_and_u: tuple[int, int],
     diag: np.ndarray
 ) -> np.ndarray:
-    '''
+    """
     Converts array whose rows represent diagonal
     entries of a matrix into the matrix itself.
     See scipy.linalg.solve_banded
-    '''
+    """
     l, u = l_and_u
     dim = diag.shape[1]
     matrix = np.zeros((dim, dim))
@@ -590,10 +594,10 @@ def is_closed(points: Sequence[np.ndarray]) -> bool:
 # Given 4 control points for a cubic bezier curve (or arrays of such)
 # return control points for 2 quadratics (or 2n quadratics) approximating them.
 def get_quadratic_approximation_of_cubic(
-    a0: Vect,
-    h0: Vect,
-    h1: Vect,
-    a1: Vect
+    a0: Vect | VectArray,
+    h0: Vect | VectArray,
+    h1: Vect | VectArray,
+    a1: Vect | VectArray
 ) -> np.ndarray:
     a0 = np.array(a0, ndmin=2)
     h0 = np.array(h0, ndmin=2)
@@ -617,7 +621,7 @@ def get_quadratic_approximation_of_cubic(
     c = cross2d(p, q)
 
     disc = b * b - 4 * a * c
-    has_infl &= (disc > 0)
+    has_infl &= (disc > 1e-4)   # > 1e-4 而不是 > 0，因为当 disc 过于接近 0 时如果当成拐点，会造成 t_mid 贴在端点附近
     sqrt_disc = np.sqrt(np.abs(disc))
     settings = np.seterr(all='ignore')
     ti_bounds = []

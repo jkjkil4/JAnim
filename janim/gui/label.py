@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import itertools as it
-import os
 from bisect import bisect_left, bisect_right
 from dataclasses import dataclass
 from enum import Enum
@@ -12,7 +11,7 @@ from PySide6.QtGui import QFont, QPainter, QPixmap
 from PySide6.QtWidgets import QApplication
 
 from janim.anims.animation import TimeRange
-from janim.utils.file_ops import get_janim_dir
+from janim.utils.file_ops import get_gui_asset
 
 LABEL_DEFAULT_HEIGHT = 3
 LABEL_PIXEL_HEIGHT_PER_UNIT = 8     # px
@@ -242,7 +241,7 @@ class LabelGroup(Label):
             max_len = 0
             # if-else 地狱 ¯\_(ツ)_/¯
             for i, other in enumerate(stack):
-                if other.t_range.end <= label.t_range.at:
+                if other.t_range.end <= label.t_range.at + 1e-5:    # 避免临近相等时的浮点误差
                     if not found_place:
                         if self.ordered_divisions is not None:
                             self.ordered_divisions[i].append(label)
@@ -272,13 +271,13 @@ class LabelGroup(Label):
         self.labels = labels
 
     def is_exclusive(self) -> bool:
-        '''
+        """
         若 ``labels`` 没有重叠部分则返回 ``True``
-        '''
+        """
         if self.ordered_divisions is not None:
             return len(self.ordered_divisions) <= 1
         return all(
-            a.t_range.end <= b.t_range.at
+            a.t_range.end <= b.t_range.at + 1e-5    # 避免临近相等时的浮点数误差
             for a, b in it.pairwise(self.labels)
         )
 
@@ -432,7 +431,7 @@ class LabelGroup(Label):
     @staticmethod
     def get_pix_collapse_tip1() -> QPixmap:
         if LabelGroup._pix_collapse_tip1 is None:
-            LabelGroup._pix_collapse_tip1 = QPixmap(os.path.join(get_janim_dir(), 'gui', 'collapse_tip1.png'))
+            LabelGroup._pix_collapse_tip1 = QPixmap(get_gui_asset('collapse_tip1.png'))
         return LabelGroup._pix_collapse_tip1
 
     _pix_collapse_tip2 = None
@@ -440,7 +439,7 @@ class LabelGroup(Label):
     @staticmethod
     def get_pix_collapse_tip2() -> QPixmap:
         if LabelGroup._pix_collapse_tip2 is None:
-            LabelGroup._pix_collapse_tip2 = QPixmap(os.path.join(get_janim_dir(), 'gui', 'collapse_tip2.png'))
+            LabelGroup._pix_collapse_tip2 = QPixmap(get_gui_asset('collapse_tip2.png'))
         return LabelGroup._pix_collapse_tip2
 
     def paint(self, p: QPainter, params: Label.PaintParams, y_offset: int = 0) -> None:

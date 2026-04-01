@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from janim.utils.font.variant import Style
 
 
-@dataclass
+@dataclass(slots=True)
 class FontException:
     family: str | None = None
     weight: int | None = None

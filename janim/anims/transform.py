@@ -11,34 +11,78 @@ from typing import Callable, Generator, Iterable
 
 import numpy as np
 
-from janim.anims.animation import Animation, ItemAnimation
+from janim.anims.animation import Animation, ItemAnimation, TimeRange
 from janim.anims.composition import AnimGroup
 from janim.anims.fading import FadeIn, FadeInFromPoint, FadeOut, FadeOutToPoint
 from janim.components.points import Cmpt_Points
 from janim.constants import C_LABEL_ANIM_STAY, OUT
+from janim.exception import TargetNotFoundError
 from janim.items.item import Item
 from janim.items.points import Points
 from janim.items.text import Text, TextChar, TextLine
 from janim.items.vitem import VItem
-from janim.locale.i18n import get_local_strings
+from janim.locale import get_translator
 from janim.logger import log
 from janim.typing import Vect
 from janim.utils.data import AlignedData
 from janim.utils.iterables import resize_preserving_order
 from janim.utils.paths import PathFunc, get_path_func
 
-_ = get_local_strings('transform')
+_ = get_translator('janim.anims.transform')
 
 
 class Transform(Animation):
-    '''
-    创建从 ``src_item`` 至 ``target_item`` 的插值动画
+    """
+    创建从 ``src_item`` 到 ``target_item`` 的插值动画
 
-    - ``path_arc`` 和 ``path_arc_axis`` 可以指定插值的圆弧路径的角度，若不传入则是直线
-    - 也可以直接传入 ``path_func`` 来指定路径方法
-    - 在默认情况（``flatten=False``）下需要保证两个物件的子物件结构能够对齐，否则会报错；可以传入 ``flatten=True`` 来忽略子物件结构
-    - ``root_only`` 可以指定只对两个物件的根物件进行插值，而不对子物件进行插值
-    '''
+    作用机制：在开始时隐藏源物件，在动画过程中播放“插值效果”，在结束后显示目标物件
+
+    :param src_item: 变换的起始物件
+    :param target_item: 变换的目标物件
+
+    **路径与插值**
+
+    :param path_arc: 插值路径的圆弧角度；为 ``0`` 时按直线插值
+    :param path_arc_axis: 当使用圆弧路径时的旋转轴。
+    :param path_func: 自定义路径函数；传入后会覆盖 ``path_arc`` 与 ``path_arc_axis`` 的默认路径行为
+
+    **对齐策略**
+
+    :param flatten: 是否忽略子物件层级并直接按顺序展平对齐；默认 ``False``，要求源与目标子结构可对齐
+    :param root_only: 是否仅对根物件进行插值而不递归子物件
+
+    **显隐与淡入淡出**
+
+    :param hide_src: 动画开始时是否自动隐藏源物件
+    :param show_target: 动画结束时是否自动显示目标物件
+    :param src_fade: 仅当 ``hide_src=False`` 时生效；表示源物件在动画开头淡入的时长比例
+    :param target_fade: 表示目标物件在动画末尾淡出的时长比例
+
+    ``src_fade`` 与 ``target_fade`` 对半透明物件较为实用，可规避开始/结束时重叠导致的透明度突变
+
+    ----
+
+    基本示例：
+
+    .. janim-example:: TransformExample
+        :extract-from-test:
+        :media: _static/videos/TransformExample.mp4
+        :url: https://janim.readthedocs.io/zh-cn/latest/janim/anims/transform.html#transformexample
+
+    对 ``hide_src`` 和 ``show_target`` 参数的演示：
+
+    .. janim-example:: TransformHideShowExample
+        :extract-from-test:
+        :media: _static/videos/TransformHideShowExample.mp4
+        :url: https://janim.readthedocs.io/zh-cn/latest/janim/anims/transform.html#transformhideshowexample
+
+    对 ``src_fade`` 和 ``target_fade`` 参数的演示：
+
+    .. janim-example:: TransformFadeExample
+        :extract-from-test:
+        :media: _static/videos/TransformFadeExample.mp4
+        :url: https://janim.readthedocs.io/zh-cn/latest/janim/anims/transform.html#transformfadeexample
+    """
     label_color = C_LABEL_ANIM_STAY
 
     def __init__(
@@ -50,11 +94,14 @@ class Transform(Animation):
         path_arc_axis: Vect = OUT,
         path_func: PathFunc | None = None,
 
+        flatten: bool = False,
+        root_only: bool = False,
+
         hide_src: bool = True,
         show_target: bool = True,
 
-        flatten: bool = False,
-        root_only: bool = False,
+        src_fade: float = 0,
+        target_fade: float = 0,
         **kwargs
     ):
         super().__init__(**kwargs)
@@ -67,6 +114,9 @@ class Transform(Animation):
 
         self.hide_src = hide_src
         self.show_target = show_target
+
+        self.src_fade = src_fade
+        self.target_fade = target_fade
 
         self.flatten = flatten
         self.root_only = root_only
@@ -88,15 +138,32 @@ class Transform(Animation):
         ]
         self.timeline.add_additional_render_calls_callback(
             self.t_range,
-            lambda: self.additional_calls
+            lambda: self.additional_calls,
+            [self.src_item, self.target_item]
         )
 
         # 在动画开始时自动隐藏源对象，在动画结束时自动显示目标对象
         # 可以将 ``hide_src`` 和 ``show_target`` 置为 ``False`` 以禁用
         if self.hide_src:
             self.timeline.schedule(self.t_range.at, self.src_item.hide, root_only=self.root_only)
+
         if self.show_target:
             self.timeline.schedule(self.t_range.end, self.target_item.show, root_only=self.root_only)
+
+        # 对 src_fade 和 target_fade 的处理
+        if not self.hide_src and self.src_fade != 0:
+            fade_duration = self.t_range.duration * self.src_fade
+            anim = FadeIn(self.src_item)
+            anim.transfer_params(self)
+            anim.t_range = TimeRange(self.t_range.at, self.t_range.at + fade_duration)
+            anim.finalize()
+
+        if self.target_fade != 0:
+            fade_start = self.t_range.duration * (1 - self.target_fade)
+            anim = FadeOut(self.target_item, hide_at_end=False)
+            anim.transfer_params(self)
+            anim.t_range = TimeRange(self.t_range.at + fade_start, self.t_range.end)
+            anim.finalize()
 
     def align_data(self) -> None:
         apprs = self.timeline.item_appearances
@@ -131,7 +198,7 @@ class Transform(Animation):
                                 len2=len(data2.get_children()))
                     )
                 else:
-                    for child1, child2 in zip(aligned.data1.stored_children, aligned.data2.stored_children):
+                    for child1, child2 in zip(aligned.data1._stored_children, aligned.data2._stored_children):
                         align(child1, child2, True)
 
         if not self.flatten:
@@ -175,11 +242,21 @@ class Transform(Animation):
 
 
 class MoveToTarget(Transform):
-    '''
+    """
     详见 :meth:`~.Item.generate_target`
-    '''
+
+    .. janim-example:: MoveToTargetExample
+        :extract-from-test:
+        :media: _static/videos/MoveToTargetExample.mp4
+        :url: https://janim.readthedocs.io/zh-cn/latest/janim/anims/transform.html#movetotargetexample
+    """
 
     def __init__(self, item: Item, **kwargs):
+        if item.target is None:
+            raise TargetNotFoundError(
+                _('You must use `.generate_target` to generate the target item '
+                  'before using `MoveToTarget` to create animation')
+            )
         super().__init__(
             item,
             item.target,
@@ -201,9 +278,94 @@ class MoveToTarget(Transform):
 
 
 class TransformInSegments(AnimGroup):
-    '''
+    """
     依照切片列表进行 ``src`` 与 ``target`` 之间的变换
-    '''
+
+    ----
+
+    **基本用法**
+
+    .. code-block:: python
+
+        TransformInSegments(a, [[0,3], [5,7]],
+                            b, [[1,3], [5,7]])
+
+    相当于
+
+    .. code-block:: python
+
+        AnimGroup(Transform(a[0:3], b[1:3]),
+                  Transform(a[5:7], b[5:7]))
+
+    **省略变换目标的切片**
+
+    使用 ``...`` 表示与变换来源的切片相同
+
+    .. code-block:: python
+
+        TransformInSegments(a, [[0,3], [5,7]],
+                            b, ...)
+
+    相当于
+
+    .. code-block:: python
+
+        TransformInSegments(a, [[0,3], [5,7]],
+                            b, [[0,3], [5,7]])
+
+    **连续切片**
+
+    .. code-block:: python
+
+        TransformInSegments(a, [[0,3], [5,7,9]],
+                            b, [[1,3], [4,7], [10,14]])
+
+    相当于
+
+    .. code-block:: python
+
+        TransformInSegments(a, [[0,3], [5,7], [7,9]],
+                            b, [[1,3], [4,7], [10,14]])
+
+    **切片简写**
+
+    如果总共只有一个切片，可以省略一层嵌套
+
+    .. code-block:: python
+
+        TransformInSegments(a, [0, 4, 6, 8],
+                            b, ...)
+
+    相当于
+
+    .. code-block:: python
+
+        TransformInSegments(a, [[0, 4, 6, 8]],
+                            b, ...)
+
+    **连续切片倒序**
+
+    倒过来写即可使切片倒序
+
+    .. code-block:: python
+
+        TransformInSegments(a, [8, 6, 4, 0],
+                            b, ...)
+
+    相当于
+
+    .. code-block:: python
+
+        TransformInSegments(a, [[6,8], [4,6], [0,4]],
+                            b, ...)
+
+    请留意 Python 切片中左闭右开的原则，对于倒序序列 ``[8, 6, 4, 0]`` 来说则是左开右闭
+
+    .. janim-example:: TransformInSegmentsExample
+        :extract-from-test:
+        :media: _static/videos/TransformInSegmentsExample.mp4
+        :url: https://janim.readthedocs.io/zh-cn/latest/janim/anims/transform.html#transforminsegmentsexample
+    """
 
     label_color = C_LABEL_ANIM_STAY
 
@@ -235,9 +397,7 @@ class TransformInSegments(AnimGroup):
 
     @staticmethod
     def parse_segment(segs: Iterable[Iterable[int]] | Iterable[int]) -> Generator[tuple[int, int], None, None]:
-        '''
-        ``[[a, b, c], [d, e]]`` -> ``[[a, b], [b, c], [d, e]]``
-        '''
+        # ``[[a, b, c], [d, e]]`` -> ``[[a, b], [b, c], [d, e]]``
         assert len(segs) > 0
         if not isinstance(segs[0], Iterable):
             segs = [segs]
@@ -248,14 +408,19 @@ class TransformInSegments(AnimGroup):
 
 
 class MethodTransform(Transform):
-    '''
+    """
     依据物件的变换而创建的补间过程
 
     具体参考 :meth:`~.Item.anim`
-    '''
+
+    .. janim-example:: MethodTransformExample
+        :extract-from-test:
+        :media: _static/videos/MethodTransformExample.mp4
+        :url: https://janim.readthedocs.io/zh-cn/latest/janim/anims/transform.html#methodtransformexample
+    """
     label_color = (255, 189, 129)    # C_LABEL_ANIM_STAY 的变体
 
-    class ActionType(Enum):
+    class _ActionType(Enum):
         GetAttr = 0
         Call = 1
 
@@ -271,20 +436,20 @@ class MethodTransform(Transform):
         self.obj = obj
         self.show_at_begin = show_at_begin
         self.hide_at_end = hide_at_end
-        self.delayed_actions: list[tuple[MethodTransform.ActionType, str | tuple[tuple, dict]]] = []
+        self.delayed_actions: list[tuple[MethodTransform._ActionType, str | tuple[tuple, dict]]] = []
 
     def __getattr__(self, name: str):
-        self.delayed_actions.append((MethodTransform.ActionType.GetAttr, name))
+        self.delayed_actions.append((MethodTransform._ActionType.GetAttr, name))
         return self
 
     def __call__(self, *args, **kwargs):
-        self.delayed_actions.append((MethodTransform.ActionType.Call, (args, kwargs)))
+        self.delayed_actions.append((MethodTransform._ActionType.Call, (args, kwargs)))
         return self
 
     def _time_fixed(self) -> None:
         obj = self.obj
         for type, value in self.delayed_actions:
-            if type is MethodTransform.ActionType.GetAttr:
+            if type is MethodTransform._ActionType.GetAttr:
                 obj = getattr(obj, value)
             else:   # Call
                 args, kwargs = value
@@ -311,9 +476,9 @@ class MethodTransform(Transform):
 
 
 class MethodTransformArgsBuilder:
-    '''
+    """
     使得 ``.anim`` 和 ``.anim(...)`` 后可以进行同样的操作
-    '''
+    """
     def __init__(self, item: Item):
         self.item = item
         self.obj = item._astype_wrapper or item
@@ -351,6 +516,7 @@ class _MethodTransform(ItemAnimation):
 
 
 class FadeTransform(AnimGroup):
+    # TODO: docs
     label_color = C_LABEL_ANIM_STAY
 
     def __init__(
@@ -416,13 +582,18 @@ type MismatchHandler = Callable[[VItem, MatchingParams, ], ItemAnimation]
 
 
 class TransformMatchingShapes(AnimGroup):
-    '''
+    """
     匹配形状进行变换
 
     - ``match`` 表示对于匹配的形状的处理
     - ``mismatch`` 表示对于不匹配的形状的处理
     - 注：所有传入该动画类的额外参数（``**kwargs``）都会被传入 ``match`` 和 ``mismatch`` 的方法中
-    '''
+
+    .. janim-example:: TransformMatchingShapesExample
+        :extract-from-test:
+        :media: _static/videos/TransformMatchingShapesExample.mp4
+        :url: https://janim.readthedocs.io/zh-cn/latest/janim/anims/transform.html#transformmatchingshapesexample
+    """
 
     label_color = C_LABEL_ANIM_STAY
 
@@ -500,7 +671,7 @@ class TransformMatchingShapes(AnimGroup):
 
 
 class TransformMatchingDiff(AnimGroup):
-    '''
+    """
     匹配 diff 进行变换
 
     对于一般物件，使用形状匹配 diff；对于 :class:`~.Text` 使用 :class:`~.TextChar` 的字符匹配 diff
@@ -508,7 +679,12 @@ class TransformMatchingDiff(AnimGroup):
     - ``match`` 表示对于匹配的形状的处理
     - ``mismatch`` 表示对于不匹配的形状的处理
     - 注：所有传入该动画类的额外参数（``**kwargs``）都会被传入 ``match`` 和 ``mismatch`` 的方法中
-    '''
+
+    .. janim-example:: TransformMatchingDiffExample
+        :extract-from-test-mark:
+        :media: _static/videos/TransformMatchingDiffExample.mp4
+        :url: https://janim.readthedocs.io/zh-cn/latest/janim/anims/transform.html#transformmatchingdiffexample
+    """
 
     label_color = C_LABEL_ANIM_STAY
 
@@ -596,7 +772,7 @@ class TransformMatchingDiff(AnimGroup):
         cls,
         src: Item,
         target: Item
-    ) -> tuple[list[MatchWrapper], list[MatchWrapper]]:
+    ) -> tuple[list[_MatchWrapper], list[_MatchWrapper]]:
 
         def self_and_descendant_with_points(item: Item) -> list[VItem]:
             return [
@@ -609,9 +785,9 @@ class TransformMatchingDiff(AnimGroup):
         target_pieces = self_and_descendant_with_points(target)
 
         if cls.can_use_char_wrapper(src, target, src_pieces, target_pieces):
-            wrapper_cls = cls.CharMatchWrapper
+            wrapper_cls = cls._CharMatchWrapper
         else:
-            wrapper_cls = cls.MatchWrapper
+            wrapper_cls = cls._MatchWrapper
 
         return wrapper_cls.from_iterable(src_pieces), wrapper_cls.from_iterable(target_pieces)
 
@@ -629,25 +805,52 @@ class TransformMatchingDiff(AnimGroup):
 
         return True
 
-    @dataclass
-    class MatchWrapper:
-        item: VItem
+    _map_to_hash_id: dict[int, int] = {}
+    _next_hash_id = 0
 
-        def __eq__(self, other: TransformMatchingDiff.MatchWrapper):
-            return self.item.points.same_shape(other.item)
+    @dataclass
+    class _MatchWrapper:
+        item: VItem
+        hash_id: int
+
+        def __eq__(self, other: TransformMatchingDiff._MatchWrapper):
+            return self.hash_id == other.hash_id
 
         def __hash__(self):
-            return self.item.points.identity[0]
+            return self.hash_id
 
         @classmethod
         def from_iterable(cls, iterable: Iterable):
-            return [cls(x) for x in iterable]
+            return [cls(x, cls.get_hash_id(x)) for x in iterable]
+
+        @staticmethod
+        def get_hash_id(x: VItem) -> int:
+            """
+            将 identity 的一组 hash 化归为单一 hash_id
+            """
+            map = TransformMatchingDiff._map_to_hash_id
+            hashes = x.points.identity[0][:1]
+
+            hash_id: int | None = None
+            for h in hashes:
+                recorded = map.get(h, None)
+                if recorded is not None:
+                    hash_id = recorded
+                    break
+
+            if hash_id is None:
+                hash_id = TransformMatchingDiff._next_hash_id
+                TransformMatchingDiff._next_hash_id += 1
+
+            for h in hashes:
+                map[h] = hash_id
+            return hash_id
 
     @dataclass
-    class CharMatchWrapper(MatchWrapper):
+    class _CharMatchWrapper(_MatchWrapper):
         item: TextChar
 
-        def __eq__(self, other: TransformMatchingDiff.CharMatchWrapper):
+        def __eq__(self, other: TransformMatchingDiff._CharMatchWrapper):
             return self.item.char == other.item.char
 
         def __hash__(self):

@@ -66,7 +66,3 @@ msgstr "Brace item"
 #: janim.items.svg.brace.Brace:3 of
 msgid "会匹配物件在 ``direction`` 方向的宽度"
 msgstr "Will match the width of the item in the ``direction`` direction"
-
-#~ msgid "将花括号进行伸缩，使得与 ``item_or_data`` 在 ``direction`` 方向的宽度匹配"
-#~ msgstr ""
-

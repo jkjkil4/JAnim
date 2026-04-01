@@ -3,6 +3,7 @@
 //  vec2 get_point(int idx)
 
 #include "../../includes/is_approx_line.glsl"
+#include "../../includes/line_sdf.glsl"
 #include "../../includes/bezier_sdf.glsl"
 
 void get_curve_attr(
@@ -17,19 +18,13 @@ void get_curve_attr(
         return;
 
     if (is_approx_line(A, B, C)) {
-        vec2 e = C - A;
-        vec2 w = v_coord - A;
-        vec2 b = w - e * clamp(dot(w, e) / dot(e, e), 0.0, 1.0);
-        float dist = length(b);
+        float dist = distance_line(A, C, v_coord);
         if (dist < d) {
             d = dist;
             match = true;
         }
 
-        bvec3 cond = bvec3( v_coord.y >= A.y,
-                            v_coord.y  < C.y,
-                            e.x * w.y > e.y * w.x );
-        if(all(cond) || all(not(cond))) sgn = -sgn;
+        sgn *= sign_line(A, C, v_coord);
     } else {
         float dist = distance_bezier(A, B, C, v_coord);
         if (dist < d) {
@@ -87,8 +82,7 @@ uniform vec3 JA_CAMERA_UP;
 uniform mat4 JA_VIEW_MATRIX;
 uniform mat4 JA_PROJ_MATRIX;
 
-uniform vec3 unit_normal;
-uniform vec3 start_point;
+#include "vitem_plane_unit_normal_uniforms.glsl"
 uniform bool DEPTH_TEST;
 
 void compute_depth_if_needed()

@@ -14,9 +14,9 @@ type PathFunc = Callable[[np.ndarray, np.ndarray, float], np.ndarray]
 
 
 def get_path_func(path_arc: float, path_arc_axis: Vect, path_func: PathFunc | None) -> PathFunc:
-    '''
+    """
     根据 ``path_arc`` ``path_arc_axis`` ``path_func`` ，建立 ``self.path_func``
-    '''
+    """
     if path_func is not None:
         return path_func
 

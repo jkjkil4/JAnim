@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import itertools as it
 import math
 from bisect import bisect, bisect_left
@@ -16,7 +18,7 @@ from janim.anims.timeline import BuiltTimeline, Timeline, TimelineItem
 from janim.gui.label import (LABEL_DEFAULT_HEIGHT, LABEL_PIXEL_HEIGHT_PER_UNIT,
                              Label, LabelGroup, LazyLabelGroup, PixelRange)
 from janim.items.item import Item
-from janim.locale.i18n import get_local_strings
+from janim.locale import get_translator
 from janim.utils.bezier import interpolate
 from janim.utils.rate_functions import linear
 from janim.utils.simple_functions import clip
@@ -24,7 +26,7 @@ from janim.utils.simple_functions import clip
 if TYPE_CHECKING:
     from PySide6.QtCharts import QAreaSeries, QChartView
 
-_ = get_local_strings('timeline_view')
+_ = get_translator('janim.gui.timeline_view')
 
 TIMELINE_VIEW_MIN_DURATION = 0.5
 LABEL_OBJ_NAME = '__obj'
@@ -33,14 +35,14 @@ SUBTIMELINE_CLASS_NAME = '__subtimeline_class'
 
 
 class TimelineView(QWidget):
-    '''
+    """
     窗口下方的进度条和动画区段指示器
 
     - **w** 键放大区段（使视野精确到一小段中）
     - **s** 键缩小区段（使视野扩展到一大段中）
     - **a** 和 **d** 左右移动区段
     - 使用鼠标滚轮纵向平移
-    '''
+    """
 
     @dataclass
     class PixelRange:
@@ -53,9 +55,9 @@ class TimelineView(QWidget):
 
     @dataclass
     class Pressing:
-        '''
+        """
         记录按键状态
-        '''
+        """
         w: bool = False
         a: bool = False
         s: bool = False
@@ -171,9 +173,9 @@ class TimelineView(QWidget):
                 sub_info.restore(label)
 
     def init_label_group(self) -> None:
-        '''
+        """
         构建动画区段信息，以便操作与绘制
-        '''
+        """
         self.debug_label_group = self.make_debug_label_group(self.built)
         self.audio_label_group = self.make_audio_label_group(self.built)
         self.anim_label_group = self.make_anim_label_group(self.built)
@@ -462,9 +464,9 @@ class TimelineView(QWidget):
         if isinstance(obj, Animation):
             self.hover_at_anim(pos, obj)
         else:
-            self.hover_at_audio(pos, obj)
+            self.hover_at_audio(pos, label, obj)
 
-    def hover_at_audio(self, pos: QPoint, info: Timeline.PlayAudioInfo) -> None:
+    def hover_at_audio(self, pos: QPoint, label: Label, info: Timeline.PlayAudioInfo) -> None:
         msg_lst = [
             f'{round(info.range.at, 2)}s ~ {round(info.range.end, 2)}s',
             info.audio.file_path
@@ -502,11 +504,14 @@ class TimelineView(QWidget):
                 msg_lst.append(_('Recommended clip') + f': {clips[:40]} ... {clips[-40:]}')
                 msg_lst.append('    ' + _('(Too many! Unable to display all ranges.)'))
 
-        label = QLabel('\n'.join(msg_lst))
-        chart_view = self.create_audio_chart(info, near=round(self.pixel_to_time(pos.x())))
+        msglabel = QLabel('\n'.join(msg_lst))
+
+        absolute_near = round(self.pixel_to_time(pos.x()))
+        relative_near = absolute_near - label.t_range.at
+        chart_view = self.create_audio_chart(info, near=relative_near)
 
         layout = QVBoxLayout()
-        layout.addWidget(label)
+        layout.addWidget(msglabel)
         layout.addWidget(chart_view)
 
         self.tooltip = QWidget()
@@ -517,7 +522,7 @@ class TimelineView(QWidget):
         self.place_tooltip(self.tooltip, pos)
         self.tooltip.show()
 
-    def create_audio_chart(self, info: Timeline.PlayAudioInfo, near: float | None = None) -> 'QChartView':
+    def create_audio_chart(self, info: Timeline.PlayAudioInfo, near: float | None = None) -> QChartView:
         from PySide6.QtCharts import (QChart, QChartView, QLineSeries,
                                       QValueAxis)
 
@@ -526,8 +531,8 @@ class TimelineView(QWidget):
         clip_begin = info.clip_range.at
         clip_end = info.clip_range.end
         if near is not None:
-            clip_begin = max(clip_begin, near - info.range.at + info.clip_range.at - 4)
-            clip_end = min(clip_end, near - info.range.at + info.clip_range.at + 4)
+            clip_begin = max(clip_begin, near + info.clip_range.at - 4)
+            clip_end = min(clip_end, near + info.clip_range.at + 4)
 
         range_begin = info.range.at + (clip_begin - info.clip_range.at)
         range_end = range_begin + (clip_end - clip_begin)
@@ -614,7 +619,7 @@ class TimelineView(QWidget):
         return chart_view
 
     @staticmethod
-    def create_axvspan(x1: float, x2: float, c1: QColor, c2: QColor) -> 'QAreaSeries':
+    def create_axvspan(x1: float, x2: float, c1: QColor, c2: QColor) -> QAreaSeries:
         from PySide6.QtCharts import QAreaSeries, QLineSeries
         from PySide6.QtGui import QGradient, QLinearGradient
 
@@ -682,7 +687,7 @@ class TimelineView(QWidget):
         self.place_tooltip(self.tooltip, pos)
         self.tooltip.show()
 
-    def create_anim_chart(self, anim: Animation) -> 'QChartView':
+    def create_anim_chart(self, anim: Animation) -> QChartView:
         from PySide6.QtCharts import QChart, QChartView, QScatterSeries
 
         count = min(500, int(anim.t_range.duration * self.built.cfg.fps))

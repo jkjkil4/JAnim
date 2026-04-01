@@ -1,4 +1,3 @@
-﻿# SOME DESCRIPTIVE TITLE.
 # Copyright (C) 2023, jkjkil4
 # This file is distributed under the same license as the JAnim package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
@@ -8,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: JAnim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-08-11 22:08+0800\n"
+"POT-Creation-Date: 2026-02-24 01:11+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -23,26 +22,6 @@ msgstr ""
 msgid "label"
 msgstr "label"
 
-#: janim.gui.label.Label:1 janim.gui.label.Label.PaintParams:1
-#: janim.gui.label.PixelRange:1 of
-msgid "基类：:py:class:`object`"
-msgstr "基类：:py:class:`object`"
-
-#: janim.gui.label.LabelGroup:1 of
-msgid "基类：:py:class:`~janim.gui.label.Label`"
-msgstr "基类：:py:class:`~janim.gui.label.Label`"
-
 #: janim.gui.label.LabelGroup.is_exclusive:1 of
 msgid "若 ``labels`` 没有重叠部分则返回 ``True``"
 msgstr "Returns ``True`` if ``labels`` have no overlapping parts"
-
-#: janim.gui.label.LabelGroup.QueryPolicy:1 of
-msgid "基类：:py:class:`~enum.Enum`"
-msgstr "基类：:py:class:`~enum.Enum`"
-
-#: janim.gui.label.LazyLabelGroup:1 of
-msgid "基类：:py:class:`~janim.gui.label.LabelGroup`"
-msgstr "基类：:py:class:`~janim.gui.label.LabelGroup`"
-
-
-

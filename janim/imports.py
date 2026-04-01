@@ -1,6 +1,6 @@
-'''
+"""
 使用 ``from janim.imports import *`` 即可导入 ``janim`` 主要的功能
-'''
+"""
 
 # flake8: noqa
 from colour import Color
@@ -19,6 +19,7 @@ from janim.anims.transform import *
 from janim.anims.updater import *
 from janim.camera.camera import *
 from janim.camera.camera_info import *
+from janim.components.data import CustomData
 from janim.components.rgbas import apart_alpha, merge_alpha
 from janim.constants import *
 from janim.exception import *
@@ -31,6 +32,7 @@ from janim.items.geometry.arc import *
 from janim.items.geometry.arrow import *
 from janim.items.geometry.line import *
 from janim.items.geometry.polygon import *
+from janim.items.group import *
 from janim.items.image_item import *
 from janim.items.item import *
 from janim.items.points import *

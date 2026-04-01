@@ -22,4 +22,3 @@ msgstr ""
 #: ../../source/janim/render/uniform.rst:2
 msgid "uniform"
 msgstr "uniform"
-

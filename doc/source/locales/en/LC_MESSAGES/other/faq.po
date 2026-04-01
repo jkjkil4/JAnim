@@ -31,24 +31,20 @@ msgstr "Why is there no border when I draw a table with :class:`~.TypstDoc`?"
 #: ../../source/tutorial/faq.rst:11
 msgid "这是因为 JAnim 的背景是黑色，边框颜色也是黑色，导致您误认为没有边框"
 msgstr ""
-"This happens because JAnim uses a black background, and the default table "
-"border color is also black, making it appear as if there is no border."
+"This happens because JAnim uses a black background, and the default table border color is also black, making it appear as "
+"if there is no border."
 
 #: ../../source/tutorial/faq.rst:13
 msgid "JAnim 只将文字的默认颜色设置为了白色，表格等其它对象的颜色需要自行设置"
 msgstr ""
-"JAnim only sets the default text color to white. For other objects like "
-"tables, you need to manually specify their colors."
+"JAnim only sets the default text color to white. For other objects like tables, you need to manually specify their colors."
 
 #: ../../source/tutorial/faq.rst:16
 msgid "为什么语言与系统语言不一致？"
 msgstr "Why is the language inconsistent with the system language?"
 
 #: ../../source/tutorial/faq.rst:18
-msgid ""
-"如果你是使用 VS Code，在一些系统中，程序会跟随 VS Code 的语言配置，需要在 "
-"VS Code 安装对应的语言包"
+msgid "如果你是使用 VS Code，在一些系统中，程序会跟随 VS Code 的语言配置，需要在 VS Code 安装对应的语言包"
 msgstr ""
-"If you are using VS Code, in some systems, the program will follow the "
-"language settings of VS Code. You need to install the corresponding language "
-"pack in VS Code."
+"If you are using VS Code, in some systems, the program will follow the language settings of VS Code. You need to install "
+"the corresponding language pack in VS Code."

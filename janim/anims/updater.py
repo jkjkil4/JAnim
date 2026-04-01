@@ -17,19 +17,19 @@ from janim.components.component import Component
 from janim.constants import C_LABEL_ANIM_ABSTRACT
 from janim.exception import UpdaterError
 from janim.items.item import Item
-from janim.locale.i18n import get_local_strings
+from janim.locale import get_translator
 from janim.render.base import Renderer
 from janim.utils.rate_functions import RateFunc, linear
 from janim.utils.simple_functions import clip
 
-_ = get_local_strings('updater')
+_ = get_translator('janim.anims.updater')
 
 
 @dataclass
 class UpdaterParams:
-    '''
+    """
     ``Updater`` 调用时会传递的参数，用于标注时间信息以及动画进度
-    '''
+    """
     global_t: float
     alpha: float
     range: TimeRange
@@ -51,10 +51,11 @@ class UpdaterParams:
 
 @dataclass
 class StepUpdaterParams:
-    '''
+    """
     :class:`StepUpdater` 调用时会传递的参数，用于标注时间信息以及动画进度
-    '''
+    """
     global_t: float
+    dt: float
     range: TimeRange
     n: int
 
@@ -73,7 +74,7 @@ updater_params_ctx: ContextVar[UpdaterParams] = ContextVar('updater_params_ctx')
 type DataUpdaterFn[T] = Callable[[T, UpdaterParams], Any]
 type GroupUpdaterFn[T] = Callable[[T, UpdaterParams], Any]
 type ItemUpdaterFn = Callable[[UpdaterParams], Item]
-type StepUpdaterFn[T] = Callable[[T, UpdaterParams], Any]
+type StepUpdaterFn[T] = Callable[[T, StepUpdaterParams], Any]
 
 
 def _call_two_func(func1: Callable, func2: Callable, *args, **kwargs) -> None:
@@ -82,7 +83,7 @@ def _call_two_func(func1: Callable, func2: Callable, *args, **kwargs) -> None:
 
 
 class DataUpdater[T: Item](Animation):
-    '''
+    """
     以时间为参数对物件的数据进行修改
 
     例如：
@@ -110,7 +111,7 @@ class DataUpdater[T: Item](Animation):
         默认 ``root_only=True`` 即只对根物件应用该 updater；需要设置 ``root_only=False`` 才会对所有后代物件也应用该 updater
 
     另见 :ref:`basic_examples` 中的 ``UpdaterExample``
-    '''
+    """
     label_color = C_LABEL_ANIM_ABSTRACT
 
     def __init__(
@@ -203,7 +204,7 @@ class _DataUpdater(ItemAnimation):
             self.func(data, params)
 
     def get_sub_alpha(self, alpha: float) -> float:
-        '''依据 ``lag_ratio`` 得到特定子物件的 ``sub_alpha``'''
+        """依据 ``lag_ratio`` 得到特定子物件的 ``sub_alpha``"""
         lag_ratio = self.lag_ratio
         full_length = (self.count - 1) * lag_ratio + 1
         value = alpha * full_length
@@ -212,13 +213,13 @@ class _DataUpdater(ItemAnimation):
 
 
 class GroupUpdater[T: Item](Animation):
-    '''
+    """
     以时间为参数对一组物件的数据进行修改
 
     .. warning::
 
         该 Updater 假设 ``func`` 不会改变 ``item`` 后代物件结构，如果改变结构（例如增删子物件、:meth:`~.Item.become` 结构不一致等情况），则可能导致意外行为
-    '''
+    """
     label_color = C_LABEL_ANIM_ABSTRACT
 
     def __init__(
@@ -302,7 +303,7 @@ class _GroupUpdater(ApplyAligner):
         **kwargs
     ):
         super().__init__(item, stacks, **kwargs)
-        self._generate_by = generate_by
+        self._generate_by: GroupUpdater = generate_by
         self.data = data
 
     def pre_apply(self, data: Item, p: ItemAnimation.ApplyParams) -> None:
@@ -315,11 +316,12 @@ class _GroupUpdater(ApplyAligner):
 
 
 class MethodUpdater(Animation):
-    '''
+    """
     依据物件的变换而创建的 updater
 
     具体参考 :meth:`~.Item.update`
-    '''
+    """
+
     label_color = (214, 185, 253)   # C_LABEL_ANIM_ABSTRACT 的变体
 
     class ActionType(Enum):
@@ -437,9 +439,9 @@ class MethodUpdater(Animation):
 
 
 class MethodUpdaterArgsBuilder:
-    '''
+    """
     使得 ``.update`` 和 ``.update(...)`` 后可以进行同样的操作
-    '''
+    """
     def __init__(self, item: Item):
         self.item = item
         self.obj = item._astype_wrapper or item
@@ -452,7 +454,7 @@ class MethodUpdaterArgsBuilder:
 
 
 class ItemUpdater(Animation):
-    '''
+    """
     以时间为参数显示物件
 
     也就是说，在 :class:`ItemUpdater` 执行时，对于每帧，都会执行 ``func``，并显示 ``func`` 返回的物件
@@ -464,7 +466,8 @@ class ItemUpdater(Animation):
     - 若传入 ``item=None``，则以上两点都无效
 
     另见 :ref:`basic_examples` 中的 ``UpdaterExample``
-    '''
+    """
+
     label_color = C_LABEL_ANIM_ABSTRACT
 
     def __init__(
@@ -487,7 +490,11 @@ class ItemUpdater(Animation):
         self.renderers: dict[type, Renderer] = {}
 
     def _time_fixed(self) -> None:
-        self.timeline.add_additional_render_calls_callback(self.t_range, self.render_calls_callback)
+        self.timeline.add_additional_render_calls_callback(
+            self.t_range,
+            self.render_calls_callback,
+            None if self.item is None else [self.item]
+        )
 
         if self.item is None:
             return
@@ -550,9 +557,10 @@ class ItemUpdater(Animation):
 
 
 class StepUpdater[T: Item](Animation):
-    '''
+    """
     按步更新物件，每次间隔 ``step`` 秒调用 ``func`` 进行下一步更新
-    '''
+    """
+
     label_color = C_LABEL_ANIM_ABSTRACT
 
     def __init__(
@@ -656,6 +664,9 @@ class _StepUpdater(ItemAnimation):
         if self.become_at_end and self.t_range.end is not FOREVER:
             self.compute(self.item, self.t_range.end)
 
+            apprs = self.timeline.item_appearances
+            apprs[self.item].stack.detect_change(self.item, self.t_range.end)
+
     def apply(self, data: None, p: ItemAnimation.ApplyParams) -> Item:
         self.compute(self.data, p.global_t, generate_temporary_cache=True)
         return self.data
@@ -707,6 +718,7 @@ class _StepUpdater(ItemAnimation):
 
         for computing_n in rg:
             with StepUpdaterParams(self.n_to_global_t(computing_n),
+                                   self.step,
                                    self.t_range,
                                    computing_n,
                                    self) as params:

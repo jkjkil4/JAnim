@@ -11,7 +11,7 @@ from janim.utils.data import AlignedData
 
 
 class Cmpt_Depth[ItemT](Component[ItemT]):
-    '''深度组件
+    """深度组件
 
     - 如果某个对象的深度值更小，那么它在 ``>`` 和 ``<`` 的判断中也就更小
     - 如果两个对象的深度值相同，那么后创建的对象在 ``>`` 和 ``<`` 的判断中更小
@@ -38,7 +38,8 @@ class Cmpt_Depth[ItemT](Component[ItemT]):
     ``d2``, ``d3``, ``d1``
 
     也就是 ``d3`` 会盖住 ``d2``； ``d1`` 会盖住 ``d2`` 和 ``d3``
-    '''
+    """
+
     _counter: defaultdict[float, int] = defaultdict(int)
 
     def __init__(self, value: float, order: int | None = None):
@@ -88,9 +89,9 @@ class Cmpt_Depth[ItemT](Component[ItemT]):
 
     @register_updater(_set_updater)
     def set(self, value: float, order: int | None = None, *, root_only: bool = False) -> Self:
-        '''
+        """
         设置物件的深度
-        '''
+        """
         assert isinstance(value, numbers.Real)
 
         if order is None:
@@ -111,17 +112,17 @@ class Cmpt_Depth[ItemT](Component[ItemT]):
         return self._depth
 
     def get_raw(self) -> tuple[float, int | float]:
-        '''
+        """
         返回元组 ``(depth, order)``
 
         在一些特殊情况下，``order`` 可能是浮点数
-        '''
+        """
         return (self._depth, self._order)
 
     def arrange(self, depth: float | None = None) -> Self:
-        '''
+        """
         将后代物件排序深度
-        '''
+        """
         if depth is None:
             depth = self._depth
         self.set(depth)

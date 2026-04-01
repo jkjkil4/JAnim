@@ -22,4 +22,3 @@ msgstr ""
 #: ../../source/examples/_auto_examples_options.rst:27
 msgid "画面以及音频可视化"
 msgstr "Visualization of frames and audio"
-

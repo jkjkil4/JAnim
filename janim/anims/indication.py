@@ -17,7 +17,8 @@ from janim.constants import (C_LABEL_ANIM_ABSTRACT, C_LABEL_ANIM_INDICATION,
 from janim.items.geometry.arc import Circle, Dot
 from janim.items.geometry.line import Line
 from janim.items.item import Item
-from janim.items.points import Group, Points
+from janim.items.group import Group
+from janim.items.points import Points
 from janim.items.shape_matchers import SurroundingRect
 from janim.items.vitem import VItem
 from janim.typing import JAnimColor, Vect
@@ -27,7 +28,15 @@ from janim.utils.rate_functions import RateFunc, smooth, there_and_back, wiggle
 
 
 class FocusOn(DataUpdater[Dot]):
-    '''展现一个逐渐聚焦到指定物件的圆形缩小动画'''
+    """
+    展现一个逐渐聚焦到指定物件的圆形缩小动画
+
+    .. janim-example:: FocusOnExample
+        :extract-from-test:
+        :media: _static/videos/FocusOnExample.mp4
+        :url: https://janim.readthedocs.io/zh-cn/latest/janim/anims/indication.html#focusonexample
+    """
+
     label_color = C_LABEL_ANIM_INDICATION
 
     def __init__(
@@ -68,7 +77,15 @@ class FocusOn(DataUpdater[Dot]):
 
 
 class Indicate(DataUpdater):
-    '''展现指定物件以放大为黄色后回到原状的动画'''
+    """
+    展现指定物件以放大为黄色后回到原状的动画
+
+    .. janim-example:: IndicateExample
+        :extract-from-test:
+        :media: _static/videos/IndicateExample.mp4
+        :url: https://janim.readthedocs.io/zh-cn/latest/janim/anims/indication.html#indicateexample
+    """
+
     label_color = C_LABEL_ANIM_INDICATION
 
     def __init__(
@@ -114,12 +131,18 @@ class Indicate(DataUpdater):
 
 
 class CircleIndicate(DataUpdater[Circle]):
-    '''
+    """
     展现以圆圈在指定物件周围淡入淡出进行强调的动画
 
     - 可以使用 ``rate_func=there_and_back_with_pause`` 使得动画中间停留一段时间
     - 可以传入 ``scale`` 指定缩放，例如 ``scale=1.2`` 即缩小的同时淡入，并且放大的同时淡出
-    '''
+
+    .. janim-example:: CircleIndicateExample
+        :extract-from-test:
+        :media: _static/videos/CircleIndicateExample.mp4
+        :url: https://janim.readthedocs.io/zh-cn/latest/janim/anims/indication.html#circleindicateexample
+    """
+
     label_color = C_LABEL_ANIM_INDICATION
 
     def __init__(
@@ -130,12 +153,18 @@ class CircleIndicate(DataUpdater[Circle]):
         rate_func: RateFunc = there_and_back,
         scale: float = 1,
         buff: float = MED_SMALL_BUFF,
+        circle_kwargs: dict = {},
         **kwargs
     ):
-        start = Circle(color=color, alpha=0)
+        start_kwargs = circle_kwargs
+        if 'alpha' in start_kwargs:
+            start_kwargs = start_kwargs.copy()
+            start_kwargs.pop('alpha')
+
+        start = Circle(color=color, alpha=0, **start_kwargs)
         if item.is_fix_in_frame():
             start.fix_in_frame()
-        target = Circle(color=color)
+        target = Circle(color=color, **circle_kwargs)
 
         def updater(c: Circle, p: UpdaterParams):
             c.interpolate(start, target, p.alpha)
@@ -156,9 +185,10 @@ class CircleIndicate(DataUpdater[Circle]):
 
 
 class ShowPassingFlash(ShowPartial):
-    '''
+    """
     基于 ``time_width`` 显示物件的一小段
-    '''
+    """
+
     label_color = C_LABEL_ANIM_ABSTRACT
 
     def __init__(
@@ -187,7 +217,15 @@ class ShowPassingFlash(ShowPartial):
 
 
 class ShowCreationThenDestruction(ShowPassingFlash):
-    '''展现创建动画后展现销毁动画'''
+    """
+    展现创建动画后展现销毁动画
+
+    .. janim-example:: ShowCreationThenDestructionExample
+        :extract-from-test:
+        :media: _static/videos/ShowCreationThenDestructionExample.mp4
+        :url: https://janim.readthedocs.io/zh-cn/latest/janim/anims/indication.html#showcreationthendestructionexample
+    """
+
     label_color = C_LABEL_ANIM_ABSTRACT
 
     def __init__(
@@ -202,7 +240,15 @@ class ShowCreationThenDestruction(ShowPassingFlash):
 
 
 class ShowCreationThenFadeOut(Succession):
-    '''展现创建动画后展现淡出动画'''
+    """
+    展现创建动画后展现淡出动画
+
+    .. janim-example:: ShowCreationThenFadeOutExample
+        :extract-from-test:
+        :media: _static/videos/ShowCreationThenFadeOutExample.mp4
+        :url: https://janim.readthedocs.io/zh-cn/latest/janim/anims/indication.html#showcreationthenfadeoutexample
+    """
+
     label_color = C_LABEL_ANIM_ABSTRACT
 
     def __init__(
@@ -222,10 +268,11 @@ class ShowCreationThenFadeOut(Succession):
 
 
 class AnimationOnSurroundingRect(AnimGroup):
-    '''
+    """
     :class:`ShowPassingFlash`、:class:`ShowCreationThenDestructionAround`、
     :class:`ShowCreationThenFadeAround` 的基类
-    '''
+    """
+
     label_color = C_LABEL_ANIM_ABSTRACT
 
     def __init__(
@@ -269,7 +316,15 @@ class AnimationOnSurroundingRect(AnimGroup):
 
 
 class ShowPassingFlashAround(AnimationOnSurroundingRect):
-    '''不完整线条在指定物件周围环绕一圈的动画'''
+    """
+    不完整线条在指定物件周围环绕一圈的动画
+
+    .. janim-example:: ShowPassingFlashAroundExample
+        :extract-from-test:
+        :media: _static/videos/ShowPassingFlashAroundExample.mp4
+        :url: https://janim.readthedocs.io/zh-cn/latest/janim/anims/indication.html#showpassingflasharoundexample
+    """
+
     label_color = C_LABEL_ANIM_INDICATION
 
     def __init__(self, item: Points, **kwargs) -> None:
@@ -277,7 +332,16 @@ class ShowPassingFlashAround(AnimationOnSurroundingRect):
 
 
 class ShowCreationThenDestructionAround(AnimationOnSurroundingRect):
-    '''在指定物件周围先创建出完整线条再销毁线条的动画'''
+    """
+    在指定物件周围先创建出完整线条再销毁线条的动画
+
+    .. janim-example:: ShowCreationThenDestructionAroundExample
+        :extract-from-test:
+        :media: _static/videos/ShowCreationThenDestructionAroundExample.mp4
+        :url:
+            https://janim.readthedocs.io/zh-cn/latest/janim/anims/indication.html#showcreationthendestructionaroundexample
+    """
+
     label_color = C_LABEL_ANIM_INDICATION
 
     def __init__(self, item: Points, **kwargs) -> None:
@@ -285,7 +349,15 @@ class ShowCreationThenDestructionAround(AnimationOnSurroundingRect):
 
 
 class ShowCreationThenFadeAround(AnimationOnSurroundingRect):
-    '''在指定物件周围先创建出完整线条再淡出线条的动画'''
+    """
+    在指定物件周围先创建出完整线条再淡出线条的动画
+
+    .. janim-example:: ShowCreationThenFadeAroundExample
+        :extract-from-test:
+        :media: _static/videos/ShowCreationThenFadeAroundExample.mp4
+        :url: https://janim.readthedocs.io/zh-cn/latest/janim/anims/indication.html#showcreationthenfadearoundexample
+    """
+
     label_color = C_LABEL_ANIM_INDICATION
 
     def __init__(self, item: Points, **kwargs) -> None:
@@ -300,7 +372,15 @@ def flash_rate_function(t: float, smooth_ratio=0.6) -> float:
 
 
 class Flash(ShowCreationThenDestruction):
-    '''展现以放射状线条进行强调的动画'''
+    """
+    展现以放射状线条进行强调的动画
+
+    .. janim-example:: FlashExample
+        :extract-from-test:
+        :media: _static/videos/FlashExample.mp4
+        :url: https://janim.readthedocs.io/zh-cn/latest/janim/anims/indication.html#flashexample
+    """
+
     label_color = C_LABEL_ANIM_INDICATION
 
     def __init__(
@@ -357,6 +437,12 @@ class Flash(ShowCreationThenDestruction):
 
 
 class ApplyWave(Homotopy):
+    """
+    .. janim-example:: ApplyWaveExample
+        :extract-from-test:
+        :media: _static/videos/ApplyWaveExample.mp4
+        :url: https://janim.readthedocs.io/zh-cn/latest/janim/anims/indication.html#applywaveexample
+    """
     label_color = C_LABEL_ANIM_INDICATION
 
     def __init__(
@@ -393,6 +479,12 @@ class ApplyWave(Homotopy):
 
 
 class WiggleOutThenIn(DataUpdater):
+    """
+    .. janim-example:: WiggleOutThenInExample
+        :extract-from-test:
+        :media: _static/videos/WiggleOutThenInExample.mp4
+        :url: https://janim.readthedocs.io/zh-cn/latest/janim/anims/indication.html#wiggleouttheninexample
+    """
     label_color = C_LABEL_ANIM_INDICATION
 
     def __init__(

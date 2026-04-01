@@ -11,7 +11,7 @@ from janim.constants import (C_LABEL_ANIM_ABSTRACT, C_LABEL_ANIM_IN,
                              C_LABEL_ANIM_INDICATION, C_LABEL_ANIM_OUT,
                              NAN_POINT)
 from janim.items.item import Item
-from janim.items.points import Group
+from janim.items.group import Group
 from janim.items.vitem import VItem
 from janim.typing import JAnimColor
 from janim.utils.bezier import integer_interpolate
@@ -21,9 +21,14 @@ DEFAULT_DRAWBORDER_THENFILL_STROKE_RADIUS = 0.01
 
 
 class ShowPartial(DataUpdater):
-    '''
+    """
     显示物件一部分的动画，显示的部分由 ``bound_func`` 决定
-    '''
+
+    .. janim-example:: ShowPartialExample
+        :extract-from-test:
+        :media: _static/videos/ShowPartialExample.mp4
+        :url: https://janim.readthedocs.io/zh-cn/latest/janim/anims/creation.html#showpartialexample
+    """
     label_color = C_LABEL_ANIM_ABSTRACT
 
     def __init__(
@@ -89,9 +94,14 @@ class ShowPartial(DataUpdater):
 
 
 class Create(ShowPartial):
-    '''
+    """
     显示物件的创建过程
-    '''
+
+    .. janim-example:: CreateExample
+        :extract-from-test:
+        :media: _static/videos/CreateExample.mp4
+        :url: https://janim.readthedocs.io/zh-cn/latest/janim/anims/creation.html#createexample
+    """
     label_color = C_LABEL_ANIM_IN
 
     def __init__(self, item: Item, auto_close_path: bool = True, **kwargs):
@@ -99,9 +109,14 @@ class Create(ShowPartial):
 
 
 class Uncreate(ShowPartial):
-    '''
+    """
     显示物件的销毁过程（:class:`Create` 的倒放）
-    '''
+
+    .. janim-example:: UncreateExample
+        :extract-from-test:
+        :media: _static/videos/UncreateExample.mp4
+        :url: https://janim.readthedocs.io/zh-cn/latest/janim/anims/creation.html#uncreateexample
+    """
     label_color = C_LABEL_ANIM_OUT
 
     def __init__(
@@ -122,11 +137,18 @@ class Uncreate(ShowPartial):
 
 
 class Destruction(ShowPartial):
-    '''
+    """
     显示物件的销毁过程
 
     - 与 :class:`Uncreate` 方向相反
-    '''
+
+    .. janim-example:: DestructionExample
+        :extract-from-test:
+        :media: _static/videos/DestructionExample.mp4
+        :url: https://janim.readthedocs.io/zh-cn/latest/janim/anims/creation.html#destructionexample
+    """
+    label_color = C_LABEL_ANIM_OUT
+
     def __init__(
         self,
         item: Item,
@@ -145,13 +167,18 @@ class Destruction(ShowPartial):
 
 
 class DrawBorderThenFill(DataUpdater):
-    '''
+    """
     画出边缘，然后填充颜色
 
     -   可以使用 ``stroke_radius`` 参数调整“画出边缘”时的描边粗细，在默认画面下的值是 0.01
 
         如果设置了 ``scale_with_camera`` 参数，描边粗细会随着 ``camera`` 大小的变化而调整，画面尺寸越小，描边越细
-    '''
+
+    .. janim-example:: DrawBorderThenFillExample
+        :extract-from-test:
+        :media: _static/videos/DrawBorderThenFillExample.mp4
+        :url: https://janim.readthedocs.io/zh-cn/latest/janim/anims/creation.html#drawborderthenfillexample
+    """
     label_color = C_LABEL_ANIM_IN
 
     def __init__(
@@ -183,8 +210,8 @@ class DrawBorderThenFill(DataUpdater):
         self.stroke_radius = stroke_radius
         self.stroke_color = stroke_color
 
-    @dataclass
-    class ExtraData:
+    @dataclass(slots=True)
+    class _ExtraData:
         outline: VItem
         zero_data: VItem | None
         stroke_transparent: bool
@@ -196,10 +223,10 @@ class DrawBorderThenFill(DataUpdater):
         data_copy.radius.set(self.stroke_radius)
         data_copy.stroke.set(self.stroke_color, 1)
         data_copy.fill.set(alpha=0)
-        return DrawBorderThenFill.ExtraData(data_copy, None, data.stroke.is_transparent())
+        return DrawBorderThenFill._ExtraData(data_copy, None, data.stroke.is_transparent())
 
     def updater(self, data: VItem, p: UpdaterParams) -> None:
-        extra: DrawBorderThenFill.ExtraData | None = p.extra_data
+        extra: DrawBorderThenFill._ExtraData | None = p.extra_data
         if extra is None:
             return  # pragma: no cover
 
@@ -229,9 +256,14 @@ class DrawBorderThenFill(DataUpdater):
 
 
 class Write(DrawBorderThenFill):
-    '''
+    """
     显示书写过程（对每个子物件应用 :class:`DrawBorderThenFill`）
-    '''
+
+    .. janim-example:: WriteExample
+        :extract-from-test:
+        :media: _static/videos/WriteExample.mp4
+        :url: https://janim.readthedocs.io/zh-cn/latest/janim/anims/creation.html#writeexample
+    """
     def __init__(
         self,
         item: Item,
@@ -265,6 +297,17 @@ class Write(DrawBorderThenFill):
 
 
 class ShowIncreasingSubsets(Animation):
+    """
+    逐个显现子物件
+
+    注：该动画目前在 :class:`~.FrameEffect` 中无效
+
+    .. janim-example:: ShowIncreasingSubsetsExample
+        :extract-from-test:
+        :media: _static/videos/ShowIncreasingSubsetsExample.mp4
+        :url: https://janim.readthedocs.io/zh-cn/latest/janim/anims/creation.html#showincreasingsubsetsexample
+    """
+
     label_color = C_LABEL_ANIM_IN
 
     def __init__(
@@ -295,7 +338,11 @@ class ShowIncreasingSubsets(Animation):
             for i, child in enumerate(self.group)
         ]
         self.n_children = len(self.group)
-        self.timeline.add_additional_render_calls_callback(self.t_range, self.additional_callback)
+        self.timeline.add_additional_render_calls_callback(
+            self.t_range,
+            self.additional_callback,
+            [self.group]
+        )
 
     def additional_callback(self):
         global_t = Animation.global_t_ctx.get()
@@ -312,6 +359,12 @@ class ShowIncreasingSubsets(Animation):
 
 
 class ShowSubitemsOneByOne(ShowIncreasingSubsets):
+    """
+    .. janim-example:: ShowSubitemsOneByOneExample
+        :extract-from-test:
+        :media: _static/videos/ShowSubitemsOneByOneExample.mp4
+        :url: https://janim.readthedocs.io/zh-cn/latest/janim/anims/creation.html#showsubitemsonebyoneexample
+    """
     label_color = C_LABEL_ANIM_INDICATION
 
     def __init__(
