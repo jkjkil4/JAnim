@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'CaptureDialog.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.8.3
+## Created by: Qt User Interface Compiler version 6.10.2
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -16,20 +16,69 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
 from PySide6.QtWidgets import (QAbstractButton, QApplication, QCheckBox, QComboBox,
-    QDialog, QDialogButtonBox, QGridLayout, QHBoxLayout,
-    QLabel, QLineEdit, QPushButton, QSizePolicy,
-    QSpacerItem, QVBoxLayout, QWidget)
+    QDialog, QDialogButtonBox, QGridLayout, QGroupBox,
+    QHBoxLayout, QLabel, QLineEdit, QPushButton,
+    QRadioButton, QSizePolicy, QSpacerItem, QVBoxLayout,
+    QWidget)
 
 class Ui_CaptureDialog(object):
     def setupUi(self, CaptureDialog):
         if not CaptureDialog.objectName():
             CaptureDialog.setObjectName(u"CaptureDialog")
-        CaptureDialog.resize(418, 189)
+        CaptureDialog.resize(418, 301)
         self.verticalLayout = QVBoxLayout(CaptureDialog)
         self.verticalLayout.setObjectName(u"verticalLayout")
-        self.vspacer1 = QSpacerItem(20, 0, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
+        self.option_groups = QGroupBox(CaptureDialog)
+        self.option_groups.setObjectName(u"option_groups")
+        self.horizontalLayout = QHBoxLayout(self.option_groups)
+        self.horizontalLayout.setObjectName(u"horizontalLayout")
+        self.horizontalLayout.setContentsMargins(6, 6, 6, 6)
+        self.src_option = QWidget(self.option_groups)
+        self.src_option.setObjectName(u"src_option")
+        self.verticalLayout_2 = QVBoxLayout(self.src_option)
+        self.verticalLayout_2.setSpacing(0)
+        self.verticalLayout_2.setObjectName(u"verticalLayout_2")
+        self.verticalLayout_2.setContentsMargins(0, 0, 0, 0)
+        self.rb_raw = QRadioButton(self.src_option)
+        self.rb_raw.setObjectName(u"rb_raw")
+        self.rb_raw.setChecked(True)
 
-        self.verticalLayout.addItem(self.vspacer1)
+        self.verticalLayout_2.addWidget(self.rb_raw)
+
+        self.rb_screen = QRadioButton(self.src_option)
+        self.rb_screen.setObjectName(u"rb_screen")
+
+        self.verticalLayout_2.addWidget(self.rb_screen)
+
+
+        self.horizontalLayout.addWidget(self.src_option)
+
+        self.target_option = QWidget(self.option_groups)
+        self.target_option.setObjectName(u"target_option")
+        self.verticalLayout_3 = QVBoxLayout(self.target_option)
+        self.verticalLayout_3.setSpacing(0)
+        self.verticalLayout_3.setObjectName(u"verticalLayout_3")
+        self.verticalLayout_3.setContentsMargins(0, 0, 0, 0)
+        self.rb_file = QRadioButton(self.target_option)
+        self.rb_file.setObjectName(u"rb_file")
+        self.rb_file.setChecked(True)
+
+        self.verticalLayout_3.addWidget(self.rb_file)
+
+        self.rb_clipboard = QRadioButton(self.target_option)
+        self.rb_clipboard.setObjectName(u"rb_clipboard")
+
+        self.verticalLayout_3.addWidget(self.rb_clipboard)
+
+
+        self.horizontalLayout.addWidget(self.target_option)
+
+
+        self.verticalLayout.addWidget(self.option_groups)
+
+        self.vspacer_options = QSpacerItem(20, 10, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Fixed)
+
+        self.verticalLayout.addItem(self.vspacer_options)
 
         self.gridlayout = QGridLayout()
         self.gridlayout.setObjectName(u"gridlayout")
@@ -62,20 +111,20 @@ class Ui_CaptureDialog(object):
 
         self.gridlayout.addWidget(self.label_size, 2, 0, 1, 1)
 
-        self.hlayou_size = QHBoxLayout()
-        self.hlayou_size.setObjectName(u"hlayou_size")
+        self.hlayout_size = QHBoxLayout()
+        self.hlayout_size.setObjectName(u"hlayout_size")
         self.cbb_size = QComboBox(CaptureDialog)
         self.cbb_size.setObjectName(u"cbb_size")
         self.cbb_size.setMinimumSize(QSize(160, 0))
 
-        self.hlayou_size.addWidget(self.cbb_size)
+        self.hlayout_size.addWidget(self.cbb_size)
 
         self.spacer_size = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
 
-        self.hlayou_size.addItem(self.spacer_size)
+        self.hlayout_size.addItem(self.spacer_size)
 
 
-        self.gridlayout.addLayout(self.hlayou_size, 2, 1, 1, 1)
+        self.gridlayout.addLayout(self.hlayout_size, 2, 1, 1, 1)
 
 
         self.verticalLayout.addLayout(self.gridlayout)
@@ -109,9 +158,9 @@ class Ui_CaptureDialog(object):
 
         self.verticalLayout.addLayout(self.hlayout_open)
 
-        self.verticalSpacer = QSpacerItem(20, 10, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Fixed)
+        self.vspacer = QSpacerItem(20, 10, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Fixed)
 
-        self.verticalLayout.addItem(self.verticalSpacer)
+        self.verticalLayout.addItem(self.vspacer)
 
         self.btn_box = QDialogButtonBox(CaptureDialog)
         self.btn_box.setObjectName(u"btn_box")
@@ -133,6 +182,11 @@ class Ui_CaptureDialog(object):
 
     def retranslateUi(self, CaptureDialog):
         CaptureDialog.setWindowTitle(QCoreApplication.translate("CaptureDialog", u"Export", None))
+        self.option_groups.setTitle(QCoreApplication.translate("CaptureDialog", u"_", None))
+        self.rb_raw.setText(QCoreApplication.translate("CaptureDialog", u"_", None))
+        self.rb_screen.setText(QCoreApplication.translate("CaptureDialog", u"_", None))
+        self.rb_file.setText(QCoreApplication.translate("CaptureDialog", u"_", None))
+        self.rb_clipboard.setText(QCoreApplication.translate("CaptureDialog", u"_", None))
         self.btn_browse.setText(QCoreApplication.translate("CaptureDialog", u"...", None))
         self.label_path.setText(QCoreApplication.translate("CaptureDialog", u"_", None))
         self.label_size.setText(QCoreApplication.translate("CaptureDialog", u"_", None))

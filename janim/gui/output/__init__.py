@@ -5,7 +5,9 @@ import traceback
 from contextlib import contextmanager, nullcontext
 from typing import TYPE_CHECKING
 
+from PIL import Image
 from PySide6.QtCore import SignalInstance
+from PySide6.QtGui import QImage
 from PySide6.QtWidgets import QApplication, QMenu, QMessageBox
 
 from janim.exception import ExitException
@@ -48,30 +50,63 @@ def on_capture_clicked(self: AnimViewer) -> None:
     if not ret:
         return
 
-    file_path = dialog.file_path()
-    transparent = dialog.transparent()
+    israw, isfile = dialog.get_options()
 
-    ret = False
-    t = self.timeline_view.progress_to_time(self.timeline_view.progress())
-    try:
-        with change_export_size(dialog.pixel_size()) if dialog.has_size_set() else nullcontext():
-            # 这里每次截图都重新构建一下，因为如果复用原来的对象会使得和 GUI 的上下文冲突
-            built = self.built.timeline.__class__().build()
-            built.capture(t, transparent=transparent, ctx=self.glw.ctx).save(file_path)
+    # 获取图像，构建原画面 / 从屏幕截取
+    if israw:
+        t = self.timeline_view.progress_to_time(self.timeline_view.progress())
+        try:
+            with change_export_size(dialog.pixel_size()) if dialog.has_size_set() else nullcontext():
+                # 这里每次截图都重新构建一下，因为如果复用原来的对象会使得和 GUI 的上下文冲突
+                built = self.built.timeline.__class__().build()
+                img = built.capture(t, transparent=dialog.transparent(), ctx=self.glw.ctx)
 
-    except Exception as e:
-        if not isinstance(e, ExitException):
-            traceback.print_exc()
+        except Exception as e:
+            if not isinstance(e, ExitException):
+                traceback.print_exc()
+            return  # 出错结束
     else:
-        ret = True
+        QMessageBox.information(self, '提示', '暂未实现')
+        return
 
-    if ret:
+    # 输出，保存到文件 / 复制到剪贴板
+    if isfile:
+        assert israw
+        assert isinstance(img, Image.Image)
+
+        file_path = dialog.file_path()
+        img.save(file_path)
+
         log.info(_('Frame t={t:.2f} saved to "{file_path}"').format(t=t, file_path=file_path))
         QMessageBox.information(self,
                                 _('Note'),
                                 _('Captured to {file_path}').format(file_path=file_path))
         if dialog.open():
             open_file(file_path)
+    else:
+        if isinstance(img, Image.Image):
+            img = pil_image_to_qimage(img)
+        elif isinstance(img, QImage):
+            img = img.convertToFormat(QImage.Format.Format_RGB888)
+        else:
+            assert False
+
+        clipboard = QApplication.clipboard()
+        clipboard.setImage(img)
+        if israw:
+            log.info(_('Frame t={t:.2f} copied to clipboard').format(t=t))
+        QMessageBox.information(self, _('Note'), _('Coiped to clipboard'))
+
+
+def pil_image_to_qimage(img: Image.Image) -> QImage:
+    if img.mode != 'RGB':
+        img = img.convert('RGB')
+
+    data = img.tobytes('raw', 'RGB')
+    qimg = QImage(data, img.width, img.height, img.width * 3, QImage.Format.Format_RGB888)
+
+    # 拷贝一份，避免依赖 Python 缓冲区的生命周期
+    return qimg.copy()
 
 
 def on_export_clicked(self: AnimViewer) -> None:
