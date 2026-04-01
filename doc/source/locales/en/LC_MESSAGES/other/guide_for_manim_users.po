@@ -26,14 +26,12 @@ msgstr "Guide for Manim Users"
 #: ../../source/other/guide_for_manim_users.rst:4
 msgid "JAnim 在使用上与 Manim 有很多相似之处，尤其是对于 Manim 的用户来说，上手使用 JAnim 会更容易。"
 msgstr ""
-"JAnim has many similarities with Manim in usage, especially for users of "
-"Manim, it will be easier to get started with JAnim."
+"JAnim has many similarities with Manim in usage, especially for users of Manim, it will be easier to get started with "
+"JAnim."
 
 #: ../../source/other/guide_for_manim_users.rst:6
 msgid "下面是 Manim 和 JAnim 之间一些功能的对照表："
-msgstr ""
-"Below is a comparison table of some functionalities between Manim and "
-"JAnim:"
+msgstr "Below is a comparison table of some functionalities between Manim and JAnim:"
 
 #: ../../source/other/guide_for_manim_users.rst:15
 msgid "功能"
@@ -201,9 +199,7 @@ msgstr ":meth:`~.Cmpt_Points.to_border`"
 
 #: ../../source/other/guide_for_manim_users.rst:68
 msgid "进一步的学习请阅读 :ref:`入门 <get_started>` 页面的内容"
-msgstr ""
-"For further learning, please read the content on the :ref:`Getting "
-"Started <get_started>` page."
+msgstr "For further learning, please read the content on the :ref:`Getting Started <get_started>` page."
 
 #: ../../source/other/guide_for_manim_users.rst:70
 msgid "欢迎在该页面补充更多信息！"
@@ -211,4 +207,3 @@ msgstr "Feel free to add more information to this page!"
 
 #~ msgid "``AnimGroup``"
 #~ msgstr "``AnimGroup``"
-

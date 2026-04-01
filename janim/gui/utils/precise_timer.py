@@ -27,7 +27,7 @@ class PreciseTimer(QTimer):
         self.skip_count = 0
         return count
 
-    def start_precise_timer(self) -> None:
+    def start_precise_timer(self, *, _caused_by_too_slow: bool = False) -> None:
         assert self.duration is not None
         self.scheduled = 0
         self.start_time = time.time()
@@ -51,7 +51,7 @@ class PreciseTimer(QTimer):
 
         else:
             if abs(delta) > 2 * self.duration:
-                self.start_precise_timer()
+                self.start_precise_timer(_caused_by_too_slow=True)
                 return
 
         self.start(max(0, int(seconds * 1000)))
@@ -79,9 +79,10 @@ class PreciseTimerWithFPS(PreciseTimer):
         self._counter = 0
         self._latest = self._start
 
-    def start_precise_timer(self) -> None:
+    def start_precise_timer(self, *, _caused_by_too_slow: bool = False) -> None:
         super().start_precise_timer()
-        self.reset_fps_counter()
+        if not _caused_by_too_slow:
+            self.reset_fps_counter()
 
     def set_skip_enabled(self, enabled: bool) -> None:
         super().set_skip_enabled(enabled)

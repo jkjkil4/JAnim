@@ -29,13 +29,8 @@ msgstr "Easing functions"
 
 #: ../../source/janim/utils/rate_functions.rst:6
 msgid "其中不以 ``ease_`` 开头的缓动函数借鉴自 manim，可参阅该图片："
-msgstr ""
-"The easing functions that do not start with ``ease_`` are borrowed from "
-"manim, refer to this image:"
+msgstr "The easing functions that do not start with ``ease_`` are borrowed from manim, refer to this image:"
 
 #: ../../source/janim/utils/rate_functions.rst:10
 msgid "其中以 ``ease_`` 开头的缓动函数可以在 `easings.net <https://easings.net/>`_ 查阅"
-msgstr ""
-"The easing functions that start with ``ease_`` can be found at "
-"`easings.net <https://easings.net/>`_"
-
+msgstr "The easing functions that start with ``ease_`` can be found at `easings.net <https://easings.net/>`_"

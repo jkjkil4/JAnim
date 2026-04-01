@@ -5,14 +5,14 @@ import tempfile
 from contextvars import ContextVar
 from functools import partial
 from pathlib import Path
-from typing import Generator, Iterable, Self
+from typing import Any, Generator, Iterable, Self
 
 import attrs
 import psutil
 from colour import Color
 
 from janim.constants import DEFAULT_ITEM_TO_EDGE_BUFF, DOWN, LEFT, RIGHT, UP
-from janim.locale.i18n import get_translator
+from janim.locale import get_translator
 from janim.typing import Vect
 from janim.utils.file_ops import guarantee_existence
 
@@ -78,7 +78,7 @@ class Config(metaclass=_ConfigMeta):
 
     2.  使用命令行参数修改全局配置
 
-        .. code-block:: sh
+        .. code-block:: bash
 
             janim write your_file.py YourTimeline -c fps 120 -c output_dir custom_dir
 
@@ -224,7 +224,7 @@ class ConfigGetter:
         yield cli_config
         yield from reversed(self.config_ctx or config_ctx_var.get())
 
-    def __getattr__(self, name: str) -> None:
+    def __getattr__(self, name: str) -> Any:
         for config in self.walk():
             value = getattr(config, name)
             if value is not None:

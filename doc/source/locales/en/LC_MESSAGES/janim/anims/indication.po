@@ -5,37 +5,26 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: JAnim\n"
+"Project-Id-Version:  JAnim\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-22 21:20+0800\n"
+"POT-Creation-Date: 2026-02-24 01:11+0800\n"
 "PO-Revision-Date: 2025-11-22 22:02+0800\n"
 "Last-Translator: \n"
-"Language-Team: en <LL@li.org>\n"
 "Language: en\n"
+"Language-Team: en <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "Generated-By: Babel 2.17.0\n"
-"X-Generator: Poedit 3.8\n"
 
 #: ../../source/janim/anims/indication.rst:2
 msgid "indication"
 msgstr "indication"
 
 #: janim.anims.indication.FocusOn:1 of
-msgid ""
-"基类：:py:class:`~janim.anims.updater.DataUpdater`\\ "
-"[:py:class:`~janim.items.geometry.arc.Dot`]"
-msgstr ""
-"Base class: :py:class:`~janim.anims.updater.DataUpdater`\\ "
-"[:py:class:`~janim.items.geometry.arc.Dot`]"
-
-#: janim.anims.indication.FocusOn:1 of
 msgid "展现一个逐渐聚焦到指定物件的圆形缩小动画"
-msgstr ""
-"Show a circular shrinking animation that gradually focuses on the "
-"specified item"
+msgstr "Show a circular shrinking animation that gradually focuses on the specified item"
 
 #: ../../source/janim/anims/indication.rst:20
 msgid ""
@@ -82,17 +71,10 @@ msgstr ""
 "            self.play(FocusOn(obj, color=color))\n"
 "\n"
 "        self.forward(0.3)"
-
-#: janim.anims.indication.Indicate:1 janim.anims.indication.WiggleOutThenIn:1
-#: of
-msgid "基类：:py:class:`~janim.anims.updater.DataUpdater`"
-msgstr "基类：:py:class:`~janim.anims.updater.DataUpdater`"
 
 #: janim.anims.indication.Indicate:1 of
 msgid "展现指定物件以放大为黄色后回到原状的动画"
-msgstr ""
-"Show an animation where the specified item scales up to yellow and then "
-"returns to its original state"
+msgstr "Show an animation where the specified item scales up to yellow and then returns to its original state"
 
 #: ../../source/janim/anims/indication.rst:20
 msgid ""
@@ -125,35 +107,20 @@ msgstr ""
 "            self.play(Indicate(mob))\n"
 "\n"
 "        self.forward(0.3)"
-
-#: janim.anims.indication.CircleIndicate:1 of
-msgid ""
-"基类：:py:class:`~janim.anims.updater.DataUpdater`\\ "
-"[:py:class:`~janim.items.geometry.arc.Circle`]"
-msgstr ""
-"Base class: :py:class:`~janim.anims.updater.DataUpdater`\\ "
-"[:py:class:`~janim.items.geometry.arc.Circle`]"
 
 #: janim.anims.indication.CircleIndicate:1 of
 msgid "展现以圆圈在指定物件周围淡入淡出进行强调的动画"
-msgstr ""
-"Show an animation with a circle fading in and out around the specified "
-"item for emphasis"
+msgstr "Show an animation with a circle fading in and out around the specified item for emphasis"
 
 #: janim.anims.indication.CircleIndicate:3 of
-msgid ""
-"可以使用 ``rate_func=there_and_back_with_pause`` 使得动画中间停留一段时间"
-msgstr ""
-"You can use ``rate_func=there_and_back_with_pause`` to make the animation "
-"pause for a while in the middle"
+msgid "可以使用 ``rate_func=there_and_back_with_pause`` 使得动画中间停留一段时间"
+msgstr "You can use ``rate_func=there_and_back_with_pause`` to make the animation pause for a while in the middle"
 
 #: janim.anims.indication.CircleIndicate:4 of
-msgid ""
-"可以传入 ``scale`` 指定缩放，例如 ``scale=1.2`` 即缩小的同时淡入，并且放大"
-"的同时淡出"
+msgid "可以传入 ``scale`` 指定缩放，例如 ``scale=1.2`` 即缩小的同时淡入，并且放大的同时淡出"
 msgstr ""
-"You can pass ``scale`` to specify scaling, for example ``scale=1.2`` means "
-"fading in while shrinking and fading out while expanding"
+"You can pass ``scale`` to specify scaling, for example ``scale=1.2`` means fading in while shrinking and fading out while "
+"expanding"
 
 #: ../../source/janim/anims/indication.rst:20
 msgid ""
@@ -196,18 +163,10 @@ msgstr ""
 "\n"
 "        for obj in group:\n"
 "            self.play(CircleIndicate(obj, scale=1.5))"
-
-#: janim.anims.indication.ShowPassingFlash:1 of
-msgid "基类：:py:class:`~janim.anims.creation.ShowPartial`"
-msgstr "基类：:py:class:`~janim.anims.creation.ShowPartial`"
 
 #: janim.anims.indication.ShowPassingFlash:1 of
 msgid "基于 ``time_width`` 显示物件的一小段"
 msgstr "Display a small segment of the item based on ``time_width``"
-
-#: janim.anims.indication.ShowCreationThenDestruction:1 of
-msgid "基类：:py:class:`~janim.anims.indication.ShowPassingFlash`"
-msgstr "基类：:py:class:`~janim.anims.indication.ShowPassingFlash`"
 
 #: janim.anims.indication.ShowCreationThenDestruction:1 of
 msgid "展现创建动画后展现销毁动画"
@@ -258,10 +217,6 @@ msgstr ""
 "        self.forward()"
 
 #: janim.anims.indication.ShowCreationThenFadeOut:1 of
-msgid "基类：:py:class:`~janim.anims.composition.Succession`"
-msgstr "基类：:py:class:`~janim.anims.composition.Succession`"
-
-#: janim.anims.indication.ShowCreationThenFadeOut:1 of
 msgid "展现创建动画后展现淡出动画"
 msgstr "Show creation animation followed by fade-out animation"
 
@@ -302,23 +257,10 @@ msgstr ""
 "        self.forward()"
 
 #: janim.anims.indication.AnimationOnSurroundingRect:1 of
-msgid "基类：:py:class:`~janim.anims.composition.AnimGroup`"
-msgstr "基类：:py:class:`~janim.anims.composition.AnimGroup`"
-
-#: janim.anims.indication.AnimationOnSurroundingRect:1 of
-msgid ""
-":class:`ShowPassingFlash`、:class:`ShowCreationThenDestructionAround`、 :class:`ShowCreationThenFadeAround` "
-"的基类"
+msgid ":class:`ShowPassingFlash`、:class:`ShowCreationThenDestructionAround`、 :class:`ShowCreationThenFadeAround` 的基类"
 msgstr ""
-"Base class "
-"for :class:`ShowPassingFlash`, :class:`ShowCreationThenDestructionAround`, "
+"Base class for :class:`ShowPassingFlash`, :class:`ShowCreationThenDestructionAround`, "
 "and :class:`ShowCreationThenFadeAround`"
-
-#: janim.anims.indication.ShowCreationThenDestructionAround:1
-#: janim.anims.indication.ShowCreationThenFadeAround:1
-#: janim.anims.indication.ShowPassingFlashAround:1 of
-msgid "基类：:py:class:`~janim.anims.indication.AnimationOnSurroundingRect`"
-msgstr "基类：:py:class:`~janim.anims.indication.AnimationOnSurroundingRect`"
 
 #: janim.anims.indication.ShowPassingFlashAround:1 of
 msgid "不完整线条在指定物件周围环绕一圈的动画"
@@ -362,9 +304,7 @@ msgstr ""
 
 #: janim.anims.indication.ShowCreationThenDestructionAround:1 of
 msgid "在指定物件周围先创建出完整线条再销毁线条的动画"
-msgstr ""
-"Animation that first creates a complete line around the specified item and "
-"then destroys it"
+msgstr "Animation that first creates a complete line around the specified item and then destroys it"
 
 #: ../../source/janim/anims/indication.rst:20
 msgid ""
@@ -404,9 +344,7 @@ msgstr ""
 
 #: janim.anims.indication.ShowCreationThenFadeAround:1 of
 msgid "在指定物件周围先创建出完整线条再淡出线条的动画"
-msgstr ""
-"Animation that first creates a complete line around the specified item and "
-"then fades it out"
+msgstr "Animation that first creates a complete line around the specified item and then fades it out"
 
 #: ../../source/janim/anims/indication.rst:20
 msgid ""
@@ -443,11 +381,6 @@ msgstr ""
 "            *map(ShowCreationThenFadeAround, group)\n"
 "        )\n"
 "        self.forward()"
-
-#: janim.anims.indication.Flash:1 of
-msgid "基类：:py:class:`~janim.anims.indication.ShowCreationThenDestruction`"
-msgstr ""
-"基类：:py:class:`~janim.anims.indication.ShowCreationThenDestruction`"
 
 #: janim.anims.indication.Flash:1 of
 msgid "展现以放射状线条进行强调的动画"
@@ -502,10 +435,6 @@ msgstr ""
 "            self.play(Flash(obj, color=color, flash_radius=0.5))\n"
 "\n"
 "        self.forward(0.3)"
-
-#: janim.anims.indication.ApplyWave:1 of
-msgid "基类：:py:class:`~janim.anims.movement.Homotopy`"
-msgstr "基类：:py:class:`~janim.anims.movement.Homotopy`"
 
 #: ../../source/janim/anims/indication.rst:20
 msgid ""

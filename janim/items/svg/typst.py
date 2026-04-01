@@ -10,10 +10,11 @@ import numpy as np
 from janim.constants import FRAME_PPI, ORIGIN, UP
 from janim.exception import (InvalidOrdinalError, InvalidTypstVarError,
                              PatternMismatchError)
-from janim.items.points import Group, Points
+from janim.items.group import Group
+from janim.items.points import Points
 from janim.items.svg.svg_item import BasepointVItem, SVGElemItem, SVGItem
 from janim.items.vitem import VItem
-from janim.locale.i18n import get_translator
+from janim.locale import get_translator
 from janim.utils.config import Config
 from janim.utils.iterables import flatten
 from janim.utils.space_ops import rotation_between_vectors
@@ -69,7 +70,7 @@ class TypstDoc(SVGItem):
 
         # 把占位元素替换为实际物件
         if vars is not None:
-            new_children = self.children.copy()
+            new_children = self._children.copy()
             for label, item in vars_mapping.items():
                 placeholders = self.get_label(label)
 
@@ -202,26 +203,23 @@ class TypstDoc(SVGItem):
         self.points.move_to_by_indicator(indicator1, indicator2)
         return self
 
+    type SingleMatchPattern = TypstPattern | tuple[TypstPattern, int]
+    type MultiMatchPattern = tuple[TypstPattern, Iterable[int]] | tuple[TypstPattern, types.EllipsisType]
+
     @overload
     def __getitem__(self, key: int) -> VItem | BasepointVItem: ...
     @overload
     def __getitem__(self, key: slice) -> Group[VItem | BasepointVItem]: ...
 
     @overload
-    def __getitem__(self, key: TypstPattern) -> Group[VItem | BasepointVItem]: ...
+    def __getitem__(self, key: SingleMatchPattern) -> Group[VItem | BasepointVItem]: ...
     @overload
-    def __getitem__(self, key: tuple[TypstPattern, int]) -> Group[VItem | BasepointVItem]: ...
-    @overload
-    def __getitem__(self, key: tuple[TypstPattern, Iterable[int]]) -> Group[Group[VItem | BasepointVItem]]: ...
-    @overload
-    def __getitem__(self, key: tuple[TypstPattern, types.EllipsisType]) -> Group[Group[VItem | BasepointVItem]]: ...
+    def __getitem__(self, key: MultiMatchPattern) -> Group[Group[VItem | BasepointVItem]]: ...
 
     @overload
-    def __getitem__(self, key: Iterable[int]) -> Group[VItem | BasepointVItem]: ...
-    @overload
-    def __getitem__(self, key: Iterable[bool]) -> Group[VItem | BasepointVItem]: ...
+    def __getitem__(self, key: Iterable[int] | Iterable[bool]) -> Group[VItem | BasepointVItem]: ...
 
-    def __getitem__(self, key: int | slice):
+    def __getitem__(self, key):
         """
         重载了一些字符索引的用法，即 :meth:`get` 和 :meth:`slice` 的组合
         """
@@ -245,6 +243,25 @@ class TypstDoc(SVGItem):
 
             case _:
                 return super().__getitem__(key)
+
+    @overload
+    def patterns(self, *patterns: SingleMatchPattern) -> Group[VItem | BasepointVItem]: ...
+    @overload
+    def patterns(self, *patterns: MultiMatchPattern) -> Group[Group[VItem | BasepointVItem]]: ...
+
+    @overload
+    def patterns(
+        self,
+        *patterns: SingleMatchPattern | MultiMatchPattern
+    ) -> Group[VItem | BasepointVItem] | Group[Group[VItem | BasepointVItem]]: ...
+
+    def patterns(self, *patterns):
+        """
+        一次性获取多个 pattern 匹配的结果，返回一个 :class:`~.Group`
+
+        例如 ``typ.patterns(A, B, ...)`` 相当于 ``Group(typ[A], typ[B], ...)``
+        """
+        return Group.from_iterable(self[pattern] for pattern in patterns)
 
     def get(self, slices, gapless: bool = False):
         """
@@ -272,10 +289,10 @@ class TypstDoc(SVGItem):
 
         - 也支持列表以及嵌套的列表，例如
 
-          ``item.get([slice(1, 3), slice(5, 7)]) == [item[:1], item[1:3], item[3:5], item[5:7], item[7:]]``
+          ``item.get([slice(1, 3), slice(5, 7)], gapless=True) == [item[:1], item[1:3], item[3:5], item[5:7], item[7:]]``
 
         - 注：在这种情况下，所有嵌套结构都会先被展平后处理
-        """
+        """     # noqa: E501
         if not gapless:
             if isinstance(slices, slice):
                 return self[slices]

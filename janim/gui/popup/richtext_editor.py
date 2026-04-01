@@ -7,7 +7,7 @@ from PySide6.QtGui import QColor, QSyntaxHighlighter
 from PySide6.QtWidgets import QCheckBox, QHBoxLayout, QVBoxLayout, QWidget
 
 from janim.gui.utils.text_edit import TextEdit
-from janim.locale.i18n import get_translator
+from janim.locale import get_translator
 
 _ = get_translator('janim.gui.popup.richtext_editor')
 
@@ -28,6 +28,7 @@ class RichTextEditor(QWidget):
                                                       if state
                                                       else RichTextEdit.LineWrapMode.NoWrap)
         )
+        self.check_box_wordwrap.setChecked(False)
 
         self.check_box_html = QCheckBox(_('Recognize rich text format on paste'))
         self.check_box_html.stateChanged.connect(self.check_box_html_state_changed)

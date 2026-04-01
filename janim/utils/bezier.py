@@ -9,7 +9,7 @@ from fontTools.cu2qu.cu2qu import curve_to_quadratic
 
 from janim.constants import DEGREES, NAN_POINT, TAU
 from janim.exception import PointError
-from janim.locale.i18n import get_translator
+from janim.locale import get_translator
 from janim.typing import Vect, VectArray
 from janim.utils.simple_functions import choose
 from janim.utils.space_ops import (angle_between_vectors, cross, cross2d,
@@ -387,10 +387,14 @@ def smooth_quadratic_path(anchors: VectArray) -> np.ndarray:
     quads = [anchors[0, :2]]
     for cub_bs in zip(anchors[:-1], h1s, h2s, anchors[1:]):
         # Try to use fontTools curve_to_quadratic
-        new_quads = curve_to_quadratic(
-            [b[:2] for b in cub_bs],
-            max_err=0.1 * get_norm(cub_bs[3] - cub_bs[0])
-        )
+        try:
+            new_quads = curve_to_quadratic(
+                [b[:2] for b in cub_bs],
+                max_err=0.1 * get_norm(cub_bs[3] - cub_bs[0])
+            )
+        except Exception:
+            print('aaa')
+            new_quads = None
         # Otherwise fall back on home baked solution
         if new_quads is None or len(new_quads) % 2 == 0:
             new_quads = get_quadratic_approximation_of_cubic(*cub_bs)[:, :2]
@@ -590,10 +594,10 @@ def is_closed(points: Sequence[np.ndarray]) -> bool:
 # Given 4 control points for a cubic bezier curve (or arrays of such)
 # return control points for 2 quadratics (or 2n quadratics) approximating them.
 def get_quadratic_approximation_of_cubic(
-    a0: Vect,
-    h0: Vect,
-    h1: Vect,
-    a1: Vect
+    a0: Vect | VectArray,
+    h0: Vect | VectArray,
+    h1: Vect | VectArray,
+    a1: Vect | VectArray
 ) -> np.ndarray:
     a0 = np.array(a0, ndmin=2)
     h0 = np.array(h0, ndmin=2)
@@ -617,7 +621,7 @@ def get_quadratic_approximation_of_cubic(
     c = cross2d(p, q)
 
     disc = b * b - 4 * a * c
-    has_infl &= (disc > 0)
+    has_infl &= (disc > 1e-4)   # > 1e-4 而不是 > 0，因为当 disc 过于接近 0 时如果当成拐点，会造成 t_mid 贴在端点附近
     sqrt_disc = np.sqrt(np.abs(disc))
     settings = np.seterr(all='ignore')
     ti_bounds = []

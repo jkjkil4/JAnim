@@ -7,7 +7,7 @@
 
 vec4 get_arrow_color(
     float stroke_d, float fill_sgn_d, int idx,
-    float shrink_left_length, float shrink_right_length
+    float shrink_left_ratio, float shrink_right_ratio
 ) {
     int anchor_idx = idx / 2;
 
@@ -18,16 +18,13 @@ vec4 get_arrow_color(
     float ratio = clamp(orig_ratio, 0.0, 1.0);
 
     float radius = mix(get_radius(anchor_idx), get_radius(anchor_idx + 1), ratio);
-
-    float left_ratio = shrink_left_length / el;
-    float right_ratio = shrink_right_length / el;
     radius *= min(
-        shrink_left_length == -1.0
+        shrink_left_ratio == -1.0
             ? 1.0
-            : smoothstep(left_ratio - 1e-5, left_ratio, orig_ratio),
-        shrink_right_length == -1.0
+            : smoothstep(shrink_left_ratio - 1e-5, shrink_left_ratio, orig_ratio),
+        shrink_right_ratio == -1.0
             ? 1.0
-            : smoothstep(right_ratio - 1e-5, right_ratio, 1.0 - orig_ratio)
+            : smoothstep(shrink_right_ratio - 1e-5, shrink_right_ratio, 1.0 - orig_ratio)
     );
     if (radius <= 0.0)
         radius = -JA_ANTI_ALIAS_RADIUS; // 避免因抗锯齿而被渲染为一个细线

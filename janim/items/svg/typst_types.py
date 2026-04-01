@@ -1,10 +1,11 @@
 from typing import Any, Iterable, Literal, NoReturn
 
 from janim.exception import InvalidOrdinalError
-from janim.items.points import Group, Points
+from janim.items.group import Group
+from janim.items.points import Points
 from janim.items.svg.svg_item import SVGElemItem
 from janim.items.svg.typst import TypstText
-from janim.locale.i18n import get_translator
+from janim.locale import get_translator
 
 type TypMatDelim = Literal['(', ')', '[', ']', '{', '}', '|', 'none']
 type TypAlignment = Literal['start', 'end', 'left', 'center', 'right', 'top', 'horizon', 'bottom']
@@ -256,7 +257,7 @@ class TypstMatrix(TypstText):
 
         # 如果矩阵内有东西，先得到第一个元素的下标，那么这个下标往前就是左括号
         elem = self._get_element(self.matrix_labels[0])[0]
-        index = self.children.index(elem)
+        index = self._children.index(elem)
         return self[:index]
 
     def get_right_brace(self) -> Group[SVGElemItem]:
@@ -273,7 +274,7 @@ class TypstMatrix(TypstText):
 
         # 如果矩阵内有东西，先得到最后一个元素的下标，那么这个下标往后就是右括号
         elem = self._get_element(self.matrix_labels[-1])[-1]
-        index = self.children.index(elem)
+        index = self._children.index(elem)
         return self[index + 1:]
 
     def _raise_if_not_labelled(self) -> None | NoReturn:

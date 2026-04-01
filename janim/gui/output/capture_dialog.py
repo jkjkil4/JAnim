@@ -8,7 +8,7 @@ from PySide6.QtWidgets import (QDialog, QDialogButtonBox, QFileDialog,
 from janim.anims.timeline import BuiltTimeline
 from janim.gui.output.export_dialog import ExportDialog
 from janim.gui.output.ui_CaptureDialog import Ui_CaptureDialog
-from janim.locale.i18n import get_translator
+from janim.locale import get_translator
 from janim.utils.config import Config
 from janim.utils.file_ops import getfile_or_stdin
 

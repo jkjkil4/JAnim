@@ -8,10 +8,14 @@ from janim.components.glow import Cmpt_Glow
 from janim.components.rgbas import Cmpt_Rgbas
 from janim.constants import (C_LABEL_ANIM_ABSTRACT, C_LABEL_ANIM_IN,
                              C_LABEL_ANIM_OUT, ORIGIN, OUT)
+from janim.exception import JAnimException
 from janim.items.item import Item
 from janim.items.points import Points
 from janim.typing import Vect
 from janim.utils.paths import PathFunc, get_path_func
+from janim.locale import get_translator
+
+_ = get_translator('janim.anims.fading')
 
 
 class Fade(DataUpdater[Item], metaclass=ABCMeta):
@@ -37,6 +41,13 @@ class Fade(DataUpdater[Item], metaclass=ABCMeta):
         root_only: bool = False,
         **kwargs
     ):
+        if isinstance(shift, Item):
+            raise JAnimException(
+                _('When using `{class_name}`, if you need to pass multiple items, '
+                  'wrap them in `Group` instead of passing them one by one')
+                .format(class_name=self.__class__.__name__)
+            )
+
         super().__init__(
             item,
             self.updater,
@@ -65,6 +76,11 @@ class FadeIn(Fade):
 
     - 可以使用 ``shift`` 指定淡入位移
     - 可以使用 ``scale`` 指定淡入缩放
+
+    .. janim-example:: FadeInExample
+        :extract-from-test:
+        :media: _static/videos/FadeInExample.mp4
+        :url: https://janim.readthedocs.io/zh-cn/latest/janim/anims/fading.html#fadeinexample
     """
     label_color = C_LABEL_ANIM_IN
 
@@ -95,6 +111,11 @@ class FadeOut(Fade):
 
     - 可以使用 ``shift`` 指定淡出位移
     - 可以使用 ``scale`` 指定淡出缩放
+
+    .. janim-example:: FadeOutExample
+        :extract-from-test:
+        :media: _static/videos/FadeOutExample.mp4
+        :url: https://janim.readthedocs.io/zh-cn/latest/janim/anims/fading.html#fadeoutexample
     """
     label_color = C_LABEL_ANIM_OUT
 
@@ -103,6 +124,7 @@ class FadeOut(Fade):
         item: Item,
         shift: Vect = ORIGIN,
         scale: float = 1.0,
+        *,
         hide_at_end: float = True,
         **kwargs
     ):
@@ -141,6 +163,12 @@ class FadeOut(Fade):
 
 
 class FadeInFromPoint(FadeIn):
+    """
+    .. janim-example:: FadeInFromPointExample
+        :extract-from-test:
+        :media: _static/videos/FadeInFromPointExample.mp4
+        :url: https://janim.readthedocs.io/zh-cn/latest/janim/anims/fading.html#fadeinfrompointexample
+    """
     def __init__(self, item: Item, point: Vect, **kwargs):
         super().__init__(
             item,
@@ -151,6 +179,12 @@ class FadeInFromPoint(FadeIn):
 
 
 class FadeOutToPoint(FadeOut):
+    """
+    .. janim-example:: FadeOutToPointExample
+        :extract-from-test:
+        :media: _static/videos/FadeOutToPointExample.mp4
+        :url: https://janim.readthedocs.io/zh-cn/latest/janim/anims/fading.html#fadeouttopointexample
+    """
     def __init__(self, item: Item, point: Vect, **kwargs):
         super().__init__(
             item,

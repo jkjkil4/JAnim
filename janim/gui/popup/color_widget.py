@@ -8,7 +8,7 @@ from PySide6.QtWidgets import (QColorDialog, QHBoxLayout, QLineEdit,
 
 import janim.constants.colors as colors
 from janim.gui.popup.ui_ColorWidget import Ui_ColorWidget
-from janim.locale.i18n import get_translator
+from janim.locale import get_translator
 from janim.utils.simple_functions import clip
 
 _ = get_translator('janim.gui.popup.color_widget')

@@ -7,8 +7,8 @@ popup
    :maxdepth: 1
 
    color_widget
+   draw_panel
    font_table
-   painter
    richtext_editor
 
 .. automodule:: janim.gui.popup.__init__

@@ -1,13 +1,12 @@
 from __future__ import annotations
 
-import copy
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Callable, Generator, Self, overload
+from typing import TYPE_CHECKING, Generator, Self, overload
 
 import janim.utils.refresh as refresh
 from janim.anims.method_updater_meta import METHOD_UPDATER_KEY
 from janim.exception import CmptGroupLookupError
-from janim.locale.i18n import get_translator
+from janim.locale import get_translator
 from janim.utils.data import AlignedData
 from janim.utils.signal import SIGNAL_OBJ_SLOTS_NAME
 
@@ -38,7 +37,7 @@ class _CmptMeta(type):
 
 
 class Component[ItemT](refresh.Refreshable, metaclass=_CmptMeta):
-    @dataclass
+    @dataclass(slots=True)
     class BindInfo:
         """
         对组件定义信息的封装
@@ -87,18 +86,31 @@ class Component[ItemT](refresh.Refreshable, metaclass=_CmptMeta):
         """
         self.bind = bind
 
-    def mark_refresh(self, func: Callable | str, *, recurse_up=False, recurse_down=False) -> Self:
+    def mark_refresh(self, name: str, *, recurse_up=False, recurse_down=False) -> None:
         """
         详见： :meth:`~.Item.broadcast_refresh_of_component`
         """
         # 与 super().mark_refresh(func) 等价，这样写是为了尽可能优化性能
-        refresh.Refreshable.mark_refresh(self, func)
+        refresh.Refreshable.mark_refresh(self, name)
 
         if self.bind is not None:
-            self.bind.at_item.broadcast_refresh_of_component(self, func, recurse_up, recurse_down)
+            self.bind.at_item.broadcast_refresh_of_component(self, name, recurse_up, recurse_down)
+
+    def __copy__(self) -> Self:
+        """
+        手动实现 ``__copy__``，这样性能比 copy.copy 高
+
+        特别是 Component 作为频繁使用的对象这很重要
+        """
+        cls = self.__class__
+        new = cls.__new__(cls)
+
+        new.__dict__ = self.__dict__.copy()
+
+        return new
 
     def copy(self) -> Self:
-        cmpt_copy = copy.copy(self)
+        cmpt_copy = self.__copy__()
         # cmpt_copy.bind = None
         cmpt_copy.reset_refresh()
         setattr(cmpt_copy, SIGNAL_OBJ_SLOTS_NAME, None)
@@ -132,7 +144,7 @@ class Component[ItemT](refresh.Refreshable, metaclass=_CmptMeta):
 
     def walk_same_cmpt_of_descendants_without_mock(self) -> Generator[Self, None, None]:
         item = self.bind.at_item
-        if not item.stored:
+        if not item._stored:
             for item in item.walk_descendants(self.bind.decl_cls):
                 cmpt = self.get_same_cmpt_without_mock(item)
                 if cmpt is None:
@@ -151,6 +163,10 @@ class Component[ItemT](refresh.Refreshable, metaclass=_CmptMeta):
         return AlignedData(cmpt1, cmpt1, cmpt1)
 
     def interpolate(self, cmpt1, cmpt2, alpha: float, *, path_func=None) -> None: ...
+
+    # 仅用于在创建动画时忘记使用 .anim 或 .update 时抛出错误，另见 AnimGroup 的 _get_anim_object
+    def __anim__(self):
+        raise NotImplementedError()
 
 
 class CmptInfo[T]:
@@ -222,10 +238,17 @@ class _CmptGroup(Component):
         return True
 
     @classmethod
-    def align(cls, cmpt1: _CmptGroup, cmpt2: _CmptGroup, aligned: AlignedData[Item]):
-        cmpt1_copy = cmpt1.copy(new_cmpts=aligned.data1.components)
-        cmpt2_copy = cmpt2.copy(new_cmpts=aligned.data2.components)
-        cmpt_union = cmpt1.copy(new_cmpts=aligned.union.components)
+    def align(
+        cls,
+        cmpt1: _CmptGroup,
+        cmpt2: _CmptGroup,
+        data1_cmpts: dict[str, Component],
+        data2_cmpts: dict[str, Component],
+        union_cmpts: dict[str, Component],
+    ):
+        cmpt1_copy = cmpt1.copy(new_cmpts=data1_cmpts)
+        cmpt2_copy = cmpt2.copy(new_cmpts=data2_cmpts)
+        cmpt_union = cmpt1.copy(new_cmpts=union_cmpts)
         return AlignedData(cmpt1_copy, cmpt2_copy, cmpt_union)
 
     def _find_objects(self) -> None:

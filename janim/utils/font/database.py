@@ -10,7 +10,7 @@ from fontTools.ttLib import TTCollection, TTFont, TTLibError
 
 from janim.constants import FRAME_PPI
 from janim.exception import FontNotFoundError
-from janim.locale.i18n import get_translator
+from janim.locale import get_translator
 from janim.logger import log
 from janim.utils.bezier import PathBuilder
 from janim.utils.font.exception import EXCEPTION_MAP

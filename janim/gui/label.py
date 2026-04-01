@@ -241,7 +241,7 @@ class LabelGroup(Label):
             max_len = 0
             # if-else 地狱 ¯\_(ツ)_/¯
             for i, other in enumerate(stack):
-                if other.t_range.end <= label.t_range.at:
+                if other.t_range.end <= label.t_range.at + 1e-5:    # 避免临近相等时的浮点误差
                     if not found_place:
                         if self.ordered_divisions is not None:
                             self.ordered_divisions[i].append(label)
@@ -277,7 +277,7 @@ class LabelGroup(Label):
         if self.ordered_divisions is not None:
             return len(self.ordered_divisions) <= 1
         return all(
-            a.t_range.end <= b.t_range.at
+            a.t_range.end <= b.t_range.at + 1e-5    # 避免临近相等时的浮点数误差
             for a, b in it.pairwise(self.labels)
         )
 

@@ -5,27 +5,22 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: JAnim\n"
+"Project-Id-Version:  JAnim\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-23 12:01+0800\n"
+"POT-Creation-Date: 2026-02-24 01:11+0800\n"
 "PO-Revision-Date: 2025-11-23 12:03+0800\n"
 "Last-Translator: \n"
-"Language-Team: en <LL@li.org>\n"
 "Language: en\n"
+"Language-Team: en <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "Generated-By: Babel 2.17.0\n"
-"X-Generator: Poedit 3.8\n"
 
 #: ../../source/janim/items/frame_effect.rst:2
 msgid "frame_effect"
 msgstr "frame_effect"
-
-#: janim.items.frame_effect.FrameEffect:1 of
-msgid "基类：:py:class:`~janim.items.item.Item`"
-msgstr "基类：:py:class:`~janim.items.item.Item`"
 
 #: janim.items.frame_effect.FrameEffect:1 of
 msgid "将传入的着色器 ``fragment_shader`` 应用到 ``items`` 上"
@@ -61,8 +56,7 @@ msgstr ""
 "in vec2 v_texcoord; // Input texture coordinates\n"
 "out vec4 f_color;   // Output color\n"
 "\n"
-"uniform sampler2D fbo; // Input texture (containing the rendering results of "
-"items)\n"
+"uniform sampler2D fbo; // Input texture (containing the rendering results of items)\n"
 "\n"
 "#[JA_FINISH_UP_UNIFORMS]\n"
 "\n"
@@ -76,33 +70,25 @@ msgstr ""
 "}"
 
 #: janim.items.frame_effect.FrameEffect:25 of
-msgid ""
-"其中 ``#[JA_FINISH_UP]`` 是一个占位符，JAnim 会在这里做一些额外的操作，前面的 "
-"``#[JA_FINISH_UP_UNIFORMS]`` 与之对应"
+msgid "其中 ``#[JA_FINISH_UP]`` 是一个占位符，JAnim 会在这里做一些额外的操作，前面的 ``#[JA_FINISH_UP_UNIFORMS]`` 与之对应"
 msgstr ""
-"``#[JA_FINISH_UP]`` is a placeholder where JAnim performs additional "
-"operations, and the preceding ``#[JA_FINISH_UP_UNIFORMS]`` corresponds to it"
+"``#[JA_FINISH_UP]`` is a placeholder where JAnim performs additional operations, and the preceding "
+"``#[JA_FINISH_UP_UNIFORMS]`` corresponds to it"
 
 #: janim.items.frame_effect.FrameEffect:27 of
-msgid ""
-"上述代码最核心的是 ``main`` 中“进行处理”的部分，其余的代码作为固定的写法照抄即可"
+msgid "上述代码最核心的是 ``main`` 中“进行处理”的部分，其余的代码作为固定的写法照抄即可"
 msgstr ""
-"The core of the above code is the “processing” part in ``main``, the rest of "
-"the code can be copied as fixed patterns"
+"The core of the above code is the “processing” part in ``main``, the rest of the code can be copied as fixed patterns"
 
 #: janim.items.frame_effect.FrameEffect:29 of
-msgid ""
-"如果懒得抄，可以用 :class:`SimpleFrameEffect`，这个类只要写“进行处理”这部分就好"
-"了，因为它把其余代码都封装了"
+msgid "如果懒得抄，可以用 :class:`SimpleFrameEffect`，这个类只要写“进行处理”这部分就好了，因为它把其余代码都封装了"
 msgstr ""
-"If you don't want to copy, you can use :class:`SimpleFrameEffect`, which only "
-"requires writing the “processing” part, as it encapsulates the rest of the code"
+"If you don't want to copy, you can use :class:`SimpleFrameEffect`, which only requires writing the “processing” part, as "
+"it encapsulates the rest of the code"
 
 #: janim.items.frame_effect.FrameEffect:31 of
 msgid "完整示例请参考 :ref:`基础样例 <basic_examples>` 中的对应代码"
-msgstr ""
-"For complete examples, refer to the corresponding code in :ref:`Basic Examples "
-"<basic_examples>`"
+msgstr "For complete examples, refer to the corresponding code in :ref:`Basic Examples <basic_examples>`"
 
 #: janim.items.frame_effect.FrameEffect.add:3 of
 msgid "调用 :meth:`add` 很可能不会按预期工作"
@@ -128,53 +114,29 @@ msgstr "Apply the effect to more items."
 msgid "对指定物件的取消应用效果"
 msgstr "Remove the effect from the specified items."
 
-#: janim.items.frame_effect.FrameClip:1 janim.items.frame_effect.Shadertoy:1
-#: janim.items.frame_effect.SimpleFrameEffect:1
-#: janim.items.frame_effect.TransformableFrameClip:1 of
-msgid "基类：:py:class:`~janim.items.frame_effect.FrameEffect`"
-msgstr "基类：:py:class:`~janim.items.frame_effect.FrameEffect`"
-
 #: janim.items.frame_effect.SimpleFrameEffect:1 of
 msgid ":class:`FrameEffect` 的简化封装，具体请参考 :class:`FrameEffect` 中的说明"
-msgstr ""
-"Simplified wrapper for :class:`FrameEffect`, for details refer to the "
-"description in :class:`FrameEffect`"
+msgstr "Simplified wrapper for :class:`FrameEffect`, for details refer to the description in :class:`FrameEffect`"
 
 #: janim.items.frame_effect.SimpleFrameEffect:5 of
-msgid ""
-"如果该着色器代码中出现报错，会显示为 ``JA_SIMPLE_FRAMEEFFECT_SHADER`` 中出现的"
-msgstr ""
-"If an error occurs in the shader code, it will be displayed as occurring in "
-"``JA_SIMPLE_FRAMEEFFECT_SHADER``."
-
-#: janim.items.frame_effect.Cmpt_FrameClip:1
-#: janim.items.frame_effect.Cmpt_TransformableFrameClip:1 of
-msgid ""
-"基"
-"类：:py:class:`~janim.components.component.Component`, :py:class:`~typing.Generic`"
-msgstr ""
-"Base "
-"class: :py:class:`~janim.components.component.Component`, :py:class:`~typing.Generic`"
+msgid "如果该着色器代码中出现报错，会显示为 ``JA_SIMPLE_FRAMEEFFECT_SHADER`` 中出现的"
+msgstr "If an error occurs in the shader code, it will be displayed as occurring in ``JA_SIMPLE_FRAMEEFFECT_SHADER``."
 
 #: janim.items.frame_effect.FrameClip:1 of
 msgid "一个用于创建简单矩形裁剪效果的类"
 msgstr "A class for creating simple rectangular clipping effects"
 
-#: janim.items.frame_effect.FrameClip:3
-#: janim.items.frame_effect.TransformableFrameClip:3 of
-msgid ""
-"``clip`` 参数表示裁剪区域的四个边界，分别是左、上、右、下，范围是 0~1 表示百分比"
+#: janim.items.frame_effect.FrameClip:3 janim.items.frame_effect.TransformableFrameClip:3 of
+msgid "``clip`` 参数表示裁剪区域的四个边界，分别是左、上、右、下，范围是 0~1 表示百分比"
 msgstr ""
-"``clip`` parameter represents the four boundaries of the clipping region: left, "
-"top, right, bottom, range is 0~1 representing percentages"
+"``clip`` parameter represents the four boundaries of the clipping region: left, top, right, bottom, range is 0~1 "
+"representing percentages"
 
-#: janim.items.frame_effect.FrameClip:4
-#: janim.items.frame_effect.TransformableFrameClip:7 of
-msgid ""
-"``debug`` 参数表示是否开启调试模式，开启后裁剪区域外的部分会显示为半透明红色"
+#: janim.items.frame_effect.FrameClip:4 janim.items.frame_effect.TransformableFrameClip:7 of
+msgid "``debug`` 参数表示是否开启调试模式，开启后裁剪区域外的部分会显示为半透明红色"
 msgstr ""
-"``debug`` parameter indicates whether to enable debug mode. When enabled, parts "
-"outside the clipping region will be displayed as semi-transparent red"
+"``debug`` parameter indicates whether to enable debug mode. When enabled, parts outside the clipping region will be "
+"displayed as semi-transparent red"
 
 #: janim.items.frame_effect.FrameClip.create_border_rect:1
 #: janim.items.frame_effect.TransformableFrameClip.create_border_rect:1 of
@@ -183,21 +145,15 @@ msgstr "Get the bounding rectangle of the clipped display region"
 
 #: janim.items.frame_effect.TransformableFrameClip:1 of
 msgid "与 :class:`FrameClip` 类似，但支持更多的变换操作（偏移、缩放、旋转）"
-msgstr ""
-"Similar to :class:`FrameClip`, but supports more transformation operations "
-"(offset, scale, rotation)"
+msgstr "Similar to :class:`FrameClip`, but supports more transformation operations (offset, scale, rotation)"
 
 #: janim.items.frame_effect.TransformableFrameClip:4 of
 msgid "``offset`` 参数表示裁剪区域 x 与 y 方向的的偏移量，单位是百分比"
-msgstr ""
-"``offset`` parameter represents the offset in x and y directions of the "
-"clipping region, unit is percentage"
+msgstr "``offset`` parameter represents the offset in x and y directions of the clipping region, unit is percentage"
 
 #: janim.items.frame_effect.TransformableFrameClip:5 of
 msgid "``scale`` 参数表示裁剪区域 x 与 y 方向的缩放量，单位是百分比"
-msgstr ""
-"``scale`` parameter represents the scaling in x and y directions of the "
-"clipping region, unit is percentage"
+msgstr "``scale`` parameter represents the scaling in x and y directions of the clipping region, unit is percentage"
 
 #: janim.items.frame_effect.TransformableFrameClip:6 of
 msgid "``rotate`` 参数表示裁剪区域的旋转角度"
@@ -236,21 +192,13 @@ msgstr ""
 
 #: janim.items.frame_effect.Shadertoy:19 of
 msgid "如果该着色器代码中出现报错，会显示为 ``JA_SHADERTOY`` 中出现的"
-msgstr ""
-"If an error occurs in the shader code, it will be displayed as occurring in "
-"``JA_SHADERTOY``."
-
-#: janim.items.frame_effect.AlphaEffect:1 of
-msgid "基类：:py:class:`~janim.items.frame_effect.SimpleFrameEffect`"
-msgstr "基类：:py:class:`~janim.items.frame_effect.SimpleFrameEffect`"
+msgstr "If an error occurs in the shader code, it will be displayed as occurring in ``JA_SHADERTOY``."
 
 #~ msgid "向该对象添加子对象"
 #~ msgstr "Add child objects to this object"
 
 #~ msgid "如果 ``insert=True`` （默认为 ``False``），那么插入到子物件列表的开头"
-#~ msgstr ""
-#~ "If ``insert=True`` (default is ``False``), then insert at the beginning of "
-#~ "the child items list"
+#~ msgstr "If ``insert=True`` (default is ``False``), then insert at the beginning of the child items list"
 
 #~ msgid "从该对象移除子对象"
 #~ msgstr "Remove child objects from this object"
@@ -259,14 +207,11 @@ msgstr "基类：:py:class:`~janim.items.frame_effect.SimpleFrameEffect`"
 #~ msgstr "The actual error line number should be subtracted by 10"
 
 #~ msgid ""
-#~ "例如，如果在上面的例子中将 ``iResolution`` 误写为了 ``Resolution``， 会导致 "
-#~ "``0(12) : error C1503: undefined variable \"Resolution\"`` 的报错， 报错信息"
-#~ "说的是在第 12 行，实际是第 2 行"
+#~ "例如，如果在上面的例子中将 ``iResolution`` 误写为了 ``Resolution``， 会导致 ``0(12) : error C1503: undefined variable "
+#~ "\"Resolution\"`` 的报错， 报错信息说的是在第 12 行，实际是第 2 行"
 #~ msgstr ""
-#~ "For example, if in the above example ``iResolution`` is mistakenly written "
-#~ "as ``Resolution``, it will cause an error ``0(12) : error C1503: undefined "
-#~ "variable \"Resolution\"``. The error message says line 12, but the actual "
-#~ "line is 2"
+#~ "For example, if in the above example ``iResolution`` is mistakenly written as ``Resolution``, it will cause an error "
+#~ "``0(12) : error C1503: undefined variable \"Resolution\"``. The error message says line 12, but the actual line is 2"
 
 #~ msgid "行数标注："
 #~ msgstr "Line number annotation:"

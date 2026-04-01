@@ -6,7 +6,9 @@ gui
 .. toctree::
    :maxdepth: 1
 
+   draw/modules.rst
    functions/modules.rst
+   handlers/modules.rst
    output/modules.rst
    popup/modules.rst
    utils/modules.rst

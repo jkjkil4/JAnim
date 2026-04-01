@@ -25,11 +25,8 @@ msgid "space_ops"
 msgstr "space_ops"
 
 #: ../../source/rst_utils/tip_of_manim.rst:1
-msgid ""
-"该部分代码来自 `3b1b/manim <https://github.com/3b1b/manim>`_，有待重构"
-msgstr ""
-"This portion of code is from 3b1b/manim <https://github.com/3b1b/manim>_ "
-"and needs refactoring."
+msgid "该部分代码来自 `3b1b/manim <https://github.com/3b1b/manim>`_，有待重构"
+msgstr "This portion of code is from 3b1b/manim <https://github.com/3b1b/manim>_ and needs refactoring."
 
 #: janim.utils.space_ops.rotation_matrix:1 of
 msgid "Rotation in R^3 about a specified axis of rotation."
@@ -40,40 +37,30 @@ msgid "Returns polar coordinate theta when vector is project on xy plane"
 msgstr "Returns polar coordinate theta when vector is project on xy plane"
 
 #: janim.utils.space_ops.angle_between_vectors:1 of
-msgid ""
-"Returns the angle between two 3D vectors. This angle will always be btw "
-"0 and pi"
-msgstr ""
-"Returns the angle between two 3D vectors. This angle will always be btw "
-"0 and pi"
+msgid "Returns the angle between two 3D vectors. This angle will always be btw 0 and pi"
+msgstr "Returns the angle between two 3D vectors. This angle will always be btw 0 and pi"
 
 #: janim.utils.space_ops.line_intersection:1 of
-msgid ""
-"return intersection point of two lines, each defined with a pair of "
-"vectors determining the end points"
-msgstr ""
-"return intersection point of two lines, each defined with a pair of "
-"vectors determining the end points"
+msgid "return intersection point of two lines, each defined with a pair of vectors determining the end points"
+msgstr "return intersection point of two lines, each defined with a pair of vectors determining the end points"
 
 #: janim.utils.space_ops.find_intersection:1 of
 msgid ""
-"Return the intersection of a line passing through p0 in direction v0 "
-"with one passing through p1 in direction v1.  (Or array of intersections "
-"from arrays of such points/directions). For 3d values, it returns the "
-"point on the ray p0 + v0 * t closest to the ray p1 + v1 * t"
+"Return the intersection of a line passing through p0 in direction v0 with one passing through p1 in direction v1.  (Or "
+"array of intersections from arrays of such points/directions). For 3d values, it returns the point on the ray p0 + v0 * t "
+"closest to the ray p1 + v1 * t"
 msgstr ""
-"Return the intersection of a line passing through p0 in direction v0 "
-"with one passing through p1 in direction v1.  (Or array of intersections "
-"from arrays of such points/directions). For 3d values, it returns the "
-"point on the ray p0 + v0 * t closest to the ray p1 + v1 * t"
+"Return the intersection of a line passing through p0 in direction v0 with one passing through p1 in direction v1.  (Or "
+"array of intersections from arrays of such points/directions). For 3d values, it returns the point on the ray p0 + v0 * t "
+"closest to the ray p1 + v1 * t"
 
 #: janim.utils.space_ops.get_closest_point_on_line:1 of
 msgid ""
-"It returns point x such that x is on line ab and xp is perpendicular to "
-"ab. If x lies beyond ab line, then it returns nearest edge(a or b)."
+"It returns point x such that x is on line ab and xp is perpendicular to ab. If x lies beyond ab line, then it returns "
+"nearest edge(a or b)."
 msgstr ""
-"It returns point x such that x is on line ab and xp is perpendicular to "
-"ab. If x lies beyond ab line, then it returns nearest edge(a or b)."
+"It returns point x such that x is on line ab and xp is perpendicular to ab. If x lies beyond ab line, then it returns "
+"nearest edge(a or b)."
 
 #: janim.utils.space_ops.is_inside_triangle:1 of
 msgid "Test if point p is inside triangle abc"

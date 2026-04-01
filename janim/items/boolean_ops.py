@@ -6,7 +6,7 @@ import pathops
 from janim.exception import BooleanOpsError
 from janim.items.item import Item
 from janim.items.vitem import VItem
-from janim.locale.i18n import get_translator
+from janim.locale import get_translator
 from janim.utils.bezier import PathBuilder
 
 _ = get_translator('janim.items.boolean_ops')

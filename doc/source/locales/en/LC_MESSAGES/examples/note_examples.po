@@ -37,7 +37,8 @@ msgstr "Email: 1173374788@qq.com"
 
 #: ../../source/examples/_note_examples_options.rst:9
 msgid "除了 00:00 - 01:25 的“类 Slide 演示”之外，作为视频叠加动画出现的区段："
-msgstr "Segments appearing as video overlay animations, excluding the \"Slide-style Demonstration\" from 00\\:00 - 01\\:25 :"
+msgstr ""
+"Segments appearing as video overlay animations, excluding the \"Slide-style Demonstration\" from 00\\:00 - 01\\:25 :"
 
 #: ../../source/examples/_note_examples_options.rst:11
 msgid "03\\:18 - 03\\:31 : 演示了 ``create_window`` 函数的参数含义"
@@ -49,7 +50,8 @@ msgstr "03\\:57 - 04\\:48 : Demonstrates the concept of ``viewport``"
 
 #: ../../source/examples/_note_examples_options.rst:21
 msgid "除了 00:00 - 00:25 的“类 Slide 演示”之外，作为视频叠加动画出现的区段："
-msgstr "Segments appearing as video overlay animations, excluding the \"Slide-style Demonstration\" from 00\\:00 - 00\\:25 :"
+msgstr ""
+"Segments appearing as video overlay animations, excluding the \"Slide-style Demonstration\" from 00\\:00 - 00\\:25 :"
 
 #: ../../source/examples/_note_examples_options.rst:23
 msgid "00\\:50 - 01\\:02 : 演示了 ``get_key`` 的用法"
@@ -94,4 +96,3 @@ msgstr "06\\:04 - 06\\:22 : Demonstrates the color blending effect of the ``mix`
 #: ../../source/examples/_note_examples_options.rst:42
 msgid "07\\:42 - 08\\:01 : 说明了纹理上下颠倒的原因"
 msgstr "07\\:42 - 08\\:01 : Explains the reason for texture being upside down"
-

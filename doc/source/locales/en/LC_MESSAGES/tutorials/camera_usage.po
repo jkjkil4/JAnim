@@ -26,4 +26,3 @@ msgstr "Camera Usage (TODO)"
 #: ../../source/tutorials/camera_usage.rst:6
 msgid "文档有待完善"
 msgstr "Documentation needs to be improved"
-

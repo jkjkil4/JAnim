@@ -10,3 +10,9 @@ utils
    fixed_ratio_widget
    precise_timer
    text_edit
+
+.. automodule:: janim.gui.utils.__init__
+   :members:
+   :undoc-members:
+   :show-inheritance:
+

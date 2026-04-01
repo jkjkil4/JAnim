@@ -31,7 +31,7 @@
 
 接着在命令行中，使用
 
-.. code-block:: sh
+.. code-block:: bash
 
     janim run learn.py HelloJAnimExample
 
@@ -235,13 +235,13 @@
 
 希望你没忘记，执行的命令是：
 
-.. code-block:: sh
+.. code-block:: bash
 
     janim run 文件名 时间轴名
 
 如果上面这段代码也写在了 ``learn.py`` 中，那么就是：
 
-.. code-block:: sh
+.. code-block:: bash
 
     janim run learn.py CmptAnimExample
 
@@ -254,13 +254,13 @@
 
 上面进行预览是使用：
 
-.. code-block:: sh
+.. code-block:: bash
 
     janim run learn.py CmptAnimExample
 
 如果你想要将这个动画导出为视频，将 ``run`` 替换为 ``write`` 即可：
 
-.. code-block:: sh
+.. code-block:: bash
 
     janim write learn.py CmptAnimExample
 
@@ -268,7 +268,7 @@
 
 如果再传入 ``-o``，会在导出结束后自动打开视频文件：
 
-.. code-block:: sh
+.. code-block:: bash
 
     janim write learn.py CmptAnimExample -o
 
@@ -292,7 +292,7 @@
 
         运行时，在预览动画的命令中加上 ``-i``，比如：
 
-        .. code-block:: sh
+        .. code-block:: bash
 
             janim run learn.py CmptAnimExample -i
 
@@ -317,7 +317,7 @@
 
         运行时，在预览动画的命令中加上 ``--watch`` 或 ``-w``，比如：
 
-        .. code-block:: sh
+        .. code-block:: bash
 
             janim run learn.py CmptAnimExample --watch
 

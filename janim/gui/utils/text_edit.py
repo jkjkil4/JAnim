@@ -9,3 +9,5 @@ class TextEdit(QPlainTextEdit):
         font.setFamily('Consolas')
         font.setPointSize(10)
         self.setFont(font)
+
+        self.setLineWrapMode(TextEdit.LineWrapMode.NoWrap)

@@ -9,11 +9,13 @@ from dataclasses import dataclass
 from typing import (TYPE_CHECKING, Any, Callable, Iterable, Self,
                     SupportsIndex, overload)
 
+import numpy as np
+
 from janim.components.component import CmptInfo, Component, _CmptGroup
 from janim.components.depth import Cmpt_Depth
 from janim.exception import AsTypeError, GetItemError
 from janim.items.relation import Relation
-from janim.locale.i18n import get_translator
+from janim.locale import get_translator
 from janim.logger import log
 from janim.render.base import Renderer
 from janim.typing import SupportsApartAlpha
@@ -23,7 +25,8 @@ from janim.utils.paths import PathFunc, straight_path
 from janim.utils.signal import SIGNAL_OBJ_SLOTS_NAME
 
 if TYPE_CHECKING:
-    from janim.items.points import Group
+    from janim.anims.timeline import Timeline
+    from janim.items.group import Group
 
 _ = get_translator('janim.items.item')
 
@@ -69,7 +72,7 @@ class _ItemMeta(type):
 
         return super().__new__(cls, name, bases, attrdict)
 
-    @dataclass
+    @dataclass(slots=True)
     class _CmptInitData:
         info: CmptInfo[CmptInfo]
         decl_cls: type[Item]
@@ -113,6 +116,14 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
 
     depth = CmptInfo(Cmpt_Depth[Self], 0)
 
+    # 在默认情况下为 None，会由子类（例如 `VItem`）使用
+    #
+    # @property
+    # def distance_sort_refernece_point(self) -> np.ndarray | None: ...
+    #
+    # 来明确具体实现
+    distance_sort_reference_point: np.ndarray | None = None
+
     def __init__(
         self,
         *args,
@@ -121,9 +132,9 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
     ):
         super().__init__(*args)
 
-        self.stored: bool = False
-        self.stored_parents: list[Item] | None = None
-        self.stored_children: list[Item] | None = None
+        self._stored: bool = False
+        self._stored_parents: list[Item] | None = None
+        self._stored_children: list[Item] | None = None
 
         from janim.anims.timeline import Timeline
         self.timeline = Timeline.get_context(raise_exc=False)
@@ -133,8 +144,9 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
 
         self._fix_in_frame = False
         self._depth_test = False
+        self._distance_sort = False
 
-        self._saved_states: dict[str, Item.SavedState[Self]] = {}
+        self.reset_additional_states()
 
         self._init_components()
 
@@ -146,6 +158,10 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
 
     def init_connect(self) -> None:
         pass
+
+    def reset_additional_states(self) -> None:
+        self._saved_states: dict[str, Item.SavedState[Self]] = {}
+        self.target: Self | None = None
 
     def _init_components(self) -> None:
         """
@@ -165,17 +181,13 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
 
             self.__dict__[key] = self.components[key] = obj
 
-    def set_component(self, key: str, cmpt: Component) -> None:
-        setattr(self, key, cmpt)
-        self.components[key] = cmpt
-
     def broadcast_refresh_of_component(
         self,
         cmpt: Component,
-        func: Callable | str,
+        name: str,
         recurse_up=False,
         recurse_down=False,
-    ) -> Self:
+    ) -> None:
         """
         为 :meth:`~.Component.mark_refresh()`
         进行 ``recurse_up/down`` 的处理
@@ -188,13 +200,13 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
                 if isinstance(item, cmpt.bind.decl_cls):
                     # 一般情况
                     item_cmpt: Component = getattr(item, cmpt.bind.key)
-                    item_cmpt.mark_refresh(func)
+                    item_cmpt.mark_refresh(name)
 
                 else:
                     # astype 情况
                     mock_cmpt = item._astype_mock_cmpt.get(cmpt.bind.key, None)
                     if mock_cmpt is not None:
-                        mock_cmpt.mark_refresh(func)
+                        mock_cmpt.mark_refresh(name)
 
         if recurse_up:
             mark(self.ancestors())
@@ -286,6 +298,8 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
             )
 
         ``.r`` 表示从组件回到物件，这样就可以调用其它组件的功能
+
+        另见：:class:`~.MethodTransform`
         """
         from janim.anims.transform import MethodTransformArgsBuilder
         return MethodTransformArgsBuilder(self)
@@ -307,6 +321,10 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         from janim.anims.updater import MethodUpdaterArgsBuilder
         return MethodUpdaterArgsBuilder(self)
 
+    # 仅用于在创建动画时忘记使用 .anim 或 .update 时抛出错误，另见 AnimGroup 的 _get_anim_object
+    def __anim__(self):
+        raise NotImplementedError()
+
     # 使得 .anim() .update() 后仍有代码提示
     @overload
     def __call__(self, **kwargs) -> Self: ...
@@ -314,11 +332,7 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
     @overload
     def __getitem__(self, key: int) -> Item: ...
     @overload
-    def __getitem__(self, key: slice) -> Group: ...
-    @overload
-    def __getitem__(self, key: Iterable[int]) -> Group: ...
-    @overload
-    def __getitem__(self, key: Iterable[bool]) -> Group: ...
+    def __getitem__(self, key: slice | Iterable[int] | Iterable[bool]) -> Group: ...
 
     def __getitem__(self, key):
         if isinstance(key, Iterable) and not isinstance(key, list):
@@ -326,28 +340,22 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
 
         # example: item[0]
         if isinstance(key, SupportsIndex):
-            return self.children[key]
+            return self._children[key]
 
-        from janim.items.points import Group
+        from janim.items.group import Group
 
         match key:
             # example: item[0:2]
             case slice():
-                return Group(*self.children[key])
+                return Group(*self._children[key])
             # example: item[False, True, True]
             case list() if all(isinstance(x, bool) for x in key):
                 return Group(*[sub for sub, flag in zip(self, key) if flag])
             # example: item[0, 3, 4]
             case list() if all(isinstance(x, SupportsIndex) for x in key):
-                return Group(*[self.children[x] for x in key])
+                return Group(*[self._children[x] for x in key])
 
         raise GetItemError(_('Unsupported key: {}').format(key))
-
-    def __iter__(self):
-        return iter(self.children)
-
-    def __len__(self) -> int:
-        return len(self.children)
 
     def __mul__(self, other: int) -> Group[Self]:
         assert isinstance(other, int)
@@ -359,13 +367,13 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
 
         可以将 ``item * n`` 作为该方法的简写
         """
-        from janim.items.points import Group
+        from janim.items.group import Group
         return Group(
             *(self.copy() for i in range(n))
         )
 
     def join[T](self, lst: Iterable[T]) -> Group[Self | T]:
-        from janim.items.points import Group
+        from janim.items.group import Group
         it = iter(lst)
         items = []
         try:
@@ -608,10 +616,10 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
     # region data
 
     def get_parents(self):
-        return self.stored_parents if self.stored else self.parents
+        return self._stored_parents if self._stored else self._parents
 
     def get_children(self):
-        return self.stored_children if self.stored else self.children
+        return self._stored_children if self._stored else self._children
 
     def not_changed(self, other: Self) -> bool:
         if self.get_children() != other.get_children():
@@ -657,15 +665,16 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         copy_item.reset_refresh()
         setattr(copy_item, SIGNAL_OBJ_SLOTS_NAME, None)
 
-        copy_item.parents = []
-        copy_item.children = []
+        copy_item._parents = []
+        copy_item._children = []
+        copy_item.reset_additional_states()
 
         if root_only:
-            copy_item.children_changed()
+            copy_item._children_changed()
         else:
             # .add 里已经调用了 .children_changed
             copy_item.add(*[item.copy() for item in self])
-        copy_item.parents_changed()
+        copy_item._parents_changed()
 
         self._copy_cmpts(self, copy_item)
         copy_item.init_connect()
@@ -675,11 +684,37 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         """
         将该物件的数据设置为与传入的物件相同（以复制的方式，不是引用）
         """
-        # self.parents 不变
+        if self.timeline is not None:
+            force_detect_items = set(self.walk_self_and_descendants())
 
-        children = self.children.copy()
+        # self.parents 不变
+        self._children_become(other, auto_visible)
+
+        for key in self.components.keys() | other.components.keys():
+            self.components[key].become(other.components[key])
+
+        if self.timeline is not None:
+            # 强制将没有变化的物件以及所有后代物件也产生 detect_change 记录
+            # 从而正确停用作用在根物件上的 GroupUpdater
+            force_detect_items.union(self.walk_self_and_descendants())
+            for item in force_detect_items:
+                appr = self.timeline.item_appearances.get(item, None)
+                if appr is None:
+                    continue
+                if not appr.stack.is_changed(item):
+                    appr.stack.detect_change(item, self.timeline.current_time, force=True)
+
+            # 如果设置了 auto_visible 且根物件是可见的
+            # 那么 become 的最后会把所有子物件设为可见
+            if auto_visible and self.timeline.is_visible(self):
+                self.timeline.show(self)
+
+        return self
+
+    def _children_become(self, other: Item, auto_visible: bool) -> None:
+        children = self._children.copy()
         self.clear_children()
-        for old, new in it.zip_longest(children, other.children):
+        for old, new in it.zip_longest(children, other._children):
             if new is None:
                 break
             if old is None or type(old) is not type(new):
@@ -687,36 +722,35 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
             else:
                 self.add(old.become(new, auto_visible=auto_visible))
 
-        for key in self.components.keys() | other.components.keys():
-            self.components[key].become(other.components[key])
-
-        # 如果设置了 auto_visible 且根物件是可见的
-        # 那么 become 的最后会把所有子物件设为可见
-        if auto_visible and self.timeline is not None and self.timeline.is_visible(self):
-            self.timeline.show(self)
-
-        return self
-
-    def store(self):
+    def store(self, *, _cmpts: dict[str, Component] | None = None):
         copy_item = copy.copy(self)
         copy_item.reset_refresh()
         setattr(copy_item, SIGNAL_OBJ_SLOTS_NAME, None)
 
-        copy_item.parents = []
-        copy_item.children = []
+        copy_item._parents = []
+        copy_item._children = []
+        copy_item.reset_additional_states()
 
-        copy_item.stored = True
-        copy_item.stored_parents = self.get_parents().copy()
-        copy_item.stored_children = self.get_children().copy()
+        copy_item._stored = True
+        copy_item._stored_parents = self.get_parents().copy()
+        copy_item._stored_children = self.get_children().copy()
 
-        self._copy_cmpts(self, copy_item)
+        # align_for_interpolate 中会传入 _cmpts 以使用 align 的 cmpts，而不直接从原物件复制
+        if _cmpts is None:
+            self._copy_cmpts(self, copy_item)
+        else:
+            for key, cmpt in _cmpts.items():
+                setattr(copy_item, key, cmpt)
+            copy_item.components = _cmpts
+            copy_item._astype_mock_cmpt = {}
+
         copy_item.init_connect()
         return copy_item
 
     def restore(self, other: Item) -> Self:
-        if self.stored:
-            self.stored_parents = other.get_parents().copy()
-            self.stored_children = other.get_children().copy()
+        if self._stored:
+            self._stored_parents = other.get_parents().copy()
+            self._stored_children = other.get_children().copy()
 
         for key in self.components.keys() & other.components.keys():
             self.components[key].become(other.components[key])
@@ -736,6 +770,12 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         self.become(self.current(as_time=self.timeline.current_time))
         return self
 
+    def _unstore(self, child_restorer: Callable[[Item], Item]) -> None:
+        assert not self._children and self._stored_children is not None
+        self._stored = False
+        self.add(*[child_restorer(sub) for sub in self._stored_children])
+        self.reset_refresh()
+
     @classmethod
     def align_for_interpolate(
         cls,
@@ -745,30 +785,35 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         """
         进行数据对齐，以便插值
         """
-        aligned = AlignedData(item1.store(),
-                              item2.store(),
-                              item1.store())
+        data1_cmpts: dict[str, Component] = {}
+        data2_cmpts: dict[str, Component] = {}
+        union_cmpts: dict[str, Component] = {}
 
         # align components
         for key, cmpt1 in item1.components.items():
             cmpt2 = item2.components.get(key, None)
 
             if isinstance(cmpt1, _CmptGroup) and isinstance(cmpt2, _CmptGroup):
-                cmpt_aligned = cmpt1.align(cmpt1, cmpt2, aligned)
+                aligned_cmpt = cmpt1.align(cmpt1, cmpt2, data1_cmpts, data2_cmpts, union_cmpts)
 
             elif cmpt2 is None:
-                cmpt_aligned = AlignedData(cmpt1, cmpt1, cmpt1)
+                aligned_cmpt = AlignedData(cmpt1, cmpt1, cmpt1)
             else:
-                cmpt_aligned = cmpt1.align_for_interpolate(cmpt1, cmpt2)
+                aligned_cmpt = cmpt1.align_for_interpolate(cmpt1, cmpt2)
 
-            aligned.data1.set_component(key, cmpt_aligned.data1)
-            aligned.data2.set_component(key, cmpt_aligned.data2)
-            aligned.union.set_component(key, cmpt_aligned.union)
+            data1_cmpts[key] = aligned_cmpt.data1
+            data2_cmpts[key] = aligned_cmpt.data2
+            union_cmpts[key] = aligned_cmpt.union
+
+        # make aligned item
+        aligned = AlignedData(item1.store(_cmpts=data1_cmpts),
+                              item2.store(_cmpts=data2_cmpts),
+                              item1.store(_cmpts=union_cmpts))
 
         # align children
         max_len = max(len(item1.get_children()), len(item2.get_children()))
-        aligned.data1.stored_children = resize_preserving_order(item1.get_children(), max_len)
-        aligned.data2.stored_children = resize_preserving_order(item2.get_children(), max_len)
+        aligned.data1._stored_children = resize_preserving_order(item1.get_children(), max_len)
+        aligned.data2._stored_children = resize_preserving_order(item2.get_children(), max_len)
 
         return aligned
 
@@ -814,6 +859,14 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
 
     def is_applied_depth_test(self) -> bool:
         return self._depth_test
+
+    def apply_distance_sort(self, on: bool = True, *, root_only: bool = False) -> Self:
+        for item in self.walk_self_and_descendants(root_only):
+            item._distance_sort = on
+        return self
+
+    def is_applied_distance_sort(self) -> bool:
+        return self._distance_sort
 
     # endregion
 
@@ -899,6 +952,8 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
                 FadeIn(mat, UP)
             )
             self.forward()
+
+        另见：:class:`~.MoveToTarget`
         """
         self.target = self.copy()
         return self.target
@@ -910,9 +965,9 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
     def create_renderer(self) -> Renderer:
         return self.renderer_cls()
 
-    def _mark_render_disabled(self) -> None:
+    def _mark_render_disabled(self, additionals: list[Timeline.AdditionalRenderCallsCallback]) -> None:
         """
-        由子类继承，用于标记 _render_disabled
+        由子类继承，用于给所影响到的对象标记 ``_render_disabled``
 
         详见 :meth:`~.Timeline.render_all` 中的注释
         """

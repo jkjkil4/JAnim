@@ -4,7 +4,7 @@ from typing import Self
 from janim.components.component import CmptGroup, CmptInfo, Component
 from janim.exception import AsTypeError, CmptGroupLookupError
 from janim.items.item import Item
-from janim.items.points import Group
+from janim.items.group import Group
 
 
 class ComponentTest(unittest.TestCase):

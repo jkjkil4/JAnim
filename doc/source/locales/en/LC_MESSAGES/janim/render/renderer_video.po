@@ -1,4 +1,4 @@
-﻿# SOME DESCRIPTIVE TITLE.
+# SOME DESCRIPTIVE TITLE.
 # Copyright (C) 2023, jkjkil4
 # This file is distributed under the same license as the JAnim package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: JAnim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-04 09:09+0800\n"
+"POT-Creation-Date: 2026-02-24 01:11+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -22,14 +22,3 @@ msgstr ""
 #: ../../source/janim/render/renderer_video.rst:2
 msgid "renderer_video"
 msgstr "renderer_video"
-
-#: janim.render.renderer_video.VideoRenderer:1 of
-msgid "基类：:py:class:`~janim.render.base.Renderer`"
-msgstr "基类：:py:class:`~janim.render.base.Renderer`"
-
-#: janim.render.renderer_video.VideoReader:1 of
-msgid "基类：:py:class:`object`"
-msgstr "基类：:py:class:`object`"
-
-
-

@@ -13,10 +13,10 @@ from janim.items.geometry.arc import Circle
 from janim.items.geometry.line import Line
 from janim.items.geometry.polygon import Polygon, Polyline, Rect, RoundedRect
 from janim.items.item import Item
-from janim.items.points import Group
+from janim.items.group import Group
 from janim.items.text import BasepointVItem, Text, TextLine
 from janim.items.vitem import VItem
-from janim.locale.i18n import get_translator
+from janim.locale import get_translator
 from janim.logger import log
 from janim.utils.bezier import PathBuilder, quadratic_bezier_points_for_arc
 from janim.utils.config import Config
@@ -111,7 +111,7 @@ class SVGItem(Group[SVGElemItem]):
         if not root_only:
             def get_idx(item: Item) -> int | None:
                 try:
-                    return self.children.index(item)
+                    return self._children.index(item)
                 except ValueError:
                     return None
 
@@ -155,12 +155,14 @@ class SVGItem(Group[SVGElemItem]):
 
         builders: list[ItemBuilder] = []
         indexers: GroupIndexer = defaultdict(list)
-        group_finder: defaultdict[Any, list[str]] = defaultdict(list)
+        group_finder: defaultdict[Any, set[str]] = defaultdict(set)
         for shape in svg.elements():
             if isinstance(shape, se.Use):
                 continue
 
-            elif isinstance(shape, se.Group):
+            if isinstance(shape, se.Group):
+                # 对 Group 而言的 group_key 识别
+                # 如果带有 group_key 属性，会将所有子物件记录到 name 中
                 if cls.group_key is None:
                     continue
                 name = shape.values.get(cls.group_key, None)
@@ -169,10 +171,10 @@ class SVGItem(Group[SVGElemItem]):
                 for elem in shape.select():
                     if not isinstance(elem, se.Shape):
                         continue
-                    group_finder[id(elem)].append(name)
+                    group_finder[id(elem)].add(name)
                 continue
 
-            elif isinstance(shape, se.Path):
+            if isinstance(shape, se.Path):
                 builder = SVGItem.convert_path(shape, offset, mark_basepoint)
             elif isinstance(shape, se.SimpleLine):
                 builder = SVGItem.convert_line(shape, offset)
@@ -197,6 +199,14 @@ class SVGItem(Group[SVGElemItem]):
                 log.warning(_('Unsupported element type: {type}').format(type=type(shape)))
                 continue
 
+            # 对普通元素而言的 group_key 识别
+            # 如果带有 group_key 属性，将其自己记录到 name 中
+            if cls.group_key is not None:
+                name = shape.values.get(cls.group_key, None)
+                if name is not None:
+                    group_finder[id(shape)].add(name)
+
+            # 其他处理
             builders.append(builder)
 
             if not group_finder:

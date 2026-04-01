@@ -21,17 +21,20 @@ from PySide6.QtWidgets import (QApplication, QCompleter, QLabel, QLineEdit,
                                QSizePolicy, QSplitter, QStackedLayout, QWidget)
 
 from janim.anims.timeline import BuiltTimeline, Timeline
+from janim.components.data import Cmpt_Data
 from janim.exception import ExitException
 from janim.gui.application import Application
 from janim.gui.functions.selector import Selector
 from janim.gui.glwidget import GLWidget
+from janim.gui.handlers import handle_command
 from janim.gui.output import connect_to_output_slots, setup_output_actions
 from janim.gui.popup import setup_popup_actions
 from janim.gui.timeline_view import TimelineView
+from janim.gui.utils import ACTION_WIDGET_FLAG_KEY
 from janim.gui.utils.audio_player import AudioPlayer
 from janim.gui.utils.fixed_ratio_widget import FixedRatioWidget
 from janim.gui.utils.precise_timer import PreciseTimerWithFPS
-from janim.locale.i18n import get_translator
+from janim.locale import get_translator
 from janim.logger import log
 from janim.utils.config import Config
 from janim.utils.file_ops import (STDIN_FILENAME, get_gui_asset,
@@ -47,6 +50,7 @@ class AnimViewer(QMainWindow):
 
     可以使用 ``AnimViewer.views(MyTimeline().build())`` 进行直接显示
     """
+    before_set_built = Signal()
     play_finished = Signal()
 
     def __init__(
@@ -111,6 +115,8 @@ class AnimViewer(QMainWindow):
         app.exec()
 
     def set_built(self, built: BuiltTimeline) -> None:
+        self.before_set_built.emit()
+
         self.built = built
 
         # data
@@ -155,6 +161,13 @@ class AnimViewer(QMainWindow):
             self.audio_player = AudioPlayer(self.built.cfg.audio_framerate,
                                             self.built.cfg.audio_channels,
                                             self.built.cfg.preview_fps)
+
+        command = self.built.timeline.gui_command
+        if command is not None:
+            if self.is_stdin:
+                log.warning(_('Cannot process the GUI command from stdin input'))
+            else:
+                QTimer.singleShot(0, lambda: handle_command(self, command))
 
     # region setup_ui
 
@@ -447,6 +460,8 @@ class AnimViewer(QMainWindow):
             module_name = '__janim_main__'
 
         reset_reloads_state()
+        Cmpt_Data._clear_resolve_cache()
+
         loader = importlib.machinery.SourceFileLoader(module_name, module.__file__)
         module = loader.load_module()
         timeline_class = getattr(module, new_timeline_name, None)
@@ -505,16 +520,20 @@ class AnimViewer(QMainWindow):
 
         from janim.cli import get_all_timelines_from_module
 
+        start_time = time.time()
         gc.collect()
-        get_all_timelines_from_module.cache_clear()
+        elapsed = time.time() - start_time
+        if elapsed >= 0.2:  # 只在超过 0.2s 的时候才提示，如果时间较短则不提示
+            log.info(_('GC took {elapsed} s').format(elapsed=f'{elapsed:.2f}'))
+
         self.update_completer([timeline.__name__ for timeline in get_all_timelines_from_module(module)])
 
         if self.has_connection():
             # 发送重新构建了的信息
             self.send_janim_cmd(Cmd.Rebuilt)
 
-            time = self.timeline_view.progress_to_time(self.timeline_view.progress())
-            self.send_janim_cmd(Cmd.Lineno, self.built.timeline.get_lineno_at_time(time))
+            t = self.timeline_view.progress_to_time(self.timeline_view.progress())
+            self.send_janim_cmd(Cmd.Lineno, self.built.timeline.get_lineno_at_time(t))
 
         self.glw.update()
 
@@ -835,6 +854,9 @@ class AnimViewer(QMainWindow):
 
     def closeEvent(self, event: QCloseEvent) -> None:
         super().closeEvent(event)
+
+        if self.audio_player is not None:
+            self.audio_player.close()
 
         if self.has_connection():
             self.send_janim_cmd(Cmd.CloseEvent)

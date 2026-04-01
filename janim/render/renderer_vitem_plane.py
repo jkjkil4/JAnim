@@ -108,6 +108,7 @@ class VItemPlaneRenderer(Renderer):
         self.u_unit_normal = self.prog['unit_normal']
         self.u_start_point = self.prog['start_point']
         self.u_DEPTH_TEST = self.prog['DEPTH_TEST']
+        self.u_SHADE_IN_3D = self.prog.get('SHADE_IN_3D', None)
 
         self.vbo_coord = self.ctx.buffer(reserve=4 * 2 * 4)
         self.vbo_mapped_points = self.ctx.buffer(reserve=1)
@@ -171,7 +172,7 @@ class VItemPlaneRenderer(Renderer):
                                             resize_target)
             self.attrs.fill = new_attrs.fill
 
-        if item._depth_test:
+        if item._depth_test or item._shade_in_3d:
             if new_attrs.points is not self.attrs.points:
                 self.unit_normal = item.points.unit_normal
 
@@ -238,7 +239,7 @@ class VItemPlaneRenderer(Renderer):
                                             resize_target)
             self.attrs.fill = new_attrs.fill
 
-        if item._depth_test:
+        if item._depth_test or item._shade_in_3d:
             if new_attrs.points is not self.attrs.points:
                 self.unit_normal = item.points.unit_normal
 
@@ -259,8 +260,10 @@ class VItemPlaneRenderer(Renderer):
         self.u_glow_size.value = new_attrs.glow_size
 
         self.u_DEPTH_TEST.value = item._depth_test
+        if self.u_SHADE_IN_3D is not None:
+            self.u_SHADE_IN_3D.value = item._shade_in_3d
 
-        if item._depth_test:
+        if item._depth_test or item._shade_in_3d:
             self.u_unit_normal.value = self.unit_normal
             self.u_start_point.value = new_attrs.points[0]
 

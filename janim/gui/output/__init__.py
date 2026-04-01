@@ -11,7 +11,7 @@ from PySide6.QtWidgets import QApplication, QMenu, QMessageBox
 from janim.exception import ExitException
 from janim.gui.output.capture_dialog import CaptureDialog
 from janim.gui.output.export_dialog import ExportDialog
-from janim.locale.i18n import get_translator
+from janim.locale import get_translator
 from janim.logger import log
 from janim.render.writer import AudioWriter, VideoWriter, merge_video_and_audio
 from janim.utils.config import cli_config

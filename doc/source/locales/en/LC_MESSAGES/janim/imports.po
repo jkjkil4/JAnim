@@ -26,4 +26,3 @@ msgstr "imports"
 #: janim.imports:1 of
 msgid "使用 ``from janim.imports import *`` 即可导入 ``janim`` 主要的功能"
 msgstr "Use ``from janim.imports import *`` to import the main functionality of ``janim``"
-

@@ -4,7 +4,8 @@ import janim.utils.refresh as refresh
 from janim.components.component import CmptInfo, Component
 from janim.constants.coord import *
 from janim.items.item import Item
-from janim.items.points import Group, Points
+from janim.items.group import Group
+from janim.items.points import Points
 from janim.utils.signal import Signal
 
 
@@ -40,9 +41,9 @@ class ItemTest(unittest.TestCase):
 
         m: MyItem
 
-        self.assertEqual(m1.children[0], m1[0])
-        self.assertEqual(m1.children[1], m1[1])
-        self.assertListEqual(m1[:1].children, [m2])
+        self.assertEqual(m1._children[0], m1[0])
+        self.assertEqual(m1._children[1], m1[1])
+        self.assertListEqual(m1[:1]._children, [m2])
 
         for m in [m1, *m1.descendants()]:
             m.cmpt.bbox()

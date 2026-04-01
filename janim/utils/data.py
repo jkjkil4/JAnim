@@ -1,14 +1,15 @@
 from __future__ import annotations
 
+from bisect import bisect_right
 from contextvars import ContextVar
 from dataclasses import dataclass
 from enum import IntFlag
-from typing import Iterable, Self, overload
+from typing import Generator, Iterable, List, Self, overload
 
 import numpy as np
 import numpy.typing as npt
 
-from janim.locale.i18n import get_translator
+from janim.locale import get_translator
 
 _ = get_translator('janim.utils.data')
 
@@ -30,9 +31,17 @@ class Array:
     使得在使用 ``.data = xxx`` 修改（赋值）后必定是不同的 id
 
     并且通过 ``.data`` 得到的 numpy 数组必定是只读的
+
+    一般来说，不使用 ``__init__`` 构造，而是使用 :meth:`create`
     """
-    def __init__(self, *, dtype=np.float32):
-        self._data = np.empty(0, dtype=dtype)
+    def __init__(self, *, _data):
+        self._data = _data
+
+    @staticmethod
+    def create(x, dtype=np.float32) -> Array:
+        data = np.array(x, dtype=dtype)
+        data.setflags(write=False)
+        return Array(_data=data)
 
     def len(self) -> int:
         return len(self._data)
@@ -53,15 +62,46 @@ class Array:
         self._data.setflags(write=False)
 
     def copy(self) -> Array:
-        ret = Array(dtype=self._data.dtype)
-        ret.data = self
-        return ret
+        return Array(_data=self._data)
 
     def is_share(self, other: Array) -> bool:
-        return self.data is other.data
+        return self._data is other._data
 
 
-@dataclass
+class SortedKeyQueue[K, T]:
+    """
+    按 ``key`` 排序的队列（基于两个列表）；
+    使用生成器方式弹出 ``key <= max_key`` 的元素
+
+    这是对 ``insort + key`` 的优化方案，因为 ``insort`` 会频繁调用 ``key`` 回调，在高频使用的场景下导致性能损失
+    """
+    __slots__ = ('_keys', '_values', '_key_func')
+
+    def __init__(self):
+        self._keys: List[K] = []   # 存 key 值
+        self._values: List[T] = []
+
+    def insert(self, key: K, value: T):
+        """
+        插入 ``value``，保持按 ``key`` 排序
+        """
+        idx = bisect_right(self._keys, key)
+        self._keys.insert(idx, key)
+        self._values.insert(idx, value)
+
+    def pop_up_to(self, max_key: float) -> Generator[T, None, None]:
+        """
+        弹出所有 ``key <= max_key`` 的元素
+        """
+        while self._values and self._keys[0] <= max_key:
+            self._keys.pop(0)
+            yield self._values.pop(0)
+
+    def __len__(self) -> int:
+        return len(self._values)
+
+
+@dataclass(slots=True)
 class AlignedData[T]:
     """
     数据对齐后的结构，用于 :meth:`~.Item.align_for_interpolate`

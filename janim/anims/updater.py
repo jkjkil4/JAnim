@@ -17,7 +17,7 @@ from janim.components.component import Component
 from janim.constants import C_LABEL_ANIM_ABSTRACT
 from janim.exception import UpdaterError
 from janim.items.item import Item
-from janim.locale.i18n import get_translator
+from janim.locale import get_translator
 from janim.render.base import Renderer
 from janim.utils.rate_functions import RateFunc, linear
 from janim.utils.simple_functions import clip
@@ -55,6 +55,7 @@ class StepUpdaterParams:
     :class:`StepUpdater` 调用时会传递的参数，用于标注时间信息以及动画进度
     """
     global_t: float
+    dt: float
     range: TimeRange
     n: int
 
@@ -73,7 +74,7 @@ updater_params_ctx: ContextVar[UpdaterParams] = ContextVar('updater_params_ctx')
 type DataUpdaterFn[T] = Callable[[T, UpdaterParams], Any]
 type GroupUpdaterFn[T] = Callable[[T, UpdaterParams], Any]
 type ItemUpdaterFn = Callable[[UpdaterParams], Item]
-type StepUpdaterFn[T] = Callable[[T, UpdaterParams], Any]
+type StepUpdaterFn[T] = Callable[[T, StepUpdaterParams], Any]
 
 
 def _call_two_func(func1: Callable, func2: Callable, *args, **kwargs) -> None:
@@ -302,7 +303,7 @@ class _GroupUpdater(ApplyAligner):
         **kwargs
     ):
         super().__init__(item, stacks, **kwargs)
-        self._generate_by = generate_by
+        self._generate_by: GroupUpdater = generate_by
         self.data = data
 
     def pre_apply(self, data: Item, p: ItemAnimation.ApplyParams) -> None:
@@ -489,7 +490,11 @@ class ItemUpdater(Animation):
         self.renderers: dict[type, Renderer] = {}
 
     def _time_fixed(self) -> None:
-        self.timeline.add_additional_render_calls_callback(self.t_range, self.render_calls_callback)
+        self.timeline.add_additional_render_calls_callback(
+            self.t_range,
+            self.render_calls_callback,
+            None if self.item is None else [self.item]
+        )
 
         if self.item is None:
             return
@@ -659,6 +664,9 @@ class _StepUpdater(ItemAnimation):
         if self.become_at_end and self.t_range.end is not FOREVER:
             self.compute(self.item, self.t_range.end)
 
+            apprs = self.timeline.item_appearances
+            apprs[self.item].stack.detect_change(self.item, self.t_range.end)
+
     def apply(self, data: None, p: ItemAnimation.ApplyParams) -> Item:
         self.compute(self.data, p.global_t, generate_temporary_cache=True)
         return self.data
@@ -710,6 +718,7 @@ class _StepUpdater(ItemAnimation):
 
         for computing_n in rg:
             with StepUpdaterParams(self.n_to_global_t(computing_n),
+                                   self.step,
                                    self.t_range,
                                    computing_n,
                                    self) as params:

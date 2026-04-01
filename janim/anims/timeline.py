@@ -1,18 +1,21 @@
 from __future__ import annotations
 
+import gc
 import inspect
 import itertools as it
 import math
 import os
+import sys
 import time
 import traceback
 import types
 from abc import ABCMeta, abstractmethod
-from bisect import bisect, insort
+from bisect import bisect
 from collections import defaultdict
 from contextlib import contextmanager, nullcontext
 from contextvars import ContextVar
 from dataclasses import dataclass
+from functools import partial
 from typing import Callable, Iterable, Self, overload
 
 import moderngl as mgl
@@ -32,11 +35,12 @@ from janim.constants import (BLACK, DEFAULT_DURATION, DOWN, FOREVER,
 from janim.exception import TimelineLookupError
 from janim.items.audio import Audio
 from janim.items.item import Item
-from janim.items.points import Group
+from janim.items.group import Group
+from janim.items.points import Point
 from janim.items.shape_matchers import SurroundingRect
 from janim.items.svg.typst import TypstText
 from janim.items.text import Text
-from janim.locale.i18n import get_translator
+from janim.locale import get_translator
 from janim.logger import log
 from janim.render.base import (RenderData, Renderer, apply_blend_flags,
                                create_context_430_or_330)
@@ -46,7 +50,7 @@ from janim.render.framebuffer import (FRAME_BUFFER_BINDING, blend_context,
 from janim.render.uniform import get_uniforms_context_var
 from janim.typing import JAnimColor, SupportsAnim
 from janim.utils.config import Config, ConfigGetter, config_ctx_var
-from janim.utils.data import ContextSetter
+from janim.utils.data import ContextSetter, SortedKeyQueue
 from janim.utils.iterables import resize_preserving_order
 from janim.utils.simple_functions import clip
 from janim.utils.space_ops import normalize
@@ -102,7 +106,7 @@ class Timeline(metaclass=ABCMeta):
 
     # endregion
 
-    @dataclass
+    @dataclass(slots=True)
     class ScheduledTask:
         """
         另见 :meth:`~.Timeline.schedule`
@@ -148,6 +152,9 @@ class Timeline(metaclass=ABCMeta):
     class AdditionalRenderCallsCallback:
         t_range: TimeRange
         func: RenderCallsFn
+        related_items: list[Item] | None
+
+        render_disabled: bool = False
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -157,7 +164,7 @@ class Timeline(metaclass=ABCMeta):
 
         self._frozen_config: list[Config] | None = None
 
-        self.scheduled_tasks: list[Timeline.ScheduledTask] = []
+        self.scheduled_tasks = SortedKeyQueue[float, Timeline.ScheduledTask]()
         self.audio_infos: list[Timeline.PlayAudioInfo] = []
         self.subtitle_infos: list[Timeline.SubtitleInfo] = []   # helpful for extracting subtitles
 
@@ -169,9 +176,11 @@ class Timeline(metaclass=ABCMeta):
         self.time_aligner: TimeAligner = TimeAligner()
         self.item_appearances = Timeline.ItemAppearancesDict(self.time_aligner)
 
-        self.debug_list: list[Item] = []
-
         self.subtimeline_items: list[TimelineItem] = []
+
+        self.gui_command: Timeline.GuiCommand | None = None
+
+        self.debug_list: list[Item] = []
 
     @abstractmethod
     def construct(self) -> None:
@@ -191,8 +200,13 @@ class Timeline(metaclass=ABCMeta):
         with self.with_config(), ContextSetter(self.ctx_var, self), ContextSetter(self.build_indent_ctx, indent):
 
             self.config_getter = ConfigGetter(config_ctx_var.get())
+
             self.camera = Camera()
             self.track(self.camera)
+
+            self.light_source = Point([-9, -7, 10])
+            self.track(self.light_source)
+
             self.hide_subtitles = hide_subtitles
             self.show_debug_notice = show_debug_notice
 
@@ -201,11 +215,26 @@ class Timeline(metaclass=ABCMeta):
                 start_time = time.time()
 
             self._build_frame = inspect.currentframe()
+            gc_enabled = gc.isenabled()
+            gc.disable()    # 在 build 期间关闭 gc，这样只有重新 enable 之后的一次大 gc，这样可以提升效率
 
             try:
                 self.construct()
+            except Timeline.GuiCommandInterrupt as e:
+                self.gui_command = e.command
+                self.forward(DEFAULT_DURATION, _record_lineno=False)    # 使用 GUI 命令的时候，额外产生一点时间，避免最后一帧的效果不可预览的问题
+                if not quiet:   # pragma: no cover
+                    log.info(
+                        indent_str + (
+                            _('Due to the use of a GUI command, '
+                              '"{name}" automatically generated an additional duration of {duration}s')
+                            .format(name=self.__class__.__name__, duration=DEFAULT_DURATION)
+                        )
+                    )
             finally:
                 self._build_frame = None
+                if gc_enabled:
+                    gc.enable()
 
             if self.current_time == 0:
                 self.forward(DEFAULT_DURATION, _record_lineno=False)    # 使得没有任何前进时，产生一点时间，避免除零以及其它问题
@@ -267,8 +296,9 @@ class Timeline(metaclass=ABCMeta):
         会在进度达到 ``at`` 时，对 ``func`` 进行调用，
         可传入 ``*args`` 和 ``**kwargs``
         """
-        task = Timeline.ScheduledTask(self.time_aligner.align_t(at), func, args, kwargs)
-        insort(self.scheduled_tasks, task, key=lambda x: x.at)
+        at = self.time_aligner.align_t(at)
+        task = Timeline.ScheduledTask(at, func, args, kwargs)
+        self.scheduled_tasks.insert(at, task)
 
     def schedule_and_detect_changes(self, at: float, func: Callable, *args, **kwargs) -> None:
         """
@@ -277,7 +307,7 @@ class Timeline(metaclass=ABCMeta):
         def wrapper(*args, **kwargs) -> None:
             func(*args, **kwargs)
             self.detect_changes_of_all()
-        self.schedule(at, wrapper, *args, *kwargs)
+        self.schedule(at, wrapper, *args, **kwargs)
 
     def timeout(self, delay: float, func: Callable, *args, **kwargs) -> None:
         """
@@ -292,7 +322,7 @@ class Timeline(metaclass=ABCMeta):
         def wrapper(*args, **kwargs) -> None:
             func(*args, **kwargs)
             self.detect_changes_of_all()
-        self.timeout(delay, wrapper, *args, *kwargs)
+        self.timeout(delay, wrapper, *args, **kwargs)
 
     # endregion
 
@@ -302,6 +332,7 @@ class Timeline(metaclass=ABCMeta):
         """
         向前推进 ``dt`` 秒
         """
+        dt = float(dt)  # 避免 numpy 类型浮点数可能导致的问题
         if dt < 0:
             raise ValueError(_('dt can\'t be negative'))
 
@@ -310,8 +341,7 @@ class Timeline(metaclass=ABCMeta):
 
         to_time = self.current_time + dt
 
-        while self.scheduled_tasks and self.scheduled_tasks[0].at <= to_time:
-            task = self.scheduled_tasks.pop(0)
+        for task in self.scheduled_tasks.pop_up_to(to_time):
             self.current_time = task.at
             task.func(*task.args, **task.kwargs)
 
@@ -550,6 +580,10 @@ class Timeline(metaclass=ABCMeta):
                 subtitle = TypstText(text, **kwargs)
             else:
                 subtitle = Text(text, font=font, **kwargs)
+            is_null = all(item.is_null() for item in subtitle.walk_self_and_descendants())
+            if is_null:
+                continue
+
             subtitle.points.scale(scale * base_scale)
             self.place_subtitle(subtitle, range)
             self.subtitle_infos.append(Timeline.SubtitleInfo(text, range, kwargs, subtitle))
@@ -693,14 +727,12 @@ class Timeline(metaclass=ABCMeta):
             as_time = Animation.global_t_ctx.get(None)
 
         if as_time is None:
-            return item.copy(root_only=root_only)
+            as_time = self.current_time
 
         root = self.compute_item(item, as_time, False)
         if not root_only:
-            assert not root.children and root.stored_children is not None
-            root.stored = False
-            root.add(*[self.item_current(sub, as_time=as_time) for sub in root.stored_children])
-            root.reset_refresh()
+            child_restorer = partial(self.item_current, as_time=as_time)
+            root._unstore(child_restorer)
         return root
 
     # endregion
@@ -767,9 +799,14 @@ class Timeline(metaclass=ABCMeta):
     def add_additional_render_calls_callback(
         self,
         t_range: TimeRange,
-        func: RenderCallsFn
+        func: RenderCallsFn,
+        related_items: list[Item] | None
     ) -> None:
-        self.additional_render_calls_callbacks.append(Timeline.AdditionalRenderCallsCallback(t_range, func))
+        self.additional_render_calls_callbacks.append(
+            Timeline.AdditionalRenderCallsCallback(t_range, func, related_items)
+        )
+
+    # endregion
 
     # endregion
 
@@ -801,6 +838,34 @@ class Timeline(metaclass=ABCMeta):
         idx = bisect(toc, time, key=lambda x: x.time)
         idx = clip(idx, 0, len(toc) - 1)
         return toc[idx].line
+
+    # endregion
+
+    # region GUI command
+
+    class GuiCommand:
+        def __init__(self, global_t: float, text: str, frame: types.FrameType):
+            try:
+                idx = text.index(':')
+            except ValueError:
+                idx = len(text)
+
+            self.global_t = global_t
+            self.text = text
+            self.name = text[:idx].strip()
+            self.body = text[idx + 1:].strip()
+            self.filepath = frame.f_code.co_filename
+            self.lineno = frame.f_lineno
+            self.locals = frame.f_locals
+
+    class GuiCommandInterrupt(Exception):
+        def __init__(self, command: Timeline.GuiCommand):
+            super().__init__()
+            self.command = command
+
+    def __call__(self, command_text: str) -> None:
+        command = Timeline.GuiCommand(self.current_time, command_text, inspect.currentframe().f_back)
+        raise Timeline.GuiCommandInterrupt(command)
 
     # endregion
 
@@ -875,6 +940,94 @@ class SourceTimeline(Timeline):
             self.source_displayer = SourceDisplayer(self.source_object(), depth=10000)
             self.source_displayer.fix_in_frame().show()
         return super().build(quiet=quiet, hide_subtitles=hide_subtitles, show_debug_notice=show_debug_notice)
+
+
+class ListedTimelines(Timeline):
+    """
+    指定一组 :class:`Timeline` 实现，将他们依次播放
+
+    示例：
+
+    .. code-block:: python
+
+        class Section0(Timeline):
+            def construct(self):
+                ...
+
+        class Section1(Timeline):
+            def construct(self):
+                ...
+
+        class Section2(Timeline):
+            def construct(self):
+                ...
+
+        class Sections(ListedTimelines):
+            includes = [Section1, Section2]
+    """
+    includes: list[type[Timeline]] = []
+
+    def construct(self):
+        """"""
+        for cls in self.includes:
+            tl = cls().build().to_item().show()
+            self.forward(tl.duration)
+
+
+class AboveTimelines(ListedTimelines):
+    """
+    依次播放在同文件中先前定义过的所有 :class:`Timeline` 实现
+
+    示例：
+
+    .. code-block:: python
+
+        class Section0(Timeline):
+            def construct(self):
+                ...
+
+        class Section1(Timeline):
+            def construct(self):
+                ...
+
+        class Section2(Timeline):
+            def construct(self):
+                ...
+
+        class Sections(AboveTimelines):
+            pass
+
+    可另外使用 ``excludes`` 指定排除项
+
+    示例：
+
+    .. code-block:: python
+
+        ...
+
+        class Sections(AboveTimelines):
+            excludes = [Section0]
+    """
+    excludes: list[type[Timeline]] = []
+
+    def construct(self):
+        """"""
+        from janim.cli import get_all_timelines_from_module
+
+        module = sys.modules[self.__class__.__module__]
+        timelines = get_all_timelines_from_module(module)
+
+        includes = []
+
+        for cls in timelines:
+            if cls is self.__class__:
+                break
+            if cls in self.excludes:
+                continue
+            includes.append(cls)
+
+        self.includes = includes
+        super().construct()
 
 
 class BuiltTimeline:
@@ -967,10 +1120,24 @@ class BuiltTimeline:
 
         return result
 
-    def current_camera_info(self) -> CameraInfo:
-        return self.timeline.compute_item(self.timeline.camera, self._time, True).points.info
+    def current_camera_info(self, *, as_time: float | None = None) -> CameraInfo:
+        """
+        得到当前的 :class:`~.CameraInfo` 信息
 
-    def render_all(self, ctx: mgl.Context, global_t: float, *, blend_on: bool = True) -> bool:
+        这里“当前”的含义是，上次调用 :meth:`render_all` 的 ``global_t`` 时刻；或者也可以传入 ``as_time`` 指定
+        """
+        if as_time is None:
+            as_time = self._time
+        return self.timeline.compute_item(self.timeline.camera, as_time, True).points.info
+
+    def render_all(
+        self,
+        ctx: mgl.Context,
+        global_t: float,
+        *,
+        blend_on: bool = True,
+        camera: Camera | None = None
+    ) -> bool:
         """
         渲染所有可见物件
         """
@@ -980,74 +1147,138 @@ class BuiltTimeline:
         if global_t == self.duration:
             global_t -= 1e-4
         self._time = global_t
+
         try:
+            # 有必要在计算 camera 和 light_source 之前设置这些 context
+            # 因为用户有可能给 camera 或 light_source 使用 updater，updater 需要这些信息
             with ContextSetter(Animation.global_t_ctx, global_t),   \
                  ContextSetter(Timeline.ctx_var, self.timeline),    \
                  self.timeline.with_config():
-                camera = timeline.compute_item(timeline.camera, global_t, True)
+
+                # 计算 camera 和 light_source
+                if camera is None:
+                    camera = timeline.compute_item(timeline.camera, global_t, True)
                 camera_info = camera.points.info
+                light_source = timeline.compute_item(timeline.light_source, global_t, True)
                 anti_alias_radius = self.cfg.anti_alias_width / 2 * camera_info.scaled_factor
 
+                # 用于渲染的基础信息
+                # - 会提供给 _uniforms_data 以设置全局 shader uniform
+                # - 会设置到 Renderer.data_ctx 使得在渲染器中可以访问到这些信息
+                render_data = RenderData(
+                    ctx=ctx,
+                    camera_info=camera_info,
+                    light_source_location=light_source.location,
+                    anti_alias_radius=anti_alias_radius
+                )
+
                 with blend_context(ctx, True) if blend_on else nullcontext(), \
-                     uniforms(ctx,
-                              JA_FRAMEBUFFER=FRAME_BUFFER_BINDING,
-                              JA_CAMERA_SCALED_FACTOR=camera_info.scaled_factor,
-                              JA_CAMERA_CENTER=camera_info.center,
-                              JA_CAMERA_LOC=camera_info.camera_location,
-                              JA_CAMERA_RIGHT=normalize(camera_info.horizontal_vect),
-                              JA_CAMERA_UP=normalize(camera_info.vertical_vect),
-                              JA_VIEW_MATRIX=camera_info.view_matrix.T.flatten(),
-                              JA_FIXED_DIST_FROM_PLANE=camera_info.fixed_distance_from_plane,
-                              JA_PROJ_MATRIX=camera_info.proj_matrix.T.flatten(),
-                              JA_FRAME_RADIUS=camera_info.frame_radius,
-                              JA_ANTI_ALIAS_RADIUS=anti_alias_radius), \
-                     ContextSetter(Renderer.data_ctx, RenderData(ctx=ctx,
-                                                                 camera_info=camera_info,
-                                                                 anti_alias_radius=anti_alias_radius)):
-                    render_datas: list[tuple[Timeline.ItemAppearance, Item]] = []
-                    # 反向遍历一遍所有物件，这是为了让一些效果标记原有的物件不进行渲染
-                    # （会把所应用的物件的 render_disabled 置为 True，所以在下面可以判断这个变量过滤掉它们）
-                    for _, appr in reversed(self.visible_item_segments.get(global_t)):
-                        if not appr.is_visible_at(global_t):
-                            continue
-                        data = appr.stack.compute(global_t, True)
-                        data._mark_render_disabled()
-                        render_datas.append((appr, data))
-                    # 添加额外的渲染调用，例如 Transform 产生的
-                    # 这里也有可能产生 render_disabled 标记
-                    additional: list[list[tuple[Item, Callable[[Item], None]]]] = []
-                    for rcc in self.visible_additional_callbacks_segments.get(global_t):
-                        if rcc.t_range.end is FOREVER:
-                            if not rcc.t_range.at <= global_t:
-                                continue
-                        else:
-                            if not rcc.t_range.at <= global_t < rcc.t_range.end:
-                                continue
-                        additional.append(rcc.func())
-                    # 剔除被标记 render_disabled 的物件，得到 render_items_final
-                    render_datas_final: list[tuple[Item, Callable]] = []
-                    for appr, data in render_datas:
-                        if appr.render_disabled:
-                            appr.render_disabled = False    # 重置，因为每次都要重新标记
-                            continue
-                        render_datas_final.append((data, appr.render))
-                    render_datas_final.extend(it.chain(*additional))
-                    # 按深度排序
-                    render_datas_final.sort(key=lambda x: x[0].depth, reverse=True)
-                    # 渲染
+                     self._uniforms_context(render_data), \
+                     ContextSetter(Renderer.data_ctx, render_data):
+
+                    # 得到所有需要渲染的物件
+                    items_render = self._get_items_render(global_t)
+
+                    # 按照特定的方法排序这些物件
+                    self._sort_items_render(items_render, camera_info)
+
+                    # 渲染这些物件
                     blending = get_uniforms_context_var(ctx).get().get('JA_BLENDING')
-                    for data, render in render_datas_final:
-                        render(data)
-                        # 如果没有 blending，我们认为当前是在向透明 framebuffer 绘制
-                        # 所以每次都需要使用 glFlush 更新 framebuffer 信息使得正确渲染
-                        if not blending:
-                            gl.glFlush()
+                    self._render_items(items_render, blending)
 
         except Exception:
             traceback.print_exc()
             return False
 
         return True
+
+    def _uniforms_context(self, data: RenderData):
+        camera_info = data.camera_info
+        return uniforms(
+            data.ctx,
+            JA_FRAMEBUFFER=FRAME_BUFFER_BINDING,
+            JA_CAMERA_SCALED_FACTOR=camera_info.scaled_factor,
+            JA_CAMERA_CENTER=camera_info.center,
+            JA_CAMERA_LOC=camera_info.camera_location,
+            JA_CAMERA_RIGHT=normalize(camera_info.horizontal_vect),
+            JA_CAMERA_UP=normalize(camera_info.vertical_vect),
+            JA_VIEW_MATRIX=camera_info.view_matrix.T.flatten(),
+            JA_FIXED_DIST_FROM_PLANE=camera_info.fixed_distance_from_plane,
+            JA_PROJ_MATRIX=camera_info.proj_matrix.T.flatten(),
+            JA_FRAME_RADIUS=camera_info.frame_radius,
+            JA_ANTI_ALIAS_RADIUS=data.anti_alias_radius,
+            JA_LIGHT_SOURCE=data.light_source_location
+        )
+
+    type _RenderFunc = Callable[[Item], None]
+    type _ItemWithRenderFunc = tuple[Item, _RenderFunc]
+
+    def _get_items_render(self, global_t: float) -> list[_ItemWithRenderFunc]:
+        # 先提取当前时刻会运作的额外的渲染调用，例如 Transform 产生的
+        # 用以传递给 _mark_render_disabled 以便根据 related_items 标记 render_disabled
+        additionals: list[Timeline.AdditionalRenderCallsCallback] = []
+        for rcc in self.visible_additional_callbacks_segments.get(global_t):
+            if rcc.t_range.end is FOREVER:
+                if not rcc.t_range.at <= global_t:
+                    continue
+            else:
+                if not rcc.t_range.at <= global_t < rcc.t_range.end:
+                    continue
+            additionals.append(rcc)
+
+        # 反向遍历一遍所有物件，这是为了让一些效果标记原有的物件不进行渲染
+        # （比如 FrameEffect 会把所应用的物件的 render_disabled 置为 True，所以在下面可以判断这个变量过滤掉它们）
+        render_apprs: list[tuple[Timeline.ItemAppearance, Item]] = []
+        for _, appr in reversed(self.visible_item_segments.get(global_t)):
+            if not appr.is_visible_at(global_t):
+                continue
+            data = appr.stack.compute(global_t, True)
+            data._mark_render_disabled(additionals)
+            render_apprs.append((appr, data))
+
+        # 得到额外的渲染调用的方法列表
+        # 这里也有可能产生 render_disabled 标记
+        additional_lists: list[list[BuiltTimeline._ItemWithRenderFunc]] = []
+        for rcc in additionals:
+            if rcc.render_disabled:
+                rcc.render_disabled = False     # 重置，因为每次都要重新标记
+                continue
+            additional_lists.append(rcc.func())
+
+        # 剔除被标记 render_disabled 的物件，得到 items_render
+        items_render: list[BuiltTimeline._ItemWithRenderFunc] = []
+        for appr, data in render_apprs:
+            if appr.render_disabled:
+                appr.render_disabled = False    # 重置，因为每次都要重新标记
+                continue
+            items_render.append((data, appr.render))
+
+        # 将 additional 的内容也添加到 items_render 中
+        items_render.extend(it.chain(*additional_lists))
+
+        return items_render
+
+    def _sort_items_render(self, items_render: list[_ItemWithRenderFunc], info: CameraInfo) -> None:
+        camera_vec = normalize(-info.camera_axis)
+        camera_loc = info.camera_location
+
+        def key(x: BuiltTimeline._ItemWithRenderFunc):
+            ref = x[0].distance_sort_reference_point
+            if ref is None:
+                distance = np.inf
+            else:
+                distance = np.dot(camera_vec, ref - camera_loc)
+            return (distance, x[0].depth)
+
+        items_render.sort(key=key, reverse=True)
+
+    def _render_items(self, items_render: list[_ItemWithRenderFunc], blending: bool) -> None:
+        for data, render in items_render:
+            render(data)
+            # 如果没有 blending，我们认为当前是在向透明 framebuffer 绘制
+            # 所以每次都需要使用 glFlush 更新 framebuffer 信息使得正确渲染
+            if not blending:
+                gl.glFlush()
 
     def capture(self, global_t: float, *, transparent: bool = True, ctx: mgl.Context | None = None) -> Image.Image:
         if ctx:
@@ -1072,7 +1303,7 @@ class BuiltTimeline:
             self.capture_fbo = create_framebuffer(ctx, pw, ph)
 
         fbo = self.capture_fbo
-        with framebuffer_context(self.capture_fbo):
+        with framebuffer_context(fbo):
             fbo.clear(*self.cfg.background_color.rgb, not transparent)
             if transparent:
                 gl.glFlush()
@@ -1125,6 +1356,7 @@ class BuiltTimeline:
         - ``first_frame_duration``: 第一帧持续多少秒
         - ``keep_last_frame``: 是否在 Timeline 结束后仍然保留最后一帧的显示
         """
+        self._warning_if_has_gui_command()
         return TimelineItem(self, **kwargs)
 
     def to_playback_control_item(self, **kwargs) -> TimelinePlaybackControlItem:
@@ -1166,7 +1398,17 @@ class BuiltTimeline:
 
         - ``keep_last_frame``: 是否在 Timeline 结束后仍然保留最后一帧的显示
         """
+        self._warning_if_has_gui_command()
         return TimelinePlaybackControlItem(self, **kwargs)
+
+    def _warning_if_has_gui_command(self) -> None:
+        command = self.timeline.gui_command
+        if command is not None:
+            log.warning(
+                _('GUI command in a sub-Timeline is ignored; '
+                  'defined in "{file}" at line {lineno}')
+                .format(file=os.path.basename(command.filepath), lineno=command.lineno)
+            )
 
 
 class TimelineItem(Item):

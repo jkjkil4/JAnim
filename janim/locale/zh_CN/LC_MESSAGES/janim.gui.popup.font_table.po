@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-24 15:29+0800\n"
+"POT-Creation-Date: 2025-12-24 22:39+0800\n"
 "PO-Revision-Date: 2025-12-24 16:01+0800\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -17,19 +17,19 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Poedit 3.8\n"
 
-#: janim/gui/popup/font_table.py:25
+#: janim/gui/popup/font_table.py:24
 msgid "Font List"
 msgstr "字体列表"
 
-#: janim/gui/popup/font_table.py:61
+#: janim/gui/popup/font_table.py:60
 msgid "Family Name"
 msgstr "字体族名(Family Name)"
 
-#: janim/gui/popup/font_table.py:62
+#: janim/gui/popup/font_table.py:61
 msgid "Full Name"
 msgstr "全名(Full Name)"
 
-#: janim/gui/popup/font_table.py:63
+#: janim/gui/popup/font_table.py:62
 msgid "Display Name (includes multiple languages, make good use of search)"
 msgstr "显示名（包含多种语言，善用搜索）"
 

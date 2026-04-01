@@ -31,3 +31,9 @@
     .. bili-example:: aid=115704456085791&bvid=BV1SJm7BJEqn&cid=34683029611&p=1
         :title: 「不想死于像这样活着」 | 【伪·Rizline自制谱】人造卫星
         :author: 破壁人五号
+
+.. random-option::
+
+    .. bili-example:: aid=115926502473904&bvid=BV13Sk5BeEEi&cid=35502556389&p=1
+        :title: 【伪·Rizline自制谱】ギターと孤独と蒼い惑星
+        :author: 破壁人五号

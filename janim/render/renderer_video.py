@@ -8,7 +8,7 @@ import numpy as np
 
 from janim.anims.animation import Animation
 from janim.exception import EXITCODE_FFMPEG_NOT_FOUND, ExitException
-from janim.locale.i18n import get_translator
+from janim.locale import get_translator
 from janim.logger import log
 from janim.render.base import Renderer
 from janim.render.program import get_program_from_file_prefix

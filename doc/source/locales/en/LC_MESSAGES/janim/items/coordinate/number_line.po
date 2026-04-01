@@ -37,14 +37,11 @@ msgstr "``x_range``:"
 
 #: janim.items.coordinate.number_line.NumberLine:7 of
 msgid "使用 ``[最小值, 最大值, 步长]`` 设定数轴的表示范围以及刻度步长"
-msgstr ""
-"Use ``[min_value, max_value, step]`` to set the number line's display range "
-"and tick step"
+msgstr "Use ``[min_value, max_value, step]`` to set the number line's display range and tick step"
 
 #: janim.items.coordinate.number_line.NumberLine:9 of
 msgid "或使用 ``[最小值, 最大值]``，步长默认为 1"
-msgstr ""
-"Or use ``[min_value, max_value]``, with step defaulting to 1"
+msgstr "Or use ``[min_value, max_value]``, with step defaulting to 1"
 
 #: janim.items.coordinate.number_line.NumberLine:11 of
 msgid "``unit_size``: 数轴单位长度"
@@ -52,9 +49,7 @@ msgstr "``unit_size``: Unit length of the number line"
 
 #: janim.items.coordinate.number_line.NumberLine:13 of
 msgid "``length``: 数轴总长，当该值设置时，会忽略 ``unit_size``"
-msgstr ""
-"``length``: Total length of the number line. When this value is set, "
-"``unit_size`` is ignored"
+msgstr "``length``: Total length of the number line. When this value is set, ``unit_size`` is ignored"
 
 #: janim.items.coordinate.number_line.NumberLine:15 of
 msgid "``center``: 创建后是否使整体居中"
@@ -66,14 +61,11 @@ msgstr "Arrow parameters:"
 
 #: janim.items.coordinate.number_line.NumberLine:19 of
 msgid "``include_tip``: 是否显示箭头，默认为 ``False`` 即不显示"
-msgstr ""
-"``include_tip``: Whether to show arrow, default is ``False`` (not shown)"
+msgstr "``include_tip``: Whether to show arrow, default is ``False`` (not shown)"
 
 #: janim.items.coordinate.number_line.NumberLine:21 of
 msgid "``tip_config``: 提供给箭头的额外参数，另见 :meth:`~.VItem.add_tip`"
-msgstr ""
-"``tip_config``: Additional parameters for the arrow, see also "
-":meth:`~.VItem.add_tip`"
+msgstr "``tip_config``: Additional parameters for the arrow, see also :meth:`~.VItem.add_tip`"
 
 #: janim.items.coordinate.number_line.NumberLine:23 of
 msgid "刻度参数："
@@ -81,8 +73,7 @@ msgstr "Tick parameters:"
 
 #: janim.items.coordinate.number_line.NumberLine:25 of
 msgid "``include_ticks``: 是否显示刻度，默认为 ``True`` 即显示"
-msgstr ""
-"``include_ticks``: Whether to show ticks, default is ``True`` (shown)"
+msgstr "``include_ticks``: Whether to show ticks, default is ``True`` (shown)"
 
 #: janim.items.coordinate.number_line.NumberLine:27 of
 msgid "``tick_size``: 刻度大小"
@@ -90,14 +81,11 @@ msgstr "``tick_size``: Tick size"
 
 #: janim.items.coordinate.number_line.NumberLine:29 of
 msgid "``longer_tick_multiple``: 长刻度在 ``tick_size`` 基础上的倍数"
-msgstr ""
-"``longer_tick_multiple``: Multiple of ``tick_size`` for longer ticks"
+msgstr "``longer_tick_multiple``: Multiple of ``tick_size`` for longer ticks"
 
 #: janim.items.coordinate.number_line.NumberLine:31 of
 msgid "``numbers_with_elongated_ticks``: 提供一个列表，指定哪些数字是长刻度"
-msgstr ""
-"``numbers_with_elongated_ticks``: Provide a list specifying which numbers "
-"have elongated ticks"
+msgstr "``numbers_with_elongated_ticks``: Provide a list specifying which numbers have elongated ticks"
 
 #: janim.items.coordinate.number_line.NumberLine:33 of
 msgid "数字参数："
@@ -113,9 +101,7 @@ msgstr "``numbers_to_exclude``: Numbers to exclude"
 
 #: janim.items.coordinate.number_line.NumberLine:39 of
 msgid "``line_to_number_direction``: 数字放在刻度点的哪个方向"
-msgstr ""
-"``line_to_number_direction``: Which direction to place numbers relative to "
-"tick points"
+msgstr "``line_to_number_direction``: Which direction to place numbers relative to tick points"
 
 #: janim.items.coordinate.number_line.NumberLine:41 of
 msgid "``line_to_number_buff``: 数字与刻度点的间距"
@@ -127,31 +113,25 @@ msgstr "``number_places``:"
 
 #: janim.items.coordinate.number_line.NumberLine:45 of
 msgid "数字的小数位数，默认会根据刻度步长自动确定"
-msgstr ""
-"Decimal places for numbers, defaults to automatic determination based on tick "
-"step"
+msgstr "Decimal places for numbers, defaults to automatic determination based on tick step"
 
 #: janim.items.coordinate.number_line.NumberLine:47 of
 msgid ""
-"注：对于 ``x_range`` 的 ``步长``，根据其自动确定小数位数时，``1`` 和 ``1.0`` "
-"是不同的，前者会使刻度保留整数，而后者会使刻度保留一位小数"
+"注：对于 ``x_range`` 的 ``步长``，根据其自动确定小数位数时，``1`` 和 ``1.0`` 是不同的，前者会使刻度保留整数，而后者会使刻"
+"度保留一位小数"
 msgstr ""
-"Note: For the ``step`` of ``x_range``, when automatically determining decimal "
-"places, ``1`` and ``1.0`` are different. The former keeps ticks as integers, "
-"while the latter keeps ticks with one decimal place"
+"Note: For the ``step`` of ``x_range``, when automatically determining decimal places, ``1`` and ``1.0`` are different. "
+"The former keeps ticks as integers, while the latter keeps ticks with one decimal place"
 
 #: janim.items.coordinate.number_line.NumberLine:49 of
 msgid "``number_config``: 提供给数字的额外参数，另见 :class:`~.Text`"
-msgstr ""
-"``number_config``: Additional parameters for numbers, see also :class:`~.Text`"
+msgstr "``number_config``: Additional parameters for numbers, see also :class:`~.Text`"
 
-#: ../../docstring janim.items.coordinate.number_line.NumberLine.tip_config_d:1
-#: of
+#: ../../docstring janim.items.coordinate.number_line.NumberLine.tip_config_d:1 of
 msgid "箭头的默认属性"
 msgstr "Default properties for arrows"
 
-#: ../../docstring
-#: janim.items.coordinate.number_line.NumberLine.number_config_d:1 of
+#: ../../docstring janim.items.coordinate.number_line.NumberLine.number_config_d:1 of
 msgid "数字的默认属性"
 msgstr "Default properties for numbers"
 
@@ -161,31 +141,27 @@ msgstr "Get the axis label text"
 
 #: janim.items.coordinate.number_line.NumberLine.get_axis_label:3 of
 msgid "如果 ``label`` 是字符串，则会将其作为 Typst 公式解析成为 :class:`~.TypstMath` 物件"
-msgstr ""
-"If ``label`` is a string, it will be parsed as a Typst formula and converted "
-"to a :class:`~.TypstMath` item"
+msgstr "If ``label`` is a string, it will be parsed as a Typst formula and converted to a :class:`~.TypstMath` item"
 
 #: janim.items.coordinate.number_line.NumberLine.get_axis_label:5 of
 msgid "物件会被放置到合适的地方，默认情况下是坐标轴尖端的旁边，具体来说由 ``alpha`` ``direction`` 和 ``buff`` 控制："
 msgstr ""
-"The item will be placed in an appropriate location. By default, it's next to "
-"the axis tip. Specifically controlled by ``alpha``, ``direction``, and "
-"``buff``:"
+"The item will be placed in an appropriate location. By default, it's next to the axis tip. Specifically controlled by "
+"``alpha``, ``direction``, and ``buff``:"
 
 #: janim.items.coordinate.number_line.NumberLine.get_axis_label:7 of
 msgid ""
-"``alpha`` 控制物件被放到坐标轴哪个点的旁边，该数值表示坐标轴上的百分比位置，例如默认的 ``1`` 即为坐标轴末尾，``0`` "
-"则为坐标轴起点"
+"``alpha`` 控制物件被放到坐标轴哪个点的旁边，该数值表示坐标轴上的百分比位置，例如默认的 ``1`` 即为坐标轴末尾，``0`` 则为坐"
+"标轴起点"
 msgstr ""
-"``alpha`` controls which point on the axis the item is placed next to. This "
-"value represents the percentage position on the axis. For example, the "
-"default ``1`` is the end of the axis, and ``0`` is the start of the axis"
+"``alpha`` controls which point on the axis the item is placed next to. This value represents the percentage position on "
+"the axis. For example, the default ``1`` is the end of the axis, and ``0`` is the start of the axis"
 
 #: janim.items.coordinate.number_line.NumberLine.get_axis_label:9 of
 msgid "``direction`` 控制物件被放到前面所述的点的哪个方向，默认是 ``UR`` 表示右上方"
 msgstr ""
-"``direction`` controls which direction the item is placed relative to the "
-"aforementioned point. Default is ``UR``, meaning upper right"
+"``direction`` controls which direction the item is placed relative to the aforementioned point. Default is ``UR``, "
+"meaning upper right"
 
 #: janim.items.coordinate.number_line.NumberLine.get_axis_label:11 of
 msgid "``buff`` 控制物件与前面所述的点的间距"
@@ -193,12 +169,11 @@ msgstr "``buff`` controls the spacing between the item and the aforementioned po
 
 #: janim.items.coordinate.number_line.NumberLine.get_axis_label:13 of
 msgid ""
-"如果坐标轴比较长，坐标轴标签有可能会超出屏幕， 此时如果设置 "
-"``ensure_on_screen=True``，坐标轴标签会自动调整位置移动到默认屏幕区域内"
+"如果坐标轴比较长，坐标轴标签有可能会超出屏幕， 此时如果设置 ``ensure_on_screen=True``，坐标轴标签会自动调整位置移动到默认"
+"屏幕区域内"
 msgstr ""
-"If the axis is relatively long, the axis label might go off-screen. If "
-"``ensure_on_screen=True`` is set, the axis label will automatically adjust "
-"its position to move within the default screen area"
+"If the axis is relatively long, the axis label might go off-screen. If ``ensure_on_screen=True`` is set, the axis label "
+"will automatically adjust its position to move within the default screen area"
 
 #: janim.items.coordinate.number_line.NumberLine.number_to_point:1 of
 msgid "传入数值得到在坐标轴上对应的位置"
@@ -211,22 +186,18 @@ msgstr "Can pass:"
 #: janim.items.coordinate.number_line.NumberLine.number_to_point:5 of
 msgid "单个数，得到单个坐标，表示这个数在坐标轴上的位置； 例如 ``n2p(2)`` 得到 2 在坐标轴上的位置"
 msgstr ""
-"A single number, returns a single coordinate representing the position of "
-"this number on the axis. For example, ``n2p(2)`` gets the position of 2 on "
-"the axis"
+"A single number, returns a single coordinate representing the position of this number on the axis. For example, "
+"``n2p(2)`` gets the position of 2 on the axis"
 
 #: janim.items.coordinate.number_line.NumberLine.number_to_point:8 of
 msgid "多个数，得到一组坐标，分别表示这些数在坐标轴上的位置； 例如 ``n2p([0, 2, 4])`` 分别得到 0、2、4 在坐标轴上的位置"
 msgstr ""
-"Multiple numbers, returns a set of coordinates representing the positions of "
-"these numbers on the axis. For example, ``n2p([0, 2, 4])`` gets the positions "
-"of 0, 2, and 4 on the axis respectively"
+"Multiple numbers, returns a set of coordinates representing the positions of these numbers on the axis. For example, "
+"``n2p([0, 2, 4])`` gets the positions of 0, 2, and 4 on the axis respectively"
 
 #: janim.items.coordinate.number_line.NumberLine.point_to_number:1 of
 msgid "传入坐标将其映射到坐标轴上，返回在坐标轴上的数值"
-msgstr ""
-"Pass a coordinate to map it onto the axis, returns the numerical value on "
-"the axis"
+msgstr "Pass a coordinate to map it onto the axis, returns the numerical value on the axis"
 
 #: janim.items.coordinate.number_line.NumberLine.n2p:1 of
 msgid "``number_to_point`` 的缩写"
@@ -238,6 +209,4 @@ msgstr "Abbreviation for ``point_to_number``"
 
 #: janim.items.coordinate.number_line.UnitInterval:1 of
 msgid "单位长度数轴（只有 0~1 的区段，其中细分 10 段）"
-msgstr ""
-"Unit interval number line (only the 0~1 segment, subdivided into 10 parts)"
-
+msgstr "Unit interval number line (only the 0~1 segment, subdivided into 10 parts)"

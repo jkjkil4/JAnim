@@ -17,7 +17,7 @@ from janim.utils.data import Array
 from janim.utils.file_ops import find_file
 from janim.utils.iterables import resize_with_interpolation
 from janim.utils.simple_functions import clip
-from janim.locale.i18n import get_translator
+from janim.locale import get_translator
 
 _ = get_translator('janim.items.audio')
 
@@ -35,7 +35,7 @@ class Audio:
 
     def __init__(self, file_path: str = '', begin: float = -1, end: float = -1, **kwargs):
         super().__init__(**kwargs)
-        self._samples = Array(dtype=np.int16)
+        self._samples = Array.create([], np.int16)
         self.framerate = 0
         self.file_path = ''
         self.filename = ''
