@@ -216,10 +216,10 @@ class ArrowPointingExample(Timeline):
             GroupUpdater(
                 arrow,
                 lambda data, p:
-                    data.points.set_start_and_end(
+                    data.set_start_and_end(
                         dot1.points.box.center,
                         dot2.current().points.box.center
-                    ).r.place_tip()
+                    )
             ),
             duration=4
         )

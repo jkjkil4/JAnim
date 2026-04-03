@@ -161,10 +161,12 @@ class Arrow(Line):
         if depth is not None and 'depth' not in tip_kwargs:
             tip_kwargs['depth'] = depth
 
+        self._tips_inited = False
         super().__init__(start, end, buff=buff, depth=depth, **kwargs)
         self.max_length_to_tip_length_ratio = max_length_to_tip_length_ratio
 
         self.init_tips(tip_kwargs)
+        self._tips_inited = True
         self.place_tip()
 
     def init_tips(self, tip_kwargs: dict) -> None:
@@ -179,17 +181,19 @@ class Arrow(Line):
             copy_item.tip = copy_item[0]
         return copy_item
 
-    def reshape(
+    def _reshape(
         self,
         start: Points | Vect | None = None,
         end: Points | Vect | None = None,
-        *,
         buff: LineBuff | None = None,
         path_arc: float | None = None
-    ) -> Self:
-        super().reshape(start, end, buff=buff, path_arc=path_arc)
-        self.place_tip()
-        return self
+    ) -> None:
+        """
+        在父类 :class:`~.Line` 的 :meth:`place_tip` 的最后增加逻辑使得箭头正确放置
+        """
+        super()._reshape(start, end, buff, path_arc)
+        if self._tips_inited:   # __init__ 的时候 _reshape 由父类调用，此时还没有 tip
+            self.place_tip()
 
     def _get_shrink_values(self) -> tuple[float, float]:
         """
