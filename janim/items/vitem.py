@@ -162,11 +162,16 @@ class VItem(Points):
             stroke_color = color
 
         if colorize:
+            def get_at_alpha(array: np.ndarray) -> np.ndarray:
+                maxidx = len(array) - 1
+                idx = clip(round(at_alpha * maxidx), 0, maxidx)
+                return array[idx]
+
             if fill_color is None:
-                fill_color = self.fill.get()[0, :3]
+                fill_color = get_at_alpha(self.fill.get()[:, :3])
             if stroke_color is None:
-                stroke_color = self.stroke.get()[0, :3]
-            color_alpha = self.stroke.get()[0, 3]
+                stroke_color = get_at_alpha(self.stroke.get()[:, :3])
+            color_alpha = get_at_alpha(self.stroke.get()[:, 3])
         else:
             color_alpha = 1.0
 
