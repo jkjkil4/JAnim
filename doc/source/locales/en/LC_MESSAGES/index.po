@@ -6,19 +6,18 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: JAnim\n"
+"Project-Id-Version:  JAnim\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-01-31 10:42+0800\n"
+"POT-Creation-Date: 2026-04-03 12:42+0800\n"
 "PO-Revision-Date: 2026-01-31 10:45+0800\n"
 "Last-Translator: \n"
-"Language-Team: en <LL@li.org>\n"
 "Language: en\n"
+"Language-Team: en <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "Generated-By: Babel 2.17.0\n"
-"X-Generator: Poedit 3.8\n"
 
 #: ../../source/index.rst:45
 msgid "安装并快速上手"
@@ -44,19 +43,19 @@ msgstr "Advanced Tutorials - Mastering More Practical Mechanisms"
 msgid "其它教程"
 msgstr "Other Tutorials"
 
-#: ../../source/index.rst:97
+#: ../../source/index.rst:98
 msgid "其它"
 msgstr "Other"
 
-#: ../../source/index.rst:104
+#: ../../source/index.rst:105
 msgid "样例索引"
 msgstr "Example Index"
 
-#: ../../source/index.rst:113
+#: ../../source/index.rst:114
 msgid "参考文档"
 msgstr "References"
 
-#: ../../source/index.rst:119
+#: ../../source/index.rst:120
 msgid "开发相关"
 msgstr "Development"
 
@@ -116,7 +115,7 @@ msgstr ""
 
 #: ../../source/index.rst:43 ../../source/index.rst:44 ../../source/index.rst:46 ../../source/index.rst:47
 #: ../../source/index.rst:51 ../../source/index.rst:55 ../../source/index.rst:59 ../../source/index.rst:65
-#: ../../source/index.rst:66 ../../source/index.rst:67 ../../source/index.rst:77 ../../source/index.rst:78
+#: ../../source/index.rst:67 ../../source/index.rst:69 ../../source/index.rst:77 ../../source/index.rst:78
 msgid "参考："
 msgstr "See also:"
 
@@ -174,7 +173,7 @@ msgid ""
 "\n"
 "class TextExample(Timeline):\n"
 "    def construct(self):\n"
-"        txt = Text('Here is a text', font_size=64)\n"
+"        txt = Text('Here is some text', font_size=64)\n"
 "        desc = Group(\n"
 "            Text('You can also apply <c BLUE>styles</c> to the text.', format=Text.Format.RichText),\n"
 "            Text('You can also apply <c GREEN><fs 1.4>styles</fs></c> to the text.', format=Text.Format.RichText),\n"
@@ -192,7 +191,7 @@ msgstr ""
 "\n"
 "class TextExample(Timeline):\n"
 "    def construct(self):\n"
-"        txt = Text('Here is a text', font_size=64)\n"
+"        txt = Text('Here is some text', font_size=64)\n"
 "        desc = Group(\n"
 "            Text('You can also apply <c BLUE>styles</c> to the text.', format=Text.Format.RichText),\n"
 "            Text('You can also apply <c GREEN><fs 1.4>styles</fs></c> to the text.', format=Text.Format.RichText),\n"
@@ -571,10 +570,10 @@ msgid ""
 "            GroupUpdater(\n"
 "                arrow,\n"
 "                lambda data, p:\n"
-"                    data.points.set_start_and_end(\n"
+"                    data.set_start_and_end(\n"
 "                        dot1.points.box.center,\n"
 "                        dot2.current().points.box.center\n"
-"                    ).r.place_tip()\n"
+"                    )\n"
 "            ),\n"
 "            duration=4\n"
 "        )"
@@ -594,10 +593,10 @@ msgstr ""
 "            GroupUpdater(\n"
 "                arrow,\n"
 "                lambda data, p:\n"
-"                    data.points.set_start_and_end(\n"
+"                    data.set_start_and_end(\n"
 "                        dot1.points.box.center,\n"
 "                        dot2.current().points.box.center\n"
-"                    ).r.place_tip()\n"
+"                    )\n"
 "            ),\n"
 "            duration=4\n"
 "        )"
@@ -608,6 +607,8 @@ msgstr ":class:`~.Dot` :class:`~.Arrow` :meth:`~.Item.update` :class:`~.GroupUpd
 
 #: ../../source/index.rst:20
 msgid ""
+"from janim.imports import *\n"
+"\n"
 "class CombineUpdatersExample(Timeline):\n"
 "    def construct(self):\n"
 "        square = Square()\n"
@@ -647,6 +648,8 @@ msgid ""
 "            duration=2\n"
 "        )"
 msgstr ""
+"from janim.imports import *\n"
+"\n"
 "class CombineUpdatersExample(Timeline):\n"
 "    def construct(self):\n"
 "        square = Square()\n"
@@ -687,7 +690,7 @@ msgstr ""
 "            duration=2\n"
 "        )"
 
-#: ../../source/index.rst:69
+#: ../../source/index.rst:71
 msgid ":meth:`~.Item.anim` :meth:`~.Item.update` :class:`~.DataUpdater`"
 msgstr ":meth:`~.Item.anim` :meth:`~.Item.update` :class:`~.DataUpdater`"
 
@@ -760,6 +763,7 @@ msgid ""
 "        super().__init__(side_length, **kwargs)\n"
 "        self.mark.set_points([RIGHT * side_length / 4, DOWN * side_length / 4])\n"
 "\n"
+"\n"
 "class MarkedItemExample(Timeline):\n"
 "    def construct(self):\n"
 "        square = MarkedSquare()\n"
@@ -777,11 +781,11 @@ msgid ""
 "\n"
 "            DataUpdater(\n"
 "                tri1,\n"
-"                lambda data, p: data.mark.set(square.current().mark.get(0))\n"
+"                lambda data, p: data.mark.set(square.current().mark.get())\n"
 "            ),\n"
 "            DataUpdater(\n"
 "                tri2,\n"
-"                lambda data, p: data.mark.set(square.current().mark.get(1))\n"
+"                lambda data, p: data.mark.set(square.current().mark.get(index=1))\n"
 "            ),\n"
 "            DataUpdater(\n"
 "                dots,\n"
@@ -798,6 +802,7 @@ msgstr ""
 "        super().__init__(side_length, **kwargs)\n"
 "        self.mark.set_points([RIGHT * side_length / 4, DOWN * side_length / 4])\n"
 "\n"
+"\n"
 "class MarkedItemExample(Timeline):\n"
 "    def construct(self):\n"
 "        square = MarkedSquare()\n"
@@ -815,11 +820,11 @@ msgstr ""
 "\n"
 "            DataUpdater(\n"
 "                tri1,\n"
-"                lambda data, p: data.mark.set(square.current().mark.get(0))\n"
+"                lambda data, p: data.mark.set(square.current().mark.get())\n"
 "            ),\n"
 "            DataUpdater(\n"
 "                tri2,\n"
-"                lambda data, p: data.mark.set(square.current().mark.get(1))\n"
+"                lambda data, p: data.mark.set(square.current().mark.get(index=1))\n"
 "            ),\n"
 "            DataUpdater(\n"
 "                dots,\n"
@@ -829,7 +834,7 @@ msgstr ""
 "            duration=4\n"
 "        )"
 
-#: ../../source/index.rst:68
+#: ../../source/index.rst:69
 msgid ":class:`~.MarkedItem` :class:`~.DataUpdater`"
 msgstr ":class:`~.MarkedItem` :class:`~.DataUpdater`"
 
@@ -1033,19 +1038,19 @@ msgstr ""
 "If you encounter difficulties during installation or have any questions while using it, you can ask questions on the "
 "Github `Discussions Page <https://github.com/jkjkil4/JAnim/discussions>`_ or join QQ group 970174336"
 
-#: ../../source/index.rst:127
+#: ../../source/index.rst:130
 msgid "目录与表格"
 msgstr "Indexes"
 
-#: ../../source/index.rst:129
+#: ../../source/index.rst:132
 msgid ":ref:`genindex`"
 msgstr ":ref:`genindex`"
 
-#: ../../source/index.rst:130
+#: ../../source/index.rst:133
 msgid ":ref:`modindex`"
 msgstr ":ref:`modindex`"
 
-#: ../../source/index.rst:131
+#: ../../source/index.rst:134
 msgid ":ref:`search`"
 msgstr ":ref:`search`"
 

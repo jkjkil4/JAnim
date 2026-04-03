@@ -4,11 +4,11 @@ from janim.imports import *
 
 class HelloJAnimExample(Timeline):
     def construct(self):
-        # define items
+        # 定义物件
         circle = Circle(color=BLUE)
         square = Square(color=GREEN, fill_alpha=0.5)
 
-        # do animations
+        # 进行动画
         self.forward()
         self.play(Create(circle))
         self.play(Transform(circle, square))
@@ -292,6 +292,7 @@ class RotatingPieExample(Timeline):
         )
 
 
+# beginmark MarkedItemExample
 class MarkedSquare(MarkedItem, Square):
     def __init__(self, side_length: float = 2.0, **kwargs):
         super().__init__(side_length, **kwargs)
@@ -328,6 +329,7 @@ class MarkedItemExample(Timeline):
             ),
             duration=4
         )
+# endmark MarkedItemExample
 
 
 class FrameEffectExample(Timeline):

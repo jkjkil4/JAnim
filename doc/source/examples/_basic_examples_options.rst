@@ -78,7 +78,7 @@
 .. random-option::
 
     .. janim-example:: MarkedItemExample
-        :extract-from-example:
+        :extract-from-example-mark:
         :media: _static/videos/MarkedItemExample.mp4
         :ref: :class:`~.MarkedItem` :class:`~.DataUpdater`
 
