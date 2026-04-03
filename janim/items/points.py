@@ -14,7 +14,6 @@ from janim.items.item import Item
 from janim.locale import get_translator
 from janim.render.renderer_dotcloud import DotCloudRenderer
 from janim.typing import Alpha, ColorArray, JAnimColor, Vect
-from janim.utils.deprecation import deprecated
 from janim.utils.data import AlignedData
 from janim.utils.iterables import (resize_preserving_order,
                                    resize_preserving_order_indice_groups)
@@ -181,20 +180,15 @@ class GlowDot(DotCloud):
 
 # 兼容旧导入路径：
 # 允许 `from janim.items.points import Group/NamedGroupMixin/NamedGroup` 暂时继续可用，
-# 并在访问时提示迁移到 `janim.items.group`。
+# 并在访问时提示迁移到 `janim.items.group`
 def __getattr__(name: str):
     if name in {'Group', 'NamedGroupMixin', 'NamedGroup'}:
-        from janim.items.group import Group, NamedGroup, NamedGroupMixin
-
-        mapping = {
-            'Group': Group,
-            'NamedGroupMixin': NamedGroupMixin,
-            'NamedGroup': NamedGroup,
-        }
+        from janim.utils.deprecation import deprecated
         deprecated(
             f'janim.items.points.{name}',
             f'janim.items.group.{name}',
             remove=(4, 4)
         )
-        return mapping[name]
+        from janim.items import group
+        return getattr(group, name)
     raise AttributeError(f'module {__name__!r} has no attribute {name!r}')
