@@ -28,27 +28,28 @@ msgstr "Polygon"
 
 #: ../../source/janim/items/geometry/polygon.rst
 msgid "参数"
-msgstr ""
+msgstr "Parameters"
 
 #: janim.items.geometry.polygon.Polygon:3 of
 msgid "顶点序列，按顺序连接构成多边形"
-msgstr ""
+msgstr "A sequence of vertices connected in order to form a polygon"
 
 #: janim.items.geometry.polygon.Polygon:4 of
 msgid "是否将最后一个顶点与第一个顶点闭合连接，默认为 ``True`` 闭合"
-msgstr ""
+msgstr "Whether to close the path by connecting the last vertex to the first; default is ``True`` (closed)"
 
 #: janim.items.geometry.polygon.Polygon.reshape:1 janim.items.geometry.polygon.Rect.reshape:1
 #: janim.items.geometry.polygon.RegularPolygon.reshape:1 janim.items.geometry.polygon.RoundedRect.reshape:1
 #: janim.items.geometry.polygon.Square.reshape:1 janim.items.geometry.polygon.Star.reshape:1 of
 msgid "类似传递给 ``__init__`` 的参数，重新设置几何物件的形状"
-msgstr ""
+msgstr "Similar to passing parameters to ``__init__``, reset the shape of the geometry item"
 
 #: janim.items.geometry.polygon.Polygon.reshape:3 janim.items.geometry.polygon.Rect.reshape:3
 #: janim.items.geometry.polygon.RegularPolygon.reshape:3 janim.items.geometry.polygon.RoundedRect.reshape:3
 #: janim.items.geometry.polygon.Square.reshape:3 janim.items.geometry.polygon.Star.reshape:3 of
 msgid "可以缺省部分值，表示使用先前的；具体用法请参考 :ref:`geometry_reshape` 文档教程"
 msgstr ""
+"Some values can be omitted to reuse previous ones; for detailed usage, refer to the :ref:`geometry_reshape` tutorial"
 
 #: janim.items.geometry.polygon.Polyline:1 of
 msgid "多边形折线"
@@ -56,11 +57,11 @@ msgstr "Polyline"
 
 #: janim.items.geometry.polygon.Polyline:3 of
 msgid "折线顶点序列，按顺序连接"
-msgstr ""
+msgstr "A sequence of polyline vertices connected in order"
 
 #: janim.items.geometry.polygon.Polyline:4 of
 msgid "是否闭合路径，默认不闭合"
-msgstr ""
+msgstr "Whether to close the path; default is not closed"
 
 #: janim.items.geometry.polygon.RegularPolygon:1 of
 msgid "正多边形"
@@ -68,18 +69,17 @@ msgstr "Regular polygon"
 
 #: janim.items.geometry.polygon.RegularPolygon:3 of
 msgid "边数"
-msgstr ""
+msgstr "Number of sides"
 
 #: janim.items.geometry.polygon.RegularPolygon:4 of
 msgid "外接圆半径"
-msgstr ""
+msgstr "Circumradius"
 
 #: janim.items.geometry.polygon.RegularPolygon:5 of
 msgid "起始角度；为 ``None`` 时根据边数自动设置"
-msgstr ""
+msgstr "Starting angle; when ``None``, it is set automatically based on the number of sides"
 
 #: janim.items.geometry.polygon.RegularPolygon:7 of
-#, fuzzy
 msgid "可通过 ``.mark.get()`` 得到多边形中心"
 msgstr "Can get the center of the polygon via ``.mark.get()``"
 
@@ -89,7 +89,7 @@ msgstr "Equilateral triangle"
 
 #: janim.items.geometry.polygon.Triangle:3 of
 msgid "其它参数，另见 :class:`RegularPolygon`"
-msgstr ""
+msgstr "Other parameters, see also :class:`RegularPolygon`"
 
 #: janim.items.geometry.polygon.Rect:1 of
 msgid "矩形"
@@ -97,15 +97,15 @@ msgstr "Rectangle"
 
 #: janim.items.geometry.polygon.Rect:3 janim.items.geometry.polygon.RoundedRect:3 of
 msgid "可传入宽高 ``(width, height)``，或传入一对对角顶点 ``(corner1, corner2)``"
-msgstr ""
+msgstr "You can pass width and height ``(width, height)``, or a pair of diagonal corners ``(corner1, corner2)``"
 
 #: janim.items.geometry.polygon.Rect:4 janim.items.geometry.polygon.RoundedRect:5 of
 msgid "传递给父类的其它参数"
-msgstr ""
+msgstr "Other parameters passed to the parent class"
 
 #: janim.items.geometry.polygon.Rect:6 of
 msgid "支持两种构建方式：``Rect(width, height)`` 或 ``Rect(corner1, corner2)``"
-msgstr ""
+msgstr "Supports two construction forms: ``Rect(width, height)`` or ``Rect(corner1, corner2)``"
 
 #: ../../docstring janim.items.geometry.polygon.Rect.preset_highlight_stroke:1 of
 msgid "高亮描边预设（黄色描边），例："
@@ -136,9 +136,8 @@ msgid "正方形"
 msgstr "Square"
 
 #: janim.items.geometry.polygon.Square:3 of
-#, fuzzy
 msgid "正方形边长"
-msgstr "Square"
+msgstr "Side length of the square"
 
 #: janim.items.geometry.polygon.RoundedRect:1 of
 msgid "圆角矩形"
@@ -146,39 +145,40 @@ msgstr "Rounded rectangle"
 
 #: janim.items.geometry.polygon.RoundedRect:4 of
 msgid "圆角半径"
-msgstr ""
+msgstr "Corner radius"
 
 #: janim.items.geometry.polygon.Star:1 of
 msgid "星形"
 msgstr "Star"
 
 #: janim.items.geometry.polygon.Star:3 of
-#, fuzzy
 msgid "顶点数，默认为 5"
-msgstr "``n`` represents the number of vertices, default is 5"
+msgstr "Number of vertices, default is 5"
 
 #: janim.items.geometry.polygon.Star:4 of
 msgid "外半径"
-msgstr ""
+msgstr "Outer radius"
 
 #: janim.items.geometry.polygon.Star:5 of
-#, fuzzy
 msgid "内半径；为 ``None`` 时由 ``density`` 计算"
-msgstr "``inner_radius`` represents the inner radius, default is ``None``, determined by ``density``"
+msgstr "Inner radius; when ``None``, it is computed from ``density``"
 
 #: janim.items.geometry.polygon.Star:6 of
 msgid ""
 "密度，数值越高内半径越小，取值范围 ``[1, n/2]``；含义可理解为一笔画时的“每个连线之间跳过多少个顶点”，默认每次跳过一个顶点"
 "即连成星形"
 msgstr ""
+"Density. Larger values produce a smaller inner radius. Valid range is ``[1, n/2]``; it can be understood as \"how many "
+"vertices to skip between each connected segment\" when drawing in one stroke. By default, one vertex is skipped each time "
+"to form a star"
 
 #: janim.items.geometry.polygon.Star:7 of
 msgid "起始角度"
-msgstr ""
+msgstr "Starting angle"
 
 #: janim.items.geometry.polygon.Star.inner_radius_of_density:1 of
 msgid "计算指定 ``density`` 下，``outer_radius`` 所对应的 ``inner_radius``"
-msgstr ""
+msgstr "Compute the ``inner_radius`` corresponding to ``outer_radius`` under the specified ``density``"
 
 #~ msgid "传入顶点列表 ``verts`` 进行表示"
 #~ msgstr "Pass a vertex list ``verts`` for representation"

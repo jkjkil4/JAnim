@@ -170,10 +170,10 @@ class Rect(Polygon):
     """
     矩形
 
-    :param 前两个参数: 可传入宽高 ``(width, height)``，或传入一对对角顶点 ``(corner1, corner2)``
-    :param kwargs: 传递给父类的其它参数
-
     支持两种构建方式：``Rect(width, height)`` 或 ``Rect(corner1, corner2)``
+
+    :param: 可传入宽高 ``(width, height)``，或传入一对对角顶点 ``(corner1, corner2)``
+    :param kwargs: 传递给父类的其它参数
     """
     _init_verts = (UR, UL, DL, DR)
 

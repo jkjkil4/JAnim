@@ -25,7 +25,7 @@ msgstr "updater"
 
 #: ../../source/janim/anims/updater.rst:6
 msgid "详细教程：:doc:`../../tutorials/updaters`"
-msgstr ""
+msgstr "Detailed tutorial: :doc:`../../tutorials/updaters`"
 
 #: janim.anims.updater.UpdaterParams:1 of
 msgid "``Updater`` 调用时会传递的参数，用于标注时间信息以及动画进度"

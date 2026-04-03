@@ -52,7 +52,7 @@ msgstr "``angle`` represents the central angle"
 #: janim.items.geometry.arc.Circle.reshape:1 janim.items.geometry.arc.Dot.reshape:1
 #: janim.items.geometry.arc.Ellipse.reshape:1 janim.items.geometry.arc.Sector.reshape:1 of
 msgid "类似传递给 ``__init__`` 的参数，重新设置几何物件的形状"
-msgstr ""
+msgstr "Similar to passing parameters to ``__init__``, reset the shape of the geometry item"
 
 #: janim.items.geometry.arc.AnnularSector.reshape:3 janim.items.geometry.arc.Annulus.reshape:3
 #: janim.items.geometry.arc.Arc.reshape:3 janim.items.geometry.arc.ArcBetweenPoints.reshape:3
@@ -60,6 +60,7 @@ msgstr ""
 #: janim.items.geometry.arc.Ellipse.reshape:3 janim.items.geometry.arc.Sector.reshape:3 of
 msgid "可以缺省部分值，表示使用先前的；具体用法请参考 :ref:`geometry_reshape` 文档教程"
 msgstr ""
+"Some values can be omitted to reuse previous ones; for detailed usage, refer to the :ref:`geometry_reshape` tutorial"
 
 #: janim.items.geometry.arc.Arc.get_arc_length:1 of
 msgid "获取圆弧长度"

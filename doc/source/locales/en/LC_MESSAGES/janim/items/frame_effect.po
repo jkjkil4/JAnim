@@ -24,4 +24,4 @@ msgstr "frame_effect"
 
 #: ../../source/janim/items/frame_effect.rst:9
 msgid "仅用于兼容旧 ``import`` 路径，新路径请参考 :doc:`effect/modules`"
-msgstr ""
+msgstr "Only kept for compatibility with the old ``import`` path; for the new path, see :doc:`effect/modules`"

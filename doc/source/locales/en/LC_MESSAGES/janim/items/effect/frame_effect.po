@@ -24,7 +24,6 @@ msgid "frame_effect"
 msgstr "frame_effect"
 
 #: janim.items.effect.frame_effect.FrameEffect:1 of
-#, fuzzy
 msgid "将传入的着色器 ``fragment_shader`` 应用到 ``items`` 上"
 msgstr "Applies the passed shader ``fragment_shader`` to ``items``"
 

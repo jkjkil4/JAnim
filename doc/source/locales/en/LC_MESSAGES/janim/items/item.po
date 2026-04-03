@@ -111,7 +111,7 @@ msgstr "``.r`` means returning from component to item, allowing you to call func
 
 #: janim.items.item.Item.anim:22 of
 msgid "另见：:class:`~.MethodTransform`"
-msgstr ""
+msgstr "See also: :class:`~.MethodTransform`"
 
 #: janim.items.item.Item.update:3 of
 msgid ""
@@ -324,7 +324,7 @@ msgstr ""
 
 #: janim.items.item.Item.generate_target:24 of
 msgid "另见：:class:`~.MoveToTarget`"
-msgstr ""
+msgstr "See also: :class:`~.MoveToTarget`"
 
 #: janim.items.item.Item.show:1 of
 msgid "显示物件"

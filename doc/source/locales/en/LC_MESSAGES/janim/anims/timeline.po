@@ -454,11 +454,13 @@ msgstr "Extract the audio stream of a specific frame"
 
 #: janim.anims.timeline.BuiltTimeline.current_camera_info:1 of
 msgid "得到当前的 :class:`~.CameraInfo` 信息"
-msgstr ""
+msgstr "Get the current :class:`~.CameraInfo` information"
 
 #: janim.anims.timeline.BuiltTimeline.current_camera_info:3 of
 msgid "这里“当前”的含义是，上次调用 :meth:`render_all` 的 ``global_t`` 时刻；或者也可以传入 ``as_time`` 指定"
 msgstr ""
+"Here, \"current\" means the ``global_t`` moment from the last call to :meth:`render_all`; you can also specify it by "
+"passing ``as_time``"
 
 #: janim.anims.timeline.BuiltTimeline.render_all:1 of
 msgid "渲染所有可见物件"
