@@ -138,8 +138,12 @@ TEMPLATE = R'''
 
 
 @lru_cache(maxsize=1)
-def get_examples_of_animations_path() -> str:
-    return os.path.join(get_janim_dir(), '..', 'test', 'examples', 'examples_of_animations.py')
+def get_examples_of_test_paths() -> tuple[str, ...]:
+    janim_dir = get_janim_dir()
+    return (
+        os.path.join(janim_dir, '..', 'test', 'examples', 'examples_of_animations.py'),
+        os.path.join(janim_dir, '..', 'test', 'examples', 'examples_of_others.py'),
+    )
 
 
 @lru_cache(maxsize=1)
@@ -209,7 +213,7 @@ def strip_construct_wrapper(source: str) -> str:
 
 def extract_source_from_options(options: dict, scene_name: str) -> str | None:
     class_extract_options = [
-        ('extract-from-test', get_examples_of_animations_path),
+        ('extract-from-test', get_examples_of_test_paths),
         ('extract-from-example', get_examples_path),
     ]
     for option_name, path_getter in class_extract_options:
@@ -217,10 +221,19 @@ def extract_source_from_options(options: dict, scene_name: str) -> str | None:
             classname = options[option_name]
             if classname == 'None':     # wtf 'None' instead of None
                 classname = scene_name
-            return get_classdefs(path_getter())[classname]
+            paths = path_getter()
+            if isinstance(paths, str):
+                paths = (paths,)
+
+            for path in paths:
+                classdefs = get_classdefs(path)
+                if classname in classdefs:
+                    return classdefs[classname]
+
+            raise KeyError(f'Cannot find class: {classname}')
 
     mark_extract_options = [
-        ('extract-from-test-mark', get_examples_of_animations_path),
+        ('extract-from-test-mark', get_examples_of_test_paths),
         ('extract-from-example-mark', get_examples_path),
     ]
     for option_name, path_getter in mark_extract_options:
@@ -228,7 +241,17 @@ def extract_source_from_options(options: dict, scene_name: str) -> str | None:
             markname = options[option_name]
             if markname == 'None':     # wtf 'None' instead of None
                 markname = scene_name
-            return get_marked_source(path_getter(), markname)
+            paths = path_getter()
+            if isinstance(paths, str):
+                paths = (paths,)
+
+            for path in paths:
+                try:
+                    return get_marked_source(path, markname)
+                except KeyError:
+                    continue
+
+            raise KeyError(f'Cannot find mark: {markname}')
 
     return None
 
