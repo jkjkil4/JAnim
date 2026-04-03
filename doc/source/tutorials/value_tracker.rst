@@ -112,34 +112,6 @@ ValueTracker 与自定义数据
 
 相比于 :meth:`~.ValueTracker.set_value` 需要提供完整字段，我们也可以用 :meth:`~.ValueTracker.update_value` 方法来只更新部分字段的值，而不影响其他字段。
 
-高级用法
--------------------------
-
-除了基本的数值和结构， :class:`~.ValueTracker` 还支持沿用组件类型，以及注册自定义类型的处理。
-
-.. note::
-
-    说实话，高级用法的应用场景非常罕见，除非你在开发新的组件或者需要跟踪非常复杂的数据，否则大多数情况下使用基础用法就足够了。
-
-    因此以下两个小标题 :ref:`use_component_types` 和 :ref:`register_custom_types` 的内容仅作简单介绍。
-
-.. _use_component_types:
-
-沿用组件类型
-~~~~~~~~~~~~~~~~~~~~~~~~~
-
-首先我们需要知道，所有 :class:`~.Component` 的子类都可以直接作为 :class:`~.ValueTracker` 的值类型，例如：
-
-- :class:`~.Cmpt_Points`
-
-- :class:`~.Cmpt_VPoints`
-
-- :class:`~.Cmpt_Rgbas`
-
-- ...
-
-虽然说我们可以将组件类型 :class:`~.Cmpt_Points` 作为值类型直接使用，但是对于实际来讲，还是直接操作 :class:`~.Points` 物件或者含义更具体的物件，并在需要时 :meth:`~.Item.current` 会更方便。
-
 .. _register_custom_types:
 
 注册自定义类型
@@ -243,3 +215,33 @@ ValueTracker 与自定义数据
 .. note::
 
     类型注解中的 ``Self`` 是为了让组件的 ``.r`` 正常运作
+
+----
+
+高级用法
+-------------------------
+
+除了基本的数值和结构， :class:`~.ValueTracker` 还支持沿用组件类型，以及注册自定义类型的处理。
+
+.. note::
+
+    说实话，高级用法的应用场景非常罕见，除非你在开发新的组件或者需要跟踪非常复杂的数据，否则大多数情况下使用基础用法就足够了。
+
+    因此以下两个小标题 :ref:`use_component_types` 和 :ref:`register_custom_types` 的内容仅作简单介绍。
+
+.. _use_component_types:
+
+沿用组件类型
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+首先我们需要知道，所有 :class:`~.Component` 的子类都可以直接作为 :class:`~.ValueTracker` 的值类型，例如：
+
+- :class:`~.Cmpt_Points`
+
+- :class:`~.Cmpt_VPoints`
+
+- :class:`~.Cmpt_Rgbas`
+
+- ...
+
+虽然说我们可以将组件类型 :class:`~.Cmpt_Points` 作为值类型直接使用，但是对于实际来讲，还是直接操作 :class:`~.Points` 物件或者含义更具体的物件，并在需要时 :meth:`~.Item.current` 会更方便。
