@@ -6,4 +6,6 @@ effect
 .. toctree::
    :maxdepth: 1
 
+   clip
+   effects
    frame_effect
