@@ -16,7 +16,7 @@ from janim.render.shader import shader_injections_ctx
 from janim.utils.config import Config
 
 if TYPE_CHECKING:
-    from janim.items.frame_effect import FrameEffect
+    from janim.items.effect.frame_effect import FrameEffect
 
 
 vertex_shader = '''

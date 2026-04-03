@@ -7,11 +7,12 @@ items
    :maxdepth: 1
 
    coordinate/modules.rst
+   effect/modules.rst
    geometry/modules.rst
    svg/modules.rst
    audio
    boolean_ops
-   frame_effect
+   group
    image_item
    item
    points
