@@ -56,7 +56,7 @@ class GeometryShape(VItem, metaclass=_PreInitReshapeDict):
         """
         类似传递给 ``__init__`` 的参数，重新设置几何物件的形状
 
-        可以缺省部分值，表示使用先前的
+        可以缺省部分值，表示使用先前的；具体用法请参考 :ref:`geometry_reshape` 文档教程
         """
         raise NotImplementedError(
             _('{cls_name} does not implement `{method_name}()`')
