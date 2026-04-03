@@ -3,7 +3,7 @@ from janim.imports import *
 
 
 class HelloJAnimExample(Timeline):
-    def construct(self) -> None:
+    def construct(self):
         # define items
         circle = Circle(color=BLUE)
         square = Square(color=GREEN, fill_alpha=0.5)
@@ -35,7 +35,7 @@ class BasicAnimationExample(Timeline):
 
 
 class TextExample(Timeline):
-    def construct(self) -> None:
+    def construct(self):
         txt = Text('Here is some text', font_size=64)
         desc = Group(
             Text('You can also apply <c BLUE>styles</c> to the text.', format=Text.Format.RichText),
@@ -51,6 +51,7 @@ class TextExample(Timeline):
         self.forward()
 
 
+# beginmark TypstExample
 typst_doc = t_(
 R'''
 JAnim provides `TypstText` and `TypstMath` classes to insert Typst content.
@@ -78,7 +79,7 @@ class TypstExample(Timeline):
             ''')
     )
 
-    def construct(self) -> None:
+    def construct(self):
         doc = TypstDoc(typst_doc)
 
         group = Group(
@@ -90,7 +91,6 @@ class TypstExample(Timeline):
         group.points.arrange_in_grid()
 
         # 作用于文本的动画的渲染速度较慢
-        # The rendering speed of animations applied to text is relatively slow
         self.play(Write(doc), duration=4)
         self.forward()
         self.play(FadeOut(doc))
@@ -98,6 +98,7 @@ class TypstExample(Timeline):
         self.play(Write(group))
         self.forward()
         self.play(FadeOut(group))
+# endmark TypstExample
 
 
 class TypstColorizeExample(Timeline):
@@ -116,7 +117,7 @@ class TypstColorizeExample(Timeline):
 
 
 class AnimatingPiExample(Timeline):
-    def construct(self) -> None:
+    def construct(self):
         grid = TypstMath('pi') * 100
         grid.points.scale(2).arrange_in_grid(10, 10, buff=0.2)
         grid.show()
@@ -146,7 +147,7 @@ class AnimatingPiExample(Timeline):
 
 
 class NumberPlaneExample(Timeline):
-    def construct(self) -> None:
+    def construct(self):
         plane = NumberPlane(faded_line_ratio=1)
 
         sin_graph = plane.get_graph(lambda x: math.sin(x))
@@ -168,7 +169,7 @@ class NumberPlaneExample(Timeline):
 
 
 class UpdaterExample(Timeline):
-    def construct(self) -> None:
+    def construct(self):
         square = Square(fill_color=BLUE_E, fill_alpha=1).show()
         brace = Brace(square, UP).show()
 
@@ -231,7 +232,6 @@ class CombineUpdatersExample(Timeline):
         square.points.to_border(LEFT)
 
         # 这里每次 play 都多一个 Updater，用于演示 动画复合 的效果
-        # Each `play` call adds an extra updater to demonstrate the effect of combining animations
 
         self.play(
             square.anim.points.to_border(RIGHT),
@@ -267,7 +267,7 @@ class CombineUpdatersExample(Timeline):
 
 
 class RotatingPieExample(Timeline):
-    def construct(self) -> None:
+    def construct(self):
         pie = Group(*[
             Sector(start_angle=i * TAU / 4, angle=TAU / 4, radius=1.5, color=color, fill_alpha=1, stroke_alpha=0)
                 .points.shift(rotate_vector(UR * 0.05, i * TAU / 4))

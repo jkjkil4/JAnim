@@ -1,5 +1,6 @@
 import ast
 import os
+import textwrap
 from functools import lru_cache
 from pathlib import Path
 
@@ -13,10 +14,17 @@ class JAnimExampleDirective(Directive):
     required_arguments = 1
     optional_arguments = 0
     option_spec = {
-        # 指定类名提取代码作为 content，若指定但缺省内容则使用主参数
+        # 从测试代码中指定类名提取代码作为 content，若指定但缺省内容则使用主参数
         'extract-from-test': str,
-        # 提取 "# beginmark xxx" 与 "# endmark xxx" 之间的代码作为 content，若指定但缺省内容则使用主参数
+        # 从测试代码中提取 "# beginmark xxx" 与 "# endmark xxx" 之间的代码作为 content，若指定但缺省内容则使用主参数
         'extract-from-test-mark': str,
+        # 从 examples.py 中指定类名提取代码作为 content，若指定但缺省内容则使用主参数
+        'extract-from-example': str,
+        # 从 examples.py 中提取 "# beginmark xxx" 与 "# endmark xxx" 之间的代码作为 content，若指定但缺省内容则使用主参数
+        'extract-from-example-mark': str,
+        # 若指定则仅保留 construct 方法体，并去除额外缩进
+        'no-construct': bool,
+
         # 媒体文件路径，可以是图片或者视频，以 source/ 目录为根目录
         'media': str,
         # 忽略，仅用于在代码 docstring 写一个链接方便用户跳转
@@ -35,23 +43,8 @@ class JAnimExampleDirective(Directive):
         media_url = self.options["media"]
         hide_name = 'hide_name' in self.options
         hide_code = 'hide_code' in self.options
-
-        if 'extract-from-test' in self.options:
-            classname = self.options['extract-from-test']
-            if classname == 'None':     # wtf 'None' instead of None
-                classname = scene_name
-            file_path = get_examples_of_animations_path()
-            source = get_classdefs(file_path)[classname]
-            content = ['from janim.imports import *', '', *source.splitlines()]
-        elif 'extract-from-test-mark' in self.options:
-            markname = self.options['extract-from-test-mark']
-            if markname == 'None':     # wtf 'None' instead of None
-                markname = scene_name
-            file_path = get_examples_of_animations_path()
-            source = get_marked_source(file_path, markname)
-            content = ['from janim.imports import *', '', *source.splitlines()]
-        else:
-            content = self.content
+        no_construct = 'no-construct' in self.options
+        content = get_content_from_extract_options(self.options, scene_name, self.content, no_construct=no_construct)
 
         env = self.state.document.settings.env
         source_file = Path(env.doc2path(env.docname, base=None))
@@ -149,6 +142,97 @@ def get_examples_of_animations_path() -> str:
     return os.path.join(get_janim_dir(), '..', 'test', 'examples', 'examples_of_animations.py')
 
 
+@lru_cache(maxsize=1)
+def get_examples_path() -> str:
+    return os.path.join(get_janim_dir(), 'examples.py')
+
+
+def get_content_from_extract_options(
+    options: dict,
+    scene_name: str,
+    fallback_content,
+    *,
+    no_construct: bool = False,
+) -> list[str]:
+    source = extract_source_from_options(options, scene_name)
+    if source is None:
+        return list(fallback_content)
+
+    if no_construct:
+        source = strip_construct_wrapper(source)
+        return source.splitlines()
+    else:
+        return ['from janim.imports import *', '', *source.splitlines()]
+
+
+def strip_construct_wrapper(source: str) -> str:
+    """
+    如果 ``source`` 是形如 ``class Xxx(Timeline):`` 的类定义，则尝试提取
+    ``construct`` 方法体并去掉缩进；若不匹配则原样返回。
+    """
+    # !! 该方法中的代码由 AI 生成且未 REVIEW !!
+    try:
+        tree = ast.parse(source)
+    except SyntaxError:
+        return source
+
+    if len(tree.body) != 1 or not isinstance(tree.body[0], ast.ClassDef):
+        return source
+
+    cls = tree.body[0]
+    construct = next(
+        (
+            node
+            for node in cls.body
+            if isinstance(node, ast.FunctionDef) and node.name == 'construct'
+        ),
+        None,
+    )
+    if construct is None:
+        return source
+
+    construct_source = ast.get_source_segment(source, construct)
+    if construct_source is None:
+        return source
+
+    lines = construct_source.splitlines()
+    def_index = next(
+        (index for index, line in enumerate(lines) if line.lstrip().startswith('def construct(')),
+        None,
+    )
+    if def_index is None:
+        return source
+
+    body = '\n'.join(lines[def_index + 1:])
+    return textwrap.dedent(body).rstrip('\n')
+
+
+def extract_source_from_options(options: dict, scene_name: str) -> str | None:
+    class_extract_options = [
+        ('extract-from-test', get_examples_of_animations_path),
+        ('extract-from-example', get_examples_path),
+    ]
+    for option_name, path_getter in class_extract_options:
+        if option_name in options:
+            classname = options[option_name]
+            if classname == 'None':     # wtf 'None' instead of None
+                classname = scene_name
+            return get_classdefs(path_getter())[classname]
+
+    mark_extract_options = [
+        ('extract-from-test-mark', get_examples_of_animations_path),
+        ('extract-from-example-mark', get_examples_path),
+    ]
+    for option_name, path_getter in mark_extract_options:
+        if option_name in options:
+            markname = options[option_name]
+            if markname == 'None':     # wtf 'None' instead of None
+                markname = scene_name
+            return get_marked_source(path_getter(), markname)
+
+    return None
+
+
 @lru_cache(maxsize=None)
 def get_classdefs(file_path: str) -> dict[str, str]:
     """
@@ -172,6 +256,9 @@ def get_classdefs(file_path: str) -> dict[str, str]:
 
 @lru_cache(maxsize=None)
 def get_marked_source(file_path: str, markname: str) -> str:
+    """
+    提取文件在 ``# beginmark xxx`` 和 ``# endmark xxx`` 之间的代码
+    """
     begin_marker = f'# beginmark {markname}'
     end_marker = f'# endmark {markname}'
 
