@@ -53,8 +53,8 @@ msgstr "Line end point, can be a coordinate vector or a :class:`~.Points` object
 #: janim.items.geometry.line.Line:5 janim.items.geometry.line.Line.build_points:7 of
 msgid "线段两端的空余量，可为单个数值或者一个元组表示两端的空余量；可用负值表示向外延伸"
 msgstr ""
-"Buffer at both ends of the line segment; can be a single value or a tuple for both ends. Negative values indicate "
-"outward extension"
+"Buffer at both ends of the line segment; can be a single value or a tuple for both ends. Negative values indicate outward "
+"extension"
 
 #: janim.items.geometry.line.Line:6 of
 msgid "线段的弯曲弧度，默认为 ``0``；``0`` 表示直线，非零则是一段圆弧"

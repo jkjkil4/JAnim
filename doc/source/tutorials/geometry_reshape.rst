@@ -77,3 +77,42 @@
     self.forward(0.5)
     self.play(rect.anim.reshape(UL, DR))
     self.forward()
+
+一个更复杂的例子：
+
+.. janim-example:: ComplexReshape
+    :media: _static/tutorial/ComplexReshape.mp4
+    :hide_name:
+    :ref: :class:`~.MoveAlongPath`
+
+    path = VItem(
+        [-6.2, 0.76, 0], [-4.45, 0.65, 0], [-3.43, 0.14, 0], [-2.95, -0.11, 0], [-1.89, -0.82, 0],
+        [-0.64, -1.66, 0], [0.03, -2, 0], [1.3, -2.64, 0], [4.07, -3.28, 0],
+        color=[BLUE, RED]
+    ).show()
+
+    star = Star(start_angle=10 * DEGREES, color=YELLOW, fill_alpha=0.5).show()
+    star.points.to_border(UR, buff=0.75)
+
+    dot = Dot()
+
+    arrow = Arrow(color=YELLOW, alpha=[0, 1])
+
+    self.play(
+        MoveAlongPath(dot, path),
+        DataUpdater(
+            dot,
+            lambda data, p:
+                data.reshape(radius=DEFAULT_DOT_RADIUS * (1 + 3 * p.alpha))
+                    .glow.set(alpha=p.alpha)
+        ),
+        GroupUpdater(
+            arrow,
+            lambda group, p: group.reshape(dot.current(), star)
+        ),
+        duration=4
+    )
+
+.. note::
+
+    其中的 ``path`` 使用 GUI 的 :ref:`gui_draw` 功能绘制
