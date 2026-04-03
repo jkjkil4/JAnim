@@ -12,6 +12,29 @@ from janim.items.item import Item
 from janim.render.shader import ShaderInjection
 from janim.utils.config import Config
 
+
+class AlphaEffect(SimpleFrameEffect):
+    alpha = CmptInfo(Cmpt_Float[Self], 1.)
+
+    def __init__(
+        self,
+        *items: Item,
+        root_only: bool = False,
+        **kwargs
+    ):
+        super().__init__(
+            *items,
+            root_only=root_only,
+            shader='f_color = texture(fbo, v_texcoord); f_color.a *= alpha;',
+            uniforms=['float alpha'],
+            cache_key='alpha_effect',
+            **kwargs
+        )
+
+    def dynamic_uniforms(self):
+        return dict(alpha=self.alpha._value)
+
+
 shadertoy_fragment_shader = '''
 #version 330 core
 
@@ -92,25 +115,3 @@ class Shadertoy(FrameEffect):
             iTime=p.elapsed,
             optional=True
         )
-
-
-class AlphaEffect(SimpleFrameEffect):
-    alpha = CmptInfo(Cmpt_Float[Self], 1.)
-
-    def __init__(
-        self,
-        *items: Item,
-        root_only: bool = False,
-        **kwargs
-    ):
-        super().__init__(
-            *items,
-            root_only=root_only,
-            shader='f_color = texture(fbo, v_texcoord); f_color.a *= alpha;',
-            uniforms=['float alpha'],
-            cache_key='alpha_effect',
-            **kwargs
-        )
-
-    def dynamic_uniforms(self):
-        return dict(alpha=self.alpha._value)

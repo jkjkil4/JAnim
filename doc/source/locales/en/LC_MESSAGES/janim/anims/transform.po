@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  JAnim\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-02-24 01:11+0800\n"
+"POT-Creation-Date: 2026-03-31 15:56+0800\n"
 "PO-Revision-Date: 2025-11-28 12:57+0800\n"
 "Last-Translator: \n"
 "Language: en\n"
@@ -29,30 +29,84 @@ msgstr ""
 "consider carefully when using it"
 
 #: janim.anims.transform.Transform:1 of
-msgid "创建从 ``src_item`` 至 ``target_item`` 的插值动画"
+#, fuzzy
+msgid "创建从 ``src_item`` 到 ``target_item`` 的插值动画"
 msgstr "Create an interpolation animation from ``src_item`` to ``target_item``"
 
 #: janim.anims.transform.Transform:3 of
-msgid "``path_arc`` 和 ``path_arc_axis`` 可以指定插值的圆弧路径的角度，若不传入则是直线"
+msgid "作用机制：在开始时隐藏源物件，在动画过程中播放“插值效果”，在结束后显示目标物件"
+msgstr ""
+
+#: janim.anims.transform.MoveToTarget of
+msgid "参数"
+msgstr ""
+
+#: janim.anims.transform.Transform:5 of
+msgid "变换的起始物件"
+msgstr ""
+
+#: janim.anims.transform.Transform:6 of
+msgid "变换的目标物件"
+msgstr ""
+
+#: janim.anims.transform.Transform:8 of
+msgid "**路径与插值**"
+msgstr ""
+
+#: janim.anims.transform.Transform:10 of
+msgid "插值路径的圆弧角度；为 ``0`` 时按直线插值"
+msgstr ""
+
+#: janim.anims.transform.Transform:11 of
+msgid "当使用圆弧路径时的旋转轴。"
+msgstr ""
+
+#: janim.anims.transform.Transform:12 of
+#, fuzzy
+msgid "自定义路径函数；传入后会覆盖 ``path_arc`` 与 ``path_arc_axis`` 的默认路径行为"
 msgstr ""
 "``path_arc`` and ``path_arc_axis`` can specify the angle of the arc path for interpolation; if not provided, it will be a "
 "straight line"
 
-#: janim.anims.transform.Transform:4 of
-msgid "也可以直接传入 ``path_func`` 来指定路径方法"
-msgstr "You can also directly pass ``path_func`` to specify the path method"
-
-#: janim.anims.transform.Transform:5 of
-msgid ""
-"在默认情况（``flatten=False``）下需要保证两个物件的子物件结构能够对齐，否则会报错；可以传入 ``flatten=True`` 来忽略子物件"
-"结构"
+#: janim.anims.transform.Transform:14 of
+msgid "**对齐策略**"
 msgstr ""
-"In the default case (``flatten=False``), the child item structures of the two items must be aligned, otherwise an error "
-"will be raised; you can pass ``flatten=True`` to ignore the child item structure"
 
-#: janim.anims.transform.Transform:6 of
-msgid "``root_only`` 可以指定只对两个物件的根物件进行插值，而不对子物件进行插值"
-msgstr "``root_only`` can specify to interpolate only the root items of the two items, without interpolating child items"
+#: janim.anims.transform.Transform:16 of
+msgid "是否忽略子物件层级并直接按顺序展平对齐；默认 ``False``，要求源与目标子结构可对齐"
+msgstr ""
+
+#: janim.anims.transform.Transform:17 of
+msgid "是否仅对根物件进行插值而不递归子物件"
+msgstr ""
+
+#: janim.anims.transform.Transform:19 of
+msgid "**显隐与淡入淡出**"
+msgstr ""
+
+#: janim.anims.transform.Transform:21 of
+msgid "动画开始时是否自动隐藏源物件"
+msgstr ""
+
+#: janim.anims.transform.Transform:22 of
+msgid "动画结束时是否自动显示目标物件"
+msgstr ""
+
+#: janim.anims.transform.Transform:23 of
+msgid "仅当 ``hide_src=False`` 时生效；表示源物件在动画开头淡入的时长比例"
+msgstr ""
+
+#: janim.anims.transform.Transform:24 of
+msgid "表示目标物件在动画末尾淡出的时长比例"
+msgstr ""
+
+#: janim.anims.transform.Transform:26 of
+msgid "``src_fade`` 与 ``target_fade`` 对半透明物件较为实用，可规避开始/结束时重叠导致的透明度突变"
+msgstr ""
+
+#: janim.anims.transform.Transform:30 of
+msgid "基本示例："
+msgstr ""
 
 #: ../../source/janim/anims/transform.rst:20
 msgid ""
@@ -86,19 +140,111 @@ msgstr ""
 "        self.play(Transform(B, C))\n"
 "        self.forward()"
 
+#: janim.anims.transform.Transform:37 of
+msgid "对 ``hide_src`` 和 ``show_target`` 参数的演示："
+msgstr ""
+
+#: ../../source/janim/anims/transform.rst:20
+msgid ""
+"from janim.imports import *\n"
+"\n"
+"class TransformHideShowExample(Timeline):\n"
+"    def construct(self):\n"
+"        squares = Square(color=GREEN) * 3\n"
+"        squares.points.arrange(DOWN).shift(LEFT * 3)\n"
+"\n"
+"        circles = Circle(color=BLUE) * 3\n"
+"        circles.points.arrange(DOWN).shift(RIGHT * 3)\n"
+"\n"
+"        txts = Text('default\\nhide_src=False\\nshow_target=False')\n"
+"        txts.points.arrange(DOWN, buff=2)\n"
+"\n"
+"        self.show(txts, squares)\n"
+"        self.forward()\n"
+"        self.play(\n"
+"            Transform(squares[0], circles[0]),\n"
+"            Transform(squares[1], circles[1], hide_src=False),\n"
+"            Transform(squares[2], circles[2], show_target=False),\n"
+"            duration=3\n"
+"        )\n"
+"        self.forward()"
+msgstr ""
+
+#: janim.anims.transform.Transform:44 of
+#, fuzzy
+msgid "对 ``src_fade`` 和 ``target_fade`` 参数的演示："
+msgstr "Create an interpolation animation from ``src_item`` to ``target_item``"
+
+#: ../../source/janim/anims/transform.rst:20
+msgid ""
+"from janim.imports import *\n"
+"\n"
+"class TransformFadeExample(Timeline):\n"
+"    def construct(self):\n"
+"        squares = Square(color=GREEN, fill_alpha=0.4) * 3\n"
+"        squares.points.arrange(DOWN).shift(LEFT * 3)\n"
+"\n"
+"        circles = Circle(color=BLUE, fill_alpha=0.4) * 3\n"
+"        circles.points.arrange(DOWN).shift(RIGHT * 3)\n"
+"\n"
+"        txts = Text('fade=0\\nfade=0.2\\nfade=0.4')\n"
+"        txts.points.arrange(DOWN, buff=2)\n"
+"\n"
+"        self.show(txts, squares)\n"
+"        self.forward()\n"
+"        self.play(\n"
+"            Transform(squares[0], circles[0], hide_src=False),\n"
+"            Transform(squares[1], circles[1], hide_src=False, src_fade=0.2),\n"
+"            Transform(squares[2], circles[2], hide_src=False, src_fade=0.4),\n"
+"            duration=3\n"
+"        )\n"
+"        self.forward()\n"
+"        self.play(\n"
+"            Transform(squares[0], circles[0]),\n"
+"            Transform(squares[1], circles[1], target_fade=0.2),\n"
+"            Transform(squares[2], circles[2], target_fade=0.4),\n"
+"            duration=3\n"
+"        )\n"
+"        self.forward()"
+msgstr ""
+
 #: janim.anims.transform.MoveToTarget:1 of
 msgid "详见 :meth:`~.Item.generate_target`"
 msgstr "See :meth:`~.Item.generate_target` for details"
+
+#: ../../source/janim/anims/transform.rst:20
+msgid ""
+"from janim.imports import *\n"
+"\n"
+"class MoveToTargetExample(Timeline):\n"
+"    def construct(self):\n"
+"        txt = Text('A Matrix')\n"
+"        mat = TypstMatrix([\n"
+"            [1, 2, 3],\n"
+"            [4, 5, 6],\n"
+"            [7, 8, 9]\n"
+"        ])\n"
+"\n"
+"        self.play(Write(txt))\n"
+"\n"
+"        Group(txt.generate_target(), mat).points.arrange(DOWN)\n"
+"\n"
+"        self.play(\n"
+"            MoveToTarget(txt),\n"
+"            FadeIn(mat, UP)\n"
+"        )\n"
+"        self.forward()"
+msgstr ""
 
 #: janim.anims.transform.TransformInSegments:1 of
 msgid "依照切片列表进行 ``src`` 与 ``target`` 之间的变换"
 msgstr "Transform between ``src`` and ``target`` according to the slice list"
 
-#: ../../source/janim/anims/transform.rst:35
+#: janim.anims.transform.TransformInSegments:5 of
 msgid "**基本用法**"
 msgstr "**Basic Usage**"
 
-#: ../../source/janim/anims/transform.rst:37
+#: janim.anims.transform.TransformInSegments:7 of
 msgid ""
 "TransformInSegments(a, [[0,3], [5,7]],\n"
 "                    b, [[1,3], [5,7]])"
@@ -106,13 +252,13 @@ msgstr ""
 "TransformInSegments(a, [[0,3], [5,7]],\n"
 "                    b, [[1,3], [5,7]])"
 
-#: ../../source/janim/anims/transform.rst:42 ../../source/janim/anims/transform.rst:58
-#: ../../source/janim/anims/transform.rst:72 ../../source/janim/anims/transform.rst:88
-#: ../../source/janim/anims/transform.rst:104
+#: janim.anims.transform.TransformInSegments:12 janim.anims.transform.TransformInSegments:28
+#: janim.anims.transform.TransformInSegments:42 janim.anims.transform.TransformInSegments:58
+#: janim.anims.transform.TransformInSegments:74 of
 msgid "相当于"
 msgstr "Equivalent to"
 
-#: ../../source/janim/anims/transform.rst:44
+#: janim.anims.transform.TransformInSegments:14 of
 msgid ""
 "AnimGroup(Transform(a[0:3], b[1:3]),\n"
 "          Transform(a[5:7], b[5:7]))"
@@ -120,15 +266,15 @@ msgstr ""
 "AnimGroup(Transform(a[0:3], b[1:3]),\n"
 "          Transform(a[5:7], b[5:7]))"
 
-#: ../../source/janim/anims/transform.rst:49
+#: janim.anims.transform.TransformInSegments:19 of
 msgid "**省略变换目标的切片**"
 msgstr "**Omitting Target Slices**"
 
-#: ../../source/janim/anims/transform.rst:51
+#: janim.anims.transform.TransformInSegments:21 of
 msgid "使用 ``...`` 表示与变换来源的切片相同"
 msgstr "Use ``...`` to indicate the same slice as the transformation source"
 
-#: ../../source/janim/anims/transform.rst:53
+#: janim.anims.transform.TransformInSegments:23 of
 msgid ""
 "TransformInSegments(a, [[0,3], [5,7]],\n"
 "                    b, ...)"
@@ -136,7 +282,7 @@ msgstr ""
 "TransformInSegments(a, [[0,3], [5,7]],\n"
 "                    b, ...)"
 
-#: ../../source/janim/anims/transform.rst:60
+#: janim.anims.transform.TransformInSegments:30 of
 msgid ""
 "TransformInSegments(a, [[0,3], [5,7]],\n"
 "                    b, [[0,3], [5,7]])"
@@ -144,11 +290,11 @@ msgstr ""
 "TransformInSegments(a, [[0,3], [5,7]],\n"
 "                    b, [[0,3], [5,7]])"
 
-#: ../../source/janim/anims/transform.rst:65
+#: janim.anims.transform.TransformInSegments:35 of
 msgid "**连续切片**"
 msgstr "**Consecutive Slices**"
 
-#: ../../source/janim/anims/transform.rst:67
+#: janim.anims.transform.TransformInSegments:37 of
 msgid ""
 "TransformInSegments(a, [[0,3], [5,7,9]],\n"
 "                    b, [[1,3], [4,7], [10,14]])"
@@ -156,7 +302,7 @@ msgstr ""
 "TransformInSegments(a, [[0,3], [5,7,9]],\n"
 "                    b, [[1,3], [4,7], [10,14]])"
 
-#: ../../source/janim/anims/transform.rst:74
+#: janim.anims.transform.TransformInSegments:44 of
 msgid ""
 "TransformInSegments(a, [[0,3], [5,7], [7,9]],\n"
 "                    b, [[1,3], [4,7], [10,14]])"
@@ -164,15 +310,15 @@ msgstr ""
 "TransformInSegments(a, [[0,3], [5,7], [7,9]],\n"
 "                    b, [[1,3], [4,7], [10,14]])"
 
-#: ../../source/janim/anims/transform.rst:79
+#: janim.anims.transform.TransformInSegments:49 of
 msgid "**切片简写**"
 msgstr "**Slice Shorthand**"
 
-#: ../../source/janim/anims/transform.rst:81
+#: janim.anims.transform.TransformInSegments:51 of
 msgid "如果总共只有一个切片，可以省略一层嵌套"
 msgstr "If there is only one slice in total, one level of nesting can be omitted"
 
-#: ../../source/janim/anims/transform.rst:83
+#: janim.anims.transform.TransformInSegments:53 of
 msgid ""
 "TransformInSegments(a, [0, 4, 6, 8],\n"
 "                    b, ...)"
@@ -180,7 +326,7 @@ msgstr ""
 "TransformInSegments(a, [0, 4, 6, 8],\n"
 "                    b, ...)"
 
-#: ../../source/janim/anims/transform.rst:90
+#: janim.anims.transform.TransformInSegments:60 of
 msgid ""
 "TransformInSegments(a, [[0, 4, 6, 8]],\n"
 "                    b, ...)"
@@ -188,15 +334,15 @@ msgstr ""
 "TransformInSegments(a, [[0, 4, 6, 8]],\n"
 "                    b, ...)"
 
-#: ../../source/janim/anims/transform.rst:95
+#: janim.anims.transform.TransformInSegments:65 of
 msgid "**连续切片倒序**"
 msgstr "**Consecutive Slices in Reverse**"
 
-#: ../../source/janim/anims/transform.rst:97
+#: janim.anims.transform.TransformInSegments:67 of
 msgid "倒过来写即可使切片倒序"
 msgstr "Writing it backwards will reverse the slices"
 
-#: ../../source/janim/anims/transform.rst:99
+#: janim.anims.transform.TransformInSegments:69 of
 msgid ""
 "TransformInSegments(a, [8, 6, 4, 0],\n"
 "                    b, ...)"
@@ -204,7 +350,7 @@ msgstr ""
 "TransformInSegments(a, [8, 6, 4, 0],\n"
 "                    b, ...)"
 
-#: ../../source/janim/anims/transform.rst:106
+#: janim.anims.transform.TransformInSegments:76 of
 msgid ""
 "TransformInSegments(a, [[6,8], [4,6], [0,4]],\n"
 "                    b, ...)"
@@ -212,7 +358,7 @@ msgstr ""
 "TransformInSegments(a, [[6,8], [4,6], [0,4]],\n"
 "                    b, ...)"
 
-#: ../../source/janim/anims/transform.rst:111
+#: janim.anims.transform.TransformInSegments:81 of
 msgid "请留意 Python 切片中左闭右开的原则，对于倒序序列 ``[8, 6, 4, 0]`` 来说则是左开右闭"
 msgstr ""
 "Note the left-closed right-open principle in Python slicing; for reverse sequences like ``[8, 6, 4, 0]``, it is left-open "
@@ -315,7 +461,10 @@ msgstr ""
 "and ``mismatch``"
 
 #: ../../source/janim/anims/transform.rst:20
+#, fuzzy
 msgid ""
+"from janim.imports import *\n"
+"\n"
 "class TransformMatchingShapesExample(Timeline):\n"
 "    def construct(self):\n"
 "        a = Text(\"the morse code\", font_size=48).show()\n"
@@ -349,7 +498,10 @@ msgstr ""
 "on :class:`~.TextChar`."
 
 #: ../../source/janim/anims/transform.rst:20
+#, fuzzy
 msgid ""
+"from janim.imports import *\n"
+"\n"
 "typ1_src = R\"\"\"\n"
 "```python\n"
 "subtitle_group = Group(\n"
@@ -386,6 +538,7 @@ msgid ""
 "    self.schedule(range.end, subtitle_display.hide)\n"
 "```\n"
 "\"\"\"\n"
+"\n"
 "\n"
 "class TransformMatchingDiffExample(Timeline):\n"
 "    CONFIG = Config(\n"
@@ -500,3 +653,16 @@ msgstr ""
 
 #~ msgid "使得 ``.anim`` 和 ``.anim(...)`` 后可以进行同样的操作"
 #~ msgstr "Allow the same operations after ``.anim`` and ``.anim(...)``."
+
+#~ msgid "也可以直接传入 ``path_func`` 来指定路径方法"
+#~ msgstr "You can also directly pass ``path_func`` to specify the path method"
+
+#~ msgid ""
+#~ "在默认情况（``flatten=False``）下需要保证两个物件的子物件结构能够对齐，否则会报错；可以传入 ``flatten=True`` 来忽略子物"
+#~ "件结构"
+#~ msgstr ""
+#~ "In the default case (``flatten=False``), the child item structures of the two items must be aligned, otherwise an "
+#~ "error will be raised; you can pass ``flatten=True`` to ignore the child item structure"
+
+#~ msgid "``root_only`` 可以指定只对两个物件的根物件进行插值，而不对子物件进行插值"
+#~ msgstr "``root_only`` can specify to interpolate only the root items of the two items, without interpolating child items"

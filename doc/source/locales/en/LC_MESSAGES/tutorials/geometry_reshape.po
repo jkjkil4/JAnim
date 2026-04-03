@@ -1,0 +1,143 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2023, jkjkil4
+# This file is distributed under the same license as the JAnim package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: JAnim \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-04-03 10:34+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: en\n"
+"Language-Team: en <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.17.0\n"
+
+#: ../../source/tutorials/geometry_reshape.rst:4
+msgid "重设几何形状"
+msgstr ""
+
+#: ../../source/tutorials/geometry_reshape.rst:6
+msgid "有时候我们会遇到这样的情景：想要根据几何参数重新设置图形的尺寸或轮廓，我们也许会这么做："
+msgstr ""
+
+#: ../../source/tutorials/geometry_reshape.rst:8
+msgid ""
+"# 第一次创建\n"
+"circle = Circle(radius=2)\n"
+"\n"
+"...\n"
+"\n"
+"# ? 重设几何参数\n"
+"circle.become(Circle(radius=1.2))"
+msgstr ""
+
+#: ../../source/tutorials/geometry_reshape.rst:18
+msgid "虽然这种方法能够达到目的，但是这种重新创建物件的方式存在两大问题："
+msgstr ""
+
+#: ../../source/tutorials/geometry_reshape.rst:20
+msgid ""
+"我们需要临时创建一个 :class:`~.Circle`，把它的数据“偷”过来，然后马上把它给抛弃掉，显得比较麻烦；并且这在频繁调用时会略微拖"
+"累性能"
+msgstr ""
+
+#: ../../source/tutorials/geometry_reshape.rst:21
+msgid "临时创建的 :class:`~.Circle` 无法跟随当前物件的位置，导致需要更多麻烦的操作来对齐位置"
+msgstr ""
+
+#: ../../source/tutorials/geometry_reshape.rst:23
+msgid ""
+"当你希望“还是同一个物件，只是换一个尺寸或轮廓”时，几何物件提供了 :meth:`~.GeometryShape.reshape` 方法来帮助你做到这一点。"
+msgstr ""
+
+#: ../../source/tutorials/geometry_reshape.rst:26
+msgid "``reshape`` 适合的场景"
+msgstr ""
+
+#: ../../source/tutorials/geometry_reshape.rst:28
+msgid ":meth:`~.GeometryShape.reshape` 适合“参数化改形状”的需求，例如："
+msgstr ""
+
+#: ../../source/tutorials/geometry_reshape.rst:30
+msgid "改圆的半径"
+msgstr ""
+
+#: ../../source/tutorials/geometry_reshape.rst:31
+msgid "改矩形的宽高"
+msgstr ""
+
+#: ../../source/tutorials/geometry_reshape.rst:32
+msgid "改圆角矩形的圆角大小"
+msgstr ""
+
+#: ../../source/tutorials/geometry_reshape.rst:34
+msgid "相比临时构造一个物件，:meth:`~.GeometryShape.reshape` 的优势是："
+msgstr ""
+
+#: ../../source/tutorials/geometry_reshape.rst:36
+msgid "代码更简洁，直接传入新的参数即可，无需临时创建一个新物件"
+msgstr ""
+
+#: ../../source/tutorials/geometry_reshape.rst:37
+msgid ""
+"可以缺省参数，例如只改圆角矩形的圆角大小，保持宽高不变；需要另外注意的是，缺省的参数会根据原先传递给构造函数的值来决定，而"
+"不是物件当前状态的宽高"
+msgstr ""
+
+#: ../../source/tutorials/geometry_reshape.rst:38
+msgid "对于一些几何物件，可以保持当前物件的位置不变，无需额外对齐操作"
+msgstr ""
+
+#: ../../source/tutorials/geometry_reshape.rst:41
+msgid "使用方式"
+msgstr ""
+
+#: ../../source/tutorials/geometry_reshape.rst:43
+msgid "你可以把它理解为“用新的形状参数，重新描述当前物件”，可以重新设置一些原先传给构造函数的参数："
+msgstr ""
+
+#: ../../source/tutorials/geometry_reshape.rst:45
+msgid "item.reshape(...)"
+msgstr ""
+
+#: ../../source/tutorials/geometry_reshape.rst:49
+msgid "在动画中，常见写法是："
+msgstr ""
+
+#: ../../source/tutorials/geometry_reshape.rst:51
+msgid "self.play(item.anim.reshape(...))"
+msgstr ""
+
+#: ../../source/tutorials/geometry_reshape.rst:55
+msgid "下面用两个常见图形演示 :meth:`~.GeometryShape.reshape` 的用法。"
+msgstr ""
+
+#: ../../source/tutorials/geometry_reshape.rst:13
+msgid ""
+"circle = Circle(radius=0.8, color=BLUE, fill_alpha=0.4).show()\n"
+"\n"
+"self.forward()\n"
+"self.play(circle.anim.reshape(1.8))\n"
+"self.forward(0.5)\n"
+"self.play(circle.anim.reshape(0.5))\n"
+"self.forward()\n"
+"\n"
+"circle.hide()\n"
+"\n"
+"rect = RoundedRect(3.6, 1.6, corner_radius=0.25, color=TEAL, fill_alpha=0.35).show()\n"
+"\n"
+"self.forward()\n"
+"self.play(rect.anim.reshape(5.2, 2.4, corner_radius=0.5))\n"
+"self.forward(0.5)\n"
+"self.play(rect.anim.reshape(corner_radius=0.15))\n"
+"self.forward(0.5)\n"
+"self.play(rect.anim.reshape(UL, DR))\n"
+"self.forward()"
+msgstr ""

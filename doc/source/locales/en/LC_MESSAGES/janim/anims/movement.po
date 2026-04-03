@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  JAnim\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-02-24 01:11+0800\n"
+"POT-Creation-Date: 2026-03-31 15:56+0800\n"
 "PO-Revision-Date: 2025-11-22 22:02+0800\n"
 "Last-Translator: \n"
 "Language: en\n"
@@ -23,11 +23,13 @@ msgid "movement"
 msgstr "movement"
 
 #: janim.anims.movement.Homotopy:1 of
-msgid "一个从 (x, y, z, t) 到 (x', y', z') 的函数"
+#, fuzzy
+msgid "一个从 ``(x, y, z, t)`` 到 ``(x', y', z')`` 的函数"
 msgstr "A function from (x, y, z, t) to (x', y', z')"
 
 #: janim.anims.movement.Homotopy:3 of
-msgid "t 的取值范围是 [0, 1]，表示动画进度"
+#, fuzzy
+msgid "``t`` 的取值范围是 ``[0, 1]``，表示动画进度"
 msgstr "The range of t is [0, 1], representing animation progress"
 
 #: ../../source/janim/anims/movement.rst:20
@@ -55,7 +57,8 @@ msgstr ""
 "        self.forward(0.3)"
 
 #: janim.anims.movement.ComplexHomotopy:1 of
-msgid "与 Homotopy 类似，区别是用复数描述坐标"
+#, fuzzy
+msgid "与 :class:`Homotopy` 类似，区别是用复数描述坐标"
 msgstr "Similar to Homotopy, but uses complex numbers to describe coordinates"
 
 #: ../../source/janim/anims/movement.rst:20

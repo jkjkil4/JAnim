@@ -1,0 +1,61 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2023, jkjkil4
+# This file is distributed under the same license as the JAnim package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: JAnim \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-04-03 10:34+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: en\n"
+"Language-Team: en <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.17.0\n"
+
+#: ../../source/janim/items/effect/clip.rst:2
+msgid "clip"
+msgstr "clip"
+
+#: janim.items.effect.clip.FrameClip:1 of
+msgid "一个用于创建简单矩形裁剪效果的类"
+msgstr "A class for creating simple rectangular clipping effects"
+
+#: janim.items.effect.clip.FrameClip:3 janim.items.effect.clip.TransformableFrameClip:3 of
+msgid "``clip`` 参数表示裁剪区域的四个边界，分别是左、上、右、下，范围是 0~1 表示百分比"
+msgstr ""
+"``clip`` parameter represents the four boundaries of the clipping region: left, top, right, bottom, range is 0~1 "
+"representing percentages"
+
+#: janim.items.effect.clip.FrameClip:4 janim.items.effect.clip.TransformableFrameClip:7 of
+msgid "``debug`` 参数表示是否开启调试模式，开启后裁剪区域外的部分会显示为半透明红色"
+msgstr ""
+"``debug`` parameter indicates whether to enable debug mode. When enabled, parts outside the clipping region will be "
+"displayed as semi-transparent red"
+
+#: janim.items.effect.clip.FrameClip.create_border_rect:1
+#: janim.items.effect.clip.TransformableFrameClip.create_border_rect:1 of
+msgid "得到裁剪后的显示区域的包围矩形"
+msgstr "Get the bounding rectangle of the clipped display region"
+
+#: janim.items.effect.clip.TransformableFrameClip:1 of
+msgid "与 :class:`FrameClip` 类似，但支持更多的变换操作（偏移、缩放、旋转）"
+msgstr "Similar to :class:`FrameClip`, but supports more transformation operations (offset, scale, rotation)"
+
+#: janim.items.effect.clip.TransformableFrameClip:4 of
+msgid "``offset`` 参数表示裁剪区域 x 与 y 方向的的偏移量，单位是百分比"
+msgstr "``offset`` parameter represents the offset in x and y directions of the clipping region, unit is percentage"
+
+#: janim.items.effect.clip.TransformableFrameClip:5 of
+msgid "``scale`` 参数表示裁剪区域 x 与 y 方向的缩放量，单位是百分比"
+msgstr "``scale`` parameter represents the scaling in x and y directions of the clipping region, unit is percentage"
+
+#: janim.items.effect.clip.TransformableFrameClip:6 of
+msgid "``rotate`` 参数表示裁剪区域的旋转角度"
+msgstr "``rotate`` parameter represents the rotation angle of the clipping region"

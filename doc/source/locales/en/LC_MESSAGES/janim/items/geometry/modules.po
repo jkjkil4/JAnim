@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: JAnim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-03-14 14:52+0800\n"
+"POT-Creation-Date: 2026-04-03 10:34+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -17,8 +17,56 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.14.0\n"
+"Generated-By: Babel 2.17.0\n"
 
 #: ../../source/janim/items/geometry/modules.rst:2
 msgid "geometry"
 msgstr "geometry"
+
+#: janim.items.geometry.__init__.GeometryShape:1 of
+msgid "几何物件的基类"
+msgstr ""
+
+#: janim.items.geometry.__init__.GeometryShape:3 of
+msgid "提供了 :meth:`reshape` 通用方法与相关辅助函数"
+msgstr ""
+
+#: janim.items.geometry.__init__.GeometryShape:5 of
+msgid "其中："
+msgstr ""
+
+#: janim.items.geometry.__init__.GeometryShape:7 of
+msgid "``_reshape`` 用于最底层的几何物件实现"
+msgstr ""
+
+#: janim.items.geometry.__init__.GeometryShape:9 of
+msgid "``reshape`` 用于给子类可以覆盖，可以用来改变外部的顶层行为"
+msgstr ""
+
+#: janim.items.geometry.__init__.GeometryShape:11 of
+msgid ""
+"（例如 :class:`~.Polygon` 默认是使用 ``verts`` 和 ``close_path`` 构造， 而 :class:`~.RegularPolygon` 覆盖 ``reshape`` 改"
+"为 ``n``、``radius`` 和 ``start_angle`` 构造）"
+msgstr ""
+
+#: janim.items.geometry.__init__.GeometryShape:14 of
+msgid ""
+"如果需要另行获取已记忆的参数值，比如获取 :class:`~.Star` 的 ``start_angle``， 可以直接使用例如 "
+"``.reshape_params['start_angle']`` 的方式"
+msgstr ""
+
+#: janim.items.geometry.__init__.GeometryShape.reshape:1 of
+msgid "类似传递给 ``__init__`` 的参数，重新设置几何物件的形状"
+msgstr ""
+
+#: janim.items.geometry.__init__.GeometryShape.reshape:3 of
+msgid "可以缺省部分值，表示使用先前的；具体用法请参考 :ref:`geometry_reshape` 文档教程"
+msgstr ""
+
+#: janim.items.geometry.__init__.GeometryShape.copy:1 of
+msgid "复制物件"
+msgstr ""
+
+#: janim.items.geometry.__init__.GeometryShape.become:1 of
+msgid "将该物件的数据设置为与传入的物件相同（以复制的方式，不是引用）"
+msgstr ""

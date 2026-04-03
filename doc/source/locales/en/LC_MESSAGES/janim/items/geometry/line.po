@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: JAnim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-02-24 01:11+0800\n"
+"POT-Creation-Date: 2026-04-03 10:34+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -30,10 +30,6 @@ msgstr "Further implementation of :class:`~.Cmpt_VPoints` in line segments"
 msgid "通过旋转和缩放，使得物件的起点和终点被置于 ``start`` 和 ``end``"
 msgstr "Through rotation and scaling, place the item's start and end points at ``start`` and ``end``"
 
-#: janim.items.geometry.line.Cmpt_VPoints_LineImpl.pointify:1 of
-msgid "Take an argument passed into Line (or subclass) and turn it into a 3d point."
-msgstr "Take an argument passed into Line (or subclass) and turn it into a 3d point."
-
 #: janim.items.geometry.line.Cmpt_VPoints_LineImpl.get_projection:1 of
 msgid "Return projection of a point onto the line"
 msgstr "Return projection of a point onto the line"
@@ -47,24 +43,104 @@ msgid "参数"
 msgstr "Parameters"
 
 #: janim.items.geometry.line.Line:3 of
-msgid "线段起点"
-msgstr "Start point of the line segment"
+msgid "线段起点，可为坐标向量或 :class:`~.Points` 对象；默认为 ``LEFT``"
+msgstr ""
 
 #: janim.items.geometry.line.Line:4 of
-msgid "线段终点"
-msgstr "End point of the line segment"
+msgid "线段终点，可为坐标向量或 :class:`~.Points` 对象；默认为 ``RIGHT``"
+msgstr ""
+
+#: janim.items.geometry.line.Line:5 janim.items.geometry.line.Line.build_points:7 of
+msgid "线段两端的空余量，可为单个数值或者一个元组表示两端的空余量；可用负值表示向外延伸"
+msgstr ""
 
 #: janim.items.geometry.line.Line:6 of
-msgid "线段两端的空余量，默认为 ``0``"
-msgstr "Buffer space at both ends of the line segment, default is ``0``"
+msgid "线段的弯曲弧度，默认为 ``0``；``0`` 表示直线，非零则是一段圆弧"
+msgstr ""
 
 #: janim.items.geometry.line.Line:7 of
-msgid "表示线段的弯曲角度"
-msgstr "Bending angle of the line segment"
-
-#: janim.items.geometry.line.Line:8 of
 msgid "其它参数"
 msgstr "Other parameters"
+
+#: janim.items.geometry.line.Line.reshape:1 of
+msgid "类似传递给 ``__init__`` 的参数，重新设置几何物件的形状"
+msgstr ""
+
+#: janim.items.geometry.line.Line.reshape:3 of
+msgid "可以缺省部分值，表示使用先前的；具体用法请参考 :ref:`geometry_reshape` 文档教程"
+msgstr ""
+
+#: janim.items.geometry.line.Line.build_points:1 of
+msgid "构建线段的点数据"
+msgstr ""
+
+#: janim.items.geometry.line.Line.build_points:3 of
+msgid "基于起点、终点、两端空余量和弯曲弧度生成线段的点数组"
+msgstr ""
+
+#: janim.items.geometry.line.Line.build_points:5 of
+#, fuzzy
+msgid "线段的起点坐标"
+msgstr "Start point of the line segment"
+
+#: janim.items.geometry.line.Line.build_points:6 of
+#, fuzzy
+msgid "线段的终点坐标"
+msgstr "End point of the line segment"
+
+#: janim.items.geometry.line.Line.build_points:8 of
+msgid "线段的弯曲弧度；0 即为直线，非零则是一段圆弧"
+msgstr ""
+
+#: ../../source/janim/items/geometry/line.rst
+msgid "返回"
+msgstr ""
+
+#: janim.items.geometry.line.Line.build_points:9 of
+msgid "线段的点数据数组"
+msgstr ""
+
+#: janim.items.geometry.line.Line.pointify_start_and_end:1 of
+msgid "将起点与终点输入解析为用于构造线段的三维坐标对"
+msgstr ""
+
+#: janim.items.geometry.line.Line.pointify_start_and_end:3 of
+msgid "先基于两者的粗略位置计算方向向量，再在输入为边界框时沿该方向提取边界点，从而得到更符合连接方向的首尾点"
+msgstr ""
+
+#: janim.items.geometry.line.Line.pointify_start_and_end:5 of
+msgid "起点，可为边界框对象或坐标"
+msgstr ""
+
+#: janim.items.geometry.line.Line.pointify_start_and_end:6 of
+msgid "终点，可为边界框对象或坐标"
+msgstr ""
+
+#: janim.items.geometry.line.Line.pointify_start_and_end:7 of
+msgid "解析后的 ``(start, end)`` 三维坐标"
+msgstr ""
+
+#: janim.items.geometry.line.Line.pointify:1 of
+msgid "将输入解析为三维坐标点"
+msgstr ""
+
+#: janim.items.geometry.line.Line.pointify:3 of
+msgid "若传入为边界框对象，未给定方向时返回中心点，给定方向时返回该方向上的边界点；若传入坐标序列，则补齐到 3 维后返回"
+msgstr ""
+
+#: janim.items.geometry.line.Line.pointify:5 of
+msgid "边界框对象或坐标"
+msgstr ""
+
+#: janim.items.geometry.line.Line.pointify:6 of
+msgid ""
+"用于提取物件坐标，默认为 ``None`` 提取其中心点，或是指定一个方向提取其边界框上指定方向的点（使"
+"用 :meth:`~.BoundingBox.get_continuous` ）"
+msgstr ""
+
+#: janim.items.geometry.line.Line.pointify:7 of
+msgid "解析得到的三维坐标"
+msgstr ""
 
 #: janim.items.geometry.line.Cmpt_VPoints_DashedLineImpl:1 of
 msgid "在虚线中，对 :class:`~.Cmpt_VPoints` 的进一步实现"
@@ -121,6 +197,16 @@ msgstr "For static use, ``False`` looks better; for dynamic creation, ``True`` a
 #: janim.items.geometry.line.DashedLine:12 of
 msgid "其它参数，另见 :class:`Line`"
 msgstr "Other parameters, see also :class:`Line`"
+
+#: janim.items.geometry.line.DashedLine:16 of
+msgid "由于一些因素，:class:`~.DashedLine` 并不完全具有 :class:`~.Line` 的功能"
+msgstr ""
+
+#: janim.items.geometry.line.DashedLine:18 of
+msgid ""
+"这是由于 :class:`~.DashedLine` 实际上将每段虚线作为子物件来实现，而去除了自己本身的 ``points`` 数据， 这会导致包括 "
+"``.reshape`` 以及 ``.points.vector`` 等一些方法不可用"
+msgstr ""
 
 #: janim.items.geometry.line.TangentLine:1 of
 msgid "切线"
@@ -263,3 +349,12 @@ msgstr "``length``: Side length of the right angle marker"
 #~ msgstr ""
 #~ "Base class: :py:class:`~janim.items.geometry.line.Line`, :py:class:`~janim.items.points.Group`\\ "
 #~ "[:py:class:`~janim.items.vitem.VItem`]"
+
+#~ msgid "Take an argument passed into Line (or subclass) and turn it into a 3d point."
+#~ msgstr "Take an argument passed into Line (or subclass) and turn it into a 3d point."
+
+#~ msgid "线段两端的空余量，默认为 ``0``"
+#~ msgstr "Buffer space at both ends of the line segment, default is ``0``"
+
+#~ msgid "表示线段的弯曲角度"
+#~ msgstr "Bending angle of the line segment"

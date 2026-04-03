@@ -1,0 +1,59 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2023, jkjkil4
+# This file is distributed under the same license as the JAnim package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: JAnim \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-04-03 10:34+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: en\n"
+"Language-Team: en <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.17.0\n"
+
+#: ../../source/janim/items/effect/effects.rst:2
+msgid "effects"
+msgstr "effects"
+
+#: janim.items.effect.effects.Shadertoy:1 of
+msgid "一个用于创建类似 Shadertoy 着色器效果的类"
+msgstr "A class for creating Shadertoy-like shader effects"
+
+#: janim.items.effect.effects.Shadertoy:3 of
+msgid "例:"
+msgstr "Example:"
+
+#: janim.items.effect.effects.Shadertoy:5 of
+#, python-brace-format
+msgid ""
+"Shadertoy(\n"
+"    '''\n"
+"    void mainImage( out vec4 fragColor, in vec2 fragCoord ) {\n"
+"        vec2 uv = fragCoord.xy / iResolution.xy;\n"
+"        vec3 color = vec3(uv.x, uv.y, 0.5);\n"
+"        fragColor = vec4(color, 1.0);\n"
+"    }\n"
+"    '''\n"
+").show()"
+msgstr ""
+"Shadertoy(\n"
+"    '''\n"
+"    void mainImage( out vec4 fragColor, in vec2 fragCoord ) {\n"
+"        vec2 uv = fragCoord.xy / iResolution.xy;\n"
+"        vec3 color = vec3(uv.x, uv.y, 0.5);\n"
+"        fragColor = vec4(color, 1.0);\n"
+"    }\n"
+"    '''\n"
+").show()"
+
+#: janim.items.effect.effects.Shadertoy:19 of
+msgid "如果该着色器代码中出现报错，会显示为 ``JA_SHADERTOY`` 中出现的"
+msgstr "If an error occurs in the shader code, it will be displayed as occurring in ``JA_SHADERTOY``."

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: JAnim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-02-24 01:11+0800\n"
+"POT-Creation-Date: 2026-04-03 10:34+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -46,6 +46,20 @@ msgstr "``start_angle`` represents the starting angle"
 #: janim.items.geometry.arc.Arc:4 janim.items.geometry.arc.ArcBetweenPoints:4 of
 msgid "``angle`` 表示圆心角"
 msgstr "``angle`` represents the central angle"
+
+#: janim.items.geometry.arc.AnnularSector.reshape:1 janim.items.geometry.arc.Annulus.reshape:1
+#: janim.items.geometry.arc.Arc.reshape:1 janim.items.geometry.arc.ArcBetweenPoints.reshape:1
+#: janim.items.geometry.arc.Circle.reshape:1 janim.items.geometry.arc.Dot.reshape:1
+#: janim.items.geometry.arc.Ellipse.reshape:1 janim.items.geometry.arc.Sector.reshape:1 of
+msgid "类似传递给 ``__init__`` 的参数，重新设置几何物件的形状"
+msgstr ""
+
+#: janim.items.geometry.arc.AnnularSector.reshape:3 janim.items.geometry.arc.Annulus.reshape:3
+#: janim.items.geometry.arc.Arc.reshape:3 janim.items.geometry.arc.ArcBetweenPoints.reshape:3
+#: janim.items.geometry.arc.Circle.reshape:3 janim.items.geometry.arc.Dot.reshape:3
+#: janim.items.geometry.arc.Ellipse.reshape:3 janim.items.geometry.arc.Sector.reshape:3 of
+msgid "可以缺省部分值，表示使用先前的；具体用法请参考 :ref:`geometry_reshape` 文档教程"
+msgstr ""
 
 #: janim.items.geometry.arc.Arc.get_arc_length:1 of
 msgid "获取圆弧长度"
