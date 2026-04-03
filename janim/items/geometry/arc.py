@@ -260,20 +260,7 @@ class Dot(Circle):
             fill_alpha=fill_alpha,
             **kwargs
         )
-        self._reshape_position(point)
-
-    # region reshape
-
-    def reshape(self, point: Vect | None = None, *, radius: float | None = None) -> Self:
-        super().reshape(radius=radius)
-        self._reshape_position(point)
-        return self
-
-    def _reshape_position(self, point: Vect | None = None) -> None:
-        point, = self._reshape_memorize(point=point)
         self.points.move_to(point)
-
-    # endregion
 
 
 class SmallDot(Dot):
