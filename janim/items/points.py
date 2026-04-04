@@ -26,6 +26,8 @@ class Points(Item):
     点集
 
     纯数据物件，不参与渲染
+
+    是大多数物件的基类
     """
     points = CmptInfo(Cmpt_Points[Self])
 

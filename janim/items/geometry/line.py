@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Literal, Self
+from typing import Iterable, Literal, Self
 
 import numpy as np
 
@@ -258,7 +258,7 @@ class Line(GeometryShape):
         :param path_arc: 线段的弯曲弧度；0 即为直线，非零则是一段圆弧
         :return: 线段的点数据数组
         """
-        if isinstance(buff, tuple):
+        if isinstance(buff, Iterable):
             start_buff, end_buff = buff
         else:
             start_buff, end_buff = buff, buff
