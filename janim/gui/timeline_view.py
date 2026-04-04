@@ -2,11 +2,10 @@ from __future__ import annotations
 
 import itertools as it
 import math
+import time
 from bisect import bisect, bisect_left
 from dataclasses import dataclass
-from typing import TYPE_CHECKING
 
-import numpy as np
 from PySide6.QtCore import QPoint, QPointF, QRect, Qt, QTimer, Signal
 from PySide6.QtGui import (QColor, QKeyEvent, QMouseEvent, QPainter,
                            QPaintEvent, QPen, QWheelEvent)
@@ -15,16 +14,14 @@ from PySide6.QtWidgets import QLabel, QVBoxLayout, QWidget
 from janim.anims.animation import FOREVER, Animation, TimeRange
 from janim.anims.composition import AnimGroup
 from janim.anims.timeline import BuiltTimeline, Timeline, TimelineItem
+from janim.gui.charts.anim_chart import AnimChartWidget
+from janim.gui.charts.audio_chart import AudioChartWidget
 from janim.gui.label import (LABEL_DEFAULT_HEIGHT, LABEL_PIXEL_HEIGHT_PER_UNIT,
                              Label, LabelGroup, LazyLabelGroup, PixelRange)
 from janim.items.item import Item
 from janim.locale import get_translator
-from janim.utils.bezier import interpolate
 from janim.utils.rate_functions import linear
 from janim.utils.simple_functions import clip
-
-if TYPE_CHECKING:
-    from PySide6.QtCharts import QAreaSeries, QChartView
 
 _ = get_translator('janim.gui.timeline_view')
 
@@ -508,7 +505,10 @@ class TimelineView(QWidget):
 
         absolute_near = round(self.pixel_to_time(pos.x()))
         relative_near = absolute_near - label.t_range.at
+        t0 = time.perf_counter()
         chart_view = self.create_audio_chart(info, near=relative_near)
+        t1 = time.perf_counter()
+        print(f'[TimelineView] create_audio_chart took {(t1 - t0) * 1000:.2f} ms')
 
         layout = QVBoxLayout()
         layout.addWidget(msglabel)
@@ -522,127 +522,8 @@ class TimelineView(QWidget):
         self.place_tooltip(self.tooltip, pos)
         self.tooltip.show()
 
-    def create_audio_chart(self, info: Timeline.PlayAudioInfo, near: float | None = None) -> QChartView:
-        from PySide6.QtCharts import (QChart, QChartView, QLineSeries,
-                                      QValueAxis)
-
-        audio = info.audio
-
-        clip_begin = info.clip_range.at
-        clip_end = info.clip_range.end
-        if near is not None:
-            clip_begin = max(clip_begin, near + info.clip_range.at - 4)
-            clip_end = min(clip_end, near + info.clip_range.at + 4)
-
-        range_begin = info.range.at + (clip_begin - info.clip_range.at)
-        range_end = range_begin + (clip_end - clip_begin)
-
-        begin = int(clip_begin * audio.framerate)
-        end = int(clip_end * audio.framerate)
-
-        left_blank = max(0, -begin)
-        right_blank = max(0, end - audio.sample_count())
-
-        data = audio._samples.data[max(0, begin): min(end, audio.sample_count())]
-        if data.ndim > 1:
-            data = np.max(data, axis=1)
-
-        if left_blank != 0 or right_blank != 0:
-            data = np.concatenate([
-                np.zeros(left_blank, dtype=np.int16),
-                data,
-                np.zeros(right_blank, dtype=np.int16)
-            ])
-
-        unit = audio.framerate // self.built.cfg.fps
-
-        data: np.ndarray = np.max(
-            np.abs(
-                data[:len(data) // unit * unit].reshape(-1, unit)
-            ),
-            axis=1
-        ) / np.iinfo(np.int16).max
-
-        times = np.linspace(range_begin,
-                            range_end,
-                            len(data))
-
-        chart = QChart()
-
-        font = chart.font()
-        font.setPointSize(7)
-
-        x_axis = QValueAxis()
-        x_axis.setRange(range_begin, range_end)
-        x_axis.setTickCount(max(2, 1 + int(range_end - range_begin)))
-        x_axis.setTitleText(_('Timeline Progress'))
-        x_axis.setTitleFont(font)
-        chart.addAxis(x_axis, Qt.AlignmentFlag.AlignBottom)
-
-        y_axis = QValueAxis()
-        y_axis.setRange(0, 1)
-        chart.addAxis(y_axis, Qt.AlignmentFlag.AlignLeft)
-
-        x_clip_axis = QValueAxis()
-        x_clip_axis.setRange(clip_begin, clip_end)
-        x_clip_axis.setTitleText(_('Audio Progress'))
-        x_clip_axis.setTitleFont(font)
-        chart.addAxis(x_clip_axis, Qt.AlignmentFlag.AlignTop)
-
-        series = QLineSeries()
-        for t, y in zip(times, data):
-            series.append(t, y)
-        chart.addSeries(series)
-        series.attachAxis(x_axis)
-        series.attachAxis(y_axis)
-
-        if clip_begin != info.clip_range.at:
-            area = self.create_axvspan(clip_begin, interpolate(clip_begin, clip_end, 0.1),
-                                       QColor(41, 171, 202, 128), QColor(41, 171, 202, 0))
-            chart.addSeries(area)
-            area.attachAxis(x_clip_axis)
-            area.attachAxis(y_axis)
-
-        if clip_end != info.clip_range.end:
-            area = self.create_axvspan(interpolate(clip_begin, clip_end, 0.9), clip_end,
-                                       QColor(41, 171, 202, 0), QColor(41, 171, 202, 128))
-            chart.addSeries(area)
-            area.attachAxis(x_clip_axis)
-            area.attachAxis(y_axis)
-
-        chart.legend().setVisible(False)
-
-        chart_view = QChartView(chart)
-        chart_view.setRenderHint(QPainter.RenderHint.Antialiasing)
-        chart_view.setMinimumSize(350, 270)
-
-        return chart_view
-
-    @staticmethod
-    def create_axvspan(x1: float, x2: float, c1: QColor, c2: QColor) -> QAreaSeries:
-        from PySide6.QtCharts import QAreaSeries, QLineSeries
-        from PySide6.QtGui import QGradient, QLinearGradient
-
-        upper_series = QLineSeries()
-        upper_series.append(x1, 1.)
-        upper_series.append(x2, 1.)
-
-        lower_series = QLineSeries()
-        lower_series.append(x1, 0.)
-        lower_series.append(x2, 0.)
-
-        area = QAreaSeries(upper_series, lower_series)
-        upper_series.setParent(area)
-        lower_series.setParent(area)
-
-        grandient = QLinearGradient(QPoint(0, 0), QPoint(1, 0))
-        grandient.setColorAt(0.0, c1)
-        grandient.setColorAt(1.0, c2)
-        grandient.setCoordinateMode(QGradient.CoordinateMode.ObjectBoundingMode)
-        area.setBrush(grandient)
-        area.setPen(Qt.PenStyle.NoPen)
-
-        return area
+    def create_audio_chart(self, info: Timeline.PlayAudioInfo, near: float | None = None) -> QWidget:
+        return AudioChartWidget(info, fps=self.built.cfg.fps, near=near)
 
     def hover_at_anim(self, pos: QPoint, anim: Animation) -> None:
         parents = [anim]
@@ -658,7 +539,10 @@ class TimelineView(QWidget):
                         f'{round(anim.t_range.at, 2)}s ~ {end}')
 
         if not is_forever:
+            t0 = time.perf_counter()
             chart_view = self.create_anim_chart(anim)
+            t1 = time.perf_counter()
+            print(f'[TimelineView] create_anim_chart took {(t1 - t0) * 1000:.2f} ms')
 
             def getname(rate_func) -> str:
                 try:
@@ -687,30 +571,8 @@ class TimelineView(QWidget):
         self.place_tooltip(self.tooltip, pos)
         self.tooltip.show()
 
-    def create_anim_chart(self, anim: Animation) -> QChartView:
-        from PySide6.QtCharts import QChart, QChartView, QScatterSeries
-
-        count = min(500, int(anim.t_range.duration * self.built.cfg.fps))
-        times = np.linspace(anim.t_range.at,
-                            anim.t_range.end,
-                            count)
-
-        series = QScatterSeries()
-        series.setMarkerSize(3)
-        series.setPen(Qt.PenStyle.NoPen)
-        for t in times:
-            series.append(t, anim.get_alpha_on_global_t(t))
-
-        chart = QChart()
-        chart.addSeries(series)
-        chart.createDefaultAxes()
-        chart.legend().setVisible(False)
-
-        chart_view = QChartView(chart)
-        chart_view.setRenderHint(QPainter.RenderHint.Antialiasing)
-        chart_view.setMinimumSize(250, 200)
-
-        return chart_view
+    def create_anim_chart(self, anim: Animation) -> QWidget:
+        return AnimChartWidget(anim, fps=self.built.cfg.fps)
 
     def place_tooltip(self, tooltip: QWidget, pos: QPoint) -> None:
         rect = tooltip.screen().availableGeometry()
