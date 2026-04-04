@@ -60,7 +60,6 @@ bench = [
 exclude = [
     ".asv/", ".vscode/", ".github/", "assets/", "doc/", "benchmarks/", "test/", "scripts/",
     ".pypirc",
-    ".coveragerc",
     ".readthedocs.yaml",
     ".gitignore",
     "uv.lock",
@@ -68,6 +67,12 @@ exclude = [
     "**/*.ui",
     "janim/locale/source",
     "janim/locale/*/LC_MESSAGES/*.po"
+]
+
+[tool.coverage.run]
+source = ["janim"]
+omit = [
+    "janim/gui/*"
 ]
 
 [project.urls]
