@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-01 13:06+0800\n"
+"POT-Creation-Date: 2026-04-03 09:42+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,14 +17,16 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: janim/components/vpoints.py:51
+#: janim/items/effect/frame_effect.py:93
 #, python-brace-format
 msgid ""
-"The number of points set is {len}, which is not odd. The last point will be "
-"ignored."
+"Calling {cls}.add is unusual and may not work as expected. If you want to "
+"apply additional items, use `apply` instead."
 msgstr ""
 
-#: janim/components/vpoints.py:346
+#: janim/items/effect/frame_effect.py:110
 #, python-brace-format
-msgid "n must be a value of 0~{maxn}, {n} is invalid"
+msgid ""
+"Calling {cls}.remove is unusual and may not work as expected. If you want to "
+"discard applied items, use `discard` instead."
 msgstr ""

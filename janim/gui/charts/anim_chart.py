@@ -8,6 +8,9 @@ from PySide6.QtGui import QColor, QPainter
 
 from janim.anims.animation import Animation
 from janim.gui.charts.base import ChartWidgetBase, make_ticks
+from janim.locale import get_translator
+
+_ = get_translator('janim.gui.charts.anim_chart')
 
 
 class AnimChartWidget(ChartWidgetBase):
@@ -42,7 +45,7 @@ class AnimChartWidget(ChartWidgetBase):
             y_ticks,
             (self.anim.t_range.at, self.anim.t_range.end),
             (0, 1),
-            bottom_title='Timeline Progress',
+            bottom_title=_('Timeline Progress'),
         )
 
         p.save()

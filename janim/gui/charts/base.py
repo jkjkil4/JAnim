@@ -1,3 +1,12 @@
+"""
+在 ``janim/gui/charts`` 中定义了若干自定义绘制的图表类
+
+不使用 ``PySide6.QtCharts`` 的原因：
+
+``PySide6`` 包分为两大部分：``PySide6-Essentials`` 和 ``PySide6-Addons`` ， ``janim`` 用到的其它 ``PySide6`` 的功能都包含在 ``Essentials`` 中，
+如果只是为了 ``QtCharts`` 而引入 ``Addons`` 这么巨大的包太不划算了
+"""
+
 from __future__ import annotations
 
 import math

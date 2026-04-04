@@ -8,7 +8,10 @@ from PySide6.QtGui import QColor, QLinearGradient, QPainter, QPainterPath, QPen
 
 from janim.anims.timeline import Timeline
 from janim.gui.charts.base import ChartWidgetBase, make_ticks
+from janim.locale import get_translator
 from janim.utils.bezier import interpolate
+
+_ = get_translator('janim.gui.charts.audio_chart')
 
 
 class AudioChartWidget(ChartWidgetBase):
@@ -96,8 +99,8 @@ class AudioChartWidget(ChartWidgetBase):
             y_ticks,
             (self.range_begin, self.range_end),
             (0, 1),
-            bottom_title='Timeline Progress',
-            top_title='Audio Progress',
+            bottom_title=_('Timeline Progress'),
+            top_title=_('Audio Progress'),
             top_ticks=top_ticks,
             top_range=(self.clip_begin, self.clip_end),
         )
