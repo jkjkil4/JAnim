@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import itertools as it
 import math
-import time
 from bisect import bisect, bisect_left
 from dataclasses import dataclass
 
@@ -505,10 +504,7 @@ class TimelineView(QWidget):
 
         absolute_near = round(self.pixel_to_time(pos.x()))
         relative_near = absolute_near - label.t_range.at
-        t0 = time.perf_counter()
         chart_view = self.create_audio_chart(info, near=relative_near)
-        t1 = time.perf_counter()
-        print(f'[TimelineView] create_audio_chart took {(t1 - t0) * 1000:.2f} ms')
 
         layout = QVBoxLayout()
         layout.addWidget(msglabel)
@@ -539,10 +535,7 @@ class TimelineView(QWidget):
                         f'{round(anim.t_range.at, 2)}s ~ {end}')
 
         if not is_forever:
-            t0 = time.perf_counter()
             chart_view = self.create_anim_chart(anim)
-            t1 = time.perf_counter()
-            print(f'[TimelineView] create_anim_chart took {(t1 - t0) * 1000:.2f} ms')
 
             def getname(rate_func) -> str:
                 try:

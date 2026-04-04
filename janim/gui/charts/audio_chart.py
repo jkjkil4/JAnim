@@ -127,7 +127,6 @@ class AudioChartWidget(ChartWidgetBase):
 
         if len(self.samples) >= 2:
             path = QPainterPath()
-            print(f'{len(self.samples)=}')
             points = [self.sample_point(index, plot_rect) for index in range(len(self.samples))]
             path.moveTo(points[0])
             for point in points[1:]:
