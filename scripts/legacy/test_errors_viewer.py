@@ -28,11 +28,13 @@ class CompareWidget(QWidget):
         self.label_wrong = QLabel()
         self.label_wrong_txt = QLabel()
 
-        self.label_diff = QLabel()
+        self.label_color_diff = QLabel()
+        self.label_alpha_diff = QLabel()
 
         self.label_correct.setStyleSheet("border: 1px solid white;")
         self.label_wrong.setStyleSheet("border: 1px solid white;")
-        self.label_diff.setStyleSheet("border: 1px solid white;")
+        self.label_color_diff.setStyleSheet("border: 1px solid white;")
+        self.label_alpha_diff.setStyleSheet("border: 1px solid white;")
 
         self.vlayout_correct = QVBoxLayout()
         self.vlayout_correct.addWidget(self.label_correct)
@@ -46,13 +48,21 @@ class CompareWidget(QWidget):
         self.hlayout_compare.addLayout(self.vlayout_correct)
         self.hlayout_compare.addLayout(self.vlayout_wrong)
 
-        self.vlayout_diff = QVBoxLayout()
-        self.vlayout_diff.addWidget(self.label_diff, alignment=Qt.AlignmentFlag.AlignHCenter)
-        self.vlayout_diff.addWidget(QLabel('Difference'), alignment=Qt.AlignmentFlag.AlignHCenter)
+        self.vlayout_color_diff = QVBoxLayout()
+        self.vlayout_color_diff.addWidget(self.label_color_diff, alignment=Qt.AlignmentFlag.AlignHCenter)
+        self.vlayout_color_diff.addWidget(QLabel('Color Difference'), alignment=Qt.AlignmentFlag.AlignHCenter)
+
+        self.vlayout_alpha_diff = QVBoxLayout()
+        self.vlayout_alpha_diff.addWidget(self.label_alpha_diff, alignment=Qt.AlignmentFlag.AlignHCenter)
+        self.vlayout_alpha_diff.addWidget(QLabel('Alpha Difference'), alignment=Qt.AlignmentFlag.AlignHCenter)
+
+        self.hlayout_diff = QHBoxLayout()
+        self.hlayout_diff.addLayout(self.vlayout_color_diff)
+        self.hlayout_diff.addLayout(self.vlayout_alpha_diff)
 
         self.vlayout = QVBoxLayout()
         self.vlayout.addLayout(self.hlayout_compare)
-        self.vlayout.addLayout(self.vlayout_diff)
+        self.vlayout.addLayout(self.hlayout_diff)
 
         self.setLayout(self.vlayout)
         self.setWindowTitle('Errors Viewer')
@@ -73,8 +83,10 @@ class CompareWidget(QWidget):
         self.label_wrong.setPixmap(pix_wrong)
         self.label_wrong_txt.setText(f'Wrong:\n{pair.wrong}')
 
-        diff_image = get_abs_diff_image(pix_correct.toImage(), pix_wrong.toImage())
-        self.label_diff.setPixmap(QPixmap(diff_image))
+        color_diff_image = get_abs_diff_image(pix_correct.toImage(), pix_wrong.toImage())
+        alpha_diff_image = get_alpha_diff_image(pix_correct.toImage(), pix_wrong.toImage())
+        self.label_color_diff.setPixmap(QPixmap(color_diff_image))
+        self.label_alpha_diff.setPixmap(QPixmap(alpha_diff_image))
 
     def keyPressEvent(self, event: QKeyEvent) -> None:
         if len(self.compare_infos) == 0:
@@ -104,6 +116,30 @@ def get_abs_diff_image(img1: QImage, img2: QImage) -> QImage:
     arr2 = np.frombuffer(bits2, dtype=np.uint8, count=img2.sizeInBytes()).reshape(h, w, 4)
 
     diff = np.abs(arr1.astype(np.int16) - arr2.astype(np.int16)).astype(np.uint8)
+    diff[:, :, 3] = 255
+
+    result = QImage(diff.data, w, h, w * 4, QImage.Format.Format_RGBA8888)
+    return result.copy()
+
+
+def get_alpha_diff_image(img1: QImage, img2: QImage) -> QImage:
+    """仅比较 alpha 通道，并以白色强度显示差异"""
+    img1 = img1.convertToFormat(QImage.Format.Format_RGBA8888)
+    img2 = img2.convertToFormat(QImage.Format.Format_RGBA8888)
+    assert img1.size() == img2.size()
+
+    w = img1.width()
+    h = img1.height()
+
+    bits1 = img1.constBits()
+    bits2 = img2.constBits()
+
+    arr1 = np.frombuffer(bits1, dtype=np.uint8, count=img1.sizeInBytes()).reshape(h, w, 4)
+    arr2 = np.frombuffer(bits2, dtype=np.uint8, count=img2.sizeInBytes()).reshape(h, w, 4)
+
+    alpha_diff = np.abs(arr1[:, :, 3].astype(np.int16) - arr2[:, :, 3].astype(np.int16)).astype(np.uint8)
+    diff = np.zeros((h, w, 4), dtype=np.uint8)
+    diff[:, :, :3] = alpha_diff[:, :, None]
     diff[:, :, 3] = 255
 
     result = QImage(diff.data, w, h, w * 4, QImage.Format.Format_RGBA8888)
