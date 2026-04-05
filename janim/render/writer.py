@@ -15,7 +15,7 @@ from janim.exception import EXITCODE_FFMPEG_NOT_FOUND, ExitException
 from janim.locale import get_translator
 from janim.logger import log
 from janim.render.base import apply_blend_flags, create_context_430_or_330
-from janim.render.framebuffer import create_framebuffer, framebuffer_context
+from janim.render.framebuffer import FrameBuffer
 from janim.utils.simple_functions import clip
 
 _ = get_translator('janim.render.writer')
@@ -48,12 +48,11 @@ class VideoWriter:
             self.ctx = create_context_430_or_330(standalone=True)
             log.debug('Created OpenGL context for VideoWriter')
 
-        pw, ph = built.cfg.pixel_width, built.cfg.pixel_height
+        self.pw, self.ph = built.cfg.pixel_width, built.cfg.pixel_height
         self.frame_count = round(built.duration * built.cfg.fps) + 1
-        self.fbo = create_framebuffer(self.ctx, pw, ph)
 
         # PBO 相关初始化
-        self.byte_size = pw * ph * 4  # 每帧的字节大小 (RGBA)
+        self.byte_size = self.pw * self.ph * 4  # 每帧的字节大小 (RGBA)
 
     def _init_pbos(self) -> None:
         """初始化PBO缓冲区"""
@@ -132,19 +131,19 @@ class VideoWriter:
         )
 
         rgb = self.built.cfg.background_color.rgb
-
         transparent = self.ext == '.mov'
+
+        fbo = FrameBuffer(self.ctx, self.pw, self.ph, rgb, transparent)
 
         if use_pbo:
             # 使用PBO优化的渲染循环
-            with framebuffer_context(self.fbo):
+            with fbo.context():
                 read_idx_iter = self._read_idx_iter(start_frame, end_frame)
                 for frame_idx, read_idx in zip(progress_display, read_idx_iter):
                     # 渲染当前帧
-                    self.fbo.clear(*rgb, not transparent)
-                    if transparent:
-                        gl.glFlush()
-                    self.built.render_all(self.ctx, frame_idx / fps, blend_on=not transparent)
+                    fbo.clear()
+                    self.built.render_all(self.ctx, frame_idx / fps)
+                    fbo.unpremultiply()
 
                     # 绑定当前PBO来存储新帧
                     gl.glBindBuffer(gl.GL_PIXEL_PACK_BUFFER, self.pbos[frame_idx % PBO_COUNT])
@@ -178,18 +177,12 @@ class VideoWriter:
             self._cleanup_pbos()
         else:
             # 原始渲染循环（不使用PBO）
-            with framebuffer_context(self.fbo):
+            with fbo.context():
                 for frame in progress_display:
-                    self.fbo.clear(*rgb, not transparent)
-                    # 在输出 mov 时，framebuffer 是透明的
-                    # 为了颜色能被正确渲染到透明 framebuffer 上
-                    # 这里需要禁用自带 blending 的并使用 shader 里自定义的 blending（参考 shader.py 的 _injection_ja_finish_up）
-                    # 但是 shader 里的 blending 依赖 framebuffer 信息
-                    # 所以这里需要使用 glFlush 更新 framebuffer 信息使得正确渲染
-                    if transparent:
-                        gl.glFlush()
-                    self.built.render_all(self.ctx, frame / fps, blend_on=not transparent)
-                    bytes = self.fbo.read(components=4)
+                    fbo.clear()
+                    self.built.render_all(self.ctx, frame / fps)
+                    fbo.unpremultiply()
+                    bytes = fbo.read()
                     self.writing_process.stdin.write(bytes)
 
         log.debug('Finished writing frames to video pipe')

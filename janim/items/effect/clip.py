@@ -28,7 +28,6 @@ in vec2 v_texcoord;
 
 out vec4 f_color;
 
-uniform sampler2D fbo;
 uniform vec4 u_clip;    // left top right bottom
 uniform bool u_debug;
 
@@ -48,7 +47,7 @@ void main()
         }
     }
 
-    f_color = texture(fbo, v_texcoord);
+    f_color = frame_texture(v_texcoord);
 
     #[JA_FINISH_UP]
 }
@@ -160,7 +159,6 @@ in vec2 v_texcoord;
 
 out vec4 f_color;
 
-uniform sampler2D fbo;
 uniform vec4 u_clip;    // left top right bottom
 uniform vec2 u_offset;  // x, y
 uniform vec2 u_scale;   // x, y
@@ -210,7 +208,7 @@ void main()
         }
     }
 
-    f_color = texture(fbo, uv);
+    f_color = frame_texture(uv);
 
     #[JA_FINISH_UP]
 }
@@ -368,7 +366,6 @@ in vec2 v_texcoord;
 
 out vec4 f_color;
 
-uniform sampler2D fbo;
 uniform vec2 JA_FRAME_RADIUS;
 uniform vec2 u_anchor;
 uniform vec2 u_orig;
@@ -421,7 +418,7 @@ void main()
     if (texcoord.x < 0.0 || texcoord.x > 1.0 || texcoord.y < 0.0 || texcoord.y > 1.0)
         discard;
 
-    f_color = texture(fbo, texcoord);
+    f_color = frame_texture(texcoord);
 
     #[JA_FINISH_UP]
 }

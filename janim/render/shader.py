@@ -172,23 +172,11 @@ def _preprocess_shader(name: str, source: str, lines: list[str], dir_path: str |
     return max_version
 
 
-_injection_ja_finish_up = '''    if (!JA_BLENDING) {
-        vec2 coord = gl_FragCoord.xy / vec2(textureSize(JA_FRAMEBUFFER, 0));
-        vec4 back = texture(JA_FRAMEBUFFER, coord);
-        float a = f_color.a + back.a * (1 - f_color.a);
-        f_color = clamp(
-            vec4(
-                (f_color.rgb * f_color.a + back.rgb * back.a * (1 - f_color.a)) / a,
-                a
-            ),
-            0.0, 1.0
-        );
-    }
-'''
+# PMA，即预乘透明度混合方案
+_injection_ja_finish_up = '    f_color.rgb *= f_color.a;'
 
-_injection_ja_finish_up_uniforms = '''uniform bool JA_BLENDING;
-uniform sampler2D JA_FRAMEBUFFER;
-'''
+# 仅用于前向兼容
+_injection_ja_finish_up_uniforms = ''
 
 shader_injections_ctx: ContextVar[list[dict[str, str]]] = ContextVar("shader_injections_ctx")
 shader_injections_ctx.set([{
