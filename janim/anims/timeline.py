@@ -1291,6 +1291,7 @@ class BuiltTimeline:
         with fbo.context():
             fbo.clear()
             self.render_all(ctx, global_t)
+            fbo.unpremultiply()
 
         return fbo.get_image()
 

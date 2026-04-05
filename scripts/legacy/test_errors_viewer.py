@@ -5,8 +5,9 @@ from dataclasses import dataclass
 from functools import lru_cache
 from pathlib import Path
 
+import numpy as np
 from PySide6.QtCore import Qt
-from PySide6.QtGui import QKeyEvent, QPainter, QPixmap
+from PySide6.QtGui import QImage, QKeyEvent, QPixmap
 from PySide6.QtWidgets import QHBoxLayout, QLabel, QVBoxLayout, QWidget
 
 from janim.gui.application import Application
@@ -72,12 +73,7 @@ class CompareWidget(QWidget):
         self.label_wrong.setPixmap(pix_wrong)
         self.label_wrong_txt.setText(f'Wrong:\n{pair.wrong}')
 
-        diff_image = pix_correct.toImage()
-        p = QPainter(diff_image)
-        p.setCompositionMode(QPainter.CompositionMode.CompositionMode_Difference)
-        p.drawImage(0, 0, pix_wrong.toImage())
-        p.end()
-
+        diff_image = get_abs_diff_image(pix_correct.toImage(), pix_wrong.toImage())
         self.label_diff.setPixmap(QPixmap(diff_image))
 
     def keyPressEvent(self, event: QKeyEvent) -> None:
@@ -90,6 +86,28 @@ class CompareWidget(QWidget):
         elif event.key() == Qt.Key.Key_Left:
             new_index = (self.current_index - 1) % len(self.compare_infos)
             self.set_current_index(new_index)
+
+
+def get_abs_diff_image(img1: QImage, img2: QImage) -> QImage:
+    """逐像素计算两张图的绝对差值（abs diff）"""
+    img1 = img1.convertToFormat(QImage.Format.Format_RGBA8888)
+    img2 = img2.convertToFormat(QImage.Format.Format_RGBA8888)
+    assert img1.size() == img2.size()
+
+    w = img1.width()
+    h = img1.height()
+
+    bits1 = img1.constBits()
+    bits2 = img2.constBits()
+
+    arr1 = np.frombuffer(bits1, dtype=np.uint8, count=img1.sizeInBytes()).reshape(h, w, 4)
+    arr2 = np.frombuffer(bits2, dtype=np.uint8, count=img2.sizeInBytes()).reshape(h, w, 4)
+
+    diff = np.abs(arr1.astype(np.int16) - arr2.astype(np.int16)).astype(np.uint8)
+    diff[:, :, 3] = 255
+
+    result = QImage(diff.data, w, h, w * 4, QImage.Format.Format_RGBA8888)
+    return result.copy()
 
 
 @dataclass
