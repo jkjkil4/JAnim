@@ -112,7 +112,7 @@ class CaptureDialog(QDialog):
         return w, h
 
     def transparent(self) -> bool:
-        return self.ui.ckb_transparent.isChecked()
+        return self.ui.rb_file.isChecked() and self.ui.ckb_transparent.isChecked()
 
     def open(self) -> bool:
         return self.ui.ckb_open.isChecked()
@@ -139,7 +139,7 @@ class CaptureDialog(QDialog):
         for widget in (self.ui.label_size, self.ui.cbb_size):
             widget.setVisible(israw)
 
-        self.ui.ckb_transparent.setVisible(israw)
+        self.ui.ckb_transparent.setVisible(israw and isfile)
         self.ui.ckb_open.setVisible(isfile)
 
         QTimer.singleShot(0, lambda: self.resize(self.width(), self.sizeHint().height()))
