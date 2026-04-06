@@ -296,15 +296,12 @@ class VideoWriter:
                 with VideoWriter.handle_ffmpeg_not_found():
                     output = sp.getoutput(f"{ffmpeg_bin} -hide_banner -encoders")
 
-                log.info(f"{output}")
-
                 encoders = [
                     "h264_vaapi",
                     "h264_nvenc",
                     "h264_qsv",
                     "h264_amf",
                 ]
-
                 available = [e for e in encoders if e in output]
 
                 log.info(f"Encoders available to ffmpeg: {available}")
