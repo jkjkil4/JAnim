@@ -1,8 +1,8 @@
-import glob
 import os
 import shutil
 import subprocess as sp
 import time
+import glob
 from contextlib import contextmanager
 from functools import partial
 from typing import Generator, List
@@ -290,25 +290,24 @@ class VideoWriter:
                 encoder = VideoWriter.hwencoder_cache
             else:
                 encoder = None
+                output = ""
 
                 # Call ffmpeg to enumerate available encoders
                 with VideoWriter.handle_ffmpeg_not_found():
-                    test_availability = sp.Popen(
-                        [ffmpeg_bin, '-hide_banner', '-encoders'],
-                        stdout=sp.PIPE,
-                        stderr=sp.PIPE
-                    )
+                    output = sp.getoutput(f"{ffmpeg_bin} -hide_banner -encoders")
 
-                out, err = test_availability.communicate()
+                log.info(f"{output}")
 
                 encoders = [
-                    'h264_vaapi'
-                    'h264_nvenc'
-                    'h264_qsv'
-                    'h264_amf'
+                    "h264_vaapi",
+                    "h264_nvenc",
+                    "h264_qsv",
+                    "h264_amf",
                 ]
-                available = [enc for enc in encoders if enc.encode() in out]
 
+                available = [e for e in encoders if e in output]
+
+                log.info(f"Encoders available to ffmpeg: {available}")
 
                 for potential in available:
                     # Attempt to use the potential encoder to see if it actually works
@@ -331,7 +330,7 @@ class VideoWriter:
                     if test_encoder.returncode == 0:
                        encoder = potential
                     else:
-                        log.info(_('ffmpeg was packaged with the \\`{potential}\\` encoder but your system cannot utilize it.').format(potential=potential))
+                        log.info(f"ffmpeg was packaged with the `{potential}` encoder but your system cannot utilize it.")
 
                 # Safe fallback for if none of the probed hardware encoders work
                 if encoder is None:
@@ -340,7 +339,7 @@ class VideoWriter:
 
                 VideoWriter.hwencoder_cache = encoder
 
-        log.info(_('Using {encoder} for encoding').format(encoder=encoder))
+        log.info(f"Using {encoder} for encoding")
         return encoder
 
     def close_video_pipe(self, _keep_temp: bool) -> None:
