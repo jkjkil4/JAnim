@@ -1,10 +1,11 @@
+import glob
 import os
 import shutil
 import subprocess as sp
 import time
 from contextlib import contextmanager
 from functools import partial
-from typing import Generator
+from typing import Generator, List
 
 import moderngl as mgl
 import OpenGL.GL as gl
@@ -222,32 +223,62 @@ class VideoWriter:
             '-pix_fmt', 'rgba',
             '-r', str(self.built.cfg.fps),  # frames per second
             '-i', '-',  # The input comes from a pipe
-            '-vf', 'vflip',
             '-an',  # Tells FFMPEG not to expect any audio
             '-loglevel', 'error',
         ]
 
         if self.ext == '.mp4':
+            encoder = self.find_encoder(self.built.cfg.ffmpeg_bin, hwaccel)
             command += [
                 '-pix_fmt', 'yuv420p',
-                '-vcodec', self.find_encoder(self.built.cfg.ffmpeg_bin, hwaccel),
+                '-vcodec', encoder,
+                *self.encoder_flags(encoder)
             ]
-        elif self.ext == '.mov':
-            # This is if the background of the exported
-            # video should be transparent.
-            command += [
-                '-vcodec', 'qtrle',
-            ]
-        elif self.ext == '.gif':
-            pass
         else:
-            assert False
+            command.extend([ '-vf', 'vflip' ])
+
+            if self.ext == '.mov':
+                # This is if the background of the exported
+                # video should be transparent.
+                command += [
+                    '-vcodec', 'qtrle',
+                ]
+            elif self.ext == '.gif':
+                pass
+            else:
+                assert False
 
         command += [self.temp_file_path]
         with self.handle_ffmpeg_not_found():
             self.writing_process = sp.Popen(command, stdin=sp.PIPE)
 
     hwencoder_cache: str | None = None
+    hwencoder_device_cache: str | None = None
+
+    @staticmethod
+    def find_encoder_device() -> str | None:
+        """Return the first working VA-API render node, or None."""
+        if VideoWriter.hwencoder_device_cache is not None:
+            device = VideoWriter.hwencoder_device_cache
+        else:
+            device = None
+            for device_node in sorted(glob.glob('/dev/dri/renderD*')):
+                if os.access(device_node, os.R_OK | os.W_OK):
+                    device = device_node
+                    VideoWriter.hwencoder_device_cache = device_node
+
+        return device
+
+    @staticmethod
+    def encoder_flags(encoder: str) -> List[str]:
+        device = VideoWriter.find_encoder_device()
+        if encoder == "h264_vaapi" and device is not None:
+            return [
+                '-vaapi_device', device,
+                '-vf', 'vflip,format=nv12,hwupload'
+            ]
+        else:
+            return [ '-vf', 'vflip' ]
 
     @staticmethod
     def find_encoder(ffmpeg_bin: str, hwaccel: bool) -> str:
@@ -258,7 +289,9 @@ class VideoWriter:
             if VideoWriter.hwencoder_cache is not None:
                 encoder = VideoWriter.hwencoder_cache
             else:
-                # call ffmpeg to test nvenc/amf support
+                encoder = None
+
+                # Call ffmpeg to enumerate available encoders
                 with VideoWriter.handle_ffmpeg_not_found():
                     test_availability = sp.Popen(
                         [ffmpeg_bin, '-hide_banner', '-encoders'],
@@ -267,13 +300,44 @@ class VideoWriter:
                     )
 
                 out, err = test_availability.communicate()
-                if b'h264_nvenc' in out:
-                    encoder = 'h264_nvenc'
-                elif b'h264_amf' in out:
-                    encoder = 'h264_amf'
-                else:
+
+                encoders = [
+                    'h264_vaapi'
+                    'h264_nvenc'
+                    'h264_qsv'
+                    'h264_amf'
+                ]
+                available = [enc for enc in encoders if enc.encode() in out]
+
+
+                for potential in available:
+                    # Attempt to use the potential encoder to see if it actually works
+                    test_encoder = sp.run(
+                        [
+                            ffmpeg_bin,
+                             "-f", "lavfi",
+                             "-i", "nullsrc=s=128x128",
+                             "-t", "1",
+                             "-c:v", potential,
+                             *VideoWriter.encoder_flags(potential),
+                             "-f", "null",
+                             "/dev/null"
+                        ],
+                        stdout=sp.DEVNULL,
+                        stderr=sp.DEVNULL
+                    )
+
+                    # If the potential encoder succeeded
+                    if test_encoder.returncode == 0:
+                       encoder = potential
+                    else:
+                        log.info(_('ffmpeg was packaged with the \\`{potential}\\` encoder but your system cannot utilize it.').format(potential=potential))
+
+                # Safe fallback for if none of the probed hardware encoders work
+                if encoder is None:
                     encoder = 'libx264'
                     log.info(_('No hardware encoder found'))
+
                 VideoWriter.hwencoder_cache = encoder
 
         log.info(_('Using {encoder} for encoding').format(encoder=encoder))
