@@ -17,7 +17,7 @@ from janim.constants import (DOWN, GREY, LEFT, MED_SMALL_BUFF, ORIGIN, RIGHT,
 from janim.exception import ColorNotFoundError
 from janim.items.geometry.line import Line
 from janim.items.group import Group
-from janim.items.points import MarkedItem
+from janim.items.points import MarkedItem, Points
 from janim.items.vitem import VItem
 from janim.locale import get_translator
 from janim.logger import log
@@ -26,7 +26,7 @@ from janim.utils.config import Config
 from janim.utils.font.database import Font, get_font_info_by_attrs
 from janim.utils.font.variant import Style, StyleName, Weight, WeightName
 from janim.utils.simple_functions import decode_utf8
-from janim.utils.space_ops import get_norm, normalize
+from janim.utils.space_ops import cross, get_norm, normalize
 
 _ = get_translator('janim.items.text')
 
@@ -181,6 +181,16 @@ class BasepointVItem(MarkedItem, VItem):
 
         scalar = np.dot(offset, proj_vect) / np.dot(proj_vect, proj_vect)
         return scalar * proj_vect
+
+    def matrix_of_marks(self) -> np.matrix:
+        """
+        得到标记点的坐标标架构成的矩阵
+        """
+        # 假定 [0] 是 basepoint，[1] 是 right，[2] 是 up
+        right = self.mark.get(1) - self.mark.get(0)
+        up = self.mark.get(2) - self.mark.get(0)
+        normal = cross(right, up) / get_norm(up)
+        return np.matrix([right, up, normal]).T
 
 
 class TextChar(BasepointVItem):
@@ -354,6 +364,24 @@ class TextLine(BasepointVItem, Group[TextChar]):
 
         return self
 
+    def match_to(self, target: Text | TextLine) -> Self:
+        """
+        将该行文本与目标文本或文本行对齐
+
+        :param target: 目标文本或文本行
+        """
+        line = target if isinstance(target, TextLine) else target[0]
+        TextLine._match_to(self, self, line)
+        return self
+
+    @staticmethod
+    def _match_to(item: Points, line1: TextLine, line2: TextLine) -> None:
+        mat = line2.matrix_of_marks() @ line1.matrix_of_marks().I
+
+        item.points.shift(-line1.mark.get()) \
+                   .apply_matrix(mat) \
+                   .shift(line2.mark.get())
+
 
 class Text(VItem, Group[TextLine]):
     """
@@ -477,9 +505,9 @@ class Text(VItem, Group[TextLine]):
         """
         根据 ``pattern`` **正则表达式** 获得文字中的部分
 
-        - ``pattern``: 用于匹配的正则表达式
+        :param pattern: 用于匹配的正则表达式
 
-        - ``group``: 对于正则表达式，指定使用第几个分组进行匹配，默认 ``0`` 表示整个匹配片段，其余数字表示对应的分组
+        :param group: 对于正则表达式，指定使用第几个分组进行匹配，默认 ``0`` 表示整个匹配片段，其余数字表示对应的分组
 
         提示：如果不希望使用正则表达式，可以使用 ``re.escape`` 进行转义，例如 ``re.escape('a[i]')`` 来正确匹配字符串中的 ``a[i]``
 
@@ -518,8 +546,8 @@ class Text(VItem, Group[TextLine]):
 
     def arrange_in_lines(self, buff: float = 0, base_buff: float = 0.85) -> Self:
         """
-        - ``buff``: 每行之间的额外间距
-        - ``base_buff``: 每行之间的基本间距，默认值 ``0.85`` 用于将两行上下排列，如果是 ``0`` 则会让两行完全重合，大部分时候不需要传入该值
+        :param buff: 每行之间的额外间距
+        :param base_buff: 每行之间的基本间距，默认值 ``0.85`` 用于将两行上下排列，如果是 ``0`` 则会让两行完全重合，大部分时候不需要传入该值
         """
         if len(self._children) == 0:
             return
@@ -533,6 +561,17 @@ class Text(VItem, Group[TextLine]):
             )
             pos = line.get_mark_orig()
 
+        return self
+
+    def match_to(self, target: Text | TextLine, *, self_lineno: int = 0) -> Self:
+        """
+        将该文本与目标文本或文本行对齐
+
+        :param target: 目标文本或文本行
+        :param self_lineno: 将自身的哪一行与目标对齐，默认为首行（即 ``self_lineno=0``）
+        """
+        line = target if isinstance(target, TextLine) else target[0]
+        TextLine._match_to(self, self[self_lineno], line)
         return self
 
     def apply_rich_text(self) -> None:
@@ -577,7 +616,7 @@ class Title(Group):
     标题
 
     - ``include_underline=True`` 会添加下划线（默认添加）
-    - ``underline_width`` 下划线的长度（默认屏幕宽 - 2 个单位）
+    - ``underline_width`` 下划线的长度（默认 ``屏幕宽 - 2个单位``）
     - ``match_underline_width_to_text=True`` 时将下划线的长度和文字匹配（默认为 ``False``）
     """
     def __init__(
