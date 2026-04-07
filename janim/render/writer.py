@@ -3,7 +3,7 @@ import shutil
 import subprocess as sp
 import sys
 import time
-import glob
+from glob import glob
 from contextlib import contextmanager
 from functools import partial
 from typing import Generator, List
@@ -259,7 +259,7 @@ class VideoWriter:
     @staticmethod
     def find_encoder_device() -> str | None:
         """Return the first working VA-API render node, or None."""
-        # Only applies on linux
+        # Only applies on linux; exit early on other platforms
         if sys.platform != "linux":
             device = None
         if VideoWriter.hwencoder_device_cache is not None:
@@ -267,7 +267,8 @@ class VideoWriter:
         else:
             device = None
 
-            for device_node in sorted(glob.glob('/dev/dri/renderD*')):
+            # If `/dev/dri` doesn't exist, this will just return an empty array
+            for device_node in sorted(glob('/dev/dri/renderD*')):
                 if os.access(device_node, os.R_OK | os.W_OK):
                     device = device_node
                     VideoWriter.hwencoder_device_cache = device_node
