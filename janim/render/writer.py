@@ -263,7 +263,7 @@ class VideoWriter:
         # `linux` and `linux2` are both possible values
         if not sys.platform.startswith("linux"):
             device = None
-        if VideoWriter.hwencoder_device_cache is not None:
+        elif VideoWriter.hwencoder_device_cache is not None:
             device = VideoWriter.hwencoder_device_cache
         else:
             device = None
