@@ -260,7 +260,8 @@ class VideoWriter:
     def find_encoder_device() -> str | None:
         """Return the first working VA-API render node, or None."""
         # Only applies on linux; exit early on other platforms
-        if sys.platform != "linux":
+        # `linux` and `linux2` are both possible values
+        if not sys.platform.startswith("linux"):
             device = None
         if VideoWriter.hwencoder_device_cache is not None:
             device = VideoWriter.hwencoder_device_cache
