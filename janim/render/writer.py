@@ -1,6 +1,7 @@
 import os
 import shutil
 import subprocess as sp
+import sys
 import time
 import glob
 from contextlib import contextmanager
@@ -258,10 +259,14 @@ class VideoWriter:
     @staticmethod
     def find_encoder_device() -> str | None:
         """Return the first working VA-API render node, or None."""
+        # Only applies on linux
+        if sys.platform != "linux":
+            device = None
         if VideoWriter.hwencoder_device_cache is not None:
             device = VideoWriter.hwencoder_device_cache
         else:
             device = None
+
             for device_node in sorted(glob.glob('/dev/dri/renderD*')):
                 if os.access(device_node, os.R_OK | os.W_OK):
                     device = device_node
@@ -301,6 +306,7 @@ class VideoWriter:
                     "h264_nvenc",
                     "h264_qsv",
                     "h264_amf",
+                    "h264_videotoolbox",
                 ]
                 available = [e for e in encoders if e in output]
 
@@ -308,23 +314,19 @@ class VideoWriter:
 
                 for potential in available:
                     # Attempt to use the potential encoder to see if it actually works
-                    test_encoder = sp.run(
-                        [
-                            ffmpeg_bin,
-                             "-f", "lavfi",
-                             "-i", "nullsrc=s=128x128",
-                             "-t", "1",
-                             "-c:v", potential,
-                             *VideoWriter.encoder_flags(potential),
-                             "-f", "null",
-                             "/dev/null"
-                        ],
-                        stdout=sp.DEVNULL,
-                        stderr=sp.DEVNULL
-                    )
+                    output, _ = sp.getstatusoutput(" ".join([
+                        ffmpeg_bin,
+                         "-f", "lavfi",
+                         "-i", "nullsrc=s=128x128",
+                         "-t", "1",
+                         "-c:v", potential,
+                         *VideoWriter.encoder_flags(potential),
+                         "-f", "null",
+                         os.devnull
+                    ]))
 
                     # If the potential encoder succeeded
-                    if test_encoder.returncode == 0:
+                    if int(output) != 0:
                        encoder = potential
                     else:
                         log.info(f"ffmpeg was packaged with the `{potential}` encoder but your system cannot utilize it.")
@@ -332,7 +334,7 @@ class VideoWriter:
                 # Safe fallback for if none of the probed hardware encoders work
                 if encoder is None:
                     encoder = 'libx264'
-                    log.info(_('No hardware encoder found'))
+                    log.info("No hardware encoder found")
 
                 VideoWriter.hwencoder_cache = encoder
 
