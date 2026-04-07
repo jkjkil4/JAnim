@@ -113,8 +113,6 @@ class FrameClip(FrameEffect):
 
     :param clip: 裁剪区域的四个边界，分别是左、上、右、下，范围是 0~1 表示百分比
     :param debug: 是否开启调试模式，开启后裁剪区域外的部分会显示为半透明红色
-
-    可另行参考 :class:`RectClip`，它在一些情况下会好用得多
     """
 
     clip = CmptInfo(Cmpt_FrameClip[Self])
