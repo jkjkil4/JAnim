@@ -5,12 +5,10 @@ from typing import TYPE_CHECKING
 
 import moderngl as mgl
 import numpy as np
-import OpenGL.GL as gl
 
 from janim.anims.animation import Animation
 from janim.render.base import Renderer
-from janim.render.framebuffer import (blend_context, create_framebuffer,
-                                      framebuffer_context)
+from janim.render.framebuffer import FrameBuffer
 from janim.render.program import get_program_from_string
 from janim.render.shader import shader_injections_ctx
 from janim.utils.config import Config
@@ -56,7 +54,7 @@ class FrameEffectRenderer(Renderer):
         if self.u_fbo is not None:
             self.u_fbo.value = 0
 
-        self.fbo = create_framebuffer(self.ctx, Config.get.pixel_width, Config.get.pixel_height)
+        self.framebuffer = FrameBuffer(self.ctx, Config.get.pixel_width, Config.get.pixel_height, (0, 0, 0), True)
         self.vbo_texcoords = self.ctx.buffer(
             data=np.array([
                 [0.0, 0.0],     # 左上
@@ -80,13 +78,8 @@ class FrameEffectRenderer(Renderer):
         if self.u_fbo is not None:
             t = Animation.global_t_ctx.get()
 
-            with blend_context(self.ctx, False), framebuffer_context(self.fbo):
-                self.fbo.clear()
-                # 为了颜色能被正确渲染到透明 framebuffer 上
-                # 这里需要禁用自带 blending 的并使用 shader 里自定义的 blending（参考 shader.py 的 _injection_ja_finish_up）
-                # 但是 shader 里的 blending 依赖 framebuffer 信息
-                # 所以这里需要使用 glFlush 更新 framebuffer 信息使得正确渲染
-                gl.glFlush()
+            with self.framebuffer.context():
+                self.framebuffer.clear()
 
                 items_render = [
                     (appr.stack.compute(t, True), appr.render)
@@ -99,10 +92,8 @@ class FrameEffectRenderer(Renderer):
 
                 for data, render in items_render:
                     render(data)
-                    # 向透明 framebuffer 绘制时，每次都需要使用 glFlush 更新 framebuffer 信息使得正确渲染
-                    gl.glFlush()
 
-            self.fbo.color_attachments[0].use(0)
+            self.framebuffer._fbo.color_attachments[0].use(0)
 
         for key, value in item._uniforms.items():
             self.prog[key] = value

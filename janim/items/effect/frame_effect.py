@@ -9,9 +9,22 @@ from janim.items.item import Item
 from janim.locale import get_translator
 from janim.logger import log
 from janim.render.renderer_frameeffect import FrameEffectRenderer
-from janim.render.shader import ShaderInjection, shader_injections_ctx
+from janim.render.shader import ShaderInjection, _injection_ja_finish_up_uniforms, shader_injections_ctx
 
 _ = get_translator('janim.items.frame_effect')
+
+
+_frameeffect_injection = '''
+uniform sampler2D fbo;
+vec4 frame_texture(vec2 texcoord)
+{
+    vec4 color = texture(fbo, texcoord);
+    // 从 PMA 转换到直通颜色
+    if (color.a != 0)
+        color.rgb /= color.a;
+    return color;
+}
+'''
 
 
 class FrameEffect(Item):
@@ -27,15 +40,13 @@ class FrameEffect(Item):
         in vec2 v_texcoord; // 传入的纹理坐标
         out vec4 f_color;   // 输出的颜色
 
-        uniform sampler2D fbo; // 传入的纹理（承载了 items 的渲染结果）
-
         #[JA_FINISH_UP_UNIFORMS]
 
         void main()
         {
             // 进行处理，例如
-            f_color = texture(fbo, v_texcoord); // 读取纹理颜色
-            f_color.rgb = 1.0 - f_color.rgb; // 反色
+            f_color = frame_texture(v_texcoord);    // 注意：需要用 frame_texture 读取纹理颜色（即 items 的渲染结果）
+            f_color.rgb = 1.0 - f_color.rgb;        // 反色
 
             #[JA_FINISH_UP]
         }
@@ -67,7 +78,11 @@ class FrameEffect(Item):
         super().__init__(**kwargs)
         self.fragment_shader = fragment_shader
         self.cache_key = cache_key
-        self.injections = shader_injections_ctx.get()
+
+        # 魔改 JA_FINISH_UP_UNIFORMS，加入 _frameeffect_injection 片段
+        # 这样就不需要用户另外写一个 injection name 了
+        with ShaderInjection(JA_FINISH_UP_UNIFORMS=_frameeffect_injection + _injection_ja_finish_up_uniforms):
+            self.injections = shader_injections_ctx.get()
 
         self.apply(*items, root_only=root_only)
 
@@ -159,8 +174,6 @@ simple_frameeffect_shader = '''
 in vec2 v_texcoord;
 
 out vec4 f_color;
-
-uniform sampler2D fbo;
 
 #[JA_SIMPLE_FRAMEEFFECT_UNIFORMS]
 
