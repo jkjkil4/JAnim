@@ -306,7 +306,7 @@ class VideoWriter:
 
     @staticmethod
     def test_encoder_usability(ffmpeg_bin: str, potential: str) -> bool:
-        exitcode, _ = sp.getstatusoutput([
+        exitcode, _ = sp.getstatusoutput(" ".join([
             ffmpeg_bin,
             '-f', 'lavfi',
             '-i', 'nullsrc=s=640x480:d=0.1',
@@ -314,7 +314,7 @@ class VideoWriter:
             '-f', 'null',
             '-loglevel', 'error',
             '-'
-        ])
+        ]))
         return exitcode == 0
 
     @staticmethod
@@ -329,7 +329,7 @@ class VideoWriter:
         else:
             return [
                 '-c:v', encoder,
-                '-vf', 'vflip'
+                '-vf', 'vflip,format=nv12'
             ]
 
     @staticmethod
