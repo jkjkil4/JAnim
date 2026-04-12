@@ -10,6 +10,25 @@ from janim.utils.space_ops import z_to_vector
 
 
 class ParametricSurface(SurfaceGeometry):
+    """
+    参数曲面
+
+    :param uv_func: 参数方程，输入 ``(u, v)``，输出对应的三维坐标
+    :param u_range: ``u`` 变量的取值范围
+    :param v_range: ``v`` 变量的取值范围
+
+    示例：
+
+    .. code-block:: python
+
+        ParametricSurface(
+            lambda u, v: [np.cos(u) * np.cos(v), np.cos(u) * np.sin(v), -u],
+            u_range=[-PI, PI],
+            v_range=[0, TAU],
+            resolution=8,
+        ).into('checker')
+    """
+
     def __init__(
         self,
         uv_func: Callable[[float, float], Vect],
@@ -21,7 +40,21 @@ class ParametricSurface(SurfaceGeometry):
 
 
 class Sphere(SurfaceGeometry):
-    # TODO: docstring
+    """
+    三维球体
+
+    :param center: 球体中心
+    :param radius: 球体半径
+    :param u_range: ``u`` 变量的范围（即绕纬线的取值，从 ``0`` 到 ``TAU``）
+    :param v_range: ``v`` 变量的范围（即沿经线的取值，最底端为 ``0``，最顶端为 ``PI``）
+
+
+    示例：
+
+    .. code-block:: python
+
+        Sphere(radius=2).into('checker')
+    """
 
     RESOLUTIONS = {
         'face': (24, 12),
@@ -47,7 +80,21 @@ class Sphere(SurfaceGeometry):
 
 
 class Torus(SurfaceGeometry):
-    # TODO: docstring
+    """
+    三维圆环面
+
+    :param major_radius: 主半径（圆环中心到管道中心的距离）
+    :param minor_radius: 次半径（管道半径）
+    :param u_range: ``u`` 变量的范围（沿圆环主方向）
+    :param v_range: ``v`` 变量的范围（沿管道截面方向）
+
+
+    示例：
+
+    .. code-block:: python
+
+        Torus(2.5, 0.6).into('checker')
+    """
 
     RESOLUTIONS = {
         'face': 24,
@@ -73,7 +120,22 @@ class Torus(SurfaceGeometry):
 
 
 class Cylinder(SurfaceGeometry):
-    # TODO: docstring
+    """
+    三维圆柱面
+
+    :param radius: 圆柱半径
+    :param height: 圆柱高度
+    :param axis: 圆柱轴线方向向量（默认沿 ``OUT``）
+    :param u_range: ``u`` 变量的范围（绕圆柱侧面的角度）
+    :param v_range: ``v`` 变量的范围（沿轴线方向的归一化取值）
+
+
+    示例：
+
+    .. code-block:: python
+
+        Cylinder(1, 3).into('checker')
+    """
 
     RESOLUTIONS = {
         'face': (24, 12),
@@ -100,7 +162,22 @@ class Cylinder(SurfaceGeometry):
 
 
 class Cone(SurfaceGeometry):
-    # TODO: docstring
+    """
+    三维圆锥面
+
+    :param radius: 圆锥底面半径
+    :param height: 圆锥高度
+    :param axis: 圆锥轴线方向向量（默认沿 ``OUT``）
+    :param u_range: ``u`` 变量的范围（绕圆锥侧面的角度）
+    :param v_min: ``v`` 变量的最小值（用于裁剪锥面，``0`` 表示从锥尖开始）
+
+
+    示例：
+
+    .. code-block:: python
+
+        Cone(1, 2).into('checker')
+    """
 
     RESOLUTIONS = {
         'face': (24, 12),
@@ -120,16 +197,17 @@ class Cone(SurfaceGeometry):
         rotT = z_to_vector(axis).T
         theta = PI - np.arctan(radius / height)
 
+        v_max = np.sqrt(radius**2 + height**2)
+        v_range = (v_min, v_max)
+
         def uv_func(u: float, v: float) -> np.ndarray:
             phi = u
-            r = v
+            r = v_max - (v - v_min)     # 反转 v 的取值使得法线朝向正常
             # v @ rotT == rot @ v.T
             return [
-                r * np.sin(theta) * np.sin(phi),
                 r * np.sin(theta) * np.cos(phi),
+                r * np.sin(theta) * np.sin(phi),
                 r * np.cos(theta)
             ] @ rotT
 
-        v_range = (v_min, np.sqrt(radius**2 + height**2))
-
-        super().__init__(uv_func, u_range, v_range)
+        super().__init__(uv_func, u_range, v_range, **kwargs)
