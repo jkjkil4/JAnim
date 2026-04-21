@@ -10,7 +10,7 @@
     flake-utils.lib.eachDefaultSystem (system:
       let
         inherit (nixpkgs) lib;
-        pkgs = import nixpkgs { inherit system; };
+        pkgs = import nixpkgs { inherit system; config.allowUnfree = true; };
 
         # Use Python 3.13 from nixpkgs
         python = pkgs.python313;
@@ -23,7 +23,11 @@
             shellHook ? "",
           }:
           pkgs.mkShell {
-            packages = [ pkgs.uv python ] ++ extraPackages;
+            packages = [ 
+              pkgs.vista-fonts  # Consolas
+              pkgs.uv 
+              python 
+            ] ++ extraPackages;
 
             env = {
               # Prevent uv from managing Python downloads
