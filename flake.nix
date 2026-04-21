@@ -26,7 +26,11 @@
             packages = [ 
               pkgs.vista-fonts  # Consolas
               pkgs.uv 
-              python 
+              python
+              # alias
+              (pkgs.writeShellScriptBin "janim" ''
+                exec uv run janim "$@"
+              '')
             ] ++ extraPackages;
 
             env = {
