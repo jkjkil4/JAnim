@@ -5,8 +5,7 @@ from typing import TYPE_CHECKING
 import numpy as np
 from PySide6.QtCore import QPointF, Qt, Signal
 from PySide6.QtGui import QColor, QPainter
-from PySide6.QtWidgets import (QLabel, QLayout, QScrollArea, QVBoxLayout,
-                               QWidget)
+from PySide6.QtWidgets import QLabel, QLayout, QScrollArea, QVBoxLayout, QWidget
 
 from janim.locale import get_translator
 

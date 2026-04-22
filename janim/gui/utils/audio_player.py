@@ -21,10 +21,12 @@ class AudioPlayer:
             import sounddevice  # noqa: F401
         except ImportError:
             log.warning(
-                _('sounddevice is not installed, unable to play audio in the preview window.\n'
-                  'You can install it with `pip install sounddevice`. If you encounter issues, '
-                  'please refer to the documentation: '
-                  'https://janim.readthedocs.io/en/latest/installation.html#install-dep')
+                _(
+                    'sounddevice is not installed, unable to play audio in the preview window.\n'
+                    'You can install it with `pip install sounddevice`. If you encounter issues, '
+                    'please refer to the documentation: '
+                    'https://janim.readthedocs.io/en/latest/installation.html#install-dep'
+                )
             )
             return
 

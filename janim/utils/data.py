@@ -34,6 +34,7 @@ class Array:
 
     一般来说，不使用 ``__init__`` 构造，而是使用 :meth:`create`
     """
+
     def __init__(self, *, _data):
         self._data = _data
 
@@ -75,10 +76,11 @@ class SortedKeyQueue[K, T]:
 
     这是对 ``insort + key`` 的优化方案，因为 ``insort`` 会频繁调用 ``key`` 回调，在高频使用的场景下导致性能损失
     """
+
     __slots__ = ('_keys', '_values', '_key_func')
 
     def __init__(self):
-        self._keys: List[K] = []   # 存 key 值
+        self._keys: List[K] = []  # 存 key 值
         self._values: List[T] = []
 
     def insert(self, key: K, value: T):
@@ -106,6 +108,7 @@ class AlignedData[T]:
     """
     数据对齐后的结构，用于 :meth:`~.Item.align_for_interpolate`
     """
+
     data1: T
     data2: T
     union: T
@@ -117,6 +120,7 @@ class Margins:
 
     如果直接传入单个数值，则表示为四个方向皆为该值
     """
+
     @overload
     def __init__(self, buff: float | tuple[float], /): ...
     @overload
@@ -150,9 +154,11 @@ class Margins:
 MarginsType = Margins | float | tuple[float]
 
 
+# fmt: off
 class Align(IntFlag):
     Center  = 0b0000_0000
     Left    = 0b0000_0001
     Right   = 0b0000_0100
     Top     = 0b0000_1000
     Bottom  = 0b0001_0000
+# fmt: on

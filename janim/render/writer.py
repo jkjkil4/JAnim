@@ -38,6 +38,7 @@ class VideoWriter:
     - 最后结束 ffmpeg 的调用，完成 ``_temp`` 文件的输出
     - 将 ``_temp`` 文件改名，删去 ``_temp`` 后缀，完成视频输出
     """
+
     def __init__(self, built: BuiltTimeline, *, ctx: mgl.Context | None = None):
         self.built = built
 
@@ -80,7 +81,9 @@ class VideoWriter:
         gl.glDeleteBuffers(len(self.pbos), self.pbos)
 
     @staticmethod
-    def writes(built: BuiltTimeline, file_path: str, *, quiet=False, use_pbo=True, hwaccel=False) -> None:
+    def writes(
+        built: BuiltTimeline, file_path: str, *, quiet=False, use_pbo=True, hwaccel=False
+    ) -> None:
         VideoWriter(built).write_all(file_path, quiet=quiet, use_pbo=use_pbo, hwaccel=hwaccel)
 
     def write_all(
@@ -92,7 +95,7 @@ class VideoWriter:
         quiet=False,
         use_pbo=True,
         hwaccel=False,
-        _keep_temp=False
+        _keep_temp=False,
     ) -> None:
         """将时间轴动画输出到文件中
 
@@ -118,7 +121,7 @@ class VideoWriter:
             out_point += self.built.duration
 
         start_frame = (
-            0
+            0  #
             if in_point is None
             else clip(round(in_point * fps), 0, self.frame_count - 1)
         )
@@ -130,7 +133,7 @@ class VideoWriter:
         progress_display = ProgressDisplay(
             range(start_frame, end_frame),
             leave=False,
-            dynamic_ncols=True
+            dynamic_ncols=True,
         )
 
         rgb = self.built.cfg.background_color.rgb
@@ -151,8 +154,15 @@ class VideoWriter:
                     # 绑定当前PBO来存储新帧
                     gl.glBindBuffer(gl.GL_PIXEL_PACK_BUFFER, self.pbos[frame_idx % PBO_COUNT])
                     # 注意: 当PBO绑定时，最后一个参数是偏移量而不是指针
-                    gl.glReadPixels(0, 0, self.built.cfg.pixel_width, self.built.cfg.pixel_height,
-                                    gl.GL_RGBA, gl.GL_UNSIGNED_BYTE, 0)
+                    gl.glReadPixels(
+                        0,
+                        0,
+                        self.built.cfg.pixel_width,
+                        self.built.cfg.pixel_height,
+                        gl.GL_RGBA,
+                        gl.GL_UNSIGNED_BYTE,
+                        0,
+                    )
 
                     # 如果不是第一批，处理上一批的数据
                     if read_idx is not None:
@@ -201,15 +211,14 @@ class VideoWriter:
 
         if not quiet:
             log.info(
-                _('Finished writing video "{name}" in {elapsed:.2f} s')
-                .format(name=name, elapsed=time.time() - t)
+                _('Finished writing video "{name}" in {elapsed:.2f} s').format(
+                    name=name,
+                    elapsed=time.time() - t,
+                )
             )
 
             if not _keep_temp:
-                log.info(
-                    _('File saved to "{file_path}" (video only)')
-                    .format(file_path=file_path)
-                )
+                log.info(_('File saved to "{file_path}" (video only)').format(file_path=file_path))
 
     def open_video_pipe(self, file_path: str, hwaccel: bool) -> None:
         stem, self.ext = os.path.splitext(file_path)
@@ -220,7 +229,7 @@ class VideoWriter:
 
         command = [
             ffmpeg_bin,
-            '-y',   # overwrite output file if it exists
+            '-y',  # overwrite output file if it exists
             '-f', 'rawvideo',
             '-s', f'{self.built.cfg.pixel_width}x{self.built.cfg.pixel_height}',  # size of one frame
             '-pix_fmt', 'rgba',
@@ -230,7 +239,7 @@ class VideoWriter:
             '-loglevel', 'error',
             *self.ext_specific_flags(ffmpeg_bin, self.ext, hwaccel),
             self.temp_file_path,
-        ]
+        ]  # fmt: skip
 
         with self.handle_ffmpeg_not_found():
             self.writing_process = sp.Popen(command, stdin=sp.PIPE)
@@ -238,7 +247,6 @@ class VideoWriter:
     @staticmethod
     def ext_specific_flags(ffmpeg_bin: str, ext: str, hwaccel: bool) -> list[str]:
         """针对不同的格式产生不同的 FFMPEG 参数"""
-
         if ext == '.mp4':
             with VideoWriter.handle_ffmpeg_not_found():
                 encoder = VideoWriter.find_h264_encoder(ffmpeg_bin, hwaccel)
@@ -246,18 +254,18 @@ class VideoWriter:
                 return [
                     '-pix_fmt', 'yuv420p',
                     *VideoWriter.encoder_flags(encoder)
-                ]
+                ]  # fmt: skip
 
         if ext == '.mov':
             return [
                 '-c:v', 'qtrle',
-                '-vf', 'vflip'
-            ]
+                '-vf', 'vflip',
+            ]  # fmt: skip
 
         if ext == '.gif':
             return [
-                '-vf', 'vflip'
-            ]
+                '-vf', 'vflip',
+            ]  # fmt: skip
 
         assert False
 
@@ -292,7 +300,7 @@ class VideoWriter:
                 _('Hardware encoder probe results:')
                 + ' '
                 + ', '.join(
-                    f'{e}={"ok" if e in usable else "fail"}'
+                    f'{e}={"ok" if e in usable else "fail"}'  #
                     for e in available
                 )
             )
@@ -313,8 +321,8 @@ class VideoWriter:
             *VideoWriter.encoder_flags(potential),
             '-f', 'null',
             '-loglevel', 'error',
-            '-'
-        ]))
+            '-',
+        ]))  # fmt: skip
         return exitcode == 0
 
     @staticmethod
@@ -325,12 +333,12 @@ class VideoWriter:
                 '-c:v', encoder,
                 '-vf', 'vflip,format=nv12,hwupload',
                 '-vaapi_device', device,
-            ]
+            ]  # fmt: skip
         else:
             return [
                 '-c:v', encoder,
                 '-vf', 'vflip,format=nv12'
-            ]
+            ]  # fmt: skip
 
     @staticmethod
     @lru_cache(maxsize=1)
@@ -361,8 +369,12 @@ class VideoWriter:
         try:
             yield
         except FileNotFoundError:
-            log.error(_('Unable to output video. '
-                        'Please install ffmpeg and add it to the environment variables.'))
+            log.error(
+                _(
+                    'Unable to output video. '  #
+                    'Please install ffmpeg and add it to the environment variables.'
+                )
+            )
             raise ExitException(EXITCODE_FFMPEG_NOT_FOUND)
 
 
@@ -389,12 +401,14 @@ class AudioWriter:
         progress_display = ProgressDisplay(
             range(round(self.built.duration * fps) + 1),
             leave=False,
-            dynamic_ncols=True
+            dynamic_ncols=True,
         )
 
-        get_audio_samples = partial(self.built.get_audio_samples_of_frame,
-                                    fps,
-                                    framerate)
+        get_audio_samples = partial(
+            self.built.get_audio_samples_of_frame,
+            fps,
+            framerate,
+        )
 
         for frame in progress_display:
             samples = get_audio_samples(frame)
@@ -407,15 +421,14 @@ class AudioWriter:
 
         if not quiet:
             log.info(
-                _('Finished writing audio of "{name}" in {elapsed:.2f} s')
-                .format(name=name, elapsed=time.time() - t)
+                _('Finished writing audio of "{name}" in {elapsed:.2f} s').format(
+                    name=name,
+                    elapsed=time.time() - t,
+                )
             )
 
             if not _keep_temp:
-                log.info(
-                    _('File saved to "{file_path}"')
-                    .format(file_path=file_path)
-                )
+                log.info(_('File saved to "{file_path}"').format(file_path=file_path))
 
     def open_audio_pipe(self, file_path: str) -> None:
         stem, ext = os.path.splitext(file_path)
@@ -424,20 +437,24 @@ class AudioWriter:
 
         command = [
             self.built.cfg.ffmpeg_bin,
-            '-y',   # overwrite output file if it exists
+            '-y',  # overwrite output file if it exists
             '-f', 's16le',
-            '-ar', str(self.built.cfg.audio_framerate),      # framerate & samplerate
+            '-ar', str(self.built.cfg.audio_framerate),  # framerate & samplerate
             '-ac', str(self.built.cfg.audio_channels),
             '-i', '-',
             '-loglevel', 'error',
-            self.temp_file_path
-        ]
+            self.temp_file_path,
+        ]  # fmt: skip
 
         try:
             self.writing_process = sp.Popen(command, stdin=sp.PIPE)
         except FileNotFoundError:
-            log.error(_('Unable to output audio. '
-                        'Please install ffmpeg and add it to the environment variables.'))
+            log.error(
+                _(
+                    'Unable to output audio. '  #
+                    'Please install ffmpeg and add it to the environment variables.'
+                )
+            )
             raise ExitException(EXITCODE_FFMPEG_NOT_FOUND)
 
     def close_audio_pipe(self, _keep_temp: bool) -> None:
@@ -466,14 +483,18 @@ def merge_video_and_audio(
         '-c:v', 'copy',
         '-c:a', 'aac',
         result_path,
-        '-loglevel', 'error'
-    ]
+        '-loglevel', 'error',
+    ]  # fmt: skip
 
     try:
         merge_process = sp.Popen(command, stdin=sp.PIPE)
     except FileNotFoundError:
-        log.error(_('Unable to merge video. '
-                    'Please install ffmpeg and add it to the environment variables.'))
+        log.error(
+            _(
+                'Unable to merge video. '  #
+                'Please install ffmpeg and add it to the environment variables.'
+            )
+        )
         raise ExitException(EXITCODE_FFMPEG_NOT_FOUND)
 
     merge_process.wait()
@@ -484,10 +505,7 @@ def merge_video_and_audio(
         os.remove(audio_path)
 
     if not quiet:
-        log.info(
-            _('File saved to "{file_path}" (merged)')
-            .format(file_path=result_path)
-        )
+        log.info(_('File saved to "{file_path}" (merged)').format(file_path=result_path))
 
 
 class SRTWriter:
@@ -503,7 +521,9 @@ class SRTWriter:
 
             for i, chunk in enumerate(chunks, start=1):
                 file.write(f'\n{i}\n')
-                file.write(f'{SRTWriter.t_to_srt_time(chunk[0].at)} --> {SRTWriter.t_to_srt_time(chunk[0].end)}\n')
+                file.write(
+                    f'{SRTWriter.t_to_srt_time(chunk[0].at)} --> {SRTWriter.t_to_srt_time(chunk[0].end)}\n'
+                )
                 for info in reversed(chunk[1]):
                     file.write(f'{info.text}\n')
 
@@ -518,4 +538,4 @@ class SRTWriter:
         secs = int(t % 60)
         millis = int((t % 1) * 1000)
 
-        return f"{hours:02}:{minutes:02}:{secs:02},{millis:03}"
+        return f'{hours:02}:{minutes:02}:{secs:02},{millis:03}'

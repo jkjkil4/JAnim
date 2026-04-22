@@ -10,7 +10,7 @@ from janim.locale import get_translator
 
 _ = get_translator('janim.items.group')
 
-if TYPE_CHECKING:   # 在支持更高级 typing 的同时保持对 3.12 的兼容
+if TYPE_CHECKING:  # 在支持更高级 typing 的同时保持对 3.12 的兼容
     T = TypeVar('T', default=Item)
 else:
     T = TypeVar('T')
@@ -22,6 +22,7 @@ class Group(Points, Generic[T]):
 
     将物件组成一组
     """
+
     def __init__(self, *items: T, **kwargs):
         super().__init__(children=items, **kwargs)
 
@@ -36,7 +37,7 @@ class Group(Points, Generic[T]):
     @overload
     def __getitem__(self, key: slice | Iterable[int] | Iterable[bool]) -> Group[T]: ...
 
-    def __getitem__(self, value):   # pragma: no cover
+    def __getitem__(self, value):  # pragma: no cover
         return super().__getitem__(value)
 
     def __iter__(self):
@@ -49,10 +50,11 @@ class NamedGroupMixin[T](Group[T]):
 
     另见 :class:`NamedGroup`
     """
+
     def __init__(self, *items: T, named: dict[str, T], **kwargs):
         super().__init__(*items, *named.values(), **kwargs)
         self._named_indices: dict[str, int] = {
-            name: len(items) + i
+            name: len(items) + i  #
             for i, name in enumerate(named)
         }
         # 相当于
@@ -77,7 +79,7 @@ class NamedGroupMixin[T](Group[T]):
         # 更新已有的索引
         if prepend:
             self._named_indices = {
-                key: idx + len(all_items)
+                key: idx + len(all_items)  #
                 for key, idx in self._named_indices.items()
             }
 
@@ -168,7 +170,7 @@ class NamedGroupMixin[T](Group[T]):
     def shuffle(self) -> Self:
         # 根据 key-下标 对应关系，得到打乱之前的 key-对象 对应关系
         named_objs = {
-            key: self._children[index]
+            key: self._children[index]  #
             for key, index in self._named_indices.items()
         }
 
@@ -176,7 +178,7 @@ class NamedGroupMixin[T](Group[T]):
 
         # 计算新的 key-下标对应关系
         self._named_indices = {
-            key: self.index(obj)
+            key: self.index(obj)  #
             for key, obj in named_objs.items()
         }
         return self
@@ -193,7 +195,7 @@ class NamedGroupMixin[T](Group[T]):
         for key, value in self._named_indices.items():
             if value == index:
                 del self._named_indices[key]
-                break   # 可以假设只存在一个，所以 break
+                break  # 可以假设只存在一个，所以 break
         self._named_indices[name] = index
 
     @overload
@@ -225,19 +227,13 @@ class NamedGroupMixin[T](Group[T]):
 
         :return: 名称到子物件的映射字典
         """
-        return {
-            key: self[value]
-            for key, value in self._named_indices.items()
-        }
+        return {key: self[value] for key, value in self._named_indices.items()}
 
     def _index_names(self) -> dict[int, str]:
         """
         具名子物件的下标到名称的对应关系，即 ``_named_indices`` 的反向字典
         """
-        return {
-            index: name
-            for name, index in self._named_indices.items()
-        }
+        return {index: name for name, index in self._named_indices.items()}
 
     def children_with_name(self) -> list[tuple[T, str | None]]:
         """
@@ -245,7 +241,7 @@ class NamedGroupMixin[T](Group[T]):
         """
         index_names = self._index_names()
         return [
-            (item, index_names.get(i, None))
+            (item, index_names.get(i, None))  #
             for i, item in enumerate(self._children)
         ]
 
@@ -406,5 +402,6 @@ class NamedGroup[T](NamedGroupMixin[T]):
 
         因为它不会将所有 ``**kwargs`` 都吃掉，而是使用显式的 ``named`` 参数来指定具名子物件字典
     """
+
     def __init__(self, *items: T, **named_items: T):
         super().__init__(*items, named=named_items)

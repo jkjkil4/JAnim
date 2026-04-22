@@ -18,6 +18,7 @@ class Cmpt_Glow[ItemT](Component[ItemT]):
     """
     泛光组件
     """
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._rgba = DEFAULT_GLOW_ARRAY.copy()
@@ -44,7 +45,9 @@ class Cmpt_Glow[ItemT](Component[ItemT]):
         cmpt2_copy = cmpt2.copy()
         return AlignedData(cmpt1_copy, cmpt2_copy, cmpt1_copy.copy())
 
-    def interpolate(self, cmpt1: Cmpt_Glow, cmpt2: Cmpt_Glow, alpha: float, *, path_func=None) -> None:
+    def interpolate(
+        self, cmpt1: Cmpt_Glow, cmpt2: Cmpt_Glow, alpha: float, *, path_func=None
+    ) -> None:
         if not cmpt1._rgba.is_share(cmpt2._rgba) or not cmpt1._rgba.is_share(self._rgba):
             if cmpt1._rgba.is_share(cmpt2._rgba):
                 self._rgba = cmpt1._rgba.copy()
@@ -141,8 +144,9 @@ class Cmpt_Glow[ItemT](Component[ItemT]):
         return self._size
 
     @register_updater(
-        lambda self, p, color, factor=0.5, *, root_only=False:
+        lambda self, p, color, factor=0.5, *, root_only=False: (  #
             self.mix(color, factor * p.alpha, root_only=root_only)
+        )
     )
     def mix(self, color: JAnimColor, factor: float = 0.5, *, root_only: bool = False) -> Self:
         color = self.format_color(color)
@@ -154,8 +158,9 @@ class Cmpt_Glow[ItemT](Component[ItemT]):
         return self
 
     @register_updater(
-        lambda self, p, alpha, factor=0.5, *, root_only=False:
+        lambda self, p, alpha, factor=0.5, *, root_only=False: (  #
             self.mix_alpha(alpha, factor * p.alpha, root_only=root_only)
+        )
     )
     def mix_alpha(self, alpha: Alpha, factor: float = 0.5, *, root_only: bool = False) -> Self:
         for cmpt in self.walk_same_cmpt_of_self_and_descendants_without_mock(root_only):

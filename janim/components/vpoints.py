@@ -15,14 +15,17 @@ from janim.items.item import Item, mockable
 from janim.locale import get_translator
 from janim.logger import log
 from janim.typing import Vect, VectArray
-from janim.utils.bezier import (PathBuilder,
-                                approx_smooth_quadratic_bezier_handles, bezier,
-                                integer_interpolate, inverse_interpolate,
-                                partial_quadratic_bezier_points,
-                                smooth_quadratic_path)
+from janim.utils.bezier import (
+    PathBuilder,
+    approx_smooth_quadratic_bezier_handles,
+    bezier,
+    integer_interpolate,
+    inverse_interpolate,
+    partial_quadratic_bezier_points,
+    smooth_quadratic_path,
+)
 from janim.utils.data import AlignedData
-from janim.utils.space_ops import (get_norm, get_unit_normal, normalize,
-                                   rotation_between_vectors)
+from janim.utils.space_ops import get_norm, get_unit_normal, normalize, rotation_between_vectors
 
 _ = get_translator('janim.components.vpoints')
 
@@ -41,6 +44,7 @@ class Cmpt_VPoints[ItemT](Cmpt_Points[ItemT], impl=True):
 
     - 如果子路径的终止点和起始点相同，则该段子路径被视为闭合路径。
     """
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.make_smooth_after_applying_functions = False
@@ -48,8 +52,9 @@ class Cmpt_VPoints[ItemT](Cmpt_Points[ItemT], impl=True):
     def set(self, points: VectArray) -> Self:
         if len(points) != 0 and len(points) % 2 == 0:
             log.warning(
-                _('The number of points set is {len}, which is not odd. The last point will be ignored.')
-                .format(len=len(points))
+                _(
+                    'The number of points set is {len}, which is not odd. The last point will be ignored.'
+                ).format(len=len(points))
             )
             points = points[:-1]
         super().set(points)
@@ -61,13 +66,13 @@ class Cmpt_VPoints[ItemT](Cmpt_Points[ItemT], impl=True):
         *,
         about_point: Vect | None = None,
         about_edge: Vect | None = ORIGIN,
-        root_only: bool = False
+        root_only: bool = False,
     ) -> Self:
         super().apply_points_fn(
             func,
             about_point=about_point,
             about_edge=about_edge,
-            root_only=root_only
+            root_only=root_only,
         )
         for cmpt in self.walk_same_cmpt_of_self_and_descendants_without_mock(root_only):
             if not isinstance(cmpt, Cmpt_VPoints) or not cmpt.make_smooth_after_applying_functions:
@@ -83,7 +88,7 @@ class Cmpt_VPoints[ItemT](Cmpt_Points[ItemT], impl=True):
         scale_stroke_radius: bool = False,
         *,
         root_only: bool = False,
-        **kwargs
+        **kwargs,
     ) -> Self:
         assert isinstance(self, Cmpt_Points)
 
@@ -233,7 +238,7 @@ class Cmpt_VPoints[ItemT](Cmpt_Points[ItemT], impl=True):
 
         bezier_tuples = list(Cmpt_VPoints.get_bezier_tuples_from_points(points))
         norms = [
-            0 if np.isnan(tup[1][0]) else get_norm(tup[2] - tup[0])
+            0 if np.isnan(tup[1][0]) else get_norm(tup[2] - tup[0])  #
             for tup in bezier_tuples
         ]
         # Calculate insertions per curve (ipc)
@@ -323,7 +328,7 @@ class Cmpt_VPoints[ItemT](Cmpt_Points[ItemT], impl=True):
         例如，对于有 7 个点的 ``points``，返回值是 ``(points[[0, 1, 2]], points[[2, 3, 4]], points[[4, 5, 6]])``
         """
         n_curves = max(0, len(points) - 1) // 2
-        return (points[2 * i: 2 * i + 3] for i in range(n_curves))
+        return (points[2 * i : 2 * i + 3] for i in range(n_curves))
 
     def get_bezier_tuples(self) -> Iterable[np.ndarray]:
         """
@@ -343,10 +348,12 @@ class Cmpt_VPoints[ItemT](Cmpt_Points[ItemT], impl=True):
         """
         if n < 0 or n >= self.curves_count():
             raise PointError(
-                _('n must be a value of 0~{maxn}, {n} is invalid')
-                .format(maxn=self.curves_count() - 1, n=n)
+                _('n must be a value of 0~{maxn}, {n} is invalid').format(
+                    maxn=self.curves_count() - 1,
+                    n=n,
+                )
             )
-        return self._points.data[2 * n: 2 * n + 3]
+        return self._points.data[2 * n : 2 * n + 3]
 
     def get_nth_curve_function(self, n: int) -> Callable[[float], np.ndarray]:
         """
@@ -402,11 +409,11 @@ class Cmpt_VPoints[ItemT](Cmpt_Points[ItemT], impl=True):
         # First index where the partial length is more than alpha times the full length
         index = next(
             (i for i, x in enumerate(partials) if x >= full * alpha),
-            len(partials) - 1  # Default
+            len(partials) - 1,  # Default
         )
-        residue = float(inverse_interpolate(
-            partials[index - 1] / full, partials[index] / full, alpha
-        ))
+        residue = float(
+            inverse_interpolate(partials[index - 1] / full, partials[index] / full, alpha)
+        )
         return index - 1, residue
 
     def point_from_proportion(self, alpha: float) -> np.ndarray:
@@ -476,7 +483,9 @@ class Cmpt_VPoints[ItemT](Cmpt_Points[ItemT], impl=True):
 
         return new_points
 
-    def pointwise_become_partial_reduced(self, other: Cmpt_VPoints | Item, a: float, b: float) -> Self:
+    def pointwise_become_partial_reduced(
+        self, other: Cmpt_VPoints | Item, a: float, b: float
+    ) -> Self:
         """
         将传入对象的曲线截取 ``[a, b]`` 区间（最大范围 ``[0, 1]`` 表示整个曲线）的部分后，设置到该对象上，丢弃区间外的点
         """
@@ -515,7 +524,7 @@ class Cmpt_VPoints[ItemT](Cmpt_Points[ItemT], impl=True):
 
         low_tup = partial_quadratic_bezier_points(points[i1:i2], lower_residue, 1)
         high_tup = partial_quadratic_bezier_points(points[i3:i4], 0, upper_residue)
-        return np.vstack([low_tup, points[i2 + 1: i3], high_tup[1:]])
+        return np.vstack([low_tup, points[i2 + 1 : i3], high_tup[1:]])
 
     # endregion
 
@@ -581,8 +590,8 @@ class Cmpt_VPoints[ItemT](Cmpt_Points[ItemT], impl=True):
                 v1[i1] = v2[i1]
                 v2[i2] = v1[i2]
 
-        v1 /= np.sqrt(v1[:, 0]**2 + v1[:, 1]**2 + v1[:, 2]**2)[:, np.newaxis]
-        v2 /= np.sqrt(v2[:, 0]**2 + v2[:, 1]**2 + v2[:, 2]**2)[:, np.newaxis]
+        v1 /= np.sqrt(v1[:, 0] ** 2 + v1[:, 1] ** 2 + v1[:, 2] ** 2)[:, np.newaxis]
+        v2 /= np.sqrt(v2[:, 0] ** 2 + v2[:, 1] ** 2 + v2[:, 2] ** 2)[:, np.newaxis]
         return np.sum(v1 * v2, axis=1)
 
     def change_anchor_mode(self, mode: AnchorMode) -> Self:
@@ -650,11 +659,13 @@ class Cmpt_VPoints[ItemT](Cmpt_Points[ItemT], impl=True):
         # Each term goes through all edges [(x0, y0, z0), (x1, y1, z1)]
         sums = p0 + p1
         diffs = p1 - p0
-        return 0.5 * np.array([
-            (sums[:, 1] * diffs[:, 2]).sum(),  # Add up (y0 + y1)*(z1 - z0)
-            (sums[:, 2] * diffs[:, 0]).sum(),  # Add up (z0 + z1)*(x1 - x0)
-            (sums[:, 0] * diffs[:, 1]).sum(),  # Add up (x0 + x1)*(y1 - y0)
-        ])
+        return 0.5 * np.array(
+            [
+                (sums[:, 1] * diffs[:, 2]).sum(),  # Add up (y0 + y1)*(z1 - z0)
+                (sums[:, 2] * diffs[:, 0]).sum(),  # Add up (z0 + z1)*(x1 - x0)
+                (sums[:, 0] * diffs[:, 1]).sum(),  # Add up (x0 + x1)*(y1 - y0)
+            ]
+        )
 
     @property
     @Cmpt_Points.set.self_refresh
@@ -681,10 +692,7 @@ class Cmpt_VPoints[ItemT](Cmpt_Points[ItemT], impl=True):
             return area_vect / area
 
         points = self.get()
-        return get_unit_normal(
-            points[1] - points[0],
-            points[2] - points[1]
-        )
+        return get_unit_normal(points[1] - points[0], points[2] - points[1])
 
     # endregion
 
@@ -719,7 +727,7 @@ class Cmpt_VPoints[ItemT](Cmpt_Points[ItemT], impl=True):
         start_idx = 0
         for end_idx in self.walk_subpath_end_indices():
             if np.isclose(points[end_idx], points[start_idx]).all():
-                result[start_idx: end_idx + 1] = True
+                result[start_idx : end_idx + 1] = True
             start_idx = end_idx + 2
 
         return result
@@ -732,7 +740,7 @@ class Cmpt_VPoints[ItemT](Cmpt_Points[ItemT], impl=True):
         if len(array) == 0:
             return []
         start_indices = [0, *(end_indices[:-1] + 2)]
-        return [array[i1: i2 + 1] for i1, i2 in zip(start_indices, end_indices)]
+        return [array[i1 : i2 + 1] for i1, i2 in zip(start_indices, end_indices)]
 
     def get_subpaths(self) -> list[np.ndarray]:
         """
@@ -768,7 +776,7 @@ class Cmpt_VPoints[ItemT](Cmpt_Points[ItemT], impl=True):
         # 将 points 旋转+归一化
         rot = rotation_between_vectors(UP, vect)
         points = points - points[0]
-        points @= rot   # points @ (UP->vect) == ((vect->UP) @ points.T).T
+        points @= rot  # points @ (UP->vect) == ((vect->UP) @ points.T).T
         points /= width
 
         # 分别计算 offset 偏移后的若干个 hash，只要有一个匹配上则认为匹配成功
@@ -776,7 +784,7 @@ class Cmpt_VPoints[ItemT](Cmpt_Points[ItemT], impl=True):
         hashes = []
         for offset in self._identity_offsets:
             offseted = points + offset
-            np.round(offseted, 1, out=offseted)    # 原位 round
+            np.round(offseted, 1, out=offseted)  # 原位 round
             offseted[offseted == -0.0] = 0.0
             hashes.append(hash(offseted.tobytes()))
 

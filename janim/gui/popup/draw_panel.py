@@ -4,8 +4,7 @@ from typing import TYPE_CHECKING
 
 from PySide6.QtCore import QEvent, QObject, Qt
 from PySide6.QtGui import QIcon, QMouseEvent, QPainter, QPaintEvent
-from PySide6.QtWidgets import (QHBoxLayout, QLabel, QRadioButton, QTabWidget,
-                               QVBoxLayout, QWidget)
+from PySide6.QtWidgets import QHBoxLayout, QLabel, QRadioButton, QTabWidget, QVBoxLayout, QWidget
 
 from janim.gui.draw import Draw, draw_handlers
 from janim.locale import get_translator
@@ -32,8 +31,12 @@ class DrawPanel(QWidget):
     def setup_ui(self) -> None:
         layout = QVBoxLayout()
 
-        note = QLabel(_('Note: This is used to determine the position on the screen. '
-                        'To actually add the drawn content, you need to manually add the corresponding code.'))
+        note = QLabel(
+            _(
+                'Note: This is used to determine the position on the screen. '
+                'To actually add the drawn content, you need to manually add the corresponding code.'
+            )
+        )
         note.setWordWrap(True)
         layout.addWidget(note)
 

@@ -8,8 +8,16 @@ from typing import TYPE_CHECKING, Callable
 
 from PySide6.QtCore import QSettings, Qt, QTimer, Signal
 from PySide6.QtGui import QIcon, QKeySequence, QShortcut
-from PySide6.QtWidgets import (QApplication, QDialogButtonBox, QFrame, QLabel,
-                               QMessageBox, QPushButton, QVBoxLayout, QWidget)
+from PySide6.QtWidgets import (
+    QApplication,
+    QDialogButtonBox,
+    QFrame,
+    QLabel,
+    QMessageBox,
+    QPushButton,
+    QVBoxLayout,
+    QWidget,
+)
 
 from janim.anims.timeline import Timeline
 from janim.exception import GuiCommandError
@@ -40,15 +48,16 @@ def parse_item(script: str, locals: dict) -> Item:
         item = eval(script, {}, locals)
     except Exception:
         QTimer.singleShot(
-            0,
-            lambda: log.error(_('Failed to parse item from "{script}"').format(script=script))
+            0, lambda: log.error(_('Failed to parse item from "{script}"').format(script=script))
         )
         raise
 
     if not isinstance(item, Item):
         raise GuiCommandError(
-            _('The {type} object from "{script}" is not a item')
-            .format(script=script, type=item.__class__.__name__)
+            _('The {type} object from "{script}" is not a item').format(
+                script=script,
+                type=item.__class__.__name__,
+            )
         )
 
     return item
@@ -59,7 +68,9 @@ def get_confirm_buttons(parent: QWidget) -> tuple[QDialogButtonBox, QPushButton,
     得到通用的确认/取消按钮控件
     """
     btn_box = QDialogButtonBox(parent)
-    btn_box.setStandardButtons(QDialogButtonBox.StandardButton.Cancel | QDialogButtonBox.StandardButton.Ok)
+    btn_box.setStandardButtons(
+        QDialogButtonBox.StandardButton.Cancel | QDialogButtonBox.StandardButton.Ok
+    )
 
     btn_ok = btn_box.button(QDialogButtonBox.StandardButton.Ok)
     btn_ok.setText(_('OK'))
@@ -73,7 +84,7 @@ def get_confirm_buttons(parent: QWidget) -> tuple[QDialogButtonBox, QPushButton,
 def get_undo_redo_buttons(
     parent: QWidget,
     on_undo: Callable[[]],
-    on_redo: Callable[[]]
+    on_redo: Callable[[]],
 ) -> tuple[QPushButton, QPushButton]:
     """
     得到通用的撤销/重做按钮控件
@@ -105,6 +116,7 @@ def silent_runtime_error(func):
 
     使用该装饰器可以忽略抛出的 ``RuntimeError`` 信息
     """
+
     @wraps(func)
     def wrapper(*args, **kwargs):
         try:
@@ -152,7 +164,9 @@ class HandlerPanel(QWidget):
         self.save_options()
 
     def load_options(self) -> None:
-        settings = QSettings(os.path.join(Config.get.temp_dir, 'handler_panel.ini'), QSettings.Format.IniFormat)
+        settings = QSettings(
+            os.path.join(Config.get.temp_dir, 'handler_panel.ini'), QSettings.Format.IniFormat
+        )
         settings.beginGroup(self.viewer.code_file_path)
         monitor: int | None = self.to_int(settings.value(self.setting_key('monitor'), None))
         x: int | None = self.to_int(settings.value(self.setting_key('x'), None))
@@ -170,7 +184,9 @@ class HandlerPanel(QWidget):
         screen = QApplication.screenAt(self.pos())
         screen_index = QApplication.screens().index(screen) if screen else 0
 
-        settings = QSettings(os.path.join(Config.get.temp_dir, 'handler_panel.ini'), QSettings.Format.IniFormat)
+        settings = QSettings(
+            os.path.join(Config.get.temp_dir, 'handler_panel.ini'), QSettings.Format.IniFormat
+        )
         settings.beginGroup(self.viewer.code_file_path)
         settings.setValue(self.setting_key('monitor'), screen_index)
         settings.setValue(self.setting_key('x'), self.x())
@@ -194,7 +210,7 @@ class SourceDiff(QFrame):
     def __init__(self, command: Timeline.GuiCommand, parent: QWidget | None = None):
         super().__init__(parent)
         self.setStyleSheet(
-            '''
+            """
             SourceDiff {
                 border: 1px solid #555555;
                 border-radius: 4px;
@@ -205,7 +221,7 @@ class SourceDiff(QFrame):
             }
             QLabel#delete_label { background-color: #5C1C1C; }
             QLabel#replace_label { background-color: #1C4C1C; }
-            '''
+            """
         )
         self.command = command
 
@@ -235,9 +251,10 @@ class SourceDiff(QFrame):
                 match = re.fullmatch(regex, line)
                 if match is None:
                     raise GuiCommandError(
-                        _('Could not find the call site of "{text}". '
-                          'Please put the command on a single line and keep the string intact')
-                        .format(text=command.text)
+                        _(
+                            'Could not find the call site of "{text}". '
+                            'Please put the command on a single line and keep the string intact'
+                        ).format(text=command.text)
                     )
                 # group(1): self(...) 之前的内容
                 # group(2): 包裹字符串的单引号或双引号
@@ -245,7 +262,7 @@ class SourceDiff(QFrame):
                 self.match_left = match.group(1)
                 self.match_right = match.group(3)
 
-                self.left_spaces = ' ' * len(self.match_left)   # 用于填充多行 replacement 的左侧字符
+                self.left_spaces = ' ' * len(self.match_left)  # 用于填充多行 replacement 的左侧字符
 
         vlayout = QVBoxLayout(self)
         vlayout.setContentsMargins(0, 0, 0, 0)
@@ -279,10 +296,11 @@ class SourceDiff(QFrame):
             msgbox = QMessageBox(
                 QMessageBox.Icon.Warning,
                 _('Confirm Replacement'),
-                _('{filename} has been modified.\nDo you want to overwrite it?')
-                .format(filename=os.path.basename(filepath)),
+                _('{filename} has been modified.\nDo you want to overwrite it?').format(
+                    filename=os.path.basename(filepath)
+                ),
                 QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
-                self
+                self,
             )
             msgbox.setDefaultButton(QMessageBox.StandardButton.Yes)
             msgbox.setButtonText(QMessageBox.StandardButton.Yes, _('Yes(&Y)'))

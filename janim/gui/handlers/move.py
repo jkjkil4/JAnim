@@ -9,13 +9,17 @@ from PySide6.QtGui import QColor, QMouseEvent, QPainter, QPaintEvent, QPen
 from PySide6.QtWidgets import QHBoxLayout, QLabel, QVBoxLayout
 
 from janim.anims.timeline import Timeline
-from janim.constants import (LARGE_BUFF, MED_LARGE_BUFF, MED_SMALL_BUFF,
-                             SMALL_BUFF)
+from janim.constants import LARGE_BUFF, MED_LARGE_BUFF, MED_SMALL_BUFF, SMALL_BUFF
 from janim.gui.handlers.select import BasicAttrs as SelectBasicAttrs
 from janim.gui.handlers.select import get_fixed_camera_info
-from janim.gui.handlers.utils import (HandlerPanel, SourceDiff,
-                                      get_confirm_buttons,
-                                      get_undo_redo_buttons, jump, parse_item)
+from janim.gui.handlers.utils import (
+    HandlerPanel,
+    SourceDiff,
+    get_confirm_buttons,
+    get_undo_redo_buttons,
+    jump,
+    parse_item,
+)
 from janim.items.item import Item
 from janim.items.points import Points
 from janim.locale import get_translator
@@ -31,10 +35,7 @@ SNAP_TOLERANCE = 0.04
 
 def handler(viewer: AnimViewer, command: Timeline.GuiCommand) -> None:
     scripts = [script.strip() for script in command.body.split(',')]
-    items = [
-        parse_item(script, command.locals)
-        for script in scripts
-    ]
+    items = [parse_item(script, command.locals) for script in scripts]
 
     jump(viewer, command)
     widget = MovePanel(viewer, command, scripts, items)
@@ -42,7 +43,13 @@ def handler(viewer: AnimViewer, command: Timeline.GuiCommand) -> None:
 
 
 class MovePanel(HandlerPanel):
-    def __init__(self, viewer: AnimViewer, command: Timeline.GuiCommand, scripts: list[str], items: list[Item]):
+    def __init__(
+        self,
+        viewer: AnimViewer,
+        command: Timeline.GuiCommand,
+        scripts: list[str],
+        items: list[Item],
+    ):
         super().__init__(viewer, command)
         self.scripts = scripts
         self.items = items
@@ -65,10 +72,12 @@ class MovePanel(HandlerPanel):
         # setup ui
 
         label_tips = QLabel(
-            _('Use mouse to drag items\n'
-              'Hold Shift: Lock horizontal/vertical/diagonal directions\n'
-              'Hold Ctrl: Disable auto-snapping'),
-            self
+            _(
+                'Use mouse to drag items\n'
+                'Hold Shift: Lock horizontal/vertical/diagonal directions\n'
+                'Hold Ctrl: Disable auto-snapping'
+            ),
+            self,
         )
 
         self.diff = SourceDiff(command, self)
@@ -200,7 +209,11 @@ class MovePanel(HandlerPanel):
             return
 
         if self.dragged:
-            self.history.save(self.boxes.index(self.dragging_box), self.offset_start, self.dragging_box.offset.copy())
+            self.history.save(
+                self.boxes.index(self.dragging_box),
+                self.offset_start,
+                self.dragging_box.offset.copy(),
+            )
             self.handle_history_change()
         self.dragging_box = None
         self.x_snap = None
@@ -395,6 +408,7 @@ class ItemBox:
     """
     物件及其在视野坐标下的可选中范围
     """
+
     def __init__(self, item: Item, attrs: BasicAttrs):
         info = attrs.camera_info
         self.frame_radius = info.frame_radius
@@ -424,7 +438,9 @@ class ItemBox:
 
         # 最终应用的时候需要考虑的向量缩放
         camera_direction = -normalize(info.camera_axis)
-        self.distance_scale = np.dot(points[0] - info.camera_location, camera_direction) / info.distance_from_plane
+        self.distance_scale = (
+            np.dot(points[0] - info.camera_location, camera_direction) / info.distance_from_plane
+        )
 
     def contains(self, x: float, y: float) -> bool:
         offx, offy = self.offset
@@ -460,23 +476,29 @@ class ItemBox:
         return (min_glpos, max_glpos)
 
     def snap_x_to(self, other: ItemBox) -> SnapMatch:
-        if (match := self._snap_min_mid_max(self.real_min_x, self.real_max_x, other.real_min_x, other.real_max_x)):
+        if match := self._snap_min_mid_max(
+            self.real_min_x, self.real_max_x, other.real_min_x, other.real_max_x
+        ):
             return match
-        if (match := self._snap_buff(self.real_min_x, other.real_max_x, 1)):
+        if match := self._snap_buff(self.real_min_x, other.real_max_x, 1):
             return match
-        if (match := self._snap_buff(self.real_max_x, other.real_min_x, -1)):
+        if match := self._snap_buff(self.real_max_x, other.real_min_x, -1):
             return match
 
     def snap_y_to(self, other: ItemBox) -> SnapMatch:
-        if (match := self._snap_min_mid_max(self.real_min_y, self.real_max_y, other.real_min_y, other.real_max_y)):
+        if match := self._snap_min_mid_max(
+            self.real_min_y, self.real_max_y, other.real_min_y, other.real_max_y
+        ):
             return match
-        if (match := self._snap_buff(self.real_min_y, other.real_max_y, 1)):
+        if match := self._snap_buff(self.real_min_y, other.real_max_y, 1):
             return match
-        if (match := self._snap_buff(self.real_max_y, other.real_min_y, -1)):
+        if match := self._snap_buff(self.real_max_y, other.real_min_y, -1):
             return match
 
     @staticmethod
-    def _snap_min_mid_max(self_min: float, self_max: float, other_min: float, other_max: float) -> SnapMatch | None:
+    def _snap_min_mid_max(
+        self_min: float, self_max: float, other_min: float, other_max: float
+    ) -> SnapMatch | None:
         self_mid = (self_min + self_max) / 2
         other_mid = (other_min + other_max) / 2
         if abs(other_mid - self_mid) <= SNAP_TOLERANCE:

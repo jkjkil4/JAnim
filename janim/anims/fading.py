@@ -1,4 +1,3 @@
-
 from abc import ABCMeta, abstractmethod
 
 import numpy as np
@@ -6,14 +5,13 @@ import numpy as np
 from janim.anims.updater import DataUpdater, UpdaterParams
 from janim.components.glow import Cmpt_Glow
 from janim.components.rgbas import Cmpt_Rgbas
-from janim.constants import (C_LABEL_ANIM_ABSTRACT, C_LABEL_ANIM_IN,
-                             C_LABEL_ANIM_OUT, ORIGIN, OUT)
+from janim.constants import C_LABEL_ANIM_ABSTRACT, C_LABEL_ANIM_IN, C_LABEL_ANIM_OUT, ORIGIN, OUT
 from janim.exception import JAnimException
 from janim.items.item import Item
 from janim.items.points import Points
+from janim.locale import get_translator
 from janim.typing import Vect
 from janim.utils.paths import PathFunc, get_path_func
-from janim.locale import get_translator
 
 _ = get_translator('janim.anims.fading')
 
@@ -22,6 +20,7 @@ class Fade(DataUpdater[Item], metaclass=ABCMeta):
     """
     :class:`FadeIn` 和 :class:`FadeOut` 的基类
     """
+
     label_color = C_LABEL_ANIM_ABSTRACT
 
     def __init__(
@@ -32,20 +31,21 @@ class Fade(DataUpdater[Item], metaclass=ABCMeta):
         *,
         about_point: Vect | None = None,
         about_edge: Vect = ORIGIN,
-
+        #
         path_arc: float = 0,
         path_arc_axis: Vect = OUT,
         path_func: PathFunc = None,
-
+        #
         become_at_end: bool = False,
         root_only: bool = False,
-        **kwargs
+        **kwargs,
     ):
         if isinstance(shift, Item):
             raise JAnimException(
-                _('When using `{class_name}`, if you need to pass multiple items, '
-                  'wrap them in `Group` instead of passing them one by one')
-                .format(class_name=self.__class__.__name__)
+                _(
+                    'When using `{class_name}`, if you need to pass multiple items, '
+                    'wrap them in `Group` instead of passing them one by one'
+                ).format(class_name=self.__class__.__name__)
             )
 
         super().__init__(
@@ -53,7 +53,7 @@ class Fade(DataUpdater[Item], metaclass=ABCMeta):
             self.updater,
             become_at_end=become_at_end,
             root_only=root_only,
-            **kwargs
+            **kwargs,
         )
         self.shift = np.array(shift)
         self.scale = scale
@@ -67,7 +67,7 @@ class Fade(DataUpdater[Item], metaclass=ABCMeta):
 
     @abstractmethod
     def updater(self, data: Item, p: UpdaterParams) -> None:
-        pass    # pragma: no cover
+        pass  # pragma: no cover
 
 
 class FadeIn(Fade):
@@ -82,6 +82,7 @@ class FadeIn(Fade):
         :media: _static/videos/FadeInExample.mp4
         :url: https://janim.readthedocs.io/zh-cn/latest/janim/anims/fading.html#fadeinexample
     """
+
     label_color = C_LABEL_ANIM_IN
 
     def updater(self, data: Item, p: UpdaterParams) -> None:
@@ -99,7 +100,7 @@ class FadeIn(Fade):
         if self.scale != 1.0:
             data.points.scale(
                 (1 - p.alpha) * 1 / self.scale + p.alpha,
-                about_point=self.about_point
+                about_point=self.about_point,
             )
         if np.any(self.shift != ORIGIN):
             data.points.shift(self.path_func(-self.shift, ORIGIN, p.alpha))
@@ -117,6 +118,7 @@ class FadeOut(Fade):
         :media: _static/videos/FadeOutExample.mp4
         :url: https://janim.readthedocs.io/zh-cn/latest/janim/anims/fading.html#fadeoutexample
     """
+
     label_color = C_LABEL_ANIM_OUT
 
     def __init__(
@@ -126,15 +128,9 @@ class FadeOut(Fade):
         scale: float = 1.0,
         *,
         hide_at_end: float = True,
-        **kwargs
+        **kwargs,
     ):
-        super().__init__(
-            item,
-            shift,
-            scale,
-            hide_at_end=hide_at_end,
-            **kwargs
-        )
+        super().__init__(item, shift, scale, hide_at_end=hide_at_end, **kwargs)
 
     def _time_fixed(self) -> None:
         super()._time_fixed()
@@ -156,7 +152,7 @@ class FadeOut(Fade):
         if self.scale != 1.0:
             data.points.scale(
                 p.alpha * self.scale + (1 - p.alpha),
-                about_point=self.about_point
+                about_point=self.about_point,
             )
         if np.any(self.shift != ORIGIN):
             data.points.shift(self.path_func(ORIGIN, self.shift, p.alpha))
@@ -169,12 +165,13 @@ class FadeInFromPoint(FadeIn):
         :media: _static/videos/FadeInFromPointExample.mp4
         :url: https://janim.readthedocs.io/zh-cn/latest/janim/anims/fading.html#fadeinfrompointexample
     """
+
     def __init__(self, item: Item, point: Vect, **kwargs):
         super().__init__(
             item,
             shift=item(Points).points.box.center - point,
             scale=np.inf,
-            **kwargs
+            **kwargs,
         )
 
 
@@ -185,10 +182,11 @@ class FadeOutToPoint(FadeOut):
         :media: _static/videos/FadeOutToPointExample.mp4
         :url: https://janim.readthedocs.io/zh-cn/latest/janim/anims/fading.html#fadeouttopointexample
     """
+
     def __init__(self, item: Item, point: Vect, **kwargs):
         super().__init__(
             item,
             shift=point - item(Points).points.box.center,
             scale=0,
-            **kwargs
+            **kwargs,
         )

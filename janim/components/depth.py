@@ -71,7 +71,9 @@ class Cmpt_Depth[ItemT](Component[ItemT]):
         cmpt2_copy = cmpt2.copy()
         return AlignedData(cmpt1_copy, cmpt2_copy, cmpt1_copy.copy())
 
-    def interpolate(self, cmpt1: Cmpt_Depth, cmpt2: Cmpt_Depth, alpha: float, *, path_func=None) -> None:
+    def interpolate(
+        self, cmpt1: Cmpt_Depth, cmpt2: Cmpt_Depth, alpha: float, *, path_func=None
+    ) -> None:
         d1, o1 = cmpt1.get_raw()
         d2, o2 = cmpt2.get_raw()
         self.set(interpolate(d1, d2, alpha), interpolate(o1, o2, alpha), root_only=True)

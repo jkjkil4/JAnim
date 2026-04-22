@@ -3,8 +3,8 @@ from dataclasses import dataclass, field
 
 import numpy as np
 
-from janim.utils.space_ops import get_norm, normalize, get_unit_normal
 from janim.typing import VectArray
+from janim.utils.space_ops import get_norm, get_unit_normal, normalize
 
 
 @dataclass
@@ -90,7 +90,9 @@ class CameraInfo:
         self.vertical_dist = get_norm(self.vertical_vect)
 
         self.distance_from_plane = self._compute_distance_from_plane(self.vertical_dist)
-        self.fixed_distance_from_plane = self._compute_distance_from_plane(self.vertical_dist / self.scaled_factor)
+        self.fixed_distance_from_plane = self._compute_distance_from_plane(
+            self.vertical_dist / self.scaled_factor
+        )
 
         self.camera_location = self._compute_camera_location()
 
@@ -191,9 +193,11 @@ class CameraInfo:
         aspect = self.horizontal_dist / self.vertical_dist
 
         f = 1.0 / np.tan(np.radians(self.fov) / 2.0)
-        return np.array([
-            [f / aspect, 0, 0, 0],
-            [0, f, 0, 0],
-            [0, 0, (far + near) / (near - far), 2 * far * near / (near - far)],
-            [0, 0, -1, 0]
-        ])
+        return np.array(
+            [
+                [f / aspect, 0, 0, 0],
+                [0, f, 0, 0],
+                [0, 0, (far + near) / (near - far), 2 * far * near / (near - far)],
+                [0, 0, -1, 0],
+            ]
+        )

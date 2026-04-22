@@ -15,9 +15,10 @@ class _PreInitReshapeDict(_ItemMeta):
     因为在子类还未进入 ``GeometryShape.__init__`` 的时候就要用到，
     等 ``GeometryShape.__init__`` 中再创建就来不及了
     """
+
     def __call__(cls, *args, **kwargs):
         obj = cls.__new__(cls, *args, **kwargs)
-        setattr(obj, 'reshape_params', {})     # 名字与 ``GeometryShape.__init__`` 中的类型注解一致
+        setattr(obj, 'reshape_params', {})  # 名字与 ``GeometryShape.__init__`` 中的类型注解一致
         cls.__init__(obj, *args, **kwargs)
         return obj
 
@@ -40,6 +41,7 @@ class GeometryShape(VItem, metaclass=_PreInitReshapeDict):
     如果需要另行获取已记忆的参数值，比如获取 :class:`~.Star` 的 ``start_angle``，
     可以直接使用例如 ``.reshape_params['start_angle']`` 的方式
     """
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # 已被 metaclass 创建，所以仅用于类型注解
@@ -48,8 +50,10 @@ class GeometryShape(VItem, metaclass=_PreInitReshapeDict):
 
     def _reshape(self):
         raise NotImplementedError(
-            _('{cls_name} does not implement `{method_name}()`')
-            .format(cls_name=self.__class__.__name__, method_name='_reshape')
+            _('{cls_name} does not implement `{method_name}()`').format(
+                cls_name=self.__class__.__name__,
+                method_name='_reshape',
+            )
         )
 
     def reshape(self) -> Self:
@@ -59,8 +63,10 @@ class GeometryShape(VItem, metaclass=_PreInitReshapeDict):
         可以缺省部分值，表示使用先前的；具体用法请参考 :ref:`geometry_reshape` 文档教程
         """
         raise NotImplementedError(
-            _('{cls_name} does not implement `{method_name}()`')
-            .format(cls_name=self.__class__.__name__, method_name='reshape')
+            _('{cls_name} does not implement `{method_name}()`').format(
+                cls_name=self.__class__.__name__,
+                method_name='reshape',
+            )
         )
 
     def _reshape_memorize(self, **kwargs):

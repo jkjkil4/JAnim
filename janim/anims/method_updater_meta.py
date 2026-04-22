@@ -14,4 +14,5 @@ def register_updater(updater: Callable, *, grouply: bool = False):
     def wrapper(func):
         setattr(func, METHOD_UPDATER_KEY, MethodUpdaterInfo(updater, grouply))
         return func
+
     return wrapper

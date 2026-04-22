@@ -7,8 +7,8 @@ class OneEuroVec2:
         self.beta = beta
         self.d_cutoff = d_cutoff
 
-        self.p = None      # filtered position (x, y)
-        self.v = 0.0       # filtered speed
+        self.p = None  # filtered position (x, y)
+        self.v = 0.0  # filtered speed
         self.last_t = None
 
     @staticmethod

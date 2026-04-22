@@ -14,7 +14,7 @@ if TYPE_CHECKING:
 registered: dict[str, Callable[[AnimViewer, Timeline.GuiCommand]]] = {
     'select': select.handler,
     'move': move.handler,
-    'camera': camera.handler
+    'camera': camera.handler,
 }
 
 

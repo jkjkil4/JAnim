@@ -7,6 +7,8 @@ from janim.utils.file_ops import get_janim_dir
 _ = get_translator('janim.__main__')
 
 
+# fmt: off
+
 def main() -> None:
     global _
 
@@ -33,7 +35,9 @@ def main() -> None:
         action='store_true'
     )
     parser.add_argument(
-        '--loglevel', default='INFO', choices=['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'],
+        '--loglevel',
+        default='INFO',
+        choices=['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'],
         type=str.upper,
         help=_('Set the logging level (default: INFO)')
     )

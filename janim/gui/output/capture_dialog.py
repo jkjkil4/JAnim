@@ -2,8 +2,7 @@ import os
 from pathlib import Path
 
 from PySide6.QtCore import QSettings, QTimer
-from PySide6.QtWidgets import (QDialog, QDialogButtonBox, QFileDialog,
-                               QMessageBox, QWidget)
+from PySide6.QtWidgets import QDialog, QDialogButtonBox, QFileDialog, QMessageBox, QWidget
 
 from janim.anims.timeline import BuiltTimeline
 from janim.gui.output.export_dialog import ExportDialog
@@ -62,7 +61,9 @@ class CaptureDialog(QDialog):
         self.ui.btn_box.accepted.connect(self.on_accepted)
 
     def load_options(self) -> None:
-        settings = QSettings(os.path.join(Config.get.temp_dir, 'capture_dialog.ini'), QSettings.Format.IniFormat)
+        settings = QSettings(
+            os.path.join(Config.get.temp_dir, 'capture_dialog.ini'), QSettings.Format.IniFormat
+        )
         settings.beginGroup(self.code_file_path)
         output_dir = settings.value('output_dir', None)
         scale = settings.value('scale', 1.0, type=float)
@@ -90,7 +91,9 @@ class CaptureDialog(QDialog):
         self.update_ui()
 
     def save_options(self) -> None:
-        settings = QSettings(os.path.join(Config.get.temp_dir, 'capture_dialog.ini'), QSettings.Format.IniFormat)
+        settings = QSettings(
+            os.path.join(Config.get.temp_dir, 'capture_dialog.ini'), QSettings.Format.IniFormat
+        )
         settings.beginGroup(self.code_file_path)
         settings.setValue('output_dir', os.path.dirname(self.file_path()))
         settings.setValue('scale', self.ui.cbb_size.currentData()[0])
@@ -151,7 +154,7 @@ class CaptureDialog(QDialog):
             self.ui.edit_path.text(),
             'PNG (*.png)',
             '',
-            QFileDialog.Option.DontConfirmOverwrite
+            QFileDialog.Option.DontConfirmOverwrite,
         )
         if not file_path:
             return
@@ -174,10 +177,11 @@ class CaptureDialog(QDialog):
                 msgbox = QMessageBox(
                     QMessageBox.Icon.Warning,
                     _('Confirm Export'),
-                    _('{filename} already exists.\nDo you want to replace it?')
-                    .format(filename=os.path.basename(file_path)),
+                    _('{filename} already exists.\nDo you want to replace it?').format(
+                        filename=os.path.basename(file_path)
+                    ),
                     QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
-                    self
+                    self,
                 )
                 msgbox.setDefaultButton(QMessageBox.StandardButton.Yes)
                 msgbox.setButtonText(QMessageBox.StandardButton.Yes, _('Yes(&Y)'))

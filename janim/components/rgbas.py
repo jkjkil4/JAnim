@@ -20,6 +20,7 @@ class Cmpt_Rgbas[ItemT](Component[ItemT]):
     """
     颜色组件
     """
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -52,7 +53,9 @@ class Cmpt_Rgbas[ItemT](Component[ItemT]):
 
         return AlignedData(cmpt1_copy, cmpt2_copy, cmpt1_copy.copy())
 
-    def interpolate(self, cmpt1: Cmpt_Rgbas, cmpt2: Cmpt_Rgbas, alpha: float, *, path_func=None) -> None:
+    def interpolate(
+        self, cmpt1: Cmpt_Rgbas, cmpt2: Cmpt_Rgbas, alpha: float, *, path_func=None
+    ) -> None:
         if not cmpt1._rgbas.is_share(cmpt2._rgbas) or not cmpt1._rgbas.is_share(self._rgbas):
             if cmpt1._rgbas.is_share(cmpt2._rgbas):
                 self._rgbas = cmpt1._rgbas.copy()
@@ -86,13 +89,16 @@ class Cmpt_Rgbas[ItemT](Component[ItemT]):
         格式化为元素仅有 ``[r, g, b]`` 的数值数组的格式
         """
         if not isinstance(colors, np.ndarray):
-            colors = np.array([
-                color
-                if isinstance(color, Iterable) and not isinstance(color, str)
-                else Color(color).rgb
-
-                for color in colors
-            ])
+            colors = np.array(
+                [
+                    (
+                        color
+                        if isinstance(color, Iterable) and not isinstance(color, str)
+                        else Color(color).rgb
+                    )
+                    for color in colors
+                ]
+            )
 
         assert colors.ndim == 2
         assert colors.shape[1] == 3
@@ -187,14 +193,16 @@ class Cmpt_Rgbas[ItemT](Component[ItemT]):
                 alpha = self.format_alphas(alpha)
 
             for cmpt in self.walk_same_cmpt_of_self_and_descendants_without_mock(root_only):
-                cmpt_color = cmpt.get()[:, :3] if color is None else color
-                cmpt_alpha = cmpt.get()[:, 3] if alpha is None else alpha
-                length = max(len(cmpt_color), len(cmpt_alpha))
+                arr_color = (cmpt.get()[:, :3] if color is None else color).astype(float)
+                arr_alpha = (cmpt.get()[:, 3] if alpha is None else alpha).astype(float)
+                length = max(len(arr_color), len(arr_alpha))
 
-                rgbas = np.hstack([
-                    resize_with_interpolation(cmpt_color.astype(float), length),
-                    resize_with_interpolation(cmpt_alpha.astype(float), length).reshape((length, 1))
-                ])
+                rgbas = np.hstack(
+                    [
+                        resize_with_interpolation(arr_color, length),
+                        resize_with_interpolation(arr_alpha, length).reshape((length, 1)),
+                    ]
+                )
                 cmpt.set_rgbas(rgbas)
 
         return self
@@ -228,8 +236,7 @@ class Cmpt_Rgbas[ItemT](Component[ItemT]):
         return self
 
     @register_updater(
-        lambda self, p, factor, *, root_only=False:
-            self.fade(factor * p.alpha, root_only=root_only)
+        lambda self, p, factor, *, root_only=False: self.fade(factor * p.alpha, root_only=root_only)
     )
     def fade(self, factor: float, *, root_only: bool = False) -> Self:
         """
@@ -243,15 +250,16 @@ class Cmpt_Rgbas[ItemT](Component[ItemT]):
         return self
 
     @register_updater(
-        lambda self, p, color, factor=0.5, *, root_only=False:
+        lambda self, p, color, factor=0.5, *, root_only=False: (  #
             self.mix(color, factor * p.alpha, root_only=root_only)
+        )
     )
     def mix(
         self,
         color: JAnimColor,
         factor: float = 0.5,
         *,
-        root_only: bool = False
+        root_only: bool = False,
     ) -> Self:
         """
         混合颜色，默认得到与 ``color`` 混合的中间色
@@ -265,15 +273,16 @@ class Cmpt_Rgbas[ItemT](Component[ItemT]):
         return self
 
     @register_updater(
-        lambda self, p, alpha, factor=0.5, *, root_only=False:
+        lambda self, p, alpha, factor=0.5, *, root_only=False: (  #
             self.mix_alpha(alpha, factor * p.alpha, root_only=root_only)
+        )
     )
     def mix_alpha(
         self,
         alpha: float,
         factor: float = 0.5,
         *,
-        root_only: bool = False
+        root_only: bool = False,
     ) -> Self:
         """
         混合透明度，默认得到与 ``alpha`` 混合的中间色
