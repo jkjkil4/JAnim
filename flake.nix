@@ -69,6 +69,7 @@
                 libxkbcommon
                 dbus
                 wayland
+                freetype
               ];
               shellHook = "uv sync --extra gui";
             };

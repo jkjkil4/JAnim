@@ -215,8 +215,8 @@ class Rect(Polygon):
         return self
 
     def _is_corners(self, v1, v2) -> bool:
-        types = (Iterable, types.NoneType)
-        return isinstance(v1, types) and isinstance(v2, types)
+        checks = (Iterable, types.NoneType)
+        return isinstance(v1, checks) and isinstance(v2, checks)
 
     def _modify_shape(self, v1, v2):
         if self._is_corners(v1, v2):
