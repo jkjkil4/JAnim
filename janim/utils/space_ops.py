@@ -17,12 +17,12 @@ def cross(v1: np.ndarray, v2: np.ndarray) -> list[np.ndarray]:
     return [
         v1[1] * v2[2] - v1[2] * v2[1],
         v1[2] * v2[0] - v1[0] * v2[2],
-        v1[0] * v2[1] - v1[1] * v2[0]
+        v1[0] * v2[1] - v1[1] * v2[0],
     ]
 
 
 def get_norm(vect: Iterable) -> float:
-    return sum((x**2 for x in vect))**0.5
+    return sum((x**2 for x in vect)) ** 0.5
 
 
 def det(a: Iterable, b: Iterable) -> float:
@@ -102,9 +102,7 @@ def quaternion_conjugate(quaternion: Iterable) -> list:
 
 
 def rotate_vector(
-    vector: Iterable,
-    angle: float,
-    axis: np.ndarray = OUT
+    vector: Iterable, angle: float, axis: np.ndarray = OUT
 ) -> np.ndarray | list[float]:
     q = quaternion_object_from_angle_axis(angle, axis)
     vector = np.asarray(vector)
@@ -148,7 +146,7 @@ def rotation_about_z(angle: float) -> list[list[float]]:
     return [
         [math.cos(angle), -math.sin(angle), 0],
         [math.sin(angle), math.cos(angle), 0],
-        [0, 0, 1]
+        [0, 0, 1],
     ]
 
 
@@ -162,7 +160,7 @@ def rotation_between_vectors(v1, v2) -> np.ndarray:
             (RIGHT if v1[0] == 0 and v1[1] == 0 else [-v1[1], v1[0], 0])
             if np.all(crs == 0)
             else crs
-        )
+        ),
     )
 
 
@@ -204,11 +202,7 @@ def normalize_along_axis(
     return array
 
 
-def get_unit_normal(
-    v1: np.ndarray,
-    v2: np.ndarray,
-    tol: float = 1e-6
-) -> np.ndarray:
+def get_unit_normal(v1: np.ndarray, v2: np.ndarray, tol: float = 1e-6) -> np.ndarray:
     v1 = normalize(v1)
     v2 = normalize(v2)
     cp = cross(v1, v2)
@@ -234,10 +228,7 @@ def thick_diagonal(dim: int, thickness: int = 2) -> np.ndarray:
 
 def compass_directions(n: int = 4, start_vect: np.ndarray = RIGHT) -> np.ndarray:
     angle = TAU / n
-    return np.array([
-        rotate_vector(start_vect, k * angle)
-        for k in range(n)
-    ])
+    return np.array([rotate_vector(start_vect, k * angle) for k in range(n)])
 
 
 def complex_to_R3(complex_num: complex) -> np.ndarray:
@@ -249,26 +240,23 @@ def R3_to_complex(point: Sequence[float]) -> complex:
 
 
 def complex_func_to_R3_func(
-    complex_func: Callable[[complex], complex]
+    complex_func: Callable[[complex], complex],
 ) -> Callable[[np.ndarray], np.ndarray]:
     return lambda p: complex_to_R3(complex_func(R3_to_complex(p)))
 
 
 def center_of_mass(points: Iterable[npt.ArrayLike]) -> np.ndarray:
-    points = [np.array(point).astype("float") for point in points]
+    points = [np.array(point).astype('float') for point in points]
     return sum(points) / len(points)
 
 
-def midpoint(
-    point1: Sequence[float],
-    point2: Sequence[float]
-) -> np.ndarray:
+def midpoint(point1: Sequence[float], point2: Sequence[float]) -> np.ndarray:
     return center_of_mass([point1, point2])
 
 
 def line_intersection(
     line1: Sequence[Sequence[float]],
-    line2: Sequence[Sequence[float]]
+    line2: Sequence[Sequence[float]],
 ) -> np.ndarray:
     """
     return intersection point of two lines,
@@ -281,7 +269,7 @@ def line_intersection(
     div = det(x_diff, y_diff)
     if div == 0:
         # i18n?
-        raise PointError("Lines do not intersect")
+        raise PointError('Lines do not intersect')
     d = (det(*line1), det(*line2))
     x = det(d, x_diff) / div
     y = det(d, y_diff) / div
@@ -293,7 +281,7 @@ def find_intersection(
     v0: npt.ArrayLike,
     p1: npt.ArrayLike,
     v1: npt.ArrayLike,
-    threshold: float = 1e-5
+    threshold: float = 1e-5,
 ) -> np.ndarray:
     """
     Return the intersection of a line passing through p0 in direction v0
@@ -314,6 +302,7 @@ def find_intersection(
     if n == 3:
         d = len(np.shape(numer))
         new_numer = np.multiply(numer, numer).sum(d - 1)
+
         new_denom = np.multiply(denom, numer).sum(d - 1)
         numer, denom = new_numer, new_denom
 
@@ -326,12 +315,12 @@ def find_intersection(
 def get_closest_point_on_line(
     a: np.ndarray,
     b: np.ndarray,
-    p: np.ndarray
+    p: np.ndarray,
 ) -> np.ndarray:
     """
-        It returns point x such that
-        x is on line ab and xp is perpendicular to ab.
-        If x lies beyond ab line, then it returns nearest edge(a or b).
+    It returns point x such that
+    x is on line ab and xp is perpendicular to ab.
+    If x lies beyond ab line, then it returns nearest edge(a or b).
     """
     # x = b + t*(a-b) = t*a + (1-t)*b
     t = np.dot(p - b, a - b) / np.dot(a - b, a - b)
@@ -339,7 +328,7 @@ def get_closest_point_on_line(
         t = 0
     if t > 1:
         t = 1
-    return ((t * a) + ((1 - t) * b))
+    return (t * a) + ((1 - t) * b)
 
 
 def get_winding_number(points: Iterable[float]) -> float:
@@ -353,6 +342,7 @@ def get_winding_number(points: Iterable[float]) -> float:
 
 ##
 
+
 def cross2d(a: np.ndarray, b: np.ndarray) -> np.ndarray:
     if a.ndim == 2:
         return a[:, 0] * b[:, 1] - a[:, 1] * b[:, 0]
@@ -363,29 +353,27 @@ def cross2d(a: np.ndarray, b: np.ndarray) -> np.ndarray:
 def tri_area(
     a: Sequence[float],
     b: Sequence[float],
-    c: Sequence[float]
+    c: Sequence[float],
 ) -> float:
-    return 0.5 * abs(
-        a[0] * (b[1] - c[1]) +
-        b[0] * (c[1] - a[1]) +
-        c[0] * (a[1] - b[1])
-    )
+    return 0.5 * abs(a[0] * (b[1] - c[1]) + b[0] * (c[1] - a[1]) + c[0] * (a[1] - b[1]))
 
 
 def is_inside_triangle(
     p: np.ndarray,
     a: np.ndarray,
     b: np.ndarray,
-    c: np.ndarray
+    c: np.ndarray,
 ) -> bool:
     """
     Test if point p is inside triangle abc
     """
-    crosses = np.array([
-        cross2d(p - a, b - p),
-        cross2d(p - b, c - p),
-        cross2d(p - c, a - p),
-    ])
+    crosses = np.array(
+        [
+            cross2d(p - a, b - p),
+            cross2d(p - b, c - p),
+            cross2d(p - c, a - p),
+        ]
+    )
     return np.all(crosses > 0) or np.all(crosses < 0)
 
 

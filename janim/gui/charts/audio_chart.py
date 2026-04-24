@@ -23,8 +23,9 @@ class AudioChartWidget(ChartWidgetBase):
     waveform_color = QColor(85, 193, 167)
     fade_color = QColor(41, 171, 202)
 
-    def __init__(self, info: Timeline.PlayAudioInfo, fps: int, near: float | None = None,
-                 parent=None):
+    def __init__(
+        self, info: Timeline.PlayAudioInfo, fps: int, near: float | None = None, parent=None
+    ):
         """初始化音频图表并预计算显示区间与采样数据"""
         super().__init__(parent)
         self.setMinimumSize(350, 270)
@@ -54,16 +55,18 @@ class AudioChartWidget(ChartWidgetBase):
         left_blank = max(0, -begin)
         right_blank = max(0, end - audio.sample_count())
 
-        data = audio._samples.data[max(0, begin): min(end, audio.sample_count())]
+        data = audio._samples.data[max(0, begin) : min(end, audio.sample_count())]
         if data.ndim > 1:
             data = np.max(data, axis=1)
 
         if left_blank != 0 or right_blank != 0:
-            data = np.concatenate([
-                np.zeros(left_blank, dtype=np.int16),
-                data,
-                np.zeros(right_blank, dtype=np.int16),
-            ])
+            data = np.concatenate(
+                [
+                    np.zeros(left_blank, dtype=np.int16),
+                    data,
+                    np.zeros(right_blank, dtype=np.int16),
+                ]
+            )
 
         unit = max(1, audio.framerate // self.fps)
         usable = len(data) // unit * unit
@@ -71,12 +74,13 @@ class AudioChartWidget(ChartWidgetBase):
         if usable == 0:
             samples = np.array([], dtype=float)
         else:
-            samples = np.max(
-                np.abs(
-                    data[:usable].reshape(-1, unit)
-                ),
-                axis=1
-            ) / np.iinfo(np.int16).max
+            samples = (
+                np.max(
+                    np.abs(data[:usable].reshape(-1, unit)),  #
+                    axis=1,
+                )
+                / np.iinfo(np.int16).max
+            )
 
         if len(samples) == 0:
             times = np.array([], dtype=float)
@@ -136,20 +140,30 @@ class AudioChartWidget(ChartWidgetBase):
 
         p.restore()
 
-    def draw_fade(self, p: QPainter, plot_rect: QRectF, begin: float, end: float, left: bool) -> None:
+    def draw_fade(
+        self, p: QPainter, plot_rect: QRectF, begin: float, end: float, left: bool
+    ) -> None:
         """用于绘制左右边缘的渐变提示"""
         x1 = self.value_to_x(begin, self.clip_begin, self.clip_end, plot_rect)
         x2 = self.value_to_x(end, self.clip_begin, self.clip_end, plot_rect)
-        rect = QRectF(QPointF(min(x1, x2), plot_rect.top()), QPointF(max(x1, x2), plot_rect.bottom()))
+        rect = QRectF(
+            QPointF(min(x1, x2), plot_rect.top()), QPointF(max(x1, x2), plot_rect.bottom())
+        )
         gradient = QLinearGradient(rect.left(), 0, rect.right(), 0)
         if left:
             gradient.setColorAt(
                 0.0,
                 QColor(self.fade_color.red(), self.fade_color.green(), self.fade_color.blue(), 128),
             )
-            gradient.setColorAt(1.0, QColor(self.fade_color.red(), self.fade_color.green(), self.fade_color.blue(), 0))
+            gradient.setColorAt(
+                1.0,
+                QColor(self.fade_color.red(), self.fade_color.green(), self.fade_color.blue(), 0),
+            )
         else:
-            gradient.setColorAt(0.0, QColor(self.fade_color.red(), self.fade_color.green(), self.fade_color.blue(), 0))
+            gradient.setColorAt(
+                0.0,
+                QColor(self.fade_color.red(), self.fade_color.green(), self.fade_color.blue(), 0),
+            )
             gradient.setColorAt(
                 1.0,
                 QColor(self.fade_color.red(), self.fade_color.green(), self.fade_color.blue(), 128),

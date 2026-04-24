@@ -99,7 +99,7 @@ class ChartWidgetBase(QWidget):
         x_ticks: list[float],
         y_ticks: list[float],
         x_range: tuple[float, float],
-        y_range: tuple[float, float]
+        y_range: tuple[float, float],
     ) -> None:
         """绘制网格线"""
         p.save()
@@ -119,14 +119,18 @@ class ChartWidgetBase(QWidget):
         p.restore()
 
     def draw_axes(
-        self, p: QPainter, plot_rect: QRectF,
-        x_ticks: list[float], y_ticks: list[float],
-        x_range: tuple[float, float], y_range: tuple[float, float],
+        self,
+        p: QPainter,
+        plot_rect: QRectF,
+        x_ticks: list[float],
+        y_ticks: list[float],
+        x_range: tuple[float, float],
+        y_range: tuple[float, float],
         *,
         bottom_title: str | None = None,
         top_title: str | None = None,
         top_ticks: list[float] | None = None,
-        top_range: tuple[float, float] | None = None
+        top_range: tuple[float, float] | None = None,
     ) -> None:
         """绘制坐标轴、刻度与标题文字"""
         self.draw_frame(p, plot_rect)
@@ -154,7 +158,11 @@ class ChartWidgetBase(QWidget):
         if bottom_title:
             title_rect = QRectF(plot_rect.left(), plot_rect.bottom() + 14, plot_rect.width(), 14)
             p.setPen(self.label_color)
-            p.drawText(title_rect, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignVCenter, bottom_title)
+            p.drawText(
+                title_rect,
+                Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignVCenter,
+                bottom_title,
+            )
             p.setPen(QPen(self.axis_color, 1))
 
         # top axis
@@ -164,7 +172,9 @@ class ChartWidgetBase(QWidget):
             for value in top_ticks:
                 x = self.value_to_x(value, *top_range, plot_rect)
                 p.drawLine(QPointF(x, plot_rect.top()), QPointF(x, plot_rect.top() - 4))
-                label_rect = QRectF(x - 20, top_label_bottom - top_label_height, 40, top_label_height)
+                label_rect = QRectF(
+                    x - 20, top_label_bottom - top_label_height, 40, top_label_height
+                )
                 p.setPen(self.label_color)
                 p.drawText(
                     label_rect,
@@ -176,7 +186,9 @@ class ChartWidgetBase(QWidget):
         if top_title:
             title_rect = QRectF(plot_rect.left(), 5, plot_rect.width(), 14)
             p.setPen(self.label_color)
-            p.drawText(title_rect, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignTop, top_title)
+            p.drawText(
+                title_rect, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignTop, top_title
+            )
             p.setPen(QPen(self.axis_color, 1))
 
         # left axis
@@ -184,7 +196,9 @@ class ChartWidgetBase(QWidget):
         for value in y_ticks:
             y = self.value_to_y(value, *y_range, plot_rect)
             p.drawLine(QPointF(plot_rect.left() - 4, y), QPointF(plot_rect.left(), y))
-            label_rect = QRectF(2, y - font_metrics.height() / 2 - 1, left_label_width, font_metrics.height() + 2)
+            label_rect = QRectF(
+                2, y - font_metrics.height() / 2 - 1, left_label_width, font_metrics.height() + 2
+            )
             p.setPen(self.label_color)
             p.drawText(
                 label_rect,

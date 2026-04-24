@@ -1,9 +1,11 @@
 import os
 import shutil
 import subprocess as sp
+import sys
 import time
 from contextlib import contextmanager
-from functools import partial
+from functools import lru_cache, partial
+from glob import glob
 from typing import Generator
 
 import moderngl as mgl
@@ -36,6 +38,7 @@ class VideoWriter:
     - 最后结束 ffmpeg 的调用，完成 ``_temp`` 文件的输出
     - 将 ``_temp`` 文件改名，删去 ``_temp`` 后缀，完成视频输出
     """
+
     def __init__(self, built: BuiltTimeline, *, ctx: mgl.Context | None = None):
         self.built = built
 
@@ -78,7 +81,9 @@ class VideoWriter:
         gl.glDeleteBuffers(len(self.pbos), self.pbos)
 
     @staticmethod
-    def writes(built: BuiltTimeline, file_path: str, *, quiet=False, use_pbo=True, hwaccel=False) -> None:
+    def writes(
+        built: BuiltTimeline, file_path: str, *, quiet=False, use_pbo=True, hwaccel=False
+    ) -> None:
         VideoWriter(built).write_all(file_path, quiet=quiet, use_pbo=use_pbo, hwaccel=hwaccel)
 
     def write_all(
@@ -90,7 +95,7 @@ class VideoWriter:
         quiet=False,
         use_pbo=True,
         hwaccel=False,
-        _keep_temp=False
+        _keep_temp=False,
     ) -> None:
         """将时间轴动画输出到文件中
 
@@ -116,7 +121,7 @@ class VideoWriter:
             out_point += self.built.duration
 
         start_frame = (
-            0
+            0  #
             if in_point is None
             else clip(round(in_point * fps), 0, self.frame_count - 1)
         )
@@ -128,7 +133,7 @@ class VideoWriter:
         progress_display = ProgressDisplay(
             range(start_frame, end_frame),
             leave=False,
-            dynamic_ncols=True
+            dynamic_ncols=True,
         )
 
         rgb = self.built.cfg.background_color.rgb
@@ -149,8 +154,15 @@ class VideoWriter:
                     # 绑定当前PBO来存储新帧
                     gl.glBindBuffer(gl.GL_PIXEL_PACK_BUFFER, self.pbos[frame_idx % PBO_COUNT])
                     # 注意: 当PBO绑定时，最后一个参数是偏移量而不是指针
-                    gl.glReadPixels(0, 0, self.built.cfg.pixel_width, self.built.cfg.pixel_height,
-                                    gl.GL_RGBA, gl.GL_UNSIGNED_BYTE, 0)
+                    gl.glReadPixels(
+                        0,
+                        0,
+                        self.built.cfg.pixel_width,
+                        self.built.cfg.pixel_height,
+                        gl.GL_RGBA,
+                        gl.GL_UNSIGNED_BYTE,
+                        0,
+                    )
 
                     # 如果不是第一批，处理上一批的数据
                     if read_idx is not None:
@@ -199,85 +211,150 @@ class VideoWriter:
 
         if not quiet:
             log.info(
-                _('Finished writing video "{name}" in {elapsed:.2f} s')
-                .format(name=name, elapsed=time.time() - t)
+                _('Finished writing video "{name}" in {elapsed:.2f} s').format(
+                    name=name,
+                    elapsed=time.time() - t,
+                )
             )
 
             if not _keep_temp:
-                log.info(
-                    _('File saved to "{file_path}" (video only)')
-                    .format(file_path=file_path)
-                )
+                log.info(_('File saved to "{file_path}" (video only)').format(file_path=file_path))
 
     def open_video_pipe(self, file_path: str, hwaccel: bool) -> None:
         stem, self.ext = os.path.splitext(file_path)
         self.final_file_path = file_path
         self.temp_file_path = stem + '_temp' + self.ext
 
+        ffmpeg_bin = self.built.cfg.ffmpeg_bin
+
         command = [
-            self.built.cfg.ffmpeg_bin,
-            '-y',   # overwrite output file if it exists
+            ffmpeg_bin,
+            '-y',  # overwrite output file if it exists
             '-f', 'rawvideo',
             '-s', f'{self.built.cfg.pixel_width}x{self.built.cfg.pixel_height}',  # size of one frame
             '-pix_fmt', 'rgba',
             '-r', str(self.built.cfg.fps),  # frames per second
             '-i', '-',  # The input comes from a pipe
-            '-vf', 'vflip',
             '-an',  # Tells FFMPEG not to expect any audio
             '-loglevel', 'error',
-        ]
+            *self.ext_specific_flags(ffmpeg_bin, self.ext, hwaccel),
+            self.temp_file_path,
+        ]  # fmt: skip
 
-        if self.ext == '.mp4':
-            command += [
-                '-pix_fmt', 'yuv420p',
-                '-vcodec', self.find_encoder(self.built.cfg.ffmpeg_bin, hwaccel),
-            ]
-        elif self.ext == '.mov':
-            # This is if the background of the exported
-            # video should be transparent.
-            command += [
-                '-vcodec', 'qtrle',
-            ]
-        elif self.ext == '.gif':
-            pass
-        else:
-            assert False
-
-        command += [self.temp_file_path]
         with self.handle_ffmpeg_not_found():
             self.writing_process = sp.Popen(command, stdin=sp.PIPE)
 
-    hwencoder_cache: str | None = None
+    @staticmethod
+    def ext_specific_flags(ffmpeg_bin: str, ext: str, hwaccel: bool) -> list[str]:
+        """针对不同的格式产生不同的 FFMPEG 参数"""
+        if ext == '.mp4':
+            with VideoWriter.handle_ffmpeg_not_found():
+                encoder = VideoWriter.find_h264_encoder(ffmpeg_bin, hwaccel)
+                log.info(_('Using {encoder} for encoding').format(encoder=encoder))
+                return [
+                    '-pix_fmt', 'yuv420p',
+                    *VideoWriter.encoder_flags(encoder)
+                ]  # fmt: skip
+
+        if ext == '.mov':
+            return [
+                '-c:v', 'qtrle',
+                '-vf', 'vflip',
+            ]  # fmt: skip
+
+        if ext == '.gif':
+            return [
+                '-vf', 'vflip',
+            ]  # fmt: skip
+
+        assert False
 
     @staticmethod
-    def find_encoder(ffmpeg_bin: str, hwaccel: bool) -> str:
+    @lru_cache
+    def find_h264_encoder(ffmpeg_bin: str, hwaccel: bool) -> str:
         """查找编码器，若 ``hwaccel=True`` 则优先使用硬件编码器"""
         if not hwaccel:
-            encoder = 'libx264'
+            return 'libx264'
+
+        # Call ffmpeg to enumerate available encoders
+        output = sp.getoutput(f'{ffmpeg_bin} -hide_banner -encoders')
+
+        encoders = [
+            'h264_vaapi',
+            'h264_nvenc',
+            'h264_qsv',
+            'h264_amf',
+            'h264_videotoolbox',
+        ]
+        available = [e for e in encoders if e in output]
+
+        # Attempt to use the potential encoder to see if it actually works
+        usable = [
+            potential
+            for potential in available
+            if VideoWriter.test_encoder_usability(ffmpeg_bin, potential)
+        ]
+
+        if available:
+            log.info(
+                _('Hardware encoder probe results:')
+                + ' '
+                + ', '.join(
+                    f'{e}={"ok" if e in usable else "fail"}'  #
+                    for e in available
+                )
+            )
+
+        if usable:
+            return usable[0]
+
+        # Safe fallback for if none of the probed hardware encoders work
+        log.info(_('No hardware encoder found'))
+        return 'libx264'
+
+    @staticmethod
+    def test_encoder_usability(ffmpeg_bin: str, potential: str) -> bool:
+        exitcode, _ = sp.getstatusoutput(' '.join([
+            ffmpeg_bin,
+            '-f', 'lavfi',
+            '-i', 'nullsrc=s=640x480:d=0.1',
+            *VideoWriter.encoder_flags(potential),
+            '-f', 'null',
+            '-loglevel', 'error',
+            '-',
+        ]))  # fmt: skip
+        return exitcode == 0
+
+    @staticmethod
+    def encoder_flags(encoder: str) -> list[str]:
+        device = VideoWriter.find_encoder_device()
+        if encoder == 'h264_vaapi' and device is not None:
+            return [
+                '-c:v', encoder,
+                '-vf', 'vflip,format=nv12,hwupload',
+                '-vaapi_device', device,
+            ]  # fmt: skip
         else:
-            if VideoWriter.hwencoder_cache is not None:
-                encoder = VideoWriter.hwencoder_cache
-            else:
-                # call ffmpeg to test nvenc/amf support
-                with VideoWriter.handle_ffmpeg_not_found():
-                    test_availability = sp.Popen(
-                        [ffmpeg_bin, '-hide_banner', '-encoders'],
-                        stdout=sp.PIPE,
-                        stderr=sp.PIPE
-                    )
+            return [
+                '-c:v', encoder,
+                '-vf', 'vflip,format=nv12'
+            ]  # fmt: skip
 
-                out, err = test_availability.communicate()
-                if b'h264_nvenc' in out:
-                    encoder = 'h264_nvenc'
-                elif b'h264_amf' in out:
-                    encoder = 'h264_amf'
-                else:
-                    encoder = 'libx264'
-                    log.info(_('No hardware encoder found'))
-                VideoWriter.hwencoder_cache = encoder
+    @staticmethod
+    @lru_cache(maxsize=1)
+    def find_encoder_device() -> str | None:
+        """Return the first working VA-API render node, or None."""
+        # Only applies on linux; exit early on other platforms
+        # `linux` and `linux2` are both possible values
+        if not sys.platform.startswith('linux'):
+            return None
 
-        log.info(_('Using {encoder} for encoding').format(encoder=encoder))
-        return encoder
+        # If `/dev/dri` doesn't exist, this will just return an empty array
+        for device_node in sorted(glob('/dev/dri/renderD*')):
+            if os.access(device_node, os.R_OK | os.W_OK):
+                return device_node
+
+        return None
 
     def close_video_pipe(self, _keep_temp: bool) -> None:
         self.writing_process.stdin.close()
@@ -292,8 +369,12 @@ class VideoWriter:
         try:
             yield
         except FileNotFoundError:
-            log.error(_('Unable to output video. '
-                        'Please install ffmpeg and add it to the environment variables.'))
+            log.error(
+                _(
+                    'Unable to output video. '  #
+                    'Please install ffmpeg and add it to the environment variables.'
+                )
+            )
             raise ExitException(EXITCODE_FFMPEG_NOT_FOUND)
 
 
@@ -320,12 +401,14 @@ class AudioWriter:
         progress_display = ProgressDisplay(
             range(round(self.built.duration * fps) + 1),
             leave=False,
-            dynamic_ncols=True
+            dynamic_ncols=True,
         )
 
-        get_audio_samples = partial(self.built.get_audio_samples_of_frame,
-                                    fps,
-                                    framerate)
+        get_audio_samples = partial(
+            self.built.get_audio_samples_of_frame,
+            fps,
+            framerate,
+        )
 
         for frame in progress_display:
             samples = get_audio_samples(frame)
@@ -338,15 +421,14 @@ class AudioWriter:
 
         if not quiet:
             log.info(
-                _('Finished writing audio of "{name}" in {elapsed:.2f} s')
-                .format(name=name, elapsed=time.time() - t)
+                _('Finished writing audio of "{name}" in {elapsed:.2f} s').format(
+                    name=name,
+                    elapsed=time.time() - t,
+                )
             )
 
             if not _keep_temp:
-                log.info(
-                    _('File saved to "{file_path}"')
-                    .format(file_path=file_path)
-                )
+                log.info(_('File saved to "{file_path}"').format(file_path=file_path))
 
     def open_audio_pipe(self, file_path: str) -> None:
         stem, ext = os.path.splitext(file_path)
@@ -355,20 +437,24 @@ class AudioWriter:
 
         command = [
             self.built.cfg.ffmpeg_bin,
-            '-y',   # overwrite output file if it exists
+            '-y',  # overwrite output file if it exists
             '-f', 's16le',
-            '-ar', str(self.built.cfg.audio_framerate),      # framerate & samplerate
+            '-ar', str(self.built.cfg.audio_framerate),  # framerate & samplerate
             '-ac', str(self.built.cfg.audio_channels),
             '-i', '-',
             '-loglevel', 'error',
-            self.temp_file_path
-        ]
+            self.temp_file_path,
+        ]  # fmt: skip
 
         try:
             self.writing_process = sp.Popen(command, stdin=sp.PIPE)
         except FileNotFoundError:
-            log.error(_('Unable to output audio. '
-                        'Please install ffmpeg and add it to the environment variables.'))
+            log.error(
+                _(
+                    'Unable to output audio. '  #
+                    'Please install ffmpeg and add it to the environment variables.'
+                )
+            )
             raise ExitException(EXITCODE_FFMPEG_NOT_FOUND)
 
     def close_audio_pipe(self, _keep_temp: bool) -> None:
@@ -397,14 +483,18 @@ def merge_video_and_audio(
         '-c:v', 'copy',
         '-c:a', 'aac',
         result_path,
-        '-loglevel', 'error'
-    ]
+        '-loglevel', 'error',
+    ]  # fmt: skip
 
     try:
         merge_process = sp.Popen(command, stdin=sp.PIPE)
     except FileNotFoundError:
-        log.error(_('Unable to merge video. '
-                    'Please install ffmpeg and add it to the environment variables.'))
+        log.error(
+            _(
+                'Unable to merge video. '  #
+                'Please install ffmpeg and add it to the environment variables.'
+            )
+        )
         raise ExitException(EXITCODE_FFMPEG_NOT_FOUND)
 
     merge_process.wait()
@@ -415,10 +505,7 @@ def merge_video_and_audio(
         os.remove(audio_path)
 
     if not quiet:
-        log.info(
-            _('File saved to "{file_path}" (merged)')
-            .format(file_path=result_path)
-        )
+        log.info(_('File saved to "{file_path}" (merged)').format(file_path=result_path))
 
 
 class SRTWriter:
@@ -434,7 +521,9 @@ class SRTWriter:
 
             for i, chunk in enumerate(chunks, start=1):
                 file.write(f'\n{i}\n')
-                file.write(f'{SRTWriter.t_to_srt_time(chunk[0].at)} --> {SRTWriter.t_to_srt_time(chunk[0].end)}\n')
+                file.write(
+                    f'{SRTWriter.t_to_srt_time(chunk[0].at)} --> {SRTWriter.t_to_srt_time(chunk[0].end)}\n'
+                )
                 for info in reversed(chunk[1]):
                     file.write(f'{info.text}\n')
 
@@ -449,4 +538,4 @@ class SRTWriter:
         secs = int(t % 60)
         millis = int((t % 1) * 1000)
 
-        return f"{hours:02}:{minutes:02}:{secs:02},{millis:03}"
+        return f'{hours:02}:{minutes:02}:{secs:02},{millis:03}'

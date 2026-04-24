@@ -3,8 +3,7 @@ import os
 from pathlib import Path
 
 from PySide6.QtCore import QSettings
-from PySide6.QtWidgets import (QDialog, QDialogButtonBox, QFileDialog,
-                               QMessageBox, QWidget)
+from PySide6.QtWidgets import QDialog, QDialogButtonBox, QFileDialog, QMessageBox, QWidget
 
 from janim.anims.timeline import BuiltTimeline
 from janim.gui.output.ui_ExportDialog import QComboBox, Ui_ExportDialog
@@ -16,7 +15,9 @@ _ = get_translator('janim.gui.output.export_dialog')
 
 
 class ExportDialog(QDialog):
-    def __init__(self, built: BuiltTimeline, is_inout_point_set: bool, parent: QWidget | None = None):
+    def __init__(
+        self, built: BuiltTimeline, is_inout_point_set: bool, parent: QWidget | None = None
+    ):
         super().__init__(parent)
         self.built = built
         self.is_inout_point_set = is_inout_point_set
@@ -61,7 +62,7 @@ class ExportDialog(QDialog):
             (2 / 3, '66.67%'),   # 720p
             (4 / 9, '44.44%'),   # 480p
             (1 / 3, '33.33%'),   # 360p
-        ]:
+        ]:  # fmt: skip
             scaled_w = math.ceil(w * factor)
             scaled_h = math.ceil(h * factor)
             cbb_size.addItem(f'{scaled_w}x{scaled_h} ({desc})', (factor, scaled_w, scaled_h))
@@ -86,7 +87,9 @@ class ExportDialog(QDialog):
                 break
 
     def load_options(self) -> None:
-        settings = QSettings(os.path.join(Config.get.temp_dir, 'export_dialog.ini'), QSettings.Format.IniFormat)
+        settings = QSettings(
+            os.path.join(Config.get.temp_dir, 'export_dialog.ini'), QSettings.Format.IniFormat
+        )
         settings.beginGroup(self.code_file_path)
         output_dir = settings.value('output_dir', None)
         output_format = settings.value('output_format', '.mp4')
@@ -104,7 +107,9 @@ class ExportDialog(QDialog):
         if not os.path.exists(output_dir):
             os.makedirs(output_dir)
 
-        file_path = os.path.join(output_dir, f'{self.built.timeline.__class__.__name__}{output_format}')
+        file_path = os.path.join(
+            output_dir, f'{self.built.timeline.__class__.__name__}{output_format}'
+        )
 
         self.ui.edit_path.setText(file_path)
         self.ui.spb_fps.setValue(fps)
@@ -120,7 +125,9 @@ class ExportDialog(QDialog):
     def save_options(self) -> None:
         path = Path(self.ui.edit_path.text())
 
-        settings = QSettings(os.path.join(Config.get.temp_dir, 'export_dialog.ini'), QSettings.Format.IniFormat)
+        settings = QSettings(
+            os.path.join(Config.get.temp_dir, 'export_dialog.ini'), QSettings.Format.IniFormat
+        )
         settings.beginGroup(self.code_file_path)
         settings.setValue('output_dir', path.parent)
         settings.setValue('output_format', path.suffix)
@@ -161,7 +168,7 @@ class ExportDialog(QDialog):
             self.ui.edit_path.text(),
             'MP4 (*.mp4);;MOV (*.mov);;GIF (*.gif)',
             suffix_to_filter_map[Path(self.ui.edit_path.text()).suffix],
-            QFileDialog.Option.DontConfirmOverwrite
+            QFileDialog.Option.DontConfirmOverwrite,
         )
         if not file_path:
             return
@@ -182,10 +189,11 @@ class ExportDialog(QDialog):
             msgbox = QMessageBox(
                 QMessageBox.Icon.Warning,
                 _('Confirm Export'),
-                _('{filename} already exists.\nDo you want to replace it?')
-                .format(filename=os.path.basename(file_path)),
+                _('{filename} already exists.\nDo you want to replace it?').format(
+                    filename=os.path.basename(file_path)
+                ),
                 QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
-                self
+                self,
             )
             msgbox.setDefaultButton(QMessageBox.StandardButton.Yes)
             msgbox.setButtonText(QMessageBox.StandardButton.Yes, _('Yes(&Y)'))

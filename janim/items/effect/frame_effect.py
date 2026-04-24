@@ -48,6 +48,7 @@ class FrameEffect(Item):
 
     完整示例请参考 :ref:`基础样例 <basic_examples>` 中的对应代码
     """
+
     renderer_cls = FrameEffectRenderer
 
     _items = CmptInfo(Cmpt_List[Self, Item])
@@ -62,7 +63,7 @@ class FrameEffect(Item):
         fragment_shader: str,
         cache_key: str | None = None,
         root_only: bool = False,
-        **kwargs
+        **kwargs,
     ):
         super().__init__(**kwargs)
         self.fragment_shader = fragment_shader
@@ -90,9 +91,10 @@ class FrameEffect(Item):
         """
         if objs:
             log.warning(
-                _('Calling {cls}.add is unusual and may not work as expected. '
-                  'If you want to apply additional items, use `apply` instead.')
-                .format(cls=self.__class__.__name__)
+                _(
+                    'Calling {cls}.add is unusual and may not work as expected. '
+                    'If you want to apply additional items, use `apply` instead.'
+                ).format(cls=self.__class__.__name__)
             )
         super().add(*objs, prepend=prepend, insert=insert)
         return self
@@ -107,9 +109,10 @@ class FrameEffect(Item):
         """
         if objs:
             log.warning(
-                _('Calling {cls}.remove is unusual and may not work as expected. '
-                  'If you want to discard applied items, use `discard` instead.')
-                .format(cls=self.__class__.__name__)
+                _(
+                    'Calling {cls}.remove is unusual and may not work as expected. '
+                    'If you want to discard applied items, use `discard` instead.'
+                ).format(cls=self.__class__.__name__)
             )
         return super().remove(*objs)
 
@@ -124,10 +127,7 @@ class FrameEffect(Item):
             if sub not in self._items
         ]
         self._items.extend(apply_items)
-        self._apprs.extend(
-            self.timeline.item_appearances[item]
-            for item in apply_items
-        )
+        self._apprs.extend(self.timeline.item_appearances[item] for item in apply_items)
 
     def discard(self, *items: Item, root_only: bool = False) -> Self:
         """
@@ -145,7 +145,7 @@ class FrameEffect(Item):
         for appr in self._apprs:
             appr.render_disabled = True
 
-        self._additional_lists = []     # 使得 Transform 以及类似动画能够正确应用 FrameEffect
+        self._additional_lists = []  # 使得 Transform 以及类似动画能够正确应用 FrameEffect
 
         for rcc in additionals:
             if all((item in self._items) for item in rcc.related_items):
@@ -153,7 +153,7 @@ class FrameEffect(Item):
                 self._additional_lists.append(rcc.func())
 
 
-simple_frameeffect_shader = '''
+simple_frameeffect_shader = """
 #version 330 core
 
 in vec2 v_texcoord;
@@ -172,7 +172,7 @@ void main()
 
     #[JA_FINISH_UP]
 }
-'''
+"""
 
 
 class SimpleFrameEffect(FrameEffect):
@@ -183,6 +183,7 @@ class SimpleFrameEffect(FrameEffect):
 
         如果该着色器代码中出现报错，会显示为 ``JA_SIMPLE_FRAMEEFFECT_SHADER`` 中出现的
     """
+
     def __init__(
         self,
         *items: Item,
@@ -190,20 +191,20 @@ class SimpleFrameEffect(FrameEffect):
         uniforms: Iterable[str] = [],
         cache_key: str | None = None,
         root_only: bool = False,
-        **kwargs
+        **kwargs,
     ):
         uniforms_code = '\n'.join(
-            f'uniform {uniform};'
+            f'uniform {uniform};'  #
             for uniform in uniforms
         )
         with ShaderInjection(
             JA_SIMPLE_FRAMEEFFECT_UNIFORMS=uniforms_code,
-            JA_SIMPLE_FRAMEEFFECT_SHADER=shader.strip()
+            JA_SIMPLE_FRAMEEFFECT_SHADER=shader.strip(),
         ):
             super().__init__(
                 *items,
                 fragment_shader=simple_frameeffect_shader,
                 cache_key=cache_key,
                 root_only=root_only,
-                **kwargs
+                **kwargs,
             )

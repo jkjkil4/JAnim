@@ -10,8 +10,7 @@ from argparse import Namespace
 from typing import Callable
 
 from janim.anims.timeline import BuiltTimeline, Timeline
-from janim.exception import (EXITCODE_MODULE_NOT_FOUND, EXITCODE_NOT_FILE,
-                             ExitException)
+from janim.exception import EXITCODE_MODULE_NOT_FOUND, EXITCODE_NOT_FILE, ExitException
 from janim.locale import get_translator
 from janim.logger import log
 from janim.utils.config import cli_config, default_config
@@ -32,12 +31,15 @@ def run(args: Namespace) -> None:
         return
 
     auto_play = len(timelines) == 1
-    available_timeline_names = [timeline.__name__ for timeline in get_all_timelines_from_module(module)]
+    available_timeline_names = [
+        timeline.__name__ for timeline in get_all_timelines_from_module(module)
+    ]
 
     # isort: off
-    from janim.gui.anim_viewer import AnimViewer    # 把 gui 组件放在前面导入，确保对 pyside6 的检测
+    from janim.gui.anim_viewer import AnimViewer  # 把 gui 组件放在前面导入，确保对 pyside6 的检测
     from PySide6.QtCore import QPoint, QTimer
     from janim.gui.application import Application
+    # isort: on
 
     app = Application()
 
@@ -46,7 +48,9 @@ def run(args: Namespace) -> None:
     built_timelines: list[BuiltTimeline] = []
 
     for timeline in timelines:
-        built_timelines.append(timeline().build(hide_subtitles=args.hide_subtitles, show_debug_notice=True))
+        built_timelines.append(
+            timeline().build(hide_subtitles=args.hide_subtitles, show_debug_notice=True)
+        )
 
     log.info('======')
     log.info(_('Constructing window'))
@@ -55,11 +59,13 @@ def run(args: Namespace) -> None:
 
     widgets: list[AnimViewer] = []
     for i, built in enumerate(built_timelines):
-        viewer = AnimViewer(built,
-                            auto_play=auto_play,
-                            interact=args.interact,
-                            watch=args.watch,
-                            available_timeline_names=available_timeline_names)
+        viewer = AnimViewer(
+            built,
+            auto_play=auto_play,
+            interact=args.interact,
+            watch=args.watch,
+            available_timeline_names=available_timeline_names,
+        )
         widgets.append(viewer)
         viewer.show()
         if i != 0:
@@ -84,8 +90,7 @@ def write(args: Namespace) -> None:
     if not timelines:
         return
 
-    from janim.render.writer import (AudioWriter, SRTWriter, VideoWriter,
-                                     merge_video_and_audio)
+    from janim.render.writer import AudioWriter, SRTWriter, VideoWriter, merge_video_and_audio
 
     log.info('======')
 
@@ -144,10 +149,7 @@ def write(args: Namespace) -> None:
         prev_is_skipped = skip
 
         if skip:
-            log.info(
-                _('Skipping "{name}": no part to output')
-                .format(name=name)
-            )
+            log.info(_('Skipping "{name}": no part to output').format(name=name))
             continue
 
         if writes_video:
@@ -163,13 +165,12 @@ def write(args: Namespace) -> None:
         if writes_video:
             video_writer = VideoWriter(built)
             video_writer.write_all(
-                os.path.join(output_dir,
-                             f'{name}.{args.format}'),
+                os.path.join(output_dir, f'{name}.{args.format}'),
                 args.in_point,
                 args.out_point,
                 use_pbo=not args.disable_pbo,
                 hwaccel=args.hwaccel,
-                _keep_temp=video_with_audio
+                _keep_temp=video_with_audio,
             )
             if open_result and not video_with_audio:
                 open_file(video_writer.final_file_path)
@@ -177,28 +178,26 @@ def write(args: Namespace) -> None:
         if writes_audio:
             audio_writer = AudioWriter(built)
             audio_writer.write_all(
-                os.path.join(output_dir,
-                             f'{name}.{args.audio_format}'),
-                _keep_temp=video_with_audio
+                os.path.join(output_dir, f'{name}.{args.audio_format}'),
+                _keep_temp=video_with_audio,
             )
             if open_result and not video_with_audio and not writes_video:
                 open_file(audio_writer.final_file_path)
 
         if video_with_audio:
-            merge_video_and_audio(built.cfg.ffmpeg_bin,
-                                  video_writer.temp_file_path,
-                                  audio_writer.temp_file_path,
-                                  video_writer.final_file_path)
+            merge_video_and_audio(
+                built.cfg.ffmpeg_bin,
+                video_writer.temp_file_path,
+                audio_writer.temp_file_path,
+                video_writer.final_file_path,
+            )
             if open_result:
                 open_file(video_writer.final_file_path)
 
         if writes_srt:
             file_path = os.path.join(output_dir, f'{name}.srt')
             SRTWriter.writes(built, file_path)
-            log.info(
-                _('Generated SRT file "{file_path}"')
-                .format(file_path=file_path)
-            )
+            log.info(_('Generated SRT file "{file_path}"').format(file_path=file_path))
 
     log.info('======')
 
@@ -208,7 +207,7 @@ def tool(args: Namespace) -> None:
         log.error(_('No tool specified for use'))
         return
 
-    from janim.gui.popup import ColorWidget, FontTable, RichTextEditor, QWidget
+    from janim.gui.popup import ColorWidget, FontTable, QWidget, RichTextEditor
 
     log.info('======')
     log.info(_('Constructing window'))
@@ -222,7 +221,7 @@ def tool(args: Namespace) -> None:
     tool_map: dict[str, type[QWidget]] = {
         'richtext': RichTextEditor,
         'fonts': FontTable,
-        'color': ColorWidget
+        'color': ColorWidget,
     }
 
     widgets: list[QWidget] = []
@@ -243,6 +242,7 @@ def modify_typst_compile_flag(args: Namespace) -> None:
     用于 CLI 的 ``--external-typst`` 参数
     """
     from janim.utils.typst_compile import set_use_external_typst
+
     set_use_external_typst(args.external_typst)
 
 
@@ -287,7 +287,7 @@ def get_module_from_stdin():
         len(source),
         None,
         [line + '\n' for line in source.splitlines()],
-        STDIN_FILENAME
+        STDIN_FILENAME,
     )
 
     sys.modules[module_name] = module
@@ -313,7 +313,7 @@ def get_module_from_file(file_name: str):
     # 兼容相对于源代码文件的导入
     sys.path.insert(0, os.path.abspath(os.path.dirname(file_name)))
 
-    module_name = file_name.replace(os.sep, ".").replace(".py", "")
+    module_name = file_name.replace(os.sep, '.').replace('.py', '')
     loader = importlib.machinery.SourceFileLoader(module_name, file_name)
     module = loader.load_module()
     return module
@@ -342,8 +342,12 @@ def extract_timelines_from_module(args: Namespace, module) -> list[type[Timeline
             return classes
 
         if module.__file__ == STDIN_FILENAME:
-            log.error(_('Multiple timelines found in stdin input. '
-                        'Please specify timeline names with command line arguments.'))
+            log.error(
+                _(
+                    'Multiple timelines found in stdin input. '  #
+                    'Please specify timeline names with command line arguments.'
+                )
+            )
             return []
 
         max_digits = len(str(len(classes)))
@@ -351,16 +355,15 @@ def extract_timelines_from_module(args: Namespace, module) -> list[type[Timeline
         name_to_class = {}
         for idx, timeline_class in enumerate(classes, start=1):
             name = timeline_class.__name__
-            print(f"{str(idx).zfill(max_digits)}: {name}", file=sys.stderr)
+            print(f'{str(idx).zfill(max_digits)}: {name}', file=sys.stderr)
             name_to_class[name] = timeline_class
 
         try:
-            prompt_text = (
-                '\n' + _('That module has multiple timelines, '
-                         'which ones would you like to render?'
-                         '\nTimeline Name or Number: ')
+            prompt_text = '\n' + _(
+                'That module has multiple timelines, which ones would you like to render?\n'  #
+                'Timeline Name or Number: '
             )
-            sys.stderr.write(prompt_text)   # input 只能输出到 stdout，所以这里手动输出到 stderr
+            sys.stderr.write(prompt_text)  # input 只能输出到 stdout，所以这里手动输出到 stderr
             sys.stderr.flush()
             user_input = input()
         except KeyboardInterrupt:
@@ -395,11 +398,16 @@ def get_all_timelines_from_module(module) -> list[type[Timeline]]:
     classes = [
         value
         for value in module.__dict__.values()
-        if (isinstance(value, type)
+        if (
+            isinstance(value, type)
             and issubclass(value, Timeline)
-            and value.__module__ == module.__name__                             # 定义于当前模块，排除了 import 导入的
-            and not value.__name__.startswith('_')                              # 排除以下划线开头的
-            and not getattr(value.construct, '__isabstractmethod__', False))    # construct 方法已被实现
+            # 定义于当前模块，排除了 import 导入的
+            and value.__module__ == module.__name__
+            # 排除以下划线开头的
+            and not value.__name__.startswith('_')
+            # construct 方法已被实现
+            and not getattr(value.construct, '__isabstractmethod__', False)
+        )
     ]
     if len(classes) <= 1:
         return classes

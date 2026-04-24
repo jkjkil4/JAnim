@@ -1,10 +1,8 @@
-
 import numpy as np
 from PySide6.QtCore import QPointF, QRectF, Qt
 from PySide6.QtGui import QPainter, QPainterPath
 
-from janim.gui.draw.base import (ACTIVE_COLOR_TRANSPARENT, INACTIVE_COLOR,
-                                 DrawOnce, point_to_str)
+from janim.gui.draw.base import ACTIVE_COLOR_TRANSPARENT, INACTIVE_COLOR, DrawOnce, point_to_str
 from janim.gui.utils.text_edit import TextEdit
 
 
@@ -32,12 +30,14 @@ class DrawRect(DrawOnce):
         urx, ury = max(x1, x2), min(y1, y2)
 
         map_to_point = self.viewer.glw.map_to_point
-        self.points = np.array([
-            map_to_point(QPointF(urx, ury)),    # UR
-            map_to_point(QPointF(dlx, ury)),    # UL
-            map_to_point(QPointF(dlx, dly)),    # DL
-            map_to_point(QPointF(urx, dly)),    # DR
-        ])
+        self.points = np.array(
+            [
+                map_to_point(QPointF(urx, ury)),  # UR
+                map_to_point(QPointF(dlx, ury)),  # UL
+                map_to_point(QPointF(dlx, dly)),  # DL
+                map_to_point(QPointF(urx, dly)),  # DR
+            ]
+        )
 
         hor = np.isclose(self.points[1, 1:] - self.points[0, 1:], 0).all()
         ver = np.isclose(self.points[2, [0, 2]] - self.points[1, [0, 2]], 0).all()

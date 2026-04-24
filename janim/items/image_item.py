@@ -16,8 +16,7 @@ from janim.components.component import CmptInfo
 from janim.components.image import Cmpt_Image
 from janim.components.rgbas import Cmpt_Rgbas
 from janim.constants import DL, DR, OUT, UL, UR
-from janim.exception import (EXITCODE_FFMPEG_NOT_FOUND, EXITCODE_FFPROBE_ERROR,
-                             ExitException)
+from janim.exception import EXITCODE_FFMPEG_NOT_FOUND, EXITCODE_FFPROBE_ERROR, ExitException
 from janim.items.points import Points
 from janim.locale import get_translator
 from janim.logger import log
@@ -53,7 +52,7 @@ class ImageItem(Points):
         width: float | None = None,
         height: float | None = None,
         min_mag_filter: tuple[int, int] = (mgl.LINEAR_MIPMAP_LINEAR, mgl.LINEAR),
-        **kwargs
+        **kwargs,
     ):
         super().__init__(**kwargs)
 
@@ -68,26 +67,20 @@ class ImageItem(Points):
         if width is None and height is None:
             self.points.set_size(
                 img.width * Config.get.default_pixel_to_frame_ratio,
-                img.height * Config.get.default_pixel_to_frame_ratio
+                img.height * Config.get.default_pixel_to_frame_ratio,
             )
         elif width is None and height is not None:
-            self.points.set_size(
-                height * img.width / img.height,
-                height
-            )
+            self.points.set_size(height * img.width / img.height, height)
         elif width is not None and height is None:
-            self.points.set_size(
-                width,
-                width * img.height / img.width
-            )
-        else:   # width is not None and height is not None
+            self.points.set_size(width, width * img.height / img.width)
+        else:  # width is not None and height is not None
             self.points.set_size(width, height)
 
     def apply_style(
         self,
         color: JAnimColor | ColorArray | None = None,
         alpha: Alpha | AlphaArray | None = None,
-        **kwargs
+        **kwargs,
     ) -> Self:
         self.color.set(color, alpha)
 
@@ -129,12 +122,9 @@ class ImageItem(Points):
         """
         img = self.image.get()
         width, height = img.size
-        return np.array(
-            img.getpixel((
-                clip(x, 0, width - 1),
-                clip(y, 0, height - 1)
-            ))
-        ) / 255
+        cx = clip(x, 0, width - 1)
+        cy = clip(y, 0, height - 1)
+        return np.array(img.getpixel((cx, cy))) / 255
 
     def point_to_rgba(self, point: np.ndarray, clamp_to_edge: bool = False) -> np.ndarray:
         """
@@ -204,6 +194,7 @@ class PixelImageItem(ImageItem):
 
     与 :class:`ImageItem` 基本一致，只是在图像被放大显示时不进行平滑插值处理，使得像素清晰
     """
+
     def __init__(
         self,
         file_path: str,
@@ -211,9 +202,11 @@ class PixelImageItem(ImageItem):
         width: float | None = None,
         height: float | None = None,
         min_mag_filter: tuple[int, int] = (mgl.LINEAR_MIPMAP_LINEAR, mgl.NEAREST),
-        **kwargs
+        **kwargs,
     ):
-        super().__init__(file_path, width=width, height=height, min_mag_filter=min_mag_filter, **kwargs)
+        super().__init__(
+            file_path, width=width, height=height, min_mag_filter=min_mag_filter, **kwargs
+        )
 
 
 class VideoFrame(ImageItem):
@@ -227,6 +220,7 @@ class VideoFrame(ImageItem):
 
     播放视频请使用 :class:`Video`
     """
+
     def __init__(
         self,
         file_path: str,
@@ -234,7 +228,7 @@ class VideoFrame(ImageItem):
         *,
         width: float | None = None,
         height: float | None = None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__(self.capture(file_path, frame_at), width=width, height=height, **kwargs)
 
@@ -256,21 +250,25 @@ class VideoFrame(ImageItem):
     def _capture(file_path: str, frame_at: str | float) -> Image.Image:
         command = [
             Config.get.ffmpeg_bin,
-            '-ss', str(frame_at),           # where
-            '-i', file_path,     # file
-            '-vframes', '1',                # capture only 1 frame
+            '-ss', str(frame_at),  # where
+            '-i', file_path,  # file
+            '-vframes', '1',  # capture only 1 frame
             '-f', 'image2pipe',
             '-vcodec', 'png',
             '-loglevel', 'error',
-            '-'     # output to a pipe
-        ]
+            '-',  # output to a pipe
+        ]  # fmt: skip
 
         try:
             with sp.Popen(command, stdout=sp.PIPE) as process:
                 data = process.stdout.read()
 
         except FileNotFoundError:
-            log.error(_('Unable to read video frame, please install ffmpeg and add it to the environment variables'))
+            log.error(
+                _(
+                    'Unable to read video frame, please install ffmpeg and add it to the environment variables'
+                )
+            )
             raise ExitException(EXITCODE_FFMPEG_NOT_FOUND)
 
         image = Image.open(io.BytesIO(data))
@@ -332,7 +330,7 @@ class Video(PlaybackControl, Points):
         height: float | None = None,
         min_mag_filter: tuple[int, int] = (mgl.LINEAR_MIPMAP_LINEAR, mgl.LINEAR),
         frame_components: int = 3,
-        **kwargs
+        **kwargs,
     ):
         super().__init__(**kwargs)
 
@@ -346,26 +344,20 @@ class Video(PlaybackControl, Points):
         if width is None and height is None:
             self.points.set_size(
                 self.info.width * Config.get.default_pixel_to_frame_ratio,
-                self.info.height * Config.get.default_pixel_to_frame_ratio
+                self.info.height * Config.get.default_pixel_to_frame_ratio,
             )
         elif width is None and height is not None:
-            self.points.set_size(
-                height * self.info.width / self.info.height,
-                height
-            )
+            self.points.set_size(height * self.info.width / self.info.height, height)
         elif width is not None and height is None:
-            self.points.set_size(
-                width,
-                width * self.info.height / self.info.width
-            )
-        else:   # width is not None and height is not None
+            self.points.set_size(width, width * self.info.height / self.info.width)
+        else:  # width is not None and height is not None
             self.points.set_size(width, height)
 
     def apply_style(
         self,
         color: JAnimColor | ColorArray | None = None,
         alpha: Alpha | AlphaArray | None = None,
-        **kwargs
+        **kwargs,
     ) -> Self:
         self.color.set(color, alpha)
 
@@ -441,16 +433,20 @@ class VideoInfo:
             '-show_entries', 'stream=width,height,r_frame_rate,nb_frames',
             '-show_entries', 'format=duration',
             '-of', 'csv=p=0',
-            file_path
-        ]
+            file_path,
+        ]  # fmt: skip
 
         try:
             with sp.Popen(command, stdout=sp.PIPE) as process:
                 ret = process.stdout.read().decode('utf-8')
                 code = process.wait()
         except FileNotFoundError:
-            log.error(_('Unable to read video information, please install ffmpeg'
-                        'and add it (including ffprobe) to the environment variables.'))
+            log.error(
+                _(
+                    'Unable to read video information, please install ffmpeg'
+                    'and add it (including ffprobe) to the environment variables.'
+                )
+            )
             raise ExitException(EXITCODE_FFMPEG_NOT_FOUND)
 
         if code != 0:
@@ -476,6 +472,7 @@ class PixelVideo(Video):
 
     与 :class:`Video` 基本一致，只是在被放大显示时不进行平滑插值处理，使得像素清晰
     """
+
     def __init__(
         self,
         file_path: str,
@@ -483,6 +480,8 @@ class PixelVideo(Video):
         width: float | None = None,
         height: float | None = None,
         min_mag_filter: tuple[int, int] = (mgl.LINEAR_MIPMAP_LINEAR, mgl.NEAREST),
-        **kwargs
+        **kwargs,
     ):
-        super().__init__(file_path, width=width, height=height, min_mag_filter=min_mag_filter, **kwargs)
+        super().__init__(
+            file_path, width=width, height=height, min_mag_filter=min_mag_filter, **kwargs
+        )

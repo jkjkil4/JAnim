@@ -1,4 +1,3 @@
-
 from typing import Callable, Iterable
 
 import numpy as np
@@ -18,7 +17,7 @@ class ParametricCurve(VItem):
         # TODO: automatically figure out discontinuities
         discontinuities: Iterable[float] = [],
         use_smoothing: bool = True,
-        **kwargs
+        **kwargs,
     ):
         self.t_func = t_func
         self.t_range = t_range
@@ -59,13 +58,13 @@ class FunctionGraph(ParametricCurve):
         function: Callable[[float], float],
         x_range: tuple[float, float, float] = (-8, 8, 0.25),
         color: JAnimColor = YELLOW,
-        **kwargs
+        **kwargs,
     ):
         super().__init__(
             lambda t: [t, function(t), 0],
             x_range,
             color=color,
-            **kwargs
+            **kwargs,
         )
 
 

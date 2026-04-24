@@ -19,6 +19,7 @@ from janim.utils.data import AlignedData
 
 _ = get_translator('janim.components.data')
 
+# fmt: off
 type ClassInfo = type | types.UnionType | tuple[ClassInfo, ...]
 type CopyFn[T] = Callable[[T], T]                   # (a) -> copied
 type NotChangedFn[T] = Callable[[T, T], bool]       # (a, b) -> is_not_changed
@@ -27,6 +28,7 @@ type InterpolateFn[T] = Callable[[T, T, float], T]  # (a, b, alpha) -> interpola
 type UpdateFn[T] = Callable[[T, T], T]              # (state, patch) -> now
 
 type _Funcs[T] = tuple[CopyFn[T], NotChangedFn[T], InterpolateFn[T]]
+# fmt: on
 
 _default_funcs: _Funcs = (copy.copy, lambda a, b: a == b, interpolate)
 
@@ -35,6 +37,7 @@ class Cmpt_Data[ItemT, T](Component[ItemT]):
     """
     详见 :class:`~.ValueTracker`
     """
+
     def __init__(self):
         self.copy_func: CopyFn[T] | None = None
         self.not_changed_func: NotChangedFn[T] | None = None
@@ -65,9 +68,7 @@ class Cmpt_Data[ItemT, T](Component[ItemT]):
             return fn(self.value, other.value)
 
     @classmethod
-    def align_for_interpolate(
-        cls, cmpt1: Cmpt_Data, cmpt2: Cmpt_Data
-    ) -> AlignedData[Self]:
+    def align_for_interpolate(cls, cmpt1: Cmpt_Data, cmpt2: Cmpt_Data) -> AlignedData[Self]:
         cmpt1_copy = cmpt1.copy()
         cmpt2_copy = cmpt2.copy()
         return AlignedData(cmpt1_copy, cmpt2_copy, cmpt1_copy.copy())
@@ -120,19 +121,22 @@ class Cmpt_Data[ItemT, T](Component[ItemT]):
     ) -> Self:
         if any(x is not None for x in (copy_func, not_changed_func, interpolate_func)):
             from janim.utils.deprecation import is_removed
+
             if is_removed((4, 3)):
                 raise RuntimeError(
                     'Compatibility with previous ValueTracker APIs ended in JAnim 4.3'
                 )
             else:
                 log.warning(
-                    _('ValueTracker was refactored in 4.0 and no longer directly accepts '
-                      'copy_func, not_changed_func, or interpolate_func.\n'
-                      'Use Cmpt_Data.register_funcs to register handlers for your types, '
-                      'See documentation page '
-                      'https://janim.readthedocs.io/en/latest/tutorials/value_tracker.html '
-                      'for details.\n'
-                      'Compatibility with the previous approach ends in JAnim 4.3')
+                    _(
+                        'ValueTracker was refactored in 4.0 and no longer directly accepts '
+                        'copy_func, not_changed_func, or interpolate_func.\n'
+                        'Use Cmpt_Data.register_funcs to register handlers for your types, '
+                        'See documentation page '
+                        'https://janim.readthedocs.io/en/latest/tutorials/value_tracker.html '
+                        'for details.\n'
+                        'Compatibility with the previous approach ends in JAnim 4.3'
+                    )
                 )
 
         if copy_func is not None:
@@ -198,10 +202,10 @@ class Cmpt_Data[ItemT, T](Component[ItemT]):
     @staticmethod
     def register_funcs[T](
         isinstance_check: ClassInfo,
-
+        #
         copy_func: CopyFn[T],
         not_changed_func: NotChangedFn[T],
-        interpolate_func: InterpolateFn[T]
+        interpolate_func: InterpolateFn[T],
     ) -> None:
         funcs = (copy_func, not_changed_func, interpolate_func)
         Cmpt_Data._funcs_resolver.register(isinstance_check, funcs)
@@ -231,18 +235,19 @@ class Cmpt_Data[ItemT, T](Component[ItemT]):
             funcs = (
                 value.__class__.copy,
                 value.__class__.not_changed,
-                value.__class__.interpolate
+                value.__class__.interpolate,
             )
             Cmpt_Data._funcs_resolver.update_cache(value, funcs)
             return funcs
 
         log.warning(
-            _('Type "{type}" has no registered function for tracking, '
-              'the default function will be used\n'
-              'See documentation page '
-              'https://janim.readthedocs.io/en/latest/tutorials/value_tracker.html '
-              'for details')
-            .format(type=value.__class__.__name__)
+            _(
+                'Type "{type}" has no registered function for tracking, '
+                'the default function will be used\n'
+                'See documentation page '
+                'https://janim.readthedocs.io/en/latest/tutorials/value_tracker.html '
+                'for details'
+            ).format(type=value.__class__.__name__)
         )
         Cmpt_Data._funcs_resolver.update_cache(value, _default_funcs)
         return _default_funcs
@@ -254,7 +259,7 @@ class Cmpt_Data[ItemT, T](Component[ItemT]):
     @staticmethod
     def register_update_func[T](
         isinstance_check: ClassInfo,
-        update_func: UpdateFn[T]
+        update_func: UpdateFn[T],
     ) -> None:
         Cmpt_Data._update_func_resolver.register(isinstance_check, update_func)
 
@@ -301,11 +306,13 @@ class CustomData[ItemT, T](CmptInfo[Cmpt_Data[ItemT, T]]):
 
             ...
     """
+
     def __init__(self):
         super().__init__(Cmpt_Data)
 
 
 # region register
+
 
 def _format_keys(keys: set) -> str:
     return '[' + ', '.join(sorted((f'"{k}"' for k in keys))) + ']'
@@ -322,7 +329,8 @@ class TrackerShapeError(JAnimException):
         self.missing = missing or set()
         self.extra = extra or set()
 
-    source_cls_name_ctx: ContextVar[str] = ContextVar('config_ctx_var')     # 透传来源类名，用于报错时的类名显示
+    # 透传来源类名，用于报错时的类名显示
+    source_cls_name_ctx: ContextVar[str] = ContextVar('config_ctx_var')
 
     @staticmethod
     def get_source_cls_name() -> str:
@@ -336,11 +344,13 @@ def _assert_seq_len_match[T: Callable](fn: T) -> T:
         if len_a != len_b:
             cls_name = TrackerShapeError.get_source_cls_name()
             raise TrackerShapeError(
-                _('Existing sequence and new value must have the same length for {cls_name}; '
-                  'existing length {len_a}, new length {len_b}')
-                .format(cls_name=cls_name, len_a=len_a, len_b=len_b)
+                _(
+                    'Existing sequence and new value must have the same length for {cls_name}; '
+                    'existing length {len_a}, new length {len_b}'
+                ).format(cls_name=cls_name, len_a=len_a, len_b=len_b)
             )
         return fn(a, b, *args)
+
     return wrapper
 
 
@@ -353,13 +363,14 @@ def _assert_dict_keys_match[T: Callable](fn: T) -> T:
         if missing or extra:
             cls_name = TrackerShapeError.get_source_cls_name()
             raise TrackerShapeError(
-                _('Existing dictionary and new value must share the same keys for {cls_name}')
-                .format(cls_name=cls_name),
-
+                _(
+                    'Existing dictionary and new value must share the same keys for {cls_name}'
+                ).format(cls_name=cls_name),
                 missing=missing,
-                extra=extra
+                extra=extra,
             )
         return fn(a, b, *args)
+
     return wrapper
 
 
@@ -375,7 +386,7 @@ Cmpt_Data.register_funcs(
         lambda a, b, alpha: tuple(
             Cmpt_Data.interpolate_for_value(x, y, alpha) for x, y in zip(a, b, strict=True)
         )
-    )
+    ),
 )
 
 Cmpt_Data.register_funcs(
@@ -390,60 +401,60 @@ Cmpt_Data.register_funcs(
         lambda a, b, alpha: [
             Cmpt_Data.interpolate_for_value(x, y, alpha) for x, y in zip(a, b, strict=True)
         ]
-    )
+    ),
 )
 
-Cmpt_Data.register_funcs(   # noqa: E305
+Cmpt_Data.register_funcs(  # noqa: E305
     dict,
     lambda a: {k: Cmpt_Data.copy_for_value(v) for k, v in a.items()},
     _assert_dict_keys_match(
-        lambda a, b: all(
-            Cmpt_Data.check_not_changed_for_value(a[k], b[k]) for k in a.keys()
-        )
+        lambda a, b: all(Cmpt_Data.check_not_changed_for_value(a[k], b[k]) for k in a.keys())
     ),
     _assert_dict_keys_match(
         lambda a, b, alpha: {
             k: Cmpt_Data.interpolate_for_value(a[k], b[k], alpha) for k in a.keys()
         }
-    )
+    ),
 )
 
-def _dict_update_func(state: dict, patch: dict) -> dict:    # noqa: E302
+
+def _dict_update_func(state: dict, patch: dict) -> dict:  # noqa: E302
     extra = set(patch.keys()) - set(state.keys())
     if extra:
         raise TrackerShapeError(
             _('Update contains keys not present in current value'),
-            extra=extra
+            extra=extra,
         )
     now = state.copy()
     for key, value in patch.items():
         now[key] = Cmpt_Data.update_for_value(state[key], value)
     return now
 
-Cmpt_Data.register_update_func(     # noqa: E305
+
+Cmpt_Data.register_update_func(  # noqa: E305
     dict,
-    _dict_update_func
+    _dict_update_func,
 )
 
-Cmpt_Data.register_funcs(   # 只是对于短 numpy 数组的简单实现，对于大规模数组，应考虑 Cmpt_Points
+Cmpt_Data.register_funcs(  # 只是对于短 numpy 数组的简单实现，对于大规模数组，应考虑 Cmpt_Points
     np.ndarray,
     np.ndarray.copy,
     lambda a, b: np.all(a == b),
-    interpolate
+    interpolate,
 )
 
 # 设计上，越后面的越早判断，因此将最常见的 numbers 放在最后 register
 
 Cmpt_Data.register_funcs(
     numbers.Number,
-    *_default_funcs
+    *_default_funcs,
 )
 
 Cmpt_Data.register_funcs(
     bool,
     copy.copy,
     lambda a, b: a == b,
-    lambda a, b, alpha: interpolate(a, b, alpha) >= 0.5
+    lambda a, b, alpha: interpolate(a, b, alpha) >= 0.5,
 )
 
 # endregion

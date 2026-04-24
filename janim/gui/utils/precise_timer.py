@@ -1,7 +1,6 @@
-
 import time
 
-from PySide6.QtCore import QTimer, QObject, Qt, Signal
+from PySide6.QtCore import QObject, Qt, QTimer, Signal
 
 
 class PreciseTimer(QTimer):

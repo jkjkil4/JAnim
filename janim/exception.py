@@ -67,7 +67,11 @@ class ExitException(JAnimException):
     当 :class:`ExitException` 未被捕获时，
     会直接以 ``exit_code`` 退出，不输出 ``traceback`` 信息
     """
+
     exit_code: int
+
+
+# fmt: off
 
 
 class TimelineError(JAnimException): ...

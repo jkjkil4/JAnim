@@ -12,9 +12,14 @@ from janim.anims.timeline import Timeline
 from janim.camera.camera import Camera
 from janim.constants import DEGREES, PI, RIGHT, TAU
 from janim.exception import GuiCommandError
-from janim.gui.handlers.utils import (HandlerPanel, SourceDiff,
-                                      get_confirm_buttons,
-                                      get_undo_redo_buttons, jump, parse_item)
+from janim.gui.handlers.utils import (
+    HandlerPanel,
+    SourceDiff,
+    get_confirm_buttons,
+    get_undo_redo_buttons,
+    jump,
+    parse_item,
+)
 from janim.locale import get_translator
 from janim.utils.space_ops import normalize
 
@@ -32,8 +37,10 @@ def handler(viewer: AnimViewer, command: Timeline.GuiCommand) -> None:
         camera = parse_item(command.body, command.locals)
         if not isinstance(camera, Camera):
             raise GuiCommandError(
-                _('The {type} item from "{script}" is not a Camera')
-                .format(script=command.body, type=camera.__class__.__name__)
+                _('The {type} item from "{script}" is not a Camera').format(
+                    script=command.body,
+                    type=camera.__class__.__name__,
+                )
             )
     else:
         camera = viewer.built.timeline.camera
@@ -58,10 +65,12 @@ class CameraPanel(HandlerPanel):
 
         # setup ui
 
-        tips_text = _('Drag:& Rotate camera\n'
-                      'Ctrl + Drag:& Rotate camera in place\n'
-                      'Shift + Drag:& Pan camera\n'
-                      'Wheel:& Zoom')
+        tips_text = _(
+            'Drag:& Rotate camera\n'  #
+            'Ctrl + Drag:& Rotate camera in place\n'  #
+            'Shift + Drag:& Pan camera\n'  #
+            'Wheel:& Zoom'
+        )
 
         # 将文本按 & 分割并使用 HTML 表格对齐
         lines = tips_text.split('\n')
@@ -69,13 +78,15 @@ class CameraPanel(HandlerPanel):
         for line in lines:
             if '&' in line:
                 left, right = line.split('&', 1)
-                html_rows.append(f'<tr><td align="right">{left.strip()}</td><td>{right.strip()}</td></tr>')
+                html_rows.append(
+                    f'<tr><td align="right">{left.strip()}</td><td>{right.strip()}</td></tr>'
+                )
             else:
                 html_rows.append(f'<tr><td colspan="2">{line}</td></tr>')
 
         label_tips = QLabel(
             f'<table cellspacing="0" cellpadding="4">{"".join(html_rows)}</table>',
-            self
+            self,
         )
         label_tips.setTextFormat(Qt.TextFormat.RichText)
 
@@ -108,7 +119,11 @@ class CameraPanel(HandlerPanel):
 
         # throttle re-render
 
-        self.throttle_timer = QTimer(self, singleShot=True, interval=1000 // viewer.built.cfg.preview_fps)
+        self.throttle_timer = QTimer(
+            self,
+            singleShot=True,
+            interval=1000 // viewer.built.cfg.preview_fps,
+        )
         self.throttle_timer.timeout.connect(self.update_glw)
 
         # update
@@ -243,7 +258,7 @@ class History:
 
         self.records: list[Camera] = [camera.store()]
         self.ptr = 1
-        self.last_is_zoom = False   # 用于合并多个滚轮导致的变动
+        self.last_is_zoom = False  # 用于合并多个滚轮导致的变动
 
     def save(self, state: Camera, *, is_zoom: bool = False) -> None:
         if is_zoom and self.last_is_zoom:
@@ -302,7 +317,9 @@ def simplify_angle_delta(angle1: float, angle2: float) -> float:
     return round(angle2 - angle1, 2)
 
 
-def pan_camera_by_start_and_end(viewer: AnimViewer, camera: Camera, start: QPointF, end: QPointF) -> None:
+def pan_camera_by_start_and_end(
+    viewer: AnimViewer, camera: Camera, start: QPointF, end: QPointF
+) -> None:
     glw = viewer.glw
     info = camera.points.info
 

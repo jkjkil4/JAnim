@@ -3,9 +3,9 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from janim.anims.timeline import Timeline
-from janim.logger import log
-from janim.locale import get_translator
 from janim.gui.handlers.utils import jump
+from janim.locale import get_translator
+from janim.logger import log
 
 if TYPE_CHECKING:
     from janim.gui.anim_viewer import AnimViewer

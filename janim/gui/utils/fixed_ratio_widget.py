@@ -1,4 +1,3 @@
-
 from PySide6.QtCore import QSize
 from PySide6.QtGui import QResizeEvent
 from PySide6.QtWidgets import QWidget
@@ -8,6 +7,7 @@ class FixedRatioWidget(QWidget):
     """
     使得传入的 ``inside`` 控件可以以固定比例塞在该控件中
     """
+
     def __init__(self, inside: QWidget, parent: QWidget | None = None) -> None:
         super().__init__(parent)
         self.inside = inside
@@ -21,11 +21,7 @@ class FixedRatioWidget(QWidget):
     def update_inner_size(self, wnd_size: QSize) -> None:
         wnd_width, wnd_height = wnd_size.toTuple()
         w, h = get_proportional_scale_size(*self.src_size, wnd_width, wnd_height)
-        self.inside.setGeometry(
-            (wnd_width - w) // 2,
-            (wnd_height - h) // 2,
-            w, h
-        )
+        self.inside.setGeometry((wnd_width - w) // 2, (wnd_height - h) // 2, w, h)
 
     def resizeEvent(self, event: QResizeEvent) -> None:
         super().resizeEvent(event)

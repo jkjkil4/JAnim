@@ -51,7 +51,7 @@ class Signal[T, **P, R]:
         update_wrapper(self, func)
 
         self.all_slots: defaultdict[FullQualname, defaultdict[Key, _SelfSlots]] \
-            = defaultdict(lambda: defaultdict(_SelfSlots))
+            = defaultdict(lambda: defaultdict(_SelfSlots))  # fmt: skip
 
     # region typing
 
@@ -63,7 +63,7 @@ class Signal[T, **P, R]:
     def __get__(self, instance, owner):
         return self if instance is None else self.func.__get__(instance, owner)
 
-    def __call__(self, *args, **kwargs):    # pragma: no cover
+    def __call__(self, *args, **kwargs):  # pragma: no cover
         return self.func(*args, **kwargs)
 
     # endregion
@@ -151,12 +151,15 @@ class Signal[T, **P, R]:
         self.all_slots[full_qualname][key].refresh_slots.append(func.__name__)
         return func
 
-    def self_refresh_with_recurse(self, *, recurse_up: bool = False, recurse_down: bool = False, key: str = ''):
+    def self_refresh_with_recurse(
+        self, *, recurse_up: bool = False, recurse_down: bool = False, key: str = ''
+    ):
         """
         被修饰的方法会在 :class:`~.Signal` 触发时，标记需要重新计算
 
         并且会根据 ``recurse_up`` 和 ``recurse_down`` 进行递归传递
         """
+
         def decorator[Fn: Callable](func: Fn) -> Fn:
             full_qualname = self._get_cls_full_qualname_from_fback()
             slot = _SelfSlotWithRecurse(func.__name__, recurse_up, recurse_down)
@@ -172,7 +175,9 @@ class Signal[T, **P, R]:
         obj_slots = self._get_obj_slots_with_default(sender)
         obj_slots[(self, key)].normal_slots.append(func)
 
-    def connect_refresh(self, sender: object, obj: refresh.Refreshable, func: Callable | str, *, key: str = '') -> None:
+    def connect_refresh(
+        self, sender: object, obj: refresh.Refreshable, func: Callable | str, *, key: str = ''
+    ) -> None:
         """
         使 ``func`` 会在 ``Signal`` 触发时被标记为需要重新计算
         """
@@ -194,7 +199,9 @@ class Signal[T, **P, R]:
 
         # @self_refresh_with_recurse
         for slot in slots.refresh_slots_with_recurse:
-            sender.mark_refresh(slot.name, recurse_up=slot.recurse_up, recurse_down=slot.recurse_down)  # type: ignore
+            sender.mark_refresh(
+                slot.name, recurse_up=slot.recurse_up, recurse_down=slot.recurse_down
+            )  # type: ignore
 
         ####
 
@@ -213,7 +220,7 @@ class Signal[T, **P, R]:
         for slot in slots.refresh_slots:
             obj = slot.obj()
             if obj is None:
-                continue    # pragma: no cover
+                continue  # pragma: no cover
             obj.mark_refresh(slot.name)
 
 
@@ -229,13 +236,9 @@ def _signal_gc_callback(phase: str, info: dict) -> None:
 
         for slots in obj_slots.values():
             len1 = len(slots.refresh_slots)
-            slots.refresh_slots = [
-                slot
-                for slot in slots.refresh_slots
-                if slot.obj() is not None
-            ]
+            slots.refresh_slots = [slot for slot in slots.refresh_slots if slot.obj() is not None]
             len2 = len(slots.refresh_slots)
-            total += (len1 - len2)
+            total += len1 - len2
 
     # if total != 0:
     #     log.debug(

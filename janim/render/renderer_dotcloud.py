@@ -28,11 +28,14 @@ class DotCloudRenderer(Renderer):
         self.vbo_color = self.ctx.buffer(reserve=1)
         self.vbo_radius = self.ctx.buffer(reserve=1)
 
-        self.vao = self.ctx.vertex_array(self.prog, [
-            (self.vbo_points, '3f', 'in_point'),
-            (self.vbo_color, '4f', 'in_color'),
-            (self.vbo_radius, '1f', 'in_radius')
-        ])
+        self.vao = self.ctx.vertex_array(
+            self.prog,
+            [
+                (self.vbo_points, '3f', 'in_point'),
+                (self.vbo_color, '4f', 'in_color'),
+                (self.vbo_radius, '1f', 'in_radius'),
+            ],
+        )
 
         self.prev_points = None
         self.prev_color = None

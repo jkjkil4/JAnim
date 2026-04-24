@@ -3,9 +3,16 @@ from typing import TYPE_CHECKING
 
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QPixmap
-from PySide6.QtWidgets import (QHBoxLayout, QHeaderView, QLabel, QLineEdit,
-                               QTableWidget, QTableWidgetItem, QVBoxLayout,
-                               QWidget)
+from PySide6.QtWidgets import (
+    QHBoxLayout,
+    QHeaderView,
+    QLabel,
+    QLineEdit,
+    QTableWidget,
+    QTableWidgetItem,
+    QVBoxLayout,
+    QWidget,
+)
 
 from janim.locale import get_translator
 from janim.utils.file_ops import get_gui_asset
@@ -51,22 +58,28 @@ class FontTable(QWidget):
     def setup_table(table: QTableWidget) -> None:
         db = get_database()
         infos = [
-            info
+            info  #
             for family in db.family_by_name.values()
             for info in family.infos
         ]
         table.setRowCount(len(infos))
         table.setColumnCount(3)
-        table.setHorizontalHeaderLabels((_('Family Name'),
-                                         _('Full Name'),
-                                         _('Display Name (includes multiple languages, make good use of search)')))
+        table.setHorizontalHeaderLabels(
+            (
+                _('Family Name'),
+                _('Full Name'),
+                _('Display Name (includes multiple languages, make good use of search)'),
+            )
+        )
         table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.ResizeToContents)
-        table.horizontalHeader().setDefaultAlignment(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter)
+        table.horizontalHeader().setDefaultAlignment(
+            Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter
+        )
         table.setHorizontalScrollMode(QTableWidget.ScrollMode.ScrollPerPixel)
 
         for row, info in enumerate(infos):
             records: list[NameRecord] = [
-                record
+                record  #
                 for record in info.name.names
                 if record.nameID == 1
             ]
@@ -78,12 +91,14 @@ class FontTable(QWidget):
                 platform_id = record.platformID
                 language_id = record.langID
                 displayname = record.string.decode('utf-16-be' if record.isUnicode() else 'latin-1')
-                names.append(f'({platform_id},{locale.windows_locale.get(language_id, language_id)}){displayname}')
+                names.append(
+                    f'({platform_id},{locale.windows_locale.get(language_id, language_id)}){displayname}'
+                )
 
             contents = (
                 info.family_name,
                 info.full_name,
-                ', '.join(names)
+                ', '.join(names),
             )
             for col, content in enumerate(contents):
                 item = QTableWidgetItem(content)

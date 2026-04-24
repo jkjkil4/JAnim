@@ -41,6 +41,7 @@ class Renderer:
 
     重写 :meth:`render` 以实现具体功能
     """
+
     data_ctx: ContextVar[RenderData] = ContextVar('Renderer.data_ctx')
 
     def render(self, item) -> None: ...
@@ -58,17 +59,13 @@ class Renderer:
         new_data: np.ndarray,
         vbo: mgl.Buffer,
         resize_target: int,
-        use_32bit_align: bool = False
+        use_32bit_align: bool = False,
     ) -> None:
         processed_data = resize_with_interpolation(new_data, resize_target)
         assert processed_data.dtype == np.float32
         bytes_data = processed_data.tobytes()
 
-        size = (
-            ((len(bytes_data) + 31) & ~31)
-            if use_32bit_align
-            else len(bytes_data)
-        )
+        size = ((len(bytes_data) + 31) & ~31) if use_32bit_align else len(bytes_data)
         if size != vbo.size:
             vbo.orphan(size)
 
@@ -78,7 +75,7 @@ class Renderer:
     def update_static_buffer_data(
         new_data: np.ndarray,
         vbo: mgl.Buffer,
-        resize_target: int
+        resize_target: int,
     ) -> None:
         processed_data = resize_with_interpolation(new_data, resize_target)
         assert processed_data.dtype == np.float32
@@ -107,6 +104,7 @@ class RenderData:
 
     通过 :py:obj:`Renderer.data_ctx` 进行设置和获取
     """
+
     ctx: mgl.Context
     camera_info: CameraInfo
     light_source_location: np.ndarray
@@ -115,10 +113,12 @@ class RenderData:
 
 def apply_blend_flags(ctx: mgl.Context) -> None:
     # 默认是 blend-off 的，在 render_all 中通过 blend_context 开启，所以这里没有设置 ctx.enable(mgl.BLEND)
+    # fmt: off
     ctx.blend_func = (
         mgl.SRC_ALPHA, mgl.ONE_MINUS_SRC_ALPHA,
         mgl.ONE, mgl.ONE
     )
+    # fmt: on
     ctx.blend_equation = mgl.FUNC_ADD, mgl.MAX
 
 

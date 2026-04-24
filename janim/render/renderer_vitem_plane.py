@@ -9,8 +9,7 @@ import OpenGL.GL as gl
 
 from janim.camera.camera_info import CameraInfo
 from janim.render.base import RenderData, Renderer
-from janim.render.program import (get_compute_shader_from_file,
-                                  get_program_from_file_prefix)
+from janim.render.program import get_compute_shader_from_file, get_program_from_file_prefix
 
 if TYPE_CHECKING:
     from janim.items.vitem import VItem
@@ -46,10 +45,12 @@ class VItemPlaneRenderer(Renderer):
 
         self.u_lim = self.prog['lim']
 
-        self.sampb_mapped_points, \
-            self.sampb_radius, \
-            self.sampb_stroke_color, \
-            self.sampb_fill_color = gl.glGenTextures(4)
+        (
+            self.sampb_mapped_points,
+            self.sampb_radius,
+            self.sampb_stroke_color,
+            self.sampb_fill_color,
+        ) = gl.glGenTextures(4)
 
         self.loc_mapped_points = gl.glGetUniformLocation(self.prog.glo, 'points')
         self.loc_radius = gl.glGetUniformLocation(self.prog.glo, 'radii')
@@ -95,7 +96,7 @@ class VItemPlaneRenderer(Renderer):
                 item.stroke._rgbas._data,
                 item.fill._rgbas._data,
                 item.glow._size,
-                item.glow._rgba._data[3] != 0.0
+                item.glow._rgba._data[3] != 0.0,
             )
 
     def init_common(self) -> None:
@@ -135,7 +136,7 @@ class VItemPlaneRenderer(Renderer):
 
         render_data = self.data_ctx.get()
         new_attrs = self.RenderAttrs.get(render_data, item)
-        points_cnt_changed = self.attrs.points is None or len(new_attrs.points) != len(self.attrs.points)
+        points_cnt_changed = self.attrs.points is None or len(new_attrs.points) != len(self.attrs.points)  # fmt: skip
         resize_target = (len(new_attrs.points) + 1) // 2
 
         if len(new_attrs.points) < 3:
@@ -150,16 +151,20 @@ class VItemPlaneRenderer(Renderer):
             self.attrs.glow_visible = new_attrs.glow_visible
 
         if new_attrs.radius is not self.attrs.radius or points_cnt_changed:
-            self.update_dynamic_buffer_data(new_attrs.radius,
-                                            self.vbo_radius,
-                                            resize_target,
-                                            use_32bit_align=True)
+            self.update_dynamic_buffer_data(
+                new_attrs.radius,
+                self.vbo_radius,
+                resize_target,
+                use_32bit_align=True,
+            )
             self.attrs.radius = new_attrs.radius
 
         if new_attrs.stroke is not self.attrs.stroke or points_cnt_changed:
-            self.update_dynamic_buffer_data(new_attrs.stroke,
-                                            self.vbo_stroke_color,
-                                            resize_target)
+            self.update_dynamic_buffer_data(
+                new_attrs.stroke,
+                self.vbo_stroke_color,
+                resize_target,
+            )
             self.attrs.stroke = new_attrs.stroke
 
         if new_attrs.fill is not self.attrs.fill:
@@ -167,9 +172,11 @@ class VItemPlaneRenderer(Renderer):
             self.fill_transparent = bool(item.fill.is_transparent())
 
         if new_attrs.fill is not self.attrs.fill or points_cnt_changed:
-            self.update_dynamic_buffer_data(new_attrs.fill,
-                                            self.vbo_fill_color,
-                                            resize_target)
+            self.update_dynamic_buffer_data(
+                new_attrs.fill,
+                self.vbo_fill_color,
+                resize_target,
+            )
             self.attrs.fill = new_attrs.fill
 
         if item._depth_test or item._shade_in_3d:
@@ -203,7 +210,7 @@ class VItemPlaneRenderer(Renderer):
 
         render_data = self.data_ctx.get()
         new_attrs = self.RenderAttrs.get(render_data, item)
-        points_cnt_changed = self.attrs.points is None or len(new_attrs.points) != len(self.attrs.points)
+        points_cnt_changed = self.attrs.points is None or len(new_attrs.points) != len(self.attrs.points)  # fmt: skip
         resize_target = (len(new_attrs.points) + 1) // 2
 
         if len(new_attrs.points) < 3:
@@ -218,15 +225,19 @@ class VItemPlaneRenderer(Renderer):
             self.attrs.glow_visible = new_attrs.glow_visible
 
         if new_attrs.radius is not self.attrs.radius or points_cnt_changed:
-            self.update_dynamic_buffer_data(new_attrs.radius,
-                                            self.vbo_radius,
-                                            resize_target)
+            self.update_dynamic_buffer_data(
+                new_attrs.radius,
+                self.vbo_radius,
+                resize_target,
+            )
             self.attrs.radius = new_attrs.radius
 
         if new_attrs.stroke is not self.attrs.stroke or points_cnt_changed:
-            self.update_dynamic_buffer_data(new_attrs.stroke,
-                                            self.vbo_stroke_color,
-                                            resize_target)
+            self.update_dynamic_buffer_data(
+                new_attrs.stroke,
+                self.vbo_stroke_color,
+                resize_target,
+            )
             self.attrs.stroke = new_attrs.stroke
 
         if new_attrs.fill is not self.attrs.fill:
@@ -234,9 +245,11 @@ class VItemPlaneRenderer(Renderer):
             self.fill_transparent = bool(item.fill.is_transparent())
 
         if new_attrs.fill is not self.attrs.fill or points_cnt_changed:
-            self.update_dynamic_buffer_data(new_attrs.fill,
-                                            self.vbo_fill_color,
-                                            resize_target)
+            self.update_dynamic_buffer_data(
+                new_attrs.fill,
+                self.vbo_fill_color,
+                resize_target,
+            )
             self.attrs.fill = new_attrs.fill
 
         if item._depth_test or item._shade_in_3d:
@@ -283,7 +296,9 @@ class VItemPlaneRenderer(Renderer):
             or new_attrs.camera_info is not self.attrs.camera_info
         )
 
-    def _update_clip_box(self, item: VItem, render_data: RenderData, new_attrs: RenderAttrs) -> None:
+    def _update_clip_box(
+        self, item: VItem, render_data: RenderData, new_attrs: RenderAttrs
+    ) -> None:
         corners = np.array(item.points.self_box.get_corners())
         if new_attrs.fix_in_frame:
             clip_box = new_attrs.camera_info.map_fixed_in_frame_points(corners)
@@ -296,12 +311,17 @@ class VItemPlaneRenderer(Renderer):
             buff = max(buff, new_attrs.glow_size)
         clip_min = np.min(clip_box, axis=0) - buff
         clip_max = np.max(clip_box, axis=0) + buff
-        clip_box = np.array([
-            clip_min,
-            [clip_min[0], clip_max[1]],
-            [clip_max[0], clip_min[1]],
-            clip_max
-        ]) / new_attrs.camera_info.frame_radius
+        clip_box = (
+            np.array(
+                [
+                    clip_min,
+                    [clip_min[0], clip_max[1]],
+                    [clip_max[0], clip_min[1]],
+                    clip_max,
+                ]
+            )
+            / new_attrs.camera_info.frame_radius
+        )
         clip_box = np.clip(clip_box, -1, 1)
 
         bytes = clip_box.astype(np.float32).tobytes()
@@ -309,9 +329,11 @@ class VItemPlaneRenderer(Renderer):
         self.vbo_coord.write(bytes)
 
     def _update_points_compatibility(self, item: VItem, new_attrs: RenderAttrs) -> None:
-        if new_attrs.points is not self.attrs.points \
-                or new_attrs.fix_in_frame != self.attrs.fix_in_frame \
-                or new_attrs.camera_info is not self.attrs.camera_info:
+        if (
+            new_attrs.points is not self.attrs.points
+            or new_attrs.fix_in_frame != self.attrs.fix_in_frame
+            or new_attrs.camera_info is not self.attrs.camera_info
+        ):
             if new_attrs.fix_in_frame:
                 mapped = new_attrs.camera_info.map_fixed_in_frame_points(new_attrs.points)
             else:
@@ -345,16 +367,20 @@ class VItemPlaneRenderer(Renderer):
 
             self.vbo_points.write(bytes)
 
-        if new_attrs.points is not self.attrs.points \
-                or new_attrs.fix_in_frame != self.attrs.fix_in_frame \
-                or new_attrs.camera_info is not self.attrs.camera_info:
+        if (
+            new_attrs.points is not self.attrs.points
+            or new_attrs.fix_in_frame != self.attrs.fix_in_frame
+            or new_attrs.camera_info is not self.attrs.camera_info
+        ):
             if self.vbo_points.size != self.vbo_mapped_points.size:
                 self.vbo_mapped_points.orphan(self.vbo_points.size)
 
             self.vbo_points.bind_to_storage_buffer(0)
             self.vbo_mapped_points.bind_to_storage_buffer(1)
             self.update_fix_in_frame(self.comp_u_fix, item)
-            self.comp.run(group_x=(len(new_attrs.points) + 255) // 256)     # 相当于 len() / 256 向上取整
+            self.comp.run(
+                group_x=(len(new_attrs.points) + 255) // 256
+            )  # 相当于 len() / 256 向上取整
 
             self.attrs.fix_in_frame = new_attrs.fix_in_frame
             self.attrs.camera_info = new_attrs.camera_info

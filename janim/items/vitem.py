@@ -12,14 +12,13 @@ from janim.components.radius import Cmpt_Radius
 from janim.components.rgbas import Cmpt_Rgbas, apart_alpha
 from janim.components.vpoints import Cmpt_VPoints
 from janim.constants import PI
-from janim.items.item import Item, mockable
 from janim.items.group import Group
+from janim.items.item import Item, mockable
 from janim.items.points import Points
 from janim.locale import get_translator
 from janim.render.renderer_vitem import VItemRenderer
 from janim.typing import Alpha, AlphaArray, ColorArray, JAnimColor, Vect
-from janim.utils.bezier import (bezier, inverse_interpolate,
-                                partial_quadratic_bezier_points)
+from janim.utils.bezier import bezier, inverse_interpolate, partial_quadratic_bezier_points
 from janim.utils.data import AlignedData
 from janim.utils.simple_functions import clip
 from janim.utils.space_ops import get_norm
@@ -33,6 +32,7 @@ class VItem(Points):
     """
     贝塞尔曲线拼接物件，具体说明请参考 :class:`~.Cmpt_VPoints` 的文档
     """
+
     points = CmptInfo(Cmpt_VPoints[Self])
     radius = CmptInfo(Cmpt_Radius[Self], DEFAULT_STROKE_RADIUS)
 
@@ -72,7 +72,7 @@ class VItem(Points):
         glow_alpha: Alpha | None = None,
         glow_size: float | None = None,
         shade_in_3d: bool | None = None,
-        **kwargs
+        **kwargs,
     ) -> Self:
         if stroke_color is None:
             stroke_color = color
@@ -131,7 +131,7 @@ class VItem(Points):
         stroke_color: JAnimColor | None = None,
         color: JAnimColor | None = None,
         d_alpha: float = 1e-6,
-        **tip_kwargs
+        **tip_kwargs,
     ):
         """
         在 ``at_alpha`` 处创建一个箭头
@@ -148,8 +148,9 @@ class VItem(Points):
             angle_vert = self.points.start_direction
         else:
             pos = self.points.pfp(at_alpha)
-            angle_vert = \
-                self.points.pfp(clip(at_alpha + d_alpha, 0, 1)) - self.points.pfp(clip(at_alpha - d_alpha, 0, 1))
+            p1 = self.points.pfp(clip(at_alpha - d_alpha, 0, 1))
+            p2 = self.points.pfp(clip(at_alpha + d_alpha, 0, 1))
+            angle_vert = p2 - p1
 
         if angle is None:
             angle = math.atan2(angle_vert[1], angle_vert[0])
@@ -162,6 +163,7 @@ class VItem(Points):
             stroke_color = color
 
         if colorize:
+
             def get_at_alpha(array: np.ndarray) -> np.ndarray:
                 maxidx = len(array) - 1
                 idx = clip(round(at_alpha * maxidx), 0, maxidx)
@@ -176,13 +178,14 @@ class VItem(Points):
             color_alpha = 1.0
 
         from janim.items.geometry.arrow import ArrowTip
+
         tip = ArrowTip(
             angle=angle,
             fill_color=fill_color,
             fill_alpha=color_alpha,
             stroke_color=stroke_color,
             stroke_alpha=color_alpha,
-            **tip_kwargs
+            **tip_kwargs,
         )
         tip.move_anchor_to(pos)
         self.add(tip)
@@ -222,7 +225,7 @@ class VItem(Points):
 
             rgbas = item.stroke.get().copy()
 
-            left = rgbas[:left_end + 1]
+            left = rgbas[: left_end + 1]
             right = rgbas[right_start:]
 
             alphas = np.array([apart_alpha(alpha, diff + 1) for alpha in left[:, 3]])
@@ -249,6 +252,7 @@ class DashedVItem(VItem, Group[VItem]):
         - ``'approx'``: 默认，虚线段长度近似相等
         - ``'none'``: 虚线段将按照曲线的参数 t 均匀分布，一般来说长度不相等
     """
+
     def __init__(
         self,
         vitem: VItem,
@@ -260,26 +264,28 @@ class DashedVItem(VItem, Group[VItem]):
         stroke_color: JAnimColor | ColorArray | None = None,
         stroke_alpha: Alpha | AlphaArray | None = None,
         stroke_radius: float | Iterable[float] | None = None,
-        **kwargs
+        **kwargs,
     ):
         self.num_dashes = num_dashes
         self.dashed_ratio = dashed_ratio
 
         self.groups = [
-            Group.from_iterable(self.get_dashed_list(
-                subpath,
-                num_dashes,
-                dashed_ratio,
-                dash_offset,
-                equal_lengths,
-            ))
+            Group.from_iterable(
+                self.get_dashed_list(
+                    subpath,
+                    num_dashes,
+                    dashed_ratio,
+                    dash_offset,
+                    equal_lengths,
+                )
+            )
             for subpath in vitem.points.get_subpaths()
         ]
 
         super().__init__(
             *self.groups,
             **self._extract_attrs(vitem, stroke_color, stroke_alpha, stroke_radius),
-            **kwargs
+            **kwargs,
         )
 
     @staticmethod
@@ -287,7 +293,7 @@ class DashedVItem(VItem, Group[VItem]):
         return {
             'stroke_color': vitem.stroke.get()[0, :3] if stroke_color is None else stroke_color,
             'stroke_alpha': vitem.stroke.get()[0, 3] if stroke_alpha is None else stroke_alpha,
-            'stroke_radius': vitem.radius.get()[0] if stroke_radius is None else stroke_radius
+            'stroke_radius': vitem.radius.get()[0] if stroke_radius is None else stroke_radius,
         }
 
     @staticmethod
@@ -323,9 +329,7 @@ class DashedVItem(VItem, Group[VItem]):
             pattern_len = 1 + void_len
 
         dash_starts = [((i * period + phase_shift) % pattern_len) for i in range(n)]
-        dash_ends = [
-            ((i * period + dash_len + phase_shift) % pattern_len) for i in range(n)
-        ]
+        dash_ends = [((i * period + dash_len + phase_shift) % pattern_len) for i in range(n)]
 
         # closed shapes can handle overflow at the 0-point
         # open shapes need special treatment for it
@@ -337,9 +341,7 @@ class DashedVItem(VItem, Group[VItem]):
                 dash_ends.pop()
                 dash_starts.pop()
             elif dash_ends[-1] < dash_len:  # if it overflowed
-                if (
-                    dash_starts[-1] < 1
-                ):  # if the beginning of the piece is still in range
+                if dash_starts[-1] < 1:  # if the beginning of the piece is still in range
                     dash_starts.append(0)
                     dash_ends.append(dash_ends[-1])
                     dash_ends[-2] = 1
@@ -348,14 +350,16 @@ class DashedVItem(VItem, Group[VItem]):
             elif dash_starts[-1] > (1 - dash_len):
                 dash_ends[-1] = 1
 
-        return DashedVItem.get_dashed_list_by_starts_and_ends(points, dash_starts, dash_ends, equal_lengths)
+        return DashedVItem.get_dashed_list_by_starts_and_ends(
+            points, dash_starts, dash_ends, equal_lengths
+        )
 
     @staticmethod
     def get_dashed_list_by_starts_and_ends(
         points: np.ndarray,
         dash_starts: list[float],
         dash_ends: list[float],
-        equal_lengths: Literal['equal', 'approx', 'none'] = 'approx'
+        equal_lengths: Literal['equal', 'approx', 'none'] = 'approx',
     ) -> list[VItem]:
         if equal_lengths == 'approx':
             # 参考 Cmpt_VPoints.curve_and_prop_of_partial_point
@@ -375,11 +379,11 @@ class DashedVItem(VItem, Group[VItem]):
                     return len(partials) - 2, 1.0
                 index = next(
                     (i for i, x in enumerate(partials) if x >= full * alpha),
-                    len(partials) - 1
+                    len(partials) - 1,
                 )
-                residue = float(inverse_interpolate(
-                    partials[index - 1] / full, partials[index] / full, alpha
-                ))
+                residue = float(
+                    inverse_interpolate(partials[index - 1] / full, partials[index] / full, alpha)
+                )
                 return index - 1, residue
 
             # 参考 Cmpt_VPoints.partial_points_reduced
@@ -392,12 +396,14 @@ class DashedVItem(VItem, Group[VItem]):
                 i4 = 2 * upper_index + 3
 
                 if lower_index == upper_index:
-                    tup = partial_quadratic_bezier_points(points[i1:i2], lower_residue, upper_residue)
+                    tup = partial_quadratic_bezier_points(
+                        points[i1:i2], lower_residue, upper_residue
+                    )
                     return np.array(tup, dtype=points.dtype)
 
                 low_tup = partial_quadratic_bezier_points(points[i1:i2], lower_residue, 1)
                 high_tup = partial_quadratic_bezier_points(points[i3:i4], 0, upper_residue)
-                return np.vstack([low_tup, points[i2 + 1: i3], high_tup[1:]])
+                return np.vstack([low_tup, points[i2 + 1 : i3], high_tup[1:]])
 
             return [
                 VItem(*get_subcurve(dash_start, dash_end))
@@ -429,7 +435,7 @@ class DashedVItem(VItem, Group[VItem]):
                             dash_end * curve_length,
                             length_vals,
                             ref_points,
-                        )
+                        ),
                     )
                 )
                 for dash_start, dash_end in zip(dash_starts, dash_ends)
@@ -441,8 +447,9 @@ class DashedVItem(VItem, Group[VItem]):
             ]
         else:
             raise ValueError(
-                _('Invalid value for equal_lengths: {equal_lengths}')
-                .format(equal_lengths=equal_lengths)
+                _('Invalid value for equal_lengths: {equal_lengths}').format(
+                    equal_lengths=equal_lengths
+                )
             )
 
 
@@ -458,35 +465,38 @@ class DashedVItemByRatio(VItem, Group[VItem]):
         - ``'approx'``: 默认，虚线段长度近似相等
         - ``'none'``: 虚线段将按照曲线的参数 t 均匀分布，一般来说长度不相等
     """
+
     def __init__(
         self,
         vitem: VItem,
-        dash_ratio: float = 1 / 30,     # 默认和 DashedVItem 一样是 15 段
+        dash_ratio: float = 1 / 30,  # 默认和 DashedVItem 一样是 15 段
         *,
         dashed_ratio: float = 0.5,
         equal_lengths: Literal['equal', 'approx', 'none'] = 'approx',
         stroke_color: JAnimColor | ColorArray | None = None,
         stroke_alpha: Alpha | AlphaArray | None = None,
         stroke_radius: float | Iterable[float] | None = None,
-        **kwargs
+        **kwargs,
     ):
         self.dash_alpha = dash_ratio
         self.dashed_ratio = dashed_ratio
 
         self.groups = [
-            Group.from_iterable(self.get_dashed_list(
-                subpath,
-                dash_ratio,
-                dashed_ratio,
-                equal_lengths,
-            ))
+            Group.from_iterable(
+                self.get_dashed_list(
+                    subpath,
+                    dash_ratio,
+                    dashed_ratio,
+                    equal_lengths,
+                )
+            )
             for subpath in vitem.points.get_subpaths()
         ]
 
         super().__init__(
             *self.groups,
             **DashedVItem._extract_attrs(vitem, stroke_color, stroke_alpha, stroke_radius),
-            **kwargs
+            **kwargs,
         )
 
     @staticmethod
@@ -502,9 +512,11 @@ class DashedVItemByRatio(VItem, Group[VItem]):
         dash_ends = []
 
         dash_start = 0
-        while dash_start < 1 - 1e-5:    # - 1e-5 避免因浮点误差在末尾产生极小片段
+        while dash_start < 1 - 1e-5:  # - 1e-5 避免因浮点误差在末尾产生极小片段
             dash_starts.append(dash_start)
             dash_ends.append(min(1, dash_start + dash_ratio))
             dash_start += step
 
-        return DashedVItem.get_dashed_list_by_starts_and_ends(points, dash_starts, dash_ends, equal_lengths)
+        return DashedVItem.get_dashed_list_by_starts_and_ends(
+            points, dash_starts, dash_ends, equal_lengths
+        )

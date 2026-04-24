@@ -1,10 +1,17 @@
 from enum import Enum
 
 from colour import Color
+
 # from PySide6.QtCore import QRegularExpression
 # from PySide6.QtGui import QRegularExpressionValidator
-from PySide6.QtWidgets import (QColorDialog, QHBoxLayout, QLineEdit,
-                               QPushButton, QVBoxLayout, QWidget)
+from PySide6.QtWidgets import (
+    QColorDialog,
+    QHBoxLayout,
+    QLineEdit,
+    QPushButton,
+    QVBoxLayout,
+    QWidget,
+)
 
 import janim.constants.colors as colors
 from janim.gui.popup.ui_ColorWidget import Ui_ColorWidget
@@ -13,7 +20,7 @@ from janim.utils.simple_functions import clip
 
 _ = get_translator('janim.gui.popup.color_widget')
 
-builtins_area_qss = '''
+builtins_area_qss = """
 QPushButton {
     border-radius: 4px;
     padding: 4px;
@@ -24,7 +31,7 @@ QPushButton:hover {
 QPushButton:pressed {
     border: 2px solid gray;
 }
-'''
+"""
 
 
 class ColorWidget(QWidget):
@@ -71,8 +78,10 @@ class ColorWidget(QWidget):
             color = colors.__dict__[name]
             text_color = 'white' if sum(Color(color).rgb) / 3 < 0.5 else 'black'
             btn.setStyleSheet(
-                f'background: {color}\n;'
-                f'color: {text_color};'
+                f"""
+                background: {color};
+                color: {text_color};
+                """
             )
             btn.clicked.connect(self.btn_builtin_clicked)
             return btn
@@ -94,7 +103,7 @@ class ColorWidget(QWidget):
 
         others_list = [
             ('PURE_RED', 'PURE_GREEN', 'PURE_BLUE', 'WHITE', 'BLACK'),
-            ('GREY_BROWN', 'DARK_BROWN', 'LIGHT_BROWN', 'PINK', 'LIGHT_PINK', 'ORANGE')
+            ('GREY_BROWN', 'DARK_BROWN', 'LIGHT_BROWN', 'PINK', 'LIGHT_PINK', 'ORANGE'),
         ]
         for others in others_list:
             sublayout = QHBoxLayout()
@@ -122,13 +131,13 @@ class ColorWidget(QWidget):
         self.set_color(
             *[
                 (
-                    round(float(editor.text()) * 255)
+                    round(float(editor.text()) * 255)  #
                     if norm
                     else int(editor.text())
                 )
                 for editor in self.rgb_editors
             ],
-            source=ColorWidget.EditSource.RGB
+            source=ColorWidget.EditSource.RGB,
         )
 
     def rgb_finished(self) -> None:
@@ -196,9 +205,11 @@ class ColorWidget(QWidget):
         assert r <= 255 and g <= 255 and b <= 255
 
         self.ui.widget.setStyleSheet(
-            'border: 2px solid white;\n'
-            f'background: rgb({r}, {g}, {b});\n'
-            'border-radius: 8px;'
+            f"""
+            border: 2px solid white;
+            background: rgb({r}, {g}, {b});
+            border-radius: 8px;
+            """
         )
 
         if source is not ColorWidget.EditSource.RGB:
