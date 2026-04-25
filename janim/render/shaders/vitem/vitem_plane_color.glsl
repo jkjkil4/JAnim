@@ -36,7 +36,7 @@ vec4 get_vitem_color(float stroke_d, float fill_sgn_d, int idx)
         : blend_color(stroke_color, fill_color);
 
     if (SHADE_IN_3D) {
-        result_color.rgb += get_shade(start_point, unit_normal);
+        result_color.rgb = apply_light(result_color.rgb, start_point, unit_normal);
     }
 
     if (glow_color.a != 0.0) {

@@ -164,7 +164,7 @@ class SmoothSurface[T: SurfaceGeometry](Points):
     _dv_points = CmptInfo(Cmpt_Points[Self])
 
     class Cmpt_SurfaceRgba[ItemT](Cmpt_Rgba[ItemT], impl=True):
-        DEFAULT_RGBA_ARRAY = Array.create([0.7, 0.53, 0.53, 1.0])  # GREY_C
+        DEFAULT_RGBA_ARRAY = Array.create([0.53, 0.53, 0.53, 1.0])  # GREY_C
 
     color = CmptInfo(Cmpt_SurfaceRgba[Self])
 

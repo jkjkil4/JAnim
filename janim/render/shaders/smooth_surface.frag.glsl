@@ -12,6 +12,6 @@ uniform vec4 u_color;
 void main()
 {
     f_color = u_color;
-    f_color.rgb += get_shade(v_point, v_normal); 
+    f_color.rgb = apply_light(f_color.rgb, v_point, v_normal);
 }
 
