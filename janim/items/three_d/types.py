@@ -1,18 +1,20 @@
 import itertools as it
-from typing import Any, Callable, Iterable, Literal, Self, Sequence, overload
+from typing import Any, Callable, Literal, Self, overload
 
 import numpy as np
 
 from janim.components.component import CmptInfo
 from janim.components.points import Cmpt_Points
+from janim.components.rgba import Cmpt_Rgba
 from janim.constants import BLUE_D, BLUE_E, GREY_A, GREY_B
 from janim.items.geometry.polygon import Polygon
 from janim.items.group import Group
 from janim.items.item import Item
-from janim.items.points import DotCloud, Points
+from janim.items.points import Points
 from janim.items.vitem import VItem
 from janim.render.renderer_smooth_surface import SmoothSurfaceRenderer
 from janim.typing import ColorArray, JAnimColor, Vect
+from janim.utils.data import Array
 from janim.utils.dict_ops import merge_dicts_recursively
 
 type Resolution = int | tuple[int, int]
@@ -158,9 +160,110 @@ class WireframeSurface[T: SurfaceGeometry](Group[VItem], VItem):
 
 
 class SmoothSurface[T: SurfaceGeometry](Points):
-    def __init__(self, geometry: T, resolution: Resolution | None = None, **kwargs):
+    _du_points = CmptInfo(Cmpt_Points[Self])
+    _dv_points = CmptInfo(Cmpt_Points[Self])
+
+    class Cmpt_SurfaceRgba[ItemT](Cmpt_Rgba[ItemT], impl=True):
+        DEFAULT_RGBA_ARRAY = Array.create([0.7, 0.53, 0.53, 1.0])  # GREY_C
+
+    color = CmptInfo(Cmpt_SurfaceRgba[Self])
+
+    renderer_cls = SmoothSurfaceRenderer
+
+    # TODO: 修复在不同形状之间的物件之间 Transform 的行为
+    def __init__(
+        self, geometry: T, resolution: Resolution | None = None, epsilon: float = 1e-3, **kwargs
+    ):
         self.geometry = geometry
         self.resolution = geometry.resolve_resolution('smooth', resolution)
+        self.epsilon = epsilon
+
+        points, du_points, dv_points = self._get_points_and_dpoints()
+        self._tri_indices = self._get_tri_indices()
+        super().__init__(**kwargs)
+        self.points.set(points)
+        self._du_points.set(du_points)
+        self._dv_points.set(dv_points)
+
+        self.apply_depth_test()
+
+    def init_connect(self) -> None:
+        super().init_connect()
+
+        Cmpt_Points.apply_points_fn.connect(self.points, self._on_points_transformed)
+
+    def _on_points_transformed(self, func, about_point) -> None:
+        self._du_points.apply_points_fn(func, about_point=about_point, about_edge=None)
+        self._dv_points.apply_points_fn(func, about_point=about_point, about_edge=None)
+
+    def apply_style(
+        self,
+        color: JAnimColor | None = None,
+        alpha: float | None = None,
+        **kwargs,
+    ) -> Self:
+        if color is not None or alpha is not None:
+            self.color.set(color, alpha)
+
+        super().apply_style(**kwargs)
+        return self
+
+    def _get_points_and_dpoints(self) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+        u_values, v_values = _get_u_values_and_v_values(
+            self.geometry.u_range, self.geometry.v_range, self.resolution
+        )
+        U, V = np.meshgrid(u_values, v_values, indexing='ij')
+        uv_grid = np.stack([U, V], axis=-1)
+        uv_plus_du = uv_grid.copy()
+        uv_plus_du[:, :, 0] += self.epsilon
+        uv_plus_dv = uv_grid.copy()
+        uv_plus_dv[:, :, 1] += self.epsilon
+
+        uv_func = self.geometry.uv_func
+        points, du_points, dv_points = [
+            np.array(
+                [
+                    uv_func(u, v)  #
+                    for u, v in grid.reshape(-1, 2)
+                ]
+            )
+            for grid in (uv_grid, uv_plus_du, uv_plus_dv)
+        ]
+        return points, du_points, dv_points
+
+    def _get_tri_indices(self) -> np.ndarray:
+        res_u, res_v = _unpack_resolution(self.resolution)
+        idx = np.arange((res_u + 1) * (res_v + 1)).reshape((res_u + 1, res_v + 1))
+        p0 = idx[:-1, :-1].ravel()
+        p1 = idx[1:, :-1].ravel()
+        p2 = idx[:-1, 1:].ravel()
+        p3 = idx[1:, 1:].ravel()
+        # 组装三角形索引
+        indices = np.stack([p0, p1, p2, p1, p3, p2], axis=1)
+        return indices.astype('i4')
+
+
+# class DotCloudSurface[T: SurfaceGeometry](DotCloud):
+#     def __init__(
+#         self,
+#         geometry: T,
+#         resolution: Resolution | None = None,
+#         radius: float | Iterable[float] = 0.01,
+#
+#         **kwargs,
+#     ):
+#         self.geometry = geometry
+#         self.resolution = geometry.resolve_resolution('smooth', resolution)
+#
+#         super().__init__(*self._get_dot_points(), radius=radius, **kwargs)
+#
+#     def _get_dot_points(self) -> np.ndarray:
+#         u_values, v_values = _get_u_values_and_v_values(
+#             self.geometry.u_range, self.geometry.v_range, self.resolution
+#         )
+#         uv_func = self.geometry.uv_func
+#         return np.array([uv_func(u, v) for u in u_values for v in v_values])
+
 
 # endregion
 
@@ -175,6 +278,7 @@ class SurfaceGeometry:
         'checker': CheckerboardSurface,
         'wire': WireframeSurface,
         'smooth': SmoothSurface,
+        # 'dots': DotCloudSurface,
     }
 
     def __init__(
@@ -182,7 +286,7 @@ class SurfaceGeometry:
         uv_func: Callable[[float, float], Vect],
         u_range: tuple[float, float],
         v_range: tuple[float, float],
-        **kwargs
+        **kwargs,
     ):
         self.uv_func = uv_func
         self.u_range = u_range
@@ -196,6 +300,8 @@ class SurfaceGeometry:
     def into(self, mode: Literal['wire'], **kwargs) -> WireframeSurface[Self]: ...
     @overload
     def into(self, mode: Literal['smooth'], **kwargs) -> SmoothSurface[Self]: ...
+    # @overload
+    # def into(self, mode: Literal['dots'], **kwargs) -> DotCloudSurface[Self]: ...
     @overload
     def into[T: Item](self, mode: type[T], **kwargs) -> T: ...
 

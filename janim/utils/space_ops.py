@@ -193,13 +193,11 @@ def project_along_vector(point: np.ndarray, vector: np.ndarray) -> np.ndarray:
 
 def normalize_along_axis(
     array: np.ndarray,
-    axis: np.ndarray,
+    axis: int,
 ) -> np.ndarray:
     norms = np.sqrt((array * array).sum(axis))
     norms[norms == 0] = 1
-    buffed_norms = np.repeat(norms, array.shape[axis]).reshape(array.shape)
-    array /= buffed_norms
-    return array
+    return array / norms[:, np.newaxis]
 
 
 def get_unit_normal(v1: np.ndarray, v2: np.ndarray, tol: float = 1e-6) -> np.ndarray:
