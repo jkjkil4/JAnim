@@ -1,4 +1,3 @@
-
 from typing import Callable
 
 import numpy as np
@@ -34,7 +33,7 @@ class ParametricSurface(SurfaceGeometry):
         uv_func: Callable[[float, float], Vect],
         u_range: tuple[float, float] = (0, 1),
         v_range: tuple[float, float] = (0, 1),
-        **kwargs
+        **kwargs,
     ):
         super().__init__(uv_func, u_range, v_range, **kwargs)
 
@@ -67,14 +66,15 @@ class Sphere(SurfaceGeometry):
         radius: float = 1,
         u_range: tuple[float, float] = (0, TAU),
         v_range: tuple[float, float] = (0, PI),
-        **kwargs
+        **kwargs,
     ):
         center = np.array(center)
 
         def uv_func(u: float, v: float) -> np.ndarray:
-            return radius * np.array(
-                [np.cos(u) * np.sin(v), np.sin(u) * np.sin(v), -np.cos(v)]
-            ) + center
+            return (
+                radius * np.array([np.cos(u) * np.sin(v), np.sin(u) * np.sin(v), -np.cos(v)])
+                + center
+            )
 
         super().__init__(uv_func, u_range, v_range, **kwargs)
 
@@ -107,7 +107,7 @@ class Torus(SurfaceGeometry):
         minor_radius: float = 1,
         u_range: tuple[float, float] = (0, TAU),
         v_range: tuple[float, float] = (0, TAU),
-        **kwargs
+        **kwargs,
     ):
         R = major_radius
         r = minor_radius
@@ -139,7 +139,7 @@ class Cylinder(SurfaceGeometry):
 
     RESOLUTIONS = {
         'face': (24, 12),
-        'smooth': (101, 11)
+        'smooth': (101, 11),
     }
 
     def __init__(
@@ -150,7 +150,7 @@ class Cylinder(SurfaceGeometry):
         # TODO: show_cap,
         u_range: tuple[float, float] = (0, TAU),
         v_range: tuple[float, float] = (-1 / 2, 1 / 2),
-        **kwargs
+        **kwargs,
     ):
         rotT = z_to_vector(axis).T
 
@@ -181,7 +181,7 @@ class Cone(SurfaceGeometry):
 
     RESOLUTIONS = {
         'face': (24, 12),
-        'smooth': (101, 11)
+        'smooth': (101, 11),
     }
 
     def __init__(
@@ -192,7 +192,7 @@ class Cone(SurfaceGeometry):
         # TODO: show_cap,
         u_range: tuple[float, float] = (0, TAU),
         v_min: float = 0,
-        **kwargs
+        **kwargs,
     ):
         rotT = z_to_vector(axis).T
         theta = PI - np.arctan(radius / height)
@@ -202,12 +202,12 @@ class Cone(SurfaceGeometry):
 
         def uv_func(u: float, v: float) -> np.ndarray:
             phi = u
-            r = v_max - (v - v_min)     # 反转 v 的取值使得法线朝向正常
+            r = v_max - (v - v_min)  # 反转 v 的取值使得法线朝向正常
             # v @ rotT == rot @ v.T
             return [
                 r * np.sin(theta) * np.cos(phi),
                 r * np.sin(theta) * np.sin(phi),
-                r * np.cos(theta)
+                r * np.cos(theta),
             ] @ rotT
 
         super().__init__(uv_func, u_range, v_range, **kwargs)

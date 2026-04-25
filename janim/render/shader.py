@@ -83,6 +83,7 @@ def convert_error_nameidx_to_name(error: mgl.Error) -> None:
         for regex in [
             r'^(\d+)\(\d+\) : .*$',  # Windows?
             r'^.*?: (\d+):\d+: .*$',  # macOS?
+            r'^(\d+):\d+\(\d+\): .*$',  # Linux?
         ]:
             match = re.match(regex, line)
             if not match:
