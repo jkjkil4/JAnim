@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import itertools as it
 from typing import Any, Callable, Literal, Self, overload
 
@@ -14,7 +16,7 @@ from janim.items.points import Points
 from janim.items.vitem import VItem
 from janim.render.renderer_smooth_surface import SmoothSurfaceRenderer
 from janim.typing import ColorArray, JAnimColor, Vect
-from janim.utils.data import Array
+from janim.utils.data import AlignedData, Array
 from janim.utils.dict_ops import merge_dicts_recursively
 
 type Resolution = int | tuple[int, int]
@@ -170,7 +172,6 @@ class SmoothSurface[T: SurfaceGeometry](Points):
 
     renderer_cls = SmoothSurfaceRenderer
 
-    # TODO: 修复在不同形状之间的物件之间 Transform 的行为
     def __init__(
         self, geometry: T, resolution: Resolution | None = None, epsilon: float = 1e-3, **kwargs
     ):
@@ -178,12 +179,8 @@ class SmoothSurface[T: SurfaceGeometry](Points):
         self.resolution = geometry.resolve_resolution('smooth', resolution)
         self.epsilon = epsilon
 
-        points, du_points, dv_points = self._get_points_and_dpoints()
-        self._tri_indices = self._get_tri_indices()
         super().__init__(**kwargs)
-        self.points.set(points)
-        self._du_points.set(du_points)
-        self._dv_points.set(dv_points)
+        self._update_resolution(self.resolution)
 
         self.apply_depth_test()
 
@@ -207,6 +204,16 @@ class SmoothSurface[T: SurfaceGeometry](Points):
 
         super().apply_style(**kwargs)
         return self
+
+    def _update_resolution(self, resolution: Resolution) -> None:
+        self.resolution = resolution
+
+        points, du_points, dv_points = self._get_points_and_dpoints()
+        self.points.set(points)
+        self._du_points.set(du_points)
+        self._dv_points.set(dv_points)
+
+        self._tri_indices = self._get_tri_indices()
 
     def _get_points_and_dpoints(self) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
         u_values, v_values = _get_u_values_and_v_values(
@@ -241,6 +248,31 @@ class SmoothSurface[T: SurfaceGeometry](Points):
         # 组装三角形索引
         indices = np.stack([p0, p1, p2, p1, p3, p2], axis=1)
         return indices.astype('i4')
+
+    @classmethod
+    def align_for_interpolate(cls, item1: Item, item2: Item) -> AlignedData[Self]:
+        """
+        对齐 uv 网格采样分辨率以及三角形索引，而不是像原先一样简单逐点对齐
+        """
+        assert isinstance(item1, SmoothSurface) and isinstance(item2, SmoothSurface)
+
+        res1_u, res1_v = _unpack_resolution(item1.resolution)
+        res2_u, res2_v = _unpack_resolution(item2.resolution)
+
+        res_u, res_v = res = max(res1_u, res2_u), max(res1_v, res2_v)
+        needs_resample1 = res1_u != res_u or res1_v != res_v
+        needs_resample2 = res2_u != res_u or res2_v != res_v
+
+        aligned = super().align_for_interpolate(item1, item2)
+
+        if needs_resample1:
+            aligned.data1._update_resolution(res)
+            # 因为在内部 union 是从 data1 复制来的，所以这里只需要在 needs_resample1 时更新 union 的 indices
+            aligned.union._tri_indices = aligned.data1._tri_indices
+        if needs_resample2:
+            aligned.data2._update_resolution(res)
+
+        return aligned
 
 
 # class DotCloudSurface[T: SurfaceGeometry](DotCloud):
