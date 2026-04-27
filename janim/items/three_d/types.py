@@ -14,10 +14,15 @@ from janim.items.group import Group
 from janim.items.item import Item
 from janim.items.points import Points
 from janim.items.vitem import VItem
+from janim.locale import get_translator
+from janim.logger import log
 from janim.render.renderer_smooth_surface import SmoothSurfaceRenderer
 from janim.typing import ColorArray, JAnimColor, Vect
 from janim.utils.data import AlignedData, Array
 from janim.utils.dict_ops import merge_dicts_recursively
+from janim.utils.iterables import resize_preserving_order
+
+_ = get_translator('janim.items.three_d.types')
 
 type Resolution = int | tuple[int, int]
 
@@ -31,9 +36,9 @@ def _unpack_resolution(resolution: Resolution) -> tuple[int, int]:
 def _get_u_values_and_v_values(
     u_range: tuple[float, float],
     v_range: tuple[float, float],
-    resolution: Resolution,
+    resolution: tuple[int, int],
 ) -> tuple[np.ndarray, np.ndarray]:
-    u_res, v_res = _unpack_resolution(resolution)
+    u_res, v_res = resolution
     u_values = np.linspace(*u_range, u_res + 1)
     v_values = np.linspace(*v_range, v_res + 1)
     return u_values, v_values
@@ -131,6 +136,41 @@ class CheckerboardSurface[T: SurfaceGeometry](Group[SurfaceFace], VItem):
 
     # TODO: set_fill_by_value
 
+    @classmethod
+    def align_for_interpolate(
+        cls, item1: CheckerboardSurface, item2: CheckerboardSurface
+    ) -> AlignedData[Self]:
+        """
+        依照 uv 网格对齐棋盘格物件，而不是像原先一样简单逐个对齐
+        """
+        aligned = super().align_for_interpolate(item1, item2)
+
+        item1_grid = item1.get_children_in_grid()
+        item2_grid = item2.get_children_in_grid()
+
+        # 先在 u 方向对齐
+        max_len = max(len(item1_grid), len(item2_grid))
+        item1_grid = resize_preserving_order(item1_grid, max_len)
+        item2_grid = resize_preserving_order(item2_grid, max_len)
+
+        # 然后在 v 方向对齐
+        for row1, row2 in zip(item1_grid, item2_grid, strict=True):
+            max_len = max(len(row1), len(row2))
+            row1[:] = resize_preserving_order(row1, max_len)
+            row2[:] = resize_preserving_order(row2, max_len)
+
+        aligned.data1._stored_children = list(it.chain(*item1_grid))
+        aligned.data2._stored_children = list(it.chain(*item2_grid))
+
+        return aligned
+
+    def get_children_in_grid(self) -> list[list[SurfaceFace]]:
+        """
+        得到棋盘格二维数组，``v`` 主序
+        """
+        batched = it.batched(self.get_children(), self.resolution[1], strict=True)
+        return [list(row) for row in batched]
+
 
 class WireframeSurface[T: SurfaceGeometry](Group[VItem], VItem):
     """
@@ -158,6 +198,9 @@ class WireframeSurface[T: SurfaceGeometry](Group[VItem], VItem):
     ):
         self.geometry = geometry
         self.resolution = geometry.resolve_resolution('face', resolution)
+        self.resolution: tuple[int, int] = tuple(
+            (res if res % 2 == 0 else res + 1) for res in self.resolution
+        )  # type: ignore
 
         super().__init__(
             *self._get_uv_lines(),
@@ -185,6 +228,42 @@ class WireframeSurface[T: SurfaceGeometry](Group[VItem], VItem):
         ]
 
         return [*u_lines, *v_lines]
+
+    @classmethod
+    def align_for_interpolate(
+        cls, item1: WireframeSurface, item2: WireframeSurface
+    ) -> AlignedData[Self]:
+        aligned = super().align_for_interpolate(item1, item2)
+
+        res1_u, res1_v = item1.resolution
+        res2_u, res2_v = item2.resolution
+        item1_children = item1.get_children()
+        item2_children = item2.get_children()
+        assert len(item1_children) == res1_u + res1_v + 2
+        assert len(item2_children) == res2_u + res2_v + 2
+
+        def align_lines(
+            lines1: list[VItem], lines2: list[VItem]
+        ) -> tuple[list[VItem], list[VItem]]:
+            max_len = max(len(lines1), len(lines2))
+            return (
+                resize_preserving_order(lines1, max_len),
+                resize_preserving_order(lines2, max_len),
+            )
+
+        u_lines1, u_lines2 = align_lines(
+            item1_children[: res1_u + 1],
+            item2_children[: res2_u + 1],
+        )
+        v_lines1, v_lines2 = align_lines(
+            item1_children[-res1_v - 1 :],
+            item2_children[-res2_v - 1 :],
+        )
+
+        aligned.data1._stored_children = [*u_lines1, *v_lines1]
+        aligned.data2._stored_children = [*u_lines2, *v_lines2]
+
+        return aligned
 
 
 class SmoothSurface[T: SurfaceGeometry](Points):
@@ -246,7 +325,7 @@ class SmoothSurface[T: SurfaceGeometry](Points):
         super().apply_style(**kwargs)
         return self
 
-    def _update_resolution(self, resolution: Resolution) -> None:
+    def _update_resolution(self, resolution: tuple[int, int]) -> None:
         self.resolution = resolution
 
         points, du_points, dv_points = self._get_points_and_dpoints()
@@ -280,7 +359,7 @@ class SmoothSurface[T: SurfaceGeometry](Points):
         return points, du_points, dv_points
 
     def _get_tri_indices(self) -> np.ndarray:
-        res_u, res_v = _unpack_resolution(self.resolution)
+        res_u, res_v = self.resolution
         idx = np.arange((res_u + 1) * (res_v + 1)).reshape((res_u + 1, res_v + 1))
         p0 = idx[:-1, :-1].ravel()
         p1 = idx[1:, :-1].ravel()
@@ -293,12 +372,12 @@ class SmoothSurface[T: SurfaceGeometry](Points):
     @classmethod
     def align_for_interpolate(cls, item1: Item, item2: Item) -> AlignedData[Self]:
         """
-        对齐 uv 网格采样分辨率以及三角形索引，而不是像原先一样简单逐点对齐
+        依照 uv 网格对齐采样分辨率以及三角形索引，而不是像原先一样简单逐点对齐
         """
         assert isinstance(item1, SmoothSurface) and isinstance(item2, SmoothSurface)
 
-        res1_u, res1_v = _unpack_resolution(item1.resolution)
-        res2_u, res2_v = _unpack_resolution(item2.resolution)
+        res1_u, res1_v = item1.resolution
+        res2_u, res2_v = item2.resolution
 
         res_u, res_v = res = max(res1_u, res2_u), max(res1_v, res2_v)
         needs_resample1 = res1_u != res_u or res1_v != res_v
@@ -422,7 +501,9 @@ class SurfaceGeometry:
             return self.SURFACE_TYPES[mode](self, **merged_kwargs)
         return mode(self, **merged_kwargs)
 
-    def resolve_resolution(self, type: str, override: Resolution | None) -> Resolution:
-        if override is not None:
-            return override
-        return self.RESOLUTIONS[type]
+    def resolve_resolution(self, type: str, override: Resolution | None) -> tuple[int, int]:
+        if override is None:
+            resolution = self.RESOLUTIONS[type]
+        else:
+            resolution = override
+        return _unpack_resolution(resolution)
