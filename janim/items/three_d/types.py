@@ -55,11 +55,24 @@ class SurfaceFace(Polygon):
         self.v_index = v_index
 
 
-# region 三大 Surface 类型
+# region 各种 Surface 类型
 
 
 class CheckerboardSurface[T: SurfaceGeometry](Group[SurfaceFace], VItem):
-    # TODO: docstring
+    """
+    棋盘格样式的曲面，默认着色为蓝色深浅网格
+
+    .. warning::
+
+        由于该样式的曲面的每个网格面都是独立的 :class:`~.VItem` 物件，因此性能普遍较差
+
+    :param geometry: 由 :meth:`SurfaceGeometry.into` 自动提供
+    :param resolution: 覆盖默认分辨率设置，可传入单个值或者传入一对值来表示在 ``u`` 和 ``v`` 方向的分辨率
+    :param checkerboard_colors: 棋盘格颜色列表，会对网格循环使用其中的颜色
+    :param stroke_color: 网格边线颜色
+    :param stroke_radius: 网格边线粗细
+    """
+
     def __init__(
         self,
         geometry: T,
@@ -120,12 +133,25 @@ class CheckerboardSurface[T: SurfaceGeometry](Group[SurfaceFace], VItem):
 
 
 class WireframeSurface[T: SurfaceGeometry](Group[VItem], VItem):
+    """
+    线框样式的曲面
+
+    .. warning::
+
+        由于该样式的曲面的每个线框都是独立的 :class:`~.VItem` 物件，因此性能普遍较差
+
+    :param geometry: 由 :meth:`SurfaceGeometry.into` 自动提供
+    :param resolution: 覆盖默认分辨率设置，可传入单个值或者传入一对值来表示在 ``u`` 和 ``v`` 方向的分辨率
+    :param stroke_color: 线框颜色
+    :param stroke_radius: 线框粗细
+    """
+
     def __init__(
         self,
         geometry: T,
         resolution: Resolution | None = None,
-        stroke_radius: float = 0.005,
         stroke_color: JAnimColor = GREY_A,
+        stroke_radius: float = 0.005,
         depth_test: bool = False,
         should_make_smooth: bool = True,
         **kwargs,
@@ -162,6 +188,17 @@ class WireframeSurface[T: SurfaceGeometry](Group[VItem], VItem):
 
 
 class SmoothSurface[T: SurfaceGeometry](Points):
+    """
+    平滑表面样式的曲面
+
+    .. note::
+
+        该样式的曲面在半透明情况下的表现有待完善
+
+    :param geometry: 由 :meth:`SurfaceGeometry.into` 自动提供
+    :param resolution: 覆盖默认分辨率设置，可传入单个值或者传入一对值来表示在 ``u`` 和 ``v`` 方向的分辨率
+    """
+
     _du_points = CmptInfo(Cmpt_Points[Self])
     _dv_points = CmptInfo(Cmpt_Points[Self])
 
@@ -173,7 +210,11 @@ class SmoothSurface[T: SurfaceGeometry](Points):
     renderer_cls = SmoothSurfaceRenderer
 
     def __init__(
-        self, geometry: T, resolution: Resolution | None = None, epsilon: float = 1e-3, **kwargs
+        self,
+        geometry: T,
+        resolution: Resolution | None = None,
+        epsilon: float = 1e-3,
+        **kwargs,
     ):
         self.geometry = geometry
         self.resolution = geometry.resolve_resolution('smooth', resolution)
@@ -327,15 +368,52 @@ class SurfaceGeometry:
         self.kwargs = kwargs
 
     @overload
-    def into(self, mode: Literal['checker'], **kwargs) -> CheckerboardSurface[Self]: ...
+    def into(self, mode: Literal['checker'], **kwargs) -> CheckerboardSurface[Self]:
+        """
+        棋盘格样式的曲面，默认着色为蓝色深浅网格
+
+        .. warning::
+
+            由于该样式的曲面的每个网格面都是独立的 :class:`~.VItem` 物件，因此性能普遍较差
+
+        具体文档请参考 :class:`CheckerboardSurface`
+        """
+
     @overload
-    def into(self, mode: Literal['wire'], **kwargs) -> WireframeSurface[Self]: ...
+    def into(self, mode: Literal['wire'], **kwargs) -> WireframeSurface[Self]:
+        """
+        线框样式的曲面
+
+        .. warning::
+
+            由于该样式的曲面的每个线框都是独立的 :class:`~.VItem` 物件，因此性能普遍较差
+
+        具体文档请参考 :class:`WireframeSurface`
+        """
+
     @overload
-    def into(self, mode: Literal['smooth'], **kwargs) -> SmoothSurface[Self]: ...
+    def into(self, mode: Literal['smooth'], **kwargs) -> SmoothSurface[Self]:
+        """
+        平滑表面样式的曲面
+
+        .. note::
+
+            该样式的曲面在半透明情况下的表现有待完善
+
+        具体文档请参考 :class:`SmoothSurface`
+        """
+
     # @overload
     # def into(self, mode: Literal['dots'], **kwargs) -> DotCloudSurface[Self]: ...
+
     @overload
-    def into[T: Item](self, mode: type[T], **kwargs) -> T: ...
+    def into[T: Item](self, mode: type[T], **kwargs) -> T:
+        """
+        指定一个类来构造自定义的曲面样式
+
+        具体可参考 :class:`CheckerboardSurface` :class:`WireframeSurface` :class:`SmoothSurface` 内置类的实现，
+        应至少接受一个 ``geometry`` 参数
+        """
 
     def into(self, mode, **kwargs):
         merged_kwargs = merge_dicts_recursively(self.kwargs, kwargs)
