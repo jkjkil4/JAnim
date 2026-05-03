@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import itertools as it
-from typing import Any, Callable, Literal, Self, overload
+from typing import Any, Callable, Iterable, Literal, Self, overload
 
 import numpy as np
 
@@ -13,7 +13,7 @@ from janim.constants import BLUE_D, BLUE_E, GREY_A, GREY_B
 from janim.items.geometry.polygon import Polygon
 from janim.items.group import Group
 from janim.items.item import Item
-from janim.items.points import Points
+from janim.items.points import DotCloud, Points
 from janim.items.vitem import VItem
 from janim.locale import get_translator
 from janim.render.renderer_smooth_surface import SmoothSurfaceRenderer
@@ -470,26 +470,60 @@ class SmoothSurface[T: SurfaceGeometry](NormSurface[T]):
         return self
 
 
-# class DotCloudSurface[T: SurfaceGeometry](DotCloud):
-#     def __init__(
-#         self,
-#         geometry: T,
-#         resolution: Resolution | None = None,
-#         radius: float | Iterable[float] = 0.01,
-#
-#         **kwargs,
-#     ):
-#         self.geometry = geometry
-#         self.resolution = geometry.resolve_resolution('smooth', resolution)
-#
-#         super().__init__(*self._get_dot_points(), radius=radius, **kwargs)
-#
-#     def _get_dot_points(self) -> np.ndarray:
-#         u_values, v_values = _get_u_values_and_v_values(
-#             self.geometry.u_range, self.geometry.v_range, self.resolution
-#         )
-#         uv_func = self.geometry.uv_func
-#         return np.array([uv_func(u, v) for u in u_values for v in v_values])
+class DotCloudSurface[T: SurfaceGeometry](DotCloud):
+    def __init__(
+        self,
+        geometry: T,
+        resolution: Resolution | None = None,
+        radius: float | Iterable[float] = 0.01,
+        **kwargs,
+    ):
+        self.geometry = geometry
+        self.resolution = geometry.resolve_resolution('smooth', resolution)
+
+        super().__init__(*self._get_dot_points(), radius=radius, **kwargs)
+
+    def _get_dot_points(self) -> np.ndarray:
+        u_values, v_values = _get_u_values_and_v_values(
+            self.geometry.u_range, self.geometry.v_range, self.resolution
+        )
+        uv_func = self.geometry.uv_func
+        return np.array([uv_func(u, v) for u in u_values for v in v_values])
+
+    def get_points_in_grid(self) -> np.ndarray:
+        """
+        得到点集二维数组，``v`` 主序
+        """
+        return self.points.get().reshape(-1, (self.resolution[1] + 1), 3)
+
+    @classmethod
+    def align_for_interpolate(
+        cls, item1: DotCloudSurface, item2: DotCloudSurface
+    ) -> AlignedData[DotCloud]:
+        """
+        依照 uv 网格对齐点，而不是像原先一样简单逐点对齐
+        """
+        aligned = super().align_for_interpolate(item1, item2)
+
+        item1_grid = item1.get_points_in_grid().copy()
+        item2_grid = item2.get_points_in_grid().copy()
+
+        len1_u, len1_v, _ = item1_grid.shape
+        len2_u, len2_v, _ = item2_grid.shape
+
+        len_u, len_v = max(len1_u, len2_u), max(len1_v, len2_v)
+        indices1_u = np.arange(len_u) * len1_u // len_u
+        indices1_v = np.arange(len_v) * len1_v // len_v
+        indices2_u = np.arange(len_u) * len2_u // len_u
+        indices2_v = np.arange(len_v) * len2_v // len_v
+
+        aligned1 = item1_grid[np.ix_(indices1_u, indices1_v)]
+        aligned2 = item2_grid[np.ix_(indices2_u, indices2_v)]
+
+        aligned.data1.points.set(aligned1.reshape(-1, 3))
+        aligned.data2.points.set(aligned2.reshape(-1, 3))
+
+        return aligned
 
 
 # endregion
@@ -506,7 +540,7 @@ class SurfaceGeometry:
         'vchecker': VCheckerboardSurface,
         'wire': WireframeSurface,
         'smooth': SmoothSurface,
-        # 'dots': DotCloudSurface,
+        'dots': DotCloudSurface,
     }
 
     def __init__(
@@ -566,8 +600,11 @@ class SurfaceGeometry:
         具体文档请参考 :class:`SmoothSurface`
         """
 
-    # @overload
-    # def into(self, mode: Literal['dots'], **kwargs) -> DotCloudSurface[Self]: ...
+    @overload
+    def into(self, mode: Literal['dots'], **kwargs) -> DotCloudSurface[Self]:
+        """
+        点集样式的曲面
+        """
 
     @overload
     def into[T: Item](self, mode: type[T], **kwargs) -> T:
