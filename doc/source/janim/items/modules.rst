@@ -10,6 +10,7 @@ items
    effect/modules.rst
    geometry/modules.rst
    svg/modules.rst
+   three_d/modules.rst
    audio
    boolean_ops
    frame_effect

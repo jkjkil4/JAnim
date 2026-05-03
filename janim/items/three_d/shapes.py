@@ -24,7 +24,7 @@ class ParametricSurface(SurfaceGeometry):
             lambda u, v: [np.cos(u) * np.cos(v), np.cos(u) * np.sin(v), -u],
             u_range=[-PI, PI],
             v_range=[0, TAU],
-            resolution=8,
+            resolution=16,
         ).into('checker')
     """
 

@@ -53,6 +53,15 @@
 
         extraPackages = with pkgs; [ ffmpeg ];
 
+        guiExtraLibs = with pkgs; [
+          zstd
+          fontconfig
+          libxkbcommon
+          dbus
+          wayland
+          freetype
+        ];
+
       in {
         devShells = rec {
           no-gui =
@@ -63,21 +72,17 @@
           gui =
             mkPyuvShell {
               inherit extraPackages;
-              extraLibs = with pkgs; [
-                zstd
-                fontconfig
-                libxkbcommon
-                dbus
-                wayland
-                freetype
-              ];
+              extraLibs = guiExtraLibs;
               shellHook = "uv sync --extra gui";
             };
-          # doc =
-          #   mkPyuvShell {
-          #     inherit extraPackages;
-          #     shellHook = "uv sync --extra doc";
-          #   };
+          doc =
+            mkPyuvShell {
+              extraPackages = extraPackages ++ (with pkgs; [ 
+                gettext
+              ]);
+              extraLibs = guiExtraLibs;
+              shellHook = "uv sync --extra gui,doc";
+            };
           # test =
           #   mkPyuvShell {
           #     inherit extraPackages;

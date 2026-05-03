@@ -68,7 +68,7 @@ class NormSurface[T: SurfaceGeometry](Points):
     """
     :class:`CheckerboardSurface` 和 :class:`SmoothSurface` 的基类
 
-    提供了对 `du_points` 和 `dv_points` 的封装，以便计算法向量
+    提供了对 ``du_points`` 和 ``dv_points`` 的封装，以便计算法向量
     """
 
     _du_points = CmptInfo(Cmpt_Points[Self])
@@ -174,7 +174,7 @@ class NormSurface[T: SurfaceGeometry](Points):
 
 class CheckerboardSurface[T: SurfaceGeometry](NormSurface[T]):
     """
-    棋盘格样式的曲面，默认着色为蓝色深浅网格
+    棋盘格样式的曲面，默认着色为蓝色深浅交替网格
 
     .. note::
 
@@ -230,13 +230,13 @@ class CheckerboardSurface[T: SurfaceGeometry](NormSurface[T]):
 
 class VCheckerboardSurface[T: SurfaceGeometry](Group[SurfaceFace], VItem):
     """
-    棋盘格样式的曲面，默认着色为蓝色深浅网格
+    棋盘格样式的曲面，默认着色为蓝色深浅交替网格
 
     .. warning::
 
         由于该样式的曲面的每个网格面都是独立的 :class:`~.VItem` 物件，因此性能普遍较差
 
-        对于性能较优的方式，请参考 :class:`VCheckerboardSurface`
+        对于性能较优的方式，请参考 :class:`CheckerboardSurface`
 
     :param geometry: 由 :meth:`SurfaceGeometry.into` 自动提供
     :param resolution: 覆盖默认分辨率设置，可传入单个值或者传入一对值来表示在 ``u`` 和 ``v`` 方向的分辨率
