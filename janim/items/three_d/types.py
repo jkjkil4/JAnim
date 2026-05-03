@@ -8,6 +8,7 @@ import numpy as np
 from janim.components.component import CmptInfo
 from janim.components.points import Cmpt_Points
 from janim.components.rgba import Cmpt_Rgba
+from janim.components.rgbas import Cmpt_Rgbas
 from janim.constants import BLUE_D, BLUE_E, GREY_A, GREY_B
 from janim.items.geometry.polygon import Polygon
 from janim.items.group import Group
@@ -15,9 +16,9 @@ from janim.items.item import Item
 from janim.items.points import Points
 from janim.items.vitem import VItem
 from janim.locale import get_translator
-from janim.logger import log
 from janim.render.renderer_smooth_surface import SmoothSurfaceRenderer
-from janim.typing import ColorArray, JAnimColor, Vect
+from janim.render.renderer_checkerboard_surface import CheckerboardSurfaceRenderer
+from janim.typing import ColorArray, JAnimColor, RgbaArray, Vect
 from janim.utils.data import AlignedData, Array
 from janim.utils.dict_ops import merge_dicts_recursively
 from janim.utils.iterables import resize_preserving_order
@@ -63,13 +64,179 @@ class SurfaceFace(Polygon):
 # region 各种 Surface 类型
 
 
-class CheckerboardSurface[T: SurfaceGeometry](Group[SurfaceFace], VItem):
+class NormSurface[T: SurfaceGeometry](Points):
+    """
+    :class:`CheckerboardSurface` 和 :class:`SmoothSurface` 的基类
+
+    提供了对 `du_points` 和 `dv_points` 的封装，以便计算法向量
+    """
+
+    _du_points = CmptInfo(Cmpt_Points[Self])
+    _dv_points = CmptInfo(Cmpt_Points[Self])
+
+    resolution_type: str | None = None
+
+    def __init__(
+        self,
+        geometry: T,
+        resolution: Resolution | None = None,
+        epsilon: float = 1e-3,
+        **kwargs,
+    ):
+        assert self.resolution_type is not None
+
+        self.geometry = geometry
+        self.resolution = geometry.resolve_resolution(self.resolution_type, resolution)
+        self.epsilon = epsilon
+
+        super().__init__(**kwargs)
+        self._update_resolution(self.resolution)
+
+        self.apply_depth_test()
+
+    def init_connect(self) -> None:
+        super().init_connect()
+        Cmpt_Points.apply_points_fn.connect(self.points, self._on_points_transformed)
+
+    def _on_points_transformed(self, func, about_point) -> None:
+        self._du_points.apply_points_fn(func, about_point=about_point, about_edge=None)
+        self._dv_points.apply_points_fn(func, about_point=about_point, about_edge=None)
+
+    def _update_resolution(self, resolution: tuple[int, int]) -> None:
+        self.resolution = resolution
+
+        points, du_points, dv_points = self._get_points_and_dpoints()
+        self.points.set(points)
+        self._du_points.set(du_points)
+        self._dv_points.set(dv_points)
+
+        self._tri_indices = self._get_tri_indices()
+
+    def _get_points_and_dpoints(self) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+        u_values, v_values = _get_u_values_and_v_values(
+            self.geometry.u_range, self.geometry.v_range, self.resolution
+        )
+        U, V = np.meshgrid(u_values, v_values, indexing='ij')
+        uv_grid = np.stack([U, V], axis=-1)
+        uv_plus_du = uv_grid.copy()
+        uv_plus_du[:, :, 0] += self.epsilon
+        uv_plus_dv = uv_grid.copy()
+        uv_plus_dv[:, :, 1] += self.epsilon
+
+        uv_func = self.geometry.uv_func
+        points, du_points, dv_points = [
+            np.array(
+                [
+                    uv_func(u, v)  #
+                    for u, v in grid.reshape(-1, 2)
+                ]
+            )
+            for grid in (uv_grid, uv_plus_du, uv_plus_dv)
+        ]
+        return points, du_points, dv_points
+
+    def _get_tri_indices(self) -> np.ndarray:
+        res_u, res_v = self.resolution
+        idx = np.arange((res_u + 1) * (res_v + 1)).reshape((res_u + 1, res_v + 1))
+        p0 = idx[:-1, :-1].ravel()
+        p1 = idx[1:, :-1].ravel()
+        p2 = idx[:-1, 1:].ravel()
+        p3 = idx[1:, 1:].ravel()
+        # 组装三角形索引
+        indices = np.stack([p0, p1, p2, p1, p3, p2], axis=1)
+        return indices.astype('i4')
+
+    @classmethod
+    def align_for_interpolate(cls, item1: Item, item2: Item) -> AlignedData[Self]:
+        """
+        依照 uv 网格对齐采样分辨率以及三角形索引，而不是像原先一样简单逐点对齐
+        """
+        assert isinstance(item1, NormSurface) and isinstance(item2, NormSurface)
+
+        res1_u, res1_v = item1.resolution
+        res2_u, res2_v = item2.resolution
+
+        res_u, res_v = res = max(res1_u, res2_u), max(res1_v, res2_v)
+        needs_resample1 = res1_u != res_u or res1_v != res_v
+        needs_resample2 = res2_u != res_u or res2_v != res_v
+
+        aligned = super().align_for_interpolate(item1, item2)
+
+        if needs_resample1:
+            aligned.data1._update_resolution(res)
+            # 因为在内部 union 是从 data1 复制来的，所以这里只需要在 needs_resample1 时更新 union 的
+            aligned.union._tri_indices = aligned.data1._tri_indices
+        if needs_resample2:
+            aligned.data2._update_resolution(res)
+
+        return aligned
+
+
+class CheckerboardSurface[T: SurfaceGeometry](NormSurface[T]):
+    """
+    棋盘格样式的曲面，默认着色为蓝色深浅网格
+
+    .. note::
+
+        该样式的曲面在半透明情况下的表现有待完善
+
+    .. note::
+
+        该样式的曲面作为整体渲染，因此无法将每个面作为单独的物件进行操作
+
+        对于每个面以独立物件存在的形式，请参考 :class:`CheckerboardSurface`
+
+    :param geometry: 由 :meth:`SurfaceGeometry.into` 自动提供
+    :param resolution: 覆盖默认分辨率设置，可传入单个值或者传入一对值来表示在 ``u`` 和 ``v`` 方向的分辨率
+    :param checkerboard_colors: 棋盘格颜色列表，会对网格循环使用其中的颜色
+    """
+
+    resolution_type = 'face'
+
+    class _Cmpt_SurfaceRgbas[ItemT](Cmpt_Rgbas[ItemT], impl=True):
+        def set_rgbas(self, rgbas: RgbaArray) -> Self:
+            rgbas = np.asarray(rgbas)
+            assert len(rgbas) == 2
+            return super().set_rgbas(rgbas)
+
+    color = CmptInfo(_Cmpt_SurfaceRgbas[Self])
+
+    renderer_cls = CheckerboardSurfaceRenderer
+
+    def __init__(
+        self,
+        geometry: T,
+        resolution: Resolution | None = None,
+        checkerboard_colors: ColorArray = [BLUE_D, BLUE_E],
+        alpha: float = 1.0,
+        epsilon: float = 1e-3,
+        **kwargs,
+    ):
+        super().__init__(geometry, resolution, epsilon, **kwargs)
+        self.color.set(checkerboard_colors, alpha)
+
+    def apply_style(
+        self,
+        color: JAnimColor | ColorArray | None = None,
+        alpha: float | None = None,
+        **kwargs,
+    ) -> Self:
+        if color is None or alpha is not None:
+            self.color.set(color, alpha)
+
+        super().apply_style(**kwargs)
+        return self
+
+
+class VCheckerboardSurface[T: SurfaceGeometry](Group[SurfaceFace], VItem):
     """
     棋盘格样式的曲面，默认着色为蓝色深浅网格
 
     .. warning::
 
         由于该样式的曲面的每个网格面都是独立的 :class:`~.VItem` 物件，因此性能普遍较差
+
+        对于性能较优的方式，请参考 :class:`VCheckerboardSurface`
 
     :param geometry: 由 :meth:`SurfaceGeometry.into` 自动提供
     :param resolution: 覆盖默认分辨率设置，可传入单个值或者传入一对值来表示在 ``u`` 和 ``v`` 方向的分辨率
@@ -233,6 +400,9 @@ class WireframeSurface[T: SurfaceGeometry](Group[VItem], VItem):
     def align_for_interpolate(
         cls, item1: WireframeSurface, item2: WireframeSurface
     ) -> AlignedData[Self]:
+        """
+        依照 uv 网格对齐线框，而不是像原先一样简单逐个对齐
+        """
         aligned = super().align_for_interpolate(item1, item2)
 
         res1_u, res1_v = item1.resolution
@@ -266,7 +436,7 @@ class WireframeSurface[T: SurfaceGeometry](Group[VItem], VItem):
         return aligned
 
 
-class SmoothSurface[T: SurfaceGeometry](Points):
+class SmoothSurface[T: SurfaceGeometry](NormSurface[T]):
     """
     平滑表面样式的曲面
 
@@ -278,8 +448,7 @@ class SmoothSurface[T: SurfaceGeometry](Points):
     :param resolution: 覆盖默认分辨率设置，可传入单个值或者传入一对值来表示在 ``u`` 和 ``v`` 方向的分辨率
     """
 
-    _du_points = CmptInfo(Cmpt_Points[Self])
-    _dv_points = CmptInfo(Cmpt_Points[Self])
+    resolution_type = 'smooth'
 
     class Cmpt_SurfaceRgba[ItemT](Cmpt_Rgba[ItemT], impl=True):
         DEFAULT_RGBA_ARRAY = Array.create([0.53, 0.53, 0.53, 1.0])  # GREY_C
@@ -287,31 +456,6 @@ class SmoothSurface[T: SurfaceGeometry](Points):
     color = CmptInfo(Cmpt_SurfaceRgba[Self])
 
     renderer_cls = SmoothSurfaceRenderer
-
-    def __init__(
-        self,
-        geometry: T,
-        resolution: Resolution | None = None,
-        epsilon: float = 1e-3,
-        **kwargs,
-    ):
-        self.geometry = geometry
-        self.resolution = geometry.resolve_resolution('smooth', resolution)
-        self.epsilon = epsilon
-
-        super().__init__(**kwargs)
-        self._update_resolution(self.resolution)
-
-        self.apply_depth_test()
-
-    def init_connect(self) -> None:
-        super().init_connect()
-
-        Cmpt_Points.apply_points_fn.connect(self.points, self._on_points_transformed)
-
-    def _on_points_transformed(self, func, about_point) -> None:
-        self._du_points.apply_points_fn(func, about_point=about_point, about_edge=None)
-        self._dv_points.apply_points_fn(func, about_point=about_point, about_edge=None)
 
     def apply_style(
         self,
@@ -324,75 +468,6 @@ class SmoothSurface[T: SurfaceGeometry](Points):
 
         super().apply_style(**kwargs)
         return self
-
-    def _update_resolution(self, resolution: tuple[int, int]) -> None:
-        self.resolution = resolution
-
-        points, du_points, dv_points = self._get_points_and_dpoints()
-        self.points.set(points)
-        self._du_points.set(du_points)
-        self._dv_points.set(dv_points)
-
-        self._tri_indices = self._get_tri_indices()
-
-    def _get_points_and_dpoints(self) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
-        u_values, v_values = _get_u_values_and_v_values(
-            self.geometry.u_range, self.geometry.v_range, self.resolution
-        )
-        U, V = np.meshgrid(u_values, v_values, indexing='ij')
-        uv_grid = np.stack([U, V], axis=-1)
-        uv_plus_du = uv_grid.copy()
-        uv_plus_du[:, :, 0] += self.epsilon
-        uv_plus_dv = uv_grid.copy()
-        uv_plus_dv[:, :, 1] += self.epsilon
-
-        uv_func = self.geometry.uv_func
-        points, du_points, dv_points = [
-            np.array(
-                [
-                    uv_func(u, v)  #
-                    for u, v in grid.reshape(-1, 2)
-                ]
-            )
-            for grid in (uv_grid, uv_plus_du, uv_plus_dv)
-        ]
-        return points, du_points, dv_points
-
-    def _get_tri_indices(self) -> np.ndarray:
-        res_u, res_v = self.resolution
-        idx = np.arange((res_u + 1) * (res_v + 1)).reshape((res_u + 1, res_v + 1))
-        p0 = idx[:-1, :-1].ravel()
-        p1 = idx[1:, :-1].ravel()
-        p2 = idx[:-1, 1:].ravel()
-        p3 = idx[1:, 1:].ravel()
-        # 组装三角形索引
-        indices = np.stack([p0, p1, p2, p1, p3, p2], axis=1)
-        return indices.astype('i4')
-
-    @classmethod
-    def align_for_interpolate(cls, item1: Item, item2: Item) -> AlignedData[Self]:
-        """
-        依照 uv 网格对齐采样分辨率以及三角形索引，而不是像原先一样简单逐点对齐
-        """
-        assert isinstance(item1, SmoothSurface) and isinstance(item2, SmoothSurface)
-
-        res1_u, res1_v = item1.resolution
-        res2_u, res2_v = item2.resolution
-
-        res_u, res_v = res = max(res1_u, res2_u), max(res1_v, res2_v)
-        needs_resample1 = res1_u != res_u or res1_v != res_v
-        needs_resample2 = res2_u != res_u or res2_v != res_v
-
-        aligned = super().align_for_interpolate(item1, item2)
-
-        if needs_resample1:
-            aligned.data1._update_resolution(res)
-            # 因为在内部 union 是从 data1 复制来的，所以这里只需要在 needs_resample1 时更新 union 的 indices
-            aligned.union._tri_indices = aligned.data1._tri_indices
-        if needs_resample2:
-            aligned.data2._update_resolution(res)
-
-        return aligned
 
 
 # class DotCloudSurface[T: SurfaceGeometry](DotCloud):
@@ -428,6 +503,7 @@ class SurfaceGeometry:
 
     SURFACE_TYPES: dict[str, Any] = {
         'checker': CheckerboardSurface,
+        'vchecker': VCheckerboardSurface,
         'wire': WireframeSurface,
         'smooth': SmoothSurface,
         # 'dots': DotCloudSurface,
@@ -451,11 +527,19 @@ class SurfaceGeometry:
         """
         棋盘格样式的曲面，默认着色为蓝色深浅网格
 
+        具体文档请参考 :class:`CheckerboardSurface`
+        """
+
+    @overload
+    def into(self, mode: Literal['vchecker'], **kwargs) -> VCheckerboardSurface[Self]:
+        """
+        棋盘格样式的曲面，默认着色为蓝色深浅网格
+
         .. warning::
 
             由于该样式的曲面的每个网格面都是独立的 :class:`~.VItem` 物件，因此性能普遍较差
 
-        具体文档请参考 :class:`CheckerboardSurface`
+        具体文档请参考 :class:`VCheckerboardSurface`
         """
 
     @overload
@@ -490,7 +574,7 @@ class SurfaceGeometry:
         """
         指定一个类来构造自定义的曲面样式
 
-        具体可参考 :class:`CheckerboardSurface` :class:`WireframeSurface` :class:`SmoothSurface` 内置类的实现，
+        具体可参考 :class:`VCheckerboardSurface` :class:`WireframeSurface` :class:`SmoothSurface` 内置类的实现，
         应至少接受一个 ``geometry`` 参数
         """
 
