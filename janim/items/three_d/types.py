@@ -46,6 +46,10 @@ def _get_u_values_and_v_values(
 
 
 class SurfaceFace(Polygon):
+    """
+    :class:`VCheckerboardSurface` 的每个面
+    """
+
     def __init__(
         self, u1: float, u2: float, v1: float, v2: float, u_index: int, v_index: int, **kwargs
     ):
@@ -471,6 +475,14 @@ class SmoothSurface[T: SurfaceGeometry](NormSurface[T]):
 
 
 class DotCloudSurface[T: SurfaceGeometry](DotCloud):
+    """
+    点集样式的曲面
+
+    :param geometry: 由 :meth:`SurfaceGeometry.into` 自动提供
+    :param resolution: 覆盖默认分辨率设置，可传入单个值或者传入一对值来表示在 ``u`` 和 ``v`` 方向的分辨率
+    :param radius: 每个点的半径大小，考虑到点会比较密集，因此这里的默认值会更小一些
+    """
+
     def __init__(
         self,
         geometry: T,
@@ -569,10 +581,6 @@ class SurfaceGeometry:
         """
         棋盘格样式的曲面，默认着色为蓝色深浅网格
 
-        .. warning::
-
-            由于该样式的曲面的每个网格面都是独立的 :class:`~.VItem` 物件，因此性能普遍较差
-
         具体文档请参考 :class:`VCheckerboardSurface`
         """
 
@@ -580,10 +588,6 @@ class SurfaceGeometry:
     def into(self, mode: Literal['wire'], **kwargs) -> WireframeSurface[Self]:
         """
         线框样式的曲面
-
-        .. warning::
-
-            由于该样式的曲面的每个线框都是独立的 :class:`~.VItem` 物件，因此性能普遍较差
 
         具体文档请参考 :class:`WireframeSurface`
         """
@@ -593,10 +597,6 @@ class SurfaceGeometry:
         """
         平滑表面样式的曲面
 
-        .. note::
-
-            该样式的曲面在半透明情况下的表现有待完善
-
         具体文档请参考 :class:`SmoothSurface`
         """
 
@@ -604,6 +604,8 @@ class SurfaceGeometry:
     def into(self, mode: Literal['dots'], **kwargs) -> DotCloudSurface[Self]:
         """
         点集样式的曲面
+
+        具体文档请参考 :class:`DotCloudSurface`
         """
 
     @overload
@@ -616,6 +618,35 @@ class SurfaceGeometry:
         """
 
     def into(self, mode, **kwargs):
+        """
+        根据曲面几何信息构造出指定类型的物件
+
+        可使用：
+
+        -   包括 ``'checker'`` 、 ``'vchecker'`` 、 ``'wire'`` 、 ``'smooth'`` 、 ``'dots'`` 的字符串，我们一般使用这些
+
+            他们分别对应 :class:`CheckerboardSurface` 、 :class:`VCheckerboardSurface` 、 :class:`WireframeSurface` 、 :class:`SmoothSurface` 、 :class:`DotCloudSurface`
+
+            可参考对应的文档说明
+
+        -   若使用一个自定义的物件类，其应至少接受一个 ``geometry`` 参数
+
+        示例：
+
+        .. code-block:: python
+
+            Sphere().into('checker')
+
+        对于不同类型物件特定的样式配置，放在 ``into`` 或是几何构造（例如这里的 ``Sphere()`` ）中均可
+
+        .. code-block:: python
+
+            Sphere().into('vchecker', fill_alpha=0.5)
+
+        .. code-block:: python
+
+            Sphere(fill_alpha=0.5).into('vchecker')
+        """
         merged_kwargs = merge_dicts_recursively(self.kwargs, kwargs)
 
         if isinstance(mode, str):
