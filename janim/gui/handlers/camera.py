@@ -161,8 +161,8 @@ class CameraPanel(HandlerPanel):
 
         elements = points.orientation.elements
         if not np.isclose(elements, self.orig_elements).all():
-            params = ', '.join(map(str, np.round(elements.astype(np.float64), 2)))
-            lines.append(f'{target}.points.set(orientation=Quaternion({params}))')
+            a, b, c, d = np.round(elements.astype(np.float64), 2)
+            lines.append(f'{target}.points.set(orientation=quat({b}, {c}, {d}, {a}))')
 
         width = points.size[0]
         if not np.isclose(width, self.orig_width):

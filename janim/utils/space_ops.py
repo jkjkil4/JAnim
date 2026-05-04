@@ -48,6 +48,10 @@ def get_arc_length(vector_length: float, path_arc: float) -> float:
 # Operations related to rotation
 
 
+def quat(x: float, y: float, z: float, w: float) -> Quaternion:
+    return Quaternion(w, x, y, z)
+
+
 def quaternion_mult(*quats: Sequence[float]) -> list[float]:
     # Real part is last entry, which is bizzare, but fits scipy Rotation convention
     if len(quats) == 0:
@@ -82,8 +86,8 @@ def quaternion_from_angle_axis(
 
 def angle_axis_from_quaternion(quat: Sequence[float]) -> tuple[float, np.ndarray]:
     # convert scalar-last order (quat) to scalar-first order (Quaternion)
-    b, c, d, a = quat
-    q = Quaternion(a, b, c, d)
+    x, y, z, w = quat
+    q = Quaternion(w, x, y, z)
     # rotation vector = axis * angle
     angle = 2 * np.arccos(q.w)
     s = np.sqrt(1 - q.w * q.w)
@@ -118,15 +122,15 @@ def rotate_vector_2d(vector: Iterable, angle: float):
 
 def rotation_matrix_transpose_from_quaternion(quat: Iterable) -> np.ndarray:
     # convert scalar-last order (quat) to scalar-first order (Quaternion)
-    b, c, d, a = quat
-    q = Quaternion(a, b, c, d)
+    x, y, z, w = quat
+    q = Quaternion(w, x, y, z)
     return q.rotation_matrix
 
 
 def rotation_matrix_from_quaternion(quat: Iterable) -> np.ndarray:
     # convert scalar-last order (quat) to scalar-first order (Quaternion)
-    b, c, d, a = quat
-    q = Quaternion(a, b, c, d)
+    x, y, z, w = quat
+    q = Quaternion(w, x, y, z)
     return q.rotation_matrix.T
 
 

@@ -79,7 +79,7 @@ class CheckerboardSurfaceRenderer(Renderer):
         self.update_fix_in_frame(self.u_fix, item)
         self.u_color1.value = item.color._rgbas._data[0]
         self.u_color2.value = item.color._rgbas._data[1]
-        self.u_row_length.value = item.resolution[0]
+        self.u_row_length.value = item.resolution[1]
 
         with self.depth_test_if_enabled(self.ctx, item):
             self.vao.render(mgl.TRIANGLES, vertices=new_indices.size)
