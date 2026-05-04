@@ -60,9 +60,10 @@ class Renderer:
         vbo: mgl.Buffer,
         resize_target: int,
         use_32bit_align: bool = False,
+        assert_dtype: Any = np.float32,
     ) -> None:
         processed_data = resize_with_interpolation(new_data, resize_target)
-        assert processed_data.dtype == np.float32
+        assert processed_data.dtype == assert_dtype
         bytes_data = processed_data.tobytes()
 
         size = ((len(bytes_data) + 31) & ~31) if use_32bit_align else len(bytes_data)

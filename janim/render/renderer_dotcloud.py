@@ -73,4 +73,4 @@ class DotCloudRenderer(Renderer):
         self.u_glow_size.value = item.glow._size
 
         with self.depth_test_if_enabled(self.ctx, item):
-            self.vao.render(mgl.POINTS, vertices=len(self.prev_points))
+            self.vao.render(mgl.POINTS, vertices=len(new_points))

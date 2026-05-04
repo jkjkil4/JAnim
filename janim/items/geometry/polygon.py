@@ -34,7 +34,7 @@ class Polygon(GeometryShape):
 
     def __init__(
         self,
-        *verts: VectArray,
+        *verts: Vect,
         close_path: bool = True,
         **kwargs,
     ):
