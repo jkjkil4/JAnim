@@ -19,10 +19,10 @@ if TYPE_CHECKING:
 
 
 class ProfilerWidget(QWidget):
-    def __init__(self, parent: "AnimViewer"):
+    def __init__(self, parent: 'AnimViewer'):
         super().__init__()
         self.viewer = parent
-        self.setWindowTitle("Render Profiler (High Performance)")
+        self.setWindowTitle('Render Profiler (High Performance)')
         self.resize(800, 600)
 
         layout = QVBoxLayout(self)
@@ -59,27 +59,27 @@ class ProfilerGraph(QWidget):
         self.timer.start(self.refresh_rate_ms)
 
         self.palette = [
-            "#88C0D0",
-            "#A3BE8C",
-            "#EBCB8B",
-            "#BF616A",
-            "#B48EAD",
-            "#5E81AC",
-            "#D08770",
-            "#81A1C1",
-            "#FF79C6",
-            "#BD93F9",
-            "#50FA7B",
-            "#F1FA8C",
-            "#46D9FF",
-            "#FFB86C",
-            "#ff757f",
-            "#82aaff",
+            '#88C0D0',
+            '#A3BE8C',
+            '#EBCB8B',
+            '#BF616A',
+            '#B48EAD',
+            '#5E81AC',
+            '#D08770',
+            '#81A1C1',
+            '#FF79C6',
+            '#BD93F9',
+            '#50FA7B',
+            '#F1FA8C',
+            '#46D9FF',
+            '#FFB86C',
+            '#ff757f',
+            '#82aaff',
         ]
 
     def _on_timeout(self):
         """定时器回调：只处理数据准备，不直接操作 UI"""
-        if not hasattr(self.viewer, "built") or not self.viewer.built:
+        if not hasattr(self.viewer, 'built') or not self.viewer.built:
             return
         # 触发重绘请求，系统会在合适的时候调用 paintEvent
         self._dirty = True
@@ -121,13 +121,13 @@ class ProfilerGraph(QWidget):
             self._buffer_pixmap = QPixmap(size)
 
         # 针对 Pixmap 的 Painter
-        self._buffer_pixmap.fill(QColor("#1e1e1e"))  # 清除背景
+        self._buffer_pixmap.fill(QColor('#1e1e1e'))  # 清除背景
         painter = QPainter(self._buffer_pixmap)
         painter.setRenderHint(QPainter.RenderHint.Antialiasing)
 
         # 获取数据
-        if not hasattr(self.viewer, "built") or not self.viewer.built:
-            self._draw_centered_text(painter, "Waiting for renderer...", w, h)
+        if not hasattr(self.viewer, 'built') or not self.viewer.built:
+            self._draw_centered_text(painter, 'Waiting for renderer...', w, h)
             painter.end()
             return
 
@@ -135,7 +135,7 @@ class ProfilerGraph(QWidget):
         total_frames_history = len(profiler.history)
 
         if total_frames_history == 0:
-            self._draw_centered_text(painter, "No Data", w, h)
+            self._draw_centered_text(painter, 'No Data', w, h)
             painter.end()
             return
 
@@ -143,9 +143,7 @@ class ProfilerGraph(QWidget):
         # itertools.islice 对 deque 非常友好，不会遍历整个历史
         start_index = max(0, total_frames_history - self.view_range_frames)
         # 注意：这里转换成 list 依然只包含最多 120 个元素，极快
-        render_data = list(
-            itertools.islice(profiler.history, start_index, total_frames_history)
-        )
+        render_data = list(itertools.islice(profiler.history, start_index, total_frames_history))
         data_count = len(render_data)
 
         if data_count == 0:
@@ -194,9 +192,7 @@ class ProfilerGraph(QWidget):
         # render_data[0] 是最旧的 (左边)，render_data[-1] 是最新的 (右边)
         # 原逻辑：frame_offset = (data_count - 1) - i
         # x = w - (frame_offset * pixels_per_frame)
-        x_coords = [
-            w - ((data_count - 1 - i) * pixels_per_frame) for i in range(data_count)
-        ]
+        x_coords = [w - ((data_count - 1 - i) * pixels_per_frame) for i in range(data_count)]
 
         for k_idx, key in enumerate(self.sorted_keys_cache):
             current_tops = stack_tops[k_idx]
@@ -259,7 +255,7 @@ class ProfilerGraph(QWidget):
             percent = i * 25
             y = h - (h * (percent / 100.0))
             painter.drawLine(0, int(y), w, int(y))
-            painter.drawText(5, int(y) - 2, f"{percent}%")
+            painter.drawText(5, int(y) - 2, f'{percent}%')
 
     def _draw_legend(self, painter, w, h):
         keys = self.sorted_keys_cache

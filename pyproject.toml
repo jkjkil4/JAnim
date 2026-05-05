@@ -31,8 +31,7 @@ dependencies = [
     "svgelements",
     "typst>=0.14.1",
 ]
-[tool.ruff.lint.per-file-ignores]
-"*.py" = ["F403", "F405"]
+
 [project.optional-dependencies]
 gui = [
     "PySide6-Essentials",

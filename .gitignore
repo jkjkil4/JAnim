@@ -5,7 +5,6 @@ __pycache__
 *_deprecated.py
 /.asv
 /.vscode
-learn.py
 /dist
 /doc/build
 /videos
