@@ -10,13 +10,13 @@ import moderngl as mgl
 import numpy as np
 
 from janim.camera.camera_info import CameraInfo
-from janim.locale.i18n import get_local_strings
+from janim.locale import get_translator
 from janim.utils.iterables import resize_with_interpolation
 
 if TYPE_CHECKING:
     from janim.items.item import Item
 
-_ = get_local_strings('base')
+_ = get_translator('janim.render.base')
 
 FIX_IN_FRAME_KEY = 'JA_FIX_IN_FRAME'
 
@@ -37,10 +37,11 @@ def get_programs(ctx: mgl.Context):
 
 
 class Renderer:
-    '''渲染器的基类
+    """渲染器的基类
 
     重写 :meth:`render` 以实现具体功能
-    '''
+    """
+
     data_ctx: ContextVar[RenderData] = ContextVar('Renderer.data_ctx')
 
     def render(self, item) -> None: ...
@@ -58,17 +59,14 @@ class Renderer:
         new_data: np.ndarray,
         vbo: mgl.Buffer,
         resize_target: int,
-        use_32bit_align: bool = False
+        use_32bit_align: bool = False,
+        assert_dtype: Any = np.float32,
     ) -> None:
         processed_data = resize_with_interpolation(new_data, resize_target)
-        assert processed_data.dtype == np.float32
+        assert processed_data.dtype == assert_dtype
         bytes_data = processed_data.tobytes()
 
-        size = (
-            ((len(bytes_data) + 31) & ~31)
-            if use_32bit_align
-            else len(bytes_data)
-        )
+        size = ((len(bytes_data) + 31) & ~31) if use_32bit_align else len(bytes_data)
         if size != vbo.size:
             vbo.orphan(size)
 
@@ -78,7 +76,7 @@ class Renderer:
     def update_static_buffer_data(
         new_data: np.ndarray,
         vbo: mgl.Buffer,
-        resize_target: int
+        resize_target: int,
     ) -> None:
         processed_data = resize_with_interpolation(new_data, resize_target)
         assert processed_data.dtype == np.float32
@@ -103,23 +101,31 @@ class Renderer:
 
 @dataclass(kw_only=True)
 class RenderData:
-    '''在渲染过程中需要配置的属性
+    """在渲染过程中需要配置的属性
 
     通过 :py:obj:`Renderer.data_ctx` 进行设置和获取
-    '''
+    """
+
     ctx: mgl.Context
     camera_info: CameraInfo
+    light_source_location: np.ndarray
     anti_alias_radius: float
 
 
-def create_context(**kwargs) -> mgl.Context:
-    ctx = mgl.create_context(**kwargs)
-    # 默认是 blend-off 的
+def apply_blend_flags(ctx: mgl.Context) -> None:
+    # 默认是 blend-off 的，在 render_all 中通过 blend_context 开启，所以这里没有设置 ctx.enable(mgl.BLEND)
+    # fmt: off
     ctx.blend_func = (
         mgl.SRC_ALPHA, mgl.ONE_MINUS_SRC_ALPHA,
         mgl.ONE, mgl.ONE
     )
+    # fmt: on
     ctx.blend_equation = mgl.FUNC_ADD, mgl.MAX
+
+
+def create_context(**kwargs) -> mgl.Context:
+    ctx = mgl.create_context(**kwargs)
+    apply_blend_flags(ctx)
     return ctx
 
 

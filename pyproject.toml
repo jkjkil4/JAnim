@@ -35,39 +35,26 @@ dependencies = [
 "*.py" = ["F403", "F405"]
 [project.optional-dependencies]
 gui = [
-    "pyside6",
+    "PySide6-Essentials",
     "qdarkstyle",
     "beautifulsoup4",
-    "pyaudio; sys_platform == 'win32'",
+    "sounddevice>=0.5.5; sys_platform == 'win32' or sys_platform == 'darwin'",
 ]
 doc = [
-    "sphinx",
+    "sphinx<9.0.0",
     "sphinx-copybutton",
     "sphinx-tabs",
     "furo",
     "jinja2",
     "docutils",
+    "sphinx-intl",
 ]
 test = [
     "opencv-python",
+    "coverage"
 ]
-
-[tool.flit.sdist]
-exclude = [
-    ".asv/", ".vscode/", ".github/", "assets/", "doc/", "benchmarks/", "test/", "scripts/",
-    ".pypirc",
-    ".coveragerc",
-    ".readthedocs.yaml",
-    ".gitignore",
-    "uv.lock",
-    "asv.conf.json",
-    "janim/gui/*.ui",
-    "janim/gui/functions/*.ui",
-    "janim/locale/source",
-    "janim/locale/compile.py",
-    "janim/locale/gettext.py",
-    "janim/locale/intl.py",
-    "janim/locale/*/LC_MESSAGES/*.po"
+bench = [
+    "asv"
 ]
 
 [project.urls]
@@ -77,3 +64,36 @@ Documentation = "https://janim.rtfd.io"
 
 [project.scripts]
 janim = "janim.__main__:main"
+
+[tool.flit.sdist]
+exclude = [
+    ".asv/", ".vscode/", ".github/", "assets/", "doc/", "benchmarks/", "test/", "scripts/",
+    ".pypirc",
+    ".readthedocs.yaml",
+    ".gitignore",
+    "uv.lock",
+    "asv.conf.json",
+    "**/*.ui",
+    "janim/locale/source",
+    "janim/locale/*/LC_MESSAGES/*.po"
+]
+
+[tool.coverage.run]
+source = ["janim"]
+omit = [
+    "janim/gui/*"
+]
+
+[tool.pyright]
+venvPath = "."
+venv = ".venv"
+
+[tool.ruff]
+exclude = [
+    "**/ui_*.py"
+]
+line-length = 100
+
+[tool.ruff.format]
+quote-style = "single"
+

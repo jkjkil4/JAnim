@@ -1,6 +1,8 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Generic, Iterable, Self, TypeVar, overload
+from typing import Iterable, Self
+
+import numpy as np
 
 from janim.components.component import CmptInfo
 from janim.components.glow import Cmpt_Glow
@@ -9,19 +11,24 @@ from janim.components.points import Cmpt_Points
 from janim.components.radius import Cmpt_Radius
 from janim.components.rgbas import Cmpt_Rgbas, apart_alpha
 from janim.items.item import Item
+from janim.locale import get_translator
 from janim.render.renderer_dotcloud import DotCloudRenderer
 from janim.typing import Alpha, ColorArray, JAnimColor, Vect
 from janim.utils.data import AlignedData
-from janim.utils.iterables import (resize_preserving_order,
-                                   resize_preserving_order_indice_groups)
+from janim.utils.iterables import resize_preserving_order, resize_preserving_order_indice_groups
+
+_ = get_translator('janim.items.points')
 
 
 class Points(Item):
-    '''
+    """
     点集
 
     纯数据物件，不参与渲染
-    '''
+
+    是大多数物件的基类
+    """
+
     points = CmptInfo(Cmpt_Points[Self])
 
     def __init__(self, *points: Vect, **kwargs):
@@ -33,9 +40,32 @@ class Points(Item):
     def is_null(self) -> bool:
         return not self.points.has()
 
+    @property
+    def distance_sort_reference_point(self) -> np.ndarray | None:
+        if not self._distance_sort:
+            return None
+        return self.points.self_box.center
+
+
+class Point(Points):
+    """
+    一个点
+
+    可以使用 ``.location`` 得到当前位置
+
+    纯数据物件，不参与渲染；若想在画面中渲染点，可参考 :class:`~.Dot`
+    """
+
+    def __init__(self, location: Vect, **kwargs):
+        super().__init__(location, **kwargs)
+
+    @property
+    def location(self) -> np.ndarray:
+        return self.points.get_start()
+
 
 class MarkedItem(Points):
-    '''
+    """
     带有标记点的物件
 
     例如 :class:`~.TextChar`、 :class:`~.TextLine`、 :class:`~.Arc` 和 :class:`~.RegularPolygon` 都以该类作为基类，
@@ -55,7 +85,7 @@ class MarkedItem(Points):
 
     这段代码的 ``self.mark.set_points([RIGHT * side_length / 4])`` 设置了在 x 轴方向上 75% 处的一个标记点，
     这个标记点会自动跟踪物件的坐标变换，具体参考 :ref:`基本样例 <basic_examples>` 中的对应代码
-    '''
+    """
 
     mark = CmptInfo(Cmpt_Mark[Self])
 
@@ -80,41 +110,6 @@ class MarkedItem(Points):
         self._blocking_signals = False
 
 
-if TYPE_CHECKING:
-    T = TypeVar('T', default=Item)
-else:
-    T = TypeVar('T')
-
-
-class Group(Points, Generic[T]):
-    '''
-    将物件组成一组
-    '''
-    def __init__(self, *objs: T, **kwargs):
-        super().__init__(children=objs, **kwargs)
-
-        self.children: list[T]
-
-    @staticmethod
-    def from_iterable[T](objs: Iterable[T], **kwargs) -> Group[T]:
-        return Group(*objs, **kwargs)
-
-    @overload
-    def __getitem__(self, value: int) -> T: ...
-    @overload
-    def __getitem__(self, value: slice) -> Group[T]: ...
-    @overload
-    def __getitem__(self, key: Iterable[int]) -> Group[T]: ...
-    @overload
-    def __getitem__(self, key: Iterable[bool]) -> Group[T]: ...
-
-    def __getitem__(self, value):   # pragma: no cover
-        return super().__getitem__(value)
-
-    def __iter__(self):
-        return iter(self.children)
-
-
 class DotCloud(Points):
     color = CmptInfo(Cmpt_Rgbas[Self])
     radius = CmptInfo(Cmpt_Radius[Self], 0.05)
@@ -123,11 +118,7 @@ class DotCloud(Points):
 
     renderer_cls = DotCloudRenderer
 
-    def __init__(
-        self,
-        *args,
-        **kwargs
-    ):
+    def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
         self.points.resize_func = resize_preserving_order
@@ -144,7 +135,7 @@ class DotCloud(Points):
         glow_color: JAnimColor | None = None,
         glow_alpha: Alpha | None = None,
         glow_size: float | None = None,
-        **kwargs
+        **kwargs,
     ) -> Self:
         self.color.set(color, alpha, root_only=True)
         if radius is not None:
@@ -184,3 +175,21 @@ class DotCloud(Points):
 class GlowDot(DotCloud):
     def __init__(self, *args, glow_alpha=0.5, **kwargs):
         super().__init__(*args, glow_alpha=glow_alpha, **kwargs)
+
+
+# 兼容旧导入路径：
+# 允许 `from janim.items.points import Group/NamedGroupMixin/NamedGroup` 暂时继续可用，
+# 并在访问时提示迁移到 `janim.items.group`
+def __getattr__(name: str):
+    if name in {'Group', 'NamedGroupMixin', 'NamedGroup'}:
+        from janim.items import group
+        from janim.utils.deprecation import deprecated
+
+        deprecated(
+            f'janim.items.points.{name}',
+            f'janim.items.group.{name}',
+            remove=(4, 4),
+        )
+        return getattr(group, name)
+
+    raise AttributeError(f'module {__name__!r} has no attribute {name!r}')

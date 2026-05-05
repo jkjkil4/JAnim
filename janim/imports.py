@@ -1,6 +1,6 @@
-'''
+"""
 使用 ``from janim.imports import *`` 即可导入 ``janim`` 主要的功能
-'''
+"""
 
 # flake8: noqa
 from colour import Color
@@ -19,6 +19,7 @@ from janim.anims.transform import *
 from janim.anims.updater import *
 from janim.camera.camera import *
 from janim.camera.camera_info import *
+from janim.components.data import CustomData
 from janim.components.rgbas import apart_alpha, merge_alpha
 from janim.constants import *
 from janim.exception import *
@@ -26,11 +27,14 @@ from janim.items.audio import *
 from janim.items.coordinate.coordinate_systems import *
 from janim.items.coordinate.functions import *
 from janim.items.coordinate.number_line import *
-from janim.items.frame_effect import *
+from janim.items.effect.clip import *
+from janim.items.effect.effects import *
+from janim.items.effect.frame_effect import *
 from janim.items.geometry.arc import *
 from janim.items.geometry.arrow import *
 from janim.items.geometry.line import *
 from janim.items.geometry.polygon import *
+from janim.items.group import *
 from janim.items.image_item import *
 from janim.items.item import *
 from janim.items.points import *
@@ -40,6 +44,8 @@ from janim.items.svg.svg_item import *
 from janim.items.svg.typst import *
 from janim.items.svg.typst_types import *
 from janim.items.text import *
+from janim.items.three_d.shapes import *
+from janim.items.three_d.types import *
 from janim.items.value_tracker import *
 from janim.items.vitem import *
 from janim.typing import *

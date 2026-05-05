@@ -14,25 +14,22 @@ type PathFunc = Callable[[np.ndarray, np.ndarray, float], np.ndarray]
 
 
 def get_path_func(path_arc: float, path_arc_axis: Vect, path_func: PathFunc | None) -> PathFunc:
-    '''
+    """
     根据 ``path_arc`` ``path_arc_axis`` ``path_func`` ，建立 ``self.path_func``
-    '''
+    """
     if path_func is not None:
         return path_func
 
     if path_arc == 0:
         return straight_path
     else:
-        return path_along_arc(
-            path_arc,
-            path_arc_axis
-        )
+        return path_along_arc(path_arc, path_arc_axis)
 
 
 def straight_path(
     start_points: np.ndarray,
     end_points: np.ndarray,
-    alpha: float
+    alpha: float,
 ) -> np.ndarray:
     """
     Same function as interpolate, but renamed to reflect
@@ -45,7 +42,7 @@ def straight_path(
 
 def path_along_arc(
     arc_angle: float,
-    axis: np.ndarray = OUT
+    axis: np.ndarray = OUT,
 ) -> Callable[[np.ndarray, np.ndarray, float], np.ndarray]:
     """
     If vect is vector from start to end, [vect[:,1], -vect[:,0]] is

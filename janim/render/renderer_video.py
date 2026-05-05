@@ -8,7 +8,7 @@ import numpy as np
 
 from janim.anims.animation import Animation
 from janim.exception import EXITCODE_FFMPEG_NOT_FOUND, ExitException
-from janim.locale.i18n import get_local_strings
+from janim.locale import get_translator
 from janim.logger import log
 from janim.render.base import Renderer
 from janim.render.program import get_program_from_file_prefix
@@ -17,7 +17,7 @@ from janim.utils.config import Config
 if TYPE_CHECKING:
     from janim.items.image_item import Video, VideoInfo
 
-_ = get_local_strings('renderer_video')
+_ = get_translator('janim.render.renderer_video')
 
 
 class VideoRenderer(Renderer):
@@ -34,19 +34,25 @@ class VideoRenderer(Renderer):
         self.vbo_points = self.ctx.buffer(reserve=4 * 3 * 4)
         self.vbo_color = self.ctx.buffer(reserve=4 * 4 * 4)
         self.vbo_texcoords = self.ctx.buffer(
-            data=np.array([
-                [0.0, 0.0],     # 左上
-                [0.0, 1.0],     # 左下
-                [1.0, 0.0],     # 右上
-                [1.0, 1.0]      # 右下
-            ], dtype=np.float32).tobytes()
+            data=np.array(
+                [
+                    [0.0, 0.0],  # 左上
+                    [0.0, 1.0],  # 左下
+                    [1.0, 0.0],  # 右上
+                    [1.0, 1.0],  # 右下
+                ],
+                dtype=np.float32,
+            ).tobytes()
         )
 
-        self.vao = self.ctx.vertex_array(self.prog, [
-            (self.vbo_points, '3f', 'in_point'),
-            (self.vbo_color, '4f', 'in_color'),
-            (self.vbo_texcoords, '2f', 'in_texcoord')
-        ])
+        self.vao = self.ctx.vertex_array(
+            self.prog,
+            [
+                (self.vbo_points, '3f', 'in_point'),
+                (self.vbo_color, '4f', 'in_color'),
+                (self.vbo_texcoords, '2f', 'in_texcoord'),
+            ],
+        )
 
         self.texture: mgl.Texture | None = None
         self.reader: VideoReader | None = None
@@ -89,7 +95,7 @@ class VideoRenderer(Renderer):
             width, height = item.info.width, item.info.height
             self.texture = self.ctx.texture(
                 size=(width, height),
-                components=item.frame_components
+                components=item.frame_components,
             )
             self.texture.repeat_x = False
             self.texture.repeat_y = False
@@ -147,13 +153,17 @@ class VideoReader:
             '-f', 'rawvideo',
             '-pix_fmt', 'rgb24' if self.components == 3 else 'rgba',
             '-loglevel', 'error',
-            '-'
-        ]
+            '-',
+        ]  # fmt: skip
+
         try:
             self.process = _Popen(command, stdout=sp.PIPE)
         except FileNotFoundError:
-            log.error(_('Unable to read video. '
-                        'Please install ffmpeg and add it to the environment variables.'))
+            log.error(
+                _(
+                    'Unable to read video. Please install ffmpeg and add it to the environment variables.'
+                )
+            )
             raise ExitException(EXITCODE_FFMPEG_NOT_FOUND)
 
 

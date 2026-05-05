@@ -8,9 +8,10 @@ from janim.utils.data import AlignedData
 
 
 class Cmpt_Float[ItemT](Component[ItemT]):
-    '''
+    """
     对 float 的 Component 封装
-    '''
+    """
+
     def __init__(self, default_value, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._value = default_value
@@ -30,7 +31,9 @@ class Cmpt_Float[ItemT](Component[ItemT]):
         cmpt2_copy = cmpt2.copy()
         return AlignedData(cmpt1_copy, cmpt2_copy, cmpt1_copy.copy())
 
-    def interpolate(self, cmpt1: Cmpt_Float, cmpt2: Cmpt_Float, alpha: float, *, path_func=None) -> None:
+    def interpolate(
+        self, cmpt1: Cmpt_Float, cmpt2: Cmpt_Float, alpha: float, *, path_func=None
+    ) -> None:
         if cmpt1._value != cmpt2._value or cmpt1._value != self._value:
             self._value = interpolate(cmpt1._value, cmpt2._value, alpha)
 
@@ -43,6 +46,11 @@ class Cmpt_Float[ItemT](Component[ItemT]):
 
 
 class Cmpt_List[ItemT, T](list[T], Component[ItemT]):
+    def __copy__(self) -> Self:
+        new: Self = Component.__copy__(self)
+        new.extend(self)
+        return new
+
     def copy(self) -> Self:
         return Component.copy(self)
 
@@ -56,6 +64,11 @@ class Cmpt_List[ItemT, T](list[T], Component[ItemT]):
 
 
 class Cmpt_Dict[ItemT, K, V](dict[K, V], Component[ItemT]):
+    def __copy__(self) -> Self:
+        new: Self = Component.__copy__(self)
+        new.update(self)
+        return new
+
     def copy(self) -> Self:
         return Component.copy(self)
 

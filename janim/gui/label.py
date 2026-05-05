@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import itertools as it
-import os
 from bisect import bisect_left, bisect_right
 from dataclasses import dataclass
 from enum import Enum
@@ -12,10 +11,10 @@ from PySide6.QtGui import QFont, QPainter, QPixmap
 from PySide6.QtWidgets import QApplication
 
 from janim.anims.animation import TimeRange
-from janim.utils.file_ops import get_janim_dir
+from janim.utils.file_ops import get_gui_asset
 
 LABEL_DEFAULT_HEIGHT = 3
-LABEL_PIXEL_HEIGHT_PER_UNIT = 8     # px
+LABEL_PIXEL_HEIGHT_PER_UNIT = 8  # px
 
 
 @dataclass
@@ -36,7 +35,7 @@ class Label:
         *,
         pen=Qt.PenStyle.NoPen,
         brush=Qt.BrushStyle.NoBrush,
-        font: QFont | None = None
+        font: QFont | None = None,
     ):
         self.parent: LabelGroup | None = None
         self.name = name
@@ -80,7 +79,7 @@ class Label:
         return self._height
 
     @property
-    def all_downs(self) -> list[Label]:     # use DFS
+    def all_downs(self) -> list[Label]:  # use DFS
         if self._all_downs_cache is not None:
             return self._all_downs_cache
 
@@ -89,10 +88,7 @@ class Label:
         for down in self.downs:
             if down not in res:
                 res.append(down)
-            res.extend(filter(
-                lambda obj: obj not in res,
-                down.all_downs
-            ))
+            res.extend(filter(lambda obj: obj not in res, down.all_downs))
 
         self._all_downs_cache = res
         return res
@@ -109,7 +105,10 @@ class Label:
 
     @staticmethod
     def time_range_to_pixel_range(params: PaintParams, t_range: TimeRange) -> PixelRange:
-        left = params.rect.left() + (t_range.at - params.range.at) / params.range.duration * params.rect.width()
+        left = (
+            params.rect.left()
+            + (t_range.at - params.range.at) / params.range.duration * params.rect.width()
+        )
         width = t_range.duration / params.range.duration * params.rect.width()
         return PixelRange(left, width)
 
@@ -120,10 +119,14 @@ class Label:
         y_offset: int,
         height: int,
         *,
-        post_fn: Callable[[QRectF]] | None = None   # 只是为了在 LabelGroup._paint 中绘制 tip 使用
+        post_fn: Callable[[QRectF]] | None = None,  # 只是为了在 LabelGroup._paint 中绘制 tip 使用
     ) -> None:
         range = self.time_range_to_pixel_range(params, self.t_range)
-        y_pixel = params.rect.y() + (self.y + y_offset) * LABEL_PIXEL_HEIGHT_PER_UNIT - params.y_pixel_offset
+        y_pixel = (
+            params.rect.y()
+            + (self.y + y_offset) * LABEL_PIXEL_HEIGHT_PER_UNIT
+            - params.y_pixel_offset
+        )
         rect = QRectF(range.left, y_pixel, range.width, LABEL_PIXEL_HEIGHT_PER_UNIT * height)
 
         # 标记是否应当绘制文字
@@ -137,7 +140,7 @@ class Label:
             out_of_boundary = True
 
         # 使得超出顶端的区段也能看到一条边
-        minimum = params.rect.top() + 3     # 本来应该是 +4，但因为 rect.bottom() 的特性所以要再 -1
+        minimum = params.rect.top() + 3  # 本来应该是 +4，但因为 rect.bottom() 的特性所以要再 -1
         if rect.bottom() < minimum:
             rect.setHeight(4)
             rect.moveBottom(minimum)
@@ -172,11 +175,7 @@ class Label:
                 prev_font = p.font()
                 p.setFont(self.font)
             p.setPen(Qt.GlobalColor.black)
-            p.drawText(
-                rect,
-                Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignTop,
-                self.name
-            )
+            p.drawText(rect, Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignTop, self.name)
             if self.font is not None:
                 p.setFont(prev_font)
 
@@ -200,7 +199,7 @@ class LabelGroup(Label):
         brush=Qt.BrushStyle.NoBrush,
         highlight_pen=Qt.PenStyle.NoPen,
         highlight_brush=Qt.BrushStyle.NoBrush,
-        skip_grouponly_query=False
+        skip_grouponly_query=False,
     ):
         super().__init__(name, t_range, pen=pen, brush=brush)
         self.highlight_pen = highlight_pen
@@ -229,7 +228,7 @@ class LabelGroup(Label):
     def init_labels(self, labels: Iterable[Label]) -> None:
         # 用于优化绘制的遍历
         self.ordered_divisions: list[list[Label]] | None = None
-        if len(labels) > 32:   # 该 LabelGroup 中 labels 多于 32 个才进行该优化
+        if len(labels) > 32:  # 该 LabelGroup 中 labels 多于 32 个才进行该优化
             self.ordered_divisions = []
 
         labels = sorted(labels, key=lambda x: x.t_range.at)
@@ -242,7 +241,7 @@ class LabelGroup(Label):
             max_len = 0
             # if-else 地狱 ¯\_(ツ)_/¯
             for i, other in enumerate(stack):
-                if other.t_range.end <= label.t_range.at:
+                if other.t_range.end <= label.t_range.at + 1e-5:  # 避免临近相等时的浮点误差
                     if not found_place:
                         if self.ordered_divisions is not None:
                             self.ordered_divisions[i].append(label)
@@ -272,13 +271,13 @@ class LabelGroup(Label):
         self.labels = labels
 
     def is_exclusive(self) -> bool:
-        '''
+        """
         若 ``labels`` 没有重叠部分则返回 ``True``
-        '''
+        """
         if self.ordered_divisions is not None:
             return len(self.ordered_divisions) <= 1
         return all(
-            a.t_range.end <= b.t_range.at
+            a.t_range.end <= b.t_range.at + 1e-5  # 避免临近相等时的浮点数误差
             for a, b in it.pairwise(self.labels)
         )
 
@@ -344,7 +343,7 @@ class LabelGroup(Label):
         display_range: TimeRange,
         pos: QPointF,
         y_pixel_offset: float,
-        policy: QueryPolicy
+        policy: QueryPolicy,
     ) -> Label | LabelGroup | None:
         t = (pos.x() - rect.left()) / rect.width() * display_range.duration + display_range.at
         y = (pos.y() - rect.top() + y_pixel_offset) // LABEL_PIXEL_HEIGHT_PER_UNIT
@@ -376,7 +375,9 @@ class LabelGroup(Label):
 
         return None
 
-    def _query_label(self, label: Label, t: float, y: int, policy: QueryPolicy) -> Label | LabelGroup | None:
+    def _query_label(
+        self, label: Label, t: float, y: int, policy: QueryPolicy
+    ) -> Label | LabelGroup | None:
         if not label.t_range.at <= t < label.t_range.end:
             return None
 
@@ -432,7 +433,7 @@ class LabelGroup(Label):
     @staticmethod
     def get_pix_collapse_tip1() -> QPixmap:
         if LabelGroup._pix_collapse_tip1 is None:
-            LabelGroup._pix_collapse_tip1 = QPixmap(os.path.join(get_janim_dir(), 'gui', 'collapse_tip1.png'))
+            LabelGroup._pix_collapse_tip1 = QPixmap(get_gui_asset('collapse_tip1.png'))
         return LabelGroup._pix_collapse_tip1
 
     _pix_collapse_tip2 = None
@@ -440,7 +441,7 @@ class LabelGroup(Label):
     @staticmethod
     def get_pix_collapse_tip2() -> QPixmap:
         if LabelGroup._pix_collapse_tip2 is None:
-            LabelGroup._pix_collapse_tip2 = QPixmap(os.path.join(get_janim_dir(), 'gui', 'collapse_tip2.png'))
+            LabelGroup._pix_collapse_tip2 = QPixmap(get_gui_asset('collapse_tip2.png'))
         return LabelGroup._pix_collapse_tip2
 
     def paint(self, p: QPainter, params: Label.PaintParams, y_offset: int = 0) -> None:
@@ -464,11 +465,7 @@ class LabelGroup(Label):
 
         # 绘制标题区
         if self._header:
-            self._paint(p,
-                        params,
-                        y_offset,
-                        self.header_height,
-                        post_fn=self._paint_tip)
+            self._paint(p, params, y_offset, self.header_height, post_fn=self._paint_tip)
 
     def _paint_tip(self, p: QPainter, rect: QRectF) -> None:
         pix = self.pix_collapse_tip1 if self._collapse else self.pix_collapse_tip2
@@ -504,7 +501,7 @@ class LazyLabelGroup(LabelGroup):
         name: str,
         t_range: TimeRange,
         make_labels_callback: Callable[[], Iterable[Label]],
-        **kwargs
+        **kwargs,
     ):
         super().__init__(name, t_range, collapse=True, header=True, **kwargs)
         self.initialized: bool = False

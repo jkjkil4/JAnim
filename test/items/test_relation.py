@@ -1,7 +1,7 @@
 import unittest
 
 from janim.items.item import Item
-from janim.items.points import Group
+from janim.items.group import Group
 
 
 class RelationTest(unittest.TestCase):

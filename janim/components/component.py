@@ -1,20 +1,19 @@
 from __future__ import annotations
 
-import copy
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Callable, Generator, Self, overload
+from typing import TYPE_CHECKING, Generator, Self, overload
 
 import janim.utils.refresh as refresh
 from janim.anims.method_updater_meta import METHOD_UPDATER_KEY
 from janim.exception import CmptGroupLookupError
-from janim.locale.i18n import get_local_strings
+from janim.locale import get_translator
 from janim.utils.data import AlignedData
 from janim.utils.signal import SIGNAL_OBJ_SLOTS_NAME
 
-if TYPE_CHECKING:   # pragma: no cover
+if TYPE_CHECKING:  # pragma: no cover
     from janim.items.item import Item
 
-_ = get_local_strings('component')
+_ = get_translator('janim.components.component')
 
 
 class _CmptMeta(type):
@@ -24,23 +23,24 @@ class _CmptMeta(type):
         bases: tuple[type, ...],
         attrdict: dict,
         *,
-        impl=False,     # 若 impl=True，则会跳过下面的检查
+        impl=False,  # 若 impl=True，则会跳过下面的检查
     ):
         if not impl:
             for key in ('copy', 'become', 'not_changed'):
                 if not callable(attrdict.get(key, None)):
                     raise AttributeError(
-                        _('Every subclass of Component must inherit and implement '
-                          'the "{key}" method, but "{name}" does not')
-                        .format(key=key, name=name)
+                        _(
+                            'Every subclass of Component must inherit and implement '
+                            'the "{key}" method, but "{name}" does not'
+                        ).format(key=key, name=name)
                     )
         return super().__new__(cls, name, bases, attrdict)
 
 
 class Component[ItemT](refresh.Refreshable, metaclass=_CmptMeta):
-    @dataclass
+    @dataclass(slots=True)
     class BindInfo:
-        '''
+        """
         对组件定义信息的封装
 
         - ``decl_cls``: 以 ``xxx = CmptInfo(...)`` 的形式被声明在哪个类中；
@@ -70,7 +70,8 @@ class Component[ItemT](refresh.Refreshable, metaclass=_CmptMeta):
 
             # item2.cmpt1.bind_info 与 BindInfo(MyItem, item2, 'cmpt1') 一致
             # item2.cmpt3.bind_info 与 BindInfo(MyItem2, item2, 'cmpt3') 一致
-        '''
+        """
+
         decl_cls: type[Item]
         at_item: Item
         key: str
@@ -80,25 +81,38 @@ class Component[ItemT](refresh.Refreshable, metaclass=_CmptMeta):
         self.bind: Component.BindInfo | None = None
 
     def init_bind(self, bind: BindInfo) -> None:
-        '''
+        """
         用于 ``Item._init_components``
 
         子类可以继承该函数，进行与所在物件相关的处理
-        '''
+        """
         self.bind = bind
 
-    def mark_refresh(self, func: Callable | str, *, recurse_up=False, recurse_down=False) -> Self:
-        '''
+    def mark_refresh(self, name: str, *, recurse_up=False, recurse_down=False) -> None:
+        """
         详见： :meth:`~.Item.broadcast_refresh_of_component`
-        '''
+        """
         # 与 super().mark_refresh(func) 等价，这样写是为了尽可能优化性能
-        refresh.Refreshable.mark_refresh(self, func)
+        refresh.Refreshable.mark_refresh(self, name)
 
         if self.bind is not None:
-            self.bind.at_item.broadcast_refresh_of_component(self, func, recurse_up, recurse_down)
+            self.bind.at_item.broadcast_refresh_of_component(self, name, recurse_up, recurse_down)
+
+    def __copy__(self) -> Self:
+        """
+        手动实现 ``__copy__``，这样性能比 copy.copy 高
+
+        特别是 Component 作为频繁使用的对象这很重要
+        """
+        cls = self.__class__
+        new = cls.__new__(cls)
+
+        new.__dict__ = self.__dict__.copy()
+
+        return new
 
     def copy(self) -> Self:
-        cmpt_copy = copy.copy(self)
+        cmpt_copy = self.__copy__()
         # cmpt_copy.bind = None
         cmpt_copy.reset_refresh()
         setattr(cmpt_copy, SIGNAL_OBJ_SLOTS_NAME, None)
@@ -109,7 +123,9 @@ class Component[ItemT](refresh.Refreshable, metaclass=_CmptMeta):
     def not_changed(self, other) -> bool: ...
 
     def get_same_cmpt(self, item: Item) -> Self:
-        return self.get_same_cmpt_if_exists(item) or getattr(item.astype(self.bind.decl_cls), self.bind.key)
+        return self.get_same_cmpt_if_exists(item) or getattr(
+            item.astype(self.bind.decl_cls), self.bind.key
+        )
 
     def get_same_cmpt_without_mock(self, item: Item) -> Self | None:
         return item.components.get(self.bind.key, None)
@@ -123,7 +139,7 @@ class Component[ItemT](refresh.Refreshable, metaclass=_CmptMeta):
 
     def walk_same_cmpt_of_self_and_descendants_without_mock(
         self,
-        root_only: bool = False
+        root_only: bool = False,
     ) -> Generator[Self, None, None]:
         yield self
         if root_only or self.bind is None:
@@ -132,7 +148,7 @@ class Component[ItemT](refresh.Refreshable, metaclass=_CmptMeta):
 
     def walk_same_cmpt_of_descendants_without_mock(self) -> Generator[Self, None, None]:
         item = self.bind.at_item
-        if not item.stored:
+        if not item._stored:
             for item in item.walk_descendants(self.bind.decl_cls):
                 cmpt = self.get_same_cmpt_without_mock(item)
                 if cmpt is None:
@@ -141,9 +157,9 @@ class Component[ItemT](refresh.Refreshable, metaclass=_CmptMeta):
 
     @property
     def r(self) -> ItemT:
-        '''
+        """
         所位于的物件，便于链式调用同物件下其它的组件
-        '''
+        """
         return self.bind.at_item
 
     @classmethod
@@ -152,9 +168,13 @@ class Component[ItemT](refresh.Refreshable, metaclass=_CmptMeta):
 
     def interpolate(self, cmpt1, cmpt2, alpha: float, *, path_func=None) -> None: ...
 
+    # 仅用于在创建动画时忘记使用 .anim 或 .update 时抛出错误，另见 AnimGroup 的 _get_anim_object
+    def __anim__(self):
+        raise NotImplementedError()
+
 
 class CmptInfo[T]:
-    '''
+    """
     在类中定义组件需要使用该类
 
     例：
@@ -173,9 +193,10 @@ class CmptInfo[T]:
 
             # 正确
             cmpt2 = CmptInfo(MyCmptWithArgs[Self], 1)
-    '''
+    """
+
     def __init__(self, cls: type[T], *args, **kwargs):
-        self.__doc__ = ""
+        self.__doc__ = ''
         self.cls = getattr(cls, '__origin__', cls)
         self.args = args
         self.kwargs = kwargs
@@ -204,14 +225,11 @@ class _CmptGroup(Component):
 
     def copy(self, *, new_cmpts: dict[str, Component]) -> Self:
         cmpt_copy = super().copy()
-        cmpt_copy.objects = {
-            key: new_cmpts[key]
-            for key in cmpt_copy.objects.keys()
-        }
+        cmpt_copy.objects = {key: new_cmpts[key] for key in cmpt_copy.objects.keys()}
 
         return cmpt_copy
 
-    def become(self, other) -> Self:    # pragma: no cover
+    def become(self, other) -> Self:  # pragma: no cover
         return self
 
     def not_changed(self, other: _CmptGroup) -> bool:
@@ -222,10 +240,17 @@ class _CmptGroup(Component):
         return True
 
     @classmethod
-    def align(cls, cmpt1: _CmptGroup, cmpt2: _CmptGroup, aligned: AlignedData[Item]):
-        cmpt1_copy = cmpt1.copy(new_cmpts=aligned.data1.components)
-        cmpt2_copy = cmpt2.copy(new_cmpts=aligned.data2.components)
-        cmpt_union = cmpt1.copy(new_cmpts=aligned.union.components)
+    def align(
+        cls,
+        cmpt1: _CmptGroup,
+        cmpt2: _CmptGroup,
+        data1_cmpts: dict[str, Component],
+        data2_cmpts: dict[str, Component],
+        union_cmpts: dict[str, Component],
+    ):
+        cmpt1_copy = cmpt1.copy(new_cmpts=data1_cmpts)
+        cmpt2_copy = cmpt2.copy(new_cmpts=data2_cmpts)
+        cmpt_union = cmpt1.copy(new_cmpts=union_cmpts)
         return AlignedData(cmpt1_copy, cmpt2_copy, cmpt_union)
 
     def _find_objects(self) -> None:
@@ -242,7 +267,9 @@ class _CmptGroup(Component):
             if val is cmpt_info:
                 return key
 
-        raise CmptGroupLookupError(_('CmptGroup must be defined within the same class as the content passed in'))
+        raise CmptGroupLookupError(
+            _('CmptGroup must be defined within the same class as the content passed in')
+        )
 
     def _returned_self(self, cmpt: Component | Item._AsTypeWrapper, ret) -> bool:
         if isinstance(cmpt, Component):
@@ -270,15 +297,13 @@ class _CmptGroup(Component):
         if not methods:
             cmpt_str = ', '.join(cmpt.__class__.__name__ for cmpt in self.objects)
             raise AttributeError(
-                _('None of the components ({cmpt_str}) have a method named {name}')
-                .format(cmpt_str=cmpt_str, name=name)
+                _('None of the components ({cmpt_str}) have a method named {name}').format(
+                    cmpt_str=cmpt_str, name=name
+                )
             )
 
         def wrapper(*args, **kwargs):
-            ret = [
-                method(*args, **kwargs)
-                for method in methods
-            ]
+            ret = [method(*args, **kwargs) for method in methods]
 
             return self if all(self._returned_self(a, b) for a, b in zip(objects, ret)) else ret
 
@@ -290,7 +315,7 @@ class _CmptGroup(Component):
 
 
 def CmptGroup[T](*cmpt_info_list: CmptInfo[T]) -> CmptInfo[T]:
-    '''
+    """
     用于将多个组件打包，使得可以同时调用
 
     例：
@@ -305,5 +330,5 @@ def CmptGroup[T](*cmpt_info_list: CmptInfo[T]) -> CmptInfo[T]:
         item = MyItem()
         item.stroke.set(...)    # 只有 stroke 的被调用
         item.color.set(...)     # stroke 和 fill 的都被调用了
-    '''
+    """
     return CmptInfo(_CmptGroup, cmpt_info_list)

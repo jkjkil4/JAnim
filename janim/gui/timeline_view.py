@@ -1,30 +1,33 @@
+from __future__ import annotations
+
 import itertools as it
 import math
 from bisect import bisect, bisect_left
 from dataclasses import dataclass
-from typing import TYPE_CHECKING
 
-import numpy as np
 from PySide6.QtCore import QPoint, QPointF, QRect, Qt, QTimer, Signal
-from PySide6.QtGui import (QColor, QKeyEvent, QMouseEvent, QPainter,
-                           QPaintEvent, QPen, QWheelEvent)
+from PySide6.QtGui import QColor, QKeyEvent, QMouseEvent, QPainter, QPaintEvent, QPen, QWheelEvent
 from PySide6.QtWidgets import QLabel, QVBoxLayout, QWidget
 
 from janim.anims.animation import FOREVER, Animation, TimeRange
 from janim.anims.composition import AnimGroup
 from janim.anims.timeline import BuiltTimeline, Timeline, TimelineItem
-from janim.gui.label import (LABEL_DEFAULT_HEIGHT, LABEL_PIXEL_HEIGHT_PER_UNIT,
-                             Label, LabelGroup, LazyLabelGroup, PixelRange)
+from janim.gui.charts.anim_chart import AnimChartWidget
+from janim.gui.charts.audio_chart import AudioChartWidget
+from janim.gui.label import (
+    LABEL_DEFAULT_HEIGHT,
+    LABEL_PIXEL_HEIGHT_PER_UNIT,
+    Label,
+    LabelGroup,
+    LazyLabelGroup,
+    PixelRange,
+)
 from janim.items.item import Item
-from janim.locale.i18n import get_local_strings
-from janim.utils.bezier import interpolate
+from janim.locale import get_translator
 from janim.utils.rate_functions import linear
 from janim.utils.simple_functions import clip
 
-if TYPE_CHECKING:
-    from PySide6.QtCharts import QAreaSeries, QChartView
-
-_ = get_local_strings('timeline_view')
+_ = get_translator('janim.gui.timeline_view')
 
 TIMELINE_VIEW_MIN_DURATION = 0.5
 LABEL_OBJ_NAME = '__obj'
@@ -33,14 +36,14 @@ SUBTIMELINE_CLASS_NAME = '__subtimeline_class'
 
 
 class TimelineView(QWidget):
-    '''
+    """
     窗口下方的进度条和动画区段指示器
 
     - **w** 键放大区段（使视野精确到一小段中）
     - **s** 键缩小区段（使视野扩展到一大段中）
     - **a** 和 **d** 左右移动区段
     - 使用鼠标滚轮纵向平移
-    '''
+    """
 
     @dataclass
     class PixelRange:
@@ -53,9 +56,10 @@ class TimelineView(QWidget):
 
     @dataclass
     class Pressing:
-        '''
+        """
         记录按键状态
-        '''
+        """
+
         w: bool = False
         a: bool = False
         s: bool = False
@@ -95,7 +99,9 @@ class TimelineView(QWidget):
 
         self.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
         self.setMouseTracking(True)
-        self.setMinimumHeight(LABEL_DEFAULT_HEIGHT * LABEL_PIXEL_HEIGHT_PER_UNIT + self.range_tip_height + 10)
+        self.setMinimumHeight(
+            LABEL_DEFAULT_HEIGHT * LABEL_PIXEL_HEIGHT_PER_UNIT + self.range_tip_height + 10
+        )
 
     def set_built(self, built: BuiltTimeline, pause_progresses: list[int]) -> None:
         # 记录先前展开的的 subtimeline labels
@@ -135,7 +141,9 @@ class TimelineView(QWidget):
                 self.expanded = None
                 return
 
-            subtimeline_label_group: LabelGroup | None = getattr(label_group, SUBTIMELINE_LABEL_GROUP_NAME)
+            subtimeline_label_group: LabelGroup | None = getattr(
+                label_group, SUBTIMELINE_LABEL_GROUP_NAME
+            )
             if subtimeline_label_group is None or subtimeline_label_group._collapse:
                 self.expanded = None
                 return
@@ -152,7 +160,9 @@ class TimelineView(QWidget):
             if self.expanded is None:
                 return
 
-            subtimeline_label_group: LabelGroup | None = getattr(label_group, SUBTIMELINE_LABEL_GROUP_NAME)
+            subtimeline_label_group: LabelGroup | None = getattr(
+                label_group, SUBTIMELINE_LABEL_GROUP_NAME
+            )
             if subtimeline_label_group is None:
                 return
 
@@ -171,9 +181,9 @@ class TimelineView(QWidget):
                 sub_info.restore(label)
 
     def init_label_group(self) -> None:
-        '''
+        """
         构建动画区段信息，以便操作与绘制
-        '''
+        """
         self.debug_label_group = self.make_debug_label_group(self.built)
         self.audio_label_group = self.make_audio_label_group(self.built)
         self.anim_label_group = self.make_anim_label_group(self.built)
@@ -185,7 +195,11 @@ class TimelineView(QWidget):
             self.anim_label_group.t_range,
             *[
                 label_group
-                for label_group in (self.subtimeline_label_group, self.debug_label_group, self.audio_label_group)
+                for label_group in (
+                    self.subtimeline_label_group,
+                    self.debug_label_group,
+                    self.audio_label_group,
+                )
                 if label_group is not None
             ],
             self.anim_label_group,
@@ -209,9 +223,9 @@ class TimelineView(QWidget):
                     return None
                 label = LabelGroup(
                     name,
-                    TimeRange(      # 这里不直接使用 anim.t_range 是为了处理 FOREVER 的子动画
+                    TimeRange(  # 这里不直接使用 anim.t_range 是为了处理 FOREVER 的子动画
                         min(label.t_range.at for label in labels),
-                        max(label.t_range.end for label in labels)
+                        max(label.t_range.end for label in labels),
                     ),
                     *labels,
                     collapse=anim.collapse,
@@ -223,11 +237,9 @@ class TimelineView(QWidget):
             else:
                 label = Label(
                     name,
-
                     anim.t_range
                     if anim.t_range.end is not FOREVER
                     else TimeRange(anim.t_range.at, built.duration),
-
                     brush=color,
                 )
             setattr(label, LABEL_OBJ_NAME, anim)
@@ -242,9 +254,10 @@ class TimelineView(QWidget):
                 if (
                     label := make_label_from_anim(
                         anim,
-                        len(anim.anims) != 1 or anim.rate_func is not linear
+                        len(anim.anims) != 1 or anim.rate_func is not linear,
                     )
-                ) is not None
+                )
+                is not None
             ],
             collapse=False,
             header=False,
@@ -259,10 +272,12 @@ class TimelineView(QWidget):
         multiple = len(infos) != 1
 
         def make_audio_label(info: Timeline.PlayAudioInfo) -> Label:
-            label = Label(info.audio.filename,
-                          info.range,
-                          pen=QColor(85, 193, 167),
-                          brush=QColor(85, 193, 167, 160))
+            label = Label(
+                info.audio.filename,
+                info.range,
+                pen=QColor(85, 193, 167),
+                brush=QColor(85, 193, 167, 160),
+            )
             setattr(label, LABEL_OBJ_NAME, info)
             return label
 
@@ -270,13 +285,13 @@ class TimelineView(QWidget):
             'audio',
             TimeRange(
                 0,
-                max(built.duration, max(info.range.end for info in infos))
+                max(built.duration, max(info.range.end for info in infos)),
             ),
             *[make_audio_label(info) for info in infos],
             collapse=multiple,
             header=multiple,
             brush=QColor(85, 193, 167),
-            skip_grouponly_query=True
+            skip_grouponly_query=True,
         )
         # 只有在播放多个音频，并且音频有重叠区段的时候才折叠组
         # 因此这里判断如果没有重叠区段，就把折叠取消
@@ -303,7 +318,7 @@ class TimelineView(QWidget):
                 highlight_pen=QPen(QColor(41, 171, 202), 3),
                 highlight_brush=QColor(41, 171, 202, 40),
                 collapse=False,
-                header=True
+                header=True,
             )
 
         class VisibilityLabel(Label):
@@ -327,14 +342,20 @@ class TimelineView(QWidget):
                 ],
                 collapse=False,
                 header=False,
-                skip_grouponly_query=True
+                skip_grouponly_query=True,
             )
 
         def make_anim_debug_label(item: Item):
             colors = [
-                [251, 180, 174], [179, 205, 227], [204, 235, 197],
-                [222, 203, 228], [254, 217, 166], [255, 255, 204],
-                [229, 216, 189], [253, 218, 236], [242, 242, 242]
+                [251, 180, 174],
+                [179, 205, 227],
+                [204, 235, 197],
+                [222, 203, 228],
+                [254, 217, 166],
+                [255, 255, 204],
+                [229, 216, 189],
+                [253, 218, 236],
+                [242, 242, 242],
             ]
             iter = it.cycle(colors)
             dct = {}
@@ -358,17 +379,16 @@ class TimelineView(QWidget):
                             f'(from {anim._generate_by.__class__.__name__} at 0x{id(anim._generate_by):X})'
                         ),
                         TimeRange(t1, t2),
-                        brush=get_color(anim)
+                        brush=get_color(anim),
                     )
                     for (t1, t2), anims in zip(
-                        it.pairwise([*stack.times, built.duration + 1]),
-                        stack.stacks
+                        it.pairwise([*stack.times, built.duration + 1]), stack.stacks
                     )
                     for anim in anims
                 ],
                 collapse=False,
                 header=False,
-                skip_grouponly_query=True
+                skip_grouponly_query=True,
             )
 
         return LabelGroup(
@@ -379,7 +399,7 @@ class TimelineView(QWidget):
             highlight_pen=QPen(QColor(41, 171, 202), 3),
             highlight_brush=QColor(41, 171, 202, 40),
             collapse=False,
-            header=True
+            header=True,
         )
 
     @staticmethod
@@ -403,10 +423,14 @@ class TimelineView(QWidget):
                 lst = [
                     *[
                         label_group
-                        for label_group in (subtimeline_label_group, debug_label_group, audio_label_group)
+                        for label_group in (
+                            subtimeline_label_group,
+                            debug_label_group,
+                            audio_label_group,
+                        )
                         if label_group is not None
                     ],
-                    anim_label_group
+                    anim_label_group,
                 ]
                 for label_group in lst:
                     label_group.shift_time_range(group.t_range.at + item.first_frame_duration)
@@ -430,13 +454,13 @@ class TimelineView(QWidget):
             'sub-timeline',
             TimeRange(
                 0,
-                max(built.duration, max(item.end for item in items))
+                max(built.duration, max(item.end for item in items)),
             ),
             *[make_subtimeline_label(item) for item in items],
             collapse=multiple,
             header=multiple,
             brush=QColor(177, 137, 198),
-            skip_grouponly_query=True
+            skip_grouponly_query=True,
         )
         # 只有在含有多个子 Timeline，并且有重叠区段的时候才折叠组
         # 因此这里判断如果没有重叠区段，就把折叠取消
@@ -446,8 +470,12 @@ class TimelineView(QWidget):
 
         return subtimeline_label_group
 
-    def query_label_at(self, pos: QPointF, policy: LabelGroup.QueryPolicy) -> Label | LabelGroup | None:
-        return self.label_group.query_at(self.labels_rect, self.range, pos, self.y_pixel_offset, policy)
+    def query_label_at(
+        self, pos: QPointF, policy: LabelGroup.QueryPolicy
+    ) -> Label | LabelGroup | None:
+        return self.label_group.query_at(
+            self.labels_rect, self.range, pos, self.y_pixel_offset, policy
+        )
 
     # endregion
 
@@ -462,15 +490,17 @@ class TimelineView(QWidget):
         if isinstance(obj, Animation):
             self.hover_at_anim(pos, obj)
         else:
-            self.hover_at_audio(pos, obj)
+            self.hover_at_audio(pos, label, obj)
 
-    def hover_at_audio(self, pos: QPoint, info: Timeline.PlayAudioInfo) -> None:
+    def hover_at_audio(self, pos: QPoint, label: Label, info: Timeline.PlayAudioInfo) -> None:
         msg_lst = [
             f'{round(info.range.at, 2)}s ~ {round(info.range.end, 2)}s',
-            info.audio.file_path
+            info.audio.file_path,
         ]
         if info.clip_range != TimeRange(0, info.audio.duration()):
-            msg_lst.append(_('Clip') + f': {round(info.clip_range.at, 2)}s ~ {round(info.clip_range.end, 2)}s')
+            msg_lst.append(
+                _('Clip') + f': {round(info.clip_range.at, 2)}s ~ {round(info.clip_range.end, 2)}s'
+            )
 
         # 只有在这区间内的“建议裁剪区段”才能够被显示
         visible_clip_begin = info.clip_range.at - 4
@@ -479,7 +509,10 @@ class TimelineView(QWidget):
         recommended_ranges = list(info.audio.recommended_ranges())
 
         def is_visible(start: float, end: float) -> bool:
-            return visible_clip_begin < start < visible_clip_end or visible_clip_begin < end < visible_clip_end
+            return (
+                visible_clip_begin < start < visible_clip_end
+                or visible_clip_begin < end < visible_clip_end
+            )
 
         clips = ', '.join(
             f'{math.floor(start * 10) / 10}s ~ {math.ceil(end * 10) / 10}s'
@@ -488,11 +521,13 @@ class TimelineView(QWidget):
         )
         if clips:
             # 如果 recommended_ranges 的前（后）是被忽略了的，那么在前（后）加上省略号
-            clips = ''.join([
-                '' if is_visible(*recommended_ranges[0]) else '... ',
-                clips,
-                '' if is_visible(*recommended_ranges[-1]) else ' ...'
-            ])
+            clips = ''.join(
+                [
+                    '' if is_visible(*recommended_ranges[0]) else '... ',
+                    clips,
+                    '' if is_visible(*recommended_ranges[-1]) else ' ...',
+                ]
+            )
 
             # 当 clips 不太长的时候（正常情况下），就直接将其作为 msg_lst 的一部分
             # 否则将其截短（保留前40个字符和最后40个字符）后，再作为 msg_lst 的一部分
@@ -502,11 +537,14 @@ class TimelineView(QWidget):
                 msg_lst.append(_('Recommended clip') + f': {clips[:40]} ... {clips[-40:]}')
                 msg_lst.append('    ' + _('(Too many! Unable to display all ranges.)'))
 
-        label = QLabel('\n'.join(msg_lst))
-        chart_view = self.create_audio_chart(info, near=round(self.pixel_to_time(pos.x())))
+        msglabel = QLabel('\n'.join(msg_lst))
+
+        absolute_near = round(self.pixel_to_time(pos.x()))
+        relative_near = absolute_near - label.t_range.at
+        chart_view = self.create_audio_chart(info, near=relative_near)
 
         layout = QVBoxLayout()
-        layout.addWidget(label)
+        layout.addWidget(msglabel)
         layout.addWidget(chart_view)
 
         self.tooltip = QWidget()
@@ -517,127 +555,10 @@ class TimelineView(QWidget):
         self.place_tooltip(self.tooltip, pos)
         self.tooltip.show()
 
-    def create_audio_chart(self, info: Timeline.PlayAudioInfo, near: float | None = None) -> 'QChartView':
-        from PySide6.QtCharts import (QChart, QChartView, QLineSeries,
-                                      QValueAxis)
-
-        audio = info.audio
-
-        clip_begin = info.clip_range.at
-        clip_end = info.clip_range.end
-        if near is not None:
-            clip_begin = max(clip_begin, near - info.range.at + info.clip_range.at - 4)
-            clip_end = min(clip_end, near - info.range.at + info.clip_range.at + 4)
-
-        range_begin = info.range.at + (clip_begin - info.clip_range.at)
-        range_end = range_begin + (clip_end - clip_begin)
-
-        begin = int(clip_begin * audio.framerate)
-        end = int(clip_end * audio.framerate)
-
-        left_blank = max(0, -begin)
-        right_blank = max(0, end - audio.sample_count())
-
-        data = audio._samples.data[max(0, begin): min(end, audio.sample_count())]
-        if data.ndim > 1:
-            data = np.max(data, axis=1)
-
-        if left_blank != 0 or right_blank != 0:
-            data = np.concatenate([
-                np.zeros(left_blank, dtype=np.int16),
-                data,
-                np.zeros(right_blank, dtype=np.int16)
-            ])
-
-        unit = audio.framerate // self.built.cfg.fps
-
-        data: np.ndarray = np.max(
-            np.abs(
-                data[:len(data) // unit * unit].reshape(-1, unit)
-            ),
-            axis=1
-        ) / np.iinfo(np.int16).max
-
-        times = np.linspace(range_begin,
-                            range_end,
-                            len(data))
-
-        chart = QChart()
-
-        font = chart.font()
-        font.setPointSize(7)
-
-        x_axis = QValueAxis()
-        x_axis.setRange(range_begin, range_end)
-        x_axis.setTickCount(max(2, 1 + int(range_end - range_begin)))
-        x_axis.setTitleText(_('Timeline Progress'))
-        x_axis.setTitleFont(font)
-        chart.addAxis(x_axis, Qt.AlignmentFlag.AlignBottom)
-
-        y_axis = QValueAxis()
-        y_axis.setRange(0, 1)
-        chart.addAxis(y_axis, Qt.AlignmentFlag.AlignLeft)
-
-        x_clip_axis = QValueAxis()
-        x_clip_axis.setRange(clip_begin, clip_end)
-        x_clip_axis.setTitleText(_('Audio Progress'))
-        x_clip_axis.setTitleFont(font)
-        chart.addAxis(x_clip_axis, Qt.AlignmentFlag.AlignTop)
-
-        series = QLineSeries()
-        for t, y in zip(times, data):
-            series.append(t, y)
-        chart.addSeries(series)
-        series.attachAxis(x_axis)
-        series.attachAxis(y_axis)
-
-        if clip_begin != info.clip_range.at:
-            area = self.create_axvspan(clip_begin, interpolate(clip_begin, clip_end, 0.1),
-                                       QColor(41, 171, 202, 128), QColor(41, 171, 202, 0))
-            chart.addSeries(area)
-            area.attachAxis(x_clip_axis)
-            area.attachAxis(y_axis)
-
-        if clip_end != info.clip_range.end:
-            area = self.create_axvspan(interpolate(clip_begin, clip_end, 0.9), clip_end,
-                                       QColor(41, 171, 202, 0), QColor(41, 171, 202, 128))
-            chart.addSeries(area)
-            area.attachAxis(x_clip_axis)
-            area.attachAxis(y_axis)
-
-        chart.legend().setVisible(False)
-
-        chart_view = QChartView(chart)
-        chart_view.setRenderHint(QPainter.RenderHint.Antialiasing)
-        chart_view.setMinimumSize(350, 270)
-
-        return chart_view
-
-    @staticmethod
-    def create_axvspan(x1: float, x2: float, c1: QColor, c2: QColor) -> 'QAreaSeries':
-        from PySide6.QtCharts import QAreaSeries, QLineSeries
-        from PySide6.QtGui import QGradient, QLinearGradient
-
-        upper_series = QLineSeries()
-        upper_series.append(x1, 1.)
-        upper_series.append(x2, 1.)
-
-        lower_series = QLineSeries()
-        lower_series.append(x1, 0.)
-        lower_series.append(x2, 0.)
-
-        area = QAreaSeries(upper_series, lower_series)
-        upper_series.setParent(area)
-        lower_series.setParent(area)
-
-        grandient = QLinearGradient(QPoint(0, 0), QPoint(1, 0))
-        grandient.setColorAt(0.0, c1)
-        grandient.setColorAt(1.0, c2)
-        grandient.setCoordinateMode(QGradient.CoordinateMode.ObjectBoundingMode)
-        area.setBrush(grandient)
-        area.setPen(Qt.PenStyle.NoPen)
-
-        return area
+    def create_audio_chart(
+        self, info: Timeline.PlayAudioInfo, near: float | None = None
+    ) -> QWidget:
+        return AudioChartWidget(info, fps=self.built.cfg.fps, near=near)
 
     def hover_at_anim(self, pos: QPoint, anim: Animation) -> None:
         parents = [anim]
@@ -649,8 +570,7 @@ class TimelineView(QWidget):
 
         is_forever = anim.t_range.end is FOREVER
         end = 'FOREVER' if is_forever else f'{round(anim.t_range.end, 2)}s'
-        label1 = QLabel(f'{anim.__class__.__name__} '
-                        f'{round(anim.t_range.at, 2)}s ~ {end}')
+        label1 = QLabel(f'{anim.__class__.__name__} {round(anim.t_range.at, 2)}s ~ {end}')
 
         if not is_forever:
             chart_view = self.create_anim_chart(anim)
@@ -663,7 +583,7 @@ class TimelineView(QWidget):
 
             label2 = QLabel(
                 '\n↑\n'.join(
-                    f'{getname(anim.rate_func)} ({anim.__class__.__name__})'
+                    f'{getname(anim.rate_func)} ({anim.__class__.__name__})'  #
                     for anim in parents
                 )
             )
@@ -682,30 +602,8 @@ class TimelineView(QWidget):
         self.place_tooltip(self.tooltip, pos)
         self.tooltip.show()
 
-    def create_anim_chart(self, anim: Animation) -> 'QChartView':
-        from PySide6.QtCharts import QChart, QChartView, QScatterSeries
-
-        count = min(500, int(anim.t_range.duration * self.built.cfg.fps))
-        times = np.linspace(anim.t_range.at,
-                            anim.t_range.end,
-                            count)
-
-        series = QScatterSeries()
-        series.setMarkerSize(3)
-        series.setPen(Qt.PenStyle.NoPen)
-        for t in times:
-            series.append(t, anim.get_alpha_on_global_t(t))
-
-        chart = QChart()
-        chart.addSeries(series)
-        chart.createDefaultAxes()
-        chart.legend().setVisible(False)
-
-        chart_view = QChartView(chart)
-        chart_view.setRenderHint(QPainter.RenderHint.Antialiasing)
-        chart_view.setMinimumSize(250, 200)
-
-        return chart_view
+    def create_anim_chart(self, anim: Animation) -> QWidget:
+        return AnimChartWidget(anim, fps=self.built.cfg.fps)
 
     def place_tooltip(self, tooltip: QWidget, pos: QPoint) -> None:
         rect = tooltip.screen().availableGeometry()
@@ -723,7 +621,9 @@ class TimelineView(QWidget):
             self.tooltip = None
 
     def on_highlight_hover_timer_timeout(self) -> None:
-        label = self.query_label_at(self.mapFromGlobal(self.cursor().pos()), LabelGroup.QueryPolicy.GroupOnly)
+        label = self.query_label_at(
+            self.mapFromGlobal(self.cursor().pos()), LabelGroup.QueryPolicy.GroupOnly
+        )
         if label is not self.highlighting:
             self.highlighting = label
             self.update()
@@ -759,7 +659,7 @@ class TimelineView(QWidget):
             factor = max(TIMELINE_VIEW_MIN_DURATION / self.range.duration, 0.97)
             self.set_range(
                 factor * (self.range.at - cursor_time) + cursor_time,
-                self.range.duration * factor
+                self.range.duration * factor,
             )
 
         elif self.is_pressing.s:
@@ -768,14 +668,14 @@ class TimelineView(QWidget):
             factor = min(self.built.duration / self.range.duration, 1 / 0.97)
             self.set_range(
                 factor * (self.range.at - cursor_time) + cursor_time,
-                self.range.duration * factor
+                self.range.duration * factor,
             )
 
         if self.is_pressing.a or self.is_pressing.d:
             shift = self.range.duration * 0.05 * (self.is_pressing.d - self.is_pressing.a)
             self.set_range(
                 self.range.at + shift,
-                self.range.duration
+                self.range.duration,
             )
 
             self.update()
@@ -825,12 +725,12 @@ class TimelineView(QWidget):
             if pixel_at < minimum:
                 self.set_range(
                     self.pixel_to_time(pixel_at - minimum),
-                    self.range.duration
+                    self.range.duration,
                 )
             if pixel_at > maximum:
                 self.set_range(
                     self.pixel_to_time(pixel_at - maximum),
-                    self.range.duration
+                    self.range.duration,
                 )
 
             self.value_changed.emit(progress)
@@ -887,7 +787,9 @@ class TimelineView(QWidget):
     def mousePressEvent(self, event: QMouseEvent) -> None:
         if event.button() == Qt.MouseButton.LeftButton:
             self.press_at = event.position()
-            self.try_to_switch_collapse = self.query_label_at(self.press_at, LabelGroup.QueryPolicy.HeaderOnly)
+            self.try_to_switch_collapse = self.query_label_at(
+                self.press_at, LabelGroup.QueryPolicy.HeaderOnly
+            )
 
             if self.try_to_switch_collapse is None:
                 self.set_progress_by_x(event.position().x())
@@ -901,7 +803,10 @@ class TimelineView(QWidget):
 
         if event.buttons() & Qt.MouseButton.LeftButton:
             if self.try_to_switch_collapse is not None:
-                if abs(self.press_at.x() - event.x()) > 16 or abs(self.press_at.y() - event.y()) > 16:
+                if (
+                    abs(self.press_at.x() - event.x()) > 16
+                    or abs(self.press_at.y() - event.y()) > 16
+                ):
                     self.try_to_switch_collapse = None
 
             if self.try_to_switch_collapse is None:
@@ -989,7 +894,7 @@ class TimelineView(QWidget):
         self.y_pixel_offset = clip(
             self.y_pixel_offset - event.angleDelta().y() / 120 * LABEL_PIXEL_HEIGHT_PER_UNIT,
             0,
-            max(0, self.label_group.height - LABEL_DEFAULT_HEIGHT) * LABEL_PIXEL_HEIGHT_PER_UNIT
+            max(0, self.label_group.height - LABEL_DEFAULT_HEIGHT) * LABEL_PIXEL_HEIGHT_PER_UNIT,
         )
         self.update()
 
@@ -1060,7 +965,7 @@ class TimelineView(QWidget):
             width,
             self.range_tip_height,
             self.range_tip_height / 2,
-            self.range_tip_height / 2
+            self.range_tip_height / 2,
         )
 
     @property

@@ -40,7 +40,9 @@ def visit_random_choice_html(self, node):
                 case 'start-text':
                     start_text = child.astext()
 
-    self.body.append(f'<div class="random-choice" id="{node["id"]}" destroy="{int(node["destroy"])}">')
+    self.body.append(
+        f'<div class="random-choice" id="{node["id"]}" destroy="{int(node["destroy"])}">'
+    )
     if start_text:
         self.body.append(f'<div class="random-placeholder">{start_text}</div>')
 
@@ -72,12 +74,12 @@ class RandomChoiceDirective(Directive):
     has_content = True
     option_spec = {
         'start-text': str,
-        'destroy': bool
+        'destroy': bool,
     }
 
     def run(self):
         node = random_choice()
-        node['id'] = f"random-{uuid.uuid4().hex[:8]}"
+        node['id'] = f'random-{uuid.uuid4().hex[:8]}'
         node['destroy'] = 'destroy' in self.options
 
         # 让 start-text 能被 gettext 提取
@@ -95,7 +97,7 @@ class RandomChoiceDirective(Directive):
             node += msg_node
 
         # 让 按钮文本 能被 gettext 提取
-        default_btn = "🎲 随机切换"
+        default_btn = '🎲 随机切换'
         btn_node = i18n_message()
         btn_node['msg_type'] = 'button'
 
@@ -129,94 +131,104 @@ class UnwrapRandomOptionsDirective(Directive):
 
 
 def setup(app):
-    app.add_node(i18n_message,
-                 html=(visit_i18n_message_html, None))
+    app.add_node(i18n_message, html=(visit_i18n_message_html, None))
 
-    app.add_node(random_choice,
-                 html=(visit_random_choice_html, depart_random_choice_html))
-    app.add_node(random_option,
-                 html=(visit_random_option_html, depart_random_option_html))
-    app.add_node(unwrap_random_options,
-                 html=(visit_unwrap_random_options_html, depart_unwrap_random_options_html))
+    app.add_node(random_choice, html=(visit_random_choice_html, depart_random_choice_html))
+    app.add_node(random_option, html=(visit_random_option_html, depart_random_option_html))
+    app.add_node(
+        unwrap_random_options,
+        html=(visit_unwrap_random_options_html, depart_unwrap_random_options_html),
+    )
 
-    app.add_directive("random-choice", RandomChoiceDirective)
-    app.add_directive("random-option", RandomOptionDirective)
-    app.add_directive("unwrap-random-options", UnwrapRandomOptionsDirective)
+    app.add_directive('random-choice', RandomChoiceDirective)
+    app.add_directive('random-option', RandomOptionDirective)
+    app.add_directive('unwrap-random-options', UnwrapRandomOptionsDirective)
 
     # 添加 JS
-    app.add_js_file(None, body=R"""
-    document.addEventListener("DOMContentLoaded", () => {
-        document.querySelectorAll(".random-choice").forEach(container => {
-            const items = Array.from(container.querySelectorAll(".random-item"));
-            const button = container.querySelector(".random-button");
-            const placeholder = container.querySelector(".random-placeholder");
-            const destroy = container.getAttribute('destroy') === "1";
-            let current = -1;
-            let firstShown = true;
+    app.add_js_file(
+        None,
+        body=R"""
+        document.addEventListener("DOMContentLoaded", () => {
+            document.querySelectorAll(".random-choice").forEach(container => {
+                const items = Array.from(container.querySelectorAll(".random-item"));
+                const button = container.querySelector(".random-button");
+                const placeholder = container.querySelector(".random-placeholder");
+                const destroy = container.getAttribute('destroy') === "1";
 
-            function showRandom() {
-                if (placeholder)
-                    placeholder.style.display = "none";
+                let current = -1;
+                let firstShown = true;
+                let unseen = items.map((_, idx) => idx);
 
-                if (current >= 0 && current < items.length) {
-                    const prevItem = items[current];
-                    prevItem.querySelectorAll("video").forEach(v => {
-                        v.pause();
-                        v.currentTime = 0;
-                    });
+                function showRandom() {
+                    if (placeholder)
+                        placeholder.style.display = "none";
 
-                    if (destroy) {
-                        const lazyContent = prevItem.querySelector('.lazy-random-item-content');
-                        if (lazyContent) lazyContent.innerHTML = '';
+                    if (current >= 0 && current < items.length) {
+                        const prevItem = items[current];
+                        prevItem.querySelectorAll("video").forEach(v => {
+                            v.pause();
+                            v.currentTime = 0;
+                        });
+
+                        if (destroy) {
+                            const lazyContent = prevItem.querySelector('.lazy-random-item-content');
+                            if (lazyContent) lazyContent.innerHTML = '';
+                        }
+                    }
+
+                    items.forEach(el => el.style.display = 'none');
+
+                    // 随机选择一个
+                    let next;
+                    if (unseen.length > 0) {
+                        const idx = Math.floor(Math.random() * unseen.length);
+                        next = unseen[idx];
+                        unseen.splice(idx, 1);
+                    } else {
+                        do { next = Math.floor(Math.random() * items.length); }
+                        while (next === current && items.length > 1);
+                    }
+
+                    const item = items[next];
+
+                    // 如果 lazy-random-item-content 为空，则搬移 <template> 内容
+                    const lazyContent = item.querySelector('.lazy-random-item-content');
+                    const template = item.querySelector('template');
+                    if (lazyContent && template && lazyContent.innerHTML.trim() === '') {
+                        lazyContent.innerHTML = template.innerHTML;
+                    }
+
+                    item.style.display = 'block';
+                    current = next;
+
+                    // 除第一次外，自动播放该 item 中的视频
+                    if (!firstShown) {
+                        item.querySelectorAll("video").forEach(v => {
+                            v.currentTime = 0;
+                            v.play();
+                            // v.play().catch(() => {});
+                        });
+                    } else {
+                        firstShown = false;
                     }
                 }
 
-                items.forEach(el => el.style.display = 'none');
-
-                // 随机选择一个
-                let next;
-                do { next = Math.floor(Math.random() * items.length); }
-                while (next === current && items.length > 1);
-
-                const item = items[next];
-
-                // 如果 lazy-random-item-content 为空，则搬移 <template> 内容
-                const lazyContent = item.querySelector('.lazy-random-item-content');
-                const template = item.querySelector('template');
-                if (lazyContent && template && lazyContent.innerHTML.trim() === '') {
-                    lazyContent.innerHTML = template.innerHTML;
+                button.addEventListener("click", showRandom);
+                if (!placeholder) {
+                    showRandom();
                 }
+            });
+            document.querySelectorAll(".unwrap-random-options").forEach(container => {
+                const items = Array.from(container.querySelectorAll(".random-item"));
 
-                item.style.display = 'block';
-                current = next;
-
-                // 除第一次外，自动播放该 item 中的视频
-                if (!firstShown) {
-                    item.querySelectorAll("video").forEach(v => {
-                        v.currentTime = 0;
-                        v.play();
-                        // v.play().catch(() => {});
-                    });
-                } else {
-                    firstShown = false;
-                }
-            }
-
-            button.addEventListener("click", showRandom);
-            if (!placeholder) {
-                showRandom();
-            }
-        });
-        document.querySelectorAll(".unwrap-random-options").forEach(container => {
-            const items = Array.from(container.querySelectorAll(".random-item"));
-
-            items.forEach(item => {
-                // const lazyContent = item.querySelector('.lazy-random-item-content');
-                const template = item.querySelector('template');
-                item.innerHTML = template.innerHTML;
-                item.style.display = 'block';
+                items.forEach(item => {
+                    // const lazyContent = item.querySelector('.lazy-random-item-content');
+                    const template = item.querySelector('template');
+                    item.innerHTML = template.innerHTML;
+                    item.style.display = 'block';
+                });
             });
         });
-    });
-    """)
+        """,
+    )
     return {'parallel_read_safe': True, 'parallel_write_safe': True}

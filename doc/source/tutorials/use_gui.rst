@@ -49,7 +49,7 @@
 
 你可以修改全局配置，在命令行参数中加上 ``-c wnd_pos UR``，比如：
 
-.. code-block:: sh
+.. code-block:: bash
 
     janim run your_file.py YourTimeline -c wnd_pos UR
 
@@ -148,6 +148,8 @@ VS Code 插件
 如果选多了，可以 ``右键`` 取消
 
 选择完后，使用 ``Ctrl+右键`` 退出这个功能
+
+.. _gui_draw:
 
 绘制
 ~~~~~~~~~~~

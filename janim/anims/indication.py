@@ -11,13 +11,22 @@ from janim.anims.fading import FadeOut
 from janim.anims.movement import Homotopy
 from janim.anims.updater import DataUpdater, UpdaterParams
 from janim.components.rgbas import Cmpt_Rgbas
-from janim.constants import (C_LABEL_ANIM_ABSTRACT, C_LABEL_ANIM_INDICATION,
-                             GREY, MED_SMALL_BUFF, ORIGIN, RIGHT, TAU, UP,
-                             YELLOW)
+from janim.constants import (
+    C_LABEL_ANIM_ABSTRACT,
+    C_LABEL_ANIM_INDICATION,
+    GREY,
+    MED_SMALL_BUFF,
+    ORIGIN,
+    RIGHT,
+    TAU,
+    UP,
+    YELLOW,
+)
 from janim.items.geometry.arc import Circle, Dot
 from janim.items.geometry.line import Line
+from janim.items.group import Group
 from janim.items.item import Item
-from janim.items.points import Group, Points
+from janim.items.points import Points
 from janim.items.shape_matchers import SurroundingRect
 from janim.items.vitem import VItem
 from janim.typing import JAnimColor, Vect
@@ -27,7 +36,15 @@ from janim.utils.rate_functions import RateFunc, smooth, there_and_back, wiggle
 
 
 class FocusOn(DataUpdater[Dot]):
-    '''展现一个逐渐聚焦到指定物件的圆形缩小动画'''
+    """
+    展现一个逐渐聚焦到指定物件的圆形缩小动画
+
+    .. janim-example:: FocusOnExample
+        :extract-from-test:
+        :media: _static/videos/FocusOnExample.mp4
+        :url: https://janim.readthedocs.io/zh-cn/latest/janim/anims/indication.html#focusonexample
+    """
+
     label_color = C_LABEL_ANIM_INDICATION
 
     def __init__(
@@ -38,7 +55,7 @@ class FocusOn(DataUpdater[Dot]):
         color: JAnimColor = GREY,
         alpha: float = 0.2,
         duration: float = 2,
-        **kwargs
+        **kwargs,
     ) -> None:
         is_item = isinstance(point_or_item, Item)
 
@@ -68,7 +85,15 @@ class FocusOn(DataUpdater[Dot]):
 
 
 class Indicate(DataUpdater):
-    '''展现指定物件以放大为黄色后回到原状的动画'''
+    """
+    展现指定物件以放大为黄色后回到原状的动画
+
+    .. janim-example:: IndicateExample
+        :extract-from-test:
+        :media: _static/videos/IndicateExample.mp4
+        :url: https://janim.readthedocs.io/zh-cn/latest/janim/anims/indication.html#indicateexample
+    """
+
     label_color = C_LABEL_ANIM_INDICATION
 
     def __init__(
@@ -79,7 +104,7 @@ class Indicate(DataUpdater):
         color: JAnimColor = YELLOW,
         rate_func: RateFunc = there_and_back,
         root_only: bool = False,
-        **kwargs
+        **kwargs,
     ) -> None:
         box = item.points.self_box if root_only else item.points.box
         self.about_point = box.center
@@ -98,7 +123,7 @@ class Indicate(DataUpdater):
             rate_func=rate_func,
             become_at_end=False,
             root_only=root_only,
-            **kwargs
+            **kwargs,
         )
 
     def create_extra_data(self, data: Item) -> Points | None:
@@ -114,12 +139,18 @@ class Indicate(DataUpdater):
 
 
 class CircleIndicate(DataUpdater[Circle]):
-    '''
+    """
     展现以圆圈在指定物件周围淡入淡出进行强调的动画
 
     - 可以使用 ``rate_func=there_and_back_with_pause`` 使得动画中间停留一段时间
     - 可以传入 ``scale`` 指定缩放，例如 ``scale=1.2`` 即缩小的同时淡入，并且放大的同时淡出
-    '''
+
+    .. janim-example:: CircleIndicateExample
+        :extract-from-test:
+        :media: _static/videos/CircleIndicateExample.mp4
+        :url: https://janim.readthedocs.io/zh-cn/latest/janim/anims/indication.html#circleindicateexample
+    """
+
     label_color = C_LABEL_ANIM_INDICATION
 
     def __init__(
@@ -130,12 +161,18 @@ class CircleIndicate(DataUpdater[Circle]):
         rate_func: RateFunc = there_and_back,
         scale: float = 1,
         buff: float = MED_SMALL_BUFF,
-        **kwargs
+        circle_kwargs: dict = {},
+        **kwargs,
     ):
-        start = Circle(color=color, alpha=0)
+        start_kwargs = circle_kwargs
+        if 'alpha' in start_kwargs:
+            start_kwargs = start_kwargs.copy()
+            start_kwargs.pop('alpha')
+
+        start = Circle(color=color, alpha=0, **start_kwargs)
         if item.is_fix_in_frame():
             start.fix_in_frame()
-        target = Circle(color=color)
+        target = Circle(color=color, **circle_kwargs)
 
         def updater(c: Circle, p: UpdaterParams):
             c.interpolate(start, target, p.alpha)
@@ -144,21 +181,17 @@ class CircleIndicate(DataUpdater[Circle]):
                 c.points.scale(interpolate(scale, 1, p.alpha))
 
         super().__init__(
-            start,
-            updater,
-            rate_func=rate_func,
-            hide_at_end=True,
-            become_at_end=False,
-            **kwargs
+            start, updater, rate_func=rate_func, hide_at_end=True, become_at_end=False, **kwargs
         )
 
         self.timeline.track_item_and_descendants(item)
 
 
 class ShowPassingFlash(ShowPartial):
-    '''
+    """
     基于 ``time_width`` 显示物件的一小段
-    '''
+    """
+
     label_color = C_LABEL_ANIM_ABSTRACT
 
     def __init__(
@@ -167,7 +200,7 @@ class ShowPassingFlash(ShowPartial):
         *,
         time_width: float = 0.1,
         auto_close_path: bool = False,
-        **kwargs
+        **kwargs,
     ):
         def bound_func(p: UpdaterParams) -> tuple[float, float]:
             upper = interpolate(0, 1 + time_width, p.alpha)
@@ -182,12 +215,20 @@ class ShowPassingFlash(ShowPartial):
             auto_close_path=auto_close_path,
             hide_at_end=True,
             become_at_end=False,
-            **kwargs
+            **kwargs,
         )
 
 
 class ShowCreationThenDestruction(ShowPassingFlash):
-    '''展现创建动画后展现销毁动画'''
+    """
+    展现创建动画后展现销毁动画
+
+    .. janim-example:: ShowCreationThenDestructionExample
+        :extract-from-test:
+        :media: _static/videos/ShowCreationThenDestructionExample.mp4
+        :url: https://janim.readthedocs.io/zh-cn/latest/janim/anims/indication.html#showcreationthendestructionexample
+    """
+
     label_color = C_LABEL_ANIM_ABSTRACT
 
     def __init__(
@@ -196,13 +237,21 @@ class ShowCreationThenDestruction(ShowPassingFlash):
         *,
         time_width: float = 2.0,
         duration: float = 1,
-        **kwargs
+        **kwargs,
     ):
         super().__init__(item, time_width=time_width, duration=duration, **kwargs)
 
 
 class ShowCreationThenFadeOut(Succession):
-    '''展现创建动画后展现淡出动画'''
+    """
+    展现创建动画后展现淡出动画
+
+    .. janim-example:: ShowCreationThenFadeOutExample
+        :extract-from-test:
+        :media: _static/videos/ShowCreationThenFadeOutExample.mp4
+        :url: https://janim.readthedocs.io/zh-cn/latest/janim/anims/indication.html#showcreationthenfadeoutexample
+    """
+
     label_color = C_LABEL_ANIM_ABSTRACT
 
     def __init__(
@@ -211,21 +260,22 @@ class ShowCreationThenFadeOut(Succession):
         create_kwargs: dict = {},
         fadeout_kwargs: dict = {},
         collapse: bool = True,
-        **kwargs
+        **kwargs,
     ):
         super().__init__(
             Create(item, **create_kwargs),
             FadeOut(item, **fadeout_kwargs),
             collapse=collapse,
-            **kwargs
+            **kwargs,
         )
 
 
 class AnimationOnSurroundingRect(AnimGroup):
-    '''
+    """
     :class:`ShowPassingFlash`、:class:`ShowCreationThenDestructionAround`、
     :class:`ShowCreationThenFadeAround` 的基类
-    '''
+    """
+
     label_color = C_LABEL_ANIM_ABSTRACT
 
     def __init__(
@@ -234,7 +284,7 @@ class AnimationOnSurroundingRect(AnimGroup):
         rect_anim: type[Animation],
         surrounding_rect_config: dict = {},
         collapse: bool = True,
-        **kwargs
+        **kwargs,
     ):
         self.item = item
         self.surrounding_rect_config = surrounding_rect_config
@@ -250,10 +300,7 @@ class AnimationOnSurroundingRect(AnimGroup):
         self.timeline.track_item_and_descendants(item)
 
     def create_rect(self) -> SurroundingRect:
-        rect = SurroundingRect(
-            self.item,
-            **self.surrounding_rect_config
-        )
+        rect = SurroundingRect(self.item, **self.surrounding_rect_config)
         rect.points.move_to(rect.points.box.center - self.item.points.box.center)
         return rect
 
@@ -269,7 +316,15 @@ class AnimationOnSurroundingRect(AnimGroup):
 
 
 class ShowPassingFlashAround(AnimationOnSurroundingRect):
-    '''不完整线条在指定物件周围环绕一圈的动画'''
+    """
+    不完整线条在指定物件周围环绕一圈的动画
+
+    .. janim-example:: ShowPassingFlashAroundExample
+        :extract-from-test:
+        :media: _static/videos/ShowPassingFlashAroundExample.mp4
+        :url: https://janim.readthedocs.io/zh-cn/latest/janim/anims/indication.html#showpassingflasharoundexample
+    """
+
     label_color = C_LABEL_ANIM_INDICATION
 
     def __init__(self, item: Points, **kwargs) -> None:
@@ -277,7 +332,16 @@ class ShowPassingFlashAround(AnimationOnSurroundingRect):
 
 
 class ShowCreationThenDestructionAround(AnimationOnSurroundingRect):
-    '''在指定物件周围先创建出完整线条再销毁线条的动画'''
+    """
+    在指定物件周围先创建出完整线条再销毁线条的动画
+
+    .. janim-example:: ShowCreationThenDestructionAroundExample
+        :extract-from-test:
+        :media: _static/videos/ShowCreationThenDestructionAroundExample.mp4
+        :url:
+            https://janim.readthedocs.io/zh-cn/latest/janim/anims/indication.html#showcreationthendestructionaroundexample
+    """
+
     label_color = C_LABEL_ANIM_INDICATION
 
     def __init__(self, item: Points, **kwargs) -> None:
@@ -285,14 +349,24 @@ class ShowCreationThenDestructionAround(AnimationOnSurroundingRect):
 
 
 class ShowCreationThenFadeAround(AnimationOnSurroundingRect):
-    '''在指定物件周围先创建出完整线条再淡出线条的动画'''
+    """
+    在指定物件周围先创建出完整线条再淡出线条的动画
+
+    .. janim-example:: ShowCreationThenFadeAroundExample
+        :extract-from-test:
+        :media: _static/videos/ShowCreationThenFadeAroundExample.mp4
+        :url: https://janim.readthedocs.io/zh-cn/latest/janim/anims/indication.html#showcreationthenfadearoundexample
+    """
+
     label_color = C_LABEL_ANIM_INDICATION
 
     def __init__(self, item: Points, **kwargs) -> None:
-        super().__init__(item,
-                         ShowCreationThenFadeOut,
-                         create_kwargs=dict(auto_close_path=False),
-                         **kwargs)
+        super().__init__(
+            item,
+            ShowCreationThenFadeOut,
+            create_kwargs=dict(auto_close_path=False),
+            **kwargs,
+        )
 
 
 def flash_rate_function(t: float, smooth_ratio=0.6) -> float:
@@ -300,7 +374,15 @@ def flash_rate_function(t: float, smooth_ratio=0.6) -> float:
 
 
 class Flash(ShowCreationThenDestruction):
-    '''展现以放射状线条进行强调的动画'''
+    """
+    展现以放射状线条进行强调的动画
+
+    .. janim-example:: FlashExample
+        :extract-from-test:
+        :media: _static/videos/FlashExample.mp4
+        :url: https://janim.readthedocs.io/zh-cn/latest/janim/anims/indication.html#flashexample
+    """
+
     label_color = C_LABEL_ANIM_INDICATION
 
     def __init__(
@@ -313,7 +395,7 @@ class Flash(ShowCreationThenDestruction):
         flash_radius: float = 0.3,
         line_stroke_radius: float = 0.015,
         rate_func=flash_rate_function,
-        **kwargs
+        **kwargs,
     ):
         self.point_or_item = point_or_item
         self.color = color
@@ -323,11 +405,7 @@ class Flash(ShowCreationThenDestruction):
         self.line_stroke_radius = line_stroke_radius
 
         self.lines = self.create_lines()
-        super().__init__(
-            self.lines,
-            rate_func=rate_func,
-            **kwargs
-        )
+        super().__init__(self.lines, rate_func=rate_func, **kwargs)
 
         is_item = isinstance(point_or_item, Item)
 
@@ -350,13 +428,22 @@ class Flash(ShowCreationThenDestruction):
             line.points.shift((self.flash_radius - self.line_length) * RIGHT)
             line.points.rotate(angle, about_point=ORIGIN)
             lines.add(line)
+        # fmt: off
         lines(VItem) \
             .stroke.set(self.color) \
             .r.radius.set(self.line_stroke_radius)
+        # fmt: on
         return lines
 
 
 class ApplyWave(Homotopy):
+    """
+    .. janim-example:: ApplyWaveExample
+        :extract-from-test:
+        :media: _static/videos/ApplyWaveExample.mp4
+        :url: https://janim.readthedocs.io/zh-cn/latest/janim/anims/indication.html#applywaveexample
+    """
+
     label_color = C_LABEL_ANIM_INDICATION
 
     def __init__(
@@ -367,7 +454,7 @@ class ApplyWave(Homotopy):
         *,
         duration: float = 1.0,
         root_only: bool = False,
-        **kwargs
+        **kwargs,
     ):
         if root_only:
             box = item(Points).points.self_box
@@ -384,15 +471,17 @@ class ApplyWave(Homotopy):
             nudge = there_and_back(t**power)
             return np.array([x, y, z]) + nudge * vect
 
-        super().__init__(
-            item,
-            homotopy,
-            duration=duration,
-            **kwargs
-        )
+        super().__init__(item, homotopy, duration=duration, **kwargs)
 
 
 class WiggleOutThenIn(DataUpdater):
+    """
+    .. janim-example:: WiggleOutThenInExample
+        :extract-from-test:
+        :media: _static/videos/WiggleOutThenInExample.mp4
+        :url: https://janim.readthedocs.io/zh-cn/latest/janim/anims/indication.html#wiggleouttheninexample
+    """
+
     label_color = C_LABEL_ANIM_INDICATION
 
     def __init__(
@@ -406,7 +495,7 @@ class WiggleOutThenIn(DataUpdater):
         rotate_about_point: Vect | None = None,
         duration: float = 2,
         root_only: bool = False,
-        **kwargs
+        **kwargs,
     ):
         if root_only:
             box = item(Points).points.self_box
@@ -417,22 +506,16 @@ class WiggleOutThenIn(DataUpdater):
         self.n_wiggles = n_wiggles
         self.scale_about_point = scale_about_point or box.center
         self.rotate_about_point = rotate_about_point or box.center
-        super().__init__(
-            item,
-            self.updater,
-            duration=duration,
-            root_only=root_only,
-            **kwargs
-        )
+        super().__init__(item, self.updater, duration=duration, root_only=root_only, **kwargs)
 
     def updater(self, data: Item, p: UpdaterParams) -> None:
         if not isinstance(data, Points):
             return
         data.points.scale(
             interpolate(1, self.scale, there_and_back(p.alpha)),
-            about_point=self.scale_about_point
+            about_point=self.scale_about_point,
         )
         data.points.rotate(
             wiggle(p.alpha, self.n_wiggles) * self.angle,
-            about_point=self.rotate_about_point
+            about_point=self.rotate_about_point,
         )

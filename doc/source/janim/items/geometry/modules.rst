@@ -10,3 +10,9 @@ geometry
    arrow
    line
    polygon
+
+.. automodule:: janim.items.geometry.__init__
+   :members:
+   :undoc-members:
+   :show-inheritance:
+

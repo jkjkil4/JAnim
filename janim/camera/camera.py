@@ -29,9 +29,9 @@ class Cmpt_CameraPoints[ItemT](Cmpt_Points[ItemT]):
         *,
         size: Vect | None = None,
         fov: float | None = None,
-        orientation: Quaternion | None = None
+        orientation: Quaternion | None = None,
     ) -> Self:
-        '''
+        """
         设置摄像机位置以及有关属性
 
         -   ``points``: 点集，必须只有一个点，表示摄像机中心位置
@@ -47,7 +47,7 @@ class Cmpt_CameraPoints[ItemT](Cmpt_Points[ItemT]):
         -   ``orientation``: 摄像机朝向，四元数表示
 
             另见 :meth:`~.Cmpt_CameraPoints.rotate`
-        '''
+        """
         if points is not None:
             points = np.asarray(points)
             assert points.ndim == 2
@@ -65,15 +65,15 @@ class Cmpt_CameraPoints[ItemT](Cmpt_Points[ItemT]):
         return self
 
     def reset(self) -> Self:
-        '''
+        """
         将摄像机几何属性设置为初始状态
-        '''
+        """
         self.orig_height = Config.get.frame_height
 
         self.set([ORIGIN])
         self.size = [Config.get.frame_width, Config.get.frame_height]
         self.fov = 45
-        self.orientation = Quaternion()     # 单位四元数
+        self.orientation = Quaternion()  # 单位四元数
 
         return self
 
@@ -99,12 +99,7 @@ class Cmpt_CameraPoints[ItemT](Cmpt_Points[ItemT]):
         return np.isclose(self.orientation.elements, other.orientation.elements).all()
 
     def interpolate(
-        self,
-        cmpt1: Self,
-        cmpt2: Self,
-        alpha: float,
-        *,
-        path_func: PathFunc = straight_path
+        self, cmpt1: Self, cmpt2: Self, alpha: float, *, path_func: PathFunc = straight_path
     ) -> None:
         alpha = clip(alpha, 0, 1)
 
@@ -124,7 +119,7 @@ class Cmpt_CameraPoints[ItemT](Cmpt_Points[ItemT]):
     @size.setter
     def size(self, value: Vect) -> None:
         self._size = np.array(value, dtype=np.float64)
-        self.mark_refresh(Cmpt_CameraPoints.info.fget)
+        self.mark_refresh(Cmpt_CameraPoints.info.fget.__name__)
 
     @property
     def fov(self) -> float:
@@ -133,7 +128,7 @@ class Cmpt_CameraPoints[ItemT](Cmpt_Points[ItemT]):
     @fov.setter
     def fov(self, val: float) -> None:
         self._fov = val
-        self.mark_refresh(Cmpt_CameraPoints.info.fget)
+        self.mark_refresh(Cmpt_CameraPoints.info.fget.__name__)
 
     @property
     def orientation(self) -> Quaternion:
@@ -142,7 +137,7 @@ class Cmpt_CameraPoints[ItemT](Cmpt_Points[ItemT]):
     @orientation.setter
     def orientation(self, val: Quaternion) -> None:
         self._orientation = val
-        self.mark_refresh(Cmpt_CameraPoints.info.fget)
+        self.mark_refresh(Cmpt_CameraPoints.info.fget.__name__)
 
     def scale(
         self,
@@ -150,11 +145,11 @@ class Cmpt_CameraPoints[ItemT](Cmpt_Points[ItemT]):
         *,
         about_point: Vect | None = None,
         about_edge: Vect = ORIGIN,
-        **kwargs
+        **kwargs,
     ) -> Self:
-        '''
+        """
         将摄像机缩放指定倍数
-        '''
+        """
         if about_point is not None or about_edge is not ORIGIN:
             if about_point is None:
                 rot_mat_T = self.orientation.rotation_matrix.T
@@ -176,14 +171,14 @@ class Cmpt_CameraPoints[ItemT](Cmpt_Points[ItemT]):
         *,
         axis: Vect = OUT,
         absolute: bool = True,
-        **kwargs
+        **kwargs,
     ) -> Self:
-        '''
+        """
         将摄像机绕 ``axis`` 轴进行旋转
 
         - 默认 ``absolute=True`` 表示绕全局坐标系旋转
         - ``absolute=False`` 表示绕相机自身坐标系旋转，并且此时 ``about_point`` 参数无效
-        '''
+        """
         q_rot = Quaternion(axis=axis, angle=angle)
         if absolute:
             super().rotate(angle, axis=axis, **kwargs)
@@ -197,9 +192,9 @@ class Cmpt_CameraPoints[ItemT](Cmpt_Points[ItemT]):
     @Cmpt_Points.set.self_refresh
     @refresh.register
     def info(self) -> CameraInfo:
-        '''
+        """
         摄像机的几何属性
-        '''
+        """
         rot_mat_T = self.orientation.rotation_matrix.T
         width, height = self.size
         return CameraInfo(
@@ -207,7 +202,7 @@ class Cmpt_CameraPoints[ItemT](Cmpt_Points[ItemT]):
             self.fov,
             self.get()[0],
             np.array([width, 0, 0]) @ rot_mat_T,
-            np.array([0, height, 0]) @ rot_mat_T
+            np.array([0, height, 0]) @ rot_mat_T,
         )
 
 
@@ -219,7 +214,7 @@ class Camera(Points):
         size: Vect | None = None,
         fov: float | None = None,
         orientation: Quaternion | None = None,
-        **kwargs
+        **kwargs,
     ) -> Self:
         self.points.set(size=size, fov=fov, orientation=orientation)
         return super().apply_style(**kwargs)

@@ -8,27 +8,27 @@ from typing import Iterable, Literal, Self, overload
 import numpy as np
 
 from janim.constants import FRAME_PPI, ORIGIN, UP
-from janim.exception import (InvalidOrdinalError, InvalidTypstVarError,
-                             PatternMismatchError)
-from janim.items.points import Group, Points
+from janim.exception import InvalidOrdinalError, InvalidTypstVarError, PatternMismatchError
+from janim.items.group import Group
+from janim.items.points import Points
 from janim.items.svg.svg_item import BasepointVItem, SVGElemItem, SVGItem
 from janim.items.vitem import VItem
-from janim.locale.i18n import get_local_strings
+from janim.locale import get_translator
 from janim.utils.config import Config
 from janim.utils.iterables import flatten
 from janim.utils.space_ops import rotation_between_vectors
 from janim.utils.typst_compile import compile_typst
 
-_ = get_local_strings('typst')
+_ = get_translator('janim.items.svg.typst')
 
 type TypstPattern = TypstDoc | str
 type TypstVar = Points | dict[str, TypstVar] | Iterable[TypstVar]
 
 
 class TypstDoc(SVGItem):
-    '''
+    """
     Typst 文档
-    '''
+    """
 
     group_key = 'data-typst-label'
 
@@ -42,7 +42,7 @@ class TypstDoc(SVGItem):
         scale: float = 1.0,
         shared_preamble: str | None = None,
         additional_preamble: str | None = None,
-        **kwargs
+        **kwargs,
     ):
         self.text = text
 
@@ -64,12 +64,12 @@ class TypstDoc(SVGItem):
         super().__init__(
             compile_typst(text, shared_preamble, additional_preamble, vars_str, sys_inputs),
             scale=scale,
-            **kwargs
+            **kwargs,
         )
 
         # 把占位元素替换为实际物件
         if vars is not None:
-            new_children = self.children.copy()
+            new_children = self._children.copy()
             for label, item in vars_mapping.items():
                 placeholders = self.get_label(label)
 
@@ -77,7 +77,8 @@ class TypstDoc(SVGItem):
                     phbox = placeholder.points.box
 
                     item_to_replace = item if i == 0 else item.copy()
-                    item_to_replace.points.set_size(width=phbox.width, height=phbox.height).move_to(phbox.center)
+                    item_to_replace.points.set_size(width=phbox.width, height=phbox.height)
+                    item_to_replace.points.move_to(phbox.center)
 
                     for suborder, sub in enumerate(item_to_replace.walk_self_and_descendants()):
                         sub.depth._depth = placeholder.depth._depth
@@ -97,24 +98,28 @@ class TypstDoc(SVGItem):
 
     @classmethod
     def typstify(cls, obj: TypstPattern) -> TypstDoc:
-        '''
+        """
         将字符串变为 Typst 对象，而本身已经是的则直接返回
-        '''
+        """
         return obj if isinstance(obj, TypstDoc) else cls(obj)
 
     # region vars
 
     @staticmethod
-    def vars_str(vars: dict[str, TypstVar], unit_or_scale: str | float) -> tuple[str, dict[str, Points]]:
+    def vars_str(
+        vars: dict[str, TypstVar], unit_or_scale: str | float
+    ) -> tuple[str, dict[str, Points]]:
         mapping = {}
         lst = [
-            f'#let {key} = {TypstDoc.var_str(var, f'__ja__{key}', unit_or_scale, mapping)}'
+            f'#let {key} = {TypstDoc.var_str(var, f"__ja__{key}", unit_or_scale, mapping)}'
             for key, var in vars.items()
         ]
         return '#let __jabox = box.with(stroke: white)\n' + '\n'.join(lst), mapping
 
     @staticmethod
-    def var_str(var: TypstVar, label: str, unit_or_scale: str | float, mapping: dict[str, Points]) -> str:
+    def var_str(
+        var: TypstVar, label: str, unit_or_scale: str | float, mapping: dict[str, Points]
+    ) -> str:
         if isinstance(var, Points):
             width = TypstDoc.length_str(var.points.box.width, unit_or_scale)
             height = TypstDoc.length_str(var.points.box.height, unit_or_scale)
@@ -122,21 +127,32 @@ class TypstDoc(SVGItem):
             return f'[#__jabox(width: {width}, height: {height})<{label}>]'
 
         elif isinstance(var, dict):
-            return '(' + ', '.join([
-                f'{key}: {TypstDoc.var_str(v, f'{label}__{key}', unit_or_scale, mapping)}'
-                for key, v in var.items()
-            ]) + ')'
+            return (
+                '('
+                + ', '.join(
+                    [
+                        f'{key}: {TypstDoc.var_str(v, f"{label}__{key}", unit_or_scale, mapping)}'
+                        for key, v in var.items()
+                    ]
+                )
+                + ')'
+            )
 
         elif isinstance(var, Iterable):
-            return '(' + ', '.join([
-                TypstDoc.var_str(v, f'{label}__{i}', unit_or_scale, mapping)
-                for i, v in enumerate(var)
-            ]) + ')'
+            return (
+                '('
+                + ', '.join(
+                    [
+                        TypstDoc.var_str(v, f'{label}__{i}', unit_or_scale, mapping)
+                        for i, v in enumerate(var)
+                    ]
+                )
+                + ')'
+            )
 
         else:
             raise InvalidTypstVarError(
-                _('{var} is not a valid value for embedding in Typst')
-                .format(var=repr(var))
+                _('{var} is not a valid value for embedding in Typst').format(var=repr(var))
             )
 
     @staticmethod
@@ -160,9 +176,9 @@ class TypstDoc(SVGItem):
         target: TypstDoc,
         pattern: TypstPattern,
         ordinal: int = 0,
-        target_ordinal: int | None = None
+        target_ordinal: int | None = None,
     ) -> Self:
-        '''
+        """
         配对并通过变换使得配对的部分重合
 
         例如
@@ -174,7 +190,7 @@ class TypstDoc(SVGItem):
             t2.points.match_pattern(t1, '+')
 
         则会将 ``t2`` 进行变换使得二者的加号重合
-        '''
+        """
         if target_ordinal is None:
             target_ordinal = ordinal
         assert isinstance(ordinal, int)
@@ -202,29 +218,28 @@ class TypstDoc(SVGItem):
         self.points.move_to_by_indicator(indicator1, indicator2)
         return self
 
+    type SingleMatchPattern = TypstPattern | tuple[TypstPattern, int]
+    type MultiMatchPattern = (
+        tuple[TypstPattern, Iterable[int]] | tuple[TypstPattern, types.EllipsisType]
+    )
+
     @overload
     def __getitem__(self, key: int) -> VItem | BasepointVItem: ...
     @overload
     def __getitem__(self, key: slice) -> Group[VItem | BasepointVItem]: ...
 
     @overload
-    def __getitem__(self, key: TypstPattern) -> Group[VItem | BasepointVItem]: ...
+    def __getitem__(self, key: SingleMatchPattern) -> Group[VItem | BasepointVItem]: ...
     @overload
-    def __getitem__(self, key: tuple[TypstPattern, int]) -> Group[VItem | BasepointVItem]: ...
-    @overload
-    def __getitem__(self, key: tuple[TypstPattern, Iterable[int]]) -> Group[Group[VItem | BasepointVItem]]: ...
-    @overload
-    def __getitem__(self, key: tuple[TypstPattern, types.EllipsisType]) -> Group[Group[VItem | BasepointVItem]]: ...
+    def __getitem__(self, key: MultiMatchPattern) -> Group[Group[VItem | BasepointVItem]]: ...
 
     @overload
-    def __getitem__(self, key: Iterable[int]) -> Group[VItem | BasepointVItem]: ...
-    @overload
-    def __getitem__(self, key: Iterable[bool]) -> Group[VItem | BasepointVItem]: ...
+    def __getitem__(self, key: Iterable[int] | Iterable[bool]) -> Group[VItem | BasepointVItem]: ...
 
-    def __getitem__(self, key: int | slice):
-        '''
+    def __getitem__(self, key):
+        """
         重载了一些字符索引的用法，即 :meth:`get` 和 :meth:`slice` 的组合
-        '''
+        """
         if isinstance(key, Iterable) and not isinstance(key, (str, list)):
             key = list(key)
 
@@ -240,14 +255,35 @@ class TypstDoc(SVGItem):
                 return self.get(self.slice(pattern, ordinal))
             # item['pattern', (o1, o2)]
             # item['pattern', ...]
-            case TypstDoc() | str() as pattern, ordinal if isinstance(ordinal, (Iterable, types.EllipsisType)):
+            case TypstDoc() | str() as pattern, ordinal if isinstance(
+                ordinal, (Iterable, types.EllipsisType)
+            ):
                 return Group(*self.get(self.slice(pattern, ordinal)))
 
             case _:
                 return super().__getitem__(key)
 
+    @overload
+    def patterns(self, *patterns: SingleMatchPattern) -> Group[VItem | BasepointVItem]: ...
+    @overload
+    def patterns(self, *patterns: MultiMatchPattern) -> Group[Group[VItem | BasepointVItem]]: ...
+
+    @overload
+    def patterns(
+        self,
+        *patterns: SingleMatchPattern | MultiMatchPattern,
+    ) -> Group[VItem | BasepointVItem] | Group[Group[VItem | BasepointVItem]]: ...
+
+    def patterns(self, *patterns):
+        """
+        一次性获取多个 pattern 匹配的结果，返回一个 :class:`~.Group`
+
+        例如 ``typ.patterns(A, B, ...)`` 相当于 ``Group(typ[A], typ[B], ...)``
+        """
+        return Group.from_iterable(self[pattern] for pattern in patterns)
+
     def get(self, slices, gapless: bool = False):
-        '''
+        """
         根据切片得到切分的子物件
 
         在默认情况下，``gapless=False``：
@@ -272,10 +308,10 @@ class TypstDoc(SVGItem):
 
         - 也支持列表以及嵌套的列表，例如
 
-          ``item.get([slice(1, 3), slice(5, 7)]) == [item[:1], item[1:3], item[3:5], item[5:7], item[7:]]``
+          ``item.get([slice(1, 3), slice(5, 7)], gapless=True) == [item[:1], item[1:3], item[3:5], item[5:7], item[7:]]``
 
         - 注：在这种情况下，所有嵌套结构都会先被展平后处理
-        '''
+        """  # noqa: E501
         if not gapless:
             if isinstance(slices, slice):
                 return self[slices]
@@ -286,39 +322,39 @@ class TypstDoc(SVGItem):
             for i in flatten(slices):
                 assert isinstance(i, slice)
                 indices.update({i.start, i.stop})
-            return [
-                self[start:stop]
-                for start, stop in it.pairwise(sorted(indices))
-            ]
+            return [self[start:stop] for start, stop in it.pairwise(sorted(indices))]
 
     @overload
     def slice(self, pattern: TypstPattern, ordinal: int) -> slice: ...
     @overload
-    def slice(self, pattern: TypstPattern, ordinal: Iterable[int] | types.EllipsisType) -> list[slice]: ...
+    def slice(
+        self, pattern: TypstPattern, ordinal: Iterable[int] | types.EllipsisType
+    ) -> list[slice]: ...
 
     def slice(self, pattern, ordinal=0):
-        '''
+        """
         得到指定 ``pattern`` 在该物件中形状配对的切片
 
         - 默认返回首个匹配的（即 ``ordinal=0``）
         - ``ordinal`` 传入其它索引可得到随后匹配的特定部分
         - ``ordinal`` 传入索引列表可得到多个匹配的特定部分
         - ``ordinal`` 传入省略号 ``...`` 可以得到所有匹配的部分
-        '''
+        """
         pattern = self.typstify(pattern)
         indices = self.indices(pattern)
 
         if not indices:
             raise PatternMismatchError(
-                _('No matches found for {pattern}')
-                .format(pattern=repr(pattern.text))
+                _('No matches found for {pattern}').format(pattern=repr(pattern.text))
             )
 
         def get_slice(i: int):
             if not 0 <= i < len(indices):
                 raise PatternMismatchError(
-                    _('{ordinal} is out of range for {count} matches')
-                    .format(ordinal=i, count=len(indices))
+                    _('{ordinal} is out of range for {count} matches').format(
+                        ordinal=i,
+                        count=len(indices),
+                    )
                 )
             return slice(indices[i], indices[i] + len(pattern))
 
@@ -328,19 +364,16 @@ class TypstDoc(SVGItem):
             case _ if isinstance(ordinal, Iterable) and all(isinstance(i, int) for i in ordinal):
                 return [get_slice(i) for i in ordinal]
             case types.EllipsisType():
-                return [
-                    slice(i, i + len(pattern))
-                    for i in indices
-                ]
+                return [slice(i, i + len(pattern)) for i in indices]
 
         raise InvalidOrdinalError(_('ordinal {} is invalid').format(ordinal))
 
     def indices(self, pattern: TypstPattern) -> list[int]:
-        '''
+        """
         找出该公式中所有出现了 ``pattern`` 的位置
 
         - ``pattern`` 支持使用字符串或者 Typst 对象
-        '''
+        """
         pattern = self.typstify(pattern)
 
         lps = pattern.lps
@@ -361,9 +394,9 @@ class TypstDoc(SVGItem):
 
     @property
     def lps(self) -> list[int]:
-        '''
+        """
         KMP 算法涉及的部分匹配表
-        '''
+        """
         # 获取缓存
         lps = TypstDoc.lps_map.get(self.text, None)
         if lps is not None:
@@ -388,9 +421,10 @@ class TypstDoc(SVGItem):
 
 
 class TypstText(TypstDoc):
-    '''
+    """
     Typst 文本
-    '''
+    """
+
     def __init__(
         self,
         text: str,
@@ -398,7 +432,7 @@ class TypstText(TypstDoc):
         shared_preamble: str | None = None,
         preamble: str | None = None,
         use_math_environment: bool = False,
-        **kwargs
+        **kwargs,
     ):
         if preamble is None:
             if use_math_environment:
@@ -409,7 +443,7 @@ class TypstText(TypstDoc):
             f'$ {text} $' if use_math_environment else text,
             shared_preamble=shared_preamble,
             additional_preamble=preamble,
-            **kwargs
+            **kwargs,
         )
 
     def move_into_position(self) -> None:
@@ -417,11 +451,12 @@ class TypstText(TypstDoc):
 
 
 class TypstMath(TypstText):
-    '''
+    """
     Typst 公式
 
     相当于 :class:`TypstText` 传入 ``use_math_environment=True``
-    '''
+    """
+
     def __init__(
         self,
         text: str,
@@ -429,12 +464,12 @@ class TypstMath(TypstText):
         shared_preamble: str | None = None,
         preamble: str | None = None,
         use_math_environment: bool = True,
-        **kwargs
+        **kwargs,
     ):
         super().__init__(
             text,
             shared_preamble=shared_preamble,
             preamble=preamble,
             use_math_environment=use_math_environment,
-            **kwargs
+            **kwargs,
         )

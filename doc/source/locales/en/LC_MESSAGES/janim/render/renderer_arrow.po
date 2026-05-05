@@ -6,24 +6,19 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: JAnim\n"
+"Project-Id-Version:  JAnim\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-22 20:19+0800\n"
+"POT-Creation-Date: 2026-02-24 01:11+0800\n"
 "PO-Revision-Date: 2025-11-22 20:20+0800\n"
 "Last-Translator: \n"
-"Language-Team: en <LL@li.org>\n"
 "Language: en\n"
+"Language-Team: en <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "Generated-By: Babel 2.17.0\n"
-"X-Generator: Poedit 3.8\n"
 
 #: ../../source/janim/render/renderer_arrow.rst:2
 msgid "renderer_arrow"
 msgstr "renderer_arrow"
-
-#: janim.render.renderer_arrow.ArrowRenderer:1 of
-msgid "基类：:py:class:`~janim.render.renderer_vitem_plane.VItemPlaneRenderer`"
-msgstr "基类：:py:class:`~janim.render.renderer_vitem_plane.VItemPlaneRenderer`"

@@ -9,12 +9,22 @@ import numpy as np
 import janim.utils.refresh as refresh
 from janim.anims.method_updater_meta import register_updater
 from janim.components.component import Component
-from janim.constants import (DEFAULT_ITEM_TO_EDGE_BUFF,
-                             DEFAULT_ITEM_TO_ITEM_BUFF, DOWN, IN, LEFT,
-                             MED_SMALL_BUFF, ORIGIN, OUT, PI, RIGHT, UP)
+from janim.constants import (
+    DEFAULT_ITEM_TO_EDGE_BUFF,
+    DEFAULT_ITEM_TO_ITEM_BUFF,
+    DOWN,
+    IN,
+    LEFT,
+    MED_SMALL_BUFF,
+    ORIGIN,
+    OUT,
+    PI,
+    RIGHT,
+    UP,
+)
 from janim.exception import InvaildMatrixError, PointError
 from janim.items.item import Item
-from janim.locale.i18n import get_local_strings
+from janim.locale import get_translator
 from janim.typing import Vect, VectArray
 from janim.utils.bezier import integer_interpolate, interpolate
 from janim.utils.config import Config
@@ -23,25 +33,29 @@ from janim.utils.iterables import resize_and_repeatedly_extend
 from janim.utils.paths import PathFunc, straight_path
 from janim.utils.signal import Signal
 from janim.utils.simple_functions import clip
-from janim.utils.space_ops import (angle_of_vector, get_norm, normalize,
-                                   rotation_between_vectors, rotation_matrix)
+from janim.utils.space_ops import (
+    angle_of_vector,
+    get_norm,
+    normalize,
+    rotation_between_vectors,
+    rotation_matrix,
+)
 
 if TYPE_CHECKING:
     from janim.camera.camera import Camera
 
-_ = get_local_strings('points')
+_ = get_translator('janim.components.points')
 
 type PointsFn = Callable[[np.ndarray], VectArray]
 type PointFn = Callable[[np.ndarray], Vect]
 type ComplexFn = Callable[[complex], complex]
 
-DEFAULT_POINTS_ARRAY = Array()
-DEFAULT_POINTS_ARRAY.data = np.zeros((0, 3))
+DEFAULT_POINTS_ARRAY = Array.create(np.zeros((0, 3)))
 
 
 class Cmpt_Points[ItemT](Component[ItemT]):
     resize_func = staticmethod(resize_and_repeatedly_extend)
-    ''''''
+    """"""
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -53,7 +67,7 @@ class Cmpt_Points[ItemT](Component[ItemT]):
 
         item = bind.at_item
 
-        item.__class__.children_changed.connect_refresh(item, self, Cmpt_Points.box.fget)
+        item.__class__._children_changed.connect_refresh(item, self, Cmpt_Points.box.fget)
 
     def copy(self) -> Self:
         cmpt_copy = super().copy()
@@ -84,12 +98,7 @@ class Cmpt_Points[ItemT](Component[ItemT]):
         return AlignedData(cmpt1_copy, cmpt2_copy, cmpt1_copy.copy())
 
     def interpolate(
-        self,
-        cmpt1: Self,
-        cmpt2: Self,
-        alpha: float,
-        *,
-        path_func: PathFunc = straight_path
+        self, cmpt1: Self, cmpt2: Self, alpha: float, *, path_func: PathFunc = straight_path
     ) -> None:
         if not cmpt1._points.is_share(cmpt2._points) or not cmpt1._points.is_share(self._points):
             if cmpt1._points.is_share(cmpt2._points):
@@ -100,28 +109,27 @@ class Cmpt_Points[ItemT](Component[ItemT]):
     # region 点数据 | Points
 
     def get(self) -> np.ndarray:
-        '''
+        """
         得到点坐标数据
-        '''
+        """
         return self._points.data
 
     def get_all(self) -> np.ndarray:
-        '''
+        """
         得到自己以及后代物件的所有点坐标数据
-        '''
+        """
         point_datas = [
-            cmpt.get()
-            for cmpt in self.walk_same_cmpt_of_self_and_descendants_without_mock()
+            cmpt.get() for cmpt in self.walk_same_cmpt_of_self_and_descendants_without_mock()
         ]
         return np.vstack(point_datas)
 
     @Signal
     def set(self, points: VectArray) -> Self:
-        '''
+        """
         设置点坐标数据，每个坐标点都有三个分量
 
         使用形如 ``.set([[1.5, 3, 2], [2, 1.5, 0]])`` 的形式
-        '''
+        """
         points = np.asarray(points)
         if points.size == 0:
             points = np.zeros((0, 3))
@@ -140,25 +148,22 @@ class Cmpt_Points[ItemT](Component[ItemT]):
         return self
 
     def clear(self) -> Self:
-        '''清除点'''
+        """清除点"""
         self.set(DEFAULT_POINTS_ARRAY.data)
         return self
 
     def extend(self, points: VectArray) -> Self:
-        '''
+        """
         追加点坐标数据，每个坐标点都有三个分量
 
         使用形如 ``.append([[1.5, 3, 2], [2, 1.5, 0]])`` 的形式
-        '''
-        self.set(np.vstack([
-            self.get(),
-            points
-        ]))
+        """
+        self.set(np.vstack([self.get(), points]))
         return self
 
     @Signal
     def reverse(self) -> Self:
-        '''使点倒序'''
+        """使点倒序"""
         self.set(self.get()[::-1])
         Cmpt_Points.reverse.emit(self)
         return self
@@ -168,49 +173,49 @@ class Cmpt_Points[ItemT](Component[ItemT]):
         return self
 
     def count(self) -> int:
-        '''
+        """
         点的数量
-        '''
+        """
         return len(self.get())
 
     def has(self) -> bool:
-        '''
+        """
         是否有点坐标数据
-        '''
+        """
         return self.count() > 0
 
     def get_start(self) -> np.ndarray:
-        '''
+        """
         得到 ``points`` 的第一个点
-        '''
+        """
         self._raise_error_if_no_points()
         return self._points.data[0]
 
     def get_end(self) -> np.ndarray:
-        '''
+        """
         得到 ``points`` 的最后一个点
-        '''
+        """
         self._raise_error_if_no_points()
         return self._points.data[-1]
 
     def get_start_and_end(self) -> tuple[np.ndarray, np.ndarray]:
-        '''
+        """
         得到 ``points`` 的第一个和最后一个点
-        '''
+        """
         return (self.get_start(), self.get_end())
 
     def point_from_proportion(self, alpha: float) -> np.ndarray:
-        '''
+        """
         将点视为折线连接的路径，得到整条路径上占比为 ``alpha`` 处的点
 
         对于曲线路径组件 :class:`~.Cmpt_VPoints` 而言行为不同，另请参考 :meth:`~.Cmpt_VPoints.point_from_proportion`
-        '''
+        """
         points = self._points.data
         i, subalpha = integer_interpolate(0, len(points) - 1, alpha)
         return interpolate(points[i], points[i + 1], subalpha)
 
     def pfp(self, alpha) -> np.ndarray:
-        ''':meth:`point_from_proportion` 的缩写'''
+        """:meth:`point_from_proportion` 的缩写"""
         return self.point_from_proportion(alpha)
 
     def _raise_error_if_no_points(self) -> None:
@@ -226,9 +231,9 @@ class Cmpt_Points[ItemT](Component[ItemT]):
     @set.self_refresh_with_recurse(recurse_up=True)
     @refresh.register
     def box(self) -> BoundingBox:
-        '''
+        """
         表示物件（包括后代物件）的矩形包围框
-        '''
+        """
         box_datas = [
             cmpt.self_box.data
             for cmpt in self.walk_same_cmpt_of_self_and_descendants_without_mock()
@@ -240,23 +245,24 @@ class Cmpt_Points[ItemT](Component[ItemT]):
     @set.self_refresh
     @refresh.register
     def self_box(self) -> BoundingBox:
-        '''
+        """
         同 ``box``，但仅表示自己 ``points`` 的包围框，不考虑后代物件的
-        '''
+        """
         return self.BoundingBox(self.get())
 
     class BoundingBox:
-        '''
+        """
         边界框，``self.data`` 包含三个元素，分别为左下，中心，右上
-        '''
+        """
+
         def __init__(self, points: VectArray):
             self.data = self.compute(points)
 
         @staticmethod
         def compute(points: VectArray) -> np.ndarray:
-            '''
+            """
             根据传入的 ``points`` 计算得到包围框的 左下、中心、右上 三个点
-            '''
+            """
             points = np.asarray(points)
 
             if len(points) == 0:
@@ -269,55 +275,60 @@ class Cmpt_Points[ItemT](Component[ItemT]):
             return np.array([mins, mids, maxs])
 
         def get(self, direction: Vect) -> np.ndarray:
-            '''
+            """
             获取边界框边上的坐标
 
             例如：
 
             - 传入 ``UR``，则返回边界框右上角的坐标
             - 传入 ``RIGHT``，则返回边界框右侧中心的坐标
-            '''
+            """
             indices = (np.sign(direction) + 1).astype(int)
-            return np.array([
-                self.data[indices[i]][i]
-                for i in range(3)
-            ])
+            return np.array(
+                [
+                    self.data[indices[i]][i]  #
+                    for i in range(3)
+                ]
+            )
 
         def get_continuous(self, direction: Vect) -> np.ndarray:
-            '''
+            """
             得到从中心发出的方向为 ``direction`` 的射线与边界框的交点
-            '''
+            """
             direction = np.array(direction)
 
             dl, center, ur = self.data
-            corner_vect = (ur - center)
+            corner_vect = ur - center
 
             return center + direction * np.min(
                 np.abs(
                     np.true_divide(
-                        corner_vect, direction,
-                        out=np.full((3, ), np.inf),
-                        where=(direction != 0)
+                        corner_vect,
+                        direction,
+                        out=np.full((3,), np.inf),
+                        where=(direction != 0),
                     )
                 )
             )
 
         def get_corners(self) -> np.ndarray:
-            '''得到包围框（立方体）的八个顶点'''
+            """得到包围框（立方体）的八个顶点"""
             x1, y1, z1 = self.data[0]
             x2, y2, z2 = self.data[2]
 
             # 不直接使用 `self.get` 是因为它太慢了
-            return np.array([
-                [x1, y1, z1],
-                [x1, y1, z2],
-                [x1, y2, z1],
-                [x1, y2, z2],
-                [x2, y1, z1],
-                [x2, y1, z2],
-                [x2, y2, z1],
-                [x2, y2, z2],
-            ])
+            return np.array(
+                [
+                    [x1, y1, z1],  # 左下角
+                    [x1, y1, z2],  # 左下角
+                    [x1, y2, z1],  # 左上角
+                    [x1, y2, z2],  # 左上角
+                    [x2, y1, z1],  # 右下角
+                    [x2, y1, z2],  # 右下角
+                    [x2, y2, z1],  # 右上角
+                    [x2, y2, z2],  # 右上角
+                ]
+            )
 
         @property
         def top(self) -> np.ndarray:
@@ -362,6 +373,11 @@ class Cmpt_Points[ItemT](Component[ItemT]):
         def depth(self) -> float:
             return self.length_over_dim(2)
 
+        @property
+        def size(self) -> tuple[float, float]:
+            """即 `(width, height)`"""
+            return (self.width, self.height)
+
         def coord(self, dim: int, direction=ORIGIN) -> float:
             return self.get(direction)[dim]
 
@@ -397,13 +413,13 @@ class Cmpt_Points[ItemT](Component[ItemT]):
         *,
         about_point: Vect | None = None,
         about_edge: Vect | None = ORIGIN,
-        root_only: bool = False
+        root_only: bool = False,
     ) -> Self:
-        '''
+        """
         将所有点作为单独的一个参数传入 ``func``，并将 ``func`` 返回的结果作为新的点坐标数据
 
         视 ``about_point`` 为原点，若其为 ``None``，则将物件在 ``about_edge`` 方向上的边界作为 ``about_point``
-        '''
+        """
         if about_point is None and about_edge is not None:
             if root_only:
                 about_point = self.self_box.get(about_edge)
@@ -429,16 +445,16 @@ class Cmpt_Points[ItemT](Component[ItemT]):
         about_edge: Vect | None = ORIGIN,
         root_only: bool = False,
     ) -> Self:
-        '''
+        """
         把每个点依次传入 ``func`` 进行变换
 
         以默认的原点作用变换，而不是物件的中心
-        '''
+        """
         self.apply_points_fn(
             lambda points: np.array([func(p) for p in points]),
             about_point=about_point,
             about_edge=about_edge,
-            root_only=root_only
+            root_only=root_only,
         )
         return self
 
@@ -450,16 +466,17 @@ class Cmpt_Points[ItemT](Component[ItemT]):
         about_edge: Vect | None = None,
         root_only: bool = False,
     ) -> Self:
-        '''
+        """
         将矩阵变换作用于 ``points``
 
         以默认的原点作用变换，而不是物件的中心
-        '''
+        """
         matrix = np.array(matrix)
         if matrix.shape not in ((2, 2), (3, 3)):
             raise InvaildMatrixError(
-                _('Only 2x2 or 3x3 matrix are valid, but a {shape} matrix was passed in')
-                .format(shape="x".join(str(v) for v in matrix.shape))
+                _('Only 2x2 or 3x3 matrix are valid, but a {shape} matrix was passed in').format(
+                    shape='x'.join(str(v) for v in matrix.shape)
+                )
             )
 
         if about_point is None and about_edge is None:
@@ -467,13 +484,13 @@ class Cmpt_Points[ItemT](Component[ItemT]):
 
         # 使 2x2 和 3x3 矩阵都可用
         full_matrix = np.identity(3)
-        full_matrix[:matrix.shape[0], :matrix.shape[1]] = matrix
+        full_matrix[: matrix.shape[0], : matrix.shape[1]] = matrix
 
         self.apply_points_fn(
             lambda points: points @ full_matrix.T,
             about_point=about_point,
             about_edge=about_edge,
-            root_only=root_only
+            root_only=root_only,
         )
 
         return self
@@ -486,31 +503,27 @@ class Cmpt_Points[ItemT](Component[ItemT]):
         about_edge: Vect | None = ORIGIN,
         root_only: bool = False,
     ) -> Self:
-        '''
+        """
         将复变函数作用于 ``points``
 
         以默认的原点作用变换，而不是物件的中心
-        '''
+        """
+
         def R3_func(point):
             x, y, z = point
             xy_complex = func(complex(x, y))
-            return [
-                xy_complex.real,
-                xy_complex.imag,
-                z
-            ]
+            return [xy_complex.real, xy_complex.imag, z]
+
         self.apply_point_fn(
             R3_func,
             about_point=about_point,
             about_edge=about_edge,
-            root_only=root_only
+            root_only=root_only,
         )
         return self
 
     @register_updater(
-        lambda self, p, angle, **kwargs:
-            self.rotate(angle * p.alpha, **kwargs),
-        grouply=True
+        lambda self, p, angle, **kwargs: self.rotate(angle * p.alpha, **kwargs), grouply=True
     )
     def rotate(
         self,
@@ -521,15 +534,15 @@ class Cmpt_Points[ItemT](Component[ItemT]):
         about_edge: Vect | None = ORIGIN,
         root_only: bool = False,
     ) -> Self:
-        '''
+        """
         以 ``axis`` 为方向，``angle`` 为角度旋转，可传入 ``about_point`` 指定相对于以哪个点为中心
-        '''
+        """
         rot_matrix_T = rotation_matrix(angle, axis).T
         self.apply_points_fn(
             lambda points: points @ rot_matrix_T,
             about_point=about_point,
             about_edge=about_edge,
-            root_only=root_only
+            root_only=root_only,
         )
         return self
 
@@ -541,22 +554,23 @@ class Cmpt_Points[ItemT](Component[ItemT]):
         about_edge: Vect | None = ORIGIN,
         root_only: bool = False,
     ) -> Self:
-        '''
+        """
         绕 axis 轴翻转
-        '''
+        """
         self.rotate(
             PI,
             axis=axis,
             about_point=about_point,
             about_edge=about_edge,
-            root_only=root_only
+            root_only=root_only,
         )
         return self
 
     @register_updater(
-        lambda self, p, scale_factor, **kwargs:
-            self.scale((np.asarray(scale_factor) - 1) * p.alpha + 1, **kwargs),
-        grouply=True
+        lambda self, p, scale_factor, **kwargs: (  #
+            self.scale((np.asarray(scale_factor) - 1) * p.alpha + 1, **kwargs)
+        ),
+        grouply=True,
     )
     def scale(
         self,
@@ -567,12 +581,12 @@ class Cmpt_Points[ItemT](Component[ItemT]):
         about_edge: Vect | None = ORIGIN,
         root_only: bool = False,
     ) -> Self:
-        '''
+        """
         将物件缩放指定倍数
 
         如果传入的倍数是可遍历的对象，那么则将其中的各个元素作为坐标各分量缩放的倍数，
         例如传入 ``scale_factor`` 为 ``(2, 0.5, 1)`` 则是在 ``x`` 方向上缩放为两倍，在 ``y`` 方向上压缩为原来的一半，在 ``z`` 方向上保持不变
-        '''
+        """
         if isinstance(scale_factor, Iterable):
             sgn = np.sign(scale_factor)
             scale_factor = sgn * abs(np.asarray(scale_factor)).clip(min=min_scale_factor)
@@ -586,14 +600,13 @@ class Cmpt_Points[ItemT](Component[ItemT]):
             lambda points: scale_factor * points,
             about_point=about_point,
             about_edge=about_edge,
-            root_only=root_only
+            root_only=root_only,
         )
         return self
 
     @register_updater(
-        lambda self, p, factor, **kwargs:
-            self.stretch((factor - 1) * p.alpha + 1, **kwargs),
-        grouply=True
+        lambda self, p, factor, **kwargs: self.stretch((factor - 1) * p.alpha + 1, **kwargs),
+        grouply=True,
     )
     def stretch(
         self,
@@ -605,9 +618,9 @@ class Cmpt_Points[ItemT](Component[ItemT]):
         about_edge: Vect | None = ORIGIN,
         root_only: bool = False,
     ) -> Self:
-        '''
+        """
         在指定的 ``dim`` 方向上使物件伸缩
-        '''
+        """
         factor = max(factor, min_scale_factor)
 
         def func(points):
@@ -618,7 +631,7 @@ class Cmpt_Points[ItemT](Component[ItemT]):
             func,
             about_point=about_point,
             about_edge=about_edge,
-            root_only=root_only
+            root_only=root_only,
         )
         return self
 
@@ -656,27 +669,27 @@ class Cmpt_Points[ItemT](Component[ItemT]):
                 min_scale_factor=min_scale_factor,
                 about_point=about_point,
                 about_edge=about_edge,
-                root_only=root_only
+                root_only=root_only,
             )
 
         return self
 
     def set_width(self, width: float, *, stretch: bool = False, **kwargs) -> Self:
-        '''
+        """
         如果 ``stretch`` 为 ``False`` （默认），则表示等比缩放
-        '''
+        """
         return self.rescale_to_fit(width, dim=0, stretch=stretch, **kwargs)
 
     def set_height(self, height: float, *, stretch: bool = False, **kwargs) -> Self:
-        '''
+        """
         如果 ``stretch`` 为 ``False`` （默认），则表示等比缩放
-        '''
+        """
         return self.rescale_to_fit(height, dim=1, stretch=stretch, **kwargs)
 
     def set_depth(self, depth: float, *, stretch: bool = False, **kwargs) -> Self:
-        '''
+        """
         如果 ``stretch`` 为 ``False`` （默认），则表示等比缩放
-        '''
+        """
         return self.rescale_to_fit(depth, dim=2, stretch=stretch, **kwargs)
 
     def set_size(
@@ -684,7 +697,7 @@ class Cmpt_Points[ItemT](Component[ItemT]):
         width: float | None = None,
         height: float | None = None,
         depth: float | None = None,
-        **kwargs
+        **kwargs,
     ) -> Self:
         if width is not None:
             self.set_width(width, stretch=True, **kwargs)
@@ -701,11 +714,11 @@ class Cmpt_Points[ItemT](Component[ItemT]):
         *,
         stretch: bool = False,
         root_only: bool = False,
-        item_root_only: bool = False
+        item_root_only: bool = False,
     ) -> Self:
-        '''
+        """
         放到 item 的位置，并且在 ``dim_to_match`` 维度上长度相同
-        '''
+        """
         cmpt = self.get_same_cmpt(item)
         item_box = cmpt.self_box if item_root_only else cmpt.box
 
@@ -716,7 +729,7 @@ class Cmpt_Points[ItemT](Component[ItemT]):
                     item_box.length_over_dim(i),
                     dim=i,
                     stretch=True,
-                    root_only=root_only
+                    root_only=root_only,
                 )
         else:
             # If stretch is False, rescale only the dimension specified by dim_to_match to match the item.
@@ -724,7 +737,7 @@ class Cmpt_Points[ItemT](Component[ItemT]):
                 item_box.length_over_dim(dim_to_match),
                 dim=dim_to_match,
                 stretch=False,
-                root_only=root_only
+                root_only=root_only,
             )
 
         # Shift the object to the center of the specified item.
@@ -742,15 +755,15 @@ class Cmpt_Points[ItemT](Component[ItemT]):
         root_only: bool = False,
         item_root_only: bool = False,
     ) -> Self:
-        '''
+        """
         与 ``replace`` 类似，但是会向外留出 ``buff`` 间距
-        '''
+        """
         self.replace(
             item,
             dim_to_match,
             stretch=stretch,
             root_only=root_only,
-            item_root_only=item_root_only
+            item_root_only=item_root_only,
         )
 
         box = self.self_box if root_only else self.box
@@ -768,9 +781,10 @@ class Cmpt_Points[ItemT](Component[ItemT]):
         return self
 
     @register_updater(
-        lambda self, p, factor=0.2, direction=RIGHT, **kwargs:
-            self.shear(factor * p.alpha, direction, **kwargs),
-        grouply=True
+        lambda self, p, factor=0.2, direction=RIGHT, **kwargs: (  #
+            self.shear(factor * p.alpha, direction, **kwargs)
+        ),
+        grouply=True,
     )
     def shear(
         self,
@@ -779,19 +793,19 @@ class Cmpt_Points[ItemT](Component[ItemT]):
         *,
         about_point: Vect | None = None,
         about_edge: Vect = ORIGIN,
-        root_only: bool = False
+        root_only: bool = False,
     ) -> Self:
-        '''
+        """
         切变
 
         - ``factor`` 表示切变的程度
         - ``direction`` 表示切变的方向
         - 可以传入 ``about_point`` 或 ``about_edge`` 控制参考点
-        '''
+        """
         mat_shear = [
             [1, factor, 0],
             [0, 1, 0],
-            [0, 0, 1]
+            [0, 0, 1],
         ]
         if np.isclose(normalize(direction), RIGHT).all():
             mat = mat_shear
@@ -804,37 +818,55 @@ class Cmpt_Points[ItemT](Component[ItemT]):
         return self
 
     def put_start_and_end_on(self, start: Vect, end: Vect) -> Self:
-        '''
+        """
         通过旋转和缩放，使得物件的起点和终点被置于 ``start`` 和 ``end``
-        '''
+        """
         start, end = np.asarray(start), np.asarray(end)
 
         curr_start, curr_end = self.get_start(), self.get_end()
-        curr_vect = curr_end - curr_start
-        if np.all(curr_vect == 0):
+        curr_vec = curr_end - curr_start
+        if np.all(curr_vec == 0):
             raise PointError(_('Cannot position endpoints of closed loop'))
-        target_vect = end - start
-        self.scale(
-            get_norm(target_vect) / get_norm(curr_vect),
-            about_point=curr_start,
-        )
-        self.rotate(
-            angle_of_vector(target_vect) - angle_of_vector(curr_vect),
-        )
-        self.rotate(
-            np.arctan2(curr_vect[2], get_norm(curr_vect[:2])) - np.arctan2(target_vect[2], get_norm(target_vect[:2])),
-            axis=np.array([-target_vect[1], target_vect[0], 0]),
-        )
-        self.shift(start - self.get_start())
+
+        target_vec = end - start
+
+        # 对齐长度
+        mat1 = np.identity(3) * (get_norm(target_vec) / get_norm(curr_vec))
+        # 对齐偏航角
+        mat2 = rotation_matrix(angle_of_vector(target_vec) - angle_of_vector(curr_vec), OUT)
+        # 对齐俯仰角
+        angle_curr = np.arctan2(curr_vec[2], get_norm(curr_vec[:2]))
+        angle_target = np.arctan2(target_vec[2], get_norm(target_vec[:2]))
+        angle = angle_curr - angle_target
+        if np.isclose(angle, 0):
+            mat3 = np.identity(3)
+        else:
+            mat3 = rotation_matrix(angle, np.array([-target_vec[1], target_vec[0], 0]))
+
+        # 叠加以上矩阵
+        mat = mat3 @ mat2 @ mat1
+
+        def func(points: np.ndarray) -> np.ndarray:
+            # 整体移动，使得从 curr_start 移动到原点
+            points = points - curr_start
+
+            # 作用矩阵效果
+            points @= mat.T
+
+            # 从原点移动到 start
+            points += start
+            return points
+
+        self.apply_points_fn(func, about_edge=None)
         return self
 
     @property
     @set.self_refresh
     @refresh.register
     def unit_normal(self) -> np.ndarray:
-        '''
+        """
         计算三维点集的拟合平面的单位法向量
-        '''
+        """
         points = self.get()
 
         # 质心
@@ -849,6 +881,27 @@ class Cmpt_Points[ItemT](Component[ItemT]):
         normal = eigvecs[:, np.argmin(eigvals)]
         return normalize(normal)
 
+    def face_to_vector(
+        self,
+        vector: Vect,
+        *,
+        about_point: Vect | None = None,
+        about_edge: Vect | None = ORIGIN,
+        root_only: bool = False,
+    ) -> Self:
+        """
+        旋转物件使其法方向与 ``vector`` 同向
+
+        - 视 ``about_point`` 为参考点，若其为 ``None``，则将物件在 ``about_edge`` 方向上的边界作为 ``about_point``
+        """
+        self.apply_matrix(
+            rotation_between_vectors(self.unit_normal, vector),
+            about_point=about_point,
+            about_edge=about_edge,
+            root_only=root_only,
+        )
+        return self
+
     def face_to_camera(
         self,
         camera: Camera | types.EllipsisType = ...,
@@ -860,7 +913,7 @@ class Cmpt_Points[ItemT](Component[ItemT]):
         about_edge: Vect | None = ORIGIN,
         root_only: bool = False,
     ) -> Self:
-        '''
+        """
         使物件面向摄像机
 
         实用参数：
@@ -876,9 +929,10 @@ class Cmpt_Points[ItemT](Component[ItemT]):
         - ``camera`` 默认为时间轴的 ``self.camera``
 
         - ``normal_vector`` 默认通过 :meth:`unit_normal` 计算
-        '''
+        """
         if camera is ...:
             from janim.anims.timeline import Timeline
+
             camera = Timeline.get_context().camera.current()
 
         if normal_vector is ...:
@@ -897,7 +951,7 @@ class Cmpt_Points[ItemT](Component[ItemT]):
             normal_vector = -normal_vector
 
         info = camera.points.info
-        camera_axis = info.camera_location - info.center
+        camera_axis = info.camera_axis
         camera_transform = rotation_between_vectors(normal_vector, camera_axis)
 
         up = np.cross(normal_vector, RIGHT)
@@ -913,7 +967,7 @@ class Cmpt_Points[ItemT](Component[ItemT]):
             rot_transform @ camera_transform,
             about_point=about_point,
             about_edge=about_edge,
-            root_only=root_only
+            root_only=root_only,
         )
         return self
 
@@ -922,17 +976,18 @@ class Cmpt_Points[ItemT](Component[ItemT]):
     # region 位移 | movement
 
     @register_updater(
-        lambda self, p, vector, *, root_only=False:
+        lambda self, p, vector, *, root_only=False: (  #
             self.shift(np.asarray(vector) * p.alpha, root_only=root_only)
+        )
     )
     def shift(self, vector: Vect, *, root_only=False) -> Self:
-        '''
+        """
         相对移动 ``vector`` 向量
-        '''
+        """
         self.apply_points_fn(
             lambda points: points + vector,
             about_edge=None,
-            root_only=root_only
+            root_only=root_only,
         )
         return self
 
@@ -943,7 +998,7 @@ class Cmpt_Points[ItemT](Component[ItemT]):
         aligned_edge: Vect,
         coor_mask: Iterable,
         root_only: bool = False,
-        item_root_only: bool = False
+        item_root_only: bool = False,
     ) -> np.ndarray:
         if isinstance(target, Item):
             cmpt = src.get_same_cmpt(target)
@@ -962,12 +1017,14 @@ class Cmpt_Points[ItemT](Component[ItemT]):
         root_only: bool = False,
         item_root_only: bool = False,
     ) -> Self:
-        '''
+        """
         移动到 ``target`` 的位置
-        '''
+        """
         self.shift(
-            self._compute_move_shift(self, target, aligned_edge, coor_mask, root_only, item_root_only),
-            root_only=root_only
+            self._compute_move_shift(
+                self, target, aligned_edge, coor_mask, root_only, item_root_only
+            ),
+            root_only=root_only,
         )
         return self
 
@@ -980,9 +1037,9 @@ class Cmpt_Points[ItemT](Component[ItemT]):
         coor_mask: Iterable = (1, 1, 1),
         root_only: bool = False,
         indicator_root_only: bool = False,
-        item_root_only: bool = False
+        item_root_only: bool = False,
     ) -> Self:
-        '''
+        """
         与 :meth:`move_to` 类似，但是该方法作用 ``indicator`` 被移动到 ``target`` 所计算出的位移，
         而不是 :meth:`move_to` 中 ``self`` 被移动到 ``target`` 的位移
 
@@ -1000,11 +1057,13 @@ class Cmpt_Points[ItemT](Component[ItemT]):
         .. note::
 
             这个示例使用 :meth:`~.TypstDoc.match_pattern` 会更简洁
-        '''
+        """
         cmpt = self.get_same_cmpt(indicator)
         self.shift(
-            cmpt._compute_move_shift(cmpt, target, aligned_edge, coor_mask, indicator_root_only, item_root_only),
-            root_only=root_only
+            cmpt._compute_move_shift(
+                cmpt, target, aligned_edge, coor_mask, indicator_root_only, item_root_only
+            ),
+            root_only=root_only,
         )
         return self
 
@@ -1016,10 +1075,10 @@ class Cmpt_Points[ItemT](Component[ItemT]):
         root_only: bool = False,
         item_root_only: bool = False,
     ) -> Self:
-        '''对齐
+        """对齐
 
         例如，``item1.align_to(item2, UP)`` 会将 ``item1`` 垂直移动，顶部与 ``item2`` 的上边缘对齐
-        '''
+        """
 
         if isinstance(item_or_point, Item):
             cmpt = self.get_same_cmpt(item_or_point)
@@ -1038,18 +1097,15 @@ class Cmpt_Points[ItemT](Component[ItemT]):
         self,
         direction: Vect = RIGHT,
         center: bool = True,
-        **kwargs
+        **kwargs,
     ) -> Self:
-        '''
+        """
         将子物件按照 ``direction`` 方向排列
-        '''
+        """
         if self.bind is None:
             return
 
-        cmpts = [
-            self.get_same_cmpt(item)
-            for item in self.bind.at_item.children
-        ]
+        cmpts = [self.get_same_cmpt(item) for item in self.bind.at_item._children]
 
         for cmpt1, cmpt2 in zip(cmpts, cmpts[1:]):
             cmpt2.next_to(cmpt1.bind.at_item, direction, **kwargs)
@@ -1096,30 +1152,27 @@ class Cmpt_Points[ItemT](Component[ItemT]):
         self,
         n_rows: int | None = None,
         n_cols: int | None = None,
-
+        #
         buff: float | None = None,
         h_buff: float | None = None,
         v_buff: float | None = None,
-
+        #
         aligned_edge: np.ndarray = ORIGIN,
         by_center_point: bool = False,
-        fill_rows_first: bool = True
+        fill_rows_first: bool = True,
     ) -> Self:
-        '''
+        """
         将子物件按网格方式排列
 
         - ``n_rows``, ``n_cols``: 行数、列数
         - ``v_buff``, ``h_buff``: 行距、列距
         - ``aligned_edge``: 对齐边缘
         - ``by_center_point``: 默认为 ``False``；若设置为 ``True``，则仅将物件视为中心点，不考虑物件的宽高
-        '''
+        """
         if self.bind is None:
             return
 
-        cmpts = [
-            self.get_same_cmpt(item)
-            for item in self.bind.at_item.children
-        ]
+        cmpts = [self.get_same_cmpt(item) for item in self.bind.at_item._children]
 
         n_rows, n_cols = self._format_rows_cols(len(cmpts), n_rows, n_cols)
         h_buff, v_buff = self._format_buff(buff, h_buff, v_buff, by_center_point)
@@ -1145,15 +1198,12 @@ class Cmpt_Points[ItemT](Component[ItemT]):
         offset: Vect,
         *,
         aligned_edge: Vect = ORIGIN,
-        center: bool = True
+        center: bool = True,
     ) -> Self:
-        if self.bind is None or not self.bind.at_item.children:
+        if self.bind is None or not self.bind.at_item._children:
             return self
 
-        cmpts = [
-            self.get_same_cmpt(item)
-            for item in self.bind.at_item.children
-        ]
+        cmpts = [self.get_same_cmpt(item) for item in self.bind.at_item._children]
         offset = np.array(offset)
 
         for cmpt1, cmpt2 in zip(cmpts, cmpts[1:]):
@@ -1166,21 +1216,25 @@ class Cmpt_Points[ItemT](Component[ItemT]):
         return self
 
     def to_center(self, *, root_only=False) -> Self:
-        '''
+        """
         移动到原点 ``(0, 0, 0)``
-        '''
+        """
         self.shift(-self.box.center, root_only=root_only)
         return self
 
     def to_border(
         self,
         direction: Vect,
-        buff: float = DEFAULT_ITEM_TO_EDGE_BUFF
+        buff: float = DEFAULT_ITEM_TO_EDGE_BUFF,
     ) -> Self:
-        '''
+        """
         移动到视框的边界
-        '''
-        target_point = np.sign(direction) * (Config.get.frame_x_radius, Config.get.frame_y_radius, 0)
+        """
+        target_point = np.sign(direction) * (
+            Config.get.frame_x_radius,
+            Config.get.frame_y_radius,
+            0,
+        )
         point_to_align = self.box.get(direction)
         shift_val = target_point - point_to_align - buff * np.array(direction)
         shift_val = shift_val * abs(np.sign(direction))
@@ -1196,7 +1250,7 @@ class Cmpt_Points[ItemT](Component[ItemT]):
         aligned_edge: Vect,
         coor_mask: Iterable,
         root_only: bool,
-        item_root_only: bool
+        item_root_only: bool,
     ) -> np.ndarray:
         if isinstance(target, Item):
             cmpt = src.get_same_cmpt(target)
@@ -1219,14 +1273,21 @@ class Cmpt_Points[ItemT](Component[ItemT]):
         root_only: bool = False,
         item_root_only: bool = False,
     ) -> Self:
-        '''
+        """
         将该物件放到 ``target`` 旁边
-        '''
+        """
         self.shift(
-            self._compute_next_to_shift(self, target,
-                                        direction, buff, aligned_edge, coor_mask,
-                                        root_only, item_root_only),
-            root_only=root_only
+            self._compute_next_to_shift(
+                self,
+                target,
+                direction,
+                buff,
+                aligned_edge,
+                coor_mask,
+                root_only,
+                item_root_only,
+            ),
+            root_only=root_only,
         )
         return self
 
@@ -1243,7 +1304,7 @@ class Cmpt_Points[ItemT](Component[ItemT]):
         indicator_root_only: bool = False,
         item_root_only: bool = False,
     ) -> Self:
-        '''
+        """
         与 :meth:`next_to` 类似，但是该方法作用 ``indicator`` 被放到 ``target`` 旁边所计算出的位移，
         而不是 :meth:`move_to` 中 ``self`` 被放到 ``target`` 旁边的位移
 
@@ -1261,19 +1322,26 @@ class Cmpt_Points[ItemT](Component[ItemT]):
         .. note::
 
             这个示例也可以使用字符索引
-        '''
+        """
         cmpt = self.get_same_cmpt(indicator)
         self.shift(
-            self._compute_next_to_shift(cmpt, target,
-                                        direction, buff, aligned_edge, coor_mask,
-                                        indicator_root_only, item_root_only),
-            root_only=root_only
+            self._compute_next_to_shift(
+                cmpt,
+                target,
+                direction,
+                buff,
+                aligned_edge,
+                coor_mask,
+                indicator_root_only,
+                item_root_only,
+            ),
+            root_only=root_only,
         )
         return self
 
     def shift_onto_screen(self, **kwargs) -> Self:
         space_lengths = [Config.get.frame_x_radius, Config.get.frame_y_radius]
-        buff = kwargs.get("buff", DEFAULT_ITEM_TO_EDGE_BUFF)
+        buff = kwargs.get('buff', DEFAULT_ITEM_TO_EDGE_BUFF)
         for vect in UP, DOWN, LEFT, RIGHT:
             dim = np.argmax(np.abs(vect))
             max_val = space_lengths[dim] - buff
@@ -1286,7 +1354,7 @@ class Cmpt_Points[ItemT](Component[ItemT]):
         self,
         direction: Vect,
         *,
-        buff: float = DEFAULT_ITEM_TO_EDGE_BUFF
+        buff: float = DEFAULT_ITEM_TO_EDGE_BUFF,
     ) -> Self:
         center = self.box.center
         x_radius = Config.get.frame_x_radius - self.box.width / 2 - buff
@@ -1339,7 +1407,9 @@ class Cmpt_Points[ItemT](Component[ItemT]):
         self.move_to([*best[:2], center[2]])
         return self
 
-    def set_coord(self, value: float, *, dim: int, direction: Vect = ORIGIN, root_only=False) -> Self:
+    def set_coord(
+        self, value: float, *, dim: int, direction: Vect = ORIGIN, root_only=False
+    ) -> Self:
         curr = self.box.coord(dim, direction)
         shift_vect = np.zeros(3)
         shift_vect[dim] = value - curr

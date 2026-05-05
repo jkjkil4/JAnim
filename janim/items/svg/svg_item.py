@@ -12,18 +12,18 @@ from janim.constants import FRAME_PPI, ORIGIN, RIGHT, TAU, UP
 from janim.items.geometry.arc import Circle
 from janim.items.geometry.line import Line
 from janim.items.geometry.polygon import Polygon, Polyline, Rect, RoundedRect
+from janim.items.group import Group
 from janim.items.item import Item
-from janim.items.points import Group
 from janim.items.text import BasepointVItem, Text, TextLine
 from janim.items.vitem import VItem
-from janim.locale.i18n import get_local_strings
+from janim.locale import get_translator
 from janim.logger import log
 from janim.utils.bezier import PathBuilder, quadratic_bezier_points_for_arc
 from janim.utils.config import Config
 from janim.utils.file_ops import find_file
 from janim.utils.space_ops import rotation_about_z
 
-_ = get_local_strings('svg_item')
+_ = get_translator('janim.items.svg.svg_item')
 
 
 type SVGElemItem = VItem | BasepointVItem | TextLine
@@ -36,21 +36,22 @@ def _point_to_3d(x: float, y: float) -> np.ndarray:
 
 
 def _convert_opacity(x: float | None) -> float:
-    return 0. if x is None else x
+    return 0.0 if x is None else x
 
 
 def _parse_color(hex, opacity) -> tuple[str, float]:
     # '#RRGGBBAA'
     if isinstance(hex, str) and hex.startswith('#') and len(hex) == 9:
-        return hex[:7], int(hex[-2:], 16) / 255     # ('#RRGGBB', Alpha)
+        return hex[:7], int(hex[-2:], 16) / 255  # ('#RRGGBB', Alpha)
 
     return hex, _convert_opacity(opacity)
 
 
 class SVGItem(Group[SVGElemItem]):
-    '''
+    """
     传入 SVG 文件路径，解析为物件
-    '''
+    """
+
     vitem_builders_map: dict[tuple, tuple[list[ItemBuilder], GroupIndexer]] = {}
     group_key: str | None = None
 
@@ -58,12 +59,12 @@ class SVGItem(Group[SVGElemItem]):
         self,
         file_path: str,
         *,
-        scale: float = 1.0,     # 缩放系数，仅当 width 和 height 都为 None 时有效
+        scale: float = 1.0,  # 缩放系数，仅当 width 和 height 都为 None 时有效
         width: float | None = None,
         height: float | None = None,
         mark_basepoint: bool = False,
         stroke_radius: float | Iterable[float] | None = None,
-        **kwargs
+        **kwargs,
     ):
         items, self.groups = self.get_items_from_file(file_path, mark_basepoint)
 
@@ -74,25 +75,14 @@ class SVGItem(Group[SVGElemItem]):
         if width is None and height is None:
             # 因为解析 svg 时按照默认的 PPI=96 读取，而 janim 默认 PPI=144，所以要缩放 (FRAME_PPI / 96)
             factor = Config.get.default_pixel_to_frame_ratio * (FRAME_PPI / 96) * scale
-            self.points.scale(
-                factor,
-                about_point=ORIGIN
-            )
+            self.points.scale(factor, about_point=ORIGIN)
         elif width is None and height is not None:
             factor = height / box.height
-            self.points.set_size(
-                box.width * factor,
-                height,
-                about_point=ORIGIN
-            )
+            self.points.set_size(box.width * factor, height, about_point=ORIGIN)
         elif width is not None and height is None:
             factor = width / box.width
-            self.points.set_size(
-                width,
-                box.height * factor,
-                about_point=ORIGIN
-            )
-        else:   # width is not None and height is not None
+            self.points.set_size(width, box.height * factor, about_point=ORIGIN)
+        else:  # width is not None and height is not None
             factor = min(width / box.width, height / box.height)
             self.points.set_size(width, height, about_point=ORIGIN)
 
@@ -109,15 +99,16 @@ class SVGItem(Group[SVGElemItem]):
         copy_item = super().copy(root_only=root_only)
 
         if not root_only:
+
             def get_idx(item: Item) -> int | None:
                 try:
-                    return self.children.index(item)
+                    return self._children.index(item)
                 except ValueError:
                     return None
 
             copy_item.groups = {
                 key: [
-                    copy_item[idx]
+                    copy_item[idx]  #
                     for item in group
                     if (idx := get_idx(item)) is not None
                 ]
@@ -127,7 +118,7 @@ class SVGItem(Group[SVGElemItem]):
         return copy_item
 
     def scale_descendants_stroke_radius(self, factor: float) -> Self:
-        '''将所有后代物件的 ``stroke_radius`` 都乘上一个值'''
+        """将所有后代物件的 ``stroke_radius`` 都乘上一个值"""
         for item in self.walk_descendants(VItem):
             item.radius.set(item.radius.get() * factor)
 
@@ -135,11 +126,11 @@ class SVGItem(Group[SVGElemItem]):
     def get_items_from_file(
         cls,
         file_path: str,
-        mark_basepoint: bool = False
+        mark_basepoint: bool = False,
     ) -> tuple[list[SVGElemItem], dict[str, list[SVGElemItem]]]:
-        '''
+        """
         解析文件并得到物件列表
-        '''
+        """
         file_path = find_file(file_path)
         mtime = os.path.getmtime(file_path)
         name = os.path.splitext(os.path.basename(file_path))[0]
@@ -149,18 +140,20 @@ class SVGItem(Group[SVGElemItem]):
         if cached is not None:
             return cls.build_items(*cached)
 
-        svg: se.SVG = se.SVG.parse(file_path)   # PPI=96
+        svg: se.SVG = se.SVG.parse(file_path)  # PPI=96
 
         offset = np.array([svg.width / -2, svg.height / -2])
 
         builders: list[ItemBuilder] = []
         indexers: GroupIndexer = defaultdict(list)
-        group_finder: defaultdict[Any, list[str]] = defaultdict(list)
+        group_finder: defaultdict[Any, set[str]] = defaultdict(set)
         for shape in svg.elements():
             if isinstance(shape, se.Use):
                 continue
 
-            elif isinstance(shape, se.Group):
+            if isinstance(shape, se.Group):
+                # 对 Group 而言的 group_key 识别
+                # 如果带有 group_key 属性，会将所有子物件记录到 name 中
                 if cls.group_key is None:
                     continue
                 name = shape.values.get(cls.group_key, None)
@@ -169,10 +162,10 @@ class SVGItem(Group[SVGElemItem]):
                 for elem in shape.select():
                     if not isinstance(elem, se.Shape):
                         continue
-                    group_finder[id(elem)].append(name)
+                    group_finder[id(elem)].add(name)
                 continue
 
-            elif isinstance(shape, se.Path):
+            if isinstance(shape, se.Path):
                 builder = SVGItem.convert_path(shape, offset, mark_basepoint)
             elif isinstance(shape, se.SimpleLine):
                 builder = SVGItem.convert_line(shape, offset)
@@ -197,6 +190,14 @@ class SVGItem(Group[SVGElemItem]):
                 log.warning(_('Unsupported element type: {type}').format(type=type(shape)))
                 continue
 
+            # 对普通元素而言的 group_key 识别
+            # 如果带有 group_key 属性，将其自己记录到 name 中
+            if cls.group_key is not None:
+                name = shape.values.get(cls.group_key, None)
+                if name is not None:
+                    group_finder[id(shape)].add(name)
+
+            # 其他处理
             builders.append(builder)
 
             if not group_finder:
@@ -213,7 +214,7 @@ class SVGItem(Group[SVGElemItem]):
     @staticmethod
     def build_items(
         builders: list[ItemBuilder],
-        indexers: GroupIndexer
+        indexers: GroupIndexer,
     ) -> tuple[list[SVGElemItem], dict[str, list[SVGElemItem]]]:
         items = [builder() for builder in builders]
         groups = {
@@ -230,24 +231,28 @@ class SVGItem(Group[SVGElemItem]):
         fill_color, fill_alpha = _parse_color(shape.fill.hex, shape.fill.opacity)
 
         return dict(
-            stroke_radius=shape.stroke_width / 2,        # stroke_width 貌似不会为 None，所以这里直接使用
+            stroke_radius=shape.stroke_width / 2,  # stroke_width 貌似不会为 None，所以这里直接使用
             stroke_color=stroke_color,
             stroke_alpha=stroke_alpha * opacity,
             fill_color=fill_color,
-            fill_alpha=fill_alpha * opacity
+            fill_alpha=fill_alpha * opacity,
         )
 
     @staticmethod
     def get_rot_and_shift_from_matrix(mat: se.Matrix) -> tuple[np.ndarray, np.ndarray]:
-        rot = np.array([
-            [mat.a, mat.c],
-            [mat.b, mat.d]
-        ])
+        rot = np.array(
+            [
+                [mat.a, mat.c],
+                [mat.b, mat.d],
+            ]
+        )
         shift = np.array([mat.e, mat.f, 0])
         return rot, shift
 
     @staticmethod
-    def convert_path(path: se.Path, offset: np.ndarray, mark_basepoint: bool = False) -> ItemBuilder:
+    def convert_path(
+        path: se.Path, offset: np.ndarray, mark_basepoint: bool = False
+    ) -> ItemBuilder:
         builder = PathBuilder()
 
         transform_cache: tuple[se.Matrix, np.ndarray, np.ndarray] | None = None
@@ -302,10 +307,7 @@ class SVGItem(Group[SVGElemItem]):
                 convert_arc(segment)
             else:
                 func, attr_names = segment_class_to_func_map[segment_class]
-                points = [
-                    _point_to_3d(*getattr(segment, attr_name))
-                    for attr_name in attr_names
-                ]
+                points = [_point_to_3d(*getattr(segment, attr_name)) for attr_name in attr_names]
                 func(*points)
 
         vitem_styles = SVGItem.get_styles_from_shape(path)
@@ -327,6 +329,7 @@ class SVGItem(Group[SVGElemItem]):
                 vitem.mark.set_points(marks)
                 return vitem
         else:
+
             def vitem_builder() -> VItem:
                 vitem = VItem(**vitem_styles)
                 vitem.points.set(vitem_points)
@@ -352,12 +355,7 @@ class SVGItem(Group[SVGElemItem]):
             pos2 = pos1 + _point_to_3d(rect.width, rect.height * rect.rx / rect.ry)
 
             def builder() -> RoundedRect:
-                item = RoundedRect(
-                    pos1,
-                    pos2,
-                    corner_radius=rect.rx,
-                    **styles
-                )
+                item = RoundedRect(pos1, pos2, corner_radius=rect.rx, **styles)
                 item.points.set_height(rect.height, about_point=pos1)
                 return item
 
@@ -380,20 +378,14 @@ class SVGItem(Group[SVGElemItem]):
     def convert_polygon(polygon: se.Polygon, offset: np.ndarray) -> ItemBuilder:
         styles = SVGItem.get_styles_from_shape(polygon)
         offset_3d = _point_to_3d(*offset)
-        points = [
-            offset_3d + _point_to_3d(*point)
-            for point in polygon
-        ]
+        points = [offset_3d + _point_to_3d(*point) for point in polygon]
         return partial(Polygon, *points, **styles)
 
     @staticmethod
     def convert_polyline(polyline: se.Polyline, offset: np.ndarray) -> ItemBuilder:
         styles = SVGItem.get_styles_from_shape(polyline)
         offset_3d = _point_to_3d(*offset)
-        points = [
-            offset_3d + _point_to_3d(*point)
-            for point in polyline
-        ]
+        points = [offset_3d + _point_to_3d(*point) for point in polyline]
         return partial(Polyline, *points, **styles)
 
     @staticmethod
@@ -403,7 +395,7 @@ class SVGItem(Group[SVGElemItem]):
         transform = se.Matrix(text.values.get('transform', ''))
         rot, shift = SVGItem.get_rot_and_shift_from_matrix(transform)
 
-        family = text.font_family.strip('"').strip('\'')
+        family = text.font_family.strip('"').strip("'")
         ratio = Config.get.default_pixel_to_frame_ratio
         # 因为字体默认 PPI=72，而 janim 默认 PPI=144，所以乘上 (72 / FRAME_PPI)
         font_size = text.font_size / ratio * (72 / FRAME_PPI)
@@ -417,19 +409,22 @@ class SVGItem(Group[SVGElemItem]):
             return points
 
         def builder() -> TextLine:
-            txt = Text(text.text,
-                       font=family,
-                       font_size=font_size,
-                       weight=text.font_weight,
-                       style=text.font_style,
-                       center=False,
-                       **styles)
+            txt = Text(
+                text.text,
+                font=family,
+                font_size=font_size,
+                weight=text.font_weight,
+                style=text.font_style,
+                center=False,
+                **styles,
+            )
             assert len(txt) == 1
             line = txt[0]
             assert np.all(line.get_mark_orig() == ORIGIN)
             # 貌似 svgelements 对于列表的 x y dx dy 只能解析出一个值
             # 所以这里直接处理为 x+dx 和 y+dy，比较粗糙
-            line.points.shift([text.x + text.dx, -(text.y + text.dy), 0]).flip(RIGHT, about_edge=None)
+            line.points.shift([text.x + text.dx, -(text.y + text.dy), 0])
+            line.points.flip(RIGHT, about_edge=None)
             line.points.apply_points_fn(points_fn, about_edge=None)
 
             return line

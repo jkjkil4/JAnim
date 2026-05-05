@@ -6,9 +6,8 @@ from typing import Literal, Self
 import numpy as np
 
 from janim.components.component import CmptInfo
-from janim.constants import (DEFAULT_ITEM_TO_ITEM_BUFF, DOWN, LEFT, ORIGIN, PI,
-                             RIGHT, UP)
-from janim.items.geometry.line import Cmpt_VPoints_LineImpl, Line
+from janim.constants import DEFAULT_ITEM_TO_ITEM_BUFF, DOWN, LEFT, ORIGIN, PI, RIGHT, UP
+from janim.items.geometry.line import Cmpt_VPoints_LineImpl, Line, LineBuff
 from janim.items.points import Points
 from janim.items.svg.typst import TypstText
 from janim.items.text import Text
@@ -16,15 +15,20 @@ from janim.items.vitem import DEFAULT_STROKE_RADIUS, VItem
 from janim.render.renderer_arrow import ArrowRenderer
 from janim.typing import Vect
 from janim.utils.simple_functions import clip
-from janim.utils.space_ops import (angle_of_vector, get_norm, midpoint,
-                                   normalize, rotation_between_vectors)
+from janim.utils.space_ops import (
+    angle_of_vector,
+    get_norm,
+    midpoint,
+    normalize,
+    rotation_between_vectors,
+)
 
 DEFAULT_ARROWTIP_BODY_LENGTH = 0.2
 DEFAULT_ARROWTIP_BACK_WIDTH = 0.2
 
 
 class CenterAnchor(StrEnum):
-    '''
+    """
     箭头原点所处位置的选项
 
     图形示意：
@@ -38,21 +42,22 @@ class CenterAnchor(StrEnum):
         |               -----
         |        -----
         .-----
-    '''
+    """
+
     Back = 'back'
     Center = 'center'
     Front = 'front'
 
 
 class ArrowTip(VItem):
-    '''
+    """
     箭头标志
 
     - ``body_length``: 箭头的宽度
     - ``back_width``: 箭头的长度
     - ``center_anchor``: 原点所处的位置，请参考 :class:`CenterAnchor`
     - ``rotation``: 绕方向轴转动的角度，一般用于 3D 中
-    '''
+    """
 
     def __init__(
         self,
@@ -65,19 +70,21 @@ class ArrowTip(VItem):
         rotation: float | None = None,
         fill_alpha: float = 1.0,
         stroke_radius: float = DEFAULT_STROKE_RADIUS / 4,
-        **kwargs
+        **kwargs,
     ) -> None:
         super().__init__(fill_alpha=fill_alpha, stroke_radius=stroke_radius, **kwargs)
         self.center_anchor = center_anchor
 
         body_length *= scale
         back_width *= scale
-        self.points.set_as_corners([
-            body_length * RIGHT,
-            back_width / 2 * UP,
-            back_width / 2 * DOWN,
-            body_length * RIGHT
-        ])
+        self.points.set_as_corners(
+            [
+                body_length * RIGHT,
+                back_width / 2 * UP,
+                back_width / 2 * DOWN,
+                body_length * RIGHT,
+            ]
+        )
 
         self.points.to_center()
         self.rotate_about_anchor(angle)
@@ -85,10 +92,10 @@ class ArrowTip(VItem):
             self.points.rotate(rotation, axis=self.direction)
 
     def get_center_anchor(self) -> np.ndarray:
-        '''
+        """
         根据设定的 ``center_anchor`` 得到原点位置，
         请参考 :class:`CenterAnchor`
-        '''
+        """
         points = self.points._points.data
         if self.center_anchor == CenterAnchor.Back:
             return points[3]
@@ -99,28 +106,28 @@ class ArrowTip(VItem):
 
     @property
     def direction(self) -> np.ndarray:
-        '''得到箭头的方向（单位向量）'''
+        """得到箭头的方向（单位向量）"""
         points = self.points._points.data
         return normalize(points[0] - points[3])
 
     @property
     def body_length(self) -> float:
-        '''得到箭头的长度'''
+        """得到箭头的长度"""
         points = self.points._points.data
         return get_norm(points[0] - points[3])
 
     @property
     def back_width(self) -> float:
-        '''得到箭头的宽度'''
+        """得到箭头的宽度"""
         points = self.points._points.data
         return get_norm(points[4] - points[2])
 
     def rotate_about_anchor(self, angle: float) -> Self:
-        '''相对于原点位置进行旋转'''
+        """相对于原点位置进行旋转"""
         self.points.rotate(angle, about_point=self.get_center_anchor())
 
     def move_anchor_to(self, pos: np.ndarray) -> Self:
-        '''将原点移动到指定位置'''
+        """将原点移动到指定位置"""
         self.points.shift(pos - self.get_center_anchor())
         return self
 
@@ -134,12 +141,12 @@ class Cmpt_VPoints_ArrowImpl[ItemT](Cmpt_VPoints_LineImpl[ItemT], impl=True):
 
 
 class Arrow(Line):
-    '''
+    """
     带箭头的线段，箭头大小自动
 
     - ``buff``: 箭头首尾的空余量，默认为 ``0.25``
     - ``max_length_to_tip_length_ratio``: 箭头长度和直线长度最大比例
-    '''
+    """
 
     renderer_cls = ArrowRenderer
 
@@ -150,18 +157,23 @@ class Arrow(Line):
         start: Vect | Points = LEFT,
         end: Vect | Points = RIGHT,
         *,
-        buff: float = 0.25,
+        buff: LineBuff = 0.25,
         max_length_to_tip_length_ratio: float | None = 0.3,
         tip_kwargs: dict = {},
-        **kwargs
+        depth: float | None = None,
+        **kwargs,
     ) -> None:
         if 'center_anchor' not in tip_kwargs:
             tip_kwargs['center_anchor'] = CenterAnchor.Center
+        if depth is not None and 'depth' not in tip_kwargs:
+            tip_kwargs['depth'] = depth
 
-        super().__init__(start, end, buff=buff, **kwargs)
+        self._tips_inited = False
+        super().__init__(start, end, buff=buff, depth=depth, **kwargs)
         self.max_length_to_tip_length_ratio = max_length_to_tip_length_ratio
 
         self.init_tips(tip_kwargs)
+        self._tips_inited = True
         self.place_tip()
 
     def init_tips(self, tip_kwargs: dict) -> None:
@@ -176,17 +188,45 @@ class Arrow(Line):
             copy_item.tip = copy_item[0]
         return copy_item
 
+    def _reshape(
+        self,
+        start: Points | Vect | None = None,
+        end: Points | Vect | None = None,
+        buff: LineBuff | None = None,
+        path_arc: float | None = None,
+    ) -> None:
+        """
+        在父类 :class:`~.Line` 的 :meth:`place_tip` 的最后增加逻辑使得箭头正确放置
+        """
+        super()._reshape(start, end, buff, path_arc)
+        if self._tips_inited:  # __init__ 的时候 _reshape 由父类调用，此时还没有 tip
+            self.place_tip()
+
     def _get_shrink_values(self) -> tuple[float, float]:
-        '''
-        返回用于着色器的 (shrink_left_length, shrink_right_length)
-        '''
-        return (-1.0, self._get_shrink_length(self.tip))
+        """
+        返回用于着色器的 (shrink_left_ratio, shrink_right_ratio)
+        """
+        return (-1.0, self._get_shrink_ratio(self.tip, True))
+
+    def _get_shrink_ratio(self, tip: ArrowTip, right_side: bool) -> float:
+        points = self.points.get()
+        if len(points) < 3:
+            return -1.0
+
+        if right_side:
+            el = get_norm(points[-1] - points[-3])
+        else:
+            el = get_norm(points[0] - points[2])
+
+        if el == 0:
+            return -1.0
+        return Arrow._get_shrink_length(tip) / el
 
     @staticmethod
     def _get_shrink_length(tip: ArrowTip) -> float:
-        '''
+        """
         返回用于着色器的 shrink_length
-        '''
+        """
         tipcur = tip.current()  # TODO: optimize
         bodylen = tipcur.body_length
         match tipcur.center_anchor:
@@ -201,7 +241,7 @@ class Arrow(Line):
         self,
         tip: ArrowTip,
         target: np.ndarray,
-        target_direction: np.ndarray
+        target_direction: np.ndarray,
     ) -> None:
         direction = tip.direction
 
@@ -234,9 +274,9 @@ class Arrow(Line):
         under: bool = False,
         buff: float = DEFAULT_ITEM_TO_ITEM_BUFF,
         d_place: float = 1e-6,
-        **kwargs
+        **kwargs,
     ):
-        '''
+        """
         创建文字并与箭头对齐
 
         其中 ``under`` 参数的含义是：
@@ -254,7 +294,7 @@ class Arrow(Line):
 
             ----------------->
                   文字
-        '''
+        """
         place = clip(place, 0, 1)
         alpha1 = clip(place - d_place, 0, 1)
         alpha2 = clip(place + d_place, 0, 1)
@@ -274,18 +314,19 @@ class Arrow(Line):
 
 
 class Vector(Arrow):
-    '''
+    """
     起点为 ORIGIN 的箭头，终点为 ``direction``
 
     - ``buff`` 默认设为了 0
-    '''
+    """
+
     def __init__(
         self,
         direction: np.ndarray = RIGHT,
         *,
         buff: float = 0,
         tip_kwargs: dict = {},
-        **kwargs
+        **kwargs,
     ):
         tip_kwargs.setdefault('center_anchor', CenterAnchor.Front)
 
@@ -295,11 +336,12 @@ class Vector(Arrow):
 
 
 class DoubleArrow(Arrow):
-    '''
+    """
     双向箭头
 
     参数请参考 :class:`Arrow`
-    '''
+    """
+
     def __init__(self, *args, tip_kwargs: dict = {}, **kwargs) -> None:
         super().__init__(*args, tip_kwargs=tip_kwargs, **kwargs)
 
@@ -316,7 +358,10 @@ class DoubleArrow(Arrow):
         return copy_item
 
     def _get_shrink_values(self) -> tuple[float, float]:
-        return (self._get_shrink_length(self.start_tip), self._get_shrink_length(self.tip))
+        return (
+            self._get_shrink_ratio(self.start_tip, False),
+            self._get_shrink_ratio(self.tip, True),
+        )
 
     def place_tip(self) -> Self:
         super().place_tip()

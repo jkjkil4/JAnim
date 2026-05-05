@@ -1,0 +1,85 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-04-01 13:06+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: janim/gui/output/capture_dialog.py:32
+msgid "Capture"
+msgstr ""
+
+#: janim/gui/output/capture_dialog.py:34
+msgid "Options"
+msgstr ""
+
+#: janim/gui/output/capture_dialog.py:35
+msgid "Capture Raw Frame"
+msgstr ""
+
+#: janim/gui/output/capture_dialog.py:36
+msgid "Capture Screen View"
+msgstr ""
+
+#: janim/gui/output/capture_dialog.py:37
+msgid "Save to File"
+msgstr ""
+
+#: janim/gui/output/capture_dialog.py:38
+msgid "Copy to Clipboard"
+msgstr ""
+
+#: janim/gui/output/capture_dialog.py:40
+msgid "Save Path:"
+msgstr ""
+
+#: janim/gui/output/capture_dialog.py:41
+msgid "Size:"
+msgstr ""
+
+#: janim/gui/output/capture_dialog.py:42
+msgid "Transparent Background"
+msgstr ""
+
+#: janim/gui/output/capture_dialog.py:43
+msgid "Open the image after capturing"
+msgstr ""
+
+#: janim/gui/output/capture_dialog.py:46
+msgid "OK"
+msgstr ""
+
+#: janim/gui/output/capture_dialog.py:49
+msgid "Cancel"
+msgstr ""
+
+#: janim/gui/output/capture_dialog.py:176
+msgid "Confirm Export"
+msgstr ""
+
+#: janim/gui/output/capture_dialog.py:177
+#, python-brace-format
+msgid ""
+"{filename} already exists.\n"
+"Do you want to replace it?"
+msgstr ""
+
+#: janim/gui/output/capture_dialog.py:183
+msgid "Yes(&Y)"
+msgstr ""
+
+#: janim/gui/output/capture_dialog.py:184
+msgid "No(&N)"
+msgstr ""

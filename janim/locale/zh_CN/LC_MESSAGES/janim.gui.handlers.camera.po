@@ -1,0 +1,36 @@
+# English translations for PACKAGE package.
+# Copyright (C) 2025 THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# Automatically generated, 2025.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-12-28 01:54+0800\n"
+"PO-Revision-Date: 2025-12-28 02:08+0800\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: none\n"
+"Language: zh_CN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Poedit 3.8\n"
+
+#: janim/gui/handlers/camera.py:35
+#, python-brace-format
+msgid "The {type} item from \"{script}\" is not a Camera"
+msgstr "由 \"{script}\" 得到的 {type} 物件不是一个 Camera"
+
+#: janim/gui/handlers/camera.py:61
+msgid ""
+"Drag:& Rotate camera\n"
+"Ctrl + Drag:& Rotate camera in place\n"
+"Shift + Drag:& Pan camera\n"
+"Wheel:& Zoom"
+msgstr ""
+"拖动：& 转动摄像机\n"
+"Ctrl + 拖动：& 原地转动摄像机\n"
+"Shift + 拖动：& 平移摄像机\n"
+"滚轮：& 缩放"

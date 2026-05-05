@@ -9,17 +9,16 @@ import OpenGL.GL as gl
 
 from janim.camera.camera_info import CameraInfo
 from janim.render.base import RenderData, Renderer
-from janim.render.program import (get_compute_shader_from_file,
-                                  get_program_from_file_prefix)
+from janim.render.program import get_compute_shader_from_file, get_program_from_file_prefix
 
 if TYPE_CHECKING:
     from janim.items.vitem import VItem
 
 
 class VItemCurveRenderer(Renderer):
-    '''
+    """
     对于纯曲线边界 :class:`~.VItem` 所使用的渲染器
-    '''
+    """
 
     shader_path_compatibility = 'render/shaders/vitem/vitem_curve_compatibility'
     shader_path_normal = 'render/shaders/vitem/vitem_curve'
@@ -44,9 +43,7 @@ class VItemCurveRenderer(Renderer):
         self.prog = get_program_from_file_prefix(self.shader_path_compatibility)
         self.init_common()
 
-        self.sampb_mapped_points, \
-            self.sampb_radius, \
-            self.sampb_stroke_color = gl.glGenTextures(3)
+        self.sampb_mapped_points, self.sampb_radius, self.sampb_stroke_color = gl.glGenTextures(3)
 
         self.loc_mapped_points = gl.glGetUniformLocation(self.prog.glo, 'points')
         self.loc_radius = gl.glGetUniformLocation(self.prog.glo, 'radii')
@@ -85,7 +82,7 @@ class VItemCurveRenderer(Renderer):
                 item.points._points._data,
                 item.radius._radii._data,
                 item.stroke._rgbas._data,
-                item.fill._rgbas._data
+                item.fill._rgbas._data,
             )
 
     def init_common(self) -> None:
@@ -116,7 +113,7 @@ class VItemCurveRenderer(Renderer):
 
         render_data = self.data_ctx.get()
         new_attrs = self.RenderAttrs.get(render_data, item)
-        points_cnt_changed = self.attrs.points is None or len(new_attrs.points) != len(self.attrs.points)
+        points_cnt_changed = self.attrs.points is None or len(new_attrs.points) != len(self.attrs.points)  # fmt: skip
         resize_target = (len(new_attrs.points) + 1) // 2
 
         if len(new_attrs.points) < 3:
@@ -125,16 +122,20 @@ class VItemCurveRenderer(Renderer):
         self._update_others(item, render_data, new_attrs)
 
         if new_attrs.radius is not self.attrs.radius or points_cnt_changed:
-            self.update_dynamic_buffer_data(new_attrs.radius,
-                                            self.vbo_radius,
-                                            resize_target,
-                                            use_32bit_align=True)
+            self.update_dynamic_buffer_data(
+                new_attrs.radius,
+                self.vbo_radius,
+                resize_target,
+                use_32bit_align=True,
+            )
             self.attrs.radius = new_attrs.radius
 
         if new_attrs.stroke is not self.attrs.stroke or points_cnt_changed:
-            self.update_dynamic_buffer_data(new_attrs.stroke,
-                                            self.vbo_stroke_color,
-                                            resize_target)
+            self.update_dynamic_buffer_data(
+                new_attrs.stroke,
+                self.vbo_stroke_color,
+                resize_target,
+            )
             self.attrs.stroke = new_attrs.stroke
 
         if new_attrs.points is not self.attrs.points:
@@ -163,7 +164,7 @@ class VItemCurveRenderer(Renderer):
 
         render_data = self.data_ctx.get()
         new_attrs = self.RenderAttrs.get(render_data, item)
-        points_cnt_changed = self.attrs.points is None or len(new_attrs.points) != len(self.attrs.points)
+        points_cnt_changed = self.attrs.points is None or len(new_attrs.points) != len(self.attrs.points)  # fmt: skip
         resize_target = (len(new_attrs.points) + 1) // 2
 
         if len(new_attrs.points) < 3:
@@ -172,15 +173,19 @@ class VItemCurveRenderer(Renderer):
         self._update_others(item, render_data, new_attrs)
 
         if new_attrs.radius is not self.attrs.radius or points_cnt_changed:
-            self.update_dynamic_buffer_data(new_attrs.radius,
-                                            self.vbo_radius,
-                                            resize_target)
+            self.update_dynamic_buffer_data(
+                new_attrs.radius,
+                self.vbo_radius,
+                resize_target,
+            )
             self.attrs.radius = new_attrs.radius
 
         if new_attrs.stroke is not self.attrs.stroke or points_cnt_changed:
-            self.update_dynamic_buffer_data(new_attrs.stroke,
-                                            self.vbo_stroke_color,
-                                            resize_target)
+            self.update_dynamic_buffer_data(
+                new_attrs.stroke,
+                self.vbo_stroke_color,
+                resize_target,
+            )
             self.attrs.stroke = new_attrs.stroke
 
         if new_attrs.points is not self.attrs.points:
@@ -229,7 +234,7 @@ class VItemCurveRenderer(Renderer):
                 next_indices[-1] = curr_indices[0] if is_closed else -1
 
             indices_list.append(
-                np.vstack([prev_indices, curr_indices, next_indices]).T
+                np.vstack([prev_indices, curr_indices, next_indices]).T,
             )
 
         all_indices = indices_list[0] if len(indices_list) == 1 else np.vstack(indices_list)
@@ -241,11 +246,15 @@ class VItemCurveRenderer(Renderer):
         self.vbo_indices.write(bytes)
 
     def _update_points_compatibility(self, item: VItem, new_attrs: RenderAttrs) -> None:
-        if new_attrs.points is not self.attrs.points \
-                or new_attrs.fix_in_frame != self.attrs.fix_in_frame \
-                or new_attrs.camera_info is not self.attrs.camera_info:
+        if (
+            new_attrs.points is not self.attrs.points
+            or new_attrs.fix_in_frame != self.attrs.fix_in_frame
+            or new_attrs.camera_info is not self.attrs.camera_info
+        ):
             if new_attrs.fix_in_frame:
-                mapped = new_attrs.camera_info.map_fixed_in_frame_points_with_depth(new_attrs.points)
+                mapped = new_attrs.camera_info.map_fixed_in_frame_points_with_depth(
+                    new_attrs.points
+                )
             else:
                 mapped = new_attrs.camera_info.map_points_with_depth(new_attrs.points)
             mapped[:, :2] *= new_attrs.camera_info.frame_radius
@@ -277,16 +286,20 @@ class VItemCurveRenderer(Renderer):
 
             self.vbo_points.write(bytes)
 
-        if new_attrs.points is not self.attrs.points \
-                or new_attrs.fix_in_frame != self.attrs.fix_in_frame \
-                or new_attrs.camera_info is not self.attrs.camera_info:
+        if (
+            new_attrs.points is not self.attrs.points
+            or new_attrs.fix_in_frame != self.attrs.fix_in_frame
+            or new_attrs.camera_info is not self.attrs.camera_info
+        ):
             if self.vbo_points.size != self.vbo_mapped_points.size:
                 self.vbo_mapped_points.orphan(self.vbo_points.size)
 
             self.vbo_points.bind_to_storage_buffer(0)
             self.vbo_mapped_points.bind_to_storage_buffer(1)
             self.update_fix_in_frame(self.comp_u_fix, item)
-            self.comp.run(group_x=(len(new_attrs.points) + 255) // 256)     # 相当于 len() / 256 向上取整
+            self.comp.run(
+                group_x=(len(new_attrs.points) + 255) // 256
+            )  # 相当于 len() / 256 向上取整
 
             self.attrs.fix_in_frame = new_attrs.fix_in_frame
             self.attrs.camera_info = new_attrs.camera_info

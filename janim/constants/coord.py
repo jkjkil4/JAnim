@@ -1,3 +1,4 @@
+# fmt: off
 import numpy as np
 
 ORIGIN = np.array((0., 0., 0.))

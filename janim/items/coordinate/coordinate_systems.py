@@ -1,4 +1,3 @@
-
 from abc import ABCMeta, abstractmethod
 from typing import Callable, Iterable, Self
 
@@ -7,17 +6,18 @@ import numpy as np
 from janim.components.component import CmptInfo
 from janim.components.points import Cmpt_Points
 from janim.components.vpoints import Cmpt_VPoints
-from janim.constants import (BLUE, BLUE_D, DEGREES, DL, ORIGIN, OUT, PI, RIGHT,
-                             SMALL_BUFF, UP, WHITE)
+from janim.constants import BLUE, BLUE_D, DEGREES, DL, ORIGIN, OUT, PI, RIGHT, SMALL_BUFF, UP, WHITE
 from janim.items.coordinate.functions import ParametricCurve
 from janim.items.coordinate.number_line import NumberLine
 from janim.items.geometry.line import Line
 from janim.items.geometry.polygon import Polygon
+from janim.items.group import Group, NamedGroupMixin
 from janim.items.item import _ItemMeta
-from janim.items.points import Group, MarkedItem, Points
+from janim.items.points import MarkedItem, Points
 from janim.items.svg.typst import TypstMath
 from janim.items.vitem import DEFAULT_STROKE_RADIUS
 from janim.typing import JAnimColor, RangeSpecifier, Vect, VectArray
+from janim.utils.deprecation import deprecated_classvar
 from janim.utils.dict_ops import merge_dicts_recursively
 from janim.utils.space_ops import angle_of_vector, cross
 
@@ -30,11 +30,11 @@ class _ItemMeta_ABCMeta(_ItemMeta, ABCMeta):
 
 
 class CoordinateSystem(metaclass=ABCMeta):
-    '''
+    """
     坐标系统抽象类
 
     具体实现请参考 :class:`Axes` :class:`ThreeDAxes` 以及 :class:`NumberPlane`
-    '''
+    """
 
     def __init__(
         self,
@@ -49,16 +49,16 @@ class CoordinateSystem(metaclass=ABCMeta):
     def create_axis(
         range: RangeSpecifier,
         axis_config: dict,
-        length: float | None
+        length: float | None,
     ) -> NumberLine:
         axis = NumberLine(range, length=length, center=False, **axis_config)
         return axis
 
     @abstractmethod
     def get_axes(self) -> list[NumberLine]:
-        '''
+        """
         得到由各方向 :class:`~.NumberLine` 所组成的列表
-        '''
+        """
         pass
 
     def get_origin(self) -> np.ndarray:
@@ -66,42 +66,40 @@ class CoordinateSystem(metaclass=ABCMeta):
         return axes[0].mark.get()
 
     def coords_to_point(self, *coords: float) -> np.ndarray:
-        '''
+        """
         传入坐标得到对应的位置
 
         例如 ``c2p(1, 3)`` 得到 (1,3) 的位置
-        '''
+        """
         axes = self.get_axes()
         origin = self.get_origin()
         return origin + sum(
-            axis.number_to_point(coord) - origin
-            for axis, coord in zip(axes, coords)
+            axis.number_to_point(coord) - origin for axis, coord in zip(axes, coords)
         )
 
     def coords_array_to_points(self, coords_array: VectArray) -> np.ndarray:
-        '''
+        """
         传入一组坐标得到对应的一组位置
 
         例如 ``c2p([[1, 3], [2, 1], [-1, -1]])`` 得到对应的三个位置
-        '''
+        """
         axes = self.get_axes()
         origin = self.get_origin()
         coords_array = np.asarray(coords_array)
         return origin + sum(
-            axis.number_to_point(coord) - origin
-            for axis, coord in zip(axes, coords_array.T)
+            axis.number_to_point(coord) - origin for axis, coord in zip(axes, coords_array.T)
         )
 
     def c2p(self, *coords: float) -> np.ndarray:
-        ''':meth:`coords_to_point` 的缩写'''
+        """:meth:`coords_to_point` 的缩写"""
         return self.coords_to_point(*coords)
 
     def point_to_coords3d(self, point: Vect | Iterable[Vect]) -> np.ndarray:
-        '''
+        """
         传入位置得到对应的坐标（但是会扩张为三维坐标；对于二维坐标系来说，第三个分量则表示距离二维平面的距离）
 
         也可以传入一组位置得到一组对应的坐标
-        '''
+        """
         axes = self.get_axes()
         origin = self.get_origin()
         vectors = [axe.number_to_point(1) - origin for axe in axes]
@@ -113,43 +111,43 @@ class CoordinateSystem(metaclass=ABCMeta):
         return (point - origin) @ mat.T
 
     def p2c3d(self, point: Vect | Iterable[Vect]) -> np.ndarray:
-        ''':meth:`point_to_coords3d` 的简写'''
+        """:meth:`point_to_coords3d` 的简写"""
         return self.point_to_coords3d(point)
 
     def point_to_coords(self, point: Vect | Iterable[Vect]) -> np.ndarray:
-        '''
+        """
         传入位置得到对应坐标
 
         也可以传入一组位置得到一组对应的坐标
-        '''
+        """
         axes = self.get_axes()
-        return self.point_to_coords3d(point)[:len(axes)]
+        return self.point_to_coords3d(point)[: len(axes)]
 
     def p2c(self, point: Vect | Iterable[Vect]) -> np.ndarray:
-        ''':meth:`point_to_coords` 的缩写'''
+        """:meth:`point_to_coords` 的缩写"""
         return self.point_to_coords(point)
 
     def number_to_point(self, number: complex | float) -> np.ndarray:
-        '''传入复数得到对应位置'''
+        """传入复数得到对应位置"""
         number = complex(number)
         return self.coords_to_point(number.real, number.imag)
 
     def n2p(self, number: complex | float) -> np.ndarray:
-        ''':meth:`number_to_point` 的缩写'''
+        """:meth:`number_to_point` 的缩写"""
         return self.number_to_point(number)
 
     def point_to_number(self, point: Vect) -> complex:
-        '''传入位置得到对应复数'''
+        """传入位置得到对应复数"""
         x, y = self.point_to_coords3d(point)[:2]
         return complex(x, y)
 
     def p2n(self, point: Vect) -> complex:
-        ''':meth:`point_to_number` 的缩写'''
+        """:meth:`point_to_number` 的缩写"""
         return self.point_to_number(point)
 
 
-class Axes(CoordinateSystem, MarkedItem, Group, metaclass=_ItemMeta_ABCMeta):
-    '''
+class Axes(CoordinateSystem, MarkedItem, NamedGroupMixin, metaclass=_ItemMeta_ABCMeta):
+    """
     二维坐标轴
 
     -   ``num_sampled_graph_points_per_tick``:
@@ -181,14 +179,33 @@ class Axes(CoordinateSystem, MarkedItem, Group, metaclass=_ItemMeta_ABCMeta):
         指定横坐标与纵坐标的单位长度，如果指定了对应的 ``*_length`` 则会被忽略
 
         注：如果需要给某个坐标轴单独指定 ``unit_size``，请传入对应的 ``*_axis_config``
-    '''
+    """
 
-    axis_config_d = dict(
-        numbers_to_exclude=[0]
+    default_axis_config = dict(
+        numbers_to_exclude=[0],
     )
-    x_axis_config_d = {}
-    y_axis_config_d = dict(
+    default_x_axis_config = {}
+    default_y_axis_config = dict(
         line_to_number_direction=UP,
+    )
+
+    axis_config_d = deprecated_classvar(
+        default_axis_config,
+        'Axes.axis_config_d',
+        'Axes.default_axis_config',
+        remove=(4, 3),
+    )
+    x_axis_config_d = deprecated_classvar(
+        default_x_axis_config,
+        'Axes.x_axis_config_d',
+        'Axes.default_x_axis_config',
+        remove=(4, 3),
+    )
+    y_axis_config_d = deprecated_classvar(
+        default_y_axis_config,
+        'Axes.y_axis_config_d',
+        'Axes.default_y_axis_config',
+        remove=(4, 3),
     )
 
     def __init__(
@@ -205,60 +222,72 @@ class Axes(CoordinateSystem, MarkedItem, Group, metaclass=_ItemMeta_ABCMeta):
         height: float | None = None,
         width: float | None = None,
         unit_size: float = 1.0,
-        **kwargs
+        **kwargs,
     ):
         if height is not None:
             from janim.utils.deprecation import deprecated
+
             deprecated(
                 'height',
                 'y_length',
-                remove=(4, 3)
+                remove=(4, 3),
             )
             y_length = height
 
         if width is not None:
             from janim.utils.deprecation import deprecated
+
             deprecated(
                 'width',
                 'x_length',
-                remove=(4, 3)
+                remove=(4, 3),
             )
             x_length = width
 
         axis_config = dict(**axis_config, unit_size=unit_size)
 
-        self.x_axis = CoordinateSystem.create_axis(
+        x_axis = CoordinateSystem.create_axis(
             x_range,
             axis_config=merge_dicts_recursively(
-                self.axis_config_d,
-                self.x_axis_config_d,
+                self.default_axis_config,
+                self.default_x_axis_config,
                 axis_config,
-                x_axis_config
+                x_axis_config,
             ),
-            length=x_length
+            length=x_length,
         )
-        self.x_range = self.x_axis.x_range
+        self.x_range = x_axis.x_range
 
-        self.y_axis = CoordinateSystem.create_axis(
+        y_axis = CoordinateSystem.create_axis(
             y_range,
             axis_config=merge_dicts_recursively(
-                self.axis_config_d,
-                self.y_axis_config_d,
+                self.default_axis_config,
+                self.default_y_axis_config,
                 axis_config,
-                y_axis_config
+                y_axis_config,
             ),
-            length=y_length
+            length=y_length,
         )
-        self.y_axis.points.rotate(90 * DEGREES, about_point=ORIGIN)
-        self.y_range = self.y_axis.x_range
+        y_axis.points.rotate(90 * DEGREES, about_point=ORIGIN)
+        self.y_range = y_axis.x_range
 
         super().__init__(
-            self.x_axis,
-            self.y_axis,
+            named=dict(
+                x_axis=x_axis,
+                y_axis=y_axis,
+            ),
             num_sampled_graph_points_per_tick=num_sampled_graph_points_per_tick,
-            **kwargs
+            **kwargs,
         )
         self.mark.set_points([ORIGIN])
+
+    @property
+    def x_axis(self) -> NumberLine:
+        return self['x_axis']
+
+    @property
+    def y_axis(self) -> NumberLine:
+        return self['y_axis']
 
     def get_axes(self) -> list[NumberLine]:
         return [self.x_axis, self.y_axis]
@@ -269,9 +298,9 @@ class Axes(CoordinateSystem, MarkedItem, Group, metaclass=_ItemMeta_ABCMeta):
         x_range: RangeSpecifier | None = None,
         *,
         bind: bool = True,
-        **kwargs
+        **kwargs,
     ) -> ParametricCurve:
-        '''
+        """
         基于坐标轴的坐标构造函数曲线，使用 :class:`~.ParametricCurve`
 
         -   ``function``: 用于构造曲线的函数
@@ -293,10 +322,10 @@ class Axes(CoordinateSystem, MarkedItem, Group, metaclass=_ItemMeta_ABCMeta):
             因为会导致变换效果被重复作用，（一次由 :class:`~.Group` 导致的作用，另一次由 ``bind=True`` 导致的作用）
 
             如果你有放在同一个 :class:`~.Group` 里的需求，请传入 ``bind=False`` 以避免该情况
-        '''
+        """
         t_range = self.x_range.copy()
         if x_range is not None:
-            t_range[:len(x_range)] = x_range
+            t_range[: len(x_range)] = x_range
 
         if x_range is None or len(x_range) < 3:
             # 当用户没有指定采样步长（没有指定 x_range 或者 x_range 不包含 step 的部分）时
@@ -306,15 +335,17 @@ class Axes(CoordinateSystem, MarkedItem, Group, metaclass=_ItemMeta_ABCMeta):
         graph = ParametricCurve(
             lambda t: self.c2p(t, function(t)),
             t_range=tuple(t_range),
-            **kwargs
+            **kwargs,
         )
 
         if bind:
             Cmpt_Points.apply_points_fn.connect(
                 self.points,
-                lambda func, about_point: graph.points.apply_points_fn(func,
-                                                                       about_point=about_point,
-                                                                       about_edge=None)
+                lambda func, about_point: graph.points.apply_points_fn(
+                    func,
+                    about_point=about_point,
+                    about_edge=None,
+                ),
             )
 
         return graph
@@ -325,9 +356,9 @@ class Axes(CoordinateSystem, MarkedItem, Group, metaclass=_ItemMeta_ABCMeta):
         t_range: tuple[float, float, float] = (0, 1, 0.1),
         *,
         bind: bool = True,
-        **kwargs
+        **kwargs,
     ):
-        '''
+        """
         基于坐标轴的坐标构造参数曲线，即 :class:`~.ParametricCurve`
 
         - ``function``: 将值映射为坐标系上的一个点的参数函数
@@ -340,19 +371,21 @@ class Axes(CoordinateSystem, MarkedItem, Group, metaclass=_ItemMeta_ABCMeta):
             因为会导致变换效果被重复作用，（一次由 :class:`~.Group` 导致的作用，另一次由 ``bind=True`` 导致的作用）
 
             如果你有放在同一个 :class:`~.Group` 里的需求，请传入 ``bind=False`` 以避免该情况
-        '''
+        """
         graph = ParametricCurve(
             lambda t: self.coords_to_point(*function(t)),
             t_range,
-            **kwargs
+            **kwargs,
         )
 
         if bind:
             Cmpt_Points.apply_points_fn.connect(
                 self.points,
-                lambda func, about_point: graph.points.apply_points_fn(func,
-                                                                       about_point=about_point,
-                                                                       about_edge=None)
+                lambda func, about_point: graph.points.apply_points_fn(
+                    func,
+                    about_point=about_point,
+                    about_edge=None,
+                ),
             )
 
         return graph
@@ -366,15 +399,15 @@ class Axes(CoordinateSystem, MarkedItem, Group, metaclass=_ItemMeta_ABCMeta):
         stroke_alpha: float | None = None,
         fill_alpha: float | None = None,
         bounded_graph: ParametricCurve = None,
-        **kwargs
+        **kwargs,
     ) -> Polygon:
-        '''
+        """
         构造 ``x_range`` 区间内，``graph`` 与坐标轴所围成的区域，使用 :class:`~.Polygon` 表示
 
         - ``graph``: 函数曲线，另见 :meth:`get_graph`
         - ``x_range``: ``x`` 区间的最小值与最大值，``x_range = [x_min, x_max]``
         - ``bounded_graph``: 如果指定该参数，那么将会构造 ``graph`` 与 ``bounded_graph`` 所围成的区域，而非与坐标轴
-        '''
+        """
         if x_range is None:
             a, b, _ = graph.t_range
         else:
@@ -386,14 +419,14 @@ class Axes(CoordinateSystem, MarkedItem, Group, metaclass=_ItemMeta_ABCMeta):
                 graph.t_func(a),
                 *[p for p in graph.points.get_anchors() if a < self.p2c(p)[0] < b],
                 graph.t_func(b),
-                self.c2p(b)
+                self.c2p(b),
             ]
         else:
             graph_points, bounded_graph_points = (
                 [
                     g.t_func(a),
                     *[p for p in g.points.get_anchors() if a < self.p2c(p)[0] < b],
-                    g.t_func(b)
+                    g.t_func(b),
                 ]
                 for g in (graph, bounded_graph)
             )
@@ -405,7 +438,7 @@ class Axes(CoordinateSystem, MarkedItem, Group, metaclass=_ItemMeta_ABCMeta):
             alpha=alpha,
             stroke_alpha=stroke_alpha,
             fill_alpha=fill_alpha,
-            **kwargs
+            **kwargs,
         )
 
     def get_axis_labels(
@@ -416,11 +449,11 @@ class Axes(CoordinateSystem, MarkedItem, Group, metaclass=_ItemMeta_ABCMeta):
         y_kwargs: dict = {},
         **kwargs,
     ) -> Group[TypstMath | Points]:
-        '''
+        """
         详见 :meth:`~.NumberLine.get_axis_label`
 
         如果设置 ``ensure_on_screen=True``，坐标轴标签会自动调整位置移动到默认屏幕区域内
-        '''
+        """
         return Group(
             self.get_x_axis_label(x_label, **x_kwargs, **kwargs),
             self.get_y_axis_label(y_label, **y_kwargs, **kwargs),
@@ -429,37 +462,45 @@ class Axes(CoordinateSystem, MarkedItem, Group, metaclass=_ItemMeta_ABCMeta):
     def get_x_axis_label(
         self,
         label: str | Points = 'x',
-        **kwargs
+        **kwargs,
     ) -> TypstMath | Points:
-        '''
+        """
         详见 :meth:`~.NumberLine.get_axis_label`
 
         如果设置 ``ensure_on_screen=True``，坐标轴标签会自动调整位置移动到默认屏幕区域内
-        '''
+        """
         return self.x_axis.get_axis_label(label, **kwargs)
 
     def get_y_axis_label(
         self,
         label: str | Points = 'y',
-        **kwargs
+        **kwargs,
     ) -> TypstMath | Points:
-        '''
+        """
         详见 :meth:`~.NumberLine.get_axis_label`
 
         如果设置 ``ensure_on_screen=True``，坐标轴标签会自动调整位置移动到默认屏幕区域内
-        '''
+        """
         return self.y_axis.get_axis_label(label, **kwargs)
 
 
 class ThreeDAxes(Axes):
-    '''
+    """
     三维坐标轴
 
     - ``z_normal`` 表示 z 坐标轴上刻度和箭头标记的面向，默认面向 ``UP`` 方向
 
     其它可用参数请参考并类比 :class:`Axes` 的使用
-    '''
-    z_axis_config_d = {}
+    """
+
+    default_z_axis_config = {}
+
+    z_axis_config_d = deprecated_classvar(
+        default_z_axis_config,
+        'ThreeDAxes.z_axis_config_d',
+        'ThreeDAxes.default_z_axis_config',
+        remove=(4, 3),
+    )
 
     def __init__(
         self,
@@ -471,28 +512,34 @@ class ThreeDAxes(Axes):
         z_length: float | None = None,
         z_axis_config: dict = {},
         z_normal: Vect = UP,
-        **kwargs
+        **kwargs,
     ):
         super().__init__(x_range, y_range, axis_config=axis_config, **kwargs)
         self.z_normal_angle = angle_of_vector(z_normal)
 
-        self.z_axis = CoordinateSystem.create_axis(
+        z_axis = CoordinateSystem.create_axis(
             z_range,
             axis_config=merge_dicts_recursively(
-                self.axis_config_d,
-                self.z_axis_config_d,
+                self.default_axis_config,
+                self.default_z_axis_config,
                 axis_config,
-                z_axis_config
+                z_axis_config,
             ),
-            length=z_length
+            length=z_length,
         )
-        self.z_axis.points \
+        # fmt: off
+        z_axis.points \
             .rotate(-PI / 2, axis=UP, about_point=ORIGIN) \
             .rotate(self.z_normal_angle - PI, axis=OUT, about_point=ORIGIN) \
             .shift(self.x_axis.mark.get())
-        self.z_range = self.z_axis.x_range
+        # fmt: on
+        self.z_range = z_axis.x_range
 
-        self.add(self.z_axis)
+        self.add(z_axis=z_axis)
+
+    @property
+    def z_axis(self) -> NumberLine:
+        return self['z_axis']
 
     def get_axes(self) -> list[NumberLine]:
         return [*super().get_axes(), self.z_axis]
@@ -509,13 +556,13 @@ class ThreeDAxes(Axes):
         z_point_up: bool = True,
         **kwargs,
     ) -> Group[TypstMath | Points]:
-        '''
+        """
         详见 :meth:`~.NumberLine.get_axis_label`
 
         另外，在默认情况下 ``rotate_xy=True`` 会将 x、y 轴的标签原地旋转半圈，以匹配从 x、y、z 三个轴的正方向看向原点的视角
 
         以及，直接生成的 z 坐标轴标签会和 2D 平面平行，默认情况下 ``point_up=True`` 会将其立起来和 z 轴方向一致，传入 ``point_up=False`` 可禁用该行为
-        '''
+        """
         x_axis_label = self.get_x_axis_label(x_label, **x_kwargs, **kwargs)
         y_axis_label = self.get_y_axis_label(y_label, **y_kwargs, **kwargs)
         z_axis_label = self.get_z_axis_label(z_label, z_point_up, **z_kwargs, **kwargs)
@@ -530,24 +577,28 @@ class ThreeDAxes(Axes):
         self,
         label: str | Points = 'z',
         point_up: bool = True,
-        **kwargs
+        **kwargs,
     ) -> TypstMath | Points:
-        '''
+        """
         详见 :meth:`~.NumberLine.get_axis_label`
 
         另外，直接生成的坐标轴标签会和 2D 平面平行，默认情况下 ``point_up=True`` 会将其立起来和 z 轴方向一致，传入 ``point_up=False`` 可禁用该行为
-        '''
+        """
         label = self.z_axis.get_axis_label(label, **kwargs)
         if point_up:
             axis_end = self.z_axis.points.get_end()
+            # fmt: off
             label.points \
                 .rotate(PI / 2, axis=RIGHT, about_point=axis_end) \
                 .rotate(self.z_normal_angle + PI / 2, about_point=axis_end)
+            # fmt: on
         return label
 
 
 class CmptVPoints_NumberPlaneImpl(Cmpt_VPoints, impl=True):
-    def prepare_for_nonlinear_transform(self, num_inserted_curves: int = 50, *, root_only=False) -> Self:
+    def prepare_for_nonlinear_transform(
+        self, num_inserted_curves: int = 50, *, root_only=False
+    ) -> Self:
         for cmpt in self.walk_same_cmpt_of_self_and_descendants_without_mock(root_only):
             if not isinstance(cmpt, Cmpt_VPoints) or not cmpt.has():
                 continue
@@ -561,7 +612,7 @@ class CmptVPoints_NumberPlaneImpl(Cmpt_VPoints, impl=True):
 
 
 class NumberPlane(Axes):
-    '''
+    """
     坐标网格
 
     一般来说包含：
@@ -587,25 +638,44 @@ class NumberPlane(Axes):
             可调整成 ``1``，减少次要网格线的密集程度，或是直接设置成 ``0`` 来禁用次要网格线
 
     更多参数与方法另请参考 :class:`Axes`
-    '''
+    """
 
     points = CmptInfo(CmptVPoints_NumberPlaneImpl)
 
-    background_line_style_d = dict(
+    default_background_line_style = dict(
         stroke_color=BLUE_D,
         stroke_radius=0.01,
     )
-    axis_config_d = dict(
+    default_axis_config = dict(
         stroke_color=WHITE,
         stroke_radius=0.01,
         include_ticks=False,
         include_tip=False,
         line_to_number_buff=SMALL_BUFF,
-        line_to_number_direction=DL
-    )
-    y_axis_config_d = dict(
         line_to_number_direction=DL,
-        numbers_to_exclude=[0]
+    )
+    default_y_axis_config = dict(
+        line_to_number_direction=DL,
+        numbers_to_exclude=[0],
+    )
+
+    background_line_style_d = deprecated_classvar(
+        default_background_line_style,
+        'NumberPlane.background_line_style_d',
+        'NumberPlane.default_background_line_style',
+        remove=(4, 3),
+    )
+    axis_config_d = deprecated_classvar(
+        default_axis_config,
+        'NumberPlane.axis_config_d',
+        'NumberPlane.default_axis_config',
+        remove=(4, 3),
+    )
+    y_axis_config_d = deprecated_classvar(
+        default_y_axis_config,
+        'NumberPlane.y_axis_config_d',
+        'NumberPlane.default_y_axis_config',
+        remove=(4, 3),
     )
 
     def __init__(
@@ -616,17 +686,23 @@ class NumberPlane(Axes):
         # Defaults to a faded version of line_config
         faded_line_style: dict = {},
         faded_line_ratio: int = 4,
-        **kwargs
+        **kwargs,
     ):
-        super().__init__(
-            x_range,
-            y_range,
-            **kwargs
+        super().__init__(x_range, y_range, **kwargs)
+        self.background_line_style = merge_dicts_recursively(
+            self.default_background_line_style, background_line_style
         )
-        self.background_line_style = merge_dicts_recursively(self.background_line_style_d, background_line_style)
         self.faded_line_style = dict(faded_line_style)
         self.faded_line_ratio = faded_line_ratio
         self._init_background_lines()
+
+    @property
+    def background_lines(self) -> Group[Line]:
+        return self['background_lines']
+
+    @property
+    def faded_lines(self) -> Group[Line]:
+        return self['faded_lines']
 
     def _init_background_lines(self) -> None:
         if not self.faded_line_style:
@@ -641,28 +717,28 @@ class NumberPlane(Axes):
 
         x_lines1, x_lines2 = self.get_lines_parallel_to_axis(self.x_axis, self.y_axis)
         y_lines1, y_lines2 = self.get_lines_parallel_to_axis(self.y_axis, self.x_axis)
-        self.background_lines = Group(*x_lines1, *y_lines1)
-        self.faded_lines = Group(*x_lines2, *y_lines2)
+        background_lines = Group(*x_lines1, *y_lines1)
+        faded_lines = Group(*x_lines2, *y_lines2)
 
-        self.background_lines.set(**self.background_line_style)
-        self.faded_lines.set(**self.faded_line_style)
+        background_lines.set(**self.background_line_style)
+        faded_lines.set(**self.faded_line_style)
 
         self.add(
-            self.faded_lines,
-            self.background_lines,
-            insert=True
+            faded_lines=faded_lines,
+            background_lines=background_lines,
+            prepend=True,
         )
         self.depth.arrange()
 
     def get_lines_parallel_to_axis(
         self,
         axis1: NumberLine,
-        axis2: NumberLine
-    ) -> tuple[Group, Group]:
+        axis2: NumberLine,
+    ) -> tuple[Group[Line], Group[Line]]:
         freq = axis2.x_step
         ratio = self.faded_line_ratio
         line = Line(axis1.points.get_start(), axis1.points.get_end())
-        dense_freq = (1 + ratio)
+        dense_freq = 1 + ratio
         step = (1 / dense_freq) * freq
 
         lines1 = Group()

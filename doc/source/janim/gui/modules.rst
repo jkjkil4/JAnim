@@ -6,12 +6,20 @@ gui
 .. toctree::
    :maxdepth: 1
 
+   draw/modules.rst
    functions/modules.rst
+   handlers/modules.rst
+   output/modules.rst
+   popup/modules.rst
+   utils/modules.rst
    anim_viewer
    application
-   audio_player
-   fixed_ratio_widget
    glwidget
    label
-   precise_timer
    timeline_view
+
+.. automodule:: janim.gui.__init__
+   :members:
+   :undoc-members:
+   :show-inheritance:
+

@@ -50,7 +50,7 @@ class RefreshTest(unittest.TestCase):
 
         # 这里标记需要更新，所以 `get_data` 可以得到更新，并且调用次数变为 2
         # Marking for an update, so `get_data` gets updated, and the call count becomes 2
-        item.mark_refresh(item.get_data)
+        item.mark_refresh(item.get_data.__name__)
         self.assertEqual(item.cnt, 1)
         self.assertEqual(item.get_data(), 10)
         self.assertEqual(item.cnt, 2)

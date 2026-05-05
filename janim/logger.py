@@ -22,8 +22,10 @@ log.propagate = False
 log.setLevel('INFO')
 
 if not log.hasHandlers():
-    fmt = logging.Formatter("%(message)s", datefmt="[%X]")
-    rich_handler = RichHandler(console=Console(stderr=True))    # RichHandler 默认输出到 stdout，需要手动改为 stderr
+    fmt = logging.Formatter('%(message)s', datefmt='[%X]')
+    rich_handler = RichHandler(
+        console=Console(stderr=True)  # RichHandler 默认输出到 stdout，需要手动改为 stderr
+    )
     rich_handler.setFormatter(fmt)
     rich_handler.addFilter(Filter(lambda record: not getattr(record, 'raw', False)))
     log.addHandler(rich_handler)

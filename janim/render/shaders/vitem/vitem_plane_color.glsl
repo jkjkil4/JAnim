@@ -5,6 +5,11 @@
 //  vec4 get_color(int anchor_idx);
 //  vec4 get_fill(int anchor_idx);
 
+#include "vitem_plane_unit_normal_uniforms.glsl"
+
+uniform bool SHADE_IN_3D;
+#include "../../includes/shade.glsl"
+
 vec4 get_vitem_color(float stroke_d, float fill_sgn_d, int idx)
 {
     int anchor_idx = idx / 2;
@@ -29,6 +34,10 @@ vec4 get_vitem_color(float stroke_d, float fill_sgn_d, int idx)
     vec4 result_color = stroke_background
         ? blend_color(fill_color, stroke_color)
         : blend_color(stroke_color, fill_color);
+
+    if (SHADE_IN_3D) {
+        result_color.rgb = apply_light(result_color.rgb, start_point, unit_normal);
+    }
 
     if (glow_color.a != 0.0) {
         float glow_sgn_d = is_fill_transparent ? stroke_d : min(stroke_d, fill_sgn_d);

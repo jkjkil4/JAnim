@@ -3,14 +3,20 @@ import os
 doc_src_path = os.path.dirname(__file__)
 janim_path = os.path.abspath(os.path.join(doc_src_path, '../../janim'))
 
-generate_autodoc_exclude = ['janim.constants', 'janim.logger', 'janim.typing',
-                            'janim.cli', 'janim.examples', 'janim.locale']
+generate_autodoc_exclude = [
+    'janim.constants',
+    'janim.logger',
+    'janim.cli',
+    'janim.examples',
+    'janim.locale',
+    'janim.gui.charts',
+]
 force_generate_autodoc = False
 
 exclude_substrings = ['._', 'ui_']
 
 extra_include = {
-    'janim': ['constants']
+    'janim': ['constants'],
 }
 
 
@@ -20,10 +26,11 @@ def generate_autodoc(local_path: str, module_path: str) -> bool:
 
     search_path = os.path.join(janim_path, local_path)
     rst_path = os.path.join(doc_src_path, 'janim', local_path)
-    lst = os.listdir(search_path)
+    lst = sorted(os.listdir(search_path))
 
-    generated_dirs = []
-    generated_files = []
+    generated_dirs: list[str] = []
+    generated_files: list[str] = []
+    index_module: str | None = None
 
     for filename in lst:
         skip = False
@@ -40,9 +47,12 @@ def generate_autodoc(local_path: str, module_path: str) -> bool:
                 generated_dirs.append(filename)
 
         elif os.path.isfile(sub_path):
-            name = _generate_autodoc_file(module_path, filename, rst_path)
-            if name is not None:
-                generated_files.append(name)
+            if filename == '__init__.py':
+                index_module = f'{module_path}.__init__'
+            else:
+                name = _generate_autodoc_file(module_path, filename, rst_path)
+                if name is not None:
+                    generated_files.append(name)
 
         else:
             raise Exception(f'{sub_path} is not available')
@@ -50,7 +60,7 @@ def generate_autodoc(local_path: str, module_path: str) -> bool:
     if generated_dirs or generated_files:
         with open(os.path.join(rst_path, 'modules.rst'), 'w') as f_modules:
             try:
-                name = module_path[module_path.rindex('.') + 1:]
+                name = module_path[module_path.rindex('.') + 1 :]
             except ValueError:
                 name = module_path
 
@@ -74,6 +84,15 @@ def generate_autodoc(local_path: str, module_path: str) -> bool:
 
             for file in generated_files:
                 f_modules.write(f'   {file}\n')
+
+            if index_module is not None:
+                f_modules.write(
+                    '\n'
+                    f'.. automodule:: {index_module}\n'
+                    '   :members:\n'
+                    '   :undoc-members:\n'
+                    '   :show-inheritance:\n\n'
+                )
 
         return True
 

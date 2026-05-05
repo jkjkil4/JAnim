@@ -1,4 +1,3 @@
-
 import math
 import os
 from typing import Self
@@ -7,8 +6,7 @@ import numpy as np
 
 from janim.components.component import CmptInfo
 from janim.components.vpoints import Cmpt_VPoints
-from janim.constants import (DEFAULT_ITEM_TO_ITEM_BUFF, DOWN, LEFT, PI,
-                             SMALL_BUFF)
+from janim.constants import DEFAULT_ITEM_TO_ITEM_BUFF, DOWN, LEFT, PI, SMALL_BUFF
 from janim.items.points import Points
 from janim.items.svg.typst import TypstMath
 from janim.items.text import Text
@@ -20,20 +18,21 @@ from janim.utils.space_ops import normalize, rotation_about_z
 
 
 class Cmpt_VPoints_BraceImpl[ItemT](Cmpt_VPoints[ItemT], impl=True):
-    '''
+    """
     在 :class:`Brace` 中对 :class:`Cmpt_VPoints` 的进一步实现
-    '''
+    """
+
     # 复制时，``brace_length`` 随 ``copy.copy(self)`` 而复制，因此不用重写 ``copy`` 方法
     def match(
         self,
         item: Points | None,
         direction: Vect | None = None,
         buff: float = SMALL_BUFF,
-        root_only: bool = False
+        root_only: bool = False,
     ) -> Self:
-        '''
+        """
         将花括号进行伸缩，使得与 ``item`` 在 ``direction`` 方向的宽度匹配
-        '''
+        """
         if direction is None:
             direction = self.direction if self.has() else DOWN
 
@@ -73,28 +72,28 @@ class Cmpt_VPoints_BraceImpl[ItemT](Cmpt_VPoints[ItemT], impl=True):
 
             self.move_to(box.left + LEFT * (buff + self.box.width / 2))
 
-        self.apply_matrix(rot.T)     # rot.T == rot.I
+        self.apply_matrix(rot.T)  # rot.T == rot.I
 
         return self
 
     @property
     def tip_point(self) -> np.ndarray:
-        '''得到花括号中间凸出处的坐标'''
+        """得到花括号中间凸出处的坐标"""
         return self._points.data[get_brace_tip_point_index()]
 
     @property
     def brace_left(self) -> np.ndarray:
-        '''得到括号指向方向左边的尖端处的坐标'''
+        """得到括号指向方向左边的尖端处的坐标"""
         return self._points.data[get_brace_left_index()]
 
     @property
     def brace_right(self) -> np.ndarray:
-        '''得到括号指向方向右边的尖端处的坐标'''
+        """得到括号指向方向右边的尖端处的坐标"""
         return self._points.data[get_brace_right_index()]
 
     @property
     def direction(self) -> np.ndarray:
-        '''得到括号指向的方向'''
+        """得到括号指向的方向"""
         return normalize(self.tip_point - (self.brace_left + self.brace_right) / 2)
 
     def put_at_tip(
@@ -102,11 +101,11 @@ class Cmpt_VPoints_BraceImpl[ItemT](Cmpt_VPoints[ItemT], impl=True):
         item: Points,
         use_next_to: bool = True,
         buff: float = DEFAULT_ITEM_TO_ITEM_BUFF,
-        **kwargs
+        **kwargs,
     ) -> Self:
-        '''
+        """
         将物件放置在花括号中间的凸出处
-        '''
+        """
         cmpt = item.points
 
         if use_next_to:
@@ -114,32 +113,37 @@ class Cmpt_VPoints_BraceImpl[ItemT](Cmpt_VPoints[ItemT], impl=True):
                 self.tip_point,
                 np.round(self.direction),
                 buff=buff,
-                **kwargs
+                **kwargs,
             )
         else:
             cmpt.move_to(self.tip_point)
             shift_distance = cmpt.box.width * 0.5 + buff
             cmpt.shift(self.direction * shift_distance)
 
-    def create_text(self, text: str, buff: float = SMALL_BUFF, use_next_to: bool = True, **kwargs) -> Text:
-        '''创建一个位于花括号中间凸出处的文字'''
+    def create_text(
+        self, text: str, buff: float = SMALL_BUFF, use_next_to: bool = True, **kwargs
+    ) -> Text:
+        """创建一个位于花括号中间凸出处的文字"""
         txt = Text(text, **kwargs)
         self.put_at_tip(txt, use_next_to=use_next_to, buff=buff)
         return txt
 
-    def create_typst(self, typst: str, buff: float = SMALL_BUFF, use_next_to: bool = True, **kwargs) -> TypstMath:
-        '''创建一个位于花括号中间凸出处的 Typst 公式'''
+    def create_typst(
+        self, typst: str, buff: float = SMALL_BUFF, use_next_to: bool = True, **kwargs
+    ) -> TypstMath:
+        """创建一个位于花括号中间凸出处的 Typst 公式"""
         typ = TypstMath(typst, **kwargs)
         self.put_at_tip(typ, use_next_to=use_next_to, buff=buff)
         return typ
 
 
 class Brace(VItem):
-    '''
+    """
     花括号物件
 
     会匹配物件在 ``direction`` 方向的宽度
-    '''
+    """
+
     points = CmptInfo(Cmpt_VPoints_BraceImpl[Self])
 
     def __init__(
@@ -150,7 +154,7 @@ class Brace(VItem):
         root_only: bool = False,
         stroke_alpha: float = 0,
         fill_alpha: float = 1,
-        **kwargs
+        **kwargs,
     ):
         super().__init__(stroke_alpha=stroke_alpha, fill_alpha=fill_alpha, **kwargs)
         self.points.match(item, direction, buff, root_only)
@@ -169,7 +173,9 @@ _brace_paths: tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray] | None = Non
 def get_brace_unique_points() -> np.ndarray:
     global _brace_unique_points
     if _brace_unique_points is None:
-        _brace_unique_points = np.load(os.path.join(get_janim_dir(), 'items', 'svg', 'brace_unique.npy'))
+        _brace_unique_points = np.load(
+            os.path.join(get_janim_dir(), 'items', 'svg', 'brace_unique.npy')
+        )
         _brace_unique_points.setflags(write=False)
     return _brace_unique_points
 
@@ -197,14 +203,14 @@ def get_brace_tip_point_index() -> int:
     return _brace_tip_point_index
 
 
-def get_brace_left_index() -> int:      # 注：“left”表示“括号指向方向的左侧”，在原顶点数据中实为顶部
+def get_brace_left_index() -> int:  # 注：“left”表示“括号指向方向的左侧”，在原顶点数据中实为顶部
     global _brace_left_index
     if _brace_left_index is None:
         _brace_left_index = get_brace_unique_points()[:, 1].argmax()
     return _brace_left_index
 
 
-def get_brace_right_index() -> int:     # 注：“right”表示“括号指向方向的右侧”，在原顶点数据中实为底部
+def get_brace_right_index() -> int:  # 注：“right”表示“括号指向方向的右侧”，在原顶点数据中实为底部
     global _brace_right_index
     if _brace_right_index is None:
         _brace_right_index = get_brace_unique_points()[:, 1].argmin()
@@ -215,8 +221,11 @@ def get_brace_paths() -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
     global _brace_paths
 
     if _brace_paths is None:
+
         def get_path(i: int):
-            path: np.ndarray = np.load(os.path.join(get_janim_dir(), 'items', 'svg', f'brace_path{i}.npy'))
+            path: np.ndarray = np.load(
+                os.path.join(get_janim_dir(), 'items', 'svg', f'brace_path{i}.npy')
+            )
             path.setflags(write=False)
             return path
 

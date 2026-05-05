@@ -1,27 +1,24 @@
-
 import hashlib
 import os
 import subprocess as sp
 
 import typst
 
-from janim.exception import (EXITCODE_TYPST_COMPILE_ERROR,
-                             EXITCODE_TYPST_NOT_FOUND, ExitException)
-from janim.locale.i18n import get_local_strings
+from janim.exception import EXITCODE_TYPST_COMPILE_ERROR, EXITCODE_TYPST_NOT_FOUND, ExitException
+from janim.locale import get_translator
 from janim.logger import log
 from janim.utils.config import Config
-from janim.utils.file_ops import (get_janim_dir, get_typst_packages_dir,
-                                  get_typst_temp_dir)
+from janim.utils.file_ops import get_janim_dir, get_typst_packages_dir, get_typst_temp_dir
 
-_ = get_local_strings('typst_compile')
+_ = get_translator('janim.utils.typst_compile')
 
 _flag_use_external_typst = False
 
 
 def set_use_external_typst(flag: bool) -> None:
-    '''
+    """
     设置是否使用外部 Typst 可执行程序进行编译
-    '''
+    """
     global _flag_use_external_typst
     _flag_use_external_typst = flag
 
@@ -31,11 +28,11 @@ def compile_typst(
     shared_preamble: str,
     additional_preamble: str,
     vars: str,
-    sys_inputs: dict[str, str]
+    sys_inputs: dict[str, str],
 ) -> str:
-    '''
+    """
     编译 Typst 文档
-    '''
+    """
     sys_inputs_pairs = get_sys_inputs_pairs(sys_inputs)
 
     typst_temp_dir = get_typst_temp_dir()
@@ -44,7 +41,7 @@ def compile_typst(
         shared_preamble,
         additional_preamble,
         vars,
-        sys_inputs_pairs
+        sys_inputs_pairs,
     )
 
     svg_file_path = os.path.join(typst_temp_dir, hash_hex + '.svg')
@@ -55,21 +52,13 @@ def compile_typst(
         shared_preamble=shared_preamble,
         additional_preamble=additional_preamble,
         vars=vars,
-        typst_expression=text
+        typst_expression=text,
     )
 
     if _flag_use_external_typst:
-        _compile_typst_by_external_executable(
-            typst_content,
-            svg_file_path,
-            sys_inputs_pairs
-        )
+        _compile_typst_by_external_executable(typst_content, svg_file_path, sys_inputs_pairs)
     else:
-        _compile_typst_by_internal_package(
-            typst_content,
-            svg_file_path,
-            sys_inputs
-        )
+        _compile_typst_by_internal_package(typst_content, svg_file_path, sys_inputs)
 
     return svg_file_path
 
@@ -80,11 +69,11 @@ _typst_fonts: typst.Fonts | None = None
 def _compile_typst_by_internal_package(
     typst_content: str,
     svg_file_path: str,
-    sys_inputs: dict[str, str]
+    sys_inputs: dict[str, str],
 ) -> str:
-    '''
+    """
     通过 typst-py 包编译 Typst 文档
-    '''
+    """
     global _typst_fonts
     if _typst_fonts is None:
         _typst_fonts = typst.Fonts()
@@ -95,7 +84,7 @@ def _compile_typst_by_internal_package(
             output=svg_file_path,
             font_paths=_typst_fonts,
             package_path=get_typst_packages_dir(),
-            sys_inputs=sys_inputs
+            sys_inputs=sys_inputs,
         )
     except typst.TypstError as e:
         log.error(e.diagnostic.removesuffix('\n'), extra={'raw': True})
@@ -106,30 +95,34 @@ def _compile_typst_by_internal_package(
 def _compile_typst_by_external_executable(
     typst_content: str,
     svg_file_path: str,
-    sys_inputs_pairs: list[str]
+    sys_inputs_pairs: list[str],
 ) -> str:
-    '''
+    """
     通过外部可执行程序编译 Typst 文档
-    '''
+    """
     commands = [
         Config.get.typst_bin,
         'compile',
         '-',
         svg_file_path,
         '-f', 'svg',
-        '--package-path', get_typst_packages_dir()
-    ]
+        '--package-path', get_typst_packages_dir(),
+    ]  # fmt: skip
 
     for pair in sys_inputs_pairs:
         commands += [
             '--input', pair
-        ]
+        ]  # fmt: skip
 
     try:
         process = sp.Popen(commands, stdin=sp.PIPE)
     except FileNotFoundError:
-        log.error(_('Could not compile Typst document by external executable. '
-                    'Please install Typst and add it to the environment variables, or use internal Typst instead.'))
+        log.error(
+            _(
+                'Could not compile Typst document by external executable. '
+                'Please install Typst and add it to the environment variables, or use internal Typst instead.'
+            )
+        )
         raise ExitException(EXITCODE_TYPST_NOT_FOUND)
 
     process.stdin.write(typst_content.encode('utf-8'))
@@ -143,9 +136,9 @@ def _compile_typst_by_external_executable(
 
 
 def get_sys_inputs_pairs(sys_inputs: dict[str, str]) -> list[str]:
-    '''
+    """
     将 ``sys_inputs`` 字典转换为键值对字符串列表
-    '''
+    """
     return [f'{key}={value}' for key, value in sys_inputs.items()]
 
 
@@ -154,11 +147,11 @@ def compute_hash_hex(
     shared_preamble: str,
     additional_preamble: str,
     vars: str,
-    sys_inputs_pairs: list[str]
+    sys_inputs_pairs: list[str],
 ) -> str:
-    '''
+    """
     计算 Typst 文档的哈希值，用于缓存
-    '''
+    """
     md5 = hashlib.md5(text.encode())
     md5.update(shared_preamble.encode())
     md5.update(additional_preamble.encode())

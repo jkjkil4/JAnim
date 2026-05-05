@@ -16,3 +16,10 @@ janim
    constants
    exception
    imports
+   typing
+
+.. automodule:: janim.__init__
+   :members:
+   :undoc-members:
+   :show-inheritance:
+

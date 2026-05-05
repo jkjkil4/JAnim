@@ -1,11 +1,13 @@
 import os
 from argparse import ArgumentParser, Namespace
 
-from janim.locale.i18n import get_local_strings, set_lang
+from janim.locale import get_translator, set_lang
 from janim.utils.file_ops import get_janim_dir
 
-_ = get_local_strings('__main__')
+_ = get_translator('janim.__main__')
 
+
+# fmt: off
 
 def main() -> None:
     global _
@@ -16,9 +18,12 @@ def main() -> None:
 
     if initial_args.lang:
         set_lang(initial_args.lang)
-        _ = get_local_strings('__main__')
+        _ = get_translator('janim.__main__')
 
-    parser = ArgumentParser(description=_('A library for creating smooth animations'))
+    parser = ArgumentParser(
+        description=_('Programmatic animation engine '
+                      'for creating precise and smooth animations with real-time feedback')
+    )
     parser.set_defaults(func=None)
 
     parser.add_argument(
@@ -30,7 +35,9 @@ def main() -> None:
         action='store_true'
     )
     parser.add_argument(
-        '--loglevel', default='INFO', choices=['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'],
+        '--loglevel',
+        default='INFO',
+        choices=['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'],
         type=str.upper,
         help=_('Set the logging level (default: INFO)')
     )

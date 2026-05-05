@@ -208,13 +208,6 @@
 
     可以使用 ``for sub in group:`` 的形式来遍历子物件。
 
-    .. warning::
-
-        可以直接访问 ``.children`` 列表，但请勿直接删改，
-        应通过 :meth:`~.Relation.add` :meth:`~.Relation.remove` 等方法，否则会造成意料之外的效果。
-
-        这里暴露对 ``.children`` 的访问只是为了方便遍历等操作。
-
 -   它下面所有层，在这个例子中的绿色层和蓝色层的物件，被统称为 **后代物件**。
 
     可以使用 :meth:`~.Relation.descendants` 方法得知所有后代物件。

@@ -5,20 +5,19 @@ from pathlib import Path
 import moderngl as mgl
 
 from janim.exception import ShaderInjectionNotFoundError
-from janim.locale.i18n import get_local_strings
-from janim.utils.file_ops import (find_file, find_file_in_path, get_janim_dir,
-                                  readall)
+from janim.locale import get_translator
+from janim.utils.file_ops import find_file, find_file_in_path, get_janim_dir, readall
 
-_ = get_local_strings('shader')
+_ = get_translator('janim.render.shader')
 
 
 def read_shader(file_path: str) -> str:
     lines = []
     found_path = find_shader_file(file_path)
     max_version = _read_shader(found_path, lines)
-    lines.append('//')      # 避免可能出现在结尾的 #line 没有后续代码导致在部分平台上报错
+    lines.append('//')  # 避免可能出现在结尾的 #line 没有后续代码导致在部分平台上报错
     return (
-        f'#version {max_version} core\n'
+        f'#version {max_version} core\n'  #
         + '\n'.join(lines)
     )
 
@@ -30,9 +29,9 @@ def read_shader_or_none(file_path: str) -> str | None:
         return None
     lines = []
     max_version = _read_shader(found_path, lines)
-    lines.append('//')      # 避免可能出现在结尾的 #line 没有后续代码导致在部分平台上报错
+    lines.append('//')  # 避免可能出现在结尾的 #line 没有后续代码导致在部分平台上报错
     return (
-        f'#version {max_version} core\n'
+        f'#version {max_version} core\n'  #
         + '\n'.join(lines)
     )
 
@@ -72,9 +71,9 @@ def idx_to_name(idx: int) -> str | None:
 
 
 def convert_error_nameidx_to_name(error: mgl.Error) -> None:
-    '''
+    """
     将 ModernGL 报错信息中的 nameidx 转换为 name
-    '''
+    """
     if len(error.args) != 1:
         return
 
@@ -82,8 +81,9 @@ def convert_error_nameidx_to_name(error: mgl.Error) -> None:
 
     def replace_line(line: str) -> str:
         for regex in [
-            r'^(\d+)\(\d+\) : .*$',     # Windows?
-            r'^.*?: (\d+):\d+: .*$',    # macOS?
+            r'^(\d+)\(\d+\) : .*$',  # Windows?
+            r'^.*?: (\d+):\d+: .*$',  # macOS?
+            r'^(\d+):\d+\(\d+\): .*$',  # Linux?
         ]:
             match = re.match(regex, line)
             if not match:
@@ -128,7 +128,7 @@ def preprocess_shader(name: str, source: str, dir_path: str | None = None) -> st
     lines = []
     max_version = _preprocess_shader(name, source, lines, dir_path)
     return (
-        f'#version {max_version} core\n'
+        f'#version {max_version} core\n'  #
         + '\n'.join(lines)
     )
 
@@ -172,7 +172,7 @@ def _preprocess_shader(name: str, source: str, lines: list[str], dir_path: str |
     return max_version
 
 
-_injection_ja_finish_up = '''    if (!JA_BLENDING) {
+_injection_ja_finish_up = """    if (!JA_BLENDING) {
         vec2 coord = gl_FragCoord.xy / vec2(textureSize(JA_FRAMEBUFFER, 0));
         vec4 back = texture(JA_FRAMEBUFFER, coord);
         float a = f_color.a + back.a * (1 - f_color.a);
@@ -184,17 +184,21 @@ _injection_ja_finish_up = '''    if (!JA_BLENDING) {
             0.0, 1.0
         );
     }
-'''
+"""
 
-_injection_ja_finish_up_uniforms = '''uniform bool JA_BLENDING;
+_injection_ja_finish_up_uniforms = """uniform bool JA_BLENDING;
 uniform sampler2D JA_FRAMEBUFFER;
-'''
+"""
 
-shader_injections_ctx: ContextVar[list[dict[str, str]]] = ContextVar("shader_injections_ctx")
-shader_injections_ctx.set([{
-    'JA_FINISH_UP': _injection_ja_finish_up,
-    'JA_FINISH_UP_UNIFORMS': _injection_ja_finish_up_uniforms
-}])
+shader_injections_ctx: ContextVar[list[dict[str, str]]] = ContextVar('shader_injections_ctx')
+shader_injections_ctx.set(
+    [
+        {
+            'JA_FINISH_UP': _injection_ja_finish_up,
+            'JA_FINISH_UP_UNIFORMS': _injection_ja_finish_up_uniforms,
+        }
+    ]
+)
 
 
 class ShaderInjection:
@@ -215,10 +219,7 @@ class ShaderInjection:
         for injection in reversed(shader_injections_ctx.get()):
             if name in injection:
                 return injection[name]
-        raise ShaderInjectionNotFoundError(
-            _('ShaderInjection not found: {name}')
-            .format(name=name)
-        )
+        raise ShaderInjectionNotFoundError(_('ShaderInjection not found: {name}').format(name=name))
 
 
 def _read_shader_from_injection(name: str, lines: list[str]) -> None:

@@ -1,11 +1,9 @@
-
 from typing import Callable, Iterable
 
 import numpy as np
 
 from janim.anims.updater import DataUpdater, GroupUpdater, UpdaterParams
-from janim.constants import (C_LABEL_ANIM_STAY, DEFAULT_ITEM_TO_ITEM_BUFF,
-                             ORIGIN, RIGHT)
+from janim.constants import C_LABEL_ANIM_STAY, DEFAULT_ITEM_TO_ITEM_BUFF, ORIGIN, RIGHT
 from janim.items.item import Item
 from janim.items.points import Points
 from janim.items.vitem import VItem
@@ -13,28 +11,28 @@ from janim.typing import Vect
 
 
 class Homotopy(DataUpdater):
-    '''
-    一个从 (x, y, z, t) 到 (x', y', z') 的函数
+    """
+    一个从 ``(x, y, z, t)`` 到 ``(x', y', z')`` 的函数
 
-    t 的取值范围是 [0, 1]，表示动画进度
-    '''
+    ``t`` 的取值范围是 ``[0, 1]``，表示动画进度
+
+    .. janim-example:: HomotopyExample
+        :extract-from-test:
+        :media: _static/videos/HomotopyExample.mp4
+        :url: https://janim.readthedocs.io/zh-cn/latest/janim/anims/movement.html#homotopyexample
+    """
+
     def __init__(
         self,
         item: Item,
         homotopy: Callable[[float, float, float, float], Vect],
         *,
-        duration: float = 3.,
+        duration: float = 3.0,
         root_only: bool = False,
-        **kwargs
+        **kwargs,
     ):
         self.homotopy = homotopy
-        super().__init__(
-            item,
-            self.updater,
-            duration=duration,
-            root_only=root_only,
-            **kwargs
-        )
+        super().__init__(item, self.updater, duration=duration, root_only=root_only, **kwargs)
 
     def updater(self, data: Item, p: UpdaterParams) -> None:
         if not isinstance(data, Points):
@@ -48,14 +46,20 @@ class Homotopy(DataUpdater):
 
 
 class ComplexHomotopy(Homotopy):
-    '''
-    与 Homotopy 类似，区别是用复数描述坐标
-    '''
+    """
+    与 :class:`Homotopy` 类似，区别是用复数描述坐标
+
+    .. janim-example:: ComplexHomotopyExample
+        :extract-from-test:
+        :media: _static/videos/ComplexHomotopyExample.mp4
+        :url: https://janim.readthedocs.io/zh-cn/latest/janim/anims/movement.html#complexhomotopyexample
+    """
+
     def __init__(
         self,
         item: Item,
         complex_homotopy: Callable[[complex, float], complex],
-        **kwargs
+        **kwargs,
     ):
         def homotopy(x, y, z, t):
             c = complex_homotopy(complex(x, y), t)
@@ -65,6 +69,13 @@ class ComplexHomotopy(Homotopy):
 
 
 class MoveAlongPath(DataUpdater):
+    """
+    .. janim-example:: MoveAlongPathExample
+        :extract-from-test:
+        :media: _static/videos/MoveAlongPathExample.mp4
+        :url: https://janim.readthedocs.io/zh-cn/latest/janim/anims/movement.html#movealongpathexample
+    """
+
     label_color = C_LABEL_ANIM_STAY
 
     def __init__(
@@ -73,7 +84,7 @@ class MoveAlongPath(DataUpdater):
         path: VItem,
         *,
         root_only: bool = False,
-        **kwargs
+        **kwargs,
     ):
         self.path = path
         if root_only:
@@ -81,12 +92,7 @@ class MoveAlongPath(DataUpdater):
         else:
             self.center = item(Points).points.box.center
 
-        super().__init__(
-            item,
-            self.updater,
-            root_only=root_only,
-            **kwargs
-        )
+        super().__init__(item, self.updater, root_only=root_only, **kwargs)
 
     def updater(self, data: Item, p: UpdaterParams) -> None:
         if not isinstance(data, Points):
@@ -95,6 +101,13 @@ class MoveAlongPath(DataUpdater):
 
 
 class Follow(GroupUpdater[Points]):
+    """
+    .. janim-example:: FollowExample
+        :extract-from-test:
+        :media: _static/videos/FollowExample.mp4
+        :url: https://janim.readthedocs.io/zh-cn/latest/janim/anims/movement.html#followexample
+    """
+
     def __init__(
         self,
         item: Points,
@@ -104,15 +117,17 @@ class Follow(GroupUpdater[Points]):
         aligned_edge: Vect = ORIGIN,
         coor_mask: Iterable = (1, 1, 1),
         item_root_only: bool = False,
-        **kwargs
+        **kwargs,
     ):
         super().__init__(
             item,
-            lambda g, p: g.points.next_to(other.current(),
-                                          direction,
-                                          buff=buff,
-                                          aligned_edge=aligned_edge,
-                                          coor_mask=coor_mask,
-                                          item_root_only=item_root_only),
-            **kwargs
+            lambda g, p: g.points.next_to(
+                other.current(),
+                direction,
+                buff=buff,
+                aligned_edge=aligned_edge,
+                coor_mask=coor_mask,
+                item_root_only=item_root_only,
+            ),
+            **kwargs,
         )

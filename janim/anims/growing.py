@@ -5,17 +5,21 @@ from typing import Callable
 import numpy as np
 
 from janim.anims.updater import DataUpdater, GroupUpdater, UpdaterParams
-from janim.constants import (C_LABEL_ANIM_ABSTRACT, C_LABEL_ANIM_IN,
-                             C_LABEL_ANIM_OUT, PI)
+from janim.constants import C_LABEL_ANIM_ABSTRACT, C_LABEL_ANIM_IN, C_LABEL_ANIM_OUT, PI
 from janim.items.geometry.arrow import Arrow
 from janim.items.points import Points
 from janim.utils.rate_functions import rush_into
 
 
 class GrowFromPoint(DataUpdater[Points]):
-    '''
+    """
     从指定的位置放大显现
-    '''
+
+    .. janim-example:: GrowFromPointExample
+        :extract-from-test:
+        :media: _static/videos/GrowFromPointExample.mp4
+        :url: https://janim.readthedocs.io/zh-cn/latest/janim/anims/growing.html#growfrompointexample
+    """
 
     label_color = C_LABEL_ANIM_IN
 
@@ -24,20 +28,27 @@ class GrowFromPoint(DataUpdater[Points]):
         item: Points,
         point: np.ndarray,
         root_only: bool = False,
-        **kwargs
+        **kwargs,
     ):
         self.point = point
         super().__init__(
             item,
             lambda data, p: data.points.scale(p.alpha, about_point=point),
             root_only=root_only,
-            become_at_end=False,    # 因为最终状态和原状态没有区别，所以不需要 become_at_end，并且也不暴露参数
+            become_at_end=False,  # 因为最终状态和原状态没有区别，所以不需要 become_at_end，并且也不暴露参数
             **kwargs,
         )
 
 
 class GrowFromCenter(GrowFromPoint):
-    '''从物件的中心放大显现'''
+    """
+    从物件的中心放大显现
+
+    .. janim-example:: GrowFromCenterExample
+        :extract-from-test:
+        :media: _static/videos/GrowFromCenterExample.mp4
+        :url: https://janim.readthedocs.io/zh-cn/latest/janim/anims/growing.html#growfromcenterexample
+    """
 
     def __init__(self, item: Points, **kwargs):
         point = item.points.box.center
@@ -45,7 +56,14 @@ class GrowFromCenter(GrowFromPoint):
 
 
 class GrowFromEdge(GrowFromPoint):
-    '''从物件的指定边角放大显现'''
+    """
+    从物件的指定边角放大显现
+
+    .. janim-example:: GrowFromEdgeExample
+        :extract-from-test:
+        :media: _static/videos/GrowFromEdgeExample.mp4
+        :url: https://janim.readthedocs.io/zh-cn/latest/janim/anims/growing.html#growfromedgeexample
+    """
 
     def __init__(self, item: Points, edge: np.ndarray, **kwargs):
         point = item.points.box.get(edge)
@@ -53,9 +71,14 @@ class GrowFromEdge(GrowFromPoint):
 
 
 class ShrinkToPoint(DataUpdater[Points]):
-    '''
+    """
     缩小到指定的位置消失
-    '''
+
+    .. janim-example:: ShrinkToPointExample
+        :extract-from-test:
+        :media: _static/videos/ShrinkToPointExample.mp4
+        :url: https://janim.readthedocs.io/zh-cn/latest/janim/anims/growing.html#shrinktopointexample
+    """
 
     label_color = C_LABEL_ANIM_OUT
 
@@ -66,7 +89,7 @@ class ShrinkToPoint(DataUpdater[Points]):
         root_only: bool = False,
         hide_at_end: bool = True,
         become_at_end: bool = False,
-        **kwargs
+        **kwargs,
     ):
         self.point = point
         super().__init__(
@@ -80,7 +103,14 @@ class ShrinkToPoint(DataUpdater[Points]):
 
 
 class ShrinkToCenter(ShrinkToPoint):
-    '''缩小到物件的中心消失'''
+    """
+    缩小到物件的中心消失
+
+    .. janim-example:: ShrinkToCenterExample
+        :extract-from-test:
+        :media: _static/videos/ShrinkToCenterExample.mp4
+        :url: https://janim.readthedocs.io/zh-cn/latest/janim/anims/growing.html#shrinktocenterexample
+    """
 
     def __init__(self, item: Points, **kwargs):
         point = item.points.box.center
@@ -88,7 +118,14 @@ class ShrinkToCenter(ShrinkToPoint):
 
 
 class ShrinkToEdge(ShrinkToPoint):
-    '''缩小到物件的指定边角消失'''
+    """
+    缩小到物件的指定边角消失
+
+    .. janim-example:: ShrinkToEdgeExample
+        :extract-from-test:
+        :media: _static/videos/ShrinkToEdgeExample.mp4
+        :url: https://janim.readthedocs.io/zh-cn/latest/janim/anims/growing.html#shrinktoedgeexample
+    """
 
     def __init__(self, item: Points, edge: np.ndarray, **kwargs):
         point = item.points.box.get(edge)
@@ -96,37 +133,45 @@ class ShrinkToEdge(ShrinkToPoint):
 
 
 class SpinInFromNothing(GrowFromCenter):
-    '''从物件的中心旋转半圈放大显现'''
+    """
+    从物件的中心旋转半圈放大显现
+
+    .. janim-example:: SpinInFromNothingExample
+        :extract-from-test:
+        :media: _static/videos/SpinInFromNothingExample.mp4
+        :url: https://janim.readthedocs.io/zh-cn/latest/janim/anims/growing.html#spininfromnothingexample
+    """
 
     def __init__(self, item: Points, *, path_arc=PI / 2, **kwargs):
         super().__init__(item, **kwargs)
         self.add_post_updater(
-            lambda data, p: data.points.rotate(
-                path_arc * (p.alpha - 1), about_point=self.point
-            )
+            lambda data, p: data.points.rotate(path_arc * (p.alpha - 1), about_point=self.point)
         )
 
 
 class SpinOutToNothing(ShrinkToCenter):
-    '''向物件的中心旋转半圈缩小消失'''
+    """
+    向物件的中心旋转半圈缩小消失
+
+    .. janim-example:: SpinOutToNothingExample
+        :extract-from-test:
+        :media: _static/videos/SpinOutToNothingExample.mp4
+        :url: https://janim.readthedocs.io/zh-cn/latest/janim/anims/growing.html#spinouttonothingexample
+    """
 
     def __init__(self, item: Points, *, path_arc=PI / 2, rate_func=rush_into, **kwargs):
         super().__init__(item, rate_func=rate_func, **kwargs)
         self.add_post_updater(
-            lambda data, p: data.points.rotate(
-                path_arc * p.alpha, about_point=self.point
-            )
+            lambda data, p: data.points.rotate(path_arc * p.alpha, about_point=self.point)
         )
 
 
 class GrowArrowByBoundFunc(GroupUpdater):
-    ''':class:`GrowArrow` 和 :class:`GrowDoubleArrow` 的基类'''
+    """:class:`GrowArrow` 和 :class:`GrowDoubleArrow` 的基类"""
 
     label_color = C_LABEL_ANIM_ABSTRACT
 
-    def __init__(
-        self, arrow: Arrow, bound_func: Callable[[float], tuple[float, float]], **kwargs
-    ):
+    def __init__(self, arrow: Arrow, bound_func: Callable[[float], tuple[float, float]], **kwargs):
         super().__init__(arrow, self.updater, **kwargs)
         self.arrow = arrow
         self.bound_func = bound_func
@@ -137,7 +182,14 @@ class GrowArrowByBoundFunc(GroupUpdater):
 
 
 class GrowArrow(GrowArrowByBoundFunc):
-    '''显示箭头的显现过程，从开头到结尾画出，并自动调整箭头标志位置'''
+    """
+    显示箭头的显现过程，从开头到结尾画出，并自动调整箭头标志位置
+
+    .. janim-example:: GrowArrowExample
+        :extract-from-test:
+        :media: _static/videos/GrowArrowExample.mp4
+        :url: https://janim.readthedocs.io/zh-cn/latest/janim/anims/growing.html#growarrowexample
+    """
 
     label_color = C_LABEL_ANIM_IN
 
@@ -146,11 +198,16 @@ class GrowArrow(GrowArrowByBoundFunc):
 
 
 class GrowDoubleArrow(GrowArrowByBoundFunc):
-    '''
+    """
     显示箭头的显现过程，默认从中间向两边显现，并自动调整箭头标志位置
 
     - 传入 ``start_ratio`` （默认 ``0.5``） 可以调整开始的位置
-    '''
+
+    .. janim-example:: GrowDoubleArrowExample
+        :extract-from-test:
+        :media: _static/videos/GrowDoubleArrowExample.mp4
+        :url: https://janim.readthedocs.io/zh-cn/latest/janim/anims/growing.html#growdoublearrowexample
+    """
 
     label_color = C_LABEL_ANIM_IN
 

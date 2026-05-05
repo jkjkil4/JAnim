@@ -8,6 +8,8 @@ import sys
 
 from janim import __version__
 
+os.environ['JANIM_SPHINX_BUILD'] = '1'
+
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
@@ -28,17 +30,19 @@ extensions = [
     'extensions.code_desc_ext',
     'extensions.translatable_tab_ext',
     'extensions.random_choice',
+    'extensions.gettext_filters',
 ]
 autodoc_member_order = 'bysource'
 # autodoc_default_flags = ['members', 'show-inheritance']
+# autodoc_inherit_docstrings = False
 
 templates_path = ['_templates']
 exclude_patterns = ['._*', '**/._*']
 
 language = 'zh_CN'
 locale_dirs = ['locales/']
-gettext_compact = False     # optional
-gettext_additional_targets = ["literal-block"]  # make code-block translatable
+gettext_compact = False  # optional
+gettext_additional_targets = ['literal-block']  # make code-block translatable
 
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
@@ -51,7 +55,10 @@ html_css_files = [
     'custom.css',
     'animation_timing_example.css',
     'janim_box.css',
-    'random_choice.css'
+    'random_choice.css',
+]
+html_js_files = [
+    'auto-scroll-current.js',
 ]
 html_favicon = '_static/favicon.ico'
 

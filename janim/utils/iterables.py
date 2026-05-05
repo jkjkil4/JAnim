@@ -1,13 +1,13 @@
 from __future__ import annotations
 
-import types
 import itertools as it
+import types
 from typing import Callable, Iterable, Sequence, TypeVar, overload
 
 import numpy as np
 
-T = TypeVar("T")
-S = TypeVar("S")
+T = TypeVar('T')
+S = TypeVar('S')
 
 type ResizeFunc = Callable[[np.ndarray, int], np.ndarray]
 
@@ -46,10 +46,12 @@ def list_difference_update(l1: Iterable[T], l2: Iterable[T]) -> list[T]:
 
 
 def adjacent_n_tuples(objects: Iterable[T], n: int) -> zip[tuple[T, T]]:
-    return zip(*[
-        [*objects[k:], *objects[:k]]
-        for k in range(n)
-    ])
+    return zip(
+        *[
+            [*objects[k:], *objects[:k]]  #
+            for k in range(n)
+        ]
+    )
 
 
 def adjacent_pairs(objects: Iterable[T]) -> zip[tuple[T, T]]:
@@ -58,7 +60,7 @@ def adjacent_pairs(objects: Iterable[T]) -> zip[tuple[T, T]]:
 
 def batch_by_property(
     items: Iterable[T],
-    property_func: Callable[[T], S]
+    property_func: Callable[[T], S],
 ) -> list[tuple[T, S]]:
     """
     Takes in a list, and returns a list of tuples, (batch, prop)
@@ -104,13 +106,15 @@ def resize_array(nparray: np.ndarray, length: int) -> np.ndarray:
 @overload
 def resize_preserving_order(array: np.ndarray, length: int) -> np.ndarray: ...
 @overload
-def resize_preserving_order[T](array: list[T], length: int, fall_back: Callable = types.NoneType) -> list[T]: ...
+def resize_preserving_order[T](
+    array: list[T], length: int, fall_back: Callable = types.NoneType
+) -> list[T]: ...
 
 
 def resize_preserving_order(
     array: np.ndarray | list,
     length: int,
-    fall_back: Callable = types.NoneType
+    fall_back: Callable = types.NoneType,
 ):
     if isinstance(array, np.ndarray):
         if len(array) == 0:
@@ -149,7 +153,7 @@ def resize_preserving_order_indice_groups(len1: int, len2: int) -> list[list[int
 
 def resize_preserving_head_and_tail(
     array: np.ndarray,
-    length: int
+    length: int,
 ):
     indices = np.round(np.linspace(0, len(array) - 1, length)).astype(int)
     if len(array) == 0:
@@ -162,11 +166,11 @@ def resize_preserving_head_and_tail(
 def resize_and_repeatedly_extend(
     array: np.ndarray,
     length: int,
-    fall_back: Callable[[int], np.ndarray] = lambda length: np.zeros((length, 3))
+    fall_back: Callable[[int], np.ndarray] = lambda length: np.zeros((length, 3)),
 ) -> np.ndarray:
-    '''
+    """
     注意：这个函数在 length <= len(array) 时，不会产生 array 的拷贝
-    '''
+    """
     if length == len(array):
         return array
 
@@ -178,10 +182,12 @@ def resize_and_repeatedly_extend(
             return fall_back(length)
 
         # len(array) != 0
-        return np.vstack([
-            array,
-            np.repeat([array[-1]], length - len(array), axis=0)
-        ])
+        return np.vstack(
+            [
+                array,
+                np.repeat([array[-1]], length - len(array), axis=0),
+            ]
+        )
 
 
 def resize_with_interpolation(nparray: np.ndarray, length: int) -> np.ndarray:
@@ -202,7 +208,7 @@ def resize_with_interpolation(nparray: np.ndarray, length: int) -> np.ndarray:
 
 def make_even(
     iterable_1: Sequence[T],
-    iterable_2: Sequence[S]
+    iterable_2: Sequence[S],
 ) -> tuple[list[T], list[S]]:
     len1 = len(iterable_1)
     len2 = len(iterable_2)
@@ -211,7 +217,7 @@ def make_even(
     new_len = max(len1, len2)
     return (
         [iterable_1[(n * len1) // new_len] for n in range(new_len)],
-        [iterable_2[(n * len2) // new_len] for n in range(new_len)]
+        [iterable_2[(n * len2) // new_len] for n in range(new_len)],
     )
 
 

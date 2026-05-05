@@ -13,7 +13,7 @@ uniform bool is_fill_transparent;
 uniform vec4 glow_color;
 uniform float glow_size;
 
-uniform vec2 shrink; // (left_length, right_length)
+uniform vec2 shrink; // (left_ratio, right_ratio)
 
 const float INFINITY = uintBitsToFloat(0x7F800000);
 
@@ -61,17 +61,17 @@ void main()
         start_idx += 2;
     }
 
-    float shrink_left_length = -1.0;
-    float shrink_right_length = -1.0;
+    float shrink_left_ratio = -1.0;
+    float shrink_right_ratio = -1.0;
     if (idx == 0) {
-        shrink_left_length = shrink.x;
+        shrink_left_ratio = shrink.x;
     }
     if (idx == lim - 2) {
-        shrink_right_length = shrink.y;
+        shrink_right_ratio = shrink.y;
     }
     f_color = get_arrow_color(
         stroke_d, fill_d * fill_sgn, idx,
-        shrink_left_length, shrink_right_length
+        shrink_left_ratio, shrink_right_ratio
     );
     compute_depth_if_needed();
 

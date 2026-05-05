@@ -22,4 +22,3 @@ msgstr ""
 #: ../../source/janim/render/texture.rst:2
 msgid "texture"
 msgstr "texture"
-

@@ -9,27 +9,26 @@ from typing import Any, Callable, Self
 from tqdm import tqdm as ProgressDisplay
 
 from janim.anims.anim_stack import AnimStack
-from janim.anims.animation import (FOREVER, Animation, ApplyAligner,
-                                   ItemAnimation, TimeRange)
-from janim.anims.method_updater_meta import (METHOD_UPDATER_KEY,
-                                             MethodUpdaterInfo)
+from janim.anims.animation import FOREVER, Animation, ApplyAligner, ItemAnimation, TimeRange
+from janim.anims.method_updater_meta import METHOD_UPDATER_KEY, MethodUpdaterInfo
 from janim.components.component import Component
 from janim.constants import C_LABEL_ANIM_ABSTRACT
 from janim.exception import UpdaterError
 from janim.items.item import Item
-from janim.locale.i18n import get_local_strings
+from janim.locale import get_translator
 from janim.render.base import Renderer
 from janim.utils.rate_functions import RateFunc, linear
 from janim.utils.simple_functions import clip
 
-_ = get_local_strings('updater')
+_ = get_translator('janim.anims.updater')
 
 
 @dataclass
 class UpdaterParams:
-    '''
+    """
     ``Updater`` 调用时会传递的参数，用于标注时间信息以及动画进度
-    '''
+    """
+
     global_t: float
     alpha: float
     range: TimeRange
@@ -51,10 +50,12 @@ class UpdaterParams:
 
 @dataclass
 class StepUpdaterParams:
-    '''
+    """
     :class:`StepUpdater` 调用时会传递的参数，用于标注时间信息以及动画进度
-    '''
+    """
+
     global_t: float
+    dt: float
     range: TimeRange
     n: int
 
@@ -73,7 +74,7 @@ updater_params_ctx: ContextVar[UpdaterParams] = ContextVar('updater_params_ctx')
 type DataUpdaterFn[T] = Callable[[T, UpdaterParams], Any]
 type GroupUpdaterFn[T] = Callable[[T, UpdaterParams], Any]
 type ItemUpdaterFn = Callable[[UpdaterParams], Item]
-type StepUpdaterFn[T] = Callable[[T, UpdaterParams], Any]
+type StepUpdaterFn[T] = Callable[[T, StepUpdaterParams], Any]
 
 
 def _call_two_func(func1: Callable, func2: Callable, *args, **kwargs) -> None:
@@ -82,7 +83,7 @@ def _call_two_func(func1: Callable, func2: Callable, *args, **kwargs) -> None:
 
 
 class DataUpdater[T: Item](Animation):
-    '''
+    """
     以时间为参数对物件的数据进行修改
 
     例如：
@@ -110,7 +111,8 @@ class DataUpdater[T: Item](Animation):
         默认 ``root_only=True`` 即只对根物件应用该 updater；需要设置 ``root_only=False`` 才会对所有后代物件也应用该 updater
 
     另见 :ref:`basic_examples` 中的 ``UpdaterExample``
-    '''
+    """
+
     label_color = C_LABEL_ANIM_ABSTRACT
 
     def __init__(
@@ -125,7 +127,7 @@ class DataUpdater[T: Item](Animation):
         become_at_end: bool = True,
         skip_null_items: bool = True,
         root_only: bool = True,
-        **kwargs
+        **kwargs,
     ):
         super().__init__(**kwargs)
         self.item = item
@@ -157,15 +159,17 @@ class DataUpdater[T: Item](Animation):
         for i, item in enumerate(items):
             stack = self.timeline.item_appearances[item].stack
 
-            sub_updater = _DataUpdater(self,
-                                       item,
-                                       self.func,
-                                       self.extra(item),
-                                       self.lag_ratio,
-                                       i,
-                                       count,
-                                       show_at_begin=self.show_at_begin,
-                                       hide_at_end=self.hide_at_end)
+            sub_updater = _DataUpdater(
+                self,
+                item,
+                self.func,
+                self.extra(item),
+                self.lag_ratio,
+                i,
+                count,
+                show_at_begin=self.show_at_begin,
+                hide_at_end=self.hide_at_end,
+            )
             sub_updater.transfer_params(self)
             sub_updater.finalize()
 
@@ -184,7 +188,7 @@ class _DataUpdater(ItemAnimation):
         lag_ratio: float,
         index: int,
         count: int,
-        **kwargs
+        **kwargs,
     ):
         super().__init__(item, **kwargs)
         self._generate_by = generate_by
@@ -195,15 +199,17 @@ class _DataUpdater(ItemAnimation):
         self.count = count
 
     def apply(self, data: Item, p: ItemAnimation.ApplyParams) -> None:
-        with UpdaterParams(p.global_t,
-                           self.get_sub_alpha(self.get_alpha_on_global_t(p.global_t)),
-                           self.t_range,
-                           self.extra_data,
-                           self) as params:
+        with UpdaterParams(
+            p.global_t,
+            self.get_sub_alpha(self.get_alpha_on_global_t(p.global_t)),
+            self.t_range,
+            self.extra_data,
+            self,
+        ) as params:
             self.func(data, params)
 
     def get_sub_alpha(self, alpha: float) -> float:
-        '''依据 ``lag_ratio`` 得到特定子物件的 ``sub_alpha``'''
+        """依据 ``lag_ratio`` 得到特定子物件的 ``sub_alpha``"""
         lag_ratio = self.lag_ratio
         full_length = (self.count - 1) * lag_ratio + 1
         value = alpha * full_length
@@ -212,13 +218,14 @@ class _DataUpdater(ItemAnimation):
 
 
 class GroupUpdater[T: Item](Animation):
-    '''
+    """
     以时间为参数对一组物件的数据进行修改
 
     .. warning::
 
         该 Updater 假设 ``func`` 不会改变 ``item`` 后代物件结构，如果改变结构（例如增删子物件、:meth:`~.Item.become` 结构不一致等情况），则可能导致意外行为
-    '''
+    """
+
     label_color = C_LABEL_ANIM_ABSTRACT
 
     def __init__(
@@ -229,7 +236,7 @@ class GroupUpdater[T: Item](Animation):
         show_at_begin: bool = True,
         hide_at_end: bool = False,
         become_at_end: bool = True,
-        **kwargs
+        **kwargs,
     ):
         super().__init__(**kwargs)
         self.item = item
@@ -255,12 +262,16 @@ class GroupUpdater[T: Item](Animation):
         self.data = self.item.copy()
 
         sub_items = list(self.item.walk_self_and_descendants())
-        stacks = [
-            self.timeline.item_appearances[item].stack
-            for item in sub_items
-        ]
+        stacks = [self.timeline.item_appearances[item].stack for item in sub_items]
         updaters = [
-            _GroupUpdater(self, item, data, stacks, show_at_begin=self.show_at_begin, hide_at_end=self.hide_at_end)
+            _GroupUpdater(
+                self,
+                item,
+                data,
+                stacks,
+                show_at_begin=self.show_at_begin,
+                hide_at_end=self.hide_at_end,
+            )
             for item, data in zip(sub_items, self.data.walk_self_and_descendants())
         ]
 
@@ -282,11 +293,13 @@ class GroupUpdater[T: Item](Animation):
         if self.applied:
             return
 
-        with UpdaterParams(global_t,
-                           self.get_alpha_on_global_t(global_t),
-                           self.t_range,
-                           None,
-                           self) as params:
+        with UpdaterParams(
+            global_t,
+            self.get_alpha_on_global_t(global_t),
+            self.t_range,
+            None,
+            self,
+        ) as params:
             self.func(self.data, params)
 
         self.applied = True
@@ -299,10 +312,10 @@ class _GroupUpdater(ApplyAligner):
         item: Item,
         data: Item,
         stacks: list[AnimStack],
-        **kwargs
+        **kwargs,
     ):
         super().__init__(item, stacks, **kwargs)
-        self._generate_by = generate_by
+        self._generate_by: GroupUpdater = generate_by
         self.data = data
 
     def pre_apply(self, data: Item, p: ItemAnimation.ApplyParams) -> None:
@@ -315,12 +328,13 @@ class _GroupUpdater(ApplyAligner):
 
 
 class MethodUpdater(Animation):
-    '''
+    """
     依据物件的变换而创建的 updater
 
     具体参考 :meth:`~.Item.update`
-    '''
-    label_color = (214, 185, 253)   # C_LABEL_ANIM_ABSTRACT 的变体
+    """
+
+    label_color = (214, 185, 253)  # C_LABEL_ANIM_ABSTRACT 的变体
 
     class ActionType(Enum):
         GetAttr = 0
@@ -333,7 +347,7 @@ class MethodUpdater(Animation):
         show_at_begin: bool = True,
         hide_at_end: bool = False,
         become_at_end: bool = True,
-        **kwargs
+        **kwargs,
     ):
         super().__init__(**kwargs)
         self.item = item
@@ -346,7 +360,13 @@ class MethodUpdater(Animation):
         self.grouply: bool = False
 
     class _FakeCmpt:
-        def __init__(self, anim: MethodUpdater, cmpt_name: str, cmpt: Component, obj: Component | Item._AsTypeWrapper):
+        def __init__(
+            self,
+            anim: MethodUpdater,
+            cmpt_name: str,
+            cmpt: Component,
+            obj: Component | Item._AsTypeWrapper,
+        ):
             self.anim = anim
             self.cmpt_name = cmpt_name
             self.cmpt = cmpt
@@ -360,8 +380,10 @@ class MethodUpdater(Animation):
             info: MethodUpdaterInfo | None = getattr(attr, METHOD_UPDATER_KEY, None)
             if info is None:
                 raise UpdaterError(
-                    _('There is no updatable method named {name} in {cmpt}')
-                    .format(name=name, cmpt=self.cmpt.__class__.__name__)
+                    _('There is no updatable method named {name} in {cmpt}').format(
+                        name=name,
+                        cmpt=self.cmpt.__class__.__name__,
+                    )
                 )
 
             def wrapper(*args, root_only: bool | None = None, **kwargs):
@@ -369,6 +391,7 @@ class MethodUpdater(Animation):
                     self.anim.grouply = True
                 self.anim.updaters.append((self.cmpt_name, info.updater, args, kwargs, root_only))
                 return self
+
             return wrapper
 
         def __anim__(self) -> Animation:
@@ -383,8 +406,10 @@ class MethodUpdater(Animation):
         info: MethodUpdaterInfo | None = getattr(attr, METHOD_UPDATER_KEY, None)
         if info is None:
             raise UpdaterError(
-                _('{item} has no component or updatable method named {name}')
-                .format(item=self.item.__class__.__name__, name=name)
+                _('{item} has no component or updatable method named {name}').format(
+                    item=self.item.__class__.__name__,
+                    name=name,
+                )
             )
 
         def wrapper(*args, root_only: bool | None = None, **kwargs):
@@ -392,6 +417,7 @@ class MethodUpdater(Animation):
                 self.grouply = True
             self.updaters.append((None, info.updater, args, kwargs, root_only))
             return self
+
         return wrapper
 
     @staticmethod
@@ -416,11 +442,11 @@ class MethodUpdater(Animation):
             sub_updater = DataUpdater(
                 self.item,
                 self.updater,
-                extra=lambda item: item is self.item,   # 只有根物件的 extra_data 为 True，用于辅助 root_only
+                extra=lambda item: item is self.item,  # 仅根物件的为 True，用于辅助 root_only
                 root_only=False,
                 show_at_begin=self.show_at_begin,
                 hide_at_end=self.hide_at_end,
-                become_at_end=self.become_at_end
+                become_at_end=self.become_at_end,
             )
         else:
             sub_updater = GroupUpdater(
@@ -428,7 +454,7 @@ class MethodUpdater(Animation):
                 self.updater,
                 show_at_begin=self.show_at_begin,
                 hide_at_end=self.hide_at_end,
-                become_at_end=self.become_at_end
+                become_at_end=self.become_at_end,
             )
 
         sub_updater._generate_by = self
@@ -437,9 +463,10 @@ class MethodUpdater(Animation):
 
 
 class MethodUpdaterArgsBuilder:
-    '''
+    """
     使得 ``.update`` 和 ``.update(...)`` 后可以进行同样的操作
-    '''
+    """
+
     def __init__(self, item: Item):
         self.item = item
         self.obj = item._astype_wrapper or item
@@ -452,7 +479,7 @@ class MethodUpdaterArgsBuilder:
 
 
 class ItemUpdater(Animation):
-    '''
+    """
     以时间为参数显示物件
 
     也就是说，在 :class:`ItemUpdater` 执行时，对于每帧，都会执行 ``func``，并显示 ``func`` 返回的物件
@@ -464,7 +491,8 @@ class ItemUpdater(Animation):
     - 若传入 ``item=None``，则以上两点都无效
 
     另见 :ref:`basic_examples` 中的 ``UpdaterExample``
-    '''
+    """
+
     label_color = C_LABEL_ANIM_ABSTRACT
 
     def __init__(
@@ -475,7 +503,7 @@ class ItemUpdater(Animation):
         hide_at_begin: bool = True,
         show_at_end: bool = True,
         become_at_end: bool = True,
-        **kwargs
+        **kwargs,
     ):
         super().__init__(**kwargs)
         self.func = func
@@ -487,7 +515,11 @@ class ItemUpdater(Animation):
         self.renderers: dict[type, Renderer] = {}
 
     def _time_fixed(self) -> None:
-        self.timeline.add_additional_render_calls_callback(self.t_range, self.render_calls_callback)
+        self.timeline.add_additional_render_calls_callback(
+            self.t_range,
+            self.render_calls_callback,
+            None if self.item is None else [self.item],
+        )
 
         if self.item is None:
             return
@@ -500,30 +532,34 @@ class ItemUpdater(Animation):
 
         # 在动画结束后，自动使用动画最后一帧的物件替换原有的
         if self.become_at_end and self.t_range.end is not FOREVER:
-            with UpdaterParams(self.t_range.end,
-                               1,
-                               self.t_range,
-                               None,
-                               self) as params:
+            with UpdaterParams(self.t_range.end, 1, self.t_range, None, self) as params:
                 self.item.become(self.call(params), auto_visible=False)
                 show_items = list(self.item.walk_self_and_descendants())
                 for item in show_items:
-                    self.timeline.item_appearances[item].stack.detect_change(item, self.t_range.end, force=True)
+                    stack = self.timeline.item_appearances[item].stack
+                    stack.detect_change(item, self.t_range.end, force=True)
 
         # 在动画开始时自动隐藏，在动画结束时自动显示
         # 可以将 ``hide_on_begin`` 和 ``show_on_end`` 置为 ``False`` 以禁用
         if self.hide_at_begin:
             self.timeline.schedule(self.t_range.at, self.timeline.hide, *hide_items, root_only=True)
         if self.show_at_end and self.t_range.end is not FOREVER:
-            self.timeline.schedule(self.t_range.end, self.timeline.show, *show_items, root_only=True)
+            self.timeline.schedule(
+                self.t_range.end, self.timeline.show, *show_items, root_only=True
+            )
 
     def call(self, p: UpdaterParams) -> Item:
         ret = self.func(p)
         if not isinstance(ret, Item):
             raise UpdaterError(
-                _('The function passed to ItemUpdater must return an item, but got {ret} instead, '
-                  'defined in {file}:{lineno}')
-                .format(ret=ret, file=inspect.getfile(self.func), lineno=inspect.getsourcelines(self.func)[1])
+                _(
+                    'The function passed to ItemUpdater must return an item, but got {ret} instead, '
+                    'defined in {file}:{lineno}'
+                ).format(
+                    ret=ret,
+                    file=inspect.getfile(self.func),
+                    lineno=inspect.getsourcelines(self.func)[1],
+                )
             )
         return ret
 
@@ -536,43 +572,37 @@ class ItemUpdater(Animation):
     def render_calls_callback(self):
         global_t = Animation.global_t_ctx.get()
         alpha = self.get_alpha_on_global_t(global_t)
-        with UpdaterParams(global_t,
-                           alpha,
-                           self.t_range,
-                           None,
-                           self) as params:
+        with UpdaterParams(global_t, alpha, self.t_range, None, self) as params:
             ret = self.call(params)
 
-        return [
-            (item, self.get_renderer(item).render)
-            for item in ret.walk_self_and_descendants()
-        ]
+        return [(item, self.get_renderer(item).render) for item in ret.walk_self_and_descendants()]
 
 
 class StepUpdater[T: Item](Animation):
-    '''
+    """
     按步更新物件，每次间隔 ``step`` 秒调用 ``func`` 进行下一步更新
-    '''
+    """
+
     label_color = C_LABEL_ANIM_ABSTRACT
 
     def __init__(
         self,
         item: T,
         func: StepUpdaterFn[T],
-        step: float = 0.02,     # 默认每秒 50 次
+        step: float = 0.02,  # 默认每秒 50 次
         *,
-        persistent_cache_step: float = 1,   # 默认每秒一个持久缓存
-
+        persistent_cache_step: float = 1,  # 默认每秒一个持久缓存
+        #
         show_at_begin: bool = True,
         hide_at_end: bool = False,
         become_at_end: bool = True,
-
+        #
         rate_func: RateFunc = linear,
         skip_null_items: bool = True,
         root_only: bool = True,
-
+        #
         progress_bar: bool = True,
-        **kwargs
+        **kwargs,
     ):
         super().__init__(rate_func=rate_func, **kwargs)
         self.item = item
@@ -602,15 +632,17 @@ class StepUpdater[T: Item](Animation):
                 self.schedule_show_and_hide(item, self.show_at_begin, self.hide_at_end)
                 continue
 
-            sub_updater = _StepUpdater(self,
-                                       item,
-                                       self.func,
-                                       self.step,
-                                       self.persistent_cache_step,
-                                       self.become_at_end,
-                                       self.progress_bar,
-                                       show_at_begin=self.show_at_begin,
-                                       hide_at_end=self.hide_at_end)
+            sub_updater = _StepUpdater(
+                self,
+                item,
+                self.func,
+                self.step,
+                self.persistent_cache_step,
+                self.become_at_end,
+                self.progress_bar,
+                show_at_begin=self.show_at_begin,
+                hide_at_end=self.hide_at_end,
+            )
             sub_updater.transfer_params(self)
             sub_updater.finalize()
 
@@ -627,7 +659,7 @@ class _StepUpdater(ItemAnimation):
         progress_bar: bool,
         *,
         show_at_begin: bool,
-        hide_at_end: bool
+        hide_at_end: bool,
     ):
         super().__init__(item, show_at_begin=show_at_begin, hide_at_end=hide_at_end)
         self._generate_by = generate_by
@@ -656,6 +688,9 @@ class _StepUpdater(ItemAnimation):
         if self.become_at_end and self.t_range.end is not FOREVER:
             self.compute(self.item, self.t_range.end)
 
+            apprs = self.timeline.item_appearances
+            apprs[self.item].stack.detect_change(self.item, self.t_range.end)
+
     def apply(self, data: None, p: ItemAnimation.ApplyParams) -> Item:
         self.compute(self.data, p.global_t, generate_temporary_cache=True)
         return self.data
@@ -666,7 +701,9 @@ class _StepUpdater(ItemAnimation):
     def n_to_global_t(self, n: int) -> float:
         return n * self.step + self.t_range.at
 
-    def compute(self, data: Item, global_t: float, *, generate_temporary_cache: bool = False) -> None:
+    def compute(
+        self, data: Item, global_t: float, *, generate_temporary_cache: bool = False
+    ) -> None:
         n = self.global_t_to_n(global_t)
         at_block = n // self.pcache_base
 
@@ -677,7 +714,10 @@ class _StepUpdater(ItemAnimation):
                 new_temporary_cache_blocks: list[list[Item]] = [*left, *([] for _ in range(offset))]
             elif offset < 0:
                 right = self.temporary_cache_blocks[: 3 + offset]
-                new_temporary_cache_blocks: list[list[Item]] = [*([] for _ in range(-offset)), *right]
+                new_temporary_cache_blocks: list[list[Item]] = [
+                    *([] for _ in range(-offset)),
+                    *right,
+                ]
             else:
                 new_temporary_cache_blocks = self.temporary_cache_blocks
 
@@ -687,9 +727,11 @@ class _StepUpdater(ItemAnimation):
         start_n = start_block * self.pcache_base + 1
         at_tcache = start_block - self.tcache_at_block + 1
 
-        if 0 <= at_tcache < 3 \
-                and (tcache := self.temporary_cache_blocks[at_tcache]) \
-                and (mod := n % self.pcache_base) > 0:
+        if (
+            0 <= at_tcache < 3
+            and (tcache := self.temporary_cache_blocks[at_tcache])
+            and (mod := n % self.pcache_base) > 0
+        ):
             idx = min(len(tcache) - 1, mod - 1)
             start_n += idx + 1
             data.restore(tcache[idx])
@@ -702,14 +744,17 @@ class _StepUpdater(ItemAnimation):
                 rg,
                 desc=f'StepUpdater({data.__class__.__name__})',
                 leave=False,
-                dynamic_ncols=True
+                dynamic_ncols=True,
             )
 
         for computing_n in rg:
-            with StepUpdaterParams(self.n_to_global_t(computing_n),
-                                   self.t_range,
-                                   computing_n,
-                                   self) as params:
+            with StepUpdaterParams(
+                self.n_to_global_t(computing_n),
+                self.step,
+                self.t_range,
+                computing_n,
+                self,
+            ) as params:
                 self.func(data, params)
 
             computing_block = computing_n // self.pcache_base

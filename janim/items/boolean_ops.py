@@ -6,10 +6,10 @@ import pathops
 from janim.exception import BooleanOpsError
 from janim.items.item import Item
 from janim.items.vitem import VItem
-from janim.locale.i18n import get_local_strings
+from janim.locale import get_translator
 from janim.utils.bezier import PathBuilder
 
-_ = get_local_strings('boolean_ops')
+_ = get_translator('janim.items.boolean_ops')
 
 # Boolean operations between 2D items
 # Borrowed from from https://github.com/ManimCommunity/manim/
@@ -29,10 +29,7 @@ def _convert_vitem_to_skia_path(vitem: VItem) -> pathops.Path:
     return path
 
 
-def _convert_skia_path_to_vitem(
-    path: pathops.Path,
-    vitem: VItem
-) -> VItem:
+def _convert_skia_path_to_vitem(path: pathops.Path, vitem: VItem) -> VItem:
     PathVerb = pathops.PathVerb
     builder: PathBuilder | None = None
 
@@ -62,7 +59,7 @@ def _convert_skia_path_to_vitem(
 
 
 class Union(VItem):
-    '''
+    """
     并集
 
     常见情况下，传入两个及以上 :class:`~.VItem`，返回它们区域的并集的外轮廓
@@ -70,7 +67,8 @@ class Union(VItem):
     另外，如果只传入单个物件，则拷贝原路径
 
     该方法只有根物件参与计算，如果需要考虑所有子物件的并集，例如对 :class:`~.Text` 所有后代物件的并集，请参考 :meth:`from_group`
-    '''
+    """
+
     def __init__(self, *vitems: VItem, **kwargs):
         if not vitems:
             raise BooleanOpsError(_('At least 1 item needed for Union.'))
@@ -81,34 +79,25 @@ class Union(VItem):
             return
 
         outpen = pathops.Path()
-        pathops.union(
-            [
-                _convert_vitem_to_skia_path(vitem)
-                for vitem in vitems
-            ],
-            outpen.getPen()
-        )
+        pathops.union([_convert_vitem_to_skia_path(vitem) for vitem in vitems], outpen.getPen())
         _convert_skia_path_to_vitem(outpen, self)
 
     @staticmethod
     def from_group(item: Item, **kwargs) -> Union:
-        '''
+        """
         传入一个物件，将其所有后代物件作并集
-        '''
-        lst = [
-            sub
-            for sub in item.walk_self_and_descendants()
-            if isinstance(sub, VItem)
-        ]
+        """
+        lst = [sub for sub in item.walk_self_and_descendants() if isinstance(sub, VItem)]
         return Union(*lst, **kwargs)
 
 
 class Difference(VItem):
-    '''
+    """
     差集
 
     传入 ``subitem`` 和 ``clip``，返回 ``subitem`` 裁去 ``clip`` 区域的轮廓线
-    '''
+    """
+
     def __init__(self, subitem: VItem, clip: VItem, **kwargs):
         super().__init__(**kwargs)
         outpen = pathops.Path()
@@ -121,7 +110,7 @@ class Difference(VItem):
 
 
 class Intersection(VItem):
-    '''
+    """
     交集
 
     常见情况下，传入两个及以上 :class:`~.VItem`，返回它们区域交集的外轮廓
@@ -129,7 +118,8 @@ class Intersection(VItem):
     另外，如果只传入单个物件，则拷贝原路径
 
     该方法只有根物件参与计算，如果需要考虑所有后代物件的交集，请参考 :meth:`from_group`
-    '''
+    """
+
     def __init__(self, *vitems: VItem, **kwargs):
         if not vitems:
             raise BooleanOpsError(_('At least 1 item needed for Intersection.'))
@@ -158,19 +148,15 @@ class Intersection(VItem):
 
     @staticmethod
     def from_group(item: Item, **kwargs) -> Union:
-        '''
+        """
         传入一个物件，将其所有后代物件作交集
-        '''
-        lst = [
-            sub
-            for sub in item.walk_self_and_descendants()
-            if isinstance(sub, VItem)
-        ]
+        """
+        lst = [sub for sub in item.walk_self_and_descendants() if isinstance(sub, VItem)]
         return Intersection(*lst, **kwargs)
 
 
 class Exclusion(VItem):
-    '''
+    """
     对称差集
 
     传入两个及以上 :class:`~.VItem`，返回它们的区域经过 XOR 运算后的外轮廓
@@ -178,7 +164,8 @@ class Exclusion(VItem):
     另外，如果只传入单个物件，则拷贝原路径
 
     该方法只有根物件参与计算，如果需要考虑所有后代物件的对称差集，请参考 :meth:`Exclusion.from_group`
-    '''
+    """
+
     def __init__(self, *vitems: VItem, **kwargs):
         if not vitems:
             raise BooleanOpsError(_('At least 1 item needed for Exclusion.'))
@@ -207,12 +194,8 @@ class Exclusion(VItem):
 
     @staticmethod
     def from_group(item: Item, **kwargs):
-        '''
+        """
         传入一个物件，将其所有子物件依次作对称差集
-        '''
-        lst = [
-            sub
-            for sub in item.walk_self_and_descendants()
-            if isinstance(sub, VItem)
-        ]
+        """
+        lst = [sub for sub in item.walk_self_and_descendants() if isinstance(sub, VItem)]
         return Exclusion(*lst, **kwargs)

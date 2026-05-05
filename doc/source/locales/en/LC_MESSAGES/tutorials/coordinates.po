@@ -26,21 +26,17 @@ msgstr "Coordinate System"
 
 #: ../../source/tutorials/coordinates.rst:4
 msgid ""
-"JAnim 的坐标系统不以像素为单位，而是采用水平方向约 ``-7.11 ~ 7.11``，垂直方向 "
-"``-4 ~ 4`` 的坐标范围，形成一个 16:9 的画面。"
+"JAnim 的坐标系统不以像素为单位，而是采用水平方向约 ``-7.11 ~ 7.11``，垂直方向 ``-4 ~ 4`` 的坐标范围，形成一个 16:9 的画"
+"面。"
 msgstr ""
-"JAnim's coordinate system is not in pixels, but uses a coordinate range of "
-"approximately ``-7.11 ~ 7.11`` horizontally and ``-4 ~ 4`` vertically, forming "
-"a 16:9 frame."
+"JAnim's coordinate system is not in pixels, but uses a coordinate range of approximately ``-7.11 ~ 7.11`` horizontally "
+"and ``-4 ~ 4`` vertically, forming a 16:9 frame."
 
 #: ../../source/tutorials/coordinates.rst:6
-msgid ""
-"原点位于画面中心，向右向上为正方向，下图展现了创建在 JAnim 画面上的坐标系网格以"
-"及放置于原点处的单位圆："
+msgid "原点位于画面中心，向右向上为正方向，下图展现了创建在 JAnim 画面上的坐标系网格以及放置于原点处的单位圆："
 msgstr ""
-"The origin is at the center of the frame, with right and up as positive "
-"directions. The following figure shows the coordinate grid created on the "
-"JAnim frame and a unit circle placed at the origin:"
+"The origin is at the center of the frame, with right and up as positive directions. The following figure shows the "
+"coordinate grid created on the JAnim frame and a unit circle placed at the origin:"
 
 #: ../../source/tutorials/coordinates.rst:15
 msgid ""
@@ -54,17 +50,13 @@ msgstr ""
 
 #: ../../source/tutorials/coordinates.rst:18
 msgid "这里的 ``xxx.show()`` 与 ``self.show(xxx)`` 一样，都是将物件直接显示出来"
-msgstr ""
-"Here, ``xxx.show()`` is the same as ``self.show(xxx)``, both directly display "
-"the item"
+msgstr "Here, ``xxx.show()`` is the same as ``self.show(xxx)``, both directly display the item"
 
 #: ../../source/tutorials/coordinates.rst:22
-msgid ""
-"为了方便起见，这里提供的代码省略了 ``construct`` 方法之外的内容，只展示 "
-"``construct`` 的核心部分"
+msgid "为了方便起见，这里提供的代码省略了 ``construct`` 方法之外的内容，只展示 ``construct`` 的核心部分"
 msgstr ""
-"For convenience, the code provided here omits content outside the "
-"``construct`` method, only showing the core part of ``construct``"
+"For convenience, the code provided here omits content outside the ``construct`` method, only showing the core part of "
+"``construct``"
 
 #: ../../source/tutorials/coordinates.rst:24
 msgid "类似情况不再赘述"
@@ -72,22 +64,18 @@ msgstr "This note will not be repeated for similar cases"
 
 #: ../../source/tutorials/coordinates.rst:26
 msgid ""
-"在之前的简要介绍中，我们提到 JAnim 的几何 **物件** 含有多个 **组件**，包括 "
-"``points``、 ``stroke``、 ``fill`` 等； 而其中与坐标系统相关的组件是 "
-"``points``，它决定了物件的形状和位置。"
+"在之前的简要介绍中，我们提到 JAnim 的几何 **物件** 含有多个 **组件**，包括 ``points``、 ``stroke``、 ``fill`` 等； 而其中"
+"与坐标系统相关的组件是 ``points``，它决定了物件的形状和位置。"
 msgstr ""
-"In the previous brief introduction, we mentioned that JAnim's geometric "
-"**items** contain multiple **components**, including ``points``, ``stroke``, "
-"``fill``, etc.; among them, the component related to the coordinate system is "
+"In the previous brief introduction, we mentioned that JAnim's geometric **items** contain multiple **components**, "
+"including ``points``, ``stroke``, ``fill``, etc.; among them, the component related to the coordinate system is "
 "``points``, which determines the shape and position of the item."
 
 #: ../../source/tutorials/coordinates.rst:29
-msgid ""
-"所以在大多数情况下，当我们想要“操作物件的坐标”时，先 ``.points`` 再做具体操作就"
-"对了！"
+msgid "所以在大多数情况下，当我们想要“操作物件的坐标”时，先 ``.points`` 再做具体操作就对了！"
 msgstr ""
-"So in most cases, when we want to “manipulate the coordinates of an item”, we "
-"first use ``.points`` and then perform specific operations!"
+"So in most cases, when we want to “manipulate the coordinates of an item”, we first use ``.points`` and then perform "
+"specific operations!"
 
 #: ../../source/tutorials/coordinates.rst:32
 msgid "坐标平移"
@@ -96,23 +84,20 @@ msgstr "Coordinate Translation"
 #: ../../source/tutorials/coordinates.rst:34
 msgid "``points`` 组件提供了多种方法来操作物件的坐标，这里先介绍两个基础方法："
 msgstr ""
-"The ``points`` component provides various methods to manipulate item "
-"coordinates. Here we first introduce two basic methods:"
+"The ``points`` component provides various methods to manipulate item coordinates. Here we first introduce two basic "
+"methods:"
 
-#: ../../source/tutorials/coordinates.rst:38
-#: ../../source/tutorials/coordinates.rst:99
+#: ../../source/tutorials/coordinates.rst:38 ../../source/tutorials/coordinates.rst:99
 #: ../../source/tutorials/coordinates.rst:183
 msgid "方法"
 msgstr "Method"
 
-#: ../../source/tutorials/coordinates.rst:39
-#: ../../source/tutorials/coordinates.rst:100
+#: ../../source/tutorials/coordinates.rst:39 ../../source/tutorials/coordinates.rst:100
 #: ../../source/tutorials/coordinates.rst:184
 msgid "示例"
 msgstr "Example"
 
-#: ../../source/tutorials/coordinates.rst:40
-#: ../../source/tutorials/coordinates.rst:101
+#: ../../source/tutorials/coordinates.rst:40 ../../source/tutorials/coordinates.rst:101
 #: ../../source/tutorials/coordinates.rst:185
 msgid "描述"
 msgstr "Description"
@@ -142,12 +127,9 @@ msgid "将物件移动到指定位置"
 msgstr "Move the item to the specified position"
 
 #: ../../source/tutorials/coordinates.rst:50
-msgid ""
-"例如，使用 ``.move_to(RIGHT * 3 + UP * 2)`` 可以将物件移动到坐标系中 ``(3,2)`` "
-"的位置："
+msgid "例如，使用 ``.move_to(RIGHT * 3 + UP * 2)`` 可以将物件移动到坐标系中 ``(3,2)`` 的位置："
 msgstr ""
-"For example, using ``.move_to(RIGHT * 3 + UP * 2)`` can move the item to "
-"position ``(3,2)`` in the coordinate system:"
+"For example, using ``.move_to(RIGHT * 3 + UP * 2)`` can move the item to position ``(3,2)`` in the coordinate system:"
 
 #: ../../source/tutorials/coordinates.rst:15
 msgid ""
@@ -159,80 +141,64 @@ msgstr ""
 
 #: ../../source/tutorials/coordinates.rst:59
 msgid ""
-"上面的例子中，我们组合 ``UP`` （向上） 和 ``RIGHT`` （向右） 这两个内置向量表示"
-"出了圆的位移； 你也可以猜到，还有 ``DOWN`` （向下） 和 ``LEFT`` （向左） 这两个"
-"内置向量可以使用。"
+"上面的例子中，我们组合 ``UP`` （向上） 和 ``RIGHT`` （向右） 这两个内置向量表示出了圆的位移； 你也可以猜到，还有 ``DOWN`` "
+"（向下） 和 ``LEFT`` （向左） 这两个内置向量可以使用。"
 msgstr ""
-"In the example above, we combined the two built-in vectors ``UP`` (upward) and "
-"``RIGHT`` (rightward) to represent the circle's displacement; you can also "
-"guess that there are ``DOWN`` (downward) and ``LEFT`` (leftward) built-in "
-"vectors available."
+"In the example above, we combined the two built-in vectors ``UP`` (upward) and ``RIGHT`` (rightward) to represent the "
+"circle's displacement; you can also guess that there are ``DOWN`` (downward) and ``LEFT`` (leftward) built-in vectors "
+"available."
 
 #: ../../source/tutorials/coordinates.rst:62
-msgid ""
-"这些内置向量方便在 JAnim 中快速表示坐标位移，只需要使用位移距离乘以方向，再依次"
-"组合即可。"
+msgid "这些内置向量方便在 JAnim 中快速表示坐标位移，只需要使用位移距离乘以方向，再依次组合即可。"
 msgstr ""
-"These built-in vectors make it convenient to quickly represent coordinate "
-"displacements in JAnim, just multiply the displacement distance by the "
-"direction and combine them sequentially."
+"These built-in vectors make it convenient to quickly represent coordinate displacements in JAnim, just multiply the "
+"displacement distance by the direction and combine them sequentially."
 
 #: ../../source/tutorials/coordinates.rst:64
 msgid "JAnim 还内置了更多额外方向，如图所示："
-msgstr ""
-"JAnim also has more additional built-in directions, as shown in the figure:"
+msgstr "JAnim also has more additional built-in directions, as shown in the figure:"
 
 #: ../../source/tutorials/coordinates.rst:73
 msgid ""
-"边上的这四个向量需要使用 ``Config.get`` 来获取，这是因为他们是由视框大小这一可"
-"配置项所决定的， 并不是像单位向量这样的固定向量。"
+"边上的这四个向量需要使用 ``Config.get`` 来获取，这是因为他们是由视框大小这一可配置项所决定的， 并不是像单位向量这样的固定"
+"向量。"
 msgstr ""
-"These four vectors on the edges need to be obtained using ``Config.get``, "
-"because they are determined by the configurable frame size, not fixed vectors "
-"like unit vectors."
+"These four vectors on the edges need to be obtained using ``Config.get``, because they are determined by the configurable "
+"frame size, not fixed vectors like unit vectors."
 
 #: ../../source/tutorials/coordinates.rst:76
 msgid "关于 :class:`~.Config` 的更多内容，可以参考 :ref:`config_system`。"
-msgstr ""
-"For more information about :class:`~.Config`, refer to :ref:`config_system`."
+msgstr "For more information about :class:`~.Config`, refer to :ref:`config_system`."
 
 #: ../../source/tutorials/coordinates.rst:78
 msgid "除了使用内置方向的组合表示坐标，还可以直接使用坐标值来表示位置。"
 msgstr ""
-"In addition to using combinations of built-in directions to represent "
-"coordinates, you can also directly use coordinate values to represent "
-"positions."
+"In addition to using combinations of built-in directions to represent coordinates, you can also directly use coordinate "
+"values to represent positions."
 
 #: ../../source/tutorials/coordinates.rst:80
 msgid ""
-"例如，上面提到的 ``.move_to(RIGHT * 3 + UP * 2)`` 等效于 ``.move_to([3, 2, "
-"0])``，也就是将物件移动到 ``[3, 2, 0]`` 的位置。"
+"例如，上面提到的 ``.move_to(RIGHT * 3 + UP * 2)`` 等效于 ``.move_to([3, 2, 0])``，也就是将物件移动到 ``[3, 2, 0]`` 的位"
+"置。"
 msgstr ""
-"For example, the aforementioned ``.move_to(RIGHT * 3 + UP * 2)`` is equivalent "
-"to ``.move_to([3, 2, 0])``, which moves the item to position ``[3, 2, 0]``."
+"For example, the aforementioned ``.move_to(RIGHT * 3 + UP * 2)`` is equivalent to ``.move_to([3, 2, 0])``, which moves "
+"the item to position ``[3, 2, 0]``."
 
 #: ../../source/tutorials/coordinates.rst:84
 msgid ""
-"尽管我们现在讨论的是画面上的二维坐标，但其实 JAnim 的坐标系统是三维的，物件和摄"
-"像机可以在空间中自由移动，所以这里还出现了第三个分量。"
+"尽管我们现在讨论的是画面上的二维坐标，但其实 JAnim 的坐标系统是三维的，物件和摄像机可以在空间中自由移动，所以这里还出现了"
+"第三个分量。"
 msgstr ""
-"Although we are now discussing two-dimensional coordinates on the screen, "
-"JAnim's coordinate system is actually three-dimensional, and items and cameras "
-"can move freely in space, so a third component appears here."
+"Although we are now discussing two-dimensional coordinates on the screen, JAnim's coordinate system is actually three-"
+"dimensional, and items and cameras can move freely in space, so a third component appears here."
 
 #: ../../source/tutorials/coordinates.rst:86
-msgid ""
-"但在大多数情况下，我们只需要关注前两个坐标轴（x 和 y）就够用了，将 z 轴取为 0 "
-"即可。"
-msgstr ""
-"But in most cases, we only need to focus on the first two coordinate axes (x "
-"and y), and set the z-axis to 0."
+msgid "但在大多数情况下，我们只需要关注前两个坐标轴（x 和 y）就够用了，将 z 轴取为 0 即可。"
+msgstr "But in most cases, we only need to focus on the first two coordinate axes (x and y), and set the z-axis to 0."
 
 #: ../../source/tutorials/coordinates.rst:88
 msgid "关于三维坐标的更多内容，可以参考 :ref:`3d_coordinates`。"
-msgstr ""
-"For more information about three-dimensional coordinates, refer "
-"to :ref:`3d_coordinates`."
+msgstr "For more information about three-dimensional coordinates, refer to :ref:`3d_coordinates`."
 
 #: ../../source/tutorials/coordinates.rst:93
 msgid "相对放置"
@@ -240,9 +206,7 @@ msgstr "Relative Placement"
 
 #: ../../source/tutorials/coordinates.rst:95
 msgid "除了上述的平移方法，物件还可以放置在其它物件以及边界旁边："
-msgstr ""
-"In addition to the translation methods mentioned above, items can also be "
-"placed next to other items and borders:"
+msgstr "In addition to the translation methods mentioned above, items can also be placed next to other items and borders:"
 
 #: ../../source/tutorials/coordinates.rst:103
 msgid ":meth:`~.Cmpt_Points.next_to`"
@@ -281,21 +245,17 @@ msgid "将物件放到画面某个方向的边界旁"
 msgstr "Place the item next to the border in a certain direction of the frame"
 
 #: ../../source/tutorials/coordinates.rst:115
-msgid ""
-"让我们结合动画来演示这些方法的使用，这里是将一个圆形四处移动，尝试放在矩形旁边"
-"以及边界旁边："
+msgid "让我们结合动画来演示这些方法的使用，这里是将一个圆形四处移动，尝试放在矩形旁边以及边界旁边："
 msgstr ""
-"Let's demonstrate the use of these methods with animations. Here, a circle is "
-"moved around, trying to place it next to a rectangle and next to borders:"
+"Let's demonstrate the use of these methods with animations. Here, a circle is moved around, trying to place it next to a "
+"rectangle and next to borders:"
 
 #: ../../source/tutorials/coordinates.rst:119
 msgid ""
-"回忆一下，对于立刻作用的 ``circle.points.next_to(...)`` 等方法， 在物件后面插"
-"入 ``.anim`` 便可使其成为可播放的动画，即"
+"回忆一下，对于立刻作用的 ``circle.points.next_to(...)`` 等方法， 在物件后面插入 ``.anim`` 便可使其成为可播放的动画，即"
 msgstr ""
-"Recall that for methods that take immediate effect like "
-"``circle.points.next_to(...)``, inserting ``.anim`` after the item makes it a "
-"playable animation, i.e."
+"Recall that for methods that take immediate effect like ``circle.points.next_to(...)``, inserting ``.anim`` after the "
+"item makes it a playable animation, i.e."
 
 #: ../../source/tutorials/coordinates.rst:122
 msgid "circle.anim.points.next_to(...)"
@@ -312,8 +272,7 @@ msgid ""
 "\n"
 "self.play(circle.anim.points.next_to(square, RIGHT))\n"
 "self.play(circle.anim.points.next_to(square, RIGHT, buff=MED_LARGE_BUFF))\n"
-"self.play(circle.anim.points.next_to(square, RIGHT, buff=MED_LARGE_BUFF, "
-"aligned_edge=UP))\n"
+"self.play(circle.anim.points.next_to(square, RIGHT, buff=MED_LARGE_BUFF, aligned_edge=UP))\n"
 "\n"
 "self.forward()\n"
 "\n"
@@ -339,8 +298,7 @@ msgstr ""
 "\n"
 "self.play(circle.anim.points.next_to(square, RIGHT))\n"
 "self.play(circle.anim.points.next_to(square, RIGHT, buff=MED_LARGE_BUFF))\n"
-"self.play(circle.anim.points.next_to(square, RIGHT, buff=MED_LARGE_BUFF, "
-"aligned_edge=UP))\n"
+"self.play(circle.anim.points.next_to(square, RIGHT, buff=MED_LARGE_BUFF, aligned_edge=UP))\n"
 "\n"
 "self.forward()\n"
 "\n"
@@ -358,11 +316,10 @@ msgstr ""
 "self.forward()"
 
 #: ../../source/tutorials/coordinates.rst:158
-msgid ""
-"上面提供的动画代码实际执行时没有坐标系网格和文字备注，那些是笔者额外添加的；"
+msgid "上面提供的动画代码实际执行时没有坐标系网格和文字备注，那些是笔者额外添加的；"
 msgstr ""
-"The animation code provided above does not include coordinate grid and text "
-"annotations when actually executed; those were added by the author separately;"
+"The animation code provided above does not include coordinate grid and text annotations when actually executed; those "
+"were added by the author separately;"
 
 #: ../../source/tutorials/coordinates.rst:160
 msgid "且进行了降速处理，方便观看动画过程。"
@@ -378,20 +335,17 @@ msgstr "``buff``"
 
 #: ../../source/tutorials/coordinates.rst:166
 msgid ""
-"表示物件与目标物件或边界之间的间距，间距从小到大可用 ``SMALL_BUFF``、 "
-"``MED_SMALL_BUFF``、 ``MED_LARGE_BUFF``、 ``LARGE_BUFF`` 以及直接数值表示"
+"表示物件与目标物件或边界之间的间距，间距从小到大可用 ``SMALL_BUFF``、 ``MED_SMALL_BUFF``、 ``MED_LARGE_BUFF``、 "
+"``LARGE_BUFF`` 以及直接数值表示"
 msgstr ""
-"Represents the spacing between the item and the target item or border. Spacing "
-"from small to large can be represented by ``SMALL_BUFF``, ``MED_SMALL_BUFF``, "
-"``MED_LARGE_BUFF``, ``LARGE_BUFF``, or direct numerical values"
+"Represents the spacing between the item and the target item or border. Spacing from small to large can be represented by "
+"``SMALL_BUFF``, ``MED_SMALL_BUFF``, ``MED_LARGE_BUFF``, ``LARGE_BUFF``, or direct numerical values"
 
 #: ../../source/tutorials/coordinates.rst:168
-msgid ""
-"物件之间的间距默认为 ``MED_SMALL_BUFF``，物件与边界直接的间距默认为 "
-"``MED_LARGE_BUFF``。"
+msgid "物件之间的间距默认为 ``MED_SMALL_BUFF``，物件与边界直接的间距默认为 ``MED_LARGE_BUFF``。"
 msgstr ""
-"The default spacing between items is ``MED_SMALL_BUFF``, and the default "
-"spacing between items and borders is ``MED_LARGE_BUFF``."
+"The default spacing between items is ``MED_SMALL_BUFF``, and the default spacing between items and borders is "
+"``MED_LARGE_BUFF``."
 
 #: ../../source/tutorials/coordinates.rst:170
 msgid "``aligned_edge``"
@@ -402,12 +356,10 @@ msgid "表示物件与目标物件的对齐边缘，"
 msgstr "Represents the aligned edge between the item and the target item,"
 
 #: ../../source/tutorials/coordinates.rst:174
-msgid ""
-"比如示例中的 ``aligned_edge=UP`` 表示将圆形放置在方形右侧的同时，使它们的上边缘"
-"对齐。"
+msgid "比如示例中的 ``aligned_edge=UP`` 表示将圆形放置在方形右侧的同时，使它们的上边缘对齐。"
 msgstr ""
-"For example, ``aligned_edge=UP`` in the example means placing the circle to "
-"the right of the square while aligning their top edges."
+"For example, ``aligned_edge=UP`` in the example means placing the circle to the right of the square while aligning their "
+"top edges."
 
 #: ../../source/tutorials/coordinates.rst:177
 msgid "形状变换"
@@ -439,9 +391,7 @@ msgstr "``.stretch(2, dim=0)``"
 
 #: ../../source/tutorials/coordinates.rst:193
 msgid "在某个方向上拉伸物件，``dim=0 dim=1 dim=2`` 分别表示 x、y、z 轴"
-msgstr ""
-"Stretch the item in a certain direction. ``dim=0 dim=1 dim=2`` represent the "
-"x, y, z axes respectively"
+msgstr "Stretch the item in a certain direction. ``dim=0 dim=1 dim=2`` represent the x, y, z axes respectively"
 
 #: ../../source/tutorials/coordinates.rst:195
 msgid ":meth:`~.Cmpt_Points.rotate`"
@@ -456,11 +406,10 @@ msgid "旋转物件，逆时针为正方向"
 msgstr "Rotate the item, counterclockwise is the positive direction"
 
 #: ../../source/tutorials/coordinates.rst:199
-msgid ""
-"让我们结合动画来演示这些方法的使用，这里是将一个正六边形进行若干形状变换："
+msgid "让我们结合动画来演示这些方法的使用，这里是将一个正六边形进行若干形状变换："
 msgstr ""
-"Let's demonstrate the use of these methods with animations. Here, a regular "
-"hexagon undergoes several shape transformations:"
+"Let's demonstrate the use of these methods with animations. Here, a regular hexagon undergoes several shape "
+"transformations:"
 
 #: ../../source/tutorials/coordinates.rst:13
 msgid ""
@@ -490,13 +439,11 @@ msgstr ""
 
 #: ../../source/tutorials/coordinates.rst:217
 msgid ""
-"首先对于旋转操作，传入的数值应是弧度制，JAnim 也内置了常用角度的常量，如 "
-"``PI`` 和 ``TAU``。 也可以使用如 ``30 * DEGREES`` 的形式表示角度值，这与 "
-"``PI / 6`` 等价。"
+"首先对于旋转操作，传入的数值应是弧度制，JAnim 也内置了常用角度的常量，如 ``PI`` 和 ``TAU``。 也可以使用如 ``30 * "
+"DEGREES`` 的形式表示角度值，这与 ``PI / 6`` 等价。"
 msgstr ""
-"First, for rotation operations, the values passed should be in radians. JAnim "
-"also has built-in constants for common angles, such as ``PI`` and ``TAU``. You "
-"can also use forms like ``30 * DEGREES`` to represent angle values, which is "
+"First, for rotation operations, the values passed should be in radians. JAnim also has built-in constants for common "
+"angles, such as ``PI`` and ``TAU``. You can also use forms like ``30 * DEGREES`` to represent angle values, which is "
 "equivalent to ``PI / 6``."
 
 #: ../../source/tutorials/coordinates.rst:220
@@ -509,47 +456,36 @@ msgstr "``about_edge``"
 
 #: ../../source/tutorials/coordinates.rst:224
 msgid "表示缩放或旋转时的参考边缘，默认为 ``ORIGIN``，即物件的中心点。"
-msgstr ""
-"Represents the reference edge when scaling or rotating. Default is ``ORIGIN``, "
-"i.e., the center point of the item."
+msgstr "Represents the reference edge when scaling or rotating. Default is ``ORIGIN``, i.e., the center point of the item."
 
 #: ../../source/tutorials/coordinates.rst:226
 msgid ""
-"例如在 ``.scale(0.25, about_edge=RIGHT)`` 中，将缩放的参考点设置为物件的右边"
-"缘，使得物件被缩小时右边缘位置不变，其余部分向右边缘聚拢。"
+"例如在 ``.scale(0.25, about_edge=RIGHT)`` 中，将缩放的参考点设置为物件的右边缘，使得物件被缩小时右边缘位置不变，其余部分向"
+"右边缘聚拢。"
 msgstr ""
-"For example, in ``.scale(0.25, about_edge=RIGHT)``, the reference point for "
-"scaling is set to the right edge of the item, so that when the item is scaled "
-"down, the right edge position remains unchanged, and the rest converges toward "
-"the right edge."
+"For example, in ``.scale(0.25, about_edge=RIGHT)``, the reference point for scaling is set to the right edge of the item, "
+"so that when the item is scaled down, the right edge position remains unchanged, and the rest converges toward the right "
+"edge."
 
 #: ../../source/tutorials/coordinates.rst:228
 msgid "``about_point``"
 msgstr "``about_point``"
 
 #: ../../source/tutorials/coordinates.rst:230
-msgid ""
-"表示缩放或旋转时的参考点，默认为 ``None``，会根据 ``about_edge`` 取参考点，即默"
-"认以物件的中心；"
+msgid "表示缩放或旋转时的参考点，默认为 ``None``，会根据 ``about_edge`` 取参考点，即默认以物件的中心；"
 msgstr ""
-"Represents the reference point when scaling or rotating. Default is ``None``, "
-"which will take the reference point based on ``about_edge``, i.e., defaults to "
-"the center of the item;"
+"Represents the reference point when scaling or rotating. Default is ``None``, which will take the reference point based "
+"on ``about_edge``, i.e., defaults to the center of the item;"
 
 #: ../../source/tutorials/coordinates.rst:232
 msgid "可以设置为某个点，表示以全局坐标中的该点为参考点。"
-msgstr ""
-"Can be set to a point, meaning to use that point in global coordinates as the "
-"reference point."
+msgstr "Can be set to a point, meaning to use that point in global coordinates as the reference point."
 
 #: ../../source/tutorials/coordinates.rst:234
-msgid ""
-"例如在 ``.rotate(120 * DEGREES, about_point=ORIGIN)`` 中，将旋转的参考点设置为"
-"全局坐标的原点，使得物件围绕原点旋转。"
+msgid "例如在 ``.rotate(120 * DEGREES, about_point=ORIGIN)`` 中，将旋转的参考点设置为全局坐标的原点，使得物件围绕原点旋转。"
 msgstr ""
-"For example, in ``.rotate(120 * DEGREES, about_point=ORIGIN)``, the reference "
-"point for rotation is set to the origin of global coordinates, making the item "
-"rotate around the origin."
+"For example, in ``.rotate(120 * DEGREES, about_point=ORIGIN)``, the reference point for rotation is set to the origin of "
+"global coordinates, making the item rotate around the origin."
 
 #: ../../source/tutorials/coordinates.rst:6
 msgid ""
@@ -562,26 +498,21 @@ msgstr ""
 #: ../../source/tutorials/coordinates.rst:16
 msgid "这两行看起来都是“将物件绕原点逆时针旋转 120 度”，但其实存在本质上的差异。"
 msgstr ""
-"These two lines both appear to \"rotate the item 120 degrees counterclockwise "
-"around the origin\", but there is an essential difference."
+"These two lines both appear to \"rotate the item 120 degrees counterclockwise around the origin\", but there is an "
+"essential difference."
 
 #: ../../source/tutorials/coordinates.rst:18
 msgid ""
-"前者是 ``poly`` 的组件动画，本质上是对操作前后的 ``poly`` 的 **插值效果**，是直"
-"线变换而非弧线移动，并没有真正的旋转效果；"
+"前者是 ``poly`` 的组件动画，本质上是对操作前后的 ``poly`` 的 **插值效果**，是直线变换而非弧线移动，并没有真正的旋转效果；"
 msgstr ""
-"The former is a component animation of ``poly``, essentially an "
-"**interpolation effect** of ``poly`` before and after the operation. It's a "
-"linear transformation rather than arc movement, and doesn't have a true "
-"rotation effect;"
+"The former is a component animation of ``poly``, essentially an **interpolation effect** of ``poly`` before and after the "
+"operation. It's a linear transformation rather than arc movement, and doesn't have a true rotation effect;"
 
 #: ../../source/tutorials/coordinates.rst:20
-msgid ""
-"而后者 :class:`~.Rotate` 作为专门的一个动画类，使得物件沿着圆弧路径旋转，产生真"
-"正的旋转效果。"
+msgid "而后者 :class:`~.Rotate` 作为专门的一个动画类，使得物件沿着圆弧路径旋转，产生真正的旋转效果。"
 msgstr ""
-"While the latter :class:`~.Rotate` is a specialized animation class that makes "
-"the item rotate along an arc path, producing a true rotation effect."
+"While the latter :class:`~.Rotate` is a specialized animation class that makes the item rotate along an arc path, "
+"producing a true rotation effect."
 
 #: ../../source/tutorials/coordinates.rst:22
 msgid "另请参考 :ref:`janim_anims_rotation` 页面的介绍。"
