@@ -380,3 +380,70 @@ class FrameEffectExample(Timeline):
                 duration=4
             )
         )
+
+
+# beginmark ThreeDShapesExample
+class _ThreeDShapesExampleSub(Timeline):
+    def __init__(self, shape_type: str, background_color: JAnimColor):
+        super().__init__()
+        self.shape_type = shape_type
+        self.background_color = background_color
+
+    def construct(self):
+        if self.shape_type == 'smooth':
+            axes = ThreeDAxes((-8, 8), (-8, 8), (-8, 8)).apply_depth_test()
+            self.prepare(FadeIn(axes, at=1))
+
+        background = FrameRect(fill_alpha=1, fill_color=self.background_color, stroke_alpha=0, depth=100)
+        background.fix_in_frame()
+        self.prepare(FadeIn(background, at=1.5, duration=3))
+
+        for shape in [Torus(2, 1), Cylinder(2, 4), Cone(2, 4)]:
+            item = shape.into(self.shape_type).show()
+            self.play(self.RotatingCamera(), duration=4)
+            item.hide()
+        
+    def RotatingCamera(self):
+        return AnimGroup(
+            DataUpdater(
+                self.camera,
+                lambda data, p: data.points.rotate(TAU * p.alpha, axis=RIGHT),
+                rate_func=linear
+            ),
+            DataUpdater(
+                self.camera,
+                lambda data, p: data.points.rotate(TAU * p.alpha, axis=OUT),
+                rate_func=linear
+            ),
+        )
+
+class ThreeDShapesExample(Timeline):
+    def construct(self):
+        subs = [
+            _ThreeDShapesExampleSub(type, color).build().to_item()
+            for type, color in zip(
+                ['checker', 'wire', 'smooth', 'dots'],
+                ['#000022', '#000033', '#000033', '#000022']
+            )
+        ]
+        subs[0].show()
+
+        effects = [
+            RectClip(sub, anchor=ORIGIN)
+            for sub in subs
+        ]
+        effects[0].show().depth.set(-1)
+        
+        dirs = [UL, UR, DL, DR]
+
+        self.forward(1)
+        for sub, effect, dir in zip(subs, effects, dirs):
+            self.show(sub, effect)
+            self.prepare(
+                effect.anim
+                    .points.scale(0.5).to_border(dir, buff=0)
+                    .r.transform.set(scale=0.5)
+            )
+
+        self.forward_to(subs[0].duration)
+# endmark ThreeDShapesExample

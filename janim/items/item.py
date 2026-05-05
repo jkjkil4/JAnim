@@ -858,28 +858,54 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
     def fix_in_frame(self, on: bool = True, *, root_only: bool = False) -> Self:
         """
         固定在屏幕上，也就是即使摄像头移动位置也不会改变在屏幕上的位置
+
+        :param on: 为 ``True`` 表示固定在屏幕上，可传入 ``False`` 表示取消固定在屏幕上
+        :param root_only: 是否只对根物件开启/禁用深度测试，默认否，即对所有后代物件也应用
         """
         for item in self.walk_self_and_descendants(root_only):
             item._fix_in_frame = on
         return self
 
     def is_fix_in_frame(self) -> bool:
+        """检查该物件是否被固定在屏幕上"""
         return self._fix_in_frame
 
     def apply_depth_test(self, on: bool = True, *, root_only: bool = False) -> Self:
+        """
+        开启深度测试
+
+        启用物件的像素级遮挡处理
+
+        更多内容可参考文档教程 :ref:`处理三维遮挡 <deal_with_3d_occlusion>` 的部分
+
+        :param on: 为 ``True`` 表示开启深度测试，可传入 ``False`` 表示禁用深度测试
+        :param root_only: 是否只对根物件开启/禁用深度测试，默认否，即对所有后代物件也应用
+        """
         for item in self.walk_self_and_descendants(root_only):
             item._depth_test = on
         return self
 
     def is_applied_depth_test(self) -> bool:
+        """检查该物件是否开启了深度测试"""
         return self._depth_test
 
     def apply_distance_sort(self, on: bool = True, *, root_only: bool = False) -> Self:
+        """
+        开启距离排序
+
+        在渲染时根据与摄像机的距离排序渲染顺序
+
+        更多内容可参考文档教程 :ref:`处理三维遮挡 <deal_with_3d_occlusion>` 的部分
+
+        :param on: 为 ``True`` 表示开启距离排序，可传入 ``False`` 表示禁用距离排序
+        :param root_only: 是否只对根物件开启/禁用深度测试，默认否，即对所有后代物件也应用
+        """
         for item in self.walk_self_and_descendants(root_only):
             item._distance_sort = on
         return self
 
     def is_applied_distance_sort(self) -> bool:
+        """检查该物件是否开启了距离排序"""
         return self._distance_sort
 
     # endregion

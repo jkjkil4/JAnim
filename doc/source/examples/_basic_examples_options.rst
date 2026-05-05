@@ -88,3 +88,10 @@
         :extract-from-example:
         :media: _static/videos/FrameEffectExample.mp4
         :ref: :class:`~.SimpleFrameEffect` :class:`~.Rotate` :class:`~.DataUpdater`
+
+.. random-option::
+
+    .. janim-example:: ThreeDShapesExample
+        :extract-from-example-mark:
+        :media: _static/videos/ThreeDShapesExample.mp4
+        :ref: :meth:`~.SurfaceGeometry.into` :meth:`~.BuiltTimeline.to_item` :class:`~.RectClip`

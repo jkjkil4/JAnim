@@ -136,7 +136,7 @@
 .. janim-example:: ThirdCoordShift
     :media: _static/tutorial/ThirdCoordShift.mp4
     :hide_name:
-    :ref: :class:`~.ThreeDAxes` :meth:`~.Item.apply_depth_test`
+    :ref: :class:`~.ThreeDAxes` :meth:`~.Item.apply_depth_test` :class:`~.Rotate`
 
     self.camera.points.set(orientation=quat(-0.15, -0.28, -0.04, 0.95))
 
@@ -169,20 +169,22 @@
 
 除了使用内置方向表示坐标，还可以直接使用坐标值来表示位置。例如，上面涉及的 ``.shift(OUT * 2)`` 等效于 ``.shift([0, 0, 2])`` 。
 
+.. _deal_with_3d_occlusion:
+
 处理三维遮挡
 -------------------------
 
 在默认情况下，JAnim 只会根据物件的 ``depth`` 顺序来绘制，但是对于三维空间中物件的遮挡，我们需要一些其它的机制
 
-处理三维空间中遮挡关系的机制可以分为两大种：
+处理三维空间中遮挡关系的机制可以分为两种：
 
--   :meth:`~.Item.apply_depth_test` : 深度测试机制
+-   :meth:`~.Item.apply_depth_test` : **深度测试机制**
 
     渲染时会自动处理启用了该机制的物件的像素级遮挡关系，不渲染已被遮挡的像素，且几乎没有性能损失
 
     具体原理可另行在网络上搜索有关 “深度测试” 或 “深度缓冲” 的内容
 
--   :meth:`~.Item.apply_distance_sort` : 距离排序机制
+-   :meth:`~.Item.apply_distance_sort` : **距离排序机制**
 
     渲染时会计算启用了该机制的物件各自的中心点离当前摄像机的距离，根据距离排序渲染顺序，会有排序的性能损失
 

@@ -21,6 +21,7 @@ JAnim 中内置了一个摄像机物件，我们可以通过 ``self.camera`` 访
 .. janim-example:: CameraZoomIn
     :media: _static/tutorial/CameraZoomIn.mp4
     :hide_name:
+    :ref: :class:`~.NumberPlane` :class:`~.ParametricCurve`
 
     # 螺线参数方程
     def t_func(self, t):
@@ -49,6 +50,7 @@ JAnim 中内置了一个摄像机物件，我们可以通过 ``self.camera`` 访
 .. janim-example:: MovingCamera
     :media: _static/tutorial/MovingCamera.mp4
     :hide_name:
+    :ref: :class:`~.Axes`
 
     # 坐标系
     axes = Axes(axis_config={ 'include_numbers': True })
@@ -84,6 +86,7 @@ JAnim 中内置了一个摄像机物件，我们可以通过 ``self.camera`` 访
 .. janim-example:: MovingCameraWithFixedItems
     :media: _static/tutorial/MovingCameraWithFixedItems.mp4
     :hide_name:
+    :ref: :class:`~.Axes` :meth:`~.Item.fix_in_frame`
 
     # 坐标系
     axes = Axes(axis_config={ 'include_numbers': True })
@@ -122,6 +125,7 @@ JAnim 中内置了一个摄像机物件，我们可以通过 ``self.camera`` 访
 .. janim-example:: CameraOnCurve
     :media: _static/tutorial/CameraOnCurve.mp4
     :hide_name:
+    :ref: :meth:`~.Axes.get_graph` :meth:`~.CoordinateSystem.c2p` :meth:`~.Item.save_state`
 
     axes = Axes(
         (0, 10), (0, 5),
