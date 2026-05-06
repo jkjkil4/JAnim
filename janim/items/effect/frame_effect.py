@@ -141,16 +141,16 @@ class FrameEffect(Item):
                 except ValueError:
                     pass
 
-    def _mark_render_disabled(self, additionals: list[Timeline.AdditionalRenderCallsCallback]):
+    def _mark_render_disabled(self, extras: list[Timeline.ExtraRenderGroup]):
         for appr in self._apprs:
             appr.render_disabled = True
 
-        self._additional_lists = []  # 使得 Transform 以及类似动画能够正确应用 FrameEffect
+        self._extra_lists = []  # 使得 Transform 以及类似动画能够正确应用 FrameEffect
 
-        for rcc in additionals:
-            if all((item in self._items) for item in rcc.related_items):
-                rcc.render_disabled = True
-                self._additional_lists.append(rcc.func())
+        for rg in extras:
+            if all((item in self._items) for item in rg.related_items):
+                rg.render_disabled = True
+                self._extra_lists.append(rg.func())
 
 
 simple_frameeffect_shader = """

@@ -133,13 +133,13 @@ class Transform(Animation):
     def _time_fixed(self) -> None:
         self.align_data()
 
-        self.additional_calls = [
+        self.render_group = [
             (aligned.union, partial(self.render, aligned, aligned.union.renderer_cls().render))
             for aligned in self.aligned.values()
         ]
-        self.timeline.add_additional_render_calls_callback(
+        self.timeline.add_extra_render_group(
             self.t_range,
-            lambda: self.additional_calls,
+            lambda: self.render_group,
             [self.src_item, self.target_item],
         )
 

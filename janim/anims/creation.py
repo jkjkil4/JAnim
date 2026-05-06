@@ -358,13 +358,13 @@ class ShowIncreasingSubsets(Animation):
             for i, child in enumerate(self.group)
         ]
         self.n_children = len(self.group)
-        self.timeline.add_additional_render_calls_callback(
+        self.timeline.add_extra_render_group(
             self.t_range,
-            self.additional_callback,
+            self.render_group_fn,
             [self.group],
         )
 
-    def additional_callback(self):
+    def render_group_fn(self):
         global_t = Animation.global_t_ctx.get()
         alpha = self.get_alpha_on_global_t(global_t)
         for i, apprs in self.i_apprs:

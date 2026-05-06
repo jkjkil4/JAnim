@@ -58,7 +58,8 @@ from janim.utils.space_ops import normalize
 
 _ = get_translator('janim.anims.timeline')
 
-type RenderCallsFn = Callable[[], list[tuple[Item, Callable[[Item], None]]]]
+type RenderGroupReturn = list[tuple[Item, Callable[[Item], None]]]
+type RenderGroupFn = Callable[[], RenderGroupReturn]
 
 
 class Timeline(metaclass=ABCMeta):
@@ -155,9 +156,9 @@ class Timeline(metaclass=ABCMeta):
         subtitle: Text | TypstText
 
     @dataclass
-    class AdditionalRenderCallsCallback:
+    class ExtraRenderGroup:
         t_range: TimeRange
-        func: RenderCallsFn
+        func: RenderGroupFn
         related_items: list[Item] | None
 
         render_disabled: bool = False
@@ -177,7 +178,7 @@ class Timeline(metaclass=ABCMeta):
         self.pause_points: list[Timeline.PausePoint] = []
 
         self.anim_groups: list[AnimGroup] = []
-        self.additional_render_calls_callbacks: list[Timeline.AdditionalRenderCallsCallback] = []
+        self.extra_render_groups: list[Timeline.ExtraRenderGroup] = []
 
         self.time_aligner: TimeAligner = TimeAligner()
         self.item_appearances = Timeline.ItemAppearancesDict(self.time_aligner)
@@ -850,14 +851,14 @@ class Timeline(metaclass=ABCMeta):
             if len(appr.visibility) % 2 == 1
         ]
 
-    def add_additional_render_calls_callback(
+    def add_extra_render_group(
         self,
         t_range: TimeRange,
-        func: RenderCallsFn,
+        func: RenderGroupFn,
         related_items: list[Item] | None,
     ) -> None:
-        self.additional_render_calls_callbacks.append(
-            Timeline.AdditionalRenderCallsCallback(t_range, func, related_items)
+        self.extra_render_groups.append(
+            Timeline.ExtraRenderGroup(t_range, func, related_items),
         )
 
     # endregion
@@ -1111,8 +1112,8 @@ class BuiltTimeline:
                 for range in it.batched(x[1].visibility, 2)
             ),
         )
-        self.visible_additional_callbacks_segments = TimeSegments(
-            self.timeline.additional_render_calls_callbacks,
+        self.visible_render_group_segments = TimeSegments(
+            self.timeline.extra_render_groups,
             lambda x: (
                 x.t_range
                 if x.t_range.end is not FOREVER
@@ -1282,15 +1283,15 @@ class BuiltTimeline:
     def _get_items_render(self, global_t: float) -> list[_ItemWithRenderFunc]:
         # 先提取当前时刻会运作的额外的渲染调用，例如 Transform 产生的
         # 用以传递给 _mark_render_disabled 以便根据 related_items 标记 render_disabled
-        additionals: list[Timeline.AdditionalRenderCallsCallback] = []
-        for rcc in self.visible_additional_callbacks_segments.get(global_t):
-            if rcc.t_range.end is FOREVER:
-                if not rcc.t_range.at <= global_t:
+        extras: list[Timeline.ExtraRenderGroup] = []
+        for rg in self.visible_render_group_segments.get(global_t):
+            if rg.t_range.end is FOREVER:
+                if not rg.t_range.at <= global_t:
                     continue
             else:
-                if not rcc.t_range.at <= global_t < rcc.t_range.end:
+                if not rg.t_range.at <= global_t < rg.t_range.end:
                     continue
-            additionals.append(rcc)
+            extras.append(rg)
 
         # 反向遍历一遍所有物件，这是为了让一些效果标记原有的物件不进行渲染
         # （比如 FrameEffect 会把所应用的物件的 render_disabled 置为 True，所以在下面可以判断这个变量过滤掉它们）
@@ -1299,17 +1300,17 @@ class BuiltTimeline:
             if not appr.is_visible_at(global_t):
                 continue
             data = appr.stack.compute(global_t, True)
-            data._mark_render_disabled(additionals)
+            data._mark_render_disabled(extras)
             render_apprs.append((appr, data))
 
         # 得到额外的渲染调用的方法列表
         # 这里也有可能产生 render_disabled 标记
-        additional_lists: list[list[BuiltTimeline._ItemWithRenderFunc]] = []
-        for rcc in additionals:
-            if rcc.render_disabled:
-                rcc.render_disabled = False  # 重置，因为每次都要重新标记
+        extra_lists: list[list[BuiltTimeline._ItemWithRenderFunc]] = []
+        for rg in extras:
+            if rg.render_disabled:
+                rg.render_disabled = False  # 重置，因为每次都要重新标记
                 continue
-            additional_lists.append(rcc.func())
+            extra_lists.append(rg.func())
 
         # 剔除被标记 render_disabled 的物件，得到 items_render
         items_render: list[BuiltTimeline._ItemWithRenderFunc] = []
@@ -1319,8 +1320,8 @@ class BuiltTimeline:
                 continue
             items_render.append((data, appr.render))
 
-        # 将 additional 的内容也添加到 items_render 中
-        items_render.extend(it.chain(*additional_lists))
+        # 将 extra 的内容也添加到 items_render 中
+        items_render.extend(it.chain(*extra_lists))
 
         return items_render
 
