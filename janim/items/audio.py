@@ -1,4 +1,3 @@
-
 from __future__ import annotations
 
 import copy
@@ -10,6 +9,7 @@ import numpy as np
 import numpy.typing as npt
 
 from janim.exception import EXITCODE_FFMPEG_NOT_FOUND, ExitException
+from janim.locale import get_translator
 from janim.logger import log
 from janim.utils.bezier import interpolate
 from janim.utils.config import Config
@@ -17,7 +17,6 @@ from janim.utils.data import Array
 from janim.utils.file_ops import find_file
 from janim.utils.iterables import resize_with_interpolation
 from janim.utils.simple_functions import clip
-from janim.locale import get_translator
 
 _ = get_translator('janim.items.audio')
 
@@ -56,7 +55,7 @@ class Audio:
         self,
         file_path: str,
         begin: float = -1,
-        end: float = -1
+        end: float = -1,
     ) -> Self:
         """
         从文件中读取音频
@@ -69,8 +68,9 @@ class Audio:
             file_path = find_file(file_path)
         except FileNotFoundError:
             log.warning(
-                _('Could not find the audio file "{file_path}". A blank audio of 8 seconds was used instead.')
-                .format(file_path=file_path)
+                _(
+                    'Could not find the audio file "{file_path}". A blank audio of 8 seconds was used instead.'
+                ).format(file_path=file_path)
             )
 
             self._samples.data = np.zeros((Config.get.audio_framerate * 8, channels))
@@ -92,20 +92,20 @@ class Audio:
             Config.get.ffmpeg_bin,
             '-vn',
             '-i', file_path,
-        ]
+        ]  # fmt: skip
         if begin != -1:
             command += ['-ss', str(begin)]  # clip from
         if end != -1:
-            command += ['-to', str(end)]    # clip to
+            command += ['-to', str(end)]  # clip to
 
         command += [
             '-f', 's16le',
             '-acodec', 'pcm_s16le',
-            '-ar', str(Config.get.audio_framerate),     # framerate & samplerate
+            '-ar', str(Config.get.audio_framerate),  # framerate & samplerate
             '-ac', str(channels),
             '-loglevel', 'error',
-            '-',    # output to a pipe
-        ]
+            '-',  # output to a pipe
+        ]  # fmt: skip
 
         try:
             # TODO: support more sampwidth
@@ -114,7 +114,11 @@ class Audio:
                 data = np.frombuffer(reading_process.stdout.read(), dtype=np.int16)
 
         except FileNotFoundError:
-            log.error(_('Unable to read audio, please install ffmpeg and add it to the environment variables'))
+            log.error(
+                _(
+                    'Unable to read audio, please install ffmpeg and add it to the environment variables'
+                )
+            )
             raise ExitException(EXITCODE_FFMPEG_NOT_FOUND)
 
         data = data.reshape((-1, channels))
@@ -204,10 +208,7 @@ class Audio:
         return self
 
     def recommended_ranges(
-        self,
-        *,
-        amplitude_threshold_ratio: float = 0.02,
-        gap_duration: float = 0.15
+        self, *, amplitude_threshold_ratio: float = 0.02, gap_duration: float = 0.15
     ) -> Generator[tuple[float, float], None, None]:
         """
         得到若干个可用区段 ``(start, end)``，一般用于配音音频，也就是会忽略没声音的部分，得到有声音的区段的起止时间
@@ -236,9 +237,7 @@ class Audio:
         yield from zip(starts, ends)
 
     def recommended_range(
-        self,
-        *,
-        amplitude_threshold_ratio: float = 0.02
+        self, *, amplitude_threshold_ratio: float = 0.02
     ) -> tuple[float, float] | None:
         """
         得到可用区段 ``(start, end)``，一般用于配音音频，也就是会忽略没声音的部分，得到有声音的区段的起止时间

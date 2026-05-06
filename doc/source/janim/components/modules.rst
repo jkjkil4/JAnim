@@ -14,6 +14,7 @@ components
    mark
    points
    radius
+   rgba
    rgbas
    simple
    vpoints

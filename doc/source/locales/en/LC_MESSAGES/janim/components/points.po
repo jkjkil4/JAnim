@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  JAnim\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-02-24 01:11+0800\n"
+"POT-Creation-Date: 2026-03-16 21:03+0800\n"
 "PO-Revision-Date: 2026-01-30 22:49+0800\n"
 "Last-Translator: \n"
 "Language: en\n"
@@ -139,6 +139,10 @@ msgstr ""
 #: janim.components.points.Cmpt_Points.BoundingBox.get_corners:1 of
 msgid "得到包围框（立方体）的八个顶点"
 msgstr "Get the eight vertices of the bounding box (cube)"
+
+#: janim.components.points.Cmpt_Points.BoundingBox.size:1 of
+msgid "即 `(width, height)`"
+msgstr "That is, `(width, height)`"
 
 #: janim.components.points.Cmpt_Points.apply_points_fn:1 of
 msgid "将所有点作为单独的一个参数传入 ``func``，并将 ``func`` 返回的结果作为新的点坐标数据"

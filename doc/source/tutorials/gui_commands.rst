@@ -3,7 +3,7 @@ GUI 命令
 
 GUI 命令允许在 :meth:`~.Timeline.construct` 方法中使用 ``self('命令内容')`` 的形式在 GUI 中打开功能交互面板。
 
-更为重要的是，面板的交互结果在提交后，可以 **应用到源代码上**。
+更为重要的是，面板的交互结果在提交后，可以 **应用到源代码上** 。
 
 GUI 命令的基本用法是：
 
@@ -42,6 +42,8 @@ GUI 命令的基本用法是：
 
     self('select: txt[0]').set(color=RED)
     self('select: txt[1]').set(color=GREEN)
+
+.. _guicmd_camera:
 
 ``camera`` 命令
 ------------------------

@@ -11,8 +11,7 @@ from PySide6.QtWidgets import QLabel, QVBoxLayout
 from janim.anims.timeline import Timeline
 from janim.camera.camera_info import CameraInfo
 from janim.constants import OUT
-from janim.gui.handlers.utils import (HandlerPanel, SourceDiff,
-                                      get_confirm_buttons, jump, parse_item)
+from janim.gui.handlers.utils import HandlerPanel, SourceDiff, get_confirm_buttons, jump, parse_item
 from janim.items.item import Item
 from janim.items.points import Points
 from janim.locale import get_translator
@@ -40,9 +39,11 @@ class SelectPanel(HandlerPanel):
         # setup ui
 
         label_tips = QLabel(
-            _('Left Click: Select Child Item\n'
-              'Right Click: Deselect Child Item'),
-            self
+            _(
+                'Left Click: Select Child Item\n'  #
+                'Right Click: Deselect Child Item'
+            ),
+            self,
         )
 
         self.diff = SourceDiff(command, self)
@@ -194,7 +195,7 @@ class SelectPanel(HandlerPanel):
         p.drawRect(
             QRectF(
                 glw.map_from_gl2d(self.item_box.min_glx, self.item_box.min_gly),
-                glw.map_from_gl2d(self.item_box.max_glx, self.item_box.max_gly)
+                glw.map_from_gl2d(self.item_box.max_glx, self.item_box.max_gly),
             )
         )
 
@@ -206,7 +207,7 @@ class SelectPanel(HandlerPanel):
             p.drawRect(
                 QRectF(
                     glw.map_from_gl2d(box.min_glx, box.min_gly),
-                    glw.map_from_gl2d(box.max_glx, box.max_gly)
+                    glw.map_from_gl2d(box.max_glx, box.max_gly),
                 )
             )
 
@@ -215,6 +216,7 @@ class ItemBox:
     """
     物件及其在 GL 坐标下的可选中范围，四周留有余量
     """
+
     def __init__(self, item: Item, attrs: BasicAttrs):
         self.item = item
 
@@ -242,7 +244,7 @@ class ItemBox:
 def select_next_item_at_position(
     viewer: AnimViewer,
     position: QPointF,
-    current: ItemBox | None
+    current: ItemBox | None,
 ) -> ItemBox | None:
     """
     选取指定位置的下一个物件
@@ -284,10 +286,7 @@ def compute_boxes_of_children(viewer: AnimViewer, item: Item) -> list[ItemBox]:
     """
     遍历 ``item`` 的子物件，计算每个子物件的 :class:`ItemBox`
     """
-    return [
-        ItemBox(sub, BasicAttrs(viewer))
-        for sub in item.get_children()
-    ]
+    return [ItemBox(sub, BasicAttrs(viewer)) for sub in item.get_children()]
 
 
 class BasicAttrs:
@@ -295,12 +294,14 @@ class BasicAttrs:
         tlview = viewer.timeline_view
 
         self.global_t = tlview.progress_to_time(tlview.progress())
-        self.camera_info = viewer.built.current_camera_info()
+        self.camera_info = viewer.built.current_camera_info(as_time=self.global_t)
         # 选取框往四周预留的余量，有余量方便选中极细或极小的物件，基于 GL 坐标
         self.tolerance = np.array([4 / viewer.glw.width(), 4 / viewer.glw.height()])
 
         # 检查 camera_axis 是否只有单个分量
-        vec = np.sort(np.abs(normalize(self.camera_info.camera_axis)))  # 这一串只为了：归一化、绝对值、尽可能单个分量挪到最后
+        vec = np.sort(
+            np.abs(normalize(self.camera_info.camera_axis))
+        )  # 这一串只为了：归一化、绝对值、尽可能单个分量挪到最后
         self.is_camera_axis_simple = np.isclose(vec, OUT).all()
 
 
@@ -310,4 +311,5 @@ def get_fixed_camera_info() -> CameraInfo:
     返回值用于辅助计算 fixed-in-frame 物件的 bounding
     """
     from janim.camera.camera import Camera
+
     return Camera().points.info

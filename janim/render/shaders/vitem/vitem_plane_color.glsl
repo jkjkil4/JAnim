@@ -5,10 +5,10 @@
 //  vec4 get_color(int anchor_idx);
 //  vec4 get_fill(int anchor_idx);
 
-uniform vec3 JA_LIGHT_SOURCE;
-
 #include "vitem_plane_unit_normal_uniforms.glsl"
+
 uniform bool SHADE_IN_3D;
+#include "../../includes/shade.glsl"
 
 vec4 get_vitem_color(float stroke_d, float fill_sgn_d, int idx)
 {
@@ -36,12 +36,7 @@ vec4 get_vitem_color(float stroke_d, float fill_sgn_d, int idx)
         : blend_color(stroke_color, fill_color);
 
     if (SHADE_IN_3D) {
-        vec3 to_sun = normalize(JA_LIGHT_SOURCE - start_point);
-        float dotv = dot(unit_normal, to_sun);
-        float light = 0.5 * dotv * dotv * dotv;
-        if (light < 0.0)
-            light *= 0.5;
-        result_color.rgb += light;
+        result_color.rgb = apply_light(result_color.rgb, start_point, unit_normal);
     }
 
     if (glow_color.a != 0.0) {

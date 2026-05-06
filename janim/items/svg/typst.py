@@ -8,9 +8,9 @@ from typing import Iterable, Literal, Self, overload
 import numpy as np
 
 from janim.constants import FRAME_PPI, ORIGIN, UP
-from janim.exception import (InvalidOrdinalError, InvalidTypstVarError,
-                             PatternMismatchError)
-from janim.items.points import Group, Points
+from janim.exception import InvalidOrdinalError, InvalidTypstVarError, PatternMismatchError
+from janim.items.group import Group
+from janim.items.points import Points
 from janim.items.svg.svg_item import BasepointVItem, SVGElemItem, SVGItem
 from janim.items.vitem import VItem
 from janim.locale import get_translator
@@ -42,7 +42,7 @@ class TypstDoc(SVGItem):
         scale: float = 1.0,
         shared_preamble: str | None = None,
         additional_preamble: str | None = None,
-        **kwargs
+        **kwargs,
     ):
         self.text = text
 
@@ -64,7 +64,7 @@ class TypstDoc(SVGItem):
         super().__init__(
             compile_typst(text, shared_preamble, additional_preamble, vars_str, sys_inputs),
             scale=scale,
-            **kwargs
+            **kwargs,
         )
 
         # 把占位元素替换为实际物件
@@ -77,7 +77,8 @@ class TypstDoc(SVGItem):
                     phbox = placeholder.points.box
 
                     item_to_replace = item if i == 0 else item.copy()
-                    item_to_replace.points.set_size(width=phbox.width, height=phbox.height).move_to(phbox.center)
+                    item_to_replace.points.set_size(width=phbox.width, height=phbox.height)
+                    item_to_replace.points.move_to(phbox.center)
 
                     for suborder, sub in enumerate(item_to_replace.walk_self_and_descendants()):
                         sub.depth._depth = placeholder.depth._depth
@@ -105,16 +106,20 @@ class TypstDoc(SVGItem):
     # region vars
 
     @staticmethod
-    def vars_str(vars: dict[str, TypstVar], unit_or_scale: str | float) -> tuple[str, dict[str, Points]]:
+    def vars_str(
+        vars: dict[str, TypstVar], unit_or_scale: str | float
+    ) -> tuple[str, dict[str, Points]]:
         mapping = {}
         lst = [
-            f'#let {key} = {TypstDoc.var_str(var, f'__ja__{key}', unit_or_scale, mapping)}'
+            f'#let {key} = {TypstDoc.var_str(var, f"__ja__{key}", unit_or_scale, mapping)}'
             for key, var in vars.items()
         ]
         return '#let __jabox = box.with(stroke: white)\n' + '\n'.join(lst), mapping
 
     @staticmethod
-    def var_str(var: TypstVar, label: str, unit_or_scale: str | float, mapping: dict[str, Points]) -> str:
+    def var_str(
+        var: TypstVar, label: str, unit_or_scale: str | float, mapping: dict[str, Points]
+    ) -> str:
         if isinstance(var, Points):
             width = TypstDoc.length_str(var.points.box.width, unit_or_scale)
             height = TypstDoc.length_str(var.points.box.height, unit_or_scale)
@@ -122,21 +127,32 @@ class TypstDoc(SVGItem):
             return f'[#__jabox(width: {width}, height: {height})<{label}>]'
 
         elif isinstance(var, dict):
-            return '(' + ', '.join([
-                f'{key}: {TypstDoc.var_str(v, f'{label}__{key}', unit_or_scale, mapping)}'
-                for key, v in var.items()
-            ]) + ')'
+            return (
+                '('
+                + ', '.join(
+                    [
+                        f'{key}: {TypstDoc.var_str(v, f"{label}__{key}", unit_or_scale, mapping)}'
+                        for key, v in var.items()
+                    ]
+                )
+                + ')'
+            )
 
         elif isinstance(var, Iterable):
-            return '(' + ', '.join([
-                TypstDoc.var_str(v, f'{label}__{i}', unit_or_scale, mapping)
-                for i, v in enumerate(var)
-            ]) + ')'
+            return (
+                '('
+                + ', '.join(
+                    [
+                        TypstDoc.var_str(v, f'{label}__{i}', unit_or_scale, mapping)
+                        for i, v in enumerate(var)
+                    ]
+                )
+                + ')'
+            )
 
         else:
             raise InvalidTypstVarError(
-                _('{var} is not a valid value for embedding in Typst')
-                .format(var=repr(var))
+                _('{var} is not a valid value for embedding in Typst').format(var=repr(var))
             )
 
     @staticmethod
@@ -160,7 +176,7 @@ class TypstDoc(SVGItem):
         target: TypstDoc,
         pattern: TypstPattern,
         ordinal: int = 0,
-        target_ordinal: int | None = None
+        target_ordinal: int | None = None,
     ) -> Self:
         """
         配对并通过变换使得配对的部分重合
@@ -203,7 +219,9 @@ class TypstDoc(SVGItem):
         return self
 
     type SingleMatchPattern = TypstPattern | tuple[TypstPattern, int]
-    type MultiMatchPattern = tuple[TypstPattern, Iterable[int]] | tuple[TypstPattern, types.EllipsisType]
+    type MultiMatchPattern = (
+        tuple[TypstPattern, Iterable[int]] | tuple[TypstPattern, types.EllipsisType]
+    )
 
     @overload
     def __getitem__(self, key: int) -> VItem | BasepointVItem: ...
@@ -237,7 +255,9 @@ class TypstDoc(SVGItem):
                 return self.get(self.slice(pattern, ordinal))
             # item['pattern', (o1, o2)]
             # item['pattern', ...]
-            case TypstDoc() | str() as pattern, ordinal if isinstance(ordinal, (Iterable, types.EllipsisType)):
+            case TypstDoc() | str() as pattern, ordinal if isinstance(
+                ordinal, (Iterable, types.EllipsisType)
+            ):
                 return Group(*self.get(self.slice(pattern, ordinal)))
 
             case _:
@@ -251,7 +271,7 @@ class TypstDoc(SVGItem):
     @overload
     def patterns(
         self,
-        *patterns: SingleMatchPattern | MultiMatchPattern
+        *patterns: SingleMatchPattern | MultiMatchPattern,
     ) -> Group[VItem | BasepointVItem] | Group[Group[VItem | BasepointVItem]]: ...
 
     def patterns(self, *patterns):
@@ -291,7 +311,7 @@ class TypstDoc(SVGItem):
           ``item.get([slice(1, 3), slice(5, 7)], gapless=True) == [item[:1], item[1:3], item[3:5], item[5:7], item[7:]]``
 
         - 注：在这种情况下，所有嵌套结构都会先被展平后处理
-        """     # noqa: E501
+        """  # noqa: E501
         if not gapless:
             if isinstance(slices, slice):
                 return self[slices]
@@ -302,15 +322,14 @@ class TypstDoc(SVGItem):
             for i in flatten(slices):
                 assert isinstance(i, slice)
                 indices.update({i.start, i.stop})
-            return [
-                self[start:stop]
-                for start, stop in it.pairwise(sorted(indices))
-            ]
+            return [self[start:stop] for start, stop in it.pairwise(sorted(indices))]
 
     @overload
     def slice(self, pattern: TypstPattern, ordinal: int) -> slice: ...
     @overload
-    def slice(self, pattern: TypstPattern, ordinal: Iterable[int] | types.EllipsisType) -> list[slice]: ...
+    def slice(
+        self, pattern: TypstPattern, ordinal: Iterable[int] | types.EllipsisType
+    ) -> list[slice]: ...
 
     def slice(self, pattern, ordinal=0):
         """
@@ -326,15 +345,16 @@ class TypstDoc(SVGItem):
 
         if not indices:
             raise PatternMismatchError(
-                _('No matches found for {pattern}')
-                .format(pattern=repr(pattern.text))
+                _('No matches found for {pattern}').format(pattern=repr(pattern.text))
             )
 
         def get_slice(i: int):
             if not 0 <= i < len(indices):
                 raise PatternMismatchError(
-                    _('{ordinal} is out of range for {count} matches')
-                    .format(ordinal=i, count=len(indices))
+                    _('{ordinal} is out of range for {count} matches').format(
+                        ordinal=i,
+                        count=len(indices),
+                    )
                 )
             return slice(indices[i], indices[i] + len(pattern))
 
@@ -344,10 +364,7 @@ class TypstDoc(SVGItem):
             case _ if isinstance(ordinal, Iterable) and all(isinstance(i, int) for i in ordinal):
                 return [get_slice(i) for i in ordinal]
             case types.EllipsisType():
-                return [
-                    slice(i, i + len(pattern))
-                    for i in indices
-                ]
+                return [slice(i, i + len(pattern)) for i in indices]
 
         raise InvalidOrdinalError(_('ordinal {} is invalid').format(ordinal))
 
@@ -407,6 +424,7 @@ class TypstText(TypstDoc):
     """
     Typst 文本
     """
+
     def __init__(
         self,
         text: str,
@@ -414,7 +432,7 @@ class TypstText(TypstDoc):
         shared_preamble: str | None = None,
         preamble: str | None = None,
         use_math_environment: bool = False,
-        **kwargs
+        **kwargs,
     ):
         if preamble is None:
             if use_math_environment:
@@ -425,7 +443,7 @@ class TypstText(TypstDoc):
             f'$ {text} $' if use_math_environment else text,
             shared_preamble=shared_preamble,
             additional_preamble=preamble,
-            **kwargs
+            **kwargs,
         )
 
     def move_into_position(self) -> None:
@@ -438,6 +456,7 @@ class TypstMath(TypstText):
 
     相当于 :class:`TypstText` 传入 ``use_math_environment=True``
     """
+
     def __init__(
         self,
         text: str,
@@ -445,12 +464,12 @@ class TypstMath(TypstText):
         shared_preamble: str | None = None,
         preamble: str | None = None,
         use_math_environment: bool = True,
-        **kwargs
+        **kwargs,
     ):
         super().__init__(
             text,
             shared_preamble=shared_preamble,
             preamble=preamble,
             use_math_environment=use_math_environment,
-            **kwargs
+            **kwargs,
         )

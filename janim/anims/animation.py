@@ -63,6 +63,7 @@ class Animation:
                     self.play(Transform(b, a))
                     self.play(Transform(a, b))
     """
+
     label_color: tuple[float, float, float] = C_LABEL_ANIM_DEFAULT
 
     def __init__(
@@ -71,7 +72,7 @@ class Animation:
         at: float = 0,
         duration: float | ForeverType = DEFAULT_DURATION,
         rate_func: RateFunc = smooth,
-        name: str | None = None
+        name: str | None = None,
     ):
         self.parent: AnimGroup | None = None
         self.name = name
@@ -84,7 +85,7 @@ class Animation:
         # 用于标记该动画的全局时间区段
         self.t_range = TimeRange(
             at,
-            FOREVER if duration is FOREVER else at + duration
+            FOREVER if duration is FOREVER else at + duration,
         )
 
         # 传给该动画对象的 rate_func
@@ -94,6 +95,7 @@ class Animation:
         self.rate_funcs = [] if rate_func is linear else [rate_func]
 
         from janim.anims.timeline import Timeline
+
         self.timeline = Timeline.get_context()
 
     def __anim__(self) -> Self:
@@ -160,7 +162,7 @@ class ItemAnimation(Animation):
         *,
         show_at_begin: bool = True,
         hide_at_end: bool = False,
-        **kwargs
+        **kwargs,
     ):
         super().__init__(**kwargs)
         self.item = item
@@ -298,6 +300,7 @@ class TimeAligner:
 
     该类用于将相近的浮点数归化到同一个值，使得 :class:`TimeRange` 区间严丝合缝
     """
+
     def __init__(self):
         self.recorded_times = []
 
@@ -315,7 +318,7 @@ class TimeAligner:
         """
         对齐时间 ``t``，确保相近的时间点归化到相同的值，返回归化后的时间值
         """
-        t = float(t)    # 避免 numpy 类型浮点数可能导致的问题（例如影响到 GUI 绘制时传给 Qt 的类型）
+        t = float(t)  # 避免 numpy 类型浮点数可能导致的问题（例如影响到 GUI 绘制时传给 Qt 的类型）
 
         idx = bisect_left(self.recorded_times, t)
 
@@ -354,7 +357,13 @@ class TimeAligner:
 
 
 class TimeSegments[T]:
-    def __init__(self, iterable: Iterable[T], key: Callable[[T], TimeRange | Iterable[TimeRange]], *, step: float = 4):
+    def __init__(
+        self,
+        iterable: Iterable[T],
+        key: Callable[[T], TimeRange | Iterable[TimeRange]],
+        *,
+        step: float = 4,
+    ):
         self.step = step
         self.segments: list[list[T]] = []
 

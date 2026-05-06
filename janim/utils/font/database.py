@@ -14,8 +14,7 @@ from janim.locale import get_translator
 from janim.logger import log
 from janim.utils.bezier import PathBuilder
 from janim.utils.font.exception import EXCEPTION_MAP
-from janim.utils.font.variant import (WEIGHT_MAP, Style, StyleName, Weight,
-                                      WeightName)
+from janim.utils.font.variant import WEIGHT_MAP, Style, StyleName, Weight, WeightName
 
 if TYPE_CHECKING:
     from fontTools.ttLib.tables._n_a_m_e import table__n_a_m_e
@@ -48,7 +47,7 @@ class FontFamily:
             key = (
                 self.style_distance(info.style, style),
                 abs(info.weight - weight),
-                -info.weight
+                -info.weight,
             )
             if i == 0 or key < best_key:
                 best = info
@@ -73,7 +72,7 @@ class FontInfo:
         self.name: table__n_a_m_e = font['name']
         try:
             self.os2: table_O_S_2f_2 | None = font.get('OS/2', None)
-        except Exception:   # 有些字体的 OS/2 表损坏会导致 struct.error
+        except Exception:  # 有些字体的 OS/2 表损坏会导致 struct.error
             self.os2 = None
 
         self.exception = EXCEPTION_MAP.get(self.postscript_name, None)
@@ -130,9 +129,11 @@ def get_database() -> FontDatabase:
 
     for filepath in findSystemFonts():
         try:
-            fonts = TTCollection(filepath, lazy=True).fonts \
-                if filepath.endswith('ttc')                 \
+            fonts = (
+                TTCollection(filepath, lazy=True).fonts
+                if filepath.endswith('ttc')
                 else [TTFont(filepath, lazy=True)]
+            )
         except TTLibError:
             log.debug(_('Skipped font "{filepath}"').format(filepath=filepath))
             continue
@@ -150,7 +151,7 @@ def get_font_info_by_attrs(
     name: str,
     weight: int | Weight | WeightName,
     style: Style | StyleName,
-    force_full_name: bool = False
+    force_full_name: bool = False,
 ) -> FontInfo:
     db = get_database()
 
@@ -165,10 +166,7 @@ def get_font_info_by_attrs(
     if info is not None:
         return info
 
-    raise FontNotFoundError(
-        _('No font named "{font_name}"')
-        .format(font_name=name)
-    )
+    raise FontNotFoundError(_('No font named "{font_name}"').format(font_name=name))
 
 
 class Font:
@@ -232,6 +230,7 @@ class Font:
         def wrap_points(func: Callable) -> Callable:
             def wrapper(*args) -> None:
                 func(*[np.array([p.x, p.y, 0]) for p in args[:-1]])
+
             return wrapper
 
         # 解析轮廓
@@ -240,7 +239,7 @@ class Font:
             wrap_points(builder.move_to),
             wrap_points(builder.line_to),
             wrap_points(builder.conic_to),
-            wrap_points(builder.cubic_to)
+            wrap_points(builder.cubic_to),
         )
 
         data = Font.GlyphData(builder.get(), (glyph.advance.x, glyph.advance.y))

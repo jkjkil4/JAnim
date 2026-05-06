@@ -1,17 +1,21 @@
-
 import math
 from dataclasses import dataclass
 from typing import Callable
 
 import numpy as np
+
 from janim.anims.animation import Animation
 from janim.anims.updater import DataUpdater, UpdaterParams
 from janim.components.vpoints import Cmpt_VPoints
-from janim.constants import (C_LABEL_ANIM_ABSTRACT, C_LABEL_ANIM_IN,
-                             C_LABEL_ANIM_INDICATION, C_LABEL_ANIM_OUT,
-                             NAN_POINT)
+from janim.constants import (
+    C_LABEL_ANIM_ABSTRACT,
+    C_LABEL_ANIM_IN,
+    C_LABEL_ANIM_INDICATION,
+    C_LABEL_ANIM_OUT,
+    NAN_POINT,
+)
+from janim.items.group import Group
 from janim.items.item import Item
-from janim.items.points import Group
 from janim.items.vitem import VItem
 from janim.typing import JAnimColor
 from janim.utils.bezier import integer_interpolate
@@ -23,7 +27,13 @@ DEFAULT_DRAWBORDER_THENFILL_STROKE_RADIUS = 0.01
 class ShowPartial(DataUpdater):
     """
     显示物件一部分的动画，显示的部分由 ``bound_func`` 决定
+
+    .. janim-example:: ShowPartialExample
+        :extract-from-test:
+        :media: _static/videos/ShowPartialExample.mp4
+        :url: https://janim.readthedocs.io/zh-cn/latest/janim/anims/creation.html#showpartialexample
     """
+
     label_color = C_LABEL_ANIM_ABSTRACT
 
     def __init__(
@@ -35,7 +45,7 @@ class ShowPartial(DataUpdater):
         become_at_end: bool = False,
         root_only: bool = False,
         zero_bound: int | None = None,
-        **kwargs
+        **kwargs,
     ):
         def func(data: Item, p: UpdaterParams) -> None:
             cmpt = data.components.get('points', None)
@@ -52,13 +62,14 @@ class ShowPartial(DataUpdater):
 
                 if lower == higher and zero_bound is not None:
                     if p.extra_data is None:
-                        p._updater.extra_data = cmpt.pointwise_become_partial(cmpt, zero_bound, zero_bound).copy()
+                        cmpt.pointwise_become_partial(cmpt, zero_bound, zero_bound)
+                        p._updater.extra_data = cmpt.copy()
                     else:
                         cmpt.become(p.extra_data)
                     return
 
             if not auto_close_path:
-                cmpt.pointwise_become_partial(cmpt, lower, higher)     # pragma: no cover
+                cmpt.pointwise_become_partial(cmpt, lower, higher)  # pragma: no cover
             else:
                 end_indices = np.array(cmpt.get_subpath_end_indices())
                 begin_indices = np.array([0, *[indice + 2 for indice in end_indices[:-1]]])
@@ -91,17 +102,36 @@ class ShowPartial(DataUpdater):
 class Create(ShowPartial):
     """
     显示物件的创建过程
+
+    .. janim-example:: CreateExample
+        :extract-from-test:
+        :media: _static/videos/CreateExample.mp4
+        :url: https://janim.readthedocs.io/zh-cn/latest/janim/anims/creation.html#createexample
     """
+
     label_color = C_LABEL_ANIM_IN
 
-    def __init__(self, item: Item, auto_close_path: bool = True, **kwargs):
-        super().__init__(item, lambda p: (0, p.alpha), auto_close_path=auto_close_path, zero_bound=0, **kwargs)
+    def __init__(
+        self,
+        item: Item,
+        auto_close_path: bool = True,
+        **kwargs,
+    ):
+        super().__init__(
+            item, lambda p: (0, p.alpha), auto_close_path=auto_close_path, zero_bound=0, **kwargs
+        )
 
 
 class Uncreate(ShowPartial):
     """
     显示物件的销毁过程（:class:`Create` 的倒放）
+
+    .. janim-example:: UncreateExample
+        :extract-from-test:
+        :media: _static/videos/UncreateExample.mp4
+        :url: https://janim.readthedocs.io/zh-cn/latest/janim/anims/creation.html#uncreateexample
     """
+
     label_color = C_LABEL_ANIM_OUT
 
     def __init__(
@@ -109,7 +139,7 @@ class Uncreate(ShowPartial):
         item: Item,
         hide_at_end: bool = True,
         auto_close_path: bool = True,
-        **kwargs
+        **kwargs,
     ):
         super().__init__(
             item,
@@ -117,7 +147,7 @@ class Uncreate(ShowPartial):
             hide_at_end=hide_at_end,
             auto_close_path=auto_close_path,
             zero_bound=0,
-            **kwargs
+            **kwargs,
         )
 
 
@@ -126,7 +156,13 @@ class Destruction(ShowPartial):
     显示物件的销毁过程
 
     - 与 :class:`Uncreate` 方向相反
+
+    .. janim-example:: DestructionExample
+        :extract-from-test:
+        :media: _static/videos/DestructionExample.mp4
+        :url: https://janim.readthedocs.io/zh-cn/latest/janim/anims/creation.html#destructionexample
     """
+
     label_color = C_LABEL_ANIM_OUT
 
     def __init__(
@@ -134,7 +170,7 @@ class Destruction(ShowPartial):
         item: Item,
         hide_at_end: bool = True,
         auto_close_path: bool = True,
-        **kwargs
+        **kwargs,
     ):
         super().__init__(
             item,
@@ -142,7 +178,7 @@ class Destruction(ShowPartial):
             hide_at_end=hide_at_end,
             auto_close_path=auto_close_path,
             zero_bound=1,
-            **kwargs
+            **kwargs,
         )
 
 
@@ -153,7 +189,13 @@ class DrawBorderThenFill(DataUpdater):
     -   可以使用 ``stroke_radius`` 参数调整“画出边缘”时的描边粗细，在默认画面下的值是 0.01
 
         如果设置了 ``scale_with_camera`` 参数，描边粗细会随着 ``camera`` 大小的变化而调整，画面尺寸越小，描边越细
+
+    .. janim-example:: DrawBorderThenFillExample
+        :extract-from-test:
+        :media: _static/videos/DrawBorderThenFillExample.mp4
+        :url: https://janim.readthedocs.io/zh-cn/latest/janim/anims/creation.html#drawborderthenfillexample
     """
+
     label_color = C_LABEL_ANIM_IN
 
     def __init__(
@@ -167,7 +209,7 @@ class DrawBorderThenFill(DataUpdater):
         rate_func: RateFunc = double_smooth,
         become_at_end: bool = False,
         root_only: bool = False,
-        **kwargs
+        **kwargs,
     ):
         super().__init__(
             item,
@@ -177,7 +219,7 @@ class DrawBorderThenFill(DataUpdater):
             rate_func=rate_func,
             become_at_end=become_at_end,
             root_only=root_only,
-            **kwargs
+            **kwargs,
         )
 
         if scale_with_camera:
@@ -186,22 +228,22 @@ class DrawBorderThenFill(DataUpdater):
         self.stroke_color = stroke_color
 
     @dataclass(slots=True)
-    class ExtraData:
+    class _ExtraData:
         outline: VItem
         zero_data: VItem | None
         stroke_transparent: bool
 
     def create_extra_data(self, data: Item) -> VItem | None:
         if not isinstance(data, VItem):
-            return None     # pragma: no cover
+            return None  # pragma: no cover
         data_copy = data.store()
         data_copy.radius.set(self.stroke_radius)
         data_copy.stroke.set(self.stroke_color, 1)
         data_copy.fill.set(alpha=0)
-        return DrawBorderThenFill.ExtraData(data_copy, None, data.stroke.is_transparent())
+        return DrawBorderThenFill._ExtraData(data_copy, None, data.stroke.is_transparent())
 
     def updater(self, data: VItem, p: UpdaterParams) -> None:
-        extra: DrawBorderThenFill.ExtraData | None = p.extra_data
+        extra: DrawBorderThenFill._ExtraData | None = p.extra_data
         if extra is None:
             return  # pragma: no cover
 
@@ -233,7 +275,13 @@ class DrawBorderThenFill(DataUpdater):
 class Write(DrawBorderThenFill):
     """
     显示书写过程（对每个子物件应用 :class:`DrawBorderThenFill`）
+
+    .. janim-example:: WriteExample
+        :extract-from-test:
+        :media: _static/videos/WriteExample.mp4
+        :url: https://janim.readthedocs.io/zh-cn/latest/janim/anims/creation.html#writeexample
     """
+
     def __init__(
         self,
         item: Item,
@@ -243,13 +291,15 @@ class Write(DrawBorderThenFill):
         rate_func: RateFunc = linear,
         skip_null_items: bool = True,
         root_only: bool = False,
-        **kwargs
+        **kwargs,
     ):
-        length = len([
-            item
-            for item in item.walk_self_and_descendants(root_only=root_only)
-            if not skip_null_items or not item.is_null()
-        ])
+        length = len(
+            [
+                item
+                for item in item.walk_self_and_descendants(root_only=root_only)
+                if not skip_null_items or not item.is_null()
+            ]
+        )
         if duration is None:
             duration = 1 if length < 15 else 2
         if lag_ratio is None:
@@ -262,7 +312,7 @@ class Write(DrawBorderThenFill):
             rate_func=rate_func,
             skip_null_items=skip_null_items,
             root_only=root_only,
-            **kwargs
+            **kwargs,
         )
 
 
@@ -271,6 +321,11 @@ class ShowIncreasingSubsets(Animation):
     逐个显现子物件
 
     注：该动画目前在 :class:`~.FrameEffect` 中无效
+
+    .. janim-example:: ShowIncreasingSubsetsExample
+        :extract-from-test:
+        :media: _static/videos/ShowIncreasingSubsetsExample.mp4
+        :url: https://janim.readthedocs.io/zh-cn/latest/janim/anims/creation.html#showincreasingsubsetsexample
     """
 
     label_color = C_LABEL_ANIM_IN
@@ -282,7 +337,7 @@ class ShowIncreasingSubsets(Animation):
         int_func=round,
         show_at_begin: bool = True,
         hide_at_end: bool = False,
-        **kwargs
+        **kwargs,
     ):
         super().__init__(**kwargs)
         self.group = group
@@ -306,7 +361,7 @@ class ShowIncreasingSubsets(Animation):
         self.timeline.add_additional_render_calls_callback(
             self.t_range,
             self.additional_callback,
-            [self.group]
+            [self.group],
         )
 
     def additional_callback(self):
@@ -324,6 +379,13 @@ class ShowIncreasingSubsets(Animation):
 
 
 class ShowSubitemsOneByOne(ShowIncreasingSubsets):
+    """
+    .. janim-example:: ShowSubitemsOneByOneExample
+        :extract-from-test:
+        :media: _static/videos/ShowSubitemsOneByOneExample.mp4
+        :url: https://janim.readthedocs.io/zh-cn/latest/janim/anims/creation.html#showsubitemsonebyoneexample
+    """
+
     label_color = C_LABEL_ANIM_INDICATION
 
     def __init__(
@@ -332,7 +394,7 @@ class ShowSubitemsOneByOne(ShowIncreasingSubsets):
         *,
         int_func=math.ceil,
         hide_at_end: bool = True,
-        **kwargs
+        **kwargs,
     ):
         super().__init__(group, int_func=int_func, hide_at_end=hide_at_end, **kwargs)
 

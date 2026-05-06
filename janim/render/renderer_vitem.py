@@ -3,9 +3,8 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from janim.render.base import Renderer
-from janim.render.renderer_vitem_plane import VItemPlaneRenderer
 from janim.render.renderer_vitem_curve import VItemCurveRenderer
-
+from janim.render.renderer_vitem_plane import VItemPlaneRenderer
 
 if TYPE_CHECKING:
     from janim.items.vitem import VItem

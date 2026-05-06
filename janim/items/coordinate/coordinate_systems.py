@@ -1,4 +1,3 @@
-
 from abc import ABCMeta, abstractmethod
 from typing import Callable, Iterable, Self
 
@@ -7,14 +6,14 @@ import numpy as np
 from janim.components.component import CmptInfo
 from janim.components.points import Cmpt_Points
 from janim.components.vpoints import Cmpt_VPoints
-from janim.constants import (BLUE, BLUE_D, DEGREES, DL, ORIGIN, OUT, PI, RIGHT,
-                             SMALL_BUFF, UP, WHITE)
+from janim.constants import BLUE, BLUE_D, DEGREES, DL, ORIGIN, OUT, PI, RIGHT, SMALL_BUFF, UP, WHITE
 from janim.items.coordinate.functions import ParametricCurve
 from janim.items.coordinate.number_line import NumberLine
 from janim.items.geometry.line import Line
 from janim.items.geometry.polygon import Polygon
+from janim.items.group import Group, NamedGroupMixin
 from janim.items.item import _ItemMeta
-from janim.items.points import Group, MarkedItem, NamedGroupMixin, Points
+from janim.items.points import MarkedItem, Points
 from janim.items.svg.typst import TypstMath
 from janim.items.vitem import DEFAULT_STROKE_RADIUS
 from janim.typing import JAnimColor, RangeSpecifier, Vect, VectArray
@@ -50,7 +49,7 @@ class CoordinateSystem(metaclass=ABCMeta):
     def create_axis(
         range: RangeSpecifier,
         axis_config: dict,
-        length: float | None
+        length: float | None,
     ) -> NumberLine:
         axis = NumberLine(range, length=length, center=False, **axis_config)
         return axis
@@ -75,8 +74,7 @@ class CoordinateSystem(metaclass=ABCMeta):
         axes = self.get_axes()
         origin = self.get_origin()
         return origin + sum(
-            axis.number_to_point(coord) - origin
-            for axis, coord in zip(axes, coords)
+            axis.number_to_point(coord) - origin for axis, coord in zip(axes, coords)
         )
 
     def coords_array_to_points(self, coords_array: VectArray) -> np.ndarray:
@@ -89,8 +87,7 @@ class CoordinateSystem(metaclass=ABCMeta):
         origin = self.get_origin()
         coords_array = np.asarray(coords_array)
         return origin + sum(
-            axis.number_to_point(coord) - origin
-            for axis, coord in zip(axes, coords_array.T)
+            axis.number_to_point(coord) - origin for axis, coord in zip(axes, coords_array.T)
         )
 
     def c2p(self, *coords: float) -> np.ndarray:
@@ -124,7 +121,7 @@ class CoordinateSystem(metaclass=ABCMeta):
         也可以传入一组位置得到一组对应的坐标
         """
         axes = self.get_axes()
-        return self.point_to_coords3d(point)[:len(axes)]
+        return self.point_to_coords3d(point)[: len(axes)]
 
     def p2c(self, point: Vect | Iterable[Vect]) -> np.ndarray:
         """:meth:`point_to_coords` 的缩写"""
@@ -185,7 +182,7 @@ class Axes(CoordinateSystem, MarkedItem, NamedGroupMixin, metaclass=_ItemMeta_AB
     """
 
     default_axis_config = dict(
-        numbers_to_exclude=[0]
+        numbers_to_exclude=[0],
     )
     default_x_axis_config = {}
     default_y_axis_config = dict(
@@ -196,19 +193,19 @@ class Axes(CoordinateSystem, MarkedItem, NamedGroupMixin, metaclass=_ItemMeta_AB
         default_axis_config,
         'Axes.axis_config_d',
         'Axes.default_axis_config',
-        remove=(4, 3)
+        remove=(4, 3),
     )
     x_axis_config_d = deprecated_classvar(
         default_x_axis_config,
         'Axes.x_axis_config_d',
         'Axes.default_x_axis_config',
-        remove=(4, 3)
+        remove=(4, 3),
     )
     y_axis_config_d = deprecated_classvar(
         default_y_axis_config,
         'Axes.y_axis_config_d',
         'Axes.default_y_axis_config',
-        remove=(4, 3)
+        remove=(4, 3),
     )
 
     def __init__(
@@ -225,23 +222,25 @@ class Axes(CoordinateSystem, MarkedItem, NamedGroupMixin, metaclass=_ItemMeta_AB
         height: float | None = None,
         width: float | None = None,
         unit_size: float = 1.0,
-        **kwargs
+        **kwargs,
     ):
         if height is not None:
             from janim.utils.deprecation import deprecated
+
             deprecated(
                 'height',
                 'y_length',
-                remove=(4, 3)
+                remove=(4, 3),
             )
             y_length = height
 
         if width is not None:
             from janim.utils.deprecation import deprecated
+
             deprecated(
                 'width',
                 'x_length',
-                remove=(4, 3)
+                remove=(4, 3),
             )
             x_length = width
 
@@ -253,9 +252,9 @@ class Axes(CoordinateSystem, MarkedItem, NamedGroupMixin, metaclass=_ItemMeta_AB
                 self.default_axis_config,
                 self.default_x_axis_config,
                 axis_config,
-                x_axis_config
+                x_axis_config,
             ),
-            length=x_length
+            length=x_length,
         )
         self.x_range = x_axis.x_range
 
@@ -265,9 +264,9 @@ class Axes(CoordinateSystem, MarkedItem, NamedGroupMixin, metaclass=_ItemMeta_AB
                 self.default_axis_config,
                 self.default_y_axis_config,
                 axis_config,
-                y_axis_config
+                y_axis_config,
             ),
-            length=y_length
+            length=y_length,
         )
         y_axis.points.rotate(90 * DEGREES, about_point=ORIGIN)
         self.y_range = y_axis.x_range
@@ -278,7 +277,7 @@ class Axes(CoordinateSystem, MarkedItem, NamedGroupMixin, metaclass=_ItemMeta_AB
                 y_axis=y_axis,
             ),
             num_sampled_graph_points_per_tick=num_sampled_graph_points_per_tick,
-            **kwargs
+            **kwargs,
         )
         self.mark.set_points([ORIGIN])
 
@@ -299,7 +298,7 @@ class Axes(CoordinateSystem, MarkedItem, NamedGroupMixin, metaclass=_ItemMeta_AB
         x_range: RangeSpecifier | None = None,
         *,
         bind: bool = True,
-        **kwargs
+        **kwargs,
     ) -> ParametricCurve:
         """
         基于坐标轴的坐标构造函数曲线，使用 :class:`~.ParametricCurve`
@@ -326,7 +325,7 @@ class Axes(CoordinateSystem, MarkedItem, NamedGroupMixin, metaclass=_ItemMeta_AB
         """
         t_range = self.x_range.copy()
         if x_range is not None:
-            t_range[:len(x_range)] = x_range
+            t_range[: len(x_range)] = x_range
 
         if x_range is None or len(x_range) < 3:
             # 当用户没有指定采样步长（没有指定 x_range 或者 x_range 不包含 step 的部分）时
@@ -336,15 +335,17 @@ class Axes(CoordinateSystem, MarkedItem, NamedGroupMixin, metaclass=_ItemMeta_AB
         graph = ParametricCurve(
             lambda t: self.c2p(t, function(t)),
             t_range=tuple(t_range),
-            **kwargs
+            **kwargs,
         )
 
         if bind:
             Cmpt_Points.apply_points_fn.connect(
                 self.points,
-                lambda func, about_point: graph.points.apply_points_fn(func,
-                                                                       about_point=about_point,
-                                                                       about_edge=None)
+                lambda func, about_point: graph.points.apply_points_fn(
+                    func,
+                    about_point=about_point,
+                    about_edge=None,
+                ),
             )
 
         return graph
@@ -355,7 +356,7 @@ class Axes(CoordinateSystem, MarkedItem, NamedGroupMixin, metaclass=_ItemMeta_AB
         t_range: tuple[float, float, float] = (0, 1, 0.1),
         *,
         bind: bool = True,
-        **kwargs
+        **kwargs,
     ):
         """
         基于坐标轴的坐标构造参数曲线，即 :class:`~.ParametricCurve`
@@ -374,15 +375,17 @@ class Axes(CoordinateSystem, MarkedItem, NamedGroupMixin, metaclass=_ItemMeta_AB
         graph = ParametricCurve(
             lambda t: self.coords_to_point(*function(t)),
             t_range,
-            **kwargs
+            **kwargs,
         )
 
         if bind:
             Cmpt_Points.apply_points_fn.connect(
                 self.points,
-                lambda func, about_point: graph.points.apply_points_fn(func,
-                                                                       about_point=about_point,
-                                                                       about_edge=None)
+                lambda func, about_point: graph.points.apply_points_fn(
+                    func,
+                    about_point=about_point,
+                    about_edge=None,
+                ),
             )
 
         return graph
@@ -396,7 +399,7 @@ class Axes(CoordinateSystem, MarkedItem, NamedGroupMixin, metaclass=_ItemMeta_AB
         stroke_alpha: float | None = None,
         fill_alpha: float | None = None,
         bounded_graph: ParametricCurve = None,
-        **kwargs
+        **kwargs,
     ) -> Polygon:
         """
         构造 ``x_range`` 区间内，``graph`` 与坐标轴所围成的区域，使用 :class:`~.Polygon` 表示
@@ -416,14 +419,14 @@ class Axes(CoordinateSystem, MarkedItem, NamedGroupMixin, metaclass=_ItemMeta_AB
                 graph.t_func(a),
                 *[p for p in graph.points.get_anchors() if a < self.p2c(p)[0] < b],
                 graph.t_func(b),
-                self.c2p(b)
+                self.c2p(b),
             ]
         else:
             graph_points, bounded_graph_points = (
                 [
                     g.t_func(a),
                     *[p for p in g.points.get_anchors() if a < self.p2c(p)[0] < b],
-                    g.t_func(b)
+                    g.t_func(b),
                 ]
                 for g in (graph, bounded_graph)
             )
@@ -435,7 +438,7 @@ class Axes(CoordinateSystem, MarkedItem, NamedGroupMixin, metaclass=_ItemMeta_AB
             alpha=alpha,
             stroke_alpha=stroke_alpha,
             fill_alpha=fill_alpha,
-            **kwargs
+            **kwargs,
         )
 
     def get_axis_labels(
@@ -459,7 +462,7 @@ class Axes(CoordinateSystem, MarkedItem, NamedGroupMixin, metaclass=_ItemMeta_AB
     def get_x_axis_label(
         self,
         label: str | Points = 'x',
-        **kwargs
+        **kwargs,
     ) -> TypstMath | Points:
         """
         详见 :meth:`~.NumberLine.get_axis_label`
@@ -471,7 +474,7 @@ class Axes(CoordinateSystem, MarkedItem, NamedGroupMixin, metaclass=_ItemMeta_AB
     def get_y_axis_label(
         self,
         label: str | Points = 'y',
-        **kwargs
+        **kwargs,
     ) -> TypstMath | Points:
         """
         详见 :meth:`~.NumberLine.get_axis_label`
@@ -489,13 +492,14 @@ class ThreeDAxes(Axes):
 
     其它可用参数请参考并类比 :class:`Axes` 的使用
     """
+
     default_z_axis_config = {}
 
     z_axis_config_d = deprecated_classvar(
         default_z_axis_config,
         'ThreeDAxes.z_axis_config_d',
         'ThreeDAxes.default_z_axis_config',
-        remove=(4, 3)
+        remove=(4, 3),
     )
 
     def __init__(
@@ -508,7 +512,7 @@ class ThreeDAxes(Axes):
         z_length: float | None = None,
         z_axis_config: dict = {},
         z_normal: Vect = UP,
-        **kwargs
+        **kwargs,
     ):
         super().__init__(x_range, y_range, axis_config=axis_config, **kwargs)
         self.z_normal_angle = angle_of_vector(z_normal)
@@ -519,14 +523,16 @@ class ThreeDAxes(Axes):
                 self.default_axis_config,
                 self.default_z_axis_config,
                 axis_config,
-                z_axis_config
+                z_axis_config,
             ),
-            length=z_length
+            length=z_length,
         )
+        # fmt: off
         z_axis.points \
             .rotate(-PI / 2, axis=UP, about_point=ORIGIN) \
             .rotate(self.z_normal_angle - PI, axis=OUT, about_point=ORIGIN) \
             .shift(self.x_axis.mark.get())
+        # fmt: on
         self.z_range = z_axis.x_range
 
         self.add(z_axis=z_axis)
@@ -571,7 +577,7 @@ class ThreeDAxes(Axes):
         self,
         label: str | Points = 'z',
         point_up: bool = True,
-        **kwargs
+        **kwargs,
     ) -> TypstMath | Points:
         """
         详见 :meth:`~.NumberLine.get_axis_label`
@@ -581,14 +587,18 @@ class ThreeDAxes(Axes):
         label = self.z_axis.get_axis_label(label, **kwargs)
         if point_up:
             axis_end = self.z_axis.points.get_end()
+            # fmt: off
             label.points \
                 .rotate(PI / 2, axis=RIGHT, about_point=axis_end) \
                 .rotate(self.z_normal_angle + PI / 2, about_point=axis_end)
+            # fmt: on
         return label
 
 
 class CmptVPoints_NumberPlaneImpl(Cmpt_VPoints, impl=True):
-    def prepare_for_nonlinear_transform(self, num_inserted_curves: int = 50, *, root_only=False) -> Self:
+    def prepare_for_nonlinear_transform(
+        self, num_inserted_curves: int = 50, *, root_only=False
+    ) -> Self:
         for cmpt in self.walk_same_cmpt_of_self_and_descendants_without_mock(root_only):
             if not isinstance(cmpt, Cmpt_VPoints) or not cmpt.has():
                 continue
@@ -642,30 +652,30 @@ class NumberPlane(Axes):
         include_ticks=False,
         include_tip=False,
         line_to_number_buff=SMALL_BUFF,
-        line_to_number_direction=DL
+        line_to_number_direction=DL,
     )
     default_y_axis_config = dict(
         line_to_number_direction=DL,
-        numbers_to_exclude=[0]
+        numbers_to_exclude=[0],
     )
 
     background_line_style_d = deprecated_classvar(
         default_background_line_style,
         'NumberPlane.background_line_style_d',
         'NumberPlane.default_background_line_style',
-        remove=(4, 3)
+        remove=(4, 3),
     )
     axis_config_d = deprecated_classvar(
         default_axis_config,
         'NumberPlane.axis_config_d',
         'NumberPlane.default_axis_config',
-        remove=(4, 3)
+        remove=(4, 3),
     )
     y_axis_config_d = deprecated_classvar(
         default_y_axis_config,
         'NumberPlane.y_axis_config_d',
         'NumberPlane.default_y_axis_config',
-        remove=(4, 3)
+        remove=(4, 3),
     )
 
     def __init__(
@@ -676,14 +686,12 @@ class NumberPlane(Axes):
         # Defaults to a faded version of line_config
         faded_line_style: dict = {},
         faded_line_ratio: int = 4,
-        **kwargs
+        **kwargs,
     ):
-        super().__init__(
-            x_range,
-            y_range,
-            **kwargs
+        super().__init__(x_range, y_range, **kwargs)
+        self.background_line_style = merge_dicts_recursively(
+            self.default_background_line_style, background_line_style
         )
-        self.background_line_style = merge_dicts_recursively(self.default_background_line_style, background_line_style)
         self.faded_line_style = dict(faded_line_style)
         self.faded_line_ratio = faded_line_ratio
         self._init_background_lines()
@@ -718,19 +726,19 @@ class NumberPlane(Axes):
         self.add(
             faded_lines=faded_lines,
             background_lines=background_lines,
-            prepend=True
+            prepend=True,
         )
         self.depth.arrange()
 
     def get_lines_parallel_to_axis(
         self,
         axis1: NumberLine,
-        axis2: NumberLine
+        axis2: NumberLine,
     ) -> tuple[Group[Line], Group[Line]]:
         freq = axis2.x_step
         ratio = self.faded_line_ratio
         line = Line(axis1.points.get_start(), axis1.points.get_end())
-        dense_freq = (1 + ratio)
+        dense_freq = 1 + ratio
         step = (1 / dense_freq) * freq
 
         lines1 = Group()

@@ -126,26 +126,9 @@ Updater 的使用
     如果不加 :meth:`~.Item.current`，只会得到 ``construct`` 函数中对应物件的最终状态，而非动画过程中的状态。
 
 .. janim-example:: ArrowPointingExample
+    :extract-from-example:
+    :no-construct:
     :media: _static/videos/ArrowPointingExample.mp4
-
-    dot1 = Dot(LEFT * 3)
-    dot2 = Dot()
-
-    arrow = Arrow(dot1, dot2, color=YELLOW)
-
-    self.show(dot1, dot2, arrow)
-    self.play(
-        dot2.update.points.rotate(TAU, about_point=RIGHT * 2),
-        GroupUpdater(
-            arrow,
-            lambda data, p:
-                data.points.set_start_and_end(
-                    dot1.points.box.center,
-                    dot2.current().points.box.center
-                ).r.place_tip()
-        ),
-        duration=4
-    )
 
 .. hint::
 
@@ -173,42 +156,9 @@ JAnim 的各个 ``Updater`` 并非孤立，不仅可以使用 ``.current()`` 获
 在下面这个例子中，我们每两秒加入一个新的 ``Updater``，以演示“动画复合”的作用：
 
 .. janim-example:: CombineUpdatersExample
+    :extract-from-example:
+    :no-construct:
     :media: _static/videos/CombineUpdatersExample.mp4
-
-    square = Square()
-    square.points.to_border(LEFT)
-
-    self.play(
-        square.anim.points.to_border(RIGHT),
-        duration=2
-    )
-
-    ###############################
-
-    square.points.to_border(LEFT)
-    self.play(
-        square.anim.points.to_border(RIGHT),
-        DataUpdater(
-            square,
-            lambda data, p: data.points.shift(UP * math.sin(p.alpha * 4 * PI)),
-            become_at_end=False
-        ),
-        duration=2
-    )
-
-    ###############################
-
-    square.points.to_border(LEFT)
-    self.play(
-        square.anim.points.to_border(RIGHT),
-        DataUpdater(
-            square,
-            lambda data, p: data.points.shift(UP * math.sin(p.alpha * 4 * PI)),
-            become_at_end=False
-        ),
-        square.update(become_at_end=False).color.set(BLUE).r.points.rotate(-TAU),
-        duration=2
-    )
 
 .. tip::
 
@@ -223,31 +173,10 @@ JAnim 的各个 ``Updater`` 并非孤立，不仅可以使用 ``.current()`` 获
 这里另外再给出一个“动画复合”的示例：
 
 .. janim-example:: RotatingPieExample
+    :extract-from-example:
+    :no-construct:
     :media: _static/videos/RotatingPieExample.mp4
     :ref: :class:`~.Sector` :func:`~.rotate_vector`
-
-    pie = Group(*[
-        Sector(start_angle=i * TAU / 4, angle=TAU / 4, radius=1.5, color=color, fill_alpha=1, stroke_alpha=0)
-            .points.shift(rotate_vector(UR * 0.05, i * TAU / 4))
-            .r
-        for i, color in enumerate([RED, PURPLE, MAROON, GOLD])
-    ])
-
-    self.play(
-        GroupUpdater(
-            pie,
-            lambda data, p: data.points.rotate(p.alpha * TAU, about_point=ORIGIN),
-            duration=5
-        ),
-        DataUpdater(
-            pie[0],
-            lambda data, p: data.points.shift(normalize(data.mark.get()) * p.alpha),
-            rate_func=there_and_back,
-            become_at_end=False,
-            at=2,
-            duration=2
-        )
-    )
 
 .. _item_updater_usage:
 
@@ -282,41 +211,10 @@ JAnim 的各个 ``Updater`` 并非孤立，不仅可以使用 ``.current()`` 获
     self.forward()
 
 .. janim-example:: UpdaterExample
+    :extract-from-example:
+    :no-construct:
     :media: _static/videos/UpdaterExample.mp4
     :ref: :class:`~.Brace`
-
-    square = Square(fill_color=BLUE_E, fill_alpha=1).show()
-    brace = Brace(square, UP).show()
-
-    def text_updater(p: UpdaterParams):
-        cmpt = brace.current().points
-        return cmpt.create_text(f'Width = {cmpt.brace_length:.2f}')
-
-    self.prepare(
-        DataUpdater(
-            brace,
-            lambda data, p: data.points.match(square.current())
-        ),
-        ItemUpdater(None, text_updater),
-        duration=10
-    )
-    self.forward()
-    self.play(square.anim.points.scale(2))
-    self.play(square.anim.points.scale(0.5))
-    self.play(square.anim.points.set_width(5, stretch=True))
-
-    w0 = square.points.box.width
-
-    self.play(
-        DataUpdater(
-            square,
-            lambda data, p: data.points.set_width(
-                w0 + 0.5 * w0 * math.sin(p.alpha * p.range.duration)
-            )
-        ),
-        duration=5
-    )
-    self.forward()
 
 .. note::
 

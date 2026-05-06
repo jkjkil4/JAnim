@@ -21,8 +21,18 @@ class Style(StrEnum):
     Oblique = 'oblique'
 
 
-type WeightName = Literal['thin', 'extralight', 'light', 'regular', 'normal',
-                          'medium', 'semibold', 'bold', 'extrabold', 'black']
+type WeightName = Literal[
+    'thin',
+    'extralight',
+    'light',
+    'regular',
+    'normal',
+    'medium',
+    'semibold',
+    'bold',
+    'extrabold',
+    'black',
+]
 type StyleName = Literal['normal', 'italic', 'oblique']
 
 WEIGHT_MAP = {

@@ -1,15 +1,14 @@
-
 import numbers
 from decimal import Decimal
 from typing import Iterable
 
 import numpy as np
 
-from janim.constants import (DOWN, GREY_B, LEFT, MED_SMALL_BUFF, ORIGIN, RIGHT,
-                             UP, UR)
+from janim.constants import DOWN, GREY_B, LEFT, MED_SMALL_BUFF, ORIGIN, RIGHT, UP, UR
 from janim.items.geometry.arrow import ArrowTip
 from janim.items.geometry.line import Line
-from janim.items.points import Group, MarkedItem, Points
+from janim.items.group import Group
+from janim.items.points import MarkedItem, Points
 from janim.items.svg.typst import TypstMath
 from janim.items.text import Text
 from janim.typing import JAnimColor, RangeSpecifier, Vect
@@ -74,14 +73,14 @@ class NumberLine(MarkedItem, Line):
 
     default_tip_config = dict(
         back_width=0.25,
-        body_length=0.25
+        body_length=0.25,
     )
     """
     箭头的默认属性
     """
 
     default_number_config = dict(
-        font_size=16
+        font_size=16,
     )
     """
     数字的默认属性
@@ -91,13 +90,13 @@ class NumberLine(MarkedItem, Line):
         default_tip_config,
         'NumberLine.tip_config_d',
         'NumberLine.default_tip_config',
-        remove=(4, 3)
+        remove=(4, 3),
     )
     number_config_d = deprecated_classvar(
         default_number_config,
         'NumberLine.number_config_d',
         'NumberLine.default_number_config',
-        remove=(4, 3)
+        remove=(4, 3),
     )
 
     def __init__(
@@ -126,32 +125,35 @@ class NumberLine(MarkedItem, Line):
         number_places: int | None = None,                       # 数字位数
         number_config: dict = {},                               # 数字属性
         decimal_number_config: dict | None = None,
-        **kwargs
-    ) -> None:
+        **kwargs,
+    ) -> None:  # fmt: skip
         if width is not None:
             from janim.utils.deprecation import deprecated
+
             deprecated(
                 'width',
                 'length',
-                remove=(4, 3)
+                remove=(4, 3),
             )
             length = width
 
         if decimal_number_config is not None:
             from janim.utils.deprecation import deprecated
+
             deprecated(
                 'decimal_number_config',
                 'number_config',
-                remove=(4, 3)
+                remove=(4, 3),
             )
             number_config = merge_dicts_recursively(decimal_number_config, number_config)
 
         if 'num_decimal_places' in number_config:
             from janim.utils.deprecation import deprecated
+
             deprecated(
                 'number_config -> num_decimal_places',
                 'number_places',
-                remove=(4, 3)
+                remove=(4, 3),
             )
             number_places = number_config.pop('num_decimal_places')
 
@@ -162,10 +164,7 @@ class NumberLine(MarkedItem, Line):
 
         self.unit_size = unit_size
 
-        self.tip_config = merge_dicts_recursively(
-            self.default_tip_config,
-            tip_config
-        )
+        self.tip_config = merge_dicts_recursively(self.default_tip_config, tip_config)
 
         self.tick_size = tick_size
         self.longer_tick_multiple = longer_tick_multiple
@@ -182,16 +181,14 @@ class NumberLine(MarkedItem, Line):
         else:
             exponent = Decimal(str(self.x_step)).as_tuple().exponent
             self.number_places = max(0, -exponent)
-        self.number_config = merge_dicts_recursively(
-            self.default_number_config,
-            number_config
-        )
+        self.number_config = merge_dicts_recursively(self.default_number_config, number_config)
 
         super().__init__(
-            self.x_min * RIGHT, self.x_max * RIGHT,
+            self.x_min * RIGHT,
+            self.x_max * RIGHT,
             color=color,
             stroke_radius=stroke_radius,
-            **kwargs
+            **kwargs,
         )
         self.mark.set_points([ORIGIN])
 
@@ -302,7 +299,7 @@ class NumberLine(MarkedItem, Line):
         self,
         x_values: Iterable[float] | None = None,
         excluding: Iterable[float] | None = None,
-        **kwargs
+        **kwargs,
     ) -> Group[Text]:
         if x_values is None:
             x_values = self.get_tick_range()
@@ -323,10 +320,10 @@ class NumberLine(MarkedItem, Line):
         x: float,
         direction: np.ndarray | None = None,
         buff: float | None = None,
-        **number_config
+        **number_config,
     ) -> Text:
-        if np.isclose(x, 0.):
-            x = 0.
+        if np.isclose(x, 0.0):
+            x = 0.0
 
         config = self.number_config.copy()
         config.update(number_config)
@@ -340,7 +337,7 @@ class NumberLine(MarkedItem, Line):
         num_item.points.next_to(
             self.number_to_point(x),
             direction=direction,
-            buff=buff
+            buff=buff,
         )
         if x < 0 and direction[0] == 0:
             # Align without the minus sign
@@ -355,7 +352,7 @@ class NumberLine(MarkedItem, Line):
         direction: Vect = UR,
         buff=MED_SMALL_BUFF,
         ensure_on_screen: bool = False,
-        **kwargs
+        **kwargs,
     ) -> TypstMath | Points:
         """
         得到坐标轴标签文字
@@ -432,14 +429,14 @@ class UnitInterval(NumberLine):
         unit_size: int = 10,
         numbers_with_elongated_ticks: Iterable[float] = [0, 1],
         decimal_number_config: dict = dict(
-            num_decimal_places=1
+            num_decimal_places=1,
         ),
-        **kwargs
+        **kwargs,
     ) -> None:
         super().__init__(
             x_range,
             unit_size=unit_size,
             numbers_with_elongated_ticks=numbers_with_elongated_ticks,
             decimal_number_config=decimal_number_config,
-            **kwargs
+            **kwargs,
         )

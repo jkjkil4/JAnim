@@ -8,24 +8,11 @@
 2. 通过 ``动画名(物件, 动画参数)`` 为物件应用内置的特殊动画效果
 
 .. janim-example:: BasicAnimationExample
+    :extract-from-example:
+    :no-construct:
     :media: _static/videos/BasicAnimationExample.mp4
     :hide_name:
     :ref: :class:`~.Create` :class:`~.SpinInFromNothing` :meth:`~.Item.anim`
-
-    circle = Circle()
-    tri = Triangle()
-
-    self.forward()
-
-    self.play(Create(circle))
-    self.play(circle.anim.points.shift(LEFT * 3).scale(1.5))
-    self.play(circle.anim.set(color=RED, fill_alpha=0.5))
-
-    self.play(SpinInFromNothing(tri))
-    self.play(tri.anim.points.shift(RIGHT * 3).scale(1.5))
-    self.play(tri.anim.set(color=BLUE, fill_alpha=0.5))
-
-    self.forward()
 
 基础动画参数
 ------------------

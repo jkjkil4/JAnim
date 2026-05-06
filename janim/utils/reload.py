@@ -28,6 +28,16 @@ def reloads():
 
         with reloads():
             from your_custom_module import *
+
+    不过，被 :meth:`reloads` 包裹的导入内容的 IDE 高亮和补全可能会缺失，也许可以使用如下方法避免：
+
+    .. code-block:: python
+
+        from janim.imports import *
+
+        with reloads():
+            from your_custom_module import *
+        from your_custom_module import *
     """
     builtins.__import__ = _reload_import_hook
     try:

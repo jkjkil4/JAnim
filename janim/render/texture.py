@@ -37,7 +37,7 @@ def get_texture_from_img(img: Image.Image) -> mgl.Texture:
     texture = ctx.texture(
         size=img.size,
         components=len(img.getbands()),
-        data=img.tobytes()
+        data=img.tobytes(),
     )
     texture.repeat_x = False
     texture.repeat_y = False

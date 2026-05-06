@@ -5,8 +5,11 @@ from typing import TYPE_CHECKING
 from PySide6.QtCore import QEvent, QObject, QRectF, Qt
 from PySide6.QtGui import QColor, QMouseEvent, QPainter, QPaintEvent
 
-from janim.gui.handlers.select import (ItemBox, compute_boxes_of_children,
-                                       select_next_item_at_position)
+from janim.gui.handlers.select import (
+    ItemBox,
+    compute_boxes_of_children,
+    select_next_item_at_position,
+)
 from janim.locale import get_translator
 
 if TYPE_CHECKING:
@@ -43,6 +46,7 @@ class Selector(QObject):
             return self.fixed_camera_info
 
         from janim.camera.camera import Camera
+
         info = Camera().points.info
 
         self.fixed_camera_info = info
@@ -156,19 +160,17 @@ class Selector(QObject):
             _('    Left Click: Select Child Item'),
             _('    Right Click: Deselect Child Item'),
             _('    Ctrl+Right Click: Exit'),
-            _('Selected Parent Item: ') + (
+            _('Selected Parent Item: ')
+            + (
                 'None'
                 if self.current is None
                 else f'{self.current.item.__class__.__name__} at 0x{id(self.current.item):X}'
             ),
-            _('Selected Subitems: ') + ', '.join(
-                (
-                    f'[{range[0]}]'
-                    if range[0] + 1 == range[1]
-                    else f'[{range[0]}:{range[1]}]'
-                )
+            _('Selected Subitems: ')
+            + ', '.join(
+                (f'[{range[0]}]' if range[0] + 1 == range[1] else f'[{range[0]}:{range[1]}]')
                 for range in ranges
-            )
+            ),
         ]
 
         glw = self.viewer.glw
@@ -179,7 +181,7 @@ class Selector(QObject):
             p.drawRect(
                 QRectF(
                     glw.map_from_gl2d(self.current.min_glx, self.current.min_gly),
-                    glw.map_from_gl2d(self.current.max_glx, self.current.max_gly)
+                    glw.map_from_gl2d(self.current.max_glx, self.current.max_gly),
                 )
             )
 
@@ -189,7 +191,7 @@ class Selector(QObject):
                 p.drawRect(
                     QRectF(
                         glw.map_from_gl2d(child.min_glx, child.min_gly),
-                        glw.map_from_gl2d(child.max_glx, child.max_gly)
+                        glw.map_from_gl2d(child.max_glx, child.max_gly),
                     )
                 )
 
@@ -199,5 +201,7 @@ class Selector(QObject):
         # 只有当鼠标在窗口内时才更新字的位置
         if glw.rect().contains(glw.mapFromGlobal(glw.cursor().pos())):
             self.painted_cursor_flag = self.compute_cursor_flag()
-        valign = Qt.AlignmentFlag.AlignBottom if self.painted_cursor_flag else Qt.AlignmentFlag.AlignTop
+        valign = (
+            Qt.AlignmentFlag.AlignBottom if self.painted_cursor_flag else Qt.AlignmentFlag.AlignTop
+        )
         p.drawText(rect, Qt.AlignmentFlag.AlignLeft | valign, '\n'.join(txt_list))

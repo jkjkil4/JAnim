@@ -1,9 +1,10 @@
 # borrowed from matplotlib.font_manager
+# fmt: off
 
-import sys
-import os
 import logging
+import os
 import subprocess
+import sys
 from functools import lru_cache
 from pathlib import Path
 

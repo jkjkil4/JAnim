@@ -1,8 +1,7 @@
 from __future__ import annotations
 
 import types
-from typing import (TYPE_CHECKING, Any, Iterable, Protocol, Self,
-                    runtime_checkable)
+from typing import TYPE_CHECKING, Any, Iterable, Protocol, Self, runtime_checkable
 
 if TYPE_CHECKING:
     import numpy as np
@@ -44,6 +43,7 @@ class SupportsAnim(Protocol):
     由于 :class:`~.Animation` 对象本身就实现了 ``__anim__`` 方法返回自己，
     所以用 :class:`SupportsAnim` 作为它们的统称，并会被 ``AnimGroup._get_animation_objects`` 统一转化
     """
+
     def __anim__(self) -> Animation: ...
 
 
@@ -54,6 +54,7 @@ class SupportsTracking(Protocol):
 
     对于没有实现这些方法的对象，使用 :meth:`~.Cmpt_Data.register_funcs` 另行定义类型的这三个方法
     """
+
     def copy(self) -> Self: ...
 
     def not_changed(self, other: Self) -> bool: ...

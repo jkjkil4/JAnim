@@ -3,14 +3,20 @@ import os
 doc_src_path = os.path.dirname(__file__)
 janim_path = os.path.abspath(os.path.join(doc_src_path, '../../janim'))
 
-generate_autodoc_exclude = ['janim.constants', 'janim.logger',
-                            'janim.cli', 'janim.examples', 'janim.locale']
+generate_autodoc_exclude = [
+    'janim.constants',
+    'janim.logger',
+    'janim.cli',
+    'janim.examples',
+    'janim.locale',
+    'janim.gui.charts',
+]
 force_generate_autodoc = False
 
 exclude_substrings = ['._', 'ui_']
 
 extra_include = {
-    'janim': ['constants']
+    'janim': ['constants'],
 }
 
 
@@ -20,7 +26,7 @@ def generate_autodoc(local_path: str, module_path: str) -> bool:
 
     search_path = os.path.join(janim_path, local_path)
     rst_path = os.path.join(doc_src_path, 'janim', local_path)
-    lst = os.listdir(search_path)
+    lst = sorted(os.listdir(search_path))
 
     generated_dirs: list[str] = []
     generated_files: list[str] = []
@@ -54,7 +60,7 @@ def generate_autodoc(local_path: str, module_path: str) -> bool:
     if generated_dirs or generated_files:
         with open(os.path.join(rst_path, 'modules.rst'), 'w') as f_modules:
             try:
-                name = module_path[module_path.rindex('.') + 1:]
+                name = module_path[module_path.rindex('.') + 1 :]
             except ValueError:
                 name = module_path
 

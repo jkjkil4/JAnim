@@ -34,7 +34,7 @@ dependencies = [
 
 [project.optional-dependencies]
 gui = [
-    "pyside6",
+    "PySide6-Essentials",
     "qdarkstyle",
     "beautifulsoup4",
     "sounddevice>=0.5.5; sys_platform == 'win32' or sys_platform == 'darwin'",
@@ -56,11 +56,18 @@ bench = [
     "asv"
 ]
 
+[project.urls]
+Home = "https://github.com/jkjkil4/JAnim"
+Source = "https://github.com/jkjkil4/JAnim"
+Documentation = "https://janim.rtfd.io"
+
+[project.scripts]
+janim = "janim.__main__:main"
+
 [tool.flit.sdist]
 exclude = [
     ".asv/", ".vscode/", ".github/", "assets/", "doc/", "benchmarks/", "test/", "scripts/",
     ".pypirc",
-    ".coveragerc",
     ".readthedocs.yaml",
     ".gitignore",
     "uv.lock",
@@ -70,10 +77,22 @@ exclude = [
     "janim/locale/*/LC_MESSAGES/*.po"
 ]
 
-[project.urls]
-Home = "https://github.com/jkjkil4/JAnim"
-Source = "https://github.com/jkjkil4/JAnim"
-Documentation = "https://janim.rtfd.io"
+[tool.coverage.run]
+source = ["janim"]
+omit = [
+    "janim/gui/*"
+]
 
-[project.scripts]
-janim = "janim.__main__:main"
+[tool.pyright]
+venvPath = "."
+venv = ".venv"
+
+[tool.ruff]
+exclude = [
+    "**/ui_*.py"
+]
+line-length = 100
+
+[tool.ruff.format]
+quote-style = "single"
+

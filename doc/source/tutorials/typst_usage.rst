@@ -70,19 +70,9 @@ Typst 子物件索引
    这也意味着 ``t['theta']`` 和 ``t['theta', 0]`` 是等效的
 
 .. janim-example:: TypstColorizeExample
+    :extract-from-example:
+    :no-construct:
     :media: _static/videos/TypstColorizeExample.mp4
-
-    typ = TypstMath('cos^2 theta + sin^2 theta = 1', scale=3).show()
-
-    self.forward()
-    self.play(typ['cos'].anim.set(color=BLUE))
-    self.play(typ['sin'].anim.set(color=BLUE))
-    self.play(typ['theta', 0].anim.set(color=GOLD))
-    self.play(typ['theta', 1].anim.set(color=ORANGE))
-    self.forward()
-    self.play(typ['theta', ...].anim.set(color=GREEN))
-    self.play(typ['space^2', ...].anim.set(color=RED))
-    self.forward()
 
 如果想要同时取出多个，则将多个编号写在一个序列中即可，例如 ``typ['theta', (0, 1)]`` 则是取出编号为 ``0`` 和 ``1`` 的匹配项，在这里就是所有匹配到的 θ 符号。
 

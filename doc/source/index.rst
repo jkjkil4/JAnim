@@ -84,12 +84,14 @@ JAnim 是一个用于创建流畅动画的库，以程序化动画为核心理�
    tutorials/value_tracker
    tutorials/sub_timeline
    tutorials/camera_usage
-   tutorials/3d_coordinates
+   tutorials/3d_scene
+   tutorials/3d_items
 
 .. toctree::
    :maxdepth: 1
    :caption: 其它教程
 
+   tutorials/geometry_reshape
    tutorials/group_advanced_usage
    tutorials/depth_detail
    tutorials/essence_of_points

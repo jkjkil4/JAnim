@@ -6,19 +6,18 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: JAnim\n"
+"Project-Id-Version:  JAnim\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-01-30 21:12+0800\n"
+"POT-Creation-Date: 2026-04-03 12:37+0800\n"
 "PO-Revision-Date: 2026-01-30 22:48+0800\n"
 "Last-Translator: \n"
-"Language-Team: en <LL@li.org>\n"
 "Language: en\n"
+"Language-Team: en <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "Generated-By: Babel 2.17.0\n"
-"X-Generator: Poedit 3.8\n"
 
 #: ../../source/tutorials/updaters.rst:4
 msgid "Updater 的使用"
@@ -266,10 +265,10 @@ msgid ""
 "    GroupUpdater(\n"
 "        arrow,\n"
 "        lambda data, p:\n"
-"            data.points.set_start_and_end(\n"
+"            data.set_start_and_end(\n"
 "                dot1.points.box.center,\n"
 "                dot2.current().points.box.center\n"
-"            ).r.place_tip()\n"
+"            )\n"
 "    ),\n"
 "    duration=4\n"
 ")"
@@ -285,19 +284,19 @@ msgstr ""
 "    GroupUpdater(\n"
 "        arrow,\n"
 "        lambda data, p:\n"
-"            data.points.set_start_and_end(\n"
+"            data.set_start_and_end(\n"
 "                dot1.points.box.center,\n"
 "                dot2.current().points.box.center\n"
-"            ).r.place_tip()\n"
+"            )\n"
 "    ),\n"
 "    duration=4\n"
 ")"
 
-#: ../../source/tutorials/updaters.rst:152
+#: ../../source/tutorials/updaters.rst:135
 msgid "``dot2.update.points.rotate(TAU, about_point=RIGHT * 2)`` 相当于"
 msgstr "``dot2.update.points.rotate(TAU, about_point=RIGHT * 2)`` is equivalent to"
 
-#: ../../source/tutorials/updaters.rst:154
+#: ../../source/tutorials/updaters.rst:137
 msgid ""
 "DataUpdater(\n"
 "    dot2,\n"
@@ -309,15 +308,15 @@ msgstr ""
 "    lambda data, p: data.points.rotate(TAU * p.alpha, about_point=RIGHT * 2)\n"
 ")"
 
-#: ../../source/tutorials/updaters.rst:161
+#: ../../source/tutorials/updaters.rst:144
 msgid "这是一种简化写法，但并不是所有方法都可以这样简化。"
 msgstr "This is a simplified way of writing, but not all methods can be simplified this way."
 
-#: ../../source/tutorials/updaters.rst:163
+#: ../../source/tutorials/updaters.rst:146
 msgid "在这个示例中，我们首先将 ``dot2`` 围绕一个圆周进行运动。"
 msgstr "In this example, we first make ``dot2`` move around a circle."
 
-#: ../../source/tutorials/updaters.rst:165
+#: ../../source/tutorials/updaters.rst:148
 msgid ""
 "然后在 ``arrow`` 的 ``Updater`` 函数中， 使用 ``.current()`` 便可以得到 ``dot2`` 当前运动到的位置，从而让箭头始终指向 "
 "``dot2``。"
@@ -325,11 +324,11 @@ msgstr ""
 "Then in the ``Updater`` function of ``arrow``, using ``.current()`` allows us to get the current position of ``dot2``, so "
 "that the arrow always points to ``dot2``."
 
-#: ../../source/tutorials/updaters.rst:169
+#: ../../source/tutorials/updaters.rst:152
 msgid "动画复合"
 msgstr "Animation Combination"
 
-#: ../../source/tutorials/updaters.rst:171
+#: ../../source/tutorials/updaters.rst:154
 msgid ""
 "JAnim 的各个 ``Updater`` 并非孤立，不仅可以使用 ``.current()`` 获知其它物件的当前动画状态，还可以在一个物件上 **叠加多个"
 "** ``Updater``，依次应用动画效果。"
@@ -337,7 +336,7 @@ msgstr ""
 "JAnim's various ``Updater`` are not isolated. Not only can you use ``.current()`` to know the current animation state of "
 "other items, but you can also **stack multiple** ``Updater`` on one item, applying animation effects sequentially."
 
-#: ../../source/tutorials/updaters.rst:173
+#: ../../source/tutorials/updaters.rst:156
 msgid "在下面这个例子中，我们每两秒加入一个新的 ``Updater``，以演示“动画复合”的作用："
 msgstr ""
 "In the following example, we add a new ``Updater`` every two seconds to demonstrate the effect of “animation combination”:"
@@ -347,6 +346,8 @@ msgid ""
 "square = Square()\n"
 "square.points.to_border(LEFT)\n"
 "\n"
+"# 这里每次 play 都多一个 Updater，用于演示 动画复合 的效果\n"
+"\n"
 "self.play(\n"
 "    square.anim.points.to_border(RIGHT),\n"
 "    duration=2\n"
@@ -382,6 +383,9 @@ msgstr ""
 "square = Square()\n"
 "square.points.to_border(LEFT)\n"
 "\n"
+"# Here, a new Updater is accumulated for every `play`\n"
+"# to show the effect of animation combination\n"
+"\n"
 "self.play(\n"
 "    square.anim.points.to_border(RIGHT),\n"
 "    duration=2\n"
@@ -414,22 +418,22 @@ msgstr ""
 "    duration=2\n"
 ")"
 
-#: ../../source/tutorials/updaters.rst:215
+#: ../../source/tutorials/updaters.rst:165
 msgid "可以给 ``Updater`` 传入 ``become_at_end=False`` 使物件在动画后回到最初的状态。"
 msgstr ""
 "You can pass ``become_at_end=False`` to ``Updater`` to make the item return to its initial state after the animation."
 
-#: ../../source/tutorials/updaters.rst:217
+#: ../../source/tutorials/updaters.rst:167
 msgid "但是 ``.anim`` 没有这种参数，所以这里每次都有 ``square.points.to_border(LEFT)``。"
 msgstr "But ``.anim`` does not have this parameter, so here we have ``square.points.to_border(LEFT)`` each time."
 
-#: ../../source/tutorials/updaters.rst:221
+#: ../../source/tutorials/updaters.rst:171
 msgid "``.anim`` 所创建的动画具有覆盖性，当其参与“动画复合”时，应将其放在最开始使用。"
 msgstr ""
 "Animations created by ``.anim`` are overriding. When participating in “animation combination”, they should be placed at "
 "the beginning."
 
-#: ../../source/tutorials/updaters.rst:223
+#: ../../source/tutorials/updaters.rst:173
 msgid "这里另外再给出一个“动画复合”的示例："
 msgstr "Here is another example of \"animation combination\":"
 
@@ -489,11 +493,11 @@ msgstr "See also:"
 msgid ":class:`~.Sector` :func:`~.rotate_vector`"
 msgstr ":class:`~.Sector` :func:`~.rotate_vector`"
 
-#: ../../source/tutorials/updaters.rst:255
+#: ../../source/tutorials/updaters.rst:184
 msgid "``ItemUpdater`` 的使用"
 msgstr "Usage of ``ItemUpdater``"
 
-#: ../../source/tutorials/updaters.rst:257
+#: ../../source/tutorials/updaters.rst:186
 msgid ""
 ":class:`~.ItemUpdater` 和前面介绍的两个 ``Updater`` 存在很大的差异，传入前面两个 ``Updater`` 的函数都会收到两个参数 "
 "``data, p``， 但是 :class:`~.ItemUpdater` 只会提供一个参数 ``p``，并且 **将函数返回的物件直接渲染到画面上**。"
@@ -502,7 +506,7 @@ msgstr ""
 "previous two ``Updater`` receive two parameters ``data, p``, but :class:`~.ItemUpdater` only provides one parameter "
 "``p``, and **directly renders the item returned by the function onto the frame**."
 
-#: ../../source/tutorials/updaters.rst:260
+#: ../../source/tutorials/updaters.rst:189
 msgid ":class:`~.ItemUpdater` 的使用场景是在动画过程中动态创建物件以显示，例如数值持续变化的文字："
 msgstr ""
 "The use case of :class:`~.ItemUpdater` is to dynamically create items during animation for display, such as text with "
@@ -620,37 +624,37 @@ msgstr ""
 msgid ":class:`~.Brace`"
 msgstr ":class:`~.Brace`"
 
-#: ../../source/tutorials/updaters.rst:323
+#: ../../source/tutorials/updaters.rst:221
 msgid "从原理上来讲，传入 :class:`~.ItemUpdater` 的物件与动画过程其实没有任何关系。"
 msgstr "In principle, the item passed to :class:`~.ItemUpdater` has no relationship with the animation process."
 
-#: ../../source/tutorials/updaters.rst:325
+#: ../../source/tutorials/updaters.rst:223
 msgid ":class:`~.ItemUpdater` 所干的，在默认情况下其实就是："
 msgstr "What :class:`~.ItemUpdater` does, by default, is:"
 
-#: ../../source/tutorials/updaters.rst:327
+#: ../../source/tutorials/updaters.rst:225
 msgid "在动画开始时，把传入的物件隐藏"
 msgstr "At the start of the animation, hide the passed item"
 
-#: ../../source/tutorials/updaters.rst:328
+#: ../../source/tutorials/updaters.rst:226
 msgid "在动画过程中，渲染函数所返回的物件"
 msgstr "During the animation, render the item returned by the function"
 
-#: ../../source/tutorials/updaters.rst:329
+#: ../../source/tutorials/updaters.rst:227
 msgid "在动画结束后，把传入的物件显示，并调用 :meth:`~.Item.become` 方法将传入物件改变成动画最后一刻的样子"
 msgstr ""
 "After the animation ends, show the passed item and call the :meth:`~.Item.become` method to change the passed item to the "
 "state at the last moment of the animation"
 
-#: ../../source/tutorials/updaters.rst:331
+#: ../../source/tutorials/updaters.rst:229
 msgid "所以 :class:`~.ItemUpdater` 可以不传入物件，传入 ``None`` 也是可以的。"
 msgstr "So :class:`~.ItemUpdater` can be used without passing an item, passing ``None`` is acceptable."
 
-#: ../../source/tutorials/updaters.rst:334
+#: ../../source/tutorials/updaters.rst:232
 msgid "``duration=FOREVER`` 的使用"
 msgstr "Usage of ``duration=FOREVER``"
 
-#: ../../source/tutorials/updaters.rst:336
+#: ../../source/tutorials/updaters.rst:234
 msgid "我们可以使用 ``duration=FOREVER`` 来创建一个持续进行的 ``Updater``，例如："
 msgstr "We can use ``duration=FOREVER`` to create a continuously running ``Updater``, for example:"
 
@@ -702,17 +706,17 @@ msgstr ""
 "\n"
 "self.forward(5)"
 
-#: ../../source/tutorials/updaters.rst:366
+#: ../../source/tutorials/updaters.rst:264
 msgid "``StepUpdater`` 的使用"
 msgstr "Usage of ``StepUpdater``"
 
-#: ../../source/tutorials/updaters.rst:368
+#: ../../source/tutorials/updaters.rst:266
 msgid "按步更新物件，适合用于 **“需要基于上一刻的状态更新下一刻状态”** 的情景，例如物理模拟或是微分方程数值演示等。"
 msgstr ""
 "Update items step by step, suitable for scenarios **\"requiring updating the next state based on the previous state\"**, "
 "such as physics simulations or numerical demonstrations of differential equations."
 
-#: ../../source/tutorials/updaters.rst:370
+#: ../../source/tutorials/updaters.rst:268
 msgid "以下是一个最简单（但也是最没必要使用 :class:`~.StepUpdater`）的一个示例："
 msgstr "The following is the simplest example (but also the least necessary to use :class:`~.StepUpdater`):"
 
@@ -746,7 +750,7 @@ msgstr ""
 ")\n"
 "self.forward()"
 
-#: ../../source/tutorials/updaters.rst:390
+#: ../../source/tutorials/updaters.rst:288
 msgid ""
 "在这个示例中，:class:`~.StepUpdater` 的函数会每次将圆形向右移动 1/50 个单位， 由于 :class:`~.StepUpdater` 默认情况下每秒钟"
 "会执行 50 次，所以圆形每秒会向右移动 1 个单位，经过两秒则时间则向右移动了 2 个单位。"
@@ -755,6 +759,6 @@ msgstr ""
 "Since :class:`~.StepUpdater` executes 50 times per second by default, the circle moves 1 unit to the right per second, "
 "and after two seconds it moves 2 units to the right."
 
-#: ../../source/tutorials/updaters.rst:395
+#: ../../source/tutorials/updaters.rst:293
 msgid "文档有待完善"
 msgstr "Documentation needs to be improved"

@@ -1,4 +1,3 @@
-
 import numpy as np
 from PySide6.QtCore import QPointF, Signal
 from PySide6.QtOpenGLWidgets import QOpenGLWidget
@@ -17,6 +16,7 @@ class GLWidget(QOpenGLWidget):
     """
     窗口中央的渲染界面
     """
+
     rendered = Signal()
     error_occurred = Signal()
 
@@ -82,10 +82,7 @@ class GLWidget(QOpenGLWidget):
         if info is None:
             info = self.built.current_camera_info()
 
-        result = [
-            self.map_from_gl2d(x, y)
-            for x, y in info.map_points(points)
-        ]
+        result = [self.map_from_gl2d(x, y) for x, y in info.map_points(points)]
         return result
 
     def initializeGL(self) -> None:
@@ -106,9 +103,9 @@ class GLWidget(QOpenGLWidget):
 
     def paintGL(self) -> None:
         if self.needs_update_clear_color:
-            self.qfuncs.glClearColor(*self.built.cfg.background_color.rgb, 1.)
+            self.qfuncs.glClearColor(*self.built.cfg.background_color.rgb, 1.0)
             self.needs_update_clear_color = False
-        self.qfuncs.glClear(0x00004000 | 0x00000100)    # GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT
+        self.qfuncs.glClear(0x00004000 | 0x00000100)  # GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT
         self.null_texture.use(FRAME_BUFFER_BINDING)
         ret = self.built.render_all(self.ctx, self.global_t, camera=self.inject_camera)
         self.rendered.emit()

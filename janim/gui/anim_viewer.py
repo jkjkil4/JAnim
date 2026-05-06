@@ -12,13 +12,30 @@ from enum import StrEnum
 from types import ModuleType
 from typing import Any
 
-from PySide6.QtCore import (QByteArray, QEvent, QFileSystemWatcher, QPoint,
-                            QSettings, Qt, QTimer, Signal)
-from PySide6.QtGui import (QCloseEvent, QGuiApplication, QHideEvent, QIcon,
-                           QShowEvent)
-from PySide6.QtWidgets import (QApplication, QCompleter, QLabel, QLineEdit,
-                               QMainWindow, QMessageBox, QPushButton,
-                               QSizePolicy, QSplitter, QStackedLayout, QWidget)
+from PySide6.QtCore import (
+    QByteArray,
+    QEvent,
+    QFileSystemWatcher,
+    QPoint,
+    QSettings,
+    Qt,
+    QTimer,
+    Signal,
+)
+from PySide6.QtGui import QCloseEvent, QGuiApplication, QHideEvent, QIcon, QShowEvent
+from PySide6.QtWidgets import (
+    QApplication,
+    QCompleter,
+    QLabel,
+    QLineEdit,
+    QMainWindow,
+    QMessageBox,
+    QPushButton,
+    QSizePolicy,
+    QSplitter,
+    QStackedLayout,
+    QWidget,
+)
 
 from janim.anims.timeline import BuiltTimeline, Timeline
 from janim.components.data import Cmpt_Data
@@ -37,8 +54,7 @@ from janim.gui.utils.precise_timer import PreciseTimerWithFPS
 from janim.locale import get_translator
 from janim.logger import log
 from janim.utils.config import Config
-from janim.utils.file_ops import (STDIN_FILENAME, get_gui_asset,
-                                  getfile_or_stdin)
+from janim.utils.file_ops import STDIN_FILENAME, get_gui_asset, getfile_or_stdin
 from janim.utils.reload import reset_reloads_state
 
 _ = get_translator('janim.gui.anim_viewer')
@@ -50,6 +66,7 @@ class AnimViewer(QMainWindow):
 
     可以使用 ``AnimViewer.views(MyTimeline().build())`` 进行直接显示
     """
+
     before_set_built = Signal()
     play_finished = Signal()
 
@@ -61,7 +78,7 @@ class AnimViewer(QMainWindow):
         interact: bool = False,
         watch: bool = False,
         available_timeline_names: list[str] | None = None,
-        parent: QWidget | None = None
+        parent: QWidget | None = None,
     ):
         super().__init__(parent)
         self.code_file_path = getfile_or_stdin(built.timeline.__class__)
@@ -137,7 +154,7 @@ class AnimViewer(QMainWindow):
         self.pause_progresses.sort()
 
         # menu bar
-        self.action_rebuild.setEnabled(not self.is_stdin)    # 对于从 stdin 构建的，禁用重新构建功能
+        self.action_rebuild.setEnabled(not self.is_stdin)  # 对于从 stdin 构建的，禁用重新构建功能
 
         if self.selector is not None:
             self.selector.deleteLater()
@@ -158,9 +175,11 @@ class AnimViewer(QMainWindow):
             self.play_timer.take_skip_count()
 
         if self.built.timeline.has_audio_for_all() and self.audio_player is None:
-            self.audio_player = AudioPlayer(self.built.cfg.audio_framerate,
-                                            self.built.cfg.audio_channels,
-                                            self.built.cfg.preview_fps)
+            self.audio_player = AudioPlayer(
+                self.built.cfg.audio_framerate,
+                self.built.cfg.audio_channels,
+                self.built.cfg.preview_fps,
+            )
 
         command = self.built.timeline.gui_command
         if command is not None:
@@ -189,7 +208,7 @@ class AnimViewer(QMainWindow):
 
         # 在 macOS 中，设置了 WindowStaysOnTopHint 后，点击窗口会把 Tool 窗口遮挡
         # 所以这里监听窗口事件，只要点击了窗口，就手动把 Tool 窗口放到最上面
-        if sys.platform == "darwin":
+        if sys.platform == 'darwin':
             QApplication.instance().installEventFilter(self)
 
     def setup_menu_bar(self) -> None:
@@ -304,11 +323,12 @@ class AnimViewer(QMainWindow):
         window_position = self.built.cfg.wnd_pos
         window_monitor = self.built.cfg.wnd_monitor
 
-        if len(window_position) != 2 or window_position[0] not in 'UOD' or window_position[1] not in 'LOR':
-            log.warning(
-                _('wnd_pos has wrong argument {wnd_pos}.')
-                .format(wnd_pos=window_position)
-            )
+        if (
+            len(window_position) != 2
+            or window_position[0] not in 'UOD'
+            or window_position[1] not in 'LOR'
+        ):
+            log.warning(_('wnd_pos has wrong argument {wnd_pos}.').format(wnd_pos=window_position))
             window_position = 'UR'
 
         screens = QApplication.screens()
@@ -317,9 +337,10 @@ class AnimViewer(QMainWindow):
         else:
             screen = screens[0]
             log.warning(
-                _('wnd_monitor has invalid value {wnd_monitor}, use {range} instead.')
-                .format(wnd_monitor=window_monitor,
-                        range=('0' if len(screens) == 1 else f'0~{len(screens) - 1}'))
+                _('wnd_monitor has invalid value {wnd_monitor}, use {range} instead.').format(
+                    wnd_monitor=window_monitor,
+                    range=('0' if len(screens) == 1 else f'0~{len(screens) - 1}'),
+                )
             )
         geometry = screen.availableGeometry()
 
@@ -338,7 +359,9 @@ class AnimViewer(QMainWindow):
         margins = self.windowHandle().frameMargins()
         geometry.adjust(margins.left(), margins.top(), margins.right(), margins.bottom())
 
-        self.windowHandle().setScreen(screen)   # 在 Windows 中不需要这句也行，但是 macOS 中需要这句才能正确移动到副屏
+        # 在 Windows 中不需要这句也行，但是 macOS 中需要这句才能正确移动到副屏
+        self.windowHandle().setScreen(screen)
+
         self.setGeometry(geometry)
 
     def update_completer(self, completions: list[str]) -> None:
@@ -357,7 +380,9 @@ class AnimViewer(QMainWindow):
     # region options
 
     def load_options(self) -> None:
-        settings = QSettings(os.path.join(Config.get.temp_dir, 'anim_viewer.ini'), QSettings.Format.IniFormat)
+        settings = QSettings(
+            os.path.join(Config.get.temp_dir, 'anim_viewer.ini'), QSettings.Format.IniFormat
+        )
         settings.beginGroup(self.code_file_path)
         frame_skip = settings.value('frame_skip', False, type=bool)
         settings.endGroup()
@@ -366,14 +391,16 @@ class AnimViewer(QMainWindow):
         if frame_skip:
             # 在渲染后才真正启用 frame_skip，避免启动时跳过太多帧
             def slot() -> None:
-                self.play_timer.start_precise_timer()   # 重置时间
+                self.play_timer.start_precise_timer()  # 重置时间
                 self.play_timer.set_skip_enabled(True)
                 self.glw.rendered.disconnect(slot)
 
             self.glw.rendered.connect(slot)
 
     def save_options(self) -> None:
-        settings = QSettings(os.path.join(Config.get.temp_dir, 'anim_viewer.ini'), QSettings.Format.IniFormat)
+        settings = QSettings(
+            os.path.join(Config.get.temp_dir, 'anim_viewer.ini'), QSettings.Format.IniFormat
+        )
         settings.beginGroup(self.code_file_path)
         settings.setValue('frame_skip', self.action_frame_skip.isChecked())
         settings.endGroup()
@@ -467,15 +494,17 @@ class AnimViewer(QMainWindow):
         timeline_class = getattr(module, new_timeline_name, None)
         if not isinstance(timeline_class, type) or not issubclass(timeline_class, Timeline):
             log.error(
-                _('No timeline named "{name}" in "{file}"')
-                .format(name=new_timeline_name, file=module.__file__)
+                _('No timeline named "{name}" in "{file}"').format(
+                    name=new_timeline_name,
+                    file=module.__file__,
+                )
             )
             return
 
         try:
             built: BuiltTimeline = timeline_class().build(
                 hide_subtitles=self.built.timeline.hide_subtitles,
-                show_debug_notice=True
+                show_debug_notice=True,
             )
         except Exception as e:
             if not isinstance(e, ExitException):
@@ -485,7 +514,9 @@ class AnimViewer(QMainWindow):
 
         self.set_built_and_handle_states(module, built, new_timeline_name)
 
-    def set_built_and_handle_states(self, module: ModuleType, built: BuiltTimeline, name: str) -> None:
+    def set_built_and_handle_states(
+        self, module: ModuleType, built: BuiltTimeline, name: str
+    ) -> None:
         stay_same = self.built.timeline.__class__.__name__ == name
         progress = self.timeline_view.progress()
         preview_fps = self.built.cfg.preview_fps
@@ -514,21 +545,31 @@ class AnimViewer(QMainWindow):
             # 设置回 入点/出点 信息，并根据当前的总时长进行调整
             # 后一个判断对应“如果入点比总时长还大，那么就不设置回 入点/出点 信息了”
             if inout_point is not None and inout_point[0] < built.duration:
-                self.timeline_view.inout_point = (inout_point[0], min(inout_point[1], built.duration))
+                self.timeline_view.inout_point = (
+                    inout_point[0],
+                    min(inout_point[1], built.duration),
+                )
 
         import gc
 
         from janim.cli import get_all_timelines_from_module
 
+        start_time = time.time()
         gc.collect()
-        self.update_completer([timeline.__name__ for timeline in get_all_timelines_from_module(module)])
+        elapsed = time.time() - start_time
+        if elapsed >= 0.2:  # 只在超过 0.2s 的时候才提示，如果时间较短则不提示
+            log.info(_('GC took {elapsed} s').format(elapsed=f'{elapsed:.2f}'))
+
+        self.update_completer(
+            [timeline.__name__ for timeline in get_all_timelines_from_module(module)]
+        )
 
         if self.has_connection():
             # 发送重新构建了的信息
             self.send_janim_cmd(Cmd.Rebuilt)
 
-            time = self.timeline_view.progress_to_time(self.timeline_view.progress())
-            self.send_janim_cmd(Cmd.Lineno, self.built.timeline.get_lineno_at_time(time))
+            t = self.timeline_view.progress_to_time(self.timeline_view.progress())
+            self.send_janim_cmd(Cmd.Lineno, self.built.timeline.get_lineno_at_time(t))
 
         self.glw.update()
 
@@ -549,13 +590,13 @@ class AnimViewer(QMainWindow):
 
         self.copied_label = QLabel(_('Copied!'))
         self.copied_label.setStyleSheet(
-            '''
+            """
             background-color: #232629;
             border: 1px solid white;
             padding: 2px 4px;
             border-radius: 6px;
             font-size: 12px;
-            '''
+            """
         )
         self.copied_label.setWindowFlag(Qt.WindowType.ToolTip)
         self.copied_label.adjustSize()
@@ -596,8 +637,7 @@ class AnimViewer(QMainWindow):
             self.play_timer.stop()
             # 这里使用 QTimer.singleShot 是为了让这个消息尽量在 traceback 后再显示
             QTimer.singleShot(
-                0,
-                lambda: log.error(_('An error occurred during rendering, playback stopped'))
+                0, lambda: log.error(_('An error occurred during rendering, playback stopped'))
             )
 
         # 没把这个放在 if 分支里，是为了在 inactive 的时候也设置为 True
@@ -621,10 +661,12 @@ class AnimViewer(QMainWindow):
 
         # 播放 prev_progress ~ curr_progress 之间的音频
         if self.built.timeline.has_audio_for_all():
-            samples = self.built.get_audio_samples_of_frame(self.built.cfg.preview_fps,
-                                                            self.built.cfg.audio_framerate,
-                                                            prev_progress,
-                                                            count=played_count)
+            samples = self.built.get_audio_samples_of_frame(
+                self.built.cfg.preview_fps,
+                self.built.cfg.audio_framerate,
+                prev_progress,
+                count=played_count,
+            )
             self.audio_player.write(samples.tobytes())
 
         # 查找 (prev_progress, curr_progress] 的区段的第一个 pause_point，如果有则暂停到特定位置
@@ -664,15 +706,19 @@ class AnimViewer(QMainWindow):
         timeline_class = getattr(module, timeline_name, None)
         if not isinstance(timeline_class, type) or not issubclass(timeline_class, Timeline):
             log.error(
-                _('No timeline named "{name}" in "{file}"')     # 这里的 file 一定会是 "<stdin>"
-                .format(name=timeline_name, file=module.__file__)
+                _(
+                    'No timeline named "{name}" in "{file}"'
+                ).format(  # 这里的 file 一定会是 "<stdin>"
+                    name=timeline_name,
+                    file=module.__file__,
+                )
             )
             return
 
         try:
             built: BuiltTimeline = timeline_class().build(
                 hide_subtitles=self.built.timeline.hide_subtitles,
-                show_debug_notice=True
+                show_debug_notice=True,
             )
         except Exception as e:
             if not isinstance(e, ExitException):
@@ -685,13 +731,16 @@ class AnimViewer(QMainWindow):
     def on_clear_font_cache_triggered(self) -> None:
         import janim.utils.font.database as fontdb
         import janim.utils.typst_compile as typcompile
+
         fontdb._database = None
         typcompile._typst_fonts = None
         QMessageBox.information(
             self,
             'JAnim',
-            _('Font cache cleared.\n'
-              'Tip: Use this to load newly installed fonts without restarting JAnim.')
+            _(
+                'Font cache cleared.\n'  #
+                'Tip: Use this to load newly installed fonts without restarting JAnim.'
+            ),
         )
 
     # endregion (slots-anim)
@@ -706,30 +755,33 @@ class AnimViewer(QMainWindow):
         ret = False
         self.shared_socket = QUdpSocket()
         if 1024 <= client_search_port <= 65535:
-            ret = self.shared_socket.bind(QHostAddress.SpecialAddress.LocalHost,
-                                          client_search_port,
-                                          QUdpSocket.BindFlag.ShareAddress | QUdpSocket.BindFlag.ReuseAddressHint)
+            ret = self.shared_socket.bind(
+                QHostAddress.SpecialAddress.LocalHost,
+                client_search_port,
+                QUdpSocket.BindFlag.ShareAddress | QUdpSocket.BindFlag.ReuseAddressHint,
+            )
             if ret:
                 self.shared_socket.readyRead.connect(self.on_shared_ready_read)
                 log.info(
-                    _('Searching port has been opened at {port}')
-                    .format(port=client_search_port)
+                    _('Searching port has been opened at {port}').format(port=client_search_port),
                 )
             else:
                 log.warning(
-                    _('Failed to open searching port at {port}')
-                    .format(port=client_search_port)
+                    _('Failed to open searching port at {port}').format(port=client_search_port),
                 )
         else:
             log.warning(
-                _('Searching port {port} is invalid, '
-                  'please use a number between 1024 and 65535 instead')
-                .format(port=client_search_port)
+                _(
+                    'Searching port {port} is invalid, please use a number between 1024 and 65535 instead'
+                ).format(port=client_search_port)
             )
 
         if not ret:
-            log.warning(_('Interactive development is disabled '
-                          'because the searching port is not established.'))
+            log.warning(
+                _(
+                    'Interactive development is disabled because the searching port is not established.'
+                ),
+            )
             self.socket = None
             return
 
@@ -740,7 +792,9 @@ class AnimViewer(QMainWindow):
 
         self.clients: set[tuple[QHostAddress, int]] = set()
 
-        log.info(_('Interactive port has been opened at {port}').format(port=self.socket.localPort()))
+        log.info(
+            _('Interactive port has been opened at {port}').format(port=self.socket.localPort()),
+        )
         self.setWindowTitle(f'{self.windowTitle()} [{self.socket.localPort()}]')
 
     def has_connection(self) -> bool:
@@ -762,14 +816,14 @@ class AnimViewer(QMainWindow):
                             'type': 'find_re',
                             'data': {
                                 'port': self.socket.localPort(),
-                                'file_path': os.path.abspath(inspect.getfile(self.built.timeline.__class__))
-                            }
+                                'file_path': os.path.abspath(inspect.getfile(self.built.timeline.__class__)),
+                            },
                         }
-                    })
+                    })  # fmt: skip
                     self.socket.writeDatagram(
                         QByteArray.fromStdString(msg),
                         datagram.senderAddress(),
-                        datagram.senderPort()
+                        datagram.senderPort(),
                     )
 
             except Exception:
@@ -791,19 +845,18 @@ class AnimViewer(QMainWindow):
 
                     # 重新构建
                     case 'file_saved':
-                        if self.watcher is None:    # 如果已经用 watcher 来监视文件变化，则跳过，避免功能重复
-                            if os.path.samefile(janim['file_path'], inspect.getmodule(self.built.timeline).__file__):
+                        # 如果已经用 watcher 来监视文件变化，则跳过，避免功能重复
+                        if self.watcher is None:
+                            if os.path.samefile(
+                                janim['file_path'], inspect.getmodule(self.built.timeline).__file__
+                            ):
                                 self.on_rebuild_triggered()
 
             except Exception:
                 traceback.print_exc()
 
     def send_janim_cmd(self, cmd: Cmd, data: Any = None) -> None:
-        msg = {
-            'janim': {
-                'type': str(cmd)
-            }
-        }
+        msg = {'janim': {'type': str(cmd)}}
         if data is not None:
             msg['janim']['data'] = data
 
@@ -822,7 +875,8 @@ class AnimViewer(QMainWindow):
         self.watcher.fileChanged.connect(self.watcher_timer.start)
         self.watcher_retries = 0
 
-        self.watch_mtime = 0    # 因为有些情况下保存可能会导致多次触发 watcher，所以记录文件最后修改时间来过滤，避免重复响应
+        # 因为有些情况下保存可能会导致多次触发 watcher，所以记录文件最后修改时间来过滤，避免重复响应
+        self.watch_mtime = 0
 
         log.info(_('Directly watching changes to "{file}"').format(file=code_file_path))
 
@@ -843,7 +897,7 @@ class AnimViewer(QMainWindow):
         self.watcher_timer.stop()
 
         mtime = os.path.getmtime(self.code_file_path)
-        if mtime != self.watch_mtime:   # 使用文件最后修改时间过滤重复的触发
+        if mtime != self.watch_mtime:  # 使用文件最后修改时间过滤重复的触发
             self.watch_mtime = mtime
             self.on_rebuild_triggered()
 
@@ -858,10 +912,14 @@ class AnimViewer(QMainWindow):
 
         self.save_options()
 
-    if sys.platform == "darwin":
+    if sys.platform == 'darwin':
+
         def eventFilter(self, watched, event):
             if self.windowFlags() & Qt.WindowType.WindowStaysOnTopHint:
-                if event.type() in (QEvent.Type.MouseButtonPress, QEvent.Type.NonClientAreaMouseButtonPress):
+                if event.type() in (
+                    QEvent.Type.MouseButtonPress,
+                    QEvent.Type.NonClientAreaMouseButtonPress,
+                ):
                     for obj in self.children():
                         if getattr(obj, ACTION_WIDGET_FLAG_KEY, False):
                             obj.raise_()

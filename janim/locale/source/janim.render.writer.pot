@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-02-05 11:52+0800\n"
+"POT-Creation-Date: 2026-04-10 10:36+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,64 +17,68 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: janim/render/writer.py:101
+#: janim/render/writer.py:103
 #, python-brace-format
 msgid "Writing video \"{name}\""
 msgstr ""
 
-#: janim/render/writer.py:202
+#: janim/render/writer.py:204
 #, python-brace-format
 msgid "Finished writing video \"{name}\" in {elapsed:.2f} s"
 msgstr ""
 
-#: janim/render/writer.py:208
+#: janim/render/writer.py:210
 #, python-brace-format
 msgid "File saved to \"{file_path}\" (video only)"
 msgstr ""
 
-#: janim/render/writer.py:276
-msgid "No hardware encoder found"
-msgstr ""
-
-#: janim/render/writer.py:279
+#: janim/render/writer.py:245
 #, python-brace-format
 msgid "Using {encoder} for encoding"
 msgstr ""
 
-#: janim/render/writer.py:295
+#: janim/render/writer.py:292
+msgid "Hardware encoder probe results:"
+msgstr ""
+
+#: janim/render/writer.py:304
+msgid "No hardware encoder found"
+msgstr ""
+
+#: janim/render/writer.py:364
 msgid ""
 "Unable to output video. Please install ffmpeg and add it to the environment "
 "variables."
 msgstr ""
 
-#: janim/render/writer.py:311
+#: janim/render/writer.py:380
 #, python-brace-format
 msgid "Writing audio of \"{name}\""
 msgstr ""
 
-#: janim/render/writer.py:341
+#: janim/render/writer.py:410
 #, python-brace-format
 msgid "Finished writing audio of \"{name}\" in {elapsed:.2f} s"
 msgstr ""
 
-#: janim/render/writer.py:347
+#: janim/render/writer.py:416
 #, python-brace-format
 msgid "File saved to \"{file_path}\""
 msgstr ""
 
-#: janim/render/writer.py:370
+#: janim/render/writer.py:439
 msgid ""
 "Unable to output audio. Please install ffmpeg and add it to the environment "
 "variables."
 msgstr ""
 
-#: janim/render/writer.py:406
+#: janim/render/writer.py:475
 msgid ""
 "Unable to merge video. Please install ffmpeg and add it to the environment "
 "variables."
 msgstr ""
 
-#: janim/render/writer.py:419
+#: janim/render/writer.py:488
 #, python-brace-format
 msgid "File saved to \"{file_path}\" (merged)"
 msgstr ""

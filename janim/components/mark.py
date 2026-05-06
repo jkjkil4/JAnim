@@ -44,19 +44,18 @@ class Cmpt_Mark[ItemT](Component[ItemT]):
         cmpt2_copy = cmpt2.copy()
 
         if len1 < len2:
-            cmpt1_copy.set_points(resize_and_repeatedly_extend(cmpt1.get_points(), len(cmpt2.get_points())))
+            cmpt1_copy.set_points(
+                resize_and_repeatedly_extend(cmpt1.get_points(), len(cmpt2.get_points()))
+            )
         elif len1 > len2:
-            cmpt2_copy.set_points(resize_and_repeatedly_extend(cmpt2.get_points(), len(cmpt1.get_points())))
+            cmpt2_copy.set_points(
+                resize_and_repeatedly_extend(cmpt2.get_points(), len(cmpt1.get_points()))
+            )
 
         return AlignedData(cmpt1_copy, cmpt2_copy, cmpt1_copy.copy())
 
     def interpolate(
-        self,
-        cmpt1: Self,
-        cmpt2: Self,
-        alpha: float,
-        *,
-        path_func: PathFunc = straight_path
+        self, cmpt1: Self, cmpt2: Self, alpha: float, *, path_func: PathFunc = straight_path
     ) -> None:
         if not cmpt1._points.is_share(cmpt2._points) or not cmpt1._points.is_share(self._points):
             if cmpt1._points.is_share(cmpt2._points):
@@ -92,8 +91,11 @@ class Cmpt_Mark[ItemT](Component[ItemT]):
         return self
 
     @register_updater(
-        lambda self, p, point, index=0, *, root_only=False:
-            self.set(interpolate(np.asarray(point), self.get(index), p.alpha), index, root_only=root_only)
+        lambda self, p, point, index=0, *, root_only=False: (  #
+            self.set(
+                interpolate(np.asarray(point), self.get(index), p.alpha), index, root_only=root_only
+            )
+        )
     )
     @Signal
     def set(self, point: Vect, index: int | str = 0, *, root_only: bool = False) -> Self:

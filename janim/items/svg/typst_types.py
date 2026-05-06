@@ -1,18 +1,21 @@
 from typing import Any, Iterable, Literal, NoReturn
 
 from janim.exception import InvalidOrdinalError
-from janim.items.points import Group, Points
+from janim.items.group import Group
+from janim.items.points import Points
 from janim.items.svg.svg_item import SVGElemItem
 from janim.items.svg.typst import TypstText
 from janim.locale import get_translator
 
 type TypMatDelim = Literal['(', ')', '[', ']', '{', '}', '|', 'none']
 type TypAlignment = Literal['start', 'end', 'left', 'center', 'right', 'top', 'horizon', 'bottom']
-type TypMatAlignment = Literal['start', 'left', 'center', 'right', 'end']   # 矩阵不支持 'top', 'horizon', 'bottom'
+type TypMatAlignment = Literal[
+    'start', 'left', 'center', 'right', 'end'
+]  # 矩阵不支持 'top', 'horizon', 'bottom'
 
 _ = get_translator('janim.items.svg.typst_types')
 
-typst_matrix_template = '''
+typst_matrix_template = """
 #set math.mat(
 {typst_args_str}
 )
@@ -20,7 +23,7 @@ typst_matrix_template = '''
 $ mat(
 {typst_str}
 ) $
-'''
+"""
 
 
 class TypstMatrix(TypstText):
@@ -93,7 +96,7 @@ class TypstMatrix(TypstText):
         row_gap: str | None = None,
         column_gap: str | None = None,
         label: bool = False,
-        **kwargs
+        **kwargs,
     ):
         typst_args = {}
 
@@ -144,45 +147,40 @@ class TypstMatrix(TypstText):
                 return f'#move[#box[{str(item)}] <{matrix_label}>]'
 
             converted = [
-                [
-                    register_matrix_label(item, row, col)
-                    for col, item in enumerate(row_items)
-                ]
+                [register_matrix_label(item, row, col) for col, item in enumerate(row_items)]
                 for row, row_items in enumerate(matrix)
             ]
 
         self.registered_count = len(vars)
         self.labelled = label
 
-        typst_str = ' ;\n'.join(
-            ', '.join(row)
-            for row in converted
-        )
+        typst_str = ' ;\n'.join(', '.join(row) for row in converted)
         typst_args_str = ',\n'.join(f'{key}: {value}' for key, value in typst_args.items())
 
         super().__init__(
             typst_matrix_template.format(
                 typst_args_str=typst_args_str,
-                typst_str=typst_str
+                typst_str=typst_str,
             ),
             vars=vars,
-            **kwargs
+            **kwargs,
         )
 
         if label:
             # 把 matrix_labels 没出现在 self.groups 的剔除掉
             # 并按照在 self.groups 中出现的顺序排序
             order = {key: i for i, key in enumerate(self.groups.keys())}
-            order.update({
-                mapfrom: order[mapto]
-                for mapfrom, mapto in self.matrix_label_mapping.items()
-            })
+            order.update(
+                {mapfrom: order[mapto] for mapfrom, mapto in self.matrix_label_mapping.items()}
+            )
             self.matrix_labels = sorted(
                 filter(
-                    lambda matrix_coord: matrix_coord in self.groups or matrix_coord in self.matrix_label_mapping,
-                    matrix_labels
+                    lambda matrix_coord: (
+                        matrix_coord in self.groups or matrix_coord in self.matrix_label_mapping
+                    ),
+                    matrix_labels,
                 ),
-                key=lambda matrix_coord: order[matrix_coord]
+                key=lambda matrix_coord: order[matrix_coord],
             )
             """
             按照子物件顺序排列的矩阵元素标签
@@ -196,8 +194,9 @@ class TypstMatrix(TypstText):
         """
         if not 0 <= index < self.registered_count:
             raise InvalidOrdinalError(
-                _('Index out of range, only {count} inserted items available')
-                .format(count=self.registered_count)
+                _('Index out of range, only {count} inserted items available').format(
+                    count=self.registered_count
+                )
             )
         return self.groups[f'__ja__mat_{index}'][0]
 
@@ -223,8 +222,7 @@ class TypstMatrix(TypstText):
         element = self._get_element(f'__ja__mat_{row}_{col}')
         if element is None:
             raise InvalidOrdinalError(
-                _('Element not found in matrix at position ({row}, {col})')
-                .format(row=row, col=col)
+                _('Element not found in matrix at position ({row}, {col})').format(row=row, col=col)
             )
 
         return element
@@ -237,10 +235,7 @@ class TypstMatrix(TypstText):
         """
         self._raise_if_not_labelled()
 
-        return [
-            self._get_element(matrix_label)
-            for matrix_label in self.matrix_labels
-        ]
+        return [self._get_element(matrix_label) for matrix_label in self.matrix_labels]
 
     def get_left_brace(self) -> Group[SVGElemItem]:
         """
@@ -252,7 +247,7 @@ class TypstMatrix(TypstText):
 
         # 如果矩阵内是空的，那么可以直接对半得到左括号
         if not self.matrix_labels:
-            return self[:len(self) // 2]
+            return self[: len(self) // 2]
 
         # 如果矩阵内有东西，先得到第一个元素的下标，那么这个下标往前就是左括号
         elem = self._get_element(self.matrix_labels[0])[0]
@@ -269,12 +264,12 @@ class TypstMatrix(TypstText):
 
         # 如果矩阵内是空的，那么可以直接对半得到右括号
         if not self.matrix_labels:
-            return self[len(self) // 2:]
+            return self[len(self) // 2 :]
 
         # 如果矩阵内有东西，先得到最后一个元素的下标，那么这个下标往后就是右括号
         elem = self._get_element(self.matrix_labels[-1])[-1]
         index = self._children.index(elem)
-        return self[index + 1:]
+        return self[index + 1 :]
 
     def _raise_if_not_labelled(self) -> None | NoReturn:
         if not self.labelled:

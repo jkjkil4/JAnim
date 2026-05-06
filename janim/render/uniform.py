@@ -1,4 +1,3 @@
-
 from contextlib import contextmanager
 from contextvars import ContextVar
 
@@ -12,7 +11,10 @@ uniforms_map: dict[mgl.Context, ContextVar[dict]] = {}
 def get_uniforms_context_var(ctx: mgl.Context) -> ContextVar[dict]:
     ctxvar = uniforms_map.get(ctx, None)
     if ctxvar is None:
-        ctxvar = uniforms_map[ctx] = ContextVar(f'uniforms_{id(ctx)}', default=dict(JA_BLENDING=False))
+        ctxvar = uniforms_map[ctx] = ContextVar(
+            f'uniforms_{id(ctx)}',
+            default=dict(JA_BLENDING=False),
+        )
     return ctxvar
 
 
@@ -32,7 +34,7 @@ def uniforms(ctx: mgl.Context, **kwargs):
     new_value = old_value.copy()
     new_value.update(kwargs)
     diff = {
-        key: old_value[key]
+        key: old_value[key]  #
         for key in new_value.keys() & old_value.keys()
     }
 

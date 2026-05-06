@@ -10,7 +10,7 @@ from janim.locale import get_translator
 from janim.utils.data import AlignedData
 from janim.utils.signal import SIGNAL_OBJ_SLOTS_NAME
 
-if TYPE_CHECKING:   # pragma: no cover
+if TYPE_CHECKING:  # pragma: no cover
     from janim.items.item import Item
 
 _ = get_translator('janim.components.component')
@@ -23,15 +23,16 @@ class _CmptMeta(type):
         bases: tuple[type, ...],
         attrdict: dict,
         *,
-        impl=False,     # 若 impl=True，则会跳过下面的检查
+        impl=False,  # 若 impl=True，则会跳过下面的检查
     ):
         if not impl:
             for key in ('copy', 'become', 'not_changed'):
                 if not callable(attrdict.get(key, None)):
                     raise AttributeError(
-                        _('Every subclass of Component must inherit and implement '
-                          'the "{key}" method, but "{name}" does not')
-                        .format(key=key, name=name)
+                        _(
+                            'Every subclass of Component must inherit and implement '
+                            'the "{key}" method, but "{name}" does not'
+                        ).format(key=key, name=name)
                     )
         return super().__new__(cls, name, bases, attrdict)
 
@@ -70,6 +71,7 @@ class Component[ItemT](refresh.Refreshable, metaclass=_CmptMeta):
             # item2.cmpt1.bind_info 与 BindInfo(MyItem, item2, 'cmpt1') 一致
             # item2.cmpt3.bind_info 与 BindInfo(MyItem2, item2, 'cmpt3') 一致
         """
+
         decl_cls: type[Item]
         at_item: Item
         key: str
@@ -121,7 +123,9 @@ class Component[ItemT](refresh.Refreshable, metaclass=_CmptMeta):
     def not_changed(self, other) -> bool: ...
 
     def get_same_cmpt(self, item: Item) -> Self:
-        return self.get_same_cmpt_if_exists(item) or getattr(item.astype(self.bind.decl_cls), self.bind.key)
+        return self.get_same_cmpt_if_exists(item) or getattr(
+            item.astype(self.bind.decl_cls), self.bind.key
+        )
 
     def get_same_cmpt_without_mock(self, item: Item) -> Self | None:
         return item.components.get(self.bind.key, None)
@@ -135,7 +139,7 @@ class Component[ItemT](refresh.Refreshable, metaclass=_CmptMeta):
 
     def walk_same_cmpt_of_self_and_descendants_without_mock(
         self,
-        root_only: bool = False
+        root_only: bool = False,
     ) -> Generator[Self, None, None]:
         yield self
         if root_only or self.bind is None:
@@ -190,8 +194,9 @@ class CmptInfo[T]:
             # 正确
             cmpt2 = CmptInfo(MyCmptWithArgs[Self], 1)
     """
+
     def __init__(self, cls: type[T], *args, **kwargs):
-        self.__doc__ = ""
+        self.__doc__ = ''
         self.cls = getattr(cls, '__origin__', cls)
         self.args = args
         self.kwargs = kwargs
@@ -220,14 +225,11 @@ class _CmptGroup(Component):
 
     def copy(self, *, new_cmpts: dict[str, Component]) -> Self:
         cmpt_copy = super().copy()
-        cmpt_copy.objects = {
-            key: new_cmpts[key]
-            for key in cmpt_copy.objects.keys()
-        }
+        cmpt_copy.objects = {key: new_cmpts[key] for key in cmpt_copy.objects.keys()}
 
         return cmpt_copy
 
-    def become(self, other) -> Self:    # pragma: no cover
+    def become(self, other) -> Self:  # pragma: no cover
         return self
 
     def not_changed(self, other: _CmptGroup) -> bool:
@@ -265,7 +267,9 @@ class _CmptGroup(Component):
             if val is cmpt_info:
                 return key
 
-        raise CmptGroupLookupError(_('CmptGroup must be defined within the same class as the content passed in'))
+        raise CmptGroupLookupError(
+            _('CmptGroup must be defined within the same class as the content passed in')
+        )
 
     def _returned_self(self, cmpt: Component | Item._AsTypeWrapper, ret) -> bool:
         if isinstance(cmpt, Component):
@@ -293,15 +297,13 @@ class _CmptGroup(Component):
         if not methods:
             cmpt_str = ', '.join(cmpt.__class__.__name__ for cmpt in self.objects)
             raise AttributeError(
-                _('None of the components ({cmpt_str}) have a method named {name}')
-                .format(cmpt_str=cmpt_str, name=name)
+                _('None of the components ({cmpt_str}) have a method named {name}').format(
+                    cmpt_str=cmpt_str, name=name
+                )
             )
 
         def wrapper(*args, **kwargs):
-            ret = [
-                method(*args, **kwargs)
-                for method in methods
-            ]
+            ret = [method(*args, **kwargs) for method in methods]
 
             return self if all(self._returned_self(a, b) for a, b in zip(objects, ret)) else ret
 

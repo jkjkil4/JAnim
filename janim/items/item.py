@@ -6,8 +6,7 @@ import itertools as it
 import types
 from contextlib import contextmanager
 from dataclasses import dataclass
-from typing import (TYPE_CHECKING, Any, Callable, Iterable, Self,
-                    SupportsIndex, overload)
+from typing import TYPE_CHECKING, Any, Callable, Iterable, Self, SupportsIndex, overload
 
 import numpy as np
 
@@ -26,7 +25,7 @@ from janim.utils.signal import SIGNAL_OBJ_SLOTS_NAME
 
 if TYPE_CHECKING:
     from janim.anims.timeline import Timeline
-    from janim.items.points import Group
+    from janim.items.group import Group
 
 _ = get_translator('janim.items.item')
 
@@ -40,10 +39,11 @@ class _ItemMeta(type):
     """
     作为 metaclass 记录定义在类中的所有 CmptInfo
     """
+
     def __new__(cls: type, name: str, bases: tuple[type, ...], attrdict: dict):
         # 记录所有定义在类中的 CmptInfo
         cls_components: dict[str, Component] = {
-            key: val
+            key: val  #
             for key, val in attrdict.items()
             if isinstance(val, CmptInfo)
         }
@@ -56,18 +56,21 @@ class _ItemMeta(type):
             styles_name: list[str] = [
                 param.name
                 for param in list(sig.parameters.values())[1:]
-                if param.kind not in (param.POSITIONAL_ONLY, param.VAR_POSITIONAL, param.VAR_KEYWORD)
+                if param.kind
+                not in (param.POSITIONAL_ONLY, param.VAR_POSITIONAL, param.VAR_KEYWORD)
             ]
             attrdict[CLS_STYLES_NAME] = styles_name
 
-            all_styles = list(it.chain(
-                styles_name,
-                *[
-                    getattr(base, CLS_STYLES_NAME)
-                    for base in bases
-                    if hasattr(base, CLS_STYLES_NAME)
-                ]
-            ))
+            all_styles = list(
+                it.chain(
+                    styles_name,
+                    *[
+                        getattr(base, CLS_STYLES_NAME)
+                        for base in bases
+                        if hasattr(base, CLS_STYLES_NAME)
+                    ],
+                )
+            )
             attrdict[ALL_STYLES_NAME] = all_styles
 
         return super().__new__(cls, name, bases, attrdict)
@@ -128,7 +131,7 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         self,
         *args,
         children: list[Item] | None = None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__(*args)
 
@@ -137,6 +140,7 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         self._stored_children: list[Item] | None = None
 
         from janim.anims.timeline import Timeline
+
         self.timeline = Timeline.get_context(raise_exc=False)
 
         self._astype_wrapper: Item._AsTypeWrapper | None = None
@@ -223,7 +227,7 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         for item in self.walk_self_and_descendants():
             available_styles = item.get_available_styles()
             apply_styles = {
-                key: style
+                key: style  #
                 for key, style in styles.items()
                 if key in available_styles
             }
@@ -241,8 +245,9 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
             for key, flag in flags.items():
                 if not flag:
                     log.warning(
-                        _('The passed parameter "{key}" did not match any style settings and was not used anywhere.')
-                        .format(key=key)
+                        _(
+                            'The passed parameter "{key}" did not match any style settings and was not used anywhere.'
+                        ).format(key=key)
                     )
 
         return self
@@ -254,7 +259,7 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
     def apply_style(
         self,
         depth: float | None = None,
-        **kwargs
+        **kwargs,
     ) -> Self:
         """
         设置物件自身的样式，不影响子物件
@@ -298,8 +303,11 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
             )
 
         ``.r`` 表示从组件回到物件，这样就可以调用其它组件的功能
+
+        另见：:class:`~.MethodTransform`
         """
         from janim.anims.transform import MethodTransformArgsBuilder
+
         return MethodTransformArgsBuilder(self)
 
     @property
@@ -317,6 +325,7 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         该例子会创建将 ``item`` 向右移动两个单位并且设置为绿色的 updater，并且二者的 ``rate_func`` 不同
         """
         from janim.anims.updater import MethodUpdaterArgsBuilder
+
         return MethodUpdaterArgsBuilder(self)
 
     # 仅用于在创建动画时忘记使用 .anim 或 .update 时抛出错误，另见 AnimGroup 的 _get_anim_object
@@ -340,7 +349,7 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         if isinstance(key, SupportsIndex):
             return self._children[key]
 
-        from janim.items.points import Group
+        from janim.items.group import Group
 
         match key:
             # example: item[0:2]
@@ -365,13 +374,13 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
 
         可以将 ``item * n`` 作为该方法的简写
         """
-        from janim.items.points import Group
-        return Group(
-            *(self.copy() for i in range(n))
-        )
+        from janim.items.group import Group
+
+        return Group.from_iterable(self.copy() for i in range(n))
 
     def join[T](self, lst: Iterable[T]) -> Group[Self | T]:
-        from janim.items.points import Group
+        from janim.items.group import Group
+
         it = iter(lst)
         items = []
         try:
@@ -548,7 +557,9 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
             item._astype_mock_cmpt[name] = cmpt
             return cmpt
 
-        def _get_mockable_method(self, base: type[Item], name: str, until: type[Item]) -> Callable | None:
+        def _get_mockable_method(
+            self, base: type[Item], name: str, until: type[Item]
+        ) -> Callable | None:
             for sup in base.mro():
                 if sup is until:
                     break
@@ -583,8 +594,9 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         """
         if not isinstance(cls, type) or not issubclass(cls, Item):
             raise AsTypeError(
-                _('{name} is not based on Item class and cannot be used as an argument for astype')
-                .format(name=cls.__name__)
+                _(
+                    '{name} is not based on Item class and cannot be used as an argument for astype'
+                ).format(name=cls.__name__)
             )
 
         return Item._AsTypeWrapper(self, self, cls)
@@ -606,7 +618,9 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         if wrapper is None:
             self.__getattribute__(name)
 
-        new_wrapper = Item._AsTypeWrapper(wrapper._astype_item, wrapper._astype_item, wrapper._astype_cls)
+        new_wrapper = Item._AsTypeWrapper(
+            wrapper._astype_item, wrapper._astype_item, wrapper._astype_cls
+        )
         return getattr(new_wrapper, name)
 
     # endregion
@@ -645,9 +659,13 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
                 cmpt_copy = cmpt.copy()
 
             if cmpt.bind is not None:
-                cmpt_copy.init_bind(Component.BindInfo(cmpt.bind.decl_cls,
-                                                       copy_item,
-                                                       key))
+                cmpt_copy.init_bind(
+                    Component.BindInfo(
+                        cmpt.bind.decl_cls,
+                        copy_item,
+                        key,
+                    )
+                )
 
             new_cmpts[key] = cmpt_copy
             setattr(copy_item, key, cmpt_copy)
@@ -775,11 +793,7 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         self.reset_refresh()
 
     @classmethod
-    def align_for_interpolate(
-        cls,
-        item1: Item,
-        item2: Item
-    ) -> AlignedData[Self]:
+    def align_for_interpolate(cls, item1: Item, item2: Item) -> AlignedData[Self]:
         """
         进行数据对齐，以便插值
         """
@@ -804,9 +818,11 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
             union_cmpts[key] = aligned_cmpt.union
 
         # make aligned item
-        aligned = AlignedData(item1.store(_cmpts=data1_cmpts),
-                              item2.store(_cmpts=data2_cmpts),
-                              item1.store(_cmpts=union_cmpts))
+        aligned = AlignedData(
+            item1.store(_cmpts=data1_cmpts),
+            item2.store(_cmpts=data2_cmpts),
+            item1.store(_cmpts=union_cmpts),
+        )
 
         # align children
         max_len = max(len(item1.get_children()), len(item2.get_children()))
@@ -842,28 +858,54 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
     def fix_in_frame(self, on: bool = True, *, root_only: bool = False) -> Self:
         """
         固定在屏幕上，也就是即使摄像头移动位置也不会改变在屏幕上的位置
+
+        :param on: 为 ``True`` 表示固定在屏幕上，可传入 ``False`` 表示取消固定在屏幕上
+        :param root_only: 是否只对根物件开启/禁用深度测试，默认否，即对所有后代物件也应用
         """
         for item in self.walk_self_and_descendants(root_only):
             item._fix_in_frame = on
         return self
 
     def is_fix_in_frame(self) -> bool:
+        """检查该物件是否被固定在屏幕上"""
         return self._fix_in_frame
 
     def apply_depth_test(self, on: bool = True, *, root_only: bool = False) -> Self:
+        """
+        开启深度测试
+
+        启用物件的像素级遮挡处理
+
+        更多内容可参考文档教程 :ref:`处理三维遮挡 <deal_with_3d_occlusion>` 的部分
+
+        :param on: 为 ``True`` 表示开启深度测试，可传入 ``False`` 表示禁用深度测试
+        :param root_only: 是否只对根物件开启/禁用深度测试，默认否，即对所有后代物件也应用
+        """
         for item in self.walk_self_and_descendants(root_only):
             item._depth_test = on
         return self
 
     def is_applied_depth_test(self) -> bool:
+        """检查该物件是否开启了深度测试"""
         return self._depth_test
 
     def apply_distance_sort(self, on: bool = True, *, root_only: bool = False) -> Self:
+        """
+        开启距离排序
+
+        在渲染时根据与摄像机的距离排序渲染顺序
+
+        更多内容可参考文档教程 :ref:`处理三维遮挡 <deal_with_3d_occlusion>` 的部分
+
+        :param on: 为 ``True`` 表示开启距离排序，可传入 ``False`` 表示禁用距离排序
+        :param root_only: 是否只对根物件开启/禁用深度测试，默认否，即对所有后代物件也应用
+        """
         for item in self.walk_self_and_descendants(root_only):
             item._distance_sort = on
         return self
 
     def is_applied_distance_sort(self) -> bool:
+        """检查该物件是否开启了距离排序"""
         return self._distance_sort
 
     # endregion
@@ -912,7 +954,10 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
                 self.camera.anim.load_state()
             )
         """
-        self._saved_states[key] = self.SavedState(self.store() if root_only else self.copy(), root_only)
+        self._saved_states[key] = self.SavedState(
+            self.store() if root_only else self.copy(),
+            root_only,
+        )
         return self
 
     def load_state(self, key: str = '') -> Self:
@@ -950,6 +995,8 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
                 FadeIn(mat, UP)
             )
             self.forward()
+
+        另见：:class:`~.MoveToTarget`
         """
         self.target = self.copy()
         return self.target
@@ -961,7 +1008,9 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
     def create_renderer(self) -> Renderer:
         return self.renderer_cls()
 
-    def _mark_render_disabled(self, self_appr, additionals: list[Timeline.AdditionalRenderCallsCallback]) -> None:
+    def _mark_render_disabled(
+        self, self_appr, additionals: list[Timeline.AdditionalRenderCallsCallback]
+    ) -> None:
         """
         由子类继承，用于给所影响到的对象标记 ``_render_disabled``
 

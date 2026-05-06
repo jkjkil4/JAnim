@@ -3,7 +3,7 @@ from janim.imports import *
 
 
 class AnimGroupExample(Timeline):
-    def construct(self) -> None:
+    def construct(self):
         group = Group(
             Circle(fill_alpha=0.5),
             Square(fill_alpha=0.5),
@@ -37,7 +37,7 @@ class AnimGroupExample(Timeline):
 
 
 class SuccessionExample(Timeline):
-    def construct(self) -> None:
+    def construct(self):
         group = Group(
             Circle(fill_alpha=0.5),
             Square(fill_alpha=0.5),
@@ -74,7 +74,7 @@ class SuccessionExample(Timeline):
 
 
 class AlignedExample(Timeline):
-    def construct(self) -> None:
+    def construct(self):
         group = Group(
             Circle(fill_alpha=0.5),
             Square(fill_alpha=0.5),
@@ -95,7 +95,7 @@ class AlignedExample(Timeline):
 
 
 class ShowPartialExample(Timeline):
-    def construct(self) -> None:
+    def construct(self):
         group = Group(
             Line(path_arc=PI),
             Line(path_arc=PI),
@@ -117,7 +117,7 @@ class ShowPartialExample(Timeline):
 
 
 class CreateExample(Timeline):
-    def construct(self) -> None:
+    def construct(self):
         group = Group(
             Square(),
             Square(),
@@ -135,7 +135,7 @@ class CreateExample(Timeline):
 
 
 class UncreateExample(Timeline):
-    def construct(self) -> None:
+    def construct(self):
         group = Group(
             Square(),
             Square(),
@@ -153,7 +153,7 @@ class UncreateExample(Timeline):
 
 
 class DestructionExample(Timeline):
-    def construct(self) -> None:
+    def construct(self):
         group = Group(
             Square(),
             Square(),
@@ -171,7 +171,7 @@ class DestructionExample(Timeline):
 
 
 class DrawBorderThenFillExample(Timeline):
-    def construct(self) -> None:
+    def construct(self):
         group = Group(
             Square(fill_alpha=0.5),
             Circle(fill_alpha=0.5),
@@ -194,7 +194,7 @@ class DrawBorderThenFillExample(Timeline):
 
 
 class WriteExample(Timeline):
-    def construct(self) -> None:
+    def construct(self):
         dots = Dot(color=BLUE) * 10
         dots.points.arrange().shift(UP)
 
@@ -226,7 +226,7 @@ class ShowSubitemsOneByOneExample(Timeline):
 
 
 class FadeInExample(Timeline):
-    def construct(self) -> None:
+    def construct(self):
         group = Group(
             Square(fill_alpha=0.5),
             Circle(fill_alpha=0.5),
@@ -242,7 +242,7 @@ class FadeInExample(Timeline):
 
 
 class FadeOutExample(Timeline):
-    def construct(self) -> None:
+    def construct(self):
         group = Group(
             Square(fill_alpha=0.5),
             Circle(fill_alpha=0.5),
@@ -292,7 +292,7 @@ class FadeOutToPointExample(Timeline):
 
 
 class GrowFromPointExample(Timeline):
-    def construct(self) -> None:
+    def construct(self):
         group = Group(
             Square(fill_alpha=0.5),
             Circle(fill_alpha=0.5),
@@ -315,7 +315,7 @@ class GrowFromPointExample(Timeline):
 
 
 class GrowFromCenterExample(Timeline):
-    def construct(self) -> None:
+    def construct(self):
         group = Group(
             Square(fill_alpha=0.5),
             Circle(fill_alpha=0.5),
@@ -330,7 +330,7 @@ class GrowFromCenterExample(Timeline):
 
 
 class GrowFromEdgeExample(Timeline):
-    def construct(self) -> None:
+    def construct(self):
         group = Group(
             Square(fill_alpha=0.5),
             Circle(fill_alpha=0.5),
@@ -353,7 +353,7 @@ class GrowFromEdgeExample(Timeline):
 
 
 class ShrinkToPointExample(Timeline):
-    def construct(self) -> None:
+    def construct(self):
         group = Group(
             Square(fill_alpha=0.5),
             Circle(fill_alpha=0.5),
@@ -376,7 +376,7 @@ class ShrinkToPointExample(Timeline):
 
 
 class ShrinkToCenterExample(Timeline):
-    def construct(self) -> None:
+    def construct(self):
         group = Group(
             Square(fill_alpha=0.5),
             Circle(fill_alpha=0.5),
@@ -391,7 +391,7 @@ class ShrinkToCenterExample(Timeline):
 
 
 class ShrinkToEdgeExample(Timeline):
-    def construct(self) -> None:
+    def construct(self):
         group = Group(
             Square(fill_alpha=0.5),
             Circle(fill_alpha=0.5),
@@ -414,7 +414,7 @@ class ShrinkToEdgeExample(Timeline):
 
 
 class SpinInFromNothingExample(Timeline):
-    def construct(self) -> None:
+    def construct(self):
         group = Group(
             Square(fill_alpha=0.5),
             Circle(fill_alpha=0.5),
@@ -431,7 +431,7 @@ class SpinInFromNothingExample(Timeline):
 
 
 class SpinOutToNothingExample(Timeline):
-    def construct(self) -> None:
+    def construct(self):
         group = Group(
             Square(fill_alpha=0.5),
             Circle(fill_alpha=0.5),
@@ -448,7 +448,7 @@ class SpinOutToNothingExample(Timeline):
 
 
 class GrowArrowExample(Timeline):
-    def construct(self) -> None:
+    def construct(self):
         group = Group(
             Arrow(ORIGIN, RIGHT * 6),
             Vector(RIGHT * 6, color=YELLOW)
@@ -464,7 +464,7 @@ class GrowArrowExample(Timeline):
 
 
 class GrowDoubleArrowExample(Timeline):
-    def construct(self) -> None:
+    def construct(self):
         group = DoubleArrow(ORIGIN, RIGHT * 7) * 3
         group.points.arrange(DOWN, buff=LARGE_BUFF)
 
@@ -478,7 +478,7 @@ class GrowDoubleArrowExample(Timeline):
 
 
 class FocusOnExample(Timeline):
-    def construct(self) -> None:
+    def construct(self):
         group = Group(
             Dot(),
             TypstMath('x')
@@ -499,7 +499,7 @@ class FocusOnExample(Timeline):
 
 
 class IndicateExample(Timeline):
-    def construct(self) -> None:
+    def construct(self):
         formula = TypstMath('f(x)')
         dot = Dot()
 
@@ -653,7 +653,7 @@ class ApplyWaveExample(Timeline):
 
 
 class WiggleOutThenInExample(Timeline):
-    def construct(self) -> None:
+    def construct(self):
         group = Group(
             Square(fill_alpha=0.5),
             Circle(fill_alpha=0.5),
@@ -697,7 +697,7 @@ class ComplexHomotopyExample(Timeline):
 
 
 class MoveAlongPathExample(Timeline):
-    def construct(self) -> None:
+    def construct(self):
         line = Line(ORIGIN, RIGHT * Config.get.frame_width, buff=1)
         dot1 = Dot(color=YELLOW)
 
@@ -796,6 +796,77 @@ class TransformExample(Timeline):
         self.forward()
 
 
+class TransformHideShowExample(Timeline):
+    def construct(self):
+        squares = Square(color=GREEN) * 3
+        squares.points.arrange(DOWN).shift(LEFT * 3)
+
+        circles = Circle(color=BLUE) * 3
+        circles.points.arrange(DOWN).shift(RIGHT * 3)
+
+        txts = Text('default\nhide_src=False\nshow_target=False')
+        txts.points.arrange(DOWN, buff=2)
+
+        self.show(txts, squares)
+        self.forward()
+        self.play(
+            Transform(squares[0], circles[0]),
+            Transform(squares[1], circles[1], hide_src=False),
+            Transform(squares[2], circles[2], show_target=False),
+            duration=3
+        )
+        self.forward()
+
+
+class TransformFadeExample(Timeline):
+    def construct(self):
+        squares = Square(color=GREEN, fill_alpha=0.4) * 3
+        squares.points.arrange(DOWN).shift(LEFT * 3)
+
+        circles = Circle(color=BLUE, fill_alpha=0.4) * 3
+        circles.points.arrange(DOWN).shift(RIGHT * 3)
+
+        txts = Text('fade=0\nfade=0.2\nfade=0.4')
+        txts.points.arrange(DOWN, buff=2)
+
+        self.show(txts, squares)
+        self.forward()
+        self.play(
+            Transform(squares[0], circles[0], hide_src=False),
+            Transform(squares[1], circles[1], hide_src=False, src_fade=0.2),
+            Transform(squares[2], circles[2], hide_src=False, src_fade=0.4),
+            duration=3
+        )
+        self.forward()
+        self.play(
+            Transform(squares[0], circles[0]),
+            Transform(squares[1], circles[1], target_fade=0.2),
+            Transform(squares[2], circles[2], target_fade=0.4),
+            duration=3
+        )
+        self.forward()
+
+
+class MoveToTargetExample(Timeline):
+    def construct(self):
+        txt = Text('A Matrix')
+        mat = TypstMatrix([
+            [1, 2, 3],
+            [4, 5, 6],
+            [7, 8, 9]
+        ])
+
+        self.play(Write(txt))
+
+        Group(txt.generate_target(), mat).points.arrange(DOWN)
+
+        self.play(
+            MoveToTarget(txt),
+            FadeIn(mat, UP)
+        )
+        self.forward()
+
+
 class TransformInSegmentsExample(Timeline):
     def construct(self):
         typ1 = TypstMath('sin x + cos x')
@@ -828,7 +899,7 @@ class MethodTransformExample(Timeline):
 
 
 class FadeTransformExample(Timeline):
-    def construct(self) -> None:
+    def construct(self):
         rect = Rect(6, 2, color=BLUE, fill_alpha=1).show()
         txt = Text('Rectangle')
         txt.points.scale(3)
@@ -850,6 +921,7 @@ class TransformMatchingShapesExample(Timeline):
         self.forward()
 
 
+# beginmark TransformMatchingDiffExample
 typ1_src = R"""
 ```python
 subtitle_group = Group(
@@ -915,3 +987,4 @@ class TransformMatchingDiffExample(Timeline):
 
         typ1 = TypstDoc(typ1_src).show()
         typ2 = TypstDoc(typ2_src)
+# endmark TransformMatchingDiffExample
