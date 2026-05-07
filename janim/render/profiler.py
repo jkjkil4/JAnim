@@ -6,7 +6,7 @@ from typing import Iterable
 
 import OpenGL.GL as gl
 
-from janim.anims.timeline import BuiltTimeline, ItemWithRenderFunc
+from janim.anims.timeline import ItemWithRenderFunc
 from janim.render.collection import RenderCollection
 
 
@@ -17,54 +17,62 @@ class RenderProfiler:
     用于 patch 物件渲染，统计物件渲染的耗时与性能
     """
 
-    def __init__(self, built: BuiltTimeline, *, max_history: int = 200):
-        self._built = built
-        self._orig_cls = built._RenderCollectionCls
-        self._WrapperCls = _make_wrapper(self)
-
+    def __init__(self, *, max_history: int = 200):
         self.max_history = max_history
         self.history: deque[FrameRecord] = deque(maxlen=max_history)
-        self.recording: FrameRecord | None = None
-
-        self.attach()
-
-    def set_built(self, built: BuiltTimeline):
-        self.detach()
-        self._built = built
-        self._orig_cls = built._RenderCollectionCls
-        self.attach()
-
-    def attach(self) -> None:
-        """挂载性能分析器"""
-        self._built._RenderCollectionCls = self._WrapperCls
-
-    def detach(self) -> None:
-        """卸载性能分析器"""
-        self._built._RenderCollectionCls = self._orig_cls
 
     @contextmanager
-    def records(self):
+    def record_frame(self):
         """
-        使用 ``with`` 语句包裹每帧渲染，收集其中所有的 ``record_item`` 统计数据
+        在渲染顶层入口 ``with`` 该函数，统计内部代码块的物件用时，存入 ``history`` 中作为一帧的数据
         """
-        is_nested = self.recording is not None
-        if not is_nested:
-            self.recording = FrameRecord(timestamp=time.time())
-        t_start = time.perf_counter()
+        t = time.perf_counter()
+        item_times = defaultdict(float)
+        try:
+            with self._patch_collection_render(item_times):
+                yield
+        finally:
+            elapsed = time.perf_counter() - t
+            self.history.append(FrameRecord(t, elapsed, item_times))
+
+    @staticmethod
+    @contextmanager
+    def _patch_collection_render(item_times: dict[str, float]):
+        # 由于渲染的嵌套结构，会出现 record 中途进入另一个 record 的情况
+        # 这个列表每个元素的含义是“内层用时”，以便最后通过 `用时 - 内层用时` 得到 `自身用时`
+        inner_elapsed_stack: list[float] = []
+
+        @contextmanager
+        def record(item_type: str):
+            inner_elapsed_stack.append(0)
+            t = time.perf_counter()
+            try:
+                yield
+            finally:
+                elapsed = time.perf_counter() - t
+                inner_elapsed = inner_elapsed_stack.pop()
+                item_times[item_type] += elapsed - inner_elapsed
+
+                if inner_elapsed_stack:  # 本次为内层渲染，需要将自己的耗时告诉外层
+                    inner_elapsed_stack[-1] += elapsed
+
+        # 在函数内定义 render patch
+        # 使得 render 中可以直接访问到 item_times 闭包
+        @staticmethod
+        def render(renders: Iterable[ItemWithRenderFunc], blending: bool) -> None:
+            for data, render in renders:
+                with record(data.__class__.__name__):
+                    render(data)
+
+                if not blending:
+                    gl.glFlush()
+
+        orig_render = RenderCollection._render
+        RenderCollection._render = render
         try:
             yield
         finally:
-            self.recording.total_time = time.perf_counter() - t_start
-            self.history.append(self.recording)
-            if not is_nested:
-                self.recording = None
-
-    def record_item(self, item_type: str, duration: float):
-        """
-        记录单个物件的渲染耗时
-        """
-        assert self.recording is not None
-        self.recording.item_times[item_type] += duration
+            RenderCollection._render = orig_render
 
 
 @dataclass
@@ -74,28 +82,8 @@ class FrameRecord:
     """
 
     timestamp: float
-    total_time: float = 0.0
+    elapsed: float = 0.0
 
     # key: 物件类型名称 (e.g. "VItem")
     # value: 累计耗时(秒)
     item_times: dict[str, float] = field(default_factory=lambda: defaultdict(float))
-
-
-def _make_wrapper(profiler: RenderProfiler):
-    class _RenderCollectionWrapper(RenderCollection):
-        @classmethod
-        def _render(cls, renders: Iterable[ItemWithRenderFunc], blending: bool) -> None:
-            with profiler.records():
-                for data, render in renders:
-                    t0 = time.perf_counter()
-                    render(data)
-                    dt = time.perf_counter() - t0
-                    item_type = data.__class__.__name__
-                    profiler.record_item(item_type, dt)
-
-                    # 如果没有 blending，我们认为当前是在向透明 framebuffer 绘制
-                    # 所以每次都需要使用 glFlush 更新 framebuffer 信息使得正确渲染
-                    if not blending:
-                        gl.glFlush()
-
-    return _RenderCollectionWrapper

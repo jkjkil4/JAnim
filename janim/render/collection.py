@@ -115,8 +115,8 @@ class RenderCollection:
         # 排序后进行渲染
         self._render(sorted(renders, key=key, reverse=True), blending)
 
-    @classmethod
-    def _render(cls, renders: Iterable[ItemWithRenderFunc], blending: bool) -> None:
+    @staticmethod
+    def _render(renders: Iterable[ItemWithRenderFunc], blending: bool) -> None:
         for data, render in renders:
             render(data)
             # 如果没有 blending，我们认为当前是在向透明 framebuffer 绘制

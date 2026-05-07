@@ -16,7 +16,6 @@ from PySide6.QtGui import (
     QPixmap,
 )
 
-from janim.render.profiler import RenderProfiler
 
 if TYPE_CHECKING:
     from janim.gui.anim_viewer import AnimViewer
@@ -80,11 +79,11 @@ class ProfilerGraph(QWidget):
             '#82aaff',
         ]
 
-        self.profiler = RenderProfiler(self.viewer.built)
-        self.viewer.built_changed.connect(self.profiler.set_built)
+        self.viewer.glw.setup_profiler()
 
     def closeEvent(self, event, /) -> None:
-        self.profiler.detach()
+        self.viewer.glw.teardown_profiler()
+
         super().closeEvent(event)
 
     def _on_timeout(self):
@@ -141,7 +140,8 @@ class ProfilerGraph(QWidget):
             painter.end()
             return
 
-        profiler = self.profiler
+        profiler = self.viewer.glw.profiler
+        assert profiler is not None
         total_frames_history = len(profiler.history)
 
         if total_frames_history == 0:
@@ -169,7 +169,7 @@ class ProfilerGraph(QWidget):
                 self.sorted_keys_cache.append(key)
 
         # --- 预计算坐标 ---
-        pixels_per_frame = w / max(1, (self.profiler.max_history - 1))
+        pixels_per_frame = w / max(1, (profiler.max_history - 1))
         num_keys = len(self.sorted_keys_cache)
 
         # 预分配数组，避免 append
