@@ -69,6 +69,7 @@ class AnimViewer(QMainWindow):
     """
 
     before_set_built = Signal()
+    built_changed = Signal(BuiltTimeline)
     play_finished = Signal()
 
     def __init__(
@@ -188,6 +189,8 @@ class AnimViewer(QMainWindow):
                 log.warning(_('Cannot process the GUI command from stdin input'))
             else:
                 QTimer.singleShot(0, lambda: handle_command(self, command))
+
+        self.built_changed.emit(self.built)
 
     # region setup_ui
 

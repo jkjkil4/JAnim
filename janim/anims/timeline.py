@@ -49,7 +49,6 @@ from janim.render.framebuffer import (
     framebuffer_context,
     uniforms,
 )
-from janim.render.profiler import RenderProfiler
 from janim.render.uniform import get_uniforms_context_var
 from janim.typing import JAnimColor, SupportsAnim
 from janim.utils.config import Config, ConfigGetter, config_ctx_var
@@ -1105,7 +1104,6 @@ class BuiltTimeline:
 
     def __init__(self, timeline: Timeline):
         self.timeline = timeline
-        self.profiler = RenderProfiler()
         self.duration = timeline.time_aligner.align_t(timeline.current_time)
 
         self.visible_item_segments = TimeSegments(

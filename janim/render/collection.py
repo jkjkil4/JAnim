@@ -69,7 +69,7 @@ class RenderCollection:
                 self._extras_is_delegated[i] = True
                 delegated_extras.append(extra)
 
-        return RenderCollection(self.timeline, delegated_apprs, delegated_extras)
+        return self.__class__(self.timeline, delegated_apprs, delegated_extras)
 
     def render(self, blending: bool) -> None:
         # 得到所有将要渲染的目标
@@ -115,19 +115,11 @@ class RenderCollection:
         # 排序后进行渲染
         self._render(sorted(renders, key=key, reverse=True), blending)
 
-    @staticmethod
-    def _render(renders: Iterable[ItemWithRenderFunc], blending: bool) -> None:
-        # TODO: migrate
-        self.profiler.start_frame()
+    @classmethod
+    def _render(cls, renders: Iterable[ItemWithRenderFunc], blending: bool) -> None:
         for data, render in renders:
-            t0 = time.perf_counter()
             render(data)
-            dt = time.perf_counter() - t0
-            item_type = data.__class__.__name__
-            self.profiler.record_item(item_type, dt)
-
             # 如果没有 blending，我们认为当前是在向透明 framebuffer 绘制
             # 所以每次都需要使用 glFlush 更新 framebuffer 信息使得正确渲染
             if not blending:
                 gl.glFlush()
-        self.profiler.end_frame()

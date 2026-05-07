@@ -1,4 +1,6 @@
-from typing import TYPE_CHECKING, List, Dict
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
 
 import itertools  # 【新增】用于高效切片
 
@@ -14,12 +16,14 @@ from PySide6.QtGui import (
     QPixmap,
 )
 
+from janim.render.profiler import RenderProfiler
+
 if TYPE_CHECKING:
     from janim.gui.anim_viewer import AnimViewer
 
 
 class ProfilerWidget(QWidget):
-    def __init__(self, parent: 'AnimViewer'):
+    def __init__(self, parent: AnimViewer):
         super().__init__()
         self.viewer = parent
         self.setWindowTitle('Render Profiler (High Performance)')
@@ -33,17 +37,16 @@ class ProfilerWidget(QWidget):
 
 
 class ProfilerGraph(QWidget):
-    def __init__(self, viewer):
+    def __init__(self, viewer: AnimViewer):
         super().__init__()
         self.viewer = viewer
 
         # --- 配置项 ---
-        self.view_range_frames = 120
         self.refresh_rate_ms = 60
 
         # --- 内部状态 ---
-        self.color_cache: Dict[str, QColor] = {}
-        self.sorted_keys_cache: List[str] = []
+        self.color_cache: dict[str, QColor] = {}
+        self.sorted_keys_cache: list[str] = []
 
         # 【优化A】双重缓冲：用于存储绘制好的图像
         self._buffer_pixmap = QPixmap()
@@ -58,7 +61,7 @@ class ProfilerGraph(QWidget):
         self.timer.timeout.connect(self._on_timeout)
         self.timer.start(self.refresh_rate_ms)
 
-        self.palette = [
+        self.colors = [
             '#88C0D0',
             '#A3BE8C',
             '#EBCB8B',
@@ -77,6 +80,13 @@ class ProfilerGraph(QWidget):
             '#82aaff',
         ]
 
+        self.profiler = RenderProfiler(self.viewer.built)
+        self.viewer.built_changed.connect(self.profiler.set_built)
+
+    def closeEvent(self, event, /) -> None:
+        self.profiler.detach()
+        super().closeEvent(event)
+
     def _on_timeout(self):
         """定时器回调：只处理数据准备，不直接操作 UI"""
         if not hasattr(self.viewer, 'built') or not self.viewer.built:
@@ -89,7 +99,7 @@ class ProfilerGraph(QWidget):
         if key in self.color_cache:
             return self.color_cache[key]
         hash_idx = abs(hash(key))
-        hex_color = self.palette[hash_idx % len(self.palette)]
+        hex_color = self.colors[hash_idx % len(self.colors)]
         color = QColor(hex_color)
         self.color_cache[key] = color
         return color
@@ -131,7 +141,7 @@ class ProfilerGraph(QWidget):
             painter.end()
             return
 
-        profiler = self.viewer.built.profiler
+        profiler = self.profiler
         total_frames_history = len(profiler.history)
 
         if total_frames_history == 0:
@@ -141,8 +151,8 @@ class ProfilerGraph(QWidget):
 
         # 【优化C】高效数据切片：不复制整个列表，只取最后 N 个
         # itertools.islice 对 deque 非常友好，不会遍历整个历史
-        start_index = max(0, total_frames_history - self.view_range_frames)
-        # 注意：这里转换成 list 依然只包含最多 120 个元素，极快
+        start_index = max(0, total_frames_history - profiler.max_history)
+        # 注意：这里转换成 list 依然只包含较少元素，极快
         render_data = list(itertools.islice(profiler.history, start_index, total_frames_history))
         data_count = len(render_data)
 
@@ -159,7 +169,7 @@ class ProfilerGraph(QWidget):
                 self.sorted_keys_cache.append(key)
 
         # --- 预计算坐标 ---
-        pixels_per_frame = w / max(1, (self.view_range_frames - 1))
+        pixels_per_frame = w / max(1, (self.profiler.max_history - 1))
         num_keys = len(self.sorted_keys_cache)
 
         # 预分配数组，避免 append
