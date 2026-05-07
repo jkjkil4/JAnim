@@ -240,7 +240,7 @@ class TimeRange:
         另见 :meth:`num_duration`
         """
         assert self.end is not FOREVER
-        return self.end - self.at
+        return self.end - self.at  # type: ignore
 
     @property
     def num_duration(self) -> float:
@@ -262,7 +262,7 @@ class TimeRange:
 
         （这用于 :class:`~.AnimGroup` 对 ``end=FOREVER`` 的子动画的处理，也就是把这种子动画当成 ``end=at`` 来计算时间）
         """
-        return self.at if self.end is FOREVER else self.end
+        return self.at if self.end is FOREVER else self.end  # type: ignore
 
     def set(self, at: float, end: float | ForeverType) -> None:
         """
@@ -277,7 +277,7 @@ class TimeRange:
         """
         self.at += delta
         if self.end is not FOREVER:
-            self.end += delta
+            self.end += delta  # type: ignore
 
     def scale(self, k: float) -> None:
         """
@@ -285,13 +285,19 @@ class TimeRange:
         """
         self.at *= k
         if self.end is not FOREVER:
-            self.end *= k
+            self.end *= k  # type: ignore
 
     def copy(self) -> TimeRange:
         return TimeRange(self.at, self.end)
 
     def __eq__(self, other: TimeRange) -> bool:
         return self.at == other.at and self.end == other.end
+
+    def contains(self, t: float) -> bool:
+        if self.end is FOREVER:
+            return self.at <= t
+        else:
+            return self.at <= t < self.end  # type: ignore
 
 
 class TimeAligner:
@@ -309,10 +315,10 @@ class TimeAligner:
         归化 ``anim`` 的时间区段，
         即分别对 ``.t_range.at`` 和 ``.t_range.end`` 进行 :meth:`align_t` 的操作
         """
-        rg = anim.t_range
-        rg.at = self.align_t(rg.at)
-        if rg.end is not FOREVER:
-            rg.end = self.align_t(rg.end)
+        t_range = anim.t_range
+        t_range.at = self.align_t(t_range.at)
+        if t_range.end is not FOREVER:
+            t_range.end = self.align_t(t_range.end)  # type: ignore
 
     def align_t(self, t: float) -> float:
         """

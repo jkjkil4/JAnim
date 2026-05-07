@@ -515,9 +515,9 @@ class ItemUpdater(Animation):
         self.renderers: dict[type, Renderer] = {}
 
     def _time_fixed(self) -> None:
-        self.timeline.add_additional_render_calls_callback(
+        self.timeline.add_extra_render_group(
             self.t_range,
-            self.render_calls_callback,
+            self.render_group_fn,
             None if self.item is None else [self.item],
         )
 
@@ -569,7 +569,7 @@ class ItemUpdater(Animation):
             renderer = self.renderers[item.__class__] = item.renderer_cls()
         return renderer
 
-    def render_calls_callback(self):
+    def render_group_fn(self):
         global_t = Animation.global_t_ctx.get()
         alpha = self.get_alpha_on_global_t(global_t)
         with UpdaterParams(global_t, alpha, self.t_range, None, self) as params:
