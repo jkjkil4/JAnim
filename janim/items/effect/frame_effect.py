@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Any, Iterable, Self
 
-from janim.anims.timeline import Timeline
+from janim.anims.timeline import RenderCollection
 from janim.components.component import CmptInfo
 from janim.components.simple import Cmpt_Dict, Cmpt_List
 from janim.items.item import Item
@@ -52,7 +52,6 @@ class FrameEffect(Item):
     renderer_cls = FrameEffectRenderer
 
     _items = CmptInfo(Cmpt_List[Self, Item])
-    _apprs = CmptInfo(Cmpt_List[Self, Timeline.ItemAppearance])
 
     _uniforms = CmptInfo(Cmpt_Dict[Self, str, Any])
     _optional_uniforms = CmptInfo(Cmpt_Dict[Self, str, Any])
@@ -127,7 +126,7 @@ class FrameEffect(Item):
             if sub not in self._items
         ]
         self._items.extend(apply_items)
-        self._apprs.extend(self.timeline.item_appearances[item] for item in apply_items)
+        return self
 
     def discard(self, *items: Item, root_only: bool = False) -> Self:
         """
@@ -137,20 +136,12 @@ class FrameEffect(Item):
             for sub in item.walk_self_and_descendants(root_only):
                 try:
                     self._items.remove(sub)
-                    self._apprs.remove(self.timeline.item_appearances[sub])
                 except ValueError:
                     pass
+        return self
 
-    def _mark_render_disabled(self, additionals: list[Timeline.AdditionalRenderCallsCallback]):
-        for appr in self._apprs:
-            appr.render_disabled = True
-
-        self._additional_lists = []  # 使得 Transform 以及类似动画能够正确应用 FrameEffect
-
-        for rcc in additionals:
-            if all((item in self._items) for item in rcc.related_items):
-                rcc.render_disabled = True
-                self._additional_lists.append(rcc.func())
+    def _render_collection_hook(self, collection: RenderCollection) -> None:
+        self._render_collection = collection.delegates(self._items)
 
 
 simple_frameeffect_shader = """
