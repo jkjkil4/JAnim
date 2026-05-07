@@ -76,8 +76,6 @@ class FrameEffectRenderer(Renderer):
             self.initialized = True
 
         if self.u_fbo is not None:
-            t = Animation.global_t_ctx.get()
-
             with blend_context(self.ctx, False), framebuffer_context(self.fbo):
                 self.fbo.clear()
                 # 为了颜色能被正确渲染到透明 framebuffer 上
@@ -86,19 +84,7 @@ class FrameEffectRenderer(Renderer):
                 # 所以这里需要使用 glFlush 更新 framebuffer 信息使得正确渲染
                 gl.glFlush()
 
-                items_render = [
-                    (appr.stack.compute(t, True), appr.render)
-                    for appr in item._apprs
-                    if appr.is_visible_at(t)
-                ]
-                items_render.extend(it.chain(*item._extra_lists))
-
-                items_render.sort(key=lambda x: x[0].depth, reverse=True)
-
-                for data, render in items_render:
-                    render(data)
-                    # 向透明 framebuffer 绘制时，每次都需要使用 glFlush 更新 framebuffer 信息使得正确渲染
-                    gl.glFlush()
+                item._render_collection.render(True)
 
             self.fbo.color_attachments[0].use(0)
 

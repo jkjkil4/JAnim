@@ -1,10 +1,14 @@
+from __future__ import annotations
+
 import math
+import itertools as it
 from dataclasses import dataclass
 from typing import Callable
 
 import numpy as np
 
 from janim.anims.animation import Animation
+from janim.anims.timeline import RenderCollection
 from janim.anims.updater import DataUpdater, UpdaterParams
 from janim.components.vpoints import Cmpt_VPoints
 from janim.constants import (
@@ -353,26 +357,39 @@ class ShowIncreasingSubsets(Animation):
 
         apprs = self.timeline.item_appearances
 
-        self.i_apprs = [
-            (i, [apprs[item] for item in child.walk_self_and_descendants()])
-            for i, child in enumerate(self.group)
+        self.i_items = [
+            (i, list(child.walk_self_and_descendants())) for i, child in enumerate(self.group)
         ]
         self.n_children = len(self.group)
+
+        wrapper_item = self.WrapperItem(self)
         self.timeline.add_extra_render_group(
             self.t_range,
-            self.render_group_fn,
+            lambda: [(wrapper_item, lambda _: None)],
             [self.group],
         )
 
-    def render_group_fn(self):
+    class WrapperItem(Item):
+        def __init__(self, anim: ShowIncreasingSubsets):
+            super().__init__()
+            self.from_anim = anim
+
+        def _render_collection_hook(self, collection: RenderCollection) -> None:
+            self.from_anim._hook(collection)
+
+    def _hook(self, collection: RenderCollection) -> None:
         global_t = Animation.global_t_ctx.get()
         alpha = self.get_alpha_on_global_t(global_t)
-        for i, apprs in self.i_apprs:
+
+        items_list: list[list[Item]] = []
+        for i, items in self.i_items:
             self.index = int(self.int_func(alpha * self.n_children))
             if not self.is_item_visible(i):
-                for appr in apprs:
-                    appr.render_disabled = True
-        return []
+                items_list.append(items)
+
+        # 通过代理不可见物件的渲染，但是自己又不渲染它们，来达到隐藏部分物件的目的
+        # 并不是一个优雅的实现，算个 workaround
+        _ = collection.delegates(it.chain.from_iterable(items_list))
 
     def is_item_visible(self, i: int) -> bool:
         return i < self.index
