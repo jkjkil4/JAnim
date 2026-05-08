@@ -1,9 +1,8 @@
-import os
 from PySide6.QtGui import QSurfaceFormat
 from PySide6.QtWidgets import QApplication
 
 from janim.exception import cancel_listen_exception, listen_exception
-from janim.utils.file_ops import readall, get_janim_dir
+from janim.gui.qdarkstyle import load_stylesheet
 
 
 class Application(QApplication):
@@ -14,8 +13,7 @@ class Application(QApplication):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        qss_file = os.path.join(get_janim_dir(), 'gui', 'styles.qss')
-        stylesheet = readall(qss_file)
+        stylesheet = load_stylesheet()
         self.setStyleSheet(stylesheet)
 
         fmt = QSurfaceFormat.defaultFormat()
