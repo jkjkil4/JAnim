@@ -60,12 +60,13 @@ class RenderProfiler:
         # 使得 render 中可以直接访问到 item_times 闭包
         @staticmethod
         def render(renders: Iterable[ItemWithRenderFunc], blending: bool) -> None:
-            for data, render in renders:
-                with record(data.__class__.__name__):
-                    render(data)
+            with record('gap'):
+                for data, render in renders:
+                    with record(data.__class__.__name__):
+                        render(data)
 
-                if not blending:
-                    gl.glFlush()
+                    if not blending:
+                        gl.glFlush()
 
         orig_render = RenderCollection._render
         RenderCollection._render = render

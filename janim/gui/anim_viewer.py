@@ -41,12 +41,11 @@ from janim.anims.timeline import BuiltTimeline, Timeline
 from janim.components.data import Cmpt_Data
 from janim.exception import ExitException
 from janim.gui.application import Application
-from janim.gui.functions.profiler_widget import ProfilerWidget
 from janim.gui.functions.selector import Selector
 from janim.gui.glwidget import GLWidget
 from janim.gui.handlers import handle_command
 from janim.gui.output import connect_to_output_slots, setup_output_actions
-from janim.gui.popup import setup_popup_actions, connect_action_widget
+from janim.gui.popup import setup_popup_actions
 from janim.gui.timeline_view import TimelineView
 from janim.gui.utils import ACTION_WIDGET_FLAG_KEY
 from janim.gui.utils.audio_player import AudioPlayer
@@ -259,12 +258,12 @@ class AnimViewer(QMainWindow):
 
         menu_tools = menu_bar.addMenu(_('Tools(&T)'))
 
-        self.action_profiler = menu_tools.addAction(_('Profiler(&P)'))
-
         self.action_select = menu_tools.addAction(_('Subitem selector(&I)'))
         self.action_select.setShortcut('Ctrl+I')
         self.action_select.setAutoRepeat(False)
         self.selector: Selector | None = None
+
+        menu_tools.addSeparator()
 
         setup_popup_actions(self, menu_tools)
 
@@ -462,8 +461,6 @@ class AnimViewer(QMainWindow):
         self.name_edit.editingFinished.connect(self.on_name_edit_finished)
         self.time_label.clicked.connect(self.on_copy_time_triggered)
         connect_to_output_slots(self, self.btn_capture.clicked, self.btn_export.clicked)
-
-        connect_action_widget(self, self.action_profiler, ProfilerWidget)
 
     # region slots-menu
 

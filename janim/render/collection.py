@@ -69,7 +69,7 @@ class RenderCollection:
                 self._extras_is_delegated[i] = True
                 delegated_extras.append(extra)
 
-        return self.__class__(self.timeline, delegated_apprs, delegated_extras)
+        return RenderCollection(self.timeline, delegated_apprs, delegated_extras)
 
     def render(self, blending: bool) -> None:
         # 得到所有将要渲染的目标

@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 from PySide6.QtGui import QAction
 from PySide6.QtWidgets import QMenu, QWidget
 
+from janim.gui.functions.profiler_widget import ProfilerWidget
 from janim.gui.popup.color_widget import ColorWidget
 from janim.gui.popup.draw_panel import DrawPanel
 from janim.gui.popup.font_table import FontTable
@@ -19,6 +20,10 @@ _ = get_translator('janim.gui.popup.__init__')
 
 
 def setup_popup_actions(viewer: AnimViewer, menu: QMenu) -> None:
+    action_profiler = menu.addAction(_('Profiler(&P)'))
+
+    menu.addSeparator()
+
     action_draw = menu.addAction(_('Draw(&D)'))
     action_draw.setShortcut('Ctrl+D')
     action_draw.setAutoRepeat(False)
@@ -35,6 +40,7 @@ def setup_popup_actions(viewer: AnimViewer, menu: QMenu) -> None:
     action_color_widget.setShortcut('Ctrl+O')
     action_color_widget.setAutoRepeat(False)
 
+    connect_action_widget(viewer, action_profiler, ProfilerWidget)
     connect_action_widget(viewer, action_draw, DrawPanel)
     connect_action_widget(viewer, action_richtext_edit, RichTextEditor)
     connect_action_widget(viewer, action_font_table, FontTable)
