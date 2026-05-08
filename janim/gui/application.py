@@ -19,6 +19,7 @@ class Application(QApplication):
         self.setStyleSheet(stylesheet)
 
         fmt = QSurfaceFormat.defaultFormat()
+        fmt.setRenderableType(QSurfaceFormat.RenderableType.OpenGL)
         fmt.setVersion(4, 3)
         fmt.setProfile(QSurfaceFormat.OpenGLContextProfile.CoreProfile)
         QSurfaceFormat.setDefaultFormat(fmt)
