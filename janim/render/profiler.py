@@ -98,4 +98,6 @@ class FrameRecord:
     times: list[tuple[str, float]]
 
     def __post_init__(self):
+        # 和 elapsed 的区别：
+        # elapsed 会包括完整的 overhead，total_time 是内部用时求和，不包含 overhead
         self.total_time = sum(t for _, t in self.times)

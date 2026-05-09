@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import math
 import itertools as it
 from collections import deque
 from typing import TYPE_CHECKING
@@ -128,6 +129,7 @@ class ProfilerGraph(QWidget):
         if flag:
             self._max_time_shrink_timer.stop()
         else:
+            self._max_time_shrink_timer.start()
             self._max_time = self._compute_max_time()
         self.update()
 
@@ -365,6 +367,8 @@ class ProfilerGraph(QWidget):
         painter.drawPixmap(QPointF(), self._buffer_pixmap)
         if self._normalize:
             self._draw_percentage_hlines(painter)
+        else:
+            self._draw_time_hlines(painter)
         self._draw_legend(painter)
 
     def _draw_centered_text(self, painter, text):
@@ -374,7 +378,45 @@ class ProfilerGraph(QWidget):
         painter.setFont(font)
         painter.drawText(self.rect(), Qt.AlignmentFlag.AlignCenter, text)
 
+    def _draw_time_hlines(self, painter: QPainter) -> None:
+        max_time = self._max_time
+        top = max_time * (1 + self.TOP_MARGIN_RATIO)
+
+        x = 10 ** math.floor(math.log10(top))
+
+        values: list[float] = [
+            x * factor  #
+            for factor in (9, 7, 5, 3, 2, 1, 0.5, 0.2)
+            if x * factor < top
+        ]
+
+        self._apply_hline_styles(painter)
+        for value in values:
+            self._draw_hline(painter, value / top, self._get_time_text(value))
+
+    @staticmethod
+    def _get_time_text(value: float) -> str:
+        if value < 1e-9:
+            return '< 1ns'
+        elif value < 1e-6:
+            ns = value * 1e9
+            return f'{ns:.0f}ns'
+        elif value < 1e-3:
+            us = value * 1e6
+            return f'{us:.0f}us'
+        elif value < 1:
+            ms = value * 1e3
+            return f'{ms:.0f}ms'
+        else:
+            return f'{value:.3f}s'
+
     def _draw_percentage_hlines(self, painter: QPainter) -> None:
+        self._apply_hline_styles(painter)
+        for i in range(1, 4):
+            percent = i * 25
+            self._draw_hline(painter, percent / 100.0, f'{percent}%')
+
+    def _apply_hline_styles(self, painter: QPainter) -> None:
         pen = QPen(QColor(255, 255, 255, 180))
         pen.setStyle(Qt.PenStyle.DashLine)
         painter.setPen(pen)
@@ -383,12 +425,10 @@ class ProfilerGraph(QWidget):
         font.setPointSize(8)
         painter.setFont(font)
 
-        w, h = self.size().toTuple()
-        for i in range(1, 4):
-            percent = i * 25
-            y = h - (h * (percent / 100.0))
-            painter.drawLine(0, int(y), w, int(y))
-            painter.drawText(5, int(y) - 2, f'{percent}%')
+    def _draw_hline(self, painter: QPainter, ratio: float, text: str) -> None:
+        y = int(self.height() * (1 - ratio))
+        painter.drawLine(0, y, self.width(), y)
+        painter.drawText(5, y - 2, text)
 
     def _draw_legend(self, painter) -> None:
         painter.setPen(Qt.GlobalColor.white)
