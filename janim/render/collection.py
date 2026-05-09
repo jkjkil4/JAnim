@@ -117,8 +117,8 @@ class RenderCollection:
 
     @staticmethod
     def _render(renders: Iterable[ItemWithRenderFunc], blending: bool) -> None:
-        for item, render in renders:
-            render(item)
+        for data, render in renders:
+            render(data)
             # 如果没有 blending，我们认为当前是在向透明 framebuffer 绘制
             # 所以每次都需要使用 glFlush 更新 framebuffer 信息使得正确渲染
             if not blending:
