@@ -58,8 +58,9 @@ class ProfilerWidget(QWidget):
 
 
 class ProfilerGraph(QWidget):
-    RECORDS_MAXLEN = 200
-    FILL_COLOR = QColor('#1e1e1e')
+    RECORDS_MAXLEN = 200  # 渲染的记录数量
+    FILL_COLOR = QColor('#1e1e1e')  # 背景填充色
+    MIN_VISIBLE_RATIO = 1e-2  # 显示的最小占比，低于这个占比的类型不显示
 
     def __init__(self, viewer: AnimViewer):
         super().__init__()
@@ -155,7 +156,6 @@ class ProfilerGraph(QWidget):
             delta_x = right - left
 
             # 先将前一次 buffer 偏移 -delta_x
-            # self._buffer_pixmap.fill(self.FILL_COLOR)
             self._buffer_pixmap.scroll(-delta_x, 0, self._buffer_pixmap.rect())
 
             # 然后再绘制新的部分
@@ -189,8 +189,22 @@ class ProfilerGraph(QWidget):
             total_time1 = sum(x[1] for x in record1.times)
             total_time2 = sum(x[1] for x in record2.times)
 
+            # 扣除占比过小的类型
+            min1 = total_time1 * self.MIN_VISIBLE_RATIO
+            min2 = total_time2 * self.MIN_VISIBLE_RATIO
+            ignored_flags: list[bool] = []
+            for _, t1, t2 in time_pairs:
+                flag = t1 < min1 and t2 < min2
+                ignored_flags.append(flag)
+                if flag:
+                    total_time1 -= t1
+                    total_time2 -= t2
+
+            # 遍历渲染
             time1, time2 = 0, 0
-            for name, t1, t2 in time_pairs:
+            for (name, t1, t2), ignored in zip(time_pairs, ignored_flags):
+                if ignored:
+                    continue
                 time1p = time1 + t1
                 time2p = time2 + t2
                 points = [

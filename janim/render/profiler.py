@@ -1,10 +1,9 @@
 from __future__ import annotations
 
-import weakref
 import time
-from collections import defaultdict, deque
+from collections import defaultdict
 from contextlib import contextmanager
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Any, Callable, Iterable
 
 import OpenGL.GL as gl
