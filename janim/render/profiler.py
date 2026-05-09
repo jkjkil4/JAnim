@@ -1,8 +1,11 @@
+from __future__ import annotations
+
+import weakref
 import time
 from collections import defaultdict, deque
 from contextlib import contextmanager
 from dataclasses import dataclass, field
-from typing import Iterable
+from typing import Any, Callable, Iterable
 
 import OpenGL.GL as gl
 
@@ -15,25 +18,28 @@ class RenderProfiler:
     性能分析器
 
     用于 patch 物件渲染，统计物件渲染的耗时与性能
+
+    :param callback: 用于接收结果的回调函数，接收一个 :class:`FrameRecord` 参数
     """
 
-    def __init__(self, *, max_history: int = 200):
-        self.max_history = max_history
-        self.history: deque[FrameRecord] = deque(maxlen=max_history)
+    def __init__(self, callback: Callable[[FrameRecord], Any]):
+        self._callback = callback
 
     @contextmanager
     def record_frame(self):
         """
-        在渲染顶层入口 ``with`` 该函数，统计内部代码块的物件用时，存入 ``history`` 中作为一帧的数据
+        在渲染顶层入口 ``with`` 该函数，统计内部代码块的物件用时，并将结果传递给 ``callback`` 回调
         """
         t = time.perf_counter()
-        item_times = defaultdict(float)
+        item_times: dict[str, float] = defaultdict(float)
         try:
             with self._patch_collection_render(item_times):
                 yield
         finally:
             elapsed = time.perf_counter() - t
-            self.history.append(FrameRecord(t, elapsed, item_times))
+            times = list(item_times.items())
+            times.sort(key=lambda x: x[0])
+            self._callback(FrameRecord(t, elapsed, times))
 
     @staticmethod
     @contextmanager
@@ -68,12 +74,12 @@ class RenderProfiler:
                     if not blending:
                         gl.glFlush()
 
-        orig_render = RenderCollection._render
+        orig_render = RenderCollection.__dict__['_render']
         RenderCollection._render = render
         try:
             yield
         finally:
-            RenderCollection._render = orig_render
+            setattr(RenderCollection, '_render', orig_render)
 
 
 @dataclass
@@ -83,8 +89,11 @@ class FrameRecord:
     """
 
     timestamp: float
-    elapsed: float = 0.0
+    elapsed: float
 
-    # key: 物件类型名称 (e.g. "VItem")
-    # value: 累计耗时(秒)
-    item_times: dict[str, float] = field(default_factory=lambda: defaultdict(float))
+    # tuple[str, float]:
+    #   物件类型名称 (e.g. "VItem")
+    #   累计耗时(秒)
+    #
+    # 列表元素按照 str 排序
+    times: list[tuple[str, float]]

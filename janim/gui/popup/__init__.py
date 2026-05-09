@@ -5,10 +5,10 @@ from typing import TYPE_CHECKING
 from PySide6.QtGui import QAction
 from PySide6.QtWidgets import QMenu, QWidget
 
-from janim.gui.functions.profiler_widget import ProfilerWidget
 from janim.gui.popup.color_widget import ColorWidget
 from janim.gui.popup.draw_panel import DrawPanel
 from janim.gui.popup.font_table import FontTable
+from janim.gui.popup.profiler_widget import ProfilerWidget
 from janim.gui.popup.richtext_editor import RichTextEditor
 from janim.gui.utils import apply_popup_flags
 from janim.locale import get_translator

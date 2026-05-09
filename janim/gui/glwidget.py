@@ -1,4 +1,5 @@
 from contextlib import nullcontext
+from typing import Any, Callable
 import numpy as np
 from PySide6.QtCore import QPointF, Signal
 from PySide6.QtOpenGLWidgets import QOpenGLWidget
@@ -10,7 +11,7 @@ from janim.camera.camera_info import CameraInfo
 from janim.logger import log
 from janim.render.base import create_context
 from janim.render.framebuffer import FRAME_BUFFER_BINDING, register_qt_glwidget
-from janim.render.profiler import RenderProfiler
+from janim.render.profiler import FrameRecord, RenderProfiler
 from janim.typing import VectArray
 
 
@@ -105,8 +106,8 @@ class GLWidget(QOpenGLWidget):
     def update_clear_color(self) -> None:
         self.needs_update_clear_color = True
 
-    def setup_profiler(self) -> None:
-        self.profiler = RenderProfiler()
+    def setup_profiler(self, callback: Callable[[FrameRecord], Any]) -> None:
+        self.profiler = RenderProfiler(callback)
 
     def teardown_profiler(self) -> None:
         self.profiler = None
