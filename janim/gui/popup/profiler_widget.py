@@ -4,7 +4,7 @@ import itertools as it
 from collections import deque
 from typing import TYPE_CHECKING
 
-from PySide6.QtCore import QMargins, QPointF, QRect, QSize, Qt, QTimer
+from PySide6.QtCore import QMargins, QPointF, QRect, Qt, QTimer
 from PySide6.QtGui import QColor, QFontMetrics, QPainter, QPen, QPixmap, QPolygonF
 from PySide6.QtWidgets import QCheckBox, QHBoxLayout, QVBoxLayout, QWidget
 
@@ -25,8 +25,7 @@ class ProfilerWidget(QWidget):
         self.setup_ui()
         self.setup_slots()
 
-        self.option_normalize.setChecked(True)
-        self.option_normalize.setEnabled(False)  # 由于另一个功能暂未实现，先禁用
+        self.option_normalize.setChecked(False)
 
         self.setWindowTitle(_('Render Profiler'))
         self.resize(800, 600)
@@ -62,13 +61,36 @@ class ProfilerGraph(QWidget):
     FILL_COLOR = QColor('#1e1e1e')  # 背景填充色
     MIN_VISIBLE_RATIO = 1e-2  # 显示的最小占比，低于这个占比的类型不显示
 
+    TOP_MARGIN_RATIO = 0.2  # 在堆积面积图中，顶部留出的空间占 _max_time 的比例
+    SHRINK_RATIO = 0.5  # 在堆积面积图中，至少下降了多少才重新设置 _max_time
+    SHRINK_MARGIN = 0.1  # 重新设置的 _max_time 比实际计算结果多出多少，避免 shrink 后马上 expand
+
+    EXPAND_INTERVAL = 100
+    SHRINK_INTERVAL = 2500
+
     def __init__(self, viewer: AnimViewer):
         super().__init__()
         self.viewer = viewer
         self.viewer.glw.setup_profiler(self._on_frame_recorded)
         self.destroyed.connect(self.viewer.glw.teardown_profiler)
 
+        self.setMinimumWidth(self.RECORDS_MAXLEN + 10)
+
+        # 关闭：堆积面积图
+        # 开启：百分比堆积面积图
         self._normalize: bool = False
+
+        # 该值仅在 _normalize=False 时有效
+        self._max_time: float = 1e-5
+
+        # 逻辑：
+        # 当某次的最大值超过原先的最大值 _max_time 后
+        # 会激活 expand_timer 使其尽快尝试扩张 _max_time，这是被动触发的因此是 singleShot=True
+        # 并且也会同时重置 shrink_timer 的时间，shrink_timer 会每隔较长的时间重复尝试缩窄 _max_time
+        self._max_time_expand_timer = QTimer(interval=self.EXPAND_INTERVAL, singleShot=True)
+        self._max_time_shrink_timer = QTimer(interval=self.SHRINK_INTERVAL)
+        self._max_time_expand_timer.timeout.connect(self._on_max_time_expand)
+        self._max_time_shrink_timer.timeout.connect(self._on_max_time_shrink)
 
         self._rendered_records: deque[FrameRecord] = deque(maxlen=self.RECORDS_MAXLEN)
         self._pending_records: list[FrameRecord] = []
@@ -76,7 +98,7 @@ class ProfilerGraph(QWidget):
         self._resize_timer = QTimer(interval=50, singleShot=True)
         self._resize_timer.timeout.connect(self._on_resize_timeout)
 
-        self._buffer_pixmap = self._new_buffer_pixmap(self.size())
+        self._buffer_pixmap = QPixmap(self.size())
         self._buffered: bool = False
 
         colors_hex = [
@@ -102,7 +124,27 @@ class ProfilerGraph(QWidget):
 
     def set_normalize(self, flag: bool) -> None:
         self._normalize = flag
+        self._buffered = False
+        if flag:
+            self._max_time_shrink_timer.stop()
+        else:
+            self._max_time = self._compute_max_time()
         self.update()
+
+    def _on_max_time_expand(self) -> None:
+        self._buffered = False
+        self._max_time = self._compute_max_time()
+        self.update()
+
+    def _on_max_time_shrink(self) -> None:
+        max_time = self._compute_max_time()
+        if max_time < self._max_time * (1 - self.SHRINK_RATIO):
+            self._buffered = False
+            self._max_time = max_time * (1 + self.SHRINK_MARGIN)
+            self.update()
+
+    def _compute_max_time(self) -> float:
+        return max(record.total_time for record in self._rendered_records)
 
     def _on_frame_recorded(self, frame: FrameRecord) -> None:
         self._pending_records.append(frame)
@@ -118,14 +160,9 @@ class ProfilerGraph(QWidget):
     def _on_resize_timeout(self) -> None:
         size = self.size()
         if size != self._buffer_pixmap.size():
-            self._buffer_pixmap = self._new_buffer_pixmap(self.size())
+            self._buffer_pixmap = QPixmap(self.size())
             self._buffered = False
             self.update()
-
-    def _new_buffer_pixmap(self, size: QSize) -> QPixmap:
-        pixmap = QPixmap(size)
-        pixmap.fill(self.FILL_COLOR)
-        return pixmap
 
     def _update_buffer_pixmap(self) -> None:
         # 如果没有新的记录，并且缓冲区没有重置过，那么直接复用
@@ -139,12 +176,13 @@ class ProfilerGraph(QWidget):
         # 如果缓冲区重置过，则全量绘制，否则增量绘制
         if not self._buffered:
             self._buffered = True
+            self._buffer_pixmap.fill(self.FILL_COLOR)
 
             records_len = len(self._rendered_records)
 
             painter = QPainter(self._buffer_pixmap)
             painter.setRenderHint(QPainter.RenderHint.Antialiasing)
-            self._render_records(painter, 0, records_len - 1, None)
+            self._render_records(painter, 0, records_len - 1)
 
         else:
             left_idx = len(self._rendered_records) - pending_count
@@ -164,14 +202,13 @@ class ProfilerGraph(QWidget):
             painter.fillRect(
                 QRect(self.width() - delta_x, 0, delta_x, self.height()), self.FILL_COLOR
             )
-            self._render_records(painter, left_idx, right_idx, None)
+            self._render_records(painter, left_idx, right_idx)
 
     def _render_records(
         self,
         painter: QPainter,
         left_idx: int,
         right_idx: int,
-        max_height: bool | None,  # TODO
     ) -> None:
         """
         指定 ``_rendered_records`` 中的一个区段渲染到 ``pixmap`` 中
@@ -186,8 +223,8 @@ class ProfilerGraph(QWidget):
             record2 = self._rendered_records[i2]
 
             time_pairs: list[tuple[str, float, float]] = list(self._iter_times(record1, record2))
-            total_time1 = sum(x[1] for x in record1.times)
-            total_time2 = sum(x[1] for x in record2.times)
+            total_time1 = record1.total_time
+            total_time2 = record2.total_time
 
             # 扣除占比过小的类型
             min1 = total_time1 * self.MIN_VISIBLE_RATIO
@@ -200,6 +237,18 @@ class ProfilerGraph(QWidget):
                     total_time1 -= t1
                     total_time2 -= t2
 
+            # 根据 normalize 选项决定除数
+            if self._normalize:
+                div1 = total_time1
+                div2 = total_time2
+            else:
+                div1 = div2 = self._max_time * (1 + self.TOP_MARGIN_RATIO)
+
+            if max(total_time1, total_time2) > self._max_time:
+                if not self._max_time_expand_timer.isActive():
+                    self._max_time_expand_timer.start()
+                self._max_time_shrink_timer.start()
+
             # 遍历渲染
             time1, time2 = 0, 0
             for (name, t1, t2), ignored in zip(time_pairs, ignored_flags):
@@ -208,10 +257,10 @@ class ProfilerGraph(QWidget):
                 time1p = time1 + t1
                 time2p = time2 + t2
                 points = [
-                    QPointF(x1, to_pixel_y(time1 / total_time1)),
-                    QPointF(x2, to_pixel_y(time2 / total_time2)),
-                    QPointF(x2, to_pixel_y(time2p / total_time2)),
-                    QPointF(x1, to_pixel_y(time1p / total_time1)),
+                    QPointF(x1, to_pixel_y(time1 / div1)),
+                    QPointF(x2, to_pixel_y(time2 / div2)),
+                    QPointF(x2, to_pixel_y(time2p / div2)),
+                    QPointF(x1, to_pixel_y(time1p / div1)),
                 ]
 
                 polygon = QPolygonF(points)
@@ -309,7 +358,7 @@ class ProfilerGraph(QWidget):
 
         painter = QPainter(self)
 
-        if not self._rendered_records:
+        if len(self._rendered_records) <= 1:
             self._draw_centered_text(painter, _('No Data'))
             return
 

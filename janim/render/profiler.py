@@ -96,3 +96,6 @@ class FrameRecord:
     #
     # 列表元素按照 str 排序
     times: list[tuple[str, float]]
+
+    def __post_init__(self):
+        self.total_time = sum(t for _, t in self.times)
