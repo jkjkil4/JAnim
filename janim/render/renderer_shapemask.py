@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import itertools as it
 from typing import TYPE_CHECKING
 
 import moderngl as mgl
