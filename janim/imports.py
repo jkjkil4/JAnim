@@ -30,6 +30,7 @@ from janim.items.coordinate.number_line import *
 from janim.items.effect.clip import *
 from janim.items.effect.effects import *
 from janim.items.effect.frame_effect import *
+from janim.items.effect.mask import *
 from janim.items.geometry.arc import *
 from janim.items.geometry.arrow import *
 from janim.items.geometry.line import *
@@ -37,7 +38,6 @@ from janim.items.geometry.polygon import *
 from janim.items.group import *
 from janim.items.image_item import *
 from janim.items.item import *
-from janim.items.mask import *
 from janim.items.points import *
 from janim.items.shape_matchers import *
 from janim.items.svg.brace import *

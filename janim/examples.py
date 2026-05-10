@@ -458,8 +458,8 @@ class MaskExample(Timeline):
         mask_1_shape = Rect(text.points.box.width, text.points.box.height)
         mask_1_shape.points.next_to(text, UP, buff=0.5)
         mask_1 = ShapeMask(
+            text,
             shape=mask_1_shape,
-            affected=[text],
         ).show()
 
         # 文本逐个上浮
@@ -474,8 +474,8 @@ class MaskExample(Timeline):
 
         # 将遮罩变为圆形
         mask_2 = ShapeMask(
+            text,
             shape=Circle(),
-            affected=[text],
         )
         self.play(Transform(mask_1, mask_2))
         self.forward(1)
@@ -502,7 +502,7 @@ class MaskExample(Timeline):
         # 持有物件的变换
         text_2 = Text("The mask should be hold")
         text_2.points.scale(2)
-        mask_2.affect(text_2)
+        mask_2.apply(text_2)
         self.play(TransformMatchingDiff(text, text_2))
         self.forward(1)
 
@@ -521,8 +521,8 @@ class MaskExample(Timeline):
         text_3 = Text('ABCDEFGHIJKLMN', font_size=40).show()
         shape_union = boolean_ops.Union(dot1, dot2)
         shape_intersection = boolean_ops.Intersection(dot1, dot2)
-        mask_union = ShapeMask(shape_union, affected=[text_3])
-        mask_intersection = ShapeMask(shape_intersection, affected=[text_3])
+        mask_union = ShapeMask(text_3, shape=shape_union)
+        mask_intersection = ShapeMask(text_3, shape=shape_intersection)
         self.play(Transform(mask_union, mask_intersection), duration=0.5)
         self.forward(1)
         self.play(Transform(mask_intersection, mask_union), duration=0.5)
@@ -535,7 +535,7 @@ class MaskExample(Timeline):
         cir = Circle(radius=0.1, color=RED).fill.set(alpha=1).r
         circles = Group.from_iterable(cir.copy() for _ in range(800))
         circles.points.arrange_in_grid(n_cols=30).shift(DOWN * 2)
-        mask_3 = ShapeMask(shape=text_fashion, affected=[circles]).show()
+        mask_3 = ShapeMask(circles, shape=text_fashion).show()
 
         self.prepare(
             circles.anim.points.shift(UP * 3),

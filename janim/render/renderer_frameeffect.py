@@ -84,7 +84,7 @@ class FrameEffectRenderer(Renderer):
                 # 所以这里需要使用 glFlush 更新 framebuffer 信息使得正确渲染
                 gl.glFlush()
 
-                item._render_collection.render(True)
+                item._render_collection.render(False)
 
             self.fbo.color_attachments[0].use(0)
 
