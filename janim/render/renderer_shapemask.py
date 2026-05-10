@@ -30,7 +30,7 @@ class ShapeMaskRenderer(Renderer):
     def __init__(self):
         self.initialized: bool = False
 
-    def init(self, item: ShapeMask) -> None:
+    def init(self) -> None:
         self.ctx = Renderer.data_ctx.get().ctx
         pw, ph = Config.get.pixel_width, Config.get.pixel_height
 
@@ -76,7 +76,7 @@ class ShapeMaskRenderer(Renderer):
 
     def render(self, item: ShapeMask) -> None:
         if not self.initialized:
-            self.init(item)
+            self.init()
             self.initialized = True
 
         # 渲染影响物件到 fbo_content
@@ -100,15 +100,8 @@ class ShapeMaskRenderer(Renderer):
         self.u_content_tex.value = 0
         self.u_mask_tex.value = 1
 
-        pw, ph = Config.get.pixel_width, Config.get.pixel_height
-
         self.prog['u_mask_alpha'] = item.alpha._value
-
-        fw = Config.get.frame_width
-        self.prog['u_feather'] = item.feather._value * (pw / fw)
-
+        self.prog['u_feather'] = item.feather._value
         self.prog['u_invert'] = item.invert._value
-
-        self.prog['u_tex_size'] = (float(pw), float(ph))
 
         self.vao.render(mgl.TRIANGLE_STRIP)

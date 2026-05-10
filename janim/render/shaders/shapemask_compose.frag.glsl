@@ -9,7 +9,8 @@ uniform sampler2D mask_tex;
 uniform float u_mask_alpha;
 uniform float u_feather;
 uniform float u_invert;
-uniform vec2 u_tex_size;
+
+uniform vec2 JA_FRAME_RADIUS;
 
 #[JA_FINISH_UP_UNIFORMS]
 
@@ -21,7 +22,7 @@ const float weights[5] = float[](
 
 float sample_mask_blurred(vec2 uv)
 {
-	vec2 texel = 1.0 / u_tex_size;
+	vec2 texel = 0.5 / JA_FRAME_RADIUS;
 	float result = 0.0;
 	float total = 0.0;
 
