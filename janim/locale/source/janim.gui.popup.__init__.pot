@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-01 13:06+0800\n"
+"POT-Creation-Date: 2026-05-09 15:21+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,18 +17,22 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: janim/gui/popup/__init__.py:22
+#: janim/gui/popup/__init__.py:23
+msgid "Profiler(&P)"
+msgstr ""
+
+#: janim/gui/popup/__init__.py:27
 msgid "Draw(&D)"
 msgstr ""
 
-#: janim/gui/popup/__init__.py:26
+#: janim/gui/popup/__init__.py:31
 msgid "Rich text editor(&R)"
 msgstr ""
 
-#: janim/gui/popup/__init__.py:30
+#: janim/gui/popup/__init__.py:35
 msgid "Font list(&F)"
 msgstr ""
 
-#: janim/gui/popup/__init__.py:34
+#: janim/gui/popup/__init__.py:39
 msgid "Color(&O)"
 msgstr ""

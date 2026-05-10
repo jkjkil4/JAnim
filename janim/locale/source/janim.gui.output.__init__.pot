@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-01 13:24+0800\n"
+"POT-Creation-Date: 2026-04-22 22:43+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -25,39 +25,39 @@ msgstr ""
 msgid "Capture(&C)"
 msgstr ""
 
-#: janim/gui/output/__init__.py:82
+#: janim/gui/output/__init__.py:86
 #, python-brace-format
 msgid "Frame t={t:.2f} saved to \"{file_path}\""
 msgstr ""
 
-#: janim/gui/output/__init__.py:84 janim/gui/output/__init__.py:96
-#: janim/gui/output/__init__.py:125 janim/gui/output/__init__.py:166
+#: janim/gui/output/__init__.py:89 janim/gui/output/__init__.py:102
+#: janim/gui/output/__init__.py:132 janim/gui/output/__init__.py:177
 msgid "Note"
 msgstr ""
 
-#: janim/gui/output/__init__.py:85
+#: janim/gui/output/__init__.py:90
 #, python-brace-format
 msgid "Captured to {file_path}"
 msgstr ""
 
-#: janim/gui/output/__init__.py:95
+#: janim/gui/output/__init__.py:101
 #, python-brace-format
 msgid "Frame t={t:.2f} copied to clipboard"
 msgstr ""
 
-#: janim/gui/output/__init__.py:96
+#: janim/gui/output/__init__.py:102
 msgid "Coiped to clipboard"
 msgstr ""
 
-#: janim/gui/output/__init__.py:126
+#: janim/gui/output/__init__.py:133
 msgid "Output will start shortly. Please check the console for information."
 msgstr ""
 
-#: janim/gui/output/__init__.py:159
+#: janim/gui/output/__init__.py:169
 msgid "Exporting was cancelled"
 msgstr ""
 
-#: janim/gui/output/__init__.py:167
+#: janim/gui/output/__init__.py:178
 #, python-brace-format
 msgid "Output to {file_path} has been completed."
 msgstr ""

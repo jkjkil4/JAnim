@@ -16,7 +16,7 @@ from PySide6.QtGui import (
     QPixmap,
     QPolygonF,
 )
-from PySide6.QtWidgets import QCheckBox, QHBoxLayout, QVBoxLayout, QWidget
+from PySide6.QtWidgets import QCheckBox, QHBoxLayout, QMessageBox, QPushButton, QVBoxLayout, QWidget
 
 from janim.locale import get_translator
 from janim.render.profiler import FrameRecord
@@ -53,9 +53,14 @@ class ProfilerWidget(QWidget):
 
     def setup_options(self) -> QWidget:
         self.option_normalize = QCheckBox(_('Normalize'))
+
+        self.hint_button = QPushButton('?')
+        self.hint_button.setMinimumWidth(20)
+
         layout = QHBoxLayout()
         layout.addWidget(self.option_normalize)
         layout.addStretch()
+        layout.addWidget(self.hint_button)
 
         self.options = QWidget()
         self.options.setLayout(layout)
@@ -64,6 +69,36 @@ class ProfilerWidget(QWidget):
 
     def setup_slots(self) -> None:
         self.option_normalize.stateChanged.connect(lambda flag: self.graph.set_normalize(flag))
+
+        self.hint_button.clicked.connect(self.on_hint_button_clicked)
+
+    def on_hint_button_clicked(self) -> None:
+        title = _('Hint')
+        tip = _(
+            '<h3>Render Profiler</h3>'
+            '<p>'
+            'The profiler shows per-frame time distribution across different items, '
+            'helping locate rendering bottlenecks. '
+            'Hovering a legend item highlights the corresponding part in the graph.'
+            '</p>'
+            '<p><b>"Normalize"</b> toggles display mode:</p>'
+            '<ul>'
+            '<li><b>Off</b>: shows real frame time</li>'
+            '<li><b>On</b>: normalizes each frame to 100%, showing proportions</li>'
+            '</ul>'
+            '<p>'
+            '<b>"gap"</b> is the waiting time between CPU and OpenGL rendering. '
+            'A larger gap usually means the GPU is the bottleneck and the CPU is waiting. '
+            'Consistently large gaps indicate high rendering cost.'
+            '</p>'
+        )
+
+        msg = QMessageBox(self)
+        msg.setWindowTitle(title)
+        msg.setTextFormat(Qt.TextFormat.RichText)
+        msg.setText(tip)
+
+        msg.exec()
 
 
 class ProfilerGraph(QWidget):

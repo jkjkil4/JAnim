@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-01 12:33+0800\n"
+"POT-Creation-Date: 2026-04-22 22:43+0800\n"
 "PO-Revision-Date: 2025-08-24 11:24+0800\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -18,59 +18,59 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 "X-Generator: Poedit 3.6\n"
 
-#: janim/gui/output/capture_dialog.py:32
+#: janim/gui/output/capture_dialog.py:31
 msgid "Capture"
 msgstr "截取"
 
-#: janim/gui/output/capture_dialog.py:34
+#: janim/gui/output/capture_dialog.py:33
 msgid "Options"
 msgstr "选项"
 
-#: janim/gui/output/capture_dialog.py:35
+#: janim/gui/output/capture_dialog.py:34
 msgid "Capture Raw Frame"
 msgstr "截取原画面"
 
-#: janim/gui/output/capture_dialog.py:36
+#: janim/gui/output/capture_dialog.py:35
 msgid "Capture Screen View"
 msgstr "截取屏幕画面"
 
-#: janim/gui/output/capture_dialog.py:37
+#: janim/gui/output/capture_dialog.py:36
 msgid "Save to File"
 msgstr "保存到文件"
 
-#: janim/gui/output/capture_dialog.py:38
+#: janim/gui/output/capture_dialog.py:37
 msgid "Copy to Clipboard"
 msgstr "复制到剪贴板"
 
-#: janim/gui/output/capture_dialog.py:40
+#: janim/gui/output/capture_dialog.py:39
 msgid "Save Path:"
 msgstr "保存路径："
 
-#: janim/gui/output/capture_dialog.py:41
+#: janim/gui/output/capture_dialog.py:40
 msgid "Size:"
 msgstr "尺寸："
 
-#: janim/gui/output/capture_dialog.py:42
+#: janim/gui/output/capture_dialog.py:41
 msgid "Transparent Background"
 msgstr "透明背景"
 
-#: janim/gui/output/capture_dialog.py:43
+#: janim/gui/output/capture_dialog.py:42
 msgid "Open the image after capturing"
 msgstr "截取图像后打开"
 
-#: janim/gui/output/capture_dialog.py:46
+#: janim/gui/output/capture_dialog.py:45
 msgid "OK"
 msgstr "确定"
 
-#: janim/gui/output/capture_dialog.py:49
+#: janim/gui/output/capture_dialog.py:48
 msgid "Cancel"
 msgstr "取消"
 
-#: janim/gui/output/capture_dialog.py:176
+#: janim/gui/output/capture_dialog.py:179
 msgid "Confirm Export"
 msgstr "确认导出"
 
-#: janim/gui/output/capture_dialog.py:177
+#: janim/gui/output/capture_dialog.py:180
 #, python-brace-format
 msgid ""
 "{filename} already exists.\n"
@@ -79,10 +79,10 @@ msgstr ""
 "{filename} 已存在。\n"
 "要替换它吗？"
 
-#: janim/gui/output/capture_dialog.py:183
+#: janim/gui/output/capture_dialog.py:187
 msgid "Yes(&Y)"
 msgstr "是(&Y)"
 
-#: janim/gui/output/capture_dialog.py:184
+#: janim/gui/output/capture_dialog.py:188
 msgid "No(&N)"
 msgstr "否(&N)"

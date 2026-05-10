@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-24 22:39+0800\n"
+"POT-Creation-Date: 2026-04-22 22:43+0800\n"
 "PO-Revision-Date: 2025-12-25 14:01+0800\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -18,16 +18,10 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 "X-Generator: Poedit 3.8\n"
 
-#: janim/gui/__init__.py:9
-msgid ""
-"Additional modules need to be installed when using the GUI interface, but "
-"they are not installed"
+#: janim/gui/__init__.py:10
+msgid "Additional modules need to be installed when using the GUI interface, but they are not installed"
 msgstr "使用 GUI 界面时需要安装额外模块，但是未安装"
 
-#: janim/gui/__init__.py:11
-msgid ""
-"You can install them using pip install \"janim[gui]\" and make sure you "
-"install them in the correct Python version"
-msgstr ""
-"你可以使用 pip install \"janim[gui]\" 进行安装，并确保你安装在了正确的 "
-"Python 版本中"
+#: janim/gui/__init__.py:12
+msgid "You can install them using pip install \"janim[gui]\" and make sure you install them in the correct Python version"
+msgstr "你可以使用 pip install \"janim[gui]\" 进行安装，并确保你安装在了正确的 Python 版本中"

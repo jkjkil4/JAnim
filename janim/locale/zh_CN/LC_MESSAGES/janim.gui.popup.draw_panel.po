@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-01-12 23:20+0800\n"
+"POT-Creation-Date: 2026-04-22 22:43+0800\n"
 "PO-Revision-Date: 2026-01-12 23:24+0800\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -18,18 +18,16 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 "X-Generator: Poedit 3.8\n"
 
-#: janim/gui/popup/draw_panel.py:35
+#: janim/gui/popup/draw_panel.py:36
 msgid ""
-"Note: This is used to determine the position on the screen. To actually add "
-"the drawn content, you need to manually add the corresponding code."
-msgstr ""
-"提示：这是在屏幕上确定位置用的，为了将绘制出的东西真正地加进去，你需要手动添"
-"加对应的代码"
+"Note: This is used to determine the position on the screen. To actually add the drawn content, you need to manually add "
+"the corresponding code."
+msgstr "提示：这是在屏幕上确定位置用的，为了将绘制出的东西真正地加进去，你需要手动添加对应的代码"
 
-#: janim/gui/popup/draw_panel.py:52
+#: janim/gui/popup/draw_panel.py:55
 msgid "Draw"
 msgstr "绘制"
 
-#: janim/gui/popup/draw_panel.py:58
+#: janim/gui/popup/draw_panel.py:61
 msgid "Move"
 msgstr "移动"
