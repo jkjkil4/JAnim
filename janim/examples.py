@@ -482,11 +482,8 @@ class MaskExample(Timeline):
         rect = Rect(3, 3, color=LIGHT_BROWN, fill_alpha=1, depth=10)
         self.play(FadeIn(rect))
         self.play(
-            mask2.anim.points.shift(UP * 0.5),
-            DataUpdater(
-                mask2,
-                lambda data, p: data.feather.set(p.alpha * 0.1),
-            )
+            mask2.anim.points.shift(UP * 0.5)
+                .r.feather.set(0.1),
         )
         self.play(
             Succession(
