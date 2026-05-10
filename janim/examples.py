@@ -436,7 +436,7 @@ class ThreeDShapesExample(Timeline):
         
         dirs = [UL, UR, DL, DR]
 
-        self.forward(1)
+        self.forward()
         for sub, effect, dir in zip(subs, effects, dirs):
             self.show(sub, effect)
             self.prepare(
@@ -447,3 +447,117 @@ class ThreeDShapesExample(Timeline):
 
         self.forward_to(subs[0].duration)
 # endmark ThreeDShapesExample
+
+
+class MaskExample(Timeline):
+    def construct(self):
+        ## 第一部分：文本在矩形遮罩中上浮的动画
+
+        txt = Text("Mask Example!")
+        txt.points.scale(2).move_to(DOWN * 0.5)
+
+        # 创建一个位于文本上方的矩形遮罩
+        mask1_shape = Rect(txt.points.box.width, txt.points.box.height)
+        mask1_shape.points.next_to(txt, UP, buff=0.5)
+        mask1 = ShapeMask(txt, shape=mask1_shape).show()
+
+        # 文本逐个上浮
+        self.play(
+            *[
+                char.anim.points.shift(UP * (0.5 + txt.points.box.height))
+                for char in txt[0]
+            ],
+            lag_ratio=0.1,
+        )
+        self.forward()
+
+        ## 第二部分：遮罩与文字的变形
+
+        # 将遮罩变为圆形
+        mask2 = ShapeMask(txt, shape=Circle())
+        self.play(Transform(mask1, mask2))
+        self.forward()
+
+        # 遮罩的羽化
+        rect = Rect(3, 3, color=LIGHT_BROWN, fill_alpha=1, depth=10)
+        self.play(FadeIn(rect))
+        self.play(
+            mask2.anim.points.shift(UP * 0.5),
+            DataUpdater(
+                mask2,
+                lambda data, p: data.feather.set(p.alpha * 0.1),
+            )
+        )
+        self.play(
+            Succession(
+                txt.anim.points.shift(LEFT * 1),
+                txt.anim.points.shift(RIGHT * 1),
+            )
+        )
+        self.forward()
+
+        # 持有物件的变换
+        txt2 = Text("The mask should be hold")
+        txt2.points.scale(2)
+        mask2.apply(txt2)
+        self.play(TransformMatchingDiff(txt, txt2))
+        self.forward()
+
+        # 遮罩本体的淡出
+        self.play(
+            FadeOut(rect),
+            FadeOut(mask2),
+        )
+        self.forward()
+        self.play(FadeOut(txt2))
+        self.forward()
+
+        ## 第三部分：遮罩与布尔运算
+
+        dot1 = Dot(LEFT, 1.5, color=YELLOW, fill_alpha=0.25).show()
+        dot2 = Dot(RIGHT, 1.5, color=YELLOW, fill_alpha=0.25).show()
+        txt3 = Text('Some Example Text Here', font_size=40).show()
+
+        # 使用 boolean_ops 创建遮罩的交并集
+        mask_union = ShapeMask(
+            txt3, 
+            shape=boolean_ops.Union(dot1, dot2)
+        )
+        mask_intersection = ShapeMask(
+            txt3, 
+            shape=boolean_ops.Intersection(dot1, dot2)
+        )
+        self.forward()
+        self.play(FadeIn(mask_union))
+        self.forward(0.5)
+        self.play(Transform(mask_union, mask_intersection), duration=0.5)
+        self.forward(0.5)
+        self.play(Transform(mask_intersection, mask_union), duration=0.5)
+        self.forward(0.5)
+        self.play(FadeOut(Group(dot1, dot2, txt3)))
+        self.forward()
+
+        ## 第四部分：复杂形状遮罩与特殊效果
+
+        # 复杂形状遮罩
+        txt_fashion = Text('Fashion')
+        txt_fashion.points.scale(10)
+        dots = DotCloud(
+            *[
+                [i * 0.3 + 0.15, j * 0.3, 0]
+                for j in range(20, -40, -1)
+                for i in range(-23, 23)
+            ], 
+            radius=0.1,
+            color=PURPLE_E,
+        )
+        mask3 = ShapeMask(dots, shape=txt_fashion).show()
+
+        self.prepare(
+            dots.anim(rate_func=linear).points.shift(UP * 3),
+            duration=5.0,
+        )
+        self.play(FadeIn(dots))
+        self.forward(1.5)
+        self.play(mask3.anim.invert.set(1.0))
+        self.forward(1.5)

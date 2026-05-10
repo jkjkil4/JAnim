@@ -5,6 +5,7 @@ import numpy as np
 from janim.anims.updater import DataUpdater, UpdaterParams
 from janim.components.glow import Cmpt_Glow
 from janim.components.rgbas import Cmpt_Rgbas
+from janim.components.simple import Cmpt_Alpha
 from janim.constants import C_LABEL_ANIM_ABSTRACT, C_LABEL_ANIM_IN, C_LABEL_ANIM_OUT, ORIGIN, OUT
 from janim.exception import JAnimException
 from janim.items.item import Item
@@ -86,9 +87,6 @@ class FadeIn(Fade):
     label_color = C_LABEL_ANIM_IN
 
     def updater(self, data: Item, p: UpdaterParams) -> None:
-        if not isinstance(data, Points):
-            return
-
         for cmpt in data.components.values():
             if isinstance(cmpt, Cmpt_Rgbas):
                 rgbas = cmpt.get().copy()
@@ -96,6 +94,11 @@ class FadeIn(Fade):
                 cmpt.set_rgbas(rgbas)
             elif isinstance(cmpt, Cmpt_Glow):
                 cmpt.mix_alpha(0, 1 - p.alpha)
+            elif isinstance(cmpt, Cmpt_Alpha):
+                cmpt.set(cmpt.get() * p.alpha)
+
+        if not isinstance(data, Points):
+            return
 
         if self.scale != 1.0:
             data.points.scale(
@@ -138,9 +141,6 @@ class FadeOut(Fade):
             self.timeline.schedule(self.t_range.end, self.item.hide, self.root_only)
 
     def updater(self, data: Item, p: UpdaterParams) -> None:
-        if not isinstance(data, Points):
-            return
-
         for cmpt in data.components.values():
             if isinstance(cmpt, Cmpt_Rgbas):
                 rgbas = cmpt.get().copy()
@@ -148,6 +148,11 @@ class FadeOut(Fade):
                 cmpt.set_rgbas(rgbas)
             elif isinstance(cmpt, Cmpt_Glow):
                 cmpt.mix_alpha(0, p.alpha)
+            elif isinstance(cmpt, Cmpt_Alpha):
+                cmpt.set(cmpt.get() * (1 - p.alpha))
+
+        if not isinstance(data, Points):
+            return
 
         if self.scale != 1.0:
             data.points.scale(

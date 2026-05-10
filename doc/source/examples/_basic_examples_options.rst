@@ -95,3 +95,10 @@
         :extract-from-example-mark:
         :media: _static/videos/ThreeDShapesExample.mp4
         :ref: :meth:`~.SurfaceGeometry.into` :meth:`~.BuiltTimeline.to_item` :class:`~.RectClip`
+
+.. random-option::
+
+    .. janim-example:: MaskExample
+        :extract-from-example:
+        :media: _static/videos/MaskExample.mp4
+        :ref: :class:`~.ShapeMask` :class:`~.TransformMatchingDiff` :class:`~.boolean_ops.Union` :class:`~.boolean_ops.Intersection` 

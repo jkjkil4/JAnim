@@ -6,7 +6,7 @@ import numpy as np
 
 from janim.anims.updater import DataUpdater, UpdaterParams
 from janim.components.component import CmptInfo
-from janim.components.simple import Cmpt_Float
+from janim.components.simple import Cmpt_Alpha
 from janim.items.effect.frame_effect import FrameEffect, SimpleFrameEffect
 from janim.items.item import Item
 from janim.render.shader import ShaderInjection
@@ -14,7 +14,7 @@ from janim.utils.config import Config
 
 
 class AlphaEffect(SimpleFrameEffect):
-    alpha = CmptInfo(Cmpt_Float[Self], 1.0)
+    alpha = CmptInfo(Cmpt_Alpha[Self], 1.0)
 
     def __init__(
         self,

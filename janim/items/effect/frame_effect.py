@@ -14,71 +14,18 @@ from janim.render.shader import ShaderInjection, shader_injections_ctx
 _ = get_translator('janim.items.frame_effect')
 
 
-class FrameEffect(Item):
+class AppliedGroup(Item):
     """
-    将传入的着色器 ``fragment_shader`` 应用到 ``items`` 上
+    :class:`FrameEffect` 等类的基础类
 
-    着色器基本格式：
-
-    .. code-block:: glsl
-
-        #version 330 core
-
-        in vec2 v_texcoord; // 传入的纹理坐标
-        out vec4 f_color;   // 输出的颜色
-
-        uniform sampler2D fbo; // 传入的纹理（承载了 items 的渲染结果）
-
-        #[JA_FINISH_UP_UNIFORMS]
-
-        void main()
-        {
-            // 进行处理，例如
-            f_color = texture(fbo, v_texcoord); // 读取纹理颜色
-            f_color.rgb = 1.0 - f_color.rgb; // 反色
-
-            #[JA_FINISH_UP]
-        }
-
-    其中 ``#[JA_FINISH_UP]`` 是一个占位符，JAnim 会在这里做一些额外的操作，前面的 ``#[JA_FINISH_UP_UNIFORMS]`` 与之对应
-
-    上述代码最核心的是 ``main`` 中“进行处理”的部分，其余的代码作为固定的写法照抄即可
-
-    如果懒得抄，可以用 :class:`SimpleFrameEffect`，这个类只要写“进行处理”这部分就好了，因为它把其余代码都封装了
-
-    完整示例请参考 :ref:`基础样例 <basic_examples>` 中的对应代码
+    提供了 :meth:`apply` 和 :meth:`discord` 方法用于标记对指定的物件 应用/取消应用 效果
     """
-
-    renderer_cls = FrameEffectRenderer
 
     _items = CmptInfo(Cmpt_List[Self, Item])
 
-    _uniforms = CmptInfo(Cmpt_Dict[Self, str, Any])
-    _optional_uniforms = CmptInfo(Cmpt_Dict[Self, str, Any])
-
-    def __init__(
-        self,
-        *items: Item,
-        fragment_shader: str,
-        cache_key: str | None = None,
-        root_only: bool = False,
-        **kwargs,
-    ):
+    def __init__(self, *items: Item, root_only: bool = False, **kwargs):
         super().__init__(**kwargs)
-        self.fragment_shader = fragment_shader
-        self.cache_key = cache_key
-        self.injections = shader_injections_ctx.get()
-
         self.apply(*items, root_only=root_only)
-
-    def apply_uniforms(self, *, optional: bool = False, **kwargs) -> None:
-        if optional:
-            self._optional_uniforms.update(kwargs)
-        else:
-            self._uniforms.update(kwargs)
-
-    def dynamic_uniforms(self) -> dict:
-        return {}
 
     def add(self, *objs, prepend=False, insert=None) -> Self:
         """
@@ -142,6 +89,69 @@ class FrameEffect(Item):
 
     def _render_collection_hook(self, collection: RenderCollection) -> None:
         self._render_collection = collection.delegates(self._items)
+
+
+class FrameEffect(AppliedGroup):
+    """
+    将传入的着色器 ``fragment_shader`` 应用到 ``items`` 上
+
+    着色器基本格式：
+
+    .. code-block:: glsl
+
+        #version 330 core
+
+        in vec2 v_texcoord; // 传入的纹理坐标
+        out vec4 f_color;   // 输出的颜色
+
+        uniform sampler2D fbo; // 传入的纹理（承载了 items 的渲染结果）
+
+        #[JA_FINISH_UP_UNIFORMS]
+
+        void main()
+        {
+            // 进行处理，例如
+            f_color = texture(fbo, v_texcoord); // 读取纹理颜色
+            f_color.rgb = 1.0 - f_color.rgb; // 反色
+
+            #[JA_FINISH_UP]
+        }
+
+    其中 ``#[JA_FINISH_UP]`` 是一个占位符，JAnim 会在这里做一些额外的操作，前面的 ``#[JA_FINISH_UP_UNIFORMS]`` 与之对应
+
+    上述代码最核心的是 ``main`` 中“进行处理”的部分，其余的代码作为固定的写法照抄即可
+
+    如果懒得抄，可以用 :class:`SimpleFrameEffect`，这个类只要写“进行处理”这部分就好了，因为它把其余代码都封装了
+
+    完整示例请参考 :ref:`基础样例 <basic_examples>` 中的对应代码
+    """
+
+    renderer_cls = FrameEffectRenderer
+
+    _uniforms = CmptInfo(Cmpt_Dict[Self, str, Any])
+    _optional_uniforms = CmptInfo(Cmpt_Dict[Self, str, Any])
+
+    def __init__(
+        self,
+        *items: Item,
+        fragment_shader: str,
+        cache_key: str | None = None,
+        root_only: bool = False,
+        **kwargs,
+    ):
+        super().__init__(*items, root_only=root_only, **kwargs)
+        self.fragment_shader = fragment_shader
+        self.cache_key = cache_key
+        self.injections = shader_injections_ctx.get()
+
+    def apply_uniforms(self, *, optional: bool = False, **kwargs) -> None:
+        if optional:
+            self._optional_uniforms.update(kwargs)
+        else:
+            self._uniforms.update(kwargs)
+
+    def dynamic_uniforms(self) -> dict:
+        return {}
 
 
 simple_frameeffect_shader = """
