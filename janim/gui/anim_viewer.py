@@ -68,6 +68,7 @@ class AnimViewer(QMainWindow):
     """
 
     before_set_built = Signal()
+    built_changed = Signal(BuiltTimeline)
     play_finished = Signal()
 
     def __init__(
@@ -188,6 +189,8 @@ class AnimViewer(QMainWindow):
             else:
                 QTimer.singleShot(0, lambda: handle_command(self, command))
 
+        self.built_changed.emit(self.built)
+
     # region setup_ui
 
     def setup_ui(self) -> None:
@@ -259,6 +262,8 @@ class AnimViewer(QMainWindow):
         self.action_select.setShortcut('Ctrl+I')
         self.action_select.setAutoRepeat(False)
         self.selector: Selector | None = None
+
+        menu_tools.addSeparator()
 
         setup_popup_actions(self, menu_tools)
 

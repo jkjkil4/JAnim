@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-01 13:06+0800\n"
+"POT-Creation-Date: 2026-05-07 15:45+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,45 +17,45 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: janim/anims/timeline.py:102
+#: janim/anims/timeline.py:108
 #, python-brace-format
 msgid "{name} cannot be used outside of Timeline.construct"
 msgstr ""
 
-#: janim/anims/timeline.py:214
+#: janim/anims/timeline.py:226
 #, python-brace-format
 msgid "Building \"{name}\""
 msgstr ""
 
-#: janim/anims/timeline.py:229
+#: janim/anims/timeline.py:248
 #, python-brace-format
 msgid ""
 "Due to the use of a GUI command, \"{name}\" automatically generated an "
 "additional duration of {duration}s"
 msgstr ""
 
-#: janim/anims/timeline.py:244
+#: janim/anims/timeline.py:270
 #, python-brace-format
 msgid ""
 "\"{name}\" did not produce a duration after construction, automatically "
 "generated a duration of {duration}s"
 msgstr ""
 
-#: janim/anims/timeline.py:260
+#: janim/anims/timeline.py:290
 #, python-brace-format
 msgid "Finished building \"{name}\" in {elapsed:.2f} s"
 msgstr ""
 
-#: janim/anims/timeline.py:337
+#: janim/anims/timeline.py:373
 msgid "dt can't be negative"
 msgstr ""
 
-#: janim/anims/timeline.py:889
+#: janim/anims/timeline.py:947
 #, python-brace-format
 msgid "Called self.debug({repr}) at {loc}"
 msgstr ""
 
-#: janim/anims/timeline.py:1408
+#: janim/anims/timeline.py:1429
 #, python-brace-format
 msgid ""
 "GUI command in a sub-Timeline is ignored; defined in \"{file}\" at line "

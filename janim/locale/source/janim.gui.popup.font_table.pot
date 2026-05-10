@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-01 13:06+0800\n"
+"POT-Creation-Date: 2026-04-22 22:43+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,18 +17,18 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: janim/gui/popup/font_table.py:24
+#: janim/gui/popup/font_table.py:31
 msgid "Font List"
 msgstr ""
 
-#: janim/gui/popup/font_table.py:60
+#: janim/gui/popup/font_table.py:69
 msgid "Family Name"
 msgstr ""
 
-#: janim/gui/popup/font_table.py:61
+#: janim/gui/popup/font_table.py:70
 msgid "Full Name"
 msgstr ""
 
-#: janim/gui/popup/font_table.py:62
+#: janim/gui/popup/font_table.py:71
 msgid "Display Name (includes multiple languages, make good use of search)"
 msgstr ""

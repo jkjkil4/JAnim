@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-01 13:06+0800\n"
+"POT-Creation-Date: 2026-04-22 22:43+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,13 +17,13 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: janim/gui/__init__.py:9
+#: janim/gui/__init__.py:10
 msgid ""
 "Additional modules need to be installed when using the GUI interface, but "
 "they are not installed"
 msgstr ""
 
-#: janim/gui/__init__.py:11
+#: janim/gui/__init__.py:12
 msgid ""
 "You can install them using pip install \"janim[gui]\" and make sure you "
 "install them in the correct Python version"

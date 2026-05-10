@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-24 14:30+0800\n"
+"POT-Creation-Date: 2026-04-22 22:43+0800\n"
 "PO-Revision-Date: 2024-06-05 18:36+0800\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -19,13 +19,9 @@ msgstr ""
 
 #: janim/items/audio.py:72
 #, python-brace-format
-msgid ""
-"Could not find the audio file \"{file_path}\". A blank audio of 8 seconds "
-"was used instead."
+msgid "Could not find the audio file \"{file_path}\". A blank audio of 8 seconds was used instead."
 msgstr "无法找到音频 \"{file_path}\"，已使用 8s 的空白音频代替"
 
-#: janim/items/audio.py:117
-msgid ""
-"Unable to read audio, please install ffmpeg and add it to the environment "
-"variables"
+#: janim/items/audio.py:119
+msgid "Unable to read audio, please install ffmpeg and add it to the environment variables"
 msgstr "无法读取音频，需要安装 ffmpeg 并将其添加到环境变量中"

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-24 14:30+0800\n"
+"POT-Creation-Date: 2026-04-22 22:43+0800\n"
 "PO-Revision-Date: 2025-12-24 15:59+0800\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -17,14 +17,12 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Poedit 3.8\n"
 
-#: janim/components/vpoints.py:51
+#: janim/components/vpoints.py:56
 #, python-brace-format
-msgid ""
-"The number of points set is {len}, which is not odd. The last point will be "
-"ignored."
+msgid "The number of points set is {len}, which is not odd. The last point will be ignored."
 msgstr "设置的点数量为 {len}，不是奇数，最后一个点被忽略"
 
-#: janim/components/vpoints.py:346
+#: janim/components/vpoints.py:351
 #, python-brace-format
 msgid "n must be a value of 0~{maxn}, {n} is invalid"
 msgstr "n 必须是 0~{maxn} 的值，{n} 无效"

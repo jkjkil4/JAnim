@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-01-12 23:11+0800\n"
+"POT-Creation-Date: 2026-04-22 22:43+0800\n"
 "PO-Revision-Date: 2026-01-12 23:26+0800\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -18,10 +18,10 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 "X-Generator: Poedit 3.8\n"
 
-#: janim/gui/draw/vitem.py:25
+#: janim/gui/draw/vitem.py:22
 msgid "(freehand-path)"
 msgstr "（手绘路径）"
 
-#: janim/gui/draw/vitem.py:60
+#: janim/gui/draw/vitem.py:57
 msgid "Count"
 msgstr "数量"

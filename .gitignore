@@ -4,7 +4,7 @@ __pycache__
 ._*
 *_deprecated.py
 /.asv
-/.vscode/launch.json
+/.vscode
 /dist
 /doc/build
 /videos

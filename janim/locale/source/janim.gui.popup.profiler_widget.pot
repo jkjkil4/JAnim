@@ -1,0 +1,47 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-05-10 09:32+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: janim/gui/popup/profiler_widget.py:40
+msgid "Render Profiler"
+msgstr ""
+
+#: janim/gui/popup/profiler_widget.py:55
+msgid "Normalize"
+msgstr ""
+
+#: janim/gui/popup/profiler_widget.py:76
+msgid "Hint"
+msgstr ""
+
+#: janim/gui/popup/profiler_widget.py:78
+msgid ""
+"<h3>Render Profiler</h3><p>The profiler shows per-frame time distribution "
+"across different items, helping locate rendering bottlenecks.</p><p>Colors "
+"represent different items. The legend shows mappings. Hovering a legend item "
+"highlights the corresponding part in the graph.</p><p><b>\"Normalize\"</b> "
+"toggles display mode:</p><ul><li><b>Off</b>: shows real frame time</"
+"li><li><b>On</b>: normalizes each frame to 100%, showing proportions</li></"
+"ul><p><b>\"gap\"</b> is the waiting time between CPU and OpenGL rendering. A "
+"larger gap usually means the GPU is the bottleneck and the CPU is waiting. "
+"Consistently large gaps indicate high rendering cost.</p>"
+msgstr ""
+
+#: janim/gui/popup/profiler_widget.py:420
+msgid "No Data"
+msgstr ""

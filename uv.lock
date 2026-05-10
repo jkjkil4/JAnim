@@ -547,7 +547,7 @@ requires-dist = [
     { name = "pyopengl" },
     { name = "pyquaternion" },
     { name = "pyside6-essentials", marker = "extra == 'gui'" },
-    { name = "qdarkstyle", marker = "extra == 'gui'" },
+    { name = "qdarkstyle", marker = "extra == 'gui'", specifier = "==3.2.3" },
     { name = "rich" },
     { name = "skia-pathops" },
     { name = "sounddevice", marker = "(sys_platform == 'darwin' and extra == 'gui') or (sys_platform == 'win32' and extra == 'gui')", specifier = ">=0.5.5" },

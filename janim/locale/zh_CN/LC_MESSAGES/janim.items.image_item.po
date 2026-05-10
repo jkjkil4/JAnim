@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-24 14:30+0800\n"
+"POT-Creation-Date: 2026-04-22 22:43+0800\n"
 "PO-Revision-Date: 2025-12-24 16:02+0800\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -17,18 +17,14 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Poedit 3.8\n"
 
-#: janim/items/image_item.py:273
-msgid ""
-"Unable to read video frame, please install ffmpeg and add it to the "
-"environment variables"
+#: janim/items/image_item.py:269
+msgid "Unable to read video frame, please install ffmpeg and add it to the environment variables"
 msgstr "无法读取视频帧，请安装 ffmpeg 并将其添加到环境变量中"
 
-#: janim/items/image_item.py:452
-msgid ""
-"Unable to read video information, please install ffmpegand add it (including "
-"ffprobe) to the environment variables."
+#: janim/items/image_item.py:446
+msgid "Unable to read video information, please install ffmpegand add it (including ffprobe) to the environment variables."
 msgstr "无法读取视频信息，请安装 ffmpeg 并将其（包括 ffprobe）添加到环境变量中"
 
-#: janim/items/image_item.py:457
+#: janim/items/image_item.py:453
 msgid "ffprobe error. Please check the output for more information."
 msgstr "ffprobe 错误，请检查输出信息"

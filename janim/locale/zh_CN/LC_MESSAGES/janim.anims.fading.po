@@ -22,8 +22,5 @@ msgstr ""
 #: janim/anims/fading.py:46
 #, python-brace-format
 msgid ""
-"When using `{class_name}`, if you need to pass multiple items, wrap them in "
-"`Group` instead of passing them one by one"
-msgstr ""
-"使用 `{class_name}` 的时候若需要传入多个物件，请使用 `Group` 包裹，而非逐个"
-"传递"
+"When using `{class_name}`, if you need to pass multiple items, wrap them in `Group` instead of passing them one by one"
+msgstr "使用 `{class_name}` 的时候若需要传入多个物件，请使用 `Group` 包裹，而非逐个传递"
