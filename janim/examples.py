@@ -531,23 +531,29 @@ class MaskExample(Timeline):
         self.forward(1)
 
         # 自定义形状遮罩
-        text_fashion = Text("Fashion")
+        text_fashion = Text('Fashion')
         text_fashion.points.scale(10)
-        cir = Circle(radius=0.1, color=RED).fill.set(alpha=1).r
-        circles = Group.from_iterable(cir.copy() for _ in range(800))
-        circles.points.arrange_in_grid(n_cols=30).shift(DOWN * 2)
-        mask_3 = ShapeMask(circles, shape=text_fashion).show()
+        dots = DotCloud(
+            *[
+                [i * 0.3 + 0.15, j * 0.3, 0]
+                for j in range(20, -40, -1)
+                for i in range(-23, 23)
+            ], 
+            radius=0.1,
+            color=PURPLE_E,
+        )
+        mask_3 = ShapeMask(dots, shape=text_fashion).show()
 
         self.prepare(
-            circles.anim.points.shift(UP * 3),
+            dots.anim(rate_func=linear).points.shift(UP * 3),
             duration=5.0,
         )
-        self.play(FadeIn(circles))
-        self.forward(1)
+        self.play(FadeIn(dots))
+        self.forward(1.5)
         self.play(
             DataUpdater(
                 mask_3,
                 lambda item, p: item.invert.set(1.0)
             )
         )
-        self.forward(2)
+        self.forward(1.5)
