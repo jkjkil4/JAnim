@@ -17,7 +17,6 @@ items
    group
    image_item
    item
-   mask
    points
    relation
    shape_matchers

@@ -9,6 +9,7 @@ popup
    color_widget
    draw_panel
    font_table
+   profiler_widget
    richtext_editor
 
 .. automodule:: janim.gui.popup.__init__

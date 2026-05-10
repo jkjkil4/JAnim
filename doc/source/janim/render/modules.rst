@@ -7,13 +7,16 @@ render
    :maxdepth: 1
 
    base
+   collection
    framebuffer
+   profiler
    program
    renderer_arrow
    renderer_checkerboard_surface
    renderer_dotcloud
    renderer_frameeffect
    renderer_imageitem
+   renderer_shapemask
    renderer_smooth_surface
    renderer_video
    renderer_vitem
