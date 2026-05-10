@@ -5,8 +5,17 @@ import itertools as it
 from collections import deque
 from typing import TYPE_CHECKING
 
-from PySide6.QtCore import QMargins, QPointF, QRect, Qt, QTimer
-from PySide6.QtGui import QColor, QFontMetrics, QPainter, QPen, QPixmap, QPolygonF
+from PySide6.QtCore import QMargins, QPointF, QRect, QRectF, Qt, QTimer
+from PySide6.QtGui import (
+    QColor,
+    QFont,
+    QFontMetrics,
+    QMouseEvent,
+    QPainter,
+    QPen,
+    QPixmap,
+    QPolygonF,
+)
 from PySide6.QtWidgets import QCheckBox, QHBoxLayout, QVBoxLayout, QWidget
 
 from janim.locale import get_translator
@@ -122,6 +131,8 @@ class ProfilerGraph(QWidget):
         ]
         self._colors = it.cycle([QColor(hex) for hex in colors_hex])
         self._color_cache: dict[str, QColor] = {}
+
+        self._hovering_legend_name: str | None = None
 
     def set_normalize(self, flag: bool) -> None:
         self._normalize = flag
@@ -268,15 +279,22 @@ class ProfilerGraph(QWidget):
                 polygon = QPolygonF(points)
 
                 base_color = self._get_color_for_name(name)
+                hovering = self._hovering_legend_name
 
                 fill_color = QColor(base_color)
-                fill_color.setAlpha(190)
+                if hovering:
+                    fill_color.setAlpha(255 if hovering == name else 80)
+                else:
+                    fill_color.setAlpha(190)
                 painter.setBrush(fill_color)
                 painter.setPen(Qt.PenStyle.NoPen)
                 painter.drawPolygon(polygon)
 
                 stroke_color = QColor(base_color)
-                stroke_color.setAlpha(255)
+                if hovering:
+                    stroke_color.setAlpha(80)
+                else:
+                    stroke_color.setAlpha(255)
                 painter.setPen(stroke_color)
                 painter.drawLine(points[-1], points[-2])
 
@@ -432,11 +450,22 @@ class ProfilerGraph(QWidget):
 
     def _draw_legend(self, painter) -> None:
         painter.setPen(Qt.GlobalColor.white)
-        font = painter.font()
-        font.setPointSize(9)
+        font = self._get_legend_font()
         painter.setFont(font)
         metrics = QFontMetrics(font)
 
+        for name, color, rect in self._iter_legend(metrics):
+            painter.fillRect(
+                rect.x() - 16, rect.y(), 12, 12, color
+            )  # 直接用 fillRect 比 drawRect 快
+            painter.drawText(rect.x(), rect.y() + metrics.ascent() - 3, name)
+
+    def _get_legend_font(self) -> QFont:
+        font = self.font()
+        font.setPointSize(9)
+        return font
+
+    def _iter_legend(self, metrics: QFontMetrics):
         margin = 10
         x = margin
         y = margin
@@ -444,17 +473,33 @@ class ProfilerGraph(QWidget):
         max_legend_width = 250
 
         for name, color in self._color_cache.items():
-            painter.fillRect(x, y, 12, 12, color)  # 直接用 fillRect 比 drawRect 快
-
-            text_y = y + metrics.ascent() - 1
-            painter.drawText(x + 16, text_y, name)
-
             text_width = metrics.horizontalAdvance(name)
-            item_width = 16 + text_width + 15
+            text_height = metrics.height()
+            text_x = x + 16
+            text_y = y
+            rect = QRectF(text_x, text_y, text_width, text_height)
+            yield name, color, rect
 
+            item_width = 16 + text_width + 15
             x += item_width
             if x > max_legend_width:
                 x = margin
                 y += row_height
 
-    # endregion
+    def mouseMoveEvent(self, event: QMouseEvent, /) -> None:
+        pos = event.position()
+        legend_name = self._get_legend_name_at(pos)
+        if legend_name != self._hovering_legend_name:
+            self._buffered = False
+            self._hovering_legend_name = legend_name
+            self.update()
+
+    def _get_legend_name_at(self, position: QPointF) -> str | None:
+        font = self._get_legend_font()
+        metrics = QFontMetrics(font)
+
+        for name, _, rect in self._iter_legend(metrics):
+            rect.adjust(-16 - 2, -2, 2, 2)
+            if rect.contains(position):
+                return name
+        return None
