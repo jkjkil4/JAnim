@@ -523,6 +523,7 @@ class MaskExample(Timeline):
         shape_intersection = boolean_ops.Intersection(dot1, dot2)
         mask_union = ShapeMask(text_3, shape=shape_union)
         mask_intersection = ShapeMask(text_3, shape=shape_intersection)
+        self.forward(0.5)
         self.play(Transform(mask_union, mask_intersection), duration=0.5)
         self.forward(1)
         self.play(Transform(mask_intersection, mask_union), duration=0.5)

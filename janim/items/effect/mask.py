@@ -1,6 +1,6 @@
 from typing import Self
 from janim.components.component import CmptInfo
-from janim.components.simple import Cmpt_Float
+from janim.components.simple import Cmpt_Alpha, Cmpt_Float
 from janim.components.vpoints import Cmpt_VPoints
 from janim.items.effect.frame_effect import AppliedGroup
 from janim.items.item import Item
@@ -44,7 +44,7 @@ class ShapeMask(AppliedGroup):
 
     points = CmptInfo(Cmpt_VPoints[Self])
 
-    alpha = CmptInfo(Cmpt_Float[Self], 1.0)
+    alpha = CmptInfo(Cmpt_Alpha[Self], 1.0)
     feather = CmptInfo(Cmpt_Float[Self], 0.0)
     invert = CmptInfo(Cmpt_Float[Self], 0.0)
 
