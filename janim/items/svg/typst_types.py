@@ -1,11 +1,17 @@
-from typing import Any, Iterable, Literal, NoReturn
+from __future__ import annotations
 
+from typing import Any, Callable, Iterable, Literal, NoReturn
+
+from janim.anims.composition import AnimGroup
+from janim.anims.updater import GroupUpdater, ItemUpdater
+from janim.components.data import CustomData
 from janim.exception import InvalidOrdinalError
 from janim.items.group import Group
 from janim.items.points import Points
 from janim.items.svg.svg_item import SVGElemItem
 from janim.items.svg.typst import TypstText
 from janim.locale import get_translator
+from janim.utils.config import config_ctx_var
 
 type TypMatDelim = Literal['(', ')', '[', ']', '{', '}', '|', 'none']
 type TypAlignment = Literal['start', 'end', 'left', 'center', 'right', 'top', 'horizon', 'bottom']
@@ -274,3 +280,86 @@ class TypstMatrix(TypstText):
     def _raise_if_not_labelled(self) -> None | NoReturn:
         if not self.labelled:
             raise InvalidOrdinalError(_('Matrix indexing requires label=True'))
+
+
+class DynamicTypst(TypstText):
+    """
+    便于创建参数变化的 Typst 对象的封装
+
+    :param template: Typst 代码
+    :param dynamic: 声明含有哪些参数及其初始值，这些值可以直接在 Typst 代码中使用
+    :param post: 用于在生成 Typst 对象后，做进一步的调整，例如固定或对齐某个位置
+
+    例：
+
+    """
+
+    _dynamic = CustomData()
+
+    def __init__(
+        self,
+        template: str,
+        dynamic: dict[str, float],
+        post: Callable[[DynamicTypst], Any] = lambda typ: None,
+        **kwargs,
+    ):
+        self._frozen_config = config_ctx_var.get()
+
+        self._template = template
+        self._kwargs = kwargs
+
+        self._post = post
+
+        text = self._render_template(template, dynamic)
+        super().__init__(text, use_math_environment=False, **kwargs)
+
+        self._dynamic.set(dynamic)
+
+        post(self)
+
+    def anim_update(
+        self,
+        can_keep_structure: bool = False,
+        **values,
+    ):
+        """
+        创建参数改变的动态动画
+
+        如果能保证动态过程不会改变物件结构，
+        可以传入 ``can_keep_structure`` 使其基于 :class:`~.GroupUpdater` 动态变化，否则默认使用 :class:`~.ItemUpdater`
+
+        设置这个参数的动机是， :class:`~.GroupUpdater` 的性质更好，但是它需要物件结构不会改变的前提
+        """
+        if can_keep_structure:
+            return AnimGroup(
+                self.anim._dynamic.update(values),
+                GroupUpdater(
+                    self,
+                    lambda group, p: group.become(group._rerender()),
+                ),
+            )
+        else:
+            return AnimGroup(
+                self.anim._dynamic.update(values),
+                ItemUpdater(
+                    self,
+                    lambda p: self.current()._rerender(),
+                ),
+            )
+
+    def _rerender(self) -> DynamicTypst:
+        token = config_ctx_var.set(self._frozen_config)
+        try:
+            dynamic = self._dynamic.get()
+            new = DynamicTypst(self._template, dynamic, **self._kwargs)
+            self._post(new)
+            return new
+        finally:
+            config_ctx_var.reset(token)
+
+    def _render_template(self, template: str, dynamic: dict[str, float]) -> str:
+        let_defs = '\n'.join(
+            f'#let {key} = {value}'  #
+            for key, value in dynamic.items()
+        )
+        return f'{let_defs}\n\n{template}'
