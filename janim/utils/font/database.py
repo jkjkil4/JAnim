@@ -221,7 +221,7 @@ class Font:
             return cached.array, cached.advance
 
         # 读取字符
-        self.face.load_char(value, FT.FT_LOAD_DEFAULT | FT.FT_LOAD_NO_BITMAP)
+        self.face.load_char(value, FT.FT_LOAD_NO_HINTING | FT.FT_LOAD_NO_BITMAP)
         glyph: FT.Glyph = self.face.glyph
         outline: FT.Outline = glyph.outline
 

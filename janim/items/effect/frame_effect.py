@@ -123,7 +123,7 @@ def _apply_fixes_for_compatibility(fragment_shader: str) -> str:
     """
     from janim.utils.deprecation import is_removed
 
-    if is_removed((5, 4)):
+    if is_removed((5, 0)):
         return fragment_shader
 
     fixes: list[str] = []
@@ -151,7 +151,7 @@ def _apply_fixes_for_compatibility(fragment_shader: str) -> str:
                 'Detected legacy-style shader code passed to FrameEffect at {file}:{lineno}\n'
                 'An automatic migration has been attempted with the following changes:\n'
                 '{fixes}\n'
-                'The legacy usage will be deprecated in JAnim 5.4'
+                'The legacy usage will be deprecated in JAnim 5.0'
             ).format(
                 file=filename,
                 lineno=lineno,

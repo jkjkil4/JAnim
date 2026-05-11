@@ -4,6 +4,7 @@ import sys
 import unittest
 
 import numpy as np
+from PIL import Image
 
 import janim.examples as examples
 from janim.anims.timeline import Timeline
@@ -43,37 +44,52 @@ def load_tests(loader, standard_tests, pattern) -> unittest.TestSuite:
             self.timeline_cls = timeline_cls
 
         def __str__(self) -> str:
-            return f"{self.timeline_cls.__name__} ({self.__class__.__name__})"
+            return f'{self.timeline_cls.__name__} ({self.__class__.__name__})'
+
+        @staticmethod
+        def premul_alpha(img: np.ndarray) -> np.ndarray:
+            # img: RGBA uint8
+            rgb = img[..., :3].astype(np.float32)
+            a = img[..., 3:4].astype(np.float32) / 255.0
+            out = rgb * a
+            return out.astype(np.uint8)
+
+        @staticmethod
+        def image_to_premul_array(img: Image.Image) -> np.ndarray:
+            return ExampleTester.premul_alpha(np.array(img))
 
         def test(self) -> None:
-            with Config(pixel_width=WIDTH,
-                        pixel_height=HEIGHT,
-                        fps=5,
-                        temp_dir='test/__test_tempdir__'):
+            with Config(
+                pixel_width=WIDTH, pixel_height=HEIGHT, fps=5, temp_dir='test/__test_tempdir__'
+            ):
                 built = self.timeline_cls().build(quiet=True)
 
             fps = built.cfg.fps
 
-            worst = 1
+            # db，若小于 40 则认为测试失败
+            TOLERANCE = 40
+            worst = TOLERANCE
             frame_number = -1
             frame_numbers = []
 
-            for frame, ref_image in zip(range(round(built.duration * fps) + 1),
-                                        self.get_ref(self.timeline_cls.__name__)):
-                render_image = cv2.cvtColor(np.array(built.capture(frame / fps)), cv2.COLOR_RGBA2BGRA)
-                res = cv2.matchTemplate(render_image, ref_image, cv2.TM_CCOEFF_NORMED)
-                res = res[0][0]
-                if res < 0.98 and res < worst:
-                    worst = res
+            for frame, ref_image in zip(
+                range(round(built.duration * fps) + 1), self.get_ref(self.timeline_cls.__name__)
+            ):
+                render_image = self.image_to_premul_array(built.capture(frame / fps))
+                res = cv2.PSNR(render_image, ref_image)
+                if res < TOLERANCE:
+                    worst = min(worst, res)
                     frame_number = frame
                     frame_numbers.append(frame)
 
-            if worst != 1:
+            if worst < TOLERANCE:
                 guarantee_existence('test/__test_errors__')
                 for frame in frame_numbers:
-                    built.capture(frame / fps).save(f'test/__test_errors__/{self.timeline_cls.__name__}_{frame}_err.png')
+                    built.capture(frame / fps).save(
+                        f'test/__test_errors__/{self.timeline_cls.__name__}_{frame}_err.png'
+                    )
 
-            self.assertEqual(worst, 1, f'worst: {worst}, t: {frame_number / fps}')
+            self.assertGreaterEqual(worst, TOLERANCE, f'worst: {worst}, t: {frame_number / fps}')
 
         @staticmethod
         def get_ref(timeline_name: str):
@@ -82,20 +98,16 @@ def load_tests(loader, standard_tests, pattern) -> unittest.TestSuite:
             while True:
                 ref_path = os.path.join(ref_dir, f'{timeline_name}_{frame}.png')
                 if os.path.exists(ref_path):
-                    ref = cv2.imread(ref_path, cv2.IMREAD_UNCHANGED)
+                    ref = ExampleTester.image_to_premul_array(Image.open(ref_path))
                 assert ref is not None
                 frame += 1
                 yield ref
-
 
     suite = unittest.TestSuite()
     if not disabled:
         ref_dir = get_ref_dir()
         timelines = get_timelines_for_test()
-        suite.addTests([
-            ExampleTester(timeline)
-            for timeline in timelines
-        ])
+        suite.addTests([ExampleTester(timeline) for timeline in timelines])
     return suite
 
 
@@ -103,9 +115,7 @@ def generate_ref() -> None:
     includes = sys.argv[1:]
     output_dir = guarantee_existence(get_ref_dir())
 
-    with Config(pixel_width=WIDTH,
-                pixel_height=HEIGHT,
-                fps=5):
+    with Config(pixel_width=WIDTH, pixel_height=HEIGHT, fps=5):
         for timeline in get_timelines_for_test():
             if includes and timeline.__name__ not in includes:
                 continue
@@ -123,8 +133,10 @@ def generate_ref() -> None:
 
 if __name__ == '__main__':
     print('Warning: 直接执行该文件会进行样例视频输出，作为单元测试样例，确认继续执行吗？')
-    print('Warning: Running this file will generate sample video output for unit testing purposes. '
-          'Are you sure you want to proceed?')
+    print(
+        'Warning: Running this file will generate sample video output for unit testing purposes. '
+        'Are you sure you want to proceed?'
+    )
     ret = input('(y/N): ')
     if ret.lower() == 'y':
         generate_ref()
