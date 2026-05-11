@@ -12,7 +12,7 @@ import types
 from abc import ABCMeta, abstractmethod
 from bisect import bisect
 from collections import defaultdict
-from contextlib import contextmanager, nullcontext
+from contextlib import contextmanager
 from contextvars import ContextVar
 from dataclasses import dataclass
 from functools import partial
@@ -20,7 +20,6 @@ from typing import Callable, Iterable, Self, overload
 
 import moderngl as mgl
 import numpy as np
-import OpenGL.GL as gl
 from PIL import Image
 
 from janim.anims.anim_stack import AnimStack
@@ -42,14 +41,8 @@ from janim.locale import get_translator
 from janim.logger import log
 from janim.render.base import RenderData, Renderer, apply_blend_flags, create_context_430_or_330
 from janim.render.collection import RenderCollection
-from janim.render.framebuffer import (
-    FRAME_BUFFER_BINDING,
-    blend_context,
-    create_framebuffer,
-    framebuffer_context,
-    uniforms,
-)
-from janim.render.uniform import get_uniforms_context_var
+from janim.render.framebuffer import FrameBuffer
+from janim.render.uniform import uniforms
 from janim.typing import JAnimColor, SupportsAnim
 from janim.utils.config import Config, ConfigGetter, config_ctx_var
 from janim.utils.data import ContextSetter, SortedKeyQueue
@@ -1125,7 +1118,7 @@ class BuiltTimeline:
         self._time: float = 0
 
         self.capture_ctx: mgl.Context | None = None
-        self.capture_fbo: mgl.Framebuffer | None = None
+        self.capture_framebuffer: FrameBuffer | None = None
 
     @property
     def cfg(self) -> Config | ConfigGetter:
@@ -1201,7 +1194,6 @@ class BuiltTimeline:
         ctx: mgl.Context,
         global_t: float,
         *,
-        blend_on: bool = True,
         camera: Camera | None = None,
     ) -> bool:
         """
@@ -1240,7 +1232,6 @@ class BuiltTimeline:
                 )
 
                 with (
-                    blend_context(ctx, True) if blend_on else nullcontext(),
                     self._uniforms_context(render_data),
                     ContextSetter(Renderer.data_ctx, render_data),
                 ):
@@ -1248,8 +1239,7 @@ class BuiltTimeline:
                     collection = self._get_render_collection(global_t)
 
                     # 进行渲染
-                    blending = get_uniforms_context_var(ctx).get().get('JA_BLENDING')
-                    collection.render(blending)
+                    collection.render()
 
         except Exception:
             traceback.print_exc()
@@ -1261,7 +1251,6 @@ class BuiltTimeline:
         camera_info = data.camera_info
         return uniforms(
             data.ctx,
-            JA_FRAMEBUFFER=FRAME_BUFFER_BINDING,
             JA_CAMERA_SCALED_FACTOR=camera_info.scaled_factor,
             JA_CAMERA_CENTER=camera_info.center,
             JA_CAMERA_LOC=camera_info.camera_location,
@@ -1316,23 +1305,24 @@ class BuiltTimeline:
 
         # 虽然说当前设计的情况中不会出现
         # 但是出于稳健性的考虑，这里还是判断，如果这次使用的 ctx 与上次的不同，则销毁原有的 framebuffer
-        if self.capture_fbo is not None and self.capture_fbo.ctx is not ctx:
-            self.capture_fbo.release()
-            self.capture_fbo = None
+        if self.capture_framebuffer is not None and self.capture_framebuffer.ctx is not ctx:
+            self.capture_framebuffer.release()
+            self.capture_framebuffer = None
 
         # 在没有创建 framebuffer 的时候创建一份用于渲染
-        if self.capture_fbo is None:
+        if self.capture_framebuffer is None:
             pw, ph = self.cfg.pixel_width, self.cfg.pixel_height
-            self.capture_fbo = create_framebuffer(ctx, pw, ph)
+            self.capture_framebuffer = FrameBuffer(
+                ctx, pw, ph, self.cfg.background_color.rgb, transparent
+            )
 
-        fbo = self.capture_fbo
-        with framebuffer_context(fbo):
-            fbo.clear(*self.cfg.background_color.rgb, not transparent)
-            if transparent:
-                gl.glFlush()
-            self.render_all(ctx, global_t, blend_on=not transparent)
+        fbo = self.capture_framebuffer
+        with fbo.context():
+            fbo.clear()
+            self.render_all(ctx, global_t)
+            fbo.unpremultiply()
 
-        return Image.frombytes('RGBA', fbo.size, fbo.read(components=4), 'raw', 'RGBA', 0, -1)
+        return fbo.get_image()
 
     def to_item(self, **kwargs) -> TimelineItem:
         """
@@ -1445,15 +1435,11 @@ class TimelineItem(Item):
 
             if 0 <= t <= item.duration:
                 if t < item.first_frame_duration:
-                    item._built.render_all(self.data_ctx.get().ctx, 0, blend_on=False)
+                    item._built.render_all(self.data_ctx.get().ctx, 0)
                 else:
-                    item._built.render_all(
-                        self.data_ctx.get().ctx, t - item.first_frame_duration, blend_on=False
-                    )
+                    item._built.render_all(self.data_ctx.get().ctx, t - item.first_frame_duration)
             elif item.keep_last_frame and t > item.duration:
-                item._built.render_all(
-                    self.data_ctx.get().ctx, item._built.duration, blend_on=False
-                )
+                item._built.render_all(self.data_ctx.get().ctx, item._built.duration)
 
     renderer_cls = TIRenderer
 
@@ -1550,11 +1536,9 @@ class TimelinePlaybackControlItem(PlaybackControl, Item):
             t = item.compute_time(t, item.duration)
             t = max(0, t)
             if 0 <= t <= item.duration:
-                item._built.render_all(self.data_ctx.get().ctx, t, blend_on=False)
+                item._built.render_all(self.data_ctx.get().ctx, t)
             elif item.keep_last_frame and t > item.duration:
-                item._built.render_all(
-                    self.data_ctx.get().ctx, item._built.duration, blend_on=False
-                )
+                item._built.render_all(self.data_ctx.get().ctx, item._built.duration)
 
     renderer_cls = TPCIRenderer
 

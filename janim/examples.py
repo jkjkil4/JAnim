@@ -341,7 +341,7 @@ class FrameEffectExample(Timeline):
         effect1 = SimpleFrameEffect(    # (2~8s) [::2] 的方块产生渐变色
             squares[::2],
             shader='''
-            f_color = texture(fbo, v_texcoord);
+            f_color = frame_texture(v_texcoord);
             f_color.gb *= v_texcoord;
             '''
         )
@@ -354,10 +354,10 @@ class FrameEffectExample(Timeline):
             float glitchStrength = sin(time) * 0.02;
             vec2 offset = vec2(glitchStrength, 0.0);
 
-            float r = texture(fbo, uv + offset).r;
-            float g = texture(fbo, uv).g;
-            float b = texture(fbo, uv - offset).b;
-            float a = max(texture(fbo, uv + offset).a, max(texture(fbo, uv).a, texture(fbo, uv - offset).a));
+            float r = frame_texture(uv + offset).r;
+            float g = frame_texture(uv).g;
+            float b = frame_texture(uv - offset).b;
+            float a = max(frame_texture(uv + offset).a, max(frame_texture(uv).a, frame_texture(uv - offset).a));
 
             float lineNoise = step(0.5, fract(uv.y * 10.0 + time));
             r *= lineNoise;

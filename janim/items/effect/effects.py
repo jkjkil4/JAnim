@@ -25,7 +25,7 @@ class AlphaEffect(SimpleFrameEffect):
         super().__init__(
             *items,
             root_only=root_only,
-            shader='f_color = texture(fbo, v_texcoord); f_color.a *= alpha;',
+            shader='f_color = frame_texture(v_texcoord); f_color.a *= alpha;',
             uniforms=['float alpha'],
             cache_key='alpha_effect',
             **kwargs,

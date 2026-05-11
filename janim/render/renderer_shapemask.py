@@ -4,11 +4,10 @@ from typing import TYPE_CHECKING
 
 import moderngl as mgl
 import numpy as np
-import OpenGL.GL as gl
 
 from janim.items.vitem import VItem
 from janim.render.base import Renderer
-from janim.render.framebuffer import blend_context, create_framebuffer, framebuffer_context
+from janim.render.framebuffer import FrameBuffer
 from janim.render.program import get_program_from_file_prefix
 from janim.utils.config import Config
 
@@ -33,9 +32,9 @@ class ShapeMaskRenderer(Renderer):
         self.ctx = Renderer.data_ctx.get().ctx
         pw, ph = Config.get.pixel_width, Config.get.pixel_height
 
-        # 双 FBO
-        self.fbo_content = create_framebuffer(self.ctx, pw, ph)
-        self.fbo_mask = create_framebuffer(self.ctx, pw, ph)
+        # 双 framebuffer
+        self.framebuffer_content = FrameBuffer(self.ctx, pw, ph, (0, 0, 0), True)
+        self.framebuffer_mask = FrameBuffer(self.ctx, pw, ph, (0, 0, 0), True)
 
         # 合成着色器
         self.prog = get_program_from_file_prefix('render/shaders/shapemask_compose')
@@ -79,22 +78,18 @@ class ShapeMaskRenderer(Renderer):
             self.initialized = True
 
         # 渲染影响物件到 fbo_content
-        with blend_context(self.ctx, False), framebuffer_context(self.fbo_content):
-            self.fbo_content.clear()
-            gl.glFlush()
-
-            item._render_collection.render(False)
+        with self.framebuffer_content.context():
+            self.framebuffer_content.clear()
+            item._render_collection.render()
 
         # 渲染蒙版形状到 fbo_mask
-        with blend_context(self.ctx, False), framebuffer_context(self.fbo_mask):
-            self.fbo_mask.clear()
-            gl.glFlush()
+        with self.framebuffer_mask.context():
+            self.framebuffer_mask.clear()
             self._render_mask_shape(item)
-            gl.glFlush()
 
         # 合成输出
-        self.fbo_content.color_attachments[0].use(0)
-        self.fbo_mask.color_attachments[0].use(1)
+        self.framebuffer_content.use(0)
+        self.framebuffer_mask.use(1)
 
         self.u_content_tex.value = 0
         self.u_mask_tex.value = 1

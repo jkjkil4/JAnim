@@ -13,6 +13,14 @@ uniform float u_invert;
 uniform vec2 JA_FRAME_RADIUS;
 
 #[JA_FINISH_UP_UNIFORMS]
+vec4 frame_texture(sampler2D fbo, vec2 texcoord)
+{
+    vec4 color = texture(fbo, texcoord);
+    // 从 PMA 转换到直通颜色
+    if (color.a != 0)
+        color.rgb /= color.a;
+    return color;
+}
 
 // 9x9 高斯模糊预归一化
 const int KERNEL_RADIUS = 4;
@@ -40,14 +48,14 @@ float sample_mask_blurred(vec2 uv)
 
 void main()
 {
-	vec4 content_color = texture(content_tex, v_texcoord);
+	vec4 content_color = frame_texture(content_tex, v_texcoord);
 
 	// 采样蒙版值
 	float mask_val;
 	if (u_feather > 0.0) {
 		mask_val = sample_mask_blurred(v_texcoord);
 	} else {
-		mask_val = texture(mask_tex, v_texcoord).a;
+		mask_val = frame_texture(mask_tex, v_texcoord).a;
 	}
 
 	// 应用反转

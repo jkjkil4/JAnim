@@ -6,8 +6,6 @@ from contextlib import contextmanager
 from dataclasses import dataclass
 from typing import Any, Callable, Iterable
 
-import OpenGL.GL as gl
-
 from janim.anims.timeline import ItemWithRenderFunc
 from janim.render.collection import RenderCollection
 
@@ -64,14 +62,11 @@ class RenderProfiler:
         # 在函数内定义 render patch
         # 使得 render 中可以直接访问到 item_times 闭包
         @staticmethod
-        def render(renders: Iterable[ItemWithRenderFunc], blending: bool) -> None:
+        def render(renders: Iterable[ItemWithRenderFunc]) -> None:
             with record('gap'):
                 for data, render in renders:
                     with record(data.__class__.__name__):
                         render(data)
-
-                    if not blending:
-                        gl.glFlush()
 
         orig_render = RenderCollection.__dict__['_render']
         RenderCollection._render = render

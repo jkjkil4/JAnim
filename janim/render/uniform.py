@@ -11,10 +11,7 @@ uniforms_map: dict[mgl.Context, ContextVar[dict]] = {}
 def get_uniforms_context_var(ctx: mgl.Context) -> ContextVar[dict]:
     ctxvar = uniforms_map.get(ctx, None)
     if ctxvar is None:
-        ctxvar = uniforms_map[ctx] = ContextVar(
-            f'uniforms_{id(ctx)}',
-            default=dict(JA_BLENDING=False),
-        )
+        ctxvar = uniforms_map[ctx] = ContextVar(f'uniforms_{id(ctx)}', default={})
     return ctxvar
 
 

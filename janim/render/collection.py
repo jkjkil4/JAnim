@@ -5,7 +5,6 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING, Iterable
 
 import numpy as np
-import OpenGL.GL as gl
 
 from janim.items.item import Item
 from janim.render.base import Renderer
@@ -71,7 +70,7 @@ class RenderCollection:
 
         return RenderCollection(self.timeline, delegated_apprs, delegated_extras)
 
-    def render(self, blending: bool) -> None:
+    def render(self) -> None:
         # 得到所有将要渲染的目标
         if self._apprs_is_delegated is None:
             appr_renders = [(item, appr.render) for appr, item in self.apprs]
@@ -113,13 +112,9 @@ class RenderCollection:
             return (distance, x[0].depth)
 
         # 排序后进行渲染
-        self._render(sorted(renders, key=key, reverse=True), blending)
+        self._render(sorted(renders, key=key, reverse=True))
 
     @staticmethod
-    def _render(renders: Iterable[ItemWithRenderFunc], blending: bool) -> None:
+    def _render(renders: Iterable[ItemWithRenderFunc]) -> None:
         for data, render in renders:
             render(data)
-            # 如果没有 blending，我们认为当前是在向透明 framebuffer 绘制
-            # 所以每次都需要使用 glFlush 更新 framebuffer 信息使得正确渲染
-            if not blending:
-                gl.glFlush()

@@ -6,7 +6,6 @@ import moderngl as mgl
 import numpy as np
 
 from janim.render.base import Renderer
-from janim.render.framebuffer import FRAME_BUFFER_BINDING
 from janim.render.program import get_program_from_file_prefix
 from janim.render.texture import get_texture_from_img
 
@@ -82,11 +81,6 @@ class ImageItemRenderer(Renderer):
         self.texture.filter = item.image.get_filter()
         self.texture.use(0)
         self.update_fix_in_frame(self.u_fix, item)
-
-        # 我不知道为啥得在这里重新绑定一遍才能奏效，但是 it works ¯\_(ツ)_/¯
-        if self.ctx.fbo.color_attachments is not None:
-            self.prog['JA_FRAMEBUFFER'] = FRAME_BUFFER_BINDING
-            self.ctx.fbo.color_attachments[0].use(FRAME_BUFFER_BINDING)
 
         with self.depth_test_if_enabled(self.ctx, item):
             self.vao.render(mgl.TRIANGLE_STRIP)
