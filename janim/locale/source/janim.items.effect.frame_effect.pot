@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-07 13:15+0800\n"
+"POT-Creation-Date: 2026-05-11 12:32+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,16 +17,35 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: janim/items/effect/frame_effect.py:94
+#: janim/items/effect/frame_effect.py:61
 #, python-brace-format
 msgid ""
 "Calling {cls}.add is unusual and may not work as expected. If you want to "
 "apply additional items, use `apply` instead."
 msgstr ""
 
-#: janim/items/effect/frame_effect.py:112
+#: janim/items/effect/frame_effect.py:79
 #, python-brace-format
 msgid ""
 "Calling {cls}.remove is unusual and may not work as expected. If you want to "
 "discard applied items, use `discard` instead."
+msgstr ""
+
+#: janim/items/effect/frame_effect.py:133
+#, python-brace-format
+msgid "Removed \"{code}\""
+msgstr ""
+
+#: janim/items/effect/frame_effect.py:139
+#, python-brace-format
+msgid "Replaced \"{orig}\" by \"{code}\""
+msgstr ""
+
+#: janim/items/effect/frame_effect.py:153
+#, python-brace-format
+msgid ""
+"Detected legacy-style shader code passed to FrameEffect at {file}:{lineno}\n"
+"An automatic migration has been attempted with the following changes:\n"
+"{fixes}\n"
+"The legacy usage will be deprecated in JAnim 5.4"
 msgstr ""
