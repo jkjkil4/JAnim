@@ -83,11 +83,11 @@
               extraLibs = guiExtraLibs;
               shellHook = "uv sync --extra gui,doc";
             };
-          # test =
-          #   mkPyuvShell {
-          #     inherit extraPackages;
-          #     shellHook = "uv sync --extra test";
-          #   };
+          test =
+            mkPyuvShell {
+              inherit extraPackages;
+              shellHook = "uv sync --extra test";
+            };
           # bench =
           #   mkPyuvShell {
           #     inherit extraPackages;
