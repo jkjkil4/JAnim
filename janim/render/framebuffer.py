@@ -35,7 +35,7 @@ def qt_framebuffer_patch(ctx: mgl.Context):
         yield
         return
 
-    prev = _qt_glwidget.qfuncs.glGetIntegerv(0x8CA6)   # GL_FRAMEBUFFER_BINDING
+    prev = _qt_glwidget.qfuncs.glGetIntegerv(0x8CA6)  # GL_FRAMEBUFFER_BINDING
     try:
         yield
     finally:
@@ -43,14 +43,18 @@ def qt_framebuffer_patch(ctx: mgl.Context):
             # 如果这里不调用 glBindFramebuffer，PyOpenGL 会出现 invalid framebuffer operation 的报错
             # 这里通过 qt 调用 OpenGL 函数，把 framebuffer bind 回先前的就好了
             # 推测可能是因为 moderngl、PyOpenGL、QtOpenGL 的一些状态没有同步
-            _qt_glwidget.qfuncs.glBindFramebuffer(0x8D40, prev)     # GL_FRAMEBUFFER
+            _qt_glwidget.qfuncs.glBindFramebuffer(0x8D40, prev)  # GL_FRAMEBUFFER
             ratio = _qt_glwidget.devicePixelRatio()
-            _qt_glwidget.qfuncs.glViewport(0, 0, int(_qt_glwidget.width() * ratio), int(_qt_glwidget.height() * ratio))
+            _qt_glwidget.qfuncs.glViewport(
+                0, 0, int(_qt_glwidget.width() * ratio), int(_qt_glwidget.height() * ratio)
+            )
             _qt_glwidget.update_clear_color()
 
 
 class FrameBuffer:
-    def __init__(self, ctx: mgl.Context, pw: int, ph: int, rgb: tuple[int, int, int], transparent: bool):
+    def __init__(
+        self, ctx: mgl.Context, pw: int, ph: int, rgb: tuple[float, float, float], transparent: bool
+    ):
         self._clear_params = (*rgb, float(not transparent))
         self._transparent = transparent
 
@@ -66,10 +70,7 @@ class FrameBuffer:
                     components=4,
                     samples=0,
                 ),
-                depth_attachment=ctx.depth_renderbuffer(
-                    (pw, ph),
-                    samples=0
-                )
+                depth_attachment=ctx.depth_renderbuffer((pw, ph), samples=0),
             )
 
     def clear(self) -> None:
@@ -86,6 +87,9 @@ class FrameBuffer:
                 if prev_fbo is not None:
                     prev_fbo.use()
 
+    def use(self, index: int) -> None:
+        self._fbo.color_attachments[0].use(index)
+
     def unpremultiply(self) -> None:
         """将当前 FBO 的 PMA 内容通过 GPU pass 转为 straight alpha，结果写回自身"""
         if not self._transparent:
@@ -95,7 +99,7 @@ class FrameBuffer:
         unpma_fbo = self._get_unpremultiply_fbo(self.ctx, self._fbo.size)
 
         # 绑定源纹理并执行转换
-        self._fbo.color_attachments[0].use(0)
+        self.use(0)
         prog['tex'] = 0
         unpma_fbo.use()
         self.ctx.disable(mgl.BLEND)
@@ -104,14 +108,14 @@ class FrameBuffer:
 
         # 把转换结果复制回原 FBO
         self.ctx.copy_framebuffer(self._fbo, unpma_fbo)
-        self._fbo.use()     # 这里假设了调用该方法前活跃的就是 self._fbo，所以这里重新让它 use
+        self._fbo.use()  # 这里假设了调用该方法前活跃的就是 self._fbo，所以这里重新让它 use
 
     @staticmethod
     @lru_cache(maxsize=8)
     def _get_unpremultiply_vao(ctx: mgl.Context):
         """获取 unpremultiply shader 程序和 VAO"""
         prog = ctx.program(
-            R'''
+            R"""
             #version 330 core
 
             in vec2 in_coord;
@@ -122,8 +126,8 @@ class FrameBuffer:
                 gl_Position = vec4(in_coord * 2.0 - 1.0, 0.0, 1.0);
                 v_coord = in_coord;
             }
-            ''',
-            R'''
+            """,
+            R"""
             #version 330 core
 
             in vec2 v_coord;
@@ -140,17 +144,14 @@ class FrameBuffer:
                     out_color = vec4(0.0);
                 }
             }
-            '''
+            """,
         )
 
         # 构建全屏四边形 VAO
         vbo = ctx.buffer(
-            data=np.array([
-                [0.0, 0.0],
-                [0.0, 1.0],
-                [1.0, 0.0],
-                [1.0, 1.0]
-            ], dtype=np.float32).tobytes()
+            data=np.array(
+                [[0.0, 0.0], [0.0, 1.0], [1.0, 0.0], [1.0, 1.0]], dtype=np.float32
+            ).tobytes()
         )
         vao = ctx.vertex_array(prog, [(vbo, '2f', 'in_coord')])
 
@@ -171,10 +172,7 @@ class FrameBuffer:
         return self._fbo.read(components=4)
 
     def get_image(self) -> Image.Image:
-        return Image.frombytes(
-            'RGBA', self._fbo.size, self.read(),
-            'raw', 'RGBA', 0, -1
-        )
+        return Image.frombytes('RGBA', self._fbo.size, self.read(), 'raw', 'RGBA', 0, -1)
 
     def release(self) -> None:
         self._fbo.release()

@@ -63,6 +63,7 @@ class Animation:
                     self.play(Transform(b, a))
                     self.play(Transform(a, b))
     """
+
     label_color: tuple[float, float, float] = C_LABEL_ANIM_DEFAULT
 
     def __init__(
@@ -71,7 +72,7 @@ class Animation:
         at: float = 0,
         duration: float | ForeverType = DEFAULT_DURATION,
         rate_func: RateFunc = smooth,
-        name: str | None = None
+        name: str | None = None,
     ):
         self.parent: AnimGroup | None = None
         self.name = name
@@ -84,7 +85,7 @@ class Animation:
         # 用于标记该动画的全局时间区段
         self.t_range = TimeRange(
             at,
-            FOREVER if duration is FOREVER else at + duration
+            FOREVER if duration is FOREVER else at + duration,
         )
 
         # 传给该动画对象的 rate_func
@@ -94,6 +95,7 @@ class Animation:
         self.rate_funcs = [] if rate_func is linear else [rate_func]
 
         from janim.anims.timeline import Timeline
+
         self.timeline = Timeline.get_context()
 
     def __anim__(self) -> Self:
@@ -160,7 +162,7 @@ class ItemAnimation(Animation):
         *,
         show_at_begin: bool = True,
         hide_at_end: bool = False,
-        **kwargs
+        **kwargs,
     ):
         super().__init__(**kwargs)
         self.item = item
@@ -238,7 +240,7 @@ class TimeRange:
         另见 :meth:`num_duration`
         """
         assert self.end is not FOREVER
-        return self.end - self.at
+        return self.end - self.at  # type: ignore
 
     @property
     def num_duration(self) -> float:
@@ -260,7 +262,7 @@ class TimeRange:
 
         （这用于 :class:`~.AnimGroup` 对 ``end=FOREVER`` 的子动画的处理，也就是把这种子动画当成 ``end=at`` 来计算时间）
         """
-        return self.at if self.end is FOREVER else self.end
+        return self.at if self.end is FOREVER else self.end  # type: ignore
 
     def set(self, at: float, end: float | ForeverType) -> None:
         """
@@ -275,7 +277,7 @@ class TimeRange:
         """
         self.at += delta
         if self.end is not FOREVER:
-            self.end += delta
+            self.end += delta  # type: ignore
 
     def scale(self, k: float) -> None:
         """
@@ -283,13 +285,19 @@ class TimeRange:
         """
         self.at *= k
         if self.end is not FOREVER:
-            self.end *= k
+            self.end *= k  # type: ignore
 
     def copy(self) -> TimeRange:
         return TimeRange(self.at, self.end)
 
     def __eq__(self, other: TimeRange) -> bool:
         return self.at == other.at and self.end == other.end
+
+    def contains(self, t: float) -> bool:
+        if self.end is FOREVER:
+            return self.at <= t
+        else:
+            return self.at <= t < self.end  # type: ignore
 
 
 class TimeAligner:
@@ -298,6 +306,7 @@ class TimeAligner:
 
     该类用于将相近的浮点数归化到同一个值，使得 :class:`TimeRange` 区间严丝合缝
     """
+
     def __init__(self):
         self.recorded_times = []
 
@@ -306,16 +315,16 @@ class TimeAligner:
         归化 ``anim`` 的时间区段，
         即分别对 ``.t_range.at`` 和 ``.t_range.end`` 进行 :meth:`align_t` 的操作
         """
-        rg = anim.t_range
-        rg.at = self.align_t(rg.at)
-        if rg.end is not FOREVER:
-            rg.end = self.align_t(rg.end)
+        t_range = anim.t_range
+        t_range.at = self.align_t(t_range.at)
+        if t_range.end is not FOREVER:
+            t_range.end = self.align_t(t_range.end)  # type: ignore
 
     def align_t(self, t: float) -> float:
         """
         对齐时间 ``t``，确保相近的时间点归化到相同的值，返回归化后的时间值
         """
-        t = float(t)    # 避免 numpy 类型浮点数可能导致的问题（例如影响到 GUI 绘制时传给 Qt 的类型）
+        t = float(t)  # 避免 numpy 类型浮点数可能导致的问题（例如影响到 GUI 绘制时传给 Qt 的类型）
 
         idx = bisect_left(self.recorded_times, t)
 
@@ -354,7 +363,13 @@ class TimeAligner:
 
 
 class TimeSegments[T]:
-    def __init__(self, iterable: Iterable[T], key: Callable[[T], TimeRange | Iterable[TimeRange]], *, step: float = 4):
+    def __init__(
+        self,
+        iterable: Iterable[T],
+        key: Callable[[T], TimeRange | Iterable[TimeRange]],
+        *,
+        step: float = 4,
+    ):
         self.step = step
         self.segments: list[list[T]] = []
 

@@ -6,8 +6,7 @@ from typing import Literal, Self
 import numpy as np
 
 from janim.components.component import CmptInfo
-from janim.constants import (DEFAULT_ITEM_TO_ITEM_BUFF, DOWN, LEFT, ORIGIN, PI,
-                             RIGHT, UP)
+from janim.constants import DEFAULT_ITEM_TO_ITEM_BUFF, DOWN, LEFT, ORIGIN, PI, RIGHT, UP
 from janim.items.geometry.line import Cmpt_VPoints_LineImpl, Line, LineBuff
 from janim.items.points import Points
 from janim.items.svg.typst import TypstText
@@ -16,8 +15,13 @@ from janim.items.vitem import DEFAULT_STROKE_RADIUS, VItem
 from janim.render.renderer_arrow import ArrowRenderer
 from janim.typing import Vect
 from janim.utils.simple_functions import clip
-from janim.utils.space_ops import (angle_of_vector, get_norm, midpoint,
-                                   normalize, rotation_between_vectors)
+from janim.utils.space_ops import (
+    angle_of_vector,
+    get_norm,
+    midpoint,
+    normalize,
+    rotation_between_vectors,
+)
 
 DEFAULT_ARROWTIP_BODY_LENGTH = 0.2
 DEFAULT_ARROWTIP_BACK_WIDTH = 0.2
@@ -39,6 +43,7 @@ class CenterAnchor(StrEnum):
         |        -----
         .-----
     """
+
     Back = 'back'
     Center = 'center'
     Front = 'front'
@@ -65,19 +70,21 @@ class ArrowTip(VItem):
         rotation: float | None = None,
         fill_alpha: float = 1.0,
         stroke_radius: float = DEFAULT_STROKE_RADIUS / 4,
-        **kwargs
+        **kwargs,
     ) -> None:
         super().__init__(fill_alpha=fill_alpha, stroke_radius=stroke_radius, **kwargs)
         self.center_anchor = center_anchor
 
         body_length *= scale
         back_width *= scale
-        self.points.set_as_corners([
-            body_length * RIGHT,
-            back_width / 2 * UP,
-            back_width / 2 * DOWN,
-            body_length * RIGHT
-        ])
+        self.points.set_as_corners(
+            [
+                body_length * RIGHT,
+                back_width / 2 * UP,
+                back_width / 2 * DOWN,
+                body_length * RIGHT,
+            ]
+        )
 
         self.points.to_center()
         self.rotate_about_anchor(angle)
@@ -154,7 +161,7 @@ class Arrow(Line):
         max_length_to_tip_length_ratio: float | None = 0.3,
         tip_kwargs: dict = {},
         depth: float | None = None,
-        **kwargs
+        **kwargs,
     ) -> None:
         if 'center_anchor' not in tip_kwargs:
             tip_kwargs['center_anchor'] = CenterAnchor.Center
@@ -186,13 +193,13 @@ class Arrow(Line):
         start: Points | Vect | None = None,
         end: Points | Vect | None = None,
         buff: LineBuff | None = None,
-        path_arc: float | None = None
+        path_arc: float | None = None,
     ) -> None:
         """
         在父类 :class:`~.Line` 的 :meth:`place_tip` 的最后增加逻辑使得箭头正确放置
         """
         super()._reshape(start, end, buff, path_arc)
-        if self._tips_inited:   # __init__ 的时候 _reshape 由父类调用，此时还没有 tip
+        if self._tips_inited:  # __init__ 的时候 _reshape 由父类调用，此时还没有 tip
             self.place_tip()
 
     def _get_shrink_values(self) -> tuple[float, float]:
@@ -234,7 +241,7 @@ class Arrow(Line):
         self,
         tip: ArrowTip,
         target: np.ndarray,
-        target_direction: np.ndarray
+        target_direction: np.ndarray,
     ) -> None:
         direction = tip.direction
 
@@ -267,7 +274,7 @@ class Arrow(Line):
         under: bool = False,
         buff: float = DEFAULT_ITEM_TO_ITEM_BUFF,
         d_place: float = 1e-6,
-        **kwargs
+        **kwargs,
     ):
         """
         创建文字并与箭头对齐
@@ -312,13 +319,14 @@ class Vector(Arrow):
 
     - ``buff`` 默认设为了 0
     """
+
     def __init__(
         self,
         direction: np.ndarray = RIGHT,
         *,
         buff: float = 0,
         tip_kwargs: dict = {},
-        **kwargs
+        **kwargs,
     ):
         tip_kwargs.setdefault('center_anchor', CenterAnchor.Front)
 
@@ -333,6 +341,7 @@ class DoubleArrow(Arrow):
 
     参数请参考 :class:`Arrow`
     """
+
     def __init__(self, *args, tip_kwargs: dict = {}, **kwargs) -> None:
         super().__init__(*args, tip_kwargs=tip_kwargs, **kwargs)
 
@@ -349,7 +358,10 @@ class DoubleArrow(Arrow):
         return copy_item
 
     def _get_shrink_values(self) -> tuple[float, float]:
-        return (self._get_shrink_ratio(self.start_tip, False), self._get_shrink_ratio(self.tip, True))
+        return (
+            self._get_shrink_ratio(self.start_tip, False),
+            self._get_shrink_ratio(self.tip, True),
+        )
 
     def place_tip(self) -> Self:
         super().place_tip()

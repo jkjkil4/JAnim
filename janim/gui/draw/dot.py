@@ -1,10 +1,8 @@
-
 from PySide6.QtCore import QObject, QPointF, Qt, Signal
 from PySide6.QtGui import QPainter
 from PySide6.QtWidgets import QCheckBox
 
-from janim.gui.draw.base import (ACTIVE_COLOR, INACTIVE_COLOR, Draw,
-                                 point_to_str)
+from janim.gui.draw.base import ACTIVE_COLOR, INACTIVE_COLOR, Draw, point_to_str
 from janim.gui.utils.text_edit import TextEdit
 from janim.locale import get_translator
 

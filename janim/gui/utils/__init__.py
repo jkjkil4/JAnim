@@ -10,5 +10,5 @@ def apply_popup_flags(widget: QWidget) -> None:
     widget.setWindowFlag(Qt.WindowType.Tool)
     widget.setAttribute(Qt.WidgetAttribute.WA_DeleteOnClose)
     widget.setAttribute(Qt.WidgetAttribute.WA_MacAlwaysShowToolWindow)
-    if sys.platform == "darwin":
+    if sys.platform == 'darwin':
         setattr(widget, ACTION_WIDGET_FLAG_KEY, True)

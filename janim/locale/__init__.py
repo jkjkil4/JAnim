@@ -4,7 +4,6 @@ import os
 
 from janim.utils.file_ops import get_janim_dir
 
-
 lang: str | None = None
 
 
@@ -22,8 +21,10 @@ def get_lang() -> str:
 
 def get_translator(domain: str):
     lang_code = get_lang()
-    t = gettext.translation(domain,
-                            os.path.join(get_janim_dir(), 'locale'),
-                            languages=[lang_code],
-                            fallback=True)
+    t = gettext.translation(
+        domain,
+        os.path.join(get_janim_dir(), 'locale'),
+        languages=[lang_code],
+        fallback=True,
+    )
     return t.gettext

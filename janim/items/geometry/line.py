@@ -16,8 +16,13 @@ from janim.items.vitem import DashedVItem, DashedVItemByRatio, VItem
 from janim.typing import JAnimColor, Vect
 from janim.utils.bezier import PathBuilder
 from janim.utils.simple_functions import clip
-from janim.utils.space_ops import (angle_of_vector, get_arc_length, get_norm,
-                                   line_intersection, normalize)
+from janim.utils.space_ops import (
+    angle_of_vector,
+    get_arc_length,
+    get_norm,
+    line_intersection,
+    normalize,
+)
 
 type AngleQuadrant = tuple[Literal[-1, 1], Literal[-1, 1]]
 type LineBuff = float | tuple[float, float]
@@ -102,50 +107,55 @@ class Cmpt_VPoints_LineImpl[ItemT](Cmpt_VPoints[ItemT], impl=True):
 
     def update_by_attrs(self, start=None, end=None, buff=None, path_arc=None) -> Self:
         from janim.utils.deprecation import deprecated
+
         deprecated(
             '.points.update_by_attrs',
             '.reshape',
-            remove=(4, 4)
+            remove=(4, 4),
         )
         self._item.reshape(start, end, buff=buff, path_arc=path_arc)
         return self
 
     def update_points_by_attrs(self, start=None, end=None, buff=None, path_arc=None) -> Self:
         from janim.utils.deprecation import deprecated
+
         deprecated(
             '.points.update_points_by_attrs',
             '.reshape',
-            remove=(4, 3)
+            remove=(4, 3),
         )
         self._item.reshape(start, end, buff=buff, path_arc=path_arc)
         return self
 
     def set_buff(self, buff: LineBuff) -> Self:
         from janim.utils.deprecation import deprecated
+
         deprecated(
             '.points.set_buff',
             '.set_buff',
-            remove=(4, 4)
+            remove=(4, 4),
         )
         self._item.set_buff(buff)
         return self
 
     def set_path_arc(self, path_arc: float) -> Self:
         from janim.utils.deprecation import deprecated
+
         deprecated(
             '.points.set_path_arc',
             '.set_path_arc',
-            remove=(4, 4)
+            remove=(4, 4),
         )
         self._item.set_path_arc(path_arc)
         return self
 
     def set_start_and_end(self, start: Points | Vect, end: Points | Vect) -> Self:
         from janim.utils.deprecation import deprecated
+
         deprecated(
             '.points.set_start_and_end',
             '.set_start_and_end',
-            remove=(4, 4)
+            remove=(4, 4),
         )
         self._item.set_start_and_end(start, end)
         return self
@@ -153,20 +163,22 @@ class Cmpt_VPoints_LineImpl[ItemT](Cmpt_VPoints[ItemT], impl=True):
     @staticmethod
     def pointify_start_and_end(*args) -> tuple[np.ndarray, np.ndarray]:
         from janim.utils.deprecation import deprecated
+
         deprecated(
             'Cmpt_VPoints_LineImpl.pointify_start_and_end',
             'Line.pointify_start_and_end',
-            remove=(4, 4)
+            remove=(4, 4),
         )
         return Line.pointify_start_and_end(*args)
 
     @staticmethod
     def pointify(input, direction=None) -> np.ndarray:
         from janim.utils.deprecation import deprecated
+
         deprecated(
             'Cmpt_VPoints_LineImpl.pointify',
             'Line.pointify',
-            remove=(4, 4)
+            remove=(4, 4),
         )
         if isinstance(input, Points):
             input = input.points.box
@@ -185,6 +197,7 @@ class Line(GeometryShape):
     :param path_arc: 线段的弯曲弧度，默认为 ``0``；``0`` 表示直线，非零则是一段圆弧
     :param \\*\\*kwargs: 其它参数
     """
+
     points = CmptInfo(Cmpt_VPoints_LineImpl[Self])
 
     def __init__(
@@ -194,7 +207,7 @@ class Line(GeometryShape):
         *,
         buff: LineBuff = 0,
         path_arc: float = 0,
-        **kwargs
+        **kwargs,
     ) -> None:
         super().__init__(**kwargs)
         self._reshape(start, end, buff, path_arc)
@@ -222,15 +235,18 @@ class Line(GeometryShape):
         start: Points | Vect | None = None,
         end: Points | Vect | None = None,
         buff: LineBuff | None = None,
-        path_arc: float | None = None
+        path_arc: float | None = None,
     ) -> None:
         # 如果 start 和 end 是 Points 物件，则转换为边界框对象，避免 memorize 持续持有对其它物件的引用
         def _item_to_box(x: Points | Vect | None) -> Cmpt_Points.BoundingBox | Vect | None:
             return x.points.box if isinstance(x, Points) else x
+
         start = _item_to_box(start)
         end = _item_to_box(end)
 
-        start, end, buff, path_arc = self._reshape_memorize(start=start, end=end, buff=buff, path_arc=path_arc)
+        start, end, buff, path_arc = self._reshape_memorize(
+            start=start, end=end, buff=buff, path_arc=path_arc
+        )
         start, end = self.pointify_start_and_end(start, end)
         self.points.set(self.build_points(start, end, buff, path_arc))
 
@@ -240,13 +256,15 @@ class Line(GeometryShape):
         end: Points | Vect | None = None,
         *,
         buff: LineBuff | None = None,
-        path_arc: float | None = None
+        path_arc: float | None = None,
     ) -> Self:
         self._reshape(start, end, buff, path_arc)
         return self
 
     @staticmethod
-    def build_points(start: np.ndarray, end: np.ndarray, buff: LineBuff, path_arc: float) -> np.ndarray:
+    def build_points(
+        start: np.ndarray, end: np.ndarray, buff: LineBuff, path_arc: float
+    ) -> np.ndarray:
         """
         构建线段的点数据
 
@@ -289,15 +307,24 @@ class Line(GeometryShape):
             else:
                 extra_points = [points]
                 if start_buff < 0:
-                    extra_points.insert(0, np.array([
-                        points[0] + start_dir * start_buff,
-                        points[0] + start_dir * (0.5 * start_buff)
-                    ]))
+                    extra_points.insert(
+                        0,
+                        np.array(
+                            [
+                                points[0] + start_dir * start_buff,
+                                points[0] + start_dir * (0.5 * start_buff),
+                            ]
+                        ),
+                    )
                 if end_buff < 0:
-                    extra_points.append(np.array([
-                        points[-1] - end_dir * (0.5 * end_buff),
-                        points[-1] - end_dir * end_buff
-                    ]))
+                    extra_points.append(
+                        np.array(
+                            [
+                                points[-1] - end_dir * (0.5 * end_buff),
+                                points[-1] - end_dir * end_buff,
+                            ]
+                        )
+                    )
                 points = np.vstack(extra_points)
 
         return points
@@ -305,7 +332,7 @@ class Line(GeometryShape):
     @staticmethod
     def pointify_start_and_end(
         start: Cmpt_Points.BoundingBox | Vect,
-        end: Cmpt_Points.BoundingBox | Vect
+        end: Cmpt_Points.BoundingBox | Vect,
     ) -> tuple[np.ndarray, np.ndarray]:
         """
         将起点与终点输入解析为用于构造线段的三维坐标对
@@ -328,7 +355,7 @@ class Line(GeometryShape):
     @staticmethod
     def pointify(
         input: Cmpt_Points.BoundingBox | Vect,
-        direction: Vect | None = None
+        direction: Vect | None = None,
     ) -> np.ndarray:
         """
         将输入解析为三维坐标点
@@ -348,7 +375,7 @@ class Line(GeometryShape):
         else:
             point = input
             result = np.zeros(3)
-            result[:len(point)] = point
+            result[: len(point)] = point
             return result
 
     # endregion
@@ -358,6 +385,7 @@ class Cmpt_VPoints_DashedLineImpl[ItemT](Cmpt_VPoints_LineImpl[ItemT], impl=True
     """
     在虚线中，对 :class:`~.Cmpt_VPoints` 的进一步实现
     """
+
     def get_start(self) -> np.ndarray:
         assert self.bind is not None
         sub = self.bind.at_item._children[0]
@@ -393,6 +421,7 @@ class DashedLine(Line, Group[VItem]):
         这是由于 :class:`~.DashedLine` 实际上将每段虚线作为子物件来实现，而去除了自己本身的 ``points`` 数据，
         这会导致包括 ``.reshape`` 以及 ``.points.vector`` 等一些方法不可用
     """
+
     def __init__(
         self,
         start: Vect | Points = LEFT,
@@ -401,7 +430,7 @@ class DashedLine(Line, Group[VItem]):
         dash_length: float = DEFAULT_DASH_LENGTH,
         dashed_ratio: float = 0.5,
         strict_by_length: bool = False,
-        **kwargs
+        **kwargs,
     ) -> None:
         self.dash_length = dash_length
         self.dashed_ratio = dashed_ratio
@@ -416,7 +445,7 @@ class DashedLine(Line, Group[VItem]):
             dashes = DashedVItemByRatio(
                 self,
                 dash_ratio=self._calculate_dash_ratio(),
-                dashed_ratio=dashed_ratio
+                dashed_ratio=dashed_ratio,
             )
         self.points.clear()
         self.add(*dashes)
@@ -446,6 +475,7 @@ class TangentLine(Line):
     - ``length``: 切线长度
     - ``d_alpha``: 精细程度，越小越精细（默认 ``1e-6``）
     """
+
     def __init__(
         self,
         vitem: VItem,
@@ -453,7 +483,7 @@ class TangentLine(Line):
         length: float = 1,
         *,
         d_alpha: float = 1e-6,
-        **kwargs
+        **kwargs,
     ) -> None:
         a1 = clip(alpha - d_alpha, 0, 1)
         a2 = clip(alpha + d_alpha, 0, 1)
@@ -468,11 +498,12 @@ class Elbow(MarkedItem, VItem):
     :param width: 直角标记的边长
     :param angle: 起始角度
     """
+
     def __init__(
         self,
         width: float = 0.2,
         angle: float = 0,
-        **kwargs
+        **kwargs,
     ) -> None:
         super().__init__(**kwargs)
         self.points.set_as_corners([UP, UP + RIGHT, RIGHT])
@@ -507,6 +538,7 @@ class Angle(MarkedItem, VItem):
 
     - ``elbow``: 是否使用直角标记的形式，参考 :class:`RightAngle` 类
     """
+
     def __init__(
         self,
         line1: Line,
@@ -519,7 +551,7 @@ class Angle(MarkedItem, VItem):
         dot_distance: float = 0.55,
         dot_color: JAnimColor = WHITE,
         elbow: bool = False,
-        **kwargs
+        **kwargs,
     ):
         super().__init__(**kwargs)
         self.lines = (line1, line2)
@@ -528,7 +560,7 @@ class Angle(MarkedItem, VItem):
         self.elbow = elbow
         inter = line_intersection(
             [line1.points.get_start(), line1.points.get_end()],
-            [line2.points.get_start(), line2.points.get_end()]
+            [line2.points.get_start(), line2.points.get_end()],
         )
 
         if radius is None:
@@ -555,9 +587,7 @@ class Angle(MarkedItem, VItem):
                 + quadrant[1] * radius * line2.points.unit_vector
             )
             angle_item = Elbow(**kwargs)
-            angle_item.points.set_as_corners([
-                anchor_angle_1, anchor_middle, anchor_angle_2
-            ])
+            angle_item.points.set_as_corners([anchor_angle_1, anchor_middle, anchor_angle_2])
         else:
             angle_1 = angle_of_vector(anchor_angle_1 - inter)
             angle_2 = angle_of_vector(anchor_angle_2 - inter)
@@ -619,9 +649,7 @@ class Angle(MarkedItem, VItem):
         return self.angle_value / DEGREES if degrees else self.angle_value
 
     @staticmethod
-    def from_three_points(
-        A: Vect, B: Vect, C: Vect, **kwargs
-    ) -> Angle:
+    def from_three_points(A: Vect, B: Vect, C: Vect, **kwargs) -> Angle:
         """
         由三点构造一个角，表示 ∠ABC，点 ``B`` 为角的顶点
         """
@@ -634,6 +662,7 @@ class RightAngle(Angle):
 
     - ``length``: 直角标记的边长
     """
+
     def __init__(
         self,
         line1: Line,

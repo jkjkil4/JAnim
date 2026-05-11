@@ -1,3 +1,4 @@
+# fmt: off
 import sys
 
 try:

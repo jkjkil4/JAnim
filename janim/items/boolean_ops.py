@@ -29,10 +29,7 @@ def _convert_vitem_to_skia_path(vitem: VItem) -> pathops.Path:
     return path
 
 
-def _convert_skia_path_to_vitem(
-    path: pathops.Path,
-    vitem: VItem
-) -> VItem:
+def _convert_skia_path_to_vitem(path: pathops.Path, vitem: VItem) -> VItem:
     PathVerb = pathops.PathVerb
     builder: PathBuilder | None = None
 
@@ -71,6 +68,7 @@ class Union(VItem):
 
     该方法只有根物件参与计算，如果需要考虑所有子物件的并集，例如对 :class:`~.Text` 所有后代物件的并集，请参考 :meth:`from_group`
     """
+
     def __init__(self, *vitems: VItem, **kwargs):
         if not vitems:
             raise BooleanOpsError(_('At least 1 item needed for Union.'))
@@ -81,13 +79,7 @@ class Union(VItem):
             return
 
         outpen = pathops.Path()
-        pathops.union(
-            [
-                _convert_vitem_to_skia_path(vitem)
-                for vitem in vitems
-            ],
-            outpen.getPen()
-        )
+        pathops.union([_convert_vitem_to_skia_path(vitem) for vitem in vitems], outpen.getPen())
         _convert_skia_path_to_vitem(outpen, self)
 
     @staticmethod
@@ -95,11 +87,7 @@ class Union(VItem):
         """
         传入一个物件，将其所有后代物件作并集
         """
-        lst = [
-            sub
-            for sub in item.walk_self_and_descendants()
-            if isinstance(sub, VItem)
-        ]
+        lst = [sub for sub in item.walk_self_and_descendants() if isinstance(sub, VItem)]
         return Union(*lst, **kwargs)
 
 
@@ -109,6 +97,7 @@ class Difference(VItem):
 
     传入 ``subitem`` 和 ``clip``，返回 ``subitem`` 裁去 ``clip`` 区域的轮廓线
     """
+
     def __init__(self, subitem: VItem, clip: VItem, **kwargs):
         super().__init__(**kwargs)
         outpen = pathops.Path()
@@ -130,6 +119,7 @@ class Intersection(VItem):
 
     该方法只有根物件参与计算，如果需要考虑所有后代物件的交集，请参考 :meth:`from_group`
     """
+
     def __init__(self, *vitems: VItem, **kwargs):
         if not vitems:
             raise BooleanOpsError(_('At least 1 item needed for Intersection.'))
@@ -161,11 +151,7 @@ class Intersection(VItem):
         """
         传入一个物件，将其所有后代物件作交集
         """
-        lst = [
-            sub
-            for sub in item.walk_self_and_descendants()
-            if isinstance(sub, VItem)
-        ]
+        lst = [sub for sub in item.walk_self_and_descendants() if isinstance(sub, VItem)]
         return Intersection(*lst, **kwargs)
 
 
@@ -179,6 +165,7 @@ class Exclusion(VItem):
 
     该方法只有根物件参与计算，如果需要考虑所有后代物件的对称差集，请参考 :meth:`Exclusion.from_group`
     """
+
     def __init__(self, *vitems: VItem, **kwargs):
         if not vitems:
             raise BooleanOpsError(_('At least 1 item needed for Exclusion.'))
@@ -210,9 +197,5 @@ class Exclusion(VItem):
         """
         传入一个物件，将其所有子物件依次作对称差集
         """
-        lst = [
-            sub
-            for sub in item.walk_self_and_descendants()
-            if isinstance(sub, VItem)
-        ]
+        lst = [sub for sub in item.walk_self_and_descendants() if isinstance(sub, VItem)]
         return Exclusion(*lst, **kwargs)

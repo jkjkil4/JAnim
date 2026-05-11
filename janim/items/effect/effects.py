@@ -6,7 +6,7 @@ import numpy as np
 
 from janim.anims.updater import DataUpdater, UpdaterParams
 from janim.components.component import CmptInfo
-from janim.components.simple import Cmpt_Float
+from janim.components.simple import Cmpt_Alpha
 from janim.items.effect.frame_effect import FrameEffect, SimpleFrameEffect
 from janim.items.item import Item
 from janim.render.shader import ShaderInjection
@@ -14,13 +14,13 @@ from janim.utils.config import Config
 
 
 class AlphaEffect(SimpleFrameEffect):
-    alpha = CmptInfo(Cmpt_Float[Self], 1.)
+    alpha = CmptInfo(Cmpt_Alpha[Self], 1.0)
 
     def __init__(
         self,
         *items: Item,
         root_only: bool = False,
-        **kwargs
+        **kwargs,
     ):
         super().__init__(
             *items,
@@ -28,14 +28,14 @@ class AlphaEffect(SimpleFrameEffect):
             shader='f_color = frame_texture(v_texcoord); f_color.a *= alpha;',
             uniforms=['float alpha'],
             cache_key='alpha_effect',
-            **kwargs
+            **kwargs,
         )
 
     def dynamic_uniforms(self):
         return dict(alpha=self.alpha._value)
 
 
-shadertoy_fragment_shader = '''
+shadertoy_fragment_shader = """
 #version 330 core
 
 in vec2 v_texcoord;
@@ -55,7 +55,7 @@ void main()
 
     #[JA_FINISH_UP]
 }
-'''
+"""
 
 
 class Shadertoy(FrameEffect):
@@ -80,30 +80,28 @@ class Shadertoy(FrameEffect):
 
         如果该着色器代码中出现报错，会显示为 ``JA_SHADERTOY`` 中出现的
     """
+
     def __init__(
         self,
         shader: str,
         *,
         cache_key: str | None = None,
         root_only: bool = False,
-        **kwargs
+        **kwargs,
     ):
-        with ShaderInjection(
-            JA_SHADERTOY=shader.strip()
-        ):
+        with ShaderInjection(JA_SHADERTOY=shader.strip()):
             super().__init__(
                 fragment_shader=shadertoy_fragment_shader,
                 cache_key=cache_key,
                 root_only=root_only,
-                **kwargs
+                **kwargs,
             )
 
         self.apply_uniforms(
-            iResolution=np.array([
-                Config.get.frame_width, Config.get.frame_height
-            ]) / Config.get.default_pixel_to_frame_ratio,
+            iResolution=np.array([Config.get.frame_width, Config.get.frame_height])
+            / Config.get.default_pixel_to_frame_ratio,
             iTime=0,
-            optional=True
+            optional=True,
         )
 
     def create_updater(self, **kwargs) -> DataUpdater:
@@ -113,5 +111,5 @@ class Shadertoy(FrameEffect):
     def updater(data: Shadertoy, p: UpdaterParams) -> None:
         data.apply_uniforms(
             iTime=p.elapsed,
-            optional=True
+            optional=True,
         )

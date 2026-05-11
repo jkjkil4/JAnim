@@ -29,7 +29,7 @@ class Cmpt_CameraPoints[ItemT](Cmpt_Points[ItemT]):
         *,
         size: Vect | None = None,
         fov: float | None = None,
-        orientation: Quaternion | None = None
+        orientation: Quaternion | None = None,
     ) -> Self:
         """
         设置摄像机位置以及有关属性
@@ -73,7 +73,7 @@ class Cmpt_CameraPoints[ItemT](Cmpt_Points[ItemT]):
         self.set([ORIGIN])
         self.size = [Config.get.frame_width, Config.get.frame_height]
         self.fov = 45
-        self.orientation = Quaternion()     # 单位四元数
+        self.orientation = Quaternion()  # 单位四元数
 
         return self
 
@@ -99,12 +99,7 @@ class Cmpt_CameraPoints[ItemT](Cmpt_Points[ItemT]):
         return np.isclose(self.orientation.elements, other.orientation.elements).all()
 
     def interpolate(
-        self,
-        cmpt1: Self,
-        cmpt2: Self,
-        alpha: float,
-        *,
-        path_func: PathFunc = straight_path
+        self, cmpt1: Self, cmpt2: Self, alpha: float, *, path_func: PathFunc = straight_path
     ) -> None:
         alpha = clip(alpha, 0, 1)
 
@@ -150,7 +145,7 @@ class Cmpt_CameraPoints[ItemT](Cmpt_Points[ItemT]):
         *,
         about_point: Vect | None = None,
         about_edge: Vect = ORIGIN,
-        **kwargs
+        **kwargs,
     ) -> Self:
         """
         将摄像机缩放指定倍数
@@ -176,7 +171,7 @@ class Cmpt_CameraPoints[ItemT](Cmpt_Points[ItemT]):
         *,
         axis: Vect = OUT,
         absolute: bool = True,
-        **kwargs
+        **kwargs,
     ) -> Self:
         """
         将摄像机绕 ``axis`` 轴进行旋转
@@ -207,7 +202,7 @@ class Cmpt_CameraPoints[ItemT](Cmpt_Points[ItemT]):
             self.fov,
             self.get()[0],
             np.array([width, 0, 0]) @ rot_mat_T,
-            np.array([0, height, 0]) @ rot_mat_T
+            np.array([0, height, 0]) @ rot_mat_T,
         )
 
 
@@ -219,7 +214,7 @@ class Camera(Points):
         size: Vect | None = None,
         fov: float | None = None,
         orientation: Quaternion | None = None,
-        **kwargs
+        **kwargs,
     ) -> Self:
         self.points.set(size=size, fov=fov, orientation=orientation)
         return super().apply_style(**kwargs)

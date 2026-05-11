@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: JAnim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-03 10:34+0800\n"
+"POT-Creation-Date: 2026-04-07 13:11+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -27,35 +27,192 @@ msgstr "clip"
 msgid "一个用于创建简单矩形裁剪效果的类"
 msgstr "A class for creating simple rectangular clipping effects"
 
+#: ../../source/janim/items/effect/clip.rst janim.items.effect.clip.RectClip.dynamic_uniforms of
+msgid "参数"
+msgstr "Parameters"
+
 #: janim.items.effect.clip.FrameClip:3 janim.items.effect.clip.TransformableFrameClip:3 of
-msgid "``clip`` 参数表示裁剪区域的四个边界，分别是左、上、右、下，范围是 0~1 表示百分比"
+msgid "裁剪区域的四个边界，分别是左、上、右、下，范围是 0~1 表示百分比"
 msgstr ""
-"``clip`` parameter represents the four boundaries of the clipping region: left, top, right, bottom, range is 0~1 "
-"representing percentages"
+"The four boundaries of the clipping region: left, top, right, and bottom. Values in the range 0~1 represent percentages"
 
 #: janim.items.effect.clip.FrameClip:4 janim.items.effect.clip.TransformableFrameClip:7 of
-msgid "``debug`` 参数表示是否开启调试模式，开启后裁剪区域外的部分会显示为半透明红色"
-msgstr ""
-"``debug`` parameter indicates whether to enable debug mode. When enabled, parts outside the clipping region will be "
-"displayed as semi-transparent red"
+msgid "是否开启调试模式，开启后裁剪区域外的部分会显示为半透明红色"
+msgstr "Whether to enable debug mode. When enabled, parts outside the clipping region are shown in semi-transparent red"
 
 #: janim.items.effect.clip.FrameClip.create_border_rect:1
 #: janim.items.effect.clip.TransformableFrameClip.create_border_rect:1 of
 msgid "得到裁剪后的显示区域的包围矩形"
 msgstr "Get the bounding rectangle of the clipped display region"
 
+#: janim.items.effect.clip.Cmpt_Attrs:1 of
+msgid ":class:`Cmpt_TransformableFrameClip` 和 :class:`Cmpt_RectClipTransform` 的基类"
+msgstr "Base class of :class:`Cmpt_TransformableFrameClip` and :class:`Cmpt_RectClipTransform`"
+
 #: janim.items.effect.clip.TransformableFrameClip:1 of
 msgid "与 :class:`FrameClip` 类似，但支持更多的变换操作（偏移、缩放、旋转）"
 msgstr "Similar to :class:`FrameClip`, but supports more transformation operations (offset, scale, rotation)"
 
 #: janim.items.effect.clip.TransformableFrameClip:4 of
-msgid "``offset`` 参数表示裁剪区域 x 与 y 方向的的偏移量，单位是百分比"
-msgstr "``offset`` parameter represents the offset in x and y directions of the clipping region, unit is percentage"
+msgid "裁剪区域 x 与 y 方向的的偏移量，单位是百分比"
+msgstr "Offset of the clipping region in the x and y directions, in percentages"
 
 #: janim.items.effect.clip.TransformableFrameClip:5 of
-msgid "``scale`` 参数表示裁剪区域 x 与 y 方向的缩放量，单位是百分比"
-msgstr "``scale`` parameter represents the scaling in x and y directions of the clipping region, unit is percentage"
+msgid "裁剪区域 x 与 y 方向的缩放量，单位是百分比"
+msgstr "Scale of the clipping region in the x and y directions, in percentages"
 
 #: janim.items.effect.clip.TransformableFrameClip:6 of
-msgid "``rotate`` 参数表示裁剪区域的旋转角度"
-msgstr "``rotate`` parameter represents the rotation angle of the clipping region"
+msgid "裁剪区域的旋转角度"
+msgstr "Rotation angle of the clipping region"
+
+#: janim.items.effect.clip.TransformableFrameClip:9 of
+msgid "可另行参考 :class:`RectClip`，它在一些情况下会好用得多"
+msgstr "You can also refer to :class:`RectClip`, which can be much more convenient in some cases"
+
+#: janim.items.effect.clip.RectClip:1 of
+msgid "矩形裁剪效果"
+msgstr "Rectangular clipping effect"
+
+#: janim.items.effect.clip.RectClip:3 of
+msgid "与 :class:`FrameClip` 不同，裁剪区域由当前 :class:`FrameRect` 的几何形状动态决定，跟随该矩形的几何状态"
+msgstr ""
+"Unlike :class:`FrameClip`, the clipping region is dynamically determined by the current geometry of :class:`FrameRect` "
+"and follows the rectangle's geometric state"
+
+#: janim.items.effect.clip.RectClip:5 of
+msgid "需要应用该裁剪效果的物件"
+msgstr "Items to which this clipping effect should be applied"
+
+#: janim.items.effect.clip.RectClip:8 of
+msgid "裁剪内容变换时的锚点（场景坐标）"
+msgstr "Anchor point (scene coordinates) when transforming clipped content"
+
+#: janim.items.effect.clip.RectClip:11 of
+msgid ""
+"是否让锚点始终居中于矩形中心；  默认为 ``False``，则锚点位置相对于矩形边框的百分比始终不变；若为 ``True``，则内容整体会被"
+"平移使得锚点处于矩形中心"
+msgstr ""
+"Whether to keep the anchor centered at the rectangle center at all times. Defaults to ``False``: the anchor's relative "
+"percentage position with respect to the rectangle border stays unchanged. If ``True``, the whole content is translated so "
+"that the anchor is at the rectangle center"
+
+#: janim.items.effect.clip.RectClip:12 of
+msgid "是否让锚点始终居中于矩形中心；"
+msgstr "Whether to keep the anchor centered at the rectangle center"
+
+#: janim.items.effect.clip.RectClip:14 of
+msgid "默认为 ``False``，则锚点位置相对于矩形边框的百分比始终不变；若为 ``True``，则内容整体会被平移使得锚点处于矩形中心"
+msgstr ""
+"Defaults to ``False``: the anchor's relative percentage position with respect to the rectangle border stays unchanged. If "
+"``True``, the whole content is translated so that the anchor is at the rectangle center"
+
+#: janim.items.effect.clip.RectClip:16 of
+msgid "裁剪内容相对于锚点位置的缩放系数"
+msgstr "Scale factor of clipped content relative to the anchor"
+
+#: janim.items.effect.clip.RectClip:19 of
+msgid "裁剪内容相对于锚点位置的旋转角度（弧度制）"
+msgstr "Rotation angle (in radians) of clipped content relative to the anchor"
+
+#: janim.items.effect.clip.RectClip:22 of
+msgid "是否绘制裁剪矩形边框"
+msgstr "Whether to draw the clipping rectangle border"
+
+#: janim.items.effect.clip.RectClip:25 of
+msgid "其中："
+msgstr "Where:"
+
+#: janim.items.effect.clip.RectClip:27 of
+msgid "``anchor`` 也可以使用 :meth:`set_anchor` 设置"
+msgstr "``anchor`` can also be set with :meth:`set_anchor`"
+
+#: janim.items.effect.clip.RectClip:28 of
+msgid "``center_on`` 也可以使用 :meth:`set_center_on` 设置"
+msgstr "``center_on`` can also be set with :meth:`set_center_on`"
+
+#: janim.items.effect.clip.RectClip:29 of
+msgid "``scale`` 和 ``rotate`` 也可以使用  ``.transform.set(...)`` 设置"
+msgstr "``scale`` and ``rotate`` can also be set with ``.transform.set(...)``"
+
+#: janim.items.effect.clip.RectClip:33 of
+msgid ":class:`RectClip` 几乎可以像一个 :class:`~.Rect` 一样操作，进行各种变换与对齐，这使得将其放到合适的位置变得更加容易"
+msgstr ""
+":class:`RectClip` can be manipulated almost like a :class:`~.Rect` for various transformations and alignments, making it "
+"easier to place in the right position"
+
+#: janim.items.effect.clip.RectClip:35 of
+msgid "并且在 ``border=True`` 时，:class:`~.Rect` 的各种视觉特性，例如边框颜色，泛光效果等，都是可用的"
+msgstr ""
+"And when ``border=True``, various visual properties of :class:`~.Rect`, such as border color and glow effects, are "
+"available"
+
+#: ../../source/janim/items/effect/clip.rst:20
+msgid ""
+"from janim.imports import *\n"
+"\n"
+"class RectClipExample(Timeline):\n"
+"    def construct(self):\n"
+"        ANCHOR = LEFT * 2\n"
+"\n"
+"        plane = NumberPlane(faded_line_ratio=1)\n"
+"        dot = Dot(ANCHOR)\n"
+"        txt = Text('Anchor')\n"
+"        txt.points.next_to(dot, UP, buff=SMALL_BUFF)\n"
+"\n"
+"        rect = RectClip(plane, dot, txt, anchor=ANCHOR, border=True)\n"
+"        self.show(plane, dot, txt, rect)\n"
+"\n"
+"        self.forward()\n"
+"        self.play(\n"
+"            rect.anim.points.scale([0.3, 0.5, 1]),\n"
+"            rect.anim.points.shift(LEFT * 2),\n"
+"            rect.anim.points.shift(UR),\n"
+"\n"
+"            rect.anim.transform.set(scale=1.5, rotate=20 * DEGREES),\n"
+"            Wait(0.5),\n"
+"            rect.anim.transform.set(scale=1, rotate=0),\n"
+"\n"
+"            rect.anim.set_center_on().color.set(RED),\n"
+"\n"
+"            rect.anim.transform.set(scale=1.5, rotate=20 * DEGREES),\n"
+"            Wait(0.5),\n"
+"            rect.anim.transform.set(scale=1, rotate=0),\n"
+"            lag_ratio=1\n"
+"        )\n"
+"        self.forward()"
+msgstr ""
+"from janim.imports import *\n"
+"\n"
+"class RectClipExample(Timeline):\n"
+"    def construct(self):\n"
+"        ANCHOR = LEFT * 2\n"
+"\n"
+"        plane = NumberPlane(faded_line_ratio=1)\n"
+"        dot = Dot(ANCHOR)\n"
+"        txt = Text('Anchor')\n"
+"        txt.points.next_to(dot, UP, buff=SMALL_BUFF)\n"
+"\n"
+"        rect = RectClip(plane, dot, txt, anchor=ANCHOR, border=True)\n"
+"        self.show(plane, dot, txt, rect)\n"
+"\n"
+"        self.forward()\n"
+"        self.play(\n"
+"            rect.anim.points.scale([0.3, 0.5, 1]),\n"
+"            rect.anim.points.shift(LEFT * 2),\n"
+"            rect.anim.points.shift(UR),\n"
+"\n"
+"            rect.anim.transform.set(scale=1.5, rotate=20 * DEGREES),\n"
+"            Wait(0.5),\n"
+"            rect.anim.transform.set(scale=1, rotate=0),\n"
+"\n"
+"            rect.anim.set_center_on().color.set(RED),\n"
+"\n"
+"            rect.anim.transform.set(scale=1.5, rotate=20 * DEGREES),\n"
+"            Wait(0.5),\n"
+"            rect.anim.transform.set(scale=1, rotate=0),\n"
+"            lag_ratio=1\n"
+"        )\n"
+"        self.forward()"
+
+#~ msgid "``rotate`` 参数表示裁剪区域的旋转角度"
+#~ msgstr "``rotate`` parameter represents the rotation angle of the clipping region"

@@ -15,8 +15,7 @@ from janim.locale import get_translator
 from janim.render.renderer_dotcloud import DotCloudRenderer
 from janim.typing import Alpha, ColorArray, JAnimColor, Vect
 from janim.utils.data import AlignedData
-from janim.utils.iterables import (resize_preserving_order,
-                                   resize_preserving_order_indice_groups)
+from janim.utils.iterables import resize_preserving_order, resize_preserving_order_indice_groups
 
 _ = get_translator('janim.items.points')
 
@@ -29,6 +28,7 @@ class Points(Item):
 
     是大多数物件的基类
     """
+
     points = CmptInfo(Cmpt_Points[Self])
 
     def __init__(self, *points: Vect, **kwargs):
@@ -55,6 +55,7 @@ class Point(Points):
 
     纯数据物件，不参与渲染；若想在画面中渲染点，可参考 :class:`~.Dot`
     """
+
     def __init__(self, location: Vect, **kwargs):
         super().__init__(location, **kwargs)
 
@@ -117,11 +118,7 @@ class DotCloud(Points):
 
     renderer_cls = DotCloudRenderer
 
-    def __init__(
-        self,
-        *args,
-        **kwargs
-    ):
+    def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
         self.points.resize_func = resize_preserving_order
@@ -138,7 +135,7 @@ class DotCloud(Points):
         glow_color: JAnimColor | None = None,
         glow_alpha: Alpha | None = None,
         glow_size: float | None = None,
-        **kwargs
+        **kwargs,
     ) -> Self:
         self.color.set(color, alpha, root_only=True)
         if radius is not None:
@@ -185,12 +182,14 @@ class GlowDot(DotCloud):
 # 并在访问时提示迁移到 `janim.items.group`
 def __getattr__(name: str):
     if name in {'Group', 'NamedGroupMixin', 'NamedGroup'}:
+        from janim.items import group
         from janim.utils.deprecation import deprecated
+
         deprecated(
             f'janim.items.points.{name}',
             f'janim.items.group.{name}',
-            remove=(4, 4)
+            remove=(4, 4),
         )
-        from janim.items import group
         return getattr(group, name)
+
     raise AttributeError(f'module {__name__!r} has no attribute {name!r}')

@@ -51,25 +51,19 @@ class TransformTest(unittest.TestCase):
 
         def tsf_anim_at(global_t: float):
             with ContextSetter(Animation.global_t_ctx, global_t):
-                for data, render in tsf_anim.additional_calls:
+                for data, render in tsf_anim.render_group:
                     render(data)
 
         tsf_anim_at(2)
-        self.assertNparrayEqual(
-            tsf_anim.aligned[(p1, p2)].union.points.get(),
-            [UP, DOWN]
-        )
+        self.assertNparrayEqual(tsf_anim.aligned[(p1, p2)].union.points.get(), [UP, DOWN])
 
         tsf_anim_at(3)
-        self.assertNparrayClose(
-            tsf_anim.aligned[(p1, p2)].union.points.get(),
-            [LEFT, RIGHT]
-        )
+        self.assertNparrayClose(tsf_anim.aligned[(p1, p2)].union.points.get(), [LEFT, RIGHT])
 
         tsf_anim_at(2.3)
         self.assertNparrayClose(
             tsf_anim.aligned[(p1, p2)].union.points.get(),
-            [UP * 0.7 + LEFT * 0.3, DOWN * 0.7 + RIGHT * 0.3]
+            [UP * 0.7 + LEFT * 0.3, DOWN * 0.7 + RIGHT * 0.3],
         )
 
         self.assertEqual(tsf_anim.t_range.at, 2)

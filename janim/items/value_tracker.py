@@ -1,4 +1,3 @@
-
 from typing import Self
 
 from janim.components.component import CmptInfo
@@ -32,7 +31,7 @@ class ValueTracker[T](Item):
         copy_func: None = None,
         not_changed_func: None = None,
         interpolate_func: None = None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__(**kwargs)
         self._data.set_func(copy_func, not_changed_func, interpolate_func)
@@ -45,9 +44,10 @@ class ValueTracker[T](Item):
     @property
     def data(self) -> Cmpt_Data:
         from janim.utils.deprecation import deprecated
+
         deprecated(
             '.data',
-            remove=(4, 3)
+            remove=(4, 3),
         )
 
         _data = self._data
@@ -57,7 +57,7 @@ class ValueTracker[T](Item):
                 deprecated(
                     '.data.set',
                     '.set_value',
-                    remove=(4, 3)
+                    remove=(4, 3),
                 )
                 return _data.set(value)
 
@@ -65,14 +65,14 @@ class ValueTracker[T](Item):
                 deprecated(
                     '.data.get',
                     '.get_value',
-                    remove=(4, 3)
+                    remove=(4, 3),
                 )
                 return _data.get()
 
             def __getattr__(self, name: str):
                 return getattr(_data, name)
 
-        return _DeprecatedWrapper()     # type: ignore
+        return _DeprecatedWrapper()  # type: ignore
 
     def set_value(self, value: T) -> Self:
         """设置当前值"""

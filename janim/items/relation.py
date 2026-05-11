@@ -25,6 +25,7 @@ class Relation[GRelT: 'Relation'](refresh.Refreshable):
         - 不包含调用者自身并且返回的列表中没有重复元素
         - 对象顺序是 DFS 顺序
     """
+
     def __init__(self):
         super().__init__()
 
@@ -97,7 +98,7 @@ class Relation[GRelT: 'Relation'](refresh.Refreshable):
         self,
         *objs: GRelT,
         prepend=False,
-        insert=None    # deprecated
+        insert=None,  # deprecated
     ) -> Self:
         """
         向该物件添加子物件
@@ -107,13 +108,14 @@ class Relation[GRelT: 'Relation'](refresh.Refreshable):
         """
         if insert is not None:
             from janim.utils.deprecation import deprecated
+
             deprecated(
                 'insert',
                 'prepend',
-                remove=(4, 3)
+                remove=(4, 3),
             )
 
-        for obj in (reversed(objs) if prepend else objs):
+        for obj in reversed(objs) if prepend else objs:
             if obj in self._children:
                 continue
 
@@ -162,7 +164,8 @@ class Relation[GRelT: 'Relation'](refresh.Refreshable):
                 assert self in obj._parents
                 obj._parents.remove(self)
                 obj._parents_changed()
-            except ValueError: ...
+            except ValueError:
+                pass
 
         self._children_changed()
         return self
@@ -208,10 +211,7 @@ class Relation[GRelT: 'Relation'](refresh.Refreshable):
         for sub_obj in lst:
             if sub_obj not in res:
                 res.append(sub_obj)
-            res.extend(filter(
-                lambda obj: obj not in res,
-                sub_obj._family(up=up)
-            ))
+            res.extend(filter(lambda obj: obj not in res, sub_obj._family(up=up)))
 
         return res
 
@@ -236,10 +236,14 @@ class Relation[GRelT: 'Relation'](refresh.Refreshable):
     def _walk_lst[ListT](base_cls: None, lst: list[ListT]) -> Generator[ListT, None, None]: ...
     @overload
     @staticmethod
-    def _walk_lst[ListT, RelT](base_cls: type[RelT], lst: list[ListT]) -> Generator[RelT, None, None]: ...
+    def _walk_lst[ListT, RelT](
+        base_cls: type[RelT], lst: list[ListT]
+    ) -> Generator[RelT, None, None]: ...
 
     @staticmethod
-    def _walk_lst[ListT, RelT](base_cls: type[RelT] | None, lst: list[ListT]) -> Generator[ListT | RelT, None, None]:
+    def _walk_lst[ListT, RelT](
+        base_cls: type[RelT] | None, lst: list[ListT]
+    ) -> Generator[ListT | RelT, None, None]:
         if base_cls is None:
             yield from lst
             return
@@ -273,7 +277,9 @@ class Relation[GRelT: 'Relation'](refresh.Refreshable):
     @overload
     def walk_ancestors[RelT](self, base_cls: type[RelT]) -> Generator[RelT, None, None]: ...
 
-    def walk_ancestors[RelT](self, base_cls: type[RelT] | None = None) -> Generator[GRelT | RelT, None, None]:
+    def walk_ancestors[RelT](
+        self, base_cls: type[RelT] | None = None
+    ) -> Generator[GRelT | RelT, None, None]:
         """
         遍历祖先节点中以 ``base_cls`` （缺省则遍历全部）为基类的物件
         """
@@ -284,7 +290,9 @@ class Relation[GRelT: 'Relation'](refresh.Refreshable):
     @overload
     def walk_descendants[RelT](self, base_cls: type[RelT]) -> Generator[RelT, None, None]: ...
 
-    def walk_descendants[RelT](self, base_cls: type[RelT] | None = None) -> Generator[GRelT | RelT, None, None]:
+    def walk_descendants[RelT](
+        self, base_cls: type[RelT] | None = None
+    ) -> Generator[GRelT | RelT, None, None]:
         """
         遍历后代节点中以 ``base_cls`` （缺省则遍历全部）为基类的物件
         """

@@ -1,4 +1,5 @@
-
+from contextlib import nullcontext
+from typing import Any, Callable
 import numpy as np
 from PySide6.QtCore import QPointF, Signal
 from PySide6.QtOpenGLWidgets import QOpenGLWidget
@@ -10,6 +11,7 @@ from janim.camera.camera_info import CameraInfo
 from janim.logger import log
 from janim.render.base import create_context
 from janim.render.framebuffer import register_qt_glwidget
+from janim.render.profiler import FrameRecord, RenderProfiler
 from janim.typing import VectArray
 
 
@@ -17,6 +19,7 @@ class GLWidget(QOpenGLWidget):
     """
     窗口中央的渲染界面
     """
+
     rendered = Signal()
     error_occurred = Signal()
 
@@ -24,6 +27,8 @@ class GLWidget(QOpenGLWidget):
         super().__init__(parent)
         self.needs_update_clear_color = False
         self.inject_camera: Camera | None = None
+
+        self.profiler: RenderProfiler | None = None
 
     def set_built(self, built: BuiltTimeline) -> None:
         self.built = built
@@ -82,10 +87,7 @@ class GLWidget(QOpenGLWidget):
         if info is None:
             info = self.built.current_camera_info()
 
-        result = [
-            self.map_from_gl2d(x, y)
-            for x, y in info.map_points(points)
-        ]
+        result = [self.map_from_gl2d(x, y) for x, y in info.map_points(points)]
         return result
 
     def initializeGL(self) -> None:
@@ -101,12 +103,21 @@ class GLWidget(QOpenGLWidget):
     def update_clear_color(self) -> None:
         self.needs_update_clear_color = True
 
+    def setup_profiler(self, callback: Callable[[FrameRecord], Any]) -> None:
+        self.profiler = RenderProfiler(callback)
+
+    def teardown_profiler(self) -> None:
+        self.profiler = None
+
     def paintGL(self) -> None:
         if self.needs_update_clear_color:
-            self.qfuncs.glClearColor(*self.built.cfg.background_color.rgb, 1.)
+            self.qfuncs.glClearColor(*self.built.cfg.background_color.rgb, 1.0)
             self.needs_update_clear_color = False
-        self.qfuncs.glClear(0x00004000 | 0x00000100)    # GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT
-        ret = self.built.render_all(self.ctx, self.global_t, camera=self.inject_camera)
+        self.qfuncs.glClear(0x00004000 | 0x00000100)  # GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT
+
+        with self.profiler.record_frame() if self.profiler is not None else nullcontext():
+            ret = self.built.render_all(self.ctx, self.global_t, camera=self.inject_camera)
+
         self.rendered.emit()
         if not ret:
             self.error_occurred.emit()

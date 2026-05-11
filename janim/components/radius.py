@@ -22,6 +22,7 @@ class Cmpt_Radius[ItemT](Component[ItemT]):
     """
     半径组件，被用于 :class:`DotCloud` 的点半径，以及 :class:`VItem` 的轮廓线粗细
     """
+
     def __init__(self, default_radius: float, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.default_radius = default_radius
@@ -55,7 +56,9 @@ class Cmpt_Radius[ItemT](Component[ItemT]):
 
         return AlignedData(cmpt1_copy, cmpt2_copy, cmpt1_copy.copy())
 
-    def interpolate(self, cmpt1: Cmpt_Radius, cmpt2: Cmpt_Radius, alpha: float, *, path_func=None) -> None:
+    def interpolate(
+        self, cmpt1: Cmpt_Radius, cmpt2: Cmpt_Radius, alpha: float, *, path_func=None
+    ) -> None:
         if not cmpt1._radii.is_share(cmpt2._radii) or not cmpt1._radii.is_share(self._radii):
             if cmpt1._radii.is_share(cmpt2._radii):
                 self._radii = cmpt1._radii.copy()

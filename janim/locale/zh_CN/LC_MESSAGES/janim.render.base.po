@@ -20,15 +20,9 @@ msgstr ""
 #: janim/render/base.py:262
 #, python-brace-format
 msgid ""
-"An additional module is required to be compatible with OpenGL {version} "
-"(lower than OpenGL 4.3), but it is not installed"
-msgstr ""
-"需要额外的模块才能兼容 OpenGL {version}（低于 OpenGL 4.3），但是未安装"
+"An additional module is required to be compatible with OpenGL {version} (lower than OpenGL 4.3), but it is not installed"
+msgstr "需要额外的模块才能兼容 OpenGL {version}（低于 OpenGL 4.3），但是未安装"
 
 #: janim/render/base.py:266
-msgid ""
-"You can install it using \"pip install PyOpenGL\" and make sure you install "
-"it in the correct Python version"
-msgstr ""
-"你可以使用 \"pip install PyOpenGL\" 进行安装，并确保你安装在了正确的 Python "
-"版本中"
+msgid "You can install it using \"pip install PyOpenGL\" and make sure you install it in the correct Python version"
+msgstr "你可以使用 \"pip install PyOpenGL\" 进行安装，并确保你安装在了正确的 Python 版本中"

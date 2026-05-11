@@ -74,7 +74,7 @@ void get_subpath_attr(
     get_curve_attr(A, B, C, match, fill_d, fill_sgn);
 }
 
-uniform vec3 JA_CAMERA_LOC;
+#include "../../includes/JA_CAMERA_LOC.glsl"
 uniform vec3 JA_CAMERA_CENTER;
 uniform vec3 JA_CAMERA_RIGHT;
 uniform vec3 JA_CAMERA_UP;

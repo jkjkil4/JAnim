@@ -9,8 +9,9 @@ from janim.utils.data import AlignedData
 
 class Cmpt_Float[ItemT](Component[ItemT]):
     """
-    对 float 的 Component 封装
+    对 ``float`` 的 :class:`~.Component` 封装
     """
+
     def __init__(self, default_value, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._value = default_value
@@ -30,7 +31,9 @@ class Cmpt_Float[ItemT](Component[ItemT]):
         cmpt2_copy = cmpt2.copy()
         return AlignedData(cmpt1_copy, cmpt2_copy, cmpt1_copy.copy())
 
-    def interpolate(self, cmpt1: Cmpt_Float, cmpt2: Cmpt_Float, alpha: float, *, path_func=None) -> None:
+    def interpolate(
+        self, cmpt1: Cmpt_Float, cmpt2: Cmpt_Float, alpha: float, *, path_func=None
+    ) -> None:
         if cmpt1._value != cmpt2._value or cmpt1._value != self._value:
             self._value = interpolate(cmpt1._value, cmpt2._value, alpha)
 
@@ -42,7 +45,17 @@ class Cmpt_Float[ItemT](Component[ItemT]):
         return self._value
 
 
+class Cmpt_Alpha[ItemT](Cmpt_Float[ItemT], impl=True):
+    """
+    和 :class:`~.Cmpt_Float` 一样，只是方便 ``isinstance``
+    """
+
+
 class Cmpt_List[ItemT, T](list[T], Component[ItemT]):
+    """
+    对 ``list`` 的 :class:`~.Component` 封装
+    """
+
     def __copy__(self) -> Self:
         new: Self = Component.__copy__(self)
         new.extend(self)
@@ -61,6 +74,10 @@ class Cmpt_List[ItemT, T](list[T], Component[ItemT]):
 
 
 class Cmpt_Dict[ItemT, K, V](dict[K, V], Component[ItemT]):
+    """
+    对 ``dict`` 的 :class:`~.Component` 封装
+    """
+
     def __copy__(self) -> Self:
         new: Self = Component.__copy__(self)
         new.update(self)

@@ -30,7 +30,9 @@ class AnimChartWidget(ChartWidgetBase):
 
         self.count = max(2, min(500, max(2, int(anim.t_range.duration * fps))))
         self.times = np.linspace(anim.t_range.at, anim.t_range.end, self.count)
-        self.values = np.array([anim.get_alpha_on_global_t(time) for time in self.times], dtype=float)
+        self.values = np.array(
+            [anim.get_alpha_on_global_t(time) for time in self.times], dtype=float
+        )
 
     def paint_chart(self, p: QPainter, plot_rect: QRectF) -> None:
         """绘制缓动函数 alpha 散点图"""

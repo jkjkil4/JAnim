@@ -35,7 +35,7 @@ dependencies = [
 [project.optional-dependencies]
 gui = [
     "PySide6-Essentials",
-    "qdarkstyle",
+    "qdarkstyle==3.2.3",
     "beautifulsoup4",
     "sounddevice>=0.5.5; sys_platform == 'win32' or sys_platform == 'darwin'",
 ]
@@ -56,6 +56,14 @@ bench = [
     "asv"
 ]
 
+[project.urls]
+Home = "https://github.com/jkjkil4/JAnim"
+Source = "https://github.com/jkjkil4/JAnim"
+Documentation = "https://janim.rtfd.io"
+
+[project.scripts]
+janim = "janim.__main__:main"
+
 [tool.flit.sdist]
 exclude = [
     ".asv/", ".vscode/", ".github/", "assets/", "doc/", "benchmarks/", "test/", "scripts/",
@@ -75,10 +83,16 @@ omit = [
     "janim/gui/*"
 ]
 
-[project.urls]
-Home = "https://github.com/jkjkil4/JAnim"
-Source = "https://github.com/jkjkil4/JAnim"
-Documentation = "https://janim.rtfd.io"
+[tool.pyright]
+venvPath = "."
+venv = ".venv"
 
-[project.scripts]
-janim = "janim.__main__:main"
+[tool.ruff]
+exclude = [
+    "**/ui_*.py"
+]
+line-length = 100
+
+[tool.ruff.format]
+quote-style = "single"
+

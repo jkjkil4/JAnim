@@ -9,3 +9,4 @@ effect
    clip
    effects
    frame_effect
+   mask

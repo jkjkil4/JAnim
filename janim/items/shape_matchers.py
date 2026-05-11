@@ -17,6 +17,7 @@ class SurroundingRect(Rect):
     """
     包围矩形框
     """
+
     def __init__(
         self,
         item: Points,
@@ -26,7 +27,7 @@ class SurroundingRect(Rect):
         width: float | None = None,
         height: float | None = None,
         align: Align = Align.Center,
-        **kwargs
+        **kwargs,
     ):
         box = item.points.box
 
@@ -63,6 +64,7 @@ class FrameRect(Rect):
     - 可以传入 ``camera`` 指定以其画面区域为准
     - 若不传入则产生默认宽高 ``frame_width`` 和 ``frame_height`` 的矩形
     """
+
     def __init__(self, camera: Camera | None = None, **kwargs):
         if camera is None:
             super().__init__(Config.get.frame_width, Config.get.frame_height, **kwargs)
@@ -72,13 +74,15 @@ class FrameRect(Rect):
             hvect_half = info.horizontal_vect / 2
             vvect_half = info.vertical_vect / 2
             center = info.center
-            self.points.set_as_corners([
-                center + hvect_half + vvect_half,
-                center - hvect_half + vvect_half,
-                center - hvect_half - vvect_half,
-                center + hvect_half - vvect_half,
-                center + hvect_half + vvect_half
-            ])
+            self.points.set_as_corners(
+                [
+                    center + hvect_half + vvect_half,
+                    center - hvect_half + vvect_half,
+                    center - hvect_half - vvect_half,
+                    center + hvect_half - vvect_half,
+                    center + hvect_half + vvect_half,
+                ]
+            )
 
 
 class HighlightRect(boolean_ops.Difference):
@@ -90,14 +94,13 @@ class HighlightRect(boolean_ops.Difference):
         Rect.preset_shadow,
         'HighlightRect.difference_config_d',
         'Rect.preset_shadow',
-        remove=(4, 3)
+        remove=(4, 3),
     )
 
     def __init__(
         self,
         # SurroundingRect
         item: Points,
-
         # FrameRect
         camera: Camera | None = None,
         *,
@@ -106,15 +109,14 @@ class HighlightRect(boolean_ops.Difference):
         width: float | None = None,
         height: float | None = None,
         align: Align = Align.Center,
-
         # Difference
-        **kwargs
+        **kwargs,
     ):
         kwargs = merge_dicts_recursively(Rect.preset_shadow, kwargs)
         super().__init__(
             FrameRect(camera),
             SurroundingRect(item, buff=buff, width=width, height=height, align=align),
-            **kwargs
+            **kwargs,
         )
 
 

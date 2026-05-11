@@ -5,19 +5,17 @@ import itertools as it
 import re
 from collections import defaultdict
 from enum import StrEnum
-from typing import (TYPE_CHECKING, Any, Callable, Concatenate, Iterable,
-                    Literal, Self)
+from typing import TYPE_CHECKING, Any, Callable, Concatenate, Iterable, Literal, Self
 
 import numpy as np
 
 from janim.components.component import CmptInfo
 from janim.components.mark import Cmpt_Mark
-from janim.constants import (DOWN, GREY, LEFT, MED_SMALL_BUFF, ORIGIN, RIGHT,
-                             UL, UP)
+from janim.constants import DOWN, GREY, LEFT, MED_SMALL_BUFF, ORIGIN, RIGHT, UL, UP
 from janim.exception import ColorNotFoundError
 from janim.items.geometry.line import Line
 from janim.items.group import Group
-from janim.items.points import MarkedItem
+from janim.items.points import MarkedItem, Points
 from janim.items.vitem import VItem
 from janim.locale import get_translator
 from janim.logger import log
@@ -26,7 +24,7 @@ from janim.utils.config import Config
 from janim.utils.font.database import Font, get_font_info_by_attrs
 from janim.utils.font.variant import Style, StyleName, Weight, WeightName
 from janim.utils.simple_functions import decode_utf8
-from janim.utils.space_ops import get_norm, normalize
+from janim.utils.space_ops import cross, get_norm, normalize
 
 _ = get_translator('janim.items.text')
 
@@ -44,6 +42,7 @@ def _get_color_value(key: str) -> JAnimColor:
         return key
 
     import janim.constants.colors as colors
+
     if not hasattr(colors, key):
         raise ColorNotFoundError(_('No built-in color named {key}').format(key=key))
     return getattr(colors, key)
@@ -72,6 +71,7 @@ def _register_acts(names: list[ActName], *acts: Act) -> None:
         available_act_map[name].extend(acts)
 
 
+# fmt: off
 _register_acts(
     ['color', 'c'],
     ((_get_color_value,),           lambda char, color: char.color.set(color)),
@@ -110,15 +110,17 @@ _register_acts(
     ['font_scale', 'fs'],
     ((float,), lambda char, factor: char.points.scale(factor, about_point=ORIGIN))
 )
+# fmt: on
 
 
 class Cmpt_Mark_TextCharImpl[ItemT](Cmpt_Mark[ItemT], impl=True):
     names = ['orig', 'right', 'up', 'advance']
 
     if TYPE_CHECKING:
+
         def get(
             self,
-            index: int | Literal['orig', 'right', 'up', 'advance'] = 0
+            index: int | Literal['orig', 'right', 'up', 'advance'] = 0,
         ) -> np.ndarray: ...
 
         def set(
@@ -126,7 +128,7 @@ class Cmpt_Mark_TextCharImpl[ItemT](Cmpt_Mark[ItemT], impl=True):
             point: Vect,
             index: int | Literal['orig', 'right', 'up', 'advance'] = 0,
             *,
-            root_only: bool = False
+            root_only: bool = False,
         ) -> Self: ...
 
 
@@ -134,9 +136,10 @@ class Cmpt_Mark_TextLineImpl[ItemT](Cmpt_Mark[ItemT], impl=True):
     names = ['orig', 'right', 'up']
 
     if TYPE_CHECKING:
+
         def get(
             self,
-            index: int | Literal['orig', 'right', 'up'] = 0
+            index: int | Literal['orig', 'right', 'up'] = 0,
         ) -> np.ndarray: ...
 
         def set(
@@ -144,7 +147,7 @@ class Cmpt_Mark_TextLineImpl[ItemT](Cmpt_Mark[ItemT], impl=True):
             point: Vect,
             index: int | Literal['orig', 'right', 'up'] = 0,
             *,
-            root_only: bool = False
+            root_only: bool = False,
         ) -> Self: ...
 
 
@@ -159,7 +162,7 @@ class BasepointVItem(MarkedItem, VItem):
     def offset_to(
         self,
         other: BasepointVItem,
-        proj: ProjType | Literal['horizontal', 'vertical', 'h', 'v'] | Vect | None = None
+        proj: ProjType | Literal['horizontal', 'vertical', 'h', 'v'] | Vect | None = None,
     ) -> np.ndarray:
         """
         计算从 ``self`` 到 ``other`` 的偏移量，如果指定了 ``proj`` 则只计算在该方向上的投影量
@@ -182,6 +185,16 @@ class BasepointVItem(MarkedItem, VItem):
         scalar = np.dot(offset, proj_vect) / np.dot(proj_vect, proj_vect)
         return scalar * proj_vect
 
+    def matrix_of_marks(self) -> np.matrix:
+        """
+        得到标记点的坐标标架构成的矩阵
+        """
+        # 假定 [0] 是 basepoint，[1] 是 right，[2] 是 up
+        right = self.mark.get(1) - self.mark.get(0)
+        up = self.mark.get(2) - self.mark.get(0)
+        normal = cross(right, up) / get_norm(up)
+        return np.matrix([right, up, normal]).T
+
 
 class TextChar(BasepointVItem):
     """
@@ -196,7 +209,7 @@ class TextChar(BasepointVItem):
         fonts: list[Font],
         font_size: float,
         fill_alpha=None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__(fill_alpha=fill_alpha, **kwargs)
         self.char = char
@@ -221,10 +234,14 @@ class TextChar(BasepointVItem):
         self.points.set(outline * scale_factor)
 
         # 标记位置
-        self.mark.set_points([
-            ORIGIN, RIGHT * font_scale_factor, UP * font_scale_factor,
-            [advance[0] * scale_factor, advance[1] * scale_factor, 0]
-        ])
+        self.mark.set_points(
+            [
+                ORIGIN,
+                RIGHT * font_scale_factor,
+                UP * font_scale_factor,
+                [advance[0] * scale_factor, advance[1] * scale_factor, 0],
+            ]
+        )
 
     @staticmethod
     def get_font_for_render(unicode: str, fonts: list[Font]) -> Font:
@@ -262,8 +279,9 @@ class TextChar(BasepointVItem):
             params = params_stack[-1]
             if name not in available_act_map:
                 log.warning(
-                    _('"{name}" is not a valid rich text tag. ("<{name} {params}>")')
-                    .format(name=name, params=' '.join(params))
+                    _('"{name}" is not a valid rich text tag. ("<{name} {params}>")').format(
+                        name=name, params=' '.join(params)
+                    )
                 )
                 continue
 
@@ -271,27 +289,33 @@ class TextChar(BasepointVItem):
                 if len(converters) == len(params):
                     try:
                         caller(
-                            self, *[
-                                converter(param)
-                                for converter, param in zip(converters, params)
-                            ]
+                            self,
+                            *[converter(param) for converter, param in zip(converters, params)],
                         )
                     except Exception:
                         log.error(
-                            _('While applying {name}, {params} did not match with {cvt_names}.')
-                            .format(name=name, params=params, cvt_names=[cvt.__name__ for cvt in converters])
+                            _(
+                                'While applying {name}, {params} did not match with {cvt_names}.'
+                            ).format(
+                                name=name,
+                                params=params,
+                                cvt_names=[cvt.__name__ for cvt in converters],
+                            )
                         )
                         raise
 
                     break
             else:
-                txt = ','.join([
-                    '[' + ','.join([cvt.__name__ for cvt in act[0]]) + ']'
-                    for act in available_act_map[name]
-                ])
+                txt = ','.join(
+                    [
+                        '[' + ','.join([cvt.__name__ for cvt in act[0]]) + ']'
+                        for act in available_act_map[name]
+                    ]
+                )
                 log.warning(
-                    _('While applying "{name}", {params} did not match any entry in {txt}.')
-                    .format(name=name, params=params, txt=txt)
+                    _('While applying "{name}", {params} did not match any entry in {txt}.').format(
+                        name=name, params=params, txt=txt
+                    )
                 )
 
 
@@ -309,17 +333,14 @@ class TextLine(BasepointVItem, Group[TextChar]):
         font_size: float,
         char_kwargs={},
         fill_alpha=None,
-        **kwargs
+        **kwargs,
     ):
         self.text = text
 
         super().__init__(
-            *[
-                TextChar(char, fonts, font_size, **char_kwargs)
-                for char in text
-            ],
+            *[TextChar(char, fonts, font_size, **char_kwargs) for char in text],
             fill_alpha=fill_alpha,
-            **kwargs
+            **kwargs,
         )
 
         # 标记位置
@@ -354,6 +375,26 @@ class TextLine(BasepointVItem, Group[TextChar]):
 
         return self
 
+    def match_to(self, target: Text | TextLine) -> Self:
+        """
+        将该行文本与目标文本或文本行对齐
+
+        :param target: 目标文本或文本行
+        """
+        line = target if isinstance(target, TextLine) else target[0]
+        TextLine._match_to(self, self, line)
+        return self
+
+    @staticmethod
+    def _match_to(item: Points, line1: TextLine, line2: TextLine) -> None:
+        mat = line2.matrix_of_marks() @ line1.matrix_of_marks().I
+
+        # fmt: off
+        item.points.shift(-line1.mark.get()) \
+                   .apply_matrix(mat) \
+                   .shift(line2.mark.get())
+        # fmt: on
+
 
 class Text(VItem, Group[TextLine]):
     """
@@ -371,6 +412,7 @@ class Text(VItem, Group[TextLine]):
 
         Text('Hello <c RED>World</c>!', format='rich')
     """
+
     class Format(StrEnum):
         PlainText = 'plain'
         RichText = 'rich'
@@ -378,22 +420,22 @@ class Text(VItem, Group[TextLine]):
     def __init__(
         self,
         text: str,
-
+        #
         font: str | Iterable[str] = [],
         font_size: float = DEFAULT_FONT_SIZE,
-        weight: int | Weight | WeightName = 400,   # = 'regular'
+        weight: int | Weight | WeightName = 400,  # = 'regular'
         style: Style | StyleName = Style.Normal,
-        force_full_name: bool = False,      # 一般情况下用不到，只是为了在 family-name 调用不符合预期时，使用该参数强制作为 full-name
-
+        force_full_name: bool = False,  # 一般情况下用不到，只是为了在 family-name 调用不符合预期时，使用该参数强制作为 full-name
+        #
         format: Format | Literal['plain', 'rich'] = Format.PlainText,
         line_kwargs: dict = {},
-
+        #
         stroke_alpha: float = 0,
         fill_alpha: float = 1,
         stroke_background: bool = True,
-
+        #
         center: bool = True,
-        **kwargs
+        **kwargs,
     ) -> None:
         # 获取字体
         if isinstance(font, str):
@@ -428,7 +470,7 @@ class Text(VItem, Group[TextLine]):
 
                 groups = match.groups()
 
-                if groups[0] is None:   # <<
+                if groups[0] is None:  # <<
                     self.text += '<'
                 else:
                     act = groups[0]
@@ -448,7 +490,7 @@ class Text(VItem, Group[TextLine]):
             stroke_alpha=stroke_alpha,
             fill_alpha=fill_alpha,
             stroke_background=stroke_background,
-            **kwargs
+            **kwargs,
         )
 
         if format == Text.Format.RichText:
@@ -477,9 +519,9 @@ class Text(VItem, Group[TextLine]):
         """
         根据 ``pattern`` **正则表达式** 获得文字中的部分
 
-        - ``pattern``: 用于匹配的正则表达式
+        :param pattern: 用于匹配的正则表达式
 
-        - ``group``: 对于正则表达式，指定使用第几个分组进行匹配，默认 ``0`` 表示整个匹配片段，其余数字表示对应的分组
+        :param group: 对于正则表达式，指定使用第几个分组进行匹配，默认 ``0`` 表示整个匹配片段，其余数字表示对应的分组
 
         提示：如果不希望使用正则表达式，可以使用 ``re.escape`` 进行转义，例如 ``re.escape('a[i]')`` 来正确匹配字符串中的 ``a[i]``
 
@@ -508,18 +550,20 @@ class Text(VItem, Group[TextLine]):
                 parts.append(self[l_row][l_col:r_col])
             else:
                 parts.append(
-                    Group(*it.chain(
-                        self[l_row][l_col:],
-                        *self[l_row + 1: r_row],
-                        self[r_row][:r_col]
-                    ))
+                    Group(
+                        *it.chain(
+                            self[l_row][l_col:],
+                            *self[l_row + 1 : r_row],
+                            self[r_row][:r_col],
+                        )
+                    )
                 )
         return Group(*parts)
 
     def arrange_in_lines(self, buff: float = 0, base_buff: float = 0.85) -> Self:
         """
-        - ``buff``: 每行之间的额外间距
-        - ``base_buff``: 每行之间的基本间距，默认值 ``0.85`` 用于将两行上下排列，如果是 ``0`` 则会让两行完全重合，大部分时候不需要传入该值
+        :param buff: 每行之间的额外间距
+        :param base_buff: 每行之间的基本间距，默认值 ``0.85`` 用于将两行上下排列，如果是 ``0`` 则会让两行完全重合，大部分时候不需要传入该值
         """
         if len(self._children) == 0:
             return
@@ -528,11 +572,20 @@ class Text(VItem, Group[TextLine]):
         for line in self._children[1:]:
             vert = line.get_mark_orig() - line.get_mark_up()
             target = pos + base_buff * vert + buff * normalize(vert)
-            line.points.shift(
-                target - line.get_mark_orig()
-            )
+            line.points.shift(target - line.get_mark_orig())
             pos = line.get_mark_orig()
 
+        return self
+
+    def match_to(self, target: Text | TextLine, *, self_lineno: int = 0) -> Self:
+        """
+        将该文本与目标文本或文本行对齐
+
+        :param target: 目标文本或文本行
+        :param self_lineno: 将自身的哪一行与目标对齐，默认为首行（即 ``self_lineno=0``）
+        """
+        line = target if isinstance(target, TextLine) else target[0]
+        TextLine._match_to(self, self[self_lineno], line)
         return self
 
     def apply_rich_text(self) -> None:
@@ -549,18 +602,17 @@ class Text(VItem, Group[TextLine]):
                     if text_at < next_act_at:
                         break
 
-                    if isinstance(next_act, str):   # ActEnd
+                    if isinstance(next_act, str):  # ActEnd
                         stack = act_params_map[next_act]
                         try:
                             stack.pop()
                         except IndexError:
                             log.warning(
-                                _('Unmatched end tag "</{name}>", ignored.')
-                                .format(name=next_act)
+                                _('Unmatched end tag "</{name}>", ignored.').format(name=next_act)
                             )
                         if not stack:
                             del act_params_map[next_act]
-                    else:   # ActStart
+                    else:  # ActStart
                         name, params = next_act
                         act_params_map[name].append(params)
 
@@ -577,9 +629,10 @@ class Title(Group):
     标题
 
     - ``include_underline=True`` 会添加下划线（默认添加）
-    - ``underline_width`` 下划线的长度（默认屏幕宽 - 2 个单位）
+    - ``underline_width`` 下划线的长度（默认 ``屏幕宽 - 2个单位``）
     - ``match_underline_width_to_text=True`` 时将下划线的长度和文字匹配（默认为 ``False``）
     """
+
     def __init__(
         self,
         text: str,
@@ -590,7 +643,7 @@ class Title(Group):
         underline_buff: float = MED_SMALL_BUFF,
         match_underline_width_to_text: bool = False,
         depth: float | None = None,
-        **kwargs
+        **kwargs,
     ):
         txt = Text(text, font=font, font_size=font_size, **kwargs)
         txt.points.to_border(UP)
@@ -620,17 +673,7 @@ class SourceDisplayer(Text):
     """
     显示 ``obj`` 的源代码
     """
-    def __init__(
-        self,
-        obj,
-        font_size=12,
-        color=GREY,
-        **kwargs
-    ):
-        super().__init__(
-            inspect.getsource(obj),
-            font_size=font_size,
-            color=color,
-            **kwargs
-        )
+
+    def __init__(self, obj, font_size=12, color=GREY, **kwargs):
+        super().__init__(inspect.getsource(obj), font_size=font_size, color=color, **kwargs)
         self.points.to_border(UL)

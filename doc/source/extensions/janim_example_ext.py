@@ -6,7 +6,6 @@ from pathlib import Path
 
 import jinja2
 from docutils.parsers.rst import Directive
-from janim.utils.file_ops import get_janim_dir
 
 
 class JAnimExampleDirective(Directive):
@@ -138,17 +137,23 @@ TEMPLATE = R'''
 
 
 @lru_cache(maxsize=1)
+def get_project_root() -> str:
+    path = Path(__file__).resolve().parents[3]
+    return str(path)
+
+
+@lru_cache(maxsize=1)
 def get_examples_of_test_paths() -> tuple[str, ...]:
-    janim_dir = get_janim_dir()
+    root = get_project_root()
     return (
-        os.path.join(janim_dir, '..', 'test', 'examples', 'examples_of_animations.py'),
-        os.path.join(janim_dir, '..', 'test', 'examples', 'examples_of_others.py'),
+        os.path.join(root, 'test', 'examples', 'examples_of_animations.py'),
+        os.path.join(root, 'test', 'examples', 'examples_of_others.py'),
     )
 
 
 @lru_cache(maxsize=1)
 def get_examples_path() -> str:
-    return os.path.join(get_janim_dir(), 'examples.py')
+    return os.path.join(get_project_root(), 'janim', 'examples.py')
 
 
 def get_content_from_extract_options(

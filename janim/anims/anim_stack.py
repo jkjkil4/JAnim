@@ -20,6 +20,7 @@ class AnimStack:
     """
     用于在 :class:`~.Timeline` 中记录作用于 :class:`~.Item` 上的 :class:`~.Animation`
     """
+
     def __init__(self, item: Item, time_aligner: TimeAligner):
         self.item = item
         self.time_aligner = time_aligner
@@ -113,8 +114,8 @@ class AnimStack:
         if anim._cover_previous_anims:
             if at_idx + 1 != end_idx:
                 # 删掉多余的区段
-                del self.times[at_idx + 1: end_idx]
-                del self.stacks[at_idx + 1: end_idx]
+                del self.times[at_idx + 1 : end_idx]
+                del self.stacks[at_idx + 1 : end_idx]
             stack = self.stacks[at_idx]
             stack.clear()
             stack.append(anim)
@@ -178,9 +179,11 @@ class AnimStack:
                             aligner = next(generator)
                         except StopIteration:
                             raise ApplyAlignerBrokenError(
-                                _('The GroupUpdater structure was broken by an overriding animation, '
-                                  'possibly caused by .anim or by an Updater '
-                                  'that ended earlier without passing become_at_end=False')
+                                _(
+                                    'The GroupUpdater structure was broken by an overriding animation, '
+                                    'possibly caused by .anim or by an Updater '
+                                    'that ended earlier without passing become_at_end=False'
+                                )
                             )
                         else:
                             computing[stack] = (generator, aligner)
@@ -203,7 +206,7 @@ class AnimStack:
                     iterates = [
                         (stack, generator)
                         for stack, (generator, _) in computing.items()
-                        if stack in stacks_found
+                        if stack in stacks_found  #
                     ]
 
                     drop: list[AnimStack] = []
@@ -223,7 +226,7 @@ class AnimStack:
                     computing = {
                         stack: tup
                         for stack, tup in computing.items()
-                        if stack not in drop
+                        if stack not in drop  #
                     }
 
         return self.cache_data if readonly else self.cache_data.store()

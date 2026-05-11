@@ -52,6 +52,7 @@ def get_gui_asset(file: str) -> str:
 
 def get_typst_temp_dir() -> str:
     from janim.utils.config import Config
+
     return guarantee_existence(os.path.join(Config.get.temp_dir, 'Typst'))
 
 
@@ -135,16 +136,16 @@ def open_file(file_path: str | Path) -> None:
     打开指定的文件
     """
     current_os = platform.system()
-    if current_os == "Windows":
+    if current_os == 'Windows':
         os.startfile(file_path)
     else:
         commands = []
-        if current_os == "Linux":
-            commands.append("xdg-open")
-        elif current_os.startswith("CYGWIN"):
-            commands.append("cygstart")
+        if current_os == 'Linux':
+            commands.append('xdg-open')
+        elif current_os.startswith('CYGWIN'):
+            commands.append('cygstart')
         else:  # Assume macOS
-            commands.append("open")
+            commands.append('open')
 
         commands.append(str(file_path))
 

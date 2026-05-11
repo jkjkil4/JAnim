@@ -11,13 +11,21 @@ from janim.anims.fading import FadeOut
 from janim.anims.movement import Homotopy
 from janim.anims.updater import DataUpdater, UpdaterParams
 from janim.components.rgbas import Cmpt_Rgbas
-from janim.constants import (C_LABEL_ANIM_ABSTRACT, C_LABEL_ANIM_INDICATION,
-                             GREY, MED_SMALL_BUFF, ORIGIN, RIGHT, TAU, UP,
-                             YELLOW)
+from janim.constants import (
+    C_LABEL_ANIM_ABSTRACT,
+    C_LABEL_ANIM_INDICATION,
+    GREY,
+    MED_SMALL_BUFF,
+    ORIGIN,
+    RIGHT,
+    TAU,
+    UP,
+    YELLOW,
+)
 from janim.items.geometry.arc import Circle, Dot
 from janim.items.geometry.line import Line
-from janim.items.item import Item
 from janim.items.group import Group
+from janim.items.item import Item
 from janim.items.points import Points
 from janim.items.shape_matchers import SurroundingRect
 from janim.items.vitem import VItem
@@ -47,7 +55,7 @@ class FocusOn(DataUpdater[Dot]):
         color: JAnimColor = GREY,
         alpha: float = 0.2,
         duration: float = 2,
-        **kwargs
+        **kwargs,
     ) -> None:
         is_item = isinstance(point_or_item, Item)
 
@@ -96,7 +104,7 @@ class Indicate(DataUpdater):
         color: JAnimColor = YELLOW,
         rate_func: RateFunc = there_and_back,
         root_only: bool = False,
-        **kwargs
+        **kwargs,
     ) -> None:
         box = item.points.self_box if root_only else item.points.box
         self.about_point = box.center
@@ -115,7 +123,7 @@ class Indicate(DataUpdater):
             rate_func=rate_func,
             become_at_end=False,
             root_only=root_only,
-            **kwargs
+            **kwargs,
         )
 
     def create_extra_data(self, data: Item) -> Points | None:
@@ -154,7 +162,7 @@ class CircleIndicate(DataUpdater[Circle]):
         scale: float = 1,
         buff: float = MED_SMALL_BUFF,
         circle_kwargs: dict = {},
-        **kwargs
+        **kwargs,
     ):
         start_kwargs = circle_kwargs
         if 'alpha' in start_kwargs:
@@ -173,12 +181,7 @@ class CircleIndicate(DataUpdater[Circle]):
                 c.points.scale(interpolate(scale, 1, p.alpha))
 
         super().__init__(
-            start,
-            updater,
-            rate_func=rate_func,
-            hide_at_end=True,
-            become_at_end=False,
-            **kwargs
+            start, updater, rate_func=rate_func, hide_at_end=True, become_at_end=False, **kwargs
         )
 
         self.timeline.track_item_and_descendants(item)
@@ -197,7 +200,7 @@ class ShowPassingFlash(ShowPartial):
         *,
         time_width: float = 0.1,
         auto_close_path: bool = False,
-        **kwargs
+        **kwargs,
     ):
         def bound_func(p: UpdaterParams) -> tuple[float, float]:
             upper = interpolate(0, 1 + time_width, p.alpha)
@@ -212,7 +215,7 @@ class ShowPassingFlash(ShowPartial):
             auto_close_path=auto_close_path,
             hide_at_end=True,
             become_at_end=False,
-            **kwargs
+            **kwargs,
         )
 
 
@@ -234,7 +237,7 @@ class ShowCreationThenDestruction(ShowPassingFlash):
         *,
         time_width: float = 2.0,
         duration: float = 1,
-        **kwargs
+        **kwargs,
     ):
         super().__init__(item, time_width=time_width, duration=duration, **kwargs)
 
@@ -257,13 +260,13 @@ class ShowCreationThenFadeOut(Succession):
         create_kwargs: dict = {},
         fadeout_kwargs: dict = {},
         collapse: bool = True,
-        **kwargs
+        **kwargs,
     ):
         super().__init__(
             Create(item, **create_kwargs),
             FadeOut(item, **fadeout_kwargs),
             collapse=collapse,
-            **kwargs
+            **kwargs,
         )
 
 
@@ -281,7 +284,7 @@ class AnimationOnSurroundingRect(AnimGroup):
         rect_anim: type[Animation],
         surrounding_rect_config: dict = {},
         collapse: bool = True,
-        **kwargs
+        **kwargs,
     ):
         self.item = item
         self.surrounding_rect_config = surrounding_rect_config
@@ -297,10 +300,7 @@ class AnimationOnSurroundingRect(AnimGroup):
         self.timeline.track_item_and_descendants(item)
 
     def create_rect(self) -> SurroundingRect:
-        rect = SurroundingRect(
-            self.item,
-            **self.surrounding_rect_config
-        )
+        rect = SurroundingRect(self.item, **self.surrounding_rect_config)
         rect.points.move_to(rect.points.box.center - self.item.points.box.center)
         return rect
 
@@ -361,10 +361,12 @@ class ShowCreationThenFadeAround(AnimationOnSurroundingRect):
     label_color = C_LABEL_ANIM_INDICATION
 
     def __init__(self, item: Points, **kwargs) -> None:
-        super().__init__(item,
-                         ShowCreationThenFadeOut,
-                         create_kwargs=dict(auto_close_path=False),
-                         **kwargs)
+        super().__init__(
+            item,
+            ShowCreationThenFadeOut,
+            create_kwargs=dict(auto_close_path=False),
+            **kwargs,
+        )
 
 
 def flash_rate_function(t: float, smooth_ratio=0.6) -> float:
@@ -393,7 +395,7 @@ class Flash(ShowCreationThenDestruction):
         flash_radius: float = 0.3,
         line_stroke_radius: float = 0.015,
         rate_func=flash_rate_function,
-        **kwargs
+        **kwargs,
     ):
         self.point_or_item = point_or_item
         self.color = color
@@ -403,11 +405,7 @@ class Flash(ShowCreationThenDestruction):
         self.line_stroke_radius = line_stroke_radius
 
         self.lines = self.create_lines()
-        super().__init__(
-            self.lines,
-            rate_func=rate_func,
-            **kwargs
-        )
+        super().__init__(self.lines, rate_func=rate_func, **kwargs)
 
         is_item = isinstance(point_or_item, Item)
 
@@ -430,9 +428,11 @@ class Flash(ShowCreationThenDestruction):
             line.points.shift((self.flash_radius - self.line_length) * RIGHT)
             line.points.rotate(angle, about_point=ORIGIN)
             lines.add(line)
+        # fmt: off
         lines(VItem) \
             .stroke.set(self.color) \
             .r.radius.set(self.line_stroke_radius)
+        # fmt: on
         return lines
 
 
@@ -443,6 +443,7 @@ class ApplyWave(Homotopy):
         :media: _static/videos/ApplyWaveExample.mp4
         :url: https://janim.readthedocs.io/zh-cn/latest/janim/anims/indication.html#applywaveexample
     """
+
     label_color = C_LABEL_ANIM_INDICATION
 
     def __init__(
@@ -453,7 +454,7 @@ class ApplyWave(Homotopy):
         *,
         duration: float = 1.0,
         root_only: bool = False,
-        **kwargs
+        **kwargs,
     ):
         if root_only:
             box = item(Points).points.self_box
@@ -470,12 +471,7 @@ class ApplyWave(Homotopy):
             nudge = there_and_back(t**power)
             return np.array([x, y, z]) + nudge * vect
 
-        super().__init__(
-            item,
-            homotopy,
-            duration=duration,
-            **kwargs
-        )
+        super().__init__(item, homotopy, duration=duration, **kwargs)
 
 
 class WiggleOutThenIn(DataUpdater):
@@ -485,6 +481,7 @@ class WiggleOutThenIn(DataUpdater):
         :media: _static/videos/WiggleOutThenInExample.mp4
         :url: https://janim.readthedocs.io/zh-cn/latest/janim/anims/indication.html#wiggleouttheninexample
     """
+
     label_color = C_LABEL_ANIM_INDICATION
 
     def __init__(
@@ -498,7 +495,7 @@ class WiggleOutThenIn(DataUpdater):
         rotate_about_point: Vect | None = None,
         duration: float = 2,
         root_only: bool = False,
-        **kwargs
+        **kwargs,
     ):
         if root_only:
             box = item(Points).points.self_box
@@ -509,22 +506,16 @@ class WiggleOutThenIn(DataUpdater):
         self.n_wiggles = n_wiggles
         self.scale_about_point = scale_about_point or box.center
         self.rotate_about_point = rotate_about_point or box.center
-        super().__init__(
-            item,
-            self.updater,
-            duration=duration,
-            root_only=root_only,
-            **kwargs
-        )
+        super().__init__(item, self.updater, duration=duration, root_only=root_only, **kwargs)
 
     def updater(self, data: Item, p: UpdaterParams) -> None:
         if not isinstance(data, Points):
             return
         data.points.scale(
             interpolate(1, self.scale, there_and_back(p.alpha)),
-            about_point=self.scale_about_point
+            about_point=self.scale_about_point,
         )
         data.points.rotate(
             wiggle(p.alpha, self.n_wiggles) * self.angle,
-            about_point=self.rotate_about_point
+            about_point=self.rotate_about_point,
         )

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-28 01:54+0800\n"
+"POT-Creation-Date: 2026-05-05 02:22+0800\n"
 "PO-Revision-Date: 2025-12-28 02:08+0800\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -18,12 +18,12 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 "X-Generator: Poedit 3.8\n"
 
-#: janim/gui/handlers/camera.py:35
+#: janim/gui/handlers/camera.py:40
 #, python-brace-format
 msgid "The {type} item from \"{script}\" is not a Camera"
 msgstr "由 \"{script}\" 得到的 {type} 物件不是一个 Camera"
 
-#: janim/gui/handlers/camera.py:61
+#: janim/gui/handlers/camera.py:69
 msgid ""
 "Drag:& Rotate camera\n"
 "Ctrl + Drag:& Rotate camera in place\n"

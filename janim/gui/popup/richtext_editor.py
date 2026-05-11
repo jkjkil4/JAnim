@@ -1,4 +1,3 @@
-
 import re
 
 from bs4 import BeautifulSoup, Tag
@@ -24,9 +23,9 @@ class RichTextEditor(QWidget):
     def setup_ui(self):
         self.check_box_wordwrap = QCheckBox(_('Word wrap'))
         self.check_box_wordwrap.stateChanged.connect(
-            lambda state: self.editor.setLineWrapMode(RichTextEdit.LineWrapMode.WidgetWidth
-                                                      if state
-                                                      else RichTextEdit.LineWrapMode.NoWrap)
+            lambda state: self.editor.setLineWrapMode(
+                RichTextEdit.LineWrapMode.WidgetWidth if state else RichTextEdit.LineWrapMode.NoWrap
+            )
         )
         self.check_box_wordwrap.setChecked(False)
 
@@ -105,7 +104,7 @@ class RichTextEdit(TextEdit):
             style = RichTextEdit.parse_style(span.get('style', ''))
 
         return (
-            f'<fc {RichTextEdit.parse_color(style['color'])}>{RichTextEdit.parse_text(span.text)}</fc>'
+            f'<fc {RichTextEdit.parse_color(style["color"])}>{RichTextEdit.parse_text(span.text)}</fc>'
             if style is not None and 'color' in style
             else RichTextEdit.parse_text(span.text)
         )
@@ -117,17 +116,11 @@ class RichTextEdit(TextEdit):
 
         if color.startswith('rgb(') and color.endswith(')'):
             rgb = color.lstrip('rgb(').rstrip(')').split(',')
-            return ' '.join([
-                str(round(float(v) / 255, 2))
-                for v in rgb
-            ])
+            return ' '.join([str(round(float(v) / 255, 2)) for v in rgb])
 
         if color.startswith('rgba(') and color.endswith(')'):
             rgba = color.lstrip('rgba(').rstrip(')').split(',')
-            return ' '.join([
-                str(round(float(v) / 255, 2))
-                for v in rgba[:3]
-            ]) + f' {rgba[3]}'
+            return ' '.join([str(round(float(v) / 255, 2)) for v in rgba[:3]]) + f' {rgba[3]}'
 
         return color
 
@@ -160,7 +153,7 @@ class RichTextHighlighter(QSyntaxHighlighter):
             start, end = match.span()
             groups = match.groups()
 
-            if groups[0] is None:   # <<
+            if groups[0] is None:  # <<
                 self.setFormat(start, 1, self.escape_color1)
                 self.setFormat(start + 1, 1, self.escape_color2)
             else:

@@ -37,7 +37,9 @@ def setup_output_actions(viewer: AnimViewer, menu: QMenu) -> None:
     connect_to_output_slots(viewer, action_capture.triggered, action_export.triggered)
 
 
-def connect_to_output_slots(viewer: AnimViewer, capture_signal: SignalInstance, export_signal: SignalInstance) -> None:
+def connect_to_output_slots(
+    viewer: AnimViewer, capture_signal: SignalInstance, export_signal: SignalInstance
+) -> None:
     capture_signal.connect(lambda: on_capture_clicked(viewer))
     export_signal.connect(lambda: on_export_clicked(viewer))
 
@@ -56,7 +58,9 @@ def on_capture_clicked(self: AnimViewer) -> None:
     if israw:
         t = self.timeline_view.progress_to_time(self.timeline_view.progress())
         try:
-            with change_export_size(dialog.pixel_size()) if dialog.has_size_set() else nullcontext():
+            with (
+                change_export_size(dialog.pixel_size()) if dialog.has_size_set() else nullcontext()
+            ):
                 # 这里每次截图都重新构建一下，因为如果复用原来的对象会使得和 GUI 的上下文冲突
                 built = self.built.timeline.__class__().build()
                 img = built.capture(t, transparent=dialog.transparent(), ctx=self.glw.ctx)
@@ -66,8 +70,8 @@ def on_capture_clicked(self: AnimViewer) -> None:
                 traceback.print_exc()
             return  # 出错结束
     else:
-        QApplication.processEvents()    # 强制处理完挂起的事件，确保画面停稳
-        self.glw.makeCurrent()          # 确保当前 GL 上下文是激活的
+        QApplication.processEvents()  # 强制处理完挂起的事件，确保画面停稳
+        self.glw.makeCurrent()  # 确保当前 GL 上下文是激活的
         img = self.glw.grabFramebuffer()
         img.convertToFormat(QImage.Format.Format_RGB888)
 
@@ -80,9 +84,11 @@ def on_capture_clicked(self: AnimViewer) -> None:
         img.save(file_path)
 
         log.info(_('Frame t={t:.2f} saved to "{file_path}"').format(t=t, file_path=file_path))
-        QMessageBox.information(self,
-                                _('Note'),
-                                _('Captured to {file_path}').format(file_path=file_path))
+        QMessageBox.information(
+            self,
+            _('Note'),
+            _('Captured to {file_path}').format(file_path=file_path),
+        )
         if dialog.open():
             open_file(file_path)
     else:
@@ -119,11 +125,13 @@ def on_export_clicked(self: AnimViewer) -> None:
     cli_config.fps = dialog.fps()
     using_inout_point = dialog.using_inout_point()
     hwaccel = dialog.hwaccel()
-    video_with_audio = (self.built.timeline.has_audio_for_all() and not file_path.endswith('gif'))
+    video_with_audio = self.built.timeline.has_audio_for_all() and not file_path.endswith('gif')
 
-    QMessageBox.information(self,
-                            _('Note'),
-                            _('Output will start shortly. Please check the console for information.'))
+    QMessageBox.information(
+        self,
+        _('Note'),
+        _('Output will start shortly. Please check the console for information.'),
+    )
     self.hide()
     QApplication.processEvents()
     ret = False
@@ -144,10 +152,12 @@ def on_export_clicked(self: AnimViewer) -> None:
                 audio_writer = AudioWriter(built)
                 audio_writer.write_all(audio_file_path, _keep_temp=True)
 
-                merge_video_and_audio(built.cfg.ffmpeg_bin,
-                                      video_writer.temp_file_path,
-                                      audio_writer.temp_file_path,
-                                      video_writer.final_file_path)
+                merge_video_and_audio(
+                    built.cfg.ffmpeg_bin,
+                    video_writer.temp_file_path,
+                    audio_writer.temp_file_path,
+                    video_writer.final_file_path,
+                )
             else:
                 video_writer = VideoWriter(built, ctx=self.glw.ctx)
                 video_writer.write_all(*args, hwaccel=hwaccel)
@@ -162,9 +172,11 @@ def on_export_clicked(self: AnimViewer) -> None:
 
     self.show()
     if ret:
-        QMessageBox.information(self,
-                                _('Note'),
-                                _('Output to {file_path} has been completed.').format(file_path=file_path))
+        QMessageBox.information(
+            self,
+            _('Note'),
+            _('Output to {file_path} has been completed.').format(file_path=file_path),
+        )
         if dialog.open():
             open_file(file_path)
 

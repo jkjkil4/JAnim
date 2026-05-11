@@ -27,19 +27,25 @@ class ImageItemRenderer(Renderer):
         self.vbo_points = self.ctx.buffer(reserve=4 * 3 * 4)
         self.vbo_color = self.ctx.buffer(reserve=4 * 4 * 4)
         self.vbo_texcoords = self.ctx.buffer(
-            data=np.array([
-                [0.0, 0.0],     # 左上
-                [0.0, 1.0],     # 左下
-                [1.0, 0.0],     # 右上
-                [1.0, 1.0]      # 右下
-            ], dtype=np.float32).tobytes()
+            data=np.array(
+                [
+                    [0.0, 0.0],  # 左上
+                    [0.0, 1.0],  # 左下
+                    [1.0, 0.0],  # 右上
+                    [1.0, 1.0],  # 右下
+                ],
+                dtype=np.float32,
+            ).tobytes()
         )
 
-        self.vao = self.ctx.vertex_array(self.prog, [
-            (self.vbo_points, '3f', 'in_point'),
-            (self.vbo_color, '4f', 'in_color'),
-            (self.vbo_texcoords, '2f', 'in_texcoord')
-        ])
+        self.vao = self.ctx.vertex_array(
+            self.prog,
+            [
+                (self.vbo_points, '3f', 'in_point'),
+                (self.vbo_color, '4f', 'in_color'),
+                (self.vbo_texcoords, '2f', 'in_texcoord'),
+            ],
+        )
 
         self.prev_points = None
         self.prev_color = None

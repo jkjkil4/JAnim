@@ -1,4 +1,3 @@
-
 import time
 
 import numpy as np
@@ -6,14 +5,12 @@ from PySide6.QtCore import QPointF, Qt
 from PySide6.QtGui import QPainter, QPainterPath, QPen
 from PySide6.QtWidgets import QHBoxLayout, QLabel, QSlider
 
-from janim.gui.draw.base import (ACTIVE_COLOR, INACTIVE_COLOR, DrawOnce,
-                                 point_to_str)
+from janim.gui.draw.base import ACTIVE_COLOR, INACTIVE_COLOR, DrawOnce, point_to_str
 from janim.gui.draw.filter import OneEuroVec2
 from janim.gui.utils.text_edit import TextEdit
 from janim.locale import get_translator
 from janim.utils.bezier import smooth_quadratic_path
-from janim.utils.iterables import (resize_preserving_head_and_tail,
-                                   resize_with_interpolation)
+from janim.utils.iterables import resize_preserving_head_and_tail, resize_with_interpolation
 
 _ = get_translator('janim.gui.draw.vitem')
 
@@ -113,10 +110,14 @@ class DrawVItem(DrawOnce):
         self.viewer.overlay.update()
 
     def update_code(self) -> None:
-        points = '\n'.join([
-            '    ' + ', '.join([point_to_str(pos) for pos in self.array[i: i + POS_PER_LINE]]) + ','
-            for i in range(0, len(self.array), POS_PER_LINE)
-        ])
+        points = '\n'.join(
+            [
+                '    '
+                + ', '.join([point_to_str(pos) for pos in self.array[i : i + POS_PER_LINE]])
+                + ','
+                for i in range(0, len(self.array), POS_PER_LINE)
+            ]
+        )
         text = f'VItem(\n{points}\n)'
         self.setLayout(self.mainlayout)
         self.code.setPlainText(text)

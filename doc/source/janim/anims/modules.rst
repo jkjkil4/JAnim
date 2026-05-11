@@ -6,8 +6,8 @@ anims
 .. toctree::
    :maxdepth: 1
 
-   animation
    anim_stack
+   animation
    composition
    creation
    display

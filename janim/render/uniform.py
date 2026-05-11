@@ -1,4 +1,3 @@
-
 from contextlib import contextmanager
 from contextvars import ContextVar
 
@@ -32,7 +31,7 @@ def uniforms(ctx: mgl.Context, **kwargs):
     new_value = old_value.copy()
     new_value.update(kwargs)
     diff = {
-        key: old_value[key]
+        key: old_value[key]  #
         for key in new_value.keys() & old_value.keys()
     }
 

@@ -83,6 +83,7 @@ class Transform(Animation):
         :media: _static/videos/TransformFadeExample.mp4
         :url: https://janim.readthedocs.io/zh-cn/latest/janim/anims/transform.html#transformfadeexample
     """
+
     label_color = C_LABEL_ANIM_STAY
 
     def __init__(
@@ -93,16 +94,16 @@ class Transform(Animation):
         path_arc: float = 0,
         path_arc_axis: Vect = OUT,
         path_func: PathFunc | None = None,
-
+        #
         flatten: bool = False,
         root_only: bool = False,
-
+        #
         hide_src: bool = True,
         show_target: bool = True,
-
+        #
         src_fade: float = 0,
         target_fade: float = 0,
-        **kwargs
+        **kwargs,
     ):
         super().__init__(**kwargs)
         self.src_item = src_item
@@ -132,14 +133,14 @@ class Transform(Animation):
     def _time_fixed(self) -> None:
         self.align_data()
 
-        self.additional_calls = [
+        self.render_group = [
             (aligned.union, partial(self.render, aligned, aligned.union.renderer_cls().render))
             for aligned in self.aligned.values()
         ]
-        self.timeline.add_additional_render_calls_callback(
+        self.timeline.add_extra_render_group(
             self.t_range,
-            lambda: self.additional_calls,
-            [self.src_item, self.target_item]
+            lambda: self.render_group,
+            [self.src_item, self.target_item],
         )
 
         # 在动画开始时自动隐藏源对象，在动画结束时自动显示目标对象
@@ -148,7 +149,9 @@ class Transform(Animation):
             self.timeline.schedule(self.t_range.at, self.src_item.hide, root_only=self.root_only)
 
         if self.show_target:
-            self.timeline.schedule(self.t_range.end, self.target_item.show, root_only=self.root_only)
+            self.timeline.schedule(
+                self.t_range.end, self.target_item.show, root_only=self.root_only
+            )
 
         # 对 src_fade 和 target_fade 的处理
         if not self.hide_src and self.src_fade != 0:
@@ -189,16 +192,21 @@ class Transform(Animation):
                     spec1 = f'<"{item1.__class__.__name__}" {id(item1):X}>'
                     spec2 = f'<"{item2.__class__.__name__}" {id(item2):X}>'
                     log.warning(
-                        _('The child items of {spec1} and {spec2} cannot be aligned '
-                          'because their child items must either both be empty or both exist. '
-                          'However, their child item counts are {len1} and {len2}, respectively.')
-                        .format(spec1=spec1,
-                                spec2=spec2,
-                                len1=len(data1.get_children()),
-                                len2=len(data2.get_children()))
+                        _(
+                            'The child items of {spec1} and {spec2} cannot be aligned '
+                            'because their child items must either both be empty or both exist. '
+                            'However, their child item counts are {len1} and {len2}, respectively.'
+                        ).format(
+                            spec1=spec1,
+                            spec2=spec2,
+                            len1=len(data1.get_children()),
+                            len2=len(data2.get_children()),
+                        )
                     )
                 else:
-                    for child1, child2 in zip(aligned.data1._stored_children, aligned.data2._stored_children):
+                    for child1, child2 in zip(
+                        aligned.data1._stored_children, aligned.data2._stored_children
+                    ):
                         align(child1, child2, True)
 
         if not self.flatten:
@@ -254,8 +262,10 @@ class MoveToTarget(Transform):
     def __init__(self, item: Item, **kwargs):
         if item.target is None:
             raise TargetNotFoundError(
-                _('You must use `.generate_target` to generate the target item '
-                  'before using `MoveToTarget` to create animation')
+                _(
+                    'You must use `.generate_target` to generate the target item '
+                    'before using `MoveToTarget` to create animation'
+                )
             )
         super().__init__(
             item,
@@ -263,14 +273,16 @@ class MoveToTarget(Transform):
             **kwargs,
             hide_src=True,
             show_target=False,
-            root_only=False
+            root_only=False,
         )
 
     def _time_fixed(self):
         super()._time_fixed()
 
         def at_end():
-            self.src_item.become(self.src_item.target, auto_visible=False)    # 因为马上就是 show，所以传入了 auto_visible=False
+            # 因为马上就是 show，所以传入了 auto_visible=False
+            self.src_item.become(self.src_item.target, auto_visible=False)
+
             self.timeline.detect_changes(self.src_item.walk_self_and_descendants())
             self.src_item.show()
 
@@ -377,7 +389,7 @@ class TransformInSegments(AnimGroup):
         target_segments: Iterable[Iterable[int]] | Iterable[int] | types.EllipsisType,
         *,
         trs_kwargs: dict = {},
-        **kwargs
+        **kwargs,
     ):
         anims = [
             Transform(src[l1:r1], target[l2:r2], **trs_kwargs)
@@ -392,11 +404,13 @@ class TransformInSegments(AnimGroup):
         return zip(
             TransformInSegments.parse_segment(src_segs),
             TransformInSegments.parse_segment(target_segs),
-            strict=True
+            strict=True,
         )
 
     @staticmethod
-    def parse_segment(segs: Iterable[Iterable[int]] | Iterable[int]) -> Generator[tuple[int, int], None, None]:
+    def parse_segment(
+        segs: Iterable[Iterable[int]] | Iterable[int],
+    ) -> Generator[tuple[int, int], None, None]:
         # ``[[a, b, c], [d, e]]`` -> ``[[a, b], [b, c], [d, e]]``
         assert len(segs) > 0
         if not isinstance(segs[0], Iterable):
@@ -418,7 +432,8 @@ class MethodTransform(Transform):
         :media: _static/videos/MethodTransformExample.mp4
         :url: https://janim.readthedocs.io/zh-cn/latest/janim/anims/transform.html#methodtransformexample
     """
-    label_color = (255, 189, 129)    # C_LABEL_ANIM_STAY 的变体
+
+    label_color = (255, 189, 129)  # C_LABEL_ANIM_STAY 的变体
 
     class _ActionType(Enum):
         GetAttr = 0
@@ -430,13 +445,15 @@ class MethodTransform(Transform):
         obj: Item | Item._AsTypeWrapper,
         show_at_begin: bool = True,
         hide_at_end: bool = False,
-        **kwargs
+        **kwargs,
     ):
         super().__init__(item, item, **kwargs)
         self.obj = obj
         self.show_at_begin = show_at_begin
         self.hide_at_end = hide_at_end
-        self.delayed_actions: list[tuple[MethodTransform._ActionType, str | tuple[tuple, dict]]] = []
+        self.delayed_actions: list[
+            tuple[MethodTransform._ActionType, str | tuple[tuple, dict]]
+        ] = []
 
     def __getattr__(self, name: str):
         self.delayed_actions.append((MethodTransform._ActionType.GetAttr, name))
@@ -451,7 +468,7 @@ class MethodTransform(Transform):
         for type, value in self.delayed_actions:
             if type is MethodTransform._ActionType.GetAttr:
                 obj = getattr(obj, value)
-            else:   # Call
+            else:  # Call
                 args, kwargs = value
                 obj = obj(*args, **kwargs)
 
@@ -465,12 +482,14 @@ class MethodTransform(Transform):
         for item in self.src_item.walk_self_and_descendants():
             aligned = self.aligned[(item, item)]
 
-            sub_updater = _MethodTransform(self,
-                                           item,
-                                           self.path_func,
-                                           aligned,
-                                           show_at_begin=self.show_at_begin,
-                                           hide_at_end=self.hide_at_end)
+            sub_updater = _MethodTransform(
+                self,
+                item,
+                self.path_func,
+                aligned,
+                show_at_begin=self.show_at_begin,
+                hide_at_end=self.hide_at_end,
+            )
             sub_updater.transfer_params(self)
             sub_updater.finalize()
 
@@ -479,6 +498,7 @@ class MethodTransformArgsBuilder:
     """
     使得 ``.anim`` 和 ``.anim(...)`` 后可以进行同样的操作
     """
+
     def __init__(self, item: Item):
         self.item = item
         self.obj = item._astype_wrapper or item
@@ -497,7 +517,7 @@ class _MethodTransform(ItemAnimation):
         item: Item,
         path_func: PathFunc,
         aligned: AlignedData[Item],
-        **kwargs
+        **kwargs,
     ):
         super().__init__(item, **kwargs)
         self._generate_by = generate_by
@@ -510,7 +530,7 @@ class _MethodTransform(ItemAnimation):
             self.aligned.data1,
             self.aligned.data2,
             self.get_alpha_on_global_t(p.global_t),
-            path_func=self.path_func
+            path_func=self.path_func,
         )
         return self.aligned.union
 
@@ -526,17 +546,18 @@ class FadeTransform(AnimGroup):
         *,
         hide_src: bool = True,
         show_target: bool = True,
-
+        #
         path_arc: float = 0,
         path_arc_axis: Vect = OUT,
         path_func: PathFunc | None = None,
-
+        #
         src_root_only: bool = False,
         target_root_only: bool = False,
-
+        #
         collapse: bool = True,
-        **kwargs
+        **kwargs,
     ):
+        # fmt: off
         src_copy = src.copy(root_only=src_root_only)
         src_copy.set(alpha=0)
         src_copy(Points) \
@@ -546,28 +567,31 @@ class FadeTransform(AnimGroup):
         target_copy.set(alpha=0)
         target_copy(Points) \
             .points.replace(src, stretch=True, root_only=target_root_only, item_root_only=src_root_only)
+        # fmt: on
 
         super().__init__(
             Transform(
-                src, src_copy,
+                src,
+                src_copy,
                 hide_src=hide_src,
                 show_target=False,
                 path_arc=path_arc,
                 path_arc_axis=path_arc_axis,
                 path_func=path_func,
-                root_only=src_root_only
+                root_only=src_root_only,
             ),
             Transform(
-                target_copy, target,
+                target_copy,
+                target,
                 hide_src=False,
                 show_target=show_target,
                 path_arc=path_arc,
                 path_arc_axis=path_arc_axis,
                 path_func=path_func,
-                root_only=target_root_only
+                root_only=target_root_only,
             ),
             collapse=collapse,
-            **kwargs
+            **kwargs,
         )
 
 
@@ -577,8 +601,21 @@ class MatchingParams:
     target_center: np.ndarray
 
 
-type MatchHandler = Callable[[VItem, VItem, MatchingParams, ], ItemAnimation]
-type MismatchHandler = Callable[[VItem, MatchingParams, ], ItemAnimation]
+type MatchHandler = Callable[
+    [
+        VItem,
+        VItem,
+        MatchingParams,
+    ],
+    ItemAnimation,
+]
+type MismatchHandler = Callable[
+    [
+        VItem,
+        MatchingParams,
+    ],
+    ItemAnimation,
+]
 
 
 class TransformMatchingShapes(AnimGroup):
@@ -605,15 +642,16 @@ class TransformMatchingShapes(AnimGroup):
         match: MatchHandler = lambda item1, item2, p, **kwargs: Transform(item1, item2, **kwargs),
         mismatch: tuple[MismatchHandler, MismatchHandler] = (
             lambda item, p, **kwargs: FadeOutToPoint(item, p.target_center, **kwargs),
-            lambda item, p, **kwargs: FadeInFromPoint(item, p.src_center, **kwargs)
+            lambda item, p, **kwargs: FadeInFromPoint(item, p.src_center, **kwargs),
         ),
         duration: float = 2,
         lag_ratio: float = 0,
         collapse: bool = True,
-        **kwargs
+        **kwargs,
     ):
         src_mismatch_method, target_mismatch_method = mismatch
-        kwargs['root_only'] = True  # 内层动画一定 root_only，否则处理带有子物件的非空图形会导致重复变换
+        # 内层动画一定 root_only，否则处理带有子物件的非空图形会导致重复变换
+        kwargs['root_only'] = True
 
         def self_and_descendant_with_points(item: Item) -> list[VItem]:
             return [
@@ -636,16 +674,8 @@ class TransformMatchingShapes(AnimGroup):
             src_matched.append(piece1)
             target_matched.append(piece2)
 
-        src_mismatched = [
-            piece
-            for piece in src_pieces
-            if piece not in src_matched
-        ]
-        target_mismatched = [
-            piece
-            for piece in target_pieces
-            if piece not in target_matched
-        ]
+        src_mismatched = [piece for piece in src_pieces if piece not in src_matched]
+        target_mismatched = [piece for piece in target_pieces if piece not in target_matched]
 
         src_center = src(Points).points.box.center
         target_center = target(Points).points.box.center
@@ -656,17 +686,11 @@ class TransformMatchingShapes(AnimGroup):
                 match(piece1, piece2, params, **kwargs)
                 for piece1, piece2 in zip(src_matched, target_matched)
             ],
-            *[
-                src_mismatch_method(piece, params, **kwargs)
-                for piece in src_mismatched
-            ],
-            *[
-                target_mismatch_method(piece, params, **kwargs)
-                for piece in target_mismatched
-            ],
+            *[src_mismatch_method(piece, params, **kwargs) for piece in src_mismatched],
+            *[target_mismatch_method(piece, params, **kwargs) for piece in target_mismatched],
             duration=duration,
             lag_ratio=lag_ratio,
-            collapse=collapse
+            collapse=collapse,
         )
 
 
@@ -701,10 +725,11 @@ class TransformMatchingDiff(AnimGroup):
         duration: float = 2,
         lag_ratio: float = 0,
         collapse: bool = True,
-        **kwargs
+        **kwargs,
     ):
         src_mismatch_method, target_mismatch_method = mismatch
-        kwargs['root_only'] = True  # 内层动画一定 root_only，否则处理带有子物件的非空图形会导致重复变换
+        # 内层动画一定 root_only，否则处理带有子物件的非空图形会导致重复变换
+        kwargs['root_only'] = True
 
         src_center = src(Points).points.box.center
         target_center = target(Points).points.box.center
@@ -726,8 +751,7 @@ class TransformMatchingDiff(AnimGroup):
 
                 case 'delete':
                     animations += [
-                        src_mismatch_method(wrapper.item, params, **kwargs)
-                        for wrapper in a[i1:i2]
+                        src_mismatch_method(wrapper.item, params, **kwargs) for wrapper in a[i1:i2]
                     ]
 
                 case 'insert':
@@ -737,18 +761,16 @@ class TransformMatchingDiff(AnimGroup):
                     ]
 
                 case 'replace':
-                    src_corners = np.vstack([
-                        wrapper.item.points.self_box.get_corners()
-                        for wrapper in a[i1:i2]
-                    ])
-                    target_corners = np.vstack([
-                        wrapper.item.points.self_box.get_corners()
-                        for wrapper in b[j1:j2]
-                    ])
+                    src_corners = np.vstack(
+                        [wrapper.item.points.self_box.get_corners() for wrapper in a[i1:i2]]
+                    )
+                    target_corners = np.vstack(
+                        [wrapper.item.points.self_box.get_corners() for wrapper in b[j1:j2]]
+                    )
 
                     replace_params = MatchingParams(
                         Cmpt_Points.BoundingBox(src_corners).center,
-                        Cmpt_Points.BoundingBox(target_corners).center
+                        Cmpt_Points.BoundingBox(target_corners).center,
                     )
 
                     animations += [
@@ -760,18 +782,11 @@ class TransformMatchingDiff(AnimGroup):
                         for wrapper in b[j1:j2]
                     ]
 
-        super().__init__(
-            *animations,
-            duration=duration,
-            lag_ratio=lag_ratio,
-            collapse=collapse
-        )
+        super().__init__(*animations, duration=duration, lag_ratio=lag_ratio, collapse=collapse)
 
     @classmethod
     def get_match_sequences(
-        cls,
-        src: Item,
-        target: Item
+        cls, src: Item, target: Item
     ) -> tuple[list[_MatchWrapper], list[_MatchWrapper]]:
 
         def self_and_descendant_with_points(item: Item) -> list[VItem]:
@@ -792,7 +807,9 @@ class TransformMatchingDiff(AnimGroup):
         return wrapper_cls.from_iterable(src_pieces), wrapper_cls.from_iterable(target_pieces)
 
     @staticmethod
-    def can_use_char_wrapper(src: Item, target: Item, src_pieces: list[VItem], target_pieces: list[VItem]) -> bool:
+    def can_use_char_wrapper(
+        src: Item, target: Item, src_pieces: list[VItem], target_pieces: list[VItem]
+    ) -> bool:
         if not isinstance(src, (Text, TextLine, TextChar)):
             return False
         if not isinstance(target, (Text, TextLine, TextChar)):

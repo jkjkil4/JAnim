@@ -21,29 +21,17 @@ msgstr ""
 #: janim/items/frame_effect.py:102
 #, python-brace-format
 msgid ""
-"Calling {cls}.add is unusual and may not work as expected. If you want to "
-"apply additional items, use `apply` instead."
-msgstr ""
-"调用 {cls}.add 是不寻常的，可能不会按预期工作。如果你想应用额外的物件，请使"
-"用 `apply` 代替"
+"Calling {cls}.add is unusual and may not work as expected. If you want to apply additional items, use `apply` instead."
+msgstr "调用 {cls}.add 是不寻常的，可能不会按预期工作。如果你想应用额外的物件，请使用 `apply` 代替"
 
 #: janim/items/frame_effect.py:119
 #, python-brace-format
 msgid ""
-"Calling {cls}.remove is unusual and may not work as expected. If you want to "
-"discard applied items, use `discard` instead."
-msgstr ""
-"调用 {cls}.remove 是不寻常的，可能不会按预期工作。如果你想撤销已应用的项，请"
-"使用 `discard` 代替"
+"Calling {cls}.remove is unusual and may not work as expected. If you want to discard applied items, use `discard` instead."
+msgstr "调用 {cls}.remove 是不寻常的，可能不会按预期工作。如果你想撤销已应用的项，请使用 `discard` 代替"
 
-#~ msgid ""
-#~ "An additional module is required to use `FrameEffect`, but it is not "
-#~ "installed"
+#~ msgid "An additional module is required to use `FrameEffect`, but it is not installed"
 #~ msgstr "需要额外的模块才能使用 `FrameEffect`，但是未安装"
 
-#~ msgid ""
-#~ "You can install it using \"pip install PyOpenGL\" and make sure you "
-#~ "install it in the correct Python version"
-#~ msgstr ""
-#~ "你可以使用 “pip install PyOpenGL” 进行安装，并确保你安装在了正确的 Python "
-#~ "版本中"
+#~ msgid "You can install it using \"pip install PyOpenGL\" and make sure you install it in the correct Python version"
+#~ msgstr "你可以使用 “pip install PyOpenGL” 进行安装，并确保你安装在了正确的 Python 版本中"
