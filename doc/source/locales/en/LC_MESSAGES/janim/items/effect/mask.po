@@ -1,0 +1,84 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2023, jkjkil4
+# This file is distributed under the same license as the JAnim package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: JAnim \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 1980-01-01 00:00+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: en\n"
+"Language-Team: en <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.17.0\n"
+
+#: ../../source/janim/items/effect/mask.rst:2
+msgid "mask"
+msgstr ""
+
+#: janim.items.effect.mask.ShapeMask:1 of
+msgid "以 ``shape`` 为轮廓做一个蒙板效果"
+msgstr ""
+
+#: janim.items.effect.mask.ShapeMask:3 of
+msgid "对于传入的物件，只会显示形状内部的部分"
+msgstr ""
+
+#: ../../source/janim/items/effect/mask.rst
+msgid "参数"
+msgstr ""
+
+#: janim.items.effect.mask.ShapeMask:5 of
+msgid ""
+"蒙板图形，若带有后代物件，则将若干后代物件图形作 XOR  若要使用后代物件的并，可参"
+"考 :meth:`~.boolean_ops.Union.from_group`，例如  .. code-block:: python      ShapeMask(..., "
+"shape=boolean_ops.Union.from_group(shape))"
+msgstr ""
+
+#: janim.items.effect.mask.ShapeMask:5 of
+msgid "蒙板图形，若带有后代物件，则将若干后代物件图形作 XOR"
+msgstr ""
+
+#: janim.items.effect.mask.ShapeMask:7 of
+msgid "若要使用后代物件的并，可参考 :meth:`~.boolean_ops.Union.from_group`，例如"
+msgstr ""
+
+#: janim.items.effect.mask.ShapeMask:9 of
+msgid "ShapeMask(..., shape=boolean_ops.Union.from_group(shape))"
+msgstr ""
+
+#: janim.items.effect.mask.ShapeMask:13 of
+msgid "蒙板整体透明度，范围 ``0.0 ~ 1.0``"
+msgstr ""
+
+#: janim.items.effect.mask.ShapeMask:14 of
+msgid "边缘羽化大小，值越大越模糊；数值上体现为羽化部分的两侧的距离"
+msgstr ""
+
+#: janim.items.effect.mask.ShapeMask:15 of
+msgid "反转蒙板， ``0.0`` 为正常， ``1.0`` 为完全反转"
+msgstr ""
+
+#: janim.items.effect.mask.ShapeMask:17 of
+msgid ""
+"text = Text('Hello').show()\n"
+"mask = ShapeMask(text, shape=Circle(radius=2), feather=0.2)\n"
+"mask.show()"
+msgstr ""
+
+#: janim.items.effect.mask.ShapeMask:23 of
+msgid "嵌套蒙板和 :class:`~.FrameEffect` 一样，需要显式嵌套 :class:`~.ShapeMask` 对象："
+msgstr ""
+
+#: janim.items.effect.mask.ShapeMask:25 of
+msgid ""
+"mask1 = ShapeMask(..., shape=shape1).show()\n"
+"mask2 = ShapeMask(mask1, shape=shape2).show()"
+msgstr ""

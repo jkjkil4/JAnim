@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: JAnim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-03 10:34+0800\n"
+"POT-Creation-Date: 1980-01-01 00:00+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -23,6 +23,38 @@ msgstr ""
 msgid "frame_effect"
 msgstr "frame_effect"
 
+#: janim.items.effect.frame_effect.AppliedGroup:1 of
+msgid ":class:`FrameEffect` 等类的基础类"
+msgstr ""
+
+#: janim.items.effect.frame_effect.AppliedGroup:3 of
+msgid "提供了 :meth:`apply` 和 :meth:`discord` 方法用于标记对指定的物件 应用/取消应用 效果"
+msgstr ""
+
+#: janim.items.effect.frame_effect.AppliedGroup.add:3 of
+msgid "调用 :meth:`add` 很可能不会按预期工作"
+msgstr "Calling :meth:`add` is unlikely to work as expected."
+
+#: janim.items.effect.frame_effect.AppliedGroup.add:5 of
+msgid "如果你想应用额外的物件，需要使用 :meth:`apply`"
+msgstr "If you want to apply additional items, use :meth:`apply`."
+
+#: janim.items.effect.frame_effect.AppliedGroup.remove:3 of
+msgid "调用 :meth:`remove` 很可能不会按预期工作"
+msgstr "Calling :meth:`remove` is unlikely to work as expected."
+
+#: janim.items.effect.frame_effect.AppliedGroup.remove:5 of
+msgid "如果你想应用额外的物件，需要使用 :meth:`discard`"
+msgstr "If you want to discard applied items, use :meth:`discard`."
+
+#: janim.items.effect.frame_effect.AppliedGroup.apply:1 of
+msgid "对更多物件应用效果"
+msgstr "Apply the effect to more items."
+
+#: janim.items.effect.frame_effect.AppliedGroup.discard:1 of
+msgid "对指定物件的取消应用效果"
+msgstr "Remove the effect from the specified items."
+
 #: janim.items.effect.frame_effect.FrameEffect:1 of
 msgid "将传入的着色器 ``fragment_shader`` 应用到 ``items`` 上"
 msgstr "Applies the passed shader ``fragment_shader`` to ``items``"
@@ -32,22 +64,20 @@ msgid "着色器基本格式："
 msgstr "Basic shader format:"
 
 #: janim.items.effect.frame_effect.FrameEffect:5 of
-#, python-brace-format
+#, fuzzy, python-brace-format
 msgid ""
 "#version 330 core\n"
 "\n"
 "in vec2 v_texcoord; // 传入的纹理坐标\n"
 "out vec4 f_color;   // 输出的颜色\n"
 "\n"
-"uniform sampler2D fbo; // 传入的纹理（承载了 items 的渲染结果）\n"
-"\n"
 "#[JA_FINISH_UP_UNIFORMS]\n"
 "\n"
 "void main()\n"
 "{\n"
 "    // 进行处理，例如\n"
-"    f_color = texture(fbo, v_texcoord); // 读取纹理颜色\n"
-"    f_color.rgb = 1.0 - f_color.rgb; // 反色\n"
+"    f_color = frame_texture(v_texcoord);    // 注意：需要用 frame_texture 读取纹理颜色（即 items 的渲染结果）\n"
+"    f_color.rgb = 1.0 - f_color.rgb;        // 反色\n"
 "\n"
 "    #[JA_FINISH_UP]\n"
 "}"
@@ -70,50 +100,26 @@ msgstr ""
 "    #[JA_FINISH_UP]\n"
 "}"
 
-#: janim.items.effect.frame_effect.FrameEffect:25 of
+#: janim.items.effect.frame_effect.FrameEffect:23 of
 msgid "其中 ``#[JA_FINISH_UP]`` 是一个占位符，JAnim 会在这里做一些额外的操作，前面的 ``#[JA_FINISH_UP_UNIFORMS]`` 与之对应"
 msgstr ""
 "``#[JA_FINISH_UP]`` is a placeholder where JAnim performs additional operations, and the preceding "
 "``#[JA_FINISH_UP_UNIFORMS]`` corresponds to it"
 
-#: janim.items.effect.frame_effect.FrameEffect:27 of
+#: janim.items.effect.frame_effect.FrameEffect:25 of
 msgid "上述代码最核心的是 ``main`` 中“进行处理”的部分，其余的代码作为固定的写法照抄即可"
 msgstr ""
 "The core of the above code is the “processing” part in ``main``, the rest of the code can be copied as fixed patterns"
 
-#: janim.items.effect.frame_effect.FrameEffect:29 of
+#: janim.items.effect.frame_effect.FrameEffect:27 of
 msgid "如果懒得抄，可以用 :class:`SimpleFrameEffect`，这个类只要写“进行处理”这部分就好了，因为它把其余代码都封装了"
 msgstr ""
 "If you don't want to copy, you can use :class:`SimpleFrameEffect`, which only requires writing the “processing” part, as "
 "it encapsulates the rest of the code"
 
-#: janim.items.effect.frame_effect.FrameEffect:31 of
+#: janim.items.effect.frame_effect.FrameEffect:29 of
 msgid "完整示例请参考 :ref:`基础样例 <basic_examples>` 中的对应代码"
 msgstr "For complete examples, refer to the corresponding code in :ref:`Basic Examples <basic_examples>`"
-
-#: janim.items.effect.frame_effect.FrameEffect.add:3 of
-msgid "调用 :meth:`add` 很可能不会按预期工作"
-msgstr "Calling :meth:`add` is unlikely to work as expected."
-
-#: janim.items.effect.frame_effect.FrameEffect.add:5 of
-msgid "如果你想应用额外的物件，需要使用 :meth:`apply`"
-msgstr "If you want to apply additional items, use :meth:`apply`."
-
-#: janim.items.effect.frame_effect.FrameEffect.remove:3 of
-msgid "调用 :meth:`remove` 很可能不会按预期工作"
-msgstr "Calling :meth:`remove` is unlikely to work as expected."
-
-#: janim.items.effect.frame_effect.FrameEffect.remove:5 of
-msgid "如果你想应用额外的物件，需要使用 :meth:`discard`"
-msgstr "If you want to discard applied items, use :meth:`discard`."
-
-#: janim.items.effect.frame_effect.FrameEffect.apply:1 of
-msgid "对更多物件应用效果"
-msgstr "Apply the effect to more items."
-
-#: janim.items.effect.frame_effect.FrameEffect.discard:1 of
-msgid "对指定物件的取消应用效果"
-msgstr "Remove the effect from the specified items."
 
 #: janim.items.effect.frame_effect.SimpleFrameEffect:1 of
 msgid ":class:`FrameEffect` 的简化封装，具体请参考 :class:`FrameEffect` 中的说明"

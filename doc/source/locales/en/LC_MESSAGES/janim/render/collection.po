@@ -1,7 +1,7 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) 2023, jkjkil4
 # This file is distributed under the same license as the JAnim package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
 #
 #, fuzzy
 msgid ""
@@ -19,16 +19,18 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.17.0\n"
 
-#: ../../source/janim/render/framebuffer.rst:2
-msgid "framebuffer"
-msgstr "framebuffer"
-
-#: janim.render.framebuffer.qt_framebuffer_patch:1 of
-msgid ""
-"对 :meth:`~.GLWidget.use_qt_framebuffer` 的进一步封装，自动在 with 前获取 GL 对象，在 with 后重设 GL 对象（如果是 Qt 的 "
-"Framebuffer）"
+#: ../../source/janim/render/collection.rst:2
+msgid "collection"
 msgstr ""
 
-#: janim.render.framebuffer.FrameBuffer.unpremultiply:1 of
-msgid "将当前 FBO 的 PMA 内容通过 GPU pass 转为 straight alpha，结果写回自身"
+#: janim.render.collection.RenderCollection:1 of
+msgid "用于辅助将渲染代理给特殊物件，比如 :class:`~.FrameEffect` 等"
+msgstr ""
+
+#: janim.render.collection.RenderCollection.delegates:1 of
+msgid "调用该方法来代理与 ``items`` 相关联的渲染"
+msgstr ""
+
+#: janim.render.collection.RenderCollection.delegates:3 of
+msgid "会返回一个 :class:`RenderCollection` 实例，应通过在后续调用其 :meth:`render` 方法来渲染代理出去的物件"
 msgstr ""

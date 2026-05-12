@@ -1,0 +1,369 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2023, jkjkil4
+# This file is distributed under the same license as the JAnim package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: JAnim \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 1980-01-01 00:00+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: en\n"
+"Language-Team: en <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.17.0\n"
+
+#: ../../source/tutorials/3d_scene.rst:4
+msgid "三维场景"
+msgstr ""
+
+#: ../../source/tutorials/3d_scene.rst:6
+msgid ""
+"在 JAnim 中，每个坐标都有三个分量 ``[x, y, z]`` ，在我们之前接触的二维场景中，我们只需要用到其中的前两个分量，当我们进入三"
+"维场景后，第三个分量就会发挥作用"
+msgstr ""
+
+#: ../../source/tutorials/3d_scene.rst:8
+msgid ""
+"在这之前，我们要先了解一下在三维空间中的摄像机旋转，以方便我们观察；在了解了摄像机旋转之后，我们便会进一步展开有关三维场景"
+"的内容"
+msgstr ""
+
+#: ../../source/tutorials/3d_scene.rst:11
+msgid "在三维空间中旋转摄像机"
+msgstr ""
+
+#: ../../source/tutorials/3d_scene.rst:13
+msgid "在 :ref:`camera_usage` 这节中，我们使用了 :meth:`~.Cmpt_CameraPoints.rotate` 方法来旋转摄像机"
+msgstr ""
+
+#: ../../source/tutorials/3d_scene.rst:15
+msgid "这个方法还有一个参数 ``axis`` 即旋转轴，这个参数默认值为 ``OUT`` ，在这种情况下我们的摄像机只会在二维平面中旋转"
+msgstr ""
+
+#: ../../source/tutorials/3d_scene.rst:17
+msgid "我们如果改变这个参数，便可以在三维空间中旋转摄像机，从而呈现三维画面："
+msgstr ""
+
+#: ../../source/tutorials/3d_scene.rst:13
+#, python-brace-format
+msgid ""
+"# 画面中的主要元素：一个三维坐标轴以及一个在二维平面内的方形\n"
+"\n"
+"axes = ThreeDAxes(\n"
+"    (-4, 4), (-4, 4), (-4, 4),\n"
+"    axis_config={\n"
+"        'include_tip': True\n"
+"    }\n"
+")\n"
+"square = Square()\n"
+"\n"
+"# 用于演示的箭头和文字\n"
+"\n"
+"vec1 = Vector(RIGHT, color=YELLOW)\n"
+"vec2 = Vector(OUT, color=YELLOW)\n"
+"\n"
+"txt1 = Text('axis=RIGHT', font_size=16, color=YELLOW)\n"
+"txt1.points.next_to(vec1, UR, buff=SMALL_BUFF)\n"
+"txt2 = Text('axis=OUT', font_size=16, color=YELLOW)\n"
+"txt2.points.next_to(vec2, OUT, buff=SMALL_BUFF)\n"
+"\n"
+"group1 = Group(vec1, txt1)\n"
+"group2 = Group(vec2, txt2)\n"
+"\n"
+"# 动画过程\n"
+"\n"
+"self.show(axes, square)\n"
+"\n"
+"self.play(FadeIn(group1))\n"
+"self.play(\n"
+"    self.camera.anim.points.rotate(30 * DEGREES, axis=RIGHT),\n"
+")\n"
+"self.play(FadeOut(group1))\n"
+"\n"
+"self.play(FadeIn(group2))\n"
+"self.play(\n"
+"    self.camera.anim.points.rotate(40 * DEGREES, axis=OUT),\n"
+")\n"
+"self.play(FadeOut(group2))"
+msgstr ""
+
+#: ../../source/tutorials/3d_scene.rst:32 ../../source/tutorials/3d_scene.rst:46 ../../source/tutorials/3d_scene.rst:50
+#: ../../source/tutorials/3d_scene.rst:60 ../../source/tutorials/3d_scene.rst:82
+msgid "参考："
+msgstr ""
+
+#: ../../source/tutorials/3d_scene.rst:62
+msgid ":class:`~.ThreeDAxes`"
+msgstr ""
+
+#: ../../source/tutorials/3d_scene.rst:63
+msgid "另外，我们还可以使用 ``absolute=False`` 来表示基于摄像机自身的坐标系来旋转："
+msgstr ""
+
+#: ../../source/tutorials/3d_scene.rst:13
+#, python-brace-format
+msgid ""
+"axes = ThreeDAxes(\n"
+"    (-4, 4), (-4, 4), (-4, 4),\n"
+"    axis_config={\n"
+"        'include_tip': True\n"
+"    }\n"
+")\n"
+"square = Square()\n"
+"\n"
+"self.show(axes, square)\n"
+"self.play(\n"
+"    self.camera.anim.points\n"
+"        .rotate(30 * DEGREES, axis=RIGHT)\n"
+"        .rotate(40 * DEGREES, axis=OUT),\n"
+"    duration=2\n"
+")\n"
+"self.show(FrameRect(self.camera, alpha=0.5))  # 显示当前摄像机的视野框\n"
+"self.forward(0.5)\n"
+"\n"
+"# 基于摄像机自身的坐标系来旋转\n"
+"self.play(\n"
+"    self.camera.anim.points\n"
+"        .rotate(20 * DEGREES, absolute=False)\n"
+")\n"
+"self.forward()"
+msgstr ""
+
+#: ../../source/tutorials/3d_scene.rst:48
+msgid ":class:`~.ThreeDAxes` :class:`~.FrameRect`"
+msgstr ""
+
+#: ../../source/tutorials/3d_scene.rst:95
+msgid "另外，也可以直接通过四元数来指定视野朝向："
+msgstr ""
+
+#: ../../source/tutorials/3d_scene.rst:13
+msgid ""
+"axes = ThreeDAxes()\n"
+"sphere = Sphere().into('checker')\n"
+"sphere.points.move_to(axes.c2p(3, 2, 2))\n"
+"\n"
+"self.show(axes, sphere)\n"
+"\n"
+"self.forward()\n"
+"self.play(\n"
+"    self.camera.anim.set(orientation=quat(0.8, 0.2, 0.1, 0.9))\n"
+")"
+msgstr ""
+
+#: ../../source/tutorials/3d_scene.rst:34
+msgid ":class:`~.ThreeDAxes` :class:`~.Sphere` :meth:`~.SurfaceGeometry.into`"
+msgstr ""
+
+#: ../../source/tutorials/3d_scene.rst:115
+msgid "JAnim GUI 也提供了一个方便的功能在预览窗口调整摄像机，可另行参阅 :ref:`guicmd_camera` 进行了解"
+msgstr ""
+
+#: ../../source/tutorials/3d_scene.rst:118
+msgid "三维坐标"
+msgstr ""
+
+#: ../../source/tutorials/3d_scene.rst:120
+msgid "回顾如下的图片，在平面坐标中，我们提及了若干个主要的方向，包括 ``LEFT`` 、 ``RIGHT`` 、 ``DOWN`` 以及 ``UP``"
+msgstr ""
+
+#: ../../source/tutorials/3d_scene.rst:127
+msgid ""
+"在三维空间中，我们在第三个分量还有两个主要的方向，它们分别是 ``OUT`` 和 ``IN`` ，分别表示“离开二维平面”（即朝向初始摄像"
+"机）以及“深入二维平面”（即远离初始摄像机）的方向，如下图所示："
+msgstr ""
+
+#: ../../source/tutorials/3d_scene.rst:134
+msgid "从而，我们可以利用这两个方向在三维空间中移动，当然，也可以在三维空间中旋转"
+msgstr ""
+
+#: ../../source/tutorials/3d_scene.rst:13
+#, python-brace-format
+msgid ""
+"self.camera.points.set(orientation=quat(-0.15, -0.28, -0.04, 0.95))\n"
+"\n"
+"# 用于辅助观察的坐标系\n"
+"\n"
+"axes = ThreeDAxes(\n"
+"    (-3, 3), (-3, 3), (-3, 3),\n"
+"    axis_config={\n"
+"        'include_tip': True,\n"
+"    }\n"
+")\n"
+"axes.z_axis.set(color=MAROON)\n"
+"labels = axes.get_axis_labels(rotate_xy=False, z_kwargs={'color': MAROON})\n"
+"\n"
+"# 用于演示的矩形物件\n"
+"\n"
+"square = Square(color=BLUE, fill_alpha=0.6)\n"
+"\n"
+"# 动画过程\n"
+"\n"
+"Group(axes, labels, square).show().apply_depth_test()\n"
+"self.forward()\n"
+"self.play(\n"
+"    square.anim(duration=1.5).points.shift(OUT * 2),\n"
+"    square.anim(duration=3).points.shift(IN * 4),\n"
+"    Rotate(square, PI, axis=RIGHT, about_point=ORIGIN, duration=3),\n"
+"    lag_ratio=1\n"
+")\n"
+"self.forward()"
+msgstr ""
+
+#: ../../source/tutorials/3d_scene.rst:52
+msgid ":class:`~.ThreeDAxes` :meth:`~.Item.apply_depth_test` :class:`~.Rotate`"
+msgstr ""
+
+#: ../../source/tutorials/3d_scene.rst:170
+msgid ""
+"除了使用内置方向表示坐标，还可以直接使用坐标值来表示位置。例如，上面涉及的 ``.shift(OUT * 2)`` 等效于 ``.shift([0, 0, "
+"2])`` 。"
+msgstr ""
+
+#: ../../source/tutorials/3d_scene.rst:175
+msgid "处理三维遮挡"
+msgstr ""
+
+#: ../../source/tutorials/3d_scene.rst:177
+msgid "在默认情况下，JAnim 只会根据物件的 ``depth`` 顺序来绘制，但是对于三维空间中物件的遮挡，我们需要一些其它的机制"
+msgstr ""
+
+#: ../../source/tutorials/3d_scene.rst:179
+msgid "处理三维空间中遮挡关系的机制可以分为两种："
+msgstr ""
+
+#: ../../source/tutorials/3d_scene.rst:181
+msgid ":meth:`~.Item.apply_depth_test` : **深度测试机制**"
+msgstr ""
+
+#: ../../source/tutorials/3d_scene.rst:183
+msgid "渲染时会自动处理启用了该机制的物件的像素级遮挡关系，不渲染已被遮挡的像素，且几乎没有性能损失"
+msgstr ""
+
+#: ../../source/tutorials/3d_scene.rst:185
+msgid "具体原理可另行在网络上搜索有关 “深度测试” 或 “深度缓冲” 的内容"
+msgstr ""
+
+#: ../../source/tutorials/3d_scene.rst:187
+msgid ":meth:`~.Item.apply_distance_sort` : **距离排序机制**"
+msgstr ""
+
+#: ../../source/tutorials/3d_scene.rst:189
+msgid "渲染时会计算启用了该机制的物件各自的中心点离当前摄像机的距离，根据距离排序渲染顺序，会有排序的性能损失"
+msgstr ""
+
+#: ../../source/tutorials/3d_scene.rst:191
+msgid "我们需要了解相应机制的优缺点，从而方便选择合适的一种，在考虑优缺点时，我们有两种难点情景需要考虑："
+msgstr ""
+
+#: ../../source/tutorials/3d_scene.rst:197
+msgid "“相交物件” 与 “半透明物件”"
+msgstr ""
+
+#: ../../source/tutorials/3d_scene.rst:203
+msgid "演示如下："
+msgstr ""
+
+#: ../../source/tutorials/3d_scene.rst:13
+#, python-brace-format
+msgid ""
+"class ThreeDOcclusion(Timeline):\n"
+"    def construct(self) -> None:\n"
+"        # 初始视角\n"
+"        self.camera.points.rotate(20 * DEGREES, axis=RIGHT).rotate(35 * DEGREES, axis=OUT)\n"
+"\n"
+"        # 演示两种策略\n"
+"        self.demonstrate(depth_test=True, distance_sort=False)\n"
+"        self.demonstrate(depth_test=False, distance_sort=True)\n"
+"\n"
+"    def demonstrate(self, depth_test: bool, distance_sort: bool) -> None:\n"
+"        txt1 = Text(f'{depth_test=}').fix_in_frame()\n"
+"        txt1.points.next_to(LEFT * 1.5, LEFT)\n"
+"        txt2 = Text(f'{distance_sort=}').fix_in_frame()\n"
+"        txt2.points.next_to(RIGHT * 1.5, RIGHT)\n"
+"\n"
+"        for txt in [txt1, txt2]:\n"
+"            txt.select_parts('True').set(color=GREEN)\n"
+"            txt.select_parts('False').set(color=RED)\n"
+"        self.show(txt1, txt2)\n"
+"\n"
+"        # 相交物件演示\n"
+"\n"
+"        s1 = Square(color=RED, fill_alpha=1)\n"
+"        s2 = Square(color=GREEN, fill_alpha=1)\n"
+"        s2.points.rotate(PI / 2, axis=RIGHT)\n"
+"        s3 = Square(color=BLUE, fill_alpha=1)\n"
+"        s3.points.rotate(PI / 2, axis=UP)\n"
+"\n"
+"        group = Group(s1, s2, s3)\n"
+"        group.apply_depth_test(depth_test)\n"
+"        group.apply_distance_sort(distance_sort)\n"
+"\n"
+"        self.show(group)\n"
+"        self.play(self.RotatingCamera(), duration=5)\n"
+"        self.hide(group)\n"
+"\n"
+"        # 半透明物件演示\n"
+"\n"
+"        sphere = Sphere(resolution=12, fill_alpha=0.5).into('vchecker')\n"
+"\n"
+"        sphere.apply_depth_test(depth_test)\n"
+"        sphere.apply_distance_sort(distance_sort)\n"
+"\n"
+"        self.show(sphere)\n"
+"        self.play(self.RotatingCamera(), duration=5)\n"
+"        self.hide(sphere)\n"
+"\n"
+"        self.hide(txt1, txt2)\n"
+"\n"
+"    def RotatingCamera(self):\n"
+"        return AnimGroup(\n"
+"            DataUpdater(\n"
+"                self.camera,\n"
+"                lambda data, p: data.points.rotate(TAU * p.alpha, axis=RIGHT),\n"
+"            ),\n"
+"            DataUpdater(\n"
+"                self.camera,\n"
+"                lambda data, p: data.points.rotate(TAU * p.alpha, axis=OUT),\n"
+"            ),\n"
+"        )"
+msgstr ""
+
+#: ../../source/tutorials/3d_scene.rst:84
+msgid ":meth:`~.Item.apply_depth_test` :meth:`~.Item.apply_distance_sort` :class:`~.Sphere` :meth:`~.SurfaceGeometry.into`"
+msgstr ""
+
+#: ../../source/tutorials/3d_scene.rst:271
+msgid "可以注意到："
+msgstr ""
+
+#: ../../source/tutorials/3d_scene.rst:273
+msgid "**深度测试机制在处理相交物件时表现较好** ，但是处理半透明物件不太好，半透明物件的可见性会受到渲染顺序的影响"
+msgstr ""
+
+#: ../../source/tutorials/3d_scene.rst:275
+msgid "并且，如果你仔细观察，可以发现开启深度测试后，有些物件会出现细黑边，这是由于抗锯齿导致边缘像素半透明而产生的"
+msgstr ""
+
+#: ../../source/tutorials/3d_scene.rst:277
+msgid "**距离排序机制在处理半透明物件时表现较好** ，但是处理相交物件不太好，无法正确处理像素级的遮挡关系"
+msgstr ""
+
+#: ../../source/tutorials/3d_scene.rst:281
+msgid "所以你可以想到，最难对付的就是："
+msgstr ""
+
+#: ../../source/tutorials/3d_scene.rst:287
+msgid "“半透明相交物件”"
+msgstr ""
+
+#: ../../source/tutorials/3d_scene.rst:293
+msgid "作为不太优雅的解决方法，也许可以考虑手动细分物件表面等，这里不过多讨论"
+msgstr ""

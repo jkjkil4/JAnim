@@ -1,14 +1,14 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) 2023, jkjkil4
 # This file is distributed under the same license as the JAnim package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
 #
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: JAnim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-29 15:25+0800\n"
+"POT-Creation-Date: 1980-01-01 00:00+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -19,27 +19,22 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.17.0\n"
 
-#: ../../source/examples/slide_examples.rst:2
-msgid "类 Slide 演示"
-msgstr "Slide-style Demonstrations"
+#: ../../source/examples/simple_demonstration.rst:2
+msgid "简单演示"
+msgstr ""
 
-#: ../../source/examples/slide_examples.rst:6
+#: ../../source/examples/tip.rst:3
 msgid "欢迎联系我们将你使用 JAnim 创作的作品添加到该页面中"
-msgstr "Welcome to contact us to add your JAnim creations to this page"
+msgstr ""
 
-#: ../../source/examples/slide_examples.rst:8
+#: ../../source/examples/tip.rst:5
 msgid "QQ 群：970174336"
-msgstr "QQ Group: 970174336"
+msgstr ""
 
-#: ../../source/examples/slide_examples.rst:10
+#: ../../source/examples/tip.rst:7
 msgid "Email：1173374788@qq.com"
-msgstr "Email: 1173374788@qq.com"
+msgstr ""
 
-#: ../../source/examples/_slide_examples_options.rst:9
+#: ../../source/examples/_simple_demonstration_options.rst:8
 msgid "嗯，这个本身就是用 JAnim 制作的"
 msgstr "Well, this itself is made with JAnim"
-
-#~ msgid "动画效果使用 JAnim 制作，“信息量”可视化结果是插入的现成图片"
-#~ msgstr ""
-#~ "Animation effects are made with JAnim, the \"information quantity\" visualization result is an inserted ready-made "
-#~ "image"

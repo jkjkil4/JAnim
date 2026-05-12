@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: JAnim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-02-24 01:11+0800\n"
+"POT-Creation-Date: 1980-01-01 00:00+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -61,9 +61,17 @@ msgstr ""
 "If ``quiet=True`` is specified, prompt messages before and after will not be output, but the progress bar will still be "
 "shown"
 
-#: janim.render.writer.VideoWriter.find_encoder:1 of
+#: janim.render.writer.VideoWriter.ext_specific_flags:1 of
+msgid "针对不同的格式产生不同的 FFMPEG 参数"
+msgstr ""
+
+#: janim.render.writer.VideoWriter.find_h264_encoder:1 of
 msgid "查找编码器，若 ``hwaccel=True`` 则优先使用硬件编码器"
 msgstr "Find encoder, if ``hwaccel=True``, prioritize using hardware encoder"
+
+#: janim.render.writer.VideoWriter.find_encoder_device:1 of
+msgid "Return the first working VA-API render node, or None."
+msgstr ""
 
 #: janim.render.writer.SRTWriter.t_to_srt_time:1 of
 msgid "将秒数转换为 SRT 时间格式：HH:MM:SS,mmm"

@@ -1,7 +1,7 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) 2023, jkjkil4
 # This file is distributed under the same license as the JAnim package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
 #
 #, fuzzy
 msgid ""
@@ -19,16 +19,14 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.17.0\n"
 
-#: ../../source/janim/render/framebuffer.rst:2
-msgid "framebuffer"
-msgstr "framebuffer"
-
-#: janim.render.framebuffer.qt_framebuffer_patch:1 of
-msgid ""
-"对 :meth:`~.GLWidget.use_qt_framebuffer` 的进一步封装，自动在 with 前获取 GL 对象，在 with 后重设 GL 对象（如果是 Qt 的 "
-"Framebuffer）"
+#: ../../source/examples/tip.rst:3
+msgid "欢迎联系我们将你使用 JAnim 创作的作品添加到该页面中"
 msgstr ""
 
-#: janim.render.framebuffer.FrameBuffer.unpremultiply:1 of
-msgid "将当前 FBO 的 PMA 内容通过 GPU pass 转为 straight alpha，结果写回自身"
+#: ../../source/examples/tip.rst:5
+msgid "QQ 群：970174336"
+msgstr ""
+
+#: ../../source/examples/tip.rst:7
+msgid "Email：1173374788@qq.com"
 msgstr ""

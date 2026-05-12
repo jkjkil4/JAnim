@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: JAnim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-29 15:25+0800\n"
+"POT-Creation-Date: 1980-01-01 00:00+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -30,7 +30,8 @@ msgstr ""
 "feature panels in the GUI."
 
 #: ../../source/tutorials/gui_commands.rst:6
-msgid "更为重要的是，面板的交互结果在提交后，可以 **应用到源代码上**。"
+#, fuzzy
+msgid "更为重要的是，面板的交互结果在提交后，可以 **应用到源代码上** 。"
 msgstr "More importantly, after submission, the panel's interaction results can be **applied to the source code**."
 
 #: ../../source/tutorials/gui_commands.rst:8
@@ -63,8 +64,8 @@ msgstr "``select`` Command"
 msgid "选择指定物件的子物件"
 msgstr "Select subitems of the specified item"
 
-#: ../../source/tutorials/gui_commands.rst:29 ../../source/tutorials/gui_commands.rst:51
-#: ../../source/tutorials/gui_commands.rst:87
+#: ../../source/tutorials/gui_commands.rst:29 ../../source/tutorials/gui_commands.rst:53
+#: ../../source/tutorials/gui_commands.rst:89
 msgid "尝试："
 msgstr "Try:"
 
@@ -94,15 +95,15 @@ msgstr ""
 "self('select: txt[0]').set(color=RED)\n"
 "self('select: txt[1]').set(color=GREEN)"
 
-#: ../../source/tutorials/gui_commands.rst:47
+#: ../../source/tutorials/gui_commands.rst:49
 msgid "``camera`` 命令"
 msgstr "``camera`` Command"
 
-#: ../../source/tutorials/gui_commands.rst:49
+#: ../../source/tutorials/gui_commands.rst:51
 msgid "自由转动/移动/缩放摄像机视角"
 msgstr "Freely rotate/move/zoom the camera view"
 
-#: ../../source/tutorials/gui_commands.rst:53
+#: ../../source/tutorials/gui_commands.rst:55
 #, python-brace-format
 msgid ""
 "ThreeDAxes(\n"
@@ -127,7 +128,7 @@ msgstr ""
 "\n"
 "self('camera')"
 
-#: ../../source/tutorials/gui_commands.rst:66
+#: ../../source/tutorials/gui_commands.rst:68
 msgid ""
 "NumberPlane(faded_line_ratio=1).show()\n"
 "\n"
@@ -157,15 +158,15 @@ msgstr ""
 "\n"
 "self('camera')"
 
-#: ../../source/tutorials/gui_commands.rst:83
+#: ../../source/tutorials/gui_commands.rst:85
 msgid "``move`` 命令"
 msgstr "``move`` Command"
 
-#: ../../source/tutorials/gui_commands.rst:85
+#: ../../source/tutorials/gui_commands.rst:87
 msgid "移动物件的位置，支持自动吸附"
 msgstr "Move items, supports auto-snapping"
 
-#: ../../source/tutorials/gui_commands.rst:89
+#: ../../source/tutorials/gui_commands.rst:91
 msgid ""
 "circle = Circle().show()\n"
 "square = Square().show()\n"
