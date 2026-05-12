@@ -1,8 +1,8 @@
 .. _basic_examples:
 
-基础样例
+API 演示
 =================
 
 .. unwrap-random-options::
 
-    .. include:: _basic_examples_options.rst
+    .. include:: _api_demonstration_options.rst
