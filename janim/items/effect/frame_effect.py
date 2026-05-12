@@ -22,10 +22,10 @@ _ = get_translator('janim.items.effect.frame_effect')
 
 
 _frameeffect_injection = """
-uniform sampler2D fbo;
+uniform sampler2D _fbo;
 vec4 frame_texture(vec2 texcoord)
 {
-    vec4 color = texture(fbo, texcoord);
+    vec4 color = texture(_fbo, texcoord);
     // 从 PMA 转换到直通颜色
     if (color.a != 0)
         color.rgb /= color.a;
@@ -276,7 +276,7 @@ class SimpleFrameEffect(FrameEffect):
         )
         with ShaderInjection(
             JA_SIMPLE_FRAMEEFFECT_UNIFORMS=uniforms_code,
-            JA_SIMPLE_FRAMEEFFECT_SHADER=shader.strip(),
+            JA_SIMPLE_FRAMEEFFECT_SHADER=_apply_fixes_for_compatibility(shader.strip()),
         ):
             super().__init__(
                 *items,

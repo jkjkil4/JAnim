@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-25 16:19+0800\n"
+"POT-Creation-Date: 2026-05-11 09:46+0800\n"
 "PO-Revision-Date: 2025-12-24 16:05+0800\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 "X-Generator: Poedit 3.8\n"
 
-#: janim/render/shader.py:222
+#: janim/render/shader.py:210
 #, python-brace-format
 msgid "ShaderInjection not found: {name}"
 msgstr "ShaderInjection 未找到: {name}"

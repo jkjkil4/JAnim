@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-11 12:24+0800\n"
+"POT-Creation-Date: 2026-05-12 16:12+0800\n"
 "PO-Revision-Date: 2026-04-04 20:43+0800\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -22,34 +22,40 @@ msgstr ""
 #: janim/items/effect/frame_effect.py:61
 #, python-brace-format
 msgid ""
-"Calling {cls}.add is unusual and may not work as expected. If you want to apply additional items, use `apply` instead."
-msgstr "调用 {cls}.add 是不寻常的，可能不会按预期工作。如果你想应用额外的物件，请使用 `apply` 代替"
+"Calling {cls}.add is unusual and may not work as expected. If you want to "
+"apply additional items, use `apply` instead."
+msgstr ""
+"调用 {cls}.add 是不寻常的，可能不会按预期工作。如果你想应用额外的物件，请使"
+"用 `apply` 代替"
 
 #: janim/items/effect/frame_effect.py:79
 #, python-brace-format
 msgid ""
-"Calling {cls}.remove is unusual and may not work as expected. If you want to discard applied items, use `discard` instead."
-msgstr "调用 {cls}.remove 是不寻常的，可能不会按预期工作。如果你想撤销已应用的项，请使用 `discard` 代替"
+"Calling {cls}.remove is unusual and may not work as expected. If you want to "
+"discard applied items, use `discard` instead."
+msgstr ""
+"调用 {cls}.remove 是不寻常的，可能不会按预期工作。如果你想撤销已应用的项，请"
+"使用 `discard` 代替"
 
 #: janim/items/effect/frame_effect.py:133
 #, python-brace-format
 msgid "Removed \"{code}\""
 msgstr "移除了 \"{code}\""
 
-#: janim/items/effect/frame_effect.py:139
+#: janim/items/effect/frame_effect.py:138
 #, python-brace-format
 msgid "Replaced \"{orig}\" by \"{code}\""
 msgstr "将 \"{orig}\" 替换为了 \"{code}\""
 
-#: janim/items/effect/frame_effect.py:153
+#: janim/items/effect/frame_effect.py:151
 #, python-brace-format
 msgid ""
 "Detected legacy-style shader code passed to FrameEffect at {file}:{lineno}\n"
 "An automatic migration has been attempted with the following changes:\n"
 "{fixes}\n"
-"The legacy usage will be deprecated in JAnim 5.4"
+"The legacy usage will be deprecated in JAnim 5.0"
 msgstr ""
 "侦测到在 {file}:{lineno} 给 FrameEffect 传递了旧版使用方式的着色器代码\n"
 "已尝试进行迁移，修改如下：\n"
 "{fixes}\n"
-"旧版使用方式将在 JAnim 5.4 弃用"
+"旧版使用方式将在 JAnim 5.0 弃用"

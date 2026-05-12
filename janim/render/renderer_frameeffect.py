@@ -48,7 +48,7 @@ class FrameEffectRenderer(Renderer):
         finally:
             shader_injections_ctx.reset(token)
 
-        self.u_fbo = self.prog.get('fbo', None)
+        self.u_fbo = self.prog.get('_fbo', None)
         if self.u_fbo is not None:
             self.u_fbo.value = 0
 

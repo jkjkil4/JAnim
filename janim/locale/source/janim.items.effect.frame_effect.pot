@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-11 12:32+0800\n"
+"POT-Creation-Date: 2026-05-12 16:12+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -36,16 +36,16 @@ msgstr ""
 msgid "Removed \"{code}\""
 msgstr ""
 
-#: janim/items/effect/frame_effect.py:139
+#: janim/items/effect/frame_effect.py:138
 #, python-brace-format
 msgid "Replaced \"{orig}\" by \"{code}\""
 msgstr ""
 
-#: janim/items/effect/frame_effect.py:153
+#: janim/items/effect/frame_effect.py:151
 #, python-brace-format
 msgid ""
 "Detected legacy-style shader code passed to FrameEffect at {file}:{lineno}\n"
 "An automatic migration has been attempted with the following changes:\n"
 "{fixes}\n"
-"The legacy usage will be deprecated in JAnim 5.4"
+"The legacy usage will be deprecated in JAnim 5.0"
 msgstr ""
