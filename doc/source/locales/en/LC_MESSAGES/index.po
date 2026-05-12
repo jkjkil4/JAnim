@@ -75,13 +75,13 @@ msgstr "Below are some example showcases (Note: you can click on the tab titles 
 
 #: ../../source/index.rst:15
 msgid "API 演示"
-msgstr ""
+msgstr "API Demonstration"
 
 #: ../../<random-choice-ui>:1
 msgid "🎲 随机切换"
 msgstr "🎲 Switch Randomly"
 
-#: ../../source/index.rst:20
+#: ../../source/examples/_api_demonstration_options.rst:20
 msgid ""
 "from janim.imports import *\n"
 "\n"
@@ -113,18 +113,21 @@ msgstr ""
 "        self.play(Uncreate(square))\n"
 "        self.forward()"
 
-#: ../../source/index.rst:43 ../../source/index.rst:44 ../../source/index.rst:46 ../../source/index.rst:47
-#: ../../source/index.rst:51 ../../source/index.rst:55 ../../source/index.rst:59 ../../source/index.rst:65
-#: ../../source/index.rst:67 ../../source/index.rst:69 ../../source/index.rst:77 ../../source/index.rst:78
-#: ../../source/index.rst:94 ../../source/index.rst:140
+#: ../../source/examples/_api_demonstration_options.rst:43 ../../source/examples/_api_demonstration_options.rst:44
+#: ../../source/examples/_api_demonstration_options.rst:46 ../../source/examples/_api_demonstration_options.rst:47
+#: ../../source/examples/_api_demonstration_options.rst:51 ../../source/examples/_api_demonstration_options.rst:55
+#: ../../source/examples/_api_demonstration_options.rst:59 ../../source/examples/_api_demonstration_options.rst:65
+#: ../../source/examples/_api_demonstration_options.rst:67 ../../source/examples/_api_demonstration_options.rst:69
+#: ../../source/examples/_api_demonstration_options.rst:77 ../../source/examples/_api_demonstration_options.rst:78
+#: ../../source/examples/_api_demonstration_options.rst:94 ../../source/examples/_api_demonstration_options.rst:140
 msgid "参考："
 msgstr "See also:"
 
-#: ../../source/index.rst:45
+#: ../../source/examples/_api_demonstration_options.rst:45
 msgid ":class:`~.Circle` :class:`~.Square` :class:`~.Create` :class:`~.Transform` :class:`~.Uncreate`"
 msgstr ":class:`~.Circle` :class:`~.Square` :class:`~.Create` :class:`~.Transform` :class:`~.Uncreate`"
 
-#: ../../source/index.rst:20
+#: ../../source/examples/_api_demonstration_options.rst:20
 msgid ""
 "from janim.imports import *\n"
 "\n"
@@ -164,11 +167,11 @@ msgstr ""
 "\n"
 "        self.forward()"
 
-#: ../../source/index.rst:49
+#: ../../source/examples/_api_demonstration_options.rst:49
 msgid ":class:`~.Create` :class:`~.SpinInFromNothing` :meth:`~.Item.anim`"
 msgstr ":class:`~.Create` :class:`~.SpinInFromNothing` :meth:`~.Item.anim`"
 
-#: ../../source/index.rst:20
+#: ../../source/examples/_api_demonstration_options.rst:20
 msgid ""
 "from janim.imports import *\n"
 "\n"
@@ -206,11 +209,11 @@ msgstr ""
 "        self.play(Transform(desc[0], desc[1]))\n"
 "        self.forward()"
 
-#: ../../source/index.rst:48
+#: ../../source/examples/_api_demonstration_options.rst:48
 msgid ":class:`~.Text` :class:`~.Write` :class:`~.FadeIn` :class:`~.Transform`"
 msgstr ":class:`~.Text` :class:`~.Write` :class:`~.FadeIn` :class:`~.Transform`"
 
-#: ../../source/index.rst:20
+#: ../../source/examples/_api_demonstration_options.rst:20
 #, python-brace-format
 msgid ""
 "from janim.imports import *\n"
@@ -311,11 +314,11 @@ msgstr ""
 "        self.forward()\n"
 "        self.play(FadeOut(group))"
 
-#: ../../source/index.rst:79
+#: ../../source/examples/_api_demonstration_options.rst:79
 msgid ":class:`~.TypstDoc` :class:`~.TypstText` :class:`~.TypstMath` :ref:`typst_usage`"
 msgstr ":class:`~.TypstDoc` :class:`~.TypstText` :class:`~.TypstMath` :ref:`typst_usage`"
 
-#: ../../source/index.rst:20
+#: ../../source/examples/_api_demonstration_options.rst:20
 msgid ""
 "from janim.imports import *\n"
 "\n"
@@ -349,11 +352,11 @@ msgstr ""
 "        self.play(typ['space^2', ...].anim.set(color=RED))\n"
 "        self.forward()"
 
-#: ../../source/index.rst:46
+#: ../../source/examples/_api_demonstration_options.rst:46
 msgid ":class:`~.TypstMath` :ref:`typst_usage`"
 msgstr ":class:`~.TypstMath` :ref:`typst_usage`"
 
-#: ../../source/index.rst:20
+#: ../../source/examples/_api_demonstration_options.rst:20
 msgid ""
 "from janim.imports import *\n"
 "\n"
@@ -417,11 +420,11 @@ msgstr ""
 "        )\n"
 "        self.forward()"
 
-#: ../../source/index.rst:61
+#: ../../source/examples/_api_demonstration_options.rst:61
 msgid ":meth:`~.Cmpt_Points.arrange_in_grid` :meth:`~.Cmpt_Points.apply_complex_fn` :meth:`~.Cmpt_Points.apply_point_fn`"
 msgstr ":meth:`~.Cmpt_Points.arrange_in_grid` :meth:`~.Cmpt_Points.apply_complex_fn` :meth:`~.Cmpt_Points.apply_point_fn`"
 
-#: ../../source/index.rst:20
+#: ../../source/examples/_api_demonstration_options.rst:20
 msgid ""
 "from janim.imports import *\n"
 "\n"
@@ -469,11 +472,11 @@ msgstr ""
 "        )\n"
 "        self.forward()"
 
-#: ../../source/index.rst:53
+#: ../../source/examples/_api_demonstration_options.rst:53
 msgid ":class:`~.NumberPlane` :meth:`~.Axes.get_graph` :meth:`~.Cmpt_Points.apply_matrix`"
 msgstr ":class:`~.NumberPlane` :meth:`~.Axes.get_graph` :meth:`~.Cmpt_Points.apply_matrix`"
 
-#: ../../source/index.rst:20
+#: ../../source/examples/_api_demonstration_options.rst:20
 #, python-brace-format
 msgid ""
 "from janim.imports import *\n"
@@ -550,11 +553,11 @@ msgstr ""
 "        )\n"
 "        self.forward()"
 
-#: ../../source/index.rst:67
+#: ../../source/examples/_api_demonstration_options.rst:67
 msgid ":class:`~.Brace` :class:`~.DataUpdater` :class:`~.ItemUpdater`"
 msgstr ":class:`~.Brace` :class:`~.DataUpdater` :class:`~.ItemUpdater`"
 
-#: ../../source/index.rst:20
+#: ../../source/examples/_api_demonstration_options.rst:20
 msgid ""
 "from janim.imports import *\n"
 "\n"
@@ -602,11 +605,11 @@ msgstr ""
 "            duration=4\n"
 "        )"
 
-#: ../../source/index.rst:53
+#: ../../source/examples/_api_demonstration_options.rst:53
 msgid ":class:`~.Dot` :class:`~.Arrow` :meth:`~.Item.update` :class:`~.GroupUpdater`"
 msgstr ":class:`~.Dot` :class:`~.Arrow` :meth:`~.Item.update` :class:`~.GroupUpdater`"
 
-#: ../../source/index.rst:20
+#: ../../source/examples/_api_demonstration_options.rst:20
 msgid ""
 "from janim.imports import *\n"
 "\n"
@@ -691,11 +694,11 @@ msgstr ""
 "            duration=2\n"
 "        )"
 
-#: ../../source/index.rst:71
+#: ../../source/examples/_api_demonstration_options.rst:71
 msgid ":meth:`~.Item.anim` :meth:`~.Item.update` :class:`~.DataUpdater`"
 msgstr ":meth:`~.Item.anim` :meth:`~.Item.update` :class:`~.DataUpdater`"
 
-#: ../../source/index.rst:20
+#: ../../source/examples/_api_demonstration_options.rst:20
 msgid ""
 "from janim.imports import *\n"
 "\n"
@@ -751,11 +754,11 @@ msgstr ""
 "            )\n"
 "        )"
 
-#: ../../source/index.rst:57
+#: ../../source/examples/_api_demonstration_options.rst:57
 msgid ":class:`~.Sector` :func:`~.rotate_vector` :class:`~.GroupUpdater` :class:`~.DataUpdater`"
 msgstr ":class:`~.Sector` :func:`~.rotate_vector` :class:`~.GroupUpdater` :class:`~.DataUpdater`"
 
-#: ../../source/index.rst:20
+#: ../../source/examples/_api_demonstration_options.rst:20
 msgid ""
 "from janim.imports import *\n"
 "\n"
@@ -835,12 +838,11 @@ msgstr ""
 "            duration=4\n"
 "        )"
 
-#: ../../source/index.rst:69
+#: ../../source/examples/_api_demonstration_options.rst:69
 msgid ":class:`~.MarkedItem` :class:`~.DataUpdater`"
 msgstr ":class:`~.MarkedItem` :class:`~.DataUpdater`"
 
-#: ../../source/index.rst:20
-#, fuzzy
+#: ../../source/examples/_api_demonstration_options.rst:20
 msgid ""
 "from janim.imports import *\n"
 "\n"
@@ -902,7 +904,7 @@ msgstr ""
 "        effect1 = SimpleFrameEffect(    # (2~8s) Squares at [::2] produce a color gradient\n"
 "            squares[::2],\n"
 "            shader='''\n"
-"            f_color = texture(fbo, v_texcoord);\n"
+"            f_color = frame_texture(v_texcoord);\n"
 "            f_color.gb *= v_texcoord;\n"
 "            '''\n"
 "        )\n"
@@ -915,10 +917,10 @@ msgstr ""
 "            float glitchStrength = sin(time) * 0.02;\n"
 "            vec2 offset = vec2(glitchStrength, 0.0);\n"
 "\n"
-"            float r = texture(fbo, uv + offset).r;\n"
-"            float g = texture(fbo, uv).g;\n"
-"            float b = texture(fbo, uv - offset).b;\n"
-"            float a = max(texture(fbo, uv + offset).a, max(texture(fbo, uv).a, texture(fbo, uv - offset).a));\n"
+"            float r = frame_texture(uv + offset).r;\n"
+"            float g = frame_texture(uv).g;\n"
+"            float b = frame_texture(uv - offset).b;\n"
+"            float a = max(frame_texture(uv + offset).a, max(frame_texture(uv).a, frame_texture(uv - offset).a));\n"
 "\n"
 "            float lineNoise = step(0.5, fract(uv.y * 10.0 + time));\n"
 "            r *= lineNoise;\n"
@@ -942,11 +944,11 @@ msgstr ""
 "            )\n"
 "        )"
 
-#: ../../source/index.rst:80
+#: ../../source/examples/_api_demonstration_options.rst:80
 msgid ":class:`~.SimpleFrameEffect` :class:`~.Rotate` :class:`~.DataUpdater`"
 msgstr ":class:`~.SimpleFrameEffect` :class:`~.Rotate` :class:`~.DataUpdater`"
 
-#: ../../source/index.rst:20
+#: ../../source/examples/_api_demonstration_options.rst:20
 msgid ""
 "from janim.imports import *\n"
 "\n"
@@ -1014,12 +1016,77 @@ msgid ""
 "\n"
 "        self.forward_to(subs[0].duration)"
 msgstr ""
+"from janim.imports import *\n"
+"\n"
+"class _ThreeDShapesExampleSub(Timeline):\n"
+"    def __init__(self, shape_type: str, background_color: JAnimColor):\n"
+"        super().__init__()\n"
+"        self.shape_type = shape_type\n"
+"        self.background_color = background_color\n"
+"\n"
+"    def construct(self):\n"
+"        if self.shape_type == 'smooth':\n"
+"            axes = ThreeDAxes((-8, 8), (-8, 8), (-8, 8)).apply_depth_test()\n"
+"            self.prepare(FadeIn(axes, at=1))\n"
+"\n"
+"        background = FrameRect(fill_alpha=1, fill_color=self.background_color, stroke_alpha=0, depth=100)\n"
+"        background.fix_in_frame()\n"
+"        self.prepare(FadeIn(background, at=1.5, duration=3))\n"
+"\n"
+"        for shape in [Torus(2, 1), Cylinder(2, 4), Cone(2, 4)]:\n"
+"            item = shape.into(self.shape_type).show()\n"
+"            self.play(self.RotatingCamera(), duration=4)\n"
+"            item.hide()\n"
+"        \n"
+"    def RotatingCamera(self):\n"
+"        return AnimGroup(\n"
+"            DataUpdater(\n"
+"                self.camera,\n"
+"                lambda data, p: data.points.rotate(TAU * p.alpha, axis=RIGHT),\n"
+"                rate_func=linear\n"
+"            ),\n"
+"            DataUpdater(\n"
+"                self.camera,\n"
+"                lambda data, p: data.points.rotate(TAU * p.alpha, axis=OUT),\n"
+"                rate_func=linear\n"
+"            ),\n"
+"        )\n"
+"\n"
+"class ThreeDShapesExample(Timeline):\n"
+"    def construct(self):\n"
+"        subs = [\n"
+"            _ThreeDShapesExampleSub(type, color).build().to_item()\n"
+"            for type, color in zip(\n"
+"                ['checker', 'wire', 'smooth', 'dots'],\n"
+"                ['#000022', '#000033', '#000033', '#000022']\n"
+"            )\n"
+"        ]\n"
+"        subs[0].show()\n"
+"\n"
+"        effects = [\n"
+"            RectClip(sub, anchor=ORIGIN)\n"
+"            for sub in subs\n"
+"        ]\n"
+"        effects[0].show().depth.set(-1)\n"
+"        \n"
+"        dirs = [UL, UR, DL, DR]\n"
+"\n"
+"        self.forward()\n"
+"        for sub, effect, dir in zip(subs, effects, dirs):\n"
+"            self.show(sub, effect)\n"
+"            self.prepare(\n"
+"                effect.anim\n"
+"                    .points.scale(0.5).to_border(dir, buff=0)\n"
+"                    .r.transform.set(scale=0.5)\n"
+"            )\n"
+"\n"
+"        self.forward_to(subs[0].duration)"
 
-#: ../../source/index.rst:96
-msgid ":meth:`~.SurfaceGeometry.into` :meth:`~.BuiltTimeline.to_item` :class:`~.RectClip`"
-msgstr ""
+#: ../../source/examples/_api_demonstration_options.rst:96
+msgid ":meth:`~.SurfaceGeometry.into` :meth:`~.BuiltTimeline.to_item` :class:`~.RectClip` :ref:`3d_scene` :ref:`3d_items`"
+msgstr ":meth:`~.SurfaceGeometry.into` :meth:`~.BuiltTimeline.to_item` :class:`~.RectClip` :ref:`3d_scene` :ref:`3d_items`"
 
-#: ../../source/index.rst:20
+#: ../../source/examples/_api_demonstration_options.rst:20
 msgid ""
 "from janim.imports import *\n"
 "\n"
@@ -1133,14 +1200,125 @@ msgid ""
 "        self.play(mask3.anim.invert.set(1.0))\n"
 "        self.forward(1.5)"
 msgstr ""
+"from janim.imports import *\n"
+"\n"
+"class MaskExample(Timeline):\n"
+"    def construct(self):\n"
+"        ## Part 1: Text floating up animation in a rectangular mask\n"
+"\n"
+"        txt = Text(\"Mask Example!\")\n"
+"        txt.points.scale(2).move_to(DOWN * 0.5)\n"
+"\n"
+"        # Create a rectangular mask positioned above the text\n"
+"        mask1_shape = Rect(txt.points.box.width, txt.points.box.height)\n"
+"        mask1_shape.points.next_to(txt, UP, buff=0.5)\n"
+"        mask1 = ShapeMask(txt, shape=mask1_shape).show()\n"
+"\n"
+"        # Text gradually floating upward\n"
+"        self.play(\n"
+"            *[\n"
+"                char.anim.points.shift(UP * (0.5 + txt.points.box.height))\n"
+"                for char in txt[0]\n"
+"            ],\n"
+"            lag_ratio=0.1,\n"
+"        )\n"
+"        self.forward()\n"
+"\n"
+"        ## Part 2: Mask and text transformation\n"
+"\n"
+"        # Transform the mask to a circle\n"
+"        mask2 = ShapeMask(txt, shape=Circle())\n"
+"        self.play(Transform(mask1, mask2))\n"
+"        self.forward()\n"
+"\n"
+"        # Mask feathering\n"
+"        rect = Rect(3, 3, color=LIGHT_BROWN, fill_alpha=1, depth=10)\n"
+"        self.play(FadeIn(rect))\n"
+"        self.play(\n"
+"            mask2.anim.points.shift(UP * 0.5)\n"
+"                .r.feather.set(0.1),\n"
+"        )\n"
+"        self.play(\n"
+"            Succession(\n"
+"                txt.anim.points.shift(LEFT * 1),\n"
+"                txt.anim.points.shift(RIGHT * 1),\n"
+"            )\n"
+"        )\n"
+"        self.forward()\n"
+"\n"
+"        # Transform while holding the item\n"
+"        txt2 = Text(\"The mask should be hold\")\n"
+"        txt2.points.scale(2)\n"
+"        mask2.apply(txt2)\n"
+"        self.play(TransformMatchingDiff(txt, txt2))\n"
+"        self.forward()\n"
+"\n"
+"        # Fade out of the mask itself\n"
+"        self.play(\n"
+"            FadeOut(rect),\n"
+"            FadeOut(mask2),\n"
+"        )\n"
+"        self.forward()\n"
+"        self.play(FadeOut(txt2))\n"
+"        self.forward()\n"
+"\n"
+"        ## Part 3: Mask with boolean operations\n"
+"\n"
+"        dot1 = Dot(LEFT, 1.5, color=YELLOW, fill_alpha=0.25).show()\n"
+"        dot2 = Dot(RIGHT, 1.5, color=YELLOW, fill_alpha=0.25).show()\n"
+"        txt3 = Text('Some Example Text Here', font_size=40).show()\n"
+"\n"
+"        # Create mask union and intersection using boolean_ops\n"
+"        mask_union = ShapeMask(\n"
+"            txt3, \n"
+"            shape=boolean_ops.Union(dot1, dot2)\n"
+"        )\n"
+"        mask_intersection = ShapeMask(\n"
+"            txt3, \n"
+"            shape=boolean_ops.Intersection(dot1, dot2)\n"
+"        )\n"
+"        self.forward()\n"
+"        self.play(FadeIn(mask_union))\n"
+"        self.forward(0.5)\n"
+"        self.play(Transform(mask_union, mask_intersection), duration=0.5)\n"
+"        self.forward(0.5)\n"
+"        self.play(Transform(mask_intersection, mask_union), duration=0.5)\n"
+"        self.forward(0.5)\n"
+"        self.play(FadeOut(Group(dot1, dot2, txt3)))\n"
+"        self.forward()\n"
+"\n"
+"        ## Part 4: Complex shape mask with special effects\n"
+"\n"
+"        # Complex shape mask\n"
+"        txt_fashion = Text('Fashion')\n"
+"        txt_fashion.points.scale(10)\n"
+"        dots = DotCloud(\n"
+"            *[\n"
+"                [i * 0.3 + 0.15, j * 0.3, 0]\n"
+"                for j in range(20, -40, -1)\n"
+"                for i in range(-23, 23)\n"
+"            ], \n"
+"            radius=0.1,\n"
+"            color=PURPLE_E,\n"
+"        )\n"
+"        mask3 = ShapeMask(dots, shape=txt_fashion).show()\n"
+"\n"
+"        self.prepare(\n"
+"            dots.anim(rate_func=linear).points.shift(UP * 3),\n"
+"            duration=5.0,\n"
+"        )\n"
+"        self.play(FadeIn(dots))\n"
+"        self.forward(1.5)\n"
+"        self.play(mask3.anim.invert.set(1.0))\n"
+"        self.forward(1.5)"
 
-#: ../../source/index.rst:142
+#: ../../source/examples/_api_demonstration_options.rst:142
 msgid ":class:`~.ShapeMask` :class:`~.TransformMatchingDiff` :class:`~.boolean_ops.Union` :class:`~.boolean_ops.Intersection`"
-msgstr ""
+msgstr ":class:`~.ShapeMask` :class:`~.TransformMatchingDiff` :class:`~.boolean_ops.Union` :class:`~.boolean_ops.Intersection`"
 
 #: ../../source/index.rst:21
 msgid "简单演示"
-msgstr ""
+msgstr "Simple Demonstration"
 
 #: ../../<random-choice-option>:1
 msgid "🎲 点击“随机切换”显示一个样例"
@@ -1152,20 +1330,19 @@ msgstr "Well, this itself is made with JAnim"
 
 #: ../../source/index.rst:29
 msgid "科普视频"
-msgstr ""
+msgstr "Educational Videos"
 
 #: ../../source/index.rst:37
 msgid "教学视频"
-msgstr ""
+msgstr "Tutorial Videos"
 
 #: ../../source/index.rst:45
 msgid "音游铺面"
-msgstr ""
+msgstr "Rhythm Game Chart"
 
 #: ../../source/index.rst:53
-#, fuzzy
 msgid "视频叠加演示"
-msgstr "Video Overlay Animations"
+msgstr "Video Overlay Demonstration"
 
 #: ../../source/examples/_overlay_demonstration_options.rst:9
 msgid "除了 00:00 - 01:25 的“类 Slide 演示”之外，作为视频叠加动画出现的区段："

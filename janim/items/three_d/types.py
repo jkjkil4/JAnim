@@ -188,7 +188,7 @@ class CheckerboardSurface[T: SurfaceGeometry](NormSurface[T]):
 
         该样式的曲面作为整体渲染，因此无法将每个面作为单独的物件进行操作
 
-        对于每个面以独立物件存在的形式，请参考 :class:`CheckerboardSurface`
+        对于每个面以独立物件存在的形式，请参考 :class:`VCheckerboardSurface`
 
     :param geometry: 由 :meth:`SurfaceGeometry.into` 自动提供
     :param resolution: 覆盖默认分辨率设置，可传入单个值或者传入一对值来表示在 ``u`` 和 ``v`` 方向的分辨率

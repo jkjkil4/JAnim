@@ -15,13 +15,6 @@ class ShapeMask(AppliedGroup):
     对于传入的物件，只会显示形状内部的部分
 
     :param shape: 蒙板图形，若带有后代物件，则将若干后代物件图形作 XOR
-
-        若要使用后代物件的并，可参考 :meth:`~.boolean_ops.Union.from_group`，例如
-
-        .. code-block:: python
-
-            ShapeMask(..., shape=boolean_ops.Union.from_group(shape))
-
     :param alpha: 蒙板整体透明度，范围 ``0.0 ~ 1.0``
     :param feather: 边缘羽化大小，值越大越模糊；数值上体现为羽化部分的两侧的距离
     :param invert: 反转蒙板， ``0.0`` 为正常， ``1.0`` 为完全反转
@@ -31,6 +24,12 @@ class ShapeMask(AppliedGroup):
         text = Text('Hello').show()
         mask = ShapeMask(text, shape=Circle(radius=2), feather=0.2)
         mask.show()
+
+    若 ``shape`` 要使用后代物件的并，可参考 :meth:`~.boolean_ops.Union.from_group` ，例如
+
+    .. code-block:: python
+
+        ShapeMask(..., shape=boolean_ops.Union.from_group(shape))
 
     嵌套蒙板和 :class:`~.FrameEffect` 一样，需要显式嵌套 :class:`~.ShapeMask` 对象：
 

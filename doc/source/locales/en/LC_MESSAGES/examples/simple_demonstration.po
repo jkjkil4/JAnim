@@ -21,19 +21,19 @@ msgstr ""
 
 #: ../../source/examples/simple_demonstration.rst:2
 msgid "简单演示"
-msgstr ""
+msgstr "Simple Demonstration"
 
 #: ../../source/examples/tip.rst:3
 msgid "欢迎联系我们将你使用 JAnim 创作的作品添加到该页面中"
-msgstr ""
+msgstr "Feel free to contact us to have your JAnim creations added to this page"
 
 #: ../../source/examples/tip.rst:5
 msgid "QQ 群：970174336"
-msgstr ""
+msgstr "QQ Group: 970174336"
 
 #: ../../source/examples/tip.rst:7
 msgid "Email：1173374788@qq.com"
-msgstr ""
+msgstr "Email: 1173374788@qq.com"
 
 #: ../../source/examples/_simple_demonstration_options.rst:8
 msgid "嗯，这个本身就是用 JAnim 制作的"

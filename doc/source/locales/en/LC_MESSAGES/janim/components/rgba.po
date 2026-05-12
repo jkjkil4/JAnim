@@ -21,28 +21,34 @@ msgstr ""
 
 #: ../../source/janim/components/rgba.rst:2
 msgid "rgba"
-msgstr ""
+msgstr "rgba"
 
 #: janim.components.rgba.Cmpt_Rgba:1 of
 msgid "单颜色组件"
-msgstr ""
+msgstr "Single-color component"
 
 #: janim.components.rgba.Cmpt_Rgba.set:1 of
 msgid "``color`` 表示传入的 ``RGB`` 颜色数据，单个颜色 （支持 ``'#FF0000'`` ``'red'`` ``[1, 0, 0.5]`` 的表示）"
 msgstr ""
+"``color`` represents the passed ``RGB`` color data, a single color (supports representations such as ``'#FF0000'``, "
+"``'red'``, and ``[1, 0, 0.5]``)"
 
 #: janim.components.rgba.Cmpt_Rgba.set:3 of
 msgid "``alpha`` 表示传入的透明度数据 （``1`` 表示不透明，``0`` 表示完全透明）"
-msgstr ""
+msgstr "``alpha`` represents the passed transparency data (``1`` means opaque, ``0`` means fully transparent)"
 
 #: janim.components.rgba.Cmpt_Rgba.set:5 of
 msgid "默认情况下会将所有后代物件也设置成指定的属性，传入 ``root_only=True`` 可以只设置根物件的"
 msgstr ""
+"By default, all descendant items will also be set to the specified property; passing ``root_only=True`` limits it to only "
+"the root item"
 
 #: janim.components.rgba.Cmpt_Rgba.set:7 of
 msgid "特殊传参："
-msgstr ""
+msgstr "Special argument handling:"
 
 #: janim.components.rgba.Cmpt_Rgba.set:9 of
 msgid "当 ``color`` 为四分量 ``RGBA`` 颜色数据时， 则同时表示了 ``color`` 和 ``alpha`` 二者，因此不能再传入 ``alpha`` 参数"
 msgstr ""
+"When ``color`` is a four-component ``RGBA`` color value, it represents both ``color`` and ``alpha``, so the ``alpha`` "
+"parameter cannot be passed again"

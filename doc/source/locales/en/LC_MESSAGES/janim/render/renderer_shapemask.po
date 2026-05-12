@@ -21,20 +21,20 @@ msgstr ""
 
 #: ../../source/janim/render/renderer_shapemask.rst:2
 msgid "renderer_shapemask"
-msgstr ""
+msgstr "renderer_shapemask"
 
 #: janim.render.renderer_shapemask.ShapeMaskRenderer:1 of
 msgid "蒙版渲染器"
-msgstr ""
+msgstr "Mask Renderer"
 
 #: janim.render.renderer_shapemask.ShapeMaskRenderer:3 of
 msgid "``fbo_content``: 渲染被遮罩物件的内容"
-msgstr ""
+msgstr "``fbo_content``: renders the content of the masked items"
 
 #: janim.render.renderer_shapemask.ShapeMaskRenderer:4 of
 msgid "``fbo_mask``: 渲染蒙版形状（白色填充）"
-msgstr ""
+msgstr "``fbo_mask``: renders the mask shape (white fill)"
 
 #: janim.render.renderer_shapemask.ShapeMaskRenderer:6 of
 msgid "通过 ``shapemask_compose`` 着色器将两者合成输出"
-msgstr ""
+msgstr "Composites the two outputs through the ``shapemask_compose`` shader"

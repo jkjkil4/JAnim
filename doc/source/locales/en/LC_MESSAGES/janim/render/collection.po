@@ -21,16 +21,18 @@ msgstr ""
 
 #: ../../source/janim/render/collection.rst:2
 msgid "collection"
-msgstr ""
+msgstr "collection"
 
 #: janim.render.collection.RenderCollection:1 of
 msgid "用于辅助将渲染代理给特殊物件，比如 :class:`~.FrameEffect` 等"
-msgstr ""
+msgstr "Used to help delegate rendering to special items such as :class:`~.FrameEffect`"
 
 #: janim.render.collection.RenderCollection.delegates:1 of
 msgid "调用该方法来代理与 ``items`` 相关联的渲染"
-msgstr ""
+msgstr "Call this method to delegate rendering associated with ``items``"
 
 #: janim.render.collection.RenderCollection.delegates:3 of
 msgid "会返回一个 :class:`RenderCollection` 实例，应通过在后续调用其 :meth:`render` 方法来渲染代理出去的物件"
 msgstr ""
+"Returns a :class:`RenderCollection` instance; you should later call its :meth:`render` method to render the delegated "
+"items"

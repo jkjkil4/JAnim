@@ -94,7 +94,7 @@
     .. janim-example:: ThreeDShapesExample
         :extract-from-example-mark:
         :media: _static/videos/ThreeDShapesExample.mp4
-        :ref: :meth:`~.SurfaceGeometry.into` :meth:`~.BuiltTimeline.to_item` :class:`~.RectClip`
+        :ref: :meth:`~.SurfaceGeometry.into` :meth:`~.BuiltTimeline.to_item` :class:`~.RectClip` :ref:`3d_scene` :ref:`3d_items`
 
 .. random-option::
 

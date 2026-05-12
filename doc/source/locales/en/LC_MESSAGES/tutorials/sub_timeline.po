@@ -170,7 +170,6 @@ msgstr ""
 "to :class:`~.FrameEffect` and its derived classes to apply complex visual effects:"
 
 #: ../../source/tutorials/sub_timeline.rst:13
-#, fuzzy
 msgid ""
 "class MainTimeline(Timeline):\n"
 "    def construct(self):\n"
@@ -212,7 +211,7 @@ msgstr ""
 "        effect = SimpleFrameEffect(\n"
 "            tl1,\n"
 "            shader='''\n"
-"            f_color = texture(fbo, v_texcoord);\n"
+"            f_color = frame_texture(v_texcoord);\n"
 "\n"
 "            vec3 col = 0.5 + 0.5 * cos(time * 1.5 + v_texcoord.xyx + vec3(0,2,4));\n"
 "            f_color.rgb *= col;\n"

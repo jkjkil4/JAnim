@@ -5,4 +5,4 @@
 
 .. unwrap-random-options::
 
-    .. include:: _science_video_options.rst
+    .. include:: _educational_video_options.rst

@@ -25,11 +25,11 @@ msgstr "frame_effect"
 
 #: janim.items.effect.frame_effect.AppliedGroup:1 of
 msgid ":class:`FrameEffect` 等类的基础类"
-msgstr ""
+msgstr "The base class for classes such as :class:`FrameEffect`"
 
 #: janim.items.effect.frame_effect.AppliedGroup:3 of
-msgid "提供了 :meth:`apply` 和 :meth:`discord` 方法用于标记对指定的物件 应用/取消应用 效果"
-msgstr ""
+msgid "提供了 :meth:`apply` 和 :meth:`discard` 方法用于标记对指定的物件 应用/取消应用 效果"
+msgstr "Provides :meth:`apply` and :meth:`discard` methods to mark applying or removing the effect for specified items"
 
 #: janim.items.effect.frame_effect.AppliedGroup.add:3 of
 msgid "调用 :meth:`add` 很可能不会按预期工作"
@@ -64,7 +64,7 @@ msgid "着色器基本格式："
 msgstr "Basic shader format:"
 
 #: janim.items.effect.frame_effect.FrameEffect:5 of
-#, fuzzy, python-brace-format
+#, python-brace-format
 msgid ""
 "#version 330 core\n"
 "\n"
@@ -87,15 +87,14 @@ msgstr ""
 "in vec2 v_texcoord; // Input texture coordinates\n"
 "out vec4 f_color;   // Output color\n"
 "\n"
-"uniform sampler2D fbo; // Input texture (containing the rendering results of items)\n"
-"\n"
 "#[JA_FINISH_UP_UNIFORMS]\n"
 "\n"
 "void main()\n"
 "{\n"
 "    // Perform processing, for example\n"
-"    f_color = texture(fbo, v_texcoord); // Read texture color\n"
-"    f_color.rgb = 1.0 - f_color.rgb; // Invert colors\n"
+"    f_color = frame_texture(v_texcoord);    // Note: use frame_texture to read texture color (i.e. the rendering result "
+"of items)\n"
+"    f_color.rgb = 1.0 - f_color.rgb;        // Invert colors\n"
 "\n"
 "    #[JA_FINISH_UP]\n"
 "}"

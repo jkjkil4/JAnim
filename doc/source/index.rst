@@ -32,7 +32,7 @@ JAnim 是一个用于创建流畅动画的库，以程序化动画为核心理�
             :start-text: 🎲 点击“随机切换”显示一个样例
             :destroy:
             
-            .. include:: examples/_science_video_options.rst
+            .. include:: examples/_educational_video_options.rst
 
     .. translatable-tab:: 教学视频
 
@@ -40,7 +40,7 @@ JAnim 是一个用于创建流畅动画的库，以程序化动画为核心理�
             :start-text: 🎲 点击“随机切换”显示一个样例
             :destroy:
 
-            .. include:: examples/_education_video_options.rst
+            .. include:: examples/_tutorial_video_options.rst
 
     .. translatable-tab:: 音游铺面
 
@@ -125,8 +125,8 @@ JAnim 是一个用于创建流畅动画的库，以程序化动画为核心理�
 
     examples/api_demonstration
     examples/simple_demonstration
-    examples/science_video
-    examples/education_video
+    examples/educational_video
+    examples/tutorial_video
     examples/rhythm_game
     examples/overlay_demonstration
 

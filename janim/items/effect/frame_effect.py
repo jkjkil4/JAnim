@@ -38,7 +38,7 @@ class AppliedGroup(Item):
     """
     :class:`FrameEffect` 等类的基础类
 
-    提供了 :meth:`apply` 和 :meth:`discord` 方法用于标记对指定的物件 应用/取消应用 效果
+    提供了 :meth:`apply` 和 :meth:`discard` 方法用于标记对指定的物件 应用/取消应用 效果
     """
 
     _items = CmptInfo(Cmpt_List[Self, Item])

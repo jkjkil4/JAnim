@@ -21,186 +21,199 @@ msgstr ""
 
 #: ../../source/janim/items/three_d/types.rst:2
 msgid "types"
-msgstr ""
+msgstr "types"
 
 #: janim.items.three_d.types.SurfaceFace:1 of
 msgid ":class:`VCheckerboardSurface` 的每个面"
-msgstr ""
+msgstr "Each face of :class:`VCheckerboardSurface`"
 
 #: janim.items.three_d.types.NormSurface:1 of
 msgid ":class:`CheckerboardSurface` 和 :class:`SmoothSurface` 的基类"
-msgstr ""
+msgstr "Base class for :class:`CheckerboardSurface` and :class:`SmoothSurface`"
 
 #: janim.items.three_d.types.NormSurface:3 of
 msgid "提供了对 ``du_points`` 和 ``dv_points`` 的封装，以便计算法向量"
-msgstr ""
+msgstr "Provides wrappers around ``du_points`` and ``dv_points`` for computing normal vectors"
 
 #: janim.items.three_d.types.NormSurface.align_for_interpolate:1 of
 msgid "依照 uv 网格对齐采样分辨率以及三角形索引，而不是像原先一样简单逐点对齐"
 msgstr ""
+"Align the sampling resolution and triangle indices according to the UV grid, instead of simply aligning point by point as "
+"before"
 
 #: janim.items.three_d.types.CheckerboardSurface:1 janim.items.three_d.types.VCheckerboardSurface:1 of
 msgid "棋盘格样式的曲面，默认着色为蓝色深浅交替网格"
-msgstr ""
+msgstr "Checkerboard-style surface, default shaded with alternating blue grid cells"
 
 #: janim.items.three_d.types.CheckerboardSurface:5 janim.items.three_d.types.SmoothSurface:5 of
 msgid "该样式的曲面在半透明情况下的表现有待完善"
-msgstr ""
+msgstr "The behavior of this surface style under semi-transparent conditions still needs improvement"
 
 #: janim.items.three_d.types.CheckerboardSurface:9 of
 msgid "该样式的曲面作为整体渲染，因此无法将每个面作为单独的物件进行操作"
-msgstr ""
+msgstr "This surface style is rendered as a whole, so each face cannot be manipulated as a separate item"
 
 #: janim.items.three_d.types.CheckerboardSurface:11 of
-msgid "对于每个面以独立物件存在的形式，请参考 :class:`CheckerboardSurface`"
-msgstr ""
+msgid "对于每个面以独立物件存在的形式，请参考 :class:`VCheckerboardSurface`"
+msgstr "For a version where each face exists as an independent item, see :class:`VCheckerboardSurface`"
 
 #: ../../source/janim/items/three_d/types.rst
 msgid "参数"
-msgstr ""
+msgstr "Parameters"
 
 #: janim.items.three_d.types.CheckerboardSurface:13 janim.items.three_d.types.DotCloudSurface:3
 #: janim.items.three_d.types.SmoothSurface:7 janim.items.three_d.types.VCheckerboardSurface:9
 #: janim.items.three_d.types.WireframeSurface:7 of
 msgid "由 :meth:`SurfaceGeometry.into` 自动提供"
-msgstr ""
+msgstr "Provided automatically by :meth:`SurfaceGeometry.into`"
 
 #: janim.items.three_d.types.CheckerboardSurface:14 janim.items.three_d.types.DotCloudSurface:4
 #: janim.items.three_d.types.SmoothSurface:8 janim.items.three_d.types.VCheckerboardSurface:10
 #: janim.items.three_d.types.WireframeSurface:8 of
 msgid "覆盖默认分辨率设置，可传入单个值或者传入一对值来表示在 ``u`` 和 ``v`` 方向的分辨率"
 msgstr ""
+"Override the default resolution setting. You can pass a single value or a pair of values to represent the resolution in "
+"the ``u`` and ``v`` directions"
 
 #: janim.items.three_d.types.CheckerboardSurface:15 janim.items.three_d.types.VCheckerboardSurface:11 of
 msgid "棋盘格颜色列表，会对网格循环使用其中的颜色"
-msgstr ""
+msgstr "A list of checkerboard colors, cycled through on the grid"
 
 #: janim.items.three_d.types.CheckerboardSurface.apply_style:1 janim.items.three_d.types.SmoothSurface.apply_style:1 of
 msgid "设置物件自身的样式，不影响子物件"
-msgstr ""
+msgstr "Set the item's own style without affecting child items"
 
 #: janim.items.three_d.types.CheckerboardSurface.apply_style:3 janim.items.three_d.types.SmoothSurface.apply_style:3 of
 msgid "另见：:meth:`set`"
-msgstr ""
+msgstr "See also: :meth:`set`"
 
 #: janim.items.three_d.types.VCheckerboardSurface:5 of
 msgid "由于该样式的曲面的每个网格面都是独立的 :class:`~.VItem` 物件，因此性能普遍较差"
-msgstr ""
+msgstr "Since each grid face of this surface style is an independent :class:`~.VItem`, performance is generally worse"
 
 #: janim.items.three_d.types.VCheckerboardSurface:7 of
 msgid "对于性能较优的方式，请参考 :class:`CheckerboardSurface`"
-msgstr ""
+msgstr "For a more performant approach, see :class:`CheckerboardSurface`"
 
 #: janim.items.three_d.types.VCheckerboardSurface:12 of
 msgid "网格边线颜色"
-msgstr ""
+msgstr "Grid line color"
 
 #: janim.items.three_d.types.VCheckerboardSurface:13 of
 msgid "网格边线粗细"
-msgstr ""
+msgstr "Grid line thickness"
 
 #: janim.items.three_d.types.VCheckerboardSurface.set_fill_by_checkerboard:1 of
 msgid "以棋盘网格的样式设置填充色"
-msgstr ""
+msgstr "Set fill color in a checkerboard pattern"
 
 #: janim.items.three_d.types.VCheckerboardSurface.set_fill_by_checkerboard:3 of
 msgid "用于交替填充的颜色序列（按顺序循环使用），例如只有两个颜色时即为经典的棋盘网格样式"
 msgstr ""
+"Sequence of colors used for alternating fills (cycled in order), e.g. with two colors this becomes the classic "
+"checkerboard pattern"
 
 #: janim.items.three_d.types.VCheckerboardSurface.set_fill_by_checkerboard:4 of
 msgid "填充透明度；若为 ``None`` 则保持当前透明度不变"
-msgstr ""
+msgstr "Fill opacity; if ``None``, keep the current opacity unchanged"
 
 #: janim.items.three_d.types.VCheckerboardSurface.align_for_interpolate:1 of
 msgid "依照 uv 网格对齐棋盘格物件，而不是像原先一样简单逐个对齐"
-msgstr ""
+msgstr "Align checkerboard items according to the UV grid, instead of simply aligning them one by one as before"
 
 #: janim.items.three_d.types.VCheckerboardSurface.get_children_in_grid:1 of
 msgid "得到棋盘格二维数组，``v`` 主序"
-msgstr ""
+msgstr "Get the checkerboard 2D array, ``v`` major order"
 
 #: janim.items.three_d.types.WireframeSurface:1 of
 msgid "线框样式的曲面"
-msgstr ""
+msgstr "Wireframe-style surface"
 
 #: janim.items.three_d.types.WireframeSurface:5 of
 msgid "由于该样式的曲面的每个线框都是独立的 :class:`~.VItem` 物件，因此性能普遍较差"
-msgstr ""
+msgstr "Since each wireframe of this surface style is an independent :class:`~.VItem`, performance is generally worse"
 
 #: janim.items.three_d.types.WireframeSurface:9 of
 msgid "线框颜色"
-msgstr ""
+msgstr "Wireframe color"
 
 #: janim.items.three_d.types.WireframeSurface:10 of
 msgid "线框粗细"
-msgstr ""
+msgstr "Wireframe thickness"
 
 #: janim.items.three_d.types.WireframeSurface.align_for_interpolate:1 of
 msgid "依照 uv 网格对齐线框，而不是像原先一样简单逐个对齐"
-msgstr ""
+msgstr "Align the wireframe according to the UV grid, instead of simply aligning them one by one as before"
 
 #: janim.items.three_d.types.SmoothSurface:1 of
 msgid "平滑表面样式的曲面"
-msgstr ""
+msgstr "Surface with smooth shading"
 
 #: janim.items.three_d.types.DotCloudSurface:1 of
 msgid "点集样式的曲面"
-msgstr ""
+msgstr "Point-cloud surface"
 
 #: janim.items.three_d.types.DotCloudSurface:5 of
 msgid "每个点的半径大小，考虑到点会比较密集，因此这里的默认值会更小一些"
-msgstr ""
+msgstr "Radius of each point. Since points are relatively dense, the default here is smaller"
 
 #: janim.items.three_d.types.DotCloudSurface.get_points_in_grid:1 of
 msgid "得到点集二维数组，``v`` 主序"
-msgstr ""
+msgstr "Get the point-cloud 2D array, ``v`` major order"
 
 #: janim.items.three_d.types.DotCloudSurface.align_for_interpolate:1 of
 msgid "依照 uv 网格对齐点，而不是像原先一样简单逐点对齐"
-msgstr ""
+msgstr "Align points according to the UV grid, instead of simply aligning point by point as before"
 
 #: janim.items.three_d.types.SurfaceGeometry.into:1 of
 msgid "根据曲面几何信息构造出指定类型的物件"
-msgstr ""
+msgstr "Construct an item of the specified type from surface geometry information"
 
 #: janim.items.three_d.types.SurfaceGeometry.into:3 of
 msgid "可使用："
-msgstr ""
+msgstr "Available values:"
 
 #: janim.items.three_d.types.SurfaceGeometry.into:5 of
 msgid "包括 ``'checker'`` 、 ``'vchecker'`` 、 ``'wire'`` 、 ``'smooth'`` 、 ``'dots'`` 的字符串，我们一般使用这些"
 msgstr ""
+"Strings including ``'checker'``, ``'vchecker'``, ``'wire'``, ``'smooth'``, and ``'dots'``; these are the ones we usually "
+"use"
 
 #: janim.items.three_d.types.SurfaceGeometry.into:7 of
 msgid ""
 "他们分别对"
 "应 :class:`CheckerboardSurface` 、 :class:`VCheckerboardSurface` 、 :class:`WireframeSurface` 、 :class:`SmoothSurface` 、 :class:`DotCloudSurface`"
 msgstr ""
+"They correspond "
+"to :class:`CheckerboardSurface`, :class:`VCheckerboardSurface`, :class:`WireframeSurface`, :class:`SmoothSurface`, "
+"and :class:`DotCloudSurface`"
 
 #: janim.items.three_d.types.SurfaceGeometry.into:9 of
 msgid "可参考对应的文档说明"
-msgstr ""
+msgstr "See the corresponding documentation for details"
 
 #: janim.items.three_d.types.SurfaceGeometry.into:11 of
 msgid "若使用一个自定义的物件类，其应至少接受一个 ``geometry`` 参数"
-msgstr ""
+msgstr "If using a custom item class, it should accept at least a ``geometry`` parameter"
 
 #: janim.items.three_d.types.SurfaceGeometry.into:13 of
 msgid "示例："
-msgstr ""
+msgstr "Example:"
 
 #: janim.items.three_d.types.SurfaceGeometry.into:15 of
 msgid "Sphere().into('checker')"
-msgstr ""
+msgstr "Sphere().into('checker')"
 
 #: janim.items.three_d.types.SurfaceGeometry.into:19 of
 msgid "对于不同类型物件特定的样式配置，放在 ``into`` 或是几何构造（例如这里的 ``Sphere()`` ）中均可"
 msgstr ""
+"For style settings specific to different item types, they can be placed either in ``into`` or in the geometry constructor "
+"(for example, ``Sphere()``)"
 
 #: janim.items.three_d.types.SurfaceGeometry.into:21 of
 msgid "Sphere().into('vchecker', fill_alpha=0.5)"
-msgstr ""
+msgstr "Sphere().into('vchecker', fill_alpha=0.5)"
 
 #: janim.items.three_d.types.SurfaceGeometry.into:25 of
 msgid "Sphere(fill_alpha=0.5).into('vchecker')"
-msgstr ""
+msgstr "Sphere(fill_alpha=0.5).into('vchecker')"

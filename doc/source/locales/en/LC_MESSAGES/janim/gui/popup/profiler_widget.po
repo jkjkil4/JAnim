@@ -21,4 +21,4 @@ msgstr ""
 
 #: ../../source/janim/gui/popup/profiler_widget.rst:2
 msgid "profiler_widget"
-msgstr ""
+msgstr "profiler_widget"

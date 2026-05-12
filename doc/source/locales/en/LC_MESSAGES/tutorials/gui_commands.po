@@ -30,7 +30,6 @@ msgstr ""
 "feature panels in the GUI."
 
 #: ../../source/tutorials/gui_commands.rst:6
-#, fuzzy
 msgid "更为重要的是，面板的交互结果在提交后，可以 **应用到源代码上** 。"
 msgstr "More importantly, after submission, the panel's interaction results can be **applied to the source code**."
 

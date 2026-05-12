@@ -20,17 +20,16 @@ msgstr ""
 "Generated-By: Babel 2.17.0\n"
 
 #: ../../source/tutorials/camera_usage.rst:4
-#, fuzzy
 msgid "摄像机的使用"
-msgstr "Camera Usage (TODO)"
+msgstr "Using the Camera"
 
 #: ../../source/tutorials/camera_usage.rst:7
 msgid "基础知识"
-msgstr ""
+msgstr "Basic Knowledge"
 
 #: ../../source/tutorials/camera_usage.rst:9
 msgid "我们知道，一个基本的 JAnim 时间轴长这样："
-msgstr ""
+msgstr "As we know, a basic JAnim timeline looks like this:"
 
 #: ../../source/tutorials/camera_usage.rst:11
 msgid ""
@@ -38,14 +37,17 @@ msgid ""
 "    def construct(self):\n"
 "        ..."
 msgstr ""
+"class MyTimeline(Timeline):\n"
+"    def construct(self):\n"
+"        ..."
 
 #: ../../source/tutorials/camera_usage.rst:17
 msgid "JAnim 中内置了一个摄像机物件，我们可以通过 ``self.camera`` 访问"
-msgstr ""
+msgstr "JAnim has a built-in camera item that can be accessed via ``self.camera``"
 
 #: ../../source/tutorials/camera_usage.rst:19
 msgid "摄像机物件像普通物件一样平移、旋转以及缩放："
-msgstr ""
+msgstr "Camera items can be translated, rotated, and scaled like regular items:"
 
 #: ../../source/tutorials/camera_usage.rst:13
 msgid ""
@@ -73,15 +75,38 @@ msgid ""
 ")\n"
 "self.forward()"
 msgstr ""
+"# Spiral parametric equation\n"
+"def t_func(self, t):\n"
+"    scale = 0.01\n"
+"    return np.array([\n"
+"        scale * np.cos(t) * t**2,\n"
+"        scale * np.sin(t) * t**2,\n"
+"        0,\n"
+"    ])\n"
+"\n"
+"# Coordinate system\n"
+"plane = NumberPlane(faded_line_ratio=1)\n"
+"# Create spiral curve\n"
+"curve = ParametricCurve(t_func, t_range=[0, 5 * TAU, 0.2], color=YELLOW)\n"
+"\n"
+"self.show(plane, curve)\n"
+"\n"
+"self.forward()\n"
+"self.play(\n"
+"    self.camera.anim.points.rotate(PI / 2).scale(0.25), # Rotate and scale camera\n"
+"    curve.anim.radius.scale(0.25),  # Scale spiral thickness\n"
+"    duration=3\n"
+")\n"
+"self.forward()"
 
 #: ../../source/tutorials/camera_usage.rst:39 ../../source/tutorials/camera_usage.rst:45
 #: ../../source/tutorials/camera_usage.rst:48 ../../source/tutorials/camera_usage.rst:50
 msgid "参考："
-msgstr ""
+msgstr "See also:"
 
 #: ../../source/tutorials/camera_usage.rst:47
 msgid ":class:`~.NumberPlane` :class:`~.ParametricCurve`"
-msgstr ""
+msgstr ":class:`~.NumberPlane` :class:`~.ParametricCurve`"
 
 #: ../../source/tutorials/camera_usage.rst:13
 #, python-brace-format
@@ -104,34 +129,55 @@ msgid ""
 ")\n"
 "self.forward()"
 msgstr ""
+"# Coordinate system\n"
+"axes = Axes(axis_config={ 'include_numbers': True })\n"
+"# Create square\n"
+"square = Square()\n"
+"square.points.shift(UR * 2)\n"
+"\n"
+"self.show(axes, square)\n"
+"\n"
+"self.forward()\n"
+"self.play(\n"
+"    self.camera.anim.points.shift(LEFT * 2),\n"
+"    self.camera.anim(duration=2).points.move_to(square),\n"
+"    Wait(0.5),\n"
+"    self.camera.anim(duration=1.5).points.to_center(),\n"
+"    lag_ratio=1\n"
+")\n"
+"self.forward()"
 
 #: ../../source/tutorials/camera_usage.rst:41
 msgid ":class:`~.Axes`"
-msgstr ""
+msgstr ":class:`~.Axes`"
 
 #: ../../source/tutorials/camera_usage.rst:73
 msgid "需要注意的是，摄像机缩放在 <1 的时候是放大画面，在 >1 的时候是缩小画面"
-msgstr ""
+msgstr "Note that when the camera scale is less than 1, it magnifies the image; when greater than 1, it shrinks the image"
 
 #: ../../source/tutorials/camera_usage.rst:75
 msgid "这是因为我们缩放的是摄像机的大小而不是画面的大小，缩小摄像机，缩小了“取景范围”，画面自然就会被放大，反之亦然"
 msgstr ""
+"This is because we are scaling the size of the camera, not the size of the image. Shrinking the camera shrinks the "
+"\"framing range\", naturally magnifying the image, and vice versa"
 
 #: ../../source/tutorials/camera_usage.rst:78
 msgid "将物件固定在摄像机画面中"
-msgstr ""
+msgstr "Fixing Items in the Camera Frame"
 
 #: ../../source/tutorials/camera_usage.rst:80
 msgid "移动摄像机会改变视野范围，让画面整体移动"
-msgstr ""
+msgstr "Moving the camera changes the viewport and shifts the entire image"
 
 #: ../../source/tutorials/camera_usage.rst:82
 msgid "而有些时候，我们会想让某些物件仍保持在画面中不动，比如标题文本或是一些提示文本等"
-msgstr ""
+msgstr "However, sometimes we want certain items to remain stationary in the frame, such as title text or hint text"
 
 #: ../../source/tutorials/camera_usage.rst:84
 msgid "为了达到这个目的，我们可以使用 :meth:`~.Item.fix_in_frame` 方法来做到，比如我们稍微修改一下上面的例子得到："
 msgstr ""
+"To achieve this, we can use the :meth:`~.Item.fix_in_frame` method. For example, with a slight modification to the "
+"example above:"
 
 #: ../../source/tutorials/camera_usage.rst:13
 #, python-brace-format
@@ -163,24 +209,52 @@ msgid ""
 ")\n"
 "self.forward()"
 msgstr ""
+"# Coordinate system\n"
+"axes = Axes(axis_config={ 'include_numbers': True })\n"
+"# Create square\n"
+"square = Square()\n"
+"square.points.shift(UR * 2)\n"
+"\n"
+"# Camera center point and text\n"
+"dot = Dot(ORIGIN, color=BLUE).fix_in_frame()\n"
+"txt1 = Text('Camera Center', color=BLUE).fix_in_frame()\n"
+"txt1.points.next_to(dot, DOWN)\n"
+"\n"
+"# Text at top-left corner of the frame\n"
+"txt2 = Text('Moving the camera ...').fix_in_frame()\n"
+"txt2.points.to_border(UL)\n"
+"\n"
+"self.show(axes, square, dot, txt1, txt2)\n"
+"\n"
+"self.forward()\n"
+"self.play(\n"
+"    self.camera.anim.points.shift(LEFT * 2),\n"
+"    self.camera.anim(duration=2).points.move_to(square),\n"
+"    Wait(0.5),\n"
+"    self.camera.anim(duration=1.5).points.to_center(),\n"
+"    lag_ratio=1\n"
+")\n"
+"self.forward()"
 
 #: ../../source/tutorials/camera_usage.rst:50
 msgid ":class:`~.Axes` :meth:`~.Item.fix_in_frame`"
-msgstr ""
+msgstr ":class:`~.Axes` :meth:`~.Item.fix_in_frame`"
 
 #: ../../source/tutorials/camera_usage.rst:118
 msgid ""
 "在这个例子中，我们让一个 ``dot`` 表示摄像机中心，并通过 :meth:`~.Item.fix_in_frame` 达到了 ``dot`` 以及若干提示文本在画面"
 "中保持不动的效果"
 msgstr ""
+"In this example, we use a ``dot`` to represent the camera center, and through :meth:`~.Item.fix_in_frame`, the ``dot`` "
+"and several hint texts are kept stationary in the frame"
 
 #: ../../source/tutorials/camera_usage.rst:121
 msgid "配合动画方法动态调整位置"
-msgstr ""
+msgstr "Dynamically Adjusting Position with Animation Methods"
 
 #: ../../source/tutorials/camera_usage.rst:123
 msgid "和一般的物件一样，显然我们也可以用一些动画来控制摄像机的位置，来达到一些有意思的效果："
-msgstr ""
+msgstr "Like regular items, we can clearly use animations to control the camera position and create interesting effects:"
 
 #: ../../source/tutorials/camera_usage.rst:13
 #, python-brace-format
@@ -214,26 +288,55 @@ msgid ""
 "    self.camera.anim.load_state()\n"
 ")"
 msgstr ""
+"axes = Axes(\n"
+"    (0, 10), (0, 5),\n"
+"    axis_config={\n"
+"        'include_tip': True,\n"
+"        'include_numbers': True,\n"
+"    }\n"
+")\n"
+"graph = axes.get_graph(lambda x: math.sin(x) + x / 2, color=BLUE)\n"
+"\n"
+"dot = SmallDot(axes.c2p(), glow_alpha=0.5)\n"
+"\n"
+"self.show(axes, graph)\n"
+"self.camera.points.move_to(axes)\n"
+"self.camera.save_state()\n"
+"\n"
+"self.play(\n"
+"    self.camera.anim.points.move_to(dot).scale(0.35),\n"
+"    FadeIn(dot, scale=0.5),\n"
+")\n"
+"self.play(\n"
+"    MoveAlongPath(dot, graph),\n"
+"    MoveAlongPath(self.camera, graph),\n"
+"    duration=4\n"
+")\n"
+"self.play(\n"
+"    FadeOut(dot),\n"
+"    self.camera.anim.load_state()\n"
+")"
 
 #: ../../source/tutorials/camera_usage.rst:52
 msgid ":meth:`~.Axes.get_graph` :meth:`~.CoordinateSystem.c2p` :meth:`~.Item.save_state`"
-msgstr ""
+msgstr ":meth:`~.Axes.get_graph` :meth:`~.CoordinateSystem.c2p` :meth:`~.Item.save_state`"
 
 #: ../../source/tutorials/camera_usage.rst:159
 msgid "同样的，你也可以给摄像机加上一些 Updater，可以另行尝试一下。"
-msgstr ""
+msgstr "Similarly, you can also add some Updater to the camera and try it out."
 
 #: ../../source/tutorials/camera_usage.rst:162
 msgid "其它"
-msgstr ""
+msgstr "Others"
 
 #: ../../source/tutorials/camera_usage.rst:164
 msgid "JAnim GUI 提供了一个方便的功能在预览窗口调整摄像机，可另行参阅 :ref:`guicmd_camera` 进行了解"
 msgstr ""
+"JAnim GUI provides a convenient feature to adjust the camera in the preview window; see :ref:`guicmd_camera` for details"
 
 #: ../../source/tutorials/camera_usage.rst:166
 msgid "对于在三维空间中使用摄像机，另行参考 :ref:`3d_scene` 页面中的介绍"
-msgstr ""
+msgstr "For using cameras in 3D space, refer to the description on the :ref:`3d_scene` page"
 
 #~ msgid "文档有待完善"
 #~ msgstr "Documentation needs to be improved"

@@ -21,28 +21,30 @@ msgstr ""
 
 #: ../../source/janim/render/profiler.rst:2
 msgid "profiler"
-msgstr ""
+msgstr "profiler"
 
 #: janim.render.profiler.RenderProfiler:1 of
 msgid "性能分析器"
-msgstr ""
+msgstr "Performance Profiler"
 
 #: janim.render.profiler.RenderProfiler:3 of
 msgid "用于 patch 物件渲染，统计物件渲染的耗时与性能"
-msgstr ""
+msgstr "Used to patch item rendering and collect timing and performance statistics"
 
 #: ../../source/janim/render/profiler.rst
 msgid "参数"
-msgstr ""
+msgstr "Parameters"
 
 #: janim.render.profiler.RenderProfiler:5 of
 msgid "用于接收结果的回调函数，接收一个 :class:`FrameRecord` 参数"
-msgstr ""
+msgstr "Callback used to receive results, taking a :class:`FrameRecord` argument"
 
 #: janim.render.profiler.RenderProfiler.record_frame:1 of
 msgid "在渲染顶层入口 ``with`` 该函数，统计内部代码块的物件用时，并将结果传递给 ``callback`` 回调"
 msgstr ""
+"Use this function in a top-level rendering ``with`` block to measure the time spent on items in the inner code block and "
+"pass the result to the ``callback``"
 
 #: janim.render.profiler.FrameRecord:1 of
 msgid "各个种类物件在单帧中的耗时统计"
-msgstr ""
+msgstr "Timing statistics for each kind of item within a single frame"

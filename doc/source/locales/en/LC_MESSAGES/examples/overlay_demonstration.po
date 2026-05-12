@@ -21,23 +21,24 @@ msgstr ""
 
 #: ../../source/examples/overlay_demonstration.rst:2
 msgid "视频叠加演示"
-msgstr ""
+msgstr "Video Overlay Demonstration"
 
 #: ../../source/examples/tip.rst:3
 msgid "欢迎联系我们将你使用 JAnim 创作的作品添加到该页面中"
-msgstr ""
+msgstr "Feel free to contact us to have your JAnim creations added to this page"
 
 #: ../../source/examples/tip.rst:5
 msgid "QQ 群：970174336"
-msgstr ""
+msgstr "QQ Group: 970174336"
 
 #: ../../source/examples/tip.rst:7
 msgid "Email：1173374788@qq.com"
-msgstr ""
+msgstr "Email: 1173374788@qq.com"
 
 #: ../../source/examples/_overlay_demonstration_options.rst:9
 msgid "除了 00:00 - 01:25 的“类 Slide 演示”之外，作为视频叠加动画出现的区段："
-msgstr "Segments appearing as video overlay animations, excluding the \"Slide-style Demonstration\" from 00\\:00 - 01\\:25 :"
+msgstr ""
+"Segments appearing as video overlay animations, excluding the \"Slide-style Demonstration\" from 00\\:00 - 01\\:25 :"
 
 #: ../../source/examples/_overlay_demonstration_options.rst:11
 msgid "03\\:18 - 03\\:31 : 演示了 ``create_window`` 函数的参数含义"
@@ -49,7 +50,8 @@ msgstr "03\\:57 - 04\\:48 : Demonstrates the concept of ``viewport``"
 
 #: ../../source/examples/_overlay_demonstration_options.rst:21
 msgid "除了 00:00 - 00:25 的“类 Slide 演示”之外，作为视频叠加动画出现的区段："
-msgstr "Segments appearing as video overlay animations, excluding the \"Slide-style Demonstration\" from 00\\:00 - 00\\:25 :"
+msgstr ""
+"Segments appearing as video overlay animations, excluding the \"Slide-style Demonstration\" from 00\\:00 - 00\\:25 :"
 
 #: ../../source/examples/_overlay_demonstration_options.rst:23
 msgid "00\\:50 - 01\\:02 : 演示了 ``get_key`` 的用法"

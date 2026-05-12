@@ -28,7 +28,7 @@ def get_qt_glwidget(ctx: mgl.Context) -> GLWidget | None:
 @contextmanager
 def qt_framebuffer_patch(ctx: mgl.Context):
     """
-    对 :meth:`~.GLWidget.use_qt_framebuffer` 的进一步封装，自动在 with 前获取 GL 对象，在 with 后重设 GL 对象（如果是 Qt 的 Framebuffer）
+    自动在 with 前获取 GL 对象，在 with 后重设 GL 对象（如果是 Qt 的 Framebuffer），以保证与 Qt 的兼容
     """
     _qt_glwidget = get_qt_glwidget(ctx)
     if _qt_glwidget is None:

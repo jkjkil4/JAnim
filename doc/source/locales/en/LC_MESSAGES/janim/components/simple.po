@@ -24,29 +24,25 @@ msgid "simple"
 msgstr "simple"
 
 #: janim.components.simple.Cmpt_Float:1 of
-#, fuzzy
 msgid "对 ``float`` 的 :class:`~.Component` 封装"
-msgstr "Component wrapper for float"
+msgstr "A :class:`~.Component` wrapper for ``float``"
 
 #: janim.components.simple.Cmpt_Alpha:1 of
 msgid "和 :class:`~.Cmpt_Float` 一样，只是方便 ``isinstance``"
-msgstr ""
+msgstr "Same as :class:`~.Cmpt_Float`, but convenient for ``isinstance``"
 
 #: janim.components.simple.Cmpt_List:1 of
-#, fuzzy
 msgid "对 ``list`` 的 :class:`~.Component` 封装"
-msgstr "Component wrapper for float"
+msgstr "A :class:`~.Component` wrapper for ``list``"
 
 #: janim.components.simple.Cmpt_List.copy:1 of
 msgid "Return a shallow copy of the list."
 msgstr "Return a shallow copy of the list."
 
 #: janim.components.simple.Cmpt_Dict:1 of
-#, fuzzy
 msgid "对 ``dict`` 的 :class:`~.Component` 封装"
-msgstr "Component wrapper for float"
+msgstr "A :class:`~.Component` wrapper for ``dict``"
 
 #: janim.components.simple.Cmpt_Dict.copy:1 of
-#, fuzzy
 msgid "Return a shallow copy of the dict."
-msgstr "Return a shallow copy of the list."
+msgstr "Return a shallow copy of the dict."

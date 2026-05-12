@@ -21,32 +21,32 @@ msgstr ""
 
 #: ../../source/janim/items/three_d/shapes.rst:2
 msgid "shapes"
-msgstr ""
+msgstr "shapes"
 
 #: janim.items.three_d.shapes.ParametricSurface:1 of
 msgid "参数曲面"
-msgstr ""
+msgstr "Parametric Surface"
 
 #: ../../source/janim/items/three_d/shapes.rst
 msgid "参数"
-msgstr ""
+msgstr "Parameters"
 
 #: janim.items.three_d.shapes.ParametricSurface:3 of
 msgid "参数方程，输入 ``(u, v)``，输出对应的三维坐标"
-msgstr ""
+msgstr "Parametric equation; it takes ``(u, v)`` as input and outputs the corresponding 3D coordinates"
 
 #: janim.items.three_d.shapes.ParametricSurface:4 of
 msgid "``u`` 变量的取值范围"
-msgstr ""
+msgstr "Range of values for the ``u`` variable"
 
 #: janim.items.three_d.shapes.ParametricSurface:5 of
 msgid "``v`` 变量的取值范围"
-msgstr ""
+msgstr "Range of values for the ``v`` variable"
 
 #: janim.items.three_d.shapes.Cone:10 janim.items.three_d.shapes.Cylinder:10 janim.items.three_d.shapes.ParametricSurface:7
 #: janim.items.three_d.shapes.Sphere:9 janim.items.three_d.shapes.Torus:9 of
 msgid "示例："
-msgstr ""
+msgstr "Example:"
 
 #: janim.items.three_d.shapes.ParametricSurface:9 of
 msgid ""
@@ -57,107 +57,113 @@ msgid ""
 "    resolution=16,\n"
 ").into('checker')"
 msgstr ""
+"ParametricSurface(\n"
+"    lambda u, v: [np.cos(u) * np.cos(v), np.cos(u) * np.sin(v), -u],\n"
+"    u_range=[-PI, PI],\n"
+"    v_range=[0, TAU],\n"
+"    resolution=16,\n"
+").into('checker')"
 
 #: janim.items.three_d.shapes.Sphere:1 of
 msgid "三维球体"
-msgstr ""
+msgstr "3D Sphere"
 
 #: janim.items.three_d.shapes.Sphere:3 of
 msgid "球体中心"
-msgstr ""
+msgstr "Center of the sphere"
 
 #: janim.items.three_d.shapes.Sphere:4 of
 msgid "球体半径"
-msgstr ""
+msgstr "Radius of the sphere"
 
 #: janim.items.three_d.shapes.Sphere:5 of
 msgid "``u`` 变量的范围（即绕纬线的取值，从 ``0`` 到 ``TAU``）"
-msgstr ""
+msgstr "Range of the ``u`` variable (i.e., values around the latitude, from ``0`` to ``TAU``)"
 
 #: janim.items.three_d.shapes.Sphere:6 of
 msgid "``v`` 变量的范围（即沿经线的取值，最底端为 ``0``，最顶端为 ``PI``）"
-msgstr ""
+msgstr "Range of the ``v`` variable (i.e., values along the longitude, with ``0`` at the bottom and ``PI`` at the top)"
 
 #: janim.items.three_d.shapes.Sphere:11 of
 msgid "Sphere(radius=2).into('checker')"
-msgstr ""
+msgstr "Sphere(radius=2).into('checker')"
 
 #: janim.items.three_d.shapes.Torus:1 of
 msgid "三维圆环面"
-msgstr ""
+msgstr "3D Torus"
 
 #: janim.items.three_d.shapes.Torus:3 of
 msgid "主半径（圆环中心到管道中心的距离）"
-msgstr ""
+msgstr "Major radius (distance from the center of the torus to the center of the tube)"
 
 #: janim.items.three_d.shapes.Torus:4 of
 msgid "次半径（管道半径）"
-msgstr ""
+msgstr "Minor radius (radius of the tube)"
 
 #: janim.items.three_d.shapes.Torus:5 of
 msgid "``u`` 变量的范围（沿圆环主方向）"
-msgstr ""
+msgstr "Range of the ``u`` variable (along the major direction of the torus)"
 
 #: janim.items.three_d.shapes.Torus:6 of
 msgid "``v`` 变量的范围（沿管道截面方向）"
-msgstr ""
+msgstr "Range of the ``v`` variable (along the cross-section direction of the tube)"
 
 #: janim.items.three_d.shapes.Torus:11 of
 msgid "Torus(2.5, 0.6).into('checker')"
-msgstr ""
+msgstr "Torus(2.5, 0.6).into('checker')"
 
 #: janim.items.three_d.shapes.Cylinder:1 of
 msgid "三维圆柱面"
-msgstr ""
+msgstr "3D Cylinder"
 
 #: janim.items.three_d.shapes.Cylinder:3 of
 msgid "圆柱半径"
-msgstr ""
+msgstr "Radius of the cylinder"
 
 #: janim.items.three_d.shapes.Cylinder:4 of
 msgid "圆柱高度"
-msgstr ""
+msgstr "Height of the cylinder"
 
 #: janim.items.three_d.shapes.Cylinder:5 of
 msgid "圆柱轴线方向向量（默认沿 ``OUT``）"
-msgstr ""
+msgstr "Direction vector of the cylinder axis (default along ``OUT``)"
 
 #: janim.items.three_d.shapes.Cylinder:6 of
 msgid "``u`` 变量的范围（绕圆柱侧面的角度）"
-msgstr ""
+msgstr "Range of the ``u`` variable (angle around the cylindrical surface)"
 
 #: janim.items.three_d.shapes.Cylinder:7 of
 msgid "``v`` 变量的范围（沿轴线方向的归一化取值）"
-msgstr ""
+msgstr "Range of the ``v`` variable (normalized values along the axis direction)"
 
 #: janim.items.three_d.shapes.Cylinder:12 of
 msgid "Cylinder(1, 3).into('checker')"
-msgstr ""
+msgstr "Cylinder(1, 3).into('checker')"
 
 #: janim.items.three_d.shapes.Cone:1 of
 msgid "三维圆锥面"
-msgstr ""
+msgstr "3D Cone"
 
 #: janim.items.three_d.shapes.Cone:3 of
 msgid "圆锥底面半径"
-msgstr ""
+msgstr "Radius of the base of the cone"
 
 #: janim.items.three_d.shapes.Cone:4 of
 msgid "圆锥高度"
-msgstr ""
+msgstr "Height of the cone"
 
 #: janim.items.three_d.shapes.Cone:5 of
 msgid "圆锥轴线方向向量（默认沿 ``OUT``）"
-msgstr ""
+msgstr "Direction vector of the cone axis (default along ``OUT``)"
 
 #: janim.items.three_d.shapes.Cone:6 of
 msgid "``u`` 变量的范围（绕圆锥侧面的角度）"
-msgstr ""
+msgstr "Range of the ``u`` variable (angle around the conical surface)"
 
 #: janim.items.three_d.shapes.Cone:7 of
 msgid "``v`` 变量的最小值（用于裁剪锥面，``0`` 表示从锥尖开始）"
-msgstr ""
+msgstr "Minimum value of the ``v`` variable (used to crop the cone surface, ``0`` means starting from the cone tip)"
 
 #: janim.items.three_d.shapes.Cone:12 of
 msgid "Cone(1, 2).into('checker')"
-msgstr ""
+msgstr "Cone(1, 2).into('checker')"

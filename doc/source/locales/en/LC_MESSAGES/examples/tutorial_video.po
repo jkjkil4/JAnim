@@ -19,18 +19,18 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.17.0\n"
 
-#: ../../source/examples/education_video.rst:2
+#: ../../source/examples/tutorial_video.rst:2
 msgid "教学视频"
-msgstr ""
+msgstr "Tutorial Videos"
 
 #: ../../source/examples/tip.rst:3
 msgid "欢迎联系我们将你使用 JAnim 创作的作品添加到该页面中"
-msgstr ""
+msgstr "Feel free to contact us to have your JAnim creations added to this page"
 
 #: ../../source/examples/tip.rst:5
 msgid "QQ 群：970174336"
-msgstr ""
+msgstr "QQ Group: 970174336"
 
 #: ../../source/examples/tip.rst:7
 msgid "Email：1173374788@qq.com"
-msgstr ""
+msgstr "Email: 1173374788@qq.com"

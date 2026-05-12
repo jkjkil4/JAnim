@@ -21,4 +21,4 @@ msgstr ""
 
 #: ../../source/janim/items/three_d/modules.rst:2
 msgid "three_d"
-msgstr ""
+msgstr "three_d"

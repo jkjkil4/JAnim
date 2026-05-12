@@ -34,10 +34,6 @@ msgstr "A data item that does not participate in rendering"
 msgid "是大多数物件的基类"
 msgstr "Base class for most items"
 
-#: janim.items.points.Points.distance_sort_reference_point:1 of
-msgid "The type of the None singleton."
-msgstr ""
-
 #: janim.items.points.Point:1 of
 msgid "一个点"
 msgstr "A point"

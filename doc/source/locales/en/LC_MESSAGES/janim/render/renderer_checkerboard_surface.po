@@ -21,4 +21,4 @@ msgstr ""
 
 #: ../../source/janim/render/renderer_checkerboard_surface.rst:2
 msgid "renderer_checkerboard_surface"
-msgstr ""
+msgstr "renderer_checkerboard_surface"

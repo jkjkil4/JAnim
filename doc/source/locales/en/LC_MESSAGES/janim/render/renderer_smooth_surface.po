@@ -21,4 +21,4 @@ msgstr ""
 
 #: ../../source/janim/render/renderer_smooth_surface.rst:2
 msgid "renderer_smooth_surface"
-msgstr ""
+msgstr "renderer_smooth_surface"

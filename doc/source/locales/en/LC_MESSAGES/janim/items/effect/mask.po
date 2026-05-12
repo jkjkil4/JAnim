@@ -21,64 +21,76 @@ msgstr ""
 
 #: ../../source/janim/items/effect/mask.rst:2
 msgid "mask"
-msgstr ""
+msgstr "mask"
 
 #: janim.items.effect.mask.ShapeMask:1 of
 msgid "以 ``shape`` 为轮廓做一个蒙板效果"
-msgstr ""
+msgstr "Create a masking effect using ``shape`` as the outline"
 
 #: janim.items.effect.mask.ShapeMask:3 of
 msgid "对于传入的物件，只会显示形状内部的部分"
-msgstr ""
+msgstr "For the passed items, only the parts inside the shape will be shown"
 
 #: ../../source/janim/items/effect/mask.rst
 msgid "参数"
-msgstr ""
-
-#: janim.items.effect.mask.ShapeMask:5 of
-msgid ""
-"蒙板图形，若带有后代物件，则将若干后代物件图形作 XOR  若要使用后代物件的并，可参"
-"考 :meth:`~.boolean_ops.Union.from_group`，例如  .. code-block:: python      ShapeMask(..., "
-"shape=boolean_ops.Union.from_group(shape))"
-msgstr ""
+msgstr "Parameters"
 
 #: janim.items.effect.mask.ShapeMask:5 of
 msgid "蒙板图形，若带有后代物件，则将若干后代物件图形作 XOR"
-msgstr ""
+msgstr "Mask shape; if it has descendant items, the descendant shapes are combined using XOR"
+
+#: janim.items.effect.mask.ShapeMask:6 of
+msgid "蒙板整体透明度，范围 ``0.0 ~ 1.0``"
+msgstr "Overall mask opacity, in the range ``0.0 ~ 1.0``"
 
 #: janim.items.effect.mask.ShapeMask:7 of
-msgid "若要使用后代物件的并，可参考 :meth:`~.boolean_ops.Union.from_group`，例如"
-msgstr ""
-
-#: janim.items.effect.mask.ShapeMask:9 of
-msgid "ShapeMask(..., shape=boolean_ops.Union.from_group(shape))"
-msgstr ""
-
-#: janim.items.effect.mask.ShapeMask:13 of
-msgid "蒙板整体透明度，范围 ``0.0 ~ 1.0``"
-msgstr ""
-
-#: janim.items.effect.mask.ShapeMask:14 of
 msgid "边缘羽化大小，值越大越模糊；数值上体现为羽化部分的两侧的距离"
 msgstr ""
+"Edge feather size; the larger the value, the blurrier it becomes; numerically, it is reflected as the distance on both "
+"sides of the feathered region"
 
-#: janim.items.effect.mask.ShapeMask:15 of
+#: janim.items.effect.mask.ShapeMask:8 of
 msgid "反转蒙板， ``0.0`` 为正常， ``1.0`` 为完全反转"
-msgstr ""
+msgstr "Invert the mask; ``0.0`` is normal and ``1.0`` is fully inverted"
 
-#: janim.items.effect.mask.ShapeMask:17 of
+#: janim.items.effect.mask.ShapeMask:10 of
 msgid ""
 "text = Text('Hello').show()\n"
 "mask = ShapeMask(text, shape=Circle(radius=2), feather=0.2)\n"
 "mask.show()"
 msgstr ""
+"text = Text('Hello').show()\n"
+"mask = ShapeMask(text, shape=Circle(radius=2), feather=0.2)\n"
+"mask.show()"
 
-#: janim.items.effect.mask.ShapeMask:23 of
+#: janim.items.effect.mask.ShapeMask:16 of
+msgid "若 ``shape`` 要使用后代物件的并，可参考 :meth:`~.boolean_ops.Union.from_group` ，例如"
+msgstr "If you want ``shape`` to use the union of its descendant items, see :meth:`~.boolean_ops.Union.from_group`, for example:"
+
+#: janim.items.effect.mask.ShapeMask:18 of
+msgid "ShapeMask(..., shape=boolean_ops.Union.from_group(shape))"
+msgstr "ShapeMask(..., shape=boolean_ops.Union.from_group(shape))"
+
+#: janim.items.effect.mask.ShapeMask:22 of
 msgid "嵌套蒙板和 :class:`~.FrameEffect` 一样，需要显式嵌套 :class:`~.ShapeMask` 对象："
-msgstr ""
+msgstr "Nested masks, like :class:`~.FrameEffect`, require explicitly nesting :class:`~.ShapeMask` objects:"
 
-#: janim.items.effect.mask.ShapeMask:25 of
+#: janim.items.effect.mask.ShapeMask:24 of
 msgid ""
 "mask1 = ShapeMask(..., shape=shape1).show()\n"
 "mask2 = ShapeMask(mask1, shape=shape2).show()"
 msgstr ""
+"mask1 = ShapeMask(..., shape=shape1).show()\n"
+"mask2 = ShapeMask(mask1, shape=shape2).show()"
+
+#~ msgid ""
+#~ "蒙板图形，若带有后代物件，则将若干后代物件图形作 XOR 若要使用后代物件的并，可参"
+#~ "考 :meth:`~.boolean_ops.Union.from_group`，例如  .. code-block:: python      ShapeMask(..., "
+#~ "shape=boolean_ops.Union.from_group(shape))"
+#~ msgstr ""
+#~ "Mask shape; if it has descendant items, the descendant shapes are combined using XOR. To use the union of descendant "
+#~ "items, refer to :meth:`~.boolean_ops.Union.from_group`, for example:\n"
+#~ "\n"
+#~ ".. code-block:: python\n"
+#~ "\n"
+#~ "    ShapeMask(..., shape=boolean_ops.Union.from_group(shape))"
