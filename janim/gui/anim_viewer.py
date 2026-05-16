@@ -873,7 +873,7 @@ class AnimViewer(QMainWindow):
             self.socket.writeDatagram(bytearr, *client)
 
     def setup_watcher(self, code_file_path: str) -> None:
-        self.watcher_timer = QTimer(self, interval=1)
+        self.watcher_timer = QTimer(self, interval=10)
         self.watcher_timer.timeout.connect(self.on_watcher_timer_timeout)
 
         self.watcher = QFileSystemWatcher([code_file_path], self)
