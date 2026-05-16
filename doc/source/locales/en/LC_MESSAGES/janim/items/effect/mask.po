@@ -65,7 +65,8 @@ msgstr ""
 
 #: janim.items.effect.mask.ShapeMask:16 of
 msgid "若 ``shape`` 要使用后代物件的并，可参考 :meth:`~.boolean_ops.Union.from_group` ，例如"
-msgstr "If you want ``shape`` to use the union of its descendant items, see :meth:`~.boolean_ops.Union.from_group`, for example:"
+msgstr ""
+"If you want ``shape`` to use the union of its descendant items, see :meth:`~.boolean_ops.Union.from_group`, for example:"
 
 #: janim.items.effect.mask.ShapeMask:18 of
 msgid "ShapeMask(..., shape=boolean_ops.Union.from_group(shape))"

@@ -420,6 +420,14 @@ class DashedLine(Line, Group[VItem]):
 
         这是由于 :class:`~.DashedLine` 实际上将每段虚线作为子物件来实现，而去除了自己本身的 ``points`` 数据，
         这会导致包括 ``.reshape`` 以及 ``.points.vector`` 等一些方法不可用
+
+        可以使用类似如下代码的做法来绕过这个问题：
+
+        .. code-block:: python
+
+            dl = DashedLine()
+            print(dl[0][0].points.get_start())  # [0][0] 意为：第一个 subpath 的第一个虚线段
+            print(dl[-1][-1].points.get_end())  # [-1][-1] 意为：最后一个 subpath 的最后一个虚线段
     """
 
     def __init__(
