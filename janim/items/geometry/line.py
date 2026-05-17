@@ -384,17 +384,23 @@ class Line(GeometryShape):
 class Cmpt_VPoints_DashedLineImpl[ItemT](Cmpt_VPoints_LineImpl[ItemT], impl=True):
     """
     在虚线中，对 :class:`~.Cmpt_VPoints` 的进一步实现
-    """
+
+    主要是对虚线根物件没有点数据导致部分方法不可用的 patch
+    """  # 现在这种做法的可维护性差，仅作功能修补，不建议参考
 
     def get_start(self) -> np.ndarray:
+        if self.has():  # 在初始化时计算 arc_length 需要用到
+            return super().get_start()
         assert self.bind is not None
-        sub = self.bind.at_item._children[0]
+        sub = self.bind.at_item._children[0][0]  # 含义：首个 subpath 的首个虚线段
         assert isinstance(sub, VItem)
         return sub.points.get_start()
 
     def get_end(self) -> np.ndarray:
+        if self.has():  # 在初始化时计算 arc_length 需要用到
+            return super().get_end()
         assert self.bind is not None
-        sub = self.bind.at_item._children[-1]
+        sub = self.bind.at_item._children[-1][-1]  # 含义：最后一个 subpath 的最后一个虚线段
         assert isinstance(sub, VItem)
         return sub.points.get_end()
 
@@ -419,16 +425,15 @@ class DashedLine(Line, Group[VItem]):
         由于一些因素，:class:`~.DashedLine` 并不完全具有 :class:`~.Line` 的功能
 
         这是由于 :class:`~.DashedLine` 实际上将每段虚线作为子物件来实现，而去除了自己本身的 ``points`` 数据，
-        这会导致包括 ``.reshape`` 以及 ``.points.vector`` 等一些方法不可用
+        这会导致包括 ``.points.get()`` ``.anim.reshape(...)`` 等一些方法无法得到预期的效果或不可用
 
-        可以使用类似如下代码的做法来绕过这个问题：
+    .. tip::
 
-        .. code-block:: python
-
-            dl = DashedLine()
-            print(dl[0][0].points.get_start())  # [0][0] 意为：第一个 subpath 的第一个虚线段
-            print(dl[-1][-1].points.get_end())  # [-1][-1] 意为：最后一个 subpath 的最后一个虚线段
+        虽然 ``.reshape(...)`` 可用，但是 ``.anim.reshape(...)`` 不可用，
+        因此如果你要对 :class:`DashedLine` 作用动态动画，建议使用 :class:`~.ItemUpdater`
     """
+
+    points = CmptInfo(Cmpt_VPoints_DashedLineImpl[Self])
 
     def __init__(
         self,
@@ -442,21 +447,29 @@ class DashedLine(Line, Group[VItem]):
     ) -> None:
         self.dash_length = dash_length
         self.dashed_ratio = dashed_ratio
+        self.strict_by_length = strict_by_length
         super().__init__(start, end, **kwargs)
-        if not strict_by_length:
+        self._break_points_data_into_dashed_lines()
+
+    def _break_points_data_into_dashed_lines(self) -> None:
+        assert self.points.has()
+        if not self.strict_by_length:
             dashes = DashedVItem(
                 self,
                 num_dashes=self._calculate_num_dashes(),
-                dashed_ratio=dashed_ratio,
+                dashed_ratio=self.dashed_ratio,
             )
         else:
             dashes = DashedVItemByRatio(
                 self,
                 dash_ratio=self._calculate_dash_ratio(),
-                dashed_ratio=dashed_ratio,
+                dashed_ratio=self.dashed_ratio,
             )
         self.points.clear()
-        self.add(*dashes)
+        if not self._children:
+            self.add(*dashes)
+        else:
+            self._children_become(dashes, True)
 
     def _calculate_num_dashes(self) -> int:
         """
@@ -473,6 +486,18 @@ class DashedLine(Line, Group[VItem]):
         """
         # max 1e-5 避免除零
         return self.dash_length / max(1e-5, self.points.arc_length)
+
+    def reshape(
+        self,
+        start: Points | Vect | None = None,
+        end: Points | Vect | None = None,
+        *,
+        buff: LineBuff | None = None,
+        path_arc: float | None = None,
+    ) -> Self:
+        super().reshape(start, end, buff=buff, path_arc=path_arc)
+        self._break_points_data_into_dashed_lines()
+        return self
 
 
 class TangentLine(Line):
