@@ -292,6 +292,10 @@ class DynamicTypst(TypstText):
 
     例：
 
+    .. janim-example:: DynamicTypstExample
+        :extract-from-test:
+        :media: _static/videos/DynamicTypstExample.mp4
+        :url: https://janim.readthedocs.io/zh-cn/latest/janim/items/svg/typst_types.html#dynamictypstexample
     """
 
     _dynamic = CustomData()
