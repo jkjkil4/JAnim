@@ -499,7 +499,7 @@ class RectClip(FrameEffect, FrameRect):
     .. janim-example:: RectClipExample
         :extract-from-test:
         :media: _static/videos/RectClipExample.mp4
-        :url: https://janim.readthedocs.io/zh-cn/latest/janim/items/effect/clip.html#rectclip
+        :url: https://janim.readthedocs.io/zh-cn/latest/janim/items/effect/clip.html#rectclipexample
     """
 
     class RCRenderer(Renderer):
