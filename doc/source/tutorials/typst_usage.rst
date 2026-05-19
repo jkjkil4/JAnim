@@ -384,6 +384,8 @@ Typst 物件支持传入 ``vars`` 参数嵌入 JAnim 物件：
 
 - :class:`~.TypstMatrix` 使用 Typst 进行矩阵布局
 
+- :class:`~.DynamicTypst` 提供了对动态参数的 Typst 物件的封装
+
 参考文档
 -------------
 

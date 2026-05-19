@@ -155,7 +155,7 @@ msgstr "Further implementation of :class:`~.Cmpt_VPoints` in dashed lines"
 
 #: janim.items.geometry.line.Cmpt_VPoints_DashedLineImpl:3 of
 msgid "主要是对虚线根物件没有点数据导致部分方法不可用的 patch"
-msgstr ""
+msgstr "Patch to fix some methods being unavailable because the dashed line's root item lacks point data"
 
 #: janim.items.geometry.line.Cmpt_VPoints_DashedLineImpl.get_start:1 of
 msgid "得到 ``points`` 的第一个点"

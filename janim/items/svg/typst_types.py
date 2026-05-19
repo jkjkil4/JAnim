@@ -284,7 +284,7 @@ class TypstMatrix(TypstText):
 
 class DynamicTypst(TypstText):
     """
-    便于创建参数变化的 Typst 对象的封装
+    便于创建参数变化的 Typst 物件的封装
 
     :param template: Typst 代码
     :param dynamic: 声明含有哪些参数及其初始值，这些值可以直接在 Typst 代码中使用

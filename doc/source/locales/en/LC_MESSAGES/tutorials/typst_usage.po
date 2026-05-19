@@ -6,19 +6,18 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: JAnim\n"
+"Project-Id-Version:  JAnim\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-27 22:17+0800\n"
+"POT-Creation-Date: 1980-01-01 00:00+0000\n"
 "PO-Revision-Date: 2025-11-27 22:18+0800\n"
 "Last-Translator: \n"
-"Language-Team: en <LL@li.org>\n"
 "Language: en\n"
+"Language-Team: en <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "Generated-By: Babel 2.17.0\n"
-"X-Generator: Poedit 3.8\n"
 
 #: ../../source/tutorials/typst_usage.rst:4
 msgid "Typst 的使用"
@@ -119,7 +118,7 @@ msgstr ""
 msgid "比如对于 :class:`~.TypstMath` 对象"
 msgstr "For example, for :class:`~.TypstMath` objects"
 
-#: ../../source/tutorials/typst_usage.rst:55 ../../source/tutorials/typst_usage.rst:96
+#: ../../source/tutorials/typst_usage.rst:55 ../../source/tutorials/typst_usage.rst:86
 msgid "typ = TypstMath('cos^2 theta + sin^2 theta = 1')"
 msgstr "typ = TypstMath('cos^2 theta + sin^2 theta = 1')"
 
@@ -179,7 +178,7 @@ msgstr ""
 "self.play(typ['space^2', ...].anim.set(color=RED))\n"
 "self.forward()"
 
-#: ../../source/tutorials/typst_usage.rst:87
+#: ../../source/tutorials/typst_usage.rst:77
 msgid ""
 "如果想要同时取出多个，则将多个编号写在一个序列中即可，例如 ``typ['theta', (0, 1)]`` 则是取出编号为 ``0`` 和 ``1`` 的匹配"
 "项，在这里就是所有匹配到的 θ 符号。"
@@ -187,7 +186,7 @@ msgstr ""
 "If you want to extract multiple at once, write multiple numbers in a sequence. For example, ``typ['theta', (0, 1)]`` "
 "extracts matches numbered ``0`` and ``1``, which here are all matched θ symbols."
 
-#: ../../source/tutorials/typst_usage.rst:89
+#: ../../source/tutorials/typst_usage.rst:79
 msgid ""
 "你应该发现了，取出 ``(0, 1)`` 的项，其实就是取出所有项，对于这种情况，JAnim 提供了 ``typ['theta', ...]`` 的方式，使用省略"
 "号表示取出所有的匹配项。"
@@ -195,21 +194,21 @@ msgstr ""
 "You should have discovered that extracting items ``(0, 1)`` is actually extracting all items. For this case, JAnim "
 "provides ``typ['theta', ...]`` using ellipsis to represent extracting all matches."
 
-#: ../../source/tutorials/typst_usage.rst:92
+#: ../../source/tutorials/typst_usage.rst:82
 msgid "一些特殊情况"
 msgstr "Some Special Cases"
 
-#: ../../source/tutorials/typst_usage.rst:94
+#: ../../source/tutorials/typst_usage.rst:84
 msgid "当你想要取出"
 msgstr "When you want to extract"
 
-#: ../../source/tutorials/typst_usage.rst:100
+#: ../../source/tutorials/typst_usage.rst:90
 msgid "中的上标 “2” 时，使用 ``typ['2']`` 无法匹配到它，这是因为上标的 “2” 和普通的 “2” 长得不同。"
 msgstr ""
 "the superscript “2” in it, using ``typ['2']`` cannot match it, because the superscript “2” looks different from the "
 "regular “2”."
 
-#: ../../source/tutorials/typst_usage.rst:102
+#: ../../source/tutorials/typst_usage.rst:92
 msgid ""
 "为了正确匹配，你需要把索引中的 2 也表示为“上标”的形式，例如 ``typ['\"\"^2']`` 或者 ``typ['space^2']``， 这两者都是把 “2” "
 "作为一个空元素（ ``\"\"`` 或者 ``space`` ） 的上标，这样就可以正确匹配了。"
@@ -218,7 +217,7 @@ msgstr ""
 "``typ['space^2']``. Both treat “2” as a superscript of an empty element (``\"\"`` or ``space``), so it can be matched "
 "correctly."
 
-#: ../../source/tutorials/typst_usage.rst:107
+#: ../../source/tutorials/typst_usage.rst:97
 msgid ""
 "上面以 :class:`~.TypstMath` 作为字符索引的例子，:class:`~.TypstDoc` 和 :class:`~.TypstText` 也是几乎一致的，但是会有略微区"
 "别"
@@ -226,7 +225,7 @@ msgstr ""
 "The above examples using :class:`~.TypstMath` for character indexing are almost the same for :class:`~.TypstDoc` "
 "and :class:`~.TypstText`, but there are slight differences"
 
-#: ../../source/tutorials/typst_usage.rst:109
+#: ../../source/tutorials/typst_usage.rst:99
 msgid ""
 "我们知道，在这三种对象中，只有 :class:`~.TypstMath` 是在公式环境中的，所以进行它的字符索引时，作为索引的字符串也会在公式环"
 "境中解析"
@@ -234,17 +233,17 @@ msgstr ""
 "We know that among these three types of objects, only :class:`~.TypstMath` is in a formula environment, so when "
 "performing character indexing on it, the string used as the index will also be parsed in the formula environment"
 
-#: ../../source/tutorials/typst_usage.rst:111
+#: ../../source/tutorials/typst_usage.rst:101
 msgid "这意味着，对于 :class:`~.TypstDoc` 和 :class:`~.TypstText` 而言，作为索引的字符串不在公式环境中"
 msgstr ""
 "This means that for :class:`~.TypstDoc` and :class:`~.TypstText`, the string used as the index is not in a formula "
 "environment"
 
-#: ../../source/tutorials/typst_usage.rst:113
+#: ../../source/tutorials/typst_usage.rst:103
 msgid "这里给出几段示例作为参考："
 msgstr "Here are some examples for reference:"
 
-#: ../../source/tutorials/typst_usage.rst:115
+#: ../../source/tutorials/typst_usage.rst:105
 msgid ""
 "t = TypstMath('cos theta')\n"
 "t['theta']\n"
@@ -258,7 +257,7 @@ msgstr ""
 "t = TypstText('$ cos theta $')\n"
 "t['$theta$']"
 
-#: ../../source/tutorials/typst_usage.rst:123
+#: ../../source/tutorials/typst_usage.rst:113
 msgid ""
 "t = TypstText('this is a formula: $cos^2 x + sin^2 x = 1$')\n"
 "t['formula']\n"
@@ -268,11 +267,11 @@ msgstr ""
 "t['formula']\n"
 "t['$x$']"
 
-#: ../../source/tutorials/typst_usage.rst:130
+#: ../../source/tutorials/typst_usage.rst:120
 msgid "获取 ``label`` 标记的内容"
 msgstr "Querying content marked with ``label``"
 
-#: ../../source/tutorials/typst_usage.rst:132
+#: ../../source/tutorials/typst_usage.rst:122
 msgid "Typst 中带有 ``label`` 的 ``box`` 可以通过 :meth:`~.SVGItem.get_label` 方法索引："
 msgstr "In Typst, a ``box`` with a ``label`` can be accessed via the :meth:`~.SVGItem.get_label` method:"
 
@@ -306,27 +305,27 @@ msgstr ""
 "typ.get_label('label1').set(color=RED)\n"
 "typ.get_label('label2').set(color=GREEN)"
 
-#: ../../source/tutorials/typst_usage.rst:153
+#: ../../source/tutorials/typst_usage.rst:143
 msgid "内置包"
 msgstr "Built-in Packages"
 
-#: ../../source/tutorials/typst_usage.rst:155
+#: ../../source/tutorials/typst_usage.rst:145
 msgid "JAnim 提供了内置包可以在 Typst 中使用 ``#import`` 引入"
 msgstr "JAnim provides built-in packages that can be imported in Typst using ``#import``"
 
-#: ../../source/tutorials/typst_usage.rst:157
+#: ../../source/tutorials/typst_usage.rst:147
 msgid "``#import \"@janim/colors:0.0.0\": *``"
 msgstr "``#import \"@janim/colors:0.0.0\": *``"
 
-#: ../../source/tutorials/typst_usage.rst:159
+#: ../../source/tutorials/typst_usage.rst:149
 msgid "提供了 JAnim 中的颜色常量（可参考 :ref:`constants_colors` 条目），以便在 Typst 中使用"
 msgstr "Provides color constants in JAnim (refer to :ref:`constants_colors` entry) for use in Typst"
 
-#: ../../source/tutorials/typst_usage.rst:166
+#: ../../source/tutorials/typst_usage.rst:156
 msgid "点击展开 ``@janim/colors`` 的具体定义"
 msgstr "Click to expand the detailed definition of ``@janim/colors``"
 
-#: ../../source/tutorials/typst_usage.rst:172
+#: ../../source/tutorials/typst_usage.rst:162
 msgid ""
 "// Colors\n"
 "#let BLUE_E = rgb(\"#1C758A\")\n"
@@ -478,12 +477,12 @@ msgstr ""
 "#let PURPLE = PURPLE_C\n"
 "#let GREY = GREY_C"
 
-#: ../../source/tutorials/typst_usage.rst:255
+#: ../../source/tutorials/typst_usage.rst:245
 msgid "如果你需要脱离 JAnim 在外部 ``.typ`` 文件中编写 Typst 代码，希望其也能引入 JAnim 的内置包"
 msgstr ""
 "If you need to write Typst code in external ``.typ`` files outside of JAnim and want to import JAnim's built-in packages"
 
-#: ../../source/tutorials/typst_usage.rst:257
+#: ../../source/tutorials/typst_usage.rst:247
 msgid ""
 "你需要将 ``<site-packages>/janim/items/svg`` 完整路径通过 ``--package-path`` 选项传递给 Typst 编译器或 Tinymist 插件的 "
 "``\"tinymist.typstExtraArgs\"`` 选项"
@@ -491,11 +490,11 @@ msgstr ""
 "You need to pass the full path ``<site-packages>/janim/items/svg`` to the Typst compiler via the ``--package-path`` "
 "option or to the Tinymist plugin's ``\"tinymist.typstExtraArgs\"`` option"
 
-#: ../../source/tutorials/typst_usage.rst:260
+#: ../../source/tutorials/typst_usage.rst:250
 msgid "语法高亮"
 msgstr "Syntax Highlighting"
 
-#: ../../source/tutorials/typst_usage.rst:262
+#: ../../source/tutorials/typst_usage.rst:252
 msgid ""
 "前面提到，如果你使用了 VSCode 插件 ``janim-toolbox``， 会自动给 :class:`TypstDoc` 和 :class:`TypstText` 中出现的 Raw-字符"
 "串（形如 ``R'...'``） 进行 Typst 语法高亮。"
@@ -503,7 +502,7 @@ msgstr ""
 "As mentioned earlier, if you use the VSCode plugin ``janim-toolbox``, it will automatically highlight Raw strings (in the "
 "form ``R'...'``) appearing in :class:`TypstDoc` and :class:`TypstText` with Typst syntax highlighting."
 
-#: ../../source/tutorials/typst_usage.rst:265
+#: ../../source/tutorials/typst_usage.rst:255
 msgid ""
 "对于同样需要 Typst 语法高亮，但不在 :class:`TypstDoc` 与 :class:`TypstText` 之中的字符串，你可以使用 ``t_`` 函数来标注需"
 "要 Typst 高亮，例如"
@@ -511,7 +510,7 @@ msgstr ""
 "For strings that also need Typst syntax highlighting but are not in :class:`TypstDoc` or :class:`TypstText`, you can use "
 "the ``t_`` function to mark them for Typst highlighting, for example"
 
-#: ../../source/tutorials/typst_usage.rst:267
+#: ../../source/tutorials/typst_usage.rst:257
 msgid ""
 "LightTyp = partial(TypstText, color=YELLOW)\n"
 "\n"
@@ -521,7 +520,7 @@ msgstr ""
 "\n"
 "typ = LightTyp(t_(R'#box(width: 10em)[#lorem(20)]')).show()"
 
-#: ../../source/tutorials/typst_usage.rst:273
+#: ../../source/tutorials/typst_usage.rst:263
 msgid ""
 "with Config(typst_shared_preamble='#set box(width: 3em, height: 3em)'):\n"
 "    group = Group.from_iterable(\n"
@@ -549,11 +548,11 @@ msgstr ""
 "group.points.arrange()\n"
 "group.show()"
 
-#: ../../source/tutorials/typst_usage.rst:289
+#: ../../source/tutorials/typst_usage.rst:279
 msgid "嵌入 JAnim 物件"
 msgstr "Embedding JAnim Items"
 
-#: ../../source/tutorials/typst_usage.rst:291
+#: ../../source/tutorials/typst_usage.rst:281
 msgid "Typst 物件支持传入 ``vars`` 参数嵌入 JAnim 物件："
 msgstr "Typst items support embedding JAnim items by passing the ``vars`` parameter:"
 
@@ -636,7 +635,7 @@ msgstr "See also:"
 msgid ":class:`~.TypstText` :class:`~.Video`"
 msgstr ":class:`~.TypstText` :class:`~.Video`"
 
-#: ../../source/tutorials/typst_usage.rst:334
+#: ../../source/tutorials/typst_usage.rst:324
 msgid ""
 "未传入 ``vars_size_unit`` 时，嵌入的 JAnim 物件会保留在 JAnim 中原有的大小，若传入了 ``vars_size_unit`` 则将其大小乘上对应"
 "的单位。"
@@ -644,7 +643,7 @@ msgstr ""
 "When ``vars_size_unit`` is not passed, embedded JAnim items will retain their original size in JAnim. If "
 "``vars_size_unit`` is passed, their size will be multiplied by the corresponding unit."
 
-#: ../../source/tutorials/typst_usage.rst:336
+#: ../../source/tutorials/typst_usage.rst:326
 msgid ""
 "例如对于一个在 JAnim 中高度为 1 的物件，如果直接插入 Typst 文字中会显得很大，此时设置 ``vars_size_unit='em'`` 使其插入高度"
 "变为 ``1em``，则基本与文字高度匹配。"
@@ -652,7 +651,7 @@ msgstr ""
 "For example, for an item with height 1 in JAnim, if directly inserted into Typst text it will appear very large. Setting "
 "``vars_size_unit='em'`` makes its insertion height ``1em``, which basically matches the text height."
 
-#: ../../source/tutorials/typst_usage.rst:338
+#: ../../source/tutorials/typst_usage.rst:328
 msgid ""
 "``vars`` 是一个字典，它的键会作为 Typst 代码中可以使用的变量名，值会作为变量名对应的 JAnim 物件，并且支持进一步嵌套列表和"
 "字典："
@@ -660,7 +659,7 @@ msgstr ""
 "``vars`` is a dictionary. Its keys will be used as variable names in Typst code, and its values will be the corresponding "
 "JAnim items. It also supports further nesting of lists and dictionaries:"
 
-#: ../../source/tutorials/typst_usage.rst:340
+#: ../../source/tutorials/typst_usage.rst:330
 msgid ""
 "TypstText(\n"
 "    ...,\n"
@@ -692,7 +691,7 @@ msgstr ""
 "    )\n"
 ")"
 
-#: ../../source/tutorials/typst_usage.rst:359
+#: ../../source/tutorials/typst_usage.rst:349
 msgid ""
 "在 Typst 中嵌入 JAnim 物件，从原理上来讲是创建了一个对应大小的占位 ``box``，然后在 Typst 物件创建后，将其替换为 JAnim 物"
 "件，从而做到嵌入的目的。"
@@ -700,11 +699,11 @@ msgstr ""
 "Embedding JAnim items in Typst, in principle, creates a placeholder ``box`` of corresponding size, and then after the "
 "Typst item is created, replaces it with the JAnim item to achieve embedding."
 
-#: ../../source/tutorials/typst_usage.rst:362
+#: ../../source/tutorials/typst_usage.rst:352
 msgid "标记基点位置"
 msgstr "Marking Basepoint Positions"
 
-#: ../../source/tutorials/typst_usage.rst:364
+#: ../../source/tutorials/typst_usage.rst:354
 msgid ""
 "标记基点位置的功能默认是关闭的，如果你希望给 Typst 物件的每个元素都标记基点位置，可以通过传入 ``mark_basepoint=True`` 来开"
 "启该功能："
@@ -712,7 +711,7 @@ msgstr ""
 "The basepoint marking feature is disabled by default. If you want to mark basepoint positions for each element of Typst "
 "items, you can enable it by passing ``mark_basepoint=True``:"
 
-#: ../../source/tutorials/typst_usage.rst:366
+#: ../../source/tutorials/typst_usage.rst:356
 msgid "TypstText('This is a sentence', mark_basepoint=True)"
 msgstr "TypstText('This is a sentence', mark_basepoint=True)"
 
@@ -740,52 +739,56 @@ msgstr ""
 "    Arrow(orig, up, buff=0, color=BLUE).show()\n"
 "    Dot(orig, 0.06, fill_color=BLACK, stroke_color=BLUE, stroke_alpha=1).show()"
 
-#: ../../source/tutorials/typst_usage.rst:386
+#: ../../source/tutorials/typst_usage.rst:376
 msgid "关于基点位置的使用，请参考 :class:`~.BasepointVItem`。"
 msgstr "For usage of basepoint positions, refer to :class:`~.BasepointVItem`."
 
-#: ../../source/tutorials/typst_usage.rst:390
+#: ../../source/tutorials/typst_usage.rst:380
 msgid ""
 "``mark_basepoint`` 其实是 :class:`~.SVGItem` 提供的一个参数，但是由于我们主要在 Typst 物件中使用它，所以放在这里进行说明。"
 msgstr ""
 "``mark_basepoint`` is actually a parameter provided by :class:`~.SVGItem`, but since we mainly use it in Typst items, it "
 "is explained here."
 
-#: ../../source/tutorials/typst_usage.rst:393
+#: ../../source/tutorials/typst_usage.rst:383
 msgid "特殊类型的 Typst 物件"
 msgstr "Special Types of Typst Items"
 
-#: ../../source/tutorials/typst_usage.rst:395
+#: ../../source/tutorials/typst_usage.rst:385
 msgid ":class:`~.TypstMatrix` 使用 Typst 进行矩阵布局"
 msgstr ":class:`~.TypstMatrix` uses Typst for matrix layout"
 
-#: ../../source/tutorials/typst_usage.rst:398
+: ../../source/tutorials/typst_usage.rst:387
+msgid ":class:`~.DynamicTypst` 提供了对动态参数的 Typst 物件的封装"
+msgstr ":class:`~.DynamicTypst` provides a wrapper for Typst items that support dynamic parameters"
+
+#: ../../source/tutorials/typst_usage.rst:390
 msgid "参考文档"
 msgstr "Reference Documentation"
 
-#: ../../source/tutorials/typst_usage.rst:400
+#: ../../source/tutorials/typst_usage.rst:392
 msgid "JAnim 类定义：请参考 :ref:`typst` 页面"
 msgstr "JAnim class definitions: refer to :ref:`typst` page"
 
-#: ../../source/tutorials/typst_usage.rst:401
+#: ../../source/tutorials/typst_usage.rst:393
 msgid "Typst 中文社区： `typst-doc-cn.github.io/guide <https://typst-doc-cn.github.io/guide>`_"
 msgstr "Typst Chinese Community: `typst-doc-cn.github.io/guide <https://typst-doc-cn.github.io/guide>`_"
 
-#: ../../source/tutorials/typst_usage.rst:402
+#: ../../source/tutorials/typst_usage.rst:394
 msgid "Typst 官方文档： `typst.app/docs <https://typst.app/docs>`_"
 msgstr "Typst Official Documentation: `typst.app/docs <https://typst.app/docs>`_"
 
-#: ../../source/tutorials/typst_usage.rst:405
+#: ../../source/tutorials/typst_usage.rst:397
 msgid "其它"
 msgstr "Others"
 
-#: ../../source/tutorials/typst_usage.rst:407
+#: ../../source/tutorials/typst_usage.rst:399
 msgid "Typst 已经作为 `typst-py <https://github.com/messense/typst-py>`_ 包集成到 JAnim 中了，不需要另外安装。"
 msgstr ""
 "Typst is already integrated into JAnim as the `typst-py <https://github.com/messense/typst-py>`_ package and does not "
 "need to be installed separately."
 
-#: ../../source/tutorials/typst_usage.rst:409
+#: ../../source/tutorials/typst_usage.rst:401
 msgid ""
 "但是如果你有使用外部 Typst 可执行文件的需求，首先参考 :ref:`install_dep` 中提及的安装方法，然后使用以下方法启用外部 "
 "Typst："
@@ -793,10 +796,10 @@ msgstr ""
 "However, if you need to use an external Typst executable, first refer to the installation instructions "
 "in :ref:`install_dep`, and then use one of the following methods to enable it:"
 
-#: ../../source/tutorials/typst_usage.rst:411
+#: ../../source/tutorials/typst_usage.rst:403
 msgid "对于 CLI，可以传递 ``--external_typst`` 选项启用外部 Typst"
 msgstr "For the CLI, you can pass the ``--external_typst`` option to enable external Typst"
 
-#: ../../source/tutorials/typst_usage.rst:413
+#: ../../source/tutorials/typst_usage.rst:405
 msgid "或者代码中，可以通过 ``set_use_external_typst(True)`` 启用外部 Typst"
 msgstr "Alternatively, in your code, you can enable it via ``set_use_external_typst(True)``"
