@@ -70,7 +70,7 @@ def _compile_typst_by_internal_package(
     typst_content: str,
     svg_file_path: str,
     sys_inputs: dict[str, str],
-) -> str:
+) -> None:
     """
     通过 typst-py 包编译 Typst 文档
     """
@@ -96,7 +96,7 @@ def _compile_typst_by_external_executable(
     typst_content: str,
     svg_file_path: str,
     sys_inputs_pairs: list[str],
-) -> str:
+) -> None:
     """
     通过外部可执行程序编译 Typst 文档
     """
