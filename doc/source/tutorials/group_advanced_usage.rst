@@ -12,7 +12,7 @@
 
     group = NamedGroup(title=..., content=...)
 
-具名物件组的 :meth:`~.NamedGroup.add` 和 :meth:`~.NamedGroup.remove` 方法也支持使用具名参数来添加/移除具名子物件。
+具名物件组的 :meth:`~.NamedGroupMixin.add` 和 :meth:`~.NamedGroupMixin.remove` 等方法也支持使用具名参数来添加/移除具名子物件。
 
 访问其具名子物件可以使用类似 ``group['content']`` 的形式，例如：
 
@@ -21,6 +21,8 @@
     pair = NamedGroup(src=Circle(), target=Square())
 
     self.play(Transform(pair['src'], pair['target']))
+
+更多内容请参考 :class:`~.NamedGroupMixin` 与 :class:`~.NamedGroup` 的介绍
 
 物件的批量复制
 ---------------------

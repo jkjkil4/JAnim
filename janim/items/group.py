@@ -46,7 +46,7 @@ class Group(Points, Generic[T]):
 
 class NamedGroupMixin[T](Group[T]):
     """
-    方便用于例如 :class:`~.Axes` 继承的基础类
+    方便用于继承的基础类，例如被 :class:`~.Axes` 继承
 
     另见 :class:`NamedGroup`
     """
