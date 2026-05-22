@@ -758,7 +758,7 @@ msgstr "Special Types of Typst Items"
 msgid ":class:`~.TypstMatrix` 使用 Typst 进行矩阵布局"
 msgstr ":class:`~.TypstMatrix` uses Typst for matrix layout"
 
-: ../../source/tutorials/typst_usage.rst:387
+#: ../../source/tutorials/typst_usage.rst:387
 msgid ":class:`~.DynamicTypst` 提供了对动态参数的 Typst 物件的封装"
 msgstr ":class:`~.DynamicTypst` provides a wrapper for Typst items that support dynamic parameters"
 

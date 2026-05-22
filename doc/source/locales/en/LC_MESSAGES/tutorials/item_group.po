@@ -21,7 +21,7 @@ msgstr ""
 
 #: ../../source/tutorials/item_group.rst:2
 msgid "物件组"
-msgstr "Item Group"
+msgstr "Item Groups"
 
 #: ../../source/tutorials/item_group.rst:4
 msgid ""

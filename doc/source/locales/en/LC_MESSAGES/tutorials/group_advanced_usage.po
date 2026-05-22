@@ -6,19 +6,18 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: JAnim\n"
+"Project-Id-Version:  JAnim\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-22 21:20+0800\n"
+"POT-Creation-Date: 1980-01-01 00:00+0000\n"
 "PO-Revision-Date: 2025-11-22 22:17+0800\n"
 "Last-Translator: \n"
-"Language-Team: en <LL@li.org>\n"
 "Language: en\n"
+"Language-Team: en <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "Generated-By: Babel 2.17.0\n"
-"X-Generator: Poedit 3.8\n"
 
 #: ../../source/tutorials/group_advanced_usage.rst:2
 msgid "物件组进阶使用"
@@ -29,10 +28,51 @@ msgid "前文回顾：:doc:`item_group`"
 msgstr "Previous Review: :doc:`item_group`"
 
 #: ../../source/tutorials/group_advanced_usage.rst:7
+msgid "具名物件组"
+msgstr "Named Item Groups"
+
+#: ../../source/tutorials/group_advanced_usage.rst:9
+msgid ""
+"除了使用 ``Group(...)`` 直接传入多个物件，还可以使用 :class:`~.NamedGroup` 类来创建带有 **具名子物件** 的物件组，例如："
+msgstr ""
+"In addition to passing multiple items directly to ``Group(...)``, you can also use the :class:`~.NamedGroup` class to "
+"create a group with **named child items**, for example:"
+
+#: ../../source/tutorials/group_advanced_usage.rst:11
+msgid "group = NamedGroup(title=..., content=...)"
+msgstr "group = NamedGroup(title=..., content=...)"
+
+#: ../../source/tutorials/group_advanced_usage.rst:15
+msgid ""
+"具名物件组的 :meth:`~.NamedGroupMixin.add` 和 :meth:`~.NamedGroupMixin.remove` 等方法也支持使用具名参数来添加/移除具名子物"
+"件。"
+msgstr ""
+"Methods such as :meth:`~.NamedGroupMixin.add` and :meth:`~.NamedGroupMixin.remove` on named item groups also support "
+"using keyword arguments to add or remove named child items."
+
+#: ../../source/tutorials/group_advanced_usage.rst:17
+msgid "访问其具名子物件可以使用类似 ``group['content']`` 的形式，例如："
+msgstr "You can access its named child items using syntax like ``group['content']``, for example:"
+
+#: ../../source/tutorials/group_advanced_usage.rst:19
+msgid ""
+"pair = NamedGroup(src=Circle(), target=Square())\n"
+"\n"
+"self.play(Transform(pair['src'], pair['target']))"
+msgstr ""
+"pair = NamedGroup(src=Circle(), target=Square())\n"
+"\n"
+"self.play(Transform(pair['src'], pair['target']))"
+
+#: ../../source/tutorials/group_advanced_usage.rst:25
+msgid "更多内容请参考 :class:`~.NamedGroupMixin` 与 :class:`~.NamedGroup` 的文档"
+msgstr "For more information, see the documentation to :class:`~.NamedGroupMixin` and :class:`~.NamedGroup`."
+
+#: ../../source/tutorials/group_advanced_usage.rst:28
 msgid "物件的批量复制"
 msgstr "Batch Copying of Items"
 
-#: ../../source/tutorials/group_advanced_usage.rst:9
+#: ../../source/tutorials/group_advanced_usage.rst:30
 msgid ""
 "举个例子，对于一个圆形物件 ``Circle()``，我们可以在其后面使用 ``* 数量`` 表示 “复制出指定数量的圆形，放到一"
 "个 :class:`~.Group` 中”："
@@ -48,9 +88,11 @@ msgid ""
 msgstr ""
 "circles = Circle() * 5\n"
 "circles.points.arrange()\n"
+"self.show(circles)circles = Circle() * 5\n"
+"circles.points.arrange()\n"
 "self.show(circles)"
 
-#: ../../source/tutorials/group_advanced_usage.rst:21
+#: ../../source/tutorials/group_advanced_usage.rst:42
 msgid ""
 "复制出来的物件都会保持相同的属性和状态，所以他们会重叠在一起， 如果你想让他们排列开来，使用 :meth:`~.Cmpt_Points.arrange` "
 "或是 :meth:`~.Cmpt_Points.arrange_in_grid` 会是比较方便的做法。"
@@ -58,7 +100,7 @@ msgstr ""
 "Copied items will all maintain the same properties and state, so they will overlap. If you want them arranged, "
 "using :meth:`~.Cmpt_Points.arrange` or :meth:`~.Cmpt_Points.arrange_in_grid` would be convenient approaches."
 
-#: ../../source/tutorials/group_advanced_usage.rst:24
+#: ../../source/tutorials/group_advanced_usage.rst:45
 msgid "以下是另一个示例："
 msgstr "Here is another example:"
 
@@ -80,13 +122,20 @@ msgstr ""
 "    txt.color.fade(0.1 * i)\n"
 "\n"
 "txts.points.arrange(DOWN, buff=0.05)\n"
+"self.show(txts)txts = Text('This is some text') * 9\n"
+"\n"
+"for i, txt in enumerate(txts):\n"
+"    txt.points.scale(1 - 0.1 * i)\n"
+"    txt.color.fade(0.1 * i)\n"
+"\n"
+"txts.points.arrange(DOWN, buff=0.05)\n"
 "self.show(txts)"
 
-#: ../../source/tutorials/group_advanced_usage.rst:40
+#: ../../source/tutorials/group_advanced_usage.rst:61
 msgid "物件组的进阶索引"
 msgstr "Advanced Indexing of Item Groups"
 
-#: ../../source/tutorials/group_advanced_usage.rst:42
+#: ../../source/tutorials/group_advanced_usage.rst:63
 msgid "我们已经知道索引的基础用法，可以使用下标索引子物件，或是使用切片得到一组子物件："
 msgstr ""
 "We already know the basic usage of indexing. We can use subscript to index child items, or use slicing to get a group of "
@@ -112,9 +161,17 @@ msgstr ""
 "\n"
 "for i, circle in enumerate(circles):\n"
 "    txt = Text(str(i), font_size=12).show()\n"
+"    txt.points.next_to(circle, DOWN, buff=SMALL_BUFF)circles = Circle(radius=0.5) * 10\n"
+"circles.points.arrange()\n"
+"circles[1].set(color=RED)\n"
+"circles[4:7].set(color=BLUE)\n"
+"circles.show()\n"
+"\n"
+"for i, circle in enumerate(circles):\n"
+"    txt = Text(str(i), font_size=12).show()\n"
 "    txt.points.next_to(circle, DOWN, buff=SMALL_BUFF)"
 
-#: ../../source/tutorials/group_advanced_usage.rst:58
+#: ../../source/tutorials/group_advanced_usage.rst:79
 msgid "除了这两种基础方法，你还可以通过以下方式："
 msgstr "In addition to these two basic methods, you can also use the following:"
 
@@ -154,6 +211,22 @@ msgstr ""
 "self.play(\n"
 "    circles[True, False, True, True].anim.set(color=BLUE, fill_alpha=0.7)\n"
 ")\n"
+"self.forward()circles = Circle(radius=0.5) * 10\n"
+"circles.points.arrange()\n"
+"circles.show()\n"
+"\n"
+"for i, circle in enumerate(circles):\n"
+"    txt = Text(str(i)).show()\n"
+"    txt.points.next_to(circle, DOWN, buff=SMALL_BUFF)\n"
+"\n"
+"self.forward()\n"
+"self.play(\n"
+"    circles[1, 3, 6, 7].anim.set(color=RED, fill_alpha=0.7)\n"
+")\n"
+"self.forward()\n"
+"self.play(\n"
+"    circles[True, False, True, True].anim.set(color=BLUE, fill_alpha=0.7)\n"
+")\n"
 "self.forward()"
 
 #: ../../source/tutorials/group_advanced_usage.rst:6
@@ -162,7 +235,7 @@ msgstr "circles[1, 3, 6, 7]"
 
 #: ../../source/tutorials/group_advanced_usage.rst:15
 msgid "这里使用多个索引 ``[1, 3, 6, 7]``，将这些子物件设置为红色"
-msgstr "Here multiple indices ``[1, 3, 6, 7]`` are used to set these child items to red"
+msgstr "Here, multiple indices ``[1, 3, 6, 7]`` are used to set these child items to red"
 
 #: ../../source/tutorials/group_advanced_usage.rst:6
 msgid "circles[True, False, True, True]"
@@ -171,14 +244,15 @@ msgstr "circles[True, False, True, True]"
 #: ../../source/tutorials/group_advanced_usage.rst:15
 msgid "这里使用布尔索引 ``[True, False, True, True]``，即为按照顺序，将对应位置为 ``True`` 的子物件设置为蓝色"
 msgstr ""
-"Here boolean indexing ``[True, False, True, True]`` is used, i.e., in order, set child items at positions corresponding "
-"to ``True`` to blue"
+"Here, boolean indexing ``[True, False, True, True]`` is used; that is, child items at positions corresponding to ``True`` "
+"are set to blue in order.Here boolean indexing ``[True, False, True, True]`` is used, i.e., in order, set child items at "
+"positions corresponding to ``True`` to blue"
 
-#: ../../source/tutorials/group_advanced_usage.rst:99
+#: ../../source/tutorials/group_advanced_usage.rst:120
 msgid "后代物件的遍历"
 msgstr "Traversing Descendant Items"
 
-#: ../../source/tutorials/group_advanced_usage.rst:101
+#: ../../source/tutorials/group_advanced_usage.rst:122
 msgid ""
 "除了使用 :meth:`~.Relation.descendants` 得到所有后代物件，还可以使用 :meth:`~.Relation.walk_descendants` 来指定获得什么类"
 "型的后代物件："
@@ -210,8 +284,18 @@ msgstr ""
 "group.points.arrange(DOWN, buff=MED_LARGE_BUFF, aligned_edge=LEFT)\n"
 "\n"
 "selected = Group.from_iterable(group.walk_descendants(RegularPolygon))\n"
+"selected.set(color=RED)group1 = Group(Circle(), Rect())\n"
+"group2 = Group(Star(), RegularPolygon(5), RegularPolygon(6))\n"
+"group3 = Group(Triangle(), Sector(angle=120 * DEGREES))\n"
+"\n"
+"group = Group(group1, group2, group3).show()\n"
+"for subgroup in group:\n"
+"    subgroup.points.arrange()\n"
+"group.points.arrange(DOWN, buff=MED_LARGE_BUFF, aligned_edge=LEFT)\n"
+"\n"
+"selected = Group.from_iterable(group.walk_descendants(RegularPolygon))\n"
 "selected.set(color=RED)"
 
-#: ../../source/tutorials/group_advanced_usage.rst:121
+#: ../../source/tutorials/group_advanced_usage.rst:142
 msgid "在这个例子中，:class:`~.Triangle` 派生自 :class:`~.RegularPolygon`，所以它也被选中了"
 msgstr "In this example, :class:`~.Triangle` is derived from :class:`~.RegularPolygon`, so it is also selected"

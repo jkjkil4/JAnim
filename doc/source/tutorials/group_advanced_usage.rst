@@ -22,7 +22,7 @@
 
     self.play(Transform(pair['src'], pair['target']))
 
-更多内容请参考 :class:`~.NamedGroupMixin` 与 :class:`~.NamedGroup` 的介绍
+更多内容请参考 :class:`~.NamedGroupMixin` 与 :class:`~.NamedGroup` 的文档
 
 物件的批量复制
 ---------------------
