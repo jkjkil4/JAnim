@@ -3,6 +3,25 @@
 
 前文回顾：:doc:`item_group`
 
+具名物件组
+-----------------------
+
+除了使用 ``Group(...)`` 直接传入多个物件，还可以使用 :class:`~.NamedGroup` 类来创建带有 **具名子物件** 的物件组，例如：
+
+.. code-block:: python
+
+    group = NamedGroup(title=..., content=...)
+
+具名物件组的 :meth:`~.NamedGroup.add` 和 :meth:`~.NamedGroup.remove` 方法也支持使用具名参数来添加/移除具名子物件。
+
+访问其具名子物件可以使用类似 ``group['content']`` 的形式，例如：
+
+.. code-block:: python
+
+    pair = NamedGroup(src=Circle(), target=Square())
+
+    self.play(Transform(pair['src'], pair['target']))
+
 物件的批量复制
 ---------------------
 
