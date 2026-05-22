@@ -6,27 +6,40 @@ import os
 import sys
 import time
 import types
-from argparse import Namespace
-from typing import Callable
+from typing import Callable, Iterable, Sequence
 
 from janim.anims.timeline import BuiltTimeline, Timeline
+from janim.cli.options import (
+    FormatOptions,
+    HardwareOptions,
+    LiveOptions,
+    OutputOptions,
+    RangeOptions,
+    SharedOptions,
+)
 from janim.exception import EXITCODE_MODULE_NOT_FOUND, EXITCODE_NOT_FILE, ExitException
 from janim.locale import get_translator
 from janim.logger import log
 from janim.utils.config import cli_config, default_config
 from janim.utils.file_ops import STDIN_FILENAME, open_file
+from janim.utils.typst_compile import set_use_external_typst
 
-_ = get_translator('janim.cli')
+_ = get_translator('janim.cli.execute')
 
 
-def run(args: Namespace) -> None:
-    module = get_module(args.input)
+def run(
+    file: str,
+    timeline_names: Sequence[str],
+    shared_options: SharedOptions,
+    live_options: LiveOptions,
+) -> None:
+    module = get_module(file)
     if module is None:
         return
-    modify_typst_compile_flag(args)
-    modify_cli_config(args)
+    set_use_external_typst(shared_options.external_typst)
+    modify_cli_config(shared_options.configs)
 
-    timelines = extract_timelines_from_module(args, module)
+    timelines = extract_timelines_from_module(module, timeline_names, shared_options.all)
     if not timelines:
         return
 
@@ -49,7 +62,7 @@ def run(args: Namespace) -> None:
 
     for timeline in timelines:
         built_timelines.append(
-            timeline().build(hide_subtitles=args.hide_subtitles, show_debug_notice=True)
+            timeline().build(hide_subtitles=shared_options.hide_subtitles, show_debug_notice=True)
         )
 
     log.info('======')
@@ -62,8 +75,8 @@ def run(args: Namespace) -> None:
         viewer = AnimViewer(
             built,
             auto_play=auto_play,
-            interact=args.interact,
-            watch=args.watch,
+            interact=live_options.interact,
+            watch=live_options.watch,
             available_timeline_names=available_timeline_names,
         )
         widgets.append(viewer)
@@ -79,14 +92,23 @@ def run(args: Namespace) -> None:
     app.exec()
 
 
-def write(args: Namespace) -> None:
-    module = get_module(args.input)
+def write(
+    file: str,
+    timeline_names: Sequence[str],
+    shared_options: SharedOptions,
+    open: bool,
+    format_options: FormatOptions,
+    output_options: OutputOptions,
+    range_options: RangeOptions,
+    hardware_options: HardwareOptions,
+) -> None:
+    module = get_module(file)
     if module is None:
         return
-    modify_typst_compile_flag(args)
-    modify_cli_config(args)
+    set_use_external_typst(shared_options.external_typst)
+    modify_cli_config(shared_options.configs)
 
-    timelines = extract_timelines_from_module(args, module)
+    timelines = extract_timelines_from_module(module, timeline_names, shared_options.all)
     if not timelines:
         return
 
@@ -94,22 +116,30 @@ def write(args: Namespace) -> None:
 
     log.info('======')
 
-    builts = [timeline().build(hide_subtitles=args.hide_subtitles) for timeline in timelines]
+    builts = [
+        timeline().build(hide_subtitles=shared_options.hide_subtitles)  #
+        for timeline in timelines
+    ]
+
+    video_with_audio = output_options.video_with_audio
+    video = output_options.video
+    audio = output_options.audio
+    srt = output_options.srt
 
     # 当设定 video_with_audio 时，忽略 video 和 audio 选项
-    if args.video_with_audio:
-        if args.video:
+    if video_with_audio:
+        if video:
             log.warning(_("'--video' is ignored because '--video_with_audio' is set"))
-            args.video = False
-        if args.audio:
+            video = False
+        if audio:
             log.warning(_("'--audio' is ignored because '--video_with_audio' is set"))
-            args.audio = False
+            audio = False
 
     # 当四个选项都没设定时，将 video_with_audio 作为默认行为
-    if not args.video_with_audio and not args.video and not args.audio and not args.srt:
-        args.video_with_audio = True
+    if not video_with_audio and not video and not audio and not srt:
+        video_with_audio = True
 
-    is_gif = args.format == 'gif'
+    is_gif = format_options.format == 'gif'
 
     prev_is_skipped = False
 
@@ -121,11 +151,11 @@ def write(args: Namespace) -> None:
         if not os.path.exists(output_dir):
             os.makedirs(output_dir)
 
-        video_with_audio = args.video_with_audio
-        video = args.video
-        audio = args.audio
-        srt = args.srt
-        open_result = args.open and built is builts[-1]
+        video_with_audio = video_with_audio
+        video = video
+        audio = audio
+        srt = srt
+        open_result = open and built is builts[-1]
 
         has_audio = built.timeline.has_audio_for_all()
 
@@ -155,21 +185,21 @@ def write(args: Namespace) -> None:
         if writes_video:
             log.info(f'fps={built.cfg.fps}')
             log.info(f'resolution="{built.cfg.pixel_width}x{built.cfg.pixel_height}"')
-            log.info(f'format="{args.format}"')
+            log.info(f'format="{format_options.format}"')
         if writes_audio:
             if not video_with_audio:
-                log.info(f'audio_format="{args.audio_format}"')
+                log.info(f'audio_format="{format_options.audio_format}"')
             log.info(f'audio_framerate="{built.cfg.audio_framerate}"')
         log.info(f'output_dir="{output_dir}"')
 
         if writes_video:
             video_writer = VideoWriter(built)
             video_writer.write_all(
-                os.path.join(output_dir, f'{name}.{args.format}'),
-                args.in_point,
-                args.out_point,
-                use_pbo=not args.disable_pbo,
-                hwaccel=args.hwaccel,
+                os.path.join(output_dir, f'{name}.{format_options.format}'),
+                range_options.in_point,
+                range_options.out_point,
+                use_pbo=not hardware_options.disable_pbo,
+                hwaccel=hardware_options.hwaccel,
                 _keep_temp=video_with_audio,
             )
             if open_result and not video_with_audio:
@@ -178,7 +208,7 @@ def write(args: Namespace) -> None:
         if writes_audio:
             audio_writer = AudioWriter(built)
             audio_writer.write_all(
-                os.path.join(output_dir, f'{name}.{args.audio_format}'),
+                os.path.join(output_dir, f'{name}.{format_options.audio_format}'),
                 _keep_temp=video_with_audio,
             )
             if open_result and not video_with_audio and not writes_video:
@@ -202,8 +232,8 @@ def write(args: Namespace) -> None:
     log.info('======')
 
 
-def tool(args: Namespace) -> None:
-    if not args.tool_name:
+def tool(tools: Iterable[str]) -> None:
+    if not tools:
         log.error(_('No tool specified for use'))
         return
 
@@ -226,7 +256,7 @@ def tool(args: Namespace) -> None:
 
     widgets: list[QWidget] = []
 
-    for key in args.tool_name:
+    for key in tools:
         widget = tool_map[key]()
         widgets.append(widget)
         widget.show()
@@ -237,36 +267,26 @@ def tool(args: Namespace) -> None:
     app.exec()
 
 
-def modify_typst_compile_flag(args: Namespace) -> None:
+def modify_cli_config(configs: Iterable[tuple[str, str]]) -> None:
     """
-    用于 CLI 的 ``--external-typst`` 参数
+    根据 (key, value) 列表修改 :py:obj:`~.cli_config`
     """
-    from janim.utils.typst_compile import set_use_external_typst
-
-    set_use_external_typst(args.external_typst)
-
-
-def modify_cli_config(args: Namespace) -> None:
-    """
-    用于 CLI 的 ``-c`` 参数
-    """
-    if args.config:
-        for key, value in args.config:
-            dtype = type(getattr(default_config, key))
-            setattr(cli_config, key, dtype(value))
+    for key, value in configs:
+        dtype = type(getattr(default_config, key))
+        setattr(cli_config, key, dtype(value))
 
 
-def get_module(input: str):
+def get_module(file: str):
     """
-    根据给定的输入 ``input`` 产生 ``module``
+    根据给定的输入 ``file`` 产生 ``module``
 
-    - 当 ``input`` 为文件路径时，将文件读取为 module
-    - 当 ``input`` 为 ``'-'`` 时，从 ``stdin`` 读取源码编译 module
+    - 当 ``file`` 为文件路径时，将文件读取为 module
+    - 当 ``file`` 为 ``'-'`` 时，从 ``stdin`` 读取源码编译 module
     """
-    if input == '-':
+    if file == '-':
         return get_module_from_stdin()
     else:
-        return get_module_from_file(input)
+        return get_module_from_file(file)
 
 
 def get_module_from_stdin():
@@ -319,15 +339,19 @@ def get_module_from_file(file_name: str):
     return module
 
 
-def extract_timelines_from_module(args: Namespace, module) -> list[type[Timeline]]:
+def extract_timelines_from_module(
+    module,
+    timeline_names: Sequence[str],
+    all: bool,
+) -> list[type[Timeline]]:
     """
     根据指定的 ``module`` 向用户询问使用哪些 :class:`~.Timeline`
     """
     timelines = []
     err = False
 
-    if not args.all and args.timeline_names:
-        for name in args.timeline_names:
+    if not all and timeline_names:
+        for name in timeline_names:
             try:
                 timeline = module.__dict__[name]
                 if not isinstance(timeline, type) or not issubclass(timeline, Timeline):
@@ -338,7 +362,7 @@ def extract_timelines_from_module(args: Namespace, module) -> list[type[Timeline
                 err = True
     else:
         classes = get_all_timelines_from_module(module)
-        if len(classes) <= 1 or args.all:
+        if len(classes) <= 1 or all:
             return classes
 
         if module.__file__ == STDIN_FILENAME:
