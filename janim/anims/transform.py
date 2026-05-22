@@ -14,6 +14,7 @@ import numpy as np
 from janim.anims.animation import Animation, ItemAnimation, TimeRange
 from janim.anims.composition import AnimGroup
 from janim.anims.fading import FadeIn, FadeInFromPoint, FadeOut, FadeOutToPoint
+from janim.camera.camera import Camera
 from janim.components.points import Cmpt_Points
 from janim.constants import C_LABEL_ANIM_STAY, OUT
 from janim.exception import TargetNotFoundError
@@ -279,6 +280,11 @@ class MoveToTarget(Transform):
     def _time_fixed(self):
         super()._time_fixed()
 
+        if isinstance(self.src_item, Camera):
+            fix = _MoveToTargetCameraFix(self)
+            fix.transfer_params(self)
+            fix.finalize()
+
         def at_end():
             # 因为马上就是 show，所以传入了 auto_visible=False
             self.src_item.become(self.src_item.target, auto_visible=False)
@@ -287,6 +293,46 @@ class MoveToTarget(Transform):
             self.src_item.show()
 
         self.timeline.schedule(self.t_range.end, at_end)
+
+
+class _MoveToTargetCameraFix(ItemAnimation):
+    """
+    对 ``Camera`` 使用 ``MoveToTarget`` 的行为的修复
+
+    修复内容：
+
+        修复前，对 ``Camera`` 使用 ``MoveToTarget`` 不会有中间的动画效果，只会在动画结束后变为 ``target``
+
+    成因：
+
+        画面渲染方法 ``BuiltTimeline.render_all`` 在渲染时，摄像机属性基于 ``self.camera`` 的当前状态决定，
+        而 ``MoveToTarget`` 的基类 ``Transform`` 并不会向物件注册动画状态（因为 ``Transform`` 依靠 ``add_extra_render_group`` 注册额外渲染）
+
+    修复做法：
+
+        手动给摄像机对象注册动画状态
+    """
+
+    def __init__(
+        self,
+        generate_by: MoveToTarget,
+        **kwargs,
+    ):
+        camera: Camera = generate_by.src_item
+
+        super().__init__(camera, **kwargs)
+        self._generate_by = generate_by
+        self._cover_previous_anims = True
+
+        self.aligned = generate_by.aligned[(camera, camera.target)]
+        self.path_func = generate_by.path_func
+
+    def apply(self, data: None, p: ItemAnimation.ApplyParams) -> Item:
+        alpha = self.get_alpha_on_global_t(p.global_t)
+
+        aligned = self.aligned
+        aligned.union.interpolate(aligned.data1, aligned.data2, alpha, path_func=self.path_func)
+        return aligned.union
 
 
 class TransformInSegments(AnimGroup):
