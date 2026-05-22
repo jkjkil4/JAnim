@@ -19,6 +19,7 @@ from janim.utils.file_ops import get_janim_dir
 _ = get_translator('janim.cli.parse')
 
 help_option = click.help_option('-h', '--help')
+DEFAULT_SECTION = cloup.Section('Commands')
 
 
 @toplevel_group
@@ -62,12 +63,13 @@ timeline_names_argument = click.argument(
 @cli.command(
     'run',
     help=_(
-        'Preview timeline classes from a Python source file.\n'
+        'Preview timeline classes\n'
         '\n'
-        "<FILE>      Python source file to load. Use '-' to read from stdin.\n"
+        "<FILE>      Python source file to load. Use '-' to read from stdin\n"
         '\n'
-        '<TIMELINE>  Timeline class names to preview.'
+        '<TIMELINE>  Timeline class names to preview'
     ),
+    section=DEFAULT_SECTION,
 )
 @help_option
 @file_argument
@@ -83,12 +85,13 @@ def run(**kwargs):
 @cli.command(
     'write',
     help=_(
-        'Write timeline classes from a Python source file to media files.\n'
+        'Export media files of timeline classes\n'
         '\n'
-        "<FILE>      Python source file to load. Use '-' to read from stdin.\n"
+        "<FILE>      Python source file to load. Use '-' to read from stdin\n"
         '\n'
-        '<TIMELINE>  Timeline class names to preview.'
+        '<TIMELINE>  Timeline class names to export'
     ),
+    section=DEFAULT_SECTION,
 )
 @help_option
 @file_argument
@@ -130,8 +133,9 @@ def write(**kwargs):
     help=_(
         'Show examples of JAnim\n'
         '\n'
-        '<TIMELINE>  Timeline class names to see.'
+        '<TIMELINE>  Timeline class names to see'
     ),
+    section=DEFAULT_SECTION,
 )  # fmt: skip
 @help_option
 @timeline_names_argument
@@ -157,6 +161,7 @@ tool_names = '{' + '|'.join(available_tools) + '}'
         '\n'
         '{tool_names}  Tool(s) that you want to use'
     ).format(tool_names=tool_names),
+    section=DEFAULT_SECTION,
 )  # fmt: skip
 @help_option
 @click.argument(
