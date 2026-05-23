@@ -69,6 +69,8 @@ exclude = [
     ".asv/", ".vscode/", ".github/", "assets/", "doc/", "benchmarks/", "test/", "scripts/",
     ".pypirc",
     ".readthedocs.yaml",
+    "flake.nix",
+    "flake.lock",
     ".gitignore",
     "uv.lock",
     "asv.conf.json",
