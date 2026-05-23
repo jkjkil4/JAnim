@@ -1,0 +1,95 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-05-22 14:31+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: janim/cli/parse.py:27
+msgid "Language code, e.g., en, zh_CN"
+msgstr ""
+
+#: janim/cli/parse.py:33
+msgid "Set the logging level (default: INFO)"
+msgstr ""
+
+#: janim/cli/parse.py:68
+msgid ""
+"Preview timeline classes\n"
+"\n"
+"<FILE>      Python source file to load. Use '-' to read from stdin\n"
+"\n"
+"<TIMELINE>  Timeline class names to preview"
+msgstr ""
+
+#: janim/cli/parse.py:90
+msgid ""
+"Generate media files of timeline classes\n"
+"\n"
+"<FILE>      Python source file to load. Use '-' to read from stdin\n"
+"\n"
+"<TIMELINE>  Timeline class names to export"
+msgstr ""
+
+#: janim/cli/parse.py:105
+msgid "Open the video after writing"
+msgstr ""
+
+#: janim/cli/parse.py:108
+msgid "Format Options"
+msgstr ""
+
+#: janim/cli/parse.py:109
+msgid "Options for specifying the format of the output files"
+msgstr ""
+
+#: janim/cli/parse.py:113
+msgid "Output Options"
+msgstr ""
+
+#: janim/cli/parse.py:114
+msgid "Options for specifying the parts to be written"
+msgstr ""
+
+#: janim/cli/parse.py:118
+msgid "Range Options"
+msgstr ""
+
+#: janim/cli/parse.py:119
+msgid "Options for specifying in/out point"
+msgstr ""
+
+#: janim/cli/parse.py:123
+msgid "Hardware Options"
+msgstr ""
+
+#: janim/cli/parse.py:124
+msgid "Hardware options for writing the output files"
+msgstr ""
+
+#: janim/cli/parse.py:136
+msgid ""
+"Show examples of JAnim\n"
+"\n"
+"<TIMELINE>  Timeline class names to see"
+msgstr ""
+
+#: janim/cli/parse.py:162
+#, python-brace-format
+msgid ""
+"Run useful tools\n"
+"\n"
+"{tool_names}  Tool(s) that you want to use"
+msgstr ""

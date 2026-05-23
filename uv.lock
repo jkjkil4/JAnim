@@ -229,6 +229,18 @@ wheels = [
 ]
 
 [[package]]
+name = "cloup"
+version = "3.0.9"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "click" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/f9/64/7f0a66021ff81d51859c66adc13f3c71f0306c2f8dfb9877a0694cbada05/cloup-3.0.9.tar.gz", hash = "sha256:519f524d3c64040e49a0866b5fc0bfd6af3eac0d3d6a4b2b50b33ab0247db2d7", size = 229896, upload-time = "2026-04-04T03:53:54.182Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/77/15/435bb5a24e3a2dc8c26afedab0c6f0cf4291c66fb99509c168c38eb81135/cloup-3.0.9-py2.py3-none-any.whl", hash = "sha256:c761ef4e975454335d50c0e1eb83595a932735aac06e8955b3ced774bc62ae7b", size = 54724, upload-time = "2026-04-04T03:53:52.909Z" },
+]
+
+[[package]]
 name = "colorama"
 version = "0.4.6"
 source = { registry = "https://pypi.org/simple" }
@@ -328,6 +340,18 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/c7/96/38086d58a181aac86d503dfa9c47eb20715a79c3e3acbdf786e92e5c09a8/coverage-7.13.4-cp314-cp314t-win_amd64.whl", hash = "sha256:4c7d3cc01e7350f2f0f6f7036caaf5673fb56b6998889ccfe9e1c1fe75a9c932", size = 224148, upload-time = "2026-02-09T12:58:58.645Z" },
     { url = "https://files.pythonhosted.org/packages/ce/72/8d10abd3740a0beb98c305e0c3faf454366221c0f37a8bcf8f60020bb65a/coverage-7.13.4-cp314-cp314t-win_arm64.whl", hash = "sha256:23e3f687cf945070d1c90f85db66d11e3025665d8dafa831301a0e0038f3db9b", size = 222172, upload-time = "2026-02-09T12:59:00.396Z" },
     { url = "https://files.pythonhosted.org/packages/0d/4a/331fe2caf6799d591109bb9c08083080f6de90a823695d412a935622abb2/coverage-7.13.4-py3-none-any.whl", hash = "sha256:1af1641e57cf7ba1bd67d677c9abdbcd6cc2ab7da3bca7fa1e2b7e50e65f2ad0", size = 211242, upload-time = "2026-02-09T12:59:02.032Z" },
+]
+
+[[package]]
+name = "dataclass-click"
+version = "1.0.4"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "click" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/89/82/5b6035efd90621771fa039960eab3e1ec7ff2a8625033272856843e8bd27/dataclass_click-1.0.4.tar.gz", hash = "sha256:10e7de638dd9e68ae9abd5086f61d8ddee42b1873a70f5fd9fd2167856afac11", size = 7580, upload-time = "2025-10-10T21:11:31.956Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/86/dc/38a94a2eb5f756724a6dc87a7aea38f7b747fe7b2e9daabc34a65e6cd9ac/dataclass_click-1.0.4-py3-none-any.whl", hash = "sha256:a225d30c04e4abbdba411cc3d5ec0a2ea829e1dca6500afe5f87cc243e5ead72", size = 8553, upload-time = "2025-10-10T21:11:30.514Z" },
 ]
 
 [[package]]
@@ -487,7 +511,9 @@ name = "janim"
 source = { editable = "." }
 dependencies = [
     { name = "attrs" },
+    { name = "cloup" },
     { name = "colour" },
+    { name = "dataclass-click" },
     { name = "fonttools" },
     { name = "freetype-py" },
     { name = "moderngl" },
@@ -532,8 +558,10 @@ requires-dist = [
     { name = "asv", marker = "extra == 'bench'" },
     { name = "attrs" },
     { name = "beautifulsoup4", marker = "extra == 'gui'" },
+    { name = "cloup" },
     { name = "colour" },
     { name = "coverage", marker = "extra == 'test'" },
+    { name = "dataclass-click" },
     { name = "docutils", marker = "extra == 'doc'" },
     { name = "fonttools" },
     { name = "freetype-py" },

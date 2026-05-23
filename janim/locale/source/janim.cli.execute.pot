@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-22 22:43+0800\n"
+"POT-Creation-Date: 2026-05-22 12:56+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,70 +17,70 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: janim/cli.py:56 janim/cli.py:213
+#: janim/cli/execute.py:69 janim/cli/execute.py:243
 msgid "Constructing window"
 msgstr ""
 
-#: janim/cli.py:76 janim/cli.py:234
+#: janim/cli/execute.py:89 janim/cli/execute.py:264
 #, python-brace-format
 msgid "Finished constructing in {time:.2f} s"
 msgstr ""
 
-#: janim/cli.py:102
+#: janim/cli/execute.py:132
 msgid "'--video' is ignored because '--video_with_audio' is set"
 msgstr ""
 
-#: janim/cli.py:105
+#: janim/cli/execute.py:135
 msgid "'--audio' is ignored because '--video_with_audio' is set"
 msgstr ""
 
-#: janim/cli.py:152
+#: janim/cli/execute.py:182
 #, python-brace-format
 msgid "Skipping \"{name}\": no part to output"
 msgstr ""
 
-#: janim/cli.py:200
+#: janim/cli/execute.py:230
 #, python-brace-format
 msgid "Generated SRT file \"{file_path}\""
 msgstr ""
 
-#: janim/cli.py:207
+#: janim/cli/execute.py:237
 msgid "No tool specified for use"
 msgstr ""
 
-#: janim/cli.py:306
+#: janim/cli/execute.py:326
 #, python-brace-format
 msgid "\"{file_name}\" doesn't exist"
 msgstr ""
 
-#: janim/cli.py:310
+#: janim/cli/execute.py:330
 #, python-brace-format
 msgid "\"{file_name}\" isn't a file"
 msgstr ""
 
-#: janim/cli.py:337
+#: janim/cli/execute.py:361
 #, python-brace-format
 msgid "No timeline named \"{name}\""
 msgstr ""
 
-#: janim/cli.py:347
+#: janim/cli/execute.py:371
 msgid ""
 "Multiple timelines found in stdin input. Please specify timeline names with "
 "command line arguments."
 msgstr ""
 
-#: janim/cli.py:363
+#: janim/cli/execute.py:387
 msgid ""
 "That module has multiple timelines, which ones would you like to render?\n"
 "Timeline Name or Number: "
 msgstr ""
 
-#: janim/cli.py:380
+#: janim/cli/execute.py:404
 #, python-brace-format
 msgid "Invaild number {num}"
 msgstr ""
 
-#: janim/cli.py:386
+#: janim/cli/execute.py:410
 #, python-brace-format
 msgid "No timeline named {split_str}"
 msgstr ""

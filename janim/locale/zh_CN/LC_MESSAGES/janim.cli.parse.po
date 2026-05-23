@@ -1,0 +1,112 @@
+# English translations for PACKAGE package.
+# Copyright (C) 2025 THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# Automatically generated, 2025.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-05-22 14:27+0800\n"
+"PO-Revision-Date: 2025-12-24 19:57+0800\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: none\n"
+"Language: zh_CN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Poedit 3.8\n"
+
+#: janim/cli/parse.py:27
+msgid "Language code, e.g., en, zh_CN"
+msgstr "语言代码，例如 en、zh_CN"
+
+#: janim/cli/parse.py:33
+msgid "Set the logging level (default: INFO)"
+msgstr "设置日志等级（默认：INFO）"
+
+#: janim/cli/parse.py:68
+msgid ""
+"Preview timeline classes\n"
+"\n"
+"<FILE>      Python source file to load. Use '-' to read from stdin\n"
+"\n"
+"<TIMELINE>  Timeline class names to preview"
+msgstr ""
+"预览 Timeline 类\n"
+"\n"
+"<FILE>      要加载的 Python 源文件，使用 '-' 从 stdin 读取\n"
+"\n"
+"<TIMELINE>  要预览的 Timeline 类名称"
+
+#: janim/cli/parse.py:90
+msgid ""
+"Export media files of timeline classes\n"
+"\n"
+"<FILE>      Python source file to load. Use '-' to read from stdin\n"
+"\n"
+"<TIMELINE>  Timeline class names to export"
+msgstr ""
+"导出 Timeline 类的媒体文件\n"
+"\n"
+"<FILE>      要加载的 Python 源文件，使用 '-' 从 stdin 读取\n"
+"\n"
+"<TIMELINE>  要导出的 Timeline 类名称"
+
+#: janim/cli/parse.py:105
+msgid "Open the video after writing"
+msgstr "在输出后打开视频文件"
+
+#: janim/cli/parse.py:108
+msgid "Format Options"
+msgstr "格式选项"
+
+#: janim/cli/parse.py:109
+msgid "Options for specifying the format of the output files"
+msgstr "指定输出文件格式的选项"
+
+#: janim/cli/parse.py:113
+msgid "Output Options"
+msgstr "输出选项"
+
+#: janim/cli/parse.py:114
+msgid "Options for specifying the parts to be written"
+msgstr "指定输出哪些部分的选项"
+
+#: janim/cli/parse.py:118
+msgid "Range Options"
+msgstr "区段选项"
+
+#: janim/cli/parse.py:119
+msgid "Options for specifying in/out point"
+msgstr "用于指定入点/出点的选项"
+
+#: janim/cli/parse.py:123
+msgid "Hardware Options"
+msgstr "硬件选项"
+
+#: janim/cli/parse.py:124
+msgid "Hardware options for writing the output files"
+msgstr "输出文件的硬件选项"
+
+#: janim/cli/parse.py:136
+msgid ""
+"Show examples of JAnim\n"
+"\n"
+"<TIMELINE>  Timeline class names to see"
+msgstr ""
+"显示 JAnim 的例子\n"
+"\n"
+"<TIMELINE>  要查看的 Timeline 类名称"
+
+#: janim/cli/parse.py:162
+#, python-brace-format
+msgid ""
+"Run useful tools\n"
+"\n"
+"{tool_names}  Tool(s) that you want to use"
+msgstr ""
+"运行实用工具\n"
+"\n"
+"{tool_names}  你想要使用的工具"
