@@ -17,6 +17,7 @@ from janim.cli.options import (
     RangeOptions,
     SharedOptions,
 )
+from janim.cli.prompt import Entry, MatchState, prompt_entries
 from janim.exception import EXITCODE_MODULE_NOT_FOUND, EXITCODE_NOT_FILE, ExitException
 from janim.locale import get_translator
 from janim.logger import log
@@ -374,41 +375,27 @@ def extract_timelines_from_module(
             )
             return []
 
-        max_digits = len(str(len(classes)))
+        entries = [Entry(timeline_class.__name__, timeline_class) for timeline_class in classes]
 
-        name_to_class = {}
-        for idx, timeline_class in enumerate(classes, start=1):
-            name = timeline_class.__name__
-            print(f'{str(idx).zfill(max_digits)}: {name}', file=sys.stderr)
-            name_to_class[name] = timeline_class
+        print(
+            _('That module has multiple timelines, which ones would you like to render?'),
+            file=sys.stderr,
+        )
+        results = prompt_entries(entries, _('Timeline Name or Number: '))
 
-        try:
-            prompt_text = '\n' + _(
-                'That module has multiple timelines, which ones would you like to render?\n'  #
-                'Timeline Name or Number: '
-            )
-            sys.stderr.write(prompt_text)  # input 只能输出到 stdout，所以这里手动输出到 stderr
-            sys.stderr.flush()
-            user_input = input()
-        except KeyboardInterrupt:
-            user_input = ''
-
-        for split_str in user_input.replace(' ', '').split(','):
-            if not split_str:
-                continue
-            if split_str.isnumeric():
-                idx = int(split_str) - 1
-                if 0 <= idx < len(classes):
-                    timelines.append(classes[idx])
-                else:
-                    log.error(_('Invaild number {num}').format(num=idx + 1))
-                    err = True
-            else:
-                try:
-                    timelines.append(name_to_class[split_str])
-                except KeyError:
-                    log.error(_('No timeline named {split_str}').format(split_str=split_str))
-                    err = True
+        if not results:
+            print(_('Cancelled'), file=sys.stderr)
+        else:
+            for result in results:
+                match result.state:
+                    case MatchState.Matched:
+                        timelines.append(result.data)
+                    case MatchState.InvalidNumber:
+                        log.error(_('Invaild number {num}').format(num=result.data))
+                        err = True
+                    case MatchState.InvalidKeyword:
+                        log.error(_('No timeline named "{name}"').format(name=result.data))
+                        err = True
 
     return [] if err else timelines
 

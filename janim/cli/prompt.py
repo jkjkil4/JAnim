@@ -1,5 +1,7 @@
-from dataclasses import dataclass
+import enum
 import itertools as it
+import sys
+from dataclasses import dataclass
 from typing import Any
 
 from prompt_toolkit.application import Application
@@ -7,6 +9,7 @@ from prompt_toolkit.key_binding.key_bindings import KeyBindings
 from prompt_toolkit.layout import Layout
 from prompt_toolkit.layout.containers import HSplit, Window
 from prompt_toolkit.layout.controls import FormattedTextControl
+from prompt_toolkit.output import create_output
 from prompt_toolkit.widgets import TextArea
 from rich.columns import Columns
 from rich.console import Console
@@ -114,10 +117,12 @@ def get_panels_in_categories(
 
     total_pages = len(pages_with_category_name)
 
+    key_hint = '' if total_pages == 0 else ' ↑/↓'
+
     panels = [
         Panel(
             page,
-            title=f'Page {i}/{total_pages}',
+            title=f'Page {i}/{total_pages}{key_hint}',
             subtitle=category,
             height=ENTRIES_COLUMN_HEIGHT + 2,
         )
@@ -156,13 +161,13 @@ def prompt_panels(console: Console, panels: list[Panel], prompt: str) -> str | N
     @kb.add('up')
     def _prev(event) -> None:
         nonlocal page
-        page = max(0, page - 1)
+        page = (page - 1) % len(panels)
         redraw()
 
     @kb.add('down')
     def _next(event) -> None:
         nonlocal page
-        page = min(len(panels) - 1, page + 1)
+        page = (page + 1) % len(panels)
         redraw()
 
     @kb.add('c-c')
@@ -182,31 +187,72 @@ def prompt_panels(console: Console, panels: list[Panel], prompt: str) -> str | N
     app = Application(
         layout=Layout(root_container, focused_element=input_box),
         key_bindings=kb,
+        output=create_output(stdout=sys.stderr),
     )
     return app.run()
 
 
-def prompt_entries(entries: list[Entry], prompt: str) -> list[Any]:
+class MatchState(enum.Enum):
+    Matched = 0
+    InvalidNumber = 1
+    InvalidKeyword = 2
+
+
+@dataclass
+class MatchResult:
+    state: MatchState
+
+    # Matched -> metadata (Any)
+    # InvalidNumber -> order (int)
+    # InvalidKeyword -> keyword (str)
+    data: Any | int | str
+
+
+def parse_user_input(entries: list[Entry], user_input: str) -> list[MatchResult]:
+    results: list[MatchResult] = []
+
+    for split_str in user_input.replace(' ', '').split(','):
+        if not split_str:
+            continue
+        if split_str.isnumeric():
+            idx = int(split_str) - 1
+            if 0 <= idx < len(entries):
+                results.append(MatchResult(MatchState.Matched, entries[idx].metadata))
+            else:
+                results.append(MatchResult(MatchState.InvalidNumber, idx + 1))
+        else:
+            for entry in entries:
+                if entry.text == split_str:
+                    results.append(MatchResult(MatchState.Matched, entry.metadata))
+                    break
+            else:
+                results.append(MatchResult(MatchState.InvalidKeyword, split_str))
+
+    return results
+
+
+def prompt_entries(
+    entries: list[Entry],
+    prompt: str,
+) -> list[MatchResult] | None:
     console = Console()
     panels = get_panels(console, entries)
     user_input = prompt_panels(console, panels, prompt)
-    print(user_input)
+    if user_input is None:
+        return None
+
+    return parse_user_input(entries, user_input)
 
 
-def prompt_entries_in_categories(categories: list[Category], prompt: str) -> list[Any]:
+def prompt_entries_in_categories(
+    categories: list[Category],
+    prompt: str,
+) -> list[MatchResult] | None:
     console = Console()
     panels = get_panels_in_categories(console, categories)
     user_input = prompt_panels(console, panels, prompt)
-    print(user_input)
+    if user_input is None:
+        return None
 
-
-import janim.examples as examples
-from janim.cli.execute import get_all_timelines_from_module
-
-timeline_types = get_all_timelines_from_module(examples)
-timeline_entries = [Entry(type.__name__, type) for type in timeline_types]
-
-console = Console()
-categories = [Category('JAnim Examples', timeline_entries), Category('test', timeline_entries)]
-
-prompt_entries_in_categories(categories, 'Select: ')
+    entries = list(it.chain.from_iterable(category.entries for category in categories))
+    return parse_user_input(entries, user_input)
