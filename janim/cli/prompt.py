@@ -140,7 +140,9 @@ def capture_panels(console: Console, panels: list[Panel]) -> list[str]:
     return texts
 
 
-def prompt_panels(console: Console, panels: list[Panel], prompt: str) -> str | None:
+def prompt_panels(
+    console: Console, panels: list[Panel], prompt: str, *, auto_completes: list[str] | None = None
+) -> str | None:
     texts = capture_panels(console, panels)
 
     display_control = FormattedTextControl()
@@ -169,6 +171,60 @@ def prompt_panels(console: Console, panels: list[Panel], prompt: str) -> str | N
         nonlocal page
         page = (page + 1) % len(panels)
         redraw()
+
+    if auto_completes is not None:
+        # (prefix, match_index)
+        auto_complete_state: tuple[str, int] | None = None
+
+        @kb.add('tab')
+        def _auto_complete(event) -> None:
+            nonlocal auto_complete_state
+
+            user_input = input_box.text
+            try:
+                last_comma = user_input.rindex(',')
+                last_start = last_comma + 1
+            except ValueError:
+                last_start = 0
+
+            last_part = user_input[last_start:]
+
+            # 仅在非空且非数值时才进行自动补全
+            if not last_part or last_part.isnumeric():
+                return
+
+            new_auto_complete_state = None
+            replace_by = last_part
+
+            if auto_complete_state is None:
+                prefix = last_part
+                for idx, pattern in enumerate(auto_completes):
+                    if pattern.startswith(prefix):
+                        new_auto_complete_state = (prefix, idx)
+                        replace_by = pattern
+                        break
+            else:
+                prefix, prev_match_index = auto_complete_state
+                start = prev_match_index + 1
+                length = len(auto_completes)
+                for i in range(start, start + length):
+                    idx = i % length
+                    pattern = auto_completes[idx]
+                    if pattern.startswith(prefix):
+                        new_auto_complete_state = (prefix, idx)
+                        replace_by = pattern
+                        break
+
+            new_text = user_input[:last_start] + replace_by
+            input_box.text = new_text
+            input_box.buffer.cursor_position = len(new_text)
+            auto_complete_state = new_auto_complete_state
+
+        def on_text_changed(_) -> None:
+            nonlocal auto_complete_state
+            auto_complete_state = None
+
+        input_box.buffer.on_text_changed += on_text_changed
 
     @kb.add('c-c')
     def _interrupt(event) -> None:
@@ -237,7 +293,9 @@ def prompt_entries(
 ) -> list[MatchResult] | None:
     console = Console()
     panels = get_panels(console, entries)
-    user_input = prompt_panels(console, panels, prompt)
+    user_input = prompt_panels(
+        console, panels, prompt, auto_completes=[entry.text for entry in entries]
+    )
     if user_input is None:
         return None
 
@@ -248,11 +306,14 @@ def prompt_entries_in_categories(
     categories: list[Category],
     prompt: str,
 ) -> list[MatchResult] | None:
+    entries = list(it.chain.from_iterable(category.entries for category in categories))
+
     console = Console()
     panels = get_panels_in_categories(console, categories)
-    user_input = prompt_panels(console, panels, prompt)
+    user_input = prompt_panels(
+        console, panels, prompt, auto_completes=[entry.text for entry in entries]
+    )
     if user_input is None:
         return None
 
-    entries = list(it.chain.from_iterable(category.entries for category in categories))
     return parse_user_input(entries, user_input)
