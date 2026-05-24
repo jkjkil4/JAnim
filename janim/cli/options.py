@@ -5,6 +5,7 @@ import click
 from dataclass_click import option
 
 from janim.locale import get_translator
+from janim.logger import log
 
 _ = get_translator('janim.cli.options')
 
@@ -110,6 +111,31 @@ class OutputOptions:
             help=_('Generate SRT file'),
         ),
     ]
+
+    def resolve(self) -> tuple[bool, bool, bool, bool]:
+        """
+        返回按照覆盖规则解析后的 ``(video_with_audio, video, audio, srt)``
+        """
+
+        video_with_audio = self.video_with_audio
+        video = self.video
+        audio = self.audio
+        srt = self.srt
+
+        # 当设定 video_with_audio 时，忽略 video 和 audio 选项
+        if video_with_audio:
+            if video:
+                log.warning(_("'--video' is ignored because '--video_with_audio' is set"))
+                video = False
+            if audio:
+                log.warning(_("'--audio' is ignored because '--video_with_audio' is set"))
+                audio = False
+
+        # 当四个选项都没设定时，将 video_with_audio 作为默认行为
+        if not video_with_audio and not video and not audio and not srt:
+            video_with_audio = True
+
+        return (video_with_audio, video, audio, srt)
 
 
 @dataclass

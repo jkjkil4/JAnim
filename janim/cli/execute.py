@@ -120,23 +120,7 @@ def write(
         for timeline in timelines
     ]
 
-    video_with_audio = output_options.video_with_audio
-    video = output_options.video
-    audio = output_options.audio
-    srt = output_options.srt
-
-    # 当设定 video_with_audio 时，忽略 video 和 audio 选项
-    if video_with_audio:
-        if video:
-            log.warning(_("'--video' is ignored because '--video_with_audio' is set"))
-            video = False
-        if audio:
-            log.warning(_("'--audio' is ignored because '--video_with_audio' is set"))
-            audio = False
-
-    # 当四个选项都没设定时，将 video_with_audio 作为默认行为
-    if not video_with_audio and not video and not audio and not srt:
-        video_with_audio = True
+    resolved_output_options = output_options.resolve()
 
     is_gif = format_options.format == 'gif'
 
@@ -150,13 +134,12 @@ def write(
         if not os.path.exists(output_dir):
             os.makedirs(output_dir)
 
-        video_with_audio = video_with_audio
-        video = video
-        audio = audio
-        srt = srt
         open_result = open and built is builts[-1]
 
         has_audio = built.timeline.has_audio_for_all()
+
+        # 将 resolved_output_options 解包出来，并根据当前 built 的实际状况调整选项
+        video_with_audio, video, audio, srt = resolved_output_options
 
         # 如果其实没办法做到 video_with_audio，那么把 video_with_audio 用 video 和 audio 替代
         fallback = not has_audio or is_gif
