@@ -1,5 +1,3 @@
-import os
-
 import click
 import cloup
 from dataclass_click import dataclass_click
@@ -14,7 +12,6 @@ from janim.cli.options import (
 )
 from janim.cli.toplevel import toplevel_group
 from janim.locale import get_translator
-from janim.utils.file_ops import get_janim_dir
 
 _ = get_translator('janim.cli.parse')
 

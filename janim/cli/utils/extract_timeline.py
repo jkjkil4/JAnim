@@ -3,7 +3,7 @@ import inspect
 import linecache
 import sys
 import types
-from typing import Any, Callable, Iterable, Sequence
+from typing import Callable, Sequence
 
 from janim.anims.timeline import Timeline
 from janim.cli.utils.prompt import (

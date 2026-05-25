@@ -4,13 +4,6 @@ import sys
 from dataclasses import dataclass
 from typing import Any
 
-from prompt_toolkit.application import Application
-from prompt_toolkit.key_binding.key_bindings import KeyBindings
-from prompt_toolkit.layout import Layout
-from prompt_toolkit.layout.containers import HSplit, Window
-from prompt_toolkit.layout.controls import FormattedTextControl
-from prompt_toolkit.output import create_output
-from prompt_toolkit.widgets import TextArea
 from rich.columns import Columns
 from rich.console import Console
 from rich.panel import Panel
@@ -146,10 +139,19 @@ def prompt_panels(
     console: Console, panels: list[Panel], prompt: str, *, auto_completes: list[str] | None = None
 ) -> str | None:
     texts = capture_panels(console, panels)
+    single_page = len(texts) == 1
 
-    display_control = FormattedTextControl()
-    # +2 来源于 Panel 的上下边线
-    display_window = Window(content=display_control, height=ENTRIES_COLUMN_HEIGHT + 2)
+    # 在只有一页的时候先输出可选项，再加载 prompt-toolkit
+    if single_page:
+        print(texts[0], end='')
+
+    from prompt_toolkit.application import Application
+    from prompt_toolkit.key_binding.key_bindings import KeyBindings
+    from prompt_toolkit.layout import Layout
+    from prompt_toolkit.layout.containers import HSplit, Window
+    from prompt_toolkit.layout.controls import FormattedTextControl
+    from prompt_toolkit.output import create_output
+    from prompt_toolkit.widgets import TextArea
 
     input_box = TextArea(
         prompt=prompt,
@@ -157,7 +159,14 @@ def prompt_panels(
         height=1,
     )
 
-    root_container = HSplit([display_window, input_box])
+    if single_page:
+        root_element = input_box
+    else:
+        display_control = FormattedTextControl()
+        # +2 来源于 Panel 的上下边线
+        display_window = Window(content=display_control, height=ENTRIES_COLUMN_HEIGHT + 2)
+
+        root_element = HSplit([display_window, input_box])
 
     kb = KeyBindings()
     page = 0
@@ -175,61 +184,7 @@ def prompt_panels(
         redraw()
 
     if auto_completes is not None:
-        # (prefix, match_index) 当前的匹配状态
-        auto_complete_state: tuple[str, int] | None = None
-
-        @kb.add('tab')
-        def _auto_complete(event) -> None:
-            nonlocal auto_complete_state
-
-            user_input = input_box.text
-            try:
-                last_comma = user_input.rindex(',')
-                last_start = last_comma + 1
-            except ValueError:
-                last_start = 0
-
-            last_part = user_input[last_start:]
-
-            # 仅在非空且非数值时才进行自动补全
-            if not last_part or last_part.isnumeric():
-                return
-
-            new_auto_complete_state = None
-            replace_by = last_part
-
-            # 在没有上一次匹配时，将当前最后一部分的内容作为匹配前缀，在 auto_completes 中从头开始搜索
-            if auto_complete_state is None:
-                prefix = last_part
-                for idx, pattern in enumerate(auto_completes):
-                    if pattern.startswith(prefix):
-                        new_auto_complete_state = (prefix, idx)
-                        replace_by = pattern
-                        break
-            # 在有上一次匹配时，沿用上一次的匹配前缀，从上一次的匹配项往后搜索
-            else:
-                prefix, prev_match_index = auto_complete_state
-                start = prev_match_index + 1
-                length = len(auto_completes)
-                for i in range(start, start + length):
-                    idx = i % length
-                    pattern = auto_completes[idx]
-                    if pattern.startswith(prefix):
-                        new_auto_complete_state = (prefix, idx)
-                        replace_by = pattern
-                        break
-
-            new_text = user_input[:last_start] + replace_by
-            input_box.text = new_text
-            input_box.buffer.cursor_position = len(new_text)
-            auto_complete_state = new_auto_complete_state
-
-        # 当文本变化时清空匹配状态
-        def on_text_changed(_) -> None:
-            nonlocal auto_complete_state
-            auto_complete_state = None
-
-        input_box.buffer.on_text_changed += on_text_changed
+        register_auto_complete(kb, input_box, auto_completes)
 
     @kb.add('c-c')
     def _interrupt(event) -> None:
@@ -240,17 +195,78 @@ def prompt_panels(
         user_input = input_box.text
         event.app.exit(result=user_input)
 
-    def redraw() -> None:
-        display_control.text = texts[page]
+    if not single_page:
 
-    redraw()
+        def redraw() -> None:
+            display_control.text = texts[page]  # type: ignore
+
+        redraw()
 
     app = Application(
-        layout=Layout(root_container, focused_element=input_box),
+        layout=Layout(root_element, focused_element=input_box),
         key_bindings=kb,
         output=create_output(stdout=sys.stderr),
     )
     return app.run()
+
+
+# 虽然 prompt-toolkit 有内置的 Completer，但这里还是手写了，自己处理了一下逗号分割
+def register_auto_complete(kb, input_box, auto_completes: list[str]) -> None:
+    # (prefix, match_index) 当前的匹配状态
+    auto_complete_state: tuple[str, int] | None = None
+
+    @kb.add('tab')
+    def _auto_complete(event) -> None:
+        nonlocal auto_complete_state
+
+        user_input = input_box.text
+        try:
+            last_comma = user_input.rindex(',')
+            last_start = last_comma + 1
+        except ValueError:
+            last_start = 0
+
+        last_part = user_input[last_start:]
+
+        # 仅在非空且非数值时才进行自动补全
+        if not last_part or last_part.isnumeric():
+            return
+
+        new_auto_complete_state = None
+        replace_by = last_part
+
+        # 在没有上一次匹配时，将当前最后一部分的内容作为匹配前缀，在 auto_completes 中从头开始搜索
+        if auto_complete_state is None:
+            prefix = last_part
+            for idx, pattern in enumerate(auto_completes):
+                if pattern.startswith(prefix):
+                    new_auto_complete_state = (prefix, idx)
+                    replace_by = pattern
+                    break
+        # 在有上一次匹配时，沿用上一次的匹配前缀，从上一次的匹配项往后搜索
+        else:
+            prefix, prev_match_index = auto_complete_state
+            start = prev_match_index + 1
+            length = len(auto_completes)
+            for i in range(start, start + length):
+                idx = i % length
+                pattern = auto_completes[idx]
+                if pattern.startswith(prefix):
+                    new_auto_complete_state = (prefix, idx)
+                    replace_by = pattern
+                    break
+
+        new_text = user_input[:last_start] + replace_by
+        input_box.text = new_text
+        input_box.buffer.cursor_position = len(new_text)
+        auto_complete_state = new_auto_complete_state
+
+    # 当文本变化时清空匹配状态
+    def on_text_changed(_) -> None:
+        nonlocal auto_complete_state
+        auto_complete_state = None
+
+    input_box.buffer.on_text_changed += on_text_changed
 
 
 class MatchState(enum.Enum):
