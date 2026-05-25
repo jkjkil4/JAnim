@@ -4,6 +4,7 @@ import sys
 from dataclasses import dataclass
 from typing import Any
 
+from rich.align import AlignMethod
 from rich.columns import Columns
 from rich.console import Console
 from rich.panel import Panel
@@ -78,7 +79,11 @@ def get_pages(
 
 
 def get_panels(
-    console: Console, entries: list[Entry], *, subtitle: str | None = None
+    console: Console,
+    entries: list[Entry],
+    *,
+    subtitle: str | None = None,
+    subtitle_align: AlignMethod = 'center',
 ) -> list[Panel]:
     # 4 来自 Panel 边框的两个像素以及其内部横向 padding 的两个像素
     pages = get_pages(console, entries, 4)
@@ -92,6 +97,7 @@ def get_panels(
             title=f'Page {i}/{total_pages}{key_hint}',
             subtitle=subtitle,
             height=ENTRIES_COLUMN_HEIGHT + 2,
+            subtitle_align=subtitle_align,
         )
         for i, page in enumerate(pages, start=1)
     ]
@@ -311,9 +317,12 @@ def parse_user_input(entries: list[Entry], user_input: str) -> list[MatchResult]
 def prompt_entries(
     entries: list[Entry],
     prompt: str,
+    *,
+    subtitle: str | None = None,
+    subtitle_align: AlignMethod = 'center',
 ) -> list[MatchResult]:
     console = Console()
-    panels = get_panels(console, entries)
+    panels = get_panels(console, entries, subtitle=subtitle, subtitle_align=subtitle_align)
     user_input = prompt_panels(
         console, panels, prompt, auto_completes=[entry.text for entry in entries]
     )

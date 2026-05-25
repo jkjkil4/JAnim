@@ -51,7 +51,9 @@ def extract_timelines_from_module(
         _('That module has multiple timelines, which ones would you like to render?'),
         file=sys.stderr,
     )
-    results = prompt_entries(entries, _('Timeline Name or Number: '))
+    results = prompt_entries(
+        entries, _('Timeline Name or Number: '), subtitle=module.__file__, subtitle_align='right'
+    )
     return parse_prompt_results(results)
 
 
