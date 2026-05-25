@@ -143,7 +143,7 @@ def prompt_panels(
 
     # 在只有一页的时候先输出可选项，再加载 prompt-toolkit
     if single_page:
-        print(texts[0], end='')
+        print(texts[0], end='', file=sys.stderr)
 
     from prompt_toolkit.application import Application
     from prompt_toolkit.key_binding.key_bindings import KeyBindings
