@@ -173,7 +173,7 @@ def prompt_panels(
         redraw()
 
     if auto_completes is not None:
-        # (prefix, match_index)
+        # (prefix, match_index) 当前的匹配状态
         auto_complete_state: tuple[str, int] | None = None
 
         @kb.add('tab')
@@ -196,6 +196,7 @@ def prompt_panels(
             new_auto_complete_state = None
             replace_by = last_part
 
+            # 在没有上一次匹配时，将当前最后一部分的内容作为匹配前缀，在 auto_completes 中从头开始搜索
             if auto_complete_state is None:
                 prefix = last_part
                 for idx, pattern in enumerate(auto_completes):
@@ -203,6 +204,7 @@ def prompt_panels(
                         new_auto_complete_state = (prefix, idx)
                         replace_by = pattern
                         break
+            # 在有上一次匹配时，沿用上一次的匹配前缀，从上一次的匹配项往后搜索
             else:
                 prefix, prev_match_index = auto_complete_state
                 start = prev_match_index + 1
@@ -220,6 +222,7 @@ def prompt_panels(
             input_box.buffer.cursor_position = len(new_text)
             auto_complete_state = new_auto_complete_state
 
+        # 当文本变化时清空匹配状态
         def on_text_changed(_) -> None:
             nonlocal auto_complete_state
             auto_complete_state = None
