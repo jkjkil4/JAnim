@@ -2,10 +2,18 @@ import ast
 import inspect
 import linecache
 import sys
-from typing import Callable, Sequence
+import types
+from typing import Any, Callable, Iterable, Sequence
 
 from janim.anims.timeline import Timeline
-from janim.cli.utils.prompt import Entry, MatchState, prompt_entries
+from janim.cli.utils.prompt import (
+    Category,
+    Entry,
+    MatchResult,
+    MatchState,
+    prompt_entries,
+    prompt_entries_in_categories,
+)
 from janim.locale import get_translator
 from janim.logger import log
 from janim.utils.file_ops import STDIN_FILENAME
@@ -14,61 +22,131 @@ _ = get_translator('janim.cli.utils.extract_timeline')
 
 
 def extract_timelines_from_module(
-    module,
+    module: types.ModuleType,
     timeline_names: Sequence[str],
     all: bool,
 ) -> list[type[Timeline]]:
     """
     根据指定的 ``module`` 向用户询问使用哪些 :class:`~.Timeline`
     """
-    timelines = []
-    err = False
-
     if not all and timeline_names:
-        for name in timeline_names:
-            try:
-                timeline = module.__dict__[name]
-                if not isinstance(timeline, type) or not issubclass(timeline, Timeline):
-                    raise KeyError()
-                timelines.append(timeline)
-            except KeyError:
-                log.error(_('No timeline named "{name}"').format(name=name))
-                err = True
-    else:
-        classes = get_all_timelines_from_module(module)
-        if len(classes) <= 1 or all:
-            return classes
+        return parse_existing_timeline_names_from_module(module, timeline_names)
 
-        if module.__file__ == STDIN_FILENAME:
-            log.error(
-                _(
-                    'Multiple timelines found in stdin input. '  #
-                    'Please specify timeline names with command line arguments.'
-                )
+    classes = get_all_timelines_from_module(module)
+    if len(classes) <= 1 or all:
+        return classes
+
+    if module.__file__ == STDIN_FILENAME:
+        log.error(
+            _(
+                'Multiple timelines found in stdin input. '  #
+                'Please specify timeline names with command line arguments.'
             )
-            return []
-
-        entries = [Entry(timeline_class.__name__, timeline_class) for timeline_class in classes]
-
-        print(
-            _('That module has multiple timelines, which ones would you like to render?'),
-            file=sys.stderr,
         )
-        results = prompt_entries(entries, _('Timeline Name or Number: '))
+        return []
 
-        if not results:
-            print(_('Cancelled'), file=sys.stderr)
-        else:
-            for result in results:
-                match result.state:
-                    case MatchState.Matched:
-                        timelines.append(result.data)
-                    case MatchState.InvalidNumber:
-                        log.error(_('Invaild number {num}').format(num=result.data))
-                        err = True
-                    case MatchState.InvalidKeyword:
-                        log.error(_('No timeline named "{name}"').format(name=result.data))
-                        err = True
+    entries = [Entry(timeline_class.__name__, timeline_class) for timeline_class in classes]
+
+    print(
+        _('That module has multiple timelines, which ones would you like to render?'),
+        file=sys.stderr,
+    )
+    results = prompt_entries(entries, _('Timeline Name or Number: '))
+    return parse_prompt_results(results)
+
+
+def extract_timelines_from_modules(
+    modules: list[tuple[str, types.ModuleType]],
+    timeline_names: Sequence[str],
+) -> list[type[Timeline]]:
+    if timeline_names:
+        return parse_existing_timeline_names_from_modules(
+            [module for _, module in modules], timeline_names
+        )
+
+    categories: list[Category] = []
+    for name, module in modules:
+        assert module.__name__ != STDIN_FILENAME
+        classes = get_all_timelines_from_module(module)
+        categories.append(
+            Category(
+                name,
+                [Entry(cls.__name__, cls) for cls in classes],
+            )
+        )
+
+    print(
+        _('There are multiple timelines, which ones would you like to render?'),
+        file=sys.stderr,
+    )
+    results = prompt_entries_in_categories(categories, _('Timeline Name or Number: '))
+    return parse_prompt_results(results)
+
+
+def parse_existing_timeline_names_from_module(
+    module: types.ModuleType,
+    timeline_names: Sequence[str],
+) -> list[type[Timeline]]:
+    timelines: list[type[Timeline]] = []
+    err: bool = False
+
+    for name in timeline_names:
+        try:
+            timeline = module.__dict__[name]
+            if not isinstance(timeline, type) or not issubclass(timeline, Timeline):
+                raise KeyError()
+            timelines.append(timeline)
+        except KeyError:
+            log.error(_('No timeline named "{name}"').format(name=name))
+            err = True
+
+    return [] if err else timelines
+
+
+def parse_existing_timeline_names_from_modules(
+    modules: list[types.ModuleType],
+    timeline_names: Sequence[str],
+) -> list[type[Timeline]]:
+    timelines: list[type[Timeline]] = []
+    err: bool = False
+
+    for name in timeline_names:
+        found: bool = False
+
+        for module in modules:
+            timeline = module.__dict__.get(name, None)
+            if timeline is None:
+                continue
+            if not isinstance(timeline, type) or not issubclass(timeline, Timeline):
+                continue
+            timelines.append(timeline)
+            found = True
+            break
+
+        if not found:
+            log.error(_('No timeline named "{name}"').format(name=name))
+            err = True
+
+    return [] if err else timelines
+
+
+def parse_prompt_results(results: list[MatchResult]) -> list[type[Timeline]]:
+    timelines: list[type[Timeline]] = []
+    err: bool = False
+
+    if not results:
+        print(_('Cancelled'), file=sys.stderr)
+    else:
+        for result in results:
+            match result.state:
+                case MatchState.Matched:
+                    timelines.append(result.data)
+                case MatchState.InvalidNumber:
+                    log.error(_('Invaild number {num}').format(num=result.data))
+                    err = True
+                case MatchState.InvalidKeyword:
+                    log.error(_('No timeline named "{name}"').format(name=result.data))
+                    err = True
 
     return [] if err else timelines
 

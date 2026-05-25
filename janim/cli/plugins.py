@@ -18,7 +18,7 @@ class PluginInfo:
 _loaded_plugins: list[PluginInfo] | None = None
 
 
-def load_plugins() -> list[PluginInfo]:
+def get_plugins() -> list[PluginInfo]:
     global _loaded_plugins
     if _loaded_plugins is not None:
         return _loaded_plugins

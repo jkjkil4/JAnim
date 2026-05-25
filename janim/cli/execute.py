@@ -1,9 +1,11 @@
+from functools import lru_cache
 import inspect
 import os
 import time
+import types
 from typing import Iterable, Sequence
 
-from janim.anims.timeline import BuiltTimeline
+from janim.anims.timeline import BuiltTimeline, Timeline
 from janim.cli.options import (
     FormatOptions,
     HardwareOptions,
@@ -12,15 +14,17 @@ from janim.cli.options import (
     RangeOptions,
     SharedOptions,
 )
+from janim.cli.plugins import get_plugins
 from janim.cli.utils.extract_timeline import (
     extract_timelines_from_module,
+    extract_timelines_from_modules,
     get_all_timelines_from_module,
 )
 from janim.cli.utils.get_module import get_module
 from janim.locale import get_translator
 from janim.logger import log
 from janim.utils.config import cli_config, default_config
-from janim.utils.file_ops import open_file
+from janim.utils.file_ops import get_janim_dir, open_file
 from janim.utils.typst_compile import set_use_external_typst
 
 _ = get_translator('janim.cli.execute')
@@ -39,13 +43,36 @@ def run(
     modify_cli_config(shared_options.configs)
 
     timelines = extract_timelines_from_module(module, timeline_names, shared_options.all)
+    run_timelines(timelines, shared_options.hide_subtitles, live_options)
+
+
+def examples(timeline_names: list[str]) -> None:
+    builtin_examples = get_module(os.path.join(get_janim_dir(), 'examples.py'))
+
+    modules: list[tuple[str, types.ModuleType]] = [
+        ('JAnim Examples', builtin_examples),
+    ]
+
+    for plugin in get_plugins():
+        module = plugin.get_examples_module()
+        if module is not None:
+            modules.append((f'{plugin.name} Examples', module))
+
+    timelines = extract_timelines_from_modules(modules, timeline_names)
+    run_timelines(timelines, False, LiveOptions(False, False))
+
+
+def run_timelines(
+    timelines: list[type[Timeline]], hide_subtitles: bool, live_options: LiveOptions
+) -> None:
     if not timelines:
         return
 
     auto_play = len(timelines) == 1
-    available_timeline_names = [
-        timeline.__name__ for timeline in get_all_timelines_from_module(module)
-    ]
+
+    @lru_cache(maxsize=None)
+    def get_all_timeline_names_from_module(module: types.ModuleType) -> list[str]:
+        return [timeline.__name__ for timeline in get_all_timelines_from_module(module)]
 
     # isort: off
     from janim.gui.anim_viewer import AnimViewer  # 把 gui 组件放在前面导入，确保对 pyside6 的检测
@@ -61,7 +88,7 @@ def run(
 
     for timeline in timelines:
         built_timelines.append(
-            timeline().build(hide_subtitles=shared_options.hide_subtitles, show_debug_notice=True)
+            timeline().build(hide_subtitles=hide_subtitles, show_debug_notice=True)
         )
 
     log.info('======')
@@ -76,7 +103,9 @@ def run(
             auto_play=auto_play,
             interact=live_options.interact,
             watch=live_options.watch,
-            available_timeline_names=available_timeline_names,
+            available_timeline_names=get_all_timeline_names_from_module(
+                inspect.getmodule(built.timeline)
+            ),
         )
         widgets.append(viewer)
         viewer.show()

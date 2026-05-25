@@ -140,14 +140,9 @@ def write(**kwargs):
 @help_option
 @timeline_names_argument
 def examples(timeline_names):
-    from janim.cli.execute import run  # 目的是 lazy import 减轻 CLI help overhead
+    from janim.cli.execute import examples  # 目的是 lazy import 减轻 CLI help overhead
 
-    run(
-        os.path.join(get_janim_dir(), 'examples.py'),
-        timeline_names,
-        SharedOptions(False, (), False, False),
-        LiveOptions(False, False),
-    )
+    examples(timeline_names)
 
 
 available_tools = ['richtext', 'fonts', 'color']

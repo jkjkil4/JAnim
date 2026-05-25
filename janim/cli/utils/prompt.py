@@ -91,10 +91,12 @@ def get_panels(
     pages = get_pages(console, entries, 4)
     total_pages = len(pages)
 
+    key_hint = '' if total_pages == 1 else ' ↑/↓'
+
     panels = [
         Panel(
             page,
-            title=f'Page {i}/{total_pages}',
+            title=f'Page {i}/{total_pages}{key_hint}',
             subtitle=subtitle,
             height=ENTRIES_COLUMN_HEIGHT + 2,
         )
@@ -117,7 +119,7 @@ def get_panels_in_categories(
 
     total_pages = len(pages_with_category_name)
 
-    key_hint = '' if total_pages == 0 else ' ↑/↓'
+    key_hint = '' if total_pages == 1 else ' ↑/↓'
 
     panels = [
         Panel(
@@ -293,14 +295,14 @@ def parse_user_input(entries: list[Entry], user_input: str) -> list[MatchResult]
 def prompt_entries(
     entries: list[Entry],
     prompt: str,
-) -> list[MatchResult] | None:
+) -> list[MatchResult]:
     console = Console()
     panels = get_panels(console, entries)
     user_input = prompt_panels(
         console, panels, prompt, auto_completes=[entry.text for entry in entries]
     )
     if user_input is None:
-        return None
+        return []
 
     return parse_user_input(entries, user_input)
 
@@ -308,7 +310,7 @@ def prompt_entries(
 def prompt_entries_in_categories(
     categories: list[Category],
     prompt: str,
-) -> list[MatchResult] | None:
+) -> list[MatchResult]:
     entries = list(it.chain.from_iterable(category.entries for category in categories))
 
     console = Console()
@@ -317,6 +319,6 @@ def prompt_entries_in_categories(
         console, panels, prompt, auto_completes=[entry.text for entry in entries]
     )
     if user_input is None:
-        return None
+        return []
 
     return parse_user_input(entries, user_input)

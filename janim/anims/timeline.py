@@ -1072,7 +1072,7 @@ class AboveTimelines(ListedTimelines):
 
     def construct(self):
         """"""
-        from janim.cli import get_all_timelines_from_module
+        from janim.cli.utils.extract_timeline import get_all_timelines_from_module
 
         module = sys.modules[self.__class__.__module__]
         timelines = get_all_timelines_from_module(module)

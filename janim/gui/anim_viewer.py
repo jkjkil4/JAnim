@@ -557,7 +557,7 @@ class AnimViewer(QMainWindow):
 
         import gc
 
-        from janim.cli import get_all_timelines_from_module
+        from janim.cli.utils.extract_timeline import get_all_timelines_from_module
 
         start_time = time.time()
         gc.collect()
