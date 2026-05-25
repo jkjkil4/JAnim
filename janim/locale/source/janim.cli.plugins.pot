@@ -17,25 +17,28 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: janim/cli/execute.py:95 janim/cli/execute.py:254
-msgid "Constructing window"
-msgstr ""
-
-#: janim/cli/execute.py:117 janim/cli/execute.py:275
+#: janim/cli/plugins.py:34
 #, python-brace-format
-msgid "Finished constructing in {time:.2f} s"
+msgid ""
+"Failed to load plugin \"{name}\":\n"
+"- {exception}"
 msgstr ""
 
-#: janim/cli/execute.py:193
+#: janim/cli/plugins.py:61
 #, python-brace-format
-msgid "Skipping \"{name}\": no part to output"
+msgid "Plugin \"{name}\" has attribute \"{key}\", but it is not callable"
 msgstr ""
 
-#: janim/cli/execute.py:241
+#: janim/cli/plugins.py:72
 #, python-brace-format
-msgid "Generated SRT file \"{file_path}\""
+msgid ""
+"{key}() in plugin \"{name}\" returns incompatible type {actual}, expected "
+"{expected}"
 msgstr ""
 
-#: janim/cli/execute.py:248
-msgid "No tool specified for use"
+#: janim/cli/plugins.py:86
+#, python-brace-format
+msgid ""
+"Failed to invoke {key}() in plugin \"{name}\":\n"
+"- {exception}"
 msgstr ""

@@ -9,7 +9,7 @@ from janim.locale import get_translator
 from janim.logger import log
 from janim.utils.file_ops import STDIN_FILENAME
 
-_ = get_translator('janim.cli.utils.module')
+_ = get_translator('janim.cli.utils.get_module')
 
 
 def get_module(file: str):

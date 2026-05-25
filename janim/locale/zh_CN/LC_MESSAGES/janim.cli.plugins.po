@@ -1,0 +1,45 @@
+# Chinese translations for PACKAGE package.
+# Copyright (C) 2026 THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# Automatically generated, 2026.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-05-25 22:05+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: none\n"
+"Language: zh_CN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: janim/cli/plugins.py:34
+#, python-brace-format
+msgid ""
+"Failed to load plugin \"{name}\":\n"
+"- {exception}"
+msgstr ""
+"加载插件 \"{name}\" 失败：\n"
+"- {exception}"
+
+#: janim/cli/plugins.py:61
+#, python-brace-format
+msgid "Plugin \"{name}\" has attribute \"{key}\", but it is not callable"
+msgstr "插件 \"{name}\" 具有属性 \"{key}\"，但它不可调用"
+
+#: janim/cli/plugins.py:72
+#, python-brace-format
+msgid "{key}() in plugin \"{name}\" returns incompatible type {actual}, expected {expected}"
+msgstr "插件 \"{name}\" 中的 {key}() 返回了不兼容的类型 {actual}，应为 {expected}"
+
+#: janim/cli/plugins.py:86
+#, python-brace-format
+msgid ""
+"Failed to invoke {key}() in plugin \"{name}\":\n"
+"- {exception}"
+msgstr ""
+"调用插件 \"{name}\" 中的 {key}() 失败：\n"
+"- {exception}"

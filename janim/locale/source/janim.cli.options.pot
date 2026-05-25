@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-22 12:56+0800\n"
+"POT-Creation-Date: 2026-05-24 21:40+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,68 +17,76 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: janim/cli/options.py:16
+#: janim/cli/options.py:17
 msgid "Extract all timelines from the file"
 msgstr ""
 
-#: janim/cli/options.py:25
+#: janim/cli/options.py:26
 msgid "Override config"
 msgstr ""
 
-#: janim/cli/options.py:30
+#: janim/cli/options.py:31
 msgid "Hide subtitles"
 msgstr ""
 
-#: janim/cli/options.py:34
+#: janim/cli/options.py:35
 msgid "Use external Typst executable for compiling Typst documents"
 msgstr ""
 
-#: janim/cli/options.py:45
+#: janim/cli/options.py:46
 msgid "Enable the network socket for interacting with VS Code"
 msgstr ""
 
-#: janim/cli/options.py:53
+#: janim/cli/options.py:54
 msgid "Watches the file and rebuild on changes"
 msgstr ""
 
-#: janim/cli/options.py:65
+#: janim/cli/options.py:66
 msgid "Output video format (mp4 by default, mov for transparent background)"
 msgstr ""
 
-#: janim/cli/options.py:72
+#: janim/cli/options.py:73
 msgid "Output audio format (valid only when outputting audio separately)"
 msgstr ""
 
-#: janim/cli/options.py:85
+#: janim/cli/options.py:86
 msgid ""
 "Video with audio (default; will be replaced by --video if there is no audio, "
 "and by both --video and --audio if the format is GIF)"
 msgstr ""
 
-#: janim/cli/options.py:94
+#: janim/cli/options.py:95
 msgid "Video only"
 msgstr ""
 
-#: janim/cli/options.py:102
+#: janim/cli/options.py:103
 msgid "Audio only"
 msgstr ""
 
-#: janim/cli/options.py:110
+#: janim/cli/options.py:111
 msgid "Generate SRT file"
 msgstr ""
 
-#: janim/cli/options.py:121
+#: janim/cli/options.py:128
+msgid "'--video' is ignored because '--video_with_audio' is set"
+msgstr ""
+
+#: janim/cli/options.py:131
+msgid "'--audio' is ignored because '--video_with_audio' is set"
+msgstr ""
+
+#: janim/cli/options.py:147
 msgid "Set In Point; use negative value to indicate time relative to the end"
 msgstr ""
 
-#: janim/cli/options.py:128
+#: janim/cli/options.py:154
 msgid "Set Out Point; use negative value to indicate time relative to the end"
 msgstr ""
 
-#: janim/cli/options.py:140
+#: janim/cli/options.py:166
 msgid "Disable PBO (Pixel Buffer Object) for writing video"
 msgstr ""
 
-#: janim/cli/options.py:148
+#: janim/cli/options.py:174
 msgid "Use hardware acceleration for writing video"
 msgstr ""
