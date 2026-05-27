@@ -1,6 +1,7 @@
 from functools import lru_cache
 import inspect
 import os
+import sys
 import time
 import types
 from typing import Iterable, Sequence
@@ -276,6 +277,17 @@ def tool(tools: Iterable[str]) -> None:
     log.info('======')
 
     app.exec()
+
+
+def plugins() -> None:
+    plugins = get_plugins()
+
+    if not plugins:
+        print(_('No available plugins for JAnim'), file=sys.stderr)
+    else:
+        print(_('Available plugins for JAnim:'), file=sys.stderr)
+        for plugin in plugins:
+            print(plugin.name, file=sys.stderr)
 
 
 def modify_cli_config(configs: Iterable[tuple[str, str]]) -> None:

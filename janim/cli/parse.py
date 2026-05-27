@@ -166,3 +166,15 @@ def tool(tool_name: tuple[str, ...]):
     from janim.cli.execute import tool  # 目的是 lazy import 减轻 CLI help overhead
 
     tool(tool_name)
+
+
+@cli.command(
+    'plugins',
+    help=_('Show plugin informations'),
+    section=DEFAULT_SECTION,
+)
+@help_option
+def plugins():
+    from janim.cli.execute import plugins  # 目的是 lazy import 减轻 CLI help overhead
+
+    plugins()
