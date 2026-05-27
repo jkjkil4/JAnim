@@ -3,11 +3,14 @@ from __future__ import annotations
 from dataclasses import dataclass
 from pathlib import Path
 
-doc_src_path = Path(__file__).parent
-root_path = doc_src_path.parent.parent
-code_src_path = root_path / 'janim'
 
 # Configurations
+
+src_folder = 'janim'
+
+doc_src_path = Path(__file__).parent
+root_path = doc_src_path.parent.parent
+code_src_path = root_path / src_folder
 
 
 py_exclude_substrings = ['._', 'ui_', '__main__']
@@ -151,7 +154,7 @@ def make_dir_rst(node: FileTreeNode, local_path: Path) -> None:
 
 def generate_autodoc() -> None:
     tree = get_py_files_tree(code_src_path)
-    walk_tree(tree, Path('janim'))
+    walk_tree(tree, Path(src_folder))
 
 
 generate_autodoc()
