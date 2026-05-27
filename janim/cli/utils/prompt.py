@@ -177,18 +177,6 @@ def prompt_panels(
     kb = KeyBindings()
     page = 0
 
-    @kb.add('up')
-    def _prev(event) -> None:
-        nonlocal page
-        page = (page - 1) % len(panels)
-        redraw()
-
-    @kb.add('down')
-    def _next(event) -> None:
-        nonlocal page
-        page = (page + 1) % len(panels)
-        redraw()
-
     if auto_completes is not None:
         register_auto_complete(kb, input_box, auto_completes)
 
@@ -202,6 +190,18 @@ def prompt_panels(
         event.app.exit(result=user_input)
 
     if not single_page:
+
+        @kb.add('up')
+        def _prev(event) -> None:
+            nonlocal page
+            page = (page - 1) % len(panels)
+            redraw()
+
+        @kb.add('down')
+        def _next(event) -> None:
+            nonlocal page
+            page = (page + 1) % len(panels)
+            redraw()
 
         def redraw() -> None:
             display_control.text = texts[page]  # type: ignore
