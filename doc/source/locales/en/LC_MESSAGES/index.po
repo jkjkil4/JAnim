@@ -1416,7 +1416,7 @@ msgstr ""
 
 #: ../../source/index.rst:149
 msgid "内容索引"
-msgstr "Content Indexes"
+msgstr "Content Indices"
 
 #: ../../source/index.rst:151
 msgid ":ref:`genindex`"
