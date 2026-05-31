@@ -1415,8 +1415,8 @@ msgstr ""
 "Github `Discussions Page <https://github.com/jkjkil4/JAnim/discussions>`_ or join QQ group 970174336"
 
 #: ../../source/index.rst:149
-msgid "目录与表格"
-msgstr "Indexes"
+msgid "内容索引"
+msgstr "Content Indexes"
 
 #: ../../source/index.rst:151
 msgid ":ref:`genindex`"
