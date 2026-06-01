@@ -675,7 +675,7 @@ class _StepUpdater(ItemAnimation):
         self.progress_bar = progress_bar
 
     def _time_fixed(self) -> None:
-        self.first_data = self.timeline.compute_item(self.item, self.t_range.at, True)
+        self.first_data = self.timeline.compute_item(self.item, self.t_range.at, True).store()
 
         super()._time_fixed()
 
