@@ -86,6 +86,9 @@
           test =
             mkPyuvShell {
               inherit extraPackages;
+              extraLibs = with pkgs; [
+                libxcb
+              ];
               shellHook = "uv sync --extra test";
             };
           # bench =
