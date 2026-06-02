@@ -251,14 +251,8 @@ class GroupUpdater[T: Item](Animation):
 
     def add_post_updater(self, func: GroupUpdaterFn[T]) -> Self:
         orig_func = self.func
-        self.func = lambda data, p: _call_two_func(orig_func, func, data, p)
+        self.func = lambda group, p: _call_two_func(orig_func, func, group, p)
         return self
-
-    @dataclass
-    class DataGroup:
-        data: Item
-        stack: AnimStack
-        updater: _GroupUpdater
 
     def _time_fixed(self) -> None:
         self.data = self.item.copy()
@@ -686,7 +680,9 @@ class _StepUpdater(ItemAnimation):
             chunk_size,
             self.first_data,
             lambda x: x.store(),
-            progress_bar_desc=f'StepUpdater({self.item.__class__.__name__})',
+            progress_bar_desc=(
+                f'StepUpdater({self.item.__class__.__name__})' if self.progress_bar else None
+            ),
         )
 
         if self.become_at_end and self.t_range.end is not FOREVER:
