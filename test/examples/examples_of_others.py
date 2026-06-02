@@ -3,6 +3,64 @@
 from janim.imports import *
 
 
+# beginmark UpdatingPhysicalBlock
+class PhysicalBlock(Square):
+    physic = CustomData()
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.physic.set({
+            'speed': ORIGIN,    # 默认静止
+            'accel': ORIGIN,    # 并且没有加速度
+        })
+
+    def do_physic(self, dt: float) -> Self:
+        # 根据 `speed` 与 `accel` 更新物件位置
+        value = self.physic.get()
+
+        avg_speed = value['speed'] + 0.5 * value['accel'] * dt
+        shift = avg_speed * dt
+
+        self.physic.update({ 'speed': value['speed'] + value['accel'] * dt })
+        self.points.shift(shift)
+
+        return self
+
+    def do_physic_updater(self):
+        # 将 `do_physic` 包装为 Updater
+        return StepUpdater(self, lambda data, p: data.do_physic(p.dt))
+
+
+class UpdatingPhysicalBlock(Timeline):
+    def construct(self):
+        block = PhysicalBlock()
+        block.points.to_border(DL)
+
+        # 实时显示物块的运动向量
+        def vectors_updater(p):
+            cur = block.current()
+            pos = cur.points.box.center
+            value = cur.physic.get()
+
+            vec_speed = Vector(value['speed'] * 0.5, color=BLUE)
+            vec_speed.points.shift(pos)
+            vec_accel = Vector(value['accel'] * 0.5, color=RED)
+            vec_accel.points.shift(pos)
+
+            return Group(vec_speed, vec_accel)
+
+        self.prepare(ItemUpdater(None, vectors_updater, duration=FOREVER))
+
+        # 物块运动以及参数变更
+        self.play(block.do_physic_updater())
+        block.physic.set({ 'speed': np.array([4, 6, 0]), 'accel': DOWN * 4 })
+        self.play(block.do_physic_updater(), duration=2)
+        block.physic.update({ 'accel': LEFT * 6 })
+        self.play(block.do_physic_updater(), duration=2)
+# endmark UpdatingPhysicalBlock
+
+
 class RectClipExample(Timeline):
     def construct(self):
         ANCHOR = LEFT * 2

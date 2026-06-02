@@ -288,6 +288,21 @@ JAnim 的各个 ``Updater`` 并非孤立，不仅可以使用 ``.current()`` 获
 在这个示例中，:class:`~.StepUpdater` 的函数会每次将圆形向右移动 1/50 个单位，
 由于 :class:`~.StepUpdater` 默认情况下每秒钟会执行 50 次，所以圆形每秒会向右移动 1 个单位，经过两秒则时间则向右移动了 2 个单位。
 
+---------------------
+
+下面是一个更复杂的例子，
+我们结合 :class:`~.CustomData` 给物件附加了“速度”与“加速度”这两个物理属性，
+在这个例子中演示了物件依赖这些属性的动态变化
+
+.. janim-example:: UpdatingPhysicalBlock
+    :extract-from-test-mark:
+    :media: _static/tutorial/UpdatingPhysicalBlock.mp4
+    :hide_name:
+
+关于 :class:`~.CustomData` 以及这个例子的具体介绍，可以参考教程页面 :ref:`add_custom_data` ，这里暂时略过。
+
+---------------------
+
 .. note::
 
     文档有待完善
