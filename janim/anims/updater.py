@@ -624,6 +624,7 @@ class StepUpdater[T: Item](Animation):
     def add_post_updater(self, updater: StepUpdaterFn[T]) -> Self:
         orig_func = self.func
         self.func = lambda data, p: _call_two_func(orig_func, updater, data, p)
+        return self
 
     def _time_fixed(self) -> None:
         for item in self.item.walk_self_and_descendants(self.root_only):
