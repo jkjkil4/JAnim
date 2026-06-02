@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import inspect
+from contextlib import contextmanager
 from contextvars import ContextVar
 from dataclasses import dataclass
 from enum import Enum
@@ -650,8 +651,6 @@ class StepUpdater[T: Item](Animation):
 
 
 class _StepUpdater(ItemAnimation):
-    _disable_temp_record_ctx = ContextVar('_disable_temp_record_ctx', default=False)
-
     def __init__(
         self,
         generate_by: StepUpdater,
@@ -682,15 +681,16 @@ class _StepUpdater(ItemAnimation):
 
         self.data = self.first_data.store()
 
-        # persistent_cache abbr. pcache
-        self.pcache_chunk_size = max(1, round(self.persistent_cache_step / self.step))
-        self.pcache: list[Item] = [self.first_data]
-        # temporary_cache abbr. tcache
-        self.tcache_at_chunk: int = 0  # 表示 tcache_chunks 中间那个 list 对应的全局 chunk 下标
-        self.tcache_chunks: list[list[Item]] = [[], [], []]
+        chunk_size = max(1, round(self.persistent_cache_step / self.step))
+        self._cache = ChunkedNearbyCache(
+            chunk_size,
+            self.first_data,
+            lambda x: x.store(),
+            progress_bar_desc=f'StepUpdater({self.item.__class__.__name__})',
+        )
 
         if self.become_at_end and self.t_range.end is not FOREVER:
-            with ContextSetter(self._disable_temp_record_ctx, True):
+            with self._cache.disable_temp_record():
                 self.compute(self.item, self.t_range.end)
 
             apprs = self.timeline.item_appearances
@@ -706,27 +706,15 @@ class _StepUpdater(ItemAnimation):
     def n_to_global_t(self, n: int) -> float:
         return n * self.step + self.t_range.at
 
-    def _tcache_idx_to_n(self, local_chunk_idx: int, elem_idx: int) -> int:
-        # 注：tcache 跳过 pcache 中已记录的项
-        # 所以 elem_idx 下标 0 对应整除 chunksize 为 1 的 n
-        chunk_idx = self.tcache_at_chunk - 1 + local_chunk_idx
-        return self.pcache_chunk_size * chunk_idx + (elem_idx + 1)
-
-    def _n_to_tcache_idx(self, n: int) -> tuple[int, int]:
-        # 注：若 n 能被 chunksize 整除，则 elem_idx 会返回 -1
-        chunk_idx, mod = divmod(n, self.pcache_chunk_size)
-        local_chunk_idx = chunk_idx - self.tcache_at_chunk + 1
-        return (local_chunk_idx, mod - 1)
-
     def compute(self, data: Item, global_t: float) -> None:
         n = self.global_t_to_n(global_t)
 
-        cache_n, cache = self._get_nearest_cache(n)
+        cache_n, cache = self._cache.get_nearest_cache(n)
         data.restore(cache)
 
-        self._scroll_tcache_to(n)
+        self._cache.scroll_tcache_to(n)
 
-        for computing_n in self._get_iter(cache_n, n):
+        for computing_n in self._cache.iterates(cache_n, n):
             with StepUpdaterParams(
                 # 因为在这个函数中，经历了 global_t_to_n，再 n_to_global_t
                 # 如果这个 updater 作用的物件有使用其它 StepUpdater 作用中的物件，会再次 global_t_to_n
@@ -740,9 +728,70 @@ class _StepUpdater(ItemAnimation):
             ) as params:
                 self.func(data, params)
 
-            self._record(data, computing_n)
+            self._cache.record(data, computing_n)
 
-    def _get_nearest_cache(self, n: int) -> tuple[int, Item]:
+
+class ChunkedNearbyCache[T]:
+    """
+    用于辅助 :class:`StepUpdater` 和 :class:`GroupStepUpdater` 的步进缓存类
+
+    :param chunk_size: 每个 chunk 的元素数量
+
+    技术细节：
+
+    -   ``pcache`` 会存储每个 chunk 开头的元素
+
+    -   ``tcache`` 的会存储当前活跃位置邻近的三个 chunk（当前以及前后各一个）
+
+        每个 chunk 中存储除了 chunk 开头的元素外的剩下最多 ``chunk_size - 1`` 个元素
+    """
+
+    _disable_temp_record_ctx = ContextVar('_disable_temp_record_ctx', default=False)
+
+    def __init__(
+        self,
+        chunk_size: int,
+        first_data: T,
+        get_copy_func: Callable[[T], T],
+        *,
+        progress_bar_desc: str | None,
+    ):
+        # persistent_cache abbr. pcache
+        self._chunk_size = chunk_size
+        self._pcache: list[T] = [first_data]
+        # temporary_cache abbr. tcache
+        self._tcache_at_chunk: int = 0  # 表示 tcache_chunks 中间那个 list 对应的全局 chunk 下标
+        self._tcache_chunks: list[list[T]] = [[], [], []]
+
+        self._get_copy_func = get_copy_func
+        self._progress_bar_desc = progress_bar_desc
+
+    def _tcache_idx_to_n(self, local_chunk_idx: int, elem_idx: int) -> int:
+        # 注：tcache 跳过 pcache 中已记录的项
+        # 所以 elem_idx 下标 0 对应整除 chunksize 为 1 的 n
+        chunk_idx = self._tcache_at_chunk - 1 + local_chunk_idx
+        return self._chunk_size * chunk_idx + (elem_idx + 1)
+
+    def _n_to_tcache_idx(self, n: int) -> tuple[int, int]:
+        # 注：若 n 能被 chunksize 整除，则 elem_idx 会返回 -1
+        chunk_idx, mod = divmod(n, self._chunk_size)
+        local_chunk_idx = chunk_idx - self._tcache_at_chunk + 1
+        return (local_chunk_idx, mod - 1)
+
+    @contextmanager
+    def disable_temp_record(self):
+        """
+        通过 ``with`` 语句在其内部临时停止记录临时缓存
+
+        用于 :class:`StepUpdater` 以及 :class:`GroupStepUpdater` 的 ``become_at_end`` 处理
+        """
+        token = self._disable_temp_record_ctx.set(True)
+        try:
+            yield
+        finally:
+            self._disable_temp_record_ctx.reset(token)
+
+    def get_nearest_cache(self, n: int) -> tuple[int, T]:
         """
         得到 ``n`` 往前（包括 ``n`` ）的最近的一个缓存
         """
@@ -750,67 +799,67 @@ class _StepUpdater(ItemAnimation):
         if (
             elem_idx != -1
             and 0 <= local_chunk_idx < 3
-            and (tcache_chunk := self.tcache_chunks[local_chunk_idx])
+            and (tcache_chunk := self._tcache_chunks[local_chunk_idx])
         ):
             found_idx = min(len(tcache_chunk) - 1, elem_idx)
             found_n = self._tcache_idx_to_n(local_chunk_idx, found_idx)
             return (found_n, tcache_chunk[found_idx])
         else:
-            chunk_idx = min(len(self.pcache) - 1, n // self.pcache_chunk_size)
-            found_n = chunk_idx * self.pcache_chunk_size
-            return (found_n, self.pcache[chunk_idx])
+            chunk_idx = min(len(self._pcache) - 1, n // self._chunk_size)
+            found_n = chunk_idx * self._chunk_size
+            return (found_n, self._pcache[chunk_idx])
 
-    def _scroll_tcache_to(self, n: int) -> None:
+    def scroll_tcache_to(self, n: int) -> None:
         """
         滚动裁剪 tcache_chunks，使得 tcache_at_chunk 和 n 对应的 chunk 对上
         """
-        chunk_idx = n // self.pcache_chunk_size
-        offset = clip(chunk_idx - self.tcache_at_chunk, -3, 3)
+        chunk_idx = n // self._chunk_size
+        offset = clip(chunk_idx - self._tcache_at_chunk, -3, 3)
         if offset > 0:
-            left = self.tcache_chunks[offset:]
-            self.tcache_chunks = [
+            left = self._tcache_chunks[offset:]
+            self._tcache_chunks = [
                 *left,
                 *([] for _ in range(offset)),
             ]
         elif offset < 0:
-            right = self.tcache_chunks[: 3 + offset]
-            self.tcache_chunks = [
+            right = self._tcache_chunks[: 3 + offset]
+            self._tcache_chunks = [
                 *([] for _ in range(-offset)),
                 *right,
             ]
-        self.tcache_at_chunk = chunk_idx
+        self._tcache_at_chunk = chunk_idx
 
-        assert len(self.tcache_chunks) == 3
+        assert len(self._tcache_chunks) == 3
 
-    def _get_iter(self, cache_n: int, n: int) -> Iterable[int]:
+    def iterates(self, cache_n: int, n: int) -> Iterable[int]:
         """
         即 ``range(cache_n + 1, n + 1)``
 
         如果两者之差过大，则会套入 ``ProgressDisplay`` （即 ``tqdm`` ） 以显示进度条
         """
         rg = range(cache_n + 1, n + 1)
-        if self.progress_bar and len(rg) > 2 * self.pcache_chunk_size:
+        if self._progress_bar_desc is not None and len(rg) > 2 * self._chunk_size:
             rg = ProgressDisplay(
                 rg,
-                desc=f'StepUpdater({self.item.__class__.__name__})',
+                desc=self._progress_bar_desc,
                 leave=False,
                 dynamic_ncols=True,
             )
         return rg
 
-    def _record(self, data: Item, n: int) -> None:
+    def record(self, data: T, n: int) -> None:
         """
         将缓存记入 pcache 或 tcache 中
         """
         # 检查是否可记入 pcache
-        chunk_idx, mod = divmod(n, self.pcache_chunk_size)
-        if mod == 0 and chunk_idx == len(self.pcache):
-            self.pcache.append(data.store())
+        chunk_idx, mod = divmod(n, self._chunk_size)
+        if mod == 0 and chunk_idx == len(self._pcache):
+            self._pcache.append(self._get_copy_func(data))
 
         # 检查是否可记入 tcache
         if not self._disable_temp_record_ctx.get():
             local_chunk_idx, elem_idx = self._n_to_tcache_idx(n)
             if elem_idx != -1 and 0 <= local_chunk_idx < 3:
-                tcache_chunk = self.tcache_chunks[local_chunk_idx]
+                tcache_chunk = self._tcache_chunks[local_chunk_idx]
                 if elem_idx == len(tcache_chunk):
-                    tcache_chunk.append(data.store())
+                    tcache_chunk.append(self._get_copy_func(data))
