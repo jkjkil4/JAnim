@@ -77,6 +77,7 @@ type DataUpdaterFn[T] = Callable[[T, UpdaterParams], Any]
 type GroupUpdaterFn[T] = Callable[[T, UpdaterParams], Any]
 type ItemUpdaterFn = Callable[[UpdaterParams], Item]
 type StepUpdaterFn[T] = Callable[[T, StepUpdaterParams], Any]
+type GroupStepUpdaterFn[T] = Callable[[T, StepUpdaterParams], Any]
 
 
 def _call_two_func(func1: Callable, func2: Callable, *args, **kwargs) -> None:
@@ -725,6 +726,92 @@ class _StepUpdater(ItemAnimation):
                 self.func(data, params)
 
             self._cache.record(data, computing_n)
+
+
+class GroupStepUpdater[T: Item](Animation):
+    """
+    按步更新一组物件，每次间隔 ``step`` 秒调用 ``func`` 进行下一步更新
+
+    .. warning::
+
+        该 Updater 假设 ``func`` 不会改变 ``item`` 后代物件结构，如果改变结构（例如增删子物件、:meth:`~.Item.become` 结构不一致等情况），则可能导致意外行为
+    """
+
+    label_color = C_LABEL_ANIM_ABSTRACT
+
+    def __init__(
+        self,
+        item: T,
+        func: StepUpdaterFn[T],
+        step: float = 0.02,  # 默认每秒 50 次
+        *,
+        persistent_cache_step: float = 1,  # 默认每秒一个持久缓存
+        #
+        show_at_begin: bool = True,
+        hide_at_end: bool = False,
+        become_at_end: bool = True,
+        #
+        rate_func: RateFunc = linear,
+        #
+        progress_bar: bool = True,
+        **kwargs,
+    ):
+        super().__init__(rate_func=rate_func, **kwargs)
+        self.item = item
+        self.func = func
+
+        self.step = step
+        self.persistent_cache_step = persistent_cache_step
+
+        self.show_at_begin = show_at_begin
+        self.hide_at_end = hide_at_end
+        self.become_at_end = become_at_end
+
+        self.progress_bar = progress_bar
+
+        self.applied: bool = False
+
+    def add_post_updater(self, func: GroupStepUpdaterFn[T]) -> Self:
+        orig_func = self.func
+        self.func = lambda group, p: _call_two_func(orig_func, func, group, p)
+        return self
+
+    def _time_fixed(self) -> None:
+        pass
+
+    def global_t_to_n(self, global_t: float) -> int:
+        return max(0, int((global_t - self.t_range.at) // self.step))
+
+    def n_to_global_t(self, n: int) -> float:
+        return n * self.step + self.t_range.at
+
+    def apply_for_group(self, global_t: float) -> None:
+        if self.applied:
+            return
+
+        # TODO
+
+        self.applied = True
+
+
+class _GroupStepUpdater(ApplyAligner):
+    def __init__(
+        self,
+        generate_by: GroupStepUpdater,
+        item: Item,
+        data: Item,
+        stacks: list[AnimStack],
+        **kwargs,
+    ):
+        super().__init__(item, stacks, **kwargs)
+        self._generate_by: _GroupStepUpdater = generate_by
+        self.data = data
+
+    # def pre_apply(self, data: Item, p: ItemAnimation.ApplyParams) -> None:
+    #     self._generate_by.applied = False
+    #
+    # def apply(self, data: Item)
+    #
 
 
 class ChunkedNearbyCache[T]:
