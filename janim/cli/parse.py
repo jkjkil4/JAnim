@@ -11,6 +11,7 @@ from janim.cli.options import (
     SharedOptions,
 )
 from janim.cli.toplevel import toplevel_group
+from janim.cli.utils.cloup_patch import option_group
 from janim.locale import get_translator
 
 _ = get_translator('janim.cli.parse')
@@ -99,22 +100,22 @@ def run(**kwargs):
     is_flag=True,
     help=_('Open the video after writing'),
 )  # fmt: skip
-@cloup.option_group(
+@option_group(
     _('Format Options'),
     _('Options for specifying the format of the output files'),
     dataclass_click(FormatOptions, kw_name='format_options'),
 )
-@cloup.option_group(
+@option_group(
     _('Output Options'),
     _('Options for specifying the parts to be written'),
     dataclass_click(OutputOptions, kw_name='output_options'),
 )
-@cloup.option_group(
+@option_group(
     _('Range Options'),
     _('Options for specifying in/out point'),
     dataclass_click(RangeOptions, kw_name='range_options'),
 )
-@cloup.option_group(
+@option_group(
     _('Hardware Options'),
     _('Hardware options for writing the output files'),
     dataclass_click(HardwareOptions, kw_name='hardware_options'),
