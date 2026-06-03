@@ -729,7 +729,7 @@ class _StepUpdater(ItemAnimation):
 
 class ChunkedNearbyCache[T]:
     """
-    用于辅助 :class:`StepUpdater` 和 :class:`GroupStepUpdater` 的步进缓存类
+    用于辅助 :class:`StepUpdater` 的步进缓存类
 
     :param chunk_size: 每个 chunk 的元素数量
 
@@ -779,7 +779,7 @@ class ChunkedNearbyCache[T]:
         """
         通过 ``with`` 语句在其内部临时停止记录临时缓存
 
-        用于 :class:`StepUpdater` 以及 :class:`GroupStepUpdater` 的 ``become_at_end`` 处理
+        用于 :class:`StepUpdater` 的 ``become_at_end`` 处理
         """
         token = self._disable_temp_record_ctx.set(True)
         try:
