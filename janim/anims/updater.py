@@ -807,7 +807,7 @@ class ChunkedNearbyCache[T]:
 
     def scroll_tcache_to(self, n: int) -> None:
         """
-        滚动裁剪 tcache_chunks，使得 tcache_at_chunk 和 n 对应的 chunk 对上
+        滚动裁剪 ``tcache_chunks``，使得 ``tcache_at_chunk`` 和 ``n`` 对应的 chunk 对上
         """
         chunk_idx = n // self._chunk_size
         offset = clip(chunk_idx - self._tcache_at_chunk, -3, 3)
@@ -845,7 +845,7 @@ class ChunkedNearbyCache[T]:
 
     def record(self, data: T, n: int) -> None:
         """
-        将缓存记入 pcache 或 tcache 中
+        将缓存记入 ``pcache`` 或 ``tcache`` 中
         """
         # 检查是否可记入 pcache
         chunk_idx, mod = divmod(n, self._chunk_size)

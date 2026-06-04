@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: JAnim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-02-23 22:08+0800\n"
+"POT-Creation-Date: 1980-01-01 00:00+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -233,67 +233,11 @@ msgstr ""
 "Compared to :meth:`~.ValueTracker.set_value` which requires full fields, you can use :meth:`~.ValueTracker.update_value` "
 "to update only some fields without affecting the others."
 
-#: ../../source/tutorials/value_tracker.rst:116
-msgid "高级用法"
-msgstr "Advanced Usage"
-
 #: ../../source/tutorials/value_tracker.rst:118
-msgid "除了基本的数值和结构， :class:`~.ValueTracker` 还支持沿用组件类型，以及注册自定义类型的处理。"
-msgstr ""
-"Besides basic values and structures, :class:`~.ValueTracker` also supports reusing component types and registering custom "
-"types."
-
-#: ../../source/tutorials/value_tracker.rst:122
-msgid ""
-"说实话，高级用法的应用场景非常罕见，除非你在开发新的组件或者需要跟踪非常复杂的数据，否则大多数情况下使用基础用法就足够了。"
-msgstr ""
-"To be honest, advanced usage is rare; unless you are developing new components or tracking very complex data, basic usage "
-"is sufficient in most cases."
-
-#: ../../source/tutorials/value_tracker.rst:124
-msgid "因此以下两个小标题 :ref:`use_component_types` 和 :ref:`register_custom_types` 的内容仅作简单介绍。"
-msgstr ""
-"Therefore the following sections :ref:`use_component_types` and :ref:`register_custom_types` are only briefly introduced."
-
-#: ../../source/tutorials/value_tracker.rst:129
-msgid "沿用组件类型"
-msgstr "Reusing Component Types"
-
-#: ../../source/tutorials/value_tracker.rst:131
-msgid "首先我们需要知道，所有 :class:`~.Component` 的子类都可以直接作为 :class:`~.ValueTracker` 的值类型，例如："
-msgstr ""
-"First, note that all subclasses of :class:`~.Component` can be used directly as value types for :class:`~.ValueTracker`, "
-"for example:"
-
-#: ../../source/tutorials/value_tracker.rst:133
-msgid ":class:`~.Cmpt_Points`"
-msgstr ":class:`~.Cmpt_Points`"
-
-#: ../../source/tutorials/value_tracker.rst:135
-msgid ":class:`~.Cmpt_VPoints`"
-msgstr ":class:`~.Cmpt_VPoints`"
-
-#: ../../source/tutorials/value_tracker.rst:137
-msgid ":class:`~.Cmpt_Rgbas`"
-msgstr ":class:`~.Cmpt_Rgbas`"
-
-#: ../../source/tutorials/value_tracker.rst:139
-msgid "..."
-msgstr "..."
-
-#: ../../source/tutorials/value_tracker.rst:141
-msgid ""
-"虽然说我们可以将组件类型 :class:`~.Cmpt_Points` 作为值类型直接使用，但是对于实际来讲，还是直接操作 :class:`~.Points` 物件"
-"或者含义更具体的物件，并在需要时 :meth:`~.Item.current` 会更方便。"
-msgstr ""
-"Although you can use a component type like :class:`~.Cmpt_Points` as the value type directly, in practice it is more "
-"convenient to operate on :class:`~.Points` items or more specific items, and use :meth:`~.Item.current` when needed."
-
-#: ../../source/tutorials/value_tracker.rst:146
 msgid "注册自定义类型"
 msgstr "Register Custom Types"
 
-#: ../../source/tutorials/value_tracker.rst:148
+#: ../../source/tutorials/value_tracker.rst:120
 msgid ""
 "如果有一个类没有定义 :class:`~.SupportsTracking` 所需求的三大"
 "件 :meth:`~.Component.copy` 、 :meth:`~.Component.not_changed` 以及 :meth:`~.Component.interpolate` ， 那么我们可以通"
@@ -305,7 +249,7 @@ msgstr ""
 "with :meth:`~.Cmpt_Data.register_funcs` so the class can be used as a value type for :class:`~.ValueTracker`. See the "
 "registration of built-in types for usage."
 
-#: ../../source/tutorials/value_tracker.rst:151
+#: ../../source/tutorials/value_tracker.rst:123
 msgid ""
 "另外，我们可以通过 :meth:`~.Cmpt_Data.register_update_func` 来注册供 :meth:`~.ValueTracker.update_value` 使用的更新方法。"
 "具体使用方法可参考内置的 ``dict`` 类型的注册。"
@@ -313,11 +257,11 @@ msgstr ""
 "Additionally, you can use :meth:`~.Cmpt_Data.register_update_func` to register an update method "
 "for :meth:`~.ValueTracker.update_value`. See the built-in ``dict`` registration for usage."
 
-#: ../../source/tutorials/value_tracker.rst:154
+#: ../../source/tutorials/value_tracker.rst:128
 msgid "添加自定义的物件数据"
 msgstr "Add Custom Item Data"
 
-#: ../../source/tutorials/value_tracker.rst:156
+#: ../../source/tutorials/value_tracker.rst:130
 msgid ""
 ":class:`~.ValueTracker` 的特性完全基于 :class:`~.Cmpt_Data` 组件实现， 你完全可以将其组件添加到任意物件中，从而让你的自定"
 "义物件能够灵活地跟踪额外的数据变化，并依据你地需求灵活使用"
@@ -325,13 +269,15 @@ msgstr ""
 "The features of :class:`~.ValueTracker` are entirely based on the :class:`~.Cmpt_Data` component. You can add this "
 "component to any item, allowing your custom item to flexibly track extra data changes and use them as needed."
 
-#: ../../source/tutorials/value_tracker.rst:159
+#: ../../source/tutorials/value_tracker.rst:133
 msgid "为了添加这种组件，使用 :class:`~.CustomData` 即可，就像这样："
 msgstr "To add this component, use :class:`~.CustomData` like this:"
 
 #: ../../source/tutorials/value_tracker.rst:13
 #, python-brace-format
 msgid ""
+"from janim.imports import *\n"
+"\n"
 "class PhysicalBlock(Square):\n"
 "    physic = CustomData()\n"
 "\n"
@@ -360,7 +306,7 @@ msgid ""
 "        return StepUpdater(self, lambda data, p: data.do_physic(p.dt))\n"
 "\n"
 "\n"
-"class TestPhysicalBlock(Timeline):\n"
+"class UpdatingPhysicalBlock(Timeline):\n"
 "    def construct(self):\n"
 "        block = PhysicalBlock()\n"
 "        block.points.to_border(DL)\n"
@@ -415,7 +361,7 @@ msgstr ""
 "        return StepUpdater(self, lambda data, p: data.do_physic(p.dt))\n"
 "\n"
 "\n"
-"class TestPhysicalBlock(Timeline):\n"
+"class UpdatingPhysicalBlock(Timeline):\n"
 "    def construct(self):\n"
 "        block = PhysicalBlock()\n"
 "        block.points.to_border(DL)\n"
@@ -442,29 +388,29 @@ msgstr ""
 "        block.physic.update({ 'accel': LEFT * 6 })\n"
 "        self.play(block.do_physic_updater(), duration=2)"
 
-#: ../../source/tutorials/value_tracker.rst:220
+#: ../../source/tutorials/value_tracker.rst:140
 msgid "其中的 ``physic = CustomData()`` 就是我们添加的自定义数据组件，它的用法和 :class:`~.ValueTracker` 十分相似："
 msgstr ""
 "The ``physic = CustomData()`` here is the custom data component we added, and its usage is very similar "
 "to :class:`~.ValueTracker`:"
 
-#: ../../source/tutorials/value_tracker.rst:222
+#: ../../source/tutorials/value_tracker.rst:142
 msgid "通过 :meth:`~.Cmpt_Data.set` 方法设置数据的值"
 msgstr "Use :meth:`~.Cmpt_Data.set` to set the data value"
 
-#: ../../source/tutorials/value_tracker.rst:224
+#: ../../source/tutorials/value_tracker.rst:144
 msgid "通过 :meth:`~.Cmpt_Data.get` 方法获取数据的值"
 msgstr "Use :meth:`~.Cmpt_Data.get` to get the data value"
 
-#: ../../source/tutorials/value_tracker.rst:226
+#: ../../source/tutorials/value_tracker.rst:146
 msgid "通过 :meth:`~.Cmpt_Data.update` 方法更新数据的部分字段"
 msgstr "Use :meth:`~.Cmpt_Data.update` to update parts of the data"
 
-#: ../../source/tutorials/value_tracker.rst:228
+#: ../../source/tutorials/value_tracker.rst:148
 msgid "可以像这样完善其类型注解："
 msgstr "You can refine its type annotations like this:"
 
-#: ../../source/tutorials/value_tracker.rst:230
+#: ../../source/tutorials/value_tracker.rst:150
 msgid ""
 "from typing import TypedDict\n"
 "\n"
@@ -488,6 +434,62 @@ msgstr ""
 "\n"
 "    ..."
 
-#: ../../source/tutorials/value_tracker.rst:245
+#: ../../source/tutorials/value_tracker.rst:165
 msgid "类型注解中的 ``Self`` 是为了让组件的 ``.r`` 正常运作"
 msgstr "The ``Self`` in the type annotation is to make the component's ``.r`` work properly"
+
+#: ../../source/tutorials/value_tracker.rst:170
+msgid "高级用法"
+msgstr "Advanced Usage"
+
+#: ../../source/tutorials/value_tracker.rst:172
+msgid "除了基本的数值和结构， :class:`~.ValueTracker` 还支持沿用组件类型，以及注册自定义类型的处理。"
+msgstr ""
+"Besides basic values and structures, :class:`~.ValueTracker` also supports reusing component types and registering custom "
+"types."
+
+#: ../../source/tutorials/value_tracker.rst:176
+msgid ""
+"说实话，高级用法的应用场景非常罕见，除非你在开发新的组件或者需要跟踪非常复杂的数据，否则大多数情况下使用基础用法就足够了。"
+msgstr ""
+"To be honest, advanced usage is rare; unless you are developing new components or tracking very complex data, basic usage "
+"is sufficient in most cases."
+
+#: ../../source/tutorials/value_tracker.rst:178
+msgid "因此以下两个小标题 :ref:`use_component_types` 和 :ref:`register_custom_types` 的内容仅作简单介绍。"
+msgstr ""
+"Therefore the following sections :ref:`use_component_types` and :ref:`register_custom_types` are only briefly introduced."
+
+#: ../../source/tutorials/value_tracker.rst:183
+msgid "沿用组件类型"
+msgstr "Reusing Component Types"
+
+#: ../../source/tutorials/value_tracker.rst:185
+msgid "首先我们需要知道，所有 :class:`~.Component` 的子类都可以直接作为 :class:`~.ValueTracker` 的值类型，例如："
+msgstr ""
+"First, note that all subclasses of :class:`~.Component` can be used directly as value types for :class:`~.ValueTracker`, "
+"for example:"
+
+#: ../../source/tutorials/value_tracker.rst:187
+msgid ":class:`~.Cmpt_Points`"
+msgstr ":class:`~.Cmpt_Points`"
+
+#: ../../source/tutorials/value_tracker.rst:189
+msgid ":class:`~.Cmpt_VPoints`"
+msgstr ":class:`~.Cmpt_VPoints`"
+
+#: ../../source/tutorials/value_tracker.rst:191
+msgid ":class:`~.Cmpt_Rgbas`"
+msgstr ":class:`~.Cmpt_Rgbas`"
+
+#: ../../source/tutorials/value_tracker.rst:193
+msgid "..."
+msgstr "..."
+
+#: ../../source/tutorials/value_tracker.rst:195
+msgid ""
+"虽然说我们可以将组件类型 :class:`~.Cmpt_Points` 作为值类型直接使用，但是对于实际来讲，还是直接操作 :class:`~.Points` 物件"
+"或者含义更具体的物件，并在需要时 :meth:`~.Item.current` 会更方便。"
+msgstr ""
+"Although you can use a component type like :class:`~.Cmpt_Points` as the value type directly, in practice it is more "
+"convenient to operate on :class:`~.Points` items or more specific items, and use :meth:`~.Item.current` when needed."
