@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-25 22:05+0800\n"
+"POT-Creation-Date: 2026-05-27 11:06+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,25 +17,33 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: janim/cli/execute.py:95 janim/cli/execute.py:254
+#: janim/cli/execute.py:96 janim/cli/execute.py:255
 msgid "Constructing window"
 msgstr ""
 
-#: janim/cli/execute.py:117 janim/cli/execute.py:275
+#: janim/cli/execute.py:118 janim/cli/execute.py:276
 #, python-brace-format
 msgid "Finished constructing in {time:.2f} s"
 msgstr ""
 
-#: janim/cli/execute.py:193
+#: janim/cli/execute.py:194
 #, python-brace-format
 msgid "Skipping \"{name}\": no part to output"
 msgstr ""
 
-#: janim/cli/execute.py:241
+#: janim/cli/execute.py:242
 #, python-brace-format
 msgid "Generated SRT file \"{file_path}\""
 msgstr ""
 
-#: janim/cli/execute.py:248
+#: janim/cli/execute.py:249
 msgid "No tool specified for use"
+msgstr ""
+
+#: janim/cli/execute.py:286
+msgid "No available plugins for JAnim"
+msgstr ""
+
+#: janim/cli/execute.py:288
+msgid "Available plugins for JAnim:"
 msgstr ""

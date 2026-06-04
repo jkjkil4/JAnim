@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-25 23:09+0800\n"
+"POT-Creation-Date: 2026-05-25 23:44+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -17,31 +17,37 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 
 #: janim/cli/utils/extract_timeline.py:42
-msgid "Multiple timelines found in stdin input. Please specify timeline names with command line arguments."
+msgid ""
+"Multiple timelines found in stdin input. Please specify timeline names with "
+"command line arguments."
 msgstr "stdin 输入中有多个 Timeline，请通过命令行参数具体指定"
 
 #: janim/cli/utils/extract_timeline.py:51
-msgid "That module has multiple timelines, which ones would you like to render?"
+msgid ""
+"That module has multiple timelines, which ones would you like to render?"
 msgstr "这个 module 中有多个 Timeline，你想要渲染哪些？"
 
-#: janim/cli/utils/extract_timeline.py:54 janim/cli/utils/extract_timeline.py:82
+#: janim/cli/utils/extract_timeline.py:55
+#: janim/cli/utils/extract_timeline.py:84
 msgid "Timeline Name or Number: "
 msgstr "Timeline 名称或序号："
 
-#: janim/cli/utils/extract_timeline.py:79
+#: janim/cli/utils/extract_timeline.py:81
 msgid "There are multiple timelines, which ones would you like to render?"
 msgstr "有多个 Timeline，你想要渲染哪些？"
 
-#: janim/cli/utils/extract_timeline.py:100 janim/cli/utils/extract_timeline.py:127 janim/cli/utils/extract_timeline.py:148
+#: janim/cli/utils/extract_timeline.py:102
+#: janim/cli/utils/extract_timeline.py:129
+#: janim/cli/utils/extract_timeline.py:150
 #, python-brace-format
 msgid "No timeline named \"{name}\""
 msgstr "没有叫作 \"{name}\" 的 Timeline"
 
-#: janim/cli/utils/extract_timeline.py:138
+#: janim/cli/utils/extract_timeline.py:140
 msgid "Cancelled"
 msgstr "已取消"
 
-#: janim/cli/utils/extract_timeline.py:145
+#: janim/cli/utils/extract_timeline.py:147
 #, python-brace-format
 msgid "Invaild number {num}"
 msgstr "序号 {num} 无效"

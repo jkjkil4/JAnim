@@ -171,7 +171,7 @@ def tool(tool_name: tuple[str, ...]):
 
 @cli.command(
     'plugins',
-    help=_('Show plugin informations'),
+    help=_('List plugins'),
     section=DEFAULT_SECTION,
 )
 @help_option
