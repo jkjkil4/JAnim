@@ -338,8 +338,7 @@ class ShowCreationThenDestructionAround(AnimationOnSurroundingRect):
     .. janim-example:: ShowCreationThenDestructionAroundExample
         :extract-from-test:
         :media: _static/videos/ShowCreationThenDestructionAroundExample.mp4
-        :url:
-            https://janim.readthedocs.io/zh-cn/latest/janim/anims/indication.html#showcreationthendestructionaroundexample
+        :url: https://janim.readthedocs.io/zh-cn/latest/janim/anims/indication.html#showcreationthendestructionaroundexample
     """
 
     label_color = C_LABEL_ANIM_INDICATION

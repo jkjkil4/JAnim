@@ -11,9 +11,10 @@ from typing import Callable, Generator, Iterable
 
 import numpy as np
 
-from janim.anims.animation import Animation, ItemAnimation, TimeRange
+from janim.anims.animation import Animation, ItemAnimation
 from janim.anims.composition import AnimGroup
 from janim.anims.fading import FadeIn, FadeInFromPoint, FadeOut, FadeOutToPoint
+from janim.anims_core.time import TimeRange
 from janim.camera.camera import Camera
 from janim.components.points import Cmpt_Points
 from janim.constants import C_LABEL_ANIM_STAY, OUT

@@ -16,19 +16,20 @@ from contextlib import contextmanager
 from contextvars import ContextVar
 from dataclasses import dataclass
 from functools import partial
-from typing import Callable, Iterable, Self, overload
+from typing import Callable, Iterable, Literal, Self, overload
 
 import moderngl as mgl
 import numpy as np
 from PIL import Image
 
 from janim.anims.anim_stack import AnimStack
-from janim.anims.animation import Animation, TimeAligner, TimeRange, TimeSegments
+from janim.anims.animation import Animation
 from janim.anims.composition import AnimGroup
 from janim.anims.updater import updater_params_ctx
+from janim.anims_core.time import FOREVER, TimeAligner, TimeChunks, TimeRange
 from janim.camera.camera import Camera
 from janim.camera.camera_info import CameraInfo
-from janim.constants import BLACK, DEFAULT_DURATION, DOWN, FOREVER, SMALL_BUFF, UP
+from janim.constants import BLACK, DEFAULT_DURATION, DOWN, SMALL_BUFF, UP
 from janim.exception import TimelineLookupError
 from janim.items.audio import Audio
 from janim.items.group import Group
@@ -87,6 +88,13 @@ class Timeline(metaclass=ABCMeta):
 
     ctx_var: ContextVar[Timeline | None] = ContextVar('Timeline.ctx_var')
 
+    @overload
+    @staticmethod
+    def get_context(raise_exc: Literal[True] = True) -> Timeline: ...
+    @overload
+    @staticmethod
+    def get_context(raise_exc: Literal[False]) -> Timeline | None: ...
+
     @staticmethod
     def get_context(raise_exc=True) -> Timeline | None:
         """
@@ -96,7 +104,7 @@ class Timeline(metaclass=ABCMeta):
         """
         obj = Timeline.ctx_var.get(None)
         if obj is None and raise_exc:
-            f_back = inspect.currentframe().f_back
+            f_back: types.FrameType = inspect.currentframe().f_back  # type: ignore
             raise TimelineLookupError(
                 _('{name} cannot be used outside of Timeline.construct').format(
                     name=f_back.f_code.co_qualname
@@ -321,7 +329,7 @@ class Timeline(metaclass=ABCMeta):
         会在进度达到 ``at`` 时，对 ``func`` 进行调用，
         可传入 ``*args`` 和 ``**kwargs``
         """
-        at = self.time_aligner.align_t(at)
+        at = self.time_aligner.align_and_record(at)
         task = Timeline.ScheduledTask(at, func, args, kwargs)
         self.scheduled_tasks.insert(at, task)
 
@@ -805,7 +813,7 @@ class Timeline(metaclass=ABCMeta):
     def _show(self, item: Item) -> None:
         gaps = self.item_appearances[item].visibility
         if len(gaps) % 2 != 1:
-            gaps.append(self.time_aligner.align_t(self.current_time))
+            gaps.append(self.time_aligner.align_and_record(self.current_time))
 
     def show(self, *roots: Item, root_only=False) -> None:
         """
@@ -818,7 +826,7 @@ class Timeline(metaclass=ABCMeta):
     def _hide(self, item: Item) -> None:
         gaps = self.item_appearances[item].visibility
         if len(gaps) % 2 == 1:
-            gaps.append(self.time_aligner.align_t(self.current_time))
+            gaps.append(self.time_aligner.align_and_record(self.current_time))
 
     def hide(self, *roots: Item, root_only=False) -> None:
         """
@@ -832,7 +840,7 @@ class Timeline(metaclass=ABCMeta):
         """
         隐藏显示中的所有物件
         """
-        t = self.time_aligner.align_t(self.current_time)
+        t = self.time_aligner.align_and_record(self.current_time)
         for appr in self.item_appearances.values():
             gaps = appr.visibility
             if len(gaps) % 2 == 1:
@@ -1097,16 +1105,16 @@ class BuiltTimeline:
 
     def __init__(self, timeline: Timeline):
         self.timeline = timeline
-        self.duration = timeline.time_aligner.align_t(timeline.current_time)
+        self.duration = timeline.time_aligner.align_and_record(timeline.current_time)
 
-        self.visible_item_segments = TimeSegments(
+        self.visible_item_segments = TimeChunks(
             ((item, appr) for item, appr in timeline.item_appearances.items()),
             lambda x: (
                 TimeRange(*range) if len(range) == 2 else TimeRange(*range, self.duration + 1)
                 for range in it.batched(x[1].visibility, 2)
             ),
         )
-        self.visible_render_group_segments = TimeSegments(
+        self.visible_render_group_segments = TimeChunks(
             self.timeline.extra_render_groups,
             lambda x: (
                 x.t_range
@@ -1200,7 +1208,7 @@ class BuiltTimeline:
         渲染所有可见物件
         """
         timeline = self.timeline
-        global_t = timeline.time_aligner.align_t_for_render(global_t)
+        global_t = timeline.time_aligner.align(global_t)
         # 使得最后一帧采用略提早一点点的时间渲染，使得一些结束在结尾的动画不突变
         if global_t == self.duration:
             global_t -= 1e-4

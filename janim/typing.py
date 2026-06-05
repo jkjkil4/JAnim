@@ -22,8 +22,6 @@ type RgbaArray = Iterable[Rgba] | np.ndarray
 
 type RangeSpecifier = tuple[float, float] | tuple[float, float, float]
 
-type ForeverType = types.EllipsisType
-
 
 @runtime_checkable
 class SupportsApartAlpha(Protocol):

@@ -10,7 +10,7 @@ from PySide6.QtCore import QPointF, QRect, QRectF, Qt
 from PySide6.QtGui import QFont, QPainter, QPixmap
 from PySide6.QtWidgets import QApplication
 
-from janim.anims.animation import TimeRange
+from janim.anims_core.time import TimeRange
 from janim.utils.file_ops import get_gui_asset
 
 LABEL_DEFAULT_HEIGHT = 3

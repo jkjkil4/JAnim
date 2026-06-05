@@ -4,9 +4,9 @@ from bisect import bisect_left, bisect_right
 from collections import defaultdict
 from typing import Generator
 
-from janim.anims.animation import ApplyAligner, ItemAnimation, TimeAligner
+from janim.anims.animation import ApplyAligner, ItemAnimation
 from janim.anims.display import Display
-from janim.constants import FOREVER
+from janim.anims_core.time import FOREVER, TimeAligner
 from janim.exception import ApplyAlignerBrokenError
 from janim.items.item import Item
 from janim.locale import get_translator

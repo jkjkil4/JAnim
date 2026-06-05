@@ -1,6 +1,7 @@
 from typing import Iterable, Self
 
-from janim.anims.animation import Animation, TimeAligner
+from janim.anims.animation import Animation
+from janim.anims_core.time import TimeAligner
 from janim.exception import AnimGroupError, NotAnimationError
 from janim.locale import get_translator
 from janim.typing import SupportsAnim
@@ -55,6 +56,7 @@ class AnimGroup(Animation):
         lag_ratio: float = 0,
         offset: float = 0,
         rate_func: RateFunc = linear,
+        #
         name: str | None = None,
         collapse: bool = False,
     ):

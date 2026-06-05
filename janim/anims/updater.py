@@ -10,15 +10,15 @@ from typing import Any, Callable, Iterable, Self
 from tqdm import tqdm as ProgressDisplay
 
 from janim.anims.anim_stack import AnimStack
-from janim.anims.animation import FOREVER, Animation, ApplyAligner, ItemAnimation, TimeRange
+from janim.anims.animation import FOREVER, Animation, ApplyAligner, ItemAnimation
 from janim.anims.method_updater_meta import METHOD_UPDATER_KEY, MethodUpdaterInfo
+from janim.anims_core.time import TimeRange
 from janim.components.component import Component
 from janim.constants import C_LABEL_ANIM_ABSTRACT
 from janim.exception import UpdaterError
 from janim.items.item import Item
 from janim.locale import get_translator
 from janim.render.base import Renderer
-from janim.utils.data import ContextSetter
 from janim.utils.rate_functions import RateFunc, linear
 from janim.utils.simple_functions import clip
 

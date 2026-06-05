@@ -9,9 +9,10 @@ from PySide6.QtCore import QPoint, QPointF, QRect, Qt, QTimer, Signal
 from PySide6.QtGui import QColor, QKeyEvent, QMouseEvent, QPainter, QPaintEvent, QPen, QWheelEvent
 from PySide6.QtWidgets import QLabel, QVBoxLayout, QWidget
 
-from janim.anims.animation import FOREVER, Animation, TimeRange
+from janim.anims.animation import FOREVER, Animation
 from janim.anims.composition import AnimGroup
 from janim.anims.timeline import BuiltTimeline, Timeline, TimelineItem
+from janim.anims_core.time import TimeRange
 from janim.gui.charts.anim_chart import AnimChartWidget
 from janim.gui.charts.audio_chart import AudioChartWidget
 from janim.gui.label import (
