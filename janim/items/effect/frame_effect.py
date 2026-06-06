@@ -112,7 +112,7 @@ class AppliedGroup(Item):
 
 
 _regex_fbo_declaration = re.compile(r'uniform\s+sampler2D\s+fbo\s*;')
-_regex_texture_fbo = re.compile(r'texture\s*\(\s*fbo\s*,')  # )
+_regex_texture_fbo = re.compile(r'texture\s*\(\s*fbo\s*,')
 
 
 def _apply_fixes_for_compatibility(fragment_shader: str) -> str:
@@ -132,12 +132,12 @@ def _apply_fixes_for_compatibility(fragment_shader: str) -> str:
     if count != 0:
         fixes.append(_('Removed "{code}"').format(code='uniform sampler2D fbo;'))
 
-    fragment_shader, count = re.subn(_regex_texture_fbo, 'frame_texture(', fragment_shader)  # )
+    fragment_shader, count = re.subn(_regex_texture_fbo, 'frame_texture(', fragment_shader)
     if count != 0:
         fixes.append(
             _('Replaced "{orig}" by "{code}"').format(
-                orig='texture(fbo,',  # )
-                code='frame_texture(',  # )
+                orig='texture(fbo,',
+                code='frame_texture(',
             )
         )
 
