@@ -197,6 +197,8 @@ class TimeChunks[T]:
 
         可以返回单个 :class:`TimeRange`，也可以返回一个 :class:`TimeRange` 列表表示多个可视的区段
 
+        注：不允许带有 ``FOREVER`` 时间的 :class:`TimeRange`
+
     :param step:
         每个区块的时长
     """
@@ -214,7 +216,7 @@ class TimeChunks[T]:
         for val in iterable:
             prev_right = None
             for t_range in self._get_ranges(val, key):
-                # left, right 表示当前可视 t_range 范围所覆盖的区块范围，左闭右开
+                # [left, right) 表示当前可视 t_range 范围所覆盖的区块范围
                 left = math.floor(t_range.at / step)
                 right = math.ceil(t_range.end / step)  # type: ignore
                 # 限制 left 不能小于 prev_right，避免重复记录
