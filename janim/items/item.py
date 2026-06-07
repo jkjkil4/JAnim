@@ -717,8 +717,8 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
                 appr = self.timeline.item_appearances.get(item, None)
                 if appr is None:
                     continue
-                if not appr.stack.is_changed(item):
-                    appr.stack.detect_change(item, self.timeline.current_time, force=True)
+                if not appr.stack.may_changed(item):
+                    appr.stack.display(self.timeline.current_time)
 
             # 如果设置了 auto_visible 且根物件是可见的
             # 那么 become 的最后会把所有子物件设为可见

@@ -22,7 +22,7 @@ import moderngl as mgl
 import numpy as np
 from PIL import Image
 
-from janim.anims.anim_stack import AnimStack
+from janim.anims_core.anim_stack import AnimStack
 from janim.anims.animation import Animation
 from janim.anims.composition import AnimGroup
 from janim.anims.updater import updater_params_ctx
@@ -278,8 +278,7 @@ class Timeline(metaclass=ABCMeta):
                     )
 
             for item, appr in self.item_appearances.items():
-                appr.stack.detect_change_if_not(item)
-                appr.stack.clear_cache()
+                appr.stack.clear_cache()  # TODO: 检查这句是否有必要，并说明原因
 
             built = BuiltTimeline(self)
 
@@ -752,8 +751,8 @@ class Timeline(metaclass=ABCMeta):
         """
         检查物件的变化并将变化记录为 :class:`~.Display`
         """
-        for item, appr in self.item_appearances.items():
-            appr.stack.detect_change(item, self.current_time)
+        for appr in self.item_appearances.values():
+            appr.stack.detect_change(self.current_time)
 
     def detect_changes(self, items: Iterable[Item]) -> None:
         """
@@ -762,7 +761,7 @@ class Timeline(metaclass=ABCMeta):
         （仅检查自身而不包括后代物件的）
         """
         for item in items:
-            self.item_appearances[item].stack.detect_change(item, self.current_time)
+            self.item_appearances[item].stack.detect_change(self.current_time)
 
     def compute_item[T](self, item: T, as_time: float, readonly: bool) -> T:
         """

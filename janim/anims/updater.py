@@ -9,7 +9,7 @@ from typing import Any, Callable, Iterable, Self
 
 from tqdm import tqdm as ProgressDisplay
 
-from janim.anims.anim_stack import AnimStack
+from janim.anims_core.anim_stack import AnimStack
 from janim.anims.animation import FOREVER, Animation, ApplyAligner, ItemAnimation
 from janim.anims.method_updater_meta import METHOD_UPDATER_KEY, MethodUpdaterInfo
 from janim.anims_core.time import TimeRange
@@ -177,7 +177,7 @@ class DataUpdater[T: Item](Animation):
 
             if self.become_at_end and self.t_range.end is not FOREVER:
                 item.restore(stack.compute(self.t_range.end, True, get_at_left=True))
-                stack.detect_change(item, self.t_range.end, force=True)
+                stack.display(self.t_range.end)
 
 
 class _DataUpdater(ItemAnimation):
@@ -200,7 +200,7 @@ class _DataUpdater(ItemAnimation):
         self.index = index
         self.count = count
 
-    def apply(self, data: Item, p: ItemAnimation.ApplyParams) -> None:
+    def apply(self, data: Item, p: StackableAnimation.ApplyParams) -> None:
         with UpdaterParams(
             p.global_t,
             self.get_sub_alpha(self.get_alpha_on_global_t(p.global_t)),
@@ -279,7 +279,7 @@ class GroupUpdater[T: Item](Animation):
                 self.func(self.item, params)
 
             for item, stack in zip(sub_items, stacks):
-                stack.detect_change(item, self.t_range.end, force=True)
+                stack.display(self.t_range.end)
 
         for sub_updater in updaters:
             sub_updater.transfer_params(self)
@@ -314,11 +314,11 @@ class _GroupUpdater(ApplyAligner):
         self._generate_by: GroupUpdater = generate_by
         self.data = data
 
-    def pre_apply(self, data: Item, p: ItemAnimation.ApplyParams) -> None:
+    def pre_apply(self, data: Item, p: StackableAnimation.ApplyParams) -> None:
         self._generate_by.applied = False
         self.data.restore(data)
 
-    def apply(self, data: Item, p: ItemAnimation.ApplyParams) -> None:
+    def apply(self, data: Item, p: StackableAnimation.ApplyParams) -> None:
         self._generate_by.apply_for_group(p.global_t)
         data.restore(self.data)
 
@@ -533,7 +533,7 @@ class ItemUpdater(Animation):
                 show_items = list(self.item.walk_self_and_descendants())
                 for item in show_items:
                     stack = self.timeline.item_appearances[item].stack
-                    stack.detect_change(item, self.t_range.end, force=True)
+                    stack.display(self.t_range.end)
 
         # 在动画开始时自动隐藏，在动画结束时自动显示
         # 可以将 ``hide_on_begin`` 和 ``show_on_end`` 置为 ``False`` 以禁用
@@ -690,9 +690,9 @@ class _StepUpdater(ItemAnimation):
                 self.compute(self.item, self.t_range.end)
 
             apprs = self.timeline.item_appearances
-            apprs[self.item].stack.detect_change(self.item, self.t_range.end)
+            apprs[self.item].stack.detect_change(self.t_range.end)
 
-    def apply(self, data: None, p: ItemAnimation.ApplyParams) -> Item:
+    def apply(self, data: None, p: StackableAnimation.ApplyParams) -> Item:
         self.compute(self.data, p.global_t)
         return self.data
 

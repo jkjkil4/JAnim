@@ -383,7 +383,7 @@ class TimelineView(QWidget):
                         brush=get_color(anim),
                     )
                     for (t1, t2), anims in zip(
-                        it.pairwise([*stack.times, built.duration + 1]), stack.stacks
+                        it.pairwise([*stack._chunk_starts, built.duration + 1]), stack._chunks
                     )
                     for anim in anims
                 ],

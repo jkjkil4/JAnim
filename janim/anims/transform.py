@@ -124,13 +124,9 @@ class Transform(Animation):
         self.flatten = flatten
         self.root_only = root_only
 
-        apprs = self.timeline.item_appearances
-
-        for item in self.src_item.walk_self_and_descendants(root_only):
-            apprs[item].stack.detect_change_if_not(item)
+        self.timeline.track_item_and_descendants(self.src_item)
         if self.target_item is not self.src_item:
-            for item in self.target_item.walk_self_and_descendants(root_only):
-                apprs[item].stack.detect_change_if_not(item)
+            self.timeline.track_item_and_descendants(self.target_item)
 
     def _time_fixed(self) -> None:
         self.align_data()
@@ -328,7 +324,7 @@ class _MoveToTargetCameraFix(ItemAnimation):
         self.aligned = generate_by.aligned[(camera, camera.target)]
         self.path_func = generate_by.path_func
 
-    def apply(self, data: None, p: ItemAnimation.ApplyParams) -> Item:
+    def apply(self, data: None, p: StackableAnimation.ApplyParams) -> Item:
         alpha = self.get_alpha_on_global_t(p.global_t)
 
         aligned = self.aligned
@@ -522,7 +518,7 @@ class MethodTransform(Transform):
         apprs = self.timeline.item_appearances
 
         for item in self.src_item.walk_self_and_descendants():
-            apprs[item].stack.detect_change(item, self.t_range.end)
+            apprs[item].stack.detect_change(self.t_range.end)
 
         self.align_data()
 
@@ -572,7 +568,7 @@ class _MethodTransform(ItemAnimation):
         self.path_func = path_func
         self.aligned = aligned
 
-    def apply(self, data: None, p: ItemAnimation.ApplyParams) -> Item:
+    def apply(self, data: None, p: StackableAnimation.ApplyParams) -> Item:
         self.aligned.union.interpolate(
             self.aligned.data1,
             self.aligned.data2,
