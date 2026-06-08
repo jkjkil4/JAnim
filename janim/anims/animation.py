@@ -1,8 +1,7 @@
 from __future__ import annotations
 
 from contextvars import ContextVar
-from dataclasses import dataclass
-from typing import TYPE_CHECKING, Self, overload
+from typing import TYPE_CHECKING, Self
 
 from janim.anims_core.time import FOREVER, ForeverType, TimeAligner, TimeRange
 from janim.constants import C_LABEL_ANIM_DEFAULT, DEFAULT_DURATION
@@ -12,7 +11,6 @@ from janim.locale import get_translator
 from janim.utils.rate_functions import RateFunc, linear, smooth
 
 if TYPE_CHECKING:
-    from janim.anims_core.anim_stack import AnimStack
     from janim.anims.composition import AnimGroup
 
 _ = get_translator('janim.anims.animation')
@@ -149,70 +147,3 @@ class Animation:
             self.timeline.schedule(self.t_range.at, item.show, root_only=True)
         if hide_at_end:
             self.timeline.schedule(self.t_range.end, item.hide, root_only=True)
-
-
-class StackableAnimation(Animation):
-    # 意即“覆盖先前的动画”
-    # 把该值置为 True 表示该动画不依赖先前动画的效果，使得进行计算时可以直接从该动画开始而不用考虑更前面的动画效果
-    # 例如，该值会被 Display 置为 True，因为 Display 不基于更前面的动画
-    _cover_previous_anims = False
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        # 有些动画是被其它动画生成的，例如 MethodTransform -> _MethodTransform，DataUpdater -> _DataUpdater 等
-        # 记录这个信息，用于 Timeline.debug 显示在时间轴上时，得知原始的动画是那个
-        self._generate_by: Animation | None = None
-
-    @dataclass(slots=True)
-    class ApplyParams:
-        global_t: float
-        anims: list[ItemAnimation]
-        index: int
-
-    @overload
-    def apply(self, data: Item, p: ApplyParams) -> None: ...
-    @overload
-    def apply(self, data: None, p: ApplyParams) -> Item: ...
-
-    def apply(self, data, params):
-        """
-        将 ``global_t`` 时的动画效果作用到 ``data`` 上
-
-        其中
-
-        - 对于 :class:`~.Display` 而言，``data`` 是 ``None``，返回值是 :class:`~.Item` 对象
-        - 而对于其它大多数的而言，``data`` 是前一个动画作用的结果，返回值是 ``None``
-        """
-        pass
-
-
-class ItemAnimation(StackableAnimation):
-    def __init__(
-        self,
-        item: Item,
-        *,
-        show_at_begin: bool = True,
-        hide_at_end: bool = False,
-        **kwargs,
-    ):
-        super().__init__(**kwargs)
-        self.item = item
-        self.show_at_begin = show_at_begin
-        self.hide_at_end = hide_at_end
-
-        self.timeline.track(item)
-
-    def _time_fixed(self) -> None:
-        stack = self.timeline.item_appearances[self.item].stack
-        stack.append(self)
-        self.schedule_show_and_hide(self.item, self.show_at_begin, self.hide_at_end)
-
-
-class ApplyAligner(ItemAnimation):
-    def __init__(self, item: Item, stacks: list[AnimStack], **kwargs):
-        super().__init__(item, **kwargs)
-        self.stacks = stacks
-
-    def pre_apply(self, data: Item, p: StackableAnimation.ApplyParams) -> None:
-        pass

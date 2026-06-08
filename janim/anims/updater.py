@@ -9,9 +9,10 @@ from typing import Any, Callable, Iterable, Self
 
 from tqdm import tqdm as ProgressDisplay
 
-from janim.anims_core.anim_stack import AnimStack
-from janim.anims.animation import FOREVER, Animation, ApplyAligner, ItemAnimation
+from janim.anims.animation import FOREVER, Animation
 from janim.anims.method_updater_meta import METHOD_UPDATER_KEY, MethodUpdaterInfo
+from janim.anims_core.anim_stack import AnimStack
+from janim.anims_core.stackable import ApplyAligner, ApplyParams, ItemAnimation
 from janim.anims_core.time import TimeRange
 from janim.components.component import Component
 from janim.constants import C_LABEL_ANIM_ABSTRACT
@@ -200,15 +201,15 @@ class _DataUpdater(ItemAnimation):
         self.index = index
         self.count = count
 
-    def apply(self, data: Item, p: StackableAnimation.ApplyParams) -> None:
+    def apply(self, params: ApplyParams) -> None:
         with UpdaterParams(
-            p.global_t,
-            self.get_sub_alpha(self.get_alpha_on_global_t(p.global_t)),
+            params.global_t,
+            self.get_sub_alpha(self.get_alpha_on_global_t(params.global_t)),
             self.t_range,
             self.extra_data,
             self,
-        ) as params:
-            self.func(data, params)
+        ) as updater_params:
+            self.func(params.data, updater_params)
 
     def get_sub_alpha(self, alpha: float) -> float:
         """依据 ``lag_ratio`` 得到特定子物件的 ``sub_alpha``"""
@@ -314,13 +315,13 @@ class _GroupUpdater(ApplyAligner):
         self._generate_by: GroupUpdater = generate_by
         self.data = data
 
-    def pre_apply(self, data: Item, p: StackableAnimation.ApplyParams) -> None:
+    def pre_apply(self, params: ApplyParams) -> None:
         self._generate_by.applied = False
-        self.data.restore(data)
+        self.data.restore(params.data)
 
-    def apply(self, data: Item, p: StackableAnimation.ApplyParams) -> None:
-        self._generate_by.apply_for_group(p.global_t)
-        data.restore(self.data)
+    def apply(self, params: ApplyParams) -> None:
+        self._generate_by.apply_for_group(params.global_t)
+        params.data.restore(self.data)
 
 
 class MethodUpdater(Animation):
@@ -692,9 +693,9 @@ class _StepUpdater(ItemAnimation):
             apprs = self.timeline.item_appearances
             apprs[self.item].stack.detect_change(self.t_range.end)
 
-    def apply(self, data: None, p: StackableAnimation.ApplyParams) -> Item:
-        self.compute(self.data, p.global_t)
-        return self.data
+    def apply(self, params: ApplyParams) -> None:
+        self.compute(self.data, params.global_t)
+        params.data = self.data
 
     def global_t_to_n(self, global_t: float) -> int:
         return max(0, int((global_t - self.t_range.at) // self.step))

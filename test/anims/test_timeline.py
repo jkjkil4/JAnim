@@ -63,12 +63,12 @@ class TimelineTest(unittest.TestCase):
         tl = MyTimeline()
         tl.build(quiet=True)
 
-        self.assertEqual(len(tl.item_appearances[tl.item1].stack.stacks), 2)
-        self.assertEqual(len(tl.item_appearances[tl.item2].stack.stacks), 2)
+        self.assertEqual(len(tl.item_appearances[tl.item1].stack._chunks), 2)
+        self.assertEqual(len(tl.item_appearances[tl.item2].stack._chunks), 3)
 
         self.check_data_at_time: list[tuple[MyItem, float, int]] = [
             (tl.item1, 1, 114),
-            (tl.item2, 1, 1919),
+            (tl.item2, 1, 0),
             (tl.item1, 2.5, 514),
             (tl.item2, 2.5, 1919),
             (tl.item1, 3.1, 514),
@@ -79,15 +79,15 @@ class TimelineTest(unittest.TestCase):
             self.assertEqual(
                 item.current(as_time=t).cmpt.value,
                 val,
-                msg=f'check_data_at_time {id(item):X} {t} {val}'
+                msg=f'check_data_at_time {id(item):X} {t} {val}',
             )
 
     def test_fmt_time(self) -> None:
-        self.assertEqual(  '     21s      ', Timeline.fmt_time(21))
-        self.assertEqual(  '     59s      ', Timeline.fmt_time(59))
-        self.assertEqual(  '  1m  0s      ', Timeline.fmt_time(60))
-        self.assertEqual(  ' 31m 31s 237ms', Timeline.fmt_time(31 * 60 + 31.23666))
-        self.assertEqual(  ' 37m  2s 234ms', Timeline.fmt_time(37 * 60 + 2.23444))
+        self.assertEqual('     21s      ', Timeline.fmt_time(21))
+        self.assertEqual('     59s      ', Timeline.fmt_time(59))
+        self.assertEqual('  1m  0s      ', Timeline.fmt_time(60))
+        self.assertEqual(' 31m 31s 237ms', Timeline.fmt_time(31 * 60 + 31.23666))
+        self.assertEqual(' 37m  2s 234ms', Timeline.fmt_time(37 * 60 + 2.23444))
         self.assertEqual('3h 37m  2s 234ms', Timeline.fmt_time(3 * 60 * 60 + 37 * 60 + 2.23444))
 
     def test_blank_timeline(self) -> None:

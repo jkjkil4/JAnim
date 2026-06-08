@@ -1,6 +1,9 @@
 from bisect import bisect_left, bisect_right
-from janim.anims.animation import StackableAnimation
-from janim.anims.display import Display
+from collections import defaultdict
+from typing import Generator
+
+from janim.anims_core.display import Display
+from janim.anims_core.stackable import ApplyAligner, ApplyParams, StackableAnimation
 from janim.anims_core.time import FOREVER, TimeAligner
 from janim.items.item import Item
 
@@ -47,7 +50,7 @@ class AnimStack:
         """
         anim = Display(self.item.store(), at=global_t, duration=FOREVER)
         anim.finalize()
-        self.append(anim)
+        self.append(anim, _is_display=True)
         self._prev_display = anim
 
     def detect_change(self, global_t: float) -> None:
@@ -64,7 +67,7 @@ class AnimStack:
         """
         return not self._prev_display.data_orig.not_changed(self.item)
 
-    def append(self, anim: StackableAnimation) -> None:
+    def append(self, anim: StackableAnimation, *, _is_display: bool = False) -> None:
         """
         向堆栈添加一个 :class:`~.StackableAnimation` 对象
 
@@ -154,20 +157,13 @@ class AnimStack:
             self._chunk_starts.insert(end_idx, end)  # type: ignore
             self._chunks.insert(end_idx, self._chunks[end_idx - 1].copy())
 
-        # 根据 _cover_previous_anim 的情况来处理
-        # - 若 True，则清空所有被该动画所覆盖的所有先前动画
-        # - 若 False，则正常 append 到范围内的区块中
-        if anim._cover_previous_anims:
-            if end_idx - at_idx > 1:
-                # 如果覆盖的区块不止一个，则删掉多余的只需要留下一个
-                del self._chunk_starts[at_idx + 1 : end_idx]
-                del self._chunks[at_idx + 1 : end_idx]
-            chunk = self._chunks[at_idx]
-            chunk.clear()
+        for idx in range(at_idx, end_idx):
+            chunk = self._chunks[idx]
+            # _is_display 为内部参数，表示是否产生于 `display` 方法
+            # 用于判断在先前只有单个动画（即 `Display` 动画）时，直接覆盖原来的那个而不是形成堆栈
+            if _is_display and len(chunk) == 1:
+                chunk.clear()
             chunk.append(anim)
-        else:
-            for idx in range(at_idx, end_idx):
-                self._chunks[idx].append(anim)
 
         # 添加了新动画，因此要重置缓存
         if self._cache_time is not None:
@@ -202,6 +198,28 @@ class AnimStack:
     def compute(self, global_t: float, readonly: bool, *, get_at_left: bool = False) -> Item:
         """
         得到在 ``global_t`` 时刻下，应用动画作用效果后的物件
+
+        :param global_t: 全局时刻
+
+        :param readonly: 表示调用方是否会对返回值进行修改
+
+            如果 ``readonly=True`` 则表示不会进行修改，该方法会直接返回缓存本身；
+            但是这并没有强制约束性，传入 ``readonly=True`` 时需要遵循不修改返回值的原则，以免影响缓存数据
+
+            如果 ``readonly=False`` 则表示会进行修改，此时会返回缓存的拷贝，从而避免影响缓存数据
+
+            例如：
+
+            -   :meth:`~.Timeline.item_current` 中的调用是 ``readonly=False`` 的，
+                因为其返回值最终会被用户使用，我们不能保证用户是否会修改
+
+            -   用于绘制时的调用是 ``readonly=True``，因为绘制时不会对物件数据产生影响
+
+        :param get_at_left: 决定使用 :meth:`get` 还是 :meth:`get_at_left` 获取动画堆栈，具体请参考对应方法的介绍
+
+        关于该方法的一些机制细节，请参考 :class:`~.StackableAnimation` 和 :class:`~.ApplyParams` 以及 :class:`~.ApplyAligner` 的介绍
+
+        关于该方法在实现上的一些细节，清参考 ``_compute`` 代码中的注释
         """
         if global_t != self._cache_time:
             self._compute(global_t, readonly, get_at_left)
@@ -211,9 +229,123 @@ class AnimStack:
         return self._cache_data if readonly else self._cache_data.store()
 
     def _compute(self, global_t: float, readonly: bool, get_at_left: bool) -> None:
-        # TODO:
-        from janim.anims.anim_stack import OldAnimStack
+        getter = self.get_at_left if get_at_left else self.get
+        anims = getter(global_t)
+        generator = self._compute_anims(global_t, anims)
 
-        OldAnimStack.compute(self, global_t, readonly, get_at_left=get_at_left)
+        try:
+            aligner = next(generator)
+        except StopIteration as e:
+            # 当 StopIteration 时，说明没有出现 ApplyAligner，直接完成了该动画堆栈的计算
+            self._cache_time = global_t
+            self._cache_data = e.value
+        else:
+            # 当 generator 被挂起，则出现了 ApplyAligner，需要让 ApplyAligner 的所有目标都“触闸”
+            # 具体请参考 `ApplyAligner` 中的介绍
+
+            # 已被挂起的 AnimStack
+            # key: AnimStack
+            # value: (被挂起的动画堆栈 generator, 由哪个 ApplyAligner 导致的挂起)
+            suspended: dict[AnimStack, tuple[Generator, ApplyAligner]] = {
+                self: (generator, aligner)
+            }
+
+            # 正在等待释放的“闸”
+            # key: “闸”的标识值
+            # value: 该“闸”包含哪些动画堆栈
+            gates: dict[int, list[AnimStack]] = {}
+
+            def setup_gate(identifier: int, stacks: list[AnimStack]) -> None:
+                # 执行某个 ApplyAligner 相关联的 stacks，将他们加入到 suspended 中
+                # 会跳过已经处于 suspended 中的 stack
+                #
+                # 什么情况下会有 stack 已经处于 suspended 中？比如下面的例子
+                # i1 i2 i3 i4
+                # -----------
+                #    a1 a2 a3
+                # b1 b2 b3
+                # 这里有 i1 i2 i3 i4 四个物件
+                # - 我们先给 i2 i3 i4 使用了一个 GroupUpdater，创建了 a1 a2 a3 的 ApplyAligner
+                # - 接着给 i1 i2 i3 使用了一个 GroupUpdater，创建了 b1 b2 b3 的 ApplyAligner
+                # 所以当我们计算 i1 的动画堆栈时
+                # - b1 进入 suspended
+                # - b2 尝试进入 suspended，但是他前面还有一个 GroupUpdater，所以会把 a1 a2 a3 也拉进 suspended 中
+                # - 接着 b2 进入 suspended，由于他前面的 a2 已经在 suspended 了，所以 a2 就不能重复进入
+                gates[identifier] = stacks
+                for stack in stacks:
+                    if stack in suspended:
+                        continue
+                    getter = stack.get_at_left if get_at_left else stack.get
+                    anims = getter(global_t)
+                    generator = stack._compute_anims(global_t, anims)
+
+                    # 预期让 generator 吐出一个 ApplyAligner 出来
+                    aligner = next(generator)  # 理论上这里不会出现 StopIteration
+
+                    # 加入到 suspended 中，并且如果其“闸”并没有被记录过，则递归收集
+                    suspended[stack] = (generator, aligner)
+                    if aligner.identifier not in gates:
+                        setup_gate(aligner.identifier, aligner.stacks)
+
+            setup_gate(aligner.identifier, aligner.stacks)
+
+            # 只要有在挂起的动画堆栈，就要重复尝试“放闸”
+            while suspended:
+                # 计数当前挂起的动画堆栈都被什么“闸”给阻挡着
+                # 如果某个“闸”的计数达到了其预期的数量，则它可以释放
+                counter: defaultdict[int, int] = defaultdict(int)
+                for _, (generator, aligner) in suspended.items():
+                    identifier = aligner.identifier
+                    counter[identifier] += 1
+                    if counter[identifier] == len(aligner.stacks):
+                        stacks_to_release = aligner.stacks
+                        break
+                else:
+                    assert False  # 断言：一定能找到可放的“闸”
+
+                drop: list[AnimStack] = []  # 记录“放闸”之后，哪些动画堆栈完成了执行
+
+                for stack, (generator, _) in suspended.items():
+                    if stack not in stacks_to_release:
+                        continue
+                    try:
+                        aligner = next(generator)
+                        # “放闸”后，该动画堆栈没有结束
+                        suspended[stack] = (generator, aligner)
+                        if aligner.identifier not in gates:
+                            setup_gate(aligner.identifier, aligner.stacks)
+                    except StopIteration as e:
+                        # “放闸”后，该动画堆栈结束
+                        drop.append(stack)
+                        stack._cache_time = global_t
+                        stack._cache_data = e.value
+
+                # 将完成执行的动画堆栈移出 suspended
+                suspended = {
+                    stack: tup
+                    for stack, tup in suspended.items()
+                    if stack not in drop  #
+                }
+
+    def _compute_anims(
+        self, global_t: float, anims: list[StackableAnimation]
+    ) -> Generator[ApplyAligner, None, None]:
+        assert anims  # 断言 anims 一定非空
+
+        # 当 anims 中只有一个动画时，一定是 Display，直接返回其 data_orig
+        if len(anims) == 1:
+            return anims[0].data_orig  # type: ignore
+
+        # 这里设置 None 是有意的，它一上来就会被 Display 设置初始值，所以不会造成问题
+        params = ApplyParams(None, global_t, 0, anims)  # type: ignore
+
+        for i, anim in enumerate(anims):
+            params.index = i
+            if i != 0 and isinstance(anim, ApplyAligner):
+                anim.pre_apply(params)
+                yield anim
+            anim.apply(params)
+
+        return params.data  # type: ignore
 
     # endregion

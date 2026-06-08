@@ -11,9 +11,10 @@ from typing import Callable, Generator, Iterable
 
 import numpy as np
 
-from janim.anims.animation import Animation, ItemAnimation
+from janim.anims.animation import Animation
 from janim.anims.composition import AnimGroup
 from janim.anims.fading import FadeIn, FadeInFromPoint, FadeOut, FadeOutToPoint
+from janim.anims_core.stackable import ApplyParams, ItemAnimation
 from janim.anims_core.time import TimeRange
 from janim.camera.camera import Camera
 from janim.components.points import Cmpt_Points
@@ -319,17 +320,16 @@ class _MoveToTargetCameraFix(ItemAnimation):
 
         super().__init__(camera, **kwargs)
         self._generate_by = generate_by
-        self._cover_previous_anims = True
 
         self.aligned = generate_by.aligned[(camera, camera.target)]
         self.path_func = generate_by.path_func
 
-    def apply(self, data: None, p: StackableAnimation.ApplyParams) -> Item:
-        alpha = self.get_alpha_on_global_t(p.global_t)
+    def apply(self, params: ApplyParams) -> None:
+        alpha = self.get_alpha_on_global_t(params.global_t)
 
         aligned = self.aligned
         aligned.union.interpolate(aligned.data1, aligned.data2, alpha, path_func=self.path_func)
-        return aligned.union
+        params.data = aligned.union
 
 
 class TransformInSegments(AnimGroup):
@@ -507,6 +507,16 @@ class MethodTransform(Transform):
         return self
 
     def _time_fixed(self) -> None:
+        apprs = self.timeline.item_appearances
+
+        # TODO: 将这段逻辑封装到合适的位置，比如 AnimStack 或 Timeline 中
+        for item in self.src_item.walk_self_and_descendants():
+            stack = apprs[item].stack
+            if len(stack.get(self.t_range.at)) > 1:  # 若 > 1 说明不只有 Display，则先将动画作用上
+                data = stack.compute(self.t_range.at, True)
+                item.restore(data)
+                stack.detect_change(self.t_range.at)
+
         obj = self.obj
         for type, value in self.delayed_actions:
             if type is MethodTransform._ActionType.GetAttr:
@@ -514,8 +524,6 @@ class MethodTransform(Transform):
             else:  # Call
                 args, kwargs = value
                 obj = obj(*args, **kwargs)
-
-        apprs = self.timeline.item_appearances
 
         for item in self.src_item.walk_self_and_descendants():
             apprs[item].stack.detect_change(self.t_range.end)
@@ -568,14 +576,14 @@ class _MethodTransform(ItemAnimation):
         self.path_func = path_func
         self.aligned = aligned
 
-    def apply(self, data: None, p: StackableAnimation.ApplyParams) -> Item:
+    def apply(self, params: ApplyParams) -> None:
         self.aligned.union.interpolate(
             self.aligned.data1,
             self.aligned.data2,
-            self.get_alpha_on_global_t(p.global_t),
+            self.get_alpha_on_global_t(params.global_t),
             path_func=self.path_func,
         )
-        return self.aligned.union
+        params.data = self.aligned.union
 
 
 class FadeTransform(AnimGroup):
