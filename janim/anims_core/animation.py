@@ -2,9 +2,9 @@ from __future__ import annotations
 
 from contextvars import ContextVar
 from typing import TYPE_CHECKING, Self
-
 from janim.anims_core.time import FOREVER, ForeverType, TimeAligner, TimeRange
-from janim.constants import C_LABEL_ANIM_DEFAULT, DEFAULT_DURATION
+from janim.constants import DEFAULT_DURATION
+from janim.constants.colors import C_LABEL_ANIM_DEFAULT
 from janim.exception import AnimationError
 from janim.items.item import Item
 from janim.locale import get_translator
@@ -20,14 +20,12 @@ class Animation:
     """
     动画基类
 
-    - 创建一个从 ``at`` 持续至 ``at + duration`` 的动画
-    - ``duration`` 可以是 ``FOREVER``
-      （一般用于 :class:`~.Display`，
-      以及特殊情况下的 :class:`DataUpdater` 等，
-      但是 :class:`~.AnimGroup` 及其衍生类不能传入 ``FOREVER``）
-    - 指定 ``rate_func`` 可以设定插值函数，默认为 :meth:`janim.utils.rate_funcs.smooth` 即平滑插值
+    定义了从 ``at`` 持续至 ``at + duration`` 的动画
 
-    - 设置 ``name`` 可以将文字显示在预览界面的时间轴标签上，不影响渲染（如果不设置则默认为类名）
+    :param at: 动画的开始时间
+    :param duration: 动画的持续时间；可以是 ``FOREVER``，比如创建持续生效的 Updater
+    :param rate_func: 设定插值函数，默认为 :meth:`~.rate_funcs.smooth`
+    :param name: 更改在预览界面中时间轴标签上显示的名字，与画面渲染无关；若不设置则默认为类名
 
     .. warning::
 
@@ -35,29 +33,22 @@ class Animation:
 
         .. code-block:: python
 
-            class Test(Timeline):
-                def construct(self):
-                    a = Square()
-                    b = Circle()
-                    anim1 = Transform(a, b)
-                    anim2 = Transform(b, a)
-                    self.play(anim1)
-                    self.play(anim2)
-                    self.play(anim1)
+            anim1 = Transform(a, b)
+            anim2 = Transform(b, a)
+            self.play(anim1)
+            self.play(anim2)
+            self.play(anim1)
 
         正确写法：
 
         .. code-block:: python
 
-            class Test(Timeline):
-                def construct(self):
-                    a = Square()
-                    b = Circle()
-                    self.play(Transform(a, b))
-                    self.play(Transform(b, a))
-                    self.play(Transform(a, b))
+            self.play(Transform(a, b))
+            self.play(Transform(b, a))
+            self.play(Transform(a, b))
     """
 
+    # 在预览界面中，时间轴标签的显示颜色
     label_color: tuple[float, float, float] = C_LABEL_ANIM_DEFAULT
 
     def __init__(
@@ -66,6 +57,7 @@ class Animation:
         at: float = 0,
         duration: float | ForeverType = DEFAULT_DURATION,
         rate_func: RateFunc = smooth,
+        #
         name: str | None = None,
     ):
         self.parent: AnimGroup | None = None
@@ -79,7 +71,7 @@ class Animation:
         # 用于标记该动画的全局时间区段
         self.t_range = TimeRange(
             at,
-            FOREVER if duration is FOREVER else at + duration,
+            FOREVER if duration is FOREVER else at + duration,  # type: ignore
         )
 
         # 传给该动画对象的 rate_func
@@ -92,7 +84,8 @@ class Animation:
 
         self.timeline = Timeline.get_context()
 
-    def __anim__(self) -> Self:
+    def __anim__(self) -> Animation:
+        # 请参考 AnimGroup._get_anim_object 中的说明
         return self
 
     def shift_range(self, delta: float) -> Self:
@@ -136,6 +129,10 @@ class Animation:
         return alpha
 
     def transfer_params(self, other: Animation) -> None:
+        """
+        将 ``other`` 中的动画参数，包括 ``t_range`` 和 ``rate_func(s)``，
+        同步到该动画对象上
+        """
         self.t_range = other.t_range
         self.rate_func = other.rate_func
         self.rate_funcs = other.rate_funcs
@@ -143,7 +140,8 @@ class Animation:
     global_t_ctx: ContextVar[float] = ContextVar('Animation.global_t_ctx')
 
     def schedule_show_and_hide(self, item: Item, show_at_begin: bool, hide_at_end: bool) -> None:
+        assert self.t_range.end is not FOREVER
         if show_at_begin:
             self.timeline.schedule(self.t_range.at, item.show, root_only=True)
         if hide_at_end:
-            self.timeline.schedule(self.t_range.end, item.hide, root_only=True)
+            self.timeline.schedule(self.t_range.end, item.hide, root_only=True)  # type: ignore

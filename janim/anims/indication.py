@@ -4,7 +4,7 @@ import math
 
 import numpy as np
 
-from janim.anims.animation import Animation
+from janim.anims_core.animation import Animation
 from janim.anims.composition import AnimGroup, Succession
 from janim.anims.creation import Create, ShowPartial
 from janim.anims.fading import FadeOut

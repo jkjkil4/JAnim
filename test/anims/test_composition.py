@@ -1,7 +1,7 @@
 # fmt: off
 import unittest
 
-from janim.anims.animation import Animation
+from janim.anims_core.animation import Animation
 from janim.anims.composition import Aligned, AnimGroup, Succession
 from janim.anims.timeline import Timeline
 from janim.anims_core.time import TimeRange

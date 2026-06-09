@@ -7,7 +7,7 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING, Callable, Iterable, Self
 
 if TYPE_CHECKING:
-    from janim.anims.animation import Animation
+    from janim.anims_core.animation import Animation
 
 __all__ = [
     'ForeverType',

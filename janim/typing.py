@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, Any, Iterable, Protocol, Self, runtime_checkab
 if TYPE_CHECKING:
     import numpy as np
 
-    from janim.anims.animation import Animation
+    from janim.anims_core.animation import Animation
 
 type Vect = Iterable[float] | np.ndarray
 type VectArray = Iterable[Vect] | np.ndarray

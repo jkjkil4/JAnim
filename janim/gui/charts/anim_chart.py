@@ -6,7 +6,7 @@ import numpy as np
 from PySide6.QtCore import QPointF, QRectF, Qt
 from PySide6.QtGui import QColor, QPainter
 
-from janim.anims.animation import Animation
+from janim.anims_core.animation import Animation
 from janim.gui.charts.base import ChartWidgetBase, make_ticks
 from janim.locale import get_translator
 

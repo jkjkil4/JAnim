@@ -22,10 +22,10 @@ import moderngl as mgl
 import numpy as np
 from PIL import Image
 
-from janim.anims_core.anim_stack import AnimStack
-from janim.anims.animation import Animation
 from janim.anims.composition import AnimGroup
 from janim.anims.updater import updater_params_ctx
+from janim.anims_core.anim_stack import AnimStack
+from janim.anims_core.animation import Animation
 from janim.anims_core.time import FOREVER, TimeAligner, TimeChunks, TimeRange
 from janim.camera.camera import Camera
 from janim.camera.camera_info import CameraInfo

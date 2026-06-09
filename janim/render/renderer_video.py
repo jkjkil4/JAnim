@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 import moderngl as mgl
 import numpy as np
 
-from janim.anims.animation import Animation
+from janim.anims_core.animation import Animation
 from janim.exception import EXITCODE_FFMPEG_NOT_FOUND, ExitException
 from janim.locale import get_translator
 from janim.logger import log

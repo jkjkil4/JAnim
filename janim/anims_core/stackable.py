@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
-from janim.anims.animation import Animation
+from janim.anims_core.animation import Animation
 from janim.items.item import Item
 
 if TYPE_CHECKING:

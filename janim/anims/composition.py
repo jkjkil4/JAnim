@@ -1,6 +1,6 @@
 from typing import Iterable, Self
 
-from janim.anims.animation import Animation
+from janim.anims_core.animation import Animation
 from janim.anims_core.time import TimeAligner
 from janim.exception import AnimGroupError, NotAnimationError
 from janim.locale import get_translator

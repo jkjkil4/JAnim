@@ -2,7 +2,7 @@ import unittest
 
 import numpy as np
 
-from janim.anims.animation import Animation
+from janim.anims_core.animation import Animation
 from janim.anims.timeline import Timeline
 from janim.anims.transform import Transform
 from janim.anims_core.time import TimeRange

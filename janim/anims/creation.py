@@ -7,7 +7,7 @@ from typing import Callable
 
 import numpy as np
 
-from janim.anims.animation import Animation
+from janim.anims_core.animation import Animation
 from janim.anims.timeline import RenderCollection
 from janim.anims.updater import DataUpdater, UpdaterParams
 from janim.components.vpoints import Cmpt_VPoints
