@@ -13,7 +13,7 @@ from janim.utils.rate_functions import RateFunc, linear, smooth
 if TYPE_CHECKING:
     from janim.anims.composition import AnimGroup
 
-_ = get_translator('janim.anims.animation')
+_ = get_translator('janim.anims_core.animation')
 
 
 class Animation:
