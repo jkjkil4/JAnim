@@ -270,7 +270,7 @@ class AnimStack:
                 # 所以当我们计算 i1 的动画堆栈时
                 # - b1 进入 suspended
                 # - b2 尝试进入 suspended，但是他前面还有一个 GroupUpdater，所以会把 a1 a2 a3 也拉进 suspended 中
-                # - 接着 b2 进入 suspended，由于他前面的 a2 已经在 suspended 了，所以 a2 就不能重复进入
+                # - 接着 b3 尝试进入 suspended，由于他前面的 a2 已经在 suspended 了，所以 a2 就不能重复进入
                 gates[identifier] = stacks
                 for stack in stacks:
                     if stack in suspended:
