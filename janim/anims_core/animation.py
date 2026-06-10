@@ -2,9 +2,9 @@ from __future__ import annotations
 
 from contextvars import ContextVar
 from typing import TYPE_CHECKING, Self
+
 from janim.anims_core.time import FOREVER, ForeverType, TimeAligner, TimeRange
-from janim.constants import DEFAULT_DURATION
-from janim.constants.colors import C_LABEL_ANIM_DEFAULT
+from janim.constants import C_LABEL_ANIM_DEFAULT, DEFAULT_DURATION
 from janim.exception import AnimationError
 from janim.items.item import Item
 from janim.locale import get_translator
@@ -80,7 +80,7 @@ class Animation:
         # 该动画及父动画的 rate_func 组成的列表
         self.rate_funcs = [] if rate_func is linear else [rate_func]
 
-        from janim.anims.timeline import Timeline
+        from janim.timeline import Timeline
 
         self.timeline = Timeline.get_context()
 

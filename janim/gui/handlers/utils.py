@@ -19,7 +19,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from janim.anims.timeline import Timeline
+from janim.timeline import Timeline
 from janim.exception import GuiCommandError
 from janim.gui.utils import apply_popup_flags
 from janim.items.item import Item

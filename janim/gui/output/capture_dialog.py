@@ -4,7 +4,7 @@ from pathlib import Path
 from PySide6.QtCore import QSettings, QTimer
 from PySide6.QtWidgets import QDialog, QDialogButtonBox, QFileDialog, QMessageBox, QWidget
 
-from janim.anims.timeline import BuiltTimeline
+from janim.timeline import BuiltTimeline
 from janim.gui.output.export_dialog import ExportDialog
 from janim.gui.output.ui_CaptureDialog import Ui_CaptureDialog
 from janim.locale import get_translator

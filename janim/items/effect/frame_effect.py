@@ -5,12 +5,12 @@ import os
 import re
 from typing import Any, Iterable, Self
 
-from janim.anims.timeline import RenderCollection
 from janim.components.component import CmptInfo
 from janim.components.simple import Cmpt_Dict, Cmpt_List
 from janim.items.item import Item
 from janim.locale import get_translator
 from janim.logger import log
+from janim.render.collection import RenderCollection
 from janim.render.renderer_frameeffect import FrameEffectRenderer
 from janim.render.shader import (
     ShaderInjection,

@@ -11,7 +11,7 @@ from janim.render.base import Renderer
 from janim.utils.space_ops import normalize
 
 if TYPE_CHECKING:
-    from janim.anims.timeline import ItemWithRenderFunc, RenderGroupReturn, Timeline
+    from janim.timeline import ItemWithRenderFunc, RenderGroupReturn, Timeline
 
 
 @dataclass

@@ -13,7 +13,7 @@ from janim.anims.growing import *
 from janim.anims.indication import *
 from janim.anims.movement import *
 from janim.anims.rotation import *
-from janim.anims.timeline import *
+from janim.timeline import *
 from janim.anims.transform import *
 from janim.anims.updater import *
 from janim.camera.camera import *

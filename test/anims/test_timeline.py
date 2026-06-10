@@ -4,7 +4,7 @@ import inspect
 import unittest
 from typing import Self
 
-from janim.anims.timeline import Timeline
+from janim.timeline import Timeline
 from janim.components.component import CmptInfo, Component
 from janim.constants import LEFT, RIGHT
 from janim.exception import NotAnimationError, TimelineLookupError

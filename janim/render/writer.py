@@ -12,7 +12,7 @@ import moderngl as mgl
 import OpenGL.GL as gl
 from tqdm import tqdm as ProgressDisplay
 
-from janim.anims.timeline import BuiltTimeline, Timeline
+from janim.timeline import BuiltTimeline, Timeline
 from janim.anims_core.time import TimeRange
 from janim.exception import EXITCODE_FFMPEG_NOT_FOUND, ExitException
 from janim.locale import get_translator

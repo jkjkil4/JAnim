@@ -6,7 +6,7 @@ from contextlib import contextmanager
 from dataclasses import dataclass
 from typing import Any, Callable, Iterable
 
-from janim.anims.timeline import ItemWithRenderFunc
+from janim.timeline.core import ItemWithRenderFunc
 from janim.render.collection import RenderCollection
 
 

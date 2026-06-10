@@ -24,7 +24,7 @@ from janim.utils.paths import PathFunc, straight_path
 from janim.utils.signal import SIGNAL_OBJ_SLOTS_NAME
 
 if TYPE_CHECKING:
-    from janim.anims.timeline import Timeline, RenderCollection
+    from janim.timeline import Timeline, RenderCollection
     from janim.items.group import Group
 
 _ = get_translator('janim.items.item')
@@ -139,7 +139,7 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         self._stored_parents: list[Item] | None = None
         self._stored_children: list[Item] | None = None
 
-        from janim.anims.timeline import Timeline
+        from janim.timeline import Timeline
 
         self.timeline = Timeline.get_context(raise_exc=False)
 

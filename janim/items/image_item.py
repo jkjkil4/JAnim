@@ -11,7 +11,7 @@ import moderngl as mgl
 import numpy as np
 from PIL import Image
 
-from janim.anims.timeline import PlaybackControl
+from janim.timeline import PlaybackControl
 from janim.components.component import CmptInfo
 from janim.components.image import Cmpt_Image
 from janim.components.rgbas import Cmpt_Rgbas

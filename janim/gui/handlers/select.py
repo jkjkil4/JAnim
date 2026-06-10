@@ -8,7 +8,7 @@ from PySide6.QtCore import QEvent, QObject, QPointF, QRectF, Qt, QTimer
 from PySide6.QtGui import QColor, QMouseEvent, QPainter, QPaintEvent
 from PySide6.QtWidgets import QLabel, QVBoxLayout
 
-from janim.anims.timeline import Timeline
+from janim.timeline import Timeline
 from janim.camera.camera_info import CameraInfo
 from janim.constants import OUT
 from janim.gui.handlers.utils import HandlerPanel, SourceDiff, get_confirm_buttons, jump, parse_item

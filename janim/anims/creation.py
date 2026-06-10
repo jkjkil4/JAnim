@@ -8,7 +8,6 @@ from typing import Callable
 import numpy as np
 
 from janim.anims_core.animation import Animation
-from janim.anims.timeline import RenderCollection
 from janim.anims.updater import DataUpdater, UpdaterParams
 from janim.components.vpoints import Cmpt_VPoints
 from janim.constants import (
@@ -21,6 +20,7 @@ from janim.constants import (
 from janim.items.group import Group
 from janim.items.item import Item
 from janim.items.vitem import VItem
+from janim.render.collection import RenderCollection
 from janim.typing import JAnimColor
 from janim.utils.bezier import integer_interpolate
 from janim.utils.rate_functions import RateFunc, double_smooth, linear
