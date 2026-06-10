@@ -68,6 +68,10 @@ class TimelineCore:
 
     这只是为了 JAnim 内部代码组织的方便，并不能单独使用，
     我们使用的时候直接用 :class:`~.Timeline` 就好了
+
+    .. hint::
+
+        该类中的方法都可以直接在 :class:`~.Timeline` 中使用
     """
 
     # 只是为了让它们也出现在 Timeline 的类成员中

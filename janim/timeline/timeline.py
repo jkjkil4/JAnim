@@ -48,6 +48,26 @@ class Timeline(PausePointsMixin, AudiosAndSubtitlesMixin, DebugMixin, TimelineCo
     继承该类并实现 :meth:`construct` 方法，以实现动画的构建逻辑
 
     调用 :meth:`build` 可以得到构建完成的 :class:`Timeline` 对象
+
+    -----
+
+    该类由若干基类实现功能，你可按照以下的分类跳转以参考对应的文档：
+
+    -   核心功能： :class:`~.TimelineCore`
+
+    -   “暂停点”功能： :class:`~.PausePointsMixin`
+
+    -   对于音频与字幕，可参考：
+
+        -   音频功能： :class:`~.AudiosMixin`
+
+        -   字幕功能： :class:`~.SubtitlesMixin`
+
+        -   对二者的结合： :class:`~.AudiosAndSubtitlesMixin`
+
+    -   特殊的调试功能（但不太完善，慎用）： :class:`~.DebugMixin`
+
+    -----
     """
 
     def __init__(self, *args, **kwargs):
@@ -311,12 +331,11 @@ class BuiltTimeline:
         """
         可以使用该方法获取 Timeline 构建时的上下文中的配置
 
-        可用于在简单场景中避免使用 :meth:`config_context`，例如：
+        可用于在简单场景中避免使用 :meth:`config_context` ，例如：
 
         .. code-block:: python
 
             built.cfg.preview_fps
-        ````
         """
         return self.timeline._config_getter
 

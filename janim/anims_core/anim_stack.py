@@ -219,7 +219,7 @@ class AnimStack:
 
         关于该方法的一些机制细节，请参考 :class:`~.StackableAnimation` 和 :class:`~.ApplyParams` 以及 :class:`~.ApplyAligner` 的介绍
 
-        关于该方法在实现上的一些细节，清参考 ``_compute`` 代码中的注释
+        关于该方法在实现上的一些细节，请参考 ``_compute`` 代码中的注释
         """
         if global_t != self._cache_time:
             self._compute(global_t, readonly, get_at_left)

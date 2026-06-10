@@ -28,6 +28,14 @@ class SubtitleInfo:
 
 
 class SubtitlesMixin(TimelineCore):
+    """
+    向 :class:`~.Timeline`  提供添加字幕的功能
+
+    .. hint::
+
+        该类中的方法都可以直接在 :class:`~.Timeline` 中使用
+    """
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 

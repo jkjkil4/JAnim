@@ -65,7 +65,7 @@ class Animation:
 
         # 用于在 AnimGroup 中标记子动画是否都对齐；
         # 对于单个动画来说肯定是对齐的，默认为 True，而在 AnimGroup 中有可能是 False
-        # 关于 is_aligned 的计算请参见 AnimGroup.__init__ 代码内的注释
+        # 关于 is_aligned 的计算请参考 AnimGroup.__init__ 代码内的注释
         self.is_aligned = True
 
         # 用于标记该动画的全局时间区段

@@ -22,6 +22,10 @@ class PlayAudioInfo:
 class AudiosMixin(TimelineCore):
     """
     向 :class:`~.Timeline` 提供播放音频的功能
+
+    .. hint::
+
+        该类中的方法都可以直接在 :class:`~.Timeline` 中使用
     """
 
     PlayAudioInfo = PlayAudioInfo  # 只是为了让 PlayAudioInfo 也出现在 Timeline 的类成员中

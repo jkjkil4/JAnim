@@ -17,6 +17,15 @@ _ = get_translator('janim.timeline.misc')
 
 
 class AudiosAndSubtitlesMixin(AudiosMixin, SubtitlesMixin):
+    """
+    对 :class:`~.AudioMixin` 与 :class:`~.SubtitlesMixin` 的整合，
+    给 :class:`~.Timeline` 提供了一些额外的功能
+
+    .. hint::
+
+        该类中的方法都可以直接在 :class:`~.Timeline` 中使用
+    """
+
     def aas(
         self,
         file_path: str,
@@ -62,6 +71,14 @@ class AudiosAndSubtitlesMixin(AudiosMixin, SubtitlesMixin):
 
 
 class DebugMixin(TimelineCore):
+    """
+    向 :class:`~.Timeline` 提供一些调试功能
+
+    .. hint::
+
+        该类中的方法都可以直接在 :class:`~.Timeline` 中使用
+    """
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
