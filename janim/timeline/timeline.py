@@ -219,8 +219,8 @@ class Timeline(PausePointsMixin, AudiosAndSubtitlesMixin, DebugMixin, TimelineCo
 
             self._config_context = [*config_ctx_var.get(), *reversed(mro_configs)]
 
-            # 用于 `BuiltTimeline.cfg`
-            self._config_getter = ConfigGetter(self._config_context)
+            # 也用于 `BuiltTimeline.cfg`，可参考其文档
+            self.cfg: Config | ConfigGetter = ConfigGetter(self._config_context)
 
         token = config_ctx_var.set(self._config_context)
         try:
@@ -305,14 +305,14 @@ class BuiltTimeline:
         self.timeline = timeline
         self.duration = timeline.time_aligner.align_and_record(timeline.current_time)
 
-        self.visible_item_segments = TimeChunks(
+        self.visible_item_chunks = TimeChunks(
             ((item, appr) for item, appr in timeline.item_appearances.items()),
             lambda x: (
-                TimeRange(*range) if len(range) == 2 else TimeRange(*range, self.duration + 1)
+                TimeRange(*range) if len(range) == 2 else TimeRange(*range, self.duration + 1)  # type: ignore
                 for range in it.batched(x[1].visibility, 2)
             ),
         )
-        self.visible_render_group_segments = TimeChunks(
+        self.visible_render_group_chunks = TimeChunks(
             self.timeline.extra_render_groups,
             lambda x: (
                 x.t_range
@@ -329,7 +329,7 @@ class BuiltTimeline:
     @property
     def cfg(self) -> Config | ConfigGetter:
         """
-        可以使用该方法获取 Timeline 构建时的上下文中的配置
+        可以使用该属性获取 Timeline 构建时的上下文中的配置
 
         可用于在简单场景中避免使用 :meth:`config_context` ，例如：
 
@@ -337,7 +337,7 @@ class BuiltTimeline:
 
             built.cfg.preview_fps
         """
-        return self.timeline._config_getter
+        return self.timeline.cfg
 
     def get_audio_samples_of_frame(
         self, fps: float, framerate: int, frame: int, *, count: int = 1
@@ -353,8 +353,8 @@ class BuiltTimeline:
         result = np.zeros((output_sample_count, channels), dtype=np.int16)
 
         # 合并自身的 audio
-        for info in self.timeline.audio_infos:
-            if end < info.range.at or begin > info.range.end:
+        for info in self.timeline.audio_infos:  # TODO: 使用 TimeChunks 优化？
+            if end < info.range.at or begin > info.range.end:  # type: ignore
                 continue
 
             audio = info.audio
@@ -363,7 +363,7 @@ class BuiltTimeline:
             frame_end = int((end - info.range.at + info.clip_range.at) * audio.framerate)
 
             clip_begin = max(0, int(audio.framerate * info.clip_range.at))
-            clip_end = min(audio.sample_count(), int(audio.framerate * info.clip_range.end))
+            clip_end = min(audio.sample_count(), int(audio.framerate * info.clip_range.end))  # type: ignore
 
             left_blank = max(0, clip_begin - frame_begin)
             right_blank = max(0, frame_end - clip_end)
@@ -484,7 +484,7 @@ class BuiltTimeline:
     def _get_render_collection(self, global_t: float) -> RenderCollection:
         # 提取所有当前可见的 apprs
         apprs: list[tuple[ItemAppearance, Item]] = []
-        for _, appr in self.visible_item_segments.get(global_t):
+        for _, appr in self.visible_item_chunks.get(global_t):
             if not appr.is_visible_at(global_t):
                 continue
             data = appr.stack.compute(global_t, True)
@@ -492,7 +492,7 @@ class BuiltTimeline:
 
         # 提取所有当前可见的额外渲染
         extras: list[tuple[Timeline.ExtraRenderGroup, RenderGroupReturn]] = []
-        for rg in self.visible_render_group_segments.get(global_t):
+        for rg in self.visible_render_group_chunks.get(global_t):
             if not rg.t_range.contains(global_t):
                 continue
             extra_items = rg.func()
@@ -528,7 +528,11 @@ class BuiltTimeline:
         if self.capture_framebuffer is None:
             pw, ph = self.cfg.pixel_width, self.cfg.pixel_height
             self.capture_framebuffer = FrameBuffer(
-                ctx, pw, ph, self.cfg.background_color.rgb, transparent
+                ctx,
+                pw,
+                ph,
+                self.cfg.background_color.rgb,  # type: ignore
+                transparent,
             )
 
         fbo = self.capture_framebuffer
@@ -668,6 +672,9 @@ class TimelineItem(Item):
         **kwargs,
     ):
         super().__init__(**kwargs)
+
+        assert self.timeline is not None
+
         self._built = built
         self.at = self.timeline.current_time + delay
         self.first_frame_duration = first_frame_duration

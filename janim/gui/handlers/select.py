@@ -257,7 +257,7 @@ def select_next_item_at_position(
 
     found: list[ItemBox] = []
 
-    for item, appr in viewer.built.visible_item_segments.get(attrs.global_t):
+    for item, appr in viewer.built.visible_item_chunks.get(attrs.global_t):
         if not appr.is_visible_at(attrs.global_t):
             continue
         item_box = ItemBox(item, attrs)

@@ -34,10 +34,19 @@ _ = get_translator('janim.timeline.core')
 @dataclass(slots=True)
 class ScheduledTask:
     """
+    在 Timeline 中计划执行的函数，所对应的参数信息
+
+    :param global_t: 全局时刻
+    :param func: 函数体
+    :param args: 位置参数
+    :param kwargs: 具名参数
+
+    在 Timeline 到达 ``global_t`` 后，``args`` 与 ``kwargs`` 会被传入 ``func`` 调用
+
     另见 :meth:`~.TimelineBase.schedule`
     """
 
-    at: float
+    global_t: float
     func: Callable
     args: tuple
     kwargs: dict
@@ -45,6 +54,10 @@ class ScheduledTask:
 
 @dataclass
 class ExtraRenderGroup:
+    """
+    一些特殊动画类注册的额外渲染
+    """
+
     t_range: TimeRange
     func: RenderGroupFn
     related_items: list[Item] | None
@@ -54,6 +67,9 @@ class ExtraRenderGroup:
 class TimeOfCode:
     """
     标记 :meth:`~.Timeline.construct` 执行到的代码行数所对应的时间
+
+    :param time: 全局时刻
+    :param line: 在代码文件中的行数，表示到 ``time`` 为止的时间，都对应这行代码
     """
 
     time: float
@@ -86,7 +102,7 @@ class TimelineCore:
         self.current_time: float = 0
         self.time_aligner: TimeAligner = TimeAligner()
 
-        # 计划执行中的函数
+        # 计划执行的函数
         self.scheduled_tasks = SortedKeyQueue[float, ScheduledTask]()
 
         # 物件状态以及动画相关
@@ -126,7 +142,7 @@ class TimelineCore:
         to_time = self.current_time + dt
 
         for task in self.scheduled_tasks.pop_up_to(to_time):
-            self.current_time = task.at
+            self.current_time = task.global_t
             task.func(*task.args, **task.kwargs)
 
         self.current_time = to_time
@@ -152,6 +168,9 @@ class TimelineCore:
         name: str | None = 'prepare',
         **kwargs,
     ) -> TimeRange:
+        """
+        应用动画但不向前推进时间
+        """
         self.detect_changes_of_all()
         group = AnimGroup(*anims, at=at + self.current_time, name=name, **kwargs)
         group.finalize()
@@ -165,6 +184,9 @@ class TimelineCore:
         name: str | None = 'play',
         **kwargs,
     ) -> TimeRange:
+        """
+        播放动画，并将时间推进到动画的末尾
+        """
         t_range = self.prepare(*anims, name=name, **kwargs)
         self.forward_to(t_range.end, _detect_changes=False)  # type: ignore
         return t_range
@@ -218,7 +240,7 @@ class TimelineCore:
 
     def track(self, item: Item) -> None:
         """
-        使得 ``item`` 在每次 ``forward`` 和 ``play`` 时都会被自动调用 :meth:`~.Item.detect_change`
+        使得 ``item`` 在每次 ``forward`` 和 ``play`` 时都会被自动检查是否发生状态改变，并记录状态变化
         """
         self.item_appearances[item]
 
@@ -231,14 +253,14 @@ class TimelineCore:
 
     def detect_changes_of_all(self) -> None:
         """
-        检查物件的变化并将变化记录为 :class:`~.Display`
+        检查追踪的所有物件的变化并将变化记录
         """
         for appr in self.item_appearances.values():
             appr.stack.detect_change(self.current_time)
 
     def detect_changes(self, items: Iterable[Item]) -> None:
         """
-        检查指定的列表中物件的变化，并将变化记录为 :class:`~.Display`
+        检查指定的列表中物件的变化，并将变化记录
 
         （仅检查自身而不包括后代物件的）
         """
@@ -328,6 +350,11 @@ class TimelineCore:
                 gaps.append(t)
 
     def visible_items(self) -> list[Item]:
+        """
+        得到当前可见的所有物件
+
+        :return: 物件列表
+        """
         return [
             item  #
             for item, appr in self.item_appearances.items()
@@ -342,6 +369,9 @@ class TimelineCore:
         func: RenderGroupFn,
         related_items: list[Item] | None,
     ) -> None:
+        """
+        注册额外渲染，用于 :class:`~.Transform` 等特殊动画类
+        """
         self.extra_render_groups.append(
             ExtraRenderGroup(t_range, func, related_items),
         )
@@ -350,7 +380,7 @@ class TimelineCore:
 
     def _extract_lineno_in_construct(self) -> int | None:
         """
-        得到当前在 :meth:`construct` 中执行到的行数
+        提取当前在 :meth:`construct` 中执行到的行数
         """
         frame = inspect.currentframe()
         while frame is not None:

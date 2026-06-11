@@ -12,6 +12,8 @@ class PlayAudioInfo:
     :param audio: 音频对象
     :param clip_range: 将音频对象中的哪一段裁剪出来
     :param range: 将裁剪出来的音频放在 Timeline 的什么时候播放
+
+    另见 :meth:`~.AudiosMixin.play_audio`
     """
 
     audio: Audio
@@ -40,6 +42,7 @@ class AudiosMixin(TimelineCore):
         audio: Audio,
         *,
         delay: float = 0,
+        #
         begin: float = 0,
         end: float = -1,
         clip: tuple[float, float] | None = None,
@@ -47,17 +50,30 @@ class AudiosMixin(TimelineCore):
         """
         在当前位置播放音频
 
-        - 可以指定 ``begin`` 和 ``end`` 表示裁剪区段
-        - 可以指定在当前位置往后 ``delay`` 秒才开始播放
-        - 若指定 ``clip``，则会覆盖 ``begin`` 和 ``end`` （可以将 ``clip`` 视为这二者的简写）
+        :param delay: 往后延迟几秒开始播放
+        :param begin: 裁剪 ``audio`` 的开始秒数
+        :param end: 裁剪 ``audio`` 的结束秒数
+        :param clip: 对 ``(begin, end)`` 的简写，若设置该值，则会覆盖 ``start`` 与 ``end``
+        :return: 播放的时间范围
 
-        返回值表示播放的时间段
+        示例：
+
+        .. code-block:: python
+
+            # 裁剪出 'test.mp3' 中 1.2~6.5s 的部分，从当前时刻开始播放
+            self.play_audio(Audio('test.mp3'), begin=1.2, end=6.5)
+
+            # 等价于
+            self.play_audio(Audio('test.mp3'), clip=(1.2, 6.5))
         """
+        # 先确定 begin 与 end
         if clip is not None:
             begin, end = clip
 
         if end == -1:
             end = audio.duration()
+
+        # 接着确定出 at 和 duration
         duration = end - begin
         at = self.current_time + delay
 

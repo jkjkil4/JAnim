@@ -24,8 +24,8 @@ from janim.utils.paths import PathFunc, straight_path
 from janim.utils.signal import SIGNAL_OBJ_SLOTS_NAME
 
 if TYPE_CHECKING:
-    from janim.timeline import Timeline, RenderCollection
     from janim.items.group import Group
+    from janim.render.collection import RenderCollection
 
 _ = get_translator('janim.items.item')
 

@@ -48,10 +48,23 @@ class AudiosAndSubtitlesMixin(AudiosMixin, SubtitlesMixin):
         **subtitle_kwargs,
     ) -> TimeRange:
         """
-        播放音频，并在对应的区间显示字幕
+        播放音频，并在播放期间显示字幕
 
-        - 如果 ``clip=...`` （默认，省略号），则表示自动确定裁剪区间，将前后的空白去除（可以传入 ``clip=None`` 禁用自动裁剪）
-        - 如果 ``mul`` 不是 ``None``，则会将音频振幅乘以该值
+        :param file_path: 音频文件路径
+
+        :param subtitle: 在音频播放期间显示的字幕
+
+        :param clip: 音频的裁剪区间
+
+            默认为 ``clip=...`` （省略号）表示自动确定裁剪区间，将前后的空白去除
+
+            可设置为 ``clip=None`` 来禁用自动裁剪，保留音频全长
+
+            也可以设置 ``(begin, end)`` 手动设置裁剪区间
+
+        :param mul: 音量的缩放倍率
+
+        :param \\*\\*subtitle_kwargs: 传递给 :meth:`~.SubtitlesMixin.subtitle` 的参数
         """
         audio = Audio(file_path)
         if mul is not None:
