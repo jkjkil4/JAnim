@@ -23,17 +23,17 @@ class AnimStack:
         self.item = item
         self.time_aligner = time_aligner
 
+        # 直接调用 clear_cache 即可做到其变量的初始化，具体处理另见 compute 方法
+        self.clear_cache()
+
         # _chunk_starts 和 _chunks 的元素总是一一对应的
         # _chunk_starts 中每个元素，都表示对应的 chunk 的开始时间（以下一个时间点为结束时间）
         # 注：为了方便直接 bisect，没有将他们打包为一个 dataclass，而是将他们各自存储为一个列表
         # 注：关于该算法策略的具体介绍，请参考 append 方法的说明
         self._chunk_starts: list[float] = [0]
-        self._chunks: list[list[StackableAnimation]] = [[]]  # TODO: 放入初始状态
+        self._chunks: list[list[StackableAnimation]] = [[]]
 
-        # 直接调用 clear_cache 即可做到其变量的初始化，具体处理另见 compute 方法
-        self.clear_cache()
-
-        # 初始化，填入默认 Display，这里会初始化 _prev_display 变量
+        # 初始化，给 _chunks 填入一个默认 Display，这里也会初始化 _prev_display 变量
         # _prev_display 变量的含义即为先前记录的物件状态
         # Timeline 会在每次前进时间时 detect_change 检查物件，便可使用 _prev_display 作为比较基础
         self.display(0)

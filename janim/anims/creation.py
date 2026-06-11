@@ -43,7 +43,7 @@ class ShowPartial(DataUpdater):
     def __init__(
         self,
         item: Item,
-        bound_func: Callable[[UpdaterParams], tuple[int, int]],
+        bound_func: Callable[[UpdaterParams], tuple[float, float]],
         *,
         auto_close_path: bool = False,
         become_at_end: bool = False,
@@ -354,8 +354,6 @@ class ShowIncreasingSubsets(Animation):
             self.timeline.schedule(self.t_range.at, self.group.show)
         if self.hide_at_end:
             self.timeline.schedule(self.t_range.end, self.group.hide)
-
-        apprs = self.timeline.item_appearances
 
         self.i_items = [
             (i, list(child.walk_self_and_descendants())) for i, child in enumerate(self.group)

@@ -21,7 +21,7 @@ class StackableAnimation(Animation):
         super().__init__(*args, **kwargs)
 
         # 有些动画是被其它动画生成的，例如 MethodTransform -> _MethodTransform，DataUpdater -> _DataUpdater 等
-        # 记录这个信息，用于 Timeline.debug 显示在时间轴上时，得知原始的动画是那个
+        # 记录这个信息，用于 Timeline.debug 显示在时间轴上时，得知原始的动画是哪个
         self._generate_by: Animation | None = None
 
     def apply(self, params: ApplyParams) -> None:

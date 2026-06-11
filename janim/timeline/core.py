@@ -195,18 +195,18 @@ class TimelineCore:
 
     # region schedule
 
-    def schedule(self, at: float, func: Callable, *args, **kwargs) -> None:
+    def schedule(self, global_t: float, func: Callable, *args, **kwargs) -> None:
         """
         计划执行
 
-        会在进度达到 ``at`` 时，对 ``func`` 进行调用，
+        会在进度达到 ``global_t`` 时，对 ``func`` 进行调用，
         可传入 ``*args`` 和 ``**kwargs``
         """
-        at = self.time_aligner.align_and_record(at)
-        task = ScheduledTask(at, func, args, kwargs)
-        self.scheduled_tasks.insert(at, task)
+        global_t = self.time_aligner.align_and_record(global_t)
+        task = ScheduledTask(global_t, func, args, kwargs)
+        self.scheduled_tasks.insert(global_t, task)
 
-    def schedule_and_detect_changes(self, at: float, func: Callable, *args, **kwargs) -> None:
+    def schedule_and_detect_changes(self, global_t: float, func: Callable, *args, **kwargs) -> None:
         """
         与 :meth:`schedule` 类似，但是在调用 ``func`` 后会记录变化的物件的状态
         """
@@ -215,7 +215,7 @@ class TimelineCore:
             func(*args, **kwargs)
             self.detect_changes_of_all()
 
-        self.schedule(at, wrapper, *args, **kwargs)
+        self.schedule(global_t, wrapper, *args, **kwargs)
 
     def timeout(self, delay: float, func: Callable, *args, **kwargs) -> None:
         """

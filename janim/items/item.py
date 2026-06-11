@@ -42,7 +42,7 @@ class _ItemMeta(type):
 
     def __new__(cls: type, name: str, bases: tuple[type, ...], attrdict: dict):
         # 记录所有定义在类中的 CmptInfo
-        cls_components: dict[str, Component] = {
+        cls_components: dict[str, CmptInfo] = {
             key: val  #
             for key, val in attrdict.items()
             if isinstance(val, CmptInfo)
