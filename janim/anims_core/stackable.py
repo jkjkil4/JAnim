@@ -96,7 +96,7 @@ class ItemAnimation(StackableAnimation):
 
         self.timeline.track(item)
 
-    def _time_fixed(self) -> None:
+    def _finalized(self) -> None:
         apprs = self.timeline.item_appearances
         apprs[self.item].stack.append(self)
 

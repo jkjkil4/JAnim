@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from functools import partial
 import inspect
 from contextlib import contextmanager
 from contextvars import ContextVar
@@ -12,6 +13,7 @@ from tqdm import tqdm as ProgressDisplay
 from janim.anims.method_updater_meta import METHOD_UPDATER_KEY, MethodUpdaterInfo
 from janim.anims_core.anim_stack import AnimStack
 from janim.anims_core.animation import FOREVER, Animation
+from janim.anims_core.display import DelayedDisplay, DelayedDisplayParams, DoBecomeAtEnd
 from janim.anims_core.stackable import ApplyAligner, ApplyParams, ItemAnimation
 from janim.anims_core.time import TimeRange
 from janim.components.component import Component
@@ -37,7 +39,7 @@ class UpdaterParams:
     range: TimeRange
     extra_data: Any | None
 
-    _updater: _DataUpdater | GroupUpdater | None
+    _updater: _DataUpdater | ItemUpdater | GroupUpdater | None
 
     @property
     def elapsed(self) -> float:
@@ -148,20 +150,20 @@ class DataUpdater[T: Item](Animation):
         self.func = lambda data, p: _call_two_func(orig_func, func, data, p)
         return self
 
-    def _time_fixed(self) -> None:
+    def _finalized(self) -> None:
+        # 收集该 DataUpdater 需要作用的物件列表
         items: list[Item] = []
         for item in self.item.walk_self_and_descendants(self.root_only):
             if self.skip_null_items and item.is_null():
-                # 这两行是为了 selector 中能够正确选择到物件
+                # 这两行是为了 selector 中能够正确选择到父物件
                 self.timeline.track(item)
                 self.schedule_show_and_hide(item, self.show_at_begin, self.hide_at_end)
             else:
                 items.append(item)
         count = len(items)
 
+        # 将 _DataUpdater 分别分派到 items 上
         for i, item in enumerate(items):
-            stack = self.timeline.item_appearances[item].stack
-
             sub_updater = _DataUpdater(
                 self,
                 item,
@@ -176,9 +178,9 @@ class DataUpdater[T: Item](Animation):
             sub_updater.transfer_params(self)
             sub_updater.finalize()
 
+            # 如果有 become_at_end，则创建 DelayedDisplay 紧跟着该动画
             if self.become_at_end and self.t_range.end is not FOREVER:
-                item.restore(stack.compute(self.t_range.end, True, get_at_left=True))
-                stack.display(self.t_range.end)
+                DoBecomeAtEnd(item, self.t_range.end).finalize()  # type: ignore
 
 
 class _DataUpdater(ItemAnimation):
@@ -255,13 +257,14 @@ class GroupUpdater[T: Item](Animation):
         self.func = lambda group, p: _call_two_func(orig_func, func, group, p)
         return self
 
-    def _time_fixed(self) -> None:
+    def _finalized(self) -> None:
         self.data = self.item.copy()
 
         sub_items = list(self.item.walk_self_and_descendants())
         stacks = [self.timeline.item_appearances[item].stack for item in sub_items]
-        updaters = [
-            _GroupUpdater(
+
+        for item, data in zip(sub_items, self.data.walk_self_and_descendants()):
+            sub_updater = _GroupUpdater(
                 self,
                 item,
                 data,
@@ -269,22 +272,11 @@ class GroupUpdater[T: Item](Animation):
                 show_at_begin=self.show_at_begin,
                 hide_at_end=self.hide_at_end,
             )
-            for item, data in zip(sub_items, self.data.walk_self_and_descendants())
-        ]
-
-        if self.become_at_end and self.t_range.end is not FOREVER:
-            for item, stack in zip(sub_items, stacks):
-                item.restore(stack.compute(self.t_range.end, True, get_at_left=True))
-
-            with UpdaterParams(self.t_range.end, 1, self.t_range, None, self) as params:
-                self.func(self.item, params)
-
-            for item, stack in zip(sub_items, stacks):
-                stack.display(self.t_range.end)
-
-        for sub_updater in updaters:
             sub_updater.transfer_params(self)
             sub_updater.finalize()
+
+            if self.become_at_end and self.t_range.end is not FOREVER:
+                DoBecomeAtEnd(item, self.t_range.end).finalize()  # type: ignore
 
     def apply_for_group(self, global_t: float) -> None:
         if self.applied:
@@ -312,7 +304,7 @@ class _GroupUpdater(ApplyAligner):
         **kwargs,
     ):
         super().__init__(item, stacks, **kwargs)
-        self._generate_by: GroupUpdater = generate_by
+        self._generate_by: GroupUpdater = generate_by  # type: ignore
         self.data = data
 
     def pre_apply(self, params: ApplyParams) -> None:
@@ -434,7 +426,7 @@ class MethodUpdater(Animation):
                 if self.grouply or p.extra_data:
                     updater(obj, p, *args, **kwargs, root_only=root_only)
 
-    def _time_fixed(self) -> None:
+    def _finalized(self) -> None:
         if not self.grouply:
             sub_updater = DataUpdater(
                 self.item,
@@ -454,7 +446,7 @@ class MethodUpdater(Animation):
                 become_at_end=self.become_at_end,
             )
 
-        sub_updater._generate_by = self
+        sub_updater._generate_by = self  # TODO: 修复 MethodUpdater -> Updater -> _Updater 传递
         sub_updater.transfer_params(self)
         sub_updater.finalize()
 
@@ -475,6 +467,7 @@ class MethodUpdaterArgsBuilder:
         return getattr(MethodUpdater(self.item, self.obj), name)
 
 
+# TODO: 让物件的 .current 能访问到 ItemUpdater 创建的动态物件
 class ItemUpdater(Animation):
     """
     以时间为参数显示物件
@@ -511,7 +504,7 @@ class ItemUpdater(Animation):
 
         self.renderers: dict[type, Renderer] = {}
 
-    def _time_fixed(self) -> None:
+    def _finalized(self) -> None:
         self.timeline.add_extra_render_group(
             self.t_range,
             self.render_group_fn,
@@ -522,28 +515,37 @@ class ItemUpdater(Animation):
             return
 
         # 因为如果需要在动画结束后替换物件，那么前后的后代物件可能会不同
-        # 因此这里采用先记录后代物件的方式，再 schedule 对这些记录的物件的隐藏和显示
-        # 而不是直接 schedule 物件的隐藏和显示
+        # 因此这里采用先记录后代物件的方式，再进行对这些记录的物件的隐藏和显示
+        # 而不是直接 schedule 根物件的隐藏和显示
         hide_items = list(self.item.walk_self_and_descendants())
         show_items = hide_items
 
-        # 在动画结束后，自动使用动画最后一帧的物件替换原有的
-        if self.become_at_end and self.t_range.end is not FOREVER:
-            with UpdaterParams(self.t_range.end, 1, self.t_range, None, self) as params:
-                self.item.become(self.call(params), auto_visible=False)
-                show_items = list(self.item.walk_self_and_descendants())
-                for item in show_items:
-                    stack = self.timeline.item_appearances[item].stack
-                    stack.display(self.t_range.end)
+        end: float = self.t_range.end  # type: ignore
 
-        # 在动画开始时自动隐藏，在动画结束时自动显示
-        # 可以将 ``hide_on_begin`` 和 ``show_on_end`` 置为 ``False`` 以禁用
+        # 在动画开始时，判断 hide_at_begin
         if self.hide_at_begin:
             self.timeline.schedule(self.t_range.at, self.timeline.hide, *hide_items, root_only=True)
-        if self.show_at_end and self.t_range.end is not FOREVER:
-            self.timeline.schedule(
-                self.t_range.end, self.timeline.show, *show_items, root_only=True
-            )
+
+        # 在动画结束时，判断 become_at_end 以及 show_at_end
+        if self.t_range.end is not FOREVER and (self.become_at_end or self.show_at_end):
+
+            def at_end() -> None:
+                nonlocal show_items
+                assert self.item is not None
+
+                # TODO: pre-append ?
+                if self.become_at_end:
+                    with UpdaterParams(end, 1, self.t_range, None, self) as params:
+                        self.item.become(self.call(params), auto_visible=False)
+                        show_items = list(self.item.walk_self_and_descendants())
+                        for item in show_items:
+                            stack = self.timeline.item_appearances[item].stack
+                            stack.display(end)
+
+                if self.show_at_end:
+                    self.timeline.show(*show_items, root_only=True)
+
+            self.timeline.schedule(end, at_end)
 
     def call(self, p: UpdaterParams) -> Item:
         ret = self.func(p)
@@ -571,7 +573,6 @@ class ItemUpdater(Animation):
         alpha = self.get_alpha_on_global_t(global_t)
         with UpdaterParams(global_t, alpha, self.t_range, None, self) as params:
             ret = self.call(params)
-
         return [(item, self.get_renderer(item).render) for item in ret.walk_self_and_descendants()]
 
 
@@ -622,7 +623,7 @@ class StepUpdater[T: Item](Animation):
         self.func = lambda data, p: _call_two_func(orig_func, updater, data, p)
         return self
 
-    def _time_fixed(self) -> None:
+    def _finalized(self) -> None:
         for item in self.item.walk_self_and_descendants(self.root_only):
             if self.skip_null_items and item.is_null():
                 # 这两行是为了 selector 中能够正确选择到物件
@@ -636,13 +637,15 @@ class StepUpdater[T: Item](Animation):
                 self.func,
                 self.step,
                 self.persistent_cache_step,
-                self.become_at_end,
                 self.progress_bar,
                 show_at_begin=self.show_at_begin,
                 hide_at_end=self.hide_at_end,
             )
             sub_updater.transfer_params(self)
             sub_updater.finalize()
+
+            if self.become_at_end and self.t_range.end is not FOREVER:
+                DoBecomeAtEnd(item, self.t_range.end).finalize()  # type: ignore
 
 
 class _StepUpdater(ItemAnimation):
@@ -653,7 +656,6 @@ class _StepUpdater(ItemAnimation):
         func: StepUpdaterFn,
         step: float,
         persistent_cache_step: float,
-        become_at_end: bool,
         progress_bar: bool,
         *,
         show_at_begin: bool,
@@ -666,13 +668,12 @@ class _StepUpdater(ItemAnimation):
         self.func = func
         self.step = step
         self.persistent_cache_step = persistent_cache_step
-        self.become_at_end = become_at_end
         self.progress_bar = progress_bar
 
-    def _time_fixed(self) -> None:
+    def _finalized(self) -> None:
         self.first_data = self.timeline.compute_item(self.item, self.t_range.at, True).store()
 
-        super()._time_fixed()
+        super()._finalized()
 
         self.data = self.first_data.store()
 
@@ -685,13 +686,6 @@ class _StepUpdater(ItemAnimation):
                 f'StepUpdater({self.item.__class__.__name__})' if self.progress_bar else None
             ),
         )
-
-        if self.become_at_end and self.t_range.end is not FOREVER:
-            with self._cache.disable_temp_record():
-                self.compute(self.item, self.t_range.end)
-
-            apprs = self.timeline.item_appearances
-            apprs[self.item].stack.detect_change(self.t_range.end)
 
     def apply(self, params: ApplyParams) -> None:
         self.compute(self.data, params.global_t)

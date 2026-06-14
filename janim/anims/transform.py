@@ -14,8 +14,9 @@ import numpy as np
 from janim.anims_core.animation import Animation
 from janim.anims.composition import AnimGroup
 from janim.anims.fading import FadeIn, FadeInFromPoint, FadeOut, FadeOutToPoint
+from janim.anims_core.display import ManualDisplay
 from janim.anims_core.stackable import ApplyParams, ItemAnimation
-from janim.anims_core.time import TimeRange
+from janim.anims_core.time import FOREVER, TimeRange
 from janim.camera.camera import Camera
 from janim.components.points import Cmpt_Points
 from janim.constants import C_LABEL_ANIM_STAY, OUT
@@ -129,7 +130,7 @@ class Transform(Animation):
         if self.target_item is not self.src_item:
             self.timeline.track_item_and_descendants(self.target_item)
 
-    def _time_fixed(self) -> None:
+    def _finalized(self) -> None:
         self.align_data()
 
         self.render_group = [
@@ -149,7 +150,9 @@ class Transform(Animation):
 
         if self.show_target:
             self.timeline.schedule(
-                self.t_range.end, self.target_item.show, root_only=self.root_only
+                self.t_range.end,  # type: ignore
+                self.target_item.show,
+                root_only=self.root_only,
             )
 
         # 对 src_fade 和 target_fade 的处理
@@ -167,9 +170,13 @@ class Transform(Animation):
             anim.t_range = TimeRange(self.t_range.at + fade_start, self.t_range.end)
             anim.finalize()
 
-    def align_data(self) -> None:
-        apprs = self.timeline.item_appearances
+    def _get_item1_data(self, item1: Item) -> Item:
+        return self.timeline.item_appearances[item1].stack.compute(self.t_range.at, True)
 
+    def _get_item2_data(self, item2: Item) -> Item:
+        return self.timeline.item_appearances[item2].stack.compute(self.t_range.end, True)  # type: ignore
+
+    def align_data(self) -> None:
         self.aligned: dict[tuple[Item, Item], AlignedData[Item]] = {}
         begin_times: defaultdict[Item, int] = defaultdict(int)
         end_times: defaultdict[Item, int] = defaultdict(int)
@@ -180,8 +187,8 @@ class Transform(Animation):
             if tup in self.aligned:
                 return
 
-            data1 = apprs[item1].stack.compute(self.t_range.at, True)
-            data2 = apprs[item2].stack.compute(self.t_range.end, True)
+            data1 = self._get_item1_data(item1)
+            data2 = self._get_item2_data(item2)
             aligned = self.aligned[tup] = data1.align_for_interpolate(data1, data2)
             begin_times[item1] += 1
             end_times[item2] += 1
@@ -275,15 +282,16 @@ class MoveToTarget(Transform):
             root_only=False,
         )
 
-    def _time_fixed(self):
-        super()._time_fixed()
+    def _finalized(self):
+        super()._finalized()
 
         if isinstance(self.src_item, Camera):
             fix = _MoveToTargetCameraFix(self)
             fix.transfer_params(self)
             fix.finalize()
 
-        def at_end():
+        # TODO: pre-append ?
+        def at_end() -> None:
             # 因为马上就是 show，所以传入了 auto_visible=False
             self.src_item.become(self.src_item.target, auto_visible=False)
 
@@ -506,17 +514,7 @@ class MethodTransform(Transform):
         self.delayed_actions.append((MethodTransform._ActionType.Call, (args, kwargs)))
         return self
 
-    def _time_fixed(self) -> None:
-        apprs = self.timeline.item_appearances
-
-        # TODO: 将这段逻辑封装到合适的位置，比如 AnimStack 或 Timeline 中
-        for item in self.src_item.walk_self_and_descendants():
-            stack = apprs[item].stack
-            if len(stack.get(self.t_range.at)) > 1:  # 若 > 1 说明不只有 Display，则先将动画作用上
-                data = stack.compute(self.t_range.at, True)
-                item.restore(data)
-                stack.detect_change(self.t_range.at)
-
+    def _apply_actions(self) -> None:
         obj = self.obj
         for type, value in self.delayed_actions:
             if type is MethodTransform._ActionType.GetAttr:
@@ -525,24 +523,60 @@ class MethodTransform(Transform):
                 args, kwargs = value
                 obj = obj(*args, **kwargs)
 
-        for item in self.src_item.walk_self_and_descendants():
-            apprs[item].stack.detect_change(self.t_range.end)
+    def _get_item1_data(self, item1: Item) -> Item:
+        return self._src_datas[item1]
 
-        self.align_data()
+    def _get_item2_data(self, item2: Item) -> Item:
+        return self._target_datas[item2]
 
-        for item in self.src_item.walk_self_and_descendants():
-            aligned = self.aligned[(item, item)]
+    def _finalized(self) -> None:
+        self._items = list(self.src_item.walk_self_and_descendants())
+        self.timeline.schedule(self.t_range.at, self._delayed_setup)
 
+        self.aligned = {}
+
+        self._sub_updaters: list[_MethodTransform] = []
+        self._displays: list[ManualDisplay] = []
+
+        for item in self._items:
             sub_updater = _MethodTransform(
                 self,
                 item,
                 self.path_func,
-                aligned,
                 show_at_begin=self.show_at_begin,
                 hide_at_end=self.hide_at_end,
             )
             sub_updater.transfer_params(self)
             sub_updater.finalize()
+            self._sub_updaters.append(sub_updater)
+
+            display = ManualDisplay(
+                item,
+                at=self.t_range.end,
+                duration=FOREVER,
+            )
+            display.finalize()
+            self._displays.append(display)
+
+    def _delayed_setup(self) -> None:
+        apprs = self.timeline.item_appearances
+
+        self._src_datas: dict[Item, Item] = {}
+        for item, sub_updater in zip(self._items, self._sub_updaters):
+            # compute 让 _MethodTransform 产生 _src_data
+            # 这里不直接使用 compute 的返回值，是为了避免其它已进入动画堆栈的后继动画对初始状态的影响
+            apprs[item].stack.compute(self.t_range.at, True)
+            self._src_datas[item] = sub_updater._src_data
+
+        self._apply_actions()
+
+        self._target_datas: dict[Item, Item] = {}
+        for item, display in zip(self._items, self._displays):
+            data = item.store()
+            display.setup(data)
+            self._target_datas[item] = data
+
+        self.align_data()
 
 
 class MethodTransformArgsBuilder:
@@ -567,23 +601,26 @@ class _MethodTransform(ItemAnimation):
         generate_by: MethodTransform,
         item: Item,
         path_func: PathFunc,
-        aligned: AlignedData[Item],
         **kwargs,
     ):
         super().__init__(item, **kwargs)
-        self._generate_by = generate_by
+        self._generate_by: MethodTransform = generate_by  # type: ignore
         self._cover_previous_anims = True
         self.path_func = path_func
-        self.aligned = aligned
 
     def apply(self, params: ApplyParams) -> None:
-        self.aligned.union.interpolate(
-            self.aligned.data1,
-            self.aligned.data2,
+        try:
+            aligned = self._generate_by.aligned[(self.item, self.item)]
+        except KeyError:  # 第一次是 _src_datas 的初始化，捕获当前 data 并跳过
+            self._src_data = params.data.store()
+            return
+        aligned.union.interpolate(
+            aligned.data1,
+            aligned.data2,
             self.get_alpha_on_global_t(params.global_t),
             path_func=self.path_func,
         )
-        params.data = self.aligned.union
+        params.data = aligned.union
 
 
 class FadeTransform(AnimGroup):

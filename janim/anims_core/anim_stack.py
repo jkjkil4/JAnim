@@ -2,7 +2,7 @@ from bisect import bisect_left, bisect_right
 from collections import defaultdict
 from typing import Generator
 
-from janim.anims_core.display import Display
+from janim.anims_core.display import Display, DisplayTypes
 from janim.anims_core.stackable import ApplyAligner, ApplyParams, StackableAnimation
 from janim.anims_core.time import FOREVER, TimeAligner
 from janim.items.item import Item
@@ -33,13 +33,19 @@ class AnimStack:
         self._chunk_starts: list[float] = [0]
         self._chunks: list[list[StackableAnimation]] = [[]]
 
-        # 初始化，给 _chunks 填入一个默认 Display，这里也会初始化 _prev_display 变量
-        # _prev_display 变量的含义即为先前记录的物件状态
-        # Timeline 会在每次前进时间时 detect_change 检查物件，便可使用 _prev_display 作为比较基础
+        # 初始化，给 _chunks 填入一个默认 Display，这里也会初始化 _active_display 和 _latest_display 变量
+        #
+        # _active_display 变量的含义即为先前记录的物件状态，也可以理解为最后一个与 item 同步状态的 Display 对象
+        # Timeline 会在每次前进时间时 detect_change 检查物件，便可使用 _active_display 作为比较基础
+        #
+        # _latest_display 变量与 _active_display 的区别是，_latest_display 表示最后一个构造的 Display 对象
+        # Display 会同时被设置到 _active_display 和 _latest_display 上
+        # 而 DelayedDisplay 在构造时就会调用 set_latest_display，但是到了对应的全局时刻才会尝试设置到 _prev_display 上
+        self._latest_display: DisplayTypes | None = None
         self.display(0)
 
     def clear_cache(self) -> None:
-        self._cache_time: float | None = None
+        self._cache_key: tuple[float, bool] | None = None
         self._cache_data: Item | None = None
 
     # region modification
@@ -51,7 +57,19 @@ class AnimStack:
         anim = Display(self.item.store(), at=global_t, duration=FOREVER)
         anim.finalize()
         self.append(anim, _is_display=True)
-        self._prev_display = anim
+        self._active_display: DisplayTypes = anim
+        self.set_latest_display(anim)
+
+    def set_latest_display(self, anim: DisplayTypes) -> None:
+        if self._latest_display is None:
+            self._latest_display = anim
+        else:
+            if anim.t_range.at <= self._latest_display.t_range.at:
+                # 当新设置的比原先的 _latest_display 更早，则将原先的 _be_covered 设置为 True
+                # 这会使得 DelayedDisplay 的 is_latest_display 标记变为 False
+                self._latest_display._be_covered = True
+
+            self._latest_display = anim
 
     def detect_change(self, global_t: float) -> None:
         """
@@ -65,7 +83,7 @@ class AnimStack:
         """
         检查物件相比 ``self._prev_display`` 所记录的状态，是否可能发生变化
         """
-        return not self._prev_display.data_orig.not_changed(self.item)
+        return not self._active_display.data_orig.not_changed(self.item)
 
     def append(self, anim: StackableAnimation, *, _is_display: bool = False) -> None:
         """
@@ -166,7 +184,7 @@ class AnimStack:
             chunk.append(anim)
 
         # 添加了新动画，因此要重置缓存
-        if self._cache_time is not None:
+        if self._cache_key is not None:
             self.clear_cache()
 
     # endregion
@@ -221,14 +239,14 @@ class AnimStack:
 
         关于该方法在实现上的一些细节，请参考 ``_compute`` 代码中的注释
         """
-        if global_t != self._cache_time:
-            self._compute(global_t, readonly, get_at_left)
+        if (global_t, get_at_left) != self._cache_key:
+            self._compute(global_t, get_at_left)
 
-        assert self._cache_time is not None
+        assert self._cache_key is not None
         assert self._cache_data is not None
         return self._cache_data if readonly else self._cache_data.store()
 
-    def _compute(self, global_t: float, readonly: bool, get_at_left: bool) -> None:
+    def _compute(self, global_t: float, get_at_left: bool) -> None:
         getter = self.get_at_left if get_at_left else self.get
         anims = getter(global_t)
         generator = self._compute_anims(global_t, anims)
@@ -237,7 +255,7 @@ class AnimStack:
             aligner = next(generator)
         except StopIteration as e:
             # 当 StopIteration 时，说明没有出现 ApplyAligner，直接完成了该动画堆栈的计算
-            self._cache_time = global_t
+            self._cache_key = (global_t, get_at_left)
             self._cache_data = e.value
         else:
             # 当 generator 被挂起，则出现了 ApplyAligner，需要让 ApplyAligner 的所有目标都“触闸”
@@ -317,7 +335,7 @@ class AnimStack:
                     except StopIteration as e:
                         # “放闸”后，该动画堆栈结束
                         drop.append(stack)
-                        stack._cache_time = global_t
+                        stack._cache_key = (global_t, get_at_left)
                         stack._cache_data = e.value
 
                 # 将完成执行的动画堆栈移出 suspended

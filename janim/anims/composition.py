@@ -194,9 +194,9 @@ class AnimGroup(Animation):
         for anim in self.anims:
             anim._align_time(aligner)
 
-    def _time_fixed(self) -> None:
+    def _finalized(self) -> None:
         for anim in self.anims:
-            anim._time_fixed()
+            anim._finalized()
 
 
 class Succession(AnimGroup):
@@ -306,7 +306,7 @@ class Do(Animation):
         self.detect_changes = detect_changes
         self.kwargs = kwargs
 
-    def _time_fixed(self) -> None:
+    def _finalized(self) -> None:
         if self.detect_changes:
             self.timeline.schedule_and_detect_changes(
                 self.t_range.at, self.func, *self.args, **self.kwargs

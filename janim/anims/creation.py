@@ -209,7 +209,7 @@ class DrawBorderThenFill(DataUpdater):
         duration: float = 2.0,
         stroke_radius: float = DEFAULT_DRAWBORDER_THENFILL_STROKE_RADIUS,
         scale_with_camera: bool = False,
-        stroke_color: JAnimColor = None,
+        stroke_color: JAnimColor | None = None,
         rate_func: RateFunc = double_smooth,
         become_at_end: bool = False,
         root_only: bool = False,
@@ -349,7 +349,7 @@ class ShowIncreasingSubsets(Animation):
         self.show_at_begin = show_at_begin
         self.hide_at_end = hide_at_end
 
-    def _time_fixed(self) -> None:
+    def _finalized(self) -> None:
         if self.show_at_begin:
             self.timeline.schedule(self.t_range.at, self.group.show)
         if self.hide_at_end:

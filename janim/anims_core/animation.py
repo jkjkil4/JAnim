@@ -107,17 +107,14 @@ class Animation:
 
     def finalize(self) -> None:
         self._align_time(self.timeline.time_aligner)
-        self._time_fixed()
+        self._finalized()
 
     def _align_time(self, aligner: TimeAligner) -> None:
         aligner.align_anim_and_record(self)
         if self.t_range.at < 0:
             raise AnimationError(_('Animation start time cannot be negative'))
 
-    def _time_fixed(self) -> None:
-        """
-        由子类实现，用于确定该动画的行为，并可用于该对象内容的初始化
-        """
+    def _finalized(self) -> None:
         pass
 
     def get_alpha_on_global_t(self, global_t: float) -> float:
@@ -140,8 +137,7 @@ class Animation:
     global_t_ctx: ContextVar[float] = ContextVar('Animation.global_t_ctx')
 
     def schedule_show_and_hide(self, item: Item, show_at_begin: bool, hide_at_end: bool) -> None:
-        assert self.t_range.end is not FOREVER
         if show_at_begin:
             self.timeline.schedule(self.t_range.at, item.show, root_only=True)
-        if hide_at_end:
+        if hide_at_end and self.t_range.end is not FOREVER:
             self.timeline.schedule(self.t_range.end, item.hide, root_only=True)  # type: ignore

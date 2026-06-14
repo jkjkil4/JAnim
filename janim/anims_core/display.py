@@ -1,5 +1,13 @@
+from __future__ import annotations
+
+from dataclasses import dataclass
+from typing import Callable
+
 from janim.anims_core.stackable import ApplyParams, StackableAnimation
+from janim.anims_core.time import FOREVER
 from janim.items.item import Item
+
+type DisplayTypes = Display | ManualDisplay | DelayedDisplay
 
 
 class Display(StackableAnimation):
@@ -13,6 +21,8 @@ class Display(StackableAnimation):
 
     def __init__(self, data: Item, **kwargs):
         super().__init__(**kwargs)
+        self._be_covered: bool = False
+
         self.data = data
         self.data_orig = data.store()
 
@@ -29,3 +39,91 @@ class Display(StackableAnimation):
         """
         self.data.restore(self.data_orig)
         params.data = self.data
+
+
+class ManualDisplay(StackableAnimation):
+    """
+    和 :class:`Display` 基本一样，但是只在手动调用 :meth:`setup` 传入 ``data`` 状态后，才设置到 ``_active_display`` 上
+    """
+
+    def __init__(self, item: Item, **kwargs):
+        super().__init__(**kwargs)
+        self._be_covered: bool = False
+
+        self._item = item
+        self._stack = self.timeline.item_appearances[item].stack
+
+    def _finalized(self) -> None:
+        self._stack.append(self, _is_display=True)
+        self._stack.set_latest_display(self)
+
+    def setup(self, data: Item) -> None:
+        is_latest_display = not self._be_covered
+
+        self.data_orig = data
+        self.data = data.store()
+        if is_latest_display:
+            self._stack._active_display = self
+
+    def apply(self, params: ApplyParams) -> None:
+        self.data.restore(self.data_orig)
+        params.data = self.data
+
+
+class DelayedDisplay(StackableAnimation):
+    """
+    和 :class:`Display` 基本一样，但是会在时间轴全局时刻到达 ``.t_range.at`` 后才调用 ``func`` 函数设置 ``data`` 状态
+
+    :param item: 状态挂载给哪个物件
+    :param func: 当全局时刻到达 ``.t_range.at`` 后的回调函数，需要返回一个 :class:`~.Item` 作为物件状态
+    """
+
+    def __init__(self, item: Item, func: Callable[[DelayedDisplayParams], Item], **kwargs):
+        super().__init__(**kwargs)
+        self._be_covered: bool = False  # 请另行参考 AnimStack.set_latest_display 中的注释
+
+        self._item = item
+        self._func = func
+        self._stack = self.timeline.item_appearances[item].stack
+
+    def _finalized(self) -> None:
+        self._stack.append(self, _is_display=True)
+        self._stack.set_latest_display(self)
+
+        self.timeline.schedule(self.t_range.at, self._delayed_setup)
+
+    def _delayed_setup(self) -> None:
+        is_latest_display = not self._be_covered
+
+        self.data = self._func(DelayedDisplayParams(is_latest_display))
+        self.data_orig = self.data.store()
+        if is_latest_display:
+            self._stack._active_display = self
+
+    def apply(self, params: ApplyParams) -> None:
+        self.data.restore(self.data_orig)
+        params.data = self.data
+
+
+@dataclass(slots=True)
+class DelayedDisplayParams:
+    is_latest_display: bool
+
+
+class DoBecomeAtEnd(DelayedDisplay):
+    """
+    对 :class:`DelayedDisplay` 针对各个动画 ``become_at_end`` 参数实现的封装
+
+    即注册到 ``end~FOREVER`` 时段，将 ``end`` 时刻前计算出的动画状态作为显示状态；
+    并在 ``is_latest_display=True`` 时自动 :meth:`~.Item.restore`
+    """
+
+    def __init__(self, item: Item, end: float, **kwargs):
+        super().__init__(item, self._do_become_at_end, at=end, duration=FOREVER, **kwargs)
+
+    def _do_become_at_end(self, params: DelayedDisplayParams) -> Item:
+        stack = self.timeline.item_appearances[self._item].stack
+        data = stack.compute(self.t_range.at, True, get_at_left=True)
+        if params.is_latest_display:
+            self._item.restore(data)
+        return data

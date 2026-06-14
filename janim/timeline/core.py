@@ -139,7 +139,7 @@ class TimelineCore:
         if _detect_changes:
             self.detect_changes_of_all()
 
-        to_time = self.current_time + dt
+        to_time = self.time_aligner.align_and_record(self.current_time + dt)
 
         for task in self.scheduled_tasks.pop_up_to(to_time):
             self.current_time = task.global_t
