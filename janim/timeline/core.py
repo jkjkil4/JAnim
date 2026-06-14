@@ -51,6 +51,8 @@ class ScheduledTask:
     args: tuple
     kwargs: dict
 
+    early_invoked: bool = False
+
 
 @dataclass
 class ExtraRenderGroup:
@@ -142,6 +144,8 @@ class TimelineCore:
         to_time = self.time_aligner.align_and_record(self.current_time + dt)
 
         for task in self.scheduled_tasks.pop_up_to(to_time):
+            if task.early_invoked:
+                continue
             self.current_time = task.global_t
             task.func(*task.args, **task.kwargs)
 
@@ -233,6 +237,20 @@ class TimelineCore:
             self.detect_changes_of_all()
 
         self.timeout(delay, wrapper, *args, **kwargs)
+
+    def early_invoke_scheduled_function(self, func: Callable) -> bool:
+        """
+        提前执行已在计划执行中的指定函数
+
+        :param func: 先前计划执行的函数
+        :return: 是否找到匹配的函数
+        """
+        for task in self.scheduled_tasks._values:
+            if task.func is func:
+                task.early_invoked = True
+                task.func(*task.args, **task.kwargs)
+                return True
+        return False
 
     # endregion
 

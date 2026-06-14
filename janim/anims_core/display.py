@@ -10,7 +10,27 @@ from janim.items.item import Item
 type DisplayTypes = Display | ManualDisplay | DelayedDisplay
 
 
-class Display(StackableAnimation):
+class DisplayBase(StackableAnimation):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self._be_covered: bool = False  # 请另行参考 AnimStack.set_latest_display 中的注释
+
+    def apply(self, params: ApplyParams) -> None:
+        """
+        给 ``params`` 初始化物件数据
+
+        将 ``self.data`` 重置为 ``self.data_orig`` 的数据并设置到 ``params.data`` 上，避免原始数据被意外更改
+
+        特殊情况：
+
+        当 :class:`~.AnimStack` 的动画堆栈只有一个动画，即该类型动画时，不会经由该方法，
+        而是直接被其访问 ``data_orig``，起到一点点优化的作用
+        """
+        self.data.restore(self.data_orig)  # type: ignore
+        params.data = self.data  # type: ignore
+
+
+class Display(DisplayBase):
     """
     用于标记物件在特定时间区段中的数据
 
@@ -21,34 +41,17 @@ class Display(StackableAnimation):
 
     def __init__(self, data: Item, **kwargs):
         super().__init__(**kwargs)
-        self._be_covered: bool = False
-
         self.data = data
         self.data_orig = data.store()
 
-    def apply(self, params: ApplyParams) -> None:
-        """
-        给 ``params`` 初始化物件数据
 
-        将 ``self.data`` 重置为 ``self.data_orig`` 的数据并设置到 ``params.data`` 上，避免原始数据被意外更改
-
-        特殊情况：
-
-        当 :class:`~.AnimStack` 的动画堆栈只有一个动画，即该动画 :class:`Display` 时，不会经由该方法，
-        而是直接被其访问 ``data_orig``，起到一点点优化的作用
-        """
-        self.data.restore(self.data_orig)
-        params.data = self.data
-
-
-class ManualDisplay(StackableAnimation):
+class ManualDisplay(DisplayBase):
     """
     和 :class:`Display` 基本一样，但是只在手动调用 :meth:`setup` 传入 ``data`` 状态后，才设置到 ``_active_display`` 上
     """
 
     def __init__(self, item: Item, **kwargs):
         super().__init__(**kwargs)
-        self._be_covered: bool = False
 
         self._item = item
         self._stack = self.timeline.item_appearances[item].stack
@@ -65,12 +68,8 @@ class ManualDisplay(StackableAnimation):
         if is_latest_display:
             self._stack._active_display = self
 
-    def apply(self, params: ApplyParams) -> None:
-        self.data.restore(self.data_orig)
-        params.data = self.data
 
-
-class DelayedDisplay(StackableAnimation):
+class DelayedDisplay(DisplayBase):
     """
     和 :class:`Display` 基本一样，但是会在时间轴全局时刻到达 ``.t_range.at`` 后才调用 ``func`` 函数设置 ``data`` 状态
 
@@ -80,7 +79,6 @@ class DelayedDisplay(StackableAnimation):
 
     def __init__(self, item: Item, func: Callable[[DelayedDisplayParams], Item], **kwargs):
         super().__init__(**kwargs)
-        self._be_covered: bool = False  # 请另行参考 AnimStack.set_latest_display 中的注释
 
         self._item = item
         self._func = func
@@ -90,7 +88,8 @@ class DelayedDisplay(StackableAnimation):
         self._stack.append(self, _is_display=True)
         self._stack.set_latest_display(self)
 
-        self.timeline.schedule(self.t_range.at, self._delayed_setup)
+        self._scheduled = self._delayed_setup
+        self.timeline.schedule(self.t_range.at, self._scheduled)
 
     def _delayed_setup(self) -> None:
         is_latest_display = not self._be_covered
@@ -100,9 +99,12 @@ class DelayedDisplay(StackableAnimation):
         if is_latest_display:
             self._stack._active_display = self
 
-    def apply(self, params: ApplyParams) -> None:
-        self.data.restore(self.data_orig)
-        params.data = self.data
+    def __getattr__(self, name: str) -> None:
+        # 在一些极特殊情况下，DelayedDisplay 在 _delayed_setup 前就会被访问 data/data_orig
+        # 在这种时候，我们提前将 schedule 的方法执行来解决问题
+        if name in ('data', 'data_orig'):
+            self.timeline.early_invoke_scheduled_function(self._scheduled)
+        return self.__getattribute__(name)
 
 
 @dataclass(slots=True)
