@@ -86,10 +86,10 @@
           test =
             mkPyuvShell {
               inherit extraPackages;
-              extraLibs = with pkgs; [
+              extraLibs = guiExtraLibs ++ (with pkgs; [
                 libxcb
-              ];
-              shellHook = "uv sync --extra test";
+              ]);
+              shellHook = "uv sync --extra gui,test";
             };
           # bench =
           #   mkPyuvShell {
