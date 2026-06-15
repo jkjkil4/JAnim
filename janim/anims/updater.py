@@ -692,7 +692,9 @@ class _StepUpdater(ItemAnimation):
         params.data = self.data
 
     def global_t_to_n(self, global_t: float) -> int:
-        return max(0, int((global_t - self.t_range.at) // self.step))
+        return max(
+            0, int((global_t - self.t_range.at + 1e-5) // self.step)
+        )  # +1e-5 是为了避免浮点误差
 
     def n_to_global_t(self, n: int) -> float:
         return n * self.step + self.t_range.at
@@ -707,11 +709,7 @@ class _StepUpdater(ItemAnimation):
 
         for computing_n in self._cache.iterates(cache_n, n):
             with StepUpdaterParams(
-                # 因为在这个函数中，经历了 global_t_to_n，再 n_to_global_t
-                # 如果这个 updater 作用的物件有使用其它 StepUpdater 作用中的物件，会再次 global_t_to_n
-                # 最后的这次 global_t_to_n 很有可能由于浮点数误差导致 n 意外小 1，导致一些错误的表现
-                # 所以这里给它们加上了 1e-5
-                self.n_to_global_t(computing_n) + 1e-5,
+                self.timeline.time_aligner.align(self.n_to_global_t(computing_n)),
                 self.step,
                 self.t_range,
                 computing_n,
