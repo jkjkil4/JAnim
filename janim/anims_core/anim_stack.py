@@ -1,5 +1,6 @@
 from bisect import bisect_left, bisect_right
 from collections import defaultdict
+from contextvars import ContextVar
 from typing import Generator
 
 from janim.anims_core.display import Display, DisplayTypes
@@ -17,6 +18,18 @@ class AnimStack:
     后一个动画，会以前一个动画的结果为基础，继续叠加作用
 
     这就是我们“动画复合”功能的内部逻辑，这个内部结构我们将其称作“动画堆栈”
+    """
+
+    get_at_left_ctx: ContextVar[bool] = ContextVar('AnimStack.get_at_left_ctx', default=False)
+    """
+    用于标记 :meth:`compute` 的 ``get_at_left`` 行为
+
+    .. code-block:: python
+
+        with ContextSetter(AnimStack.get_at_left_ctx, True):
+            stack.compute(...)
+
+    使用该 ``ContextVar`` 而非直接向 :meth:`compute` 设置参数，是为了让嵌套调用也能被标记使用 ``get_at_left`` 来处理
     """
 
     def __init__(self, item: Item, time_aligner: TimeAligner):
@@ -213,7 +226,7 @@ class AnimStack:
         assert idx >= 0
         return self._chunks[idx]
 
-    def compute(self, global_t: float, readonly: bool, *, get_at_left: bool = False) -> Item:
+    def compute(self, global_t: float, readonly: bool) -> Item:
         """
         得到在 ``global_t`` 时刻下，应用动画作用效果后的物件
 
@@ -233,12 +246,15 @@ class AnimStack:
 
             -   用于绘制时的调用是 ``readonly=True``，因为绘制时不会对物件数据产生影响
 
-        :param get_at_left: 决定使用 :meth:`get` 还是 :meth:`get_at_left` 获取动画堆栈，具体请参考对应方法的介绍
+        默认使用 :meth:`get` 获取动画堆栈，可以设置 :py:obj:`get_at_left_ctx` 设定使用 :meth:`get_at_left` 获取动画堆栈，
+        具体请参考 :py:obj:`get_at_left_ctx` 的文档
 
         关于该方法的一些机制细节，请参考 :class:`~.StackableAnimation` 和 :class:`~.ApplyParams` 以及 :class:`~.ApplyAligner` 的介绍
 
         关于该方法在实现上的一些细节，请参考 ``_compute`` 代码中的注释
         """
+        get_at_left = self.get_at_left_ctx.get()
+
         if (global_t, get_at_left) != self._cache_key:
             self._compute(global_t, get_at_left)
 

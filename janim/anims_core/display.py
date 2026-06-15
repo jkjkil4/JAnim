@@ -6,6 +6,7 @@ from typing import Callable
 from janim.anims_core.stackable import ApplyParams, StackableAnimation
 from janim.anims_core.time import FOREVER
 from janim.items.item import Item
+from janim.utils.data import ContextSetter
 
 type DisplayTypes = Display | ManualDisplay | DelayedDisplay
 
@@ -100,8 +101,9 @@ class DelayedDisplay(DisplayBase):
             self._stack._active_display = self
 
     def __getattr__(self, name: str) -> None:
-        # 在一些极特殊情况下，DelayedDisplay 在 _delayed_setup 前就会被访问 data/data_orig
-        # 在这种时候，我们提前将 schedule 的方法执行来解决问题
+        # TODO: refactor
+        # # 在一些极特殊情况下，DelayedDisplay 在 _delayed_setup 前就会被访问 data/data_orig
+        # # 在这种时候，我们提前将 schedule 的方法执行来解决问题
         if name in ('data', 'data_orig'):
             self.timeline.early_invoke_scheduled_function(self._scheduled)
         return self.__getattribute__(name)
@@ -124,8 +126,11 @@ class DoBecomeAtEnd(DelayedDisplay):
         super().__init__(item, self._do_become_at_end, at=end, duration=FOREVER, **kwargs)
 
     def _do_become_at_end(self, params: DelayedDisplayParams) -> Item:
+        from janim.anims_core.anim_stack import AnimStack
+
         stack = self.timeline.item_appearances[self._item].stack
-        data = stack.compute(self.t_range.at, True, get_at_left=True)
+        with ContextSetter(AnimStack.get_at_left_ctx, True):
+            data = stack.compute(self.t_range.at, True)
         if params.is_latest_display:
             self._item.restore(data)
         return data
