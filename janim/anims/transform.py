@@ -15,9 +15,8 @@ from janim.anims_core.anim_stack import AnimStack
 from janim.anims_core.animation import Animation
 from janim.anims.composition import AnimGroup
 from janim.anims.fading import FadeIn, FadeInFromPoint, FadeOut, FadeOutToPoint
-from janim.anims_core.display import DelayedDisplay
 from janim.anims_core.stackable import ApplyParams, ItemAnimation
-from janim.anims_core.time import FOREVER, TimeRange
+from janim.anims_core.time import TimeRange
 from janim.camera.camera import Camera
 from janim.components.points import Cmpt_Points
 from janim.constants import C_LABEL_ANIM_STAY, OUT
@@ -172,10 +171,16 @@ class Transform(Animation):
             anim.finalize()
 
     def _get_item1_data(self, item1: Item) -> Item:
-        return self.timeline.item_appearances[item1].stack.compute(self.t_range.at, True)
+        appr = self.timeline.item_appearances.get(item1, None)
+        if appr is None:
+            return item1
+        return appr.stack.compute(self.t_range.at, True)
 
     def _get_item2_data(self, item2: Item) -> Item:
-        return self.timeline.item_appearances[item2].stack.compute(self.t_range.end, True)  # type: ignore
+        appr = self.timeline.item_appearances.get(item2, None)
+        if appr is None:
+            return item2
+        return appr.stack.compute(self.t_range.end, True)  # type: ignore
 
     def align_data(self) -> None:
         self.aligned: dict[tuple[Item, Item], AlignedData[Item]] = {}
@@ -473,7 +478,7 @@ class TransformInSegments(AnimGroup):
                 yield (min(a, b), max(a, b))
 
 
-class MethodTransform(Transform):
+class MethodTransform(Animation):
     """
     依据物件的变换而创建的补间过程
 
@@ -495,14 +500,23 @@ class MethodTransform(Transform):
         self,
         item: Item,
         obj: Item | Item._AsTypeWrapper,
+        #
+        path_arc: float = 0,
+        path_arc_axis: Vect = OUT,
+        path_func: PathFunc | None = None,
+        #
         show_at_begin: bool = True,
         hide_at_end: bool = False,
         **kwargs,
     ):
-        super().__init__(item, item, **kwargs)
+        super().__init__(**kwargs)
+        self.item = item
         self.obj = obj
+
+        self.path_func = get_path_func(path_arc, path_arc_axis, path_func)
         self.show_at_begin = show_at_begin
         self.hide_at_end = hide_at_end
+
         self.delayed_actions: list[
             tuple[MethodTransform._ActionType, str | tuple[tuple, dict]]
         ] = []
@@ -524,48 +538,40 @@ class MethodTransform(Transform):
                 args, kwargs = value
                 obj = obj(*args, **kwargs)
 
-    def _get_item1_data(self, item1: Item) -> Item:
-        return self._src_datas[item1]
-
-    def _get_item2_data(self, item2: Item) -> Item:
-        return self._target_datas[item2]
-
     def _finalized(self) -> None:
         self.timeline.schedule(self.t_range.at, self._delayed_setup)
 
     def _delayed_setup(self) -> None:
-        items = list(self.src_item.walk_self_and_descendants())
+        items = list(self.item.walk_self_and_descendants())
         apprs = self.timeline.item_appearances
 
-        with ContextSetter(AnimStack.get_anims_before_ctx, self._order):
-            self._src_datas = {
-                item: apprs[item].stack.compute(self.t_range.at, True)  #
+        with (
+            ContextSetter(AnimStack.get_anims_before_ctx, self._order),
+            ContextSetter(Animation.force_order_ctx, self._order),
+        ):
+            src_datas = [
+                apprs[item].stack.compute(self.t_range.at, True)  #
                 for item in items
-            }
-            self._apply_actions()
-            self._target_datas = {item: item.store() for item in items}
+            ]
 
-            self.align_data()
-
-        with ContextSetter(Animation.force_order_ctx, self._order):
+            sub_updaters: list[_MethodTransform] = []
             for item in items:
                 sub_updater = _MethodTransform(
                     self,
                     item,
-                    self.aligned[(item, item)],
                     self.path_func,
                     show_at_begin=self.show_at_begin,
                     hide_at_end=self.hide_at_end,
                 )
                 sub_updater.transfer_params(self)
                 sub_updater.finalize()
+                sub_updaters.append(sub_updater)
 
-                DelayedDisplay(
-                    item,
-                    lambda _, item=item: self._target_datas[item],
-                    at=self.t_range.at,
-                    duration=FOREVER,
-                ).finalize()
+            self._apply_actions()
+
+            for item, src_data, sub_updater in zip(items, src_datas, sub_updaters):
+                target_data = apprs[item].stack.display(self.t_range.end).data_orig
+                sub_updater.set_data(src_data, target_data)
 
 
 class MethodTransformArgsBuilder:
@@ -589,14 +595,15 @@ class _MethodTransform(ItemAnimation):
         self,
         generate_by: MethodTransform,
         item: Item,
-        aligned: AlignedData,
         path_func: PathFunc,
         **kwargs,
     ):
         super().__init__(item, **kwargs)
-        self._generate_by: MethodTransform = generate_by  # type: ignore
-        self.aligned = aligned
+        self._generate_by = generate_by
         self.path_func = path_func
+
+    def set_data(self, src_data: Item, target_data: Item) -> None:
+        self.aligned = self.item.align_for_interpolate(src_data, target_data)
 
     def apply(self, params: ApplyParams) -> None:
         self.aligned.union.interpolate(

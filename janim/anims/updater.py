@@ -277,7 +277,8 @@ class GroupUpdater[T: Item](Animation):
             sub_updater.transfer_params(self)
             sub_updater.finalize()
 
-            if self.become_at_end and self.t_range.end is not FOREVER:
+        if self.become_at_end and self.t_range.end is not FOREVER:
+            for item in sub_items:
                 DoBecomeAtEnd(item, self.t_range.end).finalize()  # type: ignore
 
     def apply_for_group(self, global_t: float) -> None:

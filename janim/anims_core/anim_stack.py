@@ -78,7 +78,7 @@ class AnimStack:
 
     # region modification
 
-    def display(self, global_t: float) -> None:
+    def display(self, global_t: float) -> Display:
         """
         将物件当前的状态记录到动画堆栈中，将 ``global_t`` 之后都显示为该状态
         """
@@ -87,6 +87,7 @@ class AnimStack:
         self.add(anim, _is_display=True)
         self._active_display: DisplayTypes = anim
         self.set_latest_display(anim)
+        return anim
 
     def set_latest_display(self, anim: DisplayTypes) -> None:
         if self._latest_display is None:
@@ -212,13 +213,13 @@ class AnimStack:
             # _is_display 为内部参数，表示是否产生于 `display` 方法
             # 用于判断在先前只有单个动画（即 `Display` 动画）时，直接覆盖原来的那个而不是形成堆栈
             if _is_display and len(chunk) == 1:
-                if chunk[0]._order < anim._order:
+                if chunk[0]._order <= anim._order:
                     chunk.clear()
                     chunk.append(anim)
             else:
                 # 从堆栈末尾向前找，插入 anim 使得 chunk 的 _order 仍然递增
                 for idx in range(len(chunk) - 1, -1, -1):
-                    if chunk[idx]._order < anim._order:
+                    if chunk[idx]._order <= anim._order:
                         chunk.insert(idx + 1, anim)
                         break
                 else:
@@ -348,6 +349,9 @@ class AnimStack:
                         continue
                     getter = stack.get_at_left if get_at_left else stack.get
                     anims = getter(global_t)
+                    if get_anims_before is not None and anims[-1]._order >= get_anims_before:
+                        anims = [anim for anim in anims if anim._order < get_anims_before]
+
                     generator = stack._compute_anims(global_t, anims)
 
                     # 预期让 generator 吐出一个 ApplyAligner 出来
