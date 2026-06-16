@@ -99,7 +99,6 @@ class DoBecomeAtEnd(DelayedDisplay):
         stack = self._stack
         with (
             ContextSetter(AnimStack.get_at_left_ctx, True),
-            ContextSetter(AnimStack.get_anims_before_ctx, self._order),
         ):
             data = stack.compute(self.t_range.at, True)
         if params.is_latest_display:

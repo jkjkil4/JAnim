@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from functools import partial
 import inspect
 from contextlib import contextmanager
 from contextvars import ContextVar
@@ -10,11 +9,10 @@ from typing import Any, Callable, Iterable, Self
 
 from tqdm import tqdm as ProgressDisplay
 
-from janim.anims.composition import Do
 from janim.anims.method_updater_meta import METHOD_UPDATER_KEY, MethodUpdaterInfo
 from janim.anims_core.anim_stack import AnimStack
 from janim.anims_core.animation import FOREVER, Animation
-from janim.anims_core.display import DelayedDisplay, DelayedDisplayParams, DoBecomeAtEnd
+from janim.anims_core.display import DoBecomeAtEnd
 from janim.anims_core.stackable import ApplyAligner, ApplyParams, ItemAnimation
 from janim.anims_core.time import TimeRange
 from janim.components.component import Component

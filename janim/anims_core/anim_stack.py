@@ -70,7 +70,9 @@ class AnimStack:
         # Display 会同时被设置到 _active_display 和 _latest_display 上
         # 而 DelayedDisplay 在构造时就会调用 set_latest_display，但是到了对应的全局时刻才会尝试设置到 _prev_display 上
         self._latest_display: DisplayTypes | None = None
-        self.display(0)
+        initial_display = self.display(0)
+        # 让初始 Display 的 _order 均为 0
+        initial_display._order = 0
 
     def clear_cache(self) -> None:
         self._cache_key: tuple[float, bool, int | None] | None = None

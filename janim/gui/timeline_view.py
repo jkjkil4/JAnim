@@ -375,9 +375,9 @@ class TimelineView(QWidget):
                 *[
                     Label(
                         (
-                            f'{anim.__class__.__name__} at 0x{id(anim):X}'
+                            f'{anim.__class__.__name__} at 0x{id(anim):X} order {anim._order}'
                             if anim._generate_by is None
-                            else f'{anim.__class__.__name__} at 0x{id(anim):X} '
+                            else f'{anim.__class__.__name__} at 0x{id(anim):X} order {anim._order} '
                             f'(from {anim._generate_by.__class__.__name__} at 0x{id(anim._generate_by):X})'
                         ),
                         TimeRange(t1, t2),

@@ -129,6 +129,7 @@ class Animation:
         让动画的区段确定下来，这会触发对时间区段的浮点数对齐（ 请参考 :class:`TimeAligner` ）以及一些其它标记
         """
         self._align_time(self.timeline.time_aligner)
+        self._resolve_order()
         self._finalized()
 
     def _align_time(self, aligner: TimeAligner) -> None:
@@ -136,6 +137,7 @@ class Animation:
         if self.t_range.at < 0:
             raise AnimationError(_('Animation start time cannot be negative'))
 
+    def _resolve_order(self) -> None:
         # 记录动画的作用顺序，如果有设置 force_order_ctx，则使用
         force_order = self.force_order_ctx.get()
         if force_order is None:

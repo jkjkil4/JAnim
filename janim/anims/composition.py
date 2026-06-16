@@ -192,14 +192,10 @@ class AnimGroup(Animation):
         for anim in self.anims:
             anim._attach_rate_func(rate_func)
 
-    def _align_time(self, aligner: TimeAligner):
-        super()._align_time(aligner)
+    def finalize(self) -> None:
+        super().finalize()
         for anim in self.anims:
-            anim._align_time(aligner)
-
-    def _finalized(self) -> None:
-        for anim in self.anims:
-            anim._finalized()
+            anim.finalize()
 
 
 class Succession(AnimGroup):
