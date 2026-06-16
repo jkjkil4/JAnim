@@ -5,7 +5,7 @@
 from typing import Any, Callable, Optional, Sequence
 
 import click
-from cloup import Option, OptionGroup
+from cloup import Option, OptionGroup  # noqa
 from cloup.constraints import Constraint
 from cloup.typing import F
 
