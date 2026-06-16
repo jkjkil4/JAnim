@@ -109,6 +109,7 @@ class TimelineCore:
 
         # 物件状态以及动画相关
         self.item_appearances = ItemAppearances(self.time_aligner)
+        self.anim_counter: int = 0  # 用于记录动画作用的顺序
         self.anim_groups: list[AnimGroup] = []  # 这个仅用于在预览界面中显示动画区段标签
         self.extra_render_groups: list[ExtraRenderGroup] = []
 
@@ -285,11 +286,11 @@ class TimelineCore:
         for item in items:
             self.item_appearances[item].stack.detect_change(self.current_time)
 
-    def compute_item[T: Item](self, item: T, as_time: float, readonly: bool) -> T:
+    def compute_item[T: Item](self, item: T, global_t: float, readonly: bool) -> T:
         """
         另见 :meth:`~.AnimStack.compute`
         """
-        return self.item_appearances[item].stack.compute(as_time, readonly)  # type: ignore
+        return self.item_appearances[item].stack.compute(global_t, readonly)  # type: ignore
 
     def item_current[T: Item](
         self, item: T, *, as_time: float | None = None, root_only: bool = False

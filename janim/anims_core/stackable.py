@@ -30,6 +30,13 @@ class StackableAnimation(Animation):
         """
         pass
 
+    def add_to_stack(self, item: Item, *, _is_display: bool = False) -> None:
+        """
+        将该动画添加到 ``item`` 的动画堆栈中
+        """
+        stack = self.timeline.item_appearances[item].stack
+        stack.add(self, _is_display=_is_display)
+
 
 @dataclass(slots=True)
 class ApplyParams:
@@ -97,9 +104,7 @@ class ItemAnimation(StackableAnimation):
         self.timeline.track(item)
 
     def _finalized(self) -> None:
-        apprs = self.timeline.item_appearances
-        apprs[self.item].stack.append(self)
-
+        self.add_to_stack(self.item)
         self.schedule_show_and_hide(self.item, self.show_at_begin, self.hide_at_end)
 
 

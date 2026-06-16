@@ -8,13 +8,24 @@ from janim.anims_core.time import FOREVER
 from janim.items.item import Item
 from janim.utils.data import ContextSetter
 
-type DisplayTypes = Display | ManualDisplay | DelayedDisplay
+type DisplayTypes = Display | DelayedDisplay
 
 
-class DisplayBase(StackableAnimation):
-    def __init__(self, **kwargs):
+class Display(StackableAnimation):
+    """
+    用于标记物件在特定时间区段中的数据
+
+    作为 :meth:`~.AnimStack.display` 的产物，表示“物件从一个特定时间开始，被更改为了这样的数据”
+
+    另见：:meth:`~.Timeline.detect_changes_of_all`
+    """
+
+    def __init__(self, data: Item, **kwargs):
         super().__init__(**kwargs)
-        self._be_covered: bool = False  # 请另行参考 AnimStack.set_latest_display 中的注释
+        self._be_covered: bool = False
+
+        self.data = data
+        self.data_orig = data.store()
 
     def apply(self, params: ApplyParams) -> None:
         """
@@ -31,46 +42,7 @@ class DisplayBase(StackableAnimation):
         params.data = self.data  # type: ignore
 
 
-class Display(DisplayBase):
-    """
-    用于标记物件在特定时间区段中的数据
-
-    作为 :meth:`~.AnimStack.display` 的产物，表示“物件从一个特定时间开始，被更改为了这样的数据”
-
-    另见：:meth:`~.Timeline.detect_changes_of_all`
-    """
-
-    def __init__(self, data: Item, **kwargs):
-        super().__init__(**kwargs)
-        self.data = data
-        self.data_orig = data.store()
-
-
-class ManualDisplay(DisplayBase):
-    """
-    和 :class:`Display` 基本一样，但是只在手动调用 :meth:`setup` 传入 ``data`` 状态后，才设置到 ``_active_display`` 上
-    """
-
-    def __init__(self, item: Item, **kwargs):
-        super().__init__(**kwargs)
-
-        self._item = item
-        self._stack = self.timeline.item_appearances[item].stack
-
-    def _finalized(self) -> None:
-        self._stack.append(self, _is_display=True)
-        self._stack.set_latest_display(self)
-
-    def setup(self, data: Item) -> None:
-        is_latest_display = not self._be_covered
-
-        self.data_orig = data
-        self.data = data.store()
-        if is_latest_display:
-            self._stack._active_display = self
-
-
-class DelayedDisplay(DisplayBase):
+class DelayedDisplay(StackableAnimation):
     """
     和 :class:`Display` 基本一样，但是会在时间轴全局时刻到达 ``.t_range.at`` 后才调用 ``func`` 函数设置 ``data`` 状态
 
@@ -80,17 +52,21 @@ class DelayedDisplay(DisplayBase):
 
     def __init__(self, item: Item, func: Callable[[DelayedDisplayParams], Item], **kwargs):
         super().__init__(**kwargs)
+        self._be_covered: bool = False  # 请另行参考 AnimStack.set_latest_display 中的注释
 
         self._item = item
         self._func = func
         self._stack = self.timeline.item_appearances[item].stack
 
+    def apply(self, params: ApplyParams) -> None:
+        self.data.restore(self.data_orig)  # type: ignore
+        params.data = self.data  # type: ignore
+
     def _finalized(self) -> None:
-        self._stack.append(self, _is_display=True)
         self._stack.set_latest_display(self)
 
-        self._scheduled = self._delayed_setup
-        self.timeline.schedule(self.t_range.at, self._scheduled)
+        self.timeline.schedule(self.t_range.at, self._delayed_setup)
+        self.add_to_stack(self._item, _is_display=True)
 
     def _delayed_setup(self) -> None:
         is_latest_display = not self._be_covered
@@ -99,14 +75,6 @@ class DelayedDisplay(DisplayBase):
         self.data_orig = self.data.store()
         if is_latest_display:
             self._stack._active_display = self
-
-    def __getattr__(self, name: str) -> None:
-        # TODO: refactor
-        # # 在一些极特殊情况下，DelayedDisplay 在 _delayed_setup 前就会被访问 data/data_orig
-        # # 在这种时候，我们提前将 schedule 的方法执行来解决问题
-        if name in ('data', 'data_orig'):
-            self.timeline.early_invoke_scheduled_function(self._scheduled)
-        return self.__getattribute__(name)
 
 
 @dataclass(slots=True)
@@ -128,8 +96,11 @@ class DoBecomeAtEnd(DelayedDisplay):
     def _do_become_at_end(self, params: DelayedDisplayParams) -> Item:
         from janim.anims_core.anim_stack import AnimStack
 
-        stack = self.timeline.item_appearances[self._item].stack
-        with ContextSetter(AnimStack.get_at_left_ctx, True):
+        stack = self._stack
+        with (
+            ContextSetter(AnimStack.get_at_left_ctx, True),
+            ContextSetter(AnimStack.get_anims_before_ctx, self._order),
+        ):
             data = stack.compute(self.t_range.at, True)
         if params.is_latest_display:
             self._item.restore(data)

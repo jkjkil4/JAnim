@@ -46,6 +46,13 @@ class Animation:
             self.play(Transform(a, b))
             self.play(Transform(b, a))
             self.play(Transform(a, b))
+
+    JAnim 中动画区段的逻辑：
+
+    刚创建出来的普通 :class:`Animation` 对象的 ``t_range``，会随着与 :class:`~.AnimGroup` 等动画组的嵌套而被调整
+
+    当最外层调用 :meth:`finalize` ，表示确定动画区段（会由 :meth:`~.Timeline.play` 或 :meth:`~.Timeline.prepare` 自动调用），
+    则我们就认为动画区段得到确定，会进行浮点数对齐等操作，在这之后，就不应对 ``t_range`` 进行修改了
     """
 
     # 在预览界面中，时间轴标签的显示颜色
@@ -105,7 +112,22 @@ class Animation:
     def _attach_rate_func(self, rate_func: RateFunc) -> None:
         self.rate_funcs.insert(0, rate_func)
 
+    force_order_ctx: ContextVar[int | None] = ContextVar('Animation.force_order_ctx', default=None)
+    """
+    用于强制指定所标记的动画顺序
+
+    .. code-block:: python
+
+        with ContextSetter(Animation.force_order_ctx, xxxanim._order):
+            ...
+
+    用于在延迟执行中，基于较早时刻的某个顺序来标记，从而使得 :class:`~.StackableAnimation` 动画能插入到动画堆栈中的合适位置
+    """
+
     def finalize(self) -> None:
+        """
+        让动画的区段确定下来，这会触发对时间区段的浮点数对齐（ 请参考 :class:`TimeAligner` ）以及一些其它标记
+        """
         self._align_time(self.timeline.time_aligner)
         self._finalized()
 
@@ -113,6 +135,14 @@ class Animation:
         aligner.align_anim_and_record(self)
         if self.t_range.at < 0:
             raise AnimationError(_('Animation start time cannot be negative'))
+
+        # 记录动画的作用顺序，如果有设置 force_order_ctx，则使用
+        force_order = self.force_order_ctx.get()
+        if force_order is None:
+            self.timeline.anim_counter += 1
+            self._order = self.timeline.anim_counter
+        else:
+            self._order = force_order
 
     def _finalized(self) -> None:
         pass

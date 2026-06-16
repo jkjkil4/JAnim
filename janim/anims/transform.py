@@ -11,10 +11,11 @@ from typing import Callable, Generator, Iterable
 
 import numpy as np
 
+from janim.anims_core.anim_stack import AnimStack
 from janim.anims_core.animation import Animation
 from janim.anims.composition import AnimGroup
 from janim.anims.fading import FadeIn, FadeInFromPoint, FadeOut, FadeOutToPoint
-from janim.anims_core.display import ManualDisplay
+from janim.anims_core.display import DelayedDisplay
 from janim.anims_core.stackable import ApplyParams, ItemAnimation
 from janim.anims_core.time import FOREVER, TimeRange
 from janim.camera.camera import Camera
@@ -28,7 +29,7 @@ from janim.items.vitem import VItem
 from janim.locale import get_translator
 from janim.logger import log
 from janim.typing import Vect
-from janim.utils.data import AlignedData
+from janim.utils.data import AlignedData, ContextSetter
 from janim.utils.iterables import resize_preserving_order
 from janim.utils.paths import PathFunc, get_path_func
 
@@ -290,15 +291,15 @@ class MoveToTarget(Transform):
             fix.transfer_params(self)
             fix.finalize()
 
-        # TODO: pre-append ?
         def at_end() -> None:
             # 因为马上就是 show，所以传入了 auto_visible=False
-            self.src_item.become(self.src_item.target, auto_visible=False)
+            self.src_item.become(self.src_item.target, auto_visible=False)  # type: ignore
 
-            self.timeline.detect_changes(self.src_item.walk_self_and_descendants())
+            with ContextSetter(Animation.force_order_ctx, self._order):
+                self.timeline.detect_changes(self.src_item.walk_self_and_descendants())
             self.src_item.show()
 
-        self.timeline.schedule(self.t_range.end, at_end)
+        self.timeline.schedule(self.t_range.end, at_end)  # type: ignore
 
 
 class _MoveToTargetCameraFix(ItemAnimation):
@@ -324,12 +325,12 @@ class _MoveToTargetCameraFix(ItemAnimation):
         generate_by: MoveToTarget,
         **kwargs,
     ):
-        camera: Camera = generate_by.src_item
+        camera: Camera = generate_by.src_item  # type: ignore
 
         super().__init__(camera, **kwargs)
         self._generate_by = generate_by
 
-        self.aligned = generate_by.aligned[(camera, camera.target)]
+        self.aligned = generate_by.aligned[(camera, camera.target)]  # type: ignore
         self.path_func = generate_by.path_func
 
     def apply(self, params: ApplyParams) -> None:
@@ -530,53 +531,41 @@ class MethodTransform(Transform):
         return self._target_datas[item2]
 
     def _finalized(self) -> None:
-        self._items = list(self.src_item.walk_self_and_descendants())
         self.timeline.schedule(self.t_range.at, self._delayed_setup)
 
-        self.aligned = {}
-
-        self._sub_updaters: list[_MethodTransform] = []
-        self._displays: list[ManualDisplay] = []
-
-        for item in self._items:
-            sub_updater = _MethodTransform(
-                self,
-                item,
-                self.path_func,
-                show_at_begin=self.show_at_begin,
-                hide_at_end=self.hide_at_end,
-            )
-            sub_updater.transfer_params(self)
-            sub_updater.finalize()
-            self._sub_updaters.append(sub_updater)
-
-            display = ManualDisplay(
-                item,
-                at=self.t_range.end,
-                duration=FOREVER,
-            )
-            display.finalize()
-            self._displays.append(display)
-
     def _delayed_setup(self) -> None:
+        items = list(self.src_item.walk_self_and_descendants())
         apprs = self.timeline.item_appearances
 
-        self._src_datas: dict[Item, Item] = {}
-        for item, sub_updater in zip(self._items, self._sub_updaters):
-            # compute 让 _MethodTransform 产生 _src_data
-            # 这里不直接使用 compute 的返回值，是为了避免其它已进入动画堆栈的后继动画对初始状态的影响
-            apprs[item].stack.compute(self.t_range.at, True)
-            self._src_datas[item] = sub_updater._src_data
+        with ContextSetter(AnimStack.get_anims_before_ctx, self._order):
+            self._src_datas = {
+                item: apprs[item].stack.compute(self.t_range.at, True)  #
+                for item in items
+            }
+            self._apply_actions()
+            self._target_datas = {item: item.store() for item in items}
 
-        self._apply_actions()
+            self.align_data()
 
-        self._target_datas: dict[Item, Item] = {}
-        for item, display in zip(self._items, self._displays):
-            data = item.store()
-            display.setup(data)
-            self._target_datas[item] = data
+        with ContextSetter(Animation.force_order_ctx, self._order):
+            for item in items:
+                sub_updater = _MethodTransform(
+                    self,
+                    item,
+                    self.aligned[(item, item)],
+                    self.path_func,
+                    show_at_begin=self.show_at_begin,
+                    hide_at_end=self.hide_at_end,
+                )
+                sub_updater.transfer_params(self)
+                sub_updater.finalize()
 
-        self.align_data()
+                DelayedDisplay(
+                    item,
+                    lambda _, item=item: self._target_datas[item],
+                    at=self.t_range.at,
+                    duration=FOREVER,
+                ).finalize()
 
 
 class MethodTransformArgsBuilder:
@@ -600,27 +589,23 @@ class _MethodTransform(ItemAnimation):
         self,
         generate_by: MethodTransform,
         item: Item,
+        aligned: AlignedData,
         path_func: PathFunc,
         **kwargs,
     ):
         super().__init__(item, **kwargs)
         self._generate_by: MethodTransform = generate_by  # type: ignore
-        self._cover_previous_anims = True
+        self.aligned = aligned
         self.path_func = path_func
 
     def apply(self, params: ApplyParams) -> None:
-        try:
-            aligned = self._generate_by.aligned[(self.item, self.item)]
-        except KeyError:  # 第一次是 _src_datas 的初始化，捕获当前 data 并跳过
-            self._src_data = params.data.store()
-            return
-        aligned.union.interpolate(
-            aligned.data1,
-            aligned.data2,
+        self.aligned.union.interpolate(
+            self.aligned.data1,
+            self.aligned.data2,
             self.get_alpha_on_global_t(params.global_t),
             path_func=self.path_func,
         )
-        params.data = aligned.union
+        params.data = self.aligned.union
 
 
 class FadeTransform(AnimGroup):

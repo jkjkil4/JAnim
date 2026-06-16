@@ -10,6 +10,7 @@ from typing import Any, Callable, Iterable, Self
 
 from tqdm import tqdm as ProgressDisplay
 
+from janim.anims.composition import Do
 from janim.anims.method_updater_meta import METHOD_UPDATER_KEY, MethodUpdaterInfo
 from janim.anims_core.anim_stack import AnimStack
 from janim.anims_core.animation import FOREVER, Animation
@@ -22,6 +23,7 @@ from janim.exception import UpdaterError
 from janim.items.item import Item
 from janim.locale import get_translator
 from janim.render.base import Renderer
+from janim.utils.data import ContextSetter
 from janim.utils.rate_functions import RateFunc, linear
 from janim.utils.simple_functions import clip
 
@@ -520,27 +522,24 @@ class ItemUpdater(Animation):
         hide_items = list(self.item.walk_self_and_descendants())
         show_items = hide_items
 
-        end: float = self.t_range.end  # type: ignore
-
         # 在动画开始时，判断 hide_at_begin
         if self.hide_at_begin:
             self.timeline.schedule(self.t_range.at, self.timeline.hide, *hide_items, root_only=True)
 
         # 在动画结束时，判断 become_at_end 以及 show_at_end
         if self.t_range.end is not FOREVER and (self.become_at_end or self.show_at_end):
+            end: float = self.t_range.end  # type: ignore
 
             def at_end() -> None:
                 nonlocal show_items
                 assert self.item is not None
 
-                # TODO: pre-append ?
                 if self.become_at_end:
                     with UpdaterParams(end, 1, self.t_range, None, self) as params:
                         self.item.become(self.call(params), auto_visible=False)
                         show_items = list(self.item.walk_self_and_descendants())
-                        for item in show_items:
-                            stack = self.timeline.item_appearances[item].stack
-                            stack.display(end)
+                        with ContextSetter(Animation.force_order_ctx, self._order):
+                            self.timeline.detect_changes(show_items)
 
                 if self.show_at_end:
                     self.timeline.show(*show_items, root_only=True)
@@ -663,7 +662,6 @@ class _StepUpdater(ItemAnimation):
     ):
         super().__init__(item, show_at_begin=show_at_begin, hide_at_end=hide_at_end)
         self._generate_by = generate_by
-        self._cover_previous_anims = True
 
         self.func = func
         self.step = step

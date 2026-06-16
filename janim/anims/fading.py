@@ -135,11 +135,6 @@ class FadeOut(Fade):
     ):
         super().__init__(item, shift, scale, hide_at_end=hide_at_end, **kwargs)
 
-    def _finalized(self) -> None:
-        super()._finalized()
-        if self.hide_at_end:
-            self.timeline.schedule(self.t_range.end, self.item.hide, self.root_only)  # type: ignore
-
     def updater(self, data: Item, p: UpdaterParams) -> None:
         for cmpt in data.components.values():
             if isinstance(cmpt, Cmpt_Rgbas):

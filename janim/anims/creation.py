@@ -353,7 +353,7 @@ class ShowIncreasingSubsets(Animation):
         if self.show_at_begin:
             self.timeline.schedule(self.t_range.at, self.group.show)
         if self.hide_at_end:
-            self.timeline.schedule(self.t_range.end, self.group.hide)
+            self.timeline.schedule(self.t_range.end, self.group.hide)  # type: ignore
 
         self.i_items = [
             (i, list(child.walk_self_and_descendants())) for i, child in enumerate(self.group)

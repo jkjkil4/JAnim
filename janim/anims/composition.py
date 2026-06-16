@@ -1,10 +1,13 @@
 from typing import Iterable, Self
 
+from janim.anims_core.anim_stack import AnimStack
 from janim.anims_core.animation import Animation
 from janim.anims_core.time import TimeAligner
 from janim.exception import AnimGroupError, NotAnimationError
+from janim.items.item import Item
 from janim.locale import get_translator
 from janim.typing import SupportsAnim
+from janim.utils.data import ContextSetter
 from janim.utils.rate_functions import RateFunc, linear
 
 _ = get_translator('janim.anims.composition')
@@ -297,6 +300,12 @@ class Wait(Animation):
 class Do(Animation):
     """
     在动画过程的特定时间执行指定操作
+
+    :param func: 到达指定时间后调用的回调函数
+    :param \\*args: 传递给回调函数的位置参数
+    :param \\*\\*kwargs: 传递给回调函数的具名参数
+    :param at: 执行的时间点
+    :param detect_changes: 执行回调后，是否自动检测物件变化情况
     """
 
     def __init__(self, func, *args, at: float = 0, detect_changes: bool = True, **kwargs):
@@ -308,8 +317,14 @@ class Do(Animation):
 
     def _finalized(self) -> None:
         if self.detect_changes:
-            self.timeline.schedule_and_detect_changes(
-                self.t_range.at, self.func, *self.args, **self.kwargs
-            )
+            self.timeline.schedule(self.t_range.at, self._func_with_detect_changes)
         else:
             self.timeline.schedule(self.t_range.at, self.func, *self.args, **self.kwargs)
+
+    def _func_with_detect_changes(self) -> None:
+        with (
+            ContextSetter(AnimStack.get_anims_before_ctx, self._order),
+            ContextSetter(Animation.force_order_ctx, self._order),
+        ):
+            self.func(*self.args, **self.kwargs)
+            self.timeline.detect_changes_of_all()
