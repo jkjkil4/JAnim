@@ -570,7 +570,7 @@ class MethodTransform(Animation):
             self._apply_actions()
 
             for item, src_data, sub_updater in zip(items, src_datas, sub_updaters):
-                target_data = apprs[item].stack.display(self.t_range.end).data_orig
+                target_data = apprs[item].stack.display(self.t_range.end).data_orig  # type: ignore
                 sub_updater.set_data(src_data, target_data)
 
 

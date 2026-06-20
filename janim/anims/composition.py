@@ -316,9 +316,6 @@ class Do(Animation):
             self.timeline.schedule(self.t_range.at, self.func, *self.args, **self.kwargs)
 
     def _func_with_detect_changes(self) -> None:
-        with (
-            ContextSetter(AnimStack.get_anims_before_ctx, self._order),
-            ContextSetter(Animation.force_order_ctx, self._order),
-        ):
+        with ContextSetter(Animation.force_order_ctx, self._order):
             self.func(*self.args, **self.kwargs)
             self.timeline.detect_changes_of_all()

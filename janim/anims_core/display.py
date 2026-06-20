@@ -97,9 +97,7 @@ class DoBecomeAtEnd(DelayedDisplay):
         from janim.anims_core.anim_stack import AnimStack
 
         stack = self._stack
-        with (
-            ContextSetter(AnimStack.get_at_left_ctx, True),
-        ):
+        with ContextSetter(AnimStack.get_at_left_ctx, True):
             data = stack.compute(self.t_range.at, True)
         if params.is_latest_display:
             self._item.restore(data)
