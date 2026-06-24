@@ -622,9 +622,6 @@ class StepUpdater[T: Item](Animation):
         return self
 
     def _finalized(self) -> None:
-        self.timeline.schedule(self.t_range.at, self._delayed_setup)
-
-    def _delayed_setup(self) -> None:
         for item in self.item.walk_self_and_descendants(self.root_only):
             if self.skip_null_items and item.is_null():
                 # 这两行是为了 selector 中能够正确选择到物件

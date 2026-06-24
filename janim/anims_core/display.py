@@ -65,7 +65,8 @@ class DelayedDisplay(StackableAnimation):
     def _finalized(self) -> None:
         self._stack.set_latest_display(self)
 
-        self.timeline.schedule(self.t_range.at, self._delayed_setup)
+        self._scheduled = self._delayed_setup
+        self.timeline.schedule(self.t_range.at, self._scheduled)
         self.add_to_stack(self._item, _is_display=True)
 
     def _delayed_setup(self) -> None:
@@ -75,6 +76,13 @@ class DelayedDisplay(StackableAnimation):
         self.data_orig = self.data.store()
         if is_latest_display:
             self._stack._active_display = self
+
+    def __getattr__(self, name: str) -> None:
+        # 在一些极特殊情况下，DelayedDisplay 在 _delayed_setup 前就会被访问 data/data_orig
+        # 在这种时候，我们提前将 schedule 的方法执行来解决问题
+        if name in ('data', 'data_orig'):
+            self.timeline.early_invoke_scheduled_function(self._scheduled)
+        return self.__getattribute__(name)
 
 
 @dataclass(slots=True)

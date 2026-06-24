@@ -539,39 +539,32 @@ class MethodTransform(Animation):
                 obj = obj(*args, **kwargs)
 
     def _finalized(self) -> None:
-        self.timeline.schedule(self.t_range.at, self._delayed_setup)
-
-    def _delayed_setup(self) -> None:
         items = list(self.item.walk_self_and_descendants())
         apprs = self.timeline.item_appearances
 
-        with (
-            ContextSetter(AnimStack.get_anims_before_ctx, self._order),
-            ContextSetter(Animation.force_order_ctx, self._order),
-        ):
-            src_datas = [
-                apprs[item].stack.compute(self.t_range.at, True)  #
-                for item in items
-            ]
+        src_datas = [
+            apprs[item].stack.compute(self.t_range.at, True)  #
+            for item in items
+        ]
 
-            sub_updaters: list[_MethodTransform] = []
-            for item in items:
-                sub_updater = _MethodTransform(
-                    self,
-                    item,
-                    self.path_func,
-                    show_at_begin=self.show_at_begin,
-                    hide_at_end=self.hide_at_end,
-                )
-                sub_updater.transfer_params(self)
-                sub_updater.finalize()
-                sub_updaters.append(sub_updater)
+        sub_updaters: list[_MethodTransform] = []
+        for item in items:
+            sub_updater = _MethodTransform(
+                self,
+                item,
+                self.path_func,
+                show_at_begin=self.show_at_begin,
+                hide_at_end=self.hide_at_end,
+            )
+            sub_updater.transfer_params(self)
+            sub_updater.finalize()
+            sub_updaters.append(sub_updater)
 
-            self._apply_actions()
+        self._apply_actions()
 
-            for item, src_data, sub_updater in zip(items, src_datas, sub_updaters):
-                target_data = apprs[item].stack.display(self.t_range.end).data_orig  # type: ignore
-                sub_updater.set_data(src_data, target_data)
+        for item, src_data, sub_updater in zip(items, src_datas, sub_updaters):
+            target_data = apprs[item].stack.display(self.t_range.end).data_orig  # type: ignore
+            sub_updater.set_data(src_data, target_data)
 
 
 class MethodTransformArgsBuilder:
