@@ -32,21 +32,6 @@ class AnimStack:
     使用该 ``ContextVar`` 而非直接向 :meth:`compute` 设置参数，是为了让嵌套调用也能被标记使用 ``get_at_left`` 来处理
     """
 
-    get_anims_before_ctx: ContextVar[int | None] = ContextVar(
-        'AnimStack.get_anims_before', default=None
-    )
-    """
-    用于标记 :meth:`compute` 所计算的动画堆栈到哪个 ``_order`` 的动画为止
-
-    .. code-block:: python
-
-        with ContextSetter(AnimStack.get_anims_before_ctx, xxxanim._order):
-            ...
-
-    因为我们的动画都是延迟执行的，在等待执行的过程中有可能会被加入新的动画，
-    当达到执行时刻时，这个 ``ContextVar`` 提供了回退到动画确定时（ :meth:`~.Animation.finalize` ）的动画堆栈的能力
-    """
-
     def __init__(self, item: Item, time_aligner: TimeAligner):
         self.item = item
         self.time_aligner = time_aligner
@@ -75,7 +60,7 @@ class AnimStack:
         initial_display._order = 0
 
     def clear_cache(self) -> None:
-        self._cache_key: tuple[float, bool, int | None] | None = None
+        self._cache_key: tuple[float, bool] | None = None
         self._cache_data: Item | None = None
 
     # region modification
@@ -283,35 +268,29 @@ class AnimStack:
         默认使用 :meth:`get` 获取动画堆栈，可以设置 :py:obj:`get_at_left_ctx` 设定使用 :meth:`get_at_left` 获取动画堆栈，
         具体请参考 :py:obj:`get_at_left_ctx` 的文档
 
-        默认执行完整动画堆栈，可以设置 :py:obj:`get_anims_before_ctx` 设定只考虑哪个动画序号之前的动画堆栈
-
         关于该方法的一些机制细节，请参考 :class:`~.StackableAnimation` 和 :class:`~.ApplyParams` 以及 :class:`~.ApplyAligner` 的介绍
 
         关于该方法在实现上的一些细节，请参考 ``_compute`` 代码中的注释
         """
         get_at_left = self.get_at_left_ctx.get()
-        get_anims_before = self.get_anims_before_ctx.get()
 
-        if (global_t, get_at_left, get_anims_before) != self._cache_key:
-            self._compute(global_t, get_at_left, get_anims_before)
+        if (global_t, get_at_left) != self._cache_key:
+            self._compute(global_t, get_at_left)
 
         assert self._cache_key is not None
         assert self._cache_data is not None
         return self._cache_data if readonly else self._cache_data.store()
 
-    def _compute(self, global_t: float, get_at_left: bool, get_anims_before: int | None) -> None:
+    def _compute(self, global_t: float, get_at_left: bool) -> None:
         getter = self.get_at_left if get_at_left else self.get
         anims = getter(global_t)
-        if get_anims_before is not None and anims[-1]._order >= get_anims_before:
-            anims = [anim for anim in anims if anim._order < get_anims_before]
-
         generator = self._compute_anims(global_t, anims)
 
         try:
             aligner = next(generator)
         except StopIteration as e:
             # 当 StopIteration 时，说明没有出现 ApplyAligner，直接完成了该动画堆栈的计算
-            self._cache_key = (global_t, get_at_left, get_anims_before)
+            self._cache_key = (global_t, get_at_left)
             self._cache_data = e.value
         else:
             # 当 generator 被挂起，则出现了 ApplyAligner，需要让 ApplyAligner 的所有目标都“触闸”
@@ -351,9 +330,6 @@ class AnimStack:
                         continue
                     getter = stack.get_at_left if get_at_left else stack.get
                     anims = getter(global_t)
-                    if get_anims_before is not None and anims[-1]._order >= get_anims_before:
-                        anims = [anim for anim in anims if anim._order < get_anims_before]
-
                     generator = stack._compute_anims(global_t, anims)
 
                     # 预期让 generator 吐出一个 ApplyAligner 出来
@@ -394,7 +370,7 @@ class AnimStack:
                     except StopIteration as e:
                         # “放闸”后，该动画堆栈结束
                         drop.append(stack)
-                        stack._cache_key = (global_t, get_at_left, get_anims_before)
+                        stack._cache_key = (global_t, get_at_left)
                         stack._cache_data = e.value
 
                 # 将完成执行的动画堆栈移出 suspended
