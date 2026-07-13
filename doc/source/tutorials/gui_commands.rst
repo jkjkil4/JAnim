@@ -95,3 +95,16 @@ GUI 命令的基本用法是：
     rect = Rect(6, 0.5).show()
 
     self('move: circle, square, rect')
+
+``draw`` 命令
+-------------------------
+
+通过在画面上绘制来创建物件
+
+尝试：
+
+.. code-block:: python
+
+    self('draw: dot').show()
+    self('draw: rect').show()
+    self('draw: vitem').show()
