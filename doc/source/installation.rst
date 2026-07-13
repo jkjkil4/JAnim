@@ -123,11 +123,6 @@
 
     但值得注意的是，使用 GUI 界面预览动画效果并不依赖 FFmpeg，只有在最后导出视频时才需要 FFmpeg，因此你完全可以先上手体验 JAnim，等需要输出视频的时候再另行安装。
 
--   当需要书写公式或高级排版时，在 JAnim 中我们会用到 `Typst <https://github.com/typst/typst/releases>`_ 。
-
-    Typst 已经集成到 JAnim 的安装中了（基于 `typst-py <https://github.com/messense/typst-py>`_ 包），因此不需要另外安装。
-    但是，如果你有使用外部 Typst 可执行文件的需求，这里也提供了外部 Typst 的安装方法。
-
 -   对于 Linux，可能还需要另外安装 ``portaudio19-dev``，详见下方 Linux 标签页中的介绍。
 
 .. tabs::
@@ -138,7 +133,7 @@
 
         包管理器有很多选择，一般来说 Windows 应该自带一个 Winget，也可以使用 `Chocolatey <https://community.chocolatey.org/>`_ 或者 `Scoop <https://scoop.sh/>`_。三者只需安装一种，不过多装的话也没什么冲突。
 
-        安装完包管理器（或者自带 Winget），以 Winget 为例，按 ``Win + R`` 输入 ``powershell`` 或者在开始菜单中输入 powershell 打开 Powershell，输入 ``winget install typst`` 以及 ``winget install ffmpeg`` 即可完成安装。其他两种也是同理。
+        安装完包管理器（或者自带 Winget），以 Winget 为例，按 ``Win + R`` 输入 ``powershell`` 或者在开始菜单中输入 powershell 打开 Powershell，输入 ``winget install ffmpeg`` 即可完成安装。其他两种也是同理。
 
         .. tip::
 
@@ -150,15 +145,13 @@
 
         首先安装 FFmpeg。点击 https://www.gyan.dev/ffmpeg/builds/ffmpeg-git-full.7z 下载压缩包，解压，将 ``ffmpeg-`` 开头的文件夹移到适当的位置（例如 ``C:\\Program Files``），把该文件夹改名为 ``ffmpeg``。
 
-        然后安装 Typst。点击 https://github.com/typst/typst/releases/latest/download/typst-x86_64-pc-windows-msvc.zip 下载压缩包（如果网络错误可以反复尝试几次），解压，将 ``typst-x86_64-pc-windows-msvc`` 移到适当的位置，把该文件夹改名为 ``typst``。
-
-        最后添加环境变量。如果使用的是 Windows 11，可以按“Windows 徽标”键或者点击“开始”按钮，输入“环境变量”。（如果使用之前的版本可以右键此电脑 - 属性 - 高级系统设置）。点击“环境变量”，双击“用户变量”（或“系统变量”，任选其一）的“Path”，右键刚刚的 ``typst`` 文件夹并“复制文件地址”，在 Path 窗口（如下图）点击“新建”并把文件地址粘贴进去（注意不要带引号）。类似操作，将 ``ffmpeg\bin`` 也就是刚刚得到的 ffmpeg 下的 bin 文件夹的文件地址粘贴进去。
-
+        然后添加环境变量。如果使用的是 Windows 11，可以按“Windows 徽标”键或者点击“开始”按钮，输入“环境变量”。（如果使用之前的版本可以右键此电脑 - 属性 - 高级系统设置）。点击“环境变量”，双击“用户变量”（或“系统变量”，任选其一）的“Path”，右键刚刚的 ``ffmpeg`` 文件夹里的 ``bin`` 文件夹并“复制文件地址”，在 Path 窗口（如下图）点击“新建”并把文件地址粘贴进去（注意不要带引号）。
+        
         .. image:: /_static/images/envedit.png
             :align: center
             :scale: 80%
 
-        尝试一下有没有正确识别。在“开始”菜单输入并打开 PowerShell 或者 Cmd，运行 ``ffmpeg --version`` 和 ``typst --version``，输出版本号则安装成功。
+        尝试一下有没有正确识别。在“开始”菜单输入并打开 PowerShell 或者 Cmd，运行 ``ffmpeg --version`` ，输出版本号则安装成功。
 
     .. translatable-tab:: macOS
 
@@ -170,17 +163,13 @@
 
             /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 
-        接着便可以使用 Homebrew 安装 FFmpeg 和 Typst
+        接着便可以使用 Homebrew 安装 FFmpeg
 
         .. code-block:: bash
 
             # FFmpeg
             brew install ffmpeg
             ffmpeg --version    # 输出版本号则安装成功
-
-            # Typst
-            brew install typst
-            typst --version     # 输出版本号则安装成功
 
     .. translatable-tab:: Linux
 
@@ -194,16 +183,6 @@
             sudo apt update
             sudo apt install ffmpeg
             ffmpeg --version    # 输出版本号则安装成功
-
-        Typst 由于相对较新且未进入稳定版，直接从源代码仓库下载安装。
-
-        .. code-block:: bash
-
-            # Typst （参考 https://lindevs.com/install-typst-on-ubuntu）
-            wget -qO typst.tar.xz https://github.com/typst/typst/releases/latest/download/typst-x86_64-unknown-linux-musl.tar.xz
-            sudo tar xf typst.tar.xz --strip-components=1 -C /usr/local/bin typst-x86_64-unknown-linux-musl/typst
-            typst --version     # 输出版本号则安装成功
-            rm -rf typst.tar.xz
 
         另外，在 Linux 上使用 JAnim 窗口预览音频可能还需要安装 portaudio：
 
