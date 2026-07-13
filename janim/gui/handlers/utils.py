@@ -277,11 +277,12 @@ class SourceDiff(QFrame):
     def set_replacement(self, replacement: str) -> None:
         raw_lines = replacement.split('\n')
         multi_line = len(raw_lines) >= 2
+        last_line_idx = len(raw_lines) - 1
 
         lines = [
             f'{self.match_left if i == 0 else self.left_spaces}'
             f'{line}'
-            f'{"" if multi_line and i == 0 else self.match_right}'
+            f'{"" if multi_line and i != last_line_idx else self.match_right}'
             for i, line in enumerate(raw_lines)
         ]
 
