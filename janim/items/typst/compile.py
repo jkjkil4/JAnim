@@ -14,10 +14,15 @@ from janim.locale import get_translator
 from janim.logger import log
 from janim.utils.file_ops import get_janim_dir, get_typst_packages_dir
 
+__all__ = [
+    'TypstVar',
+    'TypSizeUnit',
+]
+
 _ = get_translator('janim.utils.typst_compile')
 
 type TypstVar = Points | dict[str, TypstVar] | Iterable[TypstVar]
-type TypstSizeUnit = Literal['pt', 'mm', 'cm', 'in', 'pt']
+type TypSizeUnit = Literal['pt', 'mm', 'cm', 'in', 'pt']
 
 type TypstElemItems = list[TypstElemItem]
 type GroupsIndices = dict[str, list[int]]

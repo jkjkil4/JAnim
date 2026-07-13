@@ -12,22 +12,29 @@ from janim.exception import InvalidOrdinalError, PatternMismatchError
 from janim.items.group import Group
 from janim.items.svg.svg_item import BasepointVItem, SVGElemItem
 from janim.items.typst.compile import (
-    TypstSizeUnit,
+    TypSizeUnit,
     TypstVar,
     compile_typst,
     resolve_groups,
 )
 from janim.items.typst.element import TypstElemItem
 from janim.items.typst.vars import (
+    TYPST_PT_TO_FRAME_RATIO,
     replace_vars_placeholders,
     stringify_vars_tree,
-    TYPST_PT_TO_FRAME_RATIO,
 )
 from janim.items.vitem import VItem
 from janim.locale import get_translator
 from janim.utils.config import Config
 from janim.utils.iterables import flatten
 from janim.utils.space_ops import rotation_between_vectors
+
+__all__ = [
+    'TypstPattern',
+    'TypstDoc',
+    'TypstText',
+    'TypstMath',
+]
 
 _ = get_translator('janim.items.svg.typst')
 
@@ -49,7 +56,7 @@ class TypstDoc(Group[TypstElemItem]):
         shared_preamble: str | None = None,
         additional_preamble: str | None = None,
         vars: dict[str, TypstVar] | None = None,
-        vars_size_unit: TypstSizeUnit | None = None,
+        vars_size_unit: TypSizeUnit | None = None,
         sys_inputs: dict[str, str] = {},
         # 缩放与尺寸
         scale: float = 1.0,  # 缩放系数，仅当 width 和 height 都为 None 时有效

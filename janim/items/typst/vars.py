@@ -3,10 +3,15 @@ from typing import Iterable
 
 from janim.constants import FRAME_PPI
 from janim.items.points import Points
-from janim.items.typst.compile import TypstElemItem, TypstSizeUnit, TypstVar, GroupsIndices
+from janim.items.typst.compile import TypstElemItem, TypSizeUnit, TypstVar, GroupsIndices
 from janim.utils.config import Config
 from janim.exception import InvalidTypstVarError
 from janim.locale import get_translator
+
+__all__ = [
+    'TYPST_PT_TO_FRAME_RATIO',
+    'FRAME_TO_TYPST_PT_RATIO',
+]
 
 _ = get_translator('janim.items.typst.vars')
 
@@ -26,7 +31,7 @@ FRAME_TO_TYPST_PT_RATIO = 1 / TYPST_PT_TO_FRAME_RATIO
 
 
 def stringify_vars_tree(
-    vars_tree: dict[str, TypstVar] | None, vars_size_unit: TypstSizeUnit | None
+    vars_tree: dict[str, TypstVar] | None, vars_size_unit: TypSizeUnit | None
 ) -> tuple[str, dict[str, Points]] | None:
     if vars_tree is None:
         return None
@@ -38,7 +43,7 @@ def stringify_vars_tree(
 
     mapping: dict[str, Points] = {}
     lst = [
-        f'#let {key} = {stringify_var(var, f"__ja__{key}", unit_or_scale, mapping)}'
+        f'#let {key} = {_stringify_var(var, f"__ja__{key}", unit_or_scale, mapping)}'
         for key, var in vars_tree.items()
     ]
     parsed = '#let __jabox = box.with(stroke: white)\n' + '\n'.join(lst)
@@ -69,12 +74,12 @@ def replace_vars_placeholders(
     return new_children
 
 
-def stringify_var(
+def _stringify_var(
     var: TypstVar, label: str, unit_or_scale: str | float, mapping: dict[str, Points]
 ) -> str:
     if isinstance(var, Points):
-        width = stringify_length(var.points.box.width, unit_or_scale)
-        height = stringify_length(var.points.box.height, unit_or_scale)
+        width = _stringify_length(var.points.box.width, unit_or_scale)
+        height = _stringify_length(var.points.box.height, unit_or_scale)
         mapping[label] = var
         return f'[#__jabox(width: {width}, height: {height})<{label}>]'
 
@@ -83,7 +88,7 @@ def stringify_var(
             '('
             + ', '.join(
                 [
-                    f'{key}: {stringify_var(v, f"{label}__{key}", unit_or_scale, mapping)}'
+                    f'{key}: {_stringify_var(v, f"{label}__{key}", unit_or_scale, mapping)}'
                     for key, v in var.items()
                 ]
             )
@@ -95,7 +100,7 @@ def stringify_var(
             '('
             + ', '.join(
                 [
-                    stringify_var(v, f'{label}__{i}', unit_or_scale, mapping)
+                    _stringify_var(v, f'{label}__{i}', unit_or_scale, mapping)
                     for i, v in enumerate(var)
                 ]
             )
@@ -108,7 +113,7 @@ def stringify_var(
         )
 
 
-def stringify_length(length: float, unit_or_scale: str | float) -> str:
+def _stringify_length(length: float, unit_or_scale: str | float) -> str:
     if isinstance(unit_or_scale, numbers.Real):
         return f'{length * unit_or_scale}pt'  # type: ignore
     elif isinstance(unit_or_scale, str):

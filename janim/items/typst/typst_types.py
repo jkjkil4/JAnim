@@ -13,6 +13,14 @@ from janim.items.typst.typst import TypstText
 from janim.locale import get_translator
 from janim.utils.config import config_ctx_var
 
+__all__ = [
+    'TypMatDelim',
+    'TypAlignment',
+    'TypMatAlignment',
+    'TypstMatrix',
+    'DynamicTypst',
+]
+
 type TypMatDelim = Literal['(', ')', '[', ']', '{', '}', '|', 'none']
 type TypAlignment = Literal['start', 'end', 'left', 'center', 'right', 'top', 'horizon', 'bottom']
 type TypMatAlignment = Literal[

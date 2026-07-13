@@ -9,6 +9,13 @@ from typst4janim import Element, ShapeInfo, TextGlyphInfo
 from janim.items.text import BASEPOINT_MARKS, BasepointVItem
 from janim.items.vitem import VItem
 
+__all__ = [
+    'TypstElemItem',
+    'TypTextGlyph',
+    'MarkedTypTextGlyph',
+    'TypShape',
+]
+
 type TypstElemItem = TypTextGlyph | MarkedTypTextGlyph | TypShape
 
 type _Rgba = tuple[float, float, float, float]
