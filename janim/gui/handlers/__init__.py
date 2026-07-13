@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Callable
 
 import janim.gui.handlers.camera as camera
+import janim.gui.handlers.draw as draw
 import janim.gui.handlers.move as move
 import janim.gui.handlers.select as select
 from janim.gui.handlers.unknown import handler as unknown_handler  # noqa: F401
@@ -15,6 +16,7 @@ registered: dict[str, Callable[[AnimViewer, Timeline.GuiCommand]]] = {
     'select': select.handler,
     'move': move.handler,
     'camera': camera.handler,
+    'draw': draw.handler,
 }
 
 

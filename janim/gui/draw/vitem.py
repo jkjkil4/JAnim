@@ -124,6 +124,8 @@ class DrawVItem(DrawOnce):
         self.code_changed.emit(text)
 
     def paint(self, p: QPainter, is_active: bool) -> None:
+        if len(self.full_points) == 0:
+            return
         p.setBrush(Qt.BrushStyle.NoBrush)
         p.setPen(QPen(ACTIVE_COLOR if is_active else INACTIVE_COLOR, 3))
 
