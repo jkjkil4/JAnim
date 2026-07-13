@@ -119,7 +119,7 @@ class DrawVItem(DrawOnce):
             ]
         )
         text = f'VItem(\n{points}\n)'
-        self.setLayout(self.mainlayout)
+        self.set_layout(self.mainlayout)
         self.code.setPlainText(text)
         self.code_changed.emit(text)
 

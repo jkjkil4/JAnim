@@ -76,6 +76,7 @@ class DrawPanel(HandlerPanel):
         area.setWidget(diff_widget)
 
         btn_reset = QPushButton(_('Reset'))
+        btn_reset.setMinimumWidth(70)
 
         btn_box, self.btn_ok, btn_cancel = get_confirm_buttons(self)
         self.btn_ok.setEnabled(False)
@@ -104,11 +105,13 @@ class DrawPanel(HandlerPanel):
         self.btn_ok.setEnabled(False)
 
         self.vlayout.removeWidget(self.draw)
+        self.draw.deleteLater()
 
         self.draw = self.draw_cls(self.viewer)
         self.init_draw()
+        self.viewer.overlay.update()
 
-        self.vlayout.insertWidget(0, self.draw)
+        self.vlayout.insertWidget(0, self.draw, 3)
 
     def init_draw(self) -> None:
         self.draw.init()

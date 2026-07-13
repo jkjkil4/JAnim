@@ -3,9 +3,9 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 import numpy as np
-from PySide6.QtCore import QPointF, Qt, Signal
+from PySide6.QtCore import QPointF, Qt, Signal, QMargins
 from PySide6.QtGui import QColor, QPainter
-from PySide6.QtWidgets import QLabel, QLayout, QScrollArea, QVBoxLayout, QWidget
+from PySide6.QtWidgets import QLabel, QLayout, QVBoxLayout, QWidget
 
 from janim.locale import get_translator
 
@@ -19,7 +19,7 @@ ACTIVE_COLOR_TRANSPARENT = QColor(255, 255, 0, 180)
 INACTIVE_COLOR = QColor(255, 255, 255, 128)
 
 
-class Draw(QScrollArea):
+class Draw(QWidget):
     tab_name = '(None)'
     desc_name = '(None)'
     icon_file: str | None = None
@@ -28,12 +28,16 @@ class Draw(QScrollArea):
 
     def __init__(self, viewer: AnimViewer):
         super().__init__()
-        self.setWidgetResizable(True)
+        # self.setWidgetResizable(True)
         self.setObjectName('itemWidget')
+
+        self.central_layout = QVBoxLayout()
+        self.central_layout.setContentsMargins(QMargins())
+        self.setLayout(self.central_layout)
 
         layout = QVBoxLayout()
         layout.addWidget(QLabel(_('Constructing ...')))
-        self.set_layout(layout)
+        self.central_layout.addLayout(layout)
 
         self.viewer = viewer
         self.init()
@@ -52,11 +56,15 @@ class Draw(QScrollArea):
         return layout
 
     def set_layout(self, layout: QLayout) -> None:
-        prev = self.widget()
-        if prev is not None:
-            prev.deleteLater()
-        self.setWidget(QWidget())
-        self.widget().setLayout(layout)
+        prev = self.central_layout.itemAt(0)
+        assert prev is not None
+        if prev.layout() is layout:
+            return
+
+        self.central_layout.removeItem(prev)
+        prev.layout().deleteLater()
+
+        self.central_layout.addLayout(layout)
 
 
 class DrawOnce(Draw):

@@ -53,7 +53,7 @@ class DrawDot(Draw):
         text = point_to_str(self.viewer.glw.map_to_point(self._position))
         if not self.cbb_coord_only.isChecked():
             text = f'Dot({text})'
-        self.setLayout(self.mainlayout)
+        self.set_layout(self.mainlayout)
         self.code.setPlainText(text)
         self.code_changed.emit(text)
 
