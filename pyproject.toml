@@ -15,6 +15,7 @@ classifiers = [
 ]
 requires-python = ">=3.12"
 dependencies = [
+    "typst4janim==0.15.1",
     "attrs",
     "numpy",
     "pyquaternion",
@@ -29,10 +30,9 @@ dependencies = [
     "freetype-py",
     "pillow",
     "svgelements",
-    "typst>=0.14.1",
     "dataclass-click",
     "cloup",
-    "prompt-toolkit"
+    "prompt-toolkit",
 ]
 
 [project.optional-dependencies]

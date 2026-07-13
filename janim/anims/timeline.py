@@ -35,7 +35,7 @@ from janim.items.group import Group
 from janim.items.item import Item
 from janim.items.points import Point
 from janim.items.shape_matchers import SurroundingRect
-from janim.items.svg.typst import TypstText
+from janim.items.typst.typst import TypstText
 from janim.items.text import Text
 from janim.locale import get_translator
 from janim.logger import log

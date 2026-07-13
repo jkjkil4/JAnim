@@ -1,31 +1,40 @@
 from __future__ import annotations
 
 import itertools as it
-import numbers
 import types
-from typing import Iterable, Literal, Self, overload
+from typing import Iterable, Self, overload
 
 import numpy as np
 
-from janim.constants import FRAME_PPI, ORIGIN, UP
-from janim.exception import InvalidOrdinalError, InvalidTypstVarError, PatternMismatchError
+from janim.anims.updater import updater_params_ctx
+from janim.constants import UP
+from janim.exception import InvalidOrdinalError, PatternMismatchError
 from janim.items.group import Group
-from janim.items.points import Points
-from janim.items.svg.svg_item import BasepointVItem, SVGElemItem, SVGItem
+from janim.items.svg.svg_item import BasepointVItem, SVGElemItem
+from janim.items.typst.compile import (
+    TypstSizeUnit,
+    TypstVar,
+    compile_typst,
+    resolve_groups,
+)
+from janim.items.typst.element import TypstElemItem
+from janim.items.typst.vars import (
+    replace_vars_placeholders,
+    stringify_vars_tree,
+    TYPST_PT_TO_FRAME_RATIO,
+)
 from janim.items.vitem import VItem
 from janim.locale import get_translator
 from janim.utils.config import Config
 from janim.utils.iterables import flatten
 from janim.utils.space_ops import rotation_between_vectors
-from janim.utils.typst_compile import compile_typst
 
 _ = get_translator('janim.items.svg.typst')
 
 type TypstPattern = TypstDoc | str
-type TypstVar = Points | dict[str, TypstVar] | Iterable[TypstVar]
 
 
-class TypstDoc(SVGItem):
+class TypstDoc(Group[TypstElemItem]):
     """
     Typst 文档
     """
@@ -36,65 +45,69 @@ class TypstDoc(SVGItem):
         self,
         text: str,
         *,
-        vars: dict[str, TypstVar] | None = None,
-        vars_size_unit: Literal['pt', 'mm', 'cm', 'in', 'pt'] | None = None,
-        sys_inputs: dict[str, str] = {},
-        scale: float = 1.0,
+        # 文档内容相关
         shared_preamble: str | None = None,
         additional_preamble: str | None = None,
+        vars: dict[str, TypstVar] | None = None,
+        vars_size_unit: TypstSizeUnit | None = None,
+        sys_inputs: dict[str, str] = {},
+        # 缩放与尺寸
+        scale: float = 1.0,  # 缩放系数，仅当 width 和 height 都为 None 时有效
+        width: float | None = None,
+        height: float | None = None,
+        # 其它设置
+        root: str | None = None,
+        mark_basepoint: bool = False,
         **kwargs,
     ):
         self.text = text
 
-        # 因为 Typst 默认字号=11，janim 默认字号=24，为了默认显示效果一致，将 Typst 内容缩放 24/11
-        scale *= 24 / 11
+        # Typst 产物得到的坐标以 pt 为单位，需要转换到 JAnim 坐标
+        scale *= TYPST_PT_TO_FRAME_RATIO
+
+        # 只有在不位于 Updater 内部时才缓存解析结果
+        on_updater = updater_params_ctx.get(None) is not None
 
         if shared_preamble is None:
             shared_preamble = Config.get.typst_shared_preamble
         if additional_preamble is None:
             additional_preamble = ''
 
-        if vars is not None:
-            factor_pt = Config.get.default_pixel_to_frame_ratio * (FRAME_PPI / 96) * scale
-            factor_px = factor_pt * 4 / 3
-            vars_str, vars_mapping = self.vars_str(vars, vars_size_unit or 1 / factor_px)
-        else:
-            vars_str = ''
-
-        super().__init__(
-            compile_typst(text, shared_preamble, additional_preamble, vars_str, sys_inputs),
+        parsed_vars = stringify_vars_tree(vars, vars_size_unit)
+        children, groups_indices = compile_typst(
+            text=text,
+            shared_preamble=shared_preamble,  # type: ignore
+            additional_preamble=additional_preamble,
+            vars='' if parsed_vars is None else parsed_vars[0],
+            sys_inputs=sys_inputs,
+            root=root,
+            mark_basepoint=mark_basepoint,
             scale=scale,
-            **kwargs,
+            cache=not on_updater,
         )
+        if parsed_vars is not None:
+            children = replace_vars_placeholders(children, parsed_vars[1], groups_indices)
+        self.groups = resolve_groups(children, groups_indices)
 
-        # 把占位元素替换为实际物件
-        if vars is not None:
-            new_children = self._children.copy()
-            for label, item in vars_mapping.items():
-                placeholders = self.get_label(label)
+        super().__init__(*children, **kwargs)
 
-                for i, placeholder in enumerate(placeholders):
-                    phbox = placeholder.points.box
+        box = self.points.box
 
-                    item_to_replace = item if i == 0 else item.copy()
-                    item_to_replace.points.set_size(width=phbox.width, height=phbox.height)
-                    item_to_replace.points.move_to(phbox.center)
+        # 根据 width 和 height 缩放，如果都没有指定，则这部分无效
+        if width is None and height is not None:
+            factor = height / box.height
+            self.points.set_size(box.width * factor, height, about_edge=None)
+        elif width is not None and height is None:
+            factor = width / box.width
+            self.points.set_size(width, box.height * factor, about_edge=None)
+        elif width is not None and height is not None:
+            factor = min(width / box.width, height / box.height)
+            self.points.set_size(width, height, about_edge=None)
 
-                    for suborder, sub in enumerate(item_to_replace.walk_self_and_descendants()):
-                        sub.depth._depth = placeholder.depth._depth
-                        sub.depth._order = placeholder.depth._order + 1e-4 * suborder
-
-                    self.groups[label] = [item_to_replace]
-
-                    idx = new_children.index(placeholder)
-                    new_children.pop(idx)
-                    new_children.insert(idx, item_to_replace)
-
-            self.clear_children()
-            self.add(*new_children)
+        self.move_into_position()
 
     def move_into_position(self) -> None:
-        self.points.scale(0.9, about_point=ORIGIN).to_border(UP)
+        self.points.scale(0.9, about_edge=None).to_border(UP)
 
     @classmethod
     def typstify(cls, obj: TypstPattern) -> TypstDoc:
@@ -102,69 +115,6 @@ class TypstDoc(SVGItem):
         将字符串变为 Typst 对象，而本身已经是的则直接返回
         """
         return obj if isinstance(obj, TypstDoc) else cls(obj)
-
-    # region vars
-
-    @staticmethod
-    def vars_str(
-        vars: dict[str, TypstVar], unit_or_scale: str | float
-    ) -> tuple[str, dict[str, Points]]:
-        mapping = {}
-        lst = [
-            f'#let {key} = {TypstDoc.var_str(var, f"__ja__{key}", unit_or_scale, mapping)}'
-            for key, var in vars.items()
-        ]
-        return '#let __jabox = box.with(stroke: white)\n' + '\n'.join(lst), mapping
-
-    @staticmethod
-    def var_str(
-        var: TypstVar, label: str, unit_or_scale: str | float, mapping: dict[str, Points]
-    ) -> str:
-        if isinstance(var, Points):
-            width = TypstDoc.length_str(var.points.box.width, unit_or_scale)
-            height = TypstDoc.length_str(var.points.box.height, unit_or_scale)
-            mapping[label] = var
-            return f'[#__jabox(width: {width}, height: {height})<{label}>]'
-
-        elif isinstance(var, dict):
-            return (
-                '('
-                + ', '.join(
-                    [
-                        f'{key}: {TypstDoc.var_str(v, f"{label}__{key}", unit_or_scale, mapping)}'
-                        for key, v in var.items()
-                    ]
-                )
-                + ')'
-            )
-
-        elif isinstance(var, Iterable):
-            return (
-                '('
-                + ', '.join(
-                    [
-                        TypstDoc.var_str(v, f'{label}__{i}', unit_or_scale, mapping)
-                        for i, v in enumerate(var)
-                    ]
-                )
-                + ')'
-            )
-
-        else:
-            raise InvalidTypstVarError(
-                _('{var} is not a valid value for embedding in Typst').format(var=repr(var))
-            )
-
-    @staticmethod
-    def length_str(length: float, unit_or_scale: str | float) -> str:
-        if isinstance(unit_or_scale, numbers.Real):
-            return f'{length * unit_or_scale}pt'
-        elif isinstance(unit_or_scale, str):
-            return f'{length}{unit_or_scale}'
-        else:
-            assert False
-
-    # endregion
 
     # region pattern-matching
 

@@ -9,7 +9,7 @@ from janim.components.component import CmptInfo
 from janim.constants import DEFAULT_ITEM_TO_ITEM_BUFF, DOWN, LEFT, ORIGIN, PI, RIGHT, UP
 from janim.items.geometry.line import Cmpt_VPoints_LineImpl, Line, LineBuff
 from janim.items.points import Points
-from janim.items.svg.typst import TypstText
+from janim.items.typst.typst import TypstText
 from janim.items.text import Text
 from janim.items.vitem import DEFAULT_STROKE_RADIUS, VItem
 from janim.render.renderer_arrow import ArrowRenderer

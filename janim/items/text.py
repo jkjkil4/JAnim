@@ -158,6 +158,10 @@ class ProjType(StrEnum):
     V = 'v'
 
 
+BASEPOINT_MARKS = np.array([ORIGIN, RIGHT, UP])
+BASEPOINT_MARKS.setflags(write=False)
+
+
 class BasepointVItem(MarkedItem, VItem):
     def offset_to(
         self,

@@ -47,8 +47,9 @@ EXITCODE_NOT_FILE = 1003
 # EXITCODE_PYOPENGL_NOT_FOUND = 1004
 # '''``PyOpenGL`` 未安装时的退出码（仅在设备不支持 OpenGL4.3 的情况下需要安装 PyOpenGL）'''
 
-EXITCODE_TYPST_NOT_FOUND = 1101
-"""Typst 未安装时的退出码"""
+# [deprecated]
+# EXITCODE_TYPST_NOT_FOUND = 1101
+# """Typst 未安装时的退出码"""
 EXITCODE_TYPST_COMPILE_ERROR = 1102
 """Typst 编译失败时的退出码"""
 

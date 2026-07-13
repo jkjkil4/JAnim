@@ -244,7 +244,7 @@ JAnim 提供了内置包可以在 Typst 中使用 ``#import`` 引入
 
     如果你需要脱离 JAnim 在外部 ``.typ`` 文件中编写 Typst 代码，希望其也能引入 JAnim 的内置包
 
-    你需要将 ``<site-packages>/janim/items/svg`` 完整路径通过 ``--package-path`` 选项传递给 Typst 编译器或 Tinymist 插件的 ``"tinymist.typstExtraArgs"`` 选项
+    你需要将 ``<site-packages>/janim/items/typst/packages`` 完整路径通过 ``--package-path`` 选项传递给 Typst 编译器或 Tinymist 插件的 ``"tinymist.typstExtraArgs"`` 选项
 
 语法高亮
 ----------------
@@ -351,7 +351,7 @@ Typst 物件支持传入 ``vars`` 参数嵌入 JAnim 物件：
 标记基点位置
 ----------------------
 
-标记基点位置的功能默认是关闭的，如果你希望给 Typst 物件的每个元素都标记基点位置，可以通过传入 ``mark_basepoint=True`` 来开启该功能：
+标记基点位置的功能默认是关闭的，如果你希望给 Typst 物件的每个字符都标记基点位置，可以通过传入 ``mark_basepoint=True`` 来开启该功能：
 
 .. code-block:: python
 
@@ -375,10 +375,6 @@ Typst 物件支持传入 ``vars`` 参数嵌入 JAnim 物件：
 
 关于基点位置的使用，请参考 :class:`~.BasepointVItem`。
 
-.. note::
-
-    ``mark_basepoint`` 其实是 :class:`~.SVGItem` 提供的一个参数，但是由于我们主要在 Typst 物件中使用它，所以放在这里进行说明。
-
 特殊类型的 Typst 物件
 -----------------------------
 
@@ -396,10 +392,4 @@ Typst 物件支持传入 ``vars`` 参数嵌入 JAnim 物件：
 其它
 -------------
 
-Typst 已经作为 `typst-py <https://github.com/messense/typst-py>`_ 包集成到 JAnim 中了，不需要另外安装。
-
-但是如果你有使用外部 Typst 可执行文件的需求，首先参考 :ref:`install_dep` 中提及的安装方法，然后使用以下方法启用外部 Typst：
-
-- 对于 CLI，可以传递 ``--external_typst`` 选项启用外部 Typst
-
-- 或者代码中，可以通过 ``set_use_external_typst(True)`` 启用外部 Typst
+Typst 已经作为 `typst4janim <https://github.com/jkjkil4/typst4janim>`_ 包集成到 JAnim 中了，不需要另外安装。

@@ -9,7 +9,7 @@ from janim.items.geometry.arrow import ArrowTip
 from janim.items.geometry.line import Line
 from janim.items.group import Group
 from janim.items.points import MarkedItem, Points
-from janim.items.svg.typst import TypstMath
+from janim.items.typst.typst import TypstMath
 from janim.items.text import Text
 from janim.typing import JAnimColor, RangeSpecifier, Vect
 from janim.utils.bezier import interpolate, outer_interpolate
