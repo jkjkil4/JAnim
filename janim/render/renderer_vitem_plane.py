@@ -380,14 +380,14 @@ class VItemPlaneRenderer(Renderer):
             self.update_fix_in_frame(self.comp_u_fix, item)
 
             # 让 Compute Shader 能正确读取到 vbo_points (SSBO)
-            gl.glMemoryBarrier(gl.GL_VERTEX_ATTRIB_ARRAY_BARRIER_BIT)
+            self.ctx.memory_barrier(gl.GL_VERTEX_ATTRIB_ARRAY_BARRIER_BIT)
 
             self.comp.run(
                 group_x=(len(new_attrs.points) + 255) // 256
             )  # 相当于 len() / 256 向上取整
 
-            # 让后续渲染能正确读取到 vbo_mapped_points
-            gl.glMemoryBarrier(gl.GL_SHADER_STORAGE_BARRIER_BIT)
+            # 让后续渲染能正确读取到 vbo_mapped_points (SSBO)
+            self.ctx.memory_barrier(gl.GL_SHADER_STORAGE_BARRIER_BIT)
 
             self.attrs.fix_in_frame = new_attrs.fix_in_frame
             self.attrs.camera_info = new_attrs.camera_info
