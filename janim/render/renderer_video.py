@@ -126,7 +126,7 @@ class VideoReader:
 
     def get(self, t: float) -> bytes:
         frame = round(t * self.info.fps_num / self.info.fps_den)
-        frame = min(frame, self.info.nb_frames - 1)
+        # frame = min(frame, self.info.nb_frames - 1)
 
         if frame > self.current_frame + 10 or frame < self.current_frame:
             self.open_video_pipe(frame)

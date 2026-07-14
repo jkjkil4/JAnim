@@ -7,6 +7,7 @@ import subprocess as sp
 from functools import lru_cache
 from typing import Self
 
+import av
 import moderngl as mgl
 import numpy as np
 from PIL import Image
@@ -16,7 +17,7 @@ from janim.components.component import CmptInfo
 from janim.components.image import Cmpt_Image
 from janim.components.rgbas import Cmpt_Rgbas
 from janim.constants import DL, DR, OUT, UL, UR
-from janim.exception import EXITCODE_FFMPEG_NOT_FOUND, EXITCODE_FFPROBE_ERROR, ExitException
+from janim.exception import ExitException, MediaError
 from janim.items.points import Points
 from janim.locale import get_translator
 from janim.logger import log
@@ -426,44 +427,22 @@ class VideoInfo:
     def __init__(self, file_path: str):
         self.file_path = file_path
 
-        command = [
-            Config.get.ffprobe_bin,
-            '-v', 'error',
-            '-select_streams', 'v:0',
-            '-show_entries', 'stream=width,height,r_frame_rate,nb_frames',
-            '-show_entries', 'format=duration',
-            '-of', 'csv=p=0',
-            file_path,
-        ]  # fmt: skip
-
         try:
-            with sp.Popen(command, stdout=sp.PIPE) as process:
-                ret = process.stdout.read().decode('utf-8')
-                code = process.wait()
-        except FileNotFoundError:
-            log.error(
-                _(
-                    'Unable to read video information, please install ffmpeg'
-                    'and add it (including ffprobe) to the environment variables.'
-                )
-            )
-            raise ExitException(EXITCODE_FFMPEG_NOT_FOUND)
+            container = av.open(file_path, 'r')
+            stream = container.streams.video[0]
+        except IndexError:
+            raise MediaError(_('File {file} has no video stream').format(file_path))
 
-        if code != 0:
-            log.error(_('ffprobe error. Please check the output for more information.'))
-            raise ExitException(EXITCODE_FFPROBE_ERROR)
-
-        assert ret
-        lines = ret.strip().split('\n')
-        # 实际使用发现结尾可能会多一个逗号，所以这里用 rstrip(',') 先把它去掉
-        s_width, s_height, s_fps, s_nb_frames = lines[0].rstrip(',').split(',')
-        s_duration = lines[1]
-
-        self.width = int(s_width)
-        self.height = int(s_height)
-        self.fps_num, self.fps_den = map(int, s_fps.split('/'))
-        self.nb_frames = int(s_nb_frames)
-        self.duration = float(s_duration)
+        self.width = stream.width
+        self.height = stream.height
+        r_frame_rate = stream.base_rate
+        if r_frame_rate is None:
+            raise MediaError(_('File {file} has no "r_frame_rate" infomation').format(file_path))
+        self.fps_num = r_frame_rate.numerator
+        self.fps_den = r_frame_rate.denominator
+        self.duration = container.duration
+        if self.duration is None:
+            raise MediaError(_('File {file} has no "duration" infomation').format(file_path))
 
 
 class PixelVideo(Video):
