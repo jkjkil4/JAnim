@@ -228,7 +228,6 @@ def write(
 
         if video_with_audio:
             merge_video_and_audio(
-                built.cfg.ffmpeg_bin,
                 video_writer.temp_file_path,
                 audio_writer.temp_file_path,
                 video_writer.final_file_path,

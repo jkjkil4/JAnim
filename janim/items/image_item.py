@@ -250,7 +250,7 @@ class VideoFrame(ImageItem):
     @staticmethod
     def _capture(file_path: str, frame_at: str | float) -> Image.Image:
         command = [
-            Config.get.ffmpeg_bin,
+            'ffmpeg',
             '-ss', str(frame_at),  # where
             '-i', file_path,  # file
             '-vframes', '1',  # capture only 1 frame

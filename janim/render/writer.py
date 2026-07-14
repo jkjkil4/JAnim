@@ -1,6 +1,5 @@
 import os
 import shutil
-import subprocess as sp
 import sys
 import time
 from contextlib import contextmanager
@@ -8,6 +7,7 @@ from functools import lru_cache, partial
 from glob import glob
 from typing import Generator
 
+import av
 import moderngl as mgl
 import OpenGL.GL as gl
 from tqdm import tqdm as ProgressDisplay
@@ -218,10 +218,8 @@ class VideoWriter:
         self.final_file_path = file_path
         self.temp_file_path = stem + '_temp' + self.ext
 
-        ffmpeg_bin = self.built.cfg.ffmpeg_bin
-
         command = [
-            ffmpeg_bin,
+            'ffmpeg',
             '-y',  # overwrite output file if it exists
             '-f', 'rawvideo',
             '-s', f'{self.built.cfg.pixel_width}x{self.built.cfg.pixel_height}',  # size of one frame
@@ -230,7 +228,7 @@ class VideoWriter:
             '-i', '-',  # The input comes from a pipe
             '-an',  # Tells FFMPEG not to expect any audio
             '-loglevel', 'error',
-            *self.ext_specific_flags(ffmpeg_bin, self.ext, hwaccel),
+            *self.ext_specific_flags(self.ext, hwaccel),
             self.temp_file_path,
         ]  # fmt: skip
 
@@ -238,11 +236,11 @@ class VideoWriter:
             self.writing_process = sp.Popen(command, stdin=sp.PIPE)
 
     @staticmethod
-    def ext_specific_flags(ffmpeg_bin: str, ext: str, hwaccel: bool) -> list[str]:
+    def ext_specific_flags(ext: str, hwaccel: bool) -> list[str]:
         """针对不同的格式产生不同的 FFMPEG 参数"""
         if ext == '.mp4':
             with VideoWriter.handle_ffmpeg_not_found():
-                encoder = VideoWriter.find_h264_encoder(ffmpeg_bin, hwaccel)
+                encoder = VideoWriter.find_h264_encoder(hwaccel)
                 log.info(_('Using {encoder} for encoding').format(encoder=encoder))
                 return [
                     '-pix_fmt', 'yuv420p',
@@ -264,13 +262,13 @@ class VideoWriter:
 
     @staticmethod
     @lru_cache
-    def find_h264_encoder(ffmpeg_bin: str, hwaccel: bool) -> str:
+    def find_h264_encoder(hwaccel: bool) -> str:
         """查找编码器，若 ``hwaccel=True`` 则优先使用硬件编码器"""
         if not hwaccel:
             return 'libx264'
 
         # Call ffmpeg to enumerate available encoders
-        output = sp.getoutput(f'{ffmpeg_bin} -hide_banner -encoders')
+        output = sp.getoutput('ffmpeg -hide_banner -encoders')
 
         encoders = [
             'h264_vaapi',
@@ -283,9 +281,7 @@ class VideoWriter:
 
         # Attempt to use the potential encoder to see if it actually works
         usable = [
-            potential
-            for potential in available
-            if VideoWriter.test_encoder_usability(ffmpeg_bin, potential)
+            potential for potential in available if VideoWriter.test_encoder_usability(potential)
         ]
 
         if available:
@@ -306,9 +302,9 @@ class VideoWriter:
         return 'libx264'
 
     @staticmethod
-    def test_encoder_usability(ffmpeg_bin: str, potential: str) -> bool:
+    def test_encoder_usability(potential: str) -> bool:
         exitcode, _ = sp.getstatusoutput(' '.join([
-            ffmpeg_bin,
+            'ffmpeg',
             '-f', 'lavfi',
             '-i', 'nullsrc=s=640x480:d=0.1',
             *VideoWriter.encoder_flags(potential),
@@ -429,7 +425,7 @@ class AudioWriter:
         self.temp_file_path = stem + '_temp' + ext
 
         command = [
-            self.built.cfg.ffmpeg_bin,
+            'ffmpeg',
             '-y',  # overwrite output file if it exists
             '-f', 's16le',
             '-ar', str(self.built.cfg.audio_framerate),  # framerate & samplerate
@@ -459,7 +455,6 @@ class AudioWriter:
 
 
 def merge_video_and_audio(
-    ffmpeg_bin: str,
     video_path: str,
     audio_path: str,
     result_path: str,
@@ -468,7 +463,7 @@ def merge_video_and_audio(
     quiet: bool = False,
 ) -> None:
     command = [
-        ffmpeg_bin,
+        'ffmpeg',
         '-y',
         '-i', video_path,
         '-i', audio_path,
