@@ -431,18 +431,22 @@ class VideoInfo:
             container = av.open(file_path, 'r')
             stream = container.streams.video[0]
         except IndexError:
-            raise MediaError(_('File {file} has no video stream').format(file_path))
+            raise MediaError(_('File "{file}" has no video stream').format(file_path))
 
         self.width = stream.width
         self.height = stream.height
-        r_frame_rate = stream.base_rate
-        if r_frame_rate is None:
-            raise MediaError(_('File {file} has no "r_frame_rate" infomation').format(file_path))
-        self.fps_num = r_frame_rate.numerator
-        self.fps_den = r_frame_rate.denominator
-        self.duration = container.duration
-        if self.duration is None:
-            raise MediaError(_('File {file} has no "duration" infomation').format(file_path))
+
+        frame_rate = stream.base_rate
+        if frame_rate is None:
+            raise MediaError(_('File "{file}" has no "r_frame_rate" information').format(file_path))
+        self.frame_rate = frame_rate
+        self.fps_num = frame_rate.numerator
+        self.fps_den = frame_rate.denominator
+
+        duration = container.duration
+        if duration is None:
+            raise MediaError(_('File "{file}" has no "duration" information').format(file_path))
+        self.duration = duration / av.time_base
 
 
 class PixelVideo(Video):

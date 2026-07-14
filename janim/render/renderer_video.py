@@ -1,18 +1,17 @@
 from __future__ import annotations
 
-import subprocess as sp
+from fractions import Fraction
+import math
 from typing import TYPE_CHECKING
 
+import av
 import moderngl as mgl
 import numpy as np
 
 from janim.anims.animation import Animation
-from janim.exception import EXITCODE_FFMPEG_NOT_FOUND, ExitException
 from janim.locale import get_translator
-from janim.logger import log
 from janim.render.base import Renderer
 from janim.render.program import get_program_from_file_prefix
-from janim.utils.config import Config
 
 if TYPE_CHECKING:
     from janim.items.image_item import Video, VideoInfo
@@ -116,59 +115,57 @@ class VideoReader:
     def __init__(self, info: VideoInfo, components: int):
         assert components in (3, 4)
         self.info = info
-        self.components = components
-        self.bufsize = info.height * info.width * self.components
+        self.format = 'rgb24' if components == 3 else 'rgba'
 
-        self.current_frame = -1
+        self.container = av.open(info.file_path)
+        self.stream = self.container.streams.video[0]  # VideoInfo 中已经确认过存在视频流
+        self.time_base: Fraction = self.stream.time_base  # type: ignore
 
-        self.process: _Popen | None = None
-        self.open_video_pipe(0)
+        # 两帧：(刚播放的帧, 随后的下一帧)
+        self.frame_pair: tuple[av.VideoFrame, av.VideoFrame | None] | None = None
+        # bytes 缓存，会因为 seek 和 next 重置
+        self.bytes_cache: bytes | None = None
+
+        # get 时刻超出前一次时刻的容许量，超出则触发 seek
+        self.pts_tolerance = self.time_to_pts(10)
 
     def get(self, t: float) -> bytes:
-        frame = round(t * self.info.fps_num / self.info.fps_den)
-        # frame = min(frame, self.info.nb_frames - 1)
+        pts = self.time_to_pts(t)
+        if self.needs_seek(pts):
+            self.seek(pts)
 
-        if frame > self.current_frame + 10 or frame < self.current_frame:
-            self.open_video_pipe(frame)
-            self.current_frame = frame - 1
+        assert self.frame_pair is not None
 
-        while frame > self.current_frame:
-            raw_frame = self.process.stdout.read(self.bufsize)
-            if raw_frame:
-                self.raw_frame = raw_frame
-            self.current_frame += 1
+        while self.frame_pair[1] is not None and self.frame_pair[1].pts <= pts:  # type: ignore
+            self.next()
 
-        return self.raw_frame
+        if self.bytes_cache is None:
+            self.bytes_cache = self.frame_pair[0].to_ndarray(format=self.format).tobytes()
+        return self.bytes_cache
 
-    def open_video_pipe(self, frame: int) -> None:
-        if self.process is not None:
-            self.process.kill()
-            self.process.wait()
-            self.process = None
+    def time_to_pts(self, t: float) -> int:
+        return math.ceil(int(t / self.time_base))
 
-        command = [
-            Config.get.ffmpeg_bin,
-            '-ss', str(frame * self.info.fps_den / self.info.fps_num),
-            '-i', self.info.file_path,
-            '-f', 'rawvideo',
-            '-pix_fmt', 'rgb24' if self.components == 3 else 'rgba',
-            '-loglevel', 'error',
-            '-',
-        ]  # fmt: skip
+    def needs_seek(self, pts: int) -> bool:
+        if self.frame_pair is None:
+            return True
+        return not (0 <= pts - self.frame_pair[0].pts < self.pts_tolerance)  # type: ignore
 
-        try:
-            self.process = _Popen(command, stdout=sp.PIPE)
-        except FileNotFoundError:
-            log.error(
-                _(
-                    'Unable to read video. Please install ffmpeg and add it to the environment variables.'
-                )
-            )
-            raise ExitException(EXITCODE_FFMPEG_NOT_FOUND)
+    def seek(self, pts: int) -> None:
+        self.container.seek(pts, stream=self.stream)
+        self.decode_iter = iter(self.container.decode(self.stream))
 
+        frame1 = next(self.decode_iter)
+        frame2 = next(self.decode_iter, None)
+        self.frame_pair = (frame1, frame2)
+        self.bytes_cache = None
 
-class _Popen(sp.Popen):
-    def __del__(self) -> None:
-        self.kill()
-        self.wait()
-        super().__del__()
+    def next(self) -> None:
+        assert self.frame_pair is not None
+
+        frame = next(self.decode_iter, None)
+        if frame is None and self.frame_pair[1] is None:
+            return
+
+        self.frame_pair = (self.frame_pair[1], frame)  # type: ignore
+        self.bytes_cache = None

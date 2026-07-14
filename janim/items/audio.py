@@ -8,7 +8,7 @@ from typing import Generator, Iterable, Self
 import numpy as np
 import numpy.typing as npt
 
-from janim.exception import EXITCODE_FFMPEG_NOT_FOUND, ExitException
+from janim.exception import ExitException
 from janim.locale import get_translator
 from janim.logger import log
 from janim.utils.bezier import interpolate

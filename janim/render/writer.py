@@ -13,7 +13,7 @@ import OpenGL.GL as gl
 from tqdm import tqdm as ProgressDisplay
 
 from janim.anims.timeline import BuiltTimeline, Timeline, TimeRange
-from janim.exception import EXITCODE_FFMPEG_NOT_FOUND, ExitException
+from janim.exception import ExitException
 from janim.locale import get_translator
 from janim.logger import log
 from janim.render.base import apply_blend_flags, create_context_430_or_330
