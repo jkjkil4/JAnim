@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from janim.anims.timeline import Timeline
+from janim.timeline import Timeline
 from janim.gui.handlers.utils import jump
 from janim.locale import get_translator
 from janim.logger import log

@@ -8,7 +8,7 @@ from PySide6.QtCore import QEvent, QObject, QPointF, QRectF, Qt, QTimer
 from PySide6.QtGui import QColor, QMouseEvent, QPainter, QPaintEvent
 from PySide6.QtWidgets import QLabel, QVBoxLayout
 
-from janim.anims.timeline import Timeline
+from janim.timeline import Timeline
 from janim.camera.camera_info import CameraInfo
 from janim.constants import OUT
 from janim.gui.handlers.utils import HandlerPanel, SourceDiff, get_confirm_buttons, jump, parse_item
@@ -257,7 +257,7 @@ def select_next_item_at_position(
 
     found: list[ItemBox] = []
 
-    for item, appr in viewer.built.visible_item_segments.get(attrs.global_t):
+    for item, appr in viewer.built.visible_item_chunks.get(attrs.global_t):
         if not appr.is_visible_at(attrs.global_t):
             continue
         item_box = ItemBox(item, attrs)

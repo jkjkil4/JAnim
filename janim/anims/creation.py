@@ -7,8 +7,7 @@ from typing import Callable
 
 import numpy as np
 
-from janim.anims.animation import Animation
-from janim.anims.timeline import RenderCollection
+from janim.anims_core.animation import Animation
 from janim.anims.updater import DataUpdater, UpdaterParams
 from janim.components.vpoints import Cmpt_VPoints
 from janim.constants import (
@@ -21,6 +20,7 @@ from janim.constants import (
 from janim.items.group import Group
 from janim.items.item import Item
 from janim.items.vitem import VItem
+from janim.render.collection import RenderCollection
 from janim.typing import JAnimColor
 from janim.utils.bezier import integer_interpolate
 from janim.utils.rate_functions import RateFunc, double_smooth, linear
@@ -43,7 +43,7 @@ class ShowPartial(DataUpdater):
     def __init__(
         self,
         item: Item,
-        bound_func: Callable[[UpdaterParams], tuple[int, int]],
+        bound_func: Callable[[UpdaterParams], tuple[float, float]],
         *,
         auto_close_path: bool = False,
         become_at_end: bool = False,
@@ -209,7 +209,7 @@ class DrawBorderThenFill(DataUpdater):
         duration: float = 2.0,
         stroke_radius: float = DEFAULT_DRAWBORDER_THENFILL_STROKE_RADIUS,
         scale_with_camera: bool = False,
-        stroke_color: JAnimColor = None,
+        stroke_color: JAnimColor | None = None,
         rate_func: RateFunc = double_smooth,
         become_at_end: bool = False,
         root_only: bool = False,
@@ -349,13 +349,11 @@ class ShowIncreasingSubsets(Animation):
         self.show_at_begin = show_at_begin
         self.hide_at_end = hide_at_end
 
-    def _time_fixed(self) -> None:
+    def _finalized(self) -> None:
         if self.show_at_begin:
             self.timeline.schedule(self.t_range.at, self.group.show)
         if self.hide_at_end:
-            self.timeline.schedule(self.t_range.end, self.group.hide)
-
-        apprs = self.timeline.item_appearances
+            self.timeline.schedule(self.t_range.end, self.group.hide)  # type: ignore
 
         self.i_items = [
             (i, list(child.walk_self_and_descendants())) for i, child in enumerate(self.group)

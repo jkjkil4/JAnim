@@ -1,9 +1,6 @@
-import os
-
 import click
 
-from janim.locale import get_translator, set_lang
-from janim.utils.file_ops import get_janim_dir
+from janim.locale import set_lang
 
 
 # 提前解析 --lang 参数

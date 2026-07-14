@@ -11,7 +11,13 @@ from janim.render.base import Renderer
 from janim.utils.space_ops import normalize
 
 if TYPE_CHECKING:
-    from janim.anims.timeline import ItemWithRenderFunc, RenderGroupReturn, Timeline
+    from janim.timeline import Timeline
+    from janim.timeline.core import (
+        ExtraRenderGroup,
+        ItemAppearance,
+        ItemWithRenderFunc,
+        RenderGroupReturn,
+    )
 
 
 @dataclass
@@ -21,8 +27,8 @@ class RenderCollection:
     """
 
     timeline: Timeline
-    apprs: list[tuple[Timeline.ItemAppearance, Item]]
-    extras: list[tuple[Timeline.ExtraRenderGroup, RenderGroupReturn]]
+    apprs: list[tuple[ItemAppearance, Item]]
+    extras: list[tuple[ExtraRenderGroup, RenderGroupReturn]]
 
     def __post_init__(self):
         self._apprs_is_delegated: list[bool] | None = None

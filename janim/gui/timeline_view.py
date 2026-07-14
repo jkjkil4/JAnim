@@ -9,9 +9,10 @@ from PySide6.QtCore import QPoint, QPointF, QRect, Qt, QTimer, Signal
 from PySide6.QtGui import QColor, QKeyEvent, QMouseEvent, QPainter, QPaintEvent, QPen, QWheelEvent
 from PySide6.QtWidgets import QLabel, QVBoxLayout, QWidget
 
-from janim.anims.animation import FOREVER, Animation, TimeRange
 from janim.anims.composition import AnimGroup
-from janim.anims.timeline import BuiltTimeline, Timeline, TimelineItem
+from janim.timeline import BuiltTimeline, TimelineItem
+from janim.anims_core.animation import FOREVER, Animation
+from janim.anims_core.time import TimeRange
 from janim.gui.charts.anim_chart import AnimChartWidget
 from janim.gui.charts.audio_chart import AudioChartWidget
 from janim.gui.label import (
@@ -24,6 +25,7 @@ from janim.gui.label import (
 )
 from janim.items.item import Item
 from janim.locale import get_translator
+from janim.timeline.audios import PlayAudioInfo
 from janim.utils.rate_functions import linear
 from janim.utils.simple_functions import clip
 
@@ -271,7 +273,7 @@ class TimelineView(QWidget):
         infos = built.timeline.audio_infos
         multiple = len(infos) != 1
 
-        def make_audio_label(info: Timeline.PlayAudioInfo) -> Label:
+        def make_audio_label(info: PlayAudioInfo) -> Label:
             label = Label(
                 info.audio.filename,
                 info.range,
@@ -373,16 +375,16 @@ class TimelineView(QWidget):
                 *[
                     Label(
                         (
-                            f'{anim.__class__.__name__} at 0x{id(anim):X}'
+                            f'{anim.__class__.__name__} at 0x{id(anim):X} order {anim._order}'
                             if anim._generate_by is None
-                            else f'{anim.__class__.__name__} at 0x{id(anim):X} '
+                            else f'{anim.__class__.__name__} at 0x{id(anim):X} order {anim._order} '
                             f'(from {anim._generate_by.__class__.__name__} at 0x{id(anim._generate_by):X})'
                         ),
                         TimeRange(t1, t2),
                         brush=get_color(anim),
                     )
                     for (t1, t2), anims in zip(
-                        it.pairwise([*stack.times, built.duration + 1]), stack.stacks
+                        it.pairwise([*stack._chunk_starts, built.duration + 1]), stack._chunks
                     )
                     for anim in anims
                 ],
@@ -492,7 +494,7 @@ class TimelineView(QWidget):
         else:
             self.hover_at_audio(pos, label, obj)
 
-    def hover_at_audio(self, pos: QPoint, label: Label, info: Timeline.PlayAudioInfo) -> None:
+    def hover_at_audio(self, pos: QPoint, label: Label, info: PlayAudioInfo) -> None:
         msg_lst = [
             f'{round(info.range.at, 2)}s ~ {round(info.range.end, 2)}s',
             info.audio.file_path,
@@ -555,9 +557,7 @@ class TimelineView(QWidget):
         self.place_tooltip(self.tooltip, pos)
         self.tooltip.show()
 
-    def create_audio_chart(
-        self, info: Timeline.PlayAudioInfo, near: float | None = None
-    ) -> QWidget:
+    def create_audio_chart(self, info: PlayAudioInfo, near: float | None = None) -> QWidget:
         return AudioChartWidget(info, fps=self.built.cfg.fps, near=near)
 
     def hover_at_anim(self, pos: QPoint, anim: Animation) -> None:

@@ -1,7 +1,7 @@
-animation
+subtitles
 =========
 
-.. automodule:: janim.anims.animation
+.. automodule:: janim.timeline.subtitles
    :members:
    :undoc-members:
    :show-inheritance:

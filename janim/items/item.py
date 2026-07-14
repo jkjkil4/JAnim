@@ -24,8 +24,8 @@ from janim.utils.paths import PathFunc, straight_path
 from janim.utils.signal import SIGNAL_OBJ_SLOTS_NAME
 
 if TYPE_CHECKING:
-    from janim.anims.timeline import Timeline, RenderCollection
     from janim.items.group import Group
+    from janim.render.collection import RenderCollection
 
 _ = get_translator('janim.items.item')
 
@@ -42,7 +42,7 @@ class _ItemMeta(type):
 
     def __new__(cls: type, name: str, bases: tuple[type, ...], attrdict: dict):
         # 记录所有定义在类中的 CmptInfo
-        cls_components: dict[str, Component] = {
+        cls_components: dict[str, CmptInfo] = {
             key: val  #
             for key, val in attrdict.items()
             if isinstance(val, CmptInfo)
@@ -139,7 +139,7 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         self._stored_parents: list[Item] | None = None
         self._stored_children: list[Item] | None = None
 
-        from janim.anims.timeline import Timeline
+        from janim.timeline import Timeline
 
         self.timeline = Timeline.get_context(raise_exc=False)
 
@@ -717,8 +717,8 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
                 appr = self.timeline.item_appearances.get(item, None)
                 if appr is None:
                     continue
-                if not appr.stack.is_changed(item):
-                    appr.stack.detect_change(item, self.timeline.current_time, force=True)
+                if not appr.stack.may_changed():
+                    appr.stack.display(self.timeline.current_time)
 
             # 如果设置了 auto_visible 且根物件是可见的
             # 那么 become 的最后会把所有子物件设为可见

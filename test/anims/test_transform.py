@@ -2,9 +2,10 @@ import unittest
 
 import numpy as np
 
-from janim.anims.animation import Animation, TimeRange
-from janim.anims.timeline import Timeline
+from janim.anims_core.animation import Animation
+from janim.timeline import Timeline
 from janim.anims.transform import Transform
+from janim.anims_core.time import TimeRange
 from janim.constants import DOWN, LEFT, RIGHT, UP
 from janim.items.points import Points
 from janim.utils.data import ContextSetter

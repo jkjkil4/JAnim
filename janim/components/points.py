@@ -931,7 +931,7 @@ class Cmpt_Points[ItemT](Component[ItemT]):
         - ``normal_vector`` 默认通过 :meth:`unit_normal` 计算
         """
         if camera is ...:
-            from janim.anims.timeline import Timeline
+            from janim.timeline import Timeline
 
             camera = Timeline.get_context().camera.current()
 

@@ -4,7 +4,7 @@ import math
 
 import numpy as np
 
-from janim.anims.animation import Animation
+from janim.anims_core.animation import Animation
 from janim.anims.composition import AnimGroup, Succession
 from janim.anims.creation import Create, ShowPartial
 from janim.anims.fading import FadeOut
@@ -338,8 +338,7 @@ class ShowCreationThenDestructionAround(AnimationOnSurroundingRect):
     .. janim-example:: ShowCreationThenDestructionAroundExample
         :extract-from-test:
         :media: _static/videos/ShowCreationThenDestructionAroundExample.mp4
-        :url:
-            https://janim.readthedocs.io/zh-cn/latest/janim/anims/indication.html#showcreationthendestructionaroundexample
+        :url: https://janim.readthedocs.io/zh-cn/latest/janim/anims/indication.html#showcreationthendestructionaroundexample
     """
 
     label_color = C_LABEL_ANIM_INDICATION

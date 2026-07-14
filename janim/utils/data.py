@@ -83,13 +83,20 @@ class SortedKeyQueue[K, T]:
         self._keys: List[K] = []  # 存 key 值
         self._values: List[T] = []
 
-    def insert(self, key: K, value: T):
+    def insert(self, key: K, value: T) -> None:
         """
         插入 ``value``，保持按 ``key`` 排序
         """
         idx = bisect_right(self._keys, key)
         self._keys.insert(idx, key)
         self._values.insert(idx, value)
+
+    def pop(self, idx: int) -> None:
+        """
+        移除 ``idx`` 下标的元素
+        """
+        self._keys.pop(idx)
+        self._values.pop(idx)
 
     def pop_up_to(self, max_key: float) -> Generator[T, None, None]:
         """

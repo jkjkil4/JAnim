@@ -307,7 +307,7 @@ class DynamicTypst(TypstText):
         post: Callable[[DynamicTypst], Any] = lambda typ: None,
         **kwargs,
     ):
-        self._frozen_config = config_ctx_var.get()
+        self._config_context = config_ctx_var.get()
 
         self._template = template
         self._kwargs = kwargs
@@ -352,7 +352,7 @@ class DynamicTypst(TypstText):
             )
 
     def _rerender(self) -> DynamicTypst:
-        token = config_ctx_var.set(self._frozen_config)
+        token = config_ctx_var.set(self._config_context)
         try:
             dynamic = self._dynamic.get()
             new = DynamicTypst(self._template, dynamic, **self._kwargs)

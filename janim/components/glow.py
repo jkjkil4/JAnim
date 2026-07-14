@@ -1,16 +1,13 @@
 from __future__ import annotations
 
-from typing import Iterable, Self
+from typing import Self
 
-import numpy as np
-from colour import Color
 
 from janim.anims.method_updater_meta import register_updater
-from janim.components.component import Component
 from janim.components.rgba import Cmpt_Rgba
-from janim.typing import Alpha, JAnimColor, Rgba
+from janim.typing import Alpha, JAnimColor
 from janim.utils.bezier import interpolate
-from janim.utils.data import AlignedData, Array
+from janim.utils.data import Array
 
 
 class Cmpt_Glow[ItemT](Cmpt_Rgba[ItemT]):
