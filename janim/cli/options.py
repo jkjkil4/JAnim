@@ -80,7 +80,6 @@ class OutputOptions:
     video_with_audio: Annotated[
         bool,
         option(
-            '--video_with_audio',
             is_flag=True,
             help=_(
                 'Video with audio (default; will be replaced by --video if there is no audio, and by both --video and --audio if the format is GIF)'
