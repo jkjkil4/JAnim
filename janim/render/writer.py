@@ -1,13 +1,9 @@
 import os
 import shutil
-import sys
 import time
-from contextlib import contextmanager
-from functools import lru_cache, partial
-from glob import glob
+from functools import partial
 from typing import Generator
 
-import av
 import moderngl as mgl
 import OpenGL.GL as gl
 from tqdm import tqdm as ProgressDisplay
@@ -17,6 +13,11 @@ from janim.exception import ExitException
 from janim.locale import get_translator
 from janim.logger import log
 from janim.render.base import apply_blend_flags, create_context_430_or_330
+from janim.render.encoder import (
+    FFmpegVideoEncoder,
+    PyavAudioEncoder,
+    PyavVideoEncoder,
+)
 from janim.render.framebuffer import FrameBuffer
 from janim.utils.simple_functions import clip
 
@@ -173,7 +174,7 @@ class VideoWriter:
                         assert ptr
                         data = gl.ctypes.string_at(ptr, self.byte_size)
                         # 写入数据到ffmpeg
-                        self.writing_process.stdin.write(data)
+                        self.encoder.write(data)
                         gl.glUnmapBuffer(gl.GL_PIXEL_PACK_BUFFER)
 
                 # 处理最后一批
@@ -184,7 +185,7 @@ class VideoWriter:
                         continue
                     gl.glBindBuffer(gl.GL_PIXEL_PACK_BUFFER, self.pbos[read_idx])
                     data = gl.glGetBufferSubData(gl.GL_PIXEL_PACK_BUFFER, 0, self.byte_size)
-                    self.writing_process.stdin.write(data)
+                    self.encoder.write(data)
 
             self._cleanup_pbos()
         else:
@@ -218,153 +219,21 @@ class VideoWriter:
         self.final_file_path = file_path
         self.temp_file_path = stem + '_temp' + self.ext
 
-        command = [
-            'ffmpeg',
-            '-y',  # overwrite output file if it exists
-            '-f', 'rawvideo',
-            '-s', f'{self.built.cfg.pixel_width}x{self.built.cfg.pixel_height}',  # size of one frame
-            '-pix_fmt', 'rgba',
-            '-r', str(self.built.cfg.fps),  # frames per second
-            '-i', '-',  # The input comes from a pipe
-            '-an',  # Tells FFMPEG not to expect any audio
-            '-loglevel', 'error',
-            *self.ext_specific_flags(self.ext, hwaccel),
-            self.temp_file_path,
-        ]  # fmt: skip
-
-        with self.handle_ffmpeg_not_found():
-            self.writing_process = sp.Popen(command, stdin=sp.PIPE)
-
-    @staticmethod
-    def ext_specific_flags(ext: str, hwaccel: bool) -> list[str]:
-        """针对不同的格式产生不同的 FFMPEG 参数"""
-        if ext == '.mp4':
-            with VideoWriter.handle_ffmpeg_not_found():
-                encoder = VideoWriter.find_h264_encoder(hwaccel)
-                log.info(_('Using {encoder} for encoding').format(encoder=encoder))
-                return [
-                    '-pix_fmt', 'yuv420p',
-                    *VideoWriter.encoder_flags(encoder)
-                ]  # fmt: skip
-
-        if ext == '.mov':
-            return [
-                '-c:v', 'qtrle',
-                '-vf', 'vflip',
-            ]  # fmt: skip
-
-        if ext == '.gif':
-            return [
-                '-vf', 'vflip',
-            ]  # fmt: skip
-
-        assert False
-
-    @staticmethod
-    @lru_cache
-    def find_h264_encoder(hwaccel: bool) -> str:
-        """查找编码器，若 ``hwaccel=True`` 则优先使用硬件编码器"""
-        if not hwaccel:
-            return 'libx264'
-
-        # Call ffmpeg to enumerate available encoders
-        output = sp.getoutput('ffmpeg -hide_banner -encoders')
-
-        encoders = [
-            'h264_vaapi',
-            'h264_nvenc',
-            'h264_qsv',
-            'h264_amf',
-            'h264_videotoolbox',
-        ]
-        available = [e for e in encoders if e in output]
-
-        # Attempt to use the potential encoder to see if it actually works
-        usable = [
-            potential for potential in available if VideoWriter.test_encoder_usability(potential)
-        ]
-
-        if available:
-            log.info(
-                _('Hardware encoder probe results:')
-                + ' '
-                + ', '.join(
-                    f'{e}={"ok" if e in usable else "fail"}'  #
-                    for e in available
-                )
-            )
-
-        if usable:
-            return usable[0]
-
-        # Safe fallback for if none of the probed hardware encoders work
-        log.info(_('No hardware encoder found'))
-        return 'libx264'
-
-    @staticmethod
-    def test_encoder_usability(potential: str) -> bool:
-        exitcode, _ = sp.getstatusoutput(' '.join([
-            'ffmpeg',
-            '-f', 'lavfi',
-            '-i', 'nullsrc=s=640x480:d=0.1',
-            *VideoWriter.encoder_flags(potential),
-            '-f', 'null',
-            '-loglevel', 'error',
-            '-',
-        ]))  # fmt: skip
-        return exitcode == 0
-
-    @staticmethod
-    def encoder_flags(encoder: str) -> list[str]:
-        device = VideoWriter.find_encoder_device()
-        if encoder == 'h264_vaapi' and device is not None:
-            return [
-                '-c:v', encoder,
-                '-vf', 'vflip,format=nv12,hwupload',
-                '-vaapi_device', device,
-            ]  # fmt: skip
+        if hwaccel:
+            self.encoder = FFmpegVideoEncoder()
         else:
-            return [
-                '-c:v', encoder,
-                '-vf', 'vflip,format=nv12'
-            ]  # fmt: skip
-
-    @staticmethod
-    @lru_cache(maxsize=1)
-    def find_encoder_device() -> str | None:
-        """Return the first working VA-API render node, or None."""
-        # Only applies on linux; exit early on other platforms
-        # `linux` and `linux2` are both possible values
-        if not sys.platform.startswith('linux'):
-            return None
-
-        # If `/dev/dri` doesn't exist, this will just return an empty array
-        for device_node in sorted(glob('/dev/dri/renderD*')):
-            if os.access(device_node, os.R_OK | os.W_OK):
-                return device_node
-
-        return None
+            self.encoder = PyavVideoEncoder()
+        self.encoder.open(
+            self.temp_file_path,
+            self.built.cfg.pixel_width,
+            self.built.cfg.pixel_height,
+            self.built.cfg.fps,
+        )
 
     def close_video_pipe(self, _keep_temp: bool) -> None:
-        self.writing_process.stdin.close()
-        self.writing_process.wait()
-        self.writing_process.terminate()
+        self.encoder.finish()
         if not _keep_temp:
             shutil.move(self.temp_file_path, self.final_file_path)
-
-    @staticmethod
-    @contextmanager
-    def handle_ffmpeg_not_found():
-        try:
-            yield
-        except FileNotFoundError:
-            log.error(
-                _(
-                    'Unable to output video. '  #
-                    'Please install ffmpeg and add it to the environment variables.'
-                )
-            )
-            raise ExitException(EXITCODE_FFMPEG_NOT_FOUND)
 
 
 class AudioWriter:
@@ -401,7 +270,7 @@ class AudioWriter:
 
         for frame in progress_display:
             samples = get_audio_samples(frame)
-            self.writing_process.stdin.write(samples.tobytes())
+            self.encoder.write(samples.tobytes())
 
         log.debug('Finished writing audio samples to pipe')
 
@@ -424,32 +293,15 @@ class AudioWriter:
         self.final_file_path = file_path
         self.temp_file_path = stem + '_temp' + ext
 
-        command = [
-            'ffmpeg',
-            '-y',  # overwrite output file if it exists
-            '-f', 's16le',
-            '-ar', str(self.built.cfg.audio_framerate),  # framerate & samplerate
-            '-ac', str(self.built.cfg.audio_channels),
-            '-i', '-',
-            '-loglevel', 'error',
+        self.encoder = PyavAudioEncoder()
+        self.encoder.open(
             self.temp_file_path,
-        ]  # fmt: skip
-
-        try:
-            self.writing_process = sp.Popen(command, stdin=sp.PIPE)
-        except FileNotFoundError:
-            log.error(
-                _(
-                    'Unable to output audio. '  #
-                    'Please install ffmpeg and add it to the environment variables.'
-                )
-            )
-            raise ExitException(EXITCODE_FFMPEG_NOT_FOUND)
+            self.built.cfg.audio_framerate,
+            self.built.cfg.audio_channels,
+        )
 
     def close_audio_pipe(self, _keep_temp: bool) -> None:
-        self.writing_process.stdin.close()
-        self.writing_process.wait()
-        self.writing_process.terminate()
+        self.encoder.finish()
         if not _keep_temp:
             shutil.move(self.temp_file_path, self.final_file_path)
 
@@ -462,6 +314,9 @@ def merge_video_and_audio(
     *,
     quiet: bool = False,
 ) -> None:
+    import subprocess as sp
+    from janim.exception import EXITCODE_FFMPEG_NOT_FOUND
+
     command = [
         'ffmpeg',
         '-y',

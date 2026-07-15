@@ -52,9 +52,9 @@ EXITCODE_TYPST_NOT_FOUND = 1101
 EXITCODE_TYPST_COMPILE_ERROR = 1102
 """Typst 编译失败时的退出码"""
 
+EXITCODE_FFMPEG_NOT_FOUND = 2001
+"""ffmpeg 未安装时的退出码"""
 # [deprecated]
-# EXITCODE_FFMPEG_NOT_FOUND = 2001
-# """ffmpeg 未安装时的退出码"""
 # EXITCODE_FFPROBE_ERROR = 2002
 # """ffprobe 执行失败时的退出码"""
 
