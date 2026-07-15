@@ -62,8 +62,8 @@ class FormatOptions:
         str,
         option(
             default='mp4',
-            type=click.Choice(['mp4', 'mov', 'gif']),
-            help=_('Output video format (mp4 by default, mov for transparent background)'),
+            type=click.Choice(['mp4', 'webm', 'mov', 'gif']),
+            help=_('Output video format (mp4 by default, webm/mov for transparent background)'),
         ),
     ]
     audio_format: Annotated[

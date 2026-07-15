@@ -5,6 +5,9 @@ from contextlib import contextmanager
 from functools import lru_cache
 from glob import glob
 
+import av
+import numpy as np
+
 from janim.exception import EXITCODE_FFMPEG_NOT_FOUND, ExitException
 from janim.locale import get_translator
 from janim.logger import log
@@ -19,14 +22,79 @@ class PyavVideoEncoder:
     不考虑硬件加速检测
     """
 
+    CODEC_CONFIGS = {
+        '.mp4': {
+            'codec': 'libx264',
+            'pix_fmt': 'yuv420p',
+            'options': {},
+        },
+        '.webm': {
+            'codec': 'libvpx-vp9',
+            'pix_fmt': 'yuva420p',
+            'options': {'-auto-alt-ref': '1'},
+        },
+        '.mov': {
+            'codec': 'qtrle',
+            'pix_fmt': 'argb',
+            'options': {},
+        },
+        '.gif': {
+            'codec': 'gif',
+            'pix_fmt': 'rgb8',
+            'options': {},
+        },
+    }
+
     def open(self, file_path: str, pw: int, ph: int, fps: int) -> None:
-        pass
+        self.file_path = file_path
+        self.pw = pw
+        self.ph = ph
+        self.fps = fps
+
+        ext = os.path.splitext(file_path)[1].lower()
+        config = self.CODEC_CONFIGS[ext]
+
+        if ext == '.gif' and fps > 50:
+            log.warning(
+                _(
+                    'GIF export with {fps} FPS (>50) may not play correctly '
+                    'because GIF has timing limitations. '
+                    'Consider using a lower FPS or another video format.'
+                ).format(fps=fps)
+            )
+
+        options = {
+            'an': '1',  # ffmpeg: -an, no audio
+            'crf': '23',  # ffmpeg: -crf, constant rate factor
+        }
+        options.update(config['options'])
+
+        self.container = av.open(file_path, 'w')
+        self.stream: av.VideoStream = self.container.add_stream(
+            config['codec'],
+            rate=fps,
+            options=options,
+        )
+        self.stream.width = pw
+        self.stream.height = ph
+        self.stream.pix_fmt = config['pix_fmt']
 
     def write(self, data: bytes) -> None:
-        pass
+        frame = av.VideoFrame.from_bytes(
+            data,
+            self.pw,
+            self.ph,
+            format='rgba',
+            flip_vertical=True,
+        )
+
+        for packet in self.stream.encode(frame):
+            self.container.mux(packet)
 
     def finish(self) -> None:
-        pass
+        for packet in self.stream.encode():
+            self.container.mux(packet)
+        self.container.close()
 
 
 class FFmpegVideoEncoder:
@@ -52,7 +120,7 @@ class FFmpegVideoEncoder:
             file_path,
         ]  # fmt: skip
 
-        with handle_ffmpeg_not_found():
+        with self.handle_ffmpeg_not_found():
             self.writing_process = sp.Popen(command, stdin=sp.PIPE)
 
     def write(self, data: bytes) -> None:
@@ -67,13 +135,21 @@ class FFmpegVideoEncoder:
     def ext_specific_flags(ext: str) -> list[str]:
         """针对不同的格式产生不同的 FFMPEG 参数"""
         if ext == '.mp4':
-            with handle_ffmpeg_not_found():
+            with FFmpegVideoEncoder.handle_ffmpeg_not_found():
                 encoder = FFmpegVideoEncoder.find_h264_encoder()
                 log.info(_('Using {encoder} for encoding').format(encoder=encoder))
                 return [
                     '-pix_fmt', 'yuv420p',
                     *FFmpegVideoEncoder.encoder_flags(encoder)
                 ]  # fmt: skip
+
+        if ext == '.webm':
+            return [
+                '-c:v', 'libvpx-vp9',
+                '-pix_fmt', 'yuva420p',
+                '-vf', 'vflip',
+                '-auto-alt-ref', '1',
+            ]  # fmt: skip
 
         if ext == '.mov':
             return [
@@ -172,6 +248,20 @@ class FFmpegVideoEncoder:
 
         return None
 
+    @staticmethod
+    @contextmanager
+    def handle_ffmpeg_not_found():
+        try:
+            yield
+        except FileNotFoundError:
+            log.error(
+                _(
+                    'Unable to output video. '  #
+                    'Please install ffmpeg and add it to the environment variables.'
+                )
+            )
+            raise ExitException(EXITCODE_FFMPEG_NOT_FOUND)
+
 
 class PyavAudioEncoder:
     """
@@ -179,13 +269,33 @@ class PyavAudioEncoder:
     """
 
     def open(self, file_path: str, framerate: int, channels: int) -> None:
-        pass
+        self.file_path = file_path
+        self.framerate = framerate
+        self.channels = channels
 
-    def write(self, data: bytes) -> None:
-        pass
+        self.layout = f'{channels}c'
+
+        self.container = av.open(file_path, 'w')
+        self.stream: av.AudioStream = self.container.add_stream(
+            self.container.default_audio_codec, rate=framerate
+        )  # type: ignore
+        self.stream.layout = self.layout
+
+    def write(self, array: np.ndarray) -> None:
+        frame = av.AudioFrame.from_ndarray(
+            array.reshape((1, -1)),  # packed e.g. [[L0,R0,L1,R1,...]]
+            format='s16',
+            layout=self.layout,
+        )
+        frame.sample_rate = self.framerate
+
+        for packet in self.stream.encode(frame):
+            self.container.mux(packet)
 
     def finish(self) -> None:
-        pass
+        for packet in self.stream.encode():
+            self.container.mux(packet)
+        self.container.close()
 
 
 class FFmpegAudioEncoder:
@@ -216,24 +326,10 @@ class FFmpegAudioEncoder:
             )
             raise ExitException(EXITCODE_FFMPEG_NOT_FOUND)
 
-    def write(self, data: bytes) -> None:
-        self.writing_process.stdin.write(data)
+    def write(self, array: np.ndarray) -> None:
+        self.writing_process.stdin.write(array.tobytes())
 
     def finish(self) -> None:
         self.writing_process.stdin.close()
         self.writing_process.wait()
         self.writing_process.terminate()
-
-
-@contextmanager
-def handle_ffmpeg_not_found():
-    try:
-        yield
-    except FileNotFoundError:
-        log.error(
-            _(
-                'Unable to output video. '  #
-                'Please install ffmpeg and add it to the environment variables.'
-            )
-        )
-        raise ExitException(EXITCODE_FFMPEG_NOT_FOUND)

@@ -137,7 +137,7 @@ class VideoWriter:
         )
 
         rgb = self.built.cfg.background_color.rgb
-        transparent = self.ext == '.mov'
+        transparent = self.ext in ('.webm', '.mov')
 
         fbo = FrameBuffer(self.ctx, self.pw, self.ph, rgb, transparent)
 
@@ -185,7 +185,7 @@ class VideoWriter:
                         continue
                     gl.glBindBuffer(gl.GL_PIXEL_PACK_BUFFER, self.pbos[read_idx])
                     data = gl.glGetBufferSubData(gl.GL_PIXEL_PACK_BUFFER, 0, self.byte_size)
-                    self.encoder.write(data)
+                    self.encoder.write(data.tobytes())
 
             self._cleanup_pbos()
         else:
@@ -196,7 +196,7 @@ class VideoWriter:
                     self.built.render_all(self.ctx, frame / fps)
                     fbo.unpremultiply()
                     bytes = fbo.read()
-                    self.writing_process.stdin.write(bytes)
+                    self.encoder.write(bytes)
 
         log.debug('Finished writing frames to video pipe')
 
@@ -270,7 +270,7 @@ class AudioWriter:
 
         for frame in progress_display:
             samples = get_audio_samples(frame)
-            self.encoder.write(samples.tobytes())
+            self.encoder.write(samples)
 
         log.debug('Finished writing audio samples to pipe')
 
