@@ -53,7 +53,6 @@ class VideoWriter:
             log.debug('Created OpenGL context for VideoWriter')
 
         self.pw, self.ph = built.cfg.pixel_width, built.cfg.pixel_height
-        self.frame_count = round(built.duration * built.cfg.fps) + 1
 
         # PBO 相关初始化
         self.byte_size = self.pw * self.ph * 4  # 每帧的字节大小 (RGBA)
@@ -115,21 +114,8 @@ class VideoWriter:
             self._init_pbos()
             log.debug('Created PBOs')
 
-        if in_point is not None and in_point < 0:
-            in_point += self.built.duration
-        if in_point is not None and out_point < 0:
-            out_point += self.built.duration
+        start_frame, end_frame = get_frame_start_and_end(in_point, out_point, self.built)
 
-        start_frame = (
-            0  #
-            if in_point is None
-            else clip(round(in_point * fps), 0, self.frame_count - 1)
-        )
-        end_frame = (
-            self.frame_count
-            if out_point is None
-            else clip(round(out_point * fps), start_frame + 1, self.frame_count)
-        )
         progress_display = ProgressDisplay(
             range(start_frame, end_frame),
             leave=False,
@@ -244,7 +230,15 @@ class AudioWriter:
     def writes(built: BuiltTimeline, file_path: str, *, quiet=False) -> None:
         AudioWriter(built).write_all(file_path, quiet=quiet)
 
-    def write_all(self, file_path: str, *, quiet=False, _keep_temp=False) -> None:
+    def write_all(
+        self,
+        file_path: str,
+        in_point: float | None = None,
+        out_point: float | None = None,
+        *,
+        quiet=False,
+        _keep_temp=False,
+    ) -> None:
         name = self.built.timeline.__class__.__name__
         if not quiet:
             log.info(_('Writing audio of "{name}"').format(name=name))
@@ -256,8 +250,10 @@ class AudioWriter:
         self.open_audio_pipe(file_path)
         log.debug('Opened audio pipe')
 
+        start_frame, end_frame = get_frame_start_and_end(in_point, out_point, self.built)
+
         progress_display = ProgressDisplay(
-            range(round(self.built.duration * fps) + 1),
+            range(start_frame, end_frame),
             leave=False,
             dynamic_ncols=True,
         )
@@ -304,6 +300,33 @@ class AudioWriter:
         self.encoder.finish()
         if not _keep_temp:
             shutil.move(self.temp_file_path, self.final_file_path)
+
+
+def get_frame_start_and_end(
+    in_point: float | None, out_point: float | None, built: BuiltTimeline
+) -> tuple[int, int]:
+    # 将负值的 入点/出点 （即相对结尾的时间），计算为对应的正数
+    if in_point is not None and in_point < 0:
+        in_point += built.duration
+    if out_point is not None and out_point < 0:
+        out_point += built.duration
+
+    fps = built.cfg.fps
+    frame_count = built.frame_count
+
+    # 计算对应的 frame 范围
+    start_frame = (
+        0  #
+        if in_point is None
+        else clip(round(in_point * fps), 0, frame_count - 1)
+    )
+    end_frame = (
+        frame_count
+        if out_point is None
+        else clip(round(out_point * fps), start_frame + 1, frame_count)
+    )
+
+    return (start_frame, end_frame)
 
 
 def merge_video_and_audio(

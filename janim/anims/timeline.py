@@ -1124,6 +1124,10 @@ class BuiltTimeline:
     def cfg(self) -> Config | ConfigGetter:
         return self.timeline.config_getter
 
+    @property
+    def frame_count(self) -> int:
+        return round(self.duration * self.cfg.fps) + 1
+
     def get_audio_samples_of_frame(
         self, fps: float, framerate: int, frame: int, *, count: int = 1
     ) -> np.ndarray:
