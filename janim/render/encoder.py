@@ -4,9 +4,12 @@ import sys
 from contextlib import contextmanager
 from functools import lru_cache
 from glob import glob
+from queue import Queue
+from threading import Thread
 
 import av
 import numpy as np
+from av.codec.context import ThreadType
 
 from janim.exception import EXITCODE_FFMPEG_NOT_FOUND, ExitException
 from janim.locale import get_translator
@@ -78,22 +81,50 @@ class PyavVideoEncoder:
         self.stream.width = pw
         self.stream.height = ph
         self.stream.pix_fmt = config['pix_fmt']
+        self.stream.thread_type = ThreadType.FRAME  # 可以提升处理速度
+
+        self.bytes_queue: Queue[bytes | None] = Queue(maxsize=3)
+        self.frame_queue: Queue[av.VideoFrame | None] = Queue(maxsize=3)
+
+        self.frame_thread = Thread(target=self.frame_thread_fn, daemon=True)
+        self.frame_thread.start()
+        self.encode_thread = Thread(target=self.encode_thread_fn, daemon=True)
+        self.encode_thread.start()
 
     def write(self, data: bytes) -> None:
-        frame = av.VideoFrame.from_bytes(
-            data,
-            self.pw,
-            self.ph,
-            format='rgba',
-            flip_vertical=True,
-        )
+        self.bytes_queue.put(data)
 
-        for packet in self.stream.encode(frame):
-            self.container.mux(packet)
+    def frame_thread_fn(self) -> None:
+        while True:
+            data = self.bytes_queue.get()
+            if data is None:
+                self.frame_queue.put(None)
+                return
+
+            frame = av.VideoFrame.from_bytes(
+                data,
+                self.pw,
+                self.ph,
+                format='rgba',
+                flip_vertical=True,
+            )
+            self.frame_queue.put(frame)
+
+    def encode_thread_fn(self) -> None:
+        while True:
+            frame = self.frame_queue.get()
+            if frame is None:
+                for packet in self.stream.encode():
+                    self.container.mux(packet)
+                return
+
+            for packet in self.stream.encode(frame):
+                self.container.mux(packet)
 
     def finish(self) -> None:
-        for packet in self.stream.encode():
-            self.container.mux(packet)
+        self.bytes_queue.put(None)
+        self.frame_thread.join()
+        self.encode_thread.join()
         self.container.close()
 
 
