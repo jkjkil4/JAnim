@@ -253,19 +253,21 @@ class AudioWriter:
         start_frame, end_frame = get_frame_start_and_end(in_point, out_point, self.built)
 
         progress_display = ProgressDisplay(
-            range(start_frame, end_frame),
+            # 音频输出不需要像 video 那样逐 frame 步进，所以我们这里每次循环直接提取 fps 个 frame 一起处理
+            # Q: 那为什么不直接从 start_frame 提取到 end_frame?
+            # A: 因为考虑到一次性提取内存量不可控且不利于显示进度条
+            range(start_frame, end_frame, fps),
             leave=False,
             dynamic_ncols=True,
         )
 
         get_audio_samples = partial(
-            self.built.get_audio_samples_of_frame,
-            fps,
+            self.built.get_audio_samples_between,
             framerate,
         )
 
         for frame in progress_display:
-            samples = get_audio_samples(frame)
+            samples = get_audio_samples(frame / fps, min(frame + fps, end_frame) / fps)
             self.encoder.write(samples)
 
         log.debug('Finished writing audio samples to pipe')
