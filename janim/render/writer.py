@@ -4,12 +4,12 @@ import time
 from functools import partial
 from typing import Generator
 
+import av
 import moderngl as mgl
 import OpenGL.GL as gl
 from tqdm import tqdm as ProgressDisplay
 
 from janim.anims.timeline import BuiltTimeline, Timeline, TimeRange
-from janim.exception import ExitException
 from janim.locale import get_translator
 from janim.logger import log
 from janim.render.base import apply_blend_flags, create_context_430_or_330
@@ -337,34 +337,47 @@ def merge_video_and_audio(
     *,
     quiet: bool = False,
 ) -> None:
-    import subprocess as sp
-    from janim.exception import EXITCODE_FFMPEG_NOT_FOUND
+    input_video = av.open(video_path)
+    input_audio = av.open(audio_path)
 
-    command = [
-        'ffmpeg',
-        '-y',
-        '-i', video_path,
-        '-i', audio_path,
-        '-shortest',
-        '-c:v', 'copy',
-        '-c:a', 'aac',
-        result_path,
-        '-loglevel', 'error',
-    ]  # fmt: skip
+    output = av.open(result_path, 'w')
 
-    try:
-        merge_process = sp.Popen(command, stdin=sp.PIPE)
-    except FileNotFoundError:
-        log.error(
-            _(
-                'Unable to merge video. '  #
-                'Please install ffmpeg and add it to the environment variables.'
-            )
-        )
-        raise ExitException(EXITCODE_FFMPEG_NOT_FOUND)
+    # 复制视频/音频流格式
+    video_stream = input_video.streams.video[0]
+    output_video = output.add_stream_from_template(video_stream)
 
-    merge_process.wait()
-    merge_process.terminate()
+    audio_stream = input_audio.streams.audio[0]
+    output_audio = output.add_stream_from_template(audio_stream)
+
+    # 计算两个流的结束时间，取最短的
+    video_duration = video_stream.duration * video_stream.time_base
+    audio_duration = audio_stream.duration * audio_stream.time_base
+    shortest_duration = min(video_duration, audio_duration)
+
+    video_max_pts = shortest_duration / video_stream.time_base
+    audio_max_pts = shortest_duration / audio_stream.time_base
+
+    # 写入视频流，只到最短时长
+    for packet in input_video.demux(video_stream):
+        if packet.dts is None:
+            continue
+        if packet.pts > video_max_pts:
+            break
+        packet.stream = output_video
+        output.mux(packet)
+
+    # 写入音频流，只到最短时长（考虑 packet 的持续时长）
+    for packet in input_audio.demux(audio_stream):
+        if packet.dts is None:
+            continue
+        if packet.pts + packet.duration > audio_max_pts:
+            break
+        packet.stream = output_audio
+        output.mux(packet)
+
+    output.close()
+    input_video.close()
+    input_audio.close()
 
     if remove:
         os.remove(video_path)
