@@ -351,13 +351,20 @@ def merge_video_and_audio(
     # 复制视频/音频流格式
     video_stream = input_video.streams.video[0]
     output_video = output.add_stream_from_template(video_stream)
+    output_video.codec_context.open()
 
     audio_stream = input_audio.streams.audio[0]
-    output_audio = output.add_stream_from_template(audio_stream)
+    output_audio: av.AudioStream = output.add_stream(
+        output.default_audio_codec,
+        # .webm 的 libopus 只支持 48000 等少数 sample-rate，传入其它的会报错
+        rate=48000 if video_path.endswith('.webm') else audio_stream.sample_rate,
+        layout=audio_stream.layout,
+    )  # type: ignore
 
     # 计算两个流的结束时间，取最短的
-    video_duration = video_stream.duration * video_stream.time_base
-    audio_duration = audio_stream.duration * audio_stream.time_base
+    # stream.duration * stream.time_base 无法处理 webm，所以这里用的是 container.duration / av.time_base
+    video_duration = input_video.duration / av.time_base
+    audio_duration = input_audio.duration / av.time_base
     shortest_duration = min(video_duration, audio_duration)
 
     video_max_pts = shortest_duration / video_stream.time_base
@@ -365,20 +372,20 @@ def merge_video_and_audio(
 
     # 写入视频流，只到最短时长
     for packet in input_video.demux(video_stream):
-        if packet.dts is None:
+        if packet.pts is None:
             continue
         if packet.pts > video_max_pts:
             break
         packet.stream = output_video
         output.mux(packet)
 
-    # 写入音频流，只到最短时长（考虑 packet 的持续时长）
-    for packet in input_audio.demux(audio_stream):
-        if packet.dts is None:
-            continue
-        if packet.pts + packet.duration > audio_max_pts:
+    # 转码音频，只到最短时长（考虑 packet 的持续时长）
+    for frame in input_audio.decode(audio_stream):
+        if frame.pts is not None and frame.pts + frame.duration >= audio_max_pts:
             break
-        packet.stream = output_audio
+        for packet in output_audio.encode(frame):
+            output.mux(packet)
+    for packet in output_audio.encode():
         output.mux(packet)
 
     output.close()

@@ -54,7 +54,7 @@ class PyavVideoEncoder:
         self.ph = ph
         self.fps = fps
 
-        ext = os.path.splitext(file_path)[1].lower()
+        ext = os.path.splitext(file_path)[1]
         config = self.CODEC_CONFIGS[ext]
 
         if ext == '.gif' and fps > 50:
