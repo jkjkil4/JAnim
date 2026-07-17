@@ -2,8 +2,9 @@ from __future__ import annotations
 
 import math
 import threading
+from dataclasses import dataclass
 from fractions import Fraction
-from typing import TYPE_CHECKING, Callable
+from typing import TYPE_CHECKING, Any, Callable
 
 import av
 import moderngl as mgl
@@ -113,6 +114,12 @@ class VideoRenderer(Renderer):
             self.prev_frame = raw_frame
 
 
+@dataclass(slots=True)
+class FrameData:
+    frame: Any
+    data: bytes | None = None
+
+
 class VideoReader:
     def __init__(self, info: VideoInfo, components: int):
         # 基础信息
@@ -129,11 +136,8 @@ class VideoReader:
         # 已经解码的帧，若最后一个元素为 None，则表示到达视频末尾
         # seek 时，会将 keyframe-pts ~ pts 的帧以及 pts 后的一帧一并存入列表
         # next 时，行为类似队列，会将后续的帧加入列表末尾，并弹出列表开头的帧
-        self.frames = []
-        self.worker = ThreadWorker()  # 用于预先解析
-
-        # bytes 缓存，会因为 frames 或 active_index 的变动而重置
-        self.bytes_cache: bytes | None = None
+        self.frames: list[FrameData] = []
+        self.worker = DecodeWorker(self._worker_task)  # 用于预先解析
 
         # 表示在 get 时，这次的时刻超出前一次时刻的容许量，如果超出则触发 seek
         self.pts_tolerance = self.time_to_pts(10)
@@ -141,13 +145,17 @@ class VideoReader:
     def get(self, t: float) -> bytes:
         pts = self.time_to_pts(t)
         self.ensure_frames_correct(pts)
+        return self._get_frame_bytes(self.frames[self.active_index])
 
-        if self.bytes_cache is None:
-            frame_bytes: bytes = (
-                self.frames[self.active_index].to_ndarray(format=self.format).tobytes()
-            )
-            self.bytes_cache = frame_bytes
-        return self.bytes_cache
+    def _get_frame_bytes(self, frame_data: FrameData) -> bytes:
+        try:
+            if frame_data.data is None:
+                frame_bytes: bytes = frame_data.frame.to_ndarray(format=self.format).tobytes()
+                frame_data.data = frame_bytes
+            return frame_data.data
+        except Exception:
+            print(len(self.frames))
+            raise
 
     def time_to_pts(self, t: float) -> int:
         """
@@ -171,62 +179,65 @@ class VideoReader:
             self.decode_iter = iter(self.container.decode(self.stream))
             frame1 = next(self.decode_iter)
             frame2 = next(self.decode_iter, None)
-            self.frames = [frame1, frame2]
+            self.frames = [FrameData(frame1), FrameData(frame2)]
             self.active_index = 0  # 倒数第二个
-            self.bytes_cache = None
 
         # 目前，`pts` 不位于已解码区域前面，现在判断如果在已解码区域后面，则让已解码区域逐渐后挪
-        if self.frames[-1] is not None and self.frames[-1].pts <= pts:
+        if self.frames[-1].frame is not None and self.frames[-1].frame.pts <= pts:
             worker_result = self.worker.get()
 
-            while self.frames[-1] is not None and self.frames[-1].pts <= pts:
+            while self.frames[-1].frame is not None and self.frames[-1].frame.pts <= pts:
                 # 如果有预先解析好的帧，则利用，否则手动 next
-                if worker_result is not ThreadWorker.NO_RESULT:
+                if worker_result is not None:
                     next_frame = worker_result
-                    worker_result = ThreadWorker.NO_RESULT
+                    worker_result = None
                     self.worker.clear()
                 else:
-                    next_frame = next(self.decode_iter, None)
+                    next_frame = FrameData(next(self.decode_iter, None))
 
                 if not needs_seek:
                     self.frames.pop(0)
                 self.frames.append(next_frame)
 
             # 注册预先解析任务
-            if self.frames[-1] is not None:
-                self.worker.submit(lambda: next(self.decode_iter, None))
+            if self.frames[-1].frame is not None:
+                self.worker.submit()
 
             self.active_index = len(self.frames) - 2  # 倒数第二个
-            self.bytes_cache = None
 
         # 目前，`pts` 一定位于已解码区域内部，根据 pts 对应其中的哪个 frame，更新记录的 active_index 下标
         # 因为更新后的下标很可能差得不多，所以这里直接 while 而非二分
-        while pts < self.frames[self.active_index].pts:
+        while pts < self.frames[self.active_index].frame.pts:
             assert self.active_index != 0
             self.active_index -= 1
-            self.bytes_cache = None
         while (
-            self.frames[self.active_index + 1] is not None
-            and pts >= self.frames[self.active_index + 1].pts
+            self.frames[self.active_index + 1].frame is not None
+            and pts >= self.frames[self.active_index + 1].frame.pts
         ):
             assert self.active_index != len(self.frames) - 2
             self.active_index += 1
-            self.bytes_cache = None
 
     def needs_seek(self, pts: int) -> bool:
         if len(self.frames) < 2:
             return True
-        if pts < self.frames[0].pts:
+        if pts < self.frames[0].frame.pts:
             return True
-        return self.frames[-1] is not None and pts >= self.frames[-2].pts + self.pts_tolerance
+        return (
+            self.frames[-1].frame is not None
+            and pts >= self.frames[-2].frame.pts + self.pts_tolerance
+        )
+
+    def _worker_task(self) -> FrameData | None:
+        frame_data = FrameData(next(self.decode_iter, None))
+        if frame_data.frame is not None:
+            self._get_frame_bytes(frame_data)  # 在子线程中预先计算 bytes
+        return frame_data
 
 
-class ThreadWorker:
-    NO_RESULT = object()
-
-    def __init__(self):
-        self._task: Callable | None = None
-        self._result = self.NO_RESULT
+class DecodeWorker:
+    def __init__(self, task: Callable[[], FrameData | None]):
+        self._task = task
+        self._result: FrameData | None = None
 
         self._ready = threading.Event()
         self._done = threading.Event()
@@ -240,15 +251,12 @@ class ThreadWorker:
             self._ready.wait()
             self._ready.clear()
 
-            assert self._task is not None
             self._result = self._task()
 
             self._done.set()
 
-    def submit(self, fn: Callable):
+    def submit(self):
         assert self._done.is_set(), 'worker already has a running task'
-
-        self._task = fn
         self._done.clear()
         self._ready.set()
 
@@ -257,4 +265,4 @@ class ThreadWorker:
         return self._result
 
     def clear(self):
-        self._result = self.NO_RESULT
+        self._result = None
