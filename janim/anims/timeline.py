@@ -1124,14 +1124,26 @@ class BuiltTimeline:
     def cfg(self) -> Config | ConfigGetter:
         return self.timeline.config_getter
 
+    @property
+    def frame_count(self) -> int:
+        return round(self.duration * self.cfg.fps) + 1
+
     def get_audio_samples_of_frame(
-        self, fps: float, framerate: int, frame: int, *, count: int = 1
+        self, fps: int, framerate: int, frame: int, *, count: int = 1
     ) -> np.ndarray:
         """
         提取特定帧的音频流
         """
         begin = frame / fps
         end = (frame + count) / fps
+        return self.get_audio_samples_between(framerate, begin, end)
+
+    def get_audio_samples_between(
+        self,
+        framerate: int,
+        begin: float,
+        end: float,
+    ) -> np.ndarray:
         channels = self.cfg.audio_channels
 
         output_sample_count = math.floor(end * framerate) - math.floor(begin * framerate)
@@ -1170,11 +1182,7 @@ class BuiltTimeline:
         # 合并子 Timeline 的 audio
         for item in self.timeline.subtimeline_items:
             built = item._built
-            frame_offset = int(item.at * fps)
-
-            data = built.get_audio_samples_of_frame(
-                fps, framerate, frame - frame_offset, count=count
-            )
+            data = built.get_audio_samples_between(framerate, begin - item.at, end - item.at)
             result += resize_preserving_order(data, output_sample_count)
 
         return result

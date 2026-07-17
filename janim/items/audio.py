@@ -1,14 +1,16 @@
 from __future__ import annotations
 
 import copy
+from fractions import Fraction
 import os
 import subprocess as sp
 from typing import Generator, Iterable, Self
 
+import av
 import numpy as np
 import numpy.typing as npt
 
-from janim.exception import EXITCODE_FFMPEG_NOT_FOUND, ExitException
+from janim.exception import MediaError
 from janim.locale import get_translator
 from janim.logger import log
 from janim.utils.bezier import interpolate
@@ -20,6 +22,8 @@ from janim.utils.simple_functions import clip
 
 _ = get_translator('janim.items.audio')
 
+type _AudioCache = tuple[np.ndarray, str]
+
 
 class Audio:
     """
@@ -30,18 +34,23 @@ class Audio:
     另见：:class:`~.Config`
     """
 
-    audio_cache_map: dict[tuple, tuple[np.ndarray, int, str, str]] = {}
+    audio_cache_map: dict[tuple, _AudioCache] = {}
 
     def __init__(self, file_path: str = '', begin: float = -1, end: float = -1, **kwargs):
+        from janim.anims.timeline import Timeline
+
         super().__init__(**kwargs)
+        with Timeline.get_context().with_config():
+            self.framerate: int = Config.get.audio_framerate
+            self.channels: int = Config.get.audio_channels
+
         self._samples = Array.create([], np.int16)
-        self.framerate = 0
-        self.file_path = ''
-        self.filename = ''
+
         if file_path:
             self.read(file_path, begin, end)
         else:
-            self.framerate = Config.get.audio_framerate
+            self.file_path = ''
+            self.filename = ''
 
     def copy(self) -> Self:
         copy_audio = copy.copy(self)
@@ -62,8 +71,13 @@ class Audio:
 
         可以指定 ``begin`` 和 ``end`` 来截取音频的一部分
         """
-        channels = Config.get.audio_channels
+        data, file_path = self._read(file_path, begin, end)
+        self._samples.data = data
+        self.file_path = file_path
+        self.filename = os.path.basename(file_path)
+        return self
 
+    def _read(self, file_path: str, begin: float, end: float) -> _AudioCache:
         try:
             file_path = find_file(file_path)
         except FileNotFoundError:
@@ -73,63 +87,53 @@ class Audio:
                 ).format(file_path=file_path)
             )
 
-            self._samples.data = np.zeros((Config.get.audio_framerate * 8, channels))
-            self.framerate = Config.get.audio_framerate
-            self.file_path = file_path
-            self.filename = os.path.basename(file_path)
-            return
+            data = np.zeros((Config.get.audio_framerate * 8, self.channels))
+            return (data, '')
 
         mtime = os.path.getmtime(file_path)
-        name = os.path.splitext(os.path.basename(file_path))[0]
-        key = (name, mtime, begin, end)
+        abspath = os.path.abspath(file_path)
+        key = (abspath, mtime, begin, end)
 
         cached = self.audio_cache_map.get(key, None)
         if cached is not None:
-            self._samples.data, self.framerate, self.file_path, self.filename = cached
-            return
+            return cached
 
-        command = [
-            Config.get.ffmpeg_bin,
-            '-vn',
-            '-i', file_path,
-        ]  # fmt: skip
-        if begin != -1:
-            command += ['-ss', str(begin)]  # clip from
-        if end != -1:
-            command += ['-to', str(end)]  # clip to
+        with av.open(file_path, 'r') as container:
+            try:
+                stream = container.streams.audio[0]
+            except IndexError:
+                raise MediaError(_('File "{file}" has no audio stream').format(file=file_path))
 
-        command += [
-            '-f', 's16le',
-            '-acodec', 'pcm_s16le',
-            '-ar', str(Config.get.audio_framerate),  # framerate & samplerate
-            '-ac', str(channels),
-            '-loglevel', 'error',
-            '-',  # output to a pipe
-        ]  # fmt: skip
+            time_base: Fraction = stream.time_base  # type: ignore
 
-        try:
-            # TODO: support more sampwidth
-            # TODO: fix ByteOrder
-            with sp.Popen(command, stdout=sp.PIPE) as reading_process:
-                data = np.frombuffer(reading_process.stdout.read(), dtype=np.int16)
+            if begin != -1:
+                begin_pts = int(begin / time_base)
+                # 跳转到预期时刻（稍前，后面会继续判定 pts）
+                container.seek(begin_pts, stream=stream)
+            if end != -1:
+                end_pts = int(end / time_base)
 
-        except FileNotFoundError:
-            log.error(
-                _(
-                    'Unable to read audio, please install ffmpeg and add it to the environment variables'
-                )
+            resampler = av.AudioResampler(
+                format='s16', layout=f'{self.channels}c', rate=self.framerate
             )
-            raise ExitException(EXITCODE_FFMPEG_NOT_FOUND)
+            frames: list[av.AudioFrame | None] = []
+            for frame in container.decode(stream):
+                if begin != -1 and frame.pts < begin_pts:  # type: ignore
+                    continue
+                if end != -1 and frame.pts >= end_pts:  # type: ignore
+                    break
+                frames.append(frame)
+            frames.append(None)
 
-        data = data.reshape((-1, channels))
+            chunks: list[np.ndarray] = [
+                resampled.to_ndarray().reshape((-1, self.channels))
+                for frame in frames
+                for resampled in resampler.resample(frame)
+            ]
 
-        self._samples.data = data
-        self.framerate = Config.get.audio_framerate
-        self.file_path = file_path
-        self.filename = os.path.basename(file_path)
-        self.audio_cache_map[key] = (data, self.framerate, self.file_path, self.filename)
-
-        return self
+            result = (np.vstack(chunks), file_path)
+            self.audio_cache_map[key] = result
+            return result
 
     def sample_count(self) -> int:
         """

@@ -1,22 +1,23 @@
 import os
 import shutil
-import subprocess as sp
-import sys
 import time
-from contextlib import contextmanager
-from functools import lru_cache, partial
-from glob import glob
+from functools import partial
 from typing import Generator
 
+import av
 import moderngl as mgl
 import OpenGL.GL as gl
 from tqdm import tqdm as ProgressDisplay
 
 from janim.anims.timeline import BuiltTimeline, Timeline, TimeRange
-from janim.exception import EXITCODE_FFMPEG_NOT_FOUND, ExitException
 from janim.locale import get_translator
 from janim.logger import log
 from janim.render.base import apply_blend_flags, create_context_430_or_330
+from janim.render.encoder import (
+    FFmpegH264VideoEncoder,
+    PyavAudioEncoder,
+    PyavVideoEncoder,
+)
 from janim.render.framebuffer import FrameBuffer
 from janim.utils.simple_functions import clip
 
@@ -52,7 +53,6 @@ class VideoWriter:
             log.debug('Created OpenGL context for VideoWriter')
 
         self.pw, self.ph = built.cfg.pixel_width, built.cfg.pixel_height
-        self.frame_count = round(built.duration * built.cfg.fps) + 1
 
         # PBO 相关初始化
         self.byte_size = self.pw * self.ph * 4  # 每帧的字节大小 (RGBA)
@@ -114,21 +114,8 @@ class VideoWriter:
             self._init_pbos()
             log.debug('Created PBOs')
 
-        if in_point is not None and in_point < 0:
-            in_point += self.built.duration
-        if in_point is not None and out_point < 0:
-            out_point += self.built.duration
+        start_frame, end_frame = get_frame_start_and_end(in_point, out_point, self.built)
 
-        start_frame = (
-            0  #
-            if in_point is None
-            else clip(round(in_point * fps), 0, self.frame_count - 1)
-        )
-        end_frame = (
-            self.frame_count
-            if out_point is None
-            else clip(round(out_point * fps), start_frame + 1, self.frame_count)
-        )
         progress_display = ProgressDisplay(
             range(start_frame, end_frame),
             leave=False,
@@ -136,7 +123,7 @@ class VideoWriter:
         )
 
         rgb = self.built.cfg.background_color.rgb
-        transparent = self.ext == '.mov'
+        transparent = self.ext in ('.webm', '.mov')
 
         fbo = FrameBuffer(self.ctx, self.pw, self.ph, rgb, transparent)
 
@@ -173,7 +160,7 @@ class VideoWriter:
                         assert ptr
                         data = gl.ctypes.string_at(ptr, self.byte_size)
                         # 写入数据到ffmpeg
-                        self.writing_process.stdin.write(data)
+                        self.encoder.write(data)
                         gl.glUnmapBuffer(gl.GL_PIXEL_PACK_BUFFER)
 
                 # 处理最后一批
@@ -184,7 +171,7 @@ class VideoWriter:
                         continue
                     gl.glBindBuffer(gl.GL_PIXEL_PACK_BUFFER, self.pbos[read_idx])
                     data = gl.glGetBufferSubData(gl.GL_PIXEL_PACK_BUFFER, 0, self.byte_size)
-                    self.writing_process.stdin.write(data)
+                    self.encoder.write(data.tobytes())
 
             self._cleanup_pbos()
         else:
@@ -195,7 +182,7 @@ class VideoWriter:
                     self.built.render_all(self.ctx, frame / fps)
                     fbo.unpremultiply()
                     bytes = fbo.read()
-                    self.writing_process.stdin.write(bytes)
+                    self.encoder.write(bytes)
 
         log.debug('Finished writing frames to video pipe')
 
@@ -218,157 +205,25 @@ class VideoWriter:
         self.final_file_path = file_path
         self.temp_file_path = stem + '_temp' + self.ext
 
-        ffmpeg_bin = self.built.cfg.ffmpeg_bin
+        if hwaccel and self.ext != '.mp4':
+            log.warning('Only ".mp4" video supports hardware acceleration')
+            hwaccel = False
 
-        command = [
-            ffmpeg_bin,
-            '-y',  # overwrite output file if it exists
-            '-f', 'rawvideo',
-            '-s', f'{self.built.cfg.pixel_width}x{self.built.cfg.pixel_height}',  # size of one frame
-            '-pix_fmt', 'rgba',
-            '-r', str(self.built.cfg.fps),  # frames per second
-            '-i', '-',  # The input comes from a pipe
-            '-an',  # Tells FFMPEG not to expect any audio
-            '-loglevel', 'error',
-            *self.ext_specific_flags(ffmpeg_bin, self.ext, hwaccel),
-            self.temp_file_path,
-        ]  # fmt: skip
-
-        with self.handle_ffmpeg_not_found():
-            self.writing_process = sp.Popen(command, stdin=sp.PIPE)
-
-    @staticmethod
-    def ext_specific_flags(ffmpeg_bin: str, ext: str, hwaccel: bool) -> list[str]:
-        """针对不同的格式产生不同的 FFMPEG 参数"""
-        if ext == '.mp4':
-            with VideoWriter.handle_ffmpeg_not_found():
-                encoder = VideoWriter.find_h264_encoder(ffmpeg_bin, hwaccel)
-                log.info(_('Using {encoder} for encoding').format(encoder=encoder))
-                return [
-                    '-pix_fmt', 'yuv420p',
-                    *VideoWriter.encoder_flags(encoder)
-                ]  # fmt: skip
-
-        if ext == '.mov':
-            return [
-                '-c:v', 'qtrle',
-                '-vf', 'vflip',
-            ]  # fmt: skip
-
-        if ext == '.gif':
-            return [
-                '-vf', 'vflip',
-            ]  # fmt: skip
-
-        assert False
-
-    @staticmethod
-    @lru_cache
-    def find_h264_encoder(ffmpeg_bin: str, hwaccel: bool) -> str:
-        """查找编码器，若 ``hwaccel=True`` 则优先使用硬件编码器"""
-        if not hwaccel:
-            return 'libx264'
-
-        # Call ffmpeg to enumerate available encoders
-        output = sp.getoutput(f'{ffmpeg_bin} -hide_banner -encoders')
-
-        encoders = [
-            'h264_vaapi',
-            'h264_nvenc',
-            'h264_qsv',
-            'h264_amf',
-            'h264_videotoolbox',
-        ]
-        available = [e for e in encoders if e in output]
-
-        # Attempt to use the potential encoder to see if it actually works
-        usable = [
-            potential
-            for potential in available
-            if VideoWriter.test_encoder_usability(ffmpeg_bin, potential)
-        ]
-
-        if available:
-            log.info(
-                _('Hardware encoder probe results:')
-                + ' '
-                + ', '.join(
-                    f'{e}={"ok" if e in usable else "fail"}'  #
-                    for e in available
-                )
-            )
-
-        if usable:
-            return usable[0]
-
-        # Safe fallback for if none of the probed hardware encoders work
-        log.info(_('No hardware encoder found'))
-        return 'libx264'
-
-    @staticmethod
-    def test_encoder_usability(ffmpeg_bin: str, potential: str) -> bool:
-        exitcode, _ = sp.getstatusoutput(' '.join([
-            ffmpeg_bin,
-            '-f', 'lavfi',
-            '-i', 'nullsrc=s=640x480:d=0.1',
-            *VideoWriter.encoder_flags(potential),
-            '-f', 'null',
-            '-loglevel', 'error',
-            '-',
-        ]))  # fmt: skip
-        return exitcode == 0
-
-    @staticmethod
-    def encoder_flags(encoder: str) -> list[str]:
-        device = VideoWriter.find_encoder_device()
-        if encoder == 'h264_vaapi' and device is not None:
-            return [
-                '-c:v', encoder,
-                '-vf', 'vflip,format=nv12,hwupload',
-                '-vaapi_device', device,
-            ]  # fmt: skip
+        if hwaccel:
+            self.encoder = FFmpegH264VideoEncoder()
         else:
-            return [
-                '-c:v', encoder,
-                '-vf', 'vflip,format=nv12'
-            ]  # fmt: skip
-
-    @staticmethod
-    @lru_cache(maxsize=1)
-    def find_encoder_device() -> str | None:
-        """Return the first working VA-API render node, or None."""
-        # Only applies on linux; exit early on other platforms
-        # `linux` and `linux2` are both possible values
-        if not sys.platform.startswith('linux'):
-            return None
-
-        # If `/dev/dri` doesn't exist, this will just return an empty array
-        for device_node in sorted(glob('/dev/dri/renderD*')):
-            if os.access(device_node, os.R_OK | os.W_OK):
-                return device_node
-
-        return None
+            self.encoder = PyavVideoEncoder()
+        self.encoder.open(
+            self.temp_file_path,
+            self.built.cfg.pixel_width,
+            self.built.cfg.pixel_height,
+            self.built.cfg.fps,
+        )
 
     def close_video_pipe(self, _keep_temp: bool) -> None:
-        self.writing_process.stdin.close()
-        self.writing_process.wait()
-        self.writing_process.terminate()
+        self.encoder.finish()
         if not _keep_temp:
             shutil.move(self.temp_file_path, self.final_file_path)
-
-    @staticmethod
-    @contextmanager
-    def handle_ffmpeg_not_found():
-        try:
-            yield
-        except FileNotFoundError:
-            log.error(
-                _(
-                    'Unable to output video. '  #
-                    'Please install ffmpeg and add it to the environment variables.'
-                )
-            )
-            raise ExitException(EXITCODE_FFMPEG_NOT_FOUND)
 
 
 class AudioWriter:
@@ -379,7 +234,15 @@ class AudioWriter:
     def writes(built: BuiltTimeline, file_path: str, *, quiet=False) -> None:
         AudioWriter(built).write_all(file_path, quiet=quiet)
 
-    def write_all(self, file_path: str, *, quiet=False, _keep_temp=False) -> None:
+    def write_all(
+        self,
+        file_path: str,
+        in_point: float | None = None,
+        out_point: float | None = None,
+        *,
+        quiet=False,
+        _keep_temp=False,
+    ) -> None:
         name = self.built.timeline.__class__.__name__
         if not quiet:
             log.info(_('Writing audio of "{name}"').format(name=name))
@@ -391,21 +254,25 @@ class AudioWriter:
         self.open_audio_pipe(file_path)
         log.debug('Opened audio pipe')
 
+        start_frame, end_frame = get_frame_start_and_end(in_point, out_point, self.built)
+
         progress_display = ProgressDisplay(
-            range(round(self.built.duration * fps) + 1),
+            # 音频输出不需要像 video 那样逐 frame 步进，所以我们这里每次循环直接提取 fps 个 frame 一起处理
+            # Q: 那为什么不直接从 start_frame 提取到 end_frame?
+            # A: 因为考虑到一次性提取内存量不可控且不利于显示进度条
+            range(start_frame, end_frame, fps),
             leave=False,
             dynamic_ncols=True,
         )
 
         get_audio_samples = partial(
-            self.built.get_audio_samples_of_frame,
-            fps,
+            self.built.get_audio_samples_between,
             framerate,
         )
 
         for frame in progress_display:
-            samples = get_audio_samples(frame)
-            self.writing_process.stdin.write(samples.tobytes())
+            samples = get_audio_samples(frame / fps, min(frame + fps, end_frame) / fps)
+            self.encoder.write(samples)
 
         log.debug('Finished writing audio samples to pipe')
 
@@ -428,38 +295,47 @@ class AudioWriter:
         self.final_file_path = file_path
         self.temp_file_path = stem + '_temp' + ext
 
-        command = [
-            self.built.cfg.ffmpeg_bin,
-            '-y',  # overwrite output file if it exists
-            '-f', 's16le',
-            '-ar', str(self.built.cfg.audio_framerate),  # framerate & samplerate
-            '-ac', str(self.built.cfg.audio_channels),
-            '-i', '-',
-            '-loglevel', 'error',
+        self.encoder = PyavAudioEncoder()
+        self.encoder.open(
             self.temp_file_path,
-        ]  # fmt: skip
-
-        try:
-            self.writing_process = sp.Popen(command, stdin=sp.PIPE)
-        except FileNotFoundError:
-            log.error(
-                _(
-                    'Unable to output audio. '  #
-                    'Please install ffmpeg and add it to the environment variables.'
-                )
-            )
-            raise ExitException(EXITCODE_FFMPEG_NOT_FOUND)
+            self.built.cfg.audio_framerate,
+            self.built.cfg.audio_channels,
+        )
 
     def close_audio_pipe(self, _keep_temp: bool) -> None:
-        self.writing_process.stdin.close()
-        self.writing_process.wait()
-        self.writing_process.terminate()
+        self.encoder.finish()
         if not _keep_temp:
             shutil.move(self.temp_file_path, self.final_file_path)
 
 
+def get_frame_start_and_end(
+    in_point: float | None, out_point: float | None, built: BuiltTimeline
+) -> tuple[int, int]:
+    # 将负值的 入点/出点 （即相对结尾的时间），计算为对应的正数
+    if in_point is not None and in_point < 0:
+        in_point += built.duration
+    if out_point is not None and out_point < 0:
+        out_point += built.duration
+
+    fps = built.cfg.fps
+    frame_count = built.frame_count
+
+    # 计算对应的 frame 范围
+    start_frame = (
+        0  #
+        if in_point is None
+        else clip(round(in_point * fps), 0, frame_count - 1)
+    )
+    end_frame = (
+        frame_count
+        if out_point is None
+        else clip(round(out_point * fps), start_frame + 1, frame_count)
+    )
+
+    return (start_frame, end_frame)
+
+
 def merge_video_and_audio(
-    ffmpeg_bin: str,
     video_path: str,
     audio_path: str,
     result_path: str,
@@ -467,31 +343,54 @@ def merge_video_and_audio(
     *,
     quiet: bool = False,
 ) -> None:
-    command = [
-        ffmpeg_bin,
-        '-y',
-        '-i', video_path,
-        '-i', audio_path,
-        '-shortest',
-        '-c:v', 'copy',
-        '-c:a', 'aac',
-        result_path,
-        '-loglevel', 'error',
-    ]  # fmt: skip
+    input_video = av.open(video_path)
+    input_audio = av.open(audio_path)
 
-    try:
-        merge_process = sp.Popen(command, stdin=sp.PIPE)
-    except FileNotFoundError:
-        log.error(
-            _(
-                'Unable to merge video. '  #
-                'Please install ffmpeg and add it to the environment variables.'
-            )
-        )
-        raise ExitException(EXITCODE_FFMPEG_NOT_FOUND)
+    output = av.open(result_path, 'w')
 
-    merge_process.wait()
-    merge_process.terminate()
+    # 复制视频/音频流格式
+    video_stream = input_video.streams.video[0]
+    output_video = output.add_stream_from_template(video_stream)
+    output_video.codec_context.open()
+
+    audio_stream = input_audio.streams.audio[0]
+    output_audio: av.AudioStream = output.add_stream(
+        output.default_audio_codec,
+        # .webm 的 libopus 只支持 48000 等少数 sample-rate，传入其它的会报错
+        rate=48000 if video_path.endswith('.webm') else audio_stream.sample_rate,
+        layout=audio_stream.layout,
+    )  # type: ignore
+
+    # 计算两个流的结束时间，取最短的
+    # stream.duration * stream.time_base 无法处理 webm，所以这里用的是 container.duration / av.time_base
+    video_duration = input_video.duration / av.time_base
+    audio_duration = input_audio.duration / av.time_base
+    shortest_duration = min(video_duration, audio_duration)
+
+    video_max_pts = shortest_duration / video_stream.time_base
+    audio_max_pts = shortest_duration / audio_stream.time_base
+
+    # 写入视频流，只到最短时长
+    for packet in input_video.demux(video_stream):
+        if packet.pts is None:
+            continue
+        if packet.pts > video_max_pts:
+            break
+        packet.stream = output_video
+        output.mux(packet)
+
+    # 转码音频，只到最短时长（考虑 packet 的持续时长）
+    for frame in input_audio.decode(audio_stream):
+        if frame.pts is not None and frame.pts + frame.duration >= audio_max_pts:
+            break
+        for packet in output_audio.encode(frame):
+            output.mux(packet)
+    for packet in output_audio.encode():
+        output.mux(packet)
+
+    output.close()
+    input_video.close()
+    input_audio.close()
 
     if remove:
         os.remove(video_path)

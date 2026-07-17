@@ -138,8 +138,6 @@ class Config(metaclass=_ConfigMeta):
     typst_text_preamble: str = None
     typst_math_preamble: str = None
 
-    ffmpeg_bin: str = None
-    ffprobe_bin: str = None
     output_dir: str = None
     temp_dir: str | Path = None
     asset_dir: str | Path | list[str | Path] = None
@@ -186,8 +184,6 @@ default_config = Config(
     typst_text_preamble='',
     typst_math_preamble='',
     #
-    ffmpeg_bin='ffmpeg',
-    ffprobe_bin='ffprobe',
     output_dir='videos',
     temp_dir=guarantee_existence(os.path.join(tempfile.gettempdir(), 'janim')),
     asset_dir='',

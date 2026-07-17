@@ -1,18 +1,20 @@
 from __future__ import annotations
 
-import subprocess as sp
-from typing import TYPE_CHECKING
+import math
+import threading
+from dataclasses import dataclass
+from fractions import Fraction
+from typing import TYPE_CHECKING, Any, Callable
 
+import av
 import moderngl as mgl
 import numpy as np
+from av.codec.context import ThreadType
 
 from janim.anims.animation import Animation
-from janim.exception import EXITCODE_FFMPEG_NOT_FOUND, ExitException
 from janim.locale import get_translator
-from janim.logger import log
 from janim.render.base import Renderer
 from janim.render.program import get_program_from_file_prefix
-from janim.utils.config import Config
 
 if TYPE_CHECKING:
     from janim.items.image_item import Video, VideoInfo
@@ -112,63 +114,155 @@ class VideoRenderer(Renderer):
             self.prev_frame = raw_frame
 
 
+@dataclass(slots=True)
+class FrameData:
+    frame: Any
+    data: bytes | None = None
+
+
 class VideoReader:
     def __init__(self, info: VideoInfo, components: int):
+        # 基础信息
         assert components in (3, 4)
         self.info = info
-        self.components = components
-        self.bufsize = info.height * info.width * self.components
+        self.format = 'rgb24' if components == 3 else 'rgba'
 
-        self.current_frame = -1
+        # PyAV 相关结构
+        self.container = av.open(info.file_path)
+        self.stream = self.container.streams.video[0]  # VideoInfo 中确认过存在视频流，这里不用检查
+        self.stream.thread_type = ThreadType.FRAME
+        self.time_base: Fraction = self.stream.time_base  # type: ignore
 
-        self.process: _Popen | None = None
-        self.open_video_pipe(0)
+        # 已经解码的帧，若最后一个元素为 None，则表示到达视频末尾
+        # seek 时，会将 keyframe-pts ~ pts 的帧以及 pts 后的一帧一并存入列表
+        # next 时，行为类似队列，会将后续的帧加入列表末尾，并弹出列表开头的帧
+        self.frames: list[FrameData] = []
+        self.worker = DecodeWorker(self._worker_task)  # 用于预先解析
+
+        # 表示在 get 时，这次的时刻超出前一次时刻的容许量，如果超出则触发 seek
+        self.pts_tolerance = self.time_to_pts(10)
 
     def get(self, t: float) -> bytes:
-        frame = round(t * self.info.fps_num / self.info.fps_den)
-        frame = min(frame, self.info.nb_frames - 1)
+        pts = self.time_to_pts(t)
+        self.ensure_frames_correct(pts)
+        return self._get_frame_bytes(self.frames[self.active_index])
 
-        if frame > self.current_frame + 10 or frame < self.current_frame:
-            self.open_video_pipe(frame)
-            self.current_frame = frame - 1
-
-        while frame > self.current_frame:
-            raw_frame = self.process.stdout.read(self.bufsize)
-            if raw_frame:
-                self.raw_frame = raw_frame
-            self.current_frame += 1
-
-        return self.raw_frame
-
-    def open_video_pipe(self, frame: int) -> None:
-        if self.process is not None:
-            self.process.kill()
-            self.process.wait()
-            self.process = None
-
-        command = [
-            Config.get.ffmpeg_bin,
-            '-ss', str(frame * self.info.fps_den / self.info.fps_num),
-            '-i', self.info.file_path,
-            '-f', 'rawvideo',
-            '-pix_fmt', 'rgb24' if self.components == 3 else 'rgba',
-            '-loglevel', 'error',
-            '-',
-        ]  # fmt: skip
-
+    def _get_frame_bytes(self, frame_data: FrameData) -> bytes:
         try:
-            self.process = _Popen(command, stdout=sp.PIPE)
-        except FileNotFoundError:
-            log.error(
-                _(
-                    'Unable to read video. Please install ffmpeg and add it to the environment variables.'
-                )
-            )
-            raise ExitException(EXITCODE_FFMPEG_NOT_FOUND)
+            if frame_data.data is None:
+                frame_bytes: bytes = frame_data.frame.to_ndarray(format=self.format).tobytes()
+                frame_data.data = frame_bytes
+            return frame_data.data
+        except Exception:
+            print(len(self.frames))
+            raise
+
+    def time_to_pts(self, t: float) -> int:
+        """
+        将实际时间转换为视频流时间戳
+        """
+        return math.ceil(int(t / self.time_base))
+
+    def ensure_frames_correct(self, pts: int) -> None:
+        """
+        保证 ``pts`` 一定满足 ``frames[-2].pts <= pts < frames[-1].pts``
+        - 如果 ``pts`` 处于已解码区域的后面，但是没有超出太多（由 ``self.pts_tolerance`` 决定），则让已解码区域逐渐后挪
+        - 如果 ``pts`` 处于已解码区域的前面，或处于后面超出太多，则 ``seek`` 重新构建已解码区域
+        """
+        needs_seek = self.needs_seek(pts)
+        if needs_seek:
+            # 等待运行中的解析结束
+            self.worker.get()
+            self.worker.clear()
+            # seek 视频流并解析首两帧（非精准定位，会稍前一些）
+            self.container.seek(pts, stream=self.stream)
+            self.decode_iter = iter(self.container.decode(self.stream))
+            frame1 = next(self.decode_iter)
+            frame2 = next(self.decode_iter, None)
+            self.frames = [FrameData(frame1), FrameData(frame2)]
+            self.active_index = 0  # 倒数第二个
+
+        # 目前，`pts` 不位于已解码区域前面，现在判断如果在已解码区域后面，则让已解码区域逐渐后挪
+        if self.frames[-1].frame is not None and self.frames[-1].frame.pts <= pts:
+            worker_result = self.worker.get()
+
+            while self.frames[-1].frame is not None and self.frames[-1].frame.pts <= pts:
+                # 如果有预先解析好的帧，则利用，否则手动 next
+                if worker_result is not None:
+                    next_frame = worker_result
+                    worker_result = None
+                    self.worker.clear()
+                else:
+                    next_frame = FrameData(next(self.decode_iter, None))
+
+                if not needs_seek:
+                    self.frames.pop(0)
+                self.frames.append(next_frame)
+
+            # 注册预先解析任务
+            if self.frames[-1].frame is not None:
+                self.worker.submit()
+
+            self.active_index = len(self.frames) - 2  # 倒数第二个
+
+        # 目前，`pts` 一定位于已解码区域内部，根据 pts 对应其中的哪个 frame，更新记录的 active_index 下标
+        # 因为更新后的下标很可能差得不多，所以这里直接 while 而非二分
+        while pts < self.frames[self.active_index].frame.pts:
+            assert self.active_index != 0
+            self.active_index -= 1
+        while (
+            self.frames[self.active_index + 1].frame is not None
+            and pts >= self.frames[self.active_index + 1].frame.pts
+        ):
+            assert self.active_index != len(self.frames) - 2
+            self.active_index += 1
+
+    def needs_seek(self, pts: int) -> bool:
+        if len(self.frames) < 2:
+            return True
+        if pts < self.frames[0].frame.pts:
+            return True
+        return (
+            self.frames[-1].frame is not None
+            and pts >= self.frames[-2].frame.pts + self.pts_tolerance
+        )
+
+    def _worker_task(self) -> FrameData | None:
+        frame_data = FrameData(next(self.decode_iter, None))
+        if frame_data.frame is not None:
+            self._get_frame_bytes(frame_data)  # 在子线程中预先计算 bytes
+        return frame_data
 
 
-class _Popen(sp.Popen):
-    def __del__(self) -> None:
-        self.kill()
-        self.wait()
-        super().__del__()
+class DecodeWorker:
+    def __init__(self, task: Callable[[], FrameData | None]):
+        self._task = task
+        self._result: FrameData | None = None
+
+        self._ready = threading.Event()
+        self._done = threading.Event()
+        self._done.set()
+
+        self._thread = threading.Thread(target=self._run, daemon=True)
+        self._thread.start()
+
+    def _run(self):
+        while True:
+            self._ready.wait()
+            self._ready.clear()
+
+            self._result = self._task()
+
+            self._done.set()
+
+    def submit(self):
+        assert self._done.is_set(), 'worker already has a running task'
+        self._done.clear()
+        self._ready.set()
+
+    def get(self):
+        self._done.wait()
+        return self._result
+
+    def clear(self):
+        self._result = None

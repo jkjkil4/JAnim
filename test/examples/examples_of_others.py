@@ -156,3 +156,10 @@ class DynamicTypstExample(Timeline):
             dtyp.anim_update(angle=5, can_keep_structure=True),
             duration=2,
         )
+
+
+class ReadVFRVideoExample(Timeline):
+    def construct(self) -> None:
+        video = Video('assets/VFR-fps2-fps5.mp4').show().start(speed=2)
+        video.points.scale(0.8)
+        self.forward(video.info.duration / 2)

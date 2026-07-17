@@ -1,12 +1,12 @@
 from __future__ import annotations
 
-import io
 import math
 import os
-import subprocess as sp
+from fractions import Fraction
 from functools import lru_cache
 from typing import Self
 
+import av
 import moderngl as mgl
 import numpy as np
 from PIL import Image
@@ -16,10 +16,9 @@ from janim.components.component import CmptInfo
 from janim.components.image import Cmpt_Image
 from janim.components.rgbas import Cmpt_Rgbas
 from janim.constants import DL, DR, OUT, UL, UR
-from janim.exception import EXITCODE_FFMPEG_NOT_FOUND, EXITCODE_FFPROBE_ERROR, ExitException
+from janim.exception import MediaError
 from janim.items.points import Points
 from janim.locale import get_translator
-from janim.logger import log
 from janim.render.renderer_imageitem import ImageItemRenderer
 from janim.render.renderer_video import VideoRenderer
 from janim.render.texture import get_img_from_file
@@ -248,31 +247,49 @@ class VideoFrame(ImageItem):
 
     @staticmethod
     def _capture(file_path: str, frame_at: str | float) -> Image.Image:
-        command = [
-            Config.get.ffmpeg_bin,
-            '-ss', str(frame_at),  # where
-            '-i', file_path,  # file
-            '-vframes', '1',  # capture only 1 frame
-            '-f', 'image2pipe',
-            '-vcodec', 'png',
-            '-loglevel', 'error',
-            '-',  # output to a pipe
-        ]  # fmt: skip
-
         try:
-            with sp.Popen(command, stdout=sp.PIPE) as process:
-                data = process.stdout.read()
+            container = av.open(file_path, 'r')
+            stream = container.streams.video[0]
+        except IndexError:
+            raise MediaError(_('File "{file}" has no video stream').format(file_path))
 
-        except FileNotFoundError:
-            log.error(
-                _(
-                    'Unable to read video frame, please install ffmpeg and add it to the environment variables'
-                )
-            )
-            raise ExitException(EXITCODE_FFMPEG_NOT_FOUND)
+        time_base: Fraction = stream.time_base  # type: ignore
+        t = VideoFrame.parse_time(frame_at)
+        pts = int(t / time_base)
 
-        image = Image.open(io.BytesIO(data))
+        # seek（非精确跳转），然后 decode 直到目标的 frame
+        # any_frame 貌似并不精确，所以这里没有使用该参数来处理
+        container.seek(pts, stream=stream)
+
+        selected_frame: av.VideoFrame | None = None
+        for frame in container.decode(stream):
+            if frame.pts >= pts:  # type: ignore
+                break
+            selected_frame = frame
+
+        assert selected_frame is not None
+
+        # 提取数据并转换为 PIL.Image
+        array = selected_frame.to_ndarray(format='rgba')
+        image = Image.fromarray(array, mode='RGBA')
         return image
+
+    @staticmethod
+    def parse_time(frame_at: str | float) -> float:
+        if isinstance(frame_at, (int, float)):
+            return float(frame_at)
+
+        parts = frame_at.split(':')
+        if len(parts) == 1:
+            return float(parts[0])
+        elif len(parts) == 2:
+            minutes, seconds = float(parts[0]), float(parts[1])
+            return minutes * 60 + seconds
+        elif len(parts) == 3:
+            hours, minutes, seconds = float(parts[0]), float(parts[1]), float(parts[2])
+            return hours * 3600 + minutes * 60 + seconds
+        else:
+            raise ValueError(f'Invalid time format: {frame_at}')
 
 
 class Video(PlaybackControl, Points):
@@ -426,44 +443,26 @@ class VideoInfo:
     def __init__(self, file_path: str):
         self.file_path = file_path
 
-        command = [
-            Config.get.ffprobe_bin,
-            '-v', 'error',
-            '-select_streams', 'v:0',
-            '-show_entries', 'stream=width,height,r_frame_rate,nb_frames',
-            '-show_entries', 'format=duration',
-            '-of', 'csv=p=0',
-            file_path,
-        ]  # fmt: skip
-
         try:
-            with sp.Popen(command, stdout=sp.PIPE) as process:
-                ret = process.stdout.read().decode('utf-8')
-                code = process.wait()
-        except FileNotFoundError:
-            log.error(
-                _(
-                    'Unable to read video information, please install ffmpeg'
-                    'and add it (including ffprobe) to the environment variables.'
-                )
-            )
-            raise ExitException(EXITCODE_FFMPEG_NOT_FOUND)
+            container = av.open(file_path, 'r')
+            stream = container.streams.video[0]
+        except IndexError:
+            raise MediaError(_('File "{file}" has no video stream').format(file_path))
 
-        if code != 0:
-            log.error(_('ffprobe error. Please check the output for more information.'))
-            raise ExitException(EXITCODE_FFPROBE_ERROR)
+        self.width = stream.width
+        self.height = stream.height
 
-        assert ret
-        lines = ret.strip().split('\n')
-        # 实际使用发现结尾可能会多一个逗号，所以这里用 rstrip(',') 先把它去掉
-        s_width, s_height, s_fps, s_nb_frames = lines[0].rstrip(',').split(',')
-        s_duration = lines[1]
+        frame_rate = stream.base_rate
+        if frame_rate is None:
+            raise MediaError(_('File "{file}" has no "r_frame_rate" information').format(file_path))
+        self.frame_rate = frame_rate
+        self.fps_num = frame_rate.numerator
+        self.fps_den = frame_rate.denominator
 
-        self.width = int(s_width)
-        self.height = int(s_height)
-        self.fps_num, self.fps_den = map(int, s_fps.split('/'))
-        self.nb_frames = int(s_nb_frames)
-        self.duration = float(s_duration)
+        duration = container.duration
+        if duration is None:
+            raise MediaError(_('File "{file}" has no "duration" information').format(file_path))
+        self.duration = duration / av.time_base
 
 
 class PixelVideo(Video):

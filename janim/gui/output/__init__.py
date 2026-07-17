@@ -139,28 +139,28 @@ def on_export_clicked(self: AnimViewer) -> None:
         with change_export_size(dialog.pixel_size()) if dialog.has_size_set() else nullcontext():
             built = self.built.timeline.__class__().build()
 
-            args = [file_path]
             if using_inout_point:
-                args += self.timeline_view.inout_point
+                inout_args = self.timeline_view.inout_point
+            else:
+                inout_args = ()
 
             if video_with_audio:
                 video_writer = VideoWriter(built, ctx=self.glw.ctx)
-                video_writer.write_all(*args, hwaccel=hwaccel, _keep_temp=True)
+                video_writer.write_all(file_path, *inout_args, hwaccel=hwaccel, _keep_temp=True)
 
                 audio_file_path = os.path.splitext(file_path)[0] + '.mp3'
 
                 audio_writer = AudioWriter(built)
-                audio_writer.write_all(audio_file_path, _keep_temp=True)
+                audio_writer.write_all(audio_file_path, *inout_args, _keep_temp=True)
 
                 merge_video_and_audio(
-                    built.cfg.ffmpeg_bin,
                     video_writer.temp_file_path,
                     audio_writer.temp_file_path,
                     video_writer.final_file_path,
                 )
             else:
                 video_writer = VideoWriter(built, ctx=self.glw.ctx)
-                video_writer.write_all(*args, hwaccel=hwaccel)
+                video_writer.write_all(file_path, *inout_args, hwaccel=hwaccel)
 
     except Exception as e:
         if not isinstance(e, ExitException):
