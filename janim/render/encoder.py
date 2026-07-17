@@ -177,7 +177,9 @@ class FFmpegH264VideoEncoder:
     def find_encoder() -> str:
         """查找编码器，优先使用硬件编码器"""
         # Call ffmpeg to enumerate available encoders
-        output = sp.getoutput('ffmpeg -hide_banner -encoders')
+        exitcode, output = sp.getstatusoutput('ffmpeg -hide_banner -encoders')
+        if exitcode != 0:
+            raise FileNotFoundError()
 
         encoders = [
             'h264_vaapi',
