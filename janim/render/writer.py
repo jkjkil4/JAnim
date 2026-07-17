@@ -14,7 +14,7 @@ from janim.locale import get_translator
 from janim.logger import log
 from janim.render.base import apply_blend_flags, create_context_430_or_330
 from janim.render.encoder import (
-    FFmpegVideoEncoder,
+    FFmpegH264VideoEncoder,
     PyavAudioEncoder,
     PyavVideoEncoder,
 )
@@ -205,8 +205,12 @@ class VideoWriter:
         self.final_file_path = file_path
         self.temp_file_path = stem + '_temp' + self.ext
 
+        if hwaccel and self.ext != '.mp4':
+            log.warning('Only ".mp4" video supports hardware acceleration')
+            hwaccel = False
+
         if hwaccel:
-            self.encoder = FFmpegVideoEncoder()
+            self.encoder = FFmpegH264VideoEncoder()
         else:
             self.encoder = PyavVideoEncoder()
         self.encoder.open(

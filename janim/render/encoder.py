@@ -128,15 +128,14 @@ class PyavVideoEncoder:
         self.container.close()
 
 
-class FFmpegVideoEncoder:
+class FFmpegH264VideoEncoder:
     """
-    使用 FFmpeg bin 编码视频
+    使用 FFmpeg bin 编码 H.264 (.mp4) 视频
 
     考虑硬件加速检测
     """
 
     def open(self, file_path: str, pw: int, ph: int, fps: int) -> None:
-        ext = os.path.splitext(file_path)[1]
         command = [
             'ffmpeg',
             '-y',  # overwrite output file if it exists
@@ -147,7 +146,7 @@ class FFmpegVideoEncoder:
             '-i', '-',  # The input comes from a pipe
             '-an',  # Tells FFMPEG not to expect any audio
             '-loglevel', 'error',
-            *self.ext_specific_flags(ext),
+            *self.format_flags(),
             file_path,
         ]  # fmt: skip
 
@@ -163,41 +162,19 @@ class FFmpegVideoEncoder:
         self.writing_process.terminate()
 
     @staticmethod
-    def ext_specific_flags(ext: str) -> list[str]:
-        """针对不同的格式产生不同的 FFMPEG 参数"""
-        if ext == '.mp4':
-            with FFmpegVideoEncoder.handle_ffmpeg_not_found():
-                encoder = FFmpegVideoEncoder.find_h264_encoder()
-                log.info(_('Using {encoder} for encoding').format(encoder=encoder))
-                return [
-                    '-pix_fmt', 'yuv420p',
-                    *FFmpegVideoEncoder.encoder_flags(encoder)
-                ]  # fmt: skip
+    def format_flags() -> list[str]:
+        with FFmpegH264VideoEncoder.handle_ffmpeg_not_found():
+            encoder = FFmpegH264VideoEncoder.find_encoder()
 
-        if ext == '.webm':
-            return [
-                '-c:v', 'libvpx-vp9',
-                '-pix_fmt', 'yuva420p',
-                '-vf', 'vflip',
-                '-auto-alt-ref', '1',
-            ]  # fmt: skip
-
-        if ext == '.mov':
-            return [
-                '-c:v', 'qtrle',
-                '-vf', 'vflip',
-            ]  # fmt: skip
-
-        if ext == '.gif':
-            return [
-                '-vf', 'vflip',
-            ]  # fmt: skip
-
-        assert False
+        log.info(_('Using {encoder} for encoding').format(encoder=encoder))
+        return [
+            '-pix_fmt', 'yuv420p',
+            *FFmpegH264VideoEncoder.encoder_flags(encoder)
+        ]  # fmt: skip
 
     @staticmethod
     @lru_cache(maxsize=1)
-    def find_h264_encoder() -> str:
+    def find_encoder() -> str:
         """查找编码器，优先使用硬件编码器"""
         # Call ffmpeg to enumerate available encoders
         output = sp.getoutput('ffmpeg -hide_banner -encoders')
@@ -215,7 +192,7 @@ class FFmpegVideoEncoder:
         usable = [
             potential
             for potential in available
-            if FFmpegVideoEncoder.test_encoder_usability(potential)
+            if FFmpegH264VideoEncoder.test_encoder_usability(potential)
         ]
 
         if available:
@@ -241,7 +218,7 @@ class FFmpegVideoEncoder:
             'ffmpeg',
             '-f', 'lavfi',
             '-i', 'nullsrc=s=640x480:d=0.1',
-            *FFmpegVideoEncoder.encoder_flags(potential),
+            *FFmpegH264VideoEncoder.encoder_flags(potential),
             '-f', 'null',
             '-loglevel', 'error',
             '-',
@@ -250,7 +227,7 @@ class FFmpegVideoEncoder:
 
     @staticmethod
     def encoder_flags(encoder: str) -> list[str]:
-        device = FFmpegVideoEncoder.find_encoder_device()
+        device = FFmpegH264VideoEncoder.find_encoder_device()
         if encoder == 'h264_vaapi' and device is not None:
             return [
                 '-c:v', encoder,
@@ -288,7 +265,8 @@ class FFmpegVideoEncoder:
             log.error(
                 _(
                     'Unable to output video. '  #
-                    'Please install ffmpeg and add it to the environment variables.'
+                    'Hardware acceleration requires FFmpeg to be installed '
+                    'and added to PATH.'
                 )
             )
             raise ExitException(EXITCODE_FFMPEG_NOT_FOUND)
@@ -327,40 +305,3 @@ class PyavAudioEncoder:
         for packet in self.stream.encode():
             self.container.mux(packet)
         self.container.close()
-
-
-class FFmpegAudioEncoder:
-    """
-    使用 FFmpeg bin 编码音频（deprecated）
-    """
-
-    def open(self, file_path: str, framerate: int, channels: int) -> None:
-        command = [
-            'ffmpeg',
-            '-y',  # overwrite output file if it exists
-            '-f', 's16le',
-            '-ar', str(framerate),  # framerate & samplerate
-            '-ac', str(channels),
-            '-i', '-',
-            '-loglevel', 'error',
-            file_path,
-        ]  # fmt: skip
-
-        try:
-            self.writing_process = sp.Popen(command, stdin=sp.PIPE)
-        except FileNotFoundError:
-            log.error(
-                _(
-                    'Unable to output audio. '  #
-                    'Please install ffmpeg and add it to the environment variables.'
-                )
-            )
-            raise ExitException(EXITCODE_FFMPEG_NOT_FOUND)
-
-    def write(self, array: np.ndarray) -> None:
-        self.writing_process.stdin.write(array.tobytes())
-
-    def finish(self) -> None:
-        self.writing_process.stdin.close()
-        self.writing_process.wait()
-        self.writing_process.terminate()
