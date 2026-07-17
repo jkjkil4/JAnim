@@ -1,9 +1,8 @@
 from __future__ import annotations
 
-import io
 import math
 import os
-import subprocess as sp
+from fractions import Fraction
 from functools import lru_cache
 from typing import Self
 
@@ -17,10 +16,9 @@ from janim.components.component import CmptInfo
 from janim.components.image import Cmpt_Image
 from janim.components.rgbas import Cmpt_Rgbas
 from janim.constants import DL, DR, OUT, UL, UR
-from janim.exception import ExitException, MediaError
+from janim.exception import MediaError
 from janim.items.points import Points
 from janim.locale import get_translator
-from janim.logger import log
 from janim.render.renderer_imageitem import ImageItemRenderer
 from janim.render.renderer_video import VideoRenderer
 from janim.render.texture import get_img_from_file
@@ -249,31 +247,49 @@ class VideoFrame(ImageItem):
 
     @staticmethod
     def _capture(file_path: str, frame_at: str | float) -> Image.Image:
-        command = [
-            'ffmpeg',
-            '-ss', str(frame_at),  # where
-            '-i', file_path,  # file
-            '-vframes', '1',  # capture only 1 frame
-            '-f', 'image2pipe',
-            '-vcodec', 'png',
-            '-loglevel', 'error',
-            '-',  # output to a pipe
-        ]  # fmt: skip
-
         try:
-            with sp.Popen(command, stdout=sp.PIPE) as process:
-                data = process.stdout.read()
+            container = av.open(file_path, 'r')
+            stream = container.streams.video[0]
+        except IndexError:
+            raise MediaError(_('File "{file}" has no video stream').format(file_path))
 
-        except FileNotFoundError:
-            log.error(
-                _(
-                    'Unable to read video frame, please install ffmpeg and add it to the environment variables'
-                )
-            )
-            raise ExitException(EXITCODE_FFMPEG_NOT_FOUND)
+        time_base: Fraction = stream.time_base  # type: ignore
+        t = VideoFrame.parse_time(frame_at)
+        pts = int(t / time_base)
 
-        image = Image.open(io.BytesIO(data))
+        # seek（非精确跳转），然后 decode 直到目标的 frame
+        # any_frame 貌似并不精确，所以这里没有使用该参数来处理
+        container.seek(pts, stream=stream)
+
+        selected_frame: av.VideoFrame | None = None
+        for frame in container.decode(stream):
+            if frame.pts >= pts:  # type: ignore
+                break
+            selected_frame = frame
+
+        assert selected_frame is not None
+
+        # 提取数据并转换为 PIL.Image
+        array = selected_frame.to_ndarray(format='rgba')
+        image = Image.fromarray(array, mode='RGBA')
         return image
+
+    @staticmethod
+    def parse_time(frame_at: str | float) -> float:
+        if isinstance(frame_at, (int, float)):
+            return float(frame_at)
+
+        parts = frame_at.split(':')
+        if len(parts) == 1:
+            return float(parts[0])
+        elif len(parts) == 2:
+            minutes, seconds = float(parts[0]), float(parts[1])
+            return minutes * 60 + seconds
+        elif len(parts) == 3:
+            hours, minutes, seconds = float(parts[0]), float(parts[1]), float(parts[2])
+            return hours * 3600 + minutes * 60 + seconds
+        else:
+            raise ValueError(f'Invalid time format: {frame_at}')
 
 
 class Video(PlaybackControl, Points):
