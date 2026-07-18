@@ -332,7 +332,12 @@ class TimelineView(QWidget):
                 return 1
 
         def make_visibility_debug_label(item: Item):
-            visibility = built.timeline.item_appearances[item].visibility
+            appr = built.timeline.item_appearances.get(item, None)
+            if appr is None:
+                visibility = []
+            else:
+                visibility = appr.visibility
+
             if len(visibility) % 2 != 0:
                 visibility.append(built.duration + 1)
             return LabelGroup(
@@ -368,7 +373,15 @@ class TimelineView(QWidget):
                     color = dct[anim] = QColor(*next(iter))
                 return color
 
-            stack = built.timeline.item_appearances[item].stack
+            appr = built.timeline.item_appearances.get(item, None)
+            if appr is None:
+                chunk_starts = []
+                chunks = []
+            else:
+                stack = built.timeline.item_appearances[item].stack
+                chunk_starts = stack._chunk_starts
+                chunks = stack._chunks
+
             return LabelGroup(
                 '',
                 built_t_range,
@@ -384,7 +397,7 @@ class TimelineView(QWidget):
                         brush=get_color(anim),
                     )
                     for (t1, t2), anims in zip(
-                        it.pairwise([*stack._chunk_starts, built.duration + 1]), stack._chunks
+                        it.pairwise([*chunk_starts, built.duration + 1]), chunks
                     )
                     for anim in anims
                 ],
