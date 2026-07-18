@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-08 21:37+0800\n"
+"POT-Creation-Date: 2026-07-18 19:22+0800\n"
 "PO-Revision-Date: 2025-12-25 14:04+0800\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -73,43 +73,47 @@ msgstr "子物件选择器(&I)"
 msgid "Copy time point(&T)"
 msgstr "复制时间点(&T)"
 
-#: janim/gui/anim_viewer.py:336
+#: janim/gui/anim_viewer.py:329
+msgid "Window may not be positioned as expected on Wayland"
+msgstr "窗口在 Wayland 下可能无法按预期定位"
+
+#: janim/gui/anim_viewer.py:339
 #, python-brace-format
 msgid "wnd_pos has wrong argument {wnd_pos}."
 msgstr "wnd_pos 得到了错误的参数 {wnd_pos}"
 
-#: janim/gui/anim_viewer.py:345
+#: janim/gui/anim_viewer.py:348
 #, python-brace-format
 msgid "wnd_monitor has invalid value {wnd_monitor}, use {range} instead."
 msgstr "wnd_monitor 得到了无效的值 {wnd_monitor}, 请使用 {range} 代替"
 
-#: janim/gui/anim_viewer.py:502 janim/gui/anim_viewer.py:715
+#: janim/gui/anim_viewer.py:505 janim/gui/anim_viewer.py:718
 #, python-brace-format
 msgid "No timeline named \"{name}\" in \"{file}\""
 msgstr "没有叫作 \"{name}\" 的时间轴，对于文件 \"{file}\" 来说"
 
-#: janim/gui/anim_viewer.py:517
+#: janim/gui/anim_viewer.py:520
 msgid "Failed to rebuild"
 msgstr "重新构建失败"
 
-#: janim/gui/anim_viewer.py:566
+#: janim/gui/anim_viewer.py:569
 #, python-brace-format
 msgid "GC took {elapsed} s"
 msgstr "GC 耗时 {elapsed} s"
 
-#: janim/gui/anim_viewer.py:596
+#: janim/gui/anim_viewer.py:599
 msgid "Copied!"
 msgstr "已复制!"
 
-#: janim/gui/anim_viewer.py:645
+#: janim/gui/anim_viewer.py:648
 msgid "An error occurred during rendering, playback stopped"
 msgstr "渲染过程中出现错误，播放停止"
 
-#: janim/gui/anim_viewer.py:731
+#: janim/gui/anim_viewer.py:734
 msgid "Failed to build"
 msgstr "构建失败"
 
-#: janim/gui/anim_viewer.py:746
+#: janim/gui/anim_viewer.py:749
 msgid ""
 "Font cache cleared.\n"
 "Tip: Use this to load newly installed fonts without restarting JAnim."
@@ -117,31 +121,31 @@ msgstr ""
 "字体缓存已清空\n"
 "提示：用于加载新安装的字体，而无需重启 JAnim"
 
-#: janim/gui/anim_viewer.py:771
+#: janim/gui/anim_viewer.py:774
 #, python-brace-format
 msgid "Searching port has been opened at {port}"
 msgstr "搜索端口已在 {port} 开启"
 
-#: janim/gui/anim_viewer.py:775
+#: janim/gui/anim_viewer.py:778
 #, python-brace-format
 msgid "Failed to open searching port at {port}"
 msgstr "无法在 {port} 开启搜索端口"
 
-#: janim/gui/anim_viewer.py:780
+#: janim/gui/anim_viewer.py:783
 #, python-brace-format
 msgid "Searching port {port} is invalid, please use a number between 1024 and 65535 instead"
 msgstr "搜索端口 {port} 无效，请使用 1024 至 65535 之间的数字"
 
-#: janim/gui/anim_viewer.py:787
+#: janim/gui/anim_viewer.py:790
 msgid "Interactive development is disabled because the searching port is not established."
 msgstr "由于搜索端口未建立，交互式开发不可用"
 
-#: janim/gui/anim_viewer.py:801
+#: janim/gui/anim_viewer.py:804
 #, python-brace-format
 msgid "Interactive port has been opened at {port}"
 msgstr "交互端口已在 {port} 开启"
 
-#: janim/gui/anim_viewer.py:886
+#: janim/gui/anim_viewer.py:889
 #, python-brace-format
 msgid "Directly watching changes to \"{file}\""
 msgstr "直接监测 \"{file}\" 的变动中"

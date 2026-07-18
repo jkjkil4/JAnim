@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-16 21:48+0800\n"
+"POT-Creation-Date: 2026-07-17 23:39+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,33 +17,28 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: janim/cli/execute.py:96 janim/cli/execute.py:256
-msgid "Constructing window"
-msgstr ""
-
-#: janim/cli/execute.py:118 janim/cli/execute.py:277
+#: janim/render/encoder.py:63
 #, python-brace-format
-msgid "Finished constructing in {time:.2f} s"
+msgid ""
+"GIF export with {fps} FPS (>50) may not play correctly because GIF has "
+"timing limitations. Consider using a lower FPS or another video format."
 msgstr ""
 
-#: janim/cli/execute.py:194
+#: janim/render/encoder.py:169
 #, python-brace-format
-msgid "Skipping \"{name}\": no part to output"
+msgid "Using {encoder} for encoding"
 msgstr ""
 
-#: janim/cli/execute.py:243
-#, python-brace-format
-msgid "Generated SRT file \"{file_path}\""
+#: janim/render/encoder.py:202
+msgid "Hardware encoder probe results:"
 msgstr ""
 
-#: janim/cli/execute.py:250
-msgid "No tool specified for use"
+#: janim/render/encoder.py:214
+msgid "No hardware encoder found"
 msgstr ""
 
-#: janim/cli/execute.py:287
-msgid "No available plugins for JAnim"
-msgstr ""
-
-#: janim/cli/execute.py:289
-msgid "Available plugins for JAnim:"
+#: janim/render/encoder.py:269
+msgid ""
+"Unable to output video. Hardware acceleration requires FFmpeg to be "
+"installed and added to PATH."
 msgstr ""

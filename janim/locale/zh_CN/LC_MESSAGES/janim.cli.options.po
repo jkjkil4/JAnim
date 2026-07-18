@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-24 21:40+0800\n"
+"POT-Creation-Date: 2026-07-16 02:52+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -41,51 +41,51 @@ msgid "Watches the file and rebuild on changes"
 msgstr "监听文件并在变化时重新构建"
 
 #: janim/cli/options.py:66
-msgid "Output video format (mp4 by default, mov for transparent background)"
-msgstr "输出视频的格式（默认 mp4；透明背景需使用 mov）"
+msgid "Output video format (mp4 by default, webm/mov for transparent background)"
+msgstr "输出视频的格式（默认 mp4；透明背景需使用 webm/mov）"
 
 #: janim/cli/options.py:73
 msgid "Output audio format (valid only when outputting audio separately)"
 msgstr "输出音频的格式（仅在单独输出音频时有效）"
 
-#: janim/cli/options.py:86
+#: janim/cli/options.py:85
 msgid ""
 "Video with audio (default; will be replaced by --video if there is no audio, and by both --video and --audio if the "
 "format is GIF)"
 msgstr "带有音频的视频（默认，当没有音频时会被 --video 替代，当格式为 GIF 时会被 --video 和 --audio 替代）"
 
-#: janim/cli/options.py:95
+#: janim/cli/options.py:94
 msgid "Video only"
 msgstr "仅视频"
 
-#: janim/cli/options.py:103
+#: janim/cli/options.py:102
 msgid "Audio only"
 msgstr "仅音频"
 
-#: janim/cli/options.py:111
+#: janim/cli/options.py:110
 msgid "Generate SRT file"
 msgstr "生成 SRT 文件"
 
-#: janim/cli/options.py:128
+#: janim/cli/options.py:127
 msgid "'--video' is ignored because '--video_with_audio' is set"
 msgstr "'--video' 被忽略，因为已设置 '--video_with_audio'"
 
-#: janim/cli/options.py:131
+#: janim/cli/options.py:130
 msgid "'--audio' is ignored because '--video_with_audio' is set"
 msgstr "'--audio' 被忽略，因为已设置 '--video_with_audio'"
 
-#: janim/cli/options.py:147
+#: janim/cli/options.py:146
 msgid "Set In Point; use negative value to indicate time relative to the end"
 msgstr "设置入点; 使用负值表示相对结尾的时间点"
 
-#: janim/cli/options.py:154
+#: janim/cli/options.py:153
 msgid "Set Out Point; use negative value to indicate time relative to the end"
 msgstr "设置出点; 使用负值表示相对结尾的时间点"
 
-#: janim/cli/options.py:166
+#: janim/cli/options.py:165
 msgid "Disable PBO (Pixel Buffer Object) for writing video"
 msgstr "在输出视频时禁用 PBO（像素缓冲对象）"
 
-#: janim/cli/options.py:174
+#: janim/cli/options.py:173
 msgid "Use hardware acceleration for writing video"
 msgstr "在输出视频时使用硬件加速"
