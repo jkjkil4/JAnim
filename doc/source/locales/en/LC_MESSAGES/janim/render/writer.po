@@ -61,18 +61,15 @@ msgstr ""
 "If ``quiet=True`` is specified, prompt messages before and after will not be output, but the progress bar will still be "
 "shown"
 
-#: janim.render.writer.VideoWriter.ext_specific_flags:1 of
-msgid "针对不同的格式产生不同的 FFMPEG 参数"
-msgstr "Generate different FFMPEG arguments for different formats"
-
-#: janim.render.writer.VideoWriter.find_h264_encoder:1 of
-msgid "查找编码器，若 ``hwaccel=True`` 则优先使用硬件编码器"
-msgstr "Find encoder, if ``hwaccel=True``, prioritize using hardware encoder"
-
-#: janim.render.writer.VideoWriter.find_encoder_device:1 of
-msgid "Return the first working VA-API render node, or None."
-msgstr "Return the first working VA-API render node, or None."
-
 #: janim.render.writer.SRTWriter.t_to_srt_time:1 of
 msgid "将秒数转换为 SRT 时间格式：HH:MM:SS,mmm"
 msgstr "Convert seconds to SRT time format: HH:MM:SS,mmm"
+
+#~ msgid "针对不同的格式产生不同的 FFMPEG 参数"
+#~ msgstr "Generate different FFMPEG arguments for different formats"
+
+#~ msgid "查找编码器，若 ``hwaccel=True`` 则优先使用硬件编码器"
+#~ msgstr "Find encoder, if ``hwaccel=True``, prioritize using hardware encoder"
+
+#~ msgid "Return the first working VA-API render node, or None."
+#~ msgstr "Return the first working VA-API render node, or None."

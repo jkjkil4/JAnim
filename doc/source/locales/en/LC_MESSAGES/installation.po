@@ -6,19 +6,18 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: JAnim\n"
+"Project-Id-Version:  JAnim\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-01-31 12:11+0800\n"
+"POT-Creation-Date: 1980-01-01 00:00+0000\n"
 "PO-Revision-Date: 2026-01-31 12:13+0800\n"
 "Last-Translator: \n"
-"Language-Team: en <LL@li.org>\n"
 "Language: en\n"
+"Language-Team: en <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "Generated-By: Babel 2.17.0\n"
-"X-Generator: Poedit 3.8\n"
 
 #: ../../source/installation.rst:2
 msgid "安装"
@@ -33,48 +32,59 @@ msgstr ""
 "programs, so users need to have some understanding of programming"
 
 #: ../../source/installation.rst:9
-msgid "步骤"
-msgstr "Steps"
-
-#: ../../source/installation.rst:12
 msgid "安装 JAnim"
 msgstr "Installing JAnim"
 
-#: ../../source/installation.rst:14
-msgid "安装 JAnim 时，外部依赖项并不是必须的，所以我们可以直接安装 JAnim，再按需安装依赖项。"
+#: ../../source/installation.rst:11
+msgid "接下来我们介绍如何安装 JAnim，我们分为“简要说明”和“详细教程”两个版本"
 msgstr ""
-"When installing JAnim, external dependencies are not required, so we can install JAnim directly and install dependencies "
-"as needed."
+"We will now introduce how to install JAnim. We provide two versions: a \"brief guide\" and a \"detailed tutorial\"."
 
-#: ../../source/installation.rst:16
-msgid "熟悉 Python 库的开发者可以自行选用合适的方法安装。整体上来说有两种安装思路，各有优势："
+#: ../../source/installation.rst:13
+msgid "如果你对 Python 及其包管理器有一定的了解，那么“简要说明”已经足够"
+msgstr "If you have some knowledge of Python and its package managers, the \"brief guide\" is sufficient."
+
+#: ../../source/installation.rst:15
+msgid "而如果你是一个刚开始了解 Python 的新人，则可能需要仔细阅读“详细教程”"
+msgstr "If you are new to Python, you may need to read the \"detailed tutorial\" carefully."
+
+#: ../../source/installation.rst:23
+msgid "简要说明"
+msgstr "Brief Guide"
+
+#: ../../source/installation.rst:25
+msgid "只需"
+msgstr "Simply run:"
+
+#: ../../source/installation.rst:27
+msgid "pip install janim[gui]"
+msgstr "pip install janim[gui]"
+
+#: ../../source/installation.rst:31
+msgid "不需要其它外部依赖，安装完成后运行下方命令，即可查看内置样例进一步验证安装情况"
 msgstr ""
-"Developers familiar with Python libraries can choose appropriate installation methods. Overall, there are two "
-"installation approaches, each with advantages:"
+"No other external dependencies are required. After installation, run the following command to view built-in examples and "
+"further verify the installation."
 
-#: ../../source/installation.rst:18
-msgid "安装在 **全局** 的好处是所有项目都可以调用同一套库，可以直接调用命令而不需要先切换环境和目录；"
-msgstr ""
-"Installing **globally** allows all projects to use the same library, and commands can be called directly without "
-"switching environments and directories first;"
+#: ../../source/installation.rst:33
+msgid "janim examples"
+msgstr "janim examples"
 
-#: ../../source/installation.rst:20
-msgid "安装在 **虚拟环境** 的好处是做到项目间的依赖隔离，并且不会污染全局的指令。"
-msgstr ""
-"Installing in a **virtual environment** provides dependency isolation between projects and does not pollute global "
-"commands."
+#: ../../source/installation.rst:37
+msgid "详细教程"
+msgstr "Detailed Tutorial"
 
-#: ../../source/installation.rst:22
+#: ../../source/installation.rst:39
 msgid "由于在此之后的操作或多或少要涉及到命令行操作，希望你对命令行有一定的了解"
 msgstr ""
 "Since subsequent operations will more or less involve command-line operations, we hope you have some understanding of the "
 "command line"
 
-#: ../../source/installation.rst:30
-msgid "点击展开打开命令行的简要说明"
-msgstr "Click to expand brief instructions on opening the command line"
+#: ../../source/installation.rst:47
+msgid "点击展开在 Windows 中如何打开命令行的简要说明"
+msgstr "Click to expand brief instructions on opening the command line in Windows"
 
-#: ../../source/installation.rst:37
+#: ../../source/installation.rst:53
 msgid ""
 "这里我们简单介绍一下打开命令行的方式，以后不再指出。在 Windows 上推荐使用自带的 Powershell， ❶简单的打开方式是 “Win 徽标"
 "键 + R” 打开 “运行” 窗口，输入 ``powershell`` （Powershell 7.x 需要输入 ``pwsh``）， ❷也可以在开始菜单中输入“powershell”然"
@@ -86,15 +96,15 @@ msgstr ""
 "menu and press Enter, or ❸ press ``ctrl + ``` in VS Code. On macOS / Linux, generally right-click to select “Terminal” or "
 "find the built-in terminal icon."
 
-#: ../../source/installation.rst:47
+#: ../../source/installation.rst:63
 msgid "以下简单介绍几种常见的安装方法："
 msgstr "The following briefly introduces several common installation methods:"
 
-#: ../../source/installation.rst:51
+#: ../../source/installation.rst:67
 msgid "uv + 虚拟环境"
 msgstr "uv + Virtual Environment"
 
-#: ../../source/installation.rst:53 ../../source/installation.rst:79
+#: ../../source/installation.rst:69 ../../source/installation.rst:115
 msgid ""
 "`uv <https://github.com/astral-sh/uv>`_ 是一套用于 Python 项目管理的工具链，目前已经相对完善，对于需要频繁使用 Python 多版"
 "本和多依赖库的开发者来说很方便。官方提供了很多安装方法，可以用上文提到的包管理工具安装，也可以独立安装。"
@@ -104,16 +114,7 @@ msgstr ""
 "provides many installation methods, which can be installed using the package managers mentioned above, or installed "
 "independently."
 
-#: ../../source/installation.rst:57 ../../source/installation.rst:83
-msgid ""
-"这一条目借鉴了 `ManimCE 项目的安装文档 <https://docs.manim.community/en/stable/installation/uv.html>`_，命令行安装 ``uv`` "
-"以及进一步新建项目的命令都可以参考其中相应段落"
-msgstr ""
-"This entry borrows from the `ManimCE project's installation documentation <https://docs.manim.community/en/stable/"
-"installation/uv.html>`_, command-line installation of ``uv`` and further commands for creating new projects can refer to "
-"the corresponding paragraphs therein."
-
-#: ../../source/installation.rst:59 ../../source/installation.rst:85
+#: ../../source/installation.rst:73 ../../source/installation.rst:119
 msgid ""
 "如果你对使用 ``uv`` 还不熟悉并略有困惑，可以 **点击上面分页中的 “Python + 全局” 切换到更为经典的安装方式**，这样你可能会更"
 "容易理解，但我们仍然推荐使用 ``uv`` 进行管理"
@@ -122,30 +123,59 @@ msgstr ""
 "above to switch to a more classic installation method**, which you may find easier to understand, but we still recommend "
 "using ``uv`` for management."
 
-#: ../../source/installation.rst:61
-msgid ""
-"本节介绍每个文件夹下创建独立虚拟环境的方式。假如你在一个适当的文件路径（以下用 “/my/path” 指代）下，想在一个叫 “JAnim-"
-"folder” 的文件夹下集中开发，那么请逐行运行以下命令，它会自动创建 “JAnim-folder” 并在其中创建虚拟环境。"
-msgstr ""
-"This section introduces how to create independent virtual environments under each folder. If you are at an appropriate "
-"file path (referred to as /my/path below) and want to develop in a folder called “JAnim-folder”, please run the following "
-"commands line by line, which will automatically create “JAnim-folder” and create a virtual environment in it."
+#: ../../source/installation.rst:75 ../../source/installation.rst:121
+msgid "首先可以在命令行中粘贴以下脚本安装 ``uv``"
+msgstr "First, paste the following script into the command line to install ``uv``"
 
-#: ../../source/installation.rst:63
+#: ../../source/installation.rst:79 ../../source/installation.rst:125
+msgid "Windows"
+msgstr "Windows"
+
+#: ../../source/installation.rst:81 ../../source/installation.rst:127
+msgid "powershell -ExecutionPolicy ByPass -c \"irm https://astral.sh/uv/install.ps1 | iex\""
+msgstr "powershell -ExecutionPolicy ByPass -c \"irm https://astral.sh/uv/install.ps1 | iex\""
+
+#: ../../source/installation.rst:85 ../../source/installation.rst:131
+msgid "macOS 或 Linux"
+msgstr "macOS or Linux"
+
+#: ../../source/installation.rst:87 ../../source/installation.rst:133
+msgid "curl -LsSf https://astral.sh/uv/install.sh | sh"
+msgstr "curl -LsSf https://astral.sh/uv/install.sh | sh"
+
+#: ../../source/installation.rst:91 ../../source/installation.rst:137
+msgid "如果你的系统中没有 ``curl``，则可以使用 ``wget``："
+msgstr "If ``curl`` is not available on your system, you can use ``wget`` instead:"
+
+#: ../../source/installation.rst:93 ../../source/installation.rst:139
+msgid "wget -qO- https://astral.sh/uv/install.sh | sh"
+msgstr "wget -qO- https://astral.sh/uv/install.sh | sh"
+
+#: ../../source/installation.rst:97
+msgid ""
+"本节介绍每个文件夹下创建独立虚拟环境的方式。假如你在一个适当的文件路径（以下用 “/my/path” 指代）下，想在一个叫 “janim-"
+"folder” 的文件夹下集中开发，那么请逐行运行以下命令，它会自动创建 “janim-folder” 并在其中创建虚拟环境。"
+msgstr ""
+"This section introduces how to create an independent virtual environment for each project folder. Suppose you are in an "
+"appropriate directory (referred to as \"/my/path\" below) and want to develop in a folder named \"janim-folder\". Run the "
+"following commands line by line; they will automatically create \"janim-folder\" and set up a virtual environment inside "
+"it."
+
+#: ../../source/installation.rst:99
 msgid ""
 "cd \"/my/path\"\n"
-"uv init \"JAnim-folder\"\n"
-"cd \"JAnim-folder\"\n"
+"uv init \"janim-folder\"\n"
+"cd \"janim-folder\"\n"
 "uv add janim[gui]\n"
 "uv run janim --version  # 看到版本号说明安装完成"
 msgstr ""
 "cd \"/my/path\"\n"
-"uv init \"JAnim-folder\"\n"
-"cd \"JAnim-folder\"\n"
+"uv init \"janim-folder\"\n"
+"cd \"janim-folder\"\n"
 "uv add janim[gui]\n"
 "uv run janim --version  # If you see the version number, the installation is complete"
 
-#: ../../source/installation.rst:71
+#: ../../source/installation.rst:107
 msgid ""
 "用这种方式安装后，文档中所有 ``janim`` 指令都要换成 ``uv run janim``，如果仍然要直接调用 ``janim``，则需要先 `激活虚拟环"
 "境 <https://docs.astral.sh/uv/pip/environments/#using-a-virtual-environment>`_，这是出于全局和本项目隔离的目的。"
@@ -155,23 +185,23 @@ msgstr ""
 "pip/environments/#using-a-virtual-environment>`_, which is for the purpose of isolating global and project-specific "
 "environments."
 
-#: ../../source/installation.rst:75
+#: ../../source/installation.rst:111
 msgid "一切就绪后，可以使用 ``uv run janim examples`` 查看内置示例，进一步检验 JAnim 的安装情况"
 msgstr ""
 "Once everything is ready, you can use ``uv run janim examples`` to view built-in examples and further verify the JAnim "
 "installation"
 
-#: ../../source/installation.rst:77
+#: ../../source/installation.rst:113
 msgid "uv + 全局"
 msgstr "uv + Global"
 
-#: ../../source/installation.rst:87
+#: ../../source/installation.rst:143
 msgid "和在虚拟环境中安装不同的是，全局安装不需要指定用来开发项目的文件夹。"
 msgstr ""
 "Unlike installation in a virtual environment, global installation does not require specifying a folder for project "
 "development."
 
-#: ../../source/installation.rst:89
+#: ../../source/installation.rst:145
 msgid ""
 "uv tool install janim[gui]\n"
 "janim --version     # 看到版本号说明安装完成"
@@ -179,17 +209,17 @@ msgstr ""
 "uv tool install janim[gui]\n"
 "janim --version     # If you see the version number, the installation is complete"
 
-#: ../../source/installation.rst:96 ../../source/installation.rst:111
+#: ../../source/installation.rst:152 ../../source/installation.rst:167
 msgid "一切就绪后，可以使用 ``janim examples`` 查看内置示例，进一步检验 JAnim 的安装情况"
 msgstr ""
 "Once everything is ready, you can use ``janim examples`` to view built-in examples and further verify the JAnim "
 "installation"
 
-#: ../../source/installation.rst:98
+#: ../../source/installation.rst:154
 msgid "Python + 全局"
 msgstr "Python + Global"
 
-#: ../../source/installation.rst:100
+#: ../../source/installation.rst:156
 msgid ""
 "Python 可以直接安装，而且多版本可以共存。访问 `Python 官网下载页 <https://www.python.org/downloads/>`_ 选择 3.12 或更高版"
 "本，下载安装。"
@@ -197,13 +227,13 @@ msgstr ""
 "Python can be installed directly, and multiple versions can coexist. Visit the `Python official download page <https://"
 "www.python.org/downloads/>`_ and select version 3.12 or higher to download and install."
 
-#: ../../source/installation.rst:102
-msgid "使用 Python 自带的 pip 工具，会自动将依赖安装在全局。打开命令行输入该命令即可："
+#: ../../source/installation.rst:158
+msgid "使用 Python 自带的 ``pip`` 工具，会自动将依赖安装在全局。打开命令行输入该命令即可："
 msgstr ""
-"Using Python's built-in pip tool will automatically install dependencies globally. Open the command line and enter this "
-"command:"
+"Using Python's built-in ``pip`` tool will automatically install dependencies globally. Open the command line and enter "
+"this command:"
 
-#: ../../source/installation.rst:104
+#: ../../source/installation.rst:160
 msgid ""
 "pip install janim[gui]\n"
 "janim --version     # 看到版本号说明安装完成"
@@ -211,265 +241,23 @@ msgstr ""
 "pip install janim[gui]\n"
 "janim --version     # If you see the version number, the installation is complete"
 
-#: ../../source/installation.rst:113
-msgid "Conda + 全局（TODO）"
-msgstr "Conda + Global (TODO)"
+#: ../../source/installation.rst:169
+msgid "Conda (TODO)"
+msgstr "Conda (TODO)"
 
-#: ../../source/installation.rst:115
+#: ../../source/installation.rst:171
 msgid "有待完善，欢迎补充"
 msgstr "To be improved, contributions welcome"
 
-#: ../../source/installation.rst:120
-msgid "安装可选依赖项"
-msgstr "Installing Optional Dependencies"
-
-#: ../../source/installation.rst:122
-msgid "为了输出视频文件，或者进行音视频读取，需要安装 `FFmpeg <https://ffmpeg.org>`_ 。"
-msgstr "To output video files or process audio/video, you need to install `FFmpeg <https://ffmpeg.org>`_."
-
-#: ../../source/installation.rst:124
-msgid ""
-"但值得注意的是，使用 GUI 界面预览动画效果并不依赖 FFmpeg，只有在最后导出视频时才需要 FFmpeg，因此你完全可以先上手体验 "
-"JAnim，等需要输出视频的时候再另行安装。"
-msgstr ""
-"However, it is worth noting that previewing animations via the GUI does not depend on FFmpeg; it is only required when "
-"finally exporting video. Therefore, you can start experimenting with JAnim right away and install FFmpeg later when you "
-"need to render output."
-
-#: ../../source/installation.rst:126
-msgid "当需要书写公式或高级排版时，在 JAnim 中我们会用到 `Typst <https://github.com/typst/typst/releases>`_ 。"
-msgstr ""
-"For typesetting formulas or advanced text formatting, JAnim uses `Typst <https://github.com/typst/typst/releases>`_."
-
-#: ../../source/installation.rst:128
-msgid ""
-"Typst 已经集成到 JAnim 的安装中了（基于 `typst-py <https://github.com/messense/typst-py>`_ 包），因此不需要另外安装。 但"
-"是，如果你有使用外部 Typst 可执行文件的需求，这里也提供了外部 Typst 的安装方法。"
-msgstr ""
-"Typst is already integrated into JAnim (via the `typst-py <https://github.com/messense/typst-py>`_ package), so no "
-"additional installation is required. However, if you prefer to use an external Typst executable, instructions for doing "
-"so are provided below."
-
-#: ../../source/installation.rst:131
-msgid "对于 Linux，可能还需要另外安装 ``portaudio19-dev``，详见下方 Linux 标签页中的介绍。"
-msgstr "For Linux, you may also need to install ``portaudio19-dev`` additionally. For details, see the Linux section below."
-
-#: ../../source/installation.rst:135
-msgid "Windows + 使用包管理器（推荐）"
-msgstr "Windows + Using Package Manager (Recommended)"
-
-#: ../../source/installation.rst:137
-msgid ""
-"Windows 系统的包管理不一定是开箱即用的，通常需要略微熟悉命令行操作并且需要少量配置。这个配置过程相对来说比较费时，但是一旦"
-"配置好就能自动处理很多琐事。笔者此处推荐使用包管理器。"
-msgstr ""
-"Package management on Windows systems is not necessarily ready to use out of the box. It usually requires some "
-"familiarity with command-line operations and a small amount of configuration. This configuration process is relatively "
-"time-consuming, but once configured, it can automatically handle many trivial tasks. The author recommends using a "
-"package manager here."
-
-#: ../../source/installation.rst:139
-msgid ""
-"包管理器有很多选择，一般来说 Windows 应该自带一个 Winget，也可以使用 `Chocolatey <https://community.chocolatey.org/>`_ 或"
-"者 `Scoop <https://scoop.sh/>`_。三者只需安装一种，不过多装的话也没什么冲突。"
-msgstr ""
-"There are many choices for package managers. Generally, Windows should come with Winget built-in. You can also use "
-"`Chocolatey <https://community.chocolatey.org/>`_ or `Scoop <https://scoop.sh/>`_. You only need to install one of the "
-"three, though installing multiple won't cause conflicts."
-
-#: ../../source/installation.rst:141
-msgid ""
-"安装完包管理器（或者自带 Winget），以 Winget 为例，按 ``Win + R`` 输入 ``powershell`` 或者在开始菜单中输入 powershell 打"
-"开 Powershell，输入 ``winget install typst`` 以及 ``winget install ffmpeg`` 即可完成安装。其他两种也是同理。"
-msgstr ""
-"After installing the package manager (or using the built-in Winget), taking Winget as an example, press ``Win + R`` and "
-"enter ``powershell``, or enter powershell in the Start menu to open PowerShell, then enter ``winget install typst`` and "
-"``winget install ffmpeg`` to complete the installation. The other two are similar."
-
-#: ../../source/installation.rst:145
-msgid ""
-"如果不熟悉命令行，希望使用图形化界面，也可以安装 `UniGetUI <https://github.com/marticliment/UniGetUI>`_ 来对包管理器进行统"
-"一展示和调用，注意它只是包管理器的图形界面，仍然需要环境中存在对应包管理器才能使用"
-msgstr ""
-"If you are not familiar with the command line and prefer a graphical interface, you can also install `UniGetUI <https://"
-"github.com/marticliment/UniGetUI>`_ to provide a unified display and invocation of package managers. Note that it is only "
-"a graphical interface for package managers and still requires the corresponding package manager to exist in the "
-"environment to use."
-
-#: ../../source/installation.rst:147
-msgid "Windows + 直接下载二进制"
-msgstr "Windows + Direct Binary Download"
-
-#: ../../source/installation.rst:149
-msgid "直接下载二进制文件，需要的环节更少，但是需要手动处理安装位置、添加环境变量、更新二进制的问题。"
-msgstr ""
-"Directly downloading binary files requires fewer steps, but you need to manually handle installation location, adding "
-"environment variables, and updating binaries."
-
-#: ../../source/installation.rst:151
-msgid ""
-"首先安装 FFmpeg。点击 https://www.gyan.dev/ffmpeg/builds/ffmpeg-git-full.7z 下载压缩包，解压，将 ``ffmpeg-`` 开头的文件夹"
-"移到适当的位置（例如 ``C:\\\\Program Files``），把该文件夹改名为 ``ffmpeg``。"
-msgstr ""
-"First, install FFmpeg. Click https://www.gyan.dev/ffmpeg/builds/ffmpeg-git-full.7z to download the archive, extract it, "
-"move the folder starting with ``ffmpeg-`` to an appropriate location (e.g., ``C:\\\\Program Files``), and rename the "
-"folder to ``ffmpeg``."
-
-#: ../../source/installation.rst:153
-msgid ""
-"然后安装 Typst。点击 https://github.com/typst/typst/releases/latest/download/typst-x86_64-pc-windows-msvc.zip 下载压缩包"
-"（如果网络错误可以反复尝试几次），解压，将 ``typst-x86_64-pc-windows-msvc`` 移到适当的位置，把该文件夹改名为 ``typst``。"
-msgstr ""
-"Then install Typst. Click https://github.com/typst/typst/releases/latest/download/typst-x86_64-pc-windows-msvc.zip to "
-"download the archive (if there's a network error, try several times), extract it, move ``typst-x86_64-pc-windows-msvc`` "
-"to an appropriate location, and rename the folder to ``typst``."
-
-#: ../../source/installation.rst:155
-msgid ""
-"最后添加环境变量。如果使用的是 Windows 11，可以按“Windows 徽标”键或者点击“开始”按钮，输入“环境变量”。（如果使用之前的版本"
-"可以右键此电脑 - 属性 - 高级系统设置）。点击“环境变量”，双击“用户变量”（或“系统变量”，任选其一）的“Path”，右键刚刚的 "
-"``typst`` 文件夹并“复制文件地址”，在 Path 窗口（如下图）点击“新建”并把文件地址粘贴进去（注意不要带引号）。类似操作，将 "
-"``ffmpeg\\bin`` 也就是刚刚得到的 ffmpeg 下的 bin 文件夹的文件地址粘贴进去。"
-msgstr ""
-"Finally, add environment variables. If using Windows 11, press the “Windows” logo key or click the “Start” button and "
-"enter “environment variables”. (For earlier versions, right-click This PC - Properties - Advanced System Settings). Click "
-"“Environment Variables”, double-click “Path” under “User variables” (or “System variables”, choose either), right-click "
-"the ``typst`` folder and “Copy file address”, click “New” in the Path window (as shown below) and paste the file address "
-"(note: do not include quotes). Similarly, paste the file address of ``ffmpeg\\bin``, i.e., the bin folder under the "
-"ffmpeg folder you just obtained."
-
-#: ../../source/installation.rst:161
-msgid ""
-"尝试一下有没有正确识别。在“开始”菜单输入并打开 PowerShell 或者 Cmd，运行 ``ffmpeg --version`` 和 ``typst --version``，输出"
-"版本号则安装成功。"
-msgstr ""
-"Test if they are correctly recognized. Enter and open PowerShell or Cmd from the Start menu, run ``ffmpeg --version`` and "
-"``typst --version``. If version numbers are output, the installation is successful."
-
-#: ../../source/installation.rst:163
-msgid "macOS"
-msgstr "macOS"
-
-#: ../../source/installation.rst:165
-msgid "推荐使用包管理器安装，这里使用常见的 `Homebrew <https://brew.sh/>`_ 作为示例。"
-msgstr ""
-"It is recommended to install using a package manager. Here we use the common `Homebrew <https://brew.sh/>`_ as an example."
-
-#: ../../source/installation.rst:167
-msgid "Homebrew 是 macOS 上最常用的包管理器，使用下面这个命令即可安装（如果你已经安装过了，可以跳过）："
-msgstr ""
-"Homebrew is the most commonly used package manager on macOS. Use the following command to install it (if you already have "
-"it installed, you can skip this):"
-
-#: ../../source/installation.rst:169
-msgid "/bin/bash -c \"$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)\""
-msgstr "/bin/bash -c \"$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)\""
-
-#: ../../source/installation.rst:173
-msgid "接着便可以使用 Homebrew 安装 FFmpeg 和 Typst"
-msgstr "Then you can use Homebrew to install FFmpeg and Typst"
-
-#: ../../source/installation.rst:175
-msgid ""
-"# FFmpeg\n"
-"brew install ffmpeg\n"
-"ffmpeg --version    # 输出版本号则安装成功\n"
-"\n"
-"# Typst\n"
-"brew install typst\n"
-"typst --version     # 输出版本号则安装成功"
-msgstr ""
-"# FFmpeg\n"
-"brew install ffmpeg\n"
-"ffmpeg --version    # If the version number is output, the installation is successful\n"
-"\n"
-"# Typst\n"
-"brew install typst\n"
-"typst --version     # If the version number is output, the installation is successful"
-
-#: ../../source/installation.rst:185
-msgid "Linux"
-msgstr "Linux"
-
-#: ../../source/installation.rst:187
-#, python-format
-msgid ""
-"考虑到使用 `类 UNIX <https://zh.wikipedia.org/wiki/%E7%B1%BBUnix%E7%B3%BB%E7%BB%9F>`_ 的用户一般对命令行更有了解，而且相应"
-"的发行版多，包管理没有通用的命令。这里仅给出 Ubuntu 的安装方法。"
-msgstr ""
-"Considering that users of `Unix-like <https://en.wikipedia.org/wiki/Unix-like>`_ systems generally have better "
-"understanding of the command line, and there are many corresponding distributions with no universal package management "
-"commands, only Ubuntu's installation method is provided here."
+#: ../../source/installation.rst:178
+msgid "可能出现的安装问题"
+msgstr "Possible Installation Issues"
 
 #: ../../source/installation.rst:189
-msgid "打开终端，运行以下命令。FFmpeg 使用包管理器安装，不同发行版包管理器不同，请自行适配。"
-msgstr ""
-"Open the terminal and run the following commands. FFmpeg is installed using the package manager. Different distributions "
-"have different package managers, please adapt accordingly."
-
-#: ../../source/installation.rst:191
-msgid ""
-"# FFmpeg\n"
-"sudo apt update\n"
-"sudo apt install ffmpeg\n"
-"ffmpeg --version    # 输出版本号则安装成功"
-msgstr ""
-"# FFmpeg\n"
-"sudo apt update\n"
-"sudo apt install ffmpeg\n"
-"ffmpeg --version    # If the version number is output, the installation is successful"
-
-#: ../../source/installation.rst:198
-msgid "Typst 由于相对较新且未进入稳定版，直接从源代码仓库下载安装。"
-msgstr ""
-"Since Typst is relatively new and has not entered a stable version, download and install it directly from the source "
-"repository."
-
-#: ../../source/installation.rst:200
-msgid ""
-"# Typst （参考 https://lindevs.com/install-typst-on-ubuntu）\n"
-"wget -qO typst.tar.xz https://github.com/typst/typst/releases/latest/download/typst-x86_64-unknown-linux-musl.tar.xz\n"
-"sudo tar xf typst.tar.xz --strip-components=1 -C /usr/local/bin typst-x86_64-unknown-linux-musl/typst\n"
-"typst --version     # 输出版本号则安装成功\n"
-"rm -rf typst.tar.xz"
-msgstr ""
-"# Typst (Based on https://lindevs.com/install-typst-on-ubuntu)\n"
-"wget -qO typst.tar.xz https://github.com/typst/typst/releases/latest/download/typst-x86_64-unknown-linux-musl.tar.xz\n"
-"sudo tar xf typst.tar.xz --strip-components=1 -C /usr/local/bin typst-x86_64-unknown-linux-musl/typst\n"
-"typst --version     # If the version number is output, the installation is successful\n"
-"rm -rf typst.tar.xz"
-
-#: ../../source/installation.rst:208
-msgid "另外，在 Linux 上使用 JAnim 窗口预览音频可能还需要安装 portaudio："
-msgstr "Additionally, using JAnim window preview for audio on Linux may also require installing portaudio:"
-
-#: ../../source/installation.rst:210
-msgid ""
-"# portaudio\n"
-"sudo apt install portaudio19-dev"
-msgstr ""
-"# portaudio\n"
-"sudo apt install portaudio19-dev"
-
-#: ../../source/installation.rst:215
-msgid ""
-"笔者仅在一台虚拟机上尝试过以上安装，不保证真实环境也能做到。网络波动、本地命令不存在、文件重名等等原因都可能导致安装失败。"
-"有安装问题请在 GitHub 或群聊中及时提出并附带错误信息和/或截图。"
-msgstr ""
-"The author has only tried the above installation on one virtual machine and cannot guarantee it will work in real "
-"environments. Network fluctuations, missing local commands, file name conflicts, and other reasons may cause installation "
-"failures. If you encounter installation issues, please report them promptly on GitHub or in group chat with error "
-"messages and/or screenshots."
-
-#: ../../source/installation.rst:218
-msgid "可能出现的问题"
-msgstr "Possible Issues"
-
-#: ../../source/installation.rst:229
 msgid "安装时， ``glcontext`` 包出现以下报错："
 msgstr "During installation, the ``glcontext`` package shows the following error:"
 
-#: ../../source/installation.rst:231
+#: ../../source/installation.rst:191
 msgid ""
 "error: Microsoft Visual C++ 14.0 or greater is required. Get it with \"Microsoft C++ Build Tools\":\n"
 "https://visualstudio.microsoft.com/visual-cpp-build-tools/"
@@ -477,30 +265,199 @@ msgstr ""
 "error: Microsoft Visual C++ 14.0 or greater is required. Get it with \"Microsoft C++ Build Tools\":\n"
 "https://visualstudio.microsoft.com/visual-cpp-build-tools/"
 
-#: ../../source/installation.rst:236
+#: ../../source/installation.rst:196
 msgid "只需要按照他给出的链接 https://visualstudio.microsoft.com/visual-cpp-build-tools/ 下载，然后进行安装。"
 msgstr ""
 "Simply follow the link it provides https://visualstudio.microsoft.com/visual-cpp-build-tools/ to download and install."
 
-#: ../../source/installation.rst:238
+#: ../../source/installation.rst:198
 msgid "在安装组件时勾选 **“使用 C++ 的桌面开发”** 后点击安装按钮，如下图"
 msgstr ""
 "When installing components, check **“Desktop development with C++”** and click the install button, as shown in the figure "
 "below"
 
-#: ../../source/installation.rst:242
+#: ../../source/installation.rst:202
 msgid "安装完成后再次尝试安装 ``JAnim`` 即可。"
 msgstr "After installation is complete, try installing ``JAnim`` again."
 
-#: ../../source/installation.rst:244
+#: ../../source/installation.rst:204
 msgid "如果仍然失败，可以尝试重启终端、编辑器，或者重启电脑后再次尝试。"
 msgstr "If it still fails, you can try restarting the terminal, editor, or computer and try again."
 
-#: ../../source/installation.rst:257
+#: ../../source/installation.rst:217
+msgid "额外依赖项"
+msgstr "Additional Dependencies"
+
+#: ../../source/installation.rst:219
+msgid "JAnim 运作并不依赖外部程序，但是在一些少见的情况中，你可能需要安装一些额外依赖"
+msgstr ""
+"JAnim does not depend on external programs to run, but in some rare cases you may need to install additional dependencies."
+
+#: ../../source/installation.rst:221
+msgid "在缺少某些额外依赖项的情况下，JAnim 会给出提醒，因此在使用时不必担心，可以在遇到提示后，重新访问该页面检查"
+msgstr ""
+"If some additional dependencies are missing, JAnim will provide a reminder. You do not need to worry during normal use; "
+"when you encounter such a reminder, you can return to this page for instructions."
+
+#: ../../source/installation.rst:223
+msgid "以下列出了可能遇到的情况："
+msgstr "The following lists possible situations you may encounter:"
+
+#: ../../source/installation.rst:234
+msgid "JAnim 导出 ``.mp4`` 视频时不需要外部程序，但是如果你想要尝试硬件加速，则需要安装 FFmpeg"
+msgstr "JAnim does not require any external programs to export ``.mp4`` videos, but FFmpeg is required if you want to try hardware acceleration."
+
+#: ../../source/installation.rst:240
+msgid "当你运行类似这样的命令行时"
+msgstr "When you run a command like this:"
+
+#: ../../source/installation.rst:242
+msgid "janim write ... ... --hwaccel"
+msgstr "janim write ... ... --hwaccel"
+
+#: ../../source/installation.rst:246
+msgid "可能会得到报错，提示需要安装 FFmpeg，你可以参考以下安装方式："
+msgstr ""
+"You may receive an error indicating that FFmpeg needs to be installed. You can refer to the following installation "
+"methods:"
+
+#: ../../source/installation.rst:250
+msgid "Windows + 使用包管理器（推荐）"
+msgstr "Windows + Using Package Manager (Recommended)"
+
+#: ../../source/installation.rst:252
+msgid "在 Windows 系统中，一般来说会自带一个 ``Winget``，使用以下命令即可安装"
+msgstr "Windows systems generally come with ``Winget`` pre-installed. You can install it using the following command:"
+
+#: ../../source/installation.rst:254
+msgid "winget install ffmpeg"
+msgstr "winget install ffmpeg"
+
+#: ../../source/installation.rst:258
+msgid "安装后，你需要重新命令行或 VSCode， ``ffmpeg`` 才能够正常使用，可使用以下命令检查"
+msgstr ""
+"After installation, you need to restart the command line or VS Code before ``ffmpeg`` can be used normally. You can check "
+"it with the following command:"
+
+#: ../../source/installation.rst:260
+msgid "ffmpeg --version    # 输出版本号则安装成功"
+msgstr "ffmpeg --version    # If the version number is displayed, the installation is successful"
+
+#: ../../source/installation.rst:264
+msgid ""
+"如果无法使用或是对其它包管理器有所偏好，可以另行参考 `Chocolatey <https://community.chocolatey.org/>`_ 或者 `Scoop "
+"<https://scoop.sh/>`_，或是 `UniGetUI <https://github.com/marticliment/UniGetUI>`_ 图形化界面"
+msgstr ""
+"If it is unavailable or you prefer other package managers, you can refer to `Chocolatey <https://community.chocolatey.org/"
+">`_ or `Scoop <https://scoop.sh/>`_, or use the graphical interface `UniGetUI <https://github.com/marticliment/"
+"UniGetUI>`_."
+
+#: ../../source/installation.rst:266
+msgid "Windows + 直接下载二进制"
+msgstr "Windows + Direct Binary Download"
+
+#: ../../source/installation.rst:268
+msgid "直接下载二进制文件，需要手动处理安装位置、添加环境变量、更新二进制的问题"
+msgstr ""
+"Directly downloading binary files requires manually handling the installation location, adding environment variables, and "
+"updating binaries."
+
+#: ../../source/installation.rst:270
+msgid ""
+"可以访问 https://www.gyan.dev/ffmpeg/builds/ffmpeg-git-full.7z 下载压缩包，解压到合适的位置，并配置环境变量，这里不展开赘"
+"述"
+msgstr ""
+"You can visit https://www.gyan.dev/ffmpeg/builds/ffmpeg-git-full.7z to download the archive, extract it to a suitable "
+"location, and configure the environment variables. The details are not covered here."
+
+#: ../../source/installation.rst:272
+msgid "macOS"
+msgstr "macOS"
+
+#: ../../source/installation.rst:274
+msgid "推荐使用包管理器安装，这里使用常见的 `Homebrew <https://brew.sh/>`_ 作为示例"
+msgstr ""
+"It is recommended to install using a package manager. Here we use the common `Homebrew <https://brew.sh/>`_ as an example"
+
+#: ../../source/installation.rst:276
+msgid "Homebrew 是 macOS 上最常用的包管理器，使用下面这个命令即可安装（如果你已经安装过了，可以跳过）："
+msgstr ""
+"Homebrew is the most commonly used package manager on macOS. Use the following command to install it (if you already have "
+"it installed, you can skip this):"
+
+#: ../../source/installation.rst:278
+msgid "/bin/bash -c \"$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)\""
+msgstr "/bin/bash -c \"$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)\""
+
+#: ../../source/installation.rst:282
+msgid "接着便可以使用 Homebrew 安装 FFmpeg"
+msgstr "Then you can use Homebrew to install FFmpeg"
+
+#: ../../source/installation.rst:284
+msgid ""
+"brew install ffmpeg\n"
+"ffmpeg --version    # 输出版本号则安装成功"
+msgstr ""
+"brew install ffmpeg\n"
+"ffmpeg --version    # If the version number is output, the installation is successful"
+
+#: ../../source/installation.rst:289
+msgid "Linux"
+msgstr "Linux"
+
+#: ../../source/installation.rst:291 ../../source/installation.rst:321
+#, python-format
+msgid ""
+"考虑到使用 `类 UNIX <https://zh.wikipedia.org/wiki/%E7%B1%BBUnix%E7%B3%BB%E7%BB%9F>`_ 的用户一般对命令行更有了解， 而且相"
+"应的发行版多，包管理没有通用的命令，这里仅给出在 Ubuntu 中的安装方法"
+msgstr ""
+"Considering that users of `Unix-like <https://en.wikipedia.org/wiki/Unix-like>`_ systems are generally more familiar with "
+"the command line, and that there are many distributions with no universal package management command, only the "
+"installation method for Ubuntu is provided here."
+
+#: ../../source/installation.rst:294
+msgid ""
+"sudo apt update\n"
+"sudo apt install ffmpeg\n"
+"ffmpeg --version    # 输出版本号则安装成功"
+msgstr ""
+"sudo apt update\n"
+"sudo apt install ffmpeg\n"
+"ffmpeg --version    # If the version number is displayed, the installation is successful"
+
+#: ../../source/installation.rst:300 ../../source/installation.rst:329
+msgid "不同发行版包管理器不同，请自行适配"
+msgstr "Package managers differ between distributions, please adapt accordingly."
+
+#: ../../source/installation.rst:311
+msgid "对于 Linux 系统，如果需要在预览界面中正常播放音频，则需要安装 ``PortAudio``"
+msgstr "On Linux systems, ``PortAudio`` needs to be installed to play audio normally in the preview interface."
+
+#: ../../source/installation.rst:317
+msgid ""
+"在 Linux 系统中，当你在预览界面中播放带有音频的 :class:`~.Timeline` 时，可能会遇到需要安装 ``pip install sounddevice`` 的"
+"提示"
+msgstr ""
+"On Linux systems, when playing a :class:`~.Timeline` with audio in the preview interface, you may encounter a prompt "
+"asking you to install ``pip install sounddevice``."
+
+#: ../../source/installation.rst:319
+msgid "而这个库在 Linux 系统上还需要额外的依赖 ``PortAudio``"
+msgstr "This library requires the additional dependency ``PortAudio`` on Linux systems."
+
+#: ../../source/installation.rst:324
+msgid ""
+"sudo apt update\n"
+"sudo apt install portaudio19-dev"
+msgstr ""
+"sudo apt update\n"
+"sudo apt install portaudio19-dev"
+
+#: ../../source/installation.rst:341
 msgid "安装 VS Code"
 msgstr "Installing VS Code"
 
-#: ../../source/installation.rst:259
+#: ../../source/installation.rst:343
 msgid ""
 "推荐使用 `VS Code <https://code.visualstudio.com/>`_ 进行开发，这样可以通过其中的 ``janim-toolbox`` 插件让 JAnim 的使用更"
 "加方便"
@@ -508,11 +465,11 @@ msgstr ""
 "It is recommended to use `VS Code <https://code.visualstudio.com/>`_ for development, which allows the ``janim-toolbox`` "
 "plugin to make using JAnim more convenient"
 
-#: ../../source/installation.rst:261
+#: ../../source/installation.rst:345
 msgid "具体可以参考 :ref:`VS Code 插件 <vscode_extension>` 中的介绍"
 msgstr "For details, refer to the introduction in :ref:`VS Code Extension <vscode_extension>`"
 
-#: ../../source/installation.rst:267
+#: ../../source/installation.rst:351
 msgid "请点击页面的右下角的按钮进入下一节，在之后的小节中不再赘述"
 msgstr ""
 "Please click the button at the bottom right of the page to proceed to the next section. This reminder will not appear in "
@@ -566,3 +523,187 @@ msgstr ""
 
 #~ msgid "截至 2025/11/16，PyAudio 暂未兼容 Python 3.14+ 版本"
 #~ msgstr "As of 2025/11/16, PyAudio is not yet compatible with Python 3.14+ versions"
+
+#~ msgid "步骤"
+#~ msgstr "Steps"
+
+#~ msgid "安装 JAnim 时，外部依赖项并不是必须的，所以我们可以直接安装 JAnim，再按需安装依赖项。"
+#~ msgstr ""
+#~ "When installing JAnim, external dependencies are not required, so we can install JAnim directly and install "
+#~ "dependencies as needed."
+
+#~ msgid "熟悉 Python 库的开发者可以自行选用合适的方法安装。整体上来说有两种安装思路，各有优势："
+#~ msgstr ""
+#~ "Developers familiar with Python libraries can choose appropriate installation methods. Overall, there are two "
+#~ "installation approaches, each with advantages:"
+
+#~ msgid "安装在 **全局** 的好处是所有项目都可以调用同一套库，可以直接调用命令而不需要先切换环境和目录；"
+#~ msgstr ""
+#~ "Installing **globally** allows all projects to use the same library, and commands can be called directly without "
+#~ "switching environments and directories first;"
+
+#~ msgid "安装在 **虚拟环境** 的好处是做到项目间的依赖隔离，并且不会污染全局的指令。"
+#~ msgstr ""
+#~ "Installing in a **virtual environment** provides dependency isolation between projects and does not pollute global "
+#~ "commands."
+
+#~ msgid ""
+#~ "这一条目借鉴了 `ManimCE 项目的安装文档 <https://docs.manim.community/en/stable/installation/uv.html>`_，命令行安装 "
+#~ "``uv`` 以及进一步新建项目的命令都可以参考其中相应段落"
+#~ msgstr ""
+#~ "This entry borrows from the `ManimCE project's installation documentation <https://docs.manim.community/en/stable/"
+#~ "installation/uv.html>`_, command-line installation of ``uv`` and further commands for creating new projects can refer "
+#~ "to the corresponding paragraphs therein."
+
+#~ msgid "安装可选依赖项"
+#~ msgstr "Installing Optional Dependencies"
+
+#~ msgid "为了输出视频文件，或者进行音视频读取，需要安装 `FFmpeg <https://ffmpeg.org>`_ 。"
+#~ msgstr "To output video files or process audio/video, you need to install `FFmpeg <https://ffmpeg.org>`_."
+
+#~ msgid ""
+#~ "但值得注意的是，使用 GUI 界面预览动画效果并不依赖 FFmpeg，只有在最后导出视频时才需要 FFmpeg，因此你完全可以先上手体验 "
+#~ "JAnim，等需要输出视频的时候再另行安装。"
+#~ msgstr ""
+#~ "However, it is worth noting that previewing animations via the GUI does not depend on FFmpeg; it is only required when "
+#~ "finally exporting video. Therefore, you can start experimenting with JAnim right away and install FFmpeg later when "
+#~ "you need to render output."
+
+#~ msgid "当需要书写公式或高级排版时，在 JAnim 中我们会用到 `Typst <https://github.com/typst/typst/releases>`_ 。"
+#~ msgstr ""
+#~ "For typesetting formulas or advanced text formatting, JAnim uses `Typst <https://github.com/typst/typst/releases>`_."
+
+#~ msgid ""
+#~ "Typst 已经集成到 JAnim 的安装中了（基于 `typst-py <https://github.com/messense/typst-py>`_ 包），因此不需要另外安装。 "
+#~ "但是，如果你有使用外部 Typst 可执行文件的需求，这里也提供了外部 Typst 的安装方法。"
+#~ msgstr ""
+#~ "Typst is already integrated into JAnim (via the `typst-py <https://github.com/messense/typst-py>`_ package), so no "
+#~ "additional installation is required. However, if you prefer to use an external Typst executable, instructions for "
+#~ "doing so are provided below."
+
+#~ msgid "对于 Linux，可能还需要另外安装 ``portaudio19-dev``，详见下方 Linux 标签页中的介绍。"
+#~ msgstr ""
+#~ "For Linux, you may also need to install ``portaudio19-dev`` additionally. For details, see the Linux section below."
+
+#~ msgid ""
+#~ "Windows 系统的包管理不一定是开箱即用的，通常需要略微熟悉命令行操作并且需要少量配置。这个配置过程相对来说比较费时，但是"
+#~ "一旦配置好就能自动处理很多琐事。笔者此处推荐使用包管理器。"
+#~ msgstr ""
+#~ "Package management on Windows systems is not necessarily ready to use out of the box. It usually requires some "
+#~ "familiarity with command-line operations and a small amount of configuration. This configuration process is relatively "
+#~ "time-consuming, but once configured, it can automatically handle many trivial tasks. The author recommends using a "
+#~ "package manager here."
+
+#~ msgid ""
+#~ "包管理器有很多选择，一般来说 Windows 应该自带一个 Winget，也可以使用 `Chocolatey <https://community.chocolatey.org/>`_ "
+#~ "或者 `Scoop <https://scoop.sh/>`_。三者只需安装一种，不过多装的话也没什么冲突。"
+#~ msgstr ""
+#~ "There are many choices for package managers. Generally, Windows should come with Winget built-in. You can also use "
+#~ "`Chocolatey <https://community.chocolatey.org/>`_ or `Scoop <https://scoop.sh/>`_. You only need to install one of the "
+#~ "three, though installing multiple won't cause conflicts."
+
+#~ msgid ""
+#~ "安装完包管理器（或者自带 Winget），以 Winget 为例，按 ``Win + R`` 输入 ``powershell`` 或者在开始菜单中输入 powershell "
+#~ "打开 Powershell，输入 ``winget install typst`` 以及 ``winget install ffmpeg`` 即可完成安装。其他两种也是同理。"
+#~ msgstr ""
+#~ "After installing the package manager (or using the built-in Winget), taking Winget as an example, press ``Win + R`` "
+#~ "and enter ``powershell``, or enter powershell in the Start menu to open PowerShell, then enter ``winget install "
+#~ "typst`` and ``winget install ffmpeg`` to complete the installation. The other two are similar."
+
+#~ msgid ""
+#~ "如果不熟悉命令行，希望使用图形化界面，也可以安装 `UniGetUI <https://github.com/marticliment/UniGetUI>`_ 来对包管理器进"
+#~ "行统一展示和调用，注意它只是包管理器的图形界面，仍然需要环境中存在对应包管理器才能使用"
+#~ msgstr ""
+#~ "If you are not familiar with the command line and prefer a graphical interface, you can also install `UniGetUI "
+#~ "<https://github.com/marticliment/UniGetUI>`_ to provide a unified display and invocation of package managers. Note "
+#~ "that it is only a graphical interface for package managers and still requires the corresponding package manager to "
+#~ "exist in the environment to use."
+
+#~ msgid ""
+#~ "首先安装 FFmpeg。点击 https://www.gyan.dev/ffmpeg/builds/ffmpeg-git-full.7z 下载压缩包，解压，将 ``ffmpeg-`` 开头的文件"
+#~ "夹移到适当的位置（例如 ``C:\\\\Program Files``），把该文件夹改名为 ``ffmpeg``。"
+#~ msgstr ""
+#~ "First, install FFmpeg. Click https://www.gyan.dev/ffmpeg/builds/ffmpeg-git-full.7z to download the archive, extract "
+#~ "it, move the folder starting with ``ffmpeg-`` to an appropriate location (e.g., ``C:\\\\Program Files``), and rename "
+#~ "the folder to ``ffmpeg``."
+
+#~ msgid ""
+#~ "然后安装 Typst。点击 https://github.com/typst/typst/releases/latest/download/typst-x86_64-pc-windows-msvc.zip 下载压缩"
+#~ "包（如果网络错误可以反复尝试几次），解压，将 ``typst-x86_64-pc-windows-msvc`` 移到适当的位置，把该文件夹改名为 "
+#~ "``typst``。"
+#~ msgstr ""
+#~ "Then install Typst. Click https://github.com/typst/typst/releases/latest/download/typst-x86_64-pc-windows-msvc.zip to "
+#~ "download the archive (if there's a network error, try several times), extract it, move ``typst-x86_64-pc-windows-"
+#~ "msvc`` to an appropriate location, and rename the folder to ``typst``."
+
+#~ msgid ""
+#~ "最后添加环境变量。如果使用的是 Windows 11，可以按“Windows 徽标”键或者点击“开始”按钮，输入“环境变量”。（如果使用之前的版"
+#~ "本可以右键此电脑 - 属性 - 高级系统设置）。点击“环境变量”，双击“用户变量”（或“系统变量”，任选其一）的“Path”，右键刚刚的 "
+#~ "``typst`` 文件夹并“复制文件地址”，在 Path 窗口（如下图）点击“新建”并把文件地址粘贴进去（注意不要带引号）。类似操作，将 "
+#~ "``ffmpeg\\bin`` 也就是刚刚得到的 ffmpeg 下的 bin 文件夹的文件地址粘贴进去。"
+#~ msgstr ""
+#~ "Finally, add environment variables. If using Windows 11, press the “Windows” logo key or click the “Start” button and "
+#~ "enter “environment variables”. (For earlier versions, right-click This PC - Properties - Advanced System Settings). "
+#~ "Click “Environment Variables”, double-click “Path” under “User variables” (or “System variables”, choose either), "
+#~ "right-click the ``typst`` folder and “Copy file address”, click “New” in the Path window (as shown below) and paste "
+#~ "the file address (note: do not include quotes). Similarly, paste the file address of ``ffmpeg\\bin``, i.e., the bin "
+#~ "folder under the ffmpeg folder you just obtained."
+
+#~ msgid ""
+#~ "尝试一下有没有正确识别。在“开始”菜单输入并打开 PowerShell 或者 Cmd，运行 ``ffmpeg --version`` 和 ``typst --version``，"
+#~ "输出版本号则安装成功。"
+#~ msgstr ""
+#~ "Test if they are correctly recognized. Enter and open PowerShell or Cmd from the Start menu, run ``ffmpeg --version`` "
+#~ "and ``typst --version``. If version numbers are output, the installation is successful."
+
+#~ msgid ""
+#~ "# FFmpeg\n"
+#~ "brew install ffmpeg\n"
+#~ "ffmpeg --version    # 输出版本号则安装成功\n"
+#~ "\n"
+#~ "# Typst\n"
+#~ "brew install typst\n"
+#~ "typst --version     # 输出版本号则安装成功"
+#~ msgstr ""
+#~ "# FFmpeg\n"
+#~ "brew install ffmpeg\n"
+#~ "ffmpeg --version    # If the version number is output, the installation is successful\n"
+#~ "\n"
+#~ "# Typst\n"
+#~ "brew install typst\n"
+#~ "typst --version     # If the version number is output, the installation is successful"
+
+#~ msgid "打开终端，运行以下命令。FFmpeg 使用包管理器安装，不同发行版包管理器不同，请自行适配。"
+#~ msgstr ""
+#~ "Open the terminal and run the following commands. FFmpeg is installed using the package manager. Different "
+#~ "distributions have different package managers, please adapt accordingly."
+
+#~ msgid "Typst 由于相对较新且未进入稳定版，直接从源代码仓库下载安装。"
+#~ msgstr ""
+#~ "Since Typst is relatively new and has not entered a stable version, download and install it directly from the source "
+#~ "repository."
+
+#~ msgid ""
+#~ "# Typst （参考 https://lindevs.com/install-typst-on-ubuntu）\n"
+#~ "wget -qO typst.tar.xz https://github.com/typst/typst/releases/latest/download/typst-x86_64-unknown-linux-musl.tar.xz\n"
+#~ "sudo tar xf typst.tar.xz --strip-components=1 -C /usr/local/bin typst-x86_64-unknown-linux-musl/typst\n"
+#~ "typst --version     # 输出版本号则安装成功\n"
+#~ "rm -rf typst.tar.xz"
+#~ msgstr ""
+#~ "# Typst (Based on https://lindevs.com/install-typst-on-ubuntu)\n"
+#~ "wget -qO typst.tar.xz https://github.com/typst/typst/releases/latest/download/typst-x86_64-unknown-linux-musl.tar.xz\n"
+#~ "sudo tar xf typst.tar.xz --strip-components=1 -C /usr/local/bin typst-x86_64-unknown-linux-musl/typst\n"
+#~ "typst --version     # If the version number is output, the installation is successful\n"
+#~ "rm -rf typst.tar.xz"
+
+#~ msgid "另外，在 Linux 上使用 JAnim 窗口预览音频可能还需要安装 portaudio："
+#~ msgstr "Additionally, using JAnim window preview for audio on Linux may also require installing portaudio:"
+
+#~ msgid ""
+#~ "笔者仅在一台虚拟机上尝试过以上安装，不保证真实环境也能做到。网络波动、本地命令不存在、文件重名等等原因都可能导致安装失"
+#~ "败。有安装问题请在 GitHub 或群聊中及时提出并附带错误信息和/或截图。"
+#~ msgstr ""
+#~ "The author has only tried the above installation on one virtual machine and cannot guarantee it will work in real "
+#~ "environments. Network fluctuations, missing local commands, file name conflicts, and other reasons may cause "
+#~ "installation failures. If you encounter installation issues, please report them promptly on GitHub or in group chat "
+#~ "with error messages and/or screenshots."

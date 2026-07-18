@@ -76,13 +76,13 @@
 
                 .. tabs::
 
-                    .. tab:: Windows
+                    .. translatable-tab:: Windows
 
                         .. code-block:: bash
 
                             powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
 
-                    .. tab:: macOS 或 Linux
+                    .. translatable-tab:: macOS 或 Linux
 
                         .. code-block:: bash
 
@@ -122,13 +122,13 @@
 
                 .. tabs::
 
-                    .. tab:: Windows
+                    .. translatable-tab:: Windows
 
                         .. code-block:: bash
 
                             powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
 
-                    .. tab:: macOS 和 Linux
+                    .. translatable-tab:: macOS 或 Linux
 
                         .. code-block:: bash
 
