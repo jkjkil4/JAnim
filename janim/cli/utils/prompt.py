@@ -1,5 +1,6 @@
 import enum
 import itertools as it
+import re
 import sys
 from dataclasses import dataclass
 from typing import Any
@@ -32,11 +33,24 @@ def get_pages(
     if not entries:
         return []
 
+    batched = list(it.batched(enumerate(entries, start=start), ENTRIES_COLUMN_HEIGHT))
+
+    def fmt_neg_index(column_i: int, entry_i: int) -> str:
+        if column_i != len(batched) - 1:
+            return ''
+        neg_index = entry_i - 1 - len(entries)
+        if neg_index < -2:
+            return '    '
+        return f'({neg_index})'
+
     column_texts = [
         Text(
-            '\n'.join(f'{i:02}: {entry.text}' for i, entry in column_entries),
+            '\n'.join(
+                f'{entry_i:02}{fmt_neg_index(column_i, entry_i)}: {entry.text}'
+                for entry_i, entry in column_entries
+            ),
         )
-        for column_entries in it.batched(enumerate(entries, start=start), ENTRIES_COLUMN_HEIGHT)
+        for column_i, column_entries in enumerate(batched)
     ]
     column_widths = [console.measure(text).maximum for text in column_texts]
 
@@ -291,18 +305,24 @@ class MatchResult:
     data: Any | int | str
 
 
+_integer_re = re.compile(r'[+-]?\d+')
+
+
 def parse_user_input(entries: list[Entry], user_input: str) -> list[MatchResult]:
     results: list[MatchResult] = []
 
     for split_str in user_input.replace(' ', '').split(','):
         if not split_str:
             continue
-        if split_str.isnumeric():
-            idx = int(split_str) - 1
-            if 0 <= idx < len(entries):
+
+        if _integer_re.fullmatch(split_str):
+            number = int(split_str)
+
+            if -len(entries) <= number <= len(entries) and number != 0:
+                idx = number - 1 if number > 0 else number
                 results.append(MatchResult(MatchState.Matched, entries[idx].metadata))
             else:
-                results.append(MatchResult(MatchState.InvalidNumber, idx + 1))
+                results.append(MatchResult(MatchState.InvalidNumber, number))
         else:
             for entry in entries:
                 if entry.text == split_str:
