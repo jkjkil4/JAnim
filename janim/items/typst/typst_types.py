@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, Callable, Iterable, Literal, NoReturn
+from typing import Any, Callable, Iterable, Literal, NoReturn, Self
 
 from janim.anims.composition import AnimGroup
 from janim.anims.updater import GroupUpdater, ItemUpdater
@@ -335,7 +335,7 @@ class DynamicTypst(TypstText):
         at: float = 0,
         duration: float | None = None,
         rate_func: RateFunc = smooth,
-        name: str | None = 'anim_update',
+        name: str | None = 'DynamicTypst',
         collapse: bool = True,
         #
         can_keep_structure: bool = False,
@@ -371,6 +371,14 @@ class DynamicTypst(TypstText):
             name=name,
             collapse=collapse,
         )
+
+    def become_update(self, **values) -> Self:
+        """
+        直接 :meth:`~.Item.become` 为参数改变后的结果
+        """
+        self._dynamic.update(values)
+        self.become(self._rerender())
+        return self
 
     def _rerender(self) -> DynamicTypst:
         token = config_ctx_var.set(self._frozen_config)
