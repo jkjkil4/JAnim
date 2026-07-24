@@ -1,0 +1,41 @@
+# Chinese translations for PACKAGE package.
+# Copyright (C) 2026 THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# Automatically generated, 2026.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-07-17 23:39+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: none\n"
+"Language: zh_CN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: janim/render/encoder.py:63
+#, python-brace-format
+msgid ""
+"GIF export with {fps} FPS (>50) may not play correctly because GIF has timing limitations. Consider using a lower FPS or "
+"another video format."
+msgstr "使用 {fps} FPS (>50) 导出 GIF 可能无法正常播放，因为 GIF 存在时间精度限制。建议使用较低的 FPS 或其它视频格式。"
+
+#: janim/render/encoder.py:169
+#, python-brace-format
+msgid "Using {encoder} for encoding"
+msgstr "使用 {encoder} 进行编码"
+
+#: janim/render/encoder.py:202
+msgid "Hardware encoder probe results:"
+msgstr "硬件编码器探测结果："
+
+#: janim/render/encoder.py:214
+msgid "No hardware encoder found"
+msgstr "未找到硬件编码器"
+
+#: janim/render/encoder.py:269
+msgid "Unable to output video. Hardware acceleration requires FFmpeg to be installed and added to PATH."
+msgstr "无法输出视频，硬件加速需要安装 FFmpeg 并将其添加到 PATH 环境变量中。"

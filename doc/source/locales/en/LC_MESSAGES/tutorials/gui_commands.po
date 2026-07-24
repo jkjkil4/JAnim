@@ -64,7 +64,7 @@ msgid "选择指定物件的子物件"
 msgstr "Select subitems of the specified item"
 
 #: ../../source/tutorials/gui_commands.rst:29 ../../source/tutorials/gui_commands.rst:53
-#: ../../source/tutorials/gui_commands.rst:89
+#: ../../source/tutorials/gui_commands.rst:89 ../../source/tutorials/gui_commands.rst:104
 msgid "尝试："
 msgstr "Try:"
 
@@ -178,3 +178,21 @@ msgstr ""
 "rect = Rect(6, 0.5).show()\n"
 "\n"
 "self('move: circle, square, rect')"
+
+#: ../../source/tutorials/gui_commands.rst:100
+msgid "``draw`` 命令"
+msgstr "``draw`` Command"
+
+#: ../../source/tutorials/gui_commands.rst:102
+msgid "通过在画面上绘制来创建物件"
+msgstr "Create items by drawing on the screen"
+
+#: ../../source/tutorials/gui_commands.rst:106
+msgid ""
+"self('draw: dot').show()\n"
+"self('draw: rect').show()\n"
+"self('draw: vitem').show()"
+msgstr ""
+"self('draw: dot').show()\n"
+"self('draw: rect').show()\n"
+"self('draw: vitem').show()"

@@ -17,18 +17,14 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 
 #: janim/cli/utils/extract_timeline.py:42
-msgid ""
-"Multiple timelines found in stdin input. Please specify timeline names with "
-"command line arguments."
+msgid "Multiple timelines found in stdin input. Please specify timeline names with command line arguments."
 msgstr "stdin 输入中有多个 Timeline，请通过命令行参数具体指定"
 
 #: janim/cli/utils/extract_timeline.py:51
-msgid ""
-"That module has multiple timelines, which ones would you like to render?"
+msgid "That module has multiple timelines, which ones would you like to render?"
 msgstr "这个 module 中有多个 Timeline，你想要渲染哪些？"
 
-#: janim/cli/utils/extract_timeline.py:55
-#: janim/cli/utils/extract_timeline.py:84
+#: janim/cli/utils/extract_timeline.py:55 janim/cli/utils/extract_timeline.py:84
 msgid "Timeline Name or Number: "
 msgstr "Timeline 名称或序号："
 
@@ -36,9 +32,7 @@ msgstr "Timeline 名称或序号："
 msgid "There are multiple timelines, which ones would you like to render?"
 msgstr "有多个 Timeline，你想要渲染哪些？"
 
-#: janim/cli/utils/extract_timeline.py:102
-#: janim/cli/utils/extract_timeline.py:129
-#: janim/cli/utils/extract_timeline.py:150
+#: janim/cli/utils/extract_timeline.py:102 janim/cli/utils/extract_timeline.py:129 janim/cli/utils/extract_timeline.py:150
 #, python-brace-format
 msgid "No timeline named \"{name}\""
 msgstr "没有叫作 \"{name}\" 的 Timeline"

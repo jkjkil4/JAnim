@@ -29,9 +29,5 @@ msgstr "{item} 没有名为 {name} 的组件或可更新方法"
 
 #: janim/anims/updater.py:552
 #, python-brace-format
-msgid ""
-"The function passed to ItemUpdater must return an item, but got {ret} "
-"instead, defined in {file}:{lineno}"
-msgstr ""
-"传入 ItemUpdater 的函数必须以一个物件作为返回值，而返回的是 {ret}，函数定义"
-"于 {file}:{lineno}"
+msgid "The function passed to ItemUpdater must return an item, but got {ret} instead, defined in {file}:{lineno}"
+msgstr "传入 ItemUpdater 的函数必须以一个物件作为返回值，而返回的是 {ret}，函数定义于 {file}:{lineno}"

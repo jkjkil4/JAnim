@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-22 22:43+0800\n"
+"POT-Creation-Date: 2026-07-18 19:22+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -35,28 +35,32 @@ msgstr ""
 msgid "Cancel"
 msgstr ""
 
-#: janim/gui/handlers/utils.py:255
+#: janim/gui/handlers/utils.py:168
+msgid "Panel position may not be restored correctly on Wayland"
+msgstr ""
+
+#: janim/gui/handlers/utils.py:258
 #, python-brace-format
 msgid ""
 "Could not find the call site of \"{text}\". Please put the command on a "
 "single line and keep the string intact"
 msgstr ""
 
-#: janim/gui/handlers/utils.py:298
+#: janim/gui/handlers/utils.py:302
 msgid "Confirm Replacement"
 msgstr ""
 
-#: janim/gui/handlers/utils.py:299
+#: janim/gui/handlers/utils.py:303
 #, python-brace-format
 msgid ""
 "{filename} has been modified.\n"
 "Do you want to overwrite it?"
 msgstr ""
 
-#: janim/gui/handlers/utils.py:306
+#: janim/gui/handlers/utils.py:310
 msgid "Yes(&Y)"
 msgstr ""
 
-#: janim/gui/handlers/utils.py:307
+#: janim/gui/handlers/utils.py:311
 msgid "No(&N)"
 msgstr ""

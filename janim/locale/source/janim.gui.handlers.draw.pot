@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-04 18:43+0800\n"
+"POT-Creation-Date: 2026-07-14 00:37+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,19 +17,11 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: janim/anims/updater.py:379
+#: janim/gui/handlers/draw.py:29
 #, python-brace-format
-msgid "There is no updatable method named {name} in {cmpt}"
+msgid "Invalid draw type \"{type}\" (availables: {lst})"
 msgstr ""
 
-#: janim/anims/updater.py:405
-#, python-brace-format
-msgid "{item} has no component or updatable method named {name}"
-msgstr ""
-
-#: janim/anims/updater.py:552
-#, python-brace-format
-msgid ""
-"The function passed to ItemUpdater must return an item, but got {ret} "
-"instead, defined in {file}:{lineno}"
+#: janim/gui/handlers/draw.py:78
+msgid "Reset"
 msgstr ""

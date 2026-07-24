@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-24 21:40+0800\n"
+"POT-Creation-Date: 2026-07-16 02:52+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -42,51 +42,52 @@ msgid "Watches the file and rebuild on changes"
 msgstr ""
 
 #: janim/cli/options.py:66
-msgid "Output video format (mp4 by default, mov for transparent background)"
+msgid ""
+"Output video format (mp4 by default, webm/mov for transparent background)"
 msgstr ""
 
 #: janim/cli/options.py:73
 msgid "Output audio format (valid only when outputting audio separately)"
 msgstr ""
 
-#: janim/cli/options.py:86
+#: janim/cli/options.py:85
 msgid ""
 "Video with audio (default; will be replaced by --video if there is no audio, "
 "and by both --video and --audio if the format is GIF)"
 msgstr ""
 
-#: janim/cli/options.py:95
+#: janim/cli/options.py:94
 msgid "Video only"
 msgstr ""
 
-#: janim/cli/options.py:103
+#: janim/cli/options.py:102
 msgid "Audio only"
 msgstr ""
 
-#: janim/cli/options.py:111
+#: janim/cli/options.py:110
 msgid "Generate SRT file"
 msgstr ""
 
-#: janim/cli/options.py:128
+#: janim/cli/options.py:127
 msgid "'--video' is ignored because '--video_with_audio' is set"
 msgstr ""
 
-#: janim/cli/options.py:131
+#: janim/cli/options.py:130
 msgid "'--audio' is ignored because '--video_with_audio' is set"
 msgstr ""
 
-#: janim/cli/options.py:147
+#: janim/cli/options.py:146
 msgid "Set In Point; use negative value to indicate time relative to the end"
 msgstr ""
 
-#: janim/cli/options.py:154
+#: janim/cli/options.py:153
 msgid "Set Out Point; use negative value to indicate time relative to the end"
 msgstr ""
 
-#: janim/cli/options.py:166
+#: janim/cli/options.py:165
 msgid "Disable PBO (Pixel Buffer Object) for writing video"
 msgstr ""
 
-#: janim/cli/options.py:174
+#: janim/cli/options.py:173
 msgid "Use hardware acceleration for writing video"
 msgstr ""
