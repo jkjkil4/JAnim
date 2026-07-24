@@ -12,6 +12,7 @@ from janim.items.svg.svg_item import SVGElemItem
 from janim.items.typst.typst import TypstText
 from janim.locale import get_translator
 from janim.utils.config import config_ctx_var
+from janim.utils.rate_functions import RateFunc, smooth
 
 __all__ = [
     'TypMatDelim',
@@ -331,7 +332,14 @@ class DynamicTypst(TypstText):
 
     def anim_update(
         self,
+        at: float = 0,
+        duration: float | None = None,
+        rate_func: RateFunc = smooth,
+        name: str | None = 'anim_update',
+        collapse: bool = True,
+        #
         can_keep_structure: bool = False,
+        #
         **values,
     ):
         """
@@ -343,21 +351,26 @@ class DynamicTypst(TypstText):
         设置这个参数的动机是， :class:`~.GroupUpdater` 的性质更好，但是它需要物件结构不会改变的前提
         """
         if can_keep_structure:
-            return AnimGroup(
-                self.anim._dynamic.update(values),
-                GroupUpdater(
-                    self,
-                    lambda group, p: group.become(group._rerender()),
-                ),
+            updater = GroupUpdater(
+                self,
+                lambda group, p: group.become(group._rerender()),
+                rate_func=rate_func,
             )
         else:
-            return AnimGroup(
-                self.anim._dynamic.update(values),
-                ItemUpdater(
-                    self,
-                    lambda p: self.current()._rerender(),
-                ),
+            updater = ItemUpdater(
+                self,
+                lambda p: self.current()._rerender(),
+                rate_func=rate_func,
             )
+
+        return AnimGroup(
+            self.anim(rate_func=rate_func)._dynamic.update(values),
+            updater,
+            at=at,
+            duration=duration,
+            name=name,
+            collapse=collapse,
+        )
 
     def _rerender(self) -> DynamicTypst:
         token = config_ctx_var.set(self._frozen_config)
