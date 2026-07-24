@@ -3,10 +3,8 @@ from __future__ import annotations
 import copy
 from fractions import Fraction
 import os
-import subprocess as sp
 from typing import Generator, Iterable, Self
 
-import av
 import numpy as np
 import numpy.typing as npt
 
@@ -78,6 +76,8 @@ class Audio:
         return self
 
     def _read(self, file_path: str, begin: float, end: float) -> _AudioCache:
+        import av
+
         try:
             file_path = find_file(file_path)
         except FileNotFoundError:

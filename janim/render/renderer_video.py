@@ -6,10 +6,8 @@ from dataclasses import dataclass
 from fractions import Fraction
 from typing import TYPE_CHECKING, Any, Callable
 
-import av
 import moderngl as mgl
 import numpy as np
-from av.codec.context import ThreadType
 
 from janim.anims.animation import Animation
 from janim.locale import get_translator
@@ -122,6 +120,9 @@ class FrameData:
 
 class VideoReader:
     def __init__(self, info: VideoInfo, components: int):
+        import av
+        from av.codec.context import ThreadType
+
         # 基础信息
         assert components in (3, 4)
         self.info = info

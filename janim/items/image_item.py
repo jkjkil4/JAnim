@@ -6,7 +6,6 @@ from fractions import Fraction
 from functools import lru_cache
 from typing import Self
 
-import av
 import moderngl as mgl
 import numpy as np
 from PIL import Image
@@ -247,6 +246,8 @@ class VideoFrame(ImageItem):
 
     @staticmethod
     def _capture(file_path: str, frame_at: str | float) -> Image.Image:
+        import av
+
         try:
             container = av.open(file_path, 'r')
             stream = container.streams.video[0]
@@ -441,6 +442,8 @@ class Video(PlaybackControl, Points):
 
 class VideoInfo:
     def __init__(self, file_path: str):
+        import av
+
         self.file_path = file_path
 
         try:

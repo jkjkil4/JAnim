@@ -7,9 +7,7 @@ from glob import glob
 from queue import Queue
 from threading import Thread
 
-import av
 import numpy as np
-from av.codec.context import ThreadType
 
 from janim.exception import EXITCODE_FFMPEG_NOT_FOUND, ExitException
 from janim.locale import get_translator
@@ -49,6 +47,9 @@ class PyavVideoEncoder:
     }
 
     def open(self, file_path: str, pw: int, ph: int, fps: int) -> None:
+        import av
+        from av.codec.context import ThreadType
+
         self.file_path = file_path
         self.pw = pw
         self.ph = ph
@@ -95,6 +96,8 @@ class PyavVideoEncoder:
         self.bytes_queue.put(data)
 
     def frame_thread_fn(self) -> None:
+        import av
+
         while True:
             data = self.bytes_queue.get()
             if data is None:
@@ -280,6 +283,8 @@ class PyavAudioEncoder:
     """
 
     def open(self, file_path: str, framerate: int, channels: int) -> None:
+        import av
+
         self.file_path = file_path
         self.framerate = framerate
         self.channels = channels
@@ -293,6 +298,8 @@ class PyavAudioEncoder:
         self.stream.layout = self.layout
 
     def write(self, array: np.ndarray) -> None:
+        import av
+
         frame = av.AudioFrame.from_ndarray(
             array.reshape((1, -1)),  # packed e.g. [[L0,R0,L1,R1,...]]
             format='s16',

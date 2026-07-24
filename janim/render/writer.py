@@ -4,7 +4,6 @@ import time
 from functools import partial
 from typing import Generator
 
-import av
 import moderngl as mgl
 import OpenGL.GL as gl
 from tqdm import tqdm as ProgressDisplay
@@ -343,6 +342,8 @@ def merge_video_and_audio(
     *,
     quiet: bool = False,
 ) -> None:
+    import av
+
     input_video = av.open(video_path)
     input_audio = av.open(audio_path)
 
