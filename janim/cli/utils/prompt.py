@@ -46,7 +46,7 @@ def get_pages(
     column_texts = [
         Text(
             '\n'.join(
-                f'{entry_i:02}{fmt_neg_index(column_i, entry_i)}: {entry.text}'
+                f'{fmt_neg_index(column_i, entry_i)}{entry_i:02}: {entry.text}'
                 for entry_i, entry in column_entries
             ),
         )
