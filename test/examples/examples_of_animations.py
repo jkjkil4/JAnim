@@ -1,4 +1,5 @@
 # flake8: noqa
+# fmt: off
 from janim.imports import *
 
 

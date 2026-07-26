@@ -1,4 +1,5 @@
 # flake8: noqa
+# fmt: off
 import random
 
 from janim.imports import *
