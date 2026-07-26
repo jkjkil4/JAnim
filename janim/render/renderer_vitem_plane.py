@@ -151,18 +151,19 @@ class VItemPlaneRenderer(Renderer):
             self.attrs.glow_visible = new_attrs.glow_visible
 
         if new_attrs.radius is not self.attrs.radius or points_cnt_changed:
-            self.update_dynamic_buffer_data(
+            self.update_dynamic_buffer_data_with_sampb(
                 new_attrs.radius,
                 self.vbo_radius,
+                self.sampb_radius,
                 resize_target,
-                use_32bit_align=True,
             )
             self.attrs.radius = new_attrs.radius
 
         if new_attrs.stroke is not self.attrs.stroke or points_cnt_changed:
-            self.update_dynamic_buffer_data(
+            self.update_dynamic_buffer_data_with_sampb(
                 new_attrs.stroke,
                 self.vbo_stroke_color,
+                self.sampb_stroke_color,
                 resize_target,
             )
             self.attrs.stroke = new_attrs.stroke
@@ -172,9 +173,10 @@ class VItemPlaneRenderer(Renderer):
             self.fill_transparent = bool(item.fill.is_transparent())
 
         if new_attrs.fill is not self.attrs.fill or points_cnt_changed:
-            self.update_dynamic_buffer_data(
+            self.update_dynamic_buffer_data_with_sampb(
                 new_attrs.fill,
                 self.vbo_fill_color,
+                self.sampb_fill_color,
                 resize_target,
             )
             self.attrs.fill = new_attrs.fill
@@ -348,6 +350,8 @@ class VItemPlaneRenderer(Renderer):
 
             if len(bytes) != self.vbo_mapped_points.size:
                 self.vbo_mapped_points.orphan(len(bytes))
+                gl.glBindTexture(gl.GL_TEXTURE_BUFFER, self.sampb_mapped_points)
+                gl.glTexBuffer(gl.GL_TEXTURE_BUFFER, gl.GL_RGBA32F, self.vbo_mapped_points.glo)
 
             self.vbo_mapped_points.write(bytes)
             self.attrs.fix_in_frame = new_attrs.fix_in_frame
