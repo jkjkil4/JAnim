@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-17 23:39+0800\n"
+"POT-Creation-Date: 2026-07-25 07:05+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,27 +17,27 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: janim/render/encoder.py:63
+#: janim/render/encoder.py:64
 #, python-brace-format
 msgid ""
 "GIF export with {fps} FPS (>50) may not play correctly because GIF has "
 "timing limitations. Consider using a lower FPS or another video format."
 msgstr ""
 
-#: janim/render/encoder.py:169
+#: janim/render/encoder.py:172
 #, python-brace-format
 msgid "Using {encoder} for encoding"
 msgstr ""
 
-#: janim/render/encoder.py:202
+#: janim/render/encoder.py:205
 msgid "Hardware encoder probe results:"
 msgstr ""
 
-#: janim/render/encoder.py:214
+#: janim/render/encoder.py:217
 msgid "No hardware encoder found"
 msgstr ""
 
-#: janim/render/encoder.py:269
+#: janim/render/encoder.py:272
 msgid ""
 "Unable to output video. Hardware acceleration requires FFmpeg to be "
 "installed and added to PATH."

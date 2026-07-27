@@ -671,13 +671,14 @@ class TransformMatchingShapes(AnimGroup):
     """
     匹配形状进行变换
 
-    - ``match`` 表示对于匹配的形状的处理函数，函数应返回动画对象
+    -   ``match`` 表示对于匹配的形状的处理函数，函数应返回动画对象
 
-    - ``mismatch`` 表示对于不匹配的形状的处理，其为包含两个函数的 ``tuple``，
-      分别表示对 “``src`` 中的未匹配物件的处理” 以及 “``target`` 中的未匹配物件的处理”；
-      其中的每个函数应返回动画对象，若函数返回 ``None`` 或本身直接为 None 则表示不进行处理，保留物件原样
+    -   ``mismatch`` 表示对于不匹配的形状的处理，其为包含两个函数的 ``tuple``，
+        分别表示对 “``src`` 中的未匹配物件的处理” 以及 “``target`` 中的未匹配物件的处理”；
 
-    - 注：所有传入该动画类的额外参数（``**kwargs``）都会被传入 ``match`` 和 ``mismatch`` 的方法中
+        其中的每个函数应返回动画对象，若函数返回 ``None`` 或本身直接为 None 则表示不进行处理，保留物件原样
+
+    -   注：所有传入该动画类的额外参数（``**kwargs``）都会被传入 ``match`` 和 ``mismatch`` 的方法中
 
     .. janim-example:: TransformMatchingShapesExample
         :extract-from-test:

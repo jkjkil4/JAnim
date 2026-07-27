@@ -90,7 +90,7 @@
               extraLibs = with pkgs; [
                 libxcb
               ];
-              shellHook = "uv sync --extra test";
+              shellHook = "uv sync --extra gui,test";
             };
           # bench =
           #   mkPyuvShell {

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-17 16:11+0800\n"
+"POT-Creation-Date: 2026-07-25 07:05+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,17 +17,17 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: janim/items/image_item.py:254 janim/items/image_item.py:450
+#: janim/items/image_item.py:255 janim/items/image_item.py:453
 #, python-brace-format
 msgid "File \"{file}\" has no video stream"
 msgstr ""
 
-#: janim/items/image_item.py:457
+#: janim/items/image_item.py:460
 #, python-brace-format
 msgid "File \"{file}\" has no \"r_frame_rate\" information"
 msgstr ""
 
-#: janim/items/image_item.py:464
+#: janim/items/image_item.py:467
 #, python-brace-format
 msgid "File \"{file}\" has no \"duration\" information"
 msgstr ""

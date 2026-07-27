@@ -37,8 +37,7 @@ msgstr "Installing JAnim"
 
 #: ../../source/installation.rst:11
 msgid "接下来我们介绍如何安装 JAnim，我们分为“简要说明”和“详细教程”两个版本"
-msgstr ""
-"We will now introduce how to install JAnim. We provide two versions: a \"brief guide\" and a \"detailed tutorial\"."
+msgstr "We will now introduce how to install JAnim. We provide two versions: a \"brief guide\" and a \"detailed tutorial\"."
 
 #: ../../source/installation.rst:13
 msgid "如果你对 Python 及其包管理器有一定的了解，那么“简要说明”已经足够"
@@ -107,12 +106,11 @@ msgstr "uv + Virtual Environment"
 #: ../../source/installation.rst:69 ../../source/installation.rst:115
 msgid ""
 "`uv <https://github.com/astral-sh/uv>`_ 是一套用于 Python 项目管理的工具链，目前已经相对完善，对于需要频繁使用 Python 多版"
-"本和多依赖库的开发者来说很方便。官方提供了很多安装方法，可以用上文提到的包管理工具安装，也可以独立安装。"
+"本和多依赖库的开发者来说很方便。官方提供了很多安装方法，可以使用包管理工具安装，也可以独立安装。"
 msgstr ""
 "`uv <https://github.com/astral-sh/uv>`_ is a toolchain for Python project management, currently relatively mature, and "
 "convenient for developers who frequently use multiple Python versions and multiple dependency libraries. The official "
-"provides many installation methods, which can be installed using the package managers mentioned above, or installed "
-"independently."
+"provides many installation methods, which can be installed using the package managers, or installed independently."
 
 #: ../../source/installation.rst:73 ../../source/installation.rst:119
 msgid ""
@@ -305,7 +303,9 @@ msgstr "The following lists possible situations you may encounter:"
 
 #: ../../source/installation.rst:234
 msgid "JAnim 导出 ``.mp4`` 视频时不需要外部程序，但是如果你想要尝试硬件加速，则需要安装 FFmpeg"
-msgstr "JAnim does not require any external programs to export ``.mp4`` videos, but FFmpeg is required if you want to try hardware acceleration."
+msgstr ""
+"JAnim does not require any external programs to export ``.mp4`` videos, but FFmpeg is required if you want to try "
+"hardware acceleration."
 
 #: ../../source/installation.rst:240
 msgid "当你运行类似这样的命令行时"
