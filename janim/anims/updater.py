@@ -307,6 +307,7 @@ class _GroupUpdater(ApplyAligner):
         super().__init__(item, stacks, **kwargs)
         self._generate_by: GroupUpdater = generate_by  # type: ignore
         self.data = data
+        self.stored = item.Stored(item)
 
     def pre_apply(self, params: ApplyParams) -> None:
         self._generate_by.applied = False
@@ -315,6 +316,9 @@ class _GroupUpdater(ApplyAligner):
     def apply(self, params: ApplyParams) -> None:
         self._generate_by.apply_for_group(params.global_t)
         params.data.restore(self.data)
+        # 用于保证 .current 能够正确递归解析子物件
+        # 因为应根据 self.item 的结构建立 Stored，而非 apply 时 self.data 的结构
+        params.data._stored = self.stored
 
 
 class MethodUpdater(Animation):
