@@ -151,18 +151,19 @@ class VItemPlaneRenderer(Renderer):
             self.attrs.glow_visible = new_attrs.glow_visible
 
         if new_attrs.radius is not self.attrs.radius or points_cnt_changed:
-            self.update_dynamic_buffer_data(
+            self.update_dynamic_buffer_data_with_sampb(
                 new_attrs.radius,
                 self.vbo_radius,
+                self.sampb_radius,
                 resize_target,
-                use_32bit_align=True,
             )
             self.attrs.radius = new_attrs.radius
 
         if new_attrs.stroke is not self.attrs.stroke or points_cnt_changed:
-            self.update_dynamic_buffer_data(
+            self.update_dynamic_buffer_data_with_sampb(
                 new_attrs.stroke,
                 self.vbo_stroke_color,
+                self.sampb_stroke_color,
                 resize_target,
             )
             self.attrs.stroke = new_attrs.stroke
@@ -172,9 +173,10 @@ class VItemPlaneRenderer(Renderer):
             self.fill_transparent = bool(item.fill.is_transparent())
 
         if new_attrs.fill is not self.attrs.fill or points_cnt_changed:
-            self.update_dynamic_buffer_data(
+            self.update_dynamic_buffer_data_with_sampb(
                 new_attrs.fill,
                 self.vbo_fill_color,
+                self.sampb_fill_color,
                 resize_target,
             )
             self.attrs.fill = new_attrs.fill
@@ -348,6 +350,8 @@ class VItemPlaneRenderer(Renderer):
 
             if len(bytes) != self.vbo_mapped_points.size:
                 self.vbo_mapped_points.orphan(len(bytes))
+                gl.glBindTexture(gl.GL_TEXTURE_BUFFER, self.sampb_mapped_points)
+                gl.glTexBuffer(gl.GL_TEXTURE_BUFFER, gl.GL_RGBA32F, self.vbo_mapped_points.glo)
 
             self.vbo_mapped_points.write(bytes)
             self.attrs.fix_in_frame = new_attrs.fix_in_frame
@@ -378,12 +382,20 @@ class VItemPlaneRenderer(Renderer):
             self.vbo_points.bind_to_storage_buffer(0)
             self.vbo_mapped_points.bind_to_storage_buffer(1)
             self.update_fix_in_frame(self.comp_u_fix, item)
+
+            # 让 Compute Shader 能正确读取到 vbo_points (SSBO)
+            self.ctx.memory_barrier(gl.GL_VERTEX_ATTRIB_ARRAY_BARRIER_BIT)
+
             self.comp.run(
                 group_x=(len(new_attrs.points) + 255) // 256
             )  # 相当于 len() / 256 向上取整
+
+            # 让后续渲染能正确读取到 vbo_mapped_points (SSBO)
+            self.ctx.memory_barrier(gl.GL_SHADER_STORAGE_BARRIER_BIT)
 
             self.attrs.fix_in_frame = new_attrs.fix_in_frame
             self.attrs.camera_info = new_attrs.camera_info
             self.attrs.points = new_attrs.points
 
-    # endregion
+
+# endregion

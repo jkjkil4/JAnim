@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-25 22:05+0800\n"
+"POT-Creation-Date: 2026-07-18 19:22+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -73,77 +73,81 @@ msgstr ""
 msgid "Copy time point(&T)"
 msgstr ""
 
-#: janim/gui/anim_viewer.py:336
+#: janim/gui/anim_viewer.py:329
+msgid "Window may not be positioned as expected on Wayland"
+msgstr ""
+
+#: janim/gui/anim_viewer.py:339
 #, python-brace-format
 msgid "wnd_pos has wrong argument {wnd_pos}."
 msgstr ""
 
-#: janim/gui/anim_viewer.py:345
+#: janim/gui/anim_viewer.py:348
 #, python-brace-format
 msgid "wnd_monitor has invalid value {wnd_monitor}, use {range} instead."
 msgstr ""
 
-#: janim/gui/anim_viewer.py:502 janim/gui/anim_viewer.py:715
+#: janim/gui/anim_viewer.py:505 janim/gui/anim_viewer.py:718
 #, python-brace-format
 msgid "No timeline named \"{name}\" in \"{file}\""
 msgstr ""
 
-#: janim/gui/anim_viewer.py:517
+#: janim/gui/anim_viewer.py:520
 msgid "Failed to rebuild"
 msgstr ""
 
-#: janim/gui/anim_viewer.py:566
+#: janim/gui/anim_viewer.py:569
 #, python-brace-format
 msgid "GC took {elapsed} s"
 msgstr ""
 
-#: janim/gui/anim_viewer.py:596
+#: janim/gui/anim_viewer.py:599
 msgid "Copied!"
 msgstr ""
 
-#: janim/gui/anim_viewer.py:645
+#: janim/gui/anim_viewer.py:648
 msgid "An error occurred during rendering, playback stopped"
 msgstr ""
 
-#: janim/gui/anim_viewer.py:731
+#: janim/gui/anim_viewer.py:734
 msgid "Failed to build"
 msgstr ""
 
-#: janim/gui/anim_viewer.py:746
+#: janim/gui/anim_viewer.py:749
 msgid ""
 "Font cache cleared.\n"
 "Tip: Use this to load newly installed fonts without restarting JAnim."
 msgstr ""
 
-#: janim/gui/anim_viewer.py:771
+#: janim/gui/anim_viewer.py:774
 #, python-brace-format
 msgid "Searching port has been opened at {port}"
 msgstr ""
 
-#: janim/gui/anim_viewer.py:775
+#: janim/gui/anim_viewer.py:778
 #, python-brace-format
 msgid "Failed to open searching port at {port}"
 msgstr ""
 
-#: janim/gui/anim_viewer.py:780
+#: janim/gui/anim_viewer.py:783
 #, python-brace-format
 msgid ""
 "Searching port {port} is invalid, please use a number between 1024 and 65535 "
 "instead"
 msgstr ""
 
-#: janim/gui/anim_viewer.py:787
+#: janim/gui/anim_viewer.py:790
 msgid ""
 "Interactive development is disabled because the searching port is not "
 "established."
 msgstr ""
 
-#: janim/gui/anim_viewer.py:801
+#: janim/gui/anim_viewer.py:804
 #, python-brace-format
 msgid "Interactive port has been opened at {port}"
 msgstr ""
 
-#: janim/gui/anim_viewer.py:886
+#: janim/gui/anim_viewer.py:889
 #, python-brace-format
 msgid "Directly watching changes to \"{file}\""
 msgstr ""

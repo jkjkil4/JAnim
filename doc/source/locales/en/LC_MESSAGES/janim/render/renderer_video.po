@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: JAnim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-02-24 01:11+0800\n"
+"POT-Creation-Date: 1980-01-01 00:00+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -22,3 +22,17 @@ msgstr ""
 #: ../../source/janim/render/renderer_video.rst:2
 msgid "renderer_video"
 msgstr "renderer_video"
+
+#: janim.render.renderer_video.VideoReader.time_to_pts:1 of
+msgid "将实际时间转换为视频流时间戳"
+msgstr "Convert the actual time to the video stream timestamp"
+
+#: janim.render.renderer_video.VideoReader.ensure_frames_correct:1 of
+msgid ""
+"保证 ``pts`` 一定满足 ``frames[-2].pts <= pts < frames[-1].pts`` - 如果 ``pts`` 处于已解码区域的后面，但是没有超出太多"
+"（由 ``self.pts_tolerance`` 决定），则让已解码区域逐渐后挪 - 如果 ``pts`` 处于已解码区域的前面，或处于后面超出太多，则 "
+"``seek`` 重新构建已解码区域"
+msgstr ""
+"Ensure that ``pts`` always satisfies ``frames[-2].pts <= pts < frames[-1].pts`` - If ``pts`` is slightly after the "
+"decoded region (within the tolerance defined by ``self.pts_tolerance``), gradually move the decoded region forward - If "
+"``pts`` is before the decoded region, or is too far beyond it, perform a ``seek`` to rebuild the decoded region"

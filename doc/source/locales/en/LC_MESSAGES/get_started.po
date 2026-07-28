@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  JAnim\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-03 12:39+0800\n"
+"POT-Creation-Date: 1980-01-01 00:00+0000\n"
 "PO-Revision-Date: 2025-11-26 19:26+0800\n"
 "Last-Translator: \n"
 "Language: en\n"
@@ -446,7 +446,7 @@ msgstr "janim run <file_name> <timeline_name>"
 msgid "如果上面这段代码也写在了 ``learn.py`` 中，那么就是："
 msgstr "If the above code is also written in ``learn.py``, then it is:"
 
-#: ../../source/get_started.rst:230 ../../source/get_started.rst:243
+#: ../../source/get_started.rst:230 ../../source/get_started.rst:239
 msgid "janim run learn.py CmptAnimExample"
 msgstr "janim run learn.py CmptAnimExample"
 
@@ -454,47 +454,41 @@ msgstr "janim run learn.py CmptAnimExample"
 msgid "导出视频"
 msgstr "Exporting Videos"
 
-#: ../../source/get_started.rst:239
-msgid "若要导出视频，请确保安装了 :ref:`FFmpeg <install_dep>` 并正确地将其添加到了环境变量 ``PATH`` 中"
-msgstr ""
-"To export videos, please make sure :ref:`FFmpeg <install_dep>` is installed and correctly added to the environment "
-"variable ``PATH``."
-
-#: ../../source/get_started.rst:241
+#: ../../source/get_started.rst:237
 msgid "上面进行预览是使用："
 msgstr "The preview method mentioned above is used by:"
 
-#: ../../source/get_started.rst:247
+#: ../../source/get_started.rst:243
 msgid "如果你想要将这个动画导出为视频，将 ``run`` 替换为 ``write`` 即可："
 msgstr "If you want to export this animation as a video, replace ``run`` with ``write``:"
 
-#: ../../source/get_started.rst:249
+#: ../../source/get_started.rst:245
 msgid "janim write learn.py CmptAnimExample"
 msgstr "janim write learn.py CmptAnimExample"
 
-#: ../../source/get_started.rst:253
+#: ../../source/get_started.rst:249
 msgid "默认情况下，输出的视频会在目录中的 ``videos/`` 文件夹下"
 msgstr "By default, the output video will be in the ``videos/`` folder in the directory."
 
-#: ../../source/get_started.rst:255
+#: ../../source/get_started.rst:251
 msgid "如果再传入 ``-o``，会在导出结束后自动打开视频文件："
 msgstr "If you add ``-o``, the video file will open automatically after export:"
 
-#: ../../source/get_started.rst:257
+#: ../../source/get_started.rst:253
 msgid "janim write learn.py CmptAnimExample -o"
 msgstr "janim write learn.py CmptAnimExample -o"
 
-#: ../../source/get_started.rst:264
+#: ../../source/get_started.rst:260
 msgid "实时预览"
 msgstr "Real-Time Preview"
 
-#: ../../source/get_started.rst:266
+#: ../../source/get_started.rst:262
 msgid "如果每次修改动画都需要关掉窗口、修改代码、重新执行，那么未免有点太麻烦了"
 msgstr ""
 "If you need to close the window, modify the code, and re-execute each time you modify the animation, it would be too "
 "troublesome."
 
-#: ../../source/get_started.rst:268
+#: ../../source/get_started.rst:264
 msgid ""
 "因此，你可以在修改并保存代码后，点击窗口左上角“文件”中的“重新构建”（快捷键是 ``Ctrl+L``）， 这样就会更新动画内容，使其和更"
 "改后的代码一致"
@@ -502,45 +496,45 @@ msgstr ""
 "Therefore, after modifying and saving the code, you can click “Rebuild” in the “Files” menu in the top left corner of the "
 "window (shortcut is ``Ctrl+L``), which will update the animation content to match the modified code."
 
-#: ../../source/get_started.rst:271
+#: ../../source/get_started.rst:267
 msgid "每次修改完都要手动重新构建可能还是有点麻烦了，JAnim 也提供了在保存时自动重新构建的功能："
 msgstr ""
 "It might still be a bit troublesome to manually rebuild after every modification. JAnim also provides a feature to "
 "automatically rebuild upon saving:"
 
-#: ../../source/get_started.rst:275
+#: ../../source/get_started.rst:271
 msgid "使用 VS Code 作为编辑器"
 msgstr "Using VS Code as the Editor"
 
-#: ../../source/get_started.rst:277
+#: ../../source/get_started.rst:273
 msgid "如果你使用 VS Code 开发，可以安装 VS Code 插件 ``janim-toolbox``"
 msgstr "If you use VS Code for development, you can install the VS Code extension ``janim-toolbox``."
 
-#: ../../source/get_started.rst:279
+#: ../../source/get_started.rst:275
 msgid "运行时，在预览动画的命令中加上 ``-i``，比如："
 msgstr "When running, add ``-i`` to the preview animation command, for example:"
 
-#: ../../source/get_started.rst:281
+#: ../../source/get_started.rst:277
 msgid "janim run learn.py CmptAnimExample -i"
 msgstr "janim run learn.py CmptAnimExample -i"
 
-#: ../../source/get_started.rst:285
+#: ../../source/get_started.rst:281
 msgid "这样，在执行后，输出内容应当多出这样一句：``交互端口已在 xxxxx 开启``"
 msgstr "After execution, the output should add a line: ``Interactive port has been opened at xxxxx``"
 
-#: ../../source/get_started.rst:289 ../../source/get_started.rst:312
+#: ../../source/get_started.rst:285 ../../source/get_started.rst:312
 msgid "你可能注意到了，预览窗口默认是在右半边屏幕置顶的"
 msgstr "You might have noticed that the preview window is by default on top on the right side of the screen."
 
-#: ../../source/get_started.rst:291
+#: ../../source/get_started.rst:287
 msgid "这里推荐将 VS Code 放在左半边屏幕，关闭侧边栏进行书写"
 msgstr "It is recommended to place VS Code on the left side of the screen, and close the sidebar for writing."
 
-#: ../../source/get_started.rst:293 ../../source/get_started.rst:316
+#: ../../source/get_started.rst:289 ../../source/get_started.rst:316
 msgid "你也可以更改窗口放置的位置，或者显示到其它屏幕，另见 :ref:`window_position`"
 msgstr "You can also change the window position or display it on another screen; see :ref:`window_position`."
 
-#: ../../source/get_started.rst:295
+#: ../../source/get_started.rst:291
 msgid ""
 "首先，在 VS Code 中，默认情况下，需要按下 ``Ctrl+J Ctrl+C`` （分别按下，这是组合键），如果成功的话， 会在 VS Code 右下角的"
 "状态栏中显示 ``已连接到界面端 xxxxx``"
@@ -548,9 +542,13 @@ msgstr ""
 "First, in VS Code, by default, you need to press ``Ctrl+J Ctrl+C`` (press in sequence, these are combo keys). If "
 "successful, it will show ``已连接到界面端 xxxxx`` in the status bar in the lower right corner of VS Code."
 
-#: ../../source/get_started.rst:298 ../../source/get_started.rst:318
+#: ../../source/get_started.rst:294 ../../source/get_started.rst:318
 msgid "接着，对代码进行更改，保存后，就会立即更新预览的内容"
 msgstr "Next, make changes to the code and save, and the preview content will be updated immediately."
+
+#: ../../source/get_started.rst:298 ../../source/get_started.rst:324
+msgid "对于 ``-i`` 参数与 VS Code 配合使用所带来的其它功能，另见 :ref:`vscode_extension`"
+msgstr "For other features provided by using the ``-i`` parameter with VS Code, see :ref:`vscode_extension`."
 
 #: ../../source/get_started.rst:300
 msgid "使用其它编辑器"
@@ -576,6 +574,7 @@ msgstr "It is recommended to place the editor on the left side of the screen for
 msgid "其实，无论使用什么编辑器，都可以用 ``--watch`` 参数监测文件变更"
 msgstr "In fact, regardless of the editor used, you can use the ``--watch`` parameter to detect file changes."
 
-#: ../../source/get_started.rst:324
-msgid "对于 ``-i`` 参数与 VS Code 配合使用所带来的其它功能，另见 :ref:`vscode_extension`"
-msgstr "For other features provided by using the ``-i`` parameter with VS Code, see :ref:`vscode_extension`."
+#~ msgid "若要导出视频，请确保安装了 :ref:`FFmpeg <install_dep>` 并正确地将其添加到了环境变量 ``PATH`` 中"
+#~ msgstr ""
+#~ "To export videos, please make sure :ref:`FFmpeg <install_dep>` is installed and correctly added to the environment "
+#~ "variable ``PATH``."

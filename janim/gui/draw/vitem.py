@@ -119,11 +119,13 @@ class DrawVItem(DrawOnce):
             ]
         )
         text = f'VItem(\n{points}\n)'
-        self.setLayout(self.mainlayout)
+        self.set_layout(self.mainlayout)
         self.code.setPlainText(text)
         self.code_changed.emit(text)
 
     def paint(self, p: QPainter, is_active: bool) -> None:
+        if len(self.full_points) == 0:
+            return
         p.setBrush(Qt.BrushStyle.NoBrush)
         p.setPen(QPen(ACTIVE_COLOR if is_active else INACTIVE_COLOR, 3))
 

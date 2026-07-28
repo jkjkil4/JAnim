@@ -8,6 +8,7 @@ from typing import TYPE_CHECKING, Any
 
 import moderngl as mgl
 import numpy as np
+import OpenGL.GL as gl
 
 from janim.camera.camera_info import CameraInfo
 from janim.locale import get_translator
@@ -59,16 +60,34 @@ class Renderer:
         new_data: np.ndarray,
         vbo: mgl.Buffer,
         resize_target: int,
-        use_32bit_align: bool = False,
         assert_dtype: Any = np.float32,
     ) -> None:
         processed_data = resize_with_interpolation(new_data, resize_target)
         assert processed_data.dtype == assert_dtype
         bytes_data = processed_data.tobytes()
 
-        size = ((len(bytes_data) + 31) & ~31) if use_32bit_align else len(bytes_data)
+        if len(bytes_data) != vbo.size:
+            vbo.orphan(len(bytes_data))
+
+        vbo.write(bytes_data)
+
+    @staticmethod
+    def update_dynamic_buffer_data_with_sampb(
+        new_data: np.ndarray,
+        vbo: mgl.Buffer,
+        sampb: Any,
+        resize_target: int,
+        assert_dtype: Any = np.float32,
+    ) -> None:
+        processed_data = resize_with_interpolation(new_data, resize_target)
+        assert processed_data.dtype == assert_dtype
+        bytes_data = processed_data.tobytes()
+
+        size = (len(bytes_data) + 15) & ~15
         if size != vbo.size:
             vbo.orphan(size)
+            gl.glBindTexture(gl.GL_TEXTURE_BUFFER, sampb)
+            gl.glTexBuffer(gl.GL_TEXTURE_BUFFER, gl.GL_RGBA32F, vbo.glo)
 
         vbo.write(bytes_data)
 

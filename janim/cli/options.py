@@ -62,8 +62,8 @@ class FormatOptions:
         str,
         option(
             default='mp4',
-            type=click.Choice(['mp4', 'mov', 'gif']),
-            help=_('Output video format (mp4 by default, mov for transparent background)'),
+            type=click.Choice(['mp4', 'webm', 'mov', 'gif']),
+            help=_('Output video format (mp4 by default, webm/mov for transparent background)'),
         ),
     ]
     audio_format: Annotated[
@@ -80,7 +80,6 @@ class OutputOptions:
     video_with_audio: Annotated[
         bool,
         option(
-            '--video_with_audio',
             is_flag=True,
             help=_(
                 'Video with audio (default; will be replaced by --video if there is no audio, and by both --video and --audio if the format is GIF)'

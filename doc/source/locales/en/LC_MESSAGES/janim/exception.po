@@ -6,19 +6,18 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: JAnim\n"
+"Project-Id-Version:  JAnim\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-28 08:30+0800\n"
+"POT-Creation-Date: 1980-01-01 00:00+0000\n"
 "PO-Revision-Date: 2025-11-28 08:32+0800\n"
 "Last-Translator: \n"
-"Language-Team: en <LL@li.org>\n"
 "Language: en\n"
+"Language-Team: en <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "Generated-By: Babel 2.17.0\n"
-"X-Generator: Poedit 3.8\n"
 
 #: ../../source/janim/exception.rst:2
 msgid "exception"
@@ -58,18 +57,15 @@ msgstr "Exit code when Typst compilation fails"
 msgid "ffmpeg 未安装时的退出码"
 msgstr "Exit code when ffmpeg is not installed"
 
-#: ../../docstring janim.exception.EXITCODE_FFPROBE_ERROR:1 of
-msgid "ffprobe 执行失败时的退出码"
-msgstr "Exit code when ffprobe execution fails"
-
 #: janim.exception.JAnimException:1 of
 msgid "基类：:py:class:`Exception`"
 msgstr "基类：:py:class:`Exception`"
 
 #: janim.exception.AsTypeError:1 janim.exception.BooleanOpsError:1 janim.exception.CmptGroupLookupError:1
 #: janim.exception.ColorNotFoundError:1 janim.exception.ExitException:1 janim.exception.FontNotFoundError:1
-#: janim.exception.GetItemError:1 janim.exception.InvalidTypstVarError:1 janim.exception.PointError:1
-#: janim.exception.ShaderInjectionNotFoundError:1 janim.exception.TimelineError:1 janim.exception.UpdaterError:1 of
+#: janim.exception.GetItemError:1 janim.exception.GuiCommandError:1 janim.exception.InvalidTypstVarError:1
+#: janim.exception.MediaError:1 janim.exception.PointError:1 janim.exception.ShaderInjectionNotFoundError:1
+#: janim.exception.TimelineError:1 of
 msgid "基类：:py:class:`~janim.exception.JAnimException`"
 msgstr "基类：:py:class:`~janim.exception.JAnimException`"
 
@@ -83,7 +79,8 @@ msgstr ""
 msgid "基类：:py:class:`~janim.exception.TimelineError`"
 msgstr "基类：:py:class:`~janim.exception.TimelineError`"
 
-#: janim.exception.AnimGroupError:1 janim.exception.ApplyAlignerBrokenError:1 of
+#: janim.exception.AnimGroupError:1 janim.exception.ApplyAlignerBrokenError:1 janim.exception.TargetNotFoundError:1
+#: janim.exception.UpdaterError:1 of
 msgid "基类：:py:class:`~janim.exception.AnimationError`"
 msgstr "基类：:py:class:`~janim.exception.AnimationError`"
 
@@ -98,3 +95,6 @@ msgstr "基类：:py:class:`~janim.exception.PointError`"
 #~ msgid "``PyOpenGL`` 未安装时的退出码（仅在设备不支持 OpenGL4.3 的情况下需要安装 PyOpenGL）"
 #~ msgstr ""
 #~ "Exit code when ``PyOpenGL`` is not installed (PyOpenGL is only needed when the device does not support OpenGL 4.3)"
+
+#~ msgid "ffprobe 执行失败时的退出码"
+#~ msgstr "Exit code when ffprobe execution fails"

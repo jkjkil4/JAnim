@@ -32,7 +32,8 @@ dependencies = [
     "typst>=0.14.1",
     "dataclass-click",
     "cloup",
-    "prompt-toolkit"
+    "prompt-toolkit",
+    "av",
 ]
 
 [project.optional-dependencies]

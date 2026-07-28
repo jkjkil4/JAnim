@@ -221,6 +221,8 @@ def write(
             audio_writer = AudioWriter(built)
             audio_writer.write_all(
                 os.path.join(output_dir, f'{name}.{format_options.audio_format}'),
+                range_options.in_point,
+                range_options.out_point,
                 _keep_temp=video_with_audio,
             )
             if open_result and not video_with_audio and not writes_video:
@@ -228,7 +230,6 @@ def write(
 
         if video_with_audio:
             merge_video_and_audio(
-                built.cfg.ffmpeg_bin,
                 video_writer.temp_file_path,
                 audio_writer.temp_file_path,
                 video_writer.final_file_path,

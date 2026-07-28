@@ -398,7 +398,7 @@ Typst 物件支持传入 ``vars`` 参数嵌入 JAnim 物件：
 
 Typst 已经作为 `typst-py <https://github.com/messense/typst-py>`_ 包集成到 JAnim 中了，不需要另外安装。
 
-但是如果你有使用外部 Typst 可执行文件的需求，首先参考 :ref:`install_dep` 中提及的安装方法，然后使用以下方法启用外部 Typst：
+但是如果你有使用外部 Typst 可执行文件的需求，可以使用以下方法启用外部 Typst：
 
 - 对于 CLI，可以传递 ``--external_typst`` 选项启用外部 Typst
 

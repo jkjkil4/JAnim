@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, Callable, Iterable, Literal, NoReturn
+from typing import Any, Callable, Iterable, Literal, NoReturn, Self
 
 from janim.anims.composition import AnimGroup
 from janim.anims.updater import GroupUpdater, ItemUpdater
@@ -12,6 +12,7 @@ from janim.items.svg.svg_item import SVGElemItem
 from janim.items.svg.typst import TypstText
 from janim.locale import get_translator
 from janim.utils.config import config_ctx_var
+from janim.utils.rate_functions import RateFunc, smooth
 
 type TypMatDelim = Literal['(', ')', '[', ']', '{', '}', '|', 'none']
 type TypAlignment = Literal['start', 'end', 'left', 'center', 'right', 'top', 'horizon', 'bottom']
@@ -323,7 +324,14 @@ class DynamicTypst(TypstText):
 
     def anim_update(
         self,
+        at: float = 0,
+        duration: float | None = None,
+        rate_func: RateFunc = smooth,
+        name: str | None = 'DynamicTypst',
+        collapse: bool = True,
+        #
         can_keep_structure: bool = False,
+        #
         **values,
     ):
         """
@@ -335,21 +343,34 @@ class DynamicTypst(TypstText):
         设置这个参数的动机是， :class:`~.GroupUpdater` 的性质更好，但是它需要物件结构不会改变的前提
         """
         if can_keep_structure:
-            return AnimGroup(
-                self.anim._dynamic.update(values),
-                GroupUpdater(
-                    self,
-                    lambda group, p: group.become(group._rerender()),
-                ),
+            updater = GroupUpdater(
+                self,
+                lambda group, p: group.become(group._rerender()),
+                rate_func=rate_func,
             )
         else:
-            return AnimGroup(
-                self.anim._dynamic.update(values),
-                ItemUpdater(
-                    self,
-                    lambda p: self.current()._rerender(),
-                ),
+            updater = ItemUpdater(
+                self,
+                lambda p: self.current()._rerender(),
+                rate_func=rate_func,
             )
+
+        return AnimGroup(
+            self.anim(rate_func=rate_func)._dynamic.update(values),
+            updater,
+            at=at,
+            duration=duration,
+            name=name,
+            collapse=collapse,
+        )
+
+    def become_update(self, **values) -> Self:
+        """
+        直接 :meth:`~.Item.become` 为参数改变后的结果
+        """
+        self._dynamic.update(values)
+        self.become(self._rerender())
+        return self
 
     def _rerender(self) -> DynamicTypst:
         token = config_ctx_var.set(self._config_context)

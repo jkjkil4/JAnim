@@ -60,6 +60,7 @@
           dbus
           wayland
           freetype
+          portaudio
         ];
 
       in {

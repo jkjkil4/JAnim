@@ -234,10 +234,6 @@
 导出视频
 ------------
 
-.. warning::
-
-    若要导出视频，请确保安装了 :ref:`FFmpeg <install_dep>` 并正确地将其添加到了环境变量 ``PATH`` 中
-
 上面进行预览是使用：
 
 .. code-block:: bash
@@ -296,6 +292,10 @@
         会在 VS Code 右下角的状态栏中显示 ``已连接到界面端 xxxxx``
 
         接着，对代码进行更改，保存后，就会立即更新预览的内容
+
+        .. note::
+
+            对于 ``-i`` 参数与 VS Code 配合使用所带来的其它功能，另见 :ref:`vscode_extension`
 
     .. translatable-tab:: 使用其它编辑器
 

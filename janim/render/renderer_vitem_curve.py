@@ -122,18 +122,19 @@ class VItemCurveRenderer(Renderer):
         self._update_others(item, render_data, new_attrs)
 
         if new_attrs.radius is not self.attrs.radius or points_cnt_changed:
-            self.update_dynamic_buffer_data(
+            self.update_dynamic_buffer_data_with_sampb(
                 new_attrs.radius,
                 self.vbo_radius,
+                self.sampb_radius,
                 resize_target,
-                use_32bit_align=True,
             )
             self.attrs.radius = new_attrs.radius
 
         if new_attrs.stroke is not self.attrs.stroke or points_cnt_changed:
-            self.update_dynamic_buffer_data(
+            self.update_dynamic_buffer_data_with_sampb(
                 new_attrs.stroke,
                 self.vbo_stroke_color,
+                self.sampb_stroke_color,
                 resize_target,
             )
             self.attrs.stroke = new_attrs.stroke
@@ -261,6 +262,8 @@ class VItemCurveRenderer(Renderer):
 
             if len(self.points_vec4buffer) != len(mapped):
                 self.points_vec4buffer = np.empty((len(mapped), 4), dtype=np.float32)
+                gl.glBindTexture(gl.GL_TEXTURE_BUFFER, self.sampb_mapped_points)
+                gl.glTexBuffer(gl.GL_TEXTURE_BUFFER, gl.GL_RGBA32F, self.vbo_mapped_points.glo)
 
             self.points_vec4buffer[:, :3] = mapped
             bytes = self.points_vec4buffer.tobytes()

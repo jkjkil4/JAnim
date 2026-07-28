@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  JAnim\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-03-31 15:56+0800\n"
+"POT-Creation-Date: 1980-01-01 00:00+0000\n"
 "PO-Revision-Date: 2025-11-28 12:57+0800\n"
 "Last-Translator: \n"
 "Language: en\n"
@@ -519,15 +519,25 @@ msgstr ""
 msgid "匹配形状进行变换"
 msgstr "Transform by matching shapes"
 
-#: janim.anims.transform.TransformMatchingDiff:5 janim.anims.transform.TransformMatchingShapes:3 of
-msgid "``match`` 表示对于匹配的形状的处理"
-msgstr "``match`` indicates how to handle shapes that do match"
+#: janim.anims.transform.TransformMatchingShapes:3 of
+msgid "``match`` 表示对于匹配的形状的处理函数，函数应返回动画对象"
+msgstr "``match`` indicates the handling function for matched shapes. The function should return an animation object."
 
-#: janim.anims.transform.TransformMatchingDiff:6 janim.anims.transform.TransformMatchingShapes:4 of
-msgid "``mismatch`` 表示对于不匹配的形状的处理"
-msgstr "``mismatch`` indicates how to handle shapes that do not match"
+#: janim.anims.transform.TransformMatchingShapes:5 of
+msgid ""
+"``mismatch`` 表示对于不匹配的形状的处理，其为包含两个函数的 ``tuple``， 分别表示对 “``src`` 中的未匹配物件的处理” 以及 "
+"“``target`` 中的未匹配物件的处理”；"
+msgstr ""
+"``mismatch`` indicates the handling of unmatched shapes. It is a ``tuple`` containing two functions, which respectively "
+"specify the handling of \"unmatched objects in ``src``\" and \"unmatched objects in ``target``\";"
 
-#: janim.anims.transform.TransformMatchingDiff:7 janim.anims.transform.TransformMatchingShapes:5 of
+#: janim.anims.transform.TransformMatchingShapes:8 of
+msgid "其中的每个函数应返回动画对象，若函数返回 ``None`` 或本身直接为 None 则表示不进行处理，保留物件原样"
+msgstr ""
+"Each function should return an animation object. If a function returns ``None`` or is itself ``None``, it means that no "
+"processing will be performed and the object will be kept unchanged."
+
+#: janim.anims.transform.TransformMatchingDiff:7 janim.anims.transform.TransformMatchingShapes:10 of
 msgid "注：所有传入该动画类的额外参数（``**kwargs``）都会被传入 ``match`` 和 ``mismatch`` 的方法中"
 msgstr ""
 "Note: All additional parameters (``**kwargs``) passed to this animation class will be passed to the methods in ``match`` "
@@ -568,6 +578,14 @@ msgid "对于一般物件，使用形状匹配 diff；对于 :class:`~.Text` 使
 msgstr ""
 "For general items, uses shape matching diff; for :class:`~.Text`, uses character matching diff based "
 "on :class:`~.TextChar`."
+
+#: janim.anims.transform.TransformMatchingDiff:5 of
+msgid "``match`` 表示对于匹配的形状的处理"
+msgstr "``match`` indicates how to handle shapes that do match"
+
+#: janim.anims.transform.TransformMatchingDiff:6 of
+msgid "``mismatch`` 表示对于不匹配的形状的处理"
+msgstr "``mismatch`` indicates how to handle shapes that do not match"
 
 #: ../../source/janim/anims/transform.rst:20
 msgid ""
