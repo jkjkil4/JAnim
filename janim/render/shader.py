@@ -99,9 +99,7 @@ def _resolve_shader_from_file(file_path: str, info: _ResolveInfo) -> None:
 
     # 避免重复包含
     if path in info.resolved_files:
-        print('ignored', path)
         return
-    print('resolving', path)
     info.resolved_files.add(path)
     _resolve_shader_from_source(rel_path_str, readall(file_path), info, str(path.parent))
 
