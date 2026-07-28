@@ -247,24 +247,22 @@ class NamedGroupMixin[T](Group[T]):
 
     # region 对 stored 的相关处理，不是什么很重要的细节
 
+    class Stored(Item.Stored):
+        def __init__(self, item: NamedGroupMixin):
+            super().__init__(item)
+            self.named_indices = item.get_named_indices().copy()
+
     def store(self, **kwargs):
         copy_item = super().store(**kwargs)
         copy_item._named_indices = {}
-        copy_item._stored_named_indices = self.get_named_indices().copy()
         return copy_item
-
-    def restore(self, other: NamedGroupMixin) -> Self:
-        assert isinstance(other, NamedGroupMixin)
-        if self._stored:
-            self._stored_named_indices = other.get_named_indices().copy()
-        return super().restore(other)
 
     def _unstore(self, child_restorer) -> None:
         super()._unstore(child_restorer)
         self._named_indices = self._stored_named_indices.copy()
 
     def get_named_indices(self) -> dict[str, int]:
-        return self._stored_named_indices if self._stored else self._named_indices
+        return self._stored.named_indices if self._stored else self._named_indices
 
     # endregion
 

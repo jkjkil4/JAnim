@@ -330,8 +330,8 @@ class VCheckerboardSurface[T: SurfaceGeometry](Group[SurfaceFace], VItem):
             row1[:] = resize_preserving_order(row1, max_len)
             row2[:] = resize_preserving_order(row2, max_len)
 
-        aligned.data1._stored_children = list(it.chain(*item1_grid))
-        aligned.data2._stored_children = list(it.chain(*item2_grid))
+        aligned.data1._stored.children = list(it.chain(*item1_grid))
+        aligned.data2._stored.children = list(it.chain(*item2_grid))
 
         return aligned
 
@@ -434,8 +434,8 @@ class WireframeSurface[T: SurfaceGeometry](Group[VItem], VItem):
             item2_children[-res2_v - 1 :],
         )
 
-        aligned.data1._stored_children = [*u_lines1, *v_lines1]
-        aligned.data2._stored_children = [*u_lines2, *v_lines2]
+        aligned.data1._stored.children = [*u_lines1, *v_lines1]
+        aligned.data2._stored.children = [*u_lines2, *v_lines2]
 
         return aligned
 

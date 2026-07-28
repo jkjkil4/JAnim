@@ -217,7 +217,7 @@ class Transform(Animation):
                     )
                 else:
                     for child1, child2 in zip(
-                        aligned.data1._stored_children, aligned.data2._stored_children
+                        aligned.data1._stored.children, aligned.data2._stored.children
                     ):
                         align(child1, child2, True)
 
