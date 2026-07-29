@@ -20,8 +20,10 @@ class VItemPlaneRenderer(Renderer):
     对于带内部区域的 :class:`~.VItem` 所使用的渲染器
     """
 
-    shader_path_compatibility = 'render/shaders/vitem/vitem_plane_compatibility'
-    shader_path_normal = 'render/shaders/vitem/vitem_plane'
+    # shader_path_compatibility = 'render/shaders/vitem/vitem_plane_compatibility'
+    # shader_path_normal = 'render/shaders/vitem/vitem_plane'
+    shader_path_compatibility = 'render/shaders/vitem/vitem_plane/_vitem_plane_compa_'
+    shader_path_normal = 'render/shaders/vitem/vitem_plane/_vitem_plane_normal_'
 
     def __init__(self):
         self.initialized: bool = False

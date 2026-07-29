@@ -1,5 +1,3 @@
-#version 330 core
-
 in ivec3 in_indices;
 
 out int v_prev_idx;

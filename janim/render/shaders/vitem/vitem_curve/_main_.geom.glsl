@@ -1,3 +1,20 @@
+layout(points) in;
+layout(triangle_strip, max_vertices = 6) out;
+
+in int v_prev_idx[1];
+in int v_curr_idx[1];
+in int v_next_idx[1];
+
+out vec2 v_coord;
+
+flat out int curr_idx;
+
+#include "../../../includes/janim_globals.glsl"
+
+uniform vec4 glow_color;
+uniform float glow_size;
+
+#include "../buffers.glsl"
 
 vec2 rotate_90_ccw(vec2 v) {
     return vec2(-v.y, v.x);
@@ -7,7 +24,7 @@ vec2 rotate_90_cw(vec2 v) {
     return vec2(v.y, -v.x);
 }
 
-#include "../../includes/is_approx_line.glsl"
+#include "../is_approx_line.glsl"
 
 void emit_coord(vec2 coord, float depth)
 {

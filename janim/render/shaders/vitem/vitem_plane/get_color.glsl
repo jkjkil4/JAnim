@@ -1,16 +1,10 @@
-// Required:
-//  in vec2 v_coord;
-//  vec2 get_point(int idx);
-//  float get_radius(int anchor_idx);
-//  vec4 get_color(int anchor_idx);
-//  vec4 get_fill(int anchor_idx);
+#include "../../../includes/shade.glsl"
+#include "../../../includes/blend_color.glsl"
 
-#include "vitem_plane_unit_normal_uniforms.glsl"
+#include "inputs.glsl"
+#include "../buffers.glsl"
 
-uniform bool SHADE_IN_3D;
-#include "../../includes/shade.glsl"
-
-vec4 get_vitem_color(float stroke_d, float fill_sgn_d, int idx)
+vec4 get_vitem_color(float stroke_d, float fill_sgn_d, int idx, int lim)
 {
     int anchor_idx = idx / 2;
 
@@ -19,6 +13,28 @@ vec4 get_vitem_color(float stroke_d, float fill_sgn_d, int idx)
     float ratio = clamp(dot(w, e) / dot(e, e), 0.0, 1.0);
 
     float radius = mix(get_radius(anchor_idx), get_radius(anchor_idx + 1), ratio);
+
+    #ifdef ARROW
+    float orig_ratio = dot(w, e) / dot(e, e);
+
+    float shrink_left_ratio = -1.0;
+    float shrink_right_ratio = -1.0;
+    if (idx == 0) {
+        shrink_left_ratio = shrink.x;
+    }
+    if (idx == lim - 2) {
+        shrink_right_ratio = shrink.y;
+    }
+
+    radius *= min(
+        shrink_left_ratio == -1.0
+            ? 1.0
+            : smoothstep(shrink_left_ratio - 1e-5, shrink_left_ratio, orig_ratio),
+        shrink_right_ratio == -1.0
+            ? 1.0
+            : smoothstep(shrink_right_ratio - 1e-5, shrink_right_ratio, 1.0 - orig_ratio)
+    );
+    #endif
 
     vec4 fill_color;
     if (is_fill_transparent) {

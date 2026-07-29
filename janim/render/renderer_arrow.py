@@ -10,8 +10,8 @@ if TYPE_CHECKING:
 
 
 class ArrowRenderer(VItemPlaneRenderer):
-    shader_path_compatibility = 'render/shaders/vitem/arrow_compatibility'
-    shader_path_normal = 'render/shaders/vitem/arrow'
+    shader_path_compatibility = 'render/shaders/vitem/vitem_plane/_arrow_compa_'
+    shader_path_normal = 'render/shaders/vitem/vitem_plane/_arrow_normal_'
 
     def init_common(self):
         super().init_common()

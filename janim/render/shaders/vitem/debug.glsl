@@ -1,11 +1,9 @@
-// Required:
-//  in vec2 v_coord
-//  out vec4 f_color
-//  vec2 get_point(int idx)
-
+#include "buffers.glsl"
 #include "../../includes/blend_color.glsl"
 
-bool debug_control_points(int num)
+// out vec4 f_color;
+
+bool debug_control_points(vec2 v_coord, int num)
 {
     float d = distance(v_coord, get_point(0));
     for (int i = 1; i < num; i++) {
@@ -27,7 +25,7 @@ void debug_sdf_plane(float sgn, float d)
     f_color = blend_color(sdf_color, f_color);
 }
 
-void debug_polygon_lines(int num)
+void debug_polygon_lines(vec2 v_coord, int num)
 {
     float d = dot(v_coord - get_point(0), v_coord - get_point(0));
     for(int i = 1, j = 0; i < num; j = i, i++)

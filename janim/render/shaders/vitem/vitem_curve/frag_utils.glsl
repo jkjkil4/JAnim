@@ -1,13 +1,12 @@
-// Required:
-//  in vec2 v_coord;
-//  vec2 get_point(int idx);
-//  float get_radius(int anchor_idx)
-//  vec4 get_color(int anchor_idx)
-//  vec4 get_fill(int anchor_idx)
+#include "../../../includes/blend_color.glsl"
+#include "../../../includes/infinity.glsl"
+#include "../../../includes/janim_globals.glsl"
 
-#include "../../includes/is_approx_line.glsl"
-#include "../../includes/bezier_sdf.glsl"
-#include "../../includes/blend_color.glsl"
+#include "../is_approx_line.glsl"
+#include "../bezier_sdf.glsl"
+
+#include "inputs.glsl"
+#include "../buffers.glsl"
 
 float distance_to_curve(int idx)
 {

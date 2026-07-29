@@ -18,8 +18,8 @@ shader_keys = (
 
 def get_program_from_file_prefix(filepath_prefix: str) -> mgl.Program:
     """
-    给定相对于 janim 路径或用户路径的文件位置，自动遍历后缀并读取着色器代码，
-    例如传入 ``render/shaders/dotcloud`` 后，会自动读取以下位置的代码：
+    给定相对于 janim 路径或用户路径的文件前缀，自动遍历后缀并读取着色器代码，
+    例如传入 ``render/shaders/dotcloud`` 后，会自动读取以下代码：
 
     - ``render/shaders/dotcloud.vert.glsl``
     - ``render/shaders/dotcloud.geom.glsl``

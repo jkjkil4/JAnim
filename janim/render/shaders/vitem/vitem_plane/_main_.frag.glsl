@@ -1,39 +1,35 @@
-#version 330 core
+#include "inputs.glsl"
+#include "../buffers.glsl"
 
-in vec2 v_coord;
+#ifdef COMPATIBILITY
+uniform int lim;
+int get_lim() { return lim; }
+#else
+int get_lim() { return (points.length() - 1) / 2 * 2; }
+#endif
 
 out vec4 f_color;
 
-uniform float JA_CAMERA_SCALED_FACTOR;
-uniform float JA_ANTI_ALIAS_RADIUS;
-uniform bool JA_FIX_IN_FRAME;
+#include "subpath_attr.glsl"
+#include "compute_depth.glsl"
+#include "get_color.glsl"
 
-uniform bool stroke_background;
-uniform bool is_fill_transparent;
-uniform vec4 glow_color;
-uniform float glow_size;
-
-const float INFINITY = 1.0 / 0.0;
+#include "../../../includes/infinity.glsl"
 
 #[JA_FINISH_UP_UNIFORMS]
 
-uniform int lim;
-#include "layouts/layout_compatibility.glsl"
-
-#include "../../includes/blend_color.glsl"
-#include "vitem_plane_frag_utils.glsl"
-#include "vitem_plane_color.glsl"
-#include "vitem_debug.glsl"
-
+#include "../debug.glsl"
 // #define CONTROL_POINTS
 // #define POLYGON_LINES
 // #define SDF_PLANE
 
 void main()
 {
+    int lim = get_lim();
+
     #ifdef CONTROL_POINTS
-    if (debug_control_points(lim + 1))
-        return;
+    if (debug_control_points(v_coord, lim + 1))
+        return
     #endif
 
     int idx;
@@ -58,7 +54,7 @@ void main()
         start_idx += 2;
     }
 
-    f_color = get_vitem_color(stroke_d, fill_d * fill_sgn, idx);
+    f_color = get_vitem_color(stroke_d, fill_d * fill_sgn, idx, lim);
     compute_depth_if_needed();
 
     #if !defined(POLYGON_LINES) && !defined(SDF_PLANE)
@@ -71,8 +67,9 @@ void main()
     #endif
 
     #ifdef POLYGON_LINES
-    debug_polygon_lines(lim + 1);
+    debug_polygon_lines(v_coord, lim + 1);
     #endif
 
     #[JA_FINISH_UP]
 }
+

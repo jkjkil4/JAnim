@@ -21,16 +21,12 @@ def resolve_shader_from_file(file_path: str) -> str:
 
         若某个文件存在重复包含的情况，则仅第一次有效，后续会直接忽略
 
-    -   对于 ``#version xxx core`` ，会提取遇到的最高版本写到结果字符串的开头
+    -   对于 ``#[xxx]`` ，会根据 :class:`ShaderInjection` 替换为对应的目标字符串
     """
     found_path = find_shader_file(file_path)
     info = _ResolveInfo()
     _resolve_shader_from_file(found_path, info)
-    info.lines.append('//')  # 避免可能出现在结尾的 #line 没有后续代码导致在部分平台上报错
-    return (
-        f'#version {info.max_version} core\n'  #
-        + '\n'.join(info.lines)
-    )
+    return info.assemble()
 
 
 def resolve_shader_from_file_or_none(file_path: str) -> str | None:
@@ -43,14 +39,14 @@ def resolve_shader_from_file_or_none(file_path: str) -> str | None:
         return None
     info = _ResolveInfo()
     _resolve_shader_from_file(found_path, info)
-    info.lines.append('//')  # 避免可能出现在结尾的 #line 没有后续代码导致在部分平台上报错
-    return (
-        f'#version {info.max_version} core\n'  #
-        + '\n'.join(info.lines)
-    )
+    return info.assemble()
 
 
-def resolve_shader_from_source(name: str, source: str, dir_path: str | None = None) -> str:
+def resolve_shader_from_source(
+    name: str,
+    source: str,
+    dir_path: str | None = None,
+) -> str:
     """
     处理 ``source`` 代码，解析其中的 “预编译宏”
 
@@ -60,14 +56,11 @@ def resolve_shader_from_source(name: str, source: str, dir_path: str | None = No
 
         ``dir_path`` 决定了其搜索基于的路径
 
-    -   对于 ``#version xxx core`` ，会提取遇到的最高版本写到结果字符串的开头
+    -   对于 ``#[xxx]`` ，会根据 :class:`ShaderInjection` 替换为对应的目标字符串
     """
     info = _ResolveInfo()
     _resolve_shader_from_source(name, source, info, dir_path)
-    return (
-        f'#version {info.max_version} core\n'  #
-        + '\n'.join(info.lines)
-    )
+    return info.assemble()
 
 
 class _ResolveInfo:
@@ -76,6 +69,14 @@ class _ResolveInfo:
         self.max_version: int = 330
 
         self.resolved_files: set[Path] = set()
+
+    def assemble(self) -> str:
+        lines = [
+            f'#version {self.max_version} core',
+            *self.lines,
+            '//',  # 避免可能出现在结尾的 #line 没有后续代码导致在部分平台上报错
+        ]
+        return '\n'.join(lines)
 
 
 _regex_version = re.compile(r'^\s*#\s*version\s+(\d+)\s+core\s*$')
