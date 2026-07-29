@@ -17,7 +17,7 @@ from janim.render.program import get_program_from_file_prefix
 if TYPE_CHECKING:
     from janim.items.image_item import Video, VideoInfo
 
-_ = get_translator('janim.render.renderer_video')
+_ = get_translator('janim.render.renderer.r_video')
 
 
 class VideoRenderer(Renderer):

@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from janim.render.base import RenderData
-from janim.render.renderer_vitem import VItemPlaneRenderer
+from janim.render.renderer.r_vitem import VItemPlaneRenderer
 
 if TYPE_CHECKING:
     from janim.items.geometry.arrow import Arrow

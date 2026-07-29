@@ -11,7 +11,7 @@ from janim.components.simple import Cmpt_Dict, Cmpt_List
 from janim.items.item import Item
 from janim.locale import get_translator
 from janim.logger import log
-from janim.render.renderer_frameeffect import FrameEffectRenderer
+from janim.render.renderer.r_frameeffect import FrameEffectRenderer
 from janim.render.shader import (
     ShaderInjection,
     _injection_ja_finish_up_uniforms,
