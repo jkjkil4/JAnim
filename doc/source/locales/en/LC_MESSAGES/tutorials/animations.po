@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  JAnim\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-03 12:37+0800\n"
+"POT-Creation-Date: 1980-01-01 00:00+0000\n"
 "PO-Revision-Date: 2025-11-23 08:39+0800\n"
 "Last-Translator: \n"
 "Language: en\n"
@@ -598,3 +598,27 @@ msgstr ""
 "self.play(\n"
 "    item.anim.points.shift(LEFT * 2).r.color.fade(0.5)\n"
 ")"
+
+#: ../../source/tutorials/animations.rst:287
+msgid "``.r`` 一般用于 ``.anim`` 时便于链式回到物件级别，修改完一个组件的用于动画的属性后，修改另一个组件用于动画的属性"
+msgstr "``.r`` is generally used in ``.anim`` to conveniently chain back to the item level. After modifying an animation property of one component, it allows modifying the animation property of another component"
+
+#: ../../source/tutorials/animations.rst:289
+msgid "在这样的考虑下，不推荐在常规代码中滥用 ``.r`` ，例如："
+msgstr "With this consideration, it is not recommended to overuse ``.r`` in regular code, for example:"
+
+#: ../../source/tutorials/animations.rst:291
+msgid "circle = Circle().points.shift(RIGHT).r"
+msgstr "circle = Circle().points.shift(RIGHT).r"
+
+#: ../../source/tutorials/animations.rst:295
+msgid "建议改为"
+msgstr "It is recommended to write it as"
+
+#: ../../source/tutorials/animations.rst:297
+msgid ""
+"circle = Circle()\n"
+"circle.points.shift(RIGHT)"
+msgstr ""
+"circle = Circle()\n"
+"circle.points.shift(RIGHT)"

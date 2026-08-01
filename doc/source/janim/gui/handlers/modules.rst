@@ -7,6 +7,7 @@ handlers
    :maxdepth: 1
 
    camera
+   draw
    move
    select
    unknown

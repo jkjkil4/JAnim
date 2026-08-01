@@ -1,16 +1,16 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) 2023, jkjkil4
 # This file is distributed under the same license as the JAnim package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
 #
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version:  JAnim\n"
+"Project-Id-Version: JAnim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-02-24 01:11+0800\n"
-"PO-Revision-Date: 2025-11-22 20:20+0800\n"
-"Last-Translator: \n"
+"POT-Creation-Date: 1980-01-01 00:00+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
 "Language-Team: en <LL@li.org>\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
@@ -19,6 +19,6 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.17.0\n"
 
-#: ../../source/janim/render/renderer_arrow.rst:2
-msgid "renderer_arrow"
-msgstr "renderer_arrow"
+#: ../../source/janim/render/renderer/r_smooth_surface.rst:2
+msgid "r_smooth_surface"
+msgstr "r_smooth_surface"

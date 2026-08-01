@@ -19,6 +19,6 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.17.0\n"
 
-#: ../../source/janim/render/renderer_smooth_surface.rst:2
-msgid "renderer_smooth_surface"
-msgstr "renderer_smooth_surface"
+#: ../../source/janim/gui/handlers/draw.rst:2
+msgid "draw"
+msgstr "draw"
