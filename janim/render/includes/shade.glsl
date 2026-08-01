@@ -1,6 +1,5 @@
 
-#include "JA_CAMERA_LOC.glsl"
-uniform vec3 JA_LIGHT_SOURCE;
+#include "janim_globals.glsl"
 
 const float REFLECTIVENESS = 0.3;
 const float GLOSS = 0.2;

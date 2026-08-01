@@ -5,7 +5,7 @@ from janim.components.vpoints import Cmpt_VPoints
 from janim.items.effect.frame_effect import AppliedGroup
 from janim.items.item import Item
 from janim.items.vitem import VItem
-from janim.render.renderer_shapemask import ShapeMaskRenderer
+from janim.render.renderer.r_shapemask import ShapeMaskRenderer
 
 
 class ShapeMask(AppliedGroup):

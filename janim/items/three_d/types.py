@@ -16,8 +16,8 @@ from janim.items.item import Item
 from janim.items.points import DotCloud, Points
 from janim.items.vitem import VItem
 from janim.locale import get_translator
-from janim.render.renderer_smooth_surface import SmoothSurfaceRenderer
-from janim.render.renderer_checkerboard_surface import CheckerboardSurfaceRenderer
+from janim.render.renderer.r_smooth_surface import SmoothSurfaceRenderer
+from janim.render.renderer.r_checkerboard_surface import CheckerboardSurfaceRenderer
 from janim.typing import ColorArray, JAnimColor, RgbaArray, Vect
 from janim.utils.data import AlignedData, Array
 from janim.utils.dict_ops import merge_dicts_recursively
