@@ -35,10 +35,10 @@ class Audio:
     audio_cache_map: dict[tuple, _AudioCache] = {}
 
     def __init__(self, file_path: str = '', begin: float = -1, end: float = -1, **kwargs):
-        from janim.anims.timeline import Timeline
+        from janim.timeline import Timeline
 
         super().__init__(**kwargs)
-        with Timeline.get_context().with_config():
+        with Timeline.get_context().config_context():
             self.framerate: int = Config.get.audio_framerate
             self.channels: int = Config.get.audio_channels
 

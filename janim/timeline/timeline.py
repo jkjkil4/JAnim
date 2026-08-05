@@ -339,22 +339,34 @@ class BuiltTimeline:
         """
         return self.timeline.cfg
 
+    @property
+    def frame_count(self) -> int:
+        return round(self.duration * self.cfg.fps) + 1
+
     def get_audio_samples_of_frame(
-        self, fps: float, framerate: int, frame: int, *, count: int = 1
+        self, fps: int, framerate: int, frame: int, *, count: int = 1
     ) -> np.ndarray:
         """
         提取特定帧的音频流
         """
         begin = frame / fps
         end = (frame + count) / fps
+        return self.get_audio_samples_between(framerate, begin, end)
+
+    def get_audio_samples_between(
+        self,
+        framerate: int,
+        begin: float,
+        end: float,
+    ) -> np.ndarray:
         channels = self.cfg.audio_channels
 
         output_sample_count = math.floor(end * framerate) - math.floor(begin * framerate)
         result = np.zeros((output_sample_count, channels), dtype=np.int16)
 
         # 合并自身的 audio
-        for info in self.timeline.audio_infos:  # TODO: 使用 TimeChunks 优化？
-            if end < info.range.at or begin > info.range.end:  # type: ignore
+        for info in self.timeline.audio_infos:
+            if end < info.range.at or begin > info.range.end:
                 continue
 
             audio = info.audio
@@ -363,7 +375,7 @@ class BuiltTimeline:
             frame_end = int((end - info.range.at + info.clip_range.at) * audio.framerate)
 
             clip_begin = max(0, int(audio.framerate * info.clip_range.at))
-            clip_end = min(audio.sample_count(), int(audio.framerate * info.clip_range.end))  # type: ignore
+            clip_end = min(audio.sample_count(), int(audio.framerate * info.clip_range.end))
 
             left_blank = max(0, clip_begin - frame_begin)
             right_blank = max(0, frame_end - clip_end)
@@ -385,11 +397,7 @@ class BuiltTimeline:
         # 合并子 Timeline 的 audio
         for item in self.timeline.subtimeline_items:
             built = item._built
-            frame_offset = int(item.at * fps)
-
-            data = built.get_audio_samples_of_frame(
-                fps, framerate, frame - frame_offset, count=count
-            )
+            data = built.get_audio_samples_between(framerate, begin - item.at, end - item.at)
             result += resize_preserving_order(data, output_sample_count)
 
         return result
