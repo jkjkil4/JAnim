@@ -14,7 +14,7 @@ from janim.items.geometry.polygon import Polygon
 from janim.items.group import Group, NamedGroupMixin
 from janim.items.item import _ItemMeta
 from janim.items.points import MarkedItem, Points
-from janim.items.svg.typst import TypstMath
+from janim.items.typst.typst import TypstMath
 from janim.items.vitem import DEFAULT_STROKE_RADIUS
 from janim.typing import JAnimColor, RangeSpecifier, Vect, VectArray
 from janim.utils.deprecation import deprecated_classvar

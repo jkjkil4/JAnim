@@ -2,7 +2,7 @@
 使用 ``from janim.imports import *`` 即可导入 ``janim`` 主要的功能
 """
 
-# flake8: noqa
+# ruff: noqa
 from colour import Color
 
 import janim.items.boolean_ops as boolean_ops
@@ -40,8 +40,7 @@ from janim.items.points import *
 from janim.items.shape_matchers import *
 from janim.items.svg.brace import *
 from janim.items.svg.svg_item import *
-from janim.items.svg.typst import *
-from janim.items.svg.typst_types import *
+from janim.items.typst import *
 from janim.items.text import *
 from janim.items.three_d.shapes import *
 from janim.items.three_d.types import *
@@ -59,4 +58,3 @@ from janim.utils.rate_functions import *
 from janim.utils.reload import reloads
 from janim.utils.simple_functions import *
 from janim.utils.space_ops import *
-from janim.utils.typst_compile import set_use_external_typst

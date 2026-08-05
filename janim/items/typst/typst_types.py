@@ -9,10 +9,18 @@ from janim.exception import InvalidOrdinalError
 from janim.items.group import Group
 from janim.items.points import Points
 from janim.items.svg.svg_item import SVGElemItem
-from janim.items.svg.typst import TypstText
+from janim.items.typst.typst import TypstText
 from janim.locale import get_translator
 from janim.utils.config import config_ctx_var
 from janim.utils.rate_functions import RateFunc, smooth
+
+__all__ = [
+    'TypMatDelim',
+    'TypAlignment',
+    'TypMatAlignment',
+    'TypstMatrix',
+    'DynamicTypst',
+]
 
 type TypMatDelim = Literal['(', ')', '[', ']', '{', '}', '|', 'none']
 type TypAlignment = Literal['start', 'end', 'left', 'center', 'right', 'top', 'horizon', 'bottom']

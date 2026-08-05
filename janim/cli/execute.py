@@ -26,7 +26,6 @@ from janim.locale import get_translator
 from janim.logger import log
 from janim.utils.config import cli_config, default_config
 from janim.utils.file_ops import get_janim_dir, open_file
-from janim.utils.typst_compile import set_use_external_typst
 
 _ = get_translator('janim.cli.execute')
 
@@ -40,7 +39,6 @@ def run(
     module = get_module(file)
     if module is None:
         return
-    set_use_external_typst(shared_options.external_typst)
     modify_cli_config(shared_options.configs)
 
     timelines = extract_timelines_from_module(module, timeline_names, shared_options.all)
@@ -134,7 +132,6 @@ def write(
     module = get_module(file)
     if module is None:
         return
-    set_use_external_typst(shared_options.external_typst)
     modify_cli_config(shared_options.configs)
 
     timelines = extract_timelines_from_module(module, timeline_names, shared_options.all)

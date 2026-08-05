@@ -8,13 +8,13 @@ from typing import Any, Callable, Iterable, Self
 import numpy as np
 import svgelements as se
 
-from janim.constants import FRAME_PPI, ORIGIN, RIGHT, TAU, UP
+from janim.constants import FRAME_PPI, ORIGIN, RIGHT, TAU
 from janim.items.geometry.arc import Circle
 from janim.items.geometry.line import Line
 from janim.items.geometry.polygon import Polygon, Polyline, Rect, RoundedRect
 from janim.items.group import Group
 from janim.items.item import Item
-from janim.items.text import BasepointVItem, Text, TextLine
+from janim.items.text import BASEPOINT_MARKS, BasepointVItem, Text, TextLine
 from janim.items.vitem import VItem
 from janim.locale import get_translator
 from janim.logger import log
@@ -75,16 +75,16 @@ class SVGItem(Group[SVGElemItem]):
         if width is None and height is None:
             # 因为解析 svg 时按照默认的 PPI=96 读取，而 janim 默认 PPI=144，所以要缩放 (FRAME_PPI / 96)
             factor = Config.get.default_pixel_to_frame_ratio * (FRAME_PPI / 96) * scale
-            self.points.scale(factor, about_point=ORIGIN)
+            self.points.scale(factor, about_edge=None)
         elif width is None and height is not None:
             factor = height / box.height
-            self.points.set_size(box.width * factor, height, about_point=ORIGIN)
+            self.points.set_size(box.width * factor, height, about_edge=None)
         elif width is not None and height is None:
             factor = width / box.width
-            self.points.set_size(width, box.height * factor, about_point=ORIGIN)
+            self.points.set_size(width, box.height * factor, about_edge=None)
         else:  # width is not None and height is not None
             factor = min(width / box.width, height / box.height)
-            self.points.set_size(width, height, about_point=ORIGIN)
+            self.points.set_size(width, height, about_edge=None)
 
         self(VItem).points.flip(RIGHT, about_edge=None)
         self.scale_descendants_stroke_radius(factor)
@@ -319,7 +319,7 @@ class SVGItem(Group[SVGElemItem]):
             # 原点就在其基线上，所以将原点作用 transform 即可得到 SVG 对象（一般而言是文字）的基线
             transform = se.Matrix(path.values.get('transform', ''))
             rot, shift = SVGItem.get_rot_and_shift_from_matrix(transform)
-            marks = np.array([ORIGIN, RIGHT, UP])
+            marks = BASEPOINT_MARKS.copy()
             marks[:, :2] @= rot.T
             marks[:, :2] += shift[:2] + offset
 

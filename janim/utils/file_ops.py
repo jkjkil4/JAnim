@@ -50,15 +50,9 @@ def get_gui_asset(file: str) -> str:
     return os.path.join(get_janim_dir(), 'gui', 'assets', file)
 
 
-def get_typst_temp_dir() -> str:
-    from janim.utils.config import Config
-
-    return guarantee_existence(os.path.join(Config.get.temp_dir, 'Typst'))
-
-
 @lru_cache(maxsize=1)
 def get_typst_packages_dir() -> str:
-    return os.path.join(get_janim_dir(), 'items', 'svg')
+    return os.path.join(get_janim_dir(), 'items', 'typst', 'packages')
 
 
 def readall(filepath: str | Path) -> str:
