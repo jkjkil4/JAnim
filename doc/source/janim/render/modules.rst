@@ -6,22 +6,13 @@ render
 .. toctree::
    :maxdepth: 1
 
+   renderer/modules.rst
    base
    collection
+   encoder
    framebuffer
    profiler
    program
-   renderer_arrow
-   renderer_checkerboard_surface
-   renderer_dotcloud
-   renderer_frameeffect
-   renderer_imageitem
-   renderer_shapemask
-   renderer_smooth_surface
-   renderer_video
-   renderer_vitem
-   renderer_vitem_curve
-   renderer_vitem_plane
    shader
    texture
    uniform

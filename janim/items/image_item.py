@@ -18,8 +18,8 @@ from janim.constants import DL, DR, OUT, UL, UR
 from janim.exception import MediaError
 from janim.items.points import Points
 from janim.locale import get_translator
-from janim.render.renderer_imageitem import ImageItemRenderer
-from janim.render.renderer_video import VideoRenderer
+from janim.render.renderer.r_imageitem import ImageItemRenderer
+from janim.render.renderer.r_video import VideoRenderer
 from janim.render.texture import get_img_from_file
 from janim.typing import Alpha, AlphaArray, ColorArray, JAnimColor
 from janim.utils.config import Config

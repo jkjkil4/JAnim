@@ -10,46 +10,142 @@ from janim.utils.file_ops import find_file, find_file_in_path, get_janim_dir, re
 
 _ = get_translator('janim.render.shader')
 
+# region main part
 
-def read_shader(file_path: str) -> str:
-    lines = []
+
+def resolve_shader_from_file(file_path: str) -> str:
+    """
+    读取 ``file_path`` shader 文件，并解析其中的 “预编译宏”
+
+    -   对于 ``#include "xxx"`` ，会读取对应的文件
+
+        若某个文件存在重复包含的情况，则仅第一次有效，后续会直接忽略
+
+    -   对于 ``#[xxx]`` ，会根据 :class:`ShaderInjection` 替换为对应的目标字符串
+    """
     found_path = find_shader_file(file_path)
-    max_version = _read_shader(found_path, lines)
-    lines.append('//')  # 避免可能出现在结尾的 #line 没有后续代码导致在部分平台上报错
-    return (
-        f'#version {max_version} core\n'  #
-        + '\n'.join(lines)
-    )
+    info = _ResolveInfo()
+    _resolve_shader_from_file(found_path, info)
+    return info.assemble()
 
 
-def read_shader_or_none(file_path: str) -> str | None:
+def resolve_shader_from_file_or_none(file_path: str) -> str | None:
+    """
+    和 :py:func:`resolve_shader_from_file` 一样，区别在于在找不到文件时返回 ``None``
+    """
     try:
         found_path = find_shader_file(file_path)
     except FileNotFoundError:
         return None
-    lines = []
-    max_version = _read_shader(found_path, lines)
-    lines.append('//')  # 避免可能出现在结尾的 #line 没有后续代码导致在部分平台上报错
-    return (
-        f'#version {max_version} core\n'  #
-        + '\n'.join(lines)
-    )
+    info = _ResolveInfo()
+    _resolve_shader_from_file(found_path, info)
+    return info.assemble()
 
 
-def find_shader_file(file_path: str, dir_path: str | None = None) -> str:
-    # 优先在 dir_path 中查找
-    if dir_path is not None:
-        found_path = find_file_in_path(dir_path, file_path)
-        if found_path is not None:
-            return found_path
+def resolve_shader_from_source(
+    name: str,
+    source: str,
+    dir_path: str | None = None,
+) -> str:
+    """
+    处理 ``source`` 代码，解析其中的 “预编译宏”
 
-    # 其次在 janim 目录中查找
-    found_path = find_file_in_path(get_janim_dir(), file_path)
-    if found_path is not None:
-        return found_path
+    -   对于 ``#include "xxx"`` ，会读取对应的文件
 
-    # 最后用 find_file 查找
-    return find_file(file_path)
+        若某个文件存在重复包含的情况，则仅第一次有效，后续会直接忽略
+
+        ``dir_path`` 决定了其搜索基于的路径
+
+    -   对于 ``#[xxx]`` ，会根据 :class:`ShaderInjection` 替换为对应的目标字符串
+    """
+    info = _ResolveInfo()
+    _resolve_shader_from_source(name, source, info, dir_path)
+    return info.assemble()
+
+
+class _ResolveInfo:
+    def __init__(self):
+        self.lines: list[str] = []
+        self.max_version: int = 330
+
+        self.resolved_files: set[Path] = set()
+
+    def assemble(self) -> str:
+        lines = [
+            f'#version {self.max_version} core',
+            *self.lines,
+            '//',  # 避免可能出现在结尾的 #line 没有后续代码导致在部分平台上报错
+        ]
+        return '\n'.join(lines)
+
+
+_regex_version = re.compile(r'^\s*#\s*version\s+(\d+)\s+core\s*$')
+_regex_include = re.compile(r'^\s*#\s*include\s+"([^"]+)"\s*$')
+_regex_injection = re.compile(r'^\s*#\[\s*([^\]]+)\s*\]\s*$')
+
+
+def _resolve_shader_from_file(file_path: str, info: _ResolveInfo) -> None:
+    path = Path(file_path).resolve()
+
+    # 尝试寻找合适的 rel_path 简化插入 glsl "#line" 对应的路径
+    rel_path = path
+    try:
+        rel_path = path.relative_to(get_janim_dir())
+    except ValueError:
+        try:
+            rel_path = path.relative_to(Path.cwd())
+        except ValueError:
+            pass
+    rel_path_str = repr(str(rel_path))
+
+    # 避免重复包含
+    if path in info.resolved_files:
+        return
+    info.resolved_files.add(path)
+    _resolve_shader_from_source(rel_path_str, readall(file_path), info, str(path.parent))
+
+
+def _resolve_shader_from_source(
+    name: str, source: str, info: _ResolveInfo, dir_path: str | None
+) -> None:
+    nameidx = name_to_idx(name)
+    info.lines.append(f'#line 1 {nameidx}')
+
+    for i, line in enumerate(source.splitlines(), start=1):
+        # 匹配例如 #version 330 core，提取最大需求版本
+        match = _regex_version.match(line)
+        if match:
+            info.max_version = max(info.max_version, int(match.group(1)))
+            info.lines.append('')
+            continue
+
+        # 匹配例如 #include "xxx"
+        match = _regex_include.match(line)
+        if match:
+            included_file = match.group(1)
+            # 递归读取包含的文件
+            found_file = find_shader_file(included_file, dir_path)
+            _resolve_shader_from_file(found_file, info)
+            # 返回原先的文件，需要恢复行号
+            info.lines.append(f'#line {i + 1} {nameidx}')
+            continue
+
+        # 匹配例如 #[xxx]
+        match = _regex_injection.match(line)
+        if match:
+            # 插入 injection
+            _resolve_shader_injection(match.group(1), info)
+            # 返回原先的文件，需要恢复行号
+            info.lines.append(f'#line {i + 1} {nameidx}')
+            continue
+
+        # 没有匹配到以上任意项，则保留该行原始内容
+        info.lines.append(line)
+
+
+# endregion
+
+# region name index conversion
 
 
 _shader_nameidx_mapping: dict[str, int] = {}
@@ -102,75 +198,30 @@ def convert_error_nameidx_to_name(error: mgl.Error) -> None:
     error.args = ('\n'.join(lines),)
 
 
-_regex_version = re.compile(r'^\s*#\s*version\s+(\d+)\s+core\s*$')
-_regex_include = re.compile(r'^\s*#\s*include\s+"([^"]+)"\s*$')
-_regex_injection = re.compile(r'^\s*#\[\s*([^\]]+)\s*\]\s*$')
+# endregion
+
+# region utils
 
 
-def _read_shader(file_path: str, lines: list[str]) -> int:
-    path = Path(file_path).resolve()
+def find_shader_file(file_path: str, dir_path: str | None = None) -> str:
+    # 优先在 dir_path 中查找
+    if dir_path is not None:
+        found_path = find_file_in_path(dir_path, file_path)
+        if found_path is not None:
+            return found_path
 
-    # 简化插入 glsl "#line" 对应的路径
-    rel_path = path
-    try:
-        rel_path = path.relative_to(get_janim_dir())
-    except ValueError:
-        try:
-            rel_path = path.relative_to(Path.cwd())
-        except ValueError:
-            pass
-    rel_path_str = repr(str(rel_path))
+    # 其次在 janim 目录中查找
+    found_path = find_file_in_path(get_janim_dir(), file_path)
+    if found_path is not None:
+        return found_path
 
-    return _preprocess_shader(rel_path_str, readall(file_path), lines, str(path.parent))
-
-
-def preprocess_shader(name: str, source: str, dir_path: str | None = None) -> str:
-    lines = []
-    max_version = _preprocess_shader(name, source, lines, dir_path)
-    return (
-        f'#version {max_version} core\n'  #
-        + '\n'.join(lines)
-    )
+    # 最后用 find_file 查找
+    return find_file(file_path)
 
 
-def _preprocess_shader(name: str, source: str, lines: list[str], dir_path: str | None) -> int:
-    max_version = 330
-    nameidx = name_to_idx(name)
-    lines.append(f'#line 1 {nameidx}')
+# endregion
 
-    for i, line in enumerate(source.splitlines(), start=1):
-        # 匹配例如 #version 330 core，提取最大需求版本
-        match = _regex_version.match(line)
-        if match:
-            max_version = max(max_version, int(match.group(1)))
-            lines.append('')
-            continue
-
-        # 匹配例如 #include "xxx"
-        match = _regex_include.match(line)
-        if match:
-            included_file = match.group(1)
-            found_file = find_shader_file(included_file, dir_path)
-            # 递归读取包含的文件
-            included_max_version = _read_shader(found_file, lines)
-            max_version = max(max_version, included_max_version)
-            # 返回原先的文件，所以需要恢复行号
-            lines.append(f'#line {i + 1} {nameidx}')
-            continue
-
-        # 匹配例如 #[xxx]
-        match = _regex_injection.match(line)
-        if match:
-            # 插入 injection
-            _read_shader_from_injection(match.group(1), lines)
-            # 返回原先的文件，所以需要恢复行号
-            lines.append(f'#line {i + 1} {nameidx}')
-            continue
-
-        lines.append(line)
-
-    return max_version
-
+# region shader injection
 
 # PMA，即预乘透明度混合方案
 _injection_ja_finish_up = '    f_color.rgb *= f_color.a;'
@@ -210,7 +261,10 @@ class ShaderInjection:
         raise ShaderInjectionNotFoundError(_('ShaderInjection not found: {name}').format(name=name))
 
 
-def _read_shader_from_injection(name: str, lines: list[str]) -> None:
+def _resolve_shader_injection(name: str, info: _ResolveInfo) -> None:
     nameidx = name_to_idx(name)
-    lines.append(f'#line 1 {nameidx}')
-    lines.extend(ShaderInjection.find(name).splitlines())
+    info.lines.append(f'#line 1 {nameidx}')
+    info.lines.extend(ShaderInjection.find(name).splitlines())
+
+
+# endregion

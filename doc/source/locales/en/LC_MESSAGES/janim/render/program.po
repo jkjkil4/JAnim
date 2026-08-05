@@ -6,19 +6,18 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: JAnim\n"
+"Project-Id-Version:  JAnim\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-20 08:21+0800\n"
+"POT-Creation-Date: 1980-01-01 00:00+0000\n"
 "PO-Revision-Date: 2025-11-21 17:35+0800\n"
 "Last-Translator: \n"
-"Language-Team: en <LL@li.org>\n"
 "Language: en\n"
+"Language-Team: en <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "Generated-By: Babel 2.17.0\n"
-"X-Generator: Poedit 3.8\n"
 
 #: ../../source/janim/render/program.rst:2
 msgid "program"
@@ -26,10 +25,10 @@ msgstr "program"
 
 #: janim.render.program.get_program_from_file_prefix:1 of
 msgid ""
-"给定相对于 janim 路径或用户路径的文件位置，自动遍历后缀并读取着色器代码， 例如传入 ``render/shaders/dotcloud`` 后，会自动"
-"读取以下位置的代码："
+"给定相对于 janim 路径或用户路径的文件前缀，自动遍历后缀并读取着色器代码， 例如传入 ``render/shaders/dotcloud`` 后，会自动"
+"读取以下代码："
 msgstr ""
-"Given a file path relative to the janim directory or the user directory, this function automatically iterates over the "
+"Given a file prefix relative to the janim directory or the user directory, this function automatically iterates over "
 "suffixes and reads the shader code. For example, passing ``render/shaders/dotcloud`` will automatically read the "
 "following files:"
 
