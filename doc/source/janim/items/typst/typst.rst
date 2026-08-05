@@ -3,7 +3,7 @@
 typst
 =====
 
-.. automodule:: janim.items.svg.typst
+.. automodule:: janim.items.typst.typst
    :members:
    :undoc-members:
    :show-inheritance:

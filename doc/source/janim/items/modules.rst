@@ -11,9 +11,9 @@ items
    geometry/modules.rst
    svg/modules.rst
    three_d/modules.rst
+   typst/modules.rst
    audio
    boolean_ops
-   frame_effect
    group
    image_item
    item

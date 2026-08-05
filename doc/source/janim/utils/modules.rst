@@ -22,4 +22,3 @@ utils
    signal
    simple_functions
    space_ops
-   typst_compile

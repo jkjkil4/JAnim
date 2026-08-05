@@ -92,11 +92,6 @@ class TimelineCore:
         该类中的方法都可以直接在 :class:`~.Timeline` 中使用
     """
 
-    # 只是为了让它们也出现在 Timeline 的类成员中
-    ScheduledTask = ScheduledTask
-    ExtraRenderGroup = ExtraRenderGroup
-    TimeOfCode = TimeOfCode
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -438,7 +433,7 @@ class ItemAppearance:
     - ``self.visiblility`` 是一个列表，存储物件显示/隐藏的时间点
         - 列表中偶数下标（0、2、...）的表示开始显示的时间点，奇数下标（1、3、...）的表示隐藏的时间点
         - 例如，如果列表中是 ``[3, 4, 8]``，则表示在第 3s 显示，第 4s 隐藏，并且在第 8s 后一直显示
-        - 这种记录方式是 :meth:`TimelineBase.is_visible`、:meth:`TimelineBase.show`、:meth:`TimelineBase.hide` 运作的基础
+        - 这种记录方式是 :meth:`TimelineCore.is_visible`、:meth:`TimelineCore.show`、:meth:`TimelineCore.hide` 运作的基础
 
     - ``self.renderer`` 表示所使用的渲染器对象
     """
