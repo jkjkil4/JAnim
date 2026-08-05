@@ -13,7 +13,6 @@ from janim.items.typst.typst import TypstMath
 from janim.items.text import Text
 from janim.typing import JAnimColor, RangeSpecifier, Vect
 from janim.utils.bezier import interpolate, outer_interpolate
-from janim.utils.deprecation import deprecated_classvar
 from janim.utils.dict_ops import merge_dicts_recursively
 from janim.utils.simple_functions import fdiv
 
@@ -86,25 +85,11 @@ class NumberLine(MarkedItem, Line):
     数字的默认属性
     """
 
-    tip_config_d = deprecated_classvar(
-        default_tip_config,
-        'NumberLine.tip_config_d',
-        'NumberLine.default_tip_config',
-        remove=(4, 3),
-    )
-    number_config_d = deprecated_classvar(
-        default_number_config,
-        'NumberLine.number_config_d',
-        'NumberLine.default_number_config',
-        remove=(4, 3),
-    )
-
     def __init__(
         self,
         x_range: RangeSpecifier = (-8, 8, 1),
         *,
         unit_size: int = 1,                                     # 数轴单位长度
-        width: float | None = None,
         length: float | None = None,                            # 数轴总长
         center: bool = True,                                    # 创建后是否使整体居中
         color: JAnimColor = GREY_B,
@@ -124,39 +109,8 @@ class NumberLine(MarkedItem, Line):
         line_to_number_buff: float = MED_SMALL_BUFF,            # 数字与刻度点的间距
         number_places: int | None = None,                       # 数字位数
         number_config: dict = {},                               # 数字属性
-        decimal_number_config: dict | None = None,
         **kwargs,
     ) -> None:  # fmt: skip
-        if width is not None:
-            from janim.utils.deprecation import deprecated
-
-            deprecated(
-                'width',
-                'length',
-                remove=(4, 3),
-            )
-            length = width
-
-        if decimal_number_config is not None:
-            from janim.utils.deprecation import deprecated
-
-            deprecated(
-                'decimal_number_config',
-                'number_config',
-                remove=(4, 3),
-            )
-            number_config = merge_dicts_recursively(decimal_number_config, number_config)
-
-        if 'num_decimal_places' in number_config:
-            from janim.utils.deprecation import deprecated
-
-            deprecated(
-                'number_config -> num_decimal_places',
-                'number_places',
-                remove=(4, 3),
-            )
-            number_places = number_config.pop('num_decimal_places')
-
         if len(x_range) == 2:
             x_range = [*x_range, 1]
         self.x_min, self.x_max, self.x_step = x_range

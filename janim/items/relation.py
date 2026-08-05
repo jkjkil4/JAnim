@@ -98,7 +98,6 @@ class Relation[GRelT: 'Relation'](refresh.Refreshable):
         self,
         *objs: GRelT,
         prepend=False,
-        insert=None,  # deprecated
     ) -> Self:
         """
         向该物件添加子物件
@@ -106,15 +105,6 @@ class Relation[GRelT: 'Relation'](refresh.Refreshable):
         :param objs: 要添加的子物件
         :param prepend: 默认为 ``False``，如果为 ``True``，那么插入到子物件列表的开头
         """
-        if insert is not None:
-            from janim.utils.deprecation import deprecated
-
-            deprecated(
-                'insert',
-                'prepend',
-                remove=(4, 3),
-            )
-
         for obj in reversed(objs) if prepend else objs:
             if obj in self._children:
                 continue

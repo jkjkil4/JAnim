@@ -17,7 +17,6 @@ from janim.items.points import MarkedItem, Points
 from janim.items.typst.typst import TypstMath
 from janim.items.vitem import DEFAULT_STROKE_RADIUS
 from janim.typing import JAnimColor, RangeSpecifier, Vect, VectArray
-from janim.utils.deprecation import deprecated_classvar
 from janim.utils.dict_ops import merge_dicts_recursively
 from janim.utils.space_ops import angle_of_vector, cross
 
@@ -189,25 +188,6 @@ class Axes(CoordinateSystem, MarkedItem, NamedGroupMixin, metaclass=_ItemMeta_AB
         line_to_number_direction=UP,
     )
 
-    axis_config_d = deprecated_classvar(
-        default_axis_config,
-        'Axes.axis_config_d',
-        'Axes.default_axis_config',
-        remove=(4, 3),
-    )
-    x_axis_config_d = deprecated_classvar(
-        default_x_axis_config,
-        'Axes.x_axis_config_d',
-        'Axes.default_x_axis_config',
-        remove=(4, 3),
-    )
-    y_axis_config_d = deprecated_classvar(
-        default_y_axis_config,
-        'Axes.y_axis_config_d',
-        'Axes.default_y_axis_config',
-        remove=(4, 3),
-    )
-
     def __init__(
         self,
         x_range: RangeSpecifier = DEFAULT_X_RANGE,
@@ -219,31 +199,9 @@ class Axes(CoordinateSystem, MarkedItem, NamedGroupMixin, metaclass=_ItemMeta_AB
         y_axis_config: dict = {},
         x_length: float | None = None,
         y_length: float | None = None,
-        height: float | None = None,
-        width: float | None = None,
         unit_size: float = 1.0,
         **kwargs,
     ):
-        if height is not None:
-            from janim.utils.deprecation import deprecated
-
-            deprecated(
-                'height',
-                'y_length',
-                remove=(4, 3),
-            )
-            y_length = height
-
-        if width is not None:
-            from janim.utils.deprecation import deprecated
-
-            deprecated(
-                'width',
-                'x_length',
-                remove=(4, 3),
-            )
-            x_length = width
-
         axis_config = dict(**axis_config, unit_size=unit_size)
 
         x_axis = CoordinateSystem.create_axis(
@@ -495,13 +453,6 @@ class ThreeDAxes(Axes):
 
     default_z_axis_config = {}
 
-    z_axis_config_d = deprecated_classvar(
-        default_z_axis_config,
-        'ThreeDAxes.z_axis_config_d',
-        'ThreeDAxes.default_z_axis_config',
-        remove=(4, 3),
-    )
-
     def __init__(
         self,
         x_range: RangeSpecifier = (-6, 6, 1),
@@ -657,25 +608,6 @@ class NumberPlane(Axes):
     default_y_axis_config = dict(
         line_to_number_direction=DL,
         numbers_to_exclude=[0],
-    )
-
-    background_line_style_d = deprecated_classvar(
-        default_background_line_style,
-        'NumberPlane.background_line_style_d',
-        'NumberPlane.default_background_line_style',
-        remove=(4, 3),
-    )
-    axis_config_d = deprecated_classvar(
-        default_axis_config,
-        'NumberPlane.axis_config_d',
-        'NumberPlane.default_axis_config',
-        remove=(4, 3),
-    )
-    y_axis_config_d = deprecated_classvar(
-        default_y_axis_config,
-        'NumberPlane.y_axis_config_d',
-        'NumberPlane.default_y_axis_config',
-        remove=(4, 3),
     )
 
     def __init__(
