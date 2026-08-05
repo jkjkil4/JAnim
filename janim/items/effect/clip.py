@@ -14,8 +14,8 @@ from janim.items.geometry.polygon import Rect
 from janim.items.item import Item
 from janim.items.shape_matchers import FrameRect
 from janim.render.base import Renderer
-from janim.render.renderer_frameeffect import FrameEffectRenderer
-from janim.render.renderer_vitem import VItemRenderer
+from janim.render.renderer.r_frameeffect import FrameEffectRenderer
+from janim.render.renderer.r_vitem import VItemRenderer
 from janim.typing import Vect
 from janim.utils.bezier import interpolate
 from janim.utils.config import Config

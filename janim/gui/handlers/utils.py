@@ -21,7 +21,7 @@ from PySide6.QtWidgets import (
 
 from janim.anims.timeline import Timeline
 from janim.exception import GuiCommandError
-from janim.gui.utils import apply_popup_flags
+from janim.gui.utils import apply_popup_flags, is_wayland
 from janim.items.item import Item
 from janim.locale import get_translator
 from janim.logger import log
@@ -164,6 +164,9 @@ class HandlerPanel(QWidget):
         self.save_options()
 
     def load_options(self) -> None:
+        if is_wayland():
+            log.warning(_('Panel position may not be restored correctly on Wayland'))
+
         settings = QSettings(
             os.path.join(Config.get.temp_dir, 'handler_panel.ini'), QSettings.Format.IniFormat
         )
@@ -277,11 +280,12 @@ class SourceDiff(QFrame):
     def set_replacement(self, replacement: str) -> None:
         raw_lines = replacement.split('\n')
         multi_line = len(raw_lines) >= 2
+        last_line_idx = len(raw_lines) - 1
 
         lines = [
             f'{self.match_left if i == 0 else self.left_spaces}'
             f'{line}'
-            f'{"" if multi_line and i == 0 else self.match_right}'
+            f'{"" if multi_line and i != last_line_idx else self.match_right}'
             for i, line in enumerate(raw_lines)
         ]
 

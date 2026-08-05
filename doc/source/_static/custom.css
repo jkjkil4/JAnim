@@ -46,3 +46,22 @@ div.toctree-wrapper.compound span.caption-text {
     border: 1px solid #a0b3bf;
     padding: 1rem;
 }
+
+details {
+    margin-bottom: 1em;
+}
+
+summary {
+    user-select: none;
+    position: relative;
+}
+
+summary::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 40%;
+  height: 1px;
+  background: linear-gradient(to right, var(--color-foreground-border), transparent);
+}

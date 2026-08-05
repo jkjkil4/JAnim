@@ -47,7 +47,7 @@ from janim.gui.handlers import handle_command
 from janim.gui.output import connect_to_output_slots, setup_output_actions
 from janim.gui.popup import setup_popup_actions
 from janim.gui.timeline_view import TimelineView
-from janim.gui.utils import ACTION_WIDGET_FLAG_KEY
+from janim.gui.utils import ACTION_WIDGET_FLAG_KEY, is_wayland
 from janim.gui.utils.audio_player import AudioPlayer
 from janim.gui.utils.fixed_ratio_widget import FixedRatioWidget
 from janim.gui.utils.precise_timer import PreciseTimerWithFPS
@@ -325,6 +325,9 @@ class AnimViewer(QMainWindow):
         self.setCentralWidget(self.vsplitter)
 
     def move_to_position(self) -> None:
+        if is_wayland():
+            log.warning(_('Window may not be positioned as expected on Wayland'))
+
         window_position = self.built.cfg.wnd_pos
         window_monitor = self.built.cfg.wnd_monitor
 

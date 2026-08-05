@@ -281,3 +281,20 @@ JAnim 还有一个重要的特性是“动画复合”，我们将在 :ref:`upda
     self.play(
         item.anim.points.shift(LEFT * 2).r.color.fade(0.5)
     )
+
+.. warning::
+
+    ``.r`` 一般用于 ``.anim`` 时便于链式回到物件级别，修改完一个组件的用于动画的属性后，修改另一个组件用于动画的属性
+
+    在这样的考虑下，不推荐在常规代码中滥用 ``.r`` ，例如：
+
+    .. code-block:: python
+    
+        circle = Circle().points.shift(RIGHT).r
+
+    建议改为
+
+    .. code-block:: python
+
+        circle = Circle()
+        circle.points.shift(RIGHT)

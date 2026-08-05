@@ -16,7 +16,7 @@ from janim.items.group import Group
 from janim.items.item import Item, mockable
 from janim.items.points import Points
 from janim.locale import get_translator
-from janim.render.renderer_vitem import VItemRenderer
+from janim.render.renderer.r_vitem import VItemRenderer
 from janim.typing import Alpha, AlphaArray, ColorArray, JAnimColor, Vect
 from janim.utils.bezier import bezier, inverse_interpolate, partial_quadratic_bezier_points
 from janim.utils.data import AlignedData

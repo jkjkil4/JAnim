@@ -1,1 +1,0 @@
-#include "vitem_curve.vert.glsl"

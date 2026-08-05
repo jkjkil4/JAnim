@@ -61,7 +61,7 @@ class DrawRect(DrawOnce):
             text = f'Rect({self._args_of_indices([2, 0])})'
         else:
             text = f'Polygon({self._args_of_indices([0, 1, 2, 3])})'
-        self.setLayout(self.mainlayout)
+        self.set_layout(self.mainlayout)
         self.code.setPlainText(text)
         self.code_changed.emit(text)
 

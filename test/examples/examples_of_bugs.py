@@ -1,4 +1,5 @@
 # flake8: noqa
+# fmt: off
 import random
 
 from janim.imports import *
@@ -42,3 +43,34 @@ class TestIndicateSubitem(Timeline):
             text.anim.points.shift(RIGHT * 2),
             CircleIndicate(text[0][2:5])
         )
+
+
+class TestNamedGroup(Timeline):
+    def construct(self) -> None:
+        number_plane = NumberPlane((-2, 2), (-2, 2))
+        group = NamedGroup(plane=number_plane).copy().show()
+        group.points.rotate(1)
+
+        self.forward(0.5)
+        self.play(
+            group['plane'].background_lines(VItem).anim.stroke.set(color=RED)
+        )
+        self.forward(0.5)
+        self.hide_all()
+
+        number_plane_src = NumberPlane((-2, 2), (-2, 2))
+
+        group_src = NamedGroup(plane=number_plane_src)
+
+        group_1 = group_src.copy()
+        group_2 = group_src.copy()
+
+        group_1.save_state('initial')
+        group_2.save_state('initial')
+
+        group_1.load_state('initial')
+        group_2.load_state('initial')
+        
+        # should not raise Exception
+        group_1['plane'].get_origin()
+        group_2['plane'].get_origin()

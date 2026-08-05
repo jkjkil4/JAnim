@@ -167,7 +167,7 @@ msgstr "Get the right brace element"
 msgid "便于创建参数变化的 Typst 物件的封装"
 msgstr "A wrapper to conveniently create Typst items with parameter variations"
 
-#: janim.items.svg.typst_types.DynamicTypst.anim_update of
+#: janim.items.svg.typst_types.DynamicTypst.become_update of
 msgid "参数"
 msgstr "Parameters"
 
@@ -337,3 +337,7 @@ msgid "设置这个参数的动机是， :class:`~.GroupUpdater` 的性质更好
 msgstr ""
 "The motivation for this parameter is that :class:`~.GroupUpdater` behaves better, but it requires that the item structure "
 "does not change"
+
+#: janim.items.svg.typst_types.DynamicTypst.become_update:1 of
+msgid "直接 :meth:`~.Item.become` 为参数改变后的结果"
+msgstr "Directly :meth:`~.Item.become` to the result after the parameters are changed"

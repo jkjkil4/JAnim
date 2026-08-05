@@ -12,7 +12,7 @@ from janim.items.points import Points
 from janim.items.typst.typst import TypstText
 from janim.items.text import Text
 from janim.items.vitem import DEFAULT_STROKE_RADIUS, VItem
-from janim.render.renderer_arrow import ArrowRenderer
+from janim.render.renderer.r_arrow import ArrowRenderer
 from janim.typing import Vect
 from janim.utils.simple_functions import clip
 from janim.utils.space_ops import (

@@ -32,3 +32,24 @@ details summary p {
 .sidebar-tree {
     margin-bottom: 140px;
 }
+
+.sphinx-tabs-panel > :first-child {
+    margin-top: 0px;
+}
+
+.sphinx-tabs-panel > :last-child {
+    margin-bottom: 0px;
+}
+
+.detail-box > :first-child {
+    margin-top: 0px;
+}
+
+.detail-box > :last-child {
+    margin-bottom: 0px;
+}
+
+.hide-tabs-border > .sphinx-tabs > .sphinx-tabs-panel {
+    border: none;
+    background: none;
+}

@@ -135,9 +135,7 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
     ):
         super().__init__(*args)
 
-        self._stored: bool = False
-        self._stored_parents: list[Item] | None = None
-        self._stored_children: list[Item] | None = None
+        self._stored: Item.Stored | None = None
 
         from janim.anims.timeline import Timeline
 
@@ -627,11 +625,11 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
 
     # region data
 
-    def get_parents(self):
-        return self._stored_parents if self._stored else self._parents
+    def get_parents(self) -> list[Item]:
+        return self._stored.parents if self._stored else self._parents
 
-    def get_children(self):
-        return self._stored_children if self._stored else self._children
+    def get_children(self) -> list[Item]:
+        return self._stored.children if self._stored else self._children
 
     def not_changed(self, other: Self) -> bool:
         if self.get_children() != other.get_children():
@@ -738,6 +736,15 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
             else:
                 self.add(old.become(new, auto_visible=auto_visible))
 
+    class Stored:
+        """
+        用于记录数据物件对应的原始物件的 ``parents`` 和 ``children`` 等情况
+        """
+
+        def __init__(self, item: Item):
+            self.parents = item.get_parents().copy()
+            self.children = item.get_children().copy()
+
     def store(self, *, _cmpts: dict[str, Component] | None = None):
         copy_item = copy.copy(self)
         copy_item.reset_refresh()
@@ -747,9 +754,7 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         copy_item._children = []
         copy_item.reset_additional_states()
 
-        copy_item._stored = True
-        copy_item._stored_parents = self.get_parents().copy()
-        copy_item._stored_children = self.get_children().copy()
+        copy_item._stored = self.Stored(self)
 
         # align_for_interpolate 中会传入 _cmpts 以使用 align 的 cmpts，而不直接从原物件复制
         if _cmpts is None:
@@ -765,8 +770,7 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
 
     def restore(self, other: Item) -> Self:
         if self._stored:
-            self._stored_parents = other.get_parents().copy()
-            self._stored_children = other.get_children().copy()
+            self._stored = self.Stored(other)
 
         for key in self.components.keys() & other.components.keys():
             self.components[key].become(other.components[key])
@@ -787,9 +791,9 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         return self
 
     def _unstore(self, child_restorer: Callable[[Item], Item]) -> None:
-        assert not self._children and self._stored_children is not None
-        self._stored = False
-        self.add(*[child_restorer(sub) for sub in self._stored_children])
+        assert not self._children and self._stored is not None
+        self.add(*[child_restorer(sub) for sub in self._stored.children])
+        self._stored = None
         self.reset_refresh()
 
     @classmethod
@@ -826,8 +830,8 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
 
         # align children
         max_len = max(len(item1.get_children()), len(item2.get_children()))
-        aligned.data1._stored_children = resize_preserving_order(item1.get_children(), max_len)
-        aligned.data2._stored_children = resize_preserving_order(item2.get_children(), max_len)
+        aligned.data1._stored.children = resize_preserving_order(item1.get_children(), max_len)
+        aligned.data2._stored.children = resize_preserving_order(item2.get_children(), max_len)
 
         return aligned
 

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-27 11:06+0800\n"
+"POT-Creation-Date: 2026-07-16 21:48+0800\n"
 "PO-Revision-Date: 2025-12-24 15:59+0800\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -17,11 +17,11 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Poedit 3.8\n"
 
-#: janim/cli/execute.py:96 janim/cli/execute.py:255
+#: janim/cli/execute.py:96 janim/cli/execute.py:256
 msgid "Constructing window"
 msgstr "构建窗口中"
 
-#: janim/cli/execute.py:118 janim/cli/execute.py:276
+#: janim/cli/execute.py:118 janim/cli/execute.py:277
 #, python-brace-format
 msgid "Finished constructing in {time:.2f} s"
 msgstr "构建完成，耗时 {time:.2f} s"
@@ -31,19 +31,19 @@ msgstr "构建完成，耗时 {time:.2f} s"
 msgid "Skipping \"{name}\": no part to output"
 msgstr "跳过 \"{name}\": 没有需要输出的部分"
 
-#: janim/cli/execute.py:242
+#: janim/cli/execute.py:243
 #, python-brace-format
 msgid "Generated SRT file \"{file_path}\""
 msgstr "已生成 SRT 文件 \"{file_path}\""
 
-#: janim/cli/execute.py:249
+#: janim/cli/execute.py:250
 msgid "No tool specified for use"
 msgstr "未指定所使用的工具"
 
-#: janim/cli/execute.py:286
+#: janim/cli/execute.py:287
 msgid "No available plugins for JAnim"
 msgstr "没有可用的 JAnim 插件"
 
-#: janim/cli/execute.py:288
+#: janim/cli/execute.py:289
 msgid "Available plugins for JAnim:"
 msgstr "可用的 JAnim 插件:"
