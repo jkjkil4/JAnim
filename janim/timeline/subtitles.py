@@ -7,8 +7,8 @@ from janim.anims_core.time import TimeRange
 from janim.constants import BLACK, DOWN, SMALL_BUFF, UP
 from janim.items.group import Group
 from janim.items.shape_matchers import SurroundingRect
-from janim.items.svg.typst import TypstText
 from janim.items.text import Text
+from janim.items.typst import TypstText
 from janim.timeline.core import TimelineCore
 from janim.typing import JAnimColor
 from janim.utils.config import Config
