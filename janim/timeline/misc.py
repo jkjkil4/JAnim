@@ -54,7 +54,8 @@ class AudiosAndSubtitlesMixin(AudiosMixin, SubtitlesMixin):
 
         :param subtitle: 在音频播放期间显示的字幕
 
-        :param clip: 音频的裁剪区间
+        :param clip:
+            音频的裁剪区间
 
             默认为 ``clip=...`` （省略号）表示自动确定裁剪区间，将前后的空白去除
 

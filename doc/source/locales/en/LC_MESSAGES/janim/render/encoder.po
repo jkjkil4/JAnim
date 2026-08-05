@@ -50,4 +50,3 @@ msgstr "Return the first available VA-API render node, or ``None`` if unavailabl
 #: janim.render.encoder.PyavAudioEncoder:1 of
 msgid "使用 PyAV 编码音频"
 msgstr "Encode audio using PyAV"
-

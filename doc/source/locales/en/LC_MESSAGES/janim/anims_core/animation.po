@@ -1,0 +1,248 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2023, jkjkil4
+# This file is distributed under the same license as the JAnim package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: JAnim \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 1980-01-01 00:00+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: en\n"
+"Language-Team: en <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.17.0\n"
+
+#: ../../source/janim/anims_core/animation.rst:2
+msgid "animation"
+msgstr "animation"
+
+#: janim.anims_core.animation.Animation:1 of
+msgid "动画基类"
+msgstr "Base class of animations"
+
+#: janim.anims_core.animation.Animation:3 of
+msgid "定义了从 ``at`` 持续至 ``at + duration`` 的动画"
+msgstr "Defines an animation that lasts from ``at`` to ``at + duration``"
+
+#: ../../source/janim/anims_core/animation.rst
+msgid "参数"
+msgstr "Parameters"
+
+#: janim.anims_core.animation.Animation:5 of
+msgid "动画的开始时间"
+msgstr "The start time of the animation"
+
+#: janim.anims_core.animation.Animation:6 of
+msgid "动画的持续时间；可以是 ``FOREVER``，比如创建持续生效的 Updater"
+msgstr "The duration of the animation; can be ``FOREVER``, for example, to create a continuously active Updater"
+
+#: janim.anims_core.animation.Animation:7 of
+msgid "设定插值函数，默认为 :meth:`~.rate_funcs.smooth`"
+msgstr "Sets the interpolation function, defaulting to :meth:`~.rate_funcs.smooth`"
+
+#: janim.anims_core.animation.Animation:8 of
+msgid "更改在预览界面中时间轴标签上显示的名字，与画面渲染无关；若不设置则默认为类名"
+msgstr ""
+"Changes the name displayed on the timeline label in the preview interface. It does not affect rendering; if not set, it "
+"defaults to the class name"
+
+#: janim.anims_core.animation.Animation:12 of
+msgid "动画对象不能复用，例如这样会导致意外行为："
+msgstr "Animation objects cannot be reused, for example, this will cause unexpected behavior:"
+
+#: janim.anims_core.animation.Animation:14 of
+msgid ""
+"anim1 = Transform(a, b)\n"
+"anim2 = Transform(b, a)\n"
+"self.play(anim1)\n"
+"self.play(anim2)\n"
+"self.play(anim1)"
+msgstr ""
+"anim1 = Transform(a, b)\n"
+"anim2 = Transform(b, a)\n"
+"self.play(anim1)\n"
+"self.play(anim2)\n"
+"self.play(anim1)"
+
+#: janim.anims_core.animation.Animation:22 of
+msgid "正确写法："
+msgstr "Correct way:"
+
+#: janim.anims_core.animation.Animation:24 of
+msgid ""
+"self.play(Transform(a, b))\n"
+"self.play(Transform(b, a))\n"
+"self.play(Transform(a, b))"
+msgstr ""
+"self.play(Transform(a, b))\n"
+"self.play(Transform(b, a))\n"
+"self.play(Transform(a, b))"
+
+#: janim.anims_core.animation.Animation:30 of
+msgid "JAnim 中动画区段的逻辑："
+msgstr "The logic of animation intervals in JAnim:"
+
+#: janim.anims_core.animation.Animation:32 of
+msgid "刚创建出来的普通 :class:`Animation` 对象的 ``t_range``，会随着与 :class:`~.AnimGroup` 等动画组的嵌套而被调整"
+msgstr ""
+"The ``t_range`` of a newly created regular :class:`Animation` object will be adjusted as it is nested within animation "
+"groups such as :class:`~.AnimGroup`"
+
+#: janim.anims_core.animation.Animation:34 of
+msgid ""
+"当最外层调用 :meth:`finalize` ，表示确定动画区段（会由 :meth:`~.Timeline.play` 或 :meth:`~.Timeline.prepare` 自动调用）， "
+"则我们就认为动画区段得到确定，会进行浮点数对齐等操作，在这之后，就不应对 ``t_range`` 进行修改了"
+msgstr ""
+"When the outermost layer calls :meth:`finalize`, it indicates that the animation interval has been finalized (this is "
+"automatically called by :meth:`~.Timeline.play` or :meth:`~.Timeline.prepare`). At this point, the animation interval is "
+"considered fixed, and operations such as floating-point alignment are performed. After this, ``t_range`` should no longer "
+"be modified"
+
+#: janim.anims_core.animation.Animation.shift_range:1 of
+msgid "以 ``delta`` 的变化量移动时间区段"
+msgstr "Shift the time-range by ``delta``"
+
+#: janim.anims_core.animation.Animation.scale_range:1 of
+msgid "以 ``k`` 的倍率缩放时间区段（相对于 ``t=0`` 进行缩放）"
+msgstr "Scale the time-range by factor ``k`` (scaled relative to ``t=0``)"
+
+#: ../../docstring janim.anims_core.animation.Animation.force_order_ctx:1 of
+msgid "用于强制指定所标记的动画顺序"
+msgstr "Used to forcibly specify the order of the marked animation"
+
+#: ../../docstring janim.anims_core.animation.Animation.force_order_ctx:3 of
+msgid ""
+"with ContextSetter(Animation.force_order_ctx, xxxanim._order):\n"
+"    ..."
+msgstr ""
+"with ContextSetter(Animation.force_order_ctx, xxxanim._order):\n"
+"    ..."
+
+#: ../../docstring janim.anims_core.animation.Animation.force_order_ctx:8 of
+msgid ""
+"用于在延迟执行中，基于较早时刻的某个顺序来标记，从而使得 :class:`~.StackableAnimation` 动画能插入到动画堆栈中的合适位置"
+msgstr ""
+"Used to mark animations during delayed execution based on an order from an earlier time, "
+"allowing :class:`~.StackableAnimation` animations to be inserted into the appropriate position in the animation stack"
+
+#: janim.anims_core.animation.Animation.finalize:1 of
+msgid "让动画的区段确定下来，这会触发对时间区段的浮点数对齐（ 请参考 :class:`TimeAligner` ）以及一些其它标记"
+msgstr ""
+"Finalizes the animation interval. This triggers floating-point alignment of the time interval (see :class:`TimeAligner`) "
+"and some other marking operations"
+
+#: janim.anims_core.animation.Animation.transfer_params:1 of
+msgid "将 ``other`` 中的动画参数，包括 ``t_range`` 和 ``rate_func(s)``， 同步到该动画对象上"
+msgstr ""
+"Synchronizes animation parameters from ``other``, including ``t_range`` and ``rate_func(s)``, to this animation object"
+
+#~ msgid ""
+#~ "``duration`` 可以是 ``FOREVER`` （一般用于 :class:`~.Display`， 以及特殊情况下的 :class:`DataUpdater` 等， 但"
+#~ "是 :class:`~.AnimGroup` 及其衍生类不能传入 ``FOREVER``）"
+#~ msgstr ""
+#~ "``duration`` can be ``FOREVER`` (generally used for :class:`~.Display`, and in special cases for :class:`DataUpdater`, "
+#~ "etc., but :class:`~.AnimGroup` and its derived classes cannot accept ``FOREVER``)"
+
+#~ msgid "设置 ``name`` 可以将文字显示在预览界面的时间轴标签上，不影响渲染（如果不设置则默认为类名）"
+#~ msgstr ""
+#~ "Setting ``name`` displays text on the timeline label in the preview interface, does not affect rendering (if not set, "
+#~ "defaults to class name)"
+
+#~ msgid ""
+#~ "class Test(Timeline):\n"
+#~ "    def construct(self):\n"
+#~ "        a = Square()\n"
+#~ "        b = Circle()\n"
+#~ "        self.play(Transform(a, b))\n"
+#~ "        self.play(Transform(b, a))\n"
+#~ "        self.play(Transform(a, b))"
+#~ msgstr ""
+#~ "class Test(Timeline):\n"
+#~ "    def construct(self):\n"
+#~ "        a = Square()\n"
+#~ "        b = Circle()\n"
+#~ "        self.play(Transform(a, b))\n"
+#~ "        self.play(Transform(b, a))\n"
+#~ "        self.play(Transform(a, b))"
+
+#~ msgid "将 ``global_t`` 时的动画效果作用到 ``data`` 上"
+#~ msgstr "Apply the animation effect at ``global_t`` to ``data``"
+
+#~ msgid "其中"
+#~ msgstr "Where"
+
+#~ msgid "对于 :class:`~.Display` 而言，``data`` 是 ``None``，返回值是 :class:`~.Item` 对象"
+#~ msgstr "For :class:`~.Display`, ``data`` is ``None``, and the return value is a :class:`~.Item` object"
+
+#~ msgid "而对于其它大多数的而言，``data`` 是前一个动画作用的结果，返回值是 ``None``"
+#~ msgstr "For most others, ``data`` is the result of the previous animation, and the return value is ``None``"
+
+#~ msgid "标识了从 ``at`` 开始，到 ``end`` 结束的时间区段"
+#~ msgstr "Identifies the time period starting at ``at`` and lasting for ``duration``."
+
+#~ msgid "``end`` 也可以是 ``FOREVER``"
+#~ msgstr "``end`` can also be ``FOREVER``"
+
+#~ msgid "时间区段的开始时刻"
+#~ msgstr "Start time of the time-range"
+
+#~ msgid "时间区段的结束时刻"
+#~ msgstr "End time of the time-range"
+
+#~ msgid "时间区段的时长，即 ``end - at``，如果 ``end=FOREVER`` 则抛出 ``AssertionError``"
+#~ msgstr "Duration of the time-range, i.e., ``end - at``. If ``end=FOREVER``, raises ``AssertionError``"
+
+#~ msgid "另见 :meth:`num_duration`"
+#~ msgstr "See also :meth:`num_duration`"
+
+#~ msgid "当 ``end`` 不是 ``FOREVER`` 时，与 :meth:`duration` 一致"
+#~ msgstr "When ``end`` is not ``FOREVER``, same as :meth:`duration`"
+
+#~ msgid "当 ``end`` 是 ``FOREVER`` 时，此时返回 ``0``"
+#~ msgstr "When ``end`` is ``FOREVER``, returns ``0``"
+
+#~ msgid "（这用于 :class:`~.AnimGroup` 对 ``end=FOREVER`` 的子动画的处理，也就是把这种子动画当成 ``end=at`` 来计算时间）"
+#~ msgstr ""
+#~ "(This is used for :class:`~.AnimGroup` to handle child animations with ``end=FOREVER``, i.e., treating such child "
+#~ "animations as ``end=at`` for time calculation)"
+
+#~ msgid "当 ``end`` 不是 ``FOREVER`` 时，此时返回 ``end``"
+#~ msgstr "When ``end`` is not ``FOREVER``, returns ``end``"
+
+#~ msgid "当 ``end`` 是 ``FOREVER`` 时，此时返回 ``at``"
+#~ msgstr "When ``end`` is ``FOREVER``, returns ``at``"
+
+#~ msgid "设置该时间区段的范围"
+#~ msgstr "Set the range of this time-range"
+
+#~ msgid "由于浮点数精度的问题，有可能出现比如原本设计上首尾相连的两个动画，却出现判定的错位"
+#~ msgstr ""
+#~ "Due to floating-point precision issues, it is possible that two animations designed to be connected end-to-end may "
+#~ "have misaligned judgments"
+
+#~ msgid "该类用于将相近的浮点数归化到同一个值，使得 :class:`TimeRange` 区间严丝合缝"
+#~ msgstr ""
+#~ "This class is used to normalize similar floating-point numbers to the same value, ensuring that :class:`TimeRange` "
+#~ "intervals fit perfectly"
+
+#~ msgid "归化 ``anim`` 的时间区段， 即分别对 ``.t_range.at`` 和 ``.t_range.end`` 进行 :meth:`align_t` 的操作"
+#~ msgstr ""
+#~ "Normalize the time-range of ``anim``, i.e., perform :meth:`align_t` operations on ``.t_range.at`` and ``.t_range.end`` "
+#~ "respectively"
+
+#~ msgid "对齐时间 ``t``，确保相近的时间点归化到相同的值，返回归化后的时间值"
+#~ msgstr ""
+#~ "Align time ``t``, ensuring that similar time points are normalized to the same value, returns the normalized time value"
+
+#~ msgid "与 :meth:`align_t` 类似，但区别在于"
+#~ msgstr "Similar to :meth:`align_t`, but differs in that"
+
+#~ msgid "该方法在查找后不记录 ``t`` 的值"
+#~ msgstr "This method does not record the value of ``t`` after searching"

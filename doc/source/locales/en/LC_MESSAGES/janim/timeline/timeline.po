@@ -1,0 +1,320 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2023, jkjkil4
+# This file is distributed under the same license as the JAnim package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: JAnim \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 1980-01-01 00:00+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: en\n"
+"Language-Team: en <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.17.0\n"
+
+#: ../../source/janim/timeline/timeline.rst:2
+msgid "timeline"
+msgstr "timeline"
+
+#: janim.timeline.timeline.Timeline:1 of
+msgid "继承该类并实现 :meth:`construct` 方法，以实现动画的构建逻辑"
+msgstr "Inherit this class and implement the :meth:`construct` method to implement the logic of building animations"
+
+#: janim.timeline.timeline.Timeline:3 of
+msgid "调用 :meth:`build` 可以得到构建完成的 :class:`Timeline` 对象"
+msgstr "Call :meth:`build` to get the constructed :class:`Timeline` object"
+
+#: janim.timeline.timeline.Timeline:7 of
+msgid "该类由若干基类实现功能，你可按照以下的分类跳转以参考对应的文档："
+msgstr ""
+"This class implements its functionality through several base classes. You can refer to the following categories to find "
+"the corresponding documentation:"
+
+#: janim.timeline.timeline.Timeline:9 of
+msgid "核心功能： :class:`~.TimelineCore`"
+msgstr "Core functionality: :class:`~.TimelineCore`"
+
+#: janim.timeline.timeline.Timeline:11 of
+msgid "“暂停点”功能： :class:`~.PausePointsMixin`"
+msgstr "\"Pause points\" functionality: :class:`~.PausePointsMixin`"
+
+#: janim.timeline.timeline.Timeline:13 of
+msgid "对于音频与字幕，可参考："
+msgstr "For audio and subtitles, refer to:"
+
+#: janim.timeline.timeline.Timeline:15 of
+msgid "音频功能： :class:`~.AudiosMixin`"
+msgstr "Audio functionality: :class:`~.AudiosMixin`"
+
+#: janim.timeline.timeline.Timeline:17 of
+msgid "字幕功能： :class:`~.SubtitlesMixin`"
+msgstr "Subtitle functionality: :class:`~.SubtitlesMixin`"
+
+#: janim.timeline.timeline.Timeline:19 of
+msgid "对二者的结合： :class:`~.AudiosAndSubtitlesMixin`"
+msgstr "Combination of both: :class:`~.AudiosAndSubtitlesMixin`"
+
+#: janim.timeline.timeline.Timeline:21 of
+msgid "特殊的调试功能（但不太完善，慎用）： :class:`~.DebugMixin`"
+msgstr "Special debugging functionality (not fully polished, use with caution): :class:`~.DebugMixin`"
+
+#: janim.timeline.timeline.Timeline.construct:1 of
+msgid "继承该方法以实现动画的构建逻辑"
+msgstr "Implement this method to build the animation logic"
+
+#: janim.timeline.timeline.Timeline.build:1 of
+msgid "构建动画并返回"
+msgstr "Build the animation and return it"
+
+#: ../../docstring janim.timeline.timeline.Timeline.CONFIG:1 of
+msgid "在子类中定义该变量可以起到设置配置的作用，例如："
+msgstr "Defining this variable in a subclass can serve to set configuration, for example:"
+
+#: ../../docstring janim.timeline.timeline.Timeline.CONFIG:3 of
+msgid ""
+"class Example(Timeline):\n"
+"    CONFIG = Config(\n"
+"        font=['Consolas', 'LXGW WenKai Lite']\n"
+"    )\n"
+"\n"
+"    def construct(self) -> None:\n"
+"        ..."
+msgstr ""
+"class Example(Timeline):\n"
+"    CONFIG = Config(\n"
+"        font=['Consolas', 'LXGW WenKai Lite']\n"
+"    )\n"
+"\n"
+"    def construct(self) -> None:\n"
+"        ..."
+
+#: ../../docstring janim.timeline.timeline.Timeline.CONFIG:13 of
+msgid "关于可使用的配置，另见 :class:`~.Config`"
+msgstr "For available configurations, see also :class:`~.Config`"
+
+#: janim.timeline.timeline.Timeline.config_context:1 of
+msgid ""
+"在 :meth:`build` 方法中会发生第一次 ``with`` 调用， 将当前的 ``config_ctx_var`` 上下文，与自己及各个父类"
+"的 :py:obj:`CONFIG` ， 合并为该 Timeline 对象的 ``self._config_context``"
+msgstr ""
+"The first ``with`` call occurs in the :meth:`build` method, where the current ``config_ctx_var`` context is merged with "
+"the :py:obj:`CONFIG` of itself and each of its parent classes to form this Timeline object's ``self._config_context``"
+
+#: janim.timeline.timeline.Timeline.config_context:5 of
+msgid "如果是之后的 ``with`` 调用，则会让内部代码块恢复 ``self._config_context`` 的状态， 用于保证在相关上下文中的一致性"
+msgstr ""
+"For subsequent ``with`` calls, the inner code block will restore the state of ``self._config_context`` to ensure "
+"consistency within the relevant context"
+
+#: janim.timeline.timeline.Timeline.get_context:1 of
+msgid "调用该方法可以得到当前正在构建的 :class:`Timeline` 对象"
+msgstr "Call this method to get the current :class:`Timeline` object being constructing"
+
+#: janim.timeline.timeline.Timeline.get_context:3 of
+msgid ""
+"默认情况下，在 :meth:`construct` 方法外调用时，会抛出 :class:`~.TimelineLookupError` 错误； 可以使用 ``raise_exc=False`` "
+"禁用，在同样的情况下会返回 ``None`` 而非抛出错误"
+msgstr ""
+"By default, calling this method outside the :meth:`construct` method will raise a :class:`~.TimelineLookupError` error. "
+"This can be disabled by setting ``raise_exc=False``; in the same situation, it will return ``None`` instead of raising an "
+"error"
+
+#: ../../source/janim/timeline/timeline.rst
+msgid "参数"
+msgstr "Parameters"
+
+#: janim.timeline.timeline.Timeline.get_context:6 of
+msgid "在不可用时，是否抛出错误"
+msgstr "Whether to raise an error when unavailable"
+
+#: janim.timeline.timeline.BuiltTimeline:1 of
+msgid "运行 :meth:`Timeline.build` 后返回的实例"
+msgstr "Instance returned after running :meth:`Timeline.build`"
+
+#: janim.timeline.timeline.BuiltTimeline.cfg:1 of
+msgid "可以使用该属性获取 Timeline 构建时的上下文中的配置"
+msgstr "This property can be used to obtain the configuration from the context in which the Timeline was built"
+
+#: janim.timeline.timeline.BuiltTimeline.cfg:3 of
+msgid "可用于在简单场景中避免使用 :meth:`config_context` ，例如："
+msgstr "It can be used to avoid using :meth:`config_context` in simple scenarios, for example:"
+
+#: janim.timeline.timeline.BuiltTimeline.cfg:5 of
+msgid "built.cfg.preview_fps"
+msgstr "built.cfg.preview_fps"
+
+#: janim.timeline.timeline.BuiltTimeline.get_audio_samples_of_frame:1 of
+msgid "提取特定帧的音频流"
+msgstr "Extract the audio stream of a specific frame"
+
+#: janim.timeline.timeline.BuiltTimeline.current_camera_info:1 of
+msgid "得到当前的 :class:`~.CameraInfo` 信息"
+msgstr "Get the current :class:`~.CameraInfo` information"
+
+#: janim.timeline.timeline.BuiltTimeline.current_camera_info:3 of
+msgid "这里“当前”的含义是，上次调用 :meth:`render_all` 的 ``global_t`` 时刻；或者也可以传入 ``as_time`` 指定"
+msgstr ""
+"Here, \"current\" means the ``global_t`` moment from the last call to :meth:`render_all`; you can also specify it by "
+"passing ``as_time``"
+
+#: janim.timeline.timeline.BuiltTimeline.render_all:1 of
+msgid "渲染所有可见物件"
+msgstr "Render all visible items"
+
+#: janim.timeline.timeline.BuiltTimeline.to_item:1 janim.timeline.timeline.BuiltTimeline.to_playback_control_item:1 of
+msgid "使用该方法可以在一个 Timeline 中插入另一个 Timeline"
+msgstr "Use this method to insert another Timeline into a Timeline"
+
+#: janim.timeline.timeline.BuiltTimeline.to_item:3 of
+msgid "例如："
+msgstr "For example:"
+
+#: janim.timeline.timeline.BuiltTimeline.to_item:5 of
+msgid ""
+"class Sub1(Timeline):\n"
+"    def construct(self):\n"
+"        text = Text('text from Sub1')\n"
+"        text.points.shift(UP)\n"
+"        self.play(\n"
+"            Rotate(text, TAU, about_point=LEFT * 2),\n"
+"            duration=4\n"
+"        )\n"
+"\n"
+"\n"
+"class Sub2(Timeline):\n"
+"    def construct(self):\n"
+"        text = Text('text from Sub2')\n"
+"        text.points.shift(DOWN)\n"
+"        self.play(\n"
+"            Rotate(text, TAU, about_point=RIGHT * 2),\n"
+"            duration=4\n"
+"        )\n"
+"\n"
+"\n"
+"class Test(Timeline):\n"
+"    def construct(self):\n"
+"        tl1 = Sub1().build().to_item().show()\n"
+"        tl2 = Sub2().build().to_item().show()\n"
+"        self.forward_to(tl2.end)"
+msgstr ""
+"class Sub1(Timeline):\n"
+"    def construct(self):\n"
+"        text = Text('text from Sub1')\n"
+"        text.points.shift(UP)\n"
+"        self.play(\n"
+"            Rotate(text, TAU, about_point=LEFT * 2),\n"
+"            duration=4\n"
+"        )\n"
+"\n"
+"\n"
+"class Sub2(Timeline):\n"
+"    def construct(self):\n"
+"        text = Text('text from Sub2')\n"
+"        text.points.shift(DOWN)\n"
+"        self.play(\n"
+"            Rotate(text, TAU, about_point=RIGHT * 2),\n"
+"            duration=4\n"
+"        )\n"
+"\n"
+"\n"
+"class Test(Timeline):\n"
+"    def construct(self):\n"
+"        tl1 = Sub1().build().to_item().show()\n"
+"        tl2 = Sub2().build().to_item().show()\n"
+"        self.forward_to(tl2.end)"
+
+#: janim.timeline.timeline.BuiltTimeline.to_item:33 of
+msgid "这个例子中，在 ``Test`` 中插入了 ``Sub1`` 和 ``Sub2``"
+msgstr "In this example, ``Sub1`` and ``Sub2`` are inserted into ``Test``"
+
+#: janim.timeline.timeline.BuiltTimeline.to_item:35 janim.timeline.timeline.BuiltTimeline.to_playback_control_item:34 of
+msgid "额外参数："
+msgstr "Additional parameters:"
+
+#: janim.timeline.timeline.BuiltTimeline.to_item:37 of
+msgid "``delay``: 延迟多少秒开始该 Timeline 的播放"
+msgstr "``delay``: How many seconds to delay before starting playback of this Timeline"
+
+#: janim.timeline.timeline.BuiltTimeline.to_item:38 of
+msgid "``first_frame_duration``: 第一帧持续多少秒"
+msgstr "``first_frame_duration``: How many seconds the first frame lasts"
+
+#: janim.timeline.timeline.BuiltTimeline.to_item:39 janim.timeline.timeline.BuiltTimeline.to_playback_control_item:36 of
+msgid "``keep_last_frame``: 是否在 Timeline 结束后仍然保留最后一帧的显示"
+msgstr "``keep_last_frame``: Whether to keep displaying the last frame after the Timeline ends"
+
+#: janim.timeline.timeline.BuiltTimeline.to_playback_control_item:3 of
+msgid "并且与 :class:`~.Video` 类似，可以使用 ``start``、``stop`` 以及 ``seek`` 控制播放进度"
+msgstr "And similar to :class:`~.Video`, you can use ``start``, ``stop``, and ``seek`` to control playback progress"
+
+#: janim.timeline.timeline.BuiltTimeline.to_playback_control_item:5 of
+msgid "例："
+msgstr "Example:"
+
+#: janim.timeline.timeline.BuiltTimeline.to_playback_control_item:7 of
+#, python-brace-format
+msgid ""
+"class Sub(Timeline):\n"
+"    def construct(self):\n"
+"        self.play(\n"
+"            ItemUpdater(\n"
+"                None,\n"
+"                lambda p: Text(f'{p.global_t:.2f}')\n"
+"            ),\n"
+"            duration=8\n"
+"        )\n"
+"\n"
+"\n"
+"class Test(Timeline):\n"
+"    def construct(self):\n"
+"        sub = Sub().build().to_playback_control_item().show()\n"
+"        sub.start()\n"
+"        self.forward(2)\n"
+"        sub.start(speed=0.1)\n"
+"        self.forward(2)\n"
+"        sub.seek(0).start(speed=4)\n"
+"        self.forward(2)"
+msgstr ""
+"class Sub(Timeline):\n"
+"    def construct(self):\n"
+"        self.play(\n"
+"            ItemUpdater(\n"
+"                None,\n"
+"                lambda p: Text(f'{p.global_t:.2f}')\n"
+"            ),\n"
+"            duration=8\n"
+"        )\n"
+"\n"
+"\n"
+"class Test(Timeline):\n"
+"    def construct(self):\n"
+"        sub = Sub().build().to_playback_control_item().show()\n"
+"        sub.start()\n"
+"        self.forward(2)\n"
+"        sub.start(speed=0.1)\n"
+"        self.forward(2)\n"
+"        sub.seek(0).start(speed=4)\n"
+"        self.forward(2)"
+
+#: janim.timeline.timeline.BuiltTimeline.to_playback_control_item:32 of
+msgid "在默认情况下未开始播放，需要使用 ``start`` 以开始播放"
+msgstr "By default, playback is not started; you need to use ``start`` to begin playback"
+
+#: janim.timeline.timeline.TimelineItem:1 of
+msgid "详见 :meth:`BuiltTimeline.to_item`"
+msgstr "See :meth:`BuiltTimeline.to_item` for details"
+
+#: janim.timeline.timeline.TimelineItem.start:1 of
+msgid "从当前时刻开始播放子时间轴，在此时刻之前保持显示第一帧"
+msgstr "Start playing the sub-timeline from the current moment, keeping the first frame displayed before this moment"
+
+#: janim.timeline.timeline.TimelinePlaybackControlItem:1 of
+msgid "详见 :meth:`BuiltTimeline.to_playback_control_item`"
+msgstr "See :meth:`BuiltTimeline.to_playback_control_item` for details"

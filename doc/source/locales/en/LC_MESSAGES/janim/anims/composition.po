@@ -7,10 +7,10 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  JAnim\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-02-24 01:11+0800\n"
+"POT-Creation-Date: 1980-01-01 00:00+0000\n"
 "PO-Revision-Date: 2025-12-24 15:57+0800\n"
 "Last-Translator: \n"
-"Language: zh_CN\n"
+"Language: en\n"
 "Language-Team: en <LL@li.org>\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 "MIME-Version: 1.0\n"
@@ -106,7 +106,7 @@ msgstr ""
 "In addition, ``collapse`` indicates whether to collapse this animation group in the preview interface (default is not "
 "collapsed, while for example :class:`~.TransformMatchingShapes` is collapsed by default)"
 
-#: ../../source/janim/anims/composition.rst:40 ../../source/janim/anims/composition.rst:127
+#: ../../source/janim/anims/composition.rst:40 ../../source/janim/anims/composition.rst:93
 msgid "``lag_ratio`` 与 ``offset`` 的交互式示例："
 msgstr "An interactive example of ``lag_ratio`` and ``offset``:"
 
@@ -182,7 +182,7 @@ msgstr ""
 "        )\n"
 "        self.forward()"
 
-#: ../../source/janim/anims/composition.rst:122
+#: ../../source/janim/anims/composition.rst:88
 msgid "为了更好地了解这些动画组合的效果，你可以复制到你的文件中运行，这样你就可以在界面上看到子动画对应的区段"
 msgstr ""
 "For better understanding the effect of these animation compositions, you can copy these code into your file and execute, "
@@ -354,7 +354,7 @@ msgstr ""
 ")\n"
 "# Anim1 & Anim2: 0~4s"
 
-#: ../../source/janim/anims/composition.rst:215
+#: ../../source/janim/anims/composition.rst:144
 msgid "视频示例的代码在下方，不是上方的时间示例"
 msgstr "The code of video example is the code below, not the code of time example above."
 
@@ -415,6 +415,30 @@ msgstr "(Actually just an empty animation)"
 #: janim.anims.composition.Do:1 of
 msgid "在动画过程的特定时间执行指定操作"
 msgstr "Execute a specified operation at a specific time in the animation progress"
+
+#: ../../source/janim/anims/composition.rst
+msgid "参数"
+msgstr "Parameters"
+
+#: janim.anims.composition.Do:3 of
+msgid "到达指定时间后调用的回调函数"
+msgstr "The callback function called when the specified time is reached"
+
+#: janim.anims.composition.Do:4 of
+msgid "传递给回调函数的位置参数"
+msgstr "Positional arguments passed to the callback function"
+
+#: janim.anims.composition.Do:5 of
+msgid "传递给回调函数的具名参数"
+msgstr "Keyword arguments passed to the callback function"
+
+#: janim.anims.composition.Do:6 of
+msgid "执行的时间点"
+msgstr "The time point at which the callback is executed"
+
+#: janim.anims.composition.Do:7 of
+msgid "执行回调后，是否自动检测物件变化情况"
+msgstr "Whether to automatically detect item changes after the callback is executed"
 
 #~ msgid "设置并计算子动画的时间范围"
 #~ msgstr "Set and calculate the time range of child animations"

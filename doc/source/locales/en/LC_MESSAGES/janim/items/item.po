@@ -189,7 +189,8 @@ msgstr "Sets the data of this item to be the same as the passed item (by copying
 
 #: janim.items.item.Item.Stored:1 of
 msgid "用于记录数据物件对应的原始物件的 ``parents`` 和 ``children`` 等情况"
-msgstr "Used to record the ``parents``, ``children``, and other relationships of the original item corresponding to a data item"
+msgstr ""
+"Used to record the ``parents``, ``children``, and other relationships of the original item corresponding to a data item"
 
 #: janim.items.item.Item.become_current:1 of
 msgid "使用该方法可以中断动画过程，使物件立刻成为当前动画作用下的结果"

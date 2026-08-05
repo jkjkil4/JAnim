@@ -39,7 +39,8 @@ class PausePointsMixin(TimelineCore):
 
         :param offset: 表示偏移多少秒，例如 ``offset=2`` 则是当前时刻的 2s 后
 
-        :param at_previous_frame: 控制是在前一帧暂停还是在当前帧暂停
+        :param at_previous_frame:
+            控制是在前一帧暂停还是在当前帧暂停
 
             默认为 ``True``，因为一般情况下我们暂停时想要显示先前画面中的最后一帧，而非随后画面
             （这是由 JAnim 动画区间左闭右开导致的）

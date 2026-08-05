@@ -1,15 +1,16 @@
+# SOME DESCRIPTIVE TITLE.
 # Copyright (C) 2023, jkjkil4
 # This file is distributed under the same license as the JAnim package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
 #
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version:  JAnim\n"
+"Project-Id-Version: JAnim \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 1980-01-01 00:00+0000\n"
-"PO-Revision-Date: 2025-11-22 22:12+0800\n"
-"Last-Translator: \n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
 "Language-Team: en <LL@li.org>\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
@@ -18,29 +19,29 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.17.0\n"
 
-#: ../../source/janim/items/svg/typst_types.rst:2
+#: ../../source/janim/items/typst/typst_types.rst:2
 msgid "typst_types"
 msgstr "typst_types"
 
-#: janim.items.svg.typst_types.TypstMatrix:1 of
+#: janim.items.typst.typst_types.TypstMatrix:1 of
 msgid "使用 Typst 进行矩阵布局"
 msgstr "Use Typst for matrix layout"
 
-#: janim.items.svg.typst_types.TypstMatrix:3 of
+#: janim.items.typst.typst_types.TypstMatrix:3 of
 msgid "使用 :meth:`get_inserted` 得到插入的 JAnim 物件"
 msgstr "Use :meth:`get_inserted` to get inserted JAnim items"
 
-#: janim.items.svg.typst_types.TypstMatrix:4 of
+#: janim.items.typst.typst_types.TypstMatrix:4 of
 msgid "使用 :meth:`get_element` 根据行列得到元素（需要传入 ``label=True`` 启用）"
 msgstr "Use :meth:`get_element` to get elements by row and column (requires passing ``label=True`` to enable)"
 
-#: janim.items.svg.typst_types.TypstMatrix:6 of
+#: janim.items.typst.typst_types.TypstMatrix:6 of
 msgid "传参请参考 Typst 文档 https://typst.app/docs/reference/math/mat/ ，以下给出部分示例"
 msgstr ""
 "For parameter passing, please refer to Typst documentation https://typst.app/docs/reference/math/mat/; some examples are "
 "given below"
 
-#: janim.items.svg.typst_types.TypstMatrix:8 of
+#: janim.items.typst.typst_types.TypstMatrix:8 of
 msgid ""
 "TypstMatrix(\n"
 "    [\n"
@@ -58,7 +59,7 @@ msgstr ""
 "    ],\n"
 ").show()"
 
-#: janim.items.svg.typst_types.TypstMatrix:18 of
+#: janim.items.typst.typst_types.TypstMatrix:18 of
 msgid ""
 "TypstMatrix(\n"
 "    [\n"
@@ -78,7 +79,7 @@ msgstr ""
 "    gap='2em',\n"
 ").show()"
 
-#: janim.items.svg.typst_types.TypstMatrix:29 of
+#: janim.items.typst.typst_types.TypstMatrix:29 of
 msgid ""
 "TypstMatrix(\n"
 "    [\n"
@@ -104,7 +105,7 @@ msgstr ""
 "    gap='0.5em',\n"
 ")"
 
-#: janim.items.svg.typst_types.TypstMatrix:43 of
+#: janim.items.typst.typst_types.TypstMatrix:43 of
 msgid ""
 "TypstMatrix(\n"
 "    [\n"
@@ -130,64 +131,64 @@ msgstr ""
 "    preamble='#set text(size: 3em)'\n"
 ").show()"
 
-#: ../../docstring janim.items.svg.typst_types.TypstMatrix.matrix_labels:1 of
+#: ../../docstring janim.items.typst.typst_types.TypstMatrix.matrix_labels:1 of
 msgid "按照子物件顺序排列的矩阵元素标签"
 msgstr "Matrix element labels arranged in child item order"
 
-#: janim.items.svg.typst_types.TypstMatrix.get_inserted:1 of
+#: janim.items.typst.typst_types.TypstMatrix.get_inserted:1 of
 msgid "获取插入的第 ``index`` 个 JAnim 物件"
 msgstr "Get the ``index``-th inserted JAnim item"
 
-#: janim.items.svg.typst_types.TypstMatrix.get_inserted:3 of
+#: janim.items.typst.typst_types.TypstMatrix.get_inserted:3 of
 msgid "``index`` 从 0 开始计数"
 msgstr "``index`` starts counting from 0"
 
-#: janim.items.svg.typst_types.TypstMatrix.get_element:1 of
+#: janim.items.typst.typst_types.TypstMatrix.get_element:1 of
 msgid "根据行列索引元素"
 msgstr "Index element by row and column"
 
-#: janim.items.svg.typst_types.TypstMatrix.get_element:3 janim.items.svg.typst_types.TypstMatrix.get_elements:3
-#: janim.items.svg.typst_types.TypstMatrix.get_left_brace:3 janim.items.svg.typst_types.TypstMatrix.get_right_brace:3 of
+#: janim.items.typst.typst_types.TypstMatrix.get_element:3 janim.items.typst.typst_types.TypstMatrix.get_elements:3
+#: janim.items.typst.typst_types.TypstMatrix.get_left_brace:3 janim.items.typst.typst_types.TypstMatrix.get_right_brace:3 of
 msgid "需要在构造 :class:`TypstMatrix` 时传入 ``label=True`` 启用"
 msgstr "Requires passing ``label=True`` when constructing :class:`TypstMatrix` to enable"
 
-#: janim.items.svg.typst_types.TypstMatrix.get_elements:1 of
+#: janim.items.typst.typst_types.TypstMatrix.get_elements:1 of
 msgid "获取矩阵中所有元素"
 msgstr "Get all elements in the matrix"
 
-#: janim.items.svg.typst_types.TypstMatrix.get_left_brace:1 of
+#: janim.items.typst.typst_types.TypstMatrix.get_left_brace:1 of
 msgid "获取左大括号元素"
 msgstr "Get the left brace element"
 
-#: janim.items.svg.typst_types.TypstMatrix.get_right_brace:1 of
+#: janim.items.typst.typst_types.TypstMatrix.get_right_brace:1 of
 msgid "获取右大括号元素"
 msgstr "Get the right brace element"
 
-#: janim.items.svg.typst_types.DynamicTypst:1 of
+#: janim.items.typst.typst_types.DynamicTypst:1 of
 msgid "便于创建参数变化的 Typst 物件的封装"
 msgstr "A wrapper to conveniently create Typst items with parameter variations"
 
-#: janim.items.svg.typst_types.DynamicTypst.become_update of
+#: janim.items.typst.typst_types.DynamicTypst.become_update of
 msgid "参数"
 msgstr "Parameters"
 
-#: janim.items.svg.typst_types.DynamicTypst:3 of
+#: janim.items.typst.typst_types.DynamicTypst:3 of
 msgid "Typst 代码"
 msgstr "Typst code"
 
-#: janim.items.svg.typst_types.DynamicTypst:4 of
+#: janim.items.typst.typst_types.DynamicTypst:4 of
 msgid "声明含有哪些参数及其初始值，这些值可以直接在 Typst 代码中使用"
 msgstr "Declare which parameters and their initial values; these can be used directly within the Typst code"
 
-#: janim.items.svg.typst_types.DynamicTypst:5 of
+#: janim.items.typst.typst_types.DynamicTypst:5 of
 msgid "用于在生成 Typst 对象后，做进一步的调整，例如固定或对齐某个位置"
 msgstr "Used to make further adjustments after generating the Typst item, e.g., pinning or aligning a position"
 
-#: janim.items.svg.typst_types.DynamicTypst:7 of
+#: janim.items.typst.typst_types.DynamicTypst:7 of
 msgid "例："
 msgstr "Example:"
 
-#: ../../source/janim/items/svg/typst_types.rst:20
+#: ../../source/janim/items/typst/typst_types.rst:20
 #, python-brace-format
 msgid ""
 "from janim.imports import *\n"
@@ -320,11 +321,11 @@ msgstr ""
 "            duration=2,\n"
 "        )"
 
-#: janim.items.svg.typst_types.DynamicTypst.anim_update:1 of
+#: janim.items.typst.typst_types.DynamicTypst.anim_update:1 of
 msgid "创建参数改变的动态动画"
 msgstr "Create a dynamic animation for parameter changes"
 
-#: janim.items.svg.typst_types.DynamicTypst.anim_update:3 of
+#: janim.items.typst.typst_types.DynamicTypst.anim_update:3 of
 msgid ""
 "如果能保证动态过程不会改变物件结构， 可以传入 ``can_keep_structure`` 使其基于 :class:`~.GroupUpdater` 动态变化，否则默认使"
 "用 :class:`~.ItemUpdater`"
@@ -332,12 +333,12 @@ msgstr ""
 "If the dynamic process is guaranteed not to change the item's structure, pass ``can_keep_structure`` to update "
 "using :class:`~.GroupUpdater`; otherwise it defaults to :class:`~.ItemUpdater`."
 
-#: janim.items.svg.typst_types.DynamicTypst.anim_update:6 of
+#: janim.items.typst.typst_types.DynamicTypst.anim_update:6 of
 msgid "设置这个参数的动机是， :class:`~.GroupUpdater` 的性质更好，但是它需要物件结构不会改变的前提"
 msgstr ""
 "The motivation for this parameter is that :class:`~.GroupUpdater` behaves better, but it requires that the item structure "
 "does not change"
 
-#: janim.items.svg.typst_types.DynamicTypst.become_update:1 of
+#: janim.items.typst.typst_types.DynamicTypst.become_update:1 of
 msgid "直接 :meth:`~.Item.become` 为参数改变后的结果"
 msgstr "Directly :meth:`~.Item.become` to the result after the parameters are changed"

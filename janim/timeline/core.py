@@ -43,7 +43,7 @@ class ScheduledTask:
 
     在 Timeline 到达 ``global_t`` 后，``args`` 与 ``kwargs`` 会被传入 ``func`` 调用
 
-    另见 :meth:`~.TimelineBase.schedule`
+    另见 :meth:`~.TimelineCore.schedule`
     """
 
     global_t: float

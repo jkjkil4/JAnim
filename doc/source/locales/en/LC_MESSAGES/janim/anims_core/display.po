@@ -1,0 +1,99 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2023, jkjkil4
+# This file is distributed under the same license as the JAnim package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: JAnim \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 1980-01-01 00:00+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: en\n"
+"Language-Team: en <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.17.0\n"
+
+#: ../../source/janim/anims_core/display.rst:2
+msgid "display"
+msgstr "display"
+
+#: janim.anims_core.display.Display:1 of
+msgid "用于标记物件在特定时间区段中的数据"
+msgstr "Used to mark the data of an item in a specific time-range"
+
+#: janim.anims_core.display.Display:3 of
+msgid "作为 :meth:`~.AnimStack.display` 的产物，表示“物件从一个特定时间开始，被更改为了这样的数据”"
+msgstr ""
+"As the result of :meth:`~.AnimStack.display`, it indicates that \"the item has been changed to this data starting from a "
+"specific time\""
+
+#: janim.anims_core.display.Display:5 of
+msgid "另见：:meth:`~.Timeline.detect_changes_of_all`"
+msgstr "See also: :meth:`~.Timeline.detect_changes_of_all`"
+
+#: janim.anims_core.display.Display.apply:1 of
+msgid "给 ``params`` 初始化物件数据"
+msgstr "Initializes item data for ``params``"
+
+#: janim.anims_core.display.Display.apply:3 of
+msgid "将 ``self.data`` 重置为 ``self.data_orig`` 的数据并设置到 ``params.data`` 上，避免原始数据被意外更改"
+msgstr ""
+"Resets ``self.data`` to the data of ``self.data_orig`` and sets it to ``params.data`` to prevent the original data from "
+"being accidentally modified"
+
+#: janim.anims_core.display.Display.apply:5 of
+msgid "特殊情况："
+msgstr "Special case:"
+
+#: janim.anims_core.display.Display.apply:7 of
+msgid ""
+"当 :class:`~.AnimStack` 的动画堆栈只有一个动画，即该类型动画时，不会经由该方法， 而是直接被其访问 ``data_orig``，起到一点"
+"点优化的作用"
+msgstr ""
+"When the animation stack of :class:`~.AnimStack` contains only one animation, which is this type of animation, this "
+"method is skipped and ``data_orig`` is accessed directly, providing a small optimization"
+
+#: janim.anims_core.display.DelayedDisplay:1 of
+msgid "和 :class:`Display` 基本一样，但是会在时间轴全局时刻到达 ``.t_range.at`` 后才调用 ``func`` 函数设置 ``data`` 状态"
+msgstr ""
+"Basically the same as :class:`Display`, but it only calls the ``func`` function to set the ``data`` state after the "
+"global timeline time reaches ``.t_range.at``"
+
+#: ../../source/janim/anims_core/display.rst
+msgid "参数"
+msgstr "Parameters"
+
+#: janim.anims_core.display.DelayedDisplay:3 of
+msgid "状态挂载给哪个物件"
+msgstr "The item to which the state is applied"
+
+#: janim.anims_core.display.DelayedDisplay:4 of
+msgid "当全局时刻到达 ``.t_range.at`` 后的回调函数，需要返回一个 :class:`~.Item` 作为物件状态"
+msgstr ""
+"The callback function invoked after the global time reaches ``.t_range.at``. It must return an :class:`~.Item` as the "
+"item state"
+
+#: janim.anims_core.display.DelayedDisplay.apply:1 of
+msgid "具体请参考 :class:`StackableAnimation` 以及 :class:`ApplyParams` 的介绍"
+msgstr "For details, see the descriptions of :class:`StackableAnimation` and :class:`ApplyParams`"
+
+#: janim.anims_core.display.DoBecomeAtEnd:1 of
+msgid "对 :class:`DelayedDisplay` 针对各个动画 ``become_at_end`` 参数实现的封装"
+msgstr "A wrapper around :class:`DelayedDisplay` that implements the ``become_at_end`` parameter for each animation"
+
+#: janim.anims_core.display.DoBecomeAtEnd:3 of
+msgid ""
+"即注册到 ``end~FOREVER`` 时段，将 ``end`` 时刻前计算出的动画状态作为显示状态； 并在 ``is_latest_display=True`` 时自"
+"动 :meth:`~.Item.restore`"
+msgstr ""
+"That is, it is registered for the ``end~FOREVER`` interval and uses the animation state calculated before the ``end`` "
+"time as the display state; it also automatically calls :meth:`~.Item.restore` when ``is_latest_display=True``"
+
+#~ msgid "返回记录的物件数据"
+#~ msgstr "Returns the recorded item data"

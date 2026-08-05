@@ -1,0 +1,253 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2023, jkjkil4
+# This file is distributed under the same license as the JAnim package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: JAnim \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 1980-01-01 00:00+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: en\n"
+"Language-Team: en <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.17.0\n"
+
+#: ../../source/janim/timeline/core.rst:2
+msgid "core"
+msgstr "core"
+
+#: janim.timeline.core.ScheduledTask:1 of
+msgid "在 Timeline 中计划执行的函数，所对应的参数信息"
+msgstr "The function scheduled to be executed in Timeline and its corresponding parameter information"
+
+#: ../../source/janim/timeline/core.rst
+msgid "参数"
+msgstr "Parameters"
+
+#: janim.timeline.core.ScheduledTask:3 janim.timeline.core.TimeOfCode:3 of
+msgid "全局时刻"
+msgstr "Global time"
+
+#: janim.timeline.core.ScheduledTask:4 of
+msgid "函数体"
+msgstr "Function body"
+
+#: janim.timeline.core.ScheduledTask:5 of
+msgid "位置参数"
+msgstr "Positional arguments"
+
+#: janim.timeline.core.ScheduledTask:6 of
+msgid "具名参数"
+msgstr "Keyword arguments"
+
+#: janim.timeline.core.ScheduledTask:8 of
+msgid "在 Timeline 到达 ``global_t`` 后，``args`` 与 ``kwargs`` 会被传入 ``func`` 调用"
+msgstr "After Timeline reaches ``global_t``, ``args`` and ``kwargs`` will be passed to ``func`` for invocation"
+
+#: janim.timeline.core.ScheduledTask:10 of
+msgid "另见 :meth:`~.TimelineCore.schedule`"
+msgstr "See also :meth:`~.TimelineCore.schedule`"
+
+#: janim.timeline.core.ExtraRenderGroup:1 of
+msgid "一些特殊动画类注册的额外渲染"
+msgstr "Additional rendering registered by some special animation classes"
+
+#: janim.timeline.core.TimeOfCode:1 of
+msgid "标记 :meth:`~.Timeline.construct` 执行到的代码行数所对应的时间"
+msgstr "Marks the time corresponding to the line number of code execution in :meth:`~.Timeline.construct`"
+
+#: janim.timeline.core.TimeOfCode:4 of
+msgid "在代码文件中的行数，表示到 ``time`` 为止的时间，都对应这行代码"
+msgstr "The line number in the code file, indicating that all times up to ``time`` correspond to this line of code"
+
+#: janim.timeline.core.TimelineCore:1 of
+msgid ""
+"封装了 :class:`Timeline` 的核心功能， 会通过继承其它类来扩充成 :class:`~.Timeline` 类， 关于扩充功能的介绍，请参"
+"考 :class:`~.Timeline` 的文档"
+msgstr ""
+"Encapsulates the core functionality of :class:`Timeline`. It is extended through inheritance from other classes to form "
+"the :class:`~.Timeline` class. For information about the extended functionality, see the documentation "
+"of :class:`~.Timeline`"
+
+#: janim.timeline.core.TimelineCore:5 of
+msgid "这只是为了 JAnim 内部代码组织的方便，并不能单独使用， 我们使用的时候直接用 :class:`~.Timeline` 就好了"
+msgstr ""
+"This class only exists for the convenience of JAnim's internal code organization and cannot be used independently. When "
+"using JAnim, simply use :class:`~.Timeline` directly"
+
+#: janim.timeline.core.TimelineCore:10 of
+msgid "该类中的方法都可以直接在 :class:`~.Timeline` 中使用"
+msgstr "All methods in this class can be used directly in :class:`~.Timeline`"
+
+#: janim.timeline.core.TimelineCore.forward:1 of
+msgid "向前推进 ``dt`` 秒"
+msgstr "Advance by ``dt`` seconds"
+
+#: janim.timeline.core.TimelineCore.forward_to:1 of
+msgid "向前推进到 ``t`` 秒的时候"
+msgstr "Advance to time ``t``"
+
+#: janim.timeline.core.TimelineCore.prepare:1 of
+msgid "应用动画但不向前推进时间"
+msgstr "Apply animations without advancing time"
+
+#: janim.timeline.core.TimelineCore.play:1 of
+msgid "播放动画，并将时间推进到动画的末尾"
+msgstr "Play animations and advance time to the end of the animations"
+
+#: janim.timeline.core.TimelineCore.schedule:1 of
+msgid "计划执行"
+msgstr "Schedule execution"
+
+#: janim.timeline.core.TimelineCore.schedule:3 of
+msgid "会在进度达到 ``global_t`` 时，对 ``func`` 进行调用， 可传入 ``*args`` 和 ``**kwargs``"
+msgstr "Calls ``func`` when the progress reaches ``global_t``. ``*args`` and ``**kwargs`` can be passed to it"
+
+#: janim.timeline.core.TimelineCore.schedule_and_detect_changes:1 of
+msgid "与 :meth:`schedule` 类似，但是在调用 ``func`` 后会记录变化的物件的状态"
+msgstr "Similar to :meth:`schedule`, but records the state of changed items after calling ``func``"
+
+#: janim.timeline.core.TimelineCore.timeout:1 of
+msgid "相当于 ``schedule(self.current_time + delay, func, *args, **kwargs)``"
+msgstr "Equivalent to ``schedule(self.current_time + delay, func, *args, **kwargs)``"
+
+#: janim.timeline.core.TimelineCore.timeout_and_detect_changes:1 of
+msgid "与 :meth:`timeout` 类似，但是在调用 ``func`` 后会记录变化的物件的状态"
+msgstr "Similar to :meth:`timeout`, but records the state of changed items after calling ``func``"
+
+#: janim.timeline.core.TimelineCore.early_invoke_scheduled_function:1 of
+msgid "提前执行已在计划执行中的指定函数"
+msgstr "Execute a scheduled function ahead of time"
+
+#: janim.timeline.core.TimelineCore.early_invoke_scheduled_function:3 of
+msgid "先前计划执行的函数"
+msgstr "The previously scheduled function"
+
+#: ../../source/janim/timeline/core.rst
+msgid "返回"
+msgstr "Returns"
+
+#: janim.timeline.core.TimelineCore.early_invoke_scheduled_function:4 of
+msgid "是否找到匹配的函数"
+msgstr "Whether a matching function was found"
+
+#: janim.timeline.core.TimelineCore.track:1 of
+msgid "使得 ``item`` 在每次 ``forward`` 和 ``play`` 时都会被自动检查是否发生状态改变，并记录状态变化"
+msgstr ""
+"Causes ``item`` to be automatically checked for state changes and records those changes on each ``forward`` and ``play``"
+
+#: janim.timeline.core.TimelineCore.track_item_and_descendants:1 of
+msgid "相当于对 ``item`` 及其所有的后代物件调用 :meth:`track`"
+msgstr "Equivalent to calling :meth:`track` on ``item`` and all its descendant items"
+
+#: janim.timeline.core.TimelineCore.detect_changes_of_all:1 of
+msgid "检查追踪的所有物件的变化并将变化记录"
+msgstr "Checks all tracked items for changes and records them"
+
+#: janim.timeline.core.TimelineCore.detect_changes:1 of
+msgid "检查指定的列表中物件的变化，并将变化记录"
+msgstr "Checks items in the specified list for changes and records them"
+
+#: janim.timeline.core.TimelineCore.detect_changes:3 of
+msgid "（仅检查自身而不包括后代物件的）"
+msgstr "(Only checks itself, excluding descendant items)"
+
+#: janim.timeline.core.TimelineCore.compute_item:1 of
+msgid "另见 :meth:`~.AnimStack.compute`"
+msgstr "See :meth:`~.AnimStack.compute`"
+
+#: janim.timeline.core.TimelineCore.item_current:1 of
+msgid "另见 :meth:`~.Item.current`"
+msgstr "See :meth:`~.Item.current`"
+
+#: janim.timeline.core.TimelineCore.is_visible:1 of
+msgid "判断特定的物件目前是否可见"
+msgstr "Determine whether a specific item is currently visible"
+
+#: janim.timeline.core.TimelineCore.is_visible:3 of
+msgid "另见：:meth:`show`、:meth:`hide`"
+msgstr "See also: :meth:`show`, :meth:`hide`"
+
+#: janim.timeline.core.TimelineCore.show:1 of
+msgid "显示物件"
+msgstr "Show item"
+
+#: janim.timeline.core.TimelineCore.hide:1 of
+msgid "隐藏物件"
+msgstr "Hide item"
+
+#: janim.timeline.core.TimelineCore.hide_all:1 of
+msgid "隐藏显示中的所有物件"
+msgstr "Hide all items currently displayed"
+
+#: janim.timeline.core.TimelineCore.visible_items:1 of
+msgid "得到当前可见的所有物件"
+msgstr "Gets all currently visible items"
+
+#: janim.timeline.core.TimelineCore.visible_items:3 of
+msgid "物件列表"
+msgstr "List of items"
+
+#: janim.timeline.core.TimelineCore.add_extra_render_group:1 of
+msgid "注册额外渲染，用于 :class:`~.Transform` 等特殊动画类"
+msgstr "Registers additional rendering for special animation classes such as :class:`~.Transform`"
+
+#: janim.timeline.core.TimelineCore.get_lineno_at_time:1 of
+msgid "根据 ``time`` 得到对应执行到的行数"
+msgstr "Get the corresponding line number based on ``time``."
+
+#: janim.timeline.core.ItemAppearance:1 of
+msgid "包含与物件显示有关的对象"
+msgstr "Contains objects related to item display"
+
+#: janim.timeline.core.ItemAppearance:3 of
+msgid "``self.stack`` 即 :class:`~.AnimStack` 对象"
+msgstr "``self.stack`` is the :class:`~.AnimStack` object"
+
+#: janim.timeline.core.ItemAppearance:5 of
+msgid "``self.visiblility`` 是一个列表，存储物件显示/隐藏的时间点"
+msgstr "``self.visiblility`` is a list that stores the time points when an item is shown or hidden"
+
+#: janim.timeline.core.ItemAppearance:6 of
+msgid "列表中偶数下标（0、2、...）的表示开始显示的时间点，奇数下标（1、3、...）的表示隐藏的时间点"
+msgstr ""
+"Elements at even indices (0, 2, ...) in the list represent the time points when the item starts being shown, while "
+"elements at odd indices (1, 3, ...) represent the time points when it is hidden"
+
+#: janim.timeline.core.ItemAppearance:7 of
+msgid "例如，如果列表中是 ``[3, 4, 8]``，则表示在第 3s 显示，第 4s 隐藏，并且在第 8s 后一直显示"
+msgstr ""
+"For example, if the list is ``[3, 4, 8]``, it means the item is shown at 3s, hidden at 4s, and remains shown after 8s"
+
+#: janim.timeline.core.ItemAppearance:8 of
+msgid "这种记录方式是 :meth:`TimelineCore.is_visible`、:meth:`TimelineCore.show`、:meth:`TimelineCore.hide` 运作的基础"
+msgstr ""
+"This recording method is the basis for the operation of :meth:`TimelineCore.is_visible`, :meth:`TimelineCore.show`, "
+"and :meth:`TimelineCore.hide`"
+
+#: janim.timeline.core.ItemAppearance:10 of
+msgid "``self.renderer`` 表示所使用的渲染器对象"
+msgstr "``self.renderer`` represents the renderer object being used"
+
+#: janim.timeline.core.ItemAppearance.is_visible_at:1 of
+msgid "在 ``t`` 时刻，物件是否可见"
+msgstr "Whether the item is visible at time ``t``"
+
+#: janim.timeline.core.ItemAppearances:1 of
+#, python-brace-format
+msgid "本质上是一个 ``{Item: ItemAppearance}`` 的 ``dict``"
+msgstr "Essentially, it is a ``dict`` of ``{Item: ItemAppearance}``"
+
+#: janim.timeline.core.ItemAppearances:3 of
+msgid ""
+"但是如果 ``key`` 不存在，则会自动新建一个 ``key`` 物件 所对应的 :class:`ItemAppearance`，并记录其当前状态作为初始状态"
+msgstr ""
+"However, if ``key`` does not exist, an :class:`ItemAppearance` corresponding to the ``key`` item will be created "
+"automatically, and its current state will be recorded as the initial state"
