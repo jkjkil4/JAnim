@@ -19,7 +19,7 @@ __all__ = [
     'TypSizeUnit',
 ]
 
-_ = get_translator('janim.utils.typst_compile')
+_ = get_translator('janim.items.typst.compile')
 
 type TypstVar = Points | dict[str, TypstVar] | Iterable[TypstVar]
 type TypSizeUnit = Literal['pt', 'mm', 'cm', 'in', 'pt']

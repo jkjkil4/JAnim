@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-05 13:52+0800\n"
+"POT-Creation-Date: 2026-07-13 10:54+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: janim/items/geometry/polygon.py:447
+#: janim/items/typst/vars.py:112
 #, python-brace-format
-msgid "Incompatible density {density} for number of points {n}"
+msgid "{var} is not a valid item for embedding in Typst"
 msgstr ""

@@ -42,7 +42,7 @@ class PausePointsMixin(TimelineCore):
         :param at_previous_frame: 控制是在前一帧暂停还是在当前帧暂停
 
             默认为 ``True``，因为一般情况下我们暂停时想要显示先前画面中的最后一帧，而非随后画面
-            （帧的显示规则是由 JAnim 动画区间左闭右开导致的）
+            （这是由 JAnim 动画区间左闭右开导致的）
         """
         self.pause_points.append(PausePoint(self.current_time + offset, at_previous_frame))
 

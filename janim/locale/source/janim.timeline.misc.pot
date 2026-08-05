@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-21 15:27+0800\n"
+"POT-Creation-Date: 2026-06-11 10:50+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,12 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: janim/utils/typst_compile.py:91 janim/utils/typst_compile.py:132
-msgid "Typst compilation error. Please check the output for more information."
-msgstr ""
-
-#: janim/utils/typst_compile.py:122
-msgid ""
-"Could not compile Typst document by external executable. Please install "
-"Typst and add it to the environment variables, or use internal Typst instead."
+#: janim/timeline/misc.py:111
+#, python-brace-format
+msgid "Called self.debug({repr}) at {loc}"
 msgstr ""

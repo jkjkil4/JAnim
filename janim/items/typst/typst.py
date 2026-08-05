@@ -36,7 +36,7 @@ __all__ = [
     'TypstMath',
 ]
 
-_ = get_translator('janim.items.svg.typst')
+_ = get_translator('janim.items.typst.typst')
 
 type TypstPattern = TypstDoc | str
 

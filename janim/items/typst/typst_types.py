@@ -28,7 +28,7 @@ type TypMatAlignment = Literal[
     'start', 'left', 'center', 'right', 'end'
 ]  # 矩阵不支持 'top', 'horizon', 'bottom'
 
-_ = get_translator('janim.items.svg.typst_types')
+_ = get_translator('janim.items.typst.typst_types')
 
 typst_matrix_template = """
 #set math.mat(
