@@ -9,7 +9,7 @@ import janim.gui.handlers.select as select
 from janim.gui.handlers.unknown import handler as unknown_handler  # noqa: F401
 
 if TYPE_CHECKING:
-    from janim.anims.timeline import Timeline
+    from janim.timeline import Timeline
     from janim.gui.anim_viewer import AnimViewer
 
 registered: dict[str, Callable[[AnimViewer, Timeline.GuiCommand]]] = {

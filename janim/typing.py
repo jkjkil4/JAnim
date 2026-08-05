@@ -1,12 +1,11 @@
 from __future__ import annotations
 
-import types
 from typing import TYPE_CHECKING, Any, Iterable, Protocol, Self, runtime_checkable
 
 if TYPE_CHECKING:
     import numpy as np
 
-    from janim.anims.animation import Animation
+    from janim.anims_core.animation import Animation
 
 type Vect = Iterable[float] | np.ndarray
 type VectArray = Iterable[Vect] | np.ndarray
@@ -21,8 +20,6 @@ type Rgba = Iterable[float] | np.ndarray
 type RgbaArray = Iterable[Rgba] | np.ndarray
 
 type RangeSpecifier = tuple[float, float] | tuple[float, float, float]
-
-type ForeverType = types.EllipsisType
 
 
 @runtime_checkable

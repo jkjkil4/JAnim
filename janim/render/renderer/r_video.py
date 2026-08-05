@@ -9,7 +9,7 @@ from typing import TYPE_CHECKING, Any, Callable
 import moderngl as mgl
 import numpy as np
 
-from janim.anims.animation import Animation
+from janim.anims_core.animation import Animation
 from janim.locale import get_translator
 from janim.render.base import Renderer
 from janim.render.program import get_program_from_file_prefix

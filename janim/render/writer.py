@@ -8,7 +8,8 @@ import moderngl as mgl
 import OpenGL.GL as gl
 from tqdm import tqdm as ProgressDisplay
 
-from janim.anims.timeline import BuiltTimeline, Timeline, TimeRange
+from janim.timeline import BuiltTimeline, Timeline
+from janim.anims_core.time import TimeRange
 from janim.locale import get_translator
 from janim.logger import log
 from janim.render.base import apply_blend_flags, create_context_430_or_330

@@ -7,7 +7,7 @@ import numpy as np
 from PIL import Image
 
 import janim.examples as examples
-from janim.anims.timeline import Timeline
+from janim.timeline import Timeline
 from janim.cli.utils.extract_timeline import get_all_timelines_from_module
 from janim.utils.config import Config
 from janim.utils.file_ops import guarantee_existence

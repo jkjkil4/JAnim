@@ -8,13 +8,11 @@ from colour import Color
 import janim.items.boolean_ops as boolean_ops
 from janim.anims.composition import *
 from janim.anims.creation import *
-from janim.anims.display import *
 from janim.anims.fading import *
 from janim.anims.growing import *
 from janim.anims.indication import *
 from janim.anims.movement import *
 from janim.anims.rotation import *
-from janim.anims.timeline import *
 from janim.anims.transform import *
 from janim.anims.updater import *
 from janim.camera.camera import *
@@ -49,6 +47,8 @@ from janim.items.three_d.shapes import *
 from janim.items.three_d.types import *
 from janim.items.value_tracker import *
 from janim.items.vitem import *
+from janim.timeline import *
+from janim.timeline.templates import *
 from janim.typing import *
 from janim.utils.bezier import *
 from janim.utils.config import Config

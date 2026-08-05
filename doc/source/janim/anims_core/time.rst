@@ -1,7 +1,7 @@
-display
-=======
+time
+====
 
-.. automodule:: janim.anims.display
+.. automodule:: janim.anims_core.time
    :members:
    :undoc-members:
    :show-inheritance:

@@ -8,7 +8,7 @@ from PySide6.QtCore import QEvent, QObject, QPointF, Qt, QTimer
 from PySide6.QtGui import QMouseEvent, QWheelEvent
 from PySide6.QtWidgets import QHBoxLayout, QLabel, QVBoxLayout
 
-from janim.anims.timeline import Timeline
+from janim.timeline import Timeline
 from janim.camera.camera import Camera
 from janim.constants import DEGREES, PI, RIGHT, TAU
 from janim.exception import GuiCommandError

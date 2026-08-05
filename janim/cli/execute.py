@@ -6,7 +6,7 @@ import time
 import types
 from typing import Iterable, Sequence
 
-from janim.anims.timeline import BuiltTimeline, Timeline
+from janim.timeline import BuiltTimeline, Timeline
 from janim.cli.options import (
     FormatOptions,
     HardwareOptions,

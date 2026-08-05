@@ -99,7 +99,7 @@ def find_file(file_path: str | Path) -> str:
         return found_path
 
     # find relative to source file (relative_path)
-    from janim.anims.timeline import Timeline
+    from janim.timeline import Timeline
 
     timeline = Timeline.get_context(raise_exc=False)
     relative_path: str | None = None

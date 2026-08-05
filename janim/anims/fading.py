@@ -35,7 +35,7 @@ class Fade(DataUpdater[Item], metaclass=ABCMeta):
         #
         path_arc: float = 0,
         path_arc_axis: Vect = OUT,
-        path_func: PathFunc = None,
+        path_func: PathFunc | None = None,
         #
         become_at_end: bool = False,
         root_only: bool = False,
@@ -134,11 +134,6 @@ class FadeOut(Fade):
         **kwargs,
     ):
         super().__init__(item, shift, scale, hide_at_end=hide_at_end, **kwargs)
-
-    def _time_fixed(self) -> None:
-        super()._time_fixed()
-        if self.hide_at_end:
-            self.timeline.schedule(self.t_range.end, self.item.hide, self.root_only)
 
     def updater(self, data: Item, p: UpdaterParams) -> None:
         for cmpt in data.components.values():

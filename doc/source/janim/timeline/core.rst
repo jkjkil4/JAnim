@@ -1,7 +1,7 @@
-timeline
-========
+core
+====
 
-.. automodule:: janim.anims.timeline
+.. automodule:: janim.timeline.core
    :members:
    :undoc-members:
    :show-inheritance:

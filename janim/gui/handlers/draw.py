@@ -6,7 +6,7 @@ from PySide6.QtCore import QEvent, QMargins, QObject, Qt
 from PySide6.QtGui import QMouseEvent, QPaintEvent, QPainter
 from PySide6.QtWidgets import QHBoxLayout, QPushButton, QScrollArea, QVBoxLayout, QWidget
 
-from janim.anims.timeline import Timeline
+from janim.timeline import Timeline
 from janim.exception import GuiCommandError
 from janim.gui.draw.base import Draw
 from janim.gui.draw.dot import DrawDot

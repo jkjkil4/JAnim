@@ -8,7 +8,7 @@ from PySide6.QtCore import QEvent, QObject, QPointF, QRectF, Qt
 from PySide6.QtGui import QColor, QMouseEvent, QPainter, QPaintEvent, QPen
 from PySide6.QtWidgets import QHBoxLayout, QLabel, QVBoxLayout
 
-from janim.anims.timeline import Timeline
+from janim.timeline import Timeline
 from janim.constants import LARGE_BUFF, MED_LARGE_BUFF, MED_SMALL_BUFF, SMALL_BUFF
 from janim.gui.handlers.select import BasicAttrs as SelectBasicAttrs
 from janim.gui.handlers.select import get_fixed_camera_info

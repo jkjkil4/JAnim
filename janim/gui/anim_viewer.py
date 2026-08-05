@@ -37,7 +37,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from janim.anims.timeline import BuiltTimeline, Timeline
+from janim.timeline import BuiltTimeline, Timeline
 from janim.components.data import Cmpt_Data
 from janim.exception import ExitException
 from janim.gui.application import Application
@@ -138,20 +138,7 @@ class AnimViewer(QMainWindow):
         self.built = built
 
         # data
-        def to_progress(p: Timeline.PausePoint) -> int:
-            rough_progress = p.at * self.built.cfg.preview_fps
-
-            if rough_progress % 1 < 1e-3:
-                result = int(rough_progress)
-            else:
-                result = int(rough_progress) + 1
-
-            if p.at_previous_frame:
-                result -= 1
-
-            return result
-
-        self.pause_progresses = list(map(to_progress, built.timeline.pause_points))
+        self.pause_progresses = built.timeline._pause_points_to_progresses(built.cfg.preview_fps)
         self.pause_progresses.sort()
 
         # menu bar

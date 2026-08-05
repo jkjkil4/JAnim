@@ -6,7 +6,7 @@ import numpy as np
 from PySide6.QtCore import QPointF, QRectF
 from PySide6.QtGui import QColor, QLinearGradient, QPainter, QPainterPath, QPen
 
-from janim.anims.timeline import Timeline
+from janim.timeline import Timeline
 from janim.gui.charts.base import ChartWidgetBase, make_ticks
 from janim.locale import get_translator
 from janim.utils.bezier import interpolate

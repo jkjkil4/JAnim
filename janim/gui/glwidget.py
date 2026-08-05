@@ -5,7 +5,7 @@ from PySide6.QtCore import QPointF, Signal
 from PySide6.QtOpenGLWidgets import QOpenGLWidget
 from PySide6.QtWidgets import QWidget
 
-from janim.anims.timeline import BuiltTimeline
+from janim.timeline import BuiltTimeline
 from janim.camera.camera import Camera
 from janim.camera.camera_info import CameraInfo
 from janim.logger import log
