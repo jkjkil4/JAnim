@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: JAnim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 1980-01-01 00:00+0000\n"
+"POT-Creation-Date: 2026-08-09 01:08+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -291,6 +291,32 @@ msgstr ""
 #: janim.anims_core.anim_stack.AnimStack.compute:24 of
 msgid "关于该方法在实现上的一些细节，请参考 ``_compute`` 代码中的注释"
 msgstr "For implementation details of this method, see the comments in the ``_compute`` code"
+
+#: janim.anims_core.anim_stack.simplify_anim_stacks:1 of
+msgid ""
+"在 :class:`~.Timeline` 构建完成后，最后被调用，用于检查 :class:`~.Timeline` 中各个 :class:`~.AnimStack` 是否有可被简化的成"
+"分"
+msgstr ""
+"Called after the construction of :class:`~.Timeline` is completed. "
+"It is used to check whether the :class:`~.AnimStack` instances in the "
+":class:`~.Timeline` contain components that can be simplified"
+
+#: janim.anims_core.anim_stack.simplify_anim_stacks:3 of
+msgid "在没有 :class:`~.ApplyAligner` 出现的情况下，每个动画堆栈只需要保留最后一个 :class:`~.DisplayType` 及之后的动画即可"
+msgstr ""
+"When no :class:`~.ApplyAligner` appears, each animation stack only needs "
+"to retain the animations from the last :class:`~.DisplayType` onwards"
+
+#: janim.anims_core.anim_stack.simplify_anim_stacks:5 of
+msgid ""
+"在有 :class:`~.ApplyAligner` 出现的情况下，由于会出现动画堆栈之间的依赖，所以不能直接那样做，否则会破坏原本可能依赖"
+"的 :class:`~.ApplyAligner`； 此时需要分析依赖内的所有 :class:`~.ApplyAligner`，判断他们是否可以同时被移除"
+msgstr ""
+"When a :class:`~.ApplyAligner` appears, dependencies between animation "
+"stacks may occur, so the previous simplification cannot be applied directly, "
+"as it would break the :class:`~.ApplyAligner` that may be depended on. "
+"In this case, all :class:`~.ApplyAligner` instances within the dependencies "
+"need to be analyzed to determine whether they can be removed together"
 
 #~ msgid "这部分内容涉及 JAnim 实现原理，可能较为复杂，若没有研究源码的需求，你应酌情阅读"
 #~ msgstr ""

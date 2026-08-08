@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: JAnim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 1980-01-01 00:00+0000\n"
+"POT-Creation-Date: 2026-08-09 01:08+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -22,6 +22,10 @@ msgstr ""
 #: ../../source/janim/anims_core/display.rst:2
 msgid "display"
 msgstr "display"
+
+#: janim.anims_core.display.DisplayType:1 of
+msgid "用于类型检查和 ``isinstance`` 判断的基类"
+msgstr "The base class used for type checking and ``isinstance`` checks"
 
 #: janim.anims_core.display.Display:1 of
 msgid "用于标记物件在特定时间区段中的数据"
