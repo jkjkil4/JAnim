@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+
 from janim.timeline.core import TimelineCore
 
 

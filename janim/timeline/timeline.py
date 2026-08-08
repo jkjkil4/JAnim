@@ -32,7 +32,7 @@ from janim.render.base import RenderData, Renderer, apply_blend_flags, create_co
 from janim.render.collection import RenderCollection
 from janim.render.framebuffer import FrameBuffer
 from janim.render.uniform import uniforms
-from janim.timeline.core import ItemAppearance, RenderGroupReturn, TimelineCore
+from janim.timeline.core import ExtraRenderGroup, ItemAppearance, RenderGroupReturn, TimelineCore
 from janim.timeline.misc import AudiosAndSubtitlesMixin, DebugMixin
 from janim.timeline.pause_points import PausePointsMixin
 from janim.utils.config import Config, ConfigGetter, config_ctx_var
@@ -499,7 +499,7 @@ class BuiltTimeline:
             apprs.append((appr, data))
 
         # 提取所有当前可见的额外渲染
-        extras: list[tuple[Timeline.ExtraRenderGroup, RenderGroupReturn]] = []
+        extras: list[tuple[ExtraRenderGroup, RenderGroupReturn]] = []
         for rg in self.visible_render_group_chunks.get(global_t):
             if not rg.t_range.contains(global_t):
                 continue

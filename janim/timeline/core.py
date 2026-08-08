@@ -1,12 +1,13 @@
+import inspect
+import types
 from bisect import bisect
 from collections import defaultdict
 from dataclasses import dataclass
 from functools import partial
-import inspect
-import types
 from typing import TYPE_CHECKING, Callable, Iterable
 
 from janim.anims.composition import AnimGroup
+from janim.anims.updater import updater_params_ctx
 from janim.anims_core.anim_stack import AnimStack
 from janim.anims_core.animation import Animation
 from janim.anims_core.time import TimeAligner, TimeRange
@@ -17,7 +18,6 @@ from janim.render.base import Renderer
 from janim.typing import SupportsAnim
 from janim.utils.data import SortedKeyQueue
 from janim.utils.simple_functions import clip
-from janim.anims.updater import updater_params_ctx
 
 if TYPE_CHECKING:
     from janim.timeline.timeline import TimelineItem

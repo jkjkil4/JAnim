@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+
 from janim.anims_core.time import TimeRange
 from janim.items.audio import Audio
 from janim.timeline.core import TimelineCore

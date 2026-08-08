@@ -6,9 +6,9 @@ import numpy as np
 from PySide6.QtCore import QPointF, QRectF
 from PySide6.QtGui import QColor, QLinearGradient, QPainter, QPainterPath, QPen
 
-from janim.timeline import Timeline
 from janim.gui.charts.base import ChartWidgetBase, make_ticks
 from janim.locale import get_translator
+from janim.timeline.audios import PlayAudioInfo
 from janim.utils.bezier import interpolate
 
 _ = get_translator('janim.gui.charts.audio_chart')
@@ -23,9 +23,7 @@ class AudioChartWidget(ChartWidgetBase):
     waveform_color = QColor(85, 193, 167)
     fade_color = QColor(41, 171, 202)
 
-    def __init__(
-        self, info: Timeline.PlayAudioInfo, fps: int, near: float | None = None, parent=None
-    ):
+    def __init__(self, info: PlayAudioInfo, fps: int, near: float | None = None, parent=None):
         """初始化音频图表并预计算显示区间与采样数据"""
         super().__init__(parent)
         self.setMinimumSize(350, 270)

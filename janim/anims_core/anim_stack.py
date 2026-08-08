@@ -347,7 +347,7 @@ class AnimStack:
                 # 计数当前挂起的动画堆栈都被什么“闸”给阻挡着
                 # 如果某个“闸”的计数达到了其预期的数量，则它可以释放
                 counter: defaultdict[int, int] = defaultdict(int)
-                for _, (generator, aligner) in suspended.items():
+                for generator, aligner in suspended.values():
                     identifier = aligner.identifier
                     counter[identifier] += 1
                     if counter[identifier] == len(aligner.stacks):
@@ -362,7 +362,7 @@ class AnimStack:
                     if stack not in stacks_to_release:
                         continue
                     try:
-                        aligner = next(generator)
+                        aligner: ApplyAligner = next(generator)
                         # “放闸”后，该动画堆栈没有结束
                         suspended[stack] = (generator, aligner)
                         if aligner.identifier not in gates:
