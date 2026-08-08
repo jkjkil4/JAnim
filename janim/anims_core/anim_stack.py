@@ -3,9 +3,9 @@ from collections import defaultdict
 from contextvars import ContextVar
 from typing import Generator
 
-from janim.anims_core.display import Display, DisplayTypes
+from janim.anims_core.display import Display, DisplayType
 from janim.anims_core.stackable import ApplyAligner, ApplyParams, StackableAnimation
-from janim.anims_core.time import FOREVER, TimeAligner
+from janim.anims_core.time import FOREVER, TimeAligner, TimeRange
 from janim.items.item import Item
 
 
@@ -46,6 +46,9 @@ class AnimStack:
         self._chunk_starts: list[float] = [0]
         self._chunks: list[list[StackableAnimation]] = [[]]
 
+        # 不采取 chunks 的优化，直接存储所有进入 add 方法的动画对象的列表
+        self._applied_animations: list[StackableAnimation] = []
+
         # 初始化，给 _chunks 填入一个默认 Display，这里也会初始化 _active_display 和 _latest_display 变量
         #
         # _active_display 变量的含义即为先前记录的物件状态，也可以理解为最后一个与 item 同步状态的 Display 对象
@@ -54,7 +57,7 @@ class AnimStack:
         # _latest_display 变量与 _active_display 的区别是，_latest_display 表示最后一个构造的 Display 对象
         # Display 会同时被设置到 _active_display 和 _latest_display 上
         # 而 DelayedDisplay 在构造时就会调用 set_latest_display，但是到了对应的全局时刻才会尝试设置到 _prev_display 上
-        self._latest_display: DisplayTypes | None = None
+        self._latest_display: DisplayType | None = None
         initial_display = self.display(0)
         # 让初始 Display 的 _order 均为 0
         initial_display._order = 0
@@ -72,11 +75,11 @@ class AnimStack:
         anim = Display(self.item.store(), at=global_t, duration=FOREVER)
         anim.finalize()
         self.add(anim, _is_display=True)
-        self._active_display: DisplayTypes = anim
+        self._active_display: DisplayType = anim
         self.set_latest_display(anim)
         return anim
 
-    def set_latest_display(self, anim: DisplayTypes) -> None:
+    def set_latest_display(self, anim: DisplayType) -> None:
         if self._latest_display is None:
             self._latest_display = anim
         else:
@@ -212,6 +215,8 @@ class AnimStack:
                 else:
                     assert _is_display
                     chunk.insert(0, anim)
+
+        self._applied_animations.append(anim)
 
         # 添加了新动画，因此要重置缓存
         if self._cache_key is not None:
@@ -402,3 +407,211 @@ class AnimStack:
         return params.data  # type: ignore
 
     # endregion
+
+
+##########################
+
+
+def simplify_anim_stacks(stacks: list[AnimStack]) -> None:
+    """
+    在 :class:`~.Timeline` 构建完成后，最后被调用，用于检查 :class:`~.Timeline` 中各个 :class:`~.AnimStack` 是否有可被简化的成分
+
+    -   在没有 :class:`~.ApplyAligner` 出现的情况下，每个动画堆栈只需要保留最后一个 :class:`~.DisplayType` 及之后的动画即可
+
+    -   在有 :class:`~.ApplyAligner` 出现的情况下，由于会出现动画堆栈之间的依赖，所以不能直接那样做，否则会破坏原本可能依赖的 :class:`~.ApplyAligner`；
+        此时需要分析依赖内的所有 :class:`~.ApplyAligner`，判断他们是否可以同时被移除
+    """
+    ### 遍历获取所有的 ApplyAligner gates 和涉及的动画堆栈的 analyses
+
+    # Key: 闸标识
+    # Value: 闸对应的 ApplyAligner 列表
+    gates_map: defaultdict[int, list[ApplyAligner]] = defaultdict(list)
+
+    # 有哪些动画堆栈涉及了 ApplyAligner
+    affected_stacks: list[AnimStack] = []
+
+    for stack in stacks:
+        has_apply_aligner = False
+
+        for anim in stack._applied_animations:
+            if isinstance(anim, ApplyAligner):
+                gates_map[anim.identifier].append(anim)
+                has_apply_aligner = True
+
+        if has_apply_aligner:
+            affected_stacks.append(stack)
+
+    # 按照 _order 顺序排列，_order 只需取首个 ApplyAligner 的 _order 即可
+    # 因为多个 ApplyAligner 是一起创建的（具体可参考 GroupUpdater 的代码）
+    gates = sorted(gates_map.items(), key=lambda x: x[1][0]._order)
+
+    analyses: dict[Item, _StackAnalysis] = {
+        stack.item: _StackAnalysis(stack) for stack in affected_stacks
+    }
+
+    ### 按照 gates 的顺序，依次尝试简化 stacks
+
+    for identifier, aligners in gates:
+        common_ranges = _find_common_ranges(
+            [analyses[aligner.item].simplifiable_ranges_of_gate(identifier) for aligner in aligners]
+        )
+        for aligner in aligners:
+            analyses[aligner.item].pop_front_in_ranges(common_ranges)
+
+    ### 此时剩下的所有 ApplyAligner 都是不可简化的了
+    ### 最后遍历所有 stacks，在不破坏 ApplyAligner 的前提下，清理所有被 DisplayType 遮蔽的多余动画
+    for stack in stacks:
+        for chunk in stack._chunks:
+            cut_i = 0
+
+            for i, anim in enumerate(chunk):
+                if isinstance(anim, DisplayType):
+                    cut_i = i
+                elif isinstance(anim, ApplyAligner):
+                    break
+
+            del chunk[:cut_i]
+
+
+class _StackAnalysis:
+    def __init__(self, stack: AnimStack):
+        self.stack = stack
+
+        # 对于 affected_stacks 的各个 stack，依 chunks 得到可能被简化的 ApplyAligner 的分时段信息
+        # （即对于每个 chunk 来说，除了最后一个 DisplayType 之后的 ApplyAligner，都会被收集）
+        self.aligners_in_chunks: list[list[ApplyAligner]] = [
+            self._parse_chunk(chunk) for chunk in stack._chunks
+        ]
+
+    @staticmethod
+    def _parse_chunk(chunk: list[StackableAnimation]) -> list[ApplyAligner]:
+        aligners: list[ApplyAligner] = []
+        candidates: list[ApplyAligner] = []
+        for anim in chunk:
+            if isinstance(anim, ApplyAligner):
+                candidates.append(anim)
+            elif isinstance(anim, DisplayType):
+                aligners.extend(candidates)
+                candidates.clear()
+        return aligners
+
+    def simplifiable_ranges_of_gate(self, identifier: int) -> list[TimeRange]:
+        """
+        得到在目前情况下，``identifier`` 的闸在哪些区段中有机会被释放
+
+        返回的各个 :class:`~.TimeRange` 有序
+        """
+        ranges: list[TimeRange] = []
+
+        range_start: float | None = None
+        for aligners, chunk_start in zip(self.aligners_in_chunks, self.stack._chunk_starts):
+            # 每个 chunk 中检查首个 ApplyAligner，因为后续 ApplyAligner 的释放依赖于前者
+            if range_start is None:
+                if aligners and aligners[0].identifier == identifier:
+                    range_start = chunk_start
+            else:
+                if not aligners or aligners[0].identifier != identifier:
+                    ranges.append(TimeRange(range_start, chunk_start))
+                    range_start = None
+
+        if range_start is not None:
+            ranges.append(TimeRange(range_start, FOREVER))
+
+        return ranges
+
+    def pop_front_in_ranges(self, ranges: list[TimeRange]) -> None:
+        aligners_in_chunks = self.aligners_in_chunks
+        chunks = self.stack._chunks
+        chunk_starts = self.stack._chunk_starts
+        chunk_i = 0
+
+        for rg in ranges:
+            # 推进到第一个 >= range.at 的 chunk_start
+            # 如果不相等，则说明需要切分
+            while chunk_i < len(chunks) and chunk_starts[chunk_i] < rg.at:
+                chunk_i += 1
+            start_chunk_i = chunk_i
+            # 判断并切分
+            if chunk_i == len(chunks) or chunk_starts[chunk_i] != rg.at:
+                aligners_in_chunks.insert(chunk_i, aligners_in_chunks[chunk_i - 1].copy())
+                chunks.insert(chunk_i, chunks[chunk_i - 1].copy())
+                chunk_starts.insert(chunk_i, rg.at)
+
+            # 推进到第一个 >= range.end 的 chunk_start
+            # 如果不相等，则说明需要切分
+            while chunk_i < len(chunks) and (rg.end is FOREVER or chunk_starts[chunk_i] < rg.end):
+                chunk_i += 1
+            end_chunk_i = chunk_i
+            # 判断并切分
+            if rg.end is not FOREVER and (
+                chunk_i == len(chunks) or chunk_starts[chunk_i] != rg.end
+            ):
+                aligners_in_chunks.insert(chunk_i, aligners_in_chunks[chunk_i - 1].copy())
+                chunks.insert(chunk_i, chunks[chunk_i - 1].copy())
+                chunk_starts.insert(chunk_i, rg.end)
+
+            # 弹出 start_chunk_i <= < end_chunk_i 之间的首个 aligner
+            for pop_chunk_i in range(start_chunk_i, end_chunk_i):
+                chunk = chunks[pop_chunk_i]
+                # 在遍历 chunk 时遇到之后标记为 None，标记为 None 之后开始寻找紧跟着的 DisplayType，删除比这个 DisplayType 更早的动画堆栈
+                aligner: ApplyAligner | None = aligners_in_chunks[pop_chunk_i].pop(0)
+
+                for i, anim in enumerate(chunk):
+                    if aligner is not None:
+                        if anim is aligner:
+                            aligner = None
+                    else:
+                        if isinstance(anim, DisplayType):
+                            break
+                else:
+                    assert False
+
+                del chunk[:i]
+
+
+def _find_common_ranges(ranges_list: list[list[TimeRange]]) -> list[TimeRange]:
+    """
+    求多个 :class:`~.TimeRange` 列表的公共区间
+
+    每个输入列表中的 :class:`~.TimeRange` 需要按时间顺序排列且互不重叠；
+    返回结果同样按时间顺序排列
+    """
+    if not ranges_list:
+        return []
+
+    # 任意一个为空，则没有公共区间
+    if any(not ranges for ranges in ranges_list):
+        return []
+
+    indices = [0] * len(ranges_list)
+    result: list[TimeRange] = []
+
+    # 使用多路指针方法查找公共区间
+    while True:
+        current_ranges = [ranges_list[i][indices[i]] for i in range(len(ranges_list))]
+
+        # 当前所有区间的 最迟的开始时间 和 最早的结束时间
+        start = max(r.at for r in current_ranges)
+        end = min(
+            (r.end for r in current_ranges if r.end is not FOREVER),
+            default=FOREVER,
+        )
+
+        # start < end，说明 start ~ end 范围内是公共部分
+        if end is FOREVER or start < end:
+            result.append(TimeRange(start, end))
+
+        # 所有区间都已作为 FOREVER 结束，则结束循环
+        if end is FOREVER:
+            break
+
+        # 推进结束最早的区间
+        for i, r in enumerate(current_ranges):
+            if r.end is not FOREVER and r.end == end:
+                indices[i] += 1
+
+        # 任意区间已结束，则结束循环
+        if any(indices[i] >= len(ranges_list[i]) for i in range(len(ranges_list))):
+            break
+
+    return result

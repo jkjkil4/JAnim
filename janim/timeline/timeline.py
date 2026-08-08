@@ -18,6 +18,7 @@ import moderngl as mgl
 import numpy as np
 from PIL import Image
 
+from janim.anims_core.anim_stack import simplify_anim_stacks
 from janim.anims_core.animation import Animation
 from janim.anims_core.time import FOREVER, TimeChunks, TimeRange
 from janim.camera.camera import Camera
@@ -304,6 +305,7 @@ class BuiltTimeline:
     def __init__(self, timeline: Timeline):
         self.timeline = timeline
         self.duration = timeline.time_aligner.align_and_record(timeline.current_time)
+        simplify_anim_stacks([appr.stack for appr in timeline.item_appearances.values()])
 
         self.visible_item_chunks = TimeChunks(
             ((item, appr) for item, appr in timeline.item_appearances.items()),

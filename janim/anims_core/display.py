@@ -1,17 +1,25 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Callable
+from typing import TYPE_CHECKING, Callable
 
 from janim.anims_core.stackable import ApplyParams, StackableAnimation
 from janim.anims_core.time import FOREVER
 from janim.items.item import Item
 from janim.utils.data import ContextSetter
 
-type DisplayTypes = Display | DelayedDisplay
+
+class DisplayType(StackableAnimation):
+    """
+    用于类型检查和 ``isinstance`` 判断的基类
+    """
+
+    if TYPE_CHECKING:
+        _be_covered: bool
+        data_orig: Item
 
 
-class Display(StackableAnimation):
+class Display(DisplayType):
     """
     用于标记物件在特定时间区段中的数据
 
@@ -42,7 +50,7 @@ class Display(StackableAnimation):
         params.data = self.data  # type: ignore
 
 
-class DelayedDisplay(StackableAnimation):
+class DelayedDisplay(DisplayType):
     """
     和 :class:`Display` 基本一样，但是会在时间轴全局时刻到达 ``.t_range.at`` 后才调用 ``func`` 函数设置 ``data`` 状态
 
