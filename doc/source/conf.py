@@ -62,5 +62,22 @@ html_js_files = [
 ]
 html_favicon = '_static/favicon.ico'
 
+# 对预发布版给出提示
+IS_PRERELEASE = '-' in release
+
+html_theme_options = {
+    'announcement': (
+        '🚧 <strong>预发布版本文档</strong> — '
+        '可能与稳定版存在一定差异，'
+        '你可以通过角落的悬浮菜单切换到稳定版本。'
+        '<br><br>'
+        '🚧 <strong>Pre-release documentation</strong> — '
+        'This may differ from the stable version. '
+        'You can switch to the stable version via the corner flyout menu.'
+    )
+    if IS_PRERELEASE
+    else None
+}
+
 sys.path.insert(0, os.path.abspath('../..'))
 sys.path.insert(0, os.path.abspath('.'))
