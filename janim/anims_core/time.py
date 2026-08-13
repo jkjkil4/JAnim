@@ -69,6 +69,9 @@ class TimeRange:
         """
         return self.at if self.end is FOREVER else self.end  # type: ignore
 
+    def to_tuple(self) -> tuple[float, float | ForeverType]:
+        return (self.at, self.end)
+
     def set(self, at: float, end: float | ForeverType) -> None:
         """
         设置该时间区段的范围

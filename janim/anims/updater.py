@@ -330,10 +330,6 @@ class MethodUpdater(Animation):
 
     label_color = (214, 185, 253)  # C_LABEL_ANIM_ABSTRACT 的变体
 
-    class ActionType(Enum):
-        GetAttr = 0
-        Call = 1
-
     def __init__(
         self,
         item: Item,

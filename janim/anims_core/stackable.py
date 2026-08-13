@@ -28,7 +28,6 @@ class StackableAnimation(Animation):
         """
         具体请参考 :class:`StackableAnimation` 以及 :class:`ApplyParams` 的介绍
         """
-        pass
 
     def add_to_stack(self, item: Item, *, _is_display: bool = False) -> None:
         """
@@ -36,6 +35,19 @@ class StackableAnimation(Animation):
         """
         stack = self.timeline.item_appearances[item].stack
         stack.add(self, _is_display=_is_display)
+
+    def debug_str(self) -> str:
+        """
+        输出 ``CLASS_NAME at 0x...... order ANIM_ORDER`` 的形式
+
+        如果该动画由其它动画 (``_generate_by``) 生成，则输出 ``CLASS_NAME at 0x...... order ANIM_ORDER (from CLASS_NAME at 0x......)`` 的形式
+        """
+        return (
+            f'{self.__class__.__name__} at 0x{id(self):X} order {self._order}'
+            if self._generate_by is None
+            else f'{self.__class__.__name__} at 0x{id(self):X} order {self._order} '
+            f'(from {self._generate_by.__class__.__name__} at 0x{id(self._generate_by):X})'
+        )
 
 
 @dataclass(slots=True)
