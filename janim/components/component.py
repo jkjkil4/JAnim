@@ -1,13 +1,15 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from functools import partial, wraps
 from typing import TYPE_CHECKING, Any, Callable, Generator, Self, overload
+
+from janim_backend import relation
 
 from janim.anims.method_updater_meta import METHOD_UPDATER_KEY
 from janim.exception import CmptGroupLookupError
+from janim.items.relation import _items_relation_registry
 from janim.locale import get_translator
-from janim.utils.cmpt_lazy import LAZY_INFO_NAME, SIGNAL_OBJ_CONNS_NAME, LazyInfo
+from janim.utils.cmpt_lazy import FLAG_HANDLE_NAME, SIGNAL_OBJ_CONNS_NAME
 from janim.utils.data import AlignedData
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -76,32 +78,34 @@ class Component[ItemT](metaclass=_CmptMeta):
         at_item: Item
         key: str
 
-        _computed_caches: dict[str, Any] = field(default_factory=dict)
+        _flag_0: int = field(init=False)
+        _computed_caches: dict[relation.FlagHandle, Any] = field(default_factory=dict)
 
-        def flag_key(self, name: str) -> str:
-            return f'{self.key}.{name}'
+        def __post_init__(self) -> None:
+            self._flag_0 = _items_relation_registry.indexize_key(self.key)
 
-        def get_computed_for(self, name: str) -> bool | None:
-            has_flag = self.at_item.has_flag(self.flag_key(name))
+        def get_computed_for(self, flag_handle: relation.FlagHandle) -> Any | None:
+            has_flag = self.at_item._rel_handle.get_computed_for(self._flag_0, flag_handle)
             if not has_flag:
                 return None
-            return self._computed_caches[name]
+            return self._computed_caches[flag_handle]
 
-        def mark_computed_for(self, name: str, data: Any) -> None:
-            self._computed_caches[name] = data
-            self.at_item.set_flag(self.flag_key(name), True, False, False)
+        def mark_computed_for(self, flag_handle: relation.FlagHandle, data: Any) -> None:
+            self._computed_caches[flag_handle] = data
+            self.at_item._rel_handle.mark_computed_for(self._flag_0, flag_handle)
 
-        def reset_computed_for(self, info: LazyInfo) -> None:
-            self.at_item.set_flag(
-                self.flag_key(info.name), False, info.recurse_up, info.recurse_down
-            )
+        def reset_computed_for(self, flag_handle: relation.FlagHandle) -> None:
+            self.at_item._rel_handle.reset_computed_for(self._flag_0, flag_handle)
 
         def reset_computed_for_func(self, func: Callable) -> None:
-            self.reset_computed_for(getattr(func, LAZY_INFO_NAME))
+            self.reset_computed_for(getattr(func, FLAG_HANDLE_NAME))
 
-        def reset_all_computed(self) -> None:
-            for name in self._computed_caches:
-                self.at_item.set_flag(self.flag_key(name), False, False, False)
+        def reset_computed_for_list(self, lst: list[relation.FlagHandle]) -> None:
+            self.at_item._rel_handle.reset_computed_for_list(self._flag_0, lst)
+
+        def reset_computed_for_all(self) -> None:
+            for flag_handle in self._computed_caches:
+                self.at_item._rel_handle.reset_computed_for(self._flag_0, flag_handle)
             self._computed_caches.clear()
 
     def __init__(self) -> None:
@@ -137,7 +141,7 @@ class Component[ItemT](metaclass=_CmptMeta):
 
     def become(self, other) -> Self:
         if self.bind is not None:
-            self.bind.reset_all_computed()
+            self.bind.reset_computed_for_all()
 
     def not_changed(self, other) -> bool: ...
 

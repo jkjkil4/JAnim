@@ -1,24 +1,19 @@
 from __future__ import annotations
 
-from contextvars import ContextVar
 import inspect
 from collections import defaultdict
-from dataclasses import dataclass
 from functools import cache, partial, update_wrapper, wraps
 from typing import TYPE_CHECKING, Any, Callable, Concatenate, Self, overload
+
+from janim_backend import relation
+
+from janim.items.relation import _items_relation_registry
 
 if TYPE_CHECKING:
     from janim.components.component import Component
 
 
-LAZY_INFO_NAME = '__lazy_info'
-
-
-@dataclass(slots=True)
-class LazyInfo:
-    name: str
-    recurse_up: bool
-    recurse_down: bool
+FLAG_HANDLE_NAME = '__flag_handle'
 
 
 @overload
@@ -44,22 +39,26 @@ def cmpt_lazy_method(func=None, *, recurse_up=False, recurse_down=False):  # typ
 
 
 def _cmpt_lazy_method(recurse_up: bool, recurse_down: bool, func):
-    name = func.__name__
+    flag_handle = _items_relation_registry.create_flag(func.__name__, recurse_up, recurse_down)
 
     @wraps(func)
     def wrapper(self: Component, *args, **kwargs):
         computed: Any | None = None
 
-        if self.bind is not None and (cached := self.bind.get_computed_for(name)) is not None:
+        if (
+            self.bind is not None
+            and (cached := self.bind.get_computed_for(flag_handle)) is not None
+        ):
             computed = cached
         else:
             computed = func(self, *args, **kwargs)
             if self.bind is not None:
-                self.bind.mark_computed_for(name, computed)
+                self.bind.mark_computed_for(flag_handle, computed)
 
         return computed
 
-    setattr(wrapper, LAZY_INFO_NAME, LazyInfo(name, recurse_up, recurse_down))
+    setattr(wrapper, FLAG_HANDLE_NAME, flag_handle)
+
     return wrapper
 
 
@@ -69,8 +68,8 @@ type Key = str
 # ClsRefreshes 即各个类中出现的 @self_refresh
 # ClsMroRefreshes 即把 mro() 中的 ClsRefreshes 收集得到的总和
 # 因为在类创建环节使用 @self_refresh 时，类对象还没构造，所以我们只能用 qualname 来作为类的标识
-type ClsRefreshes = defaultdict[FullQualname, defaultdict[Key, list[LazyInfo]]]
-type ClsMroRefreshes = defaultdict[Key, list[LazyInfo]]
+type ClsRefreshes = defaultdict[FullQualname, defaultdict[Key, list[relation.FlagHandle]]]
+type ClsMroRefreshes = defaultdict[Key, list[relation.FlagHandle]]
 
 type ObjConns = defaultdict[tuple[CmptSignal, Key], list[Callable]]
 
@@ -150,8 +149,8 @@ class CmptSignal[T, **P, R]:
         return self._self_refresh(full_qualname, func)
 
     def _self_refresh(self, full_qualname: str, func, key: str = ''):
-        info = getattr(func, LAZY_INFO_NAME)
-        self.cls_refreshes[full_qualname][key].append(info)
+        flag_handle = getattr(func, FLAG_HANDLE_NAME)
+        self.cls_refreshes[full_qualname][key].append(flag_handle)
         return func
 
     # endregion
@@ -187,9 +186,7 @@ class CmptSignal[T, **P, R]:
         if sender.bind is not None:
             cls_mro_refreshes = self._get_cls_mro_refreshes(sender.__class__)
             refreshes = cls_mro_refreshes[key]
-
-            for info in refreshes:
-                sender.bind.reset_computed_for(info)
+            sender.bind.reset_computed_for_list(refreshes)
 
         # .connect
 

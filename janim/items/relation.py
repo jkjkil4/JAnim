@@ -44,7 +44,7 @@ class ItemRelation[RelT: 'ItemRelation']:
         self._init_rel_handle()
 
     def _init_rel_handle(self) -> None:
-        self.__rel_handle = _items_relation_registry.create(self)
+        self._rel_handle = _items_relation_registry.create(self)
         self._parents_changed_hooks: list[Callable] = []
         self._children_changed_hooks: list[Callable] = []
 
@@ -56,40 +56,34 @@ class ItemRelation[RelT: 'ItemRelation']:
         for hook in self._children_changed_hooks:
             hook()
 
-    def has_flag(self, flag: str) -> bool:
-        return self.__rel_handle.has_flag(flag)
-
-    def set_flag(self, flag: str, state: bool, recurse_up: bool, recurse_down: bool) -> None:
-        self.__rel_handle.set_flag(flag, state, recurse_up, recurse_down)
-
     @property
     def parents(self) -> list[RelT]:
         """
         父物件列表的一份拷贝
         """
-        return self.__rel_handle.parents_ref().copy()
+        return self._rel_handle.parents_ref().copy()
 
     @property
     def children(self) -> list[RelT]:
         """
         子物件列表的一份拷贝
         """
-        return self.__rel_handle.children_ref().copy()
+        return self._rel_handle.children_ref().copy()
 
     def __iter__(self) -> Iterator[RelT]:
-        return iter(self.__rel_handle.children_ref())
+        return iter(self._rel_handle.children_ref())
 
     def __getitem__(self, i: SupportsIndex | slice):
-        return self.__rel_handle.children_ref()[i]
+        return self._rel_handle.children_ref()[i]
 
     def __contains__(self, obj: RelT) -> bool:
-        return obj in self.__rel_handle.children_ref()
+        return obj in self._rel_handle.children_ref()
 
     def __len__(self) -> int:
-        return len(self.__rel_handle.children_ref())
+        return len(self._rel_handle.children_ref())
 
     def has_child(self) -> bool:
-        return len(self.__rel_handle.children_ref()) != 0
+        return len(self._rel_handle.children_ref()) != 0
 
     def index(self, obj: RelT) -> int:
         """
@@ -99,14 +93,14 @@ class ItemRelation[RelT: 'ItemRelation']:
         :return: 子物件的索引位置
         :raises ValueError: 子物件不在列表中
         """
-        return self.__rel_handle.children_ref().index(obj)
+        return self._rel_handle.children_ref().index(obj)
 
     # region relation management
 
     @staticmethod
     def _get_handles(objs: Iterable[ItemRelation]) -> list[relation.RelationHandle]:
         try:
-            return [obj.__rel_handle for obj in objs]
+            return [obj._rel_handle for obj in objs]
         except AttributeError as e:
             raise RelationError(
                 _('{obj} is not an `Item`, cannot be used as item children').format(e.obj)
@@ -123,7 +117,7 @@ class ItemRelation[RelT: 'ItemRelation']:
         :param objs: 要添加的子物件
         :param prepend: 默认为 ``False``，如果为 ``True``，那么插入到子物件列表的开头
         """
-        self.__rel_handle.add(self._get_handles(objs), prepend)
+        self._rel_handle.add(self._get_handles(objs), prepend)
         return self
 
     def insert(self, index: int, *objs: RelT) -> Self:
@@ -133,7 +127,7 @@ class ItemRelation[RelT: 'ItemRelation']:
         :param index: 插入位置的索引
         :param objs: 要插入的子物件
         """
-        self.__rel_handle.insert(index, self._get_handles(objs))
+        self._rel_handle.insert(index, self._get_handles(objs))
         return self
 
     def remove(self, *objs: RelT) -> Self:
@@ -142,7 +136,7 @@ class ItemRelation[RelT: 'ItemRelation']:
 
         :param objs: 要移除的子物件
         """
-        self.__rel_handle.remove(self._get_handles(objs))
+        self._rel_handle.remove(self._get_handles(objs))
         return self
 
     def shuffle(self) -> Self:
@@ -155,22 +149,22 @@ class ItemRelation[RelT: 'ItemRelation']:
 
             如果需要可重复的随机结果，请在调用此方法前使用 :func:`random.seed` 设置随机数种子
         """
-        random.shuffle(self.__rel_handle.children_ref())
-        self.__rel_handle.emit_children_changed()
+        random.shuffle(self._rel_handle.children_ref())
+        self._rel_handle.emit_children_changed()
         return self
 
     def clear_parents(self) -> Self:
         """
         清空父物件
         """
-        self.__rel_handle.clear_parents()
+        self._rel_handle.clear_parents()
         return self
 
     def clear_children(self) -> Self:
         """
         清空子物件
         """
-        self.__rel_handle.clear_children()
+        self._rel_handle.clear_children()
         return self
 
     def ancestors(self, unordered: bool = False) -> list[RelT]:
@@ -300,7 +294,7 @@ class ItemRelation[RelT: 'ItemRelation']:
         遍历祖先节点中以 ``base_cls`` 为基类的物件，但是排除已经满足条件的物件的祖先物件
         """
         yield from self._walk_nearest_family(
-            base_cls, lambda rel: rel.__rel_handle.walk_ancestor_dfs()
+            base_cls, lambda rel: rel._rel_handle.walk_ancestor_dfs()
         )
 
     def walk_nearest_descendants[Filter](self, base_cls: type[Filter]) -> Iterable[Filter]:
@@ -308,7 +302,7 @@ class ItemRelation[RelT: 'ItemRelation']:
         遍历后代节点中以 ``base_cls`` 为基类的物件，但是排除已经满足条件的物件的后代物件
         """
         yield from self._walk_nearest_family(
-            base_cls, lambda rel: rel.__rel_handle.walk_descendant_dfs()
+            base_cls, lambda rel: rel._rel_handle.walk_descendant_dfs()
         )
 
     # endregion
@@ -317,16 +311,16 @@ class ItemRelation[RelT: 'ItemRelation']:
 
     def _walk_ancestors(self, unordered: bool) -> Iterable[Any]:
         return (
-            self.__rel_handle.walk_ancestor_set()
+            self._rel_handle.walk_ancestor_set()
             if unordered
-            else self.__rel_handle.walk_ancestor_dfs()
+            else self._rel_handle.walk_ancestor_dfs()
         )
 
     def _walk_descendants(self, unordered: bool) -> Iterable[Any]:
         return (
-            self.__rel_handle.walk_descendant_set()
+            self._rel_handle.walk_descendant_set()
             if unordered
-            else self.__rel_handle.walk_descendant_dfs()
+            else self._rel_handle.walk_descendant_dfs()
         )
 
     @staticmethod

@@ -763,7 +763,7 @@ class Item(ItemRelation['Item'], metaclass=_ItemMeta):
 
     def _reset_cmpt_computed(self) -> None:
         for cmpt in self.components.values():
-            cmpt.bind.reset_all_computed()  # type: ignore
+            cmpt.bind.reset_computed_for_all()  # type: ignore
 
     @classmethod
     def align_for_interpolate(cls, item1: Item, item2: Item) -> AlignedData[Self]:
