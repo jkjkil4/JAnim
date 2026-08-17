@@ -35,6 +35,7 @@ class Cmpt_Radius[ItemT](Component[ItemT]):
         return cmpt_copy
 
     def become(self, other: Cmpt_Radius) -> Self:
+        super().become(other)
         if not self._radii.is_share(other._radii):
             self._radii = other._radii.copy()
         return self
@@ -113,13 +114,14 @@ class Cmpt_Radius[ItemT](Component[ItemT]):
         将半径数据重置为默认值
         """
         self.set(np.full(1, self.default_radius))
+        return self
 
     def reverse(self) -> Self:
         self.set(self.get()[::-1])
         return self
 
     def resize(self, length: int) -> Self:
-        self.set(resize_with_interpolation(self.get(), max(1, length)))
+        self.set(resize_with_interpolation(self.get(), max(1, length)), root_only=True)
         return self
 
     def count(self) -> int:

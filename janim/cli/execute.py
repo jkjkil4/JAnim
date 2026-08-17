@@ -1,4 +1,4 @@
-from functools import lru_cache
+from functools import cache
 import inspect
 import os
 import sys
@@ -69,7 +69,7 @@ def run_timelines(
 
     auto_play = len(timelines) == 1
 
-    @lru_cache(maxsize=None)
+    @cache
     def get_all_timeline_names_from_module(module: types.ModuleType) -> list[str]:
         return [timeline.__name__ for timeline in get_all_timelines_from_module(module)]
 

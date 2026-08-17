@@ -58,6 +58,7 @@ class Cmpt_Depth[ItemT](Component[ItemT]):
         return super().copy()
 
     def become(self, other: Cmpt_Depth) -> Self:
+        super().become(other)
         self._depth = other._depth
         self._order = other._order
         return self

@@ -28,7 +28,8 @@ class TimelineTest(unittest.TestCase):
             def not_changed(self, other: MyCmpt) -> bool:
                 return self.value == other.value
 
-            def become(self, other): ...
+            def become(self, other):
+                super().become(other)
 
         class MyItem(Item):
             cmpt = CmptInfo(MyCmpt)

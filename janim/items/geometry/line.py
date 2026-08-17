@@ -304,7 +304,7 @@ class Cmpt_VPoints_DashedLineImpl[ItemT](Cmpt_VPoints_LineImpl[ItemT], impl=True
         if self.has():  # 在初始化时计算 arc_length 需要用到
             return super().get_start()
         assert self.bind is not None
-        sub = self.bind.at_item._children[0][0]  # 含义：首个 subpath 的首个虚线段
+        sub = self.bind.at_item[0][0]  # 含义：首个 subpath 的首个虚线段
         assert isinstance(sub, VItem)
         return sub.points.get_start()
 
@@ -312,7 +312,7 @@ class Cmpt_VPoints_DashedLineImpl[ItemT](Cmpt_VPoints_LineImpl[ItemT], impl=True
         if self.has():  # 在初始化时计算 arc_length 需要用到
             return super().get_end()
         assert self.bind is not None
-        sub = self.bind.at_item._children[-1][-1]  # 含义：最后一个 subpath 的最后一个虚线段
+        sub = self.bind.at_item[-1][-1]  # 含义：最后一个 subpath 的最后一个虚线段
         assert isinstance(sub, VItem)
         return sub.points.get_end()
 
@@ -378,7 +378,7 @@ class DashedLine(Line, Group[VItem]):
                 dashed_ratio=self.dashed_ratio,
             )
         self.points.clear()
-        if not self._children:
+        if not self.has_child():
             self.add(*dashes)
         else:
             self._children_become(dashes, True)

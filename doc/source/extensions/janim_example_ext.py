@@ -1,7 +1,7 @@
 import ast
 import os
 import textwrap
-from functools import lru_cache
+from functools import cache, lru_cache
 from pathlib import Path
 
 import jinja2
@@ -23,11 +23,10 @@ class JAnimExampleDirective(Directive):
         'extract-from-example-mark': str,
         # 若指定则仅保留 construct 方法体，并去除额外缩进
         'no-construct': bool,
-
         # 媒体文件路径，可以是图片或者视频，以 source/ 目录为根目录
         'media': str,
         # 忽略，仅用于在代码 docstring 写一个链接方便用户跳转
-        'url': str,     # ignores
+        'url': str,  # ignores
         # 在底部显示一些额外的内容，例如可以另行参考的内容
         'ref': str,
         # 若指定则不显示名称
@@ -39,11 +38,13 @@ class JAnimExampleDirective(Directive):
 
     def run(self):
         scene_name = self.arguments[0]
-        media_url = self.options["media"]
+        media_url = self.options['media']
         hide_name = 'hide_name' in self.options
         hide_code = 'hide_code' in self.options
         no_construct = 'no-construct' in self.options
-        content = get_content_from_extract_options(self.options, scene_name, self.content, no_construct=no_construct)
+        content = get_content_from_extract_options(
+            self.options, scene_name, self.content, no_construct=no_construct
+        )
 
         env = self.state.document.settings.env
         source_file = Path(env.doc2path(env.docname, base=None))
@@ -56,11 +57,7 @@ class JAnimExampleDirective(Directive):
         else:
             is_video = True
 
-        source_block = [
-            ".. code-block:: python",
-            "",
-            *["    " + line for line in content]
-        ]
+        source_block = ['.. code-block:: python', '', *['    ' + line for line in content]]
         source_block = '\n'.join(source_block)
 
         state_machine = self.state_machine
@@ -72,15 +69,13 @@ class JAnimExampleDirective(Directive):
             media_url=media_url,
             source_block=source_block,
             ref=self.options.get('ref', ''),
-
             is_video=is_video,
             hide_name=hide_name,
-            hide_code=hide_code
+            hide_code=hide_code,
         )
 
         state_machine.insert_input(
-            rendered_template.split('\n'),
-            source=document.attributes['source']
+            rendered_template.split('\n'), source=document.attributes['source']
         )
 
         return []
@@ -93,7 +88,7 @@ def setup(app):
     return metadata
 
 
-TEMPLATE = R'''
+TEMPLATE = R"""
 .. raw:: html
 
     <div class="janim-box">
@@ -133,7 +128,7 @@ TEMPLATE = R'''
 .. raw:: html
 
     </div>
-'''
+"""
 
 
 @lru_cache(maxsize=1)
@@ -212,7 +207,7 @@ def strip_construct_wrapper(source: str) -> str:
     if def_index is None:
         return source
 
-    body = '\n'.join(lines[def_index + 1:])
+    body = '\n'.join(lines[def_index + 1 :])
     return textwrap.dedent(body).rstrip('\n')
 
 
@@ -224,7 +219,7 @@ def extract_source_from_options(options: dict, scene_name: str) -> str | None:
     for option_name, path_getter in class_extract_options:
         if option_name in options:
             classname = options[option_name]
-            if classname == 'None':     # wtf 'None' instead of None
+            if classname == 'None':  # wtf 'None' instead of None
                 classname = scene_name
             paths = path_getter()
             if isinstance(paths, str):
@@ -244,7 +239,7 @@ def extract_source_from_options(options: dict, scene_name: str) -> str | None:
     for option_name, path_getter in mark_extract_options:
         if option_name in options:
             markname = options[option_name]
-            if markname == 'None':     # wtf 'None' instead of None
+            if markname == 'None':  # wtf 'None' instead of None
                 markname = scene_name
             paths = path_getter()
             if isinstance(paths, str):
@@ -261,7 +256,7 @@ def extract_source_from_options(options: dict, scene_name: str) -> str | None:
     return None
 
 
-@lru_cache(maxsize=None)
+@cache
 def get_classdefs(file_path: str) -> dict[str, str]:
     """
     使用 AST 提取指定文件中，在顶层（toplevel）直接定义的 ``class`` 源码
@@ -282,7 +277,7 @@ def get_classdefs(file_path: str) -> dict[str, str]:
     }
 
 
-@lru_cache(maxsize=None)
+@cache
 def get_marked_source(file_path: str, markname: str) -> str:
     """
     提取文件在 ``# beginmark xxx`` 和 ``# endmark xxx`` 之间的代码
@@ -313,4 +308,4 @@ def get_marked_source(file_path: str, markname: str) -> str:
     if end_line <= begin_line:
         raise ValueError(f'Invalid mark range: {markname}')
 
-    return ''.join(lines[begin_line + 1:end_line]).rstrip('\n')
+    return ''.join(lines[begin_line + 1 : end_line]).rstrip('\n')

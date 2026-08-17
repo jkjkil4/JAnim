@@ -1,14 +1,14 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
-from typing import TYPE_CHECKING, Generator, Self, overload
+from dataclasses import dataclass, field
+from functools import partial, wraps
+from typing import TYPE_CHECKING, Any, Callable, Generator, Self, overload
 
-import janim.utils.refresh as refresh
 from janim.anims.method_updater_meta import METHOD_UPDATER_KEY
 from janim.exception import CmptGroupLookupError
 from janim.locale import get_translator
+from janim.utils.cmpt_lazy import LAZY_INFO_NAME, SIGNAL_OBJ_CONNS_NAME, LazyInfo
 from janim.utils.data import AlignedData
-from janim.utils.signal import SIGNAL_OBJ_SLOTS_NAME
 
 if TYPE_CHECKING:  # pragma: no cover
     from janim.items.item import Item
@@ -28,7 +28,7 @@ class _CmptMeta(type):
         if not impl:
             for key in ('copy', 'become', 'not_changed'):
                 if not callable(attrdict.get(key, None)):
-                    raise AttributeError(
+                    raise AttributeError(  # noqa: TRY004
                         _(
                             'Every subclass of Component must inherit and implement '
                             'the "{key}" method, but "{name}" does not'
@@ -37,7 +37,7 @@ class _CmptMeta(type):
         return super().__new__(cls, name, bases, attrdict)
 
 
-class Component[ItemT](refresh.Refreshable, metaclass=_CmptMeta):
+class Component[ItemT](metaclass=_CmptMeta):
     @dataclass(slots=True)
     class BindInfo:
         """
@@ -76,6 +76,34 @@ class Component[ItemT](refresh.Refreshable, metaclass=_CmptMeta):
         at_item: Item
         key: str
 
+        _computed_caches: dict[str, Any] = field(default_factory=dict)
+
+        def flag_key(self, name: str) -> str:
+            return f'{self.key}.{name}'
+
+        def get_computed_for(self, name: str) -> bool | None:
+            has_flag = self.at_item.has_flag(self.flag_key(name))
+            if not has_flag:
+                return None
+            return self._computed_caches[name]
+
+        def mark_computed_for(self, name: str, data: Any) -> None:
+            self._computed_caches[name] = data
+            self.at_item.set_flag(self.flag_key(name), True, False, False)
+
+        def reset_computed_for(self, info: LazyInfo) -> None:
+            self.at_item.set_flag(
+                self.flag_key(info.name), False, info.recurse_up, info.recurse_down
+            )
+
+        def reset_computed_for_func(self, func: Callable) -> None:
+            self.reset_computed_for(getattr(func, LAZY_INFO_NAME))
+
+        def reset_all_computed(self) -> None:
+            for name in self._computed_caches:
+                self.at_item.set_flag(self.flag_key(name), False, False, False)
+            self._computed_caches.clear()
+
     def __init__(self) -> None:
         super().__init__()
         self.bind: Component.BindInfo | None = None
@@ -87,16 +115,6 @@ class Component[ItemT](refresh.Refreshable, metaclass=_CmptMeta):
         子类可以继承该函数，进行与所在物件相关的处理
         """
         self.bind = bind
-
-    def mark_refresh(self, name: str, *, recurse_up=False, recurse_down=False) -> None:
-        """
-        详见： :meth:`~.Item.broadcast_refresh_of_component`
-        """
-        # 与 super().mark_refresh(func) 等价，这样写是为了尽可能优化性能
-        refresh.Refreshable.mark_refresh(self, name)
-
-        if self.bind is not None:
-            self.bind.at_item.broadcast_refresh_of_component(self, name, recurse_up, recurse_down)
 
     def __copy__(self) -> Self:
         """
@@ -113,12 +131,13 @@ class Component[ItemT](refresh.Refreshable, metaclass=_CmptMeta):
 
     def copy(self) -> Self:
         cmpt_copy = self.__copy__()
-        # cmpt_copy.bind = None
-        cmpt_copy.reset_refresh()
-        setattr(cmpt_copy, SIGNAL_OBJ_SLOTS_NAME, None)
+        cmpt_copy.bind = None
+        setattr(cmpt_copy, SIGNAL_OBJ_CONNS_NAME, None)
         return cmpt_copy
 
-    def become(self, other) -> Self: ...
+    def become(self, other) -> Self:
+        if self.bind is not None:
+            self.bind.reset_all_computed()
 
     def not_changed(self, other) -> bool: ...
 
@@ -225,12 +244,12 @@ class _CmptGroup(Component):
 
     def copy(self, *, new_cmpts: dict[str, Component]) -> Self:
         cmpt_copy = super().copy()
-        cmpt_copy.objects = {key: new_cmpts[key] for key in cmpt_copy.objects.keys()}
+        cmpt_copy.objects = {key: new_cmpts[key] for key in cmpt_copy.objects}
 
         return cmpt_copy
 
     def become(self, other) -> Self:  # pragma: no cover
-        return self
+        super().become(other)
 
     def not_changed(self, other: _CmptGroup) -> bool:
         for key, obj in self.objects.items():

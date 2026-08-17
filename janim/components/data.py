@@ -54,6 +54,8 @@ class Cmpt_Data[ItemT, T](Component[ItemT]):
         return cmpt_copy
 
     def become(self, other: Cmpt_Data) -> Self:
+        super().become(other)
+
         with self._cls_name():
             # compatibility
             fn = other.copy_func or Cmpt_Data.copy_for_value

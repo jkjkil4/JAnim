@@ -7,7 +7,6 @@ from typing import Callable, Generator, Iterable, Self
 
 import numpy as np
 
-import janim.utils.refresh as refresh
 from janim.components.points import Cmpt_Points, PointsFn
 from janim.constants import DEGREES, NAN_POINT, ORIGIN, OUT, RIGHT, UP
 from janim.exception import PointError
@@ -24,6 +23,7 @@ from janim.utils.bezier import (
     partial_quadratic_bezier_points,
     smooth_quadratic_path,
 )
+from janim.utils.cmpt_lazy import cmpt_lazy_method
 from janim.utils.data import AlignedData
 from janim.utils.space_ops import get_norm, get_unit_normal, normalize, rotation_between_vectors
 
@@ -562,7 +562,7 @@ class Cmpt_VPoints[ItemT](Cmpt_Points[ItemT], impl=True):
         return (self.get_joint_products() > math.cos(angle_tol)).all()
 
     @Cmpt_Points.set.self_refresh
-    @refresh.register
+    @cmpt_lazy_method
     def get_joint_products(self) -> np.ndarray:
         """
         得到每个锚点前后方向向量的点积
@@ -669,7 +669,7 @@ class Cmpt_VPoints[ItemT](Cmpt_Points[ItemT], impl=True):
 
     @property
     @Cmpt_Points.set.self_refresh
-    @refresh.register
+    @cmpt_lazy_method
     def area_vector(self) -> np.ndarray:
         """
         一个向量，其长度为锚点形成的多边形所围成的面积，根据右手定则指向垂直于该多边形的方向
@@ -678,7 +678,7 @@ class Cmpt_VPoints[ItemT](Cmpt_Points[ItemT], impl=True):
 
     @property
     @Cmpt_Points.set.self_refresh
-    @refresh.register
+    @cmpt_lazy_method
     def unit_normal(self) -> np.ndarray:
         """
         单位法向量
@@ -711,7 +711,7 @@ class Cmpt_VPoints[ItemT](Cmpt_Points[ItemT], impl=True):
         return list(self.walk_subpath_end_indices())
 
     @Cmpt_Points.set.self_refresh
-    @refresh.register
+    @cmpt_lazy_method
     def get_closepath_flags(self) -> np.ndarray:
         """
         得到子路径是否闭合的标志，结果长度与点数量相同
@@ -759,15 +759,16 @@ class Cmpt_VPoints[ItemT](Cmpt_Points[ItemT], impl=True):
 
     # region identity
 
-    _identity_offsets = [0, -0.02, 0.02]
+    _identity_offsets = (0, -0.02, 0.02)
+    _default_hashes = tuple(0 for _ in range(len(_identity_offsets)))
 
     @property
     @Cmpt_Points.set.self_refresh
-    @refresh.register
+    @cmpt_lazy_method
     def identity(self) -> tuple[tuple[int, ...], np.ndarray]:
         points = self.get()[:-1]
         if len(points) < 2:
-            return RIGHT, 0
+            return self._default_hashes, RIGHT
 
         # 计算在初始方向上的宽度
         vect = normalize(self.start_direction)

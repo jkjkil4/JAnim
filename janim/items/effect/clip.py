@@ -66,6 +66,7 @@ class Cmpt_FrameClip[ItemT](Component[ItemT]):
         return cmpt_copy
 
     def become(self, other: Cmpt_FrameClip) -> Self:
+        super().become(other)
         self._attrs = other._attrs.copy()
         return self
 
@@ -230,6 +231,7 @@ class Cmpt_Attrs[ItemT](Component[ItemT]):
         return cmpt_copy
 
     def become(self, other: Cmpt_TransformableFrameClip) -> Self:
+        super().become(other)
         self._attrs = other._attrs.copy()
         return self
 

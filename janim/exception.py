@@ -1,5 +1,21 @@
 import sys
 from dataclasses import dataclass
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+
+    class JAnimBackendException(RuntimeError): ...
+
+    class LifetimeError(JAnimBackendException): ...
+
+    class RelationError(JAnimBackendException): ...
+
+else:
+    from janim_backend.exception import (
+        JAnimBackendException,
+        LifetimeError,
+        RelationError,
+    )
 
 _listen_exception_callbacks = []
 _sys_excepthook = sys.excepthook

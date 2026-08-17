@@ -30,6 +30,7 @@ class Cmpt_Rgba[ItemT](Component[ItemT]):
         return cmpt_copy
 
     def become(self, other: Cmpt_Rgba) -> Self:
+        super().become(other)
         if not self._rgba.is_share(other._rgba):
             self._rgba = other._rgba.copy()
         return self

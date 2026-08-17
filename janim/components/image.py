@@ -23,6 +23,7 @@ class Cmpt_Image[ItemT](Component[ItemT]):
         return super().copy()
 
     def become(self, other: Cmpt_Image) -> Self:
+        super().become(other)
         self.set(other.img, other.min_mag_filter)
         return self
 

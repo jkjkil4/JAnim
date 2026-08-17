@@ -5,7 +5,6 @@ from typing import Iterable, Self
 import numpy as np
 from pyquaternion import Quaternion
 
-import janim.utils.refresh as refresh
 from janim.camera.camera_info import CameraInfo
 from janim.components.component import CmptInfo
 from janim.components.points import Cmpt_Points
@@ -13,6 +12,7 @@ from janim.constants import ORIGIN, OUT
 from janim.items.points import Points
 from janim.typing import Vect, VectArray
 from janim.utils.bezier import interpolate
+from janim.utils.cmpt_lazy import cmpt_lazy_method
 from janim.utils.config import Config
 from janim.utils.paths import PathFunc, straight_path
 from janim.utils.simple_functions import clip
@@ -84,7 +84,7 @@ class Cmpt_CameraPoints[ItemT](Cmpt_Points[ItemT]):
         return cmpt_copy
 
     def become(self, other: Cmpt_CameraPoints) -> Self:
-        self.set(other.get())
+        super().become(other)
         self.size = other.size
         self.fov = other.fov
         self.orientation = Quaternion(other.orientation.elements)
@@ -119,7 +119,8 @@ class Cmpt_CameraPoints[ItemT](Cmpt_Points[ItemT]):
     @size.setter
     def size(self, value: Vect) -> None:
         self._size = np.array(value, dtype=np.float64)
-        self.mark_refresh(Cmpt_CameraPoints.info.fget.__name__)
+        if self.bind is not None:
+            self.bind.reset_computed_for_func(Cmpt_CameraPoints.info.fget)  # type: ignore
 
     @property
     def fov(self) -> float:
@@ -128,7 +129,8 @@ class Cmpt_CameraPoints[ItemT](Cmpt_Points[ItemT]):
     @fov.setter
     def fov(self, val: float) -> None:
         self._fov = val
-        self.mark_refresh(Cmpt_CameraPoints.info.fget.__name__)
+        if self.bind is not None:
+            self.bind.reset_computed_for_func(Cmpt_CameraPoints.info.fget)  # type: ignore
 
     @property
     def orientation(self) -> Quaternion:
@@ -137,7 +139,8 @@ class Cmpt_CameraPoints[ItemT](Cmpt_Points[ItemT]):
     @orientation.setter
     def orientation(self, val: Quaternion) -> None:
         self._orientation = val
-        self.mark_refresh(Cmpt_CameraPoints.info.fget.__name__)
+        if self.bind is not None:
+            self.bind.reset_computed_for_func(Cmpt_CameraPoints.info.fget)  # type: ignore
 
     def scale(
         self,
@@ -190,7 +193,7 @@ class Cmpt_CameraPoints[ItemT](Cmpt_Points[ItemT]):
 
     @property
     @Cmpt_Points.set.self_refresh
-    @refresh.register
+    @cmpt_lazy_method
     def info(self) -> CameraInfo:
         """
         摄像机的几何属性
