@@ -140,8 +140,9 @@ class Component[ItemT](metaclass=_CmptMeta):
         return cmpt_copy
 
     def become(self, other) -> Self:
-        if self.bind is not None:
-            self.bind.reset_computed_for_all()
+        bind = self.bind
+        if bind is not None:
+            bind.reset_computed_for_all()
 
     def not_changed(self, other) -> bool: ...
 

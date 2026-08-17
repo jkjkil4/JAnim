@@ -668,8 +668,10 @@ class Item(ItemRelation['Item'], metaclass=_ItemMeta):
         # self.parents 不变
         self._children_become(other, auto_visible)
 
-        for key in self.components.keys() | other.components.keys():
-            self.components[key].become(other.components[key])
+        self_cmpts = self.components
+        other_cmpts = other.components
+        for key in self_cmpts.keys() | other_cmpts.keys():
+            self_cmpts[key].become(other_cmpts[key])
 
         if self.timeline is not None:
             # 强制将没有变化的物件以及所有后代物件也产生 detect_change 记录
@@ -737,8 +739,10 @@ class Item(ItemRelation['Item'], metaclass=_ItemMeta):
         if self._stored:
             self._stored = self.Stored(other)
 
-        for key in self.components.keys() & other.components.keys():
-            self.components[key].become(other.components[key])
+        self_cmpts = self.components
+        other_cmpts = other.components
+        for key in self_cmpts.keys() & other_cmpts.keys():
+            self_cmpts[key].become(other_cmpts[key])
 
         return self
 

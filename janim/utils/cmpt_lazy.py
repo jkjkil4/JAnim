@@ -43,17 +43,16 @@ def _cmpt_lazy_method(recurse_up: bool, recurse_down: bool, func):
 
     @wraps(func)
     def wrapper(self: Component, *args, **kwargs):
+        bind = self.bind
+
         computed: Any | None = None
 
-        if (
-            self.bind is not None
-            and (cached := self.bind.get_computed_for(flag_handle)) is not None
-        ):
+        if bind is not None and (cached := bind.get_computed_for(flag_handle)) is not None:
             computed = cached
         else:
             computed = func(self, *args, **kwargs)
-            if self.bind is not None:
-                self.bind.mark_computed_for(flag_handle, computed)
+            if bind is not None:
+                bind.mark_computed_for(flag_handle, computed)
 
         return computed
 
