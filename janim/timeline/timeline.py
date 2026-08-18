@@ -27,6 +27,7 @@ from janim.constants import DEFAULT_DURATION
 from janim.exception import TimelineLookupError
 from janim.items.item import Item
 from janim.items.points import Point
+from janim.items.relation import _items_relation_registry
 from janim.locale import get_translator
 from janim.logger import log
 from janim.render.base import RenderData, Renderer, apply_blend_flags, create_context_430_or_330
@@ -163,6 +164,8 @@ class Timeline(PausePointsMixin, AudiosAndSubtitlesMixin, DebugMixin, TimelineCo
 
             for appr in self.item_appearances.values():
                 appr.stack.clear_cache()  # TODO: 检查这句是否有必要，并说明原因
+
+            _items_relation_registry.cut_nodes_chunk()
 
             built = BuiltTimeline(self)
 
