@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 import moderngl as mgl
 import numpy as np
 import OpenGL.GL as gl
-import janim_backend.render as jrender
+from janim_backend import compute
 
 from janim.camera.camera_info import CameraInfo
 from janim.render.base import RenderData, Renderer
@@ -312,7 +312,7 @@ class VItemPlaneRenderer(Renderer):
 
         camera_info = new_attrs.camera_info
 
-        bytes = jrender.compute_mapped_clip_box_in_glcoord(
+        bytes = compute.compute_mapped_clip_box_in_glcoord(
             mins,
             maxs,
             camera_info.proj_view_matrix,

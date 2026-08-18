@@ -5,6 +5,7 @@ import types
 from typing import TYPE_CHECKING, Callable, Iterable, Self
 
 import numpy as np
+from janim_backend import compute
 
 from janim.anims.method_updater_meta import register_updater
 from janim.components.component import Component
@@ -264,15 +265,9 @@ class Cmpt_Points[ItemT](Component[ItemT]):
             根据传入的 ``points`` 计算得到包围框的 左下、中心、右上 三个点
             """
             points = np.asarray(points)
-
-            if len(points) == 0:
-                return np.zeros((3, 3))
-
-            mins = np.nanmin(points, axis=0)
-            maxs = np.nanmax(points, axis=0)
-            mids = (mins + maxs) / 2
-
-            return np.array([mins, mids, maxs])
+            if points.dtype != np.float32:
+                points = points.astype(np.float32)
+            return compute.compute_bounding_box(points)
 
         def get(self, direction: Vect) -> np.ndarray:
             """
