@@ -135,8 +135,9 @@ class ArrowTip(VItem):
 class Cmpt_VPoints_ArrowImpl[ItemT](Cmpt_VPoints_LineImpl[ItemT], impl=True):
     def put_start_and_end_on(self, start: Vect, end: Vect) -> Self:
         super().put_start_and_end_on(start, end)
-        if self.bind is not None:
-            self.bind.at_item.place_tip()
+        at_item = self._bind.at_item
+        if at_item is not None:
+            at_item.place_tip()
         return self
 
 

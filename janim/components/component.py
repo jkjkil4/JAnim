@@ -40,85 +40,17 @@ class _CmptMeta(type):
 
 
 class Component[ItemT](metaclass=_CmptMeta):
-    @dataclass(slots=True)
-    class BindInfo:
-        """
-        对组件定义信息的封装
-
-        - ``decl_cls``: 以 ``xxx = CmptInfo(...)`` 的形式被声明在哪个类中；
-          如果一个类及其父类都有 ``xxx = CmptInfo(...)`` ，那么 ``decl_cls`` 是父类
-        - ``at_item``: 这个组件对象是属于哪个物件对象的
-        - ``key``: 这个组件对象的变量名
-
-        例：
-
-        .. code-block:: python
-
-            class MyCmpt(Component): ...
-
-            class MyItem(Item):
-                cmpt1 = CmptInfo(MyCmpt[Self])
-                cmpt2 = CmptInfo(MyCmpt[Self])
-
-            class MyItem2(MyItem):
-                cmpt3 = CmptInfo(MyCmpt[Self])
-
-            item = MyItem()
-
-            # item.cmpt1.bind_info 与 BindInfo(MyItem, item, 'cmpt1') 一致
-            # item.cmpt2.bind_info 与 BindInfo(MyItem, item, 'cmpt2') 一致
-
-            item2 = MyItem2()
-
-            # item2.cmpt1.bind_info 与 BindInfo(MyItem, item2, 'cmpt1') 一致
-            # item2.cmpt3.bind_info 与 BindInfo(MyItem2, item2, 'cmpt3') 一致
-        """
-
-        decl_cls: type[Item]
-        at_item: Item
-        key: str
-
-        _flag_0: int = field(init=False)
-        _computed_caches: dict[relation.FlagHandle, Any] = field(default_factory=dict)
-
-        def __post_init__(self) -> None:
-            self._flag_0 = _items_relation_registry.indexize_key(self.key)
-
-        def get_computed_for(self, flag_handle: relation.FlagHandle) -> Any | None:
-            has_flag = self.at_item._rel_handle.get_computed_for(self._flag_0, flag_handle)
-            if not has_flag:
-                return None
-            return self._computed_caches[flag_handle]
-
-        def mark_computed_for(self, flag_handle: relation.FlagHandle, data: Any) -> None:
-            self._computed_caches[flag_handle] = data
-            self.at_item._rel_handle.mark_computed_for(self._flag_0, flag_handle)
-
-        def reset_computed_for(self, flag_handle: relation.FlagHandle) -> None:
-            self.at_item._rel_handle.reset_computed_for(self._flag_0, flag_handle)
-
-        def reset_computed_for_func(self, func: Callable) -> None:
-            self.reset_computed_for(getattr(func, FLAG_HANDLE_NAME))
-
-        def reset_computed_for_list(self, lst: list[relation.FlagHandle]) -> None:
-            self.at_item._rel_handle.reset_computed_for_list(self._flag_0, lst)
-
-        def reset_computed_for_all(self) -> None:
-            for flag_handle in self._computed_caches:
-                self.at_item._rel_handle.reset_computed_for(self._flag_0, flag_handle)
-            self._computed_caches.clear()
-
     def __init__(self) -> None:
         super().__init__()
-        self.bind: Component.BindInfo | None = None
+        self._bind = _items_relation_registry.create_binder()
 
-    def init_bind(self, bind: BindInfo) -> None:
+    def init_bind(self, info: relation.BindInfo) -> None:
         """
         用于 ``Item._init_components``
 
         子类可以继承该函数，进行与所在物件相关的处理
         """
-        self.bind = bind
+        self._bind.bind_to(info)
 
     def __copy__(self) -> Self:
         """
@@ -135,45 +67,43 @@ class Component[ItemT](metaclass=_CmptMeta):
 
     def copy(self) -> Self:
         cmpt_copy = self.__copy__()
-        cmpt_copy.bind = None
+        cmpt_copy._bind = _items_relation_registry.create_binder()
         setattr(cmpt_copy, SIGNAL_OBJ_CONNS_NAME, None)
         return cmpt_copy
 
     def become(self, other) -> Self:
-        bind = self.bind
-        if bind is not None:
-            bind.reset_computed_for_all()
+        self._bind.reset_computed_for_all()
 
     def not_changed(self, other) -> bool: ...
 
     def get_same_cmpt(self, item: Item) -> Self:
         return self.get_same_cmpt_if_exists(item) or getattr(
-            item.astype(self.bind.decl_cls), self.bind.key
+            item.astype(self._bind.decl_cls), self._bind.key
         )
 
     def get_same_cmpt_without_mock(self, item: Item) -> Self | None:
-        return item.components.get(self.bind.key, None)
+        return item.components.get(self._bind.key, None)
 
     def get_same_cmpt_if_exists(self, item: Item) -> Self | None:
-        cmpt = item.components.get(self.bind.key, None)
+        cmpt = item.components.get(self._bind.key, None)
         if cmpt is not None:
             return cmpt
 
-        return item._astype_mock_cmpt.get(self.bind.key, None)
+        return item._astype_mock_cmpt.get(self._bind.key, None)
 
     def walk_same_cmpt_of_self_and_descendants_without_mock(
         self,
         root_only: bool = False,
     ) -> Generator[Self, None, None]:
         yield self
-        if root_only or self.bind is None:
+        if root_only or not self._bind.is_binded():
             return
         yield from self.walk_same_cmpt_of_descendants_without_mock()
 
     def walk_same_cmpt_of_descendants_without_mock(self) -> Generator[Self, None, None]:
-        item = self.bind.at_item
-        if not item._stored:
-            for item in item.walk_descendants(self.bind.decl_cls):
+        root: Item = self._bind.at_item
+        if not root._stored:
+            for item in root.walk_descendants(self._bind.decl_cls):
                 cmpt = self.get_same_cmpt_without_mock(item)
                 if cmpt is None:
                     continue
@@ -184,7 +114,7 @@ class Component[ItemT](metaclass=_CmptMeta):
         """
         所位于的物件，便于链式调用同物件下其它的组件
         """
-        return self.bind.at_item
+        return self._bind.at_item
 
     @classmethod
     def align_for_interpolate(cls, cmpt1, cmpt2) -> AlignedData[Self]:
@@ -243,8 +173,8 @@ class _CmptGroup(Component):
         super().__init__(**kwargs)
         self.cmpt_info_list = cmpt_info_list
 
-    def init_bind(self, bind: Component.BindInfo) -> None:
-        super().init_bind(bind)
+    def init_bind(self, info: relation.BindInfo) -> None:
+        super().init_bind(info)
         self._find_objects()
 
     def copy(self, *, new_cmpts: dict[str, Component]) -> Self:
@@ -282,12 +212,12 @@ class _CmptGroup(Component):
 
         for cmpt_info in self.cmpt_info_list:
             key = self._find_key(cmpt_info)
-            self.objects[key] = getattr(self.bind.at_item, key)
+            self.objects[key] = getattr(self._bind.at_item, key)
 
     def _find_key(self, cmpt_info: CmptInfo) -> str:
         from janim.items.item import CLS_CMPTINFO_NAME
 
-        for key, val in self.bind.decl_cls.__dict__.get(CLS_CMPTINFO_NAME, {}).items():
+        for key, val in self._bind.decl_cls.__dict__.get(CLS_CMPTINFO_NAME, {}).items():
             if val is cmpt_info:
                 return key
 

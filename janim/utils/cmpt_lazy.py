@@ -43,20 +43,17 @@ def _cmpt_lazy_method(recurse_up: bool, recurse_down: bool, func):
 
     @wraps(func)
     def wrapper(self: Component, *args, **kwargs):
-        bind = self.bind
+        bind = self._bind
 
-        computed: Any | None = None
-
-        if bind is not None and (cached := bind.get_computed_for(flag_handle)) is not None:
+        if (cached := bind.get_computed_for(flag_handle)) is not None:
             computed = cached
         else:
             computed = func(self, *args, **kwargs)
-            if bind is not None:
-                bind.mark_computed_for(flag_handle, computed)
+            bind.mark_computed_for(flag_handle, computed)
 
         return computed
 
-    setattr(wrapper, FLAG_HANDLE_NAME, flag_handle)
+    setattr(wrapper, relation.FLAG_HANDLE_NAME, flag_handle)
 
     return wrapper
 
@@ -182,10 +179,9 @@ class CmptSignal[T, **P, R]:
     def emit(self, sender: Component, *args, key: str = '', **kwargs):
         # @self_refresh
 
-        if sender.bind is not None:
-            cls_mro_refreshes = self._get_cls_mro_refreshes(sender.__class__)
-            refreshes = cls_mro_refreshes[key]
-            sender.bind.reset_computed_for_list(refreshes)
+        cls_mro_refreshes = self._get_cls_mro_refreshes(sender.__class__)
+        refreshes = cls_mro_refreshes[key]
+        sender._bind.reset_computed_for_list(refreshes)
 
         # .connect
 

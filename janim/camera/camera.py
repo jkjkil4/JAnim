@@ -119,8 +119,7 @@ class Cmpt_CameraPoints[ItemT](Cmpt_Points[ItemT]):
     @size.setter
     def size(self, value: Vect) -> None:
         self._size = np.array(value, dtype=np.float64)
-        if self.bind is not None:
-            self.bind.reset_computed_for_func(Cmpt_CameraPoints.info.fget)  # type: ignore
+        self._bind.reset_computed_for_func(Cmpt_CameraPoints.info.fget)
 
     @property
     def fov(self) -> float:
@@ -129,8 +128,7 @@ class Cmpt_CameraPoints[ItemT](Cmpt_Points[ItemT]):
     @fov.setter
     def fov(self, val: float) -> None:
         self._fov = val
-        if self.bind is not None:
-            self.bind.reset_computed_for_func(Cmpt_CameraPoints.info.fget)  # type: ignore
+        self._bind.reset_computed_for_func(Cmpt_CameraPoints.info.fget)
 
     @property
     def orientation(self) -> Quaternion:
@@ -139,8 +137,7 @@ class Cmpt_CameraPoints[ItemT](Cmpt_Points[ItemT]):
     @orientation.setter
     def orientation(self, val: Quaternion) -> None:
         self._orientation = val
-        if self.bind is not None:
-            self.bind.reset_computed_for_func(Cmpt_CameraPoints.info.fget)  # type: ignore
+        self._bind.reset_computed_for_func(Cmpt_CameraPoints.info.fget)
 
     def scale(
         self,

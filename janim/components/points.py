@@ -5,6 +5,7 @@ import types
 from typing import TYPE_CHECKING, Callable, Iterable, Self
 
 import numpy as np
+from janim_backend import relation
 
 from janim.anims.method_updater_meta import register_updater
 from janim.components.component import Component
@@ -61,11 +62,12 @@ class Cmpt_Points[ItemT](Component[ItemT]):
 
         self._points = DEFAULT_POINTS_ARRAY.copy()
 
-    def init_bind(self, bind: Component.BindInfo):
-        super().init_bind(bind)
+    def init_bind(self, info: relation.BindInfo):
+        super().init_bind(info)
 
-        bind.at_item._children_changed_hooks.append(
-            lambda: bind.reset_computed_for_func(Cmpt_Points.box.fget)
+        at_item: Item = self._bind.unwrap_at_item()
+        at_item._children_changed_hooks.append(
+            lambda: self._bind.reset_computed_for_func(Cmpt_Points.box.fget)
         )
 
     def copy(self) -> Self:
@@ -1102,13 +1104,14 @@ class Cmpt_Points[ItemT](Component[ItemT]):
         """
         将子物件按照 ``direction`` 方向排列
         """
-        if self.bind is None:
-            return
+        at_item: Item | None = self._bind.at_item
+        if at_item is None:
+            return self
 
-        cmpts = [self.get_same_cmpt(item) for item in self.bind.at_item]
+        cmpts = [self.get_same_cmpt(item) for item in at_item]
 
         for cmpt1, cmpt2 in zip(cmpts, cmpts[1:]):
-            cmpt2.next_to(cmpt1.bind.at_item, direction, **kwargs)
+            cmpt2.next_to(cmpt1._bind.at_item, direction, **kwargs)
 
         if center:
             self.to_center()
@@ -1169,10 +1172,11 @@ class Cmpt_Points[ItemT](Component[ItemT]):
         - ``aligned_edge``: 对齐边缘
         - ``by_center_point``: 默认为 ``False``；若设置为 ``True``，则仅将物件视为中心点，不考虑物件的宽高
         """
-        if self.bind is None:
-            return
+        at_item: Item | None = self._bind.at_item
+        if at_item is None:
+            return self
 
-        cmpts = [self.get_same_cmpt(item) for item in self.bind.at_item]
+        cmpts = [self.get_same_cmpt(item) for item in at_item]
 
         n_rows, n_cols = self._format_rows_cols(len(cmpts), n_rows, n_cols)
         h_buff, v_buff = self._format_buff(buff, h_buff, v_buff, by_center_point)
@@ -1200,10 +1204,11 @@ class Cmpt_Points[ItemT](Component[ItemT]):
         aligned_edge: Vect = ORIGIN,
         center: bool = True,
     ) -> Self:
-        if self.bind is None or not self.bind.at_item.has_child():
+        at_item: Item | None = self._bind.at_item
+        if at_item is None or not at_item.has_child():
             return self
 
-        cmpts = [self.get_same_cmpt(item) for item in self.bind.at_item]
+        cmpts = [self.get_same_cmpt(item) for item in at_item]
         offset = np.array(offset)
 
         for cmpt1, cmpt2 in zip(cmpts, cmpts[1:]):

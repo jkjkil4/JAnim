@@ -37,7 +37,7 @@ class Cmpt_VPoints_LineImpl[ItemT](Cmpt_VPoints[ItemT], impl=True):
 
     @property
     def _path_arc(self) -> float:
-        item: Line = self.bind.at_item
+        item: Line = self._bind.at_item
         return item.reshape_params['path_arc']
 
     def put_start_and_end_on(self, start: Vect, end: Vect) -> Self:
@@ -303,16 +303,16 @@ class Cmpt_VPoints_DashedLineImpl[ItemT](Cmpt_VPoints_LineImpl[ItemT], impl=True
     def get_start(self) -> np.ndarray:
         if self.has():  # 在初始化时计算 arc_length 需要用到
             return super().get_start()
-        assert self.bind is not None
-        sub = self.bind.at_item[0][0]  # 含义：首个 subpath 的首个虚线段
+        assert self._bind.is_binded()
+        sub = self._bind.at_item[0][0]  # 含义：首个 subpath 的首个虚线段
         assert isinstance(sub, VItem)
         return sub.points.get_start()
 
     def get_end(self) -> np.ndarray:
         if self.has():  # 在初始化时计算 arc_length 需要用到
             return super().get_end()
-        assert self.bind is not None
-        sub = self.bind.at_item[-1][-1]  # 含义：最后一个 subpath 的最后一个虚线段
+        assert self._bind.is_binded()
+        sub = self._bind.at_item[-1][-1]  # 含义：最后一个 subpath 的最后一个虚线段
         assert isinstance(sub, VItem)
         return sub.points.get_end()
 

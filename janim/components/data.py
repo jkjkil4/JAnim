@@ -11,6 +11,7 @@ import numpy as np
 
 from janim.components.component import CmptInfo, Component
 from janim.exception import JAnimException
+from janim.items.item import Item
 from janim.locale import get_translator
 from janim.logger import log
 from janim.typing import SupportsTracking
@@ -182,11 +183,12 @@ class Cmpt_Data[ItemT, T](Component[ItemT]):
 
     @contextmanager
     def _cls_name(self):
-        if self.bind is None:
+        at_item: Item | None = self._bind.at_item
+        if at_item is None:
             yield
             return
 
-        token = TrackerShapeError.source_cls_name_ctx.set(self.bind.at_item.__class__.__name__)
+        token = TrackerShapeError.source_cls_name_ctx.set(at_item.__class__.__name__)
         try:
             yield
         finally:

@@ -92,11 +92,12 @@ class Cmpt_VPoints[ItemT](Cmpt_Points[ItemT], impl=True):
     ) -> Self:
         assert isinstance(self, Cmpt_Points)
 
-        if scale_stroke_radius and self.bind is not None and isinstance(scale_factor, numbers.Real):
+        at_item: Item | None = self._bind.at_item
+        if scale_stroke_radius and at_item is not None and isinstance(scale_factor, numbers.Real):
             # 如果是 mock 的情况，既然能调用 Cmpt_VPoints.scale
             # 那么基本上可以确定 item 现在已经处在 VItem 的 astype 下
             # 所以这里可以直接访问 .radius 来缩放半径
-            self.bind.at_item.radius.scale(scale_factor, root_only=root_only)
+            at_item.radius.scale(scale_factor, root_only=root_only)
 
         return Cmpt_Points.scale(self, scale_factor, root_only=root_only, **kwargs)
 

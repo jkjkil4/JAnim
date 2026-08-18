@@ -57,6 +57,10 @@ class Cmpt_List[ItemT, T](list[T], Component[ItemT]):
     对 ``list`` 的 :class:`~.Component` 封装
     """
 
+    def __init__(self):
+        list.__init__(self)
+        Component.__init__(self)
+
     def __copy__(self) -> Self:
         new: Self = Component.__copy__(self)
         new.extend(self)
@@ -81,6 +85,10 @@ class Cmpt_Dict[ItemT, K, V](dict[K, V], Component[ItemT]):
     """
     对 ``dict`` 的 :class:`~.Component` 封装
     """
+
+    def __init__(self):
+        dict.__init__(self)
+        Component.__init__(self)
 
     def __copy__(self) -> Self:
         new: Self = Component.__copy__(self)

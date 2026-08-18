@@ -9,6 +9,7 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any, Callable, Iterable, Self, SupportsIndex, overload
 
 import numpy as np
+from janim_backend import relation
 
 from janim.components.component import CmptInfo, Component, _CmptGroup
 from janim.components.depth import Cmpt_Depth
@@ -178,7 +179,7 @@ class Item(ItemRelation['Item'], metaclass=_ItemMeta):
 
         for key, data in datas.items():
             obj = data.info.create()
-            obj.init_bind(Component.BindInfo(data.decl_cls, self, key))
+            obj.init_bind(relation.BindInfo(data.decl_cls, self, key))
 
             self.__dict__[key] = self.components[key] = obj
 
@@ -479,7 +480,7 @@ class Item(ItemRelation['Item'], metaclass=_ItemMeta):
             try:
                 attr = getattr(cmpt, name)
             except AttributeError:
-                cmpt_info: CmptInfo | None = getattr(self._astype_cls, cmpt.bind.key, None)
+                cmpt_info: CmptInfo | None = getattr(self._astype_cls, cmpt._bind.key, None)
                 if cmpt_info is None:
                     raise
                 other_attr = getattr(cmpt_info.cls, name, None)
@@ -490,7 +491,7 @@ class Item(ItemRelation['Item'], metaclass=_ItemMeta):
                     raise
             else:
                 if isinstance(attr, Callable):
-                    cmpt_info: CmptInfo | None = getattr(self._astype_cls, cmpt.bind.key, None)
+                    cmpt_info: CmptInfo | None = getattr(self._astype_cls, cmpt._bind.key, None)
                     if not issubclass(cmptcls, cmpt_info.cls):
                         ret = self._get_mockable_method(cmpt_info.cls, name, cmptcls)
                         if ret is not None:
@@ -516,7 +517,7 @@ class Item(ItemRelation['Item'], metaclass=_ItemMeta):
 
             # astype 需求的组件还没创建，那么创建并记录
             cmpt = cmpt_info.create()
-            cmpt.init_bind(Component.BindInfo(decl_cls, item, name))
+            cmpt.init_bind(relation.BindInfo(decl_cls, item, name))
 
             item._astype_mock_cmpt[name] = cmpt
             return cmpt
@@ -622,10 +623,10 @@ class Item(ItemRelation['Item'], metaclass=_ItemMeta):
             else:
                 cmpt_copy = cmpt.copy()
 
-            if cmpt.bind is not None:
+            if cmpt._bind.is_binded():
                 cmpt_copy.init_bind(
-                    Component.BindInfo(
-                        cmpt.bind.decl_cls,
+                    relation.BindInfo(
+                        cmpt._bind.decl_cls,
                         copy_item,
                         key,
                     )
@@ -724,8 +725,8 @@ class Item(ItemRelation['Item'], metaclass=_ItemMeta):
         else:
             for key, cmpt in _cmpts.items():
                 orig_cmpt = copy_item.components.get(key, None)
-                decl_cls = cmpt.bind.decl_cls if orig_cmpt is None else orig_cmpt.bind.decl_cls  # type: ignore
-                cmpt.init_bind(Component.BindInfo(decl_cls, copy_item, key))
+                decl_cls = cmpt._bind.decl_cls if orig_cmpt is None else orig_cmpt._bind.decl_cls  # type: ignore
+                cmpt.init_bind(relation.BindInfo(decl_cls, copy_item, key))
 
                 setattr(copy_item, key, cmpt)
 
@@ -767,7 +768,7 @@ class Item(ItemRelation['Item'], metaclass=_ItemMeta):
 
     def _reset_cmpt_computed(self) -> None:
         for cmpt in self.components.values():
-            cmpt.bind.reset_computed_for_all()  # type: ignore
+            cmpt._bind.reset_computed_for_all()
 
     @classmethod
     def align_for_interpolate(cls, item1: Item, item2: Item) -> AlignedData[Self]:
