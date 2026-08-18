@@ -99,7 +99,9 @@ class CameraInfo:
         self.view_matrix = self._compute_view_matrix()
         self.proj_matrix = self._compute_proj_matrix()
         self.proj_view_matrix = self.proj_matrix @ self.view_matrix
-        self.frame_radius = np.array([self.horizontal_dist, self.vertical_dist]) / 2
+        self.frame_radius = (
+            np.array([self.horizontal_dist, self.vertical_dist], dtype=np.float32) / 2
+        )
 
     @property
     def frame_size(self) -> tuple[float, float]:
@@ -179,12 +181,12 @@ class CameraInfo:
         return self.center + normal * self.distance_from_plane
 
     def _compute_view_matrix(self) -> np.ndarray:
-        rot_matrix = np.eye(4)
+        rot_matrix = np.eye(4, dtype=np.float32)
         rot_matrix[0, :3] = normalize(self.horizontal_vect)
         rot_matrix[1, :3] = normalize(self.vertical_vect)
         rot_matrix[2, :3] = normalize(self.camera_axis)
 
-        shift_matrix = np.eye(4)
+        shift_matrix = np.eye(4, dtype=np.float32)
         shift_matrix[:3, 3] = -self.camera_location
 
         return rot_matrix @ shift_matrix
@@ -199,5 +201,6 @@ class CameraInfo:
                 [0, f, 0, 0],
                 [0, 0, (far + near) / (near - far), 2 * far * near / (near - far)],
                 [0, 0, -1, 0],
-            ]
+            ],
+            dtype=np.float32,
         )
