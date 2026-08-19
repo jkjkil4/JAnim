@@ -10,7 +10,7 @@ from janim.anims.method_updater_meta import METHOD_UPDATER_KEY
 from janim.exception import CmptGroupLookupError
 from janim.items.relation import _items_relation_registry
 from janim.locale import get_translator
-from janim.utils.cmpt_lazy import FLAG_HANDLE_NAME, SIGNAL_OBJ_CONNS_NAME
+from janim.utils.cmpt_lazy import EXPIRED, FLAG_HANDLE_NAME, SIGNAL_OBJ_CONNS_NAME, Expired
 from janim.utils.data import AlignedData
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -119,10 +119,10 @@ class Component[ItemT](metaclass=CheckComponentMethods):
         def __post_init__(self) -> None:
             self._flag_0 = _items_relation_registry.indexize_key(self.key)
 
-        def get_computed_for(self, flag_handle: relation.FlagHandle) -> Any | None:
+        def get_computed_for(self, flag_handle: relation.FlagHandle) -> Any | Expired:
             has_flag = self.at_item._rel_handle.get_computed_for(self._flag_0, flag_handle)
             if not has_flag:
-                return None
+                return EXPIRED
             return self._computed_caches[flag_handle]
 
         def mark_computed_for(self, flag_handle: relation.FlagHandle, data: Any) -> None:
