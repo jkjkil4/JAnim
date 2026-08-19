@@ -119,9 +119,7 @@ class Cmpt_Points[ItemT](Component[ItemT]):
         """
         得到自己以及后代物件的所有点坐标数据
         """
-        point_datas = [
-            cmpt.get() for cmpt in self.walk_same_cmpt_of_self_and_descendants_without_mock()
-        ]
+        point_datas = [cmpt.get() for cmpt in self.walk_same_cmpt_of_self_and_descendants()]
         return np.vstack(point_datas)
 
     @CmptSignal
@@ -235,11 +233,22 @@ class Cmpt_Points[ItemT](Component[ItemT]):
         """
         表示物件（包括后代物件）的矩形包围框
         """
-        box_datas = [
-            cmpt.self_box.data
-            for cmpt in self.walk_same_cmpt_of_self_and_descendants_without_mock()
-            if cmpt.has()
-        ]
+        box_datas = []
+
+        # 自身的 self_box
+        if self.has():
+            box_datas.append(self.self_box.data)
+        # 子物件的 box，因为只考虑子物件的 box 和考虑所有后代物件的 self_box 是等价的，而 box 能更好地利用缓存
+        if self.bind is not None:
+            for item in self.bind.at_item:
+                cmpt = self.get_same_cmpt(item)
+                if cmpt is None:
+                    continue
+                box = cmpt.box
+                if box.is_null:
+                    continue
+                box_datas.append(box.data)
+
         return self.BoundingBox(np.vstack(box_datas) if box_datas else [])
 
     @property
@@ -257,17 +266,20 @@ class Cmpt_Points[ItemT](Component[ItemT]):
         """
 
         def __init__(self, points: VectArray):
-            self.data = self.compute(points)
+            self.is_null, self.data = self.compute(points)
 
         @staticmethod
-        def compute(points: VectArray) -> np.ndarray:
+        def compute(points: VectArray) -> tuple[bool, np.ndarray]:
             """
             根据传入的 ``points`` 计算得到包围框的 左下、中心、右上 三个点
             """
             points = np.asarray(points)
+            if len(points) == 0:
+                return True, np.zeros((3, 3), dtype=np.float32)
+
             if points.dtype != np.float32:
                 points = points.astype(np.float32)
-            return compute.compute_bounding_box(points)
+            return False, compute.compute_bounding_box(points)
 
         def get(self, direction: Vect) -> np.ndarray:
             """
@@ -421,7 +433,7 @@ class Cmpt_Points[ItemT](Component[ItemT]):
             else:
                 about_point = self.box.get(about_edge)
 
-        for cmpt in self.walk_same_cmpt_of_self_and_descendants_without_mock(root_only):
+        for cmpt in self.walk_same_cmpt_of_self_and_descendants(root_only):
             if cmpt.has():
                 if about_point is None:
                     cmpt.set(func(cmpt.get()))
@@ -933,7 +945,7 @@ class Cmpt_Points[ItemT](Component[ItemT]):
         if normal_vector is ...:
             vectors = [
                 cmpt.unit_normal
-                for cmpt in self.walk_same_cmpt_of_self_and_descendants_without_mock(root_only)
+                for cmpt in self.walk_same_cmpt_of_self_and_descendants(root_only)
                 if cmpt.has()
             ]
             normal_vector = np.sum(vectors, axis=0)

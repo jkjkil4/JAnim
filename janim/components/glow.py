@@ -45,7 +45,7 @@ class Cmpt_Glow[ItemT](Cmpt_Rgba[ItemT]):
     def _set_updater(self, p, color=None, alpha=None, size=None, *, root_only=False):
         super()._set_updater(p, color, alpha, root_only=root_only)
         if size is not None:
-            for cmpt in self.walk_same_cmpt_of_self_and_descendants_without_mock(root_only):
+            for cmpt in self.walk_same_cmpt_of_self_and_descendants(root_only, unordered=True):
                 cmpt._size = interpolate(cmpt._size, size, p.alpha)
 
     @register_updater(_set_updater)
@@ -73,7 +73,7 @@ class Cmpt_Glow[ItemT](Cmpt_Rgba[ItemT]):
         super().set(color, alpha, root_only=root_only)
 
         if size is not None:
-            for cmpt in self.walk_same_cmpt_of_self_and_descendants_without_mock(root_only):
+            for cmpt in self.walk_same_cmpt_of_self_and_descendants(root_only, unordered=True):
                 cmpt._size = size
 
         return self

@@ -74,7 +74,7 @@ class Cmpt_VPoints[ItemT](Cmpt_Points[ItemT], impl=True):
             about_edge=about_edge,
             root_only=root_only,
         )
-        for cmpt in self.walk_same_cmpt_of_self_and_descendants_without_mock(root_only):
+        for cmpt in self.walk_same_cmpt_of_self_and_descendants(root_only, unordered=True):
             if not isinstance(cmpt, Cmpt_VPoints) or not cmpt.make_smooth_after_applying_functions:
                 continue
             cmpt.make_approximately_smooth()
@@ -261,7 +261,7 @@ class Cmpt_VPoints[ItemT](Cmpt_Points[ItemT], impl=True):
 
     @mockable
     def insert_n_curves(self, n: int, root_only=False) -> Self:
-        for cmpt in self.walk_same_cmpt_of_self_and_descendants_without_mock(root_only):
+        for cmpt in self.walk_same_cmpt_of_self_and_descendants(root_only, unordered=True):
             if not isinstance(cmpt, Cmpt_VPoints) or cmpt.curves_count() == 0:
                 continue
             points = cmpt.insert_n_curves_to_point_list(n, cmpt.get())
@@ -623,7 +623,7 @@ class Cmpt_VPoints[ItemT](Cmpt_Points[ItemT], impl=True):
         number of points.
         """
         mode = AnchorMode.ApproxSmooth if approx else AnchorMode.TrueSmooth
-        for cmpt in self.walk_same_cmpt_of_self_and_descendants_without_mock(root_only):
+        for cmpt in self.walk_same_cmpt_of_self_and_descendants(root_only, unordered=True):
             if not isinstance(cmpt, Cmpt_VPoints):
                 continue
             cmpt.change_anchor_mode(mode)
@@ -637,7 +637,7 @@ class Cmpt_VPoints[ItemT](Cmpt_Points[ItemT], impl=True):
 
     @mockable
     def make_jagged(self, root_only=False) -> Self:
-        for cmpt in self.walk_same_cmpt_of_self_and_descendants_without_mock(root_only):
+        for cmpt in self.walk_same_cmpt_of_self_and_descendants(root_only, unordered=True):
             if not isinstance(cmpt, Cmpt_VPoints):
                 continue
             cmpt.change_anchor_mode(AnchorMode.Jagged)

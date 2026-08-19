@@ -550,7 +550,7 @@ class CmptVPoints_NumberPlaneImpl(Cmpt_VPoints, impl=True):
     def prepare_for_nonlinear_transform(
         self, num_inserted_curves: int = 50, *, root_only=False
     ) -> Self:
-        for cmpt in self.walk_same_cmpt_of_self_and_descendants_without_mock(root_only):
+        for cmpt in self.walk_same_cmpt_of_self_and_descendants(root_only, unordered=True):
             if not isinstance(cmpt, Cmpt_VPoints) or not cmpt.has():
                 continue
 

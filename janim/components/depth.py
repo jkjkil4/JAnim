@@ -99,13 +99,13 @@ class Cmpt_Depth[ItemT](Component[ItemT]):
 
         if order is None:
             order = self._counter[value]
-            for cmpt in self.walk_same_cmpt_of_self_and_descendants_without_mock(root_only):
+            for cmpt in self.walk_same_cmpt_of_self_and_descendants(root_only):
                 cmpt._depth = value
                 cmpt._order = order
                 order -= 1
             self._counter[value] = order
         else:
-            for cmpt in self.walk_same_cmpt_of_self_and_descendants_without_mock(root_only):
+            for cmpt in self.walk_same_cmpt_of_self_and_descendants(root_only, unordered=True):
                 cmpt._depth = value
                 cmpt._order = order
 

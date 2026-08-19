@@ -79,15 +79,15 @@ class Cmpt_Radius[ItemT](Component[ItemT]):
             radius = [radius]
         data2 = np.asarray(radius)
 
-        for cmpt in self.walk_same_cmpt_of_self_and_descendants_without_mock(root_only):
+        for cmpt in self.walk_same_cmpt_of_self_and_descendants(root_only):
             data1 = cmpt.get()
             len1, len2 = len(data1), len(data2)
             if len1 < len2:
-                data1 = resize_with_interpolation(data1, len2)
+                data1_resized = resize_with_interpolation(data1, len2)
+                cmpt.set(interpolate(data1_resized, data2, p.alpha), root_only=True)
             elif len1 > len2:
-                data2 = resize_with_interpolation(data2, len1)
-
-            cmpt.set(interpolate(data1, data2, p.alpha), root_only=True)
+                data2_resized = resize_with_interpolation(data2, len1)
+                cmpt.set(interpolate(data1, data2_resized, p.alpha), root_only=True)
 
     @register_updater(_set_updater)
     def set(
@@ -104,7 +104,7 @@ class Cmpt_Radius[ItemT](Component[ItemT]):
         self._radii.data = radius
 
         if not root_only:
-            for cmpt in self.walk_same_cmpt_of_descendants_without_mock():
+            for cmpt in self.walk_same_cmpt_of_descendants():
                 cmpt._radii.data = self._radii.copy()
 
         return self
@@ -134,7 +134,7 @@ class Cmpt_Radius[ItemT](Component[ItemT]):
         self._radii.data = self._radii.data * factor
 
         if not root_only:
-            for cmpt in self.walk_same_cmpt_of_descendants_without_mock():
+            for cmpt in self.walk_same_cmpt_of_descendants():
                 cmpt._radii.data = cmpt._radii.data * factor
 
         return self

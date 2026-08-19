@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, Any, Callable, Generator, Self, overload
+from typing import TYPE_CHECKING, Any, Callable, Generator, Iterable, Literal, Self, overload
 
 from janim_backend import relation
 
@@ -18,7 +18,39 @@ if TYPE_CHECKING:  # pragma: no cover
 _ = get_translator('janim.components.component')
 
 
-class _CmptMeta(type):
+class CheckComponentMethods(type):
+    """
+    所有的 :class:`Component` 子类都会被检查是否实现了 ``copy``, ``become`` 和 ``not_changed`` 方法
+
+    含义：
+
+    -   ``copy``:
+
+        调用该函数后，产生一份组件的拷贝
+
+        在该函数中，应使用 ``cmpt_copy = super().copy()`` 得到拷贝的组件对象，
+        然后在这个对象的基础上，处理有关的拷贝操作，最后返回 ``cmpt_copy`` 对象
+
+    -   ``become``:
+
+        会以另外一个（大概率是同类型的组件，该行为暂未稳定，有待明确）组件作为入参
+
+        在该函数中，应先使用 ``super().become(other)`` 处理父类的逻辑，
+        然后再进行当前组件的处理逻辑，最终确保当前组件的数据变得和目标组件长得一样
+
+    -   ``not_changed``:
+
+        该函数需要返回一个 ``bool`` 值，表示是否能确定该组件的数据没有发生过变更，用于侦测组件修改
+
+        例如 ``Cmpt_Points`` 的 ``_points`` 数据在未变动时内部 NumPy 数据的 ``id`` 保持不变，
+        但是在发生修改后，就会成为完全不同 ``id`` 的 NumPy 数组
+
+        所以 ``Cmpt_Points`` 内部的 NumPy 数组只要无法通过 ``is`` 判断相同，他的该函数就会返回 ``False``
+        （哪怕变化后回到了相同值的数据，也仍返回 ``False``）
+
+    另外，对于未附加额外数据，仅提供额外方法的组件，可以用 ``impl=True`` 跳过该子类的检查
+    """
+
     def __new__(
         cls: type,
         name: str,
@@ -39,16 +71,18 @@ class _CmptMeta(type):
         return super().__new__(cls, name, bases, attrdict)
 
 
-class Component[ItemT](metaclass=_CmptMeta):
+class Component[ItemT](metaclass=CheckComponentMethods):
     @dataclass(slots=True)
     class BindInfo:
         """
         对组件定义信息的封装
 
-        - ``decl_cls``: 以 ``xxx = CmptInfo(...)`` 的形式被声明在哪个类中；
-          如果一个类及其父类都有 ``xxx = CmptInfo(...)`` ，那么 ``decl_cls`` 是父类
-        - ``at_item``: 这个组件对象是属于哪个物件对象的
-        - ``key``: 这个组件对象的变量名
+        :param decl_cls:
+            以 ``xxx = CmptInfo(...)`` 的形式被声明在哪个类中；
+            如果一个类及其父类都有 ``xxx = CmptInfo(...)`` ，那么 ``decl_cls`` 是父类
+
+        :param at_item: 这个组件对象当前绑定到了哪个物件对象
+        :param key: 这个组件对象在物件中的变量名
 
         例：
 
@@ -122,7 +156,7 @@ class Component[ItemT](metaclass=_CmptMeta):
 
     def __copy__(self) -> Self:
         """
-        手动实现 ``__copy__``，这样性能比 copy.copy 高
+        手动实现 ``__copy__``，这样性能比 ``copy.copy`` 高
 
         特别是 Component 作为频繁使用的对象这很重要
         """
@@ -146,38 +180,88 @@ class Component[ItemT](metaclass=_CmptMeta):
 
     def not_changed(self, other) -> bool: ...
 
-    def get_same_cmpt(self, item: Item) -> Self:
-        return self.get_same_cmpt_if_exists(item) or getattr(
-            item.astype(self.bind.decl_cls), self.bind.key
-        )
+    # region 获取其它物件中的组件
 
-    def get_same_cmpt_without_mock(self, item: Item) -> Self | None:
-        return item.components.get(self.bind.key, None)
+    @overload
+    def get_same_cmpt(
+        self, item: Item, *, use_mock: bool = False, create_mock: Literal[False]
+    ) -> Self | None: ...
+    @overload
+    def get_same_cmpt(
+        self, item: Item, *, use_mock: bool = False, create_mock: Literal[True] = True
+    ) -> Self: ...
 
-    def get_same_cmpt_if_exists(self, item: Item) -> Self | None:
+    def get_same_cmpt(
+        self, item: Item, *, use_mock: bool = False, create_mock: bool = True
+    ) -> Self | None:
+        """
+        得到 ``item`` 物件中与自身同 ``self.bind.key`` 的组件，默认会创建 mock
+
+        注：若 ``self.bind`` 无效会由于尝试访问 ``None`` 的成员而抛出属性错误，
+        但是我们并没在函数中检查这一点；若有必要的话，预期的做法是在函数外检查
+
+        :param item: 得到哪个物件中的组件
+        :param use_mock: 在没有对应组件时，是否能使用先前创建过的 mock
+        :param create_mock: 在没有对应组件时，是否基于 :meth:`~.Item.astype` 创建 mock
+        :return: 得到的组件，若 ``create_mock=False``，则可能返回 ``None``
+        """
         cmpt = item.components.get(self.bind.key, None)
         if cmpt is not None:
             return cmpt
 
-        return item._astype_mock_cmpt.get(self.bind.key, None)
+        if use_mock and (cmpt := item._astype_mock_cmpt.get(self.bind.key)) is not None:
+            return cmpt
 
-    def walk_same_cmpt_of_self_and_descendants_without_mock(
+        if create_mock:
+            return getattr(item.astype(self.bind.decl_cls), self.bind.key)
+
+        return None
+
+    def walk_same_cmpt_of_self_and_descendants(
         self,
         root_only: bool = False,
-    ) -> Generator[Self, None, None]:
+        *,
+        use_mock: bool = False,
+        create_mock: bool = False,
+        unordered: bool = False,
+    ) -> Iterable[Self]:
+        """
+        遍历该组件自身，以及所在物件的后代物件中的同类组件，默认不会创建 mock
+
+        若设置了 ``root_only`` 或 ``self.bind`` 无效则会忽略后代组件
+
+        :param root_only: 是否忽略后代组件，仅 ``yield`` 自己
+
+        其余参数请参考 :meth:`walk_same_cmpt_of_descendants` 的文档
+        """
         yield self
         if root_only or self.bind is None:
             return
-        yield from self.walk_same_cmpt_of_descendants_without_mock()
+        yield from self.walk_same_cmpt_of_descendants(use_mock=use_mock, create_mock=create_mock)
 
-    def walk_same_cmpt_of_descendants_without_mock(self) -> Generator[Self, None, None]:
-        item = self.bind.at_item
-        if not item._stored:
-            for item in item.walk_descendants(self.bind.decl_cls):
-                cmpt = self.get_same_cmpt_without_mock(item)
-                if cmpt is None:
-                    continue
-                yield cmpt
+    def walk_same_cmpt_of_descendants(
+        self, *, use_mock: bool = False, create_mock: bool = False, unordered: bool = False
+    ) -> Iterable[Self]:
+        """
+        遍历所在物件的后代物件中的同类组件，默认不会创建 mock
+
+        注：若 ``self.bind`` 无效会由于尝试访问 ``None`` 的成员而抛出属性错误，
+        但是我们并没在函数中检查这一点；若有必要的话，预期的做法是在函数外检查
+
+        :param use_mock: 在没有对应组件时，是否能使用先前创建过的 mock
+        :param create_mock: 在没有对应组件时，是否基于 :meth:`~.Item.astype` 创建 mock
+        :param unordered: 遍历是否不保证顺序，若指定，对于复杂结构的性能会更佳
+        """
+        root = self.bind.at_item
+        if root._stored:
+            return
+        for item in root.walk_descendants(self.bind.decl_cls, unordered=unordered):
+            cmpt = self.get_same_cmpt(item, use_mock=use_mock, create_mock=create_mock)
+            if cmpt is None:
+                continue
+            yield cmpt
+
+    # endregion
 
     @property
     def r(self) -> ItemT:

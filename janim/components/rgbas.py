@@ -184,7 +184,7 @@ class Cmpt_Rgbas[ItemT](Component[ItemT]):
 
             self.set_rgbas(rgbas)
 
-            for cmpt in self.walk_same_cmpt_of_self_and_descendants_without_mock(root_only):
+            for cmpt in self.walk_same_cmpt_of_self_and_descendants(root_only, unordered=True):
                 cmpt.set_rgbas(rgbas)
 
         else:
@@ -193,7 +193,7 @@ class Cmpt_Rgbas[ItemT](Component[ItemT]):
             if alpha is not None:
                 alpha = self.format_alphas(alpha)
 
-            for cmpt in self.walk_same_cmpt_of_self_and_descendants_without_mock(root_only):
+            for cmpt in self.walk_same_cmpt_of_self_and_descendants(root_only, unordered=True):
                 arr_color = (cmpt.get()[:, :3] if color is None else color).astype(float)
                 arr_alpha = (cmpt.get()[:, 3] if alpha is None else alpha).astype(float)
                 length = max(len(arr_color), len(arr_alpha))
@@ -243,7 +243,7 @@ class Cmpt_Rgbas[ItemT](Component[ItemT]):
         """
         淡化颜色，``factor`` 是 0~1 的值，例如 0 没有效果，0.5 淡化一半，1 完全淡化（变得不可见）
         """
-        for cmpt in self.walk_same_cmpt_of_self_and_descendants_without_mock(root_only):
+        for cmpt in self.walk_same_cmpt_of_self_and_descendants(root_only, unordered=True):
             rgbas = cmpt.get().copy()
             rgbas[:, 3] *= 1 - factor
             cmpt.set_rgbas(rgbas)
@@ -265,7 +265,7 @@ class Cmpt_Rgbas[ItemT](Component[ItemT]):
         """
         混合颜色，默认得到与 ``color`` 混合的中间色
         """
-        for cmpt in self.walk_same_cmpt_of_self_and_descendants_without_mock(root_only):
+        for cmpt in self.walk_same_cmpt_of_self_and_descendants(root_only, unordered=True):
             rgbas = cmpt.get().copy()
             rgbas[:, :3] *= 1 - factor
             rgbas[:, :3] += self.format_color(color) * factor
@@ -288,7 +288,7 @@ class Cmpt_Rgbas[ItemT](Component[ItemT]):
         """
         混合透明度，默认得到与 ``alpha`` 混合的中间色
         """
-        for cmpt in self.walk_same_cmpt_of_self_and_descendants_without_mock(root_only):
+        for cmpt in self.walk_same_cmpt_of_self_and_descendants(root_only, unordered=True):
             rgbas = cmpt.get().copy()
             rgbas[:, 3] *= 1 - factor
             rgbas[:, 3] += alpha * factor

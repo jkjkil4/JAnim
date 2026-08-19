@@ -26,19 +26,8 @@ class ItemRelation[RelT: 'ItemRelation']:
     """
     定义了物件的有向无环图的包含关系以及一些实用操作
 
-    也就是，对于每个对象：
-
-    - ``self.parents`` 存储了与其直接关联的父对象
-    - ``self.children`` 存储了与其直接关联的子对象
-    - 使用 :meth:`add()` 建立对象间的关系
-    - 使用 :meth:`remove()` 取消对象间的关系
-    - 使用 :meth:`get_parents()` 和 :meth:`get_children()` 获取对象列表的副本
-    - :meth:`ancestors()` 表示与其直接关联的祖先对象（包括父对象，以及父对象的父对象，......）
-    - :meth:`descendants()` 表示与其直接关联的后代对象（包括子对象、以及子对象的子对象，......）
-    - 对于 :meth:`ancestors()` 以及 :meth:`descendants()`：
-        - 不包含调用者自身并且返回的列表中没有重复元素
-        - 对象顺序是 DFS 顺序
-    """  # TODO: update
+    该类仅作为 :class:`~.Item` 的基类，不作为直接创建使用
+    """
 
     def __init__(self):
         self._init_rel_handle()

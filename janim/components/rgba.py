@@ -110,14 +110,14 @@ class Cmpt_Rgba[ItemT](Component[ItemT]):
 
                 self.set_rgba(rgba)
 
-                for cmpt in self.walk_same_cmpt_of_self_and_descendants_without_mock(root_only):
+                for cmpt in self.walk_same_cmpt_of_self_and_descendants(root_only, unordered=True):
                     cmpt.set_rgba(rgba)
 
             else:
                 if color is not None:
                     color = self.format_color(color)
 
-                for cmpt in self.walk_same_cmpt_of_self_and_descendants_without_mock(root_only):
+                for cmpt in self.walk_same_cmpt_of_self_and_descendants(root_only, unordered=True):
                     cmpt_color = cmpt.get()[:3] if color is None else color
                     cmpt_alpha = cmpt.get()[3] if alpha is None else alpha
                     cmpt.set_rgba(np.array([*cmpt_color, cmpt_alpha]))
@@ -134,7 +134,7 @@ class Cmpt_Rgba[ItemT](Component[ItemT]):
     )
     def mix(self, color: JAnimColor, factor: float = 0.5, *, root_only: bool = False) -> Self:
         color = self.format_color(color)
-        for cmpt in self.walk_same_cmpt_of_self_and_descendants_without_mock(root_only):
+        for cmpt in self.walk_same_cmpt_of_self_and_descendants(root_only, unordered=True):
             data = cmpt.get().copy()
             data[:3] *= 1 - factor
             data[:3] += color * factor
@@ -147,7 +147,7 @@ class Cmpt_Rgba[ItemT](Component[ItemT]):
         )
     )
     def mix_alpha(self, alpha: Alpha, factor: float = 0.5, *, root_only: bool = False) -> Self:
-        for cmpt in self.walk_same_cmpt_of_self_and_descendants_without_mock(root_only):
+        for cmpt in self.walk_same_cmpt_of_self_and_descendants(root_only, unordered=True):
             data = cmpt.get().copy()
             data[3] *= 1 - factor
             data[3] += alpha * factor
