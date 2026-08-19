@@ -3,7 +3,7 @@ from __future__ import annotations
 import inspect
 from collections import defaultdict
 from functools import cache, partial, update_wrapper, wraps
-from typing import TYPE_CHECKING, Any, Callable, Concatenate, Self, overload
+from typing import TYPE_CHECKING, Callable, Concatenate, Self, overload
 
 from janim_backend import relation
 

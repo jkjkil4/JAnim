@@ -2,7 +2,11 @@ import gettext
 import locale
 import os
 
+import janim_backend
+
 from janim.utils.file_ops import get_janim_dir
+
+janim_backend.set_locale(locale.getdefaultlocale()[0] or '')
 
 lang: str | None = None
 
@@ -10,6 +14,7 @@ lang: str | None = None
 def set_lang(lang_code: str) -> None:
     global lang
     lang = lang_code
+    janim_backend.set_locale(lang_code)
 
 
 def get_lang() -> str:
