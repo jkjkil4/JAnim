@@ -116,6 +116,12 @@ class TypstDoc(Group[TypstElemItem]):
     def move_into_position(self) -> None:
         self.points.scale(0.9, about_edge=None).to_border(UP)
 
+    def scale_descendants_stroke_radius(self, factor: float) -> Self:
+        """将所有后代物件的 ``stroke_radius`` 都乘上一个值"""
+        for item in self.walk_descendants(VItem):
+            item.radius.set(item.radius.get() * factor)
+        return self
+
     @classmethod
     def typstify(cls, obj: TypstPattern) -> TypstDoc:
         """
