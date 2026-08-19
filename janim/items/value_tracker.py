@@ -28,13 +28,9 @@ class ValueTracker[T](Item):
     def __init__(
         self,
         value: T,
-        copy_func: None = None,
-        not_changed_func: None = None,
-        interpolate_func: None = None,
         **kwargs,
     ):
         super().__init__(**kwargs)
-        self._data.set_func(copy_func, not_changed_func, interpolate_func)
         self._data.set(value)
 
         if self.timeline is not None:
