@@ -18,7 +18,7 @@ from janim.locale import get_translator
 from janim.logger import log
 from janim.render.base import Renderer
 from janim.typing import SupportsApartAlpha
-from janim.utils.data import AlignedData
+from janim.utils.data import AlignedData, ContextSetter
 from janim.utils.iterables import resize_preserving_order
 from janim.utils.paths import PathFunc, straight_path
 
@@ -739,10 +739,12 @@ class Item(ItemRelation['Item'], metaclass=_ItemMeta):
         if self._stored:
             self._stored = self.Stored(other)
 
-        self_cmpts = self.components
-        other_cmpts = other.components
-        for key in self_cmpts.keys() & other_cmpts.keys():
-            self_cmpts[key].become(other_cmpts[key])
+        with ContextSetter(Component._become_reset_computed, False):
+            self_cmpts = self.components
+            other_cmpts = other.components
+            for key in self_cmpts.keys() & other_cmpts.keys():
+                self_cmpts[key].become(other_cmpts[key])
+        self._rel_handle.reset_computed_for_self()
 
         return self
 

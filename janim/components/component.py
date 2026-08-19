@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from contextvars import ContextVar
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Any, Callable, Generator, Iterable, Literal, Self, overload
 
@@ -173,10 +174,23 @@ class Component[ItemT](metaclass=CheckComponentMethods):
         setattr(cmpt_copy, SIGNAL_OBJ_CONNS_NAME, None)
         return cmpt_copy
 
+    _become_reset_computed = ContextVar('Component._become_reset_computed', default=True)
+    """
+    默认为 ``True`` 表示在 :meth:`become` 中调用 :meth:`BindInfo.reset_computed_for_all`
+
+    但是如果是在比如 :meth:`~.Item.restore` 中，不需要每个组件单独 reset，只要让物件自己完全 reset 就行了
+
+    这是出于性能优化上的考虑，最终效果是一样的
+    """
+
     def become(self, other) -> Self:
+        if not self._become_reset_computed.get():
+            return self
         bind = self.bind
-        if bind is not None:
-            bind.reset_computed_for_all()
+        if bind is None:
+            return self
+        bind.reset_computed_for_all()
+        return self
 
     def not_changed(self, other) -> bool: ...
 
