@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import itertools as it
-from typing import TYPE_CHECKING, Generic, Iterable, Self, TypeVar, overload
+from typing import TYPE_CHECKING, Generic, Iterable, Iterator, Self, TypeVar, overload
 
 from janim.exception import GetItemError
 from janim.items.item import Item
@@ -16,7 +16,7 @@ else:
     T = TypeVar('T')
 
 
-class Group(Points, Generic[T]):
+class Group(Points, Generic[T]):  # noqa: UP046
     """
     物件组
 
@@ -26,22 +26,22 @@ class Group(Points, Generic[T]):
     def __init__(self, *items: T, **kwargs):
         super().__init__(children=items, **kwargs)
 
-        self._children: list[T]
-
     @staticmethod
-    def from_iterable[T](items: Iterable[T], **kwargs) -> Group[T]:
+    def from_iterable[T_](items: Iterable[T_], **kwargs) -> Group[T_]:
         return Group(*items, **kwargs)
 
-    @overload
-    def __getitem__(self, key: int) -> T: ...
-    @overload
-    def __getitem__(self, key: slice | Iterable[int] | Iterable[bool]) -> Group[T]: ...
+    if TYPE_CHECKING:
 
-    def __getitem__(self, value):  # pragma: no cover
-        return super().__getitem__(value)
+        @property
+        def children(self) -> list[T]: ...  # type: ignore
 
-    def __iter__(self):
-        return iter(self._children)
+        @overload
+        def __getitem__(self, key: int) -> T: ...
+        @overload
+        def __getitem__(self, key: slice | Iterable[int] | Iterable[bool]) -> Group[T]: ...
+        def __getitem__(self, value): ...  # type: ignore
+
+        def __iter__(self) -> Iterator[T]: ...
 
 
 class NamedGroupMixin[T](Group[T]):
@@ -87,7 +87,7 @@ class NamedGroupMixin[T](Group[T]):
         if prepend:
             index_start = len(items)
         else:
-            index_start = len(self._children) - len(named_items)
+            index_start = len(self) - len(named_items)
 
         # 新物件的索引为 [ index_start, index_start + len(named_items) )
         for i, name in enumerate(named_items.keys()):
@@ -105,9 +105,9 @@ class NamedGroupMixin[T](Group[T]):
         """
         # 将可能的负下标转换为正下标，使得能正确更新 _named_indices
         # 例如 [a,b,c,d] 中 -1 应指向 len - 1 的 d，所以即为 len + index
-        actual_index = index if index >= 0 else len(self._children) + index
+        actual_index = index if index >= 0 else len(self) + index
         # 限制在 0 ~ len-1 之间，避免新索引计算错误
-        actual_index = max(0, min(actual_index, len(self._children) - 1))
+        actual_index = max(0, min(actual_index, len(self) - 1))
 
         all_items = items + tuple(named_items.values())
 
@@ -170,7 +170,7 @@ class NamedGroupMixin[T](Group[T]):
     def shuffle(self) -> Self:
         # 根据 key-下标 对应关系，得到打乱之前的 key-对象 对应关系
         named_objs = {
-            key: self._children[index]  #
+            key: self[index]  #
             for key, index in self._named_indices.items()
         }
 
@@ -242,7 +242,7 @@ class NamedGroupMixin[T](Group[T]):
         index_names = self._index_names()
         return [
             (item, index_names.get(i, None))  #
-            for i, item in enumerate(self._children)
+            for i, item in enumerate(self)
         ]
 
     # region 对 stored 的相关处理，不是什么很重要的细节

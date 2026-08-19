@@ -102,7 +102,7 @@ class SVGItem(Group[SVGElemItem]):
 
             def get_idx(item: Item) -> int | None:
                 try:
-                    return self._children.index(item)
+                    return self.index(item)
                 except ValueError:
                     return None
 

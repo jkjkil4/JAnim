@@ -20,6 +20,7 @@ class Cmpt_Float[ItemT](Component[ItemT]):
         return Component.copy(self)
 
     def become(self, other: Cmpt_Float) -> Self:
+        super().become(other)
         self._value = other._value
 
     def not_changed(self, other: Cmpt_Float) -> Self:
@@ -65,8 +66,11 @@ class Cmpt_List[ItemT, T](list[T], Component[ItemT]):
         return Component.copy(self)
 
     def become(self, other: Cmpt_List) -> Self:
+        super().become(other)
+
         self.clear()
         self.extend(other)
+
         return self
 
     def not_changed(self, other: Cmpt_List) -> Self:
@@ -87,8 +91,11 @@ class Cmpt_Dict[ItemT, K, V](dict[K, V], Component[ItemT]):
         return Component.copy(self)
 
     def become(self, other: Cmpt_Dict) -> Self:
+        super().become(other)
+
         self.clear()
         self.update(other)
+
         return self
 
     def not_changed(self, other: Cmpt_Dict) -> Self:

@@ -1,49 +1,43 @@
 import unittest
 
-import janim.utils.refresh as refresh
 from janim.components.component import CmptInfo, Component
 from janim.constants.coord import *
-from janim.items.item import Item
 from janim.items.group import Group
+from janim.items.item import Item
 from janim.items.points import Points
-from janim.utils.signal import Signal
+from janim.utils.cmpt_lazy import CmptSignal, cmpt_lazy_method
 
 
 class ItemTest(unittest.TestCase):
-    def test_broadcast_refresh(self) -> None:
+    def test_lazy_method(self) -> None:
         called_list = []
 
         class MyCmpt(Component, impl=True):
-            @Signal
+            @CmptSignal
             def points_changed(self):
                 called_list.append(self.points_changed)
                 MyCmpt.points_changed.emit(self)
 
-            @points_changed.self_refresh_with_recurse(recurse_up=True)
-            @refresh.register
+            @points_changed.self_refresh
+            @cmpt_lazy_method(recurse_up=True)
             def bbox(self):
                 called_list.append(self.bbox)
 
-            @points_changed.self_refresh_with_recurse(recurse_down=True)
-            @refresh.register
+            @points_changed.self_refresh
+            @cmpt_lazy_method(recurse_down=True)
             def fn_down(self):
                 called_list.append(self.fn_down)
 
         class MyItem(Item):
             cmpt = CmptInfo(MyCmpt)
 
-        m1 = MyItem().add(
-            m2 := MyItem().add(
-                m3 := MyItem()
-            ),
-            m4 := MyItem()
-        )
+        m1 = MyItem().add(m2 := MyItem().add(m3 := MyItem()), m4 := MyItem())
 
         m: MyItem
 
-        self.assertEqual(m1._children[0], m1[0])
-        self.assertEqual(m1._children[1], m1[1])
-        self.assertListEqual(m1[:1]._children, [m2])
+        self.assertEqual(m1.children[0], m1[0])
+        self.assertEqual(m1.children[1], m1[1])
+        self.assertListEqual(m1[:1].children, [m2])
 
         for m in [m1, *m1.descendants()]:
             m.cmpt.bbox()
@@ -61,27 +55,41 @@ class ItemTest(unittest.TestCase):
             m.cmpt.bbox()
             m.cmpt.fn_down()
 
-        self.assertEqual(
-            called_list,
-            [
-                m1.cmpt.bbox, m1.cmpt.fn_down,
-                m2.cmpt.bbox, m2.cmpt.fn_down,
-                m3.cmpt.bbox, m3.cmpt.fn_down,
-                m4.cmpt.bbox, m4.cmpt.fn_down,
+        assert_list = [
+            m1.cmpt.bbox,
+            m1.cmpt.fn_down,
+            m2.cmpt.bbox,
+            m2.cmpt.fn_down,
+            m3.cmpt.bbox,
+            m3.cmpt.fn_down,
+            m4.cmpt.bbox,
+            m4.cmpt.fn_down,
+            m2.cmpt.points_changed,
+            m1.cmpt.bbox,
+            m2.cmpt.bbox,
+            m2.cmpt.fn_down,
+            m3.cmpt.fn_down,
+            m3.cmpt.points_changed,
+            m1.cmpt.bbox,
+            m2.cmpt.bbox,
+            m3.cmpt.bbox,
+            m3.cmpt.fn_down,
+        ]
 
-                m2.cmpt.points_changed,
+        # import itertools as it
 
-                m1.cmpt.bbox,
-                m2.cmpt.bbox, m2.cmpt.fn_down,
-                              m3.cmpt.fn_down,
+        # def simplify(s: str):
+        #     x = (
+        #         s.removeprefix('<bound method ItemTest.test_lazy_method.<locals>.MyCmpt')
+        #         .removesuffix('>')
+        #         .replace('items.test_item.ItemTest.test_lazy_method.<locals>.MyCmpt ', '')
+        #     )
+        #     return f'[{x}]\t'
 
-                m3.cmpt.points_changed,
+        # for a, b in it.zip_longest(assert_list, called_list):
+        #     print(simplify(str(a)), simplify(str(b)))
 
-                m1.cmpt.bbox,
-                m2.cmpt.bbox,
-                m3.cmpt.bbox, m3.cmpt.fn_down
-            ]
-        )
+        self.assertEqual(called_list, assert_list)
 
 
 class PointsTest(unittest.TestCase):
@@ -92,11 +100,7 @@ class PointsTest(unittest.TestCase):
         class MyPoints(Points): ...
 
         g = Group(
-            p1 := MyPoints(UP, RIGHT).add(
-                p2 := Points(UL),
-                p3 := Points(DR)
-            ),
-            p4 := Points(ORIGIN)
+            p1 := MyPoints(UP, RIGHT).add(p2 := Points(UL), p3 := Points(DR)), p4 := Points(ORIGIN)
         )
 
         self.assertNparrayEqual(p1.points.get(), [UP, RIGHT])
@@ -108,4 +112,6 @@ class PointsTest(unittest.TestCase):
         self.assertNparrayEqual(g.astype(MyPoints).points.get_all(), [UP, RIGHT, UL, DR, ORIGIN])
 
         p1.points.extend([LEFT])
-        self.assertNparrayEqual(g.astype(Points).points.get_all(), [UP, RIGHT, LEFT, UL, DR, ORIGIN])
+        self.assertNparrayEqual(
+            g.astype(Points).points.get_all(), [UP, RIGHT, LEFT, UL, DR, ORIGIN]
+        )

@@ -9,10 +9,10 @@ from janim.components.component import Component
 from janim.components.points import DEFAULT_POINTS_ARRAY, PointsFn
 from janim.typing import Vect, VectArray
 from janim.utils.bezier import interpolate
+from janim.utils.cmpt_lazy import CmptSignal
 from janim.utils.data import AlignedData
 from janim.utils.iterables import resize_and_repeatedly_extend
 from janim.utils.paths import PathFunc, straight_path
-from janim.utils.signal import Signal
 
 
 class Cmpt_Mark[ItemT](Component[ItemT]):
@@ -29,6 +29,7 @@ class Cmpt_Mark[ItemT](Component[ItemT]):
         return cmpt_copy
 
     def become(self, other: Cmpt_Mark) -> Self:
+        super().become(other)
         if not self._points.is_share(other._points.copy()):
             self._points = other._points.copy()
         return self
@@ -97,7 +98,7 @@ class Cmpt_Mark[ItemT](Component[ItemT]):
             )
         )
     )
-    @Signal
+    @CmptSignal
     def set(self, point: Vect, index: int | str = 0, *, root_only: bool = False) -> Self:
         """
         设置指定索引（默认为 0）记录的坐标点
