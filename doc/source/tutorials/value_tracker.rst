@@ -112,16 +112,6 @@ ValueTracker 与自定义数据
 
 相比于 :meth:`~.ValueTracker.set_value` 需要提供完整字段，我们也可以用 :meth:`~.ValueTracker.update_value` 方法来只更新部分字段的值，而不影响其他字段。
 
-.. _register_custom_types:
-
-注册自定义类型
-~~~~~~~~~~~~~~~~~~~~~~~~~
-
-如果有一个类没有定义 :class:`~.SupportsTracking` 所需求的三大件 :meth:`~.Component.copy` 、 :meth:`~.Component.not_changed` 以及 :meth:`~.Component.interpolate` ，
-那么我们可以通过 :meth:`~.Cmpt_Data.register_funcs` 来注册这些方法，从而让这个类可以作为 :class:`~.ValueTracker` 的值类型。具体使用方法可参考内置类型的注册。
-
-另外，我们可以通过 :meth:`~.Cmpt_Data.register_update_func` 来注册供 :meth:`~.ValueTracker.update_value` 使用的更新方法。具体使用方法可参考内置的 ``dict`` 类型的注册。
-
 .. _add_custom_data:
 
 添加自定义的物件数据
@@ -193,3 +183,13 @@ ValueTracker 与自定义数据
 - ...
 
 虽然说我们可以将组件类型 :class:`~.Cmpt_Points` 作为值类型直接使用，但是对于实际来讲，还是直接操作 :class:`~.Points` 物件或者含义更具体的物件，并在需要时 :meth:`~.Item.current` 会更方便。
+
+.. _register_custom_types:
+
+注册自定义类型
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+如果有一个类没有定义 :class:`~.SupportsTracking` 所需求的三大件 :meth:`~.Component.copy` 、 :meth:`~.Component.not_changed` 以及 :meth:`~.Component.interpolate` ，
+那么我们可以通过 :meth:`~.Cmpt_Data.register_funcs` 来注册这些方法，从而让这个类可以作为 :class:`~.ValueTracker` 的值类型。具体使用方法可参考内置类型的注册。
+
+另外，我们可以通过 :meth:`~.Cmpt_Data.register_update_func` 来注册供 :meth:`~.ValueTracker.update_value` 使用的更新方法。具体使用方法可参考内置的 ``dict`` 类型的注册。
