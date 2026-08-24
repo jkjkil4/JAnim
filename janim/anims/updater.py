@@ -923,6 +923,11 @@ class ChunkedNearbyCache[T]:
         """
         得到 ``n`` 往前（包括 ``n`` ）的最近的一个缓存
         """
+        # 特判超出 _pcache 上界，则取 上界 - 1 传入 self._n_to_tcache_idx
+        upper_boundary = len(self._pcache) * self._chunk_size
+        if n >= upper_boundary:
+            n = upper_boundary - 1
+
         local_chunk_idx, elem_idx = self._n_to_tcache_idx(n)
         if (
             elem_idx != -1
