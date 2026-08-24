@@ -49,10 +49,6 @@ msgstr ""
 msgid "也就是将那些为 True 的位置取出组成一个 :class:`~.Group`"
 msgstr "that is, extracting those positions that are True to form a :class:`~.Group`"
 
-#: janim.items.item.Item.broadcast_refresh_of_component:1 of
-msgid "为 :meth:`~.Component.mark_refresh()` 进行 ``recurse_up/down`` 的处理"
-msgstr "Handles ``recurse_up/down`` for :meth:`~.Component.mark_refresh()`"
-
 #: janim.items.item.Item.set:1 of
 msgid "设置物件以及子物件的样式，与 :meth:`apply_styles` 只影响自身不同的是，该方法也会影响所有子物件"
 msgstr ""
@@ -415,3 +411,6 @@ msgstr "Hide item"
 
 #~ msgid "返回数据的引用，不进行复制"
 #~ msgstr "Returns a reference to the data, without copying"
+
+#~ msgid "为 :meth:`~.Component.mark_refresh()` 进行 ``recurse_up/down`` 的处理"
+#~ msgstr "Handles ``recurse_up/down`` for :meth:`~.Component.mark_refresh()`"

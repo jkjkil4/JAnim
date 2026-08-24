@@ -1,0 +1,46 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2023, jkjkil4
+# This file is distributed under the same license as the JAnim package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: JAnim \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 1980-01-01 00:00+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: en\n"
+"Language-Team: en <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.17.0\n"
+
+#: ../../source/janim/utils/cmpt_lazy.rst:2
+msgid "cmpt_lazy"
+msgstr "cmpt_lazy"
+
+#: janim.utils.cmpt_lazy.cmpt_lazy_method:1 of
+msgid "用于在需要时才重新计算调用组件方法得到的值，提升性能"
+msgstr "Used to recompute values returned by component methods only when needed, improving performance."
+
+#: janim.utils.cmpt_lazy.cmpt_lazy_method:3 of
+msgid "在需要重新计算的场景下，会通过 ``self.bind.reset_computed_for`` 重置， 之后对 ``func`` 的调用才会重新计算返回值"
+msgstr ""
+"When recomputation is needed, ``self.bind.reset_computed_for`` is used to reset the computed state. Subsequent calls to "
+"``func`` will then recompute and return the value."
+
+#: janim.utils.cmpt_lazy.cmpt_lazy_method:6 of
+msgid "注：如果组件没有绑定到物件，不提供缓存"
+msgstr "Note: No caching is provided if the component is not bound to an item."
+
+#: janim.utils.cmpt_lazy.CmptSignal.self_refresh:1 of
+msgid "被修饰的方法会在 ``Signal`` 触发时，标记需要重新计算"
+msgstr "The decorated method is marked for recomputation when a ``Signal`` is triggered."
+
+#: janim.utils.cmpt_lazy.CmptSignal.connect:1 of
+msgid "使 ``func`` 会在 ``Signal`` 触发时调用"
+msgstr "Makes ``func`` be called when a ``Signal`` is triggered."

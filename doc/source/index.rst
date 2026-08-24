@@ -12,7 +12,7 @@ JAnim 是一个用于创建流畅动画的库，以程序化动画为核心理�
 
     应避免借助 AI (LLM) 询问有关 JAnim 的信息，得到的消息很可能存在严重偏差
 
-    信息可靠度：加群 / 开 Discussion 询问作者 > 询问 DeepWiki > 询问市面上的 AI (LLM)
+    信息可靠度：加 QQ 群 / 开 `Discussion <https://github.com/jkjkil4/JAnim/discussions>`_ 询问作者 > 询问 DeepWiki > 询问市面上的 AI (LLM)
 
 以下是一部分样例展示（注：可以直接点击分页标题快速折叠这部分内容）
 

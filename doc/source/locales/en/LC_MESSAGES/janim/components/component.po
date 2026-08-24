@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  JAnim\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-02-24 01:11+0800\n"
+"POT-Creation-Date: 1980-01-01 00:00+0000\n"
 "PO-Revision-Date: 2025-11-22 22:07+0800\n"
 "Last-Translator: \n"
 "Language: en\n"
@@ -28,32 +28,116 @@ msgstr ""
 "This section covers the implementations of JAnim, which may be quite complex. If you do not have the need to delve into "
 "the source code, you may choose to read it at your discretion."
 
+#: janim.components.component.CheckComponentMethods:1 of
+msgid "所有的 :class:`Component` 子类都会被检查是否实现了 ``copy``, ``become`` 和 ``not_changed`` 方法"
+msgstr ""
+"All subclasses of :class:`Component` are checked to ensure that they implement the ``copy``, ``become``, and "
+"``not_changed`` methods."
+
+#: janim.components.component.CheckComponentMethods:3 of
+msgid "含义："
+msgstr "Meaning:"
+
+#: janim.components.component.CheckComponentMethods:5 of
+msgid "``copy``:"
+msgstr "``copy``:"
+
+#: janim.components.component.CheckComponentMethods:7 of
+msgid "调用该函数后，产生一份组件的拷贝"
+msgstr "Calling this function produces a copy of the component."
+
+#: janim.components.component.CheckComponentMethods:9 of
+msgid ""
+"在该函数中，应使用 ``cmpt_copy = super().copy()`` 得到拷贝的组件对象， 然后在这个对象的基础上，处理有关的拷贝操作，最后返"
+"回 ``cmpt_copy`` 对象"
+msgstr ""
+"In this function, ``cmpt_copy = super().copy()`` should be used to obtain a copy of the component. The relevant copying "
+"operations should then be performed on this object, and finally the ``cmpt_copy`` object should be returned."
+
+#: janim.components.component.CheckComponentMethods:12 of
+msgid "``become``:"
+msgstr "``become``:"
+
+#: janim.components.component.CheckComponentMethods:14 of
+msgid "会以另外一个（大概率是同类型的组件，该行为暂未稳定，有待明确）组件作为入参"
+msgstr ""
+"Takes another component as an argument (most likely one of the same type; this behavior is not yet stable and may be "
+"clarified in the future)."
+
+#: janim.components.component.CheckComponentMethods:16 of
+msgid ""
+"在该函数中，应先使用 ``super().become(other)`` 处理父类的逻辑， 然后再进行当前组件的处理逻辑，最终确保当前组件的数据变得和"
+"目标组件长得一样"
+msgstr ""
+"In this function, ``super().become(other)`` should first be used to handle the parent class's logic. The current "
+"component's logic should then be handled, ultimately ensuring that the current component's data matches that of the "
+"target component."
+
+#: janim.components.component.CheckComponentMethods:19 of
+msgid "``not_changed``:"
+msgstr "``not_changed``:"
+
+#: janim.components.component.CheckComponentMethods:21 of
+msgid "该函数需要返回一个 ``bool`` 值，表示是否能确定该组件的数据没有发生过变更，用于侦测组件修改"
+msgstr ""
+"This function should return a ``bool`` indicating whether it can be determined that the component's data has not changed, "
+"and is used to detect modifications to the component."
+
+#: janim.components.component.CheckComponentMethods:23 of
+msgid ""
+"例如 ``Cmpt_Points`` 的 ``_points`` 数据在未变动时内部 NumPy 数据的 ``id`` 保持不变， 但是在发生修改后，就会成为完全不同 "
+"``id`` 的 NumPy 数组"
+msgstr ""
+"For example, when the ``_points`` data of ``Cmpt_Points`` has not been modified, the ``id`` of its underlying NumPy array "
+"remains unchanged. After the data is modified, however, it becomes a completely different NumPy array with a different "
+"``id``."
+
+#: janim.components.component.CheckComponentMethods:26 of
+msgid ""
+"所以 ``Cmpt_Points`` 内部的 NumPy 数组只要无法通过 ``is`` 判断相同，他的该函数就会返回 ``False`` （哪怕变化后回到了相同值"
+"的数据，也仍返回 ``False``）"
+msgstr ""
+"Therefore, ``Cmpt_Points`` returns ``False`` whenever its underlying NumPy arrays cannot be determined to be the same "
+"using ``is`` (even if the data has been modified and then changed back to the same values, it will still return "
+"``False``)."
+
+#: janim.components.component.CheckComponentMethods:29 of
+msgid "另外，对于未附加额外数据，仅提供额外方法的组件，可以用 ``impl=True`` 跳过该子类的检查"
+msgstr ""
+"Additionally, for components that do not contain any additional data and only provide additional methods, ``impl=True`` "
+"can be used to skip the check for that subclass."
+
 #: janim.components.component.Component.BindInfo:1 of
 msgid "对组件定义信息的封装"
 msgstr "Encapsulation of component definition information"
 
+#: ../../source/janim/components/component.rst janim.components.component.Component.walk_same_cmpt_of_self_and_descendants
+#: of
+msgid "参数"
+msgstr "Parameters"
+
 #: janim.components.component.Component.BindInfo:3 of
 msgid ""
-"``decl_cls``: 以 ``xxx = CmptInfo(...)`` 的形式被声明在哪个类中； 如果一个类及其父类都有 ``xxx = CmptInfo(...)`` ，那么 "
-"``decl_cls`` 是父类"
+"以 ``xxx = CmptInfo(...)`` 的形式被声明在哪个类中； 如果一个类及其父类都有 ``xxx = CmptInfo(...)`` ，那么 ``decl_cls`` 是"
+"父类"
 msgstr ""
-"``decl_cls``: In which class the component is declared as ``xxx = CmptInfo(...)``; If a class and its parent class both "
-"have ``xxx = CmptInfo(...)`` , then ``decl_cls`` is the parent class"
+"The class in which it is declared in the form ``xxx = CmptInfo(...)``; if both a class and its parent class have ``xxx = "
+"CmptInfo(...)``, then ``decl_cls`` is the parent class."
 
-#: janim.components.component.Component.BindInfo:5 of
-msgid "``at_item``: 这个组件对象是属于哪个物件对象的"
-msgstr "``at_item``: To which item object this component object belongs"
+#: janim.components.component.Component.BindInfo:7 of
+msgid "这个组件对象当前绑定到了哪个物件对象"
+msgstr "The item object to which this component object is currently bound"
 
-#: janim.components.component.Component.BindInfo:6 of
-msgid "``key``: 这个组件对象的变量名"
-msgstr "``key``: The variable name of this component object"
+#: janim.components.component.Component.BindInfo:8 of
+msgid "这个组件对象在物件中的变量名"
+msgstr "The variable name of this component object within the item"
 
 #: janim.components.component.CmptGroup:3 janim.components.component.CmptInfo:3
-#: janim.components.component.Component.BindInfo:8 of
+#: janim.components.component.Component.BindInfo:10 of
 msgid "例："
 msgstr "For example:"
 
-#: janim.components.component.Component.BindInfo:10 of
+#: janim.components.component.Component.BindInfo:12 of
 msgid ""
 "class MyCmpt(Component): ...\n"
 "\n"
@@ -101,9 +185,71 @@ msgstr "Used for ``Item._init_components``"
 msgid "子类可以继承该函数，进行与所在物件相关的处理"
 msgstr "Subclasses can inherit this function to perform item-related processing"
 
-#: janim.components.component.Component.mark_refresh:1 of
-msgid "详见： :meth:`~.Item.broadcast_refresh_of_component`"
-msgstr "See  :meth:`~.Item.broadcast_refresh_of_component`"
+#: janim.components.component.Component.get_same_cmpt:1 of
+msgid "得到 ``item`` 物件中与自身同 ``self.bind.key`` 的组件，默认会创建 mock"
+msgstr ""
+"Get the component in the ``item`` object with the same ``self.bind.key`` as this component. By default, a mock will be "
+"created if necessary."
+
+#: janim.components.component.Component.get_same_cmpt:3 janim.components.component.Component.walk_same_cmpt_of_descendants:3
+#: of
+msgid ""
+"注：若 ``self.bind`` 无效会由于尝试访问 ``None`` 的成员而抛出属性错误， 但是我们并没在函数中检查这一点；若有必要的话，预期"
+"的做法是在函数外检查"
+msgstr ""
+"Note: If ``self.bind`` is invalid, an attribute error will be raised when attempting to access an attribute of ``None``. "
+"However, this is not checked within the function; if necessary, the intended approach is to perform the check outside the "
+"function."
+
+#: janim.components.component.Component.get_same_cmpt:6 of
+msgid "得到哪个物件中的组件"
+msgstr "The item from which to get the component"
+
+#: janim.components.component.Component.get_same_cmpt:7 janim.components.component.Component.walk_same_cmpt_of_descendants:6
+#: of
+msgid "在没有对应组件时，是否能使用先前创建过的 mock"
+msgstr "Whether a previously created mock can be used when the corresponding component is unavailable"
+
+#: janim.components.component.Component.get_same_cmpt:8 janim.components.component.Component.walk_same_cmpt_of_descendants:7
+#: of
+msgid "在没有对应组件时，是否基于 :meth:`~.Item.astype` 创建 mock"
+msgstr "Whether to create a mock based on :meth:`~.Item.astype` when the corresponding component is unavailable"
+
+#: ../../source/janim/components/component.rst
+msgid "返回"
+msgstr "Returns"
+
+#: janim.components.component.Component.get_same_cmpt:9 of
+msgid "得到的组件，若 ``create_mock=False``，则可能返回 ``None``"
+msgstr "The resulting component; may return ``None`` if ``create_mock=False``"
+
+#: janim.components.component.Component.walk_same_cmpt_of_self_and_descendants:1 of
+msgid "遍历该组件自身，以及所在物件的后代物件中的同类组件，默认不会创建 mock"
+msgstr ""
+"Traverse this component and the corresponding components in the descendant items of its containing item. By default, no "
+"mocks are created."
+
+#: janim.components.component.Component.walk_same_cmpt_of_self_and_descendants:3 of
+msgid "若设置了 ``root_only`` 或 ``self.bind`` 无效则会忽略后代组件"
+msgstr "If ``root_only`` is set or ``self.bind`` is invalid, descendant components are ignored."
+
+#: janim.components.component.Component.walk_same_cmpt_of_self_and_descendants:5 of
+msgid "是否忽略后代组件，仅 ``yield`` 自己"
+msgstr "Whether to ignore descendant components and only ``yield`` this component"
+
+#: janim.components.component.Component.walk_same_cmpt_of_self_and_descendants:7 of
+msgid "其余参数请参考 :meth:`walk_same_cmpt_of_descendants` 的文档"
+msgstr "For the remaining parameters, see the documentation for :meth:`walk_same_cmpt_of_descendants`."
+
+#: janim.components.component.Component.walk_same_cmpt_of_descendants:1 of
+msgid "遍历所在物件的后代物件中的同类组件，默认不会创建 mock"
+msgstr ""
+"Traverse the corresponding components in the descendant items of the containing item. By default, no mocks are created."
+
+#: janim.components.component.Component.walk_same_cmpt_of_descendants:8 of
+msgid "遍历是否不保证顺序，若指定，对于复杂结构的性能会更佳"
+msgstr ""
+"Whether to allow traversal without guaranteeing order. If specified, performance may be better for complex structures."
 
 #: janim.components.component.Component.r:1 of
 msgid "所位于的物件，便于链式调用同物件下其它的组件"
@@ -164,3 +310,9 @@ msgstr ""
 "item = MyItem()\n"
 "item.stroke.set(...)    # Only the method of stroke be called\n"
 "item.color.set(...)     # the methods of stroke and fill are both called"
+
+#~ msgid "``at_item``: 这个组件对象是属于哪个物件对象的"
+#~ msgstr "``at_item``: To which item object this component object belongs"
+
+#~ msgid "详见： :meth:`~.Item.broadcast_refresh_of_component`"
+#~ msgstr "See  :meth:`~.Item.broadcast_refresh_of_component`"

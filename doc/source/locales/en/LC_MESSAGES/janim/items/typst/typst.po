@@ -27,6 +27,10 @@ msgstr "typst"
 msgid "Typst 文档"
 msgstr "Typst document"
 
+#: janim.items.typst.typst.TypstDoc.scale_descendants_stroke_radius:1 of
+msgid "将所有后代物件的 ``stroke_radius`` 都乘上一个值"
+msgstr "Multiply all descendant items' ``stroke_radius`` by a value"
+
 #: janim.items.typst.typst.TypstDoc.typstify:1 of
 msgid "将字符串变为 Typst 对象，而本身已经是的则直接返回"
 msgstr "Convert a string to a Typst object, if it already is one, return it directly"
