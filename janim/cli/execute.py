@@ -111,6 +111,10 @@ def run_timelines(
         if i != 0:
             viewer.move(widgets[i - 1].pos() + QPoint(24, 24))
 
+    # 释放该函数对于初次构建的 Timeline 的引用，这样在 GUI 中重新构建时，就可以正常将他们释放
+    built = None
+    built_timelines.clear()
+
     QTimer.singleShot(200, widgets[-1].activateWindow)
 
     log.info(_('Finished constructing in {time:.2f} s').format(time=time.time() - t))
