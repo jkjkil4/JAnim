@@ -64,7 +64,7 @@ class StepUpdaterParams:
     range: TimeRange
     n: int
 
-    _updater: _StepUpdater
+    _updater: _StepUpdater | GroupStepUpdater
 
     def __enter__(self) -> Self:
         self.token = updater_params_ctx.set(self)
@@ -766,8 +766,38 @@ class GroupStepUpdater[T: Item](Animation):
         self.func = lambda group, p: _call_two_func(orig_func, func, group, p)
         return self
 
-    def _time_fixed(self) -> None:
-        pass
+    def _finalized(self) -> None:
+        self.first_data = self.item.current(as_time=self.t_range.at)
+        self.data = self.first_data.copy()
+
+        sub_items = list(self.item.walk_self_and_descendants())
+        stacks = [self.timeline.item_appearances[item].stack for item in sub_items]
+
+        for item, data in zip(sub_items, self.data.walk_self_and_descendants()):
+            sub_updater = _GroupStepUpdater(
+                self,
+                item,
+                data,
+                stacks,
+                show_at_begin=self.show_at_begin,
+                hide_at_end=self.hide_at_end,
+            )
+            sub_updater.transfer_params(self)
+            sub_updater.finalize()
+
+        if self.become_at_end and self.t_range.end is not FOREVER:
+            for item in sub_items:
+                DoBecomeAtEnd(item, self.t_range.end).finalize()  # type: ignore
+
+        chunk_size = max(1, round(self.persistent_cache_step / self.step))
+        self._cache = ChunkedNearbyCache(
+            chunk_size,
+            self.first_data,
+            lambda x: x.copy(),
+            progress_bar_desc=(
+                f'GroupStepUpdater({self.item.__class__.__name__})' if self.progress_bar else None
+            ),
+        )
 
     def global_t_to_n(self, global_t: float) -> int:
         return max(0, int((global_t - self.t_range.at) // self.step))
@@ -779,7 +809,27 @@ class GroupStepUpdater[T: Item](Animation):
         if self.applied:
             return
 
-        # TODO
+        n = self.global_t_to_n(global_t)
+
+        cache_n, cache = self._cache.get_nearest_cache(n)
+        for data, cache_data in zip(
+            self.data.walk_self_and_descendants(), cache.walk_self_and_descendants()
+        ):
+            data.restore(cache_data)
+
+        self._cache.scroll_tcache_to(n)
+
+        for computing_n in self._cache.iterates(cache_n, n):
+            with StepUpdaterParams(
+                self.timeline.time_aligner.align(self.n_to_global_t(computing_n)),
+                self.step,
+                self.t_range,
+                computing_n,
+                self,
+            ) as params:
+                self.func(self.data, params)
+
+            self._cache.record(self.data, computing_n)
 
         self.applied = True
 
@@ -794,19 +844,24 @@ class _GroupStepUpdater(ApplyAligner):
         **kwargs,
     ):
         super().__init__(item, stacks, **kwargs)
-        self._generate_by: _GroupStepUpdater = generate_by
+        self._generate_by: GroupStepUpdater = generate_by  # type: ignore
         self.data = data
+        self.stored = item.Stored(item)
 
-    # def pre_apply(self, data: Item, p: ItemAnimation.ApplyParams) -> None:
-    #     self._generate_by.applied = False
-    #
-    # def apply(self, data: Item)
-    #
+    def pre_apply(self, params: ApplyParams) -> None:
+        self._generate_by.applied = False
+
+    def apply(self, params: ApplyParams) -> None:
+        self._generate_by.apply_for_group(params.global_t)
+        params.data.restore(self.data)
+        # 用于保证 .current 能够正确递归解析子物件
+        # 因为应根据 self.item 的结构建立 Stored，而非 apply 时 self.data 的结构
+        params.data._stored = self.stored
 
 
 class ChunkedNearbyCache[T]:
     """
-    用于辅助 :class:`StepUpdater` 的步进缓存类
+    用于辅助 :class:`StepUpdater` 和 :class:`GroupStepUpdater` 的步进缓存类
 
     :param chunk_size: 每个 chunk 的元素数量
 
