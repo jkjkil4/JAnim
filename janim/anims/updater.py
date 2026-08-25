@@ -686,7 +686,8 @@ class _StepUpdater(ItemAnimation):
 
     def apply(self, params: ApplyParams) -> None:
         self.compute(self.data, params.global_t)
-        params.data = self.data
+        assert params.data is not None
+        params.data.restore(self.data)
 
     def global_t_to_n(self, global_t: float) -> int:
         return max(
