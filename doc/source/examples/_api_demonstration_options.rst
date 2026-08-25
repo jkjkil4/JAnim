@@ -102,3 +102,12 @@
         :extract-from-example:
         :media: _static/videos/MaskExample.mp4
         :ref: :class:`~.ShapeMask` :class:`~.TransformMatchingDiff` :class:`~.boolean_ops.Union` :class:`~.boolean_ops.Intersection` 
+
+
+.. random-option::
+
+    .. janim-example:: BallsCollisionExample
+        :extract-from-example-mark:
+        :media: _static/videos/BallsCollisionExample.mp4
+        :ref: :class:`~.GroupStepUpdater` :class:`~.CustomData` :class:`~.Follow` 
+
