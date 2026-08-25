@@ -558,3 +558,148 @@ class MaskExample(Timeline):
         self.forward(1.5)
         self.play(mask3.anim.invert.set(1.0))
         self.forward(1.5)
+
+
+# beginmark BallsCollisionExample
+class Ball(Dot):
+    speed = CustomData()
+
+    def __init__(self, radius: float):
+        super().__init__(radius=radius, color=BLUE)
+        self.speed.set(ORIGIN)
+
+
+class BallsCollisionExample(Timeline):
+    def construct(self):
+        # 有关配置
+        left = -4
+        right = 4
+        bottom = -3
+        top = 3
+
+        radius = 0.25
+        ball_count = 25
+
+        # 容器边框
+        Polygon([left, top, 0], [left, bottom, 0], [right, bottom, 0], [right, top, 0], fill_alpha=0.2).show()
+        # 内部的球
+        balls = Ball(radius) * ball_count
+
+        # 生成互不重叠的初始位置
+        positions = []
+        rng = np.random.default_rng(1234)
+        for ball in balls:
+            # 初始位置
+            while True:
+                pos = np.array([
+                    rng.uniform(left + radius, right - radius),
+                    rng.uniform(bottom + radius, top - radius),
+                    0,
+                ])
+                if all(np.linalg.norm(pos - other) >= 2 * radius for other in positions):
+                    break
+            ball.points.move_to(pos)
+            positions.append(pos)
+
+            # 初始速度
+            ball.speed.set(
+                np.array([
+                    rng.uniform(-3, 3),
+                    rng.uniform(-3, 3),
+                    0,
+                ])
+            )
+
+        def updater(group: Group[Ball], p) -> None:
+            dt = p.dt
+
+            # 1. 根据速度移动
+            for ball in group:
+                ball.points.shift(ball.speed.get() * dt)
+
+            # 2. 与容器边界碰撞
+            for ball in group:
+                pos = ball.points.box.center
+                speed = ball.speed.get().copy()
+
+                if pos[0] - radius < left:
+                    ball.points.set_x(left + radius)
+                    speed[0] = abs(speed[0])
+
+                elif pos[0] + radius > right:
+                    ball.points.set_x(right - radius)
+                    speed[0] = -abs(speed[0])
+
+                if pos[1] - radius < bottom:
+                    ball.points.set_y(bottom + radius)
+                    speed[1] = abs(speed[1])
+
+                elif pos[1] + radius > top:
+                    ball.points.set_y(top - radius)
+                    speed[1] = -abs(speed[1])
+
+                ball.speed.set(speed)
+
+            # 3. 小球之间的完全弹性碰撞
+            for i in range(len(group)):
+                for j in range(i + 1, len(group)):
+                    ball1 = group[i]
+                    ball2 = group[j]
+
+                    p1 = ball1.points.box.center
+                    p2 = ball2.points.box.center
+
+                    delta = p2 - p1
+                    dist = np.linalg.norm(delta)
+
+                    min_dist = 2 * radius
+
+                    if dist >= min_dist:
+                        continue
+
+                    # 两个球存在重合时，给出碰撞方向
+                    if dist < 1e-8:
+                        normal = np.array([1.0, 0.0, 0.0])
+                        dist = 0.0
+                    else:
+                        normal = delta / dist
+
+                    v1 = ball1.speed.get()
+                    v2 = ball2.speed.get()
+
+                    # 相对速度
+                    relative_velocity = v2 - v1
+                    velocity_along_normal = np.dot(relative_velocity, normal)
+                    # 只有相互靠近时才处理碰撞
+                    if velocity_along_normal < 0:
+                        # 相同质量的完全弹性碰撞
+                        impulse = velocity_along_normal * normal
+                        ball1.speed.set(v1 + impulse)
+                        ball2.speed.set(v2 - impulse)
+
+                    # 消除两个球之间的重叠
+                    overlap = min_dist - dist
+                    if overlap > 0:
+                        correction = normal * (overlap / 2)
+                        ball1.points.shift(-correction)
+                        ball2.points.shift(correction)
+
+        self.play(
+            GroupStepUpdater(balls, updater),
+            duration=4,
+        )
+
+        ball_follow = balls[6]
+
+        self.forward(0.5)
+        self.play(
+            self.camera.anim.points.scale(0.5).move_to(ball_follow),
+            ball_follow.anim.set(color=YELLOW),
+        )
+        self.forward(0.5)
+        self.play(
+            GroupStepUpdater(balls, updater),
+            Follow(self.camera, ball_follow, ORIGIN),
+            duration=6,
+        )
+# endmark BallsCollisionExample
