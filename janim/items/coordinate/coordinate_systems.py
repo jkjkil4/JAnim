@@ -639,7 +639,11 @@ class NumberPlane(Axes):
     def _init_background_lines(self) -> None:
         if not self.faded_line_style:
             style = dict(self.background_line_style)
-            style['stroke_alpha'] = 0.5 * style.get('stroke_alpha', 1)
+
+            stroke_alpha = style.get('stroke_alpha', None)
+            if stroke_alpha is None:
+                stroke_alpha = style.get('alpha', 1)
+            style['stroke_alpha'] = 0.5 * stroke_alpha
             style['stroke_radius'] = 0.5 * style.get('stroke_radius', DEFAULT_STROKE_RADIUS)
             self.faded_line_style = style
 
