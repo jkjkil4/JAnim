@@ -1,10 +1,8 @@
 from __future__ import annotations
 
 import inspect
-from contextlib import contextmanager
 from contextvars import ContextVar
 from dataclasses import dataclass
-from enum import Enum
 from typing import Any, Callable, Iterable, Self
 
 from tqdm import tqdm as ProgressDisplay
@@ -670,6 +668,7 @@ class _StepUpdater(ItemAnimation):
 
     def _finalized(self) -> None:
         self.first_data = self.timeline.compute_item(self.item, self.t_range.at, True).store()
+        self.last_n = -1
 
         super()._finalized()
 
@@ -699,9 +698,18 @@ class _StepUpdater(ItemAnimation):
 
     def compute(self, data: Item, global_t: float) -> None:
         n = self.global_t_to_n(global_t)
+        # is_increasing 表示时间上是否在前进
+        # 如果在前进，则尝试直接从 self.data 继续，并且计算时不 record，节省 record 开销
+        is_increasing = n >= self.last_n
 
         cache_n, cache = self._cache.get_nearest_cache(n)
-        data.restore(cache)
+        # 这里在 cache 与 self.data 二者之间选择最接近当前 n 的
+        # 如果 cache_n 大于 last_n，则使用 cache，否则使用 self.data
+        # 例外：当 last_n >= n 时，表示 last_n 无效，此时也应当使用 cache
+        if self.last_n >= n or cache_n > self.last_n:
+            data.restore(cache)
+        else:
+            cache_n = self.last_n
 
         self._cache.scroll_tcache_to(n)
 
@@ -715,7 +723,10 @@ class _StepUpdater(ItemAnimation):
             ) as params:
                 self.func(data, params)
 
-            self._cache.record(data, computing_n)
+            if not is_increasing or self._cache.is_at_pcache(computing_n):
+                self._cache.record(data, computing_n)
+
+        self.last_n = n
 
 
 class GroupStepUpdater[T: Item](Animation):
@@ -769,6 +780,7 @@ class GroupStepUpdater[T: Item](Animation):
     def _finalized(self) -> None:
         self.first_data = self.item.current(as_time=self.t_range.at)
         self.data = self.first_data.copy()
+        self.last_n = -1
 
         sub_items = list(self.item.walk_self_and_descendants())
         stacks = [self.timeline.item_appearances[item].stack for item in sub_items]
@@ -810,12 +822,21 @@ class GroupStepUpdater[T: Item](Animation):
             return
 
         n = self.global_t_to_n(global_t)
+        # is_increasing 表示时间上是否在前进
+        # 如果在前进，则尝试直接从 self.data 继续，并且计算时不 record，节省 record 开销
+        is_increasing = n >= self.last_n
 
         cache_n, cache = self._cache.get_nearest_cache(n)
-        for data, cache_data in zip(
-            self.data.walk_self_and_descendants(), cache.walk_self_and_descendants()
-        ):
-            data.restore(cache_data)
+        # 这里在 cache 与 self.data 二者之间选择最接近当前 n 的
+        # 如果 cache_n 大于 last_n，则使用 cache，否则使用 self.data
+        # 例外：当 last_n >= n 时，表示 last_n 无效，此时也应当使用 cache
+        if self.last_n >= n or cache_n > self.last_n:
+            for data, cache_data in zip(
+                self.data.walk_self_and_descendants(), cache.walk_self_and_descendants()
+            ):
+                data.restore(cache_data)
+        else:
+            cache_n = self.last_n
 
         self._cache.scroll_tcache_to(n)
 
@@ -829,8 +850,10 @@ class GroupStepUpdater[T: Item](Animation):
             ) as params:
                 self.func(self.data, params)
 
-            self._cache.record(self.data, computing_n)
+            if not is_increasing or self._cache.is_at_pcache(computing_n):
+                self._cache.record(self.data, computing_n)
 
+        self.last_n = n
         self.applied = True
 
 
@@ -874,8 +897,6 @@ class ChunkedNearbyCache[T]:
         每个 chunk 中存储除了 chunk 开头的元素外的剩下最多 ``chunk_size - 1`` 个元素
     """
 
-    _disable_temp_record_ctx = ContextVar('_disable_temp_record_ctx', default=False)
-
     def __init__(
         self,
         chunk_size: int,
@@ -905,19 +926,6 @@ class ChunkedNearbyCache[T]:
         chunk_idx, mod = divmod(n, self._chunk_size)
         local_chunk_idx = chunk_idx - self._tcache_at_chunk + 1
         return (local_chunk_idx, mod - 1)
-
-    @contextmanager
-    def disable_temp_record(self):
-        """
-        通过 ``with`` 语句在其内部临时停止记录临时缓存
-
-        用于 :class:`StepUpdater` 的 ``become_at_end`` 处理
-        """
-        token = self._disable_temp_record_ctx.set(True)
-        try:
-            yield
-        finally:
-            self._disable_temp_record_ctx.reset(token)
 
     def get_nearest_cache(self, n: int) -> tuple[int, T]:
         """
@@ -980,6 +988,9 @@ class ChunkedNearbyCache[T]:
             )
         return rg
 
+    def is_at_pcache(self, n: int) -> bool:
+        return n % self._chunk_size == 0
+
     def record(self, data: T, n: int) -> None:
         """
         将缓存记入 ``pcache`` 或 ``tcache`` 中
@@ -990,9 +1001,8 @@ class ChunkedNearbyCache[T]:
             self._pcache.append(self._get_copy_func(data))
 
         # 检查是否可记入 tcache
-        if not self._disable_temp_record_ctx.get():
-            local_chunk_idx, elem_idx = self._n_to_tcache_idx(n)
-            if elem_idx != -1 and 0 <= local_chunk_idx < 3:
-                tcache_chunk = self._tcache_chunks[local_chunk_idx]
-                if elem_idx == len(tcache_chunk):
-                    tcache_chunk.append(self._get_copy_func(data))
+        local_chunk_idx, elem_idx = self._n_to_tcache_idx(n)
+        if elem_idx != -1 and 0 <= local_chunk_idx < 3:
+            tcache_chunk = self._tcache_chunks[local_chunk_idx]
+            if elem_idx == len(tcache_chunk):
+                tcache_chunk.append(self._get_copy_func(data))
