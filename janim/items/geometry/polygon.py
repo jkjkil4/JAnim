@@ -106,7 +106,7 @@ class Polyline(Polygon):
 
     def __init__(
         self,
-        *verts: VectArray,
+        *verts: Vect,
         close_path: bool = False,
         **kwargs,
     ):

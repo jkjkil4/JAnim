@@ -26,10 +26,9 @@ class Cmpt_Glow[ItemT](Cmpt_Rgba[ItemT]):
         # _size 已通过 super().copy() 拷贝
         return cmpt_copy
 
-    def become(self, other: Cmpt_Glow) -> Self:
-        super().become(other)
+    def _become(self, other: Cmpt_Glow) -> None:
+        super()._become(other)
         self._size = other._size
-        return self
 
     def not_changed(self, other: Cmpt_Glow) -> bool:
         return super().not_changed(other) and self._size == other._size

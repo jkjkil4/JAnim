@@ -190,7 +190,8 @@ class CmptSignal[T, **P, R]:
         if sender.bind is not None:
             cls_mro_refreshes = self._get_cls_mro_refreshes(sender.__class__)
             refreshes = cls_mro_refreshes[key]
-            sender.bind.reset_computed_for_list(refreshes)
+            if refreshes:
+                sender.bind.reset_computed_for_list(refreshes)
 
         # .connect
 

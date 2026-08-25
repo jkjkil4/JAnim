@@ -34,11 +34,9 @@ class Cmpt_Radius[ItemT](Component[ItemT]):
         cmpt_copy._radii = self._radii.copy()
         return cmpt_copy
 
-    def become(self, other: Cmpt_Radius) -> Self:
-        super().become(other)
+    def _become(self, other: Cmpt_Radius) -> None:
         if not self._radii.is_share(other._radii):
             self._radii = other._radii.copy()
-        return self
 
     def not_changed(self, other: Cmpt_Radius) -> bool:
         return self._radii.is_share(other._radii)

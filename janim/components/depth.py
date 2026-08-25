@@ -57,11 +57,9 @@ class Cmpt_Depth[ItemT](Component[ItemT]):
         # Component.copy 中的 copy.copy(self) 已将 _value 和 _order 拷贝
         return super().copy()
 
-    def become(self, other: Cmpt_Depth) -> Self:
-        super().become(other)
+    def _become(self, other: Cmpt_Depth) -> None:
         self._depth = other._depth
         self._order = other._order
-        return self
 
     def not_changed(self, other: Cmpt_Depth) -> bool:
         return self._depth == other._depth and self._order == other._order

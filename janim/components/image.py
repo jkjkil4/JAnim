@@ -22,10 +22,8 @@ class Cmpt_Image[ItemT](Component[ItemT]):
         # self.min_mag_filter 已通过父方法 copy.copy 复制
         return super().copy()
 
-    def become(self, other: Cmpt_Image) -> Self:
-        super().become(other)
+    def _become(self, other: Cmpt_Image) -> None:
         self.set(other.img, other.min_mag_filter)
-        return self
 
     def not_changed(self, other: Cmpt_Image) -> bool:
         return id(self.img) == id(other.img) and self.min_mag_filter == other.min_mag_filter

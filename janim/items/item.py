@@ -671,7 +671,8 @@ class Item(ItemRelation['Item'], metaclass=_ItemMeta):
         self_cmpts = self.components
         other_cmpts = other.components
         for key in self_cmpts.keys() | other_cmpts.keys():
-            self_cmpts[key].become(other_cmpts[key])
+            self_cmpts[key]._become(other_cmpts[key])
+        self._rel_handle.reset_computed_for_self()
 
         if self.timeline is not None:
             # 强制将没有变化的物件以及所有后代物件也产生 detect_change 记录
@@ -739,11 +740,10 @@ class Item(ItemRelation['Item'], metaclass=_ItemMeta):
         if self._stored:
             self._stored = self.Stored(other)
 
-        with ContextSetter(Component._become_reset_computed, False):
-            self_cmpts = self.components
-            other_cmpts = other.components
-            for key in self_cmpts.keys() & other_cmpts.keys():
-                self_cmpts[key].become(other_cmpts[key])
+        self_cmpts = self.components
+        other_cmpts = other.components
+        for key in self_cmpts.keys() & other_cmpts.keys():
+            self_cmpts[key]._become(other_cmpts[key])
         self._rel_handle.reset_computed_for_self()
 
         return self

@@ -46,13 +46,9 @@ class Cmpt_Data[ItemT, T](Component[ItemT]):
 
         return cmpt_copy
 
-    def become(self, other: Cmpt_Data) -> Self:
-        super().become(other)
-
+    def _become(self, other: Cmpt_Data) -> None:
         with self._cls_name():
             self.set(Cmpt_Data.copy_for_value(other.value))
-
-        return self
 
     def not_changed(self, other: Cmpt_Data) -> bool:
         with self._cls_name():

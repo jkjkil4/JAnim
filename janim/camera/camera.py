@@ -83,13 +83,11 @@ class Cmpt_CameraPoints[ItemT](Cmpt_Points[ItemT]):
         cmpt_copy._orientation = Quaternion(self.orientation.elements)
         return cmpt_copy
 
-    def become(self, other: Cmpt_CameraPoints) -> Self:
-        super().become(other)
+    def _become(self, other: Cmpt_CameraPoints) -> None:
+        super()._become(other)
         self.size = other.size
         self.fov = other.fov
         self.orientation = Quaternion(other.orientation.elements)
-
-        return self
 
     def not_changed(self, other: Cmpt_CameraPoints) -> Self:
         if not super().not_changed(other):

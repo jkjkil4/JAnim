@@ -74,12 +74,10 @@ class Cmpt_Points[ItemT](Component[ItemT]):
         cmpt_copy._points = self._points.copy()
         return cmpt_copy
 
-    def become(self, other: Cmpt_Points) -> Self:
-        super().become(other)
+    def _become(self, other: Cmpt_Points) -> None:
         if not self._points.is_share(other._points):
             self._points = other._points.copy()
             Cmpt_Points.set.emit(self)
-        return self
 
     def not_changed(self, other: Cmpt_Points) -> bool:
         return self._points.is_share(other._points)

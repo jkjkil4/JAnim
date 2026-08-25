@@ -37,10 +37,8 @@ class ComponentTest(unittest.TestCase):
             def copy(self) -> Self:
                 return super().copy()
 
-            def become(self, other) -> Self:
-                super().become(other)
+            def _become(self, other) -> None:
                 self.a = other.a
-                return self
 
             def not_changed(self, other) -> bool:
                 return self.a == other.a

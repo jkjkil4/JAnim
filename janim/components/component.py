@@ -21,7 +21,7 @@ _ = get_translator('janim.components.component')
 
 class CheckComponentMethods(type):
     """
-    所有的 :class:`Component` 子类都会被检查是否实现了 ``copy``, ``become`` 和 ``not_changed`` 方法
+    所有的 :class:`Component` 子类都会被检查是否实现了 ``copy``, ``_become`` 和 ``not_changed`` 方法
 
     含义：
 
@@ -32,11 +32,11 @@ class CheckComponentMethods(type):
         在该函数中，应使用 ``cmpt_copy = super().copy()`` 得到拷贝的组件对象，
         然后在这个对象的基础上，处理有关的拷贝操作，最后返回 ``cmpt_copy`` 对象
 
-    -   ``become``:
+    -   ``_become``:
 
         会以另外一个（大概率是同类型的组件，该行为暂未稳定，有待明确）组件作为入参
 
-        在该函数中，应先使用 ``super().become(other)`` 处理父类的逻辑，
+        在该函数中，应先使用 ``super()._become(other)`` 处理父类的逻辑（如果有），
         然后再进行当前组件的处理逻辑，最终确保当前组件的数据变得和目标组件长得一样
 
     -   ``not_changed``:
@@ -60,8 +60,13 @@ class CheckComponentMethods(type):
         *,
         impl=False,  # 若 impl=True，则会跳过下面的检查
     ):
+        if 'become' in attrdict and name != 'Component':
+            raise AttributeError(
+                _('Perhaps you need to change the method name from `become` to `_become`')
+            )
+
         if not impl:
-            for key in ('copy', 'become', 'not_changed'):
+            for key in ('copy', '_become', 'not_changed'):
                 if not callable(attrdict.get(key, None)):
                     raise AttributeError(  # noqa: TRY004
                         _(
@@ -69,6 +74,7 @@ class CheckComponentMethods(type):
                             'the "{key}" method, but "{name}" does not'
                         ).format(key=key, name=name)
                     )
+
         return super().__new__(cls, name, bases, attrdict)
 
 
@@ -174,23 +180,14 @@ class Component[ItemT](metaclass=CheckComponentMethods):
         setattr(cmpt_copy, SIGNAL_OBJ_CONNS_NAME, None)
         return cmpt_copy
 
-    _become_reset_computed = ContextVar('Component._become_reset_computed', default=True)
-    """
-    默认为 ``True`` 表示在 :meth:`become` 中调用 :meth:`BindInfo.reset_computed_for_all`
-
-    但是如果是在比如 :meth:`~.Item.restore` 中，不需要每个组件单独 reset，只要让物件自己完全 reset 就行了
-
-    这是出于性能优化上的考虑，最终效果是一样的
-    """
-
     def become(self, other) -> Self:
-        if not self._become_reset_computed.get():
-            return self
         bind = self.bind
-        if bind is None:
-            return self
-        bind.reset_computed_for_all()
+        if bind is not None:
+            bind.reset_computed_for_all()
+        self._become(other)
         return self
+
+    def _become(self, other) -> None: ...
 
     def not_changed(self, other) -> bool: ...
 
@@ -351,8 +348,8 @@ class _CmptGroup(Component):
 
         return cmpt_copy
 
-    def become(self, other) -> Self:  # pragma: no cover
-        super().become(other)
+    def _become(self, other) -> None:  # pragma: no cover
+        pass
 
     def not_changed(self, other: _CmptGroup) -> bool:
         for key, obj in self.objects.items():
