@@ -121,8 +121,6 @@ Updater 的使用
 
     原则上来说，传入 :class:`~.DataUpdater` 以及 :class:`~.GroupUpdater` 等 ``Updater`` 的函数不应产生“副作用”，也就是只能改变 ``data`` 的状态，应避免产生对函数之外其它变量的影响。
 
------
-
 最后我们附上一个 ``root_only=False`` 的 :class:`~.DataUpdater` 与 :class:`~.GroupUpdater` 的对比。
 
 .. raw:: html
@@ -350,8 +348,7 @@ JAnim 的各个 ``Updater`` 并非孤立，不仅可以使用 ``.current()`` 获
 关于与 :class:`~.StepUpdater` 一套的 :class:`~.GroupStepUpdater` ，功能上是一致的，区别仅为是否将物件组看作一个整体来处理，方便处理大量小球碰撞等场景：
 
 .. janim-example:: BallsCollisionExample
-    :media: _static/tutorial/BallsCollisionExample.mp4
-    
+    :media: _static/videos/BallsCollisionExample.mp4
 
     class Ball(Dot):
         speed = CustomData()
@@ -439,7 +436,6 @@ JAnim 的各个 ``Updater`` 并非孤立，不仅可以使用 ``.current()`` 获
         def __init__(self, radius: float):
             super().__init__(radius=radius, color=BLUE)
             self.speed.set(ORIGIN)
-
 
     class BallsCollisionExample(Timeline):
         def construct(self):

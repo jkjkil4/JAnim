@@ -568,7 +568,6 @@ class Ball(Dot):
         super().__init__(radius=radius, color=BLUE)
         self.speed.set(ORIGIN)
 
-
 class BallsCollisionExample(Timeline):
     def construct(self):
         # 有关配置

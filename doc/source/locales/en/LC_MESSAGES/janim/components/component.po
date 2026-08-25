@@ -29,9 +29,9 @@ msgstr ""
 "the source code, you may choose to read it at your discretion."
 
 #: janim.components.component.CheckComponentMethods:1 of
-msgid "所有的 :class:`Component` 子类都会被检查是否实现了 ``copy``, ``become`` 和 ``not_changed`` 方法"
+msgid "所有的 :class:`Component` 子类都会被检查是否实现了 ``copy``, ``_become`` 和 ``not_changed`` 方法"
 msgstr ""
-"All subclasses of :class:`Component` are checked to ensure that they implement the ``copy``, ``become``, and "
+"All subclasses of :class:`Component` are checked to ensure that they implement the ``copy``, ``_become``, and "
 "``not_changed`` methods."
 
 #: janim.components.component.CheckComponentMethods:3 of
@@ -55,8 +55,8 @@ msgstr ""
 "operations should then be performed on this object, and finally the ``cmpt_copy`` object should be returned."
 
 #: janim.components.component.CheckComponentMethods:12 of
-msgid "``become``:"
-msgstr "``become``:"
+msgid "``_become``:"
+msgstr "``_become``:"
 
 #: janim.components.component.CheckComponentMethods:14 of
 msgid "会以另外一个（大概率是同类型的组件，该行为暂未稳定，有待明确）组件作为入参"
@@ -66,12 +66,12 @@ msgstr ""
 
 #: janim.components.component.CheckComponentMethods:16 of
 msgid ""
-"在该函数中，应先使用 ``super().become(other)`` 处理父类的逻辑， 然后再进行当前组件的处理逻辑，最终确保当前组件的数据变得和"
-"目标组件长得一样"
+"在该函数中，应先使用 ``super()._become(other)`` 处理父类的逻辑（如果有）， 然后再进行当前组件的处理逻辑，最终确保当前组件"
+"的数据变得和目标组件长得一样"
 msgstr ""
-"In this function, ``super().become(other)`` should first be used to handle the parent class's logic. The current "
-"component's logic should then be handled, ultimately ensuring that the current component's data matches that of the "
-"target component."
+"In this function, ``super()._become(other)`` should first be used to handle the parent class's logic (if it exists). The "
+"current component's logic should then be handled, ultimately ensuring that the current component's data matches that of "
+"the target component."
 
 #: janim.components.component.CheckComponentMethods:19 of
 msgid "``not_changed``:"
