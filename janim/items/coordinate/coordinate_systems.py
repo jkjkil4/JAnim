@@ -707,15 +707,8 @@ class NumberPlane(Axes):
     def _init_background_lines(self) -> None:
         if not self.faded_line_style:
             style = dict(self.background_line_style)
-
-            for key in ('fill_alpha', 'stroke_alpha', 'alpha'):
-                alpha = style.get(key, None)
-                if alpha is None:
-                    continue
-                style[key] = 0.5 * alpha
-
+            style['stroke_alpha'] = 0.5 * style.get('stroke_alpha', 1)
             style['stroke_radius'] = 0.5 * style.get('stroke_radius', DEFAULT_STROKE_RADIUS)
-
             self.faded_line_style = style
 
         x_lines1, x_lines2 = self.get_lines_parallel_to_axis(self.x_axis, self.y_axis)
