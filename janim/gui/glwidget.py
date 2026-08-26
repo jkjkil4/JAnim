@@ -1,17 +1,19 @@
+import traceback
 from contextlib import nullcontext
 from typing import Any, Callable
+
 import numpy as np
 from PySide6.QtCore import QPointF, Signal
 from PySide6.QtOpenGLWidgets import QOpenGLWidget
 from PySide6.QtWidgets import QWidget
 
-from janim.timeline import BuiltTimeline
 from janim.camera.camera import Camera
 from janim.camera.camera_info import CameraInfo
 from janim.logger import log
 from janim.render.base import create_context
 from janim.render.framebuffer import register_qt_glwidget
 from janim.render.profiler import FrameRecord, RenderProfiler
+from janim.timeline import BuiltTimeline
 from janim.typing import VectArray
 
 
@@ -91,14 +93,19 @@ class GLWidget(QOpenGLWidget):
         return result
 
     def initializeGL(self) -> None:
-        log.debug('Initializing OpenGL context for GLWidget ..')
-        self.ctx = create_context()
-        log.debug('Obtained OpenGL context of GLWidget')
+        # initializeGL 会把 Exception 静默，所以这里手动加一个 print_exc
+        try:
+            log.debug('Initializing OpenGL context for GLWidget ..')
+            self.ctx = create_context()
+            log.debug('Obtained OpenGL context of GLWidget')
 
-        self.qfuncs = self.context().functions()
-        self.update_clear_color()
+            self.qfuncs = self.context().functions()
+            self.update_clear_color()
 
-        register_qt_glwidget(self)
+            register_qt_glwidget(self)
+        except:
+            traceback.print_exc()
+            raise
 
     def update_clear_color(self) -> None:
         self.needs_update_clear_color = True
