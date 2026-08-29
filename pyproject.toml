@@ -19,7 +19,6 @@ dependencies = [
     "typst4janim==0.15.2",
     "attrs",
     "numpy",
-    "pyquaternion",
     "colour",
     "rich",
     "moderngl",
