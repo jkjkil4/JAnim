@@ -3,18 +3,20 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-
+    # fmt: off
     class JAnimBackendException(RuntimeError): ...
-
     class LifetimeError(JAnimBackendException): ...
-
     class RelationError(JAnimBackendException): ...
-
+    class BorrowMutError(JAnimBackendException): ...
+    class QuaternionError(JAnimBackendException): ...
+    # fmt: on
 else:
-    from janim_backend.exception import (
+    from janim_backend.exception import (  # noqa: I001, F401
         JAnimBackendException,
         LifetimeError,
         RelationError,
+        BorrowMutError,
+        QuaternionError,
     )
 
 _listen_exception_callbacks = []
