@@ -50,7 +50,7 @@ class RenderCollection:
         timeline_apprs = self.timeline.item_appearances
 
         items_set = set(items)
-        apprs_set = set(timeline_apprs[item] for item in items_set)
+        apprs_set = {timeline_apprs[item] for item in items_set}
 
         if self._apprs_is_delegated is None:
             self._apprs_is_delegated = [False] * len(self.apprs)

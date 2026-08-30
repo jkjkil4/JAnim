@@ -1,8 +1,7 @@
 from __future__ import annotations
 
-from contextvars import ContextVar
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, Any, Callable, Generator, Iterable, Literal, Self, overload
+from typing import TYPE_CHECKING, Any, Callable, Iterable, Literal, Self, overload
 
 from janim_backend import relation
 
@@ -10,7 +9,12 @@ from janim.anims.method_updater_meta import METHOD_UPDATER_KEY
 from janim.exception import CmptGroupLookupError
 from janim.items.relation import _items_relation_registry
 from janim.locale import get_translator
-from janim.utils.cmpt_lazy import EXPIRED, FLAG_HANDLE_NAME, SIGNAL_OBJ_CONNS_NAME, Expired
+from janim.utils.cmpt_lazy import (
+    EXPIRED,
+    FLAG_HANDLE_NAME,
+    Expired,
+    ObjConns,
+)
 from janim.utils.data import AlignedData
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -152,6 +156,7 @@ class Component[ItemT](metaclass=CheckComponentMethods):
     def __init__(self) -> None:
         super().__init__()
         self.bind: Component.BindInfo | None = None
+        self._signal_obj_conns: ObjConns | None = None
 
     def init_bind(self, bind: BindInfo) -> None:
         """
@@ -177,7 +182,7 @@ class Component[ItemT](metaclass=CheckComponentMethods):
     def copy(self) -> Self:
         cmpt_copy = self.__copy__()
         cmpt_copy.bind = None
-        setattr(cmpt_copy, SIGNAL_OBJ_CONNS_NAME, None)
+        cmpt_copy._signal_obj_conns = None
         return cmpt_copy
 
     def become(self, other) -> Self:

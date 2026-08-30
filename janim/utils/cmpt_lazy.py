@@ -77,8 +77,6 @@ type ClsMroRefreshes = defaultdict[Key, list[relation.FlagHandle]]
 
 type ObjConns = defaultdict[tuple[CmptSignal, Key], list[Callable]]
 
-SIGNAL_OBJ_CONNS_NAME = '__signal_obj_conns'
-
 
 class CmptSignal[T, **P, R]:
     def __init__(self, func: Callable[Concatenate[T, P], R]):
@@ -162,18 +160,14 @@ class CmptSignal[T, **P, R]:
     # region connect
 
     @staticmethod
-    def _get_obj_conns(sender: object) -> ObjConns | None:
-        return getattr(sender, SIGNAL_OBJ_CONNS_NAME, None)
-
-    @staticmethod
-    def _get_obj_conns_or_default(sender: object) -> ObjConns:
-        conns: ObjConns | None = getattr(sender, SIGNAL_OBJ_CONNS_NAME, None)
+    def _get_obj_conns_or_default(sender: Component) -> ObjConns:
+        conns = sender._signal_obj_conns
         if conns is None:
             conns = defaultdict(list)
-            setattr(sender, SIGNAL_OBJ_CONNS_NAME, conns)
+            sender._signal_obj_conns = conns
         return conns
 
-    def connect(self, sender: object, func: Callable, *, key: str = '') -> None:
+    def connect(self, sender: Component, func: Callable, *, key: str = '') -> None:
         """
         使 ``func`` 会在 ``Signal`` 触发时调用
         """
@@ -195,7 +189,7 @@ class CmptSignal[T, **P, R]:
 
         # .connect
 
-        obj_conns = self._get_obj_conns(sender)
+        obj_conns = sender._signal_obj_conns
         if obj_conns is None:
             return
         conns = obj_conns.get((self, key), None)
