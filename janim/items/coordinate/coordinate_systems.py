@@ -14,10 +14,9 @@ from janim.items.geometry.polygon import Polygon
 from janim.items.group import Group, NamedGroupMixin
 from janim.items.item import _ItemMeta
 from janim.items.points import MarkedItem, Points
-from janim.items.svg.typst import TypstMath
+from janim.items.typst.typst import TypstMath
 from janim.items.vitem import DEFAULT_STROKE_RADIUS
 from janim.typing import JAnimColor, RangeSpecifier, Vect, VectArray
-from janim.utils.deprecation import deprecated_classvar
 from janim.utils.dict_ops import merge_dicts_recursively
 from janim.utils.space_ops import angle_of_vector, cross
 
@@ -189,25 +188,6 @@ class Axes(CoordinateSystem, MarkedItem, NamedGroupMixin, metaclass=_ItemMeta_AB
         line_to_number_direction=UP,
     )
 
-    axis_config_d = deprecated_classvar(
-        default_axis_config,
-        'Axes.axis_config_d',
-        'Axes.default_axis_config',
-        remove=(4, 3),
-    )
-    x_axis_config_d = deprecated_classvar(
-        default_x_axis_config,
-        'Axes.x_axis_config_d',
-        'Axes.default_x_axis_config',
-        remove=(4, 3),
-    )
-    y_axis_config_d = deprecated_classvar(
-        default_y_axis_config,
-        'Axes.y_axis_config_d',
-        'Axes.default_y_axis_config',
-        remove=(4, 3),
-    )
-
     def __init__(
         self,
         x_range: RangeSpecifier = DEFAULT_X_RANGE,
@@ -219,31 +199,9 @@ class Axes(CoordinateSystem, MarkedItem, NamedGroupMixin, metaclass=_ItemMeta_AB
         y_axis_config: dict = {},
         x_length: float | None = None,
         y_length: float | None = None,
-        height: float | None = None,
-        width: float | None = None,
         unit_size: float = 1.0,
         **kwargs,
     ):
-        if height is not None:
-            from janim.utils.deprecation import deprecated
-
-            deprecated(
-                'height',
-                'y_length',
-                remove=(4, 3),
-            )
-            y_length = height
-
-        if width is not None:
-            from janim.utils.deprecation import deprecated
-
-            deprecated(
-                'width',
-                'x_length',
-                remove=(4, 3),
-            )
-            x_length = width
-
         axis_config = dict(**axis_config, unit_size=unit_size)
 
         x_axis = CoordinateSystem.create_axis(
@@ -495,13 +453,6 @@ class ThreeDAxes(Axes):
 
     default_z_axis_config = {}
 
-    z_axis_config_d = deprecated_classvar(
-        default_z_axis_config,
-        'ThreeDAxes.z_axis_config_d',
-        'ThreeDAxes.default_z_axis_config',
-        remove=(4, 3),
-    )
-
     def __init__(
         self,
         x_range: RangeSpecifier = (-6, 6, 1),
@@ -599,7 +550,7 @@ class CmptVPoints_NumberPlaneImpl(Cmpt_VPoints, impl=True):
     def prepare_for_nonlinear_transform(
         self, num_inserted_curves: int = 50, *, root_only=False
     ) -> Self:
-        for cmpt in self.walk_same_cmpt_of_self_and_descendants_without_mock(root_only):
+        for cmpt in self.walk_same_cmpt_of_self_and_descendants(root_only, unordered=True):
             if not isinstance(cmpt, Cmpt_VPoints) or not cmpt.has():
                 continue
 
@@ -659,25 +610,6 @@ class NumberPlane(Axes):
         numbers_to_exclude=[0],
     )
 
-    background_line_style_d = deprecated_classvar(
-        default_background_line_style,
-        'NumberPlane.background_line_style_d',
-        'NumberPlane.default_background_line_style',
-        remove=(4, 3),
-    )
-    axis_config_d = deprecated_classvar(
-        default_axis_config,
-        'NumberPlane.axis_config_d',
-        'NumberPlane.default_axis_config',
-        remove=(4, 3),
-    )
-    y_axis_config_d = deprecated_classvar(
-        default_y_axis_config,
-        'NumberPlane.y_axis_config_d',
-        'NumberPlane.default_y_axis_config',
-        remove=(4, 3),
-    )
-
     def __init__(
         self,
         x_range: RangeSpecifier = DEFAULT_X_RANGE,
@@ -707,7 +639,11 @@ class NumberPlane(Axes):
     def _init_background_lines(self) -> None:
         if not self.faded_line_style:
             style = dict(self.background_line_style)
-            style['stroke_alpha'] = 0.5 * style.get('stroke_alpha', 1)
+
+            stroke_alpha = style.get('stroke_alpha', None)
+            if stroke_alpha is None:
+                stroke_alpha = style.get('alpha', 1)
+            style['stroke_alpha'] = 0.5 * stroke_alpha
             style['stroke_radius'] = 0.5 * style.get('stroke_radius', DEFAULT_STROKE_RADIUS)
             self.faded_line_style = style
 

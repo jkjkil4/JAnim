@@ -8,7 +8,7 @@ import moderngl as mgl
 import OpenGL.GL as gl
 from tqdm import tqdm as ProgressDisplay
 
-from janim.anims.timeline import BuiltTimeline, Timeline, TimeRange
+from janim.anims_core.time import TimeRange
 from janim.locale import get_translator
 from janim.logger import log
 from janim.render.base import apply_blend_flags, create_context_430_or_330
@@ -18,6 +18,8 @@ from janim.render.encoder import (
     PyavVideoEncoder,
 )
 from janim.render.framebuffer import FrameBuffer
+from janim.timeline.subtitles import SubtitleInfo
+from janim.timeline.timeline import BuiltTimeline
 from janim.utils.simple_functions import clip
 
 _ = get_translator('janim.render.writer')
@@ -405,7 +407,7 @@ class SRTWriter:
     @staticmethod
     def writes(built: BuiltTimeline, file_path: str) -> None:
         with open(file_path, 'wt', encoding='utf-8') as file:
-            chunks: list[tuple[TimeRange, list[Timeline.SubtitleInfo]]] = []
+            chunks: list[tuple[TimeRange, list[SubtitleInfo]]] = []
 
             for info in built.timeline.subtitle_infos:
                 if not chunks or chunks[-1][0] != info.range:

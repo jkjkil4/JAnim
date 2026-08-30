@@ -74,3 +74,23 @@ class TestNamedGroup(Timeline):
         # should not raise Exception
         group_1['plane'].get_origin()
         group_2['plane'].get_origin()
+
+
+class TestGroupUpdater(Timeline):
+    def construct(self) -> None:
+        unit = Circle()
+        unit.add(Circle())
+        a, b, c, d = unit * 4
+        c.set(color=RED, fill_alpha=0.2)
+        d.set(color=BLUE, fill_alpha=0.2)
+
+        a.points.shift(LEFT * 5 + UP * 2)
+
+        t = self.prepare(
+            a.anim.points.shift(RIGHT * 10),
+            Follow(b, a, DOWN),
+            Follow(c, b, DOWN),
+            Follow(d, b[0], RIGHT),
+            duration=1
+        )
+        self.forward_to(t.end)

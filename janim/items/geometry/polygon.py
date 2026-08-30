@@ -106,7 +106,7 @@ class Polyline(Polygon):
 
     def __init__(
         self,
-        *verts: VectArray,
+        *verts: Vect,
         close_path: bool = False,
         **kwargs,
     ):
@@ -374,17 +374,6 @@ class Star(MarkedItem, Polygon):
             **kwargs,
         )
         self.mark.set_points([ORIGIN])
-
-    @property
-    def start_angle(self) -> float:
-        from janim.utils.deprecation import deprecated
-
-        deprecated(
-            'start_angle',
-            "reshape_params['start_angle']",
-            remove=(4, 4),
-        )
-        return self.reshape_params['start_angle']
 
     # region reshape
 

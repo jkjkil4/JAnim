@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-22 22:43+0800\n"
+"POT-Creation-Date: 2026-07-13 10:39+0800\n"
 "PO-Revision-Date: 2025-12-24 16:03+0800\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -22,22 +22,22 @@ msgstr ""
 msgid "No built-in color named {key}"
 msgstr "内置颜色中没有叫作 {key} 的"
 
-#: janim/items/text.py:282
+#: janim/items/text.py:286
 #, python-brace-format
 msgid "\"{name}\" is not a valid rich text tag. (\"<{name} {params}>\")"
 msgstr "\"{name}\" 不是一个有效的富文本标签 (\"<{name} {params}>\")"
 
-#: janim/items/text.py:298
+#: janim/items/text.py:302
 #, python-brace-format
 msgid "While applying {name}, {params} did not match with {cvt_names}."
 msgstr "应用 {name} 时，{params} 与 {cvt_names} 不匹配"
 
-#: janim/items/text.py:316
+#: janim/items/text.py:320
 #, python-brace-format
 msgid "While applying \"{name}\", {params} did not match any entry in {txt}."
 msgstr "应用 \"{name}\" 时，{params} 与 {txt} 没有匹配项"
 
-#: janim/items/text.py:611
+#: janim/items/text.py:615
 #, python-brace-format
 msgid "Unmatched end tag \"</{name}>\", ignored."
 msgstr "未匹配的结束标签 \"</{name}>\"，已忽略"

@@ -1,5 +1,23 @@
 import sys
 from dataclasses import dataclass
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    # fmt: off
+    class JAnimBackendException(RuntimeError): ...
+    class LifetimeError(JAnimBackendException): ...
+    class RelationError(JAnimBackendException): ...
+    class BorrowMutError(JAnimBackendException): ...
+    class QuaternionError(JAnimBackendException): ...
+    # fmt: on
+else:
+    from janim_backend.exception import (  # noqa: I001, F401
+        JAnimBackendException,
+        LifetimeError,
+        RelationError,
+        BorrowMutError,
+        QuaternionError,
+    )
 
 _listen_exception_callbacks = []
 _sys_excepthook = sys.excepthook
@@ -47,8 +65,9 @@ EXITCODE_NOT_FILE = 1003
 # EXITCODE_PYOPENGL_NOT_FOUND = 1004
 # '''``PyOpenGL`` 未安装时的退出码（仅在设备不支持 OpenGL4.3 的情况下需要安装 PyOpenGL）'''
 
-EXITCODE_TYPST_NOT_FOUND = 1101
-"""Typst 未安装时的退出码"""
+# [deprecated]
+# EXITCODE_TYPST_NOT_FOUND = 1101
+# """Typst 未安装时的退出码"""
 EXITCODE_TYPST_COMPILE_ERROR = 1102
 """Typst 编译失败时的退出码"""
 

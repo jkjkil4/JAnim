@@ -112,13 +112,13 @@ msgstr ""
 "convenient for developers who frequently use multiple Python versions and multiple dependency libraries. The official "
 "provides many installation methods, which can be installed using the package managers, or installed independently."
 
-#: ../../source/installation.rst:73 ../../source/installation.rst:119
+#: ../../source/installation.rst:73
 msgid ""
-"如果你对使用 ``uv`` 还不熟悉并略有困惑，可以 **点击上面分页中的 “Python + 全局” 切换到更为经典的安装方式**，这样你可能会更"
-"容易理解，但我们仍然推荐使用 ``uv`` 进行管理"
+"如果你对使用 ``uv`` 还不熟悉并略有困惑，可以 **点击上面分页中的 “Python + 全局” 切换到更为经典的安装方式** ，这样你可能会"
+"更容易理解，但我们仍然推荐使用 ``uv`` 进行管理"
 msgstr ""
 "If you are not yet familiar with using ``uv`` and are slightly confused, you can **click on the “Python + Global” tab "
-"above to switch to a more classic installation method**, which you may find easier to understand, but we still recommend "
+"above to switch to a more classic installation method** , which you may find easier to understand, but we still recommend "
 "using ``uv`` for management."
 
 #: ../../source/installation.rst:75 ../../source/installation.rst:121
@@ -192,6 +192,15 @@ msgstr ""
 #: ../../source/installation.rst:113
 msgid "uv + 全局"
 msgstr "uv + Global"
+
+#: ../../source/installation.rst:119
+msgid ""
+"如果你对使用 ``uv`` 还不熟悉并略有困惑，可以 **点击上面分页中的 “Python + 全局” 切换到更为经典的安装方式**，这样你可能会更"
+"容易理解，但我们仍然推荐使用 ``uv`` 进行管理"
+msgstr ""
+"If you are not yet familiar with using ``uv`` and are slightly confused, you can **click on the “Python + Global” tab "
+"above to switch to a more classic installation method**, which you may find easier to understand, but we still recommend "
+"using ``uv`` for management."
 
 #: ../../source/installation.rst:143
 msgid "和在虚拟环境中安装不同的是，全局安装不需要指定用来开发项目的文件夹。"

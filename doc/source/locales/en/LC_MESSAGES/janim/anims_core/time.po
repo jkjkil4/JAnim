@@ -1,0 +1,201 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2023, jkjkil4
+# This file is distributed under the same license as the JAnim package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: JAnim \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 1980-01-01 00:00+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: en\n"
+"Language-Team: en <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.17.0\n"
+
+#: ../../source/janim/anims_core/time.rst:2
+msgid "time"
+msgstr "time"
+
+#: janim.anims_core.time.TimeRange:1 of
+msgid "标识了从 ``at`` 开始，到 ``end`` 结束的时间区段"
+msgstr "Identifies the time period starting at ``at`` and lasting for ``duration``."
+
+#: janim.anims_core.time.TimeRange:3 of
+msgid "若 ``end`` 为 ``FOREVER``，则表示该时长是无限的"
+msgstr "If ``end`` is ``FOREVER``, it means the duration is infinite"
+
+#: ../../docstring janim.anims_core.time.TimeRange.at:1 of
+msgid "时间区段的开始时刻"
+msgstr "Start time of the time-range"
+
+#: ../../docstring janim.anims_core.time.TimeRange.end:1 of
+msgid "时间区段的结束时刻"
+msgstr "End time of the time-range"
+
+#: ../../docstring janim.anims_core.time.TimeRange.end:3 of
+msgid "若为 ``FOREVER``，则表示该时长是无限的"
+msgstr "If it is ``FOREVER``, it means the duration is infinite"
+
+#: janim.anims_core.time.TimeRange.duration:1 of
+msgid "时间区段的时长"
+msgstr "Duration of the time range"
+
+#: janim.anims_core.time.TimeRange.duration:3 of
+msgid "如果 ``end=FOREVER`` 则抛出 ``AssertionError``"
+msgstr "If ``end=FOREVER``, raises ``AssertionError``"
+
+#: janim.anims_core.time.TimeRange.num_duration:1 of
+msgid "当 ``end`` 不是 ``FOREVER`` 时，与 ``duration`` 一致"
+msgstr "When ``end`` is not ``FOREVER``, it is the same as ``duration``"
+
+#: janim.anims_core.time.TimeRange.num_duration:2 of
+msgid "当 ``end`` 是 ``FOREVER`` 时，此时返回 ``0``"
+msgstr "When ``end`` is ``FOREVER``, returns ``0``"
+
+#: janim.anims_core.time.TimeRange.num_end:1 of
+msgid "当 ``end`` 不是 ``FOREVER`` 时，与 ``end`` 一致"
+msgstr "When ``end`` is not ``FOREVER``, it is the same as ``end``"
+
+#: janim.anims_core.time.TimeRange.num_end:2 of
+msgid "当 ``end`` 是 ``FOREVER`` 时，此时返回 ``at``"
+msgstr "When ``end`` is ``FOREVER``, returns ``at``"
+
+#: janim.anims_core.time.TimeRange.set:1 of
+msgid "设置该时间区段的范围"
+msgstr "Set the range of this time-range"
+
+#: janim.anims_core.time.TimeRange.shift:1 of
+msgid "以 ``delta`` 的变化量移动时间区段"
+msgstr "Shift the time-range by ``delta``"
+
+#: janim.anims_core.time.TimeRange.scale:1 of
+msgid "以 ``k`` 的倍率缩放时间区段（相对于 ``t=0`` 进行缩放）"
+msgstr "Scale the time-range by factor ``k`` (scaled relative to ``t=0``)"
+
+#: janim.anims_core.time.TimeRange.copy:1 of
+msgid "复制一份该对象"
+msgstr "Creates a copy of this object"
+
+#: janim.anims_core.time.TimeRange.contains:1 of
+msgid "检查 ``t`` 是否位于该时间区段的内部"
+msgstr "Checks whether ``t`` is within this time range"
+
+#: janim.anims_core.time.TimeAligner:1 of
+msgid "由于浮点数精度的问题，有可能出现比如原本设计上首尾相连的两个动画，却出现判定的错位"
+msgstr ""
+"Due to floating-point precision issues, it is possible that two animations designed to be connected end-to-end may have "
+"misaligned judgments"
+
+#: janim.anims_core.time.TimeAligner:3 of
+msgid "该类用于将相近的浮点数归化到同一个值，使得 :class:`TimeRange` 区间严丝合缝"
+msgstr ""
+"This class is used to normalize nearby floating-point numbers to the same value, ensuring that :class:`TimeRange` "
+"intervals fit together precisely"
+
+#: janim.anims_core.time.TimeAligner.align_anim_and_record:1 of
+msgid "归化 ``anim`` 的时间区段，并参与记录"
+msgstr "Normalizes the time range of ``anim`` and records it"
+
+#: janim.anims_core.time.TimeAligner.align_anim_and_record:3 of
+msgid "即分别对其 ``.t_range.at`` 和 ``.t_range.end`` 进行 :meth:`align_and_record` 的操作"
+msgstr "That is, performs :meth:`align_and_record` on its ``.t_range.at`` and ``.t_range.end`` respectively"
+
+#: janim.anims_core.time.TimeAligner.align_and_record:1 of
+msgid "对齐时间 ``t``，若没有极近的时间点，则记录"
+msgstr "Aligns time ``t`` and records it if there is no nearby time point"
+
+#: janim.anims_core.time.TimeAligner.align_and_record:3 of
+msgid "确保极近的时间点归化到相同的值，返回归化后的时间值"
+msgstr "Ensures that nearby time points are normalized to the same value and returns the normalized time value"
+
+#: janim.anims_core.time.TimeAligner.align:1 of
+msgid "尝试对齐时间 ``t`` 到极近的时间点，不参与记录"
+msgstr "Attempts to align time ``t`` to a nearby time point without recording it"
+
+#: janim.anims_core.time.TimeChunks:1 of
+msgid "用于优化对带有 :class:`TimeRange` 信息的对象，基于特定时刻的检索"
+msgstr "Used to optimize retrieval of objects with :class:`TimeRange` information based on a specific time"
+
+#: janim.anims_core.time.TimeChunks:3 of
+msgid "动机是："
+msgstr "Motivation:"
+
+#: janim.anims_core.time.TimeChunks:5 of
+msgid ""
+"我们在时间轴上可能会有一系列的对象，这些对象的“可视时间”是零散分布的， 我们并不希望在检索 “某个 ``t`` 时刻可视的有哪些” 时"
+"遍历整个列表结构"
+msgstr ""
+"There may be a series of objects on the timeline whose \"visible times\" are scattered. When querying \"which objects are "
+"visible at a certain time ``t``\", we do not want to traverse the entire list"
+
+#: janim.anims_core.time.TimeChunks:8 of
+msgid "但是由于这些可视时间是由区间表示的，所以不方便使用二分的方法来优化"
+msgstr "However, since these visible times are represented by intervals, it is inconvenient to optimize using binary search"
+
+#: janim.anims_core.time.TimeChunks:10 of
+msgid ""
+"该类的目的是，划分出各个区块，每个区块的时长为 ``step``，记录在各个区块中有哪些是可见的， 在检索 ``t`` 时刻可视物件时，调"
+"用侧使用 :meth:`get` 方法，即可得到 ``t`` 时刻所在区块中的所有对象， 后续只需遍历这个区块内的对象检查是否可视即可"
+msgstr ""
+"The purpose of this class is to divide time into chunks, each with a duration of ``step``, and record which objects are "
+"visible in each chunk. When retrieving visible objects at time ``t``, the caller can use :meth:`get` to obtain all "
+"objects in the chunk containing ``t``, then only needs to check visibility among those objects"
+
+#: ../../source/janim/anims_core/time.rst
+msgid "参数"
+msgstr "Parameters"
+
+#: janim.anims_core.time.TimeChunks:14 of
+msgid "一系列的对象"
+msgstr "A sequence of objects"
+
+#: janim.anims_core.time.TimeChunks:17 of
+msgid ""
+"将每个对象对应到其 :class:`TimeRange` 的函数  可以返回单个 :class:`TimeRange`，也可以返回一个 :class:`TimeRange` 列表表示"
+"多个可视的区段  注：不允许带有 ``FOREVER`` 时间的 :class:`TimeRange`"
+msgstr ""
+"A function that maps each object to its :class:`TimeRange`. It can return a single :class:`TimeRange`, or a list "
+"of :class:`TimeRange` objects representing multiple visible intervals. Note: :class:`TimeRange` objects containing "
+"``FOREVER`` are not allowed"
+
+#: janim.anims_core.time.TimeChunks:18 of
+msgid "将每个对象对应到其 :class:`TimeRange` 的函数"
+msgstr "A function that maps each object to its :class:`TimeRange`"
+
+#: janim.anims_core.time.TimeChunks:20 of
+msgid "可以返回单个 :class:`TimeRange`，也可以返回一个 :class:`TimeRange` 列表表示多个可视的区段"
+msgstr ""
+"Can return a single :class:`TimeRange`, or a list of :class:`TimeRange` objects representing multiple visible intervals"
+
+#: janim.anims_core.time.TimeChunks:22 of
+msgid "注：不允许带有 ``FOREVER`` 时间的 :class:`TimeRange`"
+msgstr "Note: :class:`TimeRange` objects with ``FOREVER`` duration are not allowed"
+
+#: janim.anims_core.time.TimeChunks:24 of
+msgid "每个区块的时长"
+msgstr "The duration of each chunk"
+
+#: janim.anims_core.time.TimeChunks.get:1 of
+msgid "得到 ``t`` 时刻所在区块中的所有对象"
+msgstr "Gets all objects in the chunk containing time ``t``"
+
+#~ msgid "另见 :meth:`num_duration`"
+#~ msgstr "See also :meth:`num_duration`"
+
+#~ msgid "（这用于 :class:`~.AnimGroup` 对 ``end=FOREVER`` 的子动画的处理，也就是把这种子动画当成 ``end=at`` 来计算时间）"
+#~ msgstr ""
+#~ "(This is used for :class:`~.AnimGroup` to handle child animations with ``end=FOREVER``, i.e., treating such child "
+#~ "animations as ``end=at`` for time calculation)"
+
+#~ msgid "与 :meth:`align_t` 类似，但区别在于"
+#~ msgstr "Similar to :meth:`align_t`, but differs in that"
+
+#~ msgid "该方法在查找后不记录 ``t`` 的值"
+#~ msgstr "This method does not record the value of ``t`` after searching"

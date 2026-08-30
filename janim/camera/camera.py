@@ -3,9 +3,8 @@ from __future__ import annotations
 from typing import Iterable, Self
 
 import numpy as np
-from pyquaternion import Quaternion
+from janim_backend.math import Quaternion
 
-import janim.utils.refresh as refresh
 from janim.camera.camera_info import CameraInfo
 from janim.components.component import CmptInfo
 from janim.components.points import Cmpt_Points
@@ -13,9 +12,11 @@ from janim.constants import ORIGIN, OUT
 from janim.items.points import Points
 from janim.typing import Vect, VectArray
 from janim.utils.bezier import interpolate
+from janim.utils.cmpt_lazy import cmpt_lazy_method
 from janim.utils.config import Config
 from janim.utils.paths import PathFunc, straight_path
 from janim.utils.simple_functions import clip
+from janim.utils.space_ops import quat_from_angle_axis
 
 
 class Cmpt_CameraPoints[ItemT](Cmpt_Points[ItemT]):
@@ -73,30 +74,28 @@ class Cmpt_CameraPoints[ItemT](Cmpt_Points[ItemT]):
         self.set([ORIGIN])
         self.size = [Config.get.frame_width, Config.get.frame_height]
         self.fov = 45
-        self.orientation = Quaternion()  # 单位四元数
+        self.orientation = Quaternion.identity()
 
         return self
 
     def copy(self) -> Self:
         cmpt_copy = super().copy()
         cmpt_copy._size = self._size.copy()
-        cmpt_copy._orientation = Quaternion(self.orientation.elements)
+        cmpt_copy._orientation = self.orientation.copy()
         return cmpt_copy
 
-    def become(self, other: Cmpt_CameraPoints) -> Self:
-        self.set(other.get())
+    def _become(self, other: Cmpt_CameraPoints) -> None:
+        super()._become(other)
         self.size = other.size
         self.fov = other.fov
-        self.orientation = Quaternion(other.orientation.elements)
+        self.orientation = other.orientation.copy()
 
-        return self
-
-    def not_changed(self, other: Cmpt_CameraPoints) -> Self:
+    def not_changed(self, other: Cmpt_CameraPoints) -> bool:
         if not super().not_changed(other):
             return False
         if np.any(self.size != other.size) or self.fov != other.fov:
             return False
-        return np.isclose(self.orientation.elements, other.orientation.elements).all()
+        return np.isclose(self.orientation.xyzw, other.orientation.xyzw).all()
 
     def interpolate(
         self, cmpt1: Self, cmpt2: Self, alpha: float, *, path_func: PathFunc = straight_path
@@ -106,7 +105,7 @@ class Cmpt_CameraPoints[ItemT](Cmpt_Points[ItemT]):
         super().interpolate(cmpt1, cmpt2, alpha)
         self.size = interpolate(cmpt1.size, cmpt2.size, alpha)
         self.fov = interpolate(cmpt1.fov, cmpt2.fov, alpha)
-        self.orientation = Quaternion.slerp(cmpt1.orientation, cmpt2.orientation, amount=alpha)
+        self.orientation = cmpt1.orientation.slerp(cmpt2.orientation, alpha)
 
     @property
     def scaled_factor(self) -> float:
@@ -119,7 +118,8 @@ class Cmpt_CameraPoints[ItemT](Cmpt_Points[ItemT]):
     @size.setter
     def size(self, value: Vect) -> None:
         self._size = np.array(value, dtype=np.float64)
-        self.mark_refresh(Cmpt_CameraPoints.info.fget.__name__)
+        if self.bind is not None:
+            self.bind.reset_computed_for_func(Cmpt_CameraPoints.info.fget)  # type: ignore
 
     @property
     def fov(self) -> float:
@@ -128,7 +128,8 @@ class Cmpt_CameraPoints[ItemT](Cmpt_Points[ItemT]):
     @fov.setter
     def fov(self, val: float) -> None:
         self._fov = val
-        self.mark_refresh(Cmpt_CameraPoints.info.fget.__name__)
+        if self.bind is not None:
+            self.bind.reset_computed_for_func(Cmpt_CameraPoints.info.fget)  # type: ignore
 
     @property
     def orientation(self) -> Quaternion:
@@ -137,7 +138,8 @@ class Cmpt_CameraPoints[ItemT](Cmpt_Points[ItemT]):
     @orientation.setter
     def orientation(self, val: Quaternion) -> None:
         self._orientation = val
-        self.mark_refresh(Cmpt_CameraPoints.info.fget.__name__)
+        if self.bind is not None:
+            self.bind.reset_computed_for_func(Cmpt_CameraPoints.info.fget)  # type: ignore
 
     def scale(
         self,
@@ -179,18 +181,18 @@ class Cmpt_CameraPoints[ItemT](Cmpt_Points[ItemT]):
         - 默认 ``absolute=True`` 表示绕全局坐标系旋转
         - ``absolute=False`` 表示绕相机自身坐标系旋转，并且此时 ``about_point`` 参数无效
         """
-        q_rot = Quaternion(axis=axis, angle=angle)
+        q_rot = quat_from_angle_axis(angle, axis)
         if absolute:
             super().rotate(angle, axis=axis, **kwargs)
             self.orientation = q_rot * self.orientation
         else:
-            self.orientation *= q_rot
+            self.orientation = self.orientation * q_rot
 
         return self
 
     @property
     @Cmpt_Points.set.self_refresh
-    @refresh.register
+    @cmpt_lazy_method
     def info(self) -> CameraInfo:
         """
         摄像机的几何属性

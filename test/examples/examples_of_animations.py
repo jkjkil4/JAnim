@@ -1,4 +1,4 @@
-# flake8: noqa
+# ruff: noqa
 # fmt: off
 from janim.imports import *
 
@@ -205,6 +205,20 @@ class WriteExample(Timeline):
         self.play(
             Write(dots, duration=2),
             Write(txt, duration=2),
+        )
+
+
+class UnwriteExample(Timeline):
+    def construct(self):
+        dots = Dot(color=BLUE) * 10
+        dots.points.arrange().shift(UP)
+
+        txt = Text('Text text Text text')
+        txt.points.shift(DOWN)
+
+        self.play(
+            Unwrite(dots, duration=2),
+            Unwrite(txt, duration=2),
         )
 
 

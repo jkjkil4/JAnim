@@ -10,10 +10,12 @@ from janim.items.group import Group
 class ComponentTest(unittest.TestCase):
     def test_component(self) -> None:
         with self.assertRaises(AttributeError):
+
             class MyCmpt(Component):
                 pass
 
         class MyCmpt1[T](Component[T], impl=True): ...
+
         class MyCmpt2[T](Component[T], impl=True): ...
 
         class MyItem(Item):
@@ -35,9 +37,8 @@ class ComponentTest(unittest.TestCase):
             def copy(self) -> Self:
                 return super().copy()
 
-            def become(self, other) -> Self:
+            def _become(self, other) -> None:
                 self.a = other.a
-                return self
 
             def not_changed(self, other) -> bool:
                 return self.a == other.a
@@ -90,6 +91,7 @@ class ComponentTest(unittest.TestCase):
             cmpt1 = CmptInfo(MyCmpt)
 
         with self.assertRaises(CmptGroupLookupError):
+
             class MyItem2(MyItem):
                 cmpt2 = CmptInfo(MyCmpt)
                 cmpt = CmptGroup(MyItem.cmpt1, cmpt2)
@@ -107,14 +109,8 @@ class ComponentTest(unittest.TestCase):
         item2 = MyItem()
         item3 = MyItem()
 
-        self.assertIs(
-            item2.cmpt.get_same_cmpt(item2),
-            item2.cmpt
-        )
-        self.assertIs(
-            item2.cmpt.get_same_cmpt(item3),
-            item3.cmpt
-        )
+        self.assertIs(item2.cmpt.get_same_cmpt(item2), item2.cmpt)
+        self.assertIs(item2.cmpt.get_same_cmpt(item3), item3.cmpt)
         # self.assertIs(
         #     item2.cmpt.get_same_cmpt(item1),
         #     item1._astype_mock_cmpt['cmpt']

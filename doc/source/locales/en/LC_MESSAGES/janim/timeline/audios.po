@@ -1,0 +1,114 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2023, jkjkil4
+# This file is distributed under the same license as the JAnim package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: JAnim \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 1980-01-01 00:00+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: en\n"
+"Language-Team: en <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.17.0\n"
+
+#: ../../source/janim/timeline/audios.rst:2
+msgid "audios"
+msgstr "audios"
+
+#: janim.timeline.audios.PlayAudioInfo:1 of
+msgid "在 Timeline 中播放的音频，所对应的参数信息"
+msgstr "Parameter information corresponding to an audio played in the Timeline"
+
+#: ../../source/janim/timeline/audios.rst
+msgid "参数"
+msgstr "Parameters"
+
+#: janim.timeline.audios.PlayAudioInfo:3 of
+msgid "音频对象"
+msgstr "The audio object"
+
+#: janim.timeline.audios.PlayAudioInfo:4 of
+msgid "将音频对象中的哪一段裁剪出来"
+msgstr "Which segment of the audio object to clip"
+
+#: janim.timeline.audios.PlayAudioInfo:5 of
+msgid "将裁剪出来的音频放在 Timeline 的什么时候播放"
+msgstr "When to play the clipped audio in the Timeline"
+
+#: janim.timeline.audios.PlayAudioInfo:7 of
+msgid "另见 :meth:`~.AudiosMixin.play_audio`"
+msgstr "See :meth:`~.AudiosMixin.play_audio`"
+
+#: janim.timeline.audios.AudiosMixin:1 of
+msgid "向 :class:`~.Timeline` 提供播放音频的功能"
+msgstr "Provides audio playback functionality to :class:`~.Timeline`"
+
+#: janim.timeline.subtitles.SubtitlesMixin:5 of
+msgid "该类中的方法都可以直接在 :class:`~.Timeline` 中使用"
+msgstr "All methods in this class can be used directly in :class:`~.Timeline`"
+
+#: janim.timeline.audios.AudiosMixin.play_audio:1 of
+msgid "在当前位置播放音频"
+msgstr "Play audio at the current position"
+
+#: janim.timeline.audios.AudiosMixin.play_audio:3 of
+msgid "往后延迟几秒开始播放"
+msgstr "The delay in seconds before starting playback"
+
+#: janim.timeline.audios.AudiosMixin.play_audio:4 of
+msgid "裁剪 ``audio`` 的开始秒数"
+msgstr "The starting second for clipping ``audio``"
+
+#: janim.timeline.audios.AudiosMixin.play_audio:5 of
+msgid "裁剪 ``audio`` 的结束秒数"
+msgstr "The ending second for clipping ``audio``"
+
+#: janim.timeline.audios.AudiosMixin.play_audio:6 of
+msgid "对 ``(begin, end)`` 的简写，若设置该值，则会覆盖 ``start`` 与 ``end``"
+msgstr "A shorthand for ``(begin, end)``. If specified, it overrides ``start`` and ``end``"
+
+#: ../../source/janim/timeline/audios.rst
+msgid "返回"
+msgstr "Returns"
+
+#: janim.timeline.audios.AudiosMixin.play_audio:7 of
+msgid "播放的时间范围"
+msgstr "The playback time range"
+
+#: janim.timeline.audios.AudiosMixin.play_audio:9 of
+msgid "示例："
+msgstr "Example:"
+
+#: janim.timeline.audios.AudiosMixin.play_audio:11 of
+msgid ""
+"# 裁剪出 'test.mp3' 中 1.2~6.5s 的部分，从当前时刻开始播放\n"
+"self.play_audio(Audio('test.mp3'), begin=1.2, end=6.5)\n"
+"\n"
+"# 等价于\n"
+"self.play_audio(Audio('test.mp3'), clip=(1.2, 6.5))"
+msgstr ""
+"# Clip the 1.2~6.5s segment from 'test.mp3' and play it from the current time\n"
+"self.play_audio(Audio('test.mp3'), begin=1.2, end=6.5)\n"
+"\n"
+"# Equivalent to\n"
+"self.play_audio(Audio('test.mp3'), clip=(1.2, 6.5))"
+
+#: janim.timeline.audios.AudiosMixin.has_audio:1 of
+msgid "该 Timeline 自身是否有可以播放的音频"
+msgstr "Whether this Timeline itself has playable audio"
+
+#: janim.timeline.audios.AudiosMixin.has_audio_for_all:1 of
+msgid "考虑所有子 Timeline，是否有可以播放的音频"
+msgstr "Considering all child Timelines, whether there is playable audio"
+
+#: janim.timeline.audios.AudiosMixin.has_audio_for_all:5 of
+msgid "不包括 :meth:`~.BuiltTimeline.to_playback_control_item` 构造的子 Timeline"
+msgstr "Does not include sub-Timelines constructed by :meth:`~.BuiltTimeline.to_playback_control_item`"

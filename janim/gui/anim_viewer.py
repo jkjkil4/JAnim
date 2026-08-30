@@ -37,7 +37,6 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from janim.anims.timeline import BuiltTimeline, Timeline
 from janim.components.data import Cmpt_Data
 from janim.exception import ExitException
 from janim.gui.application import Application
@@ -51,8 +50,10 @@ from janim.gui.utils import ACTION_WIDGET_FLAG_KEY, is_wayland
 from janim.gui.utils.audio_player import AudioPlayer
 from janim.gui.utils.fixed_ratio_widget import FixedRatioWidget
 from janim.gui.utils.precise_timer import PreciseTimerWithFPS
+from janim.items.relation import _items_relation_registry
 from janim.locale import get_translator
 from janim.logger import log
+from janim.timeline import BuiltTimeline, Timeline
 from janim.utils.config import Config
 from janim.utils.file_ops import STDIN_FILENAME, get_gui_asset, getfile_or_stdin
 from janim.utils.reload import reset_reloads_state
@@ -138,20 +139,7 @@ class AnimViewer(QMainWindow):
         self.built = built
 
         # data
-        def to_progress(p: Timeline.PausePoint) -> int:
-            rough_progress = p.at * self.built.cfg.preview_fps
-
-            if rough_progress % 1 < 1e-3:
-                result = int(rough_progress)
-            else:
-                result = int(rough_progress) + 1
-
-            if p.at_previous_frame:
-                result -= 1
-
-            return result
-
-        self.pause_progresses = list(map(to_progress, built.timeline.pause_points))
+        self.pause_progresses = built.timeline._pause_points_to_progresses(built.cfg.preview_fps)
         self.pause_progresses.sort()
 
         # menu bar
@@ -564,6 +552,7 @@ class AnimViewer(QMainWindow):
 
         start_time = time.time()
         gc.collect()
+        _items_relation_registry.cleanup()
         elapsed = time.time() - start_time
         if elapsed >= 0.2:  # 只在超过 0.2s 的时候才提示，如果时间较短则不提示
             log.info(_('GC took {elapsed} s').format(elapsed=f'{elapsed:.2f}'))

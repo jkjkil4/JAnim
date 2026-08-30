@@ -65,9 +65,8 @@ class Cmpt_FrameClip[ItemT](Component[ItemT]):
         cmpt_copy._attrs = self._attrs.copy()
         return cmpt_copy
 
-    def become(self, other: Cmpt_FrameClip) -> Self:
+    def _become(self, other: Cmpt_FrameClip) -> None:
         self._attrs = other._attrs.copy()
-        return self
 
     def not_changed(self, other: Cmpt_FrameClip) -> bool:
         return np.all(self._attrs == other._attrs)
@@ -229,9 +228,8 @@ class Cmpt_Attrs[ItemT](Component[ItemT]):
         cmpt_copy._attrs = self._attrs.copy()
         return cmpt_copy
 
-    def become(self, other: Cmpt_TransformableFrameClip) -> Self:
+    def _become(self, other: Cmpt_TransformableFrameClip) -> None:
         self._attrs = other._attrs.copy()
-        return self
 
     def not_changed(self, other: Cmpt_TransformableFrameClip) -> bool:
         return np.all(self._attrs == other._attrs)

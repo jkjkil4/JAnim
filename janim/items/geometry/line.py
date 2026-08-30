@@ -98,94 +98,6 @@ class Cmpt_VPoints_LineImpl[ItemT](Cmpt_VPoints[ItemT], impl=True):
     def arc_length(self) -> float:
         return get_arc_length(get_norm(self.vector), self._path_arc)
 
-    # region deprecated
-
-    # 仅为了方便 deprecated 函数 self.bind.at_item 的类型注解，不作为长期 API
-    @property
-    def _item(self) -> Line:
-        return self.bind.at_item
-
-    def update_by_attrs(self, start=None, end=None, buff=None, path_arc=None) -> Self:
-        from janim.utils.deprecation import deprecated
-
-        deprecated(
-            '.points.update_by_attrs',
-            '.reshape',
-            remove=(4, 4),
-        )
-        self._item.reshape(start, end, buff=buff, path_arc=path_arc)
-        return self
-
-    def update_points_by_attrs(self, start=None, end=None, buff=None, path_arc=None) -> Self:
-        from janim.utils.deprecation import deprecated
-
-        deprecated(
-            '.points.update_points_by_attrs',
-            '.reshape',
-            remove=(4, 3),
-        )
-        self._item.reshape(start, end, buff=buff, path_arc=path_arc)
-        return self
-
-    def set_buff(self, buff: LineBuff) -> Self:
-        from janim.utils.deprecation import deprecated
-
-        deprecated(
-            '.points.set_buff',
-            '.set_buff',
-            remove=(4, 4),
-        )
-        self._item.set_buff(buff)
-        return self
-
-    def set_path_arc(self, path_arc: float) -> Self:
-        from janim.utils.deprecation import deprecated
-
-        deprecated(
-            '.points.set_path_arc',
-            '.set_path_arc',
-            remove=(4, 4),
-        )
-        self._item.set_path_arc(path_arc)
-        return self
-
-    def set_start_and_end(self, start: Points | Vect, end: Points | Vect) -> Self:
-        from janim.utils.deprecation import deprecated
-
-        deprecated(
-            '.points.set_start_and_end',
-            '.set_start_and_end',
-            remove=(4, 4),
-        )
-        self._item.set_start_and_end(start, end)
-        return self
-
-    @staticmethod
-    def pointify_start_and_end(*args) -> tuple[np.ndarray, np.ndarray]:
-        from janim.utils.deprecation import deprecated
-
-        deprecated(
-            'Cmpt_VPoints_LineImpl.pointify_start_and_end',
-            'Line.pointify_start_and_end',
-            remove=(4, 4),
-        )
-        return Line.pointify_start_and_end(*args)
-
-    @staticmethod
-    def pointify(input, direction=None) -> np.ndarray:
-        from janim.utils.deprecation import deprecated
-
-        deprecated(
-            'Cmpt_VPoints_LineImpl.pointify',
-            'Line.pointify',
-            remove=(4, 4),
-        )
-        if isinstance(input, Points):
-            input = input.points.box
-        return Line.pointify(input, direction)
-
-    # endregion
-
 
 class Line(GeometryShape):
     """
@@ -392,7 +304,7 @@ class Cmpt_VPoints_DashedLineImpl[ItemT](Cmpt_VPoints_LineImpl[ItemT], impl=True
         if self.has():  # 在初始化时计算 arc_length 需要用到
             return super().get_start()
         assert self.bind is not None
-        sub = self.bind.at_item._children[0][0]  # 含义：首个 subpath 的首个虚线段
+        sub = self.bind.at_item[0][0]  # 含义：首个 subpath 的首个虚线段
         assert isinstance(sub, VItem)
         return sub.points.get_start()
 
@@ -400,7 +312,7 @@ class Cmpt_VPoints_DashedLineImpl[ItemT](Cmpt_VPoints_LineImpl[ItemT], impl=True
         if self.has():  # 在初始化时计算 arc_length 需要用到
             return super().get_end()
         assert self.bind is not None
-        sub = self.bind.at_item._children[-1][-1]  # 含义：最后一个 subpath 的最后一个虚线段
+        sub = self.bind.at_item[-1][-1]  # 含义：最后一个 subpath 的最后一个虚线段
         assert isinstance(sub, VItem)
         return sub.points.get_end()
 
@@ -466,7 +378,7 @@ class DashedLine(Line, Group[VItem]):
                 dashed_ratio=self.dashed_ratio,
             )
         self.points.clear()
-        if not self._children:
+        if not self.has_child():
             self.add(*dashes)
         else:
             self._children_become(dashes, True)
@@ -526,7 +438,7 @@ class TangentLine(Line):
 
 class Elbow(MarkedItem, VItem):
     """
-    折线（一般用作直角符号），关于直接基于两条线创建的直角符号，另请参见 :class:`~.RightAngle`
+    折线（一般用作直角符号），关于直接基于两条线创建的直角符号，另请参考 :class:`~.RightAngle`
 
     :param width: 直角标记的边长
     :param angle: 起始角度

@@ -11,9 +11,12 @@ from typing import Callable, Generator, Iterable
 
 import numpy as np
 
-from janim.anims.animation import Animation, ItemAnimation, TimeRange
+from janim.anims_core.anim_stack import AnimStack
+from janim.anims_core.animation import Animation
 from janim.anims.composition import AnimGroup
 from janim.anims.fading import FadeIn, FadeInFromPoint, FadeOut, FadeOutToPoint
+from janim.anims_core.stackable import ApplyParams, ItemAnimation
+from janim.anims_core.time import TimeRange
 from janim.camera.camera import Camera
 from janim.components.points import Cmpt_Points
 from janim.constants import C_LABEL_ANIM_STAY, OUT
@@ -25,7 +28,7 @@ from janim.items.vitem import VItem
 from janim.locale import get_translator
 from janim.logger import log
 from janim.typing import Vect
-from janim.utils.data import AlignedData
+from janim.utils.data import AlignedData, ContextSetter
 from janim.utils.iterables import resize_preserving_order
 from janim.utils.paths import PathFunc, get_path_func
 
@@ -123,15 +126,11 @@ class Transform(Animation):
         self.flatten = flatten
         self.root_only = root_only
 
-        apprs = self.timeline.item_appearances
-
-        for item in self.src_item.walk_self_and_descendants(root_only):
-            apprs[item].stack.detect_change_if_not(item)
+        self.timeline.track_item_and_descendants(self.src_item)
         if self.target_item is not self.src_item:
-            for item in self.target_item.walk_self_and_descendants(root_only):
-                apprs[item].stack.detect_change_if_not(item)
+            self.timeline.track_item_and_descendants(self.target_item)
 
-    def _time_fixed(self) -> None:
+    def _finalized(self) -> None:
         self.align_data()
 
         self.render_group = [
@@ -151,7 +150,9 @@ class Transform(Animation):
 
         if self.show_target:
             self.timeline.schedule(
-                self.t_range.end, self.target_item.show, root_only=self.root_only
+                self.t_range.end,  # type: ignore
+                self.target_item.show,
+                root_only=self.root_only,
             )
 
         # 对 src_fade 和 target_fade 的处理
@@ -169,9 +170,19 @@ class Transform(Animation):
             anim.t_range = TimeRange(self.t_range.at + fade_start, self.t_range.end)
             anim.finalize()
 
-    def align_data(self) -> None:
-        apprs = self.timeline.item_appearances
+    def _get_item1_data(self, item1: Item) -> Item:
+        appr = self.timeline.item_appearances.get(item1, None)
+        if appr is None:
+            return item1
+        return appr.stack.compute(self.t_range.at, True)
 
+    def _get_item2_data(self, item2: Item) -> Item:
+        appr = self.timeline.item_appearances.get(item2, None)
+        if appr is None:
+            return item2
+        return appr.stack.compute(self.t_range.end, True)  # type: ignore
+
+    def align_data(self) -> None:
         self.aligned: dict[tuple[Item, Item], AlignedData[Item]] = {}
         begin_times: defaultdict[Item, int] = defaultdict(int)
         end_times: defaultdict[Item, int] = defaultdict(int)
@@ -182,8 +193,8 @@ class Transform(Animation):
             if tup in self.aligned:
                 return
 
-            data1 = apprs[item1].stack.compute(self.t_range.at, True)
-            data2 = apprs[item2].stack.compute(self.t_range.end, True)
+            data1 = self._get_item1_data(item1)
+            data2 = self._get_item2_data(item2)
             aligned = self.aligned[tup] = data1.align_for_interpolate(data1, data2)
             begin_times[item1] += 1
             end_times[item2] += 1
@@ -277,22 +288,23 @@ class MoveToTarget(Transform):
             root_only=False,
         )
 
-    def _time_fixed(self):
-        super()._time_fixed()
+    def _finalized(self):
+        super()._finalized()
 
         if isinstance(self.src_item, Camera):
             fix = _MoveToTargetCameraFix(self)
             fix.transfer_params(self)
             fix.finalize()
 
-        def at_end():
+        def at_end() -> None:
             # 因为马上就是 show，所以传入了 auto_visible=False
-            self.src_item.become(self.src_item.target, auto_visible=False)
+            self.src_item.become(self.src_item.target, auto_visible=False)  # type: ignore
 
-            self.timeline.detect_changes(self.src_item.walk_self_and_descendants())
+            with ContextSetter(Animation.force_order_ctx, self._order):
+                self.timeline.detect_changes(self.src_item.walk_self_and_descendants())
             self.src_item.show()
 
-        self.timeline.schedule(self.t_range.end, at_end)
+        self.timeline.schedule(self.t_range.end, at_end)  # type: ignore
 
 
 class _MoveToTargetCameraFix(ItemAnimation):
@@ -318,21 +330,20 @@ class _MoveToTargetCameraFix(ItemAnimation):
         generate_by: MoveToTarget,
         **kwargs,
     ):
-        camera: Camera = generate_by.src_item
+        camera: Camera = generate_by.src_item  # type: ignore
 
         super().__init__(camera, **kwargs)
         self._generate_by = generate_by
-        self._cover_previous_anims = True
 
-        self.aligned = generate_by.aligned[(camera, camera.target)]
+        self.aligned = generate_by.aligned[(camera, camera.target)]  # type: ignore
         self.path_func = generate_by.path_func
 
-    def apply(self, data: None, p: ItemAnimation.ApplyParams) -> Item:
-        alpha = self.get_alpha_on_global_t(p.global_t)
+    def apply(self, params: ApplyParams) -> None:
+        alpha = self.get_alpha_on_global_t(params.global_t)
 
         aligned = self.aligned
         aligned.union.interpolate(aligned.data1, aligned.data2, alpha, path_func=self.path_func)
-        return aligned.union
+        params.data = aligned.union
 
 
 class TransformInSegments(AnimGroup):
@@ -467,7 +478,7 @@ class TransformInSegments(AnimGroup):
                 yield (min(a, b), max(a, b))
 
 
-class MethodTransform(Transform):
+class MethodTransform(Animation):
     """
     依据物件的变换而创建的补间过程
 
@@ -489,14 +500,23 @@ class MethodTransform(Transform):
         self,
         item: Item,
         obj: Item | Item._AsTypeWrapper,
+        #
+        path_arc: float = 0,
+        path_arc_axis: Vect = OUT,
+        path_func: PathFunc | None = None,
+        #
         show_at_begin: bool = True,
         hide_at_end: bool = False,
         **kwargs,
     ):
-        super().__init__(item, item, **kwargs)
+        super().__init__(**kwargs)
+        self.item = item
         self.obj = obj
+
+        self.path_func = get_path_func(path_arc, path_arc_axis, path_func)
         self.show_at_begin = show_at_begin
         self.hide_at_end = hide_at_end
+
         self.delayed_actions: list[
             tuple[MethodTransform._ActionType, str | tuple[tuple, dict]]
         ] = []
@@ -509,7 +529,7 @@ class MethodTransform(Transform):
         self.delayed_actions.append((MethodTransform._ActionType.Call, (args, kwargs)))
         return self
 
-    def _time_fixed(self) -> None:
+    def _apply_actions(self) -> None:
         obj = self.obj
         for type, value in self.delayed_actions:
             if type is MethodTransform._ActionType.GetAttr:
@@ -518,26 +538,33 @@ class MethodTransform(Transform):
                 args, kwargs = value
                 obj = obj(*args, **kwargs)
 
+    def _finalized(self) -> None:
+        items = list(self.item.walk_self_and_descendants())
         apprs = self.timeline.item_appearances
 
-        for item in self.src_item.walk_self_and_descendants():
-            apprs[item].stack.detect_change(item, self.t_range.end)
+        src_datas = [
+            apprs[item].stack.compute(self.t_range.at, True)  #
+            for item in items
+        ]
 
-        self.align_data()
-
-        for item in self.src_item.walk_self_and_descendants():
-            aligned = self.aligned[(item, item)]
-
+        sub_updaters: list[_MethodTransform] = []
+        for item in items:
             sub_updater = _MethodTransform(
                 self,
                 item,
                 self.path_func,
-                aligned,
                 show_at_begin=self.show_at_begin,
                 hide_at_end=self.hide_at_end,
             )
             sub_updater.transfer_params(self)
             sub_updater.finalize()
+            sub_updaters.append(sub_updater)
+
+        self._apply_actions()
+
+        for item, src_data, sub_updater in zip(items, src_datas, sub_updaters):
+            target_data = apprs[item].stack.display(self.t_range.end).data_orig  # type: ignore
+            sub_updater.set_data(src_data, target_data)
 
 
 class MethodTransformArgsBuilder:
@@ -562,23 +589,23 @@ class _MethodTransform(ItemAnimation):
         generate_by: MethodTransform,
         item: Item,
         path_func: PathFunc,
-        aligned: AlignedData[Item],
         **kwargs,
     ):
         super().__init__(item, **kwargs)
         self._generate_by = generate_by
-        self._cover_previous_anims = True
         self.path_func = path_func
-        self.aligned = aligned
 
-    def apply(self, data: None, p: ItemAnimation.ApplyParams) -> Item:
+    def set_data(self, src_data: Item, target_data: Item) -> None:
+        self.aligned = self.item.align_for_interpolate(src_data, target_data)
+
+    def apply(self, params: ApplyParams) -> None:
         self.aligned.union.interpolate(
             self.aligned.data1,
             self.aligned.data2,
-            self.get_alpha_on_global_t(p.global_t),
+            self.get_alpha_on_global_t(params.global_t),
             path_func=self.path_func,
         )
-        return self.aligned.union
+        params.data = self.aligned.union
 
 
 class FadeTransform(AnimGroup):

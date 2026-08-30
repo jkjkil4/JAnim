@@ -45,10 +45,6 @@ msgstr "Exit code when the file specified by ``run`` or ``write`` is not found"
 msgid "使用 ``run`` 或 ``write`` 指定路径不是文件时的退出码"
 msgstr "Exit code when the path specified by ``run`` or ``write`` is not a file"
 
-#: ../../docstring janim.exception.EXITCODE_TYPST_NOT_FOUND:1 of
-msgid "Typst 未安装时的退出码"
-msgstr "Exit code when Typst is not installed"
-
 #: ../../docstring janim.exception.EXITCODE_TYPST_COMPILE_ERROR:1 of
 msgid "Typst 编译失败时的退出码"
 msgstr "Exit code when Typst compilation fails"
@@ -98,3 +94,6 @@ msgstr "基类：:py:class:`~janim.exception.PointError`"
 
 #~ msgid "ffprobe 执行失败时的退出码"
 #~ msgstr "Exit code when ffprobe execution fails"
+
+#~ msgid "Typst 未安装时的退出码"
+#~ msgstr "Exit code when Typst is not installed"

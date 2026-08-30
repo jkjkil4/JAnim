@@ -1,8 +1,7 @@
-
 import os
 import re
 from dataclasses import dataclass
-from functools import lru_cache
+from functools import cache
 from pathlib import Path
 
 import numpy as np
@@ -31,10 +30,10 @@ class CompareWidget(QWidget):
         self.label_color_diff = QLabel()
         self.label_alpha_diff = QLabel()
 
-        self.label_correct.setStyleSheet("border: 1px solid white;")
-        self.label_wrong.setStyleSheet("border: 1px solid white;")
-        self.label_color_diff.setStyleSheet("border: 1px solid white;")
-        self.label_alpha_diff.setStyleSheet("border: 1px solid white;")
+        self.label_correct.setStyleSheet('border: 1px solid white;')
+        self.label_wrong.setStyleSheet('border: 1px solid white;')
+        self.label_color_diff.setStyleSheet('border: 1px solid white;')
+        self.label_alpha_diff.setStyleSheet('border: 1px solid white;')
 
         self.vlayout_correct = QVBoxLayout()
         self.vlayout_correct.addWidget(self.label_correct)
@@ -49,12 +48,20 @@ class CompareWidget(QWidget):
         self.hlayout_compare.addLayout(self.vlayout_wrong)
 
         self.vlayout_color_diff = QVBoxLayout()
-        self.vlayout_color_diff.addWidget(self.label_color_diff, alignment=Qt.AlignmentFlag.AlignHCenter)
-        self.vlayout_color_diff.addWidget(QLabel('Color Difference'), alignment=Qt.AlignmentFlag.AlignHCenter)
+        self.vlayout_color_diff.addWidget(
+            self.label_color_diff, alignment=Qt.AlignmentFlag.AlignHCenter
+        )
+        self.vlayout_color_diff.addWidget(
+            QLabel('Color Difference'), alignment=Qt.AlignmentFlag.AlignHCenter
+        )
 
         self.vlayout_alpha_diff = QVBoxLayout()
-        self.vlayout_alpha_diff.addWidget(self.label_alpha_diff, alignment=Qt.AlignmentFlag.AlignHCenter)
-        self.vlayout_alpha_diff.addWidget(QLabel('Alpha Difference'), alignment=Qt.AlignmentFlag.AlignHCenter)
+        self.vlayout_alpha_diff.addWidget(
+            self.label_alpha_diff, alignment=Qt.AlignmentFlag.AlignHCenter
+        )
+        self.vlayout_alpha_diff.addWidget(
+            QLabel('Alpha Difference'), alignment=Qt.AlignmentFlag.AlignHCenter
+        )
 
         self.hlayout_diff = QHBoxLayout()
         self.hlayout_diff.addLayout(self.vlayout_color_diff)
@@ -137,7 +144,9 @@ def get_alpha_diff_image(img1: QImage, img2: QImage) -> QImage:
     arr1 = np.frombuffer(bits1, dtype=np.uint8, count=img1.sizeInBytes()).reshape(h, w, 4)
     arr2 = np.frombuffer(bits2, dtype=np.uint8, count=img2.sizeInBytes()).reshape(h, w, 4)
 
-    alpha_diff = np.abs(arr1[:, :, 3].astype(np.int16) - arr2[:, :, 3].astype(np.int16)).astype(np.uint8)
+    alpha_diff = np.abs(arr1[:, :, 3].astype(np.int16) - arr2[:, :, 3].astype(np.int16)).astype(
+        np.uint8
+    )
     diff = np.zeros((h, w, 4), dtype=np.uint8)
     diff[:, :, :3] = alpha_diff[:, :, None]
     diff[:, :, 3] = 255
@@ -173,16 +182,22 @@ def get_compare_info() -> list[CompareInfo]:
             ref_frame -= 1
             assert ref_frame >= 0
 
-        res.append(CompareInfo(timeline_name, err_frame, str(ref_filepath), str(errors_path / err_filename)))
+        res.append(
+            CompareInfo(
+                timeline_name, err_frame, str(ref_filepath), str(errors_path / err_filename)
+            )
+        )
 
     res.sort(key=lambda x: (x.timeline_name, x.frame))
     return res
 
 
-@lru_cache(maxsize=None)
+@cache
 def get_pixmap(filepath: str) -> QPixmap:
     pix = QPixmap(filepath)
-    return pix.scaled(pix.size() * 2, Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.FastTransformation)
+    return pix.scaled(
+        pix.size() * 2, Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.FastTransformation
+    )
 
 
 app = Application()

@@ -158,6 +158,10 @@ class ProjType(StrEnum):
     V = 'v'
 
 
+BASEPOINT_MARKS = np.array([ORIGIN, RIGHT, UP])
+BASEPOINT_MARKS.setflags(write=False)
+
+
 class BasepointVItem(MarkedItem, VItem):
     def offset_to(
         self,
@@ -565,11 +569,11 @@ class Text(VItem, Group[TextLine]):
         :param buff: 每行之间的额外间距
         :param base_buff: 每行之间的基本间距，默认值 ``0.85`` 用于将两行上下排列，如果是 ``0`` 则会让两行完全重合，大部分时候不需要传入该值
         """
-        if len(self._children) == 0:
-            return
+        if not self.has_child():
+            return self
 
-        pos = self._children[0].get_mark_orig()
-        for line in self._children[1:]:
+        pos = self[0].get_mark_orig()
+        for line in self[1:]:
             vert = line.get_mark_orig() - line.get_mark_up()
             target = pos + base_buff * vert + buff * normalize(vert)
             line.points.shift(target - line.get_mark_orig())
@@ -595,8 +599,8 @@ class Text(VItem, Group[TextLine]):
         text_at = 0
         act_idx = 0
         act_params_map: defaultdict[str, ActParamsStack] = defaultdict(list)
-        for line in self._children:
-            for char in line._children:
+        for line in self:
+            for char in line:
                 while act_idx < len(self.act_params_list):
                     next_act_at, next_act = self.act_params_list[act_idx]
                     if text_at < next_act_at:

@@ -1,0 +1,42 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-08-05 14:35+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: janim/items/typst/compile.py:84
+msgid "Typst compilation error. Please check the output for more information."
+msgstr ""
+
+#: janim/items/typst/compile.py:142
+msgid "Clip paths are not supported"
+msgstr ""
+
+#: janim/items/typst/compile.py:143
+msgid "Bitmap glyphs (image glyphs) are not supported, only outline glyphs"
+msgstr ""
+
+#: janim/items/typst/compile.py:144
+msgid "Gradients are not supported, solid colors will be used instead"
+msgstr ""
+
+#: janim/items/typst/compile.py:145
+msgid "Tiling patterns are not supported, solid colors will be used instead"
+msgstr ""
+
+#: janim/items/typst/compile.py:146
+msgid "Images are not supported"
+msgstr ""

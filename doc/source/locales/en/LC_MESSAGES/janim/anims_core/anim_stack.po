@@ -1,0 +1,328 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2023, jkjkil4
+# This file is distributed under the same license as the JAnim package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: JAnim \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-08-09 01:08+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: en\n"
+"Language-Team: en <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.17.0\n"
+
+#: ../../source/janim/anims_core/anim_stack.rst:2
+msgid "anim_stack"
+msgstr "anim_stack"
+
+#: janim.anims_core.anim_stack.AnimStack:1 of
+msgid "用于记录作用于特定 :class:`~.Item` 上的 :class:`~.StackableAnimation`，形成一个堆栈"
+msgstr "Used to record the :class:`~.StackableAnimation` objects applied to a specific :class:`~.Item`, forming a stack"
+
+#: janim.anims_core.anim_stack.AnimStack:3 of
+msgid "JAnim 动画的核心逻辑："
+msgstr "The core logic of JAnim animations:"
+
+#: janim.anims_core.anim_stack.AnimStack:5 of
+msgid "后一个动画，会以前一个动画的结果为基础，继续叠加作用"
+msgstr "Each later animation is applied on top of the result of the previous one."
+
+#: janim.anims_core.anim_stack.AnimStack:7 of
+msgid "这就是我们“动画复合”功能的内部逻辑，这个内部结构我们将其称作“动画堆栈”"
+msgstr ""
+"This is the internal logic behind JAnim's animation combination feature; we refer to this internal structure as the "
+"animation stack."
+
+#: ../../docstring janim.anims_core.anim_stack.AnimStack.get_at_left_ctx:1 of
+msgid "用于标记 :meth:`compute` 的 ``get_at_left`` 行为"
+msgstr "Used to mark the behavior of :meth:`compute` when using ``get_at_left``"
+
+#: ../../docstring janim.anims_core.anim_stack.AnimStack.get_at_left_ctx:3 of
+msgid ""
+"with ContextSetter(AnimStack.get_at_left_ctx, True):\n"
+"    stack.compute(...)"
+msgstr ""
+"with ContextSetter(AnimStack.get_at_left_ctx, True):\n"
+"    stack.compute(...)"
+
+#: ../../docstring janim.anims_core.anim_stack.AnimStack.get_at_left_ctx:8 of
+msgid "使用该 ``ContextVar`` 而非直接向 :meth:`compute` 设置参数，是为了让嵌套调用也能被标记使用 ``get_at_left`` 来处理"
+msgstr ""
+"Using this ``ContextVar`` instead of directly setting parameters for :meth:`compute` allows nested calls to also be "
+"marked as using ``get_at_left`` for processing"
+
+#: janim.anims_core.anim_stack.AnimStack.display:1 of
+msgid "将物件当前的状态记录到动画堆栈中，将 ``global_t`` 之后都显示为该状态"
+msgstr "Records the current state of the item into the animation stack, making it display this state after ``global_t``"
+
+#: janim.anims_core.anim_stack.AnimStack.detect_change:1 of
+msgid "若物件相比 ``self._prev_display`` 所记录的状态可能有变化， 则将新的状态记录到 ``global_t`` 之后的堆栈中"
+msgstr ""
+"If the item may have changed compared to the state recorded by ``self._prev_display``, records the new state into the "
+"stack after ``global_t``"
+
+#: janim.anims_core.anim_stack.AnimStack.may_changed:1 of
+msgid "检查物件相比 ``self._prev_display`` 所记录的状态，是否可能发生变化"
+msgstr "Checks whether the item may have changed compared to the state recorded by ``self._prev_display``"
+
+#: janim.anims_core.anim_stack.AnimStack.add:1 of
+msgid "向堆栈添加一个 :class:`~.StackableAnimation` 对象"
+msgstr "Adds a :class:`~.StackableAnimation` object to the stack"
+
+#: ../../source/janim/anims_core/anim_stack.rst janim.anims_core.anim_stack.AnimStack.add
+#: janim.anims_core.anim_stack.AnimStack.compute of
+msgid "参数"
+msgstr "Parameters"
+
+#: janim.anims_core.anim_stack.AnimStack.add:3 of
+msgid "要向堆栈添加的动画对象"
+msgstr "The animation object to add to the stack"
+
+#: janim.anims_core.anim_stack.AnimStack.add:5 of
+msgid "策略："
+msgstr "Strategy:"
+
+#: janim.anims_core.anim_stack.AnimStack.add:7 of
+msgid ""
+"首先，给出一个直观的理解，我们可以将时间轴看作一个条形的画布，颜料可以一直往上叠加， 我们每使用该方法添加一个动画对象，就"
+"是根据动画时间的起止范围，在这个画布上画上一笔"
+msgstr ""
+"First, for an intuitive understanding, we can view the timeline as a strip-shaped canvas where paint can continuously be "
+"layered. Each time we use this method to add an animation object, it is like drawing on this canvas according to the "
+"animation's start and end times"
+
+#: janim.anims_core.anim_stack.AnimStack.add:10 of
+msgid "从而，在时间轴的不同区间，层层叠叠地叠加上了各个不同的动画对象，不同区间中会有不同的动画对象在发挥作用"
+msgstr ""
+"As a result, different animation objects are layered over different intervals of the timeline, and different objects take "
+"effect in different intervals"
+
+#: janim.anims_core.anim_stack.AnimStack.add:12 of
+msgid "为了得知在某个时刻 ``t`` 有那些动画对象在发挥作用， 我们肯定不能遍历曾经作用过的所有动画来筛选，这样效率太过低下了"
+msgstr ""
+"To determine which animation objects are active at a given time ``t``, we cannot simply iterate through all animations "
+"that have ever been applied, as this would be far too inefficient"
+
+#: janim.anims_core.anim_stack.AnimStack.add:15 of
+msgid ""
+"所以，我们这个物件的动画堆栈，会根据每个动画的起止时刻切分为多个区块， 我们只需要二分查找出 ``t`` 所处的区块，便可以知道在"
+"这个时刻会有哪些动画在发挥作用"
+msgstr ""
+"Therefore, this item's animation stack is divided into multiple chunks according to the start and end times of each "
+"animation. We only need to use binary search to find the chunk containing ``t`` to determine which animations are active "
+"at that moment"
+
+#: janim.anims_core.anim_stack.AnimStack.add:18 janim.anims_core.anim_stack.AnimStack.compute:12 of
+msgid "例如："
+msgstr "For example:"
+
+#: janim.anims_core.anim_stack.AnimStack.add:20 of
+msgid "如果我们有先后两个动画，``A 0~3s`` 以及 ``B 1~2s``"
+msgstr "If we have two animations in sequence, ``A 0~3s`` and ``B 1~2s``"
+
+#: janim.anims_core.anim_stack.AnimStack.add:22 of
+msgid "一开始为："
+msgstr "Initially:"
+
+#: janim.anims_core.anim_stack.AnimStack.add:24 of
+msgid ""
+"starts:  0\n"
+"chunks: [ ]"
+msgstr ""
+"starts:  0\n"
+"chunks: [ ]"
+
+#: janim.anims_core.anim_stack.AnimStack.add:29 of
+msgid "当我们先加入 ``A`` 后："
+msgstr "After adding ``A`` first:"
+
+#: janim.anims_core.anim_stack.AnimStack.add:31 of
+msgid ""
+"starts:  0     |  3\n"
+"chunks: [A]    | [ ]"
+msgstr ""
+"starts:  0     |  3\n"
+"chunks: [A]    | [ ]"
+
+#: janim.anims_core.anim_stack.AnimStack.add:36 of
+msgid "接着加入 ``B`` 后："
+msgstr "After adding ``B``:"
+
+#: janim.anims_core.anim_stack.AnimStack.add:38 of
+msgid ""
+"starts:  0     |  1     |  2     |  3\n"
+"chunks: [A]    | [A,B]  | [A]    | [ ]"
+msgstr ""
+"starts:  0     |  1     |  2     |  3\n"
+"chunks: [A]    | [A,B]  | [A]    | [ ]"
+
+#: janim.anims_core.anim_stack.AnimStack.add:43 of
+msgid "可以看到，为了加入 ``B``，我们会在 ``1s`` 和 ``2s`` 的位置分别砍一刀"
+msgstr "As can be seen, to add ``B``, we split the timeline at ``1s`` and ``2s`` respectively"
+
+#: janim.anims_core.anim_stack.AnimStack.add:45 of
+msgid "如果我们再接着加入 ``C 2s~FOREVER``，则："
+msgstr "If we then add ``C 2s~FOREVER``:"
+
+#: janim.anims_core.anim_stack.AnimStack.add:47 of
+msgid ""
+"starts:  0     |  1     |  2     |  3\n"
+"chunks: [A]    | [A,B]  | [A,C]  | [C]"
+msgstr ""
+"starts:  0     |  1     |  2     |  3\n"
+"chunks: [A]    | [A,B]  | [A,C]  | [C]"
+
+#: janim.anims_core.anim_stack.AnimStack.add:52 of
+msgid ""
+"注：由于 :class:`~.Animation` 都会经过 :meth:`~.TimeAligner.align_anim_or_record` 处理， 所以不必担心由于轻微浮点误差导致"
+"产生多余的细切分的问题"
+msgstr ""
+"Note: Since all :class:`~.Animation` objects are processed by :meth:`~.TimeAligner.align_anim_or_record`, there is no "
+"need to worry about unnecessary fine-grained splits caused by minor floating-point errors"
+
+#: janim.anims_core.anim_stack.AnimStack.add:55 of
+msgid ""
+"注：在添加时，大多数情况如上所示，但是如果动画的 ``_order`` 比较复杂， 我们需要将后来的动画插入到已有动画堆栈中，而不是直"
+"接添加到末尾，这是为了保证每个区块内都是 ``_order`` 升序"
+msgstr ""
+"Note: During addition, most cases work as shown above. However, if the animation's ``_order`` is more complex, we need to "
+"insert later animations into the existing animation stack rather than simply appending them, in order to ensure that "
+"``_order`` remains in ascending order within each chunk"
+
+#: janim.anims_core.anim_stack.AnimStack.get:1 janim.anims_core.anim_stack.AnimStack.get_at_left:1 of
+msgid "得到 ``global_t`` 所处的区块（即在 ``global_t`` 时发挥作用的动画列表）"
+msgstr "Gets the chunk containing ``global_t`` (that is, the list of animations active at ``global_t``)"
+
+#: janim.anims_core.anim_stack.AnimStack.get_at_left:3 of
+msgid ""
+"和 :meth:`get` 不同，这个方法将区块区间当作左开右闭处理（即处于边界点时，得到左侧的区块）； 这个额外的方法在处理某些动画"
+"的 ``become_at_end`` 时的计算比较有用"
+msgstr ""
+"Unlike :meth:`get`, this method treats chunk intervals as left-open and right-closed (that is, when at a boundary point, "
+"it returns the chunk on the left). This additional method is useful when calculating ``become_at_end`` for certain "
+"animations"
+
+#: janim.anims_core.anim_stack.AnimStack.compute:3 janim.anims_core.anim_stack.AnimStack.get:5
+#: janim.anims_core.anim_stack.AnimStack.get_at_left:6 of
+msgid "全局时刻"
+msgstr "Global time"
+
+#: janim.anims_core.anim_stack.AnimStack.get:3 of
+msgid "在区间边界时，遵循区块区间左闭右开的原则（即处于边界点时，得到右侧的区块）"
+msgstr ""
+"At interval boundaries, follows the principle that chunk intervals are left-closed and right-open (that is, at a boundary "
+"point, the chunk on the right is returned)"
+
+#: janim.anims_core.anim_stack.AnimStack.compute:1 of
+msgid "得到在 ``global_t`` 时刻下，应用动画作用效果后的物件"
+msgstr "Gets the item after applying animation effects at ``global_t``"
+
+#: janim.anims_core.anim_stack.AnimStack.compute:5 of
+msgid ""
+"表示调用方是否会对返回值进行修改  如果 ``readonly=True`` 则表示不会进行修改，该方法会直接返回缓存本身； 但是这并没有强制约"
+"束性，传入 ``readonly=True`` 时需要遵循不修改返回值的原则，以免影响缓存数据  如果 ``readonly=False`` 则表示会进行修改，此"
+"时会返回缓存的拷贝，从而避免影响缓存数据  例如：  -   :meth:`~.Timeline.item_current` 中的调用是 ``readonly=False`` "
+"的，     因为其返回值最终会被用户使用，我们不能保证用户是否会修改  -   用于绘制时的调用是 ``readonly=True``，因为绘制时不"
+"会对物件数据产生影响"
+msgstr ""
+"Indicates whether the caller will modify the return value. If ``readonly=True``, it means the value will not be modified, "
+"and this method directly returns the cache itself. However, this is not a strict restriction; when passing "
+"``readonly=True``, the caller must follow the principle of not modifying the return value to avoid affecting cached data. "
+"If ``readonly=False``, it means the value may be modified, so a copy of the cache is returned to avoid affecting cached "
+"data. For example:  - The call in :meth:`~.Timeline.item_current` uses ``readonly=False``, because its return value will "
+"eventually be used by the user, and we cannot guarantee whether the user will modify it.  - The call used for rendering "
+"uses ``readonly=True``, because rendering does not modify item data."
+
+#: janim.anims_core.anim_stack.AnimStack.compute:5 of
+msgid "表示调用方是否会对返回值进行修改"
+msgstr "Indicates whether the caller will modify the return value"
+
+#: janim.anims_core.anim_stack.AnimStack.compute:7 of
+msgid ""
+"如果 ``readonly=True`` 则表示不会进行修改，该方法会直接返回缓存本身； 但是这并没有强制约束性，传入 ``readonly=True`` 时需"
+"要遵循不修改返回值的原则，以免影响缓存数据"
+msgstr ""
+"If ``readonly=True``, it means no modification will be made, and the method directly returns the cache itself. However, "
+"this is not a strict constraint; when passing ``readonly=True``, the caller should follow the principle of not modifying "
+"the returned value to avoid affecting cached data"
+
+#: janim.anims_core.anim_stack.AnimStack.compute:10 of
+msgid "如果 ``readonly=False`` 则表示会进行修改，此时会返回缓存的拷贝，从而避免影响缓存数据"
+msgstr ""
+"If ``readonly=False``, it means the value may be modified, so a copy of the cache is returned to avoid affecting cached "
+"data"
+
+#: janim.anims_core.anim_stack.AnimStack.compute:14 of
+msgid ""
+":meth:`~.Timeline.item_current` 中的调用是 ``readonly=False`` 的， 因为其返回值最终会被用户使用，我们不能保证用户是否会修"
+"改"
+msgstr ""
+"The call in :meth:`~.Timeline.item_current` uses ``readonly=False``, because its return value will eventually be used by "
+"the user, and we cannot guarantee whether the user will modify it"
+
+#: janim.anims_core.anim_stack.AnimStack.compute:17 of
+msgid "用于绘制时的调用是 ``readonly=True``，因为绘制时不会对物件数据产生影响"
+msgstr "The call used for rendering uses ``readonly=True``, because rendering does not modify item data"
+
+#: janim.anims_core.anim_stack.AnimStack.compute:19 of
+msgid ""
+"默认使用 :meth:`get` 获取动画堆栈，可以设置 :py:obj:`get_at_left_ctx` 设定使用 :meth:`get_at_left` 获取动画堆栈， 具体请参"
+"考 :py:obj:`get_at_left_ctx` 的文档"
+msgstr ""
+"By default, :meth:`get` is used to obtain the animation stack. You can set :py:obj:`get_at_left_ctx` to "
+"use :meth:`get_at_left` instead. For details, see the documentation of :py:obj:`get_at_left_ctx`"
+
+#: janim.anims_core.anim_stack.AnimStack.compute:22 of
+msgid ""
+"关于该方法的一些机制细节，请参考 :class:`~.StackableAnimation` 和 :class:`~.ApplyParams` 以及 :class:`~.ApplyAligner` 的介"
+"绍"
+msgstr ""
+"For details about the mechanisms of this method, see the descriptions "
+"of :class:`~.StackableAnimation`, :class:`~.ApplyParams`, and :class:`~.ApplyAligner`"
+
+#: janim.anims_core.anim_stack.AnimStack.compute:24 of
+msgid "关于该方法在实现上的一些细节，请参考 ``_compute`` 代码中的注释"
+msgstr "For implementation details of this method, see the comments in the ``_compute`` code"
+
+#: janim.anims_core.anim_stack.simplify_anim_stacks:1 of
+msgid ""
+"在 :class:`~.Timeline` 构建完成后，最后被调用，用于检查 :class:`~.Timeline` 中各个 :class:`~.AnimStack` 是否有可被简化的成"
+"分"
+msgstr ""
+"Called after the construction of :class:`~.Timeline` is completed. It is used to check whether the :class:`~.AnimStack` "
+"instances in the :class:`~.Timeline` contain components that can be simplified"
+
+#: janim.anims_core.anim_stack.simplify_anim_stacks:3 of
+msgid "在没有 :class:`~.ApplyAligner` 出现的情况下，每个动画堆栈只需要保留最后一个 :class:`~.DisplayType` 及之后的动画即可"
+msgstr ""
+"When no :class:`~.ApplyAligner` appears, each animation stack only needs to retain the animations from the "
+"last :class:`~.DisplayType` onwards"
+
+#: janim.anims_core.anim_stack.simplify_anim_stacks:5 of
+msgid ""
+"在有 :class:`~.ApplyAligner` 出现的情况下，由于会出现动画堆栈之间的依赖，所以不能直接那样做，否则会破坏原本可能依赖"
+"的 :class:`~.ApplyAligner`； 此时需要分析依赖内的所有 :class:`~.ApplyAligner`，判断他们是否可以同时被移除"
+msgstr ""
+"When a :class:`~.ApplyAligner` appears, dependencies between animation stacks may occur, so the previous simplification "
+"cannot be applied directly, as it would break the :class:`~.ApplyAligner` that may be depended on. In this case, "
+"all :class:`~.ApplyAligner` instances within the dependencies need to be analyzed to determine whether they can be "
+"removed together"
+
+#~ msgid "这部分内容涉及 JAnim 实现原理，可能较为复杂，若没有研究源码的需求，你应酌情阅读"
+#~ msgstr ""
+#~ "This section covers the implementations of JAnim, which may be quite complex. If you do not have the need to delve "
+#~ "into the source code, you may choose to read it at your discretion."
+
+#~ msgid "若有变化则记录为 :class:`Display` 对象"
+#~ msgstr "If there are changes, record them as a :class:`Display` object"
+
+#~ msgid "得到指定时间 ``as_time`` 的物件，考虑了动画的作用"
+#~ msgstr "Get the item at the specified time ``as_time``, taking into account the effects of animations"

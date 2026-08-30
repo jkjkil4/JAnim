@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-22 22:43+0800\n"
+"POT-Creation-Date: 2026-08-25 12:44+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,19 +17,23 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: janim/components/component.py:33
+#: janim/components/component.py:65
+msgid "Perhaps you need to change the method name from `become` to `_become`"
+msgstr ""
+
+#: janim/components/component.py:73
 #, python-brace-format
 msgid ""
 "Every subclass of Component must inherit and implement the \"{key}\" method, "
 "but \"{name}\" does not"
 msgstr ""
 
-#: janim/components/component.py:271
+#: janim/components/component.py:390
 msgid ""
 "CmptGroup must be defined within the same class as the content passed in"
 msgstr ""
 
-#: janim/components/component.py:300
+#: janim/components/component.py:419
 #, python-brace-format
 msgid "None of the components ({cmpt_str}) have a method named {name}"
 msgstr ""

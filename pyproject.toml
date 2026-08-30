@@ -15,9 +15,10 @@ classifiers = [
 ]
 requires-python = ">=3.12"
 dependencies = [
+    "janim-backend==5.0.3",
+    "typst4janim==0.15.2",
     "attrs",
     "numpy",
-    "pyquaternion",
     "colour",
     "rich",
     "moderngl",
@@ -29,7 +30,6 @@ dependencies = [
     "freetype-py",
     "pillow",
     "svgelements",
-    "typst>=0.14.1",
     "dataclass-click",
     "cloup",
     "prompt-toolkit",

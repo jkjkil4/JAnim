@@ -19,43 +19,43 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.17.0\n"
 
-#: ../../source/index.rst:61
+#: ../../source/index.rst:67
 msgid "安装并快速上手"
 msgstr "Installation and Quick Start"
 
-#: ../../source/index.rst:70
+#: ../../source/index.rst:76
 msgid "基础教程 - 了解基本概念"
 msgstr "Basic Tutorials - Understanding Basic Concepts"
 
-#: ../../source/index.rst:81
+#: ../../source/index.rst:87
 msgid "界面教程 - 使用 JAnim GUI"
 msgstr "GUI Tutorials - Using the JAnim GUI"
 
-#: ../../source/index.rst:88
+#: ../../source/index.rst:94
 msgid "资源教程 - 使用外部素材"
 msgstr "Resource Tutorials - Using External Assets"
 
-#: ../../source/index.rst:95
+#: ../../source/index.rst:101
 msgid "进阶教程 - 掌握更多实用机制"
 msgstr "Advanced Tutorials - Mastering More Practical Mechanisms"
 
-#: ../../source/index.rst:106
+#: ../../source/index.rst:112
 msgid "其它教程"
 msgstr "Other Tutorials"
 
-#: ../../source/index.rst:115
+#: ../../source/index.rst:121
 msgid "其它"
 msgstr "Other"
 
-#: ../../source/index.rst:122
+#: ../../source/index.rst:128
 msgid "样例索引"
 msgstr "Example Index"
 
-#: ../../source/index.rst:133
+#: ../../source/index.rst:139
 msgid "参考文档"
 msgstr "References"
 
-#: ../../source/index.rst:139
+#: ../../source/index.rst:145
 msgid "开发相关"
 msgstr "Development"
 
@@ -69,11 +69,24 @@ msgstr ""
 "JAnim is a library for creating smooth animations, built around the core concept of programmatic animation. It supports "
 "real-time editing, live preview, and a wide range of additional powerful features."
 
-#: ../../source/index.rst:11
+#: ../../source/index.rst:13
+msgid "应避免借助 AI (LLM) 询问有关 JAnim 的信息，得到的消息很可能存在严重偏差"
+msgstr ""
+"You should avoid using AI (LLMs) to ask about JAnim, as the information you receive may contain significant inaccuracies."
+
+#: ../../source/index.rst:15
+msgid ""
+"信息可靠度：加 QQ 群 / 开 `Discussion <https://github.com/jkjkil4/JAnim/discussions>`_ 询问作者 > 询问 DeepWiki > 询问市面"
+"上的 AI (LLM)"
+msgstr ""
+"Information reliability: joining the QQ group / opening a `Discussion <https://github.com/jkjkil4/JAnim/discussions>`_ to "
+"ask the author > asking DeepWiki > asking commercial AI (LLMs)"
+
+#: ../../source/index.rst:17
 msgid "以下是一部分样例展示（注：可以直接点击分页标题快速折叠这部分内容）"
 msgstr "Below are some example showcases (Note: you can click on the tab titles to quickly collapse this section)"
 
-#: ../../source/index.rst:15
+#: ../../source/index.rst:21
 msgid "API 演示"
 msgstr "API Demonstration"
 
@@ -81,7 +94,7 @@ msgstr "API Demonstration"
 msgid "🎲 随机切换"
 msgstr "🎲 Switch Randomly"
 
-#: ../../source/examples/_api_demonstration_options.rst:20
+#: ../../source/index.rst:20
 msgid ""
 "from janim.imports import *\n"
 "\n"
@@ -113,21 +126,18 @@ msgstr ""
 "        self.play(Uncreate(square))\n"
 "        self.forward()"
 
-#: ../../source/examples/_api_demonstration_options.rst:43 ../../source/examples/_api_demonstration_options.rst:44
-#: ../../source/examples/_api_demonstration_options.rst:46 ../../source/examples/_api_demonstration_options.rst:47
-#: ../../source/examples/_api_demonstration_options.rst:51 ../../source/examples/_api_demonstration_options.rst:55
-#: ../../source/examples/_api_demonstration_options.rst:59 ../../source/examples/_api_demonstration_options.rst:65
-#: ../../source/examples/_api_demonstration_options.rst:67 ../../source/examples/_api_demonstration_options.rst:69
-#: ../../source/examples/_api_demonstration_options.rst:77 ../../source/examples/_api_demonstration_options.rst:78
-#: ../../source/examples/_api_demonstration_options.rst:94 ../../source/examples/_api_demonstration_options.rst:140
+#: ../../source/index.rst:43 ../../source/index.rst:44 ../../source/index.rst:46 ../../source/index.rst:47
+#: ../../source/index.rst:51 ../../source/index.rst:55 ../../source/index.rst:59 ../../source/index.rst:65
+#: ../../source/index.rst:67 ../../source/index.rst:69 ../../source/index.rst:77 ../../source/index.rst:78
+#: ../../source/index.rst:94 ../../source/index.rst:140 ../../source/index.rst:171
 msgid "参考："
 msgstr "See also:"
 
-#: ../../source/examples/_api_demonstration_options.rst:45
+#: ../../source/index.rst:45
 msgid ":class:`~.Circle` :class:`~.Square` :class:`~.Create` :class:`~.Transform` :class:`~.Uncreate`"
 msgstr ":class:`~.Circle` :class:`~.Square` :class:`~.Create` :class:`~.Transform` :class:`~.Uncreate`"
 
-#: ../../source/examples/_api_demonstration_options.rst:20
+#: ../../source/index.rst:20
 msgid ""
 "from janim.imports import *\n"
 "\n"
@@ -167,11 +177,11 @@ msgstr ""
 "\n"
 "        self.forward()"
 
-#: ../../source/examples/_api_demonstration_options.rst:49
+#: ../../source/index.rst:49
 msgid ":class:`~.Create` :class:`~.SpinInFromNothing` :meth:`~.Item.anim`"
 msgstr ":class:`~.Create` :class:`~.SpinInFromNothing` :meth:`~.Item.anim`"
 
-#: ../../source/examples/_api_demonstration_options.rst:20
+#: ../../source/index.rst:20
 msgid ""
 "from janim.imports import *\n"
 "\n"
@@ -209,11 +219,11 @@ msgstr ""
 "        self.play(Transform(desc[0], desc[1]))\n"
 "        self.forward()"
 
-#: ../../source/examples/_api_demonstration_options.rst:48
+#: ../../source/index.rst:48
 msgid ":class:`~.Text` :class:`~.Write` :class:`~.FadeIn` :class:`~.Transform`"
 msgstr ":class:`~.Text` :class:`~.Write` :class:`~.FadeIn` :class:`~.Transform`"
 
-#: ../../source/examples/_api_demonstration_options.rst:20
+#: ../../source/index.rst:20
 #, python-brace-format
 msgid ""
 "from janim.imports import *\n"
@@ -314,11 +324,11 @@ msgstr ""
 "        self.forward()\n"
 "        self.play(FadeOut(group))"
 
-#: ../../source/examples/_api_demonstration_options.rst:79
+#: ../../source/index.rst:79
 msgid ":class:`~.TypstDoc` :class:`~.TypstText` :class:`~.TypstMath` :ref:`typst_usage`"
 msgstr ":class:`~.TypstDoc` :class:`~.TypstText` :class:`~.TypstMath` :ref:`typst_usage`"
 
-#: ../../source/examples/_api_demonstration_options.rst:20
+#: ../../source/index.rst:20
 msgid ""
 "from janim.imports import *\n"
 "\n"
@@ -352,11 +362,11 @@ msgstr ""
 "        self.play(typ['space^2', ...].anim.set(color=RED))\n"
 "        self.forward()"
 
-#: ../../source/examples/_api_demonstration_options.rst:46
+#: ../../source/index.rst:46
 msgid ":class:`~.TypstMath` :ref:`typst_usage`"
 msgstr ":class:`~.TypstMath` :ref:`typst_usage`"
 
-#: ../../source/examples/_api_demonstration_options.rst:20
+#: ../../source/index.rst:20
 msgid ""
 "from janim.imports import *\n"
 "\n"
@@ -420,11 +430,11 @@ msgstr ""
 "        )\n"
 "        self.forward()"
 
-#: ../../source/examples/_api_demonstration_options.rst:61
+#: ../../source/index.rst:61
 msgid ":meth:`~.Cmpt_Points.arrange_in_grid` :meth:`~.Cmpt_Points.apply_complex_fn` :meth:`~.Cmpt_Points.apply_point_fn`"
 msgstr ":meth:`~.Cmpt_Points.arrange_in_grid` :meth:`~.Cmpt_Points.apply_complex_fn` :meth:`~.Cmpt_Points.apply_point_fn`"
 
-#: ../../source/examples/_api_demonstration_options.rst:20
+#: ../../source/index.rst:20
 msgid ""
 "from janim.imports import *\n"
 "\n"
@@ -472,11 +482,11 @@ msgstr ""
 "        )\n"
 "        self.forward()"
 
-#: ../../source/examples/_api_demonstration_options.rst:53
+#: ../../source/index.rst:53
 msgid ":class:`~.NumberPlane` :meth:`~.Axes.get_graph` :meth:`~.Cmpt_Points.apply_matrix`"
 msgstr ":class:`~.NumberPlane` :meth:`~.Axes.get_graph` :meth:`~.Cmpt_Points.apply_matrix`"
 
-#: ../../source/examples/_api_demonstration_options.rst:20
+#: ../../source/index.rst:20
 #, python-brace-format
 msgid ""
 "from janim.imports import *\n"
@@ -553,11 +563,11 @@ msgstr ""
 "        )\n"
 "        self.forward()"
 
-#: ../../source/examples/_api_demonstration_options.rst:67
+#: ../../source/index.rst:67
 msgid ":class:`~.Brace` :class:`~.DataUpdater` :class:`~.ItemUpdater`"
 msgstr ":class:`~.Brace` :class:`~.DataUpdater` :class:`~.ItemUpdater`"
 
-#: ../../source/examples/_api_demonstration_options.rst:20
+#: ../../source/index.rst:20
 msgid ""
 "from janim.imports import *\n"
 "\n"
@@ -605,11 +615,11 @@ msgstr ""
 "            duration=4\n"
 "        )"
 
-#: ../../source/examples/_api_demonstration_options.rst:53
+#: ../../source/index.rst:53
 msgid ":class:`~.Dot` :class:`~.Arrow` :meth:`~.Item.update` :class:`~.GroupUpdater`"
 msgstr ":class:`~.Dot` :class:`~.Arrow` :meth:`~.Item.update` :class:`~.GroupUpdater`"
 
-#: ../../source/examples/_api_demonstration_options.rst:20
+#: ../../source/index.rst:20
 msgid ""
 "from janim.imports import *\n"
 "\n"
@@ -694,11 +704,11 @@ msgstr ""
 "            duration=2\n"
 "        )"
 
-#: ../../source/examples/_api_demonstration_options.rst:71
+#: ../../source/index.rst:71
 msgid ":meth:`~.Item.anim` :meth:`~.Item.update` :class:`~.DataUpdater`"
 msgstr ":meth:`~.Item.anim` :meth:`~.Item.update` :class:`~.DataUpdater`"
 
-#: ../../source/examples/_api_demonstration_options.rst:20
+#: ../../source/index.rst:20
 msgid ""
 "from janim.imports import *\n"
 "\n"
@@ -754,11 +764,11 @@ msgstr ""
 "            )\n"
 "        )"
 
-#: ../../source/examples/_api_demonstration_options.rst:57
+#: ../../source/index.rst:57
 msgid ":class:`~.Sector` :func:`~.rotate_vector` :class:`~.GroupUpdater` :class:`~.DataUpdater`"
 msgstr ":class:`~.Sector` :func:`~.rotate_vector` :class:`~.GroupUpdater` :class:`~.DataUpdater`"
 
-#: ../../source/examples/_api_demonstration_options.rst:20
+#: ../../source/index.rst:20
 msgid ""
 "from janim.imports import *\n"
 "\n"
@@ -838,11 +848,11 @@ msgstr ""
 "            duration=4\n"
 "        )"
 
-#: ../../source/examples/_api_demonstration_options.rst:69
+#: ../../source/index.rst:69
 msgid ":class:`~.MarkedItem` :class:`~.DataUpdater`"
 msgstr ":class:`~.MarkedItem` :class:`~.DataUpdater`"
 
-#: ../../source/examples/_api_demonstration_options.rst:20
+#: ../../source/index.rst:20
 msgid ""
 "from janim.imports import *\n"
 "\n"
@@ -944,11 +954,11 @@ msgstr ""
 "            )\n"
 "        )"
 
-#: ../../source/examples/_api_demonstration_options.rst:80
+#: ../../source/index.rst:80
 msgid ":class:`~.SimpleFrameEffect` :class:`~.Rotate` :class:`~.DataUpdater`"
 msgstr ":class:`~.SimpleFrameEffect` :class:`~.Rotate` :class:`~.DataUpdater`"
 
-#: ../../source/examples/_api_demonstration_options.rst:20
+#: ../../source/index.rst:20
 msgid ""
 "from janim.imports import *\n"
 "\n"
@@ -1082,11 +1092,11 @@ msgstr ""
 "\n"
 "        self.forward_to(subs[0].duration)"
 
-#: ../../source/examples/_api_demonstration_options.rst:96
+#: ../../source/index.rst:96
 msgid ":meth:`~.SurfaceGeometry.into` :meth:`~.BuiltTimeline.to_item` :class:`~.RectClip` :ref:`3d_scene` :ref:`3d_items`"
 msgstr ":meth:`~.SurfaceGeometry.into` :meth:`~.BuiltTimeline.to_item` :class:`~.RectClip` :ref:`3d_scene` :ref:`3d_items`"
 
-#: ../../source/examples/_api_demonstration_options.rst:20
+#: ../../source/index.rst:20
 msgid ""
 "from janim.imports import *\n"
 "\n"
@@ -1312,11 +1322,303 @@ msgstr ""
 "        self.play(mask3.anim.invert.set(1.0))\n"
 "        self.forward(1.5)"
 
-#: ../../source/examples/_api_demonstration_options.rst:142
+#: ../../source/index.rst:142
 msgid ":class:`~.ShapeMask` :class:`~.TransformMatchingDiff` :class:`~.boolean_ops.Union` :class:`~.boolean_ops.Intersection`"
 msgstr ":class:`~.ShapeMask` :class:`~.TransformMatchingDiff` :class:`~.boolean_ops.Union` :class:`~.boolean_ops.Intersection`"
 
-#: ../../source/index.rst:21
+#: ../../source/index.rst:20
+msgid ""
+"from janim.imports import *\n"
+"\n"
+"class Ball(Dot):\n"
+"    speed = CustomData()\n"
+"\n"
+"    def __init__(self, radius: float):\n"
+"        super().__init__(radius=radius, color=BLUE)\n"
+"        self.speed.set(ORIGIN)\n"
+"\n"
+"class BallsCollisionExample(Timeline):\n"
+"    def construct(self):\n"
+"        # 有关配置\n"
+"        left = -4\n"
+"        right = 4\n"
+"        bottom = -3\n"
+"        top = 3\n"
+"\n"
+"        radius = 0.25\n"
+"        ball_count = 25\n"
+"\n"
+"        # 容器边框\n"
+"        Polygon([left, top, 0], [left, bottom, 0], [right, bottom, 0], [right, top, 0], fill_alpha=0.2).show()\n"
+"        # 内部的球\n"
+"        balls = Ball(radius) * ball_count\n"
+"\n"
+"        # 生成互不重叠的初始位置\n"
+"        positions = []\n"
+"        rng = np.random.default_rng(1234)\n"
+"        for ball in balls:\n"
+"            # 初始位置\n"
+"            while True:\n"
+"                pos = np.array([\n"
+"                    rng.uniform(left + radius, right - radius),\n"
+"                    rng.uniform(bottom + radius, top - radius),\n"
+"                    0,\n"
+"                ])\n"
+"                if all(np.linalg.norm(pos - other) >= 2 * radius for other in positions):\n"
+"                    break\n"
+"            ball.points.move_to(pos)\n"
+"            positions.append(pos)\n"
+"\n"
+"            # 初始速度\n"
+"            ball.speed.set(\n"
+"                np.array([\n"
+"                    rng.uniform(-3, 3),\n"
+"                    rng.uniform(-3, 3),\n"
+"                    0,\n"
+"                ])\n"
+"            )\n"
+"\n"
+"        def updater(group: Group[Ball], p) -> None:\n"
+"            dt = p.dt\n"
+"\n"
+"            # 1. 根据速度移动\n"
+"            for ball in group:\n"
+"                ball.points.shift(ball.speed.get() * dt)\n"
+"\n"
+"            # 2. 与容器边界碰撞\n"
+"            for ball in group:\n"
+"                pos = ball.points.box.center\n"
+"                speed = ball.speed.get().copy()\n"
+"\n"
+"                if pos[0] - radius < left:\n"
+"                    ball.points.set_x(left + radius)\n"
+"                    speed[0] = abs(speed[0])\n"
+"\n"
+"                elif pos[0] + radius > right:\n"
+"                    ball.points.set_x(right - radius)\n"
+"                    speed[0] = -abs(speed[0])\n"
+"\n"
+"                if pos[1] - radius < bottom:\n"
+"                    ball.points.set_y(bottom + radius)\n"
+"                    speed[1] = abs(speed[1])\n"
+"\n"
+"                elif pos[1] + radius > top:\n"
+"                    ball.points.set_y(top - radius)\n"
+"                    speed[1] = -abs(speed[1])\n"
+"\n"
+"                ball.speed.set(speed)\n"
+"\n"
+"            # 3. 小球之间的完全弹性碰撞\n"
+"            for i in range(len(group)):\n"
+"                for j in range(i + 1, len(group)):\n"
+"                    ball1 = group[i]\n"
+"                    ball2 = group[j]\n"
+"\n"
+"                    p1 = ball1.points.box.center\n"
+"                    p2 = ball2.points.box.center\n"
+"\n"
+"                    delta = p2 - p1\n"
+"                    dist = np.linalg.norm(delta)\n"
+"\n"
+"                    min_dist = 2 * radius\n"
+"\n"
+"                    if dist >= min_dist:\n"
+"                        continue\n"
+"\n"
+"                    # 两个球存在重合时，给出碰撞方向\n"
+"                    if dist < 1e-8:\n"
+"                        normal = np.array([1.0, 0.0, 0.0])\n"
+"                        dist = 0.0\n"
+"                    else:\n"
+"                        normal = delta / dist\n"
+"\n"
+"                    v1 = ball1.speed.get()\n"
+"                    v2 = ball2.speed.get()\n"
+"\n"
+"                    # 相对速度\n"
+"                    relative_velocity = v2 - v1\n"
+"                    velocity_along_normal = np.dot(relative_velocity, normal)\n"
+"                    # 只有相互靠近时才处理碰撞\n"
+"                    if velocity_along_normal < 0:\n"
+"                        # 相同质量的完全弹性碰撞\n"
+"                        impulse = velocity_along_normal * normal\n"
+"                        ball1.speed.set(v1 + impulse)\n"
+"                        ball2.speed.set(v2 - impulse)\n"
+"\n"
+"                    # 消除两个球之间的重叠\n"
+"                    overlap = min_dist - dist\n"
+"                    if overlap > 0:\n"
+"                        correction = normal * (overlap / 2)\n"
+"                        ball1.points.shift(-correction)\n"
+"                        ball2.points.shift(correction)\n"
+"\n"
+"        self.play(\n"
+"            GroupStepUpdater(balls, updater),\n"
+"            duration=4,\n"
+"        )\n"
+"\n"
+"        ball_follow = balls[6]\n"
+"\n"
+"        self.forward(0.5)\n"
+"        self.play(\n"
+"            self.camera.anim.points.scale(0.5).move_to(ball_follow),\n"
+"            ball_follow.anim.set(color=YELLOW),\n"
+"        )\n"
+"        self.forward(0.5)\n"
+"        self.play(\n"
+"            GroupStepUpdater(balls, updater),\n"
+"            Follow(self.camera, ball_follow, ORIGIN),\n"
+"            duration=6,\n"
+"        )"
+msgstr ""
+"from janim.imports import *\n"
+"\n"
+"class Ball(Dot):\n"
+"    speed = CustomData()\n"
+"\n"
+"    def __init__(self, radius: float):\n"
+"        super().__init__(radius=radius, color=BLUE)\n"
+"        self.speed.set(ORIGIN)\n"
+"\n"
+"class BallsCollisionExample(Timeline):\n"
+"    def construct(self):\n"
+"        # Configuration\n"
+"        left = -4\n"
+"        right = 4\n"
+"        bottom = -3\n"
+"        top = 3\n"
+"\n"
+"        radius = 0.25\n"
+"        ball_count = 25\n"
+"\n"
+"        # Container boundary\n"
+"        Polygon([left, top, 0], [left, bottom, 0], [right, bottom, 0], [right, top, 0], fill_alpha=0.2).show()\n"
+"        # Balls inside the container\n"
+"        balls = Ball(radius) * ball_count\n"
+"\n"
+"        # Generate non-overlapping initial positions\n"
+"        positions = []\n"
+"        rng = np.random.default_rng(1234)\n"
+"        for ball in balls:\n"
+"            # Initial position\n"
+"            while True:\n"
+"                pos = np.array([\n"
+"                    rng.uniform(left + radius, right - radius),\n"
+"                    rng.uniform(bottom + radius, top - radius),\n"
+"                    0,\n"
+"                ])\n"
+"                if all(np.linalg.norm(pos - other) >= 2 * radius for other in positions):\n"
+"                    break\n"
+"            ball.points.move_to(pos)\n"
+"            positions.append(pos)\n"
+"\n"
+"            # Initial velocity\n"
+"            ball.speed.set(\n"
+"                np.array([\n"
+"                    rng.uniform(-3, 3),\n"
+"                    rng.uniform(-3, 3),\n"
+"                    0,\n"
+"                ])\n"
+"            )\n"
+"\n"
+"        def updater(group: Group[Ball], p) -> None:\n"
+"            dt = p.dt\n"
+"\n"
+"            # 1. Move according to velocity\n"
+"            for ball in group:\n"
+"                ball.points.shift(ball.speed.get() * dt)\n"
+"\n"
+"            # 2. Collision with container boundaries\n"
+"            for ball in group:\n"
+"                pos = ball.points.box.center\n"
+"                speed = ball.speed.get().copy()\n"
+"\n"
+"                if pos[0] - radius < left:\n"
+"                    ball.points.set_x(left + radius)\n"
+"                    speed[0] = abs(speed[0])\n"
+"\n"
+"                elif pos[0] + radius > right:\n"
+"                    ball.points.set_x(right - radius)\n"
+"                    speed[0] = -abs(speed[0])\n"
+"\n"
+"                if pos[1] - radius < bottom:\n"
+"                    ball.points.set_y(bottom + radius)\n"
+"                    speed[1] = abs(speed[1])\n"
+"\n"
+"                elif pos[1] + radius > top:\n"
+"                    ball.points.set_y(top - radius)\n"
+"                    speed[1] = -abs(speed[1])\n"
+"\n"
+"                ball.speed.set(speed)\n"
+"\n"
+"            # 3. Perfectly elastic collisions between balls\n"
+"            for i in range(len(group)):\n"
+"                for j in range(i + 1, len(group)):\n"
+"                    ball1 = group[i]\n"
+"                    ball2 = group[j]\n"
+"\n"
+"                    p1 = ball1.points.box.center\n"
+"                    p2 = ball2.points.box.center\n"
+"\n"
+"                    delta = p2 - p1\n"
+"                    dist = np.linalg.norm(delta)\n"
+"\n"
+"                    min_dist = 2 * radius\n"
+"\n"
+"                    if dist >= min_dist:\n"
+"                        continue\n"
+"\n"
+"                    # Determine the collision direction when the balls overlap\n"
+"                    if dist < 1e-8:\n"
+"                        normal = np.array([1.0, 0.0, 0.0])\n"
+"                        dist = 0.0\n"
+"                    else:\n"
+"                        normal = delta / dist\n"
+"\n"
+"                    v1 = ball1.speed.get()\n"
+"                    v2 = ball2.speed.get()\n"
+"\n"
+"                    # Relative velocity\n"
+"                    relative_velocity = v2 - v1\n"
+"                    velocity_along_normal = np.dot(relative_velocity, normal)\n"
+"                    # Only handle collisions when the balls are approaching each other\n"
+"                    if velocity_along_normal < 0:\n"
+"                        # Perfectly elastic collision between balls of equal mass\n"
+"                        impulse = velocity_along_normal * normal\n"
+"                        ball1.speed.set(v1 + impulse)\n"
+"                        ball2.speed.set(v2 - impulse)\n"
+"\n"
+"                    # Resolve the overlap between the two balls\n"
+"                    overlap = min_dist - dist\n"
+"                    if overlap > 0:\n"
+"                        correction = normal * (overlap / 2)\n"
+"                        ball1.points.shift(-correction)\n"
+"                        ball2.points.shift(correction)\n"
+"\n"
+"        self.play(\n"
+"            GroupStepUpdater(balls, updater),\n"
+"            duration=4,\n"
+"        )\n"
+"\n"
+"        ball_follow = balls[6]\n"
+"\n"
+"        self.forward(0.5)\n"
+"        self.play(\n"
+"            self.camera.anim.points.scale(0.5).move_to(ball_follow),\n"
+"            ball_follow.anim.set(color=YELLOW),\n"
+"        )\n"
+"        self.forward(0.5)\n"
+"        self.play(\n"
+"            GroupStepUpdater(balls, updater),\n"
+"            Follow(self.camera, ball_follow, ORIGIN),\n"
+"            duration=6,\n"
+"        )"
+
+#: ../../source/index.rst:173
+msgid ":class:`~.GroupStepUpdater` :class:`~.CustomData` :class:`~.Follow`"
+msgstr ":class:`~.GroupStepUpdater` :class:`~.CustomData` :class:`~.Follow`"
+
+#: ../../source/index.rst:27
 msgid "简单演示"
 msgstr "Simple Demonstration"
 
@@ -1328,19 +1630,19 @@ msgstr "🎲 Click \"Switch Randomly\" to show an example"
 msgid "嗯，这个本身就是用 JAnim 制作的"
 msgstr "Well, this itself is made with JAnim"
 
-#: ../../source/index.rst:29
+#: ../../source/index.rst:35
 msgid "科普视频"
 msgstr "Educational Videos"
 
-#: ../../source/index.rst:37
+#: ../../source/index.rst:43
 msgid "教学视频"
 msgstr "Tutorial Videos"
 
-#: ../../source/index.rst:45
+#: ../../source/index.rst:51
 msgid "音游铺面"
 msgstr "Rhythm Game Chart"
 
-#: ../../source/index.rst:53
+#: ../../source/index.rst:59
 msgid "视频叠加演示"
 msgstr "Video Overlay Demonstration"
 
@@ -1406,7 +1708,7 @@ msgstr "06\\:04 - 06\\:22 : Demonstrates the color blending effect of the ``mix`
 msgid "07\\:42 - 08\\:01 : 说明了纹理上下颠倒的原因"
 msgstr "07\\:42 - 08\\:01 : Explains the reason for texture being upside down"
 
-#: ../../source/index.rst:68
+#: ../../source/index.rst:74
 msgid ""
 "如果你在安装时遇到困难，或是在使用时有任何问题，可以在 Github 的 `Discussions 页面 <https://github.com/jkjkil4/JAnim/"
 "discussions>`_ 提问，或加入 QQ 群 970174336"
@@ -1414,19 +1716,19 @@ msgstr ""
 "If you encounter difficulties during installation or have any questions while using it, you can ask questions on the "
 "Github `Discussions Page <https://github.com/jkjkil4/JAnim/discussions>`_ or join QQ group 970174336"
 
-#: ../../source/index.rst:149
+#: ../../source/index.rst:155
 msgid "内容索引"
 msgstr "Content Indices"
 
-#: ../../source/index.rst:151
+#: ../../source/index.rst:157
 msgid ":ref:`genindex`"
 msgstr ":ref:`genindex`"
 
-#: ../../source/index.rst:152
+#: ../../source/index.rst:158
 msgid ":ref:`modindex`"
 msgstr ":ref:`modindex`"
 
-#: ../../source/index.rst:153
+#: ../../source/index.rst:159
 msgid ":ref:`search`"
 msgstr ":ref:`search`"
 

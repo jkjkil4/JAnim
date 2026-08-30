@@ -28,51 +28,14 @@ class ValueTracker[T](Item):
     def __init__(
         self,
         value: T,
-        copy_func: None = None,
-        not_changed_func: None = None,
-        interpolate_func: None = None,
         **kwargs,
     ):
         super().__init__(**kwargs)
-        self._data.set_func(copy_func, not_changed_func, interpolate_func)
         self._data.set(value)
 
         if self.timeline is not None:
             # 使得 ValueTracker 的内容更改哪怕没有 show 和 anim 也可以被跟踪
             self.timeline.track(self)
-
-    @property
-    def data(self) -> Cmpt_Data:
-        from janim.utils.deprecation import deprecated
-
-        deprecated(
-            '.data',
-            remove=(4, 3),
-        )
-
-        _data = self._data
-
-        class _DeprecatedWrapper:
-            def set(self, value):
-                deprecated(
-                    '.data.set',
-                    '.set_value',
-                    remove=(4, 3),
-                )
-                return _data.set(value)
-
-            def get(self):
-                deprecated(
-                    '.data.get',
-                    '.get_value',
-                    remove=(4, 3),
-                )
-                return _data.get()
-
-            def __getattr__(self, name: str):
-                return getattr(_data, name)
-
-        return _DeprecatedWrapper()  # type: ignore
 
     def set_value(self, value: T) -> Self:
         """设置当前值"""

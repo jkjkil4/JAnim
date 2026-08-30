@@ -5,7 +5,7 @@ import sys
 import types
 from typing import Callable, Sequence
 
-from janim.anims.timeline import Timeline
+from janim.timeline import Timeline
 from janim.cli.utils.prompt import (
     Category,
     Entry,

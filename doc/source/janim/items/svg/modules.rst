@@ -8,5 +8,3 @@ svg
 
    brace
    svg_item
-   typst
-   typst_types

@@ -601,7 +601,9 @@ msgstr ""
 
 #: ../../source/tutorials/animations.rst:287
 msgid "``.r`` 一般用于 ``.anim`` 时便于链式回到物件级别，修改完一个组件的用于动画的属性后，修改另一个组件用于动画的属性"
-msgstr "``.r`` is generally used in ``.anim`` to conveniently chain back to the item level. After modifying an animation property of one component, it allows modifying the animation property of another component"
+msgstr ""
+"``.r`` is generally used in ``.anim`` to conveniently chain back to the item level. After modifying an animation property "
+"of one component, it allows modifying the animation property of another component"
 
 #: ../../source/tutorials/animations.rst:289
 msgid "在这样的考虑下，不推荐在常规代码中滥用 ``.r`` ，例如："

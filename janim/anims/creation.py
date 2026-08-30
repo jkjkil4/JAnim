@@ -7,8 +7,7 @@ from typing import Callable
 
 import numpy as np
 
-from janim.anims.animation import Animation
-from janim.anims.timeline import RenderCollection
+from janim.anims_core.animation import Animation
 from janim.anims.updater import DataUpdater, UpdaterParams
 from janim.components.vpoints import Cmpt_VPoints
 from janim.constants import (
@@ -21,6 +20,7 @@ from janim.constants import (
 from janim.items.group import Group
 from janim.items.item import Item
 from janim.items.vitem import VItem
+from janim.render.collection import RenderCollection
 from janim.typing import JAnimColor
 from janim.utils.bezier import integer_interpolate
 from janim.utils.rate_functions import RateFunc, double_smooth, linear
@@ -43,7 +43,7 @@ class ShowPartial(DataUpdater):
     def __init__(
         self,
         item: Item,
-        bound_func: Callable[[UpdaterParams], tuple[int, int]],
+        bound_func: Callable[[UpdaterParams], tuple[float, float]],
         *,
         auto_close_path: bool = False,
         become_at_end: bool = False,
@@ -209,7 +209,8 @@ class DrawBorderThenFill(DataUpdater):
         duration: float = 2.0,
         stroke_radius: float = DEFAULT_DRAWBORDER_THENFILL_STROKE_RADIUS,
         scale_with_camera: bool = False,
-        stroke_color: JAnimColor = None,
+        stroke_color: JAnimColor | None = None,
+        reversed: bool = False,  # 用于 Unwrite
         rate_func: RateFunc = double_smooth,
         become_at_end: bool = False,
         root_only: bool = False,
@@ -230,6 +231,7 @@ class DrawBorderThenFill(DataUpdater):
             stroke_radius *= self.timeline.camera.points.scaled_factor
         self.stroke_radius = stroke_radius
         self.stroke_color = stroke_color
+        self.reversed = reversed
 
     @dataclass(slots=True)
     class _ExtraData:
@@ -251,10 +253,14 @@ class DrawBorderThenFill(DataUpdater):
         if extra is None:
             return  # pragma: no cover
 
+        alpha = p.alpha
+        if self.reversed:
+            alpha = 1 - alpha
+
         if self.lag_ratio != 0:
-            if p.alpha >= 1:
+            if alpha >= 1:
                 return
-            if p.alpha <= 0:
+            if alpha <= 0:
                 if extra.zero_data is None:
                     extra.zero_data = data.points.pointwise_become_partial(data.points, 0, 0).copy()
                 else:
@@ -262,7 +268,7 @@ class DrawBorderThenFill(DataUpdater):
                 return
 
         outline = extra.outline
-        index, subalpha = integer_interpolate(0, 2, p.alpha)
+        index, subalpha = integer_interpolate(0, 2, alpha)
 
         if index == 0:
             data.restore(outline)
@@ -297,6 +303,30 @@ class Write(DrawBorderThenFill):
         root_only: bool = False,
         **kwargs,
     ):
+        duration, lag_ratio = self.calculate_duration_and_lag_ratio(
+            item, skip_null_items, root_only, duration, lag_ratio
+        )
+        super().__init__(
+            item,
+            duration=duration,
+            lag_ratio=lag_ratio,
+            rate_func=rate_func,
+            skip_null_items=skip_null_items,
+            root_only=root_only,
+            **kwargs,
+        )
+
+    @staticmethod
+    def calculate_duration_and_lag_ratio(
+        item: Item,
+        skip_null_items: bool,
+        root_only: bool,
+        duration: float | None,
+        lag_ratio: float | None,
+    ) -> tuple[float, float]:
+        """
+        根据物件的后代物件数量计算相应合适的 ``duration`` 和 ``lag_ratio``
+        """
         length = len(
             [
                 item
@@ -308,14 +338,43 @@ class Write(DrawBorderThenFill):
             duration = 1 if length < 15 else 2
         if lag_ratio is None:
             lag_ratio = min(4.0 / (length + 1.0), 0.2)
+        return (duration, lag_ratio)
 
+
+class Unwrite(DrawBorderThenFill):
+    """
+    实现与 :class:`Write` 相反的效果
+
+    .. janim-example:: UnwriteExample
+        :extract-from-test:
+        :media: _static/videos/UnwriteExample.mp4
+        :url: https://janim.readthedocs.io/zh-cn/latest/janim/anims/creation.html#unwriteexample
+    """
+
+    def __init__(
+        self,
+        item: Item,
+        *,
+        duration: float | None = None,
+        lag_ratio: float | None = None,
+        rate_func: RateFunc = linear,
+        skip_null_items: bool = True,
+        root_only: bool = False,
+        hide_at_end: bool = True,
+        **kwargs,
+    ):
+        duration, lag_ratio = Write.calculate_duration_and_lag_ratio(
+            item, skip_null_items, root_only, duration, lag_ratio
+        )
         super().__init__(
             item,
+            reversed=True,
             duration=duration,
             lag_ratio=lag_ratio,
             rate_func=rate_func,
             skip_null_items=skip_null_items,
             root_only=root_only,
+            hide_at_end=hide_at_end,
             **kwargs,
         )
 
@@ -349,13 +408,11 @@ class ShowIncreasingSubsets(Animation):
         self.show_at_begin = show_at_begin
         self.hide_at_end = hide_at_end
 
-    def _time_fixed(self) -> None:
+    def _finalized(self) -> None:
         if self.show_at_begin:
             self.timeline.schedule(self.t_range.at, self.group.show)
         if self.hide_at_end:
-            self.timeline.schedule(self.t_range.end, self.group.hide)
-
-        apprs = self.timeline.item_appearances
+            self.timeline.schedule(self.t_range.end, self.group.hide)  # type: ignore
 
         self.i_items = [
             (i, list(child.walk_self_and_descendants())) for i, child in enumerate(self.group)

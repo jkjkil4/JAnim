@@ -1,4 +1,4 @@
-from functools import lru_cache
+from functools import cache
 import inspect
 import os
 import sys
@@ -6,7 +6,7 @@ import time
 import types
 from typing import Iterable, Sequence
 
-from janim.anims.timeline import BuiltTimeline, Timeline
+from janim.timeline import BuiltTimeline, Timeline
 from janim.cli.options import (
     FormatOptions,
     HardwareOptions,
@@ -26,7 +26,6 @@ from janim.locale import get_translator
 from janim.logger import log
 from janim.utils.config import cli_config, default_config
 from janim.utils.file_ops import get_janim_dir, open_file
-from janim.utils.typst_compile import set_use_external_typst
 
 _ = get_translator('janim.cli.execute')
 
@@ -40,7 +39,6 @@ def run(
     module = get_module(file)
     if module is None:
         return
-    set_use_external_typst(shared_options.external_typst)
     modify_cli_config(shared_options.configs)
 
     timelines = extract_timelines_from_module(module, timeline_names, shared_options.all)
@@ -71,7 +69,7 @@ def run_timelines(
 
     auto_play = len(timelines) == 1
 
-    @lru_cache(maxsize=None)
+    @cache
     def get_all_timeline_names_from_module(module: types.ModuleType) -> list[str]:
         return [timeline.__name__ for timeline in get_all_timelines_from_module(module)]
 
@@ -113,6 +111,10 @@ def run_timelines(
         if i != 0:
             viewer.move(widgets[i - 1].pos() + QPoint(24, 24))
 
+    # 释放该函数对于初次构建的 Timeline 的引用，这样在 GUI 中重新构建时，就可以正常将他们释放
+    built = None
+    built_timelines.clear()
+
     QTimer.singleShot(200, widgets[-1].activateWindow)
 
     log.info(_('Finished constructing in {time:.2f} s').format(time=time.time() - t))
@@ -134,7 +136,6 @@ def write(
     module = get_module(file)
     if module is None:
         return
-    set_use_external_typst(shared_options.external_typst)
     modify_cli_config(shared_options.configs)
 
     timelines = extract_timelines_from_module(module, timeline_names, shared_options.all)

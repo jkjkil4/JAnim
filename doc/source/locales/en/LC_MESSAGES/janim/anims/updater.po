@@ -92,7 +92,7 @@ msgstr "See also the ``UpdaterExample`` in :ref:`basic_examples`"
 msgid "以时间为参数对一组物件的数据进行修改"
 msgstr "Modifies the data of a group based on time parameters."
 
-#: janim.anims.updater.GroupUpdater:5 of
+#: janim.anims.updater.GroupStepUpdater:5 janim.anims.updater.GroupUpdater:5 of
 msgid ""
 "该 Updater 假设 ``func`` 不会改变 ``item`` 后代物件结构，如果改变结构（例如增删子物件、:meth:`~.Item.become` 结构不一致等"
 "情况），则可能导致意外行为"
@@ -147,9 +147,13 @@ msgstr "If ``item=None`` is passed, both of the above points are invalid."
 msgid "按步更新物件，每次间隔 ``step`` 秒调用 ``func`` 进行下一步更新"
 msgstr "Updates the item step by step, calling ``func`` every ``step`` seconds to perform the next update"
 
+#: janim.anims.updater.GroupStepUpdater:1 of
+msgid "按步更新一组物件，每次间隔 ``step`` 秒调用 ``func`` 进行下一步更新"
+msgstr "Updates a group of items step by step, calling ``func`` every ``step`` seconds to perform the next update"
+
 #: janim.anims.updater.ChunkedNearbyCache:1 of
-msgid "用于辅助 :class:`StepUpdater` 的步进缓存类"
-msgstr "A step caching class used to assist :class:`StepUpdater`"
+msgid "用于辅助 :class:`StepUpdater` 和 :class:`GroupStepUpdater` 的步进缓存类"
+msgstr "A step caching class used to assist :class:`StepUpdater` and :class:`GroupStepUpdater`"
 
 #: ../../source/janim/anims/updater.rst
 msgid "参数"

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-22 22:43+0800\n"
+"POT-Creation-Date: 2026-08-25 12:44+0800\n"
 "PO-Revision-Date: 2025-12-24 15:59+0800\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -17,16 +17,24 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Poedit 3.8\n"
 
-#: janim/components/component.py:33
-#, python-brace-format
-msgid "Every subclass of Component must inherit and implement the \"{key}\" method, but \"{name}\" does not"
-msgstr "Component 的每一个子类都必须继承并实现 \"{key}\" 方法，而 \"{name}\" 没有"
+#: janim/components/component.py:65
+msgid "Perhaps you need to change the method name from `become` to `_become`"
+msgstr "也许你需要将方法名从 `become` 改为 `_become`"
 
-#: janim/components/component.py:271
-msgid "CmptGroup must be defined within the same class as the content passed in"
+#: janim/components/component.py:73
+#, python-brace-format
+msgid ""
+"Every subclass of Component must inherit and implement the \"{key}\" method, "
+"but \"{name}\" does not"
+msgstr ""
+"Component 的每一个子类都必须继承并实现 \"{key}\" 方法，而 \"{name}\" 没有"
+
+#: janim/components/component.py:390
+msgid ""
+"CmptGroup must be defined within the same class as the content passed in"
 msgstr "CmptGroup 必须要与传入的内容在同一个类的定义中"
 
-#: janim/components/component.py:300
+#: janim/components/component.py:419
 #, python-brace-format
 msgid "None of the components ({cmpt_str}) have a method named {name}"
 msgstr "({cmpt_str}) 中没有组件有叫作 {name} 的方法"

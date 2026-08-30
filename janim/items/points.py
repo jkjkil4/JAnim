@@ -176,21 +176,3 @@ class DotCloud(Points):
 class GlowDot(DotCloud):
     def __init__(self, *args, glow_alpha=0.5, **kwargs):
         super().__init__(*args, glow_alpha=glow_alpha, **kwargs)
-
-
-# 兼容旧导入路径：
-# 允许 `from janim.items.points import Group/NamedGroupMixin/NamedGroup` 暂时继续可用，
-# 并在访问时提示迁移到 `janim.items.group`
-def __getattr__(name: str):
-    if name in {'Group', 'NamedGroupMixin', 'NamedGroup'}:
-        from janim.items import group
-        from janim.utils.deprecation import deprecated
-
-        deprecated(
-            f'janim.items.points.{name}',
-            f'janim.items.group.{name}',
-            remove=(4, 4),
-        )
-        return getattr(group, name)
-
-    raise AttributeError(f'module {__name__!r} has no attribute {name!r}')

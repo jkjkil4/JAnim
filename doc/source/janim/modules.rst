@@ -7,11 +7,13 @@ janim
    :maxdepth: 1
 
    anims/modules.rst
+   anims_core/modules.rst
    camera/modules.rst
    components/modules.rst
    gui/modules.rst
    items/modules.rst
    render/modules.rst
+   timeline/modules.rst
    utils/modules.rst
    constants
    exception

@@ -5,8 +5,8 @@ import types
 from typing import TYPE_CHECKING, Callable, Iterable, Self
 
 import numpy as np
+from janim_backend import compute
 
-import janim.utils.refresh as refresh
 from janim.anims.method_updater_meta import register_updater
 from janim.components.component import Component
 from janim.constants import (
@@ -27,11 +27,11 @@ from janim.items.item import Item
 from janim.locale import get_translator
 from janim.typing import Vect, VectArray
 from janim.utils.bezier import integer_interpolate, interpolate
+from janim.utils.cmpt_lazy import CmptSignal, cmpt_lazy_method
 from janim.utils.config import Config
 from janim.utils.data import AlignedData, Array
 from janim.utils.iterables import resize_and_repeatedly_extend
 from janim.utils.paths import PathFunc, straight_path
-from janim.utils.signal import Signal
 from janim.utils.simple_functions import clip
 from janim.utils.space_ops import (
     angle_of_vector,
@@ -65,20 +65,19 @@ class Cmpt_Points[ItemT](Component[ItemT]):
     def init_bind(self, bind: Component.BindInfo):
         super().init_bind(bind)
 
-        item = bind.at_item
-
-        item.__class__._children_changed.connect_refresh(item, self, Cmpt_Points.box.fget)
+        bind.at_item._children_changed_hooks.append(
+            lambda: bind.reset_computed_for_func(Cmpt_Points.box.fget)
+        )
 
     def copy(self) -> Self:
         cmpt_copy = super().copy()
         cmpt_copy._points = self._points.copy()
         return cmpt_copy
 
-    def become(self, other: Cmpt_Points) -> Self:
+    def _become(self, other: Cmpt_Points) -> None:
         if not self._points.is_share(other._points):
             self._points = other._points.copy()
             Cmpt_Points.set.emit(self)
-        return self
 
     def not_changed(self, other: Cmpt_Points) -> bool:
         return self._points.is_share(other._points)
@@ -118,12 +117,10 @@ class Cmpt_Points[ItemT](Component[ItemT]):
         """
         得到自己以及后代物件的所有点坐标数据
         """
-        point_datas = [
-            cmpt.get() for cmpt in self.walk_same_cmpt_of_self_and_descendants_without_mock()
-        ]
+        point_datas = [cmpt.get() for cmpt in self.walk_same_cmpt_of_self_and_descendants()]
         return np.vstack(point_datas)
 
-    @Signal
+    @CmptSignal
     def set(self, points: VectArray) -> Self:
         """
         设置点坐标数据，每个坐标点都有三个分量
@@ -161,7 +158,7 @@ class Cmpt_Points[ItemT](Component[ItemT]):
         self.set(np.vstack([self.get(), points]))
         return self
 
-    @Signal
+    @CmptSignal
     def reverse(self) -> Self:
         """使点倒序"""
         self.set(self.get()[::-1])
@@ -228,22 +225,33 @@ class Cmpt_Points[ItemT](Component[ItemT]):
     # region 边界框 | Bounding box
 
     @property
-    @set.self_refresh_with_recurse(recurse_up=True)
-    @refresh.register
+    @set.self_refresh
+    @cmpt_lazy_method(recurse_up=True)
     def box(self) -> BoundingBox:
         """
         表示物件（包括后代物件）的矩形包围框
         """
-        box_datas = [
-            cmpt.self_box.data
-            for cmpt in self.walk_same_cmpt_of_self_and_descendants_without_mock()
-            if cmpt.has()
-        ]
+        box_datas = []
+
+        # 自身的 self_box
+        if self.has():
+            box_datas.append(self.self_box.data)
+        # 子物件的 box，因为只考虑子物件的 box 和考虑所有后代物件的 self_box 是等价的，而 box 能更好地利用缓存
+        if self.bind is not None:
+            for item in self.bind.at_item:
+                cmpt = self.get_same_cmpt(item)
+                if cmpt is None:
+                    continue
+                box = cmpt.box
+                if box.is_null:
+                    continue
+                box_datas.append(box.data)
+
         return self.BoundingBox(np.vstack(box_datas) if box_datas else [])
 
     @property
     @set.self_refresh
-    @refresh.register
+    @cmpt_lazy_method
     def self_box(self) -> BoundingBox:
         """
         同 ``box``，但仅表示自己 ``points`` 的包围框，不考虑后代物件的
@@ -256,23 +264,20 @@ class Cmpt_Points[ItemT](Component[ItemT]):
         """
 
         def __init__(self, points: VectArray):
-            self.data = self.compute(points)
+            self.is_null, self.data = self.compute(points)
 
         @staticmethod
-        def compute(points: VectArray) -> np.ndarray:
+        def compute(points: VectArray) -> tuple[bool, np.ndarray]:
             """
             根据传入的 ``points`` 计算得到包围框的 左下、中心、右上 三个点
             """
             points = np.asarray(points)
-
             if len(points) == 0:
-                return np.zeros((3, 3))
+                return True, np.zeros((3, 3), dtype=np.float32)
 
-            mins = np.nanmin(points, axis=0)
-            maxs = np.nanmax(points, axis=0)
-            mids = (mins + maxs) / 2
-
-            return np.array([mins, mids, maxs])
+            if points.dtype != np.float32:
+                points = points.astype(np.float32)
+            return False, compute.compute_bounding_box(points)
 
         def get(self, direction: Vect) -> np.ndarray:
             """
@@ -406,7 +411,7 @@ class Cmpt_Points[ItemT](Component[ItemT]):
 
     # region 变换 | Transform
 
-    @Signal
+    @CmptSignal
     def apply_points_fn(
         self,
         func: PointsFn,
@@ -426,7 +431,7 @@ class Cmpt_Points[ItemT](Component[ItemT]):
             else:
                 about_point = self.box.get(about_edge)
 
-        for cmpt in self.walk_same_cmpt_of_self_and_descendants_without_mock(root_only):
+        for cmpt in self.walk_same_cmpt_of_self_and_descendants(root_only):
             if cmpt.has():
                 if about_point is None:
                     cmpt.set(func(cmpt.get()))
@@ -862,7 +867,7 @@ class Cmpt_Points[ItemT](Component[ItemT]):
 
     @property
     @set.self_refresh
-    @refresh.register
+    @cmpt_lazy_method
     def unit_normal(self) -> np.ndarray:
         """
         计算三维点集的拟合平面的单位法向量
@@ -931,14 +936,14 @@ class Cmpt_Points[ItemT](Component[ItemT]):
         - ``normal_vector`` 默认通过 :meth:`unit_normal` 计算
         """
         if camera is ...:
-            from janim.anims.timeline import Timeline
+            from janim.timeline import Timeline
 
             camera = Timeline.get_context().camera.current()
 
         if normal_vector is ...:
             vectors = [
                 cmpt.unit_normal
-                for cmpt in self.walk_same_cmpt_of_self_and_descendants_without_mock(root_only)
+                for cmpt in self.walk_same_cmpt_of_self_and_descendants(root_only)
                 if cmpt.has()
             ]
             normal_vector = np.sum(vectors, axis=0)
@@ -1105,7 +1110,7 @@ class Cmpt_Points[ItemT](Component[ItemT]):
         if self.bind is None:
             return
 
-        cmpts = [self.get_same_cmpt(item) for item in self.bind.at_item._children]
+        cmpts = [self.get_same_cmpt(item) for item in self.bind.at_item]
 
         for cmpt1, cmpt2 in zip(cmpts, cmpts[1:]):
             cmpt2.next_to(cmpt1.bind.at_item, direction, **kwargs)
@@ -1172,7 +1177,7 @@ class Cmpt_Points[ItemT](Component[ItemT]):
         if self.bind is None:
             return
 
-        cmpts = [self.get_same_cmpt(item) for item in self.bind.at_item._children]
+        cmpts = [self.get_same_cmpt(item) for item in self.bind.at_item]
 
         n_rows, n_cols = self._format_rows_cols(len(cmpts), n_rows, n_cols)
         h_buff, v_buff = self._format_buff(buff, h_buff, v_buff, by_center_point)
@@ -1200,10 +1205,10 @@ class Cmpt_Points[ItemT](Component[ItemT]):
         aligned_edge: Vect = ORIGIN,
         center: bool = True,
     ) -> Self:
-        if self.bind is None or not self.bind.at_item._children:
+        if self.bind is None or not self.bind.at_item.has_child():
             return self
 
-        cmpts = [self.get_same_cmpt(item) for item in self.bind.at_item._children]
+        cmpts = [self.get_same_cmpt(item) for item in self.bind.at_item]
         offset = np.array(offset)
 
         for cmpt1, cmpt2 in zip(cmpts, cmpts[1:]):

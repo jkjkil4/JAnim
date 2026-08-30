@@ -38,34 +38,21 @@ class Cmpt_Data[ItemT, T](Component[ItemT]):
     详见 :class:`~.ValueTracker`
     """
 
-    def __init__(self):
-        self.copy_func: CopyFn[T] | None = None
-        self.not_changed_func: NotChangedFn[T] | None = None
-        self.interpolate_func: InterpolateFn[T] | None = None
-
     def copy(self) -> Self:
         cmpt_copy = super().copy()
 
         with self._cls_name():
-            # compatibility
-            fn = self.copy_func or Cmpt_Data.copy_for_value
-            cmpt_copy.set(fn(self.value))
+            cmpt_copy.set(Cmpt_Data.copy_for_value(self.value))
 
         return cmpt_copy
 
-    def become(self, other: Cmpt_Data) -> Self:
+    def _become(self, other: Cmpt_Data) -> None:
         with self._cls_name():
-            # compatibility
-            fn = other.copy_func or Cmpt_Data.copy_for_value
-            self.set(fn(other.value))
-
-        return self
+            self.set(Cmpt_Data.copy_for_value(other.value))
 
     def not_changed(self, other: Cmpt_Data) -> bool:
         with self._cls_name():
-            # compatibility
-            fn = self.not_changed_func or Cmpt_Data.check_not_changed_for_value
-            return fn(self.value, other.value)
+            return Cmpt_Data.check_not_changed_for_value(self.value, other.value)
 
     @classmethod
     def align_for_interpolate(cls, cmpt1: Cmpt_Data, cmpt2: Cmpt_Data) -> AlignedData[Self]:
@@ -77,21 +64,16 @@ class Cmpt_Data[ItemT, T](Component[ItemT]):
         self, cmpt1: Cmpt_Data, cmpt2: Cmpt_Data, alpha: float, *, path_func=None
     ) -> None:
         with self._cls_name():
-            # compatibility
-            nc_fn = self.not_changed_func or Cmpt_Data.check_not_changed_for_value
+            nc_fn = Cmpt_Data.check_not_changed_for_value
 
             nc_cmpt1_cmpt2 = nc_fn(cmpt1.value, cmpt2.value)
             nc_cmpt1_self = nc_fn(cmpt1.value, self.value)
 
             if not nc_cmpt1_cmpt2 or not nc_cmpt1_self:
                 if nc_cmpt1_cmpt2:
-                    # compatibility
-                    fn = cmpt1.copy_func or Cmpt_Data.copy_for_value
-                    self.set(fn(cmpt1.value))
+                    self.set(Cmpt_Data.copy_for_value(cmpt1.value))
                 else:
-                    # compatibility
-                    fn = cmpt1.interpolate_func or Cmpt_Data.interpolate_for_value
-                    self.set(fn(cmpt1.value, cmpt2.value, alpha))
+                    self.set(Cmpt_Data.interpolate_for_value(cmpt1.value, cmpt2.value, alpha))
 
     def set(self, value: T) -> Self:
         """设置当前值"""
@@ -111,40 +93,6 @@ class Cmpt_Data[ItemT, T](Component[ItemT]):
         """基于字典的部分项更新原有字典"""
         with self._cls_name():
             self.value = Cmpt_Data.update_for_value(self.value, patch)
-        return self
-
-    def set_func(
-        self,
-        copy_func: CopyFn[T] | None = None,
-        not_changed_func: NotChangedFn[T] | None = None,
-        interpolate_func: InterpolateFn[T] | None = None,
-    ) -> Self:
-        if any(x is not None for x in (copy_func, not_changed_func, interpolate_func)):
-            from janim.utils.deprecation import is_removed
-
-            if is_removed((4, 3)):
-                raise RuntimeError(
-                    'Compatibility with previous ValueTracker APIs ended in JAnim 4.3'
-                )
-            else:
-                log.warning(
-                    _(
-                        'ValueTracker was refactored in 4.0 and no longer directly accepts '
-                        'copy_func, not_changed_func, or interpolate_func.\n'
-                        'Use Cmpt_Data.register_funcs to register handlers for your types, '
-                        'See documentation page '
-                        'https://janim.readthedocs.io/en/latest/tutorials/value_tracker.html '
-                        'for details.\n'
-                        'Compatibility with the previous approach ends in JAnim 4.3'
-                    )
-                )
-
-        if copy_func is not None:
-            self.copy_func = copy_func
-        if not_changed_func is not None:
-            self.not_changed_func = not_changed_func
-        if interpolate_func is not None:
-            self.interpolate_func = interpolate_func
         return self
 
     # region helper class definition

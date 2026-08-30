@@ -30,10 +30,6 @@ class SharedOptions:
         bool,
         option(is_flag=True, help=_('Hide subtitles')),
     ]
-    external_typst: Annotated[
-        bool,
-        option(is_flag=True, help=_('Use external Typst executable for compiling Typst documents')),
-    ]
 
 
 @dataclass

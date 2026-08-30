@@ -1,8 +1,10 @@
+# fmt: off
 import unittest
 
-from janim.anims.animation import Animation, TimeRange
-from janim.anims.composition import Succession, Aligned, AnimGroup
-from janim.anims.timeline import Timeline
+from janim.anims_core.animation import Animation
+from janim.anims.composition import Aligned, AnimGroup, Succession
+from janim.timeline import Timeline
+from janim.anims_core.time import TimeRange
 
 
 class TestComposition(unittest.TestCase):

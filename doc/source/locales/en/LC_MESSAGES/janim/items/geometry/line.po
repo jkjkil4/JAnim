@@ -249,7 +249,7 @@ msgid "``d_alpha``: 精细程度，越小越精细（默认 ``1e-6``）"
 msgstr "``d_alpha``: Precision level, smaller values mean higher precision (default ``1e-6``)"
 
 #: janim.items.geometry.line.Elbow:1 of
-msgid "折线（一般用作直角符号），关于直接基于两条线创建的直角符号，另请参见 :class:`~.RightAngle`"
+msgid "折线（一般用作直角符号），关于直接基于两条线创建的直角符号，另请参考 :class:`~.RightAngle`"
 msgstr ""
 "Elbow (generally used as a right angle symbol). For right angle symbols created directly from two lines, see "
 "also :class:`~.RightAngle`"

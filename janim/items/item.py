@@ -13,19 +13,18 @@ import numpy as np
 from janim.components.component import CmptInfo, Component, _CmptGroup
 from janim.components.depth import Cmpt_Depth
 from janim.exception import AsTypeError, GetItemError
-from janim.items.relation import Relation
+from janim.items.relation import ItemRelation
 from janim.locale import get_translator
 from janim.logger import log
 from janim.render.base import Renderer
 from janim.typing import SupportsApartAlpha
-from janim.utils.data import AlignedData
+from janim.utils.data import AlignedData, ContextSetter
 from janim.utils.iterables import resize_preserving_order
 from janim.utils.paths import PathFunc, straight_path
-from janim.utils.signal import SIGNAL_OBJ_SLOTS_NAME
 
 if TYPE_CHECKING:
-    from janim.anims.timeline import Timeline, RenderCollection
     from janim.items.group import Group
+    from janim.render.collection import RenderCollection
 
 _ = get_translator('janim.items.item')
 
@@ -42,7 +41,7 @@ class _ItemMeta(type):
 
     def __new__(cls: type, name: str, bases: tuple[type, ...], attrdict: dict):
         # 记录所有定义在类中的 CmptInfo
-        cls_components: dict[str, Component] = {
+        cls_components: dict[str, CmptInfo] = {
             key: val  #
             for key, val in attrdict.items()
             if isinstance(val, CmptInfo)
@@ -102,7 +101,7 @@ def mockable(func):
     return func
 
 
-class Item(Relation['Item'], metaclass=_ItemMeta):
+class Item(ItemRelation['Item'], metaclass=_ItemMeta):
     """
     :class:`~.Item` 是物件的基类
 
@@ -137,7 +136,7 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
 
         self._stored: Item.Stored | None = None
 
-        from janim.anims.timeline import Timeline
+        from janim.timeline import Timeline
 
         self.timeline = Timeline.get_context(raise_exc=False)
 
@@ -182,39 +181,6 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
             obj.init_bind(Component.BindInfo(data.decl_cls, self, key))
 
             self.__dict__[key] = self.components[key] = obj
-
-    def broadcast_refresh_of_component(
-        self,
-        cmpt: Component,
-        name: str,
-        recurse_up=False,
-        recurse_down=False,
-    ) -> None:
-        """
-        为 :meth:`~.Component.mark_refresh()`
-        进行 ``recurse_up/down`` 的处理
-        """
-        if not recurse_up and not recurse_down:
-            return
-
-        def mark(items: list[Item]):
-            for item in items:
-                if isinstance(item, cmpt.bind.decl_cls):
-                    # 一般情况
-                    item_cmpt: Component = getattr(item, cmpt.bind.key)
-                    item_cmpt.mark_refresh(name)
-
-                else:
-                    # astype 情况
-                    mock_cmpt = item._astype_mock_cmpt.get(cmpt.bind.key, None)
-                    if mock_cmpt is not None:
-                        mock_cmpt.mark_refresh(name)
-
-        if recurse_up:
-            mark(self.ancestors())
-
-        if recurse_down:
-            mark(self.descendants())
 
     def set(self, **styles) -> Self:
         """
@@ -345,20 +311,20 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
 
         # example: item[0]
         if isinstance(key, SupportsIndex):
-            return self._children[key]
+            return super().__getitem__(key)
 
         from janim.items.group import Group
 
         match key:
             # example: item[0:2]
             case slice():
-                return Group(*self._children[key])
+                return Group(*super().__getitem__(key))
             # example: item[False, True, True]
             case list() if all(isinstance(x, bool) for x in key):
                 return Group(*[sub for sub, flag in zip(self, key) if flag])
             # example: item[0, 3, 4]
             case list() if all(isinstance(x, SupportsIndex) for x in key):
-                return Group(*[self._children[x] for x in key])
+                return Group(*[super().__getitem__(x) for x in key])
 
         raise GetItemError(_('Unsupported key: {}').format(key))
 
@@ -626,10 +592,10 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
     # region data
 
     def get_parents(self) -> list[Item]:
-        return self._stored.parents if self._stored else self._parents
+        return self._stored.parents if self._stored else self.parents
 
     def get_children(self) -> list[Item]:
-        return self._stored.children if self._stored else self._children
+        return self._stored.children if self._stored else self.children
 
     def not_changed(self, other: Self) -> bool:
         if self.get_children() != other.get_children():
@@ -646,7 +612,7 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         return self.timeline.item_current(self, as_time=as_time, root_only=root_only)
 
     @staticmethod
-    def _copy_cmpts(src: Item, copy_item: Item) -> None:
+    def _copy_cmpts_to(src: Item, copy_item: Item) -> None:
         new_cmpts = {}
         for key, cmpt in src.components.items():
             if isinstance(cmpt, _CmptGroup):
@@ -671,17 +637,16 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         copy_item.components = new_cmpts
         copy_item._astype_mock_cmpt = {}
 
-    def copy(self, *, root_only: bool = False):
+    def copy(self, *, root_only: bool = False) -> Self:
         """
         复制物件
         """
         copy_item = copy.copy(self)
-        copy_item.reset_refresh()
-        setattr(copy_item, SIGNAL_OBJ_SLOTS_NAME, None)
 
-        copy_item._parents = []
-        copy_item._children = []
+        copy_item._init_rel_handle()
         copy_item.reset_additional_states()
+
+        self._copy_cmpts_to(self, copy_item)
 
         if root_only:
             copy_item._children_changed()
@@ -690,7 +655,6 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
             copy_item.add(*[item.copy() for item in self])
         copy_item._parents_changed()
 
-        self._copy_cmpts(self, copy_item)
         copy_item.init_connect()
         return copy_item
 
@@ -704,8 +668,11 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         # self.parents 不变
         self._children_become(other, auto_visible)
 
-        for key in self.components.keys() | other.components.keys():
-            self.components[key].become(other.components[key])
+        self_cmpts = self.components
+        other_cmpts = other.components
+        for key in self_cmpts.keys() | other_cmpts.keys():
+            self_cmpts[key]._become(other_cmpts[key])
+        self._rel_handle.reset_computed_for_self()
 
         if self.timeline is not None:
             # 强制将没有变化的物件以及所有后代物件也产生 detect_change 记录
@@ -715,8 +682,8 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
                 appr = self.timeline.item_appearances.get(item, None)
                 if appr is None:
                     continue
-                if not appr.stack.is_changed(item):
-                    appr.stack.detect_change(item, self.timeline.current_time, force=True)
+                if not appr.stack.may_changed():
+                    appr.stack.display(self.timeline.current_time)
 
             # 如果设置了 auto_visible 且根物件是可见的
             # 那么 become 的最后会把所有子物件设为可见
@@ -726,9 +693,9 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         return self
 
     def _children_become(self, other: Item, auto_visible: bool) -> None:
-        children = self._children.copy()
+        children = self.children  # copied
         self.clear_children()
-        for old, new in it.zip_longest(children, other._children):
+        for old, new in it.zip_longest(children, other):
             if new is None:
                 break
             if old is None or type(old) is not type(new):
@@ -742,26 +709,27 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         """
 
         def __init__(self, item: Item):
-            self.parents = item.get_parents().copy()
-            self.children = item.get_children().copy()
+            self.parents = item.get_parents()
+            self.children = item.get_children()
 
     def store(self, *, _cmpts: dict[str, Component] | None = None):
         copy_item = copy.copy(self)
-        copy_item.reset_refresh()
-        setattr(copy_item, SIGNAL_OBJ_SLOTS_NAME, None)
-
-        copy_item._parents = []
-        copy_item._children = []
-        copy_item.reset_additional_states()
 
         copy_item._stored = self.Stored(self)
+        copy_item._init_rel_handle()
+        copy_item.reset_additional_states()
 
         # align_for_interpolate 中会传入 _cmpts 以使用 align 的 cmpts，而不直接从原物件复制
         if _cmpts is None:
-            self._copy_cmpts(self, copy_item)
+            self._copy_cmpts_to(self, copy_item)
         else:
             for key, cmpt in _cmpts.items():
+                orig_cmpt = copy_item.components.get(key, None)
+                decl_cls = cmpt.bind.decl_cls if orig_cmpt is None else orig_cmpt.bind.decl_cls  # type: ignore
+                cmpt.init_bind(Component.BindInfo(decl_cls, copy_item, key))
+
                 setattr(copy_item, key, cmpt)
+
             copy_item.components = _cmpts
             copy_item._astype_mock_cmpt = {}
 
@@ -772,8 +740,11 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         if self._stored:
             self._stored = self.Stored(other)
 
-        for key in self.components.keys() & other.components.keys():
-            self.components[key].become(other.components[key])
+        self_cmpts = self.components
+        other_cmpts = other.components
+        for key in self_cmpts.keys() & other_cmpts.keys():
+            self_cmpts[key]._become(other_cmpts[key])
+        self._rel_handle.reset_computed_for_self()
 
         return self
 
@@ -791,10 +762,14 @@ class Item(Relation['Item'], metaclass=_ItemMeta):
         return self
 
     def _unstore(self, child_restorer: Callable[[Item], Item]) -> None:
-        assert not self._children and self._stored is not None
+        assert not self.has_child() and self._stored is not None
         self.add(*[child_restorer(sub) for sub in self._stored.children])
         self._stored = None
-        self.reset_refresh()
+        self._reset_cmpt_computed()
+
+    def _reset_cmpt_computed(self) -> None:
+        for cmpt in self.components.values():
+            cmpt.bind.reset_computed_for_all()  # type: ignore
 
     @classmethod
     def align_for_interpolate(cls, item1: Item, item2: Item) -> AlignedData[Self]:

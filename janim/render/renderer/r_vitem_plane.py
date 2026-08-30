@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING
 import moderngl as mgl
 import numpy as np
 import OpenGL.GL as gl
+from janim_backend import compute
 
 from janim.camera.camera_info import CameraInfo
 from janim.render.base import RenderData, Renderer
@@ -301,32 +302,27 @@ class VItemPlaneRenderer(Renderer):
     def _update_clip_box(
         self, item: VItem, render_data: RenderData, new_attrs: RenderAttrs
     ) -> None:
-        corners = np.array(item.points.self_box.get_corners())
-        if new_attrs.fix_in_frame:
-            clip_box = new_attrs.camera_info.map_fixed_in_frame_points(corners)
-        else:
-            clip_box = new_attrs.camera_info.map_points(corners)
-        clip_box *= new_attrs.camera_info.frame_radius
+        self_box = item.points.self_box
+        mins = self_box.data[0]
+        maxs = self_box.data[2]
 
         buff = new_attrs.radius.max() + render_data.anti_alias_radius
         if new_attrs.glow_visible:
             buff = max(buff, new_attrs.glow_size)
-        clip_min = np.min(clip_box, axis=0) - buff
-        clip_max = np.max(clip_box, axis=0) + buff
-        clip_box = (
-            np.array(
-                [
-                    clip_min,
-                    [clip_min[0], clip_max[1]],
-                    [clip_max[0], clip_min[1]],
-                    clip_max,
-                ]
-            )
-            / new_attrs.camera_info.frame_radius
-        )
-        clip_box = np.clip(clip_box, -1, 1)
 
-        bytes = clip_box.astype(np.float32).tobytes()
+        camera_info = new_attrs.camera_info
+
+        bytes = compute.compute_mapped_clip_box_in_glcoord(
+            mins,
+            maxs,
+            camera_info.proj_view_matrix,
+            camera_info.proj_matrix,
+            new_attrs.fix_in_frame,
+            camera_info.fixed_distance_from_plane,
+            camera_info.frame_radius,
+            buff,
+        )
+
         assert len(bytes) == self.vbo_coord.size
         self.vbo_coord.write(bytes)
 

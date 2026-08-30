@@ -6,4 +6,3 @@ from janim.constants.degrees import *
 
 FRAME_PPI = 144
 DEFAULT_DURATION = 1
-FOREVER = ...

@@ -8,7 +8,7 @@ from PySide6.QtCore import QEvent, QObject, QPointF, Qt, QTimer
 from PySide6.QtGui import QMouseEvent, QWheelEvent
 from PySide6.QtWidgets import QHBoxLayout, QLabel, QVBoxLayout
 
-from janim.anims.timeline import Timeline
+from janim.timeline import Timeline
 from janim.camera.camera import Camera
 from janim.constants import DEGREES, PI, RIGHT, TAU
 from janim.exception import GuiCommandError
@@ -53,7 +53,7 @@ def handler(viewer: AnimViewer, command: Timeline.GuiCommand) -> None:
 class CameraPanel(HandlerPanel):
     def __init__(self, viewer: AnimViewer, command: Timeline.GuiCommand, camera: Camera):
         super().__init__(viewer, command)
-        self.orig_elements = camera.points.orientation.elements
+        self.orig_xyzw = camera.points.orientation.xyzw
         self.orig_width = camera.points.size[0]
         self.orig_location: np.ndarray = camera.points.get()[0]
 
@@ -159,10 +159,10 @@ class CameraPanel(HandlerPanel):
         target = self.command.body or 'self.camera'
         points = self.active_camera.points
 
-        elements = points.orientation.elements
-        if not np.isclose(elements, self.orig_elements).all():
-            a, b, c, d = np.round(elements.astype(np.float64), 2)
-            lines.append(f'{target}.points.set(orientation=quat({b}, {c}, {d}, {a}))')
+        xyzw = points.orientation.xyzw
+        if not np.isclose(xyzw, self.orig_xyzw).all():
+            x, y, z, w = [round(v, 2) for v in xyzw]
+            lines.append(f'{target}.points.set(orientation=quat({x}, {y}, {z}, {w}))')
 
         width = points.size[0]
         if not np.isclose(width, self.orig_width):

@@ -1,0 +1,95 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2023, jkjkil4
+# This file is distributed under the same license as the JAnim package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: JAnim \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 1980-01-01 00:00+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: en\n"
+"Language-Team: en <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.17.0\n"
+
+#: ../../source/janim/timeline/subtitles.rst:2
+msgid "subtitles"
+msgstr "subtitles"
+
+#: janim.timeline.subtitles.SubtitleInfo:1 of
+msgid "调用 :meth:`~.Timeline.subtitle` 的参数信息"
+msgstr "Parameter information for calling :meth:`~.Timeline.subtitle`"
+
+#: janim.timeline.subtitles.SubtitlesMixin:1 of
+msgid "向 :class:`~.Timeline`  提供添加字幕的功能"
+msgstr "Provides the ability to add subtitles to :class:`~.Timeline`"
+
+#: janim.timeline.subtitles.SubtitlesMixin:5 of
+msgid "该类中的方法都可以直接在 :class:`~.Timeline` 中使用"
+msgstr "All methods in this class can be used directly in :class:`~.Timeline`"
+
+#: janim.timeline.subtitles.SubtitlesMixin.subtitle:1 of
+msgid "添加字幕"
+msgstr "Add subtitle"
+
+#: janim.timeline.subtitles.SubtitlesMixin.subtitle:3 of
+msgid "文字可以传入一个列表，纵向排列显示"
+msgstr "Text can be passed as a list, displayed vertically"
+
+#: janim.timeline.subtitles.SubtitlesMixin.subtitle:4 of
+msgid "可以指定在当前位置往后 ``delay`` 秒才显示"
+msgstr "You can specify that the subtitle appears ``delay`` seconds after the current position"
+
+#: janim.timeline.subtitles.SubtitlesMixin.subtitle:5 of
+msgid "``duration`` 表示持续时间"
+msgstr "``duration`` represents the duration"
+
+#: janim.timeline.subtitles.SubtitlesMixin.subtitle:6 of
+msgid "``scale`` 表示对文字的缩放，可以传入列表表示对各个文字的缩放"
+msgstr "``scale`` represents the scaling of text. You can pass a list to specify scaling for each text"
+
+#: janim.timeline.subtitles.SubtitlesMixin.subtitle:7 of
+msgid "``use_typst_text`` 表示是否使用 :class:`TypstText`，可以传入列表表示各个文字是否使用"
+msgstr ""
+"``use_typst_text`` indicates whether to use :class:`TypstText`. You can pass a list to specify whether each text uses it"
+
+#: janim.timeline.subtitles.SubtitlesMixin.subtitle:8 of
+msgid "将 ``surrounding_alpha`` 设置为 ``0`` 可以禁用附带的底框"
+msgstr "Set ``surrounding_alpha`` to ``0`` to disable the background box"
+
+#: janim.timeline.subtitles.SubtitlesMixin.subtitle:10 of
+msgid ":class:`~.Config` 中也提供了一些可以配置的参数："
+msgstr ":class:`~.Config` also provides some configurable parameters:"
+
+#: janim.timeline.subtitles.SubtitlesMixin.subtitle:12 of
+msgid "``subtitle_font`` 可全局配置字幕所使用的字体"
+msgstr "``subtitle_font`` globally configures the font used for subtitles"
+
+#: janim.timeline.subtitles.SubtitlesMixin.subtitle:13 of
+msgid "``subtitle_to_edge_buff`` 可配置字幕离底边的距离，默认是 ``DEFAULT_ITEM_TO_EDGE_BUFF``"
+msgstr ""
+"``subtitle_to_edge_buff`` configures the distance from the subtitle to the bottom edge; defaults to "
+"``DEFAULT_ITEM_TO_EDGE_BUFF``"
+
+#: janim.timeline.subtitles.SubtitlesMixin.subtitle:15 of
+msgid "返回值表示显示的时间段"
+msgstr "Return value represents the display time range"
+
+#: janim.timeline.subtitles.SubtitlesMixin.place_subtitle:1 of
+msgid "被 :meth:`subtitle` 调用以将字幕放置到合适的位置："
+msgstr "Called by :meth:`subtitle` to place subtitles in appropriate positions:"
+
+#: janim.timeline.subtitles.SubtitlesMixin.place_subtitle:3 of
+msgid "对于同一批添加的字幕 ``[a, b]``，则 ``a`` 放在 ``b`` 的上面"
+msgstr "For subtitles added in the same batch ``[a, b]``, ``a`` is placed above ``b``"
+
+#: janim.timeline.subtitles.SubtitlesMixin.place_subtitle:4 of
+msgid "如果在上文所述的 ``[a, b]`` 仍存在时，又加入了一个 ``c``，则 ``c`` 放在最上面"
+msgstr "If ``[a, b]`` mentioned above still exists and a ``c`` is added, then ``c`` is placed at the top"

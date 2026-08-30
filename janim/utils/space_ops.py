@@ -5,15 +5,23 @@ from typing import Callable, Iterable, Sequence
 
 import numpy as np
 import numpy.typing as npt
-from pyquaternion import Quaternion
+from janim_backend.math import Quaternion
 
 from janim.constants import DOWN, OUT, PI, RIGHT, TAU
 from janim.exception import PointError
+from janim.locale import get_translator
+from janim.logger import log
+from janim.typing import Vect
 from janim.utils.iterables import adjacent_pairs
 from janim.utils.simple_functions import clip
 
+_ = get_translator('janim.utils.space_ops')
+
 
 def cross(v1: np.ndarray, v2: np.ndarray) -> list[np.ndarray]:
+    """
+    计算 ``v1`` 与 ``v2`` 的叉乘
+    """
     return [
         v1[1] * v2[2] - v1[2] * v2[1],
         v1[2] * v2[0] - v1[0] * v2[2],
@@ -22,14 +30,26 @@ def cross(v1: np.ndarray, v2: np.ndarray) -> list[np.ndarray]:
 
 
 def get_norm(vect: Iterable) -> float:
-    return sum((x**2 for x in vect)) ** 0.5
+    """
+    计算向量 ``vect`` 的长度
+    """
+    return sum(x**2 for x in vect) ** 0.5
 
 
-def det(a: Iterable, b: Iterable) -> float:
+def det(a: Sequence, b: Sequence) -> float:
+    """
+    计算 ``a`` 和 ``b`` 构成的二维行列式
+    """
     return a[0] * b[1] - a[1] * b[0]
 
 
 def normalize(vect: np.ndarray, fall_back: np.ndarray | None = None) -> np.ndarray:
+    """
+    将向量 ``vect`` 归一化为单位向量
+
+    :param vect: 要归一化的向量
+    :param fall_back: 当 ``vect`` 为零向量时返回的值，若未指定，则使用零向量作为返回值
+    """
     norm = get_norm(vect)
     if norm > 0:
         return np.array(vect) / norm
@@ -40,121 +60,114 @@ def normalize(vect: np.ndarray, fall_back: np.ndarray | None = None) -> np.ndarr
 
 
 def get_arc_length(vector_length: float, path_arc: float) -> float:
+    """
+    得到指定割线长与圆心角所对应的弧长
+
+    :param vector_length: 割线长
+    :param path_arc: 圆心角
+    """
     if path_arc != 0:
         return vector_length * path_arc / (2 * math.sin(path_arc / 2))
     return vector_length
 
 
-# Operations related to rotation
+# region Operations related to rotation
 
 
 def quat(x: float, y: float, z: float, w: float) -> Quaternion:
-    return Quaternion(w, x, y, z)
+    """
+    以 ``(x, y, z, w)`` 为参数构造四元数 ``w + x*i + y*j + z*k``
+
+    另见 :py:func:`quat_from_wxyz` 以及 :py:func:`quat_from_angle_axis`
+    """
+    return Quaternion.from_xyzw(x, y, z, w)
 
 
-def quaternion_mult(*quats: Sequence[float]) -> list[float]:
-    # Real part is last entry, which is bizzare, but fits scipy Rotation convention
-    if len(quats) == 0:
-        return [0, 0, 0, 1]
-    result = quats[0]
-    for next_quat in quats[1:]:
-        x1, y1, z1, w1 = result
-        x2, y2, z2, w2 = next_quat
-        result = [
-            w1 * x2 + x1 * w2 + y1 * z2 - z1 * y2,
-            w1 * y2 + y1 * w2 + z1 * x2 - x1 * z2,
-            w1 * z2 + z1 * w2 + x1 * y2 - y1 * x2,
-            w1 * w2 - x1 * x2 - y1 * y2 - z1 * z2,
-        ]
-    return result
+def quat_from_wxyz(w: float, x: float, y: float, z: float) -> Quaternion:
+    """
+    以 ``(w, x, y, z)`` 为参数构造四元数 ``w + x*i + y*j + z*k``
+
+    另见 :py:func:`quat` 以及 :py:func:`quat_from_angle_axis`
+    """
+    return Quaternion.from_wxyz(w, x, y, z)
 
 
-def quaternion_object_from_angle_axis(angle: float, axis: np.ndarray) -> Quaternion:
-    # 这个函数只是为了规避 axis 是零向量的情况，其余情况的效果与直接构造 Quaternion 相同
-    if np.all(axis == 0):
-        return Quaternion()
-    return Quaternion(axis=axis, angle=angle)
+def quat_from_angle_axis(angle: float, axis: Vect) -> Quaternion:
+    """
+    以旋转角和旋转轴为参数构造四元数
+
+    若旋转轴为零向量，则返回单位四元数
+
+    :param angle: 旋转角
+    :param axis: 旋转轴
+
+    另见 :py:func:`quat` 以及 :py:func:`quat_from_wxyz`
+    """
+    return Quaternion.from_angle_axis(angle, tuple(axis))  # type: ignore
 
 
-def quaternion_from_angle_axis(
-    angle: float,
-    axis: np.ndarray,
-) -> list[float]:
-    q = quaternion_object_from_angle_axis(angle, axis)
-    return [q.x, q.y, q.z, q.w]
+def rotate_vector(vector: Vect, angle: float, axis: Vect = OUT) -> np.ndarray:
+    """
+    将一个向量旋转指定角度，可指定旋转轴
+
+    :param vector: 要旋转的向量
+    :param angle: 旋转角度
+    :param axis: 旋转轴，默认为 ``OUT`` 即绕 ``z`` 轴旋转
+    """
+    q = quat_from_angle_axis(angle, axis)
+    return q.rotate_vector(tuple(vector))  # type: ignore
 
 
-def angle_axis_from_quaternion(quat: Sequence[float]) -> tuple[float, np.ndarray]:
-    # convert scalar-last order (quat) to scalar-first order (Quaternion)
-    x, y, z, w = quat
-    q = Quaternion(w, x, y, z)
-    # rotation vector = axis * angle
-    angle = 2 * np.arccos(q.w)
-    s = np.sqrt(1 - q.w * q.w)
-    if s < 1e-8:
-        axis = np.array([1.0, 0.0, 0.0])
-    else:
-        axis = np.array([q.x, q.y, q.z]) / s
-    return angle, axis
+def rotate_vector_2d(vector: Vect, angle: float) -> np.ndarray:
+    """
+    将一个平面二维向量旋转指定角度
 
-
-def quaternion_conjugate(quaternion: Iterable) -> list:
-    result = list(quaternion)
-    for i in range(3):
-        result[i] *= -1
-    return result
-
-
-def rotate_vector(
-    vector: Iterable, angle: float, axis: np.ndarray = OUT
-) -> np.ndarray | list[float]:
-    q = quaternion_object_from_angle_axis(angle, axis)
-    vector = np.asarray(vector)
-    rotated = q.rotate(vector)
-    return rotated
-
-
-def rotate_vector_2d(vector: Iterable, angle: float):
-    # Use complex numbers...because why not
-    z = complex(*vector) * np.exp(complex(0, angle))
+    :param vector: 要旋转的二维向量
+    :param angle: 旋转角度
+    """
+    z: complex = complex(*vector) * np.exp(complex(0, angle))
     return np.array([z.real, z.imag])
 
 
-def rotation_matrix_transpose_from_quaternion(quat: Iterable) -> np.ndarray:
-    # convert scalar-last order (quat) to scalar-first order (Quaternion)
-    x, y, z, w = quat
-    q = Quaternion(w, x, y, z)
-    return q.rotation_matrix
-
-
-def rotation_matrix_from_quaternion(quat: Iterable) -> np.ndarray:
-    # convert scalar-last order (quat) to scalar-first order (Quaternion)
-    x, y, z, w = quat
-    q = Quaternion(w, x, y, z)
-    return q.rotation_matrix.T
-
-
-def rotation_matrix(angle: float, axis: np.ndarray) -> np.ndarray:
+def rotation_matrix(angle: float, axis: Vect) -> np.ndarray:
     """
-    Rotation in R^3 about a specified axis of rotation.
+    三维旋转矩阵，由旋转角度和旋转轴指定
+
+    :param angle: 旋转角度
+    :param axis: 旋转轴
     """
-    q = quaternion_object_from_angle_axis(angle, axis)
-    return q.rotation_matrix
+    return quat_from_angle_axis(angle, axis).rotation_matrix
 
 
-def rotation_matrix_transpose(angle: float, axis: np.ndarray) -> np.ndarray:
+def rotation_matrix_transpose(angle, axis: Vect) -> np.ndarray:
+    """
+    :py:func:`rotation_matrix` 矩阵的转置
+    """
     return rotation_matrix(angle, axis).T
 
 
-def rotation_about_z(angle: float) -> list[list[float]]:
-    return [
-        [math.cos(angle), -math.sin(angle), 0],
-        [math.sin(angle), math.cos(angle), 0],
-        [0, 0, 1],
-    ]
+def rotation_about_z(angle: float) -> np.ndarray:
+    """
+    三维旋转矩阵，仅表示绕 ``z`` 轴指定角度的旋转
+
+    :param angle: 旋转角度
+    """
+    return np.array(
+        [
+            [math.cos(angle), -math.sin(angle), 0],
+            [math.sin(angle), math.cos(angle), 0],
+            [0, 0, 1],
+        ]
+    )
 
 
-def rotation_between_vectors(v1, v2) -> np.ndarray:
+def rotation_between_vectors(v1: Vect, v2: Vect) -> np.ndarray:
+    """
+    三维旋转矩阵，表示 ``v1`` 到 ``v2`` 之间的旋转
+    """
+    v1 = np.asarray(v1)
+    v2 = np.asarray(v2)
+
     if np.all(np.isclose(v1, v2)):
         return np.identity(3)
     crs = np.cross(v1, v2)
@@ -169,7 +182,134 @@ def rotation_between_vectors(v1, v2) -> np.ndarray:
 
 
 def z_to_vector(vector: np.ndarray) -> np.ndarray:
+    """
+    三维旋转矩阵，表示 ``OUT`` 到 ``vector`` 之间的旋转
+
+    注：取 转置 或 用于右乘行向量 即表示 ``vector_to_z``
+    """
     return rotation_between_vectors(OUT, vector)
+
+
+# endregion
+
+# region (backward compatibility)
+
+
+def quaternion_object_from_angle_axis(angle: float, axis: Vect) -> Quaternion:
+    from janim.utils.deprecation import deprecated
+
+    deprecated(
+        'quaternion_object_from_angle_axis',
+        'quat_from_angle_axis',
+        remove=(5, 4),
+    )
+
+    return quat_from_angle_axis(angle, axis)
+
+
+def quaternion_mult(*quats: Sequence[float]) -> list[float]:
+    from janim.utils.deprecation import deprecated
+
+    deprecated(
+        'quaternion_mult',
+        '(quat(...) * ... * quat(...)).xyzw',
+        remove=(5, 4),
+    )
+
+    # Real part is last entry, which is bizzare, but fits scipy Rotation convention
+    if len(quats) == 0:
+        return [0, 0, 0, 1]
+    result = list(quats[0])
+    for next_quat in quats[1:]:
+        x1, y1, z1, w1 = result
+        x2, y2, z2, w2 = next_quat
+        result = [
+            w1 * x2 + x1 * w2 + y1 * z2 - z1 * y2,
+            w1 * y2 + y1 * w2 + z1 * x2 - x1 * z2,
+            w1 * z2 + z1 * w2 + x1 * y2 - y1 * x2,
+            w1 * w2 - x1 * x2 - y1 * y2 - z1 * z2,
+        ]
+    return result
+
+
+def quaternion_from_angle_axis(
+    angle: float,
+    axis: np.ndarray,
+) -> list[float]:
+    from janim.utils.deprecation import deprecated
+
+    deprecated(
+        'quaternion_from_angle_axis',
+        'quat_from_axis_angle(axis, angle).xyzw',
+        remove=(5, 4),
+    )
+
+    quat_tuple = Quaternion.from_angle_axis(angle, tuple(axis))
+    return list(quat_tuple.xyzw)
+
+
+def angle_axis_from_quaternion(quat_: Sequence[float]) -> tuple[float, np.ndarray]:
+    from janim.utils.deprecation import deprecated
+
+    deprecated(
+        'angle_axis_from_quaternion',
+        'quat(...).angle_axis',
+        remove=(5, 4),
+    )
+
+    q = quat(*quat_)
+    return (q.angle, np.array(q.axis))
+
+
+def quaternion_conjugate(quaternion: Iterable[float]) -> list[float]:
+    from janim.utils.deprecation import deprecated
+
+    deprecated(
+        'quaternion_conjugate',
+        'quat(...).conjugate().xyzw',
+        remove=(5, 4),
+    )
+
+    return list(quat(*quaternion).conjugate().xyzw)
+
+
+def rotation_matrix_transpose_from_quaternion(quat_: Iterable[float]) -> np.ndarray:
+    from janim.utils.deprecation import deprecated
+
+    deprecated(
+        'rotation_matrix_transpose_from_quaternion',
+        'quat(...).rotation_matrix',
+        remove=(5, 4),
+    )
+    log.warning(
+        _(
+            'The meaning of `rotation_matrix_transpose_from_quaternion` is inaccurate, '
+            'it actually means `rotation_matrix_from_quaternion`'
+        )
+    )
+
+    return quat(*quat_).rotation_matrix
+
+
+def rotation_matrix_from_quaternion(quat_: Iterable[float]) -> np.ndarray:
+    from janim.utils.deprecation import deprecated
+
+    deprecated(
+        'rotation_matrix_from_quaternion',
+        'quat(...).rotation_matrix.T',
+        remove=(5, 4),
+    )
+    log.warning(
+        _(
+            'The meaning of rotation_matrix_from_quaternion is inaccurate, '
+            'it actually means `rotation_matrix_transpose_from_quaternion`'
+        )
+    )
+
+    return quat(*quat_).rotation_matrix.T
+
+
+# endregion
 
 
 def angle_of_vector(vector: Sequence[float]) -> float:
