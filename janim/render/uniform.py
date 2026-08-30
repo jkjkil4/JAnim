@@ -19,9 +19,8 @@ def apply_uniforms(prog: mgl.Program | mgl.ComputeShader, uniforms: dict | None 
     if uniforms is None:
         uniforms = get_uniforms_context_var(prog.ctx).get()
     for key, value in uniforms.items():
-        uniform = prog.get(key, None)
-        if uniform is not None:
-            uniform.value = value
+        if key in prog._members:
+            prog[key] = value
 
 
 @contextmanager
