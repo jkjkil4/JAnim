@@ -84,8 +84,9 @@ class FrameEffectRenderer(Renderer):
         for key, value in item._uniforms.items():
             self.prog[key] = value
         for key, value in item._optional_uniforms.items():
-            if key in self.prog._members:
-                self.prog[key] = value
+            uniform = self.prog.get(key, None)
+            if uniform is not None:
+                uniform.value = value
         for key, value in item.dynamic_uniforms().items():
             self.prog[key] = value
 
