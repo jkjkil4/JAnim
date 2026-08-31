@@ -707,7 +707,7 @@ class _StepUpdater(ItemAnimation):
         # 这里在 cache 与 self.data 二者之间选择最接近当前 n 的
         # 如果 cache_n 大于 last_n，则使用 cache，否则使用 self.data
         # 例外：当 last_n >= n 时，表示 last_n 无效，此时也应当使用 cache
-        if self.last_n >= n or cache_n > self.last_n:
+        if self.last_n > n or cache_n > self.last_n:
             data.restore(cache)
         else:
             cache_n = self.last_n
@@ -831,7 +831,7 @@ class GroupStepUpdater[T: Item](Animation):
         # 这里在 cache 与 self.data 二者之间选择最接近当前 n 的
         # 如果 cache_n 大于 last_n，则使用 cache，否则使用 self.data
         # 例外：当 last_n >= n 时，表示 last_n 无效，此时也应当使用 cache
-        if self.last_n >= n or cache_n > self.last_n:
+        if self.last_n > n or cache_n > self.last_n:
             for data, cache_data in zip(
                 self.data.walk_self_and_descendants(), cache.walk_self_and_descendants()
             ):
