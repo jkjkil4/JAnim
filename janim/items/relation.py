@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import gc
 import random
 from typing import (
     Any,
@@ -20,6 +21,21 @@ from janim.locale import get_translator
 _ = get_translator('janim.items.relation')
 
 _items_relation_registry = relation.RelationRegistry()
+
+
+def _registry_gc_callback(phase, info):
+    """
+    在 GC Generation 2 时，调用 ``registry.cleanup()`` 进行清理
+
+    主要是为了让 Discrete Chunk 能够清理其中的 dead nodes
+    """
+    if phase != 'stop' or info['generation'] != 2:
+        return
+    _items_relation_registry.cleanup()
+    # print(_items_relation_registry.printable_statistics())
+
+
+gc.callbacks.append(_registry_gc_callback)
 
 
 class ItemRelation[RelT: 'ItemRelation']:

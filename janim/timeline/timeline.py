@@ -16,6 +16,7 @@ from typing import Literal, Self, overload
 
 import moderngl as mgl
 import numpy as np
+from janim_backend.relation import CutType
 from PIL import Image
 
 from janim.anims_core.anim_stack import simplify_anim_stacks
@@ -118,6 +119,11 @@ class Timeline(PausePointsMixin, AudiosAndSubtitlesMixin, DebugMixin, TimelineCo
             gc_enabled = gc.isenabled()
             gc.disable()
 
+            # 构建期间使用 Continous，构建之后切换到 Discrete，因为
+            # - 构建期间产生的大多为长生命周期的 registry nodes，使用 Continous
+            # - 构建之后会由于 ItemUpdater / StepUpdater 等因素导致大量的临时 registry nodes，使用 Discrete 便于回收 dead nodes
+            _items_relation_registry.cut_nodes_chunk(CutType.Continous)
+
             try:
                 self.construct()
             except Timeline.GuiCommandInterrupt as e:
@@ -143,6 +149,7 @@ class Timeline(PausePointsMixin, AudiosAndSubtitlesMixin, DebugMixin, TimelineCo
                 self._build_frame = None
                 if gc_enabled:
                     gc.enable()
+                _items_relation_registry.cut_nodes_chunk(CutType.Discrete)
 
             if self.current_time == 0:
                 # 使得没有任何前进时，产生一点时间，避免除零以及其它问题
@@ -164,8 +171,6 @@ class Timeline(PausePointsMixin, AudiosAndSubtitlesMixin, DebugMixin, TimelineCo
 
             for appr in self.item_appearances.values():
                 appr.stack.clear_cache()  # TODO: 检查这句是否有必要，并说明原因
-
-            _items_relation_registry.cut_nodes_chunk()
 
             built = BuiltTimeline(self)
 
