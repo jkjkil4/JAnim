@@ -90,7 +90,7 @@ class Timeline(PausePointsMixin, AudiosAndSubtitlesMixin, DebugMixin, TimelineCo
         """
         构建动画并返回
         """
-        with self._build_context() as indent_str:
+        with self._build_context(inspect.currentframe()) as indent_str:
             self.hide_subtitles = hide_subtitles
             self.show_debug_notice = show_debug_notice
 
@@ -154,7 +154,7 @@ class Timeline(PausePointsMixin, AudiosAndSubtitlesMixin, DebugMixin, TimelineCo
     build_indent_ctx: ContextVar[int] = ContextVar('Timeline.build_indent_ctx')
 
     @contextmanager
-    def _build_context(self):
+    def _build_context(self, build_frame: types.FrameType | None):
         """
         进入 ``build`` 有关的上下文环境，并进行一些相关的配置
 
@@ -168,7 +168,7 @@ class Timeline(PausePointsMixin, AudiosAndSubtitlesMixin, DebugMixin, TimelineCo
             ContextSetter(self.build_indent_ctx, indent),
         ):
             # 记录 frame 对象，用于 TimelineCore._extract_lineno_in_construct
-            self._build_frame = inspect.currentframe()
+            self._build_frame = build_frame
 
             # 在 build 期间关闭 gc，这样只有重新 enable 之后的一次大 gc，这样可以提升效率
             gc_enabled = gc.isenabled()
