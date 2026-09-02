@@ -136,7 +136,7 @@ class Cmpt_Rgba[ItemT](Component[ItemT]):
             data = cmpt.get().copy()
             data[:3] *= 1 - factor
             data[:3] += color * factor
-            cmpt.set(data)
+            cmpt.set_rgba(data)
         return self
 
     @register_updater(
@@ -149,5 +149,5 @@ class Cmpt_Rgba[ItemT](Component[ItemT]):
             data = cmpt.get().copy()
             data[3] *= 1 - factor
             data[3] += alpha * factor
-            cmpt.set(data)
+            cmpt.set_rgba(data)
         return self

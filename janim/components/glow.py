@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from typing import Self
 
-
 from janim.anims.method_updater_meta import register_updater
 from janim.components.rgba import Cmpt_Rgba
 from janim.typing import Alpha, JAnimColor
