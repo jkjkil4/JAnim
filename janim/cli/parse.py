@@ -34,8 +34,11 @@ DEFAULT_SECTION = cloup.Section('Commands')
 def cli(ctx: click.Context, lang, version, loglevel) -> None:
     # fmt: off
     if version:
+        # isort: off
         from janim import __version__
-        click.echo(f'JAnim {__version__}')
+        from typst4janim import TYPST_VERSION
+        # isort: on
+        click.echo(f'JAnim {__version__} (Typst {TYPST_VERSION})')
 
     if ctx.invoked_subcommand is None:
         if not version:
