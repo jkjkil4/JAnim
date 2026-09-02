@@ -85,13 +85,80 @@ class Timeline(PausePointsMixin, AudiosAndSubtitlesMixin, DebugMixin, TimelineCo
         """
         继承该方法以实现动画的构建逻辑
         """
-        pass  # pragma: no cover
-
-    build_indent_ctx: ContextVar[int] = ContextVar('Timeline.build_indent_ctx')
 
     def build(self, *, quiet=False, hide_subtitles=False, show_debug_notice=False) -> BuiltTimeline:
         """
         构建动画并返回
+        """
+        with self._build_context() as indent_str:
+            self.hide_subtitles = hide_subtitles
+            self.show_debug_notice = show_debug_notice
+
+            if not quiet:  # pragma: no cover
+                log.info(indent_str + _('Building "{name}"').format(name=self.__class__.__name__))
+                start_time = time.time()
+
+            self.camera = Camera()
+            self.track(self.camera)
+
+            self.light_source = Point([-9, -7, 10])
+            self.track(self.light_source)
+
+            try:
+                self.construct()
+            except Timeline.GuiCommandInterrupt as e:
+                self.gui_command = e.command
+
+                # 使用 GUI 命令的时候，额外产生一点时间，避免最后一帧的效果不可预览的问题
+                self.forward(DEFAULT_DURATION, _record_lineno=False)
+
+                if not quiet:  # pragma: no cover
+                    msg = _(
+                        'Due to the use of a GUI command, '
+                        '"{name}" automatically generated an additional duration of {duration}s'
+                    ).format(
+                        name=self.__class__.__name__,
+                        duration=DEFAULT_DURATION,
+                    )
+                    log.info(indent_str + msg)
+
+            if self.current_time == 0:
+                # 使得没有任何前进时，产生一点时间，避免除零以及其它问题
+                self.forward(DEFAULT_DURATION, _record_lineno=False)
+
+                if not quiet:  # pragma: no cover
+                    msg = _(
+                        '"{name}" did not produce a duration after construction, '
+                        'automatically generated a duration of {duration}s'
+                    ).format(
+                        name=self.__class__.__name__,
+                        duration=DEFAULT_DURATION,
+                    )
+                    log.info(indent_str + msg)
+
+            for appr in self.item_appearances.values():
+                appr.stack.clear_cache()  # TODO: 检查这句是否有必要，并说明原因
+
+            built = BuiltTimeline(self)
+
+            if not quiet:  # pragma: no cover
+                elapsed = time.time() - start_time  # type: ignore
+                msg = _('Finished building "{name}" in {elapsed:.2f} s').format(
+                    name=self.__class__.__name__,
+                    elapsed=elapsed,
+                )
+                log.info(indent_str + msg)
+
+        return built
+
+    build_indent_ctx: ContextVar[int] = ContextVar('Timeline.build_indent_ctx')
+
+    @contextmanager
+    def _build_context(self):
+        """
+        进入 ``build`` 有关的上下文环境，并进行一些相关的配置
+
+        会 ``yield indent_str``，作为 ``as indent_str`` 使用
         """
         indent = self.build_indent_ctx.get(-2) + 2
         indent_str = '  ' * indent
@@ -100,19 +167,7 @@ class Timeline(PausePointsMixin, AudiosAndSubtitlesMixin, DebugMixin, TimelineCo
             ContextSetter(self.ctx_var, self),
             ContextSetter(self.build_indent_ctx, indent),
         ):
-            self.camera = Camera()
-            self.track(self.camera)
-
-            self.light_source = Point([-9, -7, 10])
-            self.track(self.light_source)
-
-            self.hide_subtitles = hide_subtitles
-            self.show_debug_notice = show_debug_notice
-
-            if not quiet:  # pragma: no cover
-                log.info(indent_str + _('Building "{name}"').format(name=self.__class__.__name__))
-                start_time = time.time()
-
+            # 记录 frame 对象，用于 TimelineCore._extract_lineno_in_construct
             self._build_frame = inspect.currentframe()
 
             # 在 build 期间关闭 gc，这样只有重新 enable 之后的一次大 gc，这样可以提升效率
@@ -125,68 +180,12 @@ class Timeline(PausePointsMixin, AudiosAndSubtitlesMixin, DebugMixin, TimelineCo
             _items_relation_registry.cut_nodes_chunk(CutType.Continous)
 
             try:
-                self.construct()
-            except Timeline.GuiCommandInterrupt as e:
-                self.gui_command = e.command
-
-                # 使用 GUI 命令的时候，额外产生一点时间，避免最后一帧的效果不可预览的问题
-                self.forward(DEFAULT_DURATION, _record_lineno=False)
-
-                if not quiet:  # pragma: no cover
-                    log.info(
-                        indent_str
-                        + (
-                            _(
-                                'Due to the use of a GUI command, '
-                                '"{name}" automatically generated an additional duration of {duration}s'
-                            ).format(
-                                name=self.__class__.__name__,
-                                duration=DEFAULT_DURATION,
-                            )
-                        )
-                    )
+                yield indent_str
             finally:
-                self._build_frame = None
+                self._build_frame = None  # 设置为 None 避免长期持有 frame 对象
                 if gc_enabled:
                     gc.enable()
                 _items_relation_registry.cut_nodes_chunk(CutType.Discrete)
-
-            if self.current_time == 0:
-                # 使得没有任何前进时，产生一点时间，避免除零以及其它问题
-                self.forward(DEFAULT_DURATION, _record_lineno=False)
-
-                if not quiet:  # pragma: no cover
-                    log.info(
-                        indent_str
-                        + (
-                            _(
-                                '"{name}" did not produce a duration after construction, '
-                                'automatically generated a duration of {duration}s'
-                            ).format(
-                                name=self.__class__.__name__,
-                                duration=DEFAULT_DURATION,
-                            )
-                        )
-                    )
-
-            for appr in self.item_appearances.values():
-                appr.stack.clear_cache()  # TODO: 检查这句是否有必要，并说明原因
-
-            built = BuiltTimeline(self)
-
-            if not quiet:  # pragma: no cover
-                elapsed = time.time() - start_time  # type: ignore
-                log.info(
-                    indent_str
-                    + (
-                        _('Finished building "{name}" in {elapsed:.2f} s').format(
-                            name=self.__class__.__name__,
-                            elapsed=elapsed,
-                        )
-                    )
-                )
-
-        return built
 
     # region config
 
