@@ -1,34 +1,19 @@
-import inspect
+from __future__ import annotations
 
-import janim.examples as examples
-from janim.imports import Config, Timeline
+from typing import TYPE_CHECKING
 
+from janim import examples
 
-def get_all_timelines_from_module(module) -> list[type[Timeline]]:
-    """
-    从指定的 ``module`` 中得到所有可用的 :class:`~.Timeline`
-    """
-    classes = [
-        value
-        for value in module.__dict__.values()
-        if (isinstance(value, type)
-            and issubclass(value, Timeline)
-            and value.__module__ == module.__name__                             # 定义于当前模块，排除了 import 导入的
-            and not getattr(value.construct, '__isabstractmethod__', False))    # construct 方法已被实现
-    ]
-    if len(classes) <= 1:
-        return classes
+from .extract_timeline import get_all_timelines_from_module
 
-    classes.sort(key=lambda cls: inspect.getsourcelines(cls)[1])
-
-    return classes
-
+if TYPE_CHECKING:
+    from janim.imports import Timeline
 
 timelines = get_all_timelines_from_module(examples)
 
 
 def _wrap_timeline(timeline: type[Timeline]):
-    from janim.imports import guarantee_existence
+    from janim.imports import Config, guarantee_existence
     from janim.render.writer import VideoWriter
 
     def setup(self):
@@ -49,8 +34,8 @@ def _wrap_timeline(timeline: type[Timeline]):
         {
             'setup': setup,
             'time_build': time_build,
-            'time_write': time_write
-        }
+            'time_write': time_write,
+        },
     )
 
 

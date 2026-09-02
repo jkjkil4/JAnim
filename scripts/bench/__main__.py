@@ -3,8 +3,12 @@ import subprocess
 from argparse import ArgumentParser, RawDescriptionHelpFormatter
 
 from scripts import console, prompt_columns, step
-from scripts.bench.hashes import (get_tag_hash, get_tag_hashes_after_210,
-                                  get_tested_hashes)
+from scripts.bench.hashes import (
+    get_tag_hash,
+    get_tag_hashes_after_210,
+    get_tested_hashes,
+    ignored_hashes,
+)
 
 
 def main(untested_tags: bool, tags: list[str], hashes: list[str], open_preview: bool) -> int:
@@ -18,10 +22,13 @@ def main(untested_tags: bool, tags: list[str], hashes: list[str], open_preview: 
         tag_hashes = get_tag_hashes_after_210()
         tested_hashes = get_tested_hashes()
         if tag_hashes and tested_hashes:
-            min_len = min(len(tag_hashes[0]), len(tested_hashes[0]))
+            min_len = min(len(tag_hashes[0]), len(tested_hashes[0]), len(ignored_hashes[0]))
             tag_hashes = [h[:min_len] for h in tag_hashes]
             tested_hashes = [h[:min_len] for h in tested_hashes]
-            all_hashes += [h for h in tag_hashes if h not in tested_hashes]
+            ignored_hashes_ = [h[:min_len] for h in ignored_hashes]
+            all_hashes += [
+                h for h in tag_hashes if h not in tested_hashes and h not in ignored_hashes_
+            ]
         else:
             all_hashes += tag_hashes
 
@@ -44,7 +51,9 @@ def main(untested_tags: bool, tags: list[str], hashes: list[str], open_preview: 
     console.print()
 
     with step('Running benchmarks', 'Benchmarking') as result:
-        result.returncode = subprocess.run(['asv', 'run', 'HASHFILE:.asv/_tag_hashes.txt']).returncode
+        result.returncode = subprocess.run(
+            ['asv', 'run', 'HASHFILE:.asv/_tag_hashes.txt']
+        ).returncode
 
     console.print()
 
@@ -66,11 +75,13 @@ def main(untested_tags: bool, tags: list[str], hashes: list[str], open_preview: 
 if __name__ == '__main__':
     parser = ArgumentParser(
         description='Run benchmarks',
-        epilog='Examples:\n'
-               '  python scripts bench --untested_tags\n'
-               '  python scripts bench --tags v2.1.0 v2.2.0\n'
-               '  python scripts bench --hashes 78b7c20 2c1fcfd\n'
-               '  python scripts bench --untested_tags -o',
+        epilog=(
+            'Examples:\n'
+            '  python scripts bench --untested_tags\n'
+            '  python scripts bench --tags v2.1.0 v2.2.0\n'
+            '  python scripts bench --hashes 78b7c20 2c1fcfd\n'
+            '  python scripts bench --untested_tags -o'
+        ),
         formatter_class=RawDescriptionHelpFormatter,
     )
     parser.add_argument(
@@ -97,4 +108,6 @@ if __name__ == '__main__':
     )
     args = parser.parse_args()
 
-    raise SystemExit(main(args.untested_tags, args.tags, args.hashes or [], args.open_preview or []))
+    raise SystemExit(
+        main(args.untested_tags, args.tags, args.hashes or [], args.open_preview or [])
+    )
