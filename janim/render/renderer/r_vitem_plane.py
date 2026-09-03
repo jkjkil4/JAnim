@@ -6,10 +6,10 @@ from typing import TYPE_CHECKING
 import moderngl as mgl
 import numpy as np
 from janim_backend import compute
+from janim_backend.ffi import gl
 
 from janim.camera.camera_info import CameraInfo
 from janim.render.base import RenderData, Renderer
-from janim.render.native_gl import gl
 from janim.render.program import get_compute_shader_from_file, get_program_from_file_prefix
 
 if TYPE_CHECKING:

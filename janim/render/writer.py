@@ -6,6 +6,7 @@ from functools import partial
 from typing import Generator
 
 import moderngl as mgl
+from janim_backend.ffi import gl
 from tqdm import tqdm as ProgressDisplay
 
 from janim.anims_core.time import TimeRange
@@ -18,7 +19,6 @@ from janim.render.encoder import (
     PyavVideoEncoder,
 )
 from janim.render.framebuffer import FrameBuffer
-from janim.render.native_gl import gl
 from janim.timeline.subtitles import SubtitleInfo
 from janim.timeline.timeline import BuiltTimeline
 from janim.utils.simple_functions import clip
@@ -79,7 +79,7 @@ class VideoWriter:
     def _cleanup_pbos(self) -> None:
         gl.glBindBuffer(gl.GL_PIXEL_PACK_BUFFER, 0)  # 确保解绑
         # 正确删除多个缓冲区
-        gl.glDeleteBuffers(len(self.pbos), self.pbos)
+        gl.glDeleteBuffers(self.pbos)
 
     @staticmethod
     def writes(

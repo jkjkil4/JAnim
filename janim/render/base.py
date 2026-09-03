@@ -8,10 +8,10 @@ from typing import TYPE_CHECKING, Any
 
 import moderngl as mgl
 import numpy as np
+from janim_backend.ffi import gl
 
 from janim.camera.camera_info import CameraInfo
 from janim.locale import get_translator
-from janim.render.native_gl import gl
 from janim.utils.iterables import resize_with_interpolation
 
 if TYPE_CHECKING:
@@ -140,6 +140,8 @@ def apply_blend_flags(ctx: mgl.Context) -> None:
 
 def create_context(**kwargs) -> mgl.Context:
     ctx = mgl.create_context(**kwargs)
+    if not gl.is_loaded():
+        gl.load()
     apply_blend_flags(ctx)
     return ctx
 
