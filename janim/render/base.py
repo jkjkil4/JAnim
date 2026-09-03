@@ -8,10 +8,10 @@ from typing import TYPE_CHECKING, Any
 
 import moderngl as mgl
 import numpy as np
-import OpenGL.GL as gl
 
 from janim.camera.camera_info import CameraInfo
 from janim.locale import get_translator
+from janim.render.native_gl import gl
 from janim.utils.iterables import resize_with_interpolation
 
 if TYPE_CHECKING:

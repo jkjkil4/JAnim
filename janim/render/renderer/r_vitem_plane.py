@@ -5,11 +5,11 @@ from typing import TYPE_CHECKING
 
 import moderngl as mgl
 import numpy as np
-import OpenGL.GL as gl
 from janim_backend import compute
 
 from janim.camera.camera_info import CameraInfo
 from janim.render.base import RenderData, Renderer
+from janim.render.native_gl import gl
 from janim.render.program import get_compute_shader_from_file, get_program_from_file_prefix
 
 if TYPE_CHECKING:
@@ -29,7 +29,8 @@ class VItemPlaneRenderer(Renderer):
 
     def render(self, item: VItem) -> None:
         self.ctx = self.data_ctx.get().ctx
-        compatibility = self.ctx.version_code < 430
+        # compatibility = self.ctx.version_code < 430
+        compatibility = True
 
         if compatibility:
             self.render = self.render_compatibility
@@ -380,14 +381,14 @@ class VItemPlaneRenderer(Renderer):
             self.update_fix_in_frame(self.comp_u_fix, item)
 
             # 让 Compute Shader 能正确读取到 vbo_points (SSBO)
-            self.ctx.memory_barrier(gl.GL_VERTEX_ATTRIB_ARRAY_BARRIER_BIT)
+            self.ctx.memory_barrier(mgl.VERTEX_ATTRIB_ARRAY_BARRIER_BIT)
 
             self.comp.run(
                 group_x=(len(new_attrs.points) + 255) // 256
             )  # 相当于 len() / 256 向上取整
 
             # 让后续渲染能正确读取到 vbo_mapped_points (SSBO)
-            self.ctx.memory_barrier(gl.GL_SHADER_STORAGE_BARRIER_BIT)
+            self.ctx.memory_barrier(mgl.SHADER_STORAGE_BARRIER_BIT)
 
             self.attrs.fix_in_frame = new_attrs.fix_in_frame
             self.attrs.camera_info = new_attrs.camera_info

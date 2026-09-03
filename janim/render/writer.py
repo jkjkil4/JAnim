@@ -1,3 +1,4 @@
+import ctypes
 import os
 import shutil
 import time
@@ -5,7 +6,6 @@ from functools import partial
 from typing import Generator
 
 import moderngl as mgl
-import OpenGL.GL as gl
 from tqdm import tqdm as ProgressDisplay
 
 from janim.anims_core.time import TimeRange
@@ -18,6 +18,7 @@ from janim.render.encoder import (
     PyavVideoEncoder,
 )
 from janim.render.framebuffer import FrameBuffer
+from janim.render.native_gl import gl
 from janim.timeline.subtitles import SubtitleInfo
 from janim.timeline.timeline import BuiltTimeline
 from janim.utils.simple_functions import clip
@@ -159,7 +160,7 @@ class VideoWriter:
                         # 使用numpy从映射的内存中读取数据
                         ptr = gl.glMapBuffer(gl.GL_PIXEL_PACK_BUFFER, gl.GL_READ_ONLY)
                         assert ptr
-                        data = gl.ctypes.string_at(ptr, self.byte_size)
+                        data = ctypes.string_at(ptr, self.byte_size)
                         # 写入数据到ffmpeg
                         self.encoder.write(data)
                         gl.glUnmapBuffer(gl.GL_PIXEL_PACK_BUFFER)
@@ -172,7 +173,7 @@ class VideoWriter:
                         continue
                     gl.glBindBuffer(gl.GL_PIXEL_PACK_BUFFER, self.pbos[read_idx])
                     data = gl.glGetBufferSubData(gl.GL_PIXEL_PACK_BUFFER, 0, self.byte_size)
-                    self.encoder.write(data.tobytes())
+                    self.encoder.write(data)
 
             self._cleanup_pbos()
         else:
