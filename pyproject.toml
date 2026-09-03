@@ -22,7 +22,6 @@ dependencies = [
     "colour",
     "rich",
     "moderngl",
-    "PyOpenGL",
     "tqdm",
     "psutil",
     "skia-pathops",

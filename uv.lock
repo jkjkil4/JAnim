@@ -159,7 +159,7 @@ name = "cffi"
 version = "2.0.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "pycparser", marker = "(implementation_name != 'PyPy' and platform_machine != 'aarch64') or (implementation_name != 'PyPy' and sys_platform != 'linux')" },
+    { name = "pycparser", marker = "implementation_name != 'PyPy'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/eb/56/b1ba7935a17738ae8453301356628e8147c79dbb825bcbc73dc7401f9846/cffi-2.0.0.tar.gz", hash = "sha256:44d1b5909021139fe36001ae048dbdde8214afa20200eda0f64c068cac5d5529", size = 523588, upload-time = "2025-09-08T23:24:04.541Z" }
 wheels = [
@@ -549,7 +549,6 @@ dependencies = [
     { name = "pillow" },
     { name = "prompt-toolkit" },
     { name = "psutil" },
-    { name = "pyopengl" },
     { name = "rich" },
     { name = "skia-pathops" },
     { name = "svgelements" },
@@ -603,7 +602,6 @@ requires-dist = [
     { name = "pillow" },
     { name = "prompt-toolkit" },
     { name = "psutil" },
-    { name = "pyopengl" },
     { name = "pyside6-essentials", marker = "extra == 'gui'" },
     { name = "qdarkstyle", marker = "extra == 'gui'", specifier = "==3.2.3" },
     { name = "rich" },
@@ -623,6 +621,7 @@ provides-extras = ["bench", "doc", "gui", "test"]
 name = "janim-backend"
 version = "5.0.3"
 source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/15/43/3e3ae56055f9adea915cf617040c17700c325f0190eab647b2b45cec8047/janim_backend-5.0.3.tar.gz", hash = "sha256:2db0dbe70793bf23339911fe4d93491d44abf76404e55a7ad27b012dd0dd742e", size = 27466, upload-time = "2026-08-30T16:22:57.69Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/fc/48/613eb96e6253590a39e4e3587ca259b42cee6a82c8bd168802c163380e89/janim_backend-5.0.3-cp312-cp312-macosx_10_12_x86_64.whl", hash = "sha256:659169096140236f0fccf3e14017410078b852771b78a059a726c1b8a6239030", size = 389242, upload-time = "2026-08-30T16:21:57.594Z" },
     { url = "https://files.pythonhosted.org/packages/44/5b/05ad4a10f4217533c993cadcaa24a5c1546fbf136147a3eeb745e43a7f39/janim_backend-5.0.3-cp312-cp312-macosx_11_0_arm64.whl", hash = "sha256:ce38adf49c237c5432d112560c01113a8861fef4030746a110ebedb4a22bed3a", size = 382508, upload-time = "2026-08-30T16:21:58.93Z" },
@@ -676,6 +675,11 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/9d/73/3cf53b54aa1fc6d3713b65ae9743adc8649af409b3bf5ec7b761b96aeacb/janim_backend-5.0.3-cp314-cp314t-musllinux_1_2_aarch64.whl", hash = "sha256:4708f57de4378bb0a0cd2aab96f763043baf3fd937262d3bd293b3f9114ce533", size = 604726, upload-time = "2026-08-30T16:22:48.807Z" },
     { url = "https://files.pythonhosted.org/packages/e1/a0/396f800a47c9eea634a3b63c2a6e75afb669575850371535b374d8f2d2cc/janim_backend-5.0.3-cp314-cp314t-musllinux_1_2_armv7l.whl", hash = "sha256:361f6eead23a3a2311e08b04355c3112c5a7a43587983c6f43e5dcc0f5cbabf9", size = 706819, upload-time = "2026-08-30T16:22:49.806Z" },
     { url = "https://files.pythonhosted.org/packages/37/fe/642e604e836d7d5b160972330961c04dcf3a1d831cd5289eb786f5659e72/janim_backend-5.0.3-cp314-cp314t-musllinux_1_2_i686.whl", hash = "sha256:17d2f6d3203277989899effd754eab7f54d37777e055f3aa52c52e86b6d08c2c", size = 672564, upload-time = "2026-08-30T16:22:51.242Z" },
+    { url = "https://files.pythonhosted.org/packages/34/54/313b21939c33d08e4531693bdc55b5eeeb1fb8d0e6460e187ed54682a3c1/janim_backend-5.0.3-cp314-cp314t-musllinux_1_2_x86_64.whl", hash = "sha256:4892195b72fa892fb00cf873a3e509d53fb0a0cf404fe90489d2b45278f35337", size = 634951, upload-time = "2026-08-30T16:22:52.276Z" },
+    { url = "https://files.pythonhosted.org/packages/eb/9c/5f86e1171d051527a3a5c6c2c14c52bb5c28b77227eb1c18556a9cf6b1e6/janim_backend-5.0.3-cp315-cp315-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:d4ba935a590cc9e56de2145dc03f0893666024d411ec645cd9e2a1cfbf0f581d", size = 433210, upload-time = "2026-08-30T16:22:53.35Z" },
+    { url = "https://files.pythonhosted.org/packages/b9/39/e78bfe3e0f097f0429df38b756d5b85d74e7dfc5847cbd70f81310199f25/janim_backend-5.0.3-cp315-cp315-manylinux_2_5_i686.manylinux1_i686.whl", hash = "sha256:0b797860d0f3d7d52a40174c41ae9562f30ee6d0b8f4f9d426fc4d1cc05ad1bc", size = 460102, upload-time = "2026-08-30T16:22:54.346Z" },
+    { url = "https://files.pythonhosted.org/packages/ce/a6/c7d8a5b9494565ff753c1666a21aa7ca5afd188202d2aca6a2e1050aa64d/janim_backend-5.0.3-cp315-cp315t-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:3006d04fe9c1fffaf4ec5404e7cffa45ca99dff4a4ff1dbeb2a16ff27cb90f06", size = 433437, upload-time = "2026-08-30T16:22:55.401Z" },
+    { url = "https://files.pythonhosted.org/packages/a1/26/7d423fa23b128217d07a9fa0db039e19f188c214ea8f1c7646d1c416f021/janim_backend-5.0.3-cp315-cp315t-manylinux_2_5_i686.manylinux1_i686.whl", hash = "sha256:378730daea7902dbc96ff74058f4a48c67ca8d7e8378514eff31dec8fa09da1b", size = 457522, upload-time = "2026-08-30T16:22:56.537Z" },
 ]
 
 [[package]]
@@ -1046,15 +1050,6 @@ wheels = [
 ]
 
 [[package]]
-name = "pyopengl"
-version = "3.1.10"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/6f/16/912b7225d56284859cd9a672827f18be43f8012f8b7b932bc4bd959a298e/pyopengl-3.1.10.tar.gz", hash = "sha256:c4a02d6866b54eb119c8e9b3fb04fa835a95ab802dd96607ab4cdb0012df8335", size = 1915580, upload-time = "2025-08-18T02:33:01.76Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/de/e4/1ba6f44e491c4eece978685230dde56b14d51a0365bc1b774ddaa94d14cd/pyopengl-3.1.10-py3-none-any.whl", hash = "sha256:794a943daced39300879e4e47bd94525280685f42dbb5a998d336cfff151d74f", size = 3194996, upload-time = "2025-08-18T02:32:59.902Z" },
-]
-
-[[package]]
 name = "pyproject-hooks"
 version = "1.2.0"
 source = { registry = "https://pypi.org/simple" }
@@ -1255,7 +1250,7 @@ name = "sounddevice"
 version = "0.5.5"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "cffi", marker = "platform_machine != 'aarch64' or sys_platform != 'linux'" },
+    { name = "cffi" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/2a/f9/2592608737553638fca98e21e54bfec40bf577bb98a61b2770c912aab25e/sounddevice-0.5.5.tar.gz", hash = "sha256:22487b65198cb5bf2208755105b524f78ad173e5ab6b445bdab1c989f6698df3", size = 143191, upload-time = "2026-01-23T18:36:43.529Z" }
 wheels = [
