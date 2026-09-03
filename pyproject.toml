@@ -15,8 +15,8 @@ classifiers = [
 ]
 requires-python = ">=3.12"
 dependencies = [
-    "janim-backend==5.0.3",
-    "typst4janim==0.15.2",
+    "janim-backend==5.0.4",
+    "typst4janim==0.15.3",
     "attrs",
     "numpy",
     "colour",
