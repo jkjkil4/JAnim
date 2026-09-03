@@ -29,8 +29,7 @@ class VItemPlaneRenderer(Renderer):
 
     def render(self, item: VItem) -> None:
         self.ctx = self.data_ctx.get().ctx
-        # compatibility = self.ctx.version_code < 430
-        compatibility = True
+        compatibility = self.ctx.version_code < 430
 
         if compatibility:
             self.render = self.render_compatibility
