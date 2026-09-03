@@ -147,6 +147,13 @@ janim examples
 
 The [Documentation](https://janim.readthedocs.io/en/latest/index.html) provides a more detailed guide on installing and using JAnim. (Note: You can change the documentation language using the flyout menu at the corner of the page.)
 
+## Related Projects
+
+JAnim's core dependencies:
+
+- [janim-backend](https://github.com/jkjkil4/janim-backend): Provides the Rust backend for JAnim
+- [typst4janim](https://github.com/jkjkil4/typst4janim): Used internally to export Typst elements directly to JAnim
+
 ## License
 
 MIT license

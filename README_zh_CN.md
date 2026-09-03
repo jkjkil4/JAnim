@@ -146,6 +146,13 @@ janim examples
 
 [文档](https://janim.readthedocs.io/zh-cn/latest/index.html)提供了更为详细的 JAnim 安装与使用教程（注：你可以使用页面角落的弹出菜单来更改文档语言）
 
+## 相关项目
+
+JAnim 的核心依赖：
+
+- [janim-backend](https://github.com/jkjkil4/janim-backend)：为 JAnim 提供 Rust 后端
+- [typst4janim](https://github.com/jkjkil4/typst4janim)：内部使用，用于将 Typst 元素直接导出到 JAnim
+
 ## License
 
 MIT license
