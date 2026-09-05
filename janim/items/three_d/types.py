@@ -225,7 +225,7 @@ class CheckerboardSurface[T: SurfaceGeometry](NormSurface[T]):
         alpha: float | None = None,
         **kwargs,
     ) -> Self:
-        if color is None or alpha is not None:
+        if color is not None or alpha is not None:
             self.color.set(color, alpha)
 
         super().apply_style(**kwargs)
