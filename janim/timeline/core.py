@@ -285,7 +285,13 @@ class TimelineCore:
         """
         另见 :meth:`~.AnimStack.compute`
         """
-        return self.item_appearances[item].stack.compute(global_t, readonly)  # type: ignore
+        appr = self.item_appearances.get(item, None)
+        if appr is None:
+            if readonly:
+                return item
+            else:
+                return item.store()
+        return appr.stack.compute(global_t, readonly)  # type: ignore
 
     def item_current[T: Item](
         self, item: T, *, as_time: float | None = None, root_only: bool = False
