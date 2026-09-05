@@ -699,9 +699,12 @@ class _StepUpdater(ItemAnimation):
 
     def compute(self, data: Item, global_t: float) -> None:
         n = self.global_t_to_n(global_t)
+        if n == self.last_n:
+            return
+
         # is_increasing 表示时间上是否在前进
         # 如果在前进，则尝试直接从 self.data 继续，并且计算时不 record，节省 record 开销
-        is_increasing = n >= self.last_n
+        is_increasing = n > self.last_n
 
         cache_n, cache = self._cache.get_nearest_cache(n)
         # 这里在 cache 与 self.data 二者之间选择最接近当前 n 的
@@ -823,9 +826,12 @@ class GroupStepUpdater[T: Item](Animation):
             return
 
         n = self.global_t_to_n(global_t)
+        if n == self.last_n:
+            return
+
         # is_increasing 表示时间上是否在前进
         # 如果在前进，则尝试直接从 self.data 继续，并且计算时不 record，节省 record 开销
-        is_increasing = n >= self.last_n
+        is_increasing = n > self.last_n
 
         cache_n, cache = self._cache.get_nearest_cache(n)
         # 这里在 cache 与 self.data 二者之间选择最接近当前 n 的
