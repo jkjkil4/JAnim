@@ -434,7 +434,7 @@ class Cmpt_Points[ItemT](Component[ItemT]):
         for cmpt in self.walk_same_cmpt_of_self_and_descendants(root_only):
             if cmpt.has():
                 if about_point is None:
-                    cmpt.set(func(cmpt.get()))
+                    cmpt.set(func(cmpt.get().copy()))
                 else:
                     cmpt.set(func(cmpt.get() - about_point) + about_point)
 
