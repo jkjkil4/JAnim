@@ -14,7 +14,7 @@ from janim.items.geometry.line import Line
 from janim.items.group import Group
 from janim.items.points import MarkedItem, Points
 from janim.items.text.cmpt import Cmpt_Mark_TextCharImpl, Cmpt_Mark_TextLineImpl
-from janim.items.text.rich import ActQueue, extract_act_queue
+from janim.items.text.rich import TagQueue, extract_tag_queue
 from janim.items.vitem import VItem
 from janim.typing import Vect
 from janim.utils.config import Config
@@ -302,7 +302,7 @@ class Text(Group[TextLine], VItem):
         if format != Text.Format.RichText:
             self.text = text
         else:
-            self.text, act_queue = extract_act_queue(text)
+            self.text, tag_queue = extract_tag_queue(text)
 
         super().__init__(
             *[
@@ -316,7 +316,7 @@ class Text(Group[TextLine], VItem):
         )
 
         if format == Text.Format.RichText:
-            self.apply_rich_text(act_queue)  # type: ignore
+            self.apply_rich_text(tag_queue)  # type: ignore
 
         for line in self:
             line.arrange_in_line()
@@ -412,17 +412,17 @@ class Text(Group[TextLine], VItem):
         TextLine._match_to(self, self[self_lineno], line)
         return self
 
-    def apply_rich_text(self, act_queue: ActQueue) -> None:
+    def apply_rich_text(self, tag_queue: TagQueue) -> None:
         """
         应用富文本效果
         """
         text_at = 0
         for line in self:
             for char in line:
-                act_queue.advance_to(text_at)
-                act_queue.apply_to(char)
+                tag_queue.advance_to(text_at)
+                tag_queue.apply_to(char)
                 text_at += 1
-            text_at += 1  # 因为 ActQueue 的索引是考虑换行的，所以这里换行处也要 +1
+            text_at += 1  # 因为 TagQueue 的索引是考虑换行的，所以这里换行处也要 +1
 
 
 class Title(Group):

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  JAnim\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-01-30 21:12+0800\n"
+"POT-Creation-Date: 1980-01-01 00:00+0000\n"
 "PO-Revision-Date: 2025-11-23 08:39+0800\n"
 "Last-Translator: \n"
 "Language: en\n"
@@ -337,7 +337,8 @@ msgstr ""
 "multiple “character” items."
 
 #: ../../source/tutorials/item_group.rst:175
-msgid "具体可参阅 :doc:`../janim/items/text` 文档中的介绍。"
+#, fuzzy
+msgid "具体可参阅 :doc:`text` 文档中的介绍。"
 msgstr "For details, refer to the introduction in :doc:`../janim/items/text` documentation."
 
 #: ../../source/tutorials/item_group.rst:178

@@ -1,0 +1,342 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2023, jkjkil4
+# This file is distributed under the same license as the JAnim package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: JAnim \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 1980-01-01 00:00+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: en\n"
+"Language-Team: en <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.17.0\n"
+
+#: ../../source/tutorials/text.rst:2
+#, fuzzy
+msgid "简易文字物件"
+msgstr "Structure of text items"
+
+#: ../../source/tutorials/text.rst:4
+msgid ""
+"上一节中我们提到可以使用 Typst 进行文字和公式的书写与排版， 而对于及为简单的显示普通文字的需求，也可以使用这一节介绍"
+"的 :class:`~.Text` 来创建。"
+msgstr ""
+
+#: ../../source/tutorials/text.rst:8
+msgid "文字物件的结构"
+msgstr "Structure of text items"
+
+#: ../../source/tutorials/text.rst:10
+msgid ""
+"文字物件的结构比较复杂，:class:`~.Text` 包含若干个 :class:`~.TextLine`，每个 :class:`~.TextLine` 包含若干"
+"个 :class:`~.TextChar`"
+msgstr ""
+"The structure of text items is complex. :class:`~.Text` contains several :class:`~.TextLine`, and "
+"each :class:`~.TextLine` contains several :class:`~.TextChar`"
+
+#: ../../source/tutorials/text.rst:12
+msgid "比如，对于"
+msgstr "For example, for"
+
+#: ../../source/tutorials/text.rst:14
+msgid "txt = Text('The first line.\\nThe second line.\\nThe third line.')"
+msgstr "txt = Text('The first line.\\nThe second line.\\nThe third line.')"
+
+#: ../../source/tutorials/text.rst:18
+msgid "那么下图便说明了它的子物件情况， ``txt[0]`` 、 ``txt[1]`` 和 ``txt[2]`` 都是 :class:`~.TextLine`"
+msgstr ""
+"Then the following diagram illustrates its child items. ``txt[0]``, ``txt[1]``, and ``txt[2]`` are all :class:`~.TextLine`"
+
+#: ../../source/tutorials/text.rst:24
+msgid "对于每个 :class:`~.TextLine` 而言，比如 ``txt[0]``，其子物件情况是如下图这样的"
+msgstr "For each :class:`~.TextLine`, such as ``txt[0]``, its child items are as shown in the following diagram"
+
+#: ../../source/tutorials/text.rst:32
+msgid "其中 ``txt[0][3]`` 和 ``txt[0][9]`` 是空格"
+msgstr "Where ``txt[0][3]`` and ``txt[0][9]`` are spaces"
+
+#: ../../source/tutorials/text.rst:34
+msgid "也就是说这是一个 :class:`~.Text` → :class:`~.TextLine` → :class:`~.TextChar` 的嵌套结构"
+msgstr "That is, this is a nested structure: :class:`~.Text` → :class:`~.TextLine` → :class:`~.TextChar`"
+
+#: ../../source/tutorials/text.rst:36
+msgid ""
+"对于这种复杂的嵌套结构，如果你想要取子物件列表的切片，手动数数可能有点繁琐（比如上面例子的首行中，\"first\" 对应的切片是 "
+"``[4:9]``）"
+msgstr ""
+"For such complex nested structures, if you want to slice the child items list, manually counting can be tedious (e.g., in "
+"the first line of the above example, the slice corresponding to \"first\" is ``[4:9]``)"
+
+#: ../../source/tutorials/text.rst:38
+msgid "为了解决这个问题，你可以参考预览界面的 :ref:`subitem_selector` 功能"
+msgstr "To solve this problem, you can refer to the :ref:`subitem_selector` feature in the preview interface"
+
+#: ../../source/tutorials/text.rst:41
+msgid "字符的标记属性"
+msgstr "Mark properties of characters"
+
+#: ../../source/tutorials/text.rst:43
+msgid ":class:`~.TextChar` 有四个标记属性，比如对于 “Ggf” 中的 “g” 字符而言："
+msgstr ":class:`~.TextChar` has four mark properties, for example, for the \"g\" character in \"Ggf\":"
+
+#: ../../source/tutorials/text.rst:49
+msgid ":meth:`~.TextChar.get_mark_orig` 是字符在基线上的原点"
+msgstr ":meth:`~.TextChar.get_mark_orig` is the origin point of the character on the baseline"
+
+#: ../../source/tutorials/text.rst:50
+msgid ":meth:`~.TextChar.get_mark_right` 是对字符水平右方向的标记"
+msgstr ":meth:`~.TextChar.get_mark_right` is the mark for the horizontal right direction of the character"
+
+#: ../../source/tutorials/text.rst:51
+msgid ":meth:`~.TextChar.get_mark_up` 是对字符竖直上方向的标记"
+msgstr ":meth:`~.TextChar.get_mark_up` is the mark for the vertical upward direction of the character"
+
+#: ../../source/tutorials/text.rst:52
+msgid ":meth:`~.TextChar.get_mark_advance` 指向下一个字符的 ``orig``"
+msgstr ":meth:`~.TextChar.get_mark_advance` points to the ``orig`` of the next character"
+
+#: ../../source/tutorials/text.rst:56
+msgid ":class:`~.TextLine` 也有类似的结构，但是只有 ``orig`` 、 ``right`` 和 ``up``，没有 ``advance``"
+msgstr ":class:`~.TextLine` also has a similar structure, but only has ``orig``, ``right``, and ``up``, without ``advance``"
+
+#: ../../source/tutorials/text.rst:58
+msgid "有关更多与基线原点有关的内容，请参考 :class:`~.BasepointVItem` 。"
+msgstr "For more information about baseline origins, refer to :class:`~.BasepointVItem`."
+
+#: ../../source/tutorials/text.rst:63
+msgid "富文本"
+msgstr "Rich text"
+
+#: ../../source/tutorials/text.rst:65
+msgid "可以使用起始标记和结束标记（像 HTML 那样的）应用富文本格式："
+msgstr "Can use start and end tags (like HTML) to apply rich text formatting:"
+
+#: ../../source/tutorials/text.rst:67
+msgid "具体写法是： ``<格式名 参数>被应用对应格式的文本</格式名>``"
+msgstr "The specific syntax is: ``<format_name parameters>text with applied format</format_name>``"
+
+#: ../../source/tutorials/text.rst:69
+msgid "比如，要想让文字的一部分变为蓝色，可以这样书写："
+msgstr "For example, to make part of the text blue, you can write:"
+
+#: ../../source/tutorials/text.rst:71
+msgid "Text('Hello <c BLUE>JAnim</c>!', format=Text.Format.RichText)"
+msgstr "Text('Hello <c BLUE>JAnim</c>!', format=Text.Format.RichText)"
+
+#: ../../source/tutorials/text.rst:75
+msgid "``format=Text.Format.RichText`` 也可以简写为 ``format='rich'``"
+msgstr "``format=Text.Format.RichText`` can also be abbreviated as ``format='rich'``"
+
+#: ../../source/tutorials/text.rst:77
+msgid "Text('Hello <c BLUE>JAnim</c>!', format='rich')"
+msgstr "Text('Hello <c BLUE>JAnim</c>!', format='rich')"
+
+#: ../../source/tutorials/text.rst:83
+msgid "这里的 ``c`` 是 ``color`` 的简写"
+msgstr "Here ``c`` is an abbreviation for ``color``"
+
+#: ../../source/tutorials/text.rst:87
+msgid ""
+":class:`~.Text` 使用富文本需要传入 ``format=Text.Format.RichText`` 或者 ``format='rich'`` ，否则默认情况下视作普通文本"
+msgstr ""
+":class:`~.Text` requires passing ``format=Text.Format.RichText`` or ``format='rich'`` to use rich text, otherwise it is "
+"treated as plain text by default"
+
+#: ../../source/tutorials/text.rst:89
+msgid "以下列出了可用的格式："
+msgstr "The following lists available formats:"
+
+#: ../../source/tutorials/text.rst:93
+msgid "名称"
+msgstr "Name"
+
+#: ../../source/tutorials/text.rst:94
+msgid "缩写"
+msgstr "Abbreviation"
+
+#: ../../source/tutorials/text.rst:95
+msgid "作用"
+msgstr "Effect"
+
+#: ../../source/tutorials/text.rst:96
+msgid "参数"
+msgstr "Parameters"
+
+#: ../../source/tutorials/text.rst:97
+msgid "示例"
+msgstr "Example"
+
+#: ../../source/tutorials/text.rst:98
+msgid "备注"
+msgstr "Note"
+
+#: ../../source/tutorials/text.rst:99
+msgid "color"
+msgstr "color"
+
+#: ../../source/tutorials/text.rst:100
+msgid "c"
+msgstr "c"
+
+#: ../../source/tutorials/text.rst:101
+msgid "颜色"
+msgstr "Color"
+
+#: ../../source/tutorials/text.rst:102
+msgid "颜色名称"
+msgstr "Color name"
+
+#: ../../source/tutorials/text.rst:103
+msgid "``<c BLUE>JAnim</c>``"
+msgstr "``<c BLUE>JAnim</c>``"
+
+#: ../../source/tutorials/text.rst:108
+msgid "十六进制值"
+msgstr "Hexadecimal value"
+
+#: ../../source/tutorials/text.rst:109
+msgid "``<c #00ff00>JAnim</c>``"
+msgstr "``<c #00ff00>JAnim</c>``"
+
+#: ../../source/tutorials/text.rst:114
+msgid "r g b"
+msgstr "r g b"
+
+#: ../../source/tutorials/text.rst:115
+msgid "``<c 0 1.0 0.5>JAnim</c>``"
+msgstr "``<c 0 1.0 0.5>JAnim</c>``"
+
+#: ../../source/tutorials/text.rst:120
+msgid "r g b a"
+msgstr "r g b a"
+
+#: ../../source/tutorials/text.rst:121
+msgid "``<c 0 1.0 0.5 0.5>JAnim</c>``"
+msgstr "``<c 0 1.0 0.5 0.5>JAnim</c>``"
+
+#: ../../source/tutorials/text.rst:122 ../../source/tutorials/text.rst:140
+msgid "描边也被设置为半透明"
+msgstr "Stroke is also set to semi-transparent"
+
+#: ../../source/tutorials/text.rst:123
+msgid "stroke_color"
+msgstr "stroke_color"
+
+#: ../../source/tutorials/text.rst:124
+msgid "sc"
+msgstr "sc"
+
+#: ../../source/tutorials/text.rst:125
+msgid "描边颜色"
+msgstr "Stroke color"
+
+#: ../../source/tutorials/text.rst:126 ../../source/tutorials/text.rst:132 ../../source/tutorials/text.rst:144
+#: ../../source/tutorials/text.rst:150
+msgid "同上"
+msgstr "Same as above"
+
+#: ../../source/tutorials/text.rst:129
+msgid "fill_color"
+msgstr "fill_color"
+
+#: ../../source/tutorials/text.rst:130
+msgid "fc"
+msgstr "fc"
+
+#: ../../source/tutorials/text.rst:131
+msgid "填充颜色"
+msgstr "Fill color"
+
+#: ../../source/tutorials/text.rst:135
+msgid "alpha"
+msgstr "alpha"
+
+#: ../../source/tutorials/text.rst:136
+msgid "a"
+msgstr "a"
+
+#: ../../source/tutorials/text.rst:137
+msgid "透明度"
+msgstr "Opacity"
+
+#: ../../source/tutorials/text.rst:138 ../../source/tutorials/text.rst:156 ../../source/tutorials/text.rst:162
+msgid "一个数"
+msgstr "A number"
+
+#: ../../source/tutorials/text.rst:139
+msgid "``<a 0.5>JAnim</a>``"
+msgstr "``<a 0.5>JAnim</a>``"
+
+#: ../../source/tutorials/text.rst:141
+msgid "stroke_alpha"
+msgstr "stroke_alpha"
+
+#: ../../source/tutorials/text.rst:142
+msgid "sa"
+msgstr "sa"
+
+#: ../../source/tutorials/text.rst:143
+msgid "描边透明度"
+msgstr "Stroke opacity"
+
+#: ../../source/tutorials/text.rst:147
+msgid "fill_alpha"
+msgstr "fill_alpha"
+
+#: ../../source/tutorials/text.rst:148
+msgid "fa"
+msgstr "fa"
+
+#: ../../source/tutorials/text.rst:149
+msgid "填充透明度"
+msgstr "Fill opacity"
+
+#: ../../source/tutorials/text.rst:153
+msgid "stroke"
+msgstr "stroke"
+
+#: ../../source/tutorials/text.rst:154
+msgid "s"
+msgstr "s"
+
+#: ../../source/tutorials/text.rst:155
+msgid "描边半径"
+msgstr "Stroke radius"
+
+#: ../../source/tutorials/text.rst:157
+msgid "``<s 0.01>JAnim</s>``"
+msgstr "``<s 0.01>JAnim</s>``"
+
+#: ../../source/tutorials/text.rst:159
+msgid "font_scale"
+msgstr "font_scale"
+
+#: ../../source/tutorials/text.rst:160
+msgid "fs"
+msgstr "fs"
+
+#: ../../source/tutorials/text.rst:161
+msgid "缩放倍数"
+msgstr "Scale factor"
+
+#: ../../source/tutorials/text.rst:163
+msgid "``Hello <fs 1.2>JAnim</fs>``"
+msgstr "``Hello <fs 1.2>JAnim</fs>``"
+
+#: ../../source/tutorials/text.rst:168
+msgid "如果你想直接输入 ``<`` 符号，不希望其被解析为富文本标记，可以使用 ``<<`` 来表示一个 ``<`` 符号，例如："
+msgstr ""
+"If you want to input a literal ``<`` symbol without it being parsed as a rich text tag, you can use ``<<`` to represent a "
+"single ``<``. For example:"
+
+#: ../../source/tutorials/text.rst:170
+msgid "Text('if x << 10 <c RED>and</c> x > 2:', format='rich')"
+msgstr "Text('if x << 10 <c RED>and</c> x > 2:', format='rich')"

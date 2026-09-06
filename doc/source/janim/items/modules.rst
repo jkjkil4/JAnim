@@ -10,6 +10,7 @@ items
    effect/modules.rst
    geometry/modules.rst
    svg/modules.rst
+   text/modules.rst
    three_d/modules.rst
    typst/modules.rst
    audio
@@ -20,6 +21,5 @@ items
    points
    relation
    shape_matchers
-   text
    value_tracker
    vitem

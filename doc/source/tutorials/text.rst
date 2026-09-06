@@ -1,5 +1,8 @@
-text
-====
+简易文字物件
+===========================
+
+上一节中我们提到可以使用 Typst 进行文字和公式的书写与排版，
+而对于及为简单的显示普通文字的需求，也可以使用这一节介绍的 :class:`~.Text` 来创建。
 
 文字物件的结构
 ------------------
@@ -52,7 +55,7 @@ text
 
    :class:`~.TextLine` 也有类似的结构，但是只有 ``orig`` 、 ``right`` 和 ``up``，没有 ``advance``
 
-有关更多与基线原点有关的内容，请参考 :class:`~.BasepointVItem`。
+有关更多与基线原点有关的内容，请参考 :class:`~.BasepointVItem` 。
 
 .. _rich_text:
 
@@ -81,7 +84,7 @@ text
 
 .. important::
 
-   :class:`~.Text` 使用富文本需要传入 ``format=Text.Format.RichText`` 或者 ``format='rich'``，否则默认情况下视作普通文本
+   :class:`~.Text` 使用富文本需要传入 ``format=Text.Format.RichText`` 或者 ``format='rich'`` ，否则默认情况下视作普通文本
 
 以下列出了可用的格式：
 
@@ -167,12 +170,3 @@ text
    .. code-block:: python
 
       Text('if x << 10 <c RED>and</c> x > 2:', format='rich')
-
-参考文档
-------------
-
-.. automodule:: janim.items.text
-   :members:
-   :undoc-members:
-   :show-inheritance:
-

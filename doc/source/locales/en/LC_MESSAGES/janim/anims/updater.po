@@ -180,14 +180,6 @@ msgid "每个 chunk 中存储除了 chunk 开头的元素外的剩下最多 ``ch
 msgstr ""
 "Each chunk stores at most ``chunk_size - 1`` remaining elements except for the element at the beginning of the chunk"
 
-#: janim.anims.updater.ChunkedNearbyCache.disable_temp_record:1 of
-msgid "通过 ``with`` 语句在其内部临时停止记录临时缓存"
-msgstr "Temporarily stop recording temporary cache within the ``with`` statement"
-
-#: janim.anims.updater.ChunkedNearbyCache.disable_temp_record:3 of
-msgid "用于 :class:`StepUpdater` 的 ``become_at_end`` 处理"
-msgstr "Used for ``become_at_end`` handling in :class:`StepUpdater`"
-
 #: janim.anims.updater.ChunkedNearbyCache.get_nearest_cache:1 of
 msgid "得到 ``n`` 往前（包括 ``n`` ）的最近的一个缓存"
 msgstr "Get the nearest cache up to ``n`` (including ``n``)"
@@ -228,3 +220,9 @@ msgstr "Record the cache in ``pcache`` or ``tcache``"
 
 #~ msgid "依据 ``lag_ratio`` 得到特定子物件的 ``sub_alpha``"
 #~ msgstr "Obtains the specific ``sub_alpha`` based on ``lag_ratio``."
+
+#~ msgid "通过 ``with`` 语句在其内部临时停止记录临时缓存"
+#~ msgstr "Temporarily stop recording temporary cache within the ``with`` statement"
+
+#~ msgid "用于 :class:`StepUpdater` 的 ``become_at_end`` 处理"
+#~ msgstr "Used for ``become_at_end`` handling in :class:`StepUpdater`"

@@ -32,80 +32,80 @@ def _get_color_value(key: str) -> JAnimColor:
     return getattr(colors, key)
 
 
-type ActConverter = Callable[[str], Any]
-type ActCaller = Callable[Concatenate[TextChar, ...], Any]
-type Act = tuple[Sequence[ActConverter], ActCaller]
-type ActName = str
+type TagConverter = Callable[[str], Any]
+type TagCaller = Callable[Concatenate[TextChar, ...], Any]
+type TagRegistry = tuple[Sequence[TagConverter], TagCaller]
+type TagName = str
 
-type ActParams = list[str]
-type ActParamsStack = list[ActParams]
+type TagParams = list[str]
+type TagParamsStack = list[TagParams]
 
-type ActAt = int
-type ActStart = tuple[ActName, ActParams]
-type ActEnd = str
+type TagAt = int
+type TagStart = tuple[TagName, TagParams]
+type TagEnd = str
 
-_registered_acts: dict[ActName, list[Act]] = defaultdict(list)
+_registered_tags: dict[TagName, list[TagRegistry]] = defaultdict(list)
 
 
-def _register_acts(names: list[ActName], *acts: Act) -> None:
+def _register_tags(names: list[TagName], *tags: TagRegistry) -> None:
     """
     用于声明可用的富文本格式
     """
     for name in names:
-        _registered_acts[name].extend(acts)
+        _registered_tags[name].extend(tags)
 
 
 # fmt: off
-_register_acts(
+_register_tags(
     ['color', 'c'],
     ((_get_color_value,),           lambda char, color: char.color.set(color)),
     ((float, float, float),         lambda char, r, g, b: char.color.set([r, g, b])),
     ((float, float, float, float),  lambda char, r, g, b, a: char.color.set_rgbas([[r, g, b, a]]))
 )
-_register_acts(
+_register_tags(
     ['stroke_color', 'sc'],
     ((_get_color_value,),           lambda char, color: char.stroke.set(color)),
     ((float, float, float),         lambda char, r, g, b: char.stroke.set([r, g, b])),
     ((float, float, float, float),  lambda char, r, g, b, a: char.stroke.set_rgbas([[r, g, b, a]]))
 )
-_register_acts(
+_register_tags(
     ['fill_color', 'fc'],
     ((_get_color_value,),           lambda char, color: char.fill.set(color)),
     ((float, float, float),         lambda char, r, g, b: char.fill.set([r, g, b])),
     ((float, float, float, float),  lambda char, r, g, b, a: char.fill.set_rgbas([[r, g, b, a]]))
 )
-_register_acts(
+_register_tags(
     ['alpha', 'a'],
     ((float,), lambda char, a: char.color.set(alpha=a))
 )
-_register_acts(
+_register_tags(
     ['stroke_alpha', 'sa'],
     ((float,), lambda char, a: char.stroke.set(alpha=a))
 )
-_register_acts(
+_register_tags(
     ['fill_alpha', 'fa'],
     ((float,), lambda char, a: char.fill.set(alpha=a))
 )
-_register_acts(
+_register_tags(
     ['stroke', 's'],
     ((float,), lambda char, radius: char.radius.set(radius))
 )
-_register_acts(
+_register_tags(
     ['font_scale', 'fs'],
     ((float,), lambda char, factor: char.points.scale(factor, about_point=ORIGIN))
 )
 # fmt: on
 
 
-def extract_act_queue(source: str) -> tuple[str, ActQueue]:
+def extract_tag_queue(source: str) -> tuple[str, TagQueue]:
     """
-    按照 JAnim :class:`~.Text` 的富文本格式提取出所有的富文本标签，组成 :class:`~.ActQueue` 对象
+    按照 JAnim :class:`~.Text` 的富文本格式提取出所有的富文本标签，组成 :class:`~.TagQueue` 对象
 
-    :return: ``(剔除富文本标签后的文本, ActQueue对象)``
+    :return: ``(剔除富文本标签后的文本, TagQueue对象)``
     """
 
     text = ''
-    acts: list[tuple[ActAt, ActStart | ActEnd]] = []
+    tags: list[tuple[TagAt, TagStart | TagEnd]] = []
 
     prev_end = 0
     iter = re.finditer(r'<<|<(\/?[^>]*)>', source)
@@ -120,50 +120,50 @@ def extract_act_queue(source: str) -> tuple[str, ActQueue]:
         if groups[0] is None:  # << 转义
             text += '<'
         else:
-            act = groups[0]
-            if act.startswith('/'):
-                acts.append((len(text), act[1:]))
+            tag = groups[0]
+            if tag.startswith('/'):
+                tags.append((len(text), tag[1:]))
             else:
-                split = act.split()
-                acts.append((len(text), (split[0], split[1:])))
+                split = tag.split()
+                tags.append((len(text), (split[0], split[1:])))
 
     text += source[prev_end:]
 
-    return (text, ActQueue(acts))
+    return (text, TagQueue(tags))
 
 
-class ActQueue:
-    def __init__(self, acts: list[tuple[ActAt, ActStart | ActEnd]]):
-        self._acts = acts
-        self._active_acts: defaultdict[str, ActParamsStack] = defaultdict(list)
+class TagQueue:
+    def __init__(self, tags: list[tuple[TagAt, TagStart | TagEnd]]):
+        self._tags = tags
+        self._active_tags: defaultdict[str, TagParamsStack] = defaultdict(list)
 
-    def advance_to(self, text_at: ActAt) -> None:
+    def advance_to(self, text_at: TagAt) -> None:
         """
-        应用所有在 ``text_at`` 及之前的富文本标签，计入 ``self._active_acts``
+        应用所有在 ``text_at`` 及之前的富文本标签，计入 ``self._active_tags``
         """
-        # 处理所有 act_at <= text_at 的 act
-        while self._acts and self._acts[0][0] <= text_at:
-            next_act = self._acts.pop(0)[1]
+        # 处理所有 tag_at <= text_at 的富文本标签
+        while self._tags and self._tags[0][0] <= text_at:
+            next_tag = self._tags.pop(0)[1]
 
-            if isinstance(next_act, str):  # ActEnd
-                stack = self._active_acts[next_act]
+            if isinstance(next_tag, str):  # TagEnd
+                stack = self._active_tags[next_tag]
                 try:
                     stack.pop()
                 except IndexError:
-                    log.warning(_('Unmatched end tag "</{name}>", ignored.').format(name=next_act))
+                    log.warning(_('Unmatched end tag "</{name}>", ignored.').format(name=next_tag))
                 if not stack:
-                    del self._active_acts[next_act]
-            else:  # ActStart
-                name, params = next_act
-                self._active_acts[name].append(params)
+                    del self._active_tags[next_tag]
+            else:  # TagStart
+                name, params = next_tag
+                self._active_tags[name].append(params)
 
     def apply_to(self, char: TextChar) -> None:
         """
-        将当前的 ``self._acitve_acts`` 中，即生效中的富文本标签应用到 ``char`` 物件上
+        将当前的 ``self._acitve_tags`` 中，即生效中的富文本标签应用到 ``char`` 物件上
         """
-        for name, stack in self._active_acts.items():
+        for name, stack in self._active_tags.items():
             params = stack[-1]
-            if name not in _registered_acts:
+            if name not in _registered_tags:
                 log.warning(
                     _('"{name}" is not a valid rich text tag. ("<{name} {params}>")').format(
                         name=name, params=' '.join(params)
@@ -171,7 +171,7 @@ class ActQueue:
                 )
                 continue
 
-            for converters, caller in _registered_acts[name]:
+            for converters, caller in _registered_tags[name]:
                 if len(converters) == len(params):
                     try:
                         caller(
@@ -194,8 +194,8 @@ class ActQueue:
             else:
                 txt = ','.join(
                     [
-                        '[' + ','.join([cvt.__name__ for cvt in act[0]]) + ']'
-                        for act in _registered_acts[name]
+                        '[' + ','.join([cvt.__name__ for cvt in tag[0]]) + ']'
+                        for tag in _registered_tags[name]
                     ]
                 )
                 log.warning(

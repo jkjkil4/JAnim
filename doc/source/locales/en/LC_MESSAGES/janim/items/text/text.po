@@ -1,0 +1,185 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2023, jkjkil4
+# This file is distributed under the same license as the JAnim package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: JAnim \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 1980-01-01 00:00+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: en\n"
+"Language-Team: en <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.17.0\n"
+
+#: ../../source/janim/items/text/text.rst:2
+msgid "text"
+msgstr ""
+
+#: janim.items.text.text.BasepointVItem.offset_to:1 of
+msgid "计算从 ``self`` 到 ``other`` 的偏移量，如果指定了 ``proj`` 则只计算在该方向上的投影量"
+msgstr ""
+"Calculate the offset from ``self`` to ``other``. If ``proj`` is specified, only calculate the projection in that direction"
+
+#: janim.items.text.text.BasepointVItem.offset_to:3 of
+msgid ""
+"例如当我们想要让一段文字和另一段文字的基线对齐，可以使用 ``.offset_to(other, 'v')`` 计算基线垂直方向的偏移量，从而根据该量"
+"移动来对齐基线。"
+msgstr ""
+"For example, when we want to align the baseline of one text with another, we can use ``.offset_to(other, 'v')`` to "
+"calculate the offset in the vertical direction of the baseline, and then move accordingly to align the baselines."
+
+#: janim.items.text.text.BasepointVItem.matrix_of_marks:1 of
+msgid "得到标记点的坐标标架构成的矩阵"
+msgstr "Get the matrix formed by the coordinate frame of mark points"
+
+#: janim.items.text.text.TextChar:1 of
+msgid "字符物件，作为 :class:`TextLine` 的子物件，在创建 :class:`TextLine` 时产生"
+msgstr "Character item, as a child item of :class:`TextLine`, created when :class:`TextLine` is created"
+
+#: janim.items.text.text.TextChar.get_font_for_render:1 of
+msgid "从字体列表中找到支持显示 ``unicode`` 的字体，如果找不到只好选用第一个"
+msgstr "Find a font from the font list that supports displaying ``unicode``, if not found, use the first one"
+
+#: janim.items.text.text.TextLine:1 of
+msgid "单行文字物件，作为 :class:`Text` 的子物件，在创建 :class:`Text` 时产生"
+msgstr "Single-line text item, as a child item of :class:`Text`, created when :class:`Text` is created"
+
+#: janim.items.text.text.TextLine.arrange_in_line:1 of
+msgid "根据 ``advance`` 的标记信息排列该行"
+msgstr "Arrange this line according to the mark information of ``advance``"
+
+#: janim.items.text.text.TextLine.match_to:1 of
+msgid "将该行文本与目标文本或文本行对齐"
+msgstr "Align this line of text to the target text or text line"
+
+#: ../../source/janim/items/text/text.rst janim.items.text.text.Text.select_parts of
+msgid "参数"
+msgstr ""
+
+#: janim.items.text.text.Text.match_to:3 janim.items.text.text.TextLine.match_to:3 of
+msgid "目标文本或文本行"
+msgstr "Target text or text line"
+
+#: janim.items.text.text.Text:1 of
+msgid "文字物件，支持富文本等功能"
+msgstr "Text item, supports rich text and other features"
+
+#: janim.items.text.text.Text:3 of
+msgid "如果对换行排版等有较高的需求可以考虑使用 :class:`~.TypstDoc` 以及 :class:`~.TypstText`"
+msgstr ""
+"If you have higher requirements for line breaks and typesetting, consider using :class:`~.TypstDoc` "
+"and :class:`~.TypstText`"
+
+#: janim.items.text.text.Text:5 janim.items.text.text.Text.select_parts:9 of
+msgid "示例："
+msgstr "Example:"
+
+#: janim.items.text.text.Text:7 of
+msgid "Text('Hello World!')"
+msgstr "Text('Hello World!')"
+
+#: janim.items.text.text.Text:11 of
+msgid "Text('Hello <c RED>World</c>!', format='rich')"
+msgstr "Text('Hello <c RED>World</c>!', format='rich')"
+
+#: janim.items.text.text.Text.idx_to_row_col:1 of
+msgid "由字符索引得到 行数、列数 索引"
+msgstr "Get row and column indices from character index"
+
+#: janim.items.text.text.Text.select_parts:1 of
+msgid "根据 ``pattern`` **正则表达式** 获得文字中的部分"
+msgstr "Get parts of the text based on ``pattern`` **regular expression**"
+
+#: janim.items.text.text.Text.select_parts:3 of
+msgid "用于匹配的正则表达式"
+msgstr "Regular expression used for matching"
+
+#: janim.items.text.text.Text.select_parts:5 of
+msgid "对于正则表达式，指定使用第几个分组进行匹配，默认 ``0`` 表示整个匹配片段，其余数字表示对应的分组"
+msgstr ""
+"For regular expressions, specifies which group is used for matching. The default ``0`` means the whole matched segment; "
+"other numbers represent the corresponding groups"
+
+#: janim.items.text.text.Text.select_parts:7 of
+msgid ""
+"提示：如果不希望使用正则表达式，可以使用 ``re.escape`` 进行转义，例如 ``re.escape('a[i]')`` 来正确匹配字符串中的 ``a[i]``"
+msgstr ""
+"Tip: If you don't want to use regular expressions, you can use ``re.escape`` to escape, for example ``re.escape('a[i]')`` "
+"to correctly match ``a[i]`` in the string"
+
+#: janim.items.text.text.Text.select_parts:11 of
+msgid ""
+"txt = Text('Hello World!')\n"
+"txt.select_parts('World').set(color=RED)"
+msgstr ""
+"txt = Text('Hello World!')\n"
+"txt.select_parts('World').set(color=RED)"
+
+#: janim.items.text.text.Text.select_parts:16 of
+msgid "上面这个示例会选取出 ``Hello World!`` 中的 ``World`` 部分，并将其颜色设置为红色"
+msgstr "This example will select the ``World`` part from ``Hello World!`` and set its color to red"
+
+#: janim.items.text.text.Text.select_parts:18 of
+msgid ""
+"txt = Text('for i in range(100) if i % 3 == 0 or i % 5 == 0')\n"
+"txt.select_parts(r'[^f](or)', 1).set(color=BLUE)"
+msgstr ""
+"txt = Text('for i in range(100) if i % 3 == 0 or i % 5 == 0')\n"
+"txt.select_parts(r'[^f](or)', 1).set(color=BLUE)"
+
+#: janim.items.text.text.Text.select_parts:23 of
+msgid "上面这个示例会选取出其中的 ``or`` 部分，并且避免选取 ``for`` 中的 ``or``"
+msgstr "This example will select the ``or`` part and avoid selecting ``or`` in ``for``"
+
+#: janim.items.text.text.Text.arrange_in_lines:1 of
+msgid "每行之间的额外间距"
+msgstr "Extra spacing between lines"
+
+#: janim.items.text.text.Text.arrange_in_lines:2 of
+msgid "每行之间的基本间距，默认值 ``0.85`` 用于将两行上下排列，如果是 ``0`` 则会让两行完全重合，大部分时候不需要传入该值"
+msgstr ""
+"Basic spacing between lines. The default value ``0.85`` is used to arrange two lines vertically; if it is ``0``, the two "
+"lines will fully overlap. In most cases, you do not need to pass this value"
+
+#: janim.items.text.text.Text.match_to:1 of
+msgid "将该文本与目标文本或文本行对齐"
+msgstr "Align this text to the target text or text line"
+
+#: janim.items.text.text.Text.match_to:4 of
+msgid "将自身的哪一行与目标对齐，默认为首行（即 ``self_lineno=0``）"
+msgstr "Which line of itself to align to the target. Defaults to the first line (that is, ``self_lineno=0``)"
+
+#: janim.items.text.text.Text.apply_rich_text:1 of
+msgid "应用富文本效果"
+msgstr "Apply rich text effects"
+
+#: janim.items.text.text.Title:1 of
+msgid "标题"
+msgstr "Title"
+
+#: janim.items.text.text.Title:3 of
+msgid "``include_underline=True`` 会添加下划线（默认添加）"
+msgstr "``include_underline=True`` will add an underline (added by default)"
+
+#: janim.items.text.text.Title:4 of
+msgid "``underline_width`` 下划线的长度（默认 ``屏幕宽 - 2个单位``）"
+msgstr "``underline_width`` length of the underline (default: ``screen width - 2 units``)"
+
+#: janim.items.text.text.Title:5 of
+msgid "``match_underline_width_to_text=True`` 时将下划线的长度和文字匹配（默认为 ``False``）"
+msgstr "``match_underline_width_to_text=True`` matches the underline length to the text (default is ``False``)"
+
+#: janim.items.text.text.SourceDisplayer:1 of
+msgid "显示 ``obj`` 的源代码"
+msgstr "Display the source code of ``obj``"
+
+#~ msgid "应用富文本样式，由 :meth:`Text.apply_rich_text` 调用"
+#~ msgstr "Apply rich text styles, called by :meth:`Text.apply_rich_text`"
