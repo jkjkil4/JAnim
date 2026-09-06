@@ -267,7 +267,7 @@ class TextLine(BasepointVItem, Group[TextChar]):
         # fmt: on
 
 
-class Text(VItem, Group[TextLine]):
+class Text(Group[TextLine], VItem):
     """
     文字物件，支持富文本等功能
 
@@ -334,7 +334,7 @@ class Text(VItem, Group[TextLine]):
             *[
                 TextLine(line_text, fonts=fonts, font_size=font_size, **line_kwargs)
                 for line_text in self.text.split('\n')
-            ],  # TODO: fix? 这里由于刚好 VItem 能透传 *args 所以能正确初始化 Group 成员，但是含义是不太对的
+            ],
             stroke_alpha=stroke_alpha,
             fill_alpha=fill_alpha,
             stroke_background=stroke_background,
