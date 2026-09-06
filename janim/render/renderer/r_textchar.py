@@ -11,6 +11,7 @@ from janim.render.base import Renderer
 from janim.render.framebuffer import FrameBuffer
 from janim.render.program import get_program_from_file_prefix
 from janim.render.renderer.r_vitem import VItemRenderer
+from janim.render.shader import find_shader_file, resolve_shader_from_file
 from janim.utils.config import Config
 from janim.utils.font.database import ORIG_FONT_SIZE
 
@@ -100,22 +101,9 @@ class CharTexture:
         width, height = box.size
         width = math.ceil((x2 - x1) / pixel_to_frame_ratio)
         height = math.ceil((y2 - y1) / pixel_to_frame_ratio)
-        self.framebuffer = FrameBuffer(ctx, width, height, (0.2, 0.3, 0.3), True)
+        self.framebuffer = FrameBuffer(ctx, width, height, (0, 0, 0), True)
 
-        with self.framebuffer.context():
-            self.framebuffer.clear()
-            # self.render_vitem_standalone(x1, y1, x2, y2, scaled_outline)
-            # self.framebuffer.unpremultiply()
-
-        ####
-
-        self.prog = get_program_from_file_prefix('render/shaders/text/pixel_text')
-        self.prog['u_fbo'] = 0
-
-        self.u_scale = self.prog['u_scale']
-        self.u_char_orig = self.prog['u_char_orig']
-        self.u_char_mat = self.prog['u_char_mat']
-
+        # 在 standalone 和 pixelchar 绘制中均有用到
         self.vbo_coords = ctx.buffer(
             data=np.array(
                 [
@@ -127,6 +115,19 @@ class CharTexture:
                 dtype=np.float32,
             ).tobytes()
         )
+
+        with self.framebuffer.context():
+            self.framebuffer.clear()
+            self._render_vitem_standalone(ctx, self.vbo_coords, scaled_outline)
+
+        ####
+
+        self.prog = get_program_from_file_prefix('render/shaders/text/pixel_text')
+        self.prog['u_fbo'] = 0
+
+        self.u_scale = self.prog['u_scale']
+        self.u_char_orig = self.prog['u_char_orig']
+        self.u_char_mat = self.prog['u_char_mat']
 
         self.vao = ctx.vertex_array(self.prog, self.vbo_coords, 'in_coord', 'in_texcoord')
 
@@ -147,3 +148,38 @@ class CharTexture:
         self.u_char_orig.value = orig
         self.u_char_mat.value = mat.flatten()
         self.vao.render(mgl.TRIANGLE_STRIP)
+
+    _cached_standalone_prog: dict[mgl.Context, mgl.Program] = {}
+
+    @staticmethod
+    def _render_vitem_standalone(
+        ctx: mgl.Context,
+        vbo_coords: mgl.Buffer,
+        scaled_outline: np.ndarray,
+    ) -> None:
+        if len(scaled_outline) == 0:
+            return
+
+        cache = CharTexture._cached_standalone_prog.get(ctx, None)
+        if cache is not None:
+            prog = cache
+        else:
+            prog = ctx.program(
+                vertex_shader=resolve_shader_from_file(
+                    find_shader_file('render/shaders/text/_vitem_standalone_norm_.vert.glsl')
+                ),
+                fragment_shader=resolve_shader_from_file(
+                    find_shader_file('render/shaders/text/_vitem_standalone_norm_.frag.glsl')
+                ),
+            )
+            CharTexture._cached_standalone_prog[ctx] = prog
+
+        vbo_points = ctx.buffer(data=scaled_outline[:, :2].astype(np.float32).tobytes())
+
+        vao = ctx.vertex_array(prog, vbo_coords, 'in_coord', 'in_texcoord')
+
+        vbo_points.bind_to_storage_buffer(0)
+        prog['u_anti_alias_radius'] = Config.get.anti_alias_width / 2
+        prog['lim'] = (len(scaled_outline) - 1) // 2 * 2
+
+        vao.render(mgl.TRIANGLE_STRIP)
