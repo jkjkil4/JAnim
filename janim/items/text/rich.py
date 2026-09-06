@@ -138,6 +138,9 @@ class ActQueue:
         self._active_acts: defaultdict[str, ActParamsStack] = defaultdict(list)
 
     def advance_to(self, text_at: ActAt) -> None:
+        """
+        应用所有在 ``text_at`` 及之前的富文本标签，计入 ``self._active_acts``
+        """
         # 处理所有 act_at <= text_at 的 act
         while self._acts and self._acts[0][0] <= text_at:
             next_act = self._acts.pop(0)[1]
@@ -155,6 +158,9 @@ class ActQueue:
                 self._active_acts[name].append(params)
 
     def apply_to(self, char: TextChar) -> None:
+        """
+        将当前的 ``self._acitve_acts`` 中，即生效中的富文本标签应用到 ``char`` 物件上
+        """
         for name, stack in self._active_acts.items():
             params = stack[-1]
             if name not in _registered_acts:
