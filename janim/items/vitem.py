@@ -44,7 +44,7 @@ class VItem(Points):
 
     renderer_cls = VItemRenderer
 
-    def __init__(self, *points: Vect, fill_alpha=0, **kwargs):
+    def __init__(self, *points: Vect, fill_alpha=0.0, **kwargs):
         self.stroke_background = False
         self._shade_in_3d = False
         super().__init__(*points, fill_alpha=fill_alpha, **kwargs)

@@ -3,114 +3,28 @@ from __future__ import annotations
 import inspect
 import itertools as it
 import re
-from collections import defaultdict
 from enum import StrEnum
-from typing import TYPE_CHECKING, Any, Callable, Concatenate, Iterable, Literal, Self
+from typing import TYPE_CHECKING, Iterable, Literal, Self
 
 import numpy as np
 
 from janim.components.component import CmptInfo
 from janim.components.mark import Cmpt_Mark
 from janim.constants import DOWN, GREY, LEFT, MED_SMALL_BUFF, ORIGIN, RIGHT, UL, UP
-from janim.exception import ColorNotFoundError
 from janim.items.geometry.line import Line
 from janim.items.group import Group
 from janim.items.points import MarkedItem, Points
+from janim.items.text.rich import ActQueue, extract_act_queue
 from janim.items.vitem import VItem
-from janim.locale import get_translator
-from janim.logger import log
-from janim.typing import JAnimColor, Vect
+from janim.typing import Vect
 from janim.utils.config import Config
 from janim.utils.font.database import Font, get_font_info_by_attrs
 from janim.utils.font.variant import Style, StyleName, Weight, WeightName
 from janim.utils.simple_functions import decode_utf8
 from janim.utils.space_ops import cross, get_norm, normalize
 
-_ = get_translator('janim.items.text')
-
 DEFAULT_FONT_SIZE = 24
 ORIG_FONT_SIZE = 48
-
-
-def _get_color_value(key: str) -> JAnimColor:
-    """
-    根据 ``key`` 从 ``janim.constants.colors`` 得到颜色
-
-    如果 ``key`` 以 ``#`` 开头，则直接返回原值
-    """
-    if key.startswith('#'):
-        return key
-
-    import janim.constants.colors as colors
-
-    if not hasattr(colors, key):
-        raise ColorNotFoundError(_('No built-in color named {key}').format(key=key))
-    return getattr(colors, key)
-
-
-type ActConverter = Callable[[str], Any]
-type ActCaller = Callable[Concatenate[TextChar, ...], Any]
-type Act = tuple[Iterable[ActConverter], ActCaller]
-type ActName = str
-
-type ActParams = Iterable[str]
-type ActParamsStack = list[ActParams]
-
-type ActAt = int
-type ActStart = tuple[ActName, ActParams]
-type ActEnd = str
-
-available_act_map: dict[ActName, list[Act]] = defaultdict(list)
-
-
-def _register_acts(names: list[ActName], *acts: Act) -> None:
-    """
-    用于声明可用的富文本格式
-    """
-    for name in names:
-        available_act_map[name].extend(acts)
-
-
-# fmt: off
-_register_acts(
-    ['color', 'c'],
-    ((_get_color_value,),           lambda char, color: char.color.set(color)),
-    ((float, float, float),         lambda char, r, g, b: char.color.set([r, g, b])),
-    ((float, float, float, float),  lambda char, r, g, b, a: char.color.set_rgbas([[r, g, b, a]]))
-)
-_register_acts(
-    ['stroke_color', 'sc'],
-    ((_get_color_value,),           lambda char, color: char.stroke.set(color)),
-    ((float, float, float),         lambda char, r, g, b: char.stroke.set([r, g, b])),
-    ((float, float, float, float),  lambda char, r, g, b, a: char.stroke.set_rgbas([[r, g, b, a]]))
-)
-_register_acts(
-    ['fill_color', 'fc'],
-    ((_get_color_value,),           lambda char, color: char.fill.set(color)),
-    ((float, float, float),         lambda char, r, g, b: char.fill.set([r, g, b])),
-    ((float, float, float, float),  lambda char, r, g, b, a: char.fill.set_rgbas([[r, g, b, a]]))
-)
-_register_acts(
-    ['alpha', 'a'],
-    ((float,), lambda char, a: char.color.set(alpha=a))
-)
-_register_acts(
-    ['stroke_alpha', 'sa'],
-    ((float,), lambda char, a: char.stroke.set(alpha=a))
-)
-_register_acts(
-    ['fill_alpha', 'fa'],
-    ((float,), lambda char, a: char.fill.set(alpha=a))
-)
-_register_acts(
-    ['stroke', 's'],
-    ((float,), lambda char, radius: char.radius.set(radius))
-)
-_register_acts(
-    ['font_scale', 'fs'],
-    ((float,), lambda char, factor: char.points.scale(factor, about_point=ORIGIN))
-)
-# fmt: on
 
 
 class Cmpt_Mark_TextCharImpl[ItemT](Cmpt_Mark[ItemT], impl=True):
@@ -118,12 +32,12 @@ class Cmpt_Mark_TextCharImpl[ItemT](Cmpt_Mark[ItemT], impl=True):
 
     if TYPE_CHECKING:
 
-        def get(
+        def get(  # type: ignore
             self,
             index: int | Literal['orig', 'right', 'up', 'advance'] = 0,
         ) -> np.ndarray: ...
 
-        def set(
+        def set(  # type: ignore
             self,
             point: Vect,
             index: int | Literal['orig', 'right', 'up', 'advance'] = 0,
@@ -137,12 +51,12 @@ class Cmpt_Mark_TextLineImpl[ItemT](Cmpt_Mark[ItemT], impl=True):
 
     if TYPE_CHECKING:
 
-        def get(
+        def get(  # type: ignore
             self,
             index: int | Literal['orig', 'right', 'up'] = 0,
         ) -> np.ndarray: ...
 
-        def set(
+        def set(  # type: ignore
             self,
             point: Vect,
             index: int | Literal['orig', 'right', 'up'] = 0,
@@ -196,7 +110,7 @@ class BasepointVItem(MarkedItem, VItem):
         # 假定 [0] 是 basepoint，[1] 是 right，[2] 是 up
         right = self.mark.get(1) - self.mark.get(0)
         up = self.mark.get(2) - self.mark.get(0)
-        normal = cross(right, up) / get_norm(up)
+        normal = np.array(cross(right, up)) / get_norm(up)
         return np.matrix([right, up, normal]).T
 
 
@@ -275,53 +189,6 @@ class TextChar(BasepointVItem):
     def get_advance_length(self) -> float:
         return get_norm(self.get_mark_advance() - self.get_mark_orig())
 
-    def apply_act_list(self, act_params_map: dict[str, ActParamsStack]) -> None:
-        """
-        应用富文本样式，由 :meth:`Text.apply_rich_text` 调用
-        """
-        for name, params_stack in act_params_map.items():
-            params = params_stack[-1]
-            if name not in available_act_map:
-                log.warning(
-                    _('"{name}" is not a valid rich text tag. ("<{name} {params}>")').format(
-                        name=name, params=' '.join(params)
-                    )
-                )
-                continue
-
-            for converters, caller in available_act_map[name]:
-                if len(converters) == len(params):
-                    try:
-                        caller(
-                            self,
-                            *[converter(param) for converter, param in zip(converters, params)],
-                        )
-                    except Exception:
-                        log.error(
-                            _(
-                                'While applying {name}, {params} did not match with {cvt_names}.'
-                            ).format(
-                                name=name,
-                                params=params,
-                                cvt_names=[cvt.__name__ for cvt in converters],
-                            )
-                        )
-                        raise
-
-                    break
-            else:
-                txt = ','.join(
-                    [
-                        '[' + ','.join([cvt.__name__ for cvt in act[0]]) + ']'
-                        for act in available_act_map[name]
-                    ]
-                )
-                log.warning(
-                    _('While applying "{name}", {params} did not match any entry in {txt}.').format(
-                        name=name, params=params, txt=txt
-                    )
-                )
-
 
 class TextLine(BasepointVItem, Group[TextChar]):
     """
@@ -365,7 +232,7 @@ class TextLine(BasepointVItem, Group[TextChar]):
         根据 ``advance`` 的标记信息排列该行
         """
         if len(self) == 0:
-            return
+            return self
 
         pos = None
 
@@ -461,36 +328,13 @@ class Text(VItem, Group[TextLine]):
         if format != Text.Format.RichText:
             self.text = text
         else:
-            # 如果是 RichText，获取属性列表
-            self.text = ''
-            self.act_params_list: list[tuple[ActAt, ActStart | ActEnd]] = []
-            idx = 0
-            iter = re.finditer(r'<<|<(\/?[^>]*)>', text)
-            for match in iter:
-                match: re.Match
-                start, end = match.span()
-                self.text += text[idx:start]
-                idx = end
-
-                groups = match.groups()
-
-                if groups[0] is None:  # <<
-                    self.text += '<'
-                else:
-                    act = groups[0]
-                    if act.startswith('/'):
-                        self.act_params_list.append((len(self.text), act[1:]))
-                    else:
-                        split = act.split()
-                        self.act_params_list.append((len(self.text), (split[0], split[1:])))
-
-            self.text += text[idx:]
+            self.text, act_queue = extract_act_queue(text)
 
         super().__init__(
             *[
                 TextLine(line_text, fonts=fonts, font_size=font_size, **line_kwargs)
                 for line_text in self.text.split('\n')
-            ],
+            ],  # TODO: fix? 这里由于刚好 VItem 能透传 *args 所以能正确初始化 Group 成员，但是含义是不太对的
             stroke_alpha=stroke_alpha,
             fill_alpha=fill_alpha,
             stroke_background=stroke_background,
@@ -498,10 +342,12 @@ class Text(VItem, Group[TextLine]):
         )
 
         if format == Text.Format.RichText:
-            self.apply_rich_text()
+            self.apply_rich_text(act_queue)  # type: ignore
+
         for line in self:
             line.arrange_in_line()
         self.arrange_in_lines()
+
         if center:
             self.points.to_center()
 
@@ -592,40 +438,17 @@ class Text(VItem, Group[TextLine]):
         TextLine._match_to(self, self[self_lineno], line)
         return self
 
-    def apply_rich_text(self) -> None:
+    def apply_rich_text(self, act_queue: ActQueue) -> None:
         """
         应用富文本效果
         """
         text_at = 0
-        act_idx = 0
-        act_params_map: defaultdict[str, ActParamsStack] = defaultdict(list)
         for line in self:
             for char in line:
-                while act_idx < len(self.act_params_list):
-                    next_act_at, next_act = self.act_params_list[act_idx]
-                    if text_at < next_act_at:
-                        break
-
-                    if isinstance(next_act, str):  # ActEnd
-                        stack = act_params_map[next_act]
-                        try:
-                            stack.pop()
-                        except IndexError:
-                            log.warning(
-                                _('Unmatched end tag "</{name}>", ignored.').format(name=next_act)
-                            )
-                        if not stack:
-                            del act_params_map[next_act]
-                    else:  # ActStart
-                        name, params = next_act
-                        act_params_map[name].append(params)
-
-                    act_idx += 1
-
-                char.apply_act_list(act_params_map)
+                act_queue.advance_to(text_at)
+                act_queue.apply_to(char)
                 text_at += 1
-
-            text_at += 1
+            text_at += 1  # 因为 ActQueue 的索引是考虑换行的，所以这里换行处也要 +1
 
 
 class Title(Group):
