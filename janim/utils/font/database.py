@@ -169,6 +169,9 @@ def get_font_info_by_attrs(
     raise FontNotFoundError(_('No font named "{font_name}"').format(font_name=name))
 
 
+ORIG_FONT_SIZE = 48
+
+
 class Font:
     filepath_to_font_map: dict[tuple[str, int], Font] = {}
 
@@ -194,7 +197,7 @@ class Font:
         Font.filepath_to_font_map[key] = font
         return font
 
-    def __init__(self, filepath: str | FontInfo, index: int = 0) -> None:
+    def __init__(self, filepath: str, index: int = 0) -> None:
         self.filepath = filepath
         with open(filepath, 'rb') as file:
             self.face = FT.Face(file, index=index)
@@ -205,7 +208,7 @@ class Font:
         # 这里使用 48 << 6 是因为 freetype 里的点数是用 26.6 数值格式存储的，所以需要 << 6 空出 6 个小数位
         # （26.6 数值格式也可以理解成单位为 1/64 点）
         # 这里我们使用的 dpi/ppi 为 FRAME_PPI（默认为 144）
-        self.face.set_char_size(48 << 6, 0, FRAME_PPI, FRAME_PPI)
+        self.face.set_char_size(ORIG_FONT_SIZE << 6, 0, FRAME_PPI, FRAME_PPI)
 
         self.cached_glyph: dict[int, Font.GlyphData] = {}
 
