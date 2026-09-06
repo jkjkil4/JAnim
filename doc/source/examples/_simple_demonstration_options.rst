@@ -3,7 +3,7 @@
     .. bili-example:: aid=1854963444&bvid=BV17s42137SJ&p=1
         :title: JAnim - 编写开源动画引擎的一次尝试
         :author: jkjkil-jiang
-        :source-link: https://github.com/jkjkil4/videos/blob/main/2024/JAnimIntroduction/code.py
+        :source-link: https://github.com/jkjkil4/videos/blob/main/_2024/JAnimIntroduction/code.py
 
         嗯，这个本身就是用 JAnim 制作的
 

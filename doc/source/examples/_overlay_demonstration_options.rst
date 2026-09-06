@@ -4,7 +4,7 @@
     .. bili-example:: aid=113010723195116&bvid=BV1mVWDe6EM6&p=3
         :title: Python 图形编程 | 入门篇 第一部分 绘制一个矩形 | 3-安装与创建窗口
         :author: jkjkil-jiang
-        :source-link: https://github.com/jkjkil4/videos/blob/main/2024/LearnOpenGL-3-InstallationAndWindow/code.py
+        :source-link: https://github.com/jkjkil4/videos/blob/main/_2024/LearnOpenGL-3-InstallationAndWindow/code.py
 
         除了 00:00 - 01:25 的“类 Slide 演示”之外，作为视频叠加动画出现的区段：
 
@@ -16,7 +16,7 @@
     .. bili-example:: aid=113010723195116&bvid=BV1mVWDe6EM6&p=4
         :title: Python 图形编程 | 入门篇 第一部分 绘制一个矩形 | 4-处理输入与背景颜色
         :author: jkjkil-jiang
-        :source-link: https://github.com/jkjkil4/videos/blob/main/2024/LearnOpenGL-4-InputAndBackground/code.py
+        :source-link: https://github.com/jkjkil4/videos/blob/main/_2024/LearnOpenGL-4-InputAndBackground/code.py
 
         除了 00:00 - 00:25 的“类 Slide 演示”之外，作为视频叠加动画出现的区段：
 
@@ -29,7 +29,7 @@
     .. bili-example:: aid=114963473502149&bvid=BV1cdh3zYEWP&p=2
         :title: Python 图形编程 | 入门篇 第三部分 纹理 | 10-加载与创建纹理
         :author: jkjkil-jiang
-        :source-link: https://github.com/jkjkil4/videos/blob/main/2025/LearnOpenGL-10-TextureUsage/code.py
+        :source-link: https://github.com/jkjkil4/videos/blob/main/_2025/LearnOpenGL-10-TextureUsage/code.py
 
         作为视频叠加动画出现的区段（由于区段太多，省略了一些无关紧要的部分）：
 

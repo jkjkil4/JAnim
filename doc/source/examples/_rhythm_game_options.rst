@@ -3,7 +3,7 @@
     .. bili-example:: aid=114337414907238&bvid=BV1v1oJYAErV&cid=29418261555&p=1
         :title: 基于 JAnim 的舞萌DX播放器
         :author: jkjkil-jiang
-        :source-link: https://github.com/jkjkil4/videos/blob/main/2025/SimaiPlayer/simai_player.py
+        :source-link: https://github.com/jkjkil4/videos/blob/main/_2025/SimaiPlayer/simai_player.py
 
 .. random-option::
 

@@ -3,7 +3,7 @@
     .. bili-example:: aid=112942003588483&bvid=BV1hCYQe3EpG&p=1
         :title: 视频是如何存储在你的设备里的 - 视频编码简述
         :author: jkjkil-jiang
-        :source-link: https://github.com/jkjkil4/videos/blob/main/2024/VideoEncoding/code.py
+        :source-link: https://github.com/jkjkil4/videos/blob/main/_2024/VideoEncoding/code.py
 
 .. random-option::
 
