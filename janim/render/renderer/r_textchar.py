@@ -56,7 +56,9 @@ class PixelRenderInfo:
             self.init()
             self._initialized = True
 
-        self.texture.render(item.mark.get_points()[:3], item._fix_in_frame)
+        self.texture.render(
+            item.mark.get_points()[:3], item._fix_in_frame, item.fill._rgbas._data[0]
+        )
 
 
 # (Context, unicode, level)
@@ -129,9 +131,11 @@ class CharTexture:
         self.u_char_orig = self.prog['u_char_orig']
         self.u_char_mat = self.prog['u_char_mat']
 
+        self.u_rgba = self.prog['u_rgba']
+
         self.vao = ctx.vertex_array(self.prog, self.vbo_coords, 'in_coord', 'in_texcoord')
 
-    def render(self, mark_points: np.ndarray, is_fix_in_frame: bool) -> None:
+    def render(self, mark_points: np.ndarray, is_fix_in_frame: bool, rgba: np.ndarray) -> None:
         camera_info = Renderer.data_ctx.get().camera_info
 
         if is_fix_in_frame:
@@ -147,6 +151,9 @@ class CharTexture:
         self.u_scale.value = self.font_scale_factor
         self.u_char_orig.value = orig
         self.u_char_mat.value = mat.flatten()
+
+        self.u_rgba.value = rgba
+
         self.vao.render(mgl.TRIANGLE_STRIP)
 
     _cached_standalone_prog: dict[mgl.Context, mgl.Program] = {}
