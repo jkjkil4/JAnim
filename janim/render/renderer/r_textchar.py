@@ -25,10 +25,10 @@ _SIZE_UNIT = 12
 
 class TextCharRenderer(VItemRenderer):
     def render(self, item: TextChar) -> None:  # type: ignore
-        if item._pixel_render_attrs is None:
+        if item._pixel_render_info is None:
             super().render(item)
         else:
-            item._pixel_render_attrs.render(item)
+            item._pixel_render_info.render(item)
 
 
 class PixelRenderInfo:

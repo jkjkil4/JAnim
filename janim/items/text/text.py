@@ -14,6 +14,7 @@ from janim.components.points import Cmpt_Points
 from janim.constants import DL, DOWN, DR, GREY, LEFT, MED_SMALL_BUFF, ORIGIN, RIGHT, UL, UP, UR
 from janim.items.geometry.line import Line
 from janim.items.group import Group
+from janim.items.item import Item
 from janim.items.points import MarkedItem, Points
 from janim.items.text.cmpt import (
     Cmpt_Mark_TextCharImpl,
@@ -132,11 +133,11 @@ class TextChar(BasepointVItem):
         scaled_outline = outline * scale_factor
 
         if params.is_pixel_render:
-            self._pixel_render_attrs = PixelRenderInfo(unicode, outline, params.font_size)
+            self._pixel_render_info = PixelRenderInfo(unicode, outline, params.font_size)
             box = Cmpt_Points.BoundingBox(scaled_outline)
             self.points.set([box.get(DL), box.get(DR), box.get(UR), box.get(UL), box.get(DL)])
         else:
-            self._pixel_render_attrs = None
+            self._pixel_render_info = None
             self.points.set(scaled_outline)
 
         # 标记位置
@@ -161,6 +162,14 @@ class TextChar(BasepointVItem):
                 font_render = font
                 break
         return font_render
+
+    def become(self, other: Item, *, auto_visible: bool = True) -> Self:
+        super().become(other, auto_visible=auto_visible)
+        if isinstance(other, TextChar):
+            self._pixel_render_info = other._pixel_render_info
+        else:
+            self._pixel_render_info = None
+        return self
 
     def get_mark_orig(self) -> np.ndarray:
         return self.mark.get(0)
