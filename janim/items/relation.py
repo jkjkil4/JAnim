@@ -53,10 +53,12 @@ class ItemRelation[RelT: 'ItemRelation']:
         self._parents_changed_hooks: list[Callable] = []
         self._children_changed_hooks: list[Callable] = []
 
+    # 在 registry 内部被调用
     def _parents_changed(self) -> None:
         for hook in self._parents_changed_hooks:
             hook()
 
+    # 在 registry 内部被调用
     def _children_changed(self) -> None:
         for hook in self._children_changed_hooks:
             hook()
