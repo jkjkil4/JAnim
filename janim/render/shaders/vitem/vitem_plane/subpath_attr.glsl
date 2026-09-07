@@ -4,8 +4,10 @@
 #include "../line_sdf.glsl"
 #include "../bezier_sdf.glsl"
 
+#ifndef SKIP_VITEM_GET_SUBPATH_ATTR_INPUTS
 #include "inputs.glsl"
 #include "../buffers.glsl"
+#endif
 
 void get_curve_attr(
     vec2 A,

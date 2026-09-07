@@ -3,22 +3,29 @@ from __future__ import annotations
 import inspect
 import itertools as it
 import re
+from dataclasses import dataclass
 from enum import StrEnum
 from typing import Iterable, Literal, Self
 
 import numpy as np
 
 from janim.components.component import CmptInfo
-from janim.constants import DOWN, GREY, LEFT, MED_SMALL_BUFF, ORIGIN, RIGHT, UL, UP
+from janim.components.points import Cmpt_Points
+from janim.constants import DL, DOWN, DR, GREY, LEFT, MED_SMALL_BUFF, ORIGIN, RIGHT, UL, UP, UR
 from janim.items.geometry.line import Line
 from janim.items.group import Group
+from janim.items.item import Item
 from janim.items.points import MarkedItem, Points
-from janim.items.text.cmpt import Cmpt_Mark_TextCharImpl, Cmpt_Mark_TextLineImpl
+from janim.items.text.cmpt import (
+    Cmpt_Mark_TextCharImpl,
+    Cmpt_Mark_TextLineImpl,
+)
 from janim.items.text.rich import TagQueue, extract_tag_queue
 from janim.items.vitem import VItem
+from janim.render.renderer.r_textchar import PixelRenderInfo, TextCharRenderer
 from janim.typing import Vect
 from janim.utils.config import Config
-from janim.utils.font.database import Font, get_font_info_by_attrs
+from janim.utils.font.database import ORIG_FONT_SIZE, Font, get_font_info_by_attrs
 from janim.utils.font.variant import Style, StyleName, Weight, WeightName
 from janim.utils.simple_functions import decode_utf8
 from janim.utils.space_ops import cross, get_norm, normalize
@@ -40,7 +47,6 @@ BASEPOINT_MARKS = np.array([ORIGIN, RIGHT, UP])
 BASEPOINT_MARKS.setflags(write=False)
 
 DEFAULT_FONT_SIZE = 24
-ORIG_FONT_SIZE = 48
 
 
 class ProjType(StrEnum):
@@ -93,13 +99,14 @@ class TextChar(BasepointVItem):
     字符物件，作为 :class:`TextLine` 的子物件，在创建 :class:`TextLine` 时产生
     """
 
+    renderer_cls = TextCharRenderer
+
     mark = CmptInfo(Cmpt_Mark_TextCharImpl[Self])
 
     def __init__(
         self,
         char: str,
-        fonts: list[Font],
-        font_size: float,
+        params: _TextParams,
         fill_alpha=None,
         **kwargs,
     ):
@@ -107,13 +114,13 @@ class TextChar(BasepointVItem):
         self.char = char
 
         unicode = decode_utf8(char)
-        font_render = self.get_font_for_render(unicode, fonts)
+        font_render = self.get_font_for_render(unicode, params.fonts)
 
         outline, advance = font_render.get_glyph_data(unicode)
 
         # 因为 get_glyph_data 得到的字形是 font_size=48 的字形（具体参考 janim.utils.font.Font.__init__ 中的 set_char_size）
         # 所以这里使用 font_size / ORIG_FONT_SIZE 缩放到目标字号
-        font_scale_factor = font_size / ORIG_FONT_SIZE
+        font_scale_factor = params.font_size / ORIG_FONT_SIZE
         # frame_scale_factor 中包含了两个缩放因素：
         # - 1/64：
         #       这是因为使用 get_glyph_data 得到的字形坐标仍然是 26.6 数值格式，所以需要右移 6 位也就是除以 64
@@ -123,7 +130,15 @@ class TextChar(BasepointVItem):
 
         scale_factor = font_scale_factor * frame_scale_factor
 
-        self.points.set(outline * scale_factor)
+        scaled_outline = outline * scale_factor
+
+        if params.is_pixel_render:
+            self._pixel_render_info = PixelRenderInfo(unicode, outline, params.font_size)
+            box = Cmpt_Points.BoundingBox(scaled_outline)
+            self.points.set([box.get(DL), box.get(DR), box.get(UR), box.get(UL), box.get(DL)])
+        else:
+            self._pixel_render_info = None
+            self.points.set(scaled_outline)
 
         # 标记位置
         self.mark.set_points(
@@ -147,6 +162,14 @@ class TextChar(BasepointVItem):
                 font_render = font
                 break
         return font_render
+
+    def become(self, other: Item, *, auto_visible: bool = True) -> Self:
+        super().become(other, auto_visible=auto_visible)
+        if isinstance(other, TextChar):
+            self._pixel_render_info = other._pixel_render_info
+        else:
+            self._pixel_render_info = None
+        return self
 
     def get_mark_orig(self) -> np.ndarray:
         return self.mark.get(0)
@@ -174,8 +197,8 @@ class TextLine(BasepointVItem, Group[TextChar]):
     def __init__(
         self,
         text: str,
-        fonts: list[Font],
-        font_size: float,
+        params: _TextParams,
+        *,
         char_kwargs={},
         fill_alpha=None,
         **kwargs,
@@ -183,13 +206,13 @@ class TextLine(BasepointVItem, Group[TextChar]):
         self.text = text
 
         super().__init__(
-            *[TextChar(char, fonts, font_size, **char_kwargs) for char in text],
+            *[TextChar(char, params, **char_kwargs) for char in text],
             fill_alpha=fill_alpha,
             **kwargs,
         )
 
         # 标记位置
-        scale = font_size / ORIG_FONT_SIZE
+        scale = params.font_size / ORIG_FONT_SIZE
         self.mark.set_points([ORIGIN * scale, RIGHT * scale, UP * scale])
 
     def get_mark_orig(self) -> np.ndarray:
@@ -241,6 +264,13 @@ class TextLine(BasepointVItem, Group[TextChar]):
         # fmt: on
 
 
+@dataclass(slots=True)
+class _TextParams:
+    fonts: list[Font]
+    font_size: float
+    is_pixel_render: bool
+
+
 class Text(Group[TextLine], VItem):
     """
     文字物件，支持富文本等功能
@@ -262,6 +292,10 @@ class Text(Group[TextLine], VItem):
         PlainText = 'plain'
         RichText = 'rich'
 
+    class Render(StrEnum):
+        VItemText = 'vitem'
+        PixelText = 'pixel'
+
     def __init__(
         self,
         text: str,
@@ -273,6 +307,7 @@ class Text(Group[TextLine], VItem):
         force_full_name: bool = False,  # 一般情况下用不到，只是为了在 family-name 调用不符合预期时，使用该参数强制作为 full-name
         #
         format: Format | Literal['plain', 'rich'] = Format.PlainText,
+        render: Render | Literal['vitem', 'pixel'] = Render.VItemText,
         line_kwargs: dict = {},
         #
         stroke_alpha: float = 0,
@@ -304,11 +339,10 @@ class Text(Group[TextLine], VItem):
         else:
             self.text, tag_queue = extract_tag_queue(text)
 
+        params = _TextParams(fonts, font_size, render == Text.Render.PixelText)
+
         super().__init__(
-            *[
-                TextLine(line_text, fonts=fonts, font_size=font_size, **line_kwargs)
-                for line_text in self.text.split('\n')
-            ],
+            *[TextLine(line_text, params, **line_kwargs) for line_text in self.text.split('\n')],
             stroke_alpha=stroke_alpha,
             fill_alpha=fill_alpha,
             stroke_background=stroke_background,
