@@ -124,7 +124,7 @@ class CameraInfo:
         返回二维坐标序列
         """
         n = len(points)
-        aligned = np.empty((n, 4))
+        aligned = np.empty((n, 4), dtype=np.float32)
         aligned[:, :3] = points
         aligned[:, -1] = 1
         mapped = aligned @ self.proj_view_matrix.T
@@ -137,7 +137,7 @@ class CameraInfo:
         返回三维坐标序列，与 :meth:`map_points` 相比，最后一个分量带有深度信息
         """
         n = len(points)
-        aligned = np.empty((n, 4))
+        aligned = np.empty((n, 4), dtype=np.float32)
         aligned[:, :3] = points
         aligned[:, -1] = 1
         mapped = aligned @ self.proj_view_matrix.T

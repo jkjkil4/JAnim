@@ -3,13 +3,26 @@ in vec2 v_coord;
 
 out vec4 f_color;
 
+#ifdef COMPATIBILITY
+
+uniform samplerBuffer points;  // vec4(x1, y1, x2, y2)
+
+vec2 get_point(int idx) {
+    int idx_div = idx / 2;
+    int idx_mod = idx % 2;
+    if (idx_mod == 0) {
+        return texelFetch(points, idx_div).xy;
+    } else {
+        return texelFetch(points, idx_div).zw;
+    }
+}
+
+#else
+
 layout(std140, binding = 0) buffer Points
 {
     vec4 points[];  // vec4(x1, y1, x2, y2)
 };
-
-uniform float u_anti_alias_radius;
-uniform int lim;
 
 vec2 get_point(int idx) {
     int idx_div = idx / 2;
@@ -20,6 +33,11 @@ vec2 get_point(int idx) {
         return points[idx_div].zw;
     }
 }
+
+#endif
+
+uniform float u_anti_alias_radius;
+uniform int lim;
 
 #define SKIP_VITEM_GET_SUBPATH_ATTR_INPUTS
 #include "../vitem/vitem_plane/subpath_attr.glsl"

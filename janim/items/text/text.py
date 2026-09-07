@@ -134,7 +134,7 @@ class TextChar(BasepointVItem):
         if params.is_pixel_render:
             self._pixel_render_attrs = PixelRenderInfo(unicode, outline, params.font_size)
             box = Cmpt_Points.BoundingBox(scaled_outline)
-            self.points.set_as_corners([box.get(UL), box.get(DL), box.get(UR), box.get(DR)])
+            self.points.set([box.get(DL), box.get(DR), box.get(UR), box.get(UL), box.get(DL)])
         else:
             self._pixel_render_attrs = None
             self.points.set(scaled_outline)

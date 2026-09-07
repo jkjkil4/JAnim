@@ -3,6 +3,7 @@ from __future__ import annotations
 import math
 from typing import TYPE_CHECKING
 
+from janim_backend.ffi import gl
 import moderngl as mgl
 import numpy as np
 
@@ -44,6 +45,7 @@ class PixelRenderInfo:
         self.font_size = font_size
 
         self._initialized: bool = False
+        self._is_null = len(standard_outline) == 0
 
     def init(self) -> None:
         self.ctx = Renderer.data_ctx.get().ctx
@@ -52,6 +54,9 @@ class PixelRenderInfo:
         )
 
     def render(self, item: TextChar) -> None:
+        if self._is_null:
+            return
+
         if not self._initialized:
             self.init()
             self._initialized = True
@@ -149,10 +154,10 @@ class CharTexture:
 
         self.framebuffer.use(0)
         self.u_scale.value = self.font_scale_factor
-        self.u_char_orig.value = orig
-        self.u_char_mat.value = mat.flatten()
+        self.u_char_orig.write(orig.tobytes())
+        self.u_char_mat.write(mat.tobytes())
 
-        self.u_rgba.value = rgba
+        self.u_rgba.write(rgba.tobytes())
 
         self.vao.render(mgl.TRIANGLE_STRIP)
 
@@ -164,24 +169,32 @@ class CharTexture:
         vbo_coords: mgl.Buffer,
         scaled_outline: np.ndarray,
     ) -> None:
-        if len(scaled_outline) == 0:
-            return
+        compatibility = ctx.version_code < 430
 
         cache = CharTexture._cached_standalone_prog.get(ctx, None)
         if cache is not None:
             prog = cache
         else:
+            suffix = 'compa' if compatibility else 'normal'
             prog = ctx.program(
                 vertex_shader=resolve_shader_from_file(
-                    find_shader_file('render/shaders/text/_vitem_standalone_norm_.vert.glsl')
+                    find_shader_file(f'render/shaders/text/_vitem_standalone_{suffix}_.vert.glsl')
                 ),
                 fragment_shader=resolve_shader_from_file(
-                    find_shader_file('render/shaders/text/_vitem_standalone_norm_.frag.glsl')
+                    find_shader_file(f'render/shaders/text/_vitem_standalone_{suffix}_.frag.glsl')
                 ),
             )
             CharTexture._cached_standalone_prog[ctx] = prog
 
-        vbo_points = ctx.buffer(data=scaled_outline[:, :2].astype(np.float32).tobytes())
+        outline_bytes = scaled_outline[:, :2].astype(np.float32).tobytes()
+        if compatibility:
+            bytes_len = len(outline_bytes)
+            size = (bytes_len + 15) & ~15  # align vec4
+            if bytes_len != size:
+                outline_bytes += bytes(size - bytes_len)
+            vbo_points = ctx.buffer(data=outline_bytes)
+        else:
+            vbo_points = ctx.buffer(data=outline_bytes)
 
         vao = ctx.vertex_array(prog, vbo_coords, 'in_coord', 'in_texcoord')
 
@@ -189,4 +202,10 @@ class CharTexture:
         prog['u_anti_alias_radius'] = Config.get.anti_alias_width / 2
         prog['lim'] = (len(scaled_outline) - 1) // 2 * 2
 
+        if compatibility:
+            (sampb_points,) = gl.glGenTextures(1)
+            gl.glBindTexture(gl.GL_TEXTURE_BUFFER, sampb_points)
+            gl.glTexBuffer(gl.GL_TEXTURE_BUFFER, gl.GL_RGBA32F, vbo_points.glo)
+            gl.glActiveTexture(gl.GL_TEXTURE0)
+            gl.glBindTexture(gl.GL_TEXTURE_BUFFER, sampb_points)
         vao.render(mgl.TRIANGLE_STRIP)
