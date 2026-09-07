@@ -3,9 +3,10 @@ from __future__ import annotations
 import math
 from typing import TYPE_CHECKING
 
-from janim_backend.ffi import gl
 import moderngl as mgl
 import numpy as np
+from janim_backend import compute
+from janim_backend.ffi import gl
 
 from janim.components.points import Cmpt_Points
 from janim.render.base import Renderer
@@ -147,15 +148,15 @@ class CharTexture:
             mapped = camera_info.map_fixed_in_frame_points(mark_points)
         else:
             mapped = camera_info.map_points(mark_points)
-        orig, right, up = mapped * camera_info.frame_radius
-        mat = np.empty((2, 2), dtype=np.float32)
-        mat[0] = right - orig  # OpenGL 的矩阵是列主序，所以我们并不是 [:, i] 填充
-        mat[1] = up - orig
+        orig_bytes, mat_bytes = compute.compute_pixelchar_uniform_bytes(
+            mapped,
+            camera_info.frame_radius,
+        )
 
         self.framebuffer.use(0)
         self.u_scale.value = self.font_scale_factor
-        self.u_char_orig.write(orig.tobytes())
-        self.u_char_mat.write(mat.tobytes())
+        self.u_char_orig.write(orig_bytes)
+        self.u_char_mat.write(mat_bytes)
 
         self.u_rgba.write(rgba.tobytes())
 
