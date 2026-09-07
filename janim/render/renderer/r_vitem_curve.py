@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 
 import moderngl as mgl
 import numpy as np
-from janim_backend.ffi import gl
+from janim_backend import gl
 
 from janim.camera.camera_info import CameraInfo
 from janim.render.base import RenderData, Renderer
@@ -87,8 +87,9 @@ class VItemCurveRenderer(Renderer):
 
     def init_common(self) -> None:
         self.u_fix = self.get_u_fix_in_frame(self.prog)
-        self.u_glow_color = self.prog['glow_color']
-        self.u_glow_size = self.prog['glow_size']
+        self.u_glow_color, self.u_glow_size = self.uniforms(
+            self.prog, ('glow_color', gl.GL_FLOAT_VEC4), ('glow_size', gl.GL_FLOAT)
+        )
 
         self.vbo_indices = self.ctx.buffer(reserve=1)
 
@@ -202,8 +203,8 @@ class VItemCurveRenderer(Renderer):
 
     def render_common(self, item: VItem, render_data: RenderData, new_attrs: RenderAttrs) -> None:
         self.update_fix_in_frame(self.u_fix, item)
-        self.u_glow_color.write(item.glow._rgba._data.tobytes())
-        self.u_glow_size.value = item.glow._size
+        self.u_glow_color.write_bytes(item.glow._rgba._data.tobytes())
+        self.u_glow_size.write_float(item.glow._size)
 
         with self.depth_test_if_enabled(self.ctx, item):
             self.vao.render(mgl.POINTS, vertices=self.vbo_indices.size // 4 // 3)

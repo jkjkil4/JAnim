@@ -4,11 +4,11 @@ from typing import TYPE_CHECKING
 
 import moderngl as mgl
 import numpy as np
+from janim_backend import gl
 
 from janim.render.base import Renderer
 from janim.render.program import get_program_from_file_prefix
 from janim.utils.space_ops import normalize_along_axis
-
 
 if TYPE_CHECKING:
     from janim.items.three_d.types import SmoothSurface
@@ -22,7 +22,7 @@ class SmoothSurfaceRenderer(Renderer):
         self.prog = get_program_from_file_prefix('render/shaders/smooth_surface')
 
         self.u_fix = self.get_u_fix_in_frame(self.prog)
-        self.u_color = self.prog['u_color']
+        self.u_color = self.uniform(self.prog, 'u_color', gl.GL_FLOAT_VEC4)
 
         self.ctx = self.data_ctx.get().ctx
         self.vbo_points = self.ctx.buffer(reserve=1)
@@ -76,7 +76,7 @@ class SmoothSurfaceRenderer(Renderer):
             self.prev_indices = new_indices
 
         self.update_fix_in_frame(self.u_fix, item)
-        self.u_color.value = item.color._rgba.data
+        self.u_color.write_bytes(item.color._rgba.data.tobytes())
 
         with self.depth_test_if_enabled(self.ctx, item):
             self.vao.render(mgl.TRIANGLES, vertices=new_indices.size)

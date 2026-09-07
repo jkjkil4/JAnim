@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING
 
 import moderngl as mgl
 import numpy as np
+from janim_backend import gl
 
 from janim.render.base import Renderer
 from janim.render.program import get_program_from_file_prefix
@@ -20,8 +21,9 @@ class DotCloudRenderer(Renderer):
         self.prog = get_program_from_file_prefix('render/shaders/dotcloud')
 
         self.u_fix = self.get_u_fix_in_frame(self.prog)
-        self.u_glow_color = self.prog['glow_color']
-        self.u_glow_size = self.prog['glow_size']
+        self.u_glow_color, self.u_glow_size = self.uniforms(
+            self.prog, ('glow_color', gl.GL_FLOAT_VEC4), ('glow_size', gl.GL_FLOAT)
+        )
 
         self.ctx = self.data_ctx.get().ctx
         self.vbo_points = self.ctx.buffer(reserve=1)
@@ -69,8 +71,8 @@ class DotCloudRenderer(Renderer):
             self.prev_points = new_points
 
         self.update_fix_in_frame(self.u_fix, item)
-        self.u_glow_color.write(item.glow._rgba._data.tobytes())
-        self.u_glow_size.value = item.glow._size
+        self.u_glow_color.write_bytes(item.glow._rgba._data.tobytes())
+        self.u_glow_size.write_float(item.glow._size)
 
         with self.depth_test_if_enabled(self.ctx, item):
             self.vao.render(mgl.POINTS, vertices=len(new_points))

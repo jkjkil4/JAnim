@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING
 
 import moderngl as mgl
 import numpy as np
+from janim_backend import gl
 
 from janim.items.vitem import VItem
 from janim.render.base import Renderer
@@ -41,6 +42,13 @@ class ShapeMaskRenderer(Renderer):
 
         self.u_content_tex = self.prog['content_tex']
         self.u_mask_tex = self.prog['mask_tex']
+
+        self.u_mask_alpha, self.u_feather, self.u_invert = self.uniforms(
+            self.prog,
+            ('u_mask_alpha', gl.GL_FLOAT),
+            ('u_feather', gl.GL_FLOAT),
+            ('u_invert', gl.GL_FLOAT),
+        )
 
         # 全屏四边形 VBO（in_pos + in_texcoord 交错）
         self.vbo = self.ctx.buffer(
@@ -94,8 +102,8 @@ class ShapeMaskRenderer(Renderer):
         self.u_content_tex.value = 0
         self.u_mask_tex.value = 1
 
-        self.prog['u_mask_alpha'] = item.alpha._value
-        self.prog['u_feather'] = item.feather._value
-        self.prog['u_invert'] = item.invert._value
+        self.u_mask_alpha.write_float(item.alpha._value)
+        self.u_feather.write_float(item.feather._value)
+        self.u_invert.write_float(item.invert._value)
 
         self.vao.render(mgl.TRIANGLE_STRIP)

@@ -4,11 +4,11 @@ from collections import defaultdict
 from contextlib import contextmanager
 from contextvars import ContextVar
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Iterable
 
 import moderngl as mgl
 import numpy as np
-from janim_backend.ffi import gl
+from janim_backend import gl
 
 from janim.camera.camera_info import CameraInfo
 from janim.locale import get_translator
@@ -48,12 +48,23 @@ class Renderer:
     def render(self, item) -> None: ...
 
     @staticmethod
-    def get_u_fix_in_frame(prog: mgl.Program) -> mgl.Uniform:
-        return prog[FIX_IN_FRAME_KEY]
+    def uniform(prog: mgl.Program, name: str, gl_type: int) -> gl.FastUniform:
+        return gl.FastUniform(prog.glo, name, gl_type)
 
     @staticmethod
-    def update_fix_in_frame(uniform: mgl.Uniform, item: Item) -> None:
-        uniform.value = item._fix_in_frame
+    def uniforms(
+        prog: mgl.Program, *names_and_gl_types: tuple[str, int]
+    ) -> Iterable[gl.FastUniform]:
+        glo = prog.glo
+        return (gl.FastUniform(glo, name, gl_type) for name, gl_type in names_and_gl_types)
+
+    @staticmethod
+    def get_u_fix_in_frame(prog: mgl.Program) -> gl.FastUniform:
+        return gl.FastUniform(prog.glo, FIX_IN_FRAME_KEY, gl.GL_BOOL)
+
+    @staticmethod
+    def update_fix_in_frame(uniform: gl.FastUniform, item: Item) -> None:
+        uniform.write_bool(item._fix_in_frame)
 
     @staticmethod
     def update_dynamic_buffer_data(

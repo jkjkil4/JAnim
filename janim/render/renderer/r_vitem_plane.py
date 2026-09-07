@@ -5,8 +5,7 @@ from typing import TYPE_CHECKING
 
 import moderngl as mgl
 import numpy as np
-from janim_backend import compute
-from janim_backend.ffi import gl
+from janim_backend import compute, gl
 
 from janim.camera.camera_info import CameraInfo
 from janim.render.base import RenderData, Renderer
@@ -44,7 +43,7 @@ class VItemPlaneRenderer(Renderer):
         self.prog = get_program_from_file_prefix(self.shader_path_compatibility)
         self.init_common()
 
-        self.u_lim = self.prog['lim']
+        self.u_lim = self.uniform(self.prog, 'lim', gl.GL_INT)
 
         (
             self.sampb_mapped_points,
@@ -102,15 +101,29 @@ class VItemPlaneRenderer(Renderer):
 
     def init_common(self) -> None:
         self.u_fix = self.get_u_fix_in_frame(self.prog)
-        self.u_stroke_background: mgl.Uniform = self.prog['stroke_background']
-        self.u_is_fill_transparent = self.prog['is_fill_transparent']
-        self.u_glow_color = self.prog['glow_color']
-        self.u_glow_size = self.prog['glow_size']
 
-        self.u_unit_normal = self.prog['unit_normal']
-        self.u_start_point = self.prog['start_point']
-        self.u_DEPTH_TEST = self.prog['DEPTH_TEST']
-        self.u_SHADE_IN_3D = self.prog.get('SHADE_IN_3D', None)
+        (
+            self.u_stroke_background,
+            self.u_is_fill_transparent,
+            self.u_glow_color,
+            self.u_glow_size,
+        ) = self.uniforms(
+            self.prog,
+            ('stroke_background', gl.GL_BOOL),
+            ('is_fill_transparent', gl.GL_BOOL),
+            ('glow_color', gl.GL_FLOAT_VEC4),
+            ('glow_size', gl.GL_FLOAT),
+        )
+
+        self.u_unit_normal, self.u_start_point, self.u_DEPTH_TEST, self.u_SHADE_IN_3D = (
+            self.uniforms(
+                self.prog,
+                ('unit_normal', gl.GL_FLOAT_VEC3),
+                ('start_point', gl.GL_FLOAT_VEC3),
+                ('DEPTH_TEST', gl.GL_BOOL),
+                ('SHADE_IN_3D', gl.GL_BOOL),
+            )
+        )
 
         self.vbo_coord = self.ctx.buffer(reserve=4 * 2 * 4)
         self.vbo_mapped_points = self.ctx.buffer(reserve=1)
@@ -194,7 +207,7 @@ class VItemPlaneRenderer(Renderer):
         gl.glUniform1i(self.loc_stroke_color, 2)
         gl.glUniform1i(self.loc_fill_color, 3)
 
-        self.u_lim.value = (len(new_attrs.points) - 1) // 2 * 2
+        self.u_lim.write_int((len(new_attrs.points) - 1) // 2 * 2)
         gl.glActiveTexture(gl.GL_TEXTURE0)
         gl.glBindTexture(gl.GL_TEXTURE_BUFFER, self.sampb_mapped_points)
         gl.glActiveTexture(gl.GL_TEXTURE1)
@@ -270,18 +283,17 @@ class VItemPlaneRenderer(Renderer):
 
     def render_common(self, item: VItem, render_data: RenderData, new_attrs: RenderAttrs) -> None:
         self.update_fix_in_frame(self.u_fix, item)
-        self.u_stroke_background.value = item.stroke_background
-        self.u_is_fill_transparent.value = self.fill_transparent
-        self.u_glow_color.write(item.glow._rgba._data.tobytes())
-        self.u_glow_size.value = new_attrs.glow_size
+        self.u_stroke_background.write_bool(item.stroke_background)
+        self.u_is_fill_transparent.write_bool(self.fill_transparent)
+        self.u_glow_color.write_bytes(item.glow._rgba._data.tobytes())
+        self.u_glow_size.write_float(new_attrs.glow_size)
 
-        self.u_DEPTH_TEST.value = item._depth_test
-        if self.u_SHADE_IN_3D is not None:
-            self.u_SHADE_IN_3D.value = item._shade_in_3d
+        self.u_DEPTH_TEST.write_bool(item._depth_test)
+        self.u_SHADE_IN_3D.write_bool(item._shade_in_3d)
 
         if item._depth_test or item._shade_in_3d:
-            self.u_unit_normal.value = self.unit_normal
-            self.u_start_point.value = new_attrs.points[0]
+            self.u_unit_normal.write_bytes(self.unit_normal.tobytes())
+            self.u_start_point.write_bytes(new_attrs.points[0].tobytes())
 
         with self.depth_test_if_enabled(self.ctx, item):
             self.vao.render(mgl.TRIANGLE_STRIP)

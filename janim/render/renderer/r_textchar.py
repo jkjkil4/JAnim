@@ -5,8 +5,7 @@ from typing import TYPE_CHECKING
 
 import moderngl as mgl
 import numpy as np
-from janim_backend import compute
-from janim_backend.ffi import gl
+from janim_backend import compute, gl
 
 from janim.components.points import Cmpt_Points
 from janim.render.base import Renderer
@@ -133,11 +132,13 @@ class CharTexture:
         self.prog = get_program_from_file_prefix('render/shaders/text/pixel_text')
         self.prog['u_fbo'] = 0
 
-        self.u_scale = self.prog['u_scale']
-        self.u_char_orig = self.prog['u_char_orig']
-        self.u_char_mat = self.prog['u_char_mat']
-
-        self.u_rgba = self.prog['u_rgba']
+        self.u_scale, self.u_char_orig, self.u_char_mat, self.u_rgba = Renderer.uniforms(
+            self.prog,
+            ('u_scale', gl.GL_FLOAT),
+            ('u_char_orig', gl.GL_FLOAT_VEC2),
+            ('u_char_mat', gl.GL_FLOAT_MAT2),
+            ('u_rgba', gl.GL_FLOAT_VEC4),
+        )
 
         self.vao = ctx.vertex_array(self.prog, self.vbo_coords, 'in_coord', 'in_texcoord')
 
@@ -154,11 +155,12 @@ class CharTexture:
         )
 
         self.framebuffer.use(0)
-        self.u_scale.value = self.font_scale_factor
-        self.u_char_orig.write(orig_bytes)
-        self.u_char_mat.write(mat_bytes)
 
-        self.u_rgba.write(rgba.tobytes())
+        self.u_scale.write_float(self.font_scale_factor)
+        self.u_char_orig.write_bytes(orig_bytes)
+        self.u_char_mat.write_bytes(mat_bytes)
+
+        self.u_rgba.write_bytes(rgba.tobytes())
 
         self.vao.render(mgl.TRIANGLE_STRIP)
 

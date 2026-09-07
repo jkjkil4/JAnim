@@ -36,7 +36,7 @@ class Array:
     """
 
     def __init__(self, *, _data):
-        self._data = _data
+        self._data: np.ndarray = _data
 
     @staticmethod
     def create(x, dtype=np.float32) -> Array:

@@ -6,7 +6,7 @@ from functools import partial
 from typing import Generator
 
 import moderngl as mgl
-from janim_backend.ffi import gl
+from janim_backend import gl
 from tqdm import tqdm as ProgressDisplay
 
 from janim.anims_core.time import TimeRange

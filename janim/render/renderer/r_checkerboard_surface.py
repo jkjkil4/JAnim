@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING
 
 import moderngl as mgl
 import numpy as np
+from janim_backend import gl
 
 from janim.render.base import Renderer
 from janim.render.program import get_program_from_file_prefix
@@ -21,9 +22,12 @@ class CheckerboardSurfaceRenderer(Renderer):
         self.prog = get_program_from_file_prefix('render/shaders/checkerboard_surface')
 
         self.u_fix = self.get_u_fix_in_frame(self.prog)
-        self.u_color1 = self.prog['u_color1']
-        self.u_color2 = self.prog['u_color2']
-        self.u_row_length = self.prog['u_row_length']
+        self.u_color1, self.u_color2, self.u_row_length = self.uniforms(
+            self.prog,
+            ('u_color1', gl.GL_FLOAT_VEC4),
+            ('u_color2', gl.GL_FLOAT_VEC4),
+            ('u_row_length', gl.GL_INT),
+        )
 
         self.ctx = self.data_ctx.get().ctx
         self.vbo_points = self.ctx.buffer(reserve=1)
@@ -77,9 +81,11 @@ class CheckerboardSurfaceRenderer(Renderer):
             self.prev_indices = new_indices
 
         self.update_fix_in_frame(self.u_fix, item)
-        self.u_color1.value = item.color._rgbas._data[0]
-        self.u_color2.value = item.color._rgbas._data[1]
-        self.u_row_length.value = item.resolution[1]
+
+        rgbas = item.color._rgbas._data
+        self.u_color1.write_bytes(rgbas[0].tobytes())
+        self.u_color2.write_bytes(rgbas[1].tobytes())
+        self.u_row_length.write_int(item.resolution[1])
 
         with self.depth_test_if_enabled(self.ctx, item):
             self.vao.render(mgl.TRIANGLES, vertices=new_indices.size)
