@@ -163,3 +163,16 @@ class ReadVFRVideoExample(Timeline):
         video = Video('assets/VFR-fps2-fps5.mp4').show().start(speed=2)
         video.points.scale(0.8)
         self.forward(video.info.duration / 2)
+
+
+class TestText(Timeline):
+    def construct(self) -> None:
+        self.demo('vitem')
+        self.demo('pixel')
+
+    def demo(self, render) -> None:
+        txt = Text('Test Text!\n' * 3, font_size=60, render=render).show()
+        self.forward(0.4)
+        self.play(txt.anim.points.rotate(40 * DEGREES), duration=0.6)
+        txt.hide()
+        self.forward(0.2)
