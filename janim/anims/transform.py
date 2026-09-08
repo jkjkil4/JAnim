@@ -11,10 +11,9 @@ from typing import Callable, Generator, Iterable
 
 import numpy as np
 
-from janim.anims_core.anim_stack import AnimStack
-from janim.anims_core.animation import Animation
 from janim.anims.composition import AnimGroup
 from janim.anims.fading import FadeIn, FadeInFromPoint, FadeOut, FadeOutToPoint
+from janim.anims_core.animation import Animation
 from janim.anims_core.stackable import ApplyParams, ItemAnimation
 from janim.anims_core.time import TimeRange
 from janim.camera.camera import Camera

@@ -65,7 +65,7 @@ class Cmpt_Depth[ItemT](Component[ItemT]):
         return self._depth == other._depth and self._order == other._order
 
     @classmethod
-    def align_for_interpolate(cls, cmpt1: Cmpt_Depth, cmpt2: Cmpt_Depth):
+    def align_for_interpolate(cls, cmpt1: Cmpt_Depth, cmpt2: Cmpt_Depth) -> AlignedData[Self]:
         cmpt1_copy = cmpt1.copy()
         cmpt2_copy = cmpt2.copy()
         return AlignedData(cmpt1_copy, cmpt2_copy, cmpt1_copy.copy())

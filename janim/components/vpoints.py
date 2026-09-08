@@ -25,6 +25,7 @@ from janim.utils.bezier import (
 )
 from janim.utils.cmpt_lazy import cmpt_lazy_method
 from janim.utils.data import AlignedData
+from janim.utils.iterables import resize_preserving_order_indice_groups
 from janim.utils.space_ops import get_norm, get_unit_normal, normalize, rotation_between_vectors
 
 _ = get_translator('janim.components.vpoints')
@@ -125,84 +126,36 @@ class Cmpt_VPoints[ItemT](Cmpt_Points[ItemT], impl=True):
             cmpt1_copy.set(sp1)
             cmpt2_copy.set(sp2)
         else:
-            # 这里使得 subpaths1 的子路径数量比 subpaths2 多，简化后面的判断
-            reverse = len(subpaths1) < len(subpaths2)
+            # 这里使得 subpaths1 的子路径数量比 subpaths2 少，简化后面的判断
+            reverse = len(subpaths1) > len(subpaths2)
             if reverse:
                 cmpt1_copy, cmpt2_copy = cmpt2_copy, cmpt1_copy
                 subpaths1, subpaths2 = subpaths2, subpaths1
 
-            # 用于计算相对距离的“中心”
-            # 这里的 ``RIGHT * (i * 1e-5)`` 是为了是有重合的点有所差别，比如可以保证图形字符 “O” 配对时的一致性
-            def center(i: int, points: np.ndarray) -> np.ndarray:
-                min = np.min(points, axis=0)
-                max = np.max(points, axis=0)
-                return (min + max) * 0.5 + RIGHT * (i * 1e-5)
-
-            # 这里的 ``/ .box.width`` 是为了缩放到一致
-            subpaths1_center = np.array([center(i, subpath) for i, subpath in enumerate(subpaths1)])
-            subpaths1_center -= cmpt1_copy.box.center
-            if cmpt1_copy.box.width != 0:
-                subpaths1_center /= cmpt1_copy.box.width
-            subpaths2_center = np.array([center(i, subpath) for i, subpath in enumerate(subpaths2)])
-            subpaths2_center -= cmpt2_copy.box.center
-            if cmpt2_copy.box.width != 0:
-                subpaths2_center /= cmpt2_copy.box.width
-
-            # 这两个函数使用曼哈顿距离
-            def nearest_idx(point: np.ndarray) -> int:
-                return abs(subpaths2_center - point).sum(axis=1).argmin()
-
-            def sorted_idx(point: np.ndarray) -> Iterable[int]:
-                return abs(subpaths2_center - point).sum(axis=1).argsort()
-
-            type SubPath1Idx = int
-
-            distributions: list[list[SubPath1Idx]] = [[] for _ in range(len(subpaths2))]
-
-            # 将 subpaths1 按照最近原则分配给 subpaths2
-            for idx1, center1 in enumerate(subpaths1_center):
-                distributions[nearest_idx(center1)].append(idx1)
-
-            # 遍历分配结果，如果发现有 subpaths2 中的子路径没有分配到内容，则从其它子路径那边抢一个来
-            for idx2, distri in enumerate(distributions):
-                # 如果有分配到内容，则跳过
-                if distri:
-                    continue
-
-                # 按距离遍历其它的子路径
-                for other_idx in sorted_idx(subpaths2_center[idx2]):
-                    if other_idx == idx2:
-                        continue
-
-                    # 如果其它子路径有两个以上的分配，则从它这里抢一个
-                    other_distri = distributions[other_idx]
-                    if len(other_distri) >= 2:
-                        distri.append(other_distri.pop(0))
-                        break
-
-                # 一定能抢到，所以执行到这里时 distri 应当不为空
-                assert distri
+            # 从旧索引到新索引的对应，例如 (len1=3, len2=8) -> [[0, 1, 2], [3, 4, 5], [6, 7]]
+            indice_groups = resize_preserving_order_indice_groups(len(subpaths1), len(subpaths2))
 
             # 构建新的子路径
             new_subpaths1 = []
             new_subpaths2 = []
 
-            for idx2, distri in enumerate(distributions):
-                sp2_orig = subpaths2[idx2]
+            for from_idx, to_idxs in enumerate(indice_groups):
+                sp1_orig = subpaths1[from_idx]
 
                 # 得到点的数量最匹配的那一组，这样可以尽可能减少插入点的数量
-                diff = np.array([len(subpaths1[idx1]) for idx1 in distri]) - len(sp2_orig)
-                perfect = distri[abs(diff).argmin()]
+                diff = np.array([len(subpaths2[to_idx]) for to_idx in to_idxs]) - len(sp1_orig)
+                perfect = to_idxs[abs(diff).argmin()]
 
-                for idx1 in distri:
-                    sp1 = subpaths1[idx1]
-                    if idx1 == perfect:
-                        sp2 = sp2_orig
+                for to_idx in to_idxs:
+                    sp2_orig = subpaths2[to_idx]
+                    # 对于 perfect 匹配的子路径，我们不创建回环，直接按原样匹配
+                    # 对于其它的子路径，我们创建回环，使得额外的子路径在变换起止时不会渲染填充色
+                    if to_idx == perfect:
+                        sp1 = sp1_orig
                     else:
-                        # 对于额外的路径，先创建回环
-                        sp2 = np.vstack([sp2_orig[:-1], sp2_orig[::-1]])
+                        sp1 = np.vstack([sp1_orig[:-1], sp1_orig[::-1]])
 
-                    sp1, sp2 = cls.align_path(sp1, sp2)
+                    sp1, sp2 = cls.align_path(sp1, sp2_orig)
                     if new_subpaths1:
                         # 标记前一个路径结束
                         new_subpaths1.append(NAN_POINT)
