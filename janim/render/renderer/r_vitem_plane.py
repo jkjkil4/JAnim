@@ -183,8 +183,7 @@ class VItemPlaneRenderer(Renderer):
             self.attrs.stroke = new_attrs.stroke
 
         if new_attrs.fill is not self.attrs.fill:
-            # 这里使用 bool 将 np.bool 进行转换，使得能正常传入 uniform
-            self.fill_transparent = bool(item.fill.is_transparent())
+            self.fill_transparent = item.fill.is_transparent()
 
         if new_attrs.fill is not self.attrs.fill or points_cnt_changed:
             self.update_dynamic_buffer_data_with_sampb(
@@ -257,8 +256,7 @@ class VItemPlaneRenderer(Renderer):
             self.attrs.stroke = new_attrs.stroke
 
         if new_attrs.fill is not self.attrs.fill:
-            # 这里使用 bool 将 np.bool 进行转换，使得能正常传入 uniform
-            self.fill_transparent = bool(item.fill.is_transparent())
+            self.fill_transparent = item.fill.is_transparent()
 
         if new_attrs.fill is not self.attrs.fill or points_cnt_changed:
             self.update_dynamic_buffer_data(
