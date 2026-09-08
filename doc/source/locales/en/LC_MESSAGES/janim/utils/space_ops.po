@@ -29,128 +29,128 @@ msgstr "This portion of code is from 3b1b/manim <https://github.com/3b1b/manim>_
 
 #: janim.utils.space_ops.cross:1 of
 msgid "计算 ``v1`` 与 ``v2`` 的叉乘"
-msgstr ""
+msgstr "Compute the cross product of ``v1`` and ``v2``."
 
 #: janim.utils.space_ops.get_norm:1 of
 msgid "计算向量 ``vect`` 的长度"
-msgstr ""
+msgstr "Compute the norm of the vector ``vect``."
 
 #: janim.utils.space_ops.det:1 of
 msgid "计算 ``a`` 和 ``b`` 构成的二维行列式"
-msgstr ""
+msgstr "Compute the 2D determinant formed by ``a`` and ``b``."
 
 #: janim.utils.space_ops.normalize:1 of
 msgid "将向量 ``vect`` 归一化为单位向量"
-msgstr ""
+msgstr "Normalize the vector ``vect`` to a unit vector."
 
 #: ../../source/janim/utils/space_ops.rst janim.utils.space_ops.quat_from_angle_axis of
 msgid "参数"
-msgstr ""
+msgstr "Parameters"
 
 #: janim.utils.space_ops.normalize:3 of
 msgid "要归一化的向量"
-msgstr ""
+msgstr "The vector to normalize."
 
 #: janim.utils.space_ops.normalize:4 of
 msgid "当 ``vect`` 为零向量时返回的值，若未指定，则使用零向量作为返回值"
-msgstr ""
+msgstr "The value to return when ``vect`` is the zero vector. If not specified, the zero vector is returned."
 
 #: janim.utils.space_ops.get_arc_length:1 of
 msgid "得到指定割线长与圆心角所对应的弧长"
-msgstr ""
+msgstr "Compute the arc length corresponding to the given chord length and central angle."
 
 #: janim.utils.space_ops.get_arc_length:3 of
 msgid "割线长"
-msgstr ""
+msgstr "The chord length."
 
 #: janim.utils.space_ops.get_arc_length:4 of
 msgid "圆心角"
-msgstr ""
+msgstr "The central angle."
 
 #: janim.utils.space_ops.quat:1 of
 msgid "以 ``(x, y, z, w)`` 为参数构造四元数 ``w + x*i + y*j + z*k``"
-msgstr ""
+msgstr "Construct a quaternion ``w + x*i + y*j + z*k`` from ``(x, y, z, w)``."
 
 #: janim.utils.space_ops.quat:3 of
 msgid "另见 :py:func:`quat_from_wxyz` 以及 :py:func:`quat_from_angle_axis`"
-msgstr ""
+msgstr "See also :py:func:`quat_from_wxyz` and :py:func:`quat_from_angle_axis`."
 
 #: janim.utils.space_ops.quat_from_wxyz:1 of
 msgid "以 ``(w, x, y, z)`` 为参数构造四元数 ``w + x*i + y*j + z*k``"
-msgstr ""
+msgstr "Construct a quaternion ``w + x*i + y*j + z*k`` from ``(w, x, y, z)``."
 
 #: janim.utils.space_ops.quat_from_wxyz:3 of
 msgid "另见 :py:func:`quat` 以及 :py:func:`quat_from_angle_axis`"
-msgstr ""
+msgstr "See also :py:func:`quat` and :py:func:`quat_from_angle_axis`."
 
 #: janim.utils.space_ops.quat_from_angle_axis:1 of
 msgid "以旋转角和旋转轴为参数构造四元数"
-msgstr ""
+msgstr "Construct a quaternion from a rotation angle and axis."
 
 #: janim.utils.space_ops.quat_from_angle_axis:3 of
 msgid "若旋转轴为零向量，则返回单位四元数"
-msgstr ""
+msgstr "If the rotation axis is the zero vector, return the identity quaternion."
 
 #: janim.utils.space_ops.quat_from_angle_axis:5 of
 msgid "旋转角"
-msgstr ""
+msgstr "The rotation angle."
 
 #: janim.utils.space_ops.quat_from_angle_axis:6 janim.utils.space_ops.rotation_matrix:4 of
 msgid "旋转轴"
-msgstr ""
+msgstr "The rotation axis."
 
 #: janim.utils.space_ops.quat_from_angle_axis:8 of
 msgid "另见 :py:func:`quat` 以及 :py:func:`quat_from_wxyz`"
-msgstr ""
+msgstr "See also :py:func:`quat` and :py:func:`quat_from_wxyz`."
 
 #: janim.utils.space_ops.rotate_vector:1 of
 msgid "将一个向量旋转指定角度，可指定旋转轴"
-msgstr ""
+msgstr "Rotate a vector by the specified angle, optionally about a specified axis."
 
 #: janim.utils.space_ops.rotate_vector:3 of
 msgid "要旋转的向量"
-msgstr ""
+msgstr "The vector to rotate."
 
 #: janim.utils.space_ops.rotate_vector:4 janim.utils.space_ops.rotate_vector_2d:4 janim.utils.space_ops.rotation_about_z:3
 #: janim.utils.space_ops.rotation_matrix:3 of
 msgid "旋转角度"
-msgstr ""
+msgstr "The rotation angle."
 
 #: janim.utils.space_ops.rotate_vector:5 of
 msgid "旋转轴，默认为 ``OUT`` 即绕 ``z`` 轴旋转"
-msgstr ""
+msgstr "The rotation axis. Defaults to ``OUT``, corresponding to rotation about the ``z`` axis."
 
 #: janim.utils.space_ops.rotate_vector_2d:1 of
 msgid "将一个平面二维向量旋转指定角度"
-msgstr ""
+msgstr "Rotate a 2D vector in the plane by the specified angle."
 
 #: janim.utils.space_ops.rotate_vector_2d:3 of
 msgid "要旋转的二维向量"
-msgstr ""
+msgstr "The 2D vector to rotate."
 
 #: janim.utils.space_ops.rotation_matrix:1 of
 msgid "三维旋转矩阵，由旋转角度和旋转轴指定"
-msgstr ""
+msgstr "A 3D rotation matrix specified by a rotation angle and axis."
 
 #: janim.utils.space_ops.rotation_matrix_transpose:1 of
 msgid ":py:func:`rotation_matrix` 矩阵的转置"
-msgstr ""
+msgstr "The transpose of the :py:func:`rotation_matrix` matrix."
 
 #: janim.utils.space_ops.rotation_about_z:1 of
 msgid "三维旋转矩阵，仅表示绕 ``z`` 轴指定角度的旋转"
-msgstr ""
+msgstr "A 3D rotation matrix representing rotation about the ``z`` axis by the specified angle."
 
 #: janim.utils.space_ops.rotation_between_vectors:1 of
 msgid "三维旋转矩阵，表示 ``v1`` 到 ``v2`` 之间的旋转"
-msgstr ""
+msgstr "A 3D rotation matrix representing the rotation from ``v1`` to ``v2``."
 
 #: janim.utils.space_ops.z_to_vector:1 of
 msgid "三维旋转矩阵，表示 ``OUT`` 到 ``vector`` 之间的旋转"
-msgstr ""
+msgstr "A 3D rotation matrix representing the rotation from ``OUT`` to ``vector``."
 
 #: janim.utils.space_ops.z_to_vector:3 of
 msgid "注：取 转置 或 用于右乘行向量 即表示 ``vector_to_z``"
-msgstr ""
+msgstr "Note: Its transpose, or its use to right-multiply row vectors, represents ``vector_to_z``."
 
 #: janim.utils.space_ops.angle_of_vector:1 of
 msgid "Returns polar coordinate theta when vector is project on xy plane"

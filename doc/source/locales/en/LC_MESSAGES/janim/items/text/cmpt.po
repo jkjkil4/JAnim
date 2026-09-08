@@ -21,7 +21,7 @@ msgstr ""
 
 #: ../../source/janim/items/text/cmpt.rst:2
 msgid "cmpt"
-msgstr ""
+msgstr "cmpt"
 
 #: ../../source/rst_utils/tip_of_complex.rst:3
 msgid "这部分内容涉及 JAnim 实现原理，可能较为复杂，若没有研究源码的需求，你应酌情阅读"

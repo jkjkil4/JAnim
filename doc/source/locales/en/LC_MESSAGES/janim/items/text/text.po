@@ -21,7 +21,7 @@ msgstr ""
 
 #: ../../source/janim/items/text/text.rst:2
 msgid "text"
-msgstr ""
+msgstr "text"
 
 #: janim.items.text.text.BasepointVItem.offset_to:1 of
 msgid "计算从 ``self`` 到 ``other`` 的偏移量，如果指定了 ``proj`` 则只计算在该方向上的投影量"
@@ -48,6 +48,10 @@ msgstr "Character item, as a child item of :class:`TextLine`, created when :clas
 msgid "从字体列表中找到支持显示 ``unicode`` 的字体，如果找不到只好选用第一个"
 msgstr "Find a font from the font list that supports displaying ``unicode``, if not found, use the first one"
 
+#: janim.items.text.text.TextChar.become:1 of
+msgid "将该物件的数据设置为与传入的物件相同（以复制的方式，不是引用）"
+msgstr "Sets the data of this item to be the same as the passed item (by copying, not by reference)"
+
 #: janim.items.text.text.TextLine:1 of
 msgid "单行文字物件，作为 :class:`Text` 的子物件，在创建 :class:`Text` 时产生"
 msgstr "Single-line text item, as a child item of :class:`Text`, created when :class:`Text` is created"
@@ -62,7 +66,7 @@ msgstr "Align this line of text to the target text or text line"
 
 #: ../../source/janim/items/text/text.rst janim.items.text.text.Text.select_parts of
 msgid "参数"
-msgstr ""
+msgstr "Parameters"
 
 #: janim.items.text.text.Text.match_to:3 janim.items.text.text.TextLine.match_to:3 of
 msgid "目标文本或文本行"

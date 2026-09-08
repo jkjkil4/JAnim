@@ -337,9 +337,8 @@ msgstr ""
 "multiple “character” items."
 
 #: ../../source/tutorials/item_group.rst:175
-#, fuzzy
 msgid "具体可参阅 :doc:`text` 文档中的介绍。"
-msgstr "For details, refer to the introduction in :doc:`../janim/items/text` documentation."
+msgstr "For details, refer to the introduction in :doc:`text` documentation."
 
 #: ../../source/tutorials/item_group.rst:178
 msgid "名词解释"

@@ -1,34 +1,5 @@
 :orphan:
 
-.. 文档翻译指南（给 LLM 的说明）
-.. ================================
-..
-.. 项目术语约定：
-.. - 中文"物件"对应英文"item"
-..
-.. .po 文件说明：
-.. - 存储目录：`doc/source/locales/<language>/LC_MESSAGES/`
-.. - msgid：原始文本（来自源语言，通常是中文），不可修改
-.. - msgstr：翻译文本（目标语言），只能修改这个字段
-..
-.. 翻译状态标记：
-.. - msgstr 为空：条目尚未翻译
-.. - fuzzy 标记：条目的翻译可能不准确，需要校对（可能是源文本有更新，或是根据相近原文推断的临时译文）
-.. - 校对完成：去掉 fuzzy 标记，确保 msgstr 有正确的翻译内容
-..
-.. 严格遵循工作流程：
-.. 1. 项目中的虚拟环境可能未激活，（如果有的话）激活该项目下的虚拟环境
-..    使用合理的方式检查并激活虚拟环境，以确保脚本运行正常
-..    **重要** 注意不能直接将以下命令的 `python` 换为虚拟环境中的 python 路径，需要真正激活（activate）虚拟环境后才能正确运行命令
-.. 2. 使用 `update-po` 命令提取最新文本并生成/更新 .po 文件
-..    例如 `python scripts update-po docs <language>`
-.. 3. 使用 `check-po` 命令检查翻译完成情况
-..    例如 `python scripts check-po docs <language>`
-.. 4. 使用 `format-po` 统一格式，减少无关 diff
-..    例如 `python scripts format-po docs <language>`
-.. 5. 使用 `build-docs` 命令在本地构建文档预览翻译效果
-..    例如 `python scripts build-docs <language>`
-
 贡献文档国际化
 ===========================
 
@@ -115,13 +86,6 @@
 .. note::
 
     如果你有能力检查的话，使用 LLM Agent 翻译也无妨（但是记得校对哦）
-
-    示例提示词：
-
-    .. code-block:: text
-
-        请完成 `<language>` 文档的翻译工作
-        工作规范以及工作流程请严格参考 `doc/source/development/contribute-to-doc-i18n.rst` 中的介绍
 
 如果你是手动编辑了较多 ``.po`` 文件，建议在提交前执行一次：
 

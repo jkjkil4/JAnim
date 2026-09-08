@@ -28,34 +28,42 @@ msgid "基础教程 - 了解基本概念"
 msgstr "Basic Tutorials - Understanding Basic Concepts"
 
 #: ../../source/index.rst:87
-msgid "界面教程 - 使用 JAnim GUI"
-msgstr "GUI Tutorials - Using the JAnim GUI"
+msgid "使用 JAnim GUI"
+msgstr "Using the JAnim GUI"
 
 #: ../../source/index.rst:94
-msgid "资源教程 - 使用外部素材"
-msgstr "Resource Tutorials - Using External Assets"
+msgid "使用外部素材"
+msgstr "Using External Assets"
 
 #: ../../source/index.rst:101
-msgid "进阶教程 - 掌握更多实用机制"
-msgstr "Advanced Tutorials - Mastering More Practical Mechanisms"
+msgid "文字排版与公式书写"
+msgstr "Text and Formula Typesetting"
 
-#: ../../source/index.rst:112
+#: ../../source/index.rst:108
+msgid "摄像机以及三维空间"
+msgstr "Camera and 3D Space"
+
+#: ../../source/index.rst:116
+msgid "更多实用教程"
+msgstr "More Practical Tutorials"
+
+#: ../../source/index.rst:124
 msgid "其它教程"
 msgstr "Other Tutorials"
 
-#: ../../source/index.rst:121
+#: ../../source/index.rst:132
 msgid "其它"
 msgstr "Other"
 
-#: ../../source/index.rst:128
+#: ../../source/index.rst:139
 msgid "样例索引"
 msgstr "Example Index"
 
-#: ../../source/index.rst:139
+#: ../../source/index.rst:150
 msgid "参考文档"
 msgstr "References"
 
-#: ../../source/index.rst:145
+#: ../../source/index.rst:156
 msgid "开发相关"
 msgstr "Development"
 
@@ -1716,19 +1724,19 @@ msgstr ""
 "If you encounter difficulties during installation or have any questions while using it, you can ask questions on the "
 "Github `Discussions Page <https://github.com/jkjkil4/JAnim/discussions>`_ or join QQ group 970174336"
 
-#: ../../source/index.rst:155
+#: ../../source/index.rst:166
 msgid "内容索引"
 msgstr "Content Indices"
 
-#: ../../source/index.rst:157
+#: ../../source/index.rst:168
 msgid ":ref:`genindex`"
 msgstr ":ref:`genindex`"
 
-#: ../../source/index.rst:158
+#: ../../source/index.rst:169
 msgid ":ref:`modindex`"
 msgstr ":ref:`modindex`"
 
-#: ../../source/index.rst:159
+#: ../../source/index.rst:170
 msgid ":ref:`search`"
 msgstr ":ref:`search`"
 
@@ -1751,3 +1759,6 @@ msgstr ":ref:`search`"
 
 #~ msgid "画面以及音频可视化"
 #~ msgstr "Visualization of frames and audio"
+
+#~ msgid "进阶教程 - 掌握更多实用机制"
+#~ msgstr "Advanced Tutorials - Mastering More Practical Mechanisms"

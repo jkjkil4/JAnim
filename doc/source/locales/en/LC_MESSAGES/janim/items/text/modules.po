@@ -21,4 +21,4 @@ msgstr ""
 
 #: ../../source/janim/items/text/modules.rst:2
 msgid "text"
-msgstr ""
+msgstr "text"

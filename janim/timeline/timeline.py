@@ -730,7 +730,7 @@ class PlaybackControl:
 
         self.actions: list[tuple[float, float, float]] = []
 
-    def start(self, *, speed: int = 1) -> Self:
+    def start(self, *, speed: float = 1) -> Self:
         if not self.actions:
             base = 0
         else:

@@ -1,0 +1,46 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2023, jkjkil4
+# This file is distributed under the same license as the JAnim package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: JAnim \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 1980-01-01 00:00+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: en\n"
+"Language-Team: en <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.17.0\n"
+
+#: ../../source/janim/render/renderer/r_textchar.rst:2
+msgid "r_textchar"
+msgstr "r_textchar"
+
+#: janim.render.renderer.r_textchar.PixelRenderInfo:1 of
+msgid "存储 ``render='pixel'`` 绘制模式需要用到的信息，并在 :class:`TextCharRenderer` 中被调用以渲染"
+msgstr ""
+"Stores the information required for ``render='pixel'`` rendering mode and is used by :class:`TextCharRenderer` to perform "
+"the rendering."
+
+#: ../../source/janim/render/renderer/r_textchar.rst
+msgid "参数"
+msgstr "Parameters"
+
+#: janim.render.renderer.r_textchar.PixelRenderInfo:3 of
+msgid "字符的 unicode"
+msgstr "The Unicode code point of the character"
+
+#: janim.render.renderer.r_textchar.PixelRenderInfo:4 of
+msgid "该字符所对应的标准 outline，即 :meth:`~.Font.get_glyph_data` 的返回值"
+msgstr "The standard outline of the character, i.e. the return value of :meth:`~.Font.get_glyph_data`"
+
+#: janim.render.renderer.r_textchar.PixelRenderInfo:5 of
+msgid "当前指定的字号"
+msgstr "The currently specified font size"

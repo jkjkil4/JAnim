@@ -7,6 +7,12 @@
 
 .. random-option::
 
+    .. bili-example:: aid=116134959388273&bvid=BV1XcfiBeEwQ&p=1
+        :title: 【无痛线代】彻底搞懂SVD！矩阵究竟怎么就奇异了？
+        :author: 漫士沉思录 & Minepig233
+
+.. random-option::
+
     .. bili-example:: aid=116494075829117&bvid=BV1cf9YBhET1&p=1
         :title: 【漫士】这是世界上增长最快的数列，不服来战
         :author: 漫士沉思录 & LifeCheckpoint
