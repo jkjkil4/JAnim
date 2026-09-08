@@ -183,7 +183,10 @@ class Cmpt_CameraPoints[ItemT](Cmpt_Points[ItemT]):
         """
         q_rot = quat_from_angle_axis(angle, axis)
         if absolute:
-            super().rotate(angle, axis=axis, **kwargs)
+            # 如果没有后代物件（一般也不会有，谁这么闲给摄像机设置后代物件）
+            # 则没必要调用 super().rotate() 了，可以快很多
+            if self.bind is not None and self.bind.at_item.has_child():
+                super().rotate(angle, axis=axis, **kwargs)
             self.orientation = q_rot * self.orientation
         else:
             self.orientation = self.orientation * q_rot

@@ -231,14 +231,20 @@ class Cmpt_Points[ItemT](Component[ItemT]):
         """
         表示物件（包括后代物件）的矩形包围框
         """
+        ## 优化情况，当物件没有后代物件时，直接返回 self_box
+        bind = self.bind
+        if bind is not None and not bind.at_item.has_child():
+            return self.self_box
+
+        ## 常规情况
         box_datas = []
 
         # 自身的 self_box
         if self.has():
             box_datas.append(self.self_box.data)
         # 子物件的 box，因为只考虑子物件的 box 和考虑所有后代物件的 self_box 是等价的，而 box 能更好地利用缓存
-        if self.bind is not None:
-            for item in self.bind.at_item:
+        if bind is not None:
+            for item in bind.at_item:
                 cmpt = self.get_same_cmpt(item)
                 if cmpt is None:
                     continue
