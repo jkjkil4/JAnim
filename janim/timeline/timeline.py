@@ -16,6 +16,7 @@ from typing import Literal, Self, overload
 
 import moderngl as mgl
 import numpy as np
+from janim_backend import gl
 from janim_backend.relation import CutType
 from PIL import Image
 
@@ -481,19 +482,20 @@ class BuiltTimeline:
 
     def _uniforms_context(self, data: RenderData):
         camera_info = data.camera_info
+        U = gl.FastUniform
         return uniforms(
             data.ctx,
-            JA_CAMERA_SCALED_FACTOR=camera_info.scaled_factor,
-            JA_CAMERA_CENTER=camera_info.center,
-            JA_CAMERA_LOC=camera_info.camera_location,
-            JA_CAMERA_RIGHT=normalize(camera_info.horizontal_vect),
-            JA_CAMERA_UP=normalize(camera_info.vertical_vect),
-            JA_VIEW_MATRIX=camera_info.view_matrix.T.flatten(),
-            JA_FIXED_DIST_FROM_PLANE=camera_info.fixed_distance_from_plane,
-            JA_PROJ_MATRIX=camera_info.proj_matrix.T.flatten(),
-            JA_FRAME_RADIUS=camera_info.frame_radius,
-            JA_ANTI_ALIAS_RADIUS=data.anti_alias_radius,
-            JA_LIGHT_SOURCE=data.light_source_location,
+            JA_CAMERA_SCALED_FACTOR=(U.write_float, camera_info.scaled_factor),
+            JA_CAMERA_CENTER=(U.write_bytes, camera_info.center.tobytes()),
+            JA_CAMERA_LOC=(U.write_bytes, camera_info.camera_location.tobytes()),
+            JA_CAMERA_RIGHT=(U.write_bytes, normalize(camera_info.horizontal_vect).tobytes()),
+            JA_CAMERA_UP=(U.write_bytes, normalize(camera_info.vertical_vect).tobytes()),
+            JA_VIEW_MATRIX=(U.write_bytes, camera_info.view_matrix.T.tobytes()),
+            JA_FIXED_DIST_FROM_PLANE=(U.write_float, camera_info.fixed_distance_from_plane),
+            JA_PROJ_MATRIX=(U.write_bytes, camera_info.proj_matrix.T.tobytes()),
+            JA_FRAME_RADIUS=(U.write_bytes, camera_info.frame_radius.tobytes()),
+            JA_ANTI_ALIAS_RADIUS=(U.write_float, data.anti_alias_radius),
+            JA_LIGHT_SOURCE=(U.write_bytes, data.light_source_location.tobytes()),
         )
 
     _RenderCollectionCls = RenderCollection

@@ -43,20 +43,21 @@ def det(a: Sequence, b: Sequence) -> float:
     return a[0] * b[1] - a[1] * b[0]
 
 
-def normalize(vect: np.ndarray, fall_back: np.ndarray | None = None) -> np.ndarray:
+def normalize(vect: Vect, fall_back: np.ndarray | None = None) -> np.ndarray:
     """
     将向量 ``vect`` 归一化为单位向量
 
     :param vect: 要归一化的向量
     :param fall_back: 当 ``vect`` 为零向量时返回的值，若未指定，则使用零向量作为返回值
     """
+    vect = np.asarray(vect)
     norm = get_norm(vect)
     if norm > 0:
-        return np.array(vect) / norm
+        return vect / norm
     elif fall_back is not None:
         return fall_back
     else:
-        return np.zeros(len(vect))
+        return np.zeros_like(vect)
 
 
 def get_arc_length(vector_length: float, path_arc: float) -> float:

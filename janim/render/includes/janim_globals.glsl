@@ -1,5 +1,6 @@
 // GLSL 对于未使用变量会自动静默移除
 // 所以不用担心未使用到的冗余定义
+// 对应的 Python 文件： janim/render/uniform.py
 
 uniform bool JA_FIX_IN_FRAME;
 
