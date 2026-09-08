@@ -203,7 +203,6 @@ def _render_vitem_standalone(
 
     vao = ctx.vertex_array(prog, vbo_coords, 'in_coord', 'in_texcoord')
 
-    vbo_points.bind_to_storage_buffer(0)
     prog['u_anti_alias_radius'] = Config.get.anti_alias_width / 2
     prog['lim'] = (len(scaled_outline) - 1) // 2 * 2
 
@@ -213,6 +212,8 @@ def _render_vitem_standalone(
         gl.glTexBuffer(gl.GL_TEXTURE_BUFFER, gl.GL_RGBA32F, vbo_points.glo)
         gl.glActiveTexture(gl.GL_TEXTURE0)
         gl.glBindTexture(gl.GL_TEXTURE_BUFFER, sampb_points)
+    else:
+        vbo_points.bind_to_storage_buffer(0)
     vao.render(mgl.TRIANGLE_STRIP)
 
 
