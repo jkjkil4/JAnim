@@ -13,6 +13,7 @@ renderer
    r_imageitem
    r_shapemask
    r_smooth_surface
+   r_textchar
    r_video
    r_vitem
    r_vitem_curve

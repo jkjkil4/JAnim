@@ -32,7 +32,7 @@ class TextCharRenderer(VItemRenderer):
 
 class PixelRenderInfo:
     """
-    存储 ``PixelText`` 绘制模式需要用到的信息，并在 :class:`TextCharRenderer` 中被调用以渲染
+    存储 ``render='pixel'`` 绘制模式需要用到的信息，并在 :class:`TextCharRenderer` 中被调用以渲染
 
     :param unicode: 字符的 unicode
     :param standard_outline: 该字符所对应的标准 outline，即 :meth:`~.Font.get_glyph_data` 的返回值

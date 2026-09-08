@@ -315,15 +315,13 @@ msgstr ""
 
 #: janim.anims.creation.Write.calculate_duration_and_lag_ratio:1 of
 msgid "根据物件的后代物件数量计算相应合适的 ``duration`` 和 ``lag_ratio``"
-msgstr ""
+msgstr "Calculate appropriate ``duration`` and ``lag_ratio`` based on the number of an item's descendants."
 
 #: janim.anims.creation.Unwrite:1 of
-#, fuzzy
 msgid "实现与 :class:`Write` 相反的效果"
-msgstr "Opposite direction to :class:`Uncreate`"
+msgstr "Products the opposite effect of :class:`Write`"
 
 #: ../../source/janim/anims/creation.rst:20
-#, fuzzy
 msgid ""
 "from janim.imports import *\n"
 "\n"
@@ -342,7 +340,7 @@ msgid ""
 msgstr ""
 "from janim.imports import *\n"
 "\n"
-"class WriteExample(Timeline):\n"
+"class UnwriteExample(Timeline):\n"
 "    def construct(self):\n"
 "        dots = Dot(color=BLUE) * 10\n"
 "        dots.points.arrange().shift(UP)\n"
@@ -351,8 +349,8 @@ msgstr ""
 "        txt.points.shift(DOWN)\n"
 "\n"
 "        self.play(\n"
-"            Write(dots, duration=2),\n"
-"            Write(txt, duration=2),\n"
+"            Unwrite(dots, duration=2),\n"
+"            Unwrite(txt, duration=2),\n"
 "        )"
 
 #: janim.anims.creation.ShowIncreasingSubsets:1 of

@@ -21,7 +21,7 @@ msgstr ""
 
 #: ../../source/janim/items/text/rich.rst:2
 msgid "rich"
-msgstr ""
+msgstr "rich"
 
 #: ../../source/rst_utils/tip_of_complex.rst:3
 msgid "这部分内容涉及 JAnim 实现原理，可能较为复杂，若没有研究源码的需求，你应酌情阅读"
@@ -32,19 +32,21 @@ msgstr ""
 #: janim.items.text.rich.extract_tag_queue:1 of
 msgid "按照 JAnim :class:`~.Text` 的富文本格式提取出所有的富文本标签，组成 :class:`~.TagQueue` 对象"
 msgstr ""
+"Extract all rich text tags according to the rich text format of JAnim :class:`~.Text` and construct a :class:`~.TagQueue` "
+"object."
 
 #: ../../source/janim/items/text/rich.rst
 msgid "返回"
-msgstr ""
+msgstr "Returns"
 
 #: janim.items.text.rich.extract_tag_queue:3 of
 msgid "``(剔除富文本标签后的文本, TagQueue对象)``"
-msgstr ""
+msgstr "``(text with rich text tags removed, TagQueue object)``"
 
 #: janim.items.text.rich.TagQueue.advance_to:1 of
-msgid "应用所有在 ``text_at`` 及之前的富文本标签，计入 ``self._active_tags``"
-msgstr ""
+msgid "应用所有在 ``text_at`` 及之前的富文本标签，并更新 ``self._active_tags``"
+msgstr "Apply all rich text tags at or before ``text_at`` and update ``self._active_tags``."
 
 #: janim.items.text.rich.TagQueue.apply_to:1 of
-msgid "将当前的 ``self._acitve_tags`` 中，即生效中的富文本标签应用到 ``char`` 物件上"
-msgstr ""
+msgid "将当前的 ``self._active_tags`` 中，即生效中的富文本标签应用到 ``char`` 物件上"
+msgstr "Apply the currently active rich text tags in ``self._active_tags`` to ``char``."

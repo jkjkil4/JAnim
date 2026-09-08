@@ -139,7 +139,7 @@ class TagQueue:
 
     def advance_to(self, text_at: TagAt) -> None:
         """
-        应用所有在 ``text_at`` 及之前的富文本标签，计入 ``self._active_tags``
+        应用所有在 ``text_at`` 及之前的富文本标签，并更新 ``self._active_tags``
         """
         # 处理所有 tag_at <= text_at 的富文本标签
         while self._tags and self._tags[0][0] <= text_at:
@@ -159,7 +159,7 @@ class TagQueue:
 
     def apply_to(self, char: TextChar) -> None:
         """
-        将当前的 ``self._acitve_tags`` 中，即生效中的富文本标签应用到 ``char`` 物件上
+        将当前的 ``self._active_tags`` 中，即生效中的富文本标签应用到 ``char`` 物件上
         """
         for name, stack in self._active_tags.items():
             params = stack[-1]
