@@ -71,10 +71,12 @@ def apply_uniforms(
     if uniforms is None:
         uniforms = _get_uniforms_context_var(prog.ctx).get()
     prog_uniforms = _extract_uniform_objects(prog)
-    for name, (setter_fn, setter_arg) in uniforms.items():
-        uniform = prog_uniforms.get(name, None)
-        if uniform is not None:
-            setter_fn(uniform, setter_arg)
+
+    for name in uniforms.keys() & prog_uniforms.keys():
+        (setter_fn, setter_arg) = uniforms[name]
+        uniform = prog_uniforms[name]
+
+        setter_fn(uniform, setter_arg)
 
 
 @contextmanager
