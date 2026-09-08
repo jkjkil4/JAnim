@@ -458,6 +458,8 @@ class Text(Group[TextLine], VItem):
                 text_at += 1
             text_at += 1  # 因为 TagQueue 的索引是考虑换行的，所以这里换行处也要 +1
 
+        tag_queue.advance_to(text_at)  # 清理最后的富文本标签，避免忽略可能出现的警告
+
 
 class Title(Group):
     """
