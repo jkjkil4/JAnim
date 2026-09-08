@@ -326,23 +326,27 @@ msgstr "Experimental feature: Recognizing rich text format on paste"
 msgid "该选择框启用后，会尝试将粘贴的 html 文本样式转换为 JAnim 富文本样式"
 msgstr "With this checkbox enabled, the editor will attempt to convert pasted HTML text styles to JAnim's rich text style"
 
-#: ../../source/tutorials/use_gui.rst:208
+#: ../../source/tutorials/use_gui.rst:206
+msgid "注：该功能一开始仅为作者为了将从 VS Code 复制出来的富文本代码转换为 JAnim 格式而做的功能，并未仔细维护和完善"
+msgstr "Note: This feature was originally created solely by the author to convert rich text code copied from VS Code into the JAnim format and has not been thoroughly maintained or refined."
+
+#: ../../source/tutorials/use_gui.rst:210
 msgid "可以在命令行使用 ``janim tool richtext`` 单独打开该界面"
 msgstr "Use ``janim tool richtext`` in the command line to open this window separately"
 
-#: ../../source/tutorials/use_gui.rst:211
+#: ../../source/tutorials/use_gui.rst:213
 msgid "字体列表"
 msgstr "Font List"
 
-#: ../../source/tutorials/use_gui.rst:217
+#: ../../source/tutorials/use_gui.rst:219
 msgid "提供了字体索引列表，方便查找字体"
 msgstr "A font index list is provided for easy font lookup"
 
-#: ../../source/tutorials/use_gui.rst:219
+#: ../../source/tutorials/use_gui.rst:221
 msgid "其中“字体族名”和“全名”都是可以传给 :class:`~.Text` 的 ``font`` 参数，例如："
 msgstr "Both \"Family Name\" and \"Full Name\" can be passed to the ``font`` parameter of :class:`~.Text`, for example:"
 
-#: ../../source/tutorials/use_gui.rst:221
+#: ../../source/tutorials/use_gui.rst:223
 msgid ""
 "Text(..., font='LXGW WenKai Lite')\n"
 "Text(..., font='LXGW WenKai Lite', weight='light')\n"
@@ -352,23 +356,23 @@ msgstr ""
 "Text(..., font='LXGW WenKai Lite', weight='light')\n"
 "Text(..., font='LXGW WenKai Lite Light')"
 
-#: ../../source/tutorials/use_gui.rst:227
+#: ../../source/tutorials/use_gui.rst:229
 msgid "善用搜索功能，可以方便地根据字体名称进行查找"
 msgstr "Utilize the search function to find fonts easily by name"
 
-#: ../../source/tutorials/use_gui.rst:231
+#: ../../source/tutorials/use_gui.rst:233
 msgid "可以在命令行使用 ``janim tool fonts`` 单独打开该界面"
 msgstr "Use ``janim tool fonts`` in the command line to open this window separately"
 
-#: ../../source/tutorials/use_gui.rst:234
+#: ../../source/tutorials/use_gui.rst:236
 msgid "颜色"
 msgstr "Color"
 
-#: ../../source/tutorials/use_gui.rst:240
+#: ../../source/tutorials/use_gui.rst:242
 msgid "提供了便捷的颜色输入、转换、预览和选取的功能"
 msgstr "A convenient feature for color input, conversion, preview, and selection is provided"
 
-#: ../../source/tutorials/use_gui.rst:244
+#: ../../source/tutorials/use_gui.rst:246
 msgid "可以在命令行使用 ``janim tool color`` 单独打开该界面"
 msgstr "Use ``janim tool color`` in the command line to open this window separately"
 
