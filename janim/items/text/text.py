@@ -511,6 +511,15 @@ class SourceDisplayer(Text):
     显示 ``obj`` 的源代码
     """
 
-    def __init__(self, obj, font_size=12, color=GREY, **kwargs):
-        super().__init__(inspect.getsource(obj), font_size=font_size, color=color, **kwargs)
+    def __init__(
+        self,
+        obj,
+        font_size=12,
+        color=GREY,
+        render: Text.Render | Literal['vitem', 'pixel'] = 'pixel',
+        **kwargs,
+    ):
+        super().__init__(
+            inspect.getsource(obj), font_size=font_size, color=color, render=render, **kwargs
+        )
         self.points.to_border(UL)
