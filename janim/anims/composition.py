@@ -57,7 +57,7 @@ class AnimGroup(Animation):
         lag_ratio: float = 0,
         offset: float = 0,
         rate_func: RateFunc = linear,
-        #
+        # -
         name: str | None = None,
         collapse: bool = False,
     ):
@@ -93,7 +93,7 @@ class AnimGroup(Animation):
                 if not self.is_aligned:
                     raise AnimGroupError(
                         _(
-                            'Passing misaligned sub-animations to a composition '  #
+                            'Passing misaligned sub-animations to a composition '  # -
                             'with non-linear rate_func is not allowed'
                         )
                     )
@@ -167,7 +167,7 @@ class AnimGroup(Animation):
         if attr is None:
             raise NotAnimationError(
                 _(
-                    'A non-animation object was passed in, '  #
+                    'A non-animation object was passed in, '  # -
                     'you might have forgotten to use .anim'
                 )
             )

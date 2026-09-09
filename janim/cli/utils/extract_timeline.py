@@ -39,7 +39,7 @@ def extract_timelines_from_module(
     if module.__file__ == STDIN_FILENAME:
         log.error(
             _(
-                'Multiple timelines found in stdin input. '  #
+                'Multiple timelines found in stdin input. '  # -
                 'Please specify timeline names with command line arguments.'
             )
         )

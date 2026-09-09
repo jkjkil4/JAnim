@@ -376,7 +376,7 @@ class TimelineCore:
         :return: 物件列表
         """
         return [
-            item  #
+            item  # -
             for item, appr in self.item_appearances.items()
             if len(appr.visibility) % 2 == 1
         ]

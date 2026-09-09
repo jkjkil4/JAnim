@@ -147,7 +147,7 @@ def write(
     log.info('======')
 
     builts = [
-        timeline().build(hide_subtitles=shared_options.hide_subtitles)  #
+        timeline().build(hide_subtitles=shared_options.hide_subtitles)  # -
         for timeline in timelines
     ]
 

@@ -382,7 +382,7 @@ class AnimStack:
                 suspended = {
                     stack: tup
                     for stack, tup in suspended.items()
-                    if stack not in drop  #
+                    if stack not in drop  # -
                 }
 
     def _compute_anims(

@@ -42,7 +42,7 @@ class _ItemMeta(type):
     def __new__(cls: type, name: str, bases: tuple[type, ...], attrdict: dict):
         # 记录所有定义在类中的 CmptInfo
         cls_components: dict[str, CmptInfo] = {
-            key: val  #
+            key: val  # -
             for key, val in attrdict.items()
             if isinstance(val, CmptInfo)
         }
@@ -191,7 +191,7 @@ class Item(ItemRelation['Item'], metaclass=_ItemMeta):
         for item in self.walk_self_and_descendants():
             available_styles = item.get_available_styles()
             apply_styles = {
-                key: style  #
+                key: style  # -
                 for key, style in styles.items()
                 if key in available_styles
             }

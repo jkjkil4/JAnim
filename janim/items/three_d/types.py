@@ -131,7 +131,7 @@ class NormSurface[T: SurfaceGeometry](Points):
         points, du_points, dv_points = [
             np.array(
                 [
-                    uv_func(u, v)  #
+                    uv_func(u, v)  # -
                     for u, v in grid.reshape(-1, 2)
                 ]
             )
@@ -390,11 +390,11 @@ class WireframeSurface[T: SurfaceGeometry](Group[VItem], VItem):
         )
 
         u_lines = [
-            VItem(*[self.geometry.uv_func(u, v) for v in v_values])  #
+            VItem(*[self.geometry.uv_func(u, v) for v in v_values])  # -
             for u in u_values
         ]
         v_lines = [
-            VItem(*[self.geometry.uv_func(u, v) for u in u_values])  #
+            VItem(*[self.geometry.uv_func(u, v) for u in u_values])  # -
             for v in v_values
         ]
 

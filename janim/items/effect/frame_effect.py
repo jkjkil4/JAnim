@@ -271,7 +271,7 @@ class SimpleFrameEffect(FrameEffect):
         **kwargs,
     ):
         uniforms_code = '\n'.join(
-            f'uniform {uniform};'  #
+            f'uniform {uniform};'  # -
             for uniform in uniforms
         )
         with ShaderInjection(

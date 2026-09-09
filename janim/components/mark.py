@@ -90,7 +90,7 @@ class Cmpt_Mark[ItemT](Component[ItemT]):
         return self
 
     @register_updater(
-        lambda self, p, point, index=0, *, root_only=False: (  #
+        lambda self, p, point, index=0, *, root_only=False: (  # -
             self.set(
                 interpolate(np.asarray(point), self.get(index), p.alpha), index, root_only=root_only
             )

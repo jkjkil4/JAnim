@@ -150,7 +150,7 @@ class Cmpt_Data[ItemT, T](Component[ItemT]):
     @staticmethod
     def register_funcs[T](
         isinstance_check: ClassInfo,
-        #
+        # -
         copy_func: CopyFn[T],
         not_changed_func: NotChangedFn[T],
         interpolate_func: InterpolateFn[T],

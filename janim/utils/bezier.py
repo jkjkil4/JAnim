@@ -205,7 +205,7 @@ def bezier(
 
     def result(t):
         return sum(
-            ((1 - t) ** (n - k)) * (t**k) * choose(n, k) * point  #
+            ((1 - t) ** (n - k)) * (t**k) * choose(n, k) * point  # -
             for k, point in enumerate(points)
         )
 
@@ -216,7 +216,7 @@ def partial_bezier_points(
     points: Sequence[np.ndarray],
     a: float,
     b: float,
-) -> list[float]:
+) -> list[np.ndarray]:
     """
     Given an list of points which define
     a bezier curve, and two numbers 0<=a<b<=1,
@@ -356,7 +356,7 @@ def approx_smooth_quadratic_bezier_handles(
     if len(points) == 2:
         return midpoint(*points)
     smooth_to_right, smooth_to_left = [
-        0.25 * ps[0:-2] + ps[1:-1] - 0.25 * ps[2:]  #
+        0.25 * ps[0:-2] + ps[1:-1] - 0.25 * ps[2:]  # -
         for ps in (points, points[::-1])
     ]
     if np.isclose(points[0], points[-1]).all():

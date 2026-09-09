@@ -587,15 +587,15 @@ class StepUpdater[T: Item](Animation):
         step: float = 0.02,  # 默认每秒 50 次
         *,
         persistent_cache_step: float = 1,  # 默认每秒一个持久缓存
-        #
+        # -
         show_at_begin: bool = True,
         hide_at_end: bool = False,
         become_at_end: bool = True,
-        #
+        # -
         rate_func: RateFunc = linear,
         skip_null_items: bool = True,
         root_only: bool = True,
-        #
+        # -
         progress_bar: bool = True,
         **kwargs,
     ):
@@ -751,13 +751,13 @@ class GroupStepUpdater[T: Item](Animation):
         step: float = 0.02,  # 默认每秒 50 次
         *,
         persistent_cache_step: float = 1,  # 默认每秒一个持久缓存
-        #
+        # -
         show_at_begin: bool = True,
         hide_at_end: bool = False,
         become_at_end: bool = True,
-        #
+        # -
         rate_func: RateFunc = linear,
-        #
+        # -
         progress_bar: bool = True,
         **kwargs,
     ):

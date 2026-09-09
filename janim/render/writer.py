@@ -324,7 +324,7 @@ def get_frame_start_and_end(
 
     # 计算对应的 frame 范围
     start_frame = (
-        0  #
+        0  # -
         if in_point is None
         else clip(round(in_point * fps), 0, frame_count - 1)
     )

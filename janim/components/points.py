@@ -297,7 +297,7 @@ class Cmpt_Points[ItemT](Component[ItemT]):
             indices = (np.sign(direction) + 1).astype(int)
             return np.array(
                 [
-                    self.data[indices[i]][i]  #
+                    self.data[indices[i]][i]  # -
                     for i in range(3)
                 ]
             )
@@ -578,7 +578,7 @@ class Cmpt_Points[ItemT](Component[ItemT]):
         return self
 
     @register_updater(
-        lambda self, p, scale_factor, **kwargs: (  #
+        lambda self, p, scale_factor, **kwargs: (  # -
             self.scale((np.asarray(scale_factor) - 1) * p.alpha + 1, **kwargs)
         ),
         grouply=True,
@@ -792,7 +792,7 @@ class Cmpt_Points[ItemT](Component[ItemT]):
         return self
 
     @register_updater(
-        lambda self, p, factor=0.2, direction=RIGHT, **kwargs: (  #
+        lambda self, p, factor=0.2, direction=RIGHT, **kwargs: (  # -
             self.shear(factor * p.alpha, direction, **kwargs)
         ),
         grouply=True,
@@ -987,7 +987,7 @@ class Cmpt_Points[ItemT](Component[ItemT]):
     # region 位移 | movement
 
     @register_updater(
-        lambda self, p, vector, *, root_only=False: (  #
+        lambda self, p, vector, *, root_only=False: (  # -
             self.shift(np.asarray(vector) * p.alpha, root_only=root_only)
         )
     )
@@ -1163,11 +1163,11 @@ class Cmpt_Points[ItemT](Component[ItemT]):
         self,
         n_rows: int | None = None,
         n_cols: int | None = None,
-        #
+        # -
         buff: float | None = None,
         h_buff: float | None = None,
         v_buff: float | None = None,
-        #
+        # -
         aligned_edge: np.ndarray = ORIGIN,
         by_center_point: bool = False,
         fill_rows_first: bool = True,

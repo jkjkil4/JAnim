@@ -50,12 +50,12 @@ class SubtitlesMixin(TimelineCore):
         delay: float = 0,
         scale: float | Iterable[float] = 0.8,
         use_typst_text: bool | Iterable[bool] = False,
-        #
+        # -
         surrounding_color: JAnimColor = BLACK,
         surrounding_alpha: float = 0.5,
-        #
+        # -
         font: str | Iterable[str] = [],
-        #
+        # -
         depth: float = -1e5,
         **kwargs,
     ) -> TimeRange: ...
@@ -72,12 +72,12 @@ class SubtitlesMixin(TimelineCore):
         scale: float | Iterable[float] = 1,
         base_scale: float = 0.8,
         use_typst_text: bool | Iterable[bool] = False,
-        #
+        # -
         surrounding_color: JAnimColor = BLACK,
         surrounding_alpha: float = 0.5,
-        #
+        # -
         font: str | Iterable[str] = [],
-        #
+        # -
         depth: float = -1e5,
         **kwargs,
     ) -> TimeRange:

@@ -337,9 +337,9 @@ class DynamicTypst(TypstText):
         rate_func: RateFunc = smooth,
         name: str | None = 'DynamicTypst',
         collapse: bool = True,
-        #
+        # -
         can_keep_structure: bool = False,
-        #
+        # -
         **values,
     ):
         """
@@ -392,7 +392,7 @@ class DynamicTypst(TypstText):
 
     def _render_template(self, template: str, dynamic: dict[str, float]) -> str:
         let_defs = '\n'.join(
-            f'#let {key} = {value}'  #
+            f'#let {key} = {value}'  # -
             for key, value in dynamic.items()
         )
         return f'{let_defs}\n\n{template}'

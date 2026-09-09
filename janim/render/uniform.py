@@ -88,7 +88,7 @@ def uniforms(ctx: mgl.Context, **kwargs: UniformSetter):
     new_uniforms.update(kwargs)
 
     reset_uniforms = {
-        key: old_uniforms[key]  #
+        key: old_uniforms[key]  # -
         for key in new_uniforms.keys() & old_uniforms.keys()
     }
 

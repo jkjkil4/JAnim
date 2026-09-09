@@ -140,7 +140,7 @@ def ease_out_quad(t: float) -> float:
 
 def ease_inout_quad(t: float) -> float:
     return (
-        t**2 * 2  #
+        t**2 * 2  # -
         if t < 0.5
         else (t - 1) ** 2 * -2 + 1
     )
@@ -156,7 +156,7 @@ def ease_out_cubic(t: float) -> float:
 
 def ease_inout_cubic(t: float) -> float:
     return (
-        t**3 * 4  #
+        t**3 * 4  # -
         if t < 0.5
         else (t - 1) ** 3 * 4 + 1
     )
@@ -172,7 +172,7 @@ def ease_out_quart(t: float) -> float:
 
 def ease_inout_quart(t: float) -> float:
     return (
-        t**4 * 8  #
+        t**4 * 8  # -
         if t < 0.5
         else (t - 1) ** 4 * -8 + 1
     )
@@ -188,7 +188,7 @@ def ease_out_quint(t: float) -> float:
 
 def ease_inout_quint(t: float) -> float:
     return (
-        t**5 * 16  #
+        t**5 * 16  # -
         if t < 0.5
         else (t - 1) ** 5 * 16 + 1
     )
@@ -233,7 +233,7 @@ def ease_out_circ(t: float) -> float:
 def ease_inout_circ(t: float) -> float:
     t *= 2
     return (
-        0.5 - 0.5 * math.sqrt(1 - t**2)  #
+        0.5 - 0.5 * math.sqrt(1 - t**2)  # -
         if t < 1
         else 0.5 * math.sqrt(1 - (t - 2) ** 2) + 0.5
     )

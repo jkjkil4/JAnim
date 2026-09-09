@@ -191,7 +191,7 @@ class Cmpt_VPoints[ItemT](Cmpt_Points[ItemT], impl=True):
 
         bezier_tuples = list(Cmpt_VPoints.get_bezier_tuples_from_points(points))
         norms = [
-            0 if np.isnan(tup[1][0]) else get_norm(tup[2] - tup[0])  #
+            0 if np.isnan(tup[1][0]) else get_norm(tup[2] - tup[0])  # -
             for tup in bezier_tuples
         ]
         # Calculate insertions per curve (ipc)

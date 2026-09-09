@@ -108,7 +108,7 @@ class SVGItem(Group[SVGElemItem]):
 
             copy_item.groups = {
                 key: [
-                    copy_item[idx]  #
+                    copy_item[idx]  # -
                     for item in group
                     if (idx := get_idx(item)) is not None
                 ]

@@ -249,7 +249,7 @@ class Cmpt_Rgbas[ItemT](Component[ItemT]):
         return self
 
     @register_updater(
-        lambda self, p, color, factor=0.5, *, root_only=False: (  #
+        lambda self, p, color, factor=0.5, *, root_only=False: (  # -
             self.mix(color, factor * p.alpha, root_only=root_only)
         )
     )
@@ -272,7 +272,7 @@ class Cmpt_Rgbas[ItemT](Component[ItemT]):
         return self
 
     @register_updater(
-        lambda self, p, alpha, factor=0.5, *, root_only=False: (  #
+        lambda self, p, alpha, factor=0.5, *, root_only=False: (  # -
             self.mix_alpha(alpha, factor * p.alpha, root_only=root_only)
         )
     )

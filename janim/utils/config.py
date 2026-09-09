@@ -162,32 +162,32 @@ default_config = Config(
     fps=60,
     preview_fps=60 if is_power_plugged() else 30,
     anti_alias_width=0.015,
-    #
+    # -
     frame_height=8.0,
     frame_width=16.0 / 9.0 * 8.0,  # aspect_ratio(16/9) * frame_height
-    #
+    # -
     pixel_height=1080,
     pixel_width=1920,
     background_color=Color('#000000'),
     font='Consolas',
     subtitle_font='',
     subtitle_to_edge_buff=DEFAULT_ITEM_TO_EDGE_BUFF,
-    #
+    # -
     audio_framerate=44100,
     audio_channels=2,
-    #
+    # -
     wnd_pos='OR',
     wnd_monitor=0,
-    #
+    # -
     typst_bin='typst',
     typst_shared_preamble='',
     typst_text_preamble='',
     typst_math_preamble='',
-    #
+    # -
     output_dir='videos',
     temp_dir=guarantee_existence(os.path.join(tempfile.gettempdir(), 'janim')),
     asset_dir='',
-    #
+    # -
     client_search_port=40565,
 )
 """

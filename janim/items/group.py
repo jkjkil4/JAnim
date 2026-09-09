@@ -54,7 +54,7 @@ class NamedGroupMixin[T](Group[T]):
     def __init__(self, *items: T, named: dict[str, T], **kwargs):
         super().__init__(*items, *named.values(), **kwargs)
         self._named_indices: dict[str, int] = {
-            name: len(items) + i  #
+            name: len(items) + i  # -
             for i, name in enumerate(named)
         }
         # 相当于
@@ -79,7 +79,7 @@ class NamedGroupMixin[T](Group[T]):
         # 更新已有的索引
         if prepend:
             self._named_indices = {
-                key: idx + len(all_items)  #
+                key: idx + len(all_items)  # -
                 for key, idx in self._named_indices.items()
             }
 
@@ -170,7 +170,7 @@ class NamedGroupMixin[T](Group[T]):
     def shuffle(self) -> Self:
         # 根据 key-下标 对应关系，得到打乱之前的 key-对象 对应关系
         named_objs = {
-            key: self[index]  #
+            key: self[index]  # -
             for key, index in self._named_indices.items()
         }
 
@@ -178,7 +178,7 @@ class NamedGroupMixin[T](Group[T]):
 
         # 计算新的 key-下标对应关系
         self._named_indices = {
-            key: self.index(obj)  #
+            key: self.index(obj)  # -
             for key, obj in named_objs.items()
         }
         return self
@@ -241,7 +241,7 @@ class NamedGroupMixin[T](Group[T]):
         """
         index_names = self._index_names()
         return [
-            (item, index_names.get(i, None))  #
+            (item, index_names.get(i, None))  # -
             for i, item in enumerate(self)
         ]
 

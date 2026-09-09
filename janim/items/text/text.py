@@ -299,21 +299,21 @@ class Text(Group[TextLine], VItem):
     def __init__(
         self,
         text: str,
-        #
+        # -
         font: str | Iterable[str] = [],
         font_size: float = DEFAULT_FONT_SIZE,
         weight: int | Weight | WeightName = 400,  # = 'regular'
         style: Style | StyleName = Style.Normal,
         force_full_name: bool = False,  # 一般情况下用不到，只是为了在 family-name 调用不符合预期时，使用该参数强制作为 full-name
-        #
+        # -
         format: Format | Literal['plain', 'rich'] = Format.PlainText,
         render: Render | Literal['vitem', 'pixel'] = Render.VItemText,
         line_kwargs: dict = {},
-        #
+        # -
         stroke_alpha: float = 0,
         fill_alpha: float = 1,
         stroke_background: bool = True,
-        #
+        # -
         center: bool = True,
         **kwargs,
     ) -> None:

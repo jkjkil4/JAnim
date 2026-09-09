@@ -97,13 +97,13 @@ class Transform(Animation):
         path_arc: float = 0,
         path_arc_axis: Vect = OUT,
         path_func: PathFunc | None = None,
-        #
+        # -
         flatten: bool = False,
         root_only: bool = False,
-        #
+        # -
         hide_src: bool = True,
         show_target: bool = True,
-        #
+        # -
         src_fade: float = 0,
         target_fade: float = 0,
         **kwargs,
@@ -499,11 +499,11 @@ class MethodTransform(Animation):
         self,
         item: Item,
         obj: Item | Item._AsTypeWrapper,
-        #
+        # -
         path_arc: float = 0,
         path_arc_axis: Vect = OUT,
         path_func: PathFunc | None = None,
-        #
+        # -
         show_at_begin: bool = True,
         hide_at_end: bool = False,
         **kwargs,
@@ -542,7 +542,7 @@ class MethodTransform(Animation):
         apprs = self.timeline.item_appearances
 
         src_datas = [
-            apprs[item].stack.compute(self.t_range.at, True)  #
+            apprs[item].stack.compute(self.t_range.at, True)  # -
             for item in items
         ]
 
@@ -618,14 +618,14 @@ class FadeTransform(AnimGroup):
         *,
         hide_src: bool = True,
         show_target: bool = True,
-        #
+        # -
         path_arc: float = 0,
         path_arc_axis: Vect = OUT,
         path_func: PathFunc | None = None,
-        #
+        # -
         src_root_only: bool = False,
         target_root_only: bool = False,
-        #
+        # -
         collapse: bool = True,
         **kwargs,
     ):
@@ -767,12 +767,12 @@ class TransformMatchingShapes(AnimGroup):
         ]
         if src_mismatch_method is not None:
             anims.extend(
-                src_mismatch_method(piece, params, **kwargs)  #
+                src_mismatch_method(piece, params, **kwargs)  # -
                 for piece in src_mismatched
             )
         if target_mismatch_method is not None:
             anims.extend(
-                target_mismatch_method(piece, params, **kwargs)  #
+                target_mismatch_method(piece, params, **kwargs)  # -
                 for piece in target_mismatched
             )
 

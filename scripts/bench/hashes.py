@@ -36,7 +36,7 @@ def get_tested_hashes() -> list[str]:
     result = sp.run(['asv', 'show'], stdout=sp.PIPE, text=True)
     lines = result.stdout.splitlines()
     hashes = [
-        line.strip()  #
+        line.strip()  # -
         for line in lines
         if re.match(regex_hash_line, line)
     ]

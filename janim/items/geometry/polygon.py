@@ -54,14 +54,14 @@ class Polygon(GeometryShape):
 
     # endregion
 
-    def get_vertices(self) -> list[np.ndarray]:
+    def get_vertices(self) -> np.ndarray:
         return self.points.get()[:-1:2]
 
     def round_corners(self, radius: float | None = None) -> Self:
         verts = self.get_vertices()
         min_edge_length = min(
-            get_norm(v1 - v2)  #
-            for v1, v2 in zip(verts, verts[1:])
+            get_norm(v1 - v2)  # -
+            for v1, v2 in it.pairwise(verts)
             if not np.isclose(v1, v2).all()
         )
         if radius is None:

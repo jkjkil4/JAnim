@@ -32,11 +32,11 @@ class Fade(DataUpdater[Item], metaclass=ABCMeta):
         *,
         about_point: Vect | None = None,
         about_edge: Vect = ORIGIN,
-        #
+        # -
         path_arc: float = 0,
         path_arc_axis: Vect = OUT,
         path_func: PathFunc | None = None,
-        #
+        # -
         become_at_end: bool = False,
         root_only: bool = False,
         **kwargs,

@@ -205,7 +205,7 @@ class FFmpegH264VideoEncoder:
                 _('Hardware encoder probe results:')
                 + ' '
                 + ', '.join(
-                    f'{e}={"ok" if e in usable else "fail"}'  #
+                    f'{e}={"ok" if e in usable else "fail"}'  # -
                     for e in available
                 )
             )
@@ -269,7 +269,7 @@ class FFmpegH264VideoEncoder:
         except FileNotFoundError:
             log.error(
                 _(
-                    'Unable to output video. '  #
+                    'Unable to output video. '  # -
                     'Hardware acceleration requires FFmpeg to be installed '
                     'and added to PATH.'
                 )

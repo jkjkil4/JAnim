@@ -2,12 +2,9 @@ from __future__ import annotations
 
 import itertools as it
 import types
-from typing import Callable, Iterable, Sequence, TypeVar, overload
+from typing import Callable, Iterable, Reversible, Sequence, TypeVar, overload
 
 import numpy as np
-
-T = TypeVar('T')
-S = TypeVar('S')
 
 type ResizeFunc = Callable[[np.ndarray, int], np.ndarray]
 
@@ -18,7 +15,7 @@ def flatten(iterable):
     return list(it.chain.from_iterable(flatten(x) for x in iterable))
 
 
-def remove_list_redundancies(lst: Iterable[T]) -> list[T]:
+def remove_list_redundancies[T](lst: Reversible[T]) -> list[T]:
     """
     Used instead of list(set(l)) to maintain order
     Keeps the last occurrence of each element
@@ -33,7 +30,7 @@ def remove_list_redundancies(lst: Iterable[T]) -> list[T]:
     return reversed_result
 
 
-def list_update(l1: Iterable[T], l2: Iterable[T]) -> list[T]:
+def list_update[T](l1: Iterable[T], l2: Iterable[T]) -> list[T]:
     """
     Used instead of list(set(l1).update(l2)) to maintain order,
     making sure duplicates are removed from l1, not l2.
@@ -41,24 +38,24 @@ def list_update(l1: Iterable[T], l2: Iterable[T]) -> list[T]:
     return [e for e in l1 if e not in l2] + list(l2)
 
 
-def list_difference_update(l1: Iterable[T], l2: Iterable[T]) -> list[T]:
+def list_difference_update[T](l1: Iterable[T], l2: Iterable[T]) -> list[T]:
     return [e for e in l1 if e not in l2]
 
 
-def adjacent_n_tuples(objects: Iterable[T], n: int) -> zip[tuple[T, T]]:
+def adjacent_n_tuples[T](objects: Sequence[T], n: int) -> zip[tuple[T, T]]:
     return zip(
         *[
-            [*objects[k:], *objects[:k]]  #
+            [*objects[k:], *objects[:k]]  # -
             for k in range(n)
         ]
     )
 
 
-def adjacent_pairs(objects: Iterable[T]) -> zip[tuple[T, T]]:
+def adjacent_pairs[T](objects: Sequence[T]) -> zip[tuple[T, T]]:
     return adjacent_n_tuples(objects, 2)
 
 
-def batch_by_property(
+def batch_by_property[T, S](
     items: Iterable[T],
     property_func: Callable[[T], S],
 ) -> list[tuple[T, S]]:
@@ -177,7 +174,7 @@ def resize_and_repeatedly_extend(
     if length < len(array):
         return array[:length]
 
-    elif length > len(array):
+    else:  # length > len(array)
         if len(array) == 0:
             return fall_back(length)
 
@@ -206,10 +203,10 @@ def resize_with_interpolation(nparray: np.ndarray, length: int) -> np.ndarray:
     return (1 - a_s) * nparray[lh_s] + a_s * nparray[rh_s]
 
 
-def make_even(
+def make_even[T, S](
     iterable_1: Sequence[T],
     iterable_2: Sequence[S],
-) -> tuple[list[T], list[S]]:
+) -> tuple[Sequence[T], Sequence[S]]:
     len1 = len(iterable_1)
     len2 = len(iterable_2)
     if len1 == len2:

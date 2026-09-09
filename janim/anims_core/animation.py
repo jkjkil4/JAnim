@@ -64,7 +64,7 @@ class Animation:
         at: float = 0,
         duration: float | ForeverType = DEFAULT_DURATION,
         rate_func: RateFunc = smooth,
-        #
+        # -
         name: str | None = None,
     ):
         self.parent: AnimGroup | None = None
