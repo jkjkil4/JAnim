@@ -38,6 +38,7 @@ def get_norm(vect: Iterable) -> float:
     """
     计算向量 ``vect`` 的长度
     """
+    # source: https://github.com/jkjkil4/janim-backend/blob/main/src/math/space_ops.rs
     return _jmath.get_norm(vect)
 
 
@@ -364,6 +365,7 @@ def get_unit_normal(v1: Vect, v2: Vect, tol: float = 1e-6) -> np.ndarray:
         v1 = v1.astype(np.float32)
     if v2.dtype != np.float32:
         v2 = v2.astype(np.float32)
+    # source: https://github.com/jkjkil4/janim-backend/blob/main/src/math/space_ops.rs
     return _jmath.get_unit_normal(v1, v2, tol)
 
 
