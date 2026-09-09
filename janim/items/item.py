@@ -598,7 +598,11 @@ class Item(ItemRelation['Item'], metaclass=_ItemMeta):
         return self._stored.children if self._stored else self.children
 
     def not_changed(self, other: Self) -> bool:
-        if self.get_children() != other.get_children():
+        if (
+            self.get_children() != other.get_children()
+            or self._depth_test != other._depth_test
+            or self._distance_sort != self._distance_sort
+        ):
             return False
         for key, cmpt in self.components.items():
             if not cmpt.not_changed(other.components[key]):

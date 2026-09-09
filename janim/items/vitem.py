@@ -97,6 +97,11 @@ class VItem(Points):
 
         return super().apply_style(**kwargs)
 
+    def not_changed(self, other: Self) -> bool:
+        if self._shade_in_3d != other._shade_in_3d:
+            return False
+        return super().not_changed(other)
+
     @mockable
     def set_stroke_background(self: Item, flag: bool = True, *, root_only: bool = False) -> Self:
         """
