@@ -5,9 +5,10 @@ from typing import Callable, Iterable, Sequence
 
 import numpy as np
 import numpy.typing as npt
+from janim_backend import math as _jmath
 from janim_backend.math import Quaternion
 
-from janim.constants import DOWN, OUT, PI, RIGHT, TAU
+from janim.constants import OUT, PI, RIGHT, TAU
 from janim.exception import PointError
 from janim.locale import get_translator
 from janim.logger import log
@@ -18,22 +19,26 @@ from janim.utils.simple_functions import clip
 _ = get_translator('janim.utils.space_ops')
 
 
-def cross(v1: np.ndarray, v2: np.ndarray) -> list[np.ndarray]:
+def cross(v1: Sequence[float] | np.ndarray, v2: Sequence[float] | np.ndarray) -> np.ndarray:
     """
     计算 ``v1`` 与 ``v2`` 的叉乘
+
+    ``v1`` 和 ``v2`` 可以是单个向量，也可以是一组向量
     """
-    return [
-        v1[1] * v2[2] - v1[2] * v2[1],
-        v1[2] * v2[0] - v1[0] * v2[2],
-        v1[0] * v2[1] - v1[1] * v2[0],
-    ]
+    return np.array(
+        [
+            v1[1] * v2[2] - v1[2] * v2[1],
+            v1[2] * v2[0] - v1[0] * v2[2],
+            v1[0] * v2[1] - v1[1] * v2[0],
+        ]
+    )
 
 
 def get_norm(vect: Iterable) -> float:
     """
     计算向量 ``vect`` 的长度
     """
-    return sum(x**2 for x in vect) ** 0.5
+    return _jmath.get_norm(vect)
 
 
 def det(a: Sequence, b: Sequence) -> float:
@@ -182,7 +187,7 @@ def rotation_between_vectors(v1: Vect, v2: Vect) -> np.ndarray:
     )
 
 
-def z_to_vector(vector: np.ndarray) -> np.ndarray:
+def z_to_vector(vector: Vect) -> np.ndarray:
     """
     三维旋转矩阵，表示 ``OUT`` 到 ``vector`` 之间的旋转
 
@@ -345,19 +350,21 @@ def normalize_along_axis(
     return array / norms[:, np.newaxis]
 
 
-def get_unit_normal(v1: np.ndarray, v2: np.ndarray, tol: float = 1e-6) -> np.ndarray:
-    v1 = normalize(v1)
-    v2 = normalize(v2)
-    cp = cross(v1, v2)
-    cp_norm = get_norm(cp)
-    if cp_norm < tol:
-        # Vectors align, so find a normal to them in the plane shared with the z-axis
-        new_cp = cross(cross(v1, OUT), v1)
-        new_cp_norm = get_norm(new_cp)
-        if new_cp_norm < tol:
-            return DOWN
-        return new_cp / new_cp_norm
-    return cp / cp_norm
+def get_unit_normal(v1: Vect, v2: Vect, tol: float = 1e-6) -> np.ndarray:
+    """
+    计算由两个向量定义的平面的单位法向量
+
+    - 对于不平行的向量，返回它们叉乘的单位向量
+    - 对于平行的向量，在该方向与正 z 轴所在的平面内构造法向量
+    - 当该方向过于接近 z 轴时，使用 ``DOWN`` 作为稳定的回退结果
+    """
+    v1 = np.asarray(v1)
+    v2 = np.asarray(v2)
+    if v1.dtype != np.float32:
+        v1 = v1.astype(np.float32)
+    if v2.dtype != np.float32:
+        v2 = v2.astype(np.float32)
+    return _jmath.get_unit_normal(v1, v2, tol)
 
 
 ###
@@ -467,10 +474,7 @@ def get_closest_point_on_line(
     """
     # x = b + t*(a-b) = t*a + (1-t)*b
     t = np.dot(p - b, a - b) / np.dot(a - b, a - b)
-    if t < 0:
-        t = 0
-    if t > 1:
-        t = 1
+    t = clip(t, 0, 1)
     return (t * a) + ((1 - t) * b)
 
 

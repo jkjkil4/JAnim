@@ -375,6 +375,8 @@ def smooth_quadratic_path(anchors: VectArray) -> np.ndarray:
     Returns a path defining a smooth quadratic bezier spline
     through anchors.
     """
+    anchors = np.asarray(anchors)
+
     if len(anchors) < 2:
         return anchors
     elif len(anchors) == 2:
