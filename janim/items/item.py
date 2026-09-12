@@ -601,7 +601,7 @@ class Item(ItemRelation['Item'], metaclass=_ItemMeta):
         if (
             self.get_children() != other.get_children()
             or self._depth_test != other._depth_test
-            or self._distance_sort != self._distance_sort
+            or self._distance_sort != other._distance_sort
         ):
             return False
         for key, cmpt in self.components.items():
