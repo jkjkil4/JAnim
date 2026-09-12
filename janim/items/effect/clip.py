@@ -6,9 +6,10 @@ from typing import Self
 import numpy as np
 
 from janim.anims.method_updater_meta import register_updater
-from janim.components.component import CmptInfo, Component
-from janim.components.points import Cmpt_Points
-from janim.components.simple import Cmpt_Float
+from janim.components.core.attrs import ComponentAttrs
+from janim.components.core.component import CmptInfo, Component
+from janim.components.impls.points import Cmpt_Points
+from janim.components.impls.simple import Cmpt_Float
 from janim.items.effect.frame_effect import FrameEffect
 from janim.items.geometry.polygon import Rect
 from janim.items.item import Item
@@ -19,7 +20,7 @@ from janim.render.renderer.r_vitem import VItemRenderer
 from janim.typing import Vect
 from janim.utils.bezier import interpolate
 from janim.utils.config import Config
-from janim.utils.data import AlignedData
+from janim.utils.data import AlignedData, owned
 
 frameclip_fragment_shader = """
 #version 330 core
@@ -55,28 +56,11 @@ void main()
 
 
 class Cmpt_FrameClip[ItemT](Component[ItemT]):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        self._attrs = np.zeros(4, dtype=np.float32)
-
-    def copy(self) -> Self:
-        cmpt_copy = super().copy()
-        cmpt_copy._attrs = self._attrs.copy()
-        return cmpt_copy
-
-    def _become(self, other: Cmpt_FrameClip) -> None:
-        self._attrs = other._attrs.copy()
-
-    def not_changed(self, other: Cmpt_FrameClip) -> bool:
-        return np.all(self._attrs == other._attrs)
-
-    @classmethod
-    def align_for_interpolate(cls, cmpt1: Cmpt_FrameClip, cmpt2: Cmpt_FrameClip):
-        return AlignedData(cmpt1.copy(), cmpt2.copy(), cmpt1.copy())
+    _attrs = ComponentAttrs()
+    _clipattrs = _attrs.ndarray(np.zeros(4, dtype=np.float32))
 
     def interpolate(self, cmpt1: Self, cmpt2: Self, alpha: float, *, path_func=None) -> None:
-        self.set(*interpolate(cmpt1._attrs, cmpt2._attrs, alpha))
+        self.set(*interpolate(cmpt1._clipattrs, cmpt2._clipattrs, alpha))
 
     def _set_updater(
         self,
@@ -85,7 +69,7 @@ class Cmpt_FrameClip[ItemT](Component[ItemT]):
     ):  # fmt: skip
         self.set(
             *(
-                v if v is not None else interpolate(self._attrs[i], v, p.alpha)
+                v if v is not None else interpolate(self._clipattrs[i], v, p.alpha)
                 for i, v in enumerate((left, top, right, bottom))
             )
         )
@@ -100,7 +84,7 @@ class Cmpt_FrameClip[ItemT](Component[ItemT]):
     ) -> Self:
         for i, v in enumerate((left, top, right, bottom)):
             if v is not None:
-                self._attrs[i] = v
+                self._clipattrs[i] = v
 
         return self
 
@@ -135,7 +119,7 @@ class FrameClip(FrameEffect):
         self.clip.set(*clip)
 
     def dynamic_uniforms(self):
-        return dict(u_clip=self.clip._attrs)
+        return dict(u_clip=self.clip._clipattrs)
 
     def create_border_rect(self, **kwargs) -> Rect:
         """
@@ -143,7 +127,7 @@ class FrameClip(FrameEffect):
         """
         dl = Config.get.left_side + Config.get.bottom
         width, height = Config.get.frame_width, Config.get.frame_height
-        left, top, right, bottom = self.clip._attrs
+        left, top, right, bottom = self.clip._clipattrs
         p1 = dl + [width * left, height * bottom, 0]
         p2 = dl + [width * (1 - right), height * (1 - top), 0]
         return Rect(p1, p2, **kwargs)
@@ -212,39 +196,25 @@ void main()
 """
 
 
-class Cmpt_Attrs[ItemT](Component[ItemT]):
+class Cmpt_ClipAttrs[ItemT](Component[ItemT]):
     """
     :class:`Cmpt_TransformableFrameClip` 和 :class:`Cmpt_RectClipTransform` 的基类
     """
 
     size: int = 1
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self._attrs = np.zeros(self.size, dtype=np.float32)
+    _attrs = ComponentAttrs()
+    _clipattrs = _attrs.ndarray(np.array([], dtype=np.float32))
 
-    def copy(self) -> Self:
-        cmpt_copy = super().copy()
-        cmpt_copy._attrs = self._attrs.copy()
-        return cmpt_copy
-
-    def _become(self, other: Cmpt_TransformableFrameClip) -> None:
-        self._attrs = other._attrs.copy()
-
-    def not_changed(self, other: Cmpt_TransformableFrameClip) -> bool:
-        return np.all(self._attrs == other._attrs)
-
-    @classmethod
-    def align_for_interpolate(
-        cls, cmpt1: Cmpt_TransformableFrameClip, cmpt2: Cmpt_TransformableFrameClip
-    ):
-        return AlignedData(cmpt1.copy(), cmpt2.copy(), cmpt1.copy())
+    def __cmpt_init__(self):
+        self._clipattrs = owned(np.zeros(self.size, dtype=np.float32))
 
     def interpolate(self, cmpt1: Self, cmpt2: Self, alpha: float, *, path_func=None) -> None:
-        self.set(*interpolate(cmpt1._attrs, cmpt2._attrs, alpha))
+        # set 方法由子类实现
+        self.set(*interpolate(cmpt1._clipattrs, cmpt2._clipattrs, alpha))  # type: ignore
 
 
-class Cmpt_TransformableFrameClip[ItemT](Cmpt_Attrs[ItemT], impl=True):
+class Cmpt_TransformableFrameClip[ItemT](Cmpt_ClipAttrs[ItemT]):
     size = 9
 
     def _set_updater(
@@ -262,7 +232,7 @@ class Cmpt_TransformableFrameClip[ItemT](Cmpt_Attrs[ItemT], impl=True):
 
         self.set(
             *(
-                v if v is None else interpolate(self._attrs[i], v, p.alpha)
+                v if v is None else interpolate(self._clipattrs[i], v, p.alpha)
                 for i, v in enumerate(
                     (left, top, right, bottom, x_offset, y_offset, x_scale, y_scale, rotate)
                 )
@@ -291,7 +261,7 @@ class Cmpt_TransformableFrameClip[ItemT](Cmpt_Attrs[ItemT], impl=True):
             (left, top, right, bottom, x_offset, y_offset, x_scale, y_scale, rotate)
         ):
             if v is not None:
-                self._attrs[i] = v
+                self._clipattrs[i] = v
 
         return self
 
@@ -338,17 +308,19 @@ class TransformableFrameClip(FrameEffect):
 
     def dynamic_uniforms(self):
         return dict(
-            u_clip=self.clip._attrs[:4],
-            u_offset=self.clip._attrs[4:6],
-            u_scale=self.clip._attrs[6:8],
-            u_rotate=self.clip._attrs[8],
+            u_clip=self.clip._clipattrs[:4],
+            u_offset=self.clip._clipattrs[4:6],
+            u_scale=self.clip._clipattrs[6:8],
+            u_rotate=self.clip._clipattrs[8],
         )
 
     def create_border_rect(self, **kwargs) -> Rect:
         """
         得到裁剪后的显示区域的包围矩形
         """
-        left, top, right, bottom, x_offset, y_offset, x_scale, y_scale, rotate = self.clip._attrs
+        left, top, right, bottom, x_offset, y_offset, x_scale, y_scale, rotate = (
+            self.clip._clipattrs
+        )
 
         dl = Config.get.left_side + Config.get.bottom
         width, height = Config.get.frame_width, Config.get.frame_height
@@ -432,13 +404,13 @@ void main()
 """
 
 
-class Cmpt_RectClipTransform[ItemT](Cmpt_Attrs[ItemT], impl=True):
+class Cmpt_RectClipTransform[ItemT](Cmpt_ClipAttrs[ItemT]):
     size = 2
 
     def _set_updater(self, p, scale=None, rotate=None):
         self.set(
             *(
-                v if v is None else interpolate(self._attrs[i], v, p.alpha)
+                v if v is None else interpolate(self._clipattrs[i], v, p.alpha)
                 for i, v in enumerate((scale, rotate))
             )
         )
@@ -449,9 +421,13 @@ class Cmpt_RectClipTransform[ItemT](Cmpt_Attrs[ItemT], impl=True):
         scale: float | None = None,
         rotate: float | None = None,
     ) -> Self:
+        clipattrs = self._clipattrs.copy()
+
         for i, v in enumerate((scale, rotate)):
             if v is not None:
-                self._attrs[i] = v
+                clipattrs[i] = v
+
+        self._clipattrs = clipattrs
 
         return self
 
@@ -563,6 +539,6 @@ class RectClip(FrameEffect, FrameRect):
             u_vec_right=vec_right,
             u_vec_up=vec_up,
             u_center_on=self._center_on.get(),
-            u_scale=self.transform._attrs[0],
-            u_rotate=self.transform._attrs[1],
+            u_scale=self.transform._clipattrs[0],
+            u_rotate=self.transform._clipattrs[1],
         )

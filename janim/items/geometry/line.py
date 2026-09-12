@@ -4,9 +4,9 @@ from typing import Iterable, Literal, Self
 
 import numpy as np
 
-from janim.components.component import CmptInfo
-from janim.components.points import Cmpt_Points
-from janim.components.vpoints import Cmpt_VPoints
+from janim.components.core.component import CmptInfo
+from janim.components.impls.points import Cmpt_Points
+from janim.components.impls.vpoints import Cmpt_VPoints
 from janim.constants import DEGREES, LEFT, ORIGIN, RIGHT, UP, WHITE
 from janim.items.geometry import GeometryShape
 from janim.items.geometry.arc import Arc, Dot
@@ -30,14 +30,14 @@ type LineBuff = float | tuple[float, float]
 DEFAULT_DASH_LENGTH = 0.1
 
 
-class Cmpt_VPoints_LineImpl[ItemT](Cmpt_VPoints[ItemT], impl=True):
+class Cmpt_VPoints_LineImpl[ItemT](Cmpt_VPoints[ItemT]):
     """
     在线段中，对 :class:`~.Cmpt_VPoints` 的进一步实现
     """
 
     @property
     def _path_arc(self) -> float:
-        item: Line = self.bind.at_item
+        item: Line = self._bind.at_item
         return item.reshape_params['path_arc']
 
     def put_start_and_end_on(self, start: Vect, end: Vect) -> Self:
@@ -293,7 +293,7 @@ class Line(GeometryShape):
     # endregion
 
 
-class Cmpt_VPoints_DashedLineImpl[ItemT](Cmpt_VPoints_LineImpl[ItemT], impl=True):
+class Cmpt_VPoints_DashedLineImpl[ItemT](Cmpt_VPoints_LineImpl[ItemT]):
     """
     在虚线中，对 :class:`~.Cmpt_VPoints` 的进一步实现
 
@@ -303,16 +303,16 @@ class Cmpt_VPoints_DashedLineImpl[ItemT](Cmpt_VPoints_LineImpl[ItemT], impl=True
     def get_start(self) -> np.ndarray:
         if self.has():  # 在初始化时计算 arc_length 需要用到
             return super().get_start()
-        assert self.bind is not None
-        sub = self.bind.at_item[0][0]  # 含义：首个 subpath 的首个虚线段
+        assert self._bind is not None
+        sub = self._bind.at_item[0][0]  # 含义：首个 subpath 的首个虚线段
         assert isinstance(sub, VItem)
         return sub.points.get_start()
 
     def get_end(self) -> np.ndarray:
         if self.has():  # 在初始化时计算 arc_length 需要用到
             return super().get_end()
-        assert self.bind is not None
-        sub = self.bind.at_item[-1][-1]  # 含义：最后一个 subpath 的最后一个虚线段
+        assert self._bind is not None
+        sub = self._bind.at_item[-1][-1]  # 含义：最后一个 subpath 的最后一个虚线段
         assert isinstance(sub, VItem)
         return sub.points.get_end()
 

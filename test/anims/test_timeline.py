@@ -4,12 +4,12 @@ import inspect
 import unittest
 from typing import Self
 
-from janim.timeline import Timeline
-from janim.components.component import CmptInfo, Component
+from janim.components.core.component import CmptInfo, Component
 from janim.constants import LEFT, RIGHT
 from janim.exception import NotAnimationError, TimelineLookupError
 from janim.items.item import Item
 from janim.items.points import Points
+from janim.timeline import Timeline
 
 
 class TimelineTest(unittest.TestCase):

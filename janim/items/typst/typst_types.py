@@ -4,7 +4,7 @@ from typing import Any, Callable, Iterable, Literal, NoReturn, Self
 
 from janim.anims.composition import AnimGroup
 from janim.anims.updater import GroupUpdater, ItemUpdater
-from janim.components.data import CustomData
+from janim.components.impls.data import CustomData
 from janim.exception import InvalidOrdinalError
 from janim.items.group import Group
 from janim.items.points import Points

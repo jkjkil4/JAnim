@@ -2,8 +2,8 @@ from typing import Self
 
 import numpy as np
 
-from janim.components.component import CmptInfo
-from janim.components.vpoints import Cmpt_VPoints
+from janim.components.core.component import CmptInfo
+from janim.components.impls.vpoints import Cmpt_VPoints
 from janim.constants import LEFT, MED_SMALL_BUFF, NAN_POINT, ORIGIN, RIGHT, TAU
 from janim.items.geometry import GeometryShape
 from janim.items.item import Item
@@ -164,7 +164,7 @@ class ArcBetweenPoints(Arc):
     # endregion
 
 
-class Cmpt_VPoints_CircleImpl[ItemT](Cmpt_VPoints[ItemT], impl=True):
+class Cmpt_VPoints_CircleImpl[ItemT](Cmpt_VPoints[ItemT]):
     """
     在圆中，对 :class:`~.Cmpt_VPoints` 的进一步实现
     """

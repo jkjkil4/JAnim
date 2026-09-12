@@ -4,12 +4,13 @@ from typing import Self
 
 import numpy as np
 
-from janim.components.component import CmptInfo
-from janim.components.vpoints import Cmpt_VPoints
+from janim.components.core.attrs import ComponentAttrs
+from janim.components.core.component import CmptInfo
+from janim.components.impls.vpoints import Cmpt_VPoints
 from janim.constants import DEFAULT_ITEM_TO_ITEM_BUFF, DOWN, LEFT, PI, SMALL_BUFF
 from janim.items.points import Points
-from janim.items.typst.typst import TypstMath
 from janim.items.text import Text
+from janim.items.typst.typst import TypstMath
 from janim.items.vitem import VItem
 from janim.typing import Vect
 from janim.utils.bezier import PathBuilder
@@ -17,12 +18,14 @@ from janim.utils.file_ops import get_janim_dir
 from janim.utils.space_ops import normalize, rotation_about_z
 
 
-class Cmpt_VPoints_BraceImpl[ItemT](Cmpt_VPoints[ItemT], impl=True):
+class Cmpt_VPoints_BraceImpl[ItemT](Cmpt_VPoints[ItemT]):
     """
     在 :class:`Brace` 中对 :class:`Cmpt_VPoints` 的进一步实现
     """
 
-    # 复制时，``brace_length`` 随 ``copy.copy(self)`` 而复制，因此不用重写 ``copy`` 方法
+    _attrs = ComponentAttrs()
+    brace_length = _attrs.float()
+
     def match(
         self,
         item: Points | None,
@@ -79,17 +82,17 @@ class Cmpt_VPoints_BraceImpl[ItemT](Cmpt_VPoints[ItemT], impl=True):
     @property
     def tip_point(self) -> np.ndarray:
         """得到花括号中间凸出处的坐标"""
-        return self._points.data[get_brace_tip_point_index()]
+        return self._points[get_brace_tip_point_index()]
 
     @property
     def brace_left(self) -> np.ndarray:
         """得到括号指向方向左边的尖端处的坐标"""
-        return self._points.data[get_brace_left_index()]
+        return self._points[get_brace_left_index()]
 
     @property
     def brace_right(self) -> np.ndarray:
         """得到括号指向方向右边的尖端处的坐标"""
-        return self._points.data[get_brace_right_index()]
+        return self._points[get_brace_right_index()]
 
     @property
     def direction(self) -> np.ndarray:

@@ -6,8 +6,9 @@ import numpy as np
 from janim_backend.math import Quaternion
 
 from janim.camera.camera_info import CameraInfo
-from janim.components.component import CmptInfo
-from janim.components.points import Cmpt_Points
+from janim.components.core.attrs import ComponentAttrs
+from janim.components.core.component import CmptInfo
+from janim.components.impls.points import Cmpt_Points
 from janim.constants import ORIGIN, OUT
 from janim.items.points import Points
 from janim.typing import Vect, VectArray
@@ -20,8 +21,21 @@ from janim.utils.space_ops import quat_from_angle_axis
 
 
 class Cmpt_CameraPoints[ItemT](Cmpt_Points[ItemT]):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    _attrs = ComponentAttrs()
+
+    orig_height = _attrs.float()
+    size = _attrs.direct_object(tuple[float, float], nullable=False)
+    fov = _attrs.float()
+    orientation = _attrs.direct_object(Quaternion, nullable=False)
+
+    @size.on_modified
+    @fov.on_modified
+    @orientation.on_modified
+    def _on_modified(self) -> None:
+        if self._bind is not None:
+            self._bind.reset_computed_for_func(Cmpt_CameraPoints.info.fget)  # type: ignore
+
+    def __cmpt_init__(self) -> None:
         self.reset()
 
     def set(
@@ -72,74 +86,33 @@ class Cmpt_CameraPoints[ItemT](Cmpt_Points[ItemT]):
         self.orig_height = Config.get.frame_height
 
         self.set([ORIGIN])
-        self.size = [Config.get.frame_width, Config.get.frame_height]
+        self.size = (Config.get.frame_width, Config.get.frame_height)
         self.fov = 45
         self.orientation = Quaternion.identity()
 
         return self
 
-    def copy(self) -> Self:
-        cmpt_copy = super().copy()
-        cmpt_copy._size = self._size.copy()
-        cmpt_copy._orientation = self.orientation.copy()
-        return cmpt_copy
-
-    def _become(self, other: Cmpt_CameraPoints) -> None:
-        super()._become(other)
-        self.size = other.size
-        self.fov = other.fov
-        self.orientation = other.orientation.copy()
-
-    def not_changed(self, other: Cmpt_CameraPoints) -> bool:
-        if not super().not_changed(other):
-            return False
-        if np.any(self.size != other.size) or self.fov != other.fov:
-            return False
-        return np.isclose(self.orientation.xyzw, other.orientation.xyzw).all()
-
-    def interpolate(
-        self, cmpt1: Self, cmpt2: Self, alpha: float, *, path_func: PathFunc = straight_path
+    def interpolate(  # type: ignore
+        self,
+        cmpt1: Cmpt_CameraPoints,
+        cmpt2: Cmpt_CameraPoints,
+        alpha: float,
+        *,
+        path_func: PathFunc = straight_path,
     ) -> None:
         alpha = clip(alpha, 0, 1)
 
         super().interpolate(cmpt1, cmpt2, alpha)
-        self.size = interpolate(cmpt1.size, cmpt2.size, alpha)
+        self.size = (
+            interpolate(cmpt1.size[0], cmpt2.size[0], alpha),
+            interpolate(cmpt1.size[1], cmpt2.size[1], alpha),
+        )
         self.fov = interpolate(cmpt1.fov, cmpt2.fov, alpha)
         self.orientation = cmpt1.orientation.slerp(cmpt2.orientation, alpha)
 
     @property
     def scaled_factor(self) -> float:
         return self.size[1] / self.orig_height
-
-    @property
-    def size(self) -> np.ndarray:
-        return self._size
-
-    @size.setter
-    def size(self, value: Vect) -> None:
-        self._size = np.array(value, dtype=np.float64)
-        if self.bind is not None:
-            self.bind.reset_computed_for_func(Cmpt_CameraPoints.info.fget)  # type: ignore
-
-    @property
-    def fov(self) -> float:
-        return self._fov
-
-    @fov.setter
-    def fov(self, val: float) -> None:
-        self._fov = val
-        if self.bind is not None:
-            self.bind.reset_computed_for_func(Cmpt_CameraPoints.info.fget)  # type: ignore
-
-    @property
-    def orientation(self) -> Quaternion:
-        return self._orientation
-
-    @orientation.setter
-    def orientation(self, val: Quaternion) -> None:
-        self._orientation = val
-        if self.bind is not None:
-            self.bind.reset_computed_for_func(Cmpt_CameraPoints.info.fget)  # type: ignore
 
     def scale(
         self,
@@ -163,7 +136,7 @@ class Cmpt_CameraPoints[ItemT](Cmpt_Points[ItemT]):
             new_center = (self.get()[0] - about_point) * scale_factor + about_point
             self.set([new_center])
 
-        self._size *= scale_factor
+        self.size = tuple(np.asarray(self.size) * scale_factor)
 
         return self
 
@@ -185,7 +158,7 @@ class Cmpt_CameraPoints[ItemT](Cmpt_Points[ItemT]):
         if absolute:
             # 如果没有后代物件（一般也不会有，谁这么闲给摄像机设置后代物件）
             # 则没必要调用 super().rotate() 了，可以快很多
-            if self.bind is not None and self.bind.at_item.has_child():
+            if self._bind is not None and self._bind.at_item.has_child():
                 super().rotate(angle, axis=axis, **kwargs)
             self.orientation = q_rot * self.orientation
         else:

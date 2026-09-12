@@ -4,7 +4,7 @@ from bisect import bisect_right
 from contextvars import ContextVar
 from dataclasses import dataclass
 from enum import IntFlag
-from typing import Generator, Iterable, List, Self, overload
+from typing import TYPE_CHECKING, Any, Generator, Iterable, List, Self, final, overload
 
 import numpy as np
 import numpy.typing as npt
@@ -21,9 +21,52 @@ class ContextSetter[T]:
 
     def __enter__(self) -> Self:
         self.token = self.ctx.set(self.val)
+        return self
 
     def __exit__(self, exc_type, exc_value, tb) -> None:
         self.ctx.reset(self.token)
+
+
+def readonly_array(array: np.ndarray) -> np.ndarray:
+    """
+    给 ``array`` 标记 ``write=False`` 并原样返回
+    """
+    array.setflags(write=False)
+    return array
+
+
+@final
+class owned[T]:
+    """
+    用于在传参时标记该值只有此处的单个引用，不存在其它共享的引用；或者如果值为只读的，也可用
+
+    例如：
+
+    .. code-block:: python
+
+        def fn(array: np.ndarray | owned[np.ndarray]):
+            if array.__class__ is owned:
+                ...
+            else:
+                ...
+
+        # 传递一个普通的 ndarray
+        fn(np.array([1, 2, 3]))
+
+        # 传递一个 owned ndarray，这样 fn 内部就知道其不会被共享使用
+        fn(owned(np.array([1, 2, 3])))
+
+    注：为了绕过 typing 检查，使用 ``owned(x)`` 构造出的变量会认为具有 ``x`` 的类型，但实际运行时是 ``owned`` 对象
+    """
+
+    __slots__ = ('inner',)
+
+    if TYPE_CHECKING:
+
+        def __new__(cls, inner: T) -> T: ...
+
+    def __init__(self, inner: T, /):
+        self.inner = inner
 
 
 class Array:
@@ -39,7 +82,7 @@ class Array:
         self._data: np.ndarray = _data
 
     @staticmethod
-    def create(x, dtype=np.float32) -> Array:
+    def create(x, dtype: Any = np.float32) -> Array:
         data = np.array(x, dtype=dtype)
         data.setflags(write=False)
         return Array(_data=data)

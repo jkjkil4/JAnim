@@ -48,9 +48,9 @@ class DotCloudRenderer(Renderer):
             self.init()
             self.initialized = True
 
-        new_color = item.color._rgbas.data
-        new_radius = item.radius._radii.data
-        new_points = item.points._points.data
+        new_color = item.color._rgbas
+        new_radius = item.radius._radii
+        new_points = item.points._points
 
         if new_color is not self.prev_color or len(new_points) != len(self.prev_points):
             self.update_dynamic_buffer_data(new_color, self.vbo_color, len(new_points))
@@ -71,7 +71,7 @@ class DotCloudRenderer(Renderer):
             self.prev_points = new_points
 
         self.update_fix_in_frame(self.u_fix, item)
-        self.u_glow_color.write_bytes(item.glow._rgba._data.tobytes())
+        self.u_glow_color.write_bytes(item.glow._rgba.tobytes())
         self.u_glow_size.write_float(item.glow._size)
 
         with self.depth_test_if_enabled(self.ctx, item):

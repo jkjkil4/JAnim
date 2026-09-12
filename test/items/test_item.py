@@ -1,6 +1,6 @@
 import unittest
 
-from janim.components.component import CmptInfo, Component
+from janim.components.core.component import CmptInfo, Component
 from janim.constants.coord import *
 from janim.items.group import Group
 from janim.items.item import Item
@@ -12,7 +12,7 @@ class ItemTest(unittest.TestCase):
     def test_lazy_method(self) -> None:
         called_list = []
 
-        class MyCmpt(Component, impl=True):
+        class MyCmpt(Component):
             @CmptSignal
             def points_changed(self):
                 called_list.append(self.points_changed)

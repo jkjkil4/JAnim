@@ -11,9 +11,9 @@ import numpy as np
 from PIL import Image
 
 from janim.timeline import PlaybackControl
-from janim.components.component import CmptInfo
-from janim.components.image import Cmpt_Image
-from janim.components.rgbas import Cmpt_Rgbas
+from janim.components.core.component import CmptInfo
+from janim.components.impls.image import Cmpt_Image
+from janim.components.impls.rgbas import Cmpt_Rgbas
 from janim.constants import DL, DR, OUT, UL, UR
 from janim.exception import MediaError
 from janim.items.points import Points

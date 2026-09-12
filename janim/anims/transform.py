@@ -17,7 +17,7 @@ from janim.anims_core.animation import Animation
 from janim.anims_core.stackable import ApplyParams, ItemAnimation
 from janim.anims_core.time import TimeRange
 from janim.camera.camera import Camera
-from janim.components.points import Cmpt_Points
+from janim.components.impls.points import Cmpt_Points
 from janim.constants import C_LABEL_ANIM_STAY, OUT
 from janim.exception import TargetNotFoundError
 from janim.items.item import Item

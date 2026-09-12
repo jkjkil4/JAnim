@@ -1,7 +1,7 @@
 from typing import Self
 
-from janim.components.component import CmptInfo
-from janim.components.data import Cmpt_Data
+from janim.components.core.component import CmptInfo
+from janim.components.impls.data import Cmpt_Data
 from janim.items.item import Item
 
 

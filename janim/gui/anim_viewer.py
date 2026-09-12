@@ -37,7 +37,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from janim.components.data import Cmpt_Data
+from janim.components.impls.data import Cmpt_Data
 from janim.exception import ExitException
 from janim.gui.application import Application
 from janim.gui.functions.selector import Selector

@@ -1,21 +1,22 @@
 from __future__ import annotations
 
 import numbers
-from functools import lru_cache
+from functools import cache
 from typing import Iterable, Self
 
 import numpy as np
 
 from janim.anims.method_updater_meta import register_updater
-from janim.components.component import Component
+from janim.components.core.attrs import ComponentAttrs
+from janim.components.core.component import Component
 from janim.utils.bezier import interpolate
-from janim.utils.data import AlignedData, Array
+from janim.utils.data import AlignedData, owned, readonly_array
 from janim.utils.iterables import resize_with_interpolation
 
 
-@lru_cache()
-def _get_array(radius: float) -> Array:
-    return Array.create(np.full(1, radius))
+@cache
+def _get_array(radius: float) -> np.ndarray:
+    return owned(readonly_array(np.full(1, radius, dtype=np.float32)))
 
 
 class Cmpt_Radius[ItemT](Component[ItemT]):
@@ -23,26 +24,18 @@ class Cmpt_Radius[ItemT](Component[ItemT]):
     半径组件，被用于 :class:`DotCloud` 的点半径，以及 :class:`VItem` 的轮廓线粗细
     """
 
-    def __init__(self, default_radius: float, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    _attrs = ComponentAttrs()
+    _radii = _attrs.ndarray(np.zeros(1, dtype=np.float32))
+    default_radius = _attrs.float()
+
+    def __cmpt_init__(self, default_radius: float, *args, **kwargs):
         self.default_radius = default_radius
-
-        self._radii = _get_array(self.default_radius).copy()
-
-    def copy(self) -> Self:
-        cmpt_copy = super().copy()
-        cmpt_copy._radii = self._radii.copy()
-        return cmpt_copy
-
-    def _become(self, other: Cmpt_Radius) -> None:
-        if not self._radii.is_share(other._radii):
-            self._radii = other._radii.copy()
-
-    def not_changed(self, other: Cmpt_Radius) -> bool:
-        return self._radii.is_share(other._radii)
+        self._radii = _get_array(default_radius)
 
     @classmethod
-    def align_for_interpolate(cls, cmpt1: Cmpt_Radius, cmpt2: Cmpt_Radius):
+    def align_for_interpolate(  # type: ignore
+        cls, cmpt1: Cmpt_Radius, cmpt2: Cmpt_Radius
+    ) -> AlignedData[Cmpt_Radius]:
         len1, len2 = len(cmpt1.get()), len(cmpt2.get())
 
         cmpt1_copy = cmpt1.copy()
@@ -58,9 +51,9 @@ class Cmpt_Radius[ItemT](Component[ItemT]):
     def interpolate(
         self, cmpt1: Cmpt_Radius, cmpt2: Cmpt_Radius, alpha: float, *, path_func=None
     ) -> None:
-        if not cmpt1._radii.is_share(cmpt2._radii) or not cmpt1._radii.is_share(self._radii):
-            if cmpt1._radii.is_share(cmpt2._radii):
-                self._radii = cmpt1._radii.copy()
+        if id(cmpt1._radii) != id(cmpt2._radii) or id(cmpt1._radii) != id(self._radii):
+            if id(cmpt1._radii) == id(cmpt2._radii):
+                self._radii = owned(cmpt1._radii.copy())
             else:
                 self.set(interpolate(cmpt1.get(), cmpt2.get(), alpha), root_only=True)
 
@@ -70,7 +63,7 @@ class Cmpt_Radius[ItemT](Component[ItemT]):
         """
         得到半径数据
         """
-        return self._radii.data
+        return self._radii
 
     def _set_updater(self, p, radius, *, root_only=False):
         if isinstance(radius, numbers.Real):
@@ -98,12 +91,14 @@ class Cmpt_Radius[ItemT](Component[ItemT]):
         设置半径数据
         """
         if isinstance(radius, numbers.Real):
-            radius = [radius]
-        self._radii.data = radius
+            radius = [radius]  # type: ignore
+        radius = owned(np.asarray(radius, dtype=np.float32))
+
+        self._radii = radius
 
         if not root_only:
             for cmpt in self.walk_same_cmpt_of_descendants():
-                cmpt._radii.data = self._radii.copy()
+                cmpt._radii = radius
 
         return self
 
@@ -129,11 +124,11 @@ class Cmpt_Radius[ItemT](Component[ItemT]):
         """
         缩放半径数据
         """
-        self._radii.data = self._radii.data * factor
+        self._radii = owned(self._radii * factor)
 
         if not root_only:
             for cmpt in self.walk_same_cmpt_of_descendants():
-                cmpt._radii.data = cmpt._radii.data * factor
+                cmpt._radii = owned(cmpt._radii * factor)
 
         return self
 

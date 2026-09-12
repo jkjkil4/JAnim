@@ -3,9 +3,9 @@ from abc import ABCMeta, abstractmethod
 import numpy as np
 
 from janim.anims.updater import DataUpdater, UpdaterParams
-from janim.components.glow import Cmpt_Glow
-from janim.components.rgbas import Cmpt_Rgbas
-from janim.components.simple import Cmpt_Alpha
+from janim.components.impls.glow import Cmpt_Glow
+from janim.components.impls.rgbas import Cmpt_Rgbas
+from janim.components.impls.simple import Cmpt_Alpha
 from janim.constants import C_LABEL_ANIM_ABSTRACT, C_LABEL_ANIM_IN, C_LABEL_ANIM_OUT, ORIGIN, OUT
 from janim.exception import JAnimException
 from janim.items.item import Item

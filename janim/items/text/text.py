@@ -9,8 +9,8 @@ from typing import Iterable, Literal, Self
 
 import numpy as np
 
-from janim.components.component import CmptInfo
-from janim.components.points import Cmpt_Points
+from janim.components.core.component import CmptInfo
+from janim.components.impls.points import Cmpt_Points
 from janim.constants import DL, DOWN, DR, GREY, LEFT, MED_SMALL_BUFF, ORIGIN, RIGHT, UL, UP, UR
 from janim.items.geometry.line import Line
 from janim.items.group import Group

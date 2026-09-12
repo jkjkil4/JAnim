@@ -1,15 +1,16 @@
 from __future__ import annotations
 
-from typing import Iterable, Self
+from typing import Iterable, Self, Sequence
 
 import numpy as np
 from colour import Color
 
 from janim.anims.method_updater_meta import register_updater
-from janim.components.component import Component
+from janim.components.core.attrs import ComponentAttrs
+from janim.components.core.component import Component
 from janim.typing import Alpha, JAnimColor, Rgba
 from janim.utils.bezier import interpolate
-from janim.utils.data import AlignedData, Array
+from janim.utils.data import owned
 
 
 class Cmpt_Rgba[ItemT](Component[ItemT]):
@@ -17,49 +18,25 @@ class Cmpt_Rgba[ItemT](Component[ItemT]):
     单颜色组件
     """
 
-    DEFAULT_RGBA_ARRAY = Array.create([1, 1, 1, 0])
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self._rgba = self.DEFAULT_RGBA_ARRAY.copy()
-        self._size: float = 0.2
-
-    def copy(self) -> Self:
-        cmpt_copy = super().copy()
-        cmpt_copy._rgba = self._rgba.copy()
-        return cmpt_copy
-
-    def _become(self, other: Cmpt_Rgba) -> None:
-        if not self._rgba.is_share(other._rgba):
-            self._rgba = other._rgba.copy()
-
-    def not_changed(self, other: Cmpt_Rgba) -> bool:
-        return self._rgba.is_share(other._rgba)
-
-    @classmethod
-    def align_for_interpolate(cls, cmpt1: Cmpt_Rgba, cmpt2: Cmpt_Rgba):
-        cmpt1_copy = cmpt1.copy()
-        cmpt2_copy = cmpt2.copy()
-        return AlignedData(cmpt1_copy, cmpt2_copy, cmpt1_copy.copy())
+    _attrs = ComponentAttrs()
+    _rgba = _attrs.ndarray(np.array([1, 1, 1, 0], dtype=np.float32))
 
     def interpolate(
         self, cmpt1: Cmpt_Rgba, cmpt2: Cmpt_Rgba, alpha: float, *, path_func=None
     ) -> None:
-        if not cmpt1._rgba.is_share(cmpt2._rgba) or not cmpt1._rgba.is_share(self._rgba):
-            if cmpt1._rgba.is_share(cmpt2._rgba):
-                self._rgba = cmpt1._rgba.copy()
+        if id(cmpt1._rgba) != id(cmpt2._rgba) or id(cmpt1._rgba) != id(self._rgba):
+            if id(cmpt1._rgba) == id(cmpt2._rgba):
+                self._rgba = owned(cmpt1._rgba)
             else:
                 self.set_rgba(interpolate(cmpt1.get(), cmpt2.get(), alpha))
 
     def set_rgba(self, rgba: Rgba) -> Self:
-        self._rgba.data = rgba
+        self._rgba = self.format_rgba(rgba)
         return self
 
     @staticmethod
     def format_rgba(rgba: Rgba) -> np.ndarray:
-        if not isinstance(rgba, np.ndarray):
-            rgba = np.array(rgba)
-
+        rgba = np.asarray(rgba)
         assert rgba.ndim == 1
         assert rgba.shape[0] == 4
         return rgba
@@ -68,10 +45,9 @@ class Cmpt_Rgba[ItemT](Component[ItemT]):
     def format_color(color: JAnimColor) -> np.ndarray:
         rgb = np.array(
             color
-            if isinstance(color, Iterable) and not isinstance(color, str)
+            if isinstance(color, Sequence) and not isinstance(color, str)
             else Color(color).rgb
         )
-
         assert rgb.ndim == 1
         assert rgb.shape[0] == 3
         return rgb
@@ -103,8 +79,8 @@ class Cmpt_Rgba[ItemT](Component[ItemT]):
           则同时表示了 ``color`` 和 ``alpha`` 二者，因此不能再传入 ``alpha`` 参数
         """
         if color is not None or alpha is not None:
-            if alpha is None and not isinstance(color, str) and len(color) == 4:
-                rgba = self.format_rgba(color)
+            if alpha is None and not isinstance(color, str) and len(color) == 4:  # type: ignore
+                rgba = self.format_rgba(color)  # type: ignore
 
                 self.set_rgba(rgba)
 
@@ -123,7 +99,7 @@ class Cmpt_Rgba[ItemT](Component[ItemT]):
         return self
 
     def get(self) -> np.ndarray:
-        return self._rgba.data
+        return self._rgba
 
     @register_updater(
         lambda self, p, color, factor=0.5, *, root_only=False: (  # -

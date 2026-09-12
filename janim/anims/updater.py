@@ -13,7 +13,7 @@ from janim.anims_core.animation import FOREVER, Animation
 from janim.anims_core.display import DoBecomeAtEnd
 from janim.anims_core.stackable import ApplyAligner, ApplyParams, ItemAnimation
 from janim.anims_core.time import TimeRange
-from janim.components.component import Component
+from janim.components.core.component import Component
 from janim.constants import C_LABEL_ANIM_ABSTRACT
 from janim.exception import UpdaterError
 from janim.items.item import Item

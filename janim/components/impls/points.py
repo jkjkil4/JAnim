@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import inspect
+import itertools as it
 import types
 from typing import TYPE_CHECKING, Callable, Iterable, Self
 
@@ -8,7 +9,8 @@ import numpy as np
 from janim_backend import compute
 
 from janim.anims.method_updater_meta import register_updater
-from janim.components.component import Component
+from janim.components.core.attrs import ComponentAttrs
+from janim.components.core.component import BindInfo, Component
 from janim.constants import (
     DEFAULT_ITEM_TO_EDGE_BUFF,
     DEFAULT_ITEM_TO_ITEM_BUFF,
@@ -29,7 +31,7 @@ from janim.typing import Vect, VectArray
 from janim.utils.bezier import integer_interpolate, interpolate
 from janim.utils.cmpt_lazy import CmptSignal, cmpt_lazy_method
 from janim.utils.config import Config
-from janim.utils.data import AlignedData, Array
+from janim.utils.data import AlignedData, owned, readonly_array
 from janim.utils.iterables import resize_and_repeatedly_extend
 from janim.utils.paths import PathFunc, straight_path
 from janim.utils.simple_functions import clip
@@ -50,40 +52,27 @@ type PointsFn = Callable[[np.ndarray], VectArray]
 type PointFn = Callable[[np.ndarray], Vect]
 type ComplexFn = Callable[[complex], complex]
 
-DEFAULT_POINTS_ARRAY = Array.create(np.zeros((0, 3)))
+_DEFAULT_POINTS = readonly_array(np.zeros((0, 3), dtype=np.float32))
 
 
 class Cmpt_Points[ItemT](Component[ItemT]):
     resize_func = staticmethod(resize_and_repeatedly_extend)
     """"""
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    _attrs = ComponentAttrs()
+    _points = _attrs.ndarray(_DEFAULT_POINTS)
 
-        self._points = DEFAULT_POINTS_ARRAY.copy()
-
-    def init_bind(self, bind: Component.BindInfo):
+    def init_bind(self, bind: BindInfo):
         super().init_bind(bind)
 
         bind.at_item._children_changed_hooks.append(
-            lambda: bind.reset_computed_for_func(Cmpt_Points.box.fget)
+            lambda: bind.reset_computed_for_func(Cmpt_Points.box.fget)  # type: ignore
         )
 
-    def copy(self) -> Self:
-        cmpt_copy = super().copy()
-        cmpt_copy._points = self._points.copy()
-        return cmpt_copy
-
-    def _become(self, other: Cmpt_Points) -> None:
-        if not self._points.is_share(other._points):
-            self._points = other._points.copy()
-            Cmpt_Points.set.emit(self)
-
-    def not_changed(self, other: Cmpt_Points) -> bool:
-        return self._points.is_share(other._points)
-
     @classmethod
-    def align_for_interpolate(cls, cmpt1: Cmpt_Points, cmpt2: Cmpt_Points) -> AlignedData[Self]:
+    def align_for_interpolate(  # type: ignore
+        cls, cmpt1: Cmpt_Points, cmpt2: Cmpt_Points
+    ) -> AlignedData[Cmpt_Points]:
         len1, len2 = len(cmpt1.get()), len(cmpt2.get())
 
         cmpt1_copy = cmpt1.copy()
@@ -96,12 +85,17 @@ class Cmpt_Points[ItemT](Component[ItemT]):
 
         return AlignedData(cmpt1_copy, cmpt2_copy, cmpt1_copy.copy())
 
-    def interpolate(
-        self, cmpt1: Self, cmpt2: Self, alpha: float, *, path_func: PathFunc = straight_path
+    def interpolate(  # type: ignore
+        self,
+        cmpt1: Cmpt_Points,
+        cmpt2: Cmpt_Points,
+        alpha: float,
+        *,
+        path_func: PathFunc = straight_path,
     ) -> None:
-        if not cmpt1._points.is_share(cmpt2._points) or not cmpt1._points.is_share(self._points):
-            if cmpt1._points.is_share(cmpt2._points):
-                self._points = cmpt1._points.copy()
+        if id(cmpt1._points) != id(cmpt2._points) or id(cmpt1._points) != id(self._points):
+            if id(cmpt1._points) == id(cmpt2._points):
+                self._points = owned(cmpt1._points)
             else:
                 self.set(path_func(cmpt1.get(), cmpt2.get(), alpha))
 
@@ -111,7 +105,7 @@ class Cmpt_Points[ItemT](Component[ItemT]):
         """
         得到点坐标数据
         """
-        return self._points.data
+        return self._points
 
     def get_all(self) -> np.ndarray:
         """
@@ -134,9 +128,9 @@ class Cmpt_Points[ItemT](Component[ItemT]):
         assert points.ndim == 2
         assert points.shape[1] == 3
 
-        cnt_changed = len(points) != self._points.len()
+        cnt_changed = len(points) != len(self._points)
 
-        self._points.data = points
+        self._points = points
 
         if cnt_changed:
             Cmpt_Points.set.emit(self, key='count')
@@ -146,7 +140,7 @@ class Cmpt_Points[ItemT](Component[ItemT]):
 
     def clear(self) -> Self:
         """清除点"""
-        self.set(DEFAULT_POINTS_ARRAY.data)
+        self.set(_DEFAULT_POINTS)
         return self
 
     def extend(self, points: VectArray) -> Self:
@@ -186,14 +180,14 @@ class Cmpt_Points[ItemT](Component[ItemT]):
         得到 ``points`` 的第一个点
         """
         self._raise_error_if_no_points()
-        return self._points.data[0]
+        return self._points[0]
 
     def get_end(self) -> np.ndarray:
         """
         得到 ``points`` 的最后一个点
         """
         self._raise_error_if_no_points()
-        return self._points.data[-1]
+        return self._points[-1]
 
     def get_start_and_end(self) -> tuple[np.ndarray, np.ndarray]:
         """
@@ -207,7 +201,7 @@ class Cmpt_Points[ItemT](Component[ItemT]):
 
         对于曲线路径组件 :class:`~.Cmpt_VPoints` 而言行为不同，另请参考 :meth:`~.Cmpt_VPoints.point_from_proportion`
         """
-        points = self._points.data
+        points = self._points
         i, subalpha = integer_interpolate(0, len(points) - 1, alpha)
         return interpolate(points[i], points[i + 1], subalpha)
 
@@ -232,7 +226,7 @@ class Cmpt_Points[ItemT](Component[ItemT]):
         表示物件（包括后代物件）的矩形包围框
         """
         ## 优化情况，当物件没有后代物件时，直接返回 self_box
-        bind = self.bind
+        bind = self._bind
         if bind is not None and not bind.at_item.has_child():
             return self.self_box
 
@@ -431,6 +425,9 @@ class Cmpt_Points[ItemT](Component[ItemT]):
 
         视 ``about_point`` 为原点，若其为 ``None``，则将物件在 ``about_edge`` 方向上的边界作为 ``about_point``
         """
+        if about_point is not None:
+            about_point = np.asarray(about_point)
+
         if about_point is None and about_edge is not None:
             if root_only:
                 about_point = self.self_box.get(about_edge)
@@ -1113,13 +1110,13 @@ class Cmpt_Points[ItemT](Component[ItemT]):
         """
         将子物件按照 ``direction`` 方向排列
         """
-        if self.bind is None:
-            return
+        if self._bind is None:
+            return self
 
-        cmpts = [self.get_same_cmpt(item) for item in self.bind.at_item]
+        cmpts = [self.get_same_cmpt(item) for item in self._bind.at_item]
 
-        for cmpt1, cmpt2 in zip(cmpts, cmpts[1:]):
-            cmpt2.next_to(cmpt1.bind.at_item, direction, **kwargs)
+        for cmpt1, cmpt2 in it.pairwise(cmpts):
+            cmpt2.next_to(cmpt1._bind.at_item, direction, **kwargs)  # type: ignore
 
         if center:
             self.to_center()
@@ -1180,10 +1177,10 @@ class Cmpt_Points[ItemT](Component[ItemT]):
         - ``aligned_edge``: 对齐边缘
         - ``by_center_point``: 默认为 ``False``；若设置为 ``True``，则仅将物件视为中心点，不考虑物件的宽高
         """
-        if self.bind is None:
-            return
+        if self._bind is None:
+            return self
 
-        cmpts = [self.get_same_cmpt(item) for item in self.bind.at_item]
+        cmpts = [self.get_same_cmpt(item) for item in self._bind.at_item]
 
         n_rows, n_cols = self._format_rows_cols(len(cmpts), n_rows, n_cols)
         h_buff, v_buff = self._format_buff(buff, h_buff, v_buff, by_center_point)
@@ -1211,13 +1208,13 @@ class Cmpt_Points[ItemT](Component[ItemT]):
         aligned_edge: Vect = ORIGIN,
         center: bool = True,
     ) -> Self:
-        if self.bind is None or not self.bind.at_item.has_child():
+        if self._bind is None or not self._bind.at_item.has_child():
             return self
 
-        cmpts = [self.get_same_cmpt(item) for item in self.bind.at_item]
+        cmpts = [self.get_same_cmpt(item) for item in self._bind.at_item]
         offset = np.array(offset)
 
-        for cmpt1, cmpt2 in zip(cmpts, cmpts[1:]):
+        for cmpt1, cmpt2 in it.pairwise(cmpts):
             delta = cmpt2.box.get(aligned_edge) - cmpt1.box.get(aligned_edge)
             cmpt2.shift(offset - delta)
 

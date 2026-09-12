@@ -7,13 +7,14 @@ import numpy as np
 from colour import Color
 
 from janim.anims.method_updater_meta import register_updater
-from janim.components.component import Component
+from janim.components.core.attrs import ComponentAttrs
+from janim.components.core.component import Component
 from janim.typing import Alpha, AlphaArray, ColorArray, JAnimColor, RgbaArray
 from janim.utils.bezier import interpolate
-from janim.utils.data import AlignedData, Array
+from janim.utils.data import AlignedData, owned, readonly_array
 from janim.utils.iterables import resize_with_interpolation
 
-DEFAULT_RGBAS_ARRAY = Array.create(np.full((1, 4), 1))
+_DEFAULT_RGBAS = readonly_array(np.full((1, 4), 1, dtype=np.float32))
 
 
 class Cmpt_Rgbas[ItemT](Component[ItemT]):
@@ -21,25 +22,13 @@ class Cmpt_Rgbas[ItemT](Component[ItemT]):
     颜色组件
     """
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        self._rgbas = DEFAULT_RGBAS_ARRAY.copy()
-
-    def copy(self) -> Self:
-        cmpt_copy = super().copy()
-        cmpt_copy._rgbas = self._rgbas.copy()
-        return cmpt_copy
-
-    def _become(self, other: Cmpt_Rgbas) -> None:
-        if not self._rgbas.is_share(other._rgbas):
-            self._rgbas = other._rgbas.copy()
-
-    def not_changed(self, other: Cmpt_Rgbas) -> bool:
-        return self._rgbas.is_share(other._rgbas)
+    _attrs = ComponentAttrs()
+    _rgbas = _attrs.ndarray(_DEFAULT_RGBAS)
 
     @classmethod
-    def align_for_interpolate(cls, cmpt1: Cmpt_Rgbas, cmpt2: Cmpt_Rgbas):
+    def align_for_interpolate(  # type: ignore
+        cls, cmpt1: Cmpt_Rgbas, cmpt2: Cmpt_Rgbas
+    ) -> AlignedData[Cmpt_Rgbas]:
         len1, len2 = len(cmpt1.get()), len(cmpt2.get())
 
         cmpt1_copy = cmpt1.copy()
@@ -55,28 +44,26 @@ class Cmpt_Rgbas[ItemT](Component[ItemT]):
     def interpolate(
         self, cmpt1: Cmpt_Rgbas, cmpt2: Cmpt_Rgbas, alpha: float, *, path_func=None
     ) -> None:
-        if not cmpt1._rgbas.is_share(cmpt2._rgbas) or not cmpt1._rgbas.is_share(self._rgbas):
-            if cmpt1._rgbas.is_share(cmpt2._rgbas):
-                self._rgbas = cmpt1._rgbas.copy()
+        if id(cmpt1._rgbas) != id(cmpt2._rgbas) or id(cmpt1._rgbas) != id(self._rgbas):
+            if id(cmpt1._rgbas) == id(cmpt2._rgbas):
+                self._rgbas = owned(cmpt1._rgbas)
             else:
                 self.set_rgbas(interpolate(cmpt1.get(), cmpt2.get(), alpha))
 
     def is_transparent(self) -> None:
-        return (self._rgbas.data[:, 3] == 0).all()
+        return (self._rgbas[:, 3] == 0).all()
 
     # region 颜色数据 | Colors
 
     def get(self) -> np.ndarray:
-        return self._rgbas.data
+        return self._rgbas
 
     @staticmethod
     def format_rgbas(rgbas: RgbaArray) -> np.ndarray:
         """
         将传入值转换为数值数组
         """
-        if not isinstance(rgbas, np.ndarray):
-            rgbas = np.array(rgbas)
-
+        rgbas = np.asarray(rgbas)
         assert rgbas.ndim == 2
         assert rgbas.shape[1] == 4
         return rgbas
@@ -98,7 +85,6 @@ class Cmpt_Rgbas[ItemT](Component[ItemT]):
                     for color in colors
                 ]
             )
-
         assert colors.ndim == 2
         assert colors.shape[1] == 3
         return colors
@@ -113,7 +99,6 @@ class Cmpt_Rgbas[ItemT](Component[ItemT]):
             if isinstance(color, Iterable) and not isinstance(color, str)
             else Color(color).rgb
         )
-
         assert rgb.ndim == 1
         assert rgb.shape[0] == 3
         return rgb
@@ -133,7 +118,7 @@ class Cmpt_Rgbas[ItemT](Component[ItemT]):
         """
         直接设置 rgba 数据
         """
-        self._rgbas.data = rgbas
+        self._rgbas = self.format_rgbas(rgbas)
         return self
 
     def _set_updater(self, p, color=None, alpha=None, *, root_only=False) -> None:
@@ -210,7 +195,7 @@ class Cmpt_Rgbas[ItemT](Component[ItemT]):
         """
         将颜色数据重置为默认值
         """
-        self.set(DEFAULT_RGBAS_ARRAY.data)
+        self.set(_DEFAULT_RGBAS)
         return self
 
     def reverse(self) -> Self:
@@ -334,4 +319,4 @@ def apart_alpha(alpha: float, n: int, *, eps: float = 1e-3) -> float:
         else:
             tpl2 = (mid_single, mid_merged)
 
-    return mid_single
+    return mid_single  # type: ignore

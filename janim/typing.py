@@ -1,22 +1,22 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Iterable, Protocol, Self, runtime_checkable
+from typing import TYPE_CHECKING, Any, Iterable, Protocol, Self, Sequence, runtime_checkable
 
 if TYPE_CHECKING:
     import numpy as np
 
     from janim.anims_core.animation import Animation
 
-type Vect = Iterable[float] | np.ndarray
+type Vect = Sequence[float] | np.ndarray
 type VectArray = Iterable[Vect] | np.ndarray
 
-type JAnimColor = str | Iterable[float] | np.ndarray
+type JAnimColor = str | Sequence[float] | np.ndarray
 type ColorArray = Iterable[JAnimColor] | np.ndarray
 
 type Alpha = float
 type AlphaArray = Iterable[float] | np.ndarray
 
-type Rgba = Iterable[float] | np.ndarray
+type Rgba = Sequence[float] | np.ndarray
 type RgbaArray = Iterable[Rgba] | np.ndarray
 
 type RangeSpecifier = tuple[float, float] | tuple[float, float, float]
@@ -53,8 +53,6 @@ class SupportsTracking(Protocol):
     """
 
     def copy(self) -> Self: ...
-
-    def not_changed(self, other: Self) -> bool: ...
 
     def interpolate(self, other: Self, alpha: float) -> Self: ...
 

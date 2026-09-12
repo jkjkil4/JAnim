@@ -79,10 +79,10 @@ class VItemCurveRenderer(Renderer):
             return VItemCurveRenderer.RenderAttrs(
                 render_data.camera_info,
                 item._fix_in_frame,
-                item.points._points._data,
-                item.radius._radii._data,
-                item.stroke._rgbas._data,
-                item.fill._rgbas._data,
+                item.points._points,
+                item.radius._radii,
+                item.stroke._rgbas,
+                item.fill._rgbas,
             )
 
     def init_common(self) -> None:
@@ -203,7 +203,7 @@ class VItemCurveRenderer(Renderer):
 
     def render_common(self, item: VItem, render_data: RenderData, new_attrs: RenderAttrs) -> None:
         self.update_fix_in_frame(self.u_fix, item)
-        self.u_glow_color.write_bytes(item.glow._rgba._data.tobytes())
+        self.u_glow_color.write_bytes(item.glow._rgba.tobytes())
         self.u_glow_size.write_float(item.glow._size)
 
         with self.depth_test_if_enabled(self.ctx, item):

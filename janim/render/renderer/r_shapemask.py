@@ -102,8 +102,8 @@ class ShapeMaskRenderer(Renderer):
         self.u_content_tex.value = 0
         self.u_mask_tex.value = 1
 
-        self.u_mask_alpha.write_float(item.alpha._value)
-        self.u_feather.write_float(item.feather._value)
-        self.u_invert.write_float(item.invert._value)
+        self.u_mask_alpha.write_float(item.alpha._inner)
+        self.u_feather.write_float(item.feather._inner)
+        self.u_invert.write_float(item.invert._inner)
 
         self.vao.render(mgl.TRIANGLE_STRIP)

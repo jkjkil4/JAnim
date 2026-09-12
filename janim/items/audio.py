@@ -1,8 +1,8 @@
 from __future__ import annotations
 
 import copy
-from fractions import Fraction
 import os
+from fractions import Fraction
 from typing import Generator, Iterable, Self
 
 import numpy as np

@@ -2,12 +2,12 @@ from __future__ import annotations
 
 import numbers
 from collections import defaultdict
-from typing import Self
+from typing import ClassVar, Self
 
 from janim.anims.method_updater_meta import register_updater
-from janim.components.component import Component
+from janim.components.core.attrs import ComponentAttrs
+from janim.components.core.component import Component
 from janim.utils.bezier import interpolate
-from janim.utils.data import AlignedData
 
 
 class Cmpt_Depth[ItemT](Component[ItemT]):
@@ -40,35 +40,19 @@ class Cmpt_Depth[ItemT](Component[ItemT]):
     也就是 ``d3`` 会盖住 ``d2``； ``d1`` 会盖住 ``d2`` 和 ``d3``
     """
 
-    _counter: defaultdict[float, int] = defaultdict(int)
+    _counter: ClassVar[defaultdict[float, float]] = defaultdict(float)
 
-    def __init__(self, value: float, order: int | None = None):
-        super().__init__()
+    _attrs = ComponentAttrs()
+    _depth = _attrs.float()
+    _order = _attrs.float()
 
-        # 相当于 self.set(value, order, root_only=True)
+    def __cmpt_init__(self, value: float, order: float | None = None) -> None:
         self._depth = value
         if order is None:
             self._order = self._counter[value]
             self._counter[value] -= 1
         else:
             self._order = order
-
-    def copy(self) -> Self:
-        # Component.copy 中的 copy.copy(self) 已将 _value 和 _order 拷贝
-        return super().copy()
-
-    def _become(self, other: Cmpt_Depth) -> None:
-        self._depth = other._depth
-        self._order = other._order
-
-    def not_changed(self, other: Cmpt_Depth) -> bool:
-        return self._depth == other._depth and self._order == other._order
-
-    @classmethod
-    def align_for_interpolate(cls, cmpt1: Cmpt_Depth, cmpt2: Cmpt_Depth) -> AlignedData[Self]:
-        cmpt1_copy = cmpt1.copy()
-        cmpt2_copy = cmpt2.copy()
-        return AlignedData(cmpt1_copy, cmpt2_copy, cmpt1_copy.copy())
 
     def interpolate(
         self, cmpt1: Cmpt_Depth, cmpt2: Cmpt_Depth, alpha: float, *, path_func=None
@@ -89,7 +73,7 @@ class Cmpt_Depth[ItemT](Component[ItemT]):
         self._order = interpolate(self._order, order, p.alpha)
 
     @register_updater(_set_updater)
-    def set(self, value: float, order: int | None = None, *, root_only: bool = False) -> Self:
+    def set(self, value: float, order: float | None = None, *, root_only: bool = False) -> Self:
         """
         设置物件的深度
         """
@@ -112,11 +96,11 @@ class Cmpt_Depth[ItemT](Component[ItemT]):
     def get(self) -> float:
         return self._depth
 
-    def get_raw(self) -> tuple[float, int | float]:
+    def get_raw(self) -> tuple[float, float]:
         """
         返回元组 ``(depth, order)``
 
-        在一些特殊情况下，``order`` 可能是浮点数
+        在大多数情况下，``order`` 在数值上只整数，不过在一些特殊情况下，``order`` 可能包含小数部分
         """
         return (self._depth, self._order)
 

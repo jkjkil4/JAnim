@@ -91,12 +91,12 @@ class VItemPlaneRenderer(Renderer):
             return VItemPlaneRenderer.RenderAttrs(
                 render_data.camera_info,
                 item._fix_in_frame,
-                item.points._points._data,
-                item.radius._radii._data,
-                item.stroke._rgbas._data,
-                item.fill._rgbas._data,
+                item.points._points,
+                item.radius._radii,
+                item.stroke._rgbas,
+                item.fill._rgbas,
                 item.glow._size,
-                item.glow._rgba._data[3] != 0.0,
+                item.glow._rgba[3] != 0.0,
             )
 
     def init_common(self) -> None:
@@ -283,7 +283,7 @@ class VItemPlaneRenderer(Renderer):
         self.update_fix_in_frame(self.u_fix, item)
         self.u_stroke_background.write_bool(item.stroke_background)
         self.u_is_fill_transparent.write_bool(self.fill_transparent)
-        self.u_glow_color.write_bytes(item.glow._rgba._data.tobytes())
+        self.u_glow_color.write_bytes(item.glow._rgba.tobytes())
         self.u_glow_size.write_float(new_attrs.glow_size)
 
         self.u_DEPTH_TEST.write_bool(item._depth_test)

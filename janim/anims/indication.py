@@ -4,13 +4,13 @@ import math
 
 import numpy as np
 
-from janim.anims_core.animation import Animation
 from janim.anims.composition import AnimGroup, Succession
 from janim.anims.creation import Create, ShowPartial
 from janim.anims.fading import FadeOut
 from janim.anims.movement import Homotopy
 from janim.anims.updater import DataUpdater, UpdaterParams
-from janim.components.rgbas import Cmpt_Rgbas
+from janim.anims_core.animation import Animation
+from janim.components.impls.rgbas import Cmpt_Rgbas
 from janim.constants import (
     C_LABEL_ANIM_ABSTRACT,
     C_LABEL_ANIM_INDICATION,

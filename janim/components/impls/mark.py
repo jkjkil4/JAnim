@@ -1,42 +1,31 @@
 from __future__ import annotations
 
-from typing import Self
+from typing import ClassVar, Self
 
 import numpy as np
 
 from janim.anims.method_updater_meta import register_updater
-from janim.components.component import Component
-from janim.components.points import DEFAULT_POINTS_ARRAY, PointsFn
+from janim.components.core.attrs import ComponentAttrs
+from janim.components.core.component import Component
+from janim.components.impls.points import _DEFAULT_POINTS, PointsFn
 from janim.typing import Vect, VectArray
 from janim.utils.bezier import interpolate
 from janim.utils.cmpt_lazy import CmptSignal
-from janim.utils.data import AlignedData
+from janim.utils.data import AlignedData, owned
 from janim.utils.iterables import resize_and_repeatedly_extend
 from janim.utils.paths import PathFunc, straight_path
 
 
 class Cmpt_Mark[ItemT](Component[ItemT]):
-    names: list[str] = []
+    names: ClassVar[list[str]] = []
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        self._points = DEFAULT_POINTS_ARRAY.copy()
-
-    def copy(self) -> Self:
-        cmpt_copy = super().copy()
-        cmpt_copy._points = self._points.copy()
-        return cmpt_copy
-
-    def _become(self, other: Cmpt_Mark) -> None:
-        if not self._points.is_share(other._points.copy()):
-            self._points = other._points.copy()
-
-    def not_changed(self, other: Cmpt_Mark) -> bool:
-        return self._points.is_share(other._points)
+    _attrs = ComponentAttrs()
+    _points = _attrs.ndarray(_DEFAULT_POINTS)
 
     @classmethod
-    def align_for_interpolate(cls, cmpt1: Cmpt_Mark, cmpt2: Cmpt_Mark) -> AlignedData[Self]:
+    def align_for_interpolate(  # type: ignore
+        cls, cmpt1: Cmpt_Mark, cmpt2: Cmpt_Mark
+    ) -> AlignedData[Cmpt_Mark]:
         len1, len2 = len(cmpt1.get_points()), len(cmpt2.get_points())
 
         cmpt1_copy = cmpt1.copy()
@@ -53,12 +42,17 @@ class Cmpt_Mark[ItemT](Component[ItemT]):
 
         return AlignedData(cmpt1_copy, cmpt2_copy, cmpt1_copy.copy())
 
-    def interpolate(
-        self, cmpt1: Self, cmpt2: Self, alpha: float, *, path_func: PathFunc = straight_path
+    def interpolate(  # type: ignore
+        self,
+        cmpt1: Cmpt_Mark,
+        cmpt2: Cmpt_Mark,
+        alpha: float,
+        *,
+        path_func: PathFunc = straight_path,
     ) -> None:
-        if not cmpt1._points.is_share(cmpt2._points) or not cmpt1._points.is_share(self._points):
-            if cmpt1._points.is_share(cmpt2._points):
-                self._points = cmpt1._points.copy()
+        if id(cmpt1._points) != id(cmpt2._points) or id(cmpt1._points) != id(self._points):
+            if id(cmpt1._points) == id(cmpt2._points):
+                self._points = owned(cmpt1._points)
             else:
                 self.set_points(path_func(cmpt1.get_points(), cmpt2.get_points(), alpha))
 
@@ -66,14 +60,14 @@ class Cmpt_Mark[ItemT](Component[ItemT]):
         """
         直接得到记录的所有坐标点数据
         """
-        return self._points.data
+        return self._points
 
     def get(self, index: int | str = 0) -> np.ndarray:
         """
         得到指定索引（默认为 0）记录的坐标点
         """
         index = self.format_index(index)
-        return self._points.data[index]
+        return self._points[index]
 
     def set_points(self, points: VectArray) -> Self:
         """
@@ -86,7 +80,7 @@ class Cmpt_Mark[ItemT](Component[ItemT]):
         assert points.ndim == 2
         assert points.shape[1] == 3
 
-        self._points.data = points
+        self._points = points
         return self
 
     @register_updater(
@@ -123,8 +117,12 @@ class Cmpt_Mark[ItemT](Component[ItemT]):
 
         用于同步与 ``points`` 的变换，已经在 :class:`~.MarkedItem` 里绑定了同步，不需要手动设置和调用
         """
+        if about_point is not None:
+            about_point = np.asarray(about_point)
+
         if about_point is None:
             self.set_points(func(self.get_points()))
         else:
             self.set_points(func(self.get_points() - about_point) + about_point)
+
         return self

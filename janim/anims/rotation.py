@@ -1,6 +1,6 @@
 from janim.anims.updater import DataUpdater, UpdaterParams
 from janim.camera.camera import Camera
-from janim.components.points import Cmpt_Points
+from janim.components.impls.points import Cmpt_Points
 from janim.constants import C_LABEL_ANIM_STAY, ORIGIN, OUT
 from janim.items.item import Item
 from janim.items.points import Points

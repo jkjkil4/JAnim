@@ -5,12 +5,12 @@ from typing import Iterable, Literal, Self
 
 import numpy as np
 
-from janim.components.component import CmptGroup, CmptInfo
-from janim.components.glow import Cmpt_Glow
-from janim.components.points import Cmpt_Points
-from janim.components.radius import Cmpt_Radius
-from janim.components.rgbas import Cmpt_Rgbas, apart_alpha
-from janim.components.vpoints import Cmpt_VPoints
+from janim.components.core.component import CmptGroup, CmptInfo
+from janim.components.impls.glow import Cmpt_Glow
+from janim.components.impls.points import Cmpt_Points
+from janim.components.impls.radius import Cmpt_Radius
+from janim.components.impls.rgbas import Cmpt_Rgbas, apart_alpha
+from janim.components.impls.vpoints import Cmpt_VPoints
 from janim.constants import PI
 from janim.items.group import Group
 from janim.items.item import Item, mockable
@@ -97,10 +97,17 @@ class VItem(Points):
 
         return super().apply_style(**kwargs)
 
-    def not_changed(self, other: Self) -> bool:
+    def take_modified(self, other: Self) -> bool:  # type: ignore
+        flag = False
+
+        # 这个判断不太符合 take_modified 的语义，不过先凑合着用
         if self._shade_in_3d != other._shade_in_3d:
-            return False
-        return super().not_changed(other)
+            flag = True
+
+        if super().take_modified(other):
+            flag = True
+
+        return flag
 
     @mockable
     def set_stroke_background(self: Item, flag: bool = True, *, root_only: bool = False) -> Self:
@@ -212,9 +219,9 @@ class VItem(Points):
         ):
             cmpt1 = aligned.data1.components[cmpt_name]
             cmpt2 = aligned.data2.components[cmpt_name]
-            if cmpt1.not_changed(cmpt2):
+            if id(getattr(cmpt1, array_name)) == id(getattr(cmpt2, array_name)):
                 cmpt1.resize(count)
-                # 使用这种方式保持 not_changed 的判断，以优化性能
+                # 使用这种方式保持 array 等价，以优化性能
                 setattr(cmpt2, array_name, getattr(cmpt1, array_name).copy())
             else:
                 cmpt1.resize(count)

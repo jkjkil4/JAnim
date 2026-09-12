@@ -4,12 +4,12 @@ from typing import Iterable, Self
 
 import numpy as np
 
-from janim.components.component import CmptInfo
-from janim.components.glow import Cmpt_Glow
-from janim.components.mark import Cmpt_Mark
-from janim.components.points import Cmpt_Points
-from janim.components.radius import Cmpt_Radius
-from janim.components.rgbas import Cmpt_Rgbas, apart_alpha
+from janim.components.core.component import CmptInfo
+from janim.components.impls.glow import Cmpt_Glow
+from janim.components.impls.mark import Cmpt_Mark
+from janim.components.impls.points import Cmpt_Points
+from janim.components.impls.radius import Cmpt_Radius
+from janim.components.impls.rgbas import Cmpt_Rgbas, apart_alpha
 from janim.items.item import Item
 from janim.locale import get_translator
 from janim.render.renderer.r_dotcloud import DotCloudRenderer

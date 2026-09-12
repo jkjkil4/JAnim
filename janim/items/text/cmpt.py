@@ -2,11 +2,11 @@ from typing import TYPE_CHECKING, Literal, Self
 
 import numpy as np
 
-from janim.components.mark import Cmpt_Mark
+from janim.components.impls.mark import Cmpt_Mark
 from janim.typing import Vect
 
 
-class Cmpt_Mark_TextCharImpl[ItemT](Cmpt_Mark[ItemT], impl=True):
+class Cmpt_Mark_TextCharImpl[ItemT](Cmpt_Mark[ItemT]):
     names = ['orig', 'right', 'up', 'advance']
 
     if TYPE_CHECKING:
@@ -25,7 +25,7 @@ class Cmpt_Mark_TextCharImpl[ItemT](Cmpt_Mark[ItemT], impl=True):
         ) -> Self: ...
 
 
-class Cmpt_Mark_TextLineImpl[ItemT](Cmpt_Mark[ItemT], impl=True):
+class Cmpt_Mark_TextLineImpl[ItemT](Cmpt_Mark[ItemT]):
     names = ['orig', 'right', 'up']
 
     if TYPE_CHECKING:

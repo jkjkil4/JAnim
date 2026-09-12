@@ -9,7 +9,7 @@ import numpy as np
 
 from janim.anims_core.animation import Animation
 from janim.anims.updater import DataUpdater, UpdaterParams
-from janim.components.vpoints import Cmpt_VPoints
+from janim.components.impls.vpoints import Cmpt_VPoints
 from janim.constants import (
     C_LABEL_ANIM_ABSTRACT,
     C_LABEL_ANIM_IN,

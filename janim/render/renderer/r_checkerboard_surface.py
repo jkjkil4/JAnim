@@ -53,9 +53,9 @@ class CheckerboardSurfaceRenderer(Renderer):
             self.init()
             self.initialized = True
 
-        new_points = item.points._points.data
-        new_dupoints = item._du_points._points.data
-        new_dvpoints = item._dv_points._points.data
+        new_points = item.points._points
+        new_dupoints = item._du_points._points
+        new_dvpoints = item._dv_points._points
         new_indices = item._tri_indices
 
         if (
@@ -82,7 +82,7 @@ class CheckerboardSurfaceRenderer(Renderer):
 
         self.update_fix_in_frame(self.u_fix, item)
 
-        rgbas = item.color._rgbas._data
+        rgbas = item.color._rgbas
         self.u_color1.write_bytes(rgbas[0].tobytes())
         self.u_color2.write_bytes(rgbas[1].tobytes())
         self.u_row_length.write_int(item.resolution[1])

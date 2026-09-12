@@ -1,10 +1,10 @@
 import unittest
 from typing import Self
 
-from janim.components.component import CmptGroup, CmptInfo, Component
+from janim.components.core.component import CmptGroup, CmptInfo, Component
 from janim.exception import AsTypeError, CmptGroupLookupError
-from janim.items.item import Item
 from janim.items.group import Group
+from janim.items.item import Item
 
 
 class ComponentTest(unittest.TestCase):
@@ -14,9 +14,9 @@ class ComponentTest(unittest.TestCase):
             class MyCmpt(Component):
                 pass
 
-        class MyCmpt1[T](Component[T], impl=True): ...
+        class MyCmpt1[T](Component[T]): ...
 
-        class MyCmpt2[T](Component[T], impl=True): ...
+        class MyCmpt2[T](Component[T]): ...
 
         class MyItem(Item):
             cmpt1 = CmptInfo(MyCmpt1[Self])
@@ -84,7 +84,7 @@ class ComponentTest(unittest.TestCase):
             group.astype(MyItem).cmpt_that_not_exists
 
     def test_component_group_err(self) -> None:
-        class MyCmpt(Component, impl=True):
+        class MyCmpt(Component):
             pass
 
         class MyItem(Item):
@@ -99,7 +99,7 @@ class ComponentTest(unittest.TestCase):
             MyItem2()
 
     def test_get_same_cmpt(self) -> None:
-        class MyCmpt(Component, impl=True):
+        class MyCmpt(Component):
             pass
 
         class MyItem(Item):
@@ -122,13 +122,13 @@ class ComponentTest(unittest.TestCase):
         # )
 
     def test_inherit(self) -> None:
-        class MyCmpt1(Component, impl=True):
+        class MyCmpt1(Component):
             def fn1(self): ...
 
-        class MyCmpt2(MyCmpt1, impl=True):
+        class MyCmpt2(MyCmpt1):
             def fn2(self): ...
 
-        class MyCmpt3(Component, impl=True):
+        class MyCmpt3(Component):
             def fn3(self): ...
 
         class MyItem1(Item):

@@ -8,29 +8,36 @@ from contextvars import ContextVar
 from typing import Callable, Self
 
 import numpy as np
+from janim_backend.component import CmptField
 
-from janim.components.component import CmptInfo, Component
+from janim.components.core.attrs import CmptFieldDescriptor, ComponentAttrs
+from janim.components.core.component import AttrsCollector, CmptInfo, Component
 from janim.exception import JAnimException
 from janim.locale import get_translator
 from janim.logger import log
 from janim.typing import SupportsTracking
 from janim.utils.bezier import interpolate
-from janim.utils.data import AlignedData
+from janim.utils.data import ContextSetter
 
 _ = get_translator('janim.components.data')
 
 # fmt: off
 type ClassInfo = type | types.UnionType | tuple[ClassInfo, ...]
 type CopyFn[T] = Callable[[T], T]                   # (a) -> copied
-type NotChangedFn[T] = Callable[[T, T], bool]       # (a, b) -> is_not_changed
 type InterpolateFn[T] = Callable[[T, T, float], T]  # (a, b, alpha) -> interpolated
 
 type UpdateFn[T] = Callable[[T, T], T]              # (state, patch) -> now
 
-type _Funcs[T] = tuple[CopyFn[T], NotChangedFn[T], InterpolateFn[T]]
+type _Funcs[T] = tuple[CopyFn[T], InterpolateFn[T]]
 # fmt: on
 
-_default_funcs: _Funcs = (copy.copy, lambda a, b: a == b, interpolate)
+_default_funcs: _Funcs = (copy.copy, interpolate)
+
+
+# 由于 Cmpt_Data.copy_for_value 定义在后面，这里的 attrs 声明访问不到
+# 如果把 attrs 往后挪太丑了，所以在这里定义了一个这样的函数间接访问到 Cmpt_Data.copy_for_value
+def _copy_for_value(value):
+    Cmpt_Data.copy_for_value(value)
 
 
 class Cmpt_Data[ItemT, T](Component[ItemT]):
@@ -38,42 +45,24 @@ class Cmpt_Data[ItemT, T](Component[ItemT]):
     详见 :class:`~.ValueTracker`
     """
 
+    _attrs = ComponentAttrs()
+    value: CmptFieldDescriptor[T] = _attrs.direct_object(  # type: ignore
+        None,  # 仅占位  # type: ignore
+        nullable=False,
+        copyer=_copy_for_value,
+    )
+
+    # 因为需要 self._cls_name 的上下文用于报错提示，所以这里 override 内部的 copy 函数
+    @AttrsCollector.allow
     def copy(self) -> Self:
-        cmpt_copy = super().copy()
-
         with self._cls_name():
-            cmpt_copy.set(Cmpt_Data.copy_for_value(self.value))
-
-        return cmpt_copy
-
-    def _become(self, other: Cmpt_Data) -> None:
-        with self._cls_name():
-            self.set(Cmpt_Data.copy_for_value(other.value))
-
-    def not_changed(self, other: Cmpt_Data) -> bool:
-        with self._cls_name():
-            return Cmpt_Data.check_not_changed_for_value(self.value, other.value)
-
-    @classmethod
-    def align_for_interpolate(cls, cmpt1: Cmpt_Data, cmpt2: Cmpt_Data) -> AlignedData[Self]:
-        cmpt1_copy = cmpt1.copy()
-        cmpt2_copy = cmpt2.copy()
-        return AlignedData(cmpt1_copy, cmpt2_copy, cmpt1_copy.copy())
+            return super().copy()
 
     def interpolate(
         self, cmpt1: Cmpt_Data, cmpt2: Cmpt_Data, alpha: float, *, path_func=None
     ) -> None:
         with self._cls_name():
-            nc_fn = Cmpt_Data.check_not_changed_for_value
-
-            nc_cmpt1_cmpt2 = nc_fn(cmpt1.value, cmpt2.value)
-            nc_cmpt1_self = nc_fn(cmpt1.value, self.value)
-
-            if not nc_cmpt1_cmpt2 or not nc_cmpt1_self:
-                if nc_cmpt1_cmpt2:
-                    self.set(Cmpt_Data.copy_for_value(cmpt1.value))
-                else:
-                    self.set(Cmpt_Data.interpolate_for_value(cmpt1.value, cmpt2.value, alpha))
+            self.set(Cmpt_Data.interpolate_for_value(cmpt1.value, cmpt2.value, alpha))
 
     def set(self, value: T) -> Self:
         """设置当前值"""
@@ -128,15 +117,14 @@ class Cmpt_Data[ItemT, T](Component[ItemT]):
 
     @contextmanager
     def _cls_name(self):
-        if self.bind is None:
+        if self._bind is None:
             yield
             return
 
-        token = TrackerShapeError.source_cls_name_ctx.set(self.bind.at_item.__class__.__name__)
-        try:
+        with ContextSetter(
+            TrackerShapeError.source_cls_name_ctx, self._bind.at_item.__class__.__name__
+        ):
             yield
-        finally:
-            TrackerShapeError.source_cls_name_ctx.reset(token)
 
     # endregion
 
@@ -152,10 +140,9 @@ class Cmpt_Data[ItemT, T](Component[ItemT]):
         isinstance_check: ClassInfo,
         # -
         copy_func: CopyFn[T],
-        not_changed_func: NotChangedFn[T],
         interpolate_func: InterpolateFn[T],
     ) -> None:
-        funcs = (copy_func, not_changed_func, interpolate_func)
+        funcs = (copy_func, interpolate_func)
         Cmpt_Data._funcs_resolver.register(isinstance_check, funcs)
 
     @staticmethod
@@ -164,25 +151,19 @@ class Cmpt_Data[ItemT, T](Component[ItemT]):
         return fn(value)
 
     @staticmethod
-    def check_not_changed_for_value[T](a: T, b: T) -> bool:
-        fn = Cmpt_Data._resolve_funcs(a)[1]
-        return fn(a, b)
-
-    @staticmethod
     def interpolate_for_value[T](a: T, b: T, alpha: float) -> T:
-        fn = Cmpt_Data._resolve_funcs(a)[2]
+        fn = Cmpt_Data._resolve_funcs(a)[1]
         return fn(a, b, alpha)
 
     @staticmethod
     def _resolve_funcs[T](value: T) -> _Funcs[T]:
-        funcs = Cmpt_Data._funcs_resolver.resolve(value)
+        funcs: _Funcs[T] | None = Cmpt_Data._funcs_resolver.resolve(value)
         if funcs is not None:
             return funcs
 
         if isinstance(value, SupportsTracking):
             funcs = (
                 value.__class__.copy,
-                value.__class__.not_changed,
                 value.__class__.interpolate,
             )
             Cmpt_Data._funcs_resolver.update_cache(value, funcs)
@@ -263,7 +244,7 @@ class CustomData[ItemT, T](CmptInfo[Cmpt_Data[ItemT, T]]):
 
 
 def _format_keys(keys: set) -> str:
-    return '[' + ', '.join(sorted((f'"{k}"' for k in keys))) + ']'
+    return '[' + ', '.join(sorted(f'"{k}"' for k in keys)) + ']'
 
 
 class TrackerShapeError(JAnimException):
@@ -326,11 +307,6 @@ Cmpt_Data.register_funcs(
     tuple,
     lambda a: tuple(Cmpt_Data.copy_for_value(x) for x in a),
     _assert_seq_len_match(
-        lambda a, b: all(
-            Cmpt_Data.check_not_changed_for_value(x, y) for x, y in zip(a, b, strict=True)
-        )
-    ),
-    _assert_seq_len_match(
         lambda a, b, alpha: tuple(
             Cmpt_Data.interpolate_for_value(x, y, alpha) for x, y in zip(a, b, strict=True)
         )
@@ -341,23 +317,15 @@ Cmpt_Data.register_funcs(
     list,
     lambda a: [Cmpt_Data.copy_for_value(x) for x in a],
     _assert_seq_len_match(
-        lambda a, b: all(
-            Cmpt_Data.check_not_changed_for_value(x, y) for x, y in zip(a, b, strict=True)
-        )
-    ),
-    _assert_seq_len_match(
         lambda a, b, alpha: [
             Cmpt_Data.interpolate_for_value(x, y, alpha) for x, y in zip(a, b, strict=True)
         ]
     ),
 )
 
-Cmpt_Data.register_funcs(  # noqa: E305
+Cmpt_Data.register_funcs(
     dict,
     lambda a: {k: Cmpt_Data.copy_for_value(v) for k, v in a.items()},
-    _assert_dict_keys_match(
-        lambda a, b: all(Cmpt_Data.check_not_changed_for_value(a[k], b[k]) for k in a.keys())
-    ),
     _assert_dict_keys_match(
         lambda a, b, alpha: {
             k: Cmpt_Data.interpolate_for_value(a[k], b[k], alpha) for k in a.keys()
@@ -366,7 +334,7 @@ Cmpt_Data.register_funcs(  # noqa: E305
 )
 
 
-def _dict_update_func(state: dict, patch: dict) -> dict:  # noqa: E302
+def _dict_update_func(state: dict, patch: dict) -> dict:
     extra = set(patch.keys()) - set(state.keys())
     if extra:
         raise TrackerShapeError(
@@ -379,7 +347,7 @@ def _dict_update_func(state: dict, patch: dict) -> dict:  # noqa: E302
     return now
 
 
-Cmpt_Data.register_update_func(  # noqa: E305
+Cmpt_Data.register_update_func(
     dict,
     _dict_update_func,
 )
@@ -387,7 +355,6 @@ Cmpt_Data.register_update_func(  # noqa: E305
 Cmpt_Data.register_funcs(  # 只是对于短 numpy 数组的简单实现，对于大规模数组，应考虑 Cmpt_Points
     np.ndarray,
     np.ndarray.copy,
-    lambda a, b: np.all(a == b),
     interpolate,
 )
 
@@ -401,7 +368,6 @@ Cmpt_Data.register_funcs(
 Cmpt_Data.register_funcs(
     bool,
     copy.copy,
-    lambda a, b: a == b,
     lambda a, b, alpha: interpolate(a, b, alpha) >= 0.5,
 )
 

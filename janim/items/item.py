@@ -10,15 +10,15 @@ from typing import TYPE_CHECKING, Any, Callable, Iterable, Self, SupportsIndex, 
 
 import numpy as np
 
-from janim.components.component import CmptInfo, Component, _CmptGroup
-from janim.components.depth import Cmpt_Depth
+from janim.components.core.component import BindInfo, CmptInfo, Component
+from janim.components.impls.depth import Cmpt_Depth
 from janim.exception import AsTypeError, GetItemError
 from janim.items.relation import ItemRelation
 from janim.locale import get_translator
 from janim.logger import log
 from janim.render.base import Renderer
 from janim.typing import SupportsApartAlpha
-from janim.utils.data import AlignedData, ContextSetter
+from janim.utils.data import AlignedData
 from janim.utils.iterables import resize_preserving_order
 from janim.utils.paths import PathFunc, straight_path
 
@@ -175,10 +175,12 @@ class Item(ItemRelation['Item'], metaclass=_ItemMeta):
         datas = self.__class__._cmpt_init_datas
 
         self.components: dict[str, Component] = {}
+        __dict__ = self.__dict__
+        components = self.components
 
         for key, data in datas.items():
             obj = data.info.create()
-            obj.init_bind(Component.BindInfo(data.decl_cls, self, key))
+            obj.init_bind(BindInfo(data.decl_cls, self, key))
 
             self.__dict__[key] = self.components[key] = obj
 
@@ -479,7 +481,7 @@ class Item(ItemRelation['Item'], metaclass=_ItemMeta):
             try:
                 attr = getattr(cmpt, name)
             except AttributeError:
-                cmpt_info: CmptInfo | None = getattr(self._astype_cls, cmpt.bind.key, None)
+                cmpt_info: CmptInfo | None = getattr(self._astype_cls, cmpt._bind.key, None)
                 if cmpt_info is None:
                     raise
                 other_attr = getattr(cmpt_info.cls, name, None)
@@ -490,7 +492,7 @@ class Item(ItemRelation['Item'], metaclass=_ItemMeta):
                     raise
             else:
                 if isinstance(attr, Callable):
-                    cmpt_info: CmptInfo | None = getattr(self._astype_cls, cmpt.bind.key, None)
+                    cmpt_info: CmptInfo | None = getattr(self._astype_cls, cmpt._bind.key, None)
                     if not issubclass(cmptcls, cmpt_info.cls):
                         ret = self._get_mockable_method(cmpt_info.cls, name, cmptcls)
                         if ret is not None:
@@ -516,7 +518,7 @@ class Item(ItemRelation['Item'], metaclass=_ItemMeta):
 
             # astype 需求的组件还没创建，那么创建并记录
             cmpt = cmpt_info.create()
-            cmpt.init_bind(Component.BindInfo(decl_cls, item, name))
+            cmpt.init_bind(BindInfo(decl_cls, item, name))
 
             item._astype_mock_cmpt[name] = cmpt
             return cmpt
@@ -597,17 +599,22 @@ class Item(ItemRelation['Item'], metaclass=_ItemMeta):
     def get_children(self) -> list[Item]:
         return self._stored.children if self._stored else self.children
 
-    def not_changed(self, other: Self) -> bool:
+    def take_modified(self, other: Self) -> bool:
+        flag = False
+
+        # 这三个判断不太符合 take_modified 的语义，不过先凑合着用
         if (
             self.get_children() != other.get_children()
             or self._depth_test != other._depth_test
             or self._distance_sort != self._distance_sort
         ):
-            return False
-        for key, cmpt in self.components.items():
-            if not cmpt.not_changed(other.components[key]):
-                return False
-        return True
+            flag = True
+
+        for cmpt in self.components.values():
+            if cmpt.take_modified():
+                flag = True
+
+        return flag
 
     def current(self, *, as_time: float | None = None, root_only=False) -> Self:
         """
@@ -617,29 +624,17 @@ class Item(ItemRelation['Item'], metaclass=_ItemMeta):
 
     @staticmethod
     def _copy_cmpts_to(src: Item, copy_item: Item) -> None:
-        new_cmpts = {}
-        for key, cmpt in src.components.items():
-            if isinstance(cmpt, _CmptGroup):
-                # 因为现在的 Python 版本中，dict 取键值保留原序
-                # 所以 new_cmpts 肯定有 _CmptGroup 所需要的
-                cmpt_copy = cmpt.copy(new_cmpts=new_cmpts)
-            else:
-                cmpt_copy = cmpt.copy()
-
-            if cmpt.bind is not None:
-                cmpt_copy.init_bind(
-                    Component.BindInfo(
-                        cmpt.bind.decl_cls,
-                        copy_item,
-                        key,
-                    )
-                )
-
-            new_cmpts[key] = cmpt_copy
-            setattr(copy_item, key, cmpt_copy)
+        new_cmpts = {key: cmpt.copy() for key, cmpt in src.components.items()}
 
         copy_item.components = new_cmpts
         copy_item._astype_mock_cmpt = {}
+
+        for (key, cmpt), cmpt_copy in zip(src.components.items(), new_cmpts.values()):
+            if cmpt._bind is not None:
+                cmpt_copy.init_bind(
+                    BindInfo(cmpt._bind.decl_cls, copy_item, key),
+                )
+            setattr(copy_item, key, cmpt_copy)
 
     def copy(self, *, root_only: bool = False) -> Self:
         """
@@ -686,8 +681,7 @@ class Item(ItemRelation['Item'], metaclass=_ItemMeta):
                 appr = self.timeline.item_appearances.get(item, None)
                 if appr is None:
                     continue
-                if not appr.stack.may_changed():
-                    appr.stack.display(self.timeline.current_time)
+                appr.stack.detect_change(self.timeline.current_time, force=True)
 
             # 如果设置了 auto_visible 且根物件是可见的
             # 那么 become 的最后会把所有子物件设为可见
@@ -727,15 +721,16 @@ class Item(ItemRelation['Item'], metaclass=_ItemMeta):
         if _cmpts is None:
             self._copy_cmpts_to(self, copy_item)
         else:
-            for key, cmpt in _cmpts.items():
-                orig_cmpt = copy_item.components.get(key, None)
-                decl_cls = cmpt.bind.decl_cls if orig_cmpt is None else orig_cmpt.bind.decl_cls  # type: ignore
-                cmpt.init_bind(Component.BindInfo(decl_cls, copy_item, key))
-
-                setattr(copy_item, key, cmpt)
-
+            orig_cmpts = copy_item.components
             copy_item.components = _cmpts
             copy_item._astype_mock_cmpt = {}
+
+            for key, cmpt in _cmpts.items():
+                orig_cmpt = orig_cmpts.get(key, None)
+                decl_cls = cmpt._bind.decl_cls if orig_cmpt is None else orig_cmpt._bind.decl_cls  # type: ignore
+                cmpt.init_bind(BindInfo(decl_cls, copy_item, key))
+
+                setattr(copy_item, key, cmpt)
 
         copy_item.init_connect()
         return copy_item
@@ -772,8 +767,7 @@ class Item(ItemRelation['Item'], metaclass=_ItemMeta):
         self._reset_cmpt_computed()
 
     def _reset_cmpt_computed(self) -> None:
-        for cmpt in self.components.values():
-            cmpt.bind.reset_computed_for_all()  # type: ignore
+        self._rel_handle.reset_computed_for_self()
 
     @classmethod
     def align_for_interpolate(cls, item1: Item, item2: Item) -> AlignedData[Self]:
@@ -788,10 +782,7 @@ class Item(ItemRelation['Item'], metaclass=_ItemMeta):
         for key, cmpt1 in item1.components.items():
             cmpt2 = item2.components.get(key, None)
 
-            if isinstance(cmpt1, _CmptGroup) and isinstance(cmpt2, _CmptGroup):
-                aligned_cmpt = cmpt1.align(cmpt1, cmpt2, data1_cmpts, data2_cmpts, union_cmpts)
-
-            elif cmpt2 is None:
+            if cmpt2 is None:
                 aligned_cmpt = AlignedData(cmpt1, cmpt1, cmpt1)
             else:
                 aligned_cmpt = cmpt1.align_for_interpolate(cmpt1, cmpt2)

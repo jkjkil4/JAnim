@@ -2,11 +2,16 @@ from __future__ import annotations
 
 from typing import Self
 
+import numpy as np
+
 from janim.anims.method_updater_meta import register_updater
-from janim.components.rgba import Cmpt_Rgba
+from janim.components.core.attrs import ComponentAttrs
+from janim.components.impls.rgba import Cmpt_Rgba
 from janim.typing import Alpha, JAnimColor
 from janim.utils.bezier import interpolate
-from janim.utils.data import Array
+from janim.utils.data import owned, readonly_array
+
+_DEFAULT_GLOW_RGBA = owned(readonly_array(np.array([1, 1, 0, 0], dtype=np.float32)))
 
 
 class Cmpt_Glow[ItemT](Cmpt_Rgba[ItemT]):
@@ -14,25 +19,14 @@ class Cmpt_Glow[ItemT](Cmpt_Rgba[ItemT]):
     泛光组件
     """
 
-    DEFAULT_RGBA_ARRAY = Array.create([1, 1, 0, 0])
+    _attrs = ComponentAttrs()
+    _rgba = _attrs.ndarray(np.array([1, 1, 0, 0], dtype=np.float32))
+    _size = _attrs.float(0.2)
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self._size: float = 0.2
+    def __cmpt_init__(self) -> None:
+        self._rgba = _DEFAULT_GLOW_RGBA
 
-    def copy(self) -> Self:
-        cmpt_copy = super().copy()
-        # _size 已通过 super().copy() 拷贝
-        return cmpt_copy
-
-    def _become(self, other: Cmpt_Glow) -> None:
-        super()._become(other)
-        self._size = other._size
-
-    def not_changed(self, other: Cmpt_Glow) -> bool:
-        return super().not_changed(other) and self._size == other._size
-
-    def interpolate(
+    def interpolate(  # type: ignore
         self, cmpt1: Cmpt_Glow, cmpt2: Cmpt_Glow, alpha: float, *, path_func=None
     ) -> None:
         super().interpolate(cmpt1, cmpt2, alpha, path_func=path_func)

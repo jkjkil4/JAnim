@@ -3,9 +3,9 @@ from typing import Callable, Iterable, Self
 
 import numpy as np
 
-from janim.components.component import CmptInfo
-from janim.components.points import Cmpt_Points
-from janim.components.vpoints import Cmpt_VPoints
+from janim.components.core.component import CmptInfo
+from janim.components.impls.points import Cmpt_Points
+from janim.components.impls.vpoints import Cmpt_VPoints
 from janim.constants import BLUE, BLUE_D, DEGREES, DL, ORIGIN, OUT, PI, RIGHT, SMALL_BUFF, UP, WHITE
 from janim.items.coordinate.functions import ParametricCurve
 from janim.items.coordinate.number_line import NumberLine
@@ -546,7 +546,7 @@ class ThreeDAxes(Axes):
         return label
 
 
-class CmptVPoints_NumberPlaneImpl(Cmpt_VPoints, impl=True):
+class CmptVPoints_NumberPlaneImpl(Cmpt_VPoints):
     def prepare_for_nonlinear_transform(
         self, num_inserted_curves: int = 50, *, root_only=False
     ) -> Self:

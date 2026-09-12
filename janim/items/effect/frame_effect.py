@@ -5,8 +5,8 @@ import os
 import re
 from typing import Any, Iterable, Self
 
-from janim.components.component import CmptInfo
-from janim.components.simple import Cmpt_Dict, Cmpt_List
+from janim.components.core.component import CmptInfo
+from janim.components.impls.simple import Cmpt_Dict, Cmpt_List
 from janim.items.item import Item
 from janim.locale import get_translator
 from janim.logger import log

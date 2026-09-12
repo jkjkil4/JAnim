@@ -5,12 +5,12 @@ from typing import Literal, Self
 
 import numpy as np
 
-from janim.components.component import CmptInfo
+from janim.components.core.component import CmptInfo
 from janim.constants import DEFAULT_ITEM_TO_ITEM_BUFF, DOWN, LEFT, ORIGIN, PI, RIGHT, UP
 from janim.items.geometry.line import Cmpt_VPoints_LineImpl, Line, LineBuff
 from janim.items.points import Points
-from janim.items.typst.typst import TypstText
 from janim.items.text import Text
+from janim.items.typst.typst import TypstText
 from janim.items.vitem import DEFAULT_STROKE_RADIUS, VItem
 from janim.render.renderer.r_arrow import ArrowRenderer
 from janim.typing import Vect
@@ -132,11 +132,11 @@ class ArrowTip(VItem):
         return self
 
 
-class Cmpt_VPoints_ArrowImpl[ItemT](Cmpt_VPoints_LineImpl[ItemT], impl=True):
+class Cmpt_VPoints_ArrowImpl[ItemT](Cmpt_VPoints_LineImpl[ItemT]):
     def put_start_and_end_on(self, start: Vect, end: Vect) -> Self:
         super().put_start_and_end_on(start, end)
-        if self.bind is not None:
-            self.bind.at_item.place_tip()
+        if self._bind is not None:
+            self._bind.at_item.place_tip()
         return self
 
 

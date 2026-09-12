@@ -1,7 +1,7 @@
 from typing import Self
-from janim.components.component import CmptInfo
-from janim.components.simple import Cmpt_Alpha, Cmpt_Float
-from janim.components.vpoints import Cmpt_VPoints
+from janim.components.core.component import CmptInfo
+from janim.components.impls.simple import Cmpt_Alpha, Cmpt_Float
+from janim.components.impls.vpoints import Cmpt_VPoints
 from janim.items.effect.frame_effect import AppliedGroup
 from janim.items.item import Item
 from janim.items.vitem import VItem

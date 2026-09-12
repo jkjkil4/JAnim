@@ -8,7 +8,7 @@ import moderngl as mgl
 import numpy as np
 from janim_backend import compute, gl
 
-from janim.components.points import Cmpt_Points
+from janim.components.impls.points import Cmpt_Points
 from janim.render.base import Renderer
 from janim.render.framebuffer import FrameBuffer
 from janim.render.program import get_program_from_file_prefix
@@ -94,7 +94,7 @@ class PixelRenderInfo:
         self.u_char_orig.write_bytes(orig_bytes)
         self.u_char_mat.write_bytes(mat_bytes)
 
-        self.u_rgba.write_bytes(item.fill._rgbas._data[0].tobytes())
+        self.u_rgba.write_bytes(item.fill._rgbas[0].tobytes())
 
         self.vao.render(mgl.TRIANGLE_STRIP)
 

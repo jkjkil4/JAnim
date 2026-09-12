@@ -2,9 +2,9 @@ import unittest
 
 import numpy as np
 
+from janim.components.core.component import CmptInfo
+from janim.components.impls.rgbas import Cmpt_Rgbas
 from janim.items.item import Item
-from janim.components.component import CmptInfo
-from janim.components.rgbas import Cmpt_Rgbas
 
 
 class RgbasTest(unittest.TestCase):
@@ -23,37 +23,22 @@ class RgbasTest(unittest.TestCase):
         item = MyItem()
         item.color.set(['red', 'white', 'blue'])
 
-        self.assertNparrayEqual(
-            item.color.get(),
-            [[1, 0, 0, 1], [1, 1, 1, 1], [0, 0, 1, 1]]
-        )
+        self.assertNparrayEqual(item.color.get(), [[1, 0, 0, 1], [1, 1, 1, 1], [0, 0, 1, 1]])
 
         item.color.set(alpha=[1, 0])
 
-        self.assertNparrayEqual(
-            item.color.get(),
-            [[1, 0, 0, 1], [1, 1, 1, 0.5], [0, 0, 1, 0]]
-        )
+        self.assertNparrayEqual(item.color.get(), [[1, 0, 0, 1], [1, 1, 1, 0.5], [0, 0, 1, 0]])
 
         item.color.set(alpha=0.7)
 
-        self.assertNparrayClose(
-            item.color.get(),
-            [[1, 0, 0, 0.7], [1, 1, 1, 0.7], [0, 0, 1, 0.7]]
-        )
+        self.assertNparrayClose(item.color.get(), [[1, 0, 0, 0.7], [1, 1, 1, 0.7], [0, 0, 1, 0.7]])
 
         item.color.set(color='red')
 
-        self.assertNparrayClose(
-            item.color.get(),
-            [[1, 0, 0, 0.7], [1, 0, 0, 0.7], [1, 0, 0, 0.7]]
-        )
+        self.assertNparrayClose(item.color.get(), [[1, 0, 0, 0.7], [1, 0, 0, 0.7], [1, 0, 0, 0.7]])
 
         item.color.set([1, 1, 1, 1])
         item.color.set()
 
         self.assertEqual(item.color.count(), 1)
-        self.assertNparrayEqual(
-            item.color.get(),
-            [[1, 1, 1, 1]]
-        )
+        self.assertNparrayEqual(item.color.get(), [[1, 1, 1, 1]])

@@ -7,7 +7,8 @@ from typing import Callable, Generator, Iterable, Self
 
 import numpy as np
 
-from janim.components.points import Cmpt_Points, PointsFn
+from janim.components.core.attrs import ComponentAttrs
+from janim.components.impls.points import Cmpt_Points, PointsFn
 from janim.constants import DEGREES, NAN_POINT, ORIGIN, OUT, RIGHT, UP
 from janim.exception import PointError
 from janim.items.item import Item, mockable
@@ -31,7 +32,7 @@ from janim.utils.space_ops import get_norm, get_unit_normal, normalize, rotation
 _ = get_translator('janim.components.vpoints')
 
 
-class Cmpt_VPoints[ItemT](Cmpt_Points[ItemT], impl=True):
+class Cmpt_VPoints[ItemT](Cmpt_Points[ItemT]):
     """
     曲线点坐标数据
 
@@ -46,9 +47,8 @@ class Cmpt_VPoints[ItemT](Cmpt_Points[ItemT], impl=True):
     - 如果子路径的终止点和起始点相同，则该段子路径被视为闭合路径。
     """
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.make_smooth_after_applying_functions = False
+    _attrs = ComponentAttrs()
+    make_smooth_after_applying_functions = _attrs.bool()
 
     def set(self, points: VectArray) -> Self:
         if len(points) != 0 and len(points) % 2 == 0:
@@ -93,22 +93,28 @@ class Cmpt_VPoints[ItemT](Cmpt_Points[ItemT], impl=True):
     ) -> Self:
         assert isinstance(self, Cmpt_Points)
 
-        if scale_stroke_radius and self.bind is not None and isinstance(scale_factor, numbers.Real):
+        if (
+            scale_stroke_radius
+            and self._bind is not None
+            and isinstance(scale_factor, numbers.Real)
+        ):
             # 如果是 mock 的情况，既然能调用 Cmpt_VPoints.scale
             # 那么基本上可以确定 item 现在已经处在 VItem 的 astype 下
             # 所以这里可以直接访问 .radius 来缩放半径
-            self.bind.at_item.radius.scale(scale_factor, root_only=root_only)
+            self._bind.at_item.radius.scale(scale_factor, root_only=root_only)
 
         return Cmpt_Points.scale(self, scale_factor, root_only=root_only, **kwargs)
 
     # region align
 
     @classmethod
-    def align_for_interpolate(cls, cmpt1: Cmpt_VPoints, cmpt2: Cmpt_VPoints) -> AlignedData[Self]:
+    def align_for_interpolate(  # type: ignore
+        cls, cmpt1: Cmpt_VPoints, cmpt2: Cmpt_VPoints
+    ) -> AlignedData[Cmpt_VPoints]:
         cmpt1_copy = cmpt1.copy()
         cmpt2_copy = cmpt2.copy()
 
-        if cmpt1_copy.not_changed(cmpt2_copy):
+        if id(cmpt1_copy._points) == id(cmpt2_copy._points):
             return AlignedData(cmpt1_copy, cmpt2_copy, cmpt1_copy.copy())
 
         if not cmpt1_copy.has():
@@ -240,11 +246,11 @@ class Cmpt_VPoints[ItemT](Cmpt_Points[ItemT], impl=True):
 
     @property
     def start_direction(self) -> np.ndarray:
-        return self.start_direction_from_points(self._points.data)
+        return self.start_direction_from_points(self._points)
 
     @property
     def end_direction(self) -> np.ndarray:
-        return self.end_direction_from_points(self._points.data)
+        return self.end_direction_from_points(self._points)
 
     @staticmethod
     def start_direction_from_points(points: np.ndarray) -> np.ndarray:
@@ -269,7 +275,7 @@ class Cmpt_VPoints[ItemT](Cmpt_Points[ItemT], impl=True):
         if len(indices) == 1:
             point = self.get_start()
         else:
-            point = self._points.data[indices[-2] + 2]
+            point = self._points[indices[-2] + 2]
         self.extend([(end + point) * 0.5, point])
         return self
 
@@ -306,7 +312,7 @@ class Cmpt_VPoints[ItemT](Cmpt_Points[ItemT], impl=True):
                     n=n,
                 )
             )
-        return self._points.data[2 * n : 2 * n + 3]
+        return self._points[2 * n : 2 * n + 3]
 
     def get_nth_curve_function(self, n: int) -> Callable[[float], np.ndarray]:
         """

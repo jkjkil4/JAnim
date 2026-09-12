@@ -10,7 +10,7 @@ from janim_backend import relation
 from janim.items.relation import _items_relation_registry
 
 if TYPE_CHECKING:
-    from janim.components.component import Component
+    from janim.components.core.component import Component
 
 
 FLAG_HANDLE_NAME = '__flag_handle'
@@ -35,7 +35,7 @@ def cmpt_lazy_method(func=None, *, recurse_up=False, recurse_down=False):  # typ
     """
     用于在需要时才重新计算调用组件方法得到的值，提升性能
 
-    在需要重新计算的场景下，会通过 ``self.bind.reset_computed_for`` 重置，
+    在需要重新计算的场景下，会通过 ``self._bind.reset_computed_for`` 重置，
     之后对 ``func`` 的调用才会重新计算返回值
 
     注：如果组件没有绑定到物件，不提供缓存
@@ -50,7 +50,7 @@ def _cmpt_lazy_method(recurse_up: bool, recurse_down: bool, func):
 
     @wraps(func)
     def wrapper(self: Component, *args, **kwargs):
-        bind = self.bind
+        bind = self._bind
 
         if bind is not None and (cached := bind.get_computed_for(flag_handle)) is not EXPIRED:
             computed = cached
@@ -181,11 +181,11 @@ class CmptSignal[T, **P, R]:
     def emit(self, sender: Component, *args, key: str = '', **kwargs):
         # @self_refresh
 
-        if sender.bind is not None:
+        if sender._bind is not None:
             cls_mro_refreshes = self._get_cls_mro_refreshes(sender.__class__)
             refreshes = cls_mro_refreshes[key]
             if refreshes:
-                sender.bind.reset_computed_for_list(refreshes)
+                sender._bind.reset_computed_for_list(refreshes)
 
         # .connect
 

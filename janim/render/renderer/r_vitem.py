@@ -22,7 +22,7 @@ class VItemRenderer(Renderer):
 
     def render(self, item: VItem) -> None:
         if item._depth_test:
-            new_fill = item.fill._rgbas._data
+            new_fill = item.fill._rgbas
             if new_fill is not self.prev_fill:
                 self.fill_transparent = item.fill.is_transparent()
                 self.prev_fill = new_fill

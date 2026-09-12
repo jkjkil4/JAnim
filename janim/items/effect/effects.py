@@ -5,8 +5,8 @@ from typing import Self
 import numpy as np
 
 from janim.anims.updater import DataUpdater, UpdaterParams
-from janim.components.component import CmptInfo
-from janim.components.simple import Cmpt_Alpha
+from janim.components.core.component import CmptInfo
+from janim.components.impls.simple import Cmpt_Alpha
 from janim.items.effect.frame_effect import FrameEffect, SimpleFrameEffect
 from janim.items.item import Item
 from janim.render.shader import ShaderInjection
@@ -52,7 +52,7 @@ class AlphaEffect(SimpleFrameEffect):
         )
 
     def dynamic_uniforms(self):
-        return dict(alpha=self.alpha._value)
+        return dict(alpha=self.alpha._inner)
 
 
 shadertoy_fragment_shader = """

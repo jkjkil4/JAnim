@@ -48,9 +48,9 @@ class SmoothSurfaceRenderer(Renderer):
             self.init()
             self.initialized = True
 
-        new_points = item.points._points.data
-        new_dupoints = item._du_points._points.data
-        new_dvpoints = item._dv_points._points.data
+        new_points = item.points._points
+        new_dupoints = item._du_points._points
+        new_dvpoints = item._dv_points._points
         new_indices = item._tri_indices
 
         if (

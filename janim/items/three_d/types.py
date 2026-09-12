@@ -5,10 +5,10 @@ from typing import Any, Callable, Iterable, Literal, Self, overload
 
 import numpy as np
 
-from janim.components.component import CmptInfo
-from janim.components.points import Cmpt_Points
-from janim.components.rgba import Cmpt_Rgba
-from janim.components.rgbas import Cmpt_Rgbas
+from janim.components.core.component import CmptInfo
+from janim.components.impls.points import Cmpt_Points
+from janim.components.impls.rgba import Cmpt_Rgba
+from janim.components.impls.rgbas import Cmpt_Rgbas
 from janim.constants import BLUE_D, BLUE_E, GREY_A, GREY_B
 from janim.items.geometry.polygon import Polygon
 from janim.items.group import Group
@@ -16,10 +16,10 @@ from janim.items.item import Item
 from janim.items.points import DotCloud, Points
 from janim.items.vitem import VItem
 from janim.locale import get_translator
-from janim.render.renderer.r_smooth_surface import SmoothSurfaceRenderer
 from janim.render.renderer.r_checkerboard_surface import CheckerboardSurfaceRenderer
+from janim.render.renderer.r_smooth_surface import SmoothSurfaceRenderer
 from janim.typing import ColorArray, JAnimColor, RgbaArray, Vect
-from janim.utils.data import AlignedData, Array
+from janim.utils.data import AlignedData, owned, readonly_array
 from janim.utils.dict_ops import merge_dicts_recursively
 from janim.utils.iterables import resize_preserving_order
 
@@ -197,7 +197,7 @@ class CheckerboardSurface[T: SurfaceGeometry](NormSurface[T]):
 
     resolution_type = 'face'
 
-    class _Cmpt_SurfaceRgbas[ItemT](Cmpt_Rgbas[ItemT], impl=True):
+    class _Cmpt_SurfaceRgbas[ItemT](Cmpt_Rgbas[ItemT]):
         def set_rgbas(self, rgbas: RgbaArray) -> Self:
             rgbas = np.asarray(rgbas)
             assert len(rgbas) == 2
@@ -440,6 +440,10 @@ class WireframeSurface[T: SurfaceGeometry](Group[VItem], VItem):
         return aligned
 
 
+# GREY_C
+_DEFAULT_SMOOTH_SURFACE_RGBA = readonly_array(np.array([0.53, 0.53, 0.53, 1.0], dtype=np.float32))
+
+
 class SmoothSurface[T: SurfaceGeometry](NormSurface[T]):
     """
     平滑表面样式的曲面
@@ -454,8 +458,9 @@ class SmoothSurface[T: SurfaceGeometry](NormSurface[T]):
 
     resolution_type = 'smooth'
 
-    class Cmpt_SurfaceRgba[ItemT](Cmpt_Rgba[ItemT], impl=True):
-        DEFAULT_RGBA_ARRAY = Array.create([0.53, 0.53, 0.53, 1.0])  # GREY_C
+    class Cmpt_SurfaceRgba[ItemT](Cmpt_Rgba[ItemT]):
+        def __cmpt_init__(self) -> None:
+            self._rgba = owned(_DEFAULT_SMOOTH_SURFACE_RGBA)
 
     color = CmptInfo(Cmpt_SurfaceRgba[Self])
 
