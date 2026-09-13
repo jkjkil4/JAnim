@@ -131,7 +131,7 @@ class Indicate(DataUpdater):
             return None
         data_copy = data.store()
         data_copy.points.scale(self.scale_factor, about_point=self.about_point)
-        for cmpt in data_copy.components.values():
+        for cmpt in data_copy.get_components():
             if not isinstance(cmpt, Cmpt_Rgbas):
                 continue
             cmpt.set(self.color)

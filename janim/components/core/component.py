@@ -1,14 +1,13 @@
 from __future__ import annotations
 
 from collections import defaultdict
-from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Any, Callable, Iterable, Literal, Self, overload
 
 from janim_backend import relation
 
 from janim.anims.method_updater_meta import METHOD_UPDATER_KEY
 from janim.components.core.attrs import ComponentAttrs
-from janim.components.core.backend import AttrsStorage
+from janim.components.core.backend import AttrsStorage, CmptInfo
 from janim.exception import CmptGroupLookupError
 from janim.items.relation import _items_relation_registry
 from janim.locale import get_translator
@@ -255,7 +254,7 @@ class Component[ItemT](AttrsStorage, metaclass=AttrsCollector):
 
         需要直接使用 ``_become`` 的情景：在 :meth:`~.Item.become` 和 :meth:`~.Item.restore` 方法中，
         不需要逐组件清理惰性求值状态，而是可以直接 ``reset_computed_for_self()`` 直接在物件级别清理所有组件的惰性求值状态，
-        所以在 :meth:`~.Item.become` 和 :meth:`~.Item.restore` 这两个方法中，使用的是 ``_become`` 避免各自独立重置，从而提升效率
+        所以在 :meth:`~.Item.become` 和 :meth:`~.Item.restore` 这两个方法的后端实现中，使用的是 ``_become`` 避免各自独立重置，从而提升效率
         """
         bind = self._bind
         if bind is not None:
@@ -288,7 +287,7 @@ class Component[ItemT](AttrsStorage, metaclass=AttrsCollector):
         :param create_mock: 在没有对应组件时，是否基于 :meth:`~.Item.astype` 创建 mock
         :return: 得到的组件，若 ``create_mock=False``，则可能返回 ``None``
         """
-        cmpt = item.components.get(self._bind.key, None)
+        cmpt = item.get_component(self._bind.key, nullable=True)
         if cmpt is not None:
             return cmpt
 
@@ -355,58 +354,15 @@ class Component[ItemT](AttrsStorage, metaclass=AttrsCollector):
         """
         return self._bind.at_item  # type: ignore
 
-    @classmethod
-    def align_for_interpolate(cls, cmpt1: Self, cmpt2: Self) -> AlignedData[Self]:
-        cmpt1_copy = cmpt1.copy()
-        cmpt2_copy = cmpt2.copy()
-        return AlignedData(cmpt1_copy, cmpt2_copy, cmpt1_copy.copy())
+    def align_for_interpolate(self, cmpt1, cmpt2) -> None:
+        pass
 
-    def interpolate(self, cmpt1, cmpt2, alpha: float, *, path_func=None) -> None: ...
+    def interpolate(self, cmpt1, cmpt2, alpha: float, *, path_func=None) -> None:
+        pass
 
     # 仅用于在创建动画时忘记使用 .anim 或 .update 时抛出错误，另见 AnimGroup 的 _get_anim_object
     def __anim__(self):
         raise NotImplementedError()
-
-
-class CmptInfo[T]:
-    """
-    在类中定义组件需要使用该类
-
-    例：
-
-    .. code-block:: python
-
-        class MyItem(Item):
-            # 错误！
-            # cmpt1 = MyCmpt()
-
-            # 正确
-            cmpt1 = CmptInfo(MyCmpt[Self])
-
-            # 错误！
-            # cmpt2 = MyCmptWithArgs(1)
-
-            # 正确
-            cmpt2 = CmptInfo(MyCmptWithArgs[Self], 1)
-    """
-
-    def __init__(self, cls: type[T], *args, **kwargs):
-        self.__doc__ = ''
-        self.cls: type[Component] = getattr(cls, '__origin__', cls)  # type: ignore
-        self.args = args
-        self.kwargs = kwargs
-
-    def create(self) -> Component:
-        return self.cls(*self.args, **self.kwargs)
-
-    # 方便代码补全，没有实际意义
-    @overload
-    def __get__(self, obj: None, owner) -> Self: ...
-    @overload
-    def __get__(self, obj: object, owner) -> T: ...
-
-    def __get__(self, obj, owner) -> Self | T:
-        return self
 
 
 class _CmptGroup(Component):

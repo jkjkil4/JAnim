@@ -151,7 +151,9 @@ class NormSurface[T: SurfaceGeometry](Points):
         return indices.astype('i4')
 
     @classmethod
-    def align_for_interpolate(cls, item1: Item, item2: Item) -> AlignedData[Self]:
+    def align_for_interpolate(  # type: ignore
+        cls, item1: Self, item2: Self
+    ) -> AlignedData[Self]:
         """
         依照 uv 网格对齐采样分辨率以及三角形索引，而不是像原先一样简单逐点对齐
         """
@@ -308,8 +310,8 @@ class VCheckerboardSurface[T: SurfaceGeometry](Group[SurfaceFace], VItem):
     # TODO: set_fill_by_value
 
     @classmethod
-    def align_for_interpolate(
-        cls, item1: CheckerboardSurface, item2: CheckerboardSurface
+    def align_for_interpolate(  # type: ignore
+        cls, item1: Self, item2: Self
     ) -> AlignedData[Self]:
         """
         依照 uv 网格对齐棋盘格物件，而不是像原先一样简单逐个对齐
@@ -401,8 +403,8 @@ class WireframeSurface[T: SurfaceGeometry](Group[VItem], VItem):
         return [*u_lines, *v_lines]
 
     @classmethod
-    def align_for_interpolate(
-        cls, item1: WireframeSurface, item2: WireframeSurface
+    def align_for_interpolate(  # type: ignore
+        cls, item1: Self, item2: Self
     ) -> AlignedData[Self]:
         """
         依照 uv 网格对齐线框，而不是像原先一样简单逐个对齐
@@ -514,9 +516,9 @@ class DotCloudSurface[T: SurfaceGeometry](DotCloud):
         return self.points.get().reshape(-1, (self.resolution[1] + 1), 3)
 
     @classmethod
-    def align_for_interpolate(
-        cls, item1: DotCloudSurface, item2: DotCloudSurface
-    ) -> AlignedData[DotCloud]:
+    def align_for_interpolate(  # type: ignore
+        cls, item1: Self, item2: Self
+    ) -> AlignedData[Self]:
         """
         依照 uv 网格对齐点，而不是像原先一样简单逐点对齐
         """

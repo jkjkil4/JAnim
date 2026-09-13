@@ -6,10 +6,11 @@ import itertools as it
 import types
 from contextlib import contextmanager
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Any, Callable, Iterable, Self, SupportsIndex, overload
+from typing import TYPE_CHECKING, Any, Callable, Iterable, Literal, Self, SupportsIndex, overload
 
 import numpy as np
 
+from janim.components.core.backend import CmptField, CmptsStorage
 from janim.components.core.component import BindInfo, CmptInfo, Component
 from janim.components.impls.depth import Cmpt_Depth
 from janim.exception import AsTypeError, GetItemError
@@ -74,23 +75,19 @@ class _ItemMeta(type):
 
         return super().__new__(cls, name, bases, attrdict)
 
-    @dataclass(slots=True)
-    class _CmptInitData:
-        info: CmptInfo[CmptInfo]
-        decl_cls: type[Item]
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self._cmpt_init_datas: dict[str, _ItemMeta._CmptInitData] = {}
-        datas = self._cmpt_init_datas
+        fields: dict[str, CmptField] = {}
 
         for cls in reversed(self.mro()):
             for key, info in cls.__dict__.get(CLS_CMPTINFO_NAME, {}).items():
-                if key in datas:
-                    datas[key].info = info
+                if key in fields:
+                    fields[key].info = info
                 else:  # key not in datas
-                    datas[key] = self._CmptInitData(info, cls)
+                    fields[key] = CmptField(info, cls)
+
+        self._cmpt_fields = fields
 
 
 def mockable(func):
@@ -101,7 +98,7 @@ def mockable(func):
     return func
 
 
-class Item(ItemRelation['Item'], metaclass=_ItemMeta):
+class Item(ItemRelation['Item'], CmptsStorage, metaclass=_ItemMeta):
     """
     :class:`~.Item` 是物件的基类
 
@@ -112,6 +109,8 @@ class Item(ItemRelation['Item'], metaclass=_ItemMeta):
     - 布尔索引，例如 ``item[False, True, False, True, True]`` 表示取出 ``Group(item[1], item[3], item[4])``，
 
       也就是将那些为 True 的位置取出组成一个 :class:`~.Group`
+
+    注： :class:`Item` 子类中不支持定义 ``__slots__``
     """
 
     renderer_cls = Renderer
@@ -125,6 +124,10 @@ class Item(ItemRelation['Item'], metaclass=_ItemMeta):
     #
     # 来明确具体实现
     distance_sort_reference_point: np.ndarray | None = None
+
+    if TYPE_CHECKING:
+
+        def __new__(cls, /) -> Self: ...
 
     def __init__(
         self,
@@ -149,7 +152,8 @@ class Item(ItemRelation['Item'], metaclass=_ItemMeta):
 
         self.reset_additional_states()
 
-        self._init_components()
+        self._init_cmpts(self._cmpt_fields)
+        self._bind_cmpts(self._bind_cmpts_callback)
 
         if children is not None:
             self.add(*children)
@@ -163,24 +167,6 @@ class Item(ItemRelation['Item'], metaclass=_ItemMeta):
     def reset_additional_states(self) -> None:
         self._saved_states: dict[str, Item.SavedState[Self]] = {}
         self.target: Self | None = None
-
-    def _init_components(self) -> None:
-        """
-        创建出 CmptInfo 对应的 Component，
-        并以同名存于对象中，起到在名称上覆盖类中的 CmptInfo 的效果
-
-        因为 CmptInfo 的 __get__ 标注的返回类型是对应的 Component，
-        所以以上做法没有影响基于类型标注的代码补全
-        """
-        datas = self.__class__._cmpt_init_datas
-
-        self.components: dict[str, Component] = {}
-
-        for key, data in datas.items():
-            obj = data.info.create()
-            obj.init_bind(BindInfo(data.decl_cls, self, key))
-
-            self.__dict__[key] = self.components[key] = obj
 
     def set(self, **styles) -> Self:
         """
@@ -598,21 +584,15 @@ class Item(ItemRelation['Item'], metaclass=_ItemMeta):
         return self._stored.children if self._stored else self.children
 
     def take_modified(self, other: Self) -> bool:
-        flag = False
+        if self._take_cmpts_modified():
+            return True
 
         # 这三个判断不太符合 take_modified 的语义，不过先凑合着用
-        if (
+        return (
             self.get_children() != other.get_children()
             or self._depth_test != other._depth_test
             or self._distance_sort != self._distance_sort
-        ):
-            flag = True
-
-        for cmpt in self.components.values():
-            if cmpt.take_modified():
-                flag = True
-
-        return flag
+        )
 
     def current(self, *, as_time: float | None = None, root_only=False) -> Self:
         """
@@ -620,30 +600,42 @@ class Item(ItemRelation['Item'], metaclass=_ItemMeta):
         """
         return self.timeline.item_current(self, as_time=as_time, root_only=root_only)
 
-    @staticmethod
-    def _copy_cmpts_to(src: Item, copy_item: Item) -> None:
-        new_cmpts = {key: cmpt.copy() for key, cmpt in src.components.items()}
+    def _copy_cmpts_to(self, target: Item) -> None:  # type: ignore
+        super()._copy_cmpts_to(target)
+        target._astype_mock_cmpt = {}
+        target._bind_cmpts(target._bind_cmpts_callback)
 
-        copy_item.components = new_cmpts
-        copy_item._astype_mock_cmpt = {}
+    def _bind_cmpts_callback(self, cmpt: Component, decl_cls: type, key: str) -> None:
+        cmpt.init_bind(BindInfo(decl_cls, self, key))
 
-        for (key, cmpt), cmpt_copy in zip(src.components.items(), new_cmpts.values()):
-            if cmpt._bind is not None:
-                cmpt_copy.init_bind(
-                    BindInfo(cmpt._bind.decl_cls, copy_item, key),
-                )
-            setattr(copy_item, key, cmpt_copy)
+    @overload
+    def get_component(self, name: str, *, nullable: Literal[False] = False) -> Component: ...
+    @overload
+    def get_component(self, name: str, *, nullable: Literal[True]) -> Component | None: ...
+
+    def get_component(self, name: str, *, nullable: bool = False) -> Component | None:
+        cmpt = super().get_component(name)
+        if cmpt is None and not nullable:
+            raise KeyError(f'No component named "{name}"')
+
+        return cmpt  # type: ignore
+
+    def __copy__(self) -> Self:
+        cls = self.__class__
+        copy_item = cls.__new__(cls)
+        copy_item.__dict__.update(self.__dict__.copy())
+        return copy_item
 
     def copy(self, *, root_only: bool = False) -> Self:
         """
         复制物件
         """
-        copy_item = copy.copy(self)
+        copy_item = self.__copy__()
 
         copy_item._init_rel_handle()
         copy_item.reset_additional_states()
 
-        self._copy_cmpts_to(self, copy_item)
+        self._copy_cmpts_to(copy_item)
 
         if root_only:
             copy_item._children_changed()
@@ -665,10 +657,7 @@ class Item(ItemRelation['Item'], metaclass=_ItemMeta):
         # self.parents 不变
         self._children_become(other, auto_visible)
 
-        self_cmpts = self.components
-        other_cmpts = other.components
-        for key in self_cmpts.keys() | other_cmpts.keys():
-            self_cmpts[key]._become(other_cmpts[key])
+        self._become_cmpts_from(other)
         self._rel_handle.reset_computed_for_self()
 
         if self.timeline is not None:
@@ -708,27 +697,14 @@ class Item(ItemRelation['Item'], metaclass=_ItemMeta):
             self.parents = item.get_parents()
             self.children = item.get_children()
 
-    def store(self, *, _cmpts: dict[str, Component] | None = None):
-        copy_item = copy.copy(self)
+    def store(self):
+        copy_item = self.__copy__()
 
         copy_item._stored = self.Stored(self)
         copy_item._init_rel_handle()
         copy_item.reset_additional_states()
 
-        # align_for_interpolate 中会传入 _cmpts 以使用 align 的 cmpts，而不直接从原物件复制
-        if _cmpts is None:
-            self._copy_cmpts_to(self, copy_item)
-        else:
-            orig_cmpts = copy_item.components
-            copy_item.components = _cmpts
-            copy_item._astype_mock_cmpt = {}
-
-            for key, cmpt in _cmpts.items():
-                orig_cmpt = orig_cmpts.get(key, None)
-                decl_cls = cmpt._bind.decl_cls if orig_cmpt is None else orig_cmpt._bind.decl_cls  # type: ignore
-                cmpt.init_bind(BindInfo(decl_cls, copy_item, key))
-
-                setattr(copy_item, key, cmpt)
+        self._copy_cmpts_to(copy_item)
 
         copy_item.init_connect()
         return copy_item
@@ -737,10 +713,7 @@ class Item(ItemRelation['Item'], metaclass=_ItemMeta):
         if self._stored:
             self._stored = self.Stored(other)
 
-        self_cmpts = self.components
-        other_cmpts = other.components
-        for key in self_cmpts.keys() & other_cmpts.keys():
-            self_cmpts[key]._become(other_cmpts[key])
+        self._become_cmpts_from(other)
         self._rel_handle.reset_computed_for_self()
 
         return self
@@ -768,40 +741,30 @@ class Item(ItemRelation['Item'], metaclass=_ItemMeta):
         self._rel_handle.reset_computed_for_self()
 
     @classmethod
-    def align_for_interpolate(cls, item1: Item, item2: Item) -> AlignedData[Self]:
+    def align_for_interpolate(cls, item1: Self, item2: Self) -> AlignedData[Self]:
         """
         进行数据对齐，以便插值
         """
-        data1_cmpts: dict[str, Component] = {}
-        data2_cmpts: dict[str, Component] = {}
-        union_cmpts: dict[str, Component] = {}
+        data1 = item1.store()
+        data2 = item2.store()
+        union = data1.store()
 
         # align components
-        for key, cmpt1 in item1.components.items():
-            cmpt2 = item2.components.get(key, None)
-
-            if cmpt2 is None:
-                aligned_cmpt = AlignedData(cmpt1, cmpt1, cmpt1)
-            else:
-                aligned_cmpt = cmpt1.align_for_interpolate(cmpt1, cmpt2)
-
-            data1_cmpts[key] = aligned_cmpt.data1
-            data2_cmpts[key] = aligned_cmpt.data2
-            union_cmpts[key] = aligned_cmpt.union
-
-        # make aligned item
-        aligned = AlignedData(
-            item1.store(_cmpts=data1_cmpts),
-            item2.store(_cmpts=data2_cmpts),
-            item1.store(_cmpts=union_cmpts),
-        )
+        for key, cmpt1, cmpt2 in data1.get_common_components(data2):
+            cmpt = union.get_component(key)
+            ret = cmpt.align_for_interpolate(cmpt1, cmpt2)
+            # TODO: 在之后的版本移除这个提示
+            if ret is not None:
+                raise RuntimeError(
+                    'The API of `Component.align_for_interpolate` has changed, please contact us about how to migrate.'
+                )
 
         # align children
         max_len = max(len(item1.get_children()), len(item2.get_children()))
-        aligned.data1._stored.children = resize_preserving_order(item1.get_children(), max_len)
-        aligned.data2._stored.children = resize_preserving_order(item2.get_children(), max_len)
+        data1._stored.children = resize_preserving_order(item1.get_children(), max_len)
+        data2._stored.children = resize_preserving_order(item2.get_children(), max_len)
 
-        return aligned
+        return AlignedData(data1, data2, union)
 
     def interpolate(
         self,
@@ -814,11 +777,9 @@ class Item(ItemRelation['Item'], metaclass=_ItemMeta):
         """
         进行插值（仅对该物件进行，不包含后代物件）
         """
-        for key, cmpt in self.components.items():
-            try:
-                cmpt1 = item1.components[key]
-                cmpt2 = item2.components[key]
-            except KeyError:
+        for key, cmpt1, cmpt2 in item1.get_common_components(item2):
+            cmpt = item1.get_component(key, nullable=True)
+            if cmpt is None:
                 continue
             cmpt.interpolate(cmpt1, cmpt2, alpha, path_func=path_func)
 

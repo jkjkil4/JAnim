@@ -205,7 +205,9 @@ class VItem(Points):
         return tip
 
     @classmethod
-    def align_for_interpolate(cls, item1: VItem, item2: VItem) -> AlignedData[Self]:
+    def align_for_interpolate(  # type: ignore
+        cls, item1: Self, item2: Self
+    ) -> AlignedData[Self]:
         subpaths1_count = len(item1.points.get_subpath_end_indices())
         subpaths2_count = len(item2.points.get_subpath_end_indices())
 
@@ -217,8 +219,8 @@ class VItem(Points):
             ('fill', '_rgbas'),
             ('radius', '_radii'),
         ):
-            cmpt1 = aligned.data1.components[cmpt_name]
-            cmpt2 = aligned.data2.components[cmpt_name]
+            cmpt1 = aligned.data1.get_component(cmpt_name)
+            cmpt2 = aligned.data2.get_component(cmpt_name)
             if id(getattr(cmpt1, array_name)) == id(getattr(cmpt2, array_name)):
                 cmpt1.resize(count)
                 # 使用这种方式保持 array 等价，以优化性能

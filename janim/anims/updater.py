@@ -419,7 +419,7 @@ class MethodUpdater(Animation):
 
     def updater(self, data: Item, p: UpdaterParams) -> None:
         for cmpt_name, updater, args, kwargs, root_only in self.updaters:
-            obj = data if cmpt_name is None else data.components[cmpt_name]
+            obj = data if cmpt_name is None else data.get_component(cmpt_name)
             if root_only is None:
                 updater(obj, p, *args, **kwargs)
             else:

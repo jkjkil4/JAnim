@@ -87,7 +87,7 @@ class FadeIn(Fade):
     label_color = C_LABEL_ANIM_IN
 
     def updater(self, data: Item, p: UpdaterParams) -> None:
-        for cmpt in data.components.values():
+        for cmpt in data.get_components():
             if isinstance(cmpt, Cmpt_Rgbas):
                 rgbas = cmpt.get().copy()
                 rgbas[:, 3] *= p.alpha
@@ -136,7 +136,7 @@ class FadeOut(Fade):
         super().__init__(item, shift, scale, hide_at_end=hide_at_end, **kwargs)
 
     def updater(self, data: Item, p: UpdaterParams) -> None:
-        for cmpt in data.components.values():
+        for cmpt in data.get_components():
             if isinstance(cmpt, Cmpt_Rgbas):
                 rgbas = cmpt.get().copy()
                 rgbas[:, 3] *= 1 - p.alpha

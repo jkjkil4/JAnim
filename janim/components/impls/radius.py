@@ -32,10 +32,7 @@ class Cmpt_Radius[ItemT](Component[ItemT]):
         self.default_radius = default_radius
         self._radii = _get_array(default_radius)
 
-    @classmethod
-    def align_for_interpolate(  # type: ignore
-        cls, cmpt1: Cmpt_Radius, cmpt2: Cmpt_Radius
-    ) -> AlignedData[Cmpt_Radius]:
+    def align_for_interpolate(self, cmpt1: Cmpt_Radius, cmpt2: Cmpt_Radius) -> None:
         len1, len2 = len(cmpt1.get()), len(cmpt2.get())
 
         cmpt1_copy = cmpt1.copy()
@@ -44,9 +41,7 @@ class Cmpt_Radius[ItemT](Component[ItemT]):
         if len1 < len2:
             cmpt1_copy.resize(len2)
         elif len1 > len2:
-            cmpt1_copy.resize(len1)
-
-        return AlignedData(cmpt1_copy, cmpt2_copy, cmpt1_copy.copy())
+            cmpt2_copy.resize(len1)
 
     def interpolate(
         self, cmpt1: Cmpt_Radius, cmpt2: Cmpt_Radius, alpha: float, *, path_func=None

@@ -53,7 +53,7 @@ class Rotate(DataUpdater):
         else:
 
             def func(data: Item, p: UpdaterParams) -> None:
-                points = data.components.get('points', None)
+                points = data.get_component('points', nullable=True)
                 if points is None or not isinstance(points, Cmpt_Points):
                     return  # pragma: no cover
                 points.rotate(p.alpha * angle, axis=axis, about_point=about_point, root_only=True)

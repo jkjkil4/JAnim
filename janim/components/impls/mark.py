@@ -22,10 +22,7 @@ class Cmpt_Mark[ItemT](Component[ItemT]):
     _attrs = ComponentAttrs()
     _points = _attrs.ndarray(_DEFAULT_POINTS)
 
-    @classmethod
-    def align_for_interpolate(  # type: ignore
-        cls, cmpt1: Cmpt_Mark, cmpt2: Cmpt_Mark
-    ) -> AlignedData[Cmpt_Mark]:
+    def align_for_interpolate(self, cmpt1: Cmpt_Mark, cmpt2: Cmpt_Mark) -> None:
         len1, len2 = len(cmpt1.get_points()), len(cmpt2.get_points())
 
         cmpt1_copy = cmpt1.copy()
@@ -39,8 +36,6 @@ class Cmpt_Mark[ItemT](Component[ItemT]):
             cmpt2_copy.set_points(
                 resize_and_repeatedly_extend(cmpt2.get_points(), len(cmpt1.get_points()))
             )
-
-        return AlignedData(cmpt1_copy, cmpt2_copy, cmpt1_copy.copy())
 
     def interpolate(  # type: ignore
         self,

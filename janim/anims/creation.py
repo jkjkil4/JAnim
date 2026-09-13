@@ -52,7 +52,7 @@ class ShowPartial(DataUpdater):
         **kwargs,
     ):
         def func(data: Item, p: UpdaterParams) -> None:
-            cmpt = data.components.get('points', None)
+            cmpt = data.get_component('points', nullable=True)
             if cmpt is None or not isinstance(cmpt, Cmpt_VPoints):
                 return  # pragma: no cover
             if not cmpt.has():

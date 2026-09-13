@@ -69,10 +69,7 @@ class Cmpt_Points[ItemT](Component[ItemT]):
             lambda: bind.reset_computed_for_func(Cmpt_Points.box.fget)  # type: ignore
         )
 
-    @classmethod
-    def align_for_interpolate(  # type: ignore
-        cls, cmpt1: Cmpt_Points, cmpt2: Cmpt_Points
-    ) -> AlignedData[Cmpt_Points]:
+    def align_for_interpolate(self, cmpt1: Cmpt_Points, cmpt2: Cmpt_Points) -> None:
         len1, len2 = len(cmpt1.get()), len(cmpt2.get())
 
         cmpt1_copy = cmpt1.copy()
@@ -82,8 +79,6 @@ class Cmpt_Points[ItemT](Component[ItemT]):
             cmpt1_copy.resize(len2)
         elif len1 > len2:
             cmpt2_copy.resize(len1)
-
-        return AlignedData(cmpt1_copy, cmpt2_copy, cmpt1_copy.copy())
 
     def interpolate(  # type: ignore
         self,

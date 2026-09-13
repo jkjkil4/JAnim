@@ -17,6 +17,7 @@ from janim.anims.transform import *
 from janim.anims.updater import *
 from janim.camera.camera import *
 from janim.camera.camera_info import *
+from janim.components.core.backend import CmptInfo
 from janim.components.impls.data import CustomData
 from janim.components.impls.rgbas import apart_alpha, merge_alpha
 from janim.constants import *

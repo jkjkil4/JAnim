@@ -172,11 +172,11 @@ class ImageItem(Points):
         return x, y
 
     @classmethod
-    def align_for_interpolate(
+    def align_for_interpolate(  # type: ignore
         cls,
-        item1: ImageItem,
-        item2: ImageItem,
-    ) -> AlignedData[ImageItem]:
+        item1: Self,
+        item2: Self,
+    ) -> AlignedData[Self]:
         aligned = super().align_for_interpolate(item1, item2)
 
         for data in (aligned.data1, aligned.data2):
@@ -426,11 +426,11 @@ class Video(PlaybackControl, Points):
         return orig + hor * x / self.info.width + ver * y / self.info.height
 
     @classmethod
-    def align_for_interpolate(
+    def align_for_interpolate(  # type: ignore
         cls,
-        item1: ImageItem,
-        item2: ImageItem,
-    ) -> AlignedData[ImageItem]:
+        item1: Self,
+        item2: Self,
+    ) -> AlignedData[Self]:
         aligned = super().align_for_interpolate(item1, item2)
 
         for data in (aligned.data1, aligned.data2):

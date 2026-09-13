@@ -151,11 +151,11 @@ class DotCloud(Points):
         return super().apply_style(**kwargs)
 
     @classmethod
-    def align_for_interpolate(
+    def align_for_interpolate(  # type: ignore
         cls,
-        item1: DotCloud,
-        item2: DotCloud,
-    ) -> AlignedData[DotCloud]:
+        item1: Self,
+        item2: Self,
+    ) -> AlignedData[Self]:
         len1 = len(item1.points.get())
         len2 = len(item2.points.get())
 

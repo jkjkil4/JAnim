@@ -25,10 +25,7 @@ class Cmpt_Rgbas[ItemT](Component[ItemT]):
     _attrs = ComponentAttrs()
     _rgbas = _attrs.ndarray(_DEFAULT_RGBAS)
 
-    @classmethod
-    def align_for_interpolate(  # type: ignore
-        cls, cmpt1: Cmpt_Rgbas, cmpt2: Cmpt_Rgbas
-    ) -> AlignedData[Cmpt_Rgbas]:
+    def align_for_interpolate(self, cmpt1: Cmpt_Rgbas, cmpt2: Cmpt_Rgbas) -> None:
         len1, len2 = len(cmpt1.get()), len(cmpt2.get())
 
         cmpt1_copy = cmpt1.copy()
@@ -37,9 +34,7 @@ class Cmpt_Rgbas[ItemT](Component[ItemT]):
         if len1 < len2:
             cmpt1_copy.resize(len2)
         elif len1 > len2:
-            cmpt1_copy.resize(len1)
-
-        return AlignedData(cmpt1_copy, cmpt2_copy, cmpt1_copy.copy())
+            cmpt2_copy.resize(len1)
 
     def interpolate(
         self, cmpt1: Cmpt_Rgbas, cmpt2: Cmpt_Rgbas, alpha: float, *, path_func=None

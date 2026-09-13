@@ -8,7 +8,7 @@ from contextvars import ContextVar
 from typing import Callable, Self
 
 import numpy as np
-from janim_backend.component import AttrField
+from sphinx import TYPE_CHECKING
 
 from janim.components.core.attrs import AttrFieldDescriptor, ComponentAttrs
 from janim.components.core.component import AttrsCollector, CmptInfo, Component
@@ -236,8 +236,8 @@ class CustomData[ItemT, T](CmptInfo[Cmpt_Data[ItemT, T]]):
             ...
     """
 
-    def __init__(self):
-        super().__init__(Cmpt_Data)
+    def __new__(cls):
+        return CmptInfo.__new__(cls, Cmpt_Data)
 
 
 # region register

@@ -107,15 +107,12 @@ class Cmpt_VPoints[ItemT](Cmpt_Points[ItemT]):
 
     # region align
 
-    @classmethod
-    def align_for_interpolate(  # type: ignore
-        cls, cmpt1: Cmpt_VPoints, cmpt2: Cmpt_VPoints
-    ) -> AlignedData[Cmpt_VPoints]:
+    def align_for_interpolate(self, cmpt1: Cmpt_VPoints, cmpt2: Cmpt_VPoints) -> None:  # type: ignore
         cmpt1_copy = cmpt1.copy()
         cmpt2_copy = cmpt2.copy()
 
         if id(cmpt1_copy._points) == id(cmpt2_copy._points):
-            return AlignedData(cmpt1_copy, cmpt2_copy, cmpt1_copy.copy())
+            return
 
         if not cmpt1_copy.has():
             cmpt1_copy.set([cmpt2.self_box.center])
@@ -128,13 +125,12 @@ class Cmpt_VPoints[ItemT](Cmpt_Points[ItemT]):
         # 如果都只有单个路径，直接对齐就可以了
         # 否则进行路径之间的配对，以便对齐数据
         if len(subpaths1) == len(subpaths2) == 1:
-            sp1, sp2 = cls.align_path(subpaths1[0], subpaths2[0])
+            sp1, sp2 = self.align_path(subpaths1[0], subpaths2[0])
             cmpt1_copy.set(sp1)
             cmpt2_copy.set(sp2)
         else:
             # 这里使得 subpaths1 的子路径数量比 subpaths2 少，简化后面的判断
-            reverse = len(subpaths1) > len(subpaths2)
-            if reverse:
+            if len(subpaths1) > len(subpaths2):
                 cmpt1_copy, cmpt2_copy = cmpt2_copy, cmpt1_copy
                 subpaths1, subpaths2 = subpaths2, subpaths1
 
@@ -161,7 +157,7 @@ class Cmpt_VPoints[ItemT](Cmpt_Points[ItemT]):
                     else:
                         sp1 = np.vstack([sp1_orig[:-1], sp1_orig[::-1]])
 
-                    sp1, sp2 = cls.align_path(sp1, sp2_orig)
+                    sp1, sp2 = self.align_path(sp1, sp2_orig)
                     if new_subpaths1:
                         # 标记前一个路径结束
                         new_subpaths1.append(NAN_POINT)
@@ -171,12 +167,6 @@ class Cmpt_VPoints[ItemT](Cmpt_Points[ItemT]):
 
             cmpt1_copy.set(np.vstack(new_subpaths1))
             cmpt2_copy.set(np.vstack(new_subpaths2))
-
-            # 换回来
-            if reverse:
-                cmpt1_copy, cmpt2_copy = cmpt2_copy, cmpt1_copy
-
-        return AlignedData(cmpt1_copy, cmpt2_copy, cmpt1_copy.copy())
 
     @staticmethod
     def align_path(path1: np.ndarray, path2: np.ndarray) -> tuple[np.ndarray, np.ndarray]:

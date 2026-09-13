@@ -96,7 +96,7 @@ class ArrowTip(VItem):
         根据设定的 ``center_anchor`` 得到原点位置，
         请参考 :class:`CenterAnchor`
         """
-        points = self.points._points.data
+        points = self.points._points
         if self.center_anchor == CenterAnchor.Back:
             return points[3]
         if self.center_anchor == CenterAnchor.Center:
@@ -107,24 +107,25 @@ class ArrowTip(VItem):
     @property
     def direction(self) -> np.ndarray:
         """得到箭头的方向（单位向量）"""
-        points = self.points._points.data
+        points = self.points._points
         return normalize(points[0] - points[3])
 
     @property
     def body_length(self) -> float:
         """得到箭头的长度"""
-        points = self.points._points.data
+        points = self.points._points
         return get_norm(points[0] - points[3])
 
     @property
     def back_width(self) -> float:
         """得到箭头的宽度"""
-        points = self.points._points.data
+        points = self.points._points
         return get_norm(points[4] - points[2])
 
     def rotate_about_anchor(self, angle: float) -> Self:
         """相对于原点位置进行旋转"""
         self.points.rotate(angle, about_point=self.get_center_anchor())
+        return self
 
     def move_anchor_to(self, pos: np.ndarray) -> Self:
         """将原点移动到指定位置"""
