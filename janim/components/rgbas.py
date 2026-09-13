@@ -48,7 +48,7 @@ class Cmpt_Rgbas[ItemT](Component[ItemT]):
         if len1 < len2:
             cmpt1_copy.resize(len2)
         elif len1 > len2:
-            cmpt1_copy.resize(len1)
+            cmpt2_copy.resize(len1)
 
         return AlignedData(cmpt1_copy, cmpt2_copy, cmpt1_copy.copy())
 
