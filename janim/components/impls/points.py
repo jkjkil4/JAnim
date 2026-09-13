@@ -31,7 +31,7 @@ from janim.typing import Vect, VectArray
 from janim.utils.bezier import integer_interpolate, interpolate
 from janim.utils.cmpt_lazy import CmptSignal, cmpt_lazy_method
 from janim.utils.config import Config
-from janim.utils.data import AlignedData, owned, readonly_array
+from janim.utils.data import owned, readonly_array
 from janim.utils.iterables import resize_and_repeatedly_extend
 from janim.utils.paths import PathFunc, straight_path
 from janim.utils.simple_functions import clip

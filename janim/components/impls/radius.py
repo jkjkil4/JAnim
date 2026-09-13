@@ -10,7 +10,7 @@ from janim.anims.method_updater_meta import register_updater
 from janim.components.core.attrs import ComponentAttrs
 from janim.components.core.component import Component
 from janim.utils.bezier import interpolate
-from janim.utils.data import AlignedData, owned, readonly_array
+from janim.utils.data import owned, readonly_array
 from janim.utils.iterables import resize_with_interpolation
 
 

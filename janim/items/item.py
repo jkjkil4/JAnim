@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import copy
 import inspect
 import itertools as it
 import types

@@ -11,7 +11,7 @@ from janim.components.impls.points import _DEFAULT_POINTS, PointsFn
 from janim.typing import Vect, VectArray
 from janim.utils.bezier import interpolate
 from janim.utils.cmpt_lazy import CmptSignal
-from janim.utils.data import AlignedData, owned
+from janim.utils.data import owned
 from janim.utils.iterables import resize_and_repeatedly_extend
 from janim.utils.paths import PathFunc, straight_path
 

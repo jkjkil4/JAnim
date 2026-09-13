@@ -8,7 +8,6 @@ from contextvars import ContextVar
 from typing import Callable, Self
 
 import numpy as np
-from sphinx import TYPE_CHECKING
 
 from janim.components.core.attrs import AttrFieldDescriptor, ComponentAttrs
 from janim.components.core.component import AttrsCollector, CmptInfo, Component
