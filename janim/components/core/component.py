@@ -44,7 +44,6 @@ class AttrsCollector(type):
         setattr(func, '_ac_allowed', True)  # noqa: B010
         return func
 
-    # TODO: 在之后的新版本移除这段关于旧版本方法的迁移提示，以及上方的 allow 标记工具
     def __new__(
         cls: type,
         name: str,
@@ -53,6 +52,7 @@ class AttrsCollector(type):
         *,
         impl: bool = False,
     ):
+        # TODO: 在之后的新版本移除这段关于旧版本方法的迁移提示，以及上方的 allow 标记工具
         if impl:
             raise AttributeError(
                 _('Every subclass of Component does not need `impl=True` anymore.')
@@ -71,9 +71,12 @@ class AttrsCollector(type):
                         ).format(key=key, name=name)
                     )
 
+        # 所有子类均禁止额外的属性设置
+        attrdict['__slots__'] = ()
+
         return super().__new__(cls, name, bases, attrdict)  # type: ignore
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self: type[Component], *args, **kwargs):  # type: ignore
         super().__init__(*args, **kwargs)
 
         attrs_list: list[ComponentAttrs] = []
@@ -98,7 +101,6 @@ class AttrsCollector(type):
         """
 
 
-@dataclass(slots=True)
 class BindInfo:
     """
     对组件定义信息的封装
@@ -134,15 +136,15 @@ class BindInfo:
         # item2.cmpt3.bind_info 与 BindInfo(MyItem2, item2, 'cmpt3') 一致
     """
 
-    decl_cls: type[Item]
-    at_item: Item
-    key: str
+    __slots__ = ('_computed_caches', '_flag_0', 'at_item', 'decl_cls', 'key')
 
-    _flag_0: int = field(init=False)
-    _computed_caches: dict[relation.FlagHandle, Any] = field(default_factory=dict)
+    def __init__(self, decl_cls: type[Item], at_item: Item, key: str) -> None:
+        self.decl_cls = decl_cls
+        self.at_item = at_item
+        self.key = key
 
-    def __post_init__(self) -> None:
         self._flag_0 = _items_relation_registry.indexize_key(self.key)
+        self._computed_caches = {}
 
     def get_computed_for(self, flag_handle: relation.FlagHandle) -> Any | Expired:
         has_flag = self.at_item._rel_handle.get_computed_for(self._flag_0, flag_handle)
@@ -224,6 +226,8 @@ class Component[ItemT](CmptCore, metaclass=AttrsCollector):
 
         def __new__(cls, /) -> Self: ...
 
+        def copy(self) -> Self: ...
+
     def __init__(self, *args, **kwargs):
         self._init_attrs(self._mro_attrs_def.fields)
         self.__cmpt_init__(*args, **kwargs)
@@ -242,12 +246,6 @@ class Component[ItemT](CmptCore, metaclass=AttrsCollector):
         子类可以继承该函数，进行与所在物件相关的处理
         """
         self._bind = bind
-
-    def copy(self) -> Self:
-        cls = self.__class__
-        cmpt_copy = cls.__new__(cls)
-        self._copy_attrs_inst_to(cmpt_copy)
-        return cmpt_copy
 
     def become(self, other: Component) -> Self:
         """

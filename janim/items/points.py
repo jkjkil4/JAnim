@@ -111,18 +111,23 @@ class MarkedItem(Points):
         self._blocking_signals = False
 
 
+class Cmpt_Points_DotCloudImpl[ItemT](Cmpt_Points[ItemT]):
+    """
+    仅替代了原有的 ``resize_func``
+    """
+
+    resize_func = staticmethod(resize_preserving_order)
+
+
 class DotCloud(Points):
+    points = CmptInfo(Cmpt_Points_DotCloudImpl[Self])
+
     color = CmptInfo(Cmpt_Rgbas[Self])
     radius = CmptInfo(Cmpt_Radius[Self], 0.05)
 
     glow = CmptInfo(Cmpt_Glow[Self])
 
     renderer_cls = DotCloudRenderer
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        self.points.resize_func = resize_preserving_order
 
     def init_connect(self) -> None:
         super().init_connect()

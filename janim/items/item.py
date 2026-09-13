@@ -175,8 +175,6 @@ class Item(ItemRelation['Item'], metaclass=_ItemMeta):
         datas = self.__class__._cmpt_init_datas
 
         self.components: dict[str, Component] = {}
-        __dict__ = self.__dict__
-        components = self.components
 
         for key, data in datas.items():
             obj = data.info.create()
