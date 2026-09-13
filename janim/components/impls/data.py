@@ -8,9 +8,9 @@ from contextvars import ContextVar
 from typing import Callable, Self
 
 import numpy as np
-from janim_backend.component import CmptField
+from janim_backend.component import AttrField
 
-from janim.components.core.attrs import CmptFieldDescriptor, ComponentAttrs
+from janim.components.core.attrs import AttrFieldDescriptor, ComponentAttrs
 from janim.components.core.component import AttrsCollector, CmptInfo, Component
 from janim.exception import JAnimException
 from janim.locale import get_translator
@@ -46,7 +46,7 @@ class Cmpt_Data[ItemT, T](Component[ItemT]):
     """
 
     _attrs = ComponentAttrs()
-    value: CmptFieldDescriptor[T] = _attrs.direct_object(  # type: ignore
+    value: AttrFieldDescriptor[T] = _attrs.direct_object(  # type: ignore
         None,  # 仅占位  # type: ignore
         nullable=False,
         copyer=_copy_for_value,

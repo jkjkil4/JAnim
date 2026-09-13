@@ -7,7 +7,7 @@ from typing import Iterable, Literal, overload
 
 import numpy as np
 
-from janim.components.core.backend import CmptField, CmptFieldDescriptor
+from janim.components.core.backend import AttrField, AttrFieldDescriptor
 from janim.utils.data import owned
 
 
@@ -17,31 +17,31 @@ class ComponentAttrs:
     """
 
     def __init__(self):
-        self.fields: list[CmptField] = []
+        self.fields: list[AttrField] = []
 
-    def _register(self, field: CmptField) -> CmptFieldDescriptor:
+    def _register(self, field: AttrField) -> AttrFieldDescriptor:
         self.fields.append(field)
-        return CmptFieldDescriptor(field)
+        return AttrFieldDescriptor(field)
 
-    def int(self, default: int = 0) -> CmptFieldDescriptor[int]:
+    def int(self, default: int = 0) -> AttrFieldDescriptor[int]:
         """
         注册一个整数类型的属性
         """
-        return self._register(CmptField.Int(default))
+        return self._register(AttrField.Int(default))
 
-    def bool(self, default: bool = False) -> CmptFieldDescriptor[bool]:
+    def bool(self, default: bool = False) -> AttrFieldDescriptor[bool]:
         """
         注册一个布尔类型的属性
         """
-        return self._register(CmptField.Bool(default))
+        return self._register(AttrField.Bool(default))
 
-    def float(self, default: float = 0.0) -> CmptFieldDescriptor[float]:
+    def float(self, default: float = 0.0) -> AttrFieldDescriptor[float]:
         """
         注册一个浮点数类型的属性
         """
-        return self._register(CmptField.Float(default))
+        return self._register(AttrField.Float(default))
 
-    def ndarray(self, default: np.ndarray) -> CmptFieldDescriptor[np.ndarray]:
+    def ndarray(self, default: np.ndarray) -> AttrFieldDescriptor[np.ndarray]:
         """
         注册一个 ``np.ndarray`` 类型的属性
 
@@ -51,7 +51,7 @@ class ComponentAttrs:
         - 会保证获取的 NumPy 输入是只读的（可通过 ``.copy()`` 获取可写的拷贝）
         """
         return self._register(
-            CmptField.NDArray(
+            AttrField.NDArray(
                 default,
                 self._ndarray_setter_for_dtype(default.dtype),  # type: ignore
             )
@@ -75,7 +75,7 @@ class ComponentAttrs:
 
         return _ndarray_setter
 
-    def owned_object[T](self, _: type[T]) -> CmptFieldDescriptor[T | None]:
+    def owned_object[T](self, _: type[T]) -> AttrFieldDescriptor[T | None]:
         """
         拥有唯一所有权的对象
 
@@ -85,20 +85,20 @@ class ComponentAttrs:
 
             传入参数仅用作类型注解
         """
-        return self._register(CmptField.OwnedObject())
+        return self._register(AttrField.OwnedObject())
 
     @overload
     def direct_object[T](
         self, _: type[T], *, nullable: Literal[False], copyer: FunctionType | None = None
-    ) -> CmptFieldDescriptor[T]: ...
+    ) -> AttrFieldDescriptor[T]: ...
     @overload
     def direct_object[T](
         self, _: type[T], *, nullable: Literal[True], copyer: FunctionType | None = None
-    ) -> CmptFieldDescriptor[T | None]: ...
+    ) -> AttrFieldDescriptor[T | None]: ...
 
     def direct_object[T](
         self, _: type[T], *, nullable: bool, copyer: FunctionType | None = None
-    ) -> CmptFieldDescriptor[T] | CmptFieldDescriptor[T | None]:
+    ) -> AttrFieldDescriptor[T] | AttrFieldDescriptor[T | None]:
         """
         忽略 ``setter`` / ``getter`` 的直接访问的对象
 
@@ -115,7 +115,7 @@ class ComponentAttrs:
             实例的初始值会是 ``None``，但对于 ``nullable=False`` 的情况而言，为了使用方便，类型注解省略了 ``None`` 的部分，
             因此务必保证在构建时初始化该值，从而与类型注解一致
         """
-        return self._register(CmptField.DirectObject(copyer))
+        return self._register(AttrField.DirectObject(copyer))
 
     @staticmethod
     def merge(attrs_list: Iterable[ComponentAttrs]) -> ComponentAttrs:
