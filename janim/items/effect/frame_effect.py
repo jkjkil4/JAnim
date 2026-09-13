@@ -47,7 +47,7 @@ class AppliedGroup(Item):
         super().__init__(**kwargs)
         self.apply(*items, root_only=root_only)
 
-    def add(self, *objs, prepend=False, insert=None) -> Self:
+    def add(self, *objs, prepend=False) -> Self:
         """
         .. warning::
 
@@ -62,7 +62,7 @@ class AppliedGroup(Item):
                     'If you want to apply additional items, use `apply` instead.'
                 ).format(cls=self.__class__.__name__)
             )
-        super().add(*objs, prepend=prepend, insert=insert)
+        super().add(*objs, prepend=prepend)
         return self
 
     def remove(self, *objs) -> Self:
