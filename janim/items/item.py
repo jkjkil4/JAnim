@@ -127,7 +127,7 @@ class Item(ItemRelation['Item'], CmptsStorage, metaclass=_ItemMeta):
 
     if TYPE_CHECKING:
 
-        def __new__(cls, /) -> Self: ...
+        def __new__(cls, /, *args, **kwargs) -> Self: ...
 
     def __init__(
         self,
@@ -778,7 +778,7 @@ class Item(ItemRelation['Item'], CmptsStorage, metaclass=_ItemMeta):
         进行插值（仅对该物件进行，不包含后代物件）
         """
         for key, cmpt1, cmpt2 in item1.get_common_components(item2):
-            cmpt = item1.get_component(key, nullable=True)
+            cmpt = self.get_component(key, nullable=True)
             if cmpt is None:
                 continue
             cmpt.interpolate(cmpt1, cmpt2, alpha, path_func=path_func)

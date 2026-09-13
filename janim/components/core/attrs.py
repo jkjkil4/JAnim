@@ -77,13 +77,13 @@ class ComponentAttrs:
 
     def owned_object[T](self, _: type[T]) -> AttrFieldDescriptor[T | None]:
         """
-        拥有唯一所有权的对象
+        拥有唯一所有权的对象，且在 ``_become`` 中不会被替换
 
         初始值为 ``None``，设置的具体对象不会随着拷贝转移，从而不会意外产生多份引用
 
         .. note::
 
-            传入参数仅用作类型注解
+            传入的首个参数仅用作类型注解
         """
         return self._register(AttrField.OwnedObject())
 
@@ -108,7 +108,7 @@ class ComponentAttrs:
 
         .. note::
 
-            传入参数仅用作类型注解
+            传入的首个参数仅用作类型注解
 
         .. warning::
 

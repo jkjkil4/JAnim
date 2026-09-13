@@ -25,15 +25,12 @@ class Cmpt_Mark[ItemT](Component[ItemT]):
     def align_for_interpolate(self, cmpt1: Cmpt_Mark, cmpt2: Cmpt_Mark) -> None:
         len1, len2 = len(cmpt1.get_points()), len(cmpt2.get_points())
 
-        cmpt1_copy = cmpt1.copy()
-        cmpt2_copy = cmpt2.copy()
-
         if len1 < len2:
-            cmpt1_copy.set_points(
+            cmpt1.set_points(
                 resize_and_repeatedly_extend(cmpt1.get_points(), len(cmpt2.get_points()))
             )
         elif len1 > len2:
-            cmpt2_copy.set_points(
+            cmpt2.set_points(
                 resize_and_repeatedly_extend(cmpt2.get_points(), len(cmpt1.get_points()))
             )
 

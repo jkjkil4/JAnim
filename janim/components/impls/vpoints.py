@@ -108,30 +108,27 @@ class Cmpt_VPoints[ItemT](Cmpt_Points[ItemT]):
     # region align
 
     def align_for_interpolate(self, cmpt1: Cmpt_VPoints, cmpt2: Cmpt_VPoints) -> None:  # type: ignore
-        cmpt1_copy = cmpt1.copy()
-        cmpt2_copy = cmpt2.copy()
-
-        if id(cmpt1_copy._points) == id(cmpt2_copy._points):
+        if id(cmpt1._points) == id(cmpt2._points):
             return
 
-        if not cmpt1_copy.has():
-            cmpt1_copy.set([cmpt2.self_box.center])
-        if not cmpt2_copy.has():
-            cmpt2_copy.set([cmpt1.self_box.center])
+        if not cmpt1.has():
+            cmpt1.set([cmpt2.self_box.center])
+        if not cmpt2.has():
+            cmpt2.set([cmpt1.self_box.center])
 
-        subpaths1 = cmpt1_copy.get_subpaths()
-        subpaths2 = cmpt2_copy.get_subpaths()
+        subpaths1 = cmpt1.get_subpaths()
+        subpaths2 = cmpt2.get_subpaths()
 
         # 如果都只有单个路径，直接对齐就可以了
         # 否则进行路径之间的配对，以便对齐数据
         if len(subpaths1) == len(subpaths2) == 1:
             sp1, sp2 = self.align_path(subpaths1[0], subpaths2[0])
-            cmpt1_copy.set(sp1)
-            cmpt2_copy.set(sp2)
+            cmpt1.set(sp1)
+            cmpt2.set(sp2)
         else:
             # 这里使得 subpaths1 的子路径数量比 subpaths2 少，简化后面的判断
             if len(subpaths1) > len(subpaths2):
-                cmpt1_copy, cmpt2_copy = cmpt2_copy, cmpt1_copy
+                cmpt1, cmpt2 = cmpt2, cmpt1
                 subpaths1, subpaths2 = subpaths2, subpaths1
 
             # 从旧索引到新索引的对应，例如 (len1=3, len2=8) -> [[0, 1, 2], [3, 4, 5], [6, 7]]
@@ -165,8 +162,8 @@ class Cmpt_VPoints[ItemT](Cmpt_Points[ItemT]):
                     new_subpaths1.append(sp1)
                     new_subpaths2.append(sp2)
 
-            cmpt1_copy.set(np.vstack(new_subpaths1))
-            cmpt2_copy.set(np.vstack(new_subpaths2))
+            cmpt1.set(np.vstack(new_subpaths1))
+            cmpt2.set(np.vstack(new_subpaths2))
 
     @staticmethod
     def align_path(path1: np.ndarray, path2: np.ndarray) -> tuple[np.ndarray, np.ndarray]:

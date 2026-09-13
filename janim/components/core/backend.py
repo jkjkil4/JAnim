@@ -46,6 +46,9 @@ if TYPE_CHECKING:
 
         def create(self) -> Component: ...
 
+        @property
+        def cls(self) -> type[Component]: ...
+
         @overload
         def __get__(self, obj: None, owner) -> Self: ...
         @overload

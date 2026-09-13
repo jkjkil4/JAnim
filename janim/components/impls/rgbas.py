@@ -11,7 +11,7 @@ from janim.components.core.attrs import ComponentAttrs
 from janim.components.core.component import Component
 from janim.typing import Alpha, AlphaArray, ColorArray, JAnimColor, RgbaArray
 from janim.utils.bezier import interpolate
-from janim.utils.data import AlignedData, owned, readonly_array
+from janim.utils.data import owned, readonly_array
 from janim.utils.iterables import resize_with_interpolation
 
 _DEFAULT_RGBAS = readonly_array(np.full((1, 4), 1, dtype=np.float32))
@@ -28,13 +28,10 @@ class Cmpt_Rgbas[ItemT](Component[ItemT]):
     def align_for_interpolate(self, cmpt1: Cmpt_Rgbas, cmpt2: Cmpt_Rgbas) -> None:
         len1, len2 = len(cmpt1.get()), len(cmpt2.get())
 
-        cmpt1_copy = cmpt1.copy()
-        cmpt2_copy = cmpt2.copy()
-
         if len1 < len2:
-            cmpt1_copy.resize(len2)
+            cmpt1.resize(len2)
         elif len1 > len2:
-            cmpt2_copy.resize(len1)
+            cmpt2.resize(len1)
 
     def interpolate(
         self, cmpt1: Cmpt_Rgbas, cmpt2: Cmpt_Rgbas, alpha: float, *, path_func=None
