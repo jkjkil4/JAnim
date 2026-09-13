@@ -5,10 +5,10 @@ from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Any, Callable, Iterable, Literal, Self, overload
 
 from janim_backend import relation
-from janim_backend.component import CmptCore
 
 from janim.anims.method_updater_meta import METHOD_UPDATER_KEY
 from janim.components.core.attrs import ComponentAttrs
+from janim.components.core.backend import AttrsStorage
 from janim.exception import CmptGroupLookupError
 from janim.items.relation import _items_relation_registry
 from janim.locale import get_translator
@@ -171,7 +171,7 @@ class BindInfo:
         self._computed_caches.clear()
 
 
-class Component[ItemT](CmptCore, metaclass=AttrsCollector):
+class Component[ItemT](AttrsStorage, metaclass=AttrsCollector):
     """
     组件
 

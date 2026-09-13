@@ -3,15 +3,12 @@ from __future__ import annotations
 import itertools as it
 from functools import cache
 from types import FunctionType
-from typing import TYPE_CHECKING, Iterable, Literal, Self, overload
+from typing import Iterable, Literal, overload
 
 import numpy as np
-from janim_backend.component import CmptField
 
+from janim.components.core.backend import CmptField, CmptFieldDescriptor
 from janim.utils.data import owned
-
-if TYPE_CHECKING:
-    from janim.components.core.component import Component
 
 
 class ComponentAttrs:
@@ -128,23 +125,3 @@ class ComponentAttrs:
         merged = ComponentAttrs()
         merged.fields = list(it.chain.from_iterable(attrs.fields for attrs in attrs_list))
         return merged
-
-
-if TYPE_CHECKING:
-
-    class CmptFieldDescriptor[T]:
-        def __init__(self, field: CmptField): ...
-
-        def on_modified[F](self, fn: F) -> F: ...
-
-        @overload
-        def __get__(self, obj: None, owner) -> Self: ...
-        @overload
-        def __get__(self, obj: Component, owner) -> T: ...
-
-        def __get__(self, obj: Component | None, owner) -> Self | T: ...
-
-        def __set__(self, obj: Component, value: T, /) -> None: ...
-
-else:
-    from janim_backend.component import CmptFieldDescriptor
