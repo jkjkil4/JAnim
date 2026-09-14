@@ -622,7 +622,7 @@ class Item(ItemRelation['Item'], CmptsStorage, metaclass=_ItemMeta):
     def __copy__(self) -> Self:
         cls = self.__class__
         copy_item = cls.__new__(cls)
-        copy_item.__dict__.update(self.__dict__.copy())
+        copy_item.__dict__ = self.__dict__.copy()
         return copy_item
 
     def copy(self, *, root_only: bool = False) -> Self:
