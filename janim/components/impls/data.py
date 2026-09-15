@@ -34,9 +34,9 @@ _default_funcs: _Funcs = (copy.copy, interpolate)
 
 
 # 由于 Cmpt_Data.copy_for_value 定义在后面，这里的 attrs 声明访问不到
-# 如果把 attrs 往后挪太丑了，所以在这里定义了一个这样的函数间接访问到 Cmpt_Data.copy_for_value
+# 如果把 _attrs 往后挪太丑了，所以在这里定义了一个这样的函数间接访问到 Cmpt_Data.copy_for_value
 def _copy_for_value(value):
-    Cmpt_Data.copy_for_value(value)
+    return Cmpt_Data.copy_for_value(value)
 
 
 class Cmpt_Data[ItemT, T](Component[ItemT]):
@@ -52,6 +52,7 @@ class Cmpt_Data[ItemT, T](Component[ItemT]):
     )
 
     # 因为需要 self._cls_name 的上下文用于报错提示，所以这里 override 内部的 copy 函数
+    # FIXME: 这没用
     @AttrsCollector.allow
     def copy(self) -> Self:
         with self._cls_name():

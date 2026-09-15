@@ -58,7 +58,7 @@ class AnimStack:
         # Display 会同时被设置到 _active_display 和 _latest_display 上
         # 而 DelayedDisplay 在构造时就会调用 set_latest_display，但是到了对应的全局时刻才会尝试设置到 _prev_display 上
         self._latest_display: DisplayType | None = None
-        item.take_modified(item)
+        item._take_cmpts_modified()
         initial_display = self.display(0)
         # 让初始 Display 的 _order 均为 0
         initial_display._order = 0
@@ -69,16 +69,21 @@ class AnimStack:
 
     # region modification
 
-    def display(self, global_t: float) -> Display:
+    def display(self, global_t: float, *, _take_modified=True) -> Display:
         """
         将物件当前的状态记录到动画堆栈中，将 ``global_t`` 之后都显示为该状态
         """
         anim = Display(self.item.store(), at=global_t, duration=FOREVER)
         anim.finalize()
         self.add(anim, _is_display=True)
-        self._active_display: DisplayType = anim
+        self.set_active_display(anim, _take_modified=_take_modified)
         self.set_latest_display(anim)
         return anim
+
+    def set_active_display(self, anim: DisplayType, *, _take_modified=True) -> None:
+        if _take_modified:
+            self.item._take_cmpts_modified()
+        self._active_display = anim
 
     def set_latest_display(self, anim: DisplayType) -> None:
         if self._latest_display is None:
@@ -99,7 +104,7 @@ class AnimStack:
         # 此处 or 的顺序关系到代码逻辑
         # 因为在 force 的时候，需要在记录 Display 的同时也取出 modified 状态
         if self.take_modified() or force:
-            self.display(global_t)
+            self.display(global_t, _take_modified=False)
 
     def take_modified(self) -> bool:
         """
