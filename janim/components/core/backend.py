@@ -21,27 +21,6 @@ if TYPE_CHECKING:
         def __set__(self, obj: Component, value: T, /) -> None: ...
 
     class CmptInfo[T]:
-        """
-        在物件中声明组件信息
-
-        例：
-
-        .. code-block:: python
-
-            class MyItem(Item):
-                # 错误！
-                # cmpt1 = MyCmpt()
-
-                # 正确
-                cmpt1 = CmptInfo(MyCmpt[Self])
-
-                # 错误！
-                # cmpt2 = MyCmptWithArgs(1)
-
-                # 正确
-                cmpt2 = CmptInfo(MyCmptWithArgs[Self], 1)
-        """
-
         def __new__(cls, cls_: type[T], *args, **kwargs) -> Self: ...
 
         def create(self) -> Component: ...
@@ -60,3 +39,21 @@ if TYPE_CHECKING:
 
 else:
     from janim_backend.component import AttrFieldDescriptor, CmptInfo  # noqa: F401
+
+
+if TYPE_CHECKING:
+    from janim_backend.component import BindState as _BindState
+
+    from janim.components.core.component import Component
+    from janim.items.item import Item
+
+    class BindState(_BindState):  # type: ignore
+        @property
+        def at_item(self, /) -> Item: ...
+        @property
+        def decl_cls(self, /) -> type[Component]: ...
+        @property
+        def key(self, /) -> str: ...
+
+else:
+    from janim_backend.component import BindState  # noqa: F401

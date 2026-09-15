@@ -9,8 +9,8 @@ from typing import TYPE_CHECKING, Any, Callable, Iterable, Literal, Self, Suppor
 
 import numpy as np
 
-from janim.components.core.backend import CmptField, CmptsStorage
-from janim.components.core.component import BindInfo, CmptInfo, Component
+from janim.components.core.backend import BindState, CmptField, CmptsStorage
+from janim.components.core.component import CmptInfo, Component
 from janim.components.impls.depth import Cmpt_Depth
 from janim.exception import AsTypeError, GetItemError
 from janim.items.relation import ItemRelation
@@ -152,7 +152,7 @@ class Item(ItemRelation['Item'], CmptsStorage, metaclass=_ItemMeta):
         self.reset_additional_states()
 
         self._init_cmpts(self._cmpt_fields)
-        self._bind_cmpts(self._bind_cmpts_callback)
+        self._bind_cmpts()
 
         if children is not None:
             self.add(*children)
@@ -501,7 +501,7 @@ class Item(ItemRelation['Item'], CmptsStorage, metaclass=_ItemMeta):
 
             # astype 需求的组件还没创建，那么创建并记录
             cmpt = cmpt_info.create()
-            cmpt.init_bind(BindInfo(decl_cls, item, name))
+            cmpt.bind(BindState(decl_cls, item, name))
 
             item._astype_mock_cmpt[name] = cmpt
             return cmpt
@@ -602,10 +602,7 @@ class Item(ItemRelation['Item'], CmptsStorage, metaclass=_ItemMeta):
     def _copy_cmpts_to(self, target: Item) -> None:  # type: ignore
         super()._copy_cmpts_to(target)
         target._astype_mock_cmpt = {}
-        target._bind_cmpts(target._bind_cmpts_callback)
-
-    def _bind_cmpts_callback(self, cmpt: Component, decl_cls: type, key: str) -> None:
-        cmpt.init_bind(BindInfo(decl_cls, self, key))
+        target._bind_cmpts()
 
     @overload
     def get_component(self, name: str, *, nullable: Literal[False] = False) -> Component: ...

@@ -10,7 +10,7 @@ from janim_backend import compute
 
 from janim.anims.method_updater_meta import register_updater
 from janim.components.core.attrs import ComponentAttrs
-from janim.components.core.component import BindInfo, Component
+from janim.components.core.component import Component
 from janim.constants import (
     DEFAULT_ITEM_TO_EDGE_BUFF,
     DEFAULT_ITEM_TO_ITEM_BUFF,
@@ -62,8 +62,8 @@ class Cmpt_Points[ItemT](Component[ItemT]):
     _attrs = ComponentAttrs()
     _points = _attrs.ndarray(_DEFAULT_POINTS)
 
-    def init_bind(self, bind: BindInfo):
-        super().init_bind(bind)
+    def _binded(self) -> None:
+        bind = self._bind
 
         bind.at_item._children_changed_hooks.append(
             lambda: bind.reset_computed_for_func(Cmpt_Points.box.fget)  # type: ignore

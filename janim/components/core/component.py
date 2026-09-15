@@ -7,12 +7,11 @@ from janim_backend import relation
 
 from janim.anims.method_updater_meta import METHOD_UPDATER_KEY
 from janim.components.core.attrs import ComponentAttrs
-from janim.components.core.backend import AttrsStorage, CmptInfo
+from janim.components.core.backend import AttrsStorage, BindState, CmptInfo
 from janim.exception import CmptGroupLookupError
 from janim.items.relation import _items_relation_registry
 from janim.locale import get_translator
-from janim.utils.cmpt_lazy import EXPIRED, FLAG_HANDLE_NAME, Expired
-from janim.utils.data import AlignedData
+from janim.utils.cmpt_lazy import FLAG_HANDLE_NAME
 
 if TYPE_CHECKING:
     from janim.items.item import Item
@@ -100,76 +99,6 @@ class AttrsCollector(type):
         """
 
 
-class BindInfo:
-    """
-    对组件定义信息的封装
-
-    :param decl_cls:
-        以 ``xxx = CmptInfo(...)`` 的形式被声明在哪个类中；
-        如果一个类及其父类都有 ``xxx = CmptInfo(...)`` ，那么 ``decl_cls`` 是父类
-
-    :param at_item: 这个组件对象当前绑定到了哪个物件对象
-    :param key: 这个组件对象在物件中的变量名
-
-    例：
-
-    .. code-block:: python
-
-        class MyCmpt(Component): ...
-
-        class MyItem(Item):
-            cmpt1 = CmptInfo(MyCmpt[Self])
-            cmpt2 = CmptInfo(MyCmpt[Self])
-
-        class MyItem2(MyItem):
-            cmpt3 = CmptInfo(MyCmpt[Self])
-
-        item = MyItem()
-
-        # item.cmpt1.bind_info 与 BindInfo(MyItem, item, 'cmpt1') 一致
-        # item.cmpt2.bind_info 与 BindInfo(MyItem, item, 'cmpt2') 一致
-
-        item2 = MyItem2()
-
-        # item2.cmpt1.bind_info 与 BindInfo(MyItem, item2, 'cmpt1') 一致
-        # item2.cmpt3.bind_info 与 BindInfo(MyItem2, item2, 'cmpt3') 一致
-    """
-
-    __slots__ = ('_computed_caches', '_flag_0', 'at_item', 'decl_cls', 'key')
-
-    def __init__(self, decl_cls: type[Item], at_item: Item, key: str) -> None:
-        self.decl_cls = decl_cls
-        self.at_item = at_item
-        self.key = key
-
-        self._flag_0 = _items_relation_registry.indexize_key(self.key)
-        self._computed_caches = {}
-
-    def get_computed_for(self, flag_handle: relation.FlagHandle) -> Any | Expired:
-        has_flag = self.at_item._rel_handle.get_computed_for(self._flag_0, flag_handle)
-        if not has_flag:
-            return EXPIRED
-        return self._computed_caches[flag_handle]
-
-    def mark_computed_for(self, flag_handle: relation.FlagHandle, data: Any) -> None:
-        self._computed_caches[flag_handle] = data
-        self.at_item._rel_handle.mark_computed_for(self._flag_0, flag_handle)
-
-    def reset_computed_for(self, flag_handle: relation.FlagHandle) -> None:
-        self.at_item._rel_handle.reset_computed_for(self._flag_0, flag_handle)
-
-    def reset_computed_for_func(self, func: Callable) -> None:
-        self.reset_computed_for(getattr(func, FLAG_HANDLE_NAME))
-
-    def reset_computed_for_list(self, lst: list[relation.FlagHandle]) -> None:
-        self.at_item._rel_handle.reset_computed_for_list(self._flag_0, lst)
-
-    def reset_computed_for_all(self) -> None:
-        for flag_handle in self._computed_caches:
-            self.at_item._rel_handle.reset_computed_for(self._flag_0, flag_handle)
-        self._computed_caches.clear()
-
-
 class Component[ItemT](AttrsStorage, metaclass=AttrsCollector):
     """
     组件
@@ -227,6 +156,9 @@ class Component[ItemT](AttrsStorage, metaclass=AttrsCollector):
 
         def copy(self) -> Self: ...
 
+        @property
+        def _bind(self) -> BindState | None: ...
+
     def __init__(self, *args, **kwargs):
         self._init_attrs(self._mro_attrs_def.fields)
         self.__cmpt_init__(*args, **kwargs)
@@ -235,16 +167,10 @@ class Component[ItemT](AttrsStorage, metaclass=AttrsCollector):
         pass
 
     _attrs = ComponentAttrs()
-    _bind = _attrs.owned_object(BindInfo)
     _signal_obj_conns = _attrs.owned_object(defaultdict)
 
-    def init_bind(self, bind: BindInfo) -> None:
-        """
-        用于 ``Item._init_components``
-
-        子类可以继承该函数，进行与所在物件相关的处理
-        """
-        self._bind = bind
+    # 由子类实现，在需要的时候定义为具体方法，默认为 None 以便在 Rust 侧跳过 Python 调用栈
+    _binded: Callable | None = None
 
     def become(self, other: Component) -> Self:
         """
@@ -373,8 +299,7 @@ class _CmptGroup(Component):
     def __cmpt_init__(self, cmpt_info_list: list[CmptInfo]):
         self._cmpt_info_list = cmpt_info_list
 
-    def init_bind(self, bind: BindInfo) -> None:
-        super().init_bind(bind)
+    def _binded(self) -> None:
         self._find_objects()
 
     def _find_objects(self) -> None:
@@ -392,30 +317,27 @@ class _CmptGroup(Component):
 
         ``color`` 组件对象会得到与 ``stroke`` 和 ``fill`` 对应的组件对象
         """
+
+        from janim.items.item import CLS_CMPTINFO_NAME
+
+        cls_cmptinfos: dict[str, CmptInfo] = self._bind.decl_cls.__dict__.get(CLS_CMPTINFO_NAME, {})
+
         objects: dict[str, Component] = {}
 
         for cmpt_info in self._cmpt_info_list:
-            key = self._find_key(cmpt_info)
+            # 查找 ``cmpt_info`` 在物件中定义为什么名字
+            # 例如对于 ``points = CmptInfo(Cmpt_Points[Self])`` 会得到 ``"points"``
+            for key, value in cls_cmptinfos.items():
+                if value is cmpt_info:
+                    break
+            else:
+                raise CmptGroupLookupError(
+                    _('CmptGroup must be defined within the same class as the content passed in')
+                )
             # 由于需要 astype，所以使用 getattr 而不是直接从 .components 中获取
             objects[key] = getattr(self._bind.at_item, key)  # type: ignore
 
         self._cmpt_objects = objects
-
-    def _find_key(self, cmpt_info: CmptInfo) -> str:
-        """
-        查找 ``cmpt_info`` 在物件中定义为什么名字
-
-        例如对于 ``points = CmptInfo(Cmpt_Points[Self])`` 会得到 ``"points"``
-        """
-        from janim.items.item import CLS_CMPTINFO_NAME
-
-        for key, val in self._bind.decl_cls.__dict__.get(CLS_CMPTINFO_NAME, {}).items():  # type: ignore
-            if val is cmpt_info:
-                return key
-
-        raise CmptGroupLookupError(
-            _('CmptGroup must be defined within the same class as the content passed in')
-        )
 
     def _returned_self(self, cmpt: Component | Item._AsTypeWrapper, ret) -> bool:
         if isinstance(cmpt, Component):

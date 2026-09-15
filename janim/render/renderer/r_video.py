@@ -65,8 +65,8 @@ class VideoRenderer(Renderer):
             self.init()
             self.initialized = True
 
-        new_color = item.color._rgbas.data
-        new_points = item.points._points.data
+        new_color = item.color._rgbas
+        new_points = item.points._points
 
         if new_color is not self.prev_color:
             self.update_static_buffer_data(new_color, self.vbo_color, 4)

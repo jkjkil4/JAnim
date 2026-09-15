@@ -16,11 +16,7 @@ if TYPE_CHECKING:
 FLAG_HANDLE_NAME = '__flag_handle'
 
 
-class Expired:
-    pass
-
-
-EXPIRED = Expired()
+EXPIRED = object()
 
 
 @overload
@@ -52,7 +48,10 @@ def _cmpt_lazy_method(recurse_up: bool, recurse_down: bool, func):
     def wrapper(self: Component, *args, **kwargs):
         bind = self._bind
 
-        if bind is not None and (cached := bind.get_computed_for(flag_handle)) is not EXPIRED:
+        if (
+            bind is not None
+            and (cached := bind.get_computed_for(flag_handle, EXPIRED)) is not EXPIRED
+        ):
             computed = cached
         else:
             computed = func(self, *args, **kwargs)
