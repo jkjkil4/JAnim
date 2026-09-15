@@ -1,17 +1,13 @@
 from __future__ import annotations
 
 from collections import defaultdict
-from typing import TYPE_CHECKING, Any, Callable, Iterable, Literal, Self, overload
-
-from janim_backend import relation
+from typing import TYPE_CHECKING, Callable, Iterable, Literal, Self, overload
 
 from janim.anims.method_updater_meta import METHOD_UPDATER_KEY
 from janim.components.core.attrs import ComponentAttrs
 from janim.components.core.backend import AttrsStorage, BindState, CmptInfo
 from janim.exception import CmptGroupLookupError
-from janim.items.relation import _items_relation_registry
 from janim.locale import get_translator
-from janim.utils.cmpt_lazy import FLAG_HANDLE_NAME
 
 if TYPE_CHECKING:
     from janim.items.item import Item
@@ -345,8 +341,7 @@ class _CmptGroup(Component):
         return cmpt._astype_obj is ret._astype_obj
 
     def __getattr__(self, name: str):
-        if name == '_cmpt_objects' or self._cmpt_objects is None:
-            raise AttributeError()
+        assert self._cmpt_objects is not None
 
         objects = []
         methods = []
