@@ -60,9 +60,11 @@ class Cmpt_List[ItemT, T](Component[ItemT]):
         return self._inner[index]
 
     def __setitem__(self, index, value) -> None:
+        self._inner = self._inner  # 触发追踪
         self._inner[index] = value
 
     def __delitem__(self, index) -> None:
+        self._inner = self._inner  # 触发追踪
         del self._inner[index]
 
     def __contains__(self, value: object) -> bool:
@@ -78,21 +80,27 @@ class Cmpt_List[ItemT, T](Component[ItemT]):
         return self._inner == other
 
     def append(self, value: T) -> None:
+        self._inner = self._inner  # 触发追踪
         self._inner.append(value)
 
     def extend(self, values: Iterable[T]) -> None:
+        self._inner = self._inner  # 触发追踪
         self._inner.extend(values)
 
     def insert(self, index: int, value: T) -> None:
+        self._inner = self._inner  # 触发追踪
         self._inner.insert(index, value)
 
     def remove(self, value: T) -> None:
+        self._inner = self._inner  # 触发追踪
         self._inner.remove(value)
 
     def pop(self, index: int = -1):
+        self._inner = self._inner  # 触发追踪
         return self._inner.pop(index)
 
     def clear(self) -> None:
+        self._inner = self._inner  # 触发追踪
         self._inner.clear()
 
     def index(self, value: T, start: int = 0, stop: int = sys.maxsize) -> int:
@@ -123,9 +131,11 @@ class Cmpt_Dict[ItemT, K, V](Component[ItemT]):
         return self._inner[key]
 
     def __setitem__(self, key: K, value: V) -> None:
+        self._inner = self._inner  # 触发追踪
         self._inner[key] = value
 
     def __delitem__(self, key: K) -> None:
+        self._inner = self._inner  # 触发追踪
         del self._inner[key]
 
     def __contains__(self, key: object) -> bool:
@@ -153,12 +163,15 @@ class Cmpt_Dict[ItemT, K, V](Component[ItemT]):
         return self._inner.items()
 
     def update(self, *args, **kwargs) -> None:
+        self._inner = self._inner  # 触发追踪
         self._inner.update(*args, **kwargs)
 
     def clear(self) -> None:
+        self._inner = self._inner  # 触发追踪
         self._inner.clear()
 
     def pop(self, key: K, default=...):
+        self._inner = self._inner  # 触发追踪
         if default is ...:
             return self._inner.pop(key)
         return self._inner.pop(key, default)
