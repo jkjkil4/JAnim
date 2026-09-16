@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import numbers
-from functools import lru_cache
+from functools import cache
 from typing import Iterable, Self
 
 import numpy as np
@@ -13,7 +13,7 @@ from janim.utils.data import AlignedData, Array
 from janim.utils.iterables import resize_with_interpolation
 
 
-@lru_cache()
+@cache
 def _get_array(radius: float) -> Array:
     return Array.create(np.full(1, radius))
 
@@ -111,11 +111,11 @@ class Cmpt_Radius[ItemT](Component[ItemT]):
         """
         将半径数据重置为默认值
         """
-        self.set(np.full(1, self.default_radius))
+        self.set(_get_array(self.default_radius).data, root_only=True)
         return self
 
     def reverse(self) -> Self:
-        self.set(self.get()[::-1])
+        self.set(self.get()[::-1], root_only=True)
         return self
 
     def resize(self, length: int) -> Self:

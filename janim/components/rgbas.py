@@ -210,7 +210,7 @@ class Cmpt_Rgbas[ItemT](Component[ItemT]):
         """
         将颜色数据重置为默认值
         """
-        self.set(DEFAULT_RGBAS_ARRAY.data)
+        self.set_rgbas(DEFAULT_RGBAS_ARRAY.data)
         return self
 
     def reverse(self) -> Self:
@@ -218,7 +218,7 @@ class Cmpt_Rgbas[ItemT](Component[ItemT]):
         return self
 
     def resize(self, length: int) -> Self:
-        self.set(resize_with_interpolation(self.get(), max(1, length)), root_only=True)
+        self.set_rgbas(resize_with_interpolation(self.get(), max(1, length)))
         return self
 
     def count(self) -> int:
