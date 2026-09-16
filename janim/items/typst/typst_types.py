@@ -301,6 +301,11 @@ class DynamicTypst(TypstText):
 
     例：
 
+    .. janim-example:: DynamicValueExample
+        :extract-from-test:
+        :media: _static/videos/DynamicValueExample.mp4
+        :url: https://janim.readthedocs.io/zh-cn/latest/janim/items/svg/typst_types.html#dynamicvalueexample
+
     .. janim-example:: DynamicTypstExample
         :extract-from-test:
         :media: _static/videos/DynamicTypstExample.mp4

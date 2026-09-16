@@ -94,6 +94,27 @@ class RectClipExample(Timeline):
         self.forward()
 
 
+class DynamicValueExample(Timeline):
+    def construct(self) -> None:
+        dtyp = DynamicTypst(
+            """
+            #import "@preview/oxifmt:1.0.0": strfmt
+            #let fmt(value) = strfmt("{0:.2}", float(value))
+
+            $
+                x &= #fmt(x) \\
+                y &= #fmt(y)
+            $
+            """,
+            {'x': 0, 'y': 0},
+            post=lambda typ: typ.points.scale(2).to_border(LEFT)
+        ).show()
+
+        self.forward()
+        self.play(dtyp.anim_update(x=9, y=5))
+        self.forward()
+
+
 class DynamicTypstExample(Timeline):
     def construct(self) -> None:
         dtyp = DynamicTypst(
