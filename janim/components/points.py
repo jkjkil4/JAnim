@@ -253,7 +253,7 @@ class Cmpt_Points[ItemT](Component[ItemT]):
                     continue
                 box_datas.append(box.data)
 
-        return self.BoundingBox(np.vstack(box_datas) if box_datas else [])
+        return self.BoundingBox(np.concatenate(box_datas, axis=0) if box_datas else [])
 
     @property
     @set.self_refresh
