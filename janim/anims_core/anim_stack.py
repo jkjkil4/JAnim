@@ -49,16 +49,9 @@ class AnimStack:
         # 不采取 chunks 的优化，直接存储所有进入 add 方法的动画对象的列表
         self._applied_animations: list[StackableAnimation] = []
 
-        # 初始化，给 _chunks 填入一个默认 Display，这里也会初始化 _active_display 和 _latest_display 变量
-        #
-        # _active_display 变量的含义即为先前记录的物件状态，也可以理解为最后一个与 item 同步状态的 Display 对象
-        # Timeline 会在每次前进时间时 detect_change 检查物件，便可使用 _active_display 作为比较基础
-        #
-        # _latest_display 变量与 _active_display 的区别是，_latest_display 表示最后一个构造的 Display 对象
-        # Display 会同时被设置到 _active_display 和 _latest_display 上
-        # 而 DelayedDisplay 在构造时就会调用 set_latest_display，但是到了对应的全局时刻才会尝试设置到 _prev_display 上
+        # 调用 self.display(0) 进行初始化，给 _chunks 填入一个默认 Display，也初始化 _latest_display 表示最后一个构造的 Display 对象
+        item.take_modified()
         self._latest_display: DisplayType | None = None
-        item._take_cmpts_modified()
         initial_display = self.display(0)
         # 让初始 Display 的 _order 均为 0
         initial_display._order = 0
@@ -76,18 +69,14 @@ class AnimStack:
         anim = Display(self.item.store(), at=global_t, duration=FOREVER)
         anim.finalize()
         self.add(anim, _is_display=True)
-        self.set_active_display(anim, _take_modified=_take_modified)
+
+        # 对于来自 detect_change 的调用，由于在那边已经调用过了 take_modified，所以该条件会被设为 False 以跳过
+        # 而对于来自其它地方的调用，会通过 take_modified 重置 item 的 modified 标记，这是必要的，避免又因为 detect_change 产生一个非预期的 display
+        if _take_modified:
+            self.item.take_modified()
+
         self.set_latest_display(anim)
         return anim
-
-    def set_active_display(self, anim: DisplayType, *, _take_modified=True) -> None:
-        """
-        将 ``anim`` 作为 “ ``detect_change`` 的比较基准”
-        """
-        # TODO: remove active_display
-        if _take_modified:
-            self.item._take_cmpts_modified()
-        self._active_display = anim
 
     def set_latest_display(self, anim: DisplayType) -> None:
         """
@@ -107,19 +96,12 @@ class AnimStack:
 
     def detect_change(self, global_t: float, *, force: bool = False) -> None:
         """
-        若物件相比 ``self._prev_display`` 所记录的状态可能有变化，
-        则将新的状态记录到 ``global_t`` 之后的堆栈中
+        若物件被修改，则将新的状态记录到 ``global_t`` 之后的堆栈中
         """
         # 此处 or 的顺序关系到代码逻辑
         # 因为在 force 的时候，需要在记录 Display 的同时也取出 modified 状态
-        if self.take_modified() or force:
+        if self.item.take_modified() or force:
             self.display(global_t, _take_modified=False)
-
-    def take_modified(self) -> bool:
-        """
-        检查物件相比 ``self._prev_display`` 所记录的状态，是否可能发生变化
-        """
-        return self.item.take_modified(self._active_display.data_orig)
 
     def add(self, anim: StackableAnimation, *, _is_display: bool = False) -> None:
         """

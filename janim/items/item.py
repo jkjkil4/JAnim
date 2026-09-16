@@ -588,12 +588,17 @@ class Item(ItemRelation['Item'], CmptsStorage, metaclass=_ItemMeta):
     def get_children(self) -> list[Item]:
         return self._stored.children if self._stored else self.children
 
-    def take_modified(self, other: Self) -> bool:
-        if self._take_cmpts_modified():
-            return True
+    def take_modified(self) -> bool:
+        flag = False
 
-        # 这个判断不太符合 take_modified 的语义，不过先凑合着用
-        return self.get_children() != other.get_children()
+        if self._relation_modified:
+            flag = True
+            self._relation_modified = False
+
+        if self._take_cmpts_modified():
+            flag = True
+
+        return flag
 
     def current(self, *, as_time: float | None = None, root_only=False) -> Self:
         """

@@ -50,16 +50,19 @@ class ItemRelation[RelT: 'ItemRelation']:
 
     def _init_rel_handle(self) -> None:
         self._rel_handle = _items_relation_registry.create(self)
+        self._relation_modified: bool = True
         self._parents_changed_hooks: list[Callable] = []
         self._children_changed_hooks: list[Callable] = []
 
     # 在 registry 内部被调用
     def _parents_changed(self) -> None:
+        self._relation_modified = True
         for hook in self._parents_changed_hooks:
             hook()
 
     # 在 registry 内部被调用
     def _children_changed(self) -> None:
+        self._relation_modified = True
         for hook in self._children_changed_hooks:
             hook()
 

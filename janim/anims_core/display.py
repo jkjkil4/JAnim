@@ -82,8 +82,6 @@ class DelayedDisplay(DisplayType):
 
         self.data = self._func(DelayedDisplayParams(is_latest_display))
         self.data_orig = self.data.store()
-        if is_latest_display:
-            self._stack.set_active_display(self)
 
     def __getattr__(self, name: str) -> None:
         # 在一些极特殊情况下，DelayedDisplay 在 _delayed_setup 前就会被访问 data/data_orig
@@ -117,4 +115,5 @@ class DoBecomeAtEnd(DelayedDisplay):
             data = stack.compute(self.t_range.at, True)
         if params.is_latest_display:
             self._item.restore(data)
+            self._item.take_modified()
         return data
