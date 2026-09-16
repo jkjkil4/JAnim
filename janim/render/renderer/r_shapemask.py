@@ -75,7 +75,7 @@ class ShapeMaskRenderer(Renderer):
         # 同步数据
         vitem = self._mask_vitem
         vitem.points.become(item.points)  # .points.become 中已有对重复设置的优化
-        vitem._fix_in_frame = item._fix_in_frame
+        vitem._item_attrs.fix_in_frame = item._item_attrs.fix_in_frame
 
         # 渲染
         self._mask_vitem_renderer.render(vitem)

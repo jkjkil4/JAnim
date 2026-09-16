@@ -5,6 +5,7 @@ from typing import Iterable, Literal, Self
 
 import numpy as np
 
+from janim.components.core.attrs import ComponentAttrs
 from janim.components.core.component import CmptGroup, CmptInfo
 from janim.components.impls.glow import Cmpt_Glow
 from janim.components.impls.points import Cmpt_Points
@@ -13,7 +14,7 @@ from janim.components.impls.rgbas import Cmpt_Rgbas, apart_alpha
 from janim.components.impls.vpoints import Cmpt_VPoints
 from janim.constants import PI
 from janim.items.group import Group
-from janim.items.item import Item, mockable
+from janim.items.item import Item, ItemAttributes, mockable
 from janim.items.points import Points
 from janim.locale import get_translator
 from janim.render.renderer.r_vitem import VItemRenderer
@@ -28,10 +29,18 @@ _ = get_translator('janim.items.vitem')
 DEFAULT_STROKE_RADIUS = 0.02
 
 
+class VItemAttributes(ItemAttributes):
+    _attrs = ComponentAttrs()
+    stroke_background = _attrs.bool()
+    shade_in_3d = _attrs.bool()
+
+
 class VItem(Points):
     """
     贝塞尔曲线拼接物件，具体说明请参考 :class:`~.Cmpt_VPoints` 的文档
     """
+
+    _item_attrs = CmptInfo(VItemAttributes)
 
     points = CmptInfo(Cmpt_VPoints[Self])
     radius = CmptInfo(Cmpt_Radius[Self], DEFAULT_STROKE_RADIUS)
@@ -45,8 +54,6 @@ class VItem(Points):
     renderer_cls = VItemRenderer
 
     def __init__(self, *points: Vect, fill_alpha=0.0, **kwargs):
-        self.stroke_background = False
-        self._shade_in_3d = False
         super().__init__(*points, fill_alpha=fill_alpha, **kwargs)
 
     def init_connect(self) -> None:
@@ -85,7 +92,7 @@ class VItem(Points):
             fill_alpha = alpha
 
         if stroke_background is not None:
-            self.stroke_background = stroke_background
+            self._item_attrs.stroke_background = stroke_background
         if stroke_radius is not None:
             self.radius.set(stroke_radius, root_only=True)
         self.stroke.set(stroke_color, stroke_alpha, root_only=True)
@@ -93,21 +100,9 @@ class VItem(Points):
         self.glow.set(glow_color, glow_alpha, glow_size, root_only=True)
 
         if shade_in_3d is not None:
-            self._shade_in_3d = shade_in_3d
+            self._item_attrs.shade_in_3d = shade_in_3d
 
         return super().apply_style(**kwargs)
-
-    def take_modified(self, other: Self) -> bool:  # type: ignore
-        flag = False
-
-        # 这个判断不太符合 take_modified 的语义，不过先凑合着用
-        if self._shade_in_3d != other._shade_in_3d:
-            flag = True
-
-        if super().take_modified(other):
-            flag = True
-
-        return flag
 
     @mockable
     def set_stroke_background(self: Item, flag: bool = True, *, root_only: bool = False) -> Self:
@@ -118,8 +113,12 @@ class VItem(Points):
         """
         for item in self.walk_self_and_descendants(root_only):
             if isinstance(item, VItem):
-                item.stroke_background = flag
+                item._item_attrs.stroke_background = flag
         return self
+
+    @property
+    def stroke_background(self) -> bool:
+        return self._item_attrs.stroke_background
 
     @mockable
     def shade_in_3d(self: Item, flag: bool = True, *, root_only: bool = False) -> Self:
@@ -130,7 +129,7 @@ class VItem(Points):
         """
         for item in self.walk_self_and_descendants(root_only):
             if isinstance(item, VItem):
-                item._shade_in_3d = flag
+                item._item_attrs.shade_in_3d = flag
         return self
 
     def add_tip(

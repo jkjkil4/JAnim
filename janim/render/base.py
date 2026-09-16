@@ -64,7 +64,7 @@ class Renderer:
 
     @staticmethod
     def update_fix_in_frame(uniform: gl.FastUniform, item: Item) -> None:
-        uniform.write_bool(item._fix_in_frame)
+        uniform.write_bool(item._item_attrs.fix_in_frame)
 
     @staticmethod
     def update_dynamic_buffer_data(
@@ -119,7 +119,7 @@ class Renderer:
     @staticmethod
     @contextmanager
     def depth_test_if_enabled(ctx: mgl.Context, item: Item):
-        if item._depth_test:
+        if item._item_attrs.depth_test:
             ctx.enable(mgl.DEPTH_TEST)
             try:
                 yield

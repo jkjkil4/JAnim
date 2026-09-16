@@ -78,7 +78,7 @@ class VItemCurveRenderer(Renderer):
         def get(render_data: RenderData, item: VItem) -> VItemCurveRenderer.RenderAttrs:
             return VItemCurveRenderer.RenderAttrs(
                 render_data.camera_info,
-                item._fix_in_frame,
+                item._item_attrs.fix_in_frame,
                 item.points._points,
                 item.radius._radii,
                 item.stroke._rgbas,

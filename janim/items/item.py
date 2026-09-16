@@ -9,6 +9,7 @@ from typing import TYPE_CHECKING, Any, Callable, Iterable, Literal, Self, Suppor
 
 import numpy as np
 
+from janim.components.core.attrs import ComponentAttrs
 from janim.components.core.backend import BindState, CmptField, CmptsStorage
 from janim.components.core.component import CmptInfo, Component
 from janim.components.impls.depth import Cmpt_Depth
@@ -97,6 +98,13 @@ def mockable(func):
     return func
 
 
+class ItemAttributes(Component):
+    _attrs = ComponentAttrs()
+    fix_in_frame = _attrs.bool()
+    depth_test = _attrs.bool()
+    distance_sort = _attrs.bool()
+
+
 class Item(ItemRelation['Item'], CmptsStorage, metaclass=_ItemMeta):
     """
     :class:`~.Item` 是物件的基类
@@ -113,6 +121,8 @@ class Item(ItemRelation['Item'], CmptsStorage, metaclass=_ItemMeta):
     """
 
     renderer_cls = Renderer
+
+    _item_attrs = CmptInfo(ItemAttributes)
 
     depth = CmptInfo(Cmpt_Depth[Self], 0)
 
@@ -144,10 +154,6 @@ class Item(ItemRelation['Item'], CmptsStorage, metaclass=_ItemMeta):
 
         self._astype_wrapper: Item._AsTypeWrapper | None = None
         self._astype_mock_cmpt: dict[str, Component] = {}
-
-        self._fix_in_frame = False
-        self._depth_test = False
-        self._distance_sort = False
 
         self.reset_additional_states()
 
@@ -586,12 +592,8 @@ class Item(ItemRelation['Item'], CmptsStorage, metaclass=_ItemMeta):
         if self._take_cmpts_modified():
             return True
 
-        # 这三个判断不太符合 take_modified 的语义，不过先凑合着用
-        return (
-            self.get_children() != other.get_children()
-            or self._depth_test != other._depth_test
-            or self._distance_sort != self._distance_sort
-        )
+        # 这个判断不太符合 take_modified 的语义，不过先凑合着用
+        return self.get_children() != other.get_children()
 
     def current(self, *, as_time: float | None = None, root_only=False) -> Self:
         """
@@ -792,12 +794,12 @@ class Item(ItemRelation['Item'], CmptsStorage, metaclass=_ItemMeta):
         :param root_only: 是否只对根物件开启/禁用深度测试，默认否，即对所有后代物件也应用
         """
         for item in self.walk_self_and_descendants(root_only):
-            item._fix_in_frame = on
+            item._item_attrs.fix_in_frame = on
         return self
 
     def is_fix_in_frame(self) -> bool:
         """检查该物件是否被固定在屏幕上"""
-        return self._fix_in_frame
+        return self._item_attrs.fix_in_frame
 
     def apply_depth_test(self, on: bool = True, *, root_only: bool = False) -> Self:
         """
@@ -811,12 +813,12 @@ class Item(ItemRelation['Item'], CmptsStorage, metaclass=_ItemMeta):
         :param root_only: 是否只对根物件开启/禁用深度测试，默认否，即对所有后代物件也应用
         """
         for item in self.walk_self_and_descendants(root_only):
-            item._depth_test = on
+            item._item_attrs.depth_test = on
         return self
 
     def is_applied_depth_test(self) -> bool:
         """检查该物件是否开启了深度测试"""
-        return self._depth_test
+        return self._item_attrs.depth_test
 
     def apply_distance_sort(self, on: bool = True, *, root_only: bool = False) -> Self:
         """
@@ -830,12 +832,12 @@ class Item(ItemRelation['Item'], CmptsStorage, metaclass=_ItemMeta):
         :param root_only: 是否只对根物件开启/禁用深度测试，默认否，即对所有后代物件也应用
         """
         for item in self.walk_self_and_descendants(root_only):
-            item._distance_sort = on
+            item._item_attrs.distance_sort = on
         return self
 
     def is_applied_distance_sort(self) -> bool:
         """检查该物件是否开启了距离排序"""
-        return self._distance_sort
+        return self._item_attrs.distance_sort
 
     # endregion
 

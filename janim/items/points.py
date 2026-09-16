@@ -43,7 +43,7 @@ class Points(Item):
     @property
     def distance_sort_reference_point(self) -> np.ndarray | None:
         """"""
-        if not self._distance_sort:
+        if not self._item_attrs.distance_sort:
             return None
         return self.points.self_box.center
 

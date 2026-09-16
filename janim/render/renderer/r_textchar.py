@@ -79,7 +79,7 @@ class PixelRenderInfo:
         camera_info = Renderer.data_ctx.get().camera_info
         mark_points = item.mark.get_points()[:3]
 
-        if item._fix_in_frame:
+        if item._item_attrs.fix_in_frame:
             mapped = camera_info.map_fixed_in_frame_points(mark_points)
         else:
             mapped = camera_info.map_points(mark_points)

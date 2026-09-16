@@ -90,7 +90,7 @@ class VItemPlaneRenderer(Renderer):
         def get(render_data: RenderData, item: VItem) -> VItemPlaneRenderer.RenderAttrs:
             return VItemPlaneRenderer.RenderAttrs(
                 render_data.camera_info,
-                item._fix_in_frame,
+                item._item_attrs.fix_in_frame,
                 item.points._points,
                 item.radius._radii,
                 item.stroke._rgbas,
@@ -194,7 +194,7 @@ class VItemPlaneRenderer(Renderer):
             )
             self.attrs.fill = new_attrs.fill
 
-        if item._depth_test or item._shade_in_3d:
+        if item._item_attrs.depth_test or item._item_attrs.shade_in_3d:
             if new_attrs.points is not self.attrs.points:
                 self.unit_normal = item.points.unit_normal
 
@@ -266,7 +266,7 @@ class VItemPlaneRenderer(Renderer):
             )
             self.attrs.fill = new_attrs.fill
 
-        if item._depth_test or item._shade_in_3d:
+        if item._item_attrs.depth_test or item._item_attrs.shade_in_3d:
             if new_attrs.points is not self.attrs.points:
                 self.unit_normal = item.points.unit_normal
 
@@ -281,15 +281,15 @@ class VItemPlaneRenderer(Renderer):
 
     def render_common(self, item: VItem, render_data: RenderData, new_attrs: RenderAttrs) -> None:
         self.update_fix_in_frame(self.u_fix, item)
-        self.u_stroke_background.write_bool(item.stroke_background)
+        self.u_stroke_background.write_bool(item._item_attrs.stroke_background)
         self.u_is_fill_transparent.write_bool(self.fill_transparent)
         self.u_glow_color.write_bytes(item.glow._rgba.tobytes())
         self.u_glow_size.write_float(new_attrs.glow_size)
 
-        self.u_DEPTH_TEST.write_bool(item._depth_test)
-        self.u_SHADE_IN_3D.write_bool(item._shade_in_3d)
+        self.u_DEPTH_TEST.write_bool(item._item_attrs.depth_test)
+        self.u_SHADE_IN_3D.write_bool(item._item_attrs.shade_in_3d)
 
-        if item._depth_test or item._shade_in_3d:
+        if item._item_attrs.depth_test or item._item_attrs.shade_in_3d:
             self.u_unit_normal.write_bytes(self.unit_normal.tobytes())
             self.u_start_point.write_bytes(new_attrs.points[0].tobytes())
 

@@ -81,11 +81,20 @@ class AnimStack:
         return anim
 
     def set_active_display(self, anim: DisplayType, *, _take_modified=True) -> None:
+        """
+        将 ``anim`` 作为 “ ``detect_change`` 的比较基准”
+        """
+        # TODO: remove active_display
         if _take_modified:
             self.item._take_cmpts_modified()
         self._active_display = anim
 
     def set_latest_display(self, anim: DisplayType) -> None:
+        """
+        将 ``anim`` 作为 “最后创建的 ``DisplayType`` 动画”
+
+        含义：会根据情况给前一个 ``lastest_display`` 标记 ``_be_covered``
+        """
         if self._latest_display is None:
             self._latest_display = anim
         else:
