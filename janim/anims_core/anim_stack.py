@@ -56,7 +56,7 @@ class AnimStack:
         #
         # _latest_display 变量与 _active_display 的区别是，_latest_display 表示最后一个构造的 Display 对象
         # Display 会同时被设置到 _active_display 和 _latest_display 上
-        # 而 DelayedDisplay 在构造时就会调用 set_latest_display，但是到了对应的全局时刻才会尝试设置到 _prev_display 上
+        # 而 DelayedDisplay 在构造时就会调用 set_latest_display，但是到了对应的全局时刻才会尝试设置到 _active_display 上
         self._latest_display: DisplayType | None = None
         initial_display = self.display(0)
         # 让初始 Display 的 _order 均为 0
@@ -92,7 +92,7 @@ class AnimStack:
 
     def detect_change(self, global_t: float) -> None:
         """
-        若物件相比 ``self._prev_display`` 所记录的状态可能有变化，
+        若物件相比 ``self._active_display`` 所记录的状态可能有变化，
         则将新的状态记录到 ``global_t`` 之后的堆栈中
         """
         if self.may_changed():
@@ -100,7 +100,7 @@ class AnimStack:
 
     def may_changed(self) -> bool:
         """
-        检查物件相比 ``self._prev_display`` 所记录的状态，是否可能发生变化
+        检查物件相比 ``self._active_display`` 所记录的状态，是否可能发生变化
         """
         return not self._active_display.data_orig.not_changed(self.item)
 
