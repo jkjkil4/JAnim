@@ -195,7 +195,7 @@ class Cmpt_Rgbas[ItemT](Component[ItemT]):
         return self
 
     def resize(self, length: int) -> Self:
-        self.set(resize_with_interpolation(self.get(), max(1, length)))
+        self.set(resize_with_interpolation(self.get(), max(1, length)), root_only=True)
         return self
 
     def count(self) -> int:
