@@ -600,6 +600,7 @@ class Item(ItemRelation['Item'], metaclass=_ItemMeta):
     def not_changed(self, other: Self) -> bool:
         if (
             self.get_children() != other.get_children()
+            or self._fix_in_frame != other._fix_in_frame
             or self._depth_test != other._depth_test
             or self._distance_sort != other._distance_sort
         ):

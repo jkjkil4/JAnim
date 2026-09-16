@@ -98,7 +98,10 @@ class VItem(Points):
         return super().apply_style(**kwargs)
 
     def not_changed(self, other: Self) -> bool:
-        if self._shade_in_3d != other._shade_in_3d:
+        if (
+            self.stroke_background != other.stroke_background
+            or self._shade_in_3d != other._shade_in_3d
+        ):
             return False
         return super().not_changed(other)
 
