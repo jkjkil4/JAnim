@@ -45,7 +45,7 @@ class Cmpt_Radius[ItemT](Component[ItemT]):
     ) -> None:
         if id(cmpt1._radii) != id(cmpt2._radii) or id(cmpt1._radii) != id(self._radii):
             if id(cmpt1._radii) == id(cmpt2._radii):
-                self._radii = owned(cmpt1._radii.copy())
+                self._radii = owned(cmpt1._radii)
             else:
                 self.set(interpolate(cmpt1.get(), cmpt2.get(), alpha), root_only=True)
 
@@ -86,11 +86,8 @@ class Cmpt_Radius[ItemT](Component[ItemT]):
             radius = [radius]  # type: ignore
         radius = owned(np.asarray(radius, dtype=np.float32))
 
-        self._radii = radius
-
-        if not root_only:
-            for cmpt in self.walk_same_cmpt_of_descendants():
-                cmpt._radii = radius
+        for cmpt in self.walk_same_cmpt_of_self_and_descendants(root_only=root_only):
+            cmpt._radii = radius
 
         return self
 
@@ -98,15 +95,15 @@ class Cmpt_Radius[ItemT](Component[ItemT]):
         """
         将半径数据重置为默认值
         """
-        self.set(np.full(1, self.default_radius))
+        self._radii = _get_array(self.default_radius)
         return self
 
     def reverse(self) -> Self:
-        self.set(self.get()[::-1])
+        self._radii = self.get()[::-1]
         return self
 
     def resize(self, length: int) -> Self:
-        self.set(resize_with_interpolation(self.get(), max(1, length)), root_only=True)
+        self._radii = resize_with_interpolation(self.get(), max(1, length))
         return self
 
     def count(self) -> int:
