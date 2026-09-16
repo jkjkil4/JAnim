@@ -48,9 +48,14 @@
             '';
           };
 
-        extraPackages = with pkgs; [ ffmpeg ];
+        extraPackages = with pkgs; [ 
+          ffmpeg
+          # doc
+          gettext
+        ];
 
-        guiExtraLibs = with pkgs; [
+        extraLibs = with pkgs; [
+          # gui
           zstd
           fontconfig
           libxkbcommon
@@ -58,6 +63,7 @@
           wayland
           freetype
           portaudio
+          libxcb
         ];
 
       in {
@@ -70,11 +76,10 @@
           gui =
             mkPyuvShell {
               inherit extraPackages;
-              extraLibs = guiExtraLibs;
+              extraLibs = extraLibs;
               shellHook = "uv sync --extra gui";
             };
           default = gui;
         };
       });
 }
-
