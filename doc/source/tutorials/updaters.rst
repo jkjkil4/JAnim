@@ -46,18 +46,10 @@ Updater 的使用
 它的作用是基于起始时刻的状态，以时间为参数对物件进行修改：
 
 .. janim-example:: BasicDataUpdater
+    :extract-from-test:
+    :no-construct:
     :media: _static/tutorial/BasicDataUpdater.mp4
     :hide_name:
-
-    square = Square()
-
-    self.play(
-        DataUpdater(
-            square,
-            lambda data, p: data.points.rotate(p.alpha * PI)
-        ),
-        duration=3
-    )
 
 我们在前面提到，Updater 最核心的功能就是“通过代码控制物件每一帧的状态”，这里的 ``data.points.rotate(p.alpha * PI)`` 就是我们控制物件的代码，起到了让正方形顶点逆时针旋转的效果。
 
@@ -101,19 +93,10 @@ Updater 的使用
 而如果我们需要将一个物件组作为整体进行这样的动画，就需要用到 :class:`~.GroupUpdater` 了：
 
 .. janim-example:: BasicGroupUpdater
+    :extract-from-test:
+    :no-construct:
     :media: _static/tutorial/BasicGroupUpdater.mp4
     :hide_name:
-
-    squares = Square() * 2  # 与 squares = Group(Square(), Square()) 基本等价
-    squares.points.arrange()
-
-    self.play(
-        GroupUpdater(
-            squares,
-            lambda group, p: group.points.rotate(p.alpha * PI)
-        ),
-        duration=3
-    )
 
 可以发现，:class:`~.GroupUpdater` 的使用与 :class:`~.DataUpdater` 基本一致，区别只在于我们将 ``squares`` 作为一个整体进行旋转。
 
@@ -138,32 +121,10 @@ Updater 的使用
 前者是对各个后代物件独立应用旋转效果，后者是作为一个整体应用旋转效果。
 
 .. janim-example:: DataUpdaterVsGroupUpdater
+    :extract-from-test:
+    :no-construct:
     :media: _static/tutorial/DataUpdaterVsGroupUpdater.mp4
     :hide_name:
-
-    squares1 = Square() * 2
-    squares1.points.arrange()
-
-    squares2 = squares1.copy()
-
-    group = Group(
-        Text('DataUpdater'), Text('GroupUpdater'),
-        squares1, squares2
-    ).show()
-    group.points.arrange_in_grid(buff=LARGE_BUFF)
-
-    self.play(
-        DataUpdater(
-            squares1,
-            lambda data, p: data.points.rotate(p.alpha * PI),
-            root_only=False
-        ),
-        GroupUpdater(
-            squares2,
-            lambda data, p: data.points.rotate(p.alpha * PI)
-        ),
-        duration=4
-    )
 
 .. tip::
 
@@ -250,31 +211,10 @@ JAnim 的各个 ``Updater`` 并非孤立，不仅可以使用 ``.current()`` 获
 我们可以使用 ``duration=FOREVER`` 来创建一个持续进行的 ``Updater`` ，例如：
 
 .. janim-example:: ForeverUpdater
+    :extract-from-test:
+    :no-construct:
     :media: _static/tutorial/ForeverUpdater.mp4
     :hide_name:
-
-    square = Square().show()
-
-    self.forward()
-
-    self.prepare(
-        DataUpdater(
-            square,
-            lambda data, p: data.points.rotate(p.elapsed * 60 * DEGREES),
-            duration=FOREVER
-        )
-    )
-
-    self.prepare(
-        DataUpdater(
-            square,
-            lambda data, p: data.points.set_x(2 * math.sin(p.alpha * TAU)),
-            become_at_end=False
-        ),
-        at=2,
-    )
-
-    self.forward(5)
 
 使用 StepUpdater 与 GroupStepUpdater
 ---------------------------------------------------
@@ -291,22 +231,10 @@ JAnim 的各个 ``Updater`` 并非孤立，不仅可以使用 ``.current()`` 获
 以下是一个最简单（但也是最没必要使用 :class:`~.StepUpdater` ）的一个示例：
 
 .. janim-example:: SimplestStepUpdater
+    :extract-from-test:
+    :no-construct:
     :media: _static/tutorial/SimplestStepUpdater.mp4
     :hide_name:
-
-    NumberPlane(faded_line_ratio=1).show()
-
-    circle = Circle(0.5, color=YELLOW, fill_alpha=0.6).show()
-
-    self.forward()
-    self.play(
-        StepUpdater(
-            circle,
-            lambda data, p: data.points.shift(RIGHT / 50)
-        ),
-        duration=2
-    )
-    self.forward()
 
 在这个示例中，:class:`~.StepUpdater` 的函数会每次将圆形向右移动 1/50 个单位，
 由于 :class:`~.StepUpdater` 默认情况下每秒钟会执行 50 次，经过两秒则时间则总共向右移动了 2 个单位。
@@ -333,6 +261,7 @@ JAnim 的各个 ``Updater`` 并非孤立，不仅可以使用 ``.current()`` 获
 
 .. janim-example:: UpdatingPhysicalBlock
     :extract-from-test-mark:
+    :no-construct:
     :media: _static/tutorial/UpdatingPhysicalBlock.mp4
     :hide_name:
 
@@ -589,26 +518,10 @@ JAnim 的各个 ``Updater`` 并非孤立，不仅可以使用 ``.current()`` 获
 :class:`~.ItemUpdater` 的使用场景是在动画过程中动态创建物件以显示，例如数值持续变化的文字：
 
 .. janim-example:: DynamicNumber
+    :extract-from-test:
+    :no-construct:
     :media: _static/tutorial/DynamicNumber.mp4
     :hide_name:
-
-    tr = ValueTracker(0)
-    txt = Text('0.00', font_size=40).show()
-
-    self.forward()
-    self.play(
-        Succession(
-            tr.anim.set_value(4),
-            tr.anim.set_value(2.5),
-            tr.anim.set_value(10)
-        ),
-        ItemUpdater(
-            txt,
-            lambda p: Text(f'{tr.current().get_value():.2f}', font_size=40),
-            duration=3
-        )
-    )
-    self.forward()
 
 .. janim-example:: UpdaterExample
     :extract-from-example:

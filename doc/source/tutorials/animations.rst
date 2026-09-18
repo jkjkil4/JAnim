@@ -44,35 +44,11 @@
 以下是对上面的动画参数进行一些调整后的示例：
 
 .. janim-example:: BasicAnimationExampleWithParams
+    :extract-from-test:
+    :no-construct:
     :media: _static/tutorial/BasicAnimationExampleWithParams.mp4
     :hide_name:
 
-    circle = Circle()
-    star = Star()
-
-    self.forward()
-
-    self.play(Create(circle, duration=0.8, rate_func=rush_from))
-    self.play(
-        circle.anim(rate_func=ease_out_bounce)
-            .points.shift(LEFT * 3).scale(1.5)
-    )
-    self.play(
-        circle.anim(duration=2)
-            .set(color=RED, fill_alpha=0.5)
-    )
-
-    self.play(SpinInFromNothing(star, duration=0.6, rate_func=rush_from))
-    self.play(
-        star.anim(rate_func=ease_out_bounce)
-            .points.shift(RIGHT * 3).scale(1.5)
-    )
-    self.play(
-        star.anim(duration=2)
-            .set(color=YELLOW, fill_alpha=0.5)
-    )
-
-    self.forward()
 
 1. 将 :class:`~.Create` 和 :class:`~.SpinInFromNothing` 的缓动函数改为了 :func:`~.rush_from`，并缩短它们进入的时长
 
@@ -94,26 +70,12 @@
 首先是最基础的， 放在同一个 ``self.play`` 函数中的动画会一起执行，你也可以给动画分别传入 ``at`` 参数来控制它们的开始时机：
 
 .. janim-example:: GroupedAnimation
+    :extract-from-test:
+    :no-construct:
     :media: _static/tutorial/GroupedAnimation.mp4
     :hide_name:
     :ref: :class:`~.FadeIn` :meth:`~.Item.anim` :meth:`~.Cmpt_Points.to_border`
 
-    circle = Circle()
-    circle.points.to_border(UL, buff=LARGE_BUFF)
-
-    square = Square()
-    square.points.to_border(DL, buff=LARGE_BUFF)
-
-    self.play(
-        FadeIn(circle),
-        FadeIn(square)
-    )
-    self.play(
-        circle.anim
-            .points.to_border(UR, buff=LARGE_BUFF),
-        square.anim(at=0.2)
-            .points.to_border(DR, buff=LARGE_BUFF)
-    )
 
 你还可以使用 :class:`~.AnimGroup` :class:`~.Succession` 等方式来组合多个动画。
 
@@ -124,35 +86,11 @@
 - :class:`~.Succession` 则会将多个动画串联起来，前一个动画结束后再开始下一个动画
 
 .. janim-example:: ComplexGroupedAnimation
+    :extract-from-test:
+    :no-construct:
     :media: _static/tutorial/ComplexGroupedAnimation.mp4
     :hide_name:
     :ref: :class:`~.Succession` :class:`~.AnimGroup` :class:`~.ShowCreationThenDestructionAround`
-
-    circle = Circle()
-    circle.points.to_border(UL, buff=LARGE_BUFF)
-
-    square = Square()
-    square.points.to_border(DL, buff=LARGE_BUFF)
-
-    self.play(
-        FadeIn(circle),
-        FadeIn(square)
-    )
-    self.play(
-        Succession(
-            circle.anim(rate_func=rush_into)
-                .points.to_border(UR, buff=LARGE_BUFF),
-            square.anim(rate_func=rush_from)
-                .points.to_border(DR, buff=LARGE_BUFF),
-            duration=3
-        ),
-        AnimGroup(
-            ShowCreationThenDestructionAround(circle),
-            ShowCreationThenDestructionAround(square),
-            at=0.5,
-            duration=2
-        )
-    )
 
 .. image:: /_static/tutorial/ComplexGroupedAnimation_TimelineScreenshot.png
 
@@ -175,21 +113,11 @@
 因此，JAnim 提供了一个实用的功能——预先设置动画，但不在时间上前进，可以调用 ``self.prepare`` 做到：
 
 .. janim-example:: PrepareAnimation
+    :extract-from-test:
+    :no-construct:
     :media: _static/tutorial/PrepareAnimation.mp4
     :hide_name:
     :ref: :meth:`~.Timeline.prepare` :class:`~.Text` :class:`~.CircleIndicate`
-
-    txt = Text('JAnim')
-    txt.points.shift(LEFT * 2)
-
-    self.prepare(
-        CircleIndicate(txt),
-        at=1,
-        duration=2
-    )
-
-    self.play(txt.anim.points.shift(RIGHT * 4).scale(2), duration=2)
-    self.play(txt.anim.points.shift(LEFT * 4).scale(0.5), duration=2)
 
 .. image:: /_static/tutorial/PrepareAnimation_TimelineScreenshot.png
 
@@ -210,40 +138,11 @@
 - 使用 :class:`~.Do` 在动画序列的特定时间执行指定操作
 
 .. janim-example:: CompositionControl
+    :extract-from-test:
+    :no-construct:
     :media: _static/tutorial/CompositionControl.mp4
     :hide_name:
     :ref: :class:`~.MoveAlongPath` :class:`~.Follow`
-
-    dot = Dot(RIGHT * 2).show()
-    txt = Text('just a dot').show()
-    txt.points.next_to(dot, DOWN)
-
-    star = Star(start_angle=0, outer_radius=2)
-    star.points.shift(dot.points.box.center - star.points.get()[0])
-
-    txt1 = Text('Rotating...', font_size=60, color=GREY_D, depth=1)
-    txt2 = Text('Drawing a star!', font_size=60, color=GREY_D, depth=1)
-
-    self.forward()
-    self.play(
-        Aligned(
-            Succession(
-                Do(txt1.show),
-                Rotate(dot, TAU, about_point=ORIGIN, duration=2),
-                Do(txt1.hide),
-                Wait(0.5),
-                Do(txt2.show),
-                AnimGroup(
-                    MoveAlongPath(dot, star),
-                    Create(star, auto_close_path=False),
-                    duration=2
-                ),
-                Do(txt2.hide)
-            ),
-            Follow(txt, dot, DOWN)
-        )
-    )
-    self.forward()
 
 .. image:: /_static/tutorial/CompositionControl_TimelineScreenshot.png
 

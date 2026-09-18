@@ -60,10 +60,19 @@ class ShowPartial(DataUpdater):
 
             lower, higher = bound_func(p)
 
+            # 对于 lag_ratio != 0，会出现“只有中间一部分物件在进行动画”的情形
+            # 比如说对于 Create 动画而言，有三部分的物件：“已经完成动画” “正在进行动画” “还没开始动画”
+            # 对于 Create 中的第一种，即 lower <= 0 and higher >= 1，则不需要进行 become partial，可以直接跳过处理，以优化性能
+            # 对于 Create 中的第三种，即 lower == higher，则可以缓存这个固定的结果，之后的每次都复用缓存，以优化性能
             if self.lag_ratio != 0:
+                # 对于这个物件，目前会被完整显示，不需要 become partial，可以直接跳过处理
                 if lower <= 0 and higher >= 1:
                     return
 
+                # 对于这个物件，目前完全不会被显示
+                # 只有设置了 zero_bound 才会进行该缓存
+                # 因为比如对于 Create 动画而言，我们明确知道 zero_bound=0 是唯一的 lower == higher 位置
+                # 而对于 ShowPassingFlash 动画而言，lower == higher 位置并不是唯一的，所以我们没有给它指定 zero_bound
                 if lower == higher and zero_bound is not None:
                     if p.extra_data is None:
                         cmpt.pointwise_become_partial(cmpt, zero_bound, zero_bound)

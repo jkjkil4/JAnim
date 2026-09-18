@@ -143,6 +143,7 @@ def get_examples_of_test_paths() -> tuple[str, ...]:
     return (
         os.path.join(root, 'test', 'examples', 'examples_of_animations.py'),
         os.path.join(root, 'test', 'examples', 'examples_of_others.py'),
+        os.path.join(root, 'test', 'examples', 'examples_of_misc.py'),
     )
 
 
