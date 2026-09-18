@@ -328,7 +328,9 @@ msgstr "With this checkbox enabled, the editor will attempt to convert pasted HT
 
 #: ../../source/tutorials/use_gui.rst:206
 msgid "注：该功能一开始仅为作者为了将从 VS Code 复制出来的富文本代码转换为 JAnim 格式而做的功能，并未仔细维护和完善"
-msgstr "Note: This feature was originally created solely by the author to convert rich text code copied from VS Code into the JAnim format and has not been thoroughly maintained or refined."
+msgstr ""
+"Note: This feature was originally created solely by the author to convert rich text code copied from VS Code into the "
+"JAnim format and has not been thoroughly maintained or refined."
 
 #: ../../source/tutorials/use_gui.rst:210
 msgid "可以在命令行使用 ``janim tool richtext`` 单独打开该界面"

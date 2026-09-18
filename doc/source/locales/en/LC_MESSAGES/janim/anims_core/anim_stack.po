@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: JAnim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-09 01:08+0800\n"
+"POT-Creation-Date: 2026-09-18 10:49+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -64,14 +64,14 @@ msgid "将物件当前的状态记录到动画堆栈中，将 ``global_t`` 之�
 msgstr "Records the current state of the item into the animation stack, making it display this state after ``global_t``"
 
 #: janim.anims_core.anim_stack.AnimStack.detect_change:1 of
-msgid "若物件相比 ``self._prev_display`` 所记录的状态可能有变化， 则将新的状态记录到 ``global_t`` 之后的堆栈中"
+msgid "若物件相比 ``self._active_display`` 所记录的状态可能有变化， 则将新的状态记录到 ``global_t`` 之后的堆栈中"
 msgstr ""
-"If the item may have changed compared to the state recorded by ``self._prev_display``, records the new state into the "
-"stack after ``global_t``"
+"If the item may have changed from the state recorded by ``self._active_display``, record the new state in the stack "
+"after ``global_t``"
 
 #: janim.anims_core.anim_stack.AnimStack.may_changed:1 of
-msgid "检查物件相比 ``self._prev_display`` 所记录的状态，是否可能发生变化"
-msgstr "Checks whether the item may have changed compared to the state recorded by ``self._prev_display``"
+msgid "检查物件相比 ``self._active_display`` 所记录的状态，是否可能发生变化"
+msgstr "Check whether the item may have changed from the state recorded by ``self._active_display``"
 
 #: janim.anims_core.anim_stack.AnimStack.add:1 of
 msgid "向堆栈添加一个 :class:`~.StackableAnimation` 对象"

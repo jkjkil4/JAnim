@@ -13,13 +13,17 @@
 准备环境
 -------------------
 
+.. important::
+
+    JAnim 项目使用 `uv <https://github.com/astral-sh/uv>`_ 管理依赖，在本节中我们均使用基于 ``uv`` 的命令行
+
 假设你已经 fork 仓库并 clone 到了本地。
 
 使用 ``cd JAnim`` 进入项目文件夹，然后安装必要的环境：
 
 .. code-block:: bash
 
-    pip install -e .[gui,doc]
+    uv sync --extra gui
 
 另外，需要确保已安装 `GNU gettext <https://www.gnu.org/software/gettext/>`_
 
@@ -44,7 +48,7 @@
 
 .. code-block:: bash
 
-    python scripts update-po docs <language>
+    uv run scripts update-po docs <language>
 
 其中 ``<language>`` 是你要翻译的语言代码（例如 ``en`` 表示英文，``ja`` 表示日语等）。
 
@@ -60,6 +64,10 @@
 
 完成后，你可以在相应的 ``doc/source/locales/<language>/LC_MESSAGES/`` 目录中找到所有的 ``.po`` 文件。
 
+.. hint::
+
+    在一些情况下，你可能需要删除 ``doc/build/gettext`` 文件夹以清理过时的翻译原文
+
 检查翻译完成情况
 -------------------
 
@@ -67,7 +75,7 @@
 
 .. code-block:: bash
 
-    python scripts check-po docs <language>
+    uv run scripts check-po docs <language>
 
 该命令会扫描所有 ``.po`` 文件，并列出仍有未翻译（untranslated）或模糊（fuzzy）条目的文件。
 这有助于你了解还需要进行哪些翻译工作。
@@ -91,7 +99,7 @@
 
 .. code-block:: bash
 
-    python scripts format-po docs <language>
+    uv run scripts format-po docs <language>
 
 这个命令会统一 ``.po`` 的换行与排版策略，减少因为格式差异导致的无关 diff。
 
@@ -104,7 +112,7 @@
 
 .. code-block:: bash
 
-    python scripts build-docs <language>
+    uv run scripts build-docs <language>
 
 其中 ``<language>`` 是你要构建的语言代码（例如 ``en`` 表示英文）。
 
@@ -114,7 +122,7 @@
 
 .. code-block:: bash
 
-    python scripts build-docs <language> -o
+    uv run scripts build-docs <language> -o
 
 .. note::
 
@@ -129,7 +137,7 @@
 
    .. code-block:: bash
 
-       python scripts update-po docs en
+    uv run scripts update-po docs en
 
 2. 编辑 ``doc/source/locales/en/LC_MESSAGES/`` 中的 ``.po`` 文件进行翻译
 
@@ -137,18 +145,18 @@
 
    .. code-block:: bash
 
-       python scripts check-po docs en
+    uv run scripts check-po docs en
 
 4. 在本地构建并打开文档预览：
 
    .. code-block:: bash
 
-       python scripts build-docs en -o
+    uv run scripts build-docs en -o
 
 5. 提交前统一 ``.po`` 文件格式（可选）：
 
    .. code-block:: bash
 
-       python scripts format-po docs en
+    uv run scripts format-po docs en
 
 6. 提交更改并创建 Pull Request
