@@ -51,11 +51,13 @@ def _apply_styles(
     stroke_thickness: float,
     scale: float,
 ) -> None:
-    if fill_rgba is not None:
+    if fill_rgba is None:
+        item.fill.set_rgbas([[1.0, 1.0, 1.0, 0.0]])
+    else:
         item.fill.set_rgbas([fill_rgba])
 
     if stroke_rgba is None:
-        item.stroke.set(alpha=0)
+        item.stroke.set_rgbas([[1.0, 1.0, 1.0, 0.0]])
     else:
         item.stroke.set_rgbas([stroke_rgba])
 
@@ -68,7 +70,7 @@ class TypTextGlyph(VItem):
         info: TextGlyphInfo = element.info
         points: np.ndarray = args.shared[info.points_id]
 
-        super().__init__()
+        super().__init__(fill_alpha=None)
         self.points.set(_transform_points(points, element.transform, scale, args.offset))
         _apply_styles(self, info.fill_rgba, info.stroke_rgba, info.stroke_thickness, scale)
 
@@ -92,7 +94,7 @@ class TypShape(VItem):
     def __init__(self, element: Element, scale: float, args: ParseArgs):
         info: ShapeInfo = element.info
 
-        super().__init__()
+        super().__init__(fill_alpha=None)
         self.points.set(_transform_points(info.points, element.transform, scale, args.offset))
         _apply_styles(self, info.fill_rgba, info.stroke_rgba, info.stroke_thickness, scale)
 
