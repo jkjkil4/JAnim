@@ -616,6 +616,9 @@ gui = [
 ]
 
 [package.dev-dependencies]
+bench = [
+    { name = "asv" },
+]
 dev = [
     { name = "asv" },
     { name = "coverage" },
@@ -629,6 +632,23 @@ dev = [
     { name = "sphinx-copybutton" },
     { name = "sphinx-intl" },
     { name = "sphinx-tabs" },
+    { name = "viztracer" },
+]
+doc = [
+    { name = "docutils" },
+    { name = "furo" },
+    { name = "jinja2" },
+    { name = "sphinx" },
+    { name = "sphinx-copybutton" },
+    { name = "sphinx-intl" },
+    { name = "sphinx-tabs" },
+]
+test = [
+    { name = "coverage" },
+    { name = "opencv-python" },
+]
+tools = [
+    { name = "flit" },
     { name = "viztracer" },
 ]
 
@@ -660,6 +680,7 @@ requires-dist = [
 provides-extras = ["gui"]
 
 [package.metadata.requires-dev]
+bench = [{ name = "asv" }]
 dev = [
     { name = "asv" },
     { name = "coverage" },
@@ -673,6 +694,23 @@ dev = [
     { name = "sphinx-copybutton" },
     { name = "sphinx-intl" },
     { name = "sphinx-tabs" },
+    { name = "viztracer", specifier = ">=1.1.1" },
+]
+doc = [
+    { name = "docutils" },
+    { name = "furo" },
+    { name = "jinja2" },
+    { name = "sphinx", specifier = "<9.0.0" },
+    { name = "sphinx-copybutton" },
+    { name = "sphinx-intl" },
+    { name = "sphinx-tabs" },
+]
+test = [
+    { name = "coverage" },
+    { name = "opencv-python" },
+]
+tools = [
+    { name = "flit" },
     { name = "viztracer", specifier = ">=1.1.1" },
 ]
 
