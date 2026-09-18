@@ -192,7 +192,8 @@ class Timeline(PausePointsMixin, AudiosAndSubtitlesMixin, DebugMixin, TimelineCo
             # 构建期间使用 Continous，构建之后切换到 Discrete，因为
             # - 构建期间产生的大多为长生命周期的 registry nodes，使用 Continous
             # - 构建之后会由于 ItemUpdater / StepUpdater 等因素导致大量的临时 registry nodes，使用 Discrete 便于回收 dead nodes
-            _items_relation_registry.cut_nodes_chunk(CutType.Continous)
+            if parent_ctx is None:  # 如果是 sub-timeline 则跳过该操作
+                _items_relation_registry.cut_nodes_chunk(CutType.Continous)
 
             try:
                 yield build_ctx
@@ -200,7 +201,9 @@ class Timeline(PausePointsMixin, AudiosAndSubtitlesMixin, DebugMixin, TimelineCo
                 self._build_frame = None  # 设置为 None 避免长期持有 frame 对象
                 if gc_enabled:
                     gc.enable()
-                _items_relation_registry.cut_nodes_chunk(CutType.Discrete)
+
+                if parent_ctx is None:
+                    _items_relation_registry.cut_nodes_chunk(CutType.Discrete)
 
     # region config
 
