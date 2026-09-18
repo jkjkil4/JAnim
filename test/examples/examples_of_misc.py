@@ -446,11 +446,88 @@ class TestVItemRendering(Timeline):
         self.forward(0.5)
 
 
-class Test_Misc(_BatchOfTests):
+class Indication(Timeline):
+    def construct(self) -> None:
+        x = TypstMath('x y z w').show()
+        x.points.shift(UL * 2)
+        self.play(
+            CircleIndicate(x),
+            CircleIndicate(x, scale=2, circle_kwargs={'stroke_color': RED, 'alpha': 0.6})
+        )
+        x.hide()
+
+        items1 = Star(color=GOLD, fill_alpha=0.75) * 3
+        items1.points.arrange_by_offset(RIGHT * 2).shift(UP * 2)
+
+        items2 = items1.copy().fix_in_frame()
+        items2.points.shift(DOWN * 4)
+
+        anims = [FocusOn, CircleIndicate, ShowPassingFlashAround]
+
+        self.play(Write(items1), Write(items2), duration=0.5)
+        self.camera.save_state()
+        self.camera.points.set(orientation=quat(0.43, -0.1, -0.21, 0.87))
+        self.play(
+            *[
+                AnimGroup(anim(item1), anim(item2))
+                for item1, item2, anim in zip(items1, items2, anims)
+            ]
+        )
+
+        self.hide(items1, items2)
+        self.camera.load_state()
+
+        item = Star()
+        item.points.shift(DL)
+        item.add(Star())
+        item.set(fill_alpha=0.5)
+
+        items1 = item * 2
+        items1.points.arrange_by_offset(RIGHT * 4).shift(UP * 2)
+
+        items2 = items1.copy()
+        items2.points.shift(DOWN * 4)
+
+        self.play(Write(items1), Write(items2), duration=0.5)
+        self.play(
+            ApplyWave(items1[0]), WiggleOutThenIn(items1[1]),
+            ApplyWave(items2[0], root_only=True), WiggleOutThenIn(items2[1], root_only=True),
+        )
+
+
+class Creation(Timeline):
+    def construct(self) -> None:
+        squares = Square() * 9
+        squares.points.arrange_in_grid()
+
+        self.play(
+            Create(squares, lag_ratio=0.5),
+            duration=1.5
+        )
+        self.play(
+            ShowPassingFlash(squares, time_width=0.5, lag_ratio=0.5),
+            duration=1.5
+        )
+    
+        squares.set(fill_alpha=0.5)
+        self.camera.points.scale(0.5)
+        self.play(
+            Write(squares, stroke_radius=0.1),
+            duration=1.5
+        )
+        self.play(
+            Write(squares, stroke_radius=0.1, scale_with_camera=True),
+            duration=1.5
+        )
+
+
+class Test_Misc1(_BatchOfTests):
     lst = [
         DoDetectChange,
         BPMExample,
         TestPixelText,
         TestVItemRendering,
+        Indication,
+        Creation,
     ]
-    alpha = 0.7
+    alpha = 0.6
