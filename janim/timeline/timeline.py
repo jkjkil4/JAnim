@@ -11,6 +11,7 @@ import types
 from abc import abstractmethod
 from bisect import bisect
 from contextlib import contextmanager
+from dataclasses import dataclass
 from contextvars import ContextVar
 from typing import Literal, Self, overload
 
@@ -91,7 +92,10 @@ class Timeline(PausePointsMixin, AudiosAndSubtitlesMixin, DebugMixin, TimelineCo
         """
         构建动画并返回
         """
-        with self._build_context(inspect.currentframe()) as indent_str:
+        with self._build_context(inspect.currentframe(), quiet) as build_ctx:
+            indent_str = build_ctx.indent_str
+            quiet = build_ctx.quiet
+
             self.hide_subtitles = hide_subtitles
             self.show_debug_notice = show_debug_notice
 
@@ -148,25 +152,35 @@ class Timeline(PausePointsMixin, AudiosAndSubtitlesMixin, DebugMixin, TimelineCo
                     name=self.__class__.__name__,
                     elapsed=elapsed,
                 )
-                log.info(indent_str + msg)
+                log.info(build_ctx.indent_str + msg)
 
         return built
 
-    build_indent_ctx: ContextVar[int] = ContextVar('Timeline.build_indent_ctx')
+    @dataclass(frozen=True, slots=True)
+    class _BuildContext:
+        indent: int
+        indent_str: str
+        quiet: bool
+
+    _build_ctx: ContextVar[_BuildContext] = ContextVar('Timeline.build_ctx')
 
     @contextmanager
-    def _build_context(self, build_frame: types.FrameType | None):
+    def _build_context(self, build_frame: types.FrameType | None, quiet: bool):
         """
         进入 ``build`` 有关的上下文环境，并进行一些相关的配置
 
-        会 ``yield indent_str``，作为 ``as indent_str`` 使用
+        会 ``yield _BuildContext``，作为 ``as build_ctx`` 使用
         """
-        indent = self.build_indent_ctx.get(-2) + 2
-        indent_str = '  ' * indent
+        parent_ctx = self._build_ctx.get(None)
+
+        indent = 0 if parent_ctx is None else parent_ctx.indent + 2
+        quiet = quiet if parent_ctx is None else quiet or parent_ctx.quiet
+
+        build_ctx = self._BuildContext(indent=indent, indent_str='  ' * indent, quiet=quiet)
         with (
             self.config_context(),
             ContextSetter(self.ctx_var, self),
-            ContextSetter(self.build_indent_ctx, indent),
+            ContextSetter(self._build_ctx, build_ctx),
         ):
             # 记录 frame 对象，用于 TimelineCore._extract_lineno_in_construct
             self._build_frame = build_frame
@@ -181,7 +195,7 @@ class Timeline(PausePointsMixin, AudiosAndSubtitlesMixin, DebugMixin, TimelineCo
             _items_relation_registry.cut_nodes_chunk(CutType.Continous)
 
             try:
-                yield indent_str
+                yield build_ctx
             finally:
                 self._build_frame = None  # 设置为 None 避免长期持有 frame 对象
                 if gc_enabled:
