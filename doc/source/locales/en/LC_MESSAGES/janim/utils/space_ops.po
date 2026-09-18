@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  JAnim\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 1980-01-01 00:00+0000\n"
+"POT-Creation-Date: 2026-09-18 10:49+0800\n"
 "PO-Revision-Date: 2024-06-03 09:56+0800\n"
 "Last-Translator: \n"
 "Language: en\n"
@@ -30,6 +30,10 @@ msgstr "This portion of code is from 3b1b/manim <https://github.com/3b1b/manim>_
 #: janim.utils.space_ops.cross:1 of
 msgid "计算 ``v1`` 与 ``v2`` 的叉乘"
 msgstr "Compute the cross product of ``v1`` and ``v2``."
+
+#: janim.utils.space_ops.cross:3 of
+msgid "``v1`` 和 ``v2`` 可以是单个向量，也可以是一组向量"
+msgstr "``v1`` and ``v2`` can each be a single vector or an array of vectors"
 
 #: janim.utils.space_ops.get_norm:1 of
 msgid "计算向量 ``vect`` 的长度"
@@ -159,6 +163,22 @@ msgstr "Returns polar coordinate theta when vector is project on xy plane"
 #: janim.utils.space_ops.angle_between_vectors:1 of
 msgid "Returns the angle between two 3D vectors. This angle will always be btw 0 and pi"
 msgstr "Returns the angle between two 3D vectors. This angle will always be btw 0 and pi"
+
+#: janim.utils.space_ops.get_unit_normal:1 of
+msgid "计算由两个向量定义的平面的单位法向量"
+msgstr "Compute the unit normal vector of the plane defined by two vectors"
+
+#: janim.utils.space_ops.get_unit_normal:3 of
+msgid "对于不平行的向量，返回它们叉乘的单位向量"
+msgstr "For non-parallel vectors, return the unit vector of their cross product"
+
+#: janim.utils.space_ops.get_unit_normal:4 of
+msgid "对于平行的向量，在该方向与正 z 轴所在的平面内构造法向量"
+msgstr "For parallel vectors, construct a normal vector in the plane containing their direction and the positive z-axis"
+
+#: janim.utils.space_ops.get_unit_normal:5 of
+msgid "当该方向过于接近 z 轴时，使用 ``DOWN`` 作为稳定的回退结果"
+msgstr "When that direction is too close to the z-axis, use ``DOWN`` as a stable fallback"
 
 #: janim.utils.space_ops.line_intersection:1 of
 msgid "return intersection point of two lines, each defined with a pair of vectors determining the end points"

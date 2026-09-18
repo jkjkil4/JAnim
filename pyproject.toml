@@ -15,7 +15,7 @@ classifiers = [
 ]
 requires-python = ">=3.12"
 dependencies = [
-    "janim-backend==5.0.6",
+    "janim-backend==5.0.7",
     "typst4janim==0.15.3",
     "attrs",
     "numpy",
@@ -46,7 +46,12 @@ gui = [
 [dependency-groups]
 dev = [
     "sounddevice>=0.5.5",
-    # doc
+    { include-group = "doc" },
+    { include-group = "test" },
+    { include-group = "bench" },
+    { include-group = "tools" },
+]
+doc = [
     "sphinx<9.0.0",
     "sphinx-copybutton",
     "sphinx-tabs",
@@ -54,12 +59,15 @@ dev = [
     "jinja2",
     "docutils",
     "sphinx-intl",
-    # test
+]
+test = [
     "opencv-python",
     "coverage",
-    # bench
+]
+bench = [
     "asv",
-    # tools
+]
+tools = [
     "flit",
     "viztracer>=1.1.1",
 ]

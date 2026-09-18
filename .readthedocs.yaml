@@ -33,8 +33,9 @@ sphinx:
 #    - requirements: doc/source/requirements.txt
 python:
   install:
-    - method: pip
-      path: .
-      extra_requirements:
+    - method: uv
+      command: sync
+      extras:
         - gui
+      groups:
         - doc

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  JAnim\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-02-25 11:45+0800\n"
+"POT-Creation-Date: 2026-09-18 10:49+0800\n"
 "PO-Revision-Date: 2025-11-22 21:39+0800\n"
 "Last-Translator: \n"
 "Language: en\n"
@@ -38,82 +38,86 @@ msgstr ""
 msgid "准备环境"
 msgstr "Prepare the Environment"
 
-#: ../../source/development/contribute-to-prog-i18n.rst:16
+#: ../../source/development/contribute-to-prog-i18n.rst:18
+msgid "JAnim 项目使用 `uv <https://github.com/astral-sh/uv>`_ 管理依赖，在本节中我们均使用基于 ``uv`` 的命令行"
+msgstr "The JAnim project uses `uv <https://github.com/astral-sh/uv>`_ to manage dependencies, so all commands in this section use ``uv``."
+
+#: ../../source/development/contribute-to-prog-i18n.rst:20
 msgid "假设你已经 fork 仓库并 clone 到了本地。"
 msgstr "Assume you have already forked the repository and cloned it locally."
 
-#: ../../source/development/contribute-to-prog-i18n.rst:18
+#: ../../source/development/contribute-to-prog-i18n.rst:22
 msgid "使用 ``cd JAnim`` 进入项目文件夹，然后安装必要的环境："
 msgstr "Use ``cd JAnim`` to enter the project folder, then install the required environment:"
 
-#: ../../source/development/contribute-to-prog-i18n.rst:20
-msgid "pip install -e ."
-msgstr "pip install -e ."
-
 #: ../../source/development/contribute-to-prog-i18n.rst:24
+msgid "uv sync"
+msgstr "uv sync"
+
+#: ../../source/development/contribute-to-prog-i18n.rst:28
 msgid "另外，需要确保已安装 `GNU gettext <https://www.gnu.org/software/gettext/>`_"
 msgstr "Additionally, make sure `GNU gettext <https://www.gnu.org/software/gettext/>`_ is installed."
 
-#: ../../source/development/contribute-to-prog-i18n.rst:27
+#: ../../source/development/contribute-to-prog-i18n.rst:31
 msgid "工作流程"
 msgstr "Workflow"
 
-#: ../../source/development/contribute-to-prog-i18n.rst:29
+#: ../../source/development/contribute-to-prog-i18n.rst:33
 msgid "程序国际化的工作流程分为以下步骤："
 msgstr "The workflow for program internationalization consists of the following steps:"
 
-#: ../../source/development/contribute-to-prog-i18n.rst:31
+#: ../../source/development/contribute-to-prog-i18n.rst:35
 msgid "**更新翻译文件**：提取最新的可翻译文本并生成/更新 .po 文件"
 msgstr "**Update translation files**: extract the latest translatable text and generate/update .po files"
 
-#: ../../source/development/contribute-to-prog-i18n.rst:32
+#: ../../source/development/contribute-to-prog-i18n.rst:36
 msgid "**进行翻译**：编辑 .po 文件进行翻译（必要时可用 ``format-po`` 统一格式）"
 msgstr "**Translate**: edit .po files to perform translation (use ``format-po`` to normalize formatting when needed)"
 
-#: ../../source/development/contribute-to-prog-i18n.rst:33
+#: ../../source/development/contribute-to-prog-i18n.rst:37
 msgid "**编译翻译文件**：将 .po 文件编译为 .mo 文件（仅在必要时）"
 msgstr "**Compile translation files**: compile .po files into .mo files (only when necessary)"
 
-#: ../../source/development/contribute-to-prog-i18n.rst:38
+#: ../../source/development/contribute-to-prog-i18n.rst:42
 msgid "更新翻译文件"
 msgstr "Update Translation Files"
 
-#: ../../source/development/contribute-to-prog-i18n.rst:40
+#: ../../source/development/contribute-to-prog-i18n.rst:44
 msgid "要创建新语言的翻译或更新现有翻译文件，使用以下命令："
 msgstr "To create translations for a new language or update existing translation files, use the following command:"
 
-#: ../../source/development/contribute-to-prog-i18n.rst:42
-msgid "python scripts update-po code <language>"
-msgstr "python scripts update-po code <language>"
-
 #: ../../source/development/contribute-to-prog-i18n.rst:46
+msgid "uv run scripts update-po code <language>"
+msgstr "uv run scripts update-po code <language>"
+
+#: ../../source/development/contribute-to-prog-i18n.rst:50
 msgid "其中 ``<language>`` 是你要翻译的语言代码（例如 ``ja`` 表示日语， ``de`` 表示德语等）。"
 msgstr ""
 "Here ``<language>`` is the language code you want to translate to (for example, ``ja`` for Japanese, ``de`` for German, "
 "etc.)."
 
-#: ../../source/development/contribute-to-prog-i18n.rst:50
+#: ../../source/development/contribute-to-prog-i18n.rst:54
 msgid "``en`` 是程序文本的源语言，因此不需要为其创建翻译文件。"
 msgstr "``en`` is the source language of program text, so translation files do not need to be created for it."
 
-#: ../../source/development/contribute-to-prog-i18n.rst:58
+#: ../../source/development/contribute-to-prog-i18n.rst:62
 msgid "完成后，你可以在相应的 ``janim/locale/<language>/LC_MESSAGES/`` 目录中找到所有的 ``.po`` 文件。"
 msgstr ""
 "After completion, you can find all ``.po`` files in the corresponding ``janim/locale/<language>/LC_MESSAGES/`` directory."
 
-#: ../../source/development/contribute-to-prog-i18n.rst:61
+#: ../../source/development/contribute-to-prog-i18n.rst:65
 msgid "检查翻译完成情况"
 msgstr "Check Translation Progress"
 
-#: ../../source/development/contribute-to-prog-i18n.rst:63
+#: ../../source/development/contribute-to-prog-i18n.rst:67
 msgid "在开始翻译或翻译过程中，你可以检查翻译的完成情况："
 msgstr "Before starting translation or during the process, you can check translation progress:"
 
-#: ../../source/development/contribute-to-prog-i18n.rst:65
-msgid "python scripts check-po code <language>"
-msgstr "python scripts check-po code <language>"
-
 #: ../../source/development/contribute-to-prog-i18n.rst:69
+msgid "uv run scripts check-po code <language>"
+msgstr "uv run scripts check-po code <language>"
+
+#: ../../source/development/contribute-to-prog-i18n.rst:73
 msgid ""
 "该命令会扫描所有 ``.po`` 文件，并列出仍有未翻译（untranslated）或模糊（fuzzy）条目的文件。 这有助于你了解还需要进行哪些翻"
 "译工作。"
@@ -121,45 +125,45 @@ msgstr ""
 "This command scans all ``.po`` files and lists files that still contain untranslated or fuzzy entries. This helps you "
 "understand what translation work remains to be done."
 
-#: ../../source/development/contribute-to-prog-i18n.rst:72
+#: ../../source/development/contribute-to-prog-i18n.rst:76
 msgid "并且一些软件，比如 Poedit 的编目管理器也可以列出文件夹中的 ``.po`` 文件的翻译完成情况。"
 msgstr "Some tools, such as Poedit's Catalog Manager, can also list translation progress for ``.po`` files in a folder."
 
-#: ../../source/development/contribute-to-prog-i18n.rst:75
+#: ../../source/development/contribute-to-prog-i18n.rst:79
 msgid "进行程序翻译"
 msgstr "Translating the Program"
 
-#: ../../source/development/contribute-to-prog-i18n.rst:77
+#: ../../source/development/contribute-to-prog-i18n.rst:81
 msgid "现在 ``janim/locale/<language>/LC_MESSAGES/`` 中已经存放了翻译文件（后缀 ``.po``）。"
 msgstr "Translation files (with the ``.po`` extension) are now stored in ``janim/locale/<language>/LC_MESSAGES/``."
 
-#: ../../source/development/contribute-to-prog-i18n.rst:79
+#: ../../source/development/contribute-to-prog-i18n.rst:83
 msgid "可以使用 Poedit 软件来编辑 ``.po`` 文件，或者用任何文本编辑器直接编辑。"
 msgstr "You can use Poedit to edit ``.po`` files, or edit them directly with any text editor."
 
-#: ../../source/development/contribute-to-prog-i18n.rst:81
+#: ../../source/development/contribute-to-prog-i18n.rst:85
 msgid "如果你是手动编辑了较多 ``.po`` 文件，建议在提交前执行一次："
 msgstr "If you manually edited many ``.po`` files, it is recommended to run this once before submitting:"
 
-#: ../../source/development/contribute-to-prog-i18n.rst:83
-msgid "python scripts format-po code <language>"
-msgstr "python scripts format-po code <language>"
-
 #: ../../source/development/contribute-to-prog-i18n.rst:87
+msgid "uv run scripts format-po code <language>"
+msgstr "uv run scripts format-po code <language>"
+
+#: ../../source/development/contribute-to-prog-i18n.rst:91
 msgid "这个命令会统一 ``.po`` 的换行与排版策略，减少因为格式差异导致的无关 diff。"
 msgstr ""
 "This command standardizes line wrapping and formatting in ``.po`` files, reducing unrelated diffs caused by formatting "
 "differences."
 
-#: ../../source/development/contribute-to-prog-i18n.rst:89
+#: ../../source/development/contribute-to-prog-i18n.rst:93
 msgid "完成翻译后，提交你的更改，创建合并到 ``main`` 分支的 Pull Request。"
 msgstr "After translating, submit your changes and create a Pull Request to merge into the ``main`` branch."
 
-#: ../../source/development/contribute-to-prog-i18n.rst:92
+#: ../../source/development/contribute-to-prog-i18n.rst:96
 msgid "编译翻译文件（仅在必要时）"
 msgstr "Compile Translation Files (Only When Necessary)"
 
-#: ../../source/development/contribute-to-prog-i18n.rst:94
+#: ../../source/development/contribute-to-prog-i18n.rst:98
 msgid ""
 "如果你是使用 Poedit 等软件编辑，多半会在编辑后自动编译产生 ``.mo`` 文件。 但如果你是直接使用文本编辑器编辑的 ``.po`` 文"
 "件，需要手动编译 ``.po`` 文件为 ``.mo`` 文件，可以使用："
@@ -167,59 +171,59 @@ msgstr ""
 "If you edit with tools such as Poedit, ``.mo`` files are usually compiled automatically after editing. But if you edit "
 "``.po`` files directly with a text editor, you need to compile ``.po`` files into ``.mo`` files manually. You can use:"
 
-#: ../../source/development/contribute-to-prog-i18n.rst:97
-msgid "python scripts compile-po code <language>"
-msgstr "python scripts compile-po code <language>"
+#: ../../source/development/contribute-to-prog-i18n.rst:101
+msgid "uv run scripts compile-po code <language>"
+msgstr "uv run scripts compile-po code <language>"
 
-#: ../../source/development/contribute-to-prog-i18n.rst:102
+#: ../../source/development/contribute-to-prog-i18n.rst:106
 msgid "完整操作示例"
 msgstr "Complete Example"
 
-#: ../../source/development/contribute-to-prog-i18n.rst:104
+#: ../../source/development/contribute-to-prog-i18n.rst:108
 msgid "假设你要为程序提供日语翻译，完整流程如下："
 msgstr "Suppose you want to provide a Japanese translation for the program. The complete workflow is as follows:"
 
-#: ../../source/development/contribute-to-prog-i18n.rst:106
+#: ../../source/development/contribute-to-prog-i18n.rst:110
 msgid "更新翻译文件："
 msgstr "Update translation files:"
 
-#: ../../source/development/contribute-to-prog-i18n.rst:108
-msgid "python scripts update-po code ja"
-msgstr "python scripts update-po code ja"
-
 #: ../../source/development/contribute-to-prog-i18n.rst:112
+msgid "uv run scripts update-po code ja"
+msgstr "uv run scripts update-po code ja"
+
+#: ../../source/development/contribute-to-prog-i18n.rst:116
 msgid "编辑 ``janim/locale/ja/LC_MESSAGES/`` 中的 ``.po`` 文件"
 msgstr "Edit ``.po`` files under ``janim/locale/ja/LC_MESSAGES/``"
 
-#: ../../source/development/contribute-to-prog-i18n.rst:114
+#: ../../source/development/contribute-to-prog-i18n.rst:118
 msgid "检查翻译完成情况（可选）："
 msgstr "Check translation progress (optional):"
 
-#: ../../source/development/contribute-to-prog-i18n.rst:116
-msgid "python scripts check-po code ja"
-msgstr "python scripts check-po code ja"
-
 #: ../../source/development/contribute-to-prog-i18n.rst:120
+msgid "uv run scripts check-po code ja"
+msgstr "uv run scripts check-po code ja"
+
+#: ../../source/development/contribute-to-prog-i18n.rst:124
 msgid "编译翻译文件（仅在必要时）："
 msgstr "Compile translation files (only when necessary):"
 
-#: ../../source/development/contribute-to-prog-i18n.rst:122
-msgid "python scripts compile-po code ja"
-msgstr "python scripts compile-po code ja"
-
 #: ../../source/development/contribute-to-prog-i18n.rst:126
+msgid "uv run scripts compile-po code ja"
+msgstr "uv run scripts compile-po code ja"
+
+#: ../../source/development/contribute-to-prog-i18n.rst:130
 msgid "在本地测试翻译效果（运行程序）"
 msgstr "Test the translation locally (run the program)"
 
-#: ../../source/development/contribute-to-prog-i18n.rst:128
+#: ../../source/development/contribute-to-prog-i18n.rst:132
 msgid "提交前统一 ``.po`` 文件格式（可选）："
 msgstr "(Optional) Normalize ``.po`` file formatting before submitting:"
 
-#: ../../source/development/contribute-to-prog-i18n.rst:130
-msgid "python scripts format-po code ja"
-msgstr "python scripts format-po code ja"
-
 #: ../../source/development/contribute-to-prog-i18n.rst:134
+msgid "uv run scripts format-po code ja"
+msgstr "uv run scripts format-po code ja"
+
+#: ../../source/development/contribute-to-prog-i18n.rst:138
 msgid "提交更改并创建 Pull Request"
 msgstr "Submit your changes and open a Pull Request"
 
@@ -276,3 +280,6 @@ msgstr "Submit your changes and open a Pull Request"
 
 #~ msgid "这里推荐使用 Poedit 软件，打开目录内的 po 文件，进行翻译"
 #~ msgstr "It is recommended to use Poedit software to open the PO files in the directory and proceed with the translation."
+
+#~ msgid "pip install -e ."
+#~ msgstr "pip install -e ."
