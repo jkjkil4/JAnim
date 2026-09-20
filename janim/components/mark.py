@@ -124,7 +124,7 @@ class Cmpt_Mark[ItemT](Component[ItemT]):
         用于同步与 ``points`` 的变换，已经在 :class:`~.MarkedItem` 里绑定了同步，不需要手动设置和调用
         """
         if about_point is None:
-            self.set_points(func(self.get_points()))
+            self.set_points(func(self.get_points().copy()))
         else:
             self.set_points(func(self.get_points() - about_point) + about_point)
         return self
