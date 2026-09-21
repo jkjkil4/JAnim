@@ -159,10 +159,15 @@ class Arrow(Line):
         *,
         buff: LineBuff = 0.25,
         max_length_to_tip_length_ratio: float | None = 0.3,
-        tip_kwargs: dict = {},
+        tip_kwargs: dict | None = None,
         depth: float | None = None,
         **kwargs,
     ) -> None:
+        if tip_kwargs is None:
+            tip_kwargs = {}
+        else:
+            tip_kwargs = tip_kwargs.copy()
+
         if 'center_anchor' not in tip_kwargs:
             tip_kwargs['center_anchor'] = CenterAnchor.Center
         if depth is not None and 'depth' not in tip_kwargs:
