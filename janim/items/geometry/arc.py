@@ -255,7 +255,7 @@ class Dot(Circle):
 
     def __init__(
         self,
-        point: np.ndarray = ORIGIN,
+        point: Vect = ORIGIN,
         radius: float = DEFAULT_DOT_RADIUS,
         *,
         stroke_alpha: Alpha | AlphaArray | None = 0,
