@@ -158,7 +158,7 @@ class Margins:
         return self.buff if self.is_float else self.buff[3]
 
 
-MarginsType = Margins | float | tuple[float]
+MarginsType = Margins | float | tuple[float, ...]
 
 
 # fmt: off
