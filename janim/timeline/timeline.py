@@ -13,7 +13,7 @@ from bisect import bisect
 from contextlib import contextmanager
 from dataclasses import dataclass
 from contextvars import ContextVar
-from typing import Literal, Self, overload
+from typing import Literal, NoReturn, Self, overload
 
 import moderngl as mgl
 import numpy as np
@@ -311,7 +311,7 @@ class Timeline(PausePointsMixin, AudiosAndSubtitlesMixin, DebugMixin, TimelineCo
             super().__init__()
             self.command = command
 
-    def __call__(self, command_text: str) -> None:
+    def __call__(self, command_text: str) -> NoReturn:
         command = Timeline.GuiCommand(
             self.current_time,
             command_text,
