@@ -54,6 +54,14 @@ class AlphaEffect(SimpleFrameEffect):
     def dynamic_uniforms(self):
         return dict(alpha=self.alpha._value)
 
+    def apply_style(self, alpha: float | None = None, **kwargs) -> Self:
+        super().apply_style(**kwargs)
+
+        if alpha is not None:
+            self.alpha.set(alpha)
+
+        return self
+
 
 shadertoy_fragment_shader = """
 #version 330 core
