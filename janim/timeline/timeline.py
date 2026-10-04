@@ -554,7 +554,9 @@ class BuiltTimeline:
     def render_frame(
         self, ctx: mgl.Context, global_t: float, *, camera: Camera | None = None
     ) -> bool:
-        """Render one exposed frame into the currently bound framebuffer."""
+        """
+        渲染一帧（包含曝光采样）到当前绑定的 framebuffer
+        """
         cfg = self.cfg
         if not cfg.motion_blur:
             return self.render_all(ctx, global_t, camera=camera)

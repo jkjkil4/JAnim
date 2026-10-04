@@ -860,7 +860,11 @@ class Item(ItemRelation['Item'], metaclass=_ItemMeta):
         return self._fix_in_frame
 
     def set_motion_blur(self, on: bool = True, *, root_only: bool = False) -> Self:
-        """Enable temporal motion blur for this item and, by default, its descendants."""
+        """
+        开启时域运动模糊
+
+        默认同时作用于后代物件，传入 ``root_only=True`` 则只修改物件自身
+        """
         for item in self.walk_self_and_descendants(root_only):
             item._motion_blur = on
         return self

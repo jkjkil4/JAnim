@@ -7,12 +7,11 @@ from janim.render.framebuffer import FrameBuffer, qt_framebuffer_patch
 
 
 class MotionBlurBuffer:
-    """Accumulate independent premultiplied scene samples in a float texture.
+    """将各次采样的完整场景累加到浮点纹理中
 
-    Samples are rendered into an offscreen framebuffer and added into a floating
-    point accumulation texture. The final average is drawn onto whichever
-    framebuffer is currently bound by the caller, so the same code works for the
-    Qt widget, ``capture`` and ``VideoWriter``.
+    各样本先渲染到离屏 framebuffer，再以预乘透明度累加进浮点累积纹理。
+    最终平均值会被绘制到调用方当前绑定的 framebuffer 上，
+    因此同一份代码对 Qt 窗口、``capture`` 与 ``VideoWriter`` 都适用
     """
 
     def __init__(self, ctx: mgl.Context, size: tuple[int, int]):
@@ -78,7 +77,7 @@ class MotionBlurBuffer:
                     prev_fbo.use()
 
     def resolve(self, count: int) -> None:
-        """Draw the averaged result onto the currently bound framebuffer."""
+        """将平均后的结果绘制到当前绑定的 framebuffer 上"""
         with qt_framebuffer_patch(self.ctx):
             prev_fbo = self.ctx.fbo
             try:
