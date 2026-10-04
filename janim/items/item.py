@@ -18,7 +18,7 @@ from janim.locale import get_translator
 from janim.logger import log
 from janim.render.base import Renderer
 from janim.typing import SupportsApartAlpha
-from janim.utils.data import AlignedData, ContextSetter
+from janim.utils.data import AlignedData
 from janim.utils.iterables import resize_preserving_order
 from janim.utils.paths import PathFunc, straight_path
 
@@ -146,6 +146,7 @@ class Item(ItemRelation['Item'], metaclass=_ItemMeta):
         self._fix_in_frame = False
         self._depth_test = False
         self._distance_sort = False
+        self._motion_blur = False
 
         self.reset_additional_states()
 
@@ -603,6 +604,7 @@ class Item(ItemRelation['Item'], metaclass=_ItemMeta):
             or self._fix_in_frame != other._fix_in_frame
             or self._depth_test != other._depth_test
             or self._distance_sort != other._distance_sort
+            or self._motion_blur != other._motion_blur
         ):
             return False
         for key, cmpt in self.components.items():
@@ -672,6 +674,7 @@ class Item(ItemRelation['Item'], metaclass=_ItemMeta):
 
         # self.parents 不变
         self._children_become(other, auto_visible)
+        self._motion_blur = other._motion_blur
 
         self_cmpts = self.components
         other_cmpts = other.components
@@ -744,6 +747,7 @@ class Item(ItemRelation['Item'], metaclass=_ItemMeta):
     def restore(self, other: Item) -> Self:
         if self._stored:
             self._stored = self.Stored(other)
+        self._motion_blur = other._motion_blur
 
         self_cmpts = self.components
         other_cmpts = other.components
@@ -826,6 +830,7 @@ class Item(ItemRelation['Item'], metaclass=_ItemMeta):
         """
         进行插值（仅对该物件进行，不包含后代物件）
         """
+        self._motion_blur = item1._motion_blur if alpha < 1 else item2._motion_blur
         for key, cmpt in self.components.items():
             try:
                 cmpt1 = item1.components[key]
@@ -853,6 +858,15 @@ class Item(ItemRelation['Item'], metaclass=_ItemMeta):
     def is_fix_in_frame(self) -> bool:
         """检查该物件是否被固定在屏幕上"""
         return self._fix_in_frame
+
+    def set_motion_blur(self, on: bool = True, *, root_only: bool = False) -> Self:
+        """Enable temporal motion blur for this item and, by default, its descendants."""
+        for item in self.walk_self_and_descendants(root_only):
+            item._motion_blur = on
+        return self
+
+    def is_motion_blur_enabled(self) -> bool:
+        return self._motion_blur
 
     def apply_depth_test(self, on: bool = True, *, root_only: bool = False) -> Self:
         """

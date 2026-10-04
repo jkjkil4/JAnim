@@ -136,7 +136,7 @@ class VideoWriter:
                 for frame_idx, read_idx in zip(progress_display, read_idx_iter):
                     # 渲染当前帧
                     fbo.clear()
-                    self.built.render_all(self.ctx, frame_idx / fps)
+                    self.built.render_frame(self.ctx, frame_idx / fps)
                     fbo.unpremultiply()
 
                     # 绑定当前PBO来存储新帧
@@ -181,11 +181,12 @@ class VideoWriter:
             with fbo.context():
                 for frame in progress_display:
                     fbo.clear()
-                    self.built.render_all(self.ctx, frame / fps)
+                    self.built.render_frame(self.ctx, frame / fps)
                     fbo.unpremultiply()
                     bytes = fbo.read()
                     self.encoder.write(bytes)
 
+        self.built.release_motion_blur_buffer(self.ctx)
         log.debug('Finished writing frames to video pipe')
 
         self.close_video_pipe(_keep_temp)

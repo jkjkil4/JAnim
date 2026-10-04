@@ -116,6 +116,9 @@ class Config(metaclass=_ConfigMeta):
     fps: int = _field(validator=_opt_int_validator)
     preview_fps: int = _field(validator=_opt_int_validator)
     anti_alias_width: float = _field(validator=_opt_float_validator)
+    motion_blur: bool = _field(validator=optional_type_validator(bool, 'bool'))
+    motion_blur_samples: int = _field(validator=_opt_int_validator)
+    motion_blur_shutter: float = _field(validator=_opt_float_validator)  # fraction of 1 / fps
 
     frame_height: float = _field(validator=_opt_float_validator)
     frame_width: float = _field(validator=_opt_float_validator)
@@ -162,6 +165,9 @@ default_config = Config(
     fps=60,
     preview_fps=60 if is_power_plugged() else 30,
     anti_alias_width=0.015,
+    motion_blur=True,
+    motion_blur_samples=8,
+    motion_blur_shutter=1.0,
     # -
     frame_height=8.0,
     frame_width=16.0 / 9.0 * 8.0,  # aspect_ratio(16/9) * frame_height
