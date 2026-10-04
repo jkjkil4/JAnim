@@ -16,7 +16,6 @@ JAnim 支持对物件开启时域运动模糊（temporal motion blur）：渲染
 
 .. janim-example:: MotionBlurBasic
     :extract-from-test:
-    :no-construct:
     :media: _static/tutorial/MotionBlurBasic.mp4
     :ref: :meth:`~.Item.set_motion_blur` :meth:`~.Item.is_motion_blur_enabled`
 
@@ -41,7 +40,7 @@ JAnim 支持对物件开启时域运动模糊（temporal motion blur）：渲染
 
 .. janim-example:: MotionBlurDiagram
     :extract-from-test:
-    :no-construct:
+    :hide_code:
     :media: _static/tutorial/MotionBlurDiagram.png
 
 区间内均匀取 ``motion_blur_samples`` 个时间样本，每个样本都重新渲染整个场景，
@@ -63,7 +62,6 @@ JAnim 支持对物件开启时域运动模糊（temporal motion blur）：渲染
 
 .. janim-example:: MotionBlurShutterDemo
     :extract-from-test:
-    :no-construct:
     :media: _static/tutorial/MotionBlurShutterDemo.mp4
 
 三条跑道的运动完全一致，只是曝光时长不同：
