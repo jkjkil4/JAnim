@@ -157,8 +157,8 @@ msgstr ""
 
 #: janim.items.item.Item.astype:12 of
 msgid ""
-"在这个例子中，并不能 ``group.color.set(BLUE)`` 来设置后代物件中的颜色， 但是可以使用 "
-"``group.astype(VItem).color.set(BLUE)`` 来做到"
+"在这个例子中，并不能 ``group.color.set(BLUE)`` 来设置后代物件中的颜色， 但是可以使用 ``group.astype(VItem).color."
+"set(BLUE)`` 来做到"
 msgstr ""
 "In this example, you cannot use ``group.color.set(BLUE)`` to set the color of descendant items, but you can achieve this "
 "using ``group.astype(VItem).color.set(BLUE)``"
@@ -230,6 +230,14 @@ msgstr "Whether to apply this only to the root item; default is no, so it also a
 #: janim.items.item.Item.is_fix_in_frame:1 of
 msgid "检查该物件是否被固定在屏幕上"
 msgstr "Checks whether the item is fixed on the screen."
+
+#: janim.items.item.Item.set_motion_blur:1 of
+msgid "开启时域运动模糊"
+msgstr "Enable temporal motion blur"
+
+#: janim.items.item.Item.set_motion_blur:3 of
+msgid "默认同时作用于后代物件，传入 ``root_only=True`` 则只修改物件自身"
+msgstr "By default this also applies to descendant items; passing ``root_only=True`` only changes the item itself"
 
 #: janim.items.item.Item.apply_depth_test:1 of
 msgid "开启深度测试"

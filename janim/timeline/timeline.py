@@ -36,6 +36,7 @@ from janim.logger import log
 from janim.render.base import RenderData, Renderer, apply_blend_flags, create_context_430_or_330
 from janim.render.collection import RenderCollection
 from janim.render.framebuffer import FrameBuffer
+from janim.render.motion_blur import MotionBlurBuffer
 from janim.render.uniform import uniforms
 from janim.timeline.core import ExtraRenderGroup, ItemAppearance, RenderGroupReturn, TimelineCore
 from janim.timeline.misc import AudiosAndSubtitlesMixin, DebugMixin
@@ -352,6 +353,7 @@ class BuiltTimeline:
 
         self.capture_ctx: mgl.Context | None = None
         self.capture_framebuffer: FrameBuffer | None = None
+        self._motion_blur_buffer: MotionBlurBuffer | None = None
 
     @property
     def cfg(self) -> Config | ConfigGetter:
@@ -445,12 +447,15 @@ class BuiltTimeline:
         global_t: float,
         *,
         camera: Camera | None = None,
+        center_t: float | None = None,
     ) -> bool:
         """
         渲染所有可见物件
         """
         timeline = self.timeline
         global_t = timeline.time_aligner.align(global_t)
+        if center_t is not None:
+            center_t = timeline.time_aligner.align(center_t)
         # 使得最后一帧采用略提早一点点的时间渲染，使得一些结束在结尾的动画不突变
         if global_t == self.duration:
             global_t -= 1e-4
@@ -465,10 +470,20 @@ class BuiltTimeline:
                 self.timeline.config_context(),
             ):
                 # 计算 camera 和 light_source
+                # 与普通物件用同一条曝光规则：只有它们自己开了运动模糊才按采样时刻求值，
+                # 否则冻结在 center_t
                 if camera is None:
-                    camera = timeline.compute_item(timeline.camera, global_t, True)
+                    camera = timeline.compute_item(
+                        timeline.camera,
+                        self._exposure_time(timeline.camera, global_t, center_t),
+                        True,
+                    )
                 camera_info = camera.points.info
-                light_source = timeline.compute_item(timeline.light_source, global_t, True)
+                light_source = timeline.compute_item(
+                    timeline.light_source,
+                    self._exposure_time(timeline.light_source, global_t, center_t),
+                    True,
+                )
                 anti_alias_radius = self.cfg.anti_alias_width / 2 * camera_info.scaled_factor
 
                 # 用于渲染的基础信息
@@ -486,7 +501,7 @@ class BuiltTimeline:
                     ContextSetter(Renderer.data_ctx, render_data),
                 ):
                     # 得到渲染集合
-                    collection = self._get_render_collection(global_t)
+                    collection = self._get_render_collection(global_t, center_t)
 
                     # 进行渲染
                     collection.render()
@@ -496,6 +511,21 @@ class BuiltTimeline:
             return False
 
         return True
+
+    def _exposure_time(self, item: Item, global_t: float, center_t: float | None) -> float:
+        """
+        决定 ``item`` 该按哪个时刻求值。
+
+        与 :meth:`_get_render_collection` 中对普通物件使用的规则一致：
+        只有自己开了运动模糊的物件才按曝光窗口内的采样时刻 ``global_t`` 求值，
+        其余一律冻结在 ``center_t``。
+        """
+        if center_t is None:
+            return global_t
+        appr = self.timeline.item_appearances.get(item)
+        if appr is not None and appr.stack.compute(center_t, True)._motion_blur:
+            return global_t
+        return center_t
 
     def _uniforms_context(self, data: RenderData):
         camera_info = data.camera_info
@@ -515,31 +545,144 @@ class BuiltTimeline:
             JA_LIGHT_SOURCE=(U.write_bytes, data.light_source_location.tobytes()),
         )
 
+    def render_frame(
+        self, ctx: mgl.Context, global_t: float, *, camera: Camera | None = None
+    ) -> bool:
+        """
+        渲染一帧（包含曝光采样）到当前绑定的 framebuffer
+        """
+        cfg = self.cfg
+        if not cfg.motion_blur:
+            return self.render_all(ctx, global_t, camera=camera)
+
+        center_t = self.timeline.time_aligner.align(global_t)
+        with (
+            ContextSetter(Animation.global_t_ctx, center_t),
+            ContextSetter(Timeline.ctx_var, self.timeline),
+            self.timeline.config_context(),
+        ):
+            has_blur = any(
+                appr.stack.compute(center_t, True)._motion_blur
+                for appr in self.timeline.item_appearances.values()
+            )
+        if not has_blur:
+            return self.render_all(ctx, global_t, camera=camera)
+
+        count = cfg.motion_blur_samples
+        shutter = cfg.motion_blur_shutter
+        if count < 1 or shutter < 0 or not math.isfinite(shutter):
+            raise ValueError(
+                'motion_blur_samples must be positive and shutter must be finite and nonnegative'
+            )
+        if count == 1 or shutter == 0:
+            return self.render_all(ctx, global_t, camera=camera)
+
+        if self._motion_blur_buffer is None:
+            self._motion_blur_buffer = MotionBlurBuffer(
+                ctx, Config.get.pixel_width, Config.get.pixel_height
+            )
+        buffer = self._motion_blur_buffer
+
+        buffer.clear()
+        exposure = shutter / cfg.fps
+        try:
+            for idx in range(count):
+                sample_t = max(
+                    0, min(self.duration, center_t + (idx + 0.5 - count / 2) * exposure / count)
+                )
+                with buffer.sample.context():
+                    buffer.sample.clear()
+                    if not self.render_all(ctx, sample_t, camera=camera, center_t=center_t):
+                        return False
+                buffer.add_sample()
+            # Draw onto the framebuffer that is currently bound by the caller,
+            # so the Qt widget's own FBO is preserved.
+            buffer.resolve(count)
+        finally:
+            self._time = center_t
+        return True
+
     _RenderCollectionCls = RenderCollection
 
-    def _get_render_collection(self, global_t: float) -> RenderCollection:
-        # 提取所有当前可见的 apprs
+    def _get_render_collection(
+        self, global_t: float, center_t: float | None = None
+    ) -> RenderCollection:
+        # The center-time state determines whether each tracked item participates in exposure.
         apprs: list[tuple[ItemAppearance, Item]] = []
-        for _, appr in self.visible_item_chunks.get(global_t):
-            if not appr.is_visible_at(global_t):
+        frozen_renderers: dict[ItemAppearance, float] = {}
+        candidates = (
+            self.visible_item_chunks.get(global_t)
+            if center_t is None
+            else self.timeline.item_appearances.items()
+        )
+        for item, appr in candidates:
+            at = global_t
+            if center_t is not None and not appr.stack.compute(center_t, True)._motion_blur:
+                at = center_t
+            if not appr.is_visible_at(at):
                 continue
-            data = appr.stack.compute(global_t, True)
-            apprs.append((appr, data))
+            apprs.append((appr, appr.stack.compute(at, True)))
+            if at != global_t:
+                # A frozen Video or nested Timeline must also read center-time in its renderer.
+                frozen_renderers[appr] = at
 
-        # 提取所有当前可见的额外渲染
+        # Extra render groups (e.g. Transform) are sampled as a whole.
         extras: list[tuple[ExtraRenderGroup, RenderGroupReturn]] = []
-        for rg in self.visible_render_group_chunks.get(global_t):
-            if not rg.t_range.contains(global_t):
+        groups = (
+            self.visible_render_group_chunks.get(global_t)
+            if center_t is None
+            else self.timeline.extra_render_groups
+        )
+        for rg in groups:
+            at = global_t
+            if (
+                center_t is not None
+                and rg.related_items
+                and not any(
+                    self.timeline.compute_item(item, center_t, True)._motion_blur
+                    for item in rg.related_items
+                )
+            ):
+                at = center_t
+            if not rg.t_range.contains(at):
                 continue
-            extra_items = rg.func()
+            with ContextSetter(Animation.global_t_ctx, at):
+                extra_items = rg.func()
+            if at != global_t:
+                extra_items = [
+                    (item, self._render_at_time(render, at)) for item, render in extra_items
+                ]
             extras.append((rg, extra_items))
 
         # 组装为 RenderCollection 并依次调用将要渲染的物件的 hook，以便例如 FrameEffect 代理与其相关联的物件的渲染
         collection = self._RenderCollectionCls(self.timeline, apprs, extras)
-        for item in collection.iter_items():
+        collection.frozen_renderers = frozen_renderers
+        for _, item in apprs:
             item._render_collection_hook(collection)
+        for rg, renders in extras:
+            at = global_t
+            if (
+                center_t is not None
+                and rg.related_items
+                and not any(
+                    self.timeline.compute_item(item, center_t, True)._motion_blur
+                    for item in rg.related_items
+                )
+            ):
+                at = center_t
+            with ContextSetter(Animation.global_t_ctx, at):
+                for item, _ in renders:
+                    item._render_collection_hook(collection)
 
         return collection
+
+    @staticmethod
+    def _render_at_time(render, at: float):
+        def wrapped(item):
+            with ContextSetter(Animation.global_t_ctx, at):
+                render(item)
+
+        return wrapped
 
     def capture(
         self, global_t: float, *, transparent: bool = True, ctx: mgl.Context | None = None
@@ -574,7 +717,7 @@ class BuiltTimeline:
         fbo = self.capture_framebuffer
         with fbo.context():
             fbo.clear()
-            self.render_all(ctx, global_t)
+            self.render_frame(ctx, global_t)
             fbo.unpremultiply()
 
         return fbo.get_image()
@@ -688,13 +831,20 @@ class TimelineItem(Item):
         def render(self, item: TimelineItem):
             t = Animation.global_t_ctx.get() - item.at
 
+            # 这里必须调用 render_frame 而不是 render_all：
+            # 子 Timeline 有它自己的曝光设定（尤其是它自己的 motion_blur_shutter），
+            # 只有 render_frame 才会创建 MotionBlurBuffer 并把这份设定用上。
+            # 用 render_all 的话，子 Timeline 内部的 _motion_blur 不会产生任何效果，
+            # 于是「单独渲染有模糊、放进父 Timeline 就没模糊」。
+            ctx = self.data_ctx.get().ctx
+
             if 0 <= t <= item.duration:
                 if t < item.first_frame_duration:
-                    item._built.render_all(self.data_ctx.get().ctx, 0)
+                    item._built.render_frame(ctx, 0)
                 else:
-                    item._built.render_all(self.data_ctx.get().ctx, t - item.first_frame_duration)
+                    item._built.render_frame(ctx, t - item.first_frame_duration)
             elif item.keep_last_frame and t > item.duration:
-                item._built.render_all(self.data_ctx.get().ctx, item._built.duration)
+                item._built.render_frame(ctx, item._built.duration)
 
     renderer_cls = TIRenderer
 
@@ -793,10 +943,12 @@ class TimelinePlaybackControlItem(PlaybackControl, Item):
             t = Animation.global_t_ctx.get()
             t = item.compute_time(t, item.duration)
             t = max(0, t)
+            # 与 TimelineItem.TIRenderer 同理：走 render_frame 子 Timeline 才能用自己的曝光设定
+            ctx = self.data_ctx.get().ctx
             if 0 <= t <= item.duration:
-                item._built.render_all(self.data_ctx.get().ctx, t)
+                item._built.render_frame(ctx, t)
             elif item.keep_last_frame and t > item.duration:
-                item._built.render_all(self.data_ctx.get().ctx, item._built.duration)
+                item._built.render_frame(ctx, item._built.duration)
 
     renderer_cls = TPCIRenderer
 

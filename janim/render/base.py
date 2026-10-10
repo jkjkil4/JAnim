@@ -142,11 +142,15 @@ class RenderData:
     anti_alias_radius: float
 
 
+DEFAULT_BLEND_FUNC = (mgl.ONE, mgl.ONE_MINUS_SRC_ALPHA)
+DEFAULT_EQUATION = (mgl.FUNC_ADD, mgl.FUNC_ADD)
+
+
 def apply_blend_flags(ctx: mgl.Context) -> None:
     ctx.enable(mgl.BLEND)
     # PMA
-    ctx.blend_func = mgl.ONE, mgl.ONE_MINUS_SRC_ALPHA
-    ctx.blend_equation = mgl.FUNC_ADD, mgl.FUNC_ADD
+    ctx.blend_func = DEFAULT_BLEND_FUNC
+    ctx.blend_equation = DEFAULT_EQUATION
 
 
 def create_context(**kwargs) -> mgl.Context:
