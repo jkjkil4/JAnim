@@ -186,7 +186,6 @@ class VideoWriter:
                     bytes = fbo.read()
                     self.encoder.write(bytes)
 
-        self.built.release_motion_blur_buffer(self.ctx)
         log.debug('Finished writing frames to video pipe')
 
         self.close_video_pipe(_keep_temp)

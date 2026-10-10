@@ -14,11 +14,10 @@ class MotionBlurBuffer:
     最终平均值会被绘制到调用方当前绑定的 framebuffer 上
     """
 
-    def __init__(self, ctx: mgl.Context, size: tuple[int, int]):
+    def __init__(self, ctx: mgl.Context, pw: int, ph: int):
         self.ctx = ctx
-        self.size = size
-        self.sample = FrameBuffer(ctx, *size, (0, 0, 0), True)
-        self.accumulation = FrameBuffer(ctx, *size, (0, 0, 0), True, no_clip=True)
+        self.sample = FrameBuffer(ctx, pw, ph, (0, 0, 0), True)
+        self.accumulation = FrameBuffer(ctx, pw, ph, (0, 0, 0), True, no_clip=True)
 
         self.program = ctx.program(
             vertex_shader="""
@@ -48,7 +47,8 @@ class MotionBlurBuffer:
         self.program['source'] = 0
 
     def clear(self) -> None:
-        self.accumulation.clear()
+        with self.accumulation.context():
+            self.accumulation.clear()
 
     def add_sample(self) -> None:
         with self.accumulation.context():

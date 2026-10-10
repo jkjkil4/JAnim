@@ -545,12 +545,6 @@ class BuiltTimeline:
             JA_LIGHT_SOURCE=(U.write_bytes, data.light_source_location.tobytes()),
         )
 
-    def release_motion_blur_buffer(self, ctx: mgl.Context | None = None) -> None:
-        buffer = self._motion_blur_buffer
-        if buffer is not None and (ctx is None or buffer.ctx is ctx):
-            buffer.release()
-            self._motion_blur_buffer = None
-
     def render_frame(
         self, ctx: mgl.Context, global_t: float, *, camera: Camera | None = None
     ) -> bool:
@@ -583,11 +577,11 @@ class BuiltTimeline:
         if count == 1 or shutter == 0:
             return self.render_all(ctx, global_t, camera=camera)
 
-        size = ctx.fbo.size
+        if self._motion_blur_buffer is None:
+            self._motion_blur_buffer = MotionBlurBuffer(
+                ctx, Config.get.pixel_width, Config.get.pixel_height
+            )
         buffer = self._motion_blur_buffer
-        if buffer is None or buffer.ctx is not ctx or buffer.size != size:
-            self.release_motion_blur_buffer()
-            buffer = self._motion_blur_buffer = MotionBlurBuffer(ctx, size)
 
         buffer.clear()
         exposure = shutter / cfg.fps
