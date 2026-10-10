@@ -1,8 +1,5 @@
 from __future__ import annotations
 
-import inspect
-import os
-import re
 from typing import Any, Iterable, Self
 
 from janim.components.component import CmptInfo
@@ -111,57 +108,6 @@ class AppliedGroup(Item):
         self._render_collection = collection.delegates(self._items)
 
 
-_regex_fbo_declaration = re.compile(r'uniform\s+sampler2D\s+fbo\s*;')
-_regex_texture_fbo = re.compile(r'texture\s*\(\s*fbo\s*,')
-
-
-def _apply_fixes_for_compatibility(fragment_shader: str) -> str:
-    """
-    对 < 5.0.0 版本的着色器代码的兼容
-
-    会尝试对旧版本着色器代码的一些关键部分进行替换，若产生替换，会给出提示和警告
-    """
-    from janim.utils.deprecation import is_removed
-
-    if is_removed((5, 0)):
-        return fragment_shader
-
-    fixes: list[str] = []
-
-    fragment_shader, count = re.subn(_regex_fbo_declaration, '', fragment_shader)
-    if count != 0:
-        fixes.append(_('Removed "{code}"').format(code='uniform sampler2D fbo;'))
-
-    fragment_shader, count = re.subn(_regex_texture_fbo, 'frame_texture(', fragment_shader)
-    if count != 0:
-        fixes.append(
-            _('Replaced "{orig}" by "{code}"').format(
-                orig='texture(fbo,',
-                code='frame_texture(',
-            )
-        )
-
-    if fixes:
-        frame = inspect.currentframe().f_back.f_back
-        filename = os.path.basename(frame.f_code.co_filename)
-        lineno = frame.f_lineno
-
-        log.warning(
-            _(
-                'Detected legacy-style shader code passed to FrameEffect at {file}:{lineno}\n'
-                'An automatic migration has been attempted with the following changes:\n'
-                '{fixes}\n'
-                'The legacy usage will be deprecated in JAnim 5.0'
-            ).format(
-                file=filename,
-                lineno=lineno,
-                fixes='\n'.join(f'- {fix}' for fix in fixes),
-            )
-        )
-
-    return fragment_shader
-
-
 class FrameEffect(AppliedGroup):
     """
     将传入的着色器 ``fragment_shader`` 应用到 ``items`` 上
@@ -208,9 +154,6 @@ class FrameEffect(AppliedGroup):
         root_only: bool = False,
         **kwargs,
     ):
-        # 对 < 5.0.0 的兼容
-        fragment_shader = _apply_fixes_for_compatibility(fragment_shader)
-
         super().__init__(*items, root_only=root_only, **kwargs)
         self.fragment_shader = fragment_shader
         self.cache_key = cache_key
@@ -276,7 +219,7 @@ class SimpleFrameEffect(FrameEffect):
         )
         with ShaderInjection(
             JA_SIMPLE_FRAMEEFFECT_UNIFORMS=uniforms_code,
-            JA_SIMPLE_FRAMEEFFECT_SHADER=_apply_fixes_for_compatibility(shader.strip()),
+            JA_SIMPLE_FRAMEEFFECT_SHADER=shader.strip(),
         ):
             super().__init__(
                 *items,
