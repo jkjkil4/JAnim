@@ -28,7 +28,7 @@ msgstr "Bezier curve spliced item, for details refer to the documentation of :cl
 
 #: janim.items.vitem.VItem.apply_style:1 of
 msgid "设置物件自身的样式，不影响子物件"
-msgstr "Sets the style of the item itself, does not affect child items"
+msgstr "Set the item's own style, does not affect child items"
 
 #: janim.items.vitem.VItem.apply_style:3 of
 msgid "另见：:meth:`set`"

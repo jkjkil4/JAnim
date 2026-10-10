@@ -81,7 +81,7 @@ msgstr "A list of checkerboard colors, cycled through on the grid"
 
 #: janim.items.three_d.types.CheckerboardSurface.apply_style:1 janim.items.three_d.types.SmoothSurface.apply_style:1 of
 msgid "设置物件自身的样式，不影响子物件"
-msgstr "Set the item's own style without affecting child items"
+msgstr "Set the item's own style, does not affect child items"
 
 #: janim.items.three_d.types.CheckerboardSurface.apply_style:3 janim.items.three_d.types.SmoothSurface.apply_style:3 of
 msgid "另见：:meth:`set`"

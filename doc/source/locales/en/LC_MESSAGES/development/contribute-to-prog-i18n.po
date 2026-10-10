@@ -40,7 +40,9 @@ msgstr "Prepare the Environment"
 
 #: ../../source/development/contribute-to-prog-i18n.rst:18
 msgid "JAnim 项目使用 `uv <https://github.com/astral-sh/uv>`_ 管理依赖，在本节中我们均使用基于 ``uv`` 的命令行"
-msgstr "The JAnim project uses `uv <https://github.com/astral-sh/uv>`_ to manage dependencies, so all commands in this section use ``uv``."
+msgstr ""
+"The JAnim project uses `uv <https://github.com/astral-sh/uv>`_ to manage dependencies, so all commands in this section "
+"use ``uv``."
 
 #: ../../source/development/contribute-to-prog-i18n.rst:20
 msgid "假设你已经 fork 仓库并 clone 到了本地。"
