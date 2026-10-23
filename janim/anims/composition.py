@@ -1,6 +1,5 @@
 from typing import Iterable, Self
 
-from janim.anims_core.anim_stack import AnimStack
 from janim.anims_core.animation import Animation
 from janim.exception import AnimGroupError, NotAnimationError
 from janim.locale import get_translator
@@ -300,6 +299,22 @@ class Do(Animation):
     :param \\*\\*kwargs: 传递给回调函数的具名参数
     :param at: 执行的时间点
     :param detect_changes: 执行回调后，是否自动检测物件变化情况
+
+    在部分情况下表现可能有问题，比如下面的这个例子的结果并不符合预期
+
+    .. code-block:: python
+
+        class Test(Timeline):
+            def construct(self):
+                square = Square()
+
+                self.play(
+                    square.anim.points.shift(LEFT * 2),
+                    Do(lambda: square.set(color=RED)),
+                    square.anim.points.shift(RIGHT * 4),
+                    lag_ratio=1,
+                )
+                self.forward()
     """
 
     def __init__(self, func, *args, at: float = 0, detect_changes: bool = True, **kwargs):

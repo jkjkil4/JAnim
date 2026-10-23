@@ -570,10 +570,6 @@ class BuiltTimeline:
 
         count = cfg.motion_blur_samples
         shutter = cfg.motion_blur_shutter
-        if count < 1 or shutter < 0 or not math.isfinite(shutter):
-            raise ValueError(
-                'motion_blur_samples must be positive and shutter must be finite and nonnegative'
-            )
         if count == 1 or shutter == 0:
             return self.render_all(ctx, global_t, camera=camera)
 

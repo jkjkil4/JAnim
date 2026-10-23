@@ -5,7 +5,7 @@ import tempfile
 from contextvars import ContextVar
 from functools import partial
 from pathlib import Path
-from typing import Any, Generator, Iterable, Self
+from typing import Any, Callable, Generator, Self, Sequence
 
 import attrs
 import psutil
@@ -21,23 +21,79 @@ _ = get_translator('janim.utils.config')
 config_ctx_var: ContextVar[list[Config]] = ContextVar('config_ctx_var')
 
 
-def optional_type_validator(type, typename: str):
-    def validator(inst, attr: attrs.Attribute, value):
+class Validator:
+    def __init__(self, validator: Callable):
+        self.validator = validator
+
+    @staticmethod
+    def type(type, typename: str) -> Validator:
+        def validator(inst, attr: attrs.Attribute, value):
+            if not isinstance(value, type):
+                raise TypeError(
+                    _('{attrname}={value!r} is incompatible with type {typename}').format(
+                        attrname=attr.name, typename=typename, value=value
+                    )
+                )
+
+        return Validator(validator)
+
+    def __call__(self, inst, attr: attrs.Attribute, value) -> None:
         if value is None:
             return
-        if not isinstance(value, type):
-            raise TypeError(
-                _('{attrname}={value!r} is incompatible with type {typename}').format(
-                    attrname=attr.name, typename=typename, value=value
-                )
-            )
+        self.validator(inst, attr, value)
 
-    return validator
+    def bound(self, *, min: Any = None, max: Any = None) -> Validator:
+        def bounded_validator(inst, attr: attrs.Attribute, value):
+            self.validator(inst, attr, value)
+            if min is not None and value < min:
+                raise ValueError(
+                    _('{attrname}={value!r} should not be less than {min!r}').format(
+                        attrname=attr.name, min=min, value=value
+                    )
+                )
+            if max is not None and value > max:
+                raise ValueError(
+                    _('{attrname}={value!r} should not be greater than {max!r}').format(
+                        attrname=attr.name, max=max, value=value
+                    )
+                )
+
+        return Validator(bounded_validator)
+
+    def neq_bound(self, *, min: Any = None, max: Any = None) -> Validator:
+        def neq_bounded_validator(inst, attr: attrs.Attribute, value):
+            self.validator(inst, attr, value)
+            if min is not None and value <= min:
+                raise ValueError(
+                    _('{attrname}={value!r} should be greater than {min!r}').format(
+                        attrname=attr.name, min=min, value=value
+                    )
+                )
+            if max is not None and value >= max:
+                raise ValueError(
+                    _('{attrname}={value!r} should be less than {max!r}').format(
+                        attrname=attr.name, max=max, value=value
+                    )
+                )
+
+        return Validator(neq_bounded_validator)
+
+    def or_sequence(self) -> Validator:
+        def sequence_validator(inst, attr: attrs.Attribute, value):
+            if isinstance(value, Sequence):
+                for item in value:
+                    self.validator(inst, attr, item)
+            else:
+                self.validator(inst, attr, value)
+
+        return Validator(sequence_validator)
 
 
 _field = partial(attrs.field, default=None)
-_opt_int_validator = optional_type_validator(int, 'int')
-_opt_float_validator = optional_type_validator((int, float), 'float')
+_int_validator = Validator.type(int, 'int')
+_float_validator = Validator.type((int, float), 'float')
+_str_validator = Validator.type(str, 'str')
+_path_validator = Validator.type((str, Path), 'str or Path')
 
 
 class _ConfigMeta(type):
@@ -113,39 +169,41 @@ class Config(metaclass=_ConfigMeta):
     更多内容可以参考文档教程的 :doc:`配置系统 <../../tutorials/config_system>` 页面
     """
 
-    fps: int = _field(validator=_opt_int_validator)
-    preview_fps: int = _field(validator=_opt_int_validator)
-    anti_alias_width: float = _field(validator=_opt_float_validator)
-    motion_blur: bool = _field(validator=optional_type_validator(bool, 'bool'))
-    motion_blur_samples: int = _field(validator=_opt_int_validator)
-    motion_blur_shutter: float = _field(validator=_opt_float_validator)  # fraction of 1 / fps
+    fps: int = _field(validator=_int_validator.bound(min=1))
+    preview_fps: int = _field(validator=_int_validator.bound(min=1))
+    anti_alias_width: float = _field(validator=_float_validator.bound(min=0))
+    motion_blur: bool = _field(validator=Validator.type(bool, 'bool'))
+    motion_blur_samples: int = _field(validator=_int_validator.bound(min=1))
+    motion_blur_shutter: float = _field(
+        validator=_float_validator.bound(min=0)
+    )  # fraction of 1 / fps
 
-    frame_height: float = _field(validator=_opt_float_validator)
-    frame_width: float = _field(validator=_opt_float_validator)
+    frame_height: float = _field(validator=_float_validator.neq_bound(min=0))
+    frame_width: float = _field(validator=_float_validator.neq_bound(min=0))
 
-    pixel_height: int = _field(validator=_opt_int_validator)
-    pixel_width: int = _field(validator=_opt_int_validator)
-    background_color: Color = _field(validator=optional_type_validator(Color, 'Color'))
-    font: str | Iterable[str] = None
-    subtitle_font: str | Iterable[str] = None
-    subtitle_to_edge_buff: float = _field(validator=_opt_float_validator)
+    pixel_height: int = _field(validator=_int_validator.bound(min=1))
+    pixel_width: int = _field(validator=_int_validator.bound(min=1))
+    background_color: Color = _field(validator=Validator.type(Color, 'Color'))
+    font: str | Sequence[str] = _field(validator=_str_validator.or_sequence())
+    subtitle_font: str | Sequence[str] = _field(validator=_str_validator.or_sequence())
+    subtitle_to_edge_buff: float = _field(validator=_float_validator)
 
-    audio_framerate: int = _field(validator=_opt_int_validator)
-    audio_channels: int = _field(validator=_opt_int_validator)
+    audio_framerate: int = _field(validator=_int_validator.bound(min=1))
+    audio_channels: int = _field(validator=_int_validator.bound(min=1))
 
-    wnd_pos: str = None
-    wnd_monitor: int = _field(validator=_opt_int_validator)
+    wnd_pos: str = _field(validator=_str_validator)
+    wnd_monitor: int = _field(validator=_int_validator.bound(min=0))
 
-    typst_bin: str = None
-    typst_shared_preamble: str = None
-    typst_text_preamble: str = None
-    typst_math_preamble: str = None
+    typst_bin: str = _field(validator=_str_validator)
+    typst_shared_preamble: str = _field(validator=_str_validator)
+    typst_text_preamble: str = _field(validator=_str_validator)
+    typst_math_preamble: str = _field(validator=_str_validator)
 
-    output_dir: str = None
-    temp_dir: str | Path = None
-    asset_dir: str | Path | list[str | Path] = None
+    output_dir: str | Path = _field(validator=_path_validator)
+    temp_dir: str | Path = _field(validator=_path_validator)
+    asset_dir: str | Path | Sequence[str | Path] = _field(validator=_path_validator.or_sequence())
 
-    client_search_port: int = _field(validator=_opt_int_validator)
+    client_search_port: int = _field(validator=_int_validator)
 
     def __enter__(self) -> Self:
         lst = config_ctx_var.get()
@@ -277,7 +335,7 @@ class ConfigGetter:
         """
         将 ``:/path/to/file`` 转换为相对于 ``relative_path`` 的路径
         """
-        output_dir = self.output_dir
+        output_dir = str(self.output_dir)
 
         if output_dir.startswith((':/', ':\\')):
             return os.path.join(relative_path, output_dir[2:])

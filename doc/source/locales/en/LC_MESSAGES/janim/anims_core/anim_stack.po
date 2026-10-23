@@ -66,8 +66,8 @@ msgstr "Records the current state of the item into the animation stack, making i
 #: janim.anims_core.anim_stack.AnimStack.detect_change:1 of
 msgid "若物件相比 ``self._active_display`` 所记录的状态可能有变化， 则将新的状态记录到 ``global_t`` 之后的堆栈中"
 msgstr ""
-"If the item may have changed from the state recorded by ``self._active_display``, record the new state in the stack "
-"after ``global_t``"
+"If the item may have changed from the state recorded by ``self._active_display``, record the new state in the stack after "
+"``global_t``"
 
 #: janim.anims_core.anim_stack.AnimStack.may_changed:1 of
 msgid "检查物件相比 ``self._active_display`` 所记录的状态，是否可能发生变化"
