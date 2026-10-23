@@ -674,7 +674,6 @@ class Item(ItemRelation['Item'], metaclass=_ItemMeta):
 
         # self.parents 不变
         self._children_become(other, auto_visible)
-        self._motion_blur = other._motion_blur
 
         self_cmpts = self.components
         other_cmpts = other.components
@@ -747,7 +746,6 @@ class Item(ItemRelation['Item'], metaclass=_ItemMeta):
     def restore(self, other: Item) -> Self:
         if self._stored:
             self._stored = self.Stored(other)
-        self._motion_blur = other._motion_blur
 
         self_cmpts = self.components
         other_cmpts = other.components
@@ -830,7 +828,6 @@ class Item(ItemRelation['Item'], metaclass=_ItemMeta):
         """
         进行插值（仅对该物件进行，不包含后代物件）
         """
-        self._motion_blur = item1._motion_blur if alpha < 1 else item2._motion_blur
         for key, cmpt in self.components.items():
             try:
                 cmpt1 = item1.components[key]
