@@ -42,7 +42,7 @@ class Validator:
             return
         self.validator(inst, attr, value)
 
-    def bound(self, *, min: Any = None, max: Any = None) -> Self:
+    def bound(self, *, min: Any = None, max: Any = None) -> Validator:
         def bounded_validator(inst, attr: attrs.Attribute, value):
             self.validator(inst, attr, value)
             if min is not None and value < min:
@@ -60,7 +60,25 @@ class Validator:
 
         return Validator(bounded_validator)
 
-    def or_sequence(self) -> Self:
+    def neq_bound(self, *, min: Any = None, max: Any = None) -> Validator:
+        def neq_bounded_validator(inst, attr: attrs.Attribute, value):
+            self.validator(inst, attr, value)
+            if min is not None and value <= min:
+                raise ValueError(
+                    _('{attrname}={value!r} should be greater than {min!r}').format(
+                        attrname=attr.name, min=min, value=value
+                    )
+                )
+            if max is not None and value >= max:
+                raise ValueError(
+                    _('{attrname}={value!r} should be less than {max!r}').format(
+                        attrname=attr.name, max=max, value=value
+                    )
+                )
+
+        return Validator(neq_bounded_validator)
+
+    def or_sequence(self) -> Validator:
         def sequence_validator(inst, attr: attrs.Attribute, value):
             if isinstance(value, Sequence):
                 for item in value:
@@ -151,25 +169,25 @@ class Config(metaclass=_ConfigMeta):
     更多内容可以参考文档教程的 :doc:`配置系统 <../../tutorials/config_system>` 页面
     """
 
-    fps: int = _field(validator=_int_validator)
-    preview_fps: int = _field(validator=_int_validator)
-    anti_alias_width: float = _field(validator=_float_validator)
+    fps: int = _field(validator=_int_validator.bound(min=1))
+    preview_fps: int = _field(validator=_int_validator.bound(min=1))
+    anti_alias_width: float = _field(validator=_float_validator.bound(min=0))
 
-    frame_height: float = _field(validator=_float_validator)
-    frame_width: float = _field(validator=_float_validator)
+    frame_height: float = _field(validator=_float_validator.neq_bound(min=0))
+    frame_width: float = _field(validator=_float_validator.neq_bound(min=0))
 
-    pixel_height: int = _field(validator=_int_validator)
-    pixel_width: int = _field(validator=_int_validator)
+    pixel_height: int = _field(validator=_int_validator.bound(min=1))
+    pixel_width: int = _field(validator=_int_validator.bound(min=1))
     background_color: Color = _field(validator=Validator.type(Color, 'Color'))
     font: str | Sequence[str] = _field(validator=_str_validator.or_sequence())
     subtitle_font: str | Sequence[str] = _field(validator=_str_validator.or_sequence())
     subtitle_to_edge_buff: float = _field(validator=_float_validator)
 
-    audio_framerate: int = _field(validator=_int_validator)
-    audio_channels: int = _field(validator=_int_validator)
+    audio_framerate: int = _field(validator=_int_validator.bound(min=1))
+    audio_channels: int = _field(validator=_int_validator.bound(min=1))
 
     wnd_pos: str = _field(validator=_str_validator)
-    wnd_monitor: int = _field(validator=_int_validator)
+    wnd_monitor: int = _field(validator=_int_validator.bound(min=0))
 
     typst_bin: str = _field(validator=_str_validator)
     typst_shared_preamble: str = _field(validator=_str_validator)
