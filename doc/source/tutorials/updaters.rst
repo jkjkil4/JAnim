@@ -216,6 +216,29 @@ JAnim 的各个 ``Updater`` 并非孤立，不仅可以使用 ``.current()`` 获
     :media: _static/tutorial/ForeverUpdater.mp4
     :hide_name:
 
+.. note::
+
+    在预览界面中，``FOREVER`` 的 Updater 即使在之后被中断（例如使用 :meth:`~.Item.become_current` 中断了物件的动画）
+    其在预览界面中显示的时间轴区段标签仍然会延续到结尾，但其实已经结束，你不用担心其是否会仍然存在而导致一些性能问题
+
+    比如下面的这个例子，在第 2s 后 ``FOREVER`` 的 Updater 就已经不再工作了
+
+    .. code-block:: python
+
+        square = Square()
+
+        self.prepare(
+            DataUpdater(
+                square,
+                lambda data, p: data.points.rotate(20 * DEGREES * p.elapsed),
+                duration=FOREVER
+            )
+        )
+        self.forward(2)
+        
+        square.become_current()
+        self.forward()
+
 使用 StepUpdater 与 GroupStepUpdater
 ---------------------------------------------------
 
