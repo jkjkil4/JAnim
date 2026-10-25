@@ -534,7 +534,7 @@ class Test_Misc1(_BatchOfTests):
 
 
 class MotionBlurBasic(Timeline):
-    CONFIG = Config(fps=30, motion_blur_samples=16, motion_blur_shutter=8)
+    CONFIG = Config(fps=30, motion_blur_samples=16, motion_blur_shutter=8 / 30)
 
     def construct(self) -> None:
         blurred = Square(0.8, fill_color=BLUE, fill_alpha=1, stroke_alpha=0)
@@ -573,9 +573,9 @@ class MotionBlurShutterDemo(Timeline):
             )
 
     def construct(self) -> None:
-        for i, (shutter, color) in enumerate(zip([0, 3, 6], [GREY, BLUE, PURPLE])):
+        for i, (shutter, color) in enumerate(zip([0, 3 / 30, 6 / 30], [GREY, BLUE, PURPLE])):
             y = 2.2 - i * 2.2
-            Text(f'shutter = {shutter}', font_size=26, color=color).points.move_to(
+            Text(f'shutter = {shutter:g}s', font_size=26, color=color).points.move_to(
                 [-4.2, y, 0]
             ).r.show()
             with Config(motion_blur_shutter=shutter):
@@ -585,7 +585,7 @@ class MotionBlurShutterDemo(Timeline):
 
 
 class MotionBlurCoexistDemo(Timeline):
-    CONFIG = Config(fps=30, motion_blur_samples=16, motion_blur_shutter=9)
+    CONFIG = Config(fps=30, motion_blur_samples=16, motion_blur_shutter=9 / 30)
 
     def construct(self) -> None:
         translucent = Circle(0.5, fill_color=TEAL, fill_alpha=0.5, stroke_alpha=0)

@@ -59,7 +59,7 @@ class TransformSquare(Timeline):
 class NestedBlurredSquare(Timeline):
     """带运动模糊的方块的子时间轴，内部用较长的快门。"""
 
-    CONFIG = Config(motion_blur_shutter=6)
+    CONFIG = Config(motion_blur_shutter=0.5)
 
     def construct(self):
         square = Square(fill_alpha=1).set_motion_blur().show()
@@ -154,7 +154,13 @@ class MotionBlurTest(unittest.TestCase):
         self.assertTrue(copy.is_motion_blur_enabled())
 
     def test_exposure(self):
-        with Config(pixel_width=96, pixel_height=54, fps=12, motion_blur_samples=4):
+        with Config(
+            pixel_width=96,
+            pixel_height=54,
+            fps=12,
+            motion_blur_samples=4,
+            motion_blur_shutter=1 / 12,
+        ):
             moving = MovingSquare().build(quiet=True)
             stationary = StationarySquare().build(quiet=True)
             plain = PlainSquare().build(quiet=True)
@@ -166,8 +172,35 @@ class MotionBlurTest(unittest.TestCase):
             np.testing.assert_array_equal(regular, original)
             self.assertTrue(np.any((blurred[:, :, 3] > 0) & (blurred[:, :, 3] < 255)))
 
+    def test_fps_independence(self):
+        with Config(
+            pixel_width=96,
+            pixel_height=54,
+            fps=30,
+            motion_blur_samples=4,
+            motion_blur_shutter=0.1,
+        ):
+            image_30 = np.asarray(MovingSquare().build(quiet=True).capture(0.5))
+        with Config(
+            pixel_width=96,
+            pixel_height=54,
+            fps=60,
+            motion_blur_samples=4,
+            motion_blur_shutter=0.1,
+        ):
+            image_60 = np.asarray(MovingSquare().build(quiet=True).capture(0.5))
+
+        np.testing.assert_array_equal(image_30, image_60)
+        self.assertTrue(np.any((image_30[:, :, 3] > 0) & (image_30[:, :, 3] < 255)))
+
     def test_mixed_and_transform(self):
-        with Config(pixel_width=96, pixel_height=54, fps=12, motion_blur_samples=4):
+        with Config(
+            pixel_width=96,
+            pixel_height=54,
+            fps=12,
+            motion_blur_samples=4,
+            motion_blur_shutter=1 / 12,
+        ):
             mixed = MixedSquares().build(quiet=True)
             regular = MixedSquaresNoBlur().build(quiet=True)
             transformed = TransformSquare().build(quiet=True)
@@ -213,7 +246,13 @@ class MotionBlurTest(unittest.TestCase):
         而普通物件会被冻结在 ``center_t``。于是只要场景里**任意一个**物件开了
         运动模糊，相机自身的运动就会把整个画面糊掉 —— 哪怕没有任何人要求。
         """
-        with Config(pixel_width=96, pixel_height=54, fps=12, motion_blur_samples=4):
+        with Config(
+            pixel_width=96,
+            pixel_height=54,
+            fps=12,
+            motion_blur_samples=4,
+            motion_blur_shutter=1 / 12,
+        ):
             moving = MovingCameraWithBlurredItem().build(quiet=True)
             still = StillCameraWithBlurredItem().build(quiet=True)
             marked = MarkedCameraWithBlurredItem().build(quiet=True)
