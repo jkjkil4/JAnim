@@ -580,7 +580,8 @@ class BuiltTimeline:
         buffer = self._motion_blur_buffer
 
         buffer.clear()
-        exposure = shutter / cfg.fps
+        # 快门时长以秒为单位
+        exposure = shutter
         try:
             for idx in range(count):
                 sample_t = max(
