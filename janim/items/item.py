@@ -84,7 +84,7 @@ class _ItemMeta(type):
             for key, info in cls.__dict__.get(CLS_CMPTINFO_NAME, {}).items():
                 if key in fields:
                     fields[key].info = info
-                else:  # key not in datas
+                else:
                     fields[key] = CmptField(info, cls)
 
         self._cmpt_fields = fields
@@ -98,7 +98,11 @@ def mockable(func):
     return func
 
 
-class ItemAttributes(Component):
+class ItemOptions(Component):
+    """
+    物件级别的若干选项开关
+    """
+
     _attrs = ComponentAttrs()
     fix_in_frame = _attrs.bool()
     depth_test = _attrs.bool()
@@ -122,7 +126,7 @@ class Item(ItemRelation['Item'], CmptsStorage, metaclass=_ItemMeta):
 
     renderer_cls = Renderer
 
-    _item_attrs = CmptInfo(ItemAttributes)
+    _options = CmptInfo(ItemOptions)
 
     depth = CmptInfo(Cmpt_Depth[Self], 0)
 
@@ -799,12 +803,12 @@ class Item(ItemRelation['Item'], CmptsStorage, metaclass=_ItemMeta):
         :param root_only: 是否只对根物件开启/禁用深度测试，默认否，即对所有后代物件也应用
         """
         for item in self.walk_self_and_descendants(root_only):
-            item._item_attrs.fix_in_frame = on
+            item._options.fix_in_frame = on
         return self
 
     def is_fix_in_frame(self) -> bool:
         """检查该物件是否被固定在屏幕上"""
-        return self._item_attrs.fix_in_frame
+        return self._options.fix_in_frame
 
     def apply_depth_test(self, on: bool = True, *, root_only: bool = False) -> Self:
         """
@@ -818,12 +822,12 @@ class Item(ItemRelation['Item'], CmptsStorage, metaclass=_ItemMeta):
         :param root_only: 是否只对根物件开启/禁用深度测试，默认否，即对所有后代物件也应用
         """
         for item in self.walk_self_and_descendants(root_only):
-            item._item_attrs.depth_test = on
+            item._options.depth_test = on
         return self
 
     def is_applied_depth_test(self) -> bool:
         """检查该物件是否开启了深度测试"""
-        return self._item_attrs.depth_test
+        return self._options.depth_test
 
     def apply_distance_sort(self, on: bool = True, *, root_only: bool = False) -> Self:
         """
@@ -837,12 +841,12 @@ class Item(ItemRelation['Item'], CmptsStorage, metaclass=_ItemMeta):
         :param root_only: 是否只对根物件开启/禁用深度测试，默认否，即对所有后代物件也应用
         """
         for item in self.walk_self_and_descendants(root_only):
-            item._item_attrs.distance_sort = on
+            item._options.distance_sort = on
         return self
 
     def is_applied_distance_sort(self) -> bool:
         """检查该物件是否开启了距离排序"""
-        return self._item_attrs.distance_sort
+        return self._options.distance_sort
 
     # endregion
 

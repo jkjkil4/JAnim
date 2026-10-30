@@ -14,7 +14,7 @@ from janim.components.impls.rgbas import Cmpt_Rgbas, apart_alpha
 from janim.components.impls.vpoints import Cmpt_VPoints
 from janim.constants import PI
 from janim.items.group import Group
-from janim.items.item import Item, ItemAttributes, mockable
+from janim.items.item import Item, ItemOptions, mockable
 from janim.items.points import Points
 from janim.locale import get_translator
 from janim.render.renderer.r_vitem import VItemRenderer
@@ -29,7 +29,7 @@ _ = get_translator('janim.items.vitem')
 DEFAULT_STROKE_RADIUS = 0.02
 
 
-class VItemAttributes(ItemAttributes):
+class VItemOptions(ItemOptions):
     _attrs = ComponentAttrs()
     stroke_background = _attrs.bool()
     shade_in_3d = _attrs.bool()
@@ -40,7 +40,7 @@ class VItem(Points):
     贝塞尔曲线拼接物件，具体说明请参考 :class:`~.Cmpt_VPoints` 的文档
     """
 
-    _item_attrs = CmptInfo(VItemAttributes)
+    _options = CmptInfo(VItemOptions)
 
     points = CmptInfo(Cmpt_VPoints[Self])
     radius = CmptInfo(Cmpt_Radius[Self], DEFAULT_STROKE_RADIUS)
@@ -92,7 +92,7 @@ class VItem(Points):
             fill_alpha = alpha
 
         if stroke_background is not None:
-            self._item_attrs.stroke_background = stroke_background
+            self._options.stroke_background = stroke_background
         if stroke_radius is not None:
             self.radius.set(stroke_radius, root_only=True)
         self.stroke.set(stroke_color, stroke_alpha, root_only=True)
@@ -100,7 +100,7 @@ class VItem(Points):
         self.glow.set(glow_color, glow_alpha, glow_size, root_only=True)
 
         if shade_in_3d is not None:
-            self._item_attrs.shade_in_3d = shade_in_3d
+            self._options.shade_in_3d = shade_in_3d
 
         return super().apply_style(**kwargs)
 
@@ -113,12 +113,12 @@ class VItem(Points):
         """
         for item in self.walk_self_and_descendants(root_only):
             if isinstance(item, VItem):
-                item._item_attrs.stroke_background = flag
+                item._options.stroke_background = flag
         return self
 
     @property
     def stroke_background(self) -> bool:
-        return self._item_attrs.stroke_background
+        return self._options.stroke_background
 
     @mockable
     def shade_in_3d(self: Item, flag: bool = True, *, root_only: bool = False) -> Self:
@@ -129,7 +129,7 @@ class VItem(Points):
         """
         for item in self.walk_self_and_descendants(root_only):
             if isinstance(item, VItem):
-                item._item_attrs.shade_in_3d = flag
+                item._options.shade_in_3d = flag
         return self
 
     def add_tip(
