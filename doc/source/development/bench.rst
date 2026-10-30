@@ -4,13 +4,17 @@
 准备环境
 -------------------
 
+.. important::
+
+    JAnim 项目使用 `uv <https://github.com/astral-sh/uv>`_ 管理依赖，在本节中我们均使用基于 ``uv`` 的命令行
+
 假设你已经 fork 仓库并 clone 到了本地。
 
-使用 ``cd JAnim`` 进入项目文件夹，然后安装包含基准测试所需依赖的环境：
+使用 ``cd JAnim`` 进入项目文件夹，然后安装必要的环境：
 
 .. code-block:: bash
 
-    pip install -e .[bench]
+    uv sync
 
 运行基准测试
 -------------------
@@ -19,7 +23,7 @@
 
 .. code-block:: bash
 
-   python scripts bench [options]
+    uv run scripts bench [options]
 
 可用选项示例：
 
@@ -35,19 +39,19 @@
 
 .. code-block:: bash
 
-   python scripts bench --untested_tags
+    uv run scripts bench --untested_tags
 
 2. 测试指定标签：
 
 .. code-block:: bash
 
-   python scripts bench --tags v2.1.0 v2.2.0
+    uv run scripts bench --tags v2.1.0 v2.2.0
 
 3. 使用指定哈希测试并自动打开预览：
 
 .. code-block:: bash
 
-   python scripts bench --hashes 78b7c20 2c1fcfd -o
+    uv run scripts bench --hashes 78b7c20 2c1fcfd -o
 
 - 你也可以直接使用 ``asv preview -b`` 在本地预览已经发布的结果。
 

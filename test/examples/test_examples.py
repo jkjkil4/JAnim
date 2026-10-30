@@ -17,6 +17,7 @@ sys.path.append(os.path.dirname(__file__))
 import examples_of_animations as anim_examples
 import examples_of_others as other_examples
 import examples_of_bugs as bug_examples
+import examples_of_misc as misc_examples
 
 WIDTH = 192 * 2
 HEIGHT = 108 * 2
@@ -34,6 +35,11 @@ def get_timelines_for_test() -> list[type[Timeline]]:
     timelines += get_all_timelines_from_module(anim_examples)
     timelines += get_all_timelines_from_module(other_examples)
     timelines += get_all_timelines_from_module(bug_examples)
+    timelines += [
+        cls
+        for cls in get_all_timelines_from_module(misc_examples)
+        if cls.__name__.startswith('Test_')
+    ]
     return timelines
 
 

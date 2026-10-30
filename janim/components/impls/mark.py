@@ -113,7 +113,7 @@ class Cmpt_Mark[ItemT](Component[ItemT]):
             about_point = np.asarray(about_point)
 
         if about_point is None:
-            self.set_points(func(self.get_points()))
+            self.set_points(func(self.get_points().copy()))
         else:
             self.set_points(func(self.get_points() - about_point) + about_point)
 

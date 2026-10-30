@@ -552,7 +552,7 @@ class AnimViewer(QMainWindow):
 
         start_time = time.time()
         gc.collect()
-        _items_relation_registry.cleanup()
+        # _items_relation_registry.cleanup()  # 因为已经注册了 cleanup 的 gc callback，所以这里不需要
         elapsed = time.time() - start_time
         if elapsed >= 0.2:  # 只在超过 0.2s 的时候才提示，如果时间较短则不提示
             log.info(_('GC took {elapsed} s').format(elapsed=f'{elapsed:.2f}'))

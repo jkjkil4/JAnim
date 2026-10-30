@@ -13,13 +13,17 @@
 准备环境
 -------------------
 
+.. important::
+
+    JAnim 项目使用 `uv <https://github.com/astral-sh/uv>`_ 管理依赖，在本节中我们均使用基于 ``uv`` 的命令行
+
 假设你已经 fork 仓库并 clone 到了本地。
 
 使用 ``cd JAnim`` 进入项目文件夹，然后安装必要的环境：
 
 .. code-block:: bash
 
-    pip install -e .
+    uv sync
 
 另外，需要确保已安装 `GNU gettext <https://www.gnu.org/software/gettext/>`_
 
@@ -41,7 +45,7 @@
 
 .. code-block:: bash
 
-    python scripts update-po code <language>
+    uv run scripts update-po code <language>
 
 其中 ``<language>`` 是你要翻译的语言代码（例如 ``ja`` 表示日语， ``de`` 表示德语等）。
 
@@ -64,7 +68,7 @@
 
 .. code-block:: bash
 
-    python scripts check-po code <language>
+    uv run scripts check-po code <language>
 
 该命令会扫描所有 ``.po`` 文件，并列出仍有未翻译（untranslated）或模糊（fuzzy）条目的文件。
 这有助于你了解还需要进行哪些翻译工作。
@@ -82,7 +86,7 @@
 
 .. code-block:: bash
 
-    python scripts format-po code <language>
+    uv run scripts format-po code <language>
 
 这个命令会统一 ``.po`` 的换行与排版策略，减少因为格式差异导致的无关 diff。
 
@@ -96,7 +100,7 @@
 
 .. code-block:: bash
 
-    python scripts compile-po code <language>
+    uv run scripts compile-po code <language>
 
 完整操作示例
 -------------------
@@ -105,30 +109,30 @@
 
 1. 更新翻译文件：
 
-   .. code-block:: bash
+    .. code-block:: bash
 
-       python scripts update-po code ja
+        uv run scripts update-po code ja
 
 2. 编辑 ``janim/locale/ja/LC_MESSAGES/`` 中的 ``.po`` 文件
 
 3. 检查翻译完成情况（可选）：
 
-   .. code-block:: bash
+    .. code-block:: bash
 
-       python scripts check-po code ja
+        uv run scripts check-po code ja
 
 4. 编译翻译文件（仅在必要时）：
 
-   .. code-block:: bash
+    .. code-block:: bash
 
-       python scripts compile-po code ja
+        uv run scripts compile-po code ja
 
 5. 在本地测试翻译效果（运行程序）
 
 6. 提交前统一 ``.po`` 文件格式（可选）：
 
-   .. code-block:: bash
+    .. code-block:: bash
 
-       python scripts format-po code ja
+        uv run scripts format-po code ja
 
 7. 提交更改并创建 Pull Request

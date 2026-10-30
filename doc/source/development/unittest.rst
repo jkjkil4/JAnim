@@ -4,13 +4,17 @@
 准备环境
 -------------------
 
+.. important::
+
+    JAnim 项目使用 `uv <https://github.com/astral-sh/uv>`_ 管理依赖，在本节中我们均使用基于 ``uv`` 的命令行
+
 假设你已经 fork 仓库并 clone 到了本地。
 
-使用 ``cd JAnim`` 进入项目文件夹，然后安装包含测试依赖的环境：
+使用 ``cd JAnim`` 进入项目文件夹，然后安装必要的环境：
 
 .. code-block:: bash
 
-    pip install -e .[test]
+   uv sync
 
 运行测试
 ---------
@@ -19,7 +23,7 @@
 
 .. code-block:: bash
 
-   python scripts test-cov
+   uv run scripts test-cov
 
 这个命令会使用 ``coverage`` 执行测试套件，并对代码覆盖率进行分析，分析结果会被保存为项目根目录下的 ``.coverage`` 文件。
 
@@ -29,7 +33,7 @@
 
    .. code-block:: bash
 
-      python test
+      uv run python test
 
 生成覆盖率报告
 --------------
@@ -38,7 +42,7 @@
 
 .. code-block:: bash
 
-   python scripts test-cov --html
+   uv run scripts test-cov --html
 
 .. note::
 

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: JAnim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 1980-01-01 00:00+0000\n"
+"POT-Creation-Date: 2026-09-18 10:49+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -406,6 +406,10 @@ msgstr ""
 "pixels, rather than the infinitely fine detail of the default rendering mode."
 
 #: ../../source/tutorials/text.rst:200
+msgid "三维空间中的深度测试（ :meth:`~.Item.apply_depht_test` ）无效"
+msgstr "Depth testing in 3D space ( :meth:`~.Item.apply_depht_test` ) is not effective"
+
+#: ../../source/tutorials/text.rst:202
 msgid "总之，设置 ``render='pixel'`` ，即通过只能平移和旋转等简单操作，来换取极高的性能。"
 msgstr ""
 "In short, setting ``render='pixel'`` trades the ability to perform only simple operations such as translation and "

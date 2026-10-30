@@ -53,7 +53,7 @@ class VItem(Points):
 
     renderer_cls = VItemRenderer
 
-    def __init__(self, *points: Vect, fill_alpha=0.0, **kwargs):
+    def __init__(self, *points: Vect, fill_alpha: Alpha | AlphaArray | None = 0.0, **kwargs):
         super().__init__(*points, fill_alpha=fill_alpha, **kwargs)
 
     def init_connect(self) -> None:

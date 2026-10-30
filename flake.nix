@@ -27,10 +27,6 @@
               pkgs.vista-fonts  # Consolas
               pkgs.uv 
               python
-              # alias
-              (pkgs.writeShellScriptBin "janim" ''
-                exec uv run janim "$@"
-              '')
             ] ++ extraPackages;
 
             env = {
@@ -48,12 +44,18 @@
             shellHook = ''
               unset PYTHONPATH
               ${shellHook}
+              export PATH="$PWD/.venv/bin:$PATH"
             '';
           };
 
-        extraPackages = with pkgs; [ ffmpeg ];
+        extraPackages = with pkgs; [ 
+          ffmpeg
+          # doc
+          gettext
+        ];
 
-        guiExtraLibs = with pkgs; [
+        extraLibs = with pkgs; [
+          # gui
           zstd
           fontconfig
           libxkbcommon
@@ -61,6 +63,7 @@
           wayland
           freetype
           portaudio
+          libxcb
         ];
 
       in {
@@ -73,32 +76,10 @@
           gui =
             mkPyuvShell {
               inherit extraPackages;
-              extraLibs = guiExtraLibs;
+              extraLibs = extraLibs;
               shellHook = "uv sync --extra gui";
             };
-          doc =
-            mkPyuvShell {
-              extraPackages = extraPackages ++ (with pkgs; [ 
-                gettext
-              ]);
-              extraLibs = guiExtraLibs;
-              shellHook = "uv sync --extra gui,doc";
-            };
-          test =
-            mkPyuvShell {
-              inherit extraPackages;
-              extraLibs = guiExtraLibs ++ (with pkgs; [
-                libxcb
-              ]);
-              shellHook = "uv sync --extra gui,test";
-            };
-          # bench =
-          #   mkPyuvShell {
-          #     inherit extraPackages;
-          #     shellHook = "uv sync --extra bench";
-          #   };
           default = gui;
         };
       });
 }
-

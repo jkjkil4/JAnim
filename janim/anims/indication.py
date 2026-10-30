@@ -470,7 +470,7 @@ class ApplyWave(Homotopy):
             nudge = there_and_back(t**power)
             return np.array([x, y, z]) + nudge * vect
 
-        super().__init__(item, homotopy, duration=duration, **kwargs)
+        super().__init__(item, homotopy, duration=duration, root_only=root_only, **kwargs)
 
 
 class WiggleOutThenIn(DataUpdater):

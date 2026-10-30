@@ -9,21 +9,11 @@
 以下给出了两个示例及其解析：
 
 .. janim-example:: GroupExample1
+    :extract-from-test:
+    :no-construct:
     :media: _static/tutorial/GroupExample1.mp4
     :hide_name:
     :ref: :class:`~.Group` :meth:`~.Cmpt_Points.arrange` :meth:`~.Cmpt_Rgbas.fade`
-
-    group = Group(
-        Star(), Circle(), RegularPolygon(6),
-        color=BLUE,
-        fill_alpha=1
-    )
-    group.points.arrange(RIGHT, buff=MED_LARGE_BUFF)
-
-    self.play(FadeIn(group))
-    self.play(group(VItem).anim.fill.fade(0.7))
-    self.play(Rotate(group, TAU), duration=3)
-    self.play(FadeOut(group, lag_ratio=0.5))
 
 .. code-desc::
 
@@ -76,26 +66,11 @@
     默认 ``0`` 表示同时淡出，这里设置了 ``0.5`` 表示前一个淡出 50% 后开始淡出下一个。
 
 .. janim-example:: GroupExample2
+    :extract-from-test:
+    :no-construct:
     :media: _static/tutorial/GroupExample2.mp4
     :hide_name:
     :ref: :class:`~.Group` :meth:`~.Cmpt_Points.arrange` :class:`~.Indicate`
-
-    group = Group(
-        Star(color=GOLD, fill_alpha=0.5),
-        Circle(color=RED),
-        RegularPolygon(6, color=BLUE, fill_alpha=0.5),
-    )
-    group.points.arrange(RIGHT, buff=MED_LARGE_BUFF)
-
-    self.play(FadeIn(group))
-
-    self.play(Indicate(group))
-    for sub in group:
-        self.play(Indicate(sub))
-
-    self.play(group[1].anim.fill.set(alpha=0.5))
-
-    self.play(FadeOut(group, lag_ratio=0.5))
 
 .. code-desc::
 
@@ -135,32 +110,11 @@
 显而易见，我们完全可以把一个 :class:`~.Group` 作为另一个 :class:`~.Group` 的子物件（这里笔者随便搓了一个 ``HelloJAnimExample`` 代码的示意动画）：
 
 .. janim-example:: NestedGroupExample
+    :extract-from-test:
+    :no-construct:
     :media: _static/tutorial/NestedGroupExample.mp4
     :hide_name:
     :ref: :class:`~.Text` :class:`~.Group` :class:`~.Arrow` :class:`~.Transform`
-
-    txt = Text('self.play(Transform(circle, square))')
-
-    shapes = Group(
-        Circle(color=BLUE),
-        Arrow(color=YELLOW),
-        Square(color=GREEN, fill_alpha=0.5)
-    )
-    shapes.points.scale(0.5).arrange(RIGHT, buff=MED_LARGE_BUFF)
-
-    group = Group(txt, shapes)
-    group.points.arrange(DOWN, aligned_edge=LEFT)
-
-    self.play(Write(group))
-    self.forward(0.5)
-    self.play(
-        FadeOut(txt),
-        FadeOut(shapes[1:]),
-        shapes[0].anim.points.scale(2).to_center()
-    )
-    self.play(
-        Transform(shapes[0], Square(color=GREEN, fill_alpha=0.5))
-    )
 
 这里将一个“圆形指向方形”的 ``shapes`` 组对齐到文字的下方，然后又和文字创建了一个 ``group`` 组。
 

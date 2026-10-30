@@ -306,10 +306,19 @@ class TimelineCore:
         if as_time is None:
             as_time = Animation.global_t_ctx.get(None)
 
+        # as_time is None 表明是在 construct 中直接调用的，否则是在 Updater 等情况中调用的
         if as_time is None:
-            as_time = self.current_time
+            # 当物件在 construct 中有变更但还没记录时，使用 construct 中的状态
+            # 否则设置 as_time 计算当前时刻的状态
+            appr = self.item_appearances.get(item, None)
+            if appr is None or appr.stack.may_changed():
+                root = item.store()
+            else:
+                as_time = self.current_time
+                root = self.compute_item(item, self.current_time, False)
+        else:
+            root = self.compute_item(item, as_time, False)
 
-        root = self.compute_item(item, as_time, False)
         if not root_only:
             child_restorer = partial(self.item_current, as_time=as_time)
             root._unstore(child_restorer)

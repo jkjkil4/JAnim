@@ -364,7 +364,7 @@ class DynamicTypst(TypstText):
         else:
             updater = ItemUpdater(
                 self,
-                lambda p: self.current()._rerender(),
+                lambda p: self.current(root_only=True)._rerender(),
                 rate_func=rate_func,
             )
 
