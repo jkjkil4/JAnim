@@ -258,8 +258,8 @@ class NamedGroupMixin[T](Group[T]):
         return copy_item
 
     def _unstore(self, child_restorer) -> None:
+        self._named_indices = self._stored.named_indices.copy()
         super()._unstore(child_restorer)
-        self._named_indices = self._stored_named_indices.copy()
 
     def get_named_indices(self) -> dict[str, int]:
         return self._stored.named_indices if self._stored else self._named_indices
