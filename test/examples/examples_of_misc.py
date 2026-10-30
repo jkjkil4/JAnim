@@ -538,7 +538,7 @@ class MotionBlurBasic(Timeline):
 
     def construct(self) -> None:
         blurred = Square(0.8, fill_color=BLUE, fill_alpha=1, stroke_alpha=0)
-        blurred.set_motion_blur().show()
+        blurred.apply_motion_blur().show()
         blurred.points.shift(LEFT * 2 + UP * 1.2)
 
         sharp = Square(0.8, fill_color=RED, fill_alpha=1, stroke_alpha=0).show()
@@ -565,7 +565,7 @@ class MotionBlurShutterDemo(Timeline):
 
         def construct(self) -> None:
             square = Square(0.75, fill_color=self.color, fill_alpha=1, stroke_alpha=0)
-            square.set_motion_blur().show()
+            square.apply_motion_blur().show()
             square.points.shift(LEFT * 2.4 + UP * self.y)
             self.play(
                 square.anim(rate_func=linear).points.shift(RIGHT * 4),
@@ -589,11 +589,11 @@ class MotionBlurCoexistDemo(Timeline):
 
     def construct(self) -> None:
         translucent = Circle(0.5, fill_color=TEAL, fill_alpha=0.5, stroke_alpha=0)
-        translucent.set_motion_blur().show()
+        translucent.apply_motion_blur().show()
         translucent.points.shift(LEFT * 2.4 + UP * 1.7)
 
         effected = Square(0.9, fill_color=RED, fill_alpha=0.9, stroke_alpha=0)
-        effected.set_motion_blur().show()
+        effected.apply_motion_blur().show()
         effected.points.shift(LEFT * 2.4)
 
         frozen = Square(0.9, fill_color=GREY_D, fill_alpha=0.95, stroke_alpha=0).show()

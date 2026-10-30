@@ -856,7 +856,7 @@ class Item(ItemRelation['Item'], metaclass=_ItemMeta):
         """检查该物件是否被固定在屏幕上"""
         return self._fix_in_frame
 
-    def set_motion_blur(self, on: bool = True, *, root_only: bool = False) -> Self:
+    def apply_motion_blur(self, on: bool = True, *, root_only: bool = False) -> Self:
         """
         开启时域运动模糊
 
@@ -866,7 +866,7 @@ class Item(ItemRelation['Item'], metaclass=_ItemMeta):
             item._motion_blur = on
         return self
 
-    def is_motion_blur_enabled(self) -> bool:
+    def is_applied_motion_blur(self) -> bool:
         return self._motion_blur
 
     def apply_depth_test(self, on: bool = True, *, root_only: bool = False) -> Self:
