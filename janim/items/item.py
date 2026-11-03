@@ -18,7 +18,7 @@ from janim.locale import get_translator
 from janim.logger import log
 from janim.render.base import Renderer
 from janim.typing import SupportsApartAlpha
-from janim.utils.data import AlignedData, ContextSetter
+from janim.utils.data import AlignedData
 from janim.utils.iterables import resize_preserving_order
 from janim.utils.paths import PathFunc, straight_path
 
@@ -146,6 +146,7 @@ class Item(ItemRelation['Item'], metaclass=_ItemMeta):
         self._fix_in_frame = False
         self._depth_test = False
         self._distance_sort = False
+        self._motion_blur = False
 
         self.reset_additional_states()
 
@@ -603,6 +604,7 @@ class Item(ItemRelation['Item'], metaclass=_ItemMeta):
             or self._fix_in_frame != other._fix_in_frame
             or self._depth_test != other._depth_test
             or self._distance_sort != other._distance_sort
+            or self._motion_blur != other._motion_blur
         ):
             return False
         for key, cmpt in self.components.items():
@@ -853,6 +855,19 @@ class Item(ItemRelation['Item'], metaclass=_ItemMeta):
     def is_fix_in_frame(self) -> bool:
         """检查该物件是否被固定在屏幕上"""
         return self._fix_in_frame
+
+    def apply_motion_blur(self, on: bool = True, *, root_only: bool = False) -> Self:
+        """
+        开启时域运动模糊
+
+        默认同时作用于后代物件，传入 ``root_only=True`` 则只修改物件自身
+        """
+        for item in self.walk_self_and_descendants(root_only):
+            item._motion_blur = on
+        return self
+
+    def is_applied_motion_blur(self) -> bool:
+        return self._motion_blur
 
     def apply_depth_test(self, on: bool = True, *, root_only: bool = False) -> Self:
         """

@@ -52,23 +52,42 @@ def qt_framebuffer_patch(ctx: mgl.Context):
 
 
 class FrameBuffer:
+    """
+    对 OpenGL 帧缓冲对象的封装
+
+    :param ctx: 用于创建帧缓冲对象的 OpenGL 上下文
+    :param pw: 帧宽度
+    :param ph: 帧高度
+    :param rgb: 清空帧缓冲时使用的颜色（每个分量均为 0.0~1.0 的值）
+    :param transparent: 帧缓冲是否透明，这会影响到清空帧缓冲时使用的不透明度是 1.0 还是 0.0
+    :param no_clip: 帧缓冲是否保留超出标准颜色值的数值，这会影响到帧缓冲纹理的 ``dtype`` 是 ``f1`` 还是 ``f4``
+    """
+
     def __init__(
-        self, ctx: mgl.Context, pw: int, ph: int, rgb: tuple[float, float, float], transparent: bool
+        self,
+        ctx: mgl.Context,
+        pw: int,
+        ph: int,
+        rgb: tuple[float, float, float],
+        transparent: bool,
+        *,
+        no_clip: bool = False,
     ):
         self._clear_params = (*rgb, float(not transparent))
         self._transparent = transparent
 
         self.ctx = ctx
-        self._fbo = self._create_framebuffer(ctx, pw, ph)
+        self._fbo = self._create_framebuffer(ctx, pw, ph, no_clip)
 
     @staticmethod
-    def _create_framebuffer(ctx: mgl.Context, pw: int, ph: int) -> mgl.Framebuffer:
+    def _create_framebuffer(ctx: mgl.Context, pw: int, ph: int, no_clip: bool) -> mgl.Framebuffer:
         with qt_framebuffer_patch(ctx):
             return ctx.framebuffer(
                 color_attachments=ctx.texture(
                     (pw, ph),
                     components=4,
                     samples=0,
+                    dtype='f4' if no_clip else 'f1',
                 ),
                 depth_attachment=ctx.depth_renderbuffer((pw, ph), samples=0),
             )
@@ -175,4 +194,6 @@ class FrameBuffer:
         return Image.frombytes('RGBA', self._fbo.size, self.read(), 'raw', 'RGBA', 0, -1)
 
     def release(self) -> None:
+        self._fbo.color_attachments[0].release()
+        self._fbo.depth_attachment.release()
         self._fbo.release()

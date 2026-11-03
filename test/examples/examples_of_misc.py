@@ -531,3 +531,136 @@ class Test_Misc1(_BatchOfTests):
         Creation,
     ]
     alpha = 0.6
+
+
+class MotionBlurBasic(Timeline):
+    CONFIG = Config(fps=30, motion_blur_samples=16, motion_blur_shutter=8 / 30)
+
+    def construct(self) -> None:
+        blurred = Square(0.8, fill_color=BLUE, fill_alpha=1, stroke_alpha=0)
+        blurred.apply_motion_blur().show()
+        blurred.points.shift(LEFT * 2 + UP * 1.2)
+
+        sharp = Square(0.8, fill_color=RED, fill_alpha=1, stroke_alpha=0).show()
+        sharp.points.shift(LEFT * 2 - UP * 1.2)
+
+        Text('set_motion_blur()', font_size=26, color=BLUE).points.move_to([0, 2.6, 0]).r.show()
+        Text('default: no blur', font_size=26, color=RED).points.move_to([0, -2.6, 0]).r.show()
+
+        self.play(
+            blurred.anim(rate_func=linear).points.shift(RIGHT * 4),
+            sharp.anim(rate_func=linear).points.shift(RIGHT * 4),
+            duration=1.6,
+        )
+
+
+class MotionBlurShutterDemo(Timeline):
+    CONFIG = Config(fps=30, motion_blur_samples=16)
+
+    class _Lane(Timeline):
+        def __init__(self, y: float = 0.0, color: JAnimColor = WHITE):
+            super().__init__()
+            self.y = y
+            self.color = color
+
+        def construct(self) -> None:
+            square = Square(0.75, fill_color=self.color, fill_alpha=1, stroke_alpha=0)
+            square.apply_motion_blur().show()
+            square.points.shift(LEFT * 2.4 + UP * self.y)
+            self.play(
+                square.anim(rate_func=linear).points.shift(RIGHT * 4),
+                duration=1.4,
+            )
+
+    def construct(self) -> None:
+        for i, (shutter, color) in enumerate(zip([0, 3 / 30, 6 / 30], [GREY, BLUE, PURPLE])):
+            y = 2.2 - i * 2.2
+            Text(f'shutter = {shutter:g}s', font_size=26, color=color).points.move_to(
+                [-4.2, y, 0]
+            ).r.show()
+            with Config(motion_blur_shutter=shutter):
+                self._Lane(y, color).build(quiet=True).to_item(keep_last_frame=True).show()
+
+        self.forward(1.4)
+
+
+class MotionBlurCoexistDemo(Timeline):
+    CONFIG = Config(fps=30, motion_blur_samples=16, motion_blur_shutter=9 / 30)
+
+    def construct(self) -> None:
+        translucent = Circle(0.5, fill_color=TEAL, fill_alpha=0.5, stroke_alpha=0)
+        translucent.apply_motion_blur().show()
+        translucent.points.shift(LEFT * 2.4 + UP * 1.7)
+
+        effected = Square(0.9, fill_color=RED, fill_alpha=0.9, stroke_alpha=0)
+        effected.apply_motion_blur().show()
+        effected.points.shift(LEFT * 2.4)
+
+        frozen = Square(0.9, fill_color=GREY_D, fill_alpha=0.95, stroke_alpha=0).show()
+        frozen.points.shift(LEFT * 2.4 - UP * 1.7)
+
+        SimpleFrameEffect(
+            effected,
+            shader='f_color = frame_texture(v_texcoord); f_color.rgb *= vec3(0.55, 1.0, 0.85);',
+        ).show()
+
+        labels = ['translucent + blur', 'FrameEffect + blur', 'not enabled (frozen)']
+        for text, y in zip(labels, [1.7, 0, -1.7]):
+            Text(text, font_size=24, color=GREY).points.move_to([4.2, y, 0]).r.show()
+
+        self.play(
+            translucent.anim(rate_func=linear).points.shift(RIGHT * 4.8),
+            effected.anim(rate_func=linear).points.shift(RIGHT * 4.8),
+            frozen.anim(rate_func=linear).points.shift(RIGHT * 4.8),
+            duration=1.6,
+        )
+
+
+class MotionBlurDiagram(Timeline):
+    def construct(self) -> None:
+        gap = 2.4  # 相邻两帧在示意图上的间距，代表 1 / fps
+        shutter = 3
+        samples = 8
+
+        axis = Line([-6.4, 0, 0], [6.4, 0, 0], color=GREY)
+        window = Rect(gap * shutter, 1.9, fill_color=BLUE, fill_alpha=0.18, stroke_alpha=1, color=BLUE_C)
+        centers = Group(
+            *[
+                Line([x, -1.1, 0], [x, 1.1, 0], color=GREY)
+                for x in (-4.8, -2.4, 0.0, 2.4, 4.8)
+            ]
+        )
+        samples_group = Group(
+            *[
+                Circle(0.06, fill_alpha=1, stroke_alpha=0, color=YELLOW)
+                .points.move_to([(i + 0.5 - samples / 2) * gap * shutter / samples, 0, 0])
+                .r
+                for i in range(samples)
+            ]
+        )
+        labels = Group(
+            Text('frame time t', font_size=22, color=GREY).points.move_to([0, 1.75, 0]).r,
+            Text('1 / fps', font_size=22, color=GREY).points.move_to([3.6, 1.75, 0]).r,
+            Text(
+                'shutter interval = motion_blur_shutter / fps', font_size=22, color=BLUE
+            ).points.move_to([0, -1.75, 0]).r,
+            Text('motion_blur_samples samples per frame', font_size=22, color=YELLOW)
+            .points.move_to([0, -2.45, 0])
+            .r,
+            Text('(only items with set_motion_blur() are sampled)', font_size=20, color=GREY)
+            .points.move_to([0, -3.05, 0])
+            .r,
+        )
+
+        Group(axis, window, centers, samples_group, labels).show()
+        self.forward(1)
+
+
+class Test_MotionBlur(_BatchOfTests):
+    lst = [
+        MotionBlurBasic,
+        MotionBlurShutterDemo,
+        MotionBlurCoexistDemo,
+        MotionBlurDiagram,
+    ]
+    alpha = 1
