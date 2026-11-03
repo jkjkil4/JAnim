@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-05 14:35+0800\n"
+"POT-Creation-Date: 2026-08-19 11:11+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,17 +17,17 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: janim/items/typst/typst.py:305
+#: janim/items/typst/typst.py:311
 #, python-brace-format
 msgid "No matches found for {pattern}"
 msgstr ""
 
-#: janim/items/typst/typst.py:311
+#: janim/items/typst/typst.py:317
 #, python-brace-format
 msgid "{ordinal} is out of range for {count} matches"
 msgstr ""
 
-#: janim/items/typst/typst.py:326
+#: janim/items/typst/typst.py:332
 #, python-brace-format
 msgid "ordinal {} is invalid"
 msgstr ""

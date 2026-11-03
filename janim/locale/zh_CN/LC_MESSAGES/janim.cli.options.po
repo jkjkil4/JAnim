@@ -37,8 +37,7 @@ msgid "Watches the file and rebuild on changes"
 msgstr "监听文件并在变化时重新构建"
 
 #: janim/cli/options.py:62
-msgid ""
-"Output video format (mp4 by default, webm/mov for transparent background)"
+msgid "Output video format (mp4 by default, webm/mov for transparent background)"
 msgstr "输出视频的格式（默认 mp4；透明背景需使用 webm/mov）"
 
 #: janim/cli/options.py:69
@@ -47,11 +46,9 @@ msgstr "输出音频的格式（仅在单独输出音频时有效）"
 
 #: janim/cli/options.py:81
 msgid ""
-"Video with audio (default; will be replaced by --video if there is no audio, "
-"and by both --video and --audio if the format is GIF)"
-msgstr ""
-"带有音频的视频（默认，当没有音频时会被 --video 替代，当格式为 GIF 时会被 --"
-"video 和 --audio 替代）"
+"Video with audio (default; will be replaced by --video if there is no audio, and by both --video and --audio if the "
+"format is GIF)"
+msgstr "带有音频的视频（默认，当没有音频时会被 --video 替代，当格式为 GIF 时会被 --video 和 --audio 替代）"
 
 #: janim/cli/options.py:90
 msgid "Video only"
