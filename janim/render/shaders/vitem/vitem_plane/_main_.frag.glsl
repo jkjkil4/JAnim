@@ -14,6 +14,8 @@ out vec4 f_color;
 #include "compute_depth.glsl"
 #include "get_color.glsl"
 
+#include "../integrate_glow.glsl"
+
 #include "../../../includes/infinity.glsl"
 
 #[JA_FINISH_UP_UNIFORMS]
@@ -66,19 +68,7 @@ void main()
         if (is_inner) {
             factor = 1.0 - (-fill_sgn_d) / JA_ANTI_ALIAS_RADIUS / 2.0;
         } else {
-            factor = 0.0;
-
-            int start_idx = 0;
-            float sp_factor;
-
-            while (true) {
-                get_subpath_glow(start_idx, lim, start_idx, sp_factor);
-                factor = max(factor, sp_factor);
-
-                if (start_idx >= lim)
-                    break;
-                start_idx += 2;
-            }
+            factor = get_glow_factor(lim);
         }
 
         if (factor > 0.0) {
