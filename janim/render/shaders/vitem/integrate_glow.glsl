@@ -135,7 +135,7 @@ void integrate_subpath_glow(
     }
 
     // 在 vitem-curve 中会设置这个，因为 vitem-curve 中没有 is_fill_transparent
-    #ifdef NO_CURVE_GLOW_FOR_CLOSED_FILL
+    #ifdef INTEGRATE_GLOW_IN_VITEM_CURVE
     if (!is_fill_transparent) {
         vec2 A = get_point(end_idx);
         vec2 C = get_point(start_idx);
@@ -154,12 +154,20 @@ float get_glow_factor(int lim)
 
     while (true) {
         integrate_subpath_glow(start_idx, lim, start_idx, sp_factor);
-        factor = max(factor, sp_factor);
+        #ifdef INTEGRATE_GLOW_IN_VITEM_CURVE
+        factor += sp_factor;
+        #else
+        if (is_fill_transparent) {
+            factor += sp_factor;
+        } else {
+            factor = max(factor, sp_factor);
+        }
+        #endif
 
         if (start_idx >= lim)
             break;
         start_idx += 2;
     }
 
-    return factor;
+    return min(1.0, factor);
 }

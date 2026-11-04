@@ -37,16 +37,5 @@ vec4 get_vitem_curve_color(float d, int idx)
     vec4 stroke_color = mix(get_color(anchor_idx), get_color(anchor_idx + 1), ratio);
     stroke_color.a *= smoothstep(1, -1, (d - radius) / JA_ANTI_ALIAS_RADIUS);
 
-    vec4 result_color = stroke_color;
-
-    if (glow_color.a != 0.0) {
-        float factor = 1.0 - d / glow_size;
-        if (0.0 < factor && factor <= 1.0) {
-            vec4 f_glow_color = glow_color;
-            f_glow_color.a *= factor * factor;
-            result_color = blend_color(result_color, f_glow_color);
-        }
-    }
-
-    return result_color;
+    return stroke_color;
 }
