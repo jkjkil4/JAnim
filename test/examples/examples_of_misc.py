@@ -521,6 +521,33 @@ class Creation(Timeline):
         )
 
 
+class TestGlow(Timeline):
+    def construct(self):
+        # depth_test 用于测试 VItemCurveRenderer 下的情况
+        def get_g(text: str, dir: float, round: bool):
+            g = Group(
+                Square(),
+                Text(text),
+                VItem(LEFT, DOWN * 5 * dir, ORIGIN),
+                VItem(LEFT, UP * 5 * dir, ORIGIN, fill_alpha=1),
+                Polygon(LEFT, DOWN * dir, ORIGIN),
+                glow_alpha=0.8,
+                glow_size=1,
+                glow_color=BLUE
+            )
+            g.points.arrange(buff=1)
+            if round:
+                g[0].points.make_approximately_smooth()
+            return g
+
+        g1 = get_g('A', 1, False).show()
+        g2 = get_g('P', -1, True)
+
+        self.forward()
+        self.play(Transform(g1, g2))
+        self.forward()
+
+
 class Test_Misc1(_BatchOfTests):
     lst = [
         DoDetectChange,
@@ -529,5 +556,6 @@ class Test_Misc1(_BatchOfTests):
         TestVItemRendering,
         Indication,
         Creation,
+        TestGlow,
     ]
     alpha = 0.6

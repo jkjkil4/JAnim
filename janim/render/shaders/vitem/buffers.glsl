@@ -90,3 +90,11 @@ vec4 get_fill(int anchor_idx) {
 
 #endif
 
+
+#ifdef COMPATIBILITY
+uniform int lim;
+int get_lim() { return lim; }
+#else
+int get_lim() { return (points.length() - 1) / 2 * 2; }
+#endif
+

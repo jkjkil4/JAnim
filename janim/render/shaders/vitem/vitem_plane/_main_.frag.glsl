@@ -1,13 +1,6 @@
 #include "inputs.glsl"
 #include "../buffers.glsl"
 
-#ifdef COMPATIBILITY
-uniform int lim;
-int get_lim() { return lim; }
-#else
-int get_lim() { return (points.length() - 1) / 2 * 2; }
-#endif
-
 out vec4 f_color;
 
 #include "subpath_attr.glsl"

@@ -135,7 +135,7 @@ void integrate_subpath_glow(
     }
 
     // 在 vitem-curve 中会设置这个，因为 vitem-curve 中没有 is_fill_transparent
-    #ifdef INTEGRATE_GLOW_IN_VITEM_CURVE
+    #ifndef INTEGRATE_GLOW_IN_VITEM_CURVE
     if (!is_fill_transparent) {
         vec2 A = get_point(end_idx);
         vec2 C = get_point(start_idx);

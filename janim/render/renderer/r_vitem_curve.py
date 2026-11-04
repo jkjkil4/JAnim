@@ -43,6 +43,8 @@ class VItemCurveRenderer(Renderer):
         self.prog = get_program_from_file_prefix(self.shader_path_compatibility)
         self.init_common()
 
+        self.u_lim = self.uniform(self.prog, 'lim', gl.GL_INT)
+
         self.sampb_mapped_points, self.sampb_radius, self.sampb_stroke_color = gl.glGenTextures(3)
 
         self.loc_mapped_points = gl.glGetUniformLocation(self.prog.glo, 'points')
@@ -150,6 +152,7 @@ class VItemCurveRenderer(Renderer):
         gl.glUniform1i(self.loc_radius, 1)
         gl.glUniform1i(self.loc_stroke_color, 2)
 
+        self.u_lim.write_int((len(new_attrs.points) - 1) // 2 * 2)
         gl.glActiveTexture(gl.GL_TEXTURE0)
         gl.glBindTexture(gl.GL_TEXTURE_BUFFER, self.sampb_mapped_points)
         gl.glActiveTexture(gl.GL_TEXTURE1)
