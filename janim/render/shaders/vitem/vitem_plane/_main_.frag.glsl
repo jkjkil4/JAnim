@@ -54,8 +54,39 @@ void main()
         start_idx += 2;
     }
 
-    f_color = get_vitem_color(stroke_d, fill_d * fill_sgn, idx, lim);
+    float fill_sgn_d = fill_d * fill_sgn;
+    f_color = get_vitem_color(stroke_d, fill_sgn_d, idx, lim);
     compute_depth_if_needed();
+
+    if (glow_color.a != 0.0) {
+        // 对内部的区域，直接按照 -fill_sgn_d 处理 anti-alias
+        // 对外部的区域，计算 glow
+        bool is_inner = !is_fill_transparent && fill_sgn_d <= 0.0;
+        float factor;
+        if (is_inner) {
+            factor = 1.0 - (-fill_sgn_d) / JA_ANTI_ALIAS_RADIUS / 2.0;
+        } else {
+            factor = 0.0;
+
+            int start_idx = 0;
+            float sp_factor;
+
+            while (true) {
+                get_subpath_glow(start_idx, lim, start_idx, sp_factor);
+                factor = max(factor, sp_factor);
+
+                if (start_idx >= lim)
+                    break;
+                start_idx += 2;
+            }
+        }
+
+        if (factor > 0.0) {
+            vec4 f_glow_color = glow_color;
+            f_glow_color.a *= factor * factor;
+            f_color = blend_color(f_color, f_glow_color);
+        }
+    }
 
     #if !defined(POLYGON_LINES) && !defined(SDF_PLANE)
     if (f_color.a == 0.0)
