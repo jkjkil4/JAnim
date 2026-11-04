@@ -83,7 +83,7 @@ void main()
 
         if (factor > 0.0) {
             vec4 f_glow_color = glow_color;
-            f_glow_color.a *= factor * factor;
+            f_glow_color.a *= factor;
             f_color = blend_color(f_color, f_glow_color);
         }
     }
