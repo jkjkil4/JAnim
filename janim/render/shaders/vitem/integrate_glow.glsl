@@ -1,5 +1,5 @@
 // 该函数由 LLM 编写，未 review
-// 主要向 LLM 提及了参数约定和线元光强的衰减系数：max(0.0, dist / glow_size)
+// 主要向 LLM 提及了参数约定和线元光强的衰减系数：max(0.0, dist / glow_size) ^ 2
 float integrate_glow(vec2 A, vec2 B, float dalpha) {
     vec2 D = B - A;
     vec2 U = A - v_coord;
