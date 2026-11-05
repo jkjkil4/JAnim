@@ -82,8 +82,8 @@ float integrate_bezier_glow(
     float dalpha
 ) {
     float result = 0.0;
-    // 把曲线切成四段计算，效果已经足够
-    const int N = 4;
+    // 把曲线切成八段计算，效果也许足够
+    const int N = 8;
 
     vec2 prev = A;
 
