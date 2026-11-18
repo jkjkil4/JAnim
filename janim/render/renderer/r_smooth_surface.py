@@ -80,3 +80,14 @@ class SmoothSurfaceRenderer(Renderer):
 
         with self.depth_test_if_enabled(self.ctx, item):
             self.vao.render(mgl.TRIANGLES, vertices=new_indices.size)
+
+    def release(self) -> None:
+        if not self.initialized:
+            return
+
+        self.vao.release()
+        self.vbo_points.release()
+        self.vbo_normals.release()
+        self.ibo.release()
+
+        self.initialized = False

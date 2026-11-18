@@ -29,7 +29,7 @@ class Animation:
 
     .. warning::
 
-        动画对象不能复用，例如这样会导致意外行为：
+        动画对象不能复用，例如这样是不允许的：
 
         .. code-block:: python
 

@@ -510,6 +510,7 @@ class ItemUpdater(Animation):
             self.render_group_fn,
             None if self.item is None else [self.item],
         )
+        self.timeline._release_hooks.append(self._release_renderers)
 
         if self.item is None:
             return
@@ -564,6 +565,10 @@ class ItemUpdater(Animation):
         if renderer is None:
             renderer = self.renderers[item.__class__] = item.renderer_cls()
         return renderer
+
+    def _release_renderers(self) -> None:
+        for renderer in self.renderers.values():
+            renderer.release()
 
     def render_group_fn(self):
         global_t = Animation.global_t_ctx.get()

@@ -47,6 +47,10 @@ class Renderer:
 
     def render(self, item) -> None: ...
 
+    def release(self) -> None:
+        """释放该渲染器所持有的 OpenGL 资源"""
+        ...
+
     @staticmethod
     def uniform(prog: mgl.Program, name: str, gl_type: int) -> gl.FastUniform:
         return gl.FastUniform(prog.glo, name, gl_type)

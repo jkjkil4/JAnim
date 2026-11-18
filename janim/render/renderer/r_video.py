@@ -90,6 +90,21 @@ class VideoRenderer(Renderer):
         with self.depth_test_if_enabled(self.ctx, item):
             self.vao.render(mgl.TRIANGLE_STRIP)
 
+    def release(self) -> None:
+        if not self.initialized:
+            return
+
+        self.vao.release()
+        self.vbo_points.release()
+        self.vbo_color.release()
+        self.vbo_texcoords.release()
+
+        if self.texture is not None:
+            self.texture.release()
+            self.texture = None
+
+        self.initialized = False
+
     def update_texture(self, item: Video) -> None:
         if self.texture is None:
             width, height = item.info.width, item.info.height
