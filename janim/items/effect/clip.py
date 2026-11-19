@@ -510,6 +510,10 @@ class RectClip(FrameEffect, FrameRect):
             if item._border:
                 self.vitem_renderer.render(item)
 
+        def release(self) -> None:
+            self.effect_renderer.release()
+            self.vitem_renderer.release()
+
     renderer_cls = RCRenderer
 
     _anchor = CmptInfo(Cmpt_Points[Self])

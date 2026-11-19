@@ -34,3 +34,7 @@ class VItemRenderer(Renderer):
 
         else:
             self.plane_renderer.render(item)
+
+    def release(self) -> None:
+        self.plane_renderer.release()
+        self.curve_renderer.release()

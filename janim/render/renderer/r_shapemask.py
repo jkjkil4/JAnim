@@ -107,3 +107,15 @@ class ShapeMaskRenderer(Renderer):
         self.u_invert.write_float(item.invert._value)
 
         self.vao.render(mgl.TRIANGLE_STRIP)
+
+    def release(self) -> None:
+        if not self.initialized:
+            return
+
+        self.vao.release()
+        self.vbo.release()
+        self.framebuffer_content.release()
+        self.framebuffer_mask.release()
+        self._mask_vitem_renderer.release()
+
+        self.initialized = False
