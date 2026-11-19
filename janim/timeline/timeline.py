@@ -353,6 +353,26 @@ class BuiltTimeline:
         self.capture_ctx: mgl.Context | None = None
         self.capture_framebuffer: FrameBuffer | None = None
 
+    def release(self) -> None:
+        """
+        释放该 BuiltTimeline 所涉及的 OpenGL 资源
+        """
+        for appr in self.timeline.item_appearances.values():
+            if appr.renderer is not None:
+                appr.renderer.release()
+
+        for item in self.timeline.subtimeline_items:
+            item._built.release()
+
+        for item in self.timeline.playback_control_items:
+            item._built.release()
+
+        for hook in self.timeline._release_hooks:
+            hook()
+
+        if self.capture_framebuffer is not None:
+            self.capture_framebuffer.release()
+
     @property
     def cfg(self) -> Config | ConfigGetter:
         """
@@ -496,26 +516,6 @@ class BuiltTimeline:
             return False
 
         return True
-
-    def release(self) -> None:
-        """
-        释放该 BuiltTimeline 所涉及的 OpenGL 资源
-        """
-        for appr in self.timeline.item_appearances.values():
-            if appr.renderer is not None:
-                appr.renderer.release()
-
-        for item in self.timeline.subtimeline_items:
-            item._built.release()
-
-        for item in self.timeline.playback_control_items:
-            item._built.release()
-
-        for hook in self.timeline._release_hooks:
-            hook()
-
-        if self.capture_framebuffer is not None:
-            self.capture_framebuffer.release()
 
     def _uniforms_context(self, data: RenderData):
         camera_info = data.camera_info
