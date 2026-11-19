@@ -123,7 +123,7 @@ class GLWidget(QOpenGLWidget):
         self.qfuncs.glClear(0x00004000 | 0x00000100)  # GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT
 
         with self.profiler.record_frame() if self.profiler is not None else nullcontext():
-            ret = self.built.render_all(self.ctx, self.global_t, camera=self.inject_camera)
+            ret = self.built.render_frame(self.ctx, self.global_t, camera=self.inject_camera)
 
         self.rendered.emit()
         if not ret:

@@ -101,8 +101,8 @@ msgstr "For available configurations, see also :class:`~.Config`"
 
 #: janim.timeline.timeline.Timeline.config_context:1 of
 msgid ""
-"在 :meth:`build` 方法中会发生第一次 ``with`` 调用， 将当前的 ``config_ctx_var`` 上下文，与自己及各个父类"
-"的 :py:obj:`CONFIG` ， 合并为该 Timeline 对象的 ``self._config_context``"
+"在 :meth:`build` 方法中会发生第一次 ``with`` 调用， 将当前的 ``config_ctx_var`` 上下文，与自己及各个父类的 :py:obj:"
+"`CONFIG` ， 合并为该 Timeline 对象的 ``self._config_context``"
 msgstr ""
 "The first ``with`` call occurs in the :meth:`build` method, where the current ``config_ctx_var`` context is merged with "
 "the :py:obj:`CONFIG` of itself and each of its parent classes to form this Timeline object's ``self._config_context``"
@@ -167,6 +167,10 @@ msgstr ""
 #: janim.timeline.timeline.BuiltTimeline.render_all:1 of
 msgid "渲染所有可见物件"
 msgstr "Render all visible items"
+
+#: janim.timeline.timeline.BuiltTimeline.render_frame:1 of
+msgid "渲染一帧（包含曝光采样）到当前绑定的 framebuffer"
+msgstr "Render one frame (including exposure sampling) to the currently bound framebuffer"
 
 #: janim.timeline.timeline.BuiltTimeline.to_item:1 janim.timeline.timeline.BuiltTimeline.to_playback_control_item:1 of
 msgid "使用该方法可以在一个 Timeline 中插入另一个 Timeline"

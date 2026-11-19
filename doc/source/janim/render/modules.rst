@@ -11,6 +11,7 @@ render
    collection
    encoder
    framebuffer
+   motion_blur
    profiler
    program
    shader

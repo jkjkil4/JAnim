@@ -6,8 +6,10 @@ from typing import TYPE_CHECKING, Iterable
 
 import numpy as np
 
+from janim.anims_core.animation import Animation
 from janim.items.item import Item
 from janim.render.base import Renderer
+from janim.utils.data import ContextSetter
 from janim.utils.space_ops import normalize
 
 if TYPE_CHECKING:
@@ -31,6 +33,7 @@ class RenderCollection:
     extras: list[tuple[ExtraRenderGroup, RenderGroupReturn]]
 
     def __post_init__(self):
+        self.frozen_renderers: dict[ItemAppearance, float] = {}
         self._apprs_is_delegated: list[bool] | None = None
         self._extras_is_delegated: list[bool] | None = None
 
@@ -74,15 +77,17 @@ class RenderCollection:
                 self._extras_is_delegated[i] = True
                 delegated_extras.append(extra)
 
-        return RenderCollection(self.timeline, delegated_apprs, delegated_extras)
+        delegated = RenderCollection(self.timeline, delegated_apprs, delegated_extras)
+        delegated.frozen_renderers = self.frozen_renderers
+        return delegated
 
     def render(self) -> None:
         # 得到所有将要渲染的目标
         if self._apprs_is_delegated is None:
-            appr_renders = [(item, appr.render) for appr, item in self.apprs]
+            appr_renders = [(item, self._appr_render(appr)) for appr, item in self.apprs]
         else:
             appr_renders = [
-                (item, appr.render)
+                (item, self._appr_render(appr))
                 for (appr, item), is_delegated in zip(
                     self.apprs, self._apprs_is_delegated, strict=True
                 )
@@ -119,6 +124,17 @@ class RenderCollection:
 
         # 排序后进行渲染
         self._render(sorted(renders, key=key, reverse=True))
+
+    def _appr_render(self, appr: ItemAppearance):
+        at = self.frozen_renderers.get(appr)
+        if at is None:
+            return appr.render
+
+        def render(item: Item) -> None:
+            with ContextSetter(Animation.global_t_ctx, at):
+                appr.render(item)
+
+        return render
 
     @staticmethod
     def _render(renders: Iterable[ItemWithRenderFunc]) -> None:
