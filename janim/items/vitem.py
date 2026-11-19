@@ -9,7 +9,7 @@ from janim.components.component import CmptGroup, CmptInfo
 from janim.components.glow import Cmpt_Glow
 from janim.components.points import Cmpt_Points
 from janim.components.radius import Cmpt_Radius
-from janim.components.rgbas import Cmpt_Rgbas, apart_alpha
+from janim.components.rgbas import Cmpt_Rgbas
 from janim.components.vpoints import Cmpt_VPoints
 from janim.constants import PI
 from janim.items.group import Group
@@ -20,7 +20,6 @@ from janim.render.renderer.r_vitem import VItemRenderer
 from janim.typing import Alpha, AlphaArray, ColorArray, JAnimColor, Vect
 from janim.utils.bezier import bezier, inverse_interpolate, partial_quadratic_bezier_points
 from janim.utils.data import AlignedData
-from janim.utils.iterables import resize_preserving_order_indice_groups
 from janim.utils.simple_functions import clip
 from janim.utils.space_ops import get_norm
 
