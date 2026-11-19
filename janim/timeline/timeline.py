@@ -375,6 +375,9 @@ class BuiltTimeline:
         if self.capture_framebuffer is not None:
             self.capture_framebuffer.release()
 
+        if self._motion_blur_buffer is not None:
+            self._motion_blur_buffer.release()
+
     @property
     def cfg(self) -> Config | ConfigGetter:
         """
