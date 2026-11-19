@@ -76,3 +76,4 @@ void get_subpath_attr(
     fill_d = stroke_d;
     get_curve_attr(A, B, C, match, fill_d, fill_sgn);
 }
+

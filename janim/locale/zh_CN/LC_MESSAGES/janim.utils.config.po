@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-24 14:30+0800\n"
+"POT-Creation-Date: 2026-10-23 15:56+0800\n"
 "PO-Revision-Date: 2025-12-24 16:06+0800\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -17,9 +17,25 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Poedit 3.8\n"
 
-#: janim/utils/config.py:30
+#: janim/utils/config.py:33
 msgid "{attrname}={value!r} is incompatible with type {typename}"
 msgstr "{attrname}={value!r} 与类型 {typename} 不兼容"
+
+#: janim/utils/config.py:50
+msgid "{attrname}={value!r} should not be less than {min!r}"
+msgstr "{attrname}={value!r} 不应低于 {min!r}"
+
+#: janim/utils/config.py:56
+msgid "{attrname}={value!r} should not be greater than {max!r}"
+msgstr "{attrname}={value!r} 不应高于 {max!r}"
+
+#: janim/utils/config.py:68
+msgid "{attrname}={value!r} should be greater than {min!r}"
+msgstr "{attrname}={value!r} 应高于 {typename}"
+
+#: janim/utils/config.py:74
+msgid "{attrname}={value!r} should be less than {max!r}"
+msgstr "{attrname}={value!r} 应低于 {min!r}"
 
 #~ msgid "'{attrname}' must be of type {typename} or None, {value!r} is invalid"
 #~ msgstr "'{attrname}' 必须是 {typename} 类型或 None，{value!r} 是无效的"

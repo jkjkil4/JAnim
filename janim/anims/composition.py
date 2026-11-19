@@ -60,9 +60,17 @@ class AnimGroup(Animation):
         name: str | None = None,
         collapse: bool = False,
     ):
-        self.anims = self._get_anim_objects(anims)
-        for anim in self.anims:
+        anims: list[Animation] = self._get_anim_objects(anims)
+        for anim in anims:
+            if anim.parent is not None:
+                raise AnimGroupError(
+                    _(
+                        'Animation object {obj} cannot be reused, '
+                        'you should create different objects for animations'
+                    ).format(obj=anim)
+                )
             anim.parent = self
+        self.anims = anims
 
         self.collapse = collapse
         self._adjust_t_range(lag_ratio, offset)

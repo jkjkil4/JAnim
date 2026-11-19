@@ -32,10 +32,51 @@ class VItemPlaneRenderer(Renderer):
 
         if compatibility:
             self.render = self.render_compatibility
+            self.release = self.release_compatibility
         else:
             self.render = self.render_normal
+            self.release = self.release_normal
 
         self.render(item)
+
+    # region release
+
+    def release_common(self) -> None:
+        self.vao.release()
+        self.vbo_coord.release()
+        self.vbo_mapped_points.release()
+        self.vbo_radius.release()
+        self.vbo_stroke_color.release()
+        self.vbo_fill_color.release()
+
+    def release_compatibility(self) -> None:
+        if not self.initialized:
+            return
+
+        self.release_common()
+
+        gl.glDeleteTextures(
+            [
+                self.sampb_mapped_points,
+                self.sampb_radius,
+                self.sampb_stroke_color,
+                self.sampb_fill_color,
+            ]
+        )
+
+        self.initialized = False
+
+    def release_normal(self) -> None:
+        if not self.initialized:
+            return
+
+        self.release_common()
+
+        self.vbo_points.release()
+
+        self.initialized = False
+
+    # endregion
 
     # region init
 

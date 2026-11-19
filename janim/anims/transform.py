@@ -132,10 +132,16 @@ class Transform(Animation):
     def _finalized(self) -> None:
         self.align_data()
 
-        self.render_group = [
-            (aligned.union, partial(self.render, aligned, aligned.union.renderer_cls().render))
-            for aligned in self.aligned.values()
-        ]
+        self._extra_renderers = []
+        self.render_group = []
+        for aligned in self.aligned.values():
+            renderer = aligned.union.renderer_cls()
+            self._extra_renderers.append(renderer)
+            self.render_group.append(
+                (aligned.union, partial(self.render, aligned, renderer.render))
+            )
+        self.timeline._release_hooks.append(self._release_extra_renderers)
+
         self.timeline.add_extra_render_group(
             self.t_range,
             lambda: self.render_group,
@@ -168,6 +174,10 @@ class Transform(Animation):
             anim.transfer_params(self)
             anim.t_range = TimeRange(self.t_range.at + fade_start, self.t_range.end)
             anim.finalize()
+
+    def _release_extra_renderers(self) -> None:
+        for renderer in self._extra_renderers:
+            renderer.release()
 
     def _get_item1_data(self, item1: Item) -> Item:
         appr = self.timeline.item_appearances.get(item1, None)

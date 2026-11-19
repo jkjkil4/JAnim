@@ -32,16 +32,57 @@ class VItemCurveRenderer(Renderer):
 
         if compatibility:
             self.render = self.render_compatibility
+            self.release = self.release_compatibility
         else:
             self.render = self.render_normal
+            self.release = self.release_normal
 
         self.render(item)
+
+    # region release
+
+    def release_common(self) -> None:
+        self.vao.release()
+        self.vbo_indices.release()
+        self.vbo_mapped_points.release()
+        self.vbo_radius.release()
+        self.vbo_stroke_color.release()
+
+    def release_compatibility(self) -> None:
+        if not self.initialized:
+            return
+
+        self.release_common()
+
+        gl.glDeleteTextures(
+            [
+                self.sampb_mapped_points,
+                self.sampb_radius,
+                self.sampb_stroke_color,
+            ]
+        )
+
+        self.initialized = False
+
+    def release_normal(self) -> None:
+        if not self.initialized:
+            return
+
+        self.release_common()
+
+        self.vbo_points.release()
+
+        self.initialized = False
+
+    # endregion
 
     # region init
 
     def init_compatibility(self) -> None:
         self.prog = get_program_from_file_prefix(self.shader_path_compatibility)
         self.init_common()
+
+        self.u_lim = self.uniform(self.prog, 'lim', gl.GL_INT)
 
         self.sampb_mapped_points, self.sampb_radius, self.sampb_stroke_color = gl.glGenTextures(3)
 
@@ -150,6 +191,7 @@ class VItemCurveRenderer(Renderer):
         gl.glUniform1i(self.loc_radius, 1)
         gl.glUniform1i(self.loc_stroke_color, 2)
 
+        self.u_lim.write_int((len(new_attrs.points) - 1) // 2 * 2)
         gl.glActiveTexture(gl.GL_TEXTURE0)
         gl.glBindTexture(gl.GL_TEXTURE_BUFFER, self.sampb_mapped_points)
         gl.glActiveTexture(gl.GL_TEXTURE1)

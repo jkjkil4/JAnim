@@ -28,15 +28,19 @@ class Category:
 
 
 def get_pages(
-    console: Console, entries: list[Entry], page_padding: int, *, start: int = 1
+    console: Console, entries: list[Entry], page_padding: int, *, start: int | None = None
 ) -> list[Columns]:
     if not entries:
         return []
 
+    # start 非 None 时会禁用负数编号，用于 categories 页面
+    disable_neg_index = start is not None
+    start = start or 1
+
     batched = list(it.batched(enumerate(entries, start=start), ENTRIES_COLUMN_HEIGHT))
 
     def fmt_neg_index(column_i: int, entry_i: int) -> str:
-        if column_i != len(batched) - 1:
+        if disable_neg_index or column_i != len(batched) - 1:
             return ''
         neg_index = entry_i - 1 - len(entries)
         if neg_index < -2:

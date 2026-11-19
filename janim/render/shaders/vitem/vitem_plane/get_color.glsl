@@ -55,20 +55,5 @@ vec4 get_vitem_color(float stroke_d, float fill_sgn_d, int idx, int lim)
         result_color.rgb = apply_light(result_color.rgb, start_point, unit_normal);
     }
 
-    if (glow_color.a != 0.0) {
-        float glow_sgn_d = is_fill_transparent ? stroke_d : min(stroke_d, fill_sgn_d);
-        float factor;
-        if (glow_sgn_d >= 0.0) {
-            factor = 1.0 - glow_sgn_d / glow_size;
-        } else {
-            factor = 1.0 - (-glow_sgn_d) / JA_ANTI_ALIAS_RADIUS / 2.0;
-        }
-        if (0.0 < factor && factor <= 1.0) {
-            vec4 f_glow_color = glow_color;
-            f_glow_color.a *= factor * factor;
-            result_color = blend_color(result_color, f_glow_color);
-        }
-    }
-
     return result_color;
 }

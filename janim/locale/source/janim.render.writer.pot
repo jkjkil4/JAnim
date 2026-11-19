@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-28 17:19+0800\n"
+"POT-Creation-Date: 2026-09-10 01:09+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,37 +17,37 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: janim/render/writer.py:105
+#: janim/render/writer.py:107
 #, python-brace-format
 msgid "Writing video \"{name}\""
 msgstr ""
 
-#: janim/render/writer.py:194
+#: janim/render/writer.py:196
 #, python-brace-format
 msgid "Finished writing video \"{name}\" in {elapsed:.2f} s"
 msgstr ""
 
-#: janim/render/writer.py:201
+#: janim/render/writer.py:203
 #, python-brace-format
 msgid "File saved to \"{file_path}\" (video only)"
 msgstr ""
 
-#: janim/render/writer.py:248
+#: janim/render/writer.py:250
 #, python-brace-format
 msgid "Writing audio of \"{name}\""
 msgstr ""
 
-#: janim/render/writer.py:284
+#: janim/render/writer.py:286
 #, python-brace-format
 msgid "Finished writing audio of \"{name}\" in {elapsed:.2f} s"
 msgstr ""
 
-#: janim/render/writer.py:291
+#: janim/render/writer.py:293
 #, python-brace-format
 msgid "File saved to \"{file_path}\""
 msgstr ""
 
-#: janim/render/writer.py:402
+#: janim/render/writer.py:404
 #, python-brace-format
 msgid "File saved to \"{file_path}\" (merged)"
 msgstr ""

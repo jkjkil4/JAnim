@@ -20,7 +20,7 @@ from janim.utils.data import SortedKeyQueue
 from janim.utils.simple_functions import clip
 
 if TYPE_CHECKING:
-    from janim.timeline.timeline import TimelineItem
+    from janim.timeline.timeline import TimelineItem, TimelinePlaybackControlItem
 
 type RenderFunc = Callable[[Item], None]
 type ItemWithRenderFunc = tuple[Item, RenderFunc]
@@ -117,9 +117,13 @@ class TimelineCore:
         # ==========================================
         # 其它属性
 
-        # 该 Timeline 中包含的子 Timeline 列表
-        # 注：不包括 `to_playback_control_item` 构造的
+        # `to_item` 构造的子 Timeline 列表
         self.subtimeline_items: list[TimelineItem] = []
+        # `to_playback_control_item` 构造的子 Timeline 列表
+        self.playback_control_items: list[TimelinePlaybackControlItem] = []
+
+        # 用于在 BuiltTimeline.release 时释放动画持有的 OpenGL 资源
+        self._release_hooks: list[Callable[[], None]] = []
 
         self.hide_subtitles: bool = False
         self.show_debug_notice: bool = False

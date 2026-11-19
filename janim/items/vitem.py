@@ -9,7 +9,7 @@ from janim.components.component import CmptGroup, CmptInfo
 from janim.components.glow import Cmpt_Glow
 from janim.components.points import Cmpt_Points
 from janim.components.radius import Cmpt_Radius
-from janim.components.rgbas import Cmpt_Rgbas, apart_alpha
+from janim.components.rgbas import Cmpt_Rgbas
 from janim.components.vpoints import Cmpt_VPoints
 from janim.constants import PI
 from janim.items.group import Group
@@ -202,9 +202,6 @@ class VItem(Points):
 
     @classmethod
     def align_for_interpolate(cls, item1: VItem, item2: VItem) -> AlignedData[Self]:
-        subpaths1_count = len(item1.points.get_subpath_end_indices())
-        subpaths2_count = len(item2.points.get_subpath_end_indices())
-
         aligned = super().align_for_interpolate(item1, item2)
 
         count = (aligned.data1.points.count() + 1) // 2
@@ -222,27 +219,6 @@ class VItem(Points):
             else:
                 cmpt1.resize(count)
                 cmpt2.resize(count)
-
-        if subpaths1_count != subpaths2_count:
-            diff = abs(subpaths1_count - subpaths2_count)
-            item = aligned.data1 if subpaths1_count < subpaths2_count else aligned.data2
-            indices = item.points.get_subpath_end_indices()
-
-            left_end = indices[0] // 2
-            right_start = indices[-1 - diff] // 2 + 1
-
-            rgbas = item.stroke.get().copy()
-
-            left = rgbas[: left_end + 1]
-            right = rgbas[right_start:]
-
-            alphas = np.array([apart_alpha(alpha, diff + 1) for alpha in left[:, 3]])
-            left[:, 3] = alphas
-
-            alphas = np.array([apart_alpha(alpha, diff + 1) for alpha in right[:, 3]])
-            right[:, 3] = alphas
-
-            item.stroke.set(rgbas)
 
         return aligned
 

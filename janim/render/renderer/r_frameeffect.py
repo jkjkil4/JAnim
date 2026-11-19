@@ -90,3 +90,13 @@ class FrameEffectRenderer(Renderer):
             self.prog[key] = value
 
         self.vao.render(mgl.TRIANGLE_STRIP)
+
+    def release(self) -> None:
+        if not self.initialized:
+            return
+
+        self.vao.release()
+        self.vbo_texcoords.release()
+        self.framebuffer.release()
+
+        self.initialized = False

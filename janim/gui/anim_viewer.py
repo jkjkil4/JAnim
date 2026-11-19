@@ -519,6 +519,13 @@ class AnimViewer(QMainWindow):
         range = self.timeline_view.range
         inout_point = self.timeline_view.inout_point
 
+        # 释放上一个 BuiltTimeline 涉及的 OpenGL 资源
+        self.glw.makeCurrent()
+        try:
+            self.built.release()
+        finally:
+            self.glw.doneCurrent()
+
         self.set_built(built)
 
         if not stay_same:

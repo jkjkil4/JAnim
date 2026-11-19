@@ -355,6 +355,26 @@ class BuiltTimeline:
         self.capture_framebuffer: FrameBuffer | None = None
         self._motion_blur_buffer: MotionBlurBuffer | None = None
 
+    def release(self) -> None:
+        """
+        释放该 BuiltTimeline 所涉及的 OpenGL 资源
+        """
+        for appr in self.timeline.item_appearances.values():
+            if appr.renderer is not None:
+                appr.renderer.release()
+
+        for item in self.timeline.subtimeline_items:
+            item._built.release()
+
+        for item in self.timeline.playback_control_items:
+            item._built.release()
+
+        for hook in self.timeline._release_hooks:
+            hook()
+
+        if self.capture_framebuffer is not None:
+            self.capture_framebuffer.release()
+
     @property
     def cfg(self) -> Config | ConfigGetter:
         """
@@ -954,3 +974,7 @@ class TimelinePlaybackControlItem(PlaybackControl, Item):
         self._built = built
         self.duration = self._built.duration
         self.keep_last_frame = keep_last_frame
+
+        parent_timeline = Timeline.get_context(raise_exc=False)
+        if parent_timeline is not None:
+            parent_timeline.playback_control_items.append(self)

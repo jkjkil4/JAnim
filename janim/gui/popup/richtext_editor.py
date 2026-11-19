@@ -64,15 +64,36 @@ class RichTextEdit(TextEdit):
 
     def insertFromMimeData(self, source: QMimeData) -> None:
         if self.convert_html and source.hasHtml():
-            self.insertPlainText(self.html2richtext(source.html()))
+            text = self.html2richtext(source.html())
+            if text is None:
+                text = _('Recognize failed')
+            self.insertPlainText(text)
             self.html_inserted.emit()
         else:
             self.insertPlainText(source.text())
 
     @staticmethod
-    def html2richtext(html: str) -> str:
+    def html2richtext(html: str) -> str | None:
+        # 富文本识别（HTML -> JAnim 富文本）并不完善
+        # 此处的代码仅为作者为了识别从 VSCode 复制出来的带有代码高亮的文本而使用
+        #
+        # 一开始只有 RichTextEdit.parse_node(soup.find('html').find('body'))
+        # 之后，貌似 VSCode 复制出来的也有可能不带 html body，所以加上了 RichTextEdit.parse_node(soup)
+        #
+        # return None 是用于识别失败的 fallback
         soup = BeautifulSoup(html, 'html.parser')
-        return RichTextEdit.parse_node(soup.find('html').find('body'))
+        try:
+            body = soup.find('html').find('body')
+            return RichTextEdit.parse_node(body)
+        except Exception:
+            pass
+
+        try:
+            return RichTextEdit.parse_node(soup)
+        except Exception:
+            pass
+
+        return None
 
     @staticmethod
     def parse_node(node: Tag) -> str:

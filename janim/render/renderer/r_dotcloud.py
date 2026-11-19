@@ -76,3 +76,14 @@ class DotCloudRenderer(Renderer):
 
         with self.depth_test_if_enabled(self.ctx, item):
             self.vao.render(mgl.POINTS, vertices=len(new_points))
+
+    def release(self) -> None:
+        if not self.initialized:
+            return
+
+        self.vao.release()
+        self.vbo_points.release()
+        self.vbo_color.release()
+        self.vbo_radius.release()
+
+        self.initialized = False
